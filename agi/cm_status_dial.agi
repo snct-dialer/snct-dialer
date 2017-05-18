@@ -264,7 +264,7 @@ else
 		$affected_rowsL = $dbhA->do($stmtA);
 		if ($AGILOG) {$agi_string = "--    VL update: |$affected_rowsL|$new_status|$dtmf|$lead_id|$context|";   &agi_output;}
 
-		$stmtA = "UPDATE vicidial_closer_log SET status='$new_status' where lead_id='$lead_id' order by call_date desc limit 1;";
+		$stmtA = "UPDATE vicidial_closer_log SET status='$new_status' where lead_id='$lead_id' order by closecallid desc limit 1;";
 			if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 		$affected_rowsL = $dbhA->do($stmtA);
 		if ($AGILOG) {$agi_string = "--    VCLOG update: |$affected_rowsL|$new_status|$dtmf|$lead_id|$context|";   &agi_output;}

@@ -6721,7 +6721,7 @@ if ($function == 'update_log_entry')
 						}
 
 					if ($inbound_call > 0)
-						{$stmt="UPDATE vicidial_closer_log SET status='$status' where campaign_id='$group' and closecallid='$uniqueid' order by call_date desc limit 1;";}
+						{$stmt="UPDATE vicidial_closer_log SET status='$status' where campaign_id='$group' and closecallid='$uniqueid' order by closecallid desc limit 1;";}
 					else
 						{$stmt="UPDATE vicidial_log SET status='$status' where campaign_id='$group' and uniqueid='$uniqueid';";}
 					$rslt=mysql_to_mysqli($stmt, $link);

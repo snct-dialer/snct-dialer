@@ -3176,7 +3176,7 @@ if ($function == 'ra_call_control')
 						{$status='RAXFER';}
 					if ($call_type=='IN')
 						{
-						$stmt = "UPDATE vicidial_closer_log SET status='$status' where uniqueid='$uniqueid' and lead_id='$lead_id' and campaign_id='$campaign_id' order by call_date desc limit 1;";
+						$stmt = "UPDATE vicidial_closer_log SET status='$status' where uniqueid='$uniqueid' and lead_id='$lead_id' and campaign_id='$campaign_id' order by closecallid desc limit 1;";
 						}
 					else
 						{
