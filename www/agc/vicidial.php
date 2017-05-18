@@ -564,6 +564,7 @@ $DB=0;
 
 require_once("dbconnect_mysqli.php");
 require_once("functions.php");
+require_once("FlyInclude.php");
 
 if (isset($_GET["DB"]))						    {$DB=$_GET["DB"];}
         elseif (isset($_POST["DB"]))            {$DB=$_POST["DB"];}
@@ -18427,7 +18428,7 @@ $zi=2;
 
 <span style="position:absolute;left:0px;top:<?php echo $PBheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="MaiNfooterspan">
 <span id="blind_monitor_notice_span"><b><font color="red"> &nbsp; &nbsp; <span id="blind_monitor_notice_span_contents"></span></font></b></span>
-    <table bgcolor="<?php echo $MAIN_COLOR ?>" id="MaiNfooter" width="<?php echo $MNwidth ?>px"><tr height="32px"><td height="32px"><font face="Arial,Helvetica" size="1"><?php echo _QXZ("VERSION:"); ?> <?php echo $version ?> &nbsp; <?php echo _QXZ("BUILD:"); ?> <?php echo $build ?> &nbsp; &nbsp; <?php echo _QXZ("Server:"); ?> <?php echo $server_ip ?>  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</font><br />
+    <table bgcolor="<?php echo $MAIN_COLOR ?>" id="MaiNfooter" width="<?php echo $MNwidth ?>px"><tr height="32px"><td height="32px"><font face="Arial,Helvetica" size="1"><?php echo _QXZ("VERSION:"); ?> <?php echo $version ?> &nbsp; <?php echo _QXZ("BUILD:"); ?> <?php echo $build ?> &nbsp; <?php echo _QXZ("Patch-Level:"); ?> <?php echo $$FLY_patch_level ?> &nbsp;&nbsp; <?php echo _QXZ("Server:"); ?> <?php echo $server_ip ?>  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</font><br />
 	<font class="body_small">
 	<span id="busycallsdisplay"><a href="#"  onclick="conf_channels_detail('SHOW');"><?php echo _QXZ("Show conference call channel information"); ?></a>
     <br /><br />&nbsp;</span></font></td><td align="right" height="32px">

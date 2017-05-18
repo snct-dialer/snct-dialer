@@ -8,6 +8,7 @@ $startMS = microtime();
 
 require("dbconnect_mysqli.php");
 require("functions.php");
+require_once("FlyInclude.php");
 
 ######################################################################################################
 ######################################################################################################
@@ -40489,9 +40490,11 @@ echo "</TD></TR>\n";
 echo "<TR><TD bgcolor=#$SSmenu_background ALIGN=CENTER>\n";
 echo "<FONT STYLE=\"font-family:HELVETICA;font-size:9;color:white;\"><br><br><!-- RUNTIME: $RUNtime seconds<BR> -->";
 echo _QXZ("VERSION").": $admin_version<BR>";
-echo _QXZ("BUILD").": $build\n";
+echo _QXZ("BUILD").": $build<br>";
+echo _QXZ("Patch-Level"). ": $FLY_patch_level<br>";
 if (!preg_match("/_BUILD_/",$SShosted_settings))
-	{echo "<BR><a href=\"$PHP_SELF?ADD=999995\"><font color=white>&copy; 2017 ViciDial Group</font></a><BR><img src=\"images/pixel.gif\">";}
+    {echo "<BR><a href=\"$PHP_SELF?ADD=999995\"><font color=white>&copy; 2017 ViciDial Group</font></a><BR><img src=\"images/pixel.gif\">";}
+echo "<BR><a href=\"$PHP_SELF?ADD=999995\"><font color=white>&copy; 2017 flyingpenguin.de UG</font></a><BR><img src=\"images/pixel.gif\">";
 echo "</FONT>\n";
 ?>
 
