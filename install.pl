@@ -42,6 +42,7 @@
 # 151029-0650 - Added Asterisk 11 as listed option, added new sample voicemail.conf for 1.8 and higher
 # 151212-0840 - Added chat_customer web directory, removed static language build actions
 # 160101-0907 - Changed ip_relay code to look for installed package
+# 160522-2051 - Add code to copy FlyInclude.php
 #
 
 ############################################
@@ -2573,6 +2574,9 @@ if ($NOWEB < 1)
 	`cp -f ./www/vicidial/robots.txt $PATHweb/vicidial/server_reports/`;
 	if (-e "$PATHweb/agc/css/custom.css.save_user_changes") {`mv $PATHweb/agc/css/custom.css.save_user_changes $PATHweb/agc/css/custom.css`;}
 	`cp -f ./www/vicidial/robots.txt $PATHweb/chat_customer/`;
+	# Copy FlyInclude.php
+	`cp -f ./FlyInclude.php $PATHweb/agc`;
+	`cp -f ./FlyInclude.php $PATHweb/vicidial`;
 
 	print "setting web scripts to executable...\n";
 	`chmod 0777 $PATHweb/`;
