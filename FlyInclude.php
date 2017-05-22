@@ -7,7 +7,7 @@
 # 2017-004 JFF 2017-05-22 Add Mute marker after Status at live_report
 #
 
-$FLY_patch_level = "2017-002";
+$FLY_patch_level = "2017-004";
 
 
 ?>

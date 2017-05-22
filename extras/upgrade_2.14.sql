@@ -262,3 +262,10 @@ index (monitor_start_time)
 CREATE TABLE vicidial_rt_monitor_log_archive LIKE vicidial_rt_monitor_log; 
 
 UPDATE system_settings SET db_schema_version='1505',db_schema_update_date=NOW() where db_schema_version < 1505;
+
+ALTER TABLE servers ADD git_commit VARCHAR(55) default '';
+ALTER TABLE servers ADD git_release VARCHAR(25) default '';
+ALTER TABLE system_settings ADD git_commit VARCHAR(55) default '';
+ALTER TABLE system_settings ADD git_release VARCHAR(25) default '';
+
+UPDATE system_settings SET db_schema_version='1506',db_schema_update_date=NOW() where db_schema_version < 1506;
