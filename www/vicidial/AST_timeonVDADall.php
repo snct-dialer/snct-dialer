@@ -2867,6 +2867,19 @@ if ($talking_to_print > 0)
 			}
 		### END 3-WAY Check ###
 
+		### Mute Check ###
+		$MutePhone[$i] = "";
+		$MuteStatement="SELECT * FROM `vicidial_manager` WHERE `cmd_line_j` LIKE '$Aextension[$i]%' ORDER BY `man_id` DESC LIMIT 1;";
+		$MuteResult=mysql_to_mysqli($MuteStatement, $link);
+		if (mysqli_num_rows($MuteResult) > 0) {
+		    $MuteRow = mysqli_fetch_row($MuteResult);
+		    $chStr = substr($MuteRow[9], 29, 1);
+		    if($chStr == "1") {
+			$MutePhone[$i] = " | M";
+		    }
+		}
+		### END Mute Check ###
+
 		$i++;
 		}
 
@@ -3037,6 +3050,7 @@ if ($talking_to_print > 0)
 		$campaign_id =	sprintf("%-10s", $Acampaign_id[$i]);
 		$comments=		$Acomments[$i];
 		$calls_today =	sprintf("%-5s", $Acalls_today[$i]);
+		$LMute = $MutePhone[$i];
 
 		if ($agent_pause_codes_active > 0)
 			{
@@ -3262,6 +3276,8 @@ if ($talking_to_print > 0)
 			if ($call_time_S >= 0) {$G='<SPAN class="salmon"><B>'; $EG='</B></SPAN>'; $tr_class='TRsalmon';}
 			}
 
+		$status .= $LMute;
+
 		$L='';
 		$R='';
 
@@ -3386,7 +3402,7 @@ if ($talking_to_print > 0)
 				}
 
 			$agentcount++;
-
+			
 			if ($realtime_block_user_info > 0)
 				{
 				$Aecho .= "<tr class='$tr_class'><td NOWRAP>$UGD $G$sessionid$EG$L$R$Aring_note[$i]</td><td NOWRAP align=center> $G"._QXZ("$status",6)."$EG</td><td bgcolor=white align=center><font class='Hblank'>$CM</td>$pausecodeHTML<td NOWRAP align=right>$CP$SVD$G$call_time_MS$EG </td><td NOWRAP align=right> $G$campaign_id$EG </td><td NOWRAP align=right> $G$calls_today$EG </td>$INGRP</tr>\n";
