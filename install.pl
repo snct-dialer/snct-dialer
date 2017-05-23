@@ -42,6 +42,7 @@
 # 151029-0650 - Added Asterisk 11 as listed option, added new sample voicemail.conf for 1.8 and higher
 # 151212-0840 - Added chat_customer web directory, removed static language build actions
 # 160101-0907 - Changed ip_relay code to look for installed package
+# 160522-2051 - Add code to copy FlyInclude.php
 #
 
 ############################################
@@ -2573,6 +2574,9 @@ if ($NOWEB < 1)
 	`cp -f ./www/vicidial/robots.txt $PATHweb/vicidial/server_reports/`;
 	if (-e "$PATHweb/agc/css/custom.css.save_user_changes") {`mv $PATHweb/agc/css/custom.css.save_user_changes $PATHweb/agc/css/custom.css`;}
 	`cp -f ./www/vicidial/robots.txt $PATHweb/chat_customer/`;
+	# Copy FlyInclude.php
+	`cp -f ./FlyInclude.php $PATHweb/agc`;
+	`cp -f ./FlyInclude.php $PATHweb/vicidial`;
 
 	print "setting web scripts to executable...\n";
 	`chmod 0777 $PATHweb/`;
@@ -2750,6 +2754,54 @@ if ($dbhA)
 	$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query:|$stmtA|\n";
 
 	print "Version information updated: $svn_revision|$VARserver_ip\n";
+
+	print "Git information update:\n";
+
+	`./convert2pl.php`
+
+	require './FlyInclude.pl';
+
+	$git_commit  = "";
+#	$git_release = "";
+
+	$GitCmd  = "";
+	$GrepCmd = "";
+	$CutCmd  = "";
+	$TrCmd   = "";
+
+	if ( -e ('/bin/git')) {$GitCmd = '/bin/git';}
+	if ( -e ('/usr/bin/git')) {$GitCmd = '/usr/bin/git';}
+	if ( -e ('/usr/local/bin/git')) {$GitCmd = '/usr/local/bin/git';}
+
+	if ( -e ('/bin/grep')) {$GrepCmd = '/bin/grep';}
+	if ( -e ('/usr/bin/grept')) {$GrepCmd = '/usr/bin/grep';}
+	if ( -e ('/usr/local/bin/grep')) {$GrepCmd = '/usr/local/bin/grep';}
+
+	if ( -e ('/bin/cut')) {$CutCmd = '/bin/cut';}
+	if ( -e ('/usr/bin/cut')) {$CutCmd = '/usr/bin/cut';}
+	if ( -e ('/usr/local/bin/cut')) {$CutCmd = '/usr/local/bin/cut';}
+
+	if ( -e ('/bin/tr')) {$TrCmd = '/bin/trt';}
+	if ( -e ('/usr/bin/tr')) {$TrCmd = '/usr/bin/tr';}
+	if ( -e ('/usr/local/bin/tr')) {$TrCmd = '/usr/local/bin/tr';}
+
+	if (length($GitCmd)  == 0) { print "Git not found!\n";}
+	if (length($GrepCmd) == 0) { print "Grep not found!\n";}
+	if (length($CutCmd)  == 0) { print "Cut not found!\n";}
+	if (length($TrCmd)   == 0) { print "Tr not found!\n";}
+
+	if((length($GitCmd) != 0) && (length($GrepCmd) != 0) && (length($CutCmd) != 0) && (length($TrCmd) != 0)) {
+	$git_commit = `$GitCmd show --summary | $GrepCmd commit | $CutCmd -d" " -f2 | $TrCmd -d '\r\n'`;
+
+	$stmtGA = "UPDATE servers SET git_commit='$git_commit',git_release='$FLY_patch_level' where server_ip='$VARserver_ip';";
+		if($DB){print STDERR "\n|$stmtGA|\n";}
+	$affected_rows = $dbhA->do($stmtGA); #  or die  "Couldn't execute query:|$stmtGA|\n";
+
+	$stmtGA = "UPDATE system_settings SET git_commit='$git_commit',git_release='$FLY_patch_level';";
+		if($DB){print STDERR "\n|$stmtGA|\n";}
+	$affected_rows = $dbhA->do($stmtGA); #  or die  "Couldn't execute query:|$stmtGA|\n";
+
+	print "Git information updated: Commit: $git_commit | Release: $FLY_patch_level\n";
 	}
 ##### END attempt to connect to database, if successful then update code information in database #####
 
