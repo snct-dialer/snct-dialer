@@ -2757,7 +2757,7 @@ if ($dbhA)
 
 	print "Git information update:\n";
 
-	`./convert2pl.php`
+	`./convert2pl.php`;
 
 	require './FlyInclude.pl';
 
@@ -2791,8 +2791,10 @@ if ($dbhA)
 	if (length($TrCmd)   == 0) { print "Tr not found!\n";}
 
 	if((length($GitCmd) != 0) && (length($GrepCmd) != 0) && (length($CutCmd) != 0) && (length($TrCmd) != 0)) {
-	$git_commit = `$GitCmd show --summary | $GrepCmd commit | $CutCmd -d" " -f2 | $TrCmd -d '\r\n'`;
 
+	    $git_commit = `$GitCmd show --summary | $GrepCmd commit | $CutCmd -d" " -f2 | $TrCmd -d '\r\n'`;
+
+	}
 	$stmtGA = "UPDATE servers SET git_commit='$git_commit',git_release='$FLY_patch_level' where server_ip='$VARserver_ip';";
 		if($DB){print STDERR "\n|$stmtGA|\n";}
 	$affected_rows = $dbhA->do($stmtGA); #  or die  "Couldn't execute query:|$stmtGA|\n";
