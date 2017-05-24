@@ -10,7 +10,7 @@ use Encode qw(from_to decode encode);
 use MIME::Base64;
 use MIME::QuotedPrint;
 
-# Copyright (C) 2016  Matt Florell, Joe Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2017  Matt Florell, Joe Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
 # 
 # AST_inbound_email_parser.pl - This script is essential for periodically checking any active POP3 or IMAP 
 # email accounts set up through the Vicidial admin.
@@ -64,6 +64,7 @@ use MIME::QuotedPrint;
 # 160120-2149 - Added missing entry_date field on vicidial_list insert
 # 160414-0930 - Added missing phone_code field on vicidial_list insert
 # 161014-2200 - Bug patch for "&nbsp;" string in email message
+# 170523-1319 - file attachment patch, issue #1014
 #
 
 # default path to astguiclient configuration file:
@@ -470,13 +471,17 @@ while (@row=$rslt->fetchrow_array) {
 													case "application/vnd.oasis.opendocument.text" {$attachment_fulltype="ODT";}
 													case "application/vnd.oasis.opendocument.spreadsheet" {$attachment_fulltype="ODS";}
 												}
-												if ($sub_content_disposition=~/filename\=\"?(.*?)\"?$/i) {$attachment_filename=$&;}
+												if ($sub_content_disposition=~/filename\=\"?(.*?)\"?$|filename=\"[^\"]+\"/i) {$attachment_filename=$&;}
 												if (length($attachment_filename)==0) {
 													if ($DB) {print "Couldn't find file name with content-disposition.  Searching full header for 'filename' value...\n";}
-													if ($alt_email_text=~/filename\=\"?(.*?)\"?$/i) {$attachment_filename=$&;}
+													if ($alt_email_text=~/filename\=\"?(.*?)\"?$|filename=\"[^\"]+\"/i) {$attachment_filename=$&;}
 													if (length($attachment_filename)==0) {
-														if ($DB) {print "Couldn't find file name anywhere in header.  Searching Content-Type for 'name' value...\n";}
-														if ($sub_content_type=~/name\=\"?(.*?)\"?$/i) {$attachment_filename=$&;}
+														if ($DB) {print "Couldn't find file name anywhere in header.  Third test - searching Content-Type for 'name' value...\n";}
+														if ($sub_content_type=~/name\=\"?(.*?)\"?$|name=\"[^\"]+\"/i) {$attachment_filename=$&;}
+														if (length($attachment_filename)==0) {
+															if ($DB) {print "Couldn't find file 'name' anywhere in Content-Type.  Last test - searching full header for 'name' value...\n";}
+															if ($alt_email_text=~/name\=\"?(.*?)\"?$|name=\"[^\"]+\"/i) {$attachment_filename=$&;}
+														}
 													}
 												}
 												$attachment_filename=~s/(file)?name\=\"?|\"?$//gi;
@@ -798,13 +803,17 @@ while (@row=$rslt->fetchrow_array) {
 									case "application/vnd.oasis.opendocument.text" {$attachment_fulltype="ODT";}
 									case "application/vnd.oasis.opendocument.spreadsheet" {$attachment_fulltype="ODS";}
 								}
-								if ($sub_content_disposition=~/filename\=\"?(.*?)\"?$/i) {$attachment_filename=$&;}
+								if ($sub_content_disposition=~/filename\=\"?(.*?)\"?$|filename=\"[^\"]+\"/i) {$attachment_filename=$&;}
 								if (length($attachment_filename)==0) {
 									if ($DB) {print "Couldn't find file name with content-disposition.  Searching full header for 'filename' value...\n";}
-									if ($alt_email_text=~/filename\=\"?(.*?)\"?$/i) {$attachment_filename=$&;}
+									if ($alt_email_text=~/filename\=\"?(.*?)\"?$|filename=\"[^\"]+\"/i) {$attachment_filename=$&;}
 									if (length($attachment_filename)==0) {
-										if ($DB) {print "Couldn't find file name anywhere in header.  Searching Content-Type for 'name' value...\n";}
-										if ($sub_content_type=~/name\=\"?(.*?)\"?$/i) {$attachment_filename=$&;}
+										if ($DB) {print "Couldn't find file name anywhere in header.  Third test - searching Content-Type for 'name' value...\n";}
+										if ($sub_content_type=~/name\=\"?(.*?)\"?$|filename=\"[^\"]+\"/i) {$attachment_filename=$&;}
+										if (length($attachment_filename)==0) {
+											if ($DB) {print "Couldn't find file 'name' anywhere in Content-Type line.  Last test - searching full header for 'name' value...\n";}
+											if ($alt_email_text=~/name\=\"?(.*?)\"?$|filename=\"[^\"]+\"/i) {$attachment_filename=$&;}
+										}
 									}
 								}
 								$attachment_filename=~s/(file)?name\=\"?|\"?$//gi;
