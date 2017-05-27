@@ -1,7 +1,7 @@
 <?php
 # vdc_script_dispo_example.php
 # 
-# Copyright (C) 2013  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed to be used in the SCRIPT tab in an IFRAME and will not submit unless a specific field is filled in
 #
@@ -19,10 +19,11 @@
 # 130802-1036 - Changed to PHP mysqli functions
 # 140811-0832 - Changed to use QXZ function for echoing text
 # 141216-2133 - Added language settings lookups and user/pass variable standardization
+# 170526-2345 - Added additional variable filtering
 #
 
-$version = '2.10-7';
-$build = '141216-2133';
+$version = '2.14-8';
+$build = '170526-2345';
 
 require_once("dbconnect_mysqli.php");
 require_once("functions.php");
@@ -251,6 +252,13 @@ if (strlen($call_date) < 1)
 
 $user=preg_replace("/\'|\"|\\\\|;| /","",$user);
 $pass=preg_replace("/\'|\"|\\\\|;| /","",$pass);
+$list_id = preg_replace('/[^0-9]/', '', $list_id);
+$server_ip = preg_replace("/\'|\"|\\\\|;/","",$server_ip);
+$session_id = preg_replace('/[^0-9]/','',$session_id);
+$uniqueid = preg_replace('/[^-_\.0-9a-zA-Z]/','',$uniqueid);
+$campaign = preg_replace('/[^-_0-9a-zA-Z]/','',$campaign);
+$group = preg_replace('/[^-_0-9a-zA-Z]/','',$group);
+$session_name = preg_replace("/\'|\"|\\\\|;/","",$session_name);
 
 #############################################
 ##### START SYSTEM_SETTINGS AND USER LANGUAGE LOOKUP #####

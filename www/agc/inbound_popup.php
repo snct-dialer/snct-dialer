@@ -1,7 +1,7 @@
 <?php
-# inbound_popup.php    version 2.10
+# inbound_popup.php    version 2.14
 # 
-# Copyright (C) 2014  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed to open up when a live_inbound call comes in giving the user
 #   options of what to do with the call or options to lookup the callerID on various web sites
@@ -36,10 +36,11 @@
 # 130802-1008 - Changed to PHP mysqli functions
 # 140811-0843 - Changed to use QXZ function for echoing text
 # 141216-2120 - Added language settings lookups and user/pass variable standardization
+# 170526-2231 - Added additional variable filtering
 #
 
-$version = '0.0.12';
-$build = '141216-2120';
+$version = '2.14-13';
+$build = '170526-2231';
 
 require_once("dbconnect_mysqli.php");
 require_once("functions.php");
@@ -72,10 +73,13 @@ if (isset($_GET["local_web_callerID_URL_enc"]))			{$local_web_callerID_URL_enc=$
 if (isset($_GET["local_web_callerID_URL_enc"]))			{$local_web_callerID_URL = rawurldecode($local_web_callerID_URL_enc);}
 	else {$local_web_callerID_URL = '';}
 
+# variable filtering
 $user=preg_replace("/\'|\"|\\\\|;| /","",$user);
 $pass=preg_replace("/\'|\"|\\\\|;| /","",$pass);
 $session_name = preg_replace("/\'|\"|\\\\|;/","",$session_name);
 $server_ip = preg_replace("/\'|\"|\\\\|;/","",$server_ip);
+$uniqueid = preg_replace('/[^-_\.0-9a-zA-Z]/','',$uniqueid);
+$exten = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$exten);
 
 # default optional vars if not set
 if (!isset($format))   {$format="text";}

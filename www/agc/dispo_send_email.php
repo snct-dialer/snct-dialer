@@ -21,6 +21,7 @@
 # CHANGES
 # 150806-1424 - First Build
 # 170329-2145 - Added DID variables and custom fields values
+# 170526-2315 - Added additional variable filtering
 #
 
 $api_script = 'send_email';
@@ -70,8 +71,12 @@ $k=0;
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=14;
 
+# filter variables
 $user=preg_replace("/\'|\"|\\\\|;| /","",$user);
 $pass=preg_replace("/\'|\"|\\\\|;| /","",$pass);
+$call_id = preg_replace('/[^-_0-9a-zA-Z]/', '', $call_id);
+$lead_id = preg_replace('/[^_0-9]/', '', $lead_id);
+$container_id = preg_replace('/[^-_0-9a-zA-Z]/', '', $container_id);
 
 #############################################
 ##### START SYSTEM_SETTINGS AND USER LANGUAGE LOOKUP #####

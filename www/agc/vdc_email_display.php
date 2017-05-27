@@ -1,7 +1,7 @@
 <?php
 # vdc_email_display.php - VICIDIAL agent email display script
 #
-# Copyright (C) 2015  Matt Florell, Joe Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2017  Matt Florell, Joe Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This page displays any incoming emails in the Vicidial user interface.  It 
 # also allows the user to download and view any attachments sent in the email,
@@ -21,10 +21,11 @@
 # 141128-0850 - Code cleanup for QXZ functions
 # 141216-2117 - Added language settings lookups and user/pass variable standardization
 # 150603-1541 - Fixed email attachments issue
+# 170526-2330 - Added additional variable filtering
 #
 
-$version = '2.12-11';
-$build = '150603-1541';
+$version = '2.14-12';
+$build = '170526-2330';
 
 require_once("dbconnect_mysqli.php");
 require_once("functions.php");
@@ -104,6 +105,11 @@ $IFRAME=0;
 
 $user = preg_replace("/\'|\"|\\\\|;| /","",$user);
 $pass = preg_replace("/\'|\"|\\\\|;| /","",$pass);
+$campaign = preg_replace("/\'|\"|\\\\|;/","",$campaign);
+$attachment_id = preg_replace("/[^0-9]/","",$attachment_id);
+$lead_id = preg_replace('/[^0-9]/','',$lead_id);
+$email_row_id = preg_replace('/[^0-9]/','',$email_row_id);
+$reply_to_address = preg_replace("/\'|\"|\\\\|;/","",$reply_to_address);
 
 #############################################
 ##### START SYSTEM_SETTINGS AND USER LANGUAGE LOOKUP #####

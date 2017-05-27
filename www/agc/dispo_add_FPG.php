@@ -1,7 +1,7 @@
 <?php
 # dispo_add_FPG.php
 # 
-# Copyright (C) 2015  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed to be used in the "Dispo URL" field of a campaign
 # or in-group. It adds the phone_number of the call to a designated inbound 
@@ -20,6 +20,7 @@
 #
 # CHANGES
 # 150724-1657 - First Build
+# 170526-2305 - Added additional variable filtering
 #
 
 $api_script = 'add_FPG';
@@ -67,8 +68,12 @@ $search_value='';
 $match_found=0;
 $k=0;
 
+# filter variables
 $user=preg_replace("/\'|\"|\\\\|;| /","",$user);
 $pass=preg_replace("/\'|\"|\\\\|;| /","",$pass);
+$phone_number = preg_replace('/[^-_0-9a-zA-Z]/','',$phone_number);
+$FPG_id = preg_replace("/\'|\"|\\\\|;| /","",$FPG_id);
+$lead_id = preg_replace('/[^0-9]/','',$lead_id);
 
 #############################################
 ##### START SYSTEM_SETTINGS AND USER LANGUAGE LOOKUP #####

@@ -226,6 +226,12 @@ $IFRAME=0;
 
 $user = preg_replace("/\'|\"|\\\\|;| /","",$user);
 $pass = preg_replace("/\'|\"|\\\\|;| /","",$pass);
+$lead_id = preg_replace('/[^0-9]/', '', $lead_id);
+$list_id = preg_replace('/[^0-9]/', '', $list_id);
+$server_ip = preg_replace("/\'|\"|\\\\|;/","",$server_ip);
+$session_id = preg_replace('/[^0-9]/','',$session_id);
+$uniqueid = preg_replace('/[^-_\.0-9a-zA-Z]/','',$uniqueid);
+$campaign = preg_replace('/[^-_0-9a-zA-Z]/','',$campaign);
 
 #############################################
 ##### START SYSTEM_SETTINGS AND USER LANGUAGE LOOKUP #####
