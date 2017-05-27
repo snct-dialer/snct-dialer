@@ -1,7 +1,7 @@
 <?php
-# voicemail_check.php    version 2.12
+# voicemail_check.php    version 2.14
 # 
-# Copyright (C) 2015  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed purely to check whether the voicemail box on the server defined has new and old messages
 # This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
@@ -30,10 +30,11 @@
 # 141118-1240 - Formatting changes for QXZ output
 # 141216-1902 - Added language settings lookups and user/pass variable standardization
 # 150723-1711 - Added ajax logging
+# 170526-2351 - Added additional variable filtering
 #
 
-$version = '0.0.13';
-$build = '150723-1711';
+$version = '2.14-14';
+$build = '170526-2351';
 $php_script = 'voicemail_check.php';
 $SSagent_debug_logging=0;
 $startMS = microtime();
@@ -59,6 +60,7 @@ $user=preg_replace("/\'|\"|\\\\|;| /","",$user);
 $pass=preg_replace("/\'|\"|\\\\|;| /","",$pass);
 $session_name = preg_replace("/\'|\"|\\\\|;/","",$session_name);
 $server_ip = preg_replace("/\'|\"|\\\\|;/","",$server_ip);
+$vmail_box = preg_replace("/\'|\"|\\\\|;/","",$vmail_box);
 
 # default optional vars if not set
 if (!isset($format))   {$format="text";}

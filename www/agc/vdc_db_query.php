@@ -429,10 +429,11 @@
 # 170401-1437 - Added translation of callbacks statuses, issue #1006
 # 170429-0835 - Added callback_display_days option
 # 170504-1056 - Added start_call_url to manual-dial calls
+# 170526-2327 - Added additional variable filtering
 #
 
-$version = '2.14-323';
-$build = '170504-1056';
+$version = '2.14-324';
+$build = '170526-2327';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=684;
@@ -926,18 +927,26 @@ if ($non_latin < 1)
 	$length_in_sec = preg_replace("/[^0-9]/","",$length_in_sec);
 	$phone_code = preg_replace("/[^0-9]/","",$phone_code);
 	$phone_number = preg_replace("/[^0-9a-zA-Z]/","",$phone_number);
+	$status = preg_replace("/[^-_0-9a-zA-Z]/","",$status);
 	}
 else
 	{
 	$user = preg_replace("/\'|\"|\\\\|;/","",$user);
 	$pass=preg_replace("/\'|\"|\\\\|;| /","",$pass);
 	$orig_pass = preg_replace("/\'|\"|\\\\|;/","",$orig_pass);
+	$status = preg_replace("/\'|\"|\\\\|;/","",$status);
 	}
 
 $session_name = preg_replace("/\'|\"|\\\\|;/","",$session_name);
 $server_ip = preg_replace("/\'|\"|\\\\|;/","",$server_ip);
 $alt_phone = preg_replace("/\s/","",$alt_phone);
 $phone_number = preg_replace("/\s/","",$phone_number);
+$campaign = preg_replace("/\'|\"|\\\\|;/","",$campaign);
+$closer_choice = preg_replace("/\'|\"|\\\\|;/","",$closer_choice);
+$lead_id = preg_replace('/[^0-9]/','',$lead_id);
+$list_id = preg_replace('/[^0-9]/','',$list_id);
+$conf_exten = preg_replace('/[^-_\.0-9a-zA-Z]/','',$conf_exten);
+$uniqueid = preg_replace('/[^-_\.0-9a-zA-Z]/','',$uniqueid);
 
 # default optional vars if not set
 if (!isset($format))   {$format="text";}

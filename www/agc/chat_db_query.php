@@ -1,7 +1,7 @@
 <?php
 # chat_db_query.php
 #
-# Copyright (C) 2016  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2017  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # Called by vdc_chat_display.php and vicidial_chat_agent.js.  This contains all actions taken by the
 # agent's interface when chatting with customers, other agents, and managers, through 
@@ -21,6 +21,7 @@
 # 160831-2225 - Agent-to-agent interface now color-coded using system settings, if desired
 # 161217-0824 - Added code for multi-user internal chat sessions
 # 161221-0800 - Added color-coding for users in internal chat sessions
+# 170526-2257 - Added additional variable filtering
 #
 
 require("dbconnect_mysqli.php");
@@ -101,6 +102,17 @@ if (!$user) {echo "No user, no using."; exit;}
 
 if (file_exists('options.php'))
 	{require('options.php');}
+
+# variable filtering
+$user=preg_replace("/\'|\"|\\\\|;| /","",$user);
+$pass=preg_replace("/\'|\"|\\\\|;| /","",$pass);
+$session_name = preg_replace("/\'|\"|\\\\|;/","",$session_name);
+$server_ip = preg_replace("/\'|\"|\\\\|;/","",$server_ip);
+$agent_manager = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$agent_manager);
+$agent_user = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$agent_user);
+$manager_chat_id = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$manager_chat_id);
+$chat_creator = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$chat_creator);
+$group_id = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$group_id);
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####

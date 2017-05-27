@@ -1,7 +1,7 @@
 <?php
-# call_log_display.php    version 2.12
+# call_log_display.php    version 2.14
 # 
-# Copyright (C) 2015  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed purely to send the inbound and outbound calls for a specific phone
 # This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
@@ -38,10 +38,11 @@
 # 141128-0852 - Code cleanup for QXZ functions
 # 141216-2113 - Added language settings lookups and user/pass variable standardization
 # 150723-1714 - Added ajax logging
-# 
+# 170526-2215 - Added additional variable filtering
+#
 
-$version = '0.0.12';
-$build = '150723-1714';
+$version = '2.14-19';
+$build = '170526-2215';
 $php_script = 'call_log_display.php';
 $SSagent_debug_logging=0;
 $startMS = microtime();
@@ -69,6 +70,8 @@ $user=preg_replace("/\'|\"|\\\\|;| /","",$user);
 $pass=preg_replace("/\'|\"|\\\\|;| /","",$pass);
 $session_name = preg_replace("/\'|\"|\\\\|;/","",$session_name);
 $server_ip = preg_replace("/\'|\"|\\\\|;/","",$server_ip);
+$exten = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$exten);
+$protocol = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$protocol);
 
 # default optional vars if not set
 if (!isset($format))   {$format="text";}

@@ -34,10 +34,11 @@
 # 150923-2028 - Added DID custom variables
 # 160818-1226 - Added MANUALDIALLINK option
 # 170317-2315 - Fixed in-group list script override issue, added debug
+# 170526-2343 - Added additional variable filtering
 #
 
-$version = '2.14-28';
-$build = '170317-2315';
+$version = '2.14-29';
+$build = '170526-2343';
 
 require_once("dbconnect_mysqli.php");
 require_once("functions.php");
@@ -260,6 +261,14 @@ $IFRAMEencode=1;
 $user=preg_replace("/\'|\"|\\\\|;| /","",$user);
 $pass=preg_replace("/\'|\"|\\\\|;| /","",$pass);
 $orig_pass = preg_replace("/\'|\"|\\\\|;| /","",$orig_pass);
+$lead_id = preg_replace('/[^0-9]/', '', $lead_id);
+$list_id = preg_replace('/[^0-9]/', '', $list_id);
+$server_ip = preg_replace("/\'|\"|\\\\|;/","",$server_ip);
+$session_id = preg_replace('/[^0-9]/','',$session_id);
+$uniqueid = preg_replace('/[^-_\.0-9a-zA-Z]/','',$uniqueid);
+$campaign = preg_replace('/[^-_0-9a-zA-Z]/','',$campaign);
+$group = preg_replace('/[^-_0-9a-zA-Z]/','',$group);
+$session_name = preg_replace("/\'|\"|\\\\|;/","",$session_name);
 
 #############################################
 ##### START SYSTEM_SETTINGS AND USER LANGUAGE LOOKUP #####

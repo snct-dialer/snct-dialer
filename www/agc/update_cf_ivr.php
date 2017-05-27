@@ -1,7 +1,7 @@
 <?php
 # update_cf_ivr.php
 # 
-# Copyright (C) 2015  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is part of the API group and any modifications of data are
 # logged to the vicidial_api_log table.
@@ -10,6 +10,7 @@
 #
 # CHANGES
 # 150814-1441 - First Build
+# 170526-2319 - Added additional variable filtering
 #
 
 $api_script = 'update_cf_ivr';
@@ -55,8 +56,14 @@ $search_value='';
 $match_found=0;
 $k=0;
 
+# filter variables
 $user=preg_replace("/\'|\"|\\\\|;| /","",$user);
 $pass=preg_replace("/\'|\"|\\\\|;| /","",$pass);
+$caller_id = preg_replace('/[^-_0-9a-zA-Z]/', '', $caller_id);
+$lead_id = preg_replace('/[^_0-9]/', '', $lead_id);
+$list_id = preg_replace('/[^_0-9]/', '', $list_id);
+$field = preg_replace('/[^-_0-9a-zA-Z]/', '', $field);
+$value = preg_replace("/\'|\"|\\\\|;| /","",$value);
 
 #############################################
 ##### START SYSTEM_SETTINGS AND USER LANGUAGE LOOKUP #####

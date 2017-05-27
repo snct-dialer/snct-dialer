@@ -136,10 +136,11 @@
 # 161217-0823 - Added parked_calls_recent table entries for better handling of parked calls
 # 170317-2214 - Added more debugging output
 # 170513-1616 - Added more debugging output
+# 170526-2241 - Added additional variable filtering
 #
 
-$version = '2.14-83';
-$build = '170513-1616';
+$version = '2.14-84';
+$build = '170526-2241';
 $php_script = 'manager_send.php';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=142;
@@ -249,10 +250,19 @@ header ("Content-type: text/html; charset=utf-8");
 header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
 header ("Pragma: no-cache");                          // HTTP/1.0
 
+# filter variables
 $user=preg_replace("/\'|\"|\\\\|;| /","",$user);
 $pass=preg_replace("/\'|\"|\\\\|;| /","",$pass);
 $session_name = preg_replace("/\'|\"|\\\\|;/","",$session_name);
 $server_ip = preg_replace("/\'|\"|\\\\|;/","",$server_ip);
+$campaign = preg_replace('/[^-_0-9a-zA-Z]/','',$campaign);
+$phone_number = preg_replace('/[^-_0-9a-zA-Z]/','',$phone_number);
+$lead_id = preg_replace('/[^0-9]/','',$lead_id);
+$session_id = preg_replace('/[^0-9]/','',$session_id);
+$uniqueid = preg_replace('/[^-_\.0-9a-zA-Z]/','',$uniqueid);
+$exten = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$exten);
+$extension = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$extension);
+$protocol = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$protocol);
 
 # default optional vars if not set
 if (!isset($ACTION))   {$ACTION="Originate";}

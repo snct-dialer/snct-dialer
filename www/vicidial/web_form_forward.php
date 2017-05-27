@@ -1,7 +1,7 @@
 <?php
 # web_form_forward.php - custom script forward agent to web page and alter vars
 # 
-# Copyright (C) 2013  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # You will need to customize this to your needs
 #
@@ -9,11 +9,14 @@
 # 80626-1121 - First Build
 # 90508-0644 - Changed to PHP long tags
 # 130902-0757 - Changed to mysqli PHP functions
+# 170527-0003 - Added variable filtering
 #
 
 if (isset($_GET["phone_number"]))	{$phone_number=$_GET["phone_number"];}
 if (isset($_GET["source_id"]))		{$source_id=$_GET["source_id"];}
 if (isset($_GET["user"]))			{$user=$_GET["user"];}
+
+$user=preg_replace("/\'|\"|\\\\|;| /","",$user);
 
 require("dbconnect_mysqli.php");
 
@@ -34,6 +37,5 @@ echo"</HEAD>\n";
 echo"<BODY BGCOLOR=#FFFFFF marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 echo"<a href=\"$URL\">click here to continue. . .</a>\n";
 echo"</BODY></HTML>\n";
-
 
 ?>
