@@ -8,6 +8,8 @@
 # 2017-005 JFF 2017-05-23 Display git_[commit|release} at System Settings
 # 2017-006 JFF 2017-05-23 Some typos and missing parts
 # 2017-007 JFF 2017-05-24 Cherrypick to svn 2757
+#          JFF 2017-05-27 Add svn commit 2758
+#          JFF 2017-05-27 Add snv commit 2759
 #
 
 $FLY_patch_level = "2017-007";

@@ -38,6 +38,7 @@
 # 170317-0753 - Added more missing display variables
 # 170330-1152 - Added did_carrier_description display option
 # 170409-1004 - Added IP List features to user_authorization
+# 170526-2141 - Added additional auth variable filtering, issue #1016
 #
 
 # $mysql_queries = 26
@@ -77,8 +78,8 @@ function user_authorization($user,$pass,$user_option,$user_update,$bcrypt,$retur
 	$LOCK_trigger_attempts = 10;
 	$pass_hash='';
 
-	$user = preg_replace("/\'|\"|\\\\|;| /","",$user);
-	$pass = preg_replace("/\'|\"|\\\\|;| /","",$pass);
+	$user = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$user);
+	$pass = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$pass);
 
 	$passSQL = "pass='$pass'";
 
@@ -86,7 +87,7 @@ function user_authorization($user,$pass,$user_option,$user_update,$bcrypt,$retur
 		{
 		if ($bcrypt < 1)
 			{
-			$pass_hash = exec("./bp.pl --pass=$pass");
+			$pass_hash = exec("./bp.pl --pass='$pass'");
 			$pass_hash = preg_replace("/PHASH: |\n|\r|\t| /",'',$pass_hash);
 			}
 		else

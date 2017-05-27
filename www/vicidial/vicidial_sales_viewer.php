@@ -14,6 +14,7 @@
 # 130901-0832 - Changed to mysqli PHP functions
 # 141007-2147 - Finalized adding QXZ translation to all admin files
 # 170217-1213 - Fixed non-latin auth issue #995
+# 170526-2044 - Fixed unfilter variables issue #1015
 #
 
 if (isset($_GET["dcampaign"]))					{$dcampaign=$_GET["dcampaign"];}
@@ -64,6 +65,8 @@ else
 	$PHP_AUTH_USER = preg_replace("/'|\"|\\\\|;/","",$PHP_AUTH_USER);
 	}
 $dcampaign = preg_replace('/[^0-9a-zA-Z]/', '', $dcampaign);
+$list_ids = preg_replace('/[^\,0-9a-zA-Z]/', '', $list_ids);
+$forc = preg_replace('/[^0-9a-zA-Z]/', '', $forc);
 
 $auth=0;
 $reports_auth=0;
