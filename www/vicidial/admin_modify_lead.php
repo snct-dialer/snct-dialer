@@ -80,6 +80,7 @@
 # 160926-1052 - Fix for inbound call notes display
 # 170224-1639 - Added ability to display archived recordings
 # 170409-1554 - Added IP List validation code
+# 170527-2253 - Fix for rare inbound logging issue #1017
 #
 
 require("dbconnect_mysqli.php");

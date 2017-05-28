@@ -18,10 +18,11 @@
 # 140810-2113 - Changed to use QXZ function for echoing text
 # 141216-2132 - Added language settings lookups and user/pass variable standardization
 # 170526-2345 - Added additional variable filtering
+# 170528-0901 - Added more variable filtering
 #
 
-$version = '2.14-8';
-$build = '170526-2345';
+$version = '2.14-9';
+$build = '170528-0901';
 
 require_once("dbconnect_mysqli.php");
 require_once("functions.php");
@@ -220,7 +221,9 @@ if (strlen($call_date) < 1)
 
 $user=preg_replace("/\'|\"|\\\\|;| /","",$user);
 $pass=preg_replace("/\'|\"|\\\\|;| /","",$pass);
+$lead_id = preg_replace('/[^0-9]/', '', $lead_id);
 $list_id = preg_replace('/[^0-9]/', '', $list_id);
+$notesid = preg_replace('/[^0-9]/', '', $notesid);
 $server_ip = preg_replace("/\'|\"|\\\\|;/","",$server_ip);
 $session_id = preg_replace('/[^0-9]/','',$session_id);
 $uniqueid = preg_replace('/[^-_\.0-9a-zA-Z]/','',$uniqueid);
@@ -351,7 +354,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 if ($process > 0)
 	{
 	#Update vicidial_list record
-	$stmt="UPDATE vicidial_list SET vendor_lead_code='$vendor_lead_code',title='$title',first_name='$first_name',middle_initial='$middle_initial',last_name='$last_name',address1='$address1',address2='$address2',address3='$address3',city='$city',state='$state',province='$province',postal_code='$postal_code',phone_code='$phone_code',phone_number='$phone_number',gender='$gender',date_of_birth='$date_of_birth',alt_phone='$alt_phone',email='$email',security_phrase='$security_phrase',comments='$comments',rank='$rank',owner='$owner' where lead_id='$lead_id';";
+	$stmt="UPDATE vicidial_list SET vendor_lead_code='" . mysqli_real_escape_string($link, $vendor_lead_code) . "',title='" . mysqli_real_escape_string($link, $title) . "',first_name='" . mysqli_real_escape_string($link, $first_name) . "',middle_initial='" . mysqli_real_escape_string($link, $middle_initial) . "',last_name='" . mysqli_real_escape_string($link, $last_name) . "',address1='" . mysqli_real_escape_string($link, $address1) . "',address2='" . mysqli_real_escape_string($link, $address2) . "',address3='" . mysqli_real_escape_string($link, $address3) . "',city='" . mysqli_real_escape_string($link, $city) . "',state='" . mysqli_real_escape_string($link, $state) . "',province='" . mysqli_real_escape_string($link, $province) . "',postal_code='" . mysqli_real_escape_string($link, $postal_code) . "',phone_code='" . mysqli_real_escape_string($link, $phone_code) . "',phone_number='" . mysqli_real_escape_string($link, $phone_number) . "',gender='" . mysqli_real_escape_string($link, $gender) . "',date_of_birth='" . mysqli_real_escape_string($link, $date_of_birth) . "',alt_phone='" . mysqli_real_escape_string($link, $alt_phone) . "',email='" . mysqli_real_escape_string($link, $email) . "',security_phrase='" . mysqli_real_escape_string($link, $security_phrase) . "',comments='" . mysqli_real_escape_string($link, $comments) . "',rank='" . mysqli_real_escape_string($link, $rank) . "',owner='" . mysqli_real_escape_string($link, $owner) . "' where lead_id='$lead_id';";
 	if ($DB) {echo "$stmt\n";}
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$affected_rows = mysqli_affected_rows($link);
@@ -365,7 +368,7 @@ if ($process > 0)
 	if ($notesid < 100)
 		{
 		# Insert into vicidial_call_notes
-		$stmt="INSERT INTO vicidial_call_notes set lead_id='$lead_id',vicidial_id='$vicidial_id',call_date='$call_date',order_id='$order_id',appointment_date='$appointment_date',appointment_time='$appointment_time',call_notes='$call_notes';";
+		$stmt="INSERT INTO vicidial_call_notes set lead_id='$lead_id',vicidial_id='" . mysqli_real_escape_string($link, $vicidial_id) . "',call_date='" . mysqli_real_escape_string($link, $call_date) . "',order_id='" . mysqli_real_escape_string($link, $order_id) . "',appointment_date='" . mysqli_real_escape_string($link, $appointment_date) . "',appointment_time='" . mysqli_real_escape_string($link, $appointment_time) . "',call_notes='" . mysqli_real_escape_string($link, $call_notes) . "';";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$affected_rows = mysqli_affected_rows($link);
@@ -374,7 +377,7 @@ if ($process > 0)
 	else
 		{
 		# update vicidial_call_notes record
-		$stmt="UPDATE vicidial_call_notes set order_id='$order_id',appointment_date='$appointment_date',appointment_time='$appointment_time',call_notes='$call_notes' where notesid='$notesid';";
+		$stmt="UPDATE vicidial_call_notes set order_id='" . mysqli_real_escape_string($link, $order_id) . "',appointment_date='" . mysqli_real_escape_string($link, $appointment_date) . "',appointment_time='" . mysqli_real_escape_string($link, $appointment_time) . "',call_notes='" . mysqli_real_escape_string($link, $call_notes) . "' where notesid='$notesid';";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$affected_rows = mysqli_affected_rows($link);

@@ -80,6 +80,7 @@ $session_name = preg_replace("/\'|\"|\\\\|;/","",$session_name);
 $server_ip = preg_replace("/\'|\"|\\\\|;/","",$server_ip);
 $uniqueid = preg_replace('/[^-_\.0-9a-zA-Z]/','',$uniqueid);
 $exten = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$exten);
+$vmail_box = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$vmail_box);
 
 # default optional vars if not set
 if (!isset($format))   {$format="text";}

@@ -22,6 +22,7 @@
 # 161217-0824 - Added code for multi-user internal chat sessions
 # 161221-0800 - Added color-coding for users in internal chat sessions
 # 170526-2257 - Added additional variable filtering
+# 170528-1028 - Added more variable filtering
 #
 
 require("dbconnect_mysqli.php");
@@ -60,7 +61,7 @@ if (isset($_GET["user_level"]))	{$user_level=$_GET["user_level"];}
 if (isset($_GET["pass"]))	{$pass=$_GET["pass"];}
 	elseif (isset($_POST["pass"]))	{$pass=$_POST["pass"];}
 if (isset($_GET["first_name"]))					{$first_name=$_GET["first_name"];}
-	elseif (isset($_POST["first_name"]))			{$first_name=$_POST["first_name"];}
+	elseif (isset($_POST["first_name"]))		{$first_name=$_POST["first_name"];}
 if (isset($_GET["last_name"]))					{$last_name=$_GET["last_name"];}
 	elseif (isset($_POST["last_name"]))			{$last_name=$_POST["last_name"];}
 if (isset($_GET["group_id"]))					{$group_id=$_GET["group_id"];}
@@ -97,7 +98,6 @@ if (isset($_GET["chat_xfer_type"]))					{$chat_xfer_type=$_GET["chat_xfer_type"]
 if (isset($_GET["chat_xfer_value"]))					{$chat_xfer_value=$_GET["chat_xfer_value"];}
 	elseif (isset($_POST["chat_xfer_value"]))			{$chat_xfer_value=$_POST["chat_xfer_value"];}
 
-$chat_member_name = preg_replace('/[^- \.\,\_0-9a-zA-Z]/',"",$chat_member_name);
 if (!$user) {echo "No user, no using."; exit;}
 
 if (file_exists('options.php'))
@@ -113,6 +113,17 @@ $agent_user = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$agent_user);
 $manager_chat_id = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$manager_chat_id);
 $chat_creator = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$chat_creator);
 $group_id = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$group_id);
+$chat_member_name = preg_replace('/[^- \.\,\_0-9a-zA-Z]/',"",$chat_member_name);
+$lead_id = preg_replace('/[^0-9]/','',$lead_id);
+$agent_to_add = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$agent_to_add);
+$chat_group_id = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$chat_group_id);
+$chat_id = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$chat_id);
+$chat_level = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$chat_level);
+$chat_xfer_type = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$chat_xfer_type);
+$chat_xfer_value = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$chat_xfer_value);
+$email = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$email);
+$field_name = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$field_name);
+$manager_chat_subid = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$manager_chat_subid);
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####

@@ -137,10 +137,11 @@
 # 170317-2214 - Added more debugging output
 # 170513-1616 - Added more debugging output
 # 170526-2241 - Added additional variable filtering
+# 170528-0850 - Fix for rare inbound logging issue #1017, Added additional variable filtering
 #
 
-$version = '2.14-84';
-$build = '170526-2241';
+$version = '2.14-85';
+$build = '170528-0850';
 $php_script = 'manager_send.php';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=142;
@@ -263,6 +264,38 @@ $uniqueid = preg_replace('/[^-_\.0-9a-zA-Z]/','',$uniqueid);
 $exten = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$exten);
 $extension = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$extension);
 $protocol = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$protocol);
+$ACTION = preg_replace("/\'|\"|\\\\|;/","",$ACTION);
+$CalLCID = preg_replace("/\'|\"|\\\\|;/","",$CalLCID);
+$FROMvdc = preg_replace('/[^-_0-9a-zA-Z]/','',$FROMvdc);
+$account = preg_replace('/[^-_0-9a-zA-Z]/','',$account);
+$agent_dialed_number = preg_replace('/[^-_0-9a-zA-Z]/','',$agent_dialed_number);
+$agent_dialed_type = preg_replace('/[^-_0-9a-zA-Z]/','',$agent_dialed_type);
+$agent_log_id = preg_replace('/[^-_0-9a-zA-Z]/','',$agent_log_id);
+$agentchannel = preg_replace("/\'|\"|\\\\|;/","",$agentchannel);
+$auto_dial_level = preg_replace('/[^-\._0-9a-zA-Z]/','',$auto_dial_level);
+$call_server_ip = preg_replace("/\'|\"|\\\\|;/","",$call_server_ip);
+$call_variables = preg_replace("/\'|\"|\\\\|;/","",$call_variables);
+$channel = preg_replace("/\'|\"|\\\\|;/","",$channel);
+$customerparked = preg_replace('/[^0-9]/','',$customerparked);
+$enable_sipsak_messages = preg_replace('/[^0-9]/','',$enable_sipsak_messages);
+$ext_context = preg_replace('/[^-_0-9a-zA-Z]/','',$ext_context);
+$ext_priority = preg_replace('/[^-_0-9a-zA-Z]/','',$ext_priority);
+$exten = preg_replace("/\'|\"|\\\\|;/","",$exten);
+$extenName = preg_replace("/\'|\"|\\\\|;/","",$extenName);
+$extrachannel = preg_replace("/\'|\"|\\\\|;/","",$extrachannel);
+$filename = preg_replace("/\'|\"|\\\\|;/","",$filename);
+$format = preg_replace('/[^-_0-9a-zA-Z]/','',$format);
+$log_campaign = preg_replace("/\'|\"|\\\\|;/","",$log_campaign);
+$nodeletevdac = preg_replace('/[^0-9]/','',$nodeletevdac);
+$outbound_cid = preg_replace("/\'|\"|\\\\|;/","",$outbound_cid);
+$parkedby = preg_replace("/\'|\"|\\\\|;/","",$parkedby);
+$phone_code = preg_replace("/\s/","",$phone_code);
+$preset_name = preg_replace("/\'|\"|\\\\|;/","",$preset_name);
+$qm_extension = preg_replace("/\'|\"|\\\\|;/","",$qm_extension);
+$queryCID = preg_replace("/\'|\"|\\\\|;/","",$queryCID);
+$secondS = preg_replace('/[^0-9]/','',$secondS);
+$stage = preg_replace("/\'|\"|\\\\|;/","",$stage);
+$usegroupalias = preg_replace('/[^0-9]/','',$usegroupalias);
 
 # default optional vars if not set
 if (!isset($ACTION))   {$ACTION="Originate";}
@@ -930,7 +963,7 @@ if ($ACTION=="RedirectVD")
 		if ($row[0] > 0)
 			{
 			$four_hours_ago = date("Y-m-d H:i:s", mktime(date("H")-4,date("i"),date("s"),date("m"),date("d"),date("Y")));
-			$stmt = "UPDATE vicidial_closer_log set end_epoch='$StarTtime', length_in_sec=(queue_seconds + $secondS),status='XFER' where lead_id='$lead_id' and call_date > \"$four_hours_ago\" order by start_epoch desc limit 1;";
+			$stmt = "UPDATE vicidial_closer_log set end_epoch='$StarTtime', length_in_sec=(queue_seconds + $secondS),status='XFER' where lead_id='$lead_id' and call_date > \"$four_hours_ago\" order by closecallid desc limit 1;";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_to_mysqli($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02022',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -2421,7 +2454,7 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 				$four_hours_ago = date("Y-m-d H:i:s", mktime(date("H")-4,date("i"),date("s"),date("m"),date("d"),date("Y")));
 
 				### find the value to put in the vicidial_id field if this was an inbound call
-				$stmt="SELECT closecallid from vicidial_closer_log where lead_id='$lead_id' and call_date > \"$four_hours_ago\" order by call_date desc limit 1;";
+				$stmt="SELECT closecallid from vicidial_closer_log where lead_id='$lead_id' and call_date > \"$four_hours_ago\" order by closecallid desc limit 1;";
 				$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02077',$user,$server_ip,$session_name,$one_mysql_log);}
 				$VAC_qm_ct = mysqli_num_rows($rslt);
