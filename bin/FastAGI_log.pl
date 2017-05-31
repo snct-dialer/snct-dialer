@@ -78,6 +78,7 @@
 # 170325-1105 - Added optional vicidial_drop_log logging
 # 170427-1125 - Fix for drop call logging of answered calls hung up by customer first
 # 170508-1148 - Added blind monitor call end logging
+# 170527-2340 - Fix for rare inbound logging issue #1017
 #
 
 # defaults for PreFork
@@ -1389,7 +1390,7 @@ sub process_request
 								if ($Rsec < 10) {$Rsec = "0$Rsec";}
 									$RSQLdate = "$Ryear-$Rmon-$Rmday $Rhour:$Rmin:$Rsec";
 
-								$stmtA = "SELECT start_epoch,status,closecallid,user,term_reason,length_in_sec,queue_seconds,comments FROM vicidial_closer_log where lead_id = '$VD_lead_id' and call_date > \"$RSQLdate\" order by call_date desc limit 1;";
+								$stmtA = "SELECT start_epoch,status,closecallid,user,term_reason,length_in_sec,queue_seconds,comments FROM vicidial_closer_log where lead_id = '$VD_lead_id' and call_date > \"$RSQLdate\" order by closecallid desc limit 1;";
 									if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 								$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 								$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;

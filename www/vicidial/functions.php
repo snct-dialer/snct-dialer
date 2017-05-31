@@ -30,6 +30,7 @@
 # 170227-2230 - Change to allow horizontal_bar_chart header to be translated, issue #991
 # 170409-1003 - Added IP List features to user_authorization
 # 170503-2130 - Patched sec_convert to fix rounding time bug, issue #1011
+# 170526-2142 - Added additional auth variable filtering, issue #1016
 #
 
 ##### BEGIN validate user login credentials, check for failed lock out #####
@@ -66,17 +67,17 @@ function user_authorization($user,$pass,$user_option,$user_update,$api_call)
 	$LOCK_over = ($STARTtime - 900); # failed login lockout time is 15 minutes(900 seconds)
 	$LOCK_trigger_attempts = 10;
 
-	$user = preg_replace("/\'|\"|\\\\|;/","",$user);
-	$pass = preg_replace("/\'|\"|\\\\|;/","",$pass);
+	$user = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$user);
+	$pass = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$pass);
 
 	$passSQL = "pass='$pass'";
 
 	if ($SSpass_hash_enabled > 0)
 		{
 		if (file_exists("../agc/bp.pl"))
-			{$pass_hash = exec("../agc/bp.pl --pass=$pass");}
+			{$pass_hash = exec("../agc/bp.pl --pass='$pass'");}
 		else
-			{$pass_hash = exec("../../agc/bp.pl --pass=$pass");}
+			{$pass_hash = exec("../../agc/bp.pl --pass='$pass'");}
 		$pass_hash = preg_replace("/PHASH: |\n|\r|\t| /",'',$pass_hash);
 		$passSQL = "pass_hash='$pass_hash'";
 		}

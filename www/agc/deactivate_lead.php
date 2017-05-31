@@ -1,7 +1,7 @@
 <?php
 # deactivate_lead.php
 # 
-# Copyright (C) 2014  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed to be used in the "Dispo URL" field of a campaign
 # or in-group. It should take in the campaign_id to check for the same source_id
@@ -30,6 +30,7 @@
 # 140811-0845 - Changed to use QXZ function for echoing text
 # 141118-1234 - Formatting changes for QXZ output
 # 141216-2130 - Added language settings lookups and user/pass variable standardization
+# 170526-2301 - Added additional variable filtering
 #
 
 $api_script = 'deactivate';
@@ -77,8 +78,13 @@ $NOW_TIME = date("Y-m-d H:i:s");
 $sale_status = "$TD$sale_status$TD";
 $search_value='';
 
+# filter variables
 $user = preg_replace("/\'|\"|\\\\|;| /","",$user);
 $pass = preg_replace("/\'|\"|\\\\|;| /","",$pass);
+$search_field = preg_replace("/\'|\"|\\\\|;| /","",$search_field);
+$lead_id = preg_replace('/[^0-9]/','',$lead_id);
+$campaign_check = preg_replace('/[^-_0-9a-zA-Z]/','',$campaign_check);
+$new_status = preg_replace('/[^-_0-9a-zA-Z]/','',$new_status);
 
 #############################################
 ##### START SYSTEM_SETTINGS AND USER LANGUAGE LOOKUP #####

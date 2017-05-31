@@ -76,10 +76,11 @@
 # 161029-2216 - Formatting and additional agent debug logging
 # 161217-0822 - Addded agent debug logging of dead call trigger
 # 170220-1307 - Added external_lead_id trigger for switch_lead API function
+# 170526-2228 - Added additional variable filtering
 #
 
-$version = '2.14-51';
-$build = '170220-1307';
+$version = '2.14-52';
+$build = '170526-2228';
 $php_script = 'conf_exten_check.php';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=44;
@@ -176,7 +177,10 @@ if ($non_latin < 1)
 
 $session_name = preg_replace("/\'|\"|\\\\|;/","",$session_name);
 $server_ip = preg_replace("/\'|\"|\\\\|;/","",$server_ip);
-$conf_exten=preg_replace("/[^-_0-9a-zA-Z]/","",$conf_exten);
+$conf_exten = preg_replace("/[^-_0-9a-zA-Z]/","",$conf_exten);
+$exten = preg_replace("/\'|\"|\\\\|;/","",$exten);
+$clicks = preg_replace("/\'|\"|\\\\|;/","",$clicks);
+$customer_chat_id = preg_replace("/[^0-9a-zA-Z]/","",$customer_chat_id);
 
 # default optional vars if not set
 if (!isset($format))   {$format="text";}

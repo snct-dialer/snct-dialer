@@ -59,6 +59,7 @@
 # 160910-1354 - Added populate_... options
 # 161021-1016 - Added lead_age option
 # 170402-0906 - Added list_id_trigger option, cleaned up outputs
+# 170526-2310 - Added additional variable filtering
 #
 
 $api_script = 'movelist';
@@ -131,10 +132,13 @@ $primary_match_found=0;
 $age_trigger=0;
 $k=0;
 
+# filter variables
 $user=preg_replace("/\'|\"|\\\\|;| /","",$user);
 $pass=preg_replace("/\'|\"|\\\\|;| /","",$pass);
 $lead_age = preg_replace('/[^_0-9]/', '', $lead_age);
+$lead_id = preg_replace('/[^_0-9]/', '', $lead_id);
 $list_id = preg_replace('/[^_0-9]/', '', $list_id);
+$new_list_id = preg_replace('/[^_0-9]/', '', $new_list_id);
 $list_id_trigger = preg_replace('/[^_0-9]/', '', $list_id_trigger);
 
 #############################################
@@ -283,6 +287,7 @@ else
 									elseif (isset($_POST["$newlistfield"]))	{$new_list_id=$_POST["$newlistfield"];}
 								if (isset($_GET["$resetfield"]))			{$reset_dialed=$_GET["$resetfield"];}
 									elseif (isset($_POST["$resetfield"]))	{$reset_dialed=$_POST["$resetfield"];}
+								$new_list_id = preg_replace('/[^_0-9]/', '', $new_list_id);
 								if ($DB) {echo _QXZ("MULTI_MATCH:")." $k|$sale_status|$new_list_id|$reset_dialed|$exclude_status|$talk_time_trigger|$called_count_trigger|\n";}
 								}
 							}

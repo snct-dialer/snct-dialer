@@ -89,10 +89,11 @@
 # 161103-1729 - Added agent_debug to audio playing
 # 170209-1222 - Added URL and IP logging
 # 170220-1303 - Added switch_lead function
+# 170527-2250 - Fix for rare inbound logging issue #1017, Added variable filtering
 #
 
-$version = '2.14-55';
-$build = '170220-1303';
+$version = '2.14-56';
+$build = '170527-2250';
 
 $startMS = microtime();
 
@@ -275,6 +276,8 @@ if ($qm_conf_ct > 0)
 
 $ingroup_choices = preg_replace("/\+/"," ",$ingroup_choices);
 $query_string = preg_replace("/'|\"|\\\\|;/","",$query_string);
+$stage = preg_replace("/\'|\"|\\\\|;/","",$stage);
+$status = preg_replace("/\'|\"|\\\\|;/","",$status);
 
 if ($non_latin < 1)
 	{
@@ -351,6 +354,7 @@ if ($non_latin < 1)
 	$alt_user = preg_replace("/[^0-9a-zA-Z]/","",$alt_user);
 	$postal_code = preg_replace("/[^- \.\_0-9a-zA-Z]/","",$postal_code);
 	$agent_debug = preg_replace("/[^- \.\:\|\_0-9a-zA-Z]/","",$agent_debug);
+	$status = preg_replace("/[^-\_0-9a-zA-Z]/","",$status);
 	}
 else
 	{

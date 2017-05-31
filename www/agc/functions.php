@@ -38,6 +38,8 @@
 # 170317-0753 - Added more missing display variables
 # 170330-1152 - Added did_carrier_description display option
 # 170409-1004 - Added IP List features to user_authorization
+# 170526-2141 - Added additional auth variable filtering, issue #1016
+# 170528-1029 - Fix for rare inbound logging issue #1017, Added variable filtering
 #
 
 # $mysql_queries = 26
@@ -77,8 +79,8 @@ function user_authorization($user,$pass,$user_option,$user_update,$bcrypt,$retur
 	$LOCK_trigger_attempts = 10;
 	$pass_hash='';
 
-	$user = preg_replace("/\'|\"|\\\\|;| /","",$user);
-	$pass = preg_replace("/\'|\"|\\\\|;| /","",$pass);
+	$user = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$user);
+	$pass = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$pass);
 
 	$passSQL = "pass='$pass'";
 
@@ -86,7 +88,7 @@ function user_authorization($user,$pass,$user_option,$user_update,$bcrypt,$retur
 		{
 		if ($bcrypt < 1)
 			{
-			$pass_hash = exec("./bp.pl --pass=$pass");
+			$pass_hash = exec("./bp.pl --pass='$pass'");
 			$pass_hash = preg_replace("/PHASH: |\n|\r|\t| /",'',$pass_hash);
 			}
 		else
@@ -813,7 +815,7 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user,$DB,$call_i
 					$u++;
 					}
 
-				$stmt="SELECT start_epoch,call_date,campaign_id,length_in_sec,status,phone_code,phone_number,lead_id,term_reason,queue_seconds,uniqueid,closecallid,user from vicidial_closer_log where lead_id='$lead_id' order by call_date desc limit 10000;";
+				$stmt="SELECT start_epoch,call_date,campaign_id,length_in_sec,status,phone_code,phone_number,lead_id,term_reason,queue_seconds,uniqueid,closecallid,user from vicidial_closer_log where lead_id='$lead_id' order by closecallid desc limit 10000;";
 				$rslt=mysql_to_mysqli($stmt, $link);
 					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'05017',$user,$server_ip,$session_name,$one_mysql_log);}
 				$in_logs_to_print = mysqli_num_rows($rslt);
@@ -2293,6 +2295,14 @@ function vicidial_ajax_log($NOW_TIME,$startMS,$link,$ACTION,$php_script,$user,$s
 
 	$stmt = preg_replace('/;/', '', $stmt);
 	$stmt = addslashes($stmt);
+
+	$NOW_TIME = preg_replace("/\'|\"|\\\\|;/","",$NOW_TIME);
+	$startMS = preg_replace("/\'|\"|\\\\|;/","",$startMS);
+	$php_script = preg_replace('/[^-\._0-9a-zA-Z]/','',$php_script);
+	$ACTION = preg_replace('/[^-_0-9a-zA-Z]/','',$ACTION);
+	$lead_id = preg_replace('/[^0-9]/','',$lead_id);
+	$stage = preg_replace("/\'|\"|\\\\|;/","",$stage);
+	$session_name = preg_replace('/[^-_0-9a-zA-Z]/','',$session_name);
 
 	$stmtA="INSERT INTO vicidial_ajax_log set user='$user',start_time='$NOW_TIME',db_time=NOW(),run_time='$TOTALrun',php_script='$php_script',action='$ACTION',lead_id='$lead_id',stage='$stage',session_name='$session_name',last_sql=\"$stmt\";";
 	$rslt=mysql_to_mysqli($stmtA, $link);

@@ -4124,12 +4124,13 @@ else
 # 170429-0807 - Added campaign setting callback_display_days
 # 170430-1001 - Added three_way_record_stop and hangup_xfer_record_start campaign settings
 # 170516-0632 - Added Real-Time Monitoring Log Report
+# 170527-0041 - Added filtering of browser details before logging
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-615a';
-$build = '170516-0632';
+$admin_version = '2.14-616a';
+$build = '170527-0041';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -5060,6 +5061,9 @@ if ( ($ADD==999993) or ($ADD==999992) or ($ADD==730000000000000) or ($ADD==83000
 	$LOGserver_port = getenv("SERVER_PORT");
 	$LOGrequest_uri = getenv("REQUEST_URI");
 	$LOGhttp_referer = getenv("HTTP_REFERER");
+	$LOGbrowser=preg_replace("/\'|\"|\\\\/","",$LOGbrowser);
+	$LOGrequest_uri=preg_replace("/\'|\"|\\\\/","",$LOGrequest_uri);
+	$LOGhttp_referer=preg_replace("/\'|\"|\\\\/","",$LOGhttp_referer);
 	if (preg_match("/443/i",$LOGserver_port)) {$HTTPprotocol = 'https://';}
 	else {$HTTPprotocol = 'http://';}
 	if (($LOGserver_port == '80') or ($LOGserver_port == '443') ) {$LOGserver_port='';}

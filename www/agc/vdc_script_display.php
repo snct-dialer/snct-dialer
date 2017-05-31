@@ -34,10 +34,11 @@
 # 150923-2028 - Added DID custom variables
 # 160818-1226 - Added MANUALDIALLINK option
 # 170317-2315 - Fixed in-group list script override issue, added debug
+# 170526-2343 - Added additional variable filtering
 #
 
-$version = '2.14-28';
-$build = '170317-2315';
+$version = '2.14-29';
+$build = '170526-2343';
 
 require_once("dbconnect_mysqli.php");
 require_once("functions.php");
@@ -260,6 +261,14 @@ $IFRAMEencode=1;
 $user=preg_replace("/\'|\"|\\\\|;| /","",$user);
 $pass=preg_replace("/\'|\"|\\\\|;| /","",$pass);
 $orig_pass = preg_replace("/\'|\"|\\\\|;| /","",$orig_pass);
+$lead_id = preg_replace('/[^0-9]/', '', $lead_id);
+$list_id = preg_replace('/[^0-9]/', '', $list_id);
+$server_ip = preg_replace("/\'|\"|\\\\|;/","",$server_ip);
+$session_id = preg_replace('/[^0-9]/','',$session_id);
+$uniqueid = preg_replace('/[^-_\.0-9a-zA-Z]/','',$uniqueid);
+$campaign = preg_replace('/[^-_0-9a-zA-Z]/','',$campaign);
+$group = preg_replace('/[^-_0-9a-zA-Z]/','',$group);
+$session_name = preg_replace("/\'|\"|\\\\|;/","",$session_name);
 
 #############################################
 ##### START SYSTEM_SETTINGS AND USER LANGUAGE LOOKUP #####
@@ -754,7 +763,7 @@ if (preg_match('/--A--TABLEper_call_notes--B--/i',$script_text))
 			$u++;
 			}
 
-		$stmt="SELECT start_epoch,call_date,campaign_id,length_in_sec,status,phone_code,phone_number,lead_id,term_reason,queue_seconds,uniqueid,closecallid,user from vicidial_closer_log where lead_id='$lead_id' order by call_date desc limit 10000;";
+		$stmt="SELECT start_epoch,call_date,campaign_id,length_in_sec,status,phone_code,phone_number,lead_id,term_reason,queue_seconds,uniqueid,closecallid,user from vicidial_closer_log where lead_id='$lead_id' order by closecallid desc limit 10000;";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$in_logs_to_print = mysqli_num_rows($rslt);
 		if ($format=='debug') {$NOTESout .= "|$in_logs_to_print|$stmt|";}
