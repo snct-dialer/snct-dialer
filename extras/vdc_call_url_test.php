@@ -11,10 +11,11 @@
 # 100113-2023 - Added dispo_name
 # 130328-0023 - Converted ereg to preg functions
 # 170324-1251 - Added more debug output
+# 170529-2239 - Added event/message
 #
 
-$version = '2.14-4';
-$build = '170324-1251';
+$version = '2.14-5';
+$build = '170529-2239';
 
 require("dbconnect.php");
 
@@ -155,6 +156,10 @@ if (isset($_GET["agent_log_id"]))	{$agent_log_id=$_GET["agent_log_id"];}
 	elseif (isset($_POST["agent_log_id"]))	{$agent_log_id=$_POST["agent_log_id"];}
 if (isset($_GET["dispo_name"]))	{$dispo_name=$_GET["dispo_name"];}
 	elseif (isset($_POST["dispo_name"]))	{$dispo_name=$_POST["dispo_name"];}
+if (isset($_GET["event"]))			{$event=$_GET["event"];}
+	elseif (isset($_POST["event"]))	{$event=$_POST["event"];}
+if (isset($_GET["message"]))			{$message=$_GET["message"];}
+	elseif (isset($_POST["message"]))	{$message=$_POST["message"];}
 
 header ("Content-type: text/html; charset=utf-8");
 header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
@@ -293,6 +298,8 @@ $output .= "$talk_time|";
 $output .= "$talk_time_min|";
 $output .= "$agent_log_id|";
 $output .= "$dispo_name|";
+$output .= "$event|";
+$output .= "$message|";
 
 echo "$output\n$query_string\n";
 

@@ -14,20 +14,32 @@
 # VARhttp://127.0.0.1/agc/get2post.php?uniqueid=--A--uniqueid--B--&type=start&HTTPSURLTOPOST=127.0.0.1/agc/vdc_call_url_test.php?lead_id=--A--lead_id--B--
 # VARhttp://127.0.0.1/agc/get2post.php?uniqueid=--A--uniqueid--B--&type=start&headers=HEADERXYZ---XYZvalue-----HEADERABC---ABCvalue&HTTPURLTOPOST=127.0.0.1/agc/vdc_call_url_test.php?lead_id=--A--lead_id--B--
 #
+# Example Agent Events Push URL:
+# get2post.php?uniqueid=--A--epoch--B--.--A--agent_log_id--B--&type=event&HTTPURLTOPOST=192.168.1.3/agc/vdc_call_url_test.php?user=--A--user--B--&lead_id=--A--lead_id--B--&event=--A--event--B--&message=--A--message--B--
+#
 # CHANGELOG:
 # 160302-1159 - First build of script
 # 170324-1218 - Added headers options
 # 170418-1257 - Added ability to use some special characters in headers
+# 170531-0925 - Added ability to accept POST query string
 #
 
-$version = '2.14-3';
-$build = '170418-1257';
+$version = '2.14-4';
+$build = '170531-0925';
 
 require("dbconnect_mysqli.php");
 require("functions.php");
 
 $query_string = getenv("QUERY_STRING");
 $request_uri = getenv("REQUEST_URI");
+$POST_URI = '';
+foreach($_POST as $key=>$value)
+	{$POST_URI .= '&'.$key.'='.$value;}
+if (strlen($POST_URI)>1)
+	{$POST_URI = preg_replace("/^&/",'',$POST_URI);}
+$POST_URI = preg_replace("/'|\"|\\\\/","",$POST_URI);
+if ( (strlen($query_string) < 3) and (strlen($POST_URI) > 2) )
+	{$query_string = $POST_URI;}
 
 if (isset($_GET["uniqueid"]))			{$uniqueid=$_GET["uniqueid"];}
 	elseif (isset($_POST["uniqueid"]))	{$uniqueid=$_POST["uniqueid"];}
@@ -184,7 +196,7 @@ if (preg_match("/HTTPURLTOPOST=|HTTPSURLTOPOST=/",$query_string))
 		{print "ERROR: post url is invalid";   exit;}
 	}
 else
-	{print "ERROR: post url is not populated";   exit;}
+	{print "ERROR: post url is not populated - " . strlen($query_string);   exit;}
 
 
 #$output = '';

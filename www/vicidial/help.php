@@ -127,6 +127,7 @@
 # 170429-0810 - Added callback_display_days entry
 # 170430-0957 - Added three_way_record_stop and hangup_xfer_record_start entries
 # 170516-0628 - Added rt_monitor_log_report entry
+# 170529-2337 - Added agent push events entries
 #
 
 
@@ -5443,6 +5444,16 @@ FR_SPAC 00 00 00 00 00 - <?php echo _QXZ("France space separated phone number");
 <A NAME="settings-chat_url">
 <BR>
 <B><?php echo _QXZ("Chat URL"); ?> -</B><?php echo _QXZ("This is the location where you have placed the chat web pages for customer use."); ?>
+
+<BR>
+<A NAME="settings-agent_push_events">
+<BR>
+<B><?php echo _QXZ("Agent Push Events"); ?> -</B><?php echo _QXZ("This setting will enable the sending of events from agent screens to the URL defined below. Default is 0 for disabled."); ?>
+
+<BR>
+<A NAME="settings-agent_push_url">
+<BR>
+<B><?php echo _QXZ("Agent Push URL"); ?> -</B><?php echo _QXZ("If Agent Push Events are enabled above, this is the URL that the events will be sent to. The variables that you can use within the URL are --A--user--B--, --A--event--B--, --A--message--B--, --A--lead_id--B--. Since this function uses AJAX, it must reference a local script on the web server. If you want to reference an external web address then you should use the get2post.php script that can be found in the extras directory."); ?>
 
 <BR>
 <A NAME="settings-log_recording_access">

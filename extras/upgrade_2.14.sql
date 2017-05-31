@@ -269,3 +269,9 @@ ALTER TABLE system_settings ADD git_commit VARCHAR(55) default '';
 ALTER TABLE system_settings ADD git_release VARCHAR(25) default '';
 
 UPDATE system_settings SET db_schema_version='1506',db_schema_update_date=NOW() where db_schema_version < 1506;
+
+ALTER TABLE system_settings ADD agent_push_events ENUM('0','1') default '0';
+ALTER TABLE system_settings ADD agent_push_url TEXT;
+
+UPDATE system_settings SET db_schema_version='1506',db_schema_update_date=NOW() where db_schema_version < 1506;
+
