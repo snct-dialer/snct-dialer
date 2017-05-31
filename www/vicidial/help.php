@@ -5997,7 +5997,7 @@ FR_SPAC 00 00 00 00 00 - <?php echo _QXZ("France space separated phone number");
 <BR>
 <A NAME="ip_lists-ip_address">
 <BR>
-<B><?php echo _QXZ("IP Addresses"); ?> -</B><?php echo _QXZ("This is the list of IP Addresses within this IP List. Only one IP Address per line is allowed."); ?>
+<B><?php echo _QXZ("IP Addresses"); ?> -</B><?php echo _QXZ("This is the list of IP Addresses within this IP List. Only one IP Address per line is allowed. If you want to use IP whitelisting for agent access and you are using Dispo Call URL features like the dispo_move_list.php script, you will need to remember to include the IP Addresses of the web server in your IP List, because Dispo Call URL actions are run from the webserver."); ?>
 
 
 
