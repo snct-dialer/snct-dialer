@@ -1,7 +1,7 @@
 <?php
 # SCRIPT_multirecording_AJAX.php - script that stops/starts recordings being made over a forced-recording (ALLFORCE) call
 # 
-# Copyright (C) 2016  Joe Johnson, Matt Florell <mattf@vicidial.com>    LICENSE: AGPLv2
+# Copyright (C) 2017  Joe Johnson, Matt Florell <mattf@vicidial.com>    LICENSE: AGPLv2
 #
 # Other scripts that this application depends on:
 # - SCRIPT_multirecording.php: Gives agents ability to stop and start recordings over a forced-recording (ALLFORCE) call
@@ -10,6 +10,7 @@
 # 120224-2240 - First Build
 # 130328-0009 - Converted ereg to preg functions
 # 160401-0026 - Fix for Asterisk 1.8
+# 170526-2157 - Added variable filtering
 #
 
 require("dbconnect.php");
@@ -41,6 +42,18 @@ $NOWnum = date("YmdHis");
 $exten="8309";
 $ext_context="default";
 #if (eregi("^10.10.", $server_ip)) {$ext_context="demo";} else {$ext_content="default";}
+
+# filter variables
+$campaign = preg_replace('/[^-_0-9a-zA-Z]/','',$campaign);
+$phone_number = preg_replace('/[^-_0-9a-zA-Z]/','',$phone_number);
+$lead_id = preg_replace('/[^0-9]/','',$lead_id);
+$session_id = preg_replace('/[^0-9]/','',$session_id);
+$vendor_lead_code = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$vendor_lead_code);
+$user = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$user);
+$server_ip = preg_replace('/[^\.0-9]/','',$server_ip);
+$uniqueid = preg_replace('/[^-_\.0-9a-zA-Z]/','',$uniqueid);
+$rec_action = preg_replace('/[^0-9a-zA-Z]/','',$rec_action);
+$recording_channel = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$recording_channel);
 
 $stmt="select campaign_rec_filename from vicidial_campaigns where campaign_id='$campaign'";
 $rslt=mysql_query($stmt, $link);

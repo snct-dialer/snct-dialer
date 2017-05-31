@@ -26,6 +26,7 @@
 # 160611-1217 - Fixed for external server IP recording link issue
 # 170409-1542 - Added IP List validation code
 # 170513-2256 - Added QC Webform, issue #1010
+# 170527-2252 - Fix for rare inbound logging issue #1017
 #
 
 require("dbconnect_mysqli.php");
@@ -865,7 +866,7 @@ else
 		}
 
 	##### grab vicidial_closer_log records #####
-	$stmt="select closecallid,lead_id,list_id,campaign_id,call_date,start_epoch,end_epoch,length_in_sec,status,phone_code,phone_number,user,comments,processed,queue_seconds,user_group,xfercallid,term_reason,uniqueid,agent_only from vicidial_closer_log where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' order by closecallid desc limit 500;";
+	$stmt="SELECT closecallid,lead_id,list_id,campaign_id,call_date,start_epoch,end_epoch,length_in_sec,status,phone_code,phone_number,user,comments,processed,queue_seconds,user_group,xfercallid,term_reason,uniqueid,agent_only from vicidial_closer_log where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' order by closecallid desc limit 500;";
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$Clogs_to_print = mysqli_num_rows($rslt);
 

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_VDremote_agents.pl version 2.10
+# AST_VDremote_agents.pl version 2.14
 #
 # SUMMARY:
 # To use VICIDIAL with remote agents, this must always be running 
@@ -11,7 +11,7 @@
 # agents that should appear to be logged in so that the calls can be transferred 
 # out to them properly.
 #
-# Copyright (C) 2016  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG:
 # 50215-0954 - First version of script
@@ -51,6 +51,7 @@
 # 140428-1449 - Added pause_type
 # 141113-1559 - Added concurrency check
 # 161102-1032 - Fixed QM partition problem
+# 170527-2348 - Fix for rare inbound logging issue #1017
 #
 
 ### begin parsing run-time options ###
@@ -356,7 +357,7 @@ while($one_day_interval > 0)
 
 				if ($QHcall_type[$w] =~ /IN/)
 					{
-					$stmtC = "UPDATE vicidial_closer_log set status='XFER',user='$QHuser[$w]',comments='REMOTE' where lead_id='$QHlead_id[$w]' and uniqueid='$QHuniqueid[$w]' and campaign_id='$QHcampaign_id[$w]' limit 1;";
+					$stmtC = "UPDATE vicidial_closer_log set status='XFER',user='$QHuser[$w]',comments='REMOTE' where lead_id='$QHlead_id[$w]' and uniqueid='$QHuniqueid[$w]' and campaign_id='$QHcampaign_id[$w]' order by closecallid desc limit 1;";
 					$Caffected_rows = $dbhA->do($stmtC);
 
 					$stmtD = "INSERT IGNORE INTO vicidial_live_inbound_agents SET calls_today='1',last_call_time='$SQLdate',user='$QHuser[$w]', group_id='$QHcampaign_id[$w]' ON DUPLICATE KEY UPDATE calls_today=(calls_today + 1),last_call_time='$SQLdate';";

@@ -118,10 +118,11 @@
 # 170409-1603 - Added IP List validation code
 # 170423-0800 - Added force_entry_list_id option for update_lead
 # 170508-1048 - Added blind_monitor logging
+# 170527-2254 - Fix for rare inbound logging issue #1017
 #
 
-$version = '2.14-94';
-$build = '170508-1048';
+$version = '2.14-95';
+$build = '170527-2254';
 $api_url_log = 0;
 
 $startMS = microtime();
@@ -4920,7 +4921,7 @@ if ($function == 'did_log_export')
 						{
 						$DLlength_in_sec[$k]=0;
 						$DLcloser_epoch[$k]=$DLepoch[$k];
-						$stmt="SELECT length_in_sec,UNIX_TIMESTAMP(call_date) from vicidial_closer_log where uniqueid='$DLuniqueid[$k]' order by call_date desc limit 1;";
+						$stmt="SELECT length_in_sec,UNIX_TIMESTAMP(call_date) from vicidial_closer_log where uniqueid='$DLuniqueid[$k]' order by closecallid desc limit 1;";
 						$rslt=mysql_to_mysqli($stmt, $link);
 						$vcl_recs = mysqli_num_rows($rslt);
 						if ($DB>0) {echo "DEBUG: did_log_export query - $vcl_recs|$stmt\n";}
@@ -6687,7 +6688,7 @@ if ($function == 'update_log_entry')
 					if (preg_match("/\./",$call_id))
 						{
 						if ($inbound_call > 0)
-							{$stmt="SELECT lead_id,status,closecallid from vicidial_closer_log where campaign_id='$group' and uniqueid='$call_id' order by call_date desc limit 1;";}
+							{$stmt="SELECT lead_id,status,closecallid from vicidial_closer_log where campaign_id='$group' and uniqueid='$call_id' order by closecallid desc limit 1;";}
 						else
 							{$stmt="SELECT lead_id,status,uniqueid from vicidial_log where campaign_id='$group' and uniqueid='$call_id';";}
 						}
@@ -6697,7 +6698,7 @@ if ($function == 'update_log_entry')
 						$lead_id = ($lead_id + 0);
 
 						if ($inbound_call > 0)
-							{$stmt="SELECT lead_id,status,closecallid from vicidial_closer_log where campaign_id='$group' and lead_id='$lead_id' order by call_date desc limit 1;";}
+							{$stmt="SELECT lead_id,status,closecallid from vicidial_closer_log where campaign_id='$group' and lead_id='$lead_id' order by closecallid desc limit 1;";}
 						else
 							{$stmt="SELECT lead_id,status,uniqueid from vicidial_log where campaign_id='$group' and lead_id='$lead_id' order by call_date desc limit 1;";}
 						}

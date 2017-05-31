@@ -1,7 +1,7 @@
 <?php
 # vdc_script_dispo_example.php
 # 
-# Copyright (C) 2013  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed to be used in the SCRIPT tab in an IFRAME and will not submit unless a specific field is filled in
 #
@@ -19,10 +19,12 @@
 # 130802-1036 - Changed to PHP mysqli functions
 # 140811-0832 - Changed to use QXZ function for echoing text
 # 141216-2133 - Added language settings lookups and user/pass variable standardization
+# 170526-2345 - Added additional variable filtering
+# 170528-0902 - Added more variable filtering
 #
 
-$version = '2.10-7';
-$build = '141216-2133';
+$version = '2.14-9';
+$build = '170528-0902';
 
 require_once("dbconnect_mysqli.php");
 require_once("functions.php");
@@ -251,6 +253,18 @@ if (strlen($call_date) < 1)
 
 $user=preg_replace("/\'|\"|\\\\|;| /","",$user);
 $pass=preg_replace("/\'|\"|\\\\|;| /","",$pass);
+$lead_id = preg_replace('/[^0-9]/', '', $lead_id);
+$list_id = preg_replace('/[^0-9]/', '', $list_id);
+$notesid = preg_replace('/[^0-9]/', '', $notesid);
+$server_ip = preg_replace("/\'|\"|\\\\|;/","",$server_ip);
+$session_id = preg_replace('/[^0-9]/','',$session_id);
+$uniqueid = preg_replace('/[^-_\.0-9a-zA-Z]/','',$uniqueid);
+$campaign = preg_replace('/[^-_0-9a-zA-Z]/','',$campaign);
+$group = preg_replace('/[^-_0-9a-zA-Z]/','',$group);
+$session_name = preg_replace("/\'|\"|\\\\|;/","",$session_name);
+$question = preg_replace("/\'|\"|\\\\|;/","",$question);
+$answer = preg_replace("/\'|\"|\\\\|;/","",$answer);
+$status = preg_replace("/\'|\"|\\\\|;/","",$status);
 
 #############################################
 ##### START SYSTEM_SETTINGS AND USER LANGUAGE LOOKUP #####
@@ -290,6 +304,7 @@ if ($non_latin < 1)
 	$length_in_sec = preg_replace("/[^0-9]/","",$length_in_sec);
 	$phone_code = preg_replace("/[^0-9]/","",$phone_code);
 	$phone_number = preg_replace("/[^0-9]/","",$phone_number);
+	$status=preg_replace("/[^-_0-9a-zA-Z]/","",$status);
 	}
 
 if ($DB > 0)
@@ -361,24 +376,72 @@ if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 
 echo "<HTML>\n";
 echo "<head>\n";
-echo "<script language=\"Javascript\">\n";
-echo "var required_fields='$required_fields';\n";
-echo "var required_statuses='$required_statuses';\n";
-echo "var extra_statuses=\"$extra_statuses\";\n";
+?>
+<script language="Javascript">
+var required_fields='<?php echo $required_fields; ?>';
+var required_statuses='<?php echo $required_statuses; ?>';
+var extra_statuses="<?php echo $extra_statuses; ?>";
+
+<!-- commenting out date/time submission prep
+//	var appointment_hourFORM = document.getElementById('appointment_hour');
+//	var appointment_hourVALUE = appointment_hourFORM[appointment_hourFORM.selectedIndex].text;
+//	var appointment_minFORM = document.getElementById('appointment_min');
+//	var appointment_minVALUE = appointment_minFORM[appointment_minFORM.selectedIndex].text;
+//	document.vsn.appointment_time.value = appointment_hourVALUE + ":" + appointment_minVALUE + ":00";
+-->
+
+function submit_form()
+	{
+	var RF_dispoFORM = document.getElementById('status');
+	var RF_dispoVALUE = '|' + RF_dispoFORM[RF_dispoFORM.selectedIndex].text + '|';
+
+	var regREQtest = new RegExp(RF_dispoVALUE,"g");
+	if ( (required_statuses.match(regREQtest)) || (required_statuses == '---ALL---') )
+		{
+		var errors = 0;
+		var RF_array = required_fields.split("|");
+		var RF_array_count = RF_array.length;
+		var RF_inc = 0;
+		while (RF_inc < RF_array_count)
+			{
+			if (RF_array[RF_inc].length > 1)
+				{
+				var RF_field_name = RF_array[RF_inc];
+				var RF_field_element = document.getElementById(RF_field_name);
+				var RF_field_value = RF_field_element.value;
+				if (RF_field_value.length < 1)
+					{
+					alert("You must fill in the " + RF_field_name + " field: " + RF_field_value + '|' + RF_field_value.length);
+					errors++;
+					}
+
+				}
+			RF_inc++;
+			}
+		}
+
+	if (errors < 1)
+		{
+		document.vsn.submit();
+		document.vsn.smt.disabled = true;
+		document.vsn.smt.value = '<?php echo _QXZ("Processing..."); ?>';
+		}
+	}
+
+</script>
+
+<?php
 echo "</script>\n";
 echo "<!-- VERSION: $version     BUILD: $build    USER: $user   server_ip: $server_ip-->\n";
 echo "<title>"._QXZ("ViciDial Script");
 echo "</title>\n";
-?>
-
-<?php
 echo "</head>\n";
 echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 
 if ($process > 0)
 	{
 	#Update vicidial_list record
-	$stmt="UPDATE vicidial_list SET vendor_lead_code='$vendor_lead_code',title='$title',first_name='$first_name',middle_initial='$middle_initial',last_name='$last_name',address1='$address1',address2='$address2',address3='$address3',city='$city',state='$state',province='$province',postal_code='$postal_code',phone_code='$phone_code',phone_number='$phone_number',gender='$gender',date_of_birth='$date_of_birth',alt_phone='$alt_phone',email='$email',security_phrase='$security_phrase',comments='$comments',rank='$rank',owner='$owner' where lead_id='$lead_id';";
+	$stmt="UPDATE vicidial_list SET vendor_lead_code='" . mysqli_real_escape_string($link, $vendor_lead_code) . "',title='" . mysqli_real_escape_string($link, $title) . "',first_name='" . mysqli_real_escape_string($link, $first_name) . "',middle_initial='" . mysqli_real_escape_string($link, $middle_initial) . "',last_name='" . mysqli_real_escape_string($link, $last_name) . "',address1='" . mysqli_real_escape_string($link, $address1) . "',address2='" . mysqli_real_escape_string($link, $address2) . "',address3='" . mysqli_real_escape_string($link, $address3) . "',city='" . mysqli_real_escape_string($link, $city) . "',state='" . mysqli_real_escape_string($link, $state) . "',province='" . mysqli_real_escape_string($link, $province) . "',postal_code='" . mysqli_real_escape_string($link, $postal_code) . "',phone_code='" . mysqli_real_escape_string($link, $phone_code) . "',phone_number='" . mysqli_real_escape_string($link, $phone_number) . "',gender='" . mysqli_real_escape_string($link, $gender) . "',date_of_birth='" . mysqli_real_escape_string($link, $date_of_birth) . "',alt_phone='" . mysqli_real_escape_string($link, $alt_phone) . "',email='" . mysqli_real_escape_string($link, $email) . "',security_phrase='" . mysqli_real_escape_string($link, $security_phrase) . "',comments='" . mysqli_real_escape_string($link, $comments) . "',rank='" . mysqli_real_escape_string($link, $rank) . "',owner='" . mysqli_real_escape_string($link, $owner) . "' where lead_id='$lead_id';";
 	if ($DB) {echo "$stmt\n";}
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$affected_rows = mysqli_affected_rows($link);
@@ -414,7 +477,7 @@ if ($process > 0)
 				}
 			}
 		# Insert into vicidial_call_notes
-		$stmt="INSERT INTO vicidial_call_notes set lead_id='$lead_id',vicidial_id='$vicidial_id',call_date='$call_date',call_notes='$call_notes';";
+		$stmt="INSERT INTO vicidial_call_notes set lead_id='$lead_id',vicidial_id='" . mysqli_real_escape_string($link, $vicidial_id) . "',call_date='" . mysqli_real_escape_string($link, $call_date) . "',order_id='" . mysqli_real_escape_string($link, $order_id) . "',appointment_date='" . mysqli_real_escape_string($link, $appointment_date) . "',appointment_time='" . mysqli_real_escape_string($link, $appointment_time) . "',call_notes='" . mysqli_real_escape_string($link, $call_notes) . "';";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$affected_rows = mysqli_affected_rows($link);
@@ -423,7 +486,7 @@ if ($process > 0)
 	else
 		{
 		# update vicidial_call_notes record
-		$stmt="UPDATE vicidial_call_notes set order_id='$order_id',appointment_date='$appointment_date',appointment_time='$appointment_time',call_notes='$call_notes' where notesid='$notesid';";
+		$stmt="UPDATE vicidial_call_notes set order_id='" . mysqli_real_escape_string($link, $order_id) . "',appointment_date='" . mysqli_real_escape_string($link, $appointment_date) . "',appointment_time='" . mysqli_real_escape_string($link, $appointment_time) . "',call_notes='" . mysqli_real_escape_string($link, $call_notes) . "' where notesid='$notesid';";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$affected_rows = mysqli_affected_rows($link);
@@ -748,55 +811,6 @@ echo "</select></td></tr>\n";
 
 <TR BGCOLOR=white>
 <TD ALIGN=CENTER COLSPAN=2>
-
-<!-- commenting out date/time submission prep
-	var appointment_hourFORM = document.getElementById('appointment_hour');
-	var appointment_hourVALUE = appointment_hourFORM[appointment_hourFORM.selectedIndex].text;
-	var appointment_minFORM = document.getElementById('appointment_min');
-	var appointment_minVALUE = appointment_minFORM[appointment_minFORM.selectedIndex].text;
-	document.vsn.appointment_time.value = appointment_hourVALUE + ":" + appointment_minVALUE + ":00";
--->
-<SCRIPT LANGUAGE="JavaScript">
-
-function submit_form()
-	{
-	var RF_dispoFORM = document.getElementById('status');
-	var RF_dispoVALUE = '|' + RF_dispoFORM[RF_dispoFORM.selectedIndex].text + '|';
-
-	var regREQtest = new RegExp(RF_dispoVALUE,"g");
-	if ( (required_statuses.match(regREQtest)) || (required_statuses == '---ALL---') )
-		{
-		var errors = 0;
-		var RF_array = required_fields.split("|");
-		var RF_array_count = RF_array.length;
-		var RF_inc = 0;
-		while (RF_inc < RF_array_count)
-			{
-			if (RF_array[RF_inc].length > 1)
-				{
-				var RF_field_name = RF_array[RF_inc];
-				var RF_field_element = document.getElementById(RF_field_name);
-				var RF_field_value = RF_field_element.value;
-				if (RF_field_value.length < 1)
-					{
-					alert("You must fill in the " + RF_field_name + " field: " + RF_field_value + '|' + RF_field_value.length);
-					errors++;
-					}
-
-				}
-			RF_inc++;
-			}
-		}
-
-	if (errors < 1)
-		{
-		document.vsn.submit();
-		document.vsn.smt.disabled = true;
-		document.vsn.smt.value = <?php echo _QXZ("Processing..."); ?>;
-		}
-	}
-
-</SCRIPT>
 
 <input type=button value="SUBMIT and HANGUP CALL" name=smt id=smt onClick="submit_form()">
  &nbsp; &nbsp; &nbsp; &nbsp; <input type=checkbox name=pause id=pause size="1" value="1" /> <?php echo _QXZ("PAUSE AGENT DIALING"); ?> 

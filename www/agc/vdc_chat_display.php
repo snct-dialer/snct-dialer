@@ -1,7 +1,7 @@
 <?php
 # vdc_chat_display.php
 #
-# Copyright (C) 2016  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2017  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This is the interface for agents to chat with customers and each other.  It's separate from the manager-to-agent 
 # chat interface out of necessity and calls the chat_db_query.php page to send information and display it.  It will
@@ -16,6 +16,7 @@
 # 151218-0913 - Added missing translation code and user auth
 # 160303-0051 - Added code for chat transfers
 # 160818-1235 - Added line colors and scrolling
+# 170528-1001 - Added variable filtering
 #
 
 require("dbconnect_mysqli.php");
@@ -92,6 +93,7 @@ $campaign = preg_replace('/[^-\_0-9a-zA-Z]/','',$campaign);
 $dial_method = preg_replace('/[^-\_0-9a-zA-Z]/','',$dial_method);
 $clickmute = preg_replace("/\'|\"|\\\\|;/","",$clickmute);
 $stage = preg_replace('/[^-\_0-9a-zA-Z]/','',$stage);
+$email_invite_lead_id = preg_replace("/\'|\"|\\\\|;/","",$email_invite_lead_id);
 
 if ($non_latin < 1)
 	{

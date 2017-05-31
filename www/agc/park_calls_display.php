@@ -1,7 +1,7 @@
 <?php
-# park_calls_display.php    version 2.12
+# park_calls_display.php    version 2.14
 # 
-# Copyright (C) 2015  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed purely to send the details on the parked calls on the server
 # This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
@@ -30,10 +30,11 @@
 # 141118-1237 - Formatting changes for QXZ output
 # 141216-2105 - Added language settings lookups and user/pass variable standardization
 # 150723-1712 - Added ajax logging
+# 170526-2244 - Added additional variable filtering
 # 
 
-$version = '0.0.12';
-$build = '150723-1712';
+$version = '2.14-13';
+$build = '170526-2244';
 $php_script = 'park_calls_display.php';
 $SSagent_debug_logging=0;
 $startMS = microtime();
@@ -57,10 +58,13 @@ if (isset($_GET["exten"]))					{$exten=$_GET["exten"];}
 if (isset($_GET["protocol"]))				{$protocol=$_GET["protocol"];}
 	elseif (isset($_POST["protocol"]))		{$protocol=$_POST["protocol"];}
 
+# variable filtering
 $user=preg_replace("/\'|\"|\\\\|;| /","",$user);
 $pass=preg_replace("/\'|\"|\\\\|;| /","",$pass);
 $session_name = preg_replace("/\'|\"|\\\\|;/","",$session_name);
 $server_ip = preg_replace("/\'|\"|\\\\|;/","",$server_ip);
+$exten = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$exten);
+$protocol = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$protocol);
 
 # default optional vars if not set
 if (!isset($format))		{$format="text";}

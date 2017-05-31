@@ -123,6 +123,7 @@
 # 161102-1031 - Fixed QM partition problem
 # 170313-1041 - Added CHAT option to inbound_queue_no_dial
 # 170325-1106 - Added optional vicidial_drop_log logging
+# 170527-2347 - Fix for rare inbound logging issue #1017
 #
 
 ### begin parsing run-time options ###
@@ -2939,7 +2940,7 @@ while($one_day_interval > 0)
 							{
 							if ($NCUcallerid[$vle_count] =~ /^Y/) 
 								{
-								$stmtA = "SELECT campaign_id,status,user,phone_number,'MAIN',list_id FROM vicidial_closer_log where uniqueid='$NCUuniqueid[$vle_count]' and lead_id='$NCUleadid[$vle_count]' and call_date='$NCUcalldate[$vle_count]';";
+								$stmtA = "SELECT campaign_id,status,user,phone_number,'MAIN',list_id FROM vicidial_closer_log where uniqueid='$NCUuniqueid[$vle_count]' and lead_id='$NCUleadid[$vle_count]' and call_date='$NCUcalldate[$vle_count]' order by closecallid desc;";
 								$NCUcalltype[$vle_count] = 'IN';
 								}
 							else
