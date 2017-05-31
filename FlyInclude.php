@@ -9,9 +9,10 @@
 # 2017-006 JFF 2017-05-23 Some typos and missing parts
 # 2017-007 JFF 2017-05-24 Cherrypick to svn 2757
 # 2017-008 JFF 2017-05-27 Add svn commit 2758
-#          JFF 2017-05-27 Add svn commit 2759
-#          JFF 2017-05-27 Add svn commit 2760
-#          JFF 2017-05-28 Add svn commit 2761
+# 2017-008 JFF 2017-05-27 Add svn commit 2759
+# 2017-008 JFF 2017-05-27 Add svn commit 2760
+# 2017-008 JFF 2017-05-28 Add svn commit 2761
+#          JFF 2017-05-31 Add svn commit 2762
 #
 
 $FLY_patch_level = "2017-008";
