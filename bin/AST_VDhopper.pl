@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_VDhopper.pl version 2.12
+# AST_VDhopper.pl version 2.14
 #
 # DESCRIPTION:
 # Updates the VICIDIAL leads hopper for the streamlined approach of allocating 
@@ -87,10 +87,11 @@
 # 150717-1050 - Added force index to some vicidial_list queries, set with $VLforce_index variable
 # 150728-1050 - Added option for secondary sorting by vendor_lead_code, Issue #833
 # 150908-1544 - Added debug output for vendor_lead_code duplicate rejections count
+# 170531-0837 - Fixed issue #1019
 #
 
 # constants
-$build = '150908-1544';
+$build = '170531-0837';
 $DB=0;  # Debug flag, set to 0 for no debug messages. Can be overriden with CLI --debug flag
 $US='__';
 $MT[0]='';
@@ -518,7 +519,7 @@ if ($CBHOLD_count > 0)
 			$event_string = "|CALLBACKS LISTACT|$affected_rows|";
 			&event_logger;
 
-			$stmtA = "INSERT INTO $vicidial_hopper SET lead_id='$CA_lead_id[$CAu]',campaign_id='$CA_campaign_id[$CAu]',list_id='$CA_list_id[$CAu]',gmt_offset_now='$CA_gmt_offset_now[$CAu]',user='',state='$CA_state[$CAu]',priority='50',source='C',vendor_lead_code=\"$CA_vendor_lead_code[$cba]\";";
+			$stmtA = "INSERT INTO $vicidial_hopper SET lead_id='$CA_lead_id[$CAu]',campaign_id='$CA_campaign_id[$CAu]',list_id='$CA_list_id[$CAu]',gmt_offset_now='$CA_gmt_offset_now[$CAu]',user='',state='$CA_state[$CAu]',priority='50',source='C',vendor_lead_code=\"$CA_vendor_lead_code[$CAu]\";";
 			$affected_rows = $dbhA->do($stmtA);
 			if ($DB) {print "ANYONE Scheduled Callback Inserted into hopper:  $affected_rows|$CA_lead_id[$CAu]\n";}
 			$CAu++;
