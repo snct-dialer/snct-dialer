@@ -1,4 +1,4 @@
-NON-AGENT API DOCUMENT           Started: 2008-07-24         Updated: 2017-04-23
+NON-AGENT API DOCUMENT           Started: 2008-07-24         Updated: 2017-06-01
 
 This document describes the functions of an API(Application Programming 
 Interface) for all functions NOT directly relating to the VICIDIAL Agent screen. 
@@ -123,6 +123,9 @@ Changes:
 170301-1649 - Added validation that sounds web dir exists to sounds_list function
 170409-1603 - Added IP List validation code
 170423-0800 - Added force_entry_list_id option for update_lead
+170508-1048 - Added blind_monitor logging
+170527-2254 - Fix for rare inbound logging issue #1017
+170601-0747 - Added add_to_hopper options to update_lead function
 
 
 API Functions use the 'function' variable
@@ -787,6 +790,9 @@ callback_type -		USERONLY or ANYONE, default is ANYONE
 callback_user -		User ID the USERONLY callback is assigned to
 callback_comments -	Optional comments to appear when the callback is called back
 update_phone_number -	Y or N, Optional setting to update the phone_number field, default is N.
+add_to_hopper -		Y or N, default is N
+hopper_priority -	99 to -99, the higher number the higher priority, default is 0
+hopper_local_call_time_check - Y or N, default is N. Validate the local call time and/or state call time before inserting lead in the hopper
 
 EDITABLE FIELDS- 
 user_field -		1-20 characters, this updates the 'user' field in the vicidial_list table
@@ -845,6 +851,8 @@ http://server/vicidial/non_agent_api.php?source=test&user=6666&pass=1234&functio
 
 http://server/vicidial/non_agent_api.php?source=test&user=6666&pass=1234&function=update_lead&lead_id=406757&campaign_id=TESTCAMP&callback=Y&callback_status=CALLBK&callback_datetime=NOW&callback_type=USERONLY&callback_user=1028&callback_comments=Comments+go+here+again
 
+http://server/vicidial/non_agent_api.php?source=test&user=6666&pass=1234&function=update_lead&search_location=SYSTEM&search_method=PHONE_NUMBER&phone_number=9998887112&no_update=Y&add_to_hopper=Y&hopper_priority=99&hopper_local_call_time_check=Y
+
 Example responses:
 SUCCESS: update_lead LEAD HAS BEEN UPDATED - 6666|193716
 NOTICE: update_lead CUSTOM FIELDS VALUES UPDATED - 7275551111|1234|101
@@ -866,6 +874,12 @@ NOTICE: update_lead CUSTOM FIELDS ENTRY DELETED 1 - 7275551111|6666|999|193716|-
 
 NOTICE: update_lead LEADS FOUND IN THE SYSTEM: |6666|1010542|12345678901234|9998887112|3333444|0
 					       (user|lead_id|vendorleadcode|phone     |list_id|entry_list_id)
+
+NOTICE: update_lead ADDED TO HOPPER - 7275551111|6666|193715|1677922
+NOTICE: update_lead NOT ADDED TO HOPPER - 7275551111|6666|193715|1677922
+NOTICE: update_lead NOT ADDED TO HOPPER, OUTSIDE OF LOCAL TIME - 7275551111|193715|-5|0|6666
+NOTICE: update_lead NOT ADDED TO HOPPER, LEAD NOT FOUND - 7275551111|193715|6666
+NOTICE: update_lead NOT ADDED TO HOPPER, LEAD IS ALREADY IN THE HOPPER - 7275551111|193715|6666
 
 ERROR: update_lead INVALID DATA FOR LEAD INSERTION - 6666|||
 ERROR: update_lead NO MATCHES FOUND IN THE SYSTEM - 6666|||
