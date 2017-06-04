@@ -1,4 +1,4 @@
-Agent Events Push						2017-05-31
+Agent Events Push		Started: 2017-05-31	Updated: 2017-06-01
 
 
 This feature allows for selected events in the VICIdial agent screen to push out event triggers through HTTP requests sent to a URL as defined in the System Settings.
@@ -106,3 +106,8 @@ lead_search_open - The lead search screen has been opened
 
 pause_code_open - The pause code selection screen has been opened
 
+update_fields - API trigger to update customer information fields, will attach fields updated and new values
+
+session_empty - This event triggers when the agent session has no channels in it
+
+session_channels - This event triggers when the agent session goes from having no channels to having at least one channel in it

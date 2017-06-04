@@ -554,10 +554,11 @@
 # 170430-1005 - Added three_way_record_stop and hangup_xfer_record_start campaign options
 # 170513-1527 - Added debug logging of all alert boxes
 # 170531-0937 - Added Agent Events Push function
+# 170601-2017 - Added more agent events
 #
 
-$version = '2.14-524c';
-$build = '170531-0937';
+$version = '2.14-525c';
+$build = '170601-2017';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -4537,6 +4538,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var build='<?php echo $build ?>';
 	var script_name='<?php echo $script_name ?>';
 	var transfer_panel_open=0;
+	var last_conf_channel_count=1;
 	var DiaLControl_auto_HTML = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready','','','','','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_paused.gif") ?>\" border=\"0\" alt=\"You are paused\" /></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause','','','','','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_active.gif") ?>\" border=\"0\" alt=\"You are active\" /></a>";
 	var DiaLControl_auto_HTML_OFF = "<img src=\"./images/<?php echo _QXZ("vdc_LB_blank_OFF.gif") ?>\" border=\"0\" alt=\"pause button disabled\" />";
@@ -5903,6 +5905,11 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							{
 							if (live_conf_calls > 0)
 								{
+								if ( (last_conf_channel_count < 1) && (no_empty_session_warnings < 1) )
+									{
+									agent_events('session_channels', live_conf_calls);
+									last_conf_channel_count = live_conf_calls;
+									}
 								var temp_blind_monitors=0;
 								var loop_ct=0;
 								var display_ct=0;
@@ -6046,6 +6053,11 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								}
 							else
 								{
+								if ( (last_conf_channel_count > 0) && (no_empty_session_warnings < 1) )
+									{
+									agent_events('session_empty', '0');
+									last_conf_channel_count = 0;
+									}
 								LMAe[0]=''; LMAe[1]=''; LMAe[2]=''; LMAe[3]=''; LMAe[4]=''; LMAe[5]=''; 
 								LMAcount=0;
 								if (conf_channels_xtra_display == 1)
@@ -8493,18 +8505,31 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 					var UDresponse_status							= UDfieldsResponse_array[0];
 					if (UDresponse_status == 'GOOD')
 						{
+						var event_data='';
 						var regUDvendor_lead_code = new RegExp("vendor_lead_code,","ig");
 						if (fields_list.match(regUDvendor_lead_code))
-							{document.vicidial_form.vendor_lead_code.value	= UDfieldsResponse_array[1];}
+							{
+							document.vicidial_form.vendor_lead_code.value	= UDfieldsResponse_array[1];
+							event_data = event_data + '--- vendor_lead_code ' + UDfieldsResponse_array[1];
+							}
 						var regUDsource_id = new RegExp("source_id,","ig");
 						if (fields_list.match(regUDsource_id))
-							{source_id										= UDfieldsResponse_array[2];}
+							{
+							source_id										= UDfieldsResponse_array[2];
+							event_data = event_data + '--- source_id ' + UDfieldsResponse_array[2];
+							}
 						var regUDgmt_offset_now = new RegExp("gmt_offset_now,","ig");
 						if (fields_list.match(regUDgmt_offset_now))
-							{document.vicidial_form.gmt_offset_now.value	= UDfieldsResponse_array[3];}
+							{
+							document.vicidial_form.gmt_offset_now.value	= UDfieldsResponse_array[3];
+							event_data = event_data + '--- gmt_offset_now ' + UDfieldsResponse_array[3];
+							}
 						var regUDphone_code = new RegExp("phone_code,","ig");
 						if (fields_list.match(regUDphone_code))
-							{document.vicidial_form.phone_code.value		= UDfieldsResponse_array[4];}
+							{
+							document.vicidial_form.phone_code.value		= UDfieldsResponse_array[4];
+							event_data = event_data + '--- phone_code ' + UDfieldsResponse_array[4];
+							}
 						var regUDphone_number = new RegExp("phone_number,","ig");
 						if (fields_list.match(regUDphone_number))
 							{
@@ -8517,47 +8542,85 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 									}
 								}
 							document.vicidial_form.phone_number.value		= UDfieldsResponse_array[5];
+							event_data = event_data + '--- phone_number ' + UDfieldsResponse_array[5];
 							}
 						var regUDtitle = new RegExp("title,","ig");
 						if (fields_list.match(regUDtitle))
-							{document.vicidial_form.title.value				= UDfieldsResponse_array[6];}
+							{
+							document.vicidial_form.title.value				= UDfieldsResponse_array[6];
+							event_data = event_data + '--- title ' + UDfieldsResponse_array[6];
+							}
 						var regUDfirst_name = new RegExp("first_name,","ig");
 						if (fields_list.match(regUDfirst_name))
-							{document.vicidial_form.first_name.value		= UDfieldsResponse_array[7];}
+							{
+							document.vicidial_form.first_name.value		= UDfieldsResponse_array[7];
+							event_data = event_data + '--- first_name ' + UDfieldsResponse_array[7];
+							}
 						var regUDmiddle_initial = new RegExp("middle_initial,","ig");
 						if (fields_list.match(regUDmiddle_initial))
-							{document.vicidial_form.middle_initial.value	= UDfieldsResponse_array[8];}
+							{
+							document.vicidial_form.middle_initial.value	= UDfieldsResponse_array[8];
+							event_data = event_data + '--- middle_initial ' + UDfieldsResponse_array[8];
+							}
 						var regUDlast_name = new RegExp("last_name,","ig");
 						if (fields_list.match(regUDlast_name))
-							{document.vicidial_form.last_name.value			= UDfieldsResponse_array[9];}
+							{
+							document.vicidial_form.last_name.value			= UDfieldsResponse_array[9];
+							event_data = event_data + '--- last_name ' + UDfieldsResponse_array[9];
+							}
 						var regUDaddress1 = new RegExp("address1,","ig");
 						if (fields_list.match(regUDaddress1))
-							{document.vicidial_form.address1.value			= UDfieldsResponse_array[10];}
+							{
+							document.vicidial_form.address1.value			= UDfieldsResponse_array[10];
+							event_data = event_data + '--- address1 ' + UDfieldsResponse_array[10];
+							}
 						var regUDaddress2 = new RegExp("address2,","ig");
 						if (fields_list.match(regUDaddress2))
-							{document.vicidial_form.address2.value			= UDfieldsResponse_array[11];}
+							{
+							document.vicidial_form.address2.value			= UDfieldsResponse_array[11];
+							event_data = event_data + '--- address2 ' + UDfieldsResponse_array[11];
+							}
 						var regUDaddress3 = new RegExp("address3,","ig");
 						if (fields_list.match(regUDaddress3))
-							{document.vicidial_form.address3.value			= UDfieldsResponse_array[12];}
+							{
+							document.vicidial_form.address3.value			= UDfieldsResponse_array[12];
+							event_data = event_data + '--- address3 ' + UDfieldsResponse_array[12];
+							}
 						var regUDcity = new RegExp("city,","ig");
 						if (fields_list.match(regUDcity))
-							{document.vicidial_form.city.value				= UDfieldsResponse_array[13];}
+							{
+							document.vicidial_form.city.value				= UDfieldsResponse_array[13];
+							event_data = event_data + '--- city ' + UDfieldsResponse_array[13];
+							}
 						var regUDstate = new RegExp("state,","ig");
 						if (fields_list.match(regUDstate))
-							{document.vicidial_form.state.value				= UDfieldsResponse_array[14];}
+							{
+							document.vicidial_form.state.value				= UDfieldsResponse_array[14];
+							event_data = event_data + '--- state ' + UDfieldsResponse_array[14];
+							}
 						var regUDprovince = new RegExp("province,","ig");
 						if (fields_list.match(regUDprovince))
-							{document.vicidial_form.province.value			= UDfieldsResponse_array[15];}
+							{
+							document.vicidial_form.province.value			= UDfieldsResponse_array[15];
+							event_data = event_data + '--- province ' + UDfieldsResponse_array[15];
+							}
 						var regUDpostal_code = new RegExp("postal_code,","ig");
 						if (fields_list.match(regUDpostal_code))
-							{document.vicidial_form.postal_code.value		= UDfieldsResponse_array[16];}
+							{
+							document.vicidial_form.postal_code.value		= UDfieldsResponse_array[16];
+							event_data = event_data + '--- postal_code ' + UDfieldsResponse_array[16];
+							}
 						var regUDcountry_code = new RegExp("country_code,","ig");
 						if (fields_list.match(regUDcountry_code))
-							{document.vicidial_form.country_code.value		= UDfieldsResponse_array[17];}
+							{
+							document.vicidial_form.country_code.value		= UDfieldsResponse_array[17];
+							event_data = event_data + '--- country_code ' + UDfieldsResponse_array[17];
+							}
 						var regUDgender = new RegExp("gender,","ig");
 						if (fields_list.match(regUDgender))
 							{
 							document.vicidial_form.gender.value				= UDfieldsResponse_array[18];
+							event_data = event_data + '--- gender ' + UDfieldsResponse_array[18];
 							if (hide_gender > 0)
 								{
 								document.vicidial_form.gender_list.value		= UDfieldsResponse_array[18];
@@ -8575,16 +8638,28 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							}
 						var regUDdate_of_birth = new RegExp("date_of_birth,","ig");
 						if (fields_list.match(regUDdate_of_birth))
-							{document.vicidial_form.date_of_birth.value		= UDfieldsResponse_array[19];}
+							{
+							document.vicidial_form.date_of_birth.value		= UDfieldsResponse_array[19];
+							event_data = event_data + '--- date_of_birth ' + UDfieldsResponse_array[19];
+							}
 						var regUDalt_phone = new RegExp("alt_phone,","ig");
 						if (fields_list.match(regUDalt_phone))
-							{document.vicidial_form.alt_phone.value			= UDfieldsResponse_array[20];}
+							{
+							document.vicidial_form.alt_phone.value			= UDfieldsResponse_array[20];
+							event_data = event_data + '--- alt_phone ' + UDfieldsResponse_array[20];
+							}
 						var regUDemail = new RegExp("email,","ig");
 						if (fields_list.match(regUDemail))
-							{document.vicidial_form.email.value				= UDfieldsResponse_array[21];}
+							{
+							document.vicidial_form.email.value				= UDfieldsResponse_array[21];
+							event_data = event_data + '--- email ' + UDfieldsResponse_array[21];
+							}
 						var regUDsecurity_phrase = new RegExp("security_phrase,","ig");
 						if (fields_list.match(regUDsecurity_phrase))
-							{document.vicidial_form.security_phrase.value	= UDfieldsResponse_array[22];}
+							{
+							document.vicidial_form.security_phrase.value	= UDfieldsResponse_array[22];
+							event_data = event_data + '--- security_phrase ' + UDfieldsResponse_array[22];
+							}
 						var regUDcomments = new RegExp("comments,","ig");
 						if (fields_list.match(regUDcomments))
 							{
@@ -8594,26 +8669,42 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								{document.vicidial_form.other_tab_comments.value = UDfieldsResponse_array[23];}
 							else
 								{document.vicidial_form.comments.value			= UDfieldsResponse_array[23];}
+							event_data = event_data + '--- comments ' + UDfieldsResponse_array[23];
 							}
 						var regUDrank = new RegExp("rank,","ig");
 						if (fields_list.match(regUDrank))
-							{document.vicidial_form.rank.value				= UDfieldsResponse_array[24];}
+							{
+							document.vicidial_form.rank.value				= UDfieldsResponse_array[24];
+							event_data = event_data + '--- rank ' + UDfieldsResponse_array[24];
+							}
 						var regUDowner = new RegExp("owner,","ig");
 						if (fields_list.match(regUDowner))
-							{document.vicidial_form.owner.value				= UDfieldsResponse_array[25];}
+							{
+							document.vicidial_form.owner.value				= UDfieldsResponse_array[25];
+							event_data = event_data + '--- owner ' + UDfieldsResponse_array[25];
+							}
 						var regUDformreload = new RegExp("formreload,","ig");
 						if (fields_list.match(regUDformreload))
-							{FormContentsLoad();}
+							{
+							FormContentsLoad();
+							event_data = event_data + '--- formreload ';
+							}
 
 						// JOEJ 082812 - new for email feature
 						var regUDemailreload = new RegExp("emailreload,","ig");
 						if (fields_list.match(regUDemailreload))
-							{EmailContentsLoad();}
+							{
+							EmailContentsLoad();
+							event_data = event_data + '--- emailreload ';
+							}
 
 						// JOEJ 060514 - new for chat feature
 						var regUDchatreload = new RegExp("chatreload,","ig");
 						if (fields_list.match(regUDchatreload))
-							{CustomerChatContentsLoad();}
+							{
+							CustomerChatContentsLoad();
+							event_data = event_data + '--- chatreload ';
+							}
 
 						var regWFAcustom = new RegExp("^VAR","ig");
 						if (VDIC_web_form_address.match(regWFAcustom))
@@ -8655,6 +8746,8 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							{
                             document.getElementById("WebFormSpanTwo").innerHTML = "<a href=\"" + TEMP_VDIC_web_form_address_three + "\" target=\"" + web_form_target + "\" onMouseOver=\"WebFormThreeRefresH();\"><img src=\"./images/<?php echo _QXZ("vdc_LB_webform_three.gif"); ?>\" border=\"0\" alt=\"Web Form 3\" /></a>\n";
 							}
+
+						agent_events('update_fields', event_data);
 						}
 					else
 						{
@@ -16126,7 +16219,7 @@ function phone_number_format(formatphone) {
 					if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
 						{
 					//	alert(xmlhttp.responseText);
-						document.getElementById("debugbottomspan").innerHTML = "AGENT EVENT " + xmlhttp.responseText + "| URL: " + agent_push_script + "| DATA: " + agent_push_data;
+					//	document.getElementById("debugbottomspan").innerHTML = "AGENT EVENT " + xmlhttp.responseText + "| URL: " + agent_push_script + "| DATA: " + agent_push_data;
 						}
 					}
 				delete xmlhttp;
