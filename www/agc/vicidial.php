@@ -8235,6 +8235,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								var XDerrorDescSIP = MDlookResponse_array[4];
 								var DiaLAlerTMessagE = "<?php echo _QXZ("Call Rejected:"); ?> " + XDchannel + "\n" + XDerrorDesc + "\n" + XDerrorDescSIP;
 								TimerActionRun("DiaLAlerT",DiaLAlerTMessagE);
+								agent_events('agent_alert', 'Call Rejected:' + XDerrorDesc + ' ' + XDerrorDescSIP);
 								}
 							if ( (XDchannel.match(regMDL)) && (asterisk_version != '1.0.8') && (asterisk_version != '1.0.9') && (MD_ring_secondS < 10) )
 								{
@@ -8293,6 +8294,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								var MDerrorDescSIP = MDlookResponse_array[4];
 								var DiaLAlerTMessagE = "<?php echo _QXZ("Call Rejected:"); ?> " + MDchannel + "\n" + MDerrorDesc + "\n" + MDerrorDescSIP;
 								TimerActionRun("DiaLAlerT",DiaLAlerTMessagE);
+								agent_events('agent_alert', 'Call Rejected:' + MDerrorDesc + ' ' + MDerrorDescSIP);
 								}
 							if ( (MDchannel.match(regMDL)) && (asterisk_version != '1.0.8') && (asterisk_version != '1.0.9') )
 								{
@@ -16595,7 +16597,7 @@ function phone_number_format(formatphone) {
 			}
 
 		if (next_action < 1)
-			{timer_action = 'NONE';}	
+			{timer_action = 'NONE';}
 		}
 
 
