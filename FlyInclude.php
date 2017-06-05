@@ -14,6 +14,16 @@
 # 2017-008 JFF 2017-05-28 Add svn commit 2761
 #          JFF 2017-05-31 Add svn commit 2762
 #          JFF 2017-05-31 Add svn commit 2763
+#          JFF 2017-05-31 Add svn commit 2764
+#          JFF 2017-05-31 Add svn commit 2765
+#          JFF 2017-05-31 Add svn commit 2766
+#          JFF 2017-05-31 Add svn commit 2767
+#          JFF 2017-06-05 Add svn commit 2768
+#          JFF 2017-06-05 Add svn commit 2769
+#          JFF 2017-06-05 Add svn commit 2770
+#          JFF 2017-06-05 Add svn commit 2771
+#          JFF 2017-06-05 Add svn commit 2772
+#          JFF 2017-06-05 Add svn commit 2773
 #
 
 $FLY_patch_level = "2017-008";
