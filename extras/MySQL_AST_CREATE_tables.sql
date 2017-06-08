@@ -3021,7 +3021,8 @@ holiday_status ENUM('ACTIVE','INACTIVE','EXPIRED') default 'INACTIVE',
 ct_default_start SMALLINT(4) unsigned NOT NULL default '900',
 ct_default_stop SMALLINT(4) unsigned NOT NULL default '2100',
 default_afterhours_filename_override VARCHAR(255) default '',
-user_group VARCHAR(20) default '---ALL---'
+user_group VARCHAR(20) default '---ALL---',
+holiday_color VARCHAR(7) default ''
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_email_list (
@@ -4009,4 +4010,4 @@ UPDATE vicidial_configuration set value='1766' where name='qc_database_version';
 
 UPDATE system_settings set vdc_agent_api_active='1';
 
-UPDATE system_settings SET db_schema_version='1506',db_schema_update_date=NOW(),reload_timestamp=NOW();
+UPDATE system_settings SET db_schema_version='1507',db_schema_update_date=NOW(),reload_timestamp=NOW();

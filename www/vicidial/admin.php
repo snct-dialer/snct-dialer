@@ -1816,6 +1816,8 @@ if (isset($_GET["holiday_name"]))				{$holiday_name=$_GET["holiday_name"];}
 	elseif (isset($_POST["holiday_name"]))		{$holiday_name=$_POST["holiday_name"];}
 if (isset($_GET["holiday_comments"]))			{$holiday_comments=$_GET["holiday_comments"];}
 	elseif (isset($_POST["holiday_comments"]))	{$holiday_comments=$_POST["holiday_comments"];}
+if (isset($_GET["holiday_color"]))			{$holiday_comments=$_GET["holiday_color"];}
+	elseif (isset($_POST["holiday_color"]))		{$holiday_comments=$_POST["holiday_color"];}
 if (isset($_GET["holiday_date"]))				{$holiday_date=$_GET["holiday_date"];}
 	elseif (isset($_POST["holiday_date"]))		{$holiday_date=$_POST["holiday_date"];}
 if (isset($_GET["holiday_status"]))				{$holiday_status=$_GET["holiday_status"];}
@@ -4697,6 +4699,7 @@ if ($ADD==182111111111)	{$hh='admin';	$sh='colors';	echo _QXZ("ADD NEW SCREEN CO
 if ($ADD==191111111111)	{$hh='admin';	$sh='cts';	echo _QXZ("ADD NEW CONTACT");}
 if ($ADD==192111111111)	{$hh='admin';	$sh='sc';	echo _QXZ("ADD SETTINGS CONTAINER");}
 if ($ADD==193111111111)	{$hh='admin';	$sh='sg';	echo _QXZ("ADD STATUS GROUP");}
+if ($ADD==193222222222)	{$hh='admin';	$sh='sg';	echo _QXZ("COPY STATUS GROUP");}
 if ($ADD==194111111111)	{$hh='admin';	$sh='ar';	echo _QXZ("ADD AUTOMATED REPORT");}
 if ($ADD==195111111111)	{$hh='admin';	$sh='il';	echo _QXZ("ADD IP LIST");}
 if ($ADD==1111111111111)	{$hh='admin';	$sh='conference';	echo _QXZ("ADD NEW CONFERENCE");}
@@ -15711,7 +15714,7 @@ if ($ADD==4211111111)
 			{
 			$ct_default_start = preg_replace('/\D/', '', $ct_default_start);
 			$ct_default_stop = preg_replace('/\D/', '', $ct_default_stop);
-			$stmt="UPDATE vicidial_call_time_holidays set holiday_name='$holiday_name', holiday_comments='$holiday_comments', holiday_date='$holiday_date', holiday_status='$holiday_status', ct_default_start='$ct_default_start', ct_default_stop='$ct_default_stop',user_group='$user_group', default_afterhours_filename_override='$default_afterhours_filename_override' where holiday_id='$holiday_id';";
+			$stmt="UPDATE vicidial_call_time_holidays set holiday_name='$holiday_name', holiday_comments='$holiday_comments', holiday_date='$holiday_date', holiday_status='$holiday_status', ct_default_start='$ct_default_start', ct_default_stop='$ct_default_stop',user_group='$user_group', default_afterhours_filename_override='$default_afterhours_filename_override', holiday_color=$holiday_color where holiday_id='$holiday_id';";
 			$rslt=mysql_to_mysqli($stmt, $link);
 
 			echo "<br><B>"._QXZ("HOLIDAY MODIFIED")."</B>\n";
@@ -32168,6 +32171,7 @@ if ($ADD==3211111111)
 		$ct_default_stop =						$row[6];
 		$user_group =							$row[7];
 		$default_afterhours_filename_override =	$row[8];
+		$holiday_color	=						$row[9];
 
 		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
@@ -32188,6 +32192,9 @@ if ($ADD==3211111111)
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("AH Override").": </td><td align=left colspan=3><input type=text name=default_afterhours_filename_override id=default_afterhours_filename_override size=50 maxlength=255 value=\"$default_afterhours_filename_override\"> <a href=\"javascript:launch_chooser('default_afterhours_filename_override','date',30);\">"._QXZ("audio chooser")."</a> $NWB#call_times-default_afterhours_filename_override$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Holiday Date").": </td><td align=left colspan=3><input type=text name=holiday_date id=holiday_date size=10 maxlength=10 value=\"$holiday_date\">\n";
+
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Holiday Color").": </td><td align=left colspan=3><input type=text name=holiday_color size=7 maxlength=7 value=\"$holiday_color\"> $NWB#call_times-holiday_color$NWE</td></tr>\n";
+
 		echo "<script language=\"JavaScript\">\n";
 		echo "var o_cal = new tcal ({\n";
 		echo "	// form name\n";
@@ -38006,6 +38013,103 @@ if ($ADD==193000000000)
 	echo "</TABLE></center>\n";
 	}
 
+	
+######################
+# ADD=193222222222 copy status group
+######################
+if ($ADD==193222222222)
+{
+	##### Test exit one or more records to copy and fill drop down menu #####
+	$stmt = "SELECT * FROM vicidial_status_groups";
+	$rslt=mysql_to_mysqli($stmt, $link);
+	$sg_ct = mysqli_num_rows($rslt);
+	if ($sg_ct > 0) {
+		##### END ID override optional section #####
+		
+		echo "<TABLE><TR><TD>\n";
+		echo "<img src=\"images/icon_statusgroups.png\" width=42 height=42 align=left> <FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+			
+		echo "<br>"._QXZ("COPY STATUS GROUP")."<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=293222222222>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Status Group ID").": </td><td align=left><input type=text name=group_id size=20 maxlength=20> ("._QXZ("no spaces").")$NWB#status_groups$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Status Group Note").": </td><td align=left><input type=text name=group_name size=30 maxlength=30>$NWB#status_groups$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Source Status Group ID").": </td><td align=left><select size=1 name=source_group_id>\n";
+	
+		$groups_to_print = $sg_ct;
+		$groups_list='';
+			
+		$o=0;
+		while ($groups_to_print > $o) {
+			$rowx=mysqli_fetch_row($rslt);
+			$groups_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$o++;
+		}
+		echo "$groups_list";
+		echo "</select>$NWB#status_groups$NWE</td></tr>\n";
+			
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=center colspan=2><input type=submit name=SUBMIT value='"._QXZ("SUBMIT")."'></td></tr>\n";
+		echo "</TABLE></center>\n";
+	}
+	
+	else {
+		echo _QXZ("No Status Group to copy found")."\n";
+		exit;
+	}
+}
+
+######################
+# ADD=293222222222 adds copied status group to the system
+######################
+if ($ADD==293222222222)
+{
+	$group_id = preg_replace("/\-/",'',$group_id);
+	
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	$stmt="SELECT count(*) from vicidial_inbound_groups where group_id='$group_id';";
+	$rslt=mysql_to_mysqli($stmt, $link);
+	$row=mysqli_fetch_row($rslt);
+	if ($row[0] > 0)
+	{echo "<br>"._QXZ("GROUP NOT ADDED - there is already a group in the system with this ID")."\n";}
+	else
+	{
+		$stmt="SELECT count(*) from vicidial_status_groups where status_group_id='$group_id';";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$row=mysqli_fetch_row($rslt);
+		if ($row[0] > 0)
+		{echo "<br>"._QXZ("GROUP NOT ADDED - there is already a staus group in the system with this ID")."\n";}
+		else
+		{
+			if ( (strlen($group_id) < 2) or (strlen($group_name) < 2) or (strlen($group_id) > 20) or (preg_match('/\s/i',$group_id)) or (preg_match('/\-/i',$group_id)) or (preg_match("/\+/i",$group_id)) )
+			{
+				echo "<br>"._QXZ("GROUP NOT ADDED - Please go back and look at the data you entered")."\n";
+				echo "<br>"._QXZ("Group ID must be between 2 and 20 characters in length and contain no")." ' -+'.\n";
+				echo "<br>"._QXZ("Group name must be at least 2 characters in length")."\n";
+			}
+			else
+			{
+				$stmt="INSERT INTO vicidial_status_groups (status_group_id,status_group_notes,user_group) SELECT \"$group_id\",\"$group_name\",user_group from vicidial_status_groups where status_group_id=\"$source_group_id\";";
+				$rslt=mysql_to_mysqli($stmt, $link);
+				
+				$stmtA="INSERT INTO vicidial_campaign_statuses(status,status_name,selectable,campaign_id,human_answered,category,sale,dnc,customer_contact,not_interested,unworkable,scheduled_callback,completed,min_sec,max_sec,answering_machine) SELECT status,status_name,selectable,'$group_id',human_answered,category,sale,dnc,customer_contact,not_interested,unworkable,scheduled_callback,completed,min_sec,max_sec,answering_machine FROM vicidial_campaign_statuses WHERE campaign_id='$source_group_id';";
+				$rslt=mysql_to_mysqli($stmtA, $link);
+					
+				echo "<br><B>"._QXZ("GROUP ADDED").": $group_id</B>\n";
+				
+				### LOG INSERTION Admin Log Table ###
+				$SQL_log = "$stmt|$stmtA|$stmtB|";
+				$SQL_log = preg_replace('/;/', '', $SQL_log);
+				$SQL_log = addslashes($SQL_log);
+				$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='INGROUPS', event_type='COPY', record_id='$group_id', event_code='ADMIN COPY STATUS GROUP', event_sql=\"$SQL_log\", event_notes='';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+			}
+		}
+	}
+	$ADD=193111111111;
+}
 
 ######################
 # ADD=194000000000 display all automated report entries

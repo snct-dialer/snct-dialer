@@ -641,6 +641,26 @@ $VUselected_language = '';
 
 $random = (rand(1000000, 9999999) + 10000000);
 
+#
+# return the color for a holiday or false if no holiday
+#
+function GetHoliday($Date) {
+    global $link;
+
+    $ret = 'false';
+
+    $statement = "SELECT * FROM vicidial_call_time_holidays WHERE holiday_date = '$Date' AND holiday_status = 'ACTIVE';";
+    $result = mysql_to_mysqli($statement, $link);
+    $erg = mysqli_num_rows($result);
+    if($erg > 0) {
+	$row = mysqli_fetch_row($result);
+	$ret = $row[9];
+    }
+    mysqli_free_result($result);
+    return $ret;
+}
+
+
 
 $stmt="SELECT user,selected_language from vicidial_users where user='$VD_login';";
 if ($DB) {echo "|$stmt|\n";}
@@ -3837,8 +3857,15 @@ while ($CINC < 12)
 						{$CBL='';   $CEL=''; $CB_date_onclick='';}
 					$live_days++;
 					}
+				# Add holiday colors
+				$tDate = $CYyear . "-" . $Cmonth . "-" . $Cdayarray[mday];
+				$bkCol = "$CDCLR";
+				$FTErg = GetHoliday($tDate);
+				if(($FTErg != 'false') && ($FTErg != '')) {
+				    $bkCol = $FTErg;
+				}
+				$CCAL_OUT .= "<td bgcolor=\"$bkCol\" bordercolor=\"#ffffff\"  $CB_date_onclick>";
 
-				$CCAL_OUT .= "<td bgcolor=\"$CDCLR\" bordercolor=\"#ffffff\" $CB_date_onclick>";
 				$CCAL_OUT .= "<div align=\"center\"><font face=\"Arial, Helvetica, sans-serif\" size=1>";
 				$CCAL_OUT .= "$CBL$Cdayarray[mday]$CEL";
 				$CCAL_OUT .= "</font></div>";
