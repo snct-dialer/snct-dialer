@@ -269,3 +269,7 @@ ALTER TABLE system_settings ADD git_commit VARCHAR(55) default '';
 ALTER TABLE system_settings ADD git_release VARCHAR(25) default '';
 
 UPDATE system_settings SET db_schema_version='1506',db_schema_update_date=NOW() where db_schema_version < 1506;
+
+ALTER TABLE vicidial_call_time_holidays ADD holiday_color VARCHAR(7) default ''; 
+
+UPDATE system_settings SET db_schema_version='1507',db_schema_update_date=NOW() where db_schema_version < 1507;

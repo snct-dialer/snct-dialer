@@ -1816,6 +1816,8 @@ if (isset($_GET["holiday_name"]))				{$holiday_name=$_GET["holiday_name"];}
 	elseif (isset($_POST["holiday_name"]))		{$holiday_name=$_POST["holiday_name"];}
 if (isset($_GET["holiday_comments"]))			{$holiday_comments=$_GET["holiday_comments"];}
 	elseif (isset($_POST["holiday_comments"]))	{$holiday_comments=$_POST["holiday_comments"];}
+if (isset($_GET["holiday_color"]))			{$holiday_comments=$_GET["holiday_color"];}
+	elseif (isset($_POST["holiday_color"]))		{$holiday_comments=$_POST["holiday_color"];}
 if (isset($_GET["holiday_date"]))				{$holiday_date=$_GET["holiday_date"];}
 	elseif (isset($_POST["holiday_date"]))		{$holiday_date=$_POST["holiday_date"];}
 if (isset($_GET["holiday_status"]))				{$holiday_status=$_GET["holiday_status"];}
@@ -15708,7 +15710,7 @@ if ($ADD==4211111111)
 			{
 			$ct_default_start = preg_replace('/\D/', '', $ct_default_start);
 			$ct_default_stop = preg_replace('/\D/', '', $ct_default_stop);
-			$stmt="UPDATE vicidial_call_time_holidays set holiday_name='$holiday_name', holiday_comments='$holiday_comments', holiday_date='$holiday_date', holiday_status='$holiday_status', ct_default_start='$ct_default_start', ct_default_stop='$ct_default_stop',user_group='$user_group', default_afterhours_filename_override='$default_afterhours_filename_override' where holiday_id='$holiday_id';";
+			$stmt="UPDATE vicidial_call_time_holidays set holiday_name='$holiday_name', holiday_comments='$holiday_comments', holiday_date='$holiday_date', holiday_status='$holiday_status', ct_default_start='$ct_default_start', ct_default_stop='$ct_default_stop',user_group='$user_group', default_afterhours_filename_override='$default_afterhours_filename_override', holiday_color=$holiday_color where holiday_id='$holiday_id';";
 			$rslt=mysql_to_mysqli($stmt, $link);
 
 			echo "<br><B>"._QXZ("HOLIDAY MODIFIED")."</B>\n";
@@ -32165,6 +32167,7 @@ if ($ADD==3211111111)
 		$ct_default_stop =						$row[6];
 		$user_group =							$row[7];
 		$default_afterhours_filename_override =	$row[8];
+		$holiday_color	=						$row[9];
 
 		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
@@ -32185,6 +32188,9 @@ if ($ADD==3211111111)
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("AH Override").": </td><td align=left colspan=3><input type=text name=default_afterhours_filename_override id=default_afterhours_filename_override size=50 maxlength=255 value=\"$default_afterhours_filename_override\"> <a href=\"javascript:launch_chooser('default_afterhours_filename_override','date',30);\">"._QXZ("audio chooser")."</a> $NWB#call_times-default_afterhours_filename_override$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Holiday Date").": </td><td align=left colspan=3><input type=text name=holiday_date id=holiday_date size=10 maxlength=10 value=\"$holiday_date\">\n";
+
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Holiday Color").": </td><td align=left colspan=3><input type=text name=holiday_color size=7 maxlength=7 value=\"$holiday_color\"> $NWB#call_times-holiday_color$NWE</td></tr>\n";
+
 		echo "<script language=\"JavaScript\">\n";
 		echo "var o_cal = new tcal ({\n";
 		echo "	// form name\n";
