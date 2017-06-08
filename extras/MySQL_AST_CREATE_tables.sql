@@ -1714,9 +1714,11 @@ enable_auto_reports ENUM('1','0') default '0',
 enable_pause_code_limits ENUM('1','0') default '0',
 enable_drop_lists ENUM('0','1','2') default '0',
 allow_ip_lists ENUM('0','1','2') default '0',
-system_ip_blacklist VARCHAR(30) default ''
-git_commit VARCHAR(55) default '';
-git_release VARCHAR(25) default '';
+system_ip_blacklist VARCHAR(30) default '',
+git_commit VARCHAR(55) default '',
+git_release VARCHAR(25) default '',
+agent_push_events ENUM('0','1') default '0',
+agent_push_url TEXT
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_campaigns_list_mix (

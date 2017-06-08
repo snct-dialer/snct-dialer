@@ -119,10 +119,11 @@
 # 170423-0800 - Added force_entry_list_id option for update_lead
 # 170508-1048 - Added blind_monitor logging
 # 170527-2254 - Fix for rare inbound logging issue #1017
+# 170601-0747 - Added add_to_hopper options to update_lead function
 #
 
-$version = '2.14-95';
-$build = '170527-2254';
+$version = '2.14-96';
+$build = '170601-0747';
 $api_url_log = 0;
 
 $startMS = microtime();
@@ -7770,6 +7771,7 @@ if ($function == 'update_lead')
 					if ($search_found > 0)
 						{
 						if (strlen($lead_id)<1) {$lead_id=$search_lead_id[0];}
+						if (strlen($list_id)<1) {$list_id=$search_lead_list[0];}
 						$result = 'NOTICE';
 						$result_reason = "update_lead LEADS FOUND IN THE SYSTEM";
 						$data = "$lead_id|$vendor_lead_code|$phone_number|$search_lead_list[0]|$search_entry_list[0]";
@@ -7783,13 +7785,16 @@ if ($function == 'update_lead')
 						$data = "$lead_id|$vendor_lead_code|$phone_number";
 						echo "$result: $result_reason: |$user|$data\n";
 						api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+
+						exit;
 						}
-					exit;
 					}
 				else
 					{
 					if ($search_found > 0)
 						{
+						if (strlen($lead_id)<1) {$lead_id=$search_lead_id[0];}
+						if (strlen($list_id)<1) {$list_id=$search_lead_list[0];}
 						$VL_update_SQL='';
 						##### BEGIN update lead information in the system #####
 						if (strlen($user_field)>0)			{$VL_update_SQL .= "user=\"$user_field\",";}
@@ -7873,7 +7878,7 @@ if ($function == 'update_lead')
 
 								$result = 'SUCCESS';
 								echo "$result: $result_reason - $user|$search_lead_id[$n]|$VLaffected_rows\n";
-								$data = "$phone_number|$list_id|$lead_id|$gmt_offset";
+								$data = "$phone_number|$search_lead_list[$n]|$search_lead_id[$n]|$gmt_offset";
 								api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
 								}
 							##### BEGIN scheduled callback section #####
@@ -7921,7 +7926,7 @@ if ($function == 'update_lead')
 
 										$result = 'NOTICE';
 										$result_reason = "update_lead SCHEDULED CALLBACK UPDATED";
-										$data = "$lead_id|$campaign_id|$callback_datetime|$callback_type|$callback_user|$callback_status";
+										$data = "$search_lead_id[$n]|$campaign_id|$callback_datetime|$callback_type|$callback_user|$callback_status";
 										echo "$result: $result_reason - $data\n";
 										api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
 										}
@@ -7929,7 +7934,7 @@ if ($function == 'update_lead')
 										{
 										$result = 'NOTICE';
 										$result_reason = "update_lead SCHEDULED CALLBACK NOT UPDATED, NO FIELDS SPECIFIED";
-										$data = "$lead_id|$CBupdateSQL";
+										$data = "$search_lead_id[$n]|$CBupdateSQL";
 										echo "$result: $result_reason - $data\n";
 										api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
 										}
@@ -7965,7 +7970,7 @@ if ($function == 'update_lead')
 												{
 												$result = 'NOTICE';
 												$result_reason = "update_lead SCHEDULED CALLBACK NOT ADDED, USER NOT VALID";
-												$data = "$lead_id|$campaign_id|$callback_user|$callback_type";
+												$data = "$search_lead_id[$n]|$campaign_id|$callback_user|$callback_type";
 												echo "$result: $result_reason - $data\n";
 												api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
 												}
@@ -7982,14 +7987,14 @@ if ($function == 'update_lead')
 											if (strlen($callback_status)<1) 
 												{$callback_status='CALLBK';}
 
-											$stmt="INSERT INTO vicidial_callbacks (lead_id,list_id,campaign_id,status,entry_time,callback_time,user,recipient,comments,user_group,lead_status) values('$lead_id','$list_id','$campaign_id','ACTIVE','$NOW_TIME','$callback_datetime','$callback_user','$callback_type','$callback_comments','$user_group','$callback_status');";
+											$stmt="INSERT INTO vicidial_callbacks (lead_id,list_id,campaign_id,status,entry_time,callback_time,user,recipient,comments,user_group,lead_status) values('$search_lead_id[$n]','$search_lead_list[$n]','$campaign_id','ACTIVE','$NOW_TIME','$callback_datetime','$callback_user','$callback_type','$callback_comments','$user_group','$callback_status');";
 											if ($DB>0) {echo "DEBUG: update_lead query - $stmt\n";}
 											$rslt=mysql_to_mysqli($stmt, $link);
 											$CBaffected_rows = mysqli_affected_rows($link);
 
 											$result = 'NOTICE';
 											$result_reason = "update_lead SCHEDULED CALLBACK ADDED";
-											$data = "$lead_id|$campaign_id|$callback_datetime|$callback_type|$callback_user|$callback_status";
+											$data = "$search_lead_id[$n]|$campaign_id|$callback_datetime|$callback_type|$callback_user|$callback_status";
 											echo "$result: $result_reason - $data\n";
 											api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
 											}
@@ -7998,7 +8003,7 @@ if ($function == 'update_lead')
 										{
 										$result = 'NOTICE';
 										$result_reason = "update_lead SCHEDULED CALLBACK NOT ADDED, CAMPAIGN NOT VALID";
-										$data = "$lead_id|$campaign_id";
+										$data = "$search_lead_id[$n]|$campaign_id";
 										echo "$result: $result_reason - $data\n";
 										api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
 										}
@@ -8051,7 +8056,7 @@ if ($function == 'update_lead')
 											$result = 'NOTICE';
 											$result_reason = "update_lead CUSTOM FIELDS ENTRY DELETED";
 											echo "$result: $result_reason - $phone_number|$search_lead_id[$n]|$search_lead_list[$n]|$search_entry_list[$n]|$lead_custom_list|$custom_update_count\n";
-											$data = "$phone_number|$lead_id|$list_id|$VCLDaffected_rows";
+											$data = "$phone_number|$search_lead_id[$n]|$search_lead_list[$n]|$VCLDaffected_rows";
 											api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
 											}
 										}
@@ -8146,7 +8151,7 @@ if ($function == 'update_lead')
 											$result = 'NOTICE';
 											$result_reason = "update_lead CUSTOM FIELDS VALUES UPDATED";
 											echo "$result: $result_reason - $phone_number|$search_lead_id[$n]|$search_lead_list[$n]|$search_entry_list[$n]|$lead_custom_list|$custom_update_count\n";
-											$data = "$phone_number|$lead_id|$list_id";
+											$data = "$phone_number|$search_lead_id[$n]|$search_lead_list[$n]";
 											api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
 
 											$update_sent++;
@@ -8166,8 +8171,8 @@ if ($function == 'update_lead')
 									{
 									$result = 'NOTICE';
 									$result_reason = "update_lead CUSTOM FIELDS NOT ADDED, NO CUSTOM FIELDS DEFINED FOR THIS LIST";
-									echo "$result: $result_reason - $phone_number|$lead_id|$list_id\n";
-									$data = "$phone_number|$lead_id|$list_id";
+									echo "$result: $result_reason - $phone_number|$search_lead_id[$n]|$search_lead_list[$n]\n";
+									$data = "$phone_number|$search_lead_id[$n]|$search_lead_list[$n]";
 									api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
 									}
 								}
@@ -8416,6 +8421,99 @@ if ($function == 'update_lead')
 							}
 						}
 					}
+
+				### BEGIN add to hopper section ###
+				if ( ($add_to_hopper == 'Y') and ($search_found > 0) )
+					{
+					$stmt="SELECT count(*) from vicidial_hopper where lead_id='$lead_id';";
+					$rslt=mysql_to_mysqli($stmt, $link);
+					$row=mysqli_fetch_row($rslt);
+					$hopper_lead_count =		$row[0];
+
+					if ($hopper_lead_count < 1)
+						{
+						$dialable=1;
+
+						$stmt="SELECT vicidial_campaigns.local_call_time,vicidial_lists.local_call_time,vicidial_campaigns.campaign_id from vicidial_campaigns,vicidial_lists where list_id='$list_id' and vicidial_campaigns.campaign_id=vicidial_lists.campaign_id;";
+						$rslt=mysql_to_mysqli($stmt, $link);
+						$row=mysqli_fetch_row($rslt);
+						$local_call_time =		$row[0];
+						$list_local_call_time = $row[1];
+						$VD_campaign_id =		$row[2];
+
+						if ($DB > 0) {echo "DEBUG call time: |$local_call_time|$list_local_call_time|$VD_campaign_id|";}
+						if ( ($list_local_call_time!='') and (!preg_match("/^campaign$/i",$list_local_call_time)) )
+							{$local_call_time = $list_local_call_time;}
+
+						$stmt="SELECT state,vendor_lead_code,gmt_offset_now from vicidial_list where lead_id='$lead_id';";
+						$rslt=mysql_to_mysqli($stmt, $link);
+						$ulhi_recs = mysqli_num_rows($rslt);
+						if ($ulhi_recs > 0)
+							{
+							$row=mysqli_fetch_row($rslt);
+							$state =				$row[0];
+							$vendor_lead_code =		$row[1];
+							$gmt_offset =			$row[2];
+
+							if ($hopper_local_call_time_check == 'Y')
+								{
+								### call function to determine if lead is dialable
+								$dialable = dialable_gmt($DB,$link,$local_call_time,$gmt_offset,$state);
+								}
+							if ($dialable < 1) 
+								{
+								$result = 'NOTICE';
+								$result_reason = "update_lead NOT ADDED TO HOPPER, OUTSIDE OF LOCAL TIME";
+								echo "$result: $result_reason - $phone_number|$lead_id|$gmt_offset|$dialable|$user\n";
+								$data = "$phone_number|$lead_id|$gmt_offset|$dialable|$state";
+								api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+								}
+							else
+								{
+								### insert record into vicidial_hopper
+								$stmt = "INSERT INTO vicidial_hopper SET lead_id='$lead_id',campaign_id='$VD_campaign_id',status='READY',list_id='$list_id',gmt_offset_now='$gmt_offset',state='$state',user='',priority='$hopper_priority',source='P',vendor_lead_code=\"$vendor_lead_code\";";
+								if ($DB>0) {echo "DEBUG: update_lead query - $stmt\n";}
+								$rslt=mysql_to_mysqli($stmt, $link);
+								$Haffected_rows = mysqli_affected_rows($link);
+								if ($Haffected_rows > 0)
+									{
+									$hopper_id = mysqli_insert_id($link);
+
+									$result = 'NOTICE';
+									$result_reason = "update_lead ADDED TO HOPPER";
+									echo "$result: $result_reason - $phone_number|$lead_id|$hopper_id|$user\n";
+									$data = "$phone_number|$lead_id|$hopper_id";
+									api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+									}
+								else
+									{
+									$result = 'NOTICE';
+									$result_reason = "update_lead NOT ADDED TO HOPPER";
+									echo "$result: $result_reason - $phone_number|$lead_id|$stmt|$user\n";
+									$data = "$phone_number|$lead_id|$stmt";
+									api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+									}
+								}
+							}
+						else
+							{
+							$result = 'NOTICE';
+							$result_reason = "update_lead NOT ADDED TO HOPPER, LEAD NOT FOUND";
+							echo "$result: $result_reason - $phone_number|$lead_id|$user\n";
+							$data = "$phone_number|$lead_id|$user";
+							api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+							}
+						}
+					else
+						{
+						$result = 'NOTICE';
+						$result_reason = "update_lead NOT ADDED TO HOPPER, LEAD IS ALREADY IN THE HOPPER";
+						echo "$result: $result_reason - $phone_number|$lead_id|$user\n";
+						$data = "$phone_number|$lead_id|$user";
+						api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+						}
+					}
+				### END add to hopper section ###
 				}
 			}
 		exit;

@@ -1,4 +1,4 @@
-CRM EXAMPLE SKIN DOCUMENT	Started: 2015-12-27	Updated: 2015-12-29
+CRM EXAMPLE SKIN DOCUMENT	Started: 2015-12-27	Updated: 2017-06-01
 
 This document describes one method of integrating with the agent screen using 
 a basic skin. This method could be used as a guide to integrate a CRM web system
@@ -55,3 +55,4 @@ Notes:
 
 - The example code shown assumes a campaign with only outbound auto-dial and inbound call handling in a RATIO or ADAPT dial method.
 - The example code assumes Campaign Pause Codes is not enabled
+- For more tight integration with your CRM, take a look at the AGENT_EVENTS_PUSH.txt document for information on how to get agent events pushed to your system
