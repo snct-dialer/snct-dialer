@@ -37,6 +37,7 @@
 # 170227-1714 - Fix for default HTML report format, issue #997
 # 170323-2247 - Added debug variable
 # 170409-1559 - Added IP List validation code
+# 170602-1008 - Added 8am-5pm shift
 #
 
 $startMS = microtime();
@@ -403,6 +404,7 @@ $MAIN.="<option value=\"ALL\">"._QXZ("ALL")."</option>\n";
 $MAIN.="<option value=\"DAYTIME\">"._QXZ("DAYTIME")."</option>\n";
 $MAIN.="<option value=\"10AM-6PM\">"._QXZ("10AM-6PM")."</option>\n";
 $MAIN.="<option value=\"9AM-1AM\">"._QXZ("9AM-1AM")."</option>\n";
+$MAIN.="<option value=\"8AM-5PM\">"._QXZ("8AM-5PM")."</option>\n";
 $MAIN.="<option value=\"845-1745\">845-1745</option>\n";
 $MAIN.="<option value=\"1745-100\">1745-100</option>\n";
 $MAIN.="</SELECT>\n";
@@ -470,6 +472,11 @@ if ($shift == '9AM-1AM')
 	{
 	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "09:00:00";}
 	if (strlen($time_END) < 6) {$time_END = "00:59:59";}
+	}
+if ($shift == '8AM-5PM') 
+	{
+	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "08:00:00";}
+	if (strlen($time_END) < 6) {$time_END = "16:59:59";}
 	}
 if ($shift == '845-1745') 
 	{

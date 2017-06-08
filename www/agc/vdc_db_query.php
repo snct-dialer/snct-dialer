@@ -431,10 +431,11 @@
 # 170504-1056 - Added start_call_url to manual-dial calls
 # 170526-2327 - Added additional variable filtering
 # 170527-2208 - Added more additional variable filtering, fixed rare inbound logging issue #1017
+# 170605-1633 - Added vendor_lead_code to agent lead search results screen
 #
 
-$version = '2.14-325';
-$build = '170527-2208';
+$version = '2.14-326';
+$build = '170605-1633';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=684;
@@ -963,7 +964,7 @@ $agent_email = preg_replace("/\'|\"|\\\\|;/","",$agent_email);
 $agent_log = preg_replace('/[^-_0-9a-zA-Z]/','',$agent_log);
 $agent_log_id = preg_replace('/[^-_0-9a-zA-Z]/','',$agent_log_id);
 $agent_territories = preg_replace('/[^- _0-9a-zA-Z]/','',$agent_territories);
-$agentchannel = preg_replace("/\'|\"|\\\\|;/","",$agentchannel);
+$agentchannel = preg_replace("/\'|\"|\\\\/","",$agentchannel);
 $alt_dial = preg_replace('/[^-_0-9a-zA-Z]/','',$alt_dial);
 $alt_num_status = preg_replace('/[^-_0-9a-zA-Z]/','',$alt_num_status);
 $auto_dial_level = preg_replace('/[^-\._0-9a-zA-Z]/','',$auto_dial_level);
@@ -972,14 +973,14 @@ $callback_id = preg_replace('/[^-_0-9a-zA-Z]/','',$callback_id);
 $called_count = preg_replace('/[^0-9]/','',$called_count);
 $camp_script = preg_replace('/[^-_0-9a-zA-Z]/','',$camp_script);
 $campaign_cid = preg_replace('/[^-_0-9a-zA-Z]/','',$campaign_cid);
-$channel = preg_replace("/\'|\"|\\\\|;/","",$channel);
+$channel = preg_replace("/\'|\"|\\\\/","",$channel);
 $cid_lock = preg_replace('/[^0-9]/','',$cid_lock);
 $closer_blended = preg_replace('/[^-_0-9a-zA-Z]/','',$closer_blended);
 $conf_dialed = preg_replace('/[^-_0-9a-zA-Z]/','',$conf_dialed);
 $conf_silent_prefix = preg_replace('/[^-_0-9a-zA-Z]/','',$conf_silent_prefix);
 $custom_field_names = preg_replace("/\'|\"|\\\\|;/","",$custom_field_names);
 $customer_server_ip = preg_replace("/\'|\"|\\\\|;/","",$customer_server_ip);
-$customer_zap_channel = preg_replace("/\'|\"|\\\\|;/","",$customer_zap_channel);
+$customer_zap_channel = preg_replace("/\'|\"|\\\\/","",$customer_zap_channel);
 $date = preg_replace('/[^-_0-9]/','',$date);
 $dial_ingroup = preg_replace('/[^-_0-9a-zA-Z]/','',$dial_ingroup);
 $dial_method = preg_replace('/[^-_0-9a-zA-Z]/','',$dial_method);
@@ -14457,13 +14458,14 @@ if ($ACTION == 'SEARCHRESULTSview')
 			echo "<TD BGCOLOR=\"#CCCCCC\"><font style=\"font-size:11px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("CITY")." &nbsp; </font></TD>";
 			echo "<TD BGCOLOR=\"#CCCCCC\"><font style=\"font-size:11px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("STATE")." &nbsp; </font></TD>";
 			echo "<TD BGCOLOR=\"#CCCCCC\"><font style=\"font-size:11px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("ZIP")." &nbsp; </font></TD>";
+			echo "<TD BGCOLOR=\"#CCCCCC\"><font style=\"font-size:11px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("VENDOR ID")." &nbsp; </font></TD>";
 			echo "<TD BGCOLOR=\"#CCCCCC\"><font style=\"font-size:11px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("INFO")." &nbsp; </font></TD>";
 			echo "<TD BGCOLOR=\"#CCCCCC\"><font style=\"font-size:11px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("DIAL")." &nbsp; </font></TD>";
 			echo "</TR>";
 
 			if ($search_result_count)
 				{
-				$stmt="SELECT first_name,last_name,phone_code,phone_number,status,last_local_call_time,lead_id,city,state,postal_code from vicidial_list where $searchSQL $searchownerSQL $searchmethodSQL order by last_local_call_time desc limit 1000;";
+				$stmt="SELECT first_name,last_name,phone_code,phone_number,status,last_local_call_time,lead_id,city,state,postal_code,vendor_lead_code from vicidial_list where $searchSQL $searchownerSQL $searchmethodSQL order by last_local_call_time desc limit 1000;";
 				$rslt=mysql_to_mysqli($stmt, $link);
 					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00380',$user,$server_ip,$session_name,$one_mysql_log);}
 				$out_logs_to_print = mysqli_num_rows($rslt);
@@ -14474,16 +14476,17 @@ if ($ACTION == 'SEARCHRESULTSview')
 				while ($out_logs_to_print > $u) 
 					{
 					$row=mysqli_fetch_row($rslt);
-					$ALLsort[$g] =			"$row[0]-----$g";
-					$ALLname[$g] =			"$row[0] $row[1]";
-					$ALLphone_code[$g] =	$row[2];
-					$ALLphone_number[$g] =	$row[3];
-					$ALLstatus[$g] =		$row[4];
-					$ALLcall_date[$g] =		$row[5];
-					$ALLlead_id[$g] =		$row[6];
-					$ALLcity[$g] =			$row[7];
-					$ALLstate[$g] =			$row[8];
-					$ALLpostal_code[$g] =	$row[9];
+					$ALLsort[$g] =				"$row[0]-----$g";
+					$ALLname[$g] =				"$row[0] $row[1]";
+					$ALLphone_code[$g] =		$row[2];
+					$ALLphone_number[$g] =		$row[3];
+					$ALLstatus[$g] =			$row[4];
+					$ALLcall_date[$g] =			$row[5];
+					$ALLlead_id[$g] =			$row[6];
+					$ALLcity[$g] =				$row[7];
+					$ALLstate[$g] =				$row[8];
+					$ALLpostal_code[$g] =		$row[9];
+					$ALLvendor_lead_code[$g] =	$row[10];
 
 					$g++;
 					$u++;
@@ -14513,6 +14516,7 @@ if ($ACTION == 'SEARCHRESULTSview')
 					echo "<td align=right><font class=\"sb_text\"> $ALLcity[$i] </font></td>\n";
 					echo "<td align=right><font class=\"sb_text\"> $ALLstate[$i]</font></td>\n";
 					echo "<td align=right><font class=\"sb_text\"> $ALLpostal_code[$i] </font></td>\n";
+					echo "<td align=right><font class=\"sb_text\"> $ALLvendor_lead_code[$i] </font></td>\n";
 					echo "<td align=right><font class=\"sb_text\"> <a href=\"#\" onclick=\"VieWLeaDInfO($ALLlead_id[$i],'','$inbound_lead_search');return false;\"> "._QXZ("INFO")." </A> </font></td>\n";
 					if ($inbound_lead_search < 1)
 						{

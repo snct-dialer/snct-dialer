@@ -160,6 +160,11 @@ OTHER CHANGES:
 
 34. Added logging of Real-Time report monitoring, and report in Admin Utilities
 
+35. Added Agent Push Events, allowing for HTTP Push events to be sent on agent
+	screen events. See the AGENT_EVENTS.txt doc for more details.
+
+36. Added Add-to-hopper options to update_lead function in the Non-Agent API
+
 
 
 

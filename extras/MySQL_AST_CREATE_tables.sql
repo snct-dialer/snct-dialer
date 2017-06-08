@@ -1714,9 +1714,11 @@ enable_auto_reports ENUM('1','0') default '0',
 enable_pause_code_limits ENUM('1','0') default '0',
 enable_drop_lists ENUM('0','1','2') default '0',
 allow_ip_lists ENUM('0','1','2') default '0',
-system_ip_blacklist VARCHAR(30) default ''
-git_commit VARCHAR(55) default '';
-git_release VARCHAR(25) default '';
+system_ip_blacklist VARCHAR(30) default '',
+git_commit VARCHAR(55) default '',
+git_release VARCHAR(25) default '',
+agent_push_events ENUM('0','1') default '0',
+agent_push_url TEXT
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_campaigns_list_mix (
@@ -3021,7 +3023,8 @@ holiday_status ENUM('ACTIVE','INACTIVE','EXPIRED') default 'INACTIVE',
 ct_default_start SMALLINT(4) unsigned NOT NULL default '900',
 ct_default_stop SMALLINT(4) unsigned NOT NULL default '2100',
 default_afterhours_filename_override VARCHAR(255) default '',
-user_group VARCHAR(20) default '---ALL---'
+user_group VARCHAR(20) default '---ALL---',
+holiday_color VARCHAR(7) default ''
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_email_list (
@@ -4009,4 +4012,4 @@ UPDATE vicidial_configuration set value='1766' where name='qc_database_version';
 
 UPDATE system_settings set vdc_agent_api_active='1';
 
-UPDATE system_settings SET db_schema_version='1506',db_schema_update_date=NOW(),reload_timestamp=NOW();
+UPDATE system_settings SET db_schema_version='1507',db_schema_update_date=NOW(),reload_timestamp=NOW();
