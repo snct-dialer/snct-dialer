@@ -12,8 +12,8 @@
 #          JFF 2017-05-27 Add svn commit 2759
 #          JFF 2017-05-27 Add svn commit 2760
 #          JFF 2017-05-28 Add svn commit 2761
-#
 #          JFF 2017-06-07 New "copy status groups"
+#
 
 $FLY_patch_level = "2017-008";
 
