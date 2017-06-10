@@ -949,7 +949,7 @@ $lead_id = preg_replace('/[^0-9]/','',$lead_id);
 $list_id = preg_replace('/[^0-9]/','',$list_id);
 $conf_exten = preg_replace('/[^-_\.0-9a-zA-Z]/','',$conf_exten);
 $uniqueid = preg_replace('/[^-_\.0-9a-zA-Z]/','',$uniqueid);
-$length_in_sec = preg_replace("/[^0-9]/","",$length_in_sec);
+$length_in_sec = preg_replace('/[^0-9]/','',$length_in_sec);
 $CallBackDatETimE = preg_replace('/[^- \:_0-9a-zA-Z]/','',$CallBackDatETimE);
 $CallBackLeadStatus = preg_replace('/[^-_0-9a-zA-Z]/','',$CallBackLeadStatus);
 $DB = preg_replace('/[^0-9]/','',$DB);
@@ -1030,7 +1030,7 @@ $recording_filename = preg_replace("/\'|\"|\\\\|;/","",$recording_filename);
 $recording_id = preg_replace('/[^0-9]/','',$recording_id);
 $search = preg_replace('/[^-_0-9a-zA-Z]/','',$search);
 $stage = preg_replace("/\'|\"|\\\\|;/","",$stage);
-$start_epoch = preg_replace('/[^0-9]/','',$start_epoch);
+$start_epoch = preg_replace("/\'|\"|\\\\|;/","",$start_epoch);
 $sub_status = preg_replace('/[^-_0-9a-zA-Z]/','',$sub_status);
 $url_ids = preg_replace("/\'|\"|\\\\|;/","",$url_ids);
 $use_campaign_dnc = preg_replace('/[^-_0-9a-zA-Z]/','',$use_campaign_dnc);
@@ -1039,6 +1039,7 @@ $usegroupalias = preg_replace('/[^0-9]/','',$usegroupalias);
 $user_abb = preg_replace("/\'|\"|\\\\|;/","",$user_abb);
 $vtiger_callback_id = preg_replace("/\'|\"|\\\\|;/","",$vtiger_callback_id);
 $wrapup = preg_replace("/\'|\"|\\\\|;/","",$wrapup);
+
 
 # default optional vars if not set
 if (!isset($format))   {$format="text";}
