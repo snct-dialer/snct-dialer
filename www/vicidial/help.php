@@ -730,9 +730,9 @@ if ($SSqc_features_active > 0)
 <B><?php echo _QXZ("Agent API Access"); ?> -</B><?php echo _QXZ("This option allows the account to be used with the agent and non-agent API commands."); ?>
 
 <BR>
-<A NAME="users-vdc_agent_api_access">
+<A NAME="users-api_list_restrict">
 <BR>
-<B><?php echo _QXZ("Agent API Access"); ?> -</B><?php echo _QXZ("This option allows the account to be used with the agent and non-agent API commands."); ?>
+<B><?php echo _QXZ("API List Restrict"); ?> -</B><?php echo _QXZ("If enabled, the API commands that involve leads and lists will be restricted to the lists within the allowed campaigns for the user group of this user. Default is 0 for disabled."); ?>
 
 <BR>
 <A NAME="users-api_only_user">

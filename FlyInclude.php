@@ -26,6 +26,7 @@
 #          JFF 2017-06-05 Add svn commit 2773
 #          JFF 2017-06-07 New "copy status groups"
 # 2017-009 JFF 2017-06-08 New "callback caledar with holiday colors"
+#          JFF 2017-06-10 Add svn commit 2774-2777
 #
 
 $FLY_patch_level = "2017-009";

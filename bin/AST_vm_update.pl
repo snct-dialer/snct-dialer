@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_vm_update.pl version 2.12
+# AST_vm_update.pl version 2.14
 #
 # DESCRIPTION:
 # uses the Asterisk Manager interface to update the count of voicemail messages 
@@ -14,7 +14,7 @@
 #
 # NOTE: THIS SHOULD ONLY BE RUN ON THE DESIGNATED VOICEMAIL SERVER IN A CLUSTER!
 #
-# Copyright (C) 2015  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # 50823-1422 - Added database server variable definitions lookup
 # 50823-1452 - Added commandline arguments for debug at runtime
@@ -25,12 +25,15 @@
 # 130108-1713 - Changes for Asterisk 1.8 compatibility
 # 141124-1019 - Changed to only allow running on designated voicemail server, run for all mailboxes
 # 150610-1200 - Added support for AMI version 1.3
+# 170609-0936 - Added support for Asterisk 13
 #
 
 # constants
-$DB=0;  # Debug flag, set to 0 for no debug messages per minute
+$DB=0;  # Debug flag, set to 0 for no debug messages per minute, can be overridden by CLI flag
+$DBX=0;  # Extra Debug flag, set to 0 for no debug messages per minute, can be overridden by CLI flag
 $US='__';
 $MT[0]='';
+$secX = time();
 
 ### begin parsing run-time options ###
 if (length($ARGV[0])>1)
@@ -44,13 +47,24 @@ if (length($ARGV[0])>1)
 
 	if ($args =~ /--help/i)
 		{
-		print "allowed run time options:\n  [-t] = test\n  [-debug] = verbose debug messages\n\n";
+		print "allowed run time options:\n";
+		print "  [-t] = test\n";
+		print "  [-debug] = verbose debug messages\n";
+		print "  [-debugX] = extra verbose debug messages\n";
+		print "\n";
+		exit;
 		}
 	else
 		{
 		if ($args =~ /-debug/i)
 			{
 			$DB=1; # Debug flag
+			print "Debug output enabled\n";
+			}
+		if ($args =~ /-debugX/i)
+			{
+			$DBX=1; # Debug flag
+			print "Extra Debug output enabled\n";
 			}
 		if ($args =~ /-t/i)
 			{
@@ -105,6 +119,8 @@ foreach(@conf)
 
 # Customized Variables
 $server_ip = $VARserver_ip;		# Asterisk server IP
+$voicemail_boxes=0;
+$voicemail_updates=0;
 
 if (!$VARDB_port) {$VARDB_port='3306';}
 
@@ -138,7 +154,7 @@ if ($active_voicemail_server < 1)
 ### Grab Server values from the database
 $stmtA = "SELECT telnet_host,telnet_port,ASTmgrUSERNAME,ASTmgrSECRET,ASTmgrUSERNAMEupdate,ASTmgrUSERNAMElisten,ASTmgrUSERNAMEsend,max_vicidial_trunks,answer_transfer_agent,local_gmt,ext_context,asterisk_version FROM servers where server_ip = '$server_ip';";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-if ($DB) {print "|$stmtA|\n";}
+if ($DBX) {print "|$stmtA|\n";}
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
 $rec_count=0;
@@ -173,10 +189,10 @@ $sthA->finish();
 
 @PTvoicemail_ids=@MT;
 $stmtA = "SELECT distinct voicemail_id from phones;";
-if ($DB) {print "|$stmtA|\n";}
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
+if ($DB) {print "$sthArows|$stmtA|\n";}
 $rec_count=0;
 while ($sthArows > $rec_count)
     {
@@ -186,18 +202,37 @@ while ($sthArows > $rec_count)
     }
 $sthA->finish(); 
 
+$max_buffer = 4*1024*1024; # 4 meg buffer
+
 ### connect to asterisk manager through telnet
-$t = new Net::Telnet (Port => 5038,
-					  Prompt => '/.*[\$%#>] $/',
-					  Output_record_separator => '',);
-#$fh = $t->dump_log("$telnetlog");  # uncomment for telnet log
+$t = new Net::Telnet (
+        Port => $telnet_port,
+        Prompt => '/\r\n/',
+        Output_record_separator => "\n\n",
+        Max_buffer_length => $max_buffer,
+        Telnetmode => 0,
+);
+
+##### uncomment both lines below for telnet log
+#        $LItelnetlog = "$PATHlogs/listen_telnet_log.txt";
+#        $fh = $t->dump_log("$LItelnetlog");
+
 if (length($ASTmgrUSERNAMEsend) > 3) {$telnet_login = $ASTmgrUSERNAMEsend;}
 else {$telnet_login = $ASTmgrUSERNAME;}
+$t->open("$telnet_host");
+$t->waitfor('/Asterisk Call Manager\//');
 
-$t->open("$telnet_host"); 
-$t->waitfor('/[0123]\n$/');			# print login
-$t->print("Action: Login\nUsername: $telnet_login\nSecret: $ASTmgrSECRET\n\n");
-$t->waitfor('/Authentication accepted/');		# waitfor auth accepted
+# get the AMI version number
+$ami_version = $t->getline(Errmode => Return, Timeout => 1,);
+$ami_version =~ s/\n//gi;
+if ($DB) {print "----- AMI Version $ami_version -----\n";}
+
+# Login
+$t->print("Action: Login\nUsername: $telnet_login\nSecret: $ASTmgrSECRET");
+$t->waitfor('/Authentication accepted/');              # waitfor auth accepted
+
+$t->buffer_empty;
+
 
 $i=0;
 foreach(@PTvoicemail_ids)
@@ -222,14 +257,14 @@ foreach(@PTvoicemail_ids)
 			$j++;
 			}
 		}
-	else
+	elsif (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 13))
 		{
 		@list_channels = $t->cmd(String => "Action: MailboxCount\nMailbox: $PTvoicemail_ids[$i]\n\nAction: Ping\n\n", Prompt => '/Response: Success\nPing: Pong.*/');
 	
 		$j=0;
 		foreach(@list_channels)
 			{
-			if($DB){print "$j - $list_channels[$j]";}
+			if($DBX){print "$j - $list_channels[$j]";}
 			if ($list_channels[$j] =~ /Mailbox: $PTvoicemail_ids[$i]/)
 				{
 				$URG_messages[$i] = "$list_channels[$j+1]";
@@ -239,17 +274,48 @@ foreach(@PTvoicemail_ids)
 				$OLD_messages[$i] = "$list_channels[$j+3]";
 				$OLD_messages[$i] =~ s/OldMessages: |\n//gi;
 				}
-
 			$j++;
 			}
 		}
+	else
+		{
+		# get the current time
+			( $now_sec, $now_micro_sec ) = gettimeofday();
+
+			# figure out how many micro seconds since epoch
+			$now_micro_epoch = $now_sec * 1000000;
+			$now_micro_epoch = $now_micro_epoch + $now_micro_sec;
+
+			$begin_micro_epoch = $now_micro_epoch;
+
+			# create a new action id
+			$action_id = "$now_sec.$now_micro_sec";
+
+			@list_channels = $t->cmd(String => "Action: MailboxCount\nActionID: $action_id\nMailbox: $PTvoicemail_ids[$i]\n\nAction: Ping\n\n", Prompt => '/Response: Success\nPing: Pong.*/');
+
+			$j=0;
+			foreach(@list_channels)
+				{
+				if($DBX){print "$j - $list_channels[$j]";}
+				if ($list_channels[$j] =~ /Mailbox: $PTvoicemail_ids[$i]/)
+					{
+					$URG_messages[$i] = "$list_channels[$j+1]";
+					$URG_messages[$i] =~ s/UrgMessages: |\n//gi;
+					$NEW_messages[$i] = "$list_channels[$j+2]";
+					$NEW_messages[$i] =~ s/NewMessages: |\n//gi;
+					$OLD_messages[$i] = "$list_channels[$j+3]";
+					$OLD_messages[$i] =~ s/OldMessages: |\n//gi;
+					}
+				$j++;
+				}
+			}
 
 	@PTextensions=@MT;   @PTmessages=@MT;   @PTold_messages=@MT;   @PTserver_ips=@MT;
 	$stmtA = "SELECT extension,messages,old_messages,server_ip from phones where voicemail_id='$PTvoicemail_ids[$i]';";
-	if ($DB) {print "|$stmtA|\n";}
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
+	if ($DBX) {print "$sthArows|$stmtA|\n";}
 	$rec_countX=0;
 	while ($sthArows > $rec_countX)
 		{
@@ -273,13 +339,15 @@ foreach(@PTvoicemail_ids)
 		else
 			{
 			$stmtA = "UPDATE phones set messages='$NEW_messages[$i]', old_messages='$OLD_messages[$i]' where server_ip='$PTserver_ips[$rec_countX]' and extension='$PTextensions[$rec_countX]'";
-				if($DB){print STDERR "\n|$stmtA|\n";}
+				if($DBX){print STDERR "\n|$stmtA|\n";}
 			$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query:|$stmtA|\n";
+			$voicemail_updates = ($voicemail_updates + $affected_rows);
 			}
 		$rec_countX++;
 		}
 
 	$i++;
+	$voicemail_boxes++;
 	### sleep for 5 hundredths of a second
 	usleep(1*50*1000);
 	}
@@ -306,10 +374,10 @@ if ($active_voicemail_server > 0)
 	if($DB){print "Active Voicemail Server, checking vicidial_voicemail boxes...\n";}
 	@PTvoicemail_ids=@MT; @PTmessages=@MT; @PTold_messages=@MT; @NEW_messages=@MT; @OLD_messages=@MT;
 	$stmtA = "SELECT voicemail_id,messages,old_messages from vicidial_voicemail where active='Y';";
-	if ($DB) {print "|$stmtA|\n";}
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
+	if ($DB) {print "$sthArows|$stmtA|\n";}
 	$rec_count=0;
 	while ($sthArows > $rec_count)
 		{
@@ -344,10 +412,42 @@ if ($active_voicemail_server > 0)
 				$j++;
 				}
 			}
-		else
+		elsif (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 13))
 			{
 			@list_channels = $t->cmd(String => "Action: MailboxCount\nMailbox: $PTvoicemail_ids[$i]\n\nAction: Ping\n\n", Prompt => '/Response: Success\nPing: Pong.*/');
 	
+			$j=0;
+			foreach(@list_channels)
+				{
+				if($DBX){print "$j - $list_channels[$j]";}
+				if ($list_channels[$j] =~ /Mailbox: $PTvoicemail_ids[$i]/)
+					{
+					$URG_messages[$i] = "$list_channels[$j+1]";
+					$URG_messages[$i] =~ s/UrgMessages: |\n//gi;
+					$NEW_messages[$i] = "$list_channels[$j+2]";
+					$NEW_messages[$i] =~ s/NewMessages: |\n//gi;
+					$OLD_messages[$i] = "$list_channels[$j+3]";
+					$OLD_messages[$i] =~ s/OldMessages: |\n//gi;
+					}
+				$j++;
+				}
+			}
+		else
+			{
+			# get the current time
+			( $now_sec, $now_micro_sec ) = gettimeofday();
+
+			# figure out how many micro seconds since epoch
+			$now_micro_epoch = $now_sec * 1000000;
+			$now_micro_epoch = $now_micro_epoch + $now_micro_sec;
+
+			$begin_micro_epoch = $now_micro_epoch;
+
+			# create a new action id
+			$action_id = "$now_sec.$now_micro_sec";
+
+			@list_channels = $t->cmd(String => "Action: MailboxCount\nActionID: $action_id\nMailbox: $PTvoicemail_ids[$i]\n\nAction: Ping\n\n", Prompt => '/Response: Success\nPing: Pong.*/');
+
 			$j=0;
 			foreach(@list_channels)
 				{
@@ -361,7 +461,6 @@ if ($active_voicemail_server > 0)
 					$OLD_messages[$i] = "$list_channels[$j+3]";
 					$OLD_messages[$i] =~ s/OldMessages: |\n//gi;
 					}
-
 				$j++;
 				}
 			}
@@ -377,13 +476,14 @@ if ($active_voicemail_server > 0)
 			$stmtA = "UPDATE vicidial_voicemail set messages='$NEW_messages[$i]',old_messages='$OLD_messages[$i]' where voicemail_id='$PTvoicemail_ids[$i]';";
 				if($DB){print STDERR "\n|$stmtA|\n";}
 			$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query:|$stmtA|\n";
+			$voicemail_updates = ($voicemail_updates + $affected_rows);
 			}
 
 		$i++;
+		$voicemail_boxes++;
 		### sleep for 5 hundredths of a second
 		usleep(1*50*1000);
 		}
-
 
 	}
 ##### END check vicidial_voicemail entries #####
@@ -399,7 +499,18 @@ $ok = $t->close;
 
 $dbhA->disconnect();
 
-if($DB){print "DONE... Exiting... Goodbye... See you later... \n";}
+
+if($DB)
+	{
+	$secY = time();
+	$runtime = ($secY - $secX);
+	print "Summary:\n";
+	print "Voicemail Boxes checked:    $voicemail_boxes\n";
+	print "Voicemail Boxes updated:    $voicemail_updates\n";
+	print "Run time:                   $runtime seconds \n";
+	print "\n";
+	print "DONE... Exiting... Goodbye... See you later... \n";
+	}
 
 exit;
 

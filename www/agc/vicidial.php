@@ -555,10 +555,11 @@
 # 170513-1527 - Added debug logging of all alert boxes
 # 170531-0937 - Added Agent Events Push function
 # 170601-2017 - Added more agent events
+# 170609-1711 - Added 'commit' function to force immediate submission of Customer Information changes to database
 #
 
-$version = '2.14-525c';
-$build = '170601-2017';
+$version = '2.14-526c';
+$build = '170609-1711';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -5068,7 +5069,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					}
 				else
 					{
-					CustomerData_update();
+					CustomerData_update('NO');
 					consult_custom_wait++;
 					consult_custom_sent++;
 					}
@@ -5130,7 +5131,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			tasknum = Ctasknum + "*" + XfeR_GrouP + '*CXFER*' + document.vicidial_form.lead_id.value + '**' + dialed_number + '*' + user + '*' + agentdirect + '*' + VD_live_call_secondS + '*';
 
 			if (consult_custom_sent < 1)
-				{CustomerData_update();}
+				{CustomerData_update('NO');}
 			}
 		var regAXFvars = new RegExp("AXFER","g");
 		if (tasknum_string.match(regAXFvars))
@@ -5144,7 +5145,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			tasknum = Ctasknum + '*' + document.vicidial_form.phone_number.value + '*' + document.vicidial_form.lead_id.value + '*' + campaign + '*' + closerxfercamptail + '*' + user + '**' + VD_live_call_secondS + '*';
 
 			if (consult_custom_sent < 1)
-				{CustomerData_update();}
+				{CustomerData_update('NO');}
 			}
 
 
@@ -6440,7 +6441,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 					if (taskvar == 'XfeRLOCAL')
 						{
 						if (consult_custom_sent < 1)
-							{CustomerData_update();}
+							{CustomerData_update('NO');}
 
 						document.vicidial_form.xfername.value='';
 						var XfeRSelecT = document.getElementById("XfeRGrouP");
@@ -12509,8 +12510,10 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 // ################################################################################
 // Update vicidial_list lead record with all altered values from form
-	function CustomerData_update()
+	function CustomerData_update(commitclick)
 		{
+		if (commitclick=='YES')
+			{button_click_log = button_click_log + "" + SQLdate + "-----customer_info_commit---" + commitclick + "|";}
 		updatelead_complete=0;
 		if ( (OtherTab == '1') && (comments_all_tabs == 'ENABLED') )
 			{
@@ -14488,7 +14491,7 @@ if ($useIE > 0)
 			//	document.vicidial_form.inert_button.focus();
 			//	document.vicidial_form.inert_button.blur();
 				button_click_log = button_click_log + "" + SQLdate + "-----hotkeypress---" + HKdispo + "|";
-				CustomerData_update();
+				CustomerData_update('NO');
 				var HKdispo_ary = HKdispo.split(" ----- ");
 				if ( (HKdispo_ary[0] == 'ALTPH2') || (HKdispo_ary[0] == 'ADDR3') )
 					{
@@ -14613,7 +14616,7 @@ else
 					document.inert_form.inert_button.blur();
 					}
 				button_click_log = button_click_log + "" + SQLdate + "-----hotkeypress---" + HKdispo + "|";
-				CustomerData_update();
+				CustomerData_update('NO');
 				var HKdispo_ary = HKdispo.split(" ----- ");
 				if ( (HKdispo_ary[0] == 'ALTPH2') || (HKdispo_ary[0] == 'ADDR3') )
 					{
@@ -16760,6 +16763,7 @@ function phone_number_format(formatphone) {
 			hideDiv('HotKeyEntriesBox');
 			hideDiv('ViewCommentsBox');
 			hideDiv('MainPanel');
+			hideDiv('MainCommit');
 			hideDiv('ScriptPanel');
 			hideDiv('ScriptRefresH');
 			hideDiv('EmailPanel');
@@ -16986,7 +16990,7 @@ function phone_number_format(formatphone) {
 					document.getElementById("WrapupTimer").innerHTML = wrapup_seconds;
 					wrapup_waiting=1;
 					}
-				CustomerData_update();
+				CustomerData_update('NO');
 				if (hide_gender < 1)
 					{
 					document.getElementById("GENDERhideFORie").innerHTML = '';
@@ -17191,7 +17195,7 @@ function phone_number_format(formatphone) {
 								}
 							else
 								{
-								CustomerData_update();
+								CustomerData_update('NO');
 								if ( (per_call_notes == 'ENABLED') && (comments_dispo_screen != 'REPLACE_CALL_NOTES') )
 									{
 									var test_notesDE = document.vicidial_form.call_notes.value;
@@ -17904,6 +17908,7 @@ function phone_number_format(formatphone) {
 		hideDiv('CustomerChatRefresH');
 		hideDiv('InternalChatPanel');
 		showDiv('MainPanel');
+		showDiv('MainCommit');
 		ShoWGenDerPulldown();
 
 		if (resumevar != 'NO')
@@ -17971,6 +17976,7 @@ function phone_number_format(formatphone) {
 				{document.vicidial_form.other_tab_comments.value = document.vicidial_form.comments.value}
 			showDiv('OtherTabCommentsSpan');
 			}
+		hideDiv('MainCommit');
 		hideDiv('FormPanel');
 		hideDiv('FormRefresH');
 		hideDiv('EmailPanel');
@@ -18850,6 +18856,10 @@ if ($agent_display_dialable_leads > 0)
 </span></font>
 
 <span style="position:absolute;left:<?php echo $MUwidth ?>px;top:<?php echo $SLheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="AgentMuteSpan"></span>
+
+<span style="position:absolute;left:<?php echo $AMwidth ?>px;top:<?php echo $SRheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="MainCommit">
+<a href="#" onclick="CustomerData_update('YES')"><font class="body_small"><?php echo _QXZ("commit"); ?></font></a>
+</span>
 
 <span style="position:absolute;left:154px;top:<?php echo $SFheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="ScriptPanel">
 	<?php
