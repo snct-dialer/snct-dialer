@@ -165,6 +165,10 @@ OTHER CHANGES:
 
 36. Added Add-to-hopper options to update_lead function in the Non-Agent API
 
+37. Added basic one-way Cross-Cluster-Communication feature. Allowing for lead
+	information to pass from one VICIdial system to another with a call. 
+	See the CROSS_CLUSTER_COMMUNICATION.txt document for more information.
+
 
 
 

@@ -118,9 +118,10 @@
 # 170320-1338 - Added conf_qualify phones option for IAX
 # 170327-0847 - Added drop list triggering code
 # 170513-1728 - Added alternative uptime counter in seconds
+# 170609-1601 - If phone entry fullname and cidnumber are empty, don't populate a callerid conf line
 #
 
-$build = '170513-1728';
+$build = '170609-1601';
 
 $DB=0; # Debug flag
 $teodDB=0; # flag to log Timeclock End of Day processes to log file
@@ -2358,7 +2359,10 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 				$Piax .= "username=$extension[$i]\n";
 				$Piax .= "secret=$conf_secret[$i]\n";
 				$Piax .= "accountcode=$extension[$i]\n";
-				$Piax .= "callerid=\"$fullname[$i]\" <$outbound_cid[$i]>\n";
+				if ( (length($fullname[$i])>0) || (length($outbound_cid[$i])>0) ) 
+					{
+					$Piax .= "callerid=\"$fullname[$i]\" <$outbound_cid[$i]>\n";
+					}
 				$Piax .= "mailbox=$voicemail[$i]\n";
 				if ($conf_qualify[$i] =~ /Y/) 
 					{$Piax .= "qualify=yes\n";}
@@ -2383,7 +2387,10 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 			$Piax .= "username=$extension[$i]\n";
 			$Piax .= "secret=$conf_secret[$i]\n";
 			$Piax .= "accountcode=$extension[$i]\n";
-			$Piax .= "callerid=\"$fullname[$i]\" <$outbound_cid[$i]>\n";
+			if ( (length($fullname[$i])>0) || (length($outbound_cid[$i])>0) ) 
+				{
+				$Piax .= "callerid=\"$fullname[$i]\" <$outbound_cid[$i]>\n";
+				}
 			$Piax .= "mailbox=$voicemail[$i]\n";
 			$Piax .= "requirecalltoken=no\n";
 			$Piax .= "context=$phone_context[$i]\n";
@@ -2515,7 +2522,10 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 				$Psip .= "username=$extension[$i]\n";
 				$Psip .= "secret=$conf_secret[$i]\n";
 				$Psip .= "accountcode=$extension[$i]\n";
-				$Psip .= "callerid=\"$fullname[$i]\" <$outbound_cid[$i]>\n";
+				if ( (length($fullname[$i])>0) || (length($outbound_cid[$i])>0) ) 
+					{
+					$Psip .= "callerid=\"$fullname[$i]\" <$outbound_cid[$i]>\n";
+					}
 				$Psip .= "mailbox=$voicemail[$i]\n";
 				if ($codecs_with_template[$i] > 0) 
 					{$Psip .= "$Pcodec";}
@@ -2538,7 +2548,10 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 			$Psip .= "username=$extension[$i]\n";
 			$Psip .= "secret=$conf_secret[$i]\n";
 			$Psip .= "accountcode=$extension[$i]\n";
-			$Psip .= "callerid=\"$fullname[$i]\" <$outbound_cid[$i]>\n";
+			if ( (length($fullname[$i])>0) || (length($outbound_cid[$i])>0) ) 
+				{
+				$Psip .= "callerid=\"$fullname[$i]\" <$outbound_cid[$i]>\n";
+				}
 			$Psip .= "mailbox=$voicemail[$i]\n";
 			$Psip .= "context=$phone_context[$i]\n";
 			$Psip .= "$Pcodec";

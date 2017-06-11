@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_cleanup_agent_log.pl version 2.12
+# AST_cleanup_agent_log.pl version 2.14
 #
 # DESCRIPTION:
 # to be run frequently to clean up the vicidial_agent_log to fix erroneous time 
@@ -10,7 +10,7 @@
 #
 # This program only needs to be run by one server
 #
-# Copyright (C) 2016  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 60711-0945 - Changed to DBI by Marin Blu
@@ -40,6 +40,7 @@
 # 121115-0624 - Added buffer time for agent log validation of LOGIN between record and next record
 # 140426-2000 - Added pause_type
 # 161102-1033 - Fixed QM partition problem
+# 170609-2356 - Added option for fixing length_in_sec on vicidial_log and vicidial_closer_log records
 #
 
 # constants
@@ -67,6 +68,7 @@ if (length($ARGV[0])>1)
 		print "  [-one-day-ago] = will clean up logs for the last 24-48 hours ago only\n";
 		print "  [-one-minute-run] = short settings for running every minute\n";
 		print "  [-check-complete-pauses] = make sure every complete with a pause has a pausereason\n";
+		print "  [-check-call-lengths] = will check for too-long call lengths\n";
 		print "  [-skip-queue-log-inserts] = will skip only the queue_log missing record checks\n";
 		print "  [-skip-agent-log-validation] = will skip only the vicidial_agent_log validation\n";
 		print "  [-only-check-agent-login-lags] = will only fix queue_log missing PAUSEREASON records\n";
@@ -153,6 +155,11 @@ if (length($ARGV[0])>1)
 			$check_complete_pauses=1;
 			if ($Q < 1) {print "\n----- CHECK COMPLETE PAUSES -----\n\n";}
 			}
+		if ($args =~ /-check-call-lengths/i)
+			{
+			$check_call_lengths=1;
+			if ($Q < 1) {print "\n----- CHECK CALL LENGTHS -----\n\n";}
+			}			
 		if ($args =~ /-more-than-24hours/i)
 			{
 			$VAL_validate=1;
@@ -1137,6 +1144,102 @@ if ($vl_dup_check > 0)
 	exit;
 	}
 ### END check for duplicate vicidial_log entries
+
+
+
+
+
+### BEGIN check for call lengths longer than 1 day(84600 seconds) and correct them
+if ($check_call_lengths > 0) 
+	{
+	if ($DB) {print " - vicidial_log call length check\n";}
+	$stmtA = "SELECT uniqueid,lead_id,start_epoch,end_epoch,length_in_sec from vicidial_log $VDCL_SQL_time_where and ( (length_in_sec > 86400) or (length_in_sec < -86400) ) order by call_date;";
+	if($DBX){print STDERR "\n|$stmtA|\n";}
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$i=0;
+	$j=0;
+	while ($sthArows > $i)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$LONG_uniqueid[$i] =		$aryA[0];
+		$LONG_lead_id[$i] =			$aryA[1];
+		$LONG_start_epoch[$i] =		$aryA[2];
+		$LONG_end_epoch[$i] =		$aryA[3];
+		$LONG_length_in_sec[$i] =	$aryA[4];
+		$i++;
+		}
+	$sthA->finish();
+
+	$h=0;
+	while ($h < $i)
+		{
+		if ( ($LONG_start_epoch[$h] > 86400) && ($LONG_end_epoch[$h] > 86400) ) 
+			{
+			$new_length = ($LONG_end_epoch[$h] - $LONG_start_epoch[$h]);
+			if ($new_length < 1) 
+				{$new_length=1;}
+			$stmtA = "UPDATE vicidial_log SET length_in_sec='$new_length' where uniqueid='$LONG_uniqueid[$h]' and lead_id='$LONG_lead_id[$h]';";
+				if($DBX){print STDERR "\n|$stmtA|\n";}
+			if ($TEST < 1)	{$affected_rows = $dbhA->do($stmtA); }
+			$event_string = "VL UPDATE: $h|$i|$LONG_uniqueid[$h]|$new_length|$LONG_length_in_sec[$i]|$affected_rows|$stmtA|";
+			&event_logger;
+			$j++;
+			}
+
+		$h++;
+		}
+	if ($DB) {print "     Finished:   longs: $h   updated: $j\n";}
+
+
+	if ($DB) {print " - vicidial_closer_log call length check\n";}
+	$stmtA = "SELECT closecallid,lead_id,start_epoch,end_epoch,length_in_sec from vicidial_closer_log $VDCL_SQL_time_where and ( (length_in_sec > 86400) or (length_in_sec < -86400) ) order by call_date;";
+	if($DBX){print STDERR "\n|$stmtA|\n";}
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$i=0;
+	$j=0;
+	while ($sthArows > $i)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$LONG_closecallid[$i] =		$aryA[0];
+		$LONG_lead_id[$i] =			$aryA[1];
+		$LONG_start_epoch[$i] =		$aryA[2];
+		$LONG_end_epoch[$i] =		$aryA[3];
+		$LONG_length_in_sec[$i] =	$aryA[4];
+		$i++;
+		}
+	$sthA->finish();
+
+	$h=0;
+	while ($h < $i)
+		{
+		if ( ($LONG_start_epoch[$h] > 86400) && ($LONG_end_epoch[$h] > 86400) ) 
+			{
+			$new_length = ($LONG_end_epoch[$h] - $LONG_start_epoch[$h]);
+			if ($new_length < 1) 
+				{$new_length=1;}
+			$stmtA = "UPDATE vicidial_closer_log SET length_in_sec='$new_length' where closecallid='$LONG_closecallid[$h]' and lead_id='$LONG_lead_id[$h]';";
+				if($DBX){print STDERR "\n|$stmtA|\n";}
+			if ($TEST < 1)	{$affected_rows = $dbhA->do($stmtA); }
+			$event_string = "VCL UPDATE: $h|$i|$LONG_closecallid[$h]|$new_length|$LONG_length_in_sec[$i]|$affected_rows|$stmtA|";
+			&event_logger;
+			$j++;
+			}
+
+		$h++;
+		}
+	if ($DB) {print "     Finished:   longs: $h   updated: $j\n";}
+	}
+if ($check_call_lengths > 0)
+	{
+	exit;
+	}
+### END check for call lengths longer than 1 day(84600 seconds) and correct them
+
+
 
 
 

@@ -432,10 +432,11 @@
 # 170526-2327 - Added additional variable filtering
 # 170527-2208 - Added more additional variable filtering, fixed rare inbound logging issue #1017
 # 170605-1633 - Added vendor_lead_code to agent lead search results screen
+# 170609-1710 - small debug addition
 #
 
-$version = '2.14-326';
-$build = '170605-1633';
+$version = '2.14-327';
+$build = '170609-1710';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=684;
@@ -948,7 +949,7 @@ $lead_id = preg_replace('/[^0-9]/','',$lead_id);
 $list_id = preg_replace('/[^0-9]/','',$list_id);
 $conf_exten = preg_replace('/[^-_\.0-9a-zA-Z]/','',$conf_exten);
 $uniqueid = preg_replace('/[^-_\.0-9a-zA-Z]/','',$uniqueid);
-$length_in_sec = preg_replace("/[^0-9]/","",$length_in_sec);
+$length_in_sec = preg_replace('/[^0-9]/','',$length_in_sec);
 $CallBackDatETimE = preg_replace('/[^- \:_0-9a-zA-Z]/','',$CallBackDatETimE);
 $CallBackLeadStatus = preg_replace('/[^-_0-9a-zA-Z]/','',$CallBackLeadStatus);
 $DB = preg_replace('/[^0-9]/','',$DB);
@@ -1029,7 +1030,7 @@ $recording_filename = preg_replace("/\'|\"|\\\\|;/","",$recording_filename);
 $recording_id = preg_replace('/[^0-9]/','',$recording_id);
 $search = preg_replace('/[^-_0-9a-zA-Z]/','',$search);
 $stage = preg_replace("/\'|\"|\\\\|;/","",$stage);
-$start_epoch = preg_replace('/[^0-9]/','',$start_epoch);
+$start_epoch = preg_replace("/\'|\"|\\\\|;/","",$start_epoch);
 $sub_status = preg_replace('/[^-_0-9a-zA-Z]/','',$sub_status);
 $url_ids = preg_replace("/\'|\"|\\\\|;/","",$url_ids);
 $use_campaign_dnc = preg_replace('/[^-_0-9a-zA-Z]/','',$use_campaign_dnc);
@@ -1038,6 +1039,7 @@ $usegroupalias = preg_replace('/[^0-9]/','',$usegroupalias);
 $user_abb = preg_replace("/\'|\"|\\\\|;/","",$user_abb);
 $vtiger_callback_id = preg_replace("/\'|\"|\\\\|;/","",$vtiger_callback_id);
 $wrapup = preg_replace("/\'|\"|\\\\|;/","",$wrapup);
+
 
 # default optional vars if not set
 if (!isset($format))   {$format="text";}
@@ -12855,6 +12857,7 @@ if ($ACTION == 'updateLEAD')
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00163',$user,$server_ip,$session_name,$one_mysql_log);}
+			$VLaffected_rows = mysqli_affected_rows($link);
 			}
 
 		$random = (rand(1000000, 9999999) + 10000000);
@@ -12874,7 +12877,7 @@ if ($ACTION == 'updateLEAD')
 
 		}
 	echo _QXZ("Lead %1s information has%2s been updated",0,'',$lead_id,$DO_NOT_UPDATE_text)."\n";
-	$stage = "$DO_NOT_UPDATE|$DO_NOT_UPDATEphone|$random";
+	$stage = "$DO_NOT_UPDATE|$DO_NOT_UPDATEphone|$random|$VLaffected_rows";
 	}
 
 

@@ -120,10 +120,11 @@
 # 170508-1048 - Added blind_monitor logging
 # 170527-2254 - Fix for rare inbound logging issue #1017
 # 170601-0747 - Added add_to_hopper options to update_lead function
+# 170609-1107 - Added ccc_lead_info function
 #
 
-$version = '2.14-96';
-$build = '170601-0747';
+$version = '2.14-97';
+$build = '170609-1107';
 $api_url_log = 0;
 
 $startMS = microtime();
@@ -6360,6 +6361,211 @@ if ($function == 'callid_info')
 ### callid_info - outputs information about a call based upon the caller_code(or call ID)
 ################################################################################
 
+
+
+
+
+################################################################################
+### ccc_lead_info - outputs lead data for cross-cluster-communication call
+################################################################################
+if ($function == 'ccc_lead_info')
+	{
+	if(strlen($source)<2)
+		{
+		$result = 'ERROR';
+		$result_reason = "Invalid Source";
+		echo "$result: $result_reason - $source\n";
+		api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+		echo "ERROR: Invalid Source: |$source|\n";
+		exit;
+		}
+	else
+		{
+		if ( (!preg_match("/ $function /",$api_allowed_functions)) and (!preg_match("/ALL_FUNCTIONS/",$api_allowed_functions)) )
+			{
+			$result = 'ERROR';
+			$result_reason = "auth USER DOES NOT HAVE PERMISSION TO USE THIS FUNCTION";
+			echo "$result: $result_reason: |$user|$function|\n";
+			$data = "$allowed_user";
+			api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+			exit;
+			}
+		$stmt="SELECT count(*) from vicidial_users where user='$user' and vdc_agent_api_access='1' and view_reports='1' and user_level > 6 and active='Y';";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$row=mysqli_fetch_row($rslt);
+		$allowed_user=$row[0];
+		if ($allowed_user < 1)
+			{
+			$result = 'ERROR';
+			$result_reason = "ccc_lead_info USER DOES NOT HAVE PERMISSION TO GET LEAD INFO";
+			echo "$result: $result_reason: |$user|$allowed_user|\n";
+			$data = "$allowed_user";
+			api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+			exit;
+			}
+		else
+			{
+			$call_search_SQL='';
+			$search_ready=0;
+			$call_id = preg_replace("/\n|\r|\t| /",'',$call_id);
+
+			if ( (strlen($call_id)>17) and (strlen($call_id)<40) and (preg_match("/^Y|^J|^V|^M|^DC|^S|^LP|^VH|^XL/",$call_id)) )
+				{
+				$tenhoursago = date("Y-m-d H:i:s", mktime(date("H")-10,date("i"),date("s"),date("m"),date("d"),date("Y")));
+				$call_search_SQL .= "where caller_code='$call_id' and call_date > \"$tenhoursago\"";
+				$search_ready++;
+				}
+			if ($search_ready < 1)
+				{
+				$result = 'ERROR';
+				$result_reason = "ccc_lead_info INVALID SEARCH PARAMETERS";
+				$data = "$user|$call_id";
+				echo "$result: $result_reason: $data\n";
+				api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+				exit;
+				}
+			else
+				{
+				$stmt="SELECT admin_viewable_groups,allowed_campaigns from vicidial_user_groups where user_group='$LOGuser_group';";
+				if ($DB) {$MAIN.="|$stmt|\n";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+				$row=mysqli_fetch_row($rslt);
+				$LOGadmin_viewable_groups =		$row[0];
+				$LOGallowed_campaigns =			$row[1];
+
+				$LOGallowed_campaignsSQL='';
+				if ( (!preg_match("/ALL-CAMPAIGNS/i",$LOGallowed_campaigns)) )
+					{
+					$LOGallowed_campaignsSQL = preg_replace('/\s-/i','',$LOGallowed_campaigns);
+					$LOGallowed_campaignsSQL = preg_replace('/\s/i',"','",$LOGallowed_campaignsSQL);
+					$LOGallowed_campaignsSQL = "and campaign_id IN('$LOGallowed_campaignsSQL')";
+					}
+
+				$k=0;
+				$output='';
+				$DLset=0;
+				if ($stage == 'csv')
+					{$DL = ',';   $DLset++;}
+				if ($stage == 'tab')
+					{$DL = "\t";   $DLset++;}
+				if ($stage == 'newline')
+					{$DL = "\n";   $DLset++;}
+				if ($stage == 'pipe')
+					{$DL = '|';   $DLset++;}
+				if ($DLset < 1)
+					{$DL='|';   $stage='pipe';}
+				if (strlen($time_format) < 1)
+					{$time_format = 'HF';}
+				if ($header == 'YES')
+					{
+					$output .= 'status' . $DL . 'user' . $DL . 'vendor_lead_code' . $DL . 'source_id' . $DL . 'list_id' . $DL . 'gmt_offset_now' . $DL . 'phone_code' . $DL . 'phone_number' . $DL . 'title' . $DL . 'first_name' . $DL . 'middle_initial' . $DL . 'last_name' . $DL . 'address1' . $DL . 'address2' . $DL . 'address3' . $DL . 'city' . $DL . 'state' . $DL . 'province' . $DL . 'postal_code' . $DL . 'country_code' . $DL . 'gender' . $DL . 'date_of_birth' . $DL . 'alt_phone' . $DL . 'email' . $DL . 'security_phrase' . $DL . 'comments' . $DL . 'called_count' . $DL . 'last_local_call_time' . $DL . 'rank' . $DL . 'owner' . "\n";
+					}
+
+				$stmt="SELECT uniqueid,call_date,lead_id from vicidial_log_extended $call_search_SQL;";
+				if (preg_match("/^DC/",$call_id))
+					{$stmt="SELECT uniqueid,call_date,lead_id from vicidial_dial_log $call_search_SQL;";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+				if ($DB) {echo "$stmt\n";}
+				$vle_to_list = mysqli_num_rows($rslt);
+				if ($vle_to_list > 0)
+					{
+					$row=mysqli_fetch_row($rslt);
+					$uniqueid = 	$row[0];
+					$call_date = 	$row[1];
+					$lead_id = 		$row[2];
+
+					$stmt="SELECT status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner from vicidial_list where lead_id=$lead_id;";
+					$rslt=mysql_to_mysqli($stmt, $link);
+					if ($DB) {echo "$stmt\n";}
+					$lead_to_list = mysqli_num_rows($rslt);
+					if ($lead_to_list > 0)
+						{
+						$row=mysqli_fetch_row($rslt);
+						$LEADstatus =				$row[0];
+						$LEADuser =					$row[1];
+						$LEADvendor_lead_code =		$row[2];
+						$LEADsource_id =			$row[3];
+						$LEADlist_id =				$row[4];
+						$LEADgmt_offset_now =		$row[5];
+						$LEADphone_code =			$row[6];
+						$LEADphone_number =			$row[7];
+						$LEADtitle =				$row[8];
+						$LEADfirst_name =			$row[9];
+						$LEADmiddle_initial =		$row[10];
+						$LEADlast_name =			$row[11];
+						$LEADaddress1 =				$row[12];
+						$LEADaddress2 =				$row[13];
+						$LEADaddress3 =				$row[14];
+						$LEADcity =					$row[15];
+						$LEADstate =				$row[16];
+						$LEADprovince =				$row[17];
+						$LEADpostal_code =			$row[18];
+						$LEADcountry_code =			$row[19];
+						$LEADgender =				$row[20];
+						$LEADdate_of_birth =		$row[21];
+						$LEADalt_phone =			$row[22];
+						$LEADemail =				$row[23];
+						$LEADsecurity_phrase =		$row[24];
+						$LEADcomments =				$row[25];
+						$LEADcalled_count =			$row[26];
+						$LEADlast_local_call_time = $row[27];
+						$LEADrank =					$row[28];
+						$LEADowner =				$row[29];
+
+						if ( (strlen($LOGallowed_campaignsSQL) > 3) and ($api_list_restrict > 0) )
+							{
+							$stmt="SELECT count(*) from vicidial_lists where list_id='$LEADlist_id' $LOGallowed_campaignsSQL;";
+							$rslt=mysql_to_mysqli($stmt, $link);
+							$row=mysqli_fetch_row($rslt);
+							$allowed_list=$row[0];
+							if ($allowed_list < 1)
+								{
+								$result = 'ERROR';
+								$result_reason = "ccc_lead_info LEAD NOT FOUND";
+								echo "$result: $result_reason: |$user|$allowed_user|\n";
+								$data = "$allowed_user";
+								api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+								exit;
+								}
+							}
+
+						$output .= "$LEADstatus$DL$LEADuser$DL$LEADvendor_lead_code$DL$LEADsource_id$DL$LEADlist_id$DL$LEADgmt_offset_now$DL$LEADphone_code$DL$LEADphone_number$DL$LEADtitle$DL$LEADfirst_name$DL$LEADmiddle_initial$DL$LEADlast_name$DL$LEADaddress1$DL$LEADaddress2$DL$LEADaddress3$DL$LEADcity$DL$LEADstate$DL$LEADprovince$DL$LEADpostal_code$DL$LEADcountry_code$DL$LEADgender$DL$LEADdate_of_birth$DL$LEADalt_phone$DL$LEADemail$DL$LEADsecurity_phrase$DL$LEADcomments$DL$LEADcalled_count$DL$LEADlast_local_call_time$DL$LEADrank$DL$LEADowner\n";
+
+						echo "$output";
+
+						$result = 'SUCCESS';
+						$data = "$user|$call_id|$stage";
+						$result_reason = "ccc_lead_info $output";
+
+						api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+						}
+					else
+						{
+						$result = 'ERROR';
+						$result_reason = "ccc_lead_info LEAD NOT FOUND";
+						$data = "$user|$agent_user";
+						echo "$result: $result_reason: $data\n";
+						api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+						exit;
+						}
+					}
+				else
+					{
+					$result = 'ERROR';
+					$result_reason = "ccc_lead_info CALL NOT FOUND";
+					$data = "$user|$agent_user";
+					echo "$result: $result_reason: $data\n";
+					api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+					exit;
+					}
+				}
+			}
+		}
+	exit;
+	}
+################################################################################
+### ccc_lead_info - outputs lead data for cross-cluster-communication call
+################################################################################
 
 
 

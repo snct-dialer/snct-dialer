@@ -1,4 +1,4 @@
-NON-AGENT API DOCUMENT           Started: 2008-07-24         Updated: 2017-06-01
+NON-AGENT API DOCUMENT           Started: 2008-07-24         Updated: 2017-06-09
 
 This document describes the functions of an API(Application Programming 
 Interface) for all functions NOT directly relating to the VICIDIAL Agent screen. 
@@ -42,6 +42,7 @@ check_phone_number - allows you to check if a phone number is valid and dialable
 logged_in_agents - list of agents that are logged in to the system
 update_campaign - updates campaign settings in the system
 phone_number_log - exports list of calls placed to one of more phone numbers
+ccc_lead_info - outputs lead data for cross-cluster-communication call
 
 
 New scripts:
@@ -126,6 +127,7 @@ Changes:
 170508-1048 - Added blind_monitor logging
 170527-2254 - Fix for rare inbound logging issue #1017
 170601-0747 - Added add_to_hopper options to update_lead function
+170609-1107 - Added ccc_lead_info function
 
 
 API Functions use the 'function' variable
@@ -570,6 +572,36 @@ ERROR: lead_field_info LEAD FIELD NOT FOUND - 6666||
 
 A SUCCESS response will not show "SUCCESS", but instead will just print the value of the field:
 1234567890
+
+
+
+
+
+--------------------------------------------------------------------------------
+ccc_lead_info - outputs lead data for cross-cluster-communication call
+
+NOTE: api user for this function must have user_level set to 7 or higher and "view reports" enabled
+
+REQUIRED FIELDS-
+source -		description of what originated the API call (maximum 20 characters)
+call_id -		16-40 characters
+
+SETTINGS FIELDS-
+stage -			the format of the exported data: csv, tab, newline, pipe(default)
+header -		include a header(YES) or not(NO). This is optional, default is not to include a header
+
+Example URL strings for API calls:
+http://server/vicidial/non_agent_api.php?source=test&user=6666&pass=1234&function=ccc_lead_info&call_id=M4050908070000012345&stage=csv&header=YES
+
+Example responses:
+ERROR: ccc_lead_info USER DOES NOT HAVE PERMISSION TO GET LEAD INFO - 6666|0
+ERROR: ccc_lead_info INVALID SEARCH PARAMETERS - 6666||
+ERROR: ccc_lead_info CALL NOT FOUND - 6666||
+ERROR: ccc_lead_info LEAD NOT FOUND - 6666||
+
+A SUCCESS response will not show "SUCCESS", but instead will just print the results in the following format:
+status|user|vendor_lead_code|source_id|list_id|gmt_offset_now|phone_code|phone_number|title|first_name|middle_initial|last_name|address1|address2|address3|city|state|province|postal_code|country_code|gender|date_of_birth|alt_phone|email|security_phrase|comments|called_count|last_local_call_time|rank|owner
+TD|6666|554443||501|-4.00|1|9998887112|Mr|Billy'Oj|U|O'Reillyo|ad1|ad2|ad3|city next|FL|U|33777||U|0000-00-00|bobo'brien|test@test.com||2017-06-01 18:38:41|79|2017-06-09 14:53:27|0|4646
 
 
 
