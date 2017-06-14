@@ -5706,6 +5706,10 @@ FR_SPAC 00 00 00 00 00 - <?php echo _QXZ("France space separated phone number");
 <BR>
 <B><?php echo _QXZ("Vtiger URL"); ?> -</B><?php echo _QXZ("This is the URL or web site address used to get to your Vtiger installation."); ?>
 
+<BR>
+<A NAME="pause_campaigns">
+<BR>
+<B><?php echo _QXZ("Campaign pause"); ?> -</B><?php echo _QXZ("Enable / Disable Campaign selection at pause screen."); ?>
 
 
 
