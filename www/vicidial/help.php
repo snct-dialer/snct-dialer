@@ -128,6 +128,7 @@
 # 170430-0957 - Added three_way_record_stop and hangup_xfer_record_start entries
 # 170516-0628 - Added rt_monitor_log_report entry
 # 170529-2337 - Added agent push events entries
+# 170613-0855 - Added hide_inactive_lists
 #
 
 
@@ -5328,6 +5329,11 @@ FR_SPAC 00 00 00 00 00 - <?php echo _QXZ("France space separated phone number");
 <A NAME="settings-expanded_list_stats">
 <BR>
 <B><?php echo _QXZ("Enable Expanded List Stats"); ?> -</B><?php echo _QXZ("This setting enables two additional columns to be displayed on most of the List status breakdown tables on the list modification and campaign modification pages. Penetration is defined as the percent of leads that are at or above the campaign Call Count Limit and-or the status is marked as Completed. Default is 1 for enabled."); ?>
+
+<BR>
+<A NAME="settings-hide_inactive_lists">
+<BR>
+<B><?php echo _QXZ("Hide Inactive Lists"); ?> -</B><?php echo _QXZ("This setting allows you to hide inactive lists from the Lists Listing page. Similar to the default Users feature, a link to display all lists will be available at the top of the listings section. Default is 0 for disabled."); ?>
 
 <BR>
 <A NAME="settings-country_code_list_stats">

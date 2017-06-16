@@ -1719,7 +1719,8 @@ git_commit VARCHAR(55) default '',
 git_release VARCHAR(25) default '',
 agent_push_events ENUM('0','1') default '0',
 agent_push_url TEXT,
-pause_campaigns ENUM('Y','N') default 'N'
+pause_campaigns ENUM('Y','N') default 'N',
+hide_inactive_lists ENUM('0','1') default '0'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_campaigns_list_mix (
