@@ -30,6 +30,7 @@
 # 2017-010 JFF 2017-06-10 Add svn commit 2778
 #          JFF 2017-06-15 Add field 'Campaign Pause' into system_settings
 #          JFF 2017-06-16 Add svn commits 2779-2780
+#          JFF 2017-06-16 Finish 'Campaign Pause'
 #
 #
 
