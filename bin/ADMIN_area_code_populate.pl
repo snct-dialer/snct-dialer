@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 #
-# ADMIN_area_code_populate.pl    version 2.12
+# ADMIN_area_code_populate.pl    version 2.14
 #
-# Copyright (C) 2016  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # Description:
 # server application that allows load areacodes into to asterisk list database
@@ -23,6 +23,7 @@
 # 150203-1751 - code cleanup
 # 151228-1043 - Added ISO-TLD table and import
 # 160611-0933 - Added more documentation
+# 170614-2146 - Added some dirty input filtering and more debug output
 #
 
 
@@ -51,6 +52,7 @@ if (length($ARGV[0])>1)
 		print "  [-q] = quiet\n";
 		print "  [--test] = test\n";
 		print "  [--debug] = debug output\n";
+		print "  [--debugX] = extra debug output\n";
 		print "  [--use-local-files] = Do not download files, use local copies\n";
 		print "  [--load-NANPA-prefix] = Only loads the special NANPA list into the database\n";
 		print "     NOTE: NANPA data must be purchased from 'http://vicidial.org/store.php'\n";
@@ -176,7 +178,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 if ($nanpa_load > 0)
 	{
 	#### load special North American phone code prefix table ####
-	# LONG  # NPA,NXX,,,,LTYPE,,STATE,COUNTRY,,,,,RC,TZ,DST,ZIP,,,,,,,,,,,LATITUDE,LONGITUDE,,,,,,,
+	# LONG  # NPA,NXX,,,,LTYPE,,STATE,COUNTRY,,,,,RC,TZ,DST,ZIP,,,,,,,,,,,LATITUDE,LONGITUDE,,,,,,,TZ
 	# SHORT # NPA,NXX,TZ,DST,LATITUDE,LONGITUDE,CITY,STATE,POSTAL_CODE,COUNTRY,LTYPE
 
 	#### BEGIN vicidial_nanpa_prefix_codes population from NANPA_prefix-latest.txt file ####
@@ -194,7 +196,8 @@ if ($nanpa_load > 0)
 				if($DB){print STDERR "\n|$stmtA|\n";}
 		$affected_rows = $dbhA->do($stmtA);
 		}
-	$pc=0;   $full_file=0;   $dup_count=0;   $ins_count=0;   $dup_list='';
+	if ($DB > 0) {print "LINES IN NANPA FILE: $#prefixfile\n";}
+	$pc=0;   $full_file=0;   $dup_count=0;   $ins_count=0;   $dup_list='';	$skp_count=0;
 	$ins_stmt="insert into vicidial_nanpa_prefix_codes VALUES ";
 	foreach (@prefixfile) 
 		{
@@ -227,6 +230,24 @@ if ($nanpa_load > 0)
 					$row[15] =~ s/X/N/gi;
 					$temp_insert="('$row[0]', '$row[1]', '$row[14]', '$row[15]', '$row[27]', '$row[28]', '$row[13]', '$row[7]', '$row[16]', '$row[8]', '$row[5]'), ";
 					}
+				else
+					{
+					$row[13] =~ s/\(.*//gi;
+					$row[13] =~ s/ $//gi;
+					$row[13] =~ s/\'/\\\'/gi;
+					$row[15] =~ s/X/N/gi;
+					$row[35] =~ s/-0/-/gi;
+					$row[35] =~ s/:/./gi;
+					$row[35] =~ s/\r|\n|\t| //gi;
+					if ( ($row[7] =~ /XX/) || (length($row[35]) < 3) ) 
+						{
+						$skp_count++;
+						}
+					else
+						{
+						$temp_insert="('$row[0]', '$row[1]', '$row[35]', '$row[15]', '$row[27]', '$row[28]', '', '$row[7]', '$row[16]', '$row[8]', '$row[5]'), ";
+						}
+					}
 				}
 			else
 				{
@@ -254,31 +275,37 @@ if ($nanpa_load > 0)
 					{
 					$dup_list .= "$row[0]$row[1]|";
 					$ins_stmt .= "$temp_insert";
+					if ($DBX > 0) {print "DEBUG: $pc|$ins_count|$ins_stmt|\n\n";}
 					$ins_count++;
 					}
 				}
 			else
 				{$dup_count++;}
 
-			if ($pc =~ /000$/) 
+			if ( ($pc =~ /000$/) && (length($ins_stmt) > 60) )
 				{
 				chop($ins_stmt);
 				chop($ins_stmt);
 				$affected_rows = $dbhA->do($ins_stmt) || die "can't execute query: |$ins_stmt| $!\n";
+				if ($DBX > 0) {print "DEBUG INSERTING: $pc|$ins_count|$to_insert_ct|$ins_stmt|\n\n";}
 				$ins_stmt="insert into vicidial_nanpa_prefix_codes VALUES ";
-				print STDERR "$pc Lines     $ins_count Inserted     $dup_count Duplicates\r";
 				$dup_list='';
 				}
 			}
 		else 
 			{$pc++;}
+		if ($pc =~ /000$/)
+			{
+			print STDERR "$pc Lines     $ins_count Inserted ($skp_count skipped)     $dup_count Duplicates\r";
+			}
 		}
 
 	chop($ins_stmt);
 	chop($ins_stmt);
-	$affected_rows = $dbhA->do($ins_stmt);
+	if (length($ins_stmt) > 60)
+		{$affected_rows = $dbhA->do($ins_stmt);}
 	$ins_stmt="insert into vicidial_nanpa_prefix_codes VALUES ";
-	print STDERR "$pc Lines     $ins_count Inserted     $dup_count Duplicates\n";
+	print STDERR "$pc Lines     $ins_count Inserted ($skp_count skipped)     $dup_count Duplicates\n";
 	#### END vicidial_nanpa_prefix_codes population ####
 	}
 else

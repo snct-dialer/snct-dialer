@@ -106,10 +106,11 @@
 # 160803-1901 - Fixed issue with ERROR in campaign/ingroup name
 # 170321-1145 - Added pause code time limits colors
 # 170409-1556 - Added IP List validation code
+# 170615-0023 - Added DIAL status for manual dial agent calls that have not been answered
 #
 
-$version = '2.14-94';
-$build = '170409-1556';
+$version = '2.14-95';
+$build = '170615-0023';
 
 header ("Content-type: text/html; charset=utf-8");
 
@@ -2517,6 +2518,7 @@ if ($p<1)
 ###################################################################################
 
 $agent_incall=0;
+$agent_indial=0;
 $agent_ready=0;
 $agent_paused=0;
 $agent_dispo=0;
@@ -3083,6 +3085,26 @@ if ($talking_to_print > 0)
 					$Lstatus =		'DEAD';
 					$status =		' DEAD ';
 					}
+				else
+					{
+					if ($Acomments[$i] == 'MANUAL')
+						{
+						$stmt="SELECT uniqueid,channel from vicidial_auto_calls where callerid='$Acallerid[$i]' LIMIT 1;";
+						$rslt=mysql_to_mysqli($stmt, $link);
+						if ($DB) {echo "$stmt\n";}
+						$mandial_to_check = mysqli_num_rows($rslt);
+							if ($mandial_to_check > 0)
+							{
+							$row=mysqli_fetch_row($rslt);
+							if ( (strlen($row[0])<5) and (strlen($row[1])<5) )
+								{
+								$Astatus[$i] =	'DIAL';
+								$Lstatus =		'DIAL';
+								$status =		' DIAL ';
+								}
+							}
+						}
+					}
 				if (preg_match("/CHAT/i",$comments))
 					{
 					$stmtCT="SELECT chat_id from vicidial_live_chats where chat_creator='$Auser[$i]' and lead_id='$Alead_id[$i]' order by chat_start_time desc limit 1;";
@@ -3164,7 +3186,7 @@ if ($talking_to_print > 0)
 					}
 				}
 			}
-		if (!preg_match("/INCALL|QUEUE|PARK|3-WAY/i",$Astatus[$i]))
+		if (!preg_match("/INCALL|DIAL|QUEUE|PARK|3-WAY/i",$Astatus[$i]))
 			{$call_time_S = ($STARTtime - $Astate_change[$i]);}
 		else if (preg_match("/3-WAY/i",$Astatus[$i]))
 			{$call_time_S = ($STARTtime - $Acall_mostrecent[$i]);}
@@ -3260,7 +3282,8 @@ if ($talking_to_print > 0)
 #		if ( (strlen($Acall_server_ip[$i])> 4) and ($Acall_server_ip[$i] != "$Aserver_ip[$i]") )
 #				{$G='<SPAN class="orange"><B>'; $EG='</B></SPAN>';}
 
-		if ( (preg_match("/INCALL/i",$status)) or (preg_match("/QUEUE/i",$status))  or (preg_match("/3-WAY/i",$status)) or (preg_match('/PARK/i',$status))) {$agent_incall++;  $agent_total++;}
+		if ( (preg_match("/INCALL|DIAL/i",$status)) or (preg_match("/QUEUE/i",$status))  or (preg_match("/3-WAY/i",$status)) or (preg_match('/PARK/i',$status))) {$agent_incall++;  $agent_total++;}
+		if (preg_match("/DIAL/i",$status)) {$agent_indial++;}
 		if ( (preg_match("/READY/i",$status)) or (preg_match("/CLOSER/i",$status)) ) {$agent_ready++;  $agent_total++;}
 		if ( (preg_match("/READY/i",$status)) or (preg_match("/CLOSER/i",$status)) ) 
 			{
@@ -3451,13 +3474,15 @@ if ($talking_to_print > 0)
 	if ($agent_ready > 9) {$B='<FONT class="b3">'; $BG='</FONT>';}
 	if ($agent_ready > 14) {$B='<FONT class="b4">'; $BG='</FONT>';}
 
+	$AIDct='';   $AIDtx='';
+	if ($agent_indial > 0) {$AIDct = "/$agent_indial";   $AIDtx = ' / '._QXZ("dials");}
 
 	echo "\n<BR>\n";
 
 	if ( ($report_display_type=='TEXT') or ($report_display_type=='WALL_1') )
 		{
 		echo "$NFB$agent_total$NFE "._QXZ("agents logged in")." &nbsp; &nbsp; &nbsp; &nbsp; \n";
-		echo "$NFB$agent_incall$NFE "._QXZ("agents in calls")." &nbsp; &nbsp; &nbsp; \n";
+		echo "$NFB$agent_incall$AIDct$NFE "._QXZ("agents in calls")."$AIDtx &nbsp; &nbsp; &nbsp; \n";
 		echo "$NFB$B &nbsp;$agent_ready $BG$NFE "._QXZ("agents waiting")." &nbsp; &nbsp; &nbsp; \n";
 		echo "$NFB$agent_paused$NFE "._QXZ("paused agents")." &nbsp; &nbsp; &nbsp; \n";
 		echo "$NFB$agent_dead$NFE "._QXZ("agents in dead calls")."&nbsp; &nbsp; &nbsp; \n";
@@ -3490,6 +3515,9 @@ if ( ($report_display_type!='HTML') and ($report_display_type!='WALL_2') and ($r
 ##### BEGIN HTML output for agents summary #####
 if ( ($report_display_type=='HTML') or ($report_display_type=='WALL_2') )
 	{
+	$AIDct='';   $AIDtx='';
+	if ($agent_indial > 0) {$AIDct = " / $agent_indial";   $AIDtx = ' / '._QXZ("dials");}
+
 #	echo "<TABLE width=$section_width cellpadding=3 cellspacing=0>\n";
 	echo "<tr>";
 #	echo "<td width=5 rowspan=2> &nbsp; </td>";
@@ -3497,7 +3525,7 @@ if ( ($report_display_type=='HTML') or ($report_display_type=='WALL_2') )
 	echo "<td align='center' valign='middle' bgcolor='#015b91'><font style=\"font-family:HELVETICA;font-size:11;color:white;font-weight:bold;\">"._QXZ("agents logged in")."</font></td>";
 	echo "<td width=6 rowspan=2> &nbsp; </td>";
 	echo "<td align='center' valign='middle' bgcolor='#015b91' rowspan=2><img src=\"images/icon_agentsincalls.png\" width=42 height=42></td>";
-	echo "<td align='center' valign='middle' bgcolor='#015b91'><font style=\"font-family:HELVETICA;font-size:11;color:white;font-weight:bold;\">"._QXZ("agents in calls")."</font></td>";
+	echo "<td align='center' valign='middle' bgcolor='#015b91'><font style=\"font-family:HELVETICA;font-size:11;color:white;font-weight:bold;\">"._QXZ("agents in calls")."$AIDtx</font></td>";
 	echo "<td width=6 rowspan=2> &nbsp; </td>";
 	echo "<td align='center' valign='middle' bgcolor='#015b91' rowspan=2><img src=\"images/icon_agentswaiting.png\" width=42 height=42></td>";
 	echo "<td align='center' valign='middle' bgcolor='#015b91'><font style=\"font-family:HELVETICA;font-size:11;color:white;font-weight:bold;\">"._QXZ("agents waiting")."</font></td>";
@@ -3513,7 +3541,7 @@ if ( ($report_display_type=='HTML') or ($report_display_type=='WALL_2') )
 	echo "</tr>";
 	echo "<tr>";
 	echo "<td align='center' valign='middle' bgcolor='#015b91'><font style=\"font-family:HELVETICA;font-size:18;color:white;font-weight:bold;\">$agent_total</font></td>";
-	echo "<td align='center' valign='middle' bgcolor='#015b91'><font style=\"font-family:HELVETICA;font-size:18;color:white;font-weight:bold;\">$agent_incall</font></td>";
+	echo "<td align='center' valign='middle' bgcolor='#015b91'><font style=\"font-family:HELVETICA;font-size:18;color:white;font-weight:bold;\">$agent_incall$AIDct</font></td>";
 
 	$agents_waiting_td='bgcolor="#015b91"';   $agents_waiting_font='style="color: white; font-family: HELVETICA; font-size: 18; font-weight: bold;"';
 	if ($agent_ready > 0) {$agents_waiting_td='bgcolor="#CCFFCC"';   $agents_waiting_font='style="color: black; font-family: HELVETICA; font-size: 18; font-weight: bold;"';}
@@ -3544,12 +3572,14 @@ if ( ($report_display_type=='HTML') or ($report_display_type=='WALL_2') )
 ##### BEGIN custom WALL_3 display option #####
 if ($report_display_type=='WALL_3')
 	{
+	$AIDct='';   $AIDtx='';
+	if ($agent_indial > 0) {$AIDct = " / $agent_indial";   $AIDtx = ' / '._QXZ("dials");}
 	echo "<font style=\"font-size:48; color:black; font-weight: bold; background-color:green\">"._QXZ("agents waiting")."</font>\n";
 	echo "<font style=\"font-size:72; color:black; font-weight: bold; background-color:green\"> &nbsp; $agent_ready</font><br>\n";
 	echo "<font style=\"font-size:48; color:black; font-weight: bold; background-color:yellow\">"._QXZ("paused agents")."</font>\n";
 	echo "<font style=\"font-size:72; color:black; font-weight: bold; background-color:yellow\"> &nbsp; $agent_paused</font><br>\n";
-	echo "<font style=\"font-size:48; color:black; font-weight: bold; background-color:green\">"._QXZ("agents in calls")."</font>\n";
-	echo "<font style=\"font-size:72; color:black; font-weight: bold; background-color:green\"> &nbsp; $agent_incall</font><br>\n";
+	echo "<font style=\"font-size:48; color:black; font-weight: bold; background-color:green\">"._QXZ("agents in calls")."$AIDtx</font>\n";
+	echo "<font style=\"font-size:72; color:black; font-weight: bold; background-color:green\"> &nbsp; $agent_incall$AIDct</font><br>\n";
 	echo "<font style=\"font-size:48; color:black; font-weight: bold; background-color:red\">"._QXZ("calls waiting")."</font>\n";
 	echo "<font style=\"font-size:72; color:black; font-weight: bold; background-color:red\"> &nbsp; $out_live</font><br>\n";
 	echo "<font style=\"font-size:36; color:black; font-weight: bold;\">"._QXZ("dropped/total calls")."</font>\n";
@@ -3561,6 +3591,8 @@ if ($report_display_type=='WALL_3')
 ##### BEGIN custom WALL_4 display option #####
 if ($report_display_type=='WALL_4')
 	{
+	$AIDct='';   $AIDtx='';
+	if ($agent_indial > 0) {$AIDct = " / $agent_indial";   $AIDtx = ' / '._QXZ("dials");}
 	echo "<center><table border=0 cellpadding=3 cellspacing=3>\n";
 	echo "<tr>\n";
 	echo "<td><font style=\"font-size:48; color:black; font-weight: bold; background-color:green\">"._QXZ("agents waiting")."</font></td>";
@@ -3571,8 +3603,8 @@ if ($report_display_type=='WALL_4')
 	echo "<td><font style=\"font-size:72; color:black; font-weight: bold; background-color:yellow\"> &nbsp; $agent_paused</font></td>\n";
 	echo "</tr>\n";
 	echo "<tr>\n";
-	echo "<td><font style=\"font-size:48; color:black; font-weight: bold; background-color:green\">"._QXZ("agents in calls")."</font></td>";
-	echo "<td><font style=\"font-size:72; color:black; font-weight: bold; background-color:green\"> &nbsp; $agent_incall</font></td>\n";
+	echo "<td><font style=\"font-size:48; color:black; font-weight: bold; background-color:green\">"._QXZ("agents in calls")."$AIDtx</font></td>";
+	echo "<td><font style=\"font-size:72; color:black; font-weight: bold; background-color:green\"> &nbsp; $agent_incall$AIDct</font></td>\n";
 	echo "</tr>\n";
 	echo "<tr>\n";
 	echo "<td><font style=\"font-size:48; color:black; font-weight: bold; background-color:red\">"._QXZ("calls waiting")."</font></td>";

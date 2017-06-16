@@ -679,7 +679,7 @@ if ($sl_ct > 0)
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$stmt = "SELECT use_non_latin,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,webroot_writable,timeclock_end_of_day,vtiger_url,enable_vtiger_integration,outbound_autodial_active,enable_second_webform,user_territories_active,static_agent_url,custom_fields_enabled,pllb_grouping_limit,qc_features_active,allow_emails,callback_time_24hour,enable_languages,language_method,meetme_enter_login_filename,meetme_enter_leave3way_filename,enable_third_webform,default_language,active_modules,allow_chats,chat_url,default_phone_code,agent_screen_colors,manual_auto_next,agent_xfer_park_3way,admin_web_directory,agent_script,agent_push_events,agent_push_url FROM system_settings;";
+$stmt = "SELECT use_non_latin,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,webroot_writable,timeclock_end_of_day,vtiger_url,enable_vtiger_integration,outbound_autodial_active,enable_second_webform,user_territories_active,static_agent_url,custom_fields_enabled,pllb_grouping_limit,qc_features_active,allow_emails,callback_time_24hour,enable_languages,language_method,meetme_enter_login_filename,meetme_enter_leave3way_filename,enable_third_webform,default_language,active_modules,allow_chats,chat_url,default_phone_code,agent_screen_colors,manual_auto_next,agent_xfer_park_3way,admin_web_directory,agent_script,agent_push_events,agent_push_url,pause_campaigns FROM system_settings;";
 $rslt=mysql_to_mysqli($stmt, $link);
 	if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01001',$VD_login,$server_ip,$session_name,$one_mysql_log);}
 if ($DB) {echo "$stmt\n";}
@@ -721,6 +721,7 @@ if ($qm_conf_ct > 0)
 	$SSagent_script =					$row[31];
 	$agent_push_events =				$row[32];
 	$agent_push_url =					$row[33];
+	$pause_campaign =					$row[34];
 	}
 else
 	{
@@ -4562,6 +4563,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var hangup_both=0;
 	var agent_push_events='<?php echo $agent_push_events ?>';
 	var agent_push_url='<?php echo $agent_push_url ?>';
+	var pause_campaign='<?php echo $pause_campaign ?>';
 	var version='<?php echo $version ?>';
 	var build='<?php echo $build ?>';
 	var script_name='<?php echo $script_name ?>';
@@ -4658,6 +4660,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		image_chat_alert_UNMUTE.src="./images/<?php echo _QXZ("vdc_volume_UNMUTE.gif") ?>";
 	var image_chat_alert_MUTE = new Image();
 		image_chat_alert_MUTE.src="./images/<?php echo _QXZ("vdc_volume_MUTE.gif") ?>";
+
+	var pc_var = "";
 
 <?php
 	if ($window_validation > 0)
@@ -12709,10 +12713,19 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 			}
 		}
 
+
+	
+	function get_sel() {
+		var f = document.getElementById("pause_campaign");
+		pc_var = f.options[f.selectedIndex].text;
+		alert(pc_var);
+	}
+
 // ################################################################################
 // Generate the Pause Code Chooser panel
 	function PauseCodeSelectContent_create(PCSclick)
 		{
+
 		if (PCSclick=='YES')
 			{button_click_log = button_click_log + "" + SQLdate + "-----PauseCodeSelectContent_create---|";}
 		var move_on=1;
@@ -12740,6 +12753,22 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 				HidEGenDerPulldown();
 				showDiv('PauseCodeSelectBox');
 				WaitingForNextStep=1;
+				pc_HTML = '';
+				if (pause_campaign=='Y') {
+					pc_HTML = "<hr>";
+					pc_HTML = pc_HTML + "<select id=\"pause_campaign\" name=\"pause_campaign\" onchange=\"get_sel()\">";
+					pc_HTML = pc_HTML + "<option selected>" + campaign + "</option>";
+					pc_var = campaign;
+					var loop_ct = 0;
+					while (loop_ct < INgroupCOUNT) {
+						if ((VARingroups[loop_ct] != "AGENTDIRECT") && (VARingroups[loop_ct] != "AGENTDIRECT_CHAT")) {
+							pc_HTML = pc_HTML + "<option>" + VARingroups[loop_ct] + "</option>";
+						}
+						loop_ct++;
+					}
+					pc_HTML = pc_HTML + "</select>";
+					pc_HTLM = pc_HTML + "<hr>";
+				}
 				PauseCode_HTML = '';
 				document.vicidial_form.PauseCodeSelection.value = '';		
 				var VD_pause_codes_ct_half = parseInt(VD_pause_codes_ct / 2);
@@ -12752,13 +12781,12 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 					if (loop_ct == VD_pause_codes_ct_half) 
                         {PauseCode_HTML = PauseCode_HTML + "</span></font></td><td bgcolor=\"#99FF99\" height=\"300px\" width=\"240px\" valign=\"top\"><font class=\"log_text\"><span id=PauseCodeSelectB>";}
 					}
-
 				if (agent_pause_codes_active=='FORCE')
 					{var Go_BacK_LinK = '';}
 				else
                     {var Go_BacK_LinK = "<font size=\"3\" face=\"Arial, Helvetica, sans-serif\" style=\"BACKGROUND-COLOR: #FFFFCC\"><b><a href=\"#\" onclick=\"PauseCodeSelect_submit('','YES');return false;\"><?php echo _QXZ("Go Back"); ?></a>";}
 
-                PauseCode_HTML = PauseCode_HTML + "</span></font></td></tr></table><br /><br />" + Go_BacK_LinK;
+                PauseCode_HTML = PauseCode_HTML + "</span></font></td></tr></table><br /><br />" + pc_HTML + Go_BacK_LinK;
 				document.getElementById("PauseCodeSelectContent").innerHTML = PauseCode_HTML;
 
 				agent_events('pause_code_open', '');

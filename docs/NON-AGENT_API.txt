@@ -1,4 +1,4 @@
-NON-AGENT API DOCUMENT           Started: 2008-07-24         Updated: 2017-06-09
+NON-AGENT API DOCUMENT           Started: 2008-07-24         Updated: 2017-06-14
 
 This document describes the functions of an API(Application Programming 
 Interface) for all functions NOT directly relating to the VICIDIAL Agent screen. 
@@ -128,6 +128,7 @@ Changes:
 170527-2254 - Fix for rare inbound logging issue #1017
 170601-0747 - Added add_to_hopper options to update_lead function
 170609-1107 - Added ccc_lead_info function
+170615-0006 - Added DIAL status for manual dial agent calls that have not been answered, to 4 functions
 
 
 API Functions use the 'function' variable
@@ -442,8 +443,8 @@ ERROR: user_group_status USER DOES NOT HAVE PERMISSION TO GET USER GROUP INFO - 
 ERROR: user_group_status INVALID SEARCH PARAMETERS - 6666||
 
 A SUCCESS response will not show "SUCCESS", but instead will just print the results in the following format:
-usergroups|calls_waiting|agents_logged_in|agents_in_calls|agents_waiting|agents_paused|agents_in_dead_calls|agents_in_dispo
-ADMIN AGENT|0|1|0|1|0|0|0
+usergroups|calls_waiting|agents_logged_in|agents_in_calls|agents_waiting|agents_paused|agents_in_dead_calls|agents_in_dispo|agents_in_dial
+ADMIN AGENT|0|1|0|1|0|0|0|0
 
 
 
@@ -473,8 +474,8 @@ ERROR: in_group_status USER DOES NOT HAVE PERMISSION TO GET IN-GROUP INFO - 6666
 ERROR: in_group_status INVALID SEARCH PARAMETERS - 6666||
 
 A SUCCESS response will not show "SUCCESS", but instead will just print the results in the following format:
-ingroups,total_calls,calls_waiting,agents_logged_in,agents_in_calls,agents_waiting,agents_paused,agents_in_dispo
-SALESLINE SUPPORT,31,0,75,54,0,20,1
+ingroups,total_calls,calls_waiting,agents_logged_in,agents_in_calls,agents_waiting,agents_paused,agents_in_dispo,agents_in_dial
+SALESLINE SUPPORT,31,0,75,54,0,20,1,0
 
 
 
@@ -507,7 +508,7 @@ INCALL,M4050908070000012345,12345,TESTCAMP,1,Test Agent,AGENTS,3,LOGIN,,72755512
 INCALL|M4181606420000000104|104|TESTBLND|1|Admin|ADMIN|9|BRK2|DEAD|3125551212|123457|8600051
 PAUSED||105|TESTBLND|1|Admin|ADMIN|9||PREVIEW|9545551212|123458|8600052
 
-NOTE: real_time_sub_status field can consist of: DEAD, DISPO, 3-WAY, PARK, RING, PREVIEW or it can be empty
+NOTE: real_time_sub_status field can consist of: DEAD, DISPO, 3-WAY, PARK, RING, PREVIEW, DIAL or it can be empty
 
 
 
@@ -1436,7 +1437,7 @@ user,campaign_id,session_id,status,lead_id,callerid,calls_today,full_name,user_g
 6666,TESTCAMP,8600051,INCALL,1079409,M2260919190001079409,1,Admin,ADMIN,9,LOGIN,DEAD
 4545,TESTCAMP,8600052,PAUSED,0,,0,4545,MIKESGROUP,8,LOGIN,
 
-NOTE: real_time_sub_status field can consist of: DEAD, DISPO, 3-WAY, PARK, RING, PREVIEW or it can be empty
+NOTE: real_time_sub_status field can consist of: DEAD, DISPO, 3-WAY, PARK, RING, PREVIEW, DIAL or it can be empty
 
 
 

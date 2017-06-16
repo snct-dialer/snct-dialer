@@ -717,6 +717,9 @@ if (isset($_GET["previous_agent_log_id"]))	{$previous_agent_log_id=$_GET["previo
 	elseif (isset($_POST["previous_agent_log_id"]))	{$previous_agent_log_id=$_POST["previous_agent_log_id"];}
 if (isset($_GET["last_VDRP_stage"]))	{$last_VDRP_stage=$_GET["last_VDRP_stage"];}
 	elseif (isset($_POST["last_VDRP_stage"]))	{$last_VDRP_stage=$_POST["last_VDRP_stage"];}
+	
+	if (isset($_GET["pause_campaign"]))		{$pause_campaign=$_GET["pause_campaign"];}
+elseif (isset($_POST["pause_campaign"]))	{$pause_campaign=$_POST["pause_campaign"];}
 
 
 header ("Content-type: text/html; charset=utf-8");
@@ -13526,7 +13529,7 @@ if ($ACTION == 'PauseCodeSubmit')
 		### if this is the first pause code entry in a pause session, simply update and log to queue_log
 		if ( ($stage < 1) or ($pause_to_code_jump > 0) )
 			{
-			$stmt="UPDATE vicidial_agent_log set sub_status=\"$status\",pause_type='AGENT' where agent_log_id >= '$agent_log_id' and user='$user' and ( (sub_status is NULL) or (sub_status='') )order by agent_log_id limit 2;";
+			$stmt="UPDATE vicidial_agent_log set sub_status=\"$status\",pause_type='AGENT',pause_campaign=\"$pause_campaign\" where agent_log_id >= '$agent_log_id' and user='$user' and ( (sub_status is NULL) or (sub_status='') )order by agent_log_id limit 2;";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00175',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -13563,7 +13566,7 @@ if ($ACTION == 'PauseCodeSubmit')
 				$user_group =		trim("$row[0]");
 				}
 
-			$stmt="INSERT INTO vicidial_agent_log (user,server_ip,event_time,campaign_id,pause_epoch,pause_sec,wait_epoch,user_group,sub_status,pause_type) values('$user','$server_ip','$NOW_TIME','$campaign','$StarTtime','0','$StarTtime','$user_group','$status','AGENT');";
+			$stmt="INSERT INTO vicidial_agent_log (user,server_ip,event_time,campaign_id,pause_epoch,pause_sec,wait_epoch,user_group,sub_status,pause_type,pause_campaign) values('$user','$server_ip','$NOW_TIME','$campaign','$StarTtime','0','$StarTtime','$user_group','$status','AGENT','$pause_campaign');";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00309',$user,$server_ip,$session_name,$one_mysql_log);}

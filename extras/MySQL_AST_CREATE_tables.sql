@@ -1322,6 +1322,7 @@ dead_sec SMALLINT(5) UNSIGNED default '0',
 processed ENUM('Y','N') default 'N',
 uniqueid VARCHAR(20) default '',
 pause_type ENUM('UNDEFINED','SYSTEM','AGENT','API','ADMIN') default 'UNDEFINED',
+pause_campaign VARCHAR(20) default '',
 index (lead_id),
 index (user),
 index (event_time)
@@ -1718,7 +1719,9 @@ system_ip_blacklist VARCHAR(30) default '',
 git_commit VARCHAR(55) default '',
 git_release VARCHAR(25) default '',
 agent_push_events ENUM('0','1') default '0',
-agent_push_url TEXT
+agent_push_url TEXT,
+pause_campaigns ENUM('Y','N') default 'N',
+hide_inactive_lists ENUM('0','1') default '0'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_campaigns_list_mix (
@@ -4012,4 +4015,4 @@ UPDATE vicidial_configuration set value='1766' where name='qc_database_version';
 
 UPDATE system_settings set vdc_agent_api_active='1';
 
-UPDATE system_settings SET db_schema_version='1507',db_schema_update_date=NOW(),reload_timestamp=NOW();
+UPDATE system_settings SET db_schema_version='1508',db_schema_update_date=NOW(),reload_timestamp=NOW();
