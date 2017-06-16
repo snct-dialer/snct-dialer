@@ -277,5 +277,6 @@ ALTER TABLE vicidial_call_time_holidays ADD holiday_color VARCHAR(7) default '';
 UPDATE system_settings SET db_schema_version='1507',db_schema_update_date=NOW() where db_schema_version < 1507;
 
 ALTER TABLE system_settings ADD pause_campaigns ENUM('Y','N') default 'N';
+ALTER TABLE system_settings ADD hide_inactive_lists ENUM('0','1') default '0';
 
 UPDATE system_settings SET db_schema_version='1508',db_schema_update_date=NOW() where db_schema_version < 1508;

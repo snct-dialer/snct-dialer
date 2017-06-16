@@ -121,10 +121,11 @@
 # 170527-2254 - Fix for rare inbound logging issue #1017
 # 170601-0747 - Added add_to_hopper options to update_lead function
 # 170609-1107 - Added ccc_lead_info function
+# 170615-0006 - Added DIAL status for manual dial agent calls that have not been answered, to 4 functions
 #
 
-$version = '2.14-97';
-$build = '170609-1107';
+$version = '2.14-98';
+$build = '170615-0006';
 $api_url_log = 0;
 
 $startMS = microtime();
@@ -5532,7 +5533,7 @@ if ($function == 'user_group_status')
 				if (strlen($time_format) < 1)
 					{$time_format = 'HF';}
 				if ($header == 'YES')
-					{$output .= 'usergroups' . $DL . 'calls_waiting' . $DL . 'agents_logged_in' . $DL . 'agents_in_calls' . $DL . 'agents_waiting' . $DL . 'agents_paused' . $DL . 'agents_in_dead_calls' . $DL . 'agents_in_dispo' . "\n";}
+					{$output .= 'usergroups' . $DL . 'calls_waiting' . $DL . 'agents_logged_in' . $DL . 'agents_in_calls' . $DL . 'agents_waiting' . $DL . 'agents_paused' . $DL . 'agents_in_dead_calls' . $DL . 'agents_in_dispo' . $DL . 'agents_in_dial' . "\n";}
 
 				$total_agents=0;
 				$total_agents_in_calls=0;
@@ -5540,6 +5541,7 @@ if ($function == 'user_group_status')
 				$total_agents_paused=0;
 				$total_agents_dead=0;
 				$total_agents_dispo=0;
+				$total_agents_in_dial=0;
 				$total_calls=0;
 				$total_calls_waiting=0;
 				$call_camps[0]='';
@@ -5623,6 +5625,24 @@ if ($function == 'user_group_status')
 									{
 									if (!preg_match("/$row[5]\|/",$callerids))
 										{$row[1] =	'DEAD';}
+									else
+										{
+										if ($row[4] == 'MANUAL')
+											{
+											$stmt="SELECT uniqueid,channel from vicidial_auto_calls where callerid='$row[5]' LIMIT 1;";
+											$rslt=mysql_to_mysqli($stmt, $link);
+											if ($DB) {echo "$stmt\n";}
+											$mandial_to_check = mysqli_num_rows($rslt);
+												if ($mandial_to_check > 0)
+												{
+												$rowvac=mysqli_fetch_row($rslt);
+												if ( (strlen($rowvac[0])<5) and (strlen($rowvac[1])<5) )
+													{
+													$row[1] =	'DIAL';
+													}
+												}
+											}
+										}
 									}
 								}
 							}
@@ -5633,8 +5653,10 @@ if ($function == 'user_group_status')
 							{$total_agents_dispo++;}
 						if ($row[1]=='PAUSED') 
 							{$total_agents_paused++;}
-						if ( (preg_match("/INCALL/i",$row[1])) or (preg_match("/QUEUE/i",$row[1])) or (preg_match('/PARK/i',$row[1]))) 
+						if ( (preg_match("/INCALL|DIAL/i",$row[1])) or (preg_match("/QUEUE/i",$row[1])) or (preg_match('/PARK/i',$row[1]))) 
 							{$total_agents_in_calls++;}
+						if (preg_match("/DIAL/i",$row[1]))
+							{$total_agents_in_dial++;}
 						if ( (preg_match("/READY/i",$row[1])) or (preg_match("/CLOSER/i",$row[1])) ) 
 							{$total_agents_waiting++;}
 
@@ -5642,7 +5664,7 @@ if ($function == 'user_group_status')
 						$k++;
 						}
 					}
-				$output .= "$user_groupsOUTPUT$DL$total_calls_waiting$DL$total_agents$DL$total_agents_in_calls$DL$total_agents_waiting$DL$total_agents_paused$DL$total_agents_dead$DL$total_agents_dispo\n";
+				$output .= "$user_groupsOUTPUT$DL$total_calls_waiting$DL$total_agents$DL$total_agents_in_calls$DL$total_agents_waiting$DL$total_agents_paused$DL$total_agents_dead$DL$total_agents_dispo$DL$total_agents_in_dial\n";
 
 				echo "$output";
 
@@ -5781,7 +5803,7 @@ if ($function == 'in_group_status')
 				if (strlen($time_format) < 1)
 					{$time_format = 'HF';}
 				if ($header == 'YES')
-					{$output .= 'ingroups' . $DL . 'total_calls' . $DL . 'calls_waiting' . $DL . 'agents_logged_in' . $DL . 'agents_in_calls' . $DL . 'agents_waiting' . $DL . 'agents_paused' . $DL . 'agents_in_dispo' . "\n";}
+					{$output .= 'ingroups' . $DL . 'total_calls' . $DL . 'calls_waiting' . $DL . 'agents_logged_in' . $DL . 'agents_in_calls' . $DL . 'agents_waiting' . $DL . 'agents_paused' . $DL . 'agents_in_dispo' . $DL . 'agents_in_dial' . "\n";}
 
 				$total_agents=0;
 				$total_agents_in_calls=0;
@@ -5789,6 +5811,7 @@ if ($function == 'in_group_status')
 				$total_agents_paused=0;
 				$total_agents_dead=0;
 				$total_agents_dispo=0;
+				$total_agents_in_dial=0;
 				$total_calls=0;
 				$total_calls_waiting=0;
 				$call_camps[0]='';
@@ -5853,8 +5876,10 @@ if ($function == 'in_group_status')
 							{$total_agents_dispo++;}
 						if ($row[1]=='PAUSED') 
 							{$total_agents_paused++;}
-						if ( (preg_match("/INCALL/i",$row[1])) or (preg_match("/QUEUE/i",$row[1])) or (preg_match('/PARK/i',$row[1]))) 
+						if ( (preg_match("/INCALL|DIAL/i",$row[1])) or (preg_match("/QUEUE/i",$row[1])) or (preg_match('/PARK/i',$row[1]))) 
 							{$total_agents_in_calls++;}
+						if (preg_match("/DIAL/i",$row[1]))
+							{$total_agents_in_dial++;}
 						if ( (preg_match("/READY/i",$row[1])) or (preg_match("/CLOSER/i",$row[1])) ) 
 							{$total_agents_waiting++;}
 
@@ -5862,7 +5887,7 @@ if ($function == 'in_group_status')
 						$k++;
 						}
 					}
-				$output .= "$in_groupsOUTPUT$DL$total_calls$DL$total_calls_waiting$DL$total_agents$DL$total_agents_in_calls$DL$total_agents_waiting$DL$total_agents_paused$DL$total_agents_dispo\n";
+				$output .= "$in_groupsOUTPUT$DL$total_calls$DL$total_calls_waiting$DL$total_agents$DL$total_agents_in_calls$DL$total_agents_waiting$DL$total_agents_paused$DL$total_agents_dispo$DL$total_agents_in_dial\n";
 
 				echo "$output";
 
@@ -6079,6 +6104,24 @@ if ($function == 'agent_status')
 									$live_channel = $row[0];
 									if ($live_channel < 1)
 										{$rtr_status = 'DEAD';}
+									else
+										{
+										if ($comments == 'MANUAL')
+											{
+											$stmt="SELECT uniqueid,channel from vicidial_auto_calls where callerid='$callerid' LIMIT 1;";
+											$rslt=mysql_to_mysqli($stmt, $link);
+											if ($DB) {echo "$stmt\n";}
+											$mandial_to_check = mysqli_num_rows($rslt);
+												if ($mandial_to_check > 0)
+												{
+												$rowvac=mysqli_fetch_row($rslt);
+												if ( (strlen($rowvac[0])<5) and (strlen($rowvac[1])<5) )
+													{
+													$rtr_status =	'DIAL';
+													}
+												}
+											}
+										}
 									}
 								}
 							}
@@ -9231,6 +9274,24 @@ if ($function == 'logged_in_agents')
 									$live_channel = $row[0];
 									if ($live_channel < 1)
 										{$rtr_status = 'DEAD';}
+									else
+										{
+										if ($Acomments[$i] == 'MANUAL')
+											{
+											$stmt="SELECT uniqueid,channel from vicidial_auto_calls where callerid='$Acallerid[$i]' LIMIT 1;";
+											$rslt=mysql_to_mysqli($stmt, $link);
+											if ($DB) {echo "$stmt\n";}
+											$mandial_to_check = mysqli_num_rows($rslt);
+												if ($mandial_to_check > 0)
+												{
+												$rowvac=mysqli_fetch_row($rslt);
+												if ( (strlen($rowvac[0])<5) and (strlen($rowvac[1])<5) )
+													{
+													$rtr_status =	'DIAL';
+													}
+												}
+											}
+										}
 									}
 								}
 							}

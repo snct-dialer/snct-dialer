@@ -169,6 +169,9 @@ OTHER CHANGES:
 	information to pass from one VICIdial system to another with a call. 
 	See the CROSS_CLUSTER_COMMUNICATION.txt document for more information.
 
+38. Added Real-Time agent status of "DIAL" for agent manual dial calls after
+	they have been placed but before they have been answered.
+
 
 
 
