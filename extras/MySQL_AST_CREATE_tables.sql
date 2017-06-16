@@ -1322,6 +1322,7 @@ dead_sec SMALLINT(5) UNSIGNED default '0',
 processed ENUM('Y','N') default 'N',
 uniqueid VARCHAR(20) default '',
 pause_type ENUM('UNDEFINED','SYSTEM','AGENT','API','ADMIN') default 'UNDEFINED',
+pause_campaign VARCHAR(20) default '',
 index (lead_id),
 index (user),
 index (event_time)
