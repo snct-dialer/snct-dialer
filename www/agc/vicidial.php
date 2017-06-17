@@ -4662,6 +4662,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		image_chat_alert_MUTE.src="./images/<?php echo _QXZ("vdc_volume_MUTE.gif") ?>";
 
 	var pc_var = "";
+	var pc_var_ingroup = "";
 
 <?php
 	if ($window_validation > 0)
@@ -10624,6 +10625,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								if (status_display_LISTID > 0) {status_display_content = status_display_content + " <?php echo _QXZ("List:"); ?> " + document.vicidial_form.list_id.value;}
 
 								var temp_status_display_ingroup = " <?php echo _QXZ("Group"); ?>- " + VDIC_data_VDIG[1];
+								pc_var_ingroup = VDIC_data_VDIG[1];
 								if (status_display_ingroup == 'DISABLED')
 									{temp_status_display_ingroup='';}
 
@@ -11364,6 +11366,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								if (status_display_LISTID > 0) {status_display_content = status_display_content + " <?php echo _QXZ("List:"); ?> " + document.vicidial_form.list_id.value;}
 
 								var temp_status_display_ingroup = " <?php echo _QXZ("Group"); ?>- " + VDIC_data_VDIG[1];
+								pc_var_ingroup = VDIC_data_VDIG[1];
 								if (status_display_ingroup == 'DISABLED')
 									{temp_status_display_ingroup='';}
 
@@ -12757,12 +12760,23 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 				if (pause_campaign=='Y') {
 					pc_HTML = "<hr>";
 					pc_HTML = pc_HTML + "<select id=\"pause_campaign\" name=\"pause_campaign\" onchange=\"get_sel()\">";
-					pc_HTML = pc_HTML + "<option selected>" + campaign + "</option>";
-					pc_var = campaign;
+					if(pc_var_ingroup == "") {
+						pc_HTML = pc_HTML + "<option selected>" + campaign + "</option>";
+						pc_var = campaign;
+					}
+					else {
+						pc_HTML = pc_HTML + "<option>" + campaign + "</option>";
+					}
 					var loop_ct = 0;
 					while (loop_ct < INgroupCOUNT) {
 						if ((VARingroups[loop_ct] != "AGENTDIRECT") && (VARingroups[loop_ct] != "AGENTDIRECT_CHAT")) {
-							pc_HTML = pc_HTML + "<option>" + VARingroups[loop_ct] + "</option>";
+							if(pc_var_ingroup == VARingroups[loop_ct]) {
+								pc_HTML = pc_HTML + "<option selected>" + VARingroups[loop_ct] + "</option>";
+								pc_var = VARingroups[loop_ct];
+							}
+							else {
+								pc_HTML = pc_HTML + "<option>" + VARingroups[loop_ct] + "</option>";
+							}
 						}
 						loop_ct++;
 					}
@@ -13587,6 +13601,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 			xmlhttp.open('POST', 'vdc_db_query.php'); 
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 			xmlhttp.send(VMCpausecode_query); 
+			pc_var_ingroup = "";
 			xmlhttp.onreadystatechange = function() 
 				{ 
 				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
