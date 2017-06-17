@@ -31,10 +31,10 @@
 #          JFF 2017-06-15 Add field 'Campaign Pause' into system_settings
 #          JFF 2017-06-16 Add svn commits 2779-2780
 # 2017-011 JFF 2017-06-16 Finish 'Campaign Pause'
-#
+# 2017-012 JFF 2017-06-17 Add missing ingroup selection
 #
 
-$FLY_patch_level = "2017-011";
+$FLY_patch_level = "2017-012";
 
 
 ?>
