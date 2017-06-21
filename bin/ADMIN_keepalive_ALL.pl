@@ -1964,7 +1964,7 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 	$Liax .= "host=dynamic\n";
 	$Liax .= "permit=0.0.0.0/0.0.0.0\n";
 	$Liax .= "disallow=all\n";
-	$Liax .= "allow=ulaw\n";
+	$Liax .= "allow=alaw\n";
 	if ($conf_qualify =~ /Y/) 
 		{$Liax .= "qualify=yes\n";}
 
@@ -1979,7 +1979,7 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 	$Liax .= "host=dynamic\n";
 	$Liax .= "permit=0.0.0.0/0.0.0.0\n";
 	$Liax .= "disallow=all\n";
-	$Liax .= "allow=ulaw\n";
+	$Liax .= "allow=alaw\n";
 	if ($conf_qualify =~ /Y/) 
 		{$Liax .= "qualify=yes\n";}
 
@@ -1994,7 +1994,7 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 	$Liax .= "host=dynamic\n";
 	$Liax .= "permit=0.0.0.0/0.0.0.0\n";
 	$Liax .= "disallow=all\n";
-	$Liax .= "allow=ulaw\n";
+	$Liax .= "allow=alaw\n";
 	if ($conf_qualify =~ /Y/) 
 		{$Liax .= "qualify=yes\n";}
 
@@ -2064,7 +2064,7 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 		$Liax .= "host=dynamic\n";
 		$Liax .= "permit=0.0.0.0/0.0.0.0\n";
 		$Liax .= "disallow=all\n";
-		$Liax .= "allow=ulaw\n";
+		$Liax .= "allow=alaw\n";
 		if ($conf_qualify =~ /Y/) 
 			{$Liax .= "qualify=yes\n";}
 
@@ -2329,8 +2329,8 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 		if (length($codecs_list[$i]) > 2)
 			{
 			if ($codecs_list[$i] =~ /gsm/i)			{$Pcodec .= "allow=gsm\n";}
-			if ($codecs_list[$i] =~ /ulaw|u-law/i)	{$Pcodec .= "allow=ulaw\n";}
 			if ($codecs_list[$i] =~ /alaw|a-law/i)	{$Pcodec .= "allow=alaw\n";}
+			if ($codecs_list[$i] =~ /ulaw|u-law/i)	{$Pcodec .= "allow=ulaw\n";}
 			if ($codecs_list[$i] =~ /g722|g\.722/i)	{$Pcodec .= "allow=g722\n";}
 			if ($codecs_list[$i] =~ /g723|g\.723/i)	{$Pcodec .= "allow=g723.1\n";}
 			if ($codecs_list[$i] =~ /g726|g\.726/i)	{$Pcodec .= "allow=g726\n";}
@@ -2492,8 +2492,8 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 		if (length($codecs_list[$i]) > 2)
 			{
 			if ($codecs_list[$i] =~ /gsm/i)			{$Pcodec .= "allow=gsm\n";}
-			if ($codecs_list[$i] =~ /ulaw|u-law/i)	{$Pcodec .= "allow=ulaw\n";}
 			if ($codecs_list[$i] =~ /alaw|a-law/i)	{$Pcodec .= "allow=alaw\n";}
+			if ($codecs_list[$i] =~ /ulaw|u-law/i)	{$Pcodec .= "allow=ulaw\n";}
 			if ($codecs_list[$i] =~ /g722|g\.722/i)	{$Pcodec .= "allow=g722\n";}
 			if ($codecs_list[$i] =~ /g723|g\.723/i)	{$Pcodec .= "allow=g723.1\n";}
 			if ($codecs_list[$i] =~ /g726|g\.726/i)	{$Pcodec .= "allow=g726\n";}
