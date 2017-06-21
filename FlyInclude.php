@@ -32,6 +32,8 @@
 #          JFF 2017-06-16 Add svn commits 2779-2780
 # 2017-011 JFF 2017-06-16 Finish 'Campaign Pause'
 # 2017-012 JFF 2017-06-17 Add missing ingroup selection
+#          JFF 2017-06-21 Change ulaw to alaw for interconnections
+#          JFF 2017-06-21 Display only active callbacks
 #
 
 $FLY_patch_level = "2017-012";
