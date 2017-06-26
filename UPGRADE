@@ -172,6 +172,9 @@ OTHER CHANGES:
 38. Added Real-Time agent status of "DIAL" for agent manual dial calls after
 	they have been placed but before they have been answered.
 
+39. Changed password fields to allow up to 100 character passwords. Also changed
+	password recommendations to emphasize length over complexity.
+
 
 
 
