@@ -32,9 +32,10 @@
 #          JFF 2017-06-16 Add svn commits 2779-2780
 # 2017-011 JFF 2017-06-16 Finish 'Campaign Pause'
 # 2017-012 JFF 2017-06-17 Add missing ingroup selection
+# 2017-013 JFF 2017-06-26 Add svn commits 2781-2782
 #
 
-$FLY_patch_level = "2017-012";
+$FLY_patch_level = "2017-013";
 
 
 ?>
