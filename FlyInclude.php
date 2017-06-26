@@ -35,9 +35,10 @@
 #          JFF 2017-06-21 Change ulaw to alaw for interconnections
 #          JFF 2017-06-21 Display only active callbacks
 # 2017-013 JFF 2017-06-26 Add svn commits 2781-2782
+# 2017-014 JFF 2017-06-26 Merge
 #
 
-$FLY_patch_level = "2017-013";
+$FLY_patch_level = "2017-014";
 
 
 ?>
