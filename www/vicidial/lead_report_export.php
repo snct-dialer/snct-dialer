@@ -28,6 +28,7 @@
 # 160914-2200 - Added option to grab reports by either call date or entry date
 # 170409-1542 - Added IP List validation code
 # 170531-2230 - Added DID filtering option
+# 170615-2245 - Refined DID filtering to calculate call length w/internal transfers
 #
 
 $startMS = microtime();
@@ -731,7 +732,37 @@ if ($run_export > 0)
 				if ($export_fields == 'EXTENDED')
 					{
 					$export_fieldsDATA = "$row[40]\t$row[41]\t$row[42]\t$row[43]\t$row[44]\t";
-					if ($did_filter=="YES") {$export_fieldsDATA .= "$row[45]\t";}
+					if ($did_filter=="YES") 
+						{
+						if ($RUNdid>0) 
+							{
+							# INCLUDE COMPLETE LENGTH OF DID CALL BY CHECKING FOR WARM TRANSFERS
+							$did_stmt="select UNIX_TIMESTAMP(call_date) from vicidial_did_log where uniqueid='$row[38]'";
+							$did_rslt=mysql_to_mysqli($did_stmt, $link);
+							if (mysqli_num_rows($did_rslt)>0) 
+								{
+								$did_row=mysqli_fetch_row($did_rslt);
+								$start_epoch=$did_row[0];
+								}
+							else
+								{
+								$start_epoch=$row[39];
+								}
+							if ($DB>0) {echo "A) $did_stmt - ".mysqli_num_rows($did_rslt)." - $start_epoch<BR>\n";}
+							
+							# Added 10 seconds for padding
+							$log_stmt="select vcl.end_epoch from vicidial_xfer_log vxl, vicidial_closer_log vcl where vxl.lead_id='$row[35]' and UNIX_TIMESTAMP(vxl.call_date)>='$row[39]' and UNIX_TIMESTAMP(vxl.call_date)<=".($row[39]+$row[30]+10)." and vxl.xfercallid=vcl.xfercallid";
+							$log_rslt=mysql_to_mysqli($log_stmt, $link);
+							if (mysqli_num_rows($log_rslt)>0) 
+								{
+								$log_row=mysqli_fetch_row($log_rslt);
+								$end_epoch=$log_row[0];
+								$row[30]=$end_epoch-$start_epoch;
+								}
+							if ($DB>0) {echo "B) $log_stmt - ".mysqli_num_rows($log_rslt)." - $end_epoch<BR>\n";}
+							}
+						$export_fieldsDATA .= "$row[45]\t";
+						}
 					}
 				$export_rows[$k] = "$row[0]\t$row[1]\t$row[2]\t$row[3]\t$row[4]\t$row[5]\t$row[6]\t$row[7]\t$row[8]\t$row[9]\t$row[10]\t$row[11]\t$row[12]\t$row[13]\t$row[14]\t$row[15]\t$row[16]\t$row[17]\t$row[18]\t$row[19]\t$row[20]\t$row[21]\t$row[22]\t$row[23]\t$row[24]\t$row[25]\t$row[26]\t$row[27]\t$row[28]\t$row[29]\t$row[30]\t$row[31]\t$row[32]\t$row[33]\t$row[34]\t$row[35]\t$export_fieldsDATA";
 				$i++;

@@ -211,6 +211,7 @@
 # 170325-1104 - Added optional vicidial_drop_log logging
 # 170412-2223 - Fix for drop call logging
 # 170527-2240 - Fix for rare inbound logging issue #1017
+# 170621-2031 - Added missing list_id in log inserts
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
@@ -2053,7 +2054,7 @@ if ($AGILOG) {$agi_string = "callerID changed: $Ynewcallerid";   &agi_output;}
 
 if ($call_handle_method =~ /DIGITID$/)
 	{
-	$stmtA = "INSERT INTO vicidial_log (uniqueid,lead_id,campaign_id,call_date,start_epoch,status,phone_code,phone_number,user,processed) values('$uniqueid','$insert_lead_id','$channel_group','$SQLdate','$now_date_epoch','XFER','$phone_code','$phone_number','$fronter','N')";
+	$stmtA = "INSERT INTO vicidial_log (uniqueid,lead_id,campaign_id,call_date,start_epoch,status,phone_code,phone_number,user,processed,list_id) values('$uniqueid','$insert_lead_id','$channel_group','$SQLdate','$now_date_epoch','XFER','$phone_code','$phone_number','$fronter','N','$list_id')";
 		if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 	$affected_rows = $dbhA->do($stmtA);
 		$dbhP=$dbhA;   $mysql_count='02023';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
@@ -2062,7 +2063,7 @@ if ($call_handle_method =~ /DIGITID$/)
 $insert_xfer_id=0;
 if ($call_handle_method =~ /CLOSER|DIGITID$/)
 	{
-	$stmtA = "INSERT INTO vicidial_xfer_log (lead_id,campaign_id,call_date,phone_code,phone_number,user,closer) values('$insert_lead_id','$channel_group','$SQLdate','$phone_code','$phone_number','$fronter','VDXL')";
+	$stmtA = "INSERT INTO vicidial_xfer_log (lead_id,campaign_id,call_date,phone_code,phone_number,user,closer,list_id) values('$insert_lead_id','$channel_group','$SQLdate','$phone_code','$phone_number','$fronter','VDXL','$list_id')";
 		if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 	$affected_rows = $dbhA->do($stmtA);
 		$dbhP=$dbhA;   $mysql_count='02024';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;

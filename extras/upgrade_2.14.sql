@@ -281,3 +281,18 @@ ALTER TABLE vicidial_agent_log ADD pause_campaign VARCHAR(20) default '';
 ALTER TABLE system_settings ADD hide_inactive_lists ENUM('0','1') default '0';
 
 UPDATE system_settings SET db_schema_version='1508',db_schema_update_date=NOW() where db_schema_version < 1508;
+
+ALTER TABLE phones MODIFY pass VARCHAR(100);
+ALTER TABLE phones MODIFY login_pass VARCHAR(100);
+
+ALTER TABLE vicidial_users MODIFY pass VARCHAR(100) NOT NULL;
+ALTER TABLE vicidial_users MODIFY phone_pass VARCHAR(100);
+ALTER TABLE vicidial_users MODIFY pass_hash VARCHAR(500) default '';
+
+ALTER TABLE vicidial_avatars MODIFY avatar_api_pass VARCHAR(100) default '';
+
+ALTER TABLE system_settings MODIFY default_phone_registration_password VARCHAR(100) default 'test';
+ALTER TABLE system_settings MODIFY default_phone_login_password VARCHAR(100) default 'test';
+ALTER TABLE system_settings MODIFY default_server_password VARCHAR(100) default 'test';
+
+UPDATE system_settings SET db_schema_version='1509',db_schema_update_date=NOW() where db_schema_version < 1509;

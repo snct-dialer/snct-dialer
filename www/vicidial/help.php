@@ -129,6 +129,7 @@
 # 170516-0628 - Added rt_monitor_log_report entry
 # 170529-2337 - Added agent push events entries
 # 170613-0855 - Added hide_inactive_lists
+# 170623-2134 - Changed parameters for password recommendations
 #
 
 
@@ -306,7 +307,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="users-pass">
 <BR>
-<B><?php echo _QXZ("Password"); ?> -</B><?php echo _QXZ("This field is where you put the users password. Must be at least 2 characters in length. A strong user password should be at least 8 characters in length and have lower case and upper case letters as well as at least one number."); ?>
+<B><?php echo _QXZ("Password"); ?> -</B><?php echo _QXZ("This field is where you put the users password. Must be at least 2 characters in length. A medium strength user password will be at least 10 characters in length, and a strong user password will be at least 20 characters in length and have letters as well as at least one number. It is recommended that you use a longer password if possible, stringing together several unrelated words with no spaces, and a number somewhere in the string. The maximum size of a password is 100 characters."); ?>
 
 <BR>
 <A NAME="users-force_change_password">

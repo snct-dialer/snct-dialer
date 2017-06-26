@@ -71,6 +71,7 @@
 # 170113-1633 - Added dynamic call menu in-group option DYNAMIC_INGROUP_VAR for use with cm_phonesearch.agi
 # 170304-1354 - Added Automated Reports section to Admin
 # 170409-0757 - Added IP Lists
+# 170623-2113 - Changed password strength parameters
 #
 
 $stmt="SELECT admin_home_url,enable_tts_integration,callcard_enabled,custom_fields_enabled,allow_emails,level_8_disable_add,allow_chats,enable_languages,admin_row_click,admin_screen_colors,user_new_lead_limit,user_territories_active,qc_features_active,agent_soundboards,enable_drop_lists,allow_ip_lists from system_settings;";
@@ -339,7 +340,6 @@ echo "</title>\n";
 echo "<script language=\"Javascript\">\n";
 echo "var field_name = '';\n";
 echo "var user = '$PHP_AUTH_USER';\n";
-echo "var pass = '$PHP_AUTH_PW';\n";
 echo "var epoch = '" . date("U") . "';\n";
 
 if ($TCedit_javascript > 0)
@@ -579,8 +579,10 @@ if ( ( ($ADD==34) or ($ADD==31) or ($ADD==49) ) and ($SUB==29) and ($LOGmodify_c
 		var pwd_field = document.getElementById(pwd_field_str);
 		var pwd_img = document.getElementById(pwd_img_str);
 
-		var strong_regex = new RegExp( "^(?=.{8,})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])", "g" );
-		var medium_regex = new RegExp( "^(?=.{6,})(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9]))).*$", "g" );
+	//	var strong_regex = new RegExp( "^(?=.{8,})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])", "g" );
+	//	var medium_regex = new RegExp( "^(?=.{6,})(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9]))).*$", "g" );
+		var strong_regex = new RegExp( "^(?=.{20,})(?=.*[a-zA-Z])(?=.*[0-9])", "g" );
+		var medium_regex = new RegExp( "^(?=.{10,})(?=.*[a-zA-Z])(?=.*[0-9])", "g" );
 
 		if (strong_regex.test(pwd_field.value) ) 
 			{
@@ -655,7 +657,7 @@ if ( ($SSadmin_modify_refresh > 1) and (preg_match("/^3|^4/",$ADD)) )
 	<?php
 	}
 
-#### Javascript for auto-generate of user ID Button
+#### BEGIN Javascript for auto-generate of user ID Button
 if ( ($ADD==1) or ($ADD=="1A") )
 	{
 	?>
@@ -687,10 +689,11 @@ if ( ($ADD==1) or ($ADD=="1A") )
 
 	<?php
 	}
+#### END Javascript for auto-generate of user ID Button
 
-#### Javascript for auto-generate of user ID Button
 else
 	{
+	echo "	var pass = '$PHP_AUTH_PW';\n";
 	?>
 	function launch_chooser(fieldname,stage,vposition)
 		{
