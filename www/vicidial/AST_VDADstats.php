@@ -51,6 +51,7 @@
 # 160714-2348 - Added and tested ChartJS features for more aesthetically appealing graphs
 # 170227-1716 - Fix for default HTML report format, issue #997
 # 170409-1555 - Added IP List validation code
+# 170629-2080 - Added download option
 #
 
 $startMS = microtime();
@@ -93,6 +94,8 @@ if (isset($_GET["submit"]))				{$submit=$_GET["submit"];}
 	elseif (isset($_POST["submit"]))	{$submit=$_POST["submit"];}
 if (isset($_GET["SUBMIT"]))				{$SUBMIT=$_GET["SUBMIT"];}
 	elseif (isset($_POST["SUBMIT"]))	{$SUBMIT=$_POST["SUBMIT"];}
+if (isset($_GET["file_download"]))			{$file_download=$_GET["file_download"];}
+	elseif (isset($_POST["file_download"]))	{$file_download=$_POST["file_download"];}
 if (isset($_GET["report_display_type"]))				{$report_display_type=$_GET["report_display_type"];}
 	elseif (isset($_POST["report_display_type"]))	{$report_display_type=$_POST["report_display_type"];}
 if (isset($_GET["search_archived_data"]))			{$search_archived_data=$_GET["search_archived_data"];}
@@ -204,7 +207,7 @@ if ($sl_ct > 0)
 $auth=0;
 $reports_auth=0;
 $admin_auth=0;
-$auth_message = user_authorization($PHP_AUTH_USER,$PHP_AUTH_PW,'REPORTS',1,0);
+$auth_message = user_authorization($PHP_AUTH_USER,$PHP_AUTH_PW,'REPORTS','1','0');
 if ($auth_message == 'GOOD')
 	{$auth=1;}
 
@@ -520,30 +523,27 @@ else
 $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
 $NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
 
-?>
+$HEADER.="<!DOCTYPE HTML>\n";
+$HEADER.="<HEAD>\n";
+$HEADER.="<STYLE type=\"text/css\">\n";
+$HEADER.="<!--\n";
+$HEADER.="   .green {color: white; background-color: green}\n";
+$HEADER.="   .red {color: white; background-color: red}\n";
+$HEADER.="   .blue {color: white; background-color: blue}\n";
+$HEADER.="   .purple {color: white; background-color: purple}\n";
+$HEADER.="-->\n";
+$HEADER.=" </STYLE>\n";
 
-<!DOCTYPE HTML>
-<HEAD>
-<STYLE type="text/css">
-<!--
-   .green {color: white; background-color: green}
-   .red {color: white; background-color: red}
-   .blue {color: white; background-color: blue}
-   .purple {color: white; background-color: purple}
--->
- </STYLE>
+$HEADER.="<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
+$HEADER.="<link rel=\"stylesheet\" href=\"calendar.css\">\n";
+$HEADER.="<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 
-<?php 
+# require("chart_button.php");
 
-echo "<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
-echo "<link rel=\"stylesheet\" href=\"calendar.css\">\n";
-echo "<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
-require("chart_button.php");
-echo "<script src='chart/Chart.js'></script>\n"; 
-echo "<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
+$HEADER_b.="<script src='chart/Chart.js'></script>\n"; 
+$HEADER_b.="<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
+$HEADER_b.="<script language=\"JavaScript\">\n";
 
-
-echo "<script language=\"JavaScript\">\n";
 $list_stmt="select list_id, list_name, campaign_id from vicidial_lists $whereLOGallowed_campaignsSQL order by list_id asc";
 $list_rslt=mysql_to_mysqli($list_stmt, $link);
 $list_rows=mysqli_num_rows($list_rslt);
@@ -573,98 +573,94 @@ if ($list_rows>0) {
 	$list_name_ary_str=preg_replace('/,$/', '', $list_name_ary_str)."];\n";
 	$campaign_id_ary_str=preg_replace('/,$/', '', $campaign_id_ary_str)."];\n";
 
-	echo $list_id_ary_str;
-	echo $list_name_ary_str;
-	echo $campaign_id_ary_str;
+	$HEADER_b.=$list_id_ary_str;
+	$HEADER_b.=$list_name_ary_str;
+	$HEADER_b.=$campaign_id_ary_str;
 }
 
 $list_options.="</select>\n";
-?>
 
-function LoadLists(FromBox) {
-	if (!FromBox) {alert("NO"); return false;}
-	var selectedCampaigns="|";
-	var selectedcamps = new Array();
+$HEADER_b.="function LoadLists(FromBox) {\n";
+$HEADER_b.="	if (!FromBox) {alert(\"NO\"); return false;}\n";
+$HEADER_b.="	var selectedCampaigns=\"|\";\n";
+$HEADER_b.="	var selectedcamps = new Array();\n";
+$HEADER_b.="\n";
+$HEADER_b.="\n";
+$HEADER_b.="\n";
+$HEADER_b.="	for(i = 0; i < document.getElementById('group').options.length; i++) {\n";
+$HEADER_b.="		if (document.getElementById('group').options[i].selected) {\n";
+$HEADER_b.="			selectedCampaigns += document.getElementById('group').options[i].value+\"|\";\n";
+$HEADER_b.="		} \n";
+$HEADER_b.="	}\n";
+$HEADER_b.="\n";
+$HEADER_b.="	// Clear List menu\n";
+$HEADER_b.="	document.getElementById('list_ids').options.length=0;\n";
+$HEADER_b.="	var new_list = new Option();\n";
+$HEADER_b.="	new_list.value = \"--ALL--\";\n";
+$HEADER_b.="	new_list.text = \"--"._QXZ("ALL LISTS")."--\";\n";
+$HEADER_b.="	document.getElementById('list_ids')[0] = new_list;\n";
+$HEADER_b.="\n";
+$HEADER_b.="	list_id_index=1;\n";
+$HEADER_b.="	for (j=0; j<campaign_id_ary.length; j++) {\n";
+$HEADER_b.="		var campaignID=\"/\|\"+campaign_id_ary[j]+\"\|/g\";\n";
+$HEADER_b.="		var campaign_matches = selectedCampaigns.match(campaignID);\n";
+$HEADER_b.="		if (campaign_matches) {\n";
+$HEADER_b.="\n";
+$HEADER_b.="			var new_list = new Option();\n";
+$HEADER_b.="			new_list.value = list_id_ary[j];\n";
+$HEADER_b.="			new_list.text = list_id_ary[j]+\" - \"+list_name_ary[j];\n";
+$HEADER_b.="			document.getElementById('list_ids')[list_id_index] = new_list;\n";
+$HEADER_b.="			list_id_index++;\n";
+$HEADER_b.="		}\n";
+$HEADER_b.="	}\n";
+$HEADER_b.="}\n";
+$HEADER_b.="</script>\n";
 
-
-
-	for(i = 0; i < document.getElementById('group').options.length; i++) {
-		if (document.getElementById('group').options[i].selected) {
-			selectedCampaigns += document.getElementById('group').options[i].value+"|";
-		} 
-	}
-
-	// Clear List menu
-	document.getElementById('list_ids').options.length=0;
-	var new_list = new Option();
-	new_list.value = "--ALL--";
-	new_list.text = "--<?php echo _QXZ("ALL LISTS"); ?>--";
-	document.getElementById('list_ids')[0] = new_list;
-
-	list_id_index=1;
-	for (j=0; j<campaign_id_ary.length; j++) {
-		var campaignID="/\|"+campaign_id_ary[j]+"\|/g";
-		var campaign_matches = selectedCampaigns.match(campaignID);
-		if (campaign_matches) {
-
-			var new_list = new Option();
-			new_list.value = list_id_ary[j];
-			new_list.text = list_id_ary[j]+" - "+list_name_ary[j];
-			document.getElementById('list_ids')[list_id_index] = new_list;
-			list_id_index++;
-		}
-	}
-}
-<?php
-echo "</script>\n";
-
-echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
-echo "<TITLE>"._QXZ("$report_name")."</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
+$HEADER_b.="<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
+$HEADER_b.="<TITLE>"._QXZ("$report_name")."</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 
 $short_header=1;
 $draw_graph=1;
 
-require("admin_header.php");
+# require("admin_header.php");
 
-echo "<b>"._QXZ("$report_name")."</b> $NWB#VDADstats$NWE\n";
-echo "<TABLE CELLPADDING=3 CELLSPACING=0><TR><TD>";
+$MAIN.="<b>"._QXZ("$report_name")."</b> $NWB#VDADstats$NWE\n";
+$MAIN.="<TABLE CELLPADDING=3 CELLSPACING=0><TR><TD>";
 
-echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET name=vicidial_report id=vicidial_report>\n";
-echo "<TABLE CELLPADDING=3 CELLSPACING=0 BGCOLOR=\"#e3e3ff\"><TR><TD VALIGN=TOP> "._QXZ("Dates").":<BR>";
-echo "<INPUT TYPE=HIDDEN NAME=agent_hours VALUE=\"$agent_hours\">\n";
-echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
-echo "<INPUT TYPE=HIDDEN NAME=outbound_rate VALUE=\"$outbound_rate\">\n";
-echo "<INPUT TYPE=HIDDEN NAME=costformat VALUE=\"$costformat\">\n";
-echo "<INPUT TYPE=HIDDEN NAME=print_calls VALUE=\"$print_calls\">\n";
-echo "<INPUT TYPE=TEXT NAME=query_date SIZE=10 MAXLENGTH=10 VALUE=\"$query_date\">";
+$MAIN.="<FORM ACTION=\"$PHP_SELF\" METHOD=GET name=vicidial_report id=vicidial_report>\n";
+$MAIN.="<TABLE CELLPADDING=3 CELLSPACING=0 BGCOLOR=\"#e3e3ff\"><TR><TD VALIGN=TOP> "._QXZ("Dates").":<BR>";
+$MAIN.="<INPUT TYPE=HIDDEN NAME=agent_hours VALUE=\"$agent_hours\">\n";
+$MAIN.="<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
+$MAIN.="<INPUT TYPE=HIDDEN NAME=outbound_rate VALUE=\"$outbound_rate\">\n";
+$MAIN.="<INPUT TYPE=HIDDEN NAME=costformat VALUE=\"$costformat\">\n";
+$MAIN.="<INPUT TYPE=HIDDEN NAME=print_calls VALUE=\"$print_calls\">\n";
+$MAIN.="<INPUT TYPE=TEXT NAME=query_date SIZE=10 MAXLENGTH=10 VALUE=\"$query_date\">";
 
-?>
-<script language="JavaScript">
-var o_cal = new tcal ({
-	// form name
-	'formname': 'vicidial_report',
-	// input name
-	'controlname': 'query_date'
-});
-o_cal.a_tpl.yearscroll = false;
-// o_cal.a_tpl.weekstart = 1; // Monday week start
-</script>
-<?php
+$MAIN.="<script language=\"JavaScript\">\n";
+$MAIN.="var o_cal = new tcal ({\n";
+$MAIN.="	// form name\n";
+$MAIN.="	'formname': 'vicidial_report',\n";
+$MAIN.="	// input name\n";
+$MAIN.="	'controlname': 'query_date'\n";
+$MAIN.="});\n";
+$MAIN.="o_cal.a_tpl.yearscroll = false;\n";
+$MAIN.="// o_cal.a_tpl.weekstart = 1; // Monday week start\n";
+$MAIN.="</script>\n";
 
-echo "<BR> "._QXZ("to")." <BR><INPUT TYPE=TEXT NAME=end_date SIZE=10 MAXLENGTH=10 VALUE=\"$end_date\">";
+$MAIN.="<BR> "._QXZ("to")." <BR><INPUT TYPE=TEXT NAME=end_date SIZE=10 MAXLENGTH=10 VALUE=\"$end_date\">";
 
-?>
-<script language="JavaScript">
-var o_cal = new tcal ({
-	// form name
-	'formname': 'vicidial_report',
-	// input name
-	'controlname': 'end_date'
-});
-o_cal.a_tpl.yearscroll = false;
-// o_cal.a_tpl.weekstart = 1; // Monday week start
-</script>
-<?php
+$MAIN.="<script language=\"JavaScript\">\n";
+$MAIN.="var o_cal = new tcal ({\n";
+$MAIN.="	// form name\n";
+$MAIN.="	'formname': 'vicidial_report',\n";
+$MAIN.="	// input name\n";
+$MAIN.="	'controlname': 'end_date'\n";
+$MAIN.="});\n";
+$MAIN.="o_cal.a_tpl.yearscroll = false;\n";
+$MAIN.="// o_cal.a_tpl.weekstart = 1; // Monday week start\n";
+$MAIN.="</script>\n";
+$MAIN.="\n";
+
 if (preg_match('/MSIE/i', $_SERVER['HTTP_USER_AGENT'])) {
 	$JS_events="onBlur='LoadLists(this.form.group)' onKeyUp='LoadLists(this.form.group)'";
 } else {
@@ -673,83 +669,90 @@ if (preg_match('/MSIE/i', $_SERVER['HTTP_USER_AGENT'])) {
 
 if ($archives_available=="Y") 
 	{
-	echo "<BR><BR><input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."\n";
+	$MAIN.="<BR><BR><input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."\n";
 	}
 
-echo "</TD><TD VALIGN=TOP> "._QXZ("Campaigns").":<BR>";
-echo "<SELECT multiple SIZE=5 NAME=group[] id='group' $JS_events>\n";
+$MAIN.="</TD><TD VALIGN=TOP> "._QXZ("Campaigns").":<BR>";
+$MAIN.="<SELECT multiple SIZE=5 NAME=group[] id='group' $JS_events>\n";
 if  (preg_match('/\-\-ALL\-\-/',$group_string))
-	{echo "<option value=\"--ALL--\" selected>-- "._QXZ("ALL CAMPAIGNS")." --</option>\n";}
+	{$MAIN.="<option value=\"--ALL--\" selected>-- "._QXZ("ALL CAMPAIGNS")." --</option>\n";}
 else
-	{echo "<option value=\"--ALL--\">-- "._QXZ("ALL CAMPAIGNS")." --</option>\n";}
+	{$MAIN.="<option value=\"--ALL--\">-- "._QXZ("ALL CAMPAIGNS")." --</option>\n";}
 $o=0;
 while ($campaigns_to_print > $o)
 	{
-	if (preg_match("/$groups[$o]\|/i",$group_string)) {echo "<option selected value=\"$groups[$o]\">$groups[$o] - $group_names[$o]</option>\n";}
-	  else {echo "<option value=\"$groups[$o]\">$groups[$o] - $group_names[$o]</option>\n";}
+	if (preg_match("/$groups[$o]\|/i",$group_string)) {$MAIN.="<option selected value=\"$groups[$o]\">$groups[$o] - $group_names[$o]</option>\n";}
+	  else {$MAIN.="<option value=\"$groups[$o]\">$groups[$o] - $group_names[$o]</option>\n";}
 	$o++;
 	}
-echo "</SELECT>\n";
-echo "</TD><TD VALIGN=TOP>";
-echo _QXZ("Lists").": <font size=1>("._QXZ("optional, possibly slow").")</font><BR>\n";
-echo $list_options;
-echo "</TD><TD VALIGN=TOP>";
-echo _QXZ("Include Drop")." &nbsp; <BR>"._QXZ("Rollover").":<BR>";
-echo "<SELECT SIZE=1 NAME=include_rollover>\n";
-echo "<option selected value=\"$include_rollover\">$include_rollover</option>\n";
-echo "<option value=\"YES\">"._QXZ("YES")."</option>\n";
-echo "<option value=\"NO\">"._QXZ("NO")."</option>\n";
-echo "</SELECT>\n";
-echo "<BR>"._QXZ("Bottom Graph").": &nbsp; <BR>\n";
-echo "<SELECT SIZE=1 NAME=bottom_graph>\n";
-echo "<option selected value=\"$bottom_graph\">$bottom_graph</option>\n";
-echo "<option value=\"YES\">"._QXZ("YES")."</option>\n";
-echo "<option value=\"NO\">"._QXZ("NO")."</option>\n";
-echo "</SELECT><BR>\n";
+$MAIN.="</SELECT>\n";
+$MAIN.="</TD><TD VALIGN=TOP>";
+$MAIN.=_QXZ("Lists").": <font size=1>("._QXZ("optional, possibly slow").")</font><BR>\n";
+$MAIN.=$list_options;
+$MAIN.="</TD><TD VALIGN=TOP>";
+$MAIN.=_QXZ("Include Drop")." &nbsp; <BR>"._QXZ("Rollover").":<BR>";
+$MAIN.="<SELECT SIZE=1 NAME=include_rollover>\n";
+$MAIN.="<option selected value=\"$include_rollover\">$include_rollover</option>\n";
+$MAIN.="<option value=\"YES\">"._QXZ("YES")."</option>\n";
+$MAIN.="<option value=\"NO\">"._QXZ("NO")."</option>\n";
+$MAIN.="</SELECT>\n";
+$MAIN.="<BR>"._QXZ("Bottom Graph").": &nbsp; <BR>\n";
+$MAIN.="<SELECT SIZE=1 NAME=bottom_graph>\n";
+$MAIN.="<option selected value=\"$bottom_graph\">$bottom_graph</option>\n";
+$MAIN.="<option value=\"YES\">"._QXZ("YES")."</option>\n";
+$MAIN.="<option value=\"NO\">"._QXZ("NO")."</option>\n";
+$MAIN.="</SELECT><BR>\n";
 if ($carrier_logging_active > 0)
 	{
-	echo "</TD><TD VALIGN=TOP>"._QXZ("Carrier Stats").": &nbsp; <BR>";
-	echo "<SELECT SIZE=1 NAME=carrier_stats>\n";
-	echo "<option selected value=\"$carrier_stats\">$carrier_stats</option>\n";
-	echo "<option value=\"YES\">"._QXZ("YES")."</option>\n";
-	echo "<option value=\"NO\">"._QXZ("NO")."</option>\n";
-	echo "</SELECT>\n";
+	$MAIN.="</TD><TD VALIGN=TOP>"._QXZ("Carrier Stats").": &nbsp; <BR>";
+	$MAIN.="<SELECT SIZE=1 NAME=carrier_stats>\n";
+	$MAIN.="<option selected value=\"$carrier_stats\">$carrier_stats</option>\n";
+	$MAIN.="<option value=\"YES\">"._QXZ("YES")."</option>\n";
+	$MAIN.="<option value=\"NO\">"._QXZ("NO")."</option>\n";
+	$MAIN.="</SELECT>\n";
 	}
-echo "<BR><BR>"._QXZ("Display as").":<BR>";
-echo "<select name='report_display_type'>";
-if ($report_display_type) {echo "<option value='$report_display_type' selected>$report_display_type</option>";}
-echo "<option value='TEXT'>TEXT</option><option value='HTML'>HTML</option></select>\n<BR>";
-echo "</TD><TD VALIGN=TOP>"._QXZ("Shift").": &nbsp; <BR>";
-echo "<SELECT SIZE=1 NAME=shift>\n";
-echo "<option selected value=\"$shift\">$shift</option>\n";
-echo "<option value=\"\">--</option>\n";
-echo "<option value=\"AM\">"._QXZ("AM")."</option>\n";
-echo "<option value=\"PM\">"._QXZ("PM")."</option>\n";
-echo "<option value=\"ALL\">"._QXZ("ALL")."</option>\n";
-echo "</SELECT><BR><BR>\n";
-echo "<INPUT type=submit NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'>\n";
-echo "</TD><TD VALIGN=TOP> &nbsp; &nbsp; &nbsp; &nbsp; ";
-echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+$MAIN.="<BR><BR>"._QXZ("Display as").":<BR>";
+$MAIN.="<select name='report_display_type'>";
+if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>$report_display_type</option>";}
+$MAIN.="<option value='TEXT'>TEXT</option><option value='HTML'>HTML</option></select>\n<BR>";
+$MAIN.="</TD><TD VALIGN=TOP>"._QXZ("Shift").": &nbsp; <BR>";
+$MAIN.="<SELECT SIZE=1 NAME=shift>\n";
+$MAIN.="<option selected value=\"$shift\">$shift</option>\n";
+$MAIN.="<option value=\"\">--</option>\n";
+$MAIN.="<option value=\"AM\">"._QXZ("AM")."</option>\n";
+$MAIN.="<option value=\"PM\">"._QXZ("PM")."</option>\n";
+$MAIN.="<option value=\"ALL\">"._QXZ("ALL")."</option>\n";
+$MAIN.="</SELECT><BR><BR>\n";
+$MAIN.="<INPUT type=submit NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'>\n";
+$MAIN.="</TD><TD VALIGN=TOP> &nbsp; &nbsp; &nbsp; &nbsp; ";
+$MAIN.="<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+$MAIN.="<a href=\"$PHP_SELF?agent_hours=$agent_hours&outbound_rate=$outbound_rate&costformat=$costformat&print_calls=$print_calls&query_date=$query_date&end_date=$end_date$groupQS$list_idQS&include_rollover=$include_rollover&bottom_graph=$bottom_graph&carrier_stats=$carrier_stats&report_display_type=$report_display_type&shift=$shift&SUBMIT=$SUBMIT&file_download=1\">"._QXZ("DOWNLOAD")."</a> |";
 if (strlen($group[0]) > 1)
 	{
-	echo " <a href=\"./admin.php?ADD=34&campaign_id=$group[0]\">"._QXZ("MODIFY")."</a> | \n";
-	echo " <a href=\"./admin.php?ADD=999999\">"._QXZ("REPORTS")."</a> </FONT>\n";
+	$MAIN.=" <a href=\"./admin.php?ADD=34&campaign_id=$group[0]\">"._QXZ("MODIFY")."</a> | \n";
+	$MAIN.=" <a href=\"./admin.php?ADD=999999\">"._QXZ("REPORTS")."</a> </FONT>\n";
 	}
 else
 	{
-	echo " <a href=\"./admin.php?ADD=10\">"._QXZ("CAMPAIGNS")."</a> | \n";
-	echo " <a href=\"./admin.php?ADD=999999\">"._QXZ("REPORTS")."</a> </FONT>\n";
+	$MAIN.=" <a href=\"./admin.php?ADD=10\">"._QXZ("CAMPAIGNS")."</a> | \n";
+	$MAIN.=" <a href=\"./admin.php?ADD=999999\">"._QXZ("REPORTS")."</a> </FONT>\n";
 	}
-echo "</TD></TR></TABLE>";
-echo "</FORM>\n\n";
+$MAIN.="</TD></TR></TABLE>";
+$MAIN.="</FORM>\n\n";
 
-echo "<PRE><FONT SIZE=2>\n\n";
-
+$MAIN.="<PRE><FONT SIZE=2>\n\n";
 
 if (strlen($group[0]) < 1)
 	{
-	echo "\n\n";
-	echo _QXZ("PLEASE SELECT A CAMPAIGN AND DATE ABOVE AND CLICK SUBMIT")."\n";
+	$MAIN.="\n\n";
+	$MAIN.=_QXZ("PLEASE SELECT A CAMPAIGN AND DATE ABOVE AND CLICK SUBMIT")."\n";
+
+	echo $HEADER;
+	require("chart_button.php");
+	echo $HEADER_b;
+	require("admin_header.php");
+	echo $MAIN;
+
 	}
 
 else
@@ -779,10 +782,14 @@ else
 
 	$OUToutput = '';
 	$OUToutput .= _QXZ("Outbound Calling Stats",50)."   $NOW_TIME\n";
-
 	$OUToutput .= "\n";
 	$OUToutput .= _QXZ("Time range").": $query_date_BEGIN "._QXZ("to")." $query_date_END\n\n";
 	$OUToutput .= "---------- "._QXZ("TOTALS")."\n";
+
+	$CSV_text="";
+	$CSV_text.="\""._QXZ("Outbound Calling Stats")."\",\"$NOW_TIME\"\n\n";
+	$CSV_text.="\""._QXZ("Time range").":\",\"$query_date_BEGIN "._QXZ("to")." $query_date_END\"\n\n";
+	$CSV_text.="\"---------- "._QXZ("TOTALS")."\"\n";
 
 	$stmt="select count(*),sum(length_in_sec) from ".$vicidial_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $group_SQLand $list_id_SQLand;";
 	$rslt=mysql_to_mysqli($stmt, $link);
@@ -831,15 +838,26 @@ else
 
 	$OUToutput .= _QXZ("Total Calls placed from this Campaign").":        $TOTALcalls\n";
 	$OUToutput .= _QXZ("Average Call Length for all Calls in seconds").": $average_call_seconds\n";
+	$CSV_text .= "\""._QXZ("Total Calls placed from this Campaign").":\",\"$TOTALcalls\"\n";
+	$CSV_text .= "\""._QXZ("Average Call Length for all Calls in seconds").":\",\"$average_call_seconds\"\n";
 	if (preg_match("/YES/i",$include_rollover))
-		{$OUToutput .= _QXZ("Calls that went to rollover In-Group").":         $inTOTALcalls\n";}
+		{
+		$OUToutput .= _QXZ("Calls that went to rollover In-Group").":         $inTOTALcalls\n";
+		$CSV_text .= "\""._QXZ("Calls that went to rollover In-Group").":\",\"$inTOTALcalls\"\n";
+		}
 
 
 	$OUToutput .= "\n";
 	$OUToutput .= "---------- "._QXZ("HUMAN ANSWERS");
+	$CSV_text .= "\n";
+	$CSV_text .= "\"---------- "._QXZ("HUMAN ANSWERS")."\",";
 	if ( ($SSofcom_uk_drop_calc > 0) and ($ofcom_uk_drop_calc > 0) )
-		{$OUToutput .= "<font color=blue>(uk)</font>";}
+		{
+		$OUToutput .= "<font color=blue>(uk)</font>";
+		$CSV_text .= "\"(uk)\",";
+		}
 	$OUToutput .= "\n";
+	$CSV_text .= "\n";
 
 	### UK OFCOM test
 	if ( ($SSofcom_uk_drop_calc > 0) and ($ofcom_uk_drop_calc > 0) )
@@ -902,13 +920,19 @@ else
 
 	$OUToutput .= _QXZ("Total Human Answered calls for this Campaign").": $CIcalls\n";
 	$OUToutput .= _QXZ("Average Call Length for all HA in seconds").":    $average_ci_seconds     "._QXZ("Total Time").": $CIsec\n";
-
-
 	$OUToutput .= "\n";
 	$OUToutput .= "---------- "._QXZ("DROPS");
+	$CSV_text .= "\""._QXZ("Total Human Answered calls for this Campaign").":\",\"$CIcalls\"\n";
+	$CSV_text .= "\""._QXZ("Average Call Length for all HA in seconds").":\",\"$average_ci_seconds\",\""._QXZ("Total Time").":\",\"$CIsec\"\n";
+	$CSV_text .= "\n";
+	$CSV_text .= "\"---------- "._QXZ("DROPS")."\"";
 	if ( ($SSofcom_uk_drop_calc > 0) and ($ofcom_uk_drop_calc > 0) )
-		{$OUToutput .= "<font color=blue>(uk)</font>";}
+		{
+		$OUToutput .= "<font color=blue>(uk)</font>";
+		$CSV_text .= "\"(uk)\"";
+		}
 	$OUToutput .= "\n";
+	$CSV_text .= "\n";
 
 	$stmt="select count(*),sum(length_in_sec) from ".$vicidial_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $group_SQLand $list_id_SQLand and status='DROP' and (length_in_sec <= 6000 or length_in_sec is null);";
 	$rslt=mysql_to_mysqli($stmt, $link);
@@ -1022,13 +1046,33 @@ else
 
 	$OUToutput .= _QXZ("Total Outbound DROP Calls",44).": $DROPcalls  $DROPpercent%\n";
 	$OUToutput .= _QXZ("Percent of DROP Calls taken out of Answers",44).": $DROPcallsA / ";
-	if ( ($SSofcom_uk_drop_calc > 0) and ($ofcom_uk_drop_calc > 0) ) {$OUToutput .= "$temp_answers_today";}
-	else {$OUToutput .= ($ANSWERcalls+($DROPcallsRAW*$DROPANSWERpercent_adjustment));}
+	$CSV_text .= "\""._QXZ("Total Outbound DROP Calls").":\",\"$DROPcalls\",\"$DROPpercent%\"\n";
+	$CSV_text .= "\""._QXZ("Percent of DROP Calls taken out of Answers").":\",\"$DROPcallsA / ";
+	if ( ($SSofcom_uk_drop_calc > 0) and ($ofcom_uk_drop_calc > 0) ) 
+		{
+		$OUToutput .= "$temp_answers_today";
+		$CSV_text .= "$temp_answers_today";
+		}
+	else 
+		{
+		$OUToutput .= ($ANSWERcalls+($DROPcallsRAW*$DROPANSWERpercent_adjustment));
+		$CSV_text .= ($ANSWERcalls+($DROPcallsRAW*$DROPANSWERpercent_adjustment));
+		}
 	$OUToutput .= "  $DROPANSWERpercent%";
-	if ( ($SSofcom_uk_drop_calc > 0) and ($ofcom_uk_drop_calc > 0) ) {$OUToutput .= "   <font color=blue>(uk)</font>";}
+	$CSV_text .= "\",\"$DROPANSWERpercent%\"";
+	if ( ($SSofcom_uk_drop_calc > 0) and ($ofcom_uk_drop_calc > 0) ) 
+		{
+		$OUToutput .= "   <font color=blue>(uk)</font>";
+		$CSV_text .= "\"(uk)\",";
+		}
 
-	if ( ($DB > 0) and ($SSofcom_uk_drop_calc > 0) and ($ofcom_uk_drop_calc > 0) ) {$OUToutput .= "     detail: $ukDROPdebug";}
+	if ( ($DB > 0) and ($SSofcom_uk_drop_calc > 0) and ($ofcom_uk_drop_calc > 0) ) 
+		{
+		$OUToutput .= "     detail: $ukDROPdebug";
+		$CSV_text .= "\",\"detail:\",\"$ukDROPdebug\"";
+		}
 	$OUToutput .= "\n";
+	$CSV_text .= "\n";
 
 	if (preg_match("/YES/i",$include_rollover))
 		{
@@ -1036,9 +1080,11 @@ else
 		$inDROPANSWERpercent = round($inDROPANSWERpercent, 2);
 
 		$OUToutput .= _QXZ("Percent of DROP/Answer Calls with Rollover",44).": $DROPcalls / $CIcallsRAW  $inDROPANSWERpercent%\n";
+		$CSV_text .= "\""._QXZ("Percent of DROP/Answer Calls with Rollover").":\",\"$DROPcalls / $CIcallsRAW\",\"$inDROPANSWERpercent%\"\n";
 		}
 
 	$OUToutput .= _QXZ("Average Length for DROP Calls in seconds",44).": $average_hold_seconds\n";
+	$CSV_text .= "\""._QXZ("Average Length for DROP Calls in seconds").":\",\"$average_hold_seconds\"\n";
 
 	$stmt = "select closer_campaigns from vicidial_campaigns $group_SQL;";
 	$rslt=mysql_to_mysqli($stmt, $link);
@@ -1074,8 +1120,10 @@ else
 
 	if ($skip_productivity_calc) {
 		$OUToutput .= _QXZ("Productivity Rating",44).": N/A\n";
+		$CSV_text .= "\""._QXZ("Productivity Rating").":\",\"N/A\"\n";
 	} else {
 		$OUToutput .= _QXZ("Productivity Rating",44).": $AVG_ANSWERagent_non_pause_sec\n";
+		$CSV_text .= "\""._QXZ("Productivity Rating").":\",\"$AVG_ANSWERagent_non_pause_sec\"\n";
 	}
 
 
@@ -1083,6 +1131,8 @@ else
 
 	$OUToutput .= "\n";
 	$OUToutput .= "---------- "._QXZ("NO ANSWERS")."\n";
+	$CSV_text .= "\n";
+	$CSV_text .= "\"---------- "._QXZ("NO ANSWERS")."\"\n";
 
 	$stmt="select count(*),sum(length_in_sec) from ".$vicidial_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $group_SQLand $list_id_SQLand and status IN('NA','ADC','AB','CPDB','CPDUK','CPDATB','CPDNA','CPDREJ','CPDINV','CPDSUA','CPDSI','CPDSNC','CPDSR','CPDSUK','CPDSV','CPDERR') and (length_in_sec <= 60 or length_in_sec is null);";
 	$rslt=mysql_to_mysqli($stmt, $link);
@@ -1111,6 +1161,10 @@ else
 	$OUToutput .= _QXZ("Total auto NA calls -system-set",44).": $autoNAcalls\n";
 	$OUToutput .= _QXZ("Total manual NA calls -agent-set",44).": $manualNAcalls\n";
 	$OUToutput .= _QXZ("Average Call Length for NA Calls in seconds",44).": $average_na_seconds\n";
+	$CSV_text .= "\""._QXZ("Total NA calls -Busy,Disconnect,RingNoAnswer").":\",\"$totalNAcalls\",\"$NApercent%\"\n";
+	$CSV_text .= "\""._QXZ("Total auto NA calls -system-set").":\",\"$autoNAcalls\"\n";
+	$CSV_text .= "\""._QXZ("Total manual NA calls -agent-set").":\",\"$manualNAcalls\"\n";
+	$CSV_text .= "\""._QXZ("Average Call Length for NA Calls in seconds").":\",\"$average_na_seconds\"\n";
 
 
 	##############################
@@ -1123,6 +1177,9 @@ else
 	$ASCII_text .= "+----------------------+------------+\n";
 	$ASCII_text .= "| "._QXZ("HANGUP REASON",20)." | "._QXZ("CALLS",10)." |\n";
 	$ASCII_text .= "+----------------------+------------+\n";
+	$CSV_text .= "\n";
+	$CSV_text .= "\"---------- "._QXZ("CALL HANGUP REASON STATS")."\"\n";
+	$CSV_text .= "\""._QXZ("HANGUP REASON")."\",\""._QXZ("CALLS")."\"\n";
 
 	$stmt="select count(*),term_reason from ".$vicidial_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $group_SQLand $list_id_SQLand group by term_reason;";
 	if ($non_latin > 0) {$rslt=mysql_to_mysqli("SET NAMES 'UTF8'", $link);}
@@ -1142,6 +1199,7 @@ else
 		if (preg_match('/CALLER/',$reason)) {$reason = _QXZ("CUSTOMER",20);}
 
 		$ASCII_text .= "| $reason | $REASONcount |\n";
+		$CSV_text .= "\"$reason\",\"$REASONcount\"\n";
 
 		if ($row[0]>$max_calls) {$max_calls=$row[0];}
 		$graph_stats[$i][0]=$row[0];
@@ -1154,6 +1212,7 @@ else
 	$ASCII_text .= "+----------------------+------------+\n";
 	$ASCII_text .= "| "._QXZ("TOTAL",19).": | $TOTALcalls |\n";
 	$ASCII_text .= "+----------------------+------------+\n";
+	$CSV_text .= "\""._QXZ("TOTAL").":\",\"".trim($TOTALcalls)."\"\n";
 
     #########
 	$graph_array=array("CHRSdata|||integer|");
@@ -1163,72 +1222,73 @@ else
 
 	$graph_totals_array=array();
 	$graph_totals_rawdata=array();
-	for ($q=0; $q<count($graph_array); $q++) {
-		$graph_info=explode("|", $graph_array[$q]); 
-		$current_graph_total=0;
-		$dataset_name=$graph_info[0];
-		$dataset_index=$graph_info[1]; $dataset_type=$graph_info[3];
-		if ($q==0) {$preload_dataset=$dataset_name;}  # Used below to load initial graph
+	if ($report_display_type=="HTML") {
+		for ($q=0; $q<count($graph_array); $q++) {
+			$graph_info=explode("|", $graph_array[$q]); 
+			$current_graph_total=0;
+			$dataset_name=$graph_info[0];
+			$dataset_index=$graph_info[1]; $dataset_type=$graph_info[3];
+			if ($q==0) {$preload_dataset=$dataset_name;}  # Used below to load initial graph
 
-		$JS_text.="var $dataset_name = {\n";
-		# $JS_text.="\ttype: \"\",\n";
-		# $JS_text.="\t\tdata: {\n";
-		$datasets="\t\tdatasets: [\n";
-		$datasets.="\t\t\t{\n";
-		$datasets.="\t\t\t\tlabel: \"\",\n";
-		$datasets.="\t\t\t\tfill: false,\n";
+			$JS_text.="var $dataset_name = {\n";
+			# $JS_text.="\ttype: \"\",\n";
+			# $JS_text.="\t\tdata: {\n";
+			$datasets="\t\tdatasets: [\n";
+			$datasets.="\t\t\t{\n";
+			$datasets.="\t\t\t\tlabel: \"\",\n";
+			$datasets.="\t\t\t\tfill: false,\n";
 
-		$labels="\t\tlabels:[";
-		$data="\t\t\t\tdata: [";
-		$graphConstantsA="\t\t\t\tbackgroundColor: [";
-		$graphConstantsB="\t\t\t\thoverBackgroundColor: [";
-		$graphConstantsC="\t\t\t\thoverBorderColor: [";
-		for ($d=0; $d<count($graph_stats); $d++) {
-			$labels.="\"".$graph_stats[$d][1]."\",";
-			$data.="\"".$graph_stats[$d][0]."\","; 
-			$current_graph_total+=$graph_stats[$d][0];
-			$bgcolor=$backgroundColor[($d%count($backgroundColor))];
-			$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
-			$hbcolor=$hoverBorderColor[($d%count($hoverBorderColor))];
-			$graphConstantsA.="\"$bgcolor\",";
-			$graphConstantsB.="\"$hbgcolor\",";
-			$graphConstantsC.="\"$hbcolor\",";
-		}	
-		$graphConstantsA.="],\n";
-		$graphConstantsB.="],\n";
-		$graphConstantsC.="],\n";
-		$labels=preg_replace('/,$/', '', $labels)."],\n";
-		$data=preg_replace('/,$/', '', $data)."],\n";
-		
-		$graph_totals_rawdata[$q]=$current_graph_total;
-		switch($dataset_type) {
-			case "time":
-				$graph_totals_array[$q]="  <caption align=\"bottom\">"._QXZ("TOTAL")." - ".sec_convert($current_graph_total, 'H')." </caption>\n";
-				$chart_options="options: {tooltips: {callbacks: {label: function(tooltipItem, data) {var value = Math.round(data.datasets[0].data[tooltipItem.index]); return value.toHHMMSS();}}}, legend: { display: false }},";
-				break;
-			case "percent":
-				$graph_totals_array[$q]="";
-				$chart_options="options: {tooltips: {callbacks: {label: function(tooltipItem, data) {var value = data.datasets[0].data[tooltipItem.index]; return value + '%';}}}, legend: { display: false }},";
-				break;
-			default:
-				$graph_totals_array[$q]="  <caption align=\"bottom\">"._QXZ("TOTAL").": $current_graph_total</caption>\n";
-				$chart_options="options: { legend: { display: false }},";
-				break;
+			$labels="\t\tlabels:[";
+			$data="\t\t\t\tdata: [";
+			$graphConstantsA="\t\t\t\tbackgroundColor: [";
+			$graphConstantsB="\t\t\t\thoverBackgroundColor: [";
+			$graphConstantsC="\t\t\t\thoverBorderColor: [";
+			for ($d=0; $d<count($graph_stats); $d++) {
+				$labels.="\"".$graph_stats[$d][1]."\",";
+				$data.="\"".$graph_stats[$d][0]."\","; 
+				$current_graph_total+=$graph_stats[$d][0];
+				$bgcolor=$backgroundColor[($d%count($backgroundColor))];
+				$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
+				$hbcolor=$hoverBorderColor[($d%count($hoverBorderColor))];
+				$graphConstantsA.="\"$bgcolor\",";
+				$graphConstantsB.="\"$hbgcolor\",";
+				$graphConstantsC.="\"$hbcolor\",";
+			}	
+			$graphConstantsA.="],\n";
+			$graphConstantsB.="],\n";
+			$graphConstantsC.="],\n";
+			$labels=preg_replace('/,$/', '', $labels)."],\n";
+			$data=preg_replace('/,$/', '', $data)."],\n";
+			
+			$graph_totals_rawdata[$q]=$current_graph_total;
+			switch($dataset_type) {
+				case "time":
+					$graph_totals_array[$q]="  <caption align=\"bottom\">"._QXZ("TOTAL")." - ".sec_convert($current_graph_total, 'H')." </caption>\n";
+					$chart_options="options: {tooltips: {callbacks: {label: function(tooltipItem, data) {var value = Math.round(data.datasets[0].data[tooltipItem.index]); return value.toHHMMSS();}}}, legend: { display: false }},";
+					break;
+				case "percent":
+					$graph_totals_array[$q]="";
+					$chart_options="options: {tooltips: {callbacks: {label: function(tooltipItem, data) {var value = data.datasets[0].data[tooltipItem.index]; return value + '%';}}}, legend: { display: false }},";
+					break;
+				default:
+					$graph_totals_array[$q]="  <caption align=\"bottom\">"._QXZ("TOTAL").": $current_graph_total</caption>\n";
+					$chart_options="options: { legend: { display: false }},";
+					break;
+			}
+
+			$datasets.=$data;
+			$datasets.=$graphConstantsA.$graphConstantsB.$graphConstantsC.$graphConstants; # SEE TOP OF SCRIPT
+			$datasets.="\t\t\t}\n";
+			$datasets.="\t\t]\n";
+			$datasets.="\t}\n";
+
+			$JS_text.=$labels.$datasets;
+			# $JS_text.="}\n";
+			# $JS_text.="prepChart('$default_graph', $graph_id, $q, $dataset_name);\n";
+			$JS_text.="var main_ctx = document.getElementById(\"CanvasID".$graph_id."_".$q."\");\n";
+			$JS_text.="var GraphID".$graph_id."_".$q." = new Chart(main_ctx, {type: '$default_graph', $chart_options data: $dataset_name});\n";
 		}
-
-		$datasets.=$data;
-		$datasets.=$graphConstantsA.$graphConstantsB.$graphConstantsC.$graphConstants; # SEE TOP OF SCRIPT
-		$datasets.="\t\t\t}\n";
-		$datasets.="\t\t]\n";
-		$datasets.="\t}\n";
-
-		$JS_text.=$labels.$datasets;
-		# $JS_text.="}\n";
-		# $JS_text.="prepChart('$default_graph', $graph_id, $q, $dataset_name);\n";
-		$JS_text.="var main_ctx = document.getElementById(\"CanvasID".$graph_id."_".$q."\");\n";
-		$JS_text.="var GraphID".$graph_id."_".$q." = new Chart(main_ctx, {type: '$default_graph', $chart_options data: $dataset_name});\n";
 	}
-
 	$graph_count=count($graph_array);
 	$graph_title=_QXZ("CALL HANGUP REASON STATS");
 	include("graphcanvas.inc");
@@ -1247,6 +1307,9 @@ else
 	$ASCII_text .= "|        |                      |                      |            | "._QXZ("CALL TIME",32)." |"._QXZ("AGENT TIME",10)."|\n";
 	$ASCII_text .= "| "._QXZ("STATUS",6)." | "._QXZ("DESCRIPTION",20)." | "._QXZ("CATEGORY",20)." | "._QXZ("CALLS",10)." | "._QXZ("TOTAL TIME",10)." | "._QXZ("AVG TIME",8)." |"._QXZ("CALLS/HOUR",10)."|"._QXZ("CALLS/HOUR",10)."|\n";
 	$ASCII_text .= "+--------+----------------------+----------------------+------------+------------+----------+----------+----------+\n";
+	$CSV_text .= "\n";
+	$CSV_text .= "\"---------- "._QXZ("CALL STATUS STATS")."\"\n";
+	$CSV_text .= "\""._QXZ("STATUS")."\",\""._QXZ("DESCRIPTION")."\",\""._QXZ("CATEGORY")."\",\""._QXZ("CALLS")."\",\""._QXZ("TOTAL CALL TIME")."\",\""._QXZ("AVG CALL TIME")."\",\""._QXZ("CALLS/HOUR")."\",\""._QXZ("AGENT CALLS/HOUR")."\"\n";
 
 	######## GRAPHING #########
 #	$GRAPH="<BR><BR><a name='cssgraph'/><table border='0' cellpadding='0' cellspacing='2' width='800'>";
@@ -1406,6 +1469,7 @@ else
 		$graph_stats[$i][0]="$status - $status_name - $statcat";
 
 		$ASCII_text .= "| $status | $status_name | $statcat | $STATUScount | $STATUShours | $STATUSavg | $STATUSrate | $AGENTrate | \n";
+		$CSV_text .= "\"$status\",\"$status_name\",\"$statcat\",\"$STATUScount\",\"$STATUShours\",\"$STATUSavg\",\"$STATUSrate\",\"$AGENTrate\"\n";
 
 		$i++;
 		}
@@ -1431,6 +1495,7 @@ else
 	$ASCII_text .= "| "._QXZ("TOTAL",51).": | $TOTALcalls | $TOTALhours | $TOTALavg | $TOTALrate |          |\n";
 #	$ASCII_text .= "|   AGENT TIME                                                      | $aTOTALhours |                     | $aTOTALrate |\n";
 	$ASCII_text .= "+------------------------------------------------------+------------+------------+---------------------+----------+\n";
+	$CSV_text .= "\"\",\"\",\""._QXZ("TOTAL").":\",\"$TOTALcalls\",\"$TOTALhours\",\"$TOTALavg\",\"$TOTALrate\"\n";
 
 	# USE THIS FOR multiple graphs, use pipe-delimited array elements, dataset_name|index|link_name
 	$multigraph_text="";
@@ -1441,72 +1506,73 @@ else
 
 	$graph_totals_array=array();
 	$graph_totals_rawdata=array();
-	for ($q=0; $q<count($graph_array); $q++) {
-		$graph_info=explode("|", $graph_array[$q]); 
-		$current_graph_total=0;
-		$dataset_name=$graph_info[0];
-		$dataset_index=$graph_info[1]; 
-		$dataset_type=$graph_info[3];
+	if ($report_display_type=="HTML") {
+		for ($q=0; $q<count($graph_array); $q++) {
+			$graph_info=explode("|", $graph_array[$q]); 
+			$current_graph_total=0;
+			$dataset_name=$graph_info[0];
+			$dataset_index=$graph_info[1]; 
+			$dataset_type=$graph_info[3];
 
-		$JS_text.="var $dataset_name = {\n";
-		# $JS_text.="\ttype: \"\",\n";
-		# $JS_text.="\t\tdata: {\n";
-		$datasets="\t\tdatasets: [\n";
-		$datasets.="\t\t\t{\n";
-		$datasets.="\t\t\t\tlabel: \"\",\n";
-		$datasets.="\t\t\t\tfill: false,\n";
+			$JS_text.="var $dataset_name = {\n";
+			# $JS_text.="\ttype: \"\",\n";
+			# $JS_text.="\t\tdata: {\n";
+			$datasets="\t\tdatasets: [\n";
+			$datasets.="\t\t\t{\n";
+			$datasets.="\t\t\t\tlabel: \"\",\n";
+			$datasets.="\t\t\t\tfill: false,\n";
 
-		$labels="\t\tlabels:[";
-		$data="\t\t\t\tdata: [";
-		$graphConstantsA="\t\t\t\tbackgroundColor: [";
-		$graphConstantsB="\t\t\t\thoverBackgroundColor: [";
-		$graphConstantsC="\t\t\t\thoverBorderColor: [";
-		for ($d=0; $d<count($graph_stats); $d++) {
-			$labels.="\"".preg_replace('/ +/', ' ', $graph_stats[$d][0])."\",";
-			$data.="\"".$graph_stats[$d][$dataset_index]."\","; 
-			$current_graph_total+=$graph_stats[$d][$dataset_index];
-			$bgcolor=$backgroundColor[($d%count($backgroundColor))];
-			$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
-			$hbcolor=$hoverBorderColor[($d%count($hoverBorderColor))];
-			$graphConstantsA.="\"$bgcolor\",";
-			$graphConstantsB.="\"$hbgcolor\",";
-			$graphConstantsC.="\"$hbcolor\",";
-		}	
-		$graphConstantsA.="],\n";
-		$graphConstantsB.="],\n";
-		$graphConstantsC.="],\n";
-		$labels=preg_replace('/,$/', '', $labels)."],\n";
-		$data=preg_replace('/,$/', '', $data)."],\n";
-		
-		$graph_totals_rawdata[$q]=$current_graph_total;
-		switch($dataset_type) {
-			case "time":
-				$graph_totals_array[$q]="  <caption align=\"bottom\">"._QXZ("TOTAL")." - ".sec_convert($current_graph_total, 'H')." </caption>\n";
-				$chart_options="options: {tooltips: {callbacks: {label: function(tooltipItem, data) {var value = Math.round(data.datasets[0].data[tooltipItem.index]); return value.toHHMMSS();}}}, legend: { display: false }},";
-				break;
-			case "percent":
-				$graph_totals_array[$q]="";
-				$chart_options="options: {tooltips: {callbacks: {label: function(tooltipItem, data) {var value = data.datasets[0].data[tooltipItem.index]; return value + '%';}}}, legend: { display: false }},";
-				break;
-			default:
-				$graph_totals_array[$q]="  <caption align=\"bottom\">"._QXZ("TOTAL").": $current_graph_total</caption>\n";
-				$chart_options="options: { legend: { display: false }},";
-				break;
+			$labels="\t\tlabels:[";
+			$data="\t\t\t\tdata: [";
+			$graphConstantsA="\t\t\t\tbackgroundColor: [";
+			$graphConstantsB="\t\t\t\thoverBackgroundColor: [";
+			$graphConstantsC="\t\t\t\thoverBorderColor: [";
+			for ($d=0; $d<count($graph_stats); $d++) {
+				$labels.="\"".preg_replace('/ +/', ' ', $graph_stats[$d][0])."\",";
+				$data.="\"".$graph_stats[$d][$dataset_index]."\","; 
+				$current_graph_total+=$graph_stats[$d][$dataset_index];
+				$bgcolor=$backgroundColor[($d%count($backgroundColor))];
+				$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
+				$hbcolor=$hoverBorderColor[($d%count($hoverBorderColor))];
+				$graphConstantsA.="\"$bgcolor\",";
+				$graphConstantsB.="\"$hbgcolor\",";
+				$graphConstantsC.="\"$hbcolor\",";
+			}	
+			$graphConstantsA.="],\n";
+			$graphConstantsB.="],\n";
+			$graphConstantsC.="],\n";
+			$labels=preg_replace('/,$/', '', $labels)."],\n";
+			$data=preg_replace('/,$/', '', $data)."],\n";
+			
+			$graph_totals_rawdata[$q]=$current_graph_total;
+			switch($dataset_type) {
+				case "time":
+					$graph_totals_array[$q]="  <caption align=\"bottom\">"._QXZ("TOTAL")." - ".sec_convert($current_graph_total, 'H')." </caption>\n";
+					$chart_options="options: {tooltips: {callbacks: {label: function(tooltipItem, data) {var value = Math.round(data.datasets[0].data[tooltipItem.index]); return value.toHHMMSS();}}}, legend: { display: false }},";
+					break;
+				case "percent":
+					$graph_totals_array[$q]="";
+					$chart_options="options: {tooltips: {callbacks: {label: function(tooltipItem, data) {var value = data.datasets[0].data[tooltipItem.index]; return value + '%';}}}, legend: { display: false }},";
+					break;
+				default:
+					$graph_totals_array[$q]="  <caption align=\"bottom\">"._QXZ("TOTAL").": $current_graph_total</caption>\n";
+					$chart_options="options: { legend: { display: false }},";
+					break;
+			}
+
+			$datasets.=$data;
+			$datasets.=$graphConstantsA.$graphConstantsB.$graphConstantsC.$graphConstants; # SEE TOP OF SCRIPT
+			$datasets.="\t\t\t}\n";
+			$datasets.="\t\t]\n";
+			$datasets.="\t}\n";
+
+			$JS_text.=$labels.$datasets;
+			# $JS_text.="}\n";
+			# $JS_text.="prepChart('$default_graph', $graph_id, $q, $dataset_name);\n";
+			$JS_text.="var main_ctx = document.getElementById(\"CanvasID".$graph_id."_".$q."\");\n";
+			$JS_text.="var GraphID".$graph_id."_".$q." = new Chart(main_ctx, {type: '$default_graph', $chart_options data: $dataset_name});\n";
 		}
-
-		$datasets.=$data;
-		$datasets.=$graphConstantsA.$graphConstantsB.$graphConstantsC.$graphConstants; # SEE TOP OF SCRIPT
-		$datasets.="\t\t\t}\n";
-		$datasets.="\t\t]\n";
-		$datasets.="\t}\n";
-
-		$JS_text.=$labels.$datasets;
-		# $JS_text.="}\n";
-		# $JS_text.="prepChart('$default_graph', $graph_id, $q, $dataset_name);\n";
-		$JS_text.="var main_ctx = document.getElementById(\"CanvasID".$graph_id."_".$q."\");\n";
-		$JS_text.="var GraphID".$graph_id."_".$q." = new Chart(main_ctx, {type: '$default_graph', $chart_options data: $dataset_name});\n";
 	}
-
 	$graph_count=count($graph_array);
 	$graph_title=_QXZ("CALL STATUS STATS");
 	include("graphcanvas.inc");
@@ -1525,6 +1591,9 @@ else
 	$ASCII_text .= "+------------------------------------------+------------+\n";
 	$ASCII_text .= "| "._QXZ("LIST",40)." | "._QXZ("CALLS",10)." |\n";
 	$ASCII_text .= "+------------------------------------------+------------+\n";
+	$CSV_text .= "\n";
+	$CSV_text .= "\"---------- "._QXZ("LIST ID STATS")."\"\n";
+	$CSV_text .= "\""._QXZ("LIST")."\",\""._QXZ("CALLS")."\"\n";
 
 #	$GRAPH="</PRE><table cellspacing=\"1\" cellpadding=\"0\" bgcolor=\"white\" summary=\"DID Summary\" class=\"horizontalgraph\">\n";
 #	$GRAPH.="<caption align='top'>"._QXZ("LIST ID STATS")."</caption>";
@@ -1570,6 +1639,7 @@ else
 		$LISTIDname =	sprintf("%-40s", "$LISTIDlists[$i] - $LISTIDlist_names[$i]");while(strlen($LISTIDname)>40) {$LISTIDname = substr("$LISTIDname", 0, -1);}
 
 		$ASCII_text .= "| $LISTIDname | $LISTIDcount |\n";
+		$CSV_text .= "\"$LISTIDname\",\"$LISTIDcount\"\n";
 
 		$i++;
 		}
@@ -1579,6 +1649,7 @@ else
 	$ASCII_text .= "+------------------------------------------+------------+\n";
 	$ASCII_text .= "| "._QXZ("TOTAL",39).": | $TOTALcalls |\n";
 	$ASCII_text .= "+------------------------------------------+------------+\n";
+	$CSV_text .= "\""._QXZ("TOTAL").":\",\"$TOTALcalls\"\n";
 
     #########
 	$graph_array=array("LISdata|||integer|");
@@ -1588,73 +1659,74 @@ else
 
 	$graph_totals_array=array();
 	$graph_totals_rawdata=array();
-	for ($q=0; $q<count($graph_array); $q++) {
-		$graph_info=explode("|", $graph_array[$q]); 
-		$current_graph_total=0;
-		$dataset_name=$graph_info[0];
-		$dataset_index=$graph_info[1]; 
-		$dataset_type=$graph_info[3];
-		if ($q==0) {$preload_dataset=$dataset_name;}  # Used below to load initial graph
+	if ($report_display_type=="HTML") {
+		for ($q=0; $q<count($graph_array); $q++) {
+			$graph_info=explode("|", $graph_array[$q]); 
+			$current_graph_total=0;
+			$dataset_name=$graph_info[0];
+			$dataset_index=$graph_info[1]; 
+			$dataset_type=$graph_info[3];
+			if ($q==0) {$preload_dataset=$dataset_name;}  # Used below to load initial graph
 
-		$JS_text.="var $dataset_name = {\n";
-		# $JS_text.="\ttype: \"\",\n";
-		# $JS_text.="\t\tdata: {\n";
-		$datasets="\t\tdatasets: [\n";
-		$datasets.="\t\t\t{\n";
-		$datasets.="\t\t\t\tlabel: \"\",\n";
-		$datasets.="\t\t\t\tfill: false,\n";
+			$JS_text.="var $dataset_name = {\n";
+			# $JS_text.="\ttype: \"\",\n";
+			# $JS_text.="\t\tdata: {\n";
+			$datasets="\t\tdatasets: [\n";
+			$datasets.="\t\t\t{\n";
+			$datasets.="\t\t\t\tlabel: \"\",\n";
+			$datasets.="\t\t\t\tfill: false,\n";
 
-		$labels="\t\tlabels:[";
-		$data="\t\t\t\tdata: [";
-		$graphConstantsA="\t\t\t\tbackgroundColor: [";
-		$graphConstantsB="\t\t\t\thoverBackgroundColor: [";
-		$graphConstantsC="\t\t\t\thoverBorderColor: [";
-		for ($d=0; $d<count($graph_stats); $d++) {
-			$labels.="\"".$graph_stats[$d][1]."\",";
-			$data.="\"".$graph_stats[$d][0]."\","; 
-			$current_graph_total+=$graph_stats[$d][0];
-			$bgcolor=$backgroundColor[($d%count($backgroundColor))];
-			$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
-			$hbcolor=$hoverBorderColor[($d%count($hoverBorderColor))];
-			$graphConstantsA.="\"$bgcolor\",";
-			$graphConstantsB.="\"$hbgcolor\",";
-			$graphConstantsC.="\"$hbcolor\",";
-		}	
-		$graphConstantsA.="],\n";
-		$graphConstantsB.="],\n";
-		$graphConstantsC.="],\n";
-		$labels=preg_replace('/,$/', '', $labels)."],\n";
-		$data=preg_replace('/,$/', '', $data)."],\n";
-		
-		$graph_totals_rawdata[$q]=$current_graph_total;
-		switch($dataset_type) {
-			case "time":
-				$graph_totals_array[$q]="  <caption align=\"bottom\">"._QXZ("TOTAL")." - ".sec_convert($current_graph_total, 'H')." </caption>\n";
-				$chart_options="options: {tooltips: {callbacks: {label: function(tooltipItem, data) {var value = Math.round(data.datasets[0].data[tooltipItem.index]); return value.toHHMMSS();}}}, legend: { display: false }},";
-				break;
-			case "percent":
-				$graph_totals_array[$q]="";
-				$chart_options="options: {tooltips: {callbacks: {label: function(tooltipItem, data) {var value = data.datasets[0].data[tooltipItem.index]; return value + '%';}}}, legend: { display: false }},";
-				break;
-			default:
-				$graph_totals_array[$q]="  <caption align=\"bottom\">"._QXZ("TOTAL").": $current_graph_total</caption>\n";
-				$chart_options="options: { legend: { display: false }},";
-				break;
+			$labels="\t\tlabels:[";
+			$data="\t\t\t\tdata: [";
+			$graphConstantsA="\t\t\t\tbackgroundColor: [";
+			$graphConstantsB="\t\t\t\thoverBackgroundColor: [";
+			$graphConstantsC="\t\t\t\thoverBorderColor: [";
+			for ($d=0; $d<count($graph_stats); $d++) {
+				$labels.="\"".$graph_stats[$d][1]."\",";
+				$data.="\"".$graph_stats[$d][0]."\","; 
+				$current_graph_total+=$graph_stats[$d][0];
+				$bgcolor=$backgroundColor[($d%count($backgroundColor))];
+				$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
+				$hbcolor=$hoverBorderColor[($d%count($hoverBorderColor))];
+				$graphConstantsA.="\"$bgcolor\",";
+				$graphConstantsB.="\"$hbgcolor\",";
+				$graphConstantsC.="\"$hbcolor\",";
+			}	
+			$graphConstantsA.="],\n";
+			$graphConstantsB.="],\n";
+			$graphConstantsC.="],\n";
+			$labels=preg_replace('/,$/', '', $labels)."],\n";
+			$data=preg_replace('/,$/', '', $data)."],\n";
+			
+			$graph_totals_rawdata[$q]=$current_graph_total;
+			switch($dataset_type) {
+				case "time":
+					$graph_totals_array[$q]="  <caption align=\"bottom\">"._QXZ("TOTAL")." - ".sec_convert($current_graph_total, 'H')." </caption>\n";
+					$chart_options="options: {tooltips: {callbacks: {label: function(tooltipItem, data) {var value = Math.round(data.datasets[0].data[tooltipItem.index]); return value.toHHMMSS();}}}, legend: { display: false }},";
+					break;
+				case "percent":
+					$graph_totals_array[$q]="";
+					$chart_options="options: {tooltips: {callbacks: {label: function(tooltipItem, data) {var value = data.datasets[0].data[tooltipItem.index]; return value + '%';}}}, legend: { display: false }},";
+					break;
+				default:
+					$graph_totals_array[$q]="  <caption align=\"bottom\">"._QXZ("TOTAL").": $current_graph_total</caption>\n";
+					$chart_options="options: { legend: { display: false }},";
+					break;
+			}
+
+			$datasets.=$data;
+			$datasets.=$graphConstantsA.$graphConstantsB.$graphConstantsC.$graphConstants; # SEE TOP OF SCRIPT
+			$datasets.="\t\t\t}\n";
+			$datasets.="\t\t]\n";
+			$datasets.="\t}\n";
+
+			$JS_text.=$labels.$datasets;
+			# $JS_text.="}\n";
+			# $JS_text.="prepChart('$default_graph', $graph_id, $q, $dataset_name);\n";
+			$JS_text.="var main_ctx = document.getElementById(\"CanvasID".$graph_id."_".$q."\");\n";
+			$JS_text.="var GraphID".$graph_id."_".$q." = new Chart(main_ctx, {type: '$default_graph', $chart_options data: $dataset_name});\n";
 		}
-
-		$datasets.=$data;
-		$datasets.=$graphConstantsA.$graphConstantsB.$graphConstantsC.$graphConstants; # SEE TOP OF SCRIPT
-		$datasets.="\t\t\t}\n";
-		$datasets.="\t\t]\n";
-		$datasets.="\t}\n";
-
-		$JS_text.=$labels.$datasets;
-		# $JS_text.="}\n";
-		# $JS_text.="prepChart('$default_graph', $graph_id, $q, $dataset_name);\n";
-		$JS_text.="var main_ctx = document.getElementById(\"CanvasID".$graph_id."_".$q."\");\n";
-		$JS_text.="var GraphID".$graph_id."_".$q." = new Chart(main_ctx, {type: '$default_graph', $chart_options data: $dataset_name});\n";
 	}
-
 	$graph_count=count($graph_array);
 	$graph_title=_QXZ("LIST ID STATS");
 	include("graphcanvas.inc");
@@ -1671,6 +1743,9 @@ else
 		$ASCII_text .= "+----------------------+------------+\n";
 		$ASCII_text .= "| "._QXZ("STATUS",20)." | "._QXZ("CALLS",10)." |\n";
 		$ASCII_text .= "+----------------------+------------+\n";
+		$CSV_text .= "\n";
+		$CSV_text .= "\"---------- "._QXZ("CARRIER CALL STATUSES")."\"\n";
+		$CSV_text .= "\""._QXZ("STATUS")."\",\""._QXZ("CALLS")."\"\n";
 
 		## get counts and time totals for all statuses in this campaign
 		$stmt="select dialstatus,count(*) from ".$vicidial_carrier_log_table." vcl,".$vicidial_log_table." vl where vcl.uniqueid=vl.uniqueid and vcl.call_date > \"$query_date_BEGIN\" and vcl.call_date < \"$query_date_END\" and vl.call_date > \"$query_date_BEGIN\" and vl.call_date < \"$query_date_END\" $group_SQLand $list_id_SQLand group by dialstatus order by dialstatus;";
@@ -1687,6 +1762,7 @@ else
 			$CARcount =		sprintf("%10s", $row[1]); while(strlen($CARcount)>10) {$CARcount = substr("$CARcount", 0, -1);}
 
 			$ASCII_text .= "| $CARstatus | $CARcount |\n";
+			$CSV_text .= "\"$CARstatus\",\"$CARcount\"\n";
 
 			$i++;
 			}
@@ -1696,6 +1772,7 @@ else
 		$ASCII_text .= "+----------------------+------------+\n";
 		$ASCII_text .= "| "._QXZ("TOTAL",20)." | $TOTCARcalls |\n";
 		$ASCII_text .= "+----------------------+------------+\n";
+		$CSV_text .= "\""._QXZ("TOTAL")."\",\"$TOTCARcalls\"\n";
 		}
 
 
@@ -1721,6 +1798,9 @@ else
 		$ASCII_text .= "+------------------------------------------+------------+\n";
 		$ASCII_text .= "| "._QXZ("PRESET NAME",40)." | "._QXZ("CALLS",10)." |\n";
 		$ASCII_text .= "+------------------------------------------+------------+\n";
+		$CSV_text .= "\n";
+		$CSV_text .= "\"---------- "._QXZ("AGENT PRESET DIALS")."\"\n";
+		$CSV_text .= "\""._QXZ("PRESET NAME")."\",\""._QXZ("CALLS")."\"\n";
 
 		#$GRAPH="</PRE><table cellspacing=\"1\" cellpadding=\"0\" bgcolor=\"white\" summary=\"DID Summary\" class=\"horizontalgraph\">\n";
 		#$GRAPH.="<caption align='top'>"._QXZ("AGENT PRESET DIALS")."</caption>";
@@ -1748,6 +1828,7 @@ else
 			$graph_stats[$i][1]=$row[0];
 
 			$ASCII_text .= "| $PREstatus | $PREcount |\n";
+			$CSV_text .= "\"$PREstatus\",\"$PREcount\"\n";
 
 			$i++;
 			}
@@ -1760,6 +1841,7 @@ else
 
 		$graph_totals_array=array();
 		$graph_totals_rawdata=array();
+	if ($report_display_type=="HTML") {
 		for ($q=0; $q<count($graph_array); $q++) {
 			$graph_info=explode("|", $graph_array[$q]); 
 			$current_graph_total=0;
@@ -1826,7 +1908,7 @@ else
 			$JS_text.="var main_ctx = document.getElementById(\"CanvasID".$graph_id."_".$q."\");\n";
 			$JS_text.="var GraphID".$graph_id."_".$q." = new Chart(main_ctx, {type: '$default_graph', $chart_options data: $dataset_name});\n";
 		}
-
+	}
 		$graph_count=count($graph_array);
 		$graph_title=_QXZ("AGENT PRESET DIALS");
 		include("graphcanvas.inc");
@@ -1837,6 +1919,7 @@ else
 		$ASCII_text .= "+------------------------------------------+------------+\n";
 		$ASCII_text .= "| "._QXZ("TOTAL",40)." | $TOTPREcalls |\n";
 		$ASCII_text .= "+------------------------------------------+------------+\n";
+		$CSV_text .= "\""._QXZ("TOTAL",40)."\",\"$TOTPREcalls\"\n";
 
 		$GRAPH_text.=$GRAPH;
 		}
@@ -1850,6 +1933,9 @@ else
 	$ASCII_text .= "+----------------------+------------+--------------------------------+\n";
 	$ASCII_text .= "| "._QXZ("CATEGORY",20)." | "._QXZ("CALLS",10)." | "._QXZ("DESCRIPTION",30)." |\n";
 	$ASCII_text .= "+----------------------+------------+--------------------------------+\n";
+	$CSV_text .= "\n";
+	$CSV_text .= "\"---------- "._QXZ("CUSTOM STATUS CATEGORY STATS")."\"\n";
+	$CSV_text .= "\""._QXZ("CATEGORY")."\",\""._QXZ("CALLS")."\",\""._QXZ("DESCRIPTION")."\"\n";
 
 #	$GRAPH="</PRE><table cellspacing=\"1\" cellpadding=\"0\" bgcolor=\"white\" summary=\"DID Summary\" class=\"horizontalgraph\">\n";
 #	$GRAPH.="<caption align='top'>"._QXZ("CUSTOM STATUS CATEGORY STATS")."</caption>";
@@ -1876,6 +1962,7 @@ else
 			$i++;
 
 			$ASCII_text .= "| $category | $CATcount | $CATname |\n";
+			$CSV_text .= "\"$category\",\"$CATcount\",\"$CATname\"\n";
 			}
 		$r++;
 		}
@@ -1885,6 +1972,7 @@ else
 	$ASCII_text .= "+----------------------+------------+--------------------------------+\n";
 	$ASCII_text .= "| "._QXZ("TOTAL",20)." | $TOTCATcalls |\n";
 	$ASCII_text .= "+----------------------+------------+\n";
+	$CSV_text .= "\""._QXZ("TOTAL")."\",\"$TOTCATcalls\"\n";
 
 		#########
 		$graph_array=array("CSCdata|||integer|");
@@ -1894,6 +1982,7 @@ else
 
 		$graph_totals_array=array();
 		$graph_totals_rawdata=array();
+	if ($report_display_type=="HTML") {
 		for ($q=0; $q<count($graph_array); $q++) {
 			$graph_info=explode("|", $graph_array[$q]); 
 			$current_graph_total=0;
@@ -1960,7 +2049,7 @@ else
 			$JS_text.="var main_ctx = document.getElementById(\"CanvasID".$graph_id."_".$q."\");\n";
 			$JS_text.="var GraphID".$graph_id."_".$q." = new Chart(main_ctx, {type: '$default_graph', $chart_options data: $dataset_name});\n";
 		}
-
+	}
 		$graph_count=count($graph_array);
 		$graph_title=_QXZ("CUSTOM STATUS CATEGORY STATS");
 		include("graphcanvas.inc");
@@ -1980,6 +2069,9 @@ else
 	$ASCII_text .= "+--------------------------+------------+------------+--------+\n";
 	$ASCII_text .= "| "._QXZ("AGENT",24)." | "._QXZ("CALLS",10)." | "._QXZ("TIME H:M:S",10)." |"._QXZ("AVERAGE",7)." |\n";
 	$ASCII_text .= "+--------------------------+------------+------------+--------+\n";
+	$CSV_text .= "\n";
+	$CSV_text .= "\"---------- "._QXZ("AGENT STATS")."\"\n";
+	$CSV_text .= "\""._QXZ("AGENT")."\",\""._QXZ("CALLS")."\",\""._QXZ("TIME H:M:S")."\",\""._QXZ("AVERAGE")."\"\n";
 
 	######## GRAPHING #########
 	$graph_stats=array();
@@ -2075,7 +2167,8 @@ else
 		$USERtotTALK_MS =	sprintf("%9s", $USERtotTALK_MS);
 		$USERavgTALK_MS =	sprintf("%6s", $USERavgTALK_MS);
 
-		$ASCII_text .= "| $user - $full_name | $USERcalls |  $USERtotTALK_MS | $USERavgTALK_MS |\n";
+		$ASCII_text .= "| $user - $full_name | $USERcalls |  $USERtotTALK_MS | $USERavgTALK_MS|\n";
+		$CSV_text .= "\"$user - $full_name\",\"$USERcalls\",\"$USERtotTALK_MS\",\"$USERavgTALK_MS\"\n";
 
 		$i++;
 		}
@@ -2106,10 +2199,12 @@ else
 	$AVGwait =		sprintf("%6s", $AVGwait_MS);
 
 	$ASCII_text .= "+--------------------------+------------+------------+--------+\n";
-	$ASCII_text .= "| "._QXZ("TOTAL Agents",12).": $TOTagents | $TOTcalls | $TOTtime | $TOTavg |\n";
+	$ASCII_text .= "| "._QXZ("TOTAL Agents",12).": $TOTagents | $TOTcalls | $TOTtime | $TOTavg|\n";
 	$ASCII_text .= "+--------------------------+------------+------------+--------+\n";
-	$ASCII_text .= "| "._QXZ("Average Wait time between calls",52)." $AVGwait |\n";
+	$ASCII_text .= "| "._QXZ("Average Wait time between calls",52)." $AVGwait|\n";
 	$ASCII_text .= "+-------------------------------------------------------------+\n";
+	$CSV_text .= "\""._QXZ("TOTAL Agents").": ".trim($TOTagents)."\",\"$TOTcalls\",\"$TOTtime\",\"$TOTavg\"\n";
+	$CSV_text .= "\"\",\"\",\""._QXZ("Average Wait time between calls").":\",\"$AVGwait\"\n";
 
 	# USE THIS FOR multiple graphs, use pipe-delimited array elements, dataset_name|index|link_name
 	$multigraph_text="";
@@ -2120,72 +2215,73 @@ else
 
 	$graph_totals_array=array();
 	$graph_totals_rawdata=array();
-	for ($q=0; $q<count($graph_array); $q++) {
-		$graph_info=explode("|", $graph_array[$q]); 
-		$current_graph_total=0;
-		$dataset_name=$graph_info[0];
-		$dataset_index=$graph_info[1]; 
-		$dataset_type=$graph_info[3];
+	if ($report_display_type=="HTML") {
+		for ($q=0; $q<count($graph_array); $q++) {
+			$graph_info=explode("|", $graph_array[$q]); 
+			$current_graph_total=0;
+			$dataset_name=$graph_info[0];
+			$dataset_index=$graph_info[1]; 
+			$dataset_type=$graph_info[3];
 
-		$JS_text.="var $dataset_name = {\n";
-		# $JS_text.="\ttype: \"\",\n";
-		# $JS_text.="\t\tdata: {\n";
-		$datasets="\t\tdatasets: [\n";
-		$datasets.="\t\t\t{\n";
-		$datasets.="\t\t\t\tlabel: \"\",\n";
-		$datasets.="\t\t\t\tfill: false,\n";
+			$JS_text.="var $dataset_name = {\n";
+			# $JS_text.="\ttype: \"\",\n";
+			# $JS_text.="\t\tdata: {\n";
+			$datasets="\t\tdatasets: [\n";
+			$datasets.="\t\t\t{\n";
+			$datasets.="\t\t\t\tlabel: \"\",\n";
+			$datasets.="\t\t\t\tfill: false,\n";
 
-		$labels="\t\tlabels:[";
-		$data="\t\t\t\tdata: [";
-		$graphConstantsA="\t\t\t\tbackgroundColor: [";
-		$graphConstantsB="\t\t\t\thoverBackgroundColor: [";
-		$graphConstantsC="\t\t\t\thoverBorderColor: [";
-		for ($d=0; $d<count($graph_stats); $d++) {
-			$labels.="\"".preg_replace('/ +/', ' ', $graph_stats[$d][0])."\",";
-			$data.="\"".$graph_stats[$d][$dataset_index]."\","; 
-			$current_graph_total+=$graph_stats[$d][$dataset_index];
-			$bgcolor=$backgroundColor[($d%count($backgroundColor))];
-			$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
-			$hbcolor=$hoverBorderColor[($d%count($hoverBorderColor))];
-			$graphConstantsA.="\"$bgcolor\",";
-			$graphConstantsB.="\"$hbgcolor\",";
-			$graphConstantsC.="\"$hbcolor\",";
-		}	
-		$graphConstantsA.="],\n";
-		$graphConstantsB.="],\n";
-		$graphConstantsC.="],\n";
-		$labels=preg_replace('/,$/', '', $labels)."],\n";
-		$data=preg_replace('/,$/', '', $data)."],\n";
-		
-		$graph_totals_rawdata[$q]=$current_graph_total;
-		switch($dataset_type) {
-			case "time":
-				$graph_totals_array[$q]="  <caption align=\"bottom\">"._QXZ("TOTAL")." - ".sec_convert($current_graph_total, 'H')." </caption>\n";
-				$chart_options="options: {tooltips: {callbacks: {label: function(tooltipItem, data) {var value = Math.round(data.datasets[0].data[tooltipItem.index]); return value.toHHMMSS();}}}, legend: { display: false }},";
-				break;
-			case "percent":
-				$graph_totals_array[$q]="";
-				$chart_options="options: {tooltips: {callbacks: {label: function(tooltipItem, data) {var value = data.datasets[0].data[tooltipItem.index]; return value + '%';}}}, legend: { display: false }},";
-				break;
-			default:
-				$graph_totals_array[$q]="  <caption align=\"bottom\">"._QXZ("TOTAL").": $current_graph_total</caption>\n";
-				$chart_options="options: { legend: { display: false }},";
-				break;
+			$labels="\t\tlabels:[";
+			$data="\t\t\t\tdata: [";
+			$graphConstantsA="\t\t\t\tbackgroundColor: [";
+			$graphConstantsB="\t\t\t\thoverBackgroundColor: [";
+			$graphConstantsC="\t\t\t\thoverBorderColor: [";
+			for ($d=0; $d<count($graph_stats); $d++) {
+				$labels.="\"".preg_replace('/ +/', ' ', $graph_stats[$d][0])."\",";
+				$data.="\"".$graph_stats[$d][$dataset_index]."\","; 
+				$current_graph_total+=$graph_stats[$d][$dataset_index];
+				$bgcolor=$backgroundColor[($d%count($backgroundColor))];
+				$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
+				$hbcolor=$hoverBorderColor[($d%count($hoverBorderColor))];
+				$graphConstantsA.="\"$bgcolor\",";
+				$graphConstantsB.="\"$hbgcolor\",";
+				$graphConstantsC.="\"$hbcolor\",";
+			}	
+			$graphConstantsA.="],\n";
+			$graphConstantsB.="],\n";
+			$graphConstantsC.="],\n";
+			$labels=preg_replace('/,$/', '', $labels)."],\n";
+			$data=preg_replace('/,$/', '', $data)."],\n";
+			
+			$graph_totals_rawdata[$q]=$current_graph_total;
+			switch($dataset_type) {
+				case "time":
+					$graph_totals_array[$q]="  <caption align=\"bottom\">"._QXZ("TOTAL")." - ".sec_convert($current_graph_total, 'H')." </caption>\n";
+					$chart_options="options: {tooltips: {callbacks: {label: function(tooltipItem, data) {var value = Math.round(data.datasets[0].data[tooltipItem.index]); return value.toHHMMSS();}}}, legend: { display: false }},";
+					break;
+				case "percent":
+					$graph_totals_array[$q]="";
+					$chart_options="options: {tooltips: {callbacks: {label: function(tooltipItem, data) {var value = data.datasets[0].data[tooltipItem.index]; return value + '%';}}}, legend: { display: false }},";
+					break;
+				default:
+					$graph_totals_array[$q]="  <caption align=\"bottom\">"._QXZ("TOTAL").": $current_graph_total</caption>\n";
+					$chart_options="options: { legend: { display: false }},";
+					break;
+			}
+
+			$datasets.=$data;
+			$datasets.=$graphConstantsA.$graphConstantsB.$graphConstantsC.$graphConstants; # SEE TOP OF SCRIPT
+			$datasets.="\t\t\t}\n";
+			$datasets.="\t\t]\n";
+			$datasets.="\t}\n";
+
+			$JS_text.=$labels.$datasets;
+			# $JS_text.="}\n";
+			# $JS_text.="prepChart('$default_graph', $graph_id, $q, $dataset_name);\n";
+			$JS_text.="var main_ctx = document.getElementById(\"CanvasID".$graph_id."_".$q."\");\n";
+			$JS_text.="var GraphID".$graph_id."_".$q." = new Chart(main_ctx, {type: '$default_graph', $chart_options data: $dataset_name});\n";
 		}
-
-		$datasets.=$data;
-		$datasets.=$graphConstantsA.$graphConstantsB.$graphConstantsC.$graphConstants; # SEE TOP OF SCRIPT
-		$datasets.="\t\t\t}\n";
-		$datasets.="\t\t]\n";
-		$datasets.="\t}\n";
-
-		$JS_text.=$labels.$datasets;
-		# $JS_text.="}\n";
-		# $JS_text.="prepChart('$default_graph', $graph_id, $q, $dataset_name);\n";
-		$JS_text.="var main_ctx = document.getElementById(\"CanvasID".$graph_id."_".$q."\");\n";
-		$JS_text.="var GraphID".$graph_id."_".$q." = new Chart(main_ctx, {type: '$default_graph', $chart_options data: $dataset_name});\n";
 	}
-
 	$graph_count=count($graph_array);
 	$graph_title="AGENT STATS";
 	include("graphcanvas.inc");
@@ -2261,226 +2357,270 @@ else
 		exit;
 		}
 
-	if ($report_display_type=="HTML")
+	if ($file_download > 0) 
 		{
-		$OUToutput.=$GRAPH_text;
-		}
-	else
-		{
-		$OUToutput.=$ASCII_text;
-		}
 
-	echo "$OUToutput";
+		$FILE_TIME = date("Ymd-His");
+		$CSVfilename = "AST_VDADstats_$US$FILE_TIME.csv";
+		$CSV_text=preg_replace('/ +\"/', '"', $CSV_text);
+		$CSV_text=preg_replace('/\" +/', '"', $CSV_text);
+		$OUToutput.=$CSV_text;	
+		// We'll be outputting a TXT file
+		header('Content-type: application/octet-stream');
 
+		// It will be called LIST_101_20090209-121212.txt
+		header("Content-Disposition: attachment; filename=\"$CSVfilename\"");
+		header('Expires: 0');
+		header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+		header('Pragma: public');
+		ob_clean();
+		flush();
 
+		echo "$CSV_text";
 
-
-	if ($bottom_graph == 'YES')
-		{
-		##############################
-		#########  TIME STATS
-
-		echo "\n";
-		echo "---------- "._QXZ("TIME STATS")."\n";
-
-		echo "<FONT SIZE=0>\n";
-
-		$hi_hour_count=0;
-		$last_full_record=0;
-		$i=0;
-		$h=0;
-		while ($i <= 96)
+		if ($db_source == 'S')
 			{
-			$stmt="select count(*) from ".$vicidial_log_table." where call_date >= '$query_date $h:00:00' and call_date <= '$query_date $h:14:59' $group_SQLand $list_id_SQLand;";
-			$rslt=mysql_to_mysqli($stmt, $link);
-			if ($DB) {echo "$stmt\n";}
-			$row=mysqli_fetch_row($rslt);
-			$hour_count[$i] = $row[0];
-			if ($hour_count[$i] > $hi_hour_count) {$hi_hour_count = $hour_count[$i];}
-			if ($hour_count[$i] > 0) {$last_full_record = $i;}
-			$stmt="select count(*) from ".$vicidial_log_table." where call_date >= '$query_date $h:00:00' and call_date <= '$query_date $h:14:59' $group_SQLand $list_id_SQLand and status='DROP';";
-			$rslt=mysql_to_mysqli($stmt, $link);
-			if ($DB) {echo "$stmt\n";}
-			$row=mysqli_fetch_row($rslt);
-			$drop_count[$i] = $row[0];
-			$i++;
-
-
-			$stmt="select count(*) from ".$vicidial_log_table." where call_date >= '$query_date $h:15:00' and call_date <= '$query_date $h:29:59' $group_SQLand $list_id_SQLand;";
-			$rslt=mysql_to_mysqli($stmt, $link);
-			if ($DB) {echo "$stmt\n";}
-			$row=mysqli_fetch_row($rslt);
-			$hour_count[$i] = $row[0];
-			if ($hour_count[$i] > $hi_hour_count) {$hi_hour_count = $hour_count[$i];}
-			if ($hour_count[$i] > 0) {$last_full_record = $i;}
-			$stmt="select count(*) from ".$vicidial_log_table." where call_date >= '$query_date $h:15:00' and call_date <= '$query_date $h:29:59' $group_SQLand $list_id_SQLand and status='DROP';";
-			$rslt=mysql_to_mysqli($stmt, $link);
-			if ($DB) {echo "$stmt\n";}
-			$row=mysqli_fetch_row($rslt);
-			$drop_count[$i] = $row[0];
-			$i++;
-
-			$stmt="select count(*) from ".$vicidial_log_table." where call_date >= '$query_date $h:30:00' and call_date <= '$query_date $h:44:59' $group_SQLand $list_id_SQLand;";
-			$rslt=mysql_to_mysqli($stmt, $link);
-			if ($DB) {echo "$stmt\n";}
-			$row=mysqli_fetch_row($rslt);
-			$hour_count[$i] = $row[0];
-			if ($hour_count[$i] > $hi_hour_count) {$hi_hour_count = $hour_count[$i];}
-			if ($hour_count[$i] > 0) {$last_full_record = $i;}
-			$stmt="select count(*) from ".$vicidial_log_table." where call_date >= '$query_date $h:30:00' and call_date <= '$query_date $h:44:59' $group_SQLand $list_id_SQLand and status='DROP';";
-			$rslt=mysql_to_mysqli($stmt, $link);
-			if ($DB) {echo "$stmt\n";}
-			$row=mysqli_fetch_row($rslt);
-			$drop_count[$i] = $row[0];
-			$i++;
-
-			$stmt="select count(*) from ".$vicidial_log_table." where call_date >= '$query_date $h:45:00' and call_date <= '$query_date $h:59:59' $group_SQLand $list_id_SQLand;";
-			$rslt=mysql_to_mysqli($stmt, $link);
-			if ($DB) {echo "$stmt\n";}
-			$row=mysqli_fetch_row($rslt);
-			$hour_count[$i] = $row[0];
-			if ($hour_count[$i] > $hi_hour_count) {$hi_hour_count = $hour_count[$i];}
-			if ($hour_count[$i] > 0) {$last_full_record = $i;}
-			$stmt="select count(*) from ".$vicidial_log_table." where call_date >= '$query_date $h:45:00' and call_date <= '$query_date $h:59:59' $group_SQLand $list_id_SQLand and status='DROP';";
-			$rslt=mysql_to_mysqli($stmt, $link);
-			if ($DB) {echo "$stmt\n";}
-			$row=mysqli_fetch_row($rslt);
-			$drop_count[$i] = $row[0];
-			$i++;
-			$h++;
+			mysqli_close($link);
+			$use_slave_server=0;
+			$db_source = 'M';
+			require("dbconnect_mysqli.php");
 			}
 
-		$hour_multiplier = MathZDC(100, $hi_hour_count);
+		$ENDtime = date("U");
+		$RUNtime = ($ENDtime - $STARTtime);
 
-		echo "<!-- HICOUNT: $hi_hour_count|$hour_multiplier -->\n";
-		echo _QXZ("GRAPH IN 15 MINUTE INCREMENTS OF TOTAL CALLS PLACED FROM THIS CAMPAIGN")."\n";
+		$stmt="UPDATE vicidial_report_log set run_time='$RUNtime' where report_log_id='$report_log_id';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_to_mysqli($stmt, $link);
 
-		$k=1;
-		$Mk=0;
-		$call_scale = '0';
-		while ($k <= 102) 
+		exit;
+		
+		} 
+	else 
+		{
+		if ($report_display_type=="HTML")
 			{
-			if ($Mk >= 5) 
-				{
-				$Mk=0;
-				$scale_num=MathZDC($k, $hour_multiplier, 100);
-				$scale_num = round($scale_num, 0);
-				$LENscale_num = (strlen($scale_num));
-				$k = ($k + $LENscale_num);
-				$call_scale .= "$scale_num";
-				}
-			else
-				{
-				$call_scale .= " ";
-				$k++;   $Mk++;
-				}
+			$OUToutput.=$GRAPH_text;
 			}
-
-
-		echo "+------+-------------------------------------------------------------------------------------------------------+-------+-------+\n";
-		#echo "| HOUR | GRAPH IN 15 MINUTE INCREMENTS OF TOTAL INCOMING CALLS FOR THIS GROUP                                  | DROPS | TOTAL |\n";
-		echo "| "._QXZ("HOUR",4)." |$call_scale| "._QXZ("DROPS",5)." | "._QXZ("TOTAL",5)." |\n";
-		echo "+------+-------------------------------------------------------------------------------------------------------+-------+-------+\n";
-
-		$ZZ = '00';
-		$i=0;
-		$h=4;
-		$hour= -1;
-		$no_lines_yet=1;
-
-		while ($i <= 96)
+		else
 			{
-			$char_counter=0;
-			$time = '      ';
-			if ($h >= 4) 
+			$OUToutput.=$ASCII_text;
+			}
+		echo $HEADER;
+		require("chart_button.php");
+		echo $HEADER_b;
+		require("admin_header.php");
+		echo $MAIN;
+
+		echo "$OUToutput";
+
+		if ($bottom_graph == 'YES')
+			{
+			##############################
+			#########  TIME STATS
+
+			echo "\n";
+			echo "---------- "._QXZ("TIME STATS")."\n";
+
+			echo "<FONT SIZE=0>\n";
+
+			$hi_hour_count=0;
+			$last_full_record=0;
+			$i=0;
+			$h=0;
+			while ($i <= 96)
 				{
-				$hour++;
-				$h=0;
-				if ($hour < 10) {$hour = "0$hour";}
-				$time = "+$hour$ZZ+";
+				$stmt="select count(*) from ".$vicidial_log_table." where call_date >= '$query_date $h:00:00' and call_date <= '$query_date $h:14:59' $group_SQLand $list_id_SQLand;";
+				$rslt=mysql_to_mysqli($stmt, $link);
+				if ($DB) {echo "$stmt\n";}
+				$row=mysqli_fetch_row($rslt);
+				$hour_count[$i] = $row[0];
+				if ($hour_count[$i] > $hi_hour_count) {$hi_hour_count = $hour_count[$i];}
+				if ($hour_count[$i] > 0) {$last_full_record = $i;}
+				$stmt="select count(*) from ".$vicidial_log_table." where call_date >= '$query_date $h:00:00' and call_date <= '$query_date $h:14:59' $group_SQLand $list_id_SQLand and status='DROP';";
+				$rslt=mysql_to_mysqli($stmt, $link);
+				if ($DB) {echo "$stmt\n";}
+				$row=mysqli_fetch_row($rslt);
+				$drop_count[$i] = $row[0];
+				$i++;
+
+
+				$stmt="select count(*) from ".$vicidial_log_table." where call_date >= '$query_date $h:15:00' and call_date <= '$query_date $h:29:59' $group_SQLand $list_id_SQLand;";
+				$rslt=mysql_to_mysqli($stmt, $link);
+				if ($DB) {echo "$stmt\n";}
+				$row=mysqli_fetch_row($rslt);
+				$hour_count[$i] = $row[0];
+				if ($hour_count[$i] > $hi_hour_count) {$hi_hour_count = $hour_count[$i];}
+				if ($hour_count[$i] > 0) {$last_full_record = $i;}
+				$stmt="select count(*) from ".$vicidial_log_table." where call_date >= '$query_date $h:15:00' and call_date <= '$query_date $h:29:59' $group_SQLand $list_id_SQLand and status='DROP';";
+				$rslt=mysql_to_mysqli($stmt, $link);
+				if ($DB) {echo "$stmt\n";}
+				$row=mysqli_fetch_row($rslt);
+				$drop_count[$i] = $row[0];
+				$i++;
+
+				$stmt="select count(*) from ".$vicidial_log_table." where call_date >= '$query_date $h:30:00' and call_date <= '$query_date $h:44:59' $group_SQLand $list_id_SQLand;";
+				$rslt=mysql_to_mysqli($stmt, $link);
+				if ($DB) {echo "$stmt\n";}
+				$row=mysqli_fetch_row($rslt);
+				$hour_count[$i] = $row[0];
+				if ($hour_count[$i] > $hi_hour_count) {$hi_hour_count = $hour_count[$i];}
+				if ($hour_count[$i] > 0) {$last_full_record = $i;}
+				$stmt="select count(*) from ".$vicidial_log_table." where call_date >= '$query_date $h:30:00' and call_date <= '$query_date $h:44:59' $group_SQLand $list_id_SQLand and status='DROP';";
+				$rslt=mysql_to_mysqli($stmt, $link);
+				if ($DB) {echo "$stmt\n";}
+				$row=mysqli_fetch_row($rslt);
+				$drop_count[$i] = $row[0];
+				$i++;
+
+				$stmt="select count(*) from ".$vicidial_log_table." where call_date >= '$query_date $h:45:00' and call_date <= '$query_date $h:59:59' $group_SQLand $list_id_SQLand;";
+				$rslt=mysql_to_mysqli($stmt, $link);
+				if ($DB) {echo "$stmt\n";}
+				$row=mysqli_fetch_row($rslt);
+				$hour_count[$i] = $row[0];
+				if ($hour_count[$i] > $hi_hour_count) {$hi_hour_count = $hour_count[$i];}
+				if ($hour_count[$i] > 0) {$last_full_record = $i;}
+				$stmt="select count(*) from ".$vicidial_log_table." where call_date >= '$query_date $h:45:00' and call_date <= '$query_date $h:59:59' $group_SQLand $list_id_SQLand and status='DROP';";
+				$rslt=mysql_to_mysqli($stmt, $link);
+				if ($DB) {echo "$stmt\n";}
+				$row=mysqli_fetch_row($rslt);
+				$drop_count[$i] = $row[0];
+				$i++;
+				$h++;
 				}
-			if ($h == 1) {$time = "   15 ";}
-			if ($h == 2) {$time = "   30 ";}
-			if ($h == 3) {$time = "   45 ";}
-			$Ghour_count = $hour_count[$i];
-			if ($Ghour_count < 1) 
+
+			$hour_multiplier = MathZDC(100, $hi_hour_count);
+
+			echo "<!-- HICOUNT: $hi_hour_count|$hour_multiplier -->\n";
+			echo _QXZ("GRAPH IN 15 MINUTE INCREMENTS OF TOTAL CALLS PLACED FROM THIS CAMPAIGN")."\n";
+
+			$k=1;
+			$Mk=0;
+			$call_scale = '0';
+			while ($k <= 102) 
 				{
-				if ( ($no_lines_yet) or ($i > $last_full_record) )
+				if ($Mk >= 5) 
 					{
-					$do_nothing=1;
+					$Mk=0;
+					$scale_num=MathZDC($k, $hour_multiplier, 100);
+					$scale_num = round($scale_num, 0);
+					$LENscale_num = (strlen($scale_num));
+					$k = ($k + $LENscale_num);
+					$call_scale .= "$scale_num";
 					}
 				else
 					{
-					$hour_count[$i] =	sprintf("%-5s", $hour_count[$i]);
-					echo "|$time|";
-					$k=0;   while ($k <= 102) {echo " ";   $k++;}
-					echo "| $hour_count[$i] |\n";
+					$call_scale .= " ";
+					$k++;   $Mk++;
 					}
 				}
-			else
+
+
+			echo "+------+-------------------------------------------------------------------------------------------------------+-------+-------+\n";
+			#echo "| HOUR | GRAPH IN 15 MINUTE INCREMENTS OF TOTAL INCOMING CALLS FOR THIS GROUP                                  | DROPS | TOTAL |\n";
+			echo "| "._QXZ("HOUR",4)." |$call_scale| "._QXZ("DROPS",5)." | "._QXZ("TOTAL",5)." |\n";
+			echo "+------+-------------------------------------------------------------------------------------------------------+-------+-------+\n";
+
+			$ZZ = '00';
+			$i=0;
+			$h=4;
+			$hour= -1;
+			$no_lines_yet=1;
+
+			while ($i <= 96)
 				{
-				$no_lines_yet=0;
-				$Xhour_count = ($Ghour_count * $hour_multiplier);
-				$Yhour_count = (99 - $Xhour_count);
-
-				$Gdrop_count = $drop_count[$i];
-				if ($Gdrop_count < 1) 
+				$char_counter=0;
+				$time = '      ';
+				if ($h >= 4) 
 					{
-					$hour_count[$i] =	sprintf("%-5s", $hour_count[$i]);
-
-					echo "|$time|<SPAN class=\"green\">";
-					$k=0;   while ($k <= $Xhour_count) {echo "*";   $k++;   $char_counter++;}
-					echo "*X</SPAN>";   $char_counter++;
-					$k=0;   while ($k <= $Yhour_count) {echo " ";   $k++;   $char_counter++;}
-						while ($char_counter <= 101) {echo " ";   $char_counter++;}
-					echo "| 0     | $hour_count[$i] |\n";
-
+					$hour++;
+					$h=0;
+					if ($hour < 10) {$hour = "0$hour";}
+					$time = "+$hour$ZZ+";
+					}
+				if ($h == 1) {$time = "   15 ";}
+				if ($h == 2) {$time = "   30 ";}
+				if ($h == 3) {$time = "   45 ";}
+				$Ghour_count = $hour_count[$i];
+				if ($Ghour_count < 1) 
+					{
+					if ( ($no_lines_yet) or ($i > $last_full_record) )
+						{
+						$do_nothing=1;
+						}
+					else
+						{
+						$hour_count[$i] =	sprintf("%-5s", $hour_count[$i]);
+						echo "|$time|";
+						$k=0;   while ($k <= 102) {echo " ";   $k++;}
+						echo "| $hour_count[$i] |\n";
+						}
 					}
 				else
 					{
-					$Xdrop_count = ($Gdrop_count * $hour_multiplier);
+					$no_lines_yet=0;
+					$Xhour_count = ($Ghour_count * $hour_multiplier);
+					$Yhour_count = (99 - $Xhour_count);
 
-				#	if ($Xdrop_count >= $Xhour_count) {$Xdrop_count = ($Xdrop_count - 1);}
+					$Gdrop_count = $drop_count[$i];
+					if ($Gdrop_count < 1) 
+						{
+						$hour_count[$i] =	sprintf("%-5s", $hour_count[$i]);
 
-					$XXhour_count = ( ($Xhour_count - $Xdrop_count) - 1 );
+						echo "|$time|<SPAN class=\"green\">";
+						$k=0;   while ($k <= $Xhour_count) {echo "*";   $k++;   $char_counter++;}
+						echo "*X</SPAN>";   $char_counter++;
+						$k=0;   while ($k <= $Yhour_count) {echo " ";   $k++;   $char_counter++;}
+							while ($char_counter <= 101) {echo " ";   $char_counter++;}
+						echo "| 0     | $hour_count[$i] |\n";
 
-					$hour_count[$i] =	sprintf("%-5s", $hour_count[$i]);
-					$drop_count[$i] =	sprintf("%-5s", $drop_count[$i]);
+						}
+					else
+						{
+						$Xdrop_count = ($Gdrop_count * $hour_multiplier);
 
-					echo "|$time|<SPAN class=\"red\">";
-					$k=0;   while ($k <= $Xdrop_count) {echo ">";   $k++;   $char_counter++;}
-					echo "D</SPAN><SPAN class=\"green\">";   $char_counter++;
-					$k=0;   while ($k <= $XXhour_count) {echo "*";   $k++;   $char_counter++;}
-					echo "X</SPAN>";   $char_counter++;
-					$k=0;   while ($k <= $Yhour_count) {echo " ";   $k++;   $char_counter++;}
-						while ($char_counter <= 102) {echo " ";   $char_counter++;}
-					echo "| $drop_count[$i] | $hour_count[$i] |\n";
+					#	if ($Xdrop_count >= $Xhour_count) {$Xdrop_count = ($Xdrop_count - 1);}
+
+						$XXhour_count = ( ($Xhour_count - $Xdrop_count) - 1 );
+
+						$hour_count[$i] =	sprintf("%-5s", $hour_count[$i]);
+						$drop_count[$i] =	sprintf("%-5s", $drop_count[$i]);
+
+						echo "|$time|<SPAN class=\"red\">";
+						$k=0;   while ($k <= $Xdrop_count) {echo ">";   $k++;   $char_counter++;}
+						echo "D</SPAN><SPAN class=\"green\">";   $char_counter++;
+						$k=0;   while ($k <= $XXhour_count) {echo "*";   $k++;   $char_counter++;}
+						echo "X</SPAN>";   $char_counter++;
+						$k=0;   while ($k <= $Yhour_count) {echo " ";   $k++;   $char_counter++;}
+							while ($char_counter <= 102) {echo " ";   $char_counter++;}
+						echo "| $drop_count[$i] | $hour_count[$i] |\n";
+						}
 					}
+				
+				
+				$i++;
+				$h++;
 				}
-			
-			
-			$i++;
-			$h++;
+
+
+			echo "+------+-------------------------------------------------------------------------------------------------------+-------+-------+\n";
+
+			### END bottom graph
 			}
 
 
-		echo "+------+-------------------------------------------------------------------------------------------------------+-------+-------+\n";
 
-		### END bottom graph
+
+		$ENDtime = date("U");
+		$RUNtime = ($ENDtime - $STARTtime);
+		echo "\n"._QXZ("Run Time").": $RUNtime "._QXZ("seconds")."|$db_source\n";
 		}
 
-
-
-
-	$ENDtime = date("U");
-	$RUNtime = ($ENDtime - $STARTtime);
-	echo "\n"._QXZ("Run Time").": $RUNtime "._QXZ("seconds")."|$db_source\n";
+		$JS_onload.="}\n";
+		if ($report_display_type=='HTML') {$JS_text.=$JS_onload;}
+		$JS_text.="</script>\n";
+		echo $JS_text;
 	}
-
-	$JS_onload.="}\n";
-	if ($report_display_type=='HTML') {$JS_text.=$JS_onload;}
-	$JS_text.="</script>\n";
-	echo $JS_text;
 
 if ($db_source == 'S')
 	{

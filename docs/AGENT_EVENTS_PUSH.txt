@@ -1,4 +1,4 @@
-Agent Events Push		Started: 2017-05-31	Updated: 2017-06-01
+Agent Events Push		Started: 2017-05-31	Updated: 2017-06-29
 
 
 This feature allows for selected events in the VICIdial agent screen to push out event triggers through HTTP requests sent to a URL as defined in the System Settings.
@@ -30,7 +30,9 @@ Here is a list of the supported events that will be pushed out if you have confi
 
 logged_in - After the agent screen has finished loading, this event will be triggered. The session ID, server_ip, version, build and script will be attached to this event
 
-logged_out - There are a few different types of logouts, the reason for the logout will be attached to this event
+logged_out - There are a few different types of logouts, this is the starting of the logout process, the reason for the logout will be attached to this event
+
+logged_out_complete - triggered when logout process is complete, this event may not trigger reliably due to agent closing browser
 
 state_ready - When the agent state changes to READY or CLOSER, this event will trigger, the state will be attached to the event
 
@@ -98,7 +100,11 @@ transfer_panel_closed - The transfer conference panel has been closed
 
 ingroup_screen_open - The In-Group selection screen has been opened
 
+ingroup_screen_closed - The In-Group selection screen has been closed
+
 territory_screen_open - The Territory selection screen has been opened
+
+territory_screen_closed - The Territory selection screen has been closed
 
 contact_search_open - The Contact search screen has been opened
 
