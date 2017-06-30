@@ -197,7 +197,7 @@ $db_source = 'M';
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$stmt = "SELECT use_non_latin,outbound_autodial_active,slave_db_server,reports_use_slave_db,enable_languages,language_method,agent_whisper_enabled,allow_chats,cache_carrier_stats_realtime,report_default_format,ofcom_uk_drop_calc,enable_pause_code_limits FROM system_settings;";
+$stmt = "SELECT use_non_latin,outbound_autodial_active,slave_db_server,reports_use_slave_db,enable_languages,language_method,agent_whisper_enabled,allow_chats,cache_carrier_stats_realtime,report_default_format,ofcom_uk_drop_calc,enable_pause_code_limits,detect_3way FROM system_settings;";
 $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $qm_conf_ct = mysqli_num_rows($rslt);
@@ -216,6 +216,7 @@ if ($qm_conf_ct > 0)
 	$SSreport_default_format =		$row[9];
 	$SSofcom_uk_drop_calc =			$row[10];
 	$SSenable_pause_code_limits =	$row[11];
+	$Detect_3Way =					$row[12];
 	}
 ##### END SETTINGS LOOKUP #####
 ###########################################
@@ -1142,7 +1143,8 @@ else
 	<?php
 	echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 	echo"<META HTTP-EQUIV=Refresh CONTENT=\"$RR; URL=$PHP_SELF?RR=$RR&DB=$DB$groupQS&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\">\n";
-	echo "<TITLE>$report_name: $group</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
+	$strTmp = AddCompany2Title($report_name);
+	echo "<TITLE>$strTmp: $group</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 
 		$short_header=1;
 
@@ -2856,17 +2858,19 @@ if ($talking_to_print > 0)
 
 
 		### 3-WAY Check ###
-		if ($Alead_id[$i]!=0) 
-			{
-			$threewaystmt="SELECT UNIX_TIMESTAMP(last_call_time) from vicidial_live_agents where lead_id='$Alead_id[$i]' and status='INCALL' order by UNIX_TIMESTAMP(last_call_time) desc";
-			$threewayrslt=mysql_to_mysqli($threewaystmt, $link);
-			if (mysqli_num_rows($threewayrslt)>1) 
+		if($Detect_3Way == 'Y') {
+			if ($Alead_id[$i]!=0) 
 				{
-				$Astatus[$i]="3-WAY";
-				$srow=mysqli_fetch_row($threewayrslt);
-				$Acall_mostrecent[$i]=$srow[0];
+				$threewaystmt="SELECT UNIX_TIMESTAMP(last_call_time) from vicidial_live_agents where lead_id='$Alead_id[$i]' and status='INCALL' order by UNIX_TIMESTAMP(last_call_time) desc";
+				$threewayrslt=mysql_to_mysqli($threewaystmt, $link);
+				if (mysqli_num_rows($threewayrslt)>1) 
+					{
+					$Astatus[$i]="3-WAY";
+					$srow=mysqli_fetch_row($threewayrslt);
+					$Acall_mostrecent[$i]=$srow[0];
+					}
 				}
-			}
+		}
 		### END 3-WAY Check ###
 
 		### Mute Check ###
