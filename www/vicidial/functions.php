@@ -1422,4 +1422,26 @@ function createDateRangeArray($strDateFrom,$strDateTo)
 	return $aryRange;
 	}
 
+function  AddCompany2Title($strTitle) {
+	
+	$Comp_Name = "";
+	
+	$stmt="SELECT company_name from system_settings;";
+	$rslt=mysql_to_mysqli($stmt, $link);
+	$sl_ct = mysqli_num_rows($rslt);
+	if ($sl_ct > 0)
+	{
+		$row=mysqli_fetch_row($rslt);
+		$Comp_Name =		$row[0];
+	}
+	if($Comp_Name != "") {
+		$return = $Comp_Name . " " . $strTitle;
+	}
+	else {
+		$return = $strTitle;
+	}
+	return $return;
+}
+
+	
 ?>

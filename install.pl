@@ -2745,6 +2745,10 @@ if ($dbhA)
 		$svn_notes .= "$svn_output_string\n";
 		}
 
+	`./convert2pl.php`;
+
+	require './FlyInclude.pl';
+
 	$stmtA = "UPDATE servers SET svn_revision='$svn_revision',svn_info='$svn_notes' where server_ip='$VARserver_ip';";
 		if($DB){print STDERR "\n|$stmtA|\n";}
 	$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query:|$stmtA|\n";
@@ -2756,10 +2760,6 @@ if ($dbhA)
 	print "Version information updated: $svn_revision|$VARserver_ip\n";
 
 	print "Git information update:\n";
-
-	`./convert2pl.php`;
-
-	require './FlyInclude.pl';
 
 	$git_commit  = "";
 #	$git_release = "";

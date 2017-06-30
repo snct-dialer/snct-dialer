@@ -36,9 +36,11 @@
 #          JFF 2017-06-21 Display only active callbacks
 # 2017-013 JFF 2017-06-26 Add svn commits 2781-2782
 # 2017-014 JFF 2017-06-26 Merge
+#          JFF 2017-06-31 Add svn commit 2783-2784
+# 2017-015 JFF 2017-06-31 Add Company Name to Title
 #
 
-$FLY_patch_level = "2017-014";
-
+$FLY_patch_level = "2017-015";
+$FLY_SVN_base = "2784"
 
 ?>
