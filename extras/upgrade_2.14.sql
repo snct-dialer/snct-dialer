@@ -296,3 +296,8 @@ ALTER TABLE system_settings MODIFY default_phone_login_password VARCHAR(100) def
 ALTER TABLE system_settings MODIFY default_server_password VARCHAR(100) default 'test';
 
 UPDATE system_settings SET db_schema_version='1509',db_schema_update_date=NOW() where db_schema_version < 1509;
+
+ALTER TABLE system_settings ADD detect_3way ENUM('Y','N') default 'Y';
+ALTER TABLE system_settings ADD company_name VARCHAR(50) default '';
+
+UPDATE system_settings SET db_schema_version='1510',db_schema_update_date=NOW() where db_schema_version < 1510;
