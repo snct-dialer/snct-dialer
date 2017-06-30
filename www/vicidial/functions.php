@@ -1423,6 +1423,7 @@ function createDateRangeArray($strDateFrom,$strDateTo)
 	}
 
 function  AddCompany2Title($strTitle) {
+	global $link;
 	
 	$Comp_Name = "";
 	
@@ -1435,7 +1436,7 @@ function  AddCompany2Title($strTitle) {
 		$Comp_Name =		$row[0];
 	}
 	if($Comp_Name != "") {
-		$return = $Comp_Name . " " . $strTitle;
+		$return = "<" . $Comp_Name . "> " . $strTitle;
 	}
 	else {
 		$return = $strTitle;
