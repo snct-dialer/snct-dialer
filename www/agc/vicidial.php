@@ -556,10 +556,11 @@
 # 170531-0937 - Added Agent Events Push function
 # 170601-2017 - Added more agent events
 # 170609-1711 - Added 'commit' function to force immediate submission of Customer Information changes to database
+# 170629-1831 - Added some new agent_events entries
 #
 
-$version = '2.14-526c';
-$build = '170609-1711';
+$version = '2.14-527c';
+$build = '170629-1831';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -14179,6 +14180,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 			}
 
 		hideDiv('CloserSelectBox');
+		agent_events('ingroup_screen_closed', '');
 		MainPanelToFront();
 		CloserSelecting = 0;
 		scroll(0,0);
@@ -14341,6 +14343,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 			}
 
 		hideDiv('TerritorySelectBox');
+		agent_events('territory_screen_closed', '');
 		MainPanelToFront();
 		TerritorySelecting = 0;
 		scroll(0,0);
@@ -14483,6 +14486,8 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								needToConfirmExit = false;
 
 								document.getElementById("LogouTProcess").innerHTML = "<br /><br /><font class=\"loading_text\"><?php echo _QXZ("LOGOUT PROCESS COMPLETE, YOU MAY NOW CLOSE YOUR BROWSER OR LOG BACK IN"); ?></font><br /><br />&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <img src=\"./images/<?php echo _QXZ("agent_loading_done.gif"); ?>\" height=\"206px\" width=\"206px\" alt=\"<?php echo _QXZ("LOGOUT PROCESS COMPLETE, YOU MAY NOW CLOSE YOUR BROWSER OR LOG BACK IN"); ?>\" />";
+
+								agent_events('logged_out_complete', '');
 								}
 							}
 						delete xmlhttp;
@@ -16944,6 +16949,7 @@ function phone_number_format(formatphone) {
 			else
 				{
 				hideDiv('CloserSelectBox');
+				agent_events('ingroup_screen_closed', '');
 				MainPanelToFront();
 				var CloserSelecting = 0;
 				if (dial_method == "INBOUND_MAN")
@@ -16966,6 +16972,7 @@ function phone_number_format(formatphone) {
 			else
 				{
 				hideDiv('TerritorySelectBox');
+				agent_events('territory_screen_closed', '');
 				MainPanelToFront();
 				var TerritorySelecting = 0;
 				}
