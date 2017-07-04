@@ -2256,8 +2256,8 @@ if (isset($_GET["pause_campaigns"]))				{$pause_campaigns=$_GET["pause_campaigns
 	elseif (isset($_POST["pause_campaigns"]))		{$pause_campaigns=$_POST["pause_campaigns"];}
 if (isset($_GET["hide_inactive_lists"]))			{$hide_inactive_lists=$_GET["hide_inactive_lists"];}
 	elseif (isset($_POST["hide_inactive_lists"]))	{$hide_inactive_lists=$_POST["hide_inactive_lists"];}
-if (isset($_GET["dectect_3way"]))					{$dectect_3way=$_GET["detect_3way"];}
-	elseif (isset($_POST["detect_3way"]))			{$dectect_3way=$_POST["dectect_3way"];}
+if (isset($_GET["detect_3way"]))					{$detect_3way=$_GET["detect_3way"];}
+	elseif (isset($_POST["detect_3way"]))			{$detect_3way=$_POST["detect_3way"];}
 if (isset($_GET["company_name"]))					{$company_name=$_GET["company_name"];}
 	elseif (isset($_POST["company_name"]))			{$company_name=$_POST["company_name"];}
 
