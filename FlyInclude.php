@@ -39,7 +39,8 @@
 #          JFF 2017-06-30 Add svn commit 2783-2784
 # 2017-015 JFF 2017-06-30 Add Company Name to Title
 #          JFF 2017-06-30 Add detect 3Way
-# 2017-006 JFF 2017-06-30 Add svn commit 2785
+# 2017-016 JFF 2017-06-30 Add svn commit 2785
+#          JFF 2017-07-08 Add svn commit 2786
 #
 
 $FLY_patch_level = "2017-016";

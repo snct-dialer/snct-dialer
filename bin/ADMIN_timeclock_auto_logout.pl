@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# ADMIN_timeclock_auto_logout.pl version 2.2.0   *DBI-version*
+# ADMIN_timeclock_auto_logout.pl version 2.14
 #
 # DESCRIPTION:
 # forces logout of all users still logged into the timeclock
@@ -8,18 +8,20 @@
 # This script is launched by the ADMIN_keepalive_ALL.pl script with the '9' flag
 # defined in astguiclient.conf
 # 
-# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG
 # 80526-0958 - First Build
 # 80604-0733 - Fixed minor bug in update
 # 90812-0103 - Formatting fixes
+# 170705-0911 - Added concurrency check, and skip CLI option
 #
 
 # constants
 $DB=0;  # Debug flag, set to 0 for no debug messages, On an active system this will generate lots of lines of output per minute
 $US='__';
 $MT[0]='';
+$run_check=1;
 
 $secT = time();
 $now_date_epoch = $secT;
@@ -49,7 +51,13 @@ if (length($ARGV[0])>1)
 
 	if ($args =~ /--help/i)
 		{
-		print "allowed run time options(must stay in this order):\n  [--debug] = debug\n  [--debugX] = super debug\n  [-t] = test\n  [--force-run] = force run even if already run for the day\n\n";
+		print "allowed run time options(must stay in this order):\n";
+		print "  [--debug] = debug\n";
+		print "  [--debugX] = super debug\n";
+		print "  [-t] = test\n";
+		print "  [--force-run] = force run even if already run for the day\n";
+		print "  [--skip-run-check] = skip concurrency check, do not die if another instance is running\n";
+		print "\n";
 		exit;
 		}
 	else
@@ -74,11 +82,16 @@ if (length($ARGV[0])>1)
 			$T=1;   $TEST=1;
 			print "\n-----TESTING -----\n\n";
 			}
+		if ($args =~ /--skip-run-check/i)
+			{
+			$run_check=0;
+			if ($DB) {print "\n----- SKIPPING CONCURRENCY CHECK -----\n\n";}
+			}
 		}
 	}
 else
 	{
-	print "no command line options set\n";
+#	print "no command line options set\n";
 	}
 
 # default path to astguiclient configuration file:
@@ -122,6 +135,24 @@ foreach(@conf)
 if (!$VDALOGfile) {$VDALOGfile = "$PATHlogs/timeclockautologout.$year-$mon-$mday";}
 if (!$VARDB_port) {$VARDB_port='3306';}
 
+### concurrency check
+if ($run_check > 0)
+	{
+	my $grepout = `/bin/ps ax | grep timeclock | grep -v grep | grep -v '/bin/sh'`;
+	my $grepnum=0;
+	$grepnum++ while ($grepout =~ m/\n/g);
+	if ($grepnum > 1) 
+		{
+		$SYSLOG = 1;
+		$event_string = "CONCURRENCY EXIT: |$grepnum|";
+			&event_logger;
+		if ($DB) {print "I am not alone! Another $0 is running! Exiting...($grepnum)\n";}
+		exit;
+		}
+	if ($DBX) {print "CONCURRENCY CHECK: |$grepnum|\n$grepout\n";}
+	}
+
+
 use DBI;	  
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
@@ -137,9 +168,9 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 	while ($sthArows > $rec_count)
 		{
 		@aryA = $sthA->fetchrow_array;
-		$DBvd_server_logs =			"$aryA[0]";
-		$DBSERVER_GMT		=		"$aryA[1]";
-		if ($DBvd_server_logs =~ /Y/)	{$SYSLOG = '1';}
+		$DBvd_server_logs =			$aryA[0];
+		$DBSERVER_GMT		=		$aryA[1];
+		if ($DBvd_server_logs =~ /Y/)	{$SYSLOG = 1;}
 		else {$SYSLOG = '0';}
 		if (length($DBSERVER_GMT)>0)	{$SERVER_GMT = $DBSERVER_GMT;}
 		$rec_count++;
@@ -154,8 +185,8 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 	if ($sthArows > 0)
 		{
 		@aryA = $sthA->fetchrow_array;
-		$timeclock_end_of_day =			"$aryA[0]";
-		$timeclock_last_reset_date =	"$aryA[1]";
+		$timeclock_end_of_day =			$aryA[0];
+		$timeclock_last_reset_date =	$aryA[1];
 		}
 	$sthA->finish();
 
