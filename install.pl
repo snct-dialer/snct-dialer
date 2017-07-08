@@ -2749,15 +2749,15 @@ if ($dbhA)
 
 	require './FlyInclude.pl';
 
-	$stmtA = "UPDATE servers SET svn_revision='$svn_revision',svn_info='$svn_notes' where server_ip='$VARserver_ip';";
+	$stmtA = "UPDATE servers SET svn_revision='$Fly_old_svn',svn_info='$svn_notes' where server_ip='$VARserver_ip';";
 		if($DB){print STDERR "\n|$stmtA|\n";}
 	$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query:|$stmtA|\n";
 
-	$stmtA = "UPDATE system_settings SET svn_revision='$svn_revision';";
+	$stmtA = "UPDATE system_settings SET svn_revision='$Fly_old_svn';";
 		if($DB){print STDERR "\n|$stmtA|\n";}
 	$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query:|$stmtA|\n";
 
-	print "Version information updated: $svn_revision|$VARserver_ip\n";
+	print "Version information updated: $Fly_old_svn|$VARserver_ip\n";
 
 	print "Git information update:\n";
 
