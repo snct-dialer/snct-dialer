@@ -12,3 +12,5 @@ FP:2.14.0.1
     + Added Audit Comments display
   * Add upstream Rev. 2790:
     + Fixed help documentation for delay seconds, issue #1025
+  * Add upstream Rev. 2791:
+    + Added screen colors and fixed default date variable

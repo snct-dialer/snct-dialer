@@ -14,10 +14,11 @@
 # 141007-2039 - Finalized adding QXZ translation to all admin files
 # 141229-2033 - Added code for on-the-fly language translations display
 # 170409-1533 - Added IP List validation code
+# 170711-1105 - Added screen colors
 #
 
-$version = '2.14-10';
-$build = '170409-1533';
+$version = '2.14-11';
+$build = '170711-1105';
 
 # This limit is to prevent data inconsistancies.
 # If there are too many leads in a list this
@@ -70,7 +71,7 @@ $delete_status = preg_replace('/[^-_0-9a-zA-Z]/','',$delete_status);
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$sys_settings_stmt = "SELECT use_non_latin,outbound_autodial_active,sounds_central_control_active,enable_languages,language_method FROM system_settings;";
+$sys_settings_stmt = "SELECT use_non_latin,outbound_autodial_active,sounds_central_control_active,enable_languages,language_method,admin_screen_colors,report_default_format FROM system_settings;";
 $sys_settings_rslt=mysql_to_mysqli($sys_settings_stmt, $link);
 if ($DB) {echo "$sys_settings_stmt\n";}
 $num_rows = mysqli_num_rows($sys_settings_rslt);
@@ -82,6 +83,8 @@ if ($num_rows > 0)
 	$sounds_central_control_active =	$sys_settings_row[2];
 	$SSenable_languages =				$sys_settings_row[3];
 	$SSlanguage_method =				$sys_settings_row[4];
+	$SSadmin_screen_colors =			$sys_settings_row[5];
+	$SSreport_default_format =			$sys_settings_row[6];
 	}
 else
 	{
@@ -176,6 +179,71 @@ if ( $modify_lists < 1 )
 	exit;
 	}
 
+$SSmenu_background='015B91';
+$SSframe_background='D9E6FE';
+$SSstd_row1_background='9BB9FB';
+$SSstd_row2_background='B9CBFD';
+$SSstd_row3_background='8EBCFD';
+$SSstd_row4_background='B6D3FC';
+$SSstd_row5_background='A3C3D6';
+$SSalt_row1_background='BDFFBD';
+$SSalt_row2_background='99FF99';
+$SSalt_row3_background='CCFFCC';
+
+if ($SSadmin_screen_colors != 'default')
+	{
+	$stmt = "SELECT menu_background,frame_background,std_row1_background,std_row2_background,std_row3_background,std_row4_background,std_row5_background,alt_row1_background,alt_row2_background,alt_row3_background,web_logo FROM vicidial_screen_colors where colors_id='$SSadmin_screen_colors';";
+	$rslt=mysql_to_mysqli($stmt, $link);
+	if ($DB) {echo "$stmt\n";}
+	$colors_ct = mysqli_num_rows($rslt);
+	if ($colors_ct > 0)
+		{
+		$row=mysqli_fetch_row($rslt);
+		$SSmenu_background =		$row[0];
+		$SSframe_background =		$row[1];
+		$SSstd_row1_background =	$row[2];
+		$SSstd_row2_background =	$row[3];
+		$SSstd_row3_background =	$row[4];
+		$SSstd_row4_background =	$row[5];
+		$SSstd_row5_background =	$row[6];
+		$SSalt_row1_background =	$row[7];
+		$SSalt_row2_background =	$row[8];
+		$SSalt_row3_background =	$row[9];
+		$SSweb_logo =				$row[10];
+		}
+	}
+$Mhead_color =	$SSstd_row5_background;
+$Mmain_bgcolor = $SSmenu_background;
+$Mhead_color =	$SSstd_row5_background;
+
+$selected_logo = "./images/vicidial_admin_web_logo.png";
+$selected_small_logo = "./images/vicidial_admin_web_logo.png";
+$logo_new=0;
+$logo_old=0;
+$logo_small_old=0;
+if (file_exists('./images/vicidial_admin_web_logo.png')) {$logo_new++;}
+if (file_exists('vicidial_admin_web_logo_small.gif')) {$logo_small_old++;}
+if (file_exists('vicidial_admin_web_logo.gif')) {$logo_old++;}
+if ($SSweb_logo=='default_new')
+	{
+	$selected_logo = "./images/vicidial_admin_web_logo.png";
+	$selected_small_logo = "./images/vicidial_admin_web_logo.png";
+	}
+if ( ($SSweb_logo=='default_old') and ($logo_old > 0) )
+	{
+	$selected_logo = "./vicidial_admin_web_logo.gif";
+	$selected_small_logo = "./vicidial_admin_web_logo_small.gif";
+	}
+if ( ($SSweb_logo!='default_new') and ($SSweb_logo!='default_old') )
+	{
+	if (file_exists("./images/vicidial_admin_web_logo$SSweb_logo")) 
+		{
+		$selected_logo = "./images/vicidial_admin_web_logo$SSweb_logo";
+		$selected_small_logo = "./images/vicidial_admin_web_logo$SSweb_logo";
+		}
+	}
+
+
 echo "<html>\n";
 echo "<head>\n";
 echo "<META HTTP-EQUIV='Content-Type' CONTENT='text/html; charset=utf-8'>\n";
@@ -215,7 +283,7 @@ echo "</tr>\n";
 
 
 
-echo "<tr bgcolor='#F0F5FE'><td align=left colspan=2><font face='ARIAL,HELVETICA' color=black size=3> &nbsp; \n";
+echo "<tr bgcolor='#$SSframe_background'><td align=left colspan=2><font face='ARIAL,HELVETICA' color=black size=3> &nbsp; \n";
 
 # move confirmation page
 if ($move_submit == "move" )
@@ -743,8 +811,8 @@ if (
 	echo "<center><table width=$section_width cellspacing=3>\n";
 
 	# BEGIN lead move
-	echo "<tr bgcolor=#015B91><td colspan=2 align=center><font color=white><b>"._QXZ("Move Leads")."</b></font></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("From List")."</td><td align=left>\n";
+	echo "<tr bgcolor=#$SSmenu_background><td colspan=2 align=center><font color=white><b>"._QXZ("Move Leads")."</b></font></td></tr>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("From List")."</td><td align=left>\n";
 	echo "<select size=1 name=move_from_list>\n";
 	echo "<option value='-'>"._QXZ("Select A List")."</option>\n";
 
@@ -756,7 +824,7 @@ if (
 		}
 
 	echo "</select></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("To List")."</td><td align=left>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("To List")."</td><td align=left>\n";
 	echo "<select size=1 name=move_to_list>\n";
 	echo "<option value='-'>"._QXZ("Select A List")."</option>\n";
 
@@ -768,7 +836,7 @@ if (
 		}
 
 	echo "</select></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Status")."</td><td align=left>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Status")."</td><td align=left>\n";
 	echo "<select size=1 name=move_status>\n";
 	echo "<option value='-'>"._QXZ("Select A Status")."</option>\n";
 	echo "<option value='%'>"._QXZ("All Statuses")."</option>\n";
@@ -781,7 +849,7 @@ if (
 		}
 		
 	echo "</select></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Called Count")."</td><td align=left>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Called Count")."</td><td align=left>\n";
 	echo "<select size=1 name=move_count_op>\n";
 	echo "<option value='<'><</option>\n";
 	echo "<option value='<='><=</option>\n";
@@ -797,14 +865,14 @@ if (
 		$i++;
 		}
 	echo "</select></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td colspan=2 align=center><input type=submit name=move_submit value='"._QXZ("move")."'></td></tr>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td colspan=2 align=center><input type=submit name=move_submit value='"._QXZ("move")."'></td></tr>\n";
 	echo "</table></center>\n";
 	# END lead move
 
 	# BEGIN Status Update
 	echo "<br /><center><table width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#015B91><td colspan=2 align=center><font color=white><b>"._QXZ("Update Lead Statuses")."</b></font></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("List")."</td><td align=left>\n";
+	echo "<tr bgcolor=#$SSmenu_background><td colspan=2 align=center><font color=white><b>"._QXZ("Update Lead Statuses")."</b></font></td></tr>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("List")."</td><td align=left>\n";
 	echo "<select size=1 name=update_list>\n";
 	echo "<option value='-'>"._QXZ("Select A List")."</option>\n";
 
@@ -816,7 +884,7 @@ if (
 		}
 
 	echo "</select></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("From Status")."</td><td align=left>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("From Status")."</td><td align=left>\n";
 	echo "<select size=1 name=update_from_status>\n";
 	echo "<option value='-'>"._QXZ("Select A Status")."</option>\n";
 
@@ -828,7 +896,7 @@ if (
 		}
 
 	echo "</select></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("To Status")."</td><td align=left>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("To Status")."</td><td align=left>\n";
 	echo "<select size=1 name=update_to_status>\n";
 	echo "<option value='-'>"._QXZ("Select A Status")."</option>\n";
 
@@ -840,7 +908,7 @@ if (
 		}
 
 	echo "</select></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Called Count")."</td><td align=left>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Called Count")."</td><td align=left>\n";
 	echo "<select size=1 name=update_count_op>\n";
 	echo "<option value='<'><</option>\n";
 	echo "<option value='<='><=</option>\n";
@@ -856,7 +924,7 @@ if (
 		$i++;
 		}
 	echo "</select></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td colspan=2 align=center><input type=submit name=update_submit value='"._QXZ("update")."'></td></tr>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td colspan=2 align=center><input type=submit name=update_submit value='"._QXZ("update")."'></td></tr>\n";
 	# END Status Update
 
 	if ( $delete_lists > 0 )
@@ -864,8 +932,8 @@ if (
 		# BEGIN Delete Leads
 		echo "</table></center>\n";
 		echo "<br /><center><table width=$section_width cellspacing=3>\n";
-		echo "<tr bgcolor=#015B91><td colspan=2 align=center><font color=white><b>"._QXZ("Delete Leads")."</b></font></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("List")."</td><td align=left>\n";
+		echo "<tr bgcolor=#$SSmenu_background><td colspan=2 align=center><font color=white><b>"._QXZ("Delete Leads")."</b></font></td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("List")."</td><td align=left>\n";
 		echo "<select size=1 name=delete_list>\n";
 		echo "<option value='-'>"._QXZ("Select A List")."</option>\n";
 
@@ -877,7 +945,7 @@ if (
 			}
 
 		echo "</select></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Status")."</td><td align=left>\n";
+		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Status")."</td><td align=left>\n";
 		echo "<select size=1 name=delete_status>\n";
 		echo "<option value='-'>"._QXZ("Select A Status")."</option>\n";
 
@@ -889,7 +957,7 @@ if (
 			}
 
 		echo "</select></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Called Count")."</td><td align=left>\n";
+		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Called Count")."</td><td align=left>\n";
 		echo "<select size=1 name=delete_count_op>\n";
 				echo "<option value='<'><</option>\n";
 				echo "<option value='<='><=</option>\n";
@@ -905,7 +973,7 @@ if (
 			$i++;
 			}
 		echo "</select></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td colspan=2 align=center><input type=submit name=delete_submit value='"._QXZ("delete")."'></td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row3_background><td colspan=2 align=center><input type=submit name=delete_submit value='"._QXZ("delete")."'></td></tr>\n";
 		# END Delete Leads
 
 		}

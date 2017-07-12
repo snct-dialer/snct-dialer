@@ -17,6 +17,7 @@
 # 141114-0906 - Finalized adding QXZ translation to all admin files
 # 141230-1521 - Added code for on-the-fly language translations display
 # 170409-1534 - Added IP List validation code
+# 170711-1103 - Added screen colors and fixed default date variable
 #
 
 $startMS = microtime();
@@ -42,7 +43,7 @@ if (isset($_GET["SUBMIT"]))				{$SUBMIT=$_GET["SUBMIT"];}
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$stmt = "SELECT use_non_latin,enable_languages,language_method FROM system_settings;";
+$stmt = "SELECT use_non_latin,enable_languages,language_method,admin_screen_colors,report_default_format FROM system_settings;";
 $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $qm_conf_ct = mysqli_num_rows($rslt);
@@ -52,6 +53,8 @@ if ($qm_conf_ct > 0)
 	$non_latin =				$row[0];
 	$SSenable_languages =		$row[1];
 	$SSlanguage_method =		$row[2];
+	$SSadmin_screen_colors =	$row[3];
+	$SSreport_default_format =	$row[4];
 	}
 ##### END SETTINGS LOOKUP #####
 ###########################################
@@ -138,6 +141,11 @@ else
 $agent = preg_replace('/[^-_0-9a-zA-Z]/', '', $agent);
 $query_date = preg_replace('/[^-_0-9a-zA-Z]/', '', $query_date);
 $calls_summary = preg_replace('/[^-_0-9a-zA-Z]/', '', $calls_summary);
+$NOW_DATE = date("Y-m-d");
+$NOW_TIME = date("Y-m-d H:i:s");
+$STARTtime = date("U");
+if ( (!isset($query_date)) or (strlen($query_date) < 8) ) {$query_date = $NOW_DATE;}
+
 
 ##### BEGIN log visit to the vicidial_report_log table #####
 $LOGip = getenv("REMOTE_ADDR");
@@ -185,10 +193,70 @@ $rslt=mysql_to_mysqli($stmt, $link);
 $report_log_id = mysqli_insert_id($link);
 ##### END log visit to the vicidial_report_log table #####
 
-$NOW_DATE = date("Y-m-d");
-$NOW_TIME = date("Y-m-d H:i:s");
-$STARTtime = date("U");
-if (!isset($query_date)) {$query_date = $NOW_DATE;}
+
+$SSmenu_background='015B91';
+$SSframe_background='D9E6FE';
+$SSstd_row1_background='9BB9FB';
+$SSstd_row2_background='B9CBFD';
+$SSstd_row3_background='8EBCFD';
+$SSstd_row4_background='B6D3FC';
+$SSstd_row5_background='A3C3D6';
+$SSalt_row1_background='BDFFBD';
+$SSalt_row2_background='99FF99';
+$SSalt_row3_background='CCFFCC';
+
+if ($SSadmin_screen_colors != 'default')
+	{
+	$stmt = "SELECT menu_background,frame_background,std_row1_background,std_row2_background,std_row3_background,std_row4_background,std_row5_background,alt_row1_background,alt_row2_background,alt_row3_background,web_logo FROM vicidial_screen_colors where colors_id='$SSadmin_screen_colors';";
+	$rslt=mysql_to_mysqli($stmt, $link);
+	if ($DB) {echo "$stmt\n";}
+	$colors_ct = mysqli_num_rows($rslt);
+	if ($colors_ct > 0)
+		{
+		$row=mysqli_fetch_row($rslt);
+		$SSmenu_background =		$row[0];
+		$SSframe_background =		$row[1];
+		$SSstd_row1_background =	$row[2];
+		$SSstd_row2_background =	$row[3];
+		$SSstd_row3_background =	$row[4];
+		$SSstd_row4_background =	$row[5];
+		$SSstd_row5_background =	$row[6];
+		$SSalt_row1_background =	$row[7];
+		$SSalt_row2_background =	$row[8];
+		$SSalt_row3_background =	$row[9];
+		$SSweb_logo =				$row[10];
+		}
+	}
+$Mhead_color =	$SSstd_row5_background;
+$Mmain_bgcolor = $SSmenu_background;
+$Mhead_color =	$SSstd_row5_background;
+
+$selected_logo = "./images/vicidial_admin_web_logo.png";
+$selected_small_logo = "./images/vicidial_admin_web_logo.png";
+$logo_new=0;
+$logo_old=0;
+$logo_small_old=0;
+if (file_exists('./images/vicidial_admin_web_logo.png')) {$logo_new++;}
+if (file_exists('vicidial_admin_web_logo_small.gif')) {$logo_small_old++;}
+if (file_exists('vicidial_admin_web_logo.gif')) {$logo_old++;}
+if ($SSweb_logo=='default_new')
+	{
+	$selected_logo = "./images/vicidial_admin_web_logo.png";
+	$selected_small_logo = "./images/vicidial_admin_web_logo.png";
+	}
+if ( ($SSweb_logo=='default_old') and ($logo_old > 0) )
+	{
+	$selected_logo = "./vicidial_admin_web_logo.gif";
+	$selected_small_logo = "./vicidial_admin_web_logo_small.gif";
+	}
+if ( ($SSweb_logo!='default_new') and ($SSweb_logo!='default_old') )
+	{
+	if (file_exists("./images/vicidial_admin_web_logo$SSweb_logo")) 
+		{
+		$selected_logo = "./images/vicidial_admin_web_logo$SSweb_logo";
+		$selected_small_logo = "./images/vicidial_admin_web_logo$SSweb_logo";
+		}
+	}
 
 ?>
 
@@ -212,8 +280,8 @@ echo " - <a href=\"./user_status.php?user=$agent\">"._QXZ("User Status")."</a>\n
 echo " - <a href=\"./admin.php?ADD=3&user=$agent\">"._QXZ("Modify User")."</a>\n";
 echo "<BR>\n";
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET> &nbsp; \n";
-echo _QXZ("Date").": <INPUT TYPE=TEXT NAME=query_date SIZE=19 MAXLENGTH=19 VALUE=\"$query_date\">\n";
-echo _QXZ("User ID").": <INPUT TYPE=TEXT NAME=agent SIZE=10 MAXLENGTH=20 VALUE=\"$agent\">\n";
+echo _QXZ("Date").": <INPUT TYPE=TEXT NAME=query_date SIZE=10 MAXLENGTH=19 VALUE=\"$query_date\">\n";
+echo _QXZ("User ID").": <INPUT TYPE=TEXT NAME=agent SIZE=20 MAXLENGTH=20 VALUE=\"$agent\">\n";
 echo "<INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'>\n";
 echo "</FORM>\n\n";
 

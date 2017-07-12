@@ -12,10 +12,11 @@
 # 150312-1508 - Allow for single quotes in vicidial_list data fields
 # 170225-1436 - Added date/time range options
 # 170409-1554 - Added IP List validation code
+# 170711-1104 - Added screen colors
 #
 
-$version = '2.14-8';
-$build = '170409-1554';
+$version = '2.14-9';
+$build = '170711-1104';
 
 # This limit is to prevent data inconsistancies.
 # If there are too many leads in a list this
@@ -84,7 +85,7 @@ if ($DB)
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$sys_settings_stmt = "SELECT use_non_latin,outbound_autodial_active,sounds_central_control_active,enable_languages,language_method FROM system_settings;";
+$sys_settings_stmt = "SELECT use_non_latin,outbound_autodial_active,sounds_central_control_active,enable_languages,language_method,admin_screen_colors,report_default_format FROM system_settings;";
 $sys_settings_rslt=mysql_to_mysqli($sys_settings_stmt, $link);
 if ($DB) {echo "$sys_settings_stmt\n";}
 $num_rows = mysqli_num_rows($sys_settings_rslt);
@@ -96,6 +97,8 @@ if ($num_rows > 0)
 	$sounds_central_control_active =	$sys_settings_row[2];
 	$SSenable_languages =				$sys_settings_row[3];
 	$SSlanguage_method =				$sys_settings_row[4];
+	$SSadmin_screen_colors =			$sys_settings_row[5];
+	$SSreport_default_format =			$sys_settings_row[6];
 	}
 else
 	{
@@ -189,6 +192,71 @@ if ( $modify_lists < 1 )
 	echo _QXZ("You do not have permissions to modify lists")."\n";
 	exit;
 	}
+
+$SSmenu_background='015B91';
+$SSframe_background='D9E6FE';
+$SSstd_row1_background='9BB9FB';
+$SSstd_row2_background='B9CBFD';
+$SSstd_row3_background='8EBCFD';
+$SSstd_row4_background='B6D3FC';
+$SSstd_row5_background='A3C3D6';
+$SSalt_row1_background='BDFFBD';
+$SSalt_row2_background='99FF99';
+$SSalt_row3_background='CCFFCC';
+
+if ($SSadmin_screen_colors != 'default')
+	{
+	$stmt = "SELECT menu_background,frame_background,std_row1_background,std_row2_background,std_row3_background,std_row4_background,std_row5_background,alt_row1_background,alt_row2_background,alt_row3_background,web_logo FROM vicidial_screen_colors where colors_id='$SSadmin_screen_colors';";
+	$rslt=mysql_to_mysqli($stmt, $link);
+	if ($DB) {echo "$stmt\n";}
+	$colors_ct = mysqli_num_rows($rslt);
+	if ($colors_ct > 0)
+		{
+		$row=mysqli_fetch_row($rslt);
+		$SSmenu_background =		$row[0];
+		$SSframe_background =		$row[1];
+		$SSstd_row1_background =	$row[2];
+		$SSstd_row2_background =	$row[3];
+		$SSstd_row3_background =	$row[4];
+		$SSstd_row4_background =	$row[5];
+		$SSstd_row5_background =	$row[6];
+		$SSalt_row1_background =	$row[7];
+		$SSalt_row2_background =	$row[8];
+		$SSalt_row3_background =	$row[9];
+		$SSweb_logo =				$row[10];
+		}
+	}
+$Mhead_color =	$SSstd_row5_background;
+$Mmain_bgcolor = $SSmenu_background;
+$Mhead_color =	$SSstd_row5_background;
+
+$selected_logo = "./images/vicidial_admin_web_logo.png";
+$selected_small_logo = "./images/vicidial_admin_web_logo.png";
+$logo_new=0;
+$logo_old=0;
+$logo_small_old=0;
+if (file_exists('./images/vicidial_admin_web_logo.png')) {$logo_new++;}
+if (file_exists('vicidial_admin_web_logo_small.gif')) {$logo_small_old++;}
+if (file_exists('vicidial_admin_web_logo.gif')) {$logo_old++;}
+if ($SSweb_logo=='default_new')
+	{
+	$selected_logo = "./images/vicidial_admin_web_logo.png";
+	$selected_small_logo = "./images/vicidial_admin_web_logo.png";
+	}
+if ( ($SSweb_logo=='default_old') and ($logo_old > 0) )
+	{
+	$selected_logo = "./vicidial_admin_web_logo.gif";
+	$selected_small_logo = "./vicidial_admin_web_logo_small.gif";
+	}
+if ( ($SSweb_logo!='default_new') and ($SSweb_logo!='default_old') )
+	{
+	if (file_exists("./images/vicidial_admin_web_logo$SSweb_logo")) 
+		{
+		$selected_logo = "./images/vicidial_admin_web_logo$SSweb_logo";
+		$selected_small_logo = "./images/vicidial_admin_web_logo$SSweb_logo";
+		}
+	}
+
 
 echo "<html>\n";
 echo "<head>\n";
@@ -658,7 +726,7 @@ $subcamp_color =	'#C6C6C6';
 
 require("admin_header.php");
 
-echo "<table width=$page_width bgcolor=#E6E6E6 cellpadding=2 cellspacing=0>\n";
+echo "<table width=$page_width bgcolor=#$SSframe_background cellpadding=2 cellspacing=0>\n";
 echo "<tr bgcolor='#E6E6E6'>\n";
 echo "<td align=left>\n";
 echo "<font face='ARIAL,HELVETICA' size=2>\n";
@@ -670,7 +738,7 @@ echo "</tr>\n";
 
 
 
-echo "<tr bgcolor='#F0F5FE'><td align=left colspan=2><font face='ARIAL,HELVETICA' color=black size=3> &nbsp; \n";
+echo "<tr bgcolor='#$SSframe_background'><td align=left colspan=2><font face='ARIAL,HELVETICA' color=black size=3> &nbsp; \n";
 
 ##### BEGIN move functions #####
 # move confirmation page
@@ -3370,8 +3438,8 @@ if (
 	echo "<center><table width=$section_width cellspacing=3>\n";
 
 	# BEGIN lead move
-	echo "<tr bgcolor=#015B91><td colspan=2 align=center><font color=white><b>"._QXZ("Move Leads")."</b></font></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("From List")."</td><td align=left>\n";
+	echo "<tr bgcolor=#$SSmenu_background><td colspan=2 align=center><font color=white><b>"._QXZ("Move Leads")."</b></font></td></tr>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("From List")."</td><td align=left>\n";
 	echo "<select size=1 name=move_from_list>\n";
 	echo "<option value='-'>"._QXZ("Select A List")."</option>\n";
 
@@ -3383,7 +3451,7 @@ if (
 		}
 
 	echo "</select></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("To List")."</td><td align=left>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("To List")."</td><td align=left>\n";
 	echo "<select size=1 name=move_to_list>\n";
 	echo "<option value='-'>"._QXZ("Select A List")."</option>\n";
 
@@ -3395,7 +3463,7 @@ if (
 		}
 
 	echo "</select></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Status")."</td></td><td align=left>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Status")."</td></td><td align=left>\n";
 	echo "<input type='checkbox' name='enable_move_status' id='enable_move_status' value='enabled'>\n";
 	echo "<select size=1 name='move_status' id='move_status' disabled=true>\n";
 	echo "<option value='-'>"._QXZ("Select A Status")."</option>\n";
@@ -3409,27 +3477,27 @@ if (
 		}
 
 	echo "</select></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Country Code")."</td></td><td align=left>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Country Code")."</td></td><td align=left>\n";
 	echo "<input type='checkbox' name='enable_move_country_code' id='enable_move_country_code' value='enabled'>\n";
 	echo "<input type='text' name='move_country_code' id='move_country_code' value='' disabled=true>\n";
 	echo "</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Vendor Lead Code")."</td></td><td align=left>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Vendor Lead Code")."</td></td><td align=left>\n";
 	echo "<input type='checkbox' name='enable_move_vendor_lead_code' id='enable_move_vendor_lead_code' value='enabled'>\n";
 	echo "<input type='text' name='move_vendor_lead_code' id='move_vendor_lead_code' value='' disabled=true>\n";
 	echo "</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Source ID")."</td></td><td align=left>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Source ID")."</td></td><td align=left>\n";
 	echo "<input type='checkbox' name='enable_move_source_id' id='enable_move_source_id' value='enabled'>\n";
 	echo "<input type='text' name='move_source_id' id='move_source_id' value='' disabled=true>\n";
 	echo "</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Owner")."</td></td><td align=left>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Owner")."</td></td><td align=left>\n";
 	echo "<input type='checkbox' name='enable_move_owner' id='enable_move_owner' value='enabled'>\n";
 	echo "<input type='text' name='move_owner' id='move_owner' value='' disabled=true>\n";
 	echo "</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("State")."</td></td><td align=left>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("State")."</td></td><td align=left>\n";
 	echo "<input type='checkbox' name='enable_move_state' id='enable_move_state' value='enabled'>\n";
 	echo "<input type='text' name='move_state' id='move_state' value='' disabled=true>\n";
 	echo "</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Entry Date")."</td></td><td align=left>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Entry Date")."</td></td><td align=left>\n";
 	echo "<input type='checkbox' name='enable_move_entry_date' id='enable_move_entry_date' value='enabled'>\n";
 	echo "<select size=1 name=move_entry_date_op id='move_entry_date_op' disabled=true>\n";
 	echo "<option value='<'><</option>\n";
@@ -3441,7 +3509,7 @@ if (
 	echo "</select>\n";
 	echo "<input type='text' name='move_entry_date' id='move_entry_date' value='' disabled=true length=20 maxlength=19> "._QXZ("to")." <input type='text' name='move_entry_date_end' id='move_entry_date_end' value='' disabled=true length=20 maxlength=19> <font size=1>(YYYY-MM-DD) or (YYYY-MM-DD HH:MM:SS)</font>\n";
 	echo "</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Modify Date")."</td></td><td align=left>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Modify Date")."</td></td><td align=left>\n";
 	echo "<input type='checkbox' name='enable_move_modify_date' id='enable_move_modify_date' value='enabled'>\n";
 	echo "<select size=1 name=move_modify_date_op id='move_modify_date_op' disabled=true>\n";
 	echo "<option value='<'><</option>\n";
@@ -3453,11 +3521,11 @@ if (
 	echo "</select>\n";
 	echo "<input type='text' name='move_modify_date' id='move_modify_date' value='' disabled=true length=20 maxlength=19> "._QXZ("to")." <input type='text' name='move_modify_date_end' id='move_modify_date_end' value='' disabled=true length=20 maxlength=19> <font size=1>(YYYY-MM-DD) or (YYYY-MM-DD HH:MM:SS)</font>\n";
 	echo "</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Security Phrase")."</td></td><td align=left>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Security Phrase")."</td></td><td align=left>\n";
 	echo "<input type='checkbox' name='enable_move_security_phrase' id='enable_move_security_phrase' value='enabled'>\n";
 	echo "<input type='text' name='move_security_phrase' id='move_security_phrase' value='' disabled=true>\n";
 	echo "</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Called Count")."</td><td align=left>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Called Count")."</td><td align=left>\n";
 	echo "<input type='checkbox' name='enable_move_count' id='enable_move_count' value='enabled'>\n";
 	echo "<select size=1 name=move_count_op id='move_count_op' disabled=true>\n";
 	echo "<option value='<'><</option>\n";
@@ -3474,14 +3542,14 @@ if (
 		$i++;
 		}
 	echo "</select></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td colspan=2 align=center><input type=submit name=move_submit value='"._QXZ("move")."'></td></tr>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td colspan=2 align=center><input type=submit name=move_submit value='"._QXZ("move")."'></td></tr>\n";
 	echo "</table></center>\n";
 	# END lead move
 
 	# BEGIN Status Update
 	echo "<br /><center><table width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#015B91><td colspan=2 align=center><font color=white><b>"._QXZ("Update Lead Statuses")."</b></font></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("List")."</td><td align=left>\n";
+	echo "<tr bgcolor=#$SSmenu_background><td colspan=2 align=center><font color=white><b>"._QXZ("Update Lead Statuses")."</b></font></td></tr>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("List")."</td><td align=left>\n";
 	echo "<select size=1 name=update_list>\n";
 	echo "<option value='-'>"._QXZ("Select A List")."</option>\n";
 
@@ -3493,7 +3561,7 @@ if (
 		}
 
 	echo "</select></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("To Status")."</td><td align=left>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("To Status")."</td><td align=left>\n";
 	echo "<select size=1 name=update_to_status>\n";
 	echo "<option value='-'>"._QXZ("Select A Status")."</option>\n";
 
@@ -3505,7 +3573,7 @@ if (
 		}
 
 	echo "</select></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("From Status")."</td><td align=left>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("From Status")."</td><td align=left>\n";
 	echo "<input type='checkbox' name='enable_update_from_status' id='enable_update_from_status' value='enabled'>\n";
 	echo "<select size=1 name=update_from_status id='update_from_status' disabled=true>\n";
 	echo "<option value='-'>"._QXZ("Select A Status")."</option>\n";
@@ -3518,27 +3586,27 @@ if (
 	}
 
 	echo "</select></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Country Code")."</td></td><td align=left>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Country Code")."</td></td><td align=left>\n";
 	echo "<input type='checkbox' name='enable_update_country_code' id='enable_update_country_code' value='enabled'>\n";
 	echo "<input type='text' name='update_country_code' id='update_country_code' value='' disabled=true>\n";
 	echo "</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Vendor Lead Code")."</td></td><td align=left>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Vendor Lead Code")."</td></td><td align=left>\n";
 	echo "<input type='checkbox' name='enable_update_vendor_lead_code' id='enable_update_vendor_lead_code' value='enabled'>\n";
 	echo "<input type='text' name='update_vendor_lead_code' id='update_vendor_lead_code' value='' disabled=true>\n";
 	echo "</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Source ID")."</td></td><td align=left>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Source ID")."</td></td><td align=left>\n";
 	echo "<input type='checkbox' name='enable_update_source_id' id='enable_update_source_id' value='enabled'>\n";
 	echo "<input type='text' name='update_source_id' id='update_source_id' value='' disabled=true>\n";
 	echo "</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Owner")."</td></td><td align=left>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Owner")."</td></td><td align=left>\n";
 	echo "<input type='checkbox' name='enable_update_owner' id='enable_update_owner' value='enabled'>\n";
 	echo "<input type='text' name='update_owner' id='update_owner' value='' disabled=true>\n";
 	echo "</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("State")."</td></td><td align=left>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("State")."</td></td><td align=left>\n";
 	echo "<input type='checkbox' name='enable_update_state' id='enable_update_state' value='enabled'>\n";
 	echo "<input type='text' name='update_state' id='update_state' value='' disabled=true>\n";
 	echo "</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Entry Date")."</td></td><td align=left>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Entry Date")."</td></td><td align=left>\n";
 	echo "<input type='checkbox' name='enable_update_entry_date' id='enable_update_entry_date' value='enabled'>\n";
 	echo "<select size=1 name=update_entry_date_op id='update_entry_date_op' disabled=true>\n";
 	echo "<option value='<'><</option>\n";
@@ -3550,7 +3618,7 @@ if (
 	echo "</select>\n";
 	echo "<input type='text' name='update_entry_date' id='update_entry_date' value='' disabled=true length=20 maxlength=19> "._QXZ("to")." <input type='text' name='update_entry_date_end' id='update_entry_date_end' value='' disabled=true length=20 maxlength=19> <font size=1>(YYYY-MM-DD) or (YYYY-MM-DD HH:MM:SS)</font>\n";
 	echo "</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Modify Date")."</td></td><td align=left>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Modify Date")."</td></td><td align=left>\n";
 	echo "<input type='checkbox' name='enable_update_modify_date' id='enable_update_modify_date' value='enabled'>\n";
 	echo "<select size=1 name=update_modify_date_op id='update_modify_date_op' disabled=true>\n";
 	echo "<option value='<'><</option>\n";
@@ -3562,11 +3630,11 @@ if (
 	echo "</select>\n";
 	echo "<input type='text' name='update_modify_date' id='update_modify_date' value='' disabled=true length=20 maxlength=19> "._QXZ("to")." <input type='text' name='update_modify_date_end' id='update_modify_date_end' value='' disabled=true length=20 maxlength=19> <font size=1>(YYYY-MM-DD) or (YYYY-MM-DD HH:MM:SS)</font>\n";
 	echo "</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Security Phrase")."</td></td><td align=left>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Security Phrase")."</td></td><td align=left>\n";
 	echo "<input type='checkbox' name='enable_update_security_phrase' id='enable_update_security_phrase' value='enabled'>\n";
 	echo "<input type='text' name='update_security_phrase' id='update_security_phrase' value='' disabled=true>\n";
 	echo "</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Called Count")."</td><td align=left>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Called Count")."</td><td align=left>\n";
 	echo "<input type='checkbox' name='enable_update_count' id='enable_update_count' value='enabled'>\n";
 	echo "<select size=1 name='update_count_op' id='update_count_op' disabled=true>\n";
 	echo "<option value='<'><</option>\n";
@@ -3583,7 +3651,7 @@ if (
 		$i++;
 		}
 	echo "</select></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td colspan=2 align=center><input type=submit name=update_submit value='"._QXZ("update")."'></td></tr>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td colspan=2 align=center><input type=submit name=update_submit value='"._QXZ("update")."'></td></tr>\n";
 	# END Status Update
 
 	if ( $delete_lists > 0 )
@@ -3591,8 +3659,8 @@ if (
 		# BEGIN Delete Leads
 		echo "</table></center>\n";
 		echo "<br /><center><table width=$section_width cellspacing=3>\n";
-		echo "<tr bgcolor=#015B91><td colspan=2 align=center><font color=white><b>"._QXZ("Delete Leads")."</b></font></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("List")."</td><td align=left>\n";
+		echo "<tr bgcolor=#$SSmenu_background><td colspan=2 align=center><font color=white><b>"._QXZ("Delete Leads")."</b></font></td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("List")."</td><td align=left>\n";
 		echo "<select size=1 name=delete_list>\n";
 		echo "<option value='-'>"._QXZ("Select A List")."</option>\n";
 
@@ -3604,7 +3672,7 @@ if (
 			}
 
 		echo "</select></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Status")."</td><td align=left>\n";
+		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Status")."</td><td align=left>\n";
 		echo "<select size=1 name=delete_status>\n";
 		echo "<option value='-'>"._QXZ("Select A Status")."</option>\n";
 
@@ -3617,27 +3685,27 @@ if (
 
 		echo "<option value='---ALL---'>"._QXZ("-- ALL STATUSES --")."</option>\n";
 		echo "</select></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Country Code")."</td></td><td align=left>\n";
+		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Country Code")."</td></td><td align=left>\n";
 		echo "<input type='checkbox' name='enable_delete_country_code' id='enable_delete_country_code' value='enabled'>\n";
 		echo "<input type='text' name='delete_country_code' id='delete_country_code' value='' disabled=true>\n";
 		echo "</td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Vendor Lead Code")."</td></td><td align=left>\n";
+		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Vendor Lead Code")."</td></td><td align=left>\n";
 		echo "<input type='checkbox' name='enable_delete_vendor_lead_code' id='enable_delete_vendor_lead_code' value='enabled'>\n";
 		echo "<input type='text' name='delete_vendor_lead_code' id='delete_vendor_lead_code' value='' disabled=true>\n";
 		echo "</td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Source ID")."</td></td><td align=left>\n";
+		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Source ID")."</td></td><td align=left>\n";
 		echo "<input type='checkbox' name='enable_delete_source_id' id='enable_delete_source_id' value='enabled'>\n";
 		echo "<input type='text' name='delete_source_id' id='delete_source_id' value='' disabled=true>\n";
 		echo "</td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Owner")."</td></td><td align=left>\n";
+		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Owner")."</td></td><td align=left>\n";
 		echo "<input type='checkbox' name='enable_delete_owner' id='enable_delete_owner' value='enabled'>\n";
 		echo "<input type='text' name='delete_owner' id='delete_owner' value='' disabled=true>\n";
 		echo "</td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("State")."</td></td><td align=left>\n";
+		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("State")."</td></td><td align=left>\n";
 		echo "<input type='checkbox' name='enable_delete_state' id='enable_delete_state' value='enabled'>\n";
 		echo "<input type='text' name='delete_state' id='delete_state' value='' disabled=true>\n";
 		echo "</td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Entry Date")."</td></td><td align=left>\n";
+		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Entry Date")."</td></td><td align=left>\n";
 		echo "<input type='checkbox' name='enable_delete_entry_date' id='enable_delete_entry_date' value='enabled'>\n";
 		echo "<select size=1 name=delete_entry_date_op id='delete_entry_date_op' disabled=true>\n";
 		echo "<option value='<'><</option>\n";
@@ -3649,7 +3717,7 @@ if (
 		echo "</select>\n";
 		echo "<input type='text' name='delete_entry_date' id='delete_entry_date' value='' disabled=true length=20 maxlength=19> "._QXZ("to")." <input type='text' name='delete_entry_date_end' id='delete_entry_date_end' value='' disabled=true length=20 maxlength=19> <font size=1>(YYYY-MM-DD) or (YYYY-MM-DD HH:MM:SS)</font>\n";
 		echo "</td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Modify Date")."</td></td><td align=left>\n";
+		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Modify Date")."</td></td><td align=left>\n";
 		echo "<input type='checkbox' name='enable_delete_modify_date' id='enable_delete_modify_date' value='enabled'>\n";
 		echo "<select size=1 name=delete_modify_date_op id='delete_modify_date_op' disabled=true>\n";
 		echo "<option value='<'><</option>\n";
@@ -3661,15 +3729,15 @@ if (
 		echo "</select>\n";
 		echo "<input type='text' name='delete_modify_date' id='delete_modify_date' value='' disabled=true length=20 maxlength=19> "._QXZ("to")." <input type='text' name='delete_modify_date_end' id='delete_modify_date_end' value='' disabled=true length=20 maxlength=19> <font size=1>(YYYY-MM-DD) or (YYYY-MM-DD HH:MM:SS)</font>\n";
 		echo "</td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Security Phrase")."</td></td><td align=left>\n";
+		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Security Phrase")."</td></td><td align=left>\n";
 		echo "<input type='checkbox' name='enable_delete_security_phrase' id='enable_delete_security_phrase' value='enabled'>\n";
 		echo "<input type='text' name='delete_security_phrase' id='delete_security_phrase' value='' disabled=true>\n";
 		echo "</td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Lead ID")."</td></td><td align=left>\n";
+		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Lead ID")."</td></td><td align=left>\n";
 		echo "<input type='checkbox' name='enable_delete_lead_id' id='enable_delete_lead_id' value='enabled'>\n";
 		echo "<input type='text' name='delete_lead_id' id='delete_lead_id' value='' disabled=true>\n";
 		echo "</td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Called Count")."</td><td align=left>\n";
+		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Called Count")."</td><td align=left>\n";
 		echo "<input type='checkbox' name='enable_delete_count' id='enable_delete_count' value='enabled'>\n";
 		echo "<select size=1 name='delete_count_op' id='delete_count_op' disabled=true>\n";
 		echo "<option value='<'><</option>\n";
@@ -3687,15 +3755,15 @@ if (
 			$i++;
 			}
 		echo "</select></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td colspan=2 align=center><input type=submit name=delete_submit value='"._QXZ("delete")."'></td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row3_background><td colspan=2 align=center><input type=submit name=delete_submit value='"._QXZ("delete")."'></td></tr>\n";
 		# END Delete Leads
 		}
 
 	# BEGIN Callback Convert
 	echo "</table></center>\n";
 	echo "<br /><center><table width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#015B91><td colspan=2 align=center><font color=white><b>"._QXZ("Switch Callbacks")."</b></font></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("List")."</td><td align=left>\n";
+	echo "<tr bgcolor=#$SSmenu_background><td colspan=2 align=center><font color=white><b>"._QXZ("Switch Callbacks")."</b></font></td></tr>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("List")."</td><td align=left>\n";
 	echo "<select size=1 name=callback_list>\n";
 	echo "<option value='-'>"._QXZ("Select A List")."</option>\n";
 
@@ -3707,17 +3775,17 @@ if (
 		}
 
 	echo "</select></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Entry Date")."</td></td><td align=left>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Entry Date")."</td></td><td align=left>\n";
 	echo "<input type='checkbox' name='enable_callback_entry_date' id='enable_callback_entry_date' value='enabled'>\n";
 	echo "<input type='text' name='callback_entry_start_date' id='callback_entry_start_date' value='' disabled=true length=20 maxlength=19> "._QXZ("to")." ";
 	echo "<input type='text' name='callback_entry_end_date' id='callback_entry_end_date' value='' disabled=true length=20 maxlength=19> <font size=1>(YYYY-MM-DD)</font>\n";
 	echo "</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Callback Date")."</td></td><td align=left>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Callback Date")."</td></td><td align=left>\n";
 	echo "<input type='checkbox' name='enable_callback_callback_date' id='enable_callback_callback_date' value='enabled'>\n";
 	echo "<input type='text' name='callback_callback_start_date' id='callback_callback_start_date' value='' disabled=true length=20 maxlength=19> "._QXZ("to")." ";
 	echo "<input type='text' name='callback_callback_end_date' id='callback_callback_end_date' value='' disabled=true length=20 maxlength=19> <font size=1>(YYYY-MM-DD)</font>\n";
 	echo "</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td colspan=2 align=center><input type=submit name=callback_submit value='"._QXZ("switch callbacks")."'></td></tr>\n";
+	echo "<tr bgcolor=#$SSstd_row3_background><td colspan=2 align=center><input type=submit name=callback_submit value='"._QXZ("switch callbacks")."'></td></tr>\n";
 	# END Callback Convert
 
 
