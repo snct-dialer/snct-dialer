@@ -8,3 +8,5 @@ FP:2.14.0.1
     into admin.php.
   * Add upstream Rev. 2788:
     + Log webform click
+  * Add upstream Rev. 2789:
+    + Added Audit Comments display
