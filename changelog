@@ -10,3 +10,5 @@ FP:2.14.0.1
     + Log webform click
   * Add upstream Rev. 2789:
     + Added Audit Comments display
+  * Add upstream Rev. 2790:
+    + Fixed help documentation for delay seconds, issue #1025
