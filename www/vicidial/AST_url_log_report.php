@@ -11,6 +11,7 @@
 # 141230-1415 - Added code for on-the-fly language translations display
 # 151211-0950 - Added missing url types
 # 170409-1536 - Added IP List validation code
+# 170710-1801 - Added webform url type
 #
 
 $startMS = microtime();
@@ -218,7 +219,7 @@ while($i < $url_type_ct)
 	$i++;
 	}
 
-$LISTurltypes=array("add_lead", "custom", "dispo", "na_callurl", "non-agent", "other", "qm_socket", "start", "start_ra","nva_phone","DID_FILTER","park_ivr_c");
+$LISTurltypes=array("add_lead", "custom", "dispo", "na_callurl", "non-agent", "other", "qm_socket", "start", "start_ra","nva_phone","DID_FILTER","park_ivr_c","webform");
 
 $url_types_to_print=count($LISTurltypes);
 $i=0;

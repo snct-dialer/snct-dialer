@@ -1,0 +1,10 @@
+FP:2.14.0.1
+
+  [ Jörg Frings-Fürst ]
+  * Add Flyingpenguin Version to install.pl
+  * Add upstream Rev. 2787:
+    + Added logging and notification of 3-way call hung up in agent screen.
+  * Add fields custom_one ... _five to table vicidial_inbound_groups and
+    into admin.php.
+  * Add upstream Rev. 2788:
+    + Log webform click

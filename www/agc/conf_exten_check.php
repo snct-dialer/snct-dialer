@@ -77,13 +77,14 @@
 # 161217-0822 - Addded agent debug logging of dead call trigger
 # 170220-1307 - Added external_lead_id trigger for switch_lead API function
 # 170526-2228 - Added additional variable filtering
+# 170709-1017 - Added xfer dead call checking process
 #
 
-$version = '2.14-52';
-$build = '170526-2228';
+$version = '2.14-53';
+$build = '170709-1017';
 $php_script = 'conf_exten_check.php';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=44;
+$mysql_log_count=46;
 $one_mysql_log=0;
 $DB=0;
 $VD_login=0;
@@ -128,6 +129,8 @@ if (isset($_GET["customer_chat_id"]))			{$customer_chat_id=$_GET["customer_chat_
 	elseif (isset($_POST["customer_chat_id"]))	{$customer_chat_id=$_POST["customer_chat_id"];}
 if (isset($_GET["live_call_seconds"]))			{$live_call_seconds=$_GET["live_call_seconds"];}
 	elseif (isset($_POST["live_call_seconds"]))	{$live_call_seconds=$_POST["live_call_seconds"];}
+if (isset($_GET["xferchannel"]))			{$xferchannel=$_GET["xferchannel"];}
+	elseif (isset($_POST["xferchannel"]))	{$xferchannel=$_POST["xferchannel"];}
 
 if ($bcrypt == 'OFF')
 	{$bcrypt=0;}
@@ -842,8 +845,28 @@ if ($ACTION == 'refresh')
 				$Alogin='API_LOGOUT';
 				$external_pause='';
 				}
-			
-			echo 'DateTime: ' . $NOW_TIME . '|UnixTime: ' . $StarTtime . '|Logged-in: ' . $Alogin . '|CampCalls: ' . $RingCalls . '|Status: ' . $Astatus . '|DiaLCalls: ' . $DiaLCalls . '|APIHanguP: ' . $external_hangup . '|APIStatuS: ' . $external_status . '|APIPausE: ' . $external_pause . '|APIDiaL: ' . $external_dial . '|DEADcall: ' . $DEADcustomer . '|InGroupChange: ' . $InGroupChangeDetails . '|APIFields: ' . $external_update_fields . '|APIFieldsData: ' . $external_update_fields_data . '|APITimerAction: ' . $timer_action . '|APITimerMessage: ' . $timer_action_message . '|APITimerSeconds: ' . $timer_action_seconds . '|APIdtmf: ' . $external_dtmf . '|APItransferconf: ' . $external_transferconf . '|APIpark: ' . $external_park . '|APITimerDestination: ' . $timer_action_destination . '|APIManualDialQueue: ' . $MDQ_count . '|APIRecording: ' . $external_recording . '|APIPaUseCodE: ' . $external_pause_code . '|WaitinGChats: ' . $WaitinGChats . '|WaitinGEmails: ' . $WaitinGEmails . '|LivEAgentCommentS: ' . $live_agents_comments . '|LeadIDSwitch: ' . $external_lead_id . "\n";
+
+			//Check if xferchannel is active
+			$DEADxfer=0;
+			if(strlen($xferchannel) > 2)
+				{
+				$stmt="SELECT count(*) FROM live_channels where channel ='$xferchannel' and server_ip='$server_ip';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'03045',$user,$server_ip,$session_name,$one_mysql_log);}
+				$row=mysqli_fetch_row($rslt);
+				$live_channelCOUNT=$row[0];
+				if($live_channelCOUNT == 0)
+					{
+					$DEADxfer++;
+					$stmt="UPDATE user_call_log SET xfer_hungup='XFER_3WAYHangup', xfer_hungup_datetime=NOW() where lead_id='$Alead_id' and  user='$user' and call_type LIKE \"%3WAY%\" order by user_call_log_id desc limit 1;";
+					if ($format=='debug') {echo "\n<!-- $stmt -->";}
+					$rslt=mysql_to_mysqli($stmt, $link);
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'03046',$user,$server_ip,$session_name,$one_mysql_log);}
+					}
+				}
+
+			echo 'DateTime: ' . $NOW_TIME . '|UnixTime: ' . $StarTtime . '|Logged-in: ' . $Alogin . '|CampCalls: ' . $RingCalls . '|Status: ' . $Astatus . '|DiaLCalls: ' . $DiaLCalls . '|APIHanguP: ' . $external_hangup . '|APIStatuS: ' . $external_status . '|APIPausE: ' . $external_pause . '|APIDiaL: ' . $external_dial . '|DEADcall: ' . $DEADcustomer . '|InGroupChange: ' . $InGroupChangeDetails . '|APIFields: ' . $external_update_fields . '|APIFieldsData: ' . $external_update_fields_data . '|APITimerAction: ' . $timer_action . '|APITimerMessage: ' . $timer_action_message . '|APITimerSeconds: ' . $timer_action_seconds . '|APIdtmf: ' . $external_dtmf . '|APItransferconf: ' . $external_transferconf . '|APIpark: ' . $external_park . '|APITimerDestination: ' . $timer_action_destination . '|APIManualDialQueue: ' . $MDQ_count . '|APIRecording: ' . $external_recording . '|APIPaUseCodE: ' . $external_pause_code . '|WaitinGChats: ' . $WaitinGChats . '|WaitinGEmails: ' . $WaitinGEmails . '|LivEAgentCommentS: ' . $live_agents_comments . '|LeadIDSwitch: ' . $external_lead_id .'|DEADxfer: '.$DEADxfer. "\n";
 
 			if (strlen($timer_action) > 3)
 				{

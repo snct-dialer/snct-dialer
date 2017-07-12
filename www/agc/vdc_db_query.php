@@ -717,9 +717,10 @@ if (isset($_GET["previous_agent_log_id"]))	{$previous_agent_log_id=$_GET["previo
 	elseif (isset($_POST["previous_agent_log_id"]))	{$previous_agent_log_id=$_POST["previous_agent_log_id"];}
 if (isset($_GET["last_VDRP_stage"]))	{$last_VDRP_stage=$_GET["last_VDRP_stage"];}
 	elseif (isset($_POST["last_VDRP_stage"]))	{$last_VDRP_stage=$_POST["last_VDRP_stage"];}
-	
-	if (isset($_GET["pause_campaign"]))		{$pause_campaign=$_GET["pause_campaign"];}
-elseif (isset($_POST["pause_campaign"]))	{$pause_campaign=$_POST["pause_campaign"];}
+if (isset($_GET["pause_campaign"]))		{$pause_campaign=$_GET["pause_campaign"];}
+	elseif (isset($_POST["pause_campaign"]))	{$pause_campaign=$_POST["pause_campaign"];}
++if (isset($_GET["url_link"]))			{$url_link=$_GET["url_link"];}
++	elseif (isset($_POST["url_link"]))	{$url_link=$_POST["url_link"];}
 
 
 header ("Content-type: text/html; charset=utf-8");
@@ -1042,6 +1043,7 @@ $usegroupalias = preg_replace('/[^0-9]/','',$usegroupalias);
 $user_abb = preg_replace("/\'|\"|\\\\|;/","",$user_abb);
 $vtiger_callback_id = preg_replace("/\'|\"|\\\\|;/","",$vtiger_callback_id);
 $wrapup = preg_replace("/\'|\"|\\\\|;/","",$wrapup);
+$url_link = preg_replace("/\'|\"|\\\\|;/","",$url_link);
 
 
 # default optional vars if not set
@@ -15863,6 +15865,25 @@ if ($ACTION == 'Clear_API_Field')
 		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00343',$user,$server_ip,$session_name,$one_mysql_log);}
 
 	echo _QXZ("DONE:")." $comments";
+	}
+
+
+################################################################################
+### Log_Webform_Click - Logs the URL of a webform that has been clicked on or opened
+################################################################################
+if ($ACTION == 'Log_Webform_Click')
+	{
+	### insert a new url log entry
+	$SQL_log = "$url_link";
+	$SQL_log = preg_replace('/;/','',$SQL_log);
+	$SQL_log = addslashes($SQL_log);
+	$stmt = "INSERT INTO vicidial_url_log SET uniqueid='$uniqueid',url_date='$NOW_TIME',url_type='webform',url='$SQL_log',url_response='$stage $lead_id';";
+	if ($DB) {echo "$stmt\n";}
+	$rslt=mysql_to_mysqli($stmt, $link);
+		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+	$affected_rows = mysqli_affected_rows($link);
+
+	echo _QXZ("Webform Click Logged:")." $stage $lead_id";
 	}
 
 
