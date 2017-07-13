@@ -1123,6 +1123,7 @@ if ($function == 'moh_list')
 				$rslt=mysql_to_mysqli($stmt, $link);
 				$mohfiles_to_print = mysqli_num_rows($rslt);
 				$m=0;
+				$MOHfiles = '';
 				while ($mohfiles_to_print > $m) 
 					{
 					$rowx=mysqli_fetch_row($rslt);
