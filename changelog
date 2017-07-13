@@ -15,3 +15,6 @@ FP:2.14.0.1
   * Add upstream Rev. 2791:
     + Added screen colors and fixed default date variable
   * Bugfix MOH Frame file listing (issue #1028)
+  * Add upstream Rev. 2792:
+    + Changed agents view to use last_state_change for time.
+
