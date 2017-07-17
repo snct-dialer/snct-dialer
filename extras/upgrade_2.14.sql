@@ -310,5 +310,6 @@ ALTER TABLE vicidial_inbound_groups ADD custom_five VARCHAR(100) default '';
 
 ALTER TABLE user_call_log ADD xfer_hungup VARCHAR(20) default '';
 ALTER TABLE user_call_log ADD xfer_hungup_datetime DATETIME;
+ALTER TABLE vicidial_agent_log ADD pause_code VARCHAR(6) default '';
 
 UPDATE system_settings SET db_schema_version='1511',db_schema_update_date=NOW() where db_schema_version < 1509;

@@ -17,4 +17,5 @@ FP:2.14.0.1
   * Bugfix MOH Frame file listing (issue #1028)
   * Add upstream Rev. 2792:
     + Changed agents view to use last_state_change for time.
-
+  * Add pause_code to vicidial_agent_log
+  * Don't add upstream Rev. 2793 (issue #1028)
