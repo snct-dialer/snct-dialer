@@ -12785,6 +12785,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 				pc_HTML = '';
 				if (pause_campaign=='Y') {
 					pc_HTML = "<hr>";
+					pc_HTML = pc_HTML + "<label> <?php echo _QXZ("Billing Group"); ?>:  "; 
 					pc_HTML = pc_HTML + "<select id=\"pause_campaign\" name=\"pause_campaign\" onchange=\"get_sel()\">";
 					if(pc_var_ingroup == "") {
 						pc_HTML = pc_HTML + "<option selected>" + campaign + "</option>";
@@ -12807,12 +12808,13 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						loop_ct++;
 					}
 					pc_HTML = pc_HTML + "</select>";
+					pc_HTML = pc_HTML + "</label>";
 					pc_HTLM = pc_HTML + "<hr>";
 				}
 				PauseCode_HTML = '';
 				document.vicidial_form.PauseCodeSelection.value = '';		
 				var VD_pause_codes_ct_half = parseInt(VD_pause_codes_ct / 2);
-                PauseCode_HTML = "<table cellpadding=\"5\" cellspacing=\"5\" width=\"500px\"><tr><td colspan=\"2\"><font class=sh_text'> <?php echo _QXZ("Billing Group"); ?></font></td></tr><tr><td bgcolor=\"#99FF99\" height=\"300px\" width=\"240px\" valign=\"top\"><font class=\"log_text\"><span id=\"PauseCodeSelectA\">";
+                PauseCode_HTML = "<table cellpadding=\"5\" cellspacing=\"5\" width=\"500px\"><tr><td colspan=\"2\"><font class=sh_text'></font></td></tr><tr><td bgcolor=\"#99FF99\" height=\"300px\" width=\"240px\" valign=\"top\"><font class=\"log_text\"><span id=\"PauseCodeSelectA\">";
 				var loop_ct = 0;
 				while (loop_ct < VD_pause_codes_ct)
 					{
@@ -13595,7 +13597,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 	function PauseCodeSelect_submit(newpausecode,PCSclick)
 		{
 		if (PCSclick=='YES')
-			{button_click_log = button_click_log + "" + SQLdate + "-----PauseCodeSelect_submit---" + newpausecode + "|";}
+			{button_click_log = button_click_log + "" + SQLdate + "-----PauseCodeSelect_submit---" + newpausecode + "|" + pc_var + "|";}
 		hideDiv('PauseCodeSelectBox');
 		ShoWGenDerPulldown();
 
@@ -13622,7 +13624,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 			}
 		if (xmlhttp) 
 			{ 
-			VMCpausecode_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass  + "&ACTION=PauseCodeSubmit&format=text&status=" + newpausecode + "&agent_log_id=" + agent_log_id + "&campaign=" + campaign + "&extension=" + extension + "&protocol=" + protocol + "&phone_ip=" + phone_ip + "&enable_sipsak_messages=" + enable_sipsak_messages + "&stage=" + pause_code_counter + "&campaign_cid=" + LastCallCID + "&auto_dial_level=" + starting_dial_level + "&pause_campaign=" + pc_var +"&newPauseCode=" + pause_code ;
+			VMCpausecode_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass  + "&ACTION=PauseCodeSubmit&format=text&status=" + newpausecode + "&agent_log_id=" + agent_log_id + "&campaign=" + campaign + "&extension=" + extension + "&protocol=" + protocol + "&phone_ip=" + phone_ip + "&enable_sipsak_messages=" + enable_sipsak_messages + "&stage=" + pause_code_counter + "&campaign_cid=" + LastCallCID + "&auto_dial_level=" + starting_dial_level + "&pause_campaign=" + pc_var +"&newPauseCode=" + newpausecode ;
 			pause_code_counter++;
 			xmlhttp.open('POST', 'vdc_db_query.php'); 
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
