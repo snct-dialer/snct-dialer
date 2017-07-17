@@ -1,4 +1,15 @@
-FP:2.14.0.1
+2.25.3
+
+  [ Jörg Frings-Fürst ]
+  * Bugfix: Label "Billing Group"
+  * Bugfix: Pausecode
+  * Remove *.orig files
+  * Bugfix: sql statement InGroups custom_XX fields
+  * Bugfix: typos at install.pl and convert2pl.php
+  * Bugfix: typo at upgrade_2.14.sql
+  * Release 2.25.3 2017-07-17
+
+2.25.2
 
   [ Jörg Frings-Fürst ]
   * Add Flyingpenguin Version to install.pl
@@ -19,4 +30,4 @@ FP:2.14.0.1
     + Changed agents view to use last_state_change for time.
   * Add pause_code to vicidial_agent_log
   * Don't add upstream Rev. 2793 (issue #1028)
-  * Release 2.25.2
+  * Release 2.25.2 2017-07-17
