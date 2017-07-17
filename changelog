@@ -6,6 +6,8 @@
   * Remove *.orig files
   * Bugfix: sql statement InGroups custom_XX fields
   * Bugfix: typos at install.pl and convert2pl.php
+  * Bugfix: typo at upgrade_2.14.sql
+  * Release 2.25.3 2017-07-17
 
 2.25.2
 
