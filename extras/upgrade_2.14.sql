@@ -301,3 +301,15 @@ ALTER TABLE system_settings ADD detect_3way ENUM('Y','N') default 'Y';
 ALTER TABLE system_settings ADD company_name VARCHAR(50) default '';
 
 UPDATE system_settings SET db_schema_version='1510',db_schema_update_date=NOW() where db_schema_version < 1510;
+
+ALTER TABLE vicidial_inbound_groups ADD custom_one VARCHAR(100) default '';
+ALTER TABLE vicidial_inbound_groups ADD custom_two VARCHAR(100) default '';
+ALTER TABLE vicidial_inbound_groups ADD custom_three VARCHAR(100) default '';
+ALTER TABLE vicidial_inbound_groups ADD custom_four VARCHAR(100) default '';
+ALTER TABLE vicidial_inbound_groups ADD custom_five VARCHAR(100) default '';
+
+ALTER TABLE user_call_log ADD xfer_hungup VARCHAR(20) default '';
+ALTER TABLE user_call_log ADD xfer_hungup_datetime DATETIME;
+ALTER TABLE vicidial_agent_log ADD pause_code VARCHAR(6) default '';
+
+UPDATE system_settings SET db_schema_version='1511',db_schema_update_date=NOW() where db_schema_version < 1509;

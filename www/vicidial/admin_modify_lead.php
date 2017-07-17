@@ -81,6 +81,7 @@
 # 170224-1639 - Added ability to display archived recordings
 # 170409-1554 - Added IP List validation code
 # 170527-2253 - Fix for rare inbound logging issue #1017
+# 170710-2039 - Added Audit Comments display
 #
 
 require("dbconnect_mysqli.php");
@@ -1404,6 +1405,45 @@ else
 
 	if ($lead_id != 'NEW') 
 		{
+		$stmt="SELECT user_id, timestamp, list_id, campaign_id, comment from vicidial_comments where lead_id='$lead_id' order by timestamp;";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$row_count = mysqli_num_rows($rslt);
+		$audit_comments=false;
+		$o=0;
+		while ($row_count > $o)
+			{
+			if (!$audit_comments) 
+				{
+				echo "<tr><td colspan='2' align=center><b>"._QXZ("Comment History")."</b></td></tr>\n";
+				$audit_comments=true;
+				}
+			$rowx=mysqli_fetch_row($rslt);
+			$Auser[$o] =		$rowx[0];
+			$Atimestamp[$o] =	$rowx[1];
+			$Acomment[$o] =		$rowx[4];
+			$o++;
+			}
+		$o=0;
+		while ($row_count > $o)
+			{
+			$Afull_name='';
+			$stmt="SELECT full_name from vicidial_users where user='$Auser[$o]';";
+			$rslt=mysql_to_mysqli($stmt, $link);
+			$FNrow_count = mysqli_num_rows($rslt);
+			if ($FNrow_count > 0)
+				{
+				$rowx=mysqli_fetch_row($rslt);
+				$Afull_name = $rowx[0];
+				}
+			echo "<tr><td align=right><font size=2>$Atimestamp[$o]: </td><td align=left><font size=2><hr> &nbsp; $Acomment[$o]<br> &nbsp; </font><font size=1><i>by user: $Auser[$o] - $Afull_name</i></td></tr>\n";
+			$o++;
+			}
+
+		if ($audit_comments) 
+			{
+			echo "<tr><td align=center></td><td><hr></td></tr>\n";
+			}
+
 		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Disposition").": </td><td align=left><select size=1 name=status>\n";
 
 		### find out if status(dispo) is a scheduled callback status

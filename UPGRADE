@@ -175,6 +175,10 @@ OTHER CHANGES:
 39. Changed password fields to allow up to 100 character passwords. Also changed
 	password recommendations to emphasize length over complexity.
 
+40. Added logging and notification of 3-way call hung up in agent screen.
+
+41. Added URL logging of Agent Screen Webform button clicks and URLs
+
 
 
 

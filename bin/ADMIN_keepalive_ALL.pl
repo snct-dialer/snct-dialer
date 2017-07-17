@@ -119,9 +119,10 @@
 # 170327-0847 - Added drop list triggering code
 # 170513-1728 - Added alternative uptime counter in seconds
 # 170609-1601 - If phone entry fullname and cidnumber are empty, don't populate a callerid conf line
+# 170711-0824 - Fixed help documentation for delay seconds, issue #1025
 #
 
-$build = '170609-1601';
+$build = '170711-0824';
 
 $DB=0; # Debug flag
 $teodDB=0; # flag to log Timeclock End of Day processes to log file
@@ -205,8 +206,8 @@ if (length($ARGV[0])>1)
 		print "allowed run time options:\n";
 		print "  [-test] = test\n";
 		print "  [--version] = print version of this script, then exit\n";
-		print "  [-autodial-delay=X] = setting delay milliseconds on local auto-dial process\n";
-		print "  [-adfill-delay=X] = setting delay milliseconds on auto-dial FILL process\n";
+		print "  [-autodial-delay=X] = setting delay seconds on local auto-dial process\n";
+		print "  [-adfill-delay=X] = setting delay seconds on auto-dial FILL process\n";
 		print "  [-fill-staggered] = enable experimental staggered auto-dial FILL process\n";
 		print "  [-cu3way] = keepalive for the optional 3way conference checker\n";
 		print "  [-lstn-buffer] = use special enhanced telnet buffer listen process\n";

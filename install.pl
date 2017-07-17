@@ -2753,7 +2753,7 @@ if ($dbhA)
 		if($DB){print STDERR "\n|$stmtA|\n";}
 	$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query:|$stmtA|\n";
 
-	$stmtA = "UPDATE system_settings SET svn_revision='$Fly_old_svn';";
+	$stmtA = "UPDATE system_settings SET svn_revision='$Fly_old_svn', version='$FLY_version';";
 		if($DB){print STDERR "\n|$stmtA|\n";}
 	$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query:|$stmtA|\n";
 

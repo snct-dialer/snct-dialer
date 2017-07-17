@@ -1,0 +1,22 @@
+FP:2.14.0.1
+
+  [ Jörg Frings-Fürst ]
+  * Add Flyingpenguin Version to install.pl
+  * Add upstream Rev. 2787:
+    + Added logging and notification of 3-way call hung up in agent screen.
+  * Add fields custom_one ... _five to table vicidial_inbound_groups and
+    into admin.php.
+  * Add upstream Rev. 2788:
+    + Log webform click
+  * Add upstream Rev. 2789:
+    + Added Audit Comments display
+  * Add upstream Rev. 2790:
+    + Fixed help documentation for delay seconds, issue #1025
+  * Add upstream Rev. 2791:
+    + Added screen colors and fixed default date variable
+  * Bugfix MOH Frame file listing (issue #1028)
+  * Add upstream Rev. 2792:
+    + Changed agents view to use last_state_change for time.
+  * Add pause_code to vicidial_agent_log
+  * Don't add upstream Rev. 2793 (issue #1028)
+  * Release 2.25.2

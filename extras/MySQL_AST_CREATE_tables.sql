@@ -1221,7 +1221,12 @@ areacode_filter ENUM('DISABLED','ALLOW_ONLY','DROP_ONLY') default 'DISABLED',
 areacode_filter_seconds SMALLINT(5) default '10',
 areacode_filter_action ENUM('CALLMENU','INGROUP','DID','MESSAGE','EXTENSION','VOICEMAIL','VMAIL_NO_INST') default 'MESSAGE',
 areacode_filter_action_value VARCHAR(255) default 'nbdy-avail-to-take-call|vm-goodbye',
-populate_state_areacode ENUM('DISABLED','NEW_LEAD_ONLY','OVERWRITE_ALWAYS') default 'DISABLED'
+populate_state_areacode ENUM('DISABLED','NEW_LEAD_ONLY','OVERWRITE_ALWAYS') default 'DISABLED',
+custom_one VARCHAR(100) default '',
+custom_two VARCHAR(100) default '',
+custom_three VARCHAR(100) default '',
+custom_four VARCHAR(100) default '',
+custom_five VARCHAR(100) default ''
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_stations (
@@ -1323,6 +1328,7 @@ processed ENUM('Y','N') default 'N',
 uniqueid VARCHAR(20) default '',
 pause_type ENUM('UNDEFINED','SYSTEM','AGENT','API','ADMIN') default 'UNDEFINED',
 pause_campaign VARCHAR(20) default '',
+pause_code VARCHAR(6) default '',
 index (lead_id),
 index (user),
 index (event_time)
@@ -2157,6 +2163,8 @@ preset_name VARCHAR(40) default '',
 campaign_id VARCHAR(20) default '',
 customer_hungup ENUM('BEFORE_CALL','DURING_CALL','') default '',
 customer_hungup_seconds SMALLINT(5) UNSIGNED default '0',
+xfer_hungup VARCHAR(20) default '',
+xfer_hungup_datetime DATETIME,
 index (user),
 index (call_date),
 index (group_alias_id)
@@ -4018,4 +4026,4 @@ UPDATE vicidial_configuration set value='1766' where name='qc_database_version';
 
 UPDATE system_settings set vdc_agent_api_active='1';
 
-UPDATE system_settings SET db_schema_version='1510',db_schema_update_date=NOW(),reload_timestamp=NOW();
+UPDATE system_settings SET db_schema_version='1511',db_schema_update_date=NOW(),reload_timestamp=NOW();

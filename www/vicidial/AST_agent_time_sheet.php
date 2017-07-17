@@ -26,6 +26,7 @@
 # 151227-1735 - Added option for searching archived data
 # 160325-1428 - Changes for sidebar update
 # 170409-1539 - Added IP List validation code
+# 170711-1102 - Added screen colors and fixed default date variable
 #
 
 $startMS = microtime();
@@ -56,7 +57,7 @@ if (isset($_GET["search_archived_data"]))			{$search_archived_data=$_GET["search
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$stmt = "SELECT use_non_latin,outbound_autodial_active,slave_db_server,reports_use_slave_db,user_territories_active,enable_languages,language_method FROM system_settings;";
+$stmt = "SELECT use_non_latin,outbound_autodial_active,slave_db_server,reports_use_slave_db,user_territories_active,enable_languages,language_method,admin_screen_colors,report_default_format FROM system_settings;";
 $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {$MAIN.="$stmt\n";}
 $qm_conf_ct = mysqli_num_rows($rslt);
@@ -70,6 +71,8 @@ if ($qm_conf_ct > 0)
 	$user_territories_active =		$row[4];
 	$SSenable_languages =			$row[5];
 	$SSlanguage_method =			$row[6];
+	$SSadmin_screen_colors =		$row[7];
+	$SSreport_default_format =		$row[8];
 	}
 ##### END SETTINGS LOOKUP #####
 ###########################################
@@ -180,6 +183,11 @@ $agent = preg_replace('/[^-_0-9a-zA-Z]/', '', $agent);
 $query_date = preg_replace('/[^-_0-9a-zA-Z]/', '', $query_date);
 $calls_summary = preg_replace('/[^-_0-9a-zA-Z]/', '', $calls_summary);
 $file_download = preg_replace('/[^-_0-9a-zA-Z]/', '', $file_download);
+$NOW_DATE = date("Y-m-d");
+$NOW_TIME = date("Y-m-d H:i:s");
+$STARTtime = date("U");
+if ( (!isset($query_date)) or (strlen($query_date) < 8) ) {$query_date = $NOW_DATE;}
+
 
 ##### BEGIN log visit to the vicidial_report_log table #####
 $LOGip = getenv("REMOTE_ADDR");
@@ -281,10 +289,70 @@ if ( (!preg_match('/\-\-ALL\-\-/i', $LOGadmin_viewable_call_times)) and (strlen(
 	$whereLOGadmin_viewable_call_timesSQL = "where call_time_id IN('---ALL---','$rawLOGadmin_viewable_call_timesSQL')";
 	}
 
-$NOW_DATE = date("Y-m-d");
-$NOW_TIME = date("Y-m-d H:i:s");
-$STARTtime = date("U");
-if (!isset($query_date)) {$query_date = $NOW_DATE;}
+
+$SSmenu_background='015B91';
+$SSframe_background='D9E6FE';
+$SSstd_row1_background='9BB9FB';
+$SSstd_row2_background='B9CBFD';
+$SSstd_row3_background='8EBCFD';
+$SSstd_row4_background='B6D3FC';
+$SSstd_row5_background='A3C3D6';
+$SSalt_row1_background='BDFFBD';
+$SSalt_row2_background='99FF99';
+$SSalt_row3_background='CCFFCC';
+
+if ($SSadmin_screen_colors != 'default')
+	{
+	$stmt = "SELECT menu_background,frame_background,std_row1_background,std_row2_background,std_row3_background,std_row4_background,std_row5_background,alt_row1_background,alt_row2_background,alt_row3_background,web_logo FROM vicidial_screen_colors where colors_id='$SSadmin_screen_colors';";
+	$rslt=mysql_to_mysqli($stmt, $link);
+	if ($DB) {echo "$stmt\n";}
+	$colors_ct = mysqli_num_rows($rslt);
+	if ($colors_ct > 0)
+		{
+		$row=mysqli_fetch_row($rslt);
+		$SSmenu_background =		$row[0];
+		$SSframe_background =		$row[1];
+		$SSstd_row1_background =	$row[2];
+		$SSstd_row2_background =	$row[3];
+		$SSstd_row3_background =	$row[4];
+		$SSstd_row4_background =	$row[5];
+		$SSstd_row5_background =	$row[6];
+		$SSalt_row1_background =	$row[7];
+		$SSalt_row2_background =	$row[8];
+		$SSalt_row3_background =	$row[9];
+		$SSweb_logo =				$row[10];
+		}
+	}
+$Mhead_color =	$SSstd_row5_background;
+$Mmain_bgcolor = $SSmenu_background;
+$Mhead_color =	$SSstd_row5_background;
+
+$selected_logo = "./images/vicidial_admin_web_logo.png";
+$selected_small_logo = "./images/vicidial_admin_web_logo.png";
+$logo_new=0;
+$logo_old=0;
+$logo_small_old=0;
+if (file_exists('./images/vicidial_admin_web_logo.png')) {$logo_new++;}
+if (file_exists('vicidial_admin_web_logo_small.gif')) {$logo_small_old++;}
+if (file_exists('vicidial_admin_web_logo.gif')) {$logo_old++;}
+if ($SSweb_logo=='default_new')
+	{
+	$selected_logo = "./images/vicidial_admin_web_logo.png";
+	$selected_small_logo = "./images/vicidial_admin_web_logo.png";
+	}
+if ( ($SSweb_logo=='default_old') and ($logo_old > 0) )
+	{
+	$selected_logo = "./vicidial_admin_web_logo.gif";
+	$selected_small_logo = "./vicidial_admin_web_logo_small.gif";
+	}
+if ( ($SSweb_logo!='default_new') and ($SSweb_logo!='default_old') )
+	{
+	if (file_exists("./images/vicidial_admin_web_logo$SSweb_logo")) 
+		{
+		$selected_logo = "./images/vicidial_admin_web_logo$SSweb_logo";
+		$selected_small_logo = "./images/vicidial_admin_web_logo$SSweb_logo";
+		}
+	}
 
 
 $HEADER.="<HTML>\n";
@@ -323,13 +391,13 @@ $subcamp_color =	'#C6C6C6';
 
 #require("admin_header.php");
 
-$MAIN.="<TABLE WIDTH=$page_width BGCOLOR=\"#F0F5FE\" cellpadding=2 cellspacing=0><TR BGCOLOR=\"#F0F5FE\"><TD>\n";
+$MAIN.="<TABLE WIDTH=$page_width BGCOLOR=\"#$SSframe_background\" cellpadding=2 cellspacing=0><TR BGCOLOR=\"#$SSframe_background\"><TD>\n";
 
 $MAIN.=_QXZ("Agent Time Sheet for").": $user\n";
 $MAIN.="<BR>\n";
 $MAIN.="<FORM ACTION=\"$PHP_SELF\" METHOD=GET> &nbsp; \n";
-$MAIN.=_QXZ("Date").": <INPUT TYPE=TEXT NAME=query_date SIZE=19 MAXLENGTH=19 VALUE=\"$query_date\">\n";
-$MAIN.=_QXZ("User ID").": <INPUT TYPE=TEXT NAME=agent SIZE=10 MAXLENGTH=20 VALUE=\"$agent\">\n";
+$MAIN.=_QXZ("Date").": <INPUT TYPE=TEXT NAME=query_date SIZE=10 MAXLENGTH=19 VALUE=\"$query_date\">\n";
+$MAIN.=_QXZ("User ID").": <INPUT TYPE=TEXT NAME=agent SIZE=20 MAXLENGTH=20 VALUE=\"$agent\">\n";
 
 if ($archives_available=="Y") 
 	{
@@ -484,9 +552,9 @@ $CSV_text2.="\"\",\""._QXZ("ID")."\",\""._QXZ("EDIT")."\",\""._QXZ("EVENT")."\",
 	while ($events_to_print > $o) {
 		$row=mysqli_fetch_row($rslt);
 		if ( ($row[0]=='START') or ($row[0]=='LOGIN') )
-			{$bgcolor='bgcolor="#B9CBFD"';} 
+			{$bgcolor='bgcolor="#'.$SSstd_row3_background.'"';} 
 		else
-			{$bgcolor='bgcolor="#9BB9FB"';}
+			{$bgcolor='bgcolor="#'.$SSstd_row4_background.'"';}
 
 		$TC_log_date = date("Y-m-d H:i:s", $row[1]);
 
