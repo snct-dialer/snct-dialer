@@ -3,6 +3,8 @@
   [Jörg Frings-Fürst]
   * Add upstream Rev. 2794:
     + Fix for empty agent_choose_territories value
+  * Add upstrem Rev. 2495:
+    + Added more debug and '8days' date option
 
 2.25.3
 
