@@ -244,7 +244,7 @@ if ( (!preg_match('/\-ALL/i', $LOGallowed_campaigns)) )
 $regexLOGallowed_campaigns = " $LOGallowed_campaigns ";
 
 ###########
-if (!isset($list)) {$list = '';}
+if (!isset($list)) {$list = array();}
 
 $i=0;
 $list_string='|';

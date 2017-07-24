@@ -364,6 +364,10 @@ if ( (strlen($slave_db_server)>5) and (preg_match("/$report_name/",$reports_use_
 if (strlen($query_date_D) < 6) {$query_date_D = "00:00:00";}
 if (strlen($query_date_T) < 6) {$query_date_T = "23:59:59";}
 $NOW_DATE = date("Y-m-d");
+if (!isset($server_ip)) {$server_ip = array();}
+if (!isset($hangup_cause)) {$hangup_cause = array();}
+if (!isset($dial_status)) {$dial_status = array();}
+if (!isset($sip_hangup_cause)) {$sip_hangup_cause = array();}
 if (!isset($query_date)) {$query_date = $NOW_DATE;}
 
 $server_ip_string='|';

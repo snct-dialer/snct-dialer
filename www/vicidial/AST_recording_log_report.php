@@ -53,6 +53,7 @@ if (isset($_GET["DB"]))					{$DB=$_GET["DB"];}
 
 $report_name="Recording Access Log Report";
 $NOW_DATE = date("Y-m-d");
+if (!isset($users)) {$uesrs=array();}
 if (!isset($access_date_D)) {$access_date_D=$NOW_DATE;}
 if (!isset($access_date_end_D)) {$access_date_end_D=$NOW_DATE;}
 if (!isset($access_date_T)) {$access_date_T="00:00:00";}

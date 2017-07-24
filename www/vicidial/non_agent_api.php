@@ -122,10 +122,11 @@
 # 170601-0747 - Added add_to_hopper options to update_lead function
 # 170609-1107 - Added ccc_lead_info function
 # 170615-0006 - Added DIAL status for manual dial agent calls that have not been answered, to 4 functions
+# 170713-2312 - Fix for issue #1028
 #
 
-$version = '2.14-98';
-$build = '170615-0006';
+$version = '2.14-99';
+$build = '170713-2312';
 $api_url_log = 0;
 
 $startMS = microtime();
