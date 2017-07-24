@@ -4161,12 +4161,13 @@ else
 # 170609-1529 - Added ccc_lead_info API function
 # 170613-0851 - Added hide_inactive_lists system settings option
 # 170623-2142 - Changed parameters for password recommendations
+# 170717-1444 - Fix for empty agent_choose_territories value
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-620a';
-$build = '170623-2142';
+$admin_version = '2.14-621a';
+$build = '170717-1444';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -12757,6 +12758,8 @@ if ($ADD=="4A")
 				$delete_filters =			'0';
 				$load_leads =				'0';
 				}
+			if (strlen($agent_choose_territories) < 1) 
+				{$agent_choose_territories=0;}
 			$pass_hash='';
 			$pass_hashSQL='';
 			if ($SSpass_hash_enabled > 0)
@@ -13027,6 +13030,8 @@ if ($ADD=="4B")
 				$delete_filters =			'0';
 				$load_leads =				'0';
 				}
+			if (strlen($agent_choose_territories) < 1) 
+				{$agent_choose_territories=0;}
 			$pass_hash='';
 			$pass_hashSQL='';
 			if ($SSpass_hash_enabled > 0)
