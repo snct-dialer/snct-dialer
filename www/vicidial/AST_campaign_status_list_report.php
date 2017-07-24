@@ -60,6 +60,7 @@ if (isset($_GET["search_archived_data"]))			{$search_archived_data=$_GET["search
 
 $report_name="Campaign Status List Report";
 $NOW_DATE = date("Y-m-d");
+if (!isset($group)) {$group=array();}
 if (!isset($query_date_D)) {$query_date_D=$NOW_DATE;}
 if (!isset($end_date_D)) {$end_date_D=$NOW_DATE;}
 if (!isset($query_date_T)) {$query_date_T="00:00:00";}

@@ -55,6 +55,10 @@ if (isset($_GET["DB"]))					{$DB=$_GET["DB"];}
 
 $report_name="API Log Report";
 $NOW_DATE = date("Y-m-d");
+if (!isset($users)) {$users=array();}
+if (!isset($agent_users)) {$agent_users=array();}
+if (!isset($functions)) {$functions=array();}
+if (!isset($results)) {$results=array();}
 if (!isset($api_date_D)) {$api_date_D=$NOW_DATE;}
 if (!isset($api_date_end_D)) {$api_date_end_D=$NOW_DATE;}
 if (!isset($api_date_T)) {$api_date_T="00:00:00";}
