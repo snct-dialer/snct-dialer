@@ -45,7 +45,7 @@
 #
 
 $FLY_patch_level = "2017-018";
-$FLY_SVN_base = "2793";
-$FLY_version  = "2.25.2";
+$FLY_SVN_base = "2799";
+$FLY_version  = "2.25.4";
 
 ?>
