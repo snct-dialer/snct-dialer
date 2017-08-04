@@ -17603,7 +17603,8 @@ function phone_number_format(formatphone) {
 		var sec = t.getSeconds();
 		var regMSdate = new RegExp("MS_","g");
 		var regUSdate = new RegExp("US_","g");
-		var regEUdate = new RegExp("EU_","g");
+		var regEUdate = new RegExp("EU_SLASH","g");
+		var regEUDotdate = new RegExp("EU_DOT","g");
 		var regALdate = new RegExp("AL_","g");
 		var regAMPMdate = new RegExp("AMPM","g");
 		if (year < 1000) {year+=1900}
@@ -17630,6 +17631,10 @@ function phone_number_format(formatphone) {
 		if (vdc_header_date_format.match(regEUdate))
 			{
 			status_date = daym + "/" + month + "/" + year;
+			}
+		if (vdc_header_date_format.match(regEUDotdate))
+			{
+			status_date = daym + "." + month + "." + year;
 			}
 		if (vdc_header_date_format.match(regALdate))
 			{
@@ -17697,6 +17702,10 @@ function phone_number_format(formatphone) {
 		if (vdc_customer_date_format.match(regEUdate))
 			{
 			customer_date = Cdaym + "/" + Cmon + "/" + Cyear;
+			}
+		if (vdc_header_date_format.match(regEUDotdate))
+			{
+			status_date = daym + "." + month + "." + year;
 			}
 		if (vdc_customer_date_format.match(regALdate))
 			{

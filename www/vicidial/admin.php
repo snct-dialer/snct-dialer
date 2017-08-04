@@ -35060,6 +35060,7 @@ if ($ADD==311111111111111)
 		echo "<option>MS_DASH_24HR  2008-06-24 23:59:59</option>\n";
 		echo "<option>US_SLASH_24HR 06/24/2008 23:59:59</option>\n";
 		echo "<option>EU_SLASH_24HR 24/06/2008 23:59:59</option>\n";
+		echo "<option>EU_DOT_24HR 24.06.2008 23:59:59</option>\n";
 		echo "<option>AL_TEXT_24HR  JUN 24 23:59:59</option>\n";
 		echo "<option>MS_DASH_AMPM  2008-06-24 11:59:59 PM</option>\n";
 		echo "<option>US_SLASH_AMPM 06/24/2008 11:59:59 PM</option>\n";
@@ -35071,6 +35072,7 @@ if ($ADD==311111111111111)
 		echo "<option>MS_DASH_24HR  2008-06-24 23:59:59</option>\n";
 		echo "<option>US_SLASH_24HR 06/24/2008 23:59:59</option>\n";
 		echo "<option>EU_SLASH_24HR 24/06/2008 23:59:59</option>\n";
+		echo "<option>EU_DOT_24HR 24.06.2008 23:59:59</option>\n";
 		echo "<option>AL_TEXT_24HR  JUN 24 23:59:59</option>\n";
 		echo "<option>MS_DASH_AMPM  2008-06-24 11:59:59 PM</option>\n";
 		echo "<option>US_SLASH_AMPM 06/24/2008 11:59:59 PM</option>\n";
