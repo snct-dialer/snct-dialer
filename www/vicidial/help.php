@@ -1574,12 +1574,12 @@ if ($SSoutbound_autodial_active > 0)
 <BR>
 <A NAME="campaigns-ivr_park_call">
 <BR>
-<B><?php echo _QXZ("Park Call IVR"); ?> -</B><?php echo _QXZ("This option will allow an agent to park a call with a separate IVR PARK CALL button on their agent interface if this is ENABLED or ENABLED_PARK_ONLY. The ENABLED_PARK_ONLY option will allow the agent to send the call to park but not click to retrieve the call like the ENABLED option. The ENABLED_BUTTON_HIDDEN option allows the function through the API only. Default is DISABLED."); ?>
+<B><?php echo _QXZ("Park Call IVR"); ?> -</B><?php echo _QXZ("This option will allow an agent to park a call with a separate IVR PARK CALL button on their agent interface if this is ENABLED or ENABLED_PARK_ONLY. The ENABLED_PARK_ONLY option will allow the agent to send the call to park but not click to retrieve the call like the ENABLED option. The ENABLED_BUTTON_HIDDEN option allows the function through the API only. Default is DISABLED. This feature requires Asterisk 1.8 or higher to work."); ?>
 
 <BR>
 <A NAME="campaigns-ivr_park_call_agi">
 <BR>
-<B><?php echo _QXZ("Park Call IVR AGI"); ?> -</B><?php echo _QXZ("If the Park Call IVR field is not DISABLED, then this field is used as the AGI application string that the customer is sent to. This is a setting that should be set by your administrator if possible."); ?>
+<B><?php echo _QXZ("Park Call IVR AGI"); ?> -</B><?php echo _QXZ("If the Park Call IVR field is not DISABLED, then this field is used as the AGI application string that the customer is sent to. This is a setting that should be set by your administrator if possible. This feature requires Asterisk 1.8 or higher to work."); ?>
 
 <BR>
 <A NAME="campaigns-timer_action">
