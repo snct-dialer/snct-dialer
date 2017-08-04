@@ -2577,6 +2577,7 @@ if ($NOWEB < 1)
 	# Copy FlyInclude.php
 	`cp -f ./FlyInclude.php $PATHweb/agc`;
 	`cp -f ./FlyInclude.php $PATHweb/vicidial`;
+	`cp -f ./changelog $PATHweb/vicidial`;
 
 	print "setting web scripts to executable...\n";
 	`chmod 0777 $PATHweb/`;
