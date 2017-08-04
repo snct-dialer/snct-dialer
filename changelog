@@ -10,6 +10,10 @@
   * Remove useless *.orig files
   * Add upstream Rev. 2497:
     + Added vicidial_campaign_hour_counts and vicidial_carrier_hour_counts rolling
+  * Add uostram Rev. 2498:
+    + Added AST_agent_wait_check.pl script to send out emails if there are agents
+      waiting more than X seconds.
+
 
 2.25.3
 

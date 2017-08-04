@@ -179,6 +179,9 @@ OTHER CHANGES:
 
 41. Added URL logging of Agent Screen Webform button clicks and URLs
 
+42. Added AST_agent_wait_check.pl script to send out emails if there are agents
+	waiting more than X seconds.
+
 
 
 
