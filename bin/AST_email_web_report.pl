@@ -19,6 +19,7 @@
 # 160415-1421 - Fixed minor bug in file to attach to email
 # 170304-1400 - Added options for running a defined Automated Report, and admin logging
 # 170306-0915 - Fixed proper file extensions for different download report types
+# 170719-1242 - Added more debug and '8days' date option
 #
 
 $txt = '.txt';
@@ -57,6 +58,8 @@ $TWOAMsecY = ($TWOAMsec - 86400);
 $TWOAMsecF = ($TWOAMsec - 518400);
 ### find epoch of 2AM 7 days ago
 $TWOAMsecG = ($TWOAMsec - 604800);
+### find epoch of 2AM 8 days ago
+$TWOAMsecM = ($TWOAMsec - 691200);
 ### find epoch of 2AM 13 days ago
 $TWOAMsecJ = ($TWOAMsec - 1123200);
 ### find epoch of 2AM 14 days ago
@@ -129,6 +132,15 @@ if ($Lhour < 10) {$Lhour = "0$Lhour";}
 if ($Lmin < 10) {$Lmin = "0$Lmin";}
 if ($Lsec < 10) {$Lsec = "0$Lsec";}
 
+($Msec,$Mmin,$Mhour,$Mmday,$Mmon,$Myear,$Mwday,$Myday,$Misdst) = localtime($TWOAMsecM);
+$Myear = ($Myear + 1900);
+$Mmon++;
+if ($Mmon < 10) {$Mmon = "0$Mmon";}
+if ($Mmday < 10) {$Mmday = "0$Mmday";}
+if ($Mhour < 10) {$Mhour = "0$Mhour";}
+if ($Mmin < 10) {$Mmin = "0$Mmin";}
+if ($Msec < 10) {$Msec = "0$Msec";}
+
 
 ### begin parsing run-time options ###
 if (length($ARGV[0])>1)
@@ -156,7 +168,7 @@ if (length($ARGV[0])>1)
 		print "  [--email-list=test@test.com:test2@test.com] = send email results to these addresses\n";
 		print "  [--email-sender=vicidial@localhost] = sender for the email results\n";
 		print "  [--date=YYYY-MM-DD] = date override, can also use 'today' and 'yesterday'\n";
-		print "  [--begin-date=YYYY-MM-DD] = begin date override, can also use '6days', '7days' and '30days', if not filled in will only use the --date\n";
+		print "  [--begin-date=YYYY-MM-DD] = begin date override, can also use '6days', '7days', '8days' and '30days', if not filled in will only use the --date\n";
 		print "  [--ftp-server=XXXXXXXX] = FTP server to send file to\n";
 		print "  [--ftp-login=XXXXXXXX] = FTP user\n";
 		print "  [--ftp-pass=XXXXXXXX] = FTP pass\n";
@@ -465,7 +477,7 @@ if (length($report_id) > 1)
 			$email_sender =			$aryA[1];
 			$email_list =			$aryA[2];
 			$email_subject =		$aryA[3];
-			$email_subject =~ s/--A--date--B--/$year-$mon-$mday/gi;
+			$email_subject =~ s/--A--date--B--|--A--today--B--/$year-$mon-$mday/gi;
 			$email_subject =~ s/--A--datetime--B--/$year-$mon-$mday $hour:$min:$sec/gi;
 			}
 		if ($report_destination =~ /FTP/) 
@@ -482,6 +494,7 @@ if (length($report_id) > 1)
 		$location =~ s/--A--yesterday--B--/$Tyear-$Tmon-$Tmday/gi;
 		$location =~ s/--A--6days--B--/$Fyear-$Fmon-$Fmday/gi;
 		$location =~ s/--A--7days--B--/$Gyear-$Gmon-$Gmday/gi;
+		$location =~ s/--A--8days--B--/$Myear-$Mmon-$Mmday/gi;
 		$location =~ s/--A--13days--B--/$Jyear-$Jmon-$Jmday/gi;
 		$location =~ s/--A--14days--B--/$Kyear-$Kmon-$Kmday/gi;
 		$location =~ s/--A--15days--B--/$Lyear-$Lmon-$Lmday/gi;
@@ -569,8 +582,9 @@ else
 
 ### GRAB THE REPORT
 if (!$Q) {print "Running Report $ship_date\n$location\n";}
-
 `/usr/bin/wget --auth-no-challenge --http-user=$http_user --http-password=$http_pass --output-document=/tmp/X$HTMLfile --output-file=/tmp/Y$HTMLfileLOG $location `;
+
+if ($DBX > 0) {print "DEBUG: |/usr/bin/wget --auth-no-challenge --http-user=$http_user --http-password=$http_pass --output-document=/tmp/X$HTMLfile --output-file=/tmp/Y$HTMLfileLOG |";}
 
 if ( ($remove_images > 0) || ($remove_links > 0) )
 	{

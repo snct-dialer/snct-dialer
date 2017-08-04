@@ -120,9 +120,10 @@
 # 170513-1728 - Added alternative uptime counter in seconds
 # 170609-1601 - If phone entry fullname and cidnumber are empty, don't populate a callerid conf line
 # 170711-0824 - Fixed help documentation for delay seconds, issue #1025
+# 170725-0017 - Added vicidial_campaign_hour_counts and vicidial_carrier_hour_counts rolling
 #
 
-$build = '170711-0824';
+$build = '170725-0017';
 
 $DB=0; # Debug flag
 $teodDB=0; # flag to log Timeclock End of Day processes to log file
@@ -147,6 +148,7 @@ if ($hour < 10) {$hour = "0$hour";}
 if ($min < 10) {$min = "0$min";}
 if ($sec < 10) {$sec = "0$sec";}
 $now_date = "$year-$mon-$mday $hour:$min:$sec";
+$today_start = "$year-$mon-$mday 00:00:00";
 $reset_test = "$hour$min";
 
 ### calculate the date and time for slightly less than 24 hours ago
@@ -174,6 +176,7 @@ if ($RMhour < 10) {$RMhour = "0$RMhour";}
 if ($RMmin < 10) {$RMmin = "0$RMmin";}
 if ($RMsec < 10) {$RMsec = "0$RMsec";}
 $RMSQLdate = "$RMyear-$RMmon-$RMmday $RMhour:$RMmin:$RMsec";
+$yesterday_start = "$RMyear-$RMmon-$RMmday 00:00:00";
 $RMdate = "$RMyear-$RMmon-$RMmday";
 
 ### calculate the date and time for 7 days ago
@@ -1242,6 +1245,52 @@ if ($timeclock_end_of_day_NOW > 0)
 		$affected_rows = $dbhA->do($stmtA);
 		if($DB){print STDERR "\n|$affected_rows Holidays set to expired|\n";}
 		if ($teodDB) {$event_string = "Holidays set to expired($RMdate): $affected_rows";   &teod_logger;}
+
+		# roll campaign hour stats
+		if (!$Q) {print "\nProcessing vicidial_campaign_hour_counts table...\n";}
+		$stmtA = "INSERT IGNORE INTO vicidial_campaign_hour_counts_archive SELECT * from vicidial_campaign_hour_counts where date_hour < '$today_start';";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		
+		$sthArows = $sthA->rows;
+		if (!$Q) {print "$sthArows rows inserted into vicidial_campaign_hour_counts_archive table \n";}
+		
+		$rv = $sthA->err();
+		if (!$rv) 
+			{	
+			$stmtA = "DELETE FROM vicidial_campaign_hour_counts WHERE date_hour < '$today_start';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows = $sthA->rows;
+			if (!$Q) {print "$sthArows rows deleted from vicidial_campaign_hour_counts table \n";}
+
+			$stmtA = "optimize table vicidial_campaign_hour_counts;";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			}
+
+		# roll vicidial_carrier_hour_counts
+		if (!$Q) {print "\nProcessing vicidial_carrier_hour_counts table...\n";}
+		$stmtA = "INSERT IGNORE INTO vicidial_carrier_hour_counts_archive SELECT * from vicidial_carrier_hour_counts where date_hour < '$today_start';";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		
+		$sthArows = $sthA->rows;
+		if (!$Q) {print "$sthArows rows inserted into vicidial_carrier_hour_counts_archive table \n";}
+		
+		$rv = $sthA->err();
+		if (!$rv) 
+			{	
+			$stmtA = "DELETE FROM vicidial_carrier_hour_counts WHERE date_hour < '$yesterday_start';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows = $sthA->rows;
+			if (!$Q) {print "$sthArows rows deleted from vicidial_carrier_hour_counts table \n";}
+
+			$stmtA = "optimize table vicidial_carrier_hour_counts;";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			}
 
 
 		##### BEGIN max stats end of day process #####

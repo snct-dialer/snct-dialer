@@ -4161,12 +4161,13 @@ else
 # 170609-1529 - Added ccc_lead_info API function
 # 170613-0851 - Added hide_inactive_lists system settings option
 # 170623-2142 - Changed parameters for password recommendations
+# 170717-1444 - Fix for empty agent_choose_territories value
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-620a';
-$build = '170623-2142';
+$admin_version = '2.14-621a';
+$build = '170717-1444';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -12757,6 +12758,8 @@ if ($ADD=="4A")
 				$delete_filters =			'0';
 				$load_leads =				'0';
 				}
+			if (strlen($agent_choose_territories) < 1) 
+				{$agent_choose_territories=0;}
 			$pass_hash='';
 			$pass_hashSQL='';
 			if ($SSpass_hash_enabled > 0)
@@ -13027,6 +13030,8 @@ if ($ADD=="4B")
 				$delete_filters =			'0';
 				$load_leads =				'0';
 				}
+			if (strlen($agent_choose_territories) < 1) 
+				{$agent_choose_territories=0;}
 			$pass_hash='';
 			$pass_hashSQL='';
 			if ($SSpass_hash_enabled > 0)
@@ -35055,6 +35060,7 @@ if ($ADD==311111111111111)
 		echo "<option>MS_DASH_24HR  2008-06-24 23:59:59</option>\n";
 		echo "<option>US_SLASH_24HR 06/24/2008 23:59:59</option>\n";
 		echo "<option>EU_SLASH_24HR 24/06/2008 23:59:59</option>\n";
+		echo "<option>EU_DOT_24HR 24.06.2008 23:59:59</option>\n";
 		echo "<option>AL_TEXT_24HR  JUN 24 23:59:59</option>\n";
 		echo "<option>MS_DASH_AMPM  2008-06-24 11:59:59 PM</option>\n";
 		echo "<option>US_SLASH_AMPM 06/24/2008 11:59:59 PM</option>\n";
@@ -35066,6 +35072,7 @@ if ($ADD==311111111111111)
 		echo "<option>MS_DASH_24HR  2008-06-24 23:59:59</option>\n";
 		echo "<option>US_SLASH_24HR 06/24/2008 23:59:59</option>\n";
 		echo "<option>EU_SLASH_24HR 24/06/2008 23:59:59</option>\n";
+		echo "<option>EU_DOT_24HR 24.06.2008 23:59:59</option>\n";
 		echo "<option>AL_TEXT_24HR  JUN 24 23:59:59</option>\n";
 		echo "<option>MS_DASH_AMPM  2008-06-24 11:59:59 PM</option>\n";
 		echo "<option>US_SLASH_AMPM 06/24/2008 11:59:59 PM</option>\n";
@@ -40709,6 +40716,7 @@ echo _QXZ("Patch-Level"). ": $FLY_patch_level<br>";
 if (!preg_match("/_BUILD_/",$SShosted_settings))
     {echo "<BR><a href=\"$PHP_SELF?ADD=999995\"><font color=white>&copy; 2017 ViciDial Group</font></a><BR><img src=\"images/pixel.gif\">";}
 echo "<BR><a href=\"$PHP_SELF?ADD=999995\"><font color=white>&copy; 2017 flyingpenguin.de UG</font></a><BR><img src=\"images/pixel.gif\">";
+echo "<BR><BR><a href=\"/vicidial/changelog.html\" target=\"_blank\" type=\"text/html\"><font color=white>&copy; Changelog</font></a><BR><img src=\"images/pixel.gif\">";
 echo "</FONT>\n";
 ?>
 

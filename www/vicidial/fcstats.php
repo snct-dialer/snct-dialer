@@ -302,7 +302,7 @@ if ( (!preg_match('/\-\-ALL\-\-/i', $LOGadmin_viewable_call_times)) and (strlen(
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
 $STARTtime = date("U");
-if (!isset($group)) {$group = 'CL_TEST_L';}
+if (!isset($group)) {$group = array("CL_TEST_L");}
 if (!isset($query_date)) {$query_date = $NOW_DATE;}
 
 $stmt="select group_id from vicidial_inbound_groups $whereLOGadmin_viewable_groupsSQL order by group_id;";

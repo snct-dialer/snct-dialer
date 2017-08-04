@@ -298,7 +298,11 @@ if ($run_export > 0)
 	$NOW_TIME = date("Y-m-d H:i:s");
 	$FILE_TIME = date("Ymd-His");
 	$STARTtime = date("U");
-	if (!isset($group)) {$group = '';}
+	if (!isset($campaign)) {$campaign = array();}
+	if (!isset($group)) {$group = array();}
+	if (!isset($user_group)) {$user_group = array();}
+	if (!isset($list_id)) {$list_id = array();}
+	if (!isset($status)) {$status = array();}
 	if (!isset($query_date)) {$query_date = $NOW_DATE;}
 	if (!isset($end_date)) {$end_date = $NOW_DATE;}
 
@@ -1192,7 +1196,11 @@ if ($file_exported < 1)
 	$NOW_DATE = date("Y-m-d");
 	$NOW_TIME = date("Y-m-d H:i:s");
 	$STARTtime = date("U");
-	if (!isset($group)) {$group = '';}
+	if (!isset($campaign)) {$campaign = array();}
+	if (!isset($group)) {$group = array();}
+	if (!isset($user_group)) {$user_group = array();}
+	if (!isset($list_id)) {$list_id = array();}
+	if (!isset($status)) {$status = array();}
 	if (!isset($query_date)) {$query_date = $NOW_DATE;}
 	if (!isset($end_date)) {$end_date = $NOW_DATE;}
 

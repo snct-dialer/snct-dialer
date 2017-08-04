@@ -559,10 +559,11 @@
 # 170629-1831 - Added some new agent_events entries
 # 170709-1116 - Added Xfer Hung Up notification
 # 170710-1802 - Added logging of clicks on webform buttons
+# 170725-2147 - Added counter(aec) to agent_events calls
 #
 
-$version = '2.14-529c';
-$build = '170710-1802';
+$version = '2.14-530c';
+$build = '170725-2147';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -4572,6 +4573,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var script_name='<?php echo $script_name ?>';
 	var transfer_panel_open=0;
 	var last_conf_channel_count=1;
+	var aec=0;
 	var DiaLControl_auto_HTML = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready','','','','','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_paused.gif") ?>\" border=\"0\" alt=\"You are paused\" /></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause','','','','','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_active.gif") ?>\" border=\"0\" alt=\"You are active\" /></a>";
 	var DiaLControl_auto_HTML_OFF = "<img src=\"./images/<?php echo _QXZ("vdc_LB_blank_OFF.gif") ?>\" border=\"0\" alt=\"pause button disabled\" />";
@@ -4967,7 +4969,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 //			dialedcall_send_hangup();
 //			}
 
-		agent_events('3way_agent_leave', '');
+		agent_events('3way_agent_leave', '', aec);   aec++;
 
 		if( document.images ) { document.images['livecall'].src = image_livecall_OFF.src;}
 		}
@@ -5063,7 +5065,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		if (SMDclick=='YES')
 			{button_click_log = button_click_log + "" + SQLdate + "-----SendManualDial---" + taskFromConf + " " + agent_dialed_type + " " + manual_string + " " + three_way_call_cid + " " + threeway_cid + " " + dial_conf_exten + " " + sending_preset_name + " ";}
 
-		agent_events('3way_start', agent_dialed_type + ' ' + manual_string);
+		agent_events('3way_start', agent_dialed_type + ' ' + manual_string, aec);   aec++;
 
 		if (taskFromConf == 'YES')
 			{
@@ -5483,20 +5485,20 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								button_click_log = button_click_log + "" + SQLdate + "-----agent_disabled---" + AGLogiN + " " + vicidial_agent_disable + "|";
 								showDiv('AgenTDisablEBoX');
 								refresh_interval = 7300000;
-								agent_events('session_disabled', 'LIVE_AGENT');
+								agent_events('session_disabled', 'LIVE_AGENT', aec);   aec++;
 								}
 							if ( (AGLogiN == 'DEAD_EXTERNAL') && ( (vicidial_agent_disable == 'EXTERNAL') || (vicidial_agent_disable == 'ALL') ) )
 								{
 								button_click_log = button_click_log + "" + SQLdate + "-----agent_disabled---" + AGLogiN + " " + vicidial_agent_disable + "|";
 								showDiv('AgenTDisablEBoX');
 								refresh_interval = 7300000;
-								agent_events('session_disabled', 'DEAD_EXTERNAL');
+								agent_events('session_disabled', 'DEAD_EXTERNAL', aec);   aec++;
 								}
 							if ( (AGLogiN == 'TIME_SYNC') && (vicidial_agent_disable == 'ALL') )
 								{
 								button_click_log = button_click_log + "" + SQLdate + "-----system_disabled---" + AGLogiN + " " + vicidial_agent_disable + "|";
 								showDiv('SysteMDisablEBoX');
-								agent_events('time_sync', '');
+								agent_events('time_sync', '', aec);   aec++;
 								}
 							if (AGLogiN == 'SHIFT_LOGOUT')
 								{
@@ -5893,7 +5895,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							{
 							if (CheckDEADcallON < 1)
 								{
-								agent_events('call_dead', LasTCID);
+								agent_events('call_dead', LasTCID, aec);   aec++;
 
 								if( document.images ) 
 									{ document.images['livecall'].src = image_livecall_DEAD.src;}
@@ -5917,7 +5919,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							{
 							if (CheckDEADcallON < 1)
 								{
-								agent_events('call_dead', LasTCID);
+								agent_events('call_dead', LasTCID, aec);   aec++;
 
 								if( document.images ) 
 									{ document.images['livecall'].src = image_livechat_DEAD.src;}
@@ -5951,7 +5953,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								{
 								if ( (last_conf_channel_count < 1) && (no_empty_session_warnings < 1) )
 									{
-									agent_events('session_channels', live_conf_calls);
+									agent_events('session_channels', live_conf_calls, aec);   aec++;
 									last_conf_channel_count = live_conf_calls;
 									}
 								var temp_blind_monitors=0;
@@ -6099,7 +6101,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								{
 								if ( (last_conf_channel_count > 0) && (no_empty_session_warnings < 1) )
 									{
-									agent_events('session_empty', '0');
+									agent_events('session_empty', '0', aec);   aec++;
 									last_conf_channel_count = 0;
 									}
 								LMAe[0]=''; LMAe[1]=''; LMAe[2]=''; LMAe[3]=''; LMAe[4]=''; LMAe[5]=''; 
@@ -6442,7 +6444,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 							if (temp_blind_dialstring != 'vmail')
 								{temp_blind_dialstring = blindxferdialstring;}
-							agent_events('transfer_blind', temp_blind_dialstring);
+							agent_events('transfer_blind', temp_blind_dialstring, aec);   aec++;
 							}
 						}
 					if (taskvar == 'XfeRINTERNAL') 
@@ -6473,7 +6475,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 						xferredirect_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=RedirectVD&format=text&channel=" + redirectvalue + "&call_server_ip=" + redirectserverip + "&queryCID=" + queryCID + "&exten=" + redirectdestination + "&ext_context=" + ext_context + "&ext_priority=1&auto_dial_level=" + auto_dial_level + "&campaign=" + campaign + "&uniqueid=" + document.vicidial_form.uniqueid.value + "&lead_id=" + document.vicidial_form.lead_id.value + "&secondS=" + VD_live_call_secondS + "&session_id=" + session_id + "&CalLCID=" + CalLCID + "&customerparked=" + customerparked;
 
-						agent_events('transfer_local_closer', XfeR_GrouP);
+						agent_events('transfer_local_closer', XfeR_GrouP, aec);   aec++;
 						}
 					if (taskvar == 'XfeR')
 						{
@@ -6481,7 +6483,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						var redirectdestination = document.vicidial_form.extension_xfer.value;
 						xferredirect_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=RedirectName&format=text&channel=" + redirectvalue + "&call_server_ip=" + redirectserverip + "&queryCID=" + queryCID + "&extenName=" + redirectdestination + "&ext_context=" + ext_context + "&ext_priority=1" + "&session_id=" + session_id + "&CalLCID=" + CalLCID + "&customerparked=" + customerparked;
 
-						agent_events('transfer_blind', redirectdestination);
+						agent_events('transfer_blind', redirectdestination, aec);   aec++;
 						}
 					if (taskvar == 'VMAIL')
 						{
@@ -6489,7 +6491,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						var redirectdestination = document.vicidial_form.extension_xfer.value;
 						xferredirect_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=RedirectNameVmail&format=text&channel=" + redirectvalue + "&call_server_ip=" + redirectserverip + "&queryCID=" + queryCID + "&exten=" + voicemail_dump_exten + "&extenName=" + redirectdestination + "&ext_context=" + ext_context + "&ext_priority=1" + "&session_id=" + session_id + "&CalLCID=" + CalLCID + "&customerparked=" + customerparked;
 
-						agent_events('transfer_vmail', redirectdestination);
+						agent_events('transfer_vmail', redirectdestination, aec);   aec++;
 						}
 					if (taskvar == 'ENTRY')
 						{
@@ -6544,7 +6546,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						customerparked=1;
 						customerparkedcounter=0;
 
-						agent_events('park_started', '');
+						agent_events('park_started', '', aec);   aec++;
 						}
 					if (taskvar == 'FROMParK')
 						{
@@ -6573,7 +6575,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						customerparked=0;
 						customerparkedcounter=0;
 
-						agent_events('park_retrieved', '');
+						agent_events('park_retrieved', '', aec);   aec++;
 						}
 					if (taskvar == 'ParKivr')
 						{
@@ -6596,7 +6598,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						customerparked=1;
 						customerparkedcounter=0;
 
-						agent_events('park_ivr_started', '');
+						agent_events('park_ivr_started', '', aec);   aec++;
 						}
 					if (taskvar == 'FROMParKivr')
 						{
@@ -6625,7 +6627,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						customerparked=0;
 						customerparkedcounter=0;
 
-						agent_events('park_ivr_retrieved', '');
+						agent_events('park_ivr_retrieved', '', aec);   aec++;
 						}
 
 					if (taskvar == 'ParKXfeR')
@@ -7306,7 +7308,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 			}
 		else
 			{
-			agent_events('agent_alert', temp_message);
+			agent_events('agent_alert', temp_message, aec);   aec++;
 			}
 		document.getElementById("AlertBox").style.top = ABtop;
 		document.getElementById("AlertBox").style.left = ABleft;
@@ -7481,7 +7483,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 					}
 				showDiv('NeWManuaLDiaLBox');
 
-				agent_events('manual_dial_open', '');
+				agent_events('manual_dial_open', '', aec);   aec++;
 
 				document.vicidial_form.search_phone_number.value='';
 				document.vicidial_form.search_lead_id.value='';
@@ -8294,7 +8296,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								var XDerrorDescSIP = MDlookResponse_array[4];
 								var DiaLAlerTMessagE = "<?php echo _QXZ("Call Rejected:"); ?> " + XDchannel + "\n" + XDerrorDesc + "\n" + XDerrorDescSIP;
 								TimerActionRun("DiaLAlerT",DiaLAlerTMessagE);
-								agent_events('agent_alert', "Call Rejected: " + XDerrorDesc + ' ' + XDerrorDescSIP);
+								agent_events('agent_alert', "Call Rejected: " + XDerrorDesc + ' ' + XDerrorDescSIP, aec);   aec++;
 								}
 							if ( (XDchannel.match(regMDL)) && (asterisk_version != '1.0.8') && (asterisk_version != '1.0.9') && (MD_ring_secondS < 10) )
 								{
@@ -8338,7 +8340,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								xferchannellive=1;
 								XDcheck = '';
 
-								agent_events('3way_answered', '');
+								agent_events('3way_answered', '', aec);   aec++;
 								}
 							}
 						else
@@ -8353,7 +8355,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								var MDerrorDescSIP = MDlookResponse_array[4];
 								var DiaLAlerTMessagE = "<?php echo _QXZ("Call Rejected:"); ?> " + MDchannel + "\n" + MDerrorDesc + "\n" + MDerrorDescSIP;
 								TimerActionRun("DiaLAlerT",DiaLAlerTMessagE);
-								agent_events('agent_alert', "Call Rejected: " + MDerrorDesc + ' ' + MDerrorDescSIP);
+								agent_events('agent_alert', "Call Rejected: " + MDerrorDesc + ' ' + MDerrorDescSIP, aec);   aec++;
 								}
 							if ( (MDchannel.match(regMDL)) && (asterisk_version != '1.0.8') && (asterisk_version != '1.0.9') )
 								{
@@ -8482,7 +8484,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 								custchannellive=1;
 
-								agent_events('call_answered', CIDcheck);
+								agent_events('call_answered', CIDcheck, aec);   aec++;
 								}
 							}
 						}
@@ -8794,7 +8796,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
                             document.getElementById("WebFormSpanTwo").innerHTML = "<a href=\"" + TEMP_VDIC_web_form_address_three + "\" target=\"" + web_form_target + "\" onMouseOver=\"WebFormThreeRefresH();\" onclick=\"webform_click_log('webform3');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_webform_three.gif"); ?>\" border=\"0\" alt=\"Web Form 3\" /></a>\n";
 							}
 
-						agent_events('update_fields', event_data);
+						agent_events('update_fields', event_data, aec);   aec++;
 						}
 					else
 						{
@@ -8913,7 +8915,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 				var man_status = "<?php echo _QXZ("Waiting for Ring..."); ?>"; 
 				}
 
-			agent_events('call_dialed', mdnPhonENumbeR + " " + agent_dialed_type);
+			agent_events('call_dialed', mdnPhonENumbeR + " " + agent_dialed_type, aec);   aec++;
 
 			var xmlhttp=false;
 			/*@cc_on @*/
@@ -9912,7 +9914,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						else 
 							{VDRP_stage = 'READY';}
 						}
-					agent_events('state_ready', VDRP_stage);
+					agent_events('state_ready', VDRP_stage, aec);   aec++;
 					AutoDialReady = 1;
 					AutoDialWaiting = 1;
 					if (dial_method == "INBOUND_MAN")
@@ -9929,7 +9931,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 				else
 					{
 					VDRP_stage = 'PAUSED';
-					agent_events('state_paused', VDRP_stage);
+					agent_events('state_paused', VDRP_stage, aec);   aec++;
 					VDRP_stage_seconds=0;
 					AutoDialReady = 0;
 					AutoDialWaiting = 0;
@@ -10108,7 +10110,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 					{
 					new_script_content = xmlhttp.responseText;
 					document.getElementById(script_span).innerHTML = new_script_content;
-					agent_events('call_script', script_span);
+					agent_events('call_script', script_span, aec);   aec++;
 					}
 				}
 			delete xmlhttp;
@@ -10341,7 +10343,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							document.vicidial_form.SecondS.value		= 0;
 							document.getElementById("SecondSDISP").innerHTML = '0';
 
-							agent_events('call_answered', CalLCID);
+							agent_events('call_answered', CalLCID, aec);   aec++;
 
 							if (uniqueid_status_display=='ENABLED')
 								{custom_call_id			= " Call ID " + VDIC_data_VDAC[1];}
@@ -11650,7 +11652,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								var dial_display_number = phone_number_format(callnum);
 								alert(" <?php echo _QXZ("Incoming:"); ?> " + dial_display_number + "\n <?php echo _QXZ("Group"); ?>- " + VDIC_data_VDIG[1] + " &nbsp; " + VDIC_fronter);
 								}
-							agent_events('other_answered', CalL_AutO_LauncH);
+							agent_events('other_answered', CalL_AutO_LauncH, aec);   aec++;
 							}
 						xmlhttprequestcheckother = undefined;
 						delete xmlhttprequestcheckother;
@@ -12187,7 +12189,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						//		alert(xmlhttp.responseText);
 						//		}
 
-							agent_events('agent_hangup', '');
+							agent_events('agent_hangup', '', aec);   aec++;
 							}
 						}
 					process_post_hangup=1;
@@ -12451,7 +12453,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						Nactiveext = xmlhttp.responseText;
 				//		alert(xmlhttp.responseText);
 
-						agent_events('3way_agent_hangup', '');
+						agent_events('3way_agent_hangup', '', aec);   aec++;
 						}
 					}
 				process_post_hangup=1;
@@ -12831,7 +12833,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
                 PauseCode_HTML = PauseCode_HTML + "</span></font></td></tr></table><br /><br />" + pc_HTML + Go_BacK_LinK;
 				document.getElementById("PauseCodeSelectContent").innerHTML = PauseCode_HTML;
 
-				agent_events('pause_code_open', '');
+				agent_events('pause_code_open', '', aec);   aec++;
 				}
 			}
 		if (focus_blur_enabled==1)
@@ -12885,7 +12887,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 			showDiv('SearcHForMDisplaYBox');
 			if ( (VD_live_customer_call!=1) || (inOUT=='OUT') )
 				{WaitingForNextStep=1;}
-			agent_events('lead_search_open', '');
+			agent_events('lead_search_open', '', aec);   aec++;
 			}
 		}
 
@@ -12898,7 +12900,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 			{button_click_log = button_click_log + "" + SQLdate + "-----generate_contacts_search---|";}
 		HidEGenDerPulldown();
 		showDiv('SearcHContactsDisplaYBox');
-		agent_events('contact_search_open', '');
+		agent_events('contact_search_open', '', aec);   aec++;
 		}
 
 
@@ -13197,7 +13199,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 					showDiv('CallBackSelectBox');
 
-					agent_events('callback_select_open', '');
+					agent_events('callback_select_open', '', aec);   aec++;
 					}
 				else
 					{
@@ -13252,7 +13254,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 									}
 								waiting_on_dispo=0;
 
-								agent_events('dispo_set', DispoChoice);
+								agent_events('dispo_set', DispoChoice, aec);   aec++;
 								}
 							}
 						delete xmlhttp;
@@ -13898,7 +13900,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 		{
 		showDiv('CustomerGoneBox');
 
-		agent_events('customer_gone', '');
+		agent_events('customer_gone', '', aec);   aec++;
 
 		document.getElementById("callchannel").innerHTML = '';
 		document.vicidial_form.callserverip.value = '';
@@ -13927,7 +13929,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 	function NoneInSession()
 		{
 		showDiv('NoneInSessionBox');
-		agent_events('none_in_session', '');
+		agent_events('none_in_session', '', aec);   aec++;
 		document.getElementById("NoneInSessionID").innerHTML = session_id;
 		WaitingForNextStep=1;
 		}
@@ -14207,7 +14209,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 			}
 
 		hideDiv('CloserSelectBox');
-		agent_events('ingroup_screen_closed', '');
+		agent_events('ingroup_screen_closed', '', aec);   aec++;
 		MainPanelToFront();
 		CloserSelecting = 0;
 		scroll(0,0);
@@ -14370,7 +14372,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 			}
 
 		hideDiv('TerritorySelectBox');
-		agent_events('territory_screen_closed', '');
+		agent_events('territory_screen_closed', '', aec);   aec++;
 		MainPanelToFront();
 		TerritorySelecting = 0;
 		scroll(0,0);
@@ -14475,7 +14477,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 					}
 				else
 					{
-					agent_events('logged_out', tempreason);
+					agent_events('logged_out', tempreason, aec);   aec++;
 
 					document.getElementById("LogouTProcess").innerHTML = "<br /><br /><font class=\"loading_text\"><?php echo _QXZ("LOGOUT PROCESSING..."); ?></font><br /><br />&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <img src=\"./images/<?php echo _QXZ("agent_loading_animation.gif"); ?>\" height=\"206px\" width=\"206px\" alt=\"<?php echo _QXZ("LOGOUT PROCESSING..."); ?>\" />";
 					//	document.getElementById("LogouTProcess").innerHTML = "<?php echo _QXZ("LOGOUT PROCESSING..."); ?>";
@@ -14514,7 +14516,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 								document.getElementById("LogouTProcess").innerHTML = "<br /><br /><font class=\"loading_text\"><?php echo _QXZ("LOGOUT PROCESS COMPLETE, YOU MAY NOW CLOSE YOUR BROWSER OR LOG BACK IN"); ?></font><br /><br />&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <img src=\"./images/<?php echo _QXZ("agent_loading_done.gif"); ?>\" height=\"206px\" width=\"206px\" alt=\"<?php echo _QXZ("LOGOUT PROCESS COMPLETE, YOU MAY NOW CLOSE YOUR BROWSER OR LOG BACK IN"); ?>\" />";
 
-								agent_events('logged_out_complete', '');
+								agent_events('logged_out_complete', '', aec);   aec++;
 								}
 							}
 						delete xmlhttp;
@@ -16297,11 +16299,11 @@ function phone_number_format(formatphone) {
 
 // ################################################################################
 // Run the Agent Push Events process
-	function agent_events(event_type,event_msg)
+	function agent_events(event_type,event_msg,event_counter)
 		{
 		if ( (agent_push_events > 0) && (agent_push_url.length > 10) )
 			{
-			button_click_log = button_click_log + "" + SQLdate + "-----AgentEvent---" + event_type + "|";
+			button_click_log = button_click_log + "" + SQLdate + "-----AgentEvent---" + event_type + " " + event_counter + "|";
 		//	if (event_type == 'logged_out')
 		//		{check_for_conf_calls(session_id, '0');}
 			var xmlhttp=false;
@@ -16337,6 +16339,7 @@ function phone_number_format(formatphone) {
 				var SClead_id = document.vicidial_form.lead_id.value;
 				var SCepoch = UnixTime;
 				var SCagent_log_id = agent_log_id;
+				var SCcounter = event_counter;
 				SCuser = SCuser.replace(RGplus,'+');
 				SCevent = SCevent.replace(RGplus,'+');
 				SCmessage = SCmessage.replace(RGplus,'+');
@@ -16347,12 +16350,14 @@ function phone_number_format(formatphone) {
 				var RGlead_id = new RegExp("--A--lead_id--B--","g");
 				var RGepoch = new RegExp("--A--epoch--B--","g");
 				var RGagent_log_id = new RegExp("--A--agent_log_id--B--","g");
+				var RGcounter = new RegExp("--A--counter--B--","g");
 				temp_agent_push_url = temp_agent_push_url.replace(RGuser, SCuser);
 				temp_agent_push_url = temp_agent_push_url.replace(RGevent, SCevent);
 				temp_agent_push_url = temp_agent_push_url.replace(RGmessage, SCmessage);
 				temp_agent_push_url = temp_agent_push_url.replace(RGlead_id, SClead_id);
 				temp_agent_push_url = temp_agent_push_url.replace(RGepoch, SCepoch);
 				temp_agent_push_url = temp_agent_push_url.replace(RGagent_log_id, SCagent_log_id);
+				temp_agent_push_url = temp_agent_push_url.replace(RGcounter, SCcounter);
 				temp_agent_push_url = temp_agent_push_url.replace(RGplus, '+');
 				temp_agent_push_url = temp_agent_push_url.replace(RGnl, '+');
 				temp_agent_push_url = temp_agent_push_url.replace(RGtab, '+');
@@ -16514,7 +16519,7 @@ function phone_number_format(formatphone) {
 				{
 				HidEGenDerPulldown();
 				showDiv('CloserSelectBox');
-				agent_events('ingroup_screen_open', '');
+				agent_events('ingroup_screen_open', '', aec);   aec++;
 				}
 			}
 		}
@@ -16542,7 +16547,7 @@ function phone_number_format(formatphone) {
 		if (move_on == 1)
 			{
 			showDiv('TerritorySelectBox');
-			agent_events('territory_screen_open', '');
+			agent_events('territory_screen_open', '', aec);   aec++;
 			}
 		}
 
@@ -17020,12 +17025,12 @@ function phone_number_format(formatphone) {
 				CloserSelectContent_create();
 				if (VU_agent_choose_ingroups_DV == "MGRLOCK")
 					{VU_agent_choose_ingroups_skip_count = mrglock_ig_select_ct;}
-				agent_events('ingroup_screen_open', '');
+				agent_events('ingroup_screen_open', '', aec);   aec++;
 				}
 			else
 				{
 				hideDiv('CloserSelectBox');
-				agent_events('ingroup_screen_closed', '');
+				agent_events('ingroup_screen_closed', '', aec);   aec++;
 				MainPanelToFront();
 				var CloserSelecting = 0;
 				if (dial_method == "INBOUND_MAN")
@@ -17043,12 +17048,12 @@ function phone_number_format(formatphone) {
 				TerritorySelectContent_create();
 				if (agent_select_territories == "MGRLOCK")
 					{agent_select_territories_skip_count=4;}
-				agent_events('territory_screen_open', '');
+				agent_events('territory_screen_open', '', aec);   aec++;
 				}
 			else
 				{
 				hideDiv('TerritorySelectBox');
-				agent_events('territory_screen_closed', '');
+				agent_events('territory_screen_closed', '', aec);   aec++;
 				MainPanelToFront();
 				var TerritorySelecting = 0;
 				}
@@ -17155,7 +17160,7 @@ function phone_number_format(formatphone) {
 				//	alert("IFRAME submitting!");
 					customsubmit_trigger=1;
 					}
-				agent_events('dispo_screen_open', '');
+				agent_events('dispo_screen_open', '', aec);   aec++;
 				}
 			// trigger custom form submit if standard form has already been submitted or 3 seconds have gone by
 			if (customsubmit_trigger > 0)
@@ -17468,7 +17473,7 @@ function phone_number_format(formatphone) {
 							{
 							document.getElementById("blind_monitor_alert_span_contents").innerHTML = blind_monitor_message;
 							showDiv('blind_monitor_alert_span');
-							agent_events('blind_monitor_alert', '');
+							agent_events('blind_monitor_alert', '', aec);   aec++;
 							}
 						if ( (blind_monitor_filename.length > 0) && ( (blind_monitor_warning=='AUDIO') || (blind_monitor_warning=='ALERT_AUDIO')|| (blind_monitor_warning=='NOTICE_AUDIO') || (blind_monitor_warning=='ALL') ) )
 							{
@@ -17598,7 +17603,8 @@ function phone_number_format(formatphone) {
 		var sec = t.getSeconds();
 		var regMSdate = new RegExp("MS_","g");
 		var regUSdate = new RegExp("US_","g");
-		var regEUdate = new RegExp("EU_","g");
+		var regEUdate = new RegExp("EU_SLASH","g");
+		var regEUDotdate = new RegExp("EU_DOT","g");
 		var regALdate = new RegExp("AL_","g");
 		var regAMPMdate = new RegExp("AMPM","g");
 		if (year < 1000) {year+=1900}
@@ -17625,6 +17631,10 @@ function phone_number_format(formatphone) {
 		if (vdc_header_date_format.match(regEUdate))
 			{
 			status_date = daym + "/" + month + "/" + year;
+			}
+		if (vdc_header_date_format.match(regEUDotdate))
+			{
+			status_date = daym + "." + month + "." + year;
 			}
 		if (vdc_header_date_format.match(regALdate))
 			{
@@ -17693,6 +17703,10 @@ function phone_number_format(formatphone) {
 			{
 			customer_date = Cdaym + "/" + Cmon + "/" + Cyear;
 			}
+		if (vdc_header_date_format.match(regEUDotdate))
+			{
+			status_date = daym + "." + month + "." + year;
+			}
 		if (vdc_customer_date_format.match(regALdate))
 			{
 			var customermon='';
@@ -17749,9 +17763,9 @@ function phone_number_format(formatphone) {
 		if (check_n==2)
 			{
 			hideDiv('LoadingBox');
-			agent_events('logged_in', session_id + ' ' + server_ip + ' ' + version + ' ' + build + ' ' + script_name);
+			agent_events('logged_in', session_id + ' ' + server_ip + ' ' + version + ' ' + build + ' ' + script_name, aec);   aec++;
 			if (deactivated_old_session > 0)
-				{agent_events('session_disabled', '');}
+				{agent_events('session_disabled', '', aec);   aec++;}
 
 			if (invalid_opener > 0)
 				{
@@ -17759,7 +17773,7 @@ function phone_number_format(formatphone) {
 				logout_stop_timeouts = 1;
 				showDiv('InvalidOpenerSpan');
 
-				agent_events('login_invalid', '<?php echo _QXZ("This agent screen was not opened properly."); ?>');
+				agent_events('login_invalid', '<?php echo _QXZ("This agent screen was not opened properly."); ?>', aec);   aec++;
 				}
 			}
 		}
@@ -17950,7 +17964,7 @@ function phone_number_format(formatphone) {
 				if (custom_3way_button_transfer_enabled > 0)
                     {document.getElementById("CustomXfer").innerHTML = "<img src=\"./images/<?php echo _QXZ("vdc_LB_customxfer_OFF.gif"); ?>\" border=\"0\" alt=\"Custom Transfer\" />";}
 
-				agent_events('transfer_panel_open', '');
+				agent_events('transfer_panel_open', '', aec);   aec++;
 				transfer_panel_open=1;
 				}
 			else
@@ -17977,7 +17991,7 @@ function phone_number_format(formatphone) {
 					}
 				if (transfer_panel_open > 0)
 					{
-					agent_events('transfer_panel_closed', '');
+					agent_events('transfer_panel_closed', '', aec);   aec++;
 					transfer_panel_open=0;
 					}		
 				}

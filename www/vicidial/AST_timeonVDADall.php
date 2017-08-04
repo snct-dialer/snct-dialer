@@ -234,7 +234,8 @@ if ( (strlen($slave_db_server)>5) and (preg_match("/$report_name/",$reports_use_
 if (!isset($DB))			{$DB=0;}
 if (!isset($RR))			{$RR=40;}
 if (!isset($group))			{$group='ALL-ACTIVE';}
-if (!isset($user_group_filter))		{$user_group_filter='';}
+if (!isset($groups))		{$groups=array();}
+if (!isset($user_group_filter))		{$user_group_filter=array();}
 if (!isset($usergroup))		{$usergroup='';}
 if (!isset($UGdisplay))		{$UGdisplay=0;}	# 0=no, 1=yes
 if (!isset($UidORname))		{$UidORname=1;}	# 0=id, 1=name

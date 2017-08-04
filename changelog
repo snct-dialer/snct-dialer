@@ -1,3 +1,24 @@
+2.25.4
+
+  [Jörg Frings-Fürst]
+  * Add upstream Rev. 2794:
+    + Fix for empty agent_choose_territories value
+  * Add upstraem Rev. 2495:
+    + Added more debug and '8days' date option
+  * Add upstream Rev. 2496:
+    + Some report changes.
+  * Remove useless *.orig files
+  * Add upstream Rev. 2497:
+    + Added vicidial_campaign_hour_counts and vicidial_carrier_hour_counts rolling
+  * Add upstream Rev. 2498:
+    + Added AST_agent_wait_check.pl script to send out emails if there are agents
+      waiting more than X seconds.
+  * Add upstream Rev. 2499:
+    + Correct some typos.
+  * Add EU_DOT_24HR.
+  * Add vicidial.php to display changelog
+  * Release 2.25.4 2017-08-04
+
 2.25.3
 
   [ Jörg Frings-Fürst ]

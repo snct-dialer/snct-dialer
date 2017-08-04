@@ -283,7 +283,7 @@ if ( (!preg_match('/\-\-ALL\-\-/i', $LOGadmin_viewable_call_times)) and (strlen(
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
 $STARTtime = date("U");
-if (!isset($group)) {$group = '';}
+if (!isset($group)) {$group = array();}
 if (!isset($query_date)) {$query_date = $NOW_DATE;}
 if (!isset($end_date)) {$end_date = $NOW_DATE;}
 
@@ -2210,9 +2210,9 @@ $ASCII_text.="+------------------------------------------------------+----------
 			$graphConstantsB.="\"$hbgcolor\",";
 			$graphConstantsC.="\"$hbcolor\",";
 		}	
-		$graphConstantsA=substr($graphConstantsA,0,-1)."],\n";
-		$graphConstantsB=substr($graphConstantsB,0,-1)."],\n";
-		$graphConstantsC=substr($graphConstantsC,0,-1)."],\n";
+		$graphConstantsA=preg_replace('/,$/', '', $graphConstantsA)."],\n";
+		$graphConstantsB=preg_replace('/,$/', '', $graphConstantsB)."],\n";
+		$graphConstantsC=preg_replace('/,$/', '', $graphConstantsC)."],\n";
 		$labels=preg_replace('/,$/', '', $labels)."],\n";
 		$data=preg_replace('/,$/', '', $data)."],\n";
 		
@@ -2763,9 +2763,9 @@ for ($q=0; $q<count($graph_array); $q++) {
 		$graphConstantsB.="\"$hbgcolor\",";
 		$graphConstantsC.="\"$hbcolor\",";
 	}	
-	$graphConstantsA=substr($graphConstantsA,0,-1)."],\n";
-	$graphConstantsB=substr($graphConstantsB,0,-1)."],\n";
-	$graphConstantsC=substr($graphConstantsC,0,-1)."],\n";
+	$graphConstantsA=preg_replace('/,$/', '', $graphConstantsA)."],\n";
+	$graphConstantsB=preg_replace('/,$/', '', $graphConstantsB)."],\n";
+	$graphConstantsC=preg_replace('/,$/', '', $graphConstantsC)."],\n";
 	$labels=preg_replace('/,$/', '', $labels)."],\n";
 	$data=preg_replace('/,$/', '', $data)."],\n";
 	
