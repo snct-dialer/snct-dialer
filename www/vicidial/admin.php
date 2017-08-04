@@ -40716,7 +40716,7 @@ echo _QXZ("Patch-Level"). ": $FLY_patch_level<br>";
 if (!preg_match("/_BUILD_/",$SShosted_settings))
     {echo "<BR><a href=\"$PHP_SELF?ADD=999995\"><font color=white>&copy; 2017 ViciDial Group</font></a><BR><img src=\"images/pixel.gif\">";}
 echo "<BR><a href=\"$PHP_SELF?ADD=999995\"><font color=white>&copy; 2017 flyingpenguin.de UG</font></a><BR><img src=\"images/pixel.gif\">";
-echo "<BR><BR><a href=\"/vicidial/changelog.html\" target=\"_blank\" type=\"text/html\"><font color=white>&copy; Changelog</font></a><BR><img src=\"images/pixel.gif\">";
+echo "<BR><BR><a href=\"/vicidial/changelog.php\" target=\"_blank\" type=\"text/html\"><font color=white>Changelog (fp)</font></a><BR><img src=\"images/pixel.gif\">";
 echo "</FONT>\n";
 ?>
 
