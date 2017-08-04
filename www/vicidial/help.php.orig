@@ -6252,7 +6252,7 @@ if ($SSqc_features_active > 0)
 <?php echo _QXZ("<U>CUSTOMER</U> = Time the agent is in a live call with a customer."); ?><BR>
 <?php echo _QXZ("And the rest is just System Statuses that the agent picked and how many, to find out what they means then head over to Admin -> System Statuses."); ?><BR>
 <?php echo _QXZ("- Next table is Pause Codes."); ?><BR>
-<?php echo _QXZ("<U>LOGIN TIME</U> = Total time on the system (<U>WAIT</U> + <U>TALK</U> + <U>DISPO</U> + <U>PAUSE</U>)."); ?><BR>
+<?php echo _QXZ("<U>TOTAL</U> = Total time on the system (<U>WAIT</U> + <U>TALK</U> + <U>DISPO</U> + <U>PAUSE</U>)."); ?><BR>
 <?php echo _QXZ("<U>NONPAUSE</U> = Everything except pause (<U>WAIT</U> + <U>TALK</U> + <U>DISPO</U>)."); ?><BR>
 <?php echo _QXZ("<U>PAUSE</U> = Only Pause."); ?><BR>
 <?php echo _QXZ("- The last table is pause codes and their time (like Agent Time Detail)."); ?><BR>

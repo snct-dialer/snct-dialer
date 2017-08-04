@@ -12,10 +12,11 @@
 # 130328-0023 - Converted ereg to preg functions
 # 170324-1251 - Added more debug output
 # 170529-2239 - Added event/message
+# 170725-2102 - Added counter variable
 #
 
-$version = '2.14-5';
-$build = '170529-2239';
+$version = '2.14-6';
+$build = '170725-2102';
 
 require("dbconnect.php");
 
@@ -160,6 +161,8 @@ if (isset($_GET["event"]))			{$event=$_GET["event"];}
 	elseif (isset($_POST["event"]))	{$event=$_POST["event"];}
 if (isset($_GET["message"]))			{$message=$_GET["message"];}
 	elseif (isset($_POST["message"]))	{$message=$_POST["message"];}
+if (isset($_GET["counter"]))			{$counter=$_GET["counter"];}
+	elseif (isset($_POST["counter"]))	{$counter=$_POST["counter"];}
 
 header ("Content-type: text/html; charset=utf-8");
 header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
@@ -199,6 +202,7 @@ if ($non_latin < 1)
 	$length_in_sec = preg_replace("/[^0-9]/","",$length_in_sec);
 	$phone_code = preg_replace("/[^0-9]/","",$phone_code);
 	$phone_number = preg_replace("/[^0-9]/","",$phone_number);
+	$counter = preg_replace("/[^0-9]/","",$counter);
 	}
 else
 	{
@@ -300,6 +304,7 @@ $output .= "$agent_log_id|";
 $output .= "$dispo_name|";
 $output .= "$event|";
 $output .= "$message|";
+$output .= "$counter|";
 
 echo "$output\n$query_string\n";
 

@@ -8,6 +8,8 @@
   * Add upstream Rev. 2496:
     + Some report changes.
   * Remove useless *.orig files
+  * Add upstream Rev. 2497:
+    + Added vicidial_campaign_hour_counts and vicidial_carrier_hour_counts rolling
 
 2.25.3
 
