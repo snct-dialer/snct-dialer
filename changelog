@@ -3,23 +3,32 @@
   [Jörg Frings-Fürst]
   * Correct typos
   * Format output of changelog.php
+  * Add upstream Rev. 2800:
+    + Added more qualifiers for Hungup Xfer function to be triggered.
+    + Added detailed log option.
+    + Added park log.
+  * Add upstream Rev. 2801:
+    + NOTE: For Asterisk 1.4, use a pipe instead of a comma in the Park Call AGI IVR field.
+    + Added rolling of user_call_log if over 1000000 records.
+    + Fix for Cross-Cluster phones where phone_type has "trunk" in it.
+    + Added phone and province to detail output, fixed ASCII display issues.
 
 2.25.4
 
   [Jörg Frings-Fürst]
   * Add upstream Rev. 2794:
     + Fix for empty agent_choose_territories value
-  * Add upstraem Rev. 2495:
+  * Add upstraem Rev. 2795:
     + Added more debug and '8days' date option
-  * Add upstream Rev. 2496:
+  * Add upstream Rev. 2796:
     + Some report changes.
   * Remove useless *.orig files
-  * Add upstream Rev. 2497:
+  * Add upstream Rev. 2797:
     + Added vicidial_campaign_hour_counts and vicidial_carrier_hour_counts rolling
-  * Add upstream Rev. 2498:
+  * Add upstream Rev. 2798:
     + Added AST_agent_wait_check.pl script to send out emails if there are agents
       waiting more than X seconds.
-  * Add upstream Rev. 2499:
+  * Add upstream Rev. 2799:
     + Correct some typos.
   * Add EU_DOT_24HR.
   * Add vicidial.php to display changelog

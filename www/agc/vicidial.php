@@ -560,10 +560,11 @@
 # 170709-1116 - Added Xfer Hung Up notification
 # 170710-1802 - Added logging of clicks on webform buttons
 # 170725-2147 - Added counter(aec) to agent_events calls
+# 170808-1014 - Added more qualifiers for Hungup Xfer function to be triggered
 #
 
-$version = '2.14-530c';
-$build = '170725-2147';
+$version = '2.14-531c';
+$build = '170808-1014';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -5579,7 +5580,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						var APIpark_array = check_time_array[22].split("APIpark: ");
 						api_parkcustomer = APIpark_array[1];
 
-						if(DEADxfer >  0)
+						if ( (DEADxfer > 0) && (CheckDEADcallON < 1) && (XD_live_customer_call > 0) )
 							{                             
 							button_click_log = button_click_log + "" + SQLdate + "-----XferHungUp---" + document.vicidial_form.xferchannel.value + "|";	
 							xfercall_send_hangup('YES');

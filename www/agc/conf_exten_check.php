@@ -848,7 +848,7 @@ if ($ACTION == 'refresh')
 
 			//Check if xferchannel is active
 			$DEADxfer=0;
-			if(strlen($xferchannel) > 2)
+			if ( (strlen($xferchannel) > 2) and ($DEADcustomer < 1) )
 				{
 				$stmt="SELECT count(*) FROM live_channels where channel ='$xferchannel' and server_ip='$server_ip';";
 				if ($DB) {echo "|$stmt|\n";}
@@ -856,7 +856,7 @@ if ($ACTION == 'refresh')
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'03045',$user,$server_ip,$session_name,$one_mysql_log);}
 				$row=mysqli_fetch_row($rslt);
 				$live_channelCOUNT=$row[0];
-				if($live_channelCOUNT == 0)
+				if ( ($live_channelCOUNT == 0) and (strlen($Alead_id) > 0) )
 					{
 					$DEADxfer++;
 					$stmt="UPDATE user_call_log SET xfer_hungup='XFER_3WAYHangup', xfer_hungup_datetime=NOW() where lead_id='$Alead_id' and  user='$user' and call_type LIKE \"%3WAY%\" order by user_call_log_id desc limit 1;";

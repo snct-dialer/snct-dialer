@@ -25,6 +25,8 @@
 # Example Park Call AGI IVR field:
 # park_call_IVR_example.agi|en---please_enter_id_number---you-entered---confirm_id_number---auth-thankyou---buzz---2---outside-transfer---TEST_IN
 #
+# NOTE: For Asterisk 1.8 and higher, use a comma instead of a pipe in the Park Call AGI IVR field
+#
 # Copyright (C) 2010  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # changes:

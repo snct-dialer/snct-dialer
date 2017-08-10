@@ -48,6 +48,7 @@
 # 170209-1213 - Added vicidial_api_urls table rolling and purging to all vicidial_api_log sections
 # 170325-1108 - Added vicidial_drop_log table rolling
 # 170508-1212 - Added vicidial_rt_monitor_log table rolling
+# 170809-1926 - Added rolling of user_call_log if over 1000000 records
 #
 
 $CALC_TEST=0;
@@ -1630,6 +1631,58 @@ if (!$T)
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 
 		$stmtA = "optimize table vicidial_rt_monitor_log_archive;";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		}
+
+
+	##### user_call_log
+	$user_call_log_count_mil=0;
+	$stmtA = "SELECT count(*) from user_call_log;";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	if ($sthArows > 0)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$user_call_log_count =	$aryA[0];
+		}
+	$sthA->finish();
+	$user_call_log_count_mil = ($user_call_log_count - 1000000);
+
+	$stmtA = "SELECT count(*) from user_call_log_archive;";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	if ($sthArows > 0)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$user_call_log_archive_count =	$aryA[0];
+		}
+	$sthA->finish();
+
+	if (!$Q) {print "\nProcessing user_call_log table...  ($user_call_log_count|$user_call_log_archive_count)\n";}
+	$stmtA = "INSERT IGNORE INTO user_call_log_archive SELECT * from user_call_log;";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	
+	$sthArows = $sthA->rows;
+	if (!$Q) {print "$sthArows rows inserted into user_call_log_archive table \n";}
+	
+	$rv = $sthA->err();
+	if ( (!$rv) && ($user_call_log_count_mil > 0) )
+		{
+		$stmtA = "DELETE FROM user_call_log WHERE call_date < '$del_time' order by user_call_log_id limit $user_call_log_count_mil;";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows = $sthA->rows;
+		if (!$Q) {print "$sthArows rows deleted from user_call_log table \n";}
+
+		$stmtA = "optimize table user_call_log;";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+
+		$stmtA = "optimize table user_call_log_archive;";
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 		}
