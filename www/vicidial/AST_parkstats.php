@@ -16,6 +16,7 @@
 # 141230-1441 - Added code for on-the-fly language translations display
 # 170409-1534 - Added IP List validation code
 # 170412-2129 - Updated for new park logging
+# 170808-0220 - Added detailed log option
 #
 
 $startMS = microtime();
@@ -31,6 +32,10 @@ $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
 $PHP_SELF=$_SERVER['PHP_SELF'];
 if (isset($_GET["group"]))				{$group=$_GET["group"];}
 	elseif (isset($_POST["group"]))		{$group=$_POST["group"];}
+if (isset($_GET["show_details"]))				{$show_details=$_GET["show_details"];}
+	elseif (isset($_POST["show_details"]))		{$show_details=$_POST["show_details"];}
+if (isset($_GET["sort_by_details"]))				{$sort_by_details=$_GET["sort_by_details"];}
+	elseif (isset($_POST["sort_by_details"]))		{$sort_by_details=$_POST["sort_by_details"];}
 if (isset($_GET["query_date"]))				{$query_date=$_GET["query_date"];}
 	elseif (isset($_POST["query_date"]))		{$query_date=$_POST["query_date"];}
 if (isset($_GET["submit"]))				{$submit=$_GET["submit"];}
@@ -276,6 +281,7 @@ echo "<SELECT SIZE=1 NAME=group>\n";
 		$o++;
 	}
 echo "</SELECT>\n";
+echo "<INPUT TYPE=checkbox NAME=show_details VALUE='checked' $show_details>Show details\n";
 echo "<INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'>\n";
 echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=34&campaign_id=$group\">"._QXZ("MODIFY")."</a> | <a href=\"./admin.php?ADD=999999\">"._QXZ("REPORTS")."</a> </FONT>\n";
 echo "</FORM>\n\n";
@@ -605,6 +611,61 @@ while ($i <= 96)
 	}
 
 echo "+------+-------------------------------------------------------------------------------------------------------+-------+-------+\n";
+}
+
+if ($show_details) {
+	$stmt="select * from park_log where parked_time >= '$query_date 00:00:01' and parked_time <= '$query_date 23:59:59' and channel_group='" . mysqli_real_escape_string($link, $group) . "'  order by parked_time, grab_time, hangup_time desc"; 
+	$rslt=mysql_to_mysqli($stmt, $link);
+
+	if (!$lower_limit) {$lower_limit=1;}
+	if ($lower_limit+999>=mysqli_num_rows($rslt)) {$upper_limit=($lower_limit+mysqli_num_rows($rslt)%1000)-1;} else {$upper_limit=$lower_limit+999;}
+	
+	echo "\n\n--- "._QXZ("PARK LOG RECORDS FOR")." $query_date, "._QXZ("CHANNEL GROUP")." $group\n --- "._QXZ("RECORDS")." #$lower_limit-$upper_limit               ";
+	# echo "<a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&group=$group&show_detail=$show_detail&sort_by_detail=$sort_by_detail&query_date=$query_date&lower_limit=$lower_limit&upper_limit=$upper_limit&file_download=1\">["._QXZ("DOWNLOAD")."]</a>";
+	echo "\n";
+
+	if (mysqli_num_rows($rslt)>0) {
+		
+		$header= "+---------------------+---------------------+---------------------+------------+--------------------------------+-----------------+------------+------------+----------------------+------------+------------+\n";
+		$output.=$header;
+		$output.="| "._QXZ("PARKED TIME",19)." | "._QXZ("GRAB TIME",19)." | "._QXZ("HANGUP TIME",19)." | "._QXZ("STATUS",10)." | "._QXZ("CHANNEL",30)." | "._QXZ("SERVER IP",15)." | "._QXZ("PARKED SEC",10)." | "._QXZ("TALKED SEC",10)." | "._QXZ("EXTENSION",20)." | "._QXZ("USER",10)." | "._QXZ("LEAD ID",10)." |\n";
+		$output.=$header;
+		$i=0;
+		while($row=mysqli_fetch_array($rslt)) {
+			$i++;
+			$output.="| ";
+			$output.=sprintf("%-19s", $row["parked_time"])." | ";
+			$output.=sprintf("%-19s", $row["grab_time"])." | ";
+			$output.=sprintf("%-19s", $row["hangup_time"])." | ";
+			$output.=sprintf("%-10s", $row["status"])." | ";
+			$output.=sprintf("%-30s", substr($row["channel"], 0, 30))." | ";
+			$output.=sprintf("%-15s", $row["server_ip"])." | ";
+			$output.=sprintf("%10s", $row["parked_sec"])." | ";
+			$output.=sprintf("%10s", $row["talked_sec"])." | ";
+			$output.=sprintf("%-20s", substr($row["extension"], 0, 20))." | ";
+			$output.=sprintf("%-10s", $row["user"])." | ";
+			$output.=sprintf("%-10s", $row["lead_id"])." |\n";
+		}
+		$output.=$header;
+
+		$ll=$lower_limit-1000;
+		if ($ll>=1) {
+			$output.="<a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&group=$group&show_detail=$show_detail&sort_by_detail=$sort_by_detail&query_date=$query_date&lower_limit=$ll\">[<<< "._QXZ("PREV")." 1000 "._QXZ("records")."]</a>";
+		} else {
+			$output.=sprintf("%-23s", " ");
+		}
+		$output.=sprintf("%-171s", " ");
+
+		if (($lower_limit+1000)<mysqli_num_rows($rslt)) {
+			if ($upper_limit+1000>=mysqli_num_rows($rslt)) {$max_limit=mysqli_num_rows($rslt)-$upper_limit;} else {$max_limit=1000;}
+			$dial_log_rpt_hf.="<a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&group=$group&show_detail=$show_detail&sort_by_detail=$sort_by_detail&query_date=$query_date&lower_limit=".($lower_limit+1000)."\">["._QXZ("NEXT")." $max_limit "._QXZ("records")." >>>]</a>";
+		} else {
+			$output.=sprintf("%23s", " ");
+		}
+		$output.="\n";
+
+		echo $output;
+	}
 }
 
 $endMS = microtime();

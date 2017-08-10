@@ -848,7 +848,7 @@ if ($ACTION == 'refresh')
 
 			//Check if xferchannel is active
 			$DEADxfer=0;
-			if(strlen($xferchannel) > 2)
+			if ( (strlen($xferchannel) > 2) and ($DEADcustomer < 1) )
 				{
 				$stmt="SELECT count(*) FROM live_channels where channel ='$xferchannel' and server_ip='$server_ip';";
 				if ($DB) {echo "|$stmt|\n";}

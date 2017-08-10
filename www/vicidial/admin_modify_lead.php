@@ -82,6 +82,7 @@
 # 170409-1554 - Added IP List validation code
 # 170527-2253 - Fix for rare inbound logging issue #1017
 # 170710-2039 - Added Audit Comments display
+# 170807-2255 - Added park log
 #
 
 require("dbconnect_mysqli.php");
@@ -1828,6 +1829,42 @@ else
 
 		echo "</TABLE>\n";
 		echo "<BR><BR>\n";
+
+
+		echo "<B>"._QXZ("PARK LOGS FOR THIS LEAD").":</B>\n";
+		echo "<TABLE width=750 cellspacing=1 cellpadding=1>\n";
+		echo "<tr><td><font size=1># </td><td align=left><font size=2> "._QXZ("PARK TIME")."</td><td><font size=2>"._QXZ("CHANNEL GROUP")." </td><td align=left><font size=2>"._QXZ("TSR")." </td><td align=left><font size=2> &nbsp; "._QXZ("STATUS")."</td><td align=left><font size=2> "._QXZ("GRAB TIME")."</td><td align=left><font size=2> "._QXZ("HANGUP TIME")."</td><td align=left><font size=2> "._QXZ("PARK SEC")."</td><td align=left><font size=2> "._QXZ("TALK SEC")."</td><td align=left><font size=2> "._QXZ("EXTENSION")."</td></tr>\n";
+
+		$stmt="SELECT * from park_log where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' order by parked_time, grab_time, hangup_time desc limit 500;";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$logs_to_print = mysqli_num_rows($rslt);
+		if ($DB) {echo "$logs_to_print|$stmt|\n";}
+
+		$u=0;
+		while ($logs_to_print > $u) 
+			{
+			$row=mysqli_fetch_array($rslt);
+			if (preg_match("/1$|3$|5$|7$|9$/i", $u))
+				{$bgcolor='bgcolor="#B9CBFD"';} 
+			else
+				{$bgcolor='bgcolor="#9BB9FB"';}
+
+			$u++;
+			echo "<tr $bgcolor>";
+			echo "<td><font size=1>$u</td>";
+			echo "<td align=left><font size=1> $row[parked_time] </td>";
+			echo "<td align=left><font size=1> $row[channel_group] </td>\n";
+			echo "<td align=left><font size=2> $row[user] </td>\n";
+			echo "<td align=left><font size=2> $row[status] </td>\n";
+			echo "<td align=left><font size=1> $row[grab_time] </td>\n";
+			echo "<td align=left><font size=1> $row[hangup_time] </td>\n";
+			echo "<td align=left><font size=2> $row[parked_sec] </td>\n";
+			echo "<td align=left><font size=2> $row[talked_sec] </td>\n";
+			echo "<td align=left><font size=1> $row[extension] </td>\n";
+			echo "</tr>\n";
+			}
+
+		echo "</TABLE><BR><BR>\n";
 
 
 		echo "<B>"._QXZ("IVR LOGS FOR THIS LEAD").":</B>\n";
