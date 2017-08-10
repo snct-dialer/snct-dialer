@@ -3980,6 +3980,9 @@ CREATE TABLE vicidial_campaign_hour_counts_archive LIKE vicidial_campaign_hour_c
 
 CREATE TABLE vicidial_carrier_hour_counts_archive LIKE vicidial_carrier_hour_counts;
 
+CREATE TABLE user_call_log_archive LIKE user_call_log;
+ALTER TABLE user_call_log_archive MODIFY user_call_log_id INT(9) UNSIGNED NOT NULL;
+
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;
 
@@ -4054,4 +4057,4 @@ UPDATE vicidial_configuration set value='1766' where name='qc_database_version';
 
 UPDATE system_settings set vdc_agent_api_active='1';
 
-UPDATE system_settings SET db_schema_version='1512',db_schema_update_date=NOW(),reload_timestamp=NOW();
+UPDATE system_settings SET db_schema_version='1513',db_schema_update_date=NOW(),reload_timestamp=NOW();

@@ -67,9 +67,10 @@
 # 150610-1200 - Added support for AMI version 1.3
 # 170329-2125 - Updated system load stats collection for Linux kernel 2.6+
 # 170406-1528 - Fix for stats calculation
+# 170809-2144 - Fix for Cross-Cluster phones where phone_type has "trunk" in it
 #
 
-$build = '170406-1528';
+$build = '170809-2144';
 
 # constants
 $SYSPERF=0;	# system performance logging to MySQL server_performance table every 5 seconds
@@ -367,7 +368,7 @@ if ($Q < 1)
 	{print STDERR "LOOKING FOR IAX2 clients assigned to this server:\n";}
 $IAX2_client_count=0;
 $IAX2_client_list='|';
-$stmtA = "SELECT extension FROM phones where protocol='IAX2' and server_ip='$server_ip'";
+$stmtA = "SELECT extension FROM phones where protocol='IAX2' and server_ip='$server_ip' and phone_type NOT LIKE \"%trunk%\";";
 if($DB){print STDERR "|$stmtA|\n";}
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -720,7 +721,7 @@ while($one_day_interval > 0)
 				{print STDERR "LOOKING FOR IAX2 clients assigned to this server:\n";}
 			$IAX2_client_count=0;
 			$IAX2_client_list='|';
-			$stmtA = "SELECT extension FROM phones where protocol='IAX2' and server_ip='$server_ip'";
+			$stmtA = "SELECT extension FROM phones where protocol='IAX2' and server_ip='$server_ip' and phone_type NOT LIKE \"%trunk%\";";
 			if($DB){print STDERR "|$stmtA|\n";}
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;

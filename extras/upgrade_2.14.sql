@@ -343,3 +343,9 @@ unique index vclhc_hour (date_hour, type)
 CREATE TABLE vicidial_carrier_hour_counts_archive LIKE vicidial_carrier_hour_counts;
 
 UPDATE system_settings SET db_schema_version='1512',db_schema_update_date=NOW() where db_schema_version < 1512;
+
+CREATE TABLE user_call_log_archive LIKE user_call_log;
+ALTER TABLE user_call_log_archive MODIFY user_call_log_id INT(9) UNSIGNED NOT NULL;
+
+UPDATE system_settings SET db_schema_version='1513',db_schema_update_date=NOW() where db_schema_version < 1513;
+

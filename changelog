@@ -4,9 +4,14 @@
   * Correct typos
   * Format output of changelog.php
   * Add upstream Rev. 2800:
-    + Added more qualifiers for Hungup Xfer function to be triggered
-    + Added detailed log option
-    + Added park log
+    + Added more qualifiers for Hungup Xfer function to be triggered.
+    + Added detailed log option.
+    + Added park log.
+  * Add upstream Rev. 2801:
+    + NOTE: For Asterisk 1.4, use a pipe instead of a comma in the Park Call AGI IVR field.
+    + Added rolling of user_call_log if over 1000000 records.
+    + Fix for Cross-Cluster phones where phone_type has "trunk" in it.
+    + Added phone and province to detail output, fixed ASCII display issues.
 
 2.25.4
 
