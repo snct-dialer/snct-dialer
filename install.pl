@@ -2577,6 +2577,7 @@ if ($NOWEB < 1)
 	# Copy FlyInclude.php
 	`cp -f ./FlyInclude.php $PATHweb/agc`;
 	`cp -f ./FlyInclude.php $PATHweb/vicidial`;
+	`cp -f ./changelog $PATHweb/vicidial`;
 
 	print "setting web scripts to executable...\n";
 	`chmod 0777 $PATHweb/`;
@@ -2749,15 +2750,15 @@ if ($dbhA)
 
 	require './FlyInclude.pl';
 
-	$stmtA = "UPDATE servers SET svn_revision='$Fly_old_svn',svn_info='$svn_notes' where server_ip='$VARserver_ip';";
+	$stmtA = "UPDATE servers SET svn_revision='$FLY_old_svn',svn_info='$svn_notes' where server_ip='$VARserver_ip';";
 		if($DB){print STDERR "\n|$stmtA|\n";}
 	$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query:|$stmtA|\n";
 
-	$stmtA = "UPDATE system_settings SET svn_revision='$Fly_old_svn', version='$FLY_version';";
+	$stmtA = "UPDATE system_settings SET svn_revision='$FLY_old_svn', version='$FLY_version';";
 		if($DB){print STDERR "\n|$stmtA|\n";}
 	$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query:|$stmtA|\n";
 
-	print "Version information updated: $Fly_old_svn|$VARserver_ip\n";
+	print "Version information updated: $FLY_old_svn|$VARserver_ip\n";
 
 	print "Git information update:\n";
 

@@ -310,5 +310,42 @@ ALTER TABLE vicidial_inbound_groups ADD custom_five VARCHAR(100) default '';
 
 ALTER TABLE user_call_log ADD xfer_hungup VARCHAR(20) default '';
 ALTER TABLE user_call_log ADD xfer_hungup_datetime DATETIME;
+ALTER TABLE vicidial_agent_log ADD pause_code VARCHAR(6) default '';
 
-UPDATE system_settings SET db_schema_version='1511',db_schema_update_date=NOW() where db_schema_version < 1509;
+UPDATE system_settings SET db_schema_version='1511',db_schema_update_date=NOW() where db_schema_version < 1511;
+
+CREATE TABLE vicidial_campaign_hour_counts (
+campaign_id VARCHAR(8),
+date_hour DATETIME,
+next_hour DATETIME,
+last_update DATETIME,
+type VARCHAR(8) default 'CALLS',
+calls MEDIUMINT(6) UNSIGNED default '0',
+hr TINYINT(2) default '0',
+index (campaign_id),
+index (date_hour),
+unique index vchc_camp_hour (campaign_id, date_hour, type)
+) ENGINE=MyISAM;
+
+CREATE TABLE vicidial_campaign_hour_counts_archive LIKE vicidial_campaign_hour_counts;
+
+CREATE TABLE vicidial_carrier_hour_counts (
+date_hour DATETIME,
+next_hour DATETIME,
+last_update DATETIME,
+type VARCHAR(20) default 'ANSWERED',
+calls MEDIUMINT(6) UNSIGNED default '0',
+hr TINYINT(2) default '0',
+index (date_hour),
+unique index vclhc_hour (date_hour, type)
+) ENGINE=MyISAM;
+
+CREATE TABLE vicidial_carrier_hour_counts_archive LIKE vicidial_carrier_hour_counts;
+
+UPDATE system_settings SET db_schema_version='1512',db_schema_update_date=NOW() where db_schema_version < 1512;
+
+CREATE TABLE user_call_log_archive LIKE user_call_log;
+ALTER TABLE user_call_log_archive MODIFY user_call_log_id INT(9) UNSIGNED NOT NULL;
+
+UPDATE system_settings SET db_schema_version='1513',db_schema_update_date=NOW() where db_schema_version < 1513;
+

@@ -4161,12 +4161,13 @@ else
 # 170609-1529 - Added ccc_lead_info API function
 # 170613-0851 - Added hide_inactive_lists system settings option
 # 170623-2142 - Changed parameters for password recommendations
+# 170717-1444 - Fix for empty agent_choose_territories value
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-620a';
-$build = '170623-2142';
+$admin_version = '2.14-621a';
+$build = '170717-1444';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -12757,6 +12758,8 @@ if ($ADD=="4A")
 				$delete_filters =			'0';
 				$load_leads =				'0';
 				}
+			if (strlen($agent_choose_territories) < 1) 
+				{$agent_choose_territories=0;}
 			$pass_hash='';
 			$pass_hashSQL='';
 			if ($SSpass_hash_enabled > 0)
@@ -13027,6 +13030,8 @@ if ($ADD=="4B")
 				$delete_filters =			'0';
 				$load_leads =				'0';
 				}
+			if (strlen($agent_choose_territories) < 1) 
+				{$agent_choose_territories=0;}
 			$pass_hash='';
 			$pass_hashSQL='';
 			if ($SSpass_hash_enabled > 0)
@@ -26487,7 +26492,7 @@ if ($ADD==3111)
 		echo "<TABLE><TR><TD>\n";
 		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-		$stmt="SELECT group_id,group_name,group_color,active,web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,drop_call_seconds,drop_action,drop_exten,call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,default_xfer_group,queue_priority,drop_inbound_group,ingroup_recording_override,ingroup_rec_filename,afterhours_xfer_group,qc_enabled,qc_statuses,qc_shift_id,qc_get_record_launch,qc_show_recording,qc_web_form_address,qc_script,play_place_in_line,play_estimate_hold_time,hold_time_option,hold_time_option_seconds,hold_time_option_exten,hold_time_option_voicemail,hold_time_option_xfer_group,hold_time_option_callback_filename,hold_time_option_callback_list_id,hold_recall_xfer_group,no_delay_call_route,play_welcome_message,answer_sec_pct_rt_stat_one,answer_sec_pct_rt_stat_two,default_group_alias,no_agent_no_queue,no_agent_action,no_agent_action_value,web_form_address_two,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,ignore_list_script_override,extension_appended_cidname,uniqueid_status_display,uniqueid_status_prefix,hold_time_option_minimum,hold_time_option_press_filename,hold_time_option_callmenu,onhold_prompt_no_block,onhold_prompt_seconds,hold_time_option_no_block,hold_time_option_prompt_seconds,hold_time_second_option,hold_time_third_option,wait_hold_option_priority,wait_time_option,wait_time_second_option,wait_time_third_option,wait_time_option_seconds,wait_time_option_exten,wait_time_option_voicemail,wait_time_option_xfer_group,wait_time_option_callmenu,wait_time_option_callback_filename,wait_time_option_callback_list_id,wait_time_option_press_filename,wait_time_option_no_block,wait_time_option_prompt_seconds,timer_action_destination,calculate_estimated_hold_seconds,add_lead_url,eht_minimum_prompt_filename, eht_minimum_prompt_no_block,eht_minimum_prompt_seconds,on_hook_ring_time,na_call_url,on_hook_cid,group_calldate,action_xfer_cid,drop_callmenu,after_hours_callmenu,user_group,max_calls_method,max_calls_count,max_calls_action,dial_ingroup_cid,group_handling,web_form_address_three,populate_lead_ingroup,drop_lead_reset,after_hours_lead_reset,nanq_lead_reset,wait_time_lead_reset,hold_time_lead_reset,status_group_id,routing_initiated_recordings,on_hook_cid_number,customer_chat_screen_colors,customer_chat_survey_link,customer_chat_survey_text,populate_lead_province,areacode_filter,areacode_filter_seconds,areacode_filter_action,areacode_filter_action_value,populate_state_areacode from vicidial_inbound_groups,custom_one,custom_two,custom_three,custom_four,custom_five where group_id='$group_id' $LOGadmin_viewable_groupsSQL;";
+		$stmt="SELECT group_id,group_name,group_color,active,web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,drop_call_seconds,drop_action,drop_exten,call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,default_xfer_group,queue_priority,drop_inbound_group,ingroup_recording_override,ingroup_rec_filename,afterhours_xfer_group,qc_enabled,qc_statuses,qc_shift_id,qc_get_record_launch,qc_show_recording,qc_web_form_address,qc_script,play_place_in_line,play_estimate_hold_time,hold_time_option,hold_time_option_seconds,hold_time_option_exten,hold_time_option_voicemail,hold_time_option_xfer_group,hold_time_option_callback_filename,hold_time_option_callback_list_id,hold_recall_xfer_group,no_delay_call_route,play_welcome_message,answer_sec_pct_rt_stat_one,answer_sec_pct_rt_stat_two,default_group_alias,no_agent_no_queue,no_agent_action,no_agent_action_value,web_form_address_two,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,ignore_list_script_override,extension_appended_cidname,uniqueid_status_display,uniqueid_status_prefix,hold_time_option_minimum,hold_time_option_press_filename,hold_time_option_callmenu,onhold_prompt_no_block,onhold_prompt_seconds,hold_time_option_no_block,hold_time_option_prompt_seconds,hold_time_second_option,hold_time_third_option,wait_hold_option_priority,wait_time_option,wait_time_second_option,wait_time_third_option,wait_time_option_seconds,wait_time_option_exten,wait_time_option_voicemail,wait_time_option_xfer_group,wait_time_option_callmenu,wait_time_option_callback_filename,wait_time_option_callback_list_id,wait_time_option_press_filename,wait_time_option_no_block,wait_time_option_prompt_seconds,timer_action_destination,calculate_estimated_hold_seconds,add_lead_url,eht_minimum_prompt_filename, eht_minimum_prompt_no_block,eht_minimum_prompt_seconds,on_hook_ring_time,na_call_url,on_hook_cid,group_calldate,action_xfer_cid,drop_callmenu,after_hours_callmenu,user_group,max_calls_method,max_calls_count,max_calls_action,dial_ingroup_cid,group_handling,web_form_address_three,populate_lead_ingroup,drop_lead_reset,after_hours_lead_reset,nanq_lead_reset,wait_time_lead_reset,hold_time_lead_reset,status_group_id,routing_initiated_recordings,on_hook_cid_number,customer_chat_screen_colors,customer_chat_survey_link,customer_chat_survey_text,populate_lead_province,areacode_filter,areacode_filter_seconds,areacode_filter_action,areacode_filter_action_value,populate_state_areacode,custom_one,custom_two,custom_three,custom_four,custom_five from vicidial_inbound_groups where group_id='$group_id' $LOGadmin_viewable_groupsSQL;";
 
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$row=mysqli_fetch_row($rslt);
@@ -35055,6 +35060,7 @@ if ($ADD==311111111111111)
 		echo "<option>MS_DASH_24HR  2008-06-24 23:59:59</option>\n";
 		echo "<option>US_SLASH_24HR 06/24/2008 23:59:59</option>\n";
 		echo "<option>EU_SLASH_24HR 24/06/2008 23:59:59</option>\n";
+		echo "<option>EU_DOT_24HR 24.06.2008 23:59:59</option>\n";
 		echo "<option>AL_TEXT_24HR  JUN 24 23:59:59</option>\n";
 		echo "<option>MS_DASH_AMPM  2008-06-24 11:59:59 PM</option>\n";
 		echo "<option>US_SLASH_AMPM 06/24/2008 11:59:59 PM</option>\n";
@@ -35066,6 +35072,7 @@ if ($ADD==311111111111111)
 		echo "<option>MS_DASH_24HR  2008-06-24 23:59:59</option>\n";
 		echo "<option>US_SLASH_24HR 06/24/2008 23:59:59</option>\n";
 		echo "<option>EU_SLASH_24HR 24/06/2008 23:59:59</option>\n";
+		echo "<option>EU_DOT_24HR 24.06.2008 23:59:59</option>\n";
 		echo "<option>AL_TEXT_24HR  JUN 24 23:59:59</option>\n";
 		echo "<option>MS_DASH_AMPM  2008-06-24 11:59:59 PM</option>\n";
 		echo "<option>US_SLASH_AMPM 06/24/2008 11:59:59 PM</option>\n";
@@ -40709,6 +40716,7 @@ echo _QXZ("Patch-Level"). ": $FLY_patch_level<br>";
 if (!preg_match("/_BUILD_/",$SShosted_settings))
     {echo "<BR><a href=\"$PHP_SELF?ADD=999995\"><font color=white>&copy; 2017 ViciDial Group</font></a><BR><img src=\"images/pixel.gif\">";}
 echo "<BR><a href=\"$PHP_SELF?ADD=999995\"><font color=white>&copy; 2017 flyingpenguin.de UG</font></a><BR><img src=\"images/pixel.gif\">";
+echo "<BR><BR><a href=\"/vicidial/changelog.php\" target=\"_blank\" type=\"text/html\"><font color=white>Changelog (fp)</font></a><BR><img src=\"images/pixel.gif\">";
 echo "</FONT>\n";
 ?>
 

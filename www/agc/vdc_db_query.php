@@ -432,11 +432,12 @@
 # 170526-2327 - Added additional variable filtering
 # 170527-2208 - Added more additional variable filtering, fixed rare inbound logging issue #1017
 # 170605-1633 - Added vendor_lead_code to agent lead search results screen
-# 170609-1710 - small debug addition
+# 170609-1710 - Small debug addition
+# 170712-1548 - Changed agents view to use last_state_change for time
 #
 
-$version = '2.14-327';
-$build = '170609-1710';
+$version = '2.14-328';
+$build = '170712-1548';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=684;
@@ -719,9 +720,10 @@ if (isset($_GET["last_VDRP_stage"]))	{$last_VDRP_stage=$_GET["last_VDRP_stage"];
 	elseif (isset($_POST["last_VDRP_stage"]))	{$last_VDRP_stage=$_POST["last_VDRP_stage"];}
 if (isset($_GET["pause_campaign"]))		{$pause_campaign=$_GET["pause_campaign"];}
 	elseif (isset($_POST["pause_campaign"]))	{$pause_campaign=$_POST["pause_campaign"];}
-+if (isset($_GET["url_link"]))			{$url_link=$_GET["url_link"];}
-+	elseif (isset($_POST["url_link"]))	{$url_link=$_POST["url_link"];}
-
+if (isset($_GET["url_link"]))			{$url_link=$_GET["url_link"];}
+	elseif (isset($_POST["url_link"]))	{$url_link=$_POST["url_link"];}
+if (isset($_GET["newPauseCode"]))		{$newpausecode=$_GET["newPauseCode"];}
+	elseif (isset($_POST["newPauseCode"]))	{$newpausecode=$_POST["newPauseCode"];}
 
 header ("Content-type: text/html; charset=utf-8");
 header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
@@ -13531,7 +13533,7 @@ if ($ACTION == 'PauseCodeSubmit')
 		### if this is the first pause code entry in a pause session, simply update and log to queue_log
 		if ( ($stage < 1) or ($pause_to_code_jump > 0) )
 			{
-			$stmt="UPDATE vicidial_agent_log set sub_status=\"$status\",pause_type='AGENT',pause_campaign=\"$pause_campaign\" where agent_log_id >= '$agent_log_id' and user='$user' and ( (sub_status is NULL) or (sub_status='') )order by agent_log_id limit 2;";
+			$stmt="UPDATE vicidial_agent_log set sub_status=\"$status\",pause_type='AGENT',pause_campaign=\"$pause_campaign\",pause_code=\"$newpausecode\" where agent_log_id >= '$agent_log_id' and user='$user' and ( (sub_status is NULL) or (sub_status='') )order by agent_log_id limit 2;";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00175',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -13568,7 +13570,7 @@ if ($ACTION == 'PauseCodeSubmit')
 				$user_group =		trim("$row[0]");
 				}
 
-			$stmt="INSERT INTO vicidial_agent_log (user,server_ip,event_time,campaign_id,pause_epoch,pause_sec,wait_epoch,user_group,sub_status,pause_type,pause_campaign) values('$user','$server_ip','$NOW_TIME','$campaign','$StarTtime','0','$StarTtime','$user_group','$status','AGENT','$pause_campaign');";
+				$stmt="INSERT INTO vicidial_agent_log (user,server_ip,event_time,campaign_id,pause_epoch,pause_sec,wait_epoch,user_group,sub_status,pause_type,pause_campaign,pause_code) values('$user','$server_ip','$NOW_TIME','$campaign','$StarTtime','0','$StarTtime','$user_group','$status','AGENT','$pause_campaign','$newpausecode');";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00309',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -13699,7 +13701,7 @@ if ($ACTION == 'AGENTSview')
 	### Gather agents data and statuses
 	$agentviewlistSQL='';
 	$j=0;
-	$stmt="SELECT vla.user,vla.status,vu.full_name,UNIX_TIMESTAMP(last_call_time),UNIX_TIMESTAMP(last_call_finish) from vicidial_live_agents vla,vicidial_users vu where vla.user=vu.user $AGENTviewSQL order by vu.full_name;";
+	$stmt="SELECT vla.user,vla.status,vu.full_name,UNIX_TIMESTAMP(last_call_time),UNIX_TIMESTAMP(last_call_finish),UNIX_TIMESTAMP(last_state_change) from vicidial_live_agents vla,vicidial_users vu where vla.user=vu.user $AGENTviewSQL order by vu.full_name;";
 	$rslt=mysql_to_mysqli($stmt, $link);
 		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00227',$VD_login,$server_ip,$session_name,$one_mysql_log);}
 	if ($rslt) {$agents_count = mysqli_num_rows($rslt);}
@@ -13712,22 +13714,23 @@ if ($ACTION == 'AGENTSview')
 		$full_name =	$row[2];
 		$call_start =	$row[3];
 		$call_finish =	$row[4];
+		$state_change = $row[5];
 		$agentviewlistSQL .= "'$user',";
 
 		if ( ($status=='READY') or ($status=='CLOSER') ) 
 			{
 			$statuscolor='#ADD8E6';
-			$call_time = ($StarTtime - $call_finish);
+			$call_time = ($StarTtime - $state_change);
 			}
 		if ( ($status=='QUEUE') or ($status=='INCALL') ) 
 			{
 			$statuscolor='#D8BFD8';
-			$call_time = ($StarTtime - $call_start);
+			$call_time = ($StarTtime - $state_change);
 			}
 		if ($status=='PAUSED') 
 			{
 			$statuscolor='#F0E68C';
-			$call_time = ($StarTtime - $call_finish);
+			$call_time = ($StarTtime - $state_change);
 			}
 
 		if ($call_time < 1)

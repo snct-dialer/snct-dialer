@@ -1328,6 +1328,7 @@ processed ENUM('Y','N') default 'N',
 uniqueid VARCHAR(20) default '',
 pause_type ENUM('UNDEFINED','SYSTEM','AGENT','API','ADMIN') default 'UNDEFINED',
 pause_campaign VARCHAR(20) default '',
+pause_code VARCHAR(6) default '',
 index (lead_id),
 index (user),
 index (event_time)
@@ -3761,6 +3762,30 @@ unique index (caller_code),
 index (monitor_start_time)
 ) ENGINE=MyISAM;
 
+CREATE TABLE vicidial_campaign_hour_counts (
+campaign_id VARCHAR(8),
+date_hour DATETIME,
+next_hour DATETIME,
+last_update DATETIME,
+type VARCHAR(8) default 'CALLS',
+calls MEDIUMINT(6) UNSIGNED default '0',
+hr TINYINT(2) default '0',
+index (campaign_id),
+index (date_hour),
+unique index vchc_camp_hour (campaign_id, date_hour, type)
+) ENGINE=MyISAM;
+
+CREATE TABLE vicidial_carrier_hour_counts (
+date_hour DATETIME,
+next_hour DATETIME,
+last_update DATETIME,
+type VARCHAR(20) default 'ANSWERED',
+calls MEDIUMINT(6) UNSIGNED default '0',
+hr TINYINT(2) default '0',
+index (date_hour),
+unique index vclhc_hour (date_hour, type)
+) ENGINE=MyISAM;
+
 
 ALTER TABLE vicidial_email_list MODIFY message text character set utf8;
 
@@ -3951,6 +3976,13 @@ CREATE UNIQUE INDEX vicidial_drop_log_archive_key on vicidial_drop_log_archive(d
 
 CREATE TABLE vicidial_rt_monitor_log_archive LIKE vicidial_rt_monitor_log; 
 
+CREATE TABLE vicidial_campaign_hour_counts_archive LIKE vicidial_campaign_hour_counts;
+
+CREATE TABLE vicidial_carrier_hour_counts_archive LIKE vicidial_carrier_hour_counts;
+
+CREATE TABLE user_call_log_archive LIKE user_call_log;
+ALTER TABLE user_call_log_archive MODIFY user_call_log_id INT(9) UNSIGNED NOT NULL;
+
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;
 
@@ -4025,4 +4057,4 @@ UPDATE vicidial_configuration set value='1766' where name='qc_database_version';
 
 UPDATE system_settings set vdc_agent_api_active='1';
 
-UPDATE system_settings SET db_schema_version='1511',db_schema_update_date=NOW(),reload_timestamp=NOW();
+UPDATE system_settings SET db_schema_version='1513',db_schema_update_date=NOW(),reload_timestamp=NOW();

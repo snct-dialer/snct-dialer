@@ -1,4 +1,4 @@
-Agent Events Push		Started: 2017-05-31	Updated: 2017-06-29
+Agent Events Push		Started: 2017-05-31	Updated: 2017-07-25
 
 
 This feature allows for selected events in the VICIdial agent screen to push out event triggers through HTTP requests sent to a URL as defined in the System Settings.
@@ -10,13 +10,13 @@ There are two System Settings configurations that need to be set for Agent Event
 
 Agent Push Events - This setting will enable the sending of events from agent screens to the URL defined below. Default is 0 for disabled. 
 
-Agent Push URL - If Agent Push Events are enabled above, this is the URL that the events will be sent to. The variables that you can use within the URL are --A--user--B--, --A--event--B--, --A--message--B--, --A--lead_id--B--. Since this function uses AJAX, it must reference a local script on the web server. If you want to reference an external web address then you should use the get2post.php script that can be found in the extras directory.
+Agent Push URL - If Agent Push Events are enabled above, this is the URL that the events will be sent to. The variables that you can use within the URL are --A--user--B--, --A--event--B--, --A--message--B--, --A--lead_id--B--, --A--counter--B--. Since this function uses AJAX, it must reference a local script on the web server. If you want to reference an external web address then you should use the get2post.php script that can be found in the extras directory.
 
 
 
 The "agent_events" function operates through AJAX in the agent screen, and as such it can only access web scripts that are local on the web server. So, if you want to send these HTTP Push events to an external server, you will have to use a script like the get2post.php script that is included in the "extras" directory in the source code and copy it to the "agc" web directory on your webserver. Below is an example of how to populate the System Settings "Agent Push URL" field to use the get2post.php script:
 
-get2post.php?uniqueid=--A--epoch--B--.--A--agent_log_id--B--&type=event&HTTPURLTOPOST=192.168.1.3/agc/vdc_call_url_test.php?user=--A--user--B--&lead_id=--A--lead_id--B--&event=--A--event--B--&message=--A--message--B--
+get2post.php?uniqueid=--A--epoch--B--.--A--agent_log_id--B--&type=event&HTTPURLTOPOST=192.168.1.3/agc/vdc_call_url_test.php?user=--A--user--B--&lead_id=--A--lead_id--B--&event=--A--event--B--&message=--A--message--B--&counter=--A--counter--B--
 
 
 The above URL is passing the following fields to the external web script: user, lead_id, event, message

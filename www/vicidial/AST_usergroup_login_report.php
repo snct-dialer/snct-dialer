@@ -285,7 +285,7 @@ $MT[0]='';
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
 $STARTtime = date("U");
-if (!isset($group)) {$group = '';}
+if (!isset($user_group)) {$user_group = array();}
 
 $i=0;
 $user_group_string='|';
