@@ -2198,6 +2198,14 @@ if ($SSqc_features_active > 0)
 <BR>
 <B><?php echo _QXZ("Internal DNC List"); ?> -</B><?php echo _QXZ("This Do Not Call list contains every lead that has been set to a status of DNC in the system. Through the LISTS - ADD NUMBER TO DNC page you are able to manually add numbers to this list so that they will not be called by campaigns that use the internal DNC list. There is also the option to add leads to the campaign-specific DNC lists for those campaigns that have them. If you have the active DNC option set to AREACODE then you can also use area code wildcard entries like this 201XXXXXXX to block all calls to the 201 areacode when enabled."); ?>
 
+<BR>
+<BR>
+<A NAME="list_custom">
+<BR>
+<B><?php echo _QXZ("Custom List Fields"); ?> -</B><?php echo _QXZ("These five fields can be used for various purposes."); ?>
+
+
+
 
 <BR>
 <BR>

@@ -1016,7 +1016,12 @@ na_call_url TEXT,
 local_call_time VARCHAR(10) NOT NULL DEFAULT 'campaign',
 web_form_address_three TEXT,
 status_group_id VARCHAR(20) default '',
-user_new_lead_limit SMALLINT(5) default '-1'
+user_new_lead_limit SMALLINT(5) default '-1',
+custom_one VARCHAR(100) default '',
+custom_two VARCHAR(100) default '',
+custom_three VARCHAR(100) default '',
+custom_four VARCHAR(100) default '',
+custom_five VARCHAR(100) default ''
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_statuses (

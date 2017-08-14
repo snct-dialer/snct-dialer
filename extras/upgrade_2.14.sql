@@ -310,10 +310,11 @@ ALTER TABLE vicidial_inbound_groups ADD custom_five VARCHAR(100) default '';
 
 ALTER TABLE user_call_log ADD xfer_hungup VARCHAR(20) default '';
 ALTER TABLE user_call_log ADD xfer_hungup_datetime DATETIME;
+
 ALTER TABLE vicidial_agent_log ADD pause_code VARCHAR(6) default '';
-
+ 
 UPDATE system_settings SET db_schema_version='1511',db_schema_update_date=NOW() where db_schema_version < 1511;
-
+ 
 CREATE TABLE vicidial_campaign_hour_counts (
 campaign_id VARCHAR(8),
 date_hour DATETIME,
@@ -346,6 +347,12 @@ UPDATE system_settings SET db_schema_version='1512',db_schema_update_date=NOW() 
 
 CREATE TABLE user_call_log_archive LIKE user_call_log;
 ALTER TABLE user_call_log_archive MODIFY user_call_log_id INT(9) UNSIGNED NOT NULL;
+
+ALTER TABLE vicidial_lists ADD custom_one VARCHAR(100) default '';
+ALTER TABLE vicidial_lists ADD custom_two VARCHAR(100) default '';
+ALTER TABLE vicidial_lists ADD custom_three VARCHAR(100) default '';
+ALTER TABLE vicidial_lists ADD custom_four VARCHAR(100) default '';
+ALTER TABLE vicidial_lists ADD custom_five VARCHAR(100) default '';
 
 UPDATE system_settings SET db_schema_version='1513',db_schema_update_date=NOW() where db_schema_version < 1513;
 

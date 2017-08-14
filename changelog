@@ -12,6 +12,7 @@
     + Added rolling of user_call_log if over 1000000 records.
     + Fix for Cross-Cluster phones where phone_type has "trunk" in it.
     + Added phone and province to detail output, fixed ASCII display issues.
+  * Add new fields Custom 1 - 5 to lists.
 
 2.25.4
 
