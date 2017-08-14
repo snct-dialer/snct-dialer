@@ -13,7 +13,8 @@
 $handle = fopen("changelog", "r");
 if ($handle) {
     while (($line = fgets($handle)) !== false) {
-	echo $line . "<br>" . PHP_EOL; 
+	$line1 = str_replace( " ", "&nbsp;", $line );
+	echo $line1 . "<br>" . PHP_EOL; 
     }
 
     fclose($handle);

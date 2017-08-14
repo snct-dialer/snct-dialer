@@ -1176,7 +1176,7 @@ if (isset($_GET["carrier_description"]))			{$carrier_description=$_GET["carrier_
 	elseif (isset($_POST["carrier_description"]))	{$carrier_description=$_POST["carrier_description"];}
 if (isset($_GET["delete_vm_after_email"]))			{$delete_vm_after_email=$_GET["delete_vm_after_email"];}
 	elseif (isset($_POST["delete_vm_after_email"]))	{$delete_vm_after_email=$_POST["delete_vm_after_email"];}
-if (isset($_GET["custom_one"]))					{$ibg_custom_=$_GET["custom_one"];}
+if (isset($_GET["custom_one"]))					{$custom_one_=$_GET["custom_one"];}
 	elseif (isset($_POST["custom_one"]))		{$custom_one=$_POST["custom_one"];}
 if (isset($_GET["custom_two"]))					{$custom_two=$_GET["custom_two"];}
 	elseif (isset($_POST["custom_two"]))		{$custom_two=$_POST["custom_two"];}
@@ -1197,6 +1197,18 @@ if (isset($_GET["ibg_custom_four"]))				{$ibg_custom_four=$_GET["ibg_custom_four
 	elseif (isset($_POST["ibg_custom_four"]))		{$ibg_custom_four=$_POST["ibg_custom_four"];}
 if (isset($_GET["ibg_custom_five"]))				{$ibg_custom_five=$_GET["ibg_custom_five"];}
 	elseif (isset($_POST["ibg_custom_five"]))		{$ibg_custom_five=$_POST["ibg_custom_five"];}
+	
+if (isset($_GET["list_custom_one"]))				{$list_custom_one=$_GET["list_custom_one"];}
+	elseif (isset($_POST["list_custom_one"]))		{$list_custom_one=$_POST["list_custom_one"];}
+if (isset($_GET["list_custom_two"]))				{$list_custom_two=$_GET["list_custom_two"];}
+	elseif (isset($_POST["list_custom_two"]))		{$list_custom_two=$_POST["list_custom_two"];}
+if (isset($_GET["list_custom_three"]))				{$list_custom_three=$_GET["list_custom_three"];}
+	elseif (isset($_POST["list_custom_three"]))		{$list_custom_three=$_POST["list_custom_three"];}
+if (isset($_GET["list_custom_four"]))				{$list_custom_four=$_GET["list_custom_four"];}
+	elseif (isset($_POST["list_custom_four"]))		{$list_custom_four=$_POST["list_custom_four"];}
+if (isset($_GET["list_custom_five"]))				{$list_custom_five=$_GET["list_custom_five"];}
+	elseif (isset($_POST["list_custom_five"]))		{$list_custom_five=$_POST["list_custom_five"];}
+	
 	
 if (isset($_GET["crm_popup_login"]))			{$crm_popup_login=$_GET["crm_popup_login"];}
 	elseif (isset($_POST["crm_popup_login"]))	{$crm_popup_login=$_POST["crm_popup_login"];}
@@ -3396,6 +3408,11 @@ if ($non_latin < 1)
 	$custom_three = preg_replace('/[^- \.\:\/\@\_0-9a-zA-Z]/','',$custom_three);
 	$custom_four = preg_replace('/[^- \.\:\/\@\_0-9a-zA-Z]/','',$custom_four);
 	$custom_five = preg_replace('/[^- \.\:\/\@\_0-9a-zA-Z]/','',$custom_five);
+	$list_custom_one = preg_replace('/[^- \.\:\/\@\_0-9a-zA-Z]/','',$list_custom_one);
+	$list_custom_two = preg_replace('/[^- \.\:\/\@\_0-9a-zA-Z]/','',$list_custom_two);
+	$list_custom_three = preg_replace('/[^- \.\:\/\@\_0-9a-zA-Z]/','',$list_custom_three);
+	$list_custom_four = preg_replace('/[^- \.\:\/\@\_0-9a-zA-Z]/','',$list_custom_four);
+	$list_custom_five = preg_replace('/[^- \.\:\/\@\_0-9a-zA-Z]/','',$list_custom_five);
 	$email_subject = preg_replace('/[^- \.\:\/\@\_0-9a-zA-Z]/','',$email_subject);
 
 	### ALPHA-NUMERIC and underscore and dash and slash and at and dot and pound and star
@@ -14656,7 +14673,7 @@ if ($ADD==411)
 
 				echo "<br><B>"._QXZ("LIST MODIFIED").": $list_id</B>\n";
 
-				$stmt="UPDATE vicidial_lists set list_name='$list_name',campaign_id='$campaign_id',active='$active',list_description='$list_description',list_changedate='$SQLdate',reset_time='$reset_time',agent_script_override='$agent_script_override',campaign_cid_override='$campaign_cid_override',am_message_exten_override='$am_message_exten_override',drop_inbound_group_override='$drop_inbound_group_override',xferconf_a_number='$xferconf_a_number',xferconf_b_number='$xferconf_b_number',xferconf_c_number='$xferconf_c_number',xferconf_d_number='$xferconf_d_number',xferconf_e_number='$xferconf_e_number',web_form_address='" . mysqli_real_escape_string($link, $web_form_address) . "',web_form_address_two='" . mysqli_real_escape_string($link, $web_form_address_two) . "',time_zone_setting='$time_zone_setting',inventory_report='$inventory_report',expiration_date='$expiration_date',na_call_url='" . mysqli_real_escape_string($link, $na_call_url) . "',local_call_time='$local_call_time',web_form_address_three='" . mysqli_real_escape_string($link, $web_form_address_three) . "',status_group_id='$status_group_id',user_new_lead_limit='$user_new_lead_limit' where list_id='$list_id';";
+				$stmt="UPDATE vicidial_lists set list_name='$list_name',campaign_id='$campaign_id',active='$active',list_description='$list_description',list_changedate='$SQLdate',reset_time='$reset_time',agent_script_override='$agent_script_override',campaign_cid_override='$campaign_cid_override',am_message_exten_override='$am_message_exten_override',drop_inbound_group_override='$drop_inbound_group_override',xferconf_a_number='$xferconf_a_number',xferconf_b_number='$xferconf_b_number',xferconf_c_number='$xferconf_c_number',xferconf_d_number='$xferconf_d_number',xferconf_e_number='$xferconf_e_number',web_form_address='" . mysqli_real_escape_string($link, $web_form_address) . "',web_form_address_two='" . mysqli_real_escape_string($link, $web_form_address_two) . "',time_zone_setting='$time_zone_setting',inventory_report='$inventory_report',expiration_date='$expiration_date',na_call_url='" . mysqli_real_escape_string($link, $na_call_url) . "',local_call_time='$local_call_time',web_form_address_three='" . mysqli_real_escape_string($link, $web_form_address_three) . "',status_group_id='$status_group_id',user_new_lead_limit='$user_new_lead_limit',custom_one='$list_custom_one',custom_two='$list_custom_two',custom_three='$list_custom_three',custom_four='$list_custom_four',custom_five='$list_custom_five' where list_id='$list_id';";
 				$rslt=mysql_to_mysqli($stmt, $link);
 
 				## QC Addition for Audited Comments
@@ -25168,7 +25185,7 @@ if ($ADD==311)
 		echo "<TABLE><TR><TD>\n";
 		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-		$stmt="SELECT vicidial_lists.list_id,list_name,campaign_id,active,list_description,list_changedate,list_lastcalldate,reset_time,agent_script_override,campaign_cid_override,am_message_exten_override,drop_inbound_group_override,xferconf_a_number,xferconf_b_number,xferconf_c_number,xferconf_d_number,xferconf_e_number,web_form_address,web_form_address_two,time_zone_setting,inventory_report,IFNULL(audit_comments,0),expiration_date,DATE_FORMAT(expiration_date,'%Y%m%d'),na_call_url,local_call_time,web_form_address_three,status_group_id,user_new_lead_limit from vicidial_lists left outer join vicidial_lists_custom on vicidial_lists.list_id=vicidial_lists_custom.list_id where vicidial_lists.list_id='$list_id' $LOGallowed_campaignsSQL;";
+		$stmt="SELECT vicidial_lists.list_id,list_name,campaign_id,active,list_description,list_changedate,list_lastcalldate,reset_time,agent_script_override,campaign_cid_override,am_message_exten_override,drop_inbound_group_override,xferconf_a_number,xferconf_b_number,xferconf_c_number,xferconf_d_number,xferconf_e_number,web_form_address,web_form_address_two,time_zone_setting,inventory_report,IFNULL(audit_comments,0),expiration_date,DATE_FORMAT(expiration_date,'%Y%m%d'),na_call_url,local_call_time,web_form_address_three,status_group_id,user_new_lead_limit,custom_one, custom_two, custom_three, custom_four, custom_five from vicidial_lists left outer join vicidial_lists_custom on vicidial_lists.list_id=vicidial_lists_custom.list_id where vicidial_lists.list_id='$list_id' $LOGallowed_campaignsSQL;";
 
 		$rslt=mysql_to_mysqli($stmt, $link);
                 if ($DB) {echo "$stmt\n";}
@@ -25201,6 +25218,11 @@ if ($ADD==311)
 		$web_form_address_three =	$row[26];
 		$status_group_id =			$row[27];
 		$user_new_lead_limit =		$row[28];
+		$list_custom_one =          $row[29];
+		$list_custom_two =          $row[30];
+		$list_custom_three =        $row[31];
+		$list_custom_four =         $row[32];
+		$list_custom_five =         $row[33];
 
 		# grab names of global statuses and statuses in the selected campaign
 		$stmt="SELECT status,status_name,selectable,human_answered,category,sale,dnc,customer_contact,not_interested,unworkable,scheduled_callback,completed,min_sec,max_sec,answering_machine from vicidial_statuses order by status;";
@@ -25453,7 +25475,13 @@ if ($ADD==311)
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Inventory Report").": </td><td align=left><select size=1 name=inventory_report><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='$inventory_report' SELECTED>$inventory_report</option></select>$NWB#lists-inventory_report$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Time Zone Setting").": </td><td align=left><select size=1 name=time_zone_setting><option value='COUNTRY_AND_AREA_CODE'>"._QXZ("COUNTRY_AND_AREA_CODE")."</option><option value='POSTAL_CODE'>"._QXZ("POSTAL_CODE")."</option><option value='NANPA_PREFIX'>"._QXZ("NANPA_PREFIX")."</option><option value='OWNER_TIME_ZONE_CODE'>"._QXZ("OWNER_TIME_ZONE_CODE")."</option><option value='$time_zone_setting' SELECTED>"._QXZ("$time_zone_setting")."</option></select>$NWB#lists-time_zone_setting$NWE</td></tr>\n";
-
+		
+		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Custom 1").": </td><td align=left><input type=text name=list_custom_one   size=30 maxlength=100 value=\"$list_custom_one\">$NWB#list_custom$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Custom 2").": </td><td align=left><input type=text name=list_custom_two   size=30 maxlength=100 value=\"$list_custom_two\">$NWB#list_custom$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Custom 3").": </td><td align=left><input type=text name=list_custom_three size=30 maxlength=100 value=\"$list_custom_three\">$NWB#list_custom$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Custom 4").": </td><td align=left><input type=text name=list_custom_four  size=30 maxlength=100 value=\"$list_custom_four\">$NWB#list_custom$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Custom 5").": </td><td align=left><input type=text name=list_custom_five  size=30 maxlength=100 value=\"$list_custom_five\">$NWB#list_custom$NWE</td></tr>\n";
+		
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=center colspan=2><input type=submit name=SUBMIT value='"._QXZ("SUBMIT")."'></td></tr>\n";
 		echo "</TABLE></center>\n";
@@ -40716,7 +40744,7 @@ echo _QXZ("Patch-Level"). ": $FLY_patch_level<br>";
 if (!preg_match("/_BUILD_/",$SShosted_settings))
     {echo "<BR><a href=\"$PHP_SELF?ADD=999995\"><font color=white>&copy; 2017 ViciDial Group</font></a><BR><img src=\"images/pixel.gif\">";}
 echo "<BR><a href=\"$PHP_SELF?ADD=999995\"><font color=white>&copy; 2017 flyingpenguin.de UG</font></a><BR><img src=\"images/pixel.gif\">";
-echo "<BR><BR><a href=\"/vicidial/changelog.html\" target=\"_blank\" type=\"text/html\"><font color=white>&copy; Changelog</font></a><BR><img src=\"images/pixel.gif\">";
+echo "<BR><BR><a href=\"/vicidial/changelog.php\" target=\"_blank\" type=\"text/html\"><font color=white>Changelog (fp)</font></a><BR><img src=\"images/pixel.gif\">";
 echo "</FONT>\n";
 ?>
 

@@ -1,4 +1,4 @@
-CROSS-CLUSTER COMMUNICATION	Started: 2011-05-27	Updated: 2017-06-09
+CROSS-CLUSTER COMMUNICATION	Started: 2011-05-27	Updated: 2017-08-09
 
 
 --------------------------------
@@ -11,7 +11,7 @@ Below is a description of a simple cross-cluster option, which is to send lead d
 
 - This call will go through an IAX trunk between the two systems into an internal DID on the destination cluster
 	Set up an IAX "carrier" on the originating cluster and an IAX "phone" on the destination cluster to link the two together.
-		(Note: the phone entry on the destination cluster must have the Outbound CallerID and Fullname fields blank)
+		(Note: the phone entry on the destination cluster must have the Outbound CallerID and Fullname fields blank, and the Phone Type must have "trunk" in it)
 	The destination phone entry needs to use "trunkinbound" as it's phone and exten context
 
 - Agent on the originating cluster will do a blind-transfer or dial-with-customer to a custom dialplan number that goes to the destination cluster

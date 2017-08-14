@@ -1016,7 +1016,12 @@ na_call_url TEXT,
 local_call_time VARCHAR(10) NOT NULL DEFAULT 'campaign',
 web_form_address_three TEXT,
 status_group_id VARCHAR(20) default '',
-user_new_lead_limit SMALLINT(5) default '-1'
+user_new_lead_limit SMALLINT(5) default '-1',
+custom_one VARCHAR(100) default '',
+custom_two VARCHAR(100) default '',
+custom_three VARCHAR(100) default '',
+custom_four VARCHAR(100) default '',
+custom_five VARCHAR(100) default ''
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_statuses (
@@ -3980,6 +3985,9 @@ CREATE TABLE vicidial_campaign_hour_counts_archive LIKE vicidial_campaign_hour_c
 
 CREATE TABLE vicidial_carrier_hour_counts_archive LIKE vicidial_carrier_hour_counts;
 
+CREATE TABLE user_call_log_archive LIKE user_call_log;
+ALTER TABLE user_call_log_archive MODIFY user_call_log_id INT(9) UNSIGNED NOT NULL;
+
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;
 
@@ -4054,4 +4062,4 @@ UPDATE vicidial_configuration set value='1766' where name='qc_database_version';
 
 UPDATE system_settings set vdc_agent_api_active='1';
 
-UPDATE system_settings SET db_schema_version='1512',db_schema_update_date=NOW(),reload_timestamp=NOW();
+UPDATE system_settings SET db_schema_version='1513',db_schema_update_date=NOW(),reload_timestamp=NOW();
