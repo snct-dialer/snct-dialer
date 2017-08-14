@@ -13,6 +13,8 @@
     + Fix for Cross-Cluster phones where phone_type has "trunk" in it.
     + Added phone and province to detail output, fixed ASCII display issues.
   * Add new fields Custom 1 - 5 to lists.
+  * Add upstream Rev. 2802:
+    + Some changes at www/vicidial/fcstats_detail.php.
 
 2.25.4
 
