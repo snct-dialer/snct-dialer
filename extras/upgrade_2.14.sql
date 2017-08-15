@@ -354,5 +354,7 @@ ALTER TABLE vicidial_lists ADD custom_three VARCHAR(100) default '';
 ALTER TABLE vicidial_lists ADD custom_four VARCHAR(100) default '';
 ALTER TABLE vicidial_lists ADD custom_five VARCHAR(100) default '';
 
+ALTER TABLE system_settings ADD ticket_mail VARCHAR(100) default '';
+
 UPDATE system_settings SET db_schema_version='1513',db_schema_update_date=NOW() where db_schema_version < 1513;
 
