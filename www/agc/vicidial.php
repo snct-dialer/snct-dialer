@@ -871,6 +871,22 @@ if ( ($SSweb_logo!='default_new') and ($SSweb_logo!='default_old') )
 	}
 ##### END Define colors and logo #####
 
+### Get EmailAdresses ###
+
+
+$MailReturn = TestTicketMail($VD_login, 0, $link);
+if($MailReturn != 0) {
+	$MailTo = TestTicketMail($VD_login, 1, $link);
+	$MailFrom = TestTicketMail($VD_login, 2, $link);
+}
+
+echo "Ret :" . $MailReturn . PHP_EOL;
+echo "To  :" . $MailTo . PHP_EOL;
+echo "From:" . $MailFrom . PHP_EOL;
+echo "User:" . $VD_login . PHP_EOL;
+
+### End Get EmailAdresses ###
+	
 $hide_gender=0;
 $US='_';
 $CL=':';
@@ -3705,7 +3721,7 @@ $MNwidth =  ($MASTERwidth + 330);	# 760 - main frame
 $XFwidth =  ($MASTERwidth + 320);	# 750 - transfer/conference
 $HCwidth =  ($MASTERwidth + 310);	# 740 - hotkeys and callbacks
 $CQwidth =  ($MASTERwidth + 300);	# 730 - calls in queue listings
-$AMwidth =  ($MASTERwidth + 270);	# 700 - refresh links
+$AMwidth =  ($MASTERwidth + 250);	# 700 - refresh links
 $SCwidth =  ($MASTERwidth + 230);	# 670 - live call seconds counter, sidebar link
 $PDwidth =  ($MASTERwidth + 210);	# 650 - preset-dial links
 $MUwidth =  ($MASTERwidth + 180);	# 610 - agent mute
@@ -3734,12 +3750,14 @@ $BPheight =  ($MASTERheight - 250);	# 50 - bottom buffer, Agent Xfer Span
 $SCheight =	 49;	# 49 - seconds on call display
 $SFheight =	 65;	# 65 - height of the script and form contents
 $SRheight =	 69;	# 69 - height of the script and form refrech links
+$MAheight =	 84;	# 84 - height of the ticket mail link
 $CHheight =  ($JS_browser_height - 50);
 if ($webphone_location == 'bar') 
 	{
 	$SCheight = ($SCheight + $webphone_height);
 #	$SFheight = ($SFheight + $webphone_height);
 	$SRheight = ($SRheight + $webphone_height);
+	$MAheight = ($MAheight + $webphone_height);
 	}
 $AVTheight = '0';
 if ($is_webphone) {$AVTheight = '20';}
@@ -12546,11 +12564,10 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 // ################################################################################
 // Update vicidial_list lead record with all altered values from form
-	function CustomerData_update(commitclick)
+	function MailCustomerData(commitclick)
 		{
 		if (commitclick=='YES')
 			{button_click_log = button_click_log + "" + SQLdate + "-----customer_info_commit---" + commitclick + "|";}
-		updatelead_complete=0;
 		if ( (OtherTab == '1') && (comments_all_tabs == 'ENABLED') )
 			{
 			var test_otcx = document.vicidial_form.other_tab_comments.value;
@@ -12585,49 +12602,114 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 			}
 		if (xmlhttp) 
 			{ 
-			if (hide_gender < 1)
-				{
-				var genderIndex = document.getElementById("gender_list").selectedIndex;
-				var genderValue =  document.getElementById('gender_list').options[genderIndex].value;
-				document.vicidial_form.gender.value = genderValue;
-				}
 
-			VLupdate_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&campaign=" + campaign +  "&ACTION=updateLEAD&format=text&user=" + user + "&pass=" + pass + 
-			"&lead_id=" + encodeURIComponent(document.vicidial_form.lead_id.value) + 
-			"&vendor_lead_code=" + encodeURIComponent(document.vicidial_form.vendor_lead_code.value) + 
-			"&phone_number=" + encodeURIComponent(document.vicidial_form.phone_number.value) + 
-			"&title=" + encodeURIComponent(document.vicidial_form.title.value) + 
-			"&first_name=" + encodeURIComponent(document.vicidial_form.first_name.value) + 
-			"&middle_initial=" + encodeURIComponent(document.vicidial_form.middle_initial.value) + 
-			"&last_name=" + encodeURIComponent(document.vicidial_form.last_name.value) + 
-			"&address1=" + encodeURIComponent(document.vicidial_form.address1.value) + 
-			"&address2=" + encodeURIComponent(document.vicidial_form.address2.value) + 
-			"&address3=" + encodeURIComponent(document.vicidial_form.address3.value) + 
-			"&city=" + encodeURIComponent(document.vicidial_form.city.value) + 
-			"&state=" + encodeURIComponent(document.vicidial_form.state.value) + 
-			"&province=" + encodeURIComponent(document.vicidial_form.province.value) + 
-			"&postal_code=" + encodeURIComponent(document.vicidial_form.postal_code.value) + 
-			"&country_code=" + encodeURIComponent(document.vicidial_form.country_code.value) + 
-			"&gender=" + encodeURIComponent(document.vicidial_form.gender.value) + 
-			"&date_of_birth=" + encodeURIComponent(document.vicidial_form.date_of_birth.value) + 
-			"&alt_phone=" + encodeURIComponent(document.vicidial_form.alt_phone.value) + 
-			"&email=" + encodeURIComponent(document.vicidial_form.email.value) + 
-			"&security_phrase=" + encodeURIComponent(document.vicidial_form.security_phrase.value) + 
-			"&comments=" + REGcommentsRESULT;
-			xmlhttp.open('POST', 'vdc_db_query.php'); 
-			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(VLupdate_query); 
-			xmlhttp.onreadystatechange = function() 
-				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
-					{
-					updatelead_complete=1;
-				//	alert(xmlhttp.responseText);
-					}
-				}
+			var MailText = "Lead ID = "  + encodeURIComponent(document.vicidial_form.lead_id.value) + "\n\r" + "Comments = " + REGcommentsRESULT + "\n\r";
+			var MF = '<?php echo $MailFrom ?>';
+			var MT = '<?php echo $MailTo ?>';
+
+			var EMailPara = "?MailFrom=" + MF + "&MailTo=" + MT + "&MailTitle=Lead Report" + "&MailText=" + MailText;
+
+			var fenster = window.open("SendMail.php" + EMailPara, "Email", "width=400,height=400,top=100,left=100");
+//			xmlhttp.open('POST', 'SendMail.php'); 
+			
+//			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
+//			xmlhttp.send(EMailPara); 
+//			xmlhttp.onreadystatechange = function() 
+//				{ 
+//				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+	//				{
+			//		updatelead_complete=1;
+			//	alert(xmlhttp.responseText);
+//					}
+//				}
 			delete xmlhttp;
 			}
 		}
+
+	// ################################################################################
+	// Update vicidial_list lead record with all altered values from form
+		function CustomerData_update(commitclick)
+			{
+			if (commitclick=='YES')
+				{button_click_log = button_click_log + "" + SQLdate + "-----customer_info_commit---" + commitclick + "|";}
+			updatelead_complete=0;
+			if ( (OtherTab == '1') && (comments_all_tabs == 'ENABLED') )
+				{
+				var test_otcx = document.vicidial_form.other_tab_comments.value;
+				if (test_otcx.length > 0)
+					{document.vicidial_form.comments.value = document.vicidial_form.other_tab_comments.value}
+				}
+			var REGcommentsAMP = new RegExp('&',"g");
+			var REGcommentsQUES = new RegExp("\\?","g");
+			var REGcommentsPOUND = new RegExp("\\#","g");
+			var REGcommentsRESULT = document.vicidial_form.comments.value.replace(REGcommentsAMP, "--AMP--");
+			REGcommentsRESULT = REGcommentsRESULT.replace(REGcommentsQUES, "--QUES--");
+			REGcommentsRESULT = REGcommentsRESULT.replace(REGcommentsPOUND, "--POUND--");
+
+			var xmlhttp=false;
+			/*@cc_on @*/
+			/*@if (@_jscript_version >= 5)
+			// JScript gives us Conditional compilation, we can cope with old IE versions.
+			// and security blocked creation of the objects.
+			 try {
+			  xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+			 } catch (e) {
+			  try {
+			   xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+			  } catch (E) {
+			   xmlhttp = false;
+			  }
+			 }
+			@end @*/
+			if (!xmlhttp && typeof XMLHttpRequest!='undefined')
+				{
+				xmlhttp = new XMLHttpRequest();
+				}
+			if (xmlhttp) 
+				{ 
+				if (hide_gender < 1)
+					{
+					var genderIndex = document.getElementById("gender_list").selectedIndex;
+					var genderValue =  document.getElementById('gender_list').options[genderIndex].value;
+					document.vicidial_form.gender.value = genderValue;
+					}
+
+				VLupdate_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&campaign=" + campaign +  "&ACTION=updateLEAD&format=text&user=" + user + "&pass=" + pass + 
+				"&lead_id=" + encodeURIComponent(document.vicidial_form.lead_id.value) + 
+				"&vendor_lead_code=" + encodeURIComponent(document.vicidial_form.vendor_lead_code.value) + 
+				"&phone_number=" + encodeURIComponent(document.vicidial_form.phone_number.value) + 
+				"&title=" + encodeURIComponent(document.vicidial_form.title.value) + 
+				"&first_name=" + encodeURIComponent(document.vicidial_form.first_name.value) + 
+				"&middle_initial=" + encodeURIComponent(document.vicidial_form.middle_initial.value) + 
+				"&last_name=" + encodeURIComponent(document.vicidial_form.last_name.value) + 
+				"&address1=" + encodeURIComponent(document.vicidial_form.address1.value) + 
+				"&address2=" + encodeURIComponent(document.vicidial_form.address2.value) + 
+				"&address3=" + encodeURIComponent(document.vicidial_form.address3.value) + 
+				"&city=" + encodeURIComponent(document.vicidial_form.city.value) + 
+				"&state=" + encodeURIComponent(document.vicidial_form.state.value) + 
+				"&province=" + encodeURIComponent(document.vicidial_form.province.value) + 
+				"&postal_code=" + encodeURIComponent(document.vicidial_form.postal_code.value) + 
+				"&country_code=" + encodeURIComponent(document.vicidial_form.country_code.value) + 
+				"&gender=" + encodeURIComponent(document.vicidial_form.gender.value) + 
+				"&date_of_birth=" + encodeURIComponent(document.vicidial_form.date_of_birth.value) + 
+				"&alt_phone=" + encodeURIComponent(document.vicidial_form.alt_phone.value) + 
+				"&email=" + encodeURIComponent(document.vicidial_form.email.value) + 
+				"&security_phrase=" + encodeURIComponent(document.vicidial_form.security_phrase.value) + 
+				"&comments=" + REGcommentsRESULT;
+				xmlhttp.open('POST', 'vdc_db_query.php'); 
+				xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
+				xmlhttp.send(VLupdate_query); 
+				xmlhttp.onreadystatechange = function() 
+					{ 
+					if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+						{
+						updatelead_complete=1;
+					//	alert(xmlhttp.responseText);
+						}
+					}
+				delete xmlhttp;
+				}
+			}
 
 // ################################################################################
 // Generate the Call Disposition Chooser panel
@@ -16894,6 +16976,7 @@ function phone_number_format(formatphone) {
 			hideDiv('ViewCommentsBox');
 			hideDiv('MainPanel');
 			hideDiv('MainCommit');
+			hideDiv('MailCommit');
 			hideDiv('ScriptPanel');
 			hideDiv('ScriptRefresH');
 			hideDiv('EmailPanel');
@@ -18050,6 +18133,10 @@ function phone_number_format(formatphone) {
 		hideDiv('InternalChatPanel');
 		showDiv('MainPanel');
 		showDiv('MainCommit');
+		var Mt = <?php echo $MailReturn ?>;
+		if(Mt == 1) {
+			showDiv('MailCommit');
+		}
 		ShoWGenDerPulldown();
 
 		if (resumevar != 'NO')
@@ -18118,6 +18205,7 @@ function phone_number_format(formatphone) {
 			showDiv('OtherTabCommentsSpan');
 			}
 		hideDiv('MainCommit');
+		hideDiv('MailCommit');
 		hideDiv('FormPanel');
 		hideDiv('FormRefresH');
 		hideDiv('EmailPanel');
@@ -19000,6 +19088,10 @@ if ($agent_display_dialable_leads > 0)
 
 <span style="position:absolute;left:<?php echo $AMwidth ?>px;top:<?php echo $SRheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="MainCommit">
 <a href="#" onclick="CustomerData_update('YES')"><font class="body_small"><?php echo _QXZ("commit"); ?></font></a>
+</span>
+
+<span style="position:absolute;left:<?php echo $AMwidth ?>px;top:<?php echo $MAheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="MailCommit">
+<a href="#" onclick="MailCustomerData('YES')"><font class="body_small"><?php echo _QXZ("Ticket Mail"); ?></font></a>
 </span>
 
 <span style="position:absolute;left:154px;top:<?php echo $SFheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="ScriptPanel">

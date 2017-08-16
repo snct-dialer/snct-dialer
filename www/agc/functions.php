@@ -2342,6 +2342,7 @@ function mysql_to_mysqli($stmt, $link) {
 }
 
 
+
 # function to print/echo content, options for length, alignment and ordered internal variables are included
 function _QXZ($English_text, $sprintf=0, $align="l", $v_one='', $v_two='', $v_three='', $v_four='', $v_five='', $v_six='', $v_seven='', $v_eight='', $v_nine='')
 	{
@@ -2401,4 +2402,50 @@ function _QXZ($English_text, $sprintf=0, $align="l", $v_one='', $v_two='', $v_th
 	return $English_text;
 	}
 
+function TestTicketMail($Agent, $type, $link) {
+	
+	$return = 0;
+	
+	$stmt = "SELECT ticket_mail FROM `system_settings`;";
+	$rslt=mysqli_query($link, $stmt);
+	if(! $rslt ) {  echo "Error: " .  mysqli_error($link) . PHP_EOL; }
+	if ($DB) {echo "$stmt\n";}
+	$TT_ct = mysqli_num_rows($rslt);
+	if ($TT_ct > 0)
+	{
+		$row=mysqli_fetch_all($rslt, MYSQLI_BOTH);
+		$Ticket_Mail = $row[0];
+		if($Ticket_Mail[0] != "") {
+			$return = 1;
+		}
+	}
+	
+	if($return == 1) {
+		$return = 0;
+		$stmt = "SELECT `email` FROM `vicidial_users` WHERE user = '$Agent';";
+		$rslt=mysqli_query($link, $stmt);
+		if(! $rslt ) {  echo "Error: " .  mysqli_error($link) . PHP_EOL; }
+		if ($DB) {echo "$stmt\n";}
+		$AM_ct = mysqli_num_rows($rslt);
+		if ($AM_ct > 0)
+		{
+			$row=mysqli_fetch_all($rslt, MYSQLI_BOTH);
+			$Agent_Mail = $row[0];
+			if($Agent_Mail[0] != "") {
+				$return = 1;
+			}
+		}
+	}
+	
+	if($type == 0) {
+		return $return;
+	}
+	if($type == 1) {
+		return $Ticket_Mail[0];
+	}
+	if($type == 2) {
+		return $Agent_Mail[0];
+	}
+}
+	
 ?>

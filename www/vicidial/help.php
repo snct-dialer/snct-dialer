@@ -5726,6 +5726,15 @@ FR_SPAC 00 00 00 00 00 - <?php echo _QXZ("France space separated phone number");
 <BR>
 <B><?php echo _QXZ("Campaign pause"); ?> -</B><?php echo _QXZ("Enable / Disable Campaign selection at pause screen."); ?>
 
+<BR>
+<A NAME="company_name">
+<BR>
+<B><?php echo _QXZ("Company Name"); ?> -</B><?php echo _QXZ("Set the Browser Title."); ?>
+
+<BR>
+<A NAME="ticket_mail">
+<BR>
+<B><?php echo _QXZ("Ticket Mail Address"); ?> -</B><?php echo _QXZ("Set the Mailaddress to send Mails into a Ticketsystem."); ?>
 
 
 
