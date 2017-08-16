@@ -5,6 +5,7 @@
     + Add field ticket_mail to system_settings
     + Add link "Ticket Mail" to agent screen
     + New File SendMail.php
+  * Release 2.25.6 2017-08-16
 
 2.25.5
 
