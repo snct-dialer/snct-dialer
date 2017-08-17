@@ -123,10 +123,11 @@
 # 170609-1107 - Added ccc_lead_info function
 # 170615-0006 - Added DIAL status for manual dial agent calls that have not been answered, to 4 functions
 # 170713-2312 - Fix for issue #1028
+# 170815-1315 - Added HTTP error code 418
 #
 
-$version = '2.14-99';
-$build = '170713-2312';
+$version = '2.14-100';
+$build = '170815-1315';
 $api_url_log = 0;
 
 $startMS = microtime();
@@ -707,6 +708,26 @@ if ($function == 'version')
 ################################################################################
 ### END version
 ################################################################################
+
+
+
+
+################################################################################
+### BEGIN - coffee/teapot 418 - reject coffee requests
+################################################################################
+if ( ($function == 'coffee') or ($function == 'start_coffee') or ($function == 'make_coffee') or ($function == 'brew_coffee') )
+	{
+	$data = _QXZ("Coffee").": $function|Error 418 I'm a teapot";
+	$result = _QXZ("ERROR");
+	Header("HTTP/1.0 418 I'm a teapot");
+	echo "$data";
+	api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+	exit;
+	}
+################################################################################
+### END - coffee/teapot
+################################################################################
+
 
 
 
@@ -10412,7 +10433,8 @@ function api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$val
 			}
 
 		$NOW_TIME = date("Y-m-d H:i:s");
-		$stmt="INSERT INTO vicidial_api_log set user='$user',agent_user='$agent_user',function='$function',value='$value',result='$result',result_reason='$result_reason',source='$source',data='$data',api_date='$NOW_TIME',api_script='$api_script',run_time='$TOTALrun',webserver='$webserver_id',api_url='$url_id';";
+		$data = preg_replace("/\"/","'",$data);
+		$stmt="INSERT INTO vicidial_api_log set user='$user',agent_user='$agent_user',function='$function',value='$value',result=\"$result\",result_reason='$result_reason',source='$source',data=\"$data\",api_date='$NOW_TIME',api_script='$api_script',run_time='$TOTALrun',webserver='$webserver_id',api_url='$url_id';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$ALaffected_rows = mysqli_affected_rows($link);
 		$api_id = mysqli_insert_id($link);
