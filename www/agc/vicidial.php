@@ -880,10 +880,12 @@ if($MailReturn != 0) {
 	$MailFrom = TestTicketMail($VD_login, 2, $link);
 }
 
-echo "Ret :" . $MailReturn . PHP_EOL;
-echo "To  :" . $MailTo . PHP_EOL;
-echo "From:" . $MailFrom . PHP_EOL;
-echo "User:" . $VD_login . PHP_EOL;
+if($DB) {
+    echo "Ret :" . $MailReturn . PHP_EOL;
+    echo "To  :" . $MailTo . PHP_EOL;
+    echo "From:" . $MailFrom . PHP_EOL;
+    echo "User:" . $VD_login . PHP_EOL;
+}
 
 ### End Get EmailAdresses ###
 	
