@@ -561,10 +561,11 @@
 # 170710-1802 - Added logging of clicks on webform buttons
 # 170725-2147 - Added counter(aec) to agent_events calls
 # 170808-1014 - Added more qualifiers for Hungup Xfer function to be triggered
+# 170816-2336 - Added ask post-call survey feature for in-group calls
 #
 
-$version = '2.14-531c';
-$build = '170808-1014';
+$version = '2.14-532c';
+$build = '170816-2336';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -4595,6 +4596,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var transfer_panel_open=0;
 	var last_conf_channel_count=1;
 	var aec=0;
+	var inbound_post_call_survey='';
+	var inbound_survey_participate='';
 	var DiaLControl_auto_HTML = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready','','','','','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_paused.gif") ?>\" border=\"0\" alt=\"You are paused\" /></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause','','','','','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_active.gif") ?>\" border=\"0\" alt=\"You are active\" /></a>";
 	var DiaLControl_auto_HTML_OFF = "<img src=\"./images/<?php echo _QXZ("vdc_LB_blank_OFF.gif") ?>\" border=\"0\" alt=\"pause button disabled\" />";
@@ -9652,6 +9655,8 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 				RefresHScript('CLEAR');
 				ViewComments('OFF','OFF');
 				last_call_date='';
+				inbound_post_call_survey='';
+				inbound_survey_participate='';
 			//	document.getElementById('vcFormIFrame').src='./vdc_form_display.php?lead_id=&list_id=&stage=WELCOME';
 				}
 			}
@@ -10346,6 +10351,8 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								{VDIC_web_form_address_three = VDIC_data_VDIG[34];}
 							if (VDIC_data_VDIG[35].length > 1)
 								{CalL_ScripT_color = VDIC_data_VDIG[35];}
+							inbound_post_call_survey	= VDIC_data_VDIG[36];
+							inbound_survey_participate	= VDIC_data_VDIG[37];
 
 							var VDIC_data_VDFR=check_VDIC_array[3].split("|");
 							if ( (VDIC_data_VDFR[1].length > 1) && (VDCL_fronter_display == 'Y') )
@@ -10681,8 +10688,6 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
                                 document.getElementById("ivrParkControl").innerHTML ="<a href=\"#\" onclick=\"mainxfer_send_redirect('ParKivr','" + lastcustchannel + "','" + lastcustserverip + "','','','','YES');return false;\"><img src=\"./images/<?php echo _QXZ("vdc_LB_ivrparkcall.gif"); ?>\" border=\"0\" alt=\"IVR Park Call\" /></a>";
 								}
 
-                            document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup('','','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_hangupcustomer.gif"); ?>\" border=\"0\" alt=\"Hangup Customer\" /></a>";
-
                             document.getElementById("XferControl").innerHTML = "<a href=\"#\" onclick=\"ShoWTransferMain('ON','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_transferconf.gif"); ?>\" border=\"0\" alt=\"Transfer - Conference\" /></a>";
 
                             document.getElementById("LocalCloser").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRLOCAL','" + lastcustchannel + "','" + lastcustserverip + "','','','','YES');return false;\"><img src=\"./images/<?php echo _QXZ("vdc_XB_localcloser.gif"); ?>\" border=\"0\" alt=\"LOCAL CLOSER\" style=\"vertical-align:middle\" /></a>";
@@ -10727,6 +10732,18 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 									{quick_transfer_button_orig = document.vicidial_form.xfernumber.value;}
 
                                 document.getElementById("QuickXfer").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRBLIND','" + lastcustchannel + "','" + lastcustserverip + "','','','" + quick_transfer_button_locked + "','YES');return false;\"><img src=\"./images/<?php echo _QXZ("vdc_LB_quickxfer.gif"); ?>\" border=\"0\" alt=\"QUICK TRANSFER\" /></a>";
+								}
+
+							if ( (inbound_post_call_survey=='ENABLED') && (inbound_survey_participate=='Y') )
+								{
+								document.vicidial_form.xfernumber.value = '83068888888888883999';
+								document.vicidial_form.xferoverride.checked=true;
+								document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRBLIND','" + lastcustchannel + "','" + lastcustserverip + "','','','','YES');return false;\"><img src=\"./images/<?php echo _QXZ("vdc_LB_hangupcustomer.gif"); ?>\" border=\"0\" alt=\"Hangup Customer\" /></a>";
+								button_click_log = button_click_log + "" + SQLdate + "-----AskInGroupSurvey---" + inbound_post_call_survey + " " + inbound_survey_participate + " " + document.vicidial_form.xfernumber.value + "|";
+								}
+							else
+								{
+								document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup('','','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_hangupcustomer.gif"); ?>\" border=\"0\" alt=\"Hangup Customer\" /></a>";
 								}
 
 							if (custom_3way_button_transfer_enabled > 0)
@@ -13494,6 +13511,8 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 					source_id='';
 					entry_date='';
 					last_call_date='';
+					inbound_post_call_survey='';
+					inbound_survey_participate='';
 					if (manual_auto_next > 0)
 						{manual_auto_next_trigger=1;   manual_auto_next_count=manual_auto_next;}
 					if (agent_display_fields.match(adfREGentry_date))

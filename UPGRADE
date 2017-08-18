@@ -182,6 +182,10 @@ OTHER CHANGES:
 42. Added AST_agent_wait_check.pl script to send out emails if there are agents
 	waiting more than X seconds.
 
+43. Added In-Group option to ask callers if they would take a survey after
+	agent has handled their call. Overrides agent HANGUP CUSTOMER button
+	to send call to survey instead.
+
 
 
 

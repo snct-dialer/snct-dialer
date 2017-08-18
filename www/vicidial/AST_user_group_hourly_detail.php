@@ -9,6 +9,7 @@
 # CHANGES
 # 160826-0054 - First build
 # 170409-1542 - Added IP List validation code
+# 170816-2026 - Added HTML formatting
 #
 
 $startMS = microtime();
@@ -43,6 +44,8 @@ if (isset($_GET["DB"]))						{$DB=$_GET["DB"];}
 	elseif (isset($_POST["DB"]))			{$DB=$_POST["DB"];}
 if (isset($_GET["submit"]))					{$submit=$_GET["submit"];}
 	elseif (isset($_POST["submit"]))		{$submit=$_POST["submit"];}
+if (isset($_GET["report_display_type"]))			{$report_display_type=$_GET["report_display_type"];}
+	elseif (isset($_POST["report_display_type"]))	{$report_display_type=$_POST["report_display_type"];}
 if (isset($_GET["SUBMIT"]))					{$SUBMIT=$_GET["SUBMIT"];}
 	elseif (isset($_POST["SUBMIT"]))		{$SUBMIT=$_POST["SUBMIT"];}
 if (isset($_GET["search_archived_data"]))			{$search_archived_data=$_GET["search_archived_data"];}
@@ -363,7 +366,44 @@ else
 	$group_SQL = "and campaign_id IN($group_SQL)";
 	}
 
+##### BEGIN Define colors and logo #####
+$SSmenu_background='015B91';
+$SSframe_background='D9E6FE';
+$SSstd_row1_background='9BB9FB';
+$SSstd_row2_background='B9CBFD';
+$SSstd_row3_background='8EBCFD';
+$SSstd_row4_background='B6D3FC';
+$SSstd_row5_background='FFFFFF';
+$SSalt_row1_background='BDFFBD';
+$SSalt_row2_background='99FF99';
+$SSalt_row3_background='CCFFCC';
 
+$screen_color_stmt="select admin_screen_colors from system_settings";
+$screen_color_rslt=mysql_to_mysqli($screen_color_stmt, $link);
+$screen_color_row=mysqli_fetch_row($screen_color_rslt);
+$agent_screen_colors="$screen_color_row[0]";
+
+if ($agent_screen_colors != 'default')
+	{
+	$asc_stmt = "SELECT menu_background,frame_background,std_row1_background,std_row2_background,std_row3_background,std_row4_background,std_row5_background,alt_row1_background,alt_row2_background,alt_row3_background,web_logo FROM vicidial_screen_colors where colors_id='$agent_screen_colors';";
+	$asc_rslt=mysql_to_mysqli($stmt, $link);
+	$qm_conf_ct = mysqli_num_rows($rslt);
+	if ($qm_conf_ct > 0)
+		{
+		$asc_row=mysqli_fetch_row($asc_rslt);
+		$SSmenu_background =            $asc_row[0];
+		$SSframe_background =           $asc_row[1];
+		$SSstd_row1_background =        $asc_row[2];
+		$SSstd_row2_background =        $asc_row[3];
+		$SSstd_row3_background =        $asc_row[4];
+		$SSstd_row4_background =        $asc_row[5];
+		$SSstd_row5_background =        $asc_row[6];
+		$SSalt_row1_background =        $asc_row[7];
+		$SSalt_row2_background =        $asc_row[8];
+		$SSalt_row3_background =        $asc_row[9];
+		$SSweb_logo =		           $asc_row[10];
+		}
+	}
 
 $LINKbase = "$PHP_SELF?query_date=$query_date&end_date=$end_date&shift=$shift&DB=$DB&user=$user$groupQS&search_archived_data=$search_archived_data&report_display_type=$report_display_type";
 
@@ -404,91 +444,7 @@ if ($file_download < 1)
 	echo "<PRE><FONT SIZE=2>";
 	}
 
-/*
-if (strlen($group[0]) < 1)
-	{
-	echo "";
-	echo _QXZ("PLEASE SELECT A USER AND DATE-TIME BELOW AND CLICK SUBMIT")."\n";
-	echo " "._QXZ("NOTE: stats taken from shift specified")."\n";
-	}
-else
-	{
-	if ($shift == 'AM') 
-		{
-		$time_BEGIN=$AM_shift_BEGIN;
-		$time_END=$AM_shift_END;
-		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}   
-		if (strlen($time_END) < 6) {$time_END = "15:14:59";}
-		}
-	if ($shift == 'PM') 
-		{
-		$time_BEGIN=$PM_shift_BEGIN;
-		$time_END=$PM_shift_END;
-		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "15:15:00";}
-		if (strlen($time_END) < 6) {$time_END = "23:15:00";}
-		}
-	if ($shift == 'ALL') 
-		{
-		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}
-		if (strlen($time_END) < 6) {$time_END = "23:59:59";}
-		}
-	$query_date_BEGIN = "$query_date $time_BEGIN";   
 
-	if (strlen($group[0]) < 1)
-		{
-		echo "";
-		echo _QXZ("PLEASE SELECT A DATE-HOUR AND USER GROUP BELOW AND CLICK SUBMIT")."\n";
-		echo " "._QXZ("NOTE: stats taken from shift specified")."\n";
-		}
-	else
-		{
-		if ($shift == 'AM') 
-			{
-			$time_BEGIN=$AM_shift_BEGIN;
-			$time_END=$AM_shift_END;
-			if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}   
-			if (strlen($time_END) < 6) {$time_END = "15:14:59";}
-			}
-		if ($shift == 'PM') 
-			{
-			$time_BEGIN=$PM_shift_BEGIN;
-			$time_END=$PM_shift_END;
-			if (strlen($time_BEGIN) < 6) {$time_BEGIN = "15:15:00";}
-			if (strlen($time_END) < 6) {$time_END = "23:15:00";}
-			}
-		if ($shift == 'ALL') 
-			{
-			if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}
-			if (strlen($time_END) < 6) {$time_END = "23:59:59";}
-			}
-		$query_date_BEGIN = "$query_date $time_BEGIN";   
-		$query_date_END = "$query_date $time_END";
-
-		if ($file_download < 1)
-			{
-			$ASCII_text.=_QXZ("Agent Days Status Report",24).": $user                     $NOW_TIME ($db_source)\n";
-			$ASCII_text.=_QXZ("Time range").": $query_date_BEGIN "._QXZ("to")." $query_date_END\n\n";
-			}
-		else
-			{
-			$file_output .= _QXZ("Agent Days Status Report",24).": $user                     $NOW_TIME ($db_source)\n";
-			$file_output .= _QXZ("Time range").": $query_date_BEGIN "._QXZ("to")." $query_date_END\n\n";
-			}
-
-		$statuses='-';
-		$statusesTXT='';
-		$statusesHEAD='';
-		$statusesHTML='';
-		$statusesFILE='';
-		$statusesARY[0]='';
-		$j=0;
-		$dates='-';
-		$datesARY[0]='';
-		$date_namesARY[0]='';
-		$k=0;
-		}
-	}
-*/
 
 if ($SUBMIT && $query_date && $start_hour && $end_hour) {
 
@@ -501,6 +457,11 @@ if ($SUBMIT && $query_date && $start_hour && $end_hour) {
 	$ASCII_text .= _QXZ("Time range").": $query_date $start_hour:00:00 "._QXZ("to")." $query_date $end_hour:59:59\n";
 	$ASCII_text .= _QXZ("User groups").": ".implode(', ', $user_group)."\n";
 	$ASCII_text .= _QXZ("Campaigns").": ".implode(', ', $group)."\n\n";
+
+	$HTML_text .= _QXZ("$report_name",24).": $user                     $NOW_TIME ($db_source)\n\n";
+	$HTML_text .= _QXZ("Time range").": $query_date $start_hour:00:00 "._QXZ("to")." $query_date $end_hour:59:59\n";
+	$HTML_text .= _QXZ("User groups").": ".implode(', ', $user_group)."\n";
+	$HTML_text .= _QXZ("Campaigns").": ".implode(', ', $group)."\n\n";
 
 	$stmt="select user_group, substr(event_time, 12,2) as hour, count(distinct user) as ct from ".$vicidial_agent_log_table." where event_time>='$query_date $start_hour:00:00' and event_time<='$query_date $end_hour:59:59' $group_SQL $user_group_SQL group by user_group, hour order by hour, user_group";
 	if ($DB) {$ASCII_text.=$stmt."\n";}
@@ -533,6 +494,16 @@ if ($SUBMIT && $query_date && $start_hour && $end_hour) {
 	$ASCII_title .="| "._QXZ("USER GROUP", 20)." | "._QXZ("AGENTS", 6)." |";
 	$ASCII_total .="|               "._QXZ("TOTALS", 6)." | ".sprintf("%6s", $grand_total)." |";
 
+	$table_columns=2;
+	$HTML_text.="<table border='0' cellpadding='3' cellspacing='1'>";
+	$HTML_text.="<tr bgcolor='#".$SSstd_row1_background."'>";
+	$HTML_text.="<th><font size='2'>"._QXZ("USER GROUP")."</font></th>";
+	$HTML_text.="<th><font size='2'>"._QXZ("AGENTS")."</font></th>";
+
+	$HTML_text2.="<tr bgcolor='#".$SSstd_row1_background."'>";
+	$HTML_text2.="<th><font size='2'>"._QXZ("TOTALS")."</font></th>";
+	$HTML_text2.="<th><font size='2'>".$grand_total."</font></th>";
+
 	$CSV_text.="\""._QXZ("USER GROUP")."\",\""._QXZ("AGENTS")."\"";
 	$CSV_total.="\""._QXZ("TOTALS")."\",\"$grand_total\"";
 
@@ -542,6 +513,10 @@ if ($SUBMIT && $query_date && $start_hour && $end_hour) {
 		$ASCII_title.=date("ha", strtotime("$key1:00"))." |";
 		$ASCII_header.="--------------+";
 		$ASCII_total.=" ".sprintf("%12s", ($hour_array[$key]+0))." |";
+
+		$HTML_text.="<th><font size='2'>".date("ha", strtotime("$key:00"))." to ".date("ha", strtotime("$key1:00"))."</font></th>";
+		$HTML_text2.="<th><font size='2'>".($hour_array[$key]+0)."</font></th>";
+		$table_columns++;
 
 		$CSV_text.=",\"".date("ha", strtotime("$key:00"))." to ".date("ha", strtotime("$key1:00"))."\"";
 		$CSV_total.=",\"".($hour_array[$key]+0)."\"";
@@ -557,17 +532,25 @@ if ($SUBMIT && $query_date && $start_hour && $end_hour) {
 	$ASCII_text.=$ASCII_title."\n";
 	$ASCII_text.=$ASCII_header."\n";
 
+	$HTML_text.="</tr>\n";
+
 	$CSV_text.="\n";
 
 	while (list($key, $val)=each($user_group_array)) {
 		$ASCII_text.="| ".sprintf("%20s", $key)." | ".sprintf("%6s", $total_array[$key])." |";
+		$HTML_text.="<tr bgcolor='#".$SSstd_row2_background."'>";
+		$HTML_text.="<td><font size='2'>".$key."&nbsp;</font></td>";
+		$HTML_text.="<td><font size='2'>".$total_array[$key]."&nbsp;</font></td>";
+
 		$CSV_text.="\"$key\",\"".$total_array[$key]."\"";
 		while (list($key2, $val2)=each($hour_array)) {	
 			$ASCII_text.=" ".sprintf("%12s", ($hour_total_array[$key][$key2]+0))." |";
+			$HTML_text.="<td><font size='2'>".($hour_total_array[$key][$key2]+0)."</font></td>";
 			$CSV_text.=",\"".($hour_total_array[$key][$key2]+0)."\"";
 		}
 		reset($hour_array);
 		$CSV_text.="\n";
+		$HTML_text.="</tr>\n";
 		$ASCII_text.="\n";
 
 	}
@@ -575,6 +558,10 @@ if ($SUBMIT && $query_date && $start_hour && $end_hour) {
 	$ASCII_text.=$ASCII_header."\n";
 	$ASCII_text.=$ASCII_total."\n";
 	$ASCII_text.=$ASCII_header."\n";
+
+	$HTML_text2.="</tr>";
+	$HTML_text2.="</table>";
+	$HTML_text.=$HTML_text2;
 
 	$CSV_text.=$CSV_total."\n";
 }
@@ -709,6 +696,12 @@ if ($archives_available=="Y")
 	echo "<input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."\n";
 	}
 
+echo "<BR><BR>Display as:<BR>";
+echo "<select name='report_display_type'>";
+if ($report_display_type) {echo "<option value='$report_display_type' selected>$report_display_type</option>";}
+echo "<option value='TEXT'>TEXT</option><option value='HTML'>HTML</option></select>\n<BR><BR>";
+
+
 echo "<BR><BR><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'>\n";
 echo "</TD><TD VALIGN=TOP ROWSPAN=2> &nbsp; &nbsp; &nbsp; &nbsp; ";
 
@@ -737,8 +730,7 @@ echo "</FORM>";
 
 if ($report_display_type=="HTML")
 	{
-	echo $GRAPH_text;
-	echo $JS_text;
+	echo $HTML_text;
 	}
 else
 	{

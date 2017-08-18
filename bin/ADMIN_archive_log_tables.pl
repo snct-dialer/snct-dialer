@@ -49,6 +49,7 @@
 # 170325-1108 - Added vicidial_drop_log table rolling
 # 170508-1212 - Added vicidial_rt_monitor_log table rolling
 # 170809-1926 - Added rolling of user_call_log if over 1000000 records
+# 170817-1318 - Added rolling of vicidial_inbound_survey_log
 #
 
 $CALC_TEST=0;
@@ -1686,6 +1687,58 @@ if (!$T)
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 		}
+
+
+
+	##### vicidial_inbound_survey_log
+	$stmtA = "SELECT count(*) from vicidial_inbound_survey_log;";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	if ($sthArows > 0)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$vicidial_inbound_survey_log_count =	$aryA[0];
+		}
+	$sthA->finish();
+
+	$stmtA = "SELECT count(*) from vicidial_inbound_survey_log_archive;";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	if ($sthArows > 0)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$vicidial_inbound_survey_log_archive_count =	$aryA[0];
+		}
+	$sthA->finish();
+
+	if (!$Q) {print "\nProcessing vicidial_inbound_survey_log table...  ($vicidial_inbound_survey_log_count|$vicidial_inbound_survey_log_archive_count)\n";}
+	$stmtA = "INSERT IGNORE INTO vicidial_inbound_survey_log_archive SELECT * from vicidial_inbound_survey_log;";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	
+	$sthArows = $sthA->rows;
+	if (!$Q) {print "$sthArows rows inserted into vicidial_inbound_survey_log_archive table \n";}
+	
+	$rv = $sthA->err();
+	if (!$rv) 
+		{	
+		$stmtA = "DELETE FROM vicidial_inbound_survey_log WHERE call_date < '$del_time';";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows = $sthA->rows;
+		if (!$Q) {print "$sthArows rows deleted from vicidial_inbound_survey_log table \n";}
+
+		$stmtA = "optimize table vicidial_inbound_survey_log;";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+
+		$stmtA = "optimize table vicidial_inbound_survey_log_archive;";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		}
+
 
 
 	##### vicidial_log_noanswer

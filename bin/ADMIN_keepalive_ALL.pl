@@ -121,9 +121,10 @@
 # 170609-1601 - If phone entry fullname and cidnumber are empty, don't populate a callerid conf line
 # 170711-0824 - Fixed help documentation for delay seconds, issue #1025
 # 170725-0017 - Added vicidial_campaign_hour_counts and vicidial_carrier_hour_counts rolling
+# 170816-2323 - Added In-Group Ask-Post-Call Survey AGI dialplan entries
 #
 
-$build = '170725-0017';
+$build = '170816-2323';
 
 $DB=0; # Debug flag
 $teodDB=0; # flag to log Timeclock End of Day processes to log file
@@ -2208,6 +2209,10 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 	$Vext .= "exten => _8305888888888888X999,1,Answer\n";
 	$Vext .= "exten => _8305888888888888X999,n,Wait($vicidial_recording_limit)\n";
 	$Vext .= "exten => _8305888888888888X999,n,Hangup()\n";
+	$Vext .= "; In-Group Ask-Post-Call Survey AGI\n";
+	$Vext .= "exten => _8306888888888888X999,1,Answer\n";
+	$Vext .= "exten => _8306888888888888X999,n,AGI(agi-ingroup_survey.agi)\n";
+	$Vext .= "exten => _8306888888888888X999,n,Hangup()\n";
 	##### END Create Voicemail extensions for this server_ip #####
 
 
