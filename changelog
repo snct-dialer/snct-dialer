@@ -1,9 +1,16 @@
 2.25.7
   [Jörg Frings-Fürst]
   * Add upstream Rev. 2803:
-    - Added HTTP error code 418
+    - Added HTTP error code 418.
   * Add upstream Rev. 2804:
     - Added ask survey options.
+  * Move DB Update to version based files:
+    - New extras/mysql_update/mysql-1514.sql.
+  * Add upstream Rev. 2805:
+    - AST_agent_debug_log_report.php: Added HTML display option.
+    - AST_user_group_hourly_detail.php: Added link to v2 of report.
+    - New AST_user_group_hourly_detail_v2.php.
+    - admin.php: Added User Group Hourly Report v2(detail)
 
 2.25.6
 

@@ -7,6 +7,7 @@
 # 150724-0740 - First build
 # 150727-2111 - Added different colors for higher run times, added user variable, code cleanup
 # 170409-1547 - Added IP List validation code
+# 170818-0751 - Added HTML display option
 #
 
 $startMS = microtime();
@@ -37,6 +38,8 @@ if (isset($_GET["DB"]))						{$DB=$_GET["DB"];}
 	elseif (isset($_POST["DB"]))			{$DB=$_POST["DB"];}
 if (isset($_GET["submit"]))					{$submit=$_GET["submit"];}
 	elseif (isset($_POST["submit"]))		{$submit=$_POST["submit"];}
+if (isset($_GET["report_display_type"]))			{$report_display_type=$_GET["report_display_type"];}
+	elseif (isset($_POST["report_display_type"]))	{$report_display_type=$_POST["report_display_type"];}
 if (isset($_GET["SUBMIT"]))					{$SUBMIT=$_GET["SUBMIT"];}
 	elseif (isset($_POST["SUBMIT"]))		{$SUBMIT=$_POST["SUBMIT"];}
 
@@ -202,6 +205,45 @@ if (strlen($query_date_D) < 6) {$query_date_D = "00:00:00";}
 if (strlen($query_date_T) < 6) {$query_date_T = "23:59:59";}
 if (!isset($query_date)) {$query_date = $NOW_DATE;}
 
+
+##### BEGIN Define colors and logo #####
+$SSmenu_background='015B91';
+$SSframe_background='D9E6FE';
+$SSstd_row1_background='9BB9FB';
+$SSstd_row2_background='B9CBFD';
+$SSstd_row3_background='8EBCFD';
+$SSstd_row4_background='B6D3FC';
+$SSstd_row5_background='FFFFFF';
+$SSalt_row1_background='BDFFBD';
+$SSalt_row2_background='99FF99';
+$SSalt_row3_background='CCFFCC';
+
+$screen_color_stmt="select admin_screen_colors from system_settings";
+$screen_color_rslt=mysql_to_mysqli($screen_color_stmt, $link);
+$screen_color_row=mysqli_fetch_row($screen_color_rslt);
+$agent_screen_colors="$screen_color_row[0]";
+
+if ($agent_screen_colors != 'default')
+	{
+	$asc_stmt = "SELECT menu_background,frame_background,std_row1_background,std_row2_background,std_row3_background,std_row4_background,std_row5_background,alt_row1_background,alt_row2_background,alt_row3_background,web_logo FROM vicidial_screen_colors where colors_id='$agent_screen_colors';";
+	$asc_rslt=mysql_to_mysqli($stmt, $link);
+	$qm_conf_ct = mysqli_num_rows($rslt);
+	if ($qm_conf_ct > 0)
+		{
+		$asc_row=mysqli_fetch_row($asc_rslt);
+		$SSmenu_background =            $asc_row[0];
+		$SSframe_background =           $asc_row[1];
+		$SSstd_row1_background =        $asc_row[2];
+		$SSstd_row2_background =        $asc_row[3];
+		$SSstd_row3_background =        $asc_row[4];
+		$SSstd_row4_background =        $asc_row[5];
+		$SSstd_row5_background =        $asc_row[6];
+		$SSalt_row1_background =        $asc_row[7];
+		$SSalt_row2_background =        $asc_row[8];
+		$SSalt_row3_background =        $asc_row[9];
+		$SSweb_logo =		           $asc_row[10];
+		}
+	}
 /*
 $server_ip_string='|';
 $server_ip_ct = count($server_ip);
@@ -301,6 +343,12 @@ $MAIN.=" &nbsp; &nbsp; &nbsp; &nbsp; <INPUT TYPE=TEXT NAME=query_date_D SIZE=9 M
 
 $MAIN.=" "._QXZ("to")." <INPUT TYPE=TEXT NAME=query_date_T SIZE=9 MAXLENGTH=8 VALUE=\"$query_date_T\"> &nbsp; ";
 
+$MAIN.=_QXZ("Display as:");
+$MAIN.="<select name='report_display_type'>";
+if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>$report_display_type</option>";}
+$MAIN.="<option value='TEXT'>TEXT</option><option value='HTML'>HTML</option></select> &nbsp; &nbsp; \n";
+
+
 /*
 $MAIN.="</TD><TD ROWSPAN=2 VALIGN=TOP>"._QXZ("Server IP").":<BR/>\n";
 $MAIN.="<SELECT SIZE=5 NAME=server_ip[] multiple>\n";
@@ -371,23 +419,41 @@ if ($SUBMIT) {
 	*/
 
 
-	$MAIN.="<PRE><font size=2>\n";
-		$agent_userSQL='';
-		if (strlen($agent_user) > 1)
-			{$agent_userSQL = "and user='$agent_user'";}
-		$rpt_stmt="select user,start_time,db_time,run_time,php_script,action,lead_id,stage from vicidial_ajax_log where db_time >= '$query_date $query_date_D' and db_time <= '$query_date $query_date_T' $agent_userSQL order by db_time desc;";
-		$rpt_rslt=mysql_to_mysqli($rpt_stmt, $link);
-		if ($DB) {$MAIN.=$rpt_stmt."\n";}
-		if (mysqli_num_rows($rpt_rslt)>0) {
+	$TEXT.="<PRE><font size=2>\n";
+
+
+	$agent_userSQL='';
+	if (strlen($agent_user) > 1)
+		{$agent_userSQL = "and user='$agent_user'";}
+	$rpt_stmt="select user,start_time,db_time,run_time,php_script,action,lead_id,stage from vicidial_ajax_log where db_time >= '$query_date $query_date_D' and db_time <= '$query_date $query_date_T' $agent_userSQL order by db_time desc;";
+	$rpt_rslt=mysql_to_mysqli($rpt_stmt, $link);
+	if ($DB) {$TEXT.=$rpt_stmt."\n";}
+	if (mysqli_num_rows($rpt_rslt)>0) {
 
 		if (!$lower_limit) {$lower_limit=1;}
 		if ($lower_limit+999>=mysqli_num_rows($rpt_rslt)) {$upper_limit=($lower_limit+mysqli_num_rows($rpt_rslt)%1000)-1;} else {$upper_limit=$lower_limit+999;}
 		
-		$MAIN.="--- "._QXZ("AGENT SCREEN DEBUG LOG RECORDS FOR")." $query_date, $query_date_D "._QXZ("TO")." $query_date_T $server_rpt_string, "._QXZ("RECORDS")." #$lower_limit-$upper_limit               <a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&type=$type&query_date=$query_date&query_date_D=$query_date_D&query_date_T=$query_date_T&agent_user=$agent_user&lower_limit=$lower_limit&upper_limit=$upper_limit&file_download=1\">["._QXZ("DOWNLOAD")."]</a>\n";
+		$TEXT.="--- "._QXZ("AGENT SCREEN DEBUG LOG RECORDS FOR")." $query_date, $query_date_D "._QXZ("TO")." $query_date_T $server_rpt_string, "._QXZ("RECORDS")." #$lower_limit-$upper_limit               <a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&type=$type&query_date=$query_date&query_date_D=$query_date_D&query_date_T=$query_date_T&agent_user=$agent_user&lower_limit=$lower_limit&upper_limit=$upper_limit&file_download=1\">["._QXZ("DOWNLOAD")."]</a>\n";
 		$agntdb_rpt.="+----------------------+---------------------+---------------------+------------+----------------------+-------------------------------------+------------+------------------------------------------------------------------------+\n";
 		$agntdb_rpt.="| "._QXZ("USER",20)." | "._QXZ("SCREEN DATE",19)." | "._QXZ("DB DATE",19)." | "._QXZ("RUN TIME",10)." | "._QXZ("SCRIPT",20)." | "._QXZ("ACTION",35)." | "._QXZ("LEAD_ID",10)." | "._QXZ("STAGE",70)." |\n";
 		$agntdb_rpt.="+----------------------+---------------------+---------------------+------------+----------------------+-------------------------------------+------------+------------------------------------------------------------------------+\n";
 		$CSV_text="\""._QXZ("USER")."\",\""._QXZ("SCREEN DATE")."\",\""._QXZ("DB DATE")."\",\""._QXZ("RUN TIME")."\",\""._QXZ("SCRIPT")."\",\""._QXZ("ACTION")."\",\""._QXZ("LEAD_ID")."\",\""._QXZ("STAGE")."\"\n";
+
+		$HTML.="<table border='0' cellpadding='3' cellspacing='1'>";
+		$HTML.="<tr bgcolor='#".$SSstd_row1_background."'>";
+		$HTML.="<th colspan='7'><font size='2'>"._QXZ("AGENT SCREEN DEBUG LOG RECORDS FOR")." $query_date, $query_date_D "._QXZ("TO")." $query_date_T $server_rpt_string, "._QXZ("RECORDS")." #$lower_limit-$upper_limit</font></th>";
+		$HTML.="<th><font size='2'><a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&type=$type&query_date=$query_date&query_date_D=$query_date_D&query_date_T=$query_date_T&agent_user=$agent_user&lower_limit=$lower_limit&upper_limit=$upper_limit&file_download=1\">["._QXZ("DOWNLOAD")."]</a></font></th>";
+		$HTML.="</tr>\n";
+		$HTML.="<tr bgcolor='#".$SSstd_row1_background."'>";
+		$HTML.="<th><font size='2'>"._QXZ("USER")."</font></th>";
+		$HTML.="<th><font size='2'>"._QXZ("SCREEN DATE")."</font></th>";
+		$HTML.="<th><font size='2'>"._QXZ("DB DATE")."</font></th>";
+		$HTML.="<th><font size='2'>"._QXZ("RUN TIME")."</font></th>";
+		$HTML.="<th><font size='2'>"._QXZ("SCRIPT")."</font></th>";
+		$HTML.="<th><font size='2'>"._QXZ("ACTION")."</font></th>";
+		$HTML.="<th><font size='2'>"._QXZ("LEAD_ID")."</font></th>";
+		$HTML.="<th><font size='2'>"._QXZ("STAGE")."</font></th>";
+		$HTML.="</tr>\n";
 
 		for ($i=1; $i<=mysqli_num_rows($rpt_rslt); $i++) 
 			{
@@ -412,30 +478,57 @@ if ($SUBMIT) {
 				$agntdb_rpt.=" | ".sprintf("%-10s", $row["lead_id"]); 
 				if (strlen($row["stage"])>67) {$row["stage"]=substr($row["stage"],0,67)."...";}
 				$agntdb_rpt.=" | ".sprintf("%-70s", $row["stage"])." |\n"; 
+
+				$HTML.="<tr bgcolor='#".$SSstd_row2_background."'>";
+				$HTML.="<td><font size='2'>".$row["user"]."</font></td>";
+				$HTML.="<td><font size='2'>".$row["start_time"]."</font></td>";
+				$HTML.="<td><font size='2'>".$row["db_time"]."</font></td>";
+				$HTML.="<td><font size='2' $run_color>".$row["run_time"]."</font></td>";
+				$HTML.="<td><font size='2'>".$row["php_script"]."</font></td>";
+				$HTML.="<td><font size='2'>".$row["action"]."</font></td>";
+				$HTML.="<td><font size='2'>".$row["lead_id"]."</font></td>";
+				$HTML.="<td><font size='2'>".$row["stage"]."</font></td>";
+				$HTML.="</tr>\n";				
 				}
 			}
 		$agntdb_rpt.="+----------------------+---------------------+---------------------+------------+----------------------+-------------------------------------+------------+------------------------------------------------------------------------+\n";
 
+		$HTML.="<tr bgcolor='#".$SSstd_row1_background."'>";
+
 		$agntdb_rpt_hf="";
 		$ll=$lower_limit-1000;
 		if ($ll>=1) {
-			$agntdb_rpt_hf.="<a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&type=$type&query_date=$query_date&query_date_D=$query_date_D&query_date_T=$query_date_T&agent_user=$agent_user&lower_limit=$ll\">[<<< "._QXZ("PREV")." 1000 "._QXZ("records")."]</a>";
+			$agntdb_rpt_hf.="<a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&type=$type&query_date=$query_date&query_date_D=$query_date_D&query_date_T=$query_date_T&agent_user=$agent_user&report_display_type=$report_display_type&lower_limit=$ll\">[<<< "._QXZ("PREV")." 1000 "._QXZ("records")."]</a>";
+			$HTML.="<td colspan='4' align='left'><font size='2'><a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&type=$type&query_date=$query_date&query_date_D=$query_date_D&query_date_T=$query_date_T&agent_user=$agent_user&report_display_type=$report_display_type&lower_limit=$ll\">[<<< "._QXZ("PREV")." 1000 "._QXZ("records")."]</a></font></td>";
 		} else {
 			$agntdb_rpt_hf.=sprintf("%-23s", " ");
+			$HTML.="<td colspan='4' align='left'><font size='2'>&nbsp;</font></td>";
 		}
 		$agntdb_rpt_hf.=sprintf("%-145s", " ");
 		if (($lower_limit+1000)<mysqli_num_rows($rpt_rslt)) {
 			if ($upper_limit+1000>=mysqli_num_rows($rpt_rslt)) {$max_limit=mysqli_num_rows($rpt_rslt)-$upper_limit;} else {$max_limit=1000;}
-			$agntdb_rpt_hf.="<a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&type=$type&query_date=$query_date&query_date_D=$query_date_D&query_date_T=$query_date_T&agent_user=$agent_user&lower_limit=".($lower_limit+1000)."\">["._QXZ("NEXT")." $max_limit "._QXZ("records")." >>>]</a>";
+			$agntdb_rpt_hf.="<a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&type=$type&query_date=$query_date&query_date_D=$query_date_D&query_date_T=$query_date_T&agent_user=$agent_user&report_display_type=$report_display_type&lower_limit=".($lower_limit+1000)."\">["._QXZ("NEXT")." $max_limit "._QXZ("records")." >>>]</a>";
+			$HTML.="<td colspan='4' align='right'><font size='2'><a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&type=$type&query_date=$query_date&query_date_D=$query_date_D&query_date_T=$query_date_T&agent_user=$agent_user&report_display_type=$report_display_type&lower_limit=".($lower_limit+1000)."\">["._QXZ("NEXT")." $max_limit "._QXZ("records")." >>>]</a></font></td>";
 		} else {
 			$agntdb_rpt_hf.=sprintf("%23s", " ");
+			$HTML.="<td colspan='4' align='left'><font size='2'>&nbsp;</font></td>";
 		}
 		$agntdb_rpt_hf.="\n";
-		$MAIN.=$agntdb_rpt_hf.$agntdb_rpt.$agntdb_rpt_hf;
+		$TEXT.=$agntdb_rpt_hf.$agntdb_rpt.$agntdb_rpt_hf;
+	
+		$HTML.="</tr></table>\n";				
+
 	} else {
-		$MAIN.="*** "._QXZ("NO RECORDS FOUND")." ***\n";
+		$TEXT.="*** "._QXZ("NO RECORDS FOUND")." ***\n";
+		$HTML.="*** "._QXZ("NO RECORDS FOUND")." ***\n";
 	}
-	$MAIN.="</font></PRE>\n";
+	$TEXT.="</font></PRE>\n";
+
+	if ($report_display_type=="HTML") {
+		$MAIN.=$HTML;
+	} else {
+		$MAIN.=$TEXT;
+	}
 
 	$MAIN.="</form></BODY></HTML>\n";
 
