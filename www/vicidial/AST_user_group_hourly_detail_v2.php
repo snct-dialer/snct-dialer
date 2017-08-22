@@ -381,8 +381,8 @@ $agent_screen_colors="$screen_color_row[0]";
 if ($agent_screen_colors != 'default')
 	{
 	$asc_stmt = "SELECT menu_background,frame_background,std_row1_background,std_row2_background,std_row3_background,std_row4_background,std_row5_background,alt_row1_background,alt_row2_background,alt_row3_background,web_logo FROM vicidial_screen_colors where colors_id='$agent_screen_colors';";
-	$asc_rslt=mysql_to_mysqli($stmt, $link);
-	$qm_conf_ct = mysqli_num_rows($rslt);
+	$asc_rslt=mysql_to_mysqli($asc_stmt, $link);
+	$qm_conf_ct = mysqli_num_rows($asc_rslt);
 	if ($qm_conf_ct > 0)
 		{
 		$asc_row=mysqli_fetch_row($asc_rslt);
@@ -569,7 +569,7 @@ if ($SUBMIT && $query_date && $start_hour && $end_hour) {
 		foreach($hour_array as $hour){	
 			if($allData[$Ugroup][$hour]) {sort($allData[$Ugroup][$hour]);}
 		}
-		reset($hour_array);
+		if ($hour_array) {reset($hour_array);}
 
 		for($cont=0; $cont < $maxUserByUserGroup[$Ugroup] ;$cont ++){
 			$ASCII_text.="| ".sprintf("%20s", $Ugroup)." |" ;
@@ -597,7 +597,7 @@ if ($SUBMIT && $query_date && $start_hour && $end_hour) {
 		$UG_ct++;
 	}
 
-	reset($hour_array);
+	if ($hour_array) {reset($hour_array);}
 	$ASCII_text.=$ASCII_header."\n";
 	$ASCII_text.=$ASCII_total."\n";
 	$ASCII_text.=$ASCII_header."\n";

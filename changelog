@@ -11,6 +11,13 @@
     - AST_user_group_hourly_detail.php: Added link to v2 of report.
     - New AST_user_group_hourly_detail_v2.php.
     - admin.php: Added User Group Hourly Report v2(detail)
+  * Add upstream Rev. 2806:
+    - AST_agent_debug_log_report.php: Added HTML display option.
+    - AST_user_group_hourly_detail.php: Added link to v2 of report.
+    - AST_webserver_url_report.php: Added HTML format.
+    - admin.php: Added allow_manage_active_lists system setting.
+  * Add upstream Rev. 2807:
+    - admin.php: Fix for issue #1036.
 
 2.25.6
 

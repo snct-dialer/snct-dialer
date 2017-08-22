@@ -10,7 +10,6 @@
 # 160826-0054 - First build
 # 170409-1542 - Added IP List validation code
 # 170816-2026 - Added HTML formatting
-# 170818-0748 - Added link to v2 of report
 #
 
 $startMS = microtime();
@@ -387,8 +386,8 @@ $agent_screen_colors="$screen_color_row[0]";
 if ($agent_screen_colors != 'default')
 	{
 	$asc_stmt = "SELECT menu_background,frame_background,std_row1_background,std_row2_background,std_row3_background,std_row4_background,std_row5_background,alt_row1_background,alt_row2_background,alt_row3_background,web_logo FROM vicidial_screen_colors where colors_id='$agent_screen_colors';";
-	$asc_rslt=mysql_to_mysqli($stmt, $link);
-	$qm_conf_ct = mysqli_num_rows($rslt);
+	$asc_rslt=mysql_to_mysqli($asc_stmt, $link);
+	$qm_conf_ct = mysqli_num_rows($asc_rslt);
 	if ($qm_conf_ct > 0)
 		{
 		$asc_row=mysqli_fetch_row($asc_rslt);
@@ -687,21 +686,16 @@ echo "</SELECT>\n";
 echo "</TD>\n";
 
 echo "<TD VALIGN=TOP ROWSPAN=2>\n";
-#echo "Display as:<BR>";
-#echo "<select name='report_display_type'>";
-#if ($report_display_type) {echo "<option value='$report_display_type' selected>$report_display_type</option>";}
-#echo "<option value='TEXT'>TEXT</option><option value='HTML'>HTML</option></select>\n<BR><BR>";
+
+echo _QXZ("Display as:")."<BR>";
+echo "<select name='report_display_type'>";
+if ($report_display_type) {echo "<option value='$report_display_type' selected>$report_display_type</option>";}
+echo "<option value='TEXT'>TEXT</option><option value='HTML'>HTML</option></select>\n<BR><BR>";
 
 if ($archives_available=="Y") 
 	{
 	echo "<input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."\n";
 	}
-
-echo "<BR><BR>"._QXZ("Display as:")."<BR>";
-echo "<select name='report_display_type'>";
-if ($report_display_type) {echo "<option value='$report_display_type' selected>$report_display_type</option>";}
-echo "<option value='TEXT'>TEXT</option><option value='HTML'>HTML</option></select>\n<BR><BR>";
-
 
 echo "<BR><BR><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'>\n";
 echo "</TD><TD VALIGN=TOP ROWSPAN=2> &nbsp; &nbsp; &nbsp; &nbsp; ";

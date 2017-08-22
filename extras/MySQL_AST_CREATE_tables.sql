@@ -1740,7 +1740,8 @@ pause_campaigns ENUM('Y','N') default 'N',
 hide_inactive_lists ENUM('0','1') default '0',
 detect_3way ENUM('Y','N') default 'N',
 company_name VARCHAR(50) default '',
-ticket_mail VARCHAR(100) default ''
+ticket_mail VARCHAR(100) default '',
+allow_manage_active_lists ENUM('0','1') default '0'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_campaigns_list_mix (
