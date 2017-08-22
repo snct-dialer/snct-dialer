@@ -4204,12 +4204,13 @@ else
 # 170816-1240 - Added in-group survey options
 # 170818-0741 - Added User Group Hourly Report v2(detail)
 # 170819-0949 - Added allow_manage_active_lists system setting
+# 170821-2009 - Fix for issue #1036
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-624a';
-$build = '170819-0949';
+$admin_version = '2.14-625a';
+$build = '170821-2009';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -5127,6 +5128,8 @@ if ($ADD==999991)		{$hh='reports';		echo _QXZ("SERVERS VERSIONS");}
 if ($ADD==999990)		{$hh='reports';		echo _QXZ("SYSTEM SNAPSHOT STATS");}
 if ($ADD==999989)		{$hh='reports';		echo _QXZ("USER CHANGE LANGUAGE");}
 
+echo "</title>\n";
+
 if ( ($ADD==999993) or ($ADD==999992) or ($ADD==730000000000000) or ($ADD==830000000000000) )
 	{
 	if ($ADD==999993)		{$report_name = "SUMMARY STATS";}
@@ -5231,7 +5234,6 @@ if ( ($ADD>2) and ($ADD < 99998) )
 
 if ( ( (strlen($ADD)>4) and ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD<70)) or ($ADD=="4A")  or ($ADD=="4B") or (strlen($ADD)==12) )
 	{
-
 	##### BEGIN get campaigns listing for rankings #####
 
 	$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns $whereLOGallowed_campaignsSQL order by campaign_id";
@@ -5726,12 +5728,11 @@ $NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIG
 
 if ($ADD==99999)
 	{
-	echo"<TITLE>"._QXZ("Help Redirect")."</TITLE>\n";
-	echo"<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=iso-8859-1\">\n";
-	echo"<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=./help.php\">\n";
-	echo"</HEAD>\n";
-	echo"<BODY BGCOLOR=#FFFFFF marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
-	echo"<a href=\"./help.php\">"._QXZ("click here to continue").". . .</a>\n";
+	echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=iso-8859-1\">\n";
+	echo "<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=./help.php\">\n";
+	echo "</HEAD>\n";
+	echo "<BODY BGCOLOR=#FFFFFF marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
+	echo "<a href=\"./help.php\">"._QXZ("click here to continue").". . .</a>\n";
 	exit;
 	}
 
@@ -5752,7 +5753,6 @@ if ($ADD==73)
 	{
 	if ($LOGmodify_campaigns==1)
 		{
-		echo "</title>\n";
 		echo "</head>\n";
 		echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
@@ -5910,7 +5910,6 @@ if ($ADD==7111111)
 	$user_group = 'user_group';
 	$called_count = '2';
 
-	echo "</title>\n";
 	echo "</head>\n";
 	echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
@@ -6085,7 +6084,7 @@ if ($ADD==7111111)
 	exit;
 	}
 
-
+$no_title=1;
 $ADMIN=$PHP_SELF;
 require("admin_header.php");
 
@@ -39196,11 +39195,7 @@ if ($ADD==999999)
 
 		?>
 
-		<HTML>
-		<HEAD>
-
-		<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
-		<TITLE><?php echo _QXZ("Server Stats and Reports"); ?></TITLE></HEAD><BODY BGCOLOR=WHITE>
+		</head><BODY BGCOLOR=WHITE>
 		<img src="images/icon_black_reports.png" alt="Reports" width=42 height=42 align=left> 
 		<FONT SIZE=4><B><?php echo _QXZ("Server Stats and Reports"); ?></B></FONT><BR>
 		<FONT SIZE=1><B> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; (<a href="admin.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK><?php echo _QXZ("System Summary"); ?></font></a>)</B></FONT><BR><BR>
@@ -39587,11 +39582,7 @@ if ($ADD==999998)
 	$subhead_font = "style=\"font-family:HELVETICA;font-size:14;color:BLACK;font-weight:bold;\"";
 	?>
 
-	<HTML>
-	<HEAD>
-
-	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
-	<TITLE><?php echo _QXZ("Administration: Admin"); ?></TITLE></HEAD><BODY BGCOLOR=WHITE>
+	</head><BODY BGCOLOR=WHITE>
 	<img src="images/icon_black_admin.png" alt="Admin" width=42 height=42> <FONT FACE="ARIAL,HELVETICA" SIZE=4><B> <?php echo _QXZ("Administration"); ?></B></FONT><BR><CENTER>
 	<TABLE BORDER=0 CELLPADDING=5 CELLSPACING=0 WIDTH=800>
 	<?php

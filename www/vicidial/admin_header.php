@@ -72,6 +72,7 @@
 # 170304-1354 - Added Automated Reports section to Admin
 # 170409-0757 - Added IP Lists
 # 170623-2113 - Changed password strength parameters
+# 170821-2010 - Fix for issue #1036
 #
 
 $stmt="SELECT admin_home_url,enable_tts_integration,callcard_enabled,custom_fields_enabled,allow_emails,level_8_disable_add,allow_chats,enable_languages,admin_row_click,admin_screen_colors,user_new_lead_limit,user_territories_active,qc_features_active,agent_soundboards,enable_drop_lists,allow_ip_lists from system_settings;";
@@ -336,7 +337,7 @@ if($short_header)
 ######################### FULL HTML HEADER BEGIN #######################################
 else
 {
-echo "</title>\n";
+if ($no_title < 1) {echo "</title>\n";}
 echo "<script language=\"Javascript\">\n";
 echo "var field_name = '';\n";
 echo "var user = '$PHP_AUTH_USER';\n";
