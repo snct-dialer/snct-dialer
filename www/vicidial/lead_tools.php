@@ -15,10 +15,11 @@
 # 141229-2033 - Added code for on-the-fly language translations display
 # 170409-1533 - Added IP List validation code
 # 170711-1105 - Added screen colors
+# 170819-1002 - Added allow_manage_active_lists option
 #
 
-$version = '2.14-11';
-$build = '170711-1105';
+$version = '2.14-12';
+$build = '170819-1002';
 
 # This limit is to prevent data inconsistancies.
 # If there are too many leads in a list this
@@ -71,7 +72,7 @@ $delete_status = preg_replace('/[^-_0-9a-zA-Z]/','',$delete_status);
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$sys_settings_stmt = "SELECT use_non_latin,outbound_autodial_active,sounds_central_control_active,enable_languages,language_method,admin_screen_colors,report_default_format FROM system_settings;";
+$sys_settings_stmt = "SELECT use_non_latin,outbound_autodial_active,sounds_central_control_active,enable_languages,language_method,admin_screen_colors,report_default_format,allow_manage_active_lists FROM system_settings;";
 $sys_settings_rslt=mysql_to_mysqli($sys_settings_stmt, $link);
 if ($DB) {echo "$sys_settings_stmt\n";}
 $num_rows = mysqli_num_rows($sys_settings_rslt);
@@ -85,6 +86,7 @@ if ($num_rows > 0)
 	$SSlanguage_method =				$sys_settings_row[4];
 	$SSadmin_screen_colors =			$sys_settings_row[5];
 	$SSreport_default_format =			$sys_settings_row[6];
+	$SSallow_manage_active_lists =		$sys_settings_row[7];
 	}
 else
 	{
@@ -741,7 +743,9 @@ if (
 		}
 
 	# figure out which lists they are allowed to see
-	$lists_stmt = "SELECT list_id, list_name FROM vicidial_lists WHERE campaign_id IN ($allowed_campaigns_sql) and active = 'N' ORDER BY list_id";
+	$activeSQL = "and active = 'N'";
+	if ($SSallow_manage_active_lists > 0) {$activeSQL = '';}
+	$lists_stmt = "SELECT list_id, list_name FROM vicidial_lists WHERE campaign_id IN ($allowed_campaigns_sql) $activeSQL ORDER BY list_id";
 	if ($DB) { echo "|$lists_stmt|\n"; }
 	$lists_rslt = mysql_to_mysqli($lists_stmt, $link);
 	$num_rows = mysqli_num_rows($lists_rslt);
@@ -806,7 +810,11 @@ if (
 		}
 
 
-	echo "<p>"._QXZ("The following are basic lead management tools.  They will only work on inactive lists with less than")." $list_lead_limit "._QXZ("leads in them").". "._QXZ("This is to avoid data inconsistencies").".</p>";
+	if ($SSallow_manage_active_lists > 0)
+		{echo "<p>"._QXZ("The following are basic lead management tools.  They will only work on lists with less than");}
+	else
+		{echo "<p>"._QXZ("The following are basic lead management tools.  They will only work on inactive lists with less than");}
+	echo " $list_lead_limit "._QXZ("leads in them. This is to avoid data inconsistencies").".</p>";
 	echo "<form action=$PHP_SELF method=POST>\n";
 	echo "<center><table width=$section_width cellspacing=3>\n";
 

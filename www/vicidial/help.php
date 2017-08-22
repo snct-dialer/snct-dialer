@@ -131,6 +131,7 @@
 # 170613-0855 - Added hide_inactive_lists
 # 170623-2134 - Changed parameters for password recommendations
 # 170816-1057 - Added inbound after call entries
+# 170819-0951 - Added allow_manage_active_lists entry
 #
 
 
@@ -5380,6 +5381,11 @@ FR_SPAC 00 00 00 00 00 - <?php echo _QXZ("France space separated phone number");
 <A NAME="settings-enable_did_entry_list_id">
 <BR>
 <B><?php echo _QXZ("Enable DID Entry List ID"); ?> -</B><?php echo _QXZ("This setting if enabled will allow a manager to define an entry list id to use on the DID modify screen. Default is 0 for disabled."); ?>
+
+<BR>
+<A NAME="settings-allow_manage_active_lists">
+<BR>
+<B><?php echo _QXZ("Lead Manager Active Lists"); ?> -</B><?php echo _QXZ("This setting if enabled will allow a manager to select active lists for modification within the Lead Management admin utilities. We do not recommend enabling this option since it can cause issues with leads that could be part of active calling within the system. Default is 0 for disabled."); ?>
 
 <BR>
 <A NAME="settings-enable_drop_lists">

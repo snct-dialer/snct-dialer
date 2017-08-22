@@ -8,6 +8,7 @@
 # 141114-0057 - Finalized adding QXZ translation to all admin files
 # 141230-1352 - Added code for on-the-fly language translations display
 # 170409-1534 - Added IP List validation code
+# 170818-2130 - Added HTML format
 #
 
 $startMS = microtime();
@@ -266,8 +267,6 @@ else
 	}
 if (strlen($webserver_SQL)<3) {$webserver_SQL="";}
 
-## JOEJ
-
 $url_string='|';
 $url_ct = count($url);
 $i=0;
@@ -328,6 +327,45 @@ if (strlen($url_SQL)>0) {
 	$api_url_SQL="and api_url in ($url_SQL)";
 	$login_url_SQL="and login_url in ($url_SQL)";
 }
+
+##### BEGIN Define colors and logo #####
+$SSmenu_background='015B91';
+$SSframe_background='D9E6FE';
+$SSstd_row1_background='9BB9FB';
+$SSstd_row2_background='B9CBFD';
+$SSstd_row3_background='8EBCFD';
+$SSstd_row4_background='B6D3FC';
+$SSstd_row5_background='FFFFFF';
+$SSalt_row1_background='BDFFBD';
+$SSalt_row2_background='99FF99';
+$SSalt_row3_background='CCFFCC';
+
+$screen_color_stmt="select admin_screen_colors from system_settings";
+$screen_color_rslt=mysql_to_mysqli($screen_color_stmt, $link);
+$screen_color_row=mysqli_fetch_row($screen_color_rslt);
+$agent_screen_colors="$screen_color_row[0]";
+
+if ($agent_screen_colors != 'default')
+	{
+	$asc_stmt = "SELECT menu_background,frame_background,std_row1_background,std_row2_background,std_row3_background,std_row4_background,std_row5_background,alt_row1_background,alt_row2_background,alt_row3_background,web_logo FROM vicidial_screen_colors where colors_id='$agent_screen_colors';";
+	$asc_rslt=mysql_to_mysqli($asc_stmt, $link);
+	$qm_conf_ct = mysqli_num_rows($asc_rslt);
+	if ($qm_conf_ct > 0)
+		{
+		$asc_row=mysqli_fetch_row($asc_rslt);
+		$SSmenu_background =            $asc_row[0];
+		$SSframe_background =           $asc_row[1];
+		$SSstd_row1_background =        $asc_row[2];
+		$SSstd_row2_background =        $asc_row[3];
+		$SSstd_row3_background =        $asc_row[4];
+		$SSstd_row4_background =        $asc_row[5];
+		$SSstd_row5_background =        $asc_row[6];
+		$SSalt_row1_background =        $asc_row[7];
+		$SSalt_row2_background =        $asc_row[8];
+		$SSalt_row3_background =        $asc_row[9];
+		$SSweb_logo =		           $asc_row[10];
+		}
+	}
 
 $HEADER.="<HTML>\n";
 $HEADER.="<HEAD>\n";
@@ -427,79 +465,150 @@ $MAIN.="</SELECT>";
 $MAIN.="</TD>";
 
 $MAIN.="<TD ROWSPAN=2 VALIGN=middle align=center>\n";
+
+$MAIN.=_QXZ("Display as:");
+$MAIN.="<select name='report_display_type'>";
+if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>$report_display_type</option>";}
+$MAIN.="<option value='TEXT'>TEXT</option><option value='HTML'>HTML</option></select>\n<BR><BR>";
+
 $MAIN.="<INPUT TYPE=submit NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'><BR/><BR/>\n";
 $MAIN.="</TD></TR></TABLE>\n";
-$MAIN.="<PRE><font size=2>\n";
 
 if ($SUBMIT && $query_date && $end_date) {
-		$MAIN.="--- "._QXZ("WEBSERVER/URL LOG RECORDS FOR")." $query_date "._QXZ("TO")." $end_date $webserver_rpt_string, $URL_rpt_string\n";
-		#$MAIN.="--- RECORDS #$lower_limit-$upper_limit";
-		$MAIN.="<a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&type=$type&query_date=$query_date&query_date_D=$query_date_D&query_date_T=$query_date_T$server_ipQS$sip_hangup_causeQS&lower_limit=$lower_limit&upper_limit=$upper_limit&file_download=1\">["._QXZ("DOWNLOAD")."]</a>\n";
+		$TEXT.="<PRE><font size=2>\n";
+		$TEXT.="--- "._QXZ("WEBSERVER/URL LOG RECORDS FOR")." $query_date "._QXZ("TO")." $end_date $webserver_rpt_string, $URL_rpt_string\n";
+		#$TEXT.="--- RECORDS #$lower_limit-$upper_limit";
+		$TEXT.="<a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&type=$type&query_date=$query_date&query_date_D=$query_date_D&query_date_T=$query_date_T$server_ipQS$sip_hangup_causeQS&lower_limit=$lower_limit&report_display_type=$report_display_type&upper_limit=$upper_limit&file_download=1\">["._QXZ("DOWNLOAD")."]</a>\n";
+
+		$HTML.="<BR>"._QXZ("WEBSERVER/URL LOG RECORDS FOR")." $query_date "._QXZ("TO")." $end_date $webserver_rpt_string, $URL_rpt_string\n";
+		$HTML.="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&type=$type&query_date=$query_date&query_date_D=$query_date_D&query_date_T=$query_date_T$server_ipQS$sip_hangup_causeQS&lower_limit=$lower_limit&report_display_type=$report_display_type&upper_limit=$upper_limit&file_download=1\">["._QXZ("DOWNLOAD")."]</a><BR><BR>\n";
 
 		$stmt="select webserver, login_url, count(*) from vicidial_user_log where event_date>='$query_date 00:00:00' and event_date<='$end_date 23:59:59' $webserver_SQL $login_url_SQL group by webserver, login_url order by webserver, login_url";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$CSV_text="\""._QXZ("VICIDIAL USER LOG")."\"\n";
 		$CSV_text.="\""._QXZ("WEB SERVER")."\",\""._QXZ("URL")."\",\""._QXZ("COUNT")."\"\n";
+
 		$vulog_div="+----------------------------------------------------+------------------------------------------------------------------------------------------------------+--------+\n";
-		$MAIN.="\n"._QXZ("VICIDIAL USER LOG")."\n";
-		$MAIN.=$vulog_div;
-		    $MAIN.="| "._QXZ("WEB SERVER",50)." | "._QXZ("URL",100)." | "._QXZ("COUNT",6)." |\n";
-		$MAIN.=$vulog_div;
+		$TEXT.="\n"._QXZ("VICIDIAL USER LOG")."\n";
+		$TEXT.=$vulog_div;
+		    $TEXT.="| "._QXZ("WEB SERVER",50)." | "._QXZ("URL",100)." | "._QXZ("COUNT",6)." |\n";
+		$TEXT.=$vulog_div;
+
+		$HTML.="<table border='0' cellpadding='3' cellspacing='1'>";
+		$HTML.="<tr bgcolor='#".$SSstd_row1_background."'>";
+		$HTML.="<th colspan='3'><font size='2'>"._QXZ("VICIDIAL USER LOG")."</font></th>";
+		$HTML.="</tr>\n";
+		$HTML.="<tr bgcolor='#".$SSstd_row1_background."'>";
+		$HTML.="<th><font size='2'>"._QXZ("WEB SERVER")."</font></th>";
+		$HTML.="<th><font size='2'>"._QXZ("URL")."</font></th>";
+		$HTML.="<th><font size='2'>"._QXZ("COUNT")."</font></th>";
+		$HTML.="</tr>\n";
+		
 		$user_TOTAL=0;
 		while($row=mysqli_fetch_row($rslt)) {
-			$MAIN.="| ".sprintf("%-50s", substr($webserver_array[$row[0]], 0, 100))." | ".sprintf("%-100s", substr($url_array[$row[1]], 0, 100))." | ".sprintf("%6s", $row[2])." |\n";
+			$TEXT.="| ".sprintf("%-50s", substr($webserver_array[$row[0]], 0, 100))." | ".sprintf("%-100s", substr($url_array[$row[1]], 0, 100))." | ".sprintf("%6s", $row[2])." |\n";
 			$CSV_text.="\"".$webserver_array[$row[0]]."\",\"".$url_array[$row[1]]."\",\"$row[2]\"\n";
 			$user_TOTAL+=$row[2];
+			$HTML.="<tr bgcolor='#".$SSstd_row2_background."'>";
+			$HTML.="<td><font size='2'>".$webserver_array[$row[0]]."</font></td>";
+			$HTML.="<td><font size='2'>".$url_array[$row[1]]."</font></td>";
+			$HTML.="<td><font size='2'>".$row[2]."</font></td>";
+			$HTML.="</tr>\n";
 		}
-		$MAIN.=$vulog_div;
-		$MAIN.="| "._QXZ("TOTAL",153,"r")." | ".sprintf("%6s", $user_TOTAL)." |\n";
+		$TEXT.=$vulog_div;
+		$TEXT.="| "._QXZ("TOTAL",153,"r")." | ".sprintf("%6s", $user_TOTAL)." |\n";
 		$CSV_text.="\"\",\""._QXZ("TOTAL")."\",\"$user_TOTAL\"\n\n";
-		$MAIN.=$vulog_div;
-		$MAIN.="\n";
+		$TEXT.=$vulog_div;
+		$TEXT.="\n";
+		$HTML.="<tr bgcolor='#".$SSstd_row1_background."'>";
+		$HTML.="<th colspan='2'><font size='2'>"._QXZ("TOTAL")."</font></th>";
+		$HTML.="<th><font size='2'>".$user_TOTAL."</font></th>";
+		$HTML.="</tr>\n";
+		$HTML.="</table><BR><BR>\n";
 
 		$stmt="select webserver, api_url, count(*) from vicidial_api_log where api_date>='$query_date 00:00:00' and api_date<='$end_date 23:59:59' $webserver_SQL $api_url_SQL group by webserver, api_url order by webserver, api_url";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$CSV_text.="\""._QXZ("VICIDIAL API LOG")."\"\n";
 		$CSV_text.="\""._QXZ("WEB SERVER")."\",\""._QXZ("URL")."\",\""._QXZ("COUNT")."\"\n";
 		$valog_div="+----------------------------------------------------+------------------------------------------------------------------------------------------------------+--------+\n";
-		$MAIN.="\n"._QXZ("VICIDIAL API LOG")."\n";
-		$MAIN.=$valog_div;
-		$MAIN.="| "._QXZ("WEB SERVER",50)." | "._QXZ("URL",100)." | "._QXZ("COUNT",6)." |\n";
-		$MAIN.=$valog_div;
+		$TEXT.="\n"._QXZ("VICIDIAL API LOG")."\n";
+		$TEXT.=$valog_div;
+		$TEXT.="| "._QXZ("WEB SERVER",50)." | "._QXZ("URL",100)." | "._QXZ("COUNT",6)." |\n";
+		$TEXT.=$valog_div;
+
+		$HTML.="<table border='0' cellpadding='3' cellspacing='1'>";
+		$HTML.="<tr bgcolor='#".$SSstd_row1_background."'>";
+		$HTML.="<th colspan='3'><font size='2'>"._QXZ("VICIDIAL API LOG")."</font></th>";
+		$HTML.="</tr>\n";
+		$HTML.="<tr bgcolor='#".$SSstd_row1_background."'>";
+		$HTML.="<th><font size='2'>"._QXZ("WEB SERVER")."</font></th>";
+		$HTML.="<th><font size='2'>"._QXZ("URL")."</font></th>";
+		$HTML.="<th><font size='2'>"._QXZ("COUNT")."</font></th>";
+		$HTML.="</tr>\n";
+
 		$api_TOTAL=0;
 		while($row=mysqli_fetch_row($rslt)) {
-			$MAIN.="| ".sprintf("%-50s", substr($webserver_array[$row[0]], 0, 100))." | ".sprintf("%-100s", substr($url_array[$row[1]], 0, 100))." | ".sprintf("%6s", $row[2])." |\n";
+			$TEXT.="| ".sprintf("%-50s", substr($webserver_array[$row[0]], 0, 100))." | ".sprintf("%-100s", substr($url_array[$row[1]], 0, 100))." | ".sprintf("%6s", $row[2])." |\n";
 			$CSV_text.="\"".$webserver_array[$row[0]]."\",\"".$url_array[$row[1]]."\",\"$row[2]\"\n";
 			$api_TOTAL+=$row[2];
+			$HTML.="<tr bgcolor='#".$SSstd_row2_background."'>";
+			$HTML.="<td><font size='2'>".$webserver_array[$row[0]]."</font></td>";
+			$HTML.="<td><font size='2'>".$url_array[$row[1]]."</font></td>";
+			$HTML.="<td><font size='2'>".$row[2]."</font></td>";
+			$HTML.="</tr>\n";
 		}
-		$MAIN.=$valog_div;
-		$MAIN.="| "._QXZ("TOTAL",153,"r")." | ".sprintf("%6s", $api_TOTAL)." |\n";
+		$TEXT.=$valog_div;
+		$TEXT.="| "._QXZ("TOTAL",153,"r")." | ".sprintf("%6s", $api_TOTAL)." |\n";
 		$CSV_text.="\"\",\""._QXZ("TOTAL")."\",\"$api_TOTAL\"\n\n";
-		$MAIN.=$valog_div;
-		$MAIN.="\n\n";
+		$TEXT.=$valog_div;
+		$TEXT.="\n\n";
+		$HTML.="<tr bgcolor='#".$SSstd_row1_background."'>";
+		$HTML.="<th colspan='2'><font size='2'>"._QXZ("TOTAL")."</font></th>";
+		$HTML.="<th><font size='2'>".$api_TOTAL."</font></th>";
+		$HTML.="</tr>\n";
+		$HTML.="</table><BR><BR>\n";
 
 		$stmt="select webserver, count(*) from vicidial_report_log where event_date>='$query_date 00:00:00' and event_date<='$end_date 23:59:59' $webserver_SQL group by webserver order by webserver";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$CSV_text.="\""._QXZ("VICIDIAL REPORT LOG")."\"\n";
 		$CSV_text.="\""._QXZ("WEB SERVER")."\",\""._QXZ("COUNT")."\"\n";
 		$vrlog_div="+----------------------------------------------------+--------+\n";
-		$MAIN.="\n"._QXZ("VICIDIAL REPORT LOG")."\n";
-		$MAIN.=$vrlog_div;
-		$MAIN.="| "._QXZ("WEB SERVER",50)." | "._QXZ("COUNT",6)." |\n";
-		$MAIN.=$vrlog_div;
+		$TEXT.="\n"._QXZ("VICIDIAL REPORT LOG")."\n";
+		$TEXT.=$vrlog_div;
+		$TEXT.="| "._QXZ("WEB SERVER",50)." | "._QXZ("COUNT",6)." |\n";
+		$TEXT.=$vrlog_div;
+
+		$HTML.="<table border='0' cellpadding='3' cellspacing='1'>";
+		$HTML.="<tr bgcolor='#".$SSstd_row1_background."'>";
+		$HTML.="<th colspan='2'><font size='2'>"._QXZ("VICIDIAL REPORT LOG")."</font></th>";
+		$HTML.="</tr>\n";
+		$HTML.="<tr bgcolor='#".$SSstd_row1_background."'>";
+		$HTML.="<th><font size='2'>"._QXZ("WEB SERVER")."</font></th>";
+		$HTML.="<th><font size='2'>"._QXZ("COUNT")."</font></th>";
+		$HTML.="</tr>\n";
+
 		$report_TOTAL=0;
 		while($row=mysqli_fetch_row($rslt)) {
-			$MAIN.="| ".sprintf("%-50s", substr($webserver_array[$row[0]], 0, 50))." | ".sprintf("%6s", $row[1])." |\n";
+			$TEXT.="| ".sprintf("%-50s", substr($webserver_array[$row[0]], 0, 50))." | ".sprintf("%6s", $row[1])." |\n";
 			$CSV_text.="\"".$webserver_array[$row[0]]."\",\"$row[1]\"\n";
 			$report_TOTAL+=$row[1];
+			$HTML.="<tr bgcolor='#".$SSstd_row2_background."'>";
+			$HTML.="<td><font size='2'>".$webserver_array[$row[0]]."</font></td>";
+			$HTML.="<td><font size='2'>".$row[1]."</font></td>";
+			$HTML.="</tr>\n";
 		}
-		$MAIN.=$vrlog_div;
-		$MAIN.="| "._QXZ("TOTAL",50,"r")." | ".sprintf("%6s", $report_TOTAL)." |\n";
+		$TEXT.=$vrlog_div;
+		$TEXT.="| "._QXZ("TOTAL",50,"r")." | ".sprintf("%6s", $report_TOTAL)." |\n";
 		$CSV_text.="\""._QXZ("TOTAL")."\",\"$report_TOTAL\"\n\n";
-		$MAIN.=$vrlog_div;
-		$MAIN.="\n\n";
+		$TEXT.=$vrlog_div;
+		$TEXT.="\n\n";
+		$HTML.="<tr bgcolor='#".$SSstd_row1_background."'>";
+		$HTML.="<th><font size='2'>"._QXZ("TOTAL")."</font></th>";
+		$HTML.="<th><font size='2'>".$report_TOTAL."</font></th>";
+		$HTML.="</tr>\n";
+		$HTML.="</table>\n";
 
-		$MAIN.="</PRE>\n";
+		$TEXT.="</PRE>\n";
 
 }
 	if ($file_download>0) {
@@ -523,6 +632,14 @@ if ($SUBMIT && $query_date && $end_date) {
 	} else {
 		echo $HEADER;
 		require("admin_header.php");
+
+		if ($report_display_type=="HTML") {
+			$MAIN.=$HTML;
+		} else {
+			$MAIN.=$TEXT;
+		}
+		$MAIN.="</form></BODY></HTML>\n";
+
 		echo $MAIN;
 	}
 

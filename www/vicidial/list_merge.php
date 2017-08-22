@@ -6,10 +6,11 @@
 # CHANGES
 # 161004-2240 - Initial Build
 # 170409-1548 - Added IP List validation code
+# 170819-1000 - Added allow_manage_active_lists option
 #
 
-$version = '2.14-2';
-$build = '170409-1548';
+$version = '2.14-3';
+$build = '170819-1000';
 
 require("dbconnect_mysqli.php");
 require("functions.php");
@@ -74,7 +75,7 @@ $num_leads = preg_replace('/[^0-9]/','',$num_leads);
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$sys_settings_stmt = "SELECT use_non_latin,outbound_autodial_active,sounds_central_control_active,enable_languages,language_method,active_modules,admin_screen_colors FROM system_settings;";
+$sys_settings_stmt = "SELECT use_non_latin,outbound_autodial_active,sounds_central_control_active,enable_languages,language_method,active_modules,admin_screen_colors,allow_manage_active_lists FROM system_settings;";
 $sys_settings_rslt=mysql_to_mysqli($sys_settings_stmt, $link);
 if ($DB) {echo "$sys_settings_stmt\n";}
 $num_rows = mysqli_num_rows($sys_settings_rslt);
@@ -88,6 +89,7 @@ if ($num_rows > 0)
 	$SSlanguage_method =				$sys_settings_row[4];
 	$SSactive_modules =					$sys_settings_row[5];
 	$SSadmin_screen_colors =			$sys_settings_row[6];
+	$SSallow_manage_active_lists =		$sys_settings_row[7];
 	}
 else
 	{
@@ -483,7 +485,9 @@ if ($confirm == "CONFIRM")
 if (($submit != "submit" ) && ($confirm != "CONFIRM"))
 	{
 	# figure out which lists they are allowed to see
-	$lists_stmt = "SELECT list_id, list_name FROM vicidial_lists WHERE campaign_id IN ($allowed_campaigns_sql) and active = 'N' ORDER BY list_id;";
+	$activeSQL = "and active = 'N'";
+	if ($SSallow_manage_active_lists > 0) {$activeSQL = '';}
+	$lists_stmt = "SELECT list_id, list_name FROM vicidial_lists WHERE campaign_id IN ($allowed_campaigns_sql) $activeSQL ORDER BY list_id;";
 	if ($DB) { echo "|$lists_stmt|\n"; }
 	$lists_rslt = mysql_to_mysqli($lists_stmt, $link);
 	$num_rows = mysqli_num_rows($lists_rslt);
@@ -515,7 +519,11 @@ if (($submit != "submit" ) && ($confirm != "CONFIRM"))
 		$allowed_lists_count++;
 		}
 
-	echo "<p>"._QXZ("This is the list merge tool.  It will only work on inactive lists. It will merge an existing list into several new lists with the same options as the original list. This includes copying the customer fields from the original.")."</p>";
+	if ($SSallow_manage_active_lists > 0)
+		{echo "<p>"._QXZ("This is the list merge tool. It will merge several existing lists into a single list.")."</p>";}
+	else
+		{echo "<p>"._QXZ("This is the list merge tool. It will only work on inactive lists. It will merge several existing lists into a single list.")."</p>";}
+	
 	echo "<form action=$PHP_SELF method=POST>\n";
 	echo "<center><table width=$section_width cellspacing=3>\n";
 

@@ -7,7 +7,7 @@
 # 150724-0740 - First build
 # 150727-2111 - Added different colors for higher run times, added user variable, code cleanup
 # 170409-1547 - Added IP List validation code
-# 170818-0751 - Added HTML display option
+# 170817-2330 - Added HTML format option
 #
 
 $startMS = microtime();
@@ -226,8 +226,8 @@ $agent_screen_colors="$screen_color_row[0]";
 if ($agent_screen_colors != 'default')
 	{
 	$asc_stmt = "SELECT menu_background,frame_background,std_row1_background,std_row2_background,std_row3_background,std_row4_background,std_row5_background,alt_row1_background,alt_row2_background,alt_row3_background,web_logo FROM vicidial_screen_colors where colors_id='$agent_screen_colors';";
-	$asc_rslt=mysql_to_mysqli($stmt, $link);
-	$qm_conf_ct = mysqli_num_rows($rslt);
+	$asc_rslt=mysql_to_mysqli($asc_stmt, $link);
+	$qm_conf_ct = mysqli_num_rows($asc_rslt);
 	if ($qm_conf_ct > 0)
 		{
 		$asc_row=mysqli_fetch_row($asc_rslt);

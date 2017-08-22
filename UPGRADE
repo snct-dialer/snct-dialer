@@ -186,6 +186,10 @@ OTHER CHANGES:
 	agent has handled their call. Overrides agent HANGUP CUSTOMER button
 	to send call to survey instead.
 
+44. Added system setting to allow Lead Management admin utilities to handle
+	active lists. Also changed Advanced Lead Management tool to allow
+	you to select multiple lists.
+
 
 
 

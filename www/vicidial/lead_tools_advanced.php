@@ -13,10 +13,11 @@
 # 170225-1436 - Added date/time range options
 # 170409-1554 - Added IP List validation code
 # 170711-1104 - Added screen colors
+# 170819-1003 - Added allow_manage_active_lists option, Changed list selection to multi
 #
 
-$version = '2.14-9';
-$build = '170711-1104';
+$version = '2.14-10';
+$build = '170819-1003';
 
 # This limit is to prevent data inconsistancies.
 # If there are too many leads in a list this
@@ -85,7 +86,7 @@ if ($DB)
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$sys_settings_stmt = "SELECT use_non_latin,outbound_autodial_active,sounds_central_control_active,enable_languages,language_method,admin_screen_colors,report_default_format FROM system_settings;";
+$sys_settings_stmt = "SELECT use_non_latin,outbound_autodial_active,sounds_central_control_active,enable_languages,language_method,admin_screen_colors,report_default_format,allow_manage_active_lists FROM system_settings;";
 $sys_settings_rslt=mysql_to_mysqli($sys_settings_stmt, $link);
 if ($DB) {echo "$sys_settings_stmt\n";}
 $num_rows = mysqli_num_rows($sys_settings_rslt);
@@ -99,6 +100,7 @@ if ($num_rows > 0)
 	$SSlanguage_method =				$sys_settings_row[4];
 	$SSadmin_screen_colors =			$sys_settings_row[5];
 	$SSreport_default_format =			$sys_settings_row[6];
+	$SSallow_manage_active_lists =		$sys_settings_row[7];
 	}
 else
 	{
@@ -858,7 +860,7 @@ if ($move_submit == "move" )
 	$move_modify_date_op = preg_replace('/[^<>=_0-9a-zA-Z]/','',$move_modify_date_op);
 	$move_security_phrase = preg_replace('/[^- _\'%0-9a-zA-Z]/','',$move_security_phrase);
 	$move_status = preg_replace('/[^-_%0-9a-zA-Z]/','',$move_status);
-	$move_from_list = preg_replace('/[^0-9]/','',$move_from_list);
+	$move_from_list = preg_replace('/[^0-9\|]/','',$move_from_list);
 	$move_to_list = preg_replace('/[^0-9]/','',$move_to_list);
 	$move_count_num = preg_replace('/[^0-9]/','',$move_count_num);
 	$move_count_op = preg_replace('/[^<>=]/','',$move_count_op);
@@ -1102,7 +1104,7 @@ if ($move_submit == "move" )
 
 	# get the number of leads this action will move
 	$move_lead_count=0;
-	$move_lead_count_stmt = "SELECT count(1) FROM vicidial_list WHERE list_id = '$move_from_list' $sql_where";
+	$move_lead_count_stmt = "SELECT count(1) FROM vicidial_list WHERE list_id IN('".implode("','", $move_from_list)."') $sql_where";
 	if ($DB) { echo "|$move_lead_count_stmt|\n"; }
 	$move_lead_count_rslt = mysql_to_mysqli($move_lead_count_stmt, $link);
 	$move_lead_count_row = mysqli_fetch_row($move_lead_count_rslt);
@@ -1130,7 +1132,7 @@ if ($move_submit == "move" )
 		}
 	else
 		{
-		echo "<p>"._QXZ("You are about to move")." $move_lead_count "._QXZ("leads from list")." $move_from_list "._QXZ("to")." $move_to_list "._QXZ("with the following parameters").":<br /><br />$move_parm <br />"._QXZ("Please press confirm to continue").".</p>\n";
+		echo "<p>"._QXZ("You are about to move")." $move_lead_count "._QXZ("leads from list")." ".implode(",", $move_from_list)." "._QXZ("to")." $move_to_list "._QXZ("with the following parameters").":<br /><br />$move_parm <br />"._QXZ("Please press confirm to continue").".</p>\n";
 		echo "<center><form action=$PHP_SELF method=POST>\n";
 		echo "<input type=hidden name=enable_move_status value='$enable_move_status'>\n";
 		echo "<input type=hidden name=enable_move_country_code value='$enable_move_country_code'>\n";
@@ -1154,7 +1156,7 @@ if ($move_submit == "move" )
 		echo "<input type=hidden name=move_modify_date_end value=\"$move_modify_date_end\">\n";
 		echo "<input type=hidden name=move_modify_date_op value=\"$move_modify_date_op\">\n";
 		echo "<input type=hidden name=move_security_phrase value=\"$move_security_phrase\">\n";
-		echo "<input type=hidden name=move_from_list value=\"$move_from_list\">\n";
+		echo "<input type=hidden name=move_from_list value='".implode("|", $move_from_list)."'>\n";
 		echo "<input type=hidden name=move_to_list value=\"$move_to_list\">\n";
 		echo "<input type=hidden name=move_status value=\"$move_status\">\n";
 		echo "<input type=hidden name=move_count_op value=\"$move_count_op\">\n";
@@ -1284,7 +1286,7 @@ if ($confirm_move == "confirm")
 	$move_modify_date_op = preg_replace('/[^<>=_0-9a-zA-Z]/','',$move_modify_date_op);
 	$move_security_phrase = preg_replace('/[^- _\'%0-9a-zA-Z]/','',$move_security_phrase);
 	$move_status = preg_replace('/[^-_%0-9a-zA-Z]/','',$move_status);
-	$move_from_list = preg_replace('/[^0-9]/','',$move_from_list);
+	$move_from_list = preg_replace('/[^0-9\|]/','',$move_from_list);
 	$move_to_list = preg_replace('/[^0-9]/','',$move_to_list);
 	$move_count_num = preg_replace('/[^0-9]/','',$move_count_num);
 	$move_count_op = preg_replace('/[^<>=]/','',$move_count_op);
@@ -1512,7 +1514,8 @@ if ($confirm_move == "confirm")
 		blank_field('Move Count',true);
 		}
 
-	$move_lead_stmt = "UPDATE vicidial_list SET list_id = '$move_to_list' WHERE list_id = '$move_from_list' $sql_where";
+	$move_from_list_array=explode("|", $move_from_list);
+	$move_lead_stmt = "UPDATE vicidial_list SET list_id = '$move_to_list' WHERE list_id IN('".implode("', '", $move_from_list_array)."') $sql_where";
 	if ($DB) { echo "|$move_lead_stmt|\n"; }
 	$move_lead_rslt = mysql_to_mysqli($move_lead_stmt, $link);
 	$move_lead_count = mysqli_affected_rows($link);
@@ -1650,7 +1653,7 @@ if ($update_submit == "update" )
 	$update_security_phrase = preg_replace('/[^- _\'%0-9a-zA-Z]/','',$update_security_phrase);
 	$update_to_status = preg_replace('/[^-_%0-9a-zA-Z]/','',$update_to_status);
 	$update_from_status = preg_replace('/[^-_%0-9a-zA-Z]/','',$update_from_status);
-	$update_list = preg_replace('/[^0-9]/','',$update_list);
+	$update_list = preg_replace('/[^0-9\|]/','',$update_list);
 	$update_count_num = preg_replace('/[^0-9]/','',$update_count_num);
 	$update_count_op = preg_replace('/[^<>=]/','',$update_count_op);
 
@@ -1890,13 +1893,13 @@ if ($update_submit == "update" )
 
 	# get the number of leads this action will move
 	$update_lead_count=0;
-	$update_lead_count_stmt = "SELECT count(1) FROM vicidial_list WHERE list_id = '$update_list' $sql_where";
+	$update_lead_count_stmt = "SELECT count(1) FROM vicidial_list WHERE list_id IN('".implode("','", $update_list)."') $sql_where";
 	if ($DB) { echo "|$update_lead_count_stmt|\n"; }
 	$update_lead_count_rslt = mysql_to_mysqli($update_lead_count_stmt, $link);
 	$update_lead_count_row = mysqli_fetch_row($update_lead_count_rslt);
 	$update_lead_count = $update_lead_count_row[0];
 
-	echo "<p>"._QXZ("You are about to update")." $update_lead_count "._QXZ("leads in list")." $update_list "._QXZ("to the status")." $update_to_status "._QXZ("with the following parameters").":<br /><br />$update_parm<br />"._QXZ("Please press confirm to continue").".</p>\n";
+	echo "<p>"._QXZ("You are about to update")." $update_lead_count "._QXZ("leads in list")." ".implode(",", $update_list)." "._QXZ("to the status")." $update_to_status "._QXZ("with the following parameters").":<br /><br />$update_parm<br />"._QXZ("Please press confirm to continue").".</p>\n";
 	echo "<center><form action=$PHP_SELF method=POST>\n";
 	echo "<input type=hidden name=enable_update_from_status value='$enable_update_from_status'>\n";
 	echo "<input type=hidden name=enable_update_country_code value='$enable_update_country_code'>\n";
@@ -1920,7 +1923,7 @@ if ($update_submit == "update" )
 	echo "<input type=hidden name=update_modify_date_end value=\"$update_modify_date_end\">\n";
 	echo "<input type=hidden name=update_modify_date_op value=\"$update_modify_date_op\">\n";
 	echo "<input type=hidden name=update_security_phrase value=\"$update_security_phrase\">\n";
-	echo "<input type=hidden name=update_list value=\"$update_list\">\n";
+	echo "<input type=hidden name=update_list value='".implode("|", $update_list)."'>\n";
 	echo "<input type=hidden name=update_to_status value=\"$update_to_status\">\n";
 	echo "<input type=hidden name=update_from_status value=\"$update_from_status\">\n";
 	echo "<input type=hidden name=update_count_op value=\"$update_count_op\">\n";
@@ -2051,7 +2054,7 @@ if ($confirm_update == "confirm")
 	$update_security_phrase = preg_replace('/[^- _\'%0-9a-zA-Z]/','',$update_security_phrase);
 	$update_to_status = preg_replace('/[^-_%0-9a-zA-Z]/','',$update_to_status);
 	$update_from_status = preg_replace('/[^-_%0-9a-zA-Z]/','',$update_from_status);
-	$update_list = preg_replace('/[^0-9]/','',$update_list);
+	$update_list = preg_replace('/[^0-9\|]/','',$update_list);
 	$update_count_num = preg_replace('/[^0-9]/','',$update_count_num);
 	$update_count_op = preg_replace('/[^<>=]/','',$update_count_op);
 
@@ -2282,7 +2285,8 @@ if ($confirm_update == "confirm")
 		blank_field('Move Count',true);
 		}
 
-	$update_lead_stmt = "UPDATE vicidial_list SET status = '$update_to_status' WHERE list_id = '$update_list' $sql_where";
+	$update_list_array=explode("|", $update_list);
+	$update_lead_stmt = "UPDATE vicidial_list SET status = '$update_to_status' WHERE list_id IN('".implode("', '", $update_list_array)."') $sql_where";
 	if ($DB) { echo "|$update_lead_stmt|\n"; }
 	$update_lead_rslt = mysql_to_mysqli($update_lead_stmt, $link);
 	$update_lead_count = mysqli_affected_rows($link);
@@ -2421,7 +2425,7 @@ if ( ( $delete_submit == "delete" ) && ( $delete_lists > 0 ) )
 	$delete_security_phrase = preg_replace('/[^- _\'%0-9a-zA-Z]/','',$delete_security_phrase);
 	$delete_status = preg_replace('/[^-_%0-9a-zA-Z]/','',$delete_status);
 	$delete_lead_id = preg_replace('/[^0-9]/','',$delete_lead_id);
-	$delete_list = preg_replace('/[^0-9]/','',$delete_list);
+	$delete_list = preg_replace('/[^0-9\|]/','',$delete_list);
 	$delete_count_num = preg_replace('/[^0-9]/','',$delete_count_num);
 	$delete_count_op = preg_replace('/[^<>=]/','',$delete_count_op);
 
@@ -2664,13 +2668,13 @@ if ( ( $delete_submit == "delete" ) && ( $delete_lists > 0 ) )
 
 	# get the number of leads this action will move
 	$delete_lead_count=0;
-	$delete_lead_count_stmt = "SELECT count(1) FROM vicidial_list WHERE list_id = '$delete_list' $sql_where";
+	$delete_lead_count_stmt = "SELECT count(1) FROM vicidial_list WHERE list_id IN('".implode("','", $delete_list)."') $sql_where";
 	if ($DB) { echo "|$delete_lead_count_stmt|\n"; }
 	$delete_lead_count_rslt = mysql_to_mysqli($delete_lead_count_stmt, $link);
 	$delete_lead_count_row = mysqli_fetch_row($delete_lead_count_rslt);
 	$delete_lead_count = $delete_lead_count_row[0];
 
-	echo "<p>"._QXZ("You are about to delete")." $delete_lead_count "._QXZ("leads in list")." $delete_list "._QXZ("with the following parameters").":<br /><br />$delete_parm<br />"._QXZ("Please press confirm to continue").".</p>\n";
+	echo "<p>"._QXZ("You are about to delete")." $delete_lead_count "._QXZ("leads in list")." ".implode(",", $delete_list)." "._QXZ("with the following parameters").":<br /><br />$delete_parm<br />"._QXZ("Please press confirm to continue").".</p>\n";
 	echo "<center><form action=$PHP_SELF method=POST>\n";
 	echo "<input type=hidden name=enable_delete_lead_id value='$enable_delete_lead_id'>\n";
 	echo "<input type=hidden name=enable_delete_country_code value='$enable_delete_country_code'>\n";
@@ -2694,7 +2698,7 @@ if ( ( $delete_submit == "delete" ) && ( $delete_lists > 0 ) )
 	echo "<input type=hidden name=delete_modify_date_end value=\"$delete_modify_date_end\">\n";
 	echo "<input type=hidden name=delete_modify_date_op value=\"$delete_modify_date_op\">\n";
 	echo "<input type=hidden name=delete_security_phrase value=\"$delete_security_phrase\">\n";
-	echo "<input type=hidden name=delete_list value=\"$delete_list\">\n";
+	echo "<input type=hidden name=delete_list value='".implode("|", $delete_list)."'>\n";
 	echo "<input type=hidden name=delete_status value=\"$delete_status\">\n";
 	echo "<input type=hidden name=delete_count_op value=\"$delete_count_op\">\n";
 	echo "<input type=hidden name=delete_count_num value=\"$delete_count_num\">\n";
@@ -2824,7 +2828,7 @@ if ( ( $confirm_delete == "confirm" ) && ( $delete_lists > 0 ) )
 	$delete_security_phrase = preg_replace('/[^- _\'%0-9a-zA-Z]/','',$delete_security_phrase);
 	$delete_status = preg_replace('/[^-_%0-9a-zA-Z]/','',$delete_status);
 	$delete_lead_id = preg_replace('/[^0-9]/','',$delete_lead_id);
-	$delete_list = preg_replace('/[^0-9]/','',$delete_list);
+	$delete_list = preg_replace('/[^0-9\|]/','',$delete_list);
 	$delete_count_num = preg_replace('/[^0-9]/','',$delete_count_num);
 	$delete_count_op = preg_replace('/[^<>=]/','',$delete_count_op);
 
@@ -3058,7 +3062,8 @@ if ( ( $confirm_delete == "confirm" ) && ( $delete_lists > 0 ) )
 		blank_field('Move Count',true);
 		}
 
-	$delete_lead_stmt = "DELETE FROM vicidial_list WHERE list_id = '$delete_list' $sql_where";
+	$delete_list_array=explode("|", $delete_list);
+	$delete_lead_stmt = "DELETE FROM vicidial_list WHERE list_id IN('".implode("', '", $delete_list_array)."') $sql_where";
 	if ($DB) { echo "|$delete_lead_stmt|\n"; }
 	$delete_lead_rslt = mysql_to_mysqli($delete_lead_stmt, $link);
 	$delete_lead_count = mysqli_affected_rows($link);
@@ -3119,7 +3124,7 @@ if ($callback_submit == "switchcallbacks" )
 	$callback_entry_end_date = preg_replace('/[^-_%0-9a-zA-Z]/','',$callback_entry_end_date);
 	$callback_callback_start_date = preg_replace('/[^-_%0-9a-zA-Z]/','',$callback_callback_start_date);
 	$callback_callback_end_date = preg_replace('/[^-_%0-9a-zA-Z]/','',$callback_callback_end_date);
-	$callback_list = preg_replace('/[^0-9]/','',$callback_list);
+	$callback_list = preg_replace('/[^0-9\|]/','',$callback_list);
 
 	if ($DB)
 		{
@@ -3178,13 +3183,13 @@ if ($callback_submit == "switchcallbacks" )
 
 	# get the number of call backs that will be switched
 	$callback_lead_count=0;
-	$callback_lead_count_stmt = "SELECT count(1) FROM vicidial_callbacks WHERE list_id = '$callback_list' and recipient = 'USERONLY' $sql_where";
+	$callback_lead_count_stmt = "SELECT count(1) FROM vicidial_callbacks WHERE list_id IN('".implode("','", $callback_list)."') and recipient = 'USERONLY' $sql_where";
 	if ($DB) { echo "|$callback_lead_count_stmt|\n"; }
 	$callback_lead_count_rslt = mysql_to_mysqli($callback_lead_count_stmt, $link);
 	$callback_lead_count_row = mysqli_fetch_row($callback_lead_count_rslt);
 	$callback_lead_count = $callback_lead_count_row[0];
 
-		echo "<p>"._QXZ("You are about to switch")." $callback_lead_count "._QXZ("call backs in list")." $callback_list "._QXZ("from USERONLY callbacks to EVERYONE callbacks with these parameters").":<br /><br />$callback_parm <br />"._QXZ("Please press confirm to continue").".</p>\n";
+		echo "<p>"._QXZ("You are about to switch")." $callback_lead_count "._QXZ("call backs in list")." ".implode(",", $callback_list)." "._QXZ("from USERONLY callbacks to EVERYONE callbacks with these parameters").":<br /><br />$callback_parm <br />"._QXZ("Please press confirm to continue").".</p>\n";
 		echo "<center><form action=$PHP_SELF method=POST>\n";
 		echo "<input type=hidden name=enable_callback_entry_date value='$enable_callback_entry_date'>\n";
 		echo "<input type=hidden name=enable_callback_callback_date value='$enable_callback_callback_date'>\n";
@@ -3192,7 +3197,7 @@ if ($callback_submit == "switchcallbacks" )
 		echo "<input type=hidden name=callback_entry_end_date value='$callback_entry_end_date'>\n";
 		echo "<input type=hidden name=callback_callback_start_date value='$callback_callback_start_date'>\n";
 		echo "<input type=hidden name=callback_callback_end_date value='$callback_callback_end_date'>\n";
-		echo "<input type=hidden name=callback_list value='$callback_list'>\n";
+		echo "<input type=hidden name=callback_list value='".implode("|", $callback_list)."'>\n";
 		echo "<input type=hidden name=DB value='$DB'>\n";
 		echo "<input type=submit name=confirm_callback value='"._QXZ("confirm")."'>\n";
 		echo "</form></center>\n";
@@ -3240,7 +3245,7 @@ if ($confirm_callback == "confirm")
 	$callback_entry_end_date = preg_replace('/[^-_%0-9a-zA-Z]/','',$callback_entry_end_date);
 	$callback_callback_start_date = preg_replace('/[^-_%0-9a-zA-Z]/','',$callback_callback_start_date);
 	$callback_callback_end_date = preg_replace('/[^-_%0-9a-zA-Z]/','',$callback_callback_end_date);
-	$callback_list = preg_replace('/[^0-9]/','',$callback_list);
+	$callback_list = preg_replace('/[^0-9\|]/','',$callback_list);
 
 	if ($DB)
 		{
@@ -3296,7 +3301,8 @@ if ($confirm_callback == "confirm")
 		blank_field('Callback End Date',false);
 		}
 
-	$callback_lead_stmt = "UPDATE vicidial_callbacks SET recipient = 'ANYONE' WHERE list_id = '$callback_list' and recipient = 'USERONLY' $sql_where";
+	$callback_list_array=explode("|", $callback_list);
+	$callback_lead_stmt = "UPDATE vicidial_callbacks SET recipient = 'ANYONE' WHERE list_id IN('".implode("', '", $callback_list_array)."') and recipient = 'USERONLY' $sql_where";
 	if ($DB) { echo "|$callback_lead_stmt|\n"; }
 	$callback_lead_rslt = mysql_to_mysqli($callback_lead_stmt, $link);
 	$callback_lead_count = mysqli_affected_rows($link);
@@ -3368,7 +3374,9 @@ if (
 		}
 
 	# figure out which lists they are allowed to see
-	$lists_stmt = "SELECT list_id, list_name FROM vicidial_lists WHERE campaign_id IN ($allowed_campaigns_sql) and active = 'N' ORDER BY list_id";
+	$activeSQL = "and active = 'N'";
+	if ($SSallow_manage_active_lists > 0) {$activeSQL = '';}
+	$lists_stmt = "SELECT list_id, list_name FROM vicidial_lists WHERE campaign_id IN ($allowed_campaigns_sql) $activeSQL ORDER BY list_id";
 	if ($DB) { echo "|$lists_stmt|\n"; }
 	$lists_rslt = mysql_to_mysqli($lists_stmt, $link);
 	$num_rows = mysqli_num_rows($lists_rslt);
@@ -3433,15 +3441,19 @@ if (
 		}
 
 
-	echo "<p>"._QXZ("The following are advanced lead management tools.  They will only work on inactive lists with less than")." $list_lead_limit "._QXZ("leads in them. This is to avoid data inconsistencies").".</p>";
+	if ($SSallow_manage_active_lists > 0)
+		{echo "<p>"._QXZ("The following are advanced lead management tools.  They will only work on lists with less than");}
+	else
+		{echo "<p>"._QXZ("The following are advanced lead management tools.  They will only work on inactive lists with less than");}
+	echo " $list_lead_limit "._QXZ("leads in them. This is to avoid data inconsistencies").".</p>";
 	echo "<form action=$PHP_SELF method=POST>\n";
 	echo "<center><table width=$section_width cellspacing=3>\n";
 
 	# BEGIN lead move
 	echo "<tr bgcolor=#$SSmenu_background><td colspan=2 align=center><font color=white><b>"._QXZ("Move Leads")."</b></font></td></tr>\n";
 	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("From List")."</td><td align=left>\n";
-	echo "<select size=1 name=move_from_list>\n";
-	echo "<option value='-'>"._QXZ("Select A List")."</option>\n";
+	echo "<select size=8 name=move_from_list[] id='move_from_list' multiple>\n";
+	# echo "<option value='-'>"._QXZ("Select A List")."</option>\n";
 
 	$i = 0;
 	while ( $i < $allowed_lists_count )
@@ -3550,8 +3562,8 @@ if (
 	echo "<br /><center><table width=$section_width cellspacing=3>\n";
 	echo "<tr bgcolor=#$SSmenu_background><td colspan=2 align=center><font color=white><b>"._QXZ("Update Lead Statuses")."</b></font></td></tr>\n";
 	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("List")."</td><td align=left>\n";
-	echo "<select size=1 name=update_list>\n";
-	echo "<option value='-'>"._QXZ("Select A List")."</option>\n";
+	echo "<select size=8 name=update_list[] id='update_list' multiple>\n";
+	# echo "<option value='-'>"._QXZ("Select A List")."</option>\n";
 
 	$i = 0;
 	while ( $i < $allowed_lists_count )
@@ -3661,8 +3673,8 @@ if (
 		echo "<br /><center><table width=$section_width cellspacing=3>\n";
 		echo "<tr bgcolor=#$SSmenu_background><td colspan=2 align=center><font color=white><b>"._QXZ("Delete Leads")."</b></font></td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("List")."</td><td align=left>\n";
-		echo "<select size=1 name=delete_list>\n";
-		echo "<option value='-'>"._QXZ("Select A List")."</option>\n";
+		echo "<select size=8 name=delete_list[] id='delete_list' multiple>\n";
+		# echo "<option value='-'>"._QXZ("Select A List")."</option>\n";
 
 		$i = 0;
 		while ( $i < $allowed_lists_count )
@@ -3764,8 +3776,8 @@ if (
 	echo "<br /><center><table width=$section_width cellspacing=3>\n";
 	echo "<tr bgcolor=#$SSmenu_background><td colspan=2 align=center><font color=white><b>"._QXZ("Switch Callbacks")."</b></font></td></tr>\n";
 	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("List")."</td><td align=left>\n";
-	echo "<select size=1 name=callback_list>\n";
-	echo "<option value='-'>"._QXZ("Select A List")."</option>\n";
+	echo "<select size=8 name=callback_list[] id='callback_list' multiple>\n";
+	# echo "<option value='-'>"._QXZ("Select A List")."</option>\n";
 
 	$i = 0;
 	while ( $i < $allowed_lists_count )
