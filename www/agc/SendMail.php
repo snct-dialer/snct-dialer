@@ -27,28 +27,38 @@ if (isset($_GET["Anzeige"]))			{$Anzeige=$_GET["Anzeige"];}
 	elseif (isset($_POST["Anzeige"]))	{$Anzeige=$_POST["Anzeige"];}
 	
 echo "<form name=Datum method=\"post\">" .PHP_EOL;
+echo "<table>";
+echo "<tr>";
 echo " <input type=\"hidden\" name=\"Anzeige\" value='1'> " .PHP_EOL;
 echo " <input type=\"hidden\" name=\"MailText\" value=\"$MailText\"> " . PHP_EOL; 
 
-echo " <label for=\"MailFrom\">From :</label>" . PHP_EOL;
-echo " <input type=\"text\" name=\"MailFrom\" id=\"MailFrom\" value=\"$MailFrom\" maxlength=\"50\"> <br>" .PHP_EOL;
+echo " <td><label for=\"MailFrom\">From :</label></td>" . PHP_EOL;
+echo " <td><input type=\"text\" name=\"MailFrom\" id=\"MailFrom\" value=\"$MailFrom\" maxlength=\"50\"></td> " .PHP_EOL;
+echo "</tr>";
+echo "<tr>";
+echo " <td><label for=\"MailTo\">To :</label></td>" . PHP_EOL;
+echo " <td><input type=\"text\" name=\"MailTo\" id=\"MailTo\" value=\"$MailTo\" maxlength=\"50\"></td>" .PHP_EOL;
+echo "</tr>";
+echo "<tr>";
 
-echo " <label for=\"MailTo\">To :</label>" . PHP_EOL;
-echo " <input type=\"text\" name=\"MailTo\" id=\"MailTo\" value=\"$MailTo\" maxlength=\"50\"> <br>" .PHP_EOL;
+echo " <td><label for=\"MailTitle\">Subject :</label></td>" . PHP_EOL;
+echo " <td><input type=\"text\" name=\"MailTitle\" id=\"MailTitle\" value=\"$MailTitle\" maxlength=\"80\"> </td>" .PHP_EOL;
+echo "</tr>";
+echo "<tr>";
 
-echo " <label for=\"MailTitle\">Subject :</label>" . PHP_EOL;
-echo " <input type=\"text\" name=\"MailTitle\" id=\"MailTitle\" value=\"$MailTitle\" maxlength=\"80\"> <br>" .PHP_EOL;
+echo " <td><label for=\"MailText1\">Text :</label></td>" . PHP_EOL;
+echo " <td><textarea name=\"MailText1\" id=\"MailText1\" cols=\"50\" rows=\"10\" value=\"$MailText1\"> </textarea></td>" .PHP_EOL;
+echo "</tr>";
 
-echo " <label for=\"MailText1\">Text :</label>" . PHP_EOL;
-echo " <textarea name=\"MailText1\" id=\"MailText1\" cols=\"50\" rows=\"10\" value=\"$MailText1\"> </textarea><br>" .PHP_EOL;
-
+echo "</table>";
 echo " <button type=\"submit\">Absenden</button>" . PHP_EOL;
 echo "</form>" . PHP_EOL;
 
 if($Anzeige == '1') {
 	$Text = $MailText1 . "\n\r" . $MailText;
 	$header = 'From: ' . $MailFrom . "\r\n" .
-			'X-Mailer: PHP/' . phpversion();
+			  'Bcc: ' . $MailFrom . "\r\n" .
+		  	  'X-Mailer: PHP/' . phpversion();
 	mail ($MailTo, $MailTitle, $Text, $header);
 	echo "<script>window.close();</script>";
 }

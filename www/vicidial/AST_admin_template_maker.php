@@ -222,6 +222,12 @@ $regexLOGallowed_campaigns = " $LOGallowed_campaigns ";
 $script_name = getenv("SCRIPT_NAME");
 $server_name = getenv("SERVER_NAME");
 $server_port = getenv("SERVER_PORT");
+if(isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'){
+    $HTTPprotokol = 'https://';
+}
+if(isset($_SERVER['HTTP_X_FORWARDED_PORT'])) {
+    $server_port = $_SERVER['HTTP_X_FORWARDED_PORT'];
+}
 if (preg_match("/443/i",$server_port)) {$HTTPprotocol = 'https://';}
 else {$HTTPprotocol = 'http://';}
 $admDIR = "$HTTPprotocol$server_name$script_name";

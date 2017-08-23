@@ -846,6 +846,12 @@ if ($function == 'sounds_list')
 			}
 		$server_name = getenv("SERVER_NAME");
 		$server_port = getenv("SERVER_PORT");
+		if(isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'){
+		    $HTTPprotokol = 'https://';
+		}
+		if(isset($_SERVER['HTTP_X_FORWARDED_PORT'])) {
+		    $server_port = $_SERVER['HTTP_X_FORWARDED_PORT'];
+		}
 		if (preg_match("/443/i",$server_port)) {$HTTPprotocol = 'https://';}
 		  else {$HTTPprotocol = 'http://';}
 		$admDIR = "$HTTPprotocol$server_name:$server_port";
@@ -1033,6 +1039,12 @@ if ($function == 'moh_list')
 			}
 		$server_name = getenv("SERVER_NAME");
 		$server_port = getenv("SERVER_PORT");
+		if(isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'){
+		    $HTTPprotokol = 'https://';
+		}
+		if(isset($_SERVER['HTTP_X_FORWARDED_PORT'])) {
+		    $server_port = $_SERVER['HTTP_X_FORWARDED_PORT'];
+		}
 		if (preg_match("/443/i",$server_port)) {$HTTPprotocol = 'https://';}
 		  else {$HTTPprotocol = 'http://';}
 		$admDIR = "$HTTPprotocol$server_name:$server_port";
@@ -1220,6 +1232,12 @@ if ($function == 'vm_list')
 
 		$server_name = getenv("SERVER_NAME");
 		$server_port = getenv("SERVER_PORT");
+		if(isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'){
+		    $HTTPprotokol = 'https://';
+		}
+		if(isset($_SERVER['HTTP_X_FORWARDED_PORT'])) {
+		    $server_port = $_SERVER['HTTP_X_FORWARDED_PORT'];
+		}
 		if (preg_match("/443/i",$server_port)) {$HTTPprotocol = 'https://';}
 		  else {$HTTPprotocol = 'http://';}
 		$admDIR = "$HTTPprotocol$server_name:$server_port";
@@ -10375,6 +10393,12 @@ function api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$val
 		$script_name = getenv("SCRIPT_NAME");
 		$server_name = getenv("SERVER_NAME");
 		$server_port = getenv("SERVER_PORT");
+		if(isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'){
+		    $HTTPprotokol = 'https://';
+		}
+		if(isset($_SERVER['HTTP_X_FORWARDED_PORT'])) {
+		    $server_port = $_SERVER['HTTP_X_FORWARDED_PORT'];
+		}
 		if (preg_match("/443/i",$server_port)) {$HTTPprotocol = 'https://';}
 		  else {$HTTPprotocol = 'http://';}
 		if (($server_port == '80') or ($server_port == '443') ) {$server_port='';}
