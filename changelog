@@ -18,6 +18,7 @@
     - admin.php: Added allow_manage_active_lists system setting.
   * Add upstream Rev. 2807:
     - admin.php: Fix for issue #1036.
+  * Add HTTP_X_FORWARDED_* tests.
 
 2.25.6
 
