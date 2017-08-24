@@ -12589,67 +12589,24 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 // ################################################################################
 // Update vicidial_list lead record with all altered values from form
-	function MailCustomerData(commitclick)
-		{
+	function MailCustomerData(commitclick) {
+
 		if (commitclick=='YES')
-			{button_click_log = button_click_log + "" + SQLdate + "-----customer_info_commit---" + commitclick + "|";}
-		if ( (OtherTab == '1') && (comments_all_tabs == 'ENABLED') )
-			{
-			var test_otcx = document.vicidial_form.other_tab_comments.value;
-			if (test_otcx.length > 0)
-				{document.vicidial_form.comments.value = document.vicidial_form.other_tab_comments.value}
-			}
-		var REGcommentsAMP = new RegExp('&',"g");
-		var REGcommentsQUES = new RegExp("\\?","g");
-		var REGcommentsPOUND = new RegExp("\\#","g");
-		var REGcommentsRESULT = document.vicidial_form.comments.value.replace(REGcommentsAMP, "--AMP--");
-		REGcommentsRESULT = REGcommentsRESULT.replace(REGcommentsQUES, "--QUES--");
-		REGcommentsRESULT = REGcommentsRESULT.replace(REGcommentsPOUND, "--POUND--");
+			{button_click_log = button_click_log + "" + SQLdate + "-----mail_customer_data---" + commitclick + "|";}
 
-		var xmlhttp=false;
-		/*@cc_on @*/
-		/*@if (@_jscript_version >= 5)
-		// JScript gives us Conditional compilation, we can cope with old IE versions.
-		// and security blocked creation of the objects.
-		 try {
-		  xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
-		 } catch (e) {
-		  try {
-		   xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-		  } catch (E) {
-		   xmlhttp = false;
-		  }
-		 }
-		@end @*/
-		if (!xmlhttp && typeof XMLHttpRequest!='undefined')
-			{
-			xmlhttp = new XMLHttpRequest();
-			}
-		if (xmlhttp) 
-			{ 
+		var uri = "---------------------------------------\n";
+		uri += "Lead ID = "  + encodeURIComponent(document.vicidial_form.lead_id.value) + "\n";
+		uri += "Comments = " + document.vicidial_form.comments.value + "\n";
+		uri += "---------------------------------------\n\n\n";
+		var MailText = encodeURI(uri);
 
-			var MailText = "Lead ID = "  + encodeURIComponent(document.vicidial_form.lead_id.value) + "\n\r" + "Comments = " + REGcommentsRESULT + "\n\r";
-			var MF = '<?php echo $MailFrom ?>';
-			var MT = '<?php echo $MailTo ?>';
+		var MF = '<?php echo $MailFrom ?>';
+		var MT = '<?php echo $MailTo ?>';
 
-			var EMailPara = "?MailFrom=" + MF + "&MailTo=" + MT + "&MailTitle=Lead Report" + "&MailText=" + MailText;
+		var EMailPara = "?MailFrom=" + MF + "&MailTo=" + MT + "&MailTitle=Lead Report" + "&MailText=" + MailText;
 
-			var fenster = window.open("SendMail.php" + EMailPara, "Email", "width=600,height=400,top=100,left=100");
-//			xmlhttp.open('POST', 'SendMail.php'); 
-			
-//			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-//			xmlhttp.send(EMailPara); 
-//			xmlhttp.onreadystatechange = function() 
-//				{ 
-//				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
-	//				{
-			//		updatelead_complete=1;
-			//	alert(xmlhttp.responseText);
-//					}
-//				}
-			delete xmlhttp;
-			}
-		}
+		var fenster = window.open("SendMail.php" + EMailPara, "Email", "width=600,height=400,top=100,left=100");
+	}
 
 	// ################################################################################
 	// Update vicidial_list lead record with all altered values from form

@@ -28,6 +28,7 @@
     - callbacks_bulk_change.php: Added screen color settings.
     - vicidial_custom_reports_admin.php: Added screen colors; Fixed delete bug.
   * Fix width of SendMail window.
+  * Rewrite MailCustomerData.
 
 2.25.6
 
