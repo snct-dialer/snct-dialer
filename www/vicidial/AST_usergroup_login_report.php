@@ -182,6 +182,12 @@ $LOGhttp_referer = getenv("HTTP_REFERER");
 $LOGbrowser=preg_replace("/\'|\"|\\\\/","",$LOGbrowser);
 $LOGrequest_uri=preg_replace("/\'|\"|\\\\/","",$LOGrequest_uri);
 $LOGhttp_referer=preg_replace("/\'|\"|\\\\/","",$LOGhttp_referer);
+if(isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'){
+    $HTTPprotokol = 'https://';
+}
+if(isset($_SERVER['HTTP_X_FORWARDED_PORT'])) {
+    $LOGserver_port = $_SERVER['HTTP_X_FORWARDED_PORT'];
+}
 if (preg_match("/443/i",$LOGserver_port)) {$HTTPprotocol = 'https://';}
   else {$HTTPprotocol = 'http://';}
 if (($LOGserver_port == '80') or ($LOGserver_port == '443') ) {$LOGserver_port='';}
@@ -305,6 +311,46 @@ else
 	$user_group_SQL = preg_replace('/,$/i', '',$user_group_SQL);
 	#$user_group_SQL = "and vicidial_agent_log.user_group IN($user_group_SQL)";
 	}
+
+##### BEGIN Define colors and logo #####
+$SSmenu_background='015B91';
+$SSframe_background='D9E6FE';
+$SSstd_row1_background='9BB9FB';
+$SSstd_row2_background='B9CBFD';
+$SSstd_row3_background='8EBCFD';
+$SSstd_row4_background='B6D3FC';
+$SSstd_row5_background='FFFFFF';
+$SSalt_row1_background='BDFFBD';
+$SSalt_row2_background='99FF99';
+$SSalt_row3_background='CCFFCC';
+
+$screen_color_stmt="select admin_screen_colors from system_settings";
+$screen_color_rslt=mysql_to_mysqli($screen_color_stmt, $link);
+$screen_color_row=mysqli_fetch_row($screen_color_rslt);
+$agent_screen_colors="$screen_color_row[0]";
+
+if ($agent_screen_colors != 'default')
+	{
+	$asc_stmt = "SELECT menu_background,frame_background,std_row1_background,std_row2_background,std_row3_background,std_row4_background,std_row5_background,alt_row1_background,alt_row2_background,alt_row3_background,web_logo FROM vicidial_screen_colors where colors_id='$agent_screen_colors';";
+	$asc_rslt=mysql_to_mysqli($asc_stmt, $link);
+	$qm_conf_ct = mysqli_num_rows($asc_rslt);
+	if ($qm_conf_ct > 0)
+		{
+		$asc_row=mysqli_fetch_row($asc_rslt);
+		$SSmenu_background =            $asc_row[0];
+		$SSframe_background =           $asc_row[1];
+		$SSstd_row1_background =        $asc_row[2];
+		$SSstd_row2_background =        $asc_row[3];
+		$SSstd_row3_background =        $asc_row[4];
+		$SSstd_row4_background =        $asc_row[5];
+		$SSstd_row5_background =        $asc_row[6];
+		$SSalt_row1_background =        $asc_row[7];
+		$SSalt_row2_background =        $asc_row[8];
+		$SSalt_row3_background =        $asc_row[9];
+		$SSweb_logo =		           $asc_row[10];
+		}
+	}
+
 ######################################
 if ($DB) {$HTML_text.="$user_group_string|$user_group_ct|$user_groupQS|$i<BR>";}
 
@@ -360,29 +406,29 @@ $HTML_text.="</SELECT>\n";
 $HTML_text.="</TD>\n";
 
 $HTML_text.="<TD VALIGN=TOP>\n";
-#$HTML_text.="Display as:<BR>";
-#$HTML_text.="<select name='report_display_type'>";
-#if ($report_display_type) {$HTML_text.="<option value='$report_display_type' selected>$report_display_type</option>";}
-#$HTML_text.="<option value='TEXT'>TEXT</option><option value='HTML'>HTML</option></select>\n<BR><BR>";
+$HTML_text.=_QXZ("Display as:")."<BR>";
+$HTML_text.="<select name='report_display_type'>";
+if ($report_display_type) {$HTML_text.="<option value='$report_display_type' selected>$report_display_type</option>";}
+$HTML_text.="<option value='TEXT'>TEXT</option><option value='HTML'>HTML</option></select>\n<BR><BR>";
 
 if ($archives_available=="Y") 
 	{
 	$HTML_text.="<input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."\n";
 	}
 
-$HTML_text.="<BR><BR><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'>\n";
-$HTML_text.="</TD><TD VALIGN=TOP> &nbsp; &nbsp; &nbsp; &nbsp; ";
+$HTML_text.="</TD><TD VALIGN=MIDDLE ALIGN='CENTER'> &nbsp; &nbsp; &nbsp; &nbsp; ";
 
 $HTML_text.="<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;\n";
 $HTML_text.="<a href=\"$PHP_SELF?DB=$DB&query_date=$query_date&end_date=$end_date&query_date_D=$query_date_D&query_date_T=$query_date_T&end_date_D=$end_date_D&end_date_T=$end_date_T$groupQS$user_groupQS$call_statusQS&file_download=1&SUBMIT=$SUBMIT&search_archived_data=$search_archived_data\">"._QXZ("DOWNLOAD")."</a> |";
 $HTML_text.=" <a href=\"./admin.php?ADD=999999\">"._QXZ("REPORTS")."</a> </FONT>\n";
 $HTML_text.="</FONT>\n";
+$HTML_text.="<BR><BR><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'>\n";
 $HTML_text.="</TD></TR></TABLE>";
-$HTML_text.="</FORM><font size=2><PRE>\n";
+$HTML_text.="</FORM>\n";
 
 	if ($file_download < 1)
 		{
-		$ASCII_text.=_QXZ("Usergroup Login Report",24).": $user                     $NOW_TIME ($db_source)\n";
+		$ASCII_text.="<font size=2><PRE>"._QXZ("Usergroup Login Report",24).": $user                     $NOW_TIME ($db_source)\n";
 		$GRAPH_text.=_QXZ("Usergroup Login Report Report",24).": $user                     $NOW_TIME ($db_source)\n";
 		}
 	else
@@ -395,6 +441,26 @@ if ($SUBMIT)
 	$ASCII_text.="+--------------------------------+----------+----------------------+---------------------+---------------------+----------+-----------------+-----------------+----------------------+--------------+-----------------+-----------------+-----------------+\n";
 	$ASCII_text.="| "._QXZ("USER NAME",30)." | "._QXZ("ID",8)." | "._QXZ("USER GROUP",20)." | "._QXZ("FIRST LOGIN DATE",19)." | "._QXZ("LAST LOGIN DATE",19)." | "._QXZ("CAMPAIGN",8)." | "._QXZ("SERVER IP",15)." | "._QXZ("COMPUTER IP",15)." | "._QXZ("EXTENSION",20)." | "._QXZ("BROWSER",12)." | "._QXZ("PHONE LOGIN",15)." | "._QXZ("SERVER PHONE",15)." | "._QXZ("PHONE IP",15)." |\n";
 	$ASCII_text.="+--------------------------------+----------+----------------------+---------------------+---------------------+----------+-----------------+-----------------+----------------------+--------------+-----------------+-----------------+-----------------+\n";
+
+	$HTML_text2.="<table border='0' cellpadding='3' cellspacing='1'>";
+	$HTML_text2.="<tr bgcolor='#".$SSstd_row1_background."'>";
+	$HTML_text2.="<th colspan='11'><font size='2'>"._QXZ("Usergroup Login Report Report").": $user</th><th colspan='2'><font size='2'>$NOW_TIME ($db_source)</font></th>";
+	$HTML_text2.="</tr>\n";
+	$HTML_text2.="<tr bgcolor='#".$SSstd_row1_background."'>";
+	$HTML_text2.="<th><font size='2'>"._QXZ("USER NAME")."</font></th>";
+	$HTML_text2.="<th><font size='2'>"._QXZ("ID")."</font></th>";
+	$HTML_text2.="<th><font size='2'>"._QXZ("USER GROUP")."</font></th>";
+	$HTML_text2.="<th><font size='2'>"._QXZ("FIRST LOGIN DATE")."</font></th>";
+	$HTML_text2.="<th><font size='2'>"._QXZ("LAST LOGIN DATE")."</font></th>";
+	$HTML_text2.="<th><font size='2'>"._QXZ("CAMPAIGN")."</font></th>";
+	$HTML_text2.="<th><font size='2'>"._QXZ("SERVER IP")."</font></th>";
+	$HTML_text2.="<th><font size='2'>"._QXZ("COMPUTER IP")."</font></th>";
+	$HTML_text2.="<th><font size='2'>"._QXZ("EXTENSION")."</font></th>";
+	$HTML_text2.="<th><font size='2'>"._QXZ("BROWSER")."</font></th>";
+	$HTML_text2.="<th><font size='2'>"._QXZ("PHONE LOGIN")."</font></th>";
+	$HTML_text2.="<th><font size='2'>"._QXZ("SERVER PHONE")."</font></th>";
+	$HTML_text2.="<th><font size='2'>"._QXZ("PHONE IP")."</font></th>";
+	$HTML_text2.="</tr>\n";
 
 	$CSV_text="\""._QXZ("User group login report")."\",\""._QXZ("User groups").":\",\""._QXZ("$user_group_string")."\"\n\n";
 	$CSV_text.="\""._QXZ("User name")."\",\""._QXZ("User ID")."\",\""._QXZ("User group")."\",\""._QXZ("First login date")."\",\""._QXZ("Last login date")."\",\""._QXZ("Campaign ID")."\",\""._QXZ("Server IP")."\",\""._QXZ("Computer IP")."\",\""._QXZ("Extension")."\",\""._QXZ("Browser")."\",\""._QXZ("Phone login")."\",\""._QXZ("Server phone")."\",\""._QXZ("Phone IP")."\"\n";
@@ -414,9 +480,26 @@ if ($SUBMIT)
 			$browser=$browser_ary[0];
 			$ASCII_text.="| ".sprintf("%-30s", $row["fullname"])." | <a href='user_stats.php?user=$row[user]'>".sprintf("%-8s", $row["user"])."</a> | ".sprintf("%-20s", $data_row["user_group"])." | ".sprintf("%-19s", $date_row["min_date"])." | ".sprintf("%-19s", $date_row["max_date"])." | ".sprintf("%-8s", $data_row["campaign_id"])." | ".sprintf("%-15s", $data_row["server_ip"])." | ".sprintf("%-15s", $data_row["computer_ip"])." | ".sprintf("%-20s", $data_row["ext"])." | ".sprintf("%-12s", $browser)." | ".sprintf("%-15s", $data_row["phone_login"])." | ".sprintf("%-15s", $data_row["server_phone"])." | ".sprintf("%-15s", $data_row["phone_ip"])." |\n";
 			$CSV_text.="\"$row[full_name]\",\"$row[user]\",\"$data_row[user_group]\",\"$date_row[min_date]\",\"$date_row[max_date]\",\"$data_row[campaign_id]\",\"$data_row[server_ip]\",\"$data_row[computer_ip]\",\"$data_row[extension]\",\"$data_row[browser]\",\"$data_row[phone_login]\",\"$data_row[server_phone]\",\"$data_row[phone_ip]\"\n";
+
+			$HTML_text2.="<tr bgcolor='#".$SSstd_row2_background."'>";
+			$HTML_text2.="<td><font size='2'>".$row["fullname"]."</font></td>";
+			$HTML_text2.="<td><font size='2'><a href='user_stats.php?user=$row[user]'>".$row["user"]."</a></font></td>";
+			$HTML_text2.="<td><font size='2'>".$data_row["user_group"]."</font></td>";
+			$HTML_text2.="<td><font size='2'>".$date_row["min_date"]."</font></td>";
+			$HTML_text2.="<td><font size='2'>".$date_row["max_date"]."</font></td>";
+			$HTML_text2.="<td><font size='2'>".$data_row["campaign_id"]."</font></td>";
+			$HTML_text2.="<td><font size='2'>".$data_row["server_ip"]."</font></td>";
+			$HTML_text2.="<td><font size='2'>".$data_row["computer_ip"]."</font></td>";
+			$HTML_text2.="<td><font size='2'>".$data_row["ext"]."</font></td>";
+			$HTML_text2.="<td><font size='2'>".$browser."</font></td>";
+			$HTML_text2.="<td><font size='2'>".$data_row["phone_login"]."</font></td>";
+			$HTML_text2.="<td><font size='2'>".$data_row["server_phone"]."</font></td>";
+			$HTML_text2.="<td><font size='2'>".$data_row["phone_ip"]."</font></td>";
+			$HTML_text2.="</tr>\n";
 			}
 		}
 	$ASCII_text.="+--------------------------------+----------+----------------------+---------------------+---------------------+----------+-----------------+-----------------+----------------------+--------------+-----------------+-----------------+-----------------+\n";
+	$HTML_text2.="</table>\n";
 	}
 
 if ($file_download>0) 
@@ -449,6 +532,10 @@ else
 	if ($report_display_type=="HTMLOFF")
 		{
 		$HTML_text.=$GRAPH_text;
+		}
+	else if ($report_display_type=="HTML")
+		{
+		$HTML_text.=$HTML_text2;
 		}
 	else
 		{

@@ -90,10 +90,11 @@
 # 170209-1222 - Added URL and IP logging
 # 170220-1303 - Added switch_lead function
 # 170527-2250 - Fix for rare inbound logging issue #1017, Added variable filtering
+# 170815-1314 - Added HTTP error code 418
 #
 
-$version = '2.14-56';
-$build = '170527-2250';
+$version = '2.14-57';
+$build = '170815-1314';
 
 $startMS = microtime();
 
@@ -389,6 +390,26 @@ if ($function == 'version')
 	}
 ################################################################################
 ### END - version
+################################################################################
+
+
+
+
+
+################################################################################
+### BEGIN - coffee/teapot 418 - reject coffee requests
+################################################################################
+if ( ($function == 'coffee') or ($function == 'start_coffee') or ($function == 'make_coffee') or ($function == 'brew_coffee') )
+	{
+	$data = _QXZ("Coffee").": $function|Error 418 I'm a teapot";
+	$result = _QXZ("ERROR");
+	Header("HTTP/1.0 418 I'm a teapot");
+	echo "$data";
+	api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+	exit;
+	}
+################################################################################
+### END - coffee/teapot
 ################################################################################
 
 
@@ -4078,6 +4099,12 @@ function api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$val
 		$script_name = getenv("SCRIPT_NAME");
 		$server_name = getenv("SERVER_NAME");
 		$server_port = getenv("SERVER_PORT");
+		if(isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'){
+		    $HTTPprotokol = 'https://';
+		}
+		if(isset($_SERVER['HTTP_X_FORWARDED_PORT'])) {
+		    $server_port = $_SERVER['HTTP_X_FORWARDED_PORT'];
+		}
 		if (preg_match("/443/i",$server_port)) {$HTTPprotocol = 'https://';}
 		  else {$HTTPprotocol = 'http://';}
 		if (($server_port == '80') or ($server_port == '443') ) {$server_port='';}
@@ -4136,7 +4163,8 @@ function api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$val
 			}
 
 		$NOW_TIME = date("Y-m-d H:i:s");
-		$stmt="INSERT INTO vicidial_api_log set user='$user',agent_user='$agent_user',function='$function',value='$value',result='$result',result_reason='$result_reason',source='$source',data='$data',api_date='$NOW_TIME',api_script='$api_script',run_time='$TOTALrun',webserver='$webserver_id',api_url='$url_id';";
+		$data = preg_replace("/\"/","'",$data);
+		$stmt="INSERT INTO vicidial_api_log set user='$user',agent_user='$agent_user',function='$function',value='$value',result=\"$result\",result_reason='$result_reason',source='$source',data=\"$data\",api_date='$NOW_TIME',api_script='$api_script',run_time='$TOTALrun',webserver='$webserver_id',api_url='$url_id';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$ALaffected_rows = mysqli_affected_rows($link);
 		$api_id = mysqli_insert_id($link);

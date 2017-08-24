@@ -130,6 +130,8 @@
 # 170529-2337 - Added agent push events entries
 # 170613-0855 - Added hide_inactive_lists
 # 170623-2134 - Changed parameters for password recommendations
+# 170816-1057 - Added inbound after call entries
+# 170819-0951 - Added allow_manage_active_lists entry
 #
 
 
@@ -3040,6 +3042,32 @@ if ($SSqc_features_active > 0)
 <B><?php echo _QXZ("Populate Lead State Areacode"); ?> -</B><?php echo _QXZ("If this option is not DISABLED, then the system will look up the state that the areacode of the phone number is from and populate the state field with that value. If the OVERWRITE_ALWAYS option is selected, then every time that lead goes through this in-group, the state field will be looked up and populated again. Default is DISABLED."); ?>
 
 <BR>
+<A NAME="inbound_groups-inbound_survey">
+<BR>
+<B><?php echo _QXZ("After Call Survey"); ?> -</B><?php echo _QXZ("If this option is ENABLED, then the customer calling in to this In-Group will be asked if they would like to participate in a survey after their call has been handled by an agent. Default is DISABLED."); ?>
+
+<BR>
+<A NAME="inbound_groups-inbound_survey_filename">
+<BR>
+<B><?php echo _QXZ("After Call Survey Accept Filename"); ?> -</B><?php echo _QXZ("If the After Call Survey option is enabled above, this is the filename of the audio prompt that is played to ask the customer if they want to participate in the survey."); ?>
+
+<BR>
+<A NAME="inbound_groups-inbound_survey_accept_digit">
+<BR>
+<B><?php echo _QXZ("After Call Survey Accept Digit"); ?> -</B><?php echo _QXZ("If the After Call Survey option is enabled above, this is the digit that the customer must press to have their call set to take a survey after the agent has handled their call."); ?>
+
+<BR>
+<A NAME="inbound_groups-inbound_survey_question_filename">
+<BR>
+<B><?php echo _QXZ("After Call Question Filename"); ?> -</B><?php echo _QXZ("If the After Call Survey option is enabled above, and if the customer has chosen to take the survey, this is the audio prompt filename that will play the question to the customer."); ?>
+
+<BR>
+<A NAME="inbound_groups-inbound_survey_callmenu">
+<BR>
+<B><?php echo _QXZ("After Call End Call Menu"); ?> -</B><?php echo _QXZ("If the After Call Survey option is enabled above, this is the Call Menu that the customer will be sent to after the customer has responded to the survey question. This option can allow the customer to answer additional questions within Call Menus if desired. If this field is blank, the customer phone call will be hung up after they respond to the question."); ?>
+
+
+<BR>
 <A NAME="inbound_groups-customer_chat_link">
 <BR>
 <B><?php echo _QXZ("Customer Chat Link"); ?> -</B><?php echo _QXZ("Clicking this link will take you to the customer chat interface for this in-group.  You can use this link as a direct link on your website for a customer chat feature. The first link will go to a page in an IFRAME, the Second Link will go directly to a page that you can put into your own IFRAME. The Chat URL System Setting should look like one of these links without what is after the question mark."); ?>
@@ -5353,6 +5381,11 @@ FR_SPAC 00 00 00 00 00 - <?php echo _QXZ("France space separated phone number");
 <A NAME="settings-enable_did_entry_list_id">
 <BR>
 <B><?php echo _QXZ("Enable DID Entry List ID"); ?> -</B><?php echo _QXZ("This setting if enabled will allow a manager to define an entry list id to use on the DID modify screen. Default is 0 for disabled."); ?>
+
+<BR>
+<A NAME="settings-allow_manage_active_lists">
+<BR>
+<B><?php echo _QXZ("Lead Manager Active Lists"); ?> -</B><?php echo _QXZ("This setting if enabled will allow a manager to select active lists for modification within the Lead Management admin utilities. We do not recommend enabling this option since it can cause issues with leads that could be part of active calling within the system. Default is 0 for disabled."); ?>
 
 <BR>
 <A NAME="settings-enable_drop_lists">

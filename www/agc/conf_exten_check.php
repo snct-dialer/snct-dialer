@@ -78,10 +78,11 @@
 # 170220-1307 - Added external_lead_id trigger for switch_lead API function
 # 170526-2228 - Added additional variable filtering
 # 170709-1017 - Added xfer dead call checking process
+# 170817-0739 - Small change to xfer dead call checking process
 #
 
-$version = '2.14-53';
-$build = '170709-1017';
+$version = '2.14-54';
+$build = '170817-0739';
 $php_script = 'conf_exten_check.php';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=46;
@@ -848,7 +849,7 @@ if ($ACTION == 'refresh')
 
 			//Check if xferchannel is active
 			$DEADxfer=0;
-			if ( (strlen($xferchannel) > 2) and ($DEADcustomer < 1) )
+			if ( (strlen($xferchannel) > 2) and ($DEADcustomer < 1) and (preg_match("/INCALL/i",$Astatus)) )
 				{
 				$stmt="SELECT count(*) FROM live_channels where channel ='$xferchannel' and server_ip='$server_ip';";
 				if ($DB) {echo "|$stmt|\n";}

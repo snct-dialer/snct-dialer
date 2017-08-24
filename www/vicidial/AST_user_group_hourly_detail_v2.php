@@ -1,15 +1,20 @@
 <?php 
 # AST_user_group_hourly_detail.php
 #
-# Copyright (C) 2017  Joseph Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2017  Liz Tejada <liz@softkyrios.com> 
+#                     Joseph Johnson <freewermadmin@gmail.com>
+#                     Matt Florell <vicidial@gmail.com>
+#  
+# Thanks to Joseph Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2 
+# I took his report as base for this one. 
 #
-# Gives hourly count of distinct agents per user group, with totals.
+# Gives hourly detail of distinct agents per user group, with totals.
 # For single days only
 #
 # CHANGES
-# 160826-0054 - First build
-# 170409-1542 - Added IP List validation code
-# 170816-2026 - Added HTML formatting
+# 170816-2012 - First build
+# 170816-2152 - Added HTML option
+# 170818-0749 - Added upgraded code, fixes and link to v1 of report
 #
 
 $startMS = microtime();
@@ -53,7 +58,7 @@ if (isset($_GET["search_archived_data"]))			{$search_archived_data=$_GET["search
 
 if (strlen($shift)<2) {$shift='ALL';}
 
-$report_name = 'User Group Hourly Report';
+$report_name = 'User Group Detail Hourly Report';
 $db_source = 'M';
 
 #############################################
@@ -163,13 +168,6 @@ else
 		echo "$VDdisplayMESSAGE: |$PHP_AUTH_USER|$auth_message|\n";
 		exit;
 		}
-	if ($auth_message == 'IPBLOCK')
-		{
-		$VDdisplayMESSAGE = _QXZ("Your IP Address is not allowed") . ": $ip";
-		Header ("Content-type: text/html; charset=utf-8");
-		echo "$VDdisplayMESSAGE: |$PHP_AUTH_USER|$auth_message|\n";
-		exit;
-		}
 	Header("WWW-Authenticate: Basic realm=\"CONTACT-CENTER-ADMIN\"");
 	Header("HTTP/1.0 401 Unauthorized");
 	echo "$VDdisplayMESSAGE: |$PHP_AUTH_USER|$PHP_AUTH_PW|$auth_message|\n";
@@ -184,9 +182,6 @@ $LOGserver_name = getenv("SERVER_NAME");
 $LOGserver_port = getenv("SERVER_PORT");
 $LOGrequest_uri = getenv("REQUEST_URI");
 $LOGhttp_referer = getenv("HTTP_REFERER");
-$LOGbrowser=preg_replace("/\'|\"|\\\\/","",$LOGbrowser);
-$LOGrequest_uri=preg_replace("/\'|\"|\\\\/","",$LOGrequest_uri);
-$LOGhttp_referer=preg_replace("/\'|\"|\\\\/","",$LOGhttp_referer);
 if(isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'){
     $HTTPprotokol = 'https://';
 }
@@ -332,7 +327,7 @@ else
 	{
 	$user_group_SQL = preg_replace("/,\$/",'',$user_group_SQL);
 	$user_group_SQL_str=$user_group_SQL;
-	$user_group_SQL = "and user_group IN($user_group_SQL)";
+	$user_group_SQL = "and log.user_group IN($user_group_SQL)";
 	}
 
 
@@ -411,6 +406,7 @@ if ($agent_screen_colors != 'default')
 		}
 	}
 
+
 $LINKbase = "$PHP_SELF?query_date=$query_date&end_date=$end_date&shift=$shift&DB=$DB&user=$user$groupQS&search_archived_data=$search_archived_data&report_display_type=$report_display_type";
 
 $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
@@ -432,9 +428,6 @@ if ($file_download < 1)
 	echo "<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
 	echo "<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 	echo "<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
-	# require("chart_button.php");
-	# echo "<script src='chart/Chart.js'></script>\n"; 
-	# echo "<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
 
 	echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 	echo "<TITLE>"._QXZ("$report_name")."</TITLE></HEAD><BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
@@ -449,8 +442,6 @@ if ($file_download < 1)
 	echo "<b>"._QXZ("$report_name")."</b>\n";
 	echo "<PRE><FONT SIZE=2>";
 	}
-
-
 
 if ($SUBMIT && $query_date && $start_hour && $end_hour) {
 
@@ -469,24 +460,44 @@ if ($SUBMIT && $query_date && $start_hour && $end_hour) {
 	$HTML_text .= _QXZ("User groups").": ".implode(', ', $user_group)."\n";
 	$HTML_text .= _QXZ("Campaigns").": ".implode(', ', $group)."\n\n";
 
-	$stmt="select user_group, substr(event_time, 12,2) as hour, count(distinct user) as ct from ".$vicidial_agent_log_table." where event_time>='$query_date $start_hour:00:00' and event_time<='$query_date $end_hour:59:59' $group_SQL $user_group_SQL group by user_group, hour order by hour, user_group";
-	if ($DB) {$ASCII_text.=$stmt."\n";}
+	$stmt="select distinct      log.user_group,       substr(log.event_time, 12, 2) AS hour,log.user user from ".$vicidial_agent_log_table." log join vicidial_users u using(user) where log.event_time>='$query_date $start_hour:00:00' and log.event_time<='$query_date $end_hour:59:59' $group_SQL $user_group_SQL";
+	if ($DB) {$ASCII_text.="* ".$stmt."\n";}
 	$rslt=mysql_to_mysqli($stmt, $link);
 
-	# select user_group, substr(event_time, 12,2) as hour, count(distinct user) as ct from ".$vicidial_agent_log_table." where ((event_time>='$query_date $start_hour:00:00' and event_time<='$query_date $end_hour:59:59') or  (event_time+INTERVAL (pause_sec+wait_sec+talk_sec+dispo_sec) SECOND>='$query_date $start_hour:00:00' and event_time+INTERVAL (pause_sec+wait_sec+talk_sec+dispo_sec) SECOND<='$query_date $end_hour:59:59')) $group_SQL $user_group_SQL group by user_group, hour order by user_group, hour
-
-	$user_group_array=array();
+	 
+	$UserGroups=array();
 	$hour_array=array();
 	$hour_total_array=array();
+	$tempIDPerusegroup=array();
+	$cont=0;
+	$allData=array();
+	$temp[]=9;
+	$temp[]=7;
+	$temp[]=9;
 	while($row=mysqli_fetch_array($rslt)) {
-		$user_group_array[$row["user_group"]]+=$row["ct"];
-		$hour_array[$row["hour"]]+=$row["ct"];
-		$hour_total_array[$row["user_group"]][$row["hour"]]+=$row["ct"];  # For ASCII/CSV output
-		$usergroup_total_array[$row["hour"]][$row["user_group"]]+=$row["ct"]; # For GRAPH output
+		#echo $row["user_group"]."-->".$row["user"]."<br>";
+		$temp=array();
+		$temp[]=$row["user_group"];
+		
+		$temp[]=$row["hour"];
+		$temp[]=$row["user"];
+		 $allData[$row["user_group"]][$row["hour"]][]=$row["user"];
+		
+		$hour_array[]=$row["hour"];
+		$UserGroups[]=$row["user_group"];
+		$countByUserGroupByHour[$row["user_group"]][$row["hour"]]+=1;
+		$countByUserGroup[$row["user_group"]]+=1;
+		$countUserHour[$row["hour"]]+=1;
+		
+		
+	
 	}
-
-	$total_stmt="select user_group, count(distinct user) as ct from ".$vicidial_agent_log_table." where event_time>='$query_date $start_hour:00:00' and event_time<='$query_date $end_hour:59:59' $group_SQL $user_group_SQL group by user_group order by user_group";
+	$UserGroups=array_unique($UserGroups);
+	$hour_array=array_unique($hour_array);
+	 
+	$total_stmt="select user_group, count(distinct user) as ct from ".$vicidial_agent_log_table." where event_time>='$query_date $start_hour:00:00' and event_time<='$query_date $end_hour:59:59' $group_SQL $user_group_SQL group by user_group order by user_group,2";
 	$total_rslt=mysql_to_mysqli($total_stmt, $link);
+	if ($DB) {$ASCII_text.="* ".$total_stmt."\n";}
 	$total_array=array();
 	while ($total_row=mysqli_fetch_array($total_rslt)) {
 		$total_array[$total_row["user_group"]]+=$total_row["ct"];
@@ -496,43 +507,57 @@ if ($SUBMIT && $query_date && $start_hour && $end_hour) {
 	$grand_total_rslt=mysql_to_mysqli($grand_total_stmt, $link);
 	$grand_total=mysqli_num_rows($grand_total_rslt);
 
-	$ASCII_header ="+----------------------+--------+";
-	$ASCII_title .="| "._QXZ("USER GROUP", 20)." | "._QXZ("AGENTS", 6)." |";
-	$ASCII_total .="|               "._QXZ("TOTALS", 6)." | ".sprintf("%6s", $grand_total)." |";
+	$ASCII_header ="+----------------------+";
+	$ASCII_title .="| "._QXZ("USER GROUP", 20)." |";
+	$ASCII_total .="|               "._QXZ("TOTALS", 6)." |";
 
-	$table_columns=2;
+	$table_columns=1;
 	$HTML_text.="<table border='0' cellpadding='3' cellspacing='1'>";
 	$HTML_text.="<tr bgcolor='#".$SSstd_row1_background."'>";
 	$HTML_text.="<th><font size='2'>"._QXZ("USER GROUP")."</font></th>";
-	$HTML_text.="<th><font size='2'>"._QXZ("AGENTS")."</font></th>";
 
 	$HTML_text2.="<tr bgcolor='#".$SSstd_row1_background."'>";
 	$HTML_text2.="<th><font size='2'>"._QXZ("TOTALS")."</font></th>";
-	$HTML_text2.="<th><font size='2'>".$grand_total."</font></th>";
 
-	$CSV_text.="\""._QXZ("USER GROUP")."\",\""._QXZ("AGENTS")."\"";
-	$CSV_total.="\""._QXZ("TOTALS")."\",\"$grand_total\"";
+	$CSV_text.="\""._QXZ("USER GROUP")."\"";
+	$CSV_total.="\""._QXZ("TOTALS")."\"";
+	$maxUserByUserGroup=array();
+	foreach($UserGroups as $Ugroup){
 
-	while (list($key, $val)=each($hour_array)) {	
+					foreach($hour_array as $hour){
+						//echo "group-->". $data[0]." hour-->".$data[1]." agent-->".$data[2]."<br/>";
+						 $a=$allData[$Ugroup][$hour];
+						 if(isset($maxUserByUserGroup[$Ugroup])){
+							 if(count($a)>$maxUserByUserGroup[$Ugroup]){
+								 $maxUserByUserGroup[$Ugroup]=count($a);
+								 
+							 }
+							 
+						 }else{
+							 $maxUserByUserGroup[$Ugroup]=count($a);
+							 
+						 }
+					}
+	}
+	//print_r($hour_array);
+	foreach($hour_array as $key){	
+		
 		$ASCII_title.=" ".date("ha", strtotime("$key:00"))." to ";
 		$key1=$key+1;
 		$ASCII_title.=date("ha", strtotime("$key1:00"))." |";
 		$ASCII_header.="--------------+";
-		$ASCII_total.=" ".sprintf("%12s", ($hour_array[$key]+0))." |";
+		$ASCII_total.=" ".sprintf("%12s", ($countUserHour[$key]+0))." |";
 
 		$HTML_text.="<th><font size='2'>".date("ha", strtotime("$key:00"))." to ".date("ha", strtotime("$key1:00"))."</font></th>";
-		$HTML_text2.="<th><font size='2'>".($hour_array[$key]+0)."</font></th>";
+		$HTML_text2.="<th><font size='2'>".($countUserHour[$key]+0)."</font></th>";
 		$table_columns++;
 
 		$CSV_text.=",\"".date("ha", strtotime("$key:00"))." to ".date("ha", strtotime("$key1:00"))."\"";
-		$CSV_total.=",\"".($hour_array[$key]+0)."\"";
+		$CSV_total.=",\"".($countUserHour[$key]+0)."\"";
 	}
-	reset($hour_array);
-	reset($user_group_array);
+	if ($hour_array) {reset($hour_array);}
+	if ($user_group_array) {reset($user_group_array);}
 
-	# print_r($user_group_array);
-	# print_r($hour_array);
-	# print_r($total_array);
 
 	$ASCII_text.=$ASCII_header."\n";
 	$ASCII_text.=$ASCII_title."\n";
@@ -542,25 +567,43 @@ if ($SUBMIT && $query_date && $start_hour && $end_hour) {
 
 	$CSV_text.="\n";
 
-	while (list($key, $val)=each($user_group_array)) {
-		$ASCII_text.="| ".sprintf("%20s", $key)." | ".sprintf("%6s", $total_array[$key])." |";
-		$HTML_text.="<tr bgcolor='#".$SSstd_row2_background."'>";
-		$HTML_text.="<td><font size='2'>".$key."&nbsp;</font></td>";
-		$HTML_text.="<td><font size='2'>".$total_array[$key]."&nbsp;</font></td>";
-
-		$CSV_text.="\"$key\",\"".$total_array[$key]."\"";
-		while (list($key2, $val2)=each($hour_array)) {	
-			$ASCII_text.=" ".sprintf("%12s", ($hour_total_array[$key][$key2]+0))." |";
-			$HTML_text.="<td><font size='2'>".($hour_total_array[$key][$key2]+0)."</font></td>";
-			$CSV_text.=",\"".($hour_total_array[$key][$key2]+0)."\"";
+	$prev_group="";
+	$UG_ct=1;
+	foreach($UserGroups as $Ugroup){
+	#	echo "$Ugroup---->$hour--->".$maxUserByUserGroup[$Ugroup]."<br/>";
+	#	echo "<br/>$Ugroup<br/>";
+		foreach($hour_array as $hour){	
+			if($allData[$Ugroup][$hour]) {sort($allData[$Ugroup][$hour]);}
 		}
-		reset($hour_array);
-		$CSV_text.="\n";
-		$HTML_text.="</tr>\n";
-		$ASCII_text.="\n";
+		if ($hour_array) {reset($hour_array);}
 
+		for($cont=0; $cont < $maxUserByUserGroup[$Ugroup] ;$cont ++){
+			$ASCII_text.="| ".sprintf("%20s", $Ugroup)." |" ;
+			$HTML_text.="<tr bgcolor='#".$SSstd_row2_background."'>";
+			$HTML_text.="<td><font size='2'>".$Ugroup."&nbsp;</font></td>";
+			$CSV_text.="\"$Ugroup\"";
+			foreach($hour_array as $hour){	
+				$ASCII_text.=" ".sprintf("%12s", ($allData[$Ugroup][$hour][$cont]))." |";
+				$HTML_text.="<td><font size='2'>".($allData[$Ugroup][$hour][$cont])."&nbsp;</font></td>";
+				$CSV_text.=",\"".($allData[$Ugroup][$hour][$cont])."\"";
+			}
+			
+			$CSV_text.="\n";
+			$HTML_text.="</tr>\n";
+			$ASCII_text.="\n";
+			
+		}
+
+		if ($prev_group!=$Ugroup) {
+			$ASCII_text.=$ASCII_header."\n";
+			if ($UG_ct<count($allData)) {$HTML_text.="<tr bgcolor='#".$SSstd_row1_background."'><td colspan='$table_columns'>&nbsp;</td></tr>";}
+			$CSV_text.="\n";
+		}
+		$prev_group=$Ugroup;
+		$UG_ct++;
 	}
 
+	if ($hour_array) {reset($hour_array);}
 	$ASCII_text.=$ASCII_header."\n";
 	$ASCII_text.=$ASCII_total."\n";
 	$ASCII_text.=$ASCII_header."\n";
@@ -570,6 +613,7 @@ if ($SUBMIT && $query_date && $start_hour && $end_hour) {
 	$HTML_text.=$HTML_text2;
 
 	$CSV_text.=$CSV_total."\n";
+	
 }
 
 
@@ -640,50 +684,31 @@ o_cal.a_tpl.yearscroll = false;
 
 echo "<TD VALIGN=TOP ROWSPAN=2> "._QXZ("Campaigns").":<BR>";
 echo "<SELECT SIZE=5 NAME=group[] multiple>\n";
-if (is_array($group))
-	{
-	if  (in_array('--ALL--',$group))
-		{echo "<option value=\"--ALL--\" selected>-- "._QXZ("ALL CAMPAIGNS")." --</option>\n";}
-	else
-		{echo "<option value=\"--ALL--\">-- "._QXZ("ALL CAMPAIGNS")." --</option>\n";}
-	}
-	else
-		{echo "<option value=\"--ALL--\">-- "._QXZ("ALL CAMPAIGNS")." --</option>\n";}
+if  (in_array('--ALL--',$group))
+	{echo "<option value=\"--ALL--\" selected>-- "._QXZ("ALL CAMPAIGNS")." --</option>\n";}
+else
+	{echo "<option value=\"--ALL--\">-- "._QXZ("ALL CAMPAIGNS")." --</option>\n";}
 $o=0;
 while ($campaigns_to_print > $o)
-	{
-	if (is_array($group))
-		{
-		if (in_array("$groups[$o]",$group)) {echo "<option selected value=\"$groups[$o]\">$groups[$o]</option>\n";}
-		else {echo "<option value=\"$groups[$o]\">$groups[$o]</option>\n";}
-		}
-	else {echo "<option value=\"$groups[$o]\">$groups[$o]</option>\n";}
+{
+	if (in_array("$groups[$o]",$group)) {echo "<option selected value=\"$groups[$o]\">$groups[$o]</option>\n";}
+	  else {echo "<option value=\"$groups[$o]\">$groups[$o]</option>\n";}
 	$o++;
-	}
+}
 echo "</SELECT>\n";
 
 echo "</TD><TD VALIGN=TOP ROWSPAN=2>"._QXZ("Teams/User Groups").":<BR>";
 echo "<SELECT SIZE=5 NAME=user_group[] multiple>\n";
 
-if (is_array($user_group))
-	{
-	if  (in_array('--ALL--',$user_group))
-		{echo "<option value=\"--ALL--\" selected>-- "._QXZ("ALL USER GROUPS")." --</option>\n";}
-	else
-		{echo "<option value=\"--ALL--\">-- "._QXZ("ALL USER GROUPS")." --</option>\n";}
-	}
+if  (in_array('--ALL--',$user_group))
+	{echo "<option value=\"--ALL--\" selected>-- "._QXZ("ALL USER GROUPS")." --</option>\n";}
 else
 	{echo "<option value=\"--ALL--\">-- "._QXZ("ALL USER GROUPS")." --</option>\n";}
 $o=0;
 while ($user_groups_to_print > $o)
 	{
-	if (is_array($user_group))
-		{
-		if  (in_array("$user_groups[$o]",$user_group)) 
-			{echo "<option selected value=\"$user_groups[$o]\">$user_groups[$o]</option>\n";}
-		else 
-			{echo "<option value=\"$user_groups[$o]\">$user_groups[$o]</option>\n";}
-		}
+	if  (in_array("$user_groups[$o]",$user_group)) 
+		{echo "<option selected value=\"$user_groups[$o]\">$user_groups[$o]</option>\n";}
 	else 
 		{echo "<option value=\"$user_groups[$o]\">$user_groups[$o]</option>\n";}
 	$o++;
@@ -692,23 +717,27 @@ echo "</SELECT>\n";
 echo "</TD>\n";
 
 echo "<TD VALIGN=TOP ROWSPAN=2>\n";
-
-echo _QXZ("Display as:")."<BR>";
-echo "<select name='report_display_type'>";
-if ($report_display_type) {echo "<option value='$report_display_type' selected>$report_display_type</option>";}
-echo "<option value='TEXT'>TEXT</option><option value='HTML'>HTML</option></select>\n<BR><BR>";
+#echo "Display as:<BR>";
+#echo "<select name='report_display_type'>";
+#if ($report_display_type) {echo "<option value='$report_display_type' selected>$report_display_type</option>";}
+#echo "<option value='TEXT'>TEXT</option><option value='HTML'>HTML</option></select>\n<BR><BR>";
 
 if ($archives_available=="Y") 
 	{
 	echo "<input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."\n";
 	}
 
+echo "<BR><BR>"._QXZ("Display as:")."<BR>";
+echo "<select name='report_display_type'>";
+if ($report_display_type) {echo "<option value='$report_display_type' selected>$report_display_type</option>";}
+echo "<option value='TEXT'>TEXT</option><option value='HTML'>HTML</option></select>\n<BR><BR>";
+
 echo "<BR><BR><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'>\n";
 echo "</TD><TD VALIGN=TOP ROWSPAN=2> &nbsp; &nbsp; &nbsp; &nbsp; ";
 
 echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;\n";
 echo "<a href=\"$PHP_SELF?DB=$DB&query_date=$query_date&start_hour=$start_hour&end_hour=$end_hour$groupQS$user_groupQS$call_statusQS&file_download=1&SUBMIT=$SUBMIT&search_archived_data=$search_archived_data\">"._QXZ("DOWNLOAD")."</a> |";
-echo " <a href=\"./admin.php?ADD=999999\">"._QXZ("REPORTS")."</a> | <a href=\"./AST_user_group_hourly_detail_v2.php?DB=$DB&query_date=$query_date&start_hour=$start_hour&end_hour=$end_hour$groupQS$user_groupQS$call_statusQS&SUBMIT=$SUBMIT&search_archived_data=$search_archived_data\">v2</a></FONT>\n";
+echo " <a href=\"./admin.php?ADD=999999\">"._QXZ("REPORTS")."</a>  | <a href=\"./AST_user_group_hourly_detail.php?DB=$DB&query_date=$query_date&start_hour=$start_hour&end_hour=$end_hour$groupQS$user_groupQS$call_statusQS&SUBMIT=$SUBMIT&search_archived_data=$search_archived_data\">v1</a></FONT>\n";
 echo "</FONT>\n";
 echo "</TD></TR>";
 echo "<TR><TD ALIGN=RIGHT>"._QXZ("Start time").": <select name='start_hour'>";
@@ -731,6 +760,8 @@ echo "</FORM>";
 
 if ($report_display_type=="HTML")
 	{
+#	echo $GRAPH_text;
+#	echo $JS_text;
 	echo $HTML_text;
 	}
 else

@@ -1,10 +1,43 @@
+2.25.7
+  [Jörg Frings-Fürst]
+  * Add upstream Rev. 2803:
+    - Added HTTP error code 418.
+  * Add upstream Rev. 2804:
+    - Added ask survey options.
+  * Move DB Update to version based files:
+    - New extras/mysql_update/mysql-1514.sql.
+  * Add upstream Rev. 2805:
+    - AST_agent_debug_log_report.php: Added HTML display option.
+    - AST_user_group_hourly_detail.php: Added link to v2 of report.
+    - New AST_user_group_hourly_detail_v2.php.
+    - admin.php: Added User Group Hourly Report v2(detail)
+  * Add upstream Rev. 2806:
+    - AST_agent_debug_log_report.php: Added HTML display option.
+    - AST_user_group_hourly_detail.php: Added link to v2 of report.
+    - AST_webserver_url_report.php: Added HTML format.
+    - admin.php: Added allow_manage_active_lists system setting.
+  * Add upstream Rev. 2807:
+    - admin.php: Fix for issue #1036.
+  * Add HTTP_X_FORWARDED_* tests.
+  * Add upstream Rev. 2808:
+    - AST_carrier_log_report.php: Added HTML formatting.
+    - AST_dial_log_report.php: Added HTML formatting.
+    - AST_rt_monitor_log_report.php: Modified to use screen colors.
+    - NANPA_running_processes.php: Added screen color settings.
+    - admin_NANPA_updater.php: Added screen color settings.
+    - callbacks_bulk_change.php: Added screen color settings.
+    - vicidial_custom_reports_admin.php: Added screen colors; Fixed delete bug.
+  * Fix width of SendMail window.
+  * Rewrite MailCustomerData.
+  * Release 2.25.7 2017-08-24
+
 2.25.6
 
   [Jörg Frings-Fürst]
   * Add Ticket-Mail
-    + Add field ticket_mail to system_settings
-    + Add link "Ticket Mail" to agent screen
-    + New File SendMail.php
+    - Add field ticket_mail to system_settings
+    - Add link "Ticket Mail" to agent screen
+    - New File SendMail.php
   * Release 2.25.6 2017-08-16
 
 2.25.5
@@ -13,14 +46,14 @@
   * Correct typos
   * Format output of changelog.php
   * Add upstream Rev. 2800:
-    + Added more qualifiers for Hungup Xfer function to be triggered.
-    + Added detailed log option.
-    + Added park log.
+    - Added more qualifiers for Hungup Xfer function to be triggered.
+    - Added detailed log option.
+    - Added park log.
   * Add upstream Rev. 2801:
-    + NOTE: For Asterisk 1.4, use a pipe instead of a comma in the Park Call AGI IVR field.
-    + Added rolling of user_call_log if over 1000000 records.
-    + Fix for Cross-Cluster phones where phone_type has "trunk" in it.
-    + Added phone and province to detail output, fixed ASCII display issues.
+    - NOTE: For Asterisk 1.4, use a pipe instead of a comma in the Park Call AGI IVR field.
+    - Added rolling of user_call_log if over 1000000 records.
+    - Fix for Cross-Cluster phones where phone_type has "trunk" in it.
+    - Added phone and province to detail output, fixed ASCII display issues.
   * Add new fields Custom 1 - 5 to lists.
   * Add upstream Rev. 2802:
     + Some changes at www/vicidial/fcstats_detail.php.
@@ -30,19 +63,19 @@
 
   [Jörg Frings-Fürst]
   * Add upstream Rev. 2794:
-    + Fix for empty agent_choose_territories value
+    - Fix for empty agent_choose_territories value
   * Add upstraem Rev. 2795:
-    + Added more debug and '8days' date option
+    - Added more debug and '8days' date option
   * Add upstream Rev. 2796:
-    + Some report changes.
+    - Some report changes.
   * Remove useless *.orig files
   * Add upstream Rev. 2797:
-    + Added vicidial_campaign_hour_counts and vicidial_carrier_hour_counts rolling
+    - Added vicidial_campaign_hour_counts and vicidial_carrier_hour_counts rolling
   * Add upstream Rev. 2798:
-    + Added AST_agent_wait_check.pl script to send out emails if there are agents
+    - Added AST_agent_wait_check.pl script to send out emails if there are agents
       waiting more than X seconds.
   * Add upstream Rev. 2799:
-    + Correct some typos.
+    - Correct some typos.
   * Add EU_DOT_24HR.
   * Add vicidial.php to display changelog
   * Release 2.25.4 2017-08-04
@@ -63,20 +96,20 @@
   [ Jörg Frings-Fürst ]
   * Add Flyingpenguin Version to install.pl
   * Add upstream Rev. 2787:
-    + Added logging and notification of 3-way call hung up in agent screen.
+    - Added logging and notification of 3-way call hung up in agent screen.
   * Add fields custom_one ... _five to table vicidial_inbound_groups and
     into admin.php.
   * Add upstream Rev. 2788:
-    + Log webform click
+    - Log webform click
   * Add upstream Rev. 2789:
-    + Added Audit Comments display
+    - Added Audit Comments display
   * Add upstream Rev. 2790:
-    + Fixed help documentation for delay seconds, issue #1025
+    - Fixed help documentation for delay seconds, issue #1025
   * Add upstream Rev. 2791:
-    + Added screen colors and fixed default date variable
+    - Added screen colors and fixed default date variable
   * Bugfix MOH Frame file listing (issue #1028)
   * Add upstream Rev. 2792:
-    + Changed agents view to use last_state_change for time.
+    - Changed agents view to use last_state_change for time.
   * Add pause_code to vicidial_agent_log
   * Don't add upstream Rev. 2793 (issue #1028)
   * Release 2.25.2 2017-07-17

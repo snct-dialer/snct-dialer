@@ -561,10 +561,11 @@
 # 170710-1802 - Added logging of clicks on webform buttons
 # 170725-2147 - Added counter(aec) to agent_events calls
 # 170808-1014 - Added more qualifiers for Hungup Xfer function to be triggered
+# 170816-2336 - Added ask post-call survey feature for in-group calls
 #
 
-$version = '2.14-531c';
-$build = '170808-1014';
+$version = '2.14-532c';
+$build = '170816-2336';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -880,10 +881,12 @@ if($MailReturn != 0) {
 	$MailFrom = TestTicketMail($VD_login, 2, $link);
 }
 
-echo "Ret :" . $MailReturn . PHP_EOL;
-echo "To  :" . $MailTo . PHP_EOL;
-echo "From:" . $MailFrom . PHP_EOL;
-echo "User:" . $VD_login . PHP_EOL;
+if($DB) {
+    echo "Ret :" . $MailReturn . PHP_EOL;
+    echo "To  :" . $MailTo . PHP_EOL;
+    echo "From:" . $MailFrom . PHP_EOL;
+    echo "User:" . $VD_login . PHP_EOL;
+}
 
 ### End Get EmailAdresses ###
 	
@@ -899,6 +902,12 @@ $browser=preg_replace("/\'|\"|\\\\/","",$browser);
 $script_name = getenv("SCRIPT_NAME");
 $server_name = getenv("SERVER_NAME");
 $server_port = getenv("SERVER_PORT");
+if(isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'){
+	$HTTPprotokol = 'https://';
+}
+if(isset($_SERVER['HTTP_X_FORWARDED_PORT'])) {
+	$server_port = $_SERVER['HTTP_X_FORWARDED_PORT'];
+}
 if (preg_match("/443/i",$server_port)) {$HTTPprotocol = 'https://';}
   else {$HTTPprotocol = 'http://';}
 if (($server_port == '80') or ($server_port == '443') ) {$server_port='';}
@@ -4593,6 +4602,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var transfer_panel_open=0;
 	var last_conf_channel_count=1;
 	var aec=0;
+	var inbound_post_call_survey='';
+	var inbound_survey_participate='';
 	var DiaLControl_auto_HTML = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready','','','','','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_paused.gif") ?>\" border=\"0\" alt=\"You are paused\" /></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause','','','','','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_active.gif") ?>\" border=\"0\" alt=\"You are active\" /></a>";
 	var DiaLControl_auto_HTML_OFF = "<img src=\"./images/<?php echo _QXZ("vdc_LB_blank_OFF.gif") ?>\" border=\"0\" alt=\"pause button disabled\" />";
@@ -9650,6 +9661,8 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 				RefresHScript('CLEAR');
 				ViewComments('OFF','OFF');
 				last_call_date='';
+				inbound_post_call_survey='';
+				inbound_survey_participate='';
 			//	document.getElementById('vcFormIFrame').src='./vdc_form_display.php?lead_id=&list_id=&stage=WELCOME';
 				}
 			}
@@ -10344,6 +10357,8 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								{VDIC_web_form_address_three = VDIC_data_VDIG[34];}
 							if (VDIC_data_VDIG[35].length > 1)
 								{CalL_ScripT_color = VDIC_data_VDIG[35];}
+							inbound_post_call_survey	= VDIC_data_VDIG[36];
+							inbound_survey_participate	= VDIC_data_VDIG[37];
 
 							var VDIC_data_VDFR=check_VDIC_array[3].split("|");
 							if ( (VDIC_data_VDFR[1].length > 1) && (VDCL_fronter_display == 'Y') )
@@ -10679,8 +10694,6 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
                                 document.getElementById("ivrParkControl").innerHTML ="<a href=\"#\" onclick=\"mainxfer_send_redirect('ParKivr','" + lastcustchannel + "','" + lastcustserverip + "','','','','YES');return false;\"><img src=\"./images/<?php echo _QXZ("vdc_LB_ivrparkcall.gif"); ?>\" border=\"0\" alt=\"IVR Park Call\" /></a>";
 								}
 
-                            document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup('','','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_hangupcustomer.gif"); ?>\" border=\"0\" alt=\"Hangup Customer\" /></a>";
-
                             document.getElementById("XferControl").innerHTML = "<a href=\"#\" onclick=\"ShoWTransferMain('ON','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_transferconf.gif"); ?>\" border=\"0\" alt=\"Transfer - Conference\" /></a>";
 
                             document.getElementById("LocalCloser").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRLOCAL','" + lastcustchannel + "','" + lastcustserverip + "','','','','YES');return false;\"><img src=\"./images/<?php echo _QXZ("vdc_XB_localcloser.gif"); ?>\" border=\"0\" alt=\"LOCAL CLOSER\" style=\"vertical-align:middle\" /></a>";
@@ -10725,6 +10738,18 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 									{quick_transfer_button_orig = document.vicidial_form.xfernumber.value;}
 
                                 document.getElementById("QuickXfer").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRBLIND','" + lastcustchannel + "','" + lastcustserverip + "','','','" + quick_transfer_button_locked + "','YES');return false;\"><img src=\"./images/<?php echo _QXZ("vdc_LB_quickxfer.gif"); ?>\" border=\"0\" alt=\"QUICK TRANSFER\" /></a>";
+								}
+
+							if ( (inbound_post_call_survey=='ENABLED') && (inbound_survey_participate=='Y') )
+								{
+								document.vicidial_form.xfernumber.value = '83068888888888883999';
+								document.vicidial_form.xferoverride.checked=true;
+								document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRBLIND','" + lastcustchannel + "','" + lastcustserverip + "','','','','YES');return false;\"><img src=\"./images/<?php echo _QXZ("vdc_LB_hangupcustomer.gif"); ?>\" border=\"0\" alt=\"Hangup Customer\" /></a>";
+								button_click_log = button_click_log + "" + SQLdate + "-----AskInGroupSurvey---" + inbound_post_call_survey + " " + inbound_survey_participate + " " + document.vicidial_form.xfernumber.value + "|";
+								}
+							else
+								{
+								document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup('','','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_hangupcustomer.gif"); ?>\" border=\"0\" alt=\"Hangup Customer\" /></a>";
 								}
 
 							if (custom_3way_button_transfer_enabled > 0)
@@ -12564,67 +12589,24 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 // ################################################################################
 // Update vicidial_list lead record with all altered values from form
-	function MailCustomerData(commitclick)
-		{
+	function MailCustomerData(commitclick) {
+
 		if (commitclick=='YES')
-			{button_click_log = button_click_log + "" + SQLdate + "-----customer_info_commit---" + commitclick + "|";}
-		if ( (OtherTab == '1') && (comments_all_tabs == 'ENABLED') )
-			{
-			var test_otcx = document.vicidial_form.other_tab_comments.value;
-			if (test_otcx.length > 0)
-				{document.vicidial_form.comments.value = document.vicidial_form.other_tab_comments.value}
-			}
-		var REGcommentsAMP = new RegExp('&',"g");
-		var REGcommentsQUES = new RegExp("\\?","g");
-		var REGcommentsPOUND = new RegExp("\\#","g");
-		var REGcommentsRESULT = document.vicidial_form.comments.value.replace(REGcommentsAMP, "--AMP--");
-		REGcommentsRESULT = REGcommentsRESULT.replace(REGcommentsQUES, "--QUES--");
-		REGcommentsRESULT = REGcommentsRESULT.replace(REGcommentsPOUND, "--POUND--");
+			{button_click_log = button_click_log + "" + SQLdate + "-----mail_customer_data---" + commitclick + "|";}
 
-		var xmlhttp=false;
-		/*@cc_on @*/
-		/*@if (@_jscript_version >= 5)
-		// JScript gives us Conditional compilation, we can cope with old IE versions.
-		// and security blocked creation of the objects.
-		 try {
-		  xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
-		 } catch (e) {
-		  try {
-		   xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-		  } catch (E) {
-		   xmlhttp = false;
-		  }
-		 }
-		@end @*/
-		if (!xmlhttp && typeof XMLHttpRequest!='undefined')
-			{
-			xmlhttp = new XMLHttpRequest();
-			}
-		if (xmlhttp) 
-			{ 
+		var uri = "---------------------------------------\n";
+		uri += "Lead ID = "  + encodeURIComponent(document.vicidial_form.lead_id.value) + "\n";
+		uri += "Comments = " + document.vicidial_form.comments.value + "\n";
+		uri += "---------------------------------------\n\n\n";
+		var MailText = encodeURI(uri);
 
-			var MailText = "Lead ID = "  + encodeURIComponent(document.vicidial_form.lead_id.value) + "\n\r" + "Comments = " + REGcommentsRESULT + "\n\r";
-			var MF = '<?php echo $MailFrom ?>';
-			var MT = '<?php echo $MailTo ?>';
+		var MF = '<?php echo $MailFrom ?>';
+		var MT = '<?php echo $MailTo ?>';
 
-			var EMailPara = "?MailFrom=" + MF + "&MailTo=" + MT + "&MailTitle=Lead Report" + "&MailText=" + MailText;
+		var EMailPara = "?MailFrom=" + MF + "&MailTo=" + MT + "&MailTitle=Lead Report" + "&MailText=" + MailText;
 
-			var fenster = window.open("SendMail.php" + EMailPara, "Email", "width=400,height=400,top=100,left=100");
-//			xmlhttp.open('POST', 'SendMail.php'); 
-			
-//			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-//			xmlhttp.send(EMailPara); 
-//			xmlhttp.onreadystatechange = function() 
-//				{ 
-//				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
-	//				{
-			//		updatelead_complete=1;
-			//	alert(xmlhttp.responseText);
-//					}
-//				}
-			delete xmlhttp;
-			}
-		}
+		var fenster = window.open("SendMail.php" + EMailPara, "Email", "width=600,height=400,top=100,left=100");
+	}
 
 	// ################################################################################
 	// Update vicidial_list lead record with all altered values from form
@@ -13492,6 +13474,8 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 					source_id='';
 					entry_date='';
 					last_call_date='';
+					inbound_post_call_survey='';
+					inbound_survey_participate='';
 					if (manual_auto_next > 0)
 						{manual_auto_next_trigger=1;   manual_auto_next_count=manual_auto_next;}
 					if (agent_display_fields.match(adfREGentry_date))

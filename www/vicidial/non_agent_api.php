@@ -123,10 +123,11 @@
 # 170609-1107 - Added ccc_lead_info function
 # 170615-0006 - Added DIAL status for manual dial agent calls that have not been answered, to 4 functions
 # 170713-2312 - Fix for issue #1028
+# 170815-1315 - Added HTTP error code 418
 #
 
-$version = '2.14-99';
-$build = '170713-2312';
+$version = '2.14-100';
+$build = '170815-1315';
 $api_url_log = 0;
 
 $startMS = microtime();
@@ -710,6 +711,26 @@ if ($function == 'version')
 
 
 
+
+################################################################################
+### BEGIN - coffee/teapot 418 - reject coffee requests
+################################################################################
+if ( ($function == 'coffee') or ($function == 'start_coffee') or ($function == 'make_coffee') or ($function == 'brew_coffee') )
+	{
+	$data = _QXZ("Coffee").": $function|Error 418 I'm a teapot";
+	$result = _QXZ("ERROR");
+	Header("HTTP/1.0 418 I'm a teapot");
+	echo "$data";
+	api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+	exit;
+	}
+################################################################################
+### END - coffee/teapot
+################################################################################
+
+
+
+
 ##### BEGIN user authentication for all functions below #####
 $auth=0;
 $auth_message = user_authorization($user,$pass,'REPORTS',1,1);
@@ -825,6 +846,12 @@ if ($function == 'sounds_list')
 			}
 		$server_name = getenv("SERVER_NAME");
 		$server_port = getenv("SERVER_PORT");
+		if(isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'){
+		    $HTTPprotokol = 'https://';
+		}
+		if(isset($_SERVER['HTTP_X_FORWARDED_PORT'])) {
+		    $server_port = $_SERVER['HTTP_X_FORWARDED_PORT'];
+		}
 		if (preg_match("/443/i",$server_port)) {$HTTPprotocol = 'https://';}
 		  else {$HTTPprotocol = 'http://';}
 		$admDIR = "$HTTPprotocol$server_name:$server_port";
@@ -1012,6 +1039,12 @@ if ($function == 'moh_list')
 			}
 		$server_name = getenv("SERVER_NAME");
 		$server_port = getenv("SERVER_PORT");
+		if(isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'){
+		    $HTTPprotokol = 'https://';
+		}
+		if(isset($_SERVER['HTTP_X_FORWARDED_PORT'])) {
+		    $server_port = $_SERVER['HTTP_X_FORWARDED_PORT'];
+		}
 		if (preg_match("/443/i",$server_port)) {$HTTPprotocol = 'https://';}
 		  else {$HTTPprotocol = 'http://';}
 		$admDIR = "$HTTPprotocol$server_name:$server_port";
@@ -1199,6 +1232,12 @@ if ($function == 'vm_list')
 
 		$server_name = getenv("SERVER_NAME");
 		$server_port = getenv("SERVER_PORT");
+		if(isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'){
+		    $HTTPprotokol = 'https://';
+		}
+		if(isset($_SERVER['HTTP_X_FORWARDED_PORT'])) {
+		    $server_port = $_SERVER['HTTP_X_FORWARDED_PORT'];
+		}
 		if (preg_match("/443/i",$server_port)) {$HTTPprotocol = 'https://';}
 		  else {$HTTPprotocol = 'http://';}
 		$admDIR = "$HTTPprotocol$server_name:$server_port";
@@ -10354,6 +10393,12 @@ function api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$val
 		$script_name = getenv("SCRIPT_NAME");
 		$server_name = getenv("SERVER_NAME");
 		$server_port = getenv("SERVER_PORT");
+		if(isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'){
+		    $HTTPprotokol = 'https://';
+		}
+		if(isset($_SERVER['HTTP_X_FORWARDED_PORT'])) {
+		    $server_port = $_SERVER['HTTP_X_FORWARDED_PORT'];
+		}
 		if (preg_match("/443/i",$server_port)) {$HTTPprotocol = 'https://';}
 		  else {$HTTPprotocol = 'http://';}
 		if (($server_port == '80') or ($server_port == '443') ) {$server_port='';}
@@ -10412,7 +10457,8 @@ function api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$val
 			}
 
 		$NOW_TIME = date("Y-m-d H:i:s");
-		$stmt="INSERT INTO vicidial_api_log set user='$user',agent_user='$agent_user',function='$function',value='$value',result='$result',result_reason='$result_reason',source='$source',data='$data',api_date='$NOW_TIME',api_script='$api_script',run_time='$TOTALrun',webserver='$webserver_id',api_url='$url_id';";
+		$data = preg_replace("/\"/","'",$data);
+		$stmt="INSERT INTO vicidial_api_log set user='$user',agent_user='$agent_user',function='$function',value='$value',result=\"$result\",result_reason='$result_reason',source='$source',data=\"$data\",api_date='$NOW_TIME',api_script='$api_script',run_time='$TOTALrun',webserver='$webserver_id',api_url='$url_id';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$ALaffected_rows = mysqli_affected_rows($link);
 		$api_id = mysqli_insert_id($link);

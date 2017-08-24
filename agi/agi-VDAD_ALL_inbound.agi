@@ -212,6 +212,7 @@
 # 170412-2223 - Fix for drop call logging
 # 170527-2240 - Fix for rare inbound logging issue #1017
 # 170621-2031 - Added missing list_id in log inserts
+# 170816-2245 - Added ask survey options
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
@@ -223,7 +224,7 @@ $wait_prompt_runs=0;
 $at='@';
 $S='*';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=220;
+$mysql_log_count=222;
 $one_mysql_log=0;
 $dial_ingroup_flag=0;
 $called_count=1;
@@ -739,7 +740,7 @@ $affected_rows = $dbhA->do($stmtA);
 
 ### Grab inbound groups values from the database
 $cbc=0;
-$stmtA = "SELECT call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,drop_call_seconds,drop_action,drop_exten,next_agent_call,voicemail_ext,queue_priority,drop_inbound_group,afterhours_xfer_group,play_place_in_line,play_estimate_hold_time,hold_time_option,hold_time_option_seconds,hold_time_option_exten,hold_time_option_voicemail,hold_time_option_xfer_group,hold_time_option_callback_filename,hold_time_option_callback_list_id,hold_recall_xfer_group,no_delay_call_route,play_welcome_message,no_agent_no_queue,no_agent_action,no_agent_action_value,extension_appended_cidname,uniqueid_status_display,uniqueid_status_prefix,hold_time_option_minimum,hold_time_option_press_filename,hold_time_option_callmenu,onhold_prompt_no_block,onhold_prompt_seconds,hold_time_option_no_block,hold_time_option_prompt_seconds,hold_time_second_option,hold_time_third_option,wait_hold_option_priority,wait_time_option,wait_time_second_option,wait_time_third_option,wait_time_option_seconds,wait_time_option_exten,wait_time_option_voicemail,wait_time_option_xfer_group,wait_time_option_callmenu,wait_time_option_callback_filename,wait_time_option_callback_list_id,wait_time_option_press_filename,wait_time_option_no_block,wait_time_option_prompt_seconds,active,calculate_estimated_hold_seconds,add_lead_url,eht_minimum_prompt_filename,eht_minimum_prompt_no_block,eht_minimum_prompt_seconds,on_hook_ring_time,ingroup_recording_override,ingroup_rec_filename,on_hook_cid,action_xfer_cid,drop_callmenu,after_hours_callmenu,max_calls_method,max_calls_count,max_calls_action,populate_lead_ingroup,na_call_url,drop_lead_reset,after_hours_lead_reset,nanq_lead_reset,wait_time_lead_reset,hold_time_lead_reset,routing_initiated_recordings,on_hook_cid_number,populate_lead_province,areacode_filter,areacode_filter_seconds,areacode_filter_action,areacode_filter_action_value,populate_state_areacode FROM vicidial_inbound_groups where group_id = '$channel_group';";
+$stmtA = "SELECT call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,drop_call_seconds,drop_action,drop_exten,next_agent_call,voicemail_ext,queue_priority,drop_inbound_group,afterhours_xfer_group,play_place_in_line,play_estimate_hold_time,hold_time_option,hold_time_option_seconds,hold_time_option_exten,hold_time_option_voicemail,hold_time_option_xfer_group,hold_time_option_callback_filename,hold_time_option_callback_list_id,hold_recall_xfer_group,no_delay_call_route,play_welcome_message,no_agent_no_queue,no_agent_action,no_agent_action_value,extension_appended_cidname,uniqueid_status_display,uniqueid_status_prefix,hold_time_option_minimum,hold_time_option_press_filename,hold_time_option_callmenu,onhold_prompt_no_block,onhold_prompt_seconds,hold_time_option_no_block,hold_time_option_prompt_seconds,hold_time_second_option,hold_time_third_option,wait_hold_option_priority,wait_time_option,wait_time_second_option,wait_time_third_option,wait_time_option_seconds,wait_time_option_exten,wait_time_option_voicemail,wait_time_option_xfer_group,wait_time_option_callmenu,wait_time_option_callback_filename,wait_time_option_callback_list_id,wait_time_option_press_filename,wait_time_option_no_block,wait_time_option_prompt_seconds,active,calculate_estimated_hold_seconds,add_lead_url,eht_minimum_prompt_filename,eht_minimum_prompt_no_block,eht_minimum_prompt_seconds,on_hook_ring_time,ingroup_recording_override,ingroup_rec_filename,on_hook_cid,action_xfer_cid,drop_callmenu,after_hours_callmenu,max_calls_method,max_calls_count,max_calls_action,populate_lead_ingroup,na_call_url,drop_lead_reset,after_hours_lead_reset,nanq_lead_reset,wait_time_lead_reset,hold_time_lead_reset,routing_initiated_recordings,on_hook_cid_number,populate_lead_province,areacode_filter,areacode_filter_seconds,areacode_filter_action,areacode_filter_action_value,populate_state_areacode,inbound_survey,inbound_survey_filename,inbound_survey_accept_digit FROM vicidial_inbound_groups where group_id = '$channel_group';";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
@@ -845,6 +846,9 @@ if ($sthArows > 0)
 	$areacode_filter_action =			$aryA[88];
 	$areacode_filter_action_value =		$aryA[89];
 	$populate_state_areacode =			$aryA[90];
+	$inbound_survey =					$aryA[91];
+	$inbound_survey_filename =			$aryA[92];
+	$inbound_survey_accept_digit =		$aryA[93];
 
 	$custom_call_id='';
 	if ($uniqueid_status_display =~ /ENABLED/)
@@ -1999,7 +2003,7 @@ if ( ( ($no_agent_no_queue =~ /Y|NO_PAUSED/) || ($MCnanque_override > 0) ) && ($
 
 
 
-##### PLAY WELCOME MESSAGE #####
+##### BEGIN PLAY WELCOME MESSAGE #####
 if ( ( ( ($welcome_message_filename !~ /---NONE---/) && (length($welcome_message_filename) > 0) && ( ($play_welcome_message =~ /ALWAYS/) || ( ($no_delay_call_route =~ /N/) && ($play_welcome_message =~ /YES_UNLESS_NODELAY/) ) ) ) && ($MCdrop_override < 1) ) && ($dial_ingroup_flag < 1) )
 	{
 	if ($welcome_message_filename =~ /\|/)
@@ -2022,6 +2026,97 @@ if ($play_welcome_message =~ /IF_WAIT_ONLY/)
 	{$if_wait_play_welcome=1;}
 else
 	{$if_wait_play_welcome=0;}
+##### END PLAY WELCOME MESSAGE #####
+
+
+
+##### BEGIN ASK ABOUT A POST-CALL SURVEY #####
+if ( ($inbound_survey =~ /ENABLED/) && (length($inbound_survey_filename) > 0) && (length($inbound_survey_accept_digit) > 0) ) 
+	{
+	$digits_to_collect=1;
+
+	$AGI->stream_file('sip-silence');
+	$AGI->stream_file('sip-silence');
+	$AGI->stream_file('silence');
+
+	$digit='';
+	undef $digit;
+	$interrupt_digit='';
+	undef $interrupt_digit;
+	$digit_loop_counter=0;
+
+	$interrupt_digit = $AGI->stream_file('sip-silence',"$inbound_survey_accept_digit");
+
+	$interrupt_digit='';
+	undef $interrupt_digit;
+
+	$interrupt_digit = $AGI->stream_file("$inbound_survey_filename","$inbound_survey_accept_digit");
+
+	if ($AGILOG) {$agi_string = "interrupt_digit |$interrupt_digit|    |$inbound_survey_filename|";   &agi_output;}
+
+	$digits_being_entered=1;
+	$totalDTMF='';
+	if ($interrupt_digit > 1)
+		{
+		if ($interrupt_digit == 48) {$interrupt_digit=0;}
+		if ($interrupt_digit == 49) {$interrupt_digit=1;}
+		if ($interrupt_digit == 50) {$interrupt_digit=2;}
+		if ($interrupt_digit == 51) {$interrupt_digit=3;}
+		if ($interrupt_digit == 52) {$interrupt_digit=4;}
+		if ($interrupt_digit == 53) {$interrupt_digit=5;}
+		if ($interrupt_digit == 54) {$interrupt_digit=6;}
+		if ($interrupt_digit == 55) {$interrupt_digit=7;}
+		if ($interrupt_digit == 56) {$interrupt_digit=8;}
+		if ($interrupt_digit == 57) {$interrupt_digit=9;}
+		
+		$totalDTMF=$interrupt_digit;
+		$digit_loop_counter++;
+		}
+
+
+	while ( ($digit_loop_counter < $digits_to_collect) )
+		{
+		$digit = chr($AGI->wait_for_digit('5000'));  # wait 5 seconds for input or until the key is pressed
+		if ($digit =~ /\d/)
+			{
+			$totalDTMF = "$totalDTMF$digit";
+			if ($AGILOG) {$agi_string = "digit |$digit|     TotalDTMF |$totalDTMF|";   &agi_output;}
+	#		$AGI->say_digits("$digit");
+			undef $digit;
+			}
+		else
+			{
+			$digit_loop_counter=$digits_to_collect;
+			}
+		
+		$digit_loop_counter++;
+		}
+
+	$totalDTMF =~ s/\D//gi;
+	$VISLaffected_rows=0;
+	if (length($totalDTMF) > 0)
+		{
+		if ($AGILOG) {$agi_string = "digit |$digit|     TotalDTMF |$totalDTMF|";   &agi_output;}
+		if ($totalDTMF =~ /$inbound_survey_accept_digit/) 
+			{
+			$stmtA = "INSERT INTO vicidial_inbound_survey_log SET uniqueid='$uniqueid',lead_id='$insert_lead_id',campaign_id='$channel_group',call_date='$SQLdate',participate='Y';";
+				if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+			$VISLaffected_rows = $dbhA->do($stmtA);
+				$dbhP=$dbhA;   $mysql_count='02221';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
+			if ($AGILOG) {$agi_string = "--    Ask-Post-Call-Survey YES: $VISLaffected_rows|$insert_lead_id|insert to vicidial_inbound_survey_log: $uniqueid";   &agi_output;}
+			}
+		}
+	if ($VISLaffected_rows < 1) 
+		{
+		$stmtA = "INSERT INTO vicidial_inbound_survey_log SET uniqueid='$uniqueid',lead_id='$insert_lead_id',campaign_id='$channel_group',call_date='$SQLdate',participate='N';";
+			if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+		$VISLaffected_rows = $dbhA->do($stmtA);
+			$dbhP=$dbhA;   $mysql_count='02222';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
+		if ($AGILOG) {$agi_string = "--    Ask-Post-Call-Survey NO: $VISLaffected_rows|$insert_lead_id|insert to vicidial_inbound_survey_log: $uniqueid";   &agi_output;}
+		}
+	}
+##### END ASK ABOUT A POST-CALL SURVEY #####
+
 
 
 $vci=0;

@@ -11,6 +11,8 @@
 #
 # 151023-0106 - First build 
 # 170409-1542 - Added IP List validation code
+# 170822-2313 - Added screen colors
+# 170823-1411 - Fixed delete bug
 #
 
 $startMS = microtime();
@@ -300,7 +302,7 @@ if ($add_custom_report=="ADD REPORT") {
 		while ($user_group_row=mysqli_fetch_array($user_group_rslt)) {
 			$user_group=$user_group_row["user_group"];
 			$allowed_custom_reports=$user_group_row["allowed_custom_reports"];
-			$old_report_removed=preg_replace("/^$old_rpt_name\||\|$old_rpt_name\|/i", $allowed_custom_reports);
+			$old_report_removed=preg_replace("/^$old_rpt_name\||\|$old_rpt_name\|/i", "", $allowed_custom_reports);
 			$upd_stmt="update vicidial_user_groups set allowed_custom_reports='$old_report_removed' where user_group='$user_group'";
 			# echo $upd_stmt." - $allowed_custom_reports<BR>\n";
 			$upd_rslt=mysql_to_mysqli($upd_stmt, $link);
@@ -308,6 +310,44 @@ if ($add_custom_report=="ADD REPORT") {
 	}
 }
 
+##### BEGIN Define colors and logo #####
+$SSmenu_background='015B91';
+$SSframe_background='D9E6FE';
+$SSstd_row1_background='9BB9FB';
+$SSstd_row2_background='B9CBFD';
+$SSstd_row3_background='8EBCFD';
+$SSstd_row4_background='B6D3FC';
+$SSstd_row5_background='FFFFFF';
+$SSalt_row1_background='BDFFBD';
+$SSalt_row2_background='99FF99';
+$SSalt_row3_background='CCFFCC';
+
+$screen_color_stmt="select admin_screen_colors from system_settings";
+$screen_color_rslt=mysql_to_mysqli($screen_color_stmt, $link);
+$screen_color_row=mysqli_fetch_row($screen_color_rslt);
+$agent_screen_colors="$screen_color_row[0]";
+
+if ($agent_screen_colors != 'default')
+	{
+	$asc_stmt = "SELECT menu_background,frame_background,std_row1_background,std_row2_background,std_row3_background,std_row4_background,std_row5_background,alt_row1_background,alt_row2_background,alt_row3_background,web_logo FROM vicidial_screen_colors where colors_id='$agent_screen_colors';";
+	$asc_rslt=mysql_to_mysqli($asc_stmt, $link);
+	$qm_conf_ct = mysqli_num_rows($asc_rslt);
+	if ($qm_conf_ct > 0)
+		{
+		$asc_row=mysqli_fetch_row($asc_rslt);
+		$SSmenu_background =            $asc_row[0];
+		$SSframe_background =           $asc_row[1];
+		$SSstd_row1_background =        $asc_row[2];
+		$SSstd_row2_background =        $asc_row[3];
+		$SSstd_row3_background =        $asc_row[4];
+		$SSstd_row4_background =        $asc_row[5];
+		$SSstd_row5_background =        $asc_row[6];
+		$SSalt_row1_background =        $asc_row[7];
+		$SSalt_row2_background =        $asc_row[8];
+		$SSalt_row3_background =        $asc_row[9];
+		$SSweb_logo =		           $asc_row[10];
+		}
+	}
 
 $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php";
 $NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
@@ -389,11 +429,11 @@ function SubmitIDValues(id_no) {
 	echo "<br><B>"._QXZ("ADD A NEW CUSTOM REPORT")."</B><form action=$PHP_SELF method=GET>\n";
 
 	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Report Name").": </td><td align=left><input type=text name=report_name size=20 maxlength=100>$NWB#custom_reports_admin-report_name$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Domain").": </td><td align=left><input type=text name=domain size=20 maxlength=70> (leave blank if on same server as dialer admin)$NWB#custom_reports_admin-domain$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Path Name").": </td><td align=left><input type=text name=path_name size=20 maxlength=100>$NWB#custom_reports_admin-path_name$NWE</td></tr>\n";
-	# echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Use slave").": </td><td align=left><select size=1 name=slave><option value='Y'>"._QXZ("Y")."</option><option value='N' selected>"._QXZ("N")."</option></select>$NWB#custom_reports_admin-use_slave$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("User groups").": </td><td align=left><select size=5 name=custom_reports_user_groups[] multiple><option value='---ALL---'>"._QXZ("ALL USER GROUPS")."</option>";
+	echo "<tr bgcolor=#".$SSstd_row2_background."><td align=right>"._QXZ("Report Name").": </td><td align=left><input type=text name=report_name size=20 maxlength=100>$NWB#custom_reports_admin-report_name$NWE</td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row2_background."><td align=right>"._QXZ("Domain").": </td><td align=left><input type=text name=domain size=20 maxlength=70> (leave blank if on same server as dialer admin)$NWB#custom_reports_admin-domain$NWE</td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row2_background."><td align=right>"._QXZ("Path Name").": </td><td align=left><input type=text name=path_name size=20 maxlength=100>$NWB#custom_reports_admin-path_name$NWE</td></tr>\n";
+	# echo "<tr bgcolor=#".$SSstd_row2_background."><td align=right>"._QXZ("Use slave").": </td><td align=left><select size=1 name=slave><option value='Y'>"._QXZ("Y")."</option><option value='N' selected>"._QXZ("N")."</option></select>$NWB#custom_reports_admin-use_slave$NWE</td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row2_background."><td align=right>"._QXZ("User groups").": </td><td align=left><select size=5 name=custom_reports_user_groups[] multiple><option value='---ALL---'>"._QXZ("ALL USER GROUPS")."</option>";
 	
 	$stmt="SELECT user_group,group_name from vicidial_user_groups $whereLOGadmin_viewable_groupsSQL order by user_group;";
 	$rslt=mysql_to_mysqli($stmt, $link);
@@ -406,7 +446,7 @@ function SubmitIDValues(id_no) {
 	}
 
 	echo "</select>$NWB#custom_reports_admin-custom_reports_user_groups$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align='center' colspan='2'><input type='submit' name='add_custom_report' id='add_custom_report' value='"._QXZ("ADD REPORT")."'></td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row2_background."><td align='center' colspan='2'><input type='submit' name='add_custom_report' id='add_custom_report' value='"._QXZ("ADD REPORT")."'></td></tr>\n";
 	echo "</table>";
 	echo "</form>";
 
@@ -435,8 +475,8 @@ function SubmitIDValues(id_no) {
 			$id=$rpt_row["custom_report_id"];
 			$current_rpt_name=$rpt_row["report_name"];
 
-			if ($bgcolor=="#ccffff") {$bgcolor="#99ffcc";} else {$bgcolor="#ccffff";}
-			echo "<tr bgcolor='".$bgcolor."'>";
+			if ($bgcolor==$SSstd_row3_background) {$bgcolor=$SSstd_row4_background;} else {$bgcolor=$SSstd_row3_background;}
+			echo "<tr bgcolor='#".$bgcolor."'>";
 
 			$UGarray=array();
 			$UGstmt="select user_group from vicidial_user_groups where allowed_custom_reports like '%$current_rpt_name%' $LOGadmin_viewable_groupsSQL";
