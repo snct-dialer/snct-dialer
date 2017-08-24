@@ -12634,7 +12634,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 			var EMailPara = "?MailFrom=" + MF + "&MailTo=" + MT + "&MailTitle=Lead Report" + "&MailText=" + MailText;
 
-			var fenster = window.open("SendMail.php" + EMailPara, "Email", "width=400,height=400,top=100,left=100");
+			var fenster = window.open("SendMail.php" + EMailPara, "Email", "width=600,height=400,top=100,left=100");
 //			xmlhttp.open('POST', 'SendMail.php'); 
 			
 //			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
