@@ -29,6 +29,7 @@
     - vicidial_custom_reports_admin.php: Added screen colors; Fixed delete bug.
   * Fix width of SendMail window.
   * Rewrite MailCustomerData.
+  * Release 2.25.7 2017-08-24
 
 2.25.6
 
