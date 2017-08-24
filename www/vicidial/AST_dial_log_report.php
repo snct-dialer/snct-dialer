@@ -10,24 +10,7 @@
 # 141114-0844 - Finalized adding QXZ translation to all admin files
 # 141230-1510 - Added code for on-the-fly language translations display
 # 170409-1534 - Added IP List validation code
-#
-# describe vicidial_dial_log
-# +-------------------+-----------------------+------+-----+---------+-------+
-# | Field             | Type                  | Null | Key | Default | Extra |
-# +-------------------+-----------------------+------+-----+---------+-------+
-# | caller_code       | varchar(30)           | NO   | MUL | NULL    |       |
-# | lead_id           | int(9) unsigned       | YES  | MUL | 0       |       |
-# | server_ip         | varchar(15)           | YES  |     | NULL    |       |
-# | call_date         | datetime              | YES  | MUL | NULL    |       |
-# | extension         | varchar(100)          | YES  |     |         |       |
-# | channel           | varchar(100)          | YES  |     |         |       |
-# | context           | varchar(100)          | YES  |     |         |       |
-# | timeout           | mediumint(7) unsigned | YES  |     | 0       |       |
-# | outbound_cid      | varchar(100)          | YES  |     |         |       |
-# | sip_hangup_cause  | smallint(4) unsigned  | YES  |     | 0       |       |
-# | uniqueid          | varchar(20)           | YES  |     |         |       |
-# | sip_hangup_reason | varchar(50)           | YES  |     |         |       |
-# +-------------------+-----------------------+------+-----+---------+-------+
+# 170821-2323 - Added HTML formatting
 #
 
 $startMS = microtime();
@@ -423,6 +406,45 @@ else
 $sip_hangup_cause_SQL = preg_replace('/,$/i', '',$sip_hangup_cause_SQL);
 if (strlen($sip_hangup_cause_SQL)>0) {$sip_hangup_cause_SQL="and sip_hangup_cause in ($sip_hangup_cause_SQL)";}
 
+##### BEGIN Define colors and logo #####
+$SSmenu_background='015B91';
+$SSframe_background='D9E6FE';
+$SSstd_row1_background='9BB9FB';
+$SSstd_row2_background='B9CBFD';
+$SSstd_row3_background='8EBCFD';
+$SSstd_row4_background='B6D3FC';
+$SSstd_row5_background='FFFFFF';
+$SSalt_row1_background='BDFFBD';
+$SSalt_row2_background='99FF99';
+$SSalt_row3_background='CCFFCC';
+
+$screen_color_stmt="select admin_screen_colors from system_settings";
+$screen_color_rslt=mysql_to_mysqli($screen_color_stmt, $link);
+$screen_color_row=mysqli_fetch_row($screen_color_rslt);
+$agent_screen_colors="$screen_color_row[0]";
+
+if ($agent_screen_colors != 'default')
+	{
+	$asc_stmt = "SELECT menu_background,frame_background,std_row1_background,std_row2_background,std_row3_background,std_row4_background,std_row5_background,alt_row1_background,alt_row2_background,alt_row3_background,web_logo FROM vicidial_screen_colors where colors_id='$agent_screen_colors';";
+	$asc_rslt=mysql_to_mysqli($asc_stmt, $link);
+	$qm_conf_ct = mysqli_num_rows($asc_rslt);
+	if ($qm_conf_ct > 0)
+		{
+		$asc_row=mysqli_fetch_row($asc_rslt);
+		$SSmenu_background =            $asc_row[0];
+		$SSframe_background =           $asc_row[1];
+		$SSstd_row1_background =        $asc_row[2];
+		$SSstd_row2_background =        $asc_row[3];
+		$SSstd_row3_background =        $asc_row[4];
+		$SSstd_row4_background =        $asc_row[5];
+		$SSstd_row5_background =        $asc_row[6];
+		$SSalt_row1_background =        $asc_row[7];
+		$SSalt_row2_background =        $asc_row[8];
+		$SSalt_row3_background =        $asc_row[9];
+		$SSweb_logo =		           $asc_row[10];
+		}
+	}
+
 $HEADER.="<HTML>\n";
 $HEADER.="<HEAD>\n";
 $HEADER.="<STYLE type=\"text/css\">\n";
@@ -502,106 +524,156 @@ $MAIN.="</SELECT>";
 $MAIN.="</TD>";
 
 $MAIN.="<TD ROWSPAN=2 VALIGN=middle align=center>\n";
+$MAIN.=_QXZ("Display as:")."<BR>";
+$MAIN.="<select name='report_display_type'>";
+if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>$report_display_type</option>";}
+$MAIN.="<option value='TEXT'>TEXT</option><option value='HTML'>HTML</option></select>\n<BR><BR>";
 $MAIN.="<INPUT TYPE=submit NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'><BR/><BR/>\n";
 $MAIN.="</TD></TR></TABLE>\n";
-$MAIN.="<PRE><font size=2>\n";
+$TEXT.="<PRE><font size=2>\n";
 
 if ($SUBMIT && $query_date) {
-		$stmt="SELECT * From vicidial_dial_log where call_date>='$query_date $query_date_D' and call_date<='$query_date $query_date_T' $server_ip_SQL $sip_hangup_cause_SQL order by call_date asc";
-		$rslt=mysql_to_mysqli($stmt, $link);
+	$stmt="SELECT * From vicidial_dial_log where call_date>='$query_date $query_date_D' and call_date<='$query_date $query_date_T' $server_ip_SQL $sip_hangup_cause_SQL order by call_date asc";
+	$rslt=mysql_to_mysqli($stmt, $link);
 
-		if (!$lower_limit) {$lower_limit=1;}
-		if ($lower_limit+999>=mysqli_num_rows($rslt)) {$upper_limit=($lower_limit+mysqli_num_rows($rslt)%1000)-1;} else {$upper_limit=$lower_limit+999;}
-		$MAIN.="--- "._QXZ("DIAL LOG RECORDS FOR")." $query_date, $query_date_D "._QXZ("TO")." $query_date_T $server_rpt_string, $HC_rpt_string\n --- "._QXZ("RECORDS")." #$lower_limit-$upper_limit               <a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&type=$type&query_date=$query_date&query_date_D=$query_date_D&query_date_T=$query_date_T$server_ipQS$sip_hangup_causeQS&lower_limit=$lower_limit&upper_limit=$upper_limit&file_download=1\">["._QXZ("DOWNLOAD")."]</a>\n";
-		$CSV_text="\""._QXZ("CALLER CODE")."\",\""._QXZ("LEAD ID")."\",\""._QXZ("SERVER IP")."\",\""._QXZ("CALL DATE")."\",\""._QXZ("EXTENSION")."\",\""._QXZ("CHANNEL")."\",\""._QXZ("CONTEXT")."\",\""._QXZ("TIMEOUT")."\",\""._QXZ("OUTBOUND CID")."\",\""._QXZ("SIP HANGUP CAUSE")."\",\""._QXZ("UNIQUE ID")."\",\""._QXZ("SIP HANGUP REASON")."\"\n";
+	if (!$lower_limit) {$lower_limit=1;}
+	if ($lower_limit+999>=mysqli_num_rows($rslt)) {$upper_limit=($lower_limit+mysqli_num_rows($rslt)%1000)-1;} else {$upper_limit=$lower_limit+999;}
+	$TEXT.="--- "._QXZ("DIAL LOG RECORDS FOR")." $query_date, $query_date_D "._QXZ("TO")." $query_date_T $server_rpt_string, $HC_rpt_string\n --- "._QXZ("RECORDS")." #$lower_limit-$upper_limit               <a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&type=$type&query_date=$query_date&query_date_D=$query_date_D&query_date_T=$query_date_T$server_ipQS$sip_hangup_causeQS&lower_limit=$lower_limit&upper_limit=$upper_limit&file_download=1\">["._QXZ("DOWNLOAD")."]</a>\n";
+	$CSV_text="\""._QXZ("CALLER CODE")."\",\""._QXZ("LEAD ID")."\",\""._QXZ("SERVER IP")."\",\""._QXZ("CALL DATE")."\",\""._QXZ("EXTENSION")."\",\""._QXZ("CHANNEL")."\",\""._QXZ("CONTEXT")."\",\""._QXZ("TIMEOUT")."\",\""._QXZ("OUTBOUND CID")."\",\""._QXZ("SIP HANGUP CAUSE")."\",\""._QXZ("UNIQUE ID")."\",\""._QXZ("SIP HANGUP REASON")."\"\n";
 
-		$dial_log_rpt ="+----------------------+-----------+-----------------+---------------------+----------------------+----------------------------------------------------+----------------------+---------+------------------------------------------+--------+----------------------+----------------------------------------------------+\n";
-		$dial_log_rpt.="|                      |           |                 |                     |                      |                                                    |                      |         |                                          | "._QXZ("SIP",6)." |                      |                                                    |\n";
-		$dial_log_rpt.="|                      |           |                 |                     |                      |                                                    |                      |         |                                          | "._QXZ("HANGUP",6)." |                      |                                                    |\n";
-		$dial_log_rpt.="| "._QXZ("CALLER CODE",20)." | "._QXZ("LEAD ID",9)." | "._QXZ("SERVER IP",15)." | "._QXZ("CALL DATE",19)." | "._QXZ("EXTENSION",20)." | "._QXZ("CHANNEL",50)." | "._QXZ("CONTEXT",20)." | "._QXZ("TIMEOUT",7)." | "._QXZ("OUTBOUND CID",40)." | "._QXZ("CAUSE",6)." | "._QXZ("UNIQUE ID",20)." | "._QXZ("SIP HANGUP REASON",50)." |\n";
-		$dial_log_rpt.="+----------------------+-----------+-----------------+---------------------+----------------------+----------------------------------------------------+----------------------+---------+------------------------------------------+--------+----------------------+----------------------------------------------------+\n";
-		if ($DB) {$dial_log_rpt.=$stmt."\n";}
+	$HTML.="<BR><table border='0' cellpadding='3' cellspacing='1'>";
+	$HTML.="<tr bgcolor='#".$SSstd_row1_background."'>";
+	$HTML.="<th colspan='11'><font size='2'>"._QXZ("DIAL LOG RECORDS FOR")." $query_date, $query_date_D "._QXZ("TO")." $query_date_T $server_rpt_string, $HC_rpt_string, "._QXZ("RECORDS")." #$lower_limit-$upper_limit</font></th>";
+	$HTML.="<th><font size='2'><a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&type=$type&query_date=$query_date&query_date_D=$query_date_D&query_date_T=$query_date_T$server_ipQS$sip_hangup_causeQS&lower_limit=$lower_limit&upper_limit=$upper_limit&file_download=1\">["._QXZ("DOWNLOAD")."]</a></font></th>";
+	$HTML.="</tr>\n";
+	$HTML.="<tr bgcolor='#".$SSstd_row1_background."'>";
+	$HTML.="<th><font size='2'>"._QXZ("CALLER CODE")."</font></th>";
+	$HTML.="<th><font size='2'>"._QXZ("LEAD ID")."</font></th>";
+	$HTML.="<th><font size='2'>"._QXZ("SERVER IP")."</font></th>";
+	$HTML.="<th><font size='2'>"._QXZ("CALL DATE")."</font></th>";
+	$HTML.="<th><font size='2'>"._QXZ("EXTENSION")."</font></th>";
+	$HTML.="<th><font size='2'>"._QXZ("CHANNEL")."</font></th>";
+	$HTML.="<th><font size='2'>"._QXZ("CONTEXT")."</font></th>";
+	$HTML.="<th><font size='2'>"._QXZ("TIMEOUT")."</font></th>";
+	$HTML.="<th><font size='2'>"._QXZ("OUTBOUND CID")."</font></th>";
+	$HTML.="<th><font size='2'>"._QXZ("SIP HANGUP CAUSE")."</font></th>";
+	$HTML.="<th><font size='2'>"._QXZ("UNIQUE ID")."</font></th>";
+	$HTML.="<th><font size='2'>"._QXZ("SIP HANGUP REASON")."</font></th>";
+	$HTML.="</tr>\n";
 
-		if(mysqli_num_rows($rslt)>0) {
-			$i=0;
-			while($row=mysqli_fetch_array($rslt)) {
-				$i++;
-				if (strlen($row["extension"])>20) {$row["extension"]=substr($row["extension"], 0, 17)."...";}
-				if (strlen($row["caller_code"])>20) {$row["caller_code"]=substr($row["caller_code"], 0, 17)."...";}
-				if (strlen($row["context"])>20) {$row["context"]=substr($row["context"], 0, 17)."...";}
-				if (strlen($row["outbound_cid"])>40) {$row["outbound_cid"]=substr($row["outbound_cid"], 0, 37)."...";}
-				if ($i>=$lower_limit && $i<=$upper_limit) {
-					if (strlen($row["channel"])>50) {
-						$dial_log_rpt.="| ";
-						$dial_log_rpt.=sprintf("%-20s",substr($row["caller_code"], 0, 20))." | ";
-						$dial_log_rpt.=sprintf("%-9s",$row["lead_id"])." | ";
-						$dial_log_rpt.=sprintf("%-15s",$row["server_ip"])." | ";
-						$dial_log_rpt.=sprintf("%-19s",$row["call_date"])." | ";
-						$dial_log_rpt.=sprintf("%-20s", substr($row["extension"], 0, 20))." | ";
-						$dial_log_rpt.=sprintf("%-50s", substr($row["channel"], 0, 50))." | ";
-						$dial_log_rpt.=sprintf("%-20s", substr($row["context"], 0, 20))." | ";
-						$dial_log_rpt.=sprintf("%-7s",$row["timeout"])." | ";
-						$dial_log_rpt.=sprintf("%-40s", substr($row["outbound_cid"], 0, 40))." | ";
-						$dial_log_rpt.=sprintf("%-6s",$row["sip_hangup_cause"])." | ";
-						$dial_log_rpt.=sprintf("%-20s",$row["uniqueid"])." | ";
-						$dial_log_rpt.=sprintf("%-50s",$row["sip_hangup_reason"])." |\n";
+	$dial_log_rpt ="+----------------------+-----------+-----------------+---------------------+----------------------+----------------------------------------------------+----------------------+---------+------------------------------------------+--------+----------------------+----------------------------------------------------+\n";
+	$dial_log_rpt.="|                      |           |                 |                     |                      |                                                    |                      |         |                                          | "._QXZ("SIP",6)." |                      |                                                    |\n";
+	$dial_log_rpt.="|                      |           |                 |                     |                      |                                                    |                      |         |                                          | "._QXZ("HANGUP",6)." |                      |                                                    |\n";
+	$dial_log_rpt.="| "._QXZ("CALLER CODE",20)." | "._QXZ("LEAD ID",9)." | "._QXZ("SERVER IP",15)." | "._QXZ("CALL DATE",19)." | "._QXZ("EXTENSION",20)." | "._QXZ("CHANNEL",50)." | "._QXZ("CONTEXT",20)." | "._QXZ("TIMEOUT",7)." | "._QXZ("OUTBOUND CID",40)." | "._QXZ("CAUSE",6)." | "._QXZ("UNIQUE ID",20)." | "._QXZ("SIP HANGUP REASON",50)." |\n";
+	$dial_log_rpt.="+----------------------+-----------+-----------------+---------------------+----------------------+----------------------------------------------------+----------------------+---------+------------------------------------------+--------+----------------------+----------------------------------------------------+\n";
+	if ($DB) {$dial_log_rpt.=$stmt."\n";}
 
-						$dial_log_rpt.="| ";
-						$dial_log_rpt.=sprintf("%-20s","")." | ";
-						$dial_log_rpt.=sprintf("%-9s","")." | ";
-						$dial_log_rpt.=sprintf("%-15s","")." | ";
-						$dial_log_rpt.=sprintf("%-19s","")." | ";
-						$dial_log_rpt.=sprintf("%-20s", "")." | ";
-						$dial_log_rpt.=sprintf("%-50s", substr($row["channel"], 50))." | ";
-						$dial_log_rpt.=sprintf("%-20s", "")." | ";
-						$dial_log_rpt.=sprintf("%-7s","")." | ";
-						$dial_log_rpt.=sprintf("%-40s", "")." | ";
-						$dial_log_rpt.=sprintf("%-6s","")." | ";
-						$dial_log_rpt.=sprintf("%-20s","")." | ";
-						$dial_log_rpt.=sprintf("%-50s","")." |\n";
-					} else {
-						$dial_log_rpt.="| ";
-						$dial_log_rpt.=sprintf("%-20s",substr($row["caller_code"], 0, 20))." | ";
-						$dial_log_rpt.=sprintf("%-9s",$row["lead_id"])." | ";
-						$dial_log_rpt.=sprintf("%-15s",$row["server_ip"])." | ";
-						$dial_log_rpt.=sprintf("%-19s",$row["call_date"])." | ";
-						$dial_log_rpt.=sprintf("%-20s", substr($row["extension"], 0, 20))." | ";
-						$dial_log_rpt.=sprintf("%-50s", substr($row["channel"], 0, 50))." | ";
-						$dial_log_rpt.=sprintf("%-20s", substr($row["context"], 0, 20))." | ";
-						$dial_log_rpt.=sprintf("%-7s",$row["timeout"])." | ";
-						$dial_log_rpt.=sprintf("%-40s", substr($row["outbound_cid"], 0, 40))." | ";
-						$dial_log_rpt.=sprintf("%-6s",$row["sip_hangup_cause"])." | ";
-						$dial_log_rpt.=sprintf("%-20s",$row["uniqueid"])." | ";
-						$dial_log_rpt.=sprintf("%-50s",$row["sip_hangup_reason"])." |\n";
-					}
+	if(mysqli_num_rows($rslt)>0) {
+		$i=0;
+		while($row=mysqli_fetch_array($rslt)) {
+			$i++;
+			if (strlen($row["extension"])>20) {$row["extension"]=substr($row["extension"], 0, 17)."...";}
+			if (strlen($row["caller_code"])>20) {$row["caller_code"]=substr($row["caller_code"], 0, 17)."...";}
+			if (strlen($row["context"])>20) {$row["context"]=substr($row["context"], 0, 17)."...";}
+			if (strlen($row["outbound_cid"])>40) {$row["outbound_cid"]=substr($row["outbound_cid"], 0, 37)."...";}
+			if ($i>=$lower_limit && $i<=$upper_limit) {
+				if (strlen($row["channel"])>50) {
+					$dial_log_rpt.="| ";
+					$dial_log_rpt.=sprintf("%-20s",substr($row["caller_code"], 0, 20))." | ";
+					$dial_log_rpt.=sprintf("%-9s",$row["lead_id"])." | ";
+					$dial_log_rpt.=sprintf("%-15s",$row["server_ip"])." | ";
+					$dial_log_rpt.=sprintf("%-19s",$row["call_date"])." | ";
+					$dial_log_rpt.=sprintf("%-20s", substr($row["extension"], 0, 20))." | ";
+					$dial_log_rpt.=sprintf("%-50s", substr($row["channel"], 0, 50))." | ";
+					$dial_log_rpt.=sprintf("%-20s", substr($row["context"], 0, 20))." | ";
+					$dial_log_rpt.=sprintf("%-7s",$row["timeout"])." | ";
+					$dial_log_rpt.=sprintf("%-40s", substr($row["outbound_cid"], 0, 40))." | ";
+					$dial_log_rpt.=sprintf("%-6s",$row["sip_hangup_cause"])." | ";
+					$dial_log_rpt.=sprintf("%-20s",$row["uniqueid"])." | ";
+					$dial_log_rpt.=sprintf("%-50s",$row["sip_hangup_reason"])." |\n";
+
+					$dial_log_rpt.="| ";
+					$dial_log_rpt.=sprintf("%-20s","")." | ";
+					$dial_log_rpt.=sprintf("%-9s","")." | ";
+					$dial_log_rpt.=sprintf("%-15s","")." | ";
+					$dial_log_rpt.=sprintf("%-19s","")." | ";
+					$dial_log_rpt.=sprintf("%-20s", "")." | ";
+					$dial_log_rpt.=sprintf("%-50s", substr($row["channel"], 50))." | ";
+					$dial_log_rpt.=sprintf("%-20s", "")." | ";
+					$dial_log_rpt.=sprintf("%-7s","")." | ";
+					$dial_log_rpt.=sprintf("%-40s", "")." | ";
+					$dial_log_rpt.=sprintf("%-6s","")." | ";
+					$dial_log_rpt.=sprintf("%-20s","")." | ";
+					$dial_log_rpt.=sprintf("%-50s","")." |\n";
+				} else {
+					$dial_log_rpt.="| ";
+					$dial_log_rpt.=sprintf("%-20s",substr($row["caller_code"], 0, 20))." | ";
+					$dial_log_rpt.=sprintf("%-9s",$row["lead_id"])." | ";
+					$dial_log_rpt.=sprintf("%-15s",$row["server_ip"])." | ";
+					$dial_log_rpt.=sprintf("%-19s",$row["call_date"])." | ";
+					$dial_log_rpt.=sprintf("%-20s", substr($row["extension"], 0, 20))." | ";
+					$dial_log_rpt.=sprintf("%-50s", substr($row["channel"], 0, 50))." | ";
+					$dial_log_rpt.=sprintf("%-20s", substr($row["context"], 0, 20))." | ";
+					$dial_log_rpt.=sprintf("%-7s",$row["timeout"])." | ";
+					$dial_log_rpt.=sprintf("%-40s", substr($row["outbound_cid"], 0, 40))." | ";
+					$dial_log_rpt.=sprintf("%-6s",$row["sip_hangup_cause"])." | ";
+					$dial_log_rpt.=sprintf("%-20s",$row["uniqueid"])." | ";
+					$dial_log_rpt.=sprintf("%-50s",$row["sip_hangup_reason"])." |\n";
 				}
-				$CSV_text.="\"$row[caller_code]\",\"$row[lead_id]\",\"$row[server_ip]\",\"$row[call_date]\",\"$row[extension]\",\"$row[channel]\",\"$row[context]\",\"$row[timeout]\",\"$row[outbound_cid]\",\"$row[sip_hangup_cause]\",\"$row[uniqueid]\",\"$row[sip_hangup_reason]\"\n";
+				$HTML.="<tr bgcolor='#".$SSstd_row2_background."'>";
+				$HTML.="<th><font size='2'>".$row["caller_code"]."</font></th>";
+				$HTML.="<th><font size='2'>".$row["lead_id"]."</font></th>";
+				$HTML.="<th><font size='2'>".$row["server_ip"]."</font></th>";
+				$HTML.="<th><font size='2'>".$row["call_date"]."</font></th>";
+				$HTML.="<th><font size='2'>".$row["extension"]."</font></th>";
+				$HTML.="<th><font size='2'>".$row["channel"]."</font></th>";
+				$HTML.="<th><font size='2'>".$row["context"]."</font></th>";
+				$HTML.="<th><font size='2'>".$row["timeout"]."</font></th>";
+				$HTML.="<th><font size='2'>".$row["outbound_cid"]."</font></th>";
+				$HTML.="<th><font size='2'>".$row["sip_hangup_cause"]."</font></th>";
+				$HTML.="<th><font size='2'>".$row["uniqueid"]."</font></th>";
+				$HTML.="<th><font size='2'>".$row["sip_hangup_reason"]."</font></th>";
+				$HTML.="</tr>\n";
 			}
-		} else {
-			$dial_log_rpt.="*** "._QXZ("NO RECORDS FOUND")." ***\n";
+			$CSV_text.="\"$row[caller_code]\",\"$row[lead_id]\",\"$row[server_ip]\",\"$row[call_date]\",\"$row[extension]\",\"$row[channel]\",\"$row[context]\",\"$row[timeout]\",\"$row[outbound_cid]\",\"$row[sip_hangup_cause]\",\"$row[uniqueid]\",\"$row[sip_hangup_reason]\"\n";
 		}
-		$dial_log_rpt.="+----------------------+-----------+-----------------+---------------------+----------------------+----------------------------------------------------+----------------------+---------+------------------------------------------+--------+----------------------+----------------------------------------------------+\n";
+	} else {
+		$dial_log_rpt.="*** "._QXZ("NO RECORDS FOUND")." ***\n";
+		$HTML.="*** "._QXZ("NO RECORDS FOUND")." ***\n";
+	}
+	$dial_log_rpt.="+----------------------+-----------+-----------------+---------------------+----------------------+----------------------------------------------------+----------------------+---------+------------------------------------------+--------+----------------------+----------------------------------------------------+\n";
 
-		$dial_log_rpt_hf="";
-		$ll=$lower_limit-1000;
-		if ($ll>=1) {
-			$dial_log_rpt_hf.="<a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&type=$type&query_date=$query_date&query_date_D=$query_date_D&query_date_T=$query_date_T$server_ipQS$sip_hangup_causeQS&lower_limit=$ll\">[<<< "._QXZ("PREV")." 1000 "._QXZ("records")."]</a>";
-		} else {
-			$dial_log_rpt_hf.=sprintf("%-23s", " ");
-		}
-		$dial_log_rpt_hf.=sprintf("%-145s", " ");
+	$dial_log_rpt_hf="";
+	$ll=$lower_limit-1000;
+	$HTML.="<tr bgcolor='#".$SSstd_row1_background."'>";
+	if ($ll>=1) {
+		$dial_log_rpt_hf.="<a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&type=$type&query_date=$query_date&query_date_D=$query_date_D&query_date_T=$query_date_T&report_display_type=$report_display_type$server_ipQS$sip_hangup_causeQS&lower_limit=$ll\">[<<< "._QXZ("PREV")." 1000 "._QXZ("records")."]</a>";
+		$HTML.="<th colspan='6'><font size='2'><a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&type=$type&query_date=$query_date&query_date_D=$query_date_D&query_date_T=$query_date_T&report_display_type=$report_display_type$server_ipQS$sip_hangup_causeQS&lower_limit=$ll\">[<<< "._QXZ("PREV")." 1000 "._QXZ("records")."]</a></font></th>";
+	} else {
+		$dial_log_rpt_hf.=sprintf("%-23s", " ");
+		$HTML.="<td colspan='6'>&nbsp;</th>";
+	}
+	$dial_log_rpt_hf.=sprintf("%-145s", " ");
 
-		if (($lower_limit+1000)<mysqli_num_rows($rslt)) {
-			if ($upper_limit+1000>=mysqli_num_rows($rslt)) {$max_limit=mysqli_num_rows($rslt)-$upper_limit;} else {$max_limit=1000;}
-			$dial_log_rpt_hf.="<a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&type=$type&query_date=$query_date&query_date_D=$query_date_D&query_date_T=$query_date_T$server_ipQS$sip_hangup_causeQS&lower_limit=".($lower_limit+1000)."\">["._QXZ("NEXT")." $max_limit "._QXZ("records")." >>>]</a>";
-		} else {
-			$dial_log_rpt_hf.=sprintf("%23s", " ");
-		}
-		$dial_log_rpt_hf.="\n";
-		$MAIN.=$dial_log_rpt_hf.$dial_log_rpt.$dial_log_rpt_hf;
-		
-		$MAIN.="</PRE>\n";
+	if (($lower_limit+1000)<mysqli_num_rows($rslt)) {
+		if ($upper_limit+1000>=mysqli_num_rows($rslt)) {$max_limit=mysqli_num_rows($rslt)-$upper_limit;} else {$max_limit=1000;}
+		$dial_log_rpt_hf.="<a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&type=$type&query_date=$query_date&query_date_D=$query_date_D&query_date_T=$query_date_T&report_display_type=$report_display_type$server_ipQS$sip_hangup_causeQS&lower_limit=".($lower_limit+1000)."\">["._QXZ("NEXT")." $max_limit "._QXZ("records")." >>>]</a>";
+		$HTML.="<td align='right' colspan='6'><font size='2'><a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&type=$type&query_date=$query_date&query_date_D=$query_date_D&query_date_T=$query_date_T&report_display_type=$report_display_type$server_ipQS$sip_hangup_causeQS&lower_limit=".($lower_limit+1000)."\">["._QXZ("NEXT")." $max_limit "._QXZ("records")." >>>]</a></font></th>";
+	} else {
+		$dial_log_rpt_hf.=sprintf("%23s", " ");
+		$HTML.="<td colspan='6'>&nbsp;</th>";
+	}
+	$dial_log_rpt_hf.="\n";
+	$TEXT.=$dial_log_rpt_hf.$dial_log_rpt.$dial_log_rpt_hf;
+	
+	$TEXT.="</PRE>\n";
+	$HTML.="</tr></table>";
 
+	if ($report_display_type=="HTML") {
+		$MAIN.=$HTML;
+	} else {
+		$MAIN.=$TEXT;
+	}
 }
 	if ($file_download>0) {
 		$FILE_TIME = date("Ymd-His");

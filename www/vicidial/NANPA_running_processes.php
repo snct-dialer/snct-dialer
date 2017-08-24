@@ -11,6 +11,7 @@
 # 141229-2020 - Added code for on-the-fly language translations display
 # 160108-2300 - Changed some mysqli_query to mysql_to_mysqli for consistency
 # 170409-1537 - Added IP List validation code
+# 170822-2230 - Added screen color settings
 #
 
 $version = '2.14-5';
@@ -148,6 +149,47 @@ else
 	exit;
 	}
 
+
+##### BEGIN Define colors and logo #####
+$SSmenu_background='015B91';
+$SSframe_background='D9E6FE';
+$SSstd_row1_background='9BB9FB';
+$SSstd_row2_background='B9CBFD';
+$SSstd_row3_background='8EBCFD';
+$SSstd_row4_background='B6D3FC';
+$SSstd_row5_background='FFFFFF';
+$SSalt_row1_background='BDFFBD';
+$SSalt_row2_background='99FF99';
+$SSalt_row3_background='CCFFCC';
+
+$screen_color_stmt="select admin_screen_colors from system_settings";
+$screen_color_rslt=mysql_to_mysqli($screen_color_stmt, $link);
+$screen_color_row=mysqli_fetch_row($screen_color_rslt);
+$agent_screen_colors="$screen_color_row[0]";
+
+if ($agent_screen_colors != 'default')
+	{
+	$asc_stmt = "SELECT menu_background,frame_background,std_row1_background,std_row2_background,std_row3_background,std_row4_background,std_row5_background,alt_row1_background,alt_row2_background,alt_row3_background,web_logo FROM vicidial_screen_colors where colors_id='$agent_screen_colors';";
+	$asc_rslt=mysql_to_mysqli($asc_stmt, $link);
+	$qm_conf_ct = mysqli_num_rows($asc_rslt);
+	if ($qm_conf_ct > 0)
+		{
+		$asc_row=mysqli_fetch_row($asc_rslt);
+		$SSmenu_background =            $asc_row[0];
+		$SSframe_background =           $asc_row[1];
+		$SSstd_row1_background =        $asc_row[2];
+		$SSstd_row2_background =        $asc_row[3];
+		$SSstd_row3_background =        $asc_row[4];
+		$SSstd_row4_background =        $asc_row[5];
+		$SSstd_row5_background =        $asc_row[6];
+		$SSalt_row1_background =        $asc_row[7];
+		$SSalt_row2_background =        $asc_row[8];
+		$SSalt_row3_background =        $asc_row[9];
+		$SSweb_logo =		           $asc_row[10];
+		}
+	}
+
+
 $oc_ct=count($output_codes_to_display);
 $oc_SQL="'',";
 $url_str="";
@@ -181,28 +223,28 @@ if (!$show_history) {
 
 if (mysqli_num_rows($process_rslt)>0) {
 	echo "<table width='770' cellpadding=5 cellspacing=0>";
-	echo "<tr><th colspan='7' bgcolor='#015B91'><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE SIZE=2>$report_title</th></tr>";
+	echo "<tr><th colspan='7' bgcolor='#".$SSmenu_background."'><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE SIZE=2>$report_title</th></tr>";
 	echo "<tr>";
-	echo "<td align='left' bgcolor='#015B91' width='80'><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE SIZE=2>"._QXZ("Start time")."</th>";
-	echo "<td align='left' bgcolor='#015B91' width='80'><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE SIZE=2>"._QXZ("Status")."</th>";
-	echo "<td align='left' bgcolor='#015B91' width='100'><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE SIZE=2>"._QXZ("Last updated")."</th>";
-	echo "<td align='left' bgcolor='#015B91' width='80'><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE SIZE=2>"._QXZ("Leads count")."</th>";
-	echo "<td align='left' bgcolor='#015B91' width='80'><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE SIZE=2>"._QXZ("Filter count")."</th>";
-	echo "<td align='left' bgcolor='#015B91' width='180'><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE SIZE=2>"._QXZ("Status line")."</th>";
-	echo "<td align='left' bgcolor='#015B91' width='170'><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE SIZE=2>"._QXZ("Last script output")."</th>";
+	echo "<td align='left' bgcolor='#".$SSmenu_background."' width='80'><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE SIZE=2>"._QXZ("Start time")."</th>";
+	echo "<td align='left' bgcolor='#".$SSmenu_background."' width='80'><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE SIZE=2>"._QXZ("Status")."</th>";
+	echo "<td align='left' bgcolor='#".$SSmenu_background."' width='100'><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE SIZE=2>"._QXZ("Last updated")."</th>";
+	echo "<td align='left' bgcolor='#".$SSmenu_background."' width='80'><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE SIZE=2>"._QXZ("Leads count")."</th>";
+	echo "<td align='left' bgcolor='#".$SSmenu_background."' width='80'><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE SIZE=2>"._QXZ("Filter count")."</th>";
+	echo "<td align='left' bgcolor='#".$SSmenu_background."' width='180'><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE SIZE=2>"._QXZ("Status line")."</th>";
+	echo "<td align='left' bgcolor='#".$SSmenu_background."' width='170'><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE SIZE=2>"._QXZ("Last script output")."</th>";
 	echo "</tr>";
 
 	while ($row=mysqli_fetch_array($process_rslt)) {
-		if ($bgcolor=="#9BB9FB") {$bgcolor="#B9CBFD";} else {$bgcolor='#9BB9FB';}
+		if ($bgcolor==$SSstd_row1_background) {$bgcolor=$SSstd_row2_background;} else {$bgcolor=$SSstd_row1_background;}
 		$row["script_output"]=preg_replace('/\n/', '<BR/>', $row["script_output"]);
 		echo "<tr>";
-		echo "<td align='left' bgcolor='$bgcolor' width='80'><FONT FACE=\"ARIAL,HELVETICA\" COLOR='#000000' size='1'>$row[start_time]</th>";
-		echo "<td align='left' bgcolor='$bgcolor' width='80'><FONT FACE=\"ARIAL,HELVETICA\" COLOR='#000000' size='1'>$row[status]</th>";
-		echo "<td align='left' bgcolor='$bgcolor' width='100'><FONT FACE=\"ARIAL,HELVETICA\" COLOR='#000000' size='1'>$row[update_time]</th>";
-		echo "<td align='left' bgcolor='$bgcolor' width='80'><FONT FACE=\"ARIAL,HELVETICA\" COLOR='#000000' size='1'>$row[leads_count]</th>";
-		echo "<td align='left' bgcolor='$bgcolor' width='80'><FONT FACE=\"ARIAL,HELVETICA\" COLOR='#000000' size='1'>$row[filter_count]</th>";
-		echo "<td align='left' bgcolor='$bgcolor' width='180'><FONT FACE=\"ARIAL,HELVETICA\" COLOR='#000000' size='1'>List: $row[list_id]\n<BR>$row[status_line]</th>";
-		echo "<td align='left' bgcolor='$bgcolor' width='170'><FONT FACE=\"ARIAL,HELVETICA\" COLOR='#000000' size='1'>$row[script_output]</th>";
+		echo "<td align='left' bgcolor='#".$bgcolor."' width='80'><FONT FACE=\"ARIAL,HELVETICA\" COLOR='#000000' size='1'>$row[start_time]</th>";
+		echo "<td align='left' bgcolor='#".$bgcolor."' width='80'><FONT FACE=\"ARIAL,HELVETICA\" COLOR='#000000' size='1'>$row[status]</th>";
+		echo "<td align='left' bgcolor='#".$bgcolor."' width='100'><FONT FACE=\"ARIAL,HELVETICA\" COLOR='#000000' size='1'>$row[update_time]</th>";
+		echo "<td align='left' bgcolor='#".$bgcolor."' width='80'><FONT FACE=\"ARIAL,HELVETICA\" COLOR='#000000' size='1'>$row[leads_count]</th>";
+		echo "<td align='left' bgcolor='#".$bgcolor."' width='80'><FONT FACE=\"ARIAL,HELVETICA\" COLOR='#000000' size='1'>$row[filter_count]</th>";
+		echo "<td align='left' bgcolor='#".$bgcolor."' width='180'><FONT FACE=\"ARIAL,HELVETICA\" COLOR='#000000' size='1'>List: $row[list_id]\n<BR>$row[status_line]</th>";
+		echo "<td align='left' bgcolor='#".$bgcolor."' width='170'><FONT FACE=\"ARIAL,HELVETICA\" COLOR='#000000' size='1'>$row[script_output]</th>";
 		echo "</tr>";
 	}
 	echo "</table>";

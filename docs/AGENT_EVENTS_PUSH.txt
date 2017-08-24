@@ -1,4 +1,4 @@
-Agent Events Push		Started: 2017-05-31	Updated: 2017-07-25
+Agent Events Push		Started: 2017-05-31	Updated: 2017-08-23
 
 
 This feature allows for selected events in the VICIdial agent screen to push out event triggers through HTTP requests sent to a URL as defined in the System Settings.
@@ -117,3 +117,61 @@ update_fields - API trigger to update customer information fields, will attach f
 session_empty - This event triggers when the agent session has no channels in it
 
 session_channels - This event triggers when the agent session goes from having no channels to having at least one channel in it
+
+
+
+
+Due to the nature of AJAX to be "Asynchronous", and also some VICIdial campaign settings, the above events may not always be sent or received in the same order. To help in building your application around these event order fluctuations, here is a list of events that are triggered only after an AJAX transaction has completed, and those that are based only on Javascript/PHP events, like an agent click, javascript timer or other non-AJAX transaction:
+
+
+EVENTS THAT TRIGGER AFTER AJAX PROCESS HAS COMPLETED:
+logged_out_complete
+call_answered
+call_dead
+call_script
+other_answered
+agent_hangup
+dispo_set
+3way_answered
+3way_agent_hangup
+blind_monitor_alert
+time_sync
+customer_gone
+update_fields
+session_empty
+session_channels
+
+
+EVENTS THAT TRIGGER BY JAVASCRIPT/PHP ACTIONS(NON-AJAX) ALONE:
+logged_in
+logged_out
+state_ready
+state_paused
+call_dialed
+dispo_screen_open
+3way_start
+3way_agent_leave
+transfer_local_closer
+transfer_blind
+park_started
+park_retrieved
+park_ivr_started
+park_ivr_retrieved
+login_invalid
+manual_dial_open
+callback_select_open
+transfer_panel_open
+transfer_panel_closed
+ingroup_screen_open
+ingroup_screen_closed
+territory_screen_open
+territory_screen_closed
+contact_search_open
+lead_search_open
+pause_code_open
+
+
+MULTI-PURPOSE EVENTS THAT HAVE VARIOUS TRIGGERS:
+agent_alert
+session_disabled
+none_in_session
