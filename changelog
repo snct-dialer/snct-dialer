@@ -1,4 +1,11 @@
+2.25.8
+
+  [Jörg Frings-Fürst]
+  * Add missing fallbacks on translations.
+
+
 2.25.7
+
   [Jörg Frings-Fürst]
   * Add upstream Rev. 2803:
     - Added HTTP error code 418.
