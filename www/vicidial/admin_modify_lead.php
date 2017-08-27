@@ -83,6 +83,7 @@
 # 170527-2253 - Fix for rare inbound logging issue #1017
 # 170710-2039 - Added Audit Comments display
 # 170807-2255 - Added park log
+# 170826-0858 - Added link to turn on/off arcchived logs display
 #
 
 require("dbconnect_mysqli.php");
@@ -1343,9 +1344,15 @@ else
 	if ($archive_log=="Yes") 
 		{
 		echo "<tr><td colspan=2 align='center'>";
-		echo "<B><font color='#FF0000'>*** "._QXZ("ARCHIVED LOG SEARCH ENABLED")." ***</font></B><BR>";
+		echo "<B><font color='#FF0000'>*** "._QXZ("ARCHIVED LOG SEARCH ENABLED")." ***</font></B> <a href=\"$PHP_SELF?lead_id=$lead_id&archive_search=$archive_search&archive_log=No\">"._QXZ("Turn off archived logs display")."</a><BR>";
 		echo "<B><font color='#FF0000'>*** "._QXZ("ARCHIVED LOGS SHOWN IN RED, THERE MAY BE DUPLICATES WITH NON-ARCHIVED LOG ENTRIES")." ***</font></B>";
 		echo "<input type='hidden' name='archive_log' value='Yes'>";
+		echo "</td></tr>\n";
+		}
+	else
+		{
+		echo "<tr><td colspan=2 align='center'>";
+		echo "<a href=\"$PHP_SELF?lead_id=$lead_id&archive_search=$archive_search&archive_log=Yes\">"._QXZ("Turn on archived logs display")."</a>";
 		echo "</td></tr>\n";
 		}
 

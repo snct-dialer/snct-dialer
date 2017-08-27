@@ -9,6 +9,7 @@
 #
 # 160115-2303 - First build
 # 170409-1538 - Added IP List validation code
+# 170824-2130 - Added HTML formatting and screen colors
 #
 
 $startMS = microtime();
@@ -60,9 +61,9 @@ if (!isset($access_date_T)) {$access_date_T="00:00:00";}
 if (!isset($access_date_end_T)) {$access_date_end_T="23:59:59";}
 $access_date_from="$access_date_D $access_date_T";
 $access_date_to="$access_date_end_D $access_date_end_T";
-$CSV_text="\"RECORDING ACCESS LOG REPORT\"\n";
-$CSV_text.="\"ACCESS DATE RANGE:\",\"$access_date_from to $access_date_to\"\n";
-$ASCII_rpt_header="ACCESS DATE RANGE: $access_date_from to $access_date_to\n";
+$CSV_text="\""._QXZ("RECORDING ACCESS LOG REPORT")."\"\n";
+$CSV_text.="\""._QXZ("ACCESS DATE RANGE").":\",\"$access_date_from "._QXZ("to")." $access_date_to\"\n";
+$ASCII_rpt_header=""._QXZ("ACCESS DATE RANGE").": $access_date_from "._QXZ("to")." $access_date_to\n";
 
 $recording_date_SQL="";
 if ($recording_date_D) 
@@ -70,9 +71,10 @@ if ($recording_date_D)
 	if (!isset($recording_date_end_D)) {$recording_date_end_D=$recording_date_D;}
 	$recording_date_from="$recording_date_D 00:00:00";
 	$recording_date_to="$recording_date_end_D 23:59:59";
+	$recording_date_title="<LI>"._QXZ("RECORDINGS CREATED")." $recording_date_D "._QXZ("to")." $recording_date_end_D"; 
 	$recording_date_SQL=" start_time>='$recording_date_from' and start_time<='$recording_date_to' and ";
-	$CSV_text.="\"RECORDING DATE RANGE:\",\"$recording_date_from to $recording_date_to\"\n";
-	$ASCII_rpt_header.="RECORDING DATE RANGE: $recording_date_from to $recording_date_to\n";
+	$CSV_text.="\""._QXZ("RECORDING DATE RANGE").":\",\"$recording_date_from "._QXZ("to")." $recording_date_to\"\n";
+	$ASCII_rpt_header.=_QXZ("RECORDING DATE RANGE").": $recording_date_from "._QXZ("to")." $recording_date_to\n";
 	}
 
 
@@ -361,9 +363,10 @@ if ( (preg_match('/\-\-ALL\-\-/',$user_string) ) or ($user_ct < 1) )
 	{$vu_user_SQL = ""; $vra_user_SQL = ""; $user_SQL="";}
 else
 	{
-	$ASCII_rpt_header.="AGENTS: ".implode(", ", $users)."\n";
-	$CSV_text.="\"AGENTS:\",\"".implode(", ", $users)."\"\n";
-	$GRAPH_header.="<th class='column_header grey_graph_cell'>SELECTED AGENTS</th>";
+	$agents_title="<LI>"._QXZ("AGENTS").": ".implode(", ", $users);
+	$ASCII_rpt_header.=_QXZ("AGENTS").": ".implode(", ", $users)."\n";
+	$CSV_text.="\""._QXZ("AGENTS").":\",\"".implode(", ", $users)."\"\n";
+	$GRAPH_header.="<th class='column_header grey_graph_cell'>"._QXZ("SELECTED AGENTS")."</th>";
 	}
 
 $i=0;
@@ -381,11 +384,50 @@ if ( (preg_match('/\-\-ALL\-\-/',$user_group_string) ) or ($user_group_ct < 1) )
 	{$user_group_SQL = "";}
 else
 	{
-	$ASCII_rpt_header.="   User groups: ".implode(", ", $user_group)."\n";
-	$CSV_text.="\"User groups:\",\"".implode(", ", $user_group)."\"\n";
-	$GRAPH_header.="<th class='column_header grey_graph_cell'>SELECTED USER GROUPS</th>";
+	$ASCII_rpt_header.="   "._QXZ("User groups").": ".implode(", ", $user_group)."\n";
+	$CSV_text.="\""._QXZ("User groups").":\",\"".implode(", ", $user_group)."\"\n";
+	$GRAPH_header.="<th class='column_header grey_graph_cell'>"._QXZ("SELECTED USER GROUPS")."</th>";
 	}
 
+
+##### BEGIN Define colors and logo #####
+$SSmenu_background='015B91';
+$SSframe_background='D9E6FE';
+$SSstd_row1_background='9BB9FB';
+$SSstd_row2_background='B9CBFD';
+$SSstd_row3_background='8EBCFD';
+$SSstd_row4_background='B6D3FC';
+$SSstd_row5_background='FFFFFF';
+$SSalt_row1_background='BDFFBD';
+$SSalt_row2_background='99FF99';
+$SSalt_row3_background='CCFFCC';
+
+$screen_color_stmt="select admin_screen_colors from system_settings";
+$screen_color_rslt=mysql_to_mysqli($screen_color_stmt, $link);
+$screen_color_row=mysqli_fetch_row($screen_color_rslt);
+$agent_screen_colors="$screen_color_row[0]";
+
+if ($agent_screen_colors != 'default')
+	{
+	$asc_stmt = "SELECT menu_background,frame_background,std_row1_background,std_row2_background,std_row3_background,std_row4_background,std_row5_background,alt_row1_background,alt_row2_background,alt_row3_background,web_logo FROM vicidial_screen_colors where colors_id='$agent_screen_colors';";
+	$asc_rslt=mysql_to_mysqli($asc_stmt, $link);
+	$qm_conf_ct = mysqli_num_rows($asc_rslt);
+	if ($qm_conf_ct > 0)
+		{
+		$asc_row=mysqli_fetch_row($asc_rslt);
+		$SSmenu_background =            $asc_row[0];
+		$SSframe_background =           $asc_row[1];
+		$SSstd_row1_background =        $asc_row[2];
+		$SSstd_row2_background =        $asc_row[3];
+		$SSstd_row3_background =        $asc_row[4];
+		$SSstd_row4_background =        $asc_row[5];
+		$SSstd_row5_background =        $asc_row[6];
+		$SSalt_row1_background =        $asc_row[7];
+		$SSalt_row2_background =        $asc_row[8];
+		$SSalt_row3_background =        $asc_row[9];
+		$SSweb_logo =		           $asc_row[10];
+		}
+	}
 
 if ($DB) {echo "$user_group_string|$user_group_ct|$user_groupQS|$i<BR>\n";}
 
@@ -520,7 +562,11 @@ $HTML_text.="o_cal.a_tpl.yearscroll = false;\n";
 $HTML_text.="// o_cal.a_tpl.weekstart = 1; // Monday week start\n";
 $HTML_text.="</script>\n";
 #$HTML_text.=" &nbsp; <INPUT TYPE=TEXT NAME=access_date_end_T SIZE=9 MAXLENGTH=8 VALUE=\"$recording_date_end_T\">";
-$HTML_text.="</TD><TD VALIGN='TOP'><BR><BR>";
+$HTML_text.="</TD><TD VALIGN='TOP'>";
+$HTML_text.=_QXZ("Display as:")."<BR>";
+$HTML_text.="<select name='report_display_type'>";
+if ($report_display_type) {$HTML_text.="<option value='$report_display_type' selected>$report_display_type</option>";}
+$HTML_text.="<option value='TEXT'>TEXT</option><option value='HTML'>HTML</option></select>\n<BR><BR>";
 $HTML_text.="<INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'>\n";
 if ($archives_available=="Y") 
 	{
@@ -530,7 +576,7 @@ $HTML_text.="</TD>";
 $HTML_text.="</TR></TABLE>";
 $HTML_text.="</FORM>\n\n";
 
-$HTML_text.="<PRE><FONT SIZE=2>\n";
+$TEXT.="<PRE><FONT SIZE=2>\n";
 
 if ($SUBMIT) 
 	{
@@ -538,13 +584,28 @@ if ($SUBMIT)
 	if ($DB) {print $stmt."\n";}
 
 	$ASCII_border="+--------------+---------------------+------------+--------------------------------+---------------------+---------------------+-----------------+\n";
-	$HTML_text.=$ASCII_rpt_header;
-	$HTML_text.=sprintf("%110s", " ");
-	$HTML_text.="<a href=\"$PHP_SELF?DB=$DB&access_date_D=$access_date_D&access_date_T=$access_date_T&access_date_end_D=$access_date_end_D&access_date_end_T=$access_date_end_T&recording_date_D=$recording_date_D&recording_date_end_D=$recording_date_end_D$userQS$user_groupQS&file_download=1&SUBMIT=$SUBMIT\">"._QXZ("DOWNLOAD")."</a>\n";
+	$TEXT.=$ASCII_rpt_header;
+	$TEXT.=sprintf("%110s", " ");
+	$TEXT.="<a href=\"$PHP_SELF?DB=$DB&access_date_D=$access_date_D&access_date_T=$access_date_T&access_date_end_D=$access_date_end_D&access_date_end_T=$access_date_end_T&recording_date_D=$recording_date_D&recording_date_end_D=$recording_date_end_D$userQS$user_groupQS&file_download=1&SUBMIT=$SUBMIT\">"._QXZ("DOWNLOAD")."</a>\n";
 
-	$HTML_text.=$ASCII_border;
-	$HTML_text.="| RECORDING ID | RECORDING DATE/TIME | LEAD ID    | USER                           | DATE/TIME ACCESSED  | ACCESS RESULT       | IP              |\n";
-	$HTML_text.=$ASCII_border;
+	$HTML.="<BR><table border='0' cellpadding='3' cellspacing='1'>";
+	$HTML.="<tr bgcolor='#".$SSstd_row1_background."'>";
+	$HTML.="<td colspan='6' align='left'><B><font size='2'>"._QXZ("RECORDING ACCESS LOG FOR:")."<UL><LI>"._QXZ("RECORDS VIEWED ")."$access_date_from "._QXZ("TO")." $access_date_to$recording_date_title $agents_title</UL></font></B></td>";
+	$HTML.="<th><font size='2'><a href=\"$PHP_SELF?DB=$DB&access_date_D=$access_date_D&access_date_T=$access_date_T&access_date_end_D=$access_date_end_D&access_date_end_T=$access_date_end_T&recording_date_D=$recording_date_D&recording_date_end_D=$recording_date_end_D$userQS$user_groupQS&file_download=1&SUBMIT=$SUBMIT\">"._QXZ("DOWNLOAD")."</a></font></th>";
+	$HTML.="</tr>\n";
+	$HTML.="<tr bgcolor='#".$SSstd_row1_background."'>";
+	$HTML.="<th><font size='2'>"._QXZ("RECORDING ID")."</font></th>";
+	$HTML.="<th><font size='2'>"._QXZ("RECORDING DATE/TIME")."</font></th>";
+	$HTML.="<th><font size='2'>"._QXZ("LEAD ID")."</font></th>";
+	$HTML.="<th><font size='2'>"._QXZ("USER")."</font></th>";
+	$HTML.="<th><font size='2'>"._QXZ("DATE/TIME ACCESSED")."</font></th>";
+	$HTML.="<th><font size='2'>"._QXZ("ACCESS RESULT")."</font></th>";
+	$HTML.="<th><font size='2'>"._QXZ("IP")."</font></th>";
+	$HTML.="</tr>\n";
+
+	$TEXT.=$ASCII_border;
+	$TEXT.="| RECORDING ID | RECORDING DATE/TIME | LEAD ID    | USER                           | DATE/TIME ACCESSED  | ACCESS RESULT       | IP              |\n";
+	$TEXT.=$ASCII_border;
 
 	$CSV_text.="\n\"RECORDING ID\",\"RECORDING DATE/TIME\",\"LEAD ID\",\"USER\",\"DATE/TIME ACCESSED\",\"ACCESS RESULT\",\"IP\"\n";
 
@@ -552,31 +613,41 @@ if ($SUBMIT)
 	while ($row=mysqli_fetch_array($rslt)) 
 		{
 		$full_user=substr($row["user"]." - ".$row["full_name"], 0, 30);
-		$HTML_text.="| ";
-		$HTML_text.=sprintf("%-12s", $row["recording_id"])." | ";
-		$HTML_text.=sprintf("%-19s", $row["start_time"])." | ";
-		$HTML_text.=sprintf("%-10s", $row["lead_id"])." | ";
-		$HTML_text.=sprintf("%-30s", $full_user)." | ";
-		$HTML_text.=sprintf("%-19s", $row["access_datetime"])." | ";
-		$HTML_text.=sprintf("%-19s", $row["access_result"])." | ";
-		$HTML_text.=sprintf("%-15s", $row["ip"])." |\n";
+		$TEXT.="| ";
+		$TEXT.=sprintf("%-12s", $row["recording_id"])." | ";
+		$TEXT.=sprintf("%-19s", $row["start_time"])." | ";
+		$TEXT.=sprintf("%-10s", $row["lead_id"])." | ";
+		$TEXT.=sprintf("%-30s", $full_user)." | ";
+		$TEXT.=sprintf("%-19s", $row["access_datetime"])." | ";
+		$TEXT.=sprintf("%-19s", $row["access_result"])." | ";
+		$TEXT.=sprintf("%-15s", $row["ip"])." |\n";
+
+		$HTML.="<tr bgcolor='#".$SSstd_row2_background."'>";
+		$HTML.="<th><font size='2'>".$row["recording_id"]."</font></th>";
+		$HTML.="<th><font size='2'>".$row["start_time"]."</font></th>";
+		$HTML.="<th><font size='2'>".$row["lead_id"]."</font></th>";
+		$HTML.="<th><font size='2'>".$row["user"]." - ".$row["full_name"]."</font></th>";
+		$HTML.="<th><font size='2'>".$row["access_datetime"]."</font></th>";
+		$HTML.="<th><font size='2'>".$row["access_result"]."</font></th>";
+		$HTML.="<th><font size='2'>".$row["ip"]."</font></th>";
+		$HTML.="</tr>\n";
+
 		$CSV_text.="\"$row[recording_id]\",\"$row[start_time]\",\"$row[lead_id]\",\"$full_user\",\"$row[access_datetime]\",\"$row[access_result]\",\"$row[ip]\"\n";
 		}
-	$HTML_text.=$ASCII_border;
-/*
-+-------------------------+--------------+---------+------+---------------------+---------------------+-----------+------------+---------------------+
-| recording_access_log_id | recording_id | lead_id | user | access_datetime     | access_result       | full_name | user_group | start_time          | ip
-+-------------------------+--------------+---------+------+---------------------+---------------------+-----------+------------+---------------------+
-|                    1599 |       164677 | 1079414 | 6666 | 2016-01-12 23:50:04 | INVALID PERMISSIONS | Admin     | ADMIN      | 2016-01-09 08:22:17 |
-|                    1600 |       164668 | 1177978 | 6666 | 2016-01-12 23:52:49 | ACCESSED            | Admin     | ADMIN      | 2016-01-06 22:25:08 |
-|                    1601 |       164678 | 1177980 | 6666 | 2016-01-12 23:57:43 | ACCESSED            | Admin     | ADMIN      | 2016-01-09 08:27:56 |
-|                    1602 |       164678 | 1177980 | 6666 | 2016-01-13 00:42:54 | INVALID PERMISSIONS | Admin     | ADMIN      | 2016-01-09 08:27:56 |
-+-------------------------+--------------+---------+------+---------------------+---------------------+-----------+------------+---------------------+
-*/
+	$TEXT.=$ASCII_border;
 
 	}
 
-$HTML_text.="</FONT></PRE></BODY></HTML>";
+$TEXT.="</FONT></PRE>";
+$HTML.="</table>";
+
+if ($report_display_type=="HTML") {
+	$HTML_text.=$HTML;
+} else {
+	$HTML_text.=$TEXT;
+}
+
+$HTML_text.="</BODY></HTML>";
 
 
 if ($file_download == 0 || !$file_download) 

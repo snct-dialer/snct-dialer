@@ -14,7 +14,7 @@
 # 141114-0846 - Finalized adding QXZ translation to all admin files
 # 141230-1513 - Added code for on-the-fly language translations display
 # 170409-1534 - Added IP List validation code
-# 170821-2219 - Added HTML formatting
+# 170821-2219 - Added HTML formatting and screen colors
 #
 
 $startMS = microtime();
@@ -548,7 +548,7 @@ if ($SUBMIT && $server_ip_ct>0) {
 			$HTML.="<th colspan='6'><font size='2'><a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&type=$type&query_date=$query_date&query_date_D=$query_date_D&query_date_T=$query_date_T&report_display_type=$report_display_type$server_ipQS&lower_limit=$ll\">[<<< "._QXZ("PREV")." 1000 "._QXZ("records")."]</a></font></th>";
 		} else {
 			$carrier_rpt_hf.=sprintf("%-23s", " ");
-			$HTML.="<td colspan='6'>&nbsp;</th>";
+			$HTML.="<td colspan='6'>&nbsp;</td>";
 		}
 		$carrier_rpt_hf.=sprintf("%-145s", " ");
 		if (($lower_limit+1000)<mysqli_num_rows($rpt_rslt)) {
@@ -557,7 +557,7 @@ if ($SUBMIT && $server_ip_ct>0) {
 			$HTML.="<td align='right' colspan='6'><font size='2'><a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&type=$type&query_date=$query_date&query_date_D=$query_date_D&query_date_T=$query_date_T&report_display_type=$report_display_type$server_ipQS&lower_limit=".($lower_limit+1000)."\">["._QXZ("NEXT")." $max_limit "._QXZ("records")." >>>]</a></font></th>";
 		} else {
 			$carrier_rpt_hf.=sprintf("%23s", " ");
-			$HTML.="<td colspan='6'>&nbsp;</th>";
+			$HTML.="<td colspan='6'>&nbsp;</td>";
 		}
 		$carrier_rpt_hf.="\n";
 		$TEXT.=$carrier_rpt_hf.$carrier_rpt.$carrier_rpt_hf;

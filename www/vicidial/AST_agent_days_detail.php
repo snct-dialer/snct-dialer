@@ -915,7 +915,7 @@ if ($report_display_type=='HTML') {$JS_text.=$JS_onload;}
 $JS_text.="</script>\n";
 
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET name=vicidial_report id=vicidial_report>";
-echo "<TABLE CELLSPACING=3 BGCOLOR=\"#e3e3ff\"><TR><TD VALIGN=TOP> "._QXZ("Dates").":<BR>";
+echo "<TABLE CELLSPACING=3 BGCOLOR=\"#".$SSframe_background."\"><TR><TD VALIGN=TOP> "._QXZ("Dates").":<BR>";
 echo "<INPUT TYPE=hidden NAME=DB VALUE=\"$DB\">\n";
 echo "<INPUT TYPE=TEXT NAME=query_date SIZE=10 MAXLENGTH=10 VALUE=\"$query_date\">";
 
