@@ -1,7 +1,7 @@
 2.25.8
 
   [Jörg Frings-Fürst]
-  * Add missing fallbacks on translations.
+  * Add missing fallbacks on translations (2017-027)
   * Add upstream Rev. 2809:
     - AST_email_web_report.pl,
     - help.php: Added report filename_override option
@@ -25,7 +25,7 @@
   * New extras/mysql_update/mysql-1515.sql.
   * Add upstream Rev. 2810:
     - admin_modify_lead.php: Added link to turn on/off arcchived logs display
-
+  * Release 2.25.8 2017-08-27
 
 2.25.7
 
