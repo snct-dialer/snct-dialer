@@ -2298,6 +2298,8 @@ if (isset($_GET["inbound_survey_callmenu"]))			{$inbound_survey_callmenu=$_GET["
 	elseif (isset($_POST["inbound_survey_callmenu"]))	{$inbound_survey_callmenu=$_POST["inbound_survey_callmenu"];}
 if (isset($_GET["allow_manage_active_lists"]))			{$allow_manage_active_lists=$_GET["allow_manage_active_lists"];}
 	elseif (isset($_POST["allow_manage_active_lists"]))	{$allow_manage_active_lists=$_POST["allow_manage_active_lists"];}
+if (isset($_GET["filename_override"]))			{$filename_override=$_GET["filename_override"];}
+	elseif (isset($_POST["filename_override"]))	{$filename_override=$_POST["filename_override"];}
 
 
 if (isset($script_id)) {$script_id= strtoupper($script_id);}
@@ -3217,6 +3219,7 @@ if ($non_latin < 1)
 	$api_ip_list = preg_replace('/[^-_0-9a-zA-Z]/','',$api_ip_list);
 	$ip_list_id = preg_replace('/[^-_0-9a-zA-Z]/','',$ip_list_id);
 	$inbound_survey_callmenu = preg_replace('/[^-_0-9a-zA-Z]/','',$inbound_survey_callmenu);
+	$filename_override = preg_replace('/[^-_0-9a-zA-Z]/','',$filename_override);
 
 ### ALPHA-NUMERIC and underscore and dash and slash and dot
 	$menu_timeout_prompt = preg_replace('/[^-\/\|\._0-9a-zA-Z]/','',$menu_timeout_prompt);
@@ -4205,12 +4208,13 @@ else
 # 170818-0741 - Added User Group Hourly Report v2(detail)
 # 170819-0949 - Added allow_manage_active_lists system setting
 # 170821-2009 - Fix for issue #1036
+# 170825-1708 - Added filename_override option for Automated Reports, added more space for report_times
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-625a';
-$build = '170821-2009';
+$admin_version = '2.14-626a';
+$build = '170825-1708';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -16721,7 +16725,7 @@ if ($ADD==494111111111)
 				$p++;
 				}
 
-			$stmt="UPDATE vicidial_automated_reports set report_name='$report_name',report_server='$report_server',report_times='$report_times',report_weekdays='$REPORT_weekdays',report_monthdays='$report_monthdays',report_destination='$report_destination',email_from='$email_from',email_to='$email_to',email_subject='$email_subject',ftp_server='$ftp_server',ftp_user='" . mysqli_real_escape_string($link, $ftp_user) ."',ftp_pass='" . mysqli_real_escape_string($link, $ftp_pass) ."',ftp_directory='$ftp_directory',report_url='" . mysqli_real_escape_string($link, $report_url) ."',run_now_trigger='$run_now_trigger',active='$active',user_group='$user_group' where report_id='$report_id';";
+			$stmt="UPDATE vicidial_automated_reports set report_name='$report_name',report_server='$report_server',report_times='$report_times',report_weekdays='$REPORT_weekdays',report_monthdays='$report_monthdays',report_destination='$report_destination',email_from='$email_from',email_to='$email_to',email_subject='$email_subject',ftp_server='$ftp_server',ftp_user='" . mysqli_real_escape_string($link, $ftp_user) ."',ftp_pass='" . mysqli_real_escape_string($link, $ftp_pass) ."',ftp_directory='$ftp_directory',report_url='" . mysqli_real_escape_string($link, $report_url) ."',run_now_trigger='$run_now_trigger',active='$active',user_group='$user_group',filename_override='$filename_override' where report_id='$report_id';";
 			$rslt=mysql_to_mysqli($stmt, $link);
 
 			echo "<br>"._QXZ("AUTOMATED REPORT MODIFIED").": $report_id\n";
@@ -34350,7 +34354,7 @@ if ($ADD==394111111111)
 			$o++;
 			}
 
-		$stmt="SELECT report_id,report_name,report_last_run,report_last_length,report_server,report_times,report_weekdays,report_monthdays,report_destination,email_from,email_to,email_subject,ftp_server,ftp_user,ftp_pass,ftp_directory,report_url,run_now_trigger,active,user_group from vicidial_automated_reports where report_id='$report_id' $LOGadmin_viewable_groupsSQL;";
+		$stmt="SELECT report_id,report_name,report_last_run,report_last_length,report_server,report_times,report_weekdays,report_monthdays,report_destination,email_from,email_to,email_subject,ftp_server,ftp_user,ftp_pass,ftp_directory,report_url,run_now_trigger,active,user_group,filename_override from vicidial_automated_reports where report_id='$report_id' $LOGadmin_viewable_groupsSQL;";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$row=mysqli_fetch_row($rslt);
 		$report_id =			$row[0];
@@ -34373,6 +34377,7 @@ if ($ADD==394111111111)
 		$run_now_trigger =		$row[17];
 		$active =				$row[18];
 		$user_group =			$row[19];
+		$filename_override =	$row[20];
 
 		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
@@ -34393,7 +34398,7 @@ if ($ADD==394111111111)
 		echo "$servers_list";
 		echo "<option SELECTED>$report_server</option>\n";
 		echo "</select>$NWB#auto_reports-report_server$NWE</td></tr>\n";
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Report Times").": </td><td align=left><input type=text name=report_times size=60 maxlength=100 id=report_times value=\"$report_times\">$NWB#auto_reports-report_times$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Report Times").": </td><td align=left><input type=text name=report_times size=80 maxlength=255 id=report_times value=\"$report_times\">$NWB#auto_reports-report_times$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right NOWRAP>"._QXZ("Report Weekdays").":</td><td align=left NOWRAP>\n";
 		echo "<input type=\"checkbox\" name=\"report_weekdays[]\" value=\"0\"";
 			if (preg_match('/0/',$report_weekdays)) {echo " CHECKED";}
@@ -34430,6 +34435,7 @@ if ($ADD==394111111111)
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("FTP User").": </td><td align=left><input type=text name=ftp_user size=40 maxlength=100 value=\"$ftp_user\">$NWB#auto_reports-ftp_user$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("FTP Pass").": </td><td align=left><input type=text name=ftp_pass size=40 maxlength=100 value=\"$ftp_pass\">$NWB#auto_reports-ftp_pass$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("FTP Directory").": </td><td align=left><input type=text name=ftp_directory size=60 maxlength=100 value=\"$ftp_directory\">$NWB#auto_reports-ftp_directory$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Filename Override").": </td><td align=left><input type=text name=filename_override size=80 maxlength=255 value=\"$filename_override\">$NWB#auto_reports-filename_override$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Active").": </td><td align=left><select size=1 name=active>\n";
 		echo "<option value=\"Y\">"._QXZ("YES")."</option>\n";
 		echo "<option value=\"N\">"._QXZ("NO")."</option>\n";

@@ -2,7 +2,27 @@
 
   [Jörg Frings-Fürst]
   * Add missing fallbacks on translations.
-
+  * Add upstream Rev. 2809:
+    - AST_email_web_report.pl,
+    - help.php: Added report filename_override option
+    - AST_API_log_report.php,
+    - AST_CLOSERstats_v2.php,
+    - AST_agent_days_detail.php,
+    - AST_agent_performance_detail.php,
+    - AST_agent_status_detail.php,
+    - AST_agent_time_detail.php,
+    - AST_agent_timeclock_detail.php,
+    - AST_carrier_log_report.php,
+    - AST_email_log_report.php,
+    - AST_parkstats.php,
+    - AST_performance_comparison_report.php,
+    - AST_recording_log_report.php,
+    - AST_user_group_hourly_detail.php,
+    - AST_user_group_hourly_detail_v2.php
+    - AST_usergroup_login_report.php
+    - admin.php
+    - callcard_admin.php: Added HTML formatting and screen colors
+  * New extras/mysql_update/mysql-1515.sql.
 
 2.25.7
 
