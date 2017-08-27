@@ -18,11 +18,14 @@
     - AST_performance_comparison_report.php,
     - AST_recording_log_report.php,
     - AST_user_group_hourly_detail.php,
-    - AST_user_group_hourly_detail_v2.php
-    - AST_usergroup_login_report.php
-    - admin.php
+    - AST_user_group_hourly_detail_v2.php,
+    - AST_usergroup_login_report.php,
+    - admin.php,
     - callcard_admin.php: Added HTML formatting and screen colors
   * New extras/mysql_update/mysql-1515.sql.
+  * Add upstream Rev. 2810:
+    - admin_modify_lead.php: Added link to turn on/off arcchived logs display
+
 
 2.25.7
 
