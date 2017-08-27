@@ -268,6 +268,44 @@ if ($SEARCHONLY > 0)
 if (strlen($action) < 1)
 	{$action = 'CALLCARD_SUMMARY';}
 
+##### BEGIN Define colors and logo #####
+$SSmenu_background='015B91';
+$SSframe_background='D9E6FE';
+$SSstd_row1_background='9BB9FB';
+$SSstd_row2_background='B9CBFD';
+$SSstd_row3_background='8EBCFD';
+$SSstd_row4_background='B6D3FC';
+$SSstd_row5_background='FFFFFF';
+$SSalt_row1_background='BDFFBD';
+$SSalt_row2_background='99FF99';
+$SSalt_row3_background='CCFFCC';
+
+$screen_color_stmt="select admin_screen_colors from system_settings";
+$screen_color_rslt=mysql_to_mysqli($screen_color_stmt, $link);
+$screen_color_row=mysqli_fetch_row($screen_color_rslt);
+$agent_screen_colors="$screen_color_row[0]";
+
+if ($agent_screen_colors != 'default')
+	{
+	$asc_stmt = "SELECT menu_background,frame_background,std_row1_background,std_row2_background,std_row3_background,std_row4_background,std_row5_background,alt_row1_background,alt_row2_background,alt_row3_background,web_logo FROM vicidial_screen_colors where colors_id='$agent_screen_colors';";
+	$asc_rslt=mysql_to_mysqli($asc_stmt, $link);
+	$qm_conf_ct = mysqli_num_rows($asc_rslt);
+	if ($qm_conf_ct > 0)
+		{
+		$asc_row=mysqli_fetch_row($asc_rslt);
+		$SSmenu_background =            $asc_row[0];
+		$SSframe_background =           $asc_row[1];
+		$SSstd_row1_background =        $asc_row[2];
+		$SSstd_row2_background =        $asc_row[3];
+		$SSstd_row3_background =        $asc_row[4];
+		$SSstd_row4_background =        $asc_row[5];
+		$SSstd_row5_background =        $asc_row[6];
+		$SSalt_row1_background =        $asc_row[7];
+		$SSalt_row2_background =        $asc_row[8];
+		$SSalt_row3_background =        $asc_row[9];
+		$SSweb_logo =		           $asc_row[10];
+		}
+	}
 
 header ("Content-type: text/html; charset=utf-8");
 header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
@@ -311,11 +349,11 @@ require("admin_header.php");
 $colspan='3';
 
 ?>
-<TABLE WIDTH=<?php echo $page_width ?> BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0>
+<TABLE WIDTH=<?php echo $page_width ?> BGCOLOR=#<?php echo $SSframe_background; ?> cellpadding=2 cellspacing=0>
 
 <?php 
 
-echo "<TR BGCOLOR=\"#F0F5FE\"><TD ALIGN=LEFT COLSPAN=$colspan><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=3><B> &nbsp; \n";
+echo "<TR BGCOLOR=\"#".$SSframe_background."\"><TD ALIGN=LEFT COLSPAN=$colspan><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=3><B> &nbsp; \n";
 
 $STARTtime = date("U");
 $TODAY = date("Y-m-d");
@@ -463,27 +501,27 @@ if ($action == "CALLCARD_DETAIL")
 		echo "<input type=hidden name=card_id value=\"$card_id\">\n";
 		echo "<input type=hidden name=DB value=\"$DB\">\n";
 		echo "<center><TABLE width=$section_width cellspacing=3>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Card ID").": </td><td align=left><B>$card_id</B></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("PIN").": </td><td align=left><B>$pin</B></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Status").": </td><td align=left><B>$status</B></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Run").": </td><td align=left><B>$run</B></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Batch").": </td><td align=left><B>$batch</B></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Pack").": </td><td align=left><B>$pack</B></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Sequence").": </td><td align=left><B>$sequence</B></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Balance Minutes").": </td><td align=left><B>$balance_minutes</B></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Initial Minutes").": </td><td align=left><B>$initial_minutes</B></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Initial Value").": </td><td align=left><B>$initial_value</B></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Purchase Order").": </td><td align=left><B>$note_purchase_order</B></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Printer").": </td><td align=left><B>$note_printer</B></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("DID").": </td><td align=left><B>$note_did</B></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("In-Group").": </td><td align=left><B>$inbound_group_id</B></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Language").": </td><td align=left><B>$note_language</B></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Name").": </td><td align=left><B>$note_name</B></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Comments").": </td><td align=left><B>$note_comments</B></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Create User/Date").": </td><td align=left><B>$create_user / $create_time</B></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Activate User/Date").": </td><td align=left><B>$activate_user / $activate_time</B></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Used User/Date").": </td><td align=left><B>$used_user / $used_time</B></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Void User/Date").": </td><td align=left><B>$void_user / $void_time</B></td></tr>\n";
+		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Card ID").": </td><td align=left><B>$card_id</B></td></tr>\n";
+		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("PIN").": </td><td align=left><B>$pin</B></td></tr>\n";
+		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Status").": </td><td align=left><B>$status</B></td></tr>\n";
+		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Run").": </td><td align=left><B>$run</B></td></tr>\n";
+		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Batch").": </td><td align=left><B>$batch</B></td></tr>\n";
+		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Pack").": </td><td align=left><B>$pack</B></td></tr>\n";
+		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Sequence").": </td><td align=left><B>$sequence</B></td></tr>\n";
+		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Balance Minutes").": </td><td align=left><B>$balance_minutes</B></td></tr>\n";
+		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Initial Minutes").": </td><td align=left><B>$initial_minutes</B></td></tr>\n";
+		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Initial Value").": </td><td align=left><B>$initial_value</B></td></tr>\n";
+		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Purchase Order").": </td><td align=left><B>$note_purchase_order</B></td></tr>\n";
+		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Printer").": </td><td align=left><B>$note_printer</B></td></tr>\n";
+		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("DID").": </td><td align=left><B>$note_did</B></td></tr>\n";
+		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("In-Group").": </td><td align=left><B>$inbound_group_id</B></td></tr>\n";
+		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Language").": </td><td align=left><B>$note_language</B></td></tr>\n";
+		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Name").": </td><td align=left><B>$note_name</B></td></tr>\n";
+		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Comments").": </td><td align=left><B>$note_comments</B></td></tr>\n";
+		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Create User/Date").": </td><td align=left><B>$create_user / $create_time</B></td></tr>\n";
+		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Activate User/Date").": </td><td align=left><B>$activate_user / $activate_time</B></td></tr>\n";
+		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Used User/Date").": </td><td align=left><B>$used_user / $used_time</B></td></tr>\n";
+		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Void User/Date").": </td><td align=left><B>$void_user / $void_time</B></td></tr>\n";
 		echo "</TABLE>\n";
 		echo "<BR><BR><BR>\n";
 
@@ -861,23 +899,23 @@ if ($action == "GENERATE")
 	echo "<input type=hidden name=action value=GENERATE_RESULTS>\n";
 	echo "<input type=hidden name=DB value=$DB>\n";
 	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Run").": </td><td align=left><input type=text name=run size=5 maxlength=4></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Starting Batch").": </td><td align=left><input type=text name=starting_batch size=6 maxlength=5></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("IDs in Batch").": </td><td align=left><input type=text name=batch size=6 maxlength=5></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Starting Sequence").": </td><td align=left><input type=text name=sequence size=6 maxlength=5></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Total").": </td><td align=left><input type=text name=total size=8 maxlength=7></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Balance Minutes").": </td><td align=left><input type=text name=balance_minutes size=3 maxlength=5></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Initial Value").": </td><td align=left><input type=text name=initial_value size=7 maxlength=6></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Initial Minutes").": </td><td align=left><input type=text name=initial_minutes size=3 maxlength=5></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Purchase Order").": </td><td align=left><input type=text name=note_purchase_order size=20 maxlength=20></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Printer").": </td><td align=left><input type=text name=note_printer size=20 maxlength=20></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("DID").": </td><td align=left><input type=text name=note_did size=18 maxlength=18></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("In-Group").": </td><td align=left><input type=text name=inbound_group_id size=20 maxlength=20></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Language").": </td><td align=left><input type=text name=note_language size=10 maxlength=10></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Name").": </td><td align=left><input type=text name=note_name size=20 maxlength=20></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Comment").": </td><td align=left><input type=text name=note_comments size=50 maxlength=255></td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Run").": </td><td align=left><input type=text name=run size=5 maxlength=4></td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Starting Batch").": </td><td align=left><input type=text name=starting_batch size=6 maxlength=5></td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("IDs in Batch").": </td><td align=left><input type=text name=batch size=6 maxlength=5></td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Starting Sequence").": </td><td align=left><input type=text name=sequence size=6 maxlength=5></td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Total").": </td><td align=left><input type=text name=total size=8 maxlength=7></td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Balance Minutes").": </td><td align=left><input type=text name=balance_minutes size=3 maxlength=5></td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Initial Value").": </td><td align=left><input type=text name=initial_value size=7 maxlength=6></td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Initial Minutes").": </td><td align=left><input type=text name=initial_minutes size=3 maxlength=5></td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Purchase Order").": </td><td align=left><input type=text name=note_purchase_order size=20 maxlength=20></td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Printer").": </td><td align=left><input type=text name=note_printer size=20 maxlength=20></td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("DID").": </td><td align=left><input type=text name=note_did size=18 maxlength=18></td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("In-Group").": </td><td align=left><input type=text name=inbound_group_id size=20 maxlength=20></td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Language").": </td><td align=left><input type=text name=note_language size=10 maxlength=10></td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Name").": </td><td align=left><input type=text name=note_name size=20 maxlength=20></td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Comment").": </td><td align=left><input type=text name=note_comments size=50 maxlength=255></td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value='"._QXZ("SUBMIT")."'></td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=center colspan=2><input type=submit name=SUBMIT value='"._QXZ("SUBMIT")."'></td></tr>\n";
 	echo "</TABLE></center>\n";
 	echo "\n";
 	echo "</center>\n";
@@ -1005,12 +1043,12 @@ if ($action == "SEARCH")
 	echo "<input type=hidden name=action value=SEARCH_RESULTS>\n";
 	echo "<input type=hidden name=DB value=$DB>\n";
 	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("PIN").": </td><td align=left><input type=text name=pin size=20 maxlength=20></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Card ID").": </td><td align=left><input type=text name=card_id size=20 maxlength=20></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Run").": </td><td align=left><input type=text name=run size=5 maxlength=4></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Batch").": </td><td align=left><input type=text name=batch size=6 maxlength=5></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Sequence").": </td><td align=left><input type=text name=sequence size=6 maxlength=5></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value='"._QXZ("SUBMIT")."'></td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("PIN").": </td><td align=left><input type=text name=pin size=20 maxlength=20></td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Card ID").": </td><td align=left><input type=text name=card_id size=20 maxlength=20></td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Run").": </td><td align=left><input type=text name=run size=5 maxlength=4></td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Batch").": </td><td align=left><input type=text name=batch size=6 maxlength=5></td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Sequence").": </td><td align=left><input type=text name=sequence size=6 maxlength=5></td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=center colspan=2><input type=submit name=SUBMIT value='"._QXZ("SUBMIT")."'></td></tr>\n";
 	echo "</TABLE></center>\n";
 	echo "\n";
 	echo "</center>\n";

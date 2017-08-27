@@ -2356,7 +2356,7 @@ function _QXZ($English_text, $sprintf=0, $align="l", $v_one='', $v_two='', $v_th
 				{
 				if ($SSlanguage_method == 'MYSQL')
 					{
-					$stmt="SELECT translated_text from vicidial_language_phrases where english_text='$English_text' and language_id='$VUselected_language';";
+					$stmt="SELECT translated_text from vicidial_language_phrases where english_text='$English_text' and language_id='$VUselected_language' and translated_text IS NOT NULL and translated_text <> '';";
 					$rslt=mysql_to_mysqli($stmt, $link);
 					$sl_ct = mysqli_num_rows($rslt);
 					if ($sl_ct > 0)

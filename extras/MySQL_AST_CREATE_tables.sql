@@ -3671,7 +3671,7 @@ report_name VARCHAR(100),
 report_last_run DATETIME,
 report_last_length SMALLINT(5) default '0',
 report_server VARCHAR(30) default 'active_voicemail_server',
-report_times VARCHAR(100) default '',
+report_times VARCHAR(255) default '',
 report_weekdays VARCHAR(7) default '',
 report_monthdays VARCHAR(100) default '',
 report_destination ENUM('EMAIL','FTP') default 'EMAIL',
@@ -3686,6 +3686,7 @@ report_url TEXT,
 run_now_trigger ENUM('N','Y') default 'N',
 active ENUM('N','Y') default 'N',
 user_group VARCHAR(20) default '---ALL---',
+filename_override VARCHAR(255) default '',
 index (report_times),
 index (run_now_trigger)
 ) ENGINE=MyISAM;
@@ -4085,4 +4086,4 @@ UPDATE vicidial_configuration set value='1766' where name='qc_database_version';
 
 UPDATE system_settings set vdc_agent_api_active='1';
 
-UPDATE system_settings SET db_schema_version='1514',db_schema_update_date=NOW(),reload_timestamp=NOW();
+UPDATE system_settings SET db_schema_version='1515',db_schema_update_date=NOW(),reload_timestamp=NOW();

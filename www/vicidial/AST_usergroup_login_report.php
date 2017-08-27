@@ -383,7 +383,7 @@ $HTML_text.="<TABLE CELLPADDING=3 CELLSPACING=0><TR><TD>";
 $HTML_text.="<b>"._QXZ("$report_name")."</b> $NWB#usergroup_login$NWE\n";
 
 $HTML_text.="<FORM ACTION=\"$PHP_SELF\" METHOD=GET name=vicidial_report id=vicidial_report>\n";
-$HTML_text.="<TABLE CELLSPACING=3 BGCOLOR=\"#e3e3ff\"><TR><TD VALIGN=TOP>&nbsp;<BR>";
+$HTML_text.="<TABLE CELLSPACING=3 BGCOLOR=\"#".$SSframe_background."\"><TR><TD VALIGN=TOP>&nbsp;<BR>";
 $HTML_text.="<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 $HTML_text.="<INPUT TYPE=HIDDEN NAME=type VALUE=\"$type\">\n";
 $HTML_text.="</TD><TD VALIGN=TOP>"._QXZ("Teams/User Groups").":<BR>";

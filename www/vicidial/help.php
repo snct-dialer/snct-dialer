@@ -132,6 +132,7 @@
 # 170623-2134 - Changed parameters for password recommendations
 # 170816-1057 - Added inbound after call entries
 # 170819-0951 - Added allow_manage_active_lists entry
+# 170825-1129 - Added auto_reports-filename_override entry
 #
 
 
@@ -6003,6 +6004,11 @@ FR_SPAC 00 00 00 00 00 - <?php echo _QXZ("France space separated phone number");
 <B><?php echo _QXZ("FTP Directory"); ?> -</B><?php echo _QXZ("If the FTP destination is chosen above, then this field can be filled in with the FTP folder directory that you want the automated reports to be uploaded into. Note: the folder must already exist, this process will not try to create the folder."); ?>
 
 <BR>
+<A NAME="auto_reports-filename_override">
+<BR>
+<B><?php echo _QXZ("Filename Override"); ?> -</B><?php echo _QXZ("By default, the reports will be saved as files and either emailed or sent by FTP to the selected destination, and the filenames used for those files are automatically generated with unique generic names based upon the report ID. If you would like to override those unique generic names, you can do so by using this field. You can also use the variables shown below in the Report URL field so that you can put dates into the filename. You can also use --A--filedatetime--B-- as a variable to note the date and time the report was generated, which is useful if you will be running a report more than once a day. Only letters, numbers dashes and underscore characters are allowed in this field. Also, you should not include a file extension as part of the filename override, since the type of report will dictate the file extension that is used. Default is empty for disabled."); ?>
+
+<BR>
 <A NAME="auto_reports-active">
 <BR>
 <B><?php echo _QXZ("Active"); ?> -</B><?php echo _QXZ("The automated report will only run on the set schedule above if active is set to Y. Default is N."); ?>
@@ -6015,7 +6021,7 @@ FR_SPAC 00 00 00 00 00 - <?php echo _QXZ("France space separated phone number");
 <BR>
 <A NAME="auto_reports-report_url">
 <BR>
-<B><?php echo _QXZ("Report URL"); ?> -</B><?php echo _QXZ("This is the field where you will put the full web address, or URL, for the report that you want to run. The easiest way to figure out what address to use is to run the report normally, then go to the Reports, Admin Utilities, Admin Report Log Viewer to see the full URL that was used to run that report. Once you have copied that URL, you can replace the dates that you see with one of these variables in the standard format that is used within this system, for example, --A--today--B--. You can use: today, yesterday, 6days, 7days, 13days, 14days, 15days, 30days. Note: some networks may require that you use a local server address in this URL if that is the only way that a server on your network can access the webserver used for reporting. Related to this, you may also have to use a local IP address if a full domain name is not accessible from within your system network. Also, it is recommended that you run reports in TEXT format for best display results."); ?>
+<B><?php echo _QXZ("Report URL"); ?> -</B><?php echo _QXZ("This is the field where you will put the full web address, or URL, for the report that you want to run. The easiest way to figure out what address to use is to run the report normally, then go to the Reports, Admin Utilities, Admin Report Log Viewer to see the full URL that was used to run that report. Once you have copied that URL, you can replace the dates that you see with one of these variables in the standard format that is used within this system, for example, --A--today--B--. You can use: today, yesterday, 6days, 7days, 8days, 13days, 14days, 15days, 30days. Note: some networks may require that you use a local server address in this URL if that is the only way that a server on your network can access the webserver used for reporting. Related to this, you may also have to use a local IP address if a full domain name is not accessible from within your system network. Also, it is recommended that you run reports in TEXT format for best display results."); ?>
 
 
 

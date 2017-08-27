@@ -20,6 +20,7 @@
 # 170304-1400 - Added options for running a defined Automated Report, and admin logging
 # 170306-0915 - Fixed proper file extensions for different download report types
 # 170719-1242 - Added more debug and '8days' date option
+# 170825-1114 - Added report filename_override option
 #
 
 $txt = '.txt';
@@ -42,7 +43,7 @@ if ($min < 10) {$min = "0$min";}
 if ($sec < 10) {$sec = "0$sec";}
 $timestamp = "$year-$mon-$mday $hour:$min:$sec";
 $filedate = "$year$mon$mday";
-$ABIfiledate = "$mon-$mday-$year$us$hour$min$sec";
+$filedatetime = "$year$mon$mday$hour$min$sec";
 $shipdate = "$year-$mon-$mday";
 $start_date = "$year$mon$mday";
 $datestamp = "$year/$mon/$mday $hour:$min";
@@ -464,7 +465,7 @@ if ( (length($report_id) > 1) || ($log_to_adminlog > 0) )
 if (length($report_id) > 1) 
 	{
 	### Grab Server values from the database
-	$stmtA = "SELECT report_destination,email_from,email_to,email_subject,ftp_server,ftp_user,ftp_pass,ftp_directory,report_url from vicidial_automated_reports where report_id='$report_id';";
+	$stmtA = "SELECT report_destination,email_from,email_to,email_subject,ftp_server,ftp_user,ftp_pass,ftp_directory,report_url,filename_override from vicidial_automated_reports where report_id='$report_id';";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
@@ -488,6 +489,7 @@ if (length($report_id) > 1)
 			$VARREPORT_dir =		$aryA[7];
 			}
 		$location =				$aryA[8];
+		$filename_override =	$aryA[9];
 		if ($DB) {print "RAW LOCATION: |$location|\n";}
 		$location =~ s/\&/\\&/gi;
 		$location =~ s/--A--today--B--/$year-$mon-$mday/gi;
@@ -499,7 +501,19 @@ if (length($report_id) > 1)
 		$location =~ s/--A--14days--B--/$Kyear-$Kmon-$Kmday/gi;
 		$location =~ s/--A--15days--B--/$Lyear-$Lmon-$Lmday/gi;
 		$location =~ s/--A--30days--B--/$Hyear-$Hmon-$Hmday/gi;
-		if ($DB) {print "FINAL LOCATION: |$location|\n";}
+		$filename_override =~ s/[^-_0-9a-zA-Z]//gi;
+		$filename_override =~ s/--A--today--B--/$year-$mon-$mday/gi;
+		$filename_override =~ s/--A--yesterday--B--/$Tyear-$Tmon-$Tmday/gi;
+		$filename_override =~ s/--A--6days--B--/$Fyear-$Fmon-$Fmday/gi;
+		$filename_override =~ s/--A--7days--B--/$Gyear-$Gmon-$Gmday/gi;
+		$filename_override =~ s/--A--8days--B--/$Myear-$Mmon-$Mmday/gi;
+		$filename_override =~ s/--A--13days--B--/$Jyear-$Jmon-$Jmday/gi;
+		$filename_override =~ s/--A--14days--B--/$Kyear-$Kmon-$Kmday/gi;
+		$filename_override =~ s/--A--15days--B--/$Lyear-$Lmon-$Lmday/gi;
+		$filename_override =~ s/--A--30days--B--/$Hyear-$Hmon-$Hmday/gi;
+		$filename_override =~ s/--A--filedatetime--B--/$filedatetime/gi;
+		if ($DB) {print "FINAL LOCATION:    |$location|\n";}
+		if ($DB) {print "FILENAME OVERRIDE: |$filename_override|\n";}
 		}
 	else
 		{
@@ -552,6 +566,8 @@ if (length($report_id) > 1)
 			{$file_extension = '.csv'}
 		}
 	$HTMLfile = $report_id . "_" . $start_date . "_" . $hms . '' . $file_extension;
+	if (length($filename_override) > 0) 
+		{$HTMLfile = "$filename_override$file_extension";}
 	$HTMLfileLOG = $report_id . "_" . $start_date . "_" . $hms . '' . $txt;
 	$shipdate='';
 	}
@@ -672,7 +688,7 @@ if (length($VARREPORT_host) > 7)
 	use Net::FTP;
 
 	if (!$Q) {print "Sending File Over FTP: $HTMLfile\n";}
-	$ftp = Net::FTP->new("$VARREPORT_host", Port => $VARREPORT_port);
+	$ftp = Net::FTP->new("$VARREPORT_host", Port => $VARREPORT_port, Debug => $DBX);
 	$ftp->login("$VARREPORT_user","$VARREPORT_pass");
 	$ftp->cwd("$VARREPORT_dir");
 	$ftp->put("/tmp/$HTMLfile", "$HTMLfile");

@@ -11,6 +11,7 @@
 # 170209-1237 - Added URL and IP display
 # 170210-0700 - Reworked Show URLs code to be faster
 # 170409-1553 - Added IP List validation code
+# 170823-2241 - Added HTML formatting and screen colors, fixed CSV output bug
 #
 
 $startMS = microtime();
@@ -499,6 +500,44 @@ while ($row=mysqli_fetch_array($rslt)) {
 	array_push($results_array, $row["result"]);
 }
 
+##### BEGIN Define colors and logo #####
+$SSmenu_background='015B91';
+$SSframe_background='D9E6FE';
+$SSstd_row1_background='9BB9FB';
+$SSstd_row2_background='B9CBFD';
+$SSstd_row3_background='8EBCFD';
+$SSstd_row4_background='B6D3FC';
+$SSstd_row5_background='FFFFFF';
+$SSalt_row1_background='BDFFBD';
+$SSalt_row2_background='99FF99';
+$SSalt_row3_background='CCFFCC';
+
+$screen_color_stmt="select admin_screen_colors from system_settings";
+$screen_color_rslt=mysql_to_mysqli($screen_color_stmt, $link);
+$screen_color_row=mysqli_fetch_row($screen_color_rslt);
+$agent_screen_colors="$screen_color_row[0]";
+
+if ($agent_screen_colors != 'default')
+	{
+	$asc_stmt = "SELECT menu_background,frame_background,std_row1_background,std_row2_background,std_row3_background,std_row4_background,std_row5_background,alt_row1_background,alt_row2_background,alt_row3_background,web_logo FROM vicidial_screen_colors where colors_id='$agent_screen_colors';";
+	$asc_rslt=mysql_to_mysqli($asc_stmt, $link);
+	$qm_conf_ct = mysqli_num_rows($asc_rslt);
+	if ($qm_conf_ct > 0)
+		{
+		$asc_row=mysqli_fetch_row($asc_rslt);
+		$SSmenu_background =            $asc_row[0];
+		$SSframe_background =           $asc_row[1];
+		$SSstd_row1_background =        $asc_row[2];
+		$SSstd_row2_background =        $asc_row[3];
+		$SSstd_row3_background =        $asc_row[4];
+		$SSstd_row4_background =        $asc_row[5];
+		$SSstd_row5_background =        $asc_row[6];
+		$SSalt_row1_background =        $asc_row[7];
+		$SSalt_row2_background =        $asc_row[8];
+		$SSalt_row3_background =        $asc_row[9];
+		$SSweb_logo =		           $asc_row[10];
+		}
+	}
 
 if ($DB) {echo "$user_group_string|$user_group_ct|$user_groupQS|$i<BR>\n";}
 
@@ -632,7 +671,11 @@ for ($o=0; $o<count($results_array); $o++)
 $HTML_text.="</SELECT>\n";
 $HTML_text.="</TD>\n";
 
-$HTML_text.="<TD VALIGN='TOP'><BR><BR>";
+$HTML_text.="<TD VALIGN='TOP'>";
+$HTML_text.=_QXZ("Display as:")."<BR>";
+$HTML_text.="<select name='report_display_type'>";
+if ($report_display_type) {$HTML_text.="<option value='$report_display_type' selected>$report_display_type</option>";}
+$HTML_text.="<option value='TEXT'>TEXT</option><option value='HTML'>HTML</option></select>\n<BR><BR>";
 $HTML_text.="<INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'>\n";
 $HTML_text.="<BR><BR><input type='checkbox' name='show_urls' value='checked' $show_urls>"._QXZ("Show URLs, slower")."\n";
 if ($archives_available=="Y") 
@@ -644,7 +687,7 @@ $HTML_text.="</TD>";
 $HTML_text.="</TR></TABLE>";
 $HTML_text.="</FORM>\n\n";
 
-$HTML_text.="<PRE><FONT SIZE=2>\n";
+$TEXT.="<PRE><FONT SIZE=2>\n";
 
 if ($SUBMIT && $api_date_D && $api_date_T && $api_date_end_D && $api_date_end_T) 
 	{
@@ -659,22 +702,44 @@ if ($SUBMIT && $api_date_D && $api_date_T && $api_date_end_D && $api_date_end_T)
 		$ASCII_border="+---------------------+--------------------------------+------------+----------------------+--------------------------------+------------+----------------------+----------+-----------+-----------+----------------------+----------\n";
 		$URL_header="  REMOTE IP           |    URL";
 		}
-	$HTML_text.=$ASCII_rpt_header;
-	$HTML_text.=sprintf("%110s", " ");
-	$HTML_text.="<a href=\"$PHP_SELF?api_date_D=$api_date_D&api_date_T=$api_date_T&api_date_end_D=$api_date_end_D&api_date_end_T=$api_date_end_T$resultQS$functionQS$agent_userQS$userQS&file_download=1&show_urls=$show_urls&search_archived_data=$search_archived_data&SUBMIT=$SUBMIT\">"._QXZ("DOWNLOAD")."</a>\n";
 
-	$HTML_text.=$ASCII_border;
-	$HTML_text.="| <a href='$LINKbase&order_by=api_date'>API DATE</a>            | <a href='$LINKbase&order_by=user'>USER</a>                           | <a href='$LINKbase&order_by=api_script'>API SCRIPT</a> | <a href='$LINKbase&order_by=function'>FUNCTION</a>             | <a href='$LINKbase&order_by=agent_user'>AGENT USER</a>                     | <a href='$LINKbase&order_by=result'>RESULT</a>     | <a href='$LINKbase&order_by=source'>SOURCE</a>               | <a href='$LINKbase&order_by=run_time'>RUN TIME</a> | <a href='$LINKbase&order_by=webserver'>WEBSERVER</a> | <a href='$LINKbase&order_by=api_url'>API URL</a>   |$URL_header\n";
-	$HTML_text.=$ASCII_border;
+	$TEXT.=$ASCII_rpt_header;
+	$TEXT.=sprintf("%110s", " ");
+	$TEXT.="<a href=\"$PHP_SELF?api_date_D=$api_date_D&api_date_T=$api_date_T&api_date_end_D=$api_date_end_D&api_date_end_T=$api_date_end_T$resultQS$functionQS$agent_userQS$userQS&file_download=1&show_urls=$show_urls&search_archived_data=$search_archived_data&SUBMIT=$SUBMIT\">"._QXZ("DOWNLOAD")."</a>\n";
+	$TEXT.=$ASCII_border;
+	$TEXT.="| <a href='$LINKbase&order_by=api_date'>API DATE</a>            | <a href='$LINKbase&order_by=user'>USER</a>                           | <a href='$LINKbase&order_by=api_script'>API SCRIPT</a> | <a href='$LINKbase&order_by=function'>FUNCTION</a>             | <a href='$LINKbase&order_by=agent_user'>AGENT USER</a>                     | <a href='$LINKbase&order_by=result'>RESULT</a>     | <a href='$LINKbase&order_by=source'>SOURCE</a>               | <a href='$LINKbase&order_by=run_time'>RUN TIME</a> | <a href='$LINKbase&order_by=webserver'>WEBSERVER</a> | <a href='$LINKbase&order_by=api_url'>API URL</a>   |$URL_header\n";
+	$TEXT.=$ASCII_border;
+
+	$HTML.="<BR><table border='0' cellpadding='3' cellspacing='1'>";
+	$HTML.="<tr bgcolor='#".$SSstd_row1_background."'>";
+	$HTML.="<th colspan='".($show_urls ? "11" : "9")."'><font size='2'>$ASCII_rpt_header</font></th>";
+	$HTML.="<th><font size='2'><a href=\"$PHP_SELF?api_date_D=$api_date_D&api_date_T=$api_date_T&api_date_end_D=$api_date_end_D&api_date_end_T=$api_date_end_T$resultQS$functionQS$agent_userQS$userQS&file_download=1&show_urls=$show_urls&search_archived_data=$search_archived_data&SUBMIT=$SUBMIT\">"._QXZ("DOWNLOAD")."</a></font></th>";
+	$HTML.="</tr>\n";
+	$HTML.="<tr bgcolor='#".$SSstd_row1_background."'>";
+	$HTML.="<th><font size='2'>"._QXZ("API DATE")."</font></th>";
+	$HTML.="<th><font size='2'>"._QXZ("USER")."</font></th>";
+	$HTML.="<th><font size='2'>"._QXZ("API SCRIPT")."</font></th>";
+	$HTML.="<th><font size='2'>"._QXZ("FUNCTION")."</font></th>";
+	$HTML.="<th><font size='2'>"._QXZ("AGENT USER")."</font></th>";
+	$HTML.="<th><font size='2'>"._QXZ("RESULT")."</font></th>";
+	$HTML.="<th><font size='2'>"._QXZ("SOURCE")."</font></th>";
+	$HTML.="<th><font size='2'>"._QXZ("RUN TIME")."</font></th>";
+	$HTML.="<th><font size='2'>"._QXZ("WEBSERVER")."</font></th>";
+	$HTML.="<th><font size='2'>"._QXZ("API URL")."</font></th>";
+
 
 	if ($show_urls)
 		{
 		$CSV_text.="\n\"API DATE\",\"USER\",\"API SCRIPT\",\"FUNCTION\",\"AGENT USER\",\"VALUE\",\"RESULT\",\"RESULT REASON\",\"SOURCE\",\"DATA\",\"RUN TIME\",\"WEBSERVER\",\"API URL\",\"REMOTE IP\",\"FULL URL STRING\"\n";
+		$HTML.="<th><font size='2'>"._QXZ("REMOTE IP")."</font></th>";
+		$HTML.="<th><font size='2'>"._QXZ("FULL URL STRING")."</font></th>";
 		}
 	else
 		{
 		$CSV_text.="\n\"API DATE\",\"USER\",\"API SCRIPT\",\"FUNCTION\",\"AGENT USER\",\"VALUE\",\"RESULT\",\"RESULT REASON\",\"SOURCE\",\"DATA\",\"RUN TIME\",\"WEBSERVER\",\"API URL\"\n";
 		}
+
+	$HTML.="</tr>\n";
 
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$g=0;
@@ -700,17 +765,30 @@ if ($SUBMIT && $api_date_D && $api_date_T && $api_date_end_D && $api_date_end_T)
 	$h=0;
 	while ($h < $g) 
 		{
-		$HTML_text.="| ";
-		$HTML_text.=sprintf("%-19s", $api_date[$h])." | ";
-		$HTML_text.=sprintf("%-30s", $full_user[$h])." | ";
-		$HTML_text.=sprintf("%-10s", $api_script[$h])." | ";
-		$HTML_text.=sprintf("%-20s", $function[$h])." | ";
-		$HTML_text.=sprintf("%-30s", $full_agent_user[$h])." | ";
-		$HTML_text.=sprintf("%-10s", $result[$h])." | ";
-		$HTML_text.=sprintf("%-20s", $source[$h])." | ";
-		$HTML_text.=sprintf("%-8s", $run_time[$h])." | ";
-		$HTML_text.=sprintf("%-9s", $webserver[$h])." | ";
-		$HTML_text.=sprintf("%-9s", $api_url[$h])." | ";
+		$TEXT.="| ";
+		$TEXT.=sprintf("%-19s", $api_date[$h])." | ";
+		$TEXT.=sprintf("%-30s", $full_user[$h])." | ";
+		$TEXT.=sprintf("%-10s", $api_script[$h])." | ";
+		$TEXT.=sprintf("%-20s", $function[$h])." | ";
+		$TEXT.=sprintf("%-30s", $full_agent_user[$h])." | ";
+		$TEXT.=sprintf("%-10s", $result[$h])." | ";
+		$TEXT.=sprintf("%-20s", $source[$h])." | ";
+		$TEXT.=sprintf("%-8s", $run_time[$h])." | ";
+		$TEXT.=sprintf("%-9s", $webserver[$h])." | ";
+		$TEXT.=sprintf("%-9s", $api_url[$h])." | ";
+
+		$HTML.="<tr bgcolor='#".$SSstd_row2_background."'>";
+		$HTML.="<th><font size='2'>".$api_date[$h]."</font></th>";
+		$HTML.="<th><font size='2'>".$full_user[$h]."</font></th>";
+		$HTML.="<th><font size='2'>".$api_script[$h]."</font></th>";
+		$HTML.="<th><font size='2'>".$function[$h]."</font></th>";
+		$HTML.="<th><font size='2'>".$full_agent_user[$h]."</font></th>";
+		$HTML.="<th><font size='2'>".$result[$h]."</font></th>";
+		$HTML.="<th><font size='2'>".$source[$h]."</font></th>";
+		$HTML.="<th><font size='2'>".$run_time[$h]."</font></th>";
+		$HTML.="<th><font size='2'>".$webserver[$h]."</font></th>";
+		$HTML.="<th><font size='2'>".$api_url[$h]."</font></th>";
+
 		if ($show_urls)
 			{
 			$stmt="select remote_ip,url from $vicidial_api_urls_table where api_id='$api_id[$h]';";
@@ -722,22 +800,35 @@ if ($SUBMIT && $api_date_D && $api_date_T && $api_date_end_D && $api_date_end_T)
 				$remote_ip = $row["remote_ip"];
 				if ( ($VUmodify_same_user_level < 1) or ($VUuser_level < 9) or ($VUmodify_users < 1) )
 					{$full_url = preg_replace("/&pass=[\s\S]+?&/",'&pass=XXXX&',$full_url);}
-				$HTML_text.=sprintf("%-20s", $row["remote_ip"])." | ";
-				$HTML_text.=sprintf("%-2000s", $full_url)." | ";
-				$CSV_text.="\"$api_date[$h]\",\"$full_user[$h]\",\"$api_script[$h]\",\"$function[$h]\",\"$full_agent_user[$h]\",\"$value[$h]\",\"$result[$h]\",\"$result_reason[$h]\",\"$source[$h]\",\"$data[$h]\",\"$run_time[$h]\",\"$webserver[$h]\",\"$api_url[$h]\",\"$remote_ip\",\"$full_url\"\n";
+				$TEXT.=sprintf("%-20s", $row["remote_ip"])." | ";
+				$TEXT.=sprintf("%-2000s", $full_url)." | ";
 				}
+				$CSV_text.="\"$api_date[$h]\",\"$full_user[$h]\",\"$api_script[$h]\",\"$function[$h]\",\"$full_agent_user[$h]\",\"$value[$h]\",\"$result[$h]\",\"$result_reason[$h]\",\"$source[$h]\",\"$data[$h]\",\"$run_time[$h]\",\"$webserver[$h]\",\"$api_url[$h]\",\"$remote_ip\",\"$full_url\"\n";
+				$HTML.="<th><font size='2'>".($remote_ip=="" ? "&nbsp;" : $remote_ip)."</font></th>";
+				$HTML.="<th><font size='2'>".($full_url=="" ? "&nbsp;" : $full_url)."</font></th>";
 			}
 		else
 			{
 			$CSV_text.="\"$api_date[$h]\",\"$full_user[$h]\",\"$api_script[$h]\",\"$function[$h]\",\"$full_agent_user[$h]\",\"$value[$h]\",\"$result[$h]\",\"$result_reason[$h]\",\"$source[$h]\",\"$data[$h]\",\"$run_time[$h]\",\"$webserver[$h]\",\"$api_url[$h]\"\n";
 			}
-		$HTML_text.="\n";
+		$TEXT.="\n";
+		$HTML.="</tr>";
 		$h++;
 		}
 
-	$HTML_text.=$ASCII_border;
+	$TEXT.=$ASCII_border;
+	$HTML.="</table>";
 	}
-$HTML_text.="</FONT></PRE></BODY></HTML>";
+$TEXT.="</FONT></PRE>";
+
+if ($report_display_type=="HTML") {
+	$HTML_text.=$HTML;
+} else {
+	$HTML_text.=$TEXT;
+}
+
+
+$HTML_text.="</BODY></HTML>";
 
 
 if ($file_download == 0 || !$file_download) 
