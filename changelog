@@ -1,7 +1,22 @@
+2.25.9
+
+  [Jörg Frings-Fürst]
+  * Add upstream Rev. 2811:
+    - admin.php,
+    - New AST_DIDstats_v2.php: Added Inbound DID Summary Report
+  * ADMIN_backup_pl (2017-028):
+    - Add missing files/dirs
+      + /etc/apache2
+      + /etc/letsencrypt
+      + /usr/share/astguiclient/AST_DB_lead_status_change.pl
+   * admin.php (2017-029):
+     - Add <br> after changelog. 
+   * Release 2.25.9 2017-08-29
+
 2.25.8
 
   [Jörg Frings-Fürst]
-  * Add missing fallbacks on translations (2017-027)
+  * Add missing fallbacks on translations (2017-027).
   * Add upstream Rev. 2809:
     - AST_email_web_report.pl,
     - help.php: Added report filename_override option
