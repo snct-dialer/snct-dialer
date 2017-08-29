@@ -491,6 +491,9 @@ if ( ($without_conf < 1) && ($db_only < 1) )
 	$zapdahdi='';
 	if (-e "/etc/zaptel.conf") {$zapdahdi .= " /etc/zaptel.conf";}
 	if (-e "/etc/dahdi/system.conf") {$zapdahdi .= " /etc/dahdi";}
+	if (-e "/etc/apache2") {$zapdahdi .= " /etc/apache2";}
+	if (-e "/etc/letsencrypt") {$zapdahdi .= " /etc/letsencrypt";}
+	if (-e "/usr/share/astguiclient/AST_DB_lead_status_change.pl") {$zapdahdi .= " /usr/share/astguiclient/AST_DB_lead_status_change.pl";}
 	if ($DBX) {print "$tarbin cf $ARCHIVEpath/temp/$VARserver_ip$conf$wday$tar /etc/astguiclient.conf $zapdahdi /etc/asterisk\n";}
 	`$tarbin cf $ARCHIVEpath/temp/$VARserver_ip$conf$wday$tar /etc/astguiclient.conf $zapdahdi /etc/asterisk`;
 
