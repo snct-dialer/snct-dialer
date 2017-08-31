@@ -1,3 +1,7 @@
+2.25.9.1
+  [Jörg Frings-Fürst]
+  * Correct typo at admin.php.
+
 2.25.9
 
   [Jörg Frings-Fürst]
@@ -10,7 +14,7 @@
       + /etc/letsencrypt
       + /usr/share/astguiclient/AST_DB_lead_status_change.pl
    * admin.php (2017-029):
-     - Add <br> after changelog. 
+     - Add br's after changelog. 
    * Release 2.25.9 2017-08-29
 
 2.25.8
