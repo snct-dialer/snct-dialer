@@ -2,6 +2,8 @@
 
   [Jörg Frings-Fürst]
   * Remove old files from LANG_www.
+  * first_server_install.sql:
+    - Remove testphones.
 
 2.25.9.1
 
