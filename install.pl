@@ -2725,7 +2725,7 @@ if ($dbhA)
 	if ( -e ('/usr/bin/cut')) {$CutCmd = '/usr/bin/cut';}
 	if ( -e ('/usr/local/bin/cut')) {$CutCmd = '/usr/local/bin/cut';}
 
-	if ( -e ('/bin/tr')) {$TrCmd = '/bin/trt';}
+	if ( -e ('/bin/tr')) {$TrCmd = '/bin/tr';}
 	if ( -e ('/usr/bin/tr')) {$TrCmd = '/usr/bin/tr';}
 	if ( -e ('/usr/local/bin/tr')) {$TrCmd = '/usr/local/bin/tr';}
 
