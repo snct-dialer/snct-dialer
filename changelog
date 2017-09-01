@@ -1,6 +1,13 @@
+2.25.10
+
+  [Jörg Frings-Fürst]
+  * Remove old files from LANG_www.
+
 2.25.9.1
+
   [Jörg Frings-Fürst]
   * Correct typo at admin.php.
+  * Release 2.25.9.1 2017-08-29
 
 2.25.9
 
