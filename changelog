@@ -4,6 +4,8 @@
   * Remove old files from LANG_www.
   * first_server_install.sql:
     - Remove testphones.
+  * install.pl:
+    - Remove svn.
 
 2.25.9.1
 
