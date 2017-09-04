@@ -30,6 +30,7 @@
 # 160819-0054 - Fixed chart bugs caused by DST
 # 170227-1710 - Fix for default HTML report format, issue #997
 # 170409-1555 - Added IP List validation code
+# 170829-0040 - Added screen color settings
 #
 
 $startMS = microtime();
@@ -410,13 +411,13 @@ $HEADER.="<TITLE>"._QXZ("$report_name")."</TITLE></HEAD><BODY BGCOLOR=WHITE marg
 
 $short_header=1;
 
-# require("admin_header.php");
+require("screen_colors.php");
 
 $MAIN.="<b>"._QXZ("$report_name")."</b> $NWB#inbound_daily_report$NWE\n";
 $MAIN.="<TABLE CELLPADDING=3 CELLSPACING=0><TR><TD>";
 
 $MAIN.="<FORM ACTION=\"$PHP_SELF\" METHOD=GET name=vicidial_report id=vicidial_report>\n";
-$MAIN.="<TABLE CELLPADDING=3 CELLSPACING=0 BGCOLOR=\"#e3e3ff\"><TR valign='top'><TD>";
+$MAIN.="<TABLE CELLPADDING=3 CELLSPACING=0 BGCOLOR=\"#".$SSframe_background."\"><TR valign='top'><TD>";
 
 $MAIN.="<INPUT TYPE=TEXT NAME=query_date SIZE=10 MAXLENGTH=10 VALUE=\"$query_date\">";
 

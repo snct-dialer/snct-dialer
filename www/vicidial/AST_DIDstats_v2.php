@@ -6,6 +6,7 @@
 # CHANGES
 #
 # 170828-2018 - First build, based on AST_DIDstats.php
+# 170903-0941 - Added screen color settings
 #
 
 $startMS = microtime();
@@ -305,43 +306,7 @@ $report_log_id = mysqli_insert_id($link);
 ##### END log visit to the vicidial_report_log table #####
 
 ##### BEGIN Define colors and logo #####
-$SSmenu_background='015B91';
-$SSframe_background='D9E6FE';
-$SSstd_row1_background='9BB9FB';
-$SSstd_row2_background='B9CBFD';
-$SSstd_row3_background='8EBCFD';
-$SSstd_row4_background='B6D3FC';
-$SSstd_row5_background='FFFFFF';
-$SSalt_row1_background='BDFFBD';
-$SSalt_row2_background='99FF99';
-$SSalt_row3_background='CCFFCC';
-
-$screen_color_stmt="select admin_screen_colors from system_settings";
-$screen_color_rslt=mysql_to_mysqli($screen_color_stmt, $link);
-$screen_color_row=mysqli_fetch_row($screen_color_rslt);
-$agent_screen_colors="$screen_color_row[0]";
-
-if ($agent_screen_colors != 'default')
-	{
-	$asc_stmt = "SELECT menu_background,frame_background,std_row1_background,std_row2_background,std_row3_background,std_row4_background,std_row5_background,alt_row1_background,alt_row2_background,alt_row3_background,web_logo FROM vicidial_screen_colors where colors_id='$agent_screen_colors';";
-	$asc_rslt=mysql_to_mysqli($asc_stmt, $link);
-	$qm_conf_ct = mysqli_num_rows($asc_rslt);
-	if ($qm_conf_ct > 0)
-		{
-		$asc_row=mysqli_fetch_row($asc_rslt);
-		$SSmenu_background =            $asc_row[0];
-		$SSframe_background =           $asc_row[1];
-		$SSstd_row1_background =        $asc_row[2];
-		$SSstd_row2_background =        $asc_row[3];
-		$SSstd_row3_background =        $asc_row[4];
-		$SSstd_row4_background =        $asc_row[5];
-		$SSstd_row5_background =        $asc_row[6];
-		$SSalt_row1_background =        $asc_row[7];
-		$SSalt_row2_background =        $asc_row[8];
-		$SSalt_row3_background =        $asc_row[9];
-		$SSweb_logo =		           $asc_row[10];
-		}
-	}
+require("screen_colors.php");
 
 if ( (strlen($slave_db_server)>5) and (preg_match("/$report_name/",$reports_use_slave_db)) )
 	{
@@ -403,7 +368,7 @@ $MAIN.="<b>"._QXZ("$report_name")."</b> $NWB#DIDstats$NWE\n";
 $MAIN.="<TABLE CELLPADDING=3 CELLSPACING=0><TR><TD>";
 
 $MAIN.="<FORM ACTION=\"$PHP_SELF\" METHOD=POST name=vicidial_report id=vicidial_report>\n";
-$MAIN.="<TABLE BORDER=0 CELLPADDING=3 CELLSPACING=0 BGCOLOR=\"#e3e3ff\"><TR><TD align=left valign=top>\n";
+$MAIN.="<TABLE BORDER=0 CELLPADDING=3 CELLSPACING=0 BGCOLOR=\"#".$SSframe_background."\"><TR><TD align=left valign=top>\n";
 $MAIN.="<INPUT TYPE=TEXT NAME=query_date SIZE=10 MAXLENGTH=10 VALUE=\"$query_date\">";
 
 $MAIN.="<script language=\"JavaScript\">\n";

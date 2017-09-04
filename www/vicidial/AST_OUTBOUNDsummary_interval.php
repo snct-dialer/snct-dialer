@@ -30,6 +30,7 @@
 # 170220-2040 - Fixed bug causing sale/dncs to be counted multiple times when dispos repeated between campaigns
 # 170227-1709 - Fix for default HTML report format, issue #997
 # 170409-1555 - Added IP List validation code
+# 170829-0040 - Added screen color settings, fixed display bug
 #
 
 $startMS = microtime();
@@ -526,6 +527,8 @@ while ($i < $statdnc_to_print)
 $dnc_statusesLIST=array_values(array_unique($dnc_statusesLIST));
 $dnc_ct=count($dnc_statusesLIST);
 
+require("screen_colors.php");
+
 $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
 $NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
 
@@ -569,7 +572,7 @@ if ($bareformat < 1)
 
 
 	$MAIN.="<FORM ACTION=\"$PHP_SELF\" METHOD=GET name=vicidial_report id=vicidial_report>\n";
-	$MAIN.="<TABLE BORDER=0 CELLPADDING=3 CELLSPACING=0 BGCOLOR=\"#e3e3ff\"><TR><TD VALIGN=TOP>\n";
+	$MAIN.="<TABLE BORDER=0 CELLPADDING=3 CELLSPACING=0 BGCOLOR=\"#".$SSframe_background."\"><TR><TD VALIGN=TOP>\n";
 	$MAIN.="<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 	$MAIN.="<INPUT TYPE=HIDDEN NAME=costformat VALUE=\"$costformat\">\n";
 	$MAIN.="<INPUT TYPE=HIDDEN NAME=print_calls VALUE=\"$print_calls\">\n";
@@ -1681,6 +1684,7 @@ else
 	include("graphcanvas.inc");
 	$GRAPH_text.=$graphCanvas;
 
+	}
 
 	if ($file_download>0) {
 #		$CSV_report=fopen("AST_OUTBOUNDsummary_interval.csv", "w");
@@ -1753,8 +1757,6 @@ else
 		echo "</BODY></HTML>";
 	}
 
-
-	}
 
 
 if ($db_source == 'S')

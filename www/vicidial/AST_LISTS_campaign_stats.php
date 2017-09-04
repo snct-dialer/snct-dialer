@@ -28,6 +28,7 @@
 # 160714-2348 - Added and tested ChartJS features for more aesthetically appealing graphs
 # 170227-1719 - Fix for default HTML report format, issue #997
 # 170409-1555 - Added IP List validation code
+# 170829-0040 - Added screen color settings
 #
 
 $startMS = microtime();
@@ -438,6 +439,8 @@ else {$scheduled_callback_statuses="''";}
 if (strlen($completed_statuses)>2)			{$completed_statuses = substr("$completed_statuses", 0, -1);}
 else {$completed_statuses="''";}
 
+require("screen_colors.php");
+
 $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
 $NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
 
@@ -465,7 +468,7 @@ $MAIN.="<b>"._QXZ("$report_name")."</b> $NWB#LISTS_campaign_stats$NWE\n";
 $MAIN.="<TABLE CELLPADDING=3 CELLSPACING=0><TR><TD>";
 
 $MAIN.="<FORM ACTION=\"$PHP_SELF\" METHOD=GET name=vicidial_report id=vicidial_report>\n";
-$MAIN.="<TABLE CELLPADDING=3 CELLSPACING=0 BGCOLOR=\"#e3e3ff\"><TR><TD VALIGN=TOP>";
+$MAIN.="<TABLE CELLPADDING=3 CELLSPACING=0 BGCOLOR=\"#".$SSframe_background."\"><TR><TD VALIGN=TOP>";
 $MAIN.="<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 
 $MAIN.="</TD><TD VALIGN=TOP> "._QXZ("Campaigns").":<BR>";

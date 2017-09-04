@@ -33,6 +33,7 @@
 # 170217-2115 - Added time entry option for date ranges
 # 170227-1717 - Fix for default HTML report format, issue #997
 # 170409-1555 - Added IP List validation code
+# 170829-0040 - Added screen color settings
 #
 
 $startMS = microtime();
@@ -346,6 +347,8 @@ if ( (strlen($slave_db_server)>5) and (preg_match("/$report_name/",$reports_use_
 	$MAIN.="<!-- Using slave server $slave_db_server $db_source -->\n";
 	}
 
+require("screen_colors.php");
+
 $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
 $NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
 
@@ -397,7 +400,7 @@ $MAIN.="<b>"._QXZ("$report_name")."</b> $NWB#DIDstats$NWE\n";
 $MAIN.="<TABLE CELLPADDING=3 CELLSPACING=0><TR><TD>";
 
 $MAIN.="<FORM ACTION=\"$PHP_SELF\" METHOD=POST name=vicidial_report id=vicidial_report>\n";
-$MAIN.="<TABLE BORDER=0 CELLPADDING=3 CELLSPACING=0 BGCOLOR=\"#e3e3ff\"><TR><TD align=left valign=top>\n";
+$MAIN.="<TABLE BORDER=0 CELLPADDING=3 CELLSPACING=0 BGCOLOR=\"#".$SSframe_background."\"><TR><TD align=left valign=top>\n";
 $MAIN.="<INPUT TYPE=TEXT NAME=query_date SIZE=10 MAXLENGTH=10 VALUE=\"$query_date\">";
 
 $MAIN.="<script language=\"JavaScript\">\n";

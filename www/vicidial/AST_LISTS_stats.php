@@ -16,6 +16,7 @@
 # 150516-1304 - Fixed Javascript element problem, Issue #857
 # 160227-1026 - Fixed dbconnect bug, standardized form layout
 # 170409-1539 - Added IP List validation code
+# 170903-0951 - Added screen color settings
 #
 
 $startMS = microtime();
@@ -397,6 +398,8 @@ else {$scheduled_callback_statuses="''";}
 if (strlen($completed_statuses)>2)			{$completed_statuses = substr("$completed_statuses", 0, -1);}
 else {$completed_statuses="''";}
 
+require("screen_colors.php");
+
 $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
 $NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
 
@@ -421,7 +424,7 @@ $MAIN.="<b>"._QXZ("$report_name")."</b> $NWB#LISTS_stats$NWE\n";
 $MAIN.="<TABLE CELLPADDING=3 CELLSPACING=0><TR><TD>";
 
 $MAIN.="<FORM ACTION=\"$PHP_SELF\" METHOD=GET name=vicidial_report id=vicidial_report>\n";
-$MAIN.="<TABLE CELLPADDING=3 CELLSPACING=0 BGCOLOR=\"#e3e3ff\"><TR><TD VALIGN=TOP>";
+$MAIN.="<TABLE CELLPADDING=3 CELLSPACING=0 BGCOLOR=\"#".$SSframe_background."\"><TR><TD VALIGN=TOP>";
 $MAIN.="<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 $MAIN.="</TD>";
 

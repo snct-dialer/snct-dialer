@@ -7,6 +7,7 @@
 #
 # 170428-1205 - First build
 # 170504-2245 - Minor bug fixes
+# 170829-0040 - Added screen color settings
 #
 
 $startMS = microtime();
@@ -483,6 +484,8 @@ while ($i < $times_to_print)
 	$i++;
 	}
 
+require("screen_colors.php");
+
 $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
 $NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
 
@@ -522,7 +525,7 @@ $MAIN.="<FORM ACTION=\"$PHP_SELF\" METHOD=GET name=vicidial_report id=vicidial_r
 $MAIN.="<b>"._QXZ("$report_name")."</b> $NWB#inbound_forecasting$NWE\n";
 
 #$MAIN.="<FORM ACTION=\"$PHP_SELF\" METHOD=GET name=vicidial_report id=vicidial_report>\n";
-$MAIN.="<TABLE CELLPADDING=3 CELLSPACING=0 BORDER=0 WIDTH='1024'><TR BGCOLOR=\"#e3e3ff\"><TD VALIGN=TOP> <b>"._QXZ("Dates").":</b><BR>";
+$MAIN.="<TABLE CELLPADDING=3 CELLSPACING=0 BORDER=0 WIDTH='1024'><TR BGCOLOR=\"#".$SSframe_background."\"><TD VALIGN=TOP> <b>"._QXZ("Dates").":</b><BR>";
 $MAIN.="<INPUT TYPE=hidden NAME=DB VALUE=\"$DB\">\n";
 
 

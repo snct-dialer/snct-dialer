@@ -532,6 +532,8 @@ phone_code VARCHAR(10),
 phone_number VARCHAR(18),
 user VARCHAR(20),
 closer VARCHAR(20),
+front_uniqueid VARCHAR(50) default '',
+close_uniqueid VARCHAR(50) default '',
 index (lead_id),
 index (call_date)
 ) ENGINE=MyISAM;
@@ -2650,6 +2652,7 @@ noanswer_processed ENUM('N','Y','U') default 'N'
 ) ENGINE=MyISAM;
 
 CREATE INDEX call_date on vicidial_log_extended (call_date);
+CREATE INDEX vle_lead_id on vicidial_log_extended(lead_id);
 
 CREATE TABLE vicidial_lists_fields (
 field_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
@@ -3972,6 +3975,9 @@ ALTER TABLE vicidial_lead_search_log_archive MODIFY search_log_id INT(9) UNSIGNE
 CREATE TABLE vicidial_closer_log_archive LIKE vicidial_closer_log; 
 ALTER TABLE vicidial_closer_log_archive MODIFY closecallid INT(9) UNSIGNED NOT NULL;
 
+CREATE TABLE vicidial_xfer_log_archive LIKE vicidial_xfer_log; 
+ALTER TABLE vicidial_xfer_log_archive MODIFY xfercallid INT(9) UNSIGNED NOT NULL;
+
 CREATE TABLE vicidial_outbound_ivr_log_archive LIKE vicidial_outbound_ivr_log;
 
 CREATE TABLE vicidial_log_extended_archive LIKE vicidial_log_extended;
@@ -4086,4 +4092,4 @@ UPDATE vicidial_configuration set value='1766' where name='qc_database_version';
 
 UPDATE system_settings set vdc_agent_api_active='1';
 
-UPDATE system_settings SET db_schema_version='1515',db_schema_update_date=NOW(),reload_timestamp=NOW();
+UPDATE system_settings SET db_schema_version='1516',db_schema_update_date=NOW(),reload_timestamp=NOW();

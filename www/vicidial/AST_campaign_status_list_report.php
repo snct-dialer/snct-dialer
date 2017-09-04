@@ -25,6 +25,7 @@
 # 160714-2348 - Added and tested ChartJS features for more aesthetically appealing graphs
 # 170227-1720 - Fix for default HTML report format, issue #997
 # 170409-1555 - Added IP List validation code
+# 170829-0040 - Added screen color settings
 #
 
 $startMS = microtime();
@@ -331,6 +332,8 @@ else
 $query_date="$query_date_D $query_date_T";
 $end_date="$end_date_D $end_date_T";
 
+require("screen_colors.php");
+
 $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
 $NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
 
@@ -362,7 +365,7 @@ $HTML_text.="<TABLE CELLPADDING=3 CELLSPACING=0><TR><TD>";
 $HTML_text.="<b>"._QXZ("$report_name")."</b> $NWB#campaign_status_list_report$NWE\n";
 
 $HTML_text.="<FORM ACTION=\"$PHP_SELF\" METHOD=GET name=vicidial_report id=vicidial_report>\n";
-$HTML_text.="<TABLE CELLPADDING=3 CELLSPACING=0 BGCOLOR=\"#e3e3ff\"><TR><TD VALIGN=TOP> "._QXZ("Dates").":<BR>";
+$HTML_text.="<TABLE CELLPADDING=3 CELLSPACING=0 BGCOLOR=\"#".$SSframe_background."\"><TR><TD VALIGN=TOP> "._QXZ("Dates").":<BR>";
 $HTML_text.="<INPUT TYPE=hidden NAME=DB VALUE=\"$DB\">\n";
 $HTML_text.="<INPUT TYPE=hidden NAME=query_date ID=query_date VALUE=\"$query_date\">\n";
 $HTML_text.="<INPUT TYPE=hidden NAME=end_date ID=end_date VALUE=\"$end_date\">\n";

@@ -16,6 +16,7 @@
 # 141114-0048 - Finalized adding QXZ translation to all admin files
 # 141230-1348 - Added code for on-the-fly language translations display
 # 170409-1534 - Added IP List validation code
+# 170829-0040 - Added screen color settings
 #
 
 require("dbconnect_mysqli.php");
@@ -308,7 +309,7 @@ else
 	echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET name=vicidial_report id=vicidial_report>\n";
 	echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">";
 	echo "<INPUT TYPE=HIDDEN NAME=run_export VALUE=\"1\">";
-	echo "<TABLE BORDER=0 CELLSPACING=8><TR><TD ALIGN=LEFT VALIGN=TOP ROWSPAN=3  bgcolor=#B6D3FC>\n";
+	echo "<TABLE BORDER=0 CELLSPACING=8><TR><TD ALIGN=LEFT VALIGN=TOP ROWSPAN=3  bgcolor=#".$SSstd_row4_background.">\n";
 
 	echo "<font class=\"select_bold\"><B>"._QXZ("Date Range").":</B></font><BR><CENTER>\n";
 	echo "<INPUT TYPE=TEXT NAME=query_date SIZE=10 MAXLENGTH=10 VALUE=\"$query_date\">";
@@ -346,13 +347,13 @@ else
 
 
 	echo "<center><TABLE width=400 cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Card ID").": </td><td align=left><input type=text name=card_id size=20 maxlength=20></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Agent").": </td><td align=left><input type=text name=agent size=20 maxlength=20></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("DID").": </td><td align=left><input type=text name=did size=18 maxlength=18></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("CallerID").": </td><td align=left><input type=text name=callerid size=18 maxlength=18></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Run").": </td><td align=left><input type=text name=run size=5 maxlength=4></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Batch").": </td><td align=left><input type=text name=batch size=6 maxlength=5></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Sequence").": </td><td align=left><input type=text name=sequence size=6 maxlength=5></td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Card ID").": </td><td align=left><input type=text name=card_id size=20 maxlength=20></td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Agent").": </td><td align=left><input type=text name=agent size=20 maxlength=20></td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("DID").": </td><td align=left><input type=text name=did size=18 maxlength=18></td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("CallerID").": </td><td align=left><input type=text name=callerid size=18 maxlength=18></td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Run").": </td><td align=left><input type=text name=run size=5 maxlength=4></td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Batch").": </td><td align=left><input type=text name=batch size=6 maxlength=5></td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Sequence").": </td><td align=left><input type=text name=sequence size=6 maxlength=5></td></tr>\n";
 
 	echo "</TABLE></center>\n";
 

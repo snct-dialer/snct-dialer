@@ -7,6 +7,7 @@
 #
 # 161207-1952 - First build
 # 170409-1550 - Added IP List validation code
+# 170829-0040 - Added screen color settings
 #
 
 $startMS = microtime();
@@ -315,6 +316,8 @@ if ( (strlen($slave_db_server)>5) and (preg_match("/$report_name/",$reports_use_
 	$MAIN.="<!-- Using slave server $slave_db_server $db_source -->\n";
 	}
 
+require("screen_colors.php");
+
 $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
 $NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
 
@@ -366,7 +369,7 @@ $MAIN.="<b>"._QXZ("$report_name")."</b> $NWB#agentDIDstats$NWE\n";
 $MAIN.="<TABLE CELLPADDING=3 CELLSPACING=0><TR><TD>";
 
 $MAIN.="<FORM ACTION=\"$PHP_SELF\" METHOD=POST name=vicidial_report id=vicidial_report>\n";
-$MAIN.="<TABLE BORDER=0 CELLPADDING=3 CELLSPACING=0 BGCOLOR=\"#e3e3ff\"><TR><TD align=center valign=top>\n";
+$MAIN.="<TABLE BORDER=0 CELLPADDING=3 CELLSPACING=0 BGCOLOR=\"#".$SSframe_background."\"><TR><TD align=center valign=top>\n";
 $MAIN.="<INPUT TYPE=TEXT NAME=query_date SIZE=10 MAXLENGTH=10 VALUE=\"$query_date\">";
 
 $MAIN.="<script language=\"JavaScript\">\n";
