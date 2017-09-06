@@ -53,8 +53,11 @@
     - AST_OUTBOUNDsummary_interval.php: Added screen color settings, fixed display bug
     - New screen_colors.php.
   * New extras/mysql_update/mysql-1516.sql.
-  * ADMIN_backup_pl (2017-030):
+  * ADMIN_backup.pl (2017-030):
     - Add dir /usr/local/sbin.
+  * ADMIN_backup.pl (2017-031):
+    - Change from gzip to xz.
+    - Change Days form 7 to 14.   
        
 2.25.9.1
 
