@@ -8,8 +8,8 @@
     - Remove svn.
     - Correct typo.
   * Add upstream Rev. 2812:
-  	- agi-VDAD_ALL_inbound.agi: Added additional xfer_log details
-  	- ADMIN_archive_log_tables.pl: Added rolling of vicidial_xfer_log
+    - agi-VDAD_ALL_inbound.agi: Added additional xfer_log details
+    - ADMIN_archive_log_tables.pl: Added rolling of vicidial_xfer_log
     - AST_agent_days_time.php.orig
     - AST_CLOSER_service_level.php,
       AST_CLOSERstats.php,
@@ -57,8 +57,8 @@
     - Add dir /usr/local/sbin.
   * ADMIN_backup.pl (2017-031):
     - Change from gzip to xz.
-    - Change Days from 7 to 14.   
-       
+    - Change Days from 7 to 14.
+
 2.25.9.1
 
   [Jörg Frings-Fürst]
