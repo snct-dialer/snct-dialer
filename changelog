@@ -1,6 +1,71 @@
+2.25.10
+
+  [Jörg Frings-Fürst]
+  * Remove old files from LANG_www.
+  * first_server_install.sql:
+    - Remove testphones.
+  * install.pl:
+    - Remove svn.
+    - Correct typo.
+  * Add upstream Rev. 2812:
+    - agi-VDAD_ALL_inbound.agi: Added additional xfer_log details
+    - ADMIN_archive_log_tables.pl: Added rolling of vicidial_xfer_log
+    - AST_agent_days_time.php.orig
+    - AST_CLOSER_service_level.php,
+      AST_CLOSERstats.php,
+      AST_CLOSERstats_v2.php,
+      AST_CLOSERsummary_hourly.php,
+      AST_DIDstats.php,
+      AST_DIDstats_v2.php,
+      AST_IVRstats.php,
+      AST_LISTS_campaign_stats.php,
+      AST_LISTS_pass_report.php,
+      AST_LISTS_stats.php,
+      AST_VDADstats.php,
+      AST_agentDIDstats.php,
+      AST_agent_days_time.php,
+      AST_agent_debug_log_report.php,
+      AST_agent_performance_detail.php,
+      AST_agent_status_detail.php,
+      AST_agent_time_detail.php,
+      AST_agent_timeclock_detail.php,
+      AST_campaign_status_list_report.php,
+      AST_dial_log_report.php,
+      AST_dialer_inventory_report.php,
+      AST_email_log_report.php,
+      AST_hangup_cause_report.php,
+      AST_inbound_daily_report.php,
+      AST_inbound_forecasting.php,
+      AST_performance_comparison_report.php,
+      AST_team_performance_detail.php,
+      AST_user_group_hourly_detail.php,
+      AST_user_group_hourly_detail_v2.php,
+      AST_usergroup_login_report.php,
+      AST_webserver_url_report.php,
+      Erlang_report.php,
+      callbacks_bulk_change.php,
+      callcard_admin.php,
+      callcard_report_export.php,
+      called_counts_multilist_report.php,
+      fcstats.php,
+      fcstats_detail.php,
+      vicidial_custom_reports_admin.php: Added screen color settings
+    - AST_OUTBOUNDsummary_interval.php: Added screen color settings, fixed display bug
+    - New screen_colors.php.
+  * New extras/mysql_update/mysql-1516.sql.
+  * ADMIN_backup.pl (2017-030):
+    - Add dir /usr/local/sbin.
+  * ADMIN_backup.pl (2017-031):
+    - Change from gzip to xz.
+    - Change Days from 7 to 14.
+    - Add underline before tablename.
+  * Release 2.25.10 2017-09-08
+
 2.25.9.1
+
   [Jörg Frings-Fürst]
   * Correct typo at admin.php.
+  * Release 2.25.9.1 2017-08-29
 
 2.25.9
 

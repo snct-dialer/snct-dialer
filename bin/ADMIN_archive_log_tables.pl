@@ -50,6 +50,7 @@
 # 170508-1212 - Added vicidial_rt_monitor_log table rolling
 # 170809-1926 - Added rolling of user_call_log if over 1000000 records
 # 170817-1318 - Added rolling of vicidial_inbound_survey_log
+# 170825-2243 - Added rolling of vicidial_xfer_log
 #
 
 $CALC_TEST=0;
@@ -75,7 +76,6 @@ if (length($ARGV[0])>1)
 		print "  [--vlog-daily] = will also archive the vicidial_log table when --daily is run\n";
 		print "  [--days=XX] = number of days to archive past, default is 732(2 years)\n";
 		print "  [--months=XX] = number of months to archive past, default is 24(2 years) If 'days' used then 'months' ignored\n";
-		print "  [--closer-log] = archive vicidial_closer_log records\n";
 		print "  [--queue-log] = archive QM queue_log records\n";
 		print "  [--only-trim-archive-level-one] = will not perform normal archive process, instead this will only delete records\n";
 		print "                                    that are older than XX months from least important log archive tables:\n";
@@ -83,7 +83,7 @@ if (length($ARGV[0])>1)
 		print "  [--only-trim-archive-level-two] = same as --only-trim-archive-level-one, except includes tables:\n";
 		print "                               vicidial_carrier_log_archive, vicidial_api_log_archive, vicidial_rt_monitor_log_archive\n";
 		print "  [--only-trim-archive-level-three] = same as --only-trim-archive-level-two, except includes tables:\n";
-		print "                               vicidial_log_archive, vicidial_agent_log_archive, vicidial_closer_log_archive\n";
+		print "                               vicidial_log_archive, vicidial_agent_log_archive, vicidial_closer_log_archive, vicidial_xfer_log_archive\n";
 		print "  [--recording-log-days=XX] = OPTIONAL, number of days to archive recording_log table only past\n";
 		print "  [--cpd-log-purge-days=XX] = OPTIONAL, number of days to purge vicidial_cpd_log table only past\n";
 		print "  [--quiet] = quiet\n";
@@ -146,12 +146,6 @@ if (length($ARGV[0])>1)
 				{$CLIdays=730;}
 			if ($Q < 1) 
 				{print "\n----- DAYS OVERRIDE: $CLIdays -----\n\n";}
-			}
-		if ($args =~ /--closer-log/i)
-			{
-			$closer_log=1;
-			if ($Q < 1) 
-				{print "\n----- CLOSER LOG ARCHIVE -----\n\n";}
 			}
 		if ($args =~ /--queue-log/i)
 			{
@@ -346,7 +340,7 @@ if (!$T)
 		#    LEVEL 2:
 		# vicidial_carrier_log_archive, vicidial_api_log_archive
 		#    LEVEL 3:
-		# vicidial_log_archive, vicidial_agent_log_archive, vicidial_closer_log_archive
+		# vicidial_log_archive, vicidial_agent_log_archive, vicidial_closer_log_archive, vicidial_xfer_log_archive
 		# NOTE: script will exit once trim process has completed
 		if (!$Q) {print "\nONLY-TRIM-ARCHIVE PROCESS LAUNCHING, GOING TO LEVEL: $only_trim_archive\n";}
 
@@ -678,6 +672,35 @@ if (!$T)
 				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 				}
 			##### END vicidial_closer_log_archive trim processing #####
+
+			##### BEGIN vicidial_xfer_log_archive trim processing #####
+			$stmtA = "SELECT count(*) from vicidial_xfer_log_archive;";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$vicidial_xfer_log_archive_count =	$aryA[0];
+				}
+			$sthA->finish();
+
+			if (!$Q) {print "Trimming vicidial_xfer_log_archive table...  ($vicidial_xfer_log_archive_count)\n";}
+			
+			$rv = $sthA->err();
+			if (!$rv) 
+				{
+				$stmtA = "DELETE FROM vicidial_xfer_log_archive WHERE call_date < '$del_time';";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows = $sthA->rows;
+				if (!$Q) {print "$sthArows rows deleted from vicidial_xfer_log_archive table \n";}
+
+				$stmtA = "optimize table vicidial_xfer_log_archive;";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				}
+			##### END vicidial_xfer_log_archive trim processing #####
 			}
 
 		if (!$Q) {print "Trim process complete, exiting...\n";}
@@ -1334,6 +1357,55 @@ if (!$T)
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 		}
 
+
+	##### vicidial_xfer_log
+	$stmtA = "SELECT count(*) from vicidial_xfer_log;";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	if ($sthArows > 0)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$vicidial_xfer_log_count =	$aryA[0];
+		}
+	$sthA->finish();
+
+	$stmtA = "SELECT count(*) from vicidial_xfer_log_archive;";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	if ($sthArows > 0)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$vicidial_xfer_log_archive_count =	$aryA[0];
+		}
+	$sthA->finish();
+
+	if (!$Q) {print "\nProcessing vicidial_xfer_log table...  ($vicidial_xfer_log_count|$vicidial_xfer_log_archive_count)\n";}
+	$stmtA = "INSERT IGNORE INTO vicidial_xfer_log_archive SELECT * from vicidial_xfer_log;";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	
+	$sthArows = $sthA->rows;
+	if (!$Q) {print "$sthArows rows inserted into vicidial_xfer_log_archive table \n";}
+	
+	$rv = $sthA->err();
+	if (!$rv) 
+		{	
+		$stmtA = "DELETE FROM vicidial_xfer_log WHERE call_date < '$del_time';";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows = $sthA->rows;
+		if (!$Q) {print "$sthArows rows deleted from vicidial_xfer_log table \n";}
+
+		$stmtA = "optimize table vicidial_xfer_log;";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+
+		$stmtA = "optimize table vicidial_xfer_log_archive;";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		}
 
 
 	##### vicidial_log_extended

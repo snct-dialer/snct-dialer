@@ -57,6 +57,7 @@
 # 170227-1715 - Fix for default HTML report format, issue #997
 # 170324-0740 - Fix for daylight savings time issue
 # 170409-1559 - Added IP List validation code
+# 170829-0040 - Added screen color settings
 #
 
 $startMS = microtime();
@@ -449,7 +450,7 @@ $JS_text="<script language=\"JavaScript\">\n";
 
 $short_header=1;
 
-#require("admin_header.php");
+require("screen_colors.php");
 
 $MAIN.="<b>"._QXZ("$report_name")."</b> $NWB#CLOSERstats$NWE\n";
 $MAIN.="<TABLE CELLPADDING=3 CELLSPACING=0><TR><TD>";
@@ -464,7 +465,7 @@ if ($DB > 0)
 	}
 
 $MAIN.="<FORM ACTION=\"$PHP_SELF\" METHOD=POST name=vicidial_report id=vicidial_report>\n";
-$MAIN.="<TABLE BORDER=0 CELLPADDING=3 CELLSPACING=0 BGCOLOR=\"#e3e3ff\"><TR><TD VALIGN=TOP>\n";
+$MAIN.="<TABLE BORDER=0 CELLPADDING=3 CELLSPACING=0 BGCOLOR=\"#".$SSframe_background."\"><TR><TD VALIGN=TOP>\n";
 $MAIN.="<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 $MAIN.="<INPUT TYPE=HIDDEN NAME=DID VALUE=\"$DID\">\n";
 $MAIN.="<INPUT TYPE=HIDDEN NAME=EMAIL VALUE=\"$EMAIL\">\n";

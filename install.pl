@@ -2688,64 +2688,7 @@ if ($dbhA)
 	$svn_notes='';
 	$svn_revision=0;
 
-	### find pwd binary to do the compression
-	$pwdbin = '';
-	if ( -e ('/bin/pwd')) {$pwdbin = '/bin/pwd';}
-	else 
-		{
-		if ( -e ('/usr/bin/pwd')) {$pwdbin = '/usr/bin/pwd';}
-		else 
-			{
-			if ( -e ('/usr/local/bin/pwd')) {$pwdbin = '/usr/local/bin/pwd';}
-			else
-				{
-				print "Can't find pwd binary!\n";
-				}
-			}
-		}
-	### find svn binary to do the compression
-	$svnbin = '';
-	if ( -e ('/bin/svn')) {$svnbin = '/bin/svn';}
-	else 
-		{
-		if ( -e ('/usr/bin/svn')) {$svnbin = '/usr/bin/svn';}
-		else 
-			{
-			if ( -e ('/usr/local/bin/svn')) {$svnbin = '/usr/local/bin/svn';}
-			else
-				{
-				print "Can't find svn binary!\n";
-				}
-			}
-		}
-
-	### gather current path
-	if (length($pwdbin) > 4)
-		{
-		@pwd_output = `$pwdbin`;
-		chomp($pwd_output[0]);
-		$svn_notes .= "$pwd_output[0]\n";
-		}
-	### gather svn information
-	if (length($svnbin) > 4)
-		{
-		$svn_output_string='';
-		$svn_output_string='';
-		@svn_output = `$svnbin info`;
-		$s=0;
-		foreach(@svn_output)
-			{
-			$svn_output_string .= "$svn_output[$s]";
-			if ($svn_output[$s] =~ /Revision: /)
-				{
-				$svn_revision = $svn_output[$s];
-				$svn_revision =~ s/\D//gi;
-				}
-			$s++;
-			}
-		$svn_notes .= "$svn_output_string\n";
-		}
-
+	$svn_notes = "not longer used\n";
 	`./convert2pl.php`;
 
 	require './FlyInclude.pl';
@@ -2782,7 +2725,7 @@ if ($dbhA)
 	if ( -e ('/usr/bin/cut')) {$CutCmd = '/usr/bin/cut';}
 	if ( -e ('/usr/local/bin/cut')) {$CutCmd = '/usr/local/bin/cut';}
 
-	if ( -e ('/bin/tr')) {$TrCmd = '/bin/trt';}
+	if ( -e ('/bin/tr')) {$TrCmd = '/bin/tr';}
 	if ( -e ('/usr/bin/tr')) {$TrCmd = '/usr/bin/tr';}
 	if ( -e ('/usr/local/bin/tr')) {$TrCmd = '/usr/local/bin/tr';}
 

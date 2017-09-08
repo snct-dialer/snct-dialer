@@ -38,6 +38,7 @@
 # 170323-2247 - Added debug variable
 # 170409-1559 - Added IP List validation code
 # 170602-1008 - Added 8am-5pm shift
+# 170829-0040 - Added screen color settings
 #
 
 $startMS = microtime();
@@ -351,10 +352,10 @@ $HEADER.="<TITLE>"._QXZ("$report_name")."</TITLE></HEAD><BODY BGCOLOR=WHITE marg
 
 $short_header=1;
 
-# require("admin_header.php");
+require("screen_colors.php");
 
 $MAIN.="<b>"._QXZ("$report_name")."</b> $NWB#CLOSER_service_level$NWE\n";
-$MAIN.="<TABLE CELLPADDING=3 CELLSPACING=0 BGCOLOR=\"#e3e3ff\"><TR><TD>";
+$MAIN.="<TABLE CELLPADDING=3 CELLSPACING=0 BGCOLOR=\"#".$SSframe_background."\"><TR><TD>";
 
 $MAIN.="<FORM ACTION=\"$PHP_SELF\" METHOD=GET name=vicidial_report id=vicidial_report>\n";
 $MAIN.="<INPUT TYPE=TEXT NAME=query_date SIZE=10 MAXLENGTH=10 VALUE=\"$query_date\">";

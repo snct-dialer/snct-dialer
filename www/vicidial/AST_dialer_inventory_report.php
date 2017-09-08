@@ -24,6 +24,7 @@
 # 141230-1509 - Added code for on-the-fly language translations display
 # 160227-1933 - Uniform form format
 # 170409-1538 - Added IP List validation code
+# 170829-0040 - Added screen color settings
 #
 
 $startMS = microtime();
@@ -367,6 +368,8 @@ while ($ss_row=mysqli_fetch_row($snapshot_rslt))
 	$snapshot_span_txt.="\t<option value=\"$ss_row[0]\">$ss_row[0]</option>\n";
 	}
 $snapshot_span_txt.="</SELECT>\n";
+
+require("screen_colors.php");
 
 $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
 $NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
@@ -929,7 +932,7 @@ $HTML_text.="<TABLE CELLPADDING=3 CELLSPACING=0><TR><TD>";
 $HTML_text.="\n";
 $HTML_text.="<FORM ACTION='$PHP_SELF' METHOD=GET name=vicidial_report id=vicidial_report>\n";
 $HTML_text.="<INPUT TYPE=hidden NAME=DB VALUE='$DB'>\n";
-$HTML_text.="<TABLE CELLPADDING=3 CELLSPACING=0 BGCOLOR=\"#e3e3ff\"><TR height='150'><TD VALIGN=TOP>\n";
+$HTML_text.="<TABLE CELLPADDING=3 CELLSPACING=0 BGCOLOR=\"#".$SSframe_background."\"><TR height='150'><TD VALIGN=TOP>\n";
 $HTML_text.="	<table width='*' align='center'>\n";
 $HTML_text.="	<tr><td>"._QXZ("Report type").":</td></tr>\n";
 if ($report_type=='LIST') {$cmp_checked=""; $list_checked="checked";} else {$cmp_checked="checked"; $list_checked="";}

@@ -29,6 +29,7 @@
 # 160714-2348 - Added and tested ChartJS features for more aesthetically appealing graphs
 # 170227-1713 - Fix for default HTML report format, issue #997
 # 170409-1555 - Added IP List validation code
+# 170829-0040 - Added screen color settings
 #
 
 $startMS = microtime();
@@ -422,7 +423,7 @@ if ($bareformat < 1)
 	{
 	$short_header=1;
 
-	# require("admin_header.php");
+	require("screen_colors.php");
 
 	$MAIN.="<b>"._QXZ("$report_name")."</b> $NWB#CLOSERsummary_hourly$NWE\n";
 	$MAIN.="<TABLE CELLPADDING=3 CELLSPACING=0><TR><TD>";
@@ -437,7 +438,7 @@ if ($bareformat < 1)
 		}
 
 	$MAIN.="<FORM ACTION=\"$PHP_SELF\" METHOD=GET name=vicidial_report id=vicidial_report>\n";
-	$MAIN.="<TABLE BORDER=0 CELLPADDING=3 CELLSPACING=0 BGCOLOR=\"#e3e3ff\"><TR><TD VALIGN=TOP>\n";
+	$MAIN.="<TABLE BORDER=0 CELLPADDING=3 CELLSPACING=0 BGCOLOR=\"#".$SSframe_background."\"><TR><TD VALIGN=TOP>\n";
 	$MAIN.="<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 	$MAIN.="<INPUT TYPE=HIDDEN NAME=inbound_rate VALUE=\"$inbound_rate\">\n";
 	$MAIN.="<INPUT TYPE=HIDDEN NAME=outbound_rate VALUE=\"$outbound_rate\">\n";

@@ -2,9 +2,6 @@ INSERT INTO servers (server_id,server_description,server_ip,active,asterisk_vers
 
 INSERT INTO server_updater SET server_ip='10.10.10.15', last_update='2013-12-31 23:59:59';
 
-INSERT INTO phones (extension, dialplan_number, voicemail_id, phone_ip, computer_ip, server_ip, login, pass, status, active, phone_type, fullname, company, picture, messages, old_messages, protocol,template_id) values('gs102','102','102','10.10.10.16','10.10.9.16','10.10.10.15','gs102','test', 'ADMIN','Y','Grandstream BT 102','Test Admin Phone','TEST','','0','0','SIP','');
-INSERT INTO phones (extension, dialplan_number, voicemail_id, phone_ip, computer_ip, server_ip, login, pass, status, active, phone_type, fullname, company, protocol,template_id) values('callin','8300','8300','10.10.10.15','10.10.10.15','10.10.10.15','callin','test', 'ACTIVE','Y','Dial-in agent phone','Dial-in Agent Phone','TEST','EXTERNAL','');
-
 INSERT INTO conferences values('8600001','10.10.10.15','');
 INSERT INTO conferences values('8600002','10.10.10.15','');
 INSERT INTO conferences values('8600003','10.10.10.15','');

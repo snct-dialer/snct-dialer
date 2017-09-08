@@ -1,0 +1,1 @@
+Static language builds are no longer supported. For more information on our new non-English language dynamic features, please read "http://www.vicidial.org/docs/LANGUAGES_QXZ_notes.txt".

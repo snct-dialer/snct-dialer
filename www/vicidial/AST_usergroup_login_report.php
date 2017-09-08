@@ -21,6 +21,7 @@
 # 151229-2014 - Added archive search option
 # 160121-2218 - Added report title header, default report format, cleaned up formatting
 # 170409-1538 - Added IP List validation code
+# 170829-0040 - Added screen color settings
 #
 
 $startMS = microtime();
@@ -312,47 +313,10 @@ else
 	#$user_group_SQL = "and vicidial_agent_log.user_group IN($user_group_SQL)";
 	}
 
-##### BEGIN Define colors and logo #####
-$SSmenu_background='015B91';
-$SSframe_background='D9E6FE';
-$SSstd_row1_background='9BB9FB';
-$SSstd_row2_background='B9CBFD';
-$SSstd_row3_background='8EBCFD';
-$SSstd_row4_background='B6D3FC';
-$SSstd_row5_background='FFFFFF';
-$SSalt_row1_background='BDFFBD';
-$SSalt_row2_background='99FF99';
-$SSalt_row3_background='CCFFCC';
-
-$screen_color_stmt="select admin_screen_colors from system_settings";
-$screen_color_rslt=mysql_to_mysqli($screen_color_stmt, $link);
-$screen_color_row=mysqli_fetch_row($screen_color_rslt);
-$agent_screen_colors="$screen_color_row[0]";
-
-if ($agent_screen_colors != 'default')
-	{
-	$asc_stmt = "SELECT menu_background,frame_background,std_row1_background,std_row2_background,std_row3_background,std_row4_background,std_row5_background,alt_row1_background,alt_row2_background,alt_row3_background,web_logo FROM vicidial_screen_colors where colors_id='$agent_screen_colors';";
-	$asc_rslt=mysql_to_mysqli($asc_stmt, $link);
-	$qm_conf_ct = mysqli_num_rows($asc_rslt);
-	if ($qm_conf_ct > 0)
-		{
-		$asc_row=mysqli_fetch_row($asc_rslt);
-		$SSmenu_background =            $asc_row[0];
-		$SSframe_background =           $asc_row[1];
-		$SSstd_row1_background =        $asc_row[2];
-		$SSstd_row2_background =        $asc_row[3];
-		$SSstd_row3_background =        $asc_row[4];
-		$SSstd_row4_background =        $asc_row[5];
-		$SSstd_row5_background =        $asc_row[6];
-		$SSalt_row1_background =        $asc_row[7];
-		$SSalt_row2_background =        $asc_row[8];
-		$SSalt_row3_background =        $asc_row[9];
-		$SSweb_logo =		           $asc_row[10];
-		}
-	}
-
 ######################################
 if ($DB) {$HTML_text.="$user_group_string|$user_group_ct|$user_groupQS|$i<BR>";}
+
+require("screen_colors.php");
 
 $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
 $NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
