@@ -58,6 +58,7 @@
   * ADMIN_backup.pl (2017-031):
     - Change from gzip to xz.
     - Change Days from 7 to 14.
+    - Add underline before tablename.
 
 2.25.9.1
 
