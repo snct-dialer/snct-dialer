@@ -1,3 +1,10 @@
+2.25.11
+
+  [Jörg Frings-Fürst]
+  * Add upstream Rev. 2813:
+    - New AST_agent_inbound_status.php.
+    - user_status.php: Removed non-functional change-campaign feature
+    
 2.25.10
 
   [Jörg Frings-Fürst]
