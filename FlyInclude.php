@@ -44,8 +44,8 @@
 # 2017-017 JFF 2017-07-08 Add svn commit 2786
 #
 
-$FLY_patch_level = "2017-029";
-$FLY_SVN_base = "2811";
-$FLY_version  = "2.25.9.1";
+$FLY_patch_level = "2017-031";
+$FLY_SVN_base = "2812";
+$FLY_version  = "2.25.10";
 
 ?>

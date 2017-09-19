@@ -161,9 +161,9 @@ voicemail_dump_exten_no_inst VARCHAR(20) default '85026666666667',
 gather_asterisk_output ENUM('Y','N') default 'N',
 web_socket_url VARCHAR(255) default '',
 conf_qualify ENUM('Y','N') default 'Y',
-routing_prefix VARCHAR(10) default '13'
-git_commit VARCHAR(55) default '';
-git_release VARCHAR(25) default '';
+routing_prefix VARCHAR(10) default '13',
+git_commit VARCHAR(55) default '',
+git_release VARCHAR(25) default ''
 ) ENGINE=MyISAM;
 
 CREATE UNIQUE INDEX server_id on servers (server_id);
