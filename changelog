@@ -15,6 +15,7 @@
        entire statement if only one entry is a unique index duplicate.
   * Add missing fields into vicidial_agent_log_archive (2017-032).
   * New extras/mysql_update/mysql-1517.sql.
+  * Release 2.25.11 2017-09-19
 
 2.25.10
 
