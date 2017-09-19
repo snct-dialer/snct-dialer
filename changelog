@@ -13,7 +13,9 @@
   * Add upstream Rev. 2816:
     - admin_bulk_tools.php: Added IGNORE to bulk inserts to not error out
        entire statement if only one entry is a unique index duplicate.
-    
+  * Add missing fields into vicidial_agent_log_archive (2017-032).
+  * New extras/mysql_update/mysql-1517.sql.
+
 2.25.10
 
   [Jörg Frings-Fürst]
