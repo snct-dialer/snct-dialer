@@ -40,6 +40,7 @@
 # 170217-1213 - Fixed non-latin auth issue #995
 # 170228-1623 - Changed emergency logout to hangup all agent session calls, and more logging
 # 170409-1555 - Added IP List validation code
+# 170912-1704 - Removed non-functional change-campaign feature
 #
 
 $startMS = microtime();
@@ -951,6 +952,7 @@ if ($agents_to_print > 0)
 
 	if ($change_agent_campaign > 0)
 		{
+/*
 		echo "<form action=$PHP_SELF method=POST>\n";
 		echo "<input type=hidden name=DB value=\"$DB\">\n";
 		echo "<input type=hidden name=user value=\"$user\">\n";
@@ -965,6 +967,7 @@ if ($agents_to_print > 0)
 			}
 		echo "</SELECT>\n";
 		echo "<input type=submit name=submit value='"._QXZ("CHANGE")."' disabled><BR></form>\n";
+*/
 
 		echo "<form action=$PHP_SELF method=POST>\n";
 		echo "<input type=hidden name=DB value=\"$DB\">\n";
@@ -972,6 +975,7 @@ if ($agents_to_print > 0)
 		echo "<input type=hidden name=stage value=\"log_agent_out\">\n";
 		echo "<input type=submit name=submit value=\""._QXZ("EMERGENCY LOG AGENT OUT")."\"> &nbsp; "._QXZ("NOTE: this will hang up all calls in the agent session")."<BR></form>\n";
 		}
+
 	}
 
 else

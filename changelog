@@ -1,3 +1,22 @@
+2.25.11
+
+  [Jörg Frings-Fürst]
+  * Add upstream Rev. 2813:
+    - New AST_agent_inbound_status.php.
+    - user_status.php: Removed non-functional change-campaign feature
+  * Add upstream Rev. 2814:
+    - vdc_db_query.php: Fix for no-hopper dnc dialing issue
+    - vicidial.php: Fix for no-hopper dnc dialing issue, Small change for
+        two agent events.
+  * Add upstream Rev. 2815:
+    - vicidial.php: Fix for script tab issue.
+  * Add upstream Rev. 2816:
+    - admin_bulk_tools.php: Added IGNORE to bulk inserts to not error out
+       entire statement if only one entry is a unique index duplicate.
+  * Add missing fields into vicidial_agent_log_archive (2017-032).
+  * New extras/mysql_update/mysql-1517.sql.
+  * Release 2.25.11 2017-09-19
+
 2.25.10
 
   [Jörg Frings-Fürst]
@@ -10,7 +29,6 @@
   * Add upstream Rev. 2812:
     - agi-VDAD_ALL_inbound.agi: Added additional xfer_log details
     - ADMIN_archive_log_tables.pl: Added rolling of vicidial_xfer_log
-    - AST_agent_days_time.php.orig
     - AST_CLOSER_service_level.php,
       AST_CLOSERstats.php,
       AST_CLOSERstats_v2.php,

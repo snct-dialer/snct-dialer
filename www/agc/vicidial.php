@@ -562,10 +562,13 @@
 # 170725-2147 - Added counter(aec) to agent_events calls
 # 170808-1014 - Added more qualifiers for Hungup Xfer function to be triggered
 # 170816-2336 - Added ask post-call survey feature for in-group calls
+# 170912-1619 - Fix for no-hopper dnc dialing issue
+# 170913-1747 - Small change for two agent events
+# 170914-0708 - Fix for script tab issue
 #
 
-$version = '2.14-532c';
-$build = '170816-2336';
+$version = '2.14-535c';
+$build = '170914-0708';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -4604,6 +4607,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var aec=0;
 	var inbound_post_call_survey='';
 	var inbound_survey_participate='';
+	var left_3way_timeout=0;
 	var DiaLControl_auto_HTML = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready','','','','','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_paused.gif") ?>\" border=\"0\" alt=\"You are paused\" /></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause','','','','','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_active.gif") ?>\" border=\"0\" alt=\"You are active\" /></a>";
 	var DiaLControl_auto_HTML_OFF = "<img src=\"./images/<?php echo _QXZ("vdc_LB_blank_OFF.gif") ?>\" border=\"0\" alt=\"pause button disabled\" />";
@@ -5000,6 +5004,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 //			}
 
 		agent_events('3way_agent_leave', '', aec);   aec++;
+		left_3way_timeout=3;
 
 		if( document.images ) { document.images['livecall'].src = image_livecall_OFF.src;}
 		}
@@ -6129,7 +6134,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								}
 							else
 								{
-								if ( (last_conf_channel_count > 0) && (no_empty_session_warnings < 1) )
+								if ( (last_conf_channel_count > 0) && (no_empty_session_warnings < 1) && (left_3way_timeout < 1) )
 									{
 									agent_events('session_empty', '0', aec);   aec++;
 									last_conf_channel_count = 0;
@@ -8009,19 +8014,26 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 								if (CalL_ScripT_color.length > 1)
 									{document.getElementById("ScriptContents").style.backgroundColor = CalL_ScripT_color;}
-								if ( (view_scripts == 1) && (CalL_ScripT_id.length > 0) )
+								if (view_scripts == 1)
 									{
-									var SCRIPT_web_form = 'http://127.0.0.1/testing.php';
-									var TEMP_SCRIPT_web_form = URLDecode(SCRIPT_web_form,'YES','DEFAULT','1');
-
-									if ( (script_recording_delay > 0) && ( (LIVE_campaign_recording == 'ALLCALLS') || (LIVE_campaign_recording == 'ALLFORCE') ) )
+									if (CalL_ScripT_id.length > 0)
 										{
-										delayed_script_load = 'YES';
-										RefresHScript('CLEAR');
+										var SCRIPT_web_form = 'http://127.0.0.1/testing.php';
+										var TEMP_SCRIPT_web_form = URLDecode(SCRIPT_web_form,'YES','DEFAULT','1');
+
+										if ( (script_recording_delay > 0) && ( (LIVE_campaign_recording == 'ALLCALLS') || (LIVE_campaign_recording == 'ALLFORCE') ) )
+											{
+											delayed_script_load = 'YES';
+											RefresHScript('CLEAR');
+											}
+										else
+											{
+											load_script_contents('ScriptContents','');
+											}
 										}
 									else
 										{
-										load_script_contents('ScriptContents','');
+										RefresHScript('','YES');
 										}
 									}
 
@@ -8370,7 +8382,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								xferchannellive=1;
 								XDcheck = '';
 
-								agent_events('3way_answered', '', aec);   aec++;
+								agent_events('3way_answered', MDnextCID, aec);   aec++;
 								}
 							}
 						else
@@ -9011,6 +9023,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 							var regMNCvar = new RegExp("HOPPER EMPTY","ig");
 							var regMDFvarDNC = new RegExp("DNC","ig");
+							var regMNHDNCvar = new RegExp("NO-HOPPER DNC","ig");
 							var regMDFvarCAMP = new RegExp("CAMPLISTS","ig");
 							var regMDFvarTIME = new RegExp("OUTSIDE","ig");
 							if ( (MDnextCID.match(regMNCvar)) || (MDnextCID.match(regMDFvarDNC)) || (MDnextCID.match(regMDFvarCAMP)) || (MDnextCID.match(regMDFvarTIME)) )
@@ -9034,6 +9047,10 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 									{alert_box("<?php echo _QXZ("This phone number is not in the campaign lists:"); ?>\n" + mdnPhonENumbeR);   alert_displayed=1;}
 								if (MDnextCID.match(regMDFvarTIME))
 									{alert_box("<?php echo _QXZ("This phone number is outside of the local call time:"); ?>\n" + mdnPhonENumbeR);   alert_displayed=1;}
+
+								if (MDnextCID.match(regMNHDNCvar))
+									{alert_box("<?php echo _QXZ("The next lead is a DNC phone number, please try again:"); ?>\n" + mdnPhonENumbeR);   alert_displayed=1;}
+
 								if (alert_displayed==0)						
 									{alert_box("<?php echo _QXZ("Unspecified error:"); ?>\n" + mdnPhonENumbeR + "|" + MDnextCID);   alert_displayed=1;}
 
@@ -9387,19 +9404,26 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 									if ( (LIVE_campaign_recording == 'ALLCALLS') || (LIVE_campaign_recording == 'ALLFORCE') )
 										{all_record = 'YES';}
 
-									if ( (view_scripts == 1) && (campaign_script.length > 0) )
+									if (view_scripts == 1)
 										{
-										var SCRIPT_web_form = 'http://127.0.0.1/testing.php';
-										var TEMP_SCRIPT_web_form = URLDecode(SCRIPT_web_form,'YES','DEFAULT','1');
-
-										if ( (script_recording_delay > 0) && ( (LIVE_campaign_recording == 'ALLCALLS') || (LIVE_campaign_recording == 'ALLFORCE') ) )
+										if (campaign_script.length > 0)
 											{
-											delayed_script_load = 'YES';
-											RefresHScript('CLEAR');
+											var SCRIPT_web_form = 'http://127.0.0.1/testing.php';
+											var TEMP_SCRIPT_web_form = URLDecode(SCRIPT_web_form,'YES','DEFAULT','1');
+
+											if ( (script_recording_delay > 0) && ( (LIVE_campaign_recording == 'ALLCALLS') || (LIVE_campaign_recording == 'ALLFORCE') ) )
+												{
+												delayed_script_load = 'YES';
+												RefresHScript('CLEAR');
+												}
+											else
+												{
+												load_script_contents('ScriptContents','');
+												}
 											}
 										else
 											{
-											load_script_contents('ScriptContents','');
+											RefresHScript('','YES');
 											}
 										}
 
@@ -9465,11 +9489,18 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 										{
 										FormContentsLoad();
 										}
-									if ( (view_scripts == 1) && (campaign_script.length > 0) )
+									if (view_scripts == 1)
 										{
-										var SCRIPT_web_form = 'http://127.0.0.1/testing.php';
-										var TEMP_SCRIPT_web_form = URLDecode(SCRIPT_web_form,'YES','DEFAULT','1');
-										RefresHScript();
+										if (campaign_script.length > 0)
+											{
+											var SCRIPT_web_form = 'http://127.0.0.1/testing.php';
+											var TEMP_SCRIPT_web_form = URLDecode(SCRIPT_web_form,'YES','DEFAULT','1');
+											RefresHScript();
+											}
+										else
+											{
+											RefresHScript('','YES');
+											}
 										}
 									reselect_preview_dial = 1;
 									}
@@ -9828,19 +9859,26 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 						if (CalL_ScripT_color.length > 1)
 							{document.getElementById("ScriptContents").style.backgroundColor = CalL_ScripT_color;}
-						if ( (view_scripts == 1) && (campaign_script.length > 0) )
+						if (view_scripts == 1)
 							{
-							var SCRIPT_web_form = 'http://127.0.0.1/testing.php';
-							var TEMP_SCRIPT_web_form = URLDecode(SCRIPT_web_form,'YES','DEFAULT','1');
-
-							if ( (script_recording_delay > 0) && ( (LIVE_campaign_recording == 'ALLCALLS') || (LIVE_campaign_recording == 'ALLFORCE') ) )
+							if (campaign_script.length > 0)
 								{
-								delayed_script_load = 'YES';
-								RefresHScript('CLEAR');
+								var SCRIPT_web_form = 'http://127.0.0.1/testing.php';
+								var TEMP_SCRIPT_web_form = URLDecode(SCRIPT_web_form,'YES','DEFAULT','1');
+
+								if ( (script_recording_delay > 0) && ( (LIVE_campaign_recording == 'ALLCALLS') || (LIVE_campaign_recording == 'ALLFORCE') ) )
+									{
+									delayed_script_load = 'YES';
+									RefresHScript('CLEAR');
+									}
+								else
+									{
+									load_script_contents('ScriptContents','');
+									}
 								}
 							else
 								{
-								load_script_contents('ScriptContents','');
+								RefresHScript('','YES');
 								}
 							}
 
@@ -10863,19 +10901,26 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							if ( (LIVE_campaign_recording == 'ALLCALLS') || (LIVE_campaign_recording == 'ALLFORCE') )
 								{all_record = 'YES';}
 
-							if ( (view_scripts == 1) && (CalL_ScripT_id.length > 0) )
+							if (view_scripts == 1)
 								{
-								var SCRIPT_web_form = 'http://127.0.0.1/testing.php';
-								var TEMP_SCRIPT_web_form = URLDecode(SCRIPT_web_form,'YES','DEFAULT','1');
-
-								if ( (script_recording_delay > 0) && ( (LIVE_campaign_recording == 'ALLCALLS') || (LIVE_campaign_recording == 'ALLFORCE') ) )
+								if (CalL_ScripT_id.length > 0)
 									{
-									delayed_script_load = 'YES';
-									RefresHScript('CLEAR');
+									var SCRIPT_web_form = 'http://127.0.0.1/testing.php';
+									var TEMP_SCRIPT_web_form = URLDecode(SCRIPT_web_form,'YES','DEFAULT','1');
+
+									if ( (script_recording_delay > 0) && ( (LIVE_campaign_recording == 'ALLCALLS') || (LIVE_campaign_recording == 'ALLFORCE') ) )
+										{
+										delayed_script_load = 'YES';
+										RefresHScript('CLEAR');
+										}
+									else
+										{
+										load_script_contents('ScriptContents','');
+										}
 									}
 								else
 									{
-									load_script_contents('ScriptContents','');
+									RefresHScript('','YES');
 									}
 								}
 
@@ -11609,19 +11654,26 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 							if (CalL_ScripT_color.length > 1)
 								{document.getElementById("ScriptContents").style.backgroundColor = CalL_ScripT_color;}
-							if ( (view_scripts == 1) && (CalL_ScripT_id.length > 0) )
+							if (view_scripts == 1)
 								{
-								var SCRIPT_web_form = 'http://127.0.0.1/testing.php';
-								var TEMP_SCRIPT_web_form = URLDecode(SCRIPT_web_form,'YES','DEFAULT','1');
-
-								if ( (script_recording_delay > 0) && ( (LIVE_campaign_recording == 'ALLCALLS') || (LIVE_campaign_recording == 'ALLFORCE') ) )
+								if (CalL_ScripT_id.length > 0)
 									{
-									delayed_script_load = 'YES';
-									RefresHScript('CLEAR');
+									var SCRIPT_web_form = 'http://127.0.0.1/testing.php';
+									var TEMP_SCRIPT_web_form = URLDecode(SCRIPT_web_form,'YES','DEFAULT','1');
+
+									if ( (script_recording_delay > 0) && ( (LIVE_campaign_recording == 'ALLCALLS') || (LIVE_campaign_recording == 'ALLFORCE') ) )
+										{
+										delayed_script_load = 'YES';
+										RefresHScript('CLEAR');
+										}
+									else
+										{
+										load_script_contents('ScriptContents','');
+										}
 									}
 								else
 									{
-									load_script_contents('ScriptContents','');
+									RefresHScript('','YES');
 									}
 								}
 
@@ -17652,6 +17704,8 @@ function phone_number_format(formatphone) {
 				if (alert_box_close_counter < 1)
 					{hideDiv('AlertBox');}
 				}
+			if (left_3way_timeout > 0)
+				{left_3way_timeout = (left_3way_timeout - 1);}
 			}
 		setTimeout("all_refresh()", refresh_interval);
 		}

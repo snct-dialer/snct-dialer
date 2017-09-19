@@ -1,4 +1,4 @@
-Agent Events Push		Started: 2017-05-31	Updated: 2017-08-23
+Agent Events Push		Started: 2017-05-31	Updated: 2017-09-13
 
 
 This feature allows for selected events in the VICIdial agent screen to push out event triggers through HTTP requests sent to a URL as defined in the System Settings.
@@ -56,7 +56,7 @@ dispo_set - This is when the agent submits a disposition for the call they jsut 
 
 3way_start - This indicates that the agent has started a 3way call, where the call is going will be attached to this event
 
-3way_answered - This indicates that the 3way party has answered the call
+3way_answered - This indicates that the 3way party has answered the call. call_id of customer call is attached to event
 
 3way_agent_hangup - This indicates that the agent has clicked to hangup the 3way call
 
