@@ -6,9 +6,13 @@
     - user_status.php: Removed non-functional change-campaign feature
   * Add upstream Rev. 2814:
     - vdc_db_query.php: Fix for no-hopper dnc dialing issue
-    - vicidial.php: Fix for no-hopper dnc dialing issue, Small change for two agent events.
+    - vicidial.php: Fix for no-hopper dnc dialing issue, Small change for
+        two agent events.
   * Add upstream Rev. 2815:
     - vicidial.php: Fix for script tab issue.
+  * Add upstream Rev. 2816:
+    - admin_bulk_tools.php: Added IGNORE to bulk inserts to not error out
+       entire statement if only one entry is a unique index duplicate.
     
 2.25.10
 

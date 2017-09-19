@@ -2,7 +2,7 @@ CROSS-CLUSTER COMMUNICATION	Started: 2011-05-27	Updated: 2017-08-09
 
 
 --------------------------------
- SIMPLER IMPLEMENTED OPTION: implemented in SVN/trunk revision 2777
+ SIMPLER IMPLEMENTED OPTION: implemented in SVN/trunk revision 2777, must update to rev. 2801
 --------------------------------
 Below is a description of a simple cross-cluster option, which is to send lead data in one direction from one cluster to another as a phone call is sent over.
 
