@@ -435,13 +435,14 @@
 # 170609-1710 - Small debug addition
 # 170712-1548 - Changed agents view to use last_state_change for time
 # 170816-2334 - Added ask post-call survey feature for in-group calls
+# 170912-1618 - Fix for no-hopper dnc dialing issue
 #
 
-$version = '2.14-329';
-$build = '170816-2334';
+$version = '2.14-330';
+$build = '170912-1618';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=684;
+$mysql_log_count=694;
 $one_mysql_log=0;
 $DB=0;
 $VD_login=0;
@@ -2481,6 +2482,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 					}
 				if (preg_match("/N/i",$no_hopper_dialing))
 					{
+					$no_hopper_dialing_used=0;
 					### grab the next lead in the hopper for this campaign and reserve it for the user
 					$stmt = "UPDATE vicidial_hopper set status='QUEUE', user='$user' where campaign_id='$campaign' and status='READY' order by priority desc,hopper_id LIMIT 1";
 					if ($DB) {echo "$stmt\n";}
@@ -2490,6 +2492,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 					}
 				else
 					{
+					$no_hopper_dialing_used=1;
 					### figure out what the next lead that should be dialed is
 
 					##########################################################
@@ -3770,7 +3773,6 @@ if ($ACTION == 'manDiaLnextCaLL')
 					{$agent_dialed_number = $address3;}
 				}
 
-
 			##### BEGIN check for postal_code and phone time zones if alert enabled
 			$post_phone_time_diff_alert_message='';
 			$stmt="SELECT post_phone_time_diff_alert,local_call_time,owner_populate FROM vicidial_campaigns where campaign_id='$campaign';";
@@ -4003,7 +4005,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 				$rslt=mysql_to_mysqli($stmt, $link);
 					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00590',$user,$server_ip,$session_name,$one_mysql_log);}
 				}
-			##### BEGIN if NOT preview dialing, do not send the call #####
+			##### BEGIN if NOT preview dialing, do send the call #####
 			if ( (strlen($preview)<1) or ($preview == 'NO') or (strlen($dial_ingroup) > 1) )
 				{
 				### prepare variables to place manual call from VICIDiaL
@@ -4020,7 +4022,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 				if (strlen($campaign_cid_override) > 6) {$CCID = "$campaign_cid_override";   $CCID_on++;}
 				### check for custom cid use
 				$use_custom_cid=0;
-				$stmt = "SELECT use_custom_cid,manual_dial_hopper_check,start_call_url FROM vicidial_campaigns where campaign_id='$campaign';";
+				$stmt = "SELECT use_custom_cid,manual_dial_hopper_check,start_call_url,manual_dial_filter,use_internal_dnc,use_campaign_dnc,use_other_campaign_dnc FROM vicidial_campaigns where campaign_id='$campaign';";
 				$rslt=mysql_to_mysqli($stmt, $link);
 					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00313',$user,$server_ip,$session_name,$one_mysql_log);}
 				if ($DB) {echo "$stmt\n";}
@@ -4031,6 +4033,95 @@ if ($ACTION == 'manDiaLnextCaLL')
 					$use_custom_cid =			$row[0];
 					$manual_dial_hopper_check =	$row[1];
 					$OUT_start_call_url =		$row[2];
+					$manual_dial_filter =		$row[3];
+					$use_internal_dnc =			$row[4];
+					$use_campaign_dnc =			$row[5];
+					$use_other_campaign_dnc =	$row[6];
+					}
+
+				if ($no_hopper_dialing_used > 0)
+					{
+					### BEGIN check phone filtering for DNC or camplists if enabled ###
+					if (preg_match("/DNC/",$manual_dial_filter))
+						{
+						if (preg_match("/AREACODE/",$use_internal_dnc))
+							{
+							$phone_number_areacode = substr($agent_dialed_number, 0, 3);
+							$phone_number_areacode .= "XXXXXXX";
+							$stmt="SELECT count(*) from vicidial_dnc where phone_number IN('$agent_dialed_number','$phone_number_areacode');";
+							}
+						else
+							{$stmt="SELECT count(*) FROM vicidial_dnc where phone_number='$agent_dialed_number';";}
+						$rslt=mysql_to_mysqli($stmt, $link);
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00685',$user,$server_ip,$session_name,$one_mysql_log);}
+						if ($DB) {echo "$stmt\n";}
+						$row=mysqli_fetch_row($rslt);
+						if ($row[0] > 0)
+							{
+							### flag the lead as DNCL
+							$stmt = "UPDATE vicidial_list set status='DNCL' where lead_id='$lead_id';";
+							if ($DB) {echo "$stmt\n";}
+							$rslt=mysql_to_mysqli($stmt, $link);
+								if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00686',$user,$server_ip,$session_name,$one_mysql_log);}
+
+							### reset agent log record
+							$stmt="UPDATE vicidial_agent_log set lead_id=NULL,comments='' where agent_log_id='$agent_log_id';";
+								if ($format=='debug') {echo "\n<!-- $stmt -->";}
+							$rslt=mysql_to_mysqli($stmt, $link);
+								if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00687',$user,$server_ip,$session_name,$one_mysql_log);}
+
+							echo " NO-HOPPER DNC\nTRY AGAIN\n";
+							$stage .= "|$agent_log_id|$vla_status|$agent_dialed_type|$agent_dialed_number|";
+							if ($SSagent_debug_logging > 0) {vicidial_ajax_log($NOW_TIME,$startMS,$link,$ACTION,$php_script,$user,$stage,$lead_id,$session_name,$stmt);}
+							exit;
+							}
+						if ( (preg_match("/Y/",$use_campaign_dnc)) or (preg_match("/AREACODE/",$use_campaign_dnc)) )
+							{
+							$stmt="SELECT use_other_campaign_dnc from vicidial_campaigns where campaign_id='$campaign';";
+							$rslt=mysql_to_mysqli($stmt, $link);
+								if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00688',$user,$server_ip,$session_name,$one_mysql_log);}
+							$row=mysqli_fetch_row($rslt);
+							$use_other_campaign_dnc =	$row[0];
+							$temp_campaign_id = $campaign;
+							if (strlen($use_other_campaign_dnc) > 0) {$temp_campaign_id = $use_other_campaign_dnc;}
+
+							if (preg_match("/AREACODE/",$use_campaign_dnc))
+								{
+								$phone_number_areacode = substr($agent_dialed_number, 0, 3);
+								$phone_number_areacode .= "XXXXXXX";
+								$stmt="SELECT count(*) from vicidial_campaign_dnc where phone_number IN('$agent_dialed_number','$phone_number_areacode') and campaign_id='$temp_campaign_id';";
+								}
+							else
+								{$stmt="SELECT count(*) FROM vicidial_campaign_dnc where phone_number='$agent_dialed_number' and campaign_id='$temp_campaign_id';";}
+							$rslt=mysql_to_mysqli($stmt, $link);
+								if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00689',$user,$server_ip,$session_name,$one_mysql_log);}
+							if ($DB) {echo "$stmt\n";}
+							$row=mysqli_fetch_row($rslt);
+							if ($row[0] > 0)
+								{
+								### flag the lead as DNCC
+								$stmt = "UPDATE vicidial_list set status='DNCC' where lead_id='$lead_id';";
+								if ($DB) {echo "$stmt\n";}
+								$rslt=mysql_to_mysqli($stmt, $link);
+									if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00690',$user,$server_ip,$session_name,$one_mysql_log);}
+
+								### reset agent log record
+								$stmt="UPDATE vicidial_agent_log set lead_id='0',comments='' where agent_log_id='$agent_log_id';";
+									if ($format=='debug') {echo "\n<!-- $stmt -->";}
+								$rslt=mysql_to_mysqli($stmt, $link);
+									if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00691',$user,$server_ip,$session_name,$one_mysql_log);}
+
+								echo " NO-HOPPER DNC CAMPAIGN\nTRY AGAIN\n";
+								$stage .= "|$agent_log_id|$vla_status|$agent_dialed_type|$agent_dialed_number|";
+								if ($SSagent_debug_logging > 0) {vicidial_ajax_log($NOW_TIME,$startMS,$link,$ACTION,$php_script,$user,$stage,$lead_id,$session_name,$stmt);}
+								exit;
+								}
+							}
+						}
+					}
+
+				if ($uccid_ct > 0)
+					{
 					if ( (preg_match('/^USER_CUSTOM/', $use_custom_cid)) and ($cid_lock < 1) )
 						{
 						$temp_vu='';
@@ -8260,7 +8351,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 						$stmt = "SELECT participate from vicidial_inbound_survey_log where campaign_id='$VDADchannel_group' and lead_id='$lead_id' and uniqueid='$uniqueid' order by call_date desc limit 1;";
 						if ($DB) {echo "$stmt\n";}
 						$rslt=mysql_to_mysqli($stmt, $link);
-							if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00692',$user,$server_ip,$session_name,$one_mysql_log);}
 						$VDIG_visl_ct = mysqli_num_rows($rslt);
 						if ($VDIG_visl_ct > 0)
 							{
@@ -13191,7 +13282,7 @@ if ($ACTION == 'userLOGout')
 			{
 			$stmt="SELECT event FROM vicidial_user_log where user='$user' order by user_log_id desc LIMIT 1;";
 			$rslt=mysql_to_mysqli($stmt, $link);
-				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00693',$user,$server_ip,$session_name,$one_mysql_log);}
 			if ($DB) {echo "$stmt\n";}
 			$ul_record_ct = mysqli_num_rows($rslt);
 			if ($ul_record_ct > 0)
@@ -15901,7 +15992,7 @@ if ($ACTION == 'Log_Webform_Click')
 	$stmt = "INSERT INTO vicidial_url_log SET uniqueid='$uniqueid',url_date='$NOW_TIME',url_type='webform',url='$SQL_log',url_response='$stage $lead_id';";
 	if ($DB) {echo "$stmt\n";}
 	$rslt=mysql_to_mysqli($stmt, $link);
-		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00694',$user,$server_ip,$session_name,$one_mysql_log);}
 	$affected_rows = mysqli_affected_rows($link);
 
 	echo _QXZ("Webform Click Logged:")." $stage $lead_id";

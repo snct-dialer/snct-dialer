@@ -4,6 +4,9 @@
   * Add upstream Rev. 2813:
     - New AST_agent_inbound_status.php.
     - user_status.php: Removed non-functional change-campaign feature
+  * Add upstream Rev. 2814:
+    - vdc_db_query.php: Fix for no-hopper dnc dialing issue
+    - vicidial.php: Fix for no-hopper dnc dialing issue, Small change for two agent events
     
 2.25.10
 
