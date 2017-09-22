@@ -1,3 +1,10 @@
+2.25.12
+
+  [Jörg Frings-Fürst]
+  * admin.php:
+    - Fix copy Ingroups.
+    - Display FP-vicidial_version.
+
 2.25.11
 
   [Jörg Frings-Fürst]
