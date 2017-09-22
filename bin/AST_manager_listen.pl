@@ -46,8 +46,10 @@
 # 141219-1137 - Change to keepalive processes to not run at busy times and not drop buffer
 # 150610-1200 - Added support for AMI version 1.3
 # 150709-1506 - Added DTMF logging for Asterisk 1.8 and higher
+# 151031-0651 - Added perl telnet buffer options, requires newer versions of Net::Telnet CPAN module
 # 151031-0918 - Added better capture of errors in telnet connection, other small fixes
-# 170920-1416 - Fix for issue with recordings beginning with CALLID variable
+# 170920-1417 - Fix for issue with recordings beginning with CALLID variable
+# 170921-2209 - Merged code from AST_manager_listenBUFFER.pl script
 #
 
 # constants
@@ -225,7 +227,8 @@ while($one_day_interval > 0)
 	### connect to asterisk manager through telnet
 	$tn = new Net::Telnet (Port => $telnet_port,
 						  Prompt => '/.*[\$%#>] $/',
-						  Output_record_separator => '',);
+						  Output_record_separator => '',
+						  Max_buffer_length => 4*1024*1024, );
 #	$LItelnetlog = "$PATHlogs/listen_telnet_log.txt";  # uncomment for telnet log
 #	$fh = $tn->dump_log("$LItelnetlog");  # uncomment for telnet log
 	if (length($ASTmgrUSERNAMElisten) > 3) {$telnet_login = $ASTmgrUSERNAMElisten;}

@@ -48,6 +48,7 @@
 # 150709-1506 - Added DTMF logging for Asterisk 1.8 and higher
 # 151031-0651 - Added perl telnet buffer options, requires newer versions of Net::Telnet CPAN module
 # 170920-1417 - Fix for issue with recordings beginning with CALLID variable
+# 170921-2208 - DEPRICATED, CODE MERGED TO AST_manager_listen.pl
 #
 
 # constants

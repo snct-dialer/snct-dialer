@@ -215,6 +215,7 @@
 # 170816-2245 - Added ask survey options
 # 170903-0929 - Added additional xfer_log details
 # 170914-1634 - Added Asterisk 13 compatibility
+# 170921-2008 - Fix for CALLID in beginning of recording filename
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
@@ -2999,7 +3000,8 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 								$dbhP=$dbhA;   $mysql_count='02214';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 							}
 
-						$stmtA="INSERT INTO vicidial_manager values('','','$now_date','NEW','N','$VDADserver_ip','','Originate','$campaign_rec_filename','Channel: $channelrec','Context: $ext_context','Exten: $recording_exten','Priority: 1','Callerid: $campaign_rec_filename','','','','','');";
+						$vmgr_callerid = substr($campaign_rec_filename, 0, 17) . '...';
+						$stmtA="INSERT INTO vicidial_manager values('','','$now_date','NEW','N','$VDADserver_ip','','Originate','$vmgr_callerid','Channel: $channelrec','Context: $ext_context','Exten: $recording_exten','Priority: 1','Callerid: $campaign_rec_filename','','','','','');";
 						$affected_rows = $dbhA->do($stmtA);
 							$dbhP=$dbhA;   $mysql_count='02215';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 

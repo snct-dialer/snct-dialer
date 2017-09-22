@@ -217,7 +217,7 @@ if (length($ARGV[0])>1)
 		print "  [-adfill-delay=X] = setting delay seconds on auto-dial FILL process\n";
 		print "  [-fill-staggered] = enable experimental staggered auto-dial FILL process\n";
 		print "  [-cu3way] = keepalive for the optional 3way conference checker\n";
-		print "  [-lstn-buffer] = use special enhanced telnet buffer listen process\n";
+		print "  [-lstn-buffer] = use special enhanced telnet buffer listen process(depricated)\n";
 		print "  [-cu3way-delay=X] = setting delay seconds on 3way conference checker\n";
 		print "  [-debug] = verbose debug messages\n";
 		print "  [-debugX] = Extra-verbose debug messages\n";
@@ -294,8 +294,8 @@ if (length($ARGV[0])>1)
 			}
 		if ($args =~ /-lstn-buffer/i)
 			{
-			$lstn_buffer=1;
-			if ($DB > 0) {print "\n----- lstn_buffer ENABLED -----\n\n";}
+			# $lstn_buffer=1;
+			if ($DB > 0) {print "\n----- lstn_buffer ENABLED (depricated) -----\n\n";}
 			}
 		if ($args =~ /-cu3way-delay=/i) # CLI defined delay
 			{

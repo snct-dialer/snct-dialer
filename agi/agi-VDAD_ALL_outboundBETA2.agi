@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# agi-VDAD_ALL_outboundBETA2.agi version 2.12
+# agi-VDAD_ALL_outboundBETA2.agi version 2.14
 # 
 # runs when an outbound call is answered. This script will 
 # send the calls out to the agents that are logged in.
@@ -46,7 +46,7 @@
 #exten => 8366,4,AGI(agi-VDAD_ALL_outbound.agi,SURVEY-----LB-----US_pol_survey_hello-----1238-----8-----US_pol_survey_transfer-----US_thanks_no_contact-----OPTOUT-----DNC)
 #exten => 8366,5,Hangup
 #
-# Copyright (C) 2016  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # changes:
 # 80218-2027 - First Build
@@ -118,6 +118,7 @@
 # 161115-1359 - Forked to BETA script, added vdad_debug_logging option
 # 161201-1003 - Fixed LRERR logging issue
 # 161201-1030 - EXPERIMENTAL REMOVED MANY FEATURES TO TEST INTERPRETATION TIME!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# 170921-2007 - Fix for CALLID in beginning of recording filename
 #
 
 $script = 'agi-VDAD_ALL_outboundBETA2.agi';
@@ -2122,7 +2123,8 @@ while ($drop_timer <= $DROP_TIME)
 								$dbhP=$dbhA;   $mysql_count='02144';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 							}
 
-						$stmtA="INSERT INTO vicidial_manager values('','','$now_date','NEW','N','$VDADserver_ip','','Originate','$campaign_rec_filename','Channel: $channelrec','Context: $ext_context','Exten: $campaign_rec_exten','Priority: 1','Callerid: $campaign_rec_filename','','','','','');";
+						$vmgr_callerid = substr($campaign_rec_filename, 0, 17) . '...';
+						$stmtA="INSERT INTO vicidial_manager values('','','$now_date','NEW','N','$VDADserver_ip','','Originate','$vmgr_callerid','Channel: $channelrec','Context: $ext_context','Exten: $campaign_rec_exten','Priority: 1','Callerid: $campaign_rec_filename','','','','','');";
 						$affected_rows = $dbhA->do($stmtA);
 							$dbhP=$dbhA;   $mysql_count='02145';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 
