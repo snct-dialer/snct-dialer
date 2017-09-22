@@ -194,6 +194,16 @@ OTHER CHANGES:
 
 46. Added Agent Inbound Status Summary Report
 
+47. Added experimental support for Asterisk 13. See the ASTERISK_13.txt doc 
+	for notes on changes needed to get it to work.
+
+48. Added System Settings option to set lists to inactive once they pass their
+	expiration date
+
+49. NEW REQUIREMENT!!! Perl CPAN Net::Telnet version 3.0.4(April 21, 2013)
+	If you are using an older Net::Telnet version, you will need to upgrade!
+	this should take just two commands: "cpan" and "install Net::Telnet"
+
 
 
 

@@ -138,10 +138,11 @@
 # 170513-1616 - Added more debugging output
 # 170526-2241 - Added additional variable filtering
 # 170528-0850 - Fix for rare inbound logging issue #1017, Added additional variable filtering
+# 170921-2009 - Fix for CALLID in beginning of recording filename
 #
 
-$version = '2.14-85';
-$build = '170528-0850';
+$version = '2.14-86';
+$build = '170921-2009';
 $php_script = 'manager_send.php';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=142;
@@ -2375,14 +2376,16 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 					$rslt=mysql_to_mysqli($stmt, $link);
 						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02134',$user,$server_ip,$session_name,$one_mysql_log);}
 
-					$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$filename','Channel: $channel','Context: $ext_context','Exten: $exten','Priority: $ext_priority','Callerid: $filename','','','','','');";
+					$vmgr_callerid = substr($filename, 0, 17) . '...';
+					$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$vmgr_callerid','Channel: $channel','Context: $ext_context','Exten: $exten','Priority: $ext_priority','Callerid: $filename','','','','','');";
 						if ($format=='debug') {echo "\n<!-- $stmt -->";}
 					$rslt=mysql_to_mysqli($stmt, $link);
 						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02135',$user,$server_ip,$session_name,$one_mysql_log);}
 					}
 				else
 					{
-					$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$filename','Channel: $channel','Context: $ext_context','Exten: $exten','Priority: $ext_priority','Callerid: $filename','','','','','');";
+					$vmgr_callerid = substr($filename, 0, 17) . '...';
+					$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$vmgr_callerid','Channel: $channel','Context: $ext_context','Exten: $exten','Priority: $ext_priority','Callerid: $filename','','','','','');";
 						if ($format=='debug') {echo "\n<!-- $stmt -->";}
 					$rslt=mysql_to_mysqli($stmt, $link);
 						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02072',$user,$server_ip,$session_name,$one_mysql_log);}

@@ -47,6 +47,8 @@
 # 150610-1200 - Added support for AMI version 1.3
 # 150709-1506 - Added DTMF logging for Asterisk 1.8 and higher
 # 151031-0651 - Added perl telnet buffer options, requires newer versions of Net::Telnet CPAN module
+# 170920-1417 - Fix for issue with recordings beginning with CALLID variable
+# 170921-2208 - DEPRICATED, CODE MERGED TO AST_manager_listen.pl
 #
 
 # constants
@@ -412,7 +414,7 @@ while($one_day_interval > 0)
 								$channel =~ s/Channel: |\s*$//gi;
 								$uniqueid = $command_line[3];
 								$uniqueid =~ s/Uniqueid: |\s*$//gi;
-								$stmtA = "UPDATE vicidial_manager set status='DEAD', channel='$channel' where server_ip = '$server_ip' and uniqueid = '$uniqueid' and callerid NOT LIKE \"DCagcW%\";";
+								$stmtA = "UPDATE vicidial_manager set status='DEAD', channel='$channel' where server_ip = '$server_ip' and uniqueid = '$uniqueid' and callerid NOT LIKE \"DCagcW%\" and cmd_line_d!='Exten: 8309' and cmd_line_d!='Exten: 8310';";
 
 								if ( ($channel !~ /local/i) && ($channel !~ /CXFER/i) )
 									{
@@ -433,7 +435,7 @@ while($one_day_interval > 0)
 									$channel =~ s/Channel: |\s*$//gi;
 									$uniqueid = $command_line[4];
 									$uniqueid =~ s/Uniqueid: |\s*$//gi;
-									$stmtA = "UPDATE vicidial_manager set status='DEAD', channel='$channel' where server_ip = '$server_ip' and uniqueid = '$uniqueid' and callerid NOT LIKE \"DCagcW%\";";
+									$stmtA = "UPDATE vicidial_manager set status='DEAD', channel='$channel' where server_ip = '$server_ip' and uniqueid = '$uniqueid' and callerid NOT LIKE \"DCagcW%\" and cmd_line_d!='Exten: 8309' and cmd_line_d!='Exten: 8310';";
 
 									print STDERR "|$stmtA|\n";
 									my $affected_rows = $dbhA->do($stmtA);
@@ -445,7 +447,7 @@ while($one_day_interval > 0)
 									$channel =~ s/Channel: |\s*$//gi;
 									$uniqueid = $command_line[2];
 									$uniqueid =~ s/Uniqueid: |\s*$//gi;
-									$stmtA = "UPDATE vicidial_manager set status='DEAD', channel='$channel' where server_ip = '$server_ip' and uniqueid = '$uniqueid' and callerid NOT LIKE \"DCagcW%\";";
+									$stmtA = "UPDATE vicidial_manager set status='DEAD', channel='$channel' where server_ip = '$server_ip' and uniqueid = '$uniqueid' and callerid NOT LIKE \"DCagcW%\" and cmd_line_d!='Exten: 8309' and cmd_line_d!='Exten: 8310';";
 
 									print STDERR "|$stmtA|\n";
 									my $affected_rows = $dbhA->do($stmtA);
@@ -1054,7 +1056,7 @@ while($one_day_interval > 0)
 								$channel =~ s/Channel: |\s*$//gi;
 								$uniqueid = $command_line[3];
 								$uniqueid =~ s/Uniqueid: |\s*$//gi;
-								$stmtA = "UPDATE vicidial_manager set status='DEAD', channel='$channel' where server_ip = '$server_ip' and uniqueid = '$uniqueid' and callerid NOT LIKE \"DCagcW%\";";
+								$stmtA = "UPDATE vicidial_manager set status='DEAD', channel='$channel' where server_ip = '$server_ip' and uniqueid = '$uniqueid' and callerid NOT LIKE \"DCagcW%\" and cmd_line_d!='Exten: 8309' and cmd_line_d!='Exten: 8310';";
 								if ( ($channel !~ /local/i) && ($channel !~ /CXFER/i) )
 									{
 									print STDERR "|$stmtA|\n";

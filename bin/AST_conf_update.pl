@@ -1,10 +1,10 @@
 #!/usr/bin/perl
 #
-# AST_conf_update.pl version 2.12
+# AST_conf_update.pl version 2.14
 #
 # This script checks if there are channels in reserved conferences
 #
-# Copyright (C) 2015  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # 50810-1532 - Added database server variable definitions lookup
 # 50823-1456 - Added commandline arguments for debug at runtime
@@ -18,6 +18,7 @@
 # 100928-1506 - Changed from hard-coded 60 minute limit to servers.vicidial_recording_limit
 # 130108-1712 - Changes for Asterisk 1.8 compatibility
 # 150610-1200 - Added support for AMI version 1.3
+# 170916-0947 - Added support for AMI version 2+
 #
 
 # constants
@@ -248,19 +249,32 @@ if ($no_vc_3way_check < 1)
 
 	if (!$telnet_port) {$telnet_port = '5038';}
 
+	$max_buffer = 4*1024*1024; # 4 meg buffer
+	
 	### connect to asterisk manager through telnet
-	$t = new Net::Telnet (Port => $telnet_port,
-						  Prompt => '/.*[\$%#>] $/',
-						  Output_record_separator => '',);
-	#$fh = $t->dump_log("$telnetlog");  # uncomment for telnet log
-		if (length($ASTmgrUSERNAMEsend) > 3) {$telnet_login = $ASTmgrUSERNAMEsend;}
-		else {$telnet_login = $ASTmgrUSERNAME;}
+	$t = new Net::Telnet (
+		Port => $telnet_port,
+		Prompt => '/\r\n/',
+		Output_record_separator => "\n\n",
+		Max_buffer_length => $max_buffer,
+		Telnetmode => 0,
+	);
+	$LItelnetlog = "$PATHlogs/listen_telnet_log.txt";  # uncomment for telnet log
+	#$fh = $t->dump_log("$LItelnetlog");  # uncomment for telnet log
+	if (length($ASTmgrUSERNAMEsend) > 3) {$telnet_login = $ASTmgrUSERNAMEsend;}
+	else {$telnet_login = $ASTmgrUSERNAME;}
+	$t->open("$telnet_host");
+	$t->waitfor('/Asterisk Call Manager\//');
 
-	$t->open("$telnet_host"); 
-	$t->waitfor('/[0123]\n$/');			# print login
-	$t->print("Action: Login\nUsername: $telnet_login\nSecret: $ASTmgrSECRET\n\n");
-	$t->waitfor('/Authentication accepted/');		# waitfor auth accepted
+	# get the AMI version number
+	$ami_version = $t->getline(Errmode => Return, Timeout => 1,);
+	$ami_version =~ s/\n//gi;
+	if ($DB) {print "----- AMI Version $ami_version -----\n";}
 
+	$t->print("Action: Login\nUsername: $telnet_login\nSecret: $ASTmgrSECRET");
+	$t->waitfor('/Authentication accepted/');	      # waitfor auth accepted
+
+	$t->buffer_empty;
 
 	$i=0;
 	if ( !( ( @PTextensions == 1 ) && ( $PTextensions[0] eq '') ) ) 
@@ -269,16 +283,38 @@ if ($no_vc_3way_check < 1)
 			{	
 			@list_channels=@MT;
 			$t->buffer_empty;
-			$COMMAND = "Action: Command\nCommand: Meetme list $PT_conf_extens[$i]\n\nAction: Ping\n\n";
-			if ($DB) {print "|$PTextensions[$i]|$PT_conf_extens[$i]|$COMMAND|\n";}
-			%ast_ver_str = parse_asterisk_version($asterisk_version);
-			if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 6))
+
+			if ($ami_version =~ /^1\./i) 
 				{
-				@list_channels = $t->cmd(String => "$COMMAND", Prompt => '/Response: Pong.*/'); 
+				$COMMAND = "Action: Command\nCommand: Meetme list $PT_conf_extens[$i]\n\nAction: Ping\n\n";
+				if ($DB) {print "|$PTextensions[$i]|$PT_conf_extens[$i]|$COMMAND|\n";}
+				%ast_ver_str = parse_asterisk_version($asterisk_version);
+				if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 6))
+					{
+					@list_channels = $t->cmd(String => "$COMMAND", Prompt => '/Response: Pong.*/'); 
+					}
+				else
+					{
+					@list_channels = $t->cmd(String => "$COMMAND", Prompt => '/Response: Success\nPing: Pong.*/');
+					}
 				}
-			else
+			elsif ($ami_version =~ /^2\./i)
 				{
-				@list_channels = $t->cmd(String => "$COMMAND", Prompt => '/Response: Success\nPing: Pong.*/');
+				# get the current time
+                		( $now_sec, $now_micro_sec ) = gettimeofday();
+
+		                # figure out how many micro seconds since epoch
+		                $now_micro_epoch = $now_sec * 1000000;
+		                $now_micro_epoch = $now_micro_epoch + $now_micro_sec;
+
+                		$begin_micro_epoch = $now_micro_epoch;
+
+                		# create a new action id
+		                $action_id = "$now_sec.$now_micro_sec";
+
+				$COMMAND = "Action: Command\nActionID:$action_id\nCommand: Meetme list $PT_conf_extens[$i]";
+				if ($DB) {print "\n\n|$PTextensions[$i]|$PT_conf_extens[$i]|$COMMAND|\n";}
+				@list_channels = $t->cmd(String => "$COMMAND", Prompt => '/--END COMMAND--\n\n/');
 				}
 
 			$j=0;
@@ -336,7 +372,7 @@ if ($no_vc_3way_check < 1)
 
 			$i++;
 				### sleep for 10 hundredths of a second
-				usleep(1*100*1000);
+				usleep(10*100*100);
 			}
 		}
 
@@ -377,19 +413,32 @@ $sthA->finish();
 
 if (!$telnet_port) {$telnet_port = '5038';}
 
+$max_buffer = 4*1024*1024; # 4 meg buffer
+
 ### connect to asterisk manager through telnet
-$t = new Net::Telnet (Port => $telnet_port,
-					  Prompt => '/.*[\$%#>] $/',
-					  Output_record_separator => '',);
-#$fh = $t->dump_log("$telnetlog");  # uncomment for telnet log
+$t = new Net::Telnet (
+	Port => $telnet_port,
+	Prompt => '/\r\n/',
+	Output_record_separator => "\n\n",
+	Max_buffer_length => $max_buffer,
+	Telnetmode => 0,
+);
+$LItelnetlog = "$PATHlogs/listen_telnet_log.txt";  # uncomment for telnet log
+#$fh = $t->dump_log("$LItelnetlog");  # uncomment for telnet log
 if (length($ASTmgrUSERNAMEsend) > 3) {$telnet_login = $ASTmgrUSERNAMEsend;}
 else {$telnet_login = $ASTmgrUSERNAME;}
+$t->open("$telnet_host");
+$t->waitfor('/Asterisk Call Manager\//');
 
-$t->open("$telnet_host"); 
-$t->waitfor('/[0123]\n$/');			# print login
-$t->print("Action: Login\nUsername: $telnet_login\nSecret: $ASTmgrSECRET\n\n");
-$t->waitfor('/Authentication accepted/');		# waitfor auth accepted
+# get the AMI version number
+$ami_version = $t->getline(Errmode => Return, Timeout => 1,);
+$ami_version =~ s/\n//gi;
+if ($DB) {print "----- AMI Version $ami_version -----\n";}
 
+$t->print("Action: Login\nUsername: $telnet_login\nSecret: $ASTmgrSECRET");
+$t->waitfor('/Authentication accepted/');	      # waitfor auth accepted
+
+$t->buffer_empty;
 
 $i=0;
 if ( !( ( @PTextensions == 1 ) && ( $PTextensions[0] eq '') ) )
@@ -400,18 +449,39 @@ if ( !( ( @PTextensions == 1 ) && ( $PTextensions[0] eq '') ) )
 			{
 			@list_channels=@MT;
 			$t->buffer_empty;
-			$COMMAND = "Action: Command\nCommand: Meetme list $PT_conf_extens[$i]\n\nAction: Ping\n\n";
-			if ($DB) {print "|$PT_conf_extens[$i]|$COMMAND|\n";}
-			%ast_ver_str = parse_asterisk_version($asterisk_version);
-			if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 6))
-				{
-				@list_channels = $t->cmd(String => "$COMMAND", Prompt => '/Response: Pong.*/'); 
-				}
-			else
-				{
-				@list_channels = $t->cmd(String => "$COMMAND", Prompt => '/Response: Success\nPing: Pong.*/');
-				}
 
+			if ($ami_version =~ /^1\./i)
+				{
+				$COMMAND = "Action: Command\nCommand: Meetme list $PT_conf_extens[$i]\n\nAction: Ping\n\n";
+				if ($DB) {print "|$PT_conf_extens[$i]|$COMMAND|\n";}
+				%ast_ver_str = parse_asterisk_version($asterisk_version);
+				if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 6))
+					{
+					@list_channels = $t->cmd(String => "$COMMAND", Prompt => '/Response: Pong.*/'); 
+					}
+				else
+					{
+					@list_channels = $t->cmd(String => "$COMMAND", Prompt => '/Response: Success\nPing: Pong.*/');
+					}
+				}
+			elsif ($ami_version =~ /^2\./i)
+                                {
+				# get the current time
+                                ( $now_sec, $now_micro_sec ) = gettimeofday();
+
+                                # figure out how many micro seconds since epoch
+                                $now_micro_epoch = $now_sec * 1000000;
+                                $now_micro_epoch = $now_micro_epoch + $now_micro_sec;
+
+                                $begin_micro_epoch = $now_micro_epoch;
+
+                                # create a new action id
+                                $action_id = "$now_sec.$now_micro_sec";
+
+                                $COMMAND = "Action: Command\nActionID: $action_id\nCommand: Meetme list $PT_conf_extens[$i]";
+                                if ($DB) {print "|$PTextensions[$i]|$PT_conf_extens[$i]|$COMMAND|\n";}
+                                @list_channels = $t->cmd(String => "$COMMAND", Prompt => '/--END COMMAND--/');
+                                }
 
 			$j=0;
 			$conf_empty[$i]=0;

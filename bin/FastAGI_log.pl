@@ -79,6 +79,7 @@
 # 170427-1125 - Fix for drop call logging of answered calls hung up by customer first
 # 170508-1148 - Added blind monitor call end logging
 # 170527-2340 - Fix for rare inbound logging issue #1017
+# 170915-1753 - Asterisk 13 compatibility
 #
 
 # defaults for PreFork
@@ -151,14 +152,15 @@ $dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 	or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
-$stmtB = "SELECT vd_server_logs FROM servers where server_ip = '$VARserver_ip';";
+$stmtB = "SELECT vd_server_logs,asterisk_version FROM servers where server_ip = '$VARserver_ip';";
 $sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
 $sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
 $sthBrows=$sthB->rows;
 if ($sthBrows > 0)
 	{
 	@aryB = $sthB->fetchrow_array;
-	$SERVERLOG =	$aryB[0];
+	$SERVERLOG =		$aryB[0];
+	$asterisk_version =	$aryB[1];
 	}
 $sthB->finish();
 $dbhB->disconnect();
@@ -250,7 +252,7 @@ sub process_request
 		or die "Couldn't connect to database: " . DBI->errstr;
 
 	### Grab Server values from the database
-	$stmtA = "SELECT agi_output FROM servers where server_ip = '$VARserver_ip';";
+	$stmtA = "SELECT agi_output,asterisk_version FROM servers where server_ip = '$VARserver_ip';";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
@@ -259,16 +261,21 @@ sub process_request
 		$AGILOG = '0';
 		@aryA = $sthA->fetchrow_array;
 		$DBagi_output =			$aryA[0];
+		$asterisk_version =		$aryA[1];
 		if ($DBagi_output =~ /STDERR/)	{$AGILOG = '1';}
 		if ($DBagi_output =~ /FILE/)	{$AGILOG = '2';}
 		if ($DBagi_output =~ /BOTH/)	{$AGILOG = '3';}
 		}
 	$sthA->finish();
 
+	$h_exten_reason=0;
+	%ast_ver_str = parse_asterisk_version($asterisk_version);
+	if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} >= 12))
+		{$h_exten_reason=1;}
 
 	if ($AGILOG) 
 		{
-		$agi_string = "+++++++++++++++++ FastAGI Start ++++++++++++++++++++++++++++++++++++++++"; 
+		$agi_string = "+++++++++++++++++ FastAGI Start ++++ Asterisk version: $ast_ver_str{major} $ast_ver_str{minor} ++++++ hER: $h_exten_reason ++++++"; 
 		&agi_output;
 		}
 
@@ -334,15 +341,16 @@ sub process_request
 			$PRI = $ARGV_vars[0];
 			$PRI =~ s/.*--HVcauses--//gi;
 			$DEBUG = $ARGV_vars[1];
-			$hangup_cause = $ARGV_vars[2];
-			$dialstatus = $ARGV_vars[3];
-			$dial_time = $ARGV_vars[4];
-			$answered_time = $ARGV_vars[5];
+			$hangup_cause =			$ARGV_vars[2];
+			$dialstatus =			$ARGV_vars[3];
+			$dial_time =			$ARGV_vars[4];
+			$answered_time =		$ARGV_vars[5];
+			$tech_hangup_cause =	$ARGV_vars[6];
             if( $dial_time > $answered_time ) 
 				{$ring_time = $dial_time - $answered_time;}
             else 
 				{$ring_time = 0;}
-			$agi_string = "URL HVcauses: |$PRI|$DEBUG|$hangup_cause|$dialstatus|$dial_time|$ring_time|";   
+			$agi_string = "URL HVcauses: |$PRI|$DEBUG|$hangup_cause|$dialstatus|$dial_time|$ring_time|$tech_hangup_cause|";   
 			&agi_output;
 			}
 		if (!$fullCID)	# if no fullCID sent
@@ -601,16 +609,17 @@ sub process_request
 					@ARGV_vars = split(/-----/, $request);
 					$PRI = $ARGV_vars[0];
 					$PRI =~ s/.*--HVcauses--//gi;
-					$DEBUG =			$ARGV_vars[1];
-					$hangup_cause =		$ARGV_vars[2];
-					$dialstatus =		$ARGV_vars[3];
-					$dial_time =		$ARGV_vars[4];
-					$answered_time =	$ARGV_vars[5];
+					$DEBUG =				$ARGV_vars[1];
+					$hangup_cause =			$ARGV_vars[2];
+					$dialstatus =			$ARGV_vars[3];
+					$dial_time =			$ARGV_vars[4];
+					$answered_time =		$ARGV_vars[5];
+					$tech_hangup_cause = 	$ARGV_vars[6];
 					if( $dial_time > $answered_time ) 
 						{$ring_time = $dial_time - $answered_time;}
 					else 
 						{$ring_time = 0;}
-					$agi_string = "URL HVcauses: |$PRI|$DEBUG|$hangup_cause|$dialstatus|$dial_time|$ring_time|";   
+					$agi_string = "URL HVcauses: |$PRI|$DEBUG|$hangup_cause|$dialstatus|$dial_time|$ring_time|$tech_hangup_cause|";
 					&agi_output;
 
 					if ( (length($dialstatus) > 0) && ($callerid =~ /^V|^M/) )
@@ -649,21 +658,61 @@ sub process_request
 									}
 								$sthA->finish();
 								}
-							$sip_hangup_cause=0;
-							$sip_hangup_reason='';
 
-							$stmtA = "SELECT sip_hangup_cause,sip_hangup_reason FROM vicidial_dial_log where lead_id='$CIDlead_id' and server_ip='$VARserver_ip' and caller_code='$callerid' order by call_date desc limit 1;";
-							$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-							$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-							$sthArows=$sthA->rows;
-							if ($sthArows > 0)
+							### if using Asterisk 11 and older method for hangup reasons, check vicidial_dial_log
+							if ($h_exten_reason < 1) 
 								{
-								@aryA = $sthA->fetchrow_array;
-								$sip_hangup_cause =		$aryA[0];
-								$sip_hangup_reason =	$aryA[1];
+								$sip_hangup_cause=0;
+								$sip_hangup_reason='';
+
+								$stmtA = "SELECT sip_hangup_cause,sip_hangup_reason FROM vicidial_dial_log where lead_id='$CIDlead_id' and server_ip='$VARserver_ip' and caller_code='$callerid' order by call_date desc limit 1;";
+								$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+								$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+								$sthArows=$sthA->rows;
+								if ($sthArows > 0)
+									{
+									@aryA = $sthA->fetchrow_array;
+									$sip_hangup_cause =		$aryA[0];
+									$sip_hangup_reason =	$aryA[1];
+									}
+								$sthA->finish();
+									if ($AGILOG) {$agi_string = "$sthArows|$stmtA|$sip_hangup_cause|$sip_hangup_reason|";   &agi_output;}
 								}
-							$sthA->finish();
+
+							### if using Asterisk 12 and newer method for hangup reasons, check variables
+							else
+								{
+								if ( $tech_hangup_cause =~ /SIP/ ) 
+									{
+									# we got the tech hangup cause from Asterisk (available in asterisk 13+)
+									( $tech, $sip_hangup_cause, @error ) = split( / /, $tech_hangup_cause );
+									$sip_hangup_reason = join( ' ', @error );
+
+									# the vicidial_dial_log does not have the sip hangup data so populate it
+									$stmtA = "UPDATE vicidial_dial_log SET sip_hangup_cause='$sip_hangup_cause',sip_hangup_reason='$sip_hangup_reason',uniqueid='$uniqueid' where caller_code='$callerid' and server_ip='$VARserver_ip' and lead_id='$CIDlead_id';";
+									$dbhA->do($stmtA);		
+									}
+								else
+									{
+									# tech hangup cause was unavailable
+									$sip_hangup_cause=0;
+									$sip_hangup_reason='';
+
+									$stmtA = "SELECT sip_hangup_cause,sip_hangup_reason FROM vicidial_dial_log where lead_id='$CIDlead_id' and server_ip='$VARserver_ip' and caller_code='$callerid' order by call_date desc limit 1;";
+									$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+									$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+									$sthArows=$sthA->rows;
+									if ($sthArows > 0)
+										{
+										@aryA = $sthA->fetchrow_array;
+										$sip_hangup_cause =		$aryA[0];
+										$sip_hangup_reason =	$aryA[1];
+										}
+									$sthA->finish();
+									}
+
 								if ($AGILOG) {$agi_string = "$sthArows|$stmtA|$sip_hangup_cause|$sip_hangup_reason|";   &agi_output;}
+								}
 
 							$stmtA = "INSERT IGNORE INTO vicidial_carrier_log set uniqueid='$uniqueid',call_date='$now_date',server_ip='$VARserver_ip',lead_id='$CIDlead_id',hangup_cause='$hangup_cause',dialstatus='$dialstatus',channel='$channel',dial_time='$dial_time',answered_time='$answered_time',sip_hangup_cause='$sip_hangup_cause',sip_hangup_reason='$sip_hangup_reason',caller_code='$callerid';";
 								if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
@@ -1961,4 +2010,47 @@ sub agi_output
 		print STDERR "$now_date|$script|$process|$agi_string\n";
 		}
 	$agi_string='';
+	}
+
+# subroutine to parse the asterisk version
+# and return a hash with the various part
+sub parse_asterisk_version
+	{
+	# grab the arguments
+	my $ast_ver_str = $_[0];
+
+	# get everything after the - and put it in $ast_ver_postfix
+	my @hyphen_parts = split( /-/ , $ast_ver_str );
+
+	my $ast_ver_postfix = $hyphen_parts[1];
+
+	# now split everything before the - up by the .
+	my @dot_parts = split( /\./ , $hyphen_parts[0] );
+
+	my %ast_ver_hash;
+
+	if ( $dot_parts[0] <= 1 )
+		{
+		%ast_ver_hash = (
+				"major" => $dot_parts[0],
+				"minor" => $dot_parts[1],
+				"build" => $dot_parts[2],
+				"revision" => $dot_parts[3],
+				"postfix" => $ast_ver_postfix
+			);
+		}
+
+	# digium dropped the 1 from asterisk 10 but we still need it
+	if ( $dot_parts[0] > 1 )
+		{
+		%ast_ver_hash = (
+				"major" => 1,
+				"minor" => $dot_parts[0],
+				"build" => $dot_parts[1],
+				"revision" => $dot_parts[2],
+				"postfix" => $ast_ver_postfix
+			);
+		}
+
+	return ( %ast_ver_hash );
 	}
