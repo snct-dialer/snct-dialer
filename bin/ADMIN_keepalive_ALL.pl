@@ -122,9 +122,11 @@
 # 170711-0824 - Fixed help documentation for delay seconds, issue #1025
 # 170725-0017 - Added vicidial_campaign_hour_counts and vicidial_carrier_hour_counts rolling
 # 170816-2323 - Added In-Group Ask-Post-Call Survey AGI dialplan entries
+# 170916-1009 - Added Asterisk 13 'h' exten for dialplan generation and triggering of AMI2 scripts
+# 170920-2214 - Added expired_lists_inactive option, checks once per hour
 #
 
-$build = '170816-2323';
+$build = '170920-2214';
 
 $DB=0; # Debug flag
 $teodDB=0; # flag to log Timeclock End of Day processes to log file
@@ -150,6 +152,7 @@ if ($min < 10) {$min = "0$min";}
 if ($sec < 10) {$sec = "0$sec";}
 $now_date = "$year-$mon-$mday $hour:$min:$sec";
 $today_start = "$year-$mon-$mday 00:00:00";
+$today_date = "$year-$mon-$mday";
 $reset_test = "$hour$min";
 
 ### calculate the date and time for slightly less than 24 hours ago
@@ -322,7 +325,6 @@ else
 	}
 ### end parsing run-time options ###
 
-
 # default path to astguiclient configuration file:
 $PATHconf =		'/etc/astguiclient.conf';
 
@@ -338,8 +340,26 @@ foreach(@conf)
 		{$PATHhome = $line;   $PATHhome =~ s/.*=//gi;}
 	if ( ($line =~ /^PATHlogs/) && ($CLIlogs < 1) )
 		{$PATHlogs = $line;   $PATHlogs =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHsounds/) && ($CLIsounds < 1) )
+		{$PATHsounds = $line;   $PATHsounds =~ s/.*=//gi;}
 	if ( ($line =~ /^VARactive_keepalives/) && ($CLIactive_keepalives < 1) )
 		{$VARactive_keepalives = $line;   $VARactive_keepalives =~ s/.*=//gi;}
+	if ( ($line =~ /^VARserver_ip/) && ($CLIserver_ip < 1) )
+		{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_server/) && ($CLIDB_server < 1) )
+		{$VARDB_server = $line;   $VARDB_server =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_database/) && ($CLIDB_database < 1) )
+		{$VARDB_database = $line;   $VARDB_database =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_user/) && ($CLIDB_user < 1) )
+		{$VARDB_user = $line;   $VARDB_user =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_pass/) && ($CLIDB_pass < 1) )
+		{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_custom_user/) && ($CLIDB_custom_user < 1) )
+		{$VARDB_custom_user = $line;   $VARDB_custom_user =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_custom_pass/) && ($CLIDB_custom_pass < 1) )
+		{$VARDB_custom_pass = $line;   $VARDB_custom_pass =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_port/) && ($CLIDB_port < 1) )
+		{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
 	$i++;
 	}
 
@@ -356,6 +376,73 @@ foreach(@conf)
 #	9 - Timeclock auto logout\n";
 #	E - Email parser script
 #     - Other setting are set by configuring them in the database
+
+# Customized Variables
+$server_ip = $VARserver_ip;		# Asterisk server IP
+$THISserver_voicemail=0;
+$voicemail_server_id='';
+if (!$VARDB_port) {$VARDB_port='3306';}
+
+use DBI;	  
+
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+ or die "Couldn't connect to database: " . DBI->errstr;
+
+
+##### Get the settings from system_settings #####
+$stmtA = "SELECT sounds_central_control_active,active_voicemail_server,custom_dialplan_entry,default_codecs,generate_cross_server_exten,voicemail_timezones,default_voicemail_timezone,call_menu_qualify_enabled,allow_voicemail_greeting,reload_timestamp,meetme_enter_login_filename,meetme_enter_leave3way_filename,allow_chats,enable_auto_reports,enable_drop_lists,expired_lists_inactive FROM system_settings;";
+#	print "$stmtA\n";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+if ($sthArows > 0)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$sounds_central_control_active =	$aryA[0];
+	$active_voicemail_server =			$aryA[1];
+	$SScustom_dialplan_entry =			$aryA[2];
+	$SSdefault_codecs =					$aryA[3];
+	$SSgenerate_cross_server_exten =	$aryA[4];
+	$SSvoicemail_timezones =			$aryA[5];
+	$SSdefault_voicemail_timezone =		$aryA[6];
+	$SScall_menu_qualify_enabled =		$aryA[7];
+	$SSallow_voicemail_greeting =		$aryA[8];
+	$SSreload_timestamp =				$aryA[9];
+	$meetme_enter_login_filename =		$aryA[10];
+	$meetme_enter_leave3way_filename =	$aryA[11];
+	$SSallow_chats =					$aryA[12];
+	$SSenable_auto_reports =			$aryA[13];
+	$SSenable_drop_lists =				$aryA[14];
+	$SSexpired_lists_inactive =			$aryA[15];
+	}
+$sthA->finish();
+if ($DBXXX > 0) {print "SYSTEM SETTINGS:     $sounds_central_control_active|$active_voicemail_server|$SScustom_dialplan_entry|$SSdefault_codecs\n";}
+
+##### Get the settings for this server's server_ip #####
+$stmtA = "SELECT active_asterisk_server,generate_vicidial_conf,rebuild_conf_files,asterisk_version,sounds_update,conf_secret,custom_dialplan_entry,auto_restart_asterisk,asterisk_temp_no_restart,gather_asterisk_output,conf_qualify FROM servers where server_ip='$server_ip';";
+#	print "$stmtA\n";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+if ($sthArows > 0)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$active_asterisk_server	=		$aryA[0];
+	$generate_vicidial_conf	=		$aryA[1];
+	$rebuild_conf_files	=			$aryA[2];
+	$asterisk_version =				$aryA[3];
+	$sounds_update =				$aryA[4];
+	$self_conf_secret =				$aryA[5];
+	$SERVERcustom_dialplan_entry =	$aryA[6];
+	$auto_restart_asterisk =		$aryA[7];
+	$asterisk_temp_no_restart =		$aryA[8];
+	$gather_asterisk_output =		$aryA[9];
+	$conf_qualify =					$aryA[10];
+	}
+$sthA->finish();
+
+%ast_ver_str = parse_asterisk_version($asterisk_version);
+if ($DBX) {print "Asterisk version: $ast_ver_str{major} $ast_ver_str{minor}\n";}
 
 if ($VARactive_keepalives =~ /X/)
 	{
@@ -473,7 +560,7 @@ else
 			$runningASTERISK++;
 			if ($DB) {print "asterisk RUNNING:              |$psoutput[$i]|\n";}
 			}
-		if ($psline[1] =~ /$REGhome\/AST_update\.pl/) 
+		if ($psline[1] =~ /$REGhome\/AST_update/) 
 			{
 			$runningAST_update++;
 			if ($DB) {print "AST_update RUNNING:              |$psline[1]|\n";}
@@ -630,7 +717,7 @@ else
 				$runningASTERISK++;
 				if ($DB) {print "asterisk RUNNING:              |$psoutput2[$i]|\n";}
 				}
-			if ($psline[1] =~ /$REGhome\/AST_update\.pl/) 
+			if ($psline[1] =~ /$REGhome\/AST_update/) 
 				{
 				$runningAST_update++;
 				if ($DB) {print "AST_update RUNNING:              |$psline[1]|\n";}
@@ -693,7 +780,10 @@ else
 			{ 
 			if ($DB) {print "starting AST_update...\n";}
 			# add a '-L' to the command below to activate logging
-			`/usr/bin/screen -d -m -S ASTupdate $PATHhome/AST_update.pl`;
+			if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} >= 12))
+				{`/usr/bin/screen -d -m -S ASTupdate $PATHhome/AST_update_AMI2.pl`;}
+			else
+				{`/usr/bin/screen -d -m -S ASTupdate $PATHhome/AST_update.pl`;}
 			}
 		if ( ($AST_send_listen > 0) && ($runningAST_send < 1) )
 			{ 
@@ -705,10 +795,15 @@ else
 			{ 
 			if ($DB) {print "starting AST_manager_listen...\n";}
 			# add a '-L' to the command below to activate logging
-			if ($lstn_buffer > 0) 
-				{`/usr/bin/screen -d -m -S ASTlisten $PATHhome/AST_manager_listenBUFFER.pl`;}
+			if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} >= 12))
+				{`/usr/bin/screen -d -m -S ASTlisten $PATHhome/AST_manager_listen_AMI2.pl`;}
 			else
-				{`/usr/bin/screen -d -m -S ASTlisten $PATHhome/AST_manager_listen.pl`;}
+				{
+				if ($lstn_buffer > 0) 
+					{`/usr/bin/screen -d -m -S ASTlisten $PATHhome/AST_manager_listenBUFFER.pl`;}
+				else
+					{`/usr/bin/screen -d -m -S ASTlisten $PATHhome/AST_manager_listen.pl`;}
+				}
 			}
 		if ( ($AST_VDauto_dial > 0) && ($runningAST_VDauto_dial < 1) )
 			{ 
@@ -785,80 +880,6 @@ if ($timeclock_auto_logout > 0)
 #####        tally tables at Timeclock end-of-day
 ################################################################################
 
-# default path to astguiclient configuration file:
-$PATHconf =		'/etc/astguiclient.conf';
-
-open(conf, "$PATHconf") || die "can't open $PATHconf: $!\n";
-@conf = <conf>;
-close(conf);
-$i=0;
-foreach(@conf)
-	{
-	$line = $conf[$i];
-	$line =~ s/ |>|\n|\r|\t|\#.*|;.*//gi;
-	if ( ($line =~ /^PATHlogs/) && ($CLIlogs < 1) )
-		{$PATHlogs = $line;   $PATHlogs =~ s/.*=//gi;}
-	if ( ($line =~ /^PATHsounds/) && ($CLIsounds < 1) )
-		{$PATHsounds = $line;   $PATHsounds =~ s/.*=//gi;}
-	if ( ($line =~ /^VARserver_ip/) && ($CLIserver_ip < 1) )
-		{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
-	if ( ($line =~ /^VARDB_server/) && ($CLIDB_server < 1) )
-		{$VARDB_server = $line;   $VARDB_server =~ s/.*=//gi;}
-	if ( ($line =~ /^VARDB_database/) && ($CLIDB_database < 1) )
-		{$VARDB_database = $line;   $VARDB_database =~ s/.*=//gi;}
-	if ( ($line =~ /^VARDB_user/) && ($CLIDB_user < 1) )
-		{$VARDB_user = $line;   $VARDB_user =~ s/.*=//gi;}
-	if ( ($line =~ /^VARDB_pass/) && ($CLIDB_pass < 1) )
-		{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
-	if ( ($line =~ /^VARDB_custom_user/) && ($CLIDB_custom_user < 1) )
-		{$VARDB_custom_user = $line;   $VARDB_custom_user =~ s/.*=//gi;}
-	if ( ($line =~ /^VARDB_custom_pass/) && ($CLIDB_custom_pass < 1) )
-		{$VARDB_custom_pass = $line;   $VARDB_custom_pass =~ s/.*=//gi;}
-	if ( ($line =~ /^VARDB_port/) && ($CLIDB_port < 1) )
-		{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
-	$i++;
-	}
-
-# Customized Variables
-$server_ip = $VARserver_ip;		# Asterisk server IP
-$THISserver_voicemail=0;
-$voicemail_server_id='';
-if (!$VARDB_port) {$VARDB_port='3306';}
-
-use DBI;	  
-
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
- or die "Couldn't connect to database: " . DBI->errstr;
-
-
-##### Get the settings from system_settings #####
-$stmtA = "SELECT sounds_central_control_active,active_voicemail_server,custom_dialplan_entry,default_codecs,generate_cross_server_exten,voicemail_timezones,default_voicemail_timezone,call_menu_qualify_enabled,allow_voicemail_greeting,reload_timestamp,meetme_enter_login_filename,meetme_enter_leave3way_filename,allow_chats,enable_auto_reports,enable_drop_lists FROM system_settings;";
-#	print "$stmtA\n";
-$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-$sthArows=$sthA->rows;
-if ($sthArows > 0)
-	{
-	@aryA = $sthA->fetchrow_array;
-	$sounds_central_control_active =	$aryA[0];
-	$active_voicemail_server =			$aryA[1];
-	$SScustom_dialplan_entry =			$aryA[2];
-	$SSdefault_codecs =					$aryA[3];
-	$SSgenerate_cross_server_exten =	$aryA[4];
-	$SSvoicemail_timezones =			$aryA[5];
-	$SSdefault_voicemail_timezone =		$aryA[6];
-	$SScall_menu_qualify_enabled =		$aryA[7];
-	$SSallow_voicemail_greeting =		$aryA[8];
-	$SSreload_timestamp =				$aryA[9];
-	$meetme_enter_login_filename =		$aryA[10];
-	$meetme_enter_leave3way_filename =	$aryA[11];
-	$SSallow_chats =					$aryA[12];
-	$SSenable_auto_reports =			$aryA[13];
-	$SSenable_drop_lists =				$aryA[14];
-	}
-$sthA->finish();
-if ($DBXXX > 0) {print "SYSTEM SETTINGS:     $sounds_central_control_active|$active_voicemail_server|$SScustom_dialplan_entry|$SSdefault_codecs\n";}
-
 $timeclock_end_of_day_NOW=0;
 ### determine if it is the timeclock end of day right now
 $stmtA = "SELECT count(*) from system_settings where timeclock_end_of_day LIKE \"%$reset_test%\";";
@@ -870,29 +891,6 @@ if ($sthArows > 0)
 	{
 	@aryA = $sthA->fetchrow_array;
 	$timeclock_end_of_day_NOW =	$aryA[0];
-	}
-$sthA->finish();
-
-##### Get the settings for this server's server_ip #####
-$stmtA = "SELECT active_asterisk_server,generate_vicidial_conf,rebuild_conf_files,asterisk_version,sounds_update,conf_secret,custom_dialplan_entry,auto_restart_asterisk,asterisk_temp_no_restart,gather_asterisk_output,conf_qualify FROM servers where server_ip='$server_ip';";
-#	print "$stmtA\n";
-$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-$sthArows=$sthA->rows;
-if ($sthArows > 0)
-	{
-	@aryA = $sthA->fetchrow_array;
-	$active_asterisk_server	=		$aryA[0];
-	$generate_vicidial_conf	=		$aryA[1];
-	$rebuild_conf_files	=			$aryA[2];
-	$asterisk_version =				$aryA[3];
-	$sounds_update =				$aryA[4];
-	$self_conf_secret =				$aryA[5];
-	$SERVERcustom_dialplan_entry =	$aryA[6];
-	$auto_restart_asterisk =		$aryA[7];
-	$asterisk_temp_no_restart =		$aryA[8];
-	$gather_asterisk_output =		$aryA[9];
-	$conf_qualify =					$aryA[10];
 	}
 $sthA->finish();
 
@@ -1914,6 +1912,19 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 	{
 	if ($DB) {print "generating new auto-gen conf files\n";}
 
+	$hangup_exten_line = 'exten => h,1,AGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})';
+	%ast_ver_str = parse_asterisk_version($asterisk_version);
+	if ($DBX) {print "Asterisk version: $ast_ver_str{major} $ast_ver_str{minor}\n";}
+
+	if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 6))
+		{
+		$hangup_exten_line = 'exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})';
+		}
+	if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} >= 12))
+		{
+		$hangup_exten_line = 'exten => h,1,AGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME}-----${HANGUPCAUSE(${HANGUPCAUSE_KEYS()},tech)}))';
+		}
+
 	$stmtA="UPDATE servers SET rebuild_conf_files='N' where server_ip='$server_ip';";
 	$affected_rows = $dbhA->do($stmtA);
 
@@ -1921,9 +1932,9 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 	$S='*';
 	if( $VARserver_ip =~ m/(\S+)\.(\S+)\.(\S+)\.(\S+)/ )
 		{
-		$a = leading_zero($1); 
-		$b = leading_zero($2); 
-		$c = leading_zero($3); 
+		$a = leading_zero($1);
+		$b = leading_zero($2);
+		$c = leading_zero($3);
 		$d = leading_zero($4);
 		$VARremDIALstr = "$a$S$b$S$c$S$d";
 		}
@@ -2709,14 +2720,14 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 		$meetme_custom_ext .= "exten => _8600XXX,1,Meetme(\${EXTEN},FG($meetme_enter_login_filename))\n";
 		$meetme_custom_ext .= "exten => _8600XXX,n,Hangup()\n";
 		$meetme_custom_ext .= "\n";
-		$meetme_custom_ext .= 'exten => h,1,AGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})';
+		$meetme_custom_ext .= $hangup_exten_line;
 		$meetme_custom_ext .= "\n\n";
 		$meetme_custom_ext .= '[meetme-enter-leave3way]';
 		$meetme_custom_ext .= "\n; meetme entry for Vicidial agent leaving 3way call, Asterisk 1.8+ compatible only\n";
 		$meetme_custom_ext .= "exten => _8600XXX,1,Meetme(\${EXTEN},FG($meetme_enter_leave3way_filename))\n";
 		$meetme_custom_ext .= "exten => _8600XXX,n,Hangup()\n";
 		$meetme_custom_ext .= "\n";
-		$meetme_custom_ext .= 'exten => h,1,AGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})';
+		$meetme_custom_ext .= $hangup_exten_line;
 		$meetme_custom_ext .= "\n\n";
 
 		if ($DBX>0) {print "Custom Meetme login and leave3way entries generated: |$meetme_enter_login_filename|$meetme_enter_leave3way_filename|\n";}
@@ -3193,15 +3204,7 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 			$call_menu_ext .= "$call_menu_invalid_ext";
 			}
 		$call_menu_ext .= "; hangup\n";
-
-		%ast_ver_str = parse_asterisk_version($asterisk_version);
-		if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 6))
-		{
-		$call_menu_ext .= 'exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})';
-		} else {
-			$call_menu_ext .= 'exten => h,1,AGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})';
-		}
-
+		$call_menu_ext .= $hangup_exten_line;
 
 		if (length($custom_dialplan_entry[$i]) > 4) 
 			{
@@ -3432,70 +3435,35 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 	if (length($SScustom_dialplan_entry)>5)
 		{
 		print ext "[vicidial-auto-system-setting-custom]\n";
-		%ast_ver_str = parse_asterisk_version($asterisk_version);
-		if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 6))
-		{
-		print ext 'exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})';
-		} else {
-			print ext 'exten => h,1,AGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})';
-		}
+		print ext $hangup_exten_line;
 		print ext "\n";
 		print ext "; System Setting Custom Dialplan\n$SScustom_dialplan_entry\n\n";
 		}
 	if (length($SERVERcustom_dialplan_entry)>5)
 		{
 		print ext "[vicidial-auto-server-custom]\n";
-		%ast_ver_str = parse_asterisk_version($asterisk_version);
-		if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 6))
-		{
-		print ext 'exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})';
-		} else {
-			print ext 'exten => h,1,AGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})';
-		}
+		print ext $hangup_exten_line;
 		print ext "\n";
 		print ext "; Server Custom Dialplan\n$SERVERcustom_dialplan_entry\n\n";
 		}
 	print ext "[vicidial-auto-external]\n";
-	%ast_ver_str = parse_asterisk_version($asterisk_version);
-	if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 6))
-	{
-	print ext 'exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})';
-	} else {
-		print ext 'exten => h,1,AGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})';
-	}
+	print ext $hangup_exten_line;
 	print ext "\n";
 	print ext "$Lext\n";
 
 	print ext "[vicidial-auto-internal]\n";
-	%ast_ver_str = parse_asterisk_version($asterisk_version);
-	if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 6))
-	{
-	print ext 'exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})';
-	} else {
-		print ext 'exten => h,1,AGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})';
-	}
+	print ext $hangup_exten_line;
 	print ext "\n";
 	print ext "$Vext\n";
 
 	print ext "[vicidial-auto-phones]\n";
-	%ast_ver_str = parse_asterisk_version($asterisk_version);
-	if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 6))
-	{
-	print ext 'exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})';
-	} else {
-		print ext 'exten => h,1,AGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})';
-	}
+	print ext $hangup_exten_line;
 	print ext "\n";
 	print ext "$Pext\n";
 
 	print ext "[vicidial-auto]\n";
-	%ast_ver_str = parse_asterisk_version($asterisk_version);
-	if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 6))
-	{
-	print ext 'exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})';
-	} else {
-		print ext 'exten => h,1,AGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})';
-	}
+
+	print ext $hangup_exten_line;
 	print ext "\n";
 	print ext "\n";
 	print ext "include => vicidial-auto-internal\n";
@@ -4123,10 +4091,11 @@ if ($SSenable_drop_lists > 0)
 
 
 ################################################################################
-#####  BEGIN  reset lists
+#####  BEGIN  reset lists, and expired lists to inactive check
 ################################################################################
 if ($AST_VDadapt > 0)
 	{
+	### reset lists if reset time matches
 	$stmtA = "SELECT list_id FROM vicidial_lists where reset_time LIKE \"%$reset_test%\";";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -4160,9 +4129,49 @@ if ($AST_VDadapt > 0)
 
 		$i++;
 		}
+	
+	### set expired lists to inactive, only run at 12 minutes past the hour
+	if ( ($SSexpired_lists_inactive > 0) && ($min =~ /12/) )
+		{
+		if ($DB) {print "STARTING EXPIRED LIST TO INACTIVE CHECK:   |$SSexpired_lists_inactive|$min";}
+
+		$stmtA = "SELECT list_id FROM vicidial_lists where active='Y' and expiration_date < \"$today_date\";";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthCrows=$sthA->rows;
+		$i=0;
+		while ($sthCrows > $i)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$expired_list_id[$i] = "$aryA[0]";
+			$i++;
+			}
+		$sthA->finish();
+
+		if ($DBX) {print "EXPIRED LIST CHECK:   $i|$sthCrows|$min";}
+
+		$i=0;
+		while ($sthCrows > $i)
+			{
+			$stmtA="UPDATE vicidial_lists set active='N' where list_id='$expired_list_id[$i]';";
+			$affected_rows = $dbhA->do($stmtA);
+
+			$SQL_log = "$stmtA|";
+			$SQL_log =~ s/;|\\|\'|\"//gi;
+
+			if ($DB) {print "DONE\n";}
+			if ($DB) {print "$trigger_results\n";}
+
+			$stmtA="INSERT INTO vicidial_admin_log set event_date='$now_date', user='VDAD', ip_address='1.1.1.1', event_section='LISTS', event_type='MODIFY', record_id='$expired_list_id[$i]', event_code='ADMIN EXPIRED LIST INACTIVE', event_sql=\"$SQL_log\", event_notes='$affected_rows list expired';";
+			$Iaffected_rows = $dbhA->do($stmtA);
+			if ($DB) {print "FINISHED:   $affected_rows|$Iaffected_rows|$stmtA";}
+
+			$i++;
+			}
+		}
 	}
 ################################################################################
-#####  END  reset lists
+#####  END  reset lists, and expired lists to inactive check
 ################################################################################
 
 

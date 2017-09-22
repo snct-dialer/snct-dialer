@@ -194,6 +194,12 @@ OTHER CHANGES:
 
 46. Added Agent Inbound Status Summary Report
 
+47. Added experimental support for Asterisk 13. See the ASTERISK_13.txt doc 
+	for notes on changes needed to get it to work.
+
+48. Added System Settings option to set lists to inactive once they pass their
+	expiration date
+
 
 
 

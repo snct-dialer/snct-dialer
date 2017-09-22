@@ -124,6 +124,7 @@
 # 170313-1041 - Added CHAT option to inbound_queue_no_dial
 # 170325-1106 - Added optional vicidial_drop_log logging
 # 170527-2347 - Fix for rare inbound logging issue #1017
+# 170915-1817 - Added support for per server routing prefix needed for Asterisk 13+
 #
 
 ### begin parsing run-time options ###
@@ -243,7 +244,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
-$stmtA = "SELECT telnet_host,telnet_port,ASTmgrUSERNAME,ASTmgrSECRET,ASTmgrUSERNAMEupdate,ASTmgrUSERNAMElisten,ASTmgrUSERNAMEsend,max_vicidial_trunks,answer_transfer_agent,local_gmt,ext_context,vd_server_logs,vicidial_recording_limit FROM servers where server_ip = '$server_ip';";
+$stmtA = "SELECT telnet_host,telnet_port,ASTmgrUSERNAME,ASTmgrSECRET,ASTmgrUSERNAMEupdate,ASTmgrUSERNAMElisten,ASTmgrUSERNAMEsend,max_vicidial_trunks,answer_transfer_agent,local_gmt,ext_context,vd_server_logs,vicidial_recording_limit,asterisk_version,routing_prefix FROM servers where server_ip = '$server_ip';";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
@@ -263,6 +264,8 @@ if ($sthArows > 0)
 	$DBext_context	=			$aryA[10];
 	$DBvd_server_logs =			$aryA[11];
 	$DBvicidial_recording_limit = $aryA[12];
+	$asterisk_version = 		$aryA[13];
+	$routing_prefix = 			$aryA[14];
 	if ($DBtelnet_host)				{$telnet_host = $DBtelnet_host;}
 	if ($DBtelnet_port)				{$telnet_port = $DBtelnet_port;}
 	if ($DBASTmgrUSERNAME)			{$ASTmgrUSERNAME = $DBASTmgrUSERNAME;}
@@ -276,6 +279,7 @@ if ($sthArows > 0)
 	if ($DBext_context)				{$ext_context = $DBext_context;}
 	if ($DBvd_server_logs =~ /Y/)	{$SYSLOG = '1';}
 	else {$SYSLOG = '0';}
+	%ast_ver_str = parse_asterisk_version($asterisk_version);
 	}
 $sthA->finish();
 
@@ -1213,6 +1217,12 @@ while($one_day_interval > 0)
 									if (length($DBIPdialprefix[$user_CIPct]) > 0) {$Local_out_prefix = "$DBIPdialprefix[$user_CIPct]";}
 									if (length($DBIPvdadexten[$user_CIPct]) > 0) {$VDAD_dial_exten = "$DBIPvdadexten[$user_CIPct]";}
 									else {$VDAD_dial_exten = "$answer_transfer_agent";}
+
+									# add the routing prefix if using Asterisk 13
+									if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} > 11)) 
+										{
+										$VDAD_dial_exten = $routing_prefix . $VDAD_dial_exten;
+										}
 
 									if (length($DBIPcampaigncid[$user_CIPct]) > 6) {$CCID = "$DBIPcampaigncid[$user_CIPct]";   $CCID_on++;}
 									if (length($campaign_cid_override) > 6) {$CCID = "$campaign_cid_override";   $CCID_on++;}
@@ -3532,3 +3542,47 @@ sub jam_event_logger
 		}
 	$jam_string='';
 	}
+
+
+# subroutine to parse the asterisk version
+# and return a hash with the various part
+sub parse_asterisk_version
+{
+        # grab the arguments
+        my $ast_ver_str = $_[0];
+
+        # get everything after the - and put it in $ast_ver_postfix
+        my @hyphen_parts = split( /-/ , $ast_ver_str );
+
+        my $ast_ver_postfix = $hyphen_parts[1];
+
+        # now split everything before the - up by the .
+        my @dot_parts = split( /\./ , $hyphen_parts[0] );
+
+        my %ast_ver_hash;
+
+        if ( $dot_parts[0] <= 1 )
+                {
+                        %ast_ver_hash = (
+                                "major" => $dot_parts[0],
+                                "minor" => $dot_parts[1],
+                                "build" => $dot_parts[2],
+                                "revision" => $dot_parts[3],
+                                "postfix" => $ast_ver_postfix
+                        );
+                }
+
+        # digium dropped the 1 from asterisk 10 but we still need it
+        if ( $dot_parts[0] > 1 )
+                {
+                        %ast_ver_hash = (
+                                "major" => 1,
+                                "minor" => $dot_parts[0],
+                                "build" => $dot_parts[1],
+                                "revision" => $dot_parts[2],
+                                "postfix" => $ast_ver_postfix
+                        );
+                }
+
+        return ( %ast_ver_hash );
+}

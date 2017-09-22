@@ -4,6 +4,38 @@
   * admin.php:
     - Fix copy Ingroups.
     - Display FP-vicidial_version.
+  * Add upstream Rev. 2817:
+    - Alter table system_settings.
+    - New agi-VDAD_local_optimize.agi,
+        AST_manager_listen_AMI2.pl,
+        AST_update_AMI2.pl,
+        extensions.conf.sample-13,
+        manager.conf.sample-13,
+        ASTERISK_13.txt,
+        folder_closed.png,
+        folder_open.png,
+        lastnode.png,
+        node.png,
+        vline.pngsimpletreemenu.js.
+    - agi-VDAD_ALL_inbound.agi,
+      FastAGI_log.pl: Added Asterisk 13 compatibility.
+    - ADMIN_keepalive_ALL.pl: Added Asterisk 13 'h' exten for dialplan 
+        generation and triggering of AMI2 scripts, 
+        Added expired_lists_inactive option, checks once per hour.
+    - AST_VDauto_dial_FILL.pl: Added support for per server routing prefix
+        needed for Asterisk 13+.
+    - AST_conf_update.pl: Added support for AMI version 2+.
+    - AST_manager_listen.pl,
+      AST_manager_listenBUFFER.pl,
+      AST_manager_send.pl: Fix for issue with recordings beginning
+        with CALLID variable.
+    - Changes at AGENT_MONITOR.txt,
+        REQUIRED_APPS_INSTALL.txt,
+        UPGRADE.
+    - admin.php: Added expired_lists_inactive system setting and functions.
+    - help.php: Added expired_lists_inactive entry.
+    - install.pl: Added Asterisk 13 compability pieces.
+    - New extras/mysql_update/mysql-1518.sql (2017-033).
 
 2.25.11
 

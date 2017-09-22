@@ -214,6 +214,7 @@
 # 170621-2031 - Added missing list_id in log inserts
 # 170816-2245 - Added ask survey options
 # 170903-0929 - Added additional xfer_log details
+# 170914-1634 - Added Asterisk 13 compatibility
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
@@ -708,7 +709,7 @@ if ($channel =~ /Local/i)
 
 ### Grab Server values from the database
 $cbc=0;
-$stmtA = "SELECT voicemail_dump_exten,ext_context,answer_transfer_agent,local_gmt,asterisk_version,max_vicidial_trunks,voicemail_dump_exten_no_inst FROM servers where server_ip = '$VARserver_ip';";
+$stmtA = "SELECT voicemail_dump_exten,ext_context,answer_transfer_agent,local_gmt,asterisk_version,max_vicidial_trunks,voicemail_dump_exten_no_inst,routing_prefix FROM servers where server_ip = '$VARserver_ip';";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
@@ -723,6 +724,7 @@ while ($sthArows > $cbc)
 	$asterisk_version	=			$aryA[4];
 	$DBmax_vicidial_trunks	=		$aryA[5];
 	$voicemail_dump_exten_no_inst = $aryA[6];
+	$routing_prefix			= $aryA[7];
 	if ($DBvoicemail_dump_exten)	{$voicemail_dump_exten = $DBvoicemail_dump_exten;}
 	if ($DBext_context)				{$ext_context = $DBext_context;}
 	if ($DBanswer_transfer_agent)	{$answer_transfer_agent = $DBanswer_transfer_agent;}
@@ -3223,7 +3225,11 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 							$RAFaffected_rows = $dbhA->do($stmtA);
 							$dbhP=$dbhA;   $mysql_count='02167';   $MEL_aff_rows=$RAFaffected_rows;   &mysql_error_logging;
 
-							$RINGALLexten = "8331*$auto_call_id*$callerid*$ARuser[$ragp]*$ARdialplan_number[$ragp]";
+							%ast_ver_str = parse_asterisk_version($asterisk_version);
+							if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 6))
+								{ $RINGALLexten = "8331*$auto_call_id*$callerid*$ARuser[$ragp]*$ARdialplan_number[$ragp]"; }
+							else
+								{ $RINGALLexten = "$routing_prefix" . "8331*$auto_call_id*$callerid*$ARuser[$ragp]*$ARdialplan_number[$ragp]"; }
 
 							$PADauto_call_id = sprintf("%011s", $auto_call_id);	while (length($PADauto_call_id) > 11) {chop($PADauto_call_id);}
 							$RINGALLqueryCID = "RINGAGENT$PADauto_call_id";

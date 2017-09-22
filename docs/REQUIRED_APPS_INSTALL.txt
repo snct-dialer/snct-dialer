@@ -625,6 +625,42 @@ asterisk -vvvvvvvvvvvvvvvvvvgc
 
 
 
+#### Asterisk 13
+# NOTE: The below instructions assume that you already have all prerequisite compilation tools and libraries installed on your system
+
+wget http://downloads.asterisk.org/pub/telephony/dahdi-linux-complete/dahdi-linux-complete-current.tar.gz
+tar xvfz dahdi-linux-complete-current.tar.gz
+cd dahdi-linux-complete-2.11.1+2.11.1/
+make
+make install
+cd tools
+./configure
+make
+make install
+cd ../../
+
+wget http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-13-current.tar.gz
+tar xvfz asterisk-13-current.tar.gz
+cd asterisk-13.17.1/
+wget http://download.vicidial.com/asterisk-patches/leave.h
+wget http://download.vicidial.com/asterisk-patches/enter.h
+mv -f enter.h apps/enter.h
+mv -f leave.h apps/leave.h
+./configure --with-dahdi=/usr/src/asterisk/dahdi-linux-complete-2.11.1+2.11.1/ --with-gsm=internal --with-ogg=/usr/lib64/
+make menuselect   <MAKE SURE APP_MEETME IS SELECTED IN APPLICATIONS!!!!!!!!!!!!!!!!!!!!!!!!!!>
+make
+make install
+asterisk -vvvvvvvvvvvvvvvvvvgc
+
+
+
+
+
+
+
+
+
+
 
 #### pureftpd FTP server installation instructions ####
 

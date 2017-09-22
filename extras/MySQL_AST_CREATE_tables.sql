@@ -1743,7 +1743,8 @@ hide_inactive_lists ENUM('0','1') default '0',
 detect_3way ENUM('Y','N') default 'N',
 company_name VARCHAR(50) default '',
 ticket_mail VARCHAR(100) default '',
-allow_manage_active_lists ENUM('0','1') default '0'
+allow_manage_active_lists ENUM('0','1') default '0',
+expired_lists_inactive ENUM('0','1') default '0'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_campaigns_list_mix (
@@ -4092,4 +4093,4 @@ UPDATE vicidial_configuration set value='1766' where name='qc_database_version';
 
 UPDATE system_settings set vdc_agent_api_active='1';
 
-UPDATE system_settings SET db_schema_version='1517',db_schema_update_date=NOW(),reload_timestamp=NOW();
+UPDATE system_settings SET db_schema_version='1518',db_schema_update_date=NOW(),reload_timestamp=NOW();

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_manager_listen.pl version 2.12
+# AST_manager_listen.pl version 2.14
 #
 # Part of the Asterisk Central Queue System (ACQS)
 #
@@ -17,7 +17,7 @@
 # the ADMIN_keepalive_ALL.pl script, which makes sure it is always running in a
 # screen, provided that the astguiclient.conf keepalive setting "2" is set.
 #
-# Copyright (C) 2015  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 50322-1300 - changed callerid parsing to remove quotes and number
@@ -47,6 +47,7 @@
 # 150610-1200 - Added support for AMI version 1.3
 # 150709-1506 - Added DTMF logging for Asterisk 1.8 and higher
 # 151031-0918 - Added better capture of errors in telnet connection, other small fixes
+# 170920-1416 - Fix for issue with recordings beginning with CALLID variable
 #
 
 # constants
@@ -411,7 +412,7 @@ while($one_day_interval > 0)
 								$channel =~ s/Channel: |\s*$//gi;
 								$uniqueid = $command_line[3];
 								$uniqueid =~ s/Uniqueid: |\s*$//gi;
-								$stmtA = "UPDATE vicidial_manager set status='DEAD', channel='$channel' where server_ip = '$server_ip' and uniqueid = '$uniqueid' and callerid NOT LIKE \"DCagcW%\";";
+								$stmtA = "UPDATE vicidial_manager set status='DEAD', channel='$channel' where server_ip = '$server_ip' and uniqueid = '$uniqueid' and callerid NOT LIKE \"DCagcW%\" and cmd_line_d!='Exten: 8309' and cmd_line_d!='Exten: 8310';";
 
 								if ( ($channel !~ /local/i) && ($channel !~ /CXFER/i) )
 									{
@@ -432,7 +433,7 @@ while($one_day_interval > 0)
 									$channel =~ s/Channel: |\s*$//gi;
 									$uniqueid = $command_line[4];
 									$uniqueid =~ s/Uniqueid: |\s*$//gi;
-									$stmtA = "UPDATE vicidial_manager set status='DEAD', channel='$channel' where server_ip = '$server_ip' and uniqueid = '$uniqueid' and callerid NOT LIKE \"DCagcW%\";";
+									$stmtA = "UPDATE vicidial_manager set status='DEAD', channel='$channel' where server_ip = '$server_ip' and uniqueid = '$uniqueid' and callerid NOT LIKE \"DCagcW%\" and cmd_line_d!='Exten: 8309' and cmd_line_d!='Exten: 8310';";
 
 									print STDERR "|$stmtA|\n";
 									my $affected_rows = $dbhA->do($stmtA);
@@ -444,7 +445,7 @@ while($one_day_interval > 0)
 									$channel =~ s/Channel: |\s*$//gi;
 									$uniqueid = $command_line[2];
 									$uniqueid =~ s/Uniqueid: |\s*$//gi;
-									$stmtA = "UPDATE vicidial_manager set status='DEAD', channel='$channel' where server_ip = '$server_ip' and uniqueid = '$uniqueid' and callerid NOT LIKE \"DCagcW%\";";
+									$stmtA = "UPDATE vicidial_manager set status='DEAD', channel='$channel' where server_ip = '$server_ip' and uniqueid = '$uniqueid' and callerid NOT LIKE \"DCagcW%\" and cmd_line_d!='Exten: 8309' and cmd_line_d!='Exten: 8310';";
 
 									print STDERR "|$stmtA|\n";
 									my $affected_rows = $dbhA->do($stmtA);
@@ -1053,7 +1054,7 @@ while($one_day_interval > 0)
 								$channel =~ s/Channel: |\s*$//gi;
 								$uniqueid = $command_line[3];
 								$uniqueid =~ s/Uniqueid: |\s*$//gi;
-								$stmtA = "UPDATE vicidial_manager set status='DEAD', channel='$channel' where server_ip = '$server_ip' and uniqueid = '$uniqueid' and callerid NOT LIKE \"DCagcW%\";";
+								$stmtA = "UPDATE vicidial_manager set status='DEAD', channel='$channel' where server_ip = '$server_ip' and uniqueid = '$uniqueid' and callerid NOT LIKE \"DCagcW%\" and cmd_line_d!='Exten: 8309' and cmd_line_d!='Exten: 8310';";
 								if ( ($channel !~ /local/i) && ($channel !~ /CXFER/i) )
 									{
 									print STDERR "|$stmtA|\n";

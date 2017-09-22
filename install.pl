@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 
-# install.pl version 2.12
+# install.pl version 2.14
 #
-# Copyright (C) 2016  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 
 # CHANGES
@@ -43,6 +43,7 @@
 # 151212-0840 - Added chat_customer web directory, removed static language build actions
 # 160101-0907 - Changed ip_relay code to look for installed package
 # 160522-2051 - Add code to copy FlyInclude.php
+# 170915-1458 - Added Asterisk 13 compability pieces
 #
 
 ############################################
@@ -1846,6 +1847,7 @@ else
 			print " 1.4\n";
 			print " 1.8\n";
 			print " 11.X\n";
+			print " 13.X\n";
 			print "Enter asterisk version or press enter for default: [$VARasterisk_version] ";
 			$PROMPTasterisk_version = <STDIN>;
 			chomp($PROMPTasterisk_version);
@@ -2654,11 +2656,22 @@ if ( ($PROMPTcopy_conf_files =~ /y/i) || ($CLIcopy_conf_files =~ /y/i) )
 			}
 		else
 			{
-			`cp -f ./docs/conf_examples/extensions.conf.sample-1.4 /etc/asterisk/extensions.conf`;
-			`cp -f ./docs/conf_examples/iax.conf.sample-1.4 /etc/asterisk/iax.conf`;
-			`cp -f ./docs/conf_examples/sip.conf.sample-1.4 /etc/asterisk/sip.conf`;
-			`cp -f ./docs/conf_examples/manager.conf.sample /etc/asterisk/manager.conf`;
-			`cp -f ./docs/conf_examples/voicemail.conf.sample /etc/asterisk/voicemail.conf`;
+			if ($VARasterisk_version =~ /^13/)
+				{
+				`cp -f ./docs/conf_examples/extensions.conf.sample-13 /etc/asterisk/extensions.conf`;
+				`cp -f ./docs/conf_examples/iax.conf.sample-1.4 /etc/asterisk/iax.conf`;
+				`cp -f ./docs/conf_examples/sip.conf.sample-1.4 /etc/asterisk/sip.conf`;
+				`cp -f ./docs/conf_examples/manager.conf.sample-13 /etc/asterisk/manager.conf`;
+				`cp -f ./docs/conf_examples/voicemail.conf.sample-1.8 /etc/asterisk/voicemail.conf`;
+				}
+			else
+				{
+				`cp -f ./docs/conf_examples/extensions.conf.sample-1.4 /etc/asterisk/extensions.conf`;
+				`cp -f ./docs/conf_examples/iax.conf.sample-1.4 /etc/asterisk/iax.conf`;
+				`cp -f ./docs/conf_examples/sip.conf.sample-1.4 /etc/asterisk/sip.conf`;
+				`cp -f ./docs/conf_examples/manager.conf.sample /etc/asterisk/manager.conf`;
+				`cp -f ./docs/conf_examples/voicemail.conf.sample /etc/asterisk/voicemail.conf`;
+				}
 			}
 		}
 	`cp -f ./docs/conf_examples/meetme.conf.sample /etc/asterisk/meetme.conf`;

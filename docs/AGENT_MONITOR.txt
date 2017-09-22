@@ -1,4 +1,4 @@
-AGENT MONITOR DOC		Started: 2013-07-16	Updated: 2013-07-16
+AGENT MONITOR DOC		Started: 2013-07-16	Updated: 2017-09-15
 
 
 Requirements:
@@ -39,6 +39,9 @@ and the dialplan entries below should replace the older dialplan entries used.
 #########################################################################
 ### ADD THE LINES BELOW TO THE SYSTEM SETTINGS CUSTOM DIALPLAN
 #########################################################################
+
+NOTE: For Asteirsk 13 only, you should use the following 'h' line instead of the ones included in the below example:
+exten => h,1,AGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME}-----${HANGUPCAUSE(${HANGUPCAUSE_KEYS()},tech)}))
 
 
 
