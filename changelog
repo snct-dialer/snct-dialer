@@ -53,6 +53,7 @@
     - AST_manager_listen.pl: Fix for issue with recordings beginning with 
         CALLID variable, Merged code from AST_manager_listenBUFFER.pl script.
     - Depricat AST_manager_listenBUFFER.pl.
+  * Release 2.25.12 2017-09-22
 
 2.25.11
 
