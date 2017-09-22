@@ -200,6 +200,10 @@ OTHER CHANGES:
 48. Added System Settings option to set lists to inactive once they pass their
 	expiration date
 
+49. NEW REQUIREMENT!!! Perl CPAN Net::Telnet version 3.0.4(April 21, 2013)
+	If you are using an older Net::Telnet version, you will need to upgrade!
+	this should take just two commands: "cpan" and "install Net::Telnet"
+
 
 
 

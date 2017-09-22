@@ -195,7 +195,7 @@ $tn = new Net::Telnet (
 );
 
 $LItelnetlog = "$PATHlogs/listen_telnet_log.txt";  # uncomment for telnet log
-$fh = $tn->dump_log("$LItelnetlog");  # uncomment for telnet log
+#$fh = $tn->dump_log("$LItelnetlog");  # uncomment for telnet log
 if (length($ASTmgrUSERNAMElisten) > 3) {$telnet_login = $ASTmgrUSERNAMElisten;}
 else {$telnet_login = $ASTmgrUSERNAME;}
 $tn->open("$telnet_host"); 

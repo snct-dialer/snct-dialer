@@ -232,7 +232,7 @@ $tn = new Net::Telnet (
 );
 
 $UPtelnetlog = "$PATHlogs/update_telnet_log.txt";  # uncomment for telnet log
-$fh = $tn->dump_log("$UPtelnetlog");  # uncomment for telnet log
+#$fh = $tn->dump_log("$UPtelnetlog");  # uncomment for telnet log
 
 if (length($ASTmgrUSERNAMEupdate) > 3) {$telnet_login = $ASTmgrUSERNAMEupdate;}
 else {$telnet_login = $ASTmgrUSERNAME;}

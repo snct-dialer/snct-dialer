@@ -35,7 +35,12 @@
     - admin.php: Added expired_lists_inactive system setting and functions.
     - help.php: Added expired_lists_inactive entry.
     - install.pl: Added Asterisk 13 compability pieces.
-    - New extras/mysql_update/mysql-1518.sql (2017-033).
+  * New extras/mysql_update/mysql-1518.sql (2017-033).
+  * Add upstream Rev. 2818:
+    - AST_manager_listen_AMI2.pl
+      AST_update_AMI2.pl: Comment out telnet log.
+    - Changes UPGRADE:
+      + New Requirement: Net::Telnet version 3.0.4
 
 2.25.11
 
