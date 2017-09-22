@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_manager_send.pl version 2.10
+# AST_manager_send.pl version 2.14
 #
 # Part of the Asterisk Central Queue System (ACQS)
 #
@@ -16,7 +16,7 @@
 # scalability over just using a single process. Also, this means that a single
 # action execution lock cannot bring the entire system down.
 # 
-# Copyright (C) 2014  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 50823-1514 - Added commandline debug options with debug printouts
@@ -30,6 +30,7 @@
 # 80418-0901 - reduced time between Actions being sent, raised endless loop timer
 # 91129-2146 - removed SELECT STAR and formatting fixes
 # 141113-1356 - Added more logging, check for number of running instances, processing of QUEUE but not SENT commands
+# 170920-1419 - Fix for issue with recordings beginning with CALLID variable
 #
 
 $|++;
@@ -192,7 +193,7 @@ while ($one_day_interval > 0)
 				$originate_command .= "\n";
 
 				my $SENDNOW=1;
-				if ($originate_command =~ /Action: Hangup|Action: Redirect/) 
+				if ( ($originate_command =~ /Action: Hangup|Action: Redirect/) && ($originate_command !~ /Exten: 8309\n|Exten: 8310\n/) )
 					{
 					$SENDNOW=0;
 					print STDERR "\n|checking for dead call before executing|" . $vdm->{callerid} . "|" . $vdm->{uniqueid} . "|\n" if ($DB);
@@ -269,7 +270,7 @@ while ($one_day_interval > 0)
 					}
 				else
 					{
-					$stmtA = "UPDATE vicidial_manager set status='DEAD' where man_id='" . $vdm->{man_id} . "'";
+					$stmtA = "UPDATE vicidial_manager set status='DEAD' where man_id='" . $vdm->{man_id} . "' and cmd_line_d!='Exten: 8309' and cmd_line_d!='Exten: 8310';";
 					print STDERR "\n|$stmtA|\n" if ($DB);
 					$affected_rows = $dbhA->do($stmtA);
 					$event_string="COMMAND NOT SENT, SQL_QUERY|$stmtA|";

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_VDauto_dial_FILL.pl version 2.12
+# AST_VDauto_dial_FILL.pl version 2.14
 #
 # DESCRIPTION:
 # Places auto_dial calls on the VICIDIAL dialer system across all servers only 
@@ -12,7 +12,7 @@
 #
 # Should only be run on one server in a multi-server Asterisk/VICIDIAL cluster
 #
-# Copyright (C) 2015  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG:
 # 61115-1246 - First build, framework setup, non-functional
@@ -38,6 +38,7 @@
 # 131016-0658 - Fix for disable_auto_dial system option
 # 131122-1237 - Formatting fixes and missing sthA->finish
 # 151006-0937 - Changed campaign_cid_areacodes to operate with 2-5 digit areacodes
+# 170915-1915 - Added support for per server routing prefix needed for Asterisk 13+
 #
 
 ### begin parsing run-time options ###
@@ -446,7 +447,7 @@ while($one_day_interval > 0)
 						@DB_camp_server_available=@MT;
 						@DB_camp_server_trunks_to_dial=@MT;
 						##### Get the trunk settings for the campaign across all servers
-						$stmtA = "SELECT server_ip,max_vicidial_trunks,balance_trunks_offlimits,vicidial_balance_rank FROM servers where vicidial_balance_active = 'Y' and server_ip NOT IN($full_serversSQL) order by vicidial_balance_rank desc, server_ip;";
+						$stmtA = "SELECT server_ip,max_vicidial_trunks,balance_trunks_offlimits,vicidial_balance_rank,asterisk_version,routing_prefix FROM servers where vicidial_balance_active = 'Y' and server_ip NOT IN($full_serversSQL) order by vicidial_balance_rank desc, server_ip;";
 						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 						$sthArows=$sthA->rows;
@@ -457,6 +458,8 @@ while($one_day_interval > 0)
 							$DB_camp_server_server_ip[$DB_camp_servers] =					$aryA[0];
 							$DB_camp_server_max_vicidial_trunks[$DB_camp_servers] =			$aryA[1];
 							$DB_camp_server_balance_trunks_offlimits[$DB_camp_servers] =	$aryA[2];
+							$DB_camp_server_asterisk_version[$DB_camp_servers] =			$aryA[4];
+							$DB_camp_server_routing_prefix[$DB_camp_servers] =				$aryA[5];
 							$DB_camp_servers++;
 							$rec_count++;
 							}
@@ -835,11 +838,19 @@ while($one_day_interval > 0)
 
 													if ($staggered < 1)
 														{
+														%ast_ver_str = parse_asterisk_version($DB_camp_server_asterisk_version[$server_CIPct]);
+														if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} > 11))
+															{ 
+															$VDAD_dial_exten = "$DB_camp_server_routing_prefix[$server_CIPct]$VDAD_dial_exten"; 
+															$event_string = "|VDAD_dial_exten = $VDAD_dial_exten|";
+															&event_logger;
+															}
+
 														### insert a NEW record to the vicidial_manager table to be processed
 														$stmtA = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$DB_camp_server_server_ip[$server_CIPct]','','Originate','$VqueryCID','Exten: $VDAD_dial_exten','Context: $ext_context','Channel: $local_DEF$Ndialstring$local_AMP$ext_context','Priority: 1','Callerid: $CIDstring','Timeout: $Local_dial_timeout','','','','VDACnote: $DBfill_campaign[$camp_CIPct]|$lead_id|$phone_code|$phone_number|OUTBALANCE|$alt_dial|$DBIPqueue_priority[$camp_CIPct]')";
 														$affected_rows = $dbhA->do($stmtA);
 
-														$event_string = "|     number call dialed|$DBfill_campaign[$camp_CIPct]|$VqueryCID|$stmtA|$gmt_offset_now|$alt_dial|";
+														$event_string = "|     number call dialed|$DBfill_campaign[$camp_CIPct]|$VqueryCID|$stmtA|$gmt_offset_now|$alt_dial|$DB_camp_server_server_ip[$server_CIPct]|$DB_camp_server_asterisk_version[$server_CIPct]";
 														 &event_logger;
 
 													### insert a SENT record to the vicidial_auto_calls table 
@@ -919,7 +930,7 @@ while($one_day_interval > 0)
 						$staggered_rank_ct=0;
 						while ( ($st_ct > $staggered_rank_ct) && ($staggered_ct > $staggered_fill) )
 							{
-							$stmtA = "SELECT server_ip FROM servers where vicidial_balance_rank='$ST_rank[$staggered_rank_ct]' and vicidial_balance_active = 'Y' order by server_ip LIMIT $ST_count[$staggered_rank_ct];";
+							$stmtA = "SELECT server_ip,asterisk_version,routing_prefix FROM servers where vicidial_balance_rank='$ST_rank[$staggered_rank_ct]' and vicidial_balance_active = 'Y' order by server_ip LIMIT $ST_count[$staggered_rank_ct];";
 							$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 							$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 							$sthArowsSIPS=$sthA->rows;
@@ -928,7 +939,9 @@ while($one_day_interval > 0)
 							while ($sthArowsSIPS > $st_si_ct)
 								{
 								@aryA = $sthA->fetchrow_array;
-								$ST_server_ip[$st_si_ct] =	$aryA[0];
+								$ST_server_ip[$st_si_ct] =			$aryA[0];
+								$ST_asterisk_version[$st_si_ct] =	$aryA[1];
+								$ST_routing_prefix[$st_si_ct] =		$aryA[2];
 
 								$io=0;
 								foreach(@DB_camp_server_server_ip)
@@ -950,6 +963,8 @@ while($one_day_interval > 0)
 							$RANK_calls_placed=0;
 							$st_si_loop=0;
 							$TEMP_server_ip = '';
+							$TEMP_asterisk_version = '';
+							$TEMP_routing_prefix = '';
 							$TEMP_vm_insert = '';
 							$TEMP_vac_insert = '';
 							$TEMP_vl_update = '';
@@ -962,6 +977,8 @@ while($one_day_interval > 0)
 							while ( ($TOTAL_available > $RANK_calls_placed) && ($failsafe_ct < 99999) && ($staggered_fill <= $staggered_ct) )
 								{
 								$TEMP_server_ip = $ST_server_ip[$st_si_loop];
+								$TEMP_asterisk_version = $ST_asterisk_version[$st_si_loop];
+								$TEMP_routing_prefix = $ST_routing_prefix[$st_si_loop];
 
 								$TEMP_vm_insert = $vm_inserts[$staggered_fill];
 								$TEMP_vac_insert = $vac_inserts[$staggered_fill];
@@ -973,6 +990,11 @@ while($one_day_interval > 0)
 								$TEMP_vac_insert =~ s/XXXXXXXXXXXXXXX/$TEMP_server_ip/gi;
 								$TEMP_vddl_inserts =~ s/XXXXXXXXXXXXXXX/$TEMP_server_ip/gi;
 
+								# add the routing prefix for Asterisk 13+ systems
+								%ast_ver_str = parse_asterisk_version($TEMP_asterisk_version);
+					                        if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} > 11))
+									{ $TEMP_vm_insert =~ s/Exten: /Exten: $TEMP_routing_prefix/gi; }
+
 								if (length($TEMP_vm_insert) > 20)
 									{
 									$affected_rows_vl = $dbhA->do($TEMP_vl_update);
@@ -981,7 +1003,7 @@ while($one_day_interval > 0)
 									$affected_rows_vddl = $dbhA->do($TEMP_vddl_inserts);
 									}
 
-								$event_string = "|     number call stagger dialed|$TEMP_server_ip|$staggered_fill|$staggered_ct|$affected_rows_vm|$affected_rows_vac|$affected_rows_vl|$affected_rows_vddl   $TEMP_st_logged";
+								$event_string = "|     number call stagger dialed|$TEMP_vm_insert|$TEMP_server_ip|$staggered_fill|$staggered_ct|$affected_rows_vm|$affected_rows_vac|$affected_rows_vl|$affected_rows_vddl   $TEMP_st_logged";
 								 &event_logger;
 
 								### sleep for 2.5 hundredths of a second to not flood the server with new calls
@@ -1244,3 +1266,48 @@ sub event_logger
 		}
 	$event_string='';
 	}
+
+
+
+# subroutine to parse the asterisk version
+# and return a hash with the various part
+sub parse_asterisk_version
+{
+        # grab the arguments
+        my $ast_ver_str = $_[0];
+
+        # get everything after the - and put it in $ast_ver_postfix
+        my @hyphen_parts = split( /-/ , $ast_ver_str );
+
+        my $ast_ver_postfix = $hyphen_parts[1];
+
+        # now split everything before the - up by the .
+        my @dot_parts = split( /\./ , $hyphen_parts[0] );
+
+        my %ast_ver_hash;
+
+        if ( $dot_parts[0] <= 1 )
+                {
+                        %ast_ver_hash = (
+                                "major" => $dot_parts[0],
+                                "minor" => $dot_parts[1],
+                                "build" => $dot_parts[2],
+                                "revision" => $dot_parts[3],
+                                "postfix" => $ast_ver_postfix
+                        );
+                }
+
+        # digium dropped the 1 from asterisk 10 but we still need it
+        if ( $dot_parts[0] > 1 )
+                {
+                        %ast_ver_hash = (
+                                "major" => 1,
+                                "minor" => $dot_parts[0],
+                                "build" => $dot_parts[1],
+                                "revision" => $dot_parts[2],
+                                "postfix" => $ast_ver_postfix
+                        );
+                }
+
+        return ( %ast_ver_hash );
+}

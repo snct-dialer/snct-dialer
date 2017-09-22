@@ -133,6 +133,7 @@
 # 170816-1057 - Added inbound after call entries
 # 170819-0951 - Added allow_manage_active_lists entry
 # 170825-1129 - Added auto_reports-filename_override entry
+# 170920-2156 - Added expired_lists_inactive entry
 #
 
 
@@ -5387,6 +5388,11 @@ FR_SPAC 00 00 00 00 00 - <?php echo _QXZ("France space separated phone number");
 <A NAME="settings-allow_manage_active_lists">
 <BR>
 <B><?php echo _QXZ("Lead Manager Active Lists"); ?> -</B><?php echo _QXZ("This setting if enabled will allow a manager to select active lists for modification within the Lead Management admin utilities. We do not recommend enabling this option since it can cause issues with leads that could be part of active calling within the system. Default is 0 for disabled."); ?>
+
+<BR>
+<A NAME="settings-expired_lists_inactive">
+<BR>
+<B><?php echo _QXZ("Expired Lists Auto Inactive"); ?> -</B><?php echo _QXZ("This setting if enabled will automatically change lists that have an expiration date set to a past date to Active equals N. This is performed through both a check every time the List Modify screen is loaded for a specific list as well as a once an hour check on all lists. Default is 0 for disabled."); ?>
 
 <BR>
 <A NAME="settings-enable_drop_lists">
