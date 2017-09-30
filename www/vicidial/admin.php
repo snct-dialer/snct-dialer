@@ -4221,12 +4221,13 @@ else
 # 170913-0908 - Added Agent Inbound Status Summary Report
 # 170920-2153 - Added expired_lists_inactive system setting and functions
 # 170923-1425 - Added did_system_filter system setting and functions
+# 170926-1618 - Fix for Test Call function for Asterisk 13
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-630a';
-$build = '170923-1425';
+$admin_version = '2.14-631a';
+$build = '170926-1618';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -13694,6 +13695,20 @@ if ($ADD==41)
 						$campaign_cid_override = $row[0];
 						}
 
+					### gather server information
+					$stmt="SELECT asterisk_version,routing_prefix FROM servers where server_ip='$old_server_ip';";
+					$rslt=mysql_to_mysqli($stmt, $link);
+					if ($DB) {echo "$stmt\n";}
+					$srv_ct = mysqli_num_rows($rslt);
+					$asterisk_version='';
+					$routing_prefix='';
+					if ($srv_ct > 0)
+						{
+						$row=mysqli_fetch_row($rslt);
+						$asterisk_version =		$row[0];
+						$routing_prefix =		$row[1];
+						}
+
 					$CCID_on=0;   $CCID='';
 					$local_DEF = 'Local/';
 					$local_AMP = '@';
@@ -13704,6 +13719,11 @@ if ($ADD==41)
 					if (strlen($dial_prefix) > 0) {$Local_out_prefix = "$dial_prefix";}
 					if (strlen($campaign_vdad_exten) > 0) {$VDAD_dial_exten = "$campaign_vdad_exten";}
 					else {$VDAD_dial_exten = "$SSanswer_transfer_agent";}
+					$major_version = explode('.',$asterisk_version);
+					if ($major_version[0] >= 12)
+						{
+						$VDAD_dial_exten = "$routing_prefix$VDAD_dial_exten";
+						}
 					if (strlen($campaign_cid) > 6) {$CCID = "$campaign_cid";   $CCID_on++;}
 					if (strlen($campaign_cid_override) > 6) {$CCID = "$campaign_cid_override";   $CCID_on++;}
 					if (preg_match("/x/",$dial_prefix)) {$Local_out_prefix = '';}
@@ -33088,8 +33108,8 @@ if ($ADD==311111111111)
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("VMail Dump Exten NI").": </td><td align=left><input type=text name=voicemail_dump_exten_no_inst size=20 maxlength=20 value=\"$voicemail_dump_exten_no_inst\">$NWB#servers-voicemail_dump_exten_no_inst$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("auto dial extension").": </td><td align=left><input type=text name=answer_transfer_agent size=20 maxlength=20 value=\"$answer_transfer_agent\">$NWB#servers-answer_transfer_agent$NWE";
 
-		$major_verison = explode('.',$asterisk_version);
-		if ($major_verison[0] >= 13)
+		$major_version = explode('.',$asterisk_version);
+		if ($major_version[0] >= 12)
 			{
 			echo " &nbsp; &nbsp; "._QXZ("prefix").": <input type=text name=routing_prefix size=10 maxlength=10 value=\"$routing_prefix\">$NWB#servers-routing_prefix$NWE";
 			}
