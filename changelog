@@ -16,6 +16,8 @@
   * New extras/mysql_update/mysql-1519.sql (2017-034).
   * Add upstream Rev. 2822:
     - admin.php: Fix for Test Call function for Asterisk 13.
+  * Add upstream Rev. 2823:
+    - DNCcom_inbound_filter.php: Added in_filter_override option and cache searching option.
 
 2.25.12
 

@@ -202,9 +202,16 @@ For this script to work, you must have the same DNCDOTCOM settings container cre
 
 # For inbound filtering, 
 # USADNC will block federal DNC numbers
+# PROJDNC will block internal project DNC numbers
 # LITIGATOR will block the litigator list, if subscribed
 # INVALID will block invalid numbers
-INBOUND_FILTER => USADNC,LITIGATOR,INVALID
+INBOUND_FILTER => USADNC,PROJDNC,LITIGATOR,INVALID
+
+# to reduce load for redundant requests, you can enable
+# searching of the recent query cache to DNC.com. Set this 
+# to the number of days' results you want to search through.
+# Default is 0 for disabled.
+INBOUND_CACHE => 0
 
 Here is an example of what to put in the "Filter URL" field of the DID entry that you will be using this for. 
 NOTES:
