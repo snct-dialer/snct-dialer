@@ -27,6 +27,7 @@
 # CHANGES
 # 170923-1905 - First Build
 # 170926-1016 - Added in_filter_override option and cache searching option
+# 170927-2127 - Changed to log flags that are not used to filter, added in_cache_override option, added connect retry if rejected
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -40,6 +41,8 @@ if (isset($_GET["DB"]))					{$DB=$_GET["DB"];}
 	elseif (isset($_POST["DB"]))		{$DB=$_POST["DB"];}
 if (isset($_GET["in_filter_override"]))				{$in_filter_override=$_GET["in_filter_override"];}
 	elseif (isset($_POST["in_filter_override"]))	{$in_filter_override=$_POST["in_filter_override"];}
+if (isset($_GET["in_cache_override"]))			{$in_cache_override=$_GET["in_cache_override"];}
+	elseif (isset($_POST["in_cache_override"]))	{$in_cache_override=$_POST["in_cache_override"];}
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
@@ -65,6 +68,7 @@ else
 	$phone = preg_replace("/'|\"|\\\\|;/","",$phone);
 	}
 $in_filter_override=preg_replace('/[^-_0-9a-zA-Z]/','',$in_filter_override);
+$in_cache_override=preg_replace('/[^-_0-9a-zA-Z]/','',$in_cache_override);
 $filter_count=0;
 $ENTRYdate = date("mdHis");
 
@@ -95,6 +99,8 @@ if ($SC_count > 0)
 		$flag_dnc=0;
 		$flag_projdnc=0;
 		$flag_litigator=0;
+		$valid_pull=0;
+		$pull_counter=0;
 		$container_ct = count($container_ARY);
 		while ($p <= $container_ct)
 			{
@@ -115,7 +121,16 @@ if ($SC_count > 0)
 
 			$p++;
 			}
-		if (strlen($in_filter_override)>5) {$in_filter = $in_filter_override;}
+		if (strlen($in_filter_override)>5) 
+			{
+			if ($DB) {echo "FILTER OVERRIDE: $in_filter_override|$in_filter\n";}
+			$in_filter = $in_filter_override;
+			}
+		if (strlen($in_cache_override)>0) 
+			{
+			if ($DB) {echo "CACHE OVERRIDE: $in_cache_override|$in_cache\n";}
+			$in_cache = $in_cache_override;
+			}
 		$scrub_url .= "?version=2&loginId=" . $login_id . "&phoneList=" . $phone;
 		if (strlen($project_id)>0) {$scrub_url .= "&projId=" . $project_id;}
 		if (strlen($campaign_id)>0) {$scrub_url .= "&campaignId=" . $campaign_id;}
@@ -140,84 +155,96 @@ if ($SC_count > 0)
 
 		if ($cache_found < 1)
 			{
-			### insert a new url log entry
-			$uniqueid = $ENTRYdate . '.' . $phone;
-			$SQL_log = "$scrub_url";
-			$SQL_log = preg_replace('/;|\n/','',$SQL_log);
-			$SQL_log = addslashes($SQL_log);
-			$stmt = "INSERT INTO vicidial_url_log SET uniqueid='$uniqueid',url_date=NOW(),url_type='DNCcom',url='$SQL_log',url_response='';";
-			if ($DB) {echo "$stmt\n";}
-			$rslt=mysql_to_mysqli($stmt, $link);
-			$affected_rows = mysqli_affected_rows($link);
-			$url_id = mysqli_insert_id($link);
-
-			$URLstart_sec = date("U");
-
-			if ($DB > 0) {echo "$scrub_url<BR>\n";}
-			$SCUfile = file("$scrub_url");
-			if ( !($SCUfile) )
+			while ( ($valid_pull < 1) and ($pull_counter < 5) )
 				{
-				$error_array = error_get_last();
-				$error_type = $error_array["type"];
-				$error_message = $error_array["message"];
-				$error_line = $error_array["line"];
-				$error_file = $error_array["file"];
-				}
+				### insert a new url log entry
+				$uniqueid = $ENTRYdate . '.' . $phone;
+				$SQL_log = "$scrub_url";
+				$SQL_log = preg_replace('/;|\n/','',$SQL_log);
+				$SQL_log = addslashes($SQL_log);
+				$stmt = "INSERT INTO vicidial_url_log SET uniqueid='$uniqueid',url_date=NOW(),url_type='DNCcom',url='$SQL_log',url_response='';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+				$affected_rows = mysqli_affected_rows($link);
+				$url_id = mysqli_insert_id($link);
 
-			if ($DB > 0) {echo "$SCUfile[0]<BR>\n";}
+				$URLstart_sec = date("U");
 
-			### update url log entry
-			$URLend_sec = date("U");
-			$URLdiff_sec = ($URLend_sec - $URLstart_sec);
-			if ($SCUfile)
-				{
-				$SCUfile_contents = implode("", $SCUfile);
-				$SCUfile_contents = preg_replace("/;|\n/",'',$SCUfile_contents);
-				$SCUfile_contents = addslashes($SCUfile_contents);
+				if ($DB > 0) {echo "$scrub_url<BR>\n";}
+				$SCUfile = file("$scrub_url");
+				if ( !($SCUfile) )
+					{
+					$error_array = error_get_last();
+					$error_type = $error_array["type"];
+					$error_message = $error_array["message"];
+					$error_line = $error_array["line"];
+					$error_file = $error_array["file"];
+					}
+
+				if ($DB > 0) {echo "$SCUfile[0]<BR>\n";}
+
+				### update url log entry
+				$URLend_sec = date("U");
+				$URLdiff_sec = ($URLend_sec - $URLstart_sec);
+				if ($SCUfile)
+					{
+					$SCUfile_contents = implode("", $SCUfile);
+					$SCUfile_contents = preg_replace("/;|\n/",'',$SCUfile_contents);
+					$SCUfile_contents = addslashes($SCUfile_contents);
+					$valid_pull++;
+					}
+				else
+					{
+					$SCUfile_contents = "PHP ERROR: Type=$error_type - Message=$error_message - Line=$error_line - File=$error_file";
+					if (!preg_match("/\d/",$phone))
+						{$valid_pull++;}
+					}
+				$stmt = "UPDATE vicidial_url_log SET response_sec='$URLdiff_sec',url_response='$SCUfile_contents' where url_log_id='$url_id';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+				$affected_rows = mysqli_affected_rows($link);
+
+				$pull_counter++;
 				}
-			else
-				{
-				$SCUfile_contents = "PHP ERROR: Type=$error_type - Message=$error_message - Line=$error_line - File=$error_file";
-				}
-			$stmt = "UPDATE vicidial_url_log SET response_sec='$URLdiff_sec',url_response='$SCUfile_contents' where url_log_id='$url_id';";
-			if ($DB) {echo "$stmt\n";}
-			$rslt=mysql_to_mysqli($stmt, $link);
-			$affected_rows = mysqli_affected_rows($link);
 			}
 
 		$result_details = explode(',',$SCUfile_contents);
 		if ($result_details[1] == 'D')
 			{
-			if ( (preg_match("/National \(USA\)/",$SCUfile_contents)) and (preg_match("/USADNC/",$in_filter)) ) 
+			if (preg_match("/National \(USA\)/",$SCUfile_contents))
 				{
 				$flag_dnc++;
-				$filter_count++;
+				if (preg_match("/USADNC/",$in_filter))
+					{$filter_count++;}
 				}
-			if ( (preg_match("/Litigator/",$SCUfile_contents)) and (preg_match("/LITIGATOR/",$in_filter)) ) 
+			if (preg_match("/Litigator/",$SCUfile_contents))
 				{
 				$flag_litigator++;
-				$filter_count++;
+				if (preg_match("/LITIGATOR/",$in_filter))
+					{$filter_count++;}
 				}
 			}
-		if ( ($result_details[1] == 'P') and (preg_match("/PROJDNC/",$in_filter)) )
+		if ($result_details[1] == 'P')
 			{
 			$flag_projdnc++;
-			$filter_count++;
+			if (preg_match("/PROJDNC/",$in_filter))
+				{$filter_count++;}
 			}
-		if ( ( ($result_details[1] == 'I') or (preg_match("/\D/",$phone)) or (preg_match("/not a valid number/",$SCUfile_contents)) ) and (preg_match("/INVALID/",$in_filter)) )
+		if ( ($result_details[1] == 'I') or (preg_match("/\D/",$phone)) or (preg_match("/not a valid number/",$SCUfile_contents)) )
 			{
 			$flag_invalid++;
-			$filter_count++;
+			if (preg_match("/INVALID/",$in_filter))
+				{$filter_count++;}
 			}
 
 		if ($cache_found < 1)
 			{
 			$stmt = "INSERT INTO vicidial_dnccom_scrub_log SET phone_number='$phone',scrub_date=NOW(),flag_invalid='$flag_invalid',flag_dnc='$flag_dnc',flag_projdnc='$flag_projdnc',flag_litigator='$flag_litigator',full_response='$SCUfile_contents';";
-			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$affected_rows = mysqli_affected_rows($link);
 			if ($DB) {echo "$affected_rows|$stmt\n";}
 			}
+		if ($DB) {echo "DEBUG: pulls - $pull_counter\n";}
 		}
 	}
 

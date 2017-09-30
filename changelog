@@ -17,7 +17,11 @@
   * Add upstream Rev. 2822:
     - admin.php: Fix for Test Call function for Asterisk 13.
   * Add upstream Rev. 2823:
-    - DNCcom_inbound_filter.php: Added in_filter_override option and cache searching option.
+    - DNCcom_inbound_filter.php: Added in_filter_override option and cache
+        searching option.
+  * Add upstream Rev. 2824:
+    - DNCcom_inbound_filter.php: hanged to log flags that are not used to
+        filter, added in_cache_override option, added connect retry if rejected.
 
 2.25.12
 
