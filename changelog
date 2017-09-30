@@ -3,6 +3,18 @@
   [Jörg Frings-Fürst]
   * Add upstream Rev. 2820:
     - Chnages at AST_agent_performance_detail.php.
+  * Add upstream Rev. 2821:
+    - Added system filter feature, before any other actions
+      + agi-DID_route.agi,
+        ASTERISK_13.txt,
+        DNC-dot-COM_integration.txt,
+        vicidial.php,
+        AST_url_log_report.php,
+        admin.php,
+        help.php.
+      + New www/vicidial/DNCcom_inbound_filter.php.
+  - New extras/mysql_update/mysql-1519.sql (2017-034)
+
 
 2.25.12
 

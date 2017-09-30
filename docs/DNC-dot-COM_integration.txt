@@ -1,16 +1,18 @@
-DNC.COM INTEGRATION	  Started: 2015-12-02	Updated: 2016-11-14
+DNC.COM INTEGRATION	  Started: 2015-12-02	Updated: 2017-09-25
 
 NOTE: for DNC.COM integration of batch cellphone filtering, see this document:
 	CELLPHONE_USA_TCPA_FCC_COMPLIANCE.txt
 
 
-We have added a utility to allow for direct filtering of lists on your Vicidial system with a DNC.COM account, to allow for state, federal(FTC) and internal DNC lists as well as TCPA and Litigator Scrub direct through DNC.COM.
+We have added a utility to allow for direct filtering of lists on your Vicidial system with a DNC.COM account, to allow for state, federal(FTC) and internal DNC lists as well as TCPA and Litigator Scrub direct through DNC.COM. We have also added a new inbound scrubbing option for calls coming in through DIDs on your system.
 
 DNC.COM is also offering a Free 15 day trial to VICIdial users of their Real-time Integrated TCPA and DNC Safe Harbor lead scrubbing. For more information on this free offer, contact us (http://www.vicidial.com/?page_id=7). 
 
+
+########## OUTBOUND LIST FILTERING ############################################
+
 The script that allows for this must be run from the Linux command-line(CLI):
 	AST_DNCcom_filter.pl
-
 
 In order for this script to work, you must have a Settings Container set up within Vicidial with the ID of "DNCDOTCOM". This settings container should be customized for your specific DNC.COM account, and how you want it to function.
 
@@ -31,7 +33,7 @@ LOGIN_ID => 1234567890QWERTYUIOP1234567890QWERTYUIOP
 # the Master Project
 PROJ_ID =>
 
-# CAMPAIGN_ID denotes the campaignId you wish to scrub-in – if you 
+# CAMPAIGN_ID denotes the campaignId you wish to scrub-in - if you 
 # specify this you may omit projId; if omitted we assume Default 
 # Campaign of projId, or if both are omitted, the Default Campaign of 
 # your Master Project
@@ -185,3 +187,32 @@ STATUS_Y => YDNCCM
 # documentation. The additional fields will be comma separated.
 # Values are YES or NO.
 ADD_INFO_TO_COMMENTS => NO
+
+
+
+
+
+########## INBOUND CALL DID FILTERING ############################################
+
+There is also a script that will work with the Inbound DID configuration to filter calls coming in through DIDs:
+	DNCcom_inbound_filter.php
+
+
+For this script to work, you must have the same DNCDOTCOM settings container created in the system as shown above, but you will need to add another option to specify if you want to filter out USADNC numbers and/or LITIGATOR numbers:
+
+# For inbound filtering, 
+# USADNC will block federal DNC numbers
+# LITIGATOR will block the litigator list, if subscribed
+# INVALID will block invalid numbers
+INBOUND_FILTER => USADNC,LITIGATOR,INVALID
+
+Here is an example of what to put in the "Filter URL" field of the DID entry that you will be using this for. 
+NOTES:
+ - Make sure you set the "Filter Inbound Number" option to "URL"
+ - If you want this to be a system-wide filter, use the "did_system_filter" DID entry that you get to by clicking on the link in the Admin -> System Settings page.
+ - The below example assumes the local connection to your webserver from your dialers is "192.168.1.3"
+
+http://192.168.1.3/vicidial/DNCcom_inbound_filter.php?phone=--A--phone_number--B--
+
+
+IMPORTANT! We strongly recommend that if you are receiving calls from North America that you set the DID option "Clean CID Number" to "R10" so that you will always be looking up 10 digit numbers properly.

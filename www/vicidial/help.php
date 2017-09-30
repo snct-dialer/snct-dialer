@@ -134,6 +134,7 @@
 # 170819-0951 - Added allow_manage_active_lists entry
 # 170825-1129 - Added auto_reports-filename_override entry
 # 170920-2156 - Added expired_lists_inactive entry
+# 170923-1458 - Added settings-did_system_filter entry
 #
 
 
@@ -5353,6 +5354,11 @@ FR_SPAC 00 00 00 00 00 - <?php echo _QXZ("France space separated phone number");
 <A NAME="settings-test_campaign_calls">
 <BR>
 <B><?php echo _QXZ("Enable Campaign Test Calls"); ?> -</B><?php echo _QXZ("This setting enables the ability to enter a phone code and phone number into fields at the bottom of the Campaign Detail screen and place a phone call to that number as if it were a lead being auto-dialed in the system. The phone number will be stored as a new lead in the manual dial list ID list. The campaign must be active for this feature to be enabled, and it is recommended that the lists assigned to the campaign all be set to inactive. The dial prefix, dial timeout and all other dialing related features, except for DNC and call time options, will affect the dialing of the test number. The phone call will be placed on the server selected as the voicemail server in the system settings. Default is 0 for disabled."); ?>
+
+<BR>
+<A NAME="settings-did_system_filter">
+<BR>
+<B><?php echo _QXZ("DID System Filter"); ?> -</B><?php echo _QXZ("This setting enables the special did_system_filter DID entry. The filter settings in this DID entry will be applied to all incoming calls to the system, prior to any other actions on the call. This feature is commonly used for system-wide inbound blacklists, or filtering of do-not-contact phone numbers. Default is 0 for disabled."); ?>
 
 <BR>
 <A NAME="settings-user_new_lead_limit">

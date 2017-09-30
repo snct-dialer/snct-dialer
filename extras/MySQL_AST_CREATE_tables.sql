@@ -1744,7 +1744,8 @@ detect_3way ENUM('Y','N') default 'N',
 company_name VARCHAR(50) default '',
 ticket_mail VARCHAR(100) default '',
 allow_manage_active_lists ENUM('0','1') default '0',
-expired_lists_inactive ENUM('0','1') default '0'
+expired_lists_inactive ENUM('0','1') default '0',
+did_system_filter ENUM('0','1') default '0'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_campaigns_list_mix (
@@ -3816,6 +3817,17 @@ index (lead_id),
 index (uniqueid)
 ) ENGINE=MyISAM;
 
+CREATE TABLE vicidial_dnccom_scrub_log (
+phone_number VARCHAR(18),
+scrub_date DATETIME NOT NULL,
+flag_invalid ENUM('','0','1') default '',
+flag_dnc ENUM('','0','1') default '',
+flag_litigator ENUM('','0','1') default '',
+full_response VARCHAR(255) default '',
+index(phone_number),
+index(scrub_date)
+) ENGINE=MyISAM;
+
 
 ALTER TABLE vicidial_email_list MODIFY message text character set utf8;
 
@@ -4093,4 +4105,4 @@ UPDATE vicidial_configuration set value='1766' where name='qc_database_version';
 
 UPDATE system_settings set vdc_agent_api_active='1';
 
-UPDATE system_settings SET db_schema_version='1518',db_schema_update_date=NOW(),reload_timestamp=NOW();
+UPDATE system_settings SET db_schema_version='1519',db_schema_update_date=NOW(),reload_timestamp=NOW();

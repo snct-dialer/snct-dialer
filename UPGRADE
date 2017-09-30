@@ -204,6 +204,10 @@ OTHER CHANGES:
 	If you are using an older Net::Telnet version, you will need to upgrade!
 	this should take just two commands: "cpan" and "install Net::Telnet"
 
+50. Added DID System-wide filter option to System Settings
+
+51. Added DNC.COM inbound number filtering with DNCcom_inbound_filter.php
+
 
 
 
