@@ -14,6 +14,7 @@
 # 170822-2313 - Added screen colors
 # 170823-1411 - Fixed delete bug
 # 170829-0040 - Added screen color settings
+# 170930-0908 - Added custom variables
 #
 
 $startMS = microtime();
@@ -32,6 +33,8 @@ if (isset($_GET["domain"]))				{$domain=$_GET["domain"];}
 	elseif (isset($_POST["domain"]))	{$domain=$_POST["domain"];}
 if (isset($_GET["path_name"]))				{$path_name=$_GET["path_name"];}
 	elseif (isset($_POST["path_name"]))	{$path_name=$_POST["path_name"];}
+if (isset($_GET["presets_string"]))				{$presets_string=$_GET["presets_string"];}
+	elseif (isset($_POST["presets_string"]))	{$presets_string=$_POST["presets_string"];}
 if (isset($_GET["slave"]))				{$slave=$_GET["slave"];}
 	elseif (isset($_POST["slave"]))	{$slave=$_POST["slave"];}
 if (isset($_GET["custom_reports_user_groups"]))				{$custom_reports_user_groups=$_GET["custom_reports_user_groups"];}
@@ -48,6 +51,8 @@ if (isset($_GET["upd_report_name"]))				{$upd_report_name=$_GET["upd_report_name
 	elseif (isset($_POST["upd_report_name"]))	{$upd_report_name=$_POST["upd_report_name"];}
 if (isset($_GET["upd_path_name"]))				{$upd_path_name=$_GET["upd_path_name"];}
 	elseif (isset($_POST["upd_path_name"]))	{$upd_path_name=$_POST["upd_path_name"];}
+if (isset($_GET["upd_presets_string"]))				{$upd_presets_string=$_GET["upd_presets_string"];}
+	elseif (isset($_POST["upd_presets_string"]))	{$upd_presets_string=$_POST["upd_presets_string"];}
 if (isset($_GET["upd_slave"]))				{$upd_slave=$_GET["upd_slave"];}
 	elseif (isset($_POST["upd_slave"]))	{$upd_slave=$_POST["upd_slave"];}
 if (isset($_GET["upd_domain"]))				{$upd_domain=$_GET["upd_domain"];}
@@ -220,7 +225,7 @@ if ($add_custom_report=="ADD REPORT") {
 		if (in_array($report_name, $Vreports)) {
 			$error_msg="<BR><B>"._QXZ("CANNOT ADD REPORT, REPORT NAME ALREADY IN USE FOR STANDARD VICIDIAL REPORT")."</B><BR>";
 		} else {
-			$ins_stmt="insert into vicidial_custom_reports(report_name, date_added, user, domain, path_name) VALUES('$report_name', now(), '$PHP_AUTH_USER', '$domain', '$path_name')";
+			$ins_stmt="insert into vicidial_custom_reports(report_name, date_added, user, domain, path_name, custom_variables) VALUES('$report_name', now(), '$PHP_AUTH_USER', '$domain', '$path_name', '$presets_string')";
 			$ins_rslt=mysql_to_mysqli($ins_stmt, $link);
 			if (mysqli_affected_rows($link)<1) {
 				$error_msg="<BR><B>"._QXZ("INSERT FAILED")."</B><BR>";
@@ -259,7 +264,7 @@ if ($add_custom_report=="ADD REPORT") {
 			$old_rpt_row=mysqli_fetch_row($old_rpt_rslt);
 			$old_rpt_name=$old_rpt_row[0];
 
-			$upd_stmt="update vicidial_custom_reports set report_name='$upd_report_name', date_added=now(), user='$PHP_AUTH_USER', domain='$upd_domain', path_name='$upd_path_name' where custom_report_id='$upd_custom_report_id'";
+			$upd_stmt="update vicidial_custom_reports set report_name='$upd_report_name', date_added=now(), user='$PHP_AUTH_USER', domain='$upd_domain', path_name='$upd_path_name', custom_variables='$upd_presets_string' where custom_report_id='$upd_custom_report_id'";
 			$upd_rslt=mysql_to_mysqli($upd_stmt, $link);
 			if (mysqli_affected_rows($link)<1) {
 				$error_msg="<BR><B>"._QXZ("UPDATE FAILED")."</B><BR>";
@@ -326,6 +331,26 @@ function SubmitIDValues(id_no) {
 	DMfieldName="domain"+id_no;
 	PNfieldName="path_name"+id_no;
 	UGfieldName="custom_reports_user_groups"+id_no;
+	CVfieldName="presets_string"+id_no;
+	var new_constants_string="";
+	var custom_variables = document.getElementById(CVfieldName).value.replace(/\n+/g, '&');
+	// custom_variables = document.getElementById(CVfieldName).value.replace(/\n/g, '&');
+
+	var ALL_presets_array=custom_variables.split("\&");
+	for (y=0; y<ALL_presets_array.length; y++) {
+		if (ALL_presets_array[y].length>0) {
+			var key_value=ALL_presets_array[y].split("\=");
+			if (key_value.length>=2)
+				{
+				key_value[0]=key_value[0].replace(/[^a-z0-9_\[\]]/gi, '');
+				key_value[0]=key_value[0].replace(/\[[^\]]+/gi, '[');
+				key_value[0]=key_value[0].replace(/\].*/gi, ']');
+				key_value[1]=key_value[1].replace(/[^- \.\:\/\@\_0-9a-zA-Z]/gi, '');
+				key_value[1]=encodeURIComponent(key_value[1]);
+				new_constants_string+="&"+key_value[0]+"="+key_value[1];
+				}
+		}
+	}
 
 	var selectedUGstr = "";
 
@@ -335,6 +360,7 @@ function SubmitIDValues(id_no) {
 	document.getElementById("upd_domain").value=document.getElementById(DMfieldName).value;
 	// document.getElementById("upd_slave").value=document.getElementById(SLfieldName).value;
 	document.getElementById("upd_path_name").value=document.getElementById(PNfieldName).value;
+	document.getElementById("upd_presets_string").value=new_constants_string;
 
 	//for (i=0;i<document.getElementById(SLfieldName).length;i++) {
 	//	if (document.getElementById(SLfieldName)[i].selected) {
@@ -350,9 +376,60 @@ function SubmitIDValues(id_no) {
 
 	document.getElementById("updateForm").submit();
 }
+function AddConstant() {
+	var current_constants=document.getElementById('presets_string').value;
+	var new_variable_name=document.getElementById('new_preset_name').value;
+	new_variable_name=new_variable_name.replace(/[^a-z0-9_\[\]]/gi, '');
+	new_variable_name=new_variable_name.replace(/\[[^\]]+/gi, '[');
+	new_variable_name=new_variable_name.replace(/\].*/gi, ']');
+
+	var new_variable_value="";
+	for (x=0;x<document.getElementById('new_preset_value').length;x++) {
+		if (document.getElementById('new_preset_value')[x].selected && document.getElementById('new_preset_value')[x].value!="") {
+			new_variable_value =  "--A--"+document.getElementById('new_preset_value')[x].value+"--B--";
+		}
+	}
+	if (new_variable_value=='') {new_variable_value=document.getElementById('new_preset_custom').value;}
+	new_variable_name=new_variable_name.replace(/[^- \.\:\/\@\_0-9a-zA-Z]/gi, '');	
+	new_variable_value=encodeURIComponent(new_variable_value);
+
+	current_constants+="&"+new_variable_name+"="+new_variable_value;
+	current_constants = current_constants.replace(/^&/, '');
+	document.getElementById('presets_string').value=current_constants;
+	var ALL_presets_array=current_constants.split("\&");
+
+	var SpanInnerHTML="<table width='100%' border='0' cellpadding='3'>";
+	for (y=0; y<ALL_presets_array.length; y++) {
+		var key_value=ALL_presets_array[y].split("\=");
+		SpanInnerHTML+="<tr><td align='left'>"+key_value[0]+"</td><td align='left'>"+key_value[1]+"</td><td align='center'><input type='button' onClick='RemoveConstant("+y+")' value='REMOVE'></td></tr>";
+	}
+	SpanInnerHTML+="</table>";
+	document.getElementById('new_presets').innerHTML=SpanInnerHTML;
+}
+function RemoveConstant(array_index) {
+	var current_constants=document.getElementById('presets_string').value;
+	var new_constants_string="";
+	var ALL_presets_array=current_constants.split("\&");
+	var SpanInnerHTML="<table width='100%' border='0' cellpadding='3'>";
+	var x=0;
+	for (y=0; y<ALL_presets_array.length; y++) {
+		if (y!=array_index) {
+			new_constants_string+="&"+ALL_presets_array[y];
+			var key_value=ALL_presets_array[y].split("\=");
+			SpanInnerHTML+="<tr><td align='left'>"+key_value[0]+"</td><td align='left'>"+key_value[1]+"</td><td align='center'><input type='button' onClick='RemoveConstant("+x+")' value='REMOVE'></td></tr>";
+			x++;
+		}
+	}
+	SpanInnerHTML+="</table>";
+
+	new_constants_string = new_constants_string.replace(/^&/, '');
+	document.getElementById('new_presets').innerHTML=SpanInnerHTML;
+	document.getElementById('presets_string').value=new_constants_string;
+}
 </script>
 <?php
 	echo "<link rel=\"stylesheet\" href=\"calendar.css\">\n";
+	echo "<link rel=\"stylesheet\" href=\"vicidial_stylesheet.php\">\n";
 
 	echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 	echo "<TITLE>"._QXZ("ADMINISTRATION").": "._QXZ("Custom Reports");
@@ -390,12 +467,17 @@ function SubmitIDValues(id_no) {
 
 	echo "$error_msg";
 
-	echo "<br><B>"._QXZ("ADD A NEW CUSTOM REPORT")."</B><form action=$PHP_SELF method=GET>\n";
+	echo "<br><form action=$PHP_SELF method=GET>\n";
 
 	echo "<center><TABLE width=$section_width cellspacing=3>\n";
+	echo "<tr><td align='left' colspan='2'><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2><B>"._QXZ("ADD A NEW CUSTOM REPORT")."</B></FONT></td></tr>\n";
 	echo "<tr bgcolor=#".$SSstd_row2_background."><td align=right>"._QXZ("Report Name").": </td><td align=left><input type=text name=report_name size=20 maxlength=100>$NWB#custom_reports_admin-report_name$NWE</td></tr>\n";
-	echo "<tr bgcolor=#".$SSstd_row2_background."><td align=right>"._QXZ("Domain").": </td><td align=left><input type=text name=domain size=20 maxlength=70> (leave blank if on same server as dialer admin)$NWB#custom_reports_admin-domain$NWE</td></tr>\n";
-	echo "<tr bgcolor=#".$SSstd_row2_background."><td align=right>"._QXZ("Path Name").": </td><td align=left><input type=text name=path_name size=20 maxlength=100>$NWB#custom_reports_admin-path_name$NWE</td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row2_background."><td align=right>"._QXZ("Domain").": </td><td align=left><input type=text name='domain' id='domain' size=20 maxlength=70> (leave blank if on same server as dialer admin)$NWB#custom_reports_admin-domain$NWE</td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row2_background."><td align=right>"._QXZ("Path Name").": </td><td align=left><input type=text id='path_name' name='path_name' size=20>$NWB#custom_reports_admin-path_name$NWE</td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row2_background."><td align=right>"._QXZ("Preset constants").": </td><td align=left>Variable name: <input type='text' id='new_preset_name' name='new_preset_name' size='10' maxlength='100'>&nbsp;&nbsp;Value: ";
+	echo "<select name='new_preset_value' id='new_preset_value'><option value=''>Custom value --->></option><option value='today'>today</option><option value='yesterday'>yesterday</option><option value='datetime'>datetime</option><option value='filedatetime'>filedatetime</option><option value='6days'>6days</option><option value='7days'>7days</option><option value='8days'>8days</option><option value='13days'>13days</option><option value='14days'>14days</option><option value='15days'>15days</option><option value='30days'>30days</option></select>&nbsp;";
+	echo "<input type='text' name='new_preset_custom' id='new_preset_custom' size='10' maxlength='100'>&nbsp;<input type='button' onClick='AddConstant()' value='ADD'>$NWB#custom_reports_admin-constants$NWE</td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row2_background."><td align=right>Current constants:</td><td align=left><span id='new_presets'></span>$NWB#custom_reports_admin-current_constants$NWE<input type='hidden' name='presets_string' id='presets_string'></td></tr>\n";
 	# echo "<tr bgcolor=#".$SSstd_row2_background."><td align=right>"._QXZ("Use slave").": </td><td align=left><select size=1 name=slave><option value='Y'>"._QXZ("Y")."</option><option value='N' selected>"._QXZ("N")."</option></select>$NWB#custom_reports_admin-use_slave$NWE</td></tr>\n";
 	echo "<tr bgcolor=#".$SSstd_row2_background."><td align=right>"._QXZ("User groups").": </td><td align=left><select size=5 name=custom_reports_user_groups[] multiple><option value='---ALL---'>"._QXZ("ALL USER GROUPS")."</option>";
 	
@@ -428,7 +510,8 @@ function SubmitIDValues(id_no) {
 		echo "<tr bgcolor='#000000'>";
 		echo "<td><font size=1 color=white align=left>"._QXZ("REPORT NAME")."</font></td>";
 		echo "<td><font size=1 color=white align=left>"._QXZ("DOMAIN")."</font></td>";
-		echo "<td><font size=1 color=white align=left>"._QXZ("PATH NAME")."</font></td>";
+#		echo "<td><font size=1 color=white align=left>"._QXZ("PATH NAME")."</font></td>";
+		echo "<td><font size=1 color=white align=left>"._QXZ("PRESET CONSTANTS")."$NWB#custom_reports_admin-preset_constants$NWE</font></td>";
 		echo "<td>&nbsp;</td>";
 		# echo "<td><font size=1 color=white align=left>"._QXZ("SLAVE")."</font></td>";
 		echo "<td><font size=1 color=white align=left>"._QXZ("USER GROUPS")."</font></td>";
@@ -440,7 +523,6 @@ function SubmitIDValues(id_no) {
 			$current_rpt_name=$rpt_row["report_name"];
 
 			if ($bgcolor==$SSstd_row3_background) {$bgcolor=$SSstd_row4_background;} else {$bgcolor=$SSstd_row3_background;}
-			echo "<tr bgcolor='#".$bgcolor."'>";
 
 			$UGarray=array();
 			$UGstmt="select user_group from vicidial_user_groups where allowed_custom_reports like '%$current_rpt_name%' $LOGadmin_viewable_groupsSQL";
@@ -449,13 +531,15 @@ function SubmitIDValues(id_no) {
 				array_push($UGarray, $UGrow[0]);
 			}
 
+			$custom_variables=preg_replace("/\&/", "\n", urldecode($rpt_row["custom_variables"]));
 			
-			echo "<td align=left><input type=text id=report_name".$id." name=report_name".$id." size=20 maxlength=100 value='".$rpt_row["report_name"]."'></td>\n";
-			echo "<td align=left><input type=text id=domain".$id." name=domain".$id." size=20 maxlength=70 value='".$rpt_row["domain"]."'></td>\n";
-			echo "<td align=left><input type=text id=path_name".$id." name=path_name".$id." size=20 maxlength=100 value='".$rpt_row["path_name"]."'></td>\n";
-			echo "<td align=center nowrap><a href='".$rpt_row["domain"].$rpt_row["path_name"]."' target='_blank'>TEST LINK</a></td>";
+			echo "<tr bgcolor='#".$bgcolor."'>";
+			echo "<td align=left><input type=text class='form_field' id='report_name".$id."' name='report_name".$id."' size=20 maxlength=100 value='".$rpt_row["report_name"]."'></td>\n";
+			echo "<td align=left><input type=text class='form_field' id='domain".$id."' name='domain".$id."' size=20 maxlength=70 value='".$rpt_row["domain"]."'></td>\n";
+			echo "<td align=left rowspan='2'><textarea class='form_field' rows='5' cols='35' id='presets_string".$id."' name='presets_string".$id."'>".$custom_variables."</textarea></td>\n";
+			echo "<td align=center nowrap rowspan='2'><a href='".$rpt_row["domain"].$rpt_row["path_name"]."?".$rpt_row["custom_variables"]."' target='_blank'>TEST LINK</a></td>";
 			# echo "<td align=left><select size=1 id=slave".$id." name=slave".$id."><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='".$rpt_row["use_slave_server"]."' selected>"._QXZ($rpt_row["use_slave_server"])."</option></select></td>\n";
-			echo "<td align=left><select size=5 id=custom_reports_user_groups".$id." name=custom_reports_user_groups".$id." multiple><option value='---ALL---'>"._QXZ("ALL USER GROUPS")."</option>";
+			echo "<td align=left rowspan='2'><select size=5 class='form_field' id=custom_reports_user_groups".$id." name=custom_reports_user_groups".$id." multiple><option value='---ALL---'>"._QXZ("ALL USER GROUPS")."</option>";
 
 			$stmt="SELECT user_group,group_name from vicidial_user_groups $whereLOGadmin_viewable_groupsSQL order by user_group;";
 			$rslt=mysql_to_mysqli($stmt, $link);
@@ -467,7 +551,11 @@ function SubmitIDValues(id_no) {
 				echo "<option value='$ug_row[0]' $x>$ug_row[1]</option>";
 				$i++;
 			}
-			echo "<td align='center'><input type='button' value='"._QXZ("UPDATE")."' onClick=\"SubmitIDValues($id)\"><BR><BR><a href='vicidial_custom_reports_admin.php?delete_custom_report=".$id."'>"._QXZ("DELETE")."</a></td>";
+			echo "<td align='center'><font size=1><input type='button' class='blue_btn' value='"._QXZ("UPDATE")."' onClick=\"SubmitIDValues($id)\"></td>";
+			echo "</tr>";
+			echo "<tr bgcolor='#".$bgcolor."'>";
+			echo "<td colspan='2' align=left nowrap><font size='1'>PATH:<input type=text class='form_field' id='path_name".$id."' name='path_name".$id."' size=40 maxlength=100 value='".$rpt_row["path_name"]."'></font></td>\n";
+			echo "<td align='center'><a href='vicidial_custom_reports_admin.php?delete_custom_report=".$id."'>"._QXZ("DELETE")."</a></font></td>";
 			echo "</tr>\n";
 
 		}
@@ -478,6 +566,7 @@ function SubmitIDValues(id_no) {
 	echo "<input type=hidden name='upd_domain' id='upd_domain'>";
 	# echo "<input type=hidden name='upd_slave' id='upd_slave'>";
 	echo "<input type=hidden name='upd_path_name' id='upd_path_name'>";
+	echo "<input type=hidden name='upd_presets_string' id='upd_presets_string'>";
 	echo "<input type=hidden name='upd_custom_reports_user_groups' id='upd_custom_reports_user_groups'>";
 	echo "</form>";
 

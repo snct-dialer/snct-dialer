@@ -2802,7 +2802,6 @@ if ($non_latin < 1)
 	$agent_xfer_dial_with_customer = preg_replace('/[^NY]/','',$agent_xfer_dial_with_customer);
 	$agent_xfer_park_customer_dial = preg_replace('/[^NY]/','',$agent_xfer_park_customer_dial);
 	$agent_fullscreen = preg_replace('/[^NY]/','',$agent_fullscreen);
-	$extension_appended_cidname = preg_replace('/[^NY]/','',$extension_appended_cidname);
 	$onhold_prompt_no_block = preg_replace('/[^NY]/','',$onhold_prompt_no_block);
 	$hold_time_option_no_block = preg_replace('/[^NY]/','',$hold_time_option_no_block);
 	$wait_time_option_no_block = preg_replace('/[^NY]/','',$wait_time_option_no_block);
@@ -3228,6 +3227,7 @@ if ($non_latin < 1)
 	$inbound_survey_callmenu = preg_replace('/[^-_0-9a-zA-Z]/','',$inbound_survey_callmenu);
 	$filename_override = preg_replace('/[^-_0-9a-zA-Z]/','',$filename_override);
 	$did_id = preg_replace('/[^-_0-9a-zA-Z]/','',$did_id);
+	$extension_appended_cidname = preg_replace('/[^-_0-9a-zA-Z]/','',$extension_appended_cidname);
 
 ### ALPHA-NUMERIC and underscore and dash and slash and dot
 	$menu_timeout_prompt = preg_replace('/[^-\/\|\._0-9a-zA-Z]/','',$menu_timeout_prompt);
@@ -4222,12 +4222,13 @@ else
 # 170920-2153 - Added expired_lists_inactive system setting and functions
 # 170923-1425 - Added did_system_filter system setting and functions
 # 170926-1618 - Fix for Test Call function for Asterisk 13
+# 170930-0853 - Added extension_appended_cidname options and custom reports variable display
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-631a';
-$build = '170926-1618';
+$admin_version = '2.14-632a';
+$build = '170930-0853';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -22552,7 +22553,7 @@ if ($ADD==31)
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("No Agent Call URL").": </td><td align=left><input type=text name=na_call_url size=70 maxlength=5000 value=\"$na_call_url\">$NWB#campaigns-na_call_url$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Extension Append CID").": </td><td align=left><select size=1 name=extension_appended_cidname><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='$extension_appended_cidname' SELECTED>"._QXZ("$extension_appended_cidname")."</option></select>$NWB#campaigns-extension_appended_cidname$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Extension Append CID").": </td><td align=left><select size=1 name=extension_appended_cidname><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='Y_USER'>"._QXZ("Y_USER")."</option><option value='Y_WITH_CAMPAIGN'>"._QXZ("Y_WITH_CAMPAIGN")."</option><option value='Y_USER_WITH_CAMPAIGN'>"._QXZ("Y_USER_WITH_CAMPAIGN")."</option><option value='$extension_appended_cidname' SELECTED>"._QXZ("$extension_appended_cidname")."</option></select>$NWB#campaigns-extension_appended_cidname$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Blind Monitor Warning").": </td><td align=left><select size=1 name=blind_monitor_warning><option value='DISABLED'>"._QXZ("DISABLED")."</option><option value='ALERT'>"._QXZ("ALERT")."</option><option value='NOTICE'>"._QXZ("NOTICE")."</option><option value='AUDIO'>"._QXZ("AUDIO")."</option><option value='ALERT_NOTICE'>"._QXZ("ALERT_NOTICE")."</option><option value='ALERT_AUDIO'>"._QXZ("ALERT_AUDIO")."</option><option value='NOTICE_AUDIO'>"._QXZ("NOTICE_AUDIO")."</option><option value='ALL'>"._QXZ("ALL")."</option><option value='$blind_monitor_warning' SELECTED>"._QXZ("$blind_monitor_warning")."</option></select>$NWB#campaigns-blind_monitor_warning$NWE</td></tr>\n";
 
@@ -27458,7 +27459,7 @@ if ($ADD==3111)
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("No Agent Call URL").": </td><td align=left><input type=text name=na_call_url size=70 maxlength=5000 value=\"$na_call_url\">$NWB#inbound_groups-na_call_url$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Extension Append CID").": </td><td align=left><select size=1 name=extension_appended_cidname><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='$extension_appended_cidname' SELECTED>"._QXZ("$extension_appended_cidname")."</option></select>$NWB#inbound_groups-extension_appended_cidname$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Extension Append CID").": </td><td align=left><select size=1 name=extension_appended_cidname><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='Y_USER'>"._QXZ("Y_USER")."</option><option value='Y_WITH_CAMPAIGN'>"._QXZ("Y_WITH_CAMPAIGN")."</option><option value='Y_USER_WITH_CAMPAIGN'>"._QXZ("Y_USER_WITH_CAMPAIGN")."</option><option value='$extension_appended_cidname' SELECTED>"._QXZ("$extension_appended_cidname")."</option></select>$NWB#inbound_groups-extension_appended_cidname$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Uniqueid Status Display").": </td><td align=left><select size=1 name=uniqueid_status_display><option value='DISABLED'>"._QXZ("DISABLED")."</option><option value='ENABLED'>"._QXZ("ENABLED")."</option><option value='ENABLED_PREFIX'>"._QXZ("ENABLED_PREFIX")."</option><option value='ENABLED_PRESERVE'>"._QXZ("ENABLED_PRESERVE")."</option><option value='$uniqueid_status_display' SELECTED>"._QXZ("$uniqueid_status_display")."</option></select>$NWB#inbound_groups-uniqueid_status_display$NWE</td></tr>\n";
 
@@ -39533,15 +39534,17 @@ if ($ADD==999999)
 					echo "<BR>\n";
 					echo "<B>"._QXZ("Custom Reports")."</B><BR>\n";
 					echo "<UL>\n";
-					$report_links_stmt="SELECT report_name, domain, path_name from vicidial_custom_reports where report_name in ('".implode("','", $allowed_reports_array)."')";
+					$report_links_stmt="SELECT report_name, domain, path_name, custom_variables from vicidial_custom_reports where report_name in ('".implode("','", $allowed_reports_array)."')";
 					$report_links_rslt=mysql_to_mysqli($report_links_stmt, $link);
 					while ($report_links_row=mysqli_fetch_array($report_links_rslt))
 						{
 						$domain=$report_links_row["domain"];
 						$path_name=$report_links_row["path_name"];
-
+						$custom_variables=ConvertPresets($report_links_row["custom_variables"]);
+						# $custom_variables=$report_links_row["custom_variables"];
 						$report_name=$report_links_row["report_name"];
-						echo "<LI><a href=\"".$domain.$path_name."\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK size=2>"._QXZ("$report_name")."</a></FONT>\n";
+
+						echo "<LI><a href=\"".$domain.$path_name."?".$custom_variables."\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK size=2>"._QXZ("$report_name")."</a></FONT>\n";
 						}
 					echo "</UL>\n";
 					}
