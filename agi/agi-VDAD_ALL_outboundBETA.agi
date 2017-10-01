@@ -118,6 +118,7 @@
 # 161115-1359 - Forked to BETA script, added vdad_debug_logging option
 # 161201-1003 - Fixed LRERR logging issue
 # 170921-2007 - Fix for CALLID in beginning of recording filename
+# 170930-0913 - Added extension append options
 #
 
 $script = 'agi-VDAD_ALL_outboundBETA.agi';
@@ -2819,28 +2820,36 @@ while ($drop_timer <= $DROP_TIME)
 						}
 					if ($extension_appended_cidname =~ /Y/)
 						{
-						$eac_cbc=0;	
-						$stmtA = "SELECT extension FROM vicidial_live_agents where user='$VDADuser' order by last_call_time limit 1;";
+						$eac_extension='';
+						$stmtA = "SELECT extension,campaign_id FROM vicidial_live_agents where user='$VDADuser' order by last_call_time limit 1;";
 							if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 						$sthArows=$sthA->rows;
-							$dbhP=$dbhA;   $mysql_count='01068';   $MEL_aff_rows=$sthArows;   &mysql_error_logging;
-						while ($sthArows > $eac_cbc)
+							$dbhP=$dbhA;   $mysql_count='01069';   $MEL_aff_rows=$sthArows;   &mysql_error_logging;
+						if ($sthArows > 0)
 							{
 							@aryA = $sthA->fetchrow_array;
-							$eac_extension	=	$aryA[0];
-							$eac_extension =~ s/SIP\/|IAX2\/|Zap\/|DAHDI\/|Local\///gi;
-							$eac_cbc++;
+							if ($extension_appended_cidname =~ /USER/)
+								{
+								$eac_extension	=	$VDADuser;
+								}
+							else
+								{
+								$eac_extension	=	$aryA[0];
+								$eac_extension =~ s/SIP\/|IAX2\/|Zap\/|DAHDI\/|Local\///gi;
+								}
+							if ($extension_appended_cidname =~ /WITH_CAMPAIGN/) 
+								{$eac_extension .= " $aryA[1]";}
 							}
 						$sthA->finish();
 						
-						$newcallerid = "\"$callerid $eac_extension <$phone_number>\"";
+						$newcallerid = "\"$callerid $eac_extension <$VDADphone>\"";
 						$AGI->set_callerid($newcallerid);
 						}
 					else
 						{
-						$newcallerid = "\"$callerid <$phone_number>\"";
+						$newcallerid = "\"$callerid <$VDADphone>\"";
 						$AGI->set_callerid($newcallerid);
 						}
 					}
@@ -3544,28 +3553,36 @@ while ($drop_timer <= $DROP_TIME)
 
 					if ($extension_appended_cidname =~ /Y/)
 						{
-						$eac_cbc=0;	
-						$stmtA = "SELECT extension FROM vicidial_live_agents where user='$VDADuser' order by last_call_time limit 1;";
+						$eac_extension='';
+						$stmtA = "SELECT extension,campaign_id FROM vicidial_live_agents where user='$VDADuser' order by last_call_time limit 1;";
 							if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 						$sthArows=$sthA->rows;
 							$dbhP=$dbhA;   $mysql_count='01069';   $MEL_aff_rows=$sthArows;   &mysql_error_logging;
-						while ($sthArows > $eac_cbc)
+						if ($sthArows > 0)
 							{
 							@aryA = $sthA->fetchrow_array;
-							$eac_extension	=	$aryA[0];
-							$eac_extension =~ s/SIP\/|IAX2\/|Zap\/|DAHDI\/|Local\///gi;
-							$eac_cbc++;
+							if ($extension_appended_cidname =~ /USER/)
+								{
+								$eac_extension	=	$VDADuser;
+								}
+							else
+								{
+								$eac_extension	=	$aryA[0];
+								$eac_extension =~ s/SIP\/|IAX2\/|Zap\/|DAHDI\/|Local\///gi;
+								}
+							if ($extension_appended_cidname =~ /WITH_CAMPAIGN/) 
+								{$eac_extension .= " $aryA[1]";}
 							}
 						$sthA->finish();
 						
-						$newcallerid = "\"$callerid $eac_extension <$phone_number>\"";
+						$newcallerid = "\"$callerid $eac_extension <$VDADphone>\"";
 						$AGI->set_callerid($newcallerid);
 						}
 					else
 						{
-						$newcallerid = "\"$callerid <$phone_number>\"";
+						$newcallerid = "\"$callerid <$VDADphone>\"";
 						$AGI->set_callerid($newcallerid);
 						}
 					}
