@@ -22,6 +22,22 @@
   * Add upstream Rev. 2824:
     - DNCcom_inbound_filter.php: hanged to log flags that are not used to
         filter, added in_cache_override option, added connect retry if rejected.
+  * Add upstream Rev. 2825:
+    - agi-VDAD_ALL_inbound.agi,
+      agi-VDAD_ALL_outbound.agi,
+      agi-VDAD_ALL_outboundBETA.agi: Added extension append options.
+    - admin.php: Added extension_appended_cidname options and custom reports
+        variable display.
+    - functions.php: Added code for custom reports variable display.
+    - help.php: Added new extension append cidname options and custom
+       reports help.
+    - vicidial_custom_reports_admin.php: Added custom variables.
+  * Add upstream Rev. 2826:
+    - AST_manager_listen_AMI2.pl: Commented out handle_sip_event and
+        handle_cpd_event functions, not needed anymore, to be deleted later.
+    - extensions.conf.sample-13: remove Playback(sip-silence) calls.
+    - manager.conf.sample-13: remove eventfilter=Event: CPD-Result and
+        eventfilter=Event: SIP-Hangup-Cause.
 
 2.25.12
 
