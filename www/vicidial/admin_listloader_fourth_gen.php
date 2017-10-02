@@ -1448,7 +1448,7 @@ if (($leadfile) && ($LF_path))
 				}
 			}
 
-		print "<script language='JavaScript1.2'>document.forms[0].leadfile.disabled=true; document.forms[0].submit_file.disabled=true; document.forms[0].reload_page.disabled=true;</script>";
+		print "<script language='JavaScript1.2'>document.forms[0].leadfile.disabled=true; document.forms[0].submit_file.disabled=true; document.forms[0].reload_page.disabled=false;</script>";
 		flush();
 
 		$delim_set=0;

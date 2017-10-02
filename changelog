@@ -38,7 +38,7 @@
     - extensions.conf.sample-13: remove Playback(sip-silence) calls.
     - manager.conf.sample-13: remove eventfilter=Event: CPD-Result and
         eventfilter=Event: SIP-Hangup-Cause.
-  * Add upstream Rev. 2827:
+  * Add upstream Rev. 2827, 2828:
     - admin_listloader_fourth_gen.php: Fixed issue #1041.
 
 2.25.12
