@@ -70,10 +70,11 @@
 # 161114-2315 - Added file upload error checking
 # 170219-1427 - Added last-90-day duplicate check options
 # 170409-1553 - Added IP List validation code
+# 171001-0908 - Fixed issue #1041
 #
 
-$version = '2.14-68';
-$build = '170409-1553';
+$version = '2.14-69';
+$build = '171001-0908';
 
 require("dbconnect_mysqli.php");
 require("functions.php");
@@ -1986,7 +1987,7 @@ if (($leadfile) && ($LF_path))
 	##### BEGIN process standard file layout #####
 	if ($file_layout=="standard") 
 		{
-		print "<script language='JavaScript1.2'>document.forms[0].leadfile.disabled=true; document.forms[0].submit_file.disabled=true; document.forms[0].reload_page.disabled=true;</script>";
+		print "<script language='JavaScript1.2'>document.forms[0].leadfile.disabled=true; document.forms[0].submit_file.disabled=true; document.forms[0].reload_page.disabled=false;</script>";
 		flush();
 
 
