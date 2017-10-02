@@ -4223,12 +4223,13 @@ else
 # 170923-1425 - Added did_system_filter system setting and functions
 # 170926-1618 - Fix for Test Call function for Asterisk 13
 # 170930-0853 - Added extension_appended_cidname options and custom reports variable display
+# 171001-1544 - Moved user IP Lists permissions to new security section in Modify User page
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-632a';
-$build = '170930-0853';
+$admin_version = '2.14-633a';
+$build = '171001-1544';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -20861,16 +20862,6 @@ if ($ADD==3)
 					echo "<tr bgcolor=#$SSstd_row2_background><td align=right></td><td align=left><input type=hidden name=modify_auto_reports value=$modify_auto_reports></td></tr>\n";
 					}
 
-				if ($SSallow_ip_lists > 0)
-					{
-					echo "<tr bgcolor=#$SSstd_row2_background><td align=right>"._QXZ("Modify IP Lists").": </td><td align=left><select size=1 name=modify_ip_lists><option>0</option><option>1</option><option SELECTED>$modify_ip_lists</option></select>$NWB#users-modify_sections$NWE</td></tr>\n";
-					echo "<tr bgcolor=#$SSstd_row2_background><td align=right>"._QXZ("Ignore IP List").": </td><td align=left><select size=1 name=ignore_ip_list><option>0</option><option>1</option><option SELECTED>$ignore_ip_list</option></select>$NWB#users-modify_sections$NWE</td></tr>\n";
-					}
-				else
-					{
-					echo "<tr bgcolor=#$SSstd_row2_background><td align=right></td><td align=left><input type=hidden name=modify_ip_lists value=$modify_ip_lists><input type=hidden name=ignore_ip_list value=$ignore_ip_list></td></tr>\n";
-					}
-
 				echo "<tr bgcolor=#$SSstd_row1_background><td align=right>"._QXZ("Add Timeclock Log Record").": </td><td align=left><select size=1 name=add_timeclock_log><option>0</option><option>1</option><option SELECTED>$add_timeclock_log</option></select>$NWB#users-add_timeclock_log$NWE</td></tr>\n";
 				echo "<tr bgcolor=#$SSstd_row1_background><td align=right>"._QXZ("Modify Timeclock Log Record").": </td><td align=left><select size=1 name=modify_timeclock_log><option>0</option><option>1</option><option SELECTED>$modify_timeclock_log</option></select>$NWB#users-modify_timeclock_log$NWE</td></tr>\n";
 				echo "<tr bgcolor=#$SSstd_row1_background><td align=right>"._QXZ("Delete Timeclock Log Record").": </td><td align=left><select size=1 name=delete_timeclock_log><option>0</option><option>1</option><option SELECTED>$delete_timeclock_log</option></select>$NWB#users-delete_timeclock_log$NWE</td></tr>\n";
@@ -20881,6 +20872,17 @@ if ($ADD==3)
 					{echo "<tr bgcolor=#$SSstd_row2_background><td align=right>"._QXZ("Admin Custom Fields Show Hidden").": </td><td align=left><select size=1 name=admin_cf_show_hidden><option>0</option><option>1</option><option SELECTED>$admin_cf_show_hidden</option></select>$NWB#users-admin_cf_show_hidden$NWE</td></tr>\n";}
 				else
 					{echo "<tr bgcolor=#$SSstd_row2_background><td colspan=2><input type=hidden name=admin_cf_show_hidden value=\"$admin_cf_show_hidden\"></td></tr>\n";}
+
+				if ($SSallow_ip_lists > 0)
+					{
+					echo "<tr bgcolor=#$SSmenu_background><td colspan=2 align=center><font color=white><B>"._QXZ("SECURITY OPTIONS, Only enable if needed").":</td></tr>\n";
+					echo "<tr bgcolor=#$SSstd_row2_background><td align=right>"._QXZ("Modify IP Lists").": </td><td align=left><select size=1 name=modify_ip_lists><option>0</option><option>1</option><option SELECTED>$modify_ip_lists</option></select>$NWB#users-modify_sections$NWE</td></tr>\n";
+					echo "<tr bgcolor=#$SSstd_row2_background><td align=right>"._QXZ("Ignore IP List").": </td><td align=left><select size=1 name=ignore_ip_list><option>0</option><option>1</option><option SELECTED>$ignore_ip_list</option></select>$NWB#users-modify_sections$NWE</td></tr>\n";
+					}
+				else
+					{
+					echo "<tr bgcolor=#$SSstd_row2_background><td align=right></td><td align=left><input type=hidden name=modify_ip_lists value=$modify_ip_lists><input type=hidden name=ignore_ip_list value=$ignore_ip_list></td></tr>\n";
+					}
 
 				echo "<tr bgcolor=#$SSmenu_background><td colspan=2 align=center><font color=white><B>"._QXZ("API USER OPTIONS, Only enable if needed").":</td></tr>\n";
 

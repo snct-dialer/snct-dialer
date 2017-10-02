@@ -44,6 +44,9 @@
     - admin_modify_lead.php,
       qc_modify_lead.php: Added in-browser audio control, if recording
         access control is disabled.
+  * Add upstream Rev. 2830:
+    - admin.php: Moved user IP Lists permissions to new security section
+        in Modify User page.
 
 2.25.12
 
