@@ -83,7 +83,8 @@
 # 170527-2253 - Fix for rare inbound logging issue #1017
 # 170710-2039 - Added Audit Comments display
 # 170807-2255 - Added park log
-# 170826-0858 - Added link to turn on/off arcchived logs display
+# 170826-0858 - Added link to turn on/off archived logs display
+# 171001-1109 - Added in-browser audio control, if recording access control is disabled
 #
 
 require("dbconnect_mysqli.php");
@@ -1946,8 +1947,8 @@ else
 
 
 		echo "<B>"._QXZ("RECORDINGS FOR THIS LEAD").":</B>\n";
-		echo "<TABLE width=750 cellspacing=1 cellpadding=1>\n";
-		echo "<tr><td><font size=1># </td><td align=left><font size=2> "._QXZ("LEAD")."</td><td><font size=2>"._QXZ("DATE/TIME")." </td><td align=left><font size=2>"._QXZ("SECONDS")." </td><td align=left><font size=2> &nbsp; "._QXZ("RECID")."</td><td align=center><font size=2>"._QXZ("FILENAME")."</td><td align=left><font size=2>"._QXZ("LOCATION")."</td><td align=left><font size=2>"._QXZ("TSR")."</td></tr>\n";
+		echo "<TABLE width=800 cellspacing=1 cellpadding=1>\n";
+		echo "<tr><td><font size=1># </td><td align=left><font size=2> "._QXZ("LEAD")."</td><td><font size=2>"._QXZ("DATE/TIME")." </td><td align=left><font size=2>"._QXZ("SECONDS")." </td><td align=left><font size=2> &nbsp; "._QXZ("RECID")."</td><td align=center><font size=2>"._QXZ("FILENAME")."</td><td align=left><font size=2>"._QXZ("LOCATION")."</td><td align=left><font size=2>"._QXZ("TSR")."</td><td align=left><font size=2> </td></tr>\n";
 
 		$stmt="SELECT recording_id,channel,server_ip,extension,start_time,start_epoch,end_time,end_epoch,length_in_sec,length_in_min,filename,location,lead_id,user,vicidial_id from recording_log where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' order by recording_id desc limit 500;";
 		$rslt=mysql_to_mysqli($stmt, $link);
@@ -1996,11 +1997,19 @@ else
 				{$locat = substr($location,0,27);  $locat = "$locat...";}
 			else
 				{$locat = $location;}
+			$play_audio='<td align=left><font size=2> </font></td>';
 			if ( (preg_match('/ftp/i',$location)) or (preg_match('/http/i',$location)) )
+				{
 				if ($log_recording_access<1) 
-					{$location = "<a href=\"$location\">$locat</a>";}
+					{
+					$play_audio = "<td align=left><font size=2> <audio controls preload=\"none\"> <source src ='$location' type='audio/wav' > <source src ='$location' type='audio/mpeg' >"._QXZ("No browser audio playback support")."</audio> </td>\n";
+					$location = "<a href=\"$location\">$locat</a>";
+					}
 				else
-					{$location = "<a href=\"recording_log_redirect.php?recording_id=$row[0]&lead_id=$row[12]\">$locat</a>";}
+					{
+					$location = "<a href=\"recording_log_redirect.php?recording_id=$row[0]&lead_id=$row[12]&search_archived_data=1\">$locat</a>";
+					}
+				}
 			else
 				{$location = $locat;}
 			$u++;
@@ -2013,6 +2022,7 @@ else
 			echo "<td align=center><font size=1> $row[10] </td>\n";
 			echo "<td align=left><font size=2> $location </td>\n";
 			echo "<td align=left><font size=2> <A HREF=\"user_stats.php?user=$row[13]\" target=\"_blank\">$row[13]</A> </td>";
+			echo "$play_audio";
 			echo "</tr>\n";
 			$rec_ids .= ",'$row[0]'";
 			}
@@ -2064,11 +2074,19 @@ else
 				{$locat = substr($location,0,27);  $locat = "$locat...";}
 			else
 				{$locat = $location;}
+			$play_audio='<td align=left><font size=2> </font></td>';
 			if ( (preg_match('/ftp/i',$location)) or (preg_match('/http/i',$location)) )
+				{
 				if ($log_recording_access<1) 
-					{$location = "<a href=\"$location\">$locat</a>";}
+					{
+					$play_audio = "<td align=left><font size=2> <audio controls preload=\"none\"> <source src ='$location' type='audio/wav' > <source src ='$location' type='audio/mpeg' >"._QXZ("No browser audio playback support")."</audio> </td>\n";
+					$location = "<a href=\"$location\">$locat</a>";
+					}
 				else
-					{$location = "<a href=\"recording_log_redirect.php?recording_id=$row[0]&lead_id=$row[12]&search_archived_data=1\">$locat</a>";}
+					{
+					$location = "<a href=\"recording_log_redirect.php?recording_id=$row[0]&lead_id=$row[12]&search_archived_data=1\">$locat</a>";
+					}
+				}
 			else
 				{$location = $locat;}
 			$u++;
@@ -2082,6 +2100,7 @@ else
 			echo "<td align=center><font size=1> $row[10] </td>\n";
 			echo "<td align=left><font size=2> $location *</td>\n";
 			echo "<td align=left><font size=2> <A HREF=\"user_stats.php?user=$row[13]\" target=\"_blank\">$row[13]</A> </td>";
+			echo "$play_audio";
 			echo "</tr>\n";
 			}
 
