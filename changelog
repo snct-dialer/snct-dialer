@@ -40,6 +40,10 @@
         eventfilter=Event: SIP-Hangup-Cause.
   * Add upstream Rev. 2827, 2828:
     - admin_listloader_fourth_gen.php: Fixed issue #1041.
+  * Add upstream Rev. 2829:
+    - admin_modify_lead.php,
+      qc_modify_lead.php: Added in-browser audio control, if recording
+        access control is disabled.
 
 2.25.12
 
