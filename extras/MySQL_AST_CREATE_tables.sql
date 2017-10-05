@@ -1312,7 +1312,9 @@ clients_sip SMALLINT(4) UNSIGNED NOT NULL,
 live_recordings SMALLINT(4) UNSIGNED NOT NULL,
 cpu_user_percent SMALLINT(3) UNSIGNED NOT NULL default '0',
 cpu_system_percent SMALLINT(3) UNSIGNED NOT NULL default '0',
-cpu_idle_percent SMALLINT(3) UNSIGNED NOT NULL default '0'
+cpu_idle_percent SMALLINT(3) UNSIGNED NOT NULL default '0',
+disk_reads MEDIUMINT(7),
+disk_writes MEDIUMINT(7)
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_agent_log (
@@ -4107,4 +4109,4 @@ UPDATE vicidial_configuration set value='1766' where name='qc_database_version';
 
 UPDATE system_settings set vdc_agent_api_active='1';
 
-UPDATE system_settings SET db_schema_version='1519',db_schema_update_date=NOW(),reload_timestamp=NOW();
+UPDATE system_settings SET db_schema_version='1520',db_schema_update_date=NOW(),reload_timestamp=NOW();

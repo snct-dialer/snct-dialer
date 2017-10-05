@@ -9,6 +9,7 @@
 #
 # CHANGES
 # 170915-2110 - Initial version for Asterisk 13, based upon AST_update.pl
+# 171002-1111 - Fixed timeout erase channels issue, added more debug output
 #
 
 # constants
@@ -265,6 +266,7 @@ else
 	{
 	### BEGIN manager event handling for asterisk version >= 13
 	$endless_loop = 1;
+	$loop_count = 0;
 
 	# get the number of microseconds the loop is supposed to take
 	$loop_time_usec = $loop_time * 1000000;
@@ -298,6 +300,9 @@ else
 
 	while($endless_loop)
 		{
+		# increment total loop counter
+		$loop_count++;
+
 		# make a copy of our counts
 		%old_counts_hash = %{ $counts };
 		$old_counts = \%old_counts_hash;
@@ -320,6 +325,11 @@ else
 
 		# wait till we get the response
 		$tn->waitfor('/Message: Channels will follow\n\n/');
+		$msg = $tn->errmsg;
+		if (  $msg ne '' ) 
+			{
+			print "WAITFOR ERRMSG: |$msg|$now_date|" . length($read_input_buf) . "|$endless_loop|$loop_count|Command: $action_string|";
+			}
 
 		# initialize the channal array
 		@chan_array = ();
@@ -365,7 +375,7 @@ else
 				# we have lost connection
 				$endless_loop=0;
 				$one_day_interval=0;
-				print "ERRMSG: |$msg|\n";
+				print "ERRMSG: |$msg|$now_date|" . length($read_input_buf) . "|$endless_loop|$loop_count|\n";
 				print "\nAsterisk server shutting down, PROCESS KILLED... EXITING\n\n";
 				$event_string="Asterisk server shutting down, PROCESS KILLED... EXITING|ONE DAY INTERVAL:$one_day_interval|$msg|";
 				event_logger($SYSLOG,$event_string);
@@ -373,7 +383,8 @@ else
 			else
 				{
 				# something happened
-				print "ERRMSG: |$msg|\n";
+				print "ERRMSG: |$msg|$now_date|" . length($read_input_buf) . "|$endless_loop|$loop_count|Command: $action_string|Match String: $match_string|\n";
+				$bad_grab = 1;
 				}
 			}
 		else
