@@ -50,6 +50,9 @@
   * Add upstream Rev. 2831:
     - Some Database changes.
   * New extras/mysql_update/mysql-1520.sql (2017-035).
+  * Add upstream Rev. 2832:
+    - AST_update_AMI2.pl: Fixed timeout erase channels issue,
+        added more debug output.
 
 2.25.12
 
