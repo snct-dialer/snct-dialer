@@ -72,7 +72,8 @@
     - help.php Added lists-inbound_list_script_override entry.
   * Add upstream Rev. 2835:
     - Some database changes.
-  * New extras/mysql_update/mysql-1521.sql (2017-037). 
+  * New extras/mysql_update/mysql-1521.sql (2017-037).
+  * Release 2.25.13 2017-10-08.
 
 2.25.12
 
