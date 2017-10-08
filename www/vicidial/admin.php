@@ -4224,12 +4224,13 @@ else
 # 170926-1618 - Fix for Test Call function for Asterisk 13
 # 170930-0853 - Added extension_appended_cidname options and custom reports variable display
 # 171001-1544 - Moved user IP Lists permissions to new security section in Modify User page
+# 171005-1707 - Fix for remote agent modify overlap issue
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-633a';
-$build = '171001-1544';
+$admin_version = '2.14-634a';
+$build = '171005-1707';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -15303,7 +15304,9 @@ if ($ADD==41111)
 			{
 			### check for closest remote agents to this account to ensure no overlapping
 			$user_finish = ($user_start + $number_of_lines);
-			$stmt="SELECT count(*) from vicidial_remote_agents where user_start > '$user_start' and user_start < '$user_finish';";
+			$user_finish_length = strlen($user_finish);
+			$stmt="SELECT count(*) from vicidial_remote_agents where user_start > '$user_start' and user_start < '$user_finish' and user_start != '$user_start' and (char_length(user_start) <= $user_finish_length);";
+			if ($DB > 0) {echo "|$stmt|";}
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$row=mysqli_fetch_row($rslt);
 			if ($row[0] > 0)
@@ -15317,6 +15320,7 @@ if ($ADD==41111)
 					}
 				else
 					{
+					if ($number_of_lines < 1) {$status='INACTIVE';}
 					$stmt="UPDATE vicidial_remote_agents set user_start='$user_start', number_of_lines='$number_of_lines', server_ip='$server_ip', conf_exten='$conf_exten', status='$status', campaign_id='$campaign_id', closer_campaigns='$groups_value',extension_group='$extension_group',on_hook_agent='$on_hook_agent',on_hook_ring_time='$on_hook_ring_time' where remote_agent_id='$remote_agent_id';";
 					$rslt=mysql_to_mysqli($stmt, $link);
 
@@ -30793,6 +30797,7 @@ if ($ADD==31111)
 
 			echo "<br>"._QXZ("MODIFY A REMOTE AGENTS ENTRY").": $row[0]<form action=$PHP_SELF method=POST>\n";
 			echo "<input type=hidden name=ADD value=41111>\n";
+			echo "<input type=hidden name=DB value=\"$DB\">\n";
 			echo "<input type=hidden name=remote_agent_id value=\"$row[0]\">\n";
 			echo "<center><TABLE width=$section_width cellspacing=3>\n";
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=right><a href=\"$PHP_SELF?ADD=3&user=$user_start\">"._QXZ("User ID Start")."</a>: </td><td align=left><input type=text name=user_start size=9 maxlength=9 value=\"$user_start\"> ("._QXZ("numbers only, incremented, must be an existing vicidial user").")$NWB#remote_agents-user_start$NWE</td></tr>\n";
