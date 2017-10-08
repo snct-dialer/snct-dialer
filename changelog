@@ -64,6 +64,12 @@
   * Add upstream Rev. 2834:
     - vicidial_custom_reports_admin.php: Added capability to 
         add/modify preset variables.
+  * Add upstream Rev. 2835:
+    - QUEUEMETRICS.txt: Add part for install Queue Metrics on OpenSuSE
+        LEAP 42.3 and VICIbox 8.
+    - vdc_script_display.php: Added inbound_list_script_override option.
+    - admin.php: Added inbound list script override, Issue #1038.
+    - help.php Added lists-inbound_list_script_override entry.
 
 2.25.12
 
