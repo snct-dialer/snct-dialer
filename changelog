@@ -59,6 +59,11 @@
     - Fix symlink backup at sounds backup.
     - Switch temp directory to /tmp/vicibackup.
     - Add prompt_count.txt to linux backup.
+  * Add upstream Rev. 2833:
+    - admin.php: Fix for remote agent modify overlap issue.
+  * Add upstream Rev. 2834:
+    - vicidial_custom_reports_admin.php: Added capability to 
+        add/modify preset variables.
 
 2.25.12
 
