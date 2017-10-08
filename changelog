@@ -70,6 +70,9 @@
     - vdc_script_display.php: Added inbound_list_script_override option.
     - admin.php: Added inbound list script override, Issue #1038.
     - help.php Added lists-inbound_list_script_override entry.
+  * Add upstream Rev. 2835:
+    - Some database changes.
+  * New extras/mysql_update/mysql-1521.sql (2017-037). 
 
 2.25.12
 
