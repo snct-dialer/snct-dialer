@@ -53,6 +53,12 @@
   * Add upstream Rev. 2832:
     - AST_update_AMI2.pl: Fixed timeout erase channels issue,
         added more debug output.
+  * ADMIN_backup.pl (2017-036):
+    - Add VARDB_backup_user, VARDB_backup_pass.
+    - Use --routines at mysql backup.
+    - Fix symlink backup at sounds backup.
+    - Switch temp directory to /tmp/vicibackup.
+    - Add prompt_count.txt to linux backup.
 
 2.25.12
 
