@@ -1,4 +1,4 @@
-VICIDIAL and QueueMetrics				UPDATED: 2016-11-02
+VICIDIAL and QueueMetrics				UPDATED: 2017-10-06
 
 queue_log logging was added to VICIDIAL outbound auto calling as an option in the 2.0.3 release, and for inbound in the 2.0.4 release.
 
@@ -37,7 +37,7 @@ Entries you should have in your crontab on one server:
 
 Here is a short summary of the needed steps to install QueueMetrics on your system:
 
-NOTE: further down in this document are updated installation instructions and instructions for installing on OpenSuSE 11.1.
+NOTE: further down in this document are updated installation instructions and instructions for installing on OpenSuSE 11.1 and LEAP 42.3(VICIbox 8).
 
 First, get Sun Java SDK/JRE and install on your system.
 NOTE: the GCJ java JRE available on most RedHat/Feroda/CentOS systems WILL NOT WORK
@@ -414,6 +414,59 @@ How to install Queue Metrics on OpenSuSE v.11.1 to v 11.3 (32 or 64 bit) with a 
 
 24) If nothing shows up, you may need to go into 'yast' and change the firewall settings:
       Security --> Firewall settings, go to allowed services, type "alt-d" and add 8080 as a new port, then save and exit
+
+
+
+
+
+
+
+
+
+OpenSuSE LEAP 42.3 and VICIbox 8 installation instructions: (2017-10-06)
+
+How to install Queue Metrics on OpenSuSE LEAP 42.3 and VICIbox 8 with a system that was installed with the ViciDial Group install script. Run them in this order to avoid funky java script bugs :D
+
+1) Type: zypper in tomcat tomcat-webapps
+- Say yes to install, and say yes to license
+
+2) Type: zypper in java-1_8_0-openjdk-devel
+- Say yes to install, and say yes to license
+
+3) cd /usr/src
+4) wget http://downloads.loway.ch/qm/QueueMetrics-17.06.1.tar.gz
+5) mkdir tars (incase it doesn't exist)
+6) tar xvfz QueueMetrics-17.06.1.tar.gz
+7) mv QueueMetrics-17.06.1.tar.gz ./tars/
+8) mkdir /srv/tomcat/webapps/QM
+9) cp -r queuemetrics-17.06.1/* /srv/tomcat/webapps/QM/
+10) zypper in mysql-connector-java
+11) cp /usr/share/java/mysql-connector-java.jar /srv/tomcat/webapps/QM/WEB-INF/lib/
+12) chkconfig tomcat on
+13) mysql --execute="CREATE DATABASE queuemetrics;"
+14) mysql queuemetrics --execute="GRANT ALL PRIVILEGES ON queuemetrics.* TO 'queuemetrics'@'localhost' IDENTIFIED BY 'javadude';"
+15) mysql queuemetrics --execute="GRANT ALL PRIVILEGES ON queuemetrics.* TO queuemetrics@localhost IDENTIFIED BY 'javadude';"
+16) mysql queuemetrics --execute="GRANT ALL PRIVILEGES ON queuemetrics.* TO queuemetrics@'%' IDENTIFIED BY 'javadude';"
+17) mysql queuemetrics --user=queuemetrics --password=javadude < /srv/tomcat/webapps/QM/WEB-INF/README/queuemetrics_sample.sql
+18) mysql queuemetrics --execute="CREATE INDEX time_id on queue_log(time_id);"
+19) mysql queuemetrics --execute="CREATE INDEX call_id on queue_log(call_id);"
+20) rctomcat start
+
+21) Edit /srv/tomcat/webapps/QM/WEB-INF/web.xml and change the IP address of the following entry:
+- <param-value>jdbc:mysql://10.0.0.4/queuemetrics?autoReconnect=true&amp;zeroDateTimeBehavior=convertToNull&amp;jdbcCompliantTruncation=false&amp;user=queuemetrics&amp;password=javadude</param-value>
+
+22) Go to http://<ip-addr>:8080/QM and it should tell you the schema is old, just click next or yes to everything and have fun
+
+23) If nothing shows up, you may need to go into 'yast' and change the firewall settings:
+      Security --> Firewall settings, go to allowed services, type "alt-d" and add 8080 as a new port, then save and exit
+
+
+
+
+
+
+
+
 
 
 

@@ -22,11 +22,13 @@
 # CHANGES
 # 170915-2106 - Initial version based off the orginal AST_manager_listen.pl script
 # 170920-1418 - Fix for issue with recordings beginning with CALLID variable
+# 170930-0923 - Commented out handle_sip_event and handle_cpd_event functions, not needed anymore, to be deleted later
 #
 
 # constants
 $DB=0;  # Debug flag, set to 0 for no debug messages, lots of output
 $DBX=0;
+$full_listen_log=0; # set to 1 to log all output to log file
 $run_check=1; # concurrency check
 $last_keepalive_epoch = time();
 $keepalive_skips=0;
@@ -283,8 +285,10 @@ else
 		else
 			{
 			@lines = split( /\n/, $read_input_buf );
+			$line_log='';
 			foreach my $line ( @lines )
 				{
+				$line_log .= "$line\n";
 				# add the line to the hash
 				($key,$value) = split( /: /, $line );
 				if ($key ne "")
@@ -294,6 +298,11 @@ else
 					$value =~ s/ +$//gi;	# remove trailing white space
 					$event_hash{"$key"} = $value;
 					}
+				}
+			if ($full_listen_log > 0) 
+				{
+				$manager_string="$line_log";
+				&manager_output_logger;
 				}
 			}
 		
@@ -532,10 +541,10 @@ sub handle_event
 		case "DTMFEnd" { return handle_dtmf_end_event( %event_hash ); }		
 
 		# CPD-Result event
-		case "CPD-Result" { return handle_cpd_event( %event_hash ); }
+	#	case "CPD-Result" { return handle_cpd_event( %event_hash ); }
 
 		# SIP-Hangup-Cause event
-		case "SIP-Hangup-Cause" { return handle_sip_event( %event_hash ); }
+	#	case "SIP-Hangup-Cause" { return handle_sip_event( %event_hash ); }
 
 		# NewCallerid event
 		case "NewCallerid" { return handle_newcid_event( %event_hash ); }
@@ -777,116 +786,116 @@ sub handle_dtmf_end_event
 	}
 
 
-sub handle_cpd_event
-	{
-	my %event_hash = @_;
+#sub handle_cpd_event
+#	{
+#	my %event_hash = @_;
+#
+#	if (
+#		( exists $event_hash{'Channel'} ) &&
+#		( exists $event_hash{'Uniqueid'} ) &&
+#		( exists $event_hash{'CallerIDName'} ) &&
+#		( exists $event_hash{'ConnectedLineName'} ) &&
+#		( exists $event_hash{'CPDResult'} )
+#	)
+#		{
+#
+#		# get the valid Vicidial Call ID
+#		$call_id = get_valid_callid( $event_hash{'CallerIDName'}, $event_hash{'ConnectedLineName'} );
+#
+#		&get_time_now;
+#
+#		if($DB){print STDERR "|cpd_result = $event_hash{'CPDResult'}|cpd_detailed_result = $event_hash{'CPDDetailedResult'}|cpd_call_id = $event_hash{'CPDCallID'}|cpd_ref_id = $event_hash{'CPDReferenceID'}|cpd_camp_name = $event_hash{'CPDCampaignName'}|\n";}
+#
+#		if (length($event_hash{'CPDResult'})>0)
+#			{
+#			$lead_id = substr($call_id, 10, 10);
+#			$lead_id = ($lead_id + 0);
+#	
+#			# TODO change the cpd log and this insert to include the new SIP Headers for 2.0 CPD
+#			$stmtA = "INSERT INTO vicidial_cpd_log set channel='$event_hash{'Channel'}', uniqueid='$event_hash{'Uniqueid'}', callerid='$call_id', server_ip='$event_hash{'ServerIP'}', lead_id='$lead_id', event_date='$now_date', result='$event_hash{'CPDResult'}';";
+#			if($DB){print STDERR "|$stmtA|\n";}
+#			my $affected_rows = $dbhA->do($stmtA);
+#			if($DB){print "|$affected_rows CPD_log inserted|$now_date|\n";}
+#			}
+#
+#		return 1;
+#		}
+#	else
+#		{
+#		print STDERR "CPD-Result event does not have a Channel, Uniqueid, CPDResult, ConnectedLineName, or CallerIDName ?!!!\n";
+#		return 3;
+#		}
+#	}
 
-	if (
-		( exists $event_hash{'Channel'} ) &&
-		( exists $event_hash{'Uniqueid'} ) &&
-		( exists $event_hash{'CallerIDName'} ) &&
-		( exists $event_hash{'ConnectedLineName'} ) &&
-		( exists $event_hash{'CPDResult'} )
-	)
-		{
 
-		# get the valid Vicidial Call ID
-		$call_id = get_valid_callid( $event_hash{'CallerIDName'}, $event_hash{'ConnectedLineName'} );
-
-		&get_time_now;
-
-		if($DB){print STDERR "|cpd_result = $event_hash{'CPDResult'}|cpd_detailed_result = $event_hash{'CPDDetailedResult'}|cpd_call_id = $event_hash{'CPDCallID'}|cpd_ref_id = $event_hash{'CPDReferenceID'}|cpd_camp_name = $event_hash{'CPDCampaignName'}|\n";}
-
-		if (length($event_hash{'CPDResult'})>0)
-			{
-			$lead_id = substr($call_id, 10, 10);
-			$lead_id = ($lead_id + 0);
-	
-			# TODO change the cpd log and this insert to include the new SIP Headers for 2.0 CPD
-			$stmtA = "INSERT INTO vicidial_cpd_log set channel='$event_hash{'Channel'}', uniqueid='$event_hash{'Uniqueid'}', callerid='$call_id', server_ip='$event_hash{'ServerIP'}', lead_id='$lead_id', event_date='$now_date', result='$event_hash{'CPDResult'}';";
-			if($DB){print STDERR "|$stmtA|\n";}
-			my $affected_rows = $dbhA->do($stmtA);
-			if($DB){print "|$affected_rows CPD_log inserted|$now_date|\n";}
-			}
-
-		return 1;
-		}
-	else
-		{
-		print STDERR "CPD-Result event does not have a Channel, Uniqueid, CPDResult, ConnectedLineName, or CallerIDName ?!!!\n";
-		return 3;
-		}
-	}
-
-
-sub handle_sip_event
-	{
-	my %event_hash = @_;
-
-	if (
-		( exists $event_hash{'Channel'} ) &&
-		( exists $event_hash{'Uniqueid'} ) &&
-		( exists $event_hash{'CallerIDName'} ) &&
-		( exists $event_hash{'ConnectedLineName'} ) &&
-		( exists $event_hash{'Result'} )
-	)
-		{
-
-		# get the valid Vicidial Call ID
-		$call_id = get_valid_callid( $event_hash{'CallerIDName'}, $event_hash{'ConnectedLineName'} );
-
-		&get_time_now;
-
-		@result_details=split(/\|/, $event_hash{'Result'});
-	
-		if ( (length($event_hash{'Result'})>0) && ($result_details[0] !~ /^407/) )
-			{
-			$lead_id = substr($call_id, 10, 10);
-			$lead_id = ($lead_id + 0);
-			$beginUNIQUEID = $event_hash{'Uniqueid'};
-			$beginUNIQUEID =~ s/\..*//gi;
-			$stmtA = "UPDATE vicidial_dial_log SET sip_hangup_cause='$result_details[0]',sip_hangup_reason='$result_details[1]',uniqueid='$event_hash{'Uniqueid'}' where caller_code='$call_id' and server_ip='$event_hash{'ServerIP'}' and lead_id='$lead_id';";
-			if($DB){print STDERR "|$stmtA|\n";}
-			my $affected_rows = $dbhA->do($stmtA);
-			if($DB){print "|$affected_rows dial_log updated|$call_id|$event_hash{'ServerIP'}|$event_hash{'Result'}|\n";}
-			$vddl_update = ($vddl_update + $affected_rows);
-
-			$preCtarget = ($beginUNIQUEID - 180);   # 180 seconds before call start
-			($preCsec,$preCmin,$preChour,$preCmday,$preCmon,$preCyear,$preCwday,$preCyday,$preCisdst) = localtime($preCtarget);
-			$preCyear = ($preCyear + 1900);
-			$preCmon++;
-			if ($preCmon < 10) {$preCmon = "0$preCmon";}
-			if ($preCmday < 10) {$preCmday = "0$preCmday";}
-			if ($preChour < 10) {$preChour = "0$preChour";}
-			if ($preCmin < 10) {$preCmin = "0$preCmin";}
-			if ($preCsec < 10) {$preCsec = "0$preCsec";}
-			$preCSQLdate = "$preCyear-$preCmon-$preCmday $preChour:$preCmin:$preCsec";
-
-			$postCtarget = ($beginUNIQUEID + 10);   # 10 seconds after call start
-			($postCsec,$postCmin,$postChour,$postCmday,$postCmon,$postCyear,$postCwday,$postCyday,$postCisdst) = localtime($postCtarget);
-			$postCyear = ($postCyear + 1900);
-			$postCmon++;
-			if ($postCmon < 10) {$postCmon = "0$postCmon";}
-			if ($postCmday < 10) {$postCmday = "0$postCmday";}
-			if ($postChour < 10) {$postChour = "0$postChour";}
-			if ($postCmin < 10) {$postCmin = "0$postCmin";}
-			if ($postCsec < 10) {$postCsec = "0$postCsec";}
-			$postCSQLdate = "$postCyear-$postCmon-$postCmday $postChour:$postCmin:$postCsec";
-	
-			$stmtA = "UPDATE vicidial_carrier_log SET sip_hangup_cause='$result_details[0]',sip_hangup_reason='$result_details[1]' where server_ip='$event_hash{'ServerIP'}' and caller_code='$call_id' and lead_id='$lead_id' and call_date > \"$preCSQLdate\" and call_date < \"$postCSQLdate\" order by call_date desc limit 1;";
-			if($DB){print STDERR "|$stmtA|\n";}
-			my $affected_rows = $dbhA->do($stmtA);
-			if($DB){print "|$affected_rows carrier_log updated|$call_id|$event_hash{'ServerIP'}|$event_hash{'Uniqueid'}|$result_details[0]|$result_details[1]|\n";}
-			}				
-
-		return 1;
-		}
-	else
-		{
-		print STDERR "SIP-Hangup-Cause event does not have a Channel, Uniqueid, Result, ConnectedLineName, or CallerIDName ?!!!\n";
-		return 3;
-		}
-	}
+#sub handle_sip_event
+#	{
+#	my %event_hash = @_;
+#
+#	if (
+#		( exists $event_hash{'Channel'} ) &&
+#		( exists $event_hash{'Uniqueid'} ) &&
+#		( exists $event_hash{'CallerIDName'} ) &&
+#		( exists $event_hash{'ConnectedLineName'} ) &&
+#		( exists $event_hash{'Result'} )
+#	)
+#		{
+#
+#		# get the valid Vicidial Call ID
+#		$call_id = get_valid_callid( $event_hash{'CallerIDName'}, $event_hash{'ConnectedLineName'} );
+#
+#		&get_time_now;
+#
+#		@result_details=split(/\|/, $event_hash{'Result'});
+#	
+#		if ( (length($event_hash{'Result'})>0) && ($result_details[0] !~ /^407/) )
+#			{
+#			$lead_id = substr($call_id, 10, 10);
+#			$lead_id = ($lead_id + 0);
+#			$beginUNIQUEID = $event_hash{'Uniqueid'};
+#			$beginUNIQUEID =~ s/\..*//gi;
+#			$stmtA = "UPDATE vicidial_dial_log SET sip_hangup_cause='$result_details[0]',sip_hangup_reason='$result_details[1]',uniqueid='$event_hash{'Uniqueid'}' where caller_code='$call_id' and server_ip='$event_hash{'ServerIP'}' and lead_id='$lead_id';";
+#			if($DB){print STDERR "|$stmtA|\n";}
+#			my $affected_rows = $dbhA->do($stmtA);
+#			if($DB){print "|$affected_rows dial_log updated|$call_id|$event_hash{'ServerIP'}|$event_hash{'Result'}|\n";}
+#			$vddl_update = ($vddl_update + $affected_rows);
+#
+#			$preCtarget = ($beginUNIQUEID - 180);   # 180 seconds before call start
+#			($preCsec,$preCmin,$preChour,$preCmday,$preCmon,$preCyear,$preCwday,$preCyday,$preCisdst) = localtime($preCtarget);
+#			$preCyear = ($preCyear + 1900);
+#			$preCmon++;
+#			if ($preCmon < 10) {$preCmon = "0$preCmon";}
+#			if ($preCmday < 10) {$preCmday = "0$preCmday";}
+#			if ($preChour < 10) {$preChour = "0$preChour";}
+#			if ($preCmin < 10) {$preCmin = "0$preCmin";}
+#			if ($preCsec < 10) {$preCsec = "0$preCsec";}
+#			$preCSQLdate = "$preCyear-$preCmon-$preCmday $preChour:$preCmin:$preCsec";
+#
+#			$postCtarget = ($beginUNIQUEID + 10);   # 10 seconds after call start
+#			($postCsec,$postCmin,$postChour,$postCmday,$postCmon,$postCyear,$postCwday,$postCyday,$postCisdst) = localtime($postCtarget);
+#			$postCyear = ($postCyear + 1900);
+#			$postCmon++;
+#			if ($postCmon < 10) {$postCmon = "0$postCmon";}
+#			if ($postCmday < 10) {$postCmday = "0$postCmday";}
+#			if ($postChour < 10) {$postChour = "0$postChour";}
+#			if ($postCmin < 10) {$postCmin = "0$postCmin";}
+#			if ($postCsec < 10) {$postCsec = "0$postCsec";}
+#			$postCSQLdate = "$postCyear-$postCmon-$postCmday $postChour:$postCmin:$postCsec";
+#	
+#			$stmtA = "UPDATE vicidial_carrier_log SET sip_hangup_cause='$result_details[0]',sip_hangup_reason='$result_details[1]' where server_ip='$event_hash{'ServerIP'}' and caller_code='$call_id' and lead_id='$lead_id' and call_date > \"$preCSQLdate\" and call_date < \"$postCSQLdate\" order by call_date desc limit 1;";
+#			if($DB){print STDERR "|$stmtA|\n";}
+#			my $affected_rows = $dbhA->do($stmtA);
+#			if($DB){print "|$affected_rows carrier_log updated|$call_id|$event_hash{'ServerIP'}|$event_hash{'Uniqueid'}|$result_details[0]|$result_details[1]|\n";}
+#			}				
+#
+#		return 1;
+#		}
+#	else
+#		{
+#		print STDERR "SIP-Hangup-Cause event does not have a Channel, Uniqueid, Result, ConnectedLineName, or CallerIDName ?!!!\n";
+#		return 3;
+#		}
+#	}
 
 
 
@@ -939,7 +948,7 @@ sub dtmf_logger
 	if ($SYSLOG)
 		{
 		open(Dout, ">>$PATHlogs/dtmf.$action_log_date")
-				|| die "Can't open $PATHlogs/dttmf.$action_log_date: $!\n";
+				|| die "Can't open $PATHlogs/dtmf.$action_log_date: $!\n";
 		print Dout "|$dtmf_string|\n";
 		close(Dout);
 		}

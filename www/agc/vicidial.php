@@ -565,10 +565,11 @@
 # 170912-1619 - Fix for no-hopper dnc dialing issue
 # 170913-1747 - Small change for two agent events
 # 170914-0708 - Fix for script tab issue
+# 170923-1336 - Small change to hangup customer process
 #
 
-$version = '2.14-535c';
-$build = '170914-0708';
+$version = '2.14-536c';
+$build = '170923-1336';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -12284,13 +12285,13 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						//		{
 						//		alert(xmlhttp.responseText);
 						//		}
-
+							VD_live_customer_call = 0;
 							agent_events('agent_hangup', '', aec);   aec++;
 							}
 						}
-					process_post_hangup=1;
 					delete xmlhttp;
 					}
+				process_post_hangup=1;
 				}
 			else 
 				{process_post_hangup=1;}

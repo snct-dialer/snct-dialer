@@ -134,6 +134,9 @@
 # 170819-0951 - Added allow_manage_active_lists entry
 # 170825-1129 - Added auto_reports-filename_override entry
 # 170920-2156 - Added expired_lists_inactive entry
+# 170923-1458 - Added settings-did_system_filter entry
+# 170930-0906 - Added new extension append cidname options and custom reports help
+# 171006-2058 - Added lists-inbound_list_script_override entry
 #
 
 
@@ -1978,7 +1981,7 @@ if ($SSqc_features_active > 0)
 <BR>
 <A NAME="campaigns-extension_appended_cidname">
 <BR>
-<B><?php echo _QXZ("Extension Append CID"); ?> -</B><?php echo _QXZ("If enabled, the calls placed from this campaign will have a space and the phone extension of the agent appended to the end of the CallerID name for the call before it is sent to the agent. Default is N for disabled."); ?>
+<B><?php echo _QXZ("Extension Append CID"); ?> -</B><?php echo _QXZ("If enabled, the calls placed from this campaign will have a space and the phone extension of the agent appended to the end of the CallerID name for the call before it is sent to the agent. Default is N for disabled. If USER is part of the option, then the user ID will be used instead of the phone extension. If WITH_CAMPAIGN is used, then another spae and the campaign ID will be included as well."); ?>
 
 <BR>
 <A NAME="campaigns-pllb_grouping">
@@ -2145,6 +2148,11 @@ if ($SSqc_features_active > 0)
 <A NAME="lists-agent_script_override">
 <BR>
 <B><?php echo _QXZ("Agent Script Override"); ?> -</B><?php echo _QXZ("If this field is set, this will be the script that the agent sees on their screen instead of the campaign script when the lead is from this list. Default is not set."); ?>
+
+<BR>
+<A NAME="lists-inbound_list_script_override">
+<BR>
+<B><?php echo _QXZ("Inbound Script Override"); ?> -</B><?php echo _QXZ("If this field is set, this will be the script that the agent sees on their screen instead of the campaign script when the agent receives an inbound call and the lead is from this list. Default is not set."); ?>
 
 <BR>
 <A NAME="lists-campaign_cid_override">
@@ -3001,7 +3009,7 @@ if ($SSqc_features_active > 0)
 <BR>
 <A NAME="inbound_groups-extension_appended_cidname">
 <BR>
-<B><?php echo _QXZ("Extension Append CID"); ?> -</B><?php echo _QXZ("If enabled, the calls coming in from this in-group will have a space and the phone extension of the agent appended to the end of the CallerID name for the call before it is sent to the agent. Default is N for disabled."); ?>
+<B><?php echo _QXZ("Extension Append CID"); ?> -</B><?php echo _QXZ("If enabled, the calls coming in from this in-group will have a space and the phone extension of the agent appended to the end of the CallerID name for the call before it is sent to the agent. Default is N for disabled. If USER is part of the option, then the user ID will be used instead of the phone extension. If WITH_CAMPAIGN is used, then another spae and the campaign ID will be included as well."); ?>
 
 <BR>
 <A NAME="inbound_groups-uniqueid_status_display">
@@ -5355,6 +5363,11 @@ FR_SPAC 00 00 00 00 00 - <?php echo _QXZ("France space separated phone number");
 <B><?php echo _QXZ("Enable Campaign Test Calls"); ?> -</B><?php echo _QXZ("This setting enables the ability to enter a phone code and phone number into fields at the bottom of the Campaign Detail screen and place a phone call to that number as if it were a lead being auto-dialed in the system. The phone number will be stored as a new lead in the manual dial list ID list. The campaign must be active for this feature to be enabled, and it is recommended that the lists assigned to the campaign all be set to inactive. The dial prefix, dial timeout and all other dialing related features, except for DNC and call time options, will affect the dialing of the test number. The phone call will be placed on the server selected as the voicemail server in the system settings. Default is 0 for disabled."); ?>
 
 <BR>
+<A NAME="settings-did_system_filter">
+<BR>
+<B><?php echo _QXZ("DID System Filter"); ?> -</B><?php echo _QXZ("This setting enables the special did_system_filter DID entry. The filter settings in this DID entry will be applied to all incoming calls to the system, prior to any other actions on the call. This feature is commonly used for system-wide inbound blacklists, or filtering of do-not-contact phone numbers. Default is 0 for disabled."); ?>
+
+<BR>
 <A NAME="settings-user_new_lead_limit">
 <BR>
 <B><?php echo _QXZ("New Leads Per List Limit"); ?> -</B><?php echo _QXZ("This setting enables the new lead limits per list to be set on the list modify page and the user list new lead limit page. This feature will only work properly if the campaign is set to either the MANUAL or INBOUND_MAN Dial Method and No Hopper dialing is enabled. Default is 0 for disabled."); ?>
@@ -6880,6 +6893,28 @@ if ($SSqc_features_active > 0)
 <B><?php echo _QXZ("Path name"); ?> -</B><?php echo _QXZ("The path on the domain where the report is located.  When the domain is blank it is assumed that the report is housed on the local web server."); ?>
 
 <BR>
+<A NAME="custom_reports_admin-constants">
+<BR>
+<B><?php echo _QXZ("Preset constants"); ?> -</B><?php echo _QXZ("Here is where a user can define a preset value to pass to the report when it is accessed from the custom report link.  This is useful if the user is viewing a report that accepts multiple variables that change the report output and there is a certain set of report parameters the user frequently uses and they wish to save time by coming to the report with those values already set."); ?>
+<BR>
+
+<B><?php echo _QXZ("Variable name"); ?> -</B><?php echo _QXZ("The enters the variable name here.  Names allow alphanumeric characters, underscores, and to a limited extent brackets.  Brackets are used to pass an array to the report and should be placed at the end of the variable name, such as 'var_name[]'.  The interface will condense brackets by removing any characters within a pair of them, and will also remove unmatched brackets."); ?>
+<BR>
+
+<B><?php echo _QXZ("Value"); ?> -</B><?php echo _QXZ("Then, the user enters a variable value in the \"Value\" field, either by selecting a pre-defined variable value or a custom value.  With the exception of 'datetime' and 'filedatetime', all pre-defined variables are dates in yyyy-mm-dd format.  The predefined values are: 'today' for today's date, 'yesterday' for yesterday's date, 'datetime' which is a timestamp in the format of 'yyyy-mm-dd hh:ii:ss', 'filedatetime' which is an all-numeric timestamp in the format 'yyyymmddhhiiss', and 6/7/8/13/14/15/30days, all of which are the date 6/7/etc days ago.  If the user would like to define their own value for the variable, they can set the value to \"Custom Value\", then fill out the custom value in the field to the right.  Click 'ADD' to add the variable name/value pair to the presets to include in the report.  Values will be URL-encoded prior to being entered in the database."); ?>
+
+<BR><BR>
+<A NAME="custom_reports_admin-current_constants">
+<BR>
+<B><?php echo _QXZ("Current constants"); ?> -</B><?php echo _QXZ("Any report constant the user has entered to add to the report is displayed here.  They are not editable, but they can be removed by clicking 'REMOVE' and then re-entered."); ?>
+
+<BR><BR>
+<A NAME="custom_reports_admin-preset_constants">
+<BR>
+<B><?php echo _QXZ("Preset constants"); ?> -</B><?php echo _QXZ("This textarea field is where presets for the current custom reports are displayed and can be edited.  The name/value pairs are displayed per-line and are fully editable.  Users can also remove variables simply by deleting the line they are displayed on, or can enter new name/value pairs per line.  Variables can also be separated by an ampersand as in the typical URL GET display - the dialer interface will make the necessary adjustments to display them properly in this textarea field."); ?>
+
+
+<BR><BR>
 <A NAME="custom_reports_admin-custom_reports_user_groups">
 <BR>
 <B><?php echo _QXZ("User groups"); ?> -</B><?php echo _QXZ("The user groups that will be allowed to view this report.  When a user goes to the reports page, if they belong to a user group that has access to any of the custom reports, they can see a Custom Reports section on this page with links to every custom report they can view."); ?>

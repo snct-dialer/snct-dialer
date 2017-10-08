@@ -875,7 +875,7 @@ xferconf_e_number VARCHAR(50) default '',
 use_custom_cid ENUM('Y','N','AREACODE','USER_CUSTOM_1','USER_CUSTOM_2','USER_CUSTOM_3','USER_CUSTOM_4','USER_CUSTOM_5') default 'N',
 scheduled_callbacks_alert ENUM('NONE','BLINK','RED','BLINK_RED','BLINK_DEFER','RED_DEFER','BLINK_RED_DEFER') default 'NONE',
 queuemetrics_callstatus_override ENUM('DISABLED','NO','YES') default 'DISABLED',
-extension_appended_cidname ENUM('Y','N') default 'N',
+extension_appended_cidname ENUM('Y','N','Y_USER','Y_WITH_CAMPAIGN','Y_USER_WITH_CAMPAIGN') default 'N',
 scheduled_callbacks_count ENUM('LIVE','ALL_ACTIVE') default 'ALL_ACTIVE',
 manual_dial_override ENUM('NONE','ALLOW_ALL','DISABLE_ALL') default 'NONE',
 blind_monitor_warning ENUM('DISABLED','ALERT','NOTICE','AUDIO','ALERT_NOTICE','ALERT_AUDIO','NOTICE_AUDIO','ALL') default 'DISABLED',
@@ -1023,7 +1023,8 @@ custom_one VARCHAR(100) default '',
 custom_two VARCHAR(100) default '',
 custom_three VARCHAR(100) default '',
 custom_four VARCHAR(100) default '',
-custom_five VARCHAR(100) default ''
+custom_five VARCHAR(100) default '',
+inbound_list_script_override VARCHAR(20)
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_statuses (
@@ -1165,7 +1166,7 @@ xferconf_c_number VARCHAR(50) default '',
 xferconf_d_number VARCHAR(50) default '',
 xferconf_e_number VARCHAR(50) default '',
 ignore_list_script_override ENUM('Y','N') default 'N',
-extension_appended_cidname ENUM('Y','N') default 'N',
+extension_appended_cidname ENUM('Y','N','Y_USER','Y_WITH_CAMPAIGN','Y_USER_WITH_CAMPAIGN') default 'N',
 uniqueid_status_display ENUM('DISABLED','ENABLED','ENABLED_PREFIX','ENABLED_PRESERVE') default 'DISABLED',
 uniqueid_status_prefix VARCHAR(50) default '',
 hold_time_option_minimum SMALLINT(5) default '0',
@@ -1312,7 +1313,9 @@ clients_sip SMALLINT(4) UNSIGNED NOT NULL,
 live_recordings SMALLINT(4) UNSIGNED NOT NULL,
 cpu_user_percent SMALLINT(3) UNSIGNED NOT NULL default '0',
 cpu_system_percent SMALLINT(3) UNSIGNED NOT NULL default '0',
-cpu_idle_percent SMALLINT(3) UNSIGNED NOT NULL default '0'
+cpu_idle_percent SMALLINT(3) UNSIGNED NOT NULL default '0',
+disk_reads MEDIUMINT(7),
+disk_writes MEDIUMINT(7)
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_agent_log (
@@ -1744,7 +1747,8 @@ detect_3way ENUM('Y','N') default 'N',
 company_name VARCHAR(50) default '',
 ticket_mail VARCHAR(100) default '',
 allow_manage_active_lists ENUM('0','1') default '0',
-expired_lists_inactive ENUM('0','1') default '0'
+expired_lists_inactive ENUM('0','1') default '0',
+did_system_filter ENUM('0','1') default '0'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_campaigns_list_mix (
@@ -3504,7 +3508,8 @@ report_name VARCHAR(100) COLLATE utf8_unicode_ci DEFAULT NULL,
 date_added DATETIME DEFAULT NULL,
 user VARCHAR(20) COLLATE utf8_unicode_ci DEFAULT NULL,
 domain VARCHAR(70) COLLATE utf8_unicode_ci DEFAULT NULL,
-path_name VARCHAR(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+path_name TEXT COLLATE utf8_unicode_ci DEFAULT NULL,
+custom_variables TEXT COLLATE utf8_unicode_ci DEFAULT NULL,
 date_modified TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 user_modify VARCHAR(20) COLLATE utf8_unicode_ci DEFAULT NULL,
 PRIMARY KEY (custom_report_id),
@@ -3816,6 +3821,18 @@ index (lead_id),
 index (uniqueid)
 ) ENGINE=MyISAM;
 
+CREATE TABLE vicidial_dnccom_scrub_log (
+phone_number VARCHAR(18),
+scrub_date DATETIME NOT NULL,
+flag_invalid ENUM('','0','1') default '',
+flag_dnc ENUM('','0','1') default '',
+flag_projdnc ENUM('','0','1') default '',
+flag_litigator ENUM('','0','1') default '',
+full_response VARCHAR(255) default '',
+index(phone_number),
+index(scrub_date)
+) ENGINE=MyISAM;
+
 
 ALTER TABLE vicidial_email_list MODIFY message text character set utf8;
 
@@ -4093,4 +4110,4 @@ UPDATE vicidial_configuration set value='1766' where name='qc_database_version';
 
 UPDATE system_settings set vdc_agent_api_active='1';
 
-UPDATE system_settings SET db_schema_version='1518',db_schema_update_date=NOW(),reload_timestamp=NOW();
+UPDATE system_settings SET db_schema_version='1521',db_schema_update_date=NOW(),reload_timestamp=NOW();

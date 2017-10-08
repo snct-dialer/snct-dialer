@@ -31,6 +31,7 @@
 # 170409-1003 - Added IP List features to user_authorization
 # 170503-2130 - Patched sec_convert to fix rounding time bug, issue #1011
 # 170526-2142 - Added additional auth variable filtering, issue #1016
+# 170930-0852 - Added code for custom reports variable display
 #
 
 ##### BEGIN validate user login credentials, check for failed lock out #####
@@ -1402,6 +1403,39 @@ function hex2rgb($hex) {
 	$rgb = array($r, $g, $b);
 	return $rgb; // returns an array with the rgb values
 }
+function ConvertPresets($URL_string)
+	{
+	$from_array=array(
+		"--A--today--B--", 
+		"--A--yesterday--B--", 
+		"--A--datetime--B--", 
+		"--A--filedatetime--B--", 
+		"--A--6days--B--", 
+		"--A--7days--B--", 
+		"--A--8days--B--", 
+		"--A--13days--B--", 
+		"--A--14days--B--", 
+		"--A--15days--B--", 
+		"--A--30days--B--"
+	);
+
+	$to_array=array(
+		date("Y-m-d"), 
+		date("Y-m-d", time()-86400),
+		date("Y-m-d H:i:s"),
+		date("YmdHis"),
+		date("Y-m-d", time()-(86400*6)),
+		date("Y-m-d", time()-(86400*7)),
+		date("Y-m-d", time()-(86400*8)),
+		date("Y-m-d", time()-(86400*13)),
+		date("Y-m-d", time()-(86400*14)),
+		date("Y-m-d", time()-(86400*15)),
+		date("Y-m-d", time()-(86400*30))
+	);
+
+	$URL_string = strtr($URL_string, array_combine($from_array, $to_array));
+	return $URL_string;
+	}
 
 function createDateRangeArray($strDateFrom,$strDateTo)
 	{

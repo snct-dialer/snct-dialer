@@ -35,10 +35,11 @@
 # 160818-1226 - Added MANUALDIALLINK option
 # 170317-2315 - Fixed in-group list script override issue, added debug
 # 170526-2343 - Added additional variable filtering
+# 171006-2055 - Added inbound_list_script_override option
 #
 
-$version = '2.14-29';
-$build = '170526-2343';
+$version = '2.14-30';
+$build = '171006-2055';
 
 require_once("dbconnect_mysqli.php");
 require_once("functions.php");
@@ -363,7 +364,9 @@ if ($inOUT == 'IN')
 
 if ($ignore_list_script < 1)
 	{
-	$stmt="SELECT agent_script_override from vicidial_lists where list_id='$list_id';";
+#	$stmt="SELECT agent_script_override from vicidial_lists where list_id='$list_id';";
+	$stmt="SELECT if('$inOUT'= 'IN',if(inbound_list_script_override is null or inbound_list_script_override='',agent_script_override,inbound_list_script_override),agent_script_override) from vicidial_lists where list_id='$list_id';";
+	if ($DB) {echo "$stmt\n";}
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$row=mysqli_fetch_row($rslt);
 	$agent_script_override =		$row[0];

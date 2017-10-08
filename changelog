@@ -1,3 +1,80 @@
+2.25.13
+
+  [Jörg Frings-Fürst]
+  * Add upstream Rev. 2820:
+    - Chnages at AST_agent_performance_detail.php.
+  * Add upstream Rev. 2821:
+    - Added system filter feature, before any other actions
+      + agi-DID_route.agi,
+        ASTERISK_13.txt,
+        DNC-dot-COM_integration.txt,
+        vicidial.php,
+        AST_url_log_report.php,
+        admin.php,
+        help.php.
+      + New www/vicidial/DNCcom_inbound_filter.php.
+  * New extras/mysql_update/mysql-1519.sql (2017-034).
+  * Add upstream Rev. 2822:
+    - admin.php: Fix for Test Call function for Asterisk 13.
+  * Add upstream Rev. 2823:
+    - DNCcom_inbound_filter.php: Added in_filter_override option and cache
+        searching option.
+  * Add upstream Rev. 2824:
+    - DNCcom_inbound_filter.php: hanged to log flags that are not used to
+        filter, added in_cache_override option, added connect retry if rejected.
+  * Add upstream Rev. 2825:
+    - agi-VDAD_ALL_inbound.agi,
+      agi-VDAD_ALL_outbound.agi,
+      agi-VDAD_ALL_outboundBETA.agi: Added extension append options.
+    - admin.php: Added extension_appended_cidname options and custom reports
+        variable display.
+    - functions.php: Added code for custom reports variable display.
+    - help.php: Added new extension append cidname options and custom
+       reports help.
+    - vicidial_custom_reports_admin.php: Added custom variables.
+  * Add upstream Rev. 2826:
+    - AST_manager_listen_AMI2.pl: Commented out handle_sip_event and
+        handle_cpd_event functions, not needed anymore, to be deleted later.
+    - extensions.conf.sample-13: remove Playback(sip-silence) calls.
+    - manager.conf.sample-13: remove eventfilter=Event: CPD-Result and
+        eventfilter=Event: SIP-Hangup-Cause.
+  * Add upstream Rev. 2827, 2828:
+    - admin_listloader_fourth_gen.php: Fixed issue #1041.
+  * Add upstream Rev. 2829:
+    - admin_modify_lead.php,
+      qc_modify_lead.php: Added in-browser audio control, if recording
+        access control is disabled.
+  * Add upstream Rev. 2830:
+    - admin.php: Moved user IP Lists permissions to new security section
+        in Modify User page.
+  * Add upstream Rev. 2831:
+    - Some Database changes.
+  * New extras/mysql_update/mysql-1520.sql (2017-035).
+  * Add upstream Rev. 2832:
+    - AST_update_AMI2.pl: Fixed timeout erase channels issue,
+        added more debug output.
+  * ADMIN_backup.pl (2017-036):
+    - Add VARDB_backup_user, VARDB_backup_pass.
+    - Use --routines at mysql backup.
+    - Fix symlink backup at sounds backup.
+    - Switch temp directory to /tmp/vicibackup.
+    - Add prompt_count.txt to linux backup.
+  * Add upstream Rev. 2833:
+    - admin.php: Fix for remote agent modify overlap issue.
+  * Add upstream Rev. 2834:
+    - vicidial_custom_reports_admin.php: Added capability to 
+        add/modify preset variables.
+  * Add upstream Rev. 2835:
+    - QUEUEMETRICS.txt: Add part for install Queue Metrics on OpenSuSE
+        LEAP 42.3 and VICIbox 8.
+    - vdc_script_display.php: Added inbound_list_script_override option.
+    - admin.php: Added inbound list script override, Issue #1038.
+    - help.php Added lists-inbound_list_script_override entry.
+  * Add upstream Rev. 2835:
+    - Some database changes.
+  * New extras/mysql_update/mysql-1521.sql (2017-037).
+  * Release 2.25.13 2017-10-08.
+
 2.25.12
 
   [Jörg Frings-Fürst]

@@ -1,4 +1,4 @@
-ASTERISK 13 COMPATIBILITY	   START: 2017-09-16	    UPDATE: 2017-09-16
+ASTERISK 13 COMPATIBILITY	   START: 2017-09-16	    UPDATE: 2017-09-22
 
 
 
@@ -64,9 +64,9 @@ make
 make install
 cd ../../
 
-wget http://download.vicidial.com/beta-apps/asterisk-13.17.1-vici.tar.gz
-tar xvfz asterisk-13.17.1-vici.tar.gz
-cd asterisk-13.17.1-vici/
+wget http://download.vicidial.com/beta-apps/asterisk-13.17.2-vici.tar.gz
+tar xvfz asterisk-13.17.2-vici.tar.gz
+cd asterisk-13.17.2-vici/
 ./configure --with-dahdi=/usr/src/asterisk/dahdi-linux-complete-2.11.1+2.11.1/ --with-gsm=internal --with-ogg=/usr/lib64/
 make menuselect   <MAKE SURE APP_MEETME IS SELECTED IN APPLICATIONS!!!!!!!!!!!!!!!!!!!!!!!!!!>
 make
@@ -101,7 +101,7 @@ cd ../../
 
 wget http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-13-current.tar.gz
 tar xvfz asterisk-13-current.tar.gz
-cd asterisk-13.17.1/
+cd asterisk-13.17.2/
 wget http://download.vicidial.com/asterisk-patches/leave.h
 wget http://download.vicidial.com/asterisk-patches/enter.h
 mv -f enter.h apps/enter.h
