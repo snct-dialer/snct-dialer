@@ -14,7 +14,7 @@
 # 170822-2313 - Added screen colors
 # 170823-1411 - Fixed delete bug
 # 170829-0040 - Added screen color settings
-# 170930-0908 - Added custom variables
+# 171002-2140 - Added capability to add/modify preset variables
 #
 
 $startMS = microtime();
@@ -390,7 +390,7 @@ function AddConstant() {
 		}
 	}
 	if (new_variable_value=='') {new_variable_value=document.getElementById('new_preset_custom').value;}
-	new_variable_name=new_variable_name.replace(/[^- \.\:\/\@\_0-9a-zA-Z]/gi, '');	
+	new_variable_value=new_variable_value.replace(/[^- \.\:\/\@\_0-9a-zA-Z]/gi, '');	
 	new_variable_value=encodeURIComponent(new_variable_value);
 
 	current_constants+="&"+new_variable_name+"="+new_variable_value;

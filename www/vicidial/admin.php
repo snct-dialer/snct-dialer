@@ -1142,6 +1142,8 @@ if (isset($_GET["vicidial_balance_rank"]))			{$vicidial_balance_rank=$_GET["vici
 	elseif (isset($_POST["vicidial_balance_rank"]))	{$vicidial_balance_rank=$_POST["vicidial_balance_rank"];}
 if (isset($_GET["agent_script_override"]))			{$agent_script_override=$_GET["agent_script_override"];}
 	elseif (isset($_POST["agent_script_override"]))	{$agent_script_override=$_POST["agent_script_override"];}
+if (isset($_GET["inbound_list_script_override"]))			{$inbound_list_script_override=$_GET["inbound_list_script_override"];}
+	elseif (isset($_POST["inbound_list_script_override"]))	{$inbound_list_script_override=$_POST["inbound_list_script_override"];}
 if (isset($_GET["moh_id"]))				{$moh_id=$_GET["moh_id"];}
 	elseif (isset($_POST["moh_id"]))	{$moh_id=$_POST["moh_id"];}
 if (isset($_GET["moh_name"]))			{$moh_name=$_GET["moh_name"];}
@@ -2942,6 +2944,7 @@ if ($non_latin < 1)
 	$dead_to_dispo = preg_replace('/[^0-9a-zA-Z]/','',$dead_to_dispo);
 	$routing_prefix = preg_replace('/[^0-9a-zA-Z]/','',$routing_prefix);
 	$inbound_survey = preg_replace('/[^0-9a-zA-Z]/','',$inbound_survey);
+	$inbound_list_script_override = preg_replace('/[^0-9a-zA-Z]/','',$inbound_list_script_override);
 
 	### DIGITS and Dots
 	$server_ip = preg_replace('/[^\.0-9]/','',$server_ip);
@@ -4224,12 +4227,14 @@ else
 # 170926-1618 - Fix for Test Call function for Asterisk 13
 # 170930-0853 - Added extension_appended_cidname options and custom reports variable display
 # 171001-1544 - Moved user IP Lists permissions to new security section in Modify User page
+# 171005-1707 - Fix for remote agent modify overlap issue
+# 171006-2039 - Added inbound list script override, Issue #1038
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-633a';
-$build = '171001-1544';
+$admin_version = '2.14-635a';
+$build = '171006-2039';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -14741,7 +14746,7 @@ if ($ADD==411)
 
 				echo "<br><B>"._QXZ("LIST MODIFIED").": $list_id</B>\n";
 
-				$stmt="UPDATE vicidial_lists set list_name='$list_name',campaign_id='$campaign_id',active='$active',list_description='$list_description',list_changedate='$SQLdate',reset_time='$reset_time',agent_script_override='$agent_script_override',campaign_cid_override='$campaign_cid_override',am_message_exten_override='$am_message_exten_override',drop_inbound_group_override='$drop_inbound_group_override',xferconf_a_number='$xferconf_a_number',xferconf_b_number='$xferconf_b_number',xferconf_c_number='$xferconf_c_number',xferconf_d_number='$xferconf_d_number',xferconf_e_number='$xferconf_e_number',web_form_address='" . mysqli_real_escape_string($link, $web_form_address) . "',web_form_address_two='" . mysqli_real_escape_string($link, $web_form_address_two) . "',time_zone_setting='$time_zone_setting',inventory_report='$inventory_report',expiration_date='$expiration_date',na_call_url='" . mysqli_real_escape_string($link, $na_call_url) . "',local_call_time='$local_call_time',web_form_address_three='" . mysqli_real_escape_string($link, $web_form_address_three) . "',status_group_id='$status_group_id',user_new_lead_limit='$user_new_lead_limit',custom_one='$list_custom_one',custom_two='$list_custom_two',custom_three='$list_custom_three',custom_four='$list_custom_four',custom_five='$list_custom_five' where list_id='$list_id';";
+				$stmt="UPDATE vicidial_lists set list_name='$list_name',campaign_id='$campaign_id',active='$active',list_description='$list_description',list_changedate='$SQLdate',reset_time='$reset_time',agent_script_override='$agent_script_override',inbound_list_script_override='$inbound_list_script_override',campaign_cid_override='$campaign_cid_override',am_message_exten_override='$am_message_exten_override',drop_inbound_group_override='$drop_inbound_group_override',xferconf_a_number='$xferconf_a_number',xferconf_b_number='$xferconf_b_number',xferconf_c_number='$xferconf_c_number',xferconf_d_number='$xferconf_d_number',xferconf_e_number='$xferconf_e_number',web_form_address='" . mysqli_real_escape_string($link, $web_form_address) . "',web_form_address_two='" . mysqli_real_escape_string($link, $web_form_address_two) . "',time_zone_setting='$time_zone_setting',inventory_report='$inventory_report',expiration_date='$expiration_date',na_call_url='" . mysqli_real_escape_string($link, $na_call_url) . "',local_call_time='$local_call_time',web_form_address_three='" . mysqli_real_escape_string($link, $web_form_address_three) . "',status_group_id='$status_group_id',custom_one='$list_custom_one',custom_two='$list_custom_two',custom_three='$list_custom_three',custom_four='$list_custom_four',custom_five='$list_custom_five',user_new_lead_limit='$user_new_lead_limit' where list_id='$list_id';";
 				$rslt=mysql_to_mysqli($stmt, $link);
 
 				## QC Addition for Audited Comments
@@ -15303,7 +15308,9 @@ if ($ADD==41111)
 			{
 			### check for closest remote agents to this account to ensure no overlapping
 			$user_finish = ($user_start + $number_of_lines);
-			$stmt="SELECT count(*) from vicidial_remote_agents where user_start > '$user_start' and user_start < '$user_finish';";
+			$user_finish_length = strlen($user_finish);
+			$stmt="SELECT count(*) from vicidial_remote_agents where user_start > '$user_start' and user_start < '$user_finish' and user_start != '$user_start' and (char_length(user_start) <= $user_finish_length);";
+			if ($DB > 0) {echo "|$stmt|";}
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$row=mysqli_fetch_row($rslt);
 			if ($row[0] > 0)
@@ -15317,6 +15324,7 @@ if ($ADD==41111)
 					}
 				else
 					{
+					if ($number_of_lines < 1) {$status='INACTIVE';}
 					$stmt="UPDATE vicidial_remote_agents set user_start='$user_start', number_of_lines='$number_of_lines', server_ip='$server_ip', conf_exten='$conf_exten', status='$status', campaign_id='$campaign_id', closer_campaigns='$groups_value',extension_group='$extension_group',on_hook_agent='$on_hook_agent',on_hook_ring_time='$on_hook_ring_time' where remote_agent_id='$remote_agent_id';";
 					$rslt=mysql_to_mysqli($stmt, $link);
 
@@ -25285,8 +25293,7 @@ if ($ADD==311)
 				}
 			}
 
-		$stmt="SELECT vicidial_lists.list_id,list_name,campaign_id,active,list_description,list_changedate,list_lastcalldate,reset_time,agent_script_override,campaign_cid_override,am_message_exten_override,drop_inbound_group_override,xferconf_a_number,xferconf_b_number,xferconf_c_number,xferconf_d_number,xferconf_e_number,web_form_address,web_form_address_two,time_zone_setting,inventory_report,IFNULL(audit_comments,0),expiration_date,DATE_FORMAT(expiration_date,'%Y%m%d'),na_call_url,local_call_time,web_form_address_three,status_group_id,user_new_lead_limit,custom_one, custom_two, custom_three, custom_four, custom_five from vicidial_lists left outer join vicidial_lists_custom on vicidial_lists.list_id=vicidial_lists_custom.list_id where vicidial_lists.list_id='$list_id' $LOGallowed_campaignsSQL;";
-
+		$stmt="SELECT vicidial_lists.list_id,list_name,campaign_id,active,list_description,list_changedate,list_lastcalldate,reset_time,agent_script_override,campaign_cid_override,am_message_exten_override,drop_inbound_group_override,xferconf_a_number,xferconf_b_number,xferconf_c_number,xferconf_d_number,xferconf_e_number,web_form_address,web_form_address_two,time_zone_setting,inventory_report,IFNULL(audit_comments,0),expiration_date,DATE_FORMAT(expiration_date,'%Y%m%d'),na_call_url,local_call_time,web_form_address_three,status_group_id,user_new_lead_limit,custom_one, custom_two, custom_three, custom_four, custom_five, inbound_list_script_override from vicidial_lists left outer join vicidial_lists_custom on vicidial_lists.list_id=vicidial_lists_custom.list_id where vicidial_lists.list_id='$list_id' $LOGallowed_campaignsSQL;";
 		$rslt=mysql_to_mysqli($stmt, $link);
                 if ($DB) {echo "$stmt\n";}
 		$row=mysqli_fetch_row($rslt);
@@ -25323,6 +25330,7 @@ if ($ADD==311)
 		$list_custom_three =        $row[31];
 		$list_custom_four =         $row[32];
 		$list_custom_five =         $row[33];
+		$inbound_list_script_override =		$row[34];
 
 		# grab names of global statuses and statuses in the selected campaign
 		$stmt="SELECT status,status_name,selectable,human_answered,category,sale,dnc,customer_contact,not_interested,unworkable,scheduled_callback,completed,min_sec,max_sec,answering_machine from vicidial_statuses order by status;";
@@ -25478,6 +25486,10 @@ if ($ADD==311)
 		echo "$Lscripts_list";
 		echo "<option selected value=\"$agent_script_override\">$agent_script_override - $scriptname_list[$agent_script_override]</option>\n";
 		echo "</select>$NWB#lists-agent_script_override$NWE</td></tr>\n";
+ 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right><a href=\"$PHP_SELF?ADD=3111111&script_id=$inbound_list_script_override\">"._QXZ("Inbound Script Override")."</a>: </td><td align=left><select size=1 name=inbound_list_script_override>\n";
+ 		echo "$Lscripts_list";
+ 		echo "<option selected value=\"$inbound_list_script_override\">$inbound_list_script_override - $scriptname_list[$inbound_list_script_override]</option>\n";
+ 		echo "</select>$NWB#lists-inbound_list_script_override$NWE</td></tr>\n";
 
 		$DID_edit_link_BEGIN='';
 		$DID_edit_link_END='';
@@ -30793,6 +30805,7 @@ if ($ADD==31111)
 
 			echo "<br>"._QXZ("MODIFY A REMOTE AGENTS ENTRY").": $row[0]<form action=$PHP_SELF method=POST>\n";
 			echo "<input type=hidden name=ADD value=41111>\n";
+			echo "<input type=hidden name=DB value=\"$DB\">\n";
 			echo "<input type=hidden name=remote_agent_id value=\"$row[0]\">\n";
 			echo "<center><TABLE width=$section_width cellspacing=3>\n";
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=right><a href=\"$PHP_SELF?ADD=3&user=$user_start\">"._QXZ("User ID Start")."</a>: </td><td align=left><input type=text name=user_start size=9 maxlength=9 value=\"$user_start\"> ("._QXZ("numbers only, incremented, must be an existing vicidial user").")$NWB#remote_agents-user_start$NWE</td></tr>\n";

@@ -136,6 +136,7 @@
 # 170920-2156 - Added expired_lists_inactive entry
 # 170923-1458 - Added settings-did_system_filter entry
 # 170930-0906 - Added new extension append cidname options and custom reports help
+# 171006-2058 - Added lists-inbound_list_script_override entry
 #
 
 
@@ -2147,6 +2148,11 @@ if ($SSqc_features_active > 0)
 <A NAME="lists-agent_script_override">
 <BR>
 <B><?php echo _QXZ("Agent Script Override"); ?> -</B><?php echo _QXZ("If this field is set, this will be the script that the agent sees on their screen instead of the campaign script when the lead is from this list. Default is not set."); ?>
+
+<BR>
+<A NAME="lists-inbound_list_script_override">
+<BR>
+<B><?php echo _QXZ("Inbound Script Override"); ?> -</B><?php echo _QXZ("If this field is set, this will be the script that the agent sees on their screen instead of the campaign script when the agent receives an inbound call and the lead is from this list. Default is not set."); ?>
 
 <BR>
 <A NAME="lists-campaign_cid_override">

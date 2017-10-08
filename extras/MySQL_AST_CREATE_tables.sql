@@ -1023,7 +1023,8 @@ custom_one VARCHAR(100) default '',
 custom_two VARCHAR(100) default '',
 custom_three VARCHAR(100) default '',
 custom_four VARCHAR(100) default '',
-custom_five VARCHAR(100) default ''
+custom_five VARCHAR(100) default '',
+inbound_list_script_override VARCHAR(20)
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_statuses (
@@ -4109,4 +4110,4 @@ UPDATE vicidial_configuration set value='1766' where name='qc_database_version';
 
 UPDATE system_settings set vdc_agent_api_active='1';
 
-UPDATE system_settings SET db_schema_version='1520',db_schema_update_date=NOW(),reload_timestamp=NOW();
+UPDATE system_settings SET db_schema_version='1521',db_schema_update_date=NOW(),reload_timestamp=NOW();
