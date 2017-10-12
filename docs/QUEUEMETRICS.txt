@@ -34,6 +34,9 @@ Entries you should have in your crontab on one server:
 */5 * * * * /usr/share/astguiclient/AST_cleanup_agent_log.pl --only-qm-live-call-check
 1 1 * * * /usr/share/astguiclient/Vtiger_optimize_all_tables.pl --quiet
 
+## <OPTIONAL> QM sync process, all campaigns/ingroups/agents once a day
+58 6 * * * /usr/share/astguiclient/ADMIN_qm_sync.pl --all-sync --all-alias-sync --key-id-ig --debug
+
 
 Here is a short summary of the needed steps to install QueueMetrics on your system:
 

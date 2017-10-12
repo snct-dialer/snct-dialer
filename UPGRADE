@@ -208,6 +208,12 @@ OTHER CHANGES:
 
 51. Added DNC.COM inbound number filtering with DNCcom_inbound_filter.php
 
+52. Added cm_cid_change.agi script to alter the CID of calls in the Call Menu
+	Prompt. Also, added ability for cm_dnc.agi to recognize Vicidial-tagged
+	calls and update lead records without lookups from a phone number
+
+53. Added Webphone Layout option in Phones and override in User Groups
+
 
 
 

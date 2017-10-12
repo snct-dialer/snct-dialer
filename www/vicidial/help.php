@@ -137,6 +137,7 @@
 # 170923-1458 - Added settings-did_system_filter entry
 # 170930-0906 - Added new extension append cidname options and custom reports help
 # 171006-2058 - Added lists-inbound_list_script_override entry
+# 171011-1505 - Added webphone_layout entries
 #
 
 
@@ -3745,6 +3746,11 @@ if (strlen($SSwebphone_url) > 5)
 	<BR>
 	<B><?php echo _QXZ("Webphone Dialpad Override"); ?> -</B><?php echo _QXZ("This setting allows you to activate or deactivate the dialpad on the webphone just for the members of one user group. Default is DISABLED. TOGGLE will allow the user to view and hide the dialpad by clicking a link. TOGGLE_OFF will default to not show the dialpad on first load, but will allow the user to show the dialpad by clicking on the dialpad link."); ?>
 
+	<BR>
+	<A NAME="user_groups-webphone_layout">
+	<BR>
+	<B><?php echo _QXZ("Webphone Layout Override"); ?> - </B><?php echo _QXZ("For the WebRTC phone, this setting will allow you to use an alternate layout for all users within this user group, overriding whatever is set in the phone webphone layout field. Default is blank."); ?>
+
 	<?php
 	}
 
@@ -4252,6 +4258,11 @@ if ($SSoutbound_autodial_active > 0)
 <A NAME="phones-webphone_debug">
 <BR>
 <B><?php echo _QXZ("Webphone Debug"); ?> - </B><?php echo _QXZ("For the WebRTC phone, this setting will show debug output. Default is N."); ?>
+
+<BR>
+<A NAME="phones-webphone_layout">
+<BR>
+<B><?php echo _QXZ("Webphone Layout"); ?> - </B><?php echo _QXZ("For the WebRTC phone, this setting will allow you to use an alternate layout. Default is blank."); ?>
 
 <BR>
 <A NAME="phones-use_external_server_ip">
