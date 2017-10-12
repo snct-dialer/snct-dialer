@@ -7,7 +7,9 @@
     - ADMIN_keepalive_ALL.pl: Added process debug with --DebugXXX flag and
         screen logging.
     - ADMIN_restart_roll_logs.pl: Added rolling of proccess screenlogs.
-
+  * Add upstream Rev. 2838:
+    - New cm_cid_change.agi.
+    - cm_dnc.agi: Added ability to recognize existing Vicidial calls.
 
 2.25.13
 

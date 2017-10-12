@@ -25,6 +25,7 @@
 # 130925-1825 - Added variable filter to prevent DID SQL injection attack
 # 150928-1822 - Added dnc logging
 # 170313-1610 - Fixed issue with DNC not logging if no campaign defined
+# 171010-1228 - Added ability to recognize existing Vicidial calls
 #
 
 $script = 'cm_dnc.agi';
@@ -188,6 +189,47 @@ while(<STDIN>)
 	if (length($pin)>0) {$callerid = $pin;}
 	}
 
+$call_type='';
+$lead_id='0';
+$SleadsSQL='';
+if ($calleridname =~ /^V\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d|^Y\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d|^M\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d|^D\S\d\d\d\d\d\dW\d\d\d\d\d\d\d\d\d\dW/)
+	{
+	if ($calleridname =~ /^V/)
+		{
+		$lead_id = substr($calleridname, 10, 10);
+		$call_type = 'auto-dial';
+		}
+	if ($calleridname =~ /^Y/)
+		{
+		$lead_id = substr($calleridname, 10, 10);
+		$call_type = 'inbound';
+		}
+	if ($calleridname =~ /^M/)
+		{
+		$lead_id = substr($calleridname, 10, 10);
+		$call_type = 'manual-dial';
+		}
+	if ($calleridname =~ /^D/)
+		{
+		$lead_id = substr($calleridname, 9, 10);
+		$call_type = '3-way';
+		}
+	if (length($call_type) > 0)
+		{
+		$lead_id = ($lead_id + 0);
+		$SleadsSQL	.= "'$lead_id',";
+		if ($AGILOG) {$agi_string = "Already a Vicidial $call_type call: |$calleridname|$lead_id|     $vla_string";   &agi_output;}
+		}
+	else
+		{
+		if ($AGILOG) {$agi_string = "Not already a Vicidial call: $calleridname";   &agi_output;}
+		}
+	}
+else
+	{
+	if ($AGILOG) {$agi_string = "Not already a Vicidial call: $calleridname";   &agi_output;}
+	}
+
 foreach $i (sort keys %AGI) 
 	{
 	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
@@ -224,20 +266,38 @@ if ( (length($campaign_id) > 0) && ($camp_sys =~ /CAMP/) )
 
 
 ### Gather the lead IDs of the leads with this phone number ###
-$stmtA= "SELECT lead_id from vicidial_list where phone_number='$phone_number' $listSQL;";
-$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-$sthArows=$sthA->rows;
-	if ($AGILOG) {$agi_string = "$sthArows|$stmtA|";   &agi_output;}
-$g=0;
-$SleadsSQL='';
-while ($sthArows > $g)
+if ( (length($call_type) < 1) || ($lead_id < 1) )
 	{
-	@aryA = $sthA->fetchrow_array;
-	$SleadsSQL	.= "'$aryA[0]',";
-	$g++;
+	$stmtA= "SELECT lead_id from vicidial_list where phone_number='$phone_number' $listSQL;";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+		if ($AGILOG) {$agi_string = "$sthArows|$stmtA|";   &agi_output;}
+	$g=0;
+	while ($sthArows > $g)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$SleadsSQL	.= "'$aryA[0]',";
+		$g++;
+		}
+	$sthA->finish();
 	}
-$sthA->finish();
+else
+	{
+	$stmtA= "SELECT phone_number from vicidial_list where lead_id='$lead_id';";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+		if ($AGILOG) {$agi_string = "$sthArows|$stmtA|";   &agi_output;}
+	$g=0;
+	while ($sthArows > $g)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$phone_number = $aryA[0];
+		$g++;
+		}
+	$sthA->finish();
+	}
 chop($SleadsSQL);
 
 
