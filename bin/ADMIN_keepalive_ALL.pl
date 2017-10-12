@@ -124,9 +124,10 @@
 # 170816-2323 - Added In-Group Ask-Post-Call Survey AGI dialplan entries
 # 170916-1009 - Added Asterisk 13 'h' exten for dialplan generation and triggering of AMI2 scripts
 # 170920-2214 - Added expired_lists_inactive option, checks once per hour
+# 171010-2254 - Added process debug with --DebugXXX flag and screen logging
 #
 
-$build = '170920-2214';
+$build = '171010-2254';
 
 $DB=0; # Debug flag
 $teodDB=0; # flag to log Timeclock End of Day processes to log file
@@ -221,7 +222,7 @@ if (length($ARGV[0])>1)
 		print "  [-cu3way-delay=X] = setting delay seconds on 3way conference checker\n";
 		print "  [-debug] = verbose debug messages\n";
 		print "  [-debugX] = Extra-verbose debug messages\n";
-		print "  [-debugXXX] = Triple-Extra-verbose debug messages\n";
+		print "  [-debugXXX] = Triple-Extra-verbose debug messages, debug flag on processes and screen logging\n";
 		print "  [--teod] = log Timeclock End of Day processes to log file\n";
 		print "\n";
 		exit;
@@ -245,6 +246,8 @@ if (length($ARGV[0])>1)
 		if ($args =~ /-debugXXX/i)
 			{
 			$DBXXX=1;
+			$megaDB=1;
+			$debug_string = '--debugX';
 			print "\n----- TRIPLE DEBUGGING -----\n\n";
 			}
 		if ($args =~ /-teod/i)
@@ -781,65 +784,113 @@ else
 			if ($DB) {print "starting AST_update...\n";}
 			# add a '-L' to the command below to activate logging
 			if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} >= 12))
-				{`/usr/bin/screen -d -m -S ASTupdate $PATHhome/AST_update_AMI2.pl`;}
+				{
+				`/usr/bin/screen -d -m -S ASTupdate $PATHhome/AST_update_AMI2.pl $debug_string`;
+				}
 			else
-				{`/usr/bin/screen -d -m -S ASTupdate $PATHhome/AST_update.pl`;}
+				{`/usr/bin/screen -d -m -S ASTupdate $PATHhome/AST_update.pl $debug_string`;}
+
+			if ($megaDB)
+				{
+				`/usr/bin/screen -S ASTupdate -X logfile $PATHlogs/ASTupdate-screenlog.0`;
+				`/usr/bin/screen -S ASTupdate -X log`;
+				}
 			}
 		if ( ($AST_send_listen > 0) && ($runningAST_send < 1) )
 			{ 
 			if ($DB) {print "starting AST_manager_send...\n";}
 			# add a '-L' to the command below to activate logging
-			`/usr/bin/screen -d -m -S ASTsend $PATHhome/AST_manager_send.pl`;
+			`/usr/bin/screen -d -m -S ASTsend $PATHhome/AST_manager_send.pl $debug_string`;
+			if ($megaDB)
+				{
+				`/usr/bin/screen -S ASTsend -X logfile $PATHlogs/ASTsend-screenlog.0`;
+				`/usr/bin/screen -S ASTsend -X log`;
+				}
 			}
 		if ( ($AST_send_listen > 0) && ($runningAST_listen < 1) )
 			{ 
 			if ($DB) {print "starting AST_manager_listen...\n";}
 			# add a '-L' to the command below to activate logging
 			if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} >= 12))
-				{`/usr/bin/screen -d -m -S ASTlisten $PATHhome/AST_manager_listen_AMI2.pl`;}
+				{`/usr/bin/screen -d -m -S ASTlisten $PATHhome/AST_manager_listen_AMI2.pl $debug_string`;}
 			else
 				{
 				if ($lstn_buffer > 0) 
-					{`/usr/bin/screen -d -m -S ASTlisten $PATHhome/AST_manager_listenBUFFER.pl`;}
+					{`/usr/bin/screen -d -m -S ASTlisten $PATHhome/AST_manager_listenBUFFER.pl $debug_string`;}
 				else
-					{`/usr/bin/screen -d -m -S ASTlisten $PATHhome/AST_manager_listen.pl`;}
+					{`/usr/bin/screen -d -m -S ASTlisten $PATHhome/AST_manager_listen.pl $debug_string`;}
+				}
+			if ($megaDB)
+				{
+				`/usr/bin/screen -S ASTlisten -X logfile $PATHlogs/ASTlisten-screenlog.0`;
+				`/usr/bin/screen -S ASTlisten -X log`;
 				}
 			}
 		if ( ($AST_VDauto_dial > 0) && ($runningAST_VDauto_dial < 1) )
 			{ 
 			if ($DB) {print "starting AST_VDauto_dial...\n";}
 			# add a '-L' to the command below to activate logging
-			`/usr/bin/screen -d -m -S ASTVDauto $PATHhome/AST_VDauto_dial.pl $autodial_delay`;
+			`/usr/bin/screen -d -m -S ASTVDauto $PATHhome/AST_VDauto_dial.pl $debug_string $autodial_delay`;
+			if ($megaDB)
+				{
+				`/usr/bin/screen -S ASTVDauto -X logfile $PATHlogs/ASTVDauto-screenlog.0`;
+				`/usr/bin/screen -S ASTVDauto -X log`;
+				}
 			}
 		if ( ($AST_VDremote_agents > 0) && ($runningAST_VDremote_agents < 1) )
 			{ 
 			if ($DB) {print "starting AST_VDremote_agents...\n";}
 			# add a '-L' to the command below to activate logging
-			`/usr/bin/screen -d -m -S ASTVDremote $PATHhome/AST_VDremote_agents.pl --debug`;
+			`/usr/bin/screen -d -m -S ASTVDremote $PATHhome/AST_VDremote_agents.pl --debug $debug_string`;
+			if ($megaDB)
+				{
+				`/usr/bin/screen -S ASTVDremote -X logfile $PATHlogs/ASTVDremote-screenlog.0`;
+				`/usr/bin/screen -S ASTVDremote -X log`;
+				}
 			}
 		if ( ($AST_VDadapt > 0) && ($runningAST_VDadapt < 1) )
 			{ 
 			if ($DB) {print "starting AST_VDadapt...\n";}
 			# add a '-L' to the command below to activate logging
-			`/usr/bin/screen -d -m -S ASTVDadapt $PATHhome/AST_VDadapt.pl --debug`;
+			`/usr/bin/screen -d -m -S ASTVDadapt $PATHhome/AST_VDadapt.pl --debug $debug_string`;
+			if ($megaDB)
+				{
+				`/usr/bin/screen -S ASTVDadapt -X logfile $PATHlogs/ASTVDadapt-screenlog.0`;
+				`/usr/bin/screen -S ASTVDadapt -X log`;
+				}
 			}
 		if ( ($FastAGI_log > 0) && ($runningFastAGI_log < 1) )
 			{ 
 			if ($DB) {print "starting FastAGI_log...\n";}
 			# add a '-L' to the command below to activate logging
-			`/usr/bin/screen -d -m -S ASTfastlog $PATHhome/FastAGI_log.pl --debug`;
+			`/usr/bin/screen -d -m -S ASTfastlog $PATHhome/FastAGI_log.pl --debug $debug_string`;
+			if ($megaDB)
+				{
+				`/usr/bin/screen -S ASTfastlog -X logfile $PATHlogs/ASTfastlog-screenlog.0`;
+				`/usr/bin/screen -S ASTfastlog -X log`;
+				}
 			}
 		if ( ($AST_VDauto_dial_FILL > 0) && ($runningAST_VDauto_dial_FILL < 1) )
 			{ 
 			if ($DB) {print "starting AST_VDauto_dial_FILL...\n";}
 			# add a '-L' to the command below to activate logging
-			`/usr/bin/screen -d -m -S ASTVDadFILL $PATHhome/AST_VDauto_dial_FILL.pl --debug $fill_staggered $adfill_delay`;
+			`/usr/bin/screen -d -m -S ASTVDadFILL $PATHhome/AST_VDauto_dial_FILL.pl --debug $fill_staggered $adfill_delay $debug_string`;
+			if ($megaDB)
+				{
+				`/usr/bin/screen -S ASTadFILL -X logfile $PATHlogs/ASTadFILL-screenlog.0`;
+				`/usr/bin/screen -S ASTadFILL -X log`;
+				}
 			}
 		if ( ($email_inbound > 0) && ($runningemail_inbound < 1) )
 			{ 
 			if ($DB) {print "starting VD_email_inbound...\n";}
 			# add a '-L' to the command below to activate logging
-			`/usr/bin/screen -d -m -S ASTemail $PATHhome/VD_email_inbound.pl`;
+			`/usr/bin/screen -d -m -S ASTemail $PATHhome/VD_email_inbound.pl $debug_string`;
+			if ($megaDB)
+				{
+				`/usr/bin/screen -S ASTemail -X logfile $PATHlogs/ASTemail-screenlog.0`;
+				`/usr/bin/screen -S ASTemail -X log`;
+				}
 			}
 		if ( ($ip_relay > 0) && ($runningip_relay < 1) )
 			{ 
@@ -850,7 +901,12 @@ else
 			{ 
 			if ($DB) {print "starting AST_conf_3way...\n";}
 			# add a '-L' to the command below to activate logging
-			`/usr/bin/screen -d -m -S ASTconf3way $PATHhome/AST_conf_update_3way.pl --debug $cu3way_delay`;
+			`/usr/bin/screen -d -m -S ASTconf3way $PATHhome/AST_conf_update_3way.pl --debug $cu3way_delay $debug_string`;
+			if ($megaDB)
+				{
+				`/usr/bin/screen -S ASTconf3way -X logfile $PATHlogs/ASTconf3way-screenlog.0`;
+				`/usr/bin/screen -S ASTconf3way -X log`;
+				}
 			}
 		}
 	}

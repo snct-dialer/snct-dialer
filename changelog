@@ -1,16 +1,32 @@
 2.25.14
 
   [Jörg Frings-Fürst]
-  * Add favicon.ico.
-  * New Report_log_partX.php (2017-038).
-
-
+  * Add favicon.ico (2017-038).
+  * New Report_log_partX.php (2017-039).
+  * Add upstream Rev. 2837:
+    - ADMIN_keepalive_ALL.pl: Added process debug with --DebugXXX flag and
+        screen logging.
+    - ADMIN_restart_roll_logs.pl: Added rolling of proccess screenlogs.
+  * Add upstream Rev. 2838:
+    - New cm_cid_change.agi.
+    - cm_dnc.agi: Added ability to recognize existing Vicidial calls.
+  * Add upstream Rev. 2839:
+    - agi-VDAD_ALL_inbound.agi: Bug fix for on-hook agents using
+        Asterisk 1.8 & 11.
+  * Add upstream Rev. 2840:
+    - QUEUEMETRICS.txt: Add new crontab line.
+    - MySQL_AST_CREATE_tables.sql,
+      upgrade_2.14.sql: Update to upstrem DB version 1522.
+    - vicidial.php: Added webphone_layout options.
+    - admin.php: Added webphone_layout option to phones and user groups.
+    - help.php: Added webphone_layout entries.
+  * New extras/mysql_update/mysql-1522.sql (2017-040).
 
 2.25.13
 
   [Jörg Frings-Fürst]
   * Add upstream Rev. 2820:
-    - Chnages at AST_agent_performance_detail.php.
+    - Changes at AST_agent_performance_detail.php.
   * Add upstream Rev. 2821:
     - Added system filter feature, before any other actions
       + agi-DID_route.agi,
