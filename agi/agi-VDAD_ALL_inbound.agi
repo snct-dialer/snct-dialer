@@ -217,6 +217,7 @@
 # 170914-1634 - Added Asterisk 13 compatibility
 # 170921-2008 - Fix for CALLID in beginning of recording filename
 # 170930-0913 - Added extension append options
+# 171011-1312 - Bug fix for on-hook agents using Asterisk 1.8 & 11
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
@@ -3229,7 +3230,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 							$dbhP=$dbhA;   $mysql_count='02167';   $MEL_aff_rows=$RAFaffected_rows;   &mysql_error_logging;
 
 							%ast_ver_str = parse_asterisk_version($asterisk_version);
-							if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 6))
+							if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 12))
 								{ $RINGALLexten = "8331*$auto_call_id*$callerid*$ARuser[$ragp]*$ARdialplan_number[$ragp]"; }
 							else
 								{ $RINGALLexten = "$routing_prefix" . "8331*$auto_call_id*$callerid*$ARuser[$ragp]*$ARdialplan_number[$ragp]"; }

@@ -10,6 +10,9 @@
   * Add upstream Rev. 2838:
     - New cm_cid_change.agi.
     - cm_dnc.agi: Added ability to recognize existing Vicidial calls.
+  * Add upstream Rev. 2839:
+    - agi-VDAD_ALL_inbound.agi: Bug fix for on-hook agents using
+        Asterisk 1.8 & 11.
 
 2.25.13
 
