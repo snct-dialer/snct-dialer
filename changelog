@@ -3,14 +3,17 @@
   [Jörg Frings-Fürst]
   * Add favicon.ico.
   * New Report_log_partX.php (2017-038).
-
+  * Add upstream Rev. 2837:
+    - ADMIN_keepalive_ALL.pl: Added process debug with --DebugXXX flag and
+        screen logging.
+    - ADMIN_restart_roll_logs.pl: Added rolling of proccess screenlogs.
 
 
 2.25.13
 
   [Jörg Frings-Fürst]
   * Add upstream Rev. 2820:
-    - Chnages at AST_agent_performance_detail.php.
+    - Changes at AST_agent_performance_detail.php.
   * Add upstream Rev. 2821:
     - Added system filter feature, before any other actions
       + agi-DID_route.agi,
