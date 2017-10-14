@@ -2553,11 +2553,17 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 			{
 			$Pext .= "exten => $dialplan[$i],3,Hangup()\n";
 			}
-
+		
+		if(length($fullname[$i]) > 0) {
+			$PrintMailbox = "$fullname[$i] ($extension[$i])";
+		}
+		else {
+			$PrintMailbox = "$extension[$i] Mailbox";
+		}
 		if ($delete_vm_after_email[$i] =~ /Y/)
-			{$vm  .= "$voicemail[$i] => $pass[$i],$extension[$i] Mailbox,$email[$i],,|delete=yes|tz=$voicemail_timezone[$i]|$voicemail_options[$i]\n";}
+			{$vm  .= "$voicemail[$i] => $pass[$i],$PrintMailbox,$email[$i],,|delete=yes|tz=$voicemail_timezone[$i]|$voicemail_options[$i]\n";}
 		else
-			{$vm  .= "$voicemail[$i] => $pass[$i],$extension[$i] Mailbox,$email[$i],,|delete=no|tz=$voicemail_timezone[$i]|$voicemail_options[$i]\n";}
+			{$vm  .= "$voicemail[$i] => $pass[$i],$PrintMailbox,$email[$i],,|delete=no|tz=$voicemail_timezone[$i]|$voicemail_options[$i]\n";}
 
 		$i++;
 		}
@@ -2710,11 +2716,18 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 			{
 			$Pext .= "exten => $dialplan[$i],3,Hangup()\n";
 			}
-
+		$PrintMailbox = "";
+		if(length($fullname[$i]) > 0) {
+			$PrintMailbox = "$fullname[$i] ($extension[$i])";
+		}
+		else {
+			$PrintMailbox = "$extension[$i] Mailbox";
+		}
+		
 		if ($delete_vm_after_email[$i] =~ /Y/)
-			{$vm  .= "$voicemail[$i] => $pass[$i],$extension[$i] Mailbox,$email[$i],,|delete=yes|tz=$voicemail_timezone[$i]|$voicemail_options[$i]\n";}
+			{$vm  .= "$voicemail[$i] => $pass[$i],$PrintMailbox,$email[$i],,|delete=yes|tz=$voicemail_timezone[$i]|$voicemail_options[$i]\n";}
 		else
-			{$vm  .= "$voicemail[$i] => $pass[$i],$extension[$i] Mailbox,$email[$i],,|delete=no|tz=$voicemail_timezone[$i]|$voicemail_options[$i]\n";}
+			{$vm  .= "$voicemail[$i] => $pass[$i],$PrintMailbox,$email[$i],,|delete=no|tz=$voicemail_timezone[$i]|$voicemail_options[$i]\n";}
 
 		$i++;
 		}
@@ -3301,7 +3314,7 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 		while ($sthArows > $i)
 			{
 			##### Get the distinct phone entries #####
-			$stmtA = "SELECT extension,pass,email,delete_vm_after_email,voicemail_timezone,voicemail_options FROM phones where active='Y' and voicemail_id='$voicemail[$i]';";
+			$stmtA = "SELECT extension,pass,email,delete_vm_after_email,voicemail_timezone,voicemail_options,fullname FROM phones where active='Y' and voicemail_id='$voicemail[$i]';";
 			#	print "$stmtA\n";
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -3315,11 +3328,19 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 				$delete_vm_after_email[$i] =	$aryA[3];
 				$voicemail_timezone[$i] =		$aryA[4];
 				$voicemail_options[$i] =		$aryA[5];
+				$fullname[$i] =					$aryA[6];
 
+				$PrintMailbox = "";
+				if(length($fullname[$i]) > 0) {
+					$PrintMailbox = "$fullname[$i] ($extension[$i])";
+				}
+				else {
+					$PrintMailbox = "$extension[$i] Mailbox";
+				}
 				if ($delete_vm_after_email[$i] =~ /Y/)
-					{$vm  .= "$voicemail[$i] => $pass[$i],$extension[$i] Mailbox,$email[$i],,|delete=yes|tz=$voicemail_timezone[$i]|$voicemail_options[$i]\n";}
+					{$vm  .= "$voicemail[$i] => $pass[$i],$PrintMailbox,$email[$i],,|delete=yes|tz=$voicemail_timezone[$i]|$voicemail_options[$i]\n";}
 				else
-					{$vm  .= "$voicemail[$i] => $pass[$i],$extension[$i] Mailbox,$email[$i],,|delete=no|tz=$voicemail_timezone[$i]|$voicemail_options[$i]\n";}
+					{$vm  .= "$voicemail[$i] => $pass[$i],$PrintMailbox,$email[$i],,|delete=no|tz=$voicemail_timezone[$i]|$voicemail_options[$i]\n";}
 				}
 			$sthA->finish();
 

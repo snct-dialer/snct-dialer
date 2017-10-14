@@ -21,6 +21,9 @@
     - admin.php: Added webphone_layout option to phones and user groups.
     - help.php: Added webphone_layout entries.
   * New extras/mysql_update/mysql-1522.sql (2017-040).
+  * ADMIN_keepalive_ALL.pl: Use real names for mailboxes if available
+      (2017-041).
+  * New www/tools/mod_check_character_set.php (2017-042).
 
 2.25.13
 
