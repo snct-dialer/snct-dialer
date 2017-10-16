@@ -24,6 +24,7 @@
   * ADMIN_keepalive_ALL.pl: Use real names for mailboxes if available
       (2017-041).
   * New www/tools/mod_check_character_set.php (2017-042).
+  * Copy Report_log_partX.php to www/tools/ (2017-043).
 
 2.25.13
 
