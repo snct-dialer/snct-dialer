@@ -101,6 +101,7 @@ webphone_volume ENUM('Y','N') default 'Y',
 webphone_debug ENUM('Y','N') default 'N',
 outbound_alt_cid VARCHAR(20) default '',
 conf_qualify ENUM('Y','N') default 'Y',
+webphone_layout VARCHAR(255) default '',
 index (server_ip),
 index (voicemail_id),
 index (dialplan_number),
@@ -726,7 +727,8 @@ agent_allowed_chat_groups TEXT,
 agent_xfer_park_3way ENUM('Y','N') default 'Y',
 admin_ip_list VARCHAR(30) default '',
 agent_ip_list VARCHAR(30) default '',
-api_ip_list VARCHAR(30) default ''
+api_ip_list VARCHAR(30) default '',
+webphone_layout VARCHAR(255) default ''
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_campaigns (
@@ -4110,4 +4112,4 @@ UPDATE vicidial_configuration set value='1766' where name='qc_database_version';
 
 UPDATE system_settings set vdc_agent_api_active='1';
 
-UPDATE system_settings SET db_schema_version='1521',db_schema_update_date=NOW(),reload_timestamp=NOW();
+UPDATE system_settings SET db_schema_version='1522',db_schema_update_date=NOW(),reload_timestamp=NOW();
