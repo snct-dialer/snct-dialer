@@ -44,7 +44,9 @@
     - Add new table WallBoardStat, WallBoardData, WallBoardData_achive.
     - New bin/AST_CRON_WallBoard3_gen.php.
     - Add crontab entry.
-  
+    - Add new vicidial/WallBoard3.php,
+	          vicidial/Wall_js.php.
+
 2.25.14
 
   [Jörg Frings-Fürst]
