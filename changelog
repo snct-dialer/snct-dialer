@@ -29,6 +29,13 @@
     - graphcanvas.inc:_ Fixed javascript/apache errors with graphs by removing 
         "echo" lines
     - non_agent_api.php: Add monitor type 'HIJACK'.
+  * Add upstream Rev. 2842:
+    - MySQL_AST_CREATE_tables.sql,
+      upgrade_2.14.sql: Update to upstrem DB version 1523.
+    - vdc_db_query.php,
+      admin.php: Added code for campaign scheduled callback email alerts.
+    - help.php: Added campaigns-scheduled_callbacks_email_alert entry.
+  * New extras/mysql_update/mysql-1523.sql (2017-040).
   
 2.25.14
 

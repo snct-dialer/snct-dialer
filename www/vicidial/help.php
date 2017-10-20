@@ -138,6 +138,7 @@
 # 170930-0906 - Added new extension append cidname options and custom reports help
 # 171006-2058 - Added lists-inbound_list_script_override entry
 # 171011-1505 - Added webphone_layout entries
+# 171018-2203 - Added campaigns-scheduled_callbacks_email_alert entry
 #
 
 
@@ -1618,6 +1619,11 @@ if ($SSoutbound_autodial_active > 0)
 <A NAME="campaigns-scheduled_callbacks_alert">
 <BR>
 <B><?php echo _QXZ("Scheduled Callbacks Alert"); ?> -</B><?php echo _QXZ("This option allows the callbacks status line in the agent interface to be red, blink or blink red when there are AGENTONLY scheduled callbacks that have hit their trigger time and date. Default is NONE for standard status line. The DEFER options will stop blinking and-or displaying in red when you check the callbacks, until the number of callbacks changes."); ?>
+
+<BR>
+<A NAME="campaigns-scheduled_callbacks_email_alert">
+<BR>
+<B><?php echo _QXZ("Send Callbacks Email"); ?> -</B><?php echo _QXZ("This option will cause the dialer to attempt to send an email notification to the owner of a USERONLY scheduled callback when the callback time arrives.  In order for this to work, the owner must have a valid email address on their user profile, and the system must have a settings container named AGENT_CALLBACK_EMAIL in the Settings Container section of the admin portal.  That container must also define the following variables for the email to be sent properly: email_from - the email address the notification shows as coming from, email_subject - the subject shown on the email, and email_body_begin which when declared will treat all text between it and the string email_body_end as the body of the email.  Values from the lead ,the vicidial_list table, can be included using the same --A-- --B-- declaration style used in the scripts feature. These emails are only sent when the agent is logged into the agent screen."); ?>
 
 <BR>
 <A NAME="campaigns-scheduled_callbacks_count">
