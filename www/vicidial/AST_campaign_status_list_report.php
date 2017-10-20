@@ -26,6 +26,7 @@
 # 170227-1720 - Fix for default HTML report format, issue #997
 # 170409-1555 - Added IP List validation code
 # 170829-0040 - Added screen color settings
+# 171012-2015 - Fixed javascript/apache errors with graphs
 #
 
 $startMS = microtime();
@@ -687,6 +688,7 @@ while($i < $group_ct)
 			$graph_count=count($graph_array);
 			$graph_title=""._QXZ("List ID")." #$list_id: $list_name";
 			include("graphcanvas.inc");
+			$HTML_head.=$HTML_graph_head;
 			$GRAPH.=$graphCanvas;
 
 			}

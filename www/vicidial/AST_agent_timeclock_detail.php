@@ -27,6 +27,7 @@
 # 170227-1726 - Fix for default HTML report format, issue #997
 # 170409-1555 - Added IP List validation code
 # 170829-0040 - Added screen color settings
+# 171012-2015 - Fixed javascript/apache errors with graphs
 #
 
 $startMS = microtime();
@@ -898,6 +899,7 @@ else
 		$graph_count=count($graph_array);
 		$graph_title=_QXZ("AGENT TIME-CLOCK DETAIL");
 		include("graphcanvas.inc");
+		echo $HTML_graph_head;
 		$JS_text.="</script>\n";
 
 	# SPECIAL EXCEPTION FOR THIS GRAPH

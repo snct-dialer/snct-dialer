@@ -29,6 +29,7 @@
 # 170227-1719 - Fix for default HTML report format, issue #997
 # 170409-1555 - Added IP List validation code
 # 170829-0040 - Added screen color settings
+# 171012-2015 - Fixed javascript/apache errors with graphs
 #
 
 $startMS = microtime();
@@ -684,6 +685,7 @@ else
 	$graph_count=count($graph_array);
 	$graph_title=_QXZ("LIST ID SUMMARY");
 	include("graphcanvas.inc");
+	$HEADER.=$HTML_graph_head;
 	$GRAPH.=$graphCanvas;
 
 
@@ -928,6 +930,7 @@ else
 		$graph_count=count($graph_array);
 		$graph_title=_QXZ("STATUS FLAG SUMMARY");
 		include("graphcanvas.inc");
+		$HEADER.=$HTML_graph_head;
 		$GRAPH.=$graphCanvas;
 	# $OUToutput.=$GRAPH;
 
@@ -1052,6 +1055,7 @@ else
 	$graph_count=count($graph_array);
 	$graph_title=_QXZ("CUSTOM STATUS CATEGORY STATS");
 	include("graphcanvas.inc");
+	$HEADER.=$HTML_graph_head;
 	$GRAPH.=$graphCanvas;
 
 	#$OUToutput.=$GRAPH;
@@ -1382,6 +1386,7 @@ else
 		$graph_count=count($graph_array);
 		$graph_title="$LISTIDlists[$i]  - $LISTIDlist_names[$i] ($LISTIDlist_active[$i])";
 		include("graphcanvas.inc");
+		$HEADER.=$HTML_graph_head;
 		$GRAPH.=$graphCanvas;
 
 		# $OUToutput.=$GRAPH;
@@ -1441,7 +1446,7 @@ else
 		echo $HEADER;
 		require("admin_header.php");
 		echo $MAIN;
-		echo $JS_text;
+		if ($report_display_type=="HTML") {echo $JS_text;}
 	}
 
 

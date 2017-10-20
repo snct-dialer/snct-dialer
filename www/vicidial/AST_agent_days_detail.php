@@ -31,6 +31,7 @@
 # 160225-1625 - Fixed download issue where report was not printing properly
 # 160714-2348 - Added and tested ChartJS features for more aesthetically appealing graphs
 # 170409-1542 - Added IP List validation code
+# 171012-2015 - Fixed javascript/apache errors with graphs
 #
 
 $startMS = microtime();
@@ -858,6 +859,7 @@ else
 		$graph_count=count($graph_array);
 		$graph_title=_QXZ("LEAD STATS BREAKDOWN");
 		include("graphcanvas.inc");
+		echo $HTML_graph_head;
 		$GRAPH_text.=$graphCanvas;
 		
 

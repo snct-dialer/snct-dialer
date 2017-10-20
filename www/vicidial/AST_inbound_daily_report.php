@@ -31,6 +31,7 @@
 # 170227-1710 - Fix for default HTML report format, issue #997
 # 170409-1555 - Added IP List validation code
 # 170829-0040 - Added screen color settings
+# 171012-2015 - Fixed javascript/apache errors with graphs
 #
 
 $startMS = microtime();
@@ -1681,6 +1682,7 @@ else
 			$graph_count=count($graph_array);
 			$graph_title=_QXZ("WEEKLY REPORT")." - $query_date_BEGIN "._QXZ("to")." $query_date_END";
 			include("graphcanvas.inc");
+			$HEADER.=$HTML_graph_head;
 			$WTD_GRAPH=$graphCanvas;			
 
 			$ASCII_text.="$MAINH\n";
@@ -1835,6 +1837,7 @@ else
 			$graph_count=count($graph_array);
 			$graph_title=_QXZ("MONTHLY REPORT")." - $query_date_BEGIN "._QXZ("to")." $query_date_END";
 			include("graphcanvas.inc");
+			$HEADER.=$HTML_graph_head;
 			$MTD_GRAPH=$graphCanvas;			
 
 			$ASCII_text.="$MAINH\n";
@@ -2002,6 +2005,7 @@ else
 			$graph_count=count($graph_array);
 			$graph_title=_QXZ("QUARTERLY REPORT")." - $query_date_BEGIN "._QXZ("to")." $query_date_END";
 			include("graphcanvas.inc");
+			$HEADER.=$HTML_graph_head;
 			$QTD_GRAPH=$graphCanvas;			
 
 
@@ -2104,6 +2108,7 @@ else
 			$graph_count=count($graph_array);
 			$graph_title=_QXZ("DAILY REPORT")." - $query_date_BEGIN "._QXZ("to")." $query_date_END";
 			include("graphcanvas.inc");
+			$HEADER.=$HTML_graph_head;
 			$GRAPH=$graphCanvas;			
 
 			$FtotAGENTS =	sprintf("%8s", $FtotAGENTS);

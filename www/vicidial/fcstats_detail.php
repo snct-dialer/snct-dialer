@@ -39,6 +39,7 @@
 # 170409-1555 - Added IP List validation code
 # 170809-2115 - Added phone and province to detail output, fixed ASCII display issues
 # 170829-0040 - Added screen color settings
+# 171012-2015 - Fixed javascript/apache errors with graphs
 #
 
 $startMS = microtime();
@@ -632,7 +633,7 @@ $HTML_text.="</TD>";
 $HTML_text.="</TR></TABLE>\n";
 $HTML_text.="</FORM>\n\n";
 
-$HTML_text.="<PRE><FONT SIZE=2>\n\n";
+$HTML_text.="<PRE><FONT SIZE=2>$report_display_type\n\n";
 
 
 if (!$group)
@@ -1122,6 +1123,7 @@ $CSV_fronter_footer.="\""._QXZ("Average time in Queue for customers").":    $AVG
 	$graph_count=count($graph_array);
 	$graph_title=_QXZ("FRONTER STATS");
 	include("graphcanvas.inc");
+	$HTML_head.=$HTML_graph_head;
 	$GRAPH_text.=$graphCanvas;
 
 
@@ -1377,11 +1379,13 @@ $CSV_closer_footer.="\""._QXZ("TOTAL CLOSERS").":  $TOTagents\",\"$TOTcalls\",\"
 		# $JS_text.="prepChart('$default_graph', $graph_id, $q, $dataset_name);\n";
 		$JS_text.="var main_ctx = document.getElementById(\"CanvasID".$graph_id."_".$q."\");\n";
 		$JS_text.="var GraphID".$graph_id."_".$q." = new Chart(main_ctx, {type: '$default_graph', $chart_options data: $dataset_name});\n";
+		echo "<!-- $JS_text //-->\n";
 	}
 
 	$graph_count=count($graph_array);
 	$graph_title=_QXZ("CLOSER STATS");
 	include("graphcanvas.inc");
+	$HTML_head.=$HTML_graph_head;
 	$GRAPH_text.=$graphCanvas;
 }
 
@@ -1431,7 +1435,7 @@ else
 	echo $HTML_head;
 	require("admin_header.php");
 	echo $HTML_text;
-	echo $JS_text;
+	if ($report_display_type=='HTML') {echo $JS_text;} 
 	}
 
 #$CSV_report=fopen("fcstats.csv", "w");

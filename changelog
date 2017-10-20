@@ -1,3 +1,35 @@
+2.25.15
+
+  [Jörg Frings-Fürst]
+  * Add upstream Rev. 2841:
+    - AST_CLOSER_service_level.php,
+      AST_CLOSERstats.php,
+      AST_CLOSERstats_v2.php,
+      AST_CLOSERsummary_hourly.php,
+      AST_DIDstats.php,
+      AST_IVRstats.php,
+      AST_LISTS_campaign_stats.php,
+      AST_LISTS_pass_report.php,
+      AST_OUTBOUNDsummary_interval.php,
+      AST_VDADstats.php,
+      AST_agent_days_detail.php,
+      AST_agent_performance_detail.php,
+      AST_agent_status_detail.php,
+      AST_agent_time_detail.php,
+      AST_agent_timeclock_detail.php,
+      AST_campaign_status_list_report.php,
+      AST_inbound_daily_report.php,
+      AST_inbound_forecasting.php,
+      AST_performance_comparison_report.php,
+      AST_team_performance_detail.php,
+      Erlang_report.php,
+      fcstats.php,
+      fcstats_detail.php,
+      timeclock_report.php : Fixed javascript/apache errors with graphs.
+    - graphcanvas.inc:_ Fixed javascript/apache errors with graphs by removing 
+        "echo" lines
+    - non_agent_api.php: Add monitor type 'HIJACK'.
+  
 2.25.14
 
   [Jörg Frings-Fürst]

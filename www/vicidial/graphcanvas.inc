@@ -1,4 +1,14 @@
 <?php
+# graphcanvas.inc
+# 
+# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>, Joe Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
+#
+# CHANGES
+#
+# 160731-1019 - First build
+# 171012-2015 - Fixed javascript/apache errors with graphs by removing "echo" lines
+#
+
 $graphCanvas="\n\n<form>";
 $graphCanvas.="<table cellspacing=\"1\" cellpadding=\"1\" summary=\""._QXZ("$graph_title")."\" class=\"horizontalgraph\">\n";
 $graphCanvas.="  <caption align=\"top\">"._QXZ("$graph_title")."</caption>\n";
@@ -81,16 +91,14 @@ var h = Math.floor(d / 3600); var m = Math.floor(d % 3600 / 60); var s = Math.fl
 $graphCanvas.="</td></tr>\n";
 $graphCanvas.="</table>\n";
 $graphCanvas.="</form>\n\n";
-?>
-<script language="Javascript">
-// global chart names
-<?php
+
+$HTML_graph_head="<script language=\"Javascript\">\n";
+$HTML_graph_head.="// global chart names\n";
 for ($q=0; $q<$graph_count; $q++) {
-	echo "var GraphID".$graph_id."_".$q."=null;\n";
+        $HTML_graph_head.="var GraphID".$graph_id."_".$q."=null;\n";
 }
-?>
-</script>
-<?php 
+$HTML_graph_head.="</script>\n";
+
 $allowed_graph="ALL"; 
 $graph_count=1;
 ?>
