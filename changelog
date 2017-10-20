@@ -35,7 +35,9 @@
     - vdc_db_query.php,
       admin.php: Added code for campaign scheduled callback email alerts.
     - help.php: Added campaigns-scheduled_callbacks_email_alert entry.
-  * New extras/mysql_update/mysql-1523.sql (2017-040).
+  * New extras/mysql_update/mysql-1523.sql (2017-044).
+  * Add upstream Rev. 2843:
+    - admin.php: Added server function to clear agent conferences.
   
 2.25.14
 

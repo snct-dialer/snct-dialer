@@ -4237,12 +4237,13 @@ else
 # 171006-2039 - Added inbound list script override, Issue #1038
 # 171011-1450 - Added webphone_layout option to phones and user groups
 # 171018-1314 - Added scheduled_callbacks_email_alert campaign option
+# 171018-2234 - Added server function to clear agent conferences
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-637a';
-$build = '171018-1314';
+$admin_version = '2.14-638a';
+$build = '171018-2234';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -5031,6 +5032,7 @@ if ($ADD==51111111111)	{$hh='admin';	$sh='phones';	echo _QXZ("DELETE PHONE");}
 if ($ADD==52111111111)	{$hh='admin';	$sh='phones';	echo _QXZ("DELETE PHONE ALIAS");}
 if ($ADD==53111111111)	{$hh='admin';	$sh='phones';	echo _QXZ("DELETE GROUP ALIAS");}
 if ($ADD==511111111111)	{$hh='admin';	$sh='server';	echo _QXZ("DELETE SERVER");}
+if ($ADD==521111111111)	{$hh='admin';	$sh='server';	echo _QXZ("CLEAR AGENT CONFERENCES");}
 if ($ADD==531111111111)	{$hh='admin';	$sh='templates';	echo _QXZ("DELETE CONF TEMPLATE");}
 if ($ADD==541111111111)	{$hh='admin';	$sh='carriers';	echo _QXZ("DELETE CARRIER");}
 if ($ADD==551111111111)	{$hh='admin';	$sh='tts';	echo _QXZ("DELETE TTS ENTRY");}
@@ -5075,6 +5077,7 @@ if ($ADD==61111111111)	{$hh='admin';	$sh='phones';	echo _QXZ("DELETE PHONE");}
 if ($ADD==62111111111)	{$hh='admin';	$sh='phones';	echo _QXZ("DELETE PHONE ALIAS");}
 if ($ADD==63111111111)	{$hh='admin';	$sh='phones';	echo _QXZ("DELETE GROUP ALIAS");}
 if ($ADD==611111111111)	{$hh='admin';	$sh='server';	echo _QXZ("DELETE SERVER");}
+if ($ADD==622111111111)	{$hh='admin';	$sh='server';	echo _QXZ("CLEAR AGENT CONFERENCES");}
 if ($ADD==621111111111)	{$hh='admin';	$sh='server';	echo _QXZ("DELETE SERVER TRUNK RECORD");}
 if ($ADD==631111111111)	{$hh='admin';	$sh='templates';	echo _QXZ("DELETE CONF TEMPLATE");}
 if ($ADD==641111111111)	{$hh='admin';	$sh='carriers';	echo _QXZ("DELETE CARRIER");}
@@ -17729,7 +17732,29 @@ if ($ADD==511111111111)
 	else
 		{
 		echo "<br><B>"._QXZ("SERVER DELETION CONFIRMATION").": $server_id - $server_ip</B>\n";
-		echo "<br><br><a href=\"$PHP_SELF?ADD=611111111111&server_id=$server_id&server_ip=$server_ip&CoNfIrM=YES\">"._QXZ("Click here to delete phone")." $server_id - $server_ip</a><br><br><br>\n";
+		echo "<br><br><a href=\"$PHP_SELF?ADD=611111111111&server_id=$server_id&server_ip=$server_ip&CoNfIrM=YES\">"._QXZ("Click here to delete phones")." $server_id - $server_ip</a><br><br><br>\n";
+		}
+	$ADD='311111111111';		# go to server modification below
+	}
+
+
+######################
+# ADD=521111111111 confirmation before clearing agent conferences
+######################
+if ($ADD==521111111111)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	if ( (strlen($server_id) < 2) or (strlen($server_ip) < 7) or ($LOGast_delete_phones < 1) )
+		{
+		echo "<br>"._QXZ("AGENT CONFERENCES NOT CLEARED - Please go back and look at the data you entered")."\n";
+		echo "<br>"._QXZ("Server ID be at least 2 characters in length")."\n";
+		echo "<br>"._QXZ("Server IP be at least 7 characters in length")."\n";
+		}
+	else
+		{
+		echo "<br><B>"._QXZ("AGENT CONFERENCES CLEARING CONFIRMATION").": $server_id - $server_ip</B>\n";
+		echo "<br><br><a href=\"$PHP_SELF?ADD=622111111111&server_id=$server_id&server_ip=$server_ip&CoNfIrM=YES\">"._QXZ("Click here to clear agent conferences")." $server_id - $server_ip</a><br><br><br>\n";
 		}
 	$ADD='311111111111';		# go to server modification below
 	}
@@ -19750,6 +19775,49 @@ if ($ADD==611111111111)
 			}
 		}
 	$ADD='100000000000';		# go to server list
+	}
+
+
+
+######################
+# ADD=622111111111 clear agent conferences
+######################
+if ($ADD==622111111111)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	if ( (strlen($server_id) < 2) or (strlen($server_ip) < 7) or ($CoNfIrM != 'YES') or ($LOGast_delete_phones < 1) or ($LOGmodify_servers!=1) )
+		{
+		echo "<br>"._QXZ("AGENT CONFERENCES NOT CLEARED - Please go back and look at the data you entered")."\n";
+		echo "<br>"._QXZ("Server ID must be at least 2 characters in length")."\n";
+		echo "<br>"._QXZ("Server IP must be at least 7 characters in length")."\n";
+		}
+	else
+		{
+		$stmt="SELECT count(*) from vicidial_conferences where server_ip='$server_ip';";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$row=mysqli_fetch_row($rslt);
+		if ($row[0] < 1)
+			{echo "<br>"._QXZ("CONFERENCES NOT FOUND").": $server_id - $server_ip\n";}
+		else
+			{
+			$stmt="UPDATE vicidial_conferences SET extension='' where server_ip='$server_ip';";
+			$rslt=mysql_to_mysqli($stmt, $link);
+			$VCaffected_rows = mysqli_affected_rows($link);
+
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = preg_replace('/;/', '', $SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='SERVERS', event_type='CLEAR', record_id='$server_id', event_code='ADMIN CONF CLEAR', event_sql=\"$SQL_log\", event_notes='$VCaffected_rows entries cleared';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_to_mysqli($stmt, $link);
+
+			echo "<br><B>"._QXZ("AGENT CONFERENCES CLEAR COMPLETED").": $server_id - $server_ip</B>\n";
+			echo "<br><br>\n";
+			}
+		}
+	$ADD=311111111111;	# go to server modification form below
 	}
 
 
@@ -33321,7 +33389,7 @@ if ($ADD==311111111111)
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
-			echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=3111111111111&conf_exten=$rowx[0]&server_ip=$server_ip\">$rowx[0]</a></td><td><font size=1>$rowx[2]</td></tr>\n";
+			echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=3111111111111&conf_exten=$rowx[0]&server_ip=$server_ip\">$rowx[0]</a></td><td><font size=1>$rowx[1]</td></tr>\n";
 			}
 
 		echo "</table></center><br>\n";
@@ -33352,7 +33420,7 @@ if ($ADD==311111111111)
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
-			echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=31111111111111&conf_exten=$rowx[0]&server_ip=$server_ip\">$rowx[0]</a></td><td><font size=1>$rowx[2]</td></tr>\n";
+			echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=31111111111111&conf_exten=$rowx[0]&server_ip=$server_ip\">$rowx[0]</a></td><td><font size=1>$rowx[1]</td></tr>\n";
 			}
 
 		echo "</table></center><br>\n";
@@ -33366,6 +33434,10 @@ if ($ADD==311111111111)
 		echo _QXZ("This server has %1s active conferences",0,'',$active_confs)."<br><br>\n";
 		echo _QXZ("This server has %1s active vicidial conferences",0,'',$active_vdconfs)."<br><br>\n";
 		echo "</b></center>\n";
+		if ($LOGast_delete_phones > 0)
+			{
+			echo "<br><br><a href=\"$PHP_SELF?ADD=521111111111&server_id=$server_id&server_ip=$server_ip\">"._QXZ("CLEAR ALL AGENT CONFERENCES")."</a>\n";
+			}
 		if ($LOGast_delete_phones > 0)
 			{
 			echo "<br><br><a href=\"$PHP_SELF?ADD=511111111111&server_id=$server_id&server_ip=$server_ip\">"._QXZ("DELETE THIS SERVER")."</a>\n";
