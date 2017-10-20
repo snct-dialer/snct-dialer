@@ -26,7 +26,7 @@
       fcstats.php,
       fcstats_detail.php,
       timeclock_report.php : Fixed javascript/apache errors with graphs.
-    - graphcanvas.inc:_ Fixed javascript/apache errors with graphs by removing 
+    - graphcanvas.inc:_ Fixed javascript/apache errors with graphs by removing
         "echo" lines
     - non_agent_api.php: Add monitor type 'HIJACK'.
   * Add upstream Rev. 2842:
@@ -40,6 +40,9 @@
     - admin.php: Added server function to clear agent conferences.
   * Add upstream Rev. 2844:
     - dispo_send_email.php: Added call_notes option.
+  * New Wallboard:
+    - Add new table WallBoardStat.
+    - 
   
 2.25.14
 
