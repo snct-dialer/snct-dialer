@@ -49,4 +49,32 @@ ALTER TABLE `WallBoardStat`
 ALTER TABLE `WallBoardStat`
   MODIFY `ID` bigint(20) NOT NULL AUTO_INCREMENT;
 
+CREATE TABLE IF NOT EXISTS `WallBoardData` (
+  `ID` bigint(20) NOT NULL,
+  `DateTBegin` datetime DEFAULT NULL,
+  `DateTEnd` datetime DEFAULT NULL,
+  `Status` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `Done` tinyint(1) DEFAULT NULL,
+  `uniqueid` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `lead_id` int(9) DEFAULT NULL,
+  `DIDGruppe` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `IBGruppe` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `Agent` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `CallerID` varchar(18) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `did_route` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `SL0` tinyint(1) DEFAULT NULL,
+  `SL1` tinyint(1) DEFAULT NULL,
+  `SL2` tinyint(1) DEFAULT NULL,
+  `Dauer` bigint(20) NOT NULL DEFAULT '0',
+  `next_uniqueid` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE `WallBoardData`
+  ADD PRIMARY KEY (`ID`);
+
+ALTER TABLE `WallBoardData`
+  MODIFY `ID` bigint(20) NOT NULL AUTO_INCREMENT;
+
+CREATE TABLE `WallBoardData_archive` LIKE `WallBoardData`;
+
 UPDATE system_settings SET db_schema_version='1523',db_schema_update_date=NOW() where db_schema_version < 1523;

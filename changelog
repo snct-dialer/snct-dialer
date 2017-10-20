@@ -41,8 +41,9 @@
   * Add upstream Rev. 2844:
     - dispo_send_email.php: Added call_notes option.
   * New Wallboard:
-    - Add new table WallBoardStat.
-    - 
+    - Add new table WallBoardStat, WallBoardData, WallBoardData_achive.
+    - New bin/AST_CRON_WallBoard3_gen.php.
+    - Add crontab entry.
   
 2.25.14
 
