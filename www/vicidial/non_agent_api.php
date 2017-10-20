@@ -642,6 +642,7 @@ $REQUEST_URI = preg_replace("/'|\"|\\\\|;/","",$REQUEST_URI);
 $POST_URI = preg_replace("/'|\"|\\\\|;/","",$POST_URI);
 if ( (strlen($query_string) < 3) and (strlen($POST_URI) > 2) )
 	{$query_string = $POST_URI;}
+$barge_prefix='';
 
 $MT[0]='';
 $api_script = 'non-agent';
@@ -1770,7 +1771,7 @@ if ($function == 'blind_monitor')
 
 					$monitor_type='LISTEN'; $cid_prefix='BM';
 					if ( (preg_match('/MONITOR/',$stage)) or (strlen($stage)<1) ) {$stage = '0';}
-					if (preg_match('/BARGE/',$stage)) {$stage = ''; $monitor_type='BARGE'; $cid_prefix='BB';}
+					if (preg_match('/BARGE/',$stage)) {$stage = $barge_prefix; $monitor_type='BARGE'; $cid_prefix='BB';}
 					if (preg_match('/HIJACK/',$stage)) {$stage = ''; $monitor_type='HIJACK'; $cid_prefix='BB';}
 					if (preg_match('/WHISPER/',$stage)) 
 						{

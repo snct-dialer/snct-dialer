@@ -30,6 +30,7 @@
 # 160718-0054 - Fixed ChartJS bug
 # 170409-1542 - Added IP List validation code
 # 170829-0040 - Added screen color settings
+# 171012-2015 - Fixed javascript/apache errors with graphs
 #
 
 $startMS = microtime();
@@ -1097,6 +1098,7 @@ if ( ($SUBMIT=="SUBMIT") or ($SUBMIT==_QXZ("SUBMIT")) )
 			$graph_count=count($graph_array);
 			$graph_title="$user_group[$i] - $group_name";
 			include("graphcanvas.inc");
+			$HTML_head.=$HTML_graph_head;
 			$GRAPH.=$graphCanvas;
 
 
@@ -1256,6 +1258,7 @@ if ( ($SUBMIT=="SUBMIT") or ($SUBMIT==_QXZ("SUBMIT")) )
 	$graph_count=count($graph_array);
 	$graph_title="CALL CENTER TOTAL";
 	include("graphcanvas.inc");
+	$HTML_head.=$HTML_graph_head;
 	$GRAPH.=$graphCanvas;
 
 
@@ -1296,6 +1299,7 @@ else
 	if ($report_display_type=="HTML")
 		{
 		$HTML_text.=$GRAPH_text;
+		$HTML_text.=$JS_text;
 		}
 	else
 		{
@@ -1306,7 +1310,6 @@ else
 	$short_header=1;
 	require("admin_header.php");
 	echo $HTML_text;
-	echo $JS_text;
 	flush();
 	}
 

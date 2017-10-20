@@ -60,6 +60,7 @@
 # 161110-1830 - Fixed display issue for total averages
 # 170409-1547 - Added IP List validation code
 # 170829-0040 - Added screen color settings
+# 171012-2015 - Fixed javascript/apache errors with graphs
 #
 
 $startMS = microtime();
@@ -1609,6 +1610,7 @@ for ($q=0; $q<count($graph_array); $q++) {
 $graph_count=count($graph_array);
 $graph_title=_QXZ("CALL STATS BREAKDOWN: (Statistics related to handling of calls only)");
 include("graphcanvas.inc");
+$HTML_head.=$HTML_graph_head;
 $GRAPH.=$graphCanvas;
 
 $GRAPH_text.=$JS_text.$GRAPH.$GRAPH2.$GRAPH3;
@@ -2092,6 +2094,7 @@ for ($q=0; $q<count($graph_array); $q++) {
 $graph_count=count($graph_array);
 $graph_title=_QXZ("PAUSE CODE BREAKDOWN");
 include("graphcanvas.inc");
+$HTML_head.=$HTML_graph_head;
 $GRAPH.=$graphCanvas;
 $JS_text.="</script>\n";
 

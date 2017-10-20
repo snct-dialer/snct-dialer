@@ -990,7 +990,8 @@ agent_xfer_validation ENUM('N','Y') default 'N',
 ready_max_logout MEDIUMINT(7) default '0',
 callback_display_days SMALLINT(3) default '0',
 three_way_record_stop ENUM('Y','N') default 'N',
-hangup_xfer_record_start ENUM('Y','N') default 'N'
+hangup_xfer_record_start ENUM('Y','N') default 'N',
+scheduled_callbacks_email_alert ENUM('Y', 'N') default 'N'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_lists (
@@ -1381,6 +1382,8 @@ recipient ENUM('USERONLY','ANYONE'),
 comments VARCHAR(255),
 user_group VARCHAR(20),
 lead_status VARCHAR(6) default 'CALLBK',
+email_alert datetime,
+email_result ENUM('SENT','FAILED','NOT AVAILABLE'),
 index (lead_id),
 index (status),
 index (callback_time)
@@ -4110,6 +4113,8 @@ INSERT INTO vicidial_qc_codes (code,code_name,qc_result_type) VALUES ('QCCANCEL'
 INSERT INTO vicidial_configuration (id, name, value) VALUES (NULL, 'qc_database_version', '1638');
 UPDATE vicidial_configuration set value='1766' where name='qc_database_version';
 
+INSERT INTO vicidial_settings_containers(container_id,container_notes,container_type,user_group,container_entry) VALUES ('AGENT_CALLBACK_EMAIL ','Scheduled callback email alert settings','OTHER','---ALL---','; sending email address\r\nemail_from => vicidial@local.server\r\n\r\n; subject of the email\r\nemail_subject => Scheduled callback alert for --A--agent_name--B--\r\n\r\nemail_body_begin => \r\nThis is a reminder that you have a scheduled callback right now for the following lead:\r\n\r\nName: --A--first_name--B-- --A--last_name--B--\r\nPhone: --A--phone_number--B--\r\nAlt. phone: --A--alt_phone--B--\r\nEmail: --A--email--B--\r\nCB Comments: --A--callback_comments--B--\r\nLead Comments: --A--comments--B--\r\n\r\nPlease don\'t respond to this, fool.\r\n\r\nemail_body_end');
+
 UPDATE system_settings set vdc_agent_api_active='1';
 
-UPDATE system_settings SET db_schema_version='1522',db_schema_update_date=NOW(),reload_timestamp=NOW();
+UPDATE system_settings SET db_schema_version='1523',db_schema_update_date=NOW(),reload_timestamp=NOW();

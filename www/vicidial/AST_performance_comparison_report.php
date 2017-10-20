@@ -17,6 +17,7 @@
 # 160714-2348 - Added and tested ChartJS features for more aesthetically appealing graphs
 # 170409-1542 - Added IP List validation code
 # 170829-0040 - Added screen color settings
+# 171012-2015 - Fixed javascript/apache errors with graphs
 #
 
 $startMS = microtime();
@@ -822,6 +823,7 @@ else
 		$graph_count=count($graph_array);
 		$graph_title="$rpt_subtitle, $rpt_date";
 		include("graphcanvas.inc");
+		$HTML_head.=$HTML_graph_head;
 		$GRAPH.=$graphCanvas;
 
 		}
@@ -998,7 +1000,8 @@ if ($file_download == 0 || !$file_download)
 
 	echo $HTML_head;
 	require("admin_header.php");
-	echo $HTML_text.$JS_text;
+	echo $HTML_text;
+	if ($report_display_type=='HTML') {echo $JS_text;}
 	}
 
 

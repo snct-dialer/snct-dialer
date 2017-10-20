@@ -35,6 +35,7 @@
 # 160714-2348 - Added and tested ChartJS features for more aesthetically appealing graphs
 # 170409-1556 - Added IP List validation code
 # 170829-0040 - Added screen color settings
+# 171012-2015 - Fixed javascript/apache errors with graphs
 #
 
 $startMS = microtime();
@@ -999,6 +1000,7 @@ else
 		$graph_count=count($graph_array);
 		$graph_title=_QXZ("AGENT STATUS DETAIL REPORT");
 		include("graphcanvas.inc");
+		echo $HTML_graph_head;
 		$GRAPH.=$graphCanvas;
 		}
 	else

@@ -8,6 +8,7 @@
 # 170428-1205 - First build
 # 170504-2245 - Minor bug fixes
 # 170829-0040 - Added screen color settings
+# 171012-2015 - Fixed javascript/apache errors with graphs
 #
 
 $startMS = microtime();
@@ -1314,6 +1315,7 @@ else
 	$graph_title=_QXZ("ERLANGS REPORT");
 	$hide_graph_choice="yes";
 	include("graphcanvas.inc");
+	$HEADER.=$HTML_graph_head;
 	$GRAPH.=$graphCanvas;
 
 	
