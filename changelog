@@ -38,6 +38,8 @@
   * New extras/mysql_update/mysql-1523.sql (2017-044).
   * Add upstream Rev. 2843:
     - admin.php: Added server function to clear agent conferences.
+  * Add upstream Rev. 2844:
+    - dispo_send_email.php: Added call_notes option.
   
 2.25.14
 

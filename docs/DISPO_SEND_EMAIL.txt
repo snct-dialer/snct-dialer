@@ -17,7 +17,7 @@ HERE IS AN EXAMPLE DISPO CALL URL ENTRY FOR THIS FEATURE:
 
 	(in this example, only calls that are set by the agent as SALE, SSALE or XSALE status would have an email sent out, and the email would use the TEST_CONTAINER settings container as the email's template)
 
-VARhttp://192.168.1.1/agc/dispo_send_email.php?container_id=TEST_CONTAINER&lead_id=--A--lead_id--B--&call_id=--A--call_id--B--&dispo=--A--dispo--B--&user=--A--user--B--&pass=--A--pass--B--&sale_status=SALE---SSALE---XSALE&log_to_file=1
+VARhttp://192.168.1.1/agc/dispo_send_email.php?container_id=TEST_CONTAINER&lead_id=--A--lead_id--B--&call_id=--A--call_id--B--&dispo=--A--dispo--B--&user=--A--user--B--&pass=--A--pass--B--&sale_status=SALE---SSALE---XSALE&log_to_file=1&call_notes=--A--call_notes--B--
 
 
 
@@ -104,6 +104,7 @@ did_custom_three: --A--did_custom_three--B--
 did_custom_four: --A--did_custom_four--B--
 did_custom_five: --A--did_custom_five--B--
 custom field x: --A--custom_xyz--B--
+call notes: --A--call_notes--B--
 
 --A--CF_uses_custom_fields--B--
 
