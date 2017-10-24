@@ -21,6 +21,9 @@ header ("Content-type: text/html; charset=utf-8");
 require("dbconnect_mysqli.php");
 require("functions.php");
 
+
+
+
 $PHP_AUTH_USER=$_SERVER['PHP_AUTH_USER'];
 $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
 $PHP_SELF=$_SERVER['PHP_SELF'];
@@ -89,7 +92,7 @@ if (isset($_GET["droppedOFtotal"]))				{$droppedOFtotal=$_GET["droppedOFtotal"];
 if (isset($_GET["AnzeigeAll"]))					{$AnzeigeAll=$_GET["AnzeigeAll"];}
 	elseif (isset($_POST["AnzeigeAll"]))		{$AnzeigeAll=$_POST["AnzeigeAll"];}
 
-$report_name = 'Wallboard 2.0';
+$report_name = 'Wallboard 3.0';
 $db_source = 'M';
 
 #############################################

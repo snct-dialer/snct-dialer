@@ -23,7 +23,6 @@ header ("Content-type: text/html; charset=utf-8");
 
 
 $use_slave_server = 1;
-$slave_db_server = "172.16.2.13";
 
 require("dbconnect_mysqli.php");
 require("functions.php");
@@ -2950,7 +2949,7 @@ if ($p<1)
 		} else {
 			$LeadingName = "";
 		}
-		$stmt="SELECT * from 1WallBoardStat WHERE Gruppe = 'Gesamt' AND Datum = '$Date' LIMIT 1";
+		$stmt="SELECT * from WallBoardStat WHERE Gruppe = 'Gesamt' AND Datum = '$Date' LIMIT 1";
 		$rslt=mysqli_query($link, $stmt);
 		$row=mysqli_fetch_array($rslt,MYSQLI_BOTH);
 		
@@ -3132,7 +3131,7 @@ if ($p<1)
 		else {
 			$D3echo .= "Anrufstatistik: Heute keine Anrufe!<br><br>\n";
 		}
-		$stmt="SELECT * from 1WallBoardStat WHERE Gruppe != 'Gesamt' AND Datum = '$Date' ORDER BY Gruppe";
+		$stmt="SELECT * from WallBoardStat WHERE Gruppe != 'Gesamt' AND Datum = '$Date' ORDER BY Gruppe";
 		$rsltGrp=mysqli_query($link, $stmt);
 		$Anz=mysqli_num_rows($rsltGrp);
 		$ii = 0;
