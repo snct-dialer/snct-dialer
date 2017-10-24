@@ -37,6 +37,7 @@
 # 170227-1717 - Fix for default HTML report format, issue #997
 # 170409-1555 - Added IP List validation code
 # 170829-0040 - Added screen color settings
+# 171012-2015 - Fixed javascript/apache errors with graphs
 #
 
 $startMS = microtime();
@@ -309,7 +310,7 @@ if ( (!preg_match('/\-\-ALL\-\-/i', $LOGadmin_viewable_call_times)) and (strlen(
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
 $STARTtime = date("U");
-if (!isset($group)) {$group = array("CL_TEST_L");}
+if (!isset($group)) {$group = "CL_TEST_L";}
 if (!isset($query_date)) {$query_date = $NOW_DATE;}
 
 $stmt="select group_id from vicidial_inbound_groups $whereLOGadmin_viewable_groupsSQL order by group_id;";
@@ -715,6 +716,7 @@ $CSV_fronter_footer.="\""._QXZ("Average time in Queue for customers").":    $AVG
 	$graph_count=count($graph_array);
 	$graph_title=_QXZ("FRONTER STATS");
 	include("graphcanvas.inc");
+	$HTML_head.=$HTML_graph_head;
 	$GRAPH_text.=$graphCanvas;
 
 
@@ -974,6 +976,7 @@ $CSV_closer_footer.="\""._QXZ("TOTAL CLOSERS").":  $TOTagents\",\"$TOTcalls\",\"
 	$graph_count=count($graph_array);
 	$graph_title=_QXZ("CLOSER STATS");
 	include("graphcanvas.inc");
+	$HTML_head.=$HTML_graph_head;
 	$GRAPH_text.=$graphCanvas;
 
 
@@ -1023,7 +1026,7 @@ else
 	echo $HTML_head;
 	require("admin_header.php");
 	echo $HTML_text;
-	echo $JS_text;
+	if ($report_display_type=="HTML") {echo $JS_text;}
 	}
 
 #$CSV_report=fopen("fcstats.csv", "w");

@@ -436,13 +436,14 @@
 # 170712-1548 - Changed agents view to use last_state_change for time
 # 170816-2334 - Added ask post-call survey feature for in-group calls
 # 170912-1618 - Fix for no-hopper dnc dialing issue
+# 171018-1310 - Added code for campaign scheduled callback email alerts
 #
 
-$version = '2.14-330';
-$build = '170912-1618';
+$version = '2.14-331';
+$build = '171018-1310';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=694;
+$mysql_log_count=700;
 $one_mysql_log=0;
 $DB=0;
 $VD_login=0;
@@ -15884,15 +15885,16 @@ if ($ACTION == 'CalLBacKCounT')
 	{
 	$campaignCBhoursSQL = '';
 	$campaignCBdisplaydaysSQL = '';
-	$stmt = "SELECT callback_hours_block,callback_display_days from vicidial_campaigns where campaign_id='$campaign';";
+	$stmt = "SELECT callback_hours_block,callback_display_days,scheduled_callbacks_email_alert from vicidial_campaigns where campaign_id='$campaign';";
 	$rslt=mysql_to_mysqli($stmt, $link);
 		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00438',$user,$server_ip,$session_name,$one_mysql_log);}
 	if ($rslt) {$camp_count = mysqli_num_rows($rslt);}
 	if ($camp_count > 0)
 		{
 		$row=mysqli_fetch_row($rslt);
-		$callback_hours_block =		$row[0];
-		$callback_display_days =	$row[1];
+		$callback_hours_block =				$row[0];
+		$callback_display_days =			$row[1];
+		$scheduled_callbacks_email_alert =	$row[2];
 		if ($callback_hours_block > 0)
 			{
 			$x_hours_ago = date("Y-m-d H:i:s", mktime(date("H")-$callback_hours_block,date("i"),date("s"),date("m"),date("d"),date("Y")));
@@ -15924,6 +15926,191 @@ if ($ACTION == 'CalLBacKCounT')
 
 	echo "$cbcount|$cbcount_live";
 	$stage = "$campaign|$cbcount|$cbcount_live";
+
+	if ($scheduled_callbacks_email_alert=="Y")
+		{
+		$user_stmt="SELECT email, full_name from vicidial_users where user='$user'";
+		$user_rslt=mysql_to_mysqli($user_stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$user_stmt,'00695',$user,$server_ip,$session_name,$one_mysql_log);}
+		$user_row=mysqli_fetch_row($user_rslt);
+		$email_to=$user_row[0];
+		$agent_name=$user_row[1];
+
+		$container_id="AGENT_CALLBACK_EMAIL";
+
+		$stmt = "SELECT container_entry FROM vicidial_settings_containers where container_id='$container_id';";
+		$rslt=mysql_to_mysqli($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00696',$user,$server_ip,$session_name,$one_mysql_log);}
+		if ($DB) {echo "$stmt\n";}
+		$sc_ct = mysqli_num_rows($rslt);
+		if ($sc_ct > 0 && filter_var($email_to, FILTER_VALIDATE_EMAIL))
+			{
+			$row=mysqli_fetch_row($rslt);
+			$container_entry =	$row[0];
+			$container_ARY = explode("\n",$container_entry);
+			$email_body_gather=0;
+			$p=0;
+			$container_ct = count($container_ARY);
+			while ($p <= $container_ct)
+				{
+				$line = $container_ARY[$p];
+				if ($email_body_gather < 1)
+					{
+					$line = preg_replace("/>|\n|\r|\t|\#.*|;.*/",'',$line);
+					if (preg_match("/^email_to/",$line))
+						{$email_to = $line;   $email_to = trim(preg_replace("/.*=/",'',$email_to));}
+					if (preg_match("/^email_from/",$line))
+						{$email_from = $line;   $email_from = trim(preg_replace("/.*=/",'',$email_from));}
+					if (preg_match("/^email_subject/",$line))
+						{$email_subject = $line;   $email_subject = trim(preg_replace("/.*=/",'',$email_subject));}
+					if (preg_match("/^email_body_begin/",$line))
+						{$email_body = $line;   $email_body = trim(preg_replace("/.*=/",'',$email_body)) . "\n";   $email_body_gather++;}
+					}
+				else
+					{
+					if (preg_match("/^email_body_end/",$line))
+						{$email_body_gather=0;}
+					else
+						{$email_body .= $line;}
+					}
+				$p++;
+				}
+
+			$email_stmt="SELECT callback_id, lead_id, comments from vicidial_callbacks where recipient='USERONLY' and user='$user' $campaignCBsql and email_alert is null and callback_time>=now()-INTERVAL 1 MINUTE and callback_time<=now()";
+			$email_rslt=mysql_to_mysqli($email_stmt, $link);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$email_stmt,'00697',$user,$server_ip,$session_name,$one_mysql_log);}
+			while($email_row=mysqli_fetch_array($email_rslt)) 
+				{
+				$CB_id=$email_row["callback_id"];
+				$CB_lead_id=$email_row["lead_id"];
+				$callback_comments=$email_row["comments"];
+
+				##### grab the data from vicidial_list for the lead_id
+				$stmt="SELECT lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id FROM vicidial_list where lead_id='$CB_lead_id' LIMIT 1;";
+				$rslt=mysql_to_mysqli($stmt, $link);
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00698',$user,$server_ip,$session_name,$one_mysql_log);}
+				if ($DB) {echo "$stmt\n";}
+				$list_lead_ct = mysqli_num_rows($rslt);
+				if ($list_lead_ct > 0)
+					{
+					$row=mysqli_fetch_row($rslt);
+					$entry_date		= urlencode(trim($row[1]));
+					$dispo			= urlencode(trim($row[3]));
+					$tsr			= urlencode(trim($row[4]));
+					$vendor_id		= urlencode(trim($row[5]));
+					$vendor_lead_code	= urlencode(trim($row[5]));
+					$source_id		= urlencode(trim($row[6]));
+					$list_id		= urlencode(trim($row[7]));
+					$gmt_offset_now	= urlencode(trim($row[8]));
+					$phone_code		= urlencode(trim($row[10]));
+					$phone_number	= urlencode(trim($row[11]));
+					$title			= urlencode(trim($row[12]));
+					$first_name		= urlencode(trim($row[13]));
+					$middle_initial	= urlencode(trim($row[14]));
+					$last_name		= urlencode(trim($row[15]));
+					$address1		= urlencode(trim($row[16]));
+					$address2		= urlencode(trim($row[17]));
+					$address3		= urlencode(trim($row[18]));
+					$city			= urlencode(trim($row[19]));
+					$state			= urlencode(trim($row[20]));
+					$province		= urlencode(trim($row[21]));
+					$postal_code	= urlencode(trim($row[22]));
+					$country_code	= urlencode(trim($row[23]));
+					$gender			= urlencode(trim($row[24]));
+					$date_of_birth	= urlencode(trim($row[25]));
+					$alt_phone		= urlencode(trim($row[26]));
+					$email			= urlencode(trim($row[27]));
+					$security_phrase	= urlencode(trim($row[28]));
+					$comments		= urlencode(trim($row[29]));
+					$called_count	= urlencode(trim($row[30]));
+					$rank			= urlencode(trim($row[32]));
+					$owner			= urlencode(trim($row[33]));
+					$entry_list_id	= urlencode(trim($row[34]));
+					}
+
+				### populate variables in email_subject
+				if (preg_match('/--A--/i',$email_subject))
+					{
+					$email_subject = preg_replace('/^VAR|--A--CF_uses_custom_fields--B--/','',$email_subject);
+					$email_subject = preg_replace('/--A--lead_id--B--/i',"$lead_id",$email_subject);
+					$email_subject = preg_replace('/--A--vendor_id--B--/i',"$vendor_id",$email_subject);
+					$email_subject = preg_replace('/--A--vendor_lead_code--B--/i',"$vendor_lead_code",$email_subject);
+					$email_subject = preg_replace('/--A--list_id--B--/i',"$list_id",$email_subject);
+					$email_subject = preg_replace('/--A--list_name--B--/i',"$list_name",$email_subject);
+					$email_subject = preg_replace('/--A--list_description--B--/i',"$list_description",$email_subject);
+					$email_subject = preg_replace('/--A--gmt_offset_now--B--/i',"$gmt_offset_now",$email_subject);
+					$email_subject = preg_replace('/--A--phone_code--B--/i',"$phone_code",$email_subject);
+					$email_subject = preg_replace('/--A--phone_number--B--/i',"$phone_number",$email_subject);
+					$email_subject = preg_replace('/--A--title--B--/i',"$title",$email_subject);
+					$email_subject = preg_replace('/--A--first_name--B--/i',"$first_name",$email_subject);
+					$email_subject = preg_replace('/--A--middle_initial--B--/i',"$middle_initial",$email_subject);
+					$email_subject = preg_replace('/--A--last_name--B--/i',"$last_name",$email_subject);
+					$email_subject = preg_replace('/--A--address1--B--/i',"$address1",$email_subject);
+					$email_subject = preg_replace('/--A--address2--B--/i',"$address2",$email_subject);
+					$email_subject = preg_replace('/--A--address3--B--/i',"$address3",$email_subject);
+					$email_subject = preg_replace('/--A--city--B--/i',"$city",$email_subject);
+					$email_subject = preg_replace('/--A--state--B--/i',"$state",$email_subject);
+					$email_subject = preg_replace('/--A--province--B--/i',"$province",$email_subject);
+					$email_subject = preg_replace('/--A--postal_code--B--/i',"$postal_code",$email_subject);
+					$email_subject = preg_replace('/--A--country_code--B--/i',"$country_code",$email_subject);
+					$email_subject = preg_replace('/--A--gender--B--/i',"$gender",$email_subject);
+					$email_subject = preg_replace('/--A--date_of_birth--B--/i',"$date_of_birth",$email_subject);
+					$email_subject = preg_replace('/--A--alt_phone--B--/i',"$alt_phone",$email_subject);
+					$email_subject = preg_replace('/--A--email--B--/i',"$email",$email_subject);
+					$email_subject = preg_replace('/--A--security_phrase--B--/i',"$security_phrase",$email_subject);
+					$email_subject = preg_replace('/--A--comments--B--/i',"$comments",$email_subject);
+					$email_subject = preg_replace('/--A--agent_name--B--/i',"$agent_name",$email_subject);
+					$email_subject = preg_replace('/--A--callback_comments--B--/i',"$callback_comments",$email_subject);
+					}
+
+				### check for variables in email_body
+				if (preg_match('/--A--/i',$email_body))
+					{
+					$email_body = preg_replace('/^VAR|--A--CF_uses_custom_fields--B--/','',$email_body);
+					$email_body = preg_replace('/--A--lead_id--B--/i',"$lead_id",$email_body);
+					$email_body = preg_replace('/--A--vendor_id--B--/i',"$vendor_id",$email_body);
+					$email_body = preg_replace('/--A--vendor_lead_code--B--/i',"$vendor_lead_code",$email_body);
+					$email_body = preg_replace('/--A--list_id--B--/i',"$list_id",$email_body);
+					$email_body = preg_replace('/--A--list_name--B--/i',"$list_name",$email_body);
+					$email_body = preg_replace('/--A--list_description--B--/i',"$list_description",$email_body);
+					$email_body = preg_replace('/--A--gmt_offset_now--B--/i',"$gmt_offset_now",$email_body);
+					$email_body = preg_replace('/--A--phone_code--B--/i',"$phone_code",$email_body);
+					$email_body = preg_replace('/--A--phone_number--B--/i',"$phone_number",$email_body);
+					$email_body = preg_replace('/--A--title--B--/i',"$title",$email_body);
+					$email_body = preg_replace('/--A--first_name--B--/i',"$first_name",$email_body);
+					$email_body = preg_replace('/--A--middle_initial--B--/i',"$middle_initial",$email_body);
+					$email_body = preg_replace('/--A--last_name--B--/i',"$last_name",$email_body);
+					$email_body = preg_replace('/--A--address1--B--/i',"$address1",$email_body);
+					$email_body = preg_replace('/--A--address2--B--/i',"$address2",$email_body);
+					$email_body = preg_replace('/--A--address3--B--/i',"$address3",$email_body);
+					$email_body = preg_replace('/--A--city--B--/i',"$city",$email_body);
+					$email_body = preg_replace('/--A--state--B--/i',"$state",$email_body);
+					$email_body = preg_replace('/--A--province--B--/i',"$province",$email_body);
+					$email_body = preg_replace('/--A--postal_code--B--/i',"$postal_code",$email_body);
+					$email_body = preg_replace('/--A--country_code--B--/i',"$country_code",$email_body);
+					$email_body = preg_replace('/--A--gender--B--/i',"$gender",$email_body);
+					$email_body = preg_replace('/--A--date_of_birth--B--/i',"$date_of_birth",$email_body);
+					$email_body = preg_replace('/--A--alt_phone--B--/i',"$alt_phone",$email_body);
+					$email_body = preg_replace('/--A--email--B--/i',"$email",$email_body);
+					$email_body = preg_replace('/--A--security_phrase--B--/i',"$security_phrase",$email_body);
+					$email_body = preg_replace('/--A--comments--B--/i',"$comments",$email_body);
+					$email_body = preg_replace('/--A--agent_name--B--/i',"$agent_name",$email_body);
+					$email_body = preg_replace('/--A--callback_comments--B--/i',"$callback_comments",$email_body);
+					$email_body = urldecode($email_body);
+					}
+
+				##### sending email through PHP #####
+				$sendmail = @mail("$email_to","$email_subject","$email_body", "From: $email_from");
+				if ($sendmail) {$email_result="SENT";} else {$email_result="FAILED";}
+				$upd_stmt="UPDATE vicidial_callbacks set email_alert=now(), email_result='$email_result' where callback_id='$CB_id'";
+				$upd_rslt=mysql_to_mysqli($upd_stmt, $link);
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$upd_stmt,'00699',$user,$server_ip,$session_name,$one_mysql_log);}
+				}
+			}
+		$upd_stmt="UPDATE vicidial_callbacks set email_alert=now(), email_result='NOT AVAILABLE' where recipient='USERONLY' and user='$user' and callback_time<=now() and email_alert is null $campaignCBsql";
+		$upd_rslt=mysql_to_mysqli($upd_stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$upd_stmt,'00700',$user,$server_ip,$session_name,$one_mysql_log);}
+		}
 	}
 
 

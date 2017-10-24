@@ -22,6 +22,7 @@
 # 150806-1424 - First Build
 # 170329-2145 - Added DID variables and custom fields values
 # 170526-2315 - Added additional variable filtering
+# 171018-2310 - Added call_notes option
 #
 
 $api_script = 'send_email';
@@ -55,6 +56,8 @@ if (isset($_GET["pass"]))					{$pass=$_GET["pass"];}
 	elseif (isset($_POST["pass"]))			{$pass=$_POST["pass"];}
 if (isset($_GET["DB"]))						{$DB=$_GET["DB"];}
 	elseif (isset($_POST["DB"]))			{$DB=$_POST["DB"];}
+if (isset($_GET["call_notes"]))				{$call_notes=$_GET["call_notes"];}
+	elseif (isset($_POST["call_notes"]))	{$call_notes=$_POST["call_notes"];}
 if (isset($_GET["log_to_file"]))			{$log_to_file=$_GET["log_to_file"];}
 	elseif (isset($_POST["log_to_file"]))	{$log_to_file=$_POST["log_to_file"];}
 
@@ -77,6 +80,7 @@ $pass=preg_replace("/\'|\"|\\\\|;| /","",$pass);
 $call_id = preg_replace('/[^-_0-9a-zA-Z]/', '', $call_id);
 $lead_id = preg_replace('/[^_0-9]/', '', $lead_id);
 $container_id = preg_replace('/[^-_0-9a-zA-Z]/', '', $container_id);
+$call_notes=preg_replace("/\\\\/","",$call_notes);
 
 #############################################
 ##### START SYSTEM_SETTINGS AND USER LANGUAGE LOOKUP #####
@@ -500,7 +504,6 @@ if ($match_found > 0)
 						$email_subject = preg_replace('/--A--agent_log_id--B--/i',"$CALL_agent_log_id",$email_subject);
 						$email_subject = preg_replace('/--A--closecallid--B--/i',urlencode(trim($INclosecallid)),$email_subject);
 						$email_subject = preg_replace('/--A--xfercallid--B--/i',urlencode(trim($INxfercallid)),$email_subject);
-						$email_subject = preg_replace('/--A--call_notes--B--/i',"$url_call_notes",$email_subject);
 						$email_subject = preg_replace('/--A--recording_id--B--/i',"$recording_id",$email_subject);
 						$email_subject = preg_replace('/--A--recording_filename--B--/i',"$recording_filename",$email_subject);
 						$email_subject = urldecode($email_subject);
@@ -570,6 +573,7 @@ if ($match_found > 0)
 						$email_body = preg_replace('/--A--did_custom_four--B--/i',"$DID_custom_four",$email_body);
 						$email_body = preg_replace('/--A--did_custom_five--B--/i',"$DID_custom_five",$email_body);
 						$email_body = preg_replace('/--A--uniqueid--B--/i',"$uniqueid",$email_body);
+						$email_body = preg_replace('/--A--call_notes--B--/i',"$call_notes",$email_body);
 						$email_body = urldecode($email_body);
 						}
 

@@ -40,6 +40,7 @@
 # 170409-1004 - Added IP List features to user_authorization
 # 170526-2141 - Added additional auth variable filtering, issue #1016
 # 170528-1029 - Fix for rare inbound logging issue #1017, Added variable filtering
+# 171021-1340 - Fix to update default field if duplicate field in custom fields changed
 #
 
 # $mysql_queries = 26
@@ -561,9 +562,12 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user,$DB,$call_i
 				
 				if ($A_field_type[$o]=='TEXT') 
 					{
+					$change_trigger='';
+					if (preg_match("/\|$A_field_label[$o]\|/i",$vicidial_list_fields))
+						{$change_trigger="onchange=\"update_default_vd_field('$A_field_label[$o]');\"";}
 					if ($A_field_default[$o]=='NULL') {$A_field_default[$o]='';}
 					if (strlen($A_field_value[$o]) < 1) {$A_field_value[$o] = $A_field_default[$o];}
-					$field_HTML .= "<input type=text size=$A_field_size[$o] maxlength=$A_field_max[$o] name=$A_field_label[$o] id=$A_field_label[$o] value=\""._QXZ("$A_field_value[$o]")."\">\n";
+					$field_HTML .= "<input type=text size=$A_field_size[$o] maxlength=$A_field_max[$o] name=$A_field_label[$o] id=$A_field_label[$o] value=\""._QXZ("$A_field_value[$o]")."\" $change_trigger>\n";
 					if ( ($A_field_required[$o] == 'Y') or ( ($A_field_required[$o] == 'INBOUND_ONLY') and (preg_match("/^Y\d\d\d\d\d\d\d/",$call_id)) ) )
 						{$custom_required_fields .= "$A_field_label[$o]|";}
 					}

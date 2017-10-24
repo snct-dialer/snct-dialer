@@ -31,6 +31,7 @@
 # 170227-1709 - Fix for default HTML report format, issue #997
 # 170409-1555 - Added IP List validation code
 # 170829-0040 - Added screen color settings, fixed display bug
+# 171012-2015 - Fixed javascript/apache errors with graphs
 #
 
 $startMS = microtime();
@@ -1528,6 +1529,7 @@ else
 			$graph_count=count($graph_array);
 			$graph_title="$group[$i] - $group_cname[$i] "._QXZ("INTERVAL BREAKDOWN");
 			include("graphcanvas.inc");
+			$HEADER.=$HTML_graph_head;
 			$SUB_HTML_text.=$graphCanvas;
 
 			$i++;
@@ -1682,6 +1684,7 @@ else
 	$graph_count=count($graph_array);
 	$graph_title=_QXZ("MULTI-CAMPAIGN BREAKDOWN");
 	include("graphcanvas.inc");
+	$HEADER.=$HTML_graph_head;
 	$GRAPH_text.=$graphCanvas;
 
 	}
@@ -1736,6 +1739,7 @@ else
 			{
 			$MAIN.=$GRAPH_text;
 			$SUBoutput.=$SUB_HTML_text;
+			$SUBoutput.=$JS_text;
 			}
 		else
 			{
@@ -1747,7 +1751,6 @@ else
 		require("admin_header.php");
 		echo "$MAIN";
 		echo "$SUBoutput";
-		echo $JS_text;
 		$ENDtime = date("U");
 		$RUNtime = ($ENDtime - $STARTtime);
 		echo "\n\n"._QXZ("Run Time").": $RUNtime "._QXZ("seconds")."|$db_source\n";

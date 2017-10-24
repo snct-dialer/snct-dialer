@@ -1,3 +1,58 @@
+2.25.15
+
+  [Jörg Frings-Fürst]
+  * Add upstream Rev. 2841:
+    - AST_CLOSER_service_level.php,
+      AST_CLOSERstats.php,
+      AST_CLOSERstats_v2.php,
+      AST_CLOSERsummary_hourly.php,
+      AST_DIDstats.php,
+      AST_IVRstats.php,
+      AST_LISTS_campaign_stats.php,
+      AST_LISTS_pass_report.php,
+      AST_OUTBOUNDsummary_interval.php,
+      AST_VDADstats.php,
+      AST_agent_days_detail.php,
+      AST_agent_performance_detail.php,
+      AST_agent_status_detail.php,
+      AST_agent_time_detail.php,
+      AST_agent_timeclock_detail.php,
+      AST_campaign_status_list_report.php,
+      AST_inbound_daily_report.php,
+      AST_inbound_forecasting.php,
+      AST_performance_comparison_report.php,
+      AST_team_performance_detail.php,
+      Erlang_report.php,
+      fcstats.php,
+      fcstats_detail.php,
+      timeclock_report.php : Fixed javascript/apache errors with graphs.
+    - graphcanvas.inc:_ Fixed javascript/apache errors with graphs by removing
+        "echo" lines
+    - non_agent_api.php: Add monitor type 'HIJACK'.
+  * Add upstream Rev. 2842:
+    - MySQL_AST_CREATE_tables.sql,
+      upgrade_2.14.sql: Update to upstrem DB version 1523.
+    - vdc_db_query.php,
+      admin.php: Added code for campaign scheduled callback email alerts.
+    - help.php: Added campaigns-scheduled_callbacks_email_alert entry.
+  * New extras/mysql_update/mysql-1523.sql (2017-044).
+  * Add upstream Rev. 2843:
+    - admin.php: Added server function to clear agent conferences.
+  * Add upstream Rev. 2844:
+    - dispo_send_email.php: Added call_notes option.
+  * New Wallboard (2017-045):
+    - Add new table WallBoardStat, WallBoardData, WallBoardData_achive.
+    - New bin/AST_CRON_WallBoard3_gen.php.
+    - Add crontab entry.
+    - Add new vicidial/WallBoard3.php,
+	          vicidial/Wall_js.php.
+	- Add to report menue.
+  * Add upstream Rev. 2845: 
+    - functions.php,
+    - vdc_form_display.php: Fix to update default field if duplicate field in
+        custom fields changed.
+  * Release 2.25.15 2017-10-24.
+
 2.25.14
 
   [Jörg Frings-Fürst]

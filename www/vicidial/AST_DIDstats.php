@@ -34,6 +34,7 @@
 # 170227-1717 - Fix for default HTML report format, issue #997
 # 170409-1555 - Added IP List validation code
 # 170829-0040 - Added screen color settings
+# 171012-2015 - Fixed javascript/apache errors with graphs
 #
 
 $startMS = microtime();
@@ -909,6 +910,7 @@ else
 			$graph_count=count($graph_array);
 			$graph_title=_QXZ("DID Summary");
 			include("graphcanvas.inc");
+			$HEADER.=$HTML_graph_head;
 			$GRAPH_text.=$graphCanvas."<PRE>";
 
 
@@ -1092,6 +1094,7 @@ else
 			$graph_count=count($graph_array);
 			$graph_title=_QXZ("Server Summary");
 			include("graphcanvas.inc");
+			$HEADER.=$HTML_graph_head;
 			$GRAPH_text.=$graphCanvas."<PRE>";
 
 			$FtotCALLS =	sprintf("%10s", $SVtotCALLS);
@@ -1224,6 +1227,7 @@ else
 		$graph_count=count($graph_array);
 		$graph_title=_QXZ("Date Summary");
 		include("graphcanvas.inc");
+		$HEADER.=$HTML_graph_head;
 		$GRAPH_text.=$graphCanvas."<PRE>";
 
 

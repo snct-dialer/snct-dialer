@@ -58,6 +58,7 @@
 # 170324-0740 - Fix for daylight savings time issue
 # 170409-1559 - Added IP List validation code
 # 170829-0040 - Added screen color settings
+# 171012-2015 - Fixed javascript/apache errors with graphs
 #
 
 $startMS = microtime();
@@ -1300,6 +1301,7 @@ if ($report_display_type=="HTML") {
 	$graph_count=count($graph_array);
 	$graph_title=_QXZ("QUEUE SECONDS");
 	include("graphcanvas.inc");
+	$HEADER.=$HTML_graph_head;
 	$GRAPH_text.=$graphCanvas."<PRE>";
 	$MAIN.=$GRAPH_text;
 	}
@@ -1525,6 +1527,7 @@ if ($report_display_type=="HTML") {
 	$graph_count=count($graph_array);
 	$graph_title="DROP TIME BREAKDOWN IN SECONDS";
 	include("graphcanvas.inc");
+	$HEADER.=$HTML_graph_head;
 	$GRAPH_text.=$graphCanvas."<PRE>";
 
 	$MAIN.=$GRAPH_text;
@@ -1896,6 +1899,7 @@ if ($report_display_type=="HTML") {
 	$graph_count=count($graph_array);
 	$graph_title="CALL ANSWERED TIME BREAKDOWN";
 	include("graphcanvas.inc");
+	$HEADER.=$HTML_graph_head;
 	$GRAPH_text.=$graphCanvas;
 
 	$MAIN.=$GRAPH_text;
@@ -2044,6 +2048,7 @@ if ($report_display_type=="HTML")
 	$graph_count=count($graph_array);
 	$graph_title=_QXZ("HANGUP REASON STATS");
 	include("graphcanvas.inc");
+	$HEADER.=$HTML_graph_head;
 	$GRAPH_text.=$graphCanvas;
 
 	$MAIN.=$GRAPH_text;
@@ -2255,6 +2260,7 @@ $ASCII_text.="+------------------------------------------------------+----------
 	$graph_count=count($graph_array);
 	$graph_title=_QXZ("CALL STATUS STATS");
 	include("graphcanvas.inc");
+	$HEADER.=$HTML_graph_head;
 	$GRAPH_text.=$graphCanvas."<PRE>";
 
 ########
@@ -2405,6 +2411,7 @@ if ($report_display_type=="HTML")
 
 	$graph_count=count($graph_array);
 	include("graphcanvas.inc");
+	$HEADER.=$HTML_graph_head;
 	$GRAPH_text.=$graphCanvas."<PRE>";
 
 	$MAIN.=$GRAPH_text;
@@ -2631,6 +2638,7 @@ if ($report_display_type=="HTML")
 	$graph_count=count($graph_array);
 	$graph_title=_QXZ("CALL INITIAL QUEUE POSITION BREAKDOWN");
 	include("graphcanvas.inc");
+	$HEADER.=$HTML_graph_head;
 	$GRAPH_text.=$graphCanvas."<PRE>";
 
 	$MAIN.=$GRAPH_text;
@@ -2807,6 +2815,7 @@ for ($q=0; $q<count($graph_array); $q++) {
 
 $graph_count=count($graph_array);
 include("graphcanvas.inc");
+$HEADER.=$HTML_graph_head;
 $GRAPH_text.=$graphCanvas;			
 
 

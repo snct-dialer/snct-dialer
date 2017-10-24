@@ -214,6 +214,10 @@ OTHER CHANGES:
 
 53. Added Webphone Layout option in Phones and override in User Groups
 
+54. Added campaigns-scheduled_callbacks_email_alert option to send email alerts
+	to agents when scheduled callbacks are triggered while they are logged
+	in to the agent screen. Read the HELP for instructions to set up.
+
 
 
 
