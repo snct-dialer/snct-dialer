@@ -39621,6 +39621,14 @@ if ($ADD==999999)
 
 		echo "</UL>\n";
 
+		echo "<B>"._QXZ("Extra Reports")."</B><BR>\n";
+		echo "<UL>\n";
+
+		if ( (preg_match("/Wallboard 3.0/",$LOGallowed_reports)) or (preg_match("/ALL REPORTS/",$LOGallowed_reports)) )
+		{echo "<LI><a href=\"WallBoard3.php\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK size=2>"._QXZ("Wallboard 3.0")."</a></FONT>\n";}
+
+		echo "</UL>\n";
+
 		$custom_stmt="show tables like 'vicidial_custom_reports'";
 		$custom_rslt=mysql_to_mysqli($custom_stmt, $link);
 		if (mysqli_num_rows($custom_rslt)>0) 
