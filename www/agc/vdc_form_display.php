@@ -40,10 +40,11 @@
 # 170317-0755 - Added more missing display variables
 # 170331-2300 - Added more debug logging
 # 170428-1215 - Small fix for admin modify lead display
+# 171021-1339 - Fix to update default field if duplicate field in custom fields changed
 #
 
-$version = '2.14-30';
-$build = '170428-1215';
+$version = '2.14-31';
+$build = '171021-1339';
 $php_script = 'vdc_form_display.php';
 
 require_once("dbconnect_mysqli.php");
@@ -529,6 +530,11 @@ else
 	echo "		document.getElementById(\"P_\" + taskspan).innerHTML = \"\";\n";
 	echo "		document.getElementById(taskspan).innerHTML = \" &nbsp; <a href=\\\"javascript:open_help('\" + taskspan + \"','\" + taskhelp + \"');\\\">help+</a>\";\n";
 	echo "		document.getElementById(taskspan).style.background = \"white\";\n";
+	echo "		}\n";
+	echo "	function update_default_vd_field(taskfield) \n";
+	echo "		{\n";  
+	echo "		var tempvalue = document.getElementById(taskfield).value;\n";
+	echo "		parent.document.getElementById(taskfield).value = tempvalue;\n";
 	echo "		}\n";
 	echo "	</script>\n";
 	echo "	<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";

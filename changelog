@@ -46,6 +46,10 @@
     - Add crontab entry.
     - Add new vicidial/WallBoard3.php,
 	          vicidial/Wall_js.php.
+  * Add upstream Rev. 2845: 
+    - functions.php,
+    - vdc_form_display.php: Fix to update default field if duplicate field in
+        custom fields changed.
 
 2.25.14
 
