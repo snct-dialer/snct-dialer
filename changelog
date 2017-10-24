@@ -40,16 +40,18 @@
     - admin.php: Added server function to clear agent conferences.
   * Add upstream Rev. 2844:
     - dispo_send_email.php: Added call_notes option.
-  * New Wallboard:
+  * New Wallboard (2017-045):
     - Add new table WallBoardStat, WallBoardData, WallBoardData_achive.
     - New bin/AST_CRON_WallBoard3_gen.php.
     - Add crontab entry.
     - Add new vicidial/WallBoard3.php,
 	          vicidial/Wall_js.php.
+	- Add to report menue.
   * Add upstream Rev. 2845: 
     - functions.php,
     - vdc_form_display.php: Fix to update default field if duplicate field in
         custom fields changed.
+  * Release 2.25.15 2017-10-24.
 
 2.25.14
 
