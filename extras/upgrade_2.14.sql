@@ -486,7 +486,7 @@ CREATE TABLE IF NOT EXISTS `WallBoardStat` (
   `TSL2` bigint(20) NOT NULL DEFAULT '0',
   `Twaittime` double NOT NULL DEFAULT '0',
   `TUnbekannt` bigint(20) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 ALTER TABLE `WallBoardStat`
   ADD PRIMARY KEY (`ID`);
@@ -512,7 +512,7 @@ CREATE TABLE IF NOT EXISTS `WallBoardData` (
   `SL2` tinyint(1) DEFAULT NULL,
   `Dauer` bigint(20) NOT NULL DEFAULT '0',
   `next_uniqueid` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 ALTER TABLE `WallBoardData`
   ADD PRIMARY KEY (`ID`);
