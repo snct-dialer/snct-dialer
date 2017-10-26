@@ -1,3 +1,11 @@
+2.25.15
+
+  [Jörg Frings-Fürst]
+  * Add upstream Rev. 2846:
+    - admin_modify_lead.php,
+      qc_modify_lead.php.
+
+
 2.25.15-2
 
   [Jörg Frings-Fürst]
