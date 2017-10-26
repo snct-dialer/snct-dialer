@@ -1,3 +1,17 @@
+2.25.15
+
+  [Jörg Frings-Fürst]
+  * Add upstream Rev. 2846:
+    - admin_modify_lead.php,
+      qc_modify_lead.php.
+  * Add upstream Rev. 2847:
+    - ADMIN_archive_log_tables.pl: Added --wipe-closer-log flag.
+    - AST_inbound_email_parser.pl,
+      vdc_db_query.php: Added optional queue_log logging.
+    - CALLER_ID_NAME_CODES.txt.
+    - vicidial.php: Small change for email queue_log logging.
+
+
 2.25.15-2
 
   [Jörg Frings-Fürst]
