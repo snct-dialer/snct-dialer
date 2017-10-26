@@ -65,6 +65,7 @@ use MIME::QuotedPrint;
 # 160414-0930 - Added missing phone_code field on vicidial_list insert
 # 161014-2200 - Bug patch for "&nbsp;" string in email message
 # 170523-1319 - file attachment patch, issue #1014
+# 171026-0106 - Added optional queue_log logging
 #
 
 # default path to astguiclient configuration file:
@@ -217,7 +218,7 @@ $minutes=($hour*60)+$min;
 # $minutes=0; # Uncomment if you want to TEST ONLY, so you can test this at any time.
 
 ##### Get the settings from system_settings #####
-$stmtA = "SELECT allow_emails,default_phone_code FROM system_settings;";
+$stmtA = "SELECT allow_emails,default_phone_code,enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id,queuemetrics_eq_prepend FROM system_settings;";
 #	print "$stmtA\n";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -225,8 +226,15 @@ $sthArows=$sthA->rows;
 if ($sthArows > 0)
 	{
 	@aryA = $sthA->fetchrow_array;
-	$SSallow_emails =			$aryA[0];
-	$SSdefault_phone_code =		$aryA[1];
+	$SSallow_emails =				$aryA[0];
+	$SSdefault_phone_code =			$aryA[1];
+	$enable_queuemetrics_logging =	$aryA[2];
+	$queuemetrics_server_ip	=		$aryA[3];
+	$queuemetrics_dbname =			$aryA[4];
+	$queuemetrics_login=			$aryA[5];
+	$queuemetrics_pass =			$aryA[6];
+	$queuemetrics_log_id =			$aryA[7];
+	$queuemetrics_eq_prepend =		$aryA[8];
 	}
 $sthA->finish();
 
@@ -309,7 +317,8 @@ while (@row=$rslt->fetchrow_array) {
 				#print "Folders:\n";
 				$new_messages=0;
 				my @folder_array=$client->folders("INBOX");
-				for (my $i=0; $i<scalar(@folder_array); $i++) {
+				for (my $i=0; $i<scalar(@folder_array); $i++) 
+					{
 					#print "- ".$folder_array[$i]."\n" ;  
 					my $msgcount = $client->message_count($folder_array[$i]);
 					#print "+---+ Messages: ".$msgcount."\n";
@@ -608,16 +617,19 @@ while (@row=$rslt->fetchrow_array) {
 
 								if ($DBX) {print $ins_stmt."\n";}
 								my $ins_rslt=$dbhA->prepare($ins_stmt);
-								if ($ins_rslt->execute()) {
-									if ($attach_ct>0) {
-										$email_id=$dbhA->last_insert_id(undef, undef, 'vicidial_email_list', 'email_row_id');
+								if ($ins_rslt->execute()) 
+									{
+									$email_id=$dbhA->last_insert_id(undef, undef, 'vicidial_email_list', 'email_row_id');
+									if ($attach_ct>0) 
+										{
 										$multistmt="";
-										for ($k=0; $k<$attach_ct; $k++) {
+										for ($k=0; $k<$attach_ct; $k++) 
+											{
 											$ins_values[$k]="('$email_id',$ins_values[$k])";
 											$multistmt.="$ins_values[$k],";
 											$output_ins_values[$k]="('$email_id',$output_ins_values[$k])";
 											$output_multistmt.="$output_ins_values[$k],";
-										}
+											}
 
 										$attachment_ins_stmt="insert into inbound_email_attachments(email_row_id, filename, file_type, file_encoding, file_size, file_extension, file_contents) VALUES ".substr($multistmt,0,-1);
 										$attachment_ins_rslt=$dbhA->prepare($attachment_ins_stmt);
@@ -625,17 +637,42 @@ while (@row=$rslt->fetchrow_array) {
 
 										$output_ins_stmt="insert into inbound_email_attachments(email_row_id, filename, file_type, file_encoding, file_size, file_extension, file_contents) VALUES ".substr($output_multistmt,0,-1);
 										if ($DBX) {print $output_ins_stmt."\n";}
-									}
+										}
 									if ($DB) {print "\n Found $attach_ct attachments in email\n";}
-								} else {
-									die "Email insert failed.  Check SQL in:\n $ins_stmt\n";
-								}
 
+									## QM queue_log insert
+									if ($enable_queuemetrics_logging > 0)
+										{
+										$PADlead_id = sprintf("%010s", $lead_id);	while (length($PADlead_id) > 10) {chop($PADlead_id);}
+										$PADemail_id = sprintf("%09s", $email_id);	while (length($PADemail_id) > 9) {$PADemail_id = substr($PADemail_id,1);}
+										$caller_code = "E$PADemail_id$PADlead_id";
+
+										$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+										 or die "Couldn't connect to database: " . DBI->errstr;
+
+										if ($DBX) {print "CONNECTED TO QueueMetrics DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
+
+										$stmtB = "INSERT INTO queue_log SET `partition`='P01',time_id='$secX',call_id='$caller_code',queue='NONE',agent='NONE',verb='INFO',data1='DID',data2='$VARemail_ID',serverid='$queuemetrics_log_id';";
+										$Baffected_rows = $dbhB->do($stmtB);
+
+										$stmtB = "INSERT INTO queue_log SET `partition`='P01',time_id='$secX',call_id='$caller_code',queue='NONE',agent='NONE',verb='INFO',data1='IVRSTART',data2='$VARemail_groupid',data3='$VARemail_ID',serverid='$queuemetrics_log_id';";
+										$Baffected_rows = $dbhB->do($stmtB);
+
+										$stmtB = "INSERT INTO queue_log SET `partition`='P01',time_id='$secX',call_id='$caller_code',queue='NONE',agent='NONE',verb='INFO',data1='IVR',data2='$VARemail_groupid',serverid='$queuemetrics_log_id';";
+										$Baffected_rows = $dbhB->do($stmtB);
+
+										$dbhB->disconnect();
+										}
+									}
+								else 
+									{
+									die "Email insert failed.  Check SQL in:\n $ins_stmt\n";
+									}
+								}
 							}
-						}
 						close(STORAGE);
+						}
 					}
-				}
 				if ($DB) {
 					if ($DBX) {
 						print "Iteration #$q - found ".($new_messages+0)." new messages\n";
@@ -661,10 +698,13 @@ while (@row=$rslt->fetchrow_array) {
 			  or die "Cannot connect through POP3Client: $!";
 
 			if ($pop->Count()<0) {die "Error connecting to server.  Please try again later.\n";}
-			for( $i = 1; $i <= $pop->Count(); $i++ ) {
-				foreach( $pop->Head( $i ) ) {
+			for( $i = 1; $i <= $pop->Count(); $i++ ) 
+				{
+				foreach( $pop->Head( $i ) ) 
+					{
 					# print $_."\n";
-					if ($_=~/^(To|From|Date|Subject|MIME-Version|Content-Type|Content-Transfer-Encoding|X-Mailer|Authentication-Results|Message|Body):\s+/i) {
+					if ($_=~/^(To|From|Date|Subject|MIME-Version|Content-Type|Content-Transfer-Encoding|X-Mailer|Authentication-Results|Message|Body):\s+/i) 
+						{
 						$value=$_;
 						$ptn=$&;
 						$value=~s/$ptn//i;
@@ -673,11 +713,12 @@ while (@row=$rslt->fetchrow_array) {
 						$ptn=~s/\-/_/gi;
 						$varname=lc($ptn);
 						$$varname=$value;
-					}
-					if ($_=~/boundary\=\"?[^\"]+\"?/i) {
+						}
+					if ($_=~/boundary\=\"?[^\"]+\"?/i) 
+						{
 						$bkup_boundary=$&;
+						}
 					}
-				}
 				#Rename variables so they aren't as vague.
 				$email_to=$to;
 				$email_from=$from;
@@ -947,29 +988,58 @@ while (@row=$rslt->fetchrow_array) {
 				my $ins_stmt="insert into vicidial_email_list(lead_id, protocol, email_date, email_to, email_from, email_from_name, subject, mime_type, content_type, content_transfer_encoding, x_mailer, sender_ip, message, email_account_id, group_id, status, direction) values('$lead_id', 'POP3', STR_TO_DATE('$date', '%d %b %Y %T'), '$email_to', '$email_from', '$email_from_name', '$subject', '$mime_type', '$content_type', '$content_transfer_encoding', '$x_mailer', '$sender_ip', trim('$message'), '$VARemail_ID', '$VARemail_groupid', '$status', 'INBOUND')";
 				if ($DBX) {print $ins_stmt."\n";}
 				my $ins_rslt=$dbhA->prepare($ins_stmt);
-				if ($ins_rslt->execute()) {
+				if ($ins_rslt->execute()) 
+					{
+					$email_id=$dbhA->last_insert_id(undef, undef, 'vicidial_email_list', 'email_row_id');
 					$pop->Delete($i);
-					if ($attach_ct>0) {
-						$email_id=$dbhA->last_insert_id(undef, undef, 'vicidial_email_list', 'email_row_id');
+					if ($attach_ct>0) 
+						{
 						$multistmt="";
-						for ($k=0; $k<$attach_ct; $k++) {
+						for ($k=0; $k<$attach_ct; $k++) 
+							{
 							$ins_values[$k]="('$email_id',$ins_values[$k])";
 							$multistmt.="$ins_values[$k],";
 							$output_ins_values[$k]="('$email_id',$output_ins_values[$k])";
 							$output_multistmt.="$output_ins_values[$k],";
-						}
+							}
 
 						$attachment_ins_stmt="insert into inbound_email_attachments(email_row_id, filename, file_type, file_encoding, file_size, file_extension, file_contents) VALUES ".substr($multistmt,0,-1);
 						$attachment_ins_rslt=$dbhA->prepare($attachment_ins_stmt);
 						$attachment_ins_rslt->execute();
 						$output_ins_stmt="insert into inbound_email_attachments(email_row_id, filename, file_type, file_encoding, file_size, file_extension, file_contents) VALUES ".substr($output_multistmt,0,-1);
 						if ($DBX) {print $output_ins_stmt."\n";}
-					}
+						}
 					if ($DB) {print "\n $attach_ct attachments in email\n";}
-				} else {
+
+					## QM queue_log insert
+					if ($enable_queuemetrics_logging > 0)
+						{
+						$PADlead_id = sprintf("%010s", $lead_id);	while (length($PADlead_id) > 10) {chop($PADlead_id);}
+						$PADemail_id = sprintf("%09s", $email_id);	while (length($PADemail_id) > 9) {$PADemail_id = substr($PADemail_id,1);}
+						$caller_code = "E$PADemail_id$PADlead_id";
+
+						$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+						 or die "Couldn't connect to database: " . DBI->errstr;
+
+						if ($DBX) {print "CONNECTED TO QueueMetrics DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
+
+						$stmtB = "INSERT INTO queue_log SET `partition`='P01',time_id='$secX',call_id='$caller_code',queue='NONE',agent='NONE',verb='INFO',data1='DID',data2='$VARemail_ID',serverid='$queuemetrics_log_id';";
+						$Baffected_rows = $dbhB->do($stmtB);
+
+						$stmtB = "INSERT INTO queue_log SET `partition`='P01',time_id='$secX',call_id='$caller_code',queue='NONE',agent='NONE',verb='INFO',data1='IVRSTART',data2='$VARemail_groupid',data3='$VARemail_ID',serverid='$queuemetrics_log_id';";
+						$Baffected_rows = $dbhB->do($stmtB);
+
+						$stmtB = "INSERT INTO queue_log SET `partition`='P01',time_id='$secX',call_id='$caller_code',queue='NONE',agent='NONE',verb='INFO',data1='IVR',data2='$VARemail_groupid',serverid='$queuemetrics_log_id';";
+						$Baffected_rows = $dbhB->do($stmtB);
+
+						$dbhB->disconnect();
+						}
+					}
+				else 
+					{
 					die "Email insert failed.  Check SQL in:\n $ins_stmt\n";
+					}
 				}
-			}
 
 			#### END CYCLING THROUGH EMAILS
 			if ($DB) {
