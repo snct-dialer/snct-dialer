@@ -18,6 +18,18 @@
       new vicidial_whiteboard_functions.js,
       new whiteboard_reports.php,
       new loader.gif: Added Real-Time Whiteboard Report.
+  * New Phonebock (2017-046):
+    - new arrow_left32.png,
+      new arrow_right32.png,
+      new conf-32.png,
+      new phone32.png,
+      new up-down-arrow32.png,
+      new vdc_tab_email.png,
+      new vdc_tab_phonebook.png,
+      new phonebook_setup.php,
+      new vdc_phonebook_display.php,
+      admin.php,
+      vididial.php: New phomesbook.
 
 2.25.15-2
 
