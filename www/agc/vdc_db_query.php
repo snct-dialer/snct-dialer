@@ -437,10 +437,11 @@
 # 170816-2334 - Added ask post-call survey feature for in-group calls
 # 170912-1618 - Fix for no-hopper dnc dialing issue
 # 171018-1310 - Added code for campaign scheduled callback email alerts
+# 171026-0107 - Added optional queue_log logging
 #
 
-$version = '2.14-331';
-$build = '171018-1310';
+$version = '2.14-332';
+$build = '171026-0107';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=700;
@@ -9251,6 +9252,11 @@ if ($ACTION == 'VDADcheckINCOMINGother')
 			$email_row_id =			$row[6];
 			$xfercallid =			$row[7];
 			$uniqueid=date("U").".".rand(1, 9999);
+			$PADlead_id = sprintf("%010s", $lead_id);
+				while (strlen($PADlead_id) > 10) {$PADlead_id = substr("$PADlead_id", 1);}
+			$PADemail_row_id = sprintf("%010s", $email_row_id);
+				while (strlen($PADemail_row_id) > 9) {$PADemail_row_id = substr("$PADemail_row_id", 1);}
+			$caller_code = "E$PADemail_row_id$PADlead_id";
 
 			if (strlen($call_server_ip)<7) {$call_server_ip = $server_ip;}
 
@@ -9273,7 +9279,7 @@ if ($ACTION == 'VDADcheckINCOMINGother')
 			$calls_today++;
 
 			### update the agent status to INCALL in vicidial_live_agents while handling email
-			$stmt = "UPDATE vicidial_live_agents set status='INCALL',comments='EMAIL',last_call_time='$NOW_TIME',lead_id='$lead_id',calls_today='$calls_today',external_hangup=0,external_status='',external_pause='',external_dial='',last_state_change='$NOW_TIME',pause_code='' where user='$user' and server_ip='$server_ip';";
+			$stmt = "UPDATE vicidial_live_agents set status='INCALL',comments='EMAIL',last_call_time='$NOW_TIME',lead_id='$lead_id',calls_today='$calls_today',external_hangup=0,external_status='',external_pause='',external_dial='',last_state_change='$NOW_TIME',pause_code='',callerid='$caller_code' where user='$user' and server_ip='$server_ip';";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {$errno = mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00490',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -9371,6 +9377,50 @@ if ($ACTION == 'VDADcheckINCOMINGother')
 					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00495',$user,$server_ip,$session_name,$one_mysql_log);}
 				}
 
+			#############################################
+			##### START QUEUEMETRICS LOGGING LOOKUP #####
+			$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id,queuemetrics_callstatus,queuemetrics_dispo_pause,queuemetrics_pe_phone_append,queuemetrics_socket,queuemetrics_socket_url FROM system_settings;";
+			$rslt=mysql_to_mysqli($stmt, $link);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+			if ($DB) {echo "$stmt\n";}
+			$qm_conf_ct = mysqli_num_rows($rslt);
+			if ($qm_conf_ct > 0)
+				{
+				$row=mysqli_fetch_row($rslt);
+				$enable_queuemetrics_logging =	$row[0];
+				$queuemetrics_server_ip	=		$row[1];
+				$queuemetrics_dbname =			$row[2];
+				$queuemetrics_login	=			$row[3];
+				$queuemetrics_pass =			$row[4];
+				$queuemetrics_log_id =			$row[5];
+				$queuemetrics_callstatus =		$row[6];
+				$queuemetrics_dispo_pause =		$row[7];
+				$queuemetrics_pe_phone_append = $row[8];
+				$queuemetrics_socket =			$row[9];
+				$queuemetrics_socket_url =		$row[10];
+				}
+			##### END QUEUEMETRICS LOGGING LOOKUP #####
+			###########################################
+			if ($enable_queuemetrics_logging > 0)
+				{
+				$linkB=mysqli_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
+				if (!$linkB) {die(_QXZ("Could not connect: ")."$queuemetrics_server_ip|$queuemetrics_login" . mysqli_connect_error());}
+				mysqli_select_db($linkB, "$queuemetrics_dbname");
+
+				$stmt = "INSERT INTO queue_log SET `partition`='P01',time_id='$StarTtime',call_id='$caller_code',queue='$VDADchannel_group',agent='NONE',verb='ENTERQUEUE',data2='$email_row_id',serverid='$queuemetrics_log_id';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_to_mysqli($stmt, $linkB);
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkB,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+				$affected_rows = mysqli_affected_rows($linkB);
+
+				$stmt = "INSERT INTO queue_log SET `partition`='P01',time_id='$StarTtime',call_id='$caller_code',queue='$VDADchannel_group',agent='Agent/$user',verb='CONNECT',data1='0',serverid='$queuemetrics_log_id';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_to_mysqli($stmt, $linkB);
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkB,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+				$affected_rows = mysqli_affected_rows($linkB);
+
+				mysqli_close($linkB);
+				}
 			}
 		else if ($chat_ct>0) 
 			{
@@ -9859,7 +9909,7 @@ if ($ACTION == 'VDADcheckINCOMINGother')
 			$comments = preg_replace("/\r/i",'',$comments);
 			$comments = preg_replace("/\n/i",'!N',$comments);
 
-			$LeaD_InfO =	$callerid . "\n";
+			$LeaD_InfO =	$caller_code . "\n";
 			$LeaD_InfO .=	$lead_id . "\n";
 			$LeaD_InfO .=	$dispo . "\n";
 			$LeaD_InfO .=	$tsr . "\n";
@@ -13732,6 +13782,7 @@ if ($ACTION == 'PauseCodeSubmit')
 				{
 				$pause_call_id='NONE';
 				if (strlen($campaign_cid) > 12) {$pause_call_id = $campaign_cid;}
+				if ( (preg_match("/^E/",$MDnextCID)) and (strlen($MDnextCID) > 19) ) {$pause_call_id = $MDnextCID;}
 				$linkB=mysqli_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
 				if (!$linkB) {die(_QXZ("Could not connect: ")."$queuemetrics_server_ip|$queuemetrics_login" . mysqli_connect_error());}
 				mysqli_select_db($linkB, "$queuemetrics_dbname");

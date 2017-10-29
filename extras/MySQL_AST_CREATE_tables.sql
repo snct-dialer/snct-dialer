@@ -1753,7 +1753,8 @@ company_name VARCHAR(50) default '',
 ticket_mail VARCHAR(100) default '',
 allow_manage_active_lists ENUM('0','1') default '0',
 expired_lists_inactive ENUM('0','1') default '0',
-did_system_filter ENUM('0','1') default '0'
+did_system_filter ENUM('0','1') default '0',
+allow_phonebook ENUM('0','1') default '0'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_campaigns_list_mix (
@@ -4185,4 +4186,4 @@ INSERT INTO vicidial_settings_containers(container_id,container_notes,container_
 
 UPDATE system_settings set vdc_agent_api_active='1';
 
-UPDATE system_settings SET db_schema_version='1523',db_schema_update_date=NOW(),reload_timestamp=NOW();
+UPDATE system_settings SET db_schema_version='1524',db_schema_update_date=NOW(),reload_timestamp=NOW();

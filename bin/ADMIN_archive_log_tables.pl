@@ -51,12 +51,14 @@
 # 170809-1926 - Added rolling of user_call_log if over 1000000 records
 # 170817-1318 - Added rolling of vicidial_inbound_survey_log
 # 170825-2243 - Added rolling of vicidial_xfer_log
+# 171026-0105 - Added --wipe-closer-log flag
 #
 
 $CALC_TEST=0;
 $T=0;   $TEST=0;
 $only_trim_archive=0;
 $recording_log_archive=0;
+$wipe_closer_log=0;
 
 ### begin parsing run-time options ###
 if (length($ARGV[0])>1)
@@ -86,6 +88,7 @@ if (length($ARGV[0])>1)
 		print "                               vicidial_log_archive, vicidial_agent_log_archive, vicidial_closer_log_archive, vicidial_xfer_log_archive\n";
 		print "  [--recording-log-days=XX] = OPTIONAL, number of days to archive recording_log table only past\n";
 		print "  [--cpd-log-purge-days=XX] = OPTIONAL, number of days to purge vicidial_cpd_log table only past\n";
+		print "  [--wipe-closer-log] = OPTIONAL, deletes all records from vicidial_closer_log after archiving\n";
 		print "  [--quiet] = quiet\n";
 		print "  [--calc-test] = date calculation test only\n";
 		print "  [--test] = test\n\n";
@@ -106,6 +109,11 @@ if (length($ARGV[0])>1)
 			{
 			$CALC_TEST=1;
 			print "\n-----DATE CALCULATION TESTING ONLY-----\n\n";
+			}
+		if ($args =~ /--wipe-closer-log/i) 
+			{
+			$wipe_closer_log=1;
+			print "\n----- WIPE CLOSER LOG: $wipe_closer_log -----\n\n";
 			}
 		if ($args =~ /--daily/i)
 			{
@@ -1341,8 +1349,11 @@ if (!$T)
 	
 	$rv = $sthA->err();
 	if (!$rv) 
-		{	
-		$stmtA = "DELETE FROM vicidial_closer_log WHERE call_date < '$del_time';";
+		{
+		if ($wipe_closer_log > 0) 
+			{$stmtA = "DELETE FROM vicidial_closer_log;";}
+		else
+			{$stmtA = "DELETE FROM vicidial_closer_log WHERE call_date < '$del_time';";}
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 		$sthArows = $sthA->rows;

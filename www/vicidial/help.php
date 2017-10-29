@@ -139,6 +139,7 @@
 # 171006-2058 - Added lists-inbound_list_script_override entry
 # 171011-1505 - Added webphone_layout entries
 # 171018-2203 - Added campaigns-scheduled_callbacks_email_alert entry
+# 171020-0028 - Added whiteboard report entry
 #
 
 
@@ -6777,6 +6778,39 @@ if ($SSqc_features_active > 0)
 <?php echo _QXZ("<U>END TIME</U> = The time the manager stopped monitoring the agent, ending the monitoring session"); ?><BR>
 <?php echo _QXZ("<U>LENGTH</U> = The total length in seconds of the monitoring session"); ?><BR>
 <?php echo _QXZ("<U>TYPE</U> = The type of monitoring session that the manager was running"); ?><BR>
+
+
+
+<BR><BR><BR><BR>
+<A NAME="rt_whiteboard_report">
+<BR>
+<B><?php echo _QXZ("Real-Time Whiteboard report"); ?> -</B><?php echo _QXZ("This report allows the user to display reports in a large graph form with associated statistics printed with the report, and the report will be refreshed at a set interval.  This is useful for overhead projections where the user needs to display a set of data in a comprehensive, easy-to-read format.  Also, when the user selects a report to display, any report option relevant to that report will be highlighted in red: campaigns, status flags, etc...."); ?><BR><BR>
+<A NAME="rt_whiteboard_report-report_type">
+<?php echo _QXZ("<U>Report Type</U> = The type of report to display."); ?><BR>
+<UL>
+<?php echo _QXZ("<LI>Disposition Totals - A breakdown of disposition totals of calls made."); ?><BR>
+<?php echo _QXZ("<LI>Agent Performance Totals - Shows total calls and sales for agents within a specified date-time range."); ?><BR>
+<?php echo _QXZ("<LI>Agent Performance Rates - Shows conversion rates for agents within a specified date-time range."); ?><BR>
+<?php echo _QXZ("<LI>Team Performance Totals - Shows total calls and sales for teams/user groups within a specified date-time range."); ?><BR>
+<?php echo _QXZ("<LI>Team Performance Rates - Shows converstion rates for teams/user groups within a specified date-time range."); ?><BR>
+<?php echo _QXZ("<LI>Floor Performance Totals (ticker) - Shows cumulative total of sales in a -ticker- format-line graph, with an option to draw a target gross sales."); ?><BR>
+<?php echo _QXZ("<LI>Floor Performance Rates (ticker) - Shows time-elapsed conversion in a -ticker- format-line graph, with an option to draw a target conversion rate."); ?><BR>
+<?php echo _QXZ("<LI>Ingroup Performance Total - Shows total calls and sales for selected ingroups within a specified date-time range."); ?><BR>
+<?php echo _QXZ("<LI>Ingroup Performance Rates - Shows conversion rates for selected ingroups within a specified date-time range."); ?><BR>
+<?php echo _QXZ("<LI>DID Performance Total - Shows total calls and sales for selected DIDs within a specified date-time range."); ?><BR>
+<?php echo _QXZ("<LI>DID Performance Rates - Shows conversion rates for selected DIDs within a specified date-time range."); ?><BR>
+</UL><BR>
+<A NAME="rt_whiteboard_report-parameters">
+<?php echo _QXZ("<U>User Groups,In-groups,Campaigns,Users,DIDs,Status flags</U> = Parameters that may or may not be required based on the type of report run.  Available options are dependent on the user permissions. Additionally, selecting specific campaigns combined with selecting -ALL- for ingroups will restrict the -ALL- selection to only ingroups for the selected campaigns.  Specific campaign selection will also limit the statuses counted if any status flags are selected."); ?><BR>
+<A NAME="rt_whiteboard_report-target_per_unit">
+<?php echo _QXZ("<U>Target per unit</U> = The target number of sales per -unit-, which refers to users,user groups,ingroups,DIDs,etc depending on the report type selected, displayed as a horizontal line."); ?><BR>
+<A NAME="rt_whiteboard_report-target_gross_sales">
+<?php echo _QXZ("<U>Target gross sales</U> = The target number of total sales for ticker reports, displayed as a horizontal line.."); ?><BR>
+<A NAME="rt_whiteboard_report-start_date">
+<?php echo _QXZ("<U>Start date/time</U> = If filled out, the starting date and time that the report will use up through the current date and time when compiling the report."); ?><BR>
+<A NAME="rt_whiteboard_report-show_results">
+<?php echo _QXZ("<U>Show results for the past X hours</U> = If filled out and the start date-time is NOT filled out, the selected report will compile data starting at the time X hours ago up through the current time, which makes it a dynamic starting time as opposed to the set date-time used in the previous parameter."); ?><BR>
+
 
 
 <BR><BR><BR><BR>

@@ -1,3 +1,37 @@
+2.25.16
+
+  [Jörg Frings-Fürst]
+  * Add upstream Rev. 2846:
+    - admin_modify_lead.php,
+      qc_modify_lead.php.
+  * Add upstream Rev. 2847:
+    - ADMIN_archive_log_tables.pl: Added --wipe-closer-log flag.
+    - AST_inbound_email_parser.pl,
+      vdc_db_query.php: Added optional queue_log logging.
+    - CALLER_ID_NAME_CODES.txt.
+    - vicidial.php: Small change for email queue_log logging.
+  * Add upstream Rev. 2848:
+    - admin.php,
+      help.php,
+      new AST_rt_whiteboard_rpt.php,
+      new vicidial_stylesheet.php,
+      new vicidial_whiteboard_functions.js,
+      new whiteboard_reports.php,
+      new loader.gif: Added Real-Time Whiteboard Report.
+  * New Phonebock (2017-046):
+    - new arrow_left32.png,
+      new arrow_right32.png,
+      new conf-32.png,
+      new phone32.png,
+      new up-down-arrow32.png,
+      new vdc_tab_email.png,
+      new vdc_tab_phonebook.png,
+      new phonebook_setup.php,
+      new vdc_phonebook_display.php,
+      admin.php,
+      vididial.php: New phomesbook.
+  * Release 2.25.16 2017-10-29.
+
 2.25.15-2
 
   [Jörg Frings-Fürst]
