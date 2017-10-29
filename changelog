@@ -1,4 +1,4 @@
-2.25.15
+2.25.16
 
   [Jörg Frings-Fürst]
   * Add upstream Rev. 2846:
@@ -30,6 +30,7 @@
       new vdc_phonebook_display.php,
       admin.php,
       vididial.php: New phomesbook.
+  * Release 2.25.16 2017-10-29.
 
 2.25.15-2
 
