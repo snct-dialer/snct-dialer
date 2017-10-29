@@ -10,7 +10,13 @@
       vdc_db_query.php: Added optional queue_log logging.
     - CALLER_ID_NAME_CODES.txt.
     - vicidial.php: Small change for email queue_log logging.
-
+  * Add upstream Rev. 2848:
+    - admin.php,
+      help.php,
+      new AST_rt_whiteboard_rpt.php,
+      new vicidial_stylesheet.php,
+      new vicidial_whiteboard_functions.js,
+      new whiteboard_reports.php: Added Real-Time Whiteboard Report.
 
 2.25.15-2
 
