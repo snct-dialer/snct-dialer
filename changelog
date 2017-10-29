@@ -16,7 +16,8 @@
       new AST_rt_whiteboard_rpt.php,
       new vicidial_stylesheet.php,
       new vicidial_whiteboard_functions.js,
-      new whiteboard_reports.php: Added Real-Time Whiteboard Report.
+      new whiteboard_reports.php,
+      new loader.gif: Added Real-Time Whiteboard Report.
 
 2.25.15-2
 
