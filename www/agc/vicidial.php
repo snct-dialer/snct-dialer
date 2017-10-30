@@ -691,7 +691,7 @@ if ($sl_ct > 0)
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$stmt = "SELECT use_non_latin,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,webroot_writable,timeclock_end_of_day,vtiger_url,enable_vtiger_integration,outbound_autodial_active,enable_second_webform,user_territories_active,static_agent_url,custom_fields_enabled,pllb_grouping_limit,qc_features_active,allow_emails,callback_time_24hour,enable_languages,language_method,meetme_enter_login_filename,meetme_enter_leave3way_filename,enable_third_webform,default_language,active_modules,allow_chats,chat_url,default_phone_code,agent_screen_colors,manual_auto_next,agent_xfer_park_3way,admin_web_directory,agent_script,agent_push_events,agent_push_url,pause_campaigns FROM system_settings;";
+$stmt = "SELECT use_non_latin,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,webroot_writable,timeclock_end_of_day,vtiger_url,enable_vtiger_integration,outbound_autodial_active,enable_second_webform,user_territories_active,static_agent_url,custom_fields_enabled,pllb_grouping_limit,qc_features_active,allow_emails,callback_time_24hour,enable_languages,language_method,meetme_enter_login_filename,meetme_enter_leave3way_filename,enable_third_webform,default_language,active_modules,allow_chats,chat_url,default_phone_code,agent_screen_colors,manual_auto_next,agent_xfer_park_3way,admin_web_directory,agent_script,agent_push_events,agent_push_url,pause_campaigns,allow_phonebook FROM system_settings;";
 $rslt=mysql_to_mysqli($stmt, $link);
 	if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01001',$VD_login,$server_ip,$session_name,$one_mysql_log);}
 if ($DB) {echo "$stmt\n";}
@@ -734,6 +734,7 @@ if ($qm_conf_ct > 0)
 	$agent_push_events =				$row[32];
 	$agent_push_url =					$row[33];
 	$pause_campaign =					$row[34];
+	$allow_phonebook =					$row[35];
 	}
 else
 	{
@@ -743,10 +744,6 @@ else
 ##### END SETTINGS LOOKUP #####
 ###########################################
 
-#
-# remove after database upgrade
-#
-$phonebook_enabled = 1;
 
 if ($non_latin < 1)
 	{
@@ -1407,7 +1404,7 @@ else
 			if ( ($VU_alert_enabled > 0) and ($VU_allow_alerts > 0) ) {$VU_alert_enabled = 'ON';}
 			else {$VU_alert_enabled = 'OFF';}
 			$AgentAlert_allowed = $VU_allow_alerts;
-			if ($VU_vdc_agent_api_access == 0) { $phonebook_enabled = 0; }
+			if ($VU_vdc_agent_api_access == 0) { $allow_phonebook = 0; }
 
 			### Gather timeclock and shift enforcement restriction settings
 			$stmt="SELECT forced_timeclock_login,shift_enforcement,group_shifts,agent_status_viewable_groups,agent_status_view_time,agent_call_log_view,agent_xfer_consultative,agent_xfer_dial_override,agent_xfer_vm_transfer,agent_xfer_blind_transfer,agent_xfer_dial_with_customer,agent_xfer_park_customer_dial,agent_fullscreen,webphone_url_override,webphone_dialpad_override,webphone_systemkey_override,admin_viewable_groups,agent_xfer_park_3way,webphone_layout from vicidial_user_groups where user_group='$VU_user_group';";
@@ -4476,7 +4473,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var email_enabled='<?php echo $email_enabled ?>';
 	var chat_enabled='<?php echo $chat_enabled ?>';
 	var chat_URL='<?php echo $chat_URL; ?>';
-	var phonebook_enabled='<?php echo $phonebook_enabled ?>';
+	var allow_phonebook='<?php echo $allow_phonebook ?>';
 	var enable_xfer_presets='<?php echo $enable_xfer_presets ?>';
 	var hide_xfer_number_to_dial='<?php echo $hide_xfer_number_to_dial ?>';
 	var Presets_HTML='';
@@ -9465,7 +9462,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 										CustomerChatContentsLoad();
 										}
 										
-									if (phonebook_enabled > 0 ) {
+									if (allow_phonebook > 0 ) {
 										PhoneBookContentsLoad();
 									}
 										
@@ -9931,7 +9928,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							CustomerChatContentsLoad();
 							}
 							
-						if (phonebook_enabled > 0) {
+						if (allow_phonebook > 0) {
 							PhoneBookContentsLoad();
 						}
 						if (get_call_launch == 'SCRIPT')
@@ -10978,7 +10975,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								{
 								CustomerChatContentsLoad();
 								}
-							if (phonebook_enabled > 0) {
+							if (allow_phonebook > 0) {
 							    PhoneBookContentsLoad();
 							}
 							if (CalL_AutO_LauncH == 'SCRIPT')
@@ -11738,7 +11735,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								{
 								CustomerChatContentsLoad('', '', manual_chat_override);
 								}
-							if (phonebook_enabled > 0) {
+							if (allow_phonebook > 0) {
 								PhoneBookContentsLoad();
 							}
 							if (CalL_AutO_LauncH == 'SCRIPT')
@@ -17468,7 +17465,7 @@ function phone_number_format(formatphone) {
 					{
 					InternalChatsCheck();
 					}
-                                if (phonebook_enabled > 0) {
+                                if (allow_phonebook > 0) {
                                 
                                //     PhoneBookAgentCheck();
 				}
@@ -18594,7 +18591,7 @@ $zi=2;
 	<?php if ($email_enabled > 0)
     {echo "<td align=\"left\" width=\"67px\"><a href=\"#\" onclick=\"EmailPanelToFront('YES');\"><img src=\"./images/"._QXZ("vdc_tab_email.png")."\" alt=\"EMAIL\" width=\"67px\" height=\"30px\" border=\"0\" /></a></td>\n";}
 	?>
-	<?php if ($phonebook_enabled > 0)
+	<?php if ($allow_phonebook > 0)
     {echo "<td align=\"left\" width=\"67px\"><a href=\"#\" onclick=\"PhoneBookPanelToFront('YES');\"><img src=\"./images/"._QXZ("vdc_tab_phonebook.png")."\" alt=\"PHONEBOOK\" width=\"67px\" height=\"30px\" border=\"0\" /></a></td>\n";}
 	?>
 	<?php if ($chat_enabled > 0)
