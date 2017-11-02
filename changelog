@@ -6,6 +6,7 @@
     - WallBoard3.php,
     - Wall_js.php.
     - vicidial.php.
+  * Disable Customer Gone Warning with 0 secondes (2017-047).
 
 2.25.16
 

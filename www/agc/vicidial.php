@@ -2001,8 +2001,8 @@ else
 				if ( ($manual_dial_timeout < 1) or (strlen($manual_dial_timeout) < 1) )
 					{$manual_dial_timeout = $dial_timeout;}
 
-				if ( (strlen($customer_gone_seconds) < 1) or ($customer_gone_seconds < 1) )
-					{$customer_gone_seconds=30;}
+#				if ( (strlen($customer_gone_seconds) < 1) or ($customer_gone_seconds < 1) )
+#					{$customer_gone_seconds=30;}
 				$customer_gone_seconds_negative = ($customer_gone_seconds * -1);
 
 				if ( ($callback_active_limit_override == 'Y') and ($callback_active_limit > 0) )
@@ -17413,7 +17413,7 @@ function phone_number_format(formatphone) {
 					{TerritorySelect_submit();}
 				}
 			if (logout_stop_timeouts==1)	{WaitingForNextStep=1;}
-			if ( (custchannellive < customer_gone_seconds) && (lastcustchannel.length > 3) && (no_empty_session_warnings < 1) && (document.vicidial_form.lead_id.value != '') && (currently_in_email_or_chat==0) ) 
+			if ( (custchannellive < customer_gone_seconds) && (lastcustchannel.length > 3) && (no_empty_session_warnings < 1) && (document.vicidial_form.lead_id.value != '') && (currently_in_email_or_chat==0) && (customer_gone_seconds != 0)) 
 				{CustomerChanneLGone();}
 		//	document.getElementById("debugbottomspan").innerHTML = "custchannellive: " + custchannellive + " lastcustchannel.length: " + lastcustchannel.length + " no_empty_session_warnings: " + no_empty_session_warnings + " lead_id: |" + document.vicidial_form.lead_id.value + "|";
 			if ( (custchannellive < -10) && (lastcustchannel.length > 3) ) {ReChecKCustoMerChaN();}

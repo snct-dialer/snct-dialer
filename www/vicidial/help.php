@@ -1744,7 +1744,7 @@ if ($SSoutbound_autodial_active > 0)
 <BR>
 <A NAME="campaigns-customer_gone_seconds">
 <BR>
-<B><?php echo _QXZ("Customer Gone Warning Seconds"); ?> -</B><?php echo _QXZ("This setting controls the number of seconds after a customer hangs up before a warning that the customer has hung up will appear on the agent screen. Default is 30."); ?>
+<B><?php echo _QXZ("Customer Gone Warning Seconds"); ?> -</B><?php echo _QXZ("This setting controls the number of seconds after a customer hangs up before a warning that the customer has hung up will appear on the agent screen. Default is 30. Disable with 0."); ?>
 
 <BR>
 <A NAME="campaigns-screen_labels">
