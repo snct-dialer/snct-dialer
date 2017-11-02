@@ -7,14 +7,16 @@
 #
 # 20170329-0000 first release
 # 20171020-1900 stable release
+# 20171030-1410 Set correct $PATHweb and PATHlogs
+#               Correct typo Custom_one
 #
 
-$version="1.0.0";
-$build = "20171020-1900";
+$version="1.0.1";
+$build = "20171030-1410";
 
 
 ####  collect wallboard data should only be active on a single server
-#*/1 * * * * /usr/share/astguiclient/AST_CRON_WallBoard3_gen.php
+#*/1 * * * * php /usr/share/astguiclient/AST_CRON_WallBoard3_gen.php
 
 
 #
@@ -74,8 +76,8 @@ if ( file_exists("/etc/astguiclient.conf") )
 #$slave_db_server  = "172.16.2.13";
 
 
-require_once($PATHweb . "/vicidial/dbconnect_mysqli.php");
-require_once($PATHweb . "/vicidial/functions.php");
+require_once($WeBServeRRooT . "/vicidial/dbconnect_mysqli.php");
+require_once($WeBServeRRooT . "/vicidial/functions.php");
 
 if (!isset($Server_ip_ext))  { $Server_ip_ext = $WEBserver_ip; }
 
@@ -161,7 +163,7 @@ function GetDIDGroup($DID_ID) {
 //
 // function GetIBGroup
 //
-// Return the value from the field custom_oneX from vicidial_inbound_groups
+// Return the value from the field custom_one from vicidial_inbound_groups
 //
 // On empty fields a group called "Rest" is used
 //
@@ -306,7 +308,7 @@ function GenIBGroups() {
 	$time_start = microtime(true);
 	LogWB("--Start GetIBGroups--");
 	
-	$statement="SELECT * FROM vicidial_inbound_groups GROUP BY custom_oneX;";
+	$statement="SELECT * FROM vicidial_inbound_groups GROUP BY custom_one;";
 //	$statement="SELECT * FROM vicidial_inbound_groups GROUP BY group_id;";
 	if ($DB)
 		print "$statement\n";
@@ -1266,7 +1268,7 @@ $Date=date("Y-m-d");
 
 
 if($LOG != 0) {
-	$LogDatei = $PATH_logs . "/" . $LogDateiName . $Date . ".log";
+	$LogDatei = $PATHlogs . "/" . $LogDateiName . $Date . ".log";
 	$LogFile = fopen($LogDatei,"a");
 }
 

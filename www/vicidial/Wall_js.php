@@ -12,10 +12,11 @@
 #
 # CHANGELOG:
 # 171012-1930 first release
+# 171030-1355 Set default for AnzeigeAll to "Y"
 #
 
-$version = '1.0.1';
-$build = '171020-1935';
+$version = '1.0.2';
+$build = '171030-1355';
 
 $release = '$version . " / " . $build';
 
@@ -150,7 +151,7 @@ if (!isset($PHONEdisplay))	{$PHONEdisplay=0;}	# 0=no, 1=yes
 if (!isset($CUSTPHONEdisplay))	{$CUSTPHONEdisplay=1;}	# 0=no, 1=yes
 if (!isset($PAUSEcodes))	{$PAUSEcodes='N';}  # 0=no, 1=yes
 if (!isset($with_inbound))	{$with_inbound='M';}
-if (!isset($AnzeigeAll))		{$AnzeigeAll='N';}
+if (!isset($AnzeigeAll))		{$AnzeigeAll='Y';}
 
 $ingroup_detail='';
 

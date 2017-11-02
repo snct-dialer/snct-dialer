@@ -9,12 +9,13 @@
 # CHANGELOG:
 # 170105-1200 - First Build
 # 171020-1930 - first release
+# 171030-1355 - Set default for AnzeigeAll to "Y"
 #
 
 $startMS = microtime();
 
-$version = '1.0.1';
-$build = '171020-1935';
+$version = '1.0.2';
+$build = '171030-1359';
 
 header ("Content-type: text/html; charset=utf-8");
 
@@ -220,7 +221,7 @@ if (!isset($droppedOFtotal))
 	else {$droppedOFtotal = $RS_droppedOFtotal;}
 	}
 
-if (!isset($AnzeigeAll))		{$AnzeigeAll='N';}
+if (!isset($AnzeigeAll))		{$AnzeigeAll='Y';}
 	
 $ingroup_detail='';
 
