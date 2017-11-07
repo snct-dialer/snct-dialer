@@ -125,9 +125,10 @@
 # 170916-1009 - Added Asterisk 13 'h' exten for dialplan generation and triggering of AMI2 scripts
 # 170920-2214 - Added expired_lists_inactive option, checks once per hour
 # 171010-2254 - Added process debug with --DebugXXX flag and screen logging
+# 171107-1152 - Add allow=ulaw and allow=slin to ASTloop, ASTblind and ASTplay.
 #
 
-$build = '171010-2254';
+$build = '171107-1152';
 
 $DB=0; # Debug flag
 $teodDB=0; # flag to log Timeclock End of Day processes to log file
@@ -2083,6 +2084,8 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 	$Liax .= "permit=0.0.0.0/0.0.0.0\n";
 	$Liax .= "disallow=all\n";
 	$Liax .= "allow=alaw\n";
+	$Liax .= "allow=ulaw\n";
+	$Liax .= "allow=slin\n";
 	if ($conf_qualify =~ /Y/) 
 		{$Liax .= "qualify=yes\n";}
 
@@ -2098,6 +2101,8 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 	$Liax .= "permit=0.0.0.0/0.0.0.0\n";
 	$Liax .= "disallow=all\n";
 	$Liax .= "allow=alaw\n";
+	$Liax .= "allow=ulaw\n";
+	$Liax .= "allow=slin\n";
 	if ($conf_qualify =~ /Y/) 
 		{$Liax .= "qualify=yes\n";}
 
@@ -2113,6 +2118,8 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 	$Liax .= "permit=0.0.0.0/0.0.0.0\n";
 	$Liax .= "disallow=all\n";
 	$Liax .= "allow=alaw\n";
+	$Liax .= "allow=ulaw\n";
+	$Liax .= "allow=slin\n";
 	if ($conf_qualify =~ /Y/) 
 		{$Liax .= "qualify=yes\n";}
 
