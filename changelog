@@ -1,3 +1,10 @@
+2.25.18
+
+  [Jörg Frings-Fürst]
+  * ADMIN_keepalive_ALL.pl: Add allow=ulaw and allow=slin to ASTloop,
+      ASTblind and ASTplay.
+  
+  
 2.25.17
 
   [Jörg Frings-Fürst]
