@@ -3,7 +3,8 @@
   [Jörg Frings-Fürst]
   * ADMIN_keepalive_ALL.pl: Add allow=ulaw and allow=slin to ASTloop,
       ASTblind and ASTplay.
-  
+  * Add upstream Rev. 2848:
+    - AST_email_web_report.pl.
   
 2.25.17
 
