@@ -2,11 +2,14 @@
 
   [Jörg Frings-Fürst]
   * ADMIN_keepalive_ALL.pl: Add allow=ulaw and allow=slin to ASTloop,
-      ASTblind and ASTplay.
+      ASTblind and ASTplay (2017-048).
   * Add upstream Rev. 2848:
     - AST_email_web_report.pl.
-  * agi-VDAD_ALL_inbound.agi: Move PLAY WELCOME MESSAGE before NO AGENT NO QUEUE CHECK
- 
+  * agi-VDAD_ALL_inbound.agi: Move PLAY WELCOME MESSAGE before
+      NO AGENT NO QUEUE CHECK (2017-049).
+  * agi_DID_route.agi: Add "ON DUPLICATE KEY UPDATE"" into 
+      "INSERT INTO call_log" (2017-050). 
+  
 2.25.17
 
   [Jörg Frings-Fürst]
