@@ -786,7 +786,7 @@ $affected_rowsL = $dbhA->do($stmtA);
 if ($AGILOG) {$agi_string = "--    DID LOG : |$affected_rowsL|$stmtA|";   &agi_output;}
 
 ### Log the call to call_log
-$stmtZus = "ON DUPLICATE KEY UPDATE";
+$stmtZus = " ON DUPLICATE KEY UPDATE";
 if(length($channel) > 0) {
 	$stmtZus = $stmtZus . " channel='$channel',";
 }

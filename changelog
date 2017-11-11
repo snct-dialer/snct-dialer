@@ -7,8 +7,9 @@
     - AST_email_web_report.pl.
   * agi-VDAD_ALL_inbound.agi: Move PLAY WELCOME MESSAGE before
       NO AGENT NO QUEUE CHECK (2017-049).
-  * agi_DID_route.agi: Add "ON DUPLICATE KEY UPDATE"" into 
-      "INSERT INTO call_log" (2017-050). 
+  * agi_DID_route.agi: Add "ON DUPLICATE KEY UPDATE"" into
+      "INSERT INTO call_log" (2017-050).
+  * new b2sum.sh to build checksums (2017-051).
   
 2.25.17
 
