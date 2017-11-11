@@ -5,7 +5,8 @@
       ASTblind and ASTplay.
   * Add upstream Rev. 2848:
     - AST_email_web_report.pl.
-  
+  * agi-VDAD_ALL_inbound.agi: Move PLAY WELCOME MESSAGE before NO AGENT NO QUEUE CHECK
+ 
 2.25.17
 
   [Jörg Frings-Fürst]
