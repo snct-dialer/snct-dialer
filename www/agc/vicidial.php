@@ -568,10 +568,11 @@
 # 170923-1336 - Small change to hangup customer process
 # 171011-1524 - Added webphone_layout options
 # 171026-0109 - Small change for email queue_log logging
+# 171114-1033 - Hide preview call if preview campaign option is disabled
 #
 
-$version = '2.14-538c';
-$build = '171026-0109';
+$version = '2.14-539c';
+$build = '171114-1033';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -19821,8 +19822,12 @@ if ($agent_display_dialable_leads > 0)
  <br />
 	<a href="#" onclick="NeWManuaLDiaLCalLSubmiT('NOW','YES');return false;"><?php echo _QXZ("Dial Now"); ?></a>
 	 &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp; 
-	<a href="#" onclick="NeWManuaLDiaLCalLSubmiT('PREVIEW','YES');return false;"><?php echo _QXZ("Preview Call"); ?></a>
-	 &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp; 
+	 <?php if ($manual_dial_preview > 0)
+		 {
+		 echo "<a href=\"#\" onclick=\"NeWManuaLDiaLCalLSubmiT('PREVIEW','YES');return false;\">"._QXZ("Preview Call")."</a>
+		 &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp; \n";
+		 }
+	 ?>
 	<a href="#" onclick="ManualDialHide();return false;"><?php echo _QXZ("Go Back"); ?></a></font>
     </td></tr></table>
 </span>
