@@ -1349,7 +1349,8 @@ pause_campaign VARCHAR(20) default '',
 pause_code VARCHAR(6) default '',
 index (lead_id),
 index (user),
-index (event_time)
+index (event_time),
+index (uinqueid)
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_scripts (
@@ -3897,7 +3898,8 @@ CREATE TABLE IF NOT EXISTS `WallBoardData` (
   `SL1` tinyint(1) DEFAULT NULL,
   `SL2` tinyint(1) DEFAULT NULL,
   `Dauer` bigint(20) NOT NULL DEFAULT '0',
-  `next_uniqueid` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL
+  `next_uniqueid` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
+  index (uniqueid)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 ALTER TABLE `WallBoardData`
@@ -4186,4 +4188,4 @@ INSERT INTO vicidial_settings_containers(container_id,container_notes,container_
 
 UPDATE system_settings set vdc_agent_api_active='1';
 
-UPDATE system_settings SET db_schema_version='1524',db_schema_update_date=NOW(),reload_timestamp=NOW();
+UPDATE system_settings SET db_schema_version='1525',db_schema_update_date=NOW(),reload_timestamp=NOW();
