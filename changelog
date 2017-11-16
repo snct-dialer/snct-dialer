@@ -18,7 +18,10 @@
   * Add upstream Rev. 2852:
     - admin.php: Fixed issue with admin log viewer for logs of modifications
       made by deleted users.
-  
+  * Add upstream Rev. 2853:
+    - help.php: Updated definitions of SALEs to specifically mention status
+      flag of SALE set to Y.
+
 2.25.17
 
   [Jörg Frings-Fürst]
