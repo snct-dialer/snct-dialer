@@ -21,6 +21,8 @@
   * Add upstream Rev. 2853:
     - help.php: Updated definitions of SALEs to specifically mention status
       flag of SALE set to Y.
+  * Add upstream Rev. 2854:
+    - vicidial.php: Hide preview call if preview campaign option is disabled.
 
 2.25.17
 

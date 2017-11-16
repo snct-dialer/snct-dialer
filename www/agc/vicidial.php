@@ -568,11 +568,11 @@
 # 170923-1336 - Small change to hangup customer process
 # 171011-1524 - Added webphone_layout options
 # 171026-0109 - Small change for email queue_log logging
-# 171114-1033 - Hide preview call if preview campaign option is disabled
+# 171115-0713 - Hide preview call if preview campaign option is disabled
 #
 
 $version = '2.14-539c';
-$build = '171114-1033';
+$build = '171115-0713';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -9723,6 +9723,11 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 				last_call_date='';
 				inbound_post_call_survey='';
 				inbound_survey_participate='';
+				if (manual_dial_preview < 1)
+					{
+					document.vicidial_form.LeadPreview.checked=false;
+					hideDiv("DiaLLeaDPrevieW");
+					}
 			//	document.getElementById('vcFormIFrame').src='./vdc_form_display.php?lead_id=&list_id=&stage=WELCOME';
 				}
 			}
@@ -12621,6 +12626,11 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 			consult_custom_go=0;
 			consult_custom_sent=0;
 			xfer_agent_selected=0;
+			if (manual_dial_preview < 1)
+				{
+				document.vicidial_form.LeadPreview.checked=false;
+				hideDiv("DiaLLeaDPrevieW");
+				}
 
 
 		//  DEACTIVATE CHANNEL-DEPENDANT BUTTONS AND VARIABLES
@@ -13609,6 +13619,11 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 					if (manual_dial_in_progress==1)
 						{
 						manual_dial_finished();
+						}
+					if (manual_dial_preview < 1)
+						{
+						document.vicidial_form.LeadPreview.checked=false;
+						hideDiv("DiaLLeaDPrevieW");
 						}
 					if (hide_gender < 1)
 						{
