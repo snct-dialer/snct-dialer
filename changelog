@@ -2,9 +2,33 @@
 
   [Jörg Frings-Fürst]
   * ADMIN_keepalive_ALL.pl: Add allow=ulaw and allow=slin to ASTloop,
-      ASTblind and ASTplay.
-  
-  
+      ASTblind and ASTplay (2017-048).
+  * Add upstream Rev. 2849:
+    - AST_email_web_report.pl.
+  * agi-VDAD_ALL_inbound.agi: Move PLAY WELCOME MESSAGE before
+      NO AGENT NO QUEUE CHECK (2017-049).
+  * agi_DID_route.agi: Add "ON DUPLICATE KEY UPDATE"" into
+      "INSERT INTO call_log" (2017-050).
+  * new b2sum.sh to build checksums (2017-051).
+  * Add upstream Rev. 2850:
+    - non_agent_api.php: Added ability for update_lead function
+      insert_if_not_found leads to be inserted into the hopper.
+  * Add upstream Rev. 2851:
+    - vicidial.php: Hide preview call if preview campaign option is disabled.
+  * Add upstream Rev. 2852:
+    - admin.php: Fixed issue with admin log viewer for logs of modifications
+      made by deleted users.
+  * Add upstream Rev. 2853:
+    - help.php: Updated definitions of SALEs to specifically mention status
+      flag of SALE set to Y.
+  * Add upstream Rev. 2854:
+    - vicidial.php: Hide preview call if preview campaign option is disabled.
+  * New DB-Schema 1525: Add index uniqueid to (2017-052)
+    - vicidial_agent_log,
+      WallBoardData,
+      WallBoardData_archive.
+  * Release 2.25.18 2017-11-16.
+
 2.25.17
 
   [Jörg Frings-Fürst]

@@ -479,6 +479,7 @@ if (length($report_id) > 1)
 			$email_list =			$aryA[2];
 			$email_subject =		$aryA[3];
 			$email_subject =~ s/--A--date--B--|--A--today--B--/$year-$mon-$mday/gi;
+			$email_subject =~ s/--A--yesterday--B--/$Tyear-$Tmon-$Tmday/gi;
 			$email_subject =~ s/--A--datetime--B--/$year-$mon-$mday $hour:$min:$sec/gi;
 			}
 		if ($report_destination =~ /FTP/) 

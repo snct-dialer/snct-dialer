@@ -140,6 +140,7 @@
 # 171011-1505 - Added webphone_layout entries
 # 171018-2203 - Added campaigns-scheduled_callbacks_email_alert entry
 # 171020-0028 - Added whiteboard report entry
+# 171114-1255 - Updated definitions of SALEs to specifically mention status flag of SALE set to Y
 #
 
 
@@ -6364,7 +6365,7 @@ if ($SSqc_features_active > 0)
 <?php echo _QXZ("<U>NONPAUSE</U> = Everything except pause (<U>WAIT</U> + <U>TALK</U> + <U>DISPO</U>)."); ?><BR>
 <?php echo _QXZ("<U>TIME</U> = Total time of these (<U>PAUSE</U> + <U>WAIT</U> + <U>TALK</U> + <U>DISPO</U>)."); ?><BR>
 <?php echo _QXZ("<U>TALK</U> = Time the agent talks to a customer minus <U>DEAD</U> time."); ?><BR>
-<?php echo _QXZ("<U>SALES</U> = Total number of calls the user handled that were statused in a Sales status."); ?><BR>
+<?php echo _QXZ("<U>SALES</U> = Total number of calls the user handled where the SALE status flag is set to Y."); ?><BR>
 <?php echo _QXZ("<U>SALES PER WORKING HOUR</U> = Total number of sales divided by system time."); ?><BR>
 <?php echo _QXZ("<U>SALES TO LEADS RATIO</U> = Total number of sales divided by leads handled."); ?><BR>
 <?php echo _QXZ("<U>SALES TO CONTACTS RATIO</U> = Total number of sales divided by contacts."); ?><BR>
@@ -6380,7 +6381,7 @@ if ($SSqc_features_active > 0)
 <BR>
 <B><?php echo _QXZ("Performance Comparison Report"); ?> -</B><?php echo _QXZ("This report contains some of the same information as the Team Performance Detail report, and the results for today and yesterday as well as the last 2, 3, 5, 10 and 30 days."); ?><BR>
 <?php echo _QXZ("<U>CALLS</U> = Total number of calls sent to the user."); ?><BR>
-<?php echo _QXZ("<U>SALES</U> = Total number of calls the user handled that were statused in a Sales status."); ?><BR>
+<?php echo _QXZ("<U>SALES</U> = Total number of calls the user handled where the SALE status flag is set to Y."); ?><BR>
 <?php echo _QXZ("<U>SALES CONVERSION PCT</U> = Total number of sales divided by calls handled."); ?><BR>
 <?php echo _QXZ("<U>SALES PER HOUR</U> = Total number of sales divided by system time."); ?><BR>
 <?php echo _QXZ("<U>TIME</U> = Total time of these (<U>PAUSE</U> + <U>WAIT</U> + <U>TALK</U> + <U>DISPO</U>)."); ?><BR>
@@ -6391,7 +6392,7 @@ if ($SSqc_features_active > 0)
 <?php echo _QXZ("<U>CALLS</U> = Total number of calls sent to the user."); ?><BR>
 <?php echo _QXZ("<U>CI CALLS</U> = Total number of calls the user handled that were statused in a Customer Contact status."); ?><BR>
 <?php echo _QXZ("<U>DNC CI PCT</U> = Total number of DNC statused calls divided by the number of Customer Contact calls."); ?><BR>
-<?php echo _QXZ("<U>SALES PER HOUR</U> = Total number of sales divided by system time."); ?><BR>
+<?php echo _QXZ("<U>SALES PER HOUR</U> = Total number of calls the user handled where the SALE status flag is set to Y, divided by system time."); ?><BR>
 <?php echo _QXZ("(the rest of the fields are the statuses that the agent selected)"); ?><BR>
 
 <A NAME="single_agent_time">
@@ -6628,7 +6629,7 @@ if ($SSqc_features_active > 0)
 <?php echo _QXZ("<U>TOTAL CALLS</U> = The number of calls taken either by a campaign or during a time interval during a campaign, depending on the report."); ?><BR>
 <?php echo _QXZ("<U>SYSTEM RELEASE CALLS</U> = The number of calls terminated by the dialer per campaign or during a time interval for a campaign, depending on the report."); ?><BR>
 <?php echo _QXZ("<U>AGENT RELEASE CALLS</U> = The number of calls terminated by the agent per campaign or during a time interval for a campaign, depending on the report."); ?><BR>
-<?php echo _QXZ("<U>SALE CALLS</U> = The number of sales made either on a campaign or during a time interval during a campaign, depending on the report."); ?><BR>
+<?php echo _QXZ("<U>SALE CALLS</U> = Total number of calls the user handled where the SALE status flag is set to Y, made either on a campaign or during a time interval during a campaign, depending on the report."); ?><BR>
 <?php echo _QXZ("<U>DNC CALLS</U> = The number of DNC made either on a campaign or during a time interval during a campaign, depending on the report."); ?><BR>
 <?php echo _QXZ("<U>NO ANSWER PERCENT</U> = The percentage of calls dispositioned as no answer against the TOTAL CALLS."); ?><BR>
 <?php echo _QXZ("<U>DROP PERCENT</U> = The percentage of calls dispositioned as DROPs against the TOTAL CALLS."); ?><BR>
@@ -6684,14 +6685,14 @@ if ($SSqc_features_active > 0)
 <?php echo _QXZ("<U>AGENT</U> = The agent making the transfer (fronter)."); ?><BR>
 <?php echo _QXZ("<U>XFERS</U> = The number of transfers the agent made."); ?><BR>
 <?php echo _QXZ("<U>SALE %</U> = Percentage of transfers the agent made that resulted in a sale."); ?><BR>
-<?php echo _QXZ("<U>SALE</U> = Number of sales (dispos where sale=Y in the -Statuses- section) made on the agents transfers."); ?><BR>
+<?php echo _QXZ("<U>SALE</U> = Number of sales (statuses where sale status flag is set to Y in the -Statuses- section) made on the agents transfers."); ?><BR>
 <?php echo _QXZ("<U>DROP</U> = Number of transfers that were dropped (did not make it to a live closer)."); ?><BR>
 <?php echo _QXZ("<U>OTHER</U> = Number of transfers that were not dropped, but also not sold by the closer."); ?><BR>
 
 <?php echo _QXZ("<B>CLOSER STATS</B>"); ?><BR>
 <?php echo _QXZ("<U>AGENT</U> = The agent receiving the transfer (closer)."); ?><BR>
 <?php echo _QXZ("<U>CALLS</U> = Total calls answered by the closer."); ?><BR>
-<?php echo _QXZ("<U>SALE</U> = Number of sales (dispos where sale=Y in the -Statuses- section) made on the transfers the closer fielded."); ?><BR>
+<?php echo _QXZ("<U>SALE</U> = Number of sales (statuses where sale status flag is set to Y in the -Statuses- section) made on the transfers the closer fielded."); ?><BR>
 <?php echo _QXZ("<U>DROP</U> = Number of calls the closer received that were dispoed as dropped."); ?><BR>
 <?php echo _QXZ("<U>OTHER</U> = Calls the closer fielded that did not result in sales."); ?><BR>
 <?php echo _QXZ("<U>CONV %</U> = Percentage of transfers the closer received that resulted in sales."); ?><BR>

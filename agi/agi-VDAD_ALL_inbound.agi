@@ -1743,6 +1743,31 @@ if ( ( ( ( ($hm < $ct_default_start) || ($hm > $ct_default_stop) ) && ($hm >= $c
 ##### END AFTER HOURS CHECK #####
 
 
+##### BEGIN PLAY WELCOME MESSAGE #####
+if ( ( ( ($welcome_message_filename !~ /---NONE---/) && (length($welcome_message_filename) > 0) && ( ($play_welcome_message =~ /ALWAYS/) || ( ($no_delay_call_route =~ /N/) && ($play_welcome_message =~ /YES_UNLESS_NODELAY/) ) ) ) && ($MCdrop_override < 1) ) && ($dial_ingroup_flag < 1) )
+	{
+	if ($welcome_message_filename =~ /\|/)
+		{
+		@welcome_message_filename_array = split(/\|/,$welcome_message_filename);
+		$w=0;
+		foreach(@welcome_message_filename_array)
+			{
+			if (length($welcome_message_filename_array[$w])>0)
+				{
+				$AGI->stream_file("$welcome_message_filename_array[$w]");
+				}
+			$w++;
+			}
+		}
+	else
+		{$AGI->stream_file("$welcome_message_filename");}
+	}
+if ($play_welcome_message =~ /IF_WAIT_ONLY/)
+	{$if_wait_play_welcome=1;}
+else
+	{$if_wait_play_welcome=0;}
+##### END PLAY WELCOME MESSAGE #####
+
 
 ##### BEGIN NO AGENT NO QUEUE CHECK #####
 if ( ( ($no_agent_no_queue =~ /Y|NO_PAUSED/) || ($MCnanque_override > 0) ) && ($dial_ingroup_flag < 1) )
@@ -2006,34 +2031,6 @@ if ( ( ($no_agent_no_queue =~ /Y|NO_PAUSED/) || ($MCnanque_override > 0) ) && ($
 		}
 	}
 ##### END NO AGENT NO QUEUE CHECK #####
-
-
-
-##### BEGIN PLAY WELCOME MESSAGE #####
-if ( ( ( ($welcome_message_filename !~ /---NONE---/) && (length($welcome_message_filename) > 0) && ( ($play_welcome_message =~ /ALWAYS/) || ( ($no_delay_call_route =~ /N/) && ($play_welcome_message =~ /YES_UNLESS_NODELAY/) ) ) ) && ($MCdrop_override < 1) ) && ($dial_ingroup_flag < 1) )
-	{
-	if ($welcome_message_filename =~ /\|/)
-		{
-		@welcome_message_filename_array = split(/\|/,$welcome_message_filename);
-		$w=0;
-		foreach(@welcome_message_filename_array)
-			{
-			if (length($welcome_message_filename_array[$w])>0)
-				{
-				$AGI->stream_file("$welcome_message_filename_array[$w]");
-				}
-			$w++;
-			}
-		}
-	else
-		{$AGI->stream_file("$welcome_message_filename");}
-	}
-if ($play_welcome_message =~ /IF_WAIT_ONLY/)
-	{$if_wait_play_welcome=1;}
-else
-	{$if_wait_play_welcome=0;}
-##### END PLAY WELCOME MESSAGE #####
-
 
 
 ##### BEGIN ASK ABOUT A POST-CALL SURVEY #####
