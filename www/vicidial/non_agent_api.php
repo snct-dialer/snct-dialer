@@ -124,10 +124,11 @@
 # 170615-0006 - Added DIAL status for manual dial agent calls that have not been answered, to 4 functions
 # 170713-2312 - Fix for issue #1028
 # 170815-1315 - Added HTTP error code 418
+# 171114-1015 - Added ability for update_lead function insert_if_not_found leads to be inserted into the hopper
 #
 
-$version = '2.14-100';
-$build = '170815-1315';
+$version = '2.14-101';
+$build = '171114-1015';
 $api_url_log = 0;
 
 $startMS = microtime();
@@ -7918,6 +7919,7 @@ if ($function == 'update_lead')
 			$find_lead_id=0;
 			$find_vendor_lead_code=0;
 			$find_phone_number=0;
+			$insert_if_not_found_inserted=0;
 			if ( (strlen($search_location)<4) or ($list_id < 99) or (strlen($list_id)<3) )
 				{$search_location='SYSTEM';}
 			if (strlen($search_method)<6)
@@ -8526,6 +8528,7 @@ if ($function == 'update_lead')
 								if ($DB>0) {echo "DEBUG: update_lead query - $stmt\n";}
 								$rslt=mysql_to_mysqli($stmt, $link);
 								$affected_rows = mysqli_affected_rows($link);
+								$insert_if_not_found_inserted = $affected_rows;
 								if ($affected_rows > 0)
 									{
 									$lead_id = mysqli_insert_id($link);
@@ -8714,7 +8717,7 @@ if ($function == 'update_lead')
 					}
 
 				### BEGIN add to hopper section ###
-				if ( ($add_to_hopper == 'Y') and ($search_found > 0) )
+				if ( ($add_to_hopper == 'Y') and ( ($search_found > 0) or ($insert_if_not_found_inserted > 0) ) )
 					{
 					$stmt="SELECT count(*) from vicidial_hopper where lead_id='$lead_id';";
 					$rslt=mysql_to_mysqli($stmt, $link);
