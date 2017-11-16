@@ -15,6 +15,9 @@
       insert_if_not_found leads to be inserted into the hopper.
   * Add upstream Rev. 2851:
     - vicidial.php: Hide preview call if preview campaign option is disabled.
+  * Add upstream Rev. 2852:
+    - admin.php: Fixed issue with admin log viewer for logs of modifications
+      made by deleted users.
   
 2.25.17
 

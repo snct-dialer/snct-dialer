@@ -4241,12 +4241,13 @@ else
 # 171018-1314 - Added scheduled_callbacks_email_alert campaign option
 # 171018-2234 - Added server function to clear agent conferences
 # 171028-0913 - Added Real-Time Whiteboard Report
+# 171114-1100 - Fixed issue with admin log viewer for logs of modifications made by deleted users
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-639a';
-$build = '171028-0913';
+$admin_version = '2.14-640a';
+$build = '171114-1100';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -39109,7 +39110,7 @@ if ($ADD==730000000000000)
 		echo "<TABLE><TR><TD>\n";
 		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-		$stmt="SELECT admin_log_id,event_date,val.user,ip_address,event_section,event_type,record_id,event_code,event_notes,event_sql,full_name,val.user_group from vicidial_admin_log val, vicidial_users vu where admin_log_id='$stage' and val.user=vu.user $valLOGadmin_viewable_groupsSQL;";
+		$stmt="SELECT admin_log_id,event_date,user,ip_address,event_section,event_type,record_id,event_code,event_notes,event_sql,user_group from vicidial_admin_log where admin_log_id='$stage' $LOGadmin_viewable_groupsSQL;";
 		if ($DB > 0) {echo "$stmt\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$logs_to_print = mysqli_num_rows($rslt);
@@ -39117,46 +39118,70 @@ if ($ADD==730000000000000)
 		if ($logs_to_print > 0)
 			{
 			$row=mysqli_fetch_row($rslt);
+
+			$log_id =				$row[0];
+			$log_date_time =		$row[1];
+			$log_user =				$row[2];
+			$log_ip =				$row[3];
+			$log_section =			$row[4];
+			$log_type =				$row[5];
+			$log_record_id =		$row[6];
+			$log_description =		$row[7];
+			$log_notes =			$row[8];
+			$log_sql =				$row[9];
+			$new_sql =				$row[9];
+			$log_user_group =		$row[10];
+
+			$stmt="SELECT full_name from vicidial_users where user='$log_user';";
+			if ($DB > 0) {echo "$stmt\n";}
+			$rslt=mysql_to_mysqli($stmt, $link);
+			$user_to_print = mysqli_num_rows($rslt);
+			if ($user_to_print > 0)
+				{
+				$rowx=mysqli_fetch_row($rslt);
+				$log_full_name =		$rowx[0];
+				}
+
 			echo "<br>"._QXZ("ADMIN CHANGE LOG: Record Detail")." - $stage<BR><BR>\n";
 			echo "<center><TABLE width=$section_width cellspacing=5 cellpadding=0>\n";
 			echo "<TR>";
 			echo "<TD ALIGN=RIGHT><B><FONT FACE=\"Arial,Helvetica\" size=2>"._QXZ("ID").": </B></TD>";
-			echo "<TD ALIGN=LEFT><FONT FACE=\"Arial,Helvetica\" size=2>$row[0]</TD>";
+			echo "<TD ALIGN=LEFT><FONT FACE=\"Arial,Helvetica\" size=2>$log_id</TD>";
 			echo "</TR><TR>\n";
 			echo "<TD ALIGN=RIGHT><B><FONT FACE=\"Arial,Helvetica\" size=2>"._QXZ("DATE TIME").": </B></TD>";
-			echo "<TD ALIGN=LEFT><FONT FACE=\"Arial,Helvetica\" size=2>$row[1]</TD>";
+			echo "<TD ALIGN=LEFT><FONT FACE=\"Arial,Helvetica\" size=2>$log_date_time</TD>";
 			echo "</TR><TR>\n";
 			echo "<TD ALIGN=RIGHT><B><FONT FACE=\"Arial,Helvetica\" size=2>"._QXZ("USER").": </B></TD>";
-			echo "<TD ALIGN=LEFT><FONT FACE=\"Arial,Helvetica\" size=2>$row[2] - $row[10]</TD>";
+			echo "<TD ALIGN=LEFT><FONT FACE=\"Arial,Helvetica\" size=2>$log_user - $log_full_name</TD>";
 			echo "</TR><TR>\n";
 			echo "<TD ALIGN=RIGHT><B><FONT FACE=\"Arial,Helvetica\" size=2>"._QXZ("IP").": </B></TD>";
-			echo "<TD ALIGN=LEFT><FONT FACE=\"Arial,Helvetica\" size=2>$row[3]</TD>";
+			echo "<TD ALIGN=LEFT><FONT FACE=\"Arial,Helvetica\" size=2>$log_ip</TD>";
 			echo "</TR><TR>\n";
 			echo "<TD ALIGN=RIGHT><B><FONT FACE=\"Arial,Helvetica\" size=2>"._QXZ("SECTION").": </B></TD>";
-			echo "<TD ALIGN=LEFT><FONT FACE=\"Arial,Helvetica\" size=2>$row[4]</TD>";
+			echo "<TD ALIGN=LEFT><FONT FACE=\"Arial,Helvetica\" size=2>$log_section</TD>";
 			echo "</TR><TR>\n";
 			echo "<TD ALIGN=RIGHT><B><FONT FACE=\"Arial,Helvetica\" size=2>"._QXZ("TYPE").": </B></TD>";
-			echo "<TD ALIGN=LEFT><FONT FACE=\"Arial,Helvetica\" size=2>$row[5]</TD>";
+			echo "<TD ALIGN=LEFT><FONT FACE=\"Arial,Helvetica\" size=2>$log_type</TD>";
 			echo "</TR><TR>\n";
 			echo "<TD ALIGN=RIGHT><B><FONT FACE=\"Arial,Helvetica\" size=2>"._QXZ("RECORD ID").": </B></TD>";
-			echo "<TD ALIGN=LEFT><FONT FACE=\"Arial,Helvetica\" size=2>$row[6]</TD>";
+			echo "<TD ALIGN=LEFT><FONT FACE=\"Arial,Helvetica\" size=2>$log_record_id</TD>";
 			echo "</TR><TR>\n";
 			echo "<TD ALIGN=RIGHT><B><FONT FACE=\"Arial,Helvetica\" size=2>"._QXZ("DESCRIPTION").": </B></TD>";
-			echo "<TD ALIGN=LEFT><FONT FACE=\"Arial,Helvetica\" size=1>$row[7]</TD>";
+			echo "<TD ALIGN=LEFT><FONT FACE=\"Arial,Helvetica\" size=1>$log_description</TD>";
 			echo "</TR><TR>\n";
 			echo "<TD ALIGN=RIGHT><B><FONT FACE=\"Arial,Helvetica\" size=2>"._QXZ("ADMIN GROUP").": </B></TD>";
-			echo "<TD ALIGN=LEFT><FONT FACE=\"Arial,Helvetica\" size=1>$row[11]</TD>";
+			echo "<TD ALIGN=LEFT><FONT FACE=\"Arial,Helvetica\" size=1>$log_user_group</TD>";
 			echo "</TR><TR>\n";
 			echo "<TD ALIGN=RIGHT><B><FONT FACE=\"Arial,Helvetica\" size=2>"._QXZ("NOTES").": </B></TD>";
-			echo "<TD ALIGN=LEFT><FONT FACE=\"Arial,Helvetica\" size=1>$row[8]</TD>";
+			echo "<TD ALIGN=LEFT><FONT FACE=\"Arial,Helvetica\" size=1>$log_notes</TD>";
 			echo "</TR><TR>\n";
-			$new_sql = $row[9];
-			$row[9] = preg_replace('/\',/i', '\' ,',$row[9]);
-			$row[9] = preg_replace("/\|/","<BR>",$row[9]);
-			echo "<TD ALIGN=RIGHT><B><FONT FACE=\"Arial,Helvetica\" size=2>"._QXZ("SQL").": </B></TD>";
-			echo "<TD ALIGN=LEFT width=700><p style=\"width: 700; text-wrap: normal; word-wrap: break-word\"><FONT FACE=\"Arial,Helvetica\" size=1>$row[9]</TD>";
 
-			$stmt="SELECT admin_log_id,event_date,val.user,ip_address,event_section,event_type,record_id,event_code,event_notes,event_sql,full_name,val.user_group from vicidial_admin_log val, vicidial_users vu where event_section='$row[4]' and event_type='$row[5]' and record_id='$row[6]' and event_code='$row[7]' and admin_log_id < $row[0] and val.user=vu.user $valLOGadmin_viewable_groupsSQL order by admin_log_id desc;";
+			$log_sql = preg_replace('/\',/i', '\' ,',$log_sql);
+			$log_sql = preg_replace("/\|/","<BR>",$log_sql);
+			echo "<TD ALIGN=RIGHT><B><FONT FACE=\"Arial,Helvetica\" size=2>"._QXZ("SQL").": </B></TD>";
+			echo "<TD ALIGN=LEFT width=700><p style=\"width: 700; text-wrap: normal; word-wrap: break-word\"><FONT FACE=\"Arial,Helvetica\" size=1>$log_sql</TD>";
+
+			$stmt="SELECT admin_log_id,event_date,user,ip_address,event_section,event_type,record_id,event_code,event_notes,event_sql,user_group from vicidial_admin_log where event_section='$log_section' and event_type='$log_type' and record_id='$log_record_id' and event_code='$log_description' and admin_log_id < $log_id $LOGadmin_viewable_groupsSQL order by admin_log_id desc;";
 			if ($DB > 0) {echo "$stmt\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$last_to_print = mysqli_num_rows($rslt);
