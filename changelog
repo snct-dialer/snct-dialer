@@ -23,10 +23,11 @@
       flag of SALE set to Y.
   * Add upstream Rev. 2854:
     - vicidial.php: Hide preview call if preview campaign option is disabled.
-  * New DB-Schema 1525: Add index uniqueid to 
+  * New DB-Schema 1525: Add index uniqueid to (2017-052)
     - vicidial_agent_log,
       WallBoardData,
       WallBoardData_archive.
+  * Release 2.25.18 2017-11-16.
 
 2.25.17
 
