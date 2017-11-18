@@ -1755,7 +1755,10 @@ ticket_mail VARCHAR(100) default '',
 allow_manage_active_lists ENUM('0','1') default '0',
 expired_lists_inactive ENUM('0','1') default '0',
 did_system_filter ENUM('0','1') default '0',
-allow_phonebook ENUM('0','1') default '0'
+allow_phonebook ENUM('0','1') default '0',
+servicelevel_direct SMALLINT UNSIGNED DEFAULT '4',
+servicelevel_one SMALLINT UNSIGNED DEFAULT '20',
+servicelevel_two SMALLINT UNSIGNED DEFAULT '40'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_campaigns_list_mix (
@@ -2685,7 +2688,8 @@ name_position ENUM('LEFT','TOP') default 'LEFT',
 multi_position ENUM('HORIZONTAL','VERTICAL') default 'HORIZONTAL',
 field_order SMALLINT(5) default '1',
 field_encrypt ENUM('Y','N') default 'N',
-field_show_hide ENUM('DISABLED','X_OUT_ALL','LAST_1','LAST_2','LAST_3','LAST_4','FIRST_1_LAST_4') default 'DISABLED'
+field_show_hide ENUM('DISABLED','X_OUT_ALL','LAST_1','LAST_2','LAST_3','LAST_4','FIRST_1_LAST_4') default 'DISABLED',
+field_duplicate ENUM('Y','N') default 'N'
 ) ENGINE=MyISAM;
 
 CREATE UNIQUE INDEX listfield on vicidial_lists_fields (list_id, field_label);
@@ -4188,4 +4192,4 @@ INSERT INTO vicidial_settings_containers(container_id,container_notes,container_
 
 UPDATE system_settings set vdc_agent_api_active='1';
 
-UPDATE system_settings SET db_schema_version='1525',db_schema_update_date=NOW(),reload_timestamp=NOW();
+UPDATE system_settings SET db_schema_version='1526',db_schema_update_date=NOW(),reload_timestamp=NOW();

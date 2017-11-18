@@ -9,10 +9,11 @@
 # 20171020-1900 stable release
 # 20171030-1410 Set correct $PATHweb and PATHlogs
 #               Correct typo Custom_one
-#
+# 20171118-0851 Typo InGroup Search
+# 20171118-1232 Add function GetServicelevel
 
-$version="1.0.1";
-$build = "20171030-1410";
+$version="1.0.3";
+$build = "20171118-1232";
 
 
 ####  collect wallboard data should only be active on a single server
@@ -82,8 +83,6 @@ require_once($WeBServeRRooT . "/vicidial/functions.php");
 if (!isset($Server_ip_ext))  { $Server_ip_ext = $WEBserver_ip; }
 
 
-
-
 //
 // Global Vars
 //
@@ -122,6 +121,39 @@ function LogWB($LText) {
 	
 }
 
+//
+// function GetSeviceLevel
+//
+// Get the ServiceLevel from Systemsettings
+//
+// Use: $DB, $link, $SLO21, $SL122, $SL22X
+//
+function GetServiceLevel() {
+	global $DB, $link, $SL021, $SL122, $SL22X;
+	
+	$time_start = microtime(true);
+	LogWB("---Start GetServiceLevel---");
+	
+	$statement="SELECT servicelevel_direct, servicelevel_one, servicelevel_two FROM `system_settings`;";
+	if ($DB)
+		print "$statement\n";
+	$result = mysql_to_mysqli($statement, $link);
+	$row = mysqli_fetch_array($result, MYSQLI_BOTH);
+	$SL021 = $row["servicelevel_direct"];
+	$SL122 = $row["servicelevel_one"];
+	$SL22X = $row["servicelevel_two"];
+	if ($DB) {
+		print "SL0: $SL021\n";
+		print "SL1: $SL122\n";
+		print "SL2: $SL22X\n";
+	}
+	$time_end = microtime(true);
+	$time = $time_end - $time_start;
+	
+	LogWB("---Ende GetServiceLevel--- nach " . $time . " Sek.");
+	
+}
+
 
 //
 // function GetDIDGroup
@@ -145,8 +177,8 @@ function GetDIDGroup($DID_ID) {
 	if ($DB)
 		print "$statement\n";
 	$result = mysql_to_mysqli($statement, $link);
-	$row = mysqli_fetch_row($result);
-	$Grp = $row[41];
+	$row = mysqli_fetch_array($result, MYSQLI_BOTH);
+	$Grp = $row["custom_one"];
 	if($Grp == "") {
 		$Grp = "Rest";
 //		$Grp = $IB_ID;
@@ -182,8 +214,8 @@ function GetIBGroup($IB_ID) {
 	if ($DB)
 		print "$statement\n";
 	$result = mysql_to_mysqli($statement, $link);
-	$row = mysqli_fetch_row($result);
-	$Grp = $row[124];
+	$row = mysqli_fetch_array($result, MYSQLI_BOTH);
+	$Grp = $row["custom_one"];
 	if($Grp == "") {
 		$Grp = "Rest";
 //		$Grp = $IB_ID;
@@ -263,15 +295,15 @@ function GenDIDGroups() {
 	$time_start = microtime(true);
 	LogWB("--Start GenDIDGroups--");
 	
-	$statement="SELECT * FROM vicidial_inbound_dids GROUP BY custom_one;";
+	$statement="SELECT did_id, custom_one FROM vicidial_inbound_dids GROUP BY custom_one;";
 	if ($DB)
 		print "$statement\n";
 	$result=mysql_to_mysqli($statement, $link);
 	$Anz=mysqli_num_rows($result);
 	$i=0;
 	while($i < $Anz) {
-		$row = mysqli_fetch_row($result);
-		$Grp = $row[41];
+		$row = mysqli_fetch_array($result, MYSQLI_BOTH);
+		$Grp = $row["custom_one"];
 		if($Grp == "") {
 			$Grp = "Rest";
 		}
@@ -308,7 +340,7 @@ function GenIBGroups() {
 	$time_start = microtime(true);
 	LogWB("--Start GetIBGroups--");
 	
-	$statement="SELECT * FROM vicidial_inbound_groups GROUP BY custom_one;";
+	$statement="SELECT group_id, custom_one FROM vicidial_inbound_groups GROUP BY custom_one;";
 //	$statement="SELECT * FROM vicidial_inbound_groups GROUP BY group_id;";
 	if ($DB)
 		print "$statement\n";
@@ -316,8 +348,8 @@ function GenIBGroups() {
 	$Anz=mysqli_num_rows($result);
 	$i=0;
 	while($i < $Anz) {
-		$row = mysqli_fetch_row($result);
-		$Grp = $row[124];
+		$row = mysqli_fetch_array($result, MYSQLI_BOTH);
+		$Grp = $row["custom_one"];
 		if($Grp == "") {
 			$Grp = "Rest";
 		}
@@ -400,12 +432,12 @@ function GetCallsDidLog($Date) {
 	$Anz=mysqli_num_rows($result);
 	$i=0;
 	while($i < $Anz) {
-		$row = mysqli_fetch_row($result);
-		$uid = $row[0];
-		$cin = $row[3];
-		$cd  = $row[6];
-		$did = $row[7];
-		$dir = $row[8];
+		$row = mysqli_fetch_array($result, MYSQLI_BOTH);
+		$uid = $row["uniqueid"];
+		$cin = $row["caller_id_number"];
+		$cd  = $row["call_date"];
+		$did = $row["did_id"];
+		$dir = $row["did_route"];
 		$statement1 = "SELECT * FROM `$TableName` WHERE `uniqueid` = '$uid';";
 		if ($DB)
 			print "$statement1\n";
@@ -464,11 +496,11 @@ function GetNextUniqueid($uid) {
 	$result=mysqli_query($link, $statement);
 	$Anz=mysqli_num_rows($result);
 	if($Anz > 0) {
-		$row = mysqli_fetch_row($result);
-		$lid = $row[1];
-		$end = $row[6];
+		$row = mysqli_fetch_array($result, MYSQLI_BOTH);
+		$lid = $row["lead_id"];
+		$end = $row["end_epoch"];
 		$endp = $end + 20;
-		$clid = $row[0];
+		$clid = $row["closecallid"];
 		if($lid != 0) {
 			$statement2 = "SELECT * FROM `vicidial_closer_log` WHERE `lead_id` = '$lid' AND `start_epoch` >= '$end' AND `start_epoch` <= '$endp' ORDER BY `call_date` DESC;" ;
 			if ($DB)
@@ -476,10 +508,10 @@ function GetNextUniqueid($uid) {
 			$result2=mysqli_query($link, $statement2);
 			$Anz2=mysqli_num_rows($result2);
 			if($Anz2 > 0) {
-				$row2 = mysqli_fetch_row($result2);
-				$lUid = $row2[18];
+				$row2 = mysqli_fetch_array($result2, MYSQLI_BOTH);
+				$lUid = $row2["uniqueid"];
 //				print "CallID : |" . $clid . "|" .$row2[0] . "|" . PHP_EOL;
-				if(($lUid != "") && ($clid != $row2[0])) {
+				if(($lUid != "") && ($clid != $row2["closecallid"])) {
 					$lUid1 = GetNextUniqueid($lUid);
 					if($lUid1 != "") {
 						$RetUid = $lUid1;
@@ -522,17 +554,17 @@ function GetCallsResult() {
 	LogWB("--Start GetCallsResult--");
 	
 	$timeh = time() - 3600;
-	$statement = "SELECT *, UNIX_TIMESTAMP(DateTBegin) from `$TableName` WHERE `Done` = false;";
+	$statement = "SELECT *, UNIX_TIMESTAMP(DateTBegin) AS TAA from `$TableName` WHERE `Done` = false;";
 	if ($DB)
 		print "$statement\n";
 	$result=mysql_to_mysqli($statement, $link);
 	$Anz=mysqli_num_rows($result);
 	$i=0;
 	while($i < $Anz) {
-		$row = mysqli_fetch_row($result);
-		$id  = $row[0];
-		$uid = $row[5];
-		$taa = $row[17];
+		$row = mysqli_fetch_array($result, MYSQLI_BOTH);
+		$id  = $row["ID"];
+		$uid = $row["uniqueid"];
+		$taa = $row["TAA"];
 		if($row[10] != "") {
 			$nuid = GetNextUniqueid($uid);
 		}
@@ -546,10 +578,10 @@ function GetCallsResult() {
 		$result1=mysql_to_mysqli($statement1, $link);
 		$Anz1=mysqli_num_rows($result1);
 		if($Anz1 > 0) {
-			$row1 = mysqli_fetch_row($result1);
-			$agt = $row1[1];
-			$tae = $row1[10];
-			$lid = $row1[4];
+			$row1 = mysqli_fetch_array($result1, MYSQLI_BOTH);
+			$agt = $row1["user"];
+			$tae = $row1["talk_epoch"];
+			$lid = $row1["lead_id"];
 
 			$statement5 = "SELECT * FROM `vicidial_closer_log` WHERE `uniqueid` = '$uid' ORDER BY call_date DESC LIMIT 1;";
 			if ($DB)
@@ -558,7 +590,7 @@ function GetCallsResult() {
 			$Anz5=mysqli_num_rows($result5);
 			$ibg = "";
 			if ($Anz5 > 0) {
-				$row5 = mysqli_fetch_row($result5);
+				$row5 = mysqli_fetch_array($result5, MYSQLI_BOTH);
 				$ibg = GetIBGroup($row5[3]);
 			}
 			$Dauer = $tae - $taa;
@@ -593,10 +625,10 @@ function GetCallsResult() {
 			$result3=mysql_to_mysqli($statement3, $link);
 			$AnzVAL=mysqli_num_rows($result3);
 			if ($AnzVAL > 0) {
-				$row3 = mysqli_fetch_row($result3);
-				$status = $row3[8];
-				$endt = $row3[6];
-				$lid  = $row3[1];
+				$row3 = mysqli_fetch_array($result3, MYSQLI_BOTH);
+				$status = $row3["status"];
+				$endt = $row3["end_epoch"];
+				$lid  = $row3["lead_id"];
 				$igb  = GetIBGroup($row3[3]);
 				#				print "Status: " . $status . PHP_EOL;
 				$Erg = "";
@@ -1281,6 +1313,9 @@ GenIBGroups();
 
 // Move old Datasets to Arch
 Move2Arch($Date);
+
+// Get Servicelevel
+GetServiceLevel();
 
 // Read Calls from did log
 GetCallsDidLog($Date);

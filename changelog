@@ -1,3 +1,26 @@
+2.25.19
+
+  [Jörg Frings-Fürst]
+  * AST_CRON_WaalBoard3_gen.php:
+    - Typo InGroup Search.
+    - Add function GetServicelevel.
+    - Replace mysqli_fetch_row with mysqli_fetch_array.
+  * New DB-Schema 1526: (2017-053)
+    - Add servicelevel_* to system_settings.
+  * admin.php:
+    - Add servicelevel_* to system_settings.
+    - Rename Git Release to Patch-Level.
+  * help.php:
+    - Add help for servicelevel.
+    - Add missing help for dectect 3way calls.
+  * Add upstream Rev. 2854: 
+    - functions.php,
+      vdc_db_query.php,
+      vdc_form_display.php,
+      admin_lists_custom.php,
+      help.php: Added code for duplicate custom fields.
+  * Release 2.25.19 2017-11-18.
+
 2.25.18
 
   [Jörg Frings-Fürst]

@@ -141,6 +141,7 @@
 # 171018-2203 - Added campaigns-scheduled_callbacks_email_alert entry
 # 171020-0028 - Added whiteboard report entry
 # 171114-1255 - Updated definitions of SALEs to specifically mention status flag of SALE set to Y
+# 171116-1727 - Added lists_fields-field_duplicate entry
 #
 
 
@@ -2407,6 +2408,11 @@ if ($SSqc_features_active > 0)
 <A NAME="lists_fields-field_required">
 <BR>
 <B><?php echo _QXZ("Field Required"); ?> -</B><?php echo _QXZ("If the campaign option allowing required fields is also enabled, this field allows you to force an agent to fill in this field before they can hang up the call. Y will affect all calls, INBOUND_ONLY will only affect calls received by the agent through an In-Group. This option will only work for the following custom field types: TEXT, AREA, DATE, SELECT, MULTI, RADIO, CHECKBOX. Default is N."); ?>
+
+<BR>
+<A NAME="lists_fields-field_duplicate">
+<BR>
+<B><?php echo _QXZ("Field Duplicate"); ?> -</B><?php echo _QXZ("This option will allow you to create a duplicate of a TEXT type custom field that already exists in a different location within your custom list fields form. This option only works with TEXT type fields. This option is only available when you create a new custom field entry. When an agent modifies the text in one of these duplicate fields and clicks to another field, the system will copy the value that they place in that duplicate field to the original field. Default is N."); ?>
 
 <BR>
 <A NAME="lists_fields-name_position">
@@ -5799,6 +5805,11 @@ FR_SPAC 00 00 00 00 00 - <?php echo _QXZ("France space separated phone number");
 <B><?php echo _QXZ("Campaign pause"); ?> -</B><?php echo _QXZ("Enable / Disable Campaign selection at pause screen."); ?>
 
 <BR>
+<A NAME="detect_3way">
+<BR>
+<B><?php echo _QXZ("Detect 3way Calls"); ?> -</B><?php echo _QXZ("Enable / Disable detection of 3way Call on the realtime reports ."); ?>
+
+<BR>
 <A NAME="company_name">
 <BR>
 <B><?php echo _QXZ("Company Name"); ?> -</B><?php echo _QXZ("Set the Browser Title."); ?>
@@ -5808,6 +5819,10 @@ FR_SPAC 00 00 00 00 00 - <?php echo _QXZ("France space separated phone number");
 <BR>
 <B><?php echo _QXZ("Ticket Mail Address"); ?> -</B><?php echo _QXZ("Set the Mailaddress to send Mails into a Ticketsystem."); ?>
 
+BR>
+<A NAME="servicelevel">
+<BR>
+<B><?php echo _QXZ("Service Level"); ?> -</B><?php echo _QXZ("Set the time in seconds for the Servicelevel Direct|One|Two only for the Wallboard."); ?>
 
 
 <BR><BR><BR><BR>

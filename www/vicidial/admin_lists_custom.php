@@ -44,10 +44,11 @@
 # 170301-0827 - Enabled required custom fields with INBOUND_ONLY option
 # 170321-1553 - Fixed list view permissions issue #1005
 # 170409-1558 - Added IP List validation code
+# 171116-1544 - Added option for duplicate custom field entries(field_duplicate)
 #
 
-$admin_version = '2.14-36';
-$build = '170409-1558';
+$admin_version = '2.14-37';
+$build = '171116-1544';
 
 require("dbconnect_mysqli.php");
 require("functions.php");
@@ -93,6 +94,8 @@ if (isset($_GET["multi_position"]))				{$multi_position=$_GET["multi_position"];
 	elseif (isset($_POST["multi_position"]))	{$multi_position=$_POST["multi_position"];}
 if (isset($_GET["field_order"]))				{$field_order=$_GET["field_order"];}
 	elseif (isset($_POST["field_order"]))		{$field_order=$_POST["field_order"];}
+if (isset($_GET["field_duplicate"]))			{$field_duplicate=$_GET["field_duplicate"];}
+	elseif (isset($_POST["field_duplicate"]))	{$field_duplicate=$_POST["field_duplicate"];}
 if (isset($_GET["source_list_id"]))				{$source_list_id=$_GET["source_list_id"];}
 	elseif (isset($_POST["source_list_id"]))	{$source_list_id=$_POST["source_list_id"];}
 if (isset($_GET["copy_option"]))				{$copy_option=$_GET["copy_option"];}
@@ -149,6 +152,7 @@ if ($non_latin < 1)
 	$source_list_id = preg_replace('/[^0-9]/','',$source_list_id);
 
 	$field_required = preg_replace('/[^_A-Z]/','',$field_required);
+	$field_duplicate = preg_replace('/[^_A-Z]/','',$field_duplicate);
 
 	$field_type = preg_replace('/[^0-9a-zA-Z]/','',$field_type);
 	$ConFiRm = preg_replace('/[^0-9a-zA-Z]/','',$ConFiRm);
@@ -369,7 +373,7 @@ $NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIG
 
 if ($DB > 0)
 {
-echo "$DB,$action,$ip,$user,$copy_option,$field_id,$list_id,$source_list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order";
+echo "$DB,$action,$ip,$user,$copy_option,$field_id,$list_id,$source_list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$field_duplicate";
 }
 
 
@@ -476,7 +480,7 @@ if ( ($action == "COPY_FIELDS_SUBMIT") and ($list_id > 99) and ($source_list_id 
 				if ($DB > 0) {echo _QXZ("Starting REPLACE copy")."\n<BR>";}
 				if ($table_exists > 0)
 					{
-					$stmt="SELECT field_id,field_label from vicidial_lists_fields where list_id='$list_id' order by field_rank,field_order,field_label;";
+					$stmt="SELECT field_id,field_label,field_duplicate,field_type from vicidial_lists_fields where list_id='$list_id' order by field_rank,field_order,field_label;";
 					$rslt=mysql_to_mysqli($stmt, $link);
 					$fields_to_print = mysqli_num_rows($rslt);
 					$fields_list='';
@@ -486,6 +490,8 @@ if ( ($action == "COPY_FIELDS_SUBMIT") and ($list_id > 99) and ($source_list_id 
 						$rowx=mysqli_fetch_row($rslt);
 						$A_field_id[$o] =			$rowx[0];
 						$A_field_label[$o] =		$rowx[1];
+						$A_field_duplicate[$o] =	$rowx[2];
+						$A_field_type[$o] =			$rowx[3];
 						$o++;
 						}
 
@@ -493,7 +499,7 @@ if ( ($action == "COPY_FIELDS_SUBMIT") and ($list_id > 99) and ($source_list_id 
 					while ($fields_to_print > $o) 
 						{
 						### delete field function
-						$SQLsuccess = delete_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$A_field_id[$o],$list_id,$A_field_label[$o],$A_field_name[$o],$A_field_description[$o],$A_field_rank[$o],$A_field_help[$o],$A_field_type[$o],$A_field_options[$o],$A_field_size[$o],$A_field_max[$o],$A_field_default[$o],$A_field_required[$o],$A_field_cost[$o],$A_multi_position[$o],$A_name_position[$o],$A_field_order[$o],$vicidial_list_fields);
+						$SQLsuccess = delete_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$A_field_id[$o],$list_id,$A_field_label[$o],$A_field_name[$o],$A_field_description[$o],$A_field_rank[$o],$A_field_help[$o],$A_field_type[$o],$A_field_options[$o],$A_field_size[$o],$A_field_max[$o],$A_field_default[$o],$A_field_required[$o],$A_field_cost[$o],$A_multi_position[$o],$A_name_position[$o],$A_field_order[$o],$A_field_duplicate[$o],$vicidial_list_fields);
 
 						if ($SQLsuccess > 0)
 							{echo _QXZ("SUCCESS: Custom Field Deleted")." - $list_id|$A_field_label[$o]\n<BR>";}
@@ -506,7 +512,7 @@ if ( ($action == "COPY_FIELDS_SUBMIT") and ($list_id > 99) and ($source_list_id 
 			if ($copy_option=='APPEND')
 				{
 				if ($DB > 0) {echo _QXZ("Starting APPEND copy")."\n<BR>";}
-				$stmt="SELECT field_id,field_label,field_name,field_description,field_rank,field_help,field_type,field_options,field_size,field_max,field_default,field_cost,field_required,multi_position,name_position,field_order from vicidial_lists_fields where list_id='$source_list_id' order by field_rank,field_order,field_label;";
+				$stmt="SELECT field_id,field_label,field_name,field_description,field_rank,field_help,field_type,field_options,field_size,field_max,field_default,field_cost,field_required,multi_position,name_position,field_order,field_duplicate from vicidial_lists_fields where list_id='$source_list_id' order by field_rank,field_order,field_label;";
 				$rslt=mysql_to_mysqli($stmt, $link);
 				$fields_to_print = mysqli_num_rows($rslt);
 				$fields_list='';
@@ -530,6 +536,7 @@ if ( ($action == "COPY_FIELDS_SUBMIT") and ($list_id > 99) and ($source_list_id 
 					$A_multi_position[$o] =		$rowx[13];
 					$A_name_position[$o] =		$rowx[14];
 					$A_field_order[$o] =		$rowx[15];
+					$A_field_duplicate[$o] =	$rowx[16];
 
 					$o++;
 					$rank_select .= "<option>$o</option>";
@@ -552,13 +559,28 @@ if ( ($action == "COPY_FIELDS_SUBMIT") and ($list_id > 99) and ($source_list_id 
 							$new_field_exists =	$rowx[0];
 							}
 						}
-					if ($new_field_exists < 1)
+					if ( ($new_field_exists < 1) or ($A_field_duplicate[$o] == 'Y') )
 						{
 						if (preg_match("/\|$temp_field_label\|/i",$vicidial_list_fields))
 							{$A_field_label[$o] = strtolower($A_field_label[$o]);}
 
+						if ($A_field_duplicate[$o] == 'Y')
+							{
+							$duplicate_field_count=0;
+							$stmt="SELECT count(*) from vicidial_lists_fields where list_id='$list_id' and field_label LIKE \"$A_field_label[$o]%\";";
+							if ($DB>0) {echo "$stmt";}
+							$rslt=mysql_to_mysqli($stmt, $link);
+							$dupscount_to_print = mysqli_num_rows($rslt);
+							if ($dupscount_to_print > 0) 
+								{
+								$rowx=mysqli_fetch_row($rslt);
+								$duplicate_field_count =	$rowx[0];
+								}
+							$A_field_label[$o] .= "_DUPLICATE_" . sprintf('%03d', $duplicate_field_count);
+							}
+
 						### add field function
-						$SQLsuccess = add_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$A_field_id[$o],$list_id,$A_field_label[$o],$A_field_name[$o],$A_field_description[$o],$A_field_rank[$o],$A_field_help[$o],$A_field_type[$o],$A_field_options[$o],$A_field_size[$o],$A_field_max[$o],$A_field_default[$o],$A_field_required[$o],$A_field_cost[$o],$A_multi_position[$o],$A_name_position[$o],$A_field_order[$o],$vicidial_list_fields,$mysql_reserved_words);
+						$SQLsuccess = add_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$A_field_id[$o],$list_id,$A_field_label[$o],$A_field_name[$o],$A_field_description[$o],$A_field_rank[$o],$A_field_help[$o],$A_field_type[$o],$A_field_options[$o],$A_field_size[$o],$A_field_max[$o],$A_field_default[$o],$A_field_required[$o],$A_field_cost[$o],$A_multi_position[$o],$A_name_position[$o],$A_field_order[$o],$A_field_duplicate[$o],$vicidial_list_fields,$mysql_reserved_words);
 
 						if ($SQLsuccess > 0)
 							{echo _QXZ("SUCCESS: Custom Field Added")." - $list_id|$A_field_label[$o]\n<BR>";}
@@ -576,11 +598,11 @@ if ( ($action == "COPY_FIELDS_SUBMIT") and ($list_id > 99) and ($source_list_id 
 			if ($copy_option=='UPDATE')
 				{
 				if ($DB > 0) {echo _QXZ("Starting UPDATE copy")."\n<BR>";}
-				if ( ($table_exists < 1) and (!preg_match("/\|$field_label\|/i",$vicidial_list_fields)) )
+				if ( ($table_exists < 1) and (!preg_match("/\|$field_label\|/i",$vicidial_list_fields)) and ($field_duplicate=='N') )
 					{echo "<B><font color=red>"._QXZ("ERROR: Table does not exist")." custom_$list_id</B></font>\n<BR>";}
 				else
 					{
-					$stmt="SELECT field_id,field_label,field_name,field_description,field_rank,field_help,field_type,field_options,field_size,field_max,field_default,field_cost,field_required,multi_position,name_position,field_order from vicidial_lists_fields where list_id='$source_list_id' order by field_rank,field_order,field_label;";
+					$stmt="SELECT field_id,field_label,field_name,field_description,field_rank,field_help,field_type,field_options,field_size,field_max,field_default,field_cost,field_required,multi_position,name_position,field_order,field_duplicate from vicidial_lists_fields where list_id='$source_list_id' order by field_rank,field_order,field_label;";
 					$rslt=mysql_to_mysqli($stmt, $link);
 					$fields_to_print = mysqli_num_rows($rslt);
 					$fields_list='';
@@ -620,7 +642,7 @@ if ( ($action == "COPY_FIELDS_SUBMIT") and ($list_id > 99) and ($source_list_id 
 							$current_field_id =	$rowx[0];
 
 							### modify field function
-							$SQLsuccess = modify_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$current_field_id,$list_id,$A_field_label[$o],$A_field_name[$o],$A_field_description[$o],$A_field_rank[$o],$A_field_help[$o],$A_field_type[$o],$A_field_options[$o],$A_field_size[$o],$A_field_max[$o],$A_field_default[$o],$A_field_required[$o],$A_field_cost[$o],$A_multi_position[$o],$A_name_position[$o],$A_field_order[$o],$vicidial_list_fields);
+							$SQLsuccess = modify_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$current_field_id,$list_id,$A_field_label[$o],$A_field_name[$o],$A_field_description[$o],$A_field_rank[$o],$A_field_help[$o],$A_field_type[$o],$A_field_options[$o],$A_field_size[$o],$A_field_max[$o],$A_field_default[$o],$A_field_required[$o],$A_field_cost[$o],$A_multi_position[$o],$A_name_position[$o],$A_field_order[$o],$A_field_duplicate[$o],$vicidial_list_fields);
 
 							if ($SQLsuccess > 0)
 								{echo _QXZ("SUCCESS: Custom Field Modified")." - $list_id|$A_field_label[$o]\n<BR>";}
@@ -665,11 +687,11 @@ if ( ($action == "DELETE_CUSTOM_FIELD_CONFIRMATION") and ($list_id > 99) and ($f
 		{echo "<B><font color=red>"._QXZ("ERROR: Field does not exist")."</B></font>\n<BR>";}
 	else
 		{
-		if ( ($table_exists < 1) and (!preg_match("/\|$field_label\|/i",$vicidial_list_fields)) )
+		if ( ($table_exists < 1) and (!preg_match("/\|$field_label\|/i",$vicidial_list_fields)) and ($field_duplicate=='N') )
 			{echo "<B><font color=red>"._QXZ("ERROR: Table does not exist")." custom_$list_id</B></font>\n<BR>";}
 		else
 			{
-			echo "<BR><BR><B><a href=\"$PHP_SELF?action=DELETE_CUSTOM_FIELD&list_id=$list_id&field_id=$field_id&field_label=$field_label&field_type=$field_type&ConFiRm=YES&DB=$DB\">"._QXZ("CLICK HERE TO CONFIRM DELETION OF THIS CUSTOM FIELD").": $field_label - $field_id - $list_id</a></B><BR><BR>";
+			echo "<BR><BR><B><a href=\"$PHP_SELF?action=DELETE_CUSTOM_FIELD&list_id=$list_id&field_id=$field_id&field_label=$field_label&field_type=$field_type&field_duplicate=$field_duplicate&ConFiRm=YES&DB=$DB\">"._QXZ("CLICK HERE TO CONFIRM DELETION OF THIS CUSTOM FIELD").": $field_label - $field_id - $list_id</a></B><BR><BR>";
 			}
 		}
 
@@ -720,7 +742,7 @@ if ( ($action == "DELETE_CUSTOM_FIELD") and ($list_id > 99) and ($field_id > 0) 
 		else
 			{
 			### delete field function
-			$SQLsuccess = delete_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field_id,$list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$vicidial_list_fields);
+			$SQLsuccess = delete_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field_id,$list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$field_duplicate,$vicidial_list_fields);
 
 			if ($SQLsuccess > 0)
 				{echo _QXZ("SUCCESS: Custom Field Deleted")." - $list_id|$field_label\n<BR>";}
@@ -783,36 +805,61 @@ if ( ($action == "ADD_CUSTOM_FIELD") and ($list_id > 99) )
 					{echo "<B><font color=red>"._QXZ("ERROR: You must enter field options when adding a SELECT, MULTI, RADIO or CHECKBOX field type")."  - $list_id|$field_label|$field_type|$field_options</B></font>\n<BR>";}
 				else
 					{
-					if ($field_exists > 0)
+					if ( ($field_exists > 0) and ($field_duplicate != 'Y') )
 						{echo "<B><font color=red>"._QXZ("ERROR: Field already exists for this list")." - $list_id|$field_label</B></font>\n<BR>";}
 					else
 						{
-						$table_exists=0;
-						#$linkCUSTOM=mysql_connect("$VARDB_server:$VARDB_port", "$VARDB_custom_user","$VARDB_custom_pass");
-						#if (!$linkCUSTOM) {die("Could not connect: $VARDB_server|$VARDB_port|$VARDB_database|$VARDB_custom_user|$VARDB_custom_pass" . mysqli_error());}
-						#mysql_select_db("$VARDB_database", $linkCUSTOM);
-
-						$linkCUSTOM=mysqli_connect("$VARDB_server", "$VARDB_custom_user", "$VARDB_custom_pass", "$VARDB_database", "$VARDB_port");
-						if (!$linkCUSTOM) 
+						if ( ($field_exists < 1) and ($field_duplicate == 'Y') )
+							{echo "<B><font color=red>"._QXZ("ERROR: Field set to duplicate but original does not exist for this list")." - $list_id|$field_label|$field_duplicate</B></font>\n<BR>";}
+						else
 							{
-							die('MySQL '._QXZ("connect ERROR").': '. mysqli_connect_error());
+							if ( ($field_type!='TEXT') and ($field_duplicate == 'Y') )
+								{echo "<B><font color=red>"._QXZ("ERROR: Field set to duplicate but not TEXT type")." - $list_id|$field_label|$field_duplicate|$field_type</B></font>\n<BR>";}
+							else
+								{
+								$table_exists=0;
+								#$linkCUSTOM=mysql_connect("$VARDB_server:$VARDB_port", "$VARDB_custom_user","$VARDB_custom_pass");
+								#if (!$linkCUSTOM) {die("Could not connect: $VARDB_server|$VARDB_port|$VARDB_database|$VARDB_custom_user|$VARDB_custom_pass" . mysqli_error());}
+								#mysql_select_db("$VARDB_database", $linkCUSTOM);
+
+								$linkCUSTOM=mysqli_connect("$VARDB_server", "$VARDB_custom_user", "$VARDB_custom_pass", "$VARDB_database", "$VARDB_port");
+								if (!$linkCUSTOM)
+									{
+									die('MySQL '._QXZ("connect ERROR").': '. mysqli_connect_error());
+									}
+
+								$stmt="SHOW TABLES LIKE \"custom_$list_id\";";
+								$rslt=mysql_to_mysqli($stmt, $link);
+								$tablecount_to_print = mysqli_num_rows($rslt);
+								if ($tablecount_to_print > 0) 
+									{$table_exists =	1;}
+								if ($DB>0) {echo "$stmt|$tablecount_to_print|$table_exists";}
+							
+								if (preg_match("/\|$field_label\|/i",$vicidial_list_fields))
+									{$field_label = strtolower($field_label);}
+
+								if ($field_duplicate == 'Y')
+									{
+									$duplicate_field_count=0;
+									$stmt="SELECT count(*) from vicidial_lists_fields where list_id='$list_id' and field_label LIKE \"$field_label%\";";
+									if ($DB>0) {echo "$stmt";}
+									$rslt=mysql_to_mysqli($stmt, $link);
+									$dupscount_to_print = mysqli_num_rows($rslt);
+									if ($dupscount_to_print > 0) 
+										{
+										$rowx=mysqli_fetch_row($rslt);
+										$duplicate_field_count =	$rowx[0];
+										}
+									$field_label .= "_DUPLICATE_" . sprintf('%03d', $duplicate_field_count);
+									}
+
+								### add field function
+								$SQLsuccess = add_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field_id,$list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$field_duplicate,$vicidial_list_fields,$mysql_reserved_words);
+
+								if ($SQLsuccess > 0)
+									{echo _QXZ("SUCCESS: Custom Field Added")." - $list_id|$field_label\n<BR>";}
+								}
 							}
-
-						$stmt="SHOW TABLES LIKE \"custom_$list_id\";";
-						$rslt=mysql_to_mysqli($stmt, $link);
-						$tablecount_to_print = mysqli_num_rows($rslt);
-						if ($tablecount_to_print > 0) 
-							{$table_exists =	1;}
-						if ($DB>0) {echo "$stmt|$tablecount_to_print|$table_exists";}
-					
-						if (preg_match("/\|$field_label\|/i",$vicidial_list_fields))
-							{$field_label = strtolower($field_label);}
-
-						### add field function
-						$SQLsuccess = add_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field_id,$list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$vicidial_list_fields,$mysql_reserved_words);
-
-						if ($SQLsuccess > 0)
-							{echo _QXZ("SUCCESS: Custom Field Added")." - $list_id|$field_label\n<BR>";}
 						}
 					}
 				}
@@ -858,11 +905,14 @@ if ( ($action == "MODIFY_CUSTOM_FIELD_SUBMIT") and ($list_id > 99) and ($field_i
 		{$table_exists =	1;}
 	if ($DB>0) {echo "$stmt|$tablecount_to_print|$table_exists";}
 
+	if ($field_duplicate=='Y')
+		{$field_type='TEXT';}
+
 	if ($field_exists < 1)
 		{echo "<B><font color=red>"._QXZ("ERROR: Field does not exist")."</B></font>\n<BR>";}
 	else
 		{
-		if ( ($table_exists < 1) and (!preg_match("/\|$field_label\|/i",$vicidial_list_fields)) )
+		if ( ($table_exists < 1) and (!preg_match("/\|$field_label\|/i",$vicidial_list_fields)) and ($field_duplicate=='N') )
 			{echo "<B><font color=red>"._QXZ("ERROR: Table does not exist")."</B></font>\n<BR>";}
 		else
 			{
@@ -894,7 +944,7 @@ if ( ($action == "MODIFY_CUSTOM_FIELD_SUBMIT") and ($list_id > 99) and ($field_i
 				else
 					{
 					### modify field function
-					$SQLsuccess = modify_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field_id,$list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$vicidial_list_fields);
+					$SQLsuccess = modify_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field_id,$list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$field_duplicate,$vicidial_list_fields);
 
 					if ($SQLsuccess > 0)
 						{echo _QXZ("SUCCESS: Custom Field Modified")." - $list_id|$field_label\n<BR>";}
@@ -960,7 +1010,7 @@ if ( ($action == "MODIFY_CUSTOM_FIELDS") and ($list_id > 99) )
 	echo _QXZ("Records in this custom table").": $custom_records_count<br>\n";
 	echo "<center><TABLE width=$section_width cellspacing=3>\n";
 
-	$stmt="SELECT field_id,field_label,field_name,field_description,field_rank,field_help,field_type,field_options,field_size,field_max,field_default,field_cost,field_required,multi_position,name_position,field_order from vicidial_lists_fields where list_id='$list_id' order by field_rank,field_order,field_label;";
+	$stmt="SELECT field_id,field_label,field_name,field_description,field_rank,field_help,field_type,field_options,field_size,field_max,field_default,field_cost,field_required,multi_position,name_position,field_order,field_duplicate from vicidial_lists_fields where list_id='$list_id' order by field_rank,field_order,field_label;";
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$fields_to_print = mysqli_num_rows($rslt);
 	$fields_list='';
@@ -984,6 +1034,7 @@ if ( ($action == "MODIFY_CUSTOM_FIELDS") and ($list_id > 99) )
 		$A_multi_position[$o] =		$rowx[13];
 		$A_name_position[$o] =		$rowx[14];
 		$A_field_order[$o] =		$rowx[15];
+		$A_field_duplicate[$o] =	$rowx[16];
 
 		$o++;
 		$rank_select .= "<option>$o</option>";
@@ -1011,6 +1062,11 @@ if ( ($action == "MODIFY_CUSTOM_FIELDS") and ($list_id > 99) )
 		if (preg_match("/\|$reserved_test\|/i",$vicidial_list_fields))
 			{
 			$LcolorB='<font color=red>';
+			$LcolorE='</font>';
+			}
+		if ($A_field_duplicate[$o] == 'Y')
+			{
+			$LcolorB='<font color=#006600>';
 			$LcolorE='</font>';
 			}
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
@@ -1250,6 +1306,11 @@ if ( ($action == "MODIFY_CUSTOM_FIELDS") and ($list_id > 99) )
 			$LcolorB='<font color=red>';
 			$LcolorE='</font>';
 			}
+		if ($A_field_duplicate[$o] == 'Y')
+			{
+			$LcolorB='<font color=#006600>';
+			$LcolorE='</font>';
+			}
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
 			{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
 		else
@@ -1260,6 +1321,7 @@ if ( ($action == "MODIFY_CUSTOM_FIELDS") and ($list_id > 99) )
 		echo "<input type=hidden name=DB value=$DB>\n";
 		echo "<input type=hidden name=field_id value=\"$A_field_id[$o]\">\n";
 		echo "<input type=hidden name=field_label value=\"$A_field_label[$o]\">\n";
+		echo "<input type=hidden name=field_duplicate value=\"$A_field_duplicate[$o]\">\n";
 		echo "<a name=\"ANCHOR_$A_field_label[$o]\">\n";
 		echo "<center><TABLE width=$section_width cellspacing=3 cellpadding=1>\n";
 		echo "<tr $bgcolor><td align=right>"._QXZ("Field Label")." $A_field_rank[$o]: </td><td align=left> $LcolorB<B>$A_field_label[$o]</B>$LcolorE $NWB#lists_fields-field_label$NWE </td></tr>\n";
@@ -1314,8 +1376,9 @@ if ( ($action == "MODIFY_CUSTOM_FIELDS") and ($list_id > 99) )
 		echo "<option value=\"INBOUND_ONLY\">"._QXZ("INBOUND_ONLY")."</option>\n";
 		echo "<option selected>$A_field_required[$o]</option>\n";
 		echo "</select>  $NWB#lists_fields-field_required$NWE </td></tr>\n";
+		echo "<tr $bgcolor><td align=right>"._QXZ("Field Duplicate")." $A_field_rank[$o]: </td><td align=left>$A_field_duplicate[$o]  $NWB#lists_fields-field_duplicate$NWE </td></tr>\n";
 		echo "<tr $bgcolor><td align=center colspan=2><input type=submit name=submit value=\""._QXZ("SUBMIT")."\"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;\n";
-		echo "<B><a href=\"$PHP_SELF?action=DELETE_CUSTOM_FIELD_CONFIRMATION&list_id=$list_id&field_id=$A_field_id[$o]&field_label=$A_field_label[$o]&field_type=$A_field_type[$o]&DB=$DB\">"._QXZ("DELETE THIS CUSTOM FIELD")."</a></B>";
+		echo "<B><a href=\"$PHP_SELF?action=DELETE_CUSTOM_FIELD_CONFIRMATION&list_id=$list_id&field_id=$A_field_id[$o]&field_label=$A_field_label[$o]&field_type=$A_field_type[$o]&field_duplicate=$A_field_duplicate[$o]&DB=$DB\">"._QXZ("DELETE THIS CUSTOM FIELD")."</a></B>";
 		echo "</td></tr>\n";
 		echo "</table></center></form><BR><BR>\n";
 
@@ -1379,6 +1442,10 @@ if ( ($action == "MODIFY_CUSTOM_FIELDS") and ($list_id > 99) )
 	echo "<option value=\"Y\">"._QXZ("YES")."</option>\n";
 	echo "<option value=\"INBOUND_ONLY\">"._QXZ("INBOUND_ONLY")."</option>\n";
 	echo "</select>  $NWB#lists_fields-field_required$NWE </td></tr>\n";
+	echo "<tr $bgcolor><td align=right>"._QXZ("Field Duplicate").": </td><td align=left><select size=1 name=field_duplicate>\n";
+	echo "<option value=\"N\" SELECTED>"._QXZ("NO")."</option>\n";
+	echo "<option value=\"Y\">"._QXZ("YES")."</option>\n";
+	echo "</select>  $NWB#lists_fields-field_duplicate$NWE </td></tr>\n";
 	echo "<tr $bgcolor><td align=center colspan=2><input type=submit name=submit value=\""._QXZ("Submit")."\"></td></tr>\n";
 	echo "</table></center></form><BR><BR>\n";
 	echo "</table></center><BR><BR>\n";
@@ -1565,7 +1632,7 @@ echo "\n\n\n<br><br><br>\n<font size=1> "._QXZ("runtime").": $RUNtime "._QXZ("se
 
 ################################################################################
 ##### BEGIN add field function
-function add_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field_id,$list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$vicidial_list_fields,$mysql_reserved_words)
+function add_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field_id,$list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$field_duplicate,$vicidial_list_fields,$mysql_reserved_words)
 	{
 	$table_exists=0;
 	$stmt="SHOW TABLES LIKE \"custom_$list_id\";";
@@ -1657,7 +1724,7 @@ function add_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field
 
 	$SQLexecuted=0;
 
-	if ( ($field_type=='DISPLAY') or ($field_type=='SCRIPT') or (preg_match("/\|$field_label\|/i",$vicidial_list_fields)) )
+	if ( ($field_type=='DISPLAY') or ($field_type=='SCRIPT') or (preg_match("/\|$field_label\|/i",$vicidial_list_fields)) or ($field_duplicate=='Y') )
 		{
 		if ($DB) {echo "Non-DB $field_type field type, $field_label\n";}
 
@@ -1690,7 +1757,7 @@ function add_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field
 
 	if ($SQLexecuted > 0)
 		{
-		$stmt="INSERT INTO vicidial_lists_fields set field_label='$field_label',field_name='$field_name',field_description='$field_description',field_rank='$field_rank',field_help='$field_help',field_type='$field_type',field_options=\"$field_options\",field_size='$field_size',field_max='$field_max',field_default='$field_default',field_required='$field_required',field_cost='$field_cost',list_id='$list_id',multi_position='$multi_position',name_position='$name_position',field_order='$field_order';";
+		$stmt="INSERT INTO vicidial_lists_fields set field_label='$field_label',field_name='$field_name',field_description='$field_description',field_rank='$field_rank',field_help='$field_help',field_type='$field_type',field_options=\"$field_options\",field_size='$field_size',field_max='$field_max',field_default='$field_default',field_required='$field_required',field_cost='$field_cost',list_id='$list_id',multi_position='$multi_position',name_position='$name_position',field_order='$field_order',field_duplicate='$field_duplicate';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$field_update = mysqli_affected_rows($link);
 		if ($DB) {echo "$field_update|$stmt\n";}
@@ -1715,10 +1782,10 @@ function add_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field
 
 ################################################################################
 ##### BEGIN modify field function
-function modify_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field_id,$list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$vicidial_list_fields)
+function modify_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field_id,$list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$field_duplicate,$vicidial_list_fields)
 	{
 	$field_db_exists=0;
-	if ( ($field_type=='DISPLAY') or ($field_type=='SCRIPT') or (preg_match("/\|$field_label\|/i",$vicidial_list_fields)) )
+	if ( ($field_type=='DISPLAY') or ($field_type=='SCRIPT') or (preg_match("/\|$field_label\|/i",$vicidial_list_fields)) or ($field_duplicate=='Y') )
 		{$field_db_exists=1;}
 	else
 		{
@@ -1731,6 +1798,9 @@ function modify_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$fi
 		{$field_sql = "ALTER TABLE custom_$list_id MODIFY $field_label ";}
 	else
 		{$field_sql = "ALTER TABLE custom_$list_id ADD $field_label ";}
+
+	if ($field_duplicate=='Y')
+		{$field_type='TEXT';}
 
 	$field_options_ENUM='';
 	$field_cost=1;
@@ -1804,7 +1874,7 @@ function modify_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$fi
 
 	$SQLexecuted=0;
 
-	if ( ($field_type=='DISPLAY') or ($field_type=='SCRIPT') or (preg_match("/\|$field_label\|/i",$vicidial_list_fields)) )
+	if ( ($field_type=='DISPLAY') or ($field_type=='SCRIPT') or (preg_match("/\|$field_label\|/i",$vicidial_list_fields)) or ($field_duplicate=='Y') )
 		{
 		if ($DB) {echo _QXZ("Non-DB")." $field_type "._QXZ("field type").", $field_label\n";}
 		$SQLexecuted++;
@@ -1830,7 +1900,7 @@ function modify_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$fi
 
 	if ($SQLexecuted > 0)
 		{
-		$stmt="UPDATE vicidial_lists_fields set field_label='$field_label',field_name='$field_name',field_description='$field_description',field_rank='$field_rank',field_help='$field_help',field_type='$field_type',field_options=\"$field_options\",field_size='$field_size',field_max='$field_max',field_default='$field_default',field_required='$field_required',field_cost='$field_cost',multi_position='$multi_position',name_position='$name_position',field_order='$field_order' where list_id='$list_id' and field_id='$field_id';";
+		$stmt="UPDATE vicidial_lists_fields set field_label='$field_label',field_name='$field_name',field_description='$field_description',field_rank='$field_rank',field_help='$field_help',field_type='$field_type',field_options=\"$field_options\",field_size='$field_size',field_max='$field_max',field_default='$field_default',field_required='$field_required',field_cost='$field_cost',multi_position='$multi_position',name_position='$name_position',field_order='$field_order',field_duplicate='$field_duplicate' where list_id='$list_id' and field_id='$field_id';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$field_update = mysqli_affected_rows($link);
 		if ($DB) {echo "$field_update|$stmt\n";}
@@ -1855,11 +1925,11 @@ function modify_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$fi
 
 ################################################################################
 ##### BEGIN delete field function
-function delete_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field_id,$list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$vicidial_list_fields)
+function delete_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field_id,$list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$field_duplicate,$vicidial_list_fields)
 	{
 	$SQLexecuted=0;
 
-	if ( ($field_type=='DISPLAY') or ($field_type=='SCRIPT') or (preg_match("/\|$field_label\|/i",$vicidial_list_fields)) )
+	if ( ($field_type=='DISPLAY') or ($field_type=='SCRIPT') or (preg_match("/\|$field_label\|/i",$vicidial_list_fields)) or ($field_duplicate=='Y') )
 		{
 		if ($DB) {echo "Non-DB $field_type field type, $field_label\n";}
 		$SQLexecuted++;
