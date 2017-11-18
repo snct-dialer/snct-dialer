@@ -2,7 +2,9 @@
 
   [Jörg Frings-Fürst]
   * AST_CRON_WaalBoard3_gen.php:
-    - Typo InGroup Search
+    - Typo InGroup Search.
+    - Add function GetServicelevel.
+    - Replace mysqli_fetch_row with mysqli_fetch_array.
   * New DB-Schema 1526: (2017-053)
     - Add servicelevel_* to system_settings.
   * admin.php:
