@@ -438,10 +438,11 @@
 # 170912-1618 - Fix for no-hopper dnc dialing issue
 # 171018-1310 - Added code for campaign scheduled callback email alerts
 # 171026-0107 - Added optional queue_log logging
+# 171116-2334 - Added code for duplicate fields
 #
 
-$version = '2.14-332';
-$build = '171026-0107';
+$version = '2.14-333';
+$build = '171116-2334';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=700;
@@ -4909,7 +4910,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 				$custom_field_values='----------';
 				$custom_field_types='|';
 				### find the names of all custom fields, if any
-				$stmt = "SELECT field_label,field_type FROM vicidial_lists_fields where list_id='$entry_list_id' and field_type NOT IN('SCRIPT','DISPLAY') and field_label NOT IN('entry_date','vendor_lead_code','source_id','list_id','gmt_offset_now','called_since_last_reset','phone_code','phone_number','title','first_name','middle_initial','last_name','address1','address2','address3','city','state','province','postal_code','country_code','gender','date_of_birth','alt_phone','email','security_phrase','comments','called_count','last_local_call_time','rank','owner');";
+				$stmt = "SELECT field_label,field_type FROM vicidial_lists_fields where list_id='$entry_list_id' and field_type NOT IN('SCRIPT','DISPLAY') and field_label NOT IN('entry_date','vendor_lead_code','source_id','list_id','gmt_offset_now','called_since_last_reset','phone_code','phone_number','title','first_name','middle_initial','last_name','address1','address2','address3','city','state','province','postal_code','country_code','gender','date_of_birth','alt_phone','email','security_phrase','comments','called_count','last_local_call_time','rank','owner') and field_label NOT LIKE \"%_DUPLICATE_%\";";
 				$rslt=mysql_to_mysqli($stmt, $link);
 					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00334',$user,$server_ip,$session_name,$one_mysql_log);}
 				if ($DB) {echo "$stmt\n";}
@@ -12668,6 +12669,7 @@ if ($ACTION == 'updateDISPO')
 		if (strlen($FORMcustom_field_names)>2)
 			{
 			$custom_field_names = preg_replace("/^\||\|$/",'',$FORMcustom_field_names);
+			$custom_field_names = preg_replace("/\|.*_DUPLICATE_.*\|/",'|',$custom_field_names);
 			$custom_field_names = preg_replace("/\|/",",",$custom_field_names);
 			$custom_field_names_ARY = explode(',',$custom_field_names);
 			$custom_field_names_ct = count($custom_field_names_ARY);

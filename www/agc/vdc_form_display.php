@@ -41,10 +41,11 @@
 # 170331-2300 - Added more debug logging
 # 170428-1215 - Small fix for admin modify lead display
 # 171021-1339 - Fix to update default field if duplicate field in custom fields changed
+# 171116-2333 - Added code for duplicate fields
 #
 
-$version = '2.14-31';
-$build = '171021-1339';
+$version = '2.14-32';
+$build = '171116-2333';
 $php_script = 'vdc_form_display.php';
 
 require_once("dbconnect_mysqli.php");
@@ -351,7 +352,7 @@ if ($stage=='SUBMIT')
 		{
 		$update_SQL='';
 		$VL_update_SQL='';
-		$stmt="SELECT field_id,field_label,field_name,field_description,field_rank,field_help,field_type,field_options,field_size,field_max,field_default,field_cost,field_required,multi_position,name_position,field_order from vicidial_lists_fields where list_id='$list_id' order by field_rank,field_order,field_label;";
+		$stmt="SELECT field_id,field_label,field_name,field_description,field_rank,field_help,field_type,field_options,field_size,field_max,field_default,field_cost,field_required,multi_position,name_position,field_order,field_duplicate from vicidial_lists_fields where list_id='$list_id' order by field_rank,field_order,field_label;";
 		$rslt=mysql_to_mysqli($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'06003',$user,$server_ip,$session_name,$one_mysql_log);}
 		$fields_to_print = mysqli_num_rows($rslt);
@@ -369,6 +370,7 @@ if ($stage=='SUBMIT')
 			$A_field_size[$o] =			$rowx[8];
 			$A_field_max[$o] =			$rowx[9];
 			$A_field_required[$o] =		$rowx[12];
+			$A_field_duplicate[$o] =	$rowx[16];
 			$A_field_value[$o] =		'';
 			$field_name_id =			$A_field_label[$o];
 
@@ -411,19 +413,22 @@ if ($stage=='SUBMIT')
 				}
 			else
 				{
-				if (preg_match("/\|$A_field_label[$o]\|/i",$vicidial_list_fields))
-					{
-					$VL_update_SQL .= "$A_field_label[$o]=\"$A_field_value[$o]\",";
+				if (!preg_match("/_DUPLICATE_\d\d\d/",$A_field_label[$o]))
+					{				
+					if (preg_match("/\|$A_field_label[$o]\|/i",$vicidial_list_fields))
+						{
+						$VL_update_SQL .= "$A_field_label[$o]=\"$A_field_value[$o]\",";
+						}
+					else
+						{
+						$update_SQL .= "$A_field_label[$o]=\"$A_field_value[$o]\",";
+						}
 					}
-				else
-					{
-					$update_SQL .= "$A_field_label[$o]=\"$A_field_value[$o]\",";
-					}
-
 				$SUBMIT_output .= "<b>$A_field_name[$o]:</b> $A_field_value[$o]<BR>";
 				}
 			$o++;
 			}
+	#	$SUBMIT_output .= "$update_SQL<BR>$VL_update_SQL";
 
 		$custom_update_count=0;
 		if (strlen($update_SQL)>3)
@@ -535,6 +540,21 @@ else
 	echo "		{\n";  
 	echo "		var tempvalue = document.getElementById(taskfield).value;\n";
 	echo "		parent.document.getElementById(taskfield).value = tempvalue;\n";
+	echo "		}\n";
+	echo "	function update_dup_field(taskmasterfield,taskupdatefields,taskupdatecount,taskdefaultflag,taskdefaultfield) \n";
+	echo "		{\n";
+#	echo "		alert('1: ' + taskmasterfield + ' 2: ' + taskupdatefields + ' 3: ' + taskupdatecount + ' 4: ' + taskdefaultflag);\n";
+	echo "		var tempmastervalue = document.getElementById(taskmasterfield).value;\n";
+	echo "		var update_fields_array=taskupdatefields.split(\"|\");\n";
+	echo "		var temp_ct=0;\n";
+	echo "		while (taskupdatecount > temp_ct)\n";
+	echo "			{\n";
+	echo "			var temp_updating_field = update_fields_array[temp_ct];\n";
+	echo "			document.getElementById(temp_updating_field).value = tempmastervalue;\n";
+	echo "			temp_ct++;\n";
+	echo "			}\n";
+	echo "      if (taskdefaultflag=='1')\n";
+	echo "			{parent.document.getElementById(taskdefaultfield).value = tempmastervalue;}\n";
 	echo "		}\n";
 	echo "	</script>\n";
 	echo "	<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";

@@ -41,6 +41,7 @@
 # 170526-2141 - Added additional auth variable filtering, issue #1016
 # 170528-1029 - Fix for rare inbound logging issue #1017, Added variable filtering
 # 171021-1340 - Fix to update default field if duplicate field in custom fields changed
+# 171116-2333 - Added code for duplicate custom fields
 #
 
 # $mysql_queries = 26
@@ -349,11 +350,14 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user,$DB,$call_i
 			$custom_records_count =	$rowx[0];
 
 			$select_SQL='';
-			$stmt="SELECT field_id,field_label,field_name,field_description,field_rank,field_help,field_type,field_options,field_size,field_max,field_default,field_cost,field_required,multi_position,name_position,field_order from vicidial_lists_fields where list_id='$list_id' order by field_rank,field_order,field_label;";
+			$stmt="SELECT field_id,field_label,field_name,field_description,field_rank,field_help,field_type,field_options,field_size,field_max,field_default,field_cost,field_required,multi_position,name_position,field_order,field_duplicate from vicidial_lists_fields where list_id='$list_id' order by field_rank,field_order,field_label;";
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'05004',$user,$server_ip,$session_name,$one_mysql_log);}
 			$fields_to_print = mysqli_num_rows($rslt);
 			$fields_list='';
+			$duplicates_list='';
+			$duplicates_master_list='';
+			$duplicates_count=0;
 			$o=0;
 			while ($fields_to_print > $o) 
 				{
@@ -374,9 +378,25 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user,$DB,$call_i
 				$A_multi_position[$o] =		$rowx[13];
 				$A_name_position[$o] =		$rowx[14];
 				$A_field_order[$o] =		$rowx[15];
+				$A_field_duplicate[$o] =	$rowx[16];
 				$A_field_value[$o] =		'';
 
-				if (!preg_match("/\|$A_field_label[$o]\|/i",$vicidial_list_fields))
+				if ($A_field_duplicate[$o] == 'Y')
+					{
+					$A_master_field[$o] = preg_replace("/_DUPLICATE_.*/",'',$A_field_label[$o]);
+					$A_field_value[$o] = '--A--' . $A_master_field[$o] . '--B--';
+
+					if (!preg_match("/\|$A_master_field[$o]\|/i",$duplicates_master_list))
+						{
+						$duplicates_count++;
+						$duplicates_master_list .= "|$A_master_field[$o]|";
+						}
+					if (!preg_match("/\|$A_field_label[$o]\|/i",$duplicates_list))
+						{
+						$duplicates_list .= "|$A_field_label[$o]|";
+						}
+					}
+				if ( (!preg_match("/\|$A_field_label[$o]\|/i",$vicidial_list_fields)) and (!preg_match("/\|$A_master_field[$o]\|/i",$vicidial_list_fields)) )
 					{
 					if ( ($A_field_type[$o]=='DISPLAY') or ($A_field_type[$o]=='SCRIPT') )
 						{
@@ -385,8 +405,16 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user,$DB,$call_i
 						}
 					else
 						{
-						$select_SQL .= "$A_field_label[$o],";
-						$A_field_select[$o]=$A_field_label[$o];
+						if ($A_field_duplicate[$o]=='Y')
+							{
+							$select_SQL .= "$A_master_field[$o],";
+							$A_field_select[$o]=$A_field_label[$o];
+							}
+						else
+							{
+							$select_SQL .= "$A_field_label[$o],";
+							$A_field_select[$o]=$A_field_label[$o];
+							}
 						}
 					}
 				else
@@ -423,6 +451,8 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user,$DB,$call_i
 						{$A_field_value[$o]='';}
 					if (preg_match("/\|$A_field_label[$o]\|/i",$vicidial_list_fields))
 						{$A_field_value[$o] = '--A--' . $A_field_label[$o] . '--B--';}
+					if (preg_match("/_DUPLICATE_\d\d\d/",$A_field_label[$o]))
+						{$A_field_value[$o] = '--A--' . $A_master_field[$o] . '--B--';}
 					$o++;
 					}
 				}
@@ -563,8 +593,52 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user,$DB,$call_i
 				if ($A_field_type[$o]=='TEXT') 
 					{
 					$change_trigger='';
+					$default_field_flag=0;
 					if (preg_match("/\|$A_field_label[$o]\|/i",$vicidial_list_fields))
-						{$change_trigger="onchange=\"update_default_vd_field('$A_field_label[$o]');\"";}
+						{
+						$change_trigger="onchange=\"update_default_vd_field('$A_field_label[$o]');\"";
+						$default_field_flag++;
+						}
+					
+					if ( ($duplicates_count > 0) and ( (preg_match("/\|$A_field_label[$o]\|/i",$duplicates_master_list)) or (preg_match("/\|$A_field_label[$o]\|/i",$duplicates_list)) ) )
+						{
+						$update_dup_fields='';
+						$update_dup_ct=0;
+						if (preg_match("/\|$A_field_label[$o]\|/i",$duplicates_master_list))
+							{
+							$master_field = $A_field_label[$o];
+							$master_field_match = $master_field . '_DUPLICATE_.*';
+							$dup_fields = explode('|',$duplicates_list);
+							$dup_fields_ct = count($dup_fields);
+							$df=0;
+							while ($dup_fields_ct > $df)
+								{
+								if (preg_match("/$master_field_match/",$dup_fields[$df]))
+									{$update_dup_fields .= "$dup_fields[$df]|";   $update_dup_ct++;}
+								$df++;
+								}
+							}
+						if (preg_match("/\|$A_field_label[$o]\|/i",$duplicates_list))
+							{
+							$master_field = preg_replace("/_DUPLICATE_.*/",'',$A_field_label[$o]);
+							if (preg_match("/\|$master_field\|/i",$vicidial_list_fields))
+								{$default_field_flag++;}
+							$update_dup_fields .= "$master_field|";   $update_dup_ct++;
+							$master_field_match = $master_field . '_DUPLICATE_.*';
+							$dup_fields = explode('|',$duplicates_list);
+							$dup_fields_ct = count($dup_fields);
+							$df=0;
+							while ($dup_fields_ct > $df)
+								{
+								if ( (preg_match("/$master_field_match/",$dup_fields[$df])) and ($dup_fields[$df] != $A_field_label[$o]) )
+									{$update_dup_fields .= "$dup_fields[$df]|";   $update_dup_ct++;}
+								$df++;
+								}
+							}
+						$update_dup_fields = preg_replace("/\|$/",'',$update_dup_fields);
+						$change_trigger="onchange=\"update_dup_field('$A_field_label[$o]','$update_dup_fields',$update_dup_ct,$default_field_flag,'$master_field');\"";
+						}
+
 					if ($A_field_default[$o]=='NULL') {$A_field_default[$o]='';}
 					if (strlen($A_field_value[$o]) < 1) {$A_field_value[$o] = $A_field_default[$o];}
 					$field_HTML .= "<input type=text size=$A_field_size[$o] maxlength=$A_field_max[$o] name=$A_field_label[$o] id=$A_field_label[$o] value=\""._QXZ("$A_field_value[$o]")."\" $change_trigger>\n";

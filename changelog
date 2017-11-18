@@ -10,6 +10,12 @@
   * help.php:
     - Add help for servicelevel.
     - Add missing help for dectect 3way calls.
+  * Add upstream Rev. 2854: 
+    - functions.php,
+      vdc_db_query.php,
+      vdc_form_display.php,
+      admin_lists_custom.php,
+      help.php: Added code for duplicate custom fields.
 
 2.25.18
 
