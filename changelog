@@ -3,7 +3,10 @@
   [Jörg Frings-Fürst]
   * AST_CRON_WaalBoard3_gen.php:
     - Typo InGroup Search
-    
+  * New DB-Schema 1526: (2017-053)
+    - Add servicelevel_* to system_settings.
+
+
 2.25.18
 
   [Jörg Frings-Fürst]

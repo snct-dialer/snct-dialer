@@ -1755,7 +1755,10 @@ ticket_mail VARCHAR(100) default '',
 allow_manage_active_lists ENUM('0','1') default '0',
 expired_lists_inactive ENUM('0','1') default '0',
 did_system_filter ENUM('0','1') default '0',
-allow_phonebook ENUM('0','1') default '0'
+allow_phonebook ENUM('0','1') default '0',
+servicelevel_direct SMALLINT UNSIGNED DEFAULT '4',
+servicelevel_one SMALLINT UNSIGNED DEFAULT '20',
+servicelevel_two SMALLINT UNSIGNED DEFAULT '40'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_campaigns_list_mix (
