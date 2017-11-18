@@ -5799,6 +5799,11 @@ FR_SPAC 00 00 00 00 00 - <?php echo _QXZ("France space separated phone number");
 <B><?php echo _QXZ("Campaign pause"); ?> -</B><?php echo _QXZ("Enable / Disable Campaign selection at pause screen."); ?>
 
 <BR>
+<A NAME="detect_3way">
+<BR>
+<B><?php echo _QXZ("Detect 3way Calls"); ?> -</B><?php echo _QXZ("Enable / Disable detection of 3way Call on the realtime reports ."); ?>
+
+<BR>
 <A NAME="company_name">
 <BR>
 <B><?php echo _QXZ("Company Name"); ?> -</B><?php echo _QXZ("Set the Browser Title."); ?>
@@ -5808,6 +5813,10 @@ FR_SPAC 00 00 00 00 00 - <?php echo _QXZ("France space separated phone number");
 <BR>
 <B><?php echo _QXZ("Ticket Mail Address"); ?> -</B><?php echo _QXZ("Set the Mailaddress to send Mails into a Ticketsystem."); ?>
 
+BR>
+<A NAME="servicelevel">
+<BR>
+<B><?php echo _QXZ("Service Level"); ?> -</B><?php echo _QXZ("Set the time in seconds for the Servicelevel Direct|One|Two only for the Wallboard."); ?>
 
 
 <BR><BR><BR><BR>

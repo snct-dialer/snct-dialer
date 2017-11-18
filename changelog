@@ -5,7 +5,11 @@
     - Typo InGroup Search
   * New DB-Schema 1526: (2017-053)
     - Add servicelevel_* to system_settings.
-
+  * admin.php:
+    - Add servicelevel_* to system_settings.
+  * help.php:
+    - Add help for servicelevel.
+    - Add missing help for dectect 3way calls.
 
 2.25.18
 
