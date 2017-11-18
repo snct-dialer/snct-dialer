@@ -9,10 +9,11 @@
 # 20171020-1900 stable release
 # 20171030-1410 Set correct $PATHweb and PATHlogs
 #               Correct typo Custom_one
+# 20171118-0851 Typo InGroup Search
 #
 
-$version="1.0.1";
-$build = "20171030-1410";
+$version="1.0.2";
+$build = "20171118-0851";
 
 
 ####  collect wallboard data should only be active on a single server
@@ -183,7 +184,7 @@ function GetIBGroup($IB_ID) {
 		print "$statement\n";
 	$result = mysql_to_mysqli($statement, $link);
 	$row = mysqli_fetch_row($result);
-	$Grp = $row[124];
+	$Grp = $row[133];
 	if($Grp == "") {
 		$Grp = "Rest";
 //		$Grp = $IB_ID;
@@ -317,7 +318,7 @@ function GenIBGroups() {
 	$i=0;
 	while($i < $Anz) {
 		$row = mysqli_fetch_row($result);
-		$Grp = $row[124];
+		$Grp = $row[133];
 		if($Grp == "") {
 			$Grp = "Rest";
 		}
