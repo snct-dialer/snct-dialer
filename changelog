@@ -7,6 +7,7 @@
     - Add servicelevel_* to system_settings.
   * admin.php:
     - Add servicelevel_* to system_settings.
+    - Rename Git Release to Patch-Level.
   * help.php:
     - Add help for servicelevel.
     - Add missing help for dectect 3way calls.
@@ -16,6 +17,7 @@
       vdc_form_display.php,
       admin_lists_custom.php,
       help.php: Added code for duplicate custom fields.
+
 
 2.25.18
 

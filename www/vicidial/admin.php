@@ -35348,7 +35348,7 @@ if ($ADD==311111111111111)
 		echo "</td></tr>\n";
 		
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Git Commit").": </td><td align=left> $git_commit</td></tr>\n";
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Git Release").": </td><td align=left> $git_release</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Patch-Level").": </td><td align=left> $git_release</td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("DB Schema Update Date").": </td><td align=left> $db_schema_update_date</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Password Encryption").": </td><td align=left> $pass_hash_enabled - $pass_key - $pass_cost</td></tr>\n";
