@@ -345,7 +345,7 @@ postal_code VARCHAR(10),
 country_code VARCHAR(3),
 gender ENUM('M','F','U') default 'U',
 date_of_birth DATE,
-alt_phone VARCHAR(12),
+alt_phone VARCHAR(18),
 email VARCHAR(70),
 security_phrase VARCHAR(100),
 comments VARCHAR(255),
@@ -4192,4 +4192,4 @@ INSERT INTO vicidial_settings_containers(container_id,container_notes,container_
 
 UPDATE system_settings set vdc_agent_api_active='1';
 
-UPDATE system_settings SET db_schema_version='1526',db_schema_update_date=NOW(),reload_timestamp=NOW();
+UPDATE system_settings SET db_schema_version='1527',db_schema_update_date=NOW(),reload_timestamp=NOW();

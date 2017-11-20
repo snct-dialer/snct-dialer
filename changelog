@@ -1,6 +1,8 @@
 2.25.20
   [Jörg Frings-Fürst]
-  * help.php: add missing <.
+  * help.php: add missing '<'.
+  * New DB-Schema 1527: (2017-054)
+    - vicidial_list: Increase the size of the field alt_phone to 18.
 
 2.25.19
 
