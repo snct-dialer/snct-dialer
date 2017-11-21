@@ -19,6 +19,7 @@
 # - sale_status -	(SALE---XSALE) a triple-dash "---" delimited list of the statuses that are to be moved, use ALL-STATUSES to trigger on all calls
 # - container_id -	(999,etc...) the Settings Container ID that you want the phone number to be inserted into
 # - called_count_trigger -	(1,2,3,...) if set to number greater than 0, will only trigger for called_count at or above set number, default is DISABLED
+# - email_to - override of settings-container email setting
 #
 # CHANGES
 # 150806-1424 - First Build
@@ -26,6 +27,7 @@
 # 170526-2315 - Added additional variable filtering
 # 171018-2310 - Added call_notes option
 # 171120-0910 - Added ALL-STATUSES option and called_count_trigger option
+# 171120-1535 - Added additional_notes option and email attachments options(1-5)
 #
 
 $api_script = 'send_email';
@@ -61,12 +63,26 @@ if (isset($_GET["DB"]))						{$DB=$_GET["DB"];}
 	elseif (isset($_POST["DB"]))			{$DB=$_POST["DB"];}
 if (isset($_GET["call_notes"]))				{$call_notes=$_GET["call_notes"];}
 	elseif (isset($_POST["call_notes"]))	{$call_notes=$_POST["call_notes"];}
+if (isset($_GET["additional_notes"]))			{$additional_notes=$_GET["additional_notes"];}
+	elseif (isset($_POST["additional_notes"]))	{$additional_notes=$_POST["additional_notes"];}
 if (isset($_GET["log_to_file"]))			{$log_to_file=$_GET["log_to_file"];}
 	elseif (isset($_POST["log_to_file"]))	{$log_to_file=$_POST["log_to_file"];}
 if (isset($_GET["called_count"]))				{$called_count=$_GET["called_count"];}
 	elseif (isset($_POST["called_count"]))		{$called_count=$_POST["called_count"];}
 if (isset($_GET["called_count_trigger"]))			{$called_count_trigger=$_GET["called_count_trigger"];}
 	elseif (isset($_POST["called_count_trigger"]))	{$called_count_trigger=$_POST["called_count_trigger"];}
+if (isset($_GET["email_to"]))				{$email_to=$_GET["email_to"];}
+	elseif (isset($_POST["email_to"]))		{$email_to=$_POST["email_to"];}
+if (isset($_GET["email_attachment_1"]))				{$email_attachment_1=$_GET["email_attachment_1"];}
+	elseif (isset($_POST["email_attachment_1"]))	{$email_attachment_1=$_POST["email_attachment_1"];}
+if (isset($_GET["email_attachment_2"]))				{$email_attachment_2=$_GET["email_attachment_2"];}
+	elseif (isset($_POST["email_attachment_2"]))	{$email_attachment_2=$_POST["email_attachment_2"];}
+if (isset($_GET["email_attachment_3"]))				{$email_attachment_3=$_GET["email_attachment_3"];}
+	elseif (isset($_POST["email_attachment_3"]))	{$email_attachment_3=$_POST["email_attachment_3"];}
+if (isset($_GET["email_attachment_4"]))				{$email_attachment_4=$_GET["email_attachment_4"];}
+	elseif (isset($_POST["email_attachment_4"]))	{$email_attachment_4=$_POST["email_attachment_4"];}
+if (isset($_GET["email_attachment_5"]))				{$email_attachment_5=$_GET["email_attachment_5"];}
+	elseif (isset($_POST["email_attachment_5"]))	{$email_attachment_5=$_POST["email_attachment_5"];}
 
 
 #$DB = '1';	# DEBUG override
@@ -88,6 +104,13 @@ $call_id = preg_replace('/[^-_0-9a-zA-Z]/', '', $call_id);
 $lead_id = preg_replace('/[^_0-9]/', '', $lead_id);
 $container_id = preg_replace('/[^-_0-9a-zA-Z]/', '', $container_id);
 $call_notes=preg_replace("/\\\\/","",$call_notes);
+$additional_notes=preg_replace("/\\\\/","",$additional_notes);
+$email_attachment_1=preg_replace("/\\\\/","",$email_attachment_1);
+$email_attachment_2=preg_replace("/\\\\/","",$email_attachment_2);
+$email_attachment_3=preg_replace("/\\\\/","",$email_attachment_3);
+$email_attachment_4=preg_replace("/\\\\/","",$email_attachment_4);
+$email_attachment_5=preg_replace("/\\\\/","",$email_attachment_5);
+$email_to=preg_replace("/\\\\/","",$email_to);
 
 #############################################
 ##### START SYSTEM_SETTINGS AND USER LANGUAGE LOOKUP #####
@@ -226,8 +249,11 @@ if ($match_found > 0)
 					if ($email_body_gather < 1)
 						{
 						$line = preg_replace("/>|\n|\r|\t|\#.*|;.*/",'',$line);
-						if (preg_match("/^email_to/",$line))
-							{$email_to = $line;   $email_to = trim(preg_replace("/.*=/",'',$email_to));}
+						if (strlen($email_to) < 6)
+							{
+							if (preg_match("/^email_to/",$line))
+								{$email_to = $line;   $email_to = trim(preg_replace("/.*=/",'',$email_to));}
+							}
 						if (preg_match("/^email_from/",$line))
 							{$email_from = $line;   $email_from = trim(preg_replace("/.*=/",'',$email_from));}
 						if (preg_match("/^email_subject/",$line))
@@ -586,6 +612,7 @@ if ($match_found > 0)
 						$email_body = preg_replace('/--A--did_custom_five--B--/i',"$DID_custom_five",$email_body);
 						$email_body = preg_replace('/--A--uniqueid--B--/i',"$uniqueid",$email_body);
 						$email_body = preg_replace('/--A--call_notes--B--/i',"$call_notes",$email_body);
+						$email_body = preg_replace('/--A--additional_notes--B--/i',"$additional_notes",$email_body);
 						$email_body = urldecode($email_body);
 						}
 
@@ -609,8 +636,187 @@ if ($match_found > 0)
 						$email_from = urldecode($email_from);
 						}
 
-					##### sending email through PHP #####
-					mail("$email_to","$email_subject","$email_body", "From: $email_from");
+					// Generate an email boundary
+					$boundary = md5(uniqid(time()));
+					$attachment_1='';
+					$attachment_2='';
+					$attachment_3='';
+					$attachment_4='';
+					$attachment_5='';
+
+					### check for valid attachments
+					$valid_attachments=0;
+					if ( (strlen($email_attachment_1) > 4) or (strlen($email_attachment_2) > 4) or (strlen($email_attachment_3) > 4) or (strlen($email_attachment_4) > 4) or (strlen($email_attachment_5) > 4) )
+						{
+						if ( (strlen($email_attachment_1) > 4) and (file_exists($email_attachment_1)) )
+							{
+							$filename_1 = basename($email_attachment_1);
+							// Read the file content
+							$file_size = filesize($email_attachment_1);
+							$handle = fopen($email_attachment_1, "r");
+							$content = fread($handle, $file_size);
+							fclose($handle);
+							$content = chunk_split(base64_encode($content));
+
+							// Edit content type for different file extensions
+							$attachment_1 .= "Content-Type: application/xml; name=\"".$filename_1."\"".PHP_EOL;
+							$attachment_1 .= "Content-Transfer-Encoding: base64".PHP_EOL;
+							$attachment_1 .= "Content-Disposition: attachment; filename=\"".$filename_1."\"".PHP_EOL.PHP_EOL;
+							$attachment_1 .= $content.PHP_EOL;
+							$attachment_1 .= "--".$boundary;
+
+							if ($DB > 1) {echo "valid attachment 1: $filename_1($email_attachment_1)file_size\n";}
+							$valid_attachments++;
+							}
+						else
+							{
+							if ($DB > 1) {echo "invalid attachment 1: |$email_attachment_1|\n";}
+							$email_attachment_1='';
+							}
+
+						if ( (strlen($email_attachment_2) > 4) and (file_exists($email_attachment_2)) )
+							{
+							$filename_2 = basename($email_attachment_2);
+							// Read the file content
+							$file_size = filesize($email_attachment_2);
+							$handle = fopen($email_attachment_2, "r");
+							$content = fread($handle, $file_size);
+							fclose($handle);
+							$content = chunk_split(base64_encode($content));
+
+							// Edit content type for different file extensions
+							$attachment_2 .= "Content-Type: application/xml; name=\"".$filename_2."\"".PHP_EOL;
+							$attachment_2 .= "Content-Transfer-Encoding: base64".PHP_EOL;
+							$attachment_2 .= "Content-Disposition: attachment; filename=\"".$filename_2."\"".PHP_EOL.PHP_EOL;
+							$attachment_2 .= $content.PHP_EOL;
+							$attachment_2 .= "--".$boundary;
+							if ($DB > 1) {echo "valid attachment 2: $filename_2($email_attachment_2)file_size\n";}
+							$valid_attachments++;
+							}
+						else
+							{
+							if ($DB > 1) {echo "invalid attachment 2: |$email_attachment_2|\n";}
+							$email_attachment_2='';
+							}
+
+						if ( (strlen($email_attachment_3) > 4) and (file_exists($email_attachment_3)) )
+							{
+							$filename_3 = basename($email_attachment_3);
+							// Read the file content
+							$file_size = filesize($email_attachment_3);
+							$handle = fopen($email_attachment_3, "r");
+							$content = fread($handle, $file_size);
+							fclose($handle);
+							$content = chunk_split(base64_encode($content));
+
+							// Edit content type for different file extensions
+							$attachment_3 .= "Content-Type: application/xml; name=\"".$filename_3."\"".PHP_EOL;
+							$attachment_3 .= "Content-Transfer-Encoding: base64".PHP_EOL;
+							$attachment_3 .= "Content-Disposition: attachment; filename=\"".$filename_3."\"".PHP_EOL.PHP_EOL;
+							$attachment_3 .= $content.PHP_EOL;
+							$attachment_3 .= "--".$boundary;
+							if ($DB > 1) {echo "valid attachment 3: $filename_3($email_attachment_3)file_size\n";}
+							$valid_attachments++;
+							}
+						else
+							{
+							if ($DB > 1) {echo "invalid attachment 3: |$email_attachment_3|\n";}
+							$email_attachment_3='';
+							}
+
+						if ( (strlen($email_attachment_4) > 4) and (file_exists($email_attachment_4)) )
+							{
+							$filename_4 = basename($email_attachment_4);
+							// Read the file content
+							$file_size = filesize($email_attachment_4);
+							$handle = fopen($email_attachment_4, "r");
+							$content = fread($handle, $file_size);
+							fclose($handle);
+							$content = chunk_split(base64_encode($content));
+
+							// Edit content type for different file extensions
+							$attachment_4 .= "Content-Type: application/xml; name=\"".$filename_4."\"".PHP_EOL;
+							$attachment_4 .= "Content-Transfer-Encoding: base64".PHP_EOL;
+							$attachment_4 .= "Content-Disposition: attachment; filename=\"".$filename_4."\"".PHP_EOL.PHP_EOL;
+							$attachment_4 .= $content.PHP_EOL;
+							$attachment_4 .= "--".$boundary;
+							if ($DB > 1) {echo "valid attachment 4: $filename_4($email_attachment_4)file_size\n";}
+							$valid_attachments++;
+							}
+						else
+							{
+							if ($DB > 1) {echo "invalid attachment 4: |$email_attachment_4|\n";}
+							$email_attachment_4='';
+							}
+
+						if ( (strlen($email_attachment_5) > 4) and (file_exists($email_attachment_5)) )
+							{
+							$filename_5 = basename($email_attachment_5);
+							// Read the file content
+							$file_size = filesize($email_attachment_5);
+							$handle = fopen($email_attachment_5, "r");
+							$content = fread($handle, $file_size);
+							fclose($handle);
+							$content = chunk_split(base64_encode($content));
+
+							// Edit content type for different file extensions
+							$attachment_5 .= "Content-Type: application/xml; name=\"".$filename_5."\"".PHP_EOL;
+							$attachment_5 .= "Content-Transfer-Encoding: base64".PHP_EOL;
+							$attachment_5 .= "Content-Disposition: attachment; filename=\"".$filename_5."\"".PHP_EOL.PHP_EOL;
+							$attachment_5 .= $content.PHP_EOL;
+							$attachment_5 .= "--".$boundary;
+							if ($DB > 1) {echo "valid attachment 5: $filename_5($email_attachment_5)file_size\n";}
+							$valid_attachments++;
+							}
+						else
+							{
+							if ($DB > 1) {echo "invalid attachment 5: |$email_attachment_5|\n";}
+							$email_attachment_5='';
+							}
+
+						}
+					if ($valid_attachments > 0)
+						{
+						// Email header
+						$header = "From: ".$email_from.PHP_EOL;
+						$header .= "Reply-To: ".$email_from.PHP_EOL;
+						$header .= "MIME-Version: 1.0".PHP_EOL;
+
+						// Multipart wraps the Email Content and Attachment
+						$header .= "Content-Type: multipart/mixed; boundary=\"".$boundary."\"".PHP_EOL;
+						$header .= "This is a multi-part message in MIME format.".PHP_EOL;
+						$header .= "--".$boundary.PHP_EOL;
+
+						// Email content
+						// Content-type can be text/plain or text/html
+						$header .= "Content-type:text/plain; charset=iso-8859-1".PHP_EOL;
+						$header .= "Content-Transfer-Encoding: 7bit".PHP_EOL.PHP_EOL;
+						$header .= "$email_body".PHP_EOL;
+						$header .= "--".$boundary.PHP_EOL;
+
+						// Attachment
+						if (strlen($attachment_1) > 10)
+							{$header .= $attachment_1.PHP_EOL;}
+						if (strlen($attachment_2) > 10)
+							{$header .= $attachment_2.PHP_EOL;}
+						if (strlen($attachment_3) > 10)
+							{$header .= $attachment_3.PHP_EOL;}
+						if (strlen($attachment_4) > 10)
+							{$header .= $attachment_4.PHP_EOL;}
+						if (strlen($attachment_5) > 10)
+							{$header .= $attachment_5.PHP_EOL;}
+
+						// Send email
+						if (mail($email_to, $email_subject, "", $header)) 
+							{echo "Sent";} 
+						else 
+							{echo "Error";}
+						}
+					else
+						{
+						##### sending standard email with no attachments through PHP #####
+						mail("$email_to","$email_subject","$email_body", "From: $email_from");
+						}
 
 					$SQL_log = "$stmt|$stmtB|$CBaffected_rows|$email_from|$email_to|$email_subject|";
 					$SQL_log = preg_replace('/;/','',$SQL_log);
