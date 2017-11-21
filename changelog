@@ -3,16 +3,18 @@
   * help.php: add missing '<'.
   * New DB-Schema 1527: (2017-054)
     - vicidial_list: Increase the size of the field alt_phone to 18.
-    - dispo_send_email.php: Added ALL-STATUSES option and called_count_trigger option.
+    - WallBoardStat: add maxwaittime and Tmaxwaittime.
   * Add upstream Rev. 2856:
-    - dispo_send_email.php: Added ALL-STATUSES option and called_count_trigger option.
+    - dispo_send_email.php: Added ALL-STATUSES option and called_count_trigger
+      option.
   * Add upstream Rev. 2857:
-    - dispo_send_email.php: Added additional_notes option and email attachments options(1-5).
+    - dispo_send_email.php: Added additional_notes option and email attachments
+      options(1-5).
 
 2.25.19
 
   [Jörg Frings-Fürst]
-  * AST_CRON_WaalBoard3_gen.php:
+  * AST_CRON_WallBoard3_gen.php:
     - Typo InGroup Search.
     - Add function GetServicelevel.
     - Replace mysqli_fetch_row with mysqli_fetch_array.
@@ -24,7 +26,7 @@
   * help.php:
     - Add help for servicelevel.
     - Add missing help for dectect 3way calls.
-  * Add upstream Rev. 2854:
+  * Add upstream Rev. 2855:
     - functions.php,
       vdc_db_query.php,
       vdc_form_display.php,

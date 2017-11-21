@@ -3876,7 +3876,9 @@ CREATE TABLE IF NOT EXISTS `WallBoardStat` (
   `TSL1` bigint(20) NOT NULL DEFAULT '0',
   `TSL2` bigint(20) NOT NULL DEFAULT '0',
   `Twaittime` double NOT NULL DEFAULT '0',
-  `TUnbekannt` bigint(20) NOT NULL DEFAULT '0'
+  `TUnbekannt` bigint(20) NOT NULL DEFAULT '0',
+  `maxwaittime` bigint(20) NOT NULL DEFAULT '0',
+  `Tmaxwaittime` bigint(20) NOT NULL DEFAULT '0'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 ALTER TABLE `WallBoardStat`
