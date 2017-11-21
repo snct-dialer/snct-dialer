@@ -3,6 +3,8 @@
   * help.php: add missing '<'.
   * New DB-Schema 1527: (2017-054)
     - vicidial_list: Increase the size of the field alt_phone to 18.
+  * Add upstream Rev. 2855:
+    - dispo_send_email.php: Added ALL-STATUSES option and called_count_trigger option.
 
 2.25.19
 
@@ -19,7 +21,7 @@
   * help.php:
     - Add help for servicelevel.
     - Add missing help for dectect 3way calls.
-  * Add upstream Rev. 2854: 
+  * Add upstream Rev. 2854:
     - functions.php,
       vdc_db_query.php,
       vdc_form_display.php,

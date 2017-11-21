@@ -10,19 +10,22 @@
 # This script is part of the API group and any modifications of data are
 # logged to the vicidial_api_log table.
 #
-# Example of what to put in the Dispo URL field:
+# Examples of what to put in the Dispo URL field:
 # VARhttp://192.168.1.1/agc/dispo_send_email.php?container_id=TEST_CONTAINER&lead_id=--A--lead_id--B--&call_id=--A--call_id--B--&dispo=--A--dispo--B--&user=--A--user--B--&pass=--A--pass--B--&sale_status=SALE---SSALE---XSALE&log_to_file=1
+# VARhttp://192.168.1.1/agc/dispo_send_email.php?container_id=TEST_CONTAINER&lead_id=--A--lead_id--B--&call_id=--A--call_id--B--&dispo=--A--dispo--B--&user=--A--user--B--&pass=--A--pass--B--&sale_status=ALL-STATUSES&called_count=--A--called_count--B--&called_count_trigger=40&log_to_file=1
 # 
 # Definable Fields: (other fields should be left as they are)
 # - log_to_file -	(0,1) if set to 1, will create a log file in the agc directory
-# - sale_status -	(SALE---XSALE) a triple-dash "---" delimited list of the statuses that are to be moved
+# - sale_status -	(SALE---XSALE) a triple-dash "---" delimited list of the statuses that are to be moved, use ALL-STATUSES to trigger on all calls
 # - container_id -	(999,etc...) the Settings Container ID that you want the phone number to be inserted into
+# - called_count_trigger -	(1,2,3,...) if set to number greater than 0, will only trigger for called_count at or above set number, default is DISABLED
 #
 # CHANGES
 # 150806-1424 - First Build
 # 170329-2145 - Added DID variables and custom fields values
 # 170526-2315 - Added additional variable filtering
 # 171018-2310 - Added call_notes option
+# 171120-0910 - Added ALL-STATUSES option and called_count_trigger option
 #
 
 $api_script = 'send_email';
@@ -60,6 +63,10 @@ if (isset($_GET["call_notes"]))				{$call_notes=$_GET["call_notes"];}
 	elseif (isset($_POST["call_notes"]))	{$call_notes=$_POST["call_notes"];}
 if (isset($_GET["log_to_file"]))			{$log_to_file=$_GET["log_to_file"];}
 	elseif (isset($_POST["log_to_file"]))	{$log_to_file=$_POST["log_to_file"];}
+if (isset($_GET["called_count"]))				{$called_count=$_GET["called_count"];}
+	elseif (isset($_POST["called_count"]))		{$called_count=$_POST["called_count"];}
+if (isset($_GET["called_count_trigger"]))			{$called_count_trigger=$_GET["called_count_trigger"];}
+	elseif (isset($_POST["called_count_trigger"]))	{$called_count_trigger=$_POST["called_count_trigger"];}
 
 
 #$DB = '1';	# DEBUG override
@@ -116,10 +123,15 @@ if ($non_latin < 1)
 	$user=preg_replace("/[^-_0-9a-zA-Z]/","",$user);
 	}
 
-if ($DB>0) {echo "$lead_id|$container_id|$call_id|$sale_status|$dispo|$new_status|$user|$pass|$DB|$log_to_file|\n";}
+if ($DB>0) {echo "$lead_id|$container_id|$call_id|$sale_status|$dispo|$new_status|$called_count|$called_count_trigger|$user|$pass|$DB|$log_to_file|\n";}
 
-if (preg_match("/$TD$dispo$TD/",$sale_status))
-	{$match_found=1;}
+if ( (preg_match("/$TD$dispo$TD/",$sale_status)) or (preg_match("/ALL-STATUSES/",$sale_status)) )
+	{
+	if ( ( (strlen($called_count_trigger)>0) and ($called_count >= $called_count_trigger) ) or (strlen($called_count_trigger)<1) or ($called_count_trigger < 1) )
+		{
+		$match_found=1;
+		}
+	}
 
 if ($match_found > 0)
 	{
@@ -635,7 +647,7 @@ if ($match_found > 0)
 	}
 else
 	{
-	$MESSAGE = _QXZ("DONE: dispo is not a sale status: %1s",0,'',$dispo);
+	$MESSAGE = _QXZ("DONE: dispo is not a sale status: %1s  Count: ",0,'',$dispo) . $called_count|$called_count_trigger;
 	echo "$MESSAGE\n";
 	}
 
