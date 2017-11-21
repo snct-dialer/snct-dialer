@@ -10,6 +10,7 @@
   * Add upstream Rev. 2857:
     - dispo_send_email.php: Added additional_notes option and email attachments
       options(1-5).
+  * AST_CRON_WallBoard3_gen.php: Add maxwaittime.
 
 2.25.19
 
