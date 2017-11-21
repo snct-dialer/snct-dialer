@@ -11,9 +11,10 @@
 #               Correct typo Custom_one
 # 20171118-0851 Typo InGroup Search
 # 20171118-1232 Add function GetServicelevel
+# 20171121-1624 Add maxwaittime and Tmaxwaittime.
 
-$version="1.0.3";
-$build = "20171118-1232";
+$version="1.0.4";
+$build = "20171121-1624";
 
 
 ####  collect wallboard data should only be active on a single server
@@ -815,7 +816,13 @@ function GenWBStatsTime($IBG, $TimeAnf, $TimeEnd) {
 		$row14 = mysqli_fetch_row($result14);
 		$RRuf = $row14[0];
 		$AB = $AB + $RRuf;
-
+		
+		$statement15 = "SELECT MAX(`Dauer`) FROM `$TableName` WHERE `did_route` != 'PHONE' AND `DateTBegin` >= '$DateAnf' AND `DateTBegin` <= '$DateEnd';";
+		if ($DB)
+			print "$statement15\n";
+		$result15=mysql_to_mysqli($statement15, $link);
+		$row15 = mysqli_fetch_row($result15);
+		$MaxWT = $row15[0];
 
 		$ebk = 0.0;
 		if ($Gesamt != 0) {
@@ -834,7 +841,7 @@ function GenWBStatsTime($IBG, $TimeAnf, $TimeEnd) {
 		$row9=mysqli_fetch_row($result9);
 		if($row9[0] > 0) {
 			$DateT=date("Y-m-d H:i:s");
-	 		$statementX="UPDATE `$TableNameStat` SET `TUnbekannt` = '$Unb', `TAB` = '$AB', `TWL` = '$Weiter',  `StandVom`='$DateT', `TPhones`= '$Phones', `TKunden`='$Kunden', `TCalls`='$Gesamt', `Tebk`='$ebk', `Tkebk`='$kebk', `TDrops` = '$Drops', `TAgent`= '$Agents', `TSL0`= '$SL0', `TSL1` = '$SL1', `TSL2`='$SL2', `Twaittime`= '$Warte' WHERE Datum='$Date' AND Gruppe='Gesamt';";
+	 		$statementX="UPDATE `$TableNameStat` SET `TUnbekannt` = '$Unb', `TAB` = '$AB', `TWL` = '$Weiter',  `StandVom`='$DateT', `TPhones`= '$Phones', `TKunden`='$Kunden', `TCalls`='$Gesamt', `Tebk`='$ebk', `Tkebk`='$kebk', `TDrops` = '$Drops', `TAgent`= '$Agents', `TSL0`= '$SL0', `TSL1` = '$SL1', `TSL2`='$SL2', `Twaittime`= '$Warte', 'Tmaxwaittime`='$MaxWT' WHERE Datum='$Date' AND Gruppe='Gesamt';";
 			if ($DB)
 				print "$statementX\n";
 			if(!mysqli_query($link, $statementX)) {
@@ -842,7 +849,7 @@ function GenWBStatsTime($IBG, $TimeAnf, $TimeEnd) {
 			}
 		}
 		else {
-			$statementX1="INSERT INTO `$TableNameStat` SET `TUnbekannt` = '$Unb', `TAB` = '$AB', `TWL` = '$Weiter', `TPhones`= '$Phones', `TDatum` = '$Date', `TGruppe`='Gesamt', `TKunden`='$Kunden', `TCalls`='$Gesamt', `Tebk`='$ebk', `Tkebk`='$kebk', `TDrops` = '$Drops', `TAgent`= '$Agents', `TSL0`= '$SL0', `TSL1` = '$SL1', `TSL2`='$SL2', `Twaittime`= '$Warte';";
+			$statementX1="INSERT INTO `$TableNameStat` SET `TUnbekannt` = '$Unb', `TAB` = '$AB', `TWL` = '$Weiter', `TPhones`= '$Phones', `TDatum` = '$Date', `TGruppe`='Gesamt', `TKunden`='$Kunden', `TCalls`='$Gesamt', `Tebk`='$ebk', `Tkebk`='$kebk', `TDrops` = '$Drops', `TAgent`= '$Agents', `TSL0`= '$SL0', `TSL1` = '$SL1', `TSL2`='$SL2', `Twaittime`= '$Warte', `Tmaxwaittime` = '$MaxWT';";
 			if ($DB)
 				print "$statement\n";
 			if(!mysqli_query($link, $statementX1)) {
@@ -941,7 +948,14 @@ function GenWBStatsTime($IBG, $TimeAnf, $TimeEnd) {
 		$row14 = mysqli_fetch_row($result14);
 		$RRuf = $row14[0];
 		$AB = $AB + $RRuf;
-
+		
+		$statement15 = "SELECT MAX(`Dauer`) FROM `$TableName` WHERE `IBGruppe` = '$IBG' AND did_route` != 'PHONE' AND `DateTBegin` >= '$DateAnf' AND `DateTBegin` <= '$DateEnd';";
+		if ($DB)
+			print "$statement15\n";
+			$result15=mysql_to_mysqli($statement15, $link);
+			$row15 = mysqli_fetch_row($result15);
+			$MaxWT = $row15[0];
+			
 		$ebk = 0.0;
 		if ($Gesamt != 0) {
 			$ebk = $Agents * 100 / $Gesamt;
@@ -965,7 +979,7 @@ function GenWBStatsTime($IBG, $TimeAnf, $TimeEnd) {
 
 		if($row9[0] > 0) {
 			$DateT=date("Y-m-d H:i:s");
-			$statementX="UPDATE `$TableNameStat` SET `TUnbekannt` = '$Unb', `StandVom`='$DateT',  `TAB` = '$AB', `TKunden`='$Kunden', `TCalls`='$Gesamt', `TDrops` = '$Drops', `Tebk`='$ebk', `Tkebk`='$kebk', `TAgent`= '$Agents', `TSL0`= '$SL0', `TSL1` = '$SL1', `TSL2`='$SL2', `Twaittime`= '$Warte' WHERE Datum='$Date' AND Gruppe='$IBG';";
+			$statementX="UPDATE `$TableNameStat` SET `TUnbekannt` = '$Unb', `StandVom`='$DateT',  `TAB` = '$AB', `TKunden`='$Kunden', `TCalls`='$Gesamt', `TDrops` = '$Drops', `Tebk`='$ebk', `Tkebk`='$kebk', `TAgent`= '$Agents', `TSL0`= '$SL0', `TSL1` = '$SL1', `TSL2`='$SL2', `Twaittime`= '$Warte', `Tmaxwaittime` = '$MaxWT'  WHERE Datum='$Date' AND Gruppe='$IBG';";
 			if ($DB)
 				print "$statementX\n";
 			if(!mysqli_query($link, $statementX)) {
@@ -973,7 +987,7 @@ function GenWBStatsTime($IBG, $TimeAnf, $TimeEnd) {
 			}
 		}
 		else {
-			$statementX1="INSERT INTO `$TableNameStat` SET `TUnbekannt` = '$Unb', `Datum` = '$Date', `TAB` = '$RRUF', `TGruppe`='$IBG', `TKunden`='$Kunden', `TCalls`='$Gesamt', `Tebk`='$ebk', `Tkebk`='$kebk', `TDrops` = '$Drops', `TAgent`= '$Agents', `TSL0`= '$SL0', `TSL1` = '$SL1', `TSL2`='$SL2', `Twaittime`= '$Warte';";
+			$statementX1="INSERT INTO `$TableNameStat` SET `TUnbekannt` = '$Unb', `Datum` = '$Date', `TAB` = '$RRUF', `TGruppe`='$IBG', `TKunden`='$Kunden', `TCalls`='$Gesamt', `Tebk`='$ebk', `Tkebk`='$kebk', `TDrops` = '$Drops', `TAgent`= '$Agents', `TSL0`= '$SL0', `TSL1` = '$SL1', `TSL2`='$SL2', `Twaittime`= '$Warte', `Tmaxwaittime` = '$MaxWT'  ;";
 			if ($DB)
 				print "$statement\n";
 			if(!mysqli_query($link, $statementX1)) {
@@ -1111,8 +1125,14 @@ function GenWBStats($IBG) {
 		$row14 = mysqli_fetch_row($result14);
 		$RRuf = $row14[0];
 		$AB = $AB + $RRuf;
-		
-		
+
+		$statement15 = "SELECT MAX(`Dauer`) FROM `$TableName` WHERE `did_route` != 'PHONE';";
+		if ($DB)
+			print "$statement15\n";
+		$result15=mysql_to_mysqli($statement15, $link);
+		$row15 = mysqli_fetch_row($result15);
+		$MaxWT = $row15[0];
+			
 		$ebk = 0.0;
 		if ($Gesamt != 0) {
 			$ebk = $Agents * 100 / $Gesamt;
@@ -1130,7 +1150,7 @@ function GenWBStats($IBG) {
 		$row9=mysqli_fetch_row($result9);
 		if($row9[0] > 0) {
 			$DateT=date("Y-m-d H:i:s");
-			$statementX="UPDATE `$TableNameStat` SET `Unbekannt` = '$Unb', `AB` = '$AB', `WL` = '$Weiter',  `StandVom`='$DateT', `Phones`= '$Phones', `Kunden`='$Kunden', `Calls`='$Gesamt', `ebk`='$ebk', `kebk`='$kebk', `Drops` = '$Drops', `Agent`= '$Agents', `SL0`= '$SL0', `SL1` = '$SL1', `SL2`='$SL2', `waittime`= '$Warte' WHERE Datum='$Date' AND Gruppe='Gesamt';";
+			$statementX="UPDATE `$TableNameStat` SET `Unbekannt` = '$Unb', `AB` = '$AB', `WL` = '$Weiter',  `StandVom`='$DateT', `Phones`= '$Phones', `Kunden`='$Kunden', `Calls`='$Gesamt', `ebk`='$ebk', `kebk`='$kebk', `Drops` = '$Drops', `Agent`= '$Agents', `SL0`= '$SL0', `SL1` = '$SL1', `SL2`='$SL2', `waittime`= '$Warte', `maxwaittime` = '$MaxWT' WHERE Datum='$Date' AND Gruppe='Gesamt';";
 			if ($DB)
 				print "$statementX\n";
 				if(!mysqli_query($link, $statementX)) {
@@ -1138,7 +1158,7 @@ function GenWBStats($IBG) {
 				}
 		}
 		else {
-			$statementX1="INSERT INTO `$TableNameStat` SET `Unbekannt` = '$Unb', `AB` = '$AB', `WL` = '$Weiter', `Phones`= '$Phones', `Datum` = '$Date', `Gruppe`='Gesamt', `Kunden`='$Kunden', `Calls`='$Gesamt', `ebk`='$ebk', `kebk`='$kebk', `Drops` = '$Drops', `Agent`= '$Agents', `SL0`= '$SL0', `SL1` = '$SL1', `SL2`='$SL2', `waittime`= '$Warte';";
+			$statementX1="INSERT INTO `$TableNameStat` SET `Unbekannt` = '$Unb', `AB` = '$AB', `WL` = '$Weiter', `Phones`= '$Phones', `Datum` = '$Date', `Gruppe`='Gesamt', `Kunden`='$Kunden', `Calls`='$Gesamt', `ebk`='$ebk', `kebk`='$kebk', `Drops` = '$Drops', `Agent`= '$Agents', `SL0`= '$SL0', `SL1` = '$SL1', `SL2`='$SL2', `waittime`= '$Warte', `maxwaittime` = '$MaxWT';";
 			if ($DB)
 				print "$statement\n";
 			if(!mysqli_query($link, $statementX1)) {
@@ -1238,7 +1258,14 @@ function GenWBStats($IBG) {
 		$row14 = mysqli_fetch_row($result14);
 		$RRuf = $row14[0];
 		$AB = $AB + $RRuf;
-		
+
+		$statement15 = "SELECT MAX(`Dauer`) FROM `$TableName` WHERE `IBGruppe`= '$IBG' AND did_route` != 'PHONE';";
+		if ($DB)
+			print "$statement15\n";
+		$result15=mysql_to_mysqli($statement15, $link);
+		$row15 = mysqli_fetch_row($result15);
+		$MaxWT = $row15[0];
+
 		$ebk = 0.0;
 		if ($Gesamt != 0) {
 			$ebk = $Agents * 100 / $Gesamt;
@@ -1262,7 +1289,7 @@ function GenWBStats($IBG) {
 		
 		if($row9[0] > 0) {
 			$DateT=date("Y-m-d H:i:s");
-			$statementX="UPDATE `$TableNameStat` SET `Unbekannt` = '$Unb', `StandVom`='$DateT',  `AB` = '$AB', `Kunden`='$Kunden', `Calls`='$Gesamt', `Drops` = '$Drops', `ebk`='$ebk', `kebk`='$kebk', `Agent`= '$Agents', `SL0`= '$SL0', `SL1` = '$SL1', `SL2`='$SL2', `waittime`= '$Warte' WHERE Datum='$Date' AND Gruppe='$IBG';";
+			$statementX="UPDATE `$TableNameStat` SET `Unbekannt` = '$Unb', `StandVom`='$DateT',  `AB` = '$AB', `Kunden`='$Kunden', `Calls`='$Gesamt', `Drops` = '$Drops', `ebk`='$ebk', `kebk`='$kebk', `Agent`= '$Agents', `SL0`= '$SL0', `SL1` = '$SL1', `SL2`='$SL2', `waittime`= '$Warte', `maxwaittime` = '$MaxWT' WHERE Datum='$Date' AND Gruppe='$IBG';";
 			if ($DB)
 				print "$statementX\n";
 			if(!mysqli_query($link, $statementX)) {
@@ -1270,7 +1297,7 @@ function GenWBStats($IBG) {
 			}
 		}
 		else {
-			$statementX1="INSERT INTO `$TableNameStat` SET `Unbekannt` = '$Unb', `Datum` = '$Date', `AB` = '$RRUF', `Gruppe`='$IBG', `Kunden`='$Kunden', `Calls`='$Gesamt', `ebk`='$ebk', `kebk`='$kebk', `Drops` = '$Drops', `Agent`= '$Agents', `SL0`= '$SL0', `SL1` = '$SL1', `SL2`='$SL2', `waittime`= '$Warte';";
+			$statementX1="INSERT INTO `$TableNameStat` SET `Unbekannt` = '$Unb', `Datum` = '$Date', `AB` = '$RRUF', `Gruppe`='$IBG', `Kunden`='$Kunden', `Calls`='$Gesamt', `ebk`='$ebk', `kebk`='$kebk', `Drops` = '$Drops', `Agent`= '$Agents', `SL0`= '$SL0', `SL1` = '$SL1', `SL2`='$SL2', `waittime`= '$Warte', `maxwaittime` = '$MaxWT';";
 			if ($DB)
 				print "$statement\n";
 			if(!mysqli_query($link, $statementX1)) {

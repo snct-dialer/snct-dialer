@@ -13,10 +13,11 @@
 # CHANGELOG:
 # 171012-1930 first release
 # 171030-1355 Set default for AnzeigeAll to "Y"
-#
+# 171121-1633 Add maxwaittime 
+# 171121-1647 Add AnzeigeNull default "N" 
 
-$version = '1.0.2';
-$build = '171030-1355';
+$version = '1.0.4';
+$build = '171121-1647';
 
 $release = '$version . " / " . $build';
 
@@ -101,6 +102,8 @@ if (isset($_GET["droppedOFtotal"]))				{$droppedOFtotal=$_GET["droppedOFtotal"];
 	elseif (isset($_POST["droppedOFtotal"]))	{$droppedOFtotal=$_POST["droppedOFtotal"];}
 if (isset($_GET["AnzeigeAll"]))					{$AnzeigeAll=$_GET["AnzeigeAll"];}
 	elseif (isset($_POST["AnzeigeAll"]))		{$AnzeigeAll=$_POST["AnzeigeAll"];}
+if (isset($_GET["AnzeigeNull"]))					{$AnzeigeNull=$_GET["AnzeigeNull"];}
+	elseif (isset($_POST["AnzeigeNull"]))		{$AnzeigeNull=$_POST["AnzeigeNull"];}
 	
 
 $report_name = 'Wallboard 3.0';
@@ -3129,7 +3132,7 @@ if ($p<1)
 			$row = mysqli_fetch_array($rsltGrp, MYSQLI_BOTH);
 						
 			
-			if($row[$LeadingName . "Calls"] != 0.0) {
+			if(($row[$LeadingName . "Calls"] != 0.0) && ($AnzeigeNull = 'N')) {
 				$SL0 = $row[$LeadingName . "SL0"] * 100.0 / $row[$LeadingName . "Calls"];
 				$SL1 = $row[$LeadingName . "SL1"] * 100.0 / $row[$LeadingName . "Calls"];
 				$SL2 = $row[$LeadingName . "SL2"] * 100.0 / $row[$LeadingName . "Calls"];
@@ -3231,6 +3234,9 @@ if ($p<1)
 				$sec = $row[$LeadingName . "waittime"] % 60;
 				$min = (($row[$LeadingName . "waittime"] - $sec) / 60) % 60;
 				$wait= sprintf("%02d:%02d", $min, $sec);
+				$sec = $row[$LeadingName . "maxwaittime"] % 60;
+				$min = (($row[$LeadingName . "maxwaittime"] - $sec) / 60) % 60;
+				$maxwait= sprintf("%02d:%02d", $min, $sec);
 				$Erbk= sprintf("%.1f%%", $row[$LeadingName . "ebk"]);
 				$KdErbk= sprintf("%.1f%%", $row[$LeadingName . "kebk"]);
 				$StrSL0 = sprintf("%.1f%%", $SL0);
@@ -3261,7 +3267,7 @@ if ($p<1)
 				$D3echo .= "  <TD align='center' $SL0BK <B> $StrSL0</B></TD>\n";
 				$D3echo .= "  <TD align='center' $SL1BK <B> $StrSL1</B></TD>\n";
 				$D3echo .= "  <TD align='center' $SL2BK <B> $StrSL2</B></TD>\n";
-				$D3echo .= "  <TD align='center'> $wait</TD>\n";
+				$D3echo .= "  <TD align='center'> $wait / $maxwait</TD>\n";
 				$D3echo .= " </TR>\n";
 			}
 			$ii++;

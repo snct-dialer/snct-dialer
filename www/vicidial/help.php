@@ -5819,7 +5819,7 @@ FR_SPAC 00 00 00 00 00 - <?php echo _QXZ("France space separated phone number");
 <BR>
 <B><?php echo _QXZ("Ticket Mail Address"); ?> -</B><?php echo _QXZ("Set the Mailaddress to send Mails into a Ticketsystem."); ?>
 
-BR>
+<BR>
 <A NAME="servicelevel">
 <BR>
 <B><?php echo _QXZ("Service Level"); ?> -</B><?php echo _QXZ("Set the time in seconds for the Servicelevel Direct|One|Two only for the Wallboard."); ?>

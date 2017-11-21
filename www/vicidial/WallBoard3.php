@@ -10,12 +10,13 @@
 # 170105-1200 - First Build
 # 171020-1930 - first release
 # 171030-1355 - Set default for AnzeigeAll to "Y"
+# 171121-1645 - Add AnzeigeNull default "N"
 #
 
 $startMS = microtime();
 
-$version = '1.0.2';
-$build = '171030-1359';
+$version = '1.0.3';
+$build = '171121-1645';
 
 header ("Content-type: text/html; charset=utf-8");
 
@@ -92,7 +93,9 @@ if (isset($_GET["droppedOFtotal"]))				{$droppedOFtotal=$_GET["droppedOFtotal"];
 	elseif (isset($_POST["droppedOFtotal"]))	{$droppedOFtotal=$_POST["droppedOFtotal"];}
 if (isset($_GET["AnzeigeAll"]))					{$AnzeigeAll=$_GET["AnzeigeAll"];}
 	elseif (isset($_POST["AnzeigeAll"]))		{$AnzeigeAll=$_POST["AnzeigeAll"];}
-
+if (isset($_GET["AnzeigeNull"]))				{$AnzeigeNull=$_GET["AnzeigeNull"];}
+	elseif (isset($_POST["AnzeigeNull"]))		{$AnzeigeNull=$_POST["AnzeigeNull"];}
+	
 $report_name = 'Wallboard 3.0';
 $db_source = 'M';
 
@@ -222,6 +225,7 @@ if (!isset($droppedOFtotal))
 	}
 
 if (!isset($AnzeigeAll))		{$AnzeigeAll='Y';}
+if (!isset($AnzeigeNull))		{$AnzeigeNull='N';}
 	
 $ingroup_detail='';
 
