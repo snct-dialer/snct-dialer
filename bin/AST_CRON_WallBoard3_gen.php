@@ -5,16 +5,18 @@
 #
 # Generation of Wallbaoard 3.0 Statistics
 #
-# 20170329-0000 first release
-# 20171020-1900 stable release
-# 20171030-1410 Set correct $PATHweb and PATHlogs
-#               Correct typo Custom_one
-# 20171118-0851 Typo InGroup Search
-# 20171118-1232 Add function GetServicelevel
-# 20171121-1624 Add maxwaittime and Tmaxwaittime.
+# 20170329-0000 - first release
+# 20171020-1900 - stable release
+# 20171030-1410 - Set correct $PATHweb and PATHlogs
+#               - Correct typo Custom_one
+# 20171118-0851 - Typo InGroup Search
+# 20171118-1232 - Add function GetServicelevel
+# 20171121-1624 - Add maxwaittime and Tmaxwaittime.
+# 20171122-0930 - Typo in statement15
+#
 
-$version="1.0.4";
-$build = "20171121-1624";
+$version="1.0.5";
+$build = "20171122-0930";
 
 
 ####  collect wallboard data should only be active on a single server
@@ -1259,7 +1261,7 @@ function GenWBStats($IBG) {
 		$RRuf = $row14[0];
 		$AB = $AB + $RRuf;
 
-		$statement15 = "SELECT MAX(`Dauer`) FROM `$TableName` WHERE `IBGruppe`= '$IBG' AND did_route` != 'PHONE';";
+		$statement15 = "SELECT MAX(`Dauer`) FROM `$TableName` WHERE `IBGruppe`= '$IBG' AND `did_route` != 'PHONE';";
 		if ($DB)
 			print "$statement15\n";
 		$result15=mysql_to_mysqli($statement15, $link);

@@ -11,13 +11,15 @@
 #
 #
 # CHANGELOG:
-# 171012-1930 first release
-# 171030-1355 Set default for AnzeigeAll to "Y"
-# 171121-1633 Add maxwaittime 
-# 171121-1647 Add AnzeigeNull default "N" 
+# 20171012-1930 - first release
+# 20171030-1355 - Set default for AnzeigeAll to "Y"
+# 20171121-1633 - Add maxwaittime 
+# 20171121-1647 - Add AnzeigeNull default "N" 
+# 20171122-0929 - Add maxwaittime to Gesamt
+#
 
-$version = '1.0.4';
-$build = '171121-1647';
+$version = '1.0.5';
+$build = '20171122-0929';
 
 $release = '$version . " / " . $build';
 
@@ -3060,6 +3062,9 @@ if ($p<1)
 			$sec = $row[$LeadingName . "waittime"] % 60;
 			$min = (($row[$LeadingName . "waittime"] - $sec) / 60) % 60;
 			$wait= sprintf("%02d:%02d", $min, $sec);
+			$sec = $row[$LeadingName . "maxwaittime"] % 60;
+			$min = (($row[$LeadingName . "maxwaittime"] - $sec) / 60) % 60;
+			$maxwait= sprintf("%02d:%02d", $min, $sec);
 			$Erbk= sprintf("%.1f%%", $row[$LeadingName . "ebk"]);
 			$KdErbk= sprintf("%.1f%%", $row[$LeadingName . "kebk"]);
 			$StrSL0 = sprintf("%.1f%%", $SL0);
@@ -3118,7 +3123,7 @@ if ($p<1)
 			$D3echo .= "  <TD align='center' $SL0BK <B> $StrSL0</B></TD>\n";
 			$D3echo .= "  <TD align='center' $SL1BK <B> $StrSL1</B></TD>\n";
 			$D3echo .= "  <TD align='center' $SL2BK <B> $StrSL2</B></TD>\n";
-			$D3echo .= "  <TD align='center'> $wait</TD>\n";
+			$D3echo .= "  <TD align='center'> $wait / $maxwait </TD>\n";
 			$D3echo .= " </TR>\n";
 		}
 		else {

@@ -1,3 +1,8 @@
+2.25.21
+  [Jörg Frings-Fürst]
+  * Wall_js.php: Add MaxWaittime to 'Gesamt'.
+  * AST_CRON_WallBoard3_gen.php: Typo in statement15.
+
 2.25.20
   [Jörg Frings-Fürst]
   * help.php: add missing '<'.
