@@ -2,6 +2,7 @@
   [Jörg Frings-Fürst]
   * Wall_js.php: Add MaxWaittime to 'Gesamt'.
   * AST_CRON_WallBoard3_gen.php: Typo in statement15.
+  * New ODS_Export.php (2017-055).
 
 2.25.20
   [Jörg Frings-Fürst]
