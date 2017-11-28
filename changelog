@@ -4,7 +4,9 @@
   * AST_CRON_WallBoard3_gen.php: Typo in statement15.
   * New ODS_Export.php (2017-055).
   * Add upstream Rev. 2858:
-    - DISPO_SEND_EMAIL.txt: Update te tlast changes.
+    - DISPO_SEND_EMAIL.txt: Update the last changes.
+  * Wall_js.php:  Add missing argument 5 for user_authorization().
+  * New tools directory.
 
 2.25.20
   [Jörg Frings-Fürst]

@@ -1,0 +1,10 @@
+<?php
+require_once('odsPhpGen/odsDraw.php');
+require_once('odsPhpGen/odsFontFace.php');
+require_once('odsPhpGen/ods.php');
+require_once('odsPhpGen/odsStyle.php');
+require_once('odsPhpGen/odsTableCell.php');
+require_once('odsPhpGen/odsTableColumn.php');
+require_once('odsPhpGen/odsTable.php');
+require_once('odsPhpGen/odsTableRow.php');
+?>

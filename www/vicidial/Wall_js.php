@@ -255,7 +255,7 @@ if ($sl_ct > 0)
 $auth=0;
 $reports_auth=0;
 $admin_auth=0;
-$auth_message = user_authorization($PHP_AUTH_USER,$PHP_AUTH_PW,'REPORTS',0);
+$auth_message = user_authorization($PHP_AUTH_USER,$PHP_AUTH_PW,'REPORTS',0,0);
 if ($auth_message == 'GOOD')
 	{$auth=1;}
 
@@ -1804,10 +1804,10 @@ if ($parked_to_print > 0)
 #		echo "$NFB$out_ring$NFE "._QXZ("calls ringing")." &nbsp; &nbsp; &nbsp; &nbsp; \n";
 #		echo "$NFB &nbsp;$in_ivr$NFE "._QXZ("calls in IVR")." &nbsp; &nbsp; &nbsp; \n";
 		}
-	else
-	{
-	echo _QXZ(" NO LIVE CALLS WAITING")." \n";
-	}
+#	else
+#	{
+#	echo _QXZ(" NO LIVE CALLS WAITING")." \n";
+#	}
 
 
 if ($allow_chats) 
@@ -1846,10 +1846,10 @@ if ($allow_chats)
 		if ($chats_waiting > 14) {$F='<FONT class="r4">'; $FG='</FONT>';}
 		echo " &nbsp; &nbsp; &nbsp; $NFB$F &nbsp;$chats_waiting $FG$NFE "._QXZ("chats waiting for agents")." &nbsp; &nbsp; &nbsp; \n";
 		}
-		else
-		{
-		echo _QXZ(" NO LIVE CHATS WAITING ")." \n";
-		}
+#		else
+#		{
+#		echo _QXZ(" NO LIVE CHATS WAITING ")." \n";
+#		}
 	}
 
 
