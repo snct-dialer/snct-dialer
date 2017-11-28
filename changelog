@@ -6,7 +6,8 @@
   * Add upstream Rev. 2858:
     - DISPO_SEND_EMAIL.txt: Update the last changes.
   * Wall_js.php:  Add missing argument 5 for user_authorization().
-  * New tools directory.
+  * New tools directory (2017-056).
+  * New directory license, contain all license texts (2017-057).
 
 2.25.20
   [Jörg Frings-Fürst]
