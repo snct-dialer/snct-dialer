@@ -8,6 +8,34 @@
   * Wall_js.php:  Add missing argument 5 for user_authorization().
   * New tools directory (2017-056).
   * New directory license, contain all license texts (2017-057).
+  * New DB-Schema 1528:
+    - Add max_inbound_calls_outcome to vicidial_campaigns.
+    - Add manual_auto_next_options to vicidial_campaigns.
+  * Add upstream Rev. 2859:
+    - agi-VDAD_ALL_inbound.agi,
+      vdc_db_query.php,
+      vicidial.php,
+      admin.php,
+      help.php,
+      UPGRADE: Added max_inbound_calls_outcome options.
+  * Add upstream Rev. 2860:
+    - vicidial.php,
+      admin.php,
+      help.php,
+      UPGRADE: Added manual_auto_next_options options.
+  * Add upstream Rev. 2861:
+    - vdc_db_query.php,
+      vdc_email_display.php,
+      vdc_script_display.php,
+      vicidial.php,
+      admin.php,
+      help.php,
+      UPGRADE: Added ability to display inbound email messages in Script tab
+        scripts.
+  * Add upstream Rev. 2862:
+    - New dispo_change_status.php: Allow changing of a lead's status to a
+        different status after it has been dispositioned as a specified 
+        status a set number of times.
 
 2.25.20
   [Jörg Frings-Fürst]

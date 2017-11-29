@@ -439,10 +439,11 @@
 # 171018-1310 - Added code for campaign scheduled callback email alerts
 # 171026-0107 - Added optional queue_log logging
 # 171116-2334 - Added code for duplicate fields
-#
+# 171124-1158 - Added max_inbound_calls_outcome options
+# 
 
-$version = '2.14-333';
-$build = '171116-2334';
+$version = '2.14-334';
+$build = '171124-1158';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=700;
@@ -1415,6 +1416,7 @@ if ($ACTION == 'regCLOSER')
 		}
 	else
 		{
+		$orig_closer_choice = $closer_choice;
 		$stmt = "SELECT max_inbound_calls FROM vicidial_users where user='$user';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00587',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -1425,7 +1427,7 @@ if ($ACTION == 'regCLOSER')
 			$row=mysqli_fetch_row($rslt);
 			$VU_max_inbound_calls =		$row[0];
 			}
-		$stmt = "SELECT max_inbound_calls FROM vicidial_campaigns where campaign_id='$campaign';";
+		$stmt = "SELECT max_inbound_calls,max_inbound_calls_outcome FROM vicidial_campaigns where campaign_id='$campaign';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00589',$user,$server_ip,$session_name,$one_mysql_log);}
 		if ($format=='debug') {echo "\n<!-- $rowx[0]|$stmt -->";}
@@ -1433,7 +1435,8 @@ if ($ACTION == 'regCLOSER')
 		if ($vcmic_ct > 0)
 			{
 			$row=mysqli_fetch_row($rslt);
-			$CP_max_inbound_calls =		$row[0];
+			$CP_max_inbound_calls =			$row[0];
+			$max_inbound_calls_outcome =	$row[1];
 			}
 
 		if ( ($VU_max_inbound_calls > 0) or ($CP_max_inbound_calls > 0) )
@@ -1464,11 +1467,35 @@ if ($ACTION == 'regCLOSER')
 		if (preg_match('/INBOUND_MAN|MANUAL/',$dial_method))
 			{$vla_autodial = 'N';}
 
+		$standard_closer_update=1;
 		if ( ($closer_choice == "MGRLOCK-") or ($closer_choice == "MAXLOCK-") )
 			{
+			$standard_closer_update=0;
 			if ($closer_choice == "MAXLOCK-")
 				{
-				$closer_choice = " -";
+				if (preg_match("/ALLOW_AGENTDIRECT/",$max_inbound_calls_outcome))
+					{
+					$standard_closer_update=1;
+					
+					$ADcloser_campaigns = preg_replace("/^ | -$/",'',$orig_closer_choice);
+					$ADcloser_campaignsARY = explode(" ",$ADcloser_campaigns);
+					$ADcloser_campaignsARYct = count($ADcloser_campaignsARY);
+					$ADc=0;
+					$ADcloser_campaigns='';
+					while ($ADc < $ADcloser_campaignsARYct)
+						{
+						if (preg_match("/AGENTDIRECT/i",$ADcloser_campaignsARY[$ADc]))
+							{$ADcloser_campaigns .= "$ADcloser_campaignsARY[$ADc] ";}
+						$ADc++;
+						}
+					if (strlen($ADcloser_campaigns) > 3)
+						{$ADcloser_campaigns = " ".$ADcloser_campaigns."-";}
+					else
+						{$ADcloser_campaigns = " -";}
+					$closer_choice = $ADcloser_campaigns;
+					}
+				else
+					{$closer_choice = " -";}
 				}
 			else
 				{
@@ -1513,7 +1540,7 @@ if ($ACTION == 'regCLOSER')
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00008',$user,$server_ip,$session_name,$one_mysql_log);}
 			}
-		else
+		if ($standard_closer_update > 0)
 			{
 			$stmt="UPDATE vicidial_live_agents set closer_campaigns='$closer_choice',last_state_change='$NOW_TIME',outbound_autodial='$vla_autodial' where user='$user' and server_ip='$server_ip';";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
@@ -9215,7 +9242,7 @@ if ($ACTION == 'VDADcheckINCOMINGother')
 		if ($email_ct==0) 
 			{
 			# Chats don't have a priority setting, but we use it for the AGENTDIRECT_CHAT one (which has it set to 99 and is uneditable through the admin) so that is always the highest priority.  Also ensures that agent does not transfer to self if transferring to the same ingroup (transferring_agent!=user clause)
-			$stmt="SELECT vlc.chat_id,UNIX_TIMESTAMP(vlc.chat_start_time),vlc.status,vlc.chat_creator,vlc.group_id,vlc.lead_id,vlc.user_direct_group_id,vig.queue_priority from vicidial_live_chats vlc, vicidial_inbound_groups vig where vlc.status='WAITING' and (vlc.group_id in ($chat_group_str) or (vlc.group_id='AGENTDIRECT_CHAT' and user_direct='$user')) and (transferring_agent is null or transferring_agent!='$user') order by queue_priority desc, chat_id asc limit 1;";
+			$stmt="SELECT vlc.chat_id,UNIX_TIMESTAMP(vlc.chat_start_time),vlc.status,vlc.chat_creator,vlc.group_id,vlc.lead_id,vlc.user_direct_group_id,vig.queue_priority,vig.get_call_launch from vicidial_live_chats vlc, vicidial_inbound_groups vig where vlc.status='WAITING' and (vlc.group_id in ($chat_group_str) or (vlc.group_id='AGENTDIRECT_CHAT' and user_direct='$user')) and (transferring_agent is null or transferring_agent!='$user') order by queue_priority desc, chat_id asc limit 1;";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);
 	if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00638',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -9261,8 +9288,20 @@ if ($ACTION == 'VDADcheckINCOMINGother')
 
 			if (strlen($call_server_ip)<7) {$call_server_ip = $server_ip;}
 
+			$stmt="SELECT get_call_launch FROM vicidial_inbound_groups where group_id='$VDADchannel_group';";
+			$rslt=mysql_to_mysqli($stmt, $link);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+			if ($DB) {echo "$stmt\n";}
+			$eg_ct = mysqli_num_rows($rslt);
+			if ($eg_ct > 0)
+				{
+				$row=mysqli_fetch_row($rslt);
+				$get_call_launch = $row[0];
+				}
+			if (!preg_match("/EMAIL|SCRIPT/",$get_call_launch))
+				{$get_call_launch='EMAIL';}
 			# Change to better suit the output processed by the agent interface
-			 echo "1\n" . $lead_id . '|'.$uniqueid.'|' . $email_from . '|EMAIL|' . $email_row_id . '|' . $email_row_id . "|EMAIL\n"; # VDIC_data_VDAC
+			 echo "1\n" . $lead_id . '|'.$uniqueid.'|' . $email_from . '|' . $get_call_launch . '|' . $email_row_id . '|' . $email_row_id . "|EMAIL\n"; # VDIC_data_VDAC
 
 			##### grab number of calls today in this campaign and increment
 			$stmt="SELECT calls_today FROM vicidial_live_agents WHERE user='$user' and campaign_id='$campaign';";

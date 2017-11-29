@@ -36,10 +36,11 @@
 # 170317-2315 - Fixed in-group list script override issue, added debug
 # 170526-2343 - Added additional variable filtering
 # 171006-2055 - Added inbound_list_script_override option
+# 171126-1124 - Added email message display from inbound emails only
 #
 
-$version = '2.14-30';
-$build = '171006-2055';
+$version = '2.14-31';
+$build = '171126-1124';
 
 require_once("dbconnect_mysqli.php");
 require_once("functions.php");
@@ -235,6 +236,8 @@ if (isset($_GET["did_custom_four"]))			{$did_custom_four=$_GET["did_custom_four"
 	elseif (isset($_POST["did_custom_four"]))	{$did_custom_four=$_POST["did_custom_four"];}
 if (isset($_GET["did_custom_five"]))			{$did_custom_five=$_GET["did_custom_five"];}
 	elseif (isset($_POST["did_custom_five"]))	{$did_custom_five=$_POST["did_custom_five"];}
+if (isset($_GET["email_row_id"]))			{$email_row_id=$_GET["email_row_id"];}
+	elseif (isset($_POST["email_row_id"]))	{$email_row_id=$_POST["email_row_id"];}
 if (isset($_GET["DB"]))				{$DB=$_GET["DB"];}
 	elseif (isset($_POST["DB"]))	{$DB=$_POST["DB"];}
 if (isset($_GET["inOUT"]))			{$inOUT=$_GET["inOUT"];}
@@ -264,6 +267,7 @@ $pass=preg_replace("/\'|\"|\\\\|;| /","",$pass);
 $orig_pass = preg_replace("/\'|\"|\\\\|;| /","",$orig_pass);
 $lead_id = preg_replace('/[^0-9]/', '', $lead_id);
 $list_id = preg_replace('/[^0-9]/', '', $list_id);
+$email_row_id = preg_replace('/[^0-9]/', '', $email_row_id);
 $server_ip = preg_replace("/\'|\"|\\\\|;/","",$server_ip);
 $session_id = preg_replace('/[^0-9]/','',$session_id);
 $uniqueid = preg_replace('/[^-_\.0-9a-zA-Z]/','',$uniqueid);
@@ -861,8 +865,51 @@ if (preg_match('/--A--TABLEper_call_notes--B--/i',$script_text))
 	### END Gather Call Log and notes ###
 	}
 
+$EMAILout='';
+if ( (preg_match('/--A--EMAILinbound_message--B--/i',$script_text)) and (strlen($email_row_id) > 0) )
+	{
+	### BEGIN Gather inbound email message ###
+	$stmtA="SELECT email_date,email_to,email_from,email_from_name,subject,message FROM vicidial_email_list WHERE email_row_id='$email_row_id';";
+	$rsltA=mysql_to_mysqli($stmtA, $link);
+	$out_email_to_print = mysqli_num_rows($rslt);
+	if ($out_email_to_print > 0)
+		{
+		$rowA=mysqli_fetch_row($rsltA);
+		$Eemail_date =			$rowA[0];
+		$Eemail_to =			$rowA[1];
+		$Eemail_from =			$rowA[2];
+		$Eemail_from_name =		$rowA[3];
+		$Esubject =				$rowA[4];
+		$Emessage =				$rowA[5];
+
+		$EMAILout .= "<table bgcolor=#999999 cellspacing=2 cellpadding=2><tr><td align=center colspan=2 bgcolor=white>"._QXZ("INBOUND EMAIL MESSAGE:").": </td></tr>";
+		$EMAILout .= "<tr><td align=right bgcolor=white width=150>"._QXZ("Email Date").": </td><td align=left bgcolor=white>$Eemail_date</td></tr>";
+		$EMAILout .= "<tr><td align=right bgcolor=white width=150>"._QXZ("Subject").": </td><td align=left bgcolor=white>$Esubject</td></tr>";
+		$EMAILout .= "<tr><td align=right bgcolor=white width=150>"._QXZ("To").": </td><td align=left bgcolor=white>$Eemail_to</td></tr>";
+		$EMAILout .= "<tr><td align=right bgcolor=white width=150>"._QXZ("From").": </td><td align=left bgcolor=white>$Eemail_from_name &lt;$Eemail_from&gt;</td></tr>";
+		$EMAILout .= "<tr><td align=left colspan=2 bgcolor=white><font face='courier'>$Emessage</font></td></tr>";
+
+		$att_stmt="SELECT * from inbound_email_attachments where email_row_id='$email_row_id'";
+		$att_rslt=mysql_to_mysqli($att_stmt, $link);
+		if (mysqli_num_rows($att_rslt)>0) 
+			{
+			$EMAILout.="<tr><td align=left valign=top colspan=2 bgcolor=white>"._QXZ("Attachments:")."<br><pre>";
+			while($att_row=mysqli_fetch_array($att_rslt)) 
+				{
+				$EMAILout.="<LI><a href='./vdc_email_display.php?attachment_id=$att_row[attachment_id]&lead_id=$lead_id&user=$user&pass=$orig_pass' target='_blank'>$att_row[filename]</a>\n";
+				}
+			$EMAIL_form.="</pre></td></tr>";
+			}
+
+		$EMAILout .= "</table>";
+		$EMAILout .= "<BR>";
+		}
+	### END Gather inbound email message ###
+	}
+
 $script_text = preg_replace("/\n/i","<BR>",$script_text);
 $script_text = preg_replace('/--A--TABLEper_call_notes--B--/i',"$NOTESout",$script_text);
+$script_text = preg_replace('/--A--EMAILinbound_message--B--/i',"$EMAILout",$script_text);
 $manual_dial_code = "<a href=\"#\" onclick=\"NeWManuaLDiaLCalL('NO','','','','','YES');return false;\">" . _QXZ("MANUAL DIAL") ."</a>";
 $script_text = preg_replace('/--A--MANUALDIALLINK--B--/i',$manual_dial_code,$script_text);
 $script_text = stripslashes($script_text);

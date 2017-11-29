@@ -218,7 +218,8 @@
 # 170921-2008 - Fix for CALLID in beginning of recording filename
 # 170930-0913 - Added extension append options
 # 171011-1312 - Bug fix for on-hook agents using Asterisk 1.8 & 11
-#
+# 171124-1159 - Added max_inbound_calls_outcome options
+# 
 
 $script = 'agi-VDAD_ALL_inbound.agi';
 $dtmf_silent_prefix = '7';
@@ -3557,7 +3558,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 					@aryA = $sthA->fetchrow_array;
 					$VU_max_inbound_calls = $aryA[0];
 					}
-				$stmtA = "SELECT max_inbound_calls FROM vicidial_campaigns where campaign_id='$log_campaign';";
+				$stmtA = "SELECT max_inbound_calls,max_inbound_calls_outcome FROM vicidial_campaigns where campaign_id='$log_campaign';";
 				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 				$sthArowsMIC=$sthA->rows;
@@ -3565,7 +3566,8 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 				if ($sthArowsMIC > 0)
 					{
 					@aryA = $sthA->fetchrow_array;
-					$CP_max_inbound_calls = $aryA[0];
+					$CP_max_inbound_calls =			$aryA[0];
+					$max_inbound_calls_outcome =	$aryA[1];
 					}
 
 				if ( ($VU_max_inbound_calls > 0) || ($CP_max_inbound_calls > 0) )
@@ -3587,7 +3589,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 					if ($max_inbound_count >= $max_inbound_calls)
 						{
 						$outbound_autodial='0';
-						$stmtA = "SELECT outbound_autodial FROM vicidial_live_agents where user='$VDADuser';";
+						$stmtA = "SELECT outbound_autodial,closer_campaigns FROM vicidial_live_agents where user='$VDADuser';";
 						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 						$sthArowsVLA=$sthA->rows;
@@ -3597,20 +3599,46 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 							@aryA = $sthA->fetchrow_array;
 							if ($aryA[0] =~ /Y/)
 								{$outbound_autodial = '1';}
+							$closer_campaigns = $aryA[1];
 							}
 
 						$stmtA = "UPDATE vicidial_live_agents set external_ingroups=' -',external_blended='$outbound_autodial',external_igb_set_user='VDIC',manager_ingroup_set='SET' where user='$VDADuser'";
+						$stmtB = "DELETE FROM vicidial_live_inbound_agents where user='$VDADuser';";
+
+						if ($max_inbound_calls_outcome =~ /ALLOW_AGENTDIRECT/) 
+							{
+							$closer_campaigns =~ s/^ | -$//gi;
+							@ADcloser_campaignsARY = split(/ /,$closer_campaigns);
+							$ADcloser_campaignsARYct = scalar(@ADcloser_campaignsARY);
+							$ADc=0;
+							$ADcloser_campaigns='';
+							while ($ADc < $ADcloser_campaignsARYct)
+								{
+								if ($ADcloser_campaignsARY[$ADc] =~ /AGENTDIRECT/i)
+									{$ADcloser_campaigns .= "$ADcloser_campaignsARY[$ADc] ";}
+								$ADc++;
+								}
+							if (length($ADcloser_campaigns) > 3)
+								{$ADcloser_campaigns = " ".$ADcloser_campaigns."-";}
+							else
+								{$ADcloser_campaigns = " -";}
+
+							$stmtA = "UPDATE vicidial_live_agents set external_ingroups='$ADcloser_campaigns',external_blended='$outbound_autodial',external_igb_set_user='VDIC',manager_ingroup_set='SET' where user='$VDADuser'";
+							$stmtB = "DELETE FROM vicidial_live_inbound_agents where user='$VDADuser' and group_id NOT LIKE\"%AGENTDIRECT%\";";
+							}
+
 						$affected_rows = $dbhA->do($stmtA);
 							$dbhP=$dbhA;   $mysql_count='02202';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 
-						$stmtA = "DELETE FROM vicidial_live_inbound_agents where user='$VDADuser';";
-						$affected_rows = $dbhA->do($stmtA);
+						$affected_rows = $dbhA->do($stmtB);
 							$dbhP=$dbhA;   $mysql_count='02203';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 
-						$stmtA = "INSERT INTO vicidial_admin_log set event_date=NOW(), user='$VDADuser', ip_address='$VARserver_ip', event_section='USERS', event_type='MODIFY', record_id='$VDADuser', event_code='MAX IN CALLS MODIFY USER', event_sql='DELETE FROM vicidial_live_inbound_agents where user=$VDADuser', event_notes='|$max_inbound_count|$max_inbound_calls|$VDADuser|$callerid|IC|';";
-						$affected_rows = $dbhA->do($stmtA);
+						$SQL_log = "$stmtA|$stmtB";
+						$SQL_log =~ s/'|%//gi;
+						$stmtC = "INSERT INTO vicidial_admin_log set event_date=NOW(), user='$VDADuser', ip_address='$VARserver_ip', event_section='USERS', event_type='MODIFY', record_id='$VDADuser', event_code='MAX IN CALLS MODIFY USER', event_sql='$SQL_log', event_notes='|$max_inbound_count|$max_inbound_calls|$VDADuser|$callerid|IC|$max_inbound_calls_outcome|$closer_campaigns|$ADcloser_campaignsARYct|';";
+						$affected_rows = $dbhA->do($stmtC);
 							$dbhP=$dbhA;   $mysql_count='02204';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
-						if ($AGILOG) {$agi_string = "--    MAX INBOUND AGENT CALLS TRIGGER: |$max_inbound_count|$max_inbound_calls|$VDADuser|$callerid|";   &agi_output;}
+						if ($AGILOG) {$agi_string = "--    MAX INBOUND AGENT CALLS TRIGGER: |$max_inbound_count|$max_inbound_calls|$VDADuser|$callerid|$max_inbound_calls_outcome|$closer_campaigns|$ADcloser_campaignsARYct|";   &agi_output;}
 						}
 					}
 				##### END check for user max inbound calls #####
