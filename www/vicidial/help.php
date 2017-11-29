@@ -143,6 +143,7 @@
 # 171114-1255 - Updated definitions of SALEs to specifically mention status flag of SALE set to Y
 # 171116-1727 - Added lists_fields-field_duplicate entry
 # 171124-1045 - Added campaigns-max_inbound_calls_outcome entry
+# 171124-1353 = Added campaigns-manual_auto_next_options entry
 #
 
 require("dbconnect_mysqli.php");
@@ -1175,6 +1176,11 @@ if ($SSoutbound_autodial_active > 0)
 	<A NAME="campaigns-manual_auto_next">
 	<BR>
 	<B><?php echo _QXZ("Manual Auto Next Seconds"); ?> -</B><?php echo _QXZ("If the Dial Method is set to MANUAL or INBOUND_MAN, then this setting will trigger the next lead to be automatically be dialed after this number of seconds. If enabled, it cannot be set lower than 5 seconds. Default is 0 for disabled."); ?>
+
+	<BR>
+	<A NAME="campaigns-manual_auto_next_options">
+	<BR>
+	<B><?php echo _QXZ("Manual Auto Next Options"); ?> -</B><?php echo _QXZ("If the Manual Auto Next option is enabled above, then this setting will determine if the timer to automatically dial the next number will count down while the agent is paused or not. Default is DEFAULT, which will count down while the agent is paused."); ?>
 
 	<BR>
 	<A NAME="campaigns-manual_auto_show">

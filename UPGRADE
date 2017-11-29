@@ -226,6 +226,9 @@ OTHER CHANGES:
 57. Added Max Inbound Calls Outcome to allow for different behaviors when an 
 	agent reaches their maximum inbound calls for the day
 
+58. Added campaign option to allow agents to pause the Manual Dial Auto Next 
+	feature
+
 
 
 

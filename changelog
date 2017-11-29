@@ -10,6 +10,7 @@
   * New directory license, contain all license texts (2017-057).
   * New DB-Schema 1528:
     - Add max_inbound_calls_outcome to vicidial_campaigns.
+    - Add manual_auto_next_options to vicidial_campaigns.
   * Add upstream Rev. 2859:
     - agi-VDAD_ALL_inbound.agi,
       vdc_db_query.php,
@@ -17,6 +18,11 @@
       admin.php,
       help.php,
       UPGRADE: Added max_inbound_calls_outcome options.
+  * Add upstream Rev. 2860:
+    - vicidial.php,
+      admin.php,
+      help.php,
+      UPGRADE: Added manual_auto_next_options options.
 
 2.25.20
   [Jörg Frings-Fürst]

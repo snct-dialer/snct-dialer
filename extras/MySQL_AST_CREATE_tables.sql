@@ -992,7 +992,8 @@ callback_display_days SMALLINT(3) default '0',
 three_way_record_stop ENUM('Y','N') default 'N',
 hangup_xfer_record_start ENUM('Y','N') default 'N',
 scheduled_callbacks_email_alert ENUM('Y', 'N') default 'N',
-max_inbound_calls_outcome ENUM('DEFAULT','ALLOW_AGENTDIRECT','ALLOW_MI_PAUSE','ALLOW_AGENTDIRECT_AND_MI_PAUSE') default 'DEFAULT'
+max_inbound_calls_outcome ENUM('DEFAULT','ALLOW_AGENTDIRECT','ALLOW_MI_PAUSE','ALLOW_AGENTDIRECT_AND_MI_PAUSE') default 'DEFAULT',
+manual_auto_next_options ENUM('DEFAULT','PAUSE_NO_COUNT') default 'DEFAULT'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_lists (
