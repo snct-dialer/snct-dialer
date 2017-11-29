@@ -231,6 +231,10 @@ OTHER CHANGES:
 
 59. Added ability to display inbound email messages in Script tab scripts.
 
+60. Added dispo_change_status.php script to allow changing of a lead's status
+	to a different status after it has been dispositioned as a specified 
+	status a set number of times.
+
 
 
 

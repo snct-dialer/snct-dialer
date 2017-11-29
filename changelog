@@ -30,7 +30,12 @@
       vicidial.php,
       admin.php,
       help.php,
-      UPGRADE: Added ability to display inbound email messages in Script tab scripts. 
+      UPGRADE: Added ability to display inbound email messages in Script tab
+        scripts.
+  * Add upstream Rev. 2862:
+    - New dispo_change_status.php: Allow changing of a lead's status to a
+        different status after it has been dispositioned as a specified 
+        status a set number of times.
 
 2.25.20
   [Jörg Frings-Fürst]
