@@ -439,10 +439,11 @@
 # 171018-1310 - Added code for campaign scheduled callback email alerts
 # 171026-0107 - Added optional queue_log logging
 # 171116-2334 - Added code for duplicate fields
-#
+# 171124-1158 - Added max_inbound_calls_outcome options
+# 
 
-$version = '2.14-333';
-$build = '171116-2334';
+$version = '2.14-334';
+$build = '171124-1158';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=700;
@@ -1415,6 +1416,7 @@ if ($ACTION == 'regCLOSER')
 		}
 	else
 		{
+		$orig_closer_choice = $closer_choice;
 		$stmt = "SELECT max_inbound_calls FROM vicidial_users where user='$user';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00587',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -1425,7 +1427,7 @@ if ($ACTION == 'regCLOSER')
 			$row=mysqli_fetch_row($rslt);
 			$VU_max_inbound_calls =		$row[0];
 			}
-		$stmt = "SELECT max_inbound_calls FROM vicidial_campaigns where campaign_id='$campaign';";
+		$stmt = "SELECT max_inbound_calls,max_inbound_calls_outcome FROM vicidial_campaigns where campaign_id='$campaign';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00589',$user,$server_ip,$session_name,$one_mysql_log);}
 		if ($format=='debug') {echo "\n<!-- $rowx[0]|$stmt -->";}
@@ -1433,7 +1435,8 @@ if ($ACTION == 'regCLOSER')
 		if ($vcmic_ct > 0)
 			{
 			$row=mysqli_fetch_row($rslt);
-			$CP_max_inbound_calls =		$row[0];
+			$CP_max_inbound_calls =			$row[0];
+			$max_inbound_calls_outcome =	$row[1];
 			}
 
 		if ( ($VU_max_inbound_calls > 0) or ($CP_max_inbound_calls > 0) )
@@ -1464,11 +1467,35 @@ if ($ACTION == 'regCLOSER')
 		if (preg_match('/INBOUND_MAN|MANUAL/',$dial_method))
 			{$vla_autodial = 'N';}
 
+		$standard_closer_update=1;
 		if ( ($closer_choice == "MGRLOCK-") or ($closer_choice == "MAXLOCK-") )
 			{
+			$standard_closer_update=0;
 			if ($closer_choice == "MAXLOCK-")
 				{
-				$closer_choice = " -";
+				if (preg_match("/ALLOW_AGENTDIRECT/",$max_inbound_calls_outcome))
+					{
+					$standard_closer_update=1;
+					
+					$ADcloser_campaigns = preg_replace("/^ | -$/",'',$orig_closer_choice);
+					$ADcloser_campaignsARY = explode(" ",$ADcloser_campaigns);
+					$ADcloser_campaignsARYct = count($ADcloser_campaignsARY);
+					$ADc=0;
+					$ADcloser_campaigns='';
+					while ($ADc < $ADcloser_campaignsARYct)
+						{
+						if (preg_match("/AGENTDIRECT/i",$ADcloser_campaignsARY[$ADc]))
+							{$ADcloser_campaigns .= "$ADcloser_campaignsARY[$ADc] ";}
+						$ADc++;
+						}
+					if (strlen($ADcloser_campaigns) > 3)
+						{$ADcloser_campaigns = " ".$ADcloser_campaigns."-";}
+					else
+						{$ADcloser_campaigns = " -";}
+					$closer_choice = $ADcloser_campaigns;
+					}
+				else
+					{$closer_choice = " -";}
 				}
 			else
 				{
@@ -1513,7 +1540,7 @@ if ($ACTION == 'regCLOSER')
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00008',$user,$server_ip,$session_name,$one_mysql_log);}
 			}
-		else
+		if ($standard_closer_update > 0)
 			{
 			$stmt="UPDATE vicidial_live_agents set closer_campaigns='$closer_choice',last_state_change='$NOW_TIME',outbound_autodial='$vla_autodial' where user='$user' and server_ip='$server_ip';";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}

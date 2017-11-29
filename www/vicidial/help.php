@@ -142,8 +142,8 @@
 # 171020-0028 - Added whiteboard report entry
 # 171114-1255 - Updated definitions of SALEs to specifically mention status flag of SALE set to Y
 # 171116-1727 - Added lists_fields-field_duplicate entry
+# 171124-1045 - Added campaigns-max_inbound_calls_outcome entry
 #
-
 
 require("dbconnect_mysqli.php");
 require("functions.php");
@@ -2087,6 +2087,11 @@ if ($SSqc_features_active > 0)
 <A NAME="campaigns-max_inbound_calls">
 <BR>
 <B><?php echo _QXZ("Max Inbound Calls"); ?> -</B><?php echo _QXZ("If this setting is set to a number greater than 0, then it will be the maximum number of inbound calls that an agent can handle across all inbound groups in one day. If the agent reaches their maximum number of inbound calls, then they will not be able to select inbound groups to take calls from until the next day. This setting can be overridden by the User setting of the same name. Default is 0 for disabled."); ?>
+
+<BR>
+<A NAME="campaigns-max_inbound_calls_outcome">
+<BR>
+<B><?php echo _QXZ("Max Inbound Calls Outcome"); ?> -</B><?php echo _QXZ("If the Max Inbound Calls setting above is enabled, this will be the outcome of what happens to the agent when the maximum number of inbound calls is reached. DEFAULT will halt all inbound call handling to the agent, and if the agent is in an INBOUND_MAN campaign, it will only allow them to manual dial, with no pausing ability. ALLOW_AGENTDIRECT will allow the agent to continue to receive AGENTDIRECT in-group calls after they have reached the max inbound calls count. ALLOW_MI_PAUSE will allow an agent in an INBOUND_MAN campaign to continue to pause after they have reached the max inbound calls count. Default is DEFAULT."); ?>
 
 
 

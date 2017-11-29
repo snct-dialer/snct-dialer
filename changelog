@@ -8,6 +8,15 @@
   * Wall_js.php:  Add missing argument 5 for user_authorization().
   * New tools directory (2017-056).
   * New directory license, contain all license texts (2017-057).
+  * New DB-Schema 1528:
+    - Add max_inbound_calls_outcome to vicidial_campaigns.
+  * Add upstream Rev. 2859:
+    - agi-VDAD_ALL_inbound.agi,
+      vdc_db_query.php,
+      vicidial.php,
+      admin.php,
+      help.php,
+      UPGRADE: Added max_inbound_calls_outcome options.
 
 2.25.20
   [Jörg Frings-Fürst]

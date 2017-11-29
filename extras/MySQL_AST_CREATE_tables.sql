@@ -991,7 +991,8 @@ ready_max_logout MEDIUMINT(7) default '0',
 callback_display_days SMALLINT(3) default '0',
 three_way_record_stop ENUM('Y','N') default 'N',
 hangup_xfer_record_start ENUM('Y','N') default 'N',
-scheduled_callbacks_email_alert ENUM('Y', 'N') default 'N'
+scheduled_callbacks_email_alert ENUM('Y', 'N') default 'N',
+max_inbound_calls_outcome ENUM('DEFAULT','ALLOW_AGENTDIRECT','ALLOW_MI_PAUSE','ALLOW_AGENTDIRECT_AND_MI_PAUSE') default 'DEFAULT'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_lists (
@@ -4194,4 +4195,4 @@ INSERT INTO vicidial_settings_containers(container_id,container_notes,container_
 
 UPDATE system_settings set vdc_agent_api_active='1';
 
-UPDATE system_settings SET db_schema_version='1527',db_schema_update_date=NOW(),reload_timestamp=NOW();
+UPDATE system_settings SET db_schema_version='1528',db_schema_update_date=NOW(),reload_timestamp=NOW();

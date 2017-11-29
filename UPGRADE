@@ -223,6 +223,9 @@ OTHER CHANGES:
 56. Added the ability to include duplicate custom text fields in a custom fields
 	form in the agent screen.
 
+57. Added Max Inbound Calls Outcome to allow for different behaviors when an 
+	agent reaches their maximum inbound calls for the day
+
 
 
 
