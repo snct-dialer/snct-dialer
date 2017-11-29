@@ -11,6 +11,10 @@
   * New DB-Schema 1528:
     - Add max_inbound_calls_outcome to vicidial_campaigns.
     - Add manual_auto_next_options to vicidial_campaigns.
+    - Add office_num_phone_code,
+          cell_num_phone_code,
+          other_num1_phone_code,
+          other_num2_phone_code to contact_information;
   * Add upstream Rev. 2859:
     - agi-VDAD_ALL_inbound.agi,
       vdc_db_query.php,
@@ -36,6 +40,8 @@
     - New dispo_change_status.php: Allow changing of a lead's status to a
         different status after it has been dispositioned as a specified 
         status a set number of times.
+  * Add phone_code to phonebook (2017-058):
+    - Add new fields to contact_information.
 
 2.25.20
   [Jörg Frings-Fürst]

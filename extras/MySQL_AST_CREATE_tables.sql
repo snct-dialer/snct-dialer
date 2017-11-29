@@ -2904,7 +2904,12 @@ bu_name VARCHAR(100) default '',
 department VARCHAR(100) default '',
 group_name VARCHAR(100) default '',
 job_title VARCHAR(100) default '',
-location VARCHAR(100) default ''
+location VARCHAR(100) default '',
+office_num_phone_code VARCHAR(10) COLLATE utf8_unicode_ci DEFAULT '',
+cell_num_phone_code VARCHAR(10) COLLATE utf8_unicode_ci DEFAULT ''
+other_num1_phone_code VARCHAR(10) COLLATE utf8_unicode_ci DEFAULT '',
+other_num2_phone_code VARCHAR(10) COLLATE utf8_unicode_ci DEFAULT ''
+
 ) ENGINE=MyISAM;
 
 CREATE INDEX ci_first_name on contact_information (first_name);
