@@ -23,6 +23,14 @@
       admin.php,
       help.php,
       UPGRADE: Added manual_auto_next_options options.
+  * Add upstream Rev. 2861:
+    - vdc_db_query.php,
+      vdc_email_display.php,
+      vdc_script_display.php,
+      vicidial.php,
+      admin.php,
+      help.php,
+      UPGRADE: Added ability to display inbound email messages in Script tab scripts. 
 
 2.25.20
   [Jörg Frings-Fürst]

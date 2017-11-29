@@ -4256,12 +4256,13 @@ else
 # 171114-1100 - Fixed issue with admin log viewer for logs of modifications made by deleted users
 # 171124-1041 - Added max_inbound_calls_outcome campaign setting
 # 171124-1349 - Added manual_auto_next_options campaign setting
+# 171126-1413 - Changes to allow for Email groups to display script tab on get_call_launch
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-642a';
-$build = '171124-1349';
+$admin_version = '2.14-643a';
+$build = '171126-1413';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -28355,6 +28356,15 @@ if ($ADD==3811)
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Fronter Display").": </td><td align=left><select size=1 name=fronter_display><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='$fronter_display' SELECTED>"._QXZ("$fronter_display")."</option></select>$NWB#inbound_groups-fronter_display$NWE</td></tr>\n";
 
+		$eswHTML=''; $cfwHTML='';
+		if ($SSenable_second_webform > 0)
+			{$eswHTML = "<option value='WEBFORMTWO'>"._QXZ("WEBFORMTWO")."</option>";}
+		if ($SSenable_third_webform > 0)
+			{$eswHTML = "<option value='WEBFORMTHREE'>"._QXZ("WEBFORMTHREE")."</option>";}
+		if ($SSallow_emails > 0)
+			{$aemHTML = "<option value='EMAIL'>"._QXZ("EMAIL")."</option>";}
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Get Call Launch").": </td><td align=left><select size=1 name=get_call_launch><option value='NONE' selected>"._QXZ("NONE")."</option><option value='SCRIPT'>"._QXZ("SCRIPT")."</option><option value='WEBFORM'>"._QXZ("WEBFORM")."</option>$eswHTML$cfwHTML$aemHTML$achHTML<option value='$get_call_launch' selected>"._QXZ("$get_call_launch")."</option></select>$NWB#inbound_groups-get_call_launch$NWE</td></tr>\n";
+
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Group Handling").": </td><td align=left><select size=1 name=group_handling><option  value='PHONE'>"._QXZ("PHONE")."</option>";
 		echo "<option selected value='EMAIL'>"._QXZ("EMAIL")."</option>";
 
@@ -28364,6 +28374,13 @@ if ($ADD==3811)
 			}
 
 		echo "</select>$NWB#inbound_groups-group_handling$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right><a href=\"$PHP_SELF?ADD=3111111&script_id=$script_id\">"._QXZ("Script")."</a>: </td><td align=left><select size=1 name=script_id>\n";
+		echo "$scripts_list";
+		echo "<option selected value=\"$script_id\">$script_id - $scriptname_list[$script_id]</option>\n";
+		echo "</select>$NWB#inbound_groups-ingroup_script$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Ignore List Script Override").": </td><td align=left><select size=1 name=ignore_list_script_override><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='$ignore_list_script_override' SELECTED>"._QXZ("$ignore_list_script_override")."</option></select>$NWB#inbound_groups-ignore_list_script_override$NWE</td></tr>\n";
 
 		##### get status group listings for dynamic pulldown menu
 		$stmt="SELECT status_group_id,status_group_notes from vicidial_status_groups $whereLOGadmin_viewable_groupsSQL order by status_group_id;";
