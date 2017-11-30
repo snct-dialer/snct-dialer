@@ -46,6 +46,9 @@
     - Add new fields to contact_information.
   * Add upstream Rev. 2863:
     - non_agent_api.php: Fixed issue with duplicate custom fields.
+  * Add upstream Rev. 2864:
+    - functions.php: Fixed issue with duplicate custom fields.
+  * Add upstream Rev. 2863:
     
 2.25.20
   [Jörg Frings-Fürst]
