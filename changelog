@@ -13,6 +13,7 @@
   * New DB-Schema 1528:
     - Add max_inbound_calls_outcome to vicidial_campaigns.
     - Add manual_auto_next_options to vicidial_campaigns.
+    - Add agent_screen_time_display to vicidial_campaigns.
     - Add office_num_phone_code,
           cell_num_phone_code,
           other_num1_phone_code,
@@ -56,6 +57,11 @@
     - admin.php,
     - help.php,
     - UPGRADE: Added agent_screen_time_display option.
+  * New WallBoard3_mail.php (2017-059).
+  
+  [Axel Huizinga]
+  * vdc_phonebook_display.php: Change to $_SERVER['SERVER_NAME'].
+
 
 2.25.20
   [Jörg Frings-Fürst]

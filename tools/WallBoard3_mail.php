@@ -6,25 +6,28 @@
 # Generation of Statistics Mail
 #
 # 20171128-0000 - first release
-#
+# 20171130-1235 - Use CompanyName from System_settings
+#               - Use WallBoard3_mail_conf.php to setup $mail_to.
 
-$version="1.0.0";
-$build = "20171128-1535";
+$version="1.0.1";
+$build = "20171130-1235";
 
 
 ####  collect wallboard data should only be active on a single server
 #*/1 * * * * php /usr/share/astguiclient/WallBoard3_mail.php
 
 
-
-
-
-
 $DB=0;
 
 
-$file= "Auswertung Optadata.ods";
+$file= "Auswertung.ods";
+$Comp_Name = "ViciDial";
 
+$mail_to = "jff@flyingpenguin.de";
+
+if(file_exists('WallBoard3_mail_conf.php')) {
+    require_once('WallBoard3_mail_conf.php');
+}
 
 require("/srv/www/htdocs/vicidial/dbconnect_mysqli.php");
 require("/srv/www/htdocs/vicidial/functions.php");
@@ -53,6 +56,7 @@ $style_end = new odsStyleTableCell();
 $style_end -> setTextAlign('end');
 
 $IBGroupsArray = array ();
+
 
 function GenIBGroups() {
 	global $DB, $link, $IBGroupsArray;
@@ -254,6 +258,19 @@ date_default_timezone_set("Europe/Berlin");
 $Date=date("Y-m-01");
 
 
+$Comp_Name = "ViciDial";
+
+$stmt="SELECT company_name from system_settings;";
+$rslt=mysql_to_mysqli($stmt, $link);
+$sl_ct = mysqli_num_rows($rslt);
+if ($sl_ct > 0)
+{
+    $row=mysqli_fetch_row($rslt);
+    $Comp_Name =		$row[0];
+}
+
+$file="Auswertung " . $Comp_Name ."ods";
+
 GenIBGroups();
 
 
@@ -280,11 +297,11 @@ print "$file\n";
 
 /* Email Detials */
 #$mail_to = "jff@flyingpenguin.de";
-$mail_to = "Jerome Linden <j.linden@optadata-gruppe.de>";
+
 $from_mail = "support@flyingpenguin.de";
-$from_name = "OptaData Server";
+$from_name = $Comp_Name . " Server";
 $reply_to = "support@flyingpenguin.de";
-$subject = "Payment Auswertung";
+$subject = "Wallboard3 Auswertung";
 $message = "siehe Anlage";
 
 /* Attachment File */

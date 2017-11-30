@@ -31,6 +31,7 @@
 # 20160224-1014 Add parameter to enabel CIDFromPhone
 # 20160224-1016 Add parameter to test the global alias
 # 20171130-1159 Add fields *_phone_code
+# 20171130-1439 Change to $_SERVER['SERVER_NAME'];
 #
 #
 
@@ -48,8 +49,8 @@
 #
 #
 
-$version = '0.1.6';
-$build = '20171130-1159';
+$version = '0.1.7';
+$build = '20171130-1439';
 
 
 require_once("phonebook_setup.php");
@@ -113,7 +114,7 @@ if (isset($_GET["searchtag"]))                          {$searchTag=$_GET["searc
 if (isset($_GET["searchfield"]))                        {$searchField=$_GET["searchfield"];}
         elseif (isset($_POST["searchfield"]))           {$searchField=$_POST["searchfield"];}
 
-$Server_ip_ext = $_SERVER['SERVER_ADDR'];
+$Server_ip_ext = $_SERVER['SERVER_NAME'];
 if ($DB) { print $Server_ip_ext; }
 
 $server_port = getenv("SERVER_PORT");
