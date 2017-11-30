@@ -2,7 +2,7 @@
   [Jörg Frings-Fürst]
   * Wall_js.php: 
      - Add MaxWaittime to 'Gesamt'.
-     - Add company to Title.
+     - Add CompanyName to Title.
   * AST_CRON_WallBoard3_gen.php: Typo in statement15.
   * New ODS_Export.php (2017-055).
   * Add upstream Rev. 2858:
@@ -44,6 +44,16 @@
         status a set number of times.
   * Add phone_code to phonebook (2017-058):
     - Add new fields to contact_information.
+  * Add upstream Rev. 2863:
+    - non_agent_api.php: Fixed issue with duplicate custom fields.
+  * Add upstream Rev. 2864:
+    - functions.php: Fixed issue with duplicate custom fields.
+  * Add upstream Rev. 2865:
+    - vdc_db_query.php,
+    - vicidial.php,
+    - admin.php,
+    - help.php,
+    - UPGRADE: Added agent_screen_time_display option.
 
 2.25.20
   [Jörg Frings-Fürst]

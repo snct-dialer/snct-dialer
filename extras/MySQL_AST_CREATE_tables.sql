@@ -993,7 +993,8 @@ three_way_record_stop ENUM('Y','N') default 'N',
 hangup_xfer_record_start ENUM('Y','N') default 'N',
 scheduled_callbacks_email_alert ENUM('Y', 'N') default 'N',
 max_inbound_calls_outcome ENUM('DEFAULT','ALLOW_AGENTDIRECT','ALLOW_MI_PAUSE','ALLOW_AGENTDIRECT_AND_MI_PAUSE') default 'DEFAULT',
-manual_auto_next_options ENUM('DEFAULT','PAUSE_NO_COUNT') default 'DEFAULT'
+manual_auto_next_options ENUM('DEFAULT','PAUSE_NO_COUNT') default 'DEFAULT',
+agent_screen_time_display ENUM('DISABLED','ENABLED_BASIC','ENABLED_FULL','ENABLED_BILL_BREAK_LUNCH_COACH') default 'DISABLED'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_lists (
