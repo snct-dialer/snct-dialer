@@ -1,6 +1,8 @@
 2.25.21
   [Jörg Frings-Fürst]
-  * Wall_js.php: Add MaxWaittime to 'Gesamt'.
+  * Wall_js.php: 
+     - Add MaxWaittime to 'Gesamt'.
+     - Add company to Title.
   * AST_CRON_WallBoard3_gen.php: Typo in statement15.
   * New ODS_Export.php (2017-055).
   * Add upstream Rev. 2858:
