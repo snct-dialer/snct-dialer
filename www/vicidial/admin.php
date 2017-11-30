@@ -1743,13 +1743,21 @@ if (isset($_GET["first_name"]))				{$first_name=$_GET["first_name"];}
 if (isset($_GET["last_name"]))				{$last_name=$_GET["last_name"];}
 	elseif (isset($_POST["last_name"]))		{$last_name=$_POST["last_name"];}
 if (isset($_GET["office_num"]))				{$office_num=$_GET["office_num"];}
-	elseif (isset($_POST["office_num"]))	{$office_num=$_POST["office_num"];}
+    elseif (isset($_POST["office_num"]))	{$office_num=$_POST["office_num"];}
+if (isset($_GET["office_num_pc"]))			{$office_num_pc=$_GET["office_num_pc"];}
+    elseif (isset($_POST["office_num_pc"]))	{$office_num_pc=$_POST["office_num_pc"];}
 if (isset($_GET["cell_num"]))				{$cell_num=$_GET["cell_num"];}
-	elseif (isset($_POST["cell_num"]))		{$cell_num=$_POST["cell_num"];}
+    elseif (isset($_POST["cell_num"]))		{$cell_num=$_POST["cell_num"];}
+if (isset($_GET["cell_num_pc"]))			{$cell_num_pc=$_GET["cell_num_pc"];}
+    elseif (isset($_POST["cell_num_pc"]))	{$cell_num_pc=$_POST["cell_num_pc"];}
 if (isset($_GET["other_num1"]))				{$other_num1=$_GET["other_num1"];}
 	elseif (isset($_POST["other_num1"]))	{$other_num1=$_POST["other_num1"];}
+if (isset($_GET["other_num1_pc"]))			{$other_num1_pc=$_GET["other_num1_pc"];}
+	elseif (isset($_POST["other_num1_pc"]))	{$other_num1_pc=$_POST["other_num1_pc"];}
 if (isset($_GET["other_num2"]))				{$other_num2=$_GET["other_num2"];}
-	elseif (isset($_POST["other_num2"]))	{$other_num2=$_POST["other_num2"];}
+    elseif (isset($_POST["other_num2"]))	{$other_num2=$_POST["other_num2"];}
+if (isset($_GET["other_num2_pc"]))			{$other_num2_pc=$_GET["other_num2_pc"];}
+    elseif (isset($_POST["other_num2_pc"]))	{$other_num2_pc=$_POST["other_num2_pc"];}
 if (isset($_GET["modify_contacts"]))			{$modify_contacts=$_GET["modify_contacts"];}
 	elseif (isset($_POST["modify_contacts"]))	{$modify_contacts=$_POST["modify_contacts"];}
 if (isset($_GET["bu_name"]))			{$bu_name=$_GET["bu_name"];}
@@ -2666,6 +2674,10 @@ if ($non_latin < 1)
 	$cell_num = preg_replace('/[^0-9]/','',$cell_num);
 	$other_num1 = preg_replace('/[^0-9]/','',$other_num1);
 	$other_num2 = preg_replace('/[^0-9]/','',$other_num2);
+	$office_num_pc = preg_replace('/[^0-9]/','',$office_num_pc);
+	$cell_num_pc = preg_replace('/[^0-9]/','',$cell_num_pc);
+	$other_num1_pc = preg_replace('/[^0-9]/','',$other_num1_pc);
+	$other_num2_pc = preg_replace('/[^0-9]/','',$other_num2_pc);
 	$modify_contacts = preg_replace('/[^0-9]/','',$modify_contacts);
 	$callback_hours_block = preg_replace('/[^0-9]/','',$callback_hours_block);
 	$modify_same_user_level = preg_replace('/[^0-9]/','',$modify_same_user_level);
@@ -4262,6 +4274,7 @@ else
 # 171126-1413 - Changes to allow for Email groups to display script tab on get_call_launch
 # 171130-0036 - Added agent_screen_time_display campaign setting
 #
+
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
@@ -8705,10 +8718,14 @@ if ($ADD==191111111111)
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("First Name").": </td><td align=left><input type=text name=first_name size=50 maxlength=50>$NWB#contact_information$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Last Name").": </td><td align=left><input type=text name=last_name size=50 maxlength=50>$NWB#contact_information$NWE</td></tr>\n";
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Office Number").": </td><td align=left><input type=text name=office_num size=20 maxlength=20>$NWB#contact_information$NWE</td></tr>\n";
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Cell Number").": </td><td align=left><input type=text name=cell_num size=20 maxlength=20>$NWB#contact_information$NWE</td></tr>\n";
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Other Number")." 1: </td><td align=left><input type=text name=other_num1 size=20 maxlength=20>$NWB#contact_information$NWE</td></tr>\n";
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Other Number")." 2: </td><td align=left><input type=text name=other_num2 size=20 maxlength=20>$NWB#contact_information$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Office Number").": </td><td align=left><input type=text name=office_num size=20 maxlength=20>$NWB#contact_information$NWE</td>\n";
+		echo _QXZ("Office Number Phone Code").": </td><td align=left><input type=text name=office_num_pc size=5 maxlength=10>$NWB#contact_information$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Cell Number").": </td><td align=left><input type=text name=cell_num size=20 maxlength=20>$NWB#contact_information$NWE</td>\n";
+		echo _QXZ("Cell Number Phone Code").": </td><td align=left><input type=text name=cell_num_pc size=5 maxlength=10>$NWB#contact_information$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Other Number")." 1: </td><td align=left><input type=text name=other_num1 size=20 maxlength=20>$NWB#contact_information$NWE</td>\n";
+		echo _QXZ("Other Number Phone Code")." 1: </td><td align=left><input type=text name=other_num1_pc size=5 maxlength=10>$NWB#contact_information$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Other Number")." 2: </td><td align=left><input type=text name=other_num2 size=20 maxlength=20>$NWB#contact_information$NWE</td>\n";
+		echo _QXZ("Other Number Phone Code")." 2: </td><td align=left><input type=text name=other_num2_pc size=5 maxlength=10>$NWB#contact_information$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("BU Name").": </td><td align=left><input type=text name=bu_name size=50 maxlength=100>$NWB#contact_information$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Department").": </td><td align=left><input type=text name=department size=50 maxlength=100>$NWB#contact_information$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Group").": </td><td align=left><input type=text name=group_name size=50 maxlength=100>$NWB#contact_information$NWE</td></tr>\n";
@@ -12442,7 +12459,7 @@ if ($ADD==291111111111)
 				{
 				echo "<br>"._QXZ("CONTACT ADDED")."\n";
 
-				$stmt="INSERT INTO contact_information SET first_name='$first_name',last_name='$last_name',office_num='$office_num',cell_num='$cell_num',other_num1='$other_num1',other_num2='$other_num2',bu_name='$bu_name',department='$department',group_name='$group_name',job_title='$job_title',location='$location';";
+				$stmt="INSERT INTO contact_information SET first_name='$first_name',last_name='$last_name',office_num='$office_num',cell_num='$cell_num',other_num1='$other_num1',other_num2='$other_num2',bu_name='$bu_name',department='$department',group_name='$group_name',job_title='$job_title',location='$location',office_num_phone_code='$office_num_pc',cell_num_phone_code='$cell_num_pc',other_num1_phone_code='$other_num1_pc', other_num2_phone_code='$other_num2_pc' ;";
 				$rslt=mysql_to_mysqli($stmt, $linkALT);
 				$contact_id = mysqli_insert_id($linkALT);
 
@@ -16597,7 +16614,7 @@ if ($ADD==491111111111)
 				}
 			else
 				{$linkALT = $link;}
-			$stmt="UPDATE contact_information set first_name='$first_name',last_name='$last_name',office_num='$office_num',cell_num='$cell_num',other_num1='$other_num1',other_num2='$other_num2',bu_name='$bu_name',department='$department',group_name='$group_name',job_title='$job_title',location='$location' where contact_id='$contact_id';";
+			$stmt="UPDATE contact_information set first_name='$first_name',last_name='$last_name',office_num='$office_num',cell_num='$cell_num',other_num1='$other_num1',other_num2='$other_num2',bu_name='$bu_name',department='$department',group_name='$group_name',job_title='$job_title',location='$location',office_num_phone_code='$office_num_pc',cell_num_phone_code='$cell_num_pc',other_num1_phone_code='$other_num1_pc', other_num2_phone_code='$other_num2_pc' where contact_id='$contact_id';";
 			$rslt=mysql_to_mysqli($stmt, $linkALT);
 
 			echo "<br>"._QXZ("CONTACT MODIFIED").": $contact_id\n";
@@ -34316,7 +34333,7 @@ if ($ADD==391111111111)
 			}
 		else
 			{$linkALT = $link;}
-		$stmt="SELECT first_name,last_name,office_num,cell_num,other_num1,other_num2,bu_name,department,group_name,job_title,location from contact_information where contact_id='$contact_id';";
+		$stmt="SELECT first_name,last_name,office_num,cell_num,other_num1,other_num2,bu_name,department,group_name,job_title,location, office_num_phone_code,cell_num_phone_code,other_num1_phone_code,other_num2_phone_code from contact_information where contact_id='$contact_id';";
 		$rslt=mysql_to_mysqli($stmt, $linkALT);
 		$row=mysqli_fetch_row($rslt);
 		$first_name =	$row[0];
@@ -34330,6 +34347,10 @@ if ($ADD==391111111111)
 		$group_name =	$row[8];
 		$job_title =	$row[9];
 		$location =		$row[10];
+		$office_num_pc    = $row[11];
+		$cell_num_pc      = $row[12];
+		$other_num1_pc    = $row[13];
+		$other_num2_pc    = $row[14];
 
 		echo "<br>"._QXZ("MODIFY CONTACT").": $tts_id<form action=$PHP_SELF method=POST>\n";
 		echo "<input type=hidden name=ADD value=491111111111>\n";
@@ -34337,10 +34358,14 @@ if ($ADD==391111111111)
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("First Name").": </td><td align=left><input type=text name=first_name value=\"$first_name\" size=50 maxlength=50>$NWB#contact_information$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Last Name").": </td><td align=left><input type=text name=last_name value=\"$last_name\" size=50 maxlength=50>$NWB#contact_information$NWE</td></tr>\n";
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Office Number").": </td><td align=left><input type=text name=office_num value=\"$office_num\" size=20 maxlength=20>$NWB#contact_information$NWE</td></tr>\n";
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Cell Number").": </td><td align=left><input type=text name=cell_num value=\"$cell_num\" size=20 maxlength=20>$NWB#contact_information$NWE</td></tr>\n";
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Other Number")." 1: </td><td align=left><input type=text name=other_num1 value=\"$other_num1\" size=20 maxlength=20>$NWB#contact_information$NWE</td></tr>\n";
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Other Number")." 2: </td><td align=left><input type=text name=other_num2 value=\"$other_num2\" size=20 maxlength=20>$NWB#contact_information$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Office Number").": </td><td align=left><input type=text name=office_num value=\"$office_num\" size=20 maxlength=20>$NWB#contact_information$NWE</td>\n";
+		echo _QXZ("Office Number Phone Code").": </td><td align=left><input type=text name=office_num_pc value=\"$office_num_pc\" size=5 maxlength=10>$NWB#contact_information$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Cell Number").": </td><td align=left><input type=text name=cell_num value=\"$cell_num\" size=20 maxlength=20>$NWB#contact_information$NWE</td>\n";
+		echo _QXZ("Cell Number Phone Code").": </td><td align=left><input type=text name=cell_num value=\"$cell_num_pc\" size=5 maxlength=10>$NWB#contact_information$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Other Number")." 1: </td><td align=left><input type=text name=other_num1 value=\"$other_num1\" size=20 maxlength=20>$NWB#contact_information$NWE</td>\n";
+		echo _QXZ("Other Number Phone Code")." 1: </td><td align=left><input type=text name=other_num1_pc value=\"$other_num1_pc\" size=5 maxlength=10>$NWB#contact_information$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Other Number")." 2: </td><td align=left><input type=text name=other_num2 value=\"$other_num2\" size=20 maxlength=20>$NWB#contact_information$NWE</td>\n";
+		echo _QXZ("Other Number Phone Code")." 2: </td><td align=left><input type=text name=other_num2_pc value=\"$other_num2_pc\" size=5 maxlength=10>$NWB#contact_information$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("BU Name").": </td><td align=left><input type=text name=bu_name value=\"$bu_name\" size=50 maxlength=100>$NWB#contact_information$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Department").": </td><td align=left><input type=text name=department value=\"$department\" size=50 maxlength=100>$NWB#contact_information$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Group").": </td><td align=left><input type=text name=group_name value=\"$group_name\" size=50 maxlength=100>$NWB#contact_information$NWE</td></tr>\n";
