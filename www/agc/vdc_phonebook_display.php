@@ -1,7 +1,7 @@
 <?php
 #
-# Copyright (c) 2015-2016 Jörg Frings-Fürst <jff@flyingpenguin.de>   LICENSE: AGPLv2
-#		2015-2016 flyingpenguin UG <info@flyingpenguin.de>
+# Copyright (c) 2015-2017 Jörg Frings-Fürst <jff@flyingpenguin.de>   LICENSE: AGPLv2
+#		        2015-2017 flyingpenguin UG <info@flyingpenguin.de>
 #
 # Display module for table contact_information
 #
@@ -30,6 +30,8 @@
 # 20160223-1607 Add new function to check group_alias entries
 # 20160224-1014 Add parameter to enabel CIDFromPhone
 # 20160224-1016 Add parameter to test the global alias
+# 20171130-1159 Add fields *_phone_code
+#
 #
 
 #
@@ -46,8 +48,8 @@
 #
 #
 
-$version = '0.1.5-3';
-$build = '20160223-1607';
+$version = '0.1.6';
+$build = '20171130-1159';
 
 
 require_once("phonebook_setup.php");
@@ -250,12 +252,12 @@ var CIDPhoneEnable = '<?php echo $pb_cid_phone_enable ?>';
 //
 // Park the activ call and dial to other
 //
-function CallandPark(Phone) {
+function CallandPark(Phone, PhoneCode) {
 
     var xmlhttp=false;
     var AStatus = '<?php GetAgentStatus($user); ?>';
 
-    var DialPhone = PreDial + Phone;
+    var DialPhone = PhoneCode + Phone;
 
     if (CIDPhoneEnable == "N") { Alias = 0; }
     
@@ -301,7 +303,7 @@ function CallandPark(Phone) {
 //
 // Dial to phone number
 //
-function CallExtern(Phone) {
+function CallExtern(Phone, PhoneCode) {
 
     var xmlhttp=false;
 
@@ -322,10 +324,10 @@ function CallExtern(Phone) {
     }
     else {
         if (Alias == 0) {
-            html_query = "source=PBookCall" + "&user=" + User + "&pass=" + Pass + "&agent_user=" + User + "&function=external_dial" + "&value=" + DialPhone + "&phone_code=49&search=YES&preview=NO&focus=YES";
+            html_query = "source=PBookCall" + "&user=" + User + "&pass=" + Pass + "&agent_user=" + User + "&function=external_dial" + "&value=" + DialPhone + "&phone_code=" + PhoneCode +"&search=YES&preview=NO&focus=YES";
         }
         else {
-            html_query = "source=PBookCall" + "&user=" + User + "&pass=" + Pass + "&group_alias=" + User + "&agent_user=" + User + "&function=external_dial" + "&value=" + DialPhone + "&phone_code=49&search=YES&preview=NO&focus=YES";
+            html_query = "source=PBookCall" + "&user=" + User + "&pass=" + Pass + "&group_alias=" + User + "&agent_user=" + User + "&function=external_dial" + "&value=" + DialPhone + "&phone_code=" + PhoneCode + "&search=YES&preview=NO&focus=YES";
         }
 	xmlhttp.open('POST', 'api.php');
 	xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
@@ -348,7 +350,7 @@ function CallExtern(Phone) {
 //
 // Conference with the activ call and other phone number
 //
-function CallConf(Phone) {
+function CallConf(Phone, PhoneCode) {
 
     var xmlhttp=false;
     var AStatus = '<?php GetAgentStatus($user); ?>';
@@ -368,10 +370,10 @@ function CallConf(Phone) {
 	}
 	else {
             if (Alias == 0) { 
-                html_query = "source=PBookCall" + "&user=" + User + "&pass=" + Pass + "&agent_user=" + User + "&function=external_dial" + "&value=" + DialPhone + "&phone_code=49&search=YES&preview=NO&focus=YES";
+                html_query = "source=PBookCall" + "&user=" + User + "&pass=" + Pass + "&agent_user=" + User + "&function=external_dial" + "&value=" + DialPhone + "&phone_code=" + PhoneCode + "&search=YES&preview=NO&focus=YES";
             }
             else {
-                html_query = "source=PBookCall" + "&user=" + User + "&pass=" + Pass + "&group_alias=" + User + "&agent_user=" + User + "&function=external_dial" + "&value=" + DialPhone + "&phone_code=49&search=YES&preview=NO&focus=YES";
+                html_query = "source=PBookCall" + "&user=" + User + "&pass=" + Pass + "&group_alias=" + User + "&agent_user=" + User + "&function=external_dial" + "&value=" + DialPhone + "&phone_code=" + PhoneCode + "&search=YES&preview=NO&focus=YES";
             }
 	    xmlhttp.open('POST', 'api.php');
 	    xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
@@ -496,7 +498,7 @@ function GetPhonebookEntry($first_row) {
 	$strSearch = " WHERE last_name LIKE \"%$searchTag%\" or first_name LIKE \"%$searchTag%\" or group_name LIKE \"%$searchTag%\" or bu_name LIKE \"%$searchTag%\" or department LIKE \"%$searchTag%\" or location LIKE \"%$searchTag%\" ";
 	if ($DB) { print "str: $strSearch\n"; }
     }
-    $statement="SELECT first_name,last_name,office_num,cell_num,other_num1,other_num2,bu_name,department,group_name,job_title,location from contact_information $strSearch ORDER BY $orderF $orderDir LIMIT $MAX_ANZ OFFSET $first_row;";
+    $statement="SELECT first_name,last_name,office_num,cell_num,other_num1,other_num2,bu_name,department,group_name,job_title,location,office_num_phone_code,cell_num_phone_code,other_num1_phone_code,other_num2_phone_code from contact_information $strSearch ORDER BY $orderF $orderDir LIMIT $MAX_ANZ OFFSET $first_row;";
     if ($DB) print "$statement\n";
     $result=mysql_to_mysqli($statement, $link);
     return $result;
@@ -577,7 +579,7 @@ function CountColum() {
 #
 # api call not tested!
 #
-function GenAPIforAgent($phone, $a_status) {
+function GenAPIforAgent($phone, $a_status, $pc) {
     global $Server_ip_ext, $pass, $user, $IMAGE_SIZE;
 
     $CallStr="";
@@ -595,16 +597,16 @@ function GenAPIforAgent($phone, $a_status) {
 	# call to hold and new call
 	#
         if ($a_status == 2) {
-	    print "<input type=\"image\" id=\"Call3\" onClick=\"CallandPark($phone)\" src=\"./images/phone32.png\" style=\"width: $IMAGE_SIZE; height: $IMAGE_SIZE;\" alt=\"Call\" border=\"0\"> </input>\n";
-	    print "<input type=\"image\" id=\"Call2\" onClick=\"CallConf($phone)\" src=\"./images/conf-32.png\" style=\"width: $IMAGE_SIZE; height: $IMAGE_SIZE;\" alt=\"Call\" border=\"0\"> </input>\n";
+	    print "<input type=\"image\" id=\"Call3\" onClick=\"CallandPark($phone, $pc)\" src=\"./images/phone32.png\" style=\"width: $IMAGE_SIZE; height: $IMAGE_SIZE;\" alt=\"Call\" border=\"0\"> </input>\n";
+	    print "<input type=\"image\" id=\"Call2\" onClick=\"CallConf($phone, $pc)\" src=\"./images/conf-32.png\" style=\"width: $IMAGE_SIZE; height: $IMAGE_SIZE;\" alt=\"Call\" border=\"0\"> </input>\n";
         }
         # paused -> call
         elseif ($a_status == 1) {
-    	    print "<input type=\"image\" id=\"Call1\" onClick=\"CallExtern($phone)\" src=\"./images/phone32.png\" style=\"width: $IMAGE_SIZE; height: $IMAGE_SIZE;\" alt=\"Call\" border=\"0\"> </input>\n";
+    	    print "<input type=\"image\" id=\"Call1\" onClick=\"CallExtern($phone, $pc)\" src=\"./images/phone32.png\" style=\"width: $IMAGE_SIZE; height: $IMAGE_SIZE;\" alt=\"Call\" border=\"0\"> </input>\n";
         }
         # ready -> call
         elseif ($a_status == 0) {
-    	    print "<input type=\"image\" id=\"Call1\" onClick=\"CallExtern($phone)\" src=\"./images/phone32.png\" style=\"width: $IMAGE_SIZE; height: $IMAGE_SIZE;\" alt=\"Call\" border=\"0\"> </input>\n";
+    	    print "<input type=\"image\" id=\"Call1\" onClick=\"CallExtern($phone, $pc)\" src=\"./images/phone32.png\" style=\"width: $IMAGE_SIZE; height: $IMAGE_SIZE;\" alt=\"Call\" border=\"0\"> </input>\n";
         }
     }
     print "  </TD>\n";
@@ -712,19 +714,19 @@ function PrintTableRow($row_i, $AgentStat) {
     print "  <TD nowrap>$row_i[0]</TD>\n";
     if($dispColum[0]) {
 	print "  <TD nowrap>$row_i[2]</TD>\n";
-	GenAPIforAgent($row_i[2], $AgentStat);
+	GenAPIforAgent($row_i[2], $AgentStat, $row_i[11]);
     }
     if($dispColum[1]) {
 	print "  <TD nowrap>$row_i[3]</TD>\n";
-	GenAPIforAgent($row_i[3], $AgentStat);
+	GenAPIforAgent($row_i[3], $AgentStat, $row_i[12]);
     }
     if($dispColum[2]) {
 	print "  <TD nowrap>$row_i[4]</TD>\n";
-	GenAPIforAgent($row_i[4], $AgentStat);
+	GenAPIforAgent($row_i[4], $AgentStat, $row_i[13]);
     }
     if($dispColum[3]) {
 	print "  <TD nowrap>$row_i[5]</TD>\n";
-	GenAPIforAgent($row_i[5], $AgentStat);
+	GenAPIforAgent($row_i[5], $AgentStat, $row_i[14]);
     }
     if($dispColum[6]) {
 	print "  <TD nowrap>$row_i[8]</TD>\n";

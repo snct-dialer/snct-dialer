@@ -44,6 +44,8 @@
         status a set number of times.
   * Add phone_code to phonebook (2017-058):
     - Add new fields to contact_information.
+    - admin.php: Add fields Phone Code.
+    - vdc_phonebook_display.php: Add code for Phone Code.
   * Add upstream Rev. 2863:
     - non_agent_api.php: Fixed issue with duplicate custom fields.
   * Add upstream Rev. 2864:
