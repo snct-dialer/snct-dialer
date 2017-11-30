@@ -235,6 +235,9 @@ OTHER CHANGES:
 	to a different status after it has been dispositioned as a specified 
 	status a set number of times.
 
+61. Added Agent Screen Time Report campaign option, to display agent time
+	statistics in the agent screen for the current day.
+
 
 
 

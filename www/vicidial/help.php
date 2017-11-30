@@ -144,6 +144,7 @@
 # 171116-1727 - Added lists_fields-field_duplicate entry
 # 171124-1045 - Added campaigns-max_inbound_calls_outcome entry
 # 171124-1353 = Added campaigns-manual_auto_next_options entry
+# 171130-0048 - Added agent_screen_time_display entry
 #
 
 require("dbconnect_mysqli.php");
@@ -1778,6 +1779,11 @@ if ($SSoutbound_autodial_active > 0)
 <A NAME="campaigns-agent_display_fields">
 <BR>
 <B><?php echo _QXZ("Agent Display Fields"); ?> -</B><?php echo _QXZ("This option allows you to display hidden fields as read-only in the agent screen. Available fields are entry_date, source_id, date_of_birth, rank, owner, last_local_call_time. Default is blank."); ?>
+
+<BR>
+<A NAME="campaigns-agent_screen_time_display">
+<BR>
+<B><?php echo _QXZ("Agent Screen Time Display"); ?> -</B><?php echo _QXZ("This option allows you to display a link on the agent screen that when clicked will open a frame showing the agent their time statistics for the day. There are several options that will determine what information is displayed. Default is DISABLED."); ?>
 
 <BR>
 <A NAME="campaigns-use_internal_dnc">

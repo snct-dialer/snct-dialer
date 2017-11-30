@@ -48,8 +48,13 @@
     - non_agent_api.php: Fixed issue with duplicate custom fields.
   * Add upstream Rev. 2864:
     - functions.php: Fixed issue with duplicate custom fields.
-  * Add upstream Rev. 2863:
-    
+  * Add upstream Rev. 2865:
+    - vdc_db_query.php,
+    - vicidial.php,
+    - admin.php,
+    - help.php,
+    - UPGRADE: Added agent_screen_time_display option.
+
 2.25.20
   [Jörg Frings-Fürst]
   * help.php: add missing '<'.

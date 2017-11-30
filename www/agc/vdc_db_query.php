@@ -440,10 +440,11 @@
 # 171026-0107 - Added optional queue_log logging
 # 171116-2334 - Added code for duplicate fields
 # 171124-1158 - Added max_inbound_calls_outcome options
+# 171130-0314 - Added agent_screen_time_display option
 # 
 
-$version = '2.14-334';
-$build = '171124-1158';
+$version = '2.14-335';
+$build = '171130-0314';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=700;
@@ -16205,6 +16206,137 @@ if ($ACTION == 'CalLBacKCounT')
 		}
 	}
 
+
+
+################################################################################
+### AGENTtimeREPORT - display today's agent time report
+################################################################################
+if ($ACTION == 'AGENTtimeREPORT')
+	{
+	if (strlen($stage) < 5)
+		{$stage = 'DISABLED';}
+
+	$stmt="SELECT agent_screen_time_display from vicidial_campaigns where campaign_id='$campaign';";
+	$rslt=mysql_to_mysqli($stmt, $link);
+		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+	$camp_to_print = mysqli_num_rows($rslt);
+	if ($format=='debug') {echo "|$camp_to_print|$stmt|";}
+	if ($camp_to_print > 0) 
+		{
+		$row=mysqli_fetch_row($rslt);
+		$stage =		$row[0];
+		}
+
+	if ($stage == 'DISABLED')
+		{
+		echo "<BR><BR>\n";
+		echo "<B>" . _QXZ("ERROR: this feature is disabled for this campaign") . "</B>\n";
+		echo "<BR><BR>\n";
+		echo "<a href=\"#\" onclick=\"AgentTimeReport('close');return false;\">"._QXZ("Close Agent Time Report")."</a>";
+		}
+	else
+		{
+		$stmt="SELECT pause_epoch,wait_epoch,talk_epoch,dispo_epoch,dead_epoch,pause_sec,wait_sec,talk_sec,dispo_sec,dead_sec,sub_status,agent_log_id from vicidial_agent_log where user='$user' and event_time >= '$NOW_DATE 00:00:00'  and event_time <= '$NOW_DATE 23:59:59' order by agent_log_id desc limit 10000;";
+		$rslt=mysql_to_mysqli($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+		$time_logs_to_print = mysqli_num_rows($rslt);
+		if ($format=='debug') {echo "|$stage|$time_logs_to_print|$stmt|";}
+
+		$g=0;
+		$pauseTOTAL=0;
+		$waitTOTAL=0;
+		$talkTOTAL=0;
+		$dispoTOTAL=0;
+		$billTOTAL=0;
+		$breakTOTAL=0;
+		$lunchTOTAL=0;
+		$coachTOTAL=0;
+		$loginTOTAL=0;
+		while ($time_logs_to_print > $g) 
+			{
+			$row=mysqli_fetch_row($rslt);
+			$Tpause_epoch[$g] =		$row[0];
+			$Twait_epoch[$g] =		$row[1];
+			$talk_epoch[$g] =		$row[2];
+			$Tdispo_epoch[$g] =		$row[3];
+			$Tdead_epoch[$g] =		$row[4];
+			$Tpause_sec[$g] =		$row[5];
+			$Twait_sec[$g] =		$row[6];
+			$Ttalk_sec[$g] =		$row[7];
+			$Tdispo_sec[$g] =		$row[8];
+			$Tdead_sec[$g] =		$row[9];
+			$Tsub_status[$g] =		$row[10];
+			$Tagent_log_id[$g] =	$row[11];
+
+			if ($Tpause_sec[$g] < 65000)	
+				{
+				$pauseTOTAL = ($pauseTOTAL + $Tpause_sec[$g]);
+				if (preg_match("/break/i",$Tsub_status[$g])) {$breakTOTAL = ($breakTOTAL + $Tpause_sec[$g]);}
+				if (preg_match("/lunch/i",$Tsub_status[$g])) {$lunchTOTAL = ($lunchTOTAL + $Tpause_sec[$g]);}
+				if (preg_match("/coach/i",$Tsub_status[$g])) {$coachTOTAL = ($coachTOTAL + $Tpause_sec[$g]);}
+				}
+			if ($Twait_sec[$g] < 65000)		{$waitTOTAL = ($waitTOTAL + $Twait_sec[$g]);}
+			if ($Ttalk_sec[$g] < 65000)		{$talkTOTAL = ($talkTOTAL + $Ttalk_sec[$g]);}
+			if ($Tdispo_sec[$g] < 65000)	{$dispoTOTAL = ($dispoTOTAL + $Tdispo_sec[$g]);}
+
+			if ($format=='debug') {echo "|$g|$Tagent_log_id[$g]|$Tpause_epoch[$g]|$Tpause_sec[$g]|<BR>\n";}
+			$g++;
+			}
+		$billTOTAL = ($waitTOTAL + $talkTOTAL + $dispoTOTAL);
+		$loginTOTAL = ($pauseTOTAL + $waitTOTAL + $talkTOTAL + $dispoTOTAL);
+
+		echo "<CENTER>\n";
+		#echo "<font style=\"font-size:14px;font-family:sans-serif;\"><B>"._QXZ("Agent Time Report for Today").":</B></font>\n";
+		echo "<BR><BR>\n";
+		if ($stage == 'ENABLED_BASIC')
+			{
+			echo "<TABLE CELLPADDING=2 CELLSPACING=2 BORDER=0 WIDTH=400 BGCOLOR='#999999'>";
+			echo "<TR>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:14px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("TOTAL LOGGED IN TIME")." &nbsp; </font></TD>";
+			echo "</TR><TR>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:12px;font-family:sans-serif;\"><B> &nbsp; " . gmdate("H:i:s", $loginTOTAL) . " &nbsp; </font></TD>";
+			echo "</TR>";
+			echo "</TABLE>";
+			}
+		if ($stage == 'ENABLED_FULL')
+			{
+			echo "<TABLE CELLPADDING=2 CELLSPACING=2 BORDER=0 WIDTH=800 BGCOLOR='#999999'>";
+			echo "<TR>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:14px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("TOTAL LOGGED IN")." &nbsp; </font></TD>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:14px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("WAIT")." &nbsp; </font></TD>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:14px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("TALK")." &nbsp; </font></TD>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:14px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("DISPO")." &nbsp; </font></TD>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:14px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("PAUSE")." &nbsp; </font></TD>";
+			echo "</TR><TR>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:12px;font-family:sans-serif;\"><B> &nbsp; " . gmdate("H:i:s", $loginTOTAL) . " &nbsp; </font></TD>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:12px;font-family:sans-serif;\"><B> &nbsp; " . gmdate("H:i:s", $waitTOTAL) . " &nbsp; </font></TD>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:12px;font-family:sans-serif;\"><B> &nbsp; " . gmdate("H:i:s", $talkTOTAL) . " &nbsp; </font></TD>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:12px;font-family:sans-serif;\"><B> &nbsp; " . gmdate("H:i:s", $dispoTOTAL) . " &nbsp; </font></TD>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:12px;font-family:sans-serif;\"><B> &nbsp; " . gmdate("H:i:s", $pauseTOTAL) . " &nbsp; </font></TD>";
+			echo "</TR>";
+			echo "</TABLE>";
+			}
+		if ($stage == 'ENABLED_BILL_BREAK_LUNCH_COACH')
+			{
+			echo "<TABLE CELLPADDING=2 CELLSPACING=2 BORDER=0 WIDTH=700 BGCOLOR='#999999'>";
+			echo "<TR>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:14px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("BILLABLE")." &nbsp; </font></TD>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:14px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("BREAK")." &nbsp; </font></TD>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:14px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("LUNCH")." &nbsp; </font></TD>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:14px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("COACH")." &nbsp; </font></TD>";
+			echo "</TR><TR>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:12px;font-family:sans-serif;\"><B> &nbsp; " . gmdate("H:i:s", $billTOTAL) . " &nbsp; </font></TD>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:12px;font-family:sans-serif;\"><B> &nbsp; " . gmdate("H:i:s", $breakTOTAL) . " &nbsp; </font></TD>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:12px;font-family:sans-serif;\"><B> &nbsp; " . gmdate("H:i:s", $lunchTOTAL) . " &nbsp; </font></TD>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:12px;font-family:sans-serif;\"><B> &nbsp; " . gmdate("H:i:s", $coachTOTAL) . " &nbsp; </font></TD>";
+			echo "</TR>";
+			echo "</TABLE>";
+			}
+		echo "<BR>";
+		echo "<a href=\"#\" onclick=\"AgentTimeReport('close');return false;\">"._QXZ("Close Agent Time Report")."</a>";
+		echo "</CENTER>";
+		}
+	}
 
 
 

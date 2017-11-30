@@ -6,4 +6,6 @@ ALTER TABLE contact_information ADD cell_num_phone_code VARCHAR(10) COLLATE utf8
 ALTER TABLE contact_information ADD other_num1_phone_code VARCHAR(10) COLLATE utf8_unicode_ci DEFAULT '';
 ALTER TABLE contact_information ADD other_num2_phone_code VARCHAR(10) COLLATE utf8_unicode_ci DEFAULT '';
 
+ALTER TABLE vicidial_campaigns ADD agent_screen_time_display ENUM('DISABLED','ENABLED_BASIC','ENABLED_FULL','ENABLED_BILL_BREAK_LUNCH_COACH') default 'DISABLED';
+
 UPDATE system_settings SET db_schema_version='1528',db_schema_update_date=NOW() where db_schema_version < 1528;
