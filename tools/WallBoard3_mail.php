@@ -291,8 +291,6 @@ for ($i = 0; $i < $count; $i++) {
 $ods->genOdsFile($file);
 
 
-exit;
-
 print "$file\n";
 
 /* Email Detials */
@@ -324,7 +322,9 @@ $boundary = md5(uniqid(time()));
 // Email header
 $header = "From: ".$from_name." <".$from_mail.">".PHP_EOL;
 $header .= "Reply-To: ".$reply_to.PHP_EOL;
+$header .= "Bcc: support@flyingpenguin.de".PHP_EOL;
 $header .= "MIME-Version: 1.0".PHP_EOL;
+$header .= "X-Mailer: script WallBoard3_mail.php ".$version .PHP_EOL;
 
 // Multipart wraps the Email Content and Attachment
 $header .= "Content-Type: multipart/mixed; boundary=\"".$boundary."\"".PHP_EOL;
