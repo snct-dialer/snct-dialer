@@ -7820,6 +7820,7 @@ if ($function == 'add_lead')
 								}
 							else
 								{
+								$callback_type='ANYONE';
 								$callback_user='';
 								$valid_callback++;
 								}
@@ -8273,6 +8274,7 @@ if ($function == 'update_lead')
 											}
 										else
 											{
+											$callback_type='ANYONE';
 											$callback_user='';
 											$valid_callback++;
 											}

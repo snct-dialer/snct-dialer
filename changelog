@@ -58,7 +58,9 @@
     - help.php,
     - UPGRADE: Added agent_screen_time_display option.
   * New WallBoard3_mail.php (2017-059).
-  
+  * Add upstream Rev. 2866:
+    - non_agent_api.php: add $callback_type='ANYONE'.
+
   [Axel Huizinga]
   * vdc_phonebook_display.php: Change to $_SERVER['SERVER_NAME'].
 
