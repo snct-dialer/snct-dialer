@@ -12747,40 +12747,43 @@ if ($ACTION == 'updateDISPO')
 
 
 			##### BEGIN grab the data from custom table for the lead_id
-			$stmt="SELECT $custom_field_names_SQL FROM custom_$entry_list_id where lead_id='$lead_id' LIMIT 1;";
-			$rslt=mysql_to_mysqli($stmt, $link);
-				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00345',$user,$server_ip,$session_name,$one_mysql_log);}
-			if ($DB) {echo "$stmt\n";}
-			$list_lead_ct = mysqli_num_rows($rslt);
-			if ($list_lead_ct > 0)
+			if ($entry_list_id > 0)
 				{
-				$row=mysqli_fetch_row($rslt);
-				$o=0;
-				while ($custom_field_names_ct > $o) 
+				$stmt="SELECT $custom_field_names_SQL FROM custom_$entry_list_id where lead_id='$lead_id' LIMIT 1;";
+				$rslt=mysql_to_mysqli($stmt, $link);
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00345',$user,$server_ip,$session_name,$one_mysql_log);}
+				if ($DB) {echo "$stmt\n";}
+				$list_lead_ct = mysqli_num_rows($rslt);
+				if ($list_lead_ct > 0)
 					{
-					$field_name_id =		$custom_field_names_ARY[$o];
-					$field_name_tag =		"--A--" . $field_name_id . "--B--";
-					if ($enc_fields > 0)
+					$row=mysqli_fetch_row($rslt);
+					$o=0;
+					while ($custom_field_names_ct > $o) 
 						{
-						$field_enc='';   $field_enc_all='';
-						if ($DB) {echo "|$column_list|$encrypt_list|\n";}
-						if ( (preg_match("/,$field_name_id,/",$encrypt_list)) and (strlen($row[$o]) > 0) )
+						$field_name_id =		$custom_field_names_ARY[$o];
+						$field_name_tag =		"--A--" . $field_name_id . "--B--";
+						if ($enc_fields > 0)
 							{
-							exec("../agc/aes.pl --decrypt --text=$row[$o]", $field_enc);
-							$field_enc_ct = count($field_enc);
-							$k=0;
-							while ($field_enc_ct > $k)
+							$field_enc='';   $field_enc_all='';
+							if ($DB) {echo "|$column_list|$encrypt_list|\n";}
+							if ( (preg_match("/,$field_name_id,/",$encrypt_list)) and (strlen($row[$o]) > 0) )
 								{
-								$field_enc_all .= $field_enc[$k];
-								$k++;
+								exec("../agc/aes.pl --decrypt --text=$row[$o]", $field_enc);
+								$field_enc_ct = count($field_enc);
+								$k=0;
+								while ($field_enc_ct > $k)
+									{
+									$field_enc_all .= $field_enc[$k];
+									$k++;
+									}
+								$field_enc_all = preg_replace("/CRYPT: |\n|\r|\t/",'',$field_enc_all);
+								$row[$o] = base64_decode($field_enc_all);
 								}
-							$field_enc_all = preg_replace("/CRYPT: |\n|\r|\t/",'',$field_enc_all);
-							$row[$o] = base64_decode($field_enc_all);
 							}
+						$form_field_value =		urlencode(trim("$row[$o]"));
+						$dispo_call_urlARY[$j] = preg_replace("/$field_name_tag/i","$form_field_value",$dispo_call_urlARY[$j]);
+						$o++;
 						}
-					$form_field_value =		urlencode(trim("$row[$o]"));
-					$dispo_call_urlARY[$j] = preg_replace("/$field_name_tag/i","$form_field_value",$dispo_call_urlARY[$j]);
-					$o++;
 					}
 				}
 			}
