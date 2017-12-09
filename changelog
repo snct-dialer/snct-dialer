@@ -76,6 +76,8 @@
   * Add upstream Rev. 2871:
     - AST_agent_days_detail.php: Fixed minor reporting bug.
     - Erlang_report.php: Modified to include disposition seconds in C report.
+  * Add upstream Rev. 2872:
+    - dispo_send_email.php: Added option of up to 20 attachments.
 
   [Axel Huizinga]
   * vdc_phonebook_display.php: Change to $_SERVER['SERVER_NAME'].
