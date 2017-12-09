@@ -39,6 +39,7 @@
 # 131122-1237 - Formatting fixes and missing sthA->finish
 # 151006-0937 - Changed campaign_cid_areacodes to operate with 2-5 digit areacodes
 # 170915-1915 - Added support for per server routing prefix needed for Asterisk 13+
+# 171205-2022 - Fix for double-dialing issue on high-volume systems
 #
 
 ### begin parsing run-time options ###
@@ -593,7 +594,7 @@ while($one_day_interval > 0)
 								my $UDaffected_rows=0;
 								if ($call_CMPIPct < $DB_camp_server_trunks_to_dial[$server_CIPct])
 									{
-									$stmtA = "UPDATE vicidial_hopper set status='QUEUE', user='VDAD_$DB_camp_server_server_ip[$server_CIPct]' where campaign_id='$DBfill_campaign[$camp_CIPct]' and status='READY' order by priority desc,hopper_id LIMIT $DB_camp_server_trunks_to_dial[$server_CIPct];";
+									$stmtA = "UPDATE vicidial_hopper set status='QUEUE', user='VDFC_$DB_camp_server_server_ip[$server_CIPct]' where campaign_id='$DBfill_campaign[$camp_CIPct]' and status='READY' order by priority desc,hopper_id LIMIT $DB_camp_server_trunks_to_dial[$server_CIPct];";
 									print "|$stmtA|\n";
 									$UDaffected_rows = $dbhA->do($stmtA);
 									print "hopper rows updated to QUEUE: |$UDaffected_rows|\n";
@@ -603,7 +604,7 @@ while($one_day_interval > 0)
 										$lead_id=''; $phone_code=''; $phone_number=''; $called_count='';
 										while ($call_CMPIPct < $UDaffected_rows)
 											{
-											$stmtA = "SELECT lead_id,alt_dial FROM vicidial_hopper where campaign_id='$DBfill_campaign[$camp_CIPct]' and status='QUEUE' and user='VDAD_$DB_camp_server_server_ip[$server_CIPct]' order by priority desc,hopper_id LIMIT 1;";
+											$stmtA = "SELECT lead_id,alt_dial FROM vicidial_hopper where campaign_id='$DBfill_campaign[$camp_CIPct]' and status='QUEUE' and user='VDFC_$DB_camp_server_server_ip[$server_CIPct]' order by priority desc,hopper_id LIMIT 1;";
 											print "|$stmtA|\n";
 											$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 											$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -622,8 +623,8 @@ while($one_day_interval > 0)
 												print "!!!!!!!!!!!!!!!!duplicate lead_id for this run: |$lead_id|     $lead_id_call_list\n";
 												if ($SYSLOG)
 													{
-													open(DUPout, ">>$PATHlogs/VDAD_DUPLICATE.$file_date")
-															|| die "Can't open $PATHlogs/VDAD_DUPLICATE.$file_date: $!\n";
+													open(DUPout, ">>$PATHlogs/VDFC_DUPLICATE.$file_date")
+															|| die "Can't open $PATHlogs/VDFC_DUPLICATE.$file_date: $!\n";
 													print DUPout "$now_date-----$lead_id_call_list-----$lead_id\n";
 													close(DUPout);
 													}
@@ -847,7 +848,7 @@ while($one_day_interval > 0)
 															}
 
 														### insert a NEW record to the vicidial_manager table to be processed
-														$stmtA = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$DB_camp_server_server_ip[$server_CIPct]','','Originate','$VqueryCID','Exten: $VDAD_dial_exten','Context: $ext_context','Channel: $local_DEF$Ndialstring$local_AMP$ext_context','Priority: 1','Callerid: $CIDstring','Timeout: $Local_dial_timeout','','','','VDACnote: $DBfill_campaign[$camp_CIPct]|$lead_id|$phone_code|$phone_number|OUTBALANCE|$alt_dial|$DBIPqueue_priority[$camp_CIPct]')";
+														$stmtA = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$DB_camp_server_server_ip[$server_CIPct]','','Originate','$VqueryCID','Exten: $VDAD_dial_exten','Context: $ext_context','Channel: $local_DEF$Ndialstring$local_AMP$ext_context','Priority: 1','Callerid: $CIDstring','Timeout: $Local_dial_timeout','','','','VDACnote: $DBfill_campaign[$camp_CIPct]|$lead_id|$phone_code|$phone_number|OUTBALANCE|$alt_dial|$DBIPqueue_priority[$camp_CIPct]|$server_ip')";
 														$affected_rows = $dbhA->do($stmtA);
 
 														$event_string = "|     number call dialed|$DBfill_campaign[$camp_CIPct]|$VqueryCID|$stmtA|$gmt_offset_now|$alt_dial|$DB_camp_server_server_ip[$server_CIPct]|$DB_camp_server_asterisk_version[$server_CIPct]";
@@ -865,7 +866,7 @@ while($one_day_interval > 0)
 													else
 														{
 														##### create dummy records to have their server_ip filled in at the stagger section
-														$vm_inserts[$staggered_ct] = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','XXXXXXXXXXXXXXX','','Originate','$VqueryCID','Exten: $VDAD_dial_exten','Context: $ext_context','Channel: $local_DEF$Ndialstring$local_AMP$ext_context','Priority: 1','Callerid: $CIDstring','Timeout: $Local_dial_timeout','','','','VDACnote: $DBfill_campaign[$camp_CIPct]|$lead_id|$phone_code|$phone_number|OUTBALANCE|$alt_dial|$DBIPqueue_priority[$camp_CIPct]')";
+														$vm_inserts[$staggered_ct] = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','XXXXXXXXXXXXXXX','','Originate','$VqueryCID','Exten: $VDAD_dial_exten','Context: $ext_context','Channel: $local_DEF$Ndialstring$local_AMP$ext_context','Priority: 1','Callerid: $CIDstring','Timeout: $Local_dial_timeout','','','','VDACnote: $DBfill_campaign[$camp_CIPct]|$lead_id|$phone_code|$phone_number|OUTBALANCE|$alt_dial|$DBIPqueue_priority[$camp_CIPct]|$server_ip')";
 
 														$vac_inserts[$staggered_ct] = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,callerid,phone_code,phone_number,call_time,call_type,alt_dial,queue_priority) values('XXXXXXXXXXXXXXX','$DBfill_campaign[$camp_CIPct]','SENT','$lead_id','$VqueryCID','$phone_code','$phone_number','$SQLdate','OUTBALANCE','$alt_dial','$DBIPqueue_priority[$camp_CIPct]')";
 
