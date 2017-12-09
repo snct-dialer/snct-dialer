@@ -73,6 +73,9 @@
   * Add upstream Rev. 2870:
     - AST_VDauto_dial_FILL.pl: Fix for double-dialing issue on high
         volume systems.
+  * Add upstream Rev. 2871:
+    - AST_agent_days_detail.php: Fixed minor reporting bug.
+    - Erlang_report.php: Modified to include disposition seconds in C report.
 
   [Axel Huizinga]
   * vdc_phonebook_display.php: Change to $_SERVER['SERVER_NAME'].

@@ -32,6 +32,7 @@
 # 160714-2348 - Added and tested ChartJS features for more aesthetically appealing graphs
 # 170409-1542 - Added IP List validation code
 # 171012-2015 - Fixed javascript/apache errors with graphs
+# 171204-2300 - Fixed minor reporting bug
 #
 
 $startMS = microtime();
@@ -553,7 +554,7 @@ else
 	while ($m < $k)
 		{
 		$Sdate=$datesARY[$m];
-		$Scalls=$calls[$m];
+		$Scalls=0;
 		$SstatusesHTML='';
 		$SstatusesFILE='';
 		$CIScount=0;

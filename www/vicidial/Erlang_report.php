@@ -9,6 +9,7 @@
 # 170504-2245 - Minor bug fixes
 # 170829-0040 - Added screen color settings
 # 171012-2015 - Fixed javascript/apache errors with graphs
+# 171205-2304 - Modified to include disposition seconds in C report
 #
 
 $startMS = microtime();
@@ -687,7 +688,7 @@ else
 
 		$avg_stmt="select avg(length_in_sec) as avg_length from vicidial_log where length_in_sec is not null and campaign_id in ($campaign_SQL) and call_date>='$query_date 00:00:00' and call_date<='$end_date 23:59:59'"; # **
 
-		$wrapup_stmt="select uniqueid from vicidial_log where length_in_sec is not null and user!='VDCL' and campaign_id in ($campaign_SQL) and call_date>='$query_date 00:00:00' and call_date<='$end_date 23:59:59'"; # ***
+		$wrapup_stmt="select uniqueid from vicidial_log where length_in_sec is not null and user!='VDAD' and campaign_id in ($campaign_SQL) and call_date>='$query_date 00:00:00' and call_date<='$end_date 23:59:59'"; # ***
 	}
 	if ($DB) {echo "|$hour_stmt|\n";}
 	if ($DB) {echo "|$avg_stmt|\n";}
@@ -702,18 +703,32 @@ else
 	$avg_row=mysqli_fetch_array($avg_rslt);
 	$average_call_length=$avg_row["avg_length"];
 
-	$wrapup_rslt=mysql_to_mysqli($wrapup_stmt, $link); # ***
-	$wrapup_calls=mysqli_num_rows($wrapup_rslt);
-	$uid_ct=0; 
-	$uid_clause="";
-	$dispo_secs=0;
-	$talk_secs=0;
-	while ($wrapup_row=mysqli_fetch_row($wrapup_rslt)) {
-		$uid_ct++;
-		$uid_clause.="'$wrapup_row[0]',";
-		if ($uid_ct%100==0) {
+	if ($erlang_type=="C") {  # Erlang B reports SHOULD NOT INCLUDE WRAPUP TIME
+		$wrapup_rslt=mysql_to_mysqli($wrapup_stmt, $link); # ***
+		$wrapup_calls=mysqli_num_rows($wrapup_rslt);
+		$uid_ct=0; 
+		$uid_clause="";
+		$dispo_secs=0;
+		$talk_secs=0;
+		while ($wrapup_row=mysqli_fetch_row($wrapup_rslt)) {
+			$uid_ct++;
+			$uid_clause.="'$wrapup_row[0]',";
+			if ($uid_ct%100==0) {
+				$uid_clause=preg_replace('/,$/', '', $uid_clause);
+				$uid_stmt="select dispo_sec, talk_sec from vicidial_agent_log where uniqueid in ($uid_clause)";
+				if ($DB) {echo "|$uid_stmt|\n";}
+				$uid_rslt=mysql_to_mysqli($uid_stmt, $link);
+				while ($uid_row=mysqli_fetch_row($uid_rslt)) {
+					$dispo_secs+=$uid_row[0];
+					$talk_secs+=$uid_row[1];
+				}
+				$uid_clause="";
+			}
+		}
+		if (strlen($uid_clause)>0) {
 			$uid_clause=preg_replace('/,$/', '', $uid_clause);
 			$uid_stmt="select dispo_sec, talk_sec from vicidial_agent_log where uniqueid in ($uid_clause)";
+			if ($DB) {echo "|$uid_stmt|\n";}
 			$uid_rslt=mysql_to_mysqli($uid_stmt, $link);
 			while ($uid_row=mysqli_fetch_row($uid_rslt)) {
 				$dispo_secs+=$uid_row[0];
@@ -721,19 +736,13 @@ else
 			}
 			$uid_clause="";
 		}
+		$avg_dispo_sec=MathZDC($dispo_secs, $wrapup_calls);
+		$avg_talk_sec=MathZDC($talk_secs, $wrapup_calls);
+
+		$average_talk_length=$average_call_length;
+		$average_call_length+=$avg_dispo_sec;
 	}
-	if (strlen($uid_clause)>0) {
-		$uid_clause=preg_replace('/,$/', '', $uid_clause);
-		$uid_stmt="select dispo_sec, talk_sec from vicidial_agent_log where uniqueid in ($uid_clause)";
-		$uid_rslt=mysql_to_mysqli($uid_stmt, $link);
-		while ($uid_row=mysqli_fetch_row($uid_rslt)) {
-			$dispo_secs+=$uid_row[0];
-			$talk_secs+=$uid_row[1];
-		}
-		$uid_clause="";
-	}
-	$avg_dispo_sec=MathZDC($dispo_secs, $wrapup_calls);
-	$avg_talk_sec=MathZDC($talk_secs, $wrapup_calls);
+
 	#####
 
 
@@ -806,8 +815,8 @@ else
 		$ASCII_text.="| ".sprintf("%70s", _QXZ("Desired sale rate: ")).sprintf("%-5.2f", "$sale_chance").sprintf("%-142s", " %")." |\n";
 		$ASCII_text.="| ".sprintf("%70s", _QXZ("Actual sale rate: ")).sprintf("%-5.2f", (100*$sale_percent)).sprintf("%-142s", " %")." |\n";
 		$ASCII_text.="| ".sprintf("%70s", _QXZ("Average call duration: ")).sprintf("%-147.2f", "$average_call_length")." |\n";
-		# $ASCII_text.="| ".sprintf("%70s", _QXZ("Average talk length: ")).sprintf("%-147.4f", "$avg_talk_sec")." |\n";
-		# $ASCII_text.="| ".sprintf("%70s", _QXZ("Average wrapup time: ")).sprintf("%-147.4f", "$avg_dispo_sec")." |\n";
+		$ASCII_text.="| ".sprintf("%70s", _QXZ("Average call length: ")).sprintf("%-147.4f", "$average_talk_length")." |\n";
+		$ASCII_text.="| ".sprintf("%70s", _QXZ("Average wrapup time: ")).sprintf("%-147.4f", "$avg_dispo_sec")." |\n";
 		$ASCII_text.="| ".sprintf("%70s", _QXZ("Erlangs: ")).sprintf("%-147.4f", $total_erlangs)." |\n";
 	}
 	$HTML_text.="<table width='640' border='0' cellpadding='2' cellspacing='0'>";
