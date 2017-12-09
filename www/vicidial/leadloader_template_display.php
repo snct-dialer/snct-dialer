@@ -16,6 +16,7 @@
 # 141229-2021 - Added code for on-the-fly language translations display
 # 150210-0619 - Fixed small display issue
 # 170409-1534 - Added IP List validation code
+# 171204-1518 - Fix for custom field duplicate issue, removed link to old lead loader
 #
 
 require("dbconnect_mysqli.php");
@@ -280,7 +281,7 @@ else
 		$tablecount_to_print = mysqli_num_rows($rslt);
 		if ($tablecount_to_print > 0) 
 			{
-			$stmt="SELECT count(*) from vicidial_lists_fields where list_id='$list_id';";
+			$stmt="SELECT count(*) from vicidial_lists_fields where list_id='$list_id' and field_duplicate!='Y';";
 			if ($DB>0) {echo "$stmt\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$fieldscount_to_print = mysqli_num_rows($rslt);
@@ -290,7 +291,7 @@ else
 				$custom_records_count =	$rowx[0];
 
 				$custom_SQL='';
-				$stmt="SELECT field_id,field_label,field_name,field_description,field_rank,field_help,field_type,field_options,field_size,field_max,field_default,field_cost,field_required,multi_position,name_position,field_order from vicidial_lists_fields where list_id='$list_id' order by field_rank,field_order,field_label;";
+				$stmt="SELECT field_id,field_label,field_name,field_description,field_rank,field_help,field_type,field_options,field_size,field_max,field_default,field_cost,field_required,multi_position,name_position,field_order from vicidial_lists_fields where list_id='$list_id' and field_duplicate!='Y' order by field_rank,field_order,field_label;";
 				if ($DB>0) {echo "$stmt\n";}
 				$rslt=mysql_to_mysqli($stmt, $link);
 				$fields_to_print = mysqli_num_rows($rslt);

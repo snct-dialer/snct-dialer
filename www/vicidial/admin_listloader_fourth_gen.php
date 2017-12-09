@@ -71,10 +71,11 @@
 # 170219-1427 - Added last-90-day duplicate check options
 # 170409-1553 - Added IP List validation code
 # 171001-0908 - Fixed issue #1041
+# 171204-1517 - Fix for custom field duplicate issue, removed link to old lead loader
 #
 
-$version = '2.14-69';
-$build = '171001-0908';
+$version = '2.14-70';
+$build = '171204-1517';
 
 require("dbconnect_mysqli.php");
 require("functions.php");
@@ -768,7 +769,7 @@ if ( (!$OK_to_process) or ( ($leadfile) and ($file_layout!="standard" && $file_l
 		<tr>
 			<td align=center colspan=2><input type=submit value="<?php echo _QXZ("SUBMIT"); ?>" name='submit_file'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=button onClick="javascript:document.location='admin_listloader_fourth_gen.php'" value="<?php echo _QXZ("START OVER"); ?>" name='reload_page'></td>
 		  </tr>
-		  <tr><td align=left><font size=1> &nbsp; &nbsp; &nbsp; &nbsp; <a href="admin.php?ADD=100" target="_parent"><?php echo _QXZ("BACK TO ADMIN"); ?></a> &nbsp; &nbsp; &nbsp; &nbsp; <a href="./admin_listloader_third_gen.php"><?php echo _QXZ("Old Lead Loader"); ?></a> &nbsp; &nbsp; </font></td><td align=right><font size=1><?php echo _QXZ("LIST LOADER 4th Gen"); ?>- &nbsp; &nbsp; <?php echo _QXZ("VERSION"); ?>: <?php echo $version ?> &nbsp; &nbsp; <?php echo _QXZ("BUILD"); ?>: <?php echo $build ?> &nbsp; &nbsp; </td></tr>
+		  <tr><td align=left><font size=1> &nbsp; &nbsp; &nbsp; &nbsp; <a href="admin.php?ADD=100" target="_parent"><?php echo _QXZ("BACK TO ADMIN"); ?></a> &nbsp; &nbsp; </font></td><td align=right><font size=1><?php echo _QXZ("LIST LOADER 4th Gen"); ?>- &nbsp; &nbsp; <?php echo _QXZ("VERSION"); ?>: <?php echo $version ?> &nbsp; &nbsp; <?php echo _QXZ("BUILD"); ?>: <?php echo $build ?> &nbsp; &nbsp; </td></tr>
 		</table>
 		<?php 
 
@@ -915,14 +916,14 @@ if ($OK_to_process)
 
 			if ($tablecount_to_print > 0) 
 				{
-				$stmt="SELECT count(*) from vicidial_lists_fields where list_id='$list_id_override';";
+				$stmt="SELECT count(*) from vicidial_lists_fields where list_id='$list_id_override' and field_duplicate!='Y';";
 				if ($DB>0) {echo "$stmt\n";}
 				$rslt=mysql_to_mysqli($stmt, $link);
 				$fieldscount_to_print = mysqli_num_rows($rslt);
 
 				if ($fieldscount_to_print > 0) 
 					{
-					$stmt="SELECT field_label,field_type,field_encrypt from vicidial_lists_fields where list_id='$list_id_override' order by field_rank,field_order,field_label;";
+					$stmt="SELECT field_label,field_type,field_encrypt from vicidial_lists_fields where list_id='$list_id_override' and field_duplicate!='Y' order by field_rank,field_order,field_label;";
 					if ($DB>0) {echo "$stmt\n";}
 					$rslt=mysql_to_mysqli($stmt, $link);
 					$fields_to_print = mysqli_num_rows($rslt);
@@ -2467,7 +2468,7 @@ if (($leadfile) && ($LF_path))
 			$tablecount_to_print = mysqli_num_rows($rslt);
 			if ($tablecount_to_print > 0) 
 				{
-				$stmt="SELECT count(*) from vicidial_lists_fields where list_id='$list_id_override';";
+				$stmt="SELECT count(*) from vicidial_lists_fields where list_id='$list_id_override' and field_duplicate!='Y';";
 				if ($DB>0) {echo "$stmt\n";}
 				$rslt=mysql_to_mysqli($stmt, $link);
 				$fieldscount_to_print = mysqli_num_rows($rslt);
@@ -2477,7 +2478,7 @@ if (($leadfile) && ($LF_path))
 					$custom_records_count =	$rowx[0];
 
 					$custom_SQL='';
-					$stmt="SELECT field_id,field_label,field_name,field_description,field_rank,field_help,field_type,field_options,field_size,field_max,field_default,field_cost,field_required,multi_position,name_position,field_order,field_encrypt from vicidial_lists_fields where list_id='$list_id_override' order by field_rank,field_order,field_label;";
+					$stmt="SELECT field_id,field_label,field_name,field_description,field_rank,field_help,field_type,field_options,field_size,field_max,field_default,field_cost,field_required,multi_position,name_position,field_order,field_encrypt from vicidial_lists_fields where list_id='$list_id_override' and field_duplicate!='Y' order by field_rank,field_order,field_label;";
 					if ($DB>0) {echo "$stmt\n";}
 					$rslt=mysql_to_mysqli($stmt, $link);
 					$fields_to_print = mysqli_num_rows($rslt);
