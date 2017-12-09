@@ -60,6 +60,11 @@
   * New WallBoard3_mail.php (2017-059).
   * Add upstream Rev. 2866:
     - non_agent_api.php: add $callback_type='ANYONE'.
+  * Add upstream Rev. 2867:
+    - admin_listloader_third_gen.php: move to extras.
+    - admin_listloader_fourth_gen.php,
+      leadloader_template_display.php: Fix for custom field duplicate issue,
+       removed link to old lead loader.
 
   [Axel Huizinga]
   * vdc_phonebook_display.php: Change to $_SERVER['SERVER_NAME'].
