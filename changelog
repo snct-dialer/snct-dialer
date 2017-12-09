@@ -78,6 +78,7 @@
     - Erlang_report.php: Modified to include disposition seconds in C report.
   * Add upstream Rev. 2872:
     - dispo_send_email.php: Added option of up to 20 attachments.
+  * vdc_db_query.php: Add function to display future callbacks (2017-060).
 
   [Axel Huizinga]
   * vdc_phonebook_display.php: Change to $_SERVER['SERVER_NAME'].

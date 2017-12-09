@@ -15871,7 +15871,7 @@ if ($ACTION == 'CalLBacKLisT')
 	{
 	$campaignCBhoursSQL = '';
 	$campaignCBdisplaydaysSQL = '';
-	$stmt = "SELECT callback_hours_block,callback_list_calltime,local_call_time,callback_display_days from vicidial_campaigns where campaign_id='$campaign';";
+	$stmt = "SELECT callback_hours_block,callback_list_calltime,local_call_time,callback_display_days,scheduled_callbacks_count from vicidial_campaigns where campaign_id='$campaign';";
 	$rslt=mysql_to_mysqli($stmt, $link);
 		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00437',$user,$server_ip,$session_name,$one_mysql_log);}
 	if ($rslt) {$camp_count = mysqli_num_rows($rslt);}
@@ -15882,11 +15882,19 @@ if ($ACTION == 'CalLBacKLisT')
 		$callback_list_calltime =	$row[1];
 		$local_call_time =			$row[2];
 		$callback_display_days =	$row[3];
+		$callback_count = 			$row[4];
 		if ($callback_hours_block > 0)
 			{
 			$x_hours_ago = date("Y-m-d H:i:s", mktime(date("H")-$callback_hours_block,date("i"),date("s"),date("m"),date("d"),date("Y")));
 			$campaignCBhoursSQL = "and entry_time < \"$x_hours_ago\"";
 			}
+		$statusSQL = "and status = \"LIVE\"";
+		if($callback_display_days < 0) {
+			if($callback_count == "ALL_ACTIVE") {
+				$statusSQL = "AND status IN (\"LIVE\", \"ACTIVE\")";
+			}
+			$callback_display_days *= (-1);
+		}
 		if ($callback_display_days > 0)
 			{
 			$x_days_from_now = date("Y-m-d H:i:s", mktime(0,0,0,date("m"),date("d")+$callback_display_days,date("Y")));
@@ -15897,7 +15905,7 @@ if ($ACTION == 'CalLBacKLisT')
 	if ($agentonly_callback_campaign_lock > 0)
 		{$campaignCBsql = "and campaign_id='$campaign'";}
 
-	$stmt = "SELECT callback_id,lead_id,campaign_id,status,entry_time,callback_time,comments from vicidial_callbacks where recipient='USERONLY' and user='$user' $campaignCBsql $campaignCBhoursSQL $campaignCBdisplaydaysSQL and status = 'LIVE' order by callback_time;";
+	$stmt = "SELECT callback_id,lead_id,campaign_id,status,entry_time,callback_time,comments from vicidial_callbacks where recipient='USERONLY' and user='$user' $campaignCBsql $campaignCBhoursSQL $campaignCBdisplaydaysSQL $statusSQL order by callback_time;";
 	if ($DB) {echo "$stmt\n";}
 	$rslt=mysql_to_mysqli($stmt, $link);
 		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00178',$user,$server_ip,$session_name,$one_mysql_log);}
