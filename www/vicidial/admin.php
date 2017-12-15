@@ -2896,7 +2896,6 @@ if ($non_latin < 1)
 	$campaign_script = preg_replace('/[^0-9a-zA-Z]/','',$campaign_script);
 	$submit = preg_replace('/[^0-9a-zA-Z]/','',$submit);
 	$campaign_cid = preg_replace('/[^0-9a-zA-Z]/','',$campaign_cid);
-	$get_call_launch = preg_replace('/[^0-9a-zA-Z]/','',$get_call_launch);
 	$campaign_recording = preg_replace('/[^0-9a-zA-Z]/','',$campaign_recording);
 	$ADD = preg_replace('/[^0-9a-zA-Z]/','',$ADD);
 	$dial_prefix = preg_replace('/[^0-9a-zA-Z]/','',$dial_prefix);
@@ -3265,6 +3264,7 @@ if ($non_latin < 1)
 	$max_inbound_calls_outcome = preg_replace('/[^-_0-9a-zA-Z]/','',$max_inbound_calls_outcome);
 	$manual_auto_next_options = preg_replace('/[^-_0-9a-zA-Z]/','',$manual_auto_next_options);
 	$agent_screen_time_display = preg_replace('/[^-_0-9a-zA-Z]/','',$agent_screen_time_display);
+	$get_call_launch = preg_replace('/[^-_0-9a-zA-Z]/','',$get_call_launch);
 
 ### ALPHA-NUMERIC and underscore and dash and slash and dot
 	$menu_timeout_prompt = preg_replace('/[^-\/\|\._0-9a-zA-Z]/','',$menu_timeout_prompt);
