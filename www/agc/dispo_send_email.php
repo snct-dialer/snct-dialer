@@ -61,6 +61,8 @@ if (isset($_GET["user"]))					{$user=$_GET["user"];}
 	elseif (isset($_POST["user"]))			{$user=$_POST["user"];}
 if (isset($_GET["pass"]))					{$pass=$_GET["pass"];}
 	elseif (isset($_POST["pass"]))			{$pass=$_POST["pass"];}
+if (isset($_GET["stage"]))					{$stage=$_GET["stage"];}
+	elseif (isset($_POST["stage"]))			{$stage=$_POST["stage"];}
 if (isset($_GET["DB"]))						{$DB=$_GET["DB"];}
 	elseif (isset($_POST["DB"]))			{$DB=$_POST["DB"];}
 if (isset($_GET["call_notes"]))				{$call_notes=$_GET["call_notes"];}
@@ -136,6 +138,7 @@ $call_id = preg_replace('/[^-_0-9a-zA-Z]/', '', $call_id);
 $lead_id = preg_replace('/[^_0-9]/', '', $lead_id);
 $container_id = preg_replace('/[^-_0-9a-zA-Z]/', '', $container_id);
 $call_notes=preg_replace("/\\\\/","",$call_notes);
+$stage = preg_replace('/[^-_0-9a-zA-Z]/', '', $stage);
 $additional_notes=preg_replace("/\\\\/","",$additional_notes);
 $email_attachment_1=preg_replace("/\\\\/","",$email_attachment_1);
 $email_attachment_2=preg_replace("/\\\\/","",$email_attachment_2);
@@ -247,12 +250,17 @@ if ($match_found > 0)
 		if ($auth_message == 'GOOD')
 			{$auth=1;}
 
-		$stmt="SELECT count(*) from vicidial_live_agents where user='$user';";
-		if ($DB) {echo "|$stmt|\n";}
-		$rslt=mysql_to_mysqli($stmt, $link);
-			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'60004',$user,$server_ip,$session_name,$one_mysql_log);}
-		$row=mysqli_fetch_row($rslt);
-		$authlive=$row[0];
+		if ($stage == 'offline')
+			{$authlive=1;}
+		else
+			{
+			$stmt="SELECT count(*) from vicidial_live_agents where user='$user';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_to_mysqli($stmt, $link);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'60004',$user,$server_ip,$session_name,$one_mysql_log);}
+			$row=mysqli_fetch_row($rslt);
+			$authlive=$row[0];
+			}
 		}
 
 	if ( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0) or ($authlive==0))

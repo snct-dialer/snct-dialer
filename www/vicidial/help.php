@@ -1523,7 +1523,7 @@ if ($SSoutbound_autodial_active > 0)
 <BR>
 <A NAME="campaigns-get_call_launch">
 <BR>
-<B><?php echo _QXZ("Get Call Launch"); ?> -</B><?php echo _QXZ("This menu allows you to choose whether you want to auto-launch the web-form page in a separate window, auto-switch to the SCRIPT, EMAIL, or CHAT tab ,emails and chats must be allowed to have those options available, or do nothing when a call is sent to the agent for this campaign. If custom list fields are enabled on your system, FORM will open the FORM tab upon connection of a call to an agent."); ?>
+<B><?php echo _QXZ("Get Call Launch"); ?> -</B><?php echo _QXZ("This menu allows you to choose whether you want to auto-launch the web-form page in a separate window, auto-switch to the SCRIPT, EMAIL, or CHAT tab ,emails and chats must be allowed to have those options available, or do nothing when a call is sent to the agent for this campaign. If custom list fields are enabled on your system, FORM will open the FORM tab upon connection of a call to an agent. If the PREVIEW option is included, then the launch will happen if a lead is being previewed."); ?>
 
 <BR>
 <A NAME="campaigns-xferconf_a_dtmf">

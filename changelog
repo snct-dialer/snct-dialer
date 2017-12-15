@@ -79,6 +79,14 @@
   * Add upstream Rev. 2872:
     - dispo_send_email.php: Added option of up to 20 attachments.
   * vdc_db_query.php: Add function to display future callbacks (2017-060).
+  * Add upstream Rev. 2873:
+    - AST_inbound_email_parser.pl,
+      AST_update.pl: Added code to handle more gracefully frozen connections
+        to Asterisk port.
+    - dispo_send_email.php,
+      vicidial.php,
+      admin.php,
+      help.php: Added PREVIEW_ options for get_call_launch.
 
   [Axel Huizinga]
   * vdc_phonebook_display.php: Change to $_SERVER['SERVER_NAME'].

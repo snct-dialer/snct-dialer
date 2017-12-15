@@ -4273,13 +4273,14 @@ else
 # 171124-1349 - Added manual_auto_next_options campaign setting
 # 171126-1413 - Changes to allow for Email groups to display script tab on get_call_launch
 # 171130-0036 - Added agent_screen_time_display campaign setting
+# 171214-2045 - Added PREVIEW_ options for get_call_launch
 #
-
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-644a';
-$build = '171130-0036';
+$admin_version = '2.14-645a';
+$build = '171214-2045';
+
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -6429,15 +6430,15 @@ if ($ADD==11)
 
 		$eswHTML=''; $cfwHTML='';
 		if ($SSenable_second_webform > 0)
-			{$eswHTML = "<option value='WEBFORMTWO'>"._QXZ("WEBFORMTWO")."</option>";}
+			{$eswHTML .= "<option value='WEBFORMTWO'>"._QXZ("WEBFORMTWO")."</option>";}
 		if ($SSenable_third_webform > 0)
-			{$eswHTML = "<option value='WEBFORMTHREE'>"._QXZ("WEBFORMTHREE")."</option>";}
+			{$eswHTML .= "<option value='WEBFORMTHREE'>"._QXZ("WEBFORMTHREE")."</option>";}
 		if ($SScustom_fields_enabled > 0)
-			{$cfwHTML = "<option value='FORM'>"._QXZ("FORM")."</option>";}
+			{$cfwHTML .= "<option value='FORM'>"._QXZ("FORM")."</option>";}
 		if ($SSallow_emails > 0)
-			{$aemHTML = "<option value='EMAIL'>"._QXZ("EMAIL")."</option>";}
+			{$aemHTML .= "<option value='EMAIL'>"._QXZ("EMAIL")."</option>";}
 		if ($SSallow_chats > 0)
-			{$achHTML = "<option value='CHAT'>"._QXZ("CHAT")."</option>";}
+			{$achHTML .= "<option value='CHAT'>"._QXZ("CHAT")."</option>";}
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Get Call Launch").": </td><td align=left><select size=1 name=get_call_launch><option selected value='NONE'>"._QXZ("NONE")."</option><option value='SCRIPT'>"._QXZ("SCRIPT")."</option><option value='WEBFORM'>"._QXZ("WEBFORM")."</option>$eswHTML$cfwHTML$aemHTML$achHTML</select>$NWB#campaigns-get_call_launch$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=center colspan=2><input type=submit name=SUBMIT value='"._QXZ("SUBMIT")."'></td></tr>\n";
 		echo "</TABLE></center>\n";
@@ -7184,15 +7185,15 @@ if ($ADD==1111)
 		echo "</select>$NWB#inbound_groups-ingroup_script$NWE</td></tr>\n";
 		$eswHTML=''; $cfwHTML='';
 		if ($SSenable_second_webform > 0)
-			{$eswHTML = "<option value='WEBFORMTWO'>"._QXZ("WEBFORMTWO")."</option>";}
+			{$eswHTML .= "<option value='WEBFORMTWO'>"._QXZ("WEBFORMTWO")."</option>";}
 		if ($SSenable_third_webform > 0)
-			{$eswHTML = "<option value='WEBFORMTHREE'>"._QXZ("WEBFORMTHREE")."</option>";}
+			{$eswHTML .= "<option value='WEBFORMTHREE'>"._QXZ("WEBFORMTHREE")."</option>";}
 		if ($SScustom_fields_enabled > 0)
-			{$cfwHTML = "<option value='FORM'>"._QXZ("FORM")."</option>";}
+			{$cfwHTML .= "<option value='FORM'>"._QXZ("FORM")."</option>";}
 		if ($SSallow_emails > 0)
-			{$aemHTML = "<option value='EMAIL'>"._QXZ("EMAIL")."</option>";}
+			{$aemHTML .= "<option value='EMAIL'>"._QXZ("EMAIL")."</option>";}
 		if ($SSallow_chats > 0)
-			{$achHTML = "<option value='CHAT'>"._QXZ("CHAT")."</option>";}
+			{$achHTML .= "<option value='CHAT'>"._QXZ("CHAT")."</option>";}
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Get Call Launch").": </td><td align=left><select size=1 name=get_call_launch><option selected value='NONE'>"._QXZ("NONE")."</option><option value='SCRIPT'>"._QXZ("SCRIPT")."</option><option value='WEBFORM'>"._QXZ("WEBFORM")."</option>$eswHTML$cfwHTML$aemHTML$achHTML</select>$NWB#inbound_groups-get_call_launch$NWE</td></tr>\n";
 /* Don't give an option (yet).  This is clearly for phones only. 
 		if ($SSallow_emails>0 || $SSallow_chats > 0)
@@ -7266,15 +7267,15 @@ if ($ADD==1811)
 		echo "</select>$NWB#inbound_groups-ingroup_script$NWE</td></tr>\n";
 		$eswHTML=''; $cfwHTML='';
 		if ($SSenable_second_webform > 0)
-			{$eswHTML = "<option value='WEBFORMTWO'>"._QXZ("WEBFORMTWO")."</option>";}
+			{$eswHTML .= "<option value='WEBFORMTWO'>"._QXZ("WEBFORMTWO")."</option>";}
 		if ($SSenable_third_webform > 0)
-			{$eswHTML = "<option value='WEBFORMTHREE'>"._QXZ("WEBFORMTHREE")."</option>";}
+			{$eswHTML .= "<option value='WEBFORMTHREE'>"._QXZ("WEBFORMTHREE")."</option>";}
 		if ($SScustom_fields_enabled > 0)
-			{$cfwHTML = "<option value='FORM'>"._QXZ("FORM")."</option>";}
+			{$cfwHTML .= "<option value='FORM'>"._QXZ("FORM")."</option>";}
 		if ($SSallow_emails > 0)
-			{$aemHTML = "<option value='EMAIL'>"._QXZ("EMAIL")."</option>";}
+			{$aemHTML .= "<option value='EMAIL'>"._QXZ("EMAIL")."</option>";}
 		if ($SSallow_chats > 0)
-			{$achHTML = "<option value='CHAT'>"._QXZ("CHAT")."</option>";}
+			{$achHTML .= "<option value='CHAT'>"._QXZ("CHAT")."</option>";}
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Get Call Launch").": </td><td align=left><select size=1 name=get_call_launch><option value='NONE' selected>"._QXZ("NONE")."</option><option value='SCRIPT'>"._QXZ("SCRIPT")."</option><option value='WEBFORM'>"._QXZ("WEBFORM")."</option>$eswHTML$cfwHTML$aemHTML$achHTML</select>$NWB#inbound_groups-get_call_launch$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right></td><td align=left><input type=hidden name=group_handling value='EMAIL'></td></tr>\n";
@@ -7339,15 +7340,15 @@ if ($ADD==18111)
 		echo "</select>$NWB#inbound_groups-ingroup_script$NWE</td></tr>\n";
 		$eswHTML=''; $cfwHTML='';
 		if ($SSenable_second_webform > 0)
-			{$eswHTML = "<option value='WEBFORMTWO'>"._QXZ("WEBFORMTWO")."</option>";}
+			{$eswHTML .= "<option value='WEBFORMTWO'>"._QXZ("WEBFORMTWO")."</option>";}
 		if ($SSenable_third_webform > 0)
-			{$eswHTML = "<option value='WEBFORMTHREE'>"._QXZ("WEBFORMTHREE")."</option>";}
+			{$eswHTML .= "<option value='WEBFORMTHREE'>"._QXZ("WEBFORMTHREE")."</option>";}
 		if ($SScustom_fields_enabled > 0)
-			{$cfwHTML = "<option value='FORM'>"._QXZ("FORM")."</option>";}
+			{$cfwHTML .= "<option value='FORM'>"._QXZ("FORM")."</option>";}
 		if ($SSallow_emails > 0)
-			{$aemHTML = "<option value='EMAIL'>"._QXZ("EMAIL")."</option>";}
+			{$aemHTML .= "<option value='EMAIL'>"._QXZ("EMAIL")."</option>";}
 		if ($SSallow_chats > 0)
-			{$achHTML = "<option value='CHAT'>"._QXZ("CHAT")."</option>";}
+			{$achHTML .= "<option value='CHAT'>"._QXZ("CHAT")."</option>";}
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Get Call Launch").": </td><td align=left><select size=1 name=get_call_launch><option value='NONE' selected>"._QXZ("NONE")."</option><option value='SCRIPT'>"._QXZ("SCRIPT")."</option><option value='WEBFORM'>"._QXZ("WEBFORM")."</option>$eswHTML$cfwHTML$aemHTML$achHTML</select>$NWB#inbound_groups-get_call_launch$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right></td><td align=left><input type=hidden name=group_handling value='CHAT'></td></tr>\n";
@@ -22318,16 +22319,16 @@ if ($ADD==31)
 
 		$eswHTML=''; $cfwHTML='';
 		if ($SSenable_second_webform > 0)
-			{$eswHTML = '<option value="WEBFORMTWO">'._QXZ("WEBFORMTWO").'</option>';}
+			{$eswHTML .= '<option value="WEBFORMTWO">'._QXZ("WEBFORMTWO").'</option><option value="PREVIEW_WEBFORMTWO">'._QXZ("PREVIEW_WEBFORMTWO").'</option>';}
 		if ($SSenable_third_webform > 0)
-			{$eswHTML = "<option value='WEBFORMTHREE'>"._QXZ("WEBFORMTHREE")."</option>";}
+			{$eswHTML .= "<option value='WEBFORMTHREE'>"._QXZ("WEBFORMTHREE")."</option><option value='PREVIEW_WEBFORMTHREE'>"._QXZ("PREVIEW_WEBFORMTHREE")."</option>";}
 		if ($SScustom_fields_enabled > 0)
-			{$cfwHTML = '<option value="FORM">'._QXZ("FORM").'</option>';}
+			{$cfwHTML .= '<option value="FORM">'._QXZ("FORM").'</option>';}
 		if ($SSallow_emails > 0)
-			{$aemHTML = "<option value='EMAIL'>"._QXZ("EMAIL")."</option>";}
+			{$aemHTML .= "<option value='EMAIL'>"._QXZ("EMAIL")."</option>";}
 		if ($SSallow_chats > 0)
-			{$achHTML = '<option value="CHAT">'._QXZ("CHAT").'</option>';}
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Get Call Launch").": </td><td align=left><select size=1 name=get_call_launch><option value='NONE' selected>"._QXZ("NONE")."</option><option value='SCRIPT'>"._QXZ("SCRIPT")."</option><option value='WEBFORM'>"._QXZ("WEBFORM")."</option>$eswHTML$cfwHTML$aemHTML$achHTML<option value='$get_call_launch' selected>"._QXZ("$get_call_launch")."</option></select>$NWB#campaigns-get_call_launch$NWE</td></tr>\n";
+			{$achHTML .= '<option value="CHAT">'._QXZ("CHAT").'</option>';}
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Get Call Launch").": </td><td align=left><select size=1 name=get_call_launch><option value='NONE' selected>"._QXZ("NONE")."</option><option value='SCRIPT'>"._QXZ("SCRIPT")."</option><option value='WEBFORM'>"._QXZ("WEBFORM")."</option><option value='PREVIEW_WEBFORM'>"._QXZ("PREVIEW_WEBFORM")."</option>$eswHTML$cfwHTML$aemHTML$achHTML<option value='$get_call_launch' selected>"._QXZ("$get_call_launch")."</option></select>$NWB#campaigns-get_call_launch$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Answering Machine Message").": </td><td><input type=text size=50 maxlength=100 name=am_message_exten id=am_message_exten value=\"$am_message_exten\"> <a href=\"javascript:launch_chooser('am_message_exten','date',2100);\">"._QXZ("audio chooser")."</a>  $NWB#campaigns-am_message_exten$NWE\n";
 		$stmt="SELECT count(*) from vicidial_lists where campaign_id='$campaign_id' and am_message_exten_override != '' and active='Y' $LOGallowed_campaignsSQL;";
@@ -27185,15 +27186,15 @@ if ($ADD==3111)
 
 		$eswHTML=''; $cfwHTML='';
 		if ($SSenable_second_webform > 0)
-			{$eswHTML = "<option value='WEBFORMTWO'>"._QXZ("WEBFORMTWO")."</option>";}
+			{$eswHTML .= "<option value='WEBFORMTWO'>"._QXZ("WEBFORMTWO")."</option>";}
 		if ($SSenable_third_webform > 0)
-			{$eswHTML = "<option value='WEBFORMTHREE'>"._QXZ("WEBFORMTHREE")."</option>";}
+			{$eswHTML .= "<option value='WEBFORMTHREE'>"._QXZ("WEBFORMTHREE")."</option>";}
 		if ($SScustom_fields_enabled > 0)
-			{$cfwHTML = "<option value='FORM'>"._QXZ("FORM")."</option>";}
+			{$cfwHTML .= "<option value='FORM'>"._QXZ("FORM")."</option>";}
 		if ($SSallow_emails > 0)
-			{$aemHTML = "<option value='EMAIL'>"._QXZ("EMAIL")."</option>";}
+			{$aemHTML .= "<option value='EMAIL'>"._QXZ("EMAIL")."</option>";}
 		if ($SSallow_chats > 0)
-			{$achHTML = "<option value='CHAT'>"._QXZ("CHAT")."</option>";}
+			{$achHTML .= "<option value='CHAT'>"._QXZ("CHAT")."</option>";}
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Get Call Launch").": </td><td align=left><select size=1 name=get_call_launch><option value='NONE' selected>"._QXZ("NONE")."</option><option value='SCRIPT'>"._QXZ("SCRIPT")."</option><option value='WEBFORM'>"._QXZ("WEBFORM")."</option>$eswHTML$cfwHTML$aemHTML$achHTML<option value='$get_call_launch' selected>"._QXZ("$get_call_launch")."</option></select>$NWB#inbound_groups-get_call_launch$NWE</td></tr>\n";
 
 		if ($SSallow_emails>0 || $SSallow_chats > 0)
@@ -28382,11 +28383,11 @@ if ($ADD==3811)
 
 		$eswHTML=''; $cfwHTML='';
 		if ($SSenable_second_webform > 0)
-			{$eswHTML = "<option value='WEBFORMTWO'>"._QXZ("WEBFORMTWO")."</option>";}
+			{$eswHTML .= "<option value='WEBFORMTWO'>"._QXZ("WEBFORMTWO")."</option>";}
 		if ($SSenable_third_webform > 0)
-			{$eswHTML = "<option value='WEBFORMTHREE'>"._QXZ("WEBFORMTHREE")."</option>";}
+			{$eswHTML .= "<option value='WEBFORMTHREE'>"._QXZ("WEBFORMTHREE")."</option>";}
 		if ($SSallow_emails > 0)
-			{$aemHTML = "<option value='EMAIL'>"._QXZ("EMAIL")."</option>";}
+			{$aemHTML .= "<option value='EMAIL'>"._QXZ("EMAIL")."</option>";}
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Get Call Launch").": </td><td align=left><select size=1 name=get_call_launch><option value='NONE' selected>"._QXZ("NONE")."</option><option value='SCRIPT'>"._QXZ("SCRIPT")."</option><option value='WEBFORM'>"._QXZ("WEBFORM")."</option>$eswHTML$cfwHTML$aemHTML$achHTML<option value='$get_call_launch' selected>"._QXZ("$get_call_launch")."</option></select>$NWB#inbound_groups-get_call_launch$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Group Handling").": </td><td align=left><select size=1 name=group_handling><option  value='PHONE'>"._QXZ("PHONE")."</option>";
