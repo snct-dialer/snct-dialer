@@ -89,10 +89,11 @@
       help.php: Added PREVIEW_ options for get_call_launch.
   * Add upstream Rev. 2874:
     - admin.php: Allow ALPHA-NUMERIC, underscore and dash to $get_call_launch.
-    
+
   [Axel Huizinga]
   * vdc_phonebook_display.php: Change to $_SERVER['SERVER_NAME'].
 
+  * Release 2.25.21 2017-12-17.
 
 2.25.20
   [Jörg Frings-Fürst]
