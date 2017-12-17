@@ -68,9 +68,10 @@
 # 170329-2125 - Updated system load stats collection for Linux kernel 2.6+
 # 170406-1528 - Fix for stats calculation
 # 170809-2144 - Fix for Cross-Cluster phones where phone_type has "trunk" in it
+# 171208-1543 - Added code to handle more gracefully frozen connections to Asterisk port
 #
 
-$build = '170809-2144';
+$build = '171208-1543';
 
 # constants
 $SYSPERF=0;	# system performance logging to MySQL server_performance table every 5 seconds
@@ -252,6 +253,7 @@ $server_ip = $VARserver_ip;		# Asterisk server IP
 &get_time_now;
 
 if (!$UPLOGfile) {$UPLOGfile = "$PATHlogs/update.$year-$mon-$mday";}
+if (!$UPERRfile) {$UPERRfile = "$PATHlogs/updateERROR.$year-$mon-$mday";}
 if (!$VARDB_port) {$VARDB_port='3306';}
 
 $event_string='PROGRAM STARTED||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||';
@@ -446,19 +448,22 @@ if ($run_check > 0)
 		}
 	}
 
-$one_day_interval = 12;		# 2 hour loops for one day
+$one_day_interval = 12000;		# 2 hour loops for one day
+$error_counter=0;
 while($one_day_interval > 0)
 	{
 	$event_string="STARTING NEW MANAGER TELNET CONNECTION||ATTEMPT|ONE DAY INTERVAL:$one_day_interval|";
 	&event_logger;
 
 	if (!$telnet_port) {$telnet_port = '5038';}
+	$UPtelnetlog = "$PATHlogs/update_telnet_log".$filedate.".txt";
 
 	### connect to asterisk manager through telnet
 	$t = new Net::Telnet (Port => $telnet_port,
 						  Prompt => '/.*[\$%#>] $/',
-						  Output_record_separator => '',);
-	#$fh = $t->dump_log("$telnetlog");  # uncomment for telnet log
+						  Output_record_separator => '',
+						  Timeout => 3,);
+#	$fh = $t->dump_log("$UPtelnetlog");  # uncomment for telnet log
 	if (length($ASTmgrUSERNAMEupdate) > 3) {$telnet_login = $ASTmgrUSERNAMEupdate;}
 	else {$telnet_login = $ASTmgrUSERNAME;}
 	$t->open("$telnet_host"); 
@@ -482,7 +487,9 @@ while($one_day_interval > 0)
 		&get_current_channels;
 
 		&validate_parked_channels;
-	   
+
+		$modechange = $t->errmode('return');
+
 		$t->buffer_empty;
 		if ($show_channels_format < 1)
 			{
@@ -496,6 +503,43 @@ while($one_day_interval > 0)
 			{
 			@list_channels = $t->cmd(String => "Action: Command\nCommand: core show channels concise\n\n", Prompt => '/--END COMMAND-.*/'); 
 			}
+
+		$error_string = $t->errmsg;
+		if (length($error_string)>0) 
+			{
+			$error_counter++;
+			$error_string = "$error_counter|".$error_string;
+			&error_logger;
+			}
+		else
+			{$error_counter=0;}
+
+		if ($error_counter > 1) 
+			{
+			$event_string="ERROR LIMIT REACHED, KILLING CONNECTION: $error_counter";
+			&event_logger;
+			
+			# end this connection and start new one
+			$ok = $t->close;
+
+			### connect to asterisk manager through telnet
+			$t = new Net::Telnet (Port => $telnet_port,
+								  Prompt => '/.*[\$%#>] $/',
+								  Output_record_separator => '',
+								  Timeout => 3,);
+		#	$fh = $t->dump_log("$UPtelnetlog");  # uncomment for telnet log
+			if (length($ASTmgrUSERNAMEupdate) > 3) {$telnet_login = $ASTmgrUSERNAMEupdate;}
+			else {$telnet_login = $ASTmgrUSERNAME;}
+			$t->open("$telnet_host"); 
+			$t->waitfor('/[0123]\n$/');			# print login
+			$t->print("Action: Login\nUsername: $telnet_login\nSecret: $ASTmgrSECRET\n\n");
+			$t->waitfor('/Authentication accepted/');		# waitfor auth accepted
+
+				$event_string="STARTED NEW MANAGER TELNET CONNECTION|$telnet_login|CONFIRMED CONNECTION|ONE DAY INTERVAL:$one_day_interval|";
+			&event_logger;
+			}
+
+		$modechange = $t->errmode('die');
 
 		##### TEST CHANNELS ZAP/IAX2/Local TO SEE IF THERE WAS A LARGE HICCUP IN OUTPUT FROM PREVIOUS OUTPUT
 		@test_channels=@list_channels;
@@ -1085,7 +1129,7 @@ while($one_day_interval > 0)
 	@hangup = $t->cmd(String => "Action: Logoff\n\n", Prompt => "/.*/"); 
 
 	$t->buffer_empty;
-	$t->waitfor(Match => '/Message:.*\n\n/', Timeout => 10);
+	$t->waitfor(Match => '/Message:.*\n\n/', Timeout => 5);
 	$ok = $t->close;
 
 	$one_day_interval--;
@@ -1314,6 +1358,7 @@ sub get_time_now
 
 	$now_date_epoch = time();
 	$now_date = "$year-$mon-$mday $hour:$min:$sec";
+	$filedate = "$year$mon$mday$hour$min$sec";
 	}
 
 
@@ -1334,6 +1379,20 @@ sub event_logger
 		print "$now_date|$event_string|\n";
 		}
 	$event_string='';
+	}
+
+
+sub error_logger 
+	{
+	if ($SYSLOG)
+		{
+		open(Eout, ">>$UPERRfile")
+				|| die "Can't open $UPERRfile: $!\n";
+		print Eout "$now_date|$error_string|\n";
+		close(Eout);
+		}
+	print "ERROR: $now_date|$error_string|\n";
+	$error_string='';
 	}
 
 

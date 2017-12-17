@@ -439,10 +439,13 @@
 # 171018-1310 - Added code for campaign scheduled callback email alerts
 # 171026-0107 - Added optional queue_log logging
 # 171116-2334 - Added code for duplicate fields
+# 171124-1158 - Added max_inbound_calls_outcome options
+# 171130-0314 - Added agent_screen_time_display option
+# 171204-1528 - Fixes for custom field duplicate fields
 #
 
-$version = '2.14-333';
-$build = '171116-2334';
+$version = '2.14-336';
+$build = '171204-1528';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=700;
@@ -1415,6 +1418,7 @@ if ($ACTION == 'regCLOSER')
 		}
 	else
 		{
+		$orig_closer_choice = $closer_choice;
 		$stmt = "SELECT max_inbound_calls FROM vicidial_users where user='$user';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00587',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -1425,7 +1429,7 @@ if ($ACTION == 'regCLOSER')
 			$row=mysqli_fetch_row($rslt);
 			$VU_max_inbound_calls =		$row[0];
 			}
-		$stmt = "SELECT max_inbound_calls FROM vicidial_campaigns where campaign_id='$campaign';";
+		$stmt = "SELECT max_inbound_calls,max_inbound_calls_outcome FROM vicidial_campaigns where campaign_id='$campaign';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00589',$user,$server_ip,$session_name,$one_mysql_log);}
 		if ($format=='debug') {echo "\n<!-- $rowx[0]|$stmt -->";}
@@ -1433,7 +1437,8 @@ if ($ACTION == 'regCLOSER')
 		if ($vcmic_ct > 0)
 			{
 			$row=mysqli_fetch_row($rslt);
-			$CP_max_inbound_calls =		$row[0];
+			$CP_max_inbound_calls =			$row[0];
+			$max_inbound_calls_outcome =	$row[1];
 			}
 
 		if ( ($VU_max_inbound_calls > 0) or ($CP_max_inbound_calls > 0) )
@@ -1464,11 +1469,35 @@ if ($ACTION == 'regCLOSER')
 		if (preg_match('/INBOUND_MAN|MANUAL/',$dial_method))
 			{$vla_autodial = 'N';}
 
+		$standard_closer_update=1;
 		if ( ($closer_choice == "MGRLOCK-") or ($closer_choice == "MAXLOCK-") )
 			{
+			$standard_closer_update=0;
 			if ($closer_choice == "MAXLOCK-")
 				{
-				$closer_choice = " -";
+				if (preg_match("/ALLOW_AGENTDIRECT/",$max_inbound_calls_outcome))
+					{
+					$standard_closer_update=1;
+					
+					$ADcloser_campaigns = preg_replace("/^ | -$/",'',$orig_closer_choice);
+					$ADcloser_campaignsARY = explode(" ",$ADcloser_campaigns);
+					$ADcloser_campaignsARYct = count($ADcloser_campaignsARY);
+					$ADc=0;
+					$ADcloser_campaigns='';
+					while ($ADc < $ADcloser_campaignsARYct)
+						{
+						if (preg_match("/AGENTDIRECT/i",$ADcloser_campaignsARY[$ADc]))
+							{$ADcloser_campaigns .= "$ADcloser_campaignsARY[$ADc] ";}
+						$ADc++;
+						}
+					if (strlen($ADcloser_campaigns) > 3)
+						{$ADcloser_campaigns = " ".$ADcloser_campaigns."-";}
+					else
+						{$ADcloser_campaigns = " -";}
+					$closer_choice = $ADcloser_campaigns;
+					}
+				else
+					{$closer_choice = " -";}
 				}
 			else
 				{
@@ -1513,7 +1542,7 @@ if ($ACTION == 'regCLOSER')
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00008',$user,$server_ip,$session_name,$one_mysql_log);}
 			}
-		else
+		if ($standard_closer_update > 0)
 			{
 			$stmt="UPDATE vicidial_live_agents set closer_campaigns='$closer_choice',last_state_change='$NOW_TIME',outbound_autodial='$vla_autodial' where user='$user' and server_ip='$server_ip';";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
@@ -8575,7 +8604,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 			$custom_field_values='----------';
 			$custom_field_types='|';
 			### find the names of all custom fields, if any
-			$stmt = "SELECT field_label,field_type FROM vicidial_lists_fields where list_id='$entry_list_id' and field_type NOT IN('SCRIPT','DISPLAY') and field_label NOT IN('entry_date','vendor_lead_code','source_id','list_id','gmt_offset_now','called_since_last_reset','phone_code','phone_number','title','first_name','middle_initial','last_name','address1','address2','address3','city','state','province','postal_code','country_code','gender','date_of_birth','alt_phone','email','security_phrase','comments','called_count','last_local_call_time','rank','owner');";
+			$stmt = "SELECT field_label,field_type FROM vicidial_lists_fields where list_id='$entry_list_id' and field_type NOT IN('SCRIPT','DISPLAY') and field_label NOT IN('entry_date','vendor_lead_code','source_id','list_id','gmt_offset_now','called_since_last_reset','phone_code','phone_number','title','first_name','middle_initial','last_name','address1','address2','address3','city','state','province','postal_code','country_code','gender','date_of_birth','alt_phone','email','security_phrase','comments','called_count','last_local_call_time','rank','owner') and field_label NOT LIKE \"%_DUPLICATE_%\";";
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00339',$user,$server_ip,$session_name,$one_mysql_log);}
 			if ($DB) {echo "$stmt\n";}
@@ -9215,7 +9244,7 @@ if ($ACTION == 'VDADcheckINCOMINGother')
 		if ($email_ct==0) 
 			{
 			# Chats don't have a priority setting, but we use it for the AGENTDIRECT_CHAT one (which has it set to 99 and is uneditable through the admin) so that is always the highest priority.  Also ensures that agent does not transfer to self if transferring to the same ingroup (transferring_agent!=user clause)
-			$stmt="SELECT vlc.chat_id,UNIX_TIMESTAMP(vlc.chat_start_time),vlc.status,vlc.chat_creator,vlc.group_id,vlc.lead_id,vlc.user_direct_group_id,vig.queue_priority from vicidial_live_chats vlc, vicidial_inbound_groups vig where vlc.status='WAITING' and (vlc.group_id in ($chat_group_str) or (vlc.group_id='AGENTDIRECT_CHAT' and user_direct='$user')) and (transferring_agent is null or transferring_agent!='$user') order by queue_priority desc, chat_id asc limit 1;";
+			$stmt="SELECT vlc.chat_id,UNIX_TIMESTAMP(vlc.chat_start_time),vlc.status,vlc.chat_creator,vlc.group_id,vlc.lead_id,vlc.user_direct_group_id,vig.queue_priority,vig.get_call_launch from vicidial_live_chats vlc, vicidial_inbound_groups vig where vlc.status='WAITING' and (vlc.group_id in ($chat_group_str) or (vlc.group_id='AGENTDIRECT_CHAT' and user_direct='$user')) and (transferring_agent is null or transferring_agent!='$user') order by queue_priority desc, chat_id asc limit 1;";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);
 	if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00638',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -9261,8 +9290,20 @@ if ($ACTION == 'VDADcheckINCOMINGother')
 
 			if (strlen($call_server_ip)<7) {$call_server_ip = $server_ip;}
 
+			$stmt="SELECT get_call_launch FROM vicidial_inbound_groups where group_id='$VDADchannel_group';";
+			$rslt=mysql_to_mysqli($stmt, $link);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+			if ($DB) {echo "$stmt\n";}
+			$eg_ct = mysqli_num_rows($rslt);
+			if ($eg_ct > 0)
+				{
+				$row=mysqli_fetch_row($rslt);
+				$get_call_launch = $row[0];
+				}
+			if (!preg_match("/EMAIL|SCRIPT/",$get_call_launch))
+				{$get_call_launch='EMAIL';}
 			# Change to better suit the output processed by the agent interface
-			 echo "1\n" . $lead_id . '|'.$uniqueid.'|' . $email_from . '|EMAIL|' . $email_row_id . '|' . $email_row_id . "|EMAIL\n"; # VDIC_data_VDAC
+			 echo "1\n" . $lead_id . '|'.$uniqueid.'|' . $email_from . '|' . $get_call_launch . '|' . $email_row_id . '|' . $email_row_id . "|EMAIL\n"; # VDIC_data_VDAC
 
 			##### grab number of calls today in this campaign and increment
 			$stmt="SELECT calls_today FROM vicidial_live_agents WHERE user='$user' and campaign_id='$campaign';";
@@ -9867,7 +9908,7 @@ if ($ACTION == 'VDADcheckINCOMINGother')
 			$custom_field_values='----------';
 			$custom_field_types='|';
 			### find the names of all custom fields, if any
-			$stmt = "SELECT field_label,field_type FROM vicidial_lists_fields where list_id='$entry_list_id' and field_type NOT IN('SCRIPT','DISPLAY') and field_label NOT IN('entry_date','vendor_lead_code','source_id','list_id','gmt_offset_now','called_since_last_reset','phone_code','phone_number','title','first_name','middle_initial','last_name','address1','address2','address3','city','state','province','postal_code','country_code','gender','date_of_birth','alt_phone','email','security_phrase','comments','called_count','last_local_call_time','rank','owner');";
+			$stmt = "SELECT field_label,field_type FROM vicidial_lists_fields where list_id='$entry_list_id' and field_type NOT IN('SCRIPT','DISPLAY') and field_label NOT IN('entry_date','vendor_lead_code','source_id','list_id','gmt_offset_now','called_since_last_reset','phone_code','phone_number','title','first_name','middle_initial','last_name','address1','address2','address3','city','state','province','postal_code','country_code','gender','date_of_birth','alt_phone','email','security_phrase','comments','called_count','last_local_call_time','rank','owner') and field_label NOT LIKE \"%_DUPLICATE_%\";";
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00512',$user,$server_ip,$session_name,$one_mysql_log);}
 			if ($DB) {echo "$stmt\n";}
@@ -10951,7 +10992,7 @@ if ($ACTION == 'LeaDSearcHSelecTUpdatE')
 			$custom_field_values='----------';
 			$custom_field_types='|';
 			### find the names of all custom fields, if any
-			$stmt = "SELECT field_label,field_type FROM vicidial_lists_fields where list_id='$entry_list_id' and field_type NOT IN('SCRIPT','DISPLAY') and field_label NOT IN('entry_date','vendor_lead_code','source_id','list_id','gmt_offset_now','called_since_last_reset','phone_code','phone_number','title','first_name','middle_initial','last_name','address1','address2','address3','city','state','province','postal_code','country_code','gender','date_of_birth','alt_phone','email','security_phrase','comments','called_count','last_local_call_time','rank','owner');";
+			$stmt = "SELECT field_label,field_type FROM vicidial_lists_fields where list_id='$entry_list_id' and field_type NOT IN('SCRIPT','DISPLAY') and field_label NOT IN('entry_date','vendor_lead_code','source_id','list_id','gmt_offset_now','called_since_last_reset','phone_code','phone_number','title','first_name','middle_initial','last_name','address1','address2','address3','city','state','province','postal_code','country_code','gender','date_of_birth','alt_phone','email','security_phrase','comments','called_count','last_local_call_time','rank','owner') and field_label NOT LIKE \"%_DUPLICATE_%\";";
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00479',$user,$server_ip,$session_name,$one_mysql_log);}
 			if ($DB) {echo "$stmt\n";}
@@ -12706,40 +12747,43 @@ if ($ACTION == 'updateDISPO')
 
 
 			##### BEGIN grab the data from custom table for the lead_id
-			$stmt="SELECT $custom_field_names_SQL FROM custom_$entry_list_id where lead_id='$lead_id' LIMIT 1;";
-			$rslt=mysql_to_mysqli($stmt, $link);
-				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00345',$user,$server_ip,$session_name,$one_mysql_log);}
-			if ($DB) {echo "$stmt\n";}
-			$list_lead_ct = mysqli_num_rows($rslt);
-			if ($list_lead_ct > 0)
+			if ($entry_list_id > 0)
 				{
-				$row=mysqli_fetch_row($rslt);
-				$o=0;
-				while ($custom_field_names_ct > $o) 
+				$stmt="SELECT $custom_field_names_SQL FROM custom_$entry_list_id where lead_id='$lead_id' LIMIT 1;";
+				$rslt=mysql_to_mysqli($stmt, $link);
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00345',$user,$server_ip,$session_name,$one_mysql_log);}
+				if ($DB) {echo "$stmt\n";}
+				$list_lead_ct = mysqli_num_rows($rslt);
+				if ($list_lead_ct > 0)
 					{
-					$field_name_id =		$custom_field_names_ARY[$o];
-					$field_name_tag =		"--A--" . $field_name_id . "--B--";
-					if ($enc_fields > 0)
+					$row=mysqli_fetch_row($rslt);
+					$o=0;
+					while ($custom_field_names_ct > $o) 
 						{
-						$field_enc='';   $field_enc_all='';
-						if ($DB) {echo "|$column_list|$encrypt_list|\n";}
-						if ( (preg_match("/,$field_name_id,/",$encrypt_list)) and (strlen($row[$o]) > 0) )
+						$field_name_id =		$custom_field_names_ARY[$o];
+						$field_name_tag =		"--A--" . $field_name_id . "--B--";
+						if ($enc_fields > 0)
 							{
-							exec("../agc/aes.pl --decrypt --text=$row[$o]", $field_enc);
-							$field_enc_ct = count($field_enc);
-							$k=0;
-							while ($field_enc_ct > $k)
+							$field_enc='';   $field_enc_all='';
+							if ($DB) {echo "|$column_list|$encrypt_list|\n";}
+							if ( (preg_match("/,$field_name_id,/",$encrypt_list)) and (strlen($row[$o]) > 0) )
 								{
-								$field_enc_all .= $field_enc[$k];
-								$k++;
+								exec("../agc/aes.pl --decrypt --text=$row[$o]", $field_enc);
+								$field_enc_ct = count($field_enc);
+								$k=0;
+								while ($field_enc_ct > $k)
+									{
+									$field_enc_all .= $field_enc[$k];
+									$k++;
+									}
+								$field_enc_all = preg_replace("/CRYPT: |\n|\r|\t/",'',$field_enc_all);
+								$row[$o] = base64_decode($field_enc_all);
 								}
-							$field_enc_all = preg_replace("/CRYPT: |\n|\r|\t/",'',$field_enc_all);
-							$row[$o] = base64_decode($field_enc_all);
 							}
+						$form_field_value =		urlencode(trim("$row[$o]"));
+						$dispo_call_urlARY[$j] = preg_replace("/$field_name_tag/i","$form_field_value",$dispo_call_urlARY[$j]);
+						$o++;
 						}
-					$form_field_value =		urlencode(trim("$row[$o]"));
-					$dispo_call_urlARY[$j] = preg_replace("/$field_name_tag/i","$form_field_value",$dispo_call_urlARY[$j]);
-					$o++;
 					}
 				}
 			}
@@ -15827,7 +15871,7 @@ if ($ACTION == 'CalLBacKLisT')
 	{
 	$campaignCBhoursSQL = '';
 	$campaignCBdisplaydaysSQL = '';
-	$stmt = "SELECT callback_hours_block,callback_list_calltime,local_call_time,callback_display_days from vicidial_campaigns where campaign_id='$campaign';";
+	$stmt = "SELECT callback_hours_block,callback_list_calltime,local_call_time,callback_display_days,scheduled_callbacks_count from vicidial_campaigns where campaign_id='$campaign';";
 	$rslt=mysql_to_mysqli($stmt, $link);
 		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00437',$user,$server_ip,$session_name,$one_mysql_log);}
 	if ($rslt) {$camp_count = mysqli_num_rows($rslt);}
@@ -15838,11 +15882,19 @@ if ($ACTION == 'CalLBacKLisT')
 		$callback_list_calltime =	$row[1];
 		$local_call_time =			$row[2];
 		$callback_display_days =	$row[3];
+		$callback_count = 			$row[4];
 		if ($callback_hours_block > 0)
 			{
 			$x_hours_ago = date("Y-m-d H:i:s", mktime(date("H")-$callback_hours_block,date("i"),date("s"),date("m"),date("d"),date("Y")));
 			$campaignCBhoursSQL = "and entry_time < \"$x_hours_ago\"";
 			}
+		$statusSQL = "and status = \"LIVE\"";
+		if($callback_display_days < 0) {
+			if($callback_count == "ALL_ACTIVE") {
+				$statusSQL = "AND status IN (\"LIVE\", \"ACTIVE\")";
+			}
+			$callback_display_days *= (-1);
+		}
 		if ($callback_display_days > 0)
 			{
 			$x_days_from_now = date("Y-m-d H:i:s", mktime(0,0,0,date("m"),date("d")+$callback_display_days,date("Y")));
@@ -15853,7 +15905,7 @@ if ($ACTION == 'CalLBacKLisT')
 	if ($agentonly_callback_campaign_lock > 0)
 		{$campaignCBsql = "and campaign_id='$campaign'";}
 
-	$stmt = "SELECT callback_id,lead_id,campaign_id,status,entry_time,callback_time,comments from vicidial_callbacks where recipient='USERONLY' and user='$user' $campaignCBsql $campaignCBhoursSQL $campaignCBdisplaydaysSQL and status = 'LIVE' order by callback_time;";
+	$stmt = "SELECT callback_id,lead_id,campaign_id,status,entry_time,callback_time,comments from vicidial_callbacks where recipient='USERONLY' and user='$user' $campaignCBsql $campaignCBhoursSQL $campaignCBdisplaydaysSQL $statusSQL order by callback_time;";
 	if ($DB) {echo "$stmt\n";}
 	$rslt=mysql_to_mysqli($stmt, $link);
 		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00178',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -16166,6 +16218,137 @@ if ($ACTION == 'CalLBacKCounT')
 		}
 	}
 
+
+
+################################################################################
+### AGENTtimeREPORT - display today's agent time report
+################################################################################
+if ($ACTION == 'AGENTtimeREPORT')
+	{
+	if (strlen($stage) < 5)
+		{$stage = 'DISABLED';}
+
+	$stmt="SELECT agent_screen_time_display from vicidial_campaigns where campaign_id='$campaign';";
+	$rslt=mysql_to_mysqli($stmt, $link);
+		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+	$camp_to_print = mysqli_num_rows($rslt);
+	if ($format=='debug') {echo "|$camp_to_print|$stmt|";}
+	if ($camp_to_print > 0) 
+		{
+		$row=mysqli_fetch_row($rslt);
+		$stage =		$row[0];
+		}
+
+	if ($stage == 'DISABLED')
+		{
+		echo "<BR><BR>\n";
+		echo "<B>" . _QXZ("ERROR: this feature is disabled for this campaign") . "</B>\n";
+		echo "<BR><BR>\n";
+		echo "<a href=\"#\" onclick=\"AgentTimeReport('close');return false;\">"._QXZ("Close Agent Time Report")."</a>";
+		}
+	else
+		{
+		$stmt="SELECT pause_epoch,wait_epoch,talk_epoch,dispo_epoch,dead_epoch,pause_sec,wait_sec,talk_sec,dispo_sec,dead_sec,sub_status,agent_log_id from vicidial_agent_log where user='$user' and event_time >= '$NOW_DATE 00:00:00'  and event_time <= '$NOW_DATE 23:59:59' order by agent_log_id desc limit 10000;";
+		$rslt=mysql_to_mysqli($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+		$time_logs_to_print = mysqli_num_rows($rslt);
+		if ($format=='debug') {echo "|$stage|$time_logs_to_print|$stmt|";}
+
+		$g=0;
+		$pauseTOTAL=0;
+		$waitTOTAL=0;
+		$talkTOTAL=0;
+		$dispoTOTAL=0;
+		$billTOTAL=0;
+		$breakTOTAL=0;
+		$lunchTOTAL=0;
+		$coachTOTAL=0;
+		$loginTOTAL=0;
+		while ($time_logs_to_print > $g) 
+			{
+			$row=mysqli_fetch_row($rslt);
+			$Tpause_epoch[$g] =		$row[0];
+			$Twait_epoch[$g] =		$row[1];
+			$talk_epoch[$g] =		$row[2];
+			$Tdispo_epoch[$g] =		$row[3];
+			$Tdead_epoch[$g] =		$row[4];
+			$Tpause_sec[$g] =		$row[5];
+			$Twait_sec[$g] =		$row[6];
+			$Ttalk_sec[$g] =		$row[7];
+			$Tdispo_sec[$g] =		$row[8];
+			$Tdead_sec[$g] =		$row[9];
+			$Tsub_status[$g] =		$row[10];
+			$Tagent_log_id[$g] =	$row[11];
+
+			if ($Tpause_sec[$g] < 65000)	
+				{
+				$pauseTOTAL = ($pauseTOTAL + $Tpause_sec[$g]);
+				if (preg_match("/break/i",$Tsub_status[$g])) {$breakTOTAL = ($breakTOTAL + $Tpause_sec[$g]);}
+				if (preg_match("/lunch/i",$Tsub_status[$g])) {$lunchTOTAL = ($lunchTOTAL + $Tpause_sec[$g]);}
+				if (preg_match("/coach/i",$Tsub_status[$g])) {$coachTOTAL = ($coachTOTAL + $Tpause_sec[$g]);}
+				}
+			if ($Twait_sec[$g] < 65000)		{$waitTOTAL = ($waitTOTAL + $Twait_sec[$g]);}
+			if ($Ttalk_sec[$g] < 65000)		{$talkTOTAL = ($talkTOTAL + $Ttalk_sec[$g]);}
+			if ($Tdispo_sec[$g] < 65000)	{$dispoTOTAL = ($dispoTOTAL + $Tdispo_sec[$g]);}
+
+			if ($format=='debug') {echo "|$g|$Tagent_log_id[$g]|$Tpause_epoch[$g]|$Tpause_sec[$g]|<BR>\n";}
+			$g++;
+			}
+		$billTOTAL = ($waitTOTAL + $talkTOTAL + $dispoTOTAL);
+		$loginTOTAL = ($pauseTOTAL + $waitTOTAL + $talkTOTAL + $dispoTOTAL);
+
+		echo "<CENTER>\n";
+		#echo "<font style=\"font-size:14px;font-family:sans-serif;\"><B>"._QXZ("Agent Time Report for Today").":</B></font>\n";
+		echo "<BR><BR>\n";
+		if ($stage == 'ENABLED_BASIC')
+			{
+			echo "<TABLE CELLPADDING=2 CELLSPACING=2 BORDER=0 WIDTH=400 BGCOLOR='#999999'>";
+			echo "<TR>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:14px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("TOTAL LOGGED IN TIME")." &nbsp; </font></TD>";
+			echo "</TR><TR>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:12px;font-family:sans-serif;\"><B> &nbsp; " . gmdate("H:i:s", $loginTOTAL) . " &nbsp; </font></TD>";
+			echo "</TR>";
+			echo "</TABLE>";
+			}
+		if ($stage == 'ENABLED_FULL')
+			{
+			echo "<TABLE CELLPADDING=2 CELLSPACING=2 BORDER=0 WIDTH=800 BGCOLOR='#999999'>";
+			echo "<TR>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:14px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("TOTAL LOGGED IN")." &nbsp; </font></TD>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:14px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("WAIT")." &nbsp; </font></TD>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:14px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("TALK")." &nbsp; </font></TD>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:14px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("DISPO")." &nbsp; </font></TD>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:14px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("PAUSE")." &nbsp; </font></TD>";
+			echo "</TR><TR>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:12px;font-family:sans-serif;\"><B> &nbsp; " . gmdate("H:i:s", $loginTOTAL) . " &nbsp; </font></TD>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:12px;font-family:sans-serif;\"><B> &nbsp; " . gmdate("H:i:s", $waitTOTAL) . " &nbsp; </font></TD>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:12px;font-family:sans-serif;\"><B> &nbsp; " . gmdate("H:i:s", $talkTOTAL) . " &nbsp; </font></TD>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:12px;font-family:sans-serif;\"><B> &nbsp; " . gmdate("H:i:s", $dispoTOTAL) . " &nbsp; </font></TD>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:12px;font-family:sans-serif;\"><B> &nbsp; " . gmdate("H:i:s", $pauseTOTAL) . " &nbsp; </font></TD>";
+			echo "</TR>";
+			echo "</TABLE>";
+			}
+		if ($stage == 'ENABLED_BILL_BREAK_LUNCH_COACH')
+			{
+			echo "<TABLE CELLPADDING=2 CELLSPACING=2 BORDER=0 WIDTH=700 BGCOLOR='#999999'>";
+			echo "<TR>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:14px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("BILLABLE")." &nbsp; </font></TD>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:14px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("BREAK")." &nbsp; </font></TD>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:14px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("LUNCH")." &nbsp; </font></TD>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:14px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("COACH")." &nbsp; </font></TD>";
+			echo "</TR><TR>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:12px;font-family:sans-serif;\"><B> &nbsp; " . gmdate("H:i:s", $billTOTAL) . " &nbsp; </font></TD>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:12px;font-family:sans-serif;\"><B> &nbsp; " . gmdate("H:i:s", $breakTOTAL) . " &nbsp; </font></TD>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:12px;font-family:sans-serif;\"><B> &nbsp; " . gmdate("H:i:s", $lunchTOTAL) . " &nbsp; </font></TD>";
+			echo "<TD BGCOLOR='white'><font style=\"font-size:12px;font-family:sans-serif;\"><B> &nbsp; " . gmdate("H:i:s", $coachTOTAL) . " &nbsp; </font></TD>";
+			echo "</TR>";
+			echo "</TABLE>";
+			}
+		echo "<BR>";
+		echo "<a href=\"#\" onclick=\"AgentTimeReport('close');return false;\">"._QXZ("Close Agent Time Report")."</a>";
+		echo "</CENTER>";
+		}
+	}
 
 
 

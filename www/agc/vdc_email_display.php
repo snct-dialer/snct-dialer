@@ -22,10 +22,11 @@
 # 141216-2117 - Added language settings lookups and user/pass variable standardization
 # 150603-1541 - Fixed email attachments issue
 # 170526-2330 - Added additional variable filtering
+# 171126-1406 - Added fault tolerance and extra debug
 #
 
-$version = '2.14-12';
-$build = '170526-2330';
+$version = '2.14-13';
+$build = '171126-1406';
 
 require_once("dbconnect_mysqli.php");
 require_once("functions.php");
@@ -259,8 +260,12 @@ if ($REPLY)
 	}
 
 
-if ($lead_id) {
-	$stmt="select * from vicidial_email_list where lead_id='$lead_id' and direction='INBOUND' and status IN('NEW','INCALL') order by email_date asc";
+if ( ($lead_id) or (strlen($email_row_id)>0) ) 
+	{
+	$stmt="SELECT * from vicidial_email_list where lead_id='$lead_id' and direction='INBOUND' and status IN('NEW','INCALL') order by email_date asc";
+	if ($email_row_id)
+		{$stmt="SELECT * from vicidial_email_list where lead_id='$lead_id' and email_row_id='$email_row_id' and direction='INBOUND' and status IN('NEW','INCALL') order by email_date asc";}
+	if ($DB > 0) {echo "$stmt\n";}
 	$rslt=mysql_to_mysqli($stmt, $link);
 	if (mysqli_num_rows($rslt)>0) {
 		$row=mysqli_fetch_array($rslt);

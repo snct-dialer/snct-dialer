@@ -125,10 +125,11 @@
 # 170713-2312 - Fix for issue #1028
 # 170815-1315 - Added HTTP error code 418
 # 171114-1015 - Added ability for update_lead function insert_if_not_found leads to be inserted into the hopper
+# 171129-0751 - Fixed issue with duplicate custom fields
 #
 
-$version = '2.14-101';
-$build = '171114-1015';
+$version = '2.14-102';
+$build = '171129-0751';
 $api_url_log = 0;
 
 $startMS = microtime();
@@ -7598,13 +7599,14 @@ if ($function == 'add_lead')
 						if ($custom_fields_enabled > 0)
 							{
 							$stmt="SHOW TABLES LIKE \"custom_$list_id\";";
-							if ($DB>0) {echo "$stmt";}
+							if ($DB>0) {echo "$stmt\n";}
 							$rslt=mysql_to_mysqli($stmt, $link);
 							$tablecount_to_print = mysqli_num_rows($rslt);
 							if ($tablecount_to_print > 0) 
 								{
 								$CFinsert_SQL='';
-								$stmt="SELECT field_id,field_label,field_name,field_description,field_rank,field_help,field_type,field_options,field_size,field_max,field_default,field_cost,field_required,multi_position,name_position,field_order,field_encrypt from vicidial_lists_fields where list_id='$list_id' order by field_rank,field_order,field_label;";
+								$stmt="SELECT field_id,field_label,field_name,field_description,field_rank,field_help,field_type,field_options,field_size,field_max,field_default,field_cost,field_required,multi_position,name_position,field_order,field_encrypt from vicidial_lists_fields where list_id='$list_id' and field_duplicate!='Y' order by field_rank,field_order,field_label;";
+								if ($DB>0) {echo "$stmt\n";}
 								$rslt=mysql_to_mysqli($stmt, $link);
 								$fields_to_print = mysqli_num_rows($rslt);
 								$fields_list='';
@@ -7669,6 +7671,7 @@ if ($function == 'add_lead')
 									{
 									$CFinsert_SQL = preg_replace("/,$/","",$CFinsert_SQL);
 									$custom_table_update_SQL = "INSERT INTO custom_$list_id SET lead_id='$lead_id',$CFinsert_SQL;";
+									if ($DB>0) {echo "$custom_table_update_SQL\n";}
 									$rslt=mysql_to_mysqli($custom_table_update_SQL, $link);
 									$custom_insert_count = mysqli_affected_rows($link);
 									if ($custom_insert_count > 0) 
@@ -7687,7 +7690,7 @@ if ($function == 'add_lead')
 									else
 										{
 										$result = 'NOTICE';
-										$result_reason = "add_lead CUSTOM FIELDS NOT ADDED, NO FIELDS DEFINED";
+										$result_reason = "add_lead CUSTOM FIELDS NOT ADDED, NO FIELDS TO UPDATE DEFINED";
 										echo "$result: $result_reason - $phone_number|$lead_id|$list_id\n";
 										$data = "$phone_number|$lead_id|$list_id";
 										api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
@@ -7817,6 +7820,7 @@ if ($function == 'add_lead')
 								}
 							else
 								{
+								$callback_type='ANYONE';
 								$callback_user='';
 								$valid_callback++;
 								}
@@ -8270,6 +8274,7 @@ if ($function == 'update_lead')
 											}
 										else
 											{
+											$callback_type='ANYONE';
 											$callback_user='';
 											$valid_callback++;
 											}
@@ -8357,7 +8362,7 @@ if ($function == 'update_lead')
 										{
 										$update_SQL='';
 										$VL_update_SQL='';
-										$stmt="SELECT field_id,field_label,field_name,field_description,field_rank,field_help,field_type,field_options,field_size,field_max,field_default,field_cost,field_required,multi_position,name_position,field_order,field_encrypt from vicidial_lists_fields where list_id='$lead_custom_list' order by field_rank,field_order,field_label;";
+										$stmt="SELECT field_id,field_label,field_name,field_description,field_rank,field_help,field_type,field_options,field_size,field_max,field_default,field_cost,field_required,multi_position,name_position,field_order,field_encrypt from vicidial_lists_fields where list_id='$lead_custom_list' and field_duplicate!='Y' order by field_rank,field_order,field_label;";
 										$rslt=mysql_to_mysqli($stmt, $link);
 										$fields_to_print = mysqli_num_rows($rslt);
 										$fields_list='';
@@ -8589,7 +8594,7 @@ if ($function == 'update_lead')
 											if ($tablecount_to_print > 0) 
 												{
 												$CFinsert_SQL='';
-												$stmt="SELECT field_id,field_label,field_name,field_description,field_rank,field_help,field_type,field_options,field_size,field_max,field_default,field_cost,field_required,multi_position,name_position,field_order,field_encrypt from vicidial_lists_fields where list_id='$list_id' order by field_rank,field_order,field_label;";
+												$stmt="SELECT field_id,field_label,field_name,field_description,field_rank,field_help,field_type,field_options,field_size,field_max,field_default,field_cost,field_required,multi_position,name_position,field_order,field_encrypt from vicidial_lists_fields where list_id='$list_id' and field_duplicate!='Y' order by field_rank,field_order,field_label;";
 												$rslt=mysql_to_mysqli($stmt, $link);
 												$fields_to_print = mysqli_num_rows($rslt);
 												$fields_list='';

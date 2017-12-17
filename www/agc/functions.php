@@ -42,6 +42,7 @@
 # 170528-1029 - Fix for rare inbound logging issue #1017, Added variable filtering
 # 171021-1340 - Fix to update default field if duplicate field in custom fields changed
 # 171116-2333 - Added code for duplicate custom fields
+# 171129-0812 - Fixed issue with duplicate custom fields
 #
 
 # $mysql_queries = 26
@@ -396,6 +397,10 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user,$DB,$call_i
 						$duplicates_list .= "|$A_field_label[$o]|";
 						}
 					}
+				else
+					{
+					$A_master_field[$o] = $A_field_label[$o];
+					}
 				if ( (!preg_match("/\|$A_field_label[$o]\|/i",$vicidial_list_fields)) and (!preg_match("/\|$A_master_field[$o]\|/i",$vicidial_list_fields)) )
 					{
 					if ( ($A_field_type[$o]=='DISPLAY') or ($A_field_type[$o]=='SCRIPT') )
@@ -420,7 +425,7 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user,$DB,$call_i
 				else
 					{
 					$select_SQL .= "8,";
-					$A_field_value[$o] = '--A--' . $A_field_label[$o] . '--B--';
+					$A_field_value[$o] = '--A--' . $A_master_field[$o] . '--B--';
 					}
 				$o++;
 				$rank_select .= "<option>$o</option>";

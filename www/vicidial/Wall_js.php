@@ -11,13 +11,16 @@
 #
 #
 # CHANGELOG:
-# 171012-1930 first release
-# 171030-1355 Set default for AnzeigeAll to "Y"
-# 171121-1633 Add maxwaittime 
-# 171121-1647 Add AnzeigeNull default "N" 
+# 20171012-1930 - first release
+# 20171030-1355 - Set default for AnzeigeAll to "Y"
+# 20171121-1633 - Add maxwaittime 
+# 20171121-1647 - Add AnzeigeNull default "N" 
+# 20171122-0929 - Add maxwaittime to Gesamt
+# 20171130-0953 - Add CompanyName to title
+#
 
-$version = '1.0.4';
-$build = '171121-1647';
+$version = '1.0.6';
+$build = '20171130-0953';
 
 $release = '$version . " / " . $build';
 
@@ -253,7 +256,7 @@ if ($sl_ct > 0)
 $auth=0;
 $reports_auth=0;
 $admin_auth=0;
-$auth_message = user_authorization($PHP_AUTH_USER,$PHP_AUTH_PW,'REPORTS',0);
+$auth_message = user_authorization($PHP_AUTH_USER,$PHP_AUTH_PW,'REPORTS',0,0);
 if ($auth_message == 'GOOD')
 	{$auth=1;}
 
@@ -765,10 +768,11 @@ else
 
 	echo "\n-->\n
 	</STYLE>\n";
-
+    $StrTitel = AddCompany2Title("$report_name: $group");
+    
 	echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 	echo"<META HTTP-EQUIV=Refresh CONTENT=\"$RR; URL=$PHP_SELF?RR=$RR&DB=$DB$groupQS&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal\">\n";
-	echo "<TITLE>$report_name: $group</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
+	echo "<TITLE>$StrTitle</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 
 		$short_header=1;
 
@@ -1802,10 +1806,10 @@ if ($parked_to_print > 0)
 #		echo "$NFB$out_ring$NFE "._QXZ("calls ringing")." &nbsp; &nbsp; &nbsp; &nbsp; \n";
 #		echo "$NFB &nbsp;$in_ivr$NFE "._QXZ("calls in IVR")." &nbsp; &nbsp; &nbsp; \n";
 		}
-	else
-	{
-	echo _QXZ(" NO LIVE CALLS WAITING")." \n";
-	}
+#	else
+#	{
+#	echo _QXZ(" NO LIVE CALLS WAITING")." \n";
+#	}
 
 
 if ($allow_chats) 
@@ -1844,10 +1848,10 @@ if ($allow_chats)
 		if ($chats_waiting > 14) {$F='<FONT class="r4">'; $FG='</FONT>';}
 		echo " &nbsp; &nbsp; &nbsp; $NFB$F &nbsp;$chats_waiting $FG$NFE "._QXZ("chats waiting for agents")." &nbsp; &nbsp; &nbsp; \n";
 		}
-		else
-		{
-		echo _QXZ(" NO LIVE CHATS WAITING ")." \n";
-		}
+#		else
+#		{
+#		echo _QXZ(" NO LIVE CHATS WAITING ")." \n";
+#		}
 	}
 
 
@@ -3060,6 +3064,9 @@ if ($p<1)
 			$sec = $row[$LeadingName . "waittime"] % 60;
 			$min = (($row[$LeadingName . "waittime"] - $sec) / 60) % 60;
 			$wait= sprintf("%02d:%02d", $min, $sec);
+			$sec = $row[$LeadingName . "maxwaittime"] % 60;
+			$min = (($row[$LeadingName . "maxwaittime"] - $sec) / 60) % 60;
+			$maxwait= sprintf("%02d:%02d", $min, $sec);
 			$Erbk= sprintf("%.1f%%", $row[$LeadingName . "ebk"]);
 			$KdErbk= sprintf("%.1f%%", $row[$LeadingName . "kebk"]);
 			$StrSL0 = sprintf("%.1f%%", $SL0);
@@ -3118,7 +3125,7 @@ if ($p<1)
 			$D3echo .= "  <TD align='center' $SL0BK <B> $StrSL0</B></TD>\n";
 			$D3echo .= "  <TD align='center' $SL1BK <B> $StrSL1</B></TD>\n";
 			$D3echo .= "  <TD align='center' $SL2BK <B> $StrSL2</B></TD>\n";
-			$D3echo .= "  <TD align='center'> $wait</TD>\n";
+			$D3echo .= "  <TD align='center'> $wait / $maxwait </TD>\n";
 			$D3echo .= " </TR>\n";
 		}
 		else {

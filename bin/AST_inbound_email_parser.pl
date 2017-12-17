@@ -1070,6 +1070,13 @@ while (@row=$rslt->fetchrow_array) {
 			die "No valid protocol specified for this program: ($VARemail_protocol) is the current protocol - needs to be IMAP or POP3.\n";
 		}
 	}
+else
+	{
+	if ($DB > 0)
+		{
+		print "               NO-CHECK -    MIN: $minutes   FREQ: $VARemail_frequency \n";
+		}
+	}
 }
 
 ### calculate time to run script ###
