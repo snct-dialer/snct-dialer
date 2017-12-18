@@ -8719,14 +8719,14 @@ if ($ADD==191111111111)
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("First Name").": </td><td align=left><input type=text name=first_name size=50 maxlength=50>$NWB#contact_information$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Last Name").": </td><td align=left><input type=text name=last_name size=50 maxlength=50>$NWB#contact_information$NWE</td></tr>\n";
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Office Number").": </td><td align=left><input type=text name=office_num size=20 maxlength=20>$NWB#contact_information$NWE</td>\n";
-		echo _QXZ("Office Number Phone Code").": </td><td align=left><input type=text name=office_num_pc size=5 maxlength=10>$NWB#contact_information$NWE</td></tr>\n";
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Cell Number").": </td><td align=left><input type=text name=cell_num size=20 maxlength=20>$NWB#contact_information$NWE</td>\n";
-		echo _QXZ("Cell Number Phone Code").": </td><td align=left><input type=text name=cell_num_pc size=5 maxlength=10>$NWB#contact_information$NWE</td></tr>\n";
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Other Number")." 1: </td><td align=left><input type=text name=other_num1 size=20 maxlength=20>$NWB#contact_information$NWE</td>\n";
-		echo _QXZ("Other Number Phone Code")." 1: </td><td align=left><input type=text name=other_num1_pc size=5 maxlength=10>$NWB#contact_information$NWE</td></tr>\n";
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Other Number")." 2: </td><td align=left><input type=text name=other_num2 size=20 maxlength=20>$NWB#contact_information$NWE</td>\n";
-		echo _QXZ("Other Number Phone Code")." 2: </td><td align=left><input type=text name=other_num2_pc size=5 maxlength=10>$NWB#contact_information$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Office Number").": </td><td align=left><input type=text name=office_num size=20 maxlength=20>$NWB#contact_information$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Office Number Phone Code").": </td><td align=left><input type=text name=office_num_pc size=5 maxlength=10>$NWB#contact_information$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Cell Number").": </td><td align=left><input type=text name=cell_num size=20 maxlength=20>$NWB#contact_information$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Cell Number Phone Code").": </td><td align=left><input type=text name=cell_num_pc size=5 maxlength=10>$NWB#contact_information$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Other Number")." 1: </td><td align=left><input type=text name=other_num1 size=20 maxlength=20>$NWB#contact_information$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Other Number Phone Code")." 1: </td><td align=left><input type=text name=other_num1_pc size=5 maxlength=10>$NWB#contact_information$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Other Number")." 2: </td><td align=left><input type=text name=other_num2 size=20 maxlength=20>$NWB#contact_information$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Other Number Phone Code")." 2: </td><td align=left><input type=text name=other_num2_pc size=5 maxlength=10>$NWB#contact_information$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("BU Name").": </td><td align=left><input type=text name=bu_name size=50 maxlength=100>$NWB#contact_information$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Department").": </td><td align=left><input type=text name=department size=50 maxlength=100>$NWB#contact_information$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Group").": </td><td align=left><input type=text name=group_name size=50 maxlength=100>$NWB#contact_information$NWE</td></tr>\n";
@@ -34359,14 +34359,14 @@ if ($ADD==391111111111)
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("First Name").": </td><td align=left><input type=text name=first_name value=\"$first_name\" size=50 maxlength=50>$NWB#contact_information$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Last Name").": </td><td align=left><input type=text name=last_name value=\"$last_name\" size=50 maxlength=50>$NWB#contact_information$NWE</td></tr>\n";
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Office Number").": </td><td align=left><input type=text name=office_num value=\"$office_num\" size=20 maxlength=20>$NWB#contact_information$NWE</td>\n";
-		echo _QXZ("Office Number Phone Code").": </td><td align=left><input type=text name=office_num_pc value=\"$office_num_pc\" size=5 maxlength=10>$NWB#contact_information$NWE</td></tr>\n";
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Cell Number").": </td><td align=left><input type=text name=cell_num value=\"$cell_num\" size=20 maxlength=20>$NWB#contact_information$NWE</td>\n";
-		echo _QXZ("Cell Number Phone Code").": </td><td align=left><input type=text name=cell_num value=\"$cell_num_pc\" size=5 maxlength=10>$NWB#contact_information$NWE</td></tr>\n";
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Other Number")." 1: </td><td align=left><input type=text name=other_num1 value=\"$other_num1\" size=20 maxlength=20>$NWB#contact_information$NWE</td>\n";
-		echo _QXZ("Other Number Phone Code")." 1: </td><td align=left><input type=text name=other_num1_pc value=\"$other_num1_pc\" size=5 maxlength=10>$NWB#contact_information$NWE</td></tr>\n";
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Other Number")." 2: </td><td align=left><input type=text name=other_num2 value=\"$other_num2\" size=20 maxlength=20>$NWB#contact_information$NWE</td>\n";
-		echo _QXZ("Other Number Phone Code")." 2: </td><td align=left><input type=text name=other_num2_pc value=\"$other_num2_pc\" size=5 maxlength=10>$NWB#contact_information$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Office Number").": </td><td align=left><input type=text name=office_num value=\"$office_num\" size=20 maxlength=20>$NWB#contact_information$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Office Number Phone Code").": </td><td align=left><input type=text name=office_num_pc value=\"$office_num_pc\" size=5 maxlength=10>$NWB#contact_information$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Cell Number").": </td><td align=left><input type=text name=cell_num value=\"$cell_num\" size=20 maxlength=20>$NWB#contact_information$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Cell Number Phone Code").": </td><td align=left><input type=text name=cell_num value=\"$cell_num_pc\" size=5 maxlength=10>$NWB#contact_information$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Other Number")." 1: </td><td align=left><input type=text name=other_num1 value=\"$other_num1\" size=20 maxlength=20>$NWB#contact_information$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Other Number Phone Code")." 1: </td><td align=left><input type=text name=other_num1_pc value=\"$other_num1_pc\" size=5 maxlength=10>$NWB#contact_information$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Other Number")." 2: </td><td align=left><input type=text name=other_num2 value=\"$other_num2\" size=20 maxlength=20>$NWB#contact_information$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Other Number Phone Code")." 2: </td><td align=left><input type=text name=other_num2_pc value=\"$other_num2_pc\" size=5 maxlength=10>$NWB#contact_information$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("BU Name").": </td><td align=left><input type=text name=bu_name value=\"$bu_name\" size=50 maxlength=100>$NWB#contact_information$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Department").": </td><td align=left><input type=text name=department value=\"$department\" size=50 maxlength=100>$NWB#contact_information$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Group").": </td><td align=left><input type=text name=group_name value=\"$group_name\" size=50 maxlength=100>$NWB#contact_information$NWE</td></tr>\n";
