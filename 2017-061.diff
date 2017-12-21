@@ -1,0 +1,61 @@
+diff --git a/bin/AST_VDauto_dial.pl b/bin/AST_VDauto_dial.pl
+index c820b5a..44db780 100644
+--- a/bin/AST_VDauto_dial.pl
++++ b/bin/AST_VDauto_dial.pl
+@@ -1094,7 +1094,7 @@ while($one_day_interval > 0)
+ 								print "hopper row updated to INCALL: |$UQaffected_rows|$lead_id|\n";
+ 
+ 								### Gather lead data
+-								$stmtA = "SELECT list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,address3,alt_phone,called_count,security_phrase FROM vicidial_list where lead_id='$lead_id';";
++								$stmtA = "SELECT list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,address3,alt_phone,called_count,security_phrase,status FROM vicidial_list where lead_id='$lead_id';";
+ 								$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+ 								$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+ 								$sthArows=$sthA->rows;
+@@ -1112,9 +1112,30 @@ while($one_day_interval > 0)
+ 									$alt_phone =				$aryA[6];
+ 									$called_count =				$aryA[7];
+ 									$security_phrase =			$aryA[8];
+-
+-									$rec_countCUSTDATA++;
+-									$rec_count++;
++									$Zstatus =					$aryA[9];
++									
++									$doneX = 0;
++									# check only if Zstatus is not NEW
++									if(index($Zstatus, 'NEW') == -1) { 
++										$stmtZ = "SELECT dial_statuses FROM vicidial_campaigns WHERE campaign_id='$DBIPcampaign[$user_CIPct]';";
++										$sthZ = $dbhA->prepare($stmtZ) or die "preparing: ",$dbhA->errstr;
++										$sthZ->execute or die "executing: $stmtZ ", $dbhA->errstr;
++										$sthZrows=$sthZ->rows;
++										if($sthZrows > 0 {
++											@aryZ = $sthZ->fetchrow_array;
++											$ZdialStatus = $aryZ[0];
++											if ( index($ZdialStatus, $Zstatus ) == -1) { 
++												$doneX = 1;
++											}
++										}
++									}
++									if($doneX > 0) {
++										$stmtX = "DELETE FROM vicidial_hopper where lead_id='$lead_id'";
++										$affected_rows = $dbhA->do($stmtX);
++									} else {
++										$rec_countCUSTDATA++;
++										$rec_count++;
++									}
+ 									}
+ 								$sthA->finish();
+ 
+diff --git a/changelog b/changelog
+index 91ed234..c9df67f 100644
+--- a/changelog
++++ b/changelog
+@@ -1,7 +1,8 @@
+ 2.25.22
+   [Jörg Frings-Fürst]
+   * admin.php: Fix table for contacts.
+-  * admin.php: Allow Clear Lists for User Level >= 8 (2017-061).
++  * admin.php: Allow Clear Lists for User Level >= 8 (2017-062).
++  * AST_VDauto_dial.pl: Add test to check dialable status (2017-061).
+ 
+ 2.25.21
+   [Jörg Frings-Fürst]
