@@ -85,6 +85,7 @@
 # 170807-2255 - Added park log
 # 170826-0858 - Added link to turn on/off archived logs display
 # 171001-1109 - Added in-browser audio control, if recording access control is disabled
+# 171216-2058 - Added ability to modify all active scheduled callbacks, and view callbacks log
 #
 
 require("dbconnect_mysqli.php");
@@ -171,8 +172,6 @@ if (isset($_GET["SUBMIT"]))				{$SUBMIT=$_GET["SUBMIT"];}
 	elseif (isset($_POST["SUBMIT"]))	{$SUBMIT=$_POST["SUBMIT"];}
 if (isset($_GET["CBchangeUSERtoANY"]))				{$CBchangeUSERtoANY=$_GET["CBchangeUSERtoANY"];}
 	elseif (isset($_POST["CBchangeUSERtoANY"]))		{$CBchangeUSERtoANY=$_POST["CBchangeUSERtoANY"];}
-if (isset($_GET["CBchangeUSERtoUSER"]))				{$CBchangeUSERtoUSER=$_GET["CBchangeUSERtoUSER"];}
-	elseif (isset($_POST["CBchangeUSERtoUSER"]))	{$CBchangeUSERtoUSER=$_POST["CBchangeUSERtoUSER"];}
 if (isset($_GET["CBchangeANYtoUSER"]))				{$CBchangeANYtoUSER=$_GET["CBchangeANYtoUSER"];}
 	elseif (isset($_POST["CBchangeANYtoUSER"]))		{$CBchangeANYtoUSER=$_POST["CBchangeANYtoUSER"];}
 if (isset($_GET["CBchangeDATE"]))				{$CBchangeDATE=$_GET["CBchangeDATE"];}
@@ -567,11 +566,66 @@ body
 	{
     font-family: HELVETICA;
 	}
+
+.form_field 
+	{
+	font-family: Helvetica;
+	font-size: 10px;
+	margin-bottom: 3px;
+	padding: 2px;
+	border: solid 1px;
+	}
+
 -->
 </STYLE>
 <?php
 echo "</HEAD><BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 echo "<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
+?>
+<script language="JavaScript">
+function UpdateCallback(callback_id) {
+	var apt_date_field="appointment_date_"+callback_id;
+	var apt_hour_field="appointment_hour_"+callback_id;
+	var apt_min_field="appointment_min_"+callback_id;
+	var cbstatus_field="CBstatus_"+callback_id;
+	var cbuser_field="CBuser_"+callback_id;
+	var comments_field="comments_"+callback_id;
+	var recipient_field="CBchangeRecipient_"+callback_id;
+
+	var appointment_date=document.getElementById(apt_date_field).value;
+	var e = document.getElementById(apt_hour_field);
+	var appointment_hour = e.options[e.selectedIndex].text;
+	var e = document.getElementById(apt_min_field);
+	var appointment_min = e.options[e.selectedIndex].text;
+	var CBstatus=document.getElementById(cbstatus_field).value;
+	var CBuser=document.getElementById(cbuser_field).value;
+	var recipientField=document.getElementsByName(recipient_field);
+
+
+    for (var i = 0; i < recipientField.length; i++) {
+        var button = recipientField[i];
+        if (button.checked) {
+            var recipient=button.value;
+        }
+    }
+	
+	if(recipient=="A") {
+		var CBchangeUSERtoANY="YES";
+		var CBchangeANYtoUSER="";
+	} else if(recipient=="U") {
+		var CBchangeUSERtoANY="";
+		var CBchangeANYtoUSER="YES";
+	}
+
+	var appointment_time = appointment_hour + ":" + appointment_min + ":00";
+
+	var comments=encodeURIComponent(document.getElementById(comments_field).value);
+
+	document.getElementById('vsn').action="<?php echo $PHP_SELF; ?>?appointment_date="+appointment_date+"&appointment_time="+appointment_time+"&CBstatus="+CBstatus+"&CBchangeUSERtoANY="+CBchangeUSERtoANY+"&CBchangeANYtoUSER="+CBchangeANYtoUSER+"&CBuser="+CBuser+"&comments="+comments+"&callback_id="+callback_id;
+	document.vsn.submit();
+}
+</script>
+<?php
 echo "<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 echo "<span style=\"position:absolute;left:0px;top:0px;z-index:20;\" id=admin_header>";
 
@@ -836,15 +890,6 @@ else
 
 		echo "<BR>"._QXZ("vicidial_callback record changed to ANYONE")."<BR>\n";
 		}
-	if ($CBchangeUSERtoUSER == 'YES')
-		{
-		### set vicidial_callbacks record to a different USERONLY callback record for this lead 
-		$stmtL="UPDATE vicidial_callbacks set user='" . mysqli_real_escape_string($link, $CBuser) . "' where callback_id='" . mysqli_real_escape_string($link, $callback_id) . "';";
-		if ($DB) {echo "|$stmtL|\n";}
-		$rslt=mysql_to_mysqli($stmtL, $link);
-
-		echo "<BR>"._QXZ("vicidial_callback record user changed to")." $CBuser<BR>\n";
-		}	
 	if ($CBchangeANYtoUSER == 'YES')
 		{
 		### set vicidial_callbacks record to an USERONLY callback for this lead 
@@ -1553,218 +1598,298 @@ else
 		if ( ($dispo == 'CALLBK') or ($dispo == 'CBHOLD') or ($scheduled_callback == 'Y') )
 			{
 			### find any vicidial_callback records for this lead 
-			$stmt="SELECT callback_id,lead_id,list_id,campaign_id,status,entry_time,callback_time,modify_date,user,recipient,comments,user_group,lead_status from vicidial_callbacks where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' and status IN('ACTIVE','LIVE') order by callback_id desc LIMIT 1;";
+			$cb_stmt="SELECT callback_id,lead_id,list_id,campaign_id,status,entry_time,callback_time,modify_date,user,recipient,comments,user_group,lead_status from vicidial_callbacks where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' and status IN('ACTIVE','LIVE') order by callback_id desc limit 1000;";
 			if ($DB) {echo "|$stmt|\n";}
-			$rslt=mysql_to_mysqli($stmt, $link);
-			$CB_to_print = mysqli_num_rows($rslt);
-			$rowx=mysqli_fetch_row($rslt);
+			$cb_rslt=mysql_to_mysqli($cb_stmt, $link);
+			$CB_to_print = mysqli_num_rows($cb_rslt);
 
 			if ($CB_to_print>0)
 				{
-				if ($rowx[9] == 'USERONLY')
-					{
-					echo "<br><form action=$PHP_SELF method=POST>\n";
-					echo "<input type=hidden name=CBchangeUSERtoANY value=\"YES\">\n";
-					echo "<input type=hidden name=DB value=\"$DB\">\n";
-					echo "<input type=hidden name=lead_id value=\"$lead_id\">\n";
-					echo "<input type=hidden name=callback_id value=\"$rowx[0]\">\n";
-					echo "<input type=submit name=submit value=\""._QXZ("CHANGE TO ANYONE CALLBACK")."\"></form><BR>\n";
+				echo "<form action='$PHP_SELF' method='POST' name='vsn' id='vsn'>";
+				echo "<TABLE BGCOLOR=#B6D3FC WIDTH=800>";
+				echo "<tr>";
+				echo "<td><font size=2>"._QXZ("CallBack Date/Time").":</font></td>";
+				echo "<td><font size=2>"._QXZ("CallBack Disposition").":</font></td>";
+				echo "<td><font size=2>"._QXZ("Owner").":</font></td>";
+				echo "<td><font size=2>"._QXZ("Comments").":</font></td>";
+				echo "<td>&nbsp;</td>";
+				echo "</tr>";
 
-					echo "<br><form action=$PHP_SELF method=POST>\n";
-					echo "<input type=hidden name=CBchangeUSERtoUSER value=\"YES\">\n";
-					echo "<input type=hidden name=DB value=\"$DB\">\n";
-					echo "<input type=hidden name=lead_id value=\"$lead_id\">\n";
-					echo "<input type=hidden name=callback_id value=\"$rowx[0]\">\n";
-					echo _QXZ("New Callback Owner UserID").": <input type=text name=CBuser size=18 maxlength=20 value=\"$rowx[8]\"> \n";
-					echo "<input type=submit name=submit value=\""._QXZ("CHANGE USERONLY CALLBACK USER")."\"></form><BR>\n";
-					}
-				else
-					{
-					echo "<br><form action=$PHP_SELF method=POST>\n";
-					echo "<input type=hidden name=CBchangeANYtoUSER value=\"YES\">\n";
-					echo "<input type=hidden name=DB value=\"$DB\">\n";
-					echo "<input type=hidden name=lead_id value=\"$lead_id\">\n";
-					echo "<input type=hidden name=callback_id value=\"$rowx[0]\">\n";
-					echo _QXZ("New Callback Owner UserID").": <input type=text name=CBuser size=18 maxlength=20 value=\"$rowx[8]\"> \n";
-					echo "<input type=submit name=submit value=\""._QXZ("CHANGE TO USERONLY CALLBACK")."\"></form><BR>\n";
-					}
-				$callback_id = $rowx[0];
-				$CBcomments = $rowx[10];
-				$lead_status = $rowx[12];
-				$appointment_datetimeARRAY = explode(" ",$rowx[6]);
-				$appointment_date = $appointment_datetimeARRAY[0];
-				$appointment_timeARRAY = explode(":",$appointment_datetimeARRAY[1]);
-				$appointment_hour = $appointment_timeARRAY[0];
-				$appointment_min = $appointment_timeARRAY[1];
+				$u=0;
+				while ($cb_row=mysqli_fetch_row($cb_rslt)) {
+					$callback_id = $cb_row[0];
+					$CBcomments = $cb_row[10];
+					$lead_status = $cb_row[12];
+					$appointment_datetimeARRAY = explode(" ",$cb_row[6]);
+					$appointment_date = $appointment_datetimeARRAY[0];
+					$appointment_timeARRAY = explode(":",$appointment_datetimeARRAY[1]);
+					$appointment_hour = $appointment_timeARRAY[0];
+					$appointment_min = $appointment_timeARRAY[1];
 
+					$stmt="SELECT status,status_name from vicidial_statuses where scheduled_callback='Y' $selectableSQLand and status NOT IN('CBHOLD') order by status";
+					$rslt=mysql_to_mysqli($stmt, $link);
+					$statuses_to_print = mysqli_num_rows($rslt);
+					$statuses_list='';
 
+					$o=0;
+					$DS=0;
+					while ($statuses_to_print > $o) 
+						{
+						$rowx=mysqli_fetch_row($rslt);
+						if ( (strlen($lead_status) == strlen($rowx[0])) and (preg_match("/$lead_status/i",$rowx[0])) )
+							{$statuses_list .= "<option SELECTED value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n"; $DS++;}
+						else
+							{$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";}
+						$o++;
+						}
 
-				$stmt="SELECT status,status_name from vicidial_statuses where scheduled_callback='Y' $selectableSQLand and status NOT IN('CBHOLD') order by status";
-				$rslt=mysql_to_mysqli($stmt, $link);
-				$statuses_to_print = mysqli_num_rows($rslt);
-				$statuses_list='';
+					$stmt="SELECT status,status_name from vicidial_campaign_statuses where scheduled_callback='Y' $selectableSQLand and status NOT IN('CBHOLD') and campaign_id='$list_campaign' order by status";
+					$rslt=mysql_to_mysqli($stmt, $link);
+					$CAMPstatuses_to_print = mysqli_num_rows($rslt);
 
-				$o=0;
-				$DS=0;
-				while ($statuses_to_print > $o) 
-					{
-					$rowx=mysqli_fetch_row($rslt);
-					if ( (strlen($lead_status) == strlen($rowx[0])) and (preg_match("/$lead_status/i",$rowx[0])) )
-						{$statuses_list .= "<option SELECTED value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n"; $DS++;}
+					$o=0;
+					$CBhold_set=0;
+					while ($CAMPstatuses_to_print > $o) 
+						{
+						$rowx=mysqli_fetch_row($rslt);
+						if ( (strlen($lead_status) ==  strlen($rowx[0])) and (preg_match("/$lead_status/i",$rowx[0])) )
+							{$statuses_list .= "<option SELECTED value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n"; $DS++;}
+						else
+							{$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";}
+						$o++;
+						}
+
+					if ($DS < 1) 
+						{$statuses_list .= "<option SELECTED value=\"$lead_status\">$lead_status</option>\n";}
+
+					if ($u%2==0)
+						{$bgcolor='bgcolor="#B9CBFD"';} 
 					else
-						{$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";}
-					$o++;
+						{$bgcolor='bgcolor="#9BB9FB"';}
+					$u++;
+
+					echo "<tr $bgcolor>";
+					echo "<td><input class='form_field' name='appointment_date_".$callback_id."' id='appointment_date_".$callback_id."' size=10 maxlength=10 value='$appointment_date'>";
+					echo "					<script language=\"JavaScript\">
+					var o_cal = new tcal ({
+						// form name
+						'formname': 'vsn',
+						// input name
+						'controlname': 'appointment_date_".$callback_id."'
+					});
+					o_cal.a_tpl.yearscroll = false;
+					// o_cal.a_tpl.weekstart = 1; // Monday week start
+					</script>";
+					echo "<BR>";
+					echo "<SELECT class='form_field' name='appointment_hour_".$callback_id."' id='appointment_hour_".$callback_id."'>\n";
+					for ($i=0; $i<=23; $i++) {
+						$hr=substr("0$i", -2);
+						echo "<OPTION value='$hr'>$hr</option>\n";
 					}
-
-				$stmt="SELECT status,status_name from vicidial_campaign_statuses where scheduled_callback='Y' $selectableSQLand and status NOT IN('CBHOLD') and campaign_id='$list_campaign' order by status";
-				$rslt=mysql_to_mysqli($stmt, $link);
-				$CAMPstatuses_to_print = mysqli_num_rows($rslt);
-
-				$o=0;
-				$CBhold_set=0;
-				while ($CAMPstatuses_to_print > $o) 
-					{
-					$rowx=mysqli_fetch_row($rslt);
-					if ( (strlen($lead_status) ==  strlen($rowx[0])) and (preg_match("/$lead_status/i",$rowx[0])) )
-						{$statuses_list .= "<option SELECTED value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n"; $DS++;}
-					else
-						{$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";}
-					$o++;
+					echo "<OPTION value='$appointment_hour' selected>$appointment_hour</OPTION>";
+					echo "</SELECT>:";
+					echo "<SELECT class='form_field' name='appointment_min_".$callback_id."' id='appointment_min_".$callback_id."'>";
+					for ($i=0; $i<=55; $i+=5) {
+						$min=substr("0$i", -2);
+						echo "<OPTION value='$min'>$min</option>\n";
 					}
+					echo "<OPTION value='$appointment_min' selected>$appointment_min</OPTION>";
+					echo "</SELECT>";
+					echo "</td>";
+					echo "<td><FONT FACE='ARIAL,HELVETICA'><select class='form_field' size=1 name='CBstatus_".$callback_id."' id='CBstatus_".$callback_id."'>\n";
+					echo "$statuses_list";
+					echo "</td>";
+					echo "<td><font size='2'>";
+					if ($cb_row[9] == 'USERONLY') {$ucheck="checked"; $acheck="";} else {$acheck="checked"; $ucheck="";}
 
-				if ($DS < 1) 
-					{$statuses_list .= "<option SELECTED value=\"$lead_status\">$lead_status</option>\n";}
+					echo "<input type='radio' name='CBchangeRecipient_".$callback_id."' id='CBchangeRecipient_".$callback_id."A' value=\"A\" $acheck>Anyone<BR>";
+					echo "<input type='radio' name='CBchangeRecipient_".$callback_id."' id='CBchangeRecipient_".$callback_id."U' value=\"U\" $ucheck>Useronly<BR><BR>";
+					echo _QXZ("New CB Owner UserID").":<BR><input type=text class='form_field' name='CBuser_".$callback_id."' id='CBuser_".$callback_id."' size=6 maxlength=20 value=\"$cb_row[8]\"> \n";
+					echo "<input type=hidden id='recipient_".$callback_id."' name='recipient_".$callback_id."' value=\"YES\">";
+					echo "</font></td>";
+					echo "<td><TEXTAREA class='form_field' name='comments_".$callback_id."' id='comments_".$callback_id."' ROWS=6 COLS=50>$CBcomments</TEXTAREA></td>";
+					echo "<td><input type='button' value='UPDATE' onClick='UpdateCallback($callback_id)'></td>";
+					echo "</tr>";
 
-				?>
-
-				<FORM METHOD=POST NAME=vsn ID=vsn ACTION="<?php echo $PHP_SELF ?>">
-				<BR><?php echo _QXZ("Change Scheduled Callback Date"); ?>:<BR>
-
-				<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=2 WIDTH=700>
-				<TR><TD COLSPAN=2 ALIGN=CENTER>
-				<input type=hidden name=DB id=DB value=<?php echo $DB ?>>
-				<input type=hidden name=CBchangeDATE value="YES">
-				<input type=hidden name=lead_id id=lead_id value="<?php echo $lead_id ?>">
-				<input type=hidden name=callback_id value="<?php echo $callback_id ?>">
-
-				<TR BGCOLOR="#E6E6E6">
-				<TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA"><?php echo _QXZ("CallBack Date/Time"); ?>: </TD><TD ALIGN=LEFT><input type=text name=appointment_date id=appointment_date size=10 maxlength=10 value="<?php echo $appointment_date ?>">
-
-				<script language="JavaScript">
-				var o_cal = new tcal ({
-					// form name
-					'formname': 'vsn',
-					// input name
-					'controlname': 'appointment_date'
-				});
-				o_cal.a_tpl.yearscroll = false;
-				// o_cal.a_tpl.weekstart = 1; // Monday week start
-				</script>
-				&nbsp; &nbsp;  
-				<input type=hidden name=appointment_time id=appointment_time value="<?php echo $appointment_time ?>">
-				<SELECT name=appointment_hour id=appointment_hour>
-				<option>00</option>
-				<option>01</option>
-				<option>02</option>
-				<option>03</option>
-				<option>04</option>
-				<option>05</option>
-				<option>06</option>
-				<option>07</option>
-				<option>08</option>
-				<option>09</option>
-				<option>10</option>
-				<option>11</option>
-				<option>12</option>
-				<option>13</option>
-				<option>14</option>
-				<option>15</option>
-				<option>16</option>
-				<option>17</option>
-				<option>18</option>
-				<option>19</option>
-				<option>20</option>
-				<option>21</option>
-				<option>22</option>
-				<option>23</option>
-				<OPTION value="<?php echo $appointment_hour ?>" selected><?php echo $appointment_hour ?></OPTION>
-				</SELECT>:
-				<SELECT name=appointment_min id=appointment_min>
-				<option>00</option>
-				<option>05</option>
-				<option>10</option>
-				<option>15</option>
-				<option>20</option>
-				<option>25</option>
-				<option>30</option>
-				<option>35</option>
-				<option>40</option>
-				<option>45</option>
-				<option>50</option>
-				<option>55</option>
-				<OPTION value="<?php echo $appointment_min ?>" selected><?php echo $appointment_min ?></OPTION>
-				</SELECT>
-
-				</TD>
-				</TR>
-				<TR BGCOLOR="#E6E6E6">
-				<TD align=center colspan=2>
-				<FONT FACE="ARIAL,HELVETICA"><?php echo _QXZ("Callback Disposition"); ?>: <select size=1 name=CBstatus>\n";
-				<?php echo "$statuses_list"; ?>
-				</select>
-				</TD>
-				</TR>
-
-				<TR BGCOLOR="#E6E6E6">
-				<TD align=center colspan=2>
-				<FONT FACE="ARIAL,HELVETICA"><?php echo _QXZ("Comments"); ?>: 
-
-				<TEXTAREA name=comments ROWS=3 COLS=65><?php echo $CBcomments ?></TEXTAREA>
-				</TD>
-				</TR>
-
-				<TR BGCOLOR="#E6E6E6">
-				<TD align=center colspan=2>
-
-				<SCRIPT LANGUAGE="JavaScript">
-
-				function submit_form()
-					{
-					var appointment_hourFORM = document.getElementById('appointment_hour');
-					var appointment_hourVALUE = appointment_hourFORM[appointment_hourFORM.selectedIndex].text;
-					var appointment_minFORM = document.getElementById('appointment_min');
-					var appointment_minVALUE = appointment_minFORM[appointment_minFORM.selectedIndex].text;
-
-					document.vsn.appointment_time.value = appointment_hourVALUE + ":" + appointment_minVALUE + ":00";
-
-					document.vsn.submit();
 					}
-
-				</SCRIPT>
-
-				<input type=button value="SUBMIT" name=smt id=smt onClick="submit_form()">
-				</TD>
-				</TR>
-
-				</TABLE>
-
-				</FORM>
-
-				<?php
 				}
 			else
 				{
 				echo "<BR>"._QXZ("No Callback records found")."<BR>\n";
 				}
+			echo "</TABLE>";
+			echo "<input type=hidden name=DB value=\"$DB\">\n";
+			echo "<input type=hidden id=lead_id name=lead_id value=\"$lead_id\">\n";
+			echo "<input type=hidden id=CBchangeDATE name=CBchangeDATE value=\"YES\">";
+			echo "</form>\n";
 
+			echo "</TD></TR></table>\n";
+
+			### find any vicidial_callback records for this lead 
+			$cb_stmt="SELECT entry_time,callback_time,user,recipient,lead_status,status,list_id,campaign_id,comments,user_group,lead_status from vicidial_callbacks where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' and status NOT IN('ACTIVE','LIVE') order by callback_id desc limit 1000;";
+			if ($DB) {echo "|$stmt|\n";}
+			$cb_rslt=mysql_to_mysqli($cb_stmt, $link);
+			$CB_to_print = mysqli_num_rows($cb_rslt);
+
+			$cb=0;
+			$callbacks_log='';
+			while ($CB_to_print > $cb)
+				{
+				if (preg_match("/1$|3$|5$|7$|9$/i", $cb))
+					{$bgcolor='bgcolor="#B9CBFD"';} 
+				else
+					{$bgcolor='bgcolor="#9BB9FB"';}
+				$rowx=mysqli_fetch_row($cb_rslt);
+				$cb++;
+				$callbacks_log .= "<tr $bgcolor>";
+				$callbacks_log .= "<td><font size=1>$cb &nbsp; </td>";
+				$callbacks_log .= "<td><font size=2>$rowx[0]</font></td>";
+				$callbacks_log .= "<td><font size=2>$rowx[1]</font></td>";
+				$callbacks_log .= "<td><font size=2>$rowx[2]</font></td>";
+				$callbacks_log .= "<td><font size=2>$rowx[3]</font></td>";
+				$callbacks_log .= "<td><font size=2>$rowx[4]</font></td>";
+				$callbacks_log .= "<td><font size=2>$rowx[5]</font></td>";
+				$callbacks_log .= "<td><font size=2>$rowx[6]</font></td>";
+				$callbacks_log .= "<td><font size=2>$rowx[7]</font></td>";
+				$callbacks_log .= "</tr><tr>";
+				$callbacks_log .= "<td><font size=1> &nbsp; </td>";
+				$callbacks_log .= "<td colspan=8 align=left $bgcolor><font size=1>"._QXZ("comments").": </font><font size=2>$rowx[8]</font></td>";
+				$callbacks_log .= "</tr>\n";
+				}
+
+			if ($archive_log=="Yes") 
+				{
+				### find any vicidial_callbacks_archive records for this lead 
+				$cb_stmt="SELECT entry_time,callback_time,user,recipient,lead_status,status,list_id,campaign_id,comments,user_group,lead_status from vicidial_callbacks_archive where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' and status NOT IN('ACTIVE','LIVE') order by callback_id desc limit 1000;";
+				if ($DB) {echo "|$stmt|\n";}
+				$cb_rslt=mysql_to_mysqli($cb_stmt, $link);
+				$CBA_to_print = mysqli_num_rows($cb_rslt);
+
+				$cba=0;
+				while ($CBA_to_print > $cba)
+					{
+					if (preg_match("/1$|3$|5$|7$|9$/i", $cb))
+						{$bgcolor='bgcolor="#B9CBFD"';} 
+					else
+						{$bgcolor='bgcolor="#9BB9FB"';}
+					$rowx=mysqli_fetch_row($cb_rslt);
+					$cb++;
+					$cba++;
+					$callbacks_log .= "<tr $bgcolor>";
+					$callbacks_log .= "<td><font size=1>$cb &nbsp; </td>";
+					$callbacks_log .= "<td><font size=2 color='#FF0000'>$rowx[0]</font></td>";
+					$callbacks_log .= "<td><font size=2>$rowx[1]</font></td>";
+					$callbacks_log .= "<td><font size=2>$rowx[2]</font></td>";
+					$callbacks_log .= "<td><font size=2>$rowx[3]</font></td>";
+					$callbacks_log .= "<td><font size=2>$rowx[4]</font></td>";
+					$callbacks_log .= "<td><font size=2>$rowx[5]</font></td>";
+					$callbacks_log .= "<td><font size=2>$rowx[6]</font></td>";
+					$callbacks_log .= "<td><font size=2>$rowx[7]</font></td>";
+					$callbacks_log .= "</tr><tr>";
+					$callbacks_log .= "<td><font size=1> &nbsp; </td>";
+					$callbacks_log .= "<td colspan=8 align=left $bgcolor><font size=1>"._QXZ("comments").": </font><font size=2>$rowx[8]</font></td>";
+					$callbacks_log .= "</tr>\n";
+					}
+				}
+
+			if ($cb > 0)
+				{
+				echo "<B>"._QXZ("CALLBACKS LOG").":</B>\n";
+				echo "<TABLE width=750 cellspacing=0 cellpadding=1>\n";
+				echo "<tr><td><font size=1># </td><td><font size=2>"._QXZ("ENTRY TIME")." </td><td><font size=2>"._QXZ("CALLBACK TIME")." </td><td align=left><font size=2>"._QXZ("USER")."</td><td align=left><font size=2> "._QXZ("RECIPIENT")."</td><td align=left><font size=2> "._QXZ("LEAD STATUS")."</td><td align=left><font size=2> "._QXZ("STATUS")."</td><td align=left><font size=2> "._QXZ("LIST")."</td><td align=left><font size=2> "._QXZ("CAMPAIGN")."</td></tr>\n";
+
+				echo "$callbacks_log";
+
+				echo "</TABLE>\n";
+				}
+			echo "<BR><BR>\n";
 			}
 		else
 			{
 			echo "<BR>"._QXZ("If you want to change this lead to a scheduled callback, first change the Disposition to CBHOLD, then submit and you will be able to set the callback date and time").".<BR>\n";
-			}
-		echo "</TD></TR></TABLE>\n";
+			echo "</TD></TR></table>\n";
 
-		echo "<br><br>\n";
+			echo "<br><br>\n";
+
+			### find any vicidial_callback records for this lead 
+			$cb_stmt="SELECT entry_time,callback_time,user,recipient,lead_status,status,list_id,campaign_id,comments,user_group,lead_status from vicidial_callbacks where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' order by callback_id desc limit 1000;";
+			if ($DB) {echo "|$stmt|\n";}
+			$cb_rslt=mysql_to_mysqli($cb_stmt, $link);
+			$CB_to_print = mysqli_num_rows($cb_rslt);
+
+			$cb=0;
+			$callbacks_log='';
+			while ($CB_to_print > $cb)
+				{
+				if (preg_match("/1$|3$|5$|7$|9$/i", $cb))
+					{$bgcolor='bgcolor="#B9CBFD"';} 
+				else
+					{$bgcolor='bgcolor="#9BB9FB"';}
+				$rowx=mysqli_fetch_row($cb_rslt);
+				$cb++;
+				$callbacks_log .= "<tr $bgcolor>";
+				$callbacks_log .= "<td><font size=1>$cb &nbsp; </td>";
+				$callbacks_log .= "<td><font size=2>$rowx[0]</font></td>";
+				$callbacks_log .= "<td><font size=2>$rowx[1]</font></td>";
+				$callbacks_log .= "<td><font size=2>$rowx[2]</font></td>";
+				$callbacks_log .= "<td><font size=2>$rowx[3]</font></td>";
+				$callbacks_log .= "<td><font size=2>$rowx[4]</font></td>";
+				$callbacks_log .= "<td><font size=2>$rowx[5]</font></td>";
+				$callbacks_log .= "<td><font size=2>$rowx[6]</font></td>";
+				$callbacks_log .= "<td><font size=2>$rowx[7]</font></td>";
+				$callbacks_log .= "</tr><tr>";
+				$callbacks_log .= "<td><font size=1> &nbsp; </td>";
+				$callbacks_log .= "<td colspan=8 align=left $bgcolor><font size=1>"._QXZ("comments").": </font><font size=2>$rowx[8]</font></td>";
+				$callbacks_log .= "</tr>\n";
+				}
+			
+			if ($archive_log=="Yes") 
+				{
+				### find any vicidial_callbacks_archive records for this lead 
+				$cb_stmt="SELECT entry_time,callback_time,user,recipient,lead_status,status,list_id,campaign_id,comments,user_group,lead_status from vicidial_callbacks_archive where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' order by callback_id desc limit 1000;";
+				if ($DB) {echo "|$stmt|\n";}
+				$cb_rslt=mysql_to_mysqli($cb_stmt, $link);
+				$CBA_to_print = mysqli_num_rows($cb_rslt);
+
+				$cba=0;
+				while ($CBA_to_print > $cba)
+					{
+					if (preg_match("/1$|3$|5$|7$|9$/i", $cb))
+						{$bgcolor='bgcolor="#B9CBFD"';} 
+					else
+						{$bgcolor='bgcolor="#9BB9FB"';}
+					$rowx=mysqli_fetch_row($cb_rslt);
+					$cb++;
+					$cba++;
+					$callbacks_log .= "<tr $bgcolor>";
+					$callbacks_log .= "<td><font size=1>$cb &nbsp; </td>";
+					$callbacks_log .= "<td><font size=2 color='#FF0000'>$rowx[0]</font></td>";
+					$callbacks_log .= "<td><font size=2>$rowx[1]</font></td>";
+					$callbacks_log .= "<td><font size=2>$rowx[2]</font></td>";
+					$callbacks_log .= "<td><font size=2>$rowx[3]</font></td>";
+					$callbacks_log .= "<td><font size=2>$rowx[4]</font></td>";
+					$callbacks_log .= "<td><font size=2>$rowx[5]</font></td>";
+					$callbacks_log .= "<td><font size=2>$rowx[6]</font></td>";
+					$callbacks_log .= "<td><font size=2>$rowx[7]</font></td>";
+					$callbacks_log .= "</tr><tr>";
+					$callbacks_log .= "<td><font size=1> &nbsp; </td>";
+					$callbacks_log .= "<td colspan=8 align=left $bgcolor><font size=1>"._QXZ("comments").": </font><font size=2>$rowx[8]</font></td>";
+					$callbacks_log .= "</tr>\n";
+					}
+				}
+
+			if ($cb > 0)
+				{
+				echo "<B>"._QXZ("CALLBACKS LOG").":</B>\n";
+				echo "<TABLE width=750 cellspacing=0 cellpadding=1>\n";
+				echo "<tr><td><font size=1># </td><td><font size=2>"._QXZ("ENTRY TIME")." </td><td><font size=2>"._QXZ("CALLBACK TIME")." </td><td align=left><font size=2>"._QXZ("USER")."</td><td align=left><font size=2> "._QXZ("RECIPIENT")."</td><td align=left><font size=2> "._QXZ("LEAD STATUS")."</td><td align=left><font size=2> "._QXZ("STATUS")."</td><td align=left><font size=2> "._QXZ("LIST")."</td><td align=left><font size=2> "._QXZ("CAMPAIGN")."</td></tr>\n";
+
+				echo "$callbacks_log";
+
+				echo "</TABLE>\n";
+				}
+			echo "<BR><BR>\n";
+			}
 
 
 		if ($c > 0)
