@@ -1,3 +1,13 @@
+2.25.22
+  [Jörg Frings-Fürst]
+  * admin.php: Fix table for contacts.
+  * admin.php: Allow Clear Lists for User Level >= 8 (2017-062).
+  * AST_VDauto_dial.pl: Add test to check dialable status (2017-061).
+  * Add upstream Rev. 2875:
+    - admin_modify_lead.php: Added ability to modify all active scheduled
+        callbacks, and view callbacks log.
+  * Release 2.25.22 2017-12-27.
+
 2.25.21
   [Jörg Frings-Fürst]
   * Wall_js.php: 

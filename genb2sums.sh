@@ -3,7 +3,7 @@
 REL=`cat version`
 SUMFILE="checksum/b2sum-${REL}.txt"
 DIRS="LANG_www SuSE agi bin docs experimental extras libs sounds translations www"
-FILES="changelog convert2pl.php FlyInclude.php genb2sums.sh GetGitRepro.sh INSTALL install.pl UPGRADE version"
+FILES="changelog convert2pl.php FlyInclude.php genb2sums.sh GetGitRepro.sh INSTALL install.pl UPGRADE version readme.fp"
 
 rm -f ${SUMFILE}
 

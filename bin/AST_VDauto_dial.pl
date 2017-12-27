@@ -1094,7 +1094,7 @@ while($one_day_interval > 0)
 								print "hopper row updated to INCALL: |$UQaffected_rows|$lead_id|\n";
 
 								### Gather lead data
-								$stmtA = "SELECT list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,address3,alt_phone,called_count,security_phrase FROM vicidial_list where lead_id='$lead_id';";
+								$stmtA = "SELECT list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,address3,alt_phone,called_count,security_phrase,status FROM vicidial_list where lead_id='$lead_id';";
 								$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 								$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 								$sthArows=$sthA->rows;
@@ -1112,9 +1112,30 @@ while($one_day_interval > 0)
 									$alt_phone =				$aryA[6];
 									$called_count =				$aryA[7];
 									$security_phrase =			$aryA[8];
+									$Zstatus =					$aryA[9];
 
-									$rec_countCUSTDATA++;
-									$rec_count++;
+									$doneX = 0;
+									# check only if Zstatus is not NEW
+									if(index($Zstatus, 'NEW') == -1) {
+										$stmtZ = "SELECT dial_statuses FROM vicidial_campaigns WHERE campaign_id='$DBIPcampaign[$user_CIPct]';";
+										$sthZ = $dbhA->prepare($stmtZ) or die "preparing: ",$dbhA->errstr;
+										$sthZ->execute or die "executing: $stmtZ ", $dbhA->errstr;
+										$sthZrows=$sthZ->rows;
+										if($sthZrows > 0 {
+											@aryZ = $sthZ->fetchrow_array;
+											$ZdialStatus = $aryZ[0];
+											if ( index($ZdialStatus, $Zstatus ) == -1) {
+												$doneX = 1;
+											}
+										}
+									}
+									if($doneX > 0) {
+										$stmtX = "DELETE FROM vicidial_hopper where lead_id='$lead_id'";
+										$affected_rows = $dbhA->do($stmtX);
+									} else {
+										$rec_countCUSTDATA++;
+										$rec_count++;
+									}
 									}
 								$sthA->finish();
 
