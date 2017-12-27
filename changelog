@@ -6,6 +6,7 @@
   * Add upstream Rev. 2875:
     - admin_modify_lead.php: Added ability to modify all active scheduled
         callbacks, and view callbacks log.
+  * Release 2.25.22 2017-12-27.
 
 2.25.21
   [Jörg Frings-Fürst]
