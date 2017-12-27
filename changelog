@@ -4,7 +4,8 @@
   * admin.php: Allow Clear Lists for User Level >= 8 (2017-062).
   * AST_VDauto_dial.pl: Add test to check dialable status (2017-061).
   * Add upstream Rev. 2875:
-    - admin_modify_lead.php: Added ability to modify all active scheduled callbacks, and view callbacks log.
+    - admin_modify_lead.php: Added ability to modify all active scheduled
+        callbacks, and view callbacks log.
 
 2.25.21
   [Jörg Frings-Fürst]
