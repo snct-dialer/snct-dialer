@@ -49,6 +49,7 @@ $consult_custom_delay	= '2';	# number of seconds to delay consultative transfers
 $mrglock_ig_select_ct	= '4';	# number of seconds to leave in-group select screen open if agent select is disabled
 $link_to_grey_version	= '1';	# show link to old grey version of agent screen at login screen, next to timeclock link
 $use_agent_colors		= '1';	# agent chat colors
+$no_empty_session_warnings=0;	# set to 1 to disable empty session warnings on agent screen
 
 $TEST_all_statuses		= '0';	# TEST variable allows all statuses in dispo screen
 

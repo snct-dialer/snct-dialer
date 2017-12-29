@@ -10,6 +10,10 @@
       vicidial.php,
       admin.php,
       help.php: Added List default_xfer_group override.
+  * Add upstream Rev. 2877:
+    - get2post.php: Change replace of $headers.
+    - options-example.php,
+      vicidial.php: Change declare position of $no_empty_session_warnings.
 
 2.25.22
   [Jörg Frings-Fürst]

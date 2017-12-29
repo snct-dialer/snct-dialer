@@ -802,6 +802,7 @@ $focus_blur_enabled		= '0';	# set to 1 to enable the focus/blur enter key blocki
 $consult_custom_delay	= '2';	# number of seconds to delay consultative transfers when customfields are active
 $mrglock_ig_select_ct	= '4';	# number of seconds to leave in-group select screen open if agent select is disabled
 $link_to_grey_version	= '1';	# show link to old grey version of agent screen at login screen, next to timeclock link
+$no_empty_session_warnings=0;	# set to 1 to disable empty session warnings on agent screen
 
 $TEST_all_statuses		= '0';	# TEST variable allows all statuses in dispo screen, FOR DEBUG ONLY
 
@@ -2924,7 +2925,6 @@ else
 		if (strlen($meetme_enter_login_filename) > 0)
 			{$login_context = 'meetme-enter-login';}
 
-		$no_empty_session_warnings=0;
 		if ( ($phone_login == 'nophone') or ($on_hook_agent == 'Y') )
 			{
 			$no_empty_session_warnings=1;
