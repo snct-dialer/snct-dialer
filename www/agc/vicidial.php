@@ -574,10 +574,11 @@
 # 171126-1140 - Added ability to use EMAILinbound_message script variable
 # 171130-0226 - Added agent_screen_time_display option
 # 171214-2018 - Added PREVIEW_ get_call_launch options
+# 171224-1244 - Added List default_xfer_group override
 #
 
-$version = '2.14-544c';
-$build = '171214-2018';
+$version = '2.14-545c';
+$build = '171224-1244';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -801,6 +802,7 @@ $focus_blur_enabled		= '0';	# set to 1 to enable the focus/blur enter key blocki
 $consult_custom_delay	= '2';	# number of seconds to delay consultative transfers when customfields are active
 $mrglock_ig_select_ct	= '4';	# number of seconds to leave in-group select screen open if agent select is disabled
 $link_to_grey_version	= '1';	# show link to old grey version of agent screen at login screen, next to timeclock link
+$no_empty_session_warnings=0;	# set to 1 to disable empty session warnings on agent screen
 
 $TEST_all_statuses		= '0';	# TEST variable allows all statuses in dispo screen, FOR DEBUG ONLY
 
@@ -2923,7 +2925,6 @@ else
 		if (strlen($meetme_enter_login_filename) > 0)
 			{$login_context = 'meetme-enter-login';}
 
-		$no_empty_session_warnings=0;
 		if ( ($phone_login == 'nophone') or ($on_hook_agent == 'Y') )
 			{
 			$no_empty_session_warnings=1;
@@ -9218,6 +9219,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								entry_date										= MDnextResponse_array[57];
 								status_group_statuses_data						= MDnextResponse_array[58];
 								last_call_date									= MDnextResponse_array[59];
+								LIVE_default_xfer_group							= MDnextResponse_array[60];
 
 								// build statuses list for disposition screen
 								VARstatuses = [];

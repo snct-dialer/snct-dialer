@@ -1,6 +1,20 @@
 2.25.23
   [Jörg Frings-Fürst]
-  
+  * Add upstream Rev. 2876:
+    - ADMIN_keepalive_ALL.pl: Added rolling of vicidial_ingroup_hour_counts
+        records.
+    - AST_VDadapt.pl,
+      MySQL_AST_CREATE_tables.sql,
+      upgrade_2.14.sql: Added caching of inbound call stats.
+    - vdc_db_query.php,
+      vicidial.php,
+      admin.php,
+      help.php: Added List default_xfer_group override.
+  * Add upstream Rev. 2877:
+    - get2post.php: Change replace of $headers.
+    - options-example.php,
+      vicidial.php: Change declare position of $no_empty_session_warnings.
+
 2.25.22
   [Jörg Frings-Fürst]
   * admin.php: Fix table for contacts.

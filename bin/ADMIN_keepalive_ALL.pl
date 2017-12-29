@@ -126,9 +126,10 @@
 # 170920-2214 - Added expired_lists_inactive option, checks once per hour
 # 171010-2254 - Added process debug with --DebugXXX flag and screen logging
 # 171107-1152 - Add allow=ulaw and allow=slin to ASTloop, ASTblind and ASTplay.
+# 171221-1628 - Added rolling of vicidial_ingroup_hour_counts records
 #
 
-$build = '171107-1152';
+$build = '171221-1628';
 
 $DB=0; # Debug flag
 $teodDB=0; # flag to log Timeclock End of Day processes to log file
@@ -1348,6 +1349,28 @@ if ($timeclock_end_of_day_NOW > 0)
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			}
 
+		# roll vicidial_ingroup_hour_counts
+		if (!$Q) {print "\nProcessing vicidial_ingroup_hour_counts table...\n";}
+		$stmtA = "INSERT IGNORE INTO vicidial_ingroup_hour_counts_archive SELECT * from vicidial_ingroup_hour_counts where date_hour < '$today_start';";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		
+		$sthArows = $sthA->rows;
+		if (!$Q) {print "$sthArows rows inserted into vicidial_ingroup_hour_counts_archive table \n";}
+		
+		$rv = $sthA->err();
+		if (!$rv) 
+			{	
+			$stmtA = "DELETE FROM vicidial_ingroup_hour_counts WHERE date_hour < '$today_start';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows = $sthA->rows;
+			if (!$Q) {print "$sthArows rows deleted from vicidial_ingroup_hour_counts table \n";}
+
+			$stmtA = "optimize table vicidial_ingroup_hour_counts;";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			}
 
 		##### BEGIN max stats end of day process #####
 		# set OPEN max stats records to CLOSING for processing

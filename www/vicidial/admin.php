@@ -4281,12 +4281,13 @@ else
 # 171126-1413 - Changes to allow for Email groups to display script tab on get_call_launch
 # 171130-0036 - Added agent_screen_time_display campaign setting
 # 171214-2045 - Added PREVIEW_ options for get_call_launch
+# 171224-1220 - Added List default_xfer_group override
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-645a';
-$build = '171214-2045';
+$admin_version = '2.14-646a';
+$build = '171224-1220';
 
 
 $STARTtime = date("U");
@@ -14805,7 +14806,7 @@ if ($ADD==411)
 
 				echo "<br><B>"._QXZ("LIST MODIFIED").": $list_id</B>\n";
 
-				$stmt="UPDATE vicidial_lists set list_name='$list_name',campaign_id='$campaign_id',active='$active',list_description='$list_description',list_changedate='$SQLdate',reset_time='$reset_time',agent_script_override='$agent_script_override',inbound_list_script_override='$inbound_list_script_override',campaign_cid_override='$campaign_cid_override',am_message_exten_override='$am_message_exten_override',drop_inbound_group_override='$drop_inbound_group_override',xferconf_a_number='$xferconf_a_number',xferconf_b_number='$xferconf_b_number',xferconf_c_number='$xferconf_c_number',xferconf_d_number='$xferconf_d_number',xferconf_e_number='$xferconf_e_number',web_form_address='" . mysqli_real_escape_string($link, $web_form_address) . "',web_form_address_two='" . mysqli_real_escape_string($link, $web_form_address_two) . "',time_zone_setting='$time_zone_setting',inventory_report='$inventory_report',expiration_date='$expiration_date',na_call_url='" . mysqli_real_escape_string($link, $na_call_url) . "',local_call_time='$local_call_time',web_form_address_three='" . mysqli_real_escape_string($link, $web_form_address_three) . "',status_group_id='$status_group_id',custom_one='$list_custom_one',custom_two='$list_custom_two',custom_three='$list_custom_three',custom_four='$list_custom_four',custom_five='$list_custom_five',user_new_lead_limit='$user_new_lead_limit' where list_id='$list_id';";
+				$stmt="UPDATE vicidial_lists set list_name='$list_name',campaign_id='$campaign_id',active='$active',list_description='$list_description',list_changedate='$SQLdate',reset_time='$reset_time',agent_script_override='$agent_script_override',inbound_list_script_override='$inbound_list_script_override',campaign_cid_override='$campaign_cid_override',am_message_exten_override='$am_message_exten_override',drop_inbound_group_override='$drop_inbound_group_override',xferconf_a_number='$xferconf_a_number',xferconf_b_number='$xferconf_b_number',xferconf_c_number='$xferconf_c_number',xferconf_d_number='$xferconf_d_number',xferconf_e_number='$xferconf_e_number',web_form_address='" . mysqli_real_escape_string($link, $web_form_address) . "',web_form_address_two='" . mysqli_real_escape_string($link, $web_form_address_two) . "',time_zone_setting='$time_zone_setting',inventory_report='$inventory_report',expiration_date='$expiration_date',na_call_url='" . mysqli_real_escape_string($link, $na_call_url) . "',local_call_time='$local_call_time',web_form_address_three='" . mysqli_real_escape_string($link, $web_form_address_three) . "',status_group_id='$status_group_id',custom_one='$list_custom_one',custom_two='$list_custom_two',custom_three='$list_custom_three',custom_four='$list_custom_four',custom_five='$list_custom_five',user_new_lead_limit='$user_new_lead_limit',default_xfer_group='$default_xfer_group'  where list_id='$list_id';";
 				$rslt=mysql_to_mysqli($stmt, $link);
 
 				## QC Addition for Audited Comments
@@ -25471,7 +25472,8 @@ if ($ADD==311)
 				}
 			}
 
-		$stmt="SELECT vicidial_lists.list_id,list_name,campaign_id,active,list_description,list_changedate,list_lastcalldate,reset_time,agent_script_override,campaign_cid_override,am_message_exten_override,drop_inbound_group_override,xferconf_a_number,xferconf_b_number,xferconf_c_number,xferconf_d_number,xferconf_e_number,web_form_address,web_form_address_two,time_zone_setting,inventory_report,IFNULL(audit_comments,0),expiration_date,DATE_FORMAT(expiration_date,'%Y%m%d'),na_call_url,local_call_time,web_form_address_three,status_group_id,user_new_lead_limit,custom_one, custom_two, custom_three, custom_four, custom_five, inbound_list_script_override from vicidial_lists left outer join vicidial_lists_custom on vicidial_lists.list_id=vicidial_lists_custom.list_id where vicidial_lists.list_id='$list_id' $LOGallowed_campaignsSQL;";
+		$stmt="SELECT vicidial_lists.list_id,list_name,campaign_id,active,list_description,list_changedate,list_lastcalldate,reset_time,agent_script_override,campaign_cid_override,am_message_exten_override,drop_inbound_group_override,xferconf_a_number,xferconf_b_number,xferconf_c_number,xferconf_d_number,xferconf_e_number,web_form_address,web_form_address_two,time_zone_setting,inventory_report,IFNULL(audit_comments,0),expiration_date,DATE_FORMAT(expiration_date,'%Y%m%d'),na_call_url,local_call_time,web_form_address_three,status_group_id,user_new_lead_limit,custom_one, custom_two, custom_three, custom_four, custom_five, inbound_list_script_override,default_xfer_group from vicidial_lists left outer join vicidial_lists_custom on vicidial_lists.list_id=vicidial_lists_custom.list_id where vicidial_lists.list_id='$list_id' $LOGallowed_campaignsSQL;";
+
 		$rslt=mysql_to_mysqli($stmt, $link);
                 if ($DB) {echo "$stmt\n";}
 		$row=mysqli_fetch_row($rslt);
@@ -25509,6 +25511,7 @@ if ($ADD==311)
 		$list_custom_four =         $row[32];
 		$list_custom_five =         $row[33];
 		$inbound_list_script_override =		$row[34];
+		$default_xfer_group =		$row[35];
 
 		# grab names of global statuses and statuses in the selected campaign
 		$stmt="SELECT status,status_name,selectable,human_answered,category,sale,dnc,customer_contact,not_interested,unworkable,scheduled_callback,completed,min_sec,max_sec,answering_machine from vicidial_statuses order by status;";
@@ -25718,6 +25721,49 @@ if ($ADD==311)
 			$sglinkE='</a>';
 			}
 
+		##### get in-groups listings for dynamic transfer group pulldown list menu
+		$xfer_groupsSQL='';
+		$stmt="SELECT closer_campaigns,xfer_groups from vicidial_campaigns where campaign_id='$campaign_id' $LOGallowed_campaignsSQL;";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$row=mysqli_fetch_row($rslt);
+		$closer_campaigns =	$row[0];
+			$closer_campaigns = preg_replace("/ -$/","",$closer_campaigns);
+			$groups = explode(" ", $closer_campaigns);
+		$xfer_groups =	$row[1];
+			$xfer_groups = preg_replace("/ -$/","",$xfer_groups);
+			$XFERgroups = explode(" ", $xfer_groups);
+		$xfer_groupsSQL = preg_replace("/^ | -$/","",$xfer_groups);
+		$xfer_groupsSQL = preg_replace("/ /","','",$xfer_groupsSQL);
+		$xfer_groupsSQL = "WHERE group_id IN('$xfer_groupsSQL')";
+
+		$nxLOGadmin_viewable_groupsSQL = $LOGadmin_viewable_groupsSQL;
+		if (strlen($xfer_groupsSQL) < 6)
+				{$nxLOGadmin_viewable_groupsSQL = $whereLOGadmin_viewable_groupsSQL;}
+
+		$stmt="SELECT group_id,group_name from vicidial_inbound_groups $xfer_groupsSQL $nxLOGadmin_viewable_groupsSQL order by group_id;";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$Xgroups_to_print = mysqli_num_rows($rslt);
+		$Xgroups_menu='';
+		$Xgroups_selected=0;
+		$o=0;
+		while ($Xgroups_to_print > $o) 
+			{
+			$rowx=mysqli_fetch_row($rslt);
+			$Xgroups_menu .= "<option ";
+			if ($default_xfer_group == "$rowx[0]") 
+				{
+				$Xgroups_menu .= "SELECTED ";
+				$Xgroups_selected++;
+				}
+			$Xgroups_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$o++;
+			}
+		if ($Xgroups_selected < 1) 
+			{$Xgroups_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
+		else 
+			{$Xgroups_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
+
+
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>$sglinkB"._QXZ("Status Group Override")."$sglinkE: </td><td align=left><select size=1 name=status_group_id>";
 		echo "<option value=\"\">"._QXZ("NONE")."</option>";
 		echo "$status_groups_menu";
@@ -25744,6 +25790,10 @@ if ($ADD==311)
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Transfer-Conf Number 4 Override").": </td><td align=left><input type=text name=xferconf_d_number size=20 maxlength=50 value=\"$xferconf_d_number\">$NWB#lists-xferconf_a_dtmf$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Transfer-Conf Number 5 Override").": </td><td align=left><input type=text name=xferconf_e_number size=20 maxlength=50 value=\"$xferconf_e_number\">$NWB#lists-xferconf_a_dtmf$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Default Transfer Group").": </td><td align=left><select size=1 name=default_xfer_group>";
+		echo "$Xgroups_menu";
+		echo "</select>$NWB#lists-default_xfer_group$NWE</td></tr>\n";
 
 		if ($SSuser_new_lead_limit > 0)
 			{
