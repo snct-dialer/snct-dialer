@@ -574,10 +574,11 @@
 # 171126-1140 - Added ability to use EMAILinbound_message script variable
 # 171130-0226 - Added agent_screen_time_display option
 # 171214-2018 - Added PREVIEW_ get_call_launch options
+# 171224-1244 - Added List default_xfer_group override
 #
 
-$version = '2.14-544c';
-$build = '171214-2018';
+$version = '2.14-545c';
+$build = '171224-1244';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -9218,6 +9219,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								entry_date										= MDnextResponse_array[57];
 								status_group_statuses_data						= MDnextResponse_array[58];
 								last_call_date									= MDnextResponse_array[59];
+								LIVE_default_xfer_group							= MDnextResponse_array[60];
 
 								// build statuses list for disposition screen
 								VARstatuses = [];

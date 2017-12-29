@@ -1030,7 +1030,9 @@ custom_two VARCHAR(100) default '',
 custom_three VARCHAR(100) default '',
 custom_four VARCHAR(100) default '',
 custom_five VARCHAR(100) default '',
-inbound_list_script_override VARCHAR(20)
+inbound_list_script_override VARCHAR(20),
+default_xfer_group VARCHAR(20) default '---NONE---'
+
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_statuses (
@@ -3826,6 +3828,19 @@ index (date_hour),
 unique index vclhc_hour (date_hour, type)
 ) ENGINE=MyISAM;
 
+CREATE TABLE vicidial_ingroup_hour_counts (
+group_id VARCHAR(20),
+date_hour DATETIME,
+next_hour DATETIME,
+last_update DATETIME,
+type VARCHAR(22) default 'CALLS',
+calls INT(9) UNSIGNED default '0',
+hr TINYINT(2) default '0',
+index (group_id),
+index (date_hour),
+unique index vihc_ingr_hour (group_id, date_hour, type)
+) ENGINE=MyISAM;
+
 CREATE TABLE vicidial_inbound_survey_log (
 uniqueid VARCHAR(50) NOT NULL,
 lead_id INT(9) UNSIGNED NOT NULL,
@@ -4120,6 +4135,8 @@ CREATE TABLE vicidial_campaign_hour_counts_archive LIKE vicidial_campaign_hour_c
 
 CREATE TABLE vicidial_carrier_hour_counts_archive LIKE vicidial_carrier_hour_counts;
 
+CREATE TABLE vicidial_ingroup_hour_counts_archive LIKE vicidial_ingroup_hour_counts;
+
 CREATE TABLE user_call_log_archive LIKE user_call_log;
 ALTER TABLE user_call_log_archive MODIFY user_call_log_id INT(9) UNSIGNED NOT NULL;
 
@@ -4202,4 +4219,4 @@ INSERT INTO vicidial_settings_containers(container_id,container_notes,container_
 
 UPDATE system_settings set vdc_agent_api_active='1';
 
-UPDATE system_settings SET db_schema_version='1528',db_schema_update_date=NOW(),reload_timestamp=NOW();
+UPDATE system_settings SET db_schema_version='1529',db_schema_update_date=NOW(),reload_timestamp=NOW();

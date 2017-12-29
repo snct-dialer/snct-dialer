@@ -145,6 +145,7 @@
 # 171124-1045 - Added campaigns-max_inbound_calls_outcome entry
 # 171124-1353 = Added campaigns-manual_auto_next_options entry
 # 171130-0048 - Added agent_screen_time_display entry
+# 171224-1027 - Added lists-default_xfer_group entry
 #
 
 require("dbconnect_mysqli.php");
@@ -2220,6 +2221,11 @@ if ($SSqc_features_active > 0)
 <A NAME="lists-user_new_lead_limit">
 <BR>
 <B><?php echo _QXZ("User New Lead Limit"); ?> -</B><?php echo _QXZ("This setting will limit the number of new leads any user can dial in this list per day. This feature will only work properly if the campaign is set to either the MANUAL or INBOUND_MAN Dial Method and No Hopper dialing is enabled. Default is -1 for disabled."); ?>
+
+<BR>
+<A NAME="lists-default_xfer_group">
+<BR>
+<B><?php echo _QXZ("Default Transfer Group"); ?> -</B><?php echo _QXZ("This field is the default In-Group that will be automatically selected when the agent opens the transfer-conference frame in their agent interface. If set to NONE, then the campaign or in-group Default Transfer Group will be used. Default is NONE."); ?>
 
 <BR>
 <A NAME="lists-inventory_report">

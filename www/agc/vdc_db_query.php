@@ -442,10 +442,11 @@
 # 171124-1158 - Added max_inbound_calls_outcome options
 # 171130-0314 - Added agent_screen_time_display option
 # 171204-1528 - Fixes for custom field duplicate fields
+# 171224-1222 - Added List default_xfer_group override
 #
 
-$version = '2.14-336';
-$build = '171204-1528';
+$version = '2.14-337';
+$build = '171224-1222';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=700;
@@ -3807,7 +3808,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 
 			##### BEGIN check for postal_code and phone time zones if alert enabled
 			$post_phone_time_diff_alert_message='';
-			$stmt="SELECT post_phone_time_diff_alert,local_call_time,owner_populate FROM vicidial_campaigns where campaign_id='$campaign';";
+			$stmt="SELECT post_phone_time_diff_alert,local_call_time,owner_populate,default_xfer_group FROM vicidial_campaigns where campaign_id='$campaign';";
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00414',$user,$server_ip,$session_name,$one_mysql_log);}
 			if ($DB) {echo "$stmt\n";}
@@ -3818,6 +3819,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 				$post_phone_time_diff_alert =	$row[0];
 				$local_call_time =				$row[1];
 				$owner_populate =				$row[2];
+				$default_xfer_group =			$row[3];
 				}
 			if ( ($post_phone_time_diff_alert == 'ENABLED') or (preg_match("/OUTSIDE_CALLTIME/",$post_phone_time_diff_alert)) )
 				{
@@ -4012,7 +4014,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 			### check if there is a list_id override
 			if (strlen($list_id) > 1)
 				{
-				$stmt = "SELECT campaign_cid_override,web_form_address,web_form_address_two,web_form_address_three,list_description FROM vicidial_lists where list_id='$list_id';";
+				$stmt = "SELECT campaign_cid_override,web_form_address,web_form_address_two,web_form_address_three,list_description,default_xfer_group FROM vicidial_lists where list_id='$list_id';";
 				$rslt=mysql_to_mysqli($stmt, $link);
 					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00245',$user,$server_ip,$session_name,$one_mysql_log);}
 				if ($DB) {echo "$stmt\n";}
@@ -4025,6 +4027,9 @@ if ($ACTION == 'manDiaLnextCaLL')
 					$LISTweb_form_address_two =		$row[2];
 					$LISTweb_form_address_three =	$row[3];
 					$list_description =				$row[4];
+					$LISTdefault_xfer_group =		$row[5];
+					if ( (strlen($LISTdefault_xfer_group)>0) and (!preg_match("/---NONE---/",$LISTdefault_xfer_group)) )
+						{$default_xfer_group = $LISTdefault_xfer_group;}
 					}
 				}
 
@@ -5058,6 +5063,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 			$LeaD_InfO .=	$entry_date . "\n";
 			$LeaD_InfO .=	$status_group_gather_data . "\n";
 			$LeaD_InfO .=	$call_date . "\n";
+			$LeaD_InfO .=	$default_xfer_group . "\n";
 
 			echo $LeaD_InfO;
 			}
@@ -8150,7 +8156,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 				### Check for List ID override settings
 				if (strlen($list_id)>0)
 					{
-					$stmt = "SELECT xferconf_a_number,xferconf_b_number,xferconf_c_number,xferconf_d_number,xferconf_e_number,web_form_address,web_form_address_two,list_name,web_form_address_three,list_description,status_group_id from vicidial_lists where list_id='$list_id';";
+					$stmt = "SELECT xferconf_a_number,xferconf_b_number,xferconf_c_number,xferconf_d_number,xferconf_e_number,web_form_address,web_form_address_two,list_name,web_form_address_three,list_description,status_group_id,default_xfer_group from vicidial_lists where list_id='$list_id';";
 					if ($DB) {echo "$stmt\n";}
 					$rslt=mysql_to_mysqli($stmt, $link);
 						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00281',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -8178,6 +8184,8 @@ if ($ACTION == 'VDADcheckINCOMING')
 							{$VDCL_group_web_three =	$row[8];}
 						$list_description =				$row[9];
 						$status_group_gather_data = status_group_gather($row[10],'LIST');
+						if ( (strlen($row[11]) > 0) and (!preg_match("/---NONE---/",$row[11])) )
+							{$VDCL_default_xfer_group =	$row[11];}
 						}
 					}
 
@@ -8296,7 +8304,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 
 					$status_group_gather_data = status_group_gather($row[27],'INGROUP');
 
-					$stmt = "SELECT campaign_script,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,default_group_alias,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,timer_action_destination from vicidial_campaigns where campaign_id='$campaign';";
+					$stmt = "SELECT campaign_script,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,default_group_alias,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,timer_action_destination,default_xfer_group from vicidial_campaigns where campaign_id='$campaign';";
 					if ($DB) {echo "$stmt\n";}
 					$rslt=mysql_to_mysqli($stmt, $link);
 						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00181',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -8332,6 +8340,8 @@ if ($ACTION == 'VDADcheckINCOMING')
 							{$VDCL_xferconf_e_number =	$row[13];}
 						if (strlen($VDCL_timer_action_destination) < 1)
 							{$VDCL_timer_action_destination =	$row[14];}
+						if ( (strlen($row[15]) > 0) and (!preg_match("/---NONE---/",$row[15])) )
+							{$VDCL_default_xfer_group =	$row[15];}
 
 						if ( ( (preg_match('/NONE/',$VDCL_ingroup_script)) and (strlen($VDCL_ingroup_script) < 5) ) or (strlen($VDCL_ingroup_script) < 1) )
 							{
