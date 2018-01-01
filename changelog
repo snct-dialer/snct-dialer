@@ -14,6 +14,7 @@
     - get2post.php: Change replace of $headers.
     - options-example.php,
       vicidial.php: Change declare position of $no_empty_session_warnings.
+  * admin.php: Add year 2018.
 
 2.25.22
   [Jörg Frings-Fürst]

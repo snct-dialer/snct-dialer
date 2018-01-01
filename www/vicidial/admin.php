@@ -41251,7 +41251,7 @@ echo _QXZ("admin.php-Version").": $admin_version<BR>";
 echo _QXZ("BUILD").": $build<br>";
 if (!preg_match("/_BUILD_/",$SShosted_settings))
     {echo "<BR><a href=\"$PHP_SELF?ADD=999995\"><font color=white>&copy; 2017 ViciDial Group</font></a><BR><img src=\"images/pixel.gif\">";}
-echo "<BR><a href=\"$PHP_SELF?ADD=999995\"><font color=white>&copy; 2017 flyingpenguin.de UG</font></a><BR><img src=\"images/pixel.gif\">";
+echo "<BR><a href=\"$PHP_SELF?ADD=999995\"><font color=white>&copy; 2017-2018 flyingpenguin.de UG</font></a><BR><img src=\"images/pixel.gif\">";
 echo "<BR><BR><a href=\"/vicidial/changelog.php\" target=\"_blank\" type=\"text/html\"><font color=white>Changelog (fp)</font></a><BR><img src=\"images/pixel.gif\">";
 echo "<BR><BR><BR><BR>";
 echo "</FONT>\n";
