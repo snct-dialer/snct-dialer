@@ -29,6 +29,8 @@ if (isset($_GET["sales_time_frame"]))			{$sales_time_frame=$_GET["sales_time_fra
 	elseif (isset($_POST["sales_time_frame"]))	{$sales_time_frame=$_POST["sales_time_frame"];}
 if (isset($_GET["forc"]))						{$forc=$_GET["forc"];}
 	elseif (isset($_POST["forc"]))				{$forc=$_POST["forc"];}
+if (isset($_GET["DB"]))							{$DB=$_GET["DB"];}
+	elseif (isset($_POST["DB"]))				{$DB=$_POST["DB"];}
 
 include("dbconnect_mysqli.php");
 include("functions.php");
@@ -159,6 +161,7 @@ echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
 
 <form action="<?php echo $PHP_SELF ?>" method=post onSubmit="return GatherListIDs()">
 <input type="hidden" name="list_ids">
+<input type="hidden" name="DB" value="<?php echo $DB ?>">
 <table border=0 cellpadding=5 cellspacing=0 align=center width=600>
 <tr>
 	<th colspan=3><font class="standard_bold"><?php echo _QXZ("OUTBOUND recent sales report"); ?> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </font><font class="standard"><a href="admin.php?ADD=999999"><?php echo _QXZ("Back to Admin"); ?></a></font>
@@ -271,7 +274,8 @@ if ($submit_report && $list_ids) {
 	} else {
 		$stmt="select v.first_name, v.last_name, v.phone_number, vl.call_date, v.lead_id, vl.user, vl.closer from vicidial_list v, vicidial_xfer_log vl where vl.call_date>='$timestamp' and vl.lead_id=v.lead_id and v.status='SALE' $list_id_clause order by call_date desc $limit_clause";
 	}
-	fwrite($dfile, "$stmt\n");
+	if ( ($webroot_writable > 0) and ($DB>0) )
+		{fwrite($dfile, "$stmt\n");}
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$q=0;
 	print "<tr bgcolor='#000000'><th colspan=8><font class='standard_bold' color='white'>Last ".mysqli_num_rows($rslt)." "._QXZ("sales made")."</font></th></tr>\n";

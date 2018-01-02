@@ -136,6 +136,22 @@ $Vtables = 'NONE,log_noanswer,did_agent_log,contact_information';
 
 $APIfunctions = 'ALL_FUNCTIONS add_group_alias add_lead add_list add_phone add_phone_alias add_user agent_ingroup_info agent_stats_export agent_status audio_playback blind_monitor call_agent callid_info change_ingroups check_phone_number did_log_export external_add_lead external_dial external_hangup external_pause external_status in_group_status logout moh_list park_call pause_code preview_dial_action ra_call_control recording recording_lookup send_dtmf server_refresh set_timer_action sounds_list st_get_agent_active_lead st_login_log transfer_conference update_fields update_lead update_list update_log_entry update_phone update_phone_alias update_user user_group_status vm_list webphone_url webserver logged_in_agents update_campaigns lead_field_info phone_number_log switch_lead ccc_lead_info';
 
+
+### BEGIN housecleaning of old static report files, if not done before ###
+if (!file_exists('old_clear'))
+	{
+	array_map('unlink', glob("./*.csv"));
+	array_map('unlink', glob("./*.xls"));
+	array_map('unlink', glob("./ploticus/*"));
+	unlink('project_auth_entries.txt');
+
+	$clear_file=fopen('old_clear', "w");
+	fwrite($clear_file, '1');
+	fclose($clear_file);
+	}
+### END housecleaning of old static report files ###
+
+
 ######################################################################################################
 ######################################################################################################
 #######   Form variable declaration
@@ -4282,12 +4298,13 @@ else
 # 171130-0036 - Added agent_screen_time_display campaign setting
 # 171214-2045 - Added PREVIEW_ options for get_call_launch
 # 171224-1220 - Added List default_xfer_group override
+# 171229-2309 - Added housecleaning code
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-646a';
-$build = '171224-1220';
+$admin_version = '2.14-647a';
+$build = '171229-2309';
 
 
 $STARTtime = date("U");

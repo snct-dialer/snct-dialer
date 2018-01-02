@@ -19,6 +19,18 @@
     - AST_update_AMI2.pl: Added more debug logging.
     - non_agent_api.php,
       NON-AGENT_API.txt: Added lead_status_search function.
+  * Add upstream Rev. 2879:
+    - AST_IVRfilter.php,
+      AST_OUTBOUNDsummary_interval.php,
+      AST_agent_performance_detail.php,
+      AST_agent_performance_detail_SALES.php,
+      AST_performance_comparison_report.php,
+      fcstats.php,
+      fcstats_detail.php: Rewritte CSV download handling.
+    - admin.php,
+      vicidial_sales_viewer.php: Added housecleaning code.
+    - admin_listloader_fourth_gen.php: Write logs only if $DB > 0.
+    - functions.php: Add separator to log.
 
 2.25.22
   [Jörg Frings-Fürst]
