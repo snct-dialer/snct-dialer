@@ -1192,11 +1192,11 @@ $GRAPH_text.=$JS_text.$GRAPH.$GRAPH2.$GRAPH3;
 
 $CSV_total=preg_replace('/\s/', '', "\"\",\"\",\"TOTALS\",\"AGENTS:$TOT_AGENTS\",\"$STOTsales_per_call\",\"$STOTsales_per_hour\",\"$Sgrand_total_sales\",\"$TOTcalls\",\"$TOTtime_MS\",\"$TOTtotPAUSE_MS\",\"$TOTavgPAUSE_MS\",\"$TOTtotWAIT_MS\",\"$TOTavgWAIT_MS\",\"$TOTtotTALK_MS\",\"$TOTavgTALK_MS\",\"$TOTtotDISPO_MS\",\"$TOTavgDISPO_MS\",\"$TOTtotDEAD_MS\",\"$TOTavgDEAD_MS\",\"$TOTtotCUSTOMER_MS\",\"$TOTavgCUSTOMER_MS\"$CSVSUMstatuses");
 
+$FILE_TIME = date("Ymd-His");
+$CSVfilename = "AGENT_PERFORMACE_DETAIL$US$FILE_TIME.csv";
+
 if ($file_download == 1)
 	{
-	$FILE_TIME = date("Ymd-His");
-	$CSVfilename = "AGENT_PERFORMACE_DETAIL$US$FILE_TIME.csv";
-
 	// We'll be outputting a TXT file
 	header('Content-type: application/octet-stream');
 
@@ -1232,11 +1232,11 @@ if ($file_download == 1)
 	exit;
 	}
 
-$CSV_report=fopen("AST_agent_performance_detail.csv", "w");
-fwrite($CSV_report, $CSV_header);
-fwrite($CSV_report, $CSV_lines);
-fwrite($CSV_report, $CSV_total);
-
+#$CSV_report=fopen($CSVfilename, "w");
+#fwrite($CSV_report, $CSV_header);
+#fwrite($CSV_report, $CSV_lines);
+#fwrite($CSV_report, $CSV_total);
+#fclose($CSV_report);
 
 $ASCII_text.="\n\n";
 
@@ -1587,11 +1587,11 @@ $GRAPH_text.=$JS_text.$GRAPH.$GRAPH2.$GRAPH3.$max;
 
 $CSV_total=preg_replace('/\s/', '', "\"\",\"\",\"TOTALS\",\"AGENTS:$TOT_AGENTS\",\"$TOTtotTOTAL_MS\",\"$TOTtotNONPAUSE_MS\",\"$TOTtotPAUSE_MS\",$CSVSUMstatuses");
 
+$FILE_TIME = date("Ymd-His");
+$CSVfilename = "AST_PAUSE_CODE_BREAKDOWN$US$FILE_TIME.csv";
+
 if ($file_download == 2)
 	{
-	$FILE_TIME = date("Ymd-His");
-	$CSVfilename = "AST_PAUSE_CODE_BREAKDOWN$US$FILE_TIME.csv";
-
 	// We'll be outputting a TXT file
 	header('Content-type: application/octet-stream');
 
@@ -1626,10 +1626,12 @@ if ($file_download == 2)
 
 	exit;
 	}
-$CSV_report=fopen("AST_pause_code_breakdown.csv", "w");
-fwrite($CSV_report, $CSV_header);
-fwrite($CSV_report, $CSV_lines);
-fwrite($CSV_report, $CSV_total);
+
+#$CSV_report=fopen($CSVfilename, "w");
+#fwrite($CSV_report, $CSV_header);
+#fwrite($CSV_report, $CSV_lines);
+#fwrite($CSV_report, $CSV_total);
+#fclose($CSV_report);
 
 if ($report_display_type=="HTML")
 	{

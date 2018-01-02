@@ -128,7 +128,7 @@ function user_authorization($user,$pass,$user_option,$user_update,$api_call)
 		if ($SSwebroot_writable > 0)
 			{
 			$fp = fopen ("./project_auth_entries.txt", "a");
-			fwrite ($fp, "ADMIN|FAIL|$NOW_TIME|$user|$auth_key|$ip|$browser|\n");
+			fwrite ($fp, "ADMIN|FAIL|$NOW_TIME|X|$auth_key|$ip|$browser|\n");
 			fclose($fp);
 			}
 		}

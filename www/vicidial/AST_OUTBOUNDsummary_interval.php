@@ -1690,10 +1690,6 @@ else
 	}
 
 	if ($file_download>0) {
-#		$CSV_report=fopen("AST_OUTBOUNDsummary_interval.csv", "w");
-#		$CSV_text=preg_replace('/\s+,/', ',', $CSV_main.$CSV_subreports);
-#		fwrite($CSV_report, $CSV_text);
-#		fclose($CSV_report);
 		$CSVfilename = "AST_OUTBOUNDsummary_interval$US$FILE_TIME.csv";
 		$CSV_text=$CSV_main.$CSV_subreports;
 		$CSV_text=preg_replace('/ +\"/', '"', $CSV_text);
