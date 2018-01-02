@@ -1,4 +1,4 @@
-NON-AGENT API DOCUMENT           Started: 2008-07-24         Updated: 2017-06-14
+NON-AGENT API DOCUMENT           Started: 2008-07-24         Updated: 2017-12-29
 
 This document describes the functions of an API(Application Programming 
 Interface) for all functions NOT directly relating to the VICIDIAL Agent screen. 
@@ -43,6 +43,7 @@ logged_in_agents - list of agents that are logged in to the system
 update_campaign - updates campaign settings in the system
 phone_number_log - exports list of calls placed to one of more phone numbers
 ccc_lead_info - outputs lead data for cross-cluster-communication call
+lead_status_search - displays all field values of all leads that match the status and call date in request
 
 
 New scripts:
@@ -129,6 +130,7 @@ Changes:
 170601-0747 - Added add_to_hopper options to update_lead function
 170609-1107 - Added ccc_lead_info function
 170615-0006 - Added DIAL status for manual dial agent calls that have not been answered, to 4 functions
+171229-1602 - Added lead_status_search function
 
 
 API Functions use the 'function' variable
@@ -554,7 +556,7 @@ NOTE: api user for this function must have user_level set to 7 or higher and "mo
 
 REQUIRED FIELDS-
 source -		description of what originated the API call (maximum 20 characters)
-lead_id -		16-40 characters
+lead_id -		1-10 digits
 field_name -		name of lead field to pull
 
 OPTIONAL FIELDS-
@@ -573,6 +575,49 @@ ERROR: lead_field_info LEAD FIELD NOT FOUND - 6666||
 
 A SUCCESS response will not show "SUCCESS", but instead will just print the value of the field:
 1234567890
+
+
+
+
+
+--------------------------------------------------------------------------------
+lead_status_search - displays all field values of all leads that match the status and call date in request
+
+NOTE: api user for this function must have user_level set to 7 or higher and "modify leads" enabled
+
+REQUIRED FIELDS-
+source -		description of what originated the API call (maximum 20 characters)
+status -		status of leads to be pulled
+date -			called date of the leads to pull (must be in YYYY-MM-DD format)
+			NOTE: both inbound and outbound call logs are searched, no more than 2000 responses are displayed
+
+OPTIONAL FIELDS-
+lead_id -		1-10 digits, only used if status and date are empty 
+custom_fields -		Y or N, default is N. Display custom fields values or not
+list_id -		override for the entry_list_id of a custom field
+
+Example URL strings for API calls:
+http://server/vicidial/non_agent_api.php?source=test&user=6666&pass=1234&function=lead_status_search&status=NP&date=2017-12-29&custom_fields=Y
+
+Example responses:
+ERROR: lead_status_search USER DOES NOT HAVE PERMISSION TO GET LEAD INFO - 6666|0
+ERROR: lead_status_search INVALID SEARCH PARAMETERS - 6666|||
+ERROR: lead_status_search NO RESULTS FOUND - 6666|||
+
+A SUCCESS response will not show "SUCCESS", but instead will print the values of all lead fields, one per line, with leads beginning with ";---------- START OF RECORD 1 ----------":
+
+;---------- START OF RECORD 1 ----------
+lead_id => 823602
+status => TD
+user => 6666
+vendor_lead_code => 1028405
+source_id => I
+list_id => 107
+gmt_offset_now => -5.00
+phone_code => 1
+phone_number => 9999028405
+...
+test_custom_field => new value
 
 
 

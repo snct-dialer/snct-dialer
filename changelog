@@ -15,6 +15,10 @@
     - options-example.php,
       vicidial.php: Change declare position of $no_empty_session_warnings.
   * admin.php: Add year 2018.
+  * Add upstream Rev. 2878:
+    - AST_update_AMI2.pl: Added more debug logging.
+    - non_agent_api.php,
+      NON-AGENT_API.txt: Added lead_status_search function.
 
 2.25.22
   [Jörg Frings-Fürst]

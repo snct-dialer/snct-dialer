@@ -10,6 +10,7 @@
 # CHANGES
 # 170915-2110 - Initial version for Asterisk 13, based upon AST_update.pl
 # 171002-1111 - Fixed timeout erase channels issue, added more debug output
+# 171228-1832 - Added more debug logging
 #
 
 # constants
@@ -212,7 +213,7 @@ if ($run_check > 0)
 		{
 		if ($DB) {print "I am not alone! Another $0 is running! Exiting...\n";}
 		$event_string = "I am not alone! Another $0 is running! Exiting...";
-		&event_logger;
+		&event_logger($SYSLOG,$event_string);
 		exit;
 		}
 	}
@@ -259,7 +260,7 @@ if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 13))
 	{
 	print "Asterisk version too low for this script. Exiting.\n\n\n";
 	$event_string = "Asterisk version too low for this script. Exiting.";
-	&event_logger;
+	&event_logger($SYSLOG,$event_string);
 	exit;
 	}
 else 
@@ -319,6 +320,8 @@ else
 		# create a new action id
 		$action_id = "$now_sec.$now_micro_sec";
 
+		$modechange = $tn->errmode('return');
+
 		# ask the AMI for the channels
 		$action_string = "Action: CoreShowChannels\nActionID: $action_id";
 		$tn->print($action_string);
@@ -328,7 +331,9 @@ else
 		$msg = $tn->errmsg;
 		if (  $msg ne '' ) 
 			{
-			print "WAITFOR ERRMSG: |$msg|$now_date|" . length($read_input_buf) . "|$endless_loop|$loop_count|Command: $action_string|";
+			$event_string =  "WAITFOR ERRMSG: |$msg|$now_date|" . length($read_input_buf) . "|$endless_loop|$loop_count|Command: $action_string|";
+			&event_logger($SYSLOG,$event_string);
+			print $event_string."\n";
 			}
 
 		# initialize the channal array
@@ -1145,7 +1150,7 @@ sub bad_grab_check
 		{
 		$bad_grab = 1;
 		$event_string="------ UPDATER BAD GRAB!!!\n$percent_total_static|$counts->{'total'}:$old_counts->{'total'}\t$percent_dahdi_client_static|$counts->{'dahdi'}:$old_counts->{'dahdi'}\t$percent_iax_client_static|$counts->{'iax'}:$old_counts->{'iax'}\t$percent_local_client_static|$counts->{'local'}:$old_counts->{'local'}\t$percent_sip_client_static|$counts->{'sip'}:$old_counts->{'sip'}\n";
-		&event_logger;
+		&event_logger($SYSLOG,$event_string);
 		}
 	
 	return $bad_grab;
