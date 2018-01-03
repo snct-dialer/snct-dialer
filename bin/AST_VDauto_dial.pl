@@ -1121,7 +1121,7 @@ while($one_day_interval > 0)
 										$sthZ = $dbhA->prepare($stmtZ) or die "preparing: ",$dbhA->errstr;
 										$sthZ->execute or die "executing: $stmtZ ", $dbhA->errstr;
 										$sthZrows=$sthZ->rows;
-										if($sthZrows > 0 {
+										if($sthZrows > 0 ) {
 											@aryZ = $sthZ->fetchrow_array;
 											$ZdialStatus = $aryZ[0];
 											if ( index($ZdialStatus, $Zstatus ) == -1) {
