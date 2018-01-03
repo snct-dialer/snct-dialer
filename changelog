@@ -31,6 +31,7 @@
       vicidial_sales_viewer.php: Added housecleaning code.
     - admin_listloader_fourth_gen.php: Write logs only if $DB > 0.
     - functions.php: Add separator to log.
+  * AST_VDauto_dial.pl: Add log for the new check.
 
 2.25.22
   [Jörg Frings-Fürst]

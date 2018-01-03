@@ -1116,7 +1116,7 @@ while($one_day_interval > 0)
 
 									$doneX = 0;
 									# check only if Zstatus is not NEW
-									if(index($Zstatus, 'NEW') == -1) {
+									if($Zstatus ne 'NEW') {
 										$stmtZ = "SELECT dial_statuses FROM vicidial_campaigns WHERE campaign_id='$DBIPcampaign[$user_CIPct]';";
 										$sthZ = $dbhA->prepare($stmtZ) or die "preparing: ",$dbhA->errstr;
 										$sthZ->execute or die "executing: $stmtZ ", $dbhA->errstr;
@@ -1132,6 +1132,9 @@ while($one_day_interval > 0)
 									if($doneX > 0) {
 										$stmtX = "DELETE FROM vicidial_hopper where lead_id='$lead_id'";
 										$affected_rows = $dbhA->do($stmtX);
+
+										$event_string="Remove $lead_id from $DBIPcampaign[$user_CIPct] with status $Zstatus";
+										&event_logger;
 									} else {
 										$rec_countCUSTDATA++;
 										$rec_count++;
