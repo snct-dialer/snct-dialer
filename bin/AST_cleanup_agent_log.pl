@@ -10,7 +10,7 @@
 #
 # This program only needs to be run by one server
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 60711-0945 - Changed to DBI by Marin Blu
@@ -41,6 +41,7 @@
 # 140426-2000 - Added pause_type
 # 161102-1033 - Fixed QM partition problem
 # 170609-2356 - Added option for fixing length_in_sec on vicidial_log and vicidial_closer_log records
+# 180102-0111 - Added a check for vicidial_log entries with a user with no vicidial_agent_log entry
 #
 
 # constants
@@ -75,6 +76,7 @@ if (length($ARGV[0])>1)
 		print "  [-only-qm-live-call-check] = will only check the queue_log calls that report as live, in ViciDial\n";
 		print "  [-only-fix-old-lagged] = will go through old lagged entries and add a new entry after\n";
 		print "  [-only-dedupe-vicidial-log] = will look for duplicate vicidial_log and extended entries\n";
+		print "  [-only-check-vicidial-log-agent] = will check for missing agent log entries\n";
 		print "  [-only-hold-cleanup] = will look for hold entries and correct agent log wait/talk times\n";
 		print "  [-run-check] = concurrency check, die if another instance is running\n";
 		print "  [-q] = quiet, no output\n";
@@ -125,6 +127,11 @@ if (length($ARGV[0])>1)
 			{
 			$vl_dup_check=1;
 			if ($Q < 1) {print "\n----- VICIDIAL LOG DUPLICATE CHECK -----\n\n";}
+			}
+		if ($args =~ /-only-check-vicidial-log-agent/i)
+			{
+			$vl_val_check=1;
+			if ($Q < 1) {print "\n----- VICIDIAL LOG AGENT LOG CHECK -----\n\n";}
 			}
 		if ($args =~ /-last-24hours/i)
 			{
@@ -446,6 +453,109 @@ if ($sthArows > 0)
 $sthA->finish();
 ##### END QUEUEMETRICS LOGGING LOOKUP #####
 ###########################################
+
+
+### BEGIN check for vicidial_log entries with a user with no vicidial_agent_log entry
+if ($vl_val_check > 0) 
+	{
+	if ($DB) {print " - check for vicidial_log entries with a user with no vicidial_agent_log entry\n";}
+	$stmtA = "SELECT call_date,lead_id,uniqueid,user,status from vicidial_log $VDCL_SQL_time_where and user NOT IN('','VDAC','VDAD') order by call_date;";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	if($DBX){print STDERR "\n$sthArows|$stmtA|\n";}
+	$i=0;
+	while ($sthArows > $i)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$dup_call_date[$i] =	$aryA[0];
+			$dup_date[$i] = $aryA[0];
+			$dup_date[$i] =~ s/ .*//;
+
+		$dup_lead[$i] =			$aryA[1];
+		$dup_uniqueid[$i] =		$aryA[2];
+		$dup_user[$i] =			$aryA[3];
+		$dup_status[$i] =		$aryA[4];
+		$i++;
+		}
+	$sthA->finish();
+
+	if ($DB > 0) 
+		{
+		print "$sthArows vicidial_log records found, starting lookups...\n";
+		}
+
+	$i=0;
+	$missing=0;
+	$missing_uid=0;
+	while ($sthArows > $i)
+		{
+		$stmtA = "SELECT count(*) from vicidial_agent_log where user='$dup_user[$i]' and lead_id='$dup_lead[$i]' and uniqueid='$dup_uniqueid[$i]' and event_time >= \"$dup_date[$i] 00:00:00\" and event_time <= \"$dup_date[$i] 23:59:59\";";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArowsVAL=$sthA->rows;
+		if($DBX){print STDERR "\n$sthArowsVAL|$stmtA|\n";}
+		if ($sthArowsVAL > 0)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$sthA->finish();
+			$dup_agent_count[$i] =	$aryA[0];
+			if ($dup_agent_count[$i] < 1) 
+				{
+				$stmtA = "SELECT uniqueid from vicidial_agent_log where user='$dup_user[$i]' and lead_id='$dup_lead[$i]' and event_time >= \"$dup_date[$i] 00:00:00\" and event_time <= \"$dup_date[$i] 23:59:59\";";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArowsVAL=$sthA->rows;
+				if($DBX){print STDERR "\n$sthArowsVAL|$stmtA|\n";}
+				if ($sthArowsVAL > 0)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$dup_agent_uniqueid[$i] =	$aryA[0];
+					if ($dup_agent_uniqueid[$i] != $dup_uniqueid[$i]) 
+						{
+						$missing_uid++;
+						if ($DBX > 0) 
+							{print "VAL record UID MISMATCH: $i|$missing_uid|     |$dup_call_date[$i]|$dup_user[$i]|$dup_lead[$i]|$dup_uniqueid[$i]|$dup_agent_uniqueid[$i]|$dup_status[$i]|\n";}
+						}
+					}
+				else
+					{
+					$missing++;
+					if ($DB > 0) 
+						{print "Missing VAL record: $i|$missing|     |$dup_call_date[$i]|$dup_user[$i]|$dup_lead[$i]|$dup_uniqueid[$i]|$dup_status[$i]|\n";}
+					}
+				}
+			}
+		
+		$i++;
+
+		if ( ($i =~ /0$/) && ($DB > 0) )
+			{
+			if ($i =~ /00$/) {$k='+';}
+			if ($i =~ /10$/) {$k='|';}
+			if ($i =~ /20$/) {$k='/';}
+			if ($i =~ /30$/) {$k='-';}
+			if ($i =~ /40$/) {$k="\\";}
+			if ($i =~ /50$/) {$k='|';}
+			if ($i =~ /60$/) {$k='/';}
+			if ($i =~ /70$/) {$k='-';}
+			if ($i =~ /80$/) {$k="\\";}
+			if ($i =~ /90$/) {$k='0';}
+			print STDERR "$k    $i / $sthArows     MISSING: $missing ($missing_uid)\r";
+			}
+		}
+
+	if ($DB > 0) 
+		{
+		print "DONE:     TOTAL: $i     MISSING: $missing ($missing_uid)\n";
+		}
+
+	exit;
+	}
+### END check for vicidial_log entries with a user with no vicidial_agent_log entry
+
+
+
 
 
 ##### BEGIN hold entries process (not recurring process, only run once) #####
@@ -1144,7 +1254,6 @@ if ($vl_dup_check > 0)
 	exit;
 	}
 ### END check for duplicate vicidial_log entries
-
 
 
 

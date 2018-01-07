@@ -1,7 +1,7 @@
 <?php
 # vicidial.php - the web-based version of the astVICIDIAL client application
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # Other scripts that this application depends on:
 # - vdc_db_query.php: Updates information in the database
@@ -575,10 +575,11 @@
 # 171130-0226 - Added agent_screen_time_display option
 # 171214-2018 - Added PREVIEW_ get_call_launch options
 # 171224-1244 - Added List default_xfer_group override
+# 180105-1543 - Small javascript fixes, and more debug logging, change to 2018
 #
 
-$version = '2.14-545c';
-$build = '171224-1244';
+$version = '2.14-546c';
+$build = '180105-1543';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -5896,16 +5897,18 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							}
 						if ( (APIDiaL.length > 9) && (WaitingForNextStep == '0') && (AllowManualQueueCalls == '1') && (check_n > 2) )
 							{
-							button_click_log = button_click_log + "" + SQLdate + "-----api_dial---" + APIDiaL + "|";
+							button_click_log = button_click_log + "" + SQLdate + "-----api_dial---" + APIDiaL + " " + APIDiaL_ID + "|";
 							var APIDiaL_array_detail = APIDiaL.split("!");
 							if (APIDiaL_ID == APIDiaL_array_detail[6])
 								{
+								button_click_log = button_click_log + "" + SQLdate + "-----api_dial_cancel---" + APIDiaL_ID + " " + APIDiaL_array_detail[6] + "|";
 							//	alert("DiaL ALREADY RECEIVED: " + APIDiaL_ID + "|" + APIDiaL_array_detail[5]);
 								}
 							else
 								{
 								if (APIDiaL_array_detail[0] == 'MANUALNEXT')  // trigger Dial Next Number button
 									{
+									APIDiaL_ID = APIDiaL_array_detail[6];
 									if (APIDiaL_array_detail[4] == 'YES')  // focus on vicidial agent screen
 										{
 										window.focus();
@@ -13389,6 +13392,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 				hideDiv('DispoButtonHideB');
 				hideDiv('DispoButtonHideC');
 				document.getElementById("debugbottomspan").innerHTML =  "<?php echo _QXZ("Disposition set twice: "); ?>" + document.vicidial_form.lead_id.value + "|" + DispoChoice + "\n"
+				button_click_log = button_click_log + "" + SQLdate + "-----dispo_set_twice---" + document.vicidial_form.lead_id.value + " " + DispoChoice + "|";
 				}
 			else
 				{

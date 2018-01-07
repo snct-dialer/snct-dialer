@@ -32,6 +32,11 @@
     - admin_listloader_fourth_gen.php: Write logs only if $DB > 0.
     - functions.php: Add separator to log.
   * AST_VDauto_dial.pl: Add log for the new check.
+  * Add upstream Rev. 2880:
+    - AST_cleanup_agent_log.pl: Added a check for vicidial_log entries with a
+      user with no vicidial_agent_log entry.
+    - vicidial.php: Small javascript fixes, and more debug logging, change
+      to 2018.
 
 2.25.22
   [Jörg Frings-Fürst]
