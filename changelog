@@ -1,7 +1,7 @@
 2.25.24 UNRELEASED
   [Jörg Frings-Fürst]
 
-2.25.23
+2.25.23 stable
   [Jörg Frings-Fürst]
   * Add upstream Rev. 2876:
     - ADMIN_keepalive_ALL.pl: Added rolling of vicidial_ingroup_hour_counts
