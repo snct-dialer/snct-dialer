@@ -1029,14 +1029,6 @@ else
 	if ($report_display_type=="HTML") {echo $JS_text;}
 	}
 
-#$CSV_report=fopen("fcstats.csv", "w");
-#$CSV_head=preg_replace('/\s+,/', ',', $CSV_fronter_header.$CSV_fronter_lines.$CSV_fronter_footer.$CSV_closer_header.$CSV_closer_lines.$CSV_closer_footer);
-#fwrite($CSV_report, $CSV_head);
-#fclose($CSV_report);
-
-
-
-
 if ($db_source == 'S')
 	{
 	mysqli_close($link);

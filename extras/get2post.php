@@ -78,7 +78,7 @@ if ($qm_conf_ct > 0)
 ##### END SETTINGS LOOKUP #####
 ###########################################
 
-$headers=preg_replace('/[^- !\$\.\_0-9a-zA-Z]/',"",$headers);
+$headers=preg_replace('/[^- !\=\$\.\_0-9a-zA-Z]/',"",$headers);
 $uniqueid=preg_replace('/[^-\.\_0-9a-zA-Z]/',"",$uniqueid);
 $type=preg_replace('/[^-\_0-9a-zA-Z]/',"",$type);
 $DB=preg_replace('/[^0-9]/',"",$DB);

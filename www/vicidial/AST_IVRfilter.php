@@ -615,11 +615,6 @@ if ($file_download == 0 || !$file_download) {
 
 	echo "$CSV_text";
 	
-#	$CSV_report=fopen("AST_pause_code_breakdown.csv", "w");
-#	fwrite($CSV_report, $CSV_header);
-#	fwrite($CSV_report, $CSV_lines);
-#	fwrite($CSV_report, $CSV_total);
-
 }
 
 if ($db_source == 'S')

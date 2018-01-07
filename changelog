@@ -1,3 +1,44 @@
+2.25.23
+  [Jörg Frings-Fürst]
+  * Add upstream Rev. 2876:
+    - ADMIN_keepalive_ALL.pl: Added rolling of vicidial_ingroup_hour_counts
+        records.
+    - AST_VDadapt.pl,
+      MySQL_AST_CREATE_tables.sql,
+      upgrade_2.14.sql: Added caching of inbound call stats.
+    - vdc_db_query.php,
+      vicidial.php,
+      admin.php,
+      help.php: Added List default_xfer_group override.
+  * Add upstream Rev. 2877:
+    - get2post.php: Change replace of $headers.
+    - options-example.php,
+      vicidial.php: Change declare position of $no_empty_session_warnings.
+  * admin.php: Add year 2018.
+  * Add upstream Rev. 2878:
+    - AST_update_AMI2.pl: Added more debug logging.
+    - non_agent_api.php,
+      NON-AGENT_API.txt: Added lead_status_search function.
+  * Add upstream Rev. 2879:
+    - AST_IVRfilter.php,
+      AST_OUTBOUNDsummary_interval.php,
+      AST_agent_performance_detail.php,
+      AST_agent_performance_detail_SALES.php,
+      AST_performance_comparison_report.php,
+      fcstats.php,
+      fcstats_detail.php: Rewritte CSV download handling.
+    - admin.php,
+      vicidial_sales_viewer.php: Added housecleaning code.
+    - admin_listloader_fourth_gen.php: Write logs only if $DB > 0.
+    - functions.php: Add separator to log.
+  * AST_VDauto_dial.pl: Add log for the new check.
+  * Add upstream Rev. 2880:
+    - AST_cleanup_agent_log.pl: Added a check for vicidial_log entries with a
+      user with no vicidial_agent_log entry.
+    - vicidial.php: Small javascript fixes, and more debug logging, change
+      to 2018.
+  * Release 2.25.23 2018-01-07.
+
 2.25.22
   [Jörg Frings-Fürst]
   * admin.php: Fix table for contacts.

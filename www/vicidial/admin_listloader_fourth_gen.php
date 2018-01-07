@@ -1296,7 +1296,7 @@ if ($OK_to_process)
 						$affected_rows = mysqli_affected_rows($link);
 						$lead_id = mysqli_insert_id($link);
 						if ($DB > 0) {echo "<!-- $affected_rows|$lead_id|$stmtZ -->";}
-						if ($webroot_writable > 0) 
+						if ( ($webroot_writable > 0) and ($DB>0) )
 							{fwrite($stmt_file, $stmtZ."\r\n");}
 						$multistmt='';
 
@@ -1312,7 +1312,7 @@ if ($OK_to_process)
 							### insert good record into vicidial_list table ###
 							$stmtZ = "INSERT INTO vicidial_list (lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id) values$multistmt('',\"$entry_date\",\"$modify_date\",\"$status\",\"$user\",\"$vendor_lead_code\",\"$source_id\",\"$list_id\",\"$gmt_offset\",\"$called_since_last_reset\",\"$phone_code\",\"$phone_number\",\"$title\",\"$first_name\",\"$middle_initial\",\"$last_name\",\"$address1\",\"$address2\",\"$address3\",\"$city\",\"$state\",\"$province\",\"$postal_code\",\"$country_code\",\"$gender\",\"$date_of_birth\",\"$alt_phone\",\"$email\",\"$security_phrase\",\"$comments\",0,\"2008-01-01 00:00:00\",\"$rank\",\"$owner\",'0');";
 							$rslt=mysql_to_mysqli($stmtZ, $link);
-							if ($webroot_writable > 0) 
+							if ( ($webroot_writable > 0) and ($DB>0) )
 								{fwrite($stmt_file, $stmtZ."\r\n");}
 							$multistmt='';
 							$multi_insert_counter=0;
@@ -1360,7 +1360,7 @@ if ($OK_to_process)
 			{
 			$stmtZ = "INSERT INTO vicidial_list (lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id) values".substr($multistmt, 0, -1).";";
 			mysql_to_mysqli($stmtZ, $link);
-			if ($webroot_writable > 0) 
+			if ( ($webroot_writable > 0) and ($DB>0) )
 				{fwrite($stmt_file, $stmtZ."\r\n");}
 			}
 
@@ -1828,7 +1828,7 @@ if (($leadfile) && ($LF_path))
 							### insert good deal into pending_transactions table ###
 							$stmtZ = "INSERT INTO vicidial_list (lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id) values$multistmt('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country_code','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments',0,'2008-01-01 00:00:00','$rank','$owner','0');";
 							$rslt=mysql_to_mysqli($stmtZ, $link);
-							if ($webroot_writable > 0) 
+							if ( ($webroot_writable > 0) and ($DB>0) )
 								{fwrite($stmt_file, $stmtZ."\r\n");}
 							$multistmt=''; */
 							$multi_insert_counter=0;
@@ -1837,7 +1837,7 @@ if (($leadfile) && ($LF_path))
 							$affected_rows = mysqli_affected_rows($link);
 							$lead_id = mysqli_insert_id($link);
 							if ($DB > 0) {echo "<!-- $affected_rows|$lead_id|$stmtZ -->";}
-							if ($webroot_writable > 0) 
+							if ( ($webroot_writable > 0) and ($DB>0) )
 								{fwrite($stmt_file, $stmtZ."\r\n");}
 							$multistmt='';
 
@@ -1893,7 +1893,7 @@ if (($leadfile) && ($LF_path))
 							$custom_rslt=mysql_to_mysqli($custom_ins_stmt, $link);
 							$affected_rows = mysqli_affected_rows($link);
 							echo "<!-- $custom_ins_stmt //-->\n";
-							if ($webroot_writable > 0) 
+							if ( ($webroot_writable > 0) and ($DB>0) )
 								{fwrite($stmt_file, $custom_ins_stmt."\r\n");}
 /*
 							} 
@@ -1952,7 +1952,7 @@ if (($leadfile) && ($LF_path))
 				{
 				$stmtZ = "INSERT INTO vicidial_list (lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id) values".substr($multistmt, 0, -1).";";
 				mysql_to_mysqli($stmtZ, $link);
-				if ($webroot_writable > 0) 
+				if ( ($webroot_writable > 0) and ($DB>0) )
 					{fwrite($stmt_file, $stmtZ."\r\n");}
 
 				$custom_ins_stmt="INSERT INTO $custom_table(";
@@ -1968,7 +1968,7 @@ if (($leadfile) && ($LF_path))
 					}
 				$custom_ins_stmt=substr($custom_ins_stmt, 0, -1).") VALUES".substr($custom_multistmt, 0, -1);
 				mysql_to_mysqli($custom_ins_stmt, $link);
-				if ($webroot_writable > 0) 
+				if ( ($webroot_writable > 0) and ($DB>0) )
 					{fwrite($stmt_file, $custom_ins_stmt."\r\n");}
 				}
 			### LOG INSERTION Admin Log Table ###
@@ -2381,7 +2381,7 @@ if (($leadfile) && ($LF_path))
 							### insert good deal into pending_transactions table ###
 							$stmtZ = "INSERT INTO vicidial_list (lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id) values$multistmt('',\"$entry_date\",\"$modify_date\",\"$status\",\"$user\",\"$vendor_lead_code\",\"$source_id\",\"$list_id\",\"$gmt_offset\",\"$called_since_last_reset\",\"$phone_code\",\"$phone_number\",\"$title\",\"$first_name\",\"$middle_initial\",\"$last_name\",\"$address1\",\"$address2\",\"$address3\",\"$city\",\"$state\",\"$province\",\"$postal_code\",\"$country_code\",\"$gender\",\"$date_of_birth\",\"$alt_phone\",\"$email\",\"$security_phrase\",\"$comments\",0,\"2008-01-01 00:00:00\",\"$rank\",\"$owner\",'0');";
 							$rslt=mysql_to_mysqli($stmtZ, $link);
-							if ($webroot_writable > 0) 
+							if ( ($webroot_writable > 0) and ($DB>0) )
 								{fwrite($stmt_file, $stmtZ."\r\n");}
 							$multistmt='';
 							$multi_insert_counter=0;
@@ -2428,7 +2428,7 @@ if (($leadfile) && ($LF_path))
 				{
 				$stmtZ = "INSERT INTO vicidial_list (lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id) values".substr($multistmt, 0, -1).";";
 				mysql_to_mysqli($stmtZ, $link);
-				if ($webroot_writable > 0) 
+				if ( ($webroot_writable > 0) and ($DB>0) )
 					{fwrite($stmt_file, $stmtZ."\r\n");}
 				}
 			### LOG INSERTION Admin Log Table ###
@@ -2634,6 +2634,7 @@ if (($leadfile) && ($LF_path))
 		print "  <input type=hidden name=lead_file value=\"$lead_file\">\r\n";
 		print "  <input type=hidden name=list_id_override value=\"$list_id_override\">\r\n";
 		print "  <input type=hidden name=phone_code_override value=\"$phone_code_override\">\r\n";
+		print "  <input type=hidden name=DB value=\"$DB\">\r\n";
 		print "    <th colspan=2><input type=submit name='OK_to_process' value='"._QXZ("OK TO PROCESS")."'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=button onClick=\"javascript:document.location='admin_listloader_fourth_gen.php'\" value=\""._QXZ("START OVER")."\" name='reload_page'></th>\r\n";
 		print "  </tr>\r\n";
 		print "</table>\r\n";

@@ -45,7 +45,9 @@
 # 160515-2016 - Added code for new UK OFCOM drop calculations
 # 161102-1029 - Fixed QM partition problem
 # 170724-2352 - Added option for cached hour counts for vicidial_log entries per campaign and carrier log totals
+# 171221-1049 - Added caching of inbound call stats
 #
+
 
 # constants
 $DB=0;  # Debug flag, set to 0 for no debug messages, On an active system this will generate lots of lines of output per minute
@@ -53,6 +55,7 @@ $US='__';
 $MT[0]='';
 $run_check=1; # concurrency check
 $VLhour_counts=1; # use cached hour counts for vicidial_log entries per campaign
+$VCLhour_counts=1; # use cached hour counts for vicidial_closer_log entries per in-group
 
 ##### table definitions(used to force index usage for better performance):
 	$vicidial_log = 'vicidial_log FORCE INDEX (call_date) ';
@@ -3140,113 +3143,1177 @@ sub calculate_drops_inbound
 		}
 
 	# TODAY CALL AND DROP STATS
-	$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date > '$VDL_date';";
-	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-	$sthArows=$sthA->rows;
-	if ($sthArows > 0)
+	## BEGIN CACHED HOURLY ANALYSIS: INBOUND CALLS
+	if ($VCLhour_counts > 0) 
 		{
-		@aryA = $sthA->fetchrow_array;
-		$iVCScalls_today[$p] =	$aryA[0];
+		$secH = time();
+		($HRsec,$HRmin,$HRhour,$HRmday,$HRmon,$HRyear,$HRwday,$HRyday,$HRisdst) = localtime(time);
+		$HRyear = ($HRyear + 1900);
+		$HRmon++;
+		$HRhour_test = $HRhour;
+		if ($HRmon < 10) {$HRmon = "0$HRmon";}
+		if ($HRmday < 10) {$HRmday = "0$HRmday";}
+		if ($HRhour < 10) {$HRhour = "0$HRhour";}
+		$VCL_today = "$HRyear-$HRmon-$HRmday";
+		$VCL_current_hour_date = "$HRyear-$HRmon-$HRmday $HRhour:00:00";
+		$VCL_day_start_date = "$HRyear-$HRmon-$HRmday 00:00:00";
+		$VCL_current_hour_calls=0;
+
+		### get date-time of start of next hour ###
+		$VCL_next_hour = ($secH + (60 * 60));
+		($NHsec,$NHmin,$NHhour,$NHmday,$NHmon,$NHyear,$NHwday,$NHyday,$NHisdst) = localtime($VCL_next_hour);
+		$NHyear = ($NHyear + 1900);
+		$NHmon++;
+		if ($NHmon < 10) {$NHmon = "0$NHmon";}
+		if ($NHmday < 10) {$NHmday = "0$NHmday";}
+		$VCL_next_hour_date = "$NHyear-$NHmon-$NHmday $NHhour:00:00";
+
+		if ($DBX > 1) {print "STARTING CACHED HOURLY TOTAL INBOUND CALLS:  |$VCL_current_hour_date|$VCL_next_hour_date|\n";}
+
+		$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date >= '$VCL_current_hour_date';";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		if ($sthArows > 0)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$VCL_current_hour_calls =	$aryA[0];
+			}
+		$sthA->finish();
+		if ($DBX) {print "VCLHC CURRENT HOUR CALLS: |$sthArows|$VCL_current_hour_calls|$stmtA|\n";}
+
+		$stmtA="INSERT IGNORE INTO vicidial_ingroup_hour_counts SET group_id='$group_id[$p]',date_hour='$VCL_current_hour_date',type='CALLS',next_hour='$VCL_next_hour_date',last_update=NOW(),calls='$VCL_current_hour_calls',hr='$HRhour_test' ON DUPLICATE KEY UPDATE last_update=NOW(),calls='$VCL_current_hour_calls';";
+		$affected_rows = $dbhA->do($stmtA);
+		if ($DBX) {print "VCLHC STATS INSERT/UPDATE    TOTAL|$affected_rows|$stmtA|\n";}
+
+		if ($HRhour_test > 0)
+			{
+			# check to see if cached hour totals already exist
+			$VCHC_entry_count=0;
+			$stmtA = "SELECT count(*) from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='CALLS' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour;";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$VCHC_entry_count =	$aryA[0];
+				}
+			$sthA->finish();
+			if ($DBX) {print "VCLHC CACHED HOUR CHECK: |$sthArows|$VCHC_entry_count|$stmtA|\n";}
+
+			# if cached totals equal the number of hours, then run single query to get sums of calls, if not, go hour-by-hour
+			if ($VCHC_entry_count >= $HRhour_test) 
+				{
+				$VCHC_cache_calls=0;
+				$stmtA = "SELECT sum(calls) from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='CALLS' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour;";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				if ($sthArows > 0)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$VCHC_cache_calls =	$aryA[0];
+					}
+				$sthA->finish();
+				$iVCScalls_today[$p] = ($VCHC_cache_calls + $VCL_current_hour_calls);
+				if ($DBX) {print "VCLHC CACHED HOUR SINGLE QUERY: |$sthArows|$VCHC_cache_calls($iVCScalls_today[$p])|$stmtA|\n";}
+				}
+			else
+				{
+				@VCHC_hour=@MT;
+				@VCHC_date_hour=@MT;
+				@VCHC_next_hour=@MT;
+				@VCHC_last_update=@MT;
+				@VCHC_calls=@MT;
+				$stmtA = "SELECT hr,date_hour,next_hour,last_update,calls from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='CALLS' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour order by hr;";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows_hr=$sthA->rows;
+				$j=0;
+				while ($sthArows_hr > $j)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$VCHC_hour[$j] =		$aryA[0];
+					$VCHC_date_hour[$j] =	$aryA[1];
+					$VCHC_next_hour[$j] =	$aryA[2];
+					$VCHC_last_update[$j] =	$aryA[3];
+					$VCHC_calls[$j] =		$aryA[4];
+					$j++;
+					}
+				$sthA->finish();
+				if ($DBX) {print "VCLHC CACHED HOUR LIST QUERY: |$sthArows_hr|$stmtA|\n";}
+
+				$j=0;
+				while ($j < $HRhour_test) 
+					{
+					$k=0;
+					$cache_hour_found=0;
+					while ($sthArows_hr > $k)
+						{
+						if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") ) 
+							{
+							$iVCScalls_today[$p] = ($iVCScalls_today[$p] + $VCHC_calls[$k]);
+							$cache_hour_found++;
+							if ($DBX) {print "VCLHC CACHED HOUR FOUND: |$VCHC_hour[$k]|$j|$k|$iVCScalls_today[$p]|\n";}
+							}
+						$k++;
+						}
+					if ($cache_hour_found < 1) 
+						{
+						$j_next = ($j + 1);
+						$VCL_this_hour_calls=0;
+						$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date >= '$VCL_today $j:00:00' and call_date < '$VCL_today $j_next:00:00';";
+						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+						$sthArows=$sthA->rows;
+						if ($sthArows > 0)
+							{
+							@aryA = $sthA->fetchrow_array;
+							$VCL_this_hour_calls =	$aryA[0];
+							$iVCScalls_today[$p] = ($iVCScalls_today[$p] + $VCL_this_hour_calls);
+							}
+						$sthA->finish();
+						if ($DBX) {print "VCLHC CACHED HOUR QUERY: |$sthArows|$VCL_this_hour_calls|$stmtA|\n";}
+
+						$stmtA="INSERT IGNORE INTO vicidial_ingroup_hour_counts SET group_id='$group_id[$p]',date_hour='$VCL_today $j:00:00',type='CALLS',next_hour='$VCL_today $j_next:00:00',last_update=NOW(),calls='$VCL_this_hour_calls',hr='$j' ON DUPLICATE KEY UPDATE last_update=NOW(),calls='$VCL_this_hour_calls';";
+						$affected_rows = $dbhA->do($stmtA);
+						if ($DBX) {print "VCLHC STATS INSERT/UPDATE    HOUR|$j|$affected_rows|$stmtA|\n";}
+						}
+					$j++;
+					}
+				$iVCScalls_today[$p] = ($iVCScalls_today[$p] + $VCL_current_hour_calls);
+				}
+			}
+		else
+			{
+			# midnight hour, so total is only current hour stats
+			$iVCScalls_today[$p] =	$VCL_current_hour_calls;
+			if ($DBX) {print "VCLHC MIDNIGHT HOUR: |$iVCScalls_today[$p]|\n";}
+			}
 		}
-	$sthA->finish();
+	## END CACHED HOURLY ANALYSIS: INBOUND CALLS
+	else
+		{
+		$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date > '$VDL_date';";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		if ($sthArows > 0)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$iVCScalls_today[$p] =	$aryA[0];
+			}
+		$sthA->finish();
+		}
 
 	if ($iVCScalls_today[$p] > 0)
 		{
 		# TODAY ANSWERS
-		$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date > '$VDL_date' and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE','TIMEOT','AFTHRS','NANQUE','INBND','MAXCAL');";
-		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-		$sthArows=$sthA->rows;
-		if ($sthArows > 0)
+		## BEGIN CACHED HOURLY ANALYSIS: INBOUND CALLS ANSWERS
+		if ($VCLhour_counts > 0) 
 			{
-			@aryA = $sthA->fetchrow_array;
-			$iVCSanswers_today[$p] =	$aryA[0];
-			}
-		$sthA->finish();
-
-		# TODAY DROPS
-		$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date > '$VDL_date' and status IN('DROP','XDROP');";
-		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-		$sthArows=$sthA->rows;
-		if ($DBX > 0) {print "$stmtA\n";}
-		if ($sthArows > 0)
-			{
-			@aryA = $sthA->fetchrow_array;
-			$iVCSdrops_today[$p] =	$aryA[0];
-			if ($iVCSdrops_today[$p] > 0)
+			$VCL_current_hour_calls=0;
+			$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date >= '$VCL_current_hour_date' and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE','TIMEOT','AFTHRS','NANQUE','INBND','MAXCAL');";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
 				{
-				$iVCSdrops_today_pct[$p] = ( ($iVCSdrops_today[$p] / $iVCScalls_today[$p]) * 100 );
-				$iVCSdrops_today_pct[$p] = sprintf("%.2f", $iVCSdrops_today_pct[$p]);
-				if ($iVCSanswers_today[$p] < 1) {$iVCSanswers_today[$p] = 1;}
-				$iVCSdrops_answers_today_pct[$p] = ( ($iVCSdrops_today[$p] / $iVCSanswers_today[$p]) * 100 );
-				$iVCSdrops_answers_today_pct[$p] = sprintf("%.2f", $iVCSdrops_answers_today_pct[$p]);
+				@aryA = $sthA->fetchrow_array;
+				$VCL_current_hour_calls =	$aryA[0];
+				}
+			$sthA->finish();
+			if ($DBX) {print "VCLHC CURRENT HOUR CALLS ANSWERS: |$sthArows|$VCL_current_hour_calls|$stmtA|\n";}
+
+			$stmtA="INSERT IGNORE INTO vicidial_ingroup_hour_counts SET group_id='$group_id[$p]',date_hour='$VCL_current_hour_date',type='ANSWERS',next_hour='$VCL_next_hour_date',last_update=NOW(),calls='$VCL_current_hour_calls',hr='$HRhour_test' ON DUPLICATE KEY UPDATE last_update=NOW(),calls='$VCL_current_hour_calls';";
+			$affected_rows = $dbhA->do($stmtA);
+			if ($DBX) {print "VCLHC STATS INSERT/UPDATE    TOTAL|$affected_rows|$stmtA|\n";}
+
+			if ($HRhour_test > 0)
+				{
+				# check to see if cached hour totals already exist
+				$VCHC_entry_count=0;
+				$stmtA = "SELECT count(*) from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='ANSWERS' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour;";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				if ($sthArows > 0)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$VCHC_entry_count =	$aryA[0];
+					}
+				$sthA->finish();
+				if ($DBX) {print "VCLHC CACHED HOUR CHECK: |$sthArows|$VCHC_entry_count|$stmtA|\n";}
+
+				# if cached totals equal the number of hours, then run single query to get sums of calls, if not, go hour-by-hour
+				if ($VCHC_entry_count >= $HRhour_test) 
+					{
+					$VCHC_cache_calls=0;
+					$stmtA = "SELECT sum(calls) from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='ANSWERS' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour;";
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows=$sthA->rows;
+					if ($sthArows > 0)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$VCHC_cache_calls =	$aryA[0];
+						}
+					$sthA->finish();
+					$iVCSanswers_today[$p] = ($VCHC_cache_calls + $VCL_current_hour_calls);
+					if ($DBX) {print "VCLHC CACHED HOUR SINGLE QUERY: |$sthArows|$VCHC_cache_calls($iVCSanswers_today[$p])|$stmtA|\n";}
+					}
+				else
+					{
+					@VCHC_hour=@MT;
+					@VCHC_date_hour=@MT;
+					@VCHC_next_hour=@MT;
+					@VCHC_last_update=@MT;
+					@VCHC_calls=@MT;
+					$stmtA = "SELECT hr,date_hour,next_hour,last_update,calls from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='ANSWERS' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour order by hr;";
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows_hr=$sthA->rows;
+					$j=0;
+					while ($sthArows_hr > $j)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$VCHC_hour[$j] =		$aryA[0];
+						$VCHC_date_hour[$j] =	$aryA[1];
+						$VCHC_next_hour[$j] =	$aryA[2];
+						$VCHC_last_update[$j] =	$aryA[3];
+						$VCHC_calls[$j] =		$aryA[4];
+						$j++;
+						}
+					$sthA->finish();
+					if ($DBX) {print "VCLHC CACHED HOUR LIST QUERY: |$sthArows_hr|$stmtA|\n";}
+
+					$j=0;
+					while ($j < $HRhour_test) 
+						{
+						$k=0;
+						$cache_hour_found=0;
+						while ($sthArows_hr > $k)
+							{
+							if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") ) 
+								{
+								$iVCSanswers_today[$p] = ($iVCSanswers_today[$p] + $VCHC_calls[$k]);
+								$cache_hour_found++;
+								if ($DBX) {print "VCLHC CACHED HOUR FOUND: |$VCHC_hour[$k]|$j|$k|$iVCSanswers_today[$p]|\n";}
+								}
+							$k++;
+							}
+						if ($cache_hour_found < 1) 
+							{
+							$j_next = ($j + 1);
+							$VCL_this_hour_calls=0;
+							$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date >= '$VCL_today $j:00:00' and call_date < '$VCL_today $j_next:00:00' and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE','TIMEOT','AFTHRS','NANQUE','INBND','MAXCAL');";
+							$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+							$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+							$sthArows=$sthA->rows;
+							if ($sthArows > 0)
+								{
+								@aryA = $sthA->fetchrow_array;
+								$VCL_this_hour_calls =	$aryA[0];
+								$iVCSanswers_today[$p] = ($iVCSanswers_today[$p] + $VCL_this_hour_calls);
+								}
+							$sthA->finish();
+							if ($DBX) {print "VCLHC CACHED HOUR QUERY: |$sthArows|$VCL_this_hour_calls|$stmtA|\n";}
+
+							$stmtA="INSERT IGNORE INTO vicidial_ingroup_hour_counts SET group_id='$group_id[$p]',date_hour='$VCL_today $j:00:00',type='ANSWERS',next_hour='$VCL_today $j_next:00:00',last_update=NOW(),calls='$VCL_this_hour_calls',hr='$j' ON DUPLICATE KEY UPDATE last_update=NOW(),calls='$VCL_this_hour_calls';";
+							$affected_rows = $dbhA->do($stmtA);
+							if ($DBX) {print "VCLHC STATS INSERT/UPDATE    HOUR|$j|$affected_rows|$stmtA|\n";}
+							}
+						$j++;
+						}
+					$iVCSanswers_today[$p] = ($iVCSanswers_today[$p] + $VCL_current_hour_calls);
+					}
+				}
+			else
+				{
+				# midnight hour, so total is only current hour stats
+				$iVCSanswers_today[$p] =	$VCL_current_hour_calls;
+				if ($DBX) {print "VCLHC MIDNIGHT HOUR: |$iVCSanswers_today[$p]|\n";}
 				}
 			}
-		$sthA->finish();
+		## END CACHED HOURLY ANALYSIS: INBOUND CALLS ANSWERS
+		else
+			{
+			$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date > '$VDL_date' and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE','TIMEOT','AFTHRS','NANQUE','INBND','MAXCAL');";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$iVCSanswers_today[$p] =	$aryA[0];
+				}
+			$sthA->finish();
+			}
+
+		# TODAY DROPS
+		## BEGIN CACHED HOURLY ANALYSIS: INBOUND CALLS DROPS
+		if ($VCLhour_counts > 0) 
+			{
+			$VCL_current_hour_calls=0;
+			$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date >= '$VCL_current_hour_date' and status IN('DROP','XDROP');";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$VCL_current_hour_calls =	$aryA[0];
+				}
+			$sthA->finish();
+			if ($DBX) {print "VCLHC CURRENT HOUR CALLS DROPS: |$sthArows|$VCL_current_hour_calls|$stmtA|\n";}
+
+			$stmtA="INSERT IGNORE INTO vicidial_ingroup_hour_counts SET group_id='$group_id[$p]',date_hour='$VCL_current_hour_date',type='DROPS',next_hour='$VCL_next_hour_date',last_update=NOW(),calls='$VCL_current_hour_calls',hr='$HRhour_test' ON DUPLICATE KEY UPDATE last_update=NOW(),calls='$VCL_current_hour_calls';";
+			$affected_rows = $dbhA->do($stmtA);
+			if ($DBX) {print "VCLHC STATS INSERT/UPDATE    TOTAL|$affected_rows|$stmtA|\n";}
+
+			if ($HRhour_test > 0)
+				{
+				# check to see if cached hour totals already exist
+				$VCHC_entry_count=0;
+				$stmtA = "SELECT count(*) from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='DROPS' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour;";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				if ($sthArows > 0)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$VCHC_entry_count =	$aryA[0];
+					}
+				$sthA->finish();
+				if ($DBX) {print "VCLHC CACHED HOUR CHECK: |$sthArows|$VCHC_entry_count|$stmtA|\n";}
+
+				# if cached totals equal the number of hours, then run single query to get sums of calls, if not, go hour-by-hour
+				if ($VCHC_entry_count >= $HRhour_test) 
+					{
+					$VCHC_cache_calls=0;
+					$stmtA = "SELECT sum(calls) from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='DROPS' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour;";
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows=$sthA->rows;
+					if ($sthArows > 0)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$VCHC_cache_calls =	$aryA[0];
+						}
+					$sthA->finish();
+					$iVCSdrops_today[$p] = ($VCHC_cache_calls + $VCL_current_hour_calls);
+					if ($DBX) {print "VCLHC CACHED HOUR SINGLE QUERY: |$sthArows|$VCHC_cache_calls($iVCSdrops_today[$p])|$stmtA|\n";}
+					}
+				else
+					{
+					@VCHC_hour=@MT;
+					@VCHC_date_hour=@MT;
+					@VCHC_next_hour=@MT;
+					@VCHC_last_update=@MT;
+					@VCHC_calls=@MT;
+					$stmtA = "SELECT hr,date_hour,next_hour,last_update,calls from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='DROPS' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour order by hr;";
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows_hr=$sthA->rows;
+					$j=0;
+					while ($sthArows_hr > $j)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$VCHC_hour[$j] =		$aryA[0];
+						$VCHC_date_hour[$j] =	$aryA[1];
+						$VCHC_next_hour[$j] =	$aryA[2];
+						$VCHC_last_update[$j] =	$aryA[3];
+						$VCHC_calls[$j] =		$aryA[4];
+						$j++;
+						}
+					$sthA->finish();
+					if ($DBX) {print "VCLHC CACHED HOUR LIST QUERY: |$sthArows_hr|$stmtA|\n";}
+
+					$j=0;
+					while ($j < $HRhour_test) 
+						{
+						$k=0;
+						$cache_hour_found=0;
+						while ($sthArows_hr > $k)
+							{
+							if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") ) 
+								{
+								$iVCSdrops_today[$p] = ($iVCSdrops_today[$p] + $VCHC_calls[$k]);
+								$cache_hour_found++;
+								if ($DBX) {print "VCLHC CACHED HOUR FOUND: |$VCHC_hour[$k]|$j|$k|$iVCSdrops_today[$p]|\n";}
+								}
+							$k++;
+							}
+						if ($cache_hour_found < 1) 
+							{
+							$j_next = ($j + 1);
+							$VCL_this_hour_calls=0;
+							$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date >= '$VCL_today $j:00:00' and call_date < '$VCL_today $j_next:00:00' and status IN('DROP','XDROP');";
+							$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+							$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+							$sthArows=$sthA->rows;
+							if ($sthArows > 0)
+								{
+								@aryA = $sthA->fetchrow_array;
+								$VCL_this_hour_calls =	$aryA[0];
+								$iVCSdrops_today[$p] = ($iVCSdrops_today[$p] + $VCL_this_hour_calls);
+								}
+							$sthA->finish();
+							if ($DBX) {print "VCLHC CACHED HOUR QUERY: |$sthArows|$VCL_this_hour_calls|$stmtA|\n";}
+
+							$stmtA="INSERT IGNORE INTO vicidial_ingroup_hour_counts SET group_id='$group_id[$p]',date_hour='$VCL_today $j:00:00',type='DROPS',next_hour='$VCL_today $j_next:00:00',last_update=NOW(),calls='$VCL_this_hour_calls',hr='$j' ON DUPLICATE KEY UPDATE last_update=NOW(),calls='$VCL_this_hour_calls';";
+							$affected_rows = $dbhA->do($stmtA);
+							if ($DBX) {print "VCLHC STATS INSERT/UPDATE    HOUR|$j|$affected_rows|$stmtA|\n";}
+							}
+						$j++;
+						}
+					$iVCSdrops_today[$p] = ($iVCSdrops_today[$p] + $VCL_current_hour_calls);
+					}
+				}
+			else
+				{
+				# midnight hour, so total is only current hour stats
+				$iVCSdrops_today[$p] =	$VCL_current_hour_calls;
+				if ($DBX) {print "VCLHC MIDNIGHT HOUR: |$iVCSdrops_today[$p]|\n";}
+				}
+			}
+		## END CACHED HOURLY ANALYSIS: INBOUND CALLS DROPS
+		else
+			{
+			$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date > '$VDL_date' and status IN('DROP','XDROP');";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($DBX > 0) {print "$stmtA\n";}
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$iVCSdrops_today[$p] =	$aryA[0];
+				}
+			$sthA->finish();
+			}
+
+		if ($iVCSdrops_today[$p] > 0)
+			{
+			$iVCSdrops_today_pct[$p] = ( ($iVCSdrops_today[$p] / $iVCScalls_today[$p]) * 100 );
+			$iVCSdrops_today_pct[$p] = sprintf("%.2f", $iVCSdrops_today_pct[$p]);
+			if ($iVCSanswers_today[$p] < 1) {$iVCSanswers_today[$p] = 1;}
+			$iVCSdrops_answers_today_pct[$p] = ( ($iVCSdrops_today[$p] / $iVCSanswers_today[$p]) * 100 );
+			$iVCSdrops_answers_today_pct[$p] = sprintf("%.2f", $iVCSdrops_answers_today_pct[$p]);
+			}
 
 		# TODAY ANSWER PERCENT OF HOLD SECONDS one and two
-		$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date > '$VDL_date' and queue_seconds <= $answer_sec_pct_rt_stat_one and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE','TIMEOT','AFTHRS','NANQUE','INBND','MAXCAL');";
-		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-		$sthArows=$sthA->rows;
-		if ($sthArows > 0)
+		## BEGIN CACHED HOURLY ANALYSIS: INBOUND CALLS HOLD SECONDS 1
+		if ($VCLhour_counts > 0) 
 			{
-			@aryA = $sthA->fetchrow_array;
-			$answer_sec_pct_rt_stat_one_PCT[$p] = $aryA[0];
-			}
-		$sthA->finish();
+			$VCL_current_hour_calls=0;
+			$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date >= '$VCL_current_hour_date' and queue_seconds <= $answer_sec_pct_rt_stat_one and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE','TIMEOT','AFTHRS','NANQUE','INBND','MAXCAL');";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$VCL_current_hour_calls =	$aryA[0];
+				}
+			$sthA->finish();
+			if ($DBX) {print "VCLHC CURRENT HOUR CALLS HOLD SECONDS 1: |$sthArows|$VCL_current_hour_calls|$stmtA|\n";}
 
-		$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date > '$VDL_date' and queue_seconds <= $answer_sec_pct_rt_stat_two and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE','TIMEOT','AFTHRS','NANQUE','INBND','MAXCAL');";
-		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-		$sthArows=$sthA->rows;
-		if ($sthArows > 0)
-			{
-			@aryA = $sthA->fetchrow_array;
-			$answer_sec_pct_rt_stat_two_PCT[$p] = $aryA[0];
+			$stmtA="INSERT IGNORE INTO vicidial_ingroup_hour_counts SET group_id='$group_id[$p]',date_hour='$VCL_current_hour_date',type='HOLDSEC1',next_hour='$VCL_next_hour_date',last_update=NOW(),calls='$VCL_current_hour_calls',hr='$HRhour_test' ON DUPLICATE KEY UPDATE last_update=NOW(),calls='$VCL_current_hour_calls';";
+			$affected_rows = $dbhA->do($stmtA);
+			if ($DBX) {print "VCLHC STATS INSERT/UPDATE    TOTAL|$affected_rows|$stmtA|\n";}
+
+			if ($HRhour_test > 0)
+				{
+				# check to see if cached hour totals already exist
+				$VCHC_entry_count=0;
+				$stmtA = "SELECT count(*) from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='HOLDSEC1' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour;";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				if ($sthArows > 0)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$VCHC_entry_count =	$aryA[0];
+					}
+				$sthA->finish();
+				if ($DBX) {print "VCLHC CACHED HOUR CHECK: |$sthArows|$VCHC_entry_count|$stmtA|\n";}
+
+				# if cached totals equal the number of hours, then run single query to get sums of calls, if not, go hour-by-hour
+				if ($VCHC_entry_count >= $HRhour_test) 
+					{
+					$VCHC_cache_calls=0;
+					$stmtA = "SELECT sum(calls) from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='HOLDSEC1' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour;";
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows=$sthA->rows;
+					if ($sthArows > 0)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$VCHC_cache_calls =	$aryA[0];
+						}
+					$sthA->finish();
+					$answer_sec_pct_rt_stat_one_PCT[$p] = ($VCHC_cache_calls + $VCL_current_hour_calls);
+					if ($DBX) {print "VCLHC CACHED HOUR SINGLE QUERY: |$sthArows|$VCHC_cache_calls($answer_sec_pct_rt_stat_one_PCT[$p])|$stmtA|\n";}
+					}
+				else
+					{
+					@VCHC_hour=@MT;
+					@VCHC_date_hour=@MT;
+					@VCHC_next_hour=@MT;
+					@VCHC_last_update=@MT;
+					@VCHC_calls=@MT;
+					$stmtA = "SELECT hr,date_hour,next_hour,last_update,calls from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='HOLDSEC1' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour order by hr;";
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows_hr=$sthA->rows;
+					$j=0;
+					while ($sthArows_hr > $j)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$VCHC_hour[$j] =		$aryA[0];
+						$VCHC_date_hour[$j] =	$aryA[1];
+						$VCHC_next_hour[$j] =	$aryA[2];
+						$VCHC_last_update[$j] =	$aryA[3];
+						$VCHC_calls[$j] =		$aryA[4];
+						$j++;
+						}
+					$sthA->finish();
+					if ($DBX) {print "VCLHC CACHED HOUR LIST QUERY: |$sthArows_hr|$stmtA|\n";}
+
+					$j=0;
+					while ($j < $HRhour_test) 
+						{
+						$k=0;
+						$cache_hour_found=0;
+						while ($sthArows_hr > $k)
+							{
+							if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") ) 
+								{
+								$answer_sec_pct_rt_stat_one_PCT[$p] = ($answer_sec_pct_rt_stat_one_PCT[$p] + $VCHC_calls[$k]);
+								$cache_hour_found++;
+								if ($DBX) {print "VCLHC CACHED HOUR FOUND: |$VCHC_hour[$k]|$j|$k|$answer_sec_pct_rt_stat_one_PCT[$p]|\n";}
+								}
+							$k++;
+							}
+						if ($cache_hour_found < 1) 
+							{
+							$j_next = ($j + 1);
+							$VCL_this_hour_calls=0;
+							$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date >= '$VCL_today $j:00:00' and call_date < '$VCL_today $j_next:00:00' and queue_seconds <= $answer_sec_pct_rt_stat_one and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE','TIMEOT','AFTHRS','NANQUE','INBND','MAXCAL');";
+							$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+							$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+							$sthArows=$sthA->rows;
+							if ($sthArows > 0)
+								{
+								@aryA = $sthA->fetchrow_array;
+								$VCL_this_hour_calls =	$aryA[0];
+								$answer_sec_pct_rt_stat_one_PCT[$p] = ($answer_sec_pct_rt_stat_one_PCT[$p] + $VCL_this_hour_calls);
+								}
+							$sthA->finish();
+							if ($DBX) {print "VCLHC CACHED HOUR QUERY: |$sthArows|$VCL_this_hour_calls|$stmtA|\n";}
+
+							$stmtA="INSERT IGNORE INTO vicidial_ingroup_hour_counts SET group_id='$group_id[$p]',date_hour='$VCL_today $j:00:00',type='HOLDSEC1',next_hour='$VCL_today $j_next:00:00',last_update=NOW(),calls='$VCL_this_hour_calls',hr='$j' ON DUPLICATE KEY UPDATE last_update=NOW(),calls='$VCL_this_hour_calls';";
+							$affected_rows = $dbhA->do($stmtA);
+							if ($DBX) {print "VCLHC STATS INSERT/UPDATE    HOUR|$j|$affected_rows|$stmtA|\n";}
+							}
+						$j++;
+						}
+					$answer_sec_pct_rt_stat_one_PCT[$p] = ($answer_sec_pct_rt_stat_one_PCT[$p] + $VCL_current_hour_calls);
+					}
+				}
+			else
+				{
+				# midnight hour, so total is only current hour stats
+				$answer_sec_pct_rt_stat_one_PCT[$p] =	$VCL_current_hour_calls;
+				if ($DBX) {print "VCLHC MIDNIGHT HOUR: |$answer_sec_pct_rt_stat_one_PCT[$p]|\n";}
+				}
 			}
-		$sthA->finish();
+		## END CACHED HOURLY ANALYSIS: INBOUND CALLS HOLD SECONDS 1
+		else
+			{
+			$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date > '$VDL_date' and queue_seconds <= $answer_sec_pct_rt_stat_one and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE','TIMEOT','AFTHRS','NANQUE','INBND','MAXCAL');";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$answer_sec_pct_rt_stat_one_PCT[$p] = $aryA[0];
+				}
+			$sthA->finish();
+			}
+
+		## BEGIN CACHED HOURLY ANALYSIS: INBOUND CALLS HOLD SECONDS 2
+		if ($VCLhour_counts > 0) 
+			{
+			$VCL_current_hour_calls=0;
+			$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date >= '$VCL_current_hour_date' and queue_seconds <= $answer_sec_pct_rt_stat_two and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE','TIMEOT','AFTHRS','NANQUE','INBND','MAXCAL');";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$VCL_current_hour_calls =	$aryA[0];
+				}
+			$sthA->finish();
+			if ($DBX) {print "VCLHC CURRENT HOUR CALLS HOLD SECONDS 2: |$sthArows|$VCL_current_hour_calls|$stmtA|\n";}
+
+			$stmtA="INSERT IGNORE INTO vicidial_ingroup_hour_counts SET group_id='$group_id[$p]',date_hour='$VCL_current_hour_date',type='HOLDSEC2',next_hour='$VCL_next_hour_date',last_update=NOW(),calls='$VCL_current_hour_calls',hr='$HRhour_test' ON DUPLICATE KEY UPDATE last_update=NOW(),calls='$VCL_current_hour_calls';";
+			$affected_rows = $dbhA->do($stmtA);
+			if ($DBX) {print "VCLHC STATS INSERT/UPDATE    TOTAL|$affected_rows|$stmtA|\n";}
+
+			if ($HRhour_test > 0)
+				{
+				# check to see if cached hour totals already exist
+				$VCHC_entry_count=0;
+				$stmtA = "SELECT count(*) from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='HOLDSEC2' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour;";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				if ($sthArows > 0)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$VCHC_entry_count =	$aryA[0];
+					}
+				$sthA->finish();
+				if ($DBX) {print "VCLHC CACHED HOUR CHECK: |$sthArows|$VCHC_entry_count|$stmtA|\n";}
+
+				# if cached totals equal the number of hours, then run single query to get sums of calls, if not, go hour-by-hour
+				if ($VCHC_entry_count >= $HRhour_test) 
+					{
+					$VCHC_cache_calls=0;
+					$stmtA = "SELECT sum(calls) from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='HOLDSEC2' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour;";
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows=$sthA->rows;
+					if ($sthArows > 0)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$VCHC_cache_calls =	$aryA[0];
+						}
+					$sthA->finish();
+					$answer_sec_pct_rt_stat_two_PCT[$p] = ($VCHC_cache_calls + $VCL_current_hour_calls);
+					if ($DBX) {print "VCLHC CACHED HOUR SINGLE QUERY: |$sthArows|$VCHC_cache_calls($answer_sec_pct_rt_stat_two_PCT[$p])|$stmtA|\n";}
+					}
+				else
+					{
+					@VCHC_hour=@MT;
+					@VCHC_date_hour=@MT;
+					@VCHC_next_hour=@MT;
+					@VCHC_last_update=@MT;
+					@VCHC_calls=@MT;
+					$stmtA = "SELECT hr,date_hour,next_hour,last_update,calls from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='HOLDSEC2' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour order by hr;";
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows_hr=$sthA->rows;
+					$j=0;
+					while ($sthArows_hr > $j)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$VCHC_hour[$j] =		$aryA[0];
+						$VCHC_date_hour[$j] =	$aryA[1];
+						$VCHC_next_hour[$j] =	$aryA[2];
+						$VCHC_last_update[$j] =	$aryA[3];
+						$VCHC_calls[$j] =		$aryA[4];
+						$j++;
+						}
+					$sthA->finish();
+					if ($DBX) {print "VCLHC CACHED HOUR LIST QUERY: |$sthArows_hr|$stmtA|\n";}
+
+					$j=0;
+					while ($j < $HRhour_test) 
+						{
+						$k=0;
+						$cache_hour_found=0;
+						while ($sthArows_hr > $k)
+							{
+							if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") ) 
+								{
+								$answer_sec_pct_rt_stat_two_PCT[$p] = ($answer_sec_pct_rt_stat_two_PCT[$p] + $VCHC_calls[$k]);
+								$cache_hour_found++;
+								if ($DBX) {print "VCLHC CACHED HOUR FOUND: |$VCHC_hour[$k]|$j|$k|$answer_sec_pct_rt_stat_two_PCT[$p]|\n";}
+								}
+							$k++;
+							}
+						if ($cache_hour_found < 1) 
+							{
+							$j_next = ($j + 1);
+							$VCL_this_hour_calls=0;
+							$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date >= '$VCL_today $j:00:00' and call_date < '$VCL_today $j_next:00:00' and queue_seconds <= $answer_sec_pct_rt_stat_two and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE','TIMEOT','AFTHRS','NANQUE','INBND','MAXCAL');";
+							$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+							$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+							$sthArows=$sthA->rows;
+							if ($sthArows > 0)
+								{
+								@aryA = $sthA->fetchrow_array;
+								$VCL_this_hour_calls =	$aryA[0];
+								$answer_sec_pct_rt_stat_two_PCT[$p] = ($answer_sec_pct_rt_stat_two_PCT[$p] + $VCL_this_hour_calls);
+								}
+							$sthA->finish();
+							if ($DBX) {print "VCLHC CACHED HOUR QUERY: |$sthArows|$VCL_this_hour_calls|$stmtA|\n";}
+
+							$stmtA="INSERT IGNORE INTO vicidial_ingroup_hour_counts SET group_id='$group_id[$p]',date_hour='$VCL_today $j:00:00',type='HOLDSEC2',next_hour='$VCL_today $j_next:00:00',last_update=NOW(),calls='$VCL_this_hour_calls',hr='$j' ON DUPLICATE KEY UPDATE last_update=NOW(),calls='$VCL_this_hour_calls';";
+							$affected_rows = $dbhA->do($stmtA);
+							if ($DBX) {print "VCLHC STATS INSERT/UPDATE    HOUR|$j|$affected_rows|$stmtA|\n";}
+							}
+						$j++;
+						}
+					$answer_sec_pct_rt_stat_two_PCT[$p] = ($answer_sec_pct_rt_stat_two_PCT[$p] + $VCL_current_hour_calls);
+					}
+				}
+			else
+				{
+				# midnight hour, so total is only current hour stats
+				$answer_sec_pct_rt_stat_two_PCT[$p] =	$VCL_current_hour_calls;
+				if ($DBX) {print "VCLHC MIDNIGHT HOUR: |$answer_sec_pct_rt_stat_two_PCT[$p]|\n";}
+				}
+			}
+		## END CACHED HOURLY ANALYSIS: INBOUND CALLS HOLD SECONDS 2
+		else
+			{
+			$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date > '$VDL_date' and queue_seconds <= $answer_sec_pct_rt_stat_two and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE','TIMEOT','AFTHRS','NANQUE','INBND','MAXCAL');";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$answer_sec_pct_rt_stat_two_PCT[$p] = $aryA[0];
+				}
+			$sthA->finish();
+			}
 
 		# TODAY TOTAL HOLD TIME FOR ANSWERED CALLS
-		$stmtA = "SELECT sum(queue_seconds) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date > '$VDL_date' and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE','TIMEOT','AFTHRS','NANQUE','INBND','MAXCAL');";
-		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-		$sthArows=$sthA->rows;
-		if ($sthArows > 0)
+		## BEGIN CACHED HOURLY ANALYSIS: INBOUND CALLS HOLD SEC ANSWERED
+		if ($VCLhour_counts > 0) 
 			{
-			@aryA = $sthA->fetchrow_array;
-			if ($aryA[0] > 0)
-				{$hold_sec_answer_calls[$p] = $aryA[0];}
+			$VCL_current_hour_calls=0;
+			$stmtA = "SELECT sum(queue_seconds) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date >= '$VCL_current_hour_date' and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE','TIMEOT','AFTHRS','NANQUE','INBND','MAXCAL');";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$VCL_current_hour_calls =	$aryA[0];
+				}
+			$sthA->finish();
+			if ($DBX) {print "VCLHC CURRENT HOUR CALLS HOLD SECONDS OF ANSWERED CALLS: |$sthArows|$VCL_current_hour_calls|$stmtA|\n";}
+
+			$stmtA="INSERT IGNORE INTO vicidial_ingroup_hour_counts SET group_id='$group_id[$p]',date_hour='$VCL_current_hour_date',type='HDSECANS',next_hour='$VCL_next_hour_date',last_update=NOW(),calls='$VCL_current_hour_calls',hr='$HRhour_test' ON DUPLICATE KEY UPDATE last_update=NOW(),calls='$VCL_current_hour_calls';";
+			$affected_rows = $dbhA->do($stmtA);
+			if ($DBX) {print "VCLHC STATS INSERT/UPDATE    TOTAL|$affected_rows|$stmtA|\n";}
+
+			if ($HRhour_test > 0)
+				{
+				# check to see if cached hour totals already exist
+				$VCHC_entry_count=0;
+				$stmtA = "SELECT sum(calls) from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='HDSECANS' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour;";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				if ($sthArows > 0)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$VCHC_entry_count =	$aryA[0];
+					}
+				$sthA->finish();
+				if ($DBX) {print "VCLHC CACHED HOUR CHECK: |$sthArows|$VCHC_entry_count|$stmtA|\n";}
+
+				# if cached totals equal the number of hours, then run single query to get sums of calls, if not, go hour-by-hour
+				if ($VCHC_entry_count >= $HRhour_test) 
+					{
+					$VCHC_cache_calls=0;
+					$stmtA = "SELECT sum(calls) from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='HDSECANS' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour;";
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows=$sthA->rows;
+					if ($sthArows > 0)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$VCHC_cache_calls =	$aryA[0];
+						}
+					$sthA->finish();
+					$hold_sec_answer_calls[$p] = ($VCHC_cache_calls + $VCL_current_hour_calls);
+					if ($DBX) {print "VCLHC CACHED HOUR SINGLE QUERY: |$sthArows|$VCHC_cache_calls($hold_sec_answer_calls[$p])|$stmtA|\n";}
+					}
+				else
+					{
+					@VCHC_hour=@MT;
+					@VCHC_date_hour=@MT;
+					@VCHC_next_hour=@MT;
+					@VCHC_last_update=@MT;
+					@VCHC_calls=@MT;
+					$stmtA = "SELECT hr,date_hour,next_hour,last_update,calls from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='HDSECANS' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour order by hr;";
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows_hr=$sthA->rows;
+					$j=0;
+					while ($sthArows_hr > $j)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$VCHC_hour[$j] =		$aryA[0];
+						$VCHC_date_hour[$j] =	$aryA[1];
+						$VCHC_next_hour[$j] =	$aryA[2];
+						$VCHC_last_update[$j] =	$aryA[3];
+						$VCHC_calls[$j] =		$aryA[4];
+						$j++;
+						}
+					$sthA->finish();
+					if ($DBX) {print "VCLHC CACHED HOUR LIST QUERY: |$sthArows_hr|$stmtA|\n";}
+
+					$j=0;
+					while ($j < $HRhour_test) 
+						{
+						$k=0;
+						$cache_hour_found=0;
+						while ($sthArows_hr > $k)
+							{
+							if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") ) 
+								{
+								$hold_sec_answer_calls[$p] = ($hold_sec_answer_calls[$p] + $VCHC_calls[$k]);
+								$cache_hour_found++;
+								if ($DBX) {print "VCLHC CACHED HOUR FOUND: |$VCHC_hour[$k]|$j|$k|$hold_sec_answer_calls[$p]|\n";}
+								}
+							$k++;
+							}
+						if ($cache_hour_found < 1) 
+							{
+							$j_next = ($j + 1);
+							$VCL_this_hour_calls=0;
+							$stmtA = "SELECT sum(queue_seconds) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date >= '$VCL_today $j:00:00' and call_date < '$VCL_today $j_next:00:00' and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE','TIMEOT','AFTHRS','NANQUE','INBND','MAXCAL');";
+							$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+							$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+							$sthArows=$sthA->rows;
+							if ($sthArows > 0)
+								{
+								@aryA = $sthA->fetchrow_array;
+								$VCL_this_hour_calls =	$aryA[0];
+								$hold_sec_answer_calls[$p] = ($hold_sec_answer_calls[$p] + $VCL_this_hour_calls);
+								}
+							$sthA->finish();
+							if ($DBX) {print "VCLHC CACHED HOUR QUERY: |$sthArows|$VCL_this_hour_calls|$stmtA|\n";}
+
+							$stmtA="INSERT IGNORE INTO vicidial_ingroup_hour_counts SET group_id='$group_id[$p]',date_hour='$VCL_today $j:00:00',type='HDSECANS',next_hour='$VCL_today $j_next:00:00',last_update=NOW(),calls='$VCL_this_hour_calls',hr='$j' ON DUPLICATE KEY UPDATE last_update=NOW(),calls='$VCL_this_hour_calls';";
+							$affected_rows = $dbhA->do($stmtA);
+							if ($DBX) {print "VCLHC STATS INSERT/UPDATE    HOUR|$j|$affected_rows|$stmtA|\n";}
+							}
+						$j++;
+						}
+					$hold_sec_answer_calls[$p] = ($hold_sec_answer_calls[$p] + $VCL_current_hour_calls);
+					}
+				}
+			else
+				{
+				# midnight hour, so total is only current hour stats
+				$hold_sec_answer_calls[$p] =	$VCL_current_hour_calls;
+				if ($DBX) {print "VCLHC MIDNIGHT HOUR: |$hold_sec_answer_calls[$p]|\n";}
+				}
 			}
-		$sthA->finish();
+		## END CACHED HOURLY ANALYSIS: INBOUND CALLS HOLD SEC ANSWERED
+		else
+			{
+			$stmtA = "SELECT sum(queue_seconds) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date > '$VDL_date' and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE','TIMEOT','AFTHRS','NANQUE','INBND','MAXCAL');";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				if ($aryA[0] > 0)
+					{$hold_sec_answer_calls[$p] = $aryA[0];}
+				}
+			$sthA->finish();
+			}
 
 		# TODAY TOTAL HOLD TIME FOR DROP CALLS
-		$stmtA = "SELECT sum(queue_seconds) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date > '$VDL_date' and status IN('DROP','XDROP');";
-		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-		$sthArows=$sthA->rows;
-		if ($sthArows > 0)
+		## BEGIN CACHED HOURLY ANALYSIS: INBOUND CALLS HOLD TIME DROPS
+		if ($VCLhour_counts > 0) 
 			{
-			@aryA = $sthA->fetchrow_array;
-			if ($aryA[0] > 0)
-				{$hold_sec_drop_calls[$p] = $aryA[0];}
+			$VCL_current_hour_calls=0;
+			$stmtA = "SELECT sum(queue_seconds) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date >= '$VCL_current_hour_date' and status IN('DROP','XDROP');";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$VCL_current_hour_calls =	$aryA[0];
+				}
+			$sthA->finish();
+			if ($DBX) {print "VCLHC CURRENT HOUR CALLS HOLD SECONDS OF DROPPED CALLS: |$sthArows|$VCL_current_hour_calls|$stmtA|\n";}
+
+			$stmtA="INSERT IGNORE INTO vicidial_ingroup_hour_counts SET group_id='$group_id[$p]',date_hour='$VCL_current_hour_date',type='HDSECDRP',next_hour='$VCL_next_hour_date',last_update=NOW(),calls='$VCL_current_hour_calls',hr='$HRhour_test' ON DUPLICATE KEY UPDATE last_update=NOW(),calls='$VCL_current_hour_calls';";
+			$affected_rows = $dbhA->do($stmtA);
+			if ($DBX) {print "VCLHC STATS INSERT/UPDATE    TOTAL|$affected_rows|$stmtA|\n";}
+
+			if ($HRhour_test > 0)
+				{
+				# check to see if cached hour totals already exist
+				$VCHC_entry_count=0;
+				$stmtA = "SELECT sum(calls) from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='HDSECDRP' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour;";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				if ($sthArows > 0)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$VCHC_entry_count =	$aryA[0];
+					}
+				$sthA->finish();
+				if ($DBX) {print "VCLHC CACHED HOUR CHECK: |$sthArows|$VCHC_entry_count|$stmtA|\n";}
+
+				# if cached totals equal the number of hours, then run single query to get sums of calls, if not, go hour-by-hour
+				if ($VCHC_entry_count >= $HRhour_test) 
+					{
+					$VCHC_cache_calls=0;
+					$stmtA = "SELECT sum(calls) from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='HDSECDRP' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour;";
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows=$sthA->rows;
+					if ($sthArows > 0)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$VCHC_cache_calls =	$aryA[0];
+						}
+					$sthA->finish();
+					$hold_sec_drop_calls[$p] = ($VCHC_cache_calls + $VCL_current_hour_calls);
+					if ($DBX) {print "VCLHC CACHED HOUR SINGLE QUERY: |$sthArows|$VCHC_cache_calls($hold_sec_drop_calls[$p])|$stmtA|\n";}
+					}
+				else
+					{
+					@VCHC_hour=@MT;
+					@VCHC_date_hour=@MT;
+					@VCHC_next_hour=@MT;
+					@VCHC_last_update=@MT;
+					@VCHC_calls=@MT;
+					$stmtA = "SELECT hr,date_hour,next_hour,last_update,calls from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='HDSECDRP' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour order by hr;";
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows_hr=$sthA->rows;
+					$j=0;
+					while ($sthArows_hr > $j)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$VCHC_hour[$j] =		$aryA[0];
+						$VCHC_date_hour[$j] =	$aryA[1];
+						$VCHC_next_hour[$j] =	$aryA[2];
+						$VCHC_last_update[$j] =	$aryA[3];
+						$VCHC_calls[$j] =		$aryA[4];
+						$j++;
+						}
+					$sthA->finish();
+					if ($DBX) {print "VCLHC CACHED HOUR LIST QUERY: |$sthArows_hr|$stmtA|\n";}
+
+					$j=0;
+					while ($j < $HRhour_test) 
+						{
+						$k=0;
+						$cache_hour_found=0;
+						while ($sthArows_hr > $k)
+							{
+							if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") ) 
+								{
+								$hold_sec_drop_calls[$p] = ($hold_sec_drop_calls[$p] + $VCHC_calls[$k]);
+								$cache_hour_found++;
+								if ($DBX) {print "VCLHC CACHED HOUR FOUND: |$VCHC_hour[$k]|$j|$k|$hold_sec_drop_calls[$p]|\n";}
+								}
+							$k++;
+							}
+						if ($cache_hour_found < 1) 
+							{
+							$j_next = ($j + 1);
+							$VCL_this_hour_calls=0;
+							$stmtA = "SELECT sum(queue_seconds) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date >= '$VCL_today $j:00:00' and call_date < '$VCL_today $j_next:00:00' and status IN('DROP','XDROP');";
+							$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+							$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+							$sthArows=$sthA->rows;
+							if ($sthArows > 0)
+								{
+								@aryA = $sthA->fetchrow_array;
+								$VCL_this_hour_calls =	$aryA[0];
+								$hold_sec_drop_calls[$p] = ($hold_sec_drop_calls[$p] + $VCL_this_hour_calls);
+								}
+							$sthA->finish();
+							if ($DBX) {print "VCLHC CACHED HOUR QUERY: |$sthArows|$VCL_this_hour_calls|$stmtA|\n";}
+
+							$stmtA="INSERT IGNORE INTO vicidial_ingroup_hour_counts SET group_id='$group_id[$p]',date_hour='$VCL_today $j:00:00',type='HDSECDRP',next_hour='$VCL_today $j_next:00:00',last_update=NOW(),calls='$VCL_this_hour_calls',hr='$j' ON DUPLICATE KEY UPDATE last_update=NOW(),calls='$VCL_this_hour_calls';";
+							$affected_rows = $dbhA->do($stmtA);
+							if ($DBX) {print "VCLHC STATS INSERT/UPDATE    HOUR|$j|$affected_rows|$stmtA|\n";}
+							}
+						$j++;
+						}
+					$hold_sec_drop_calls[$p] = ($hold_sec_drop_calls[$p] + $VCL_current_hour_calls);
+					}
+				}
+			else
+				{
+				# midnight hour, so total is only current hour stats
+				$hold_sec_drop_calls[$p] =	$VCL_current_hour_calls;
+				if ($DBX) {print "VCLHC MIDNIGHT HOUR: |$hold_sec_drop_calls[$p]|\n";}
+				}
 			}
-		$sthA->finish();
+		## END CACHED HOURLY ANALYSIS: INBOUND CALLS HOLD TIME DROPS
+		else
+			{
+			$stmtA = "SELECT sum(queue_seconds) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date > '$VDL_date' and status IN('DROP','XDROP');";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				if ($aryA[0] > 0)
+					{$hold_sec_drop_calls[$p] = $aryA[0];}
+				}
+			$sthA->finish();
+			}
 
 		# TODAY TOTAL QUEUE TIME FOR QUEUE CALLS
-		$stmtA = "SELECT sum(queue_seconds) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date > '$VDL_date';";
-		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-		$sthArows=$sthA->rows;
-		if ($sthArows > 0)
+		## BEGIN CACHED HOURLY ANALYSIS: INBOUND CALLS HOLD SEC ALL
+		if ($VCLhour_counts > 0) 
 			{
-			@aryA = $sthA->fetchrow_array;
-			if ($aryA[0] > 0)
-				{$hold_sec_queue_calls[$p] = $aryA[0];}
+			$VCL_current_hour_calls=0;
+			$stmtA = "SELECT sum(queue_seconds) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date >= '$VCL_current_hour_date';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$VCL_current_hour_calls =	$aryA[0];
+				}
+			$sthA->finish();
+			if ($DBX) {print "VCLHC CURRENT HOUR CALLS HOLD SECONDS OF ALL CALLS: |$sthArows|$VCL_current_hour_calls|$stmtA|\n";}
+
+			$stmtA="INSERT IGNORE INTO vicidial_ingroup_hour_counts SET group_id='$group_id[$p]',date_hour='$VCL_current_hour_date',type='HDSECALL',next_hour='$VCL_next_hour_date',last_update=NOW(),calls='$VCL_current_hour_calls',hr='$HRhour_test' ON DUPLICATE KEY UPDATE last_update=NOW(),calls='$VCL_current_hour_calls';";
+			$affected_rows = $dbhA->do($stmtA);
+			if ($DBX) {print "VCLHC STATS INSERT/UPDATE    TOTAL|$affected_rows|$stmtA|\n";}
+
+			if ($HRhour_test > 0)
+				{
+				# check to see if cached hour totals already exist
+				$VCHC_entry_count=0;
+				$stmtA = "SELECT sum(calls) from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='HDSECALL' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour;";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				if ($sthArows > 0)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$VCHC_entry_count =	$aryA[0];
+					}
+				$sthA->finish();
+				if ($DBX) {print "VCLHC CACHED HOUR CHECK: |$sthArows|$VCHC_entry_count|$stmtA|\n";}
+
+				# if cached totals equal the number of hours, then run single query to get sums of calls, if not, go hour-by-hour
+				if ($VCHC_entry_count >= $HRhour_test) 
+					{
+					$VCHC_cache_calls=0;
+					$stmtA = "SELECT sum(calls) from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='HDSECALL' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour;";
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows=$sthA->rows;
+					if ($sthArows > 0)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$VCHC_cache_calls =	$aryA[0];
+						}
+					$sthA->finish();
+					$hold_sec_queue_calls[$p] = ($VCHC_cache_calls + $VCL_current_hour_calls);
+					if ($DBX) {print "VCLHC CACHED HOUR SINGLE QUERY: |$sthArows|$VCHC_cache_calls($hold_sec_queue_calls[$p])|$stmtA|\n";}
+					}
+				else
+					{
+					@VCHC_hour=@MT;
+					@VCHC_date_hour=@MT;
+					@VCHC_next_hour=@MT;
+					@VCHC_last_update=@MT;
+					@VCHC_calls=@MT;
+					$stmtA = "SELECT hr,date_hour,next_hour,last_update,calls from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='HDSECALL' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour order by hr;";
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows_hr=$sthA->rows;
+					$j=0;
+					while ($sthArows_hr > $j)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$VCHC_hour[$j] =		$aryA[0];
+						$VCHC_date_hour[$j] =	$aryA[1];
+						$VCHC_next_hour[$j] =	$aryA[2];
+						$VCHC_last_update[$j] =	$aryA[3];
+						$VCHC_calls[$j] =		$aryA[4];
+						$j++;
+						}
+					$sthA->finish();
+					if ($DBX) {print "VCLHC CACHED HOUR LIST QUERY: |$sthArows_hr|$stmtA|\n";}
+
+					$j=0;
+					while ($j < $HRhour_test) 
+						{
+						$k=0;
+						$cache_hour_found=0;
+						while ($sthArows_hr > $k)
+							{
+							if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") ) 
+								{
+								$hold_sec_queue_calls[$p] = ($hold_sec_queue_calls[$p] + $VCHC_calls[$k]);
+								$cache_hour_found++;
+								if ($DBX) {print "VCLHC CACHED HOUR FOUND: |$VCHC_hour[$k]|$j|$k|$hold_sec_queue_calls[$p]|\n";}
+								}
+							$k++;
+							}
+						if ($cache_hour_found < 1) 
+							{
+							$j_next = ($j + 1);
+							$VCL_this_hour_calls=0;
+							$stmtA = "SELECT sum(queue_seconds) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date >= '$VCL_today $j:00:00' and call_date < '$VCL_today $j_next:00:00';";
+							$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+							$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+							$sthArows=$sthA->rows;
+							if ($sthArows > 0)
+								{
+								@aryA = $sthA->fetchrow_array;
+								$VCL_this_hour_calls =	$aryA[0];
+								$hold_sec_queue_calls[$p] = ($hold_sec_queue_calls[$p] + $VCL_this_hour_calls);
+								}
+							$sthA->finish();
+							if ($DBX) {print "VCLHC CACHED HOUR QUERY: |$sthArows|$VCL_this_hour_calls|$stmtA|\n";}
+
+							$stmtA="INSERT IGNORE INTO vicidial_ingroup_hour_counts SET group_id='$group_id[$p]',date_hour='$VCL_today $j:00:00',type='HDSECALL',next_hour='$VCL_today $j_next:00:00',last_update=NOW(),calls='$VCL_this_hour_calls',hr='$j' ON DUPLICATE KEY UPDATE last_update=NOW(),calls='$VCL_this_hour_calls';";
+							$affected_rows = $dbhA->do($stmtA);
+							if ($DBX) {print "VCLHC STATS INSERT/UPDATE    HOUR|$j|$affected_rows|$stmtA|\n";}
+							}
+						$j++;
+						}
+					$hold_sec_queue_calls[$p] = ($hold_sec_queue_calls[$p] + $VCL_current_hour_calls);
+					}
+				}
+			else
+				{
+				# midnight hour, so total is only current hour stats
+				$hold_sec_queue_calls[$p] =	$VCL_current_hour_calls;
+				if ($DBX) {print "VCLHC MIDNIGHT HOUR: |$hold_sec_queue_calls[$p]|\n";}
+				}
 			}
-		$sthA->finish();
+		## END CACHED HOURLY ANALYSIS: INBOUND CALLS HOLD SEC ALL
+		else
+			{
+			$stmtA = "SELECT sum(queue_seconds) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date > '$VDL_date';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				if ($aryA[0] > 0)
+					{$hold_sec_queue_calls[$p] = $aryA[0];}
+				}
+			$sthA->finish();
+			}
 		}
 
 
@@ -3305,17 +4372,147 @@ sub calculate_drops_inbound
 		if (length($CATstatusesSQL)>2)
 			{
 			# FIND STATUSES IN STATUS CATEGORY
-			$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date > '$VDL_date' and status IN($CATstatusesSQL);";
-			#	if ($DBX) {print "|$stmtA|\n";}
-			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-			$sthArows=$sthA->rows;
-			if ($sthArows > 0)
+			## BEGIN CACHED HOURLY ANALYSIS: INBOUND CALLS
+			if ($VCLhour_counts > 0) 
 				{
-				@aryA = $sthA->fetchrow_array;
-				$VSCtally =		$aryA[0];
+				$VCL_current_hour_calls=0;
+				$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date >= '$VCL_current_hour_date' and status IN($CATstatusesSQL);";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				if ($sthArows > 0)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$VCL_current_hour_calls =	$aryA[0];
+					}
+				$sthA->finish();
+				if ($DBX) {print "VCLHC CURRENT HOUR CALLS CATEGORY $VSCcategory: |$sthArows|$VCL_current_hour_calls|$stmtA|\n";}
+
+				$stmtA="INSERT IGNORE INTO vicidial_ingroup_hour_counts SET group_id='$group_id[$p]',date_hour='$VCL_current_hour_date',type='C_$VSCcategory',next_hour='$VCL_next_hour_date',last_update=NOW(),calls='$VCL_current_hour_calls',hr='$HRhour_test' ON DUPLICATE KEY UPDATE last_update=NOW(),calls='$VCL_current_hour_calls';";
+				$affected_rows = $dbhA->do($stmtA);
+				if ($DBX) {print "VCLHC STATS INSERT/UPDATE    TOTAL|$affected_rows|$stmtA|\n";}
+
+				if ($HRhour_test > 0)
+					{
+					# check to see if cached hour totals already exist
+					$VCHC_entry_count=0;
+					$stmtA = "SELECT count(*) from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='C_$VSCcategory' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour;";
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows=$sthA->rows;
+					if ($sthArows > 0)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$VCHC_entry_count =	$aryA[0];
+						}
+					$sthA->finish();
+					if ($DBX) {print "VCLHC CACHED HOUR CHECK: |$sthArows|$VCHC_entry_count|$stmtA|\n";}
+
+					# if cached totals equal the number of hours, then run single query to get sums of calls, if not, go hour-by-hour
+					if ($VCHC_entry_count >= $HRhour_test) 
+						{
+						$VCHC_cache_calls=0;
+						$stmtA = "SELECT sum(calls) from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='C_$VSCcategory' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour;";
+						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+						$sthArows=$sthA->rows;
+						if ($sthArows > 0)
+							{
+							@aryA = $sthA->fetchrow_array;
+							$VCHC_cache_calls =	$aryA[0];
+							}
+						$sthA->finish();
+						$VSCtally = ($VCHC_cache_calls + $VCL_current_hour_calls);
+						if ($DBX) {print "VCLHC CACHED HOUR SINGLE QUERY: |$sthArows|$VCHC_cache_calls($VSCtally)|$stmtA|\n";}
+						}
+					else
+						{
+						@VCHC_hour=@MT;
+						@VCHC_date_hour=@MT;
+						@VCHC_next_hour=@MT;
+						@VCHC_last_update=@MT;
+						@VCHC_calls=@MT;
+						$stmtA = "SELECT hr,date_hour,next_hour,last_update,calls from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='C_$VSCcategory' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour order by hr;";
+						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+						$sthArows_hr=$sthA->rows;
+						$j=0;
+						while ($sthArows_hr > $j)
+							{
+							@aryA = $sthA->fetchrow_array;
+							$VCHC_hour[$j] =		$aryA[0];
+							$VCHC_date_hour[$j] =	$aryA[1];
+							$VCHC_next_hour[$j] =	$aryA[2];
+							$VCHC_last_update[$j] =	$aryA[3];
+							$VCHC_calls[$j] =		$aryA[4];
+							$j++;
+							}
+						$sthA->finish();
+						if ($DBX) {print "VCLHC CACHED HOUR LIST QUERY: |$sthArows_hr|$stmtA|\n";}
+
+						$j=0;
+						while ($j < $HRhour_test) 
+							{
+							$k=0;
+							$cache_hour_found=0;
+							while ($sthArows_hr > $k)
+								{
+								if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") ) 
+									{
+									$VSCtally = ($VSCtally + $VCHC_calls[$k]);
+									$cache_hour_found++;
+									if ($DBX) {print "VCLHC CACHED HOUR FOUND: |$VCHC_hour[$k]|$j|$k|$VSCtally|\n";}
+									}
+								$k++;
+								}
+							if ($cache_hour_found < 1) 
+								{
+								$j_next = ($j + 1);
+								$VCL_this_hour_calls=0;
+								$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date >= '$VCL_today $j:00:00' and call_date < '$VCL_today $j_next:00:00' and status IN($CATstatusesSQL);";
+								$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+								$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+								$sthArows=$sthA->rows;
+								if ($sthArows > 0)
+									{
+									@aryA = $sthA->fetchrow_array;
+									$VCL_this_hour_calls =	$aryA[0];
+									$VSCtally = ($VSCtally + $VCL_this_hour_calls);
+									}
+								$sthA->finish();
+								if ($DBX) {print "VCLHC CACHED HOUR QUERY: |$sthArows|$VCL_this_hour_calls|$stmtA|\n";}
+
+								$stmtA="INSERT IGNORE INTO vicidial_ingroup_hour_counts SET group_id='$group_id[$p]',date_hour='$VCL_today $j:00:00',type='C_$VSCcategory',next_hour='$VCL_today $j_next:00:00',last_update=NOW(),calls='$VCL_this_hour_calls',hr='$j' ON DUPLICATE KEY UPDATE last_update=NOW(),calls='$VCL_this_hour_calls';";
+								$affected_rows = $dbhA->do($stmtA);
+								if ($DBX) {print "VCLHC STATS INSERT/UPDATE    HOUR|$j|$affected_rows|$stmtA|\n";}
+								}
+							$j++;
+							}
+						$VSCtally = ($VSCtally + $VCL_current_hour_calls);
+						}
+					}
+				else
+					{
+					# midnight hour, so total is only current hour stats
+					$VSCtally =	$VCL_current_hour_calls;
+					if ($DBX) {print "VCLHC MIDNIGHT HOUR: |$VSCtally|\n";}
+					}
 				}
-			$sthA->finish();
+			## END CACHED HOURLY ANALYSIS: INBOUND CALLS
+			else
+				{
+				$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date > '$VDL_date' and status IN($CATstatusesSQL);";
+				#	if ($DBX) {print "|$stmtA|\n";}
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				if ($sthArows > 0)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$VSCtally =		$aryA[0];
+					}
+				$sthA->finish();
+				}
 			}
 		$g++;
 		if ($DBX) {print "     $group_id[$p]|$VSCcategory|$VSCtally|$CATstatusesSQL|\n";}
