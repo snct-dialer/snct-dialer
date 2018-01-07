@@ -37,6 +37,7 @@
       user with no vicidial_agent_log entry.
     - vicidial.php: Small javascript fixes, and more debug logging, change
       to 2018.
+  * Release 2.25.23 2018-01-07.
 
 2.25.22
   [Jörg Frings-Fürst]
