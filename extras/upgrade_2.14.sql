@@ -586,3 +586,8 @@ CREATE TABLE vicidial_ingroup_hour_counts_archive LIKE vicidial_ingroup_hour_cou
 ALTER TABLE vicidial_lists ADD default_xfer_group VARCHAR(20) default '---NONE---';
 
 UPDATE system_settings SET db_schema_version='1529',db_schema_update_date=NOW() where db_schema_version < 1529;
+
+ALTER TABLE vicidial_campaigns ADD next_dial_my_callbacks ENUM('DISABLED','ENABLED') default 'DISABLED';
+
+UPDATE system_settings SET db_schema_version='1530',db_schema_update_date=NOW() where db_schema_version < 1530;
+

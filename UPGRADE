@@ -242,6 +242,10 @@ OTHER CHANGES:
 
 63. Added lead_status_search Non-Agent API function
 
+64. Added "Next-Dial My Callbacks" campaign setting that will automatically dial
+	USERONLY Scheduled Callbacks for agents in MANUAL or INBOUND_MAN 
+	no-hopper campaigns when they click DIAL NEXT NUMBER in the agent screen
+
 
 
 

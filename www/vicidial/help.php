@@ -146,6 +146,7 @@
 # 171124-1353 = Added campaigns-manual_auto_next_options entry
 # 171130-0048 - Added agent_screen_time_display entry
 # 171224-1027 - Added lists-default_xfer_group entry
+# 180108-2115 - Added campaigns-next_dial_my_callbacks entry
 #
 
 require("dbconnect_mysqli.php");
@@ -1685,6 +1686,11 @@ if ($SSoutbound_autodial_active > 0)
 <A NAME="campaigns-callback_useronly_move_minutes">
 <BR>
 <B><?php echo _QXZ("Scheduled Callbacks Useronly Move Minutes"); ?> -</B><?php echo _QXZ("This option if set to a number greater than 0, will change all USERONLY Scheduled Callbacks that are X minutes after their callback time to ANYONE callbacks. This process runs every minute. Default is 0 for disabled."); ?>
+
+<BR>
+<A NAME="campaigns-next_dial_my_callbacks">
+<BR>
+<B><?php echo _QXZ("Next-Dial My Callbacks"); ?> -</B><?php echo _QXZ("This option only works for MANUAL and INBOUND_MAN dial methods, and also only if No Hopper Dialing is enabled. This feature will look for Scheduled Callbacks that have triggered for the agent and dial them next when the agent clicks on the Dial Next Number button on their agent screen. Default is DISABLED."); ?>
 
 <BR>
 <A NAME="campaigns-wrapup_seconds">

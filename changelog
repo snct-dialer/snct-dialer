@@ -1,5 +1,13 @@
 2.25.24 UNRELEASED
   [Jörg Frings-Fürst]
+  * Add upstream Rev. 2881:
+    - MySQL_AST_CREATE_tables.sql,
+      upgrade_2.14.sql,
+      vdc_db_query.php,
+      admin.php,
+      UPGRADE,
+      help.php: Added next_dial_my_callbacks campaign option.
+  * New mysql-1530.sql.
 
 2.25.23 stable
   [Jörg Frings-Fürst]
