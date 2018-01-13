@@ -1,7 +1,7 @@
 <?php
 # non_agent_api.php
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed as an API(Application Programming Interface) to allow
 # other programs to interact with all non-agent-screen VICIDIAL functions
@@ -127,10 +127,11 @@
 # 171114-1015 - Added ability for update_lead function insert_if_not_found leads to be inserted into the hopper
 # 171129-0751 - Fixed issue with duplicate custom fields
 # 171229-1602 - Added lead_status_search function
+# 180109-1313 - Added call_status_stats function
 #
 
-$version = '2.14-103';
-$build = '171229-1602';
+$version = '2.14-104';
+$build = '180109-1313';
 $api_url_log = 0;
 
 $startMS = microtime();
@@ -243,6 +244,8 @@ if (isset($_GET["search_location"]))			{$search_location=$_GET["search_location"
 	elseif (isset($_POST["search_location"]))	{$search_location=$_POST["search_location"];}
 if (isset($_GET["status"]))						{$status=$_GET["status"];}
 	elseif (isset($_POST["status"]))			{$status=$_POST["status"];}
+if (isset($_GET["statuses"]))						{$statuses=$_GET["statuses"];}
+	elseif (isset($_POST["statuses"]))			{$statuses=$_POST["statuses"];}
 if (isset($_GET["user_field"]))					{$user_field=$_GET["user_field"];}
 	elseif (isset($_POST["user_field"]))		{$user_field=$_POST["user_field"];}
 if (isset($_GET["list_id_field"]))				{$list_id_field=$_GET["list_id_field"];}
@@ -257,6 +260,14 @@ if (isset($_GET["called_count"]))				{$called_count=$_GET["called_count"];}
 	elseif (isset($_POST["called_count"]))		{$called_count=$_POST["called_count"];}
 if (isset($_GET["date"]))						{$date=$_GET["date"];}
 	elseif (isset($_POST["date"]))				{$date=$_POST["date"];}
+if (isset($_GET["query_date"]))						{$query_date=$_GET["query_date"];}
+	elseif (isset($_POST["query_date"]))				{$query_date=$_POST["query_date"];}
+if (isset($_GET["query_time"]))						{$query_time=$_GET["query_time"];}
+	elseif (isset($_POST["query_time"]))				{$query_time=$_POST["query_time"];}
+if (isset($_GET["end_date"]))						{$end_date=$_GET["end_date"];}
+	elseif (isset($_POST["end_date"]))				{$end_date=$_POST["end_date"];}
+if (isset($_GET["end_time"]))						{$end_time=$_GET["end_time"];}
+	elseif (isset($_POST["end_time"]))				{$end_time=$_POST["end_time"];}
 if (isset($_GET["header"]))						{$header=$_GET["header"];}
 	elseif (isset($_POST["header"]))			{$header=$_POST["header"];}
 if (isset($_GET["agent_pass"]))					{$agent_pass=$_GET["agent_pass"];}
@@ -405,6 +416,8 @@ if (isset($_GET["show_sub_status"]))			{$show_sub_status=$_GET["show_sub_status"
 	elseif (isset($_POST["show_sub_status"]))	{$show_sub_status=$_POST["show_sub_status"];}
 if (isset($_GET["campaigns"]))			{$campaigns=$_GET["campaigns"];}
 	elseif (isset($_POST["campaigns"]))	{$campaigns=$_POST["campaigns"];}
+if (isset($_GET["ingroups"]))			{$ingroups=$_GET["ingroups"];}
+	elseif (isset($_POST["ingroups"]))	{$ingroups=$_POST["ingroups"];}
 if (isset($_GET["campaign_name"]))			{$campaign_name=$_GET["campaign_name"];}
 	elseif (isset($_POST["campaign_name"]))	{$campaign_name=$_POST["campaign_name"];}
 if (isset($_GET["auto_dial_level"]))			{$auto_dial_level=$_GET["auto_dial_level"];}
@@ -9772,6 +9785,226 @@ if ($function == 'logged_in_agents')
 ### END logged_in_agents
 ################################################################################
 
+
+
+################################################################################
+### call_status_stats - campaign and ingroup call stats by hour and status
+################################################################################
+if ($function == 'call_status_stats')
+	{
+#	header("Content-Type: text/plain");
+	if(strlen($campaigns)<2)
+		{
+		$result = 'ERROR';
+		$result_reason = "call_status_stats INVALID OR MISSING CAMPAIGNS";
+		echo "$result: $result_reason - $source\n";
+		api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+		echo "ERROR: Invalid Source: |$source|\n";
+		exit;
+		}
+	else
+		{
+		if ( (!preg_match("/ $function /",$api_allowed_functions)) and (!preg_match("/ALL_FUNCTIONS/",$api_allowed_functions)) )
+			{
+			$result = 'ERROR';
+			$result_reason = "auth USER DOES NOT HAVE PERMISSION TO USE THIS FUNCTION";
+			echo "$result: $result_reason: |$user|$function|\n";
+			$data = "$allowed_user";
+			api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+			exit;
+			}
+		$stmt="SELECT count(*) from vicidial_users where user='$user' and view_reports='1' and user_level > 8 and active='Y';";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$row=mysqli_fetch_row($rslt);
+		$allowed_user=$row[0];
+		if ($allowed_user < 1)
+			{
+			$result = 'ERROR';
+			$result_reason = "call_status_stats USER DOES NOT HAVE PERMISSION TO VIEW STATS";
+			echo "$result: $result_reason: |$user|$allowed_user|\n";
+			$data = "$allowed_user";
+			api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+			exit;
+			}
+		else
+			{
+
+			if (!$query_date) {$query_date=date("Y-m-d");}
+			if (!$query_time) {$query_time="00:00:00";}
+			if (!$end_date) {$end_date=$query_date;}
+			if (!$end_time) {$end_time="23:59:59";}
+			$outbound_array=array();
+			$inbound_array=array();
+			$temp_hour_array=array();
+			$temp_stat_array=array();
+/*
+			$total_calls_array=array();
+			$total_hr_array=array();
+			$total_stat_array=array();
+*/
+			
+			$campaign_array=explode("-", $campaigns);
+			$campaign_SQL=" and campaign_id in ('".implode("', '", $campaign_array)."') ";
+			if (in_array("ALLCAMPAIGNS", $campaign_array) || preg_match('/\-\-\-ALL\-\-\-/', $campaigns)) 
+				{
+				$campaign_SQL="";
+				$campaign_stmt="select campaign_id from vicidial_campaigns order by campaign_id";
+				if ($DB>0) {echo $campaign_stmt."\n";}
+				$campaign_rslt=mysql_to_mysqli($campaign_stmt, $link);
+				while ($row=mysqli_fetch_row($campaign_rslt)) 
+					{
+					$outbound_array{"$row[0]"}[0]=0;
+					$outbound_array{"$row[0]"}[1]=0;
+					}
+				} 
+			else 
+				{
+				for ($i=0; $i<count($campaign_array); $i++) 
+					{
+					$outbound_array{"$campaign_array[$i]"}[0]=0;
+					$outbound_array{"$campaign_array[$i]"}[1]=0;
+					}
+				}
+			ksort($outbound_array);
+
+			$ha_stmt="select distinct status from vicidial_statuses where human_answered='Y' UNION select distinct status from vicidial_campaign_statuses where human_answered='Y' $campaign_SQL";
+			if ($DB>0) {echo $ha_stmt."\n";}
+			$ha_rslt=mysql_to_mysqli($ha_stmt, $link);
+			$human_ans_array=array();
+			while ($ha_row=mysqli_fetch_row($ha_rslt)) 
+				{
+				array_push($human_ans_array, $ha_row[0]);
+				}
+
+			if (strlen($statuses)>0) 
+				{
+				$status_array=explode("-", $statuses);
+				$status_SQL=" and status in ('".implode("', '", $status_array)."') ";
+				} 
+			else 
+				{
+				$status_SQL="";
+				}
+
+			if (strlen($ingroups)==0) 
+				{
+				$ingroup_array=array();
+				$ingroup_stmt="select closer_campaigns from vicidial_campaigns where closer_campaigns is not null and closer_campaigns!='' $campaign_SQL";
+				if ($DB>0) {echo $ingroup_stmt."\n";}
+				$ingroup_rslt=mysql_to_mysqli($ingroup_stmt, $link);
+				while($ingroup_row=mysqli_fetch_row($ingroup_rslt)) 
+					{
+					$ingroup_row[0]=preg_replace('/ -$/', "", trim($ingroup_row[0]));
+					$ing_ary=explode(" ", $ingroup_row[0]);
+					$ingroup_array=array_merge($ingroup_array, $ing_ary);
+					}
+				$ingroup_array=array_unique($ingroup_array);
+				$ingroup_array=array_values($ingroup_array);
+				}
+			else 
+				{
+				$ingroup_array=explode("-", $ingroups);
+				}
+
+			$ingroup_SQL=" and campaign_id in ('".implode("', '", $ingroup_array)."') ";
+			for ($i=0; $i<count($ingroup_array); $i++) 
+				{
+				$inbound_array{"$ingroup_array[$i]"}[0]=0;
+				$inbound_array{"$ingroup_array[$i]"}[1]=0;
+				}
+			ksort($inbound_array);
+
+			$outb_stmt="select campaign_id, status, substr(call_date, 12, 2) as hour, count(*) from vicidial_log where call_date>='$query_date $query_time' and call_date<='$end_date $end_time' $campaign_SQL $status_SQL group by campaign_id, status, hour order by campaign_id, status, hour";
+			if ($DB>0) {echo $outb_stmt."\n";}
+			$outb_rslt=mysql_to_mysqli($outb_stmt, $link);
+
+			for ($i=0; $i<24; $i++) 
+				{
+				$hrkey=substr("0$i", -2);
+				$total_hr_array{"$hrkey"}=0;
+				}
+
+			while($outb_row=mysqli_fetch_row($outb_rslt)) 
+				{
+				$outbound_array{"$outb_row[0]"}[0]+=$outb_row[3];
+				if (in_array($outb_row[1], $human_ans_array)) 
+					{
+					$outbound_array{"$outb_row[0]"}[1]+=$outb_row[3];
+					}
+				$temp_stat_array{"$outb_row[0]"}{"$outb_row[1]"}+=$outb_row[3];
+				$temp_hour_array{"$outb_row[0]"}{"$outb_row[2]"}+=$outb_row[3];
+				}
+
+			$inb_stmt="select campaign_id, status, substr(call_date, 12, 2) as hour, count(*) from vicidial_closer_log where call_date>='$query_date $query_time' and call_date<='$end_date $end_time' $ingroup_SQL $status_SQL group by campaign_id, status, hour order by campaign_id, status, hour";
+			if ($DB>0) {echo $inb_stmt."\n";}
+			$inb_rslt=mysql_to_mysqli($inb_stmt, $link);
+			while($inb_row=mysqli_fetch_row($inb_rslt)) 
+				{
+				$inbound_array{"$inb_row[0]"}[0]+=$inb_row[3];
+				if (in_array($inb_row[1], $human_ans_array)) 
+					{
+					$inbound_array{"$inb_row[0]"}[1]+=$inb_row[3];
+					}
+				$temp_stat_array{"$inb_row[0]"}{"$inb_row[1]"}+=$inb_row[3];
+				$temp_hour_array{"$inb_row[0]"}{"$inb_row[2]"}+=$inb_row[3];
+				}
+			}
+			
+			while(list($key, $val)=each($outbound_array)) {
+				$hour_str="";
+				$status_str="";
+				for ($i=0; $i<24; $i++) 
+					{
+					$hrkey=substr("0$i", -2);
+					$hrs=$temp_hour_array{"$key"}{"$hrkey"}+=0;
+					$hour_str.="$hrkey-$hrs,";
+					}
+				$hour_str=substr($hour_str, 0, -1);
+
+				$temp_ary_ct = count($temp_stat_array{"$key"});
+				if ($temp_ary_ct > 0)
+					{
+					ksort($temp_stat_array{"$key"});
+					while(list($statkey, $statval)=each($temp_stat_array{"$key"})) 
+						{
+						$status_str.=$statkey."-".$temp_stat_array{"$key"}{"$statkey"}.",";
+						}
+					}
+				$status_str=substr($status_str, 0, -1);
+
+				echo $key."|".$outbound_array{$key}[0]."|".$outbound_array{$key}[1]."|".$hour_str."|".$status_str."|\n";
+			}
+
+			while(list($key, $val)=each($inbound_array)) {
+				$hour_str="";
+				$status_str="";
+				for ($i=0; $i<24; $i++) 
+					{
+					$hrkey=substr("0$i", -2);
+					$hrs=$temp_hour_array{"$key"}{"$hrkey"}+=0;
+					$hour_str.="$hrkey-$hrs,";
+					}
+				$hour_str=substr($hour_str, 0, -1);
+
+				$temp_ary_ct = count($temp_stat_array{"$key"});
+				if ($temp_ary_ct > 0)
+					{
+					ksort($temp_stat_array{"$key"});
+					while(list($statkey, $statval)=each($temp_stat_array{"$key"})) 
+						{
+						$status_str.=$statkey."-".$temp_stat_array{"$key"}{"$statkey"}.",";
+						}
+					}
+				$status_str=substr($status_str, 0, -1);
+
+				echo $key."|".$inbound_array{$key}[0]."|".$inbound_array{$key}[1]."|".$hour_str."|".$status_str."|\n";
+			}
+		}
+	exit;
+	}
+################################################################################
+### END call_status_stats
+################################################################################
 
 
 

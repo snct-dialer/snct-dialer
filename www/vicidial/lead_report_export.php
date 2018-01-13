@@ -5,7 +5,7 @@
 # vicidial_log and/or vicidial_closer_log information by status, list_id and 
 # date range. downloads to a flat text file that is tab delimited
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -29,6 +29,7 @@
 # 170409-1542 - Added IP List validation code
 # 170531-2230 - Added DID filtering option
 # 170615-2245 - Refined DID filtering to calculate call length w/internal transfers
+# 180109-2005 - Added vendor lead code filtering option
 #
 
 $startMS = microtime();
@@ -55,10 +56,14 @@ if (isset($_GET["list_id"]))				{$list_id=$_GET["list_id"];}
 	elseif (isset($_POST["list_id"]))		{$list_id=$_POST["list_id"];}
 if (isset($_GET["status"]))					{$status=$_GET["status"];}
 	elseif (isset($_POST["status"]))		{$status=$_POST["status"];}
-if (isset($_GET["did_filter"]))						{$did_filter=$_GET["did_filter"];}
-	elseif (isset($_POST["did_filter"]))			{$did_filter=$_POST["did_filter"];}
-if (isset($_GET["dids"]))						{$dids=$_GET["dids"];}
+if (isset($_GET["did_filter"]))				{$did_filter=$_GET["did_filter"];}
+	elseif (isset($_POST["did_filter"]))	{$did_filter=$_POST["did_filter"];}
+if (isset($_GET["vlc_filter"]))				{$vlc_filter=$_GET["vlc_filter"];}
+	elseif (isset($_POST["vlc_filter"]))	{$vlc_filter=$_POST["vlc_filter"];}
+if (isset($_GET["dids"]))					{$dids=$_GET["dids"];}
 	elseif (isset($_POST["dids"]))			{$dids=$_POST["dids"];}
+if (isset($_GET["vlcs"]))					{$vlcs=$_GET["vlcs"];}
+	elseif (isset($_POST["vlcs"]))			{$vlcs=$_POST["vlcs"];}
 if (isset($_GET["DB"]))						{$DB=$_GET["DB"];}
 	elseif (isset($_POST["DB"]))			{$DB=$_POST["DB"];}
 if (isset($_GET["run_export"]))				{$run_export=$_GET["run_export"];}
@@ -79,8 +84,10 @@ if (isset($_GET["SUBMIT"]))					{$SUBMIT=$_GET["SUBMIT"];}
 	elseif (isset($_POST["SUBMIT"]))		{$SUBMIT=$_POST["SUBMIT"];}
 if (isset($_GET["search_archived_data"]))			{$search_archived_data=$_GET["search_archived_data"];}
 	elseif (isset($_POST["search_archived_data"]))	{$search_archived_data=$_POST["search_archived_data"];}
-if (isset($_GET["vicidial_list_archive_only"]))			{$vicidial_list_archive_only=$_GET["vicidial_list_archive_only"];}
+if (isset($_GET["vicidial_list_archive_only"]))				{$vicidial_list_archive_only=$_GET["vicidial_list_archive_only"];}
 	elseif (isset($_POST["vicidial_list_archive_only"]))	{$vicidial_list_archive_only=$_POST["vicidial_list_archive_only"];}
+if (isset($_GET["VLC_enabled"]))			{$VLC_enabled=$_GET["VLC_enabled"];}
+	elseif (isset($_POST["VLC_enabled"]))	{$VLC_enabled=$_POST["VLC_enabled"];}
 
 if (strlen($shift)<2) {$shift='ALL';}
 
@@ -382,6 +389,7 @@ if ($run_export > 0)
 	$list_ct = count($list_id);
 	$status_ct = count($status);
 	$did_ct = count($dids);
+	$vlc_ct = count($vlcs);
 	$campaign_string='|';
 	$group_string='|';
 	$user_group_string='|';
@@ -451,6 +459,27 @@ if ($run_export > 0)
 		$RUNdid++;
 		}
 	if ($did_filter=="NO") {$did_SQL=""; $RUNdid=0;}
+
+	$i=0;
+	while($i < $vlc_ct)
+		{
+		$vlc_string .= "$vlcs[$i]|";
+		$vlc_SQL .= "'$vlcs[$i]',";
+		$i++;
+		}
+	if ( (preg_match('/\-\-NONE\-\-/',$vlc_string) ) or ($vlc_ct < 1) )
+		{
+		$vlc_SQL = "''";
+		$vlc_SQL = "vendor_lead_code IN('')"; # JCJ
+		$RUNvlc=0;
+		}
+	else
+		{
+		$vlc_SQL = preg_replace('/,$/i', '',$vlc_SQL);
+		$vlc_SQL = "and vendor_lead_code IN($vlc_SQL)"; # JCJ
+		$RUNvlc++;
+		}
+	if ($vlc_filter=="NO") {$vlc_SQL=""; $RUNvlc=0;}
 
 	$i=0;
 	while($i < $user_group_ct)
@@ -524,6 +553,8 @@ if ($run_export > 0)
 		echo "<BR>\n";
 		echo "$did_ct|$did_string|$did_SQL\n";
 		echo "<BR>\n";
+		echo "$vlc_ct|$vlc_string|$vlc_SQL\n";
+		echo "<BR>\n";
 		echo "$user_group_ct|$user_group_string|$user_group_SQL\n";
 		echo "<BR>\n";
 		echo "$list_ct|$list_string|$list_SQL\n";
@@ -537,7 +568,7 @@ if ($run_export > 0)
 	$k=0;
 	if ($RUNcampaign > 0)
 		{
-		$stmt = "SELECT vl.call_date,vl.phone_number,vi.status,vl.user,vu.full_name,vl.campaign_id,vi.vendor_lead_code,vi.source_id,vi.list_id,vi.gmt_offset_now,vi.phone_code,vi.phone_number,vi.title,vi.first_name,vi.middle_initial,vi.last_name,vi.address1,vi.address2,vi.address3,vi.city,vi.state,vi.province,vi.postal_code,vi.country_code,vi.gender,vi.date_of_birth,vi.alt_phone,vi.email,vi.security_phrase,vi.comments,vl.length_in_sec,vl.user_group,vl.alt_dial,vi.rank,vi.owner,vi.lead_id,vl.uniqueid,vi.entry_list_id,UNIX_TIMESTAMP(vl.call_date)$export_fields_SQL from vicidial_users vu,".$vicidial_log_table." vl,".$vicidial_list_table." vi where ".$date_field." >= '$query_date 00:00:00' and ".$date_field." <= '$end_date 23:59:59' and vu.user=vl.user and vi.lead_id=vl.lead_id $list_SQL $campaign_SQL $user_group_SQL $status_SQL order by ".$date_field." desc limit 500000;";
+		$stmt = "SELECT vl.call_date,vl.phone_number,vi.status,vl.user,vu.full_name,vl.campaign_id,vi.vendor_lead_code,vi.source_id,vi.list_id,vi.gmt_offset_now,vi.phone_code,vi.phone_number,vi.title,vi.first_name,vi.middle_initial,vi.last_name,vi.address1,vi.address2,vi.address3,vi.city,vi.state,vi.province,vi.postal_code,vi.country_code,vi.gender,vi.date_of_birth,vi.alt_phone,vi.email,vi.security_phrase,vi.comments,vl.length_in_sec,vl.user_group,vl.alt_dial,vi.rank,vi.owner,vi.lead_id,vl.uniqueid,vi.entry_list_id,UNIX_TIMESTAMP(vl.call_date)$export_fields_SQL from vicidial_users vu,".$vicidial_log_table." vl,".$vicidial_list_table." vi where ".$date_field." >= '$query_date 00:00:00' and ".$date_field." <= '$end_date 23:59:59' and vu.user=vl.user and vi.lead_id=vl.lead_id $list_SQL $campaign_SQL $user_group_SQL $status_SQL $vlc_SQL order by ".$date_field." desc limit 500000;";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		if ($DB) {echo "$stmt\n";}
 		$outbound_to_print = mysqli_num_rows($rslt);
@@ -645,15 +676,15 @@ if ($run_export > 0)
 
 		if ($RUNdid > 0 && $RUNgroup > 0) 
 			{
-			$stmtA = "SELECT vl.call_date,vl.phone_number,vi.status,vl.user,vu.full_name,vl.campaign_id,vi.vendor_lead_code,vi.source_id,vi.list_id,vi.gmt_offset_now,vi.phone_code,vi.phone_number,vi.title,vi.first_name,vi.middle_initial,vi.last_name,vi.address1,vi.address2,vi.address3,vi.city,vi.state,vi.province,vi.postal_code,vi.country_code,vi.gender,vi.date_of_birth,vi.alt_phone,vi.email,vi.security_phrase,vi.comments,vl.length_in_sec,vl.user_group,vl.queue_seconds,vi.rank,vi.owner,vi.lead_id,vl.closecallid,vi.entry_list_id,vl.uniqueid,UNIX_TIMESTAMP(vl.call_date)$export_fields_SQL from vicidial_users vu,".$vicidial_closer_log_table." vl,".$vicidial_list_table." vi, ".$vicidial_did_log_table." vdl where ".$date_field." >= '$query_date 00:00:00' and ".$date_field." <= '$end_date 23:59:59' and vu.user=vl.user and vi.lead_id=vl.lead_id and vl.uniqueid=vdl.uniqueid $list_SQL $group_SQL $user_group_SQL $did_SQL $status_SQL order by ".$date_field." desc limit 500000;";
+			$stmtA = "SELECT vl.call_date,vl.phone_number,vi.status,vl.user,vu.full_name,vl.campaign_id,vi.vendor_lead_code,vi.source_id,vi.list_id,vi.gmt_offset_now,vi.phone_code,vi.phone_number,vi.title,vi.first_name,vi.middle_initial,vi.last_name,vi.address1,vi.address2,vi.address3,vi.city,vi.state,vi.province,vi.postal_code,vi.country_code,vi.gender,vi.date_of_birth,vi.alt_phone,vi.email,vi.security_phrase,vi.comments,vl.length_in_sec,vl.user_group,vl.queue_seconds,vi.rank,vi.owner,vi.lead_id,vl.closecallid,vi.entry_list_id,vl.uniqueid,UNIX_TIMESTAMP(vl.call_date)$export_fields_SQL from vicidial_users vu,".$vicidial_closer_log_table." vl,".$vicidial_list_table." vi, ".$vicidial_did_log_table." vdl where ".$date_field." >= '$query_date 00:00:00' and ".$date_field." <= '$end_date 23:59:59' and vu.user=vl.user and vi.lead_id=vl.lead_id and vl.uniqueid=vdl.uniqueid $list_SQL $group_SQL $user_group_SQL $did_SQL $status_SQL $vlc_SQL order by ".$date_field." desc limit 500000;";
 			}
 		else if ($RUNdid > 0)
 			{
-			$stmtA = "SELECT vl.call_date,vl.phone_number,vi.status,vl.user,vu.full_name,vl.campaign_id,vi.vendor_lead_code,vi.source_id,vi.list_id,vi.gmt_offset_now,vi.phone_code,vi.phone_number,vi.title,vi.first_name,vi.middle_initial,vi.last_name,vi.address1,vi.address2,vi.address3,vi.city,vi.state,vi.province,vi.postal_code,vi.country_code,vi.gender,vi.date_of_birth,vi.alt_phone,vi.email,vi.security_phrase,vi.comments,vl.length_in_sec,vl.user_group,vl.queue_seconds,vi.rank,vi.owner,vi.lead_id,vl.closecallid,vi.entry_list_id,vl.uniqueid,UNIX_TIMESTAMP(vl.call_date)$export_fields_SQL from vicidial_users vu,".$vicidial_closer_log_table." vl,".$vicidial_list_table." vi, ".$vicidial_did_log_table." vdl where ".$date_field." >= '$query_date 00:00:00' and ".$date_field." <= '$end_date 23:59:59' and vu.user=vl.user and vi.lead_id=vl.lead_id and vl.uniqueid=vdl.uniqueid $list_SQL $user_group_SQL $status_SQL $did_SQL order by ".$date_field." desc limit 500000;";
+			$stmtA = "SELECT vl.call_date,vl.phone_number,vi.status,vl.user,vu.full_name,vl.campaign_id,vi.vendor_lead_code,vi.source_id,vi.list_id,vi.gmt_offset_now,vi.phone_code,vi.phone_number,vi.title,vi.first_name,vi.middle_initial,vi.last_name,vi.address1,vi.address2,vi.address3,vi.city,vi.state,vi.province,vi.postal_code,vi.country_code,vi.gender,vi.date_of_birth,vi.alt_phone,vi.email,vi.security_phrase,vi.comments,vl.length_in_sec,vl.user_group,vl.queue_seconds,vi.rank,vi.owner,vi.lead_id,vl.closecallid,vi.entry_list_id,vl.uniqueid,UNIX_TIMESTAMP(vl.call_date)$export_fields_SQL from vicidial_users vu,".$vicidial_closer_log_table." vl,".$vicidial_list_table." vi, ".$vicidial_did_log_table." vdl where ".$date_field." >= '$query_date 00:00:00' and ".$date_field." <= '$end_date 23:59:59' and vu.user=vl.user and vi.lead_id=vl.lead_id and vl.uniqueid=vdl.uniqueid $list_SQL $user_group_SQL $status_SQL $vlc_SQL $did_SQL order by ".$date_field." desc limit 500000;";
 			}
 		else 
 			{
-			$stmtA = "SELECT vl.call_date,vl.phone_number,vi.status,vl.user,vu.full_name,vl.campaign_id,vi.vendor_lead_code,vi.source_id,vi.list_id,vi.gmt_offset_now,vi.phone_code,vi.phone_number,vi.title,vi.first_name,vi.middle_initial,vi.last_name,vi.address1,vi.address2,vi.address3,vi.city,vi.state,vi.province,vi.postal_code,vi.country_code,vi.gender,vi.date_of_birth,vi.alt_phone,vi.email,vi.security_phrase,vi.comments,vl.length_in_sec,vl.user_group,vl.queue_seconds,vi.rank,vi.owner,vi.lead_id,vl.closecallid,vi.entry_list_id,vl.uniqueid,UNIX_TIMESTAMP(vl.call_date)$export_fields_SQL from vicidial_users vu,".$vicidial_closer_log_table." vl,".$vicidial_list_table." vi where ".$date_field." >= '$query_date 00:00:00' and ".$date_field." <= '$end_date 23:59:59' and vu.user=vl.user and vi.lead_id=vl.lead_id $list_SQL $group_SQL $user_group_SQL $status_SQL order by ".$date_field." desc limit 500000;";
+			$stmtA = "SELECT vl.call_date,vl.phone_number,vi.status,vl.user,vu.full_name,vl.campaign_id,vi.vendor_lead_code,vi.source_id,vi.list_id,vi.gmt_offset_now,vi.phone_code,vi.phone_number,vi.title,vi.first_name,vi.middle_initial,vi.last_name,vi.address1,vi.address2,vi.address3,vi.city,vi.state,vi.province,vi.postal_code,vi.country_code,vi.gender,vi.date_of_birth,vi.alt_phone,vi.email,vi.security_phrase,vi.comments,vl.length_in_sec,vl.user_group,vl.queue_seconds,vi.rank,vi.owner,vi.lead_id,vl.closecallid,vi.entry_list_id,vl.uniqueid,UNIX_TIMESTAMP(vl.call_date)$export_fields_SQL from vicidial_users vu,".$vicidial_closer_log_table." vl,".$vicidial_list_table." vi where ".$date_field." >= '$query_date 00:00:00' and ".$date_field." <= '$end_date 23:59:59' and vu.user=vl.user and vi.lead_id=vl.lead_id $list_SQL $group_SQL $user_group_SQL $status_SQL $vlc_SQL order by ".$date_field." desc limit 500000;";
 			}
 		$rslt=mysql_to_mysqli($stmtA, $link);
 		if ($DB) {echo "$stmtA\n";}
@@ -1145,6 +1176,7 @@ if ($run_export > 0)
 		}
 	else
 		{
+		echo "$stmtA\n";
 		echo _QXZ("There are no calls during this time period for these parameter")."\n";
 		exit;
 		}
@@ -1255,6 +1287,28 @@ else
 		}
 	if (strlen($did_SQL)<3) {$did_SQL="''";}
 
+	$i=0;
+	$vlc_string='|';
+	$vlc_ct = count($vlcs);
+	while($i < $vlc_ct)
+		{
+		if ( (strlen($vlcs[$i]) > 0) and (preg_match("/\|$vlcs[$i]\|/",$vlc_string)) )
+			{
+			$vlc_string .= "$vlcs[$i]|";
+			$vlc_SQL .= "'$vlcs[$i]',";
+			$vlcQS .= "&vlcs[]=$vlcs[$i]";
+			}
+		$i++;
+		}
+	if ( (preg_match('/\s\-\-NONE\-\-\s/',$vlc_string) ) or ($vlc_ct < 1) )
+		{
+		$vlc_SQL = "''";
+		}
+	else
+		{
+		$vlc_SQL = preg_replace('/,$/i', '',$vlc_SQL);
+		}
+	if (strlen($vlc_SQL)<3) {$vlc_SQL="''";}
 
 	$stmt="select list_id from vicidial_lists $whereLOGallowed_campaignsSQL order by list_id;";
 	$rslt=mysql_to_mysqli($stmt, $link);
@@ -1264,11 +1318,41 @@ else
 		$LISTlists[$i]='---ALL---';
 		$i++;
 		$lists_to_print++;
+	$allowed_lists=array();
 	while ($i < $lists_to_print)
 		{
 		$row=mysqli_fetch_row($rslt);
 		$LISTlists[$i] =$row[0];
+		array_push($allowed_lists, $row[0]);
 		$i++;
+		}
+	if (count($allowed_lists)>0) 
+		{
+		$whereLOGallowed_listsSQL="where list_id in ('".implode("','", $allowed_lists)."')";
+		$LOGallowed_listsSQL="and list_id in ('".implode("','", $allowed_lists)."')";
+		}
+	else
+		{
+		$whereLOGallowed_listsSQL='';
+		$LOGallowed_listsSQL='';
+		}
+
+	if ($VLC_enabled == 'Y')
+		{
+		$stmt="select distinct vendor_lead_code from vicidial_list $whereLOGallowed_listsSQL order by vendor_lead_code;";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		if ($DB) {echo "$stmt\n";}
+		$vlcs_to_print = mysqli_num_rows($rslt);
+		$i=0;
+			$LISTvlcs[$i]='---NONE---';
+			$i++;
+			$vlcs_to_print++;
+		while ($i < $vlcs_to_print)
+			{
+			$row=mysqli_fetch_row($rslt);
+			$LISTvlcs[$i] =$row[0];
+			$i++;
+			}
 		}
 
 	$stmt="select status from vicidial_statuses order by status;";
@@ -1336,6 +1420,7 @@ else
 	echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET name=vicidial_report id=vicidial_report>\n";
 	echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">";
 	echo "<INPUT TYPE=HIDDEN NAME=run_export VALUE=\"1\">";
+	echo "<INPUT TYPE=HIDDEN NAME=VLC_enabled VALUE=\"$VLC_enabled\">";
 	echo "<TABLE BORDER=0 CELLSPACING=8><TR><TD ALIGN=LEFT VALIGN=TOP ROWSPAN=3>\n";
 
 	echo "<font class=\"select_bold\"><B>"._QXZ("Date Range").":</B></font><BR><CENTER>\n";
@@ -1414,6 +1499,16 @@ else
 
 	echo "<BR><BR>\n";
 
+	if ($VLC_enabled == 'Y')
+		{
+		echo "<B>"._QXZ("Use VLC filter").":</B><BR>\n";
+		echo "<select size=1 name=vlc_filter onChange=\"if (this.value=='YES') {document.getElementById('vlc_span').style.display='block';} else {document.getElementById('vlc_span').style.display='none';}\">";
+		if ($vlc_filter) {echo "<option value='$vlc_filter' selected>$vlc_filter</option>";}
+		echo "<option value='NO'>"._QXZ("NO")."</option><option value='YES'>"._QXZ("YES")."</option></select>\n";
+
+		echo "<BR><BR>\n";
+		}
+
 	echo "<B>"._QXZ("Export Fields").":</B><BR>\n";
 	echo "<select size=1 name=export_fields><option value='STANDARD' selected>"._QXZ("STANDARD")."</option><option value='EXTENDED'>"._QXZ("EXTENDED")."</option></select>\n";
 
@@ -1483,7 +1578,8 @@ else
 			$o++;
 		}
 	echo "</SELECT>\n";
-	echo "</TD><TD ALIGN=LEFT VALIGN=TOP ROWSPAN=3>\n";
+	echo "</TD>\n";
+	echo "<TD ALIGN=LEFT VALIGN=TOP ROWSPAN=3>\n";
 	echo "<font class=\"select_bold\"><B>"._QXZ("User Groups").":</B></font><BR><CENTER>\n";
 	echo "<SELECT SIZE=20 NAME=user_group[] multiple>\n";
 		$o=0;
@@ -1510,6 +1606,21 @@ else
 			$o++;
 		}
 	echo "</SELECT></SPAN></TD>\n";
+
+	echo "<TD ALIGN=LEFT VALIGN=TOP ROWSPAN=3><SPAN ID='vlc_span' style='display:".($vlc_filter=="YES" ? "block" : "none").";'>\n";
+	echo "<font class=\"select_bold\"><B>"._QXZ("Vendor lead codes").":</B></font><BR><CENTER>\n";
+	echo "<SELECT SIZE=20 NAME=vlcs[] multiple>\n";
+		$o=0;
+		while ($vlcs_to_print > $o)
+		{
+			if (preg_match("/\|$LISTvlcs[$o]\|/",$vlc_string)) 
+				{echo "<option selected value=\"$LISTvlcs[$o]\">$LISTvlcs[$o]</option>\n";}
+			else 
+				{echo "<option value=\"$LISTvlcs[$o]\">$LISTvlcs[$o]</option>\n";}
+			$o++;
+		}
+	echo "</SELECT></SPAN></TD>\n";
+
 
 	echo "</TR><TR></TD><TD ALIGN=LEFT VALIGN=TOP COLSPAN=2> &nbsp; \n";
 

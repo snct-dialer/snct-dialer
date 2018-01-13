@@ -8,6 +8,10 @@
       UPGRADE,
       help.php: Added next_dial_my_callbacks campaign option.
   * New mysql-1530.sql.
+  * Add upstream Rev. 2882:
+    - admin.php,
+      NON-AGENT_API.txt: Added call_status_stats function.
+    - lead_report_export.php: Added vendor lead code filtering option.
 
 2.25.23 stable
   [Jörg Frings-Fürst]
