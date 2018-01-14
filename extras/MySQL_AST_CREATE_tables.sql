@@ -3941,6 +3941,18 @@ ALTER TABLE `WallBoardData`
 
 CREATE TABLE `WallBoardData_archive` LIKE `WallBoardData`;
 
+CREATE TABLE vicidial_process_log (
+serial_id VARCHAR(20) NOT NULL,
+run_time DATETIME,
+run_sec INT,
+server_ip VARCHAR(15) NOT NULL,
+script VARCHAR(100),
+process VARCHAR(100),
+output_lines MEDIUMTEXT,
+index (serial_id),
+index (run_time)
+) ENGINE=MyISAM;
+
 ALTER TABLE vicidial_email_list MODIFY message text character set utf8;
 
 ALTER TABLE vicidial_email_log MODIFY message text character set utf8;

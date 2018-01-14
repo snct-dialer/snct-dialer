@@ -9,7 +9,7 @@
 # !!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!
 # THIS SCRIPT SHOULD ONLY BE RUN ON ONE SERVER ON YOUR CLUSTER
 #
-# Copyright (C) 2016  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 60717-1214 - changed to DBI by Marin Blu
@@ -22,6 +22,7 @@
 # 150710-0907 - Added flush of vicidial_dtmf_log table
 # 160101-1124 - Added flush of routing_initiated_recordings table
 # 161214-1039 - Added flush of parked_channels_recent table
+# 180112-0915 - Added flush for cid_channels_recent table
 #
 
 ### begin parsing run-time options ###
@@ -100,6 +101,17 @@ if ($hour < 10) {$hour = "0$hour";}
 if ($min < 10) {$min = "0$min";}
 if ($sec < 10) {$sec = "0$sec";}
 $SQLdate_NOW="$year-$mon-$mday $hour:$min:$sec";
+
+($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time() - 121);
+$year = ($year + 1900);
+$yy = $year; $yy =~ s/^..//gi;
+$mon++;
+if ($mon < 10) {$mon = "0$mon";}
+if ($mday < 10) {$mday = "0$mday";}
+if ($hour < 10) {$hour = "0$hour";}
+if ($min < 10) {$min = "0$min";}
+if ($sec < 10) {$sec = "0$sec";}
+$SQLdate_NEG_2min="$year-$mon-$mday $hour:$min:$sec";
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time() - $purge_seconds);
 $year = ($year + 1900);
@@ -215,6 +227,11 @@ if($DB){print STDERR "\n|$stmtA|\n";}
 if (!$T) {      $affected_rows = $dbhA->do($stmtA);}
 if (!$Q) {print " - parked_channels_recent flush: $affected_rows rows\n";}
 
+$stmtA = "DELETE from cid_channels_recent where call_date < '$SQLdate_NEG_2min';";
+if($DB){print STDERR "\n|$stmtA|\n";}
+if (!$T) {      $affected_rows = $dbhA->do($stmtA);}
+if (!$Q) {print " - cid_channels_recent flush: $affected_rows rows\n";}
+
 $stmtA = "OPTIMIZE table vicidial_manager;";
 if($DB){print STDERR "\n|$stmtA|\n";}
 if (!$T) 
@@ -269,6 +286,20 @@ if (!$T)
         $sthA->finish();
         }
 if (!$Q) {print " - OPTIMIZE parked_channels_recent          \n";}
+
+
+$stmtA = "OPTIMIZE table cid_channels_recent;";
+if($DB){print STDERR "\n|$stmtA|\n";}
+if (!$T)
+        {
+        $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+        $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+        $sthArows=$sthA->rows;
+        @aryA = $sthA->fetchrow_array;
+        if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+        $sthA->finish();
+        }
+if (!$Q) {print " - OPTIMIZE cid_channels_recent          \n";}
 
 
 $stmtA = "OPTIMIZE table vicidial_live_agents;";
@@ -332,4 +363,3 @@ $dbhA->disconnect();
 
 
 exit;
-
