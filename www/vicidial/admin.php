@@ -2357,6 +2357,8 @@ if (isset($_GET["agent_screen_time_display"]))			{$agent_screen_time_display=$_G
 	elseif (isset($_POST["agent_screen_time_display"]))	{$agent_screen_time_display=$_POST["agent_screen_time_display"];}
 if (isset($_GET["next_dial_my_callbacks"]))				{$next_dial_my_callbacks=$_GET["next_dial_my_callbacks"];}
 	elseif (isset($_POST["next_dial_my_callbacks"]))	{$next_dial_my_callbacks=$_POST["next_dial_my_callbacks"];}
+if (isset($_GET["anyone_callback_inactive_lists"]))				{$anyone_callback_inactive_lists=$_GET["anyone_callback_inactive_lists"];}
+	elseif (isset($_POST["anyone_callback_inactive_lists"]))	{$anyone_callback_inactive_lists=$_POST["anyone_callback_inactive_lists"];}
 
 
 if (isset($script_id)) {$script_id= strtoupper($script_id);}
@@ -3291,6 +3293,7 @@ if ($non_latin < 1)
 	$agent_screen_time_display = preg_replace('/[^-_0-9a-zA-Z]/','',$agent_screen_time_display);
 	$get_call_launch = preg_replace('/[^-_0-9a-zA-Z]/','',$get_call_launch);
 	$next_dial_my_callbacks = preg_replace('/[^-_0-9a-zA-Z]/','',$next_dial_my_callbacks);
+	$anyone_callback_inactive_lists = preg_replace('/[^-_0-9a-zA-Z]/','',$anyone_callback_inactive_lists);
 
 ### ALPHA-NUMERIC and underscore and dash and slash and dot
 	$menu_timeout_prompt = preg_replace('/[^-\/\|\._0-9a-zA-Z]/','',$menu_timeout_prompt);
@@ -4304,12 +4307,13 @@ else
 # 171229-2309 - Added housecleaning code
 # 180108-2011 - Added next_dial_my_callbacks campaign option, updated for 2018
 # 180109-1316 - Added call_status_stats API function
+# 180111-1544 - Added anyone_callback_inactive_lists system setting
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-649a';
-$build = '180109-1316';
+$admin_version = '2.14-650a';
+$build = '180111-1544';
 
 
 $STARTtime = date("U");
@@ -17074,8 +17078,9 @@ if ($ADD==411111111111111)
 			enable_pause_code_limits='$enable_pause_code_limits',enable_drop_lists='$enable_drop_lists',allow_ip_lists='$allow_ip_lists',system_ip_blacklist='$system_ip_blacklist',
 			agent_push_events='$agent_push_events',agent_push_url='$agent_push_url'$custom_dialplanSQL,pause_campaigns='$pause_campaigns',hide_inactive_lists='$hide_inactive_lists',
 			detect_3way='$detect_3way',company_name='$company_name',ticket_mail='$ticket_mail',allow_manage_active_lists='$allow_manage_active_lists',expired_lists_inactive='$expired_lists_inactive',
-			did_system_filter='$did_system_filter'$custom_dialplanSQL,allow_phonebook='$allow_phonebook',servicelevel_direct='$servicelevel_direct',servicelevel_one='$servicelevel_one',
-			servicelevel_two='$servicelevel_two';";
+			did_system_filter='$did_system_filter',allow_phonebook='$allow_phonebook',servicelevel_direct='$servicelevel_direct',servicelevel_one='$servicelevel_one',
+			servicelevel_two='$servicelevel_two',anyone_callback_inactive_lists='$anyone_callback_inactive_lists'$custom_dialplanSQL;";
+
 		$rslt=mysql_to_mysqli($stmt, $link);
 
 		if ( ($meetme_enter_login_filename != $SSmeetme_enter_login_filename) or ($meetme_enter_leave3way_filename != $SSmeetme_enter_leave3way_filename) )
@@ -35290,7 +35295,7 @@ if ($ADD==311111111111111)
 			$ALLagent_count =		$rowx[2];
 			}
 
-		$stmt="SELECT version,install_date,use_non_latin,webroot_writable,enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_url,queuemetrics_log_id,queuemetrics_eq_prepend,vicidial_agent_disable,allow_sipsak_messages,admin_home_url,enable_agc_xfer_log,db_schema_version,auto_user_add_value,timeclock_end_of_day,timeclock_last_reset_date,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,vdc_agent_api_active,qc_last_pull_time,enable_vtiger_integration,vtiger_server_ip,vtiger_dbname,vtiger_login,vtiger_pass,vtiger_url,qc_features_active,outbound_autodial_active,outbound_calls_per_second,enable_tts_integration,agentonly_callback_campaign_lock,sounds_central_control_active,sounds_web_server,sounds_web_directory,active_voicemail_server,auto_dial_limit,user_territories_active,allow_custom_dialplan,db_schema_update_date,enable_second_webform,default_webphone,default_external_server_ip,webphone_url,enable_agc_dispo_log,custom_dialplan_entry,queuemetrics_loginout,callcard_enabled,queuemetrics_callstatus,default_codecs,admin_web_directory,label_title,label_first_name,label_middle_initial,label_last_name,label_address1,label_address2,label_address3,label_city,label_state,label_province,label_postal_code,label_vendor_lead_code,label_gender,label_phone_number,label_phone_code,label_alt_phone,label_security_phrase,label_email,label_comments,custom_fields_enabled,slave_db_server,reports_use_slave_db,webphone_systemkey,first_login_trigger,default_phone_registration_password,default_phone_login_password,default_server_password,admin_modify_refresh,nocache_admin,generate_cross_server_exten,queuemetrics_addmember_enabled,queuemetrics_dispo_pause,label_hide_field_logs,queuemetrics_pe_phone_append,test_campaign_calls,agents_calls_reset,default_voicemail_timezone,default_local_gmt,noanswer_log,alt_log_server_ip,alt_log_dbname,alt_log_login,alt_log_pass,tables_use_alt_log_db,did_agent_log,campaign_cid_areacodes_enabled,pllb_grouping_limit,did_ra_extensions_enabled,expanded_list_stats,contacts_enabled,call_menu_qualify_enabled,admin_list_counts,allow_voicemail_greeting,svn_revision,queuemetrics_socket,queuemetrics_socket_url,enhanced_disconnect_logging,allow_emails,level_8_disable_add,pass_hash_enabled,pass_key,pass_cost,disable_auto_dial,queuemetrics_record_hold,country_code_list_stats,reload_timestamp,queuemetrics_pause_type,frozen_server_call_clear,callback_time_24hour,allow_chats,chat_url,chat_timeout,enable_languages,language_method,meetme_enter_login_filename,meetme_enter_leave3way_filename,enable_did_entry_list_id,enable_third_webform,agent_debug_logging,default_language,agent_whisper_enabled,user_hide_realtime_enabled,usacan_phone_dialcode_fix,cache_carrier_stats_realtime,oldest_logs_date,log_recording_access,report_default_format,alt_ivr_logging,default_phone_code,admin_row_click,admin_screen_colors,ofcom_uk_drop_calc,agent_screen_colors,script_remove_js,manual_auto_next,user_new_lead_limit,agent_xfer_park_3way,rec_prompt_count,agent_soundboards,web_loader_phone_length,agent_script,agent_chat_screen_colors,enable_auto_reports,enable_pause_code_limits,enable_drop_lists,allow_ip_lists,system_ip_blacklist, git_commit, git_release ,agent_push_events,agent_push_url,pause_campaigns,hide_inactive_lists,detect_3way,company_name,ticket_mail,allow_manage_active_lists,expired_lists_inactive,did_system_filter,allow_phonebook,servicelevel_direct,servicelevel_one,servicelevel_two from system_settings;";
+		$stmt="SELECT version,install_date,use_non_latin,webroot_writable,enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_url,queuemetrics_log_id,queuemetrics_eq_prepend,vicidial_agent_disable,allow_sipsak_messages,admin_home_url,enable_agc_xfer_log,db_schema_version,auto_user_add_value,timeclock_end_of_day,timeclock_last_reset_date,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,vdc_agent_api_active,qc_last_pull_time,enable_vtiger_integration,vtiger_server_ip,vtiger_dbname,vtiger_login,vtiger_pass,vtiger_url,qc_features_active,outbound_autodial_active,outbound_calls_per_second,enable_tts_integration,agentonly_callback_campaign_lock,sounds_central_control_active,sounds_web_server,sounds_web_directory,active_voicemail_server,auto_dial_limit,user_territories_active,allow_custom_dialplan,db_schema_update_date,enable_second_webform,default_webphone,default_external_server_ip,webphone_url,enable_agc_dispo_log,custom_dialplan_entry,queuemetrics_loginout,callcard_enabled,queuemetrics_callstatus,default_codecs,admin_web_directory,label_title,label_first_name,label_middle_initial,label_last_name,label_address1,label_address2,label_address3,label_city,label_state,label_province,label_postal_code,label_vendor_lead_code,label_gender,label_phone_number,label_phone_code,label_alt_phone,label_security_phrase,label_email,label_comments,custom_fields_enabled,slave_db_server,reports_use_slave_db,webphone_systemkey,first_login_trigger,default_phone_registration_password,default_phone_login_password,default_server_password,admin_modify_refresh,nocache_admin,generate_cross_server_exten,queuemetrics_addmember_enabled,queuemetrics_dispo_pause,label_hide_field_logs,queuemetrics_pe_phone_append,test_campaign_calls,agents_calls_reset,default_voicemail_timezone,default_local_gmt,noanswer_log,alt_log_server_ip,alt_log_dbname,alt_log_login,alt_log_pass,tables_use_alt_log_db,did_agent_log,campaign_cid_areacodes_enabled,pllb_grouping_limit,did_ra_extensions_enabled,expanded_list_stats,contacts_enabled,call_menu_qualify_enabled,admin_list_counts,allow_voicemail_greeting,svn_revision,queuemetrics_socket,queuemetrics_socket_url,enhanced_disconnect_logging,allow_emails,level_8_disable_add,pass_hash_enabled,pass_key,pass_cost,disable_auto_dial,queuemetrics_record_hold,country_code_list_stats,reload_timestamp,queuemetrics_pause_type,frozen_server_call_clear,callback_time_24hour,allow_chats,chat_url,chat_timeout,enable_languages,language_method,meetme_enter_login_filename,meetme_enter_leave3way_filename,enable_did_entry_list_id,enable_third_webform,agent_debug_logging,default_language,agent_whisper_enabled,user_hide_realtime_enabled,usacan_phone_dialcode_fix,cache_carrier_stats_realtime,oldest_logs_date,log_recording_access,report_default_format,alt_ivr_logging,default_phone_code,admin_row_click,admin_screen_colors,ofcom_uk_drop_calc,agent_screen_colors,script_remove_js,manual_auto_next,user_new_lead_limit,agent_xfer_park_3way,rec_prompt_count,agent_soundboards,web_loader_phone_length,agent_script,agent_chat_screen_colors,enable_auto_reports,enable_pause_code_limits,enable_drop_lists,allow_ip_lists,system_ip_blacklist, git_commit, git_release ,agent_push_events,agent_push_url,pause_campaigns,hide_inactive_lists,detect_3way,company_name,ticket_mail,allow_manage_active_lists,expired_lists_inactive,did_system_filter,allow_phonebook,servicelevel_direct,servicelevel_one,servicelevel_two,anyone_callback_inactive_lists from system_settings;";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$row=mysqli_fetch_row($rslt);
 		$version =						$row[0];
@@ -35471,6 +35476,7 @@ if ($ADD==311111111111111)
 		$servicelevel_direct = 		$row[175];
 		$servicelevel_one =			$row[176];
 		$servicelevel_two =			$row[177];
+		$anyone_callback_inactive_lists = 	$row[178];
 
 		if ($pass_hash_enabled > 0) {$pass_hash_enabled = 'ENABLED';}	
 		else {$pass_hash_enabled = 'DISABLED';}
@@ -35609,11 +35615,14 @@ if ($ADD==311111111111111)
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Agent Screen Park Xfer Button").": </td><td align=left><select size=1 name=agent_xfer_park_3way><option>1</option><option>0</option><option selected>$agent_xfer_park_3way</option></select>$NWB#settings-agent_xfer_park_3way$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Agent Soundboards").": </td><td align=left><select size=1 name=agent_soundboards><option>1</option><option>0</option><option selected>$agent_soundboards</option></select>$NWB#settings-agent_soundboards$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Enable Pause Code Time Limits").": </td><td align=left><select size=1 name=enable_pause_code_limits><option>1</option><option>0</option><option selected>$enable_pause_code_limits</option></select>$NWB#settings-enable_pause_code_limits$NWE</td></tr>\n";
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Agent Only Callback Campaign Lock").": </td><td align=left><select size=1 name=agentonly_callback_campaign_lock><option>1</option><option>0</option><option selected>$agentonly_callback_campaign_lock</option></select>$NWB#settings-agentonly_callback_campaign_lock$NWE</td></tr>\n";
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Callback Time 24 Hours").": </td><td align=left><select size=1 name=callback_time_24hour><option>1</option><option>0</option><option selected>$callback_time_24hour</option></select>$NWB#settings-callback_time_24hour$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Agent Only Callback Campaign Lock").": </td><td align=left><select size=1 name=agentonly_callback_campaign_lock><option>1</option><option>0</option><option selected>$agentonly_callback_campaign_lock</option></select>$NWB#settings-agentonly_callback_campaign_lock$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Callback Time 24 Hours").": </td><td align=left><select size=1 name=callback_time_24hour><option>1</option><option>0</option><option selected>$callback_time_24hour</option></select>$NWB#settings-callback_time_24hour$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Anyone Callback Inactive Lists").": </td><td align=left><select size=1 name=anyone_callback_inactive_lists><option>default</option><option>NO_ADD_TO_HOPPER</option><option>KEEP_IN_HOPPER</option><option selected>$anyone_callback_inactive_lists</option></select>$NWB#settings-anyone_callback_inactive_lists$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Central Sound Control Active").": </td><td align=left><select size=1 name=sounds_central_control_active><option>1</option><option>0</option><option selected>$sounds_central_control_active</option></select>$NWB#settings-sounds_central_control_active$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Sounds Web Server").": </td><td align=left><input type=text name=sounds_web_server size=30 maxlength=50 value=\"$sounds_web_server\">$NWB#settings-sounds_web_server$NWE</td></tr>\n";
+
 
 		$admin_web_dir='';
 		if (preg_match("/\//",$admin_web_directory))

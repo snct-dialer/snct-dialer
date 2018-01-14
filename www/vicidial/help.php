@@ -1,7 +1,7 @@
 <?php
 # help.php - VICIDIAL administration page
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 # 
 
 # CHANGELOG:
@@ -147,6 +147,7 @@
 # 171130-0048 - Added agent_screen_time_display entry
 # 171224-1027 - Added lists-default_xfer_group entry
 # 180108-2115 - Added campaigns-next_dial_my_callbacks entry
+# 180111-1547 - Added settings-anyone_callback_inactive_lists entry
 #
 
 require("dbconnect_mysqli.php");
@@ -5280,6 +5281,11 @@ FR_SPAC 00 00 00 00 00 - <?php echo _QXZ("France space separated phone number");
 <A NAME="settings-callback_time_24hour">
 <BR>
 <B><?php echo _QXZ("Callback Time 24 Hours"); ?> -</B><?php echo _QXZ("This option defines whether the agent sees 12 hour time with AM PM options or 24 hour time on the Callback setting screen in the agent interface. Default is 0 for disabled."); ?>
+
+<BR>
+<A NAME="settings-anyone_callback_inactive_lists">
+<BR>
+<B><?php echo _QXZ("Anyone Callback Inactive Lists"); ?> -</B><?php echo _QXZ("This option defines whether an ANYONE callback within an inactive list will be placed in the hopper to be dialed or not. The default option will place ANYONE scheduled callbacks from inactive lists into the hopper for up to one minute before removing them from the hopper. Using the NO_ADD_TO_HOPPER option will prevent ANYONE scheduled callbacks from inactive lists from ever being put into the hopper while the list is inactive. The KEEP_IN_HOPPER option will put ANYONE scheduled callbacks from inactive lists into the hopper and will make sure they stay in the hopper until they are dialed, or they are no longer dialable due to a Call Time setting. This feature only affects campaigns that use the dial hopper. Default is default."); ?>
 
 <BR>
 <A NAME="settings-sounds_central_control_active">

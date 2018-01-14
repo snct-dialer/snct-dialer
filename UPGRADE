@@ -246,6 +246,9 @@ OTHER CHANGES:
 	USERONLY Scheduled Callbacks for agents in MANUAL or INBOUND_MAN 
 	no-hopper campaigns when they click DIAL NEXT NUMBER in the agent screen
 
+65. Added "Anyone Callback Inactive Lists" System Setting option to determine
+	how ANYONE scheduled callbacks from inactive lists should be handled.
+
 
 
 

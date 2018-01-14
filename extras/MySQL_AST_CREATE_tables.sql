@@ -1764,7 +1764,8 @@ did_system_filter ENUM('0','1') default '0',
 allow_phonebook ENUM('0','1') default '0',
 servicelevel_direct SMALLINT UNSIGNED DEFAULT '4',
 servicelevel_one SMALLINT UNSIGNED DEFAULT '20',
-servicelevel_two SMALLINT UNSIGNED DEFAULT '40'
+servicelevel_two SMALLINT UNSIGNED DEFAULT '40',
+anyone_callback_inactive_lists ENUM('default','NO_ADD_TO_HOPPER','KEEP_IN_HOPPER') default 'default'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_campaigns_list_mix (

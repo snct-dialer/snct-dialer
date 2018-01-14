@@ -12,6 +12,15 @@
     - admin.php,
       NON-AGENT_API.txt: Added call_status_stats function.
     - lead_report_export.php: Added vendor lead code filtering option.
+  * Upstream Rev. 2882, 2883, 2284, 2885, 2886, 2887 and 2888 not added.
+  * Add upstream Rev. 2889:
+    - AST_VDhopper.pl,
+      MySQL_AST_CREATE_tables.sql,
+      upgrade_2.14.sql,
+      admin.php,
+      help.php,
+      UPGRADE: Added anyone_callback_inactive_lists option.
+  
 
 2.25.23 stable
   [Jörg Frings-Fürst]
