@@ -24,6 +24,8 @@
     - AST_flush_DBqueue.pl,
       MySQL_AST_CREATE_tables.sql,
       upgrade_2.14.sql: Added flush for cid_channels_recent table.
+  * Add upstream Rev. 2891:
+    - lead_report_export.php: Correct SQL statement build.
 
 2.25.23 stable
   [Jörg Frings-Fürst]

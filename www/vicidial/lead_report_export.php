@@ -479,7 +479,7 @@ if ($run_export > 0)
 		$vlc_SQL = "and vendor_lead_code IN($vlc_SQL)"; # JCJ
 		$RUNvlc++;
 		}
-	if ($vlc_filter=="NO") {$vlc_SQL=""; $RUNvlc=0;}
+	if ( ($vlc_filter=="NO") or ($VLC_enabled != 'Y') ) {$vlc_SQL=""; $RUNvlc=0;}
 
 	$i=0;
 	while($i < $user_group_ct)
