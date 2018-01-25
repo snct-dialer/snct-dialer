@@ -603,4 +603,6 @@ index (run_time)
 
 DELETE from cid_channels_recent;
 
+ALTER TABLE system_settings ADD tmp_download_dir VARCHAR(255) default 'download';
+
 UPDATE system_settings SET db_schema_version='1530',db_schema_update_date=NOW() where db_schema_version < 1530;

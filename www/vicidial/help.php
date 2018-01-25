@@ -5855,6 +5855,11 @@ FR_SPAC 00 00 00 00 00 - <?php echo _QXZ("France space separated phone number");
 <B><?php echo _QXZ("Ticket Mail Address"); ?> -</B><?php echo _QXZ("Set the Mailaddress to send Mails into a Ticketsystem."); ?>
 
 <BR>
+<A NAME="downloaddir">
+<BR>
+<B><?php echo _QXZ("Temp. Download Directory"); ?> -</B><?php echo _QXZ("Set the Directory for Downloads."); ?>
+
+<BR>
 <A NAME="servicelevel">
 <BR>
 <B><?php echo _QXZ("Service Level"); ?> -</B><?php echo _QXZ("Set the time in seconds for the Servicelevel Direct|One|Two only for the Wallboard."); ?>

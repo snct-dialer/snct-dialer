@@ -26,6 +26,12 @@
       upgrade_2.14.sql: Added flush for cid_channels_recent table.
   * Add upstream Rev. 2891:
     - lead_report_export.php: Correct SQL statement build.
+  * Add download function (2018-001):
+    - Add field tmp_download_dir to table system_settings.
+    - admin.php: Add field.
+    - help.php: Add tag downloaddir.
+    - New download.php.
+    - functions.php: New function GetTmpDownLoadDir().
 
 2.25.23 stable
   [Jörg Frings-Fürst]
