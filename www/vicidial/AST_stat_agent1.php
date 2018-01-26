@@ -22,9 +22,6 @@ $release = '20180124-4';
 header ("Content-type: text/html; charset=utf-8");
 
 
-$use_slave_server = 1;
-
-
 require("dbconnect_mysqli.php");
 require("functions.php");
 
