@@ -2563,6 +2563,7 @@ if ($NOWEB < 1)
 	if (!-e "$PATHweb/vicidial/ploticus/")			{`mkdir -p $PATHweb/vicidial/ploticus/`;}
 	if (!-e "$PATHweb/vicidial/agent_reports/")		{`mkdir -p $PATHweb/vicidial/agent_reports/`;}
 	if (!-e "$PATHweb/vicidial/server_reports/")	{`mkdir -p $PATHweb/vicidial/server_reports/`;}
+	if (!-e "$PATHweb/vicidial/download/")		{`mkdir -p $PATHweb/vicidial/download/`;}
 	if (!-e "$PATHweb/chat_customer/")				{`mkdir -p $PATHweb/chat_customer/`;}
 
 	print "Copying web files...\n";
@@ -2574,6 +2575,7 @@ if ($NOWEB < 1)
 	`cp -f ./www/vicidial/robots.txt $PATHweb/vicidial/ploticus/`;
 	`cp -f ./www/vicidial/robots.txt $PATHweb/vicidial/agent_reports/`;
 	`cp -f ./www/vicidial/robots.txt $PATHweb/vicidial/server_reports/`;
+	`cp -f ./www/vicidial/robots.txt $PATHweb/vicidial/download/`;
 	if (-e "$PATHweb/agc/css/custom.css.save_user_changes") {`mv $PATHweb/agc/css/custom.css.save_user_changes $PATHweb/agc/css/custom.css`;}
 	`cp -f ./www/vicidial/robots.txt $PATHweb/chat_customer/`;
 	# Copy FlyInclude.php

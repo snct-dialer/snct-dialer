@@ -32,6 +32,7 @@
     - help.php: Add tag downloaddir.
     - New download.php.
     - functions.php: New function GetTmpDownLoadDir().
+    - install.pl: Add mkdir for directory download.
 
 2.25.23 stable
   [Jörg Frings-Fürst]
