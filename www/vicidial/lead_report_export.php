@@ -1612,13 +1612,14 @@ else
 	echo "<SELECT SIZE=20 NAME=vlcs[] multiple>\n";
 		$o=0;
 		while ($vlcs_to_print > $o)
-		{
-			if (preg_match("/\|$LISTvlcs[$o]\|/",$vlc_string)) 
+			{
+			$temp_vlc = preg_quote($LISTvlcs[$o], '/');
+			if (preg_match("/\|$temp_vlc\|/",$vlc_string)) 
 				{echo "<option selected value=\"$LISTvlcs[$o]\">$LISTvlcs[$o]</option>\n";}
 			else 
 				{echo "<option value=\"$LISTvlcs[$o]\">$LISTvlcs[$o]</option>\n";}
 			$o++;
-		}
+			}
 	echo "</SELECT></SPAN></TD>\n";
 
 

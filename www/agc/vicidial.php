@@ -576,10 +576,11 @@
 # 171214-2018 - Added PREVIEW_ get_call_launch options
 # 171224-1244 - Added List default_xfer_group override
 # 180105-1543 - Small javascript fixes, and more debug logging, change to 2018
+# 180126-0855 - Added more agent api pause debug output
 #
 
-$version = '2.14-546c';
-$build = '180105-1543';
+$version = '2.14-547c';
+$build = '180126-0855';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -5849,10 +5850,11 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							}
 						if (APIPausE.length > 4)
 							{
-							button_click_log = button_click_log + "" + SQLdate + "-----api_pause---" + APIPausE + "|";
+							var temp_APIPausE_message='';
 							var APIPausE_array = APIPausE.split("!");
 							if (APIPausE_ID == APIPausE_array[1])
 								{
+								temp_APIPausE_message='ALREADY-RECEIVED';
 							//	alert("PAUSE ALREADY RECEIVED");
 								}
 							else
@@ -5865,6 +5867,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 										// set to pause on next dispo
 										document.vicidial_form.DispoSelectStop.checked=true;
 									//	alert("Setting dispo to PAUSE");
+										temp_APIPausE_message='PAUSE-DISPO-SET';
 										}
 									else
 										{
@@ -5874,6 +5877,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 												{
 												AutoDialWaiting = 0;
 												AutoDial_ReSume_PauSe("VDADpause");
+												temp_APIPausE_message='PAUSE-SET';
 												}
 											VICIDiaL_pause_calling = 1;
 											}
@@ -5883,8 +5887,10 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 									{
 									AutoDialWaiting = 1;
 									AutoDial_ReSume_PauSe("VDADready");
+									temp_APIPausE_message='RESUME-SET';
 									}
 								}
+							button_click_log = button_click_log + "" + SQLdate + "-----api_pause---" + APIPausE + " " + temp_APIPausE_message + "|";
 							}
 						if ( (APIDiaL.length > 9) && (AllowManualQueueCalls == '0') )
 							{
@@ -13391,7 +13397,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 				hideDiv('DispoButtonHideA');
 				hideDiv('DispoButtonHideB');
 				hideDiv('DispoButtonHideC');
-				document.getElementById("debugbottomspan").innerHTML =  "<?php echo _QXZ("Disposition set twice: "); ?>" + document.vicidial_form.lead_id.value + "|" + DispoChoice + "\n"
+				document.getElementById("debugbottomspan").innerHTML =  "<?php echo _QXZ("Disposition set twice: "); ?>" + document.vicidial_form.lead_id.value + "|" + DispoChoice + "\n";
 				button_click_log = button_click_log + "" + SQLdate + "-----dispo_set_twice---" + document.vicidial_form.lead_id.value + " " + DispoChoice + "|";
 				}
 			else
@@ -15176,6 +15182,7 @@ else
 		"&did_custom_five=" + did_custom_five + '' +
 		"&called_count=" + document.vicidial_form.called_count.value + '' +
 		"&email_row_id=" + document.vicidial_form.email_row_id.value + '' +
+		"&inOUT=" + inOUT + '' +
 		"&web_vars=" + LIVE_web_vars + '' +
 		webform_session;
 
@@ -15573,6 +15580,7 @@ else
 		var RGdid_custom_three = new RegExp("--A--did_custom_three--B--","g");
 		var RGdid_custom_four = new RegExp("--A--did_custom_four--B--","g");
 		var RGdid_custom_five = new RegExp("--A--did_custom_five--B--","g");
+		var RGinOUT = new RegExp("--A--inOUT--B--","g");
 		var RGcalled_count = new RegExp("--A--called_count--B--","g");
 		var RGweb_vars = new RegExp("--A--web_vars--B--","g");
 
@@ -15660,6 +15668,7 @@ else
 		encoded = encoded.replace(RGdid_custom_four,SCdid_custom_four);
 		encoded = encoded.replace(RGdid_custom_five,SCdid_custom_five);
 		encoded = encoded.replace(RGcalled_count,SCcalled_count);
+		encoded = encoded.replace(RGinOUT,inOUT);
 		encoded = encoded.replace(RGweb_vars, SCweb_vars);
 		}
 

@@ -1,7 +1,7 @@
 <?php
 # api.php
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed as an API(Application Programming Interface) to allow
 # other programs to interact with the VICIDIAL Agent screen
@@ -91,10 +91,11 @@
 # 170220-1303 - Added switch_lead function
 # 170527-2250 - Fix for rare inbound logging issue #1017, Added variable filtering
 # 170815-1314 - Added HTTP error code 418
+# 180124-1608 - Added calls_in_queue_count function
 #
 
-$version = '2.14-57';
-$build = '170815-1314';
+$version = '2.14-58';
+$build = '180124-1608';
 
 $startMS = microtime();
 
@@ -4051,6 +4052,101 @@ if ($function == 'pause_code')
 ### END - pause_code
 ################################################################################
 
+
+
+
+
+################################################################################
+### BEGIN - calls_in_queue_count - display a count of the calls waiting in queue for the specific agent
+################################################################################
+if ($function == 'calls_in_queue_count')
+	{
+	if ( ($value!='DISPLAY') or ( (strlen($agent_user)<1) and (strlen($alt_user)<2) ) )
+		{
+		$result = _QXZ("ERROR");
+		$result_reason = _QXZ("calls_in_queue_count not valid");
+		echo "$result: $result_reason - $value|$agent_user\n";
+		api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+		}
+	else
+		{
+		if ( (!preg_match("/ $function /",$VUapi_allowed_functions)) and (!preg_match("/ALL_FUNCTIONS/",$VUapi_allowed_functions)) )
+			{
+			$result = _QXZ("ERROR");
+			$result_reason = _QXZ("auth USER DOES NOT HAVE PERMISSION TO USE THIS FUNCTION");
+			echo "$result: $result_reason - $value|$user|$function|$VUuser_group\n";
+			api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+			exit;
+			}
+		if (strlen($alt_user)>1)
+			{
+			$stmt = "select count(*) from vicidial_users where custom_three='$alt_user';";
+			if ($DB) {echo "$stmt\n";}
+			$rslt=mysql_to_mysqli($stmt, $link);
+			$row=mysqli_fetch_row($rslt);
+			if ($row[0] > 0)
+				{
+				$stmt = "select user from vicidial_users where custom_three='$alt_user' order by user;";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+				$row=mysqli_fetch_row($rslt);
+				$agent_user = $row[0];
+				}
+			else
+				{
+				$result = _QXZ("ERROR");
+				$result_reason = _QXZ("no user found");
+				echo "$result: $result_reason - $alt_user\n";
+				api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+				}
+			}
+		$stmt = "SELECT count(*) from vicidial_live_agents where user='$agent_user';";
+		if ($DB) {echo "$stmt\n";}
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$row=mysqli_fetch_row($rslt);
+		if ($row[0] > 0)
+			{
+			$ADsql='';
+			### grab the status, campaign and in-group details for this logged-in agent
+			$stmt="SELECT status,campaign_id,closer_campaigns from vicidial_live_agents where user='$agent_user';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_to_mysqli($stmt, $link);
+			$row=mysqli_fetch_row($rslt);
+			$Alogin=$row[0];
+			$Acampaign=$row[1];
+			$AccampSQL=$row[2];
+			$AccampSQL = preg_replace('/\s\-/','', $AccampSQL);
+			$AccampSQL = preg_replace('/\s/',"','", $AccampSQL);
+			if (preg_match('/AGENTDIRECT/i', $AccampSQL))
+				{
+				$AccampSQL = preg_replace('/AGENTDIRECT/i','', $AccampSQL);
+				$ADsql = "or ( (campaign_id LIKE \"%AGENTDIRECT%\") and (agent_only='$agent_user') )";
+				}
+
+			### grab the number of calls waiting in queue that could be routed to this agent
+			$stmt="SELECT count(*) from vicidial_auto_calls where status IN('LIVE') and ( (campaign_id='$Acampaign') or (campaign_id IN('$AccampSQL')) $ADsql);";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_to_mysqli($stmt, $link);
+			$row=mysqli_fetch_row($rslt);
+			$calls_in_queue_count=$row[0];
+
+			$result = _QXZ("SUCCESS");
+			$result_reason = _QXZ("SUCCESS: calls_in_queue_count") . " - " . $calls_in_queue_count;
+			echo "$result_reason";
+			api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+			}
+		else
+			{
+			$result = _QXZ("ERROR");
+			$result_reason = _QXZ("agent_user is not logged in");
+			echo "$result: $result_reason - $agent_user\n";
+			api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+			}
+		}
+	}
+################################################################################
+### END - calls_in_queue_count
+################################################################################
 
 
 

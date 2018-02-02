@@ -125,6 +125,7 @@
 # 170325-1106 - Added optional vicidial_drop_log logging
 # 170527-2347 - Fix for rare inbound logging issue #1017
 # 170915-1817 - Added support for per server routing prefix needed for Asterisk 13+
+# 180130-1346 - Added inbound_no_agents_no_dial campaign options
 #
 
 ### begin parsing run-time options ###
@@ -142,6 +143,7 @@ if (length($ARGV[0])>1)
 		print "allowed run time options:\n";
 		print "  [-t] = test\n";
 		print "  [-debug] = verbose debug messages\n";
+		print "  [-debugX] = Extra verbose debug messages\n";
 		print "  [--delay=XXX] = delay of XXX seconds per loop, default 2.5 seconds\n";
 		print "\n";
 		exit;
@@ -162,6 +164,10 @@ if (length($ARGV[0])>1)
 		if ($args =~ /-debug/i)
 			{
 			$DB=1; # Debug flag, set to 0 for no debug messages, On an active system this will generate hundreds of lines of output per minute
+			}
+		if ($args =~ /-debugX/i)
+			{
+			$DBX=1; # Extra Debug flag, set to 0 for no debug messages, On an active system this will generate hundreds of lines of output per minute
 			}
 		if ($args =~ /-t/i)
 			{
@@ -383,6 +389,11 @@ while($one_day_interval > 0)
 		@DBIPdial_method=@MT;
 		@DBIPuse_custom_cid=@MT;
 		@DBIPinbound_queue_no_dial=@MT;
+		@DBIPinbound_no_agents_no_dial=@MT;
+		@DBIPinbound_no_agents_no_dial_threshold=@MT;
+		@DBIPinbound_no_agents_no_dial_trigger=@MT;
+		@DBIPinand_agent_ready_count=@MT;
+		@DBIPinand_users=@MT;
 		@DBIPavailable_only_tally=@MT;
 		@DBIPavailable_only_tally_threshold=@MT;
 		@DBIPavailable_only_tally_threshold_agents=@MT;
@@ -625,7 +636,7 @@ while($one_day_interval > 0)
 
 			### grab the dial_level and multiply by active agents to get your goalcalls
 			$DBIPadlevel[$user_CIPct]=0;
-			$stmtA = "SELECT auto_dial_level,local_call_time,dial_timeout,dial_prefix,campaign_cid,active,campaign_vdad_exten,closer_campaigns,omit_phone_code,available_only_ratio_tally,auto_alt_dial,campaign_allow_inbound,queue_priority,dial_method,use_custom_cid,inbound_queue_no_dial,available_only_tally_threshold,available_only_tally_threshold_agents,dial_level_threshold,dial_level_threshold_agents,adaptive_dl_diff_target,dl_diff_target_method FROM vicidial_campaigns where campaign_id='$DBIPcampaign[$user_CIPct]'";
+			$stmtA = "SELECT auto_dial_level,local_call_time,dial_timeout,dial_prefix,campaign_cid,active,campaign_vdad_exten,closer_campaigns,omit_phone_code,available_only_ratio_tally,auto_alt_dial,campaign_allow_inbound,queue_priority,dial_method,use_custom_cid,inbound_queue_no_dial,available_only_tally_threshold,available_only_tally_threshold_agents,dial_level_threshold,dial_level_threshold_agents,adaptive_dl_diff_target,dl_diff_target_method,inbound_no_agents_no_dial_container,inbound_no_agents_no_dial_threshold FROM vicidial_campaigns where campaign_id='$DBIPcampaign[$user_CIPct]'";
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			$sthArows=$sthA->rows;
@@ -658,6 +669,9 @@ while($one_day_interval > 0)
 				$DBIPdial_level_threshold_agents[$user_CIPct] = $aryA[19];
 				$DBIPadaptive_dl_diff_target[$user_CIPct] =		$aryA[20];
 				$DBIPdl_diff_target_method[$user_CIPct] =		$aryA[21];
+				$DBIPinbound_no_agents_no_dial[$user_CIPct] =	$aryA[22];
+				$DBIPinbound_no_agents_no_dial_threshold[$user_CIPct] =	$aryA[23];
+
 				if ($DBIPdl_diff_target_method[$user_CIPct] =~ /ADAPT_CALC_ONLY/)
 					{
 					if ( ($DBIPadaptive_dl_diff_target[$user_CIPct] < 0) || ($DBIPadaptive_dl_diff_target[$user_CIPct] > 0) )
@@ -811,6 +825,78 @@ while($one_day_interval > 0)
 				}
 			else 
 				{$DBIPexistcalls_IN[$user_CIPct]=0;}
+
+			### Check for inbound no-agents no-dial
+			$DBIPinbound_no_agents_no_dial_trigger[$user_CIPct]=0;
+			if ($DBX) 
+				{
+				print "INBOUND NO-AGENTS NO-DIAL CHECK START($DBIPcampaign[$user_CIPct]): $DBIPinbound_no_agents_no_dial[$user_CIPct]|$DBIPinbound_no_agents_no_dial_threshold[$user_CIPct]\n";
+				}
+			if ( ($DBIPinbound_no_agents_no_dial[$user_CIPct] !~ /DISABLED/) && (length($DBIPinbound_no_agents_no_dial[$user_CIPct]) > 0) && ($DBIPinbound_no_agents_no_dial_threshold[$user_CIPct] > 0) )
+				{
+				$DBIPinand_container_entry[$user_CIPct]='';
+				$stmtA = "SELECT container_entry FROM vicidial_settings_containers where container_id='$DBIPinbound_no_agents_no_dial[$user_CIPct]';";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				if ($DBX) {print "$sthArows|$stmtA\n";}
+				if ($sthArows > 0)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$DBIPinand_container_entry[$user_CIPct] = $aryA[0];
+					$DBIPinand_container_entry[$user_CIPct] =~ s/\n/','/gi;
+					$DBIPinand_container_entry[$user_CIPct] =~ s/\r|\t| |''|,$|^,//gi;
+					$DBIPinand_container_entry[$user_CIPct] =~ s/,,/,/gi;
+					$DBIPinand_container_entry[$user_CIPct] =~ s/,''//gi;
+					$DBIPinand_container_entry[$user_CIPct] =~ s/','$//gi;
+					}
+				$sthA->finish();
+
+				if (length($DBIPinand_container_entry[$user_CIPct]) > 2) 
+					{
+					$DBIPinbound_no_agents_no_dial_trigger[$user_CIPct]=1;
+					$DBIPinand_users[$user_CIPct]='';
+					$stmtA = "SELECT distinct(user) FROM vicidial_live_inbound_agents where group_id IN('$DBIPinand_container_entry[$user_CIPct]');";
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows=$sthA->rows;
+					if ($DBX) {print "$sthArows|$stmtA\n";}
+					$u=0;
+					while ($sthArows > $u)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$DBIPinand_users[$user_CIPct] .= "'$aryA[0]',";
+						$u++;
+						}
+					$DBIPinand_users[$user_CIPct] =~ s/,$//gi;
+					$sthA->finish();
+
+					if (length($DBIPinand_users[$user_CIPct]) > 2) 
+						{
+						$DBIPinand_agent_ready_count[$user_CIPct]=0;
+						$stmtA = "SELECT count(*) FROM vicidial_live_agents where user IN($DBIPinand_users[$user_CIPct]) and status IN('READY','CLOSER');";
+						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+						$sthArows=$sthA->rows;
+						if ($DBX) {print "$sthArows|$stmtA\n";}
+						if ($sthArows > 0)
+							{
+							@aryA = $sthA->fetchrow_array;
+							$DBIPinand_agent_ready_count[$user_CIPct] = $aryA[0];
+							if ($DBIPinand_agent_ready_count[$user_CIPct] >= $DBIPinbound_no_agents_no_dial_threshold[$user_CIPct]) 
+								{
+								$DBIPinbound_no_agents_no_dial_trigger[$user_CIPct]=0;
+								}
+							else
+								{$debug_string .= "   !! INBOUND NO-AGENT NO-DIAL: Agents: $DBIPinand_agent_ready_count[$user_CIPct]  Threshold: $DBIPinbound_no_agents_no_dial_threshold[$user_CIPct]\n";}
+							if ($DBX) {print "DEBUG: INBOUND NO-AGENT    Agents: $DBIPinand_agent_ready_count[$user_CIPct]  Threshold: $DBIPinbound_no_agents_no_dial_threshold[$user_CIPct]\n";}
+							}
+						$sthA->finish();
+						}
+					else
+						{$debug_string .= "   !! INBOUND NO-AGENT NO-DIAL: Agents: $DBIPinand_agent_ready_count[$user_CIPct]  Threshold: $DBIPinbound_no_agents_no_dial_threshold[$user_CIPct]\n";}
+					}
+				}
 
 			$stmtA = "SELECT count(*) FROM vicidial_auto_calls where (campaign_id='$DBIPcampaign[$user_CIPct]' and call_type IN('OUT','OUTBALANCE')) and server_ip='$DBIPaddress[$user_CIPct]' and status IN('SENT','RINGING','LIVE','XFER','CLOSER');";
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -996,10 +1082,25 @@ while($one_day_interval > 0)
 				if ( ($DBIPadlevel[$user_CIPct] < 1) || ($DBIPdial_method[$user_CIPct] =~ /MANUAL|INBOUND_MAN/) )
 					{
 					$event_string="Manual Dial Override for Shortage |$DBIPadlevel[$user_CIPct]|$DBIPtrunk_shortage[$user_CIPct]|";
-					&event_logger;
 					$debug_string .= "$event_string\n";
+					&event_logger;
 					$DBIPtrunk_shortage[$user_CIPct] = 0;
 					}
+				if ( ( ($DBIPinbound_queue_no_dial[$user_CIPct] =~ /ENABLED/) && ($DBIPexistcalls_IN_LIVE[$user_CIPct] > 0) ) || ( ($DBIPinbound_queue_no_dial[$user_CIPct] =~ /CHAT/) && ($DBIPexistchats_IN_LIVE[$user_CIPct] > 0) ) )
+					{
+					$event_string="Inbound Queue No-Dial Override for Shortage |$DBIPexistcalls_IN_LIVE[$user_CIPct]|$DBIPtrunk_shortage[$user_CIPct]|";
+					$debug_string .= "$event_string\n";
+					&event_logger;
+					$DBIPtrunk_shortage[$user_CIPct] = 0;
+					}
+				if ($DBIPinbound_no_agents_no_dial_trigger[$user_CIPct] > 0)
+					{
+					$event_string="Inbound No-Agents No-Dial Override for Shortage |$DBIPinbound_no_agents_no_dial_trigger[$user_CIPct]|$DBIPtrunk_shortage[$user_CIPct]|";
+					$debug_string .= "$event_string\n";
+					&event_logger;
+					$DBIPtrunk_shortage[$user_CIPct] = 0;
+					}
+
 				$stmtA = "UPDATE vicidial_campaign_server_stats SET local_trunk_shortage='$DBIPtrunk_shortage[$user_CIPct]',update_time='$now_date' where server_ip='$server_ip' and campaign_id='$DBIPcampaign[$user_CIPct]';";
 				$affected_rows = $dbhA->do($stmtA);
 				}
@@ -1042,305 +1143,315 @@ while($one_day_interval > 0)
 					}
 				else
 					{
-					$event_string="$DBIPcampaign[$user_CIPct] $DBIPaddress[$user_CIPct]: CALLING";
-					&event_logger;
-					$call_CMPIPct=0;
-					$lead_id_call_list='|';
-					my $UDaffected_rows=0;
-					if ($call_CMPIPct < $DBIPmakecalls[$user_CIPct])
+					if ($DBIPinbound_no_agents_no_dial_trigger[$user_CIPct] > 0)
 						{
-						$stmtA = "UPDATE vicidial_hopper set status='QUEUE', user='VDAD_$server_ip' where campaign_id='$DBIPcampaign[$user_CIPct]' and status='READY' order by priority desc,hopper_id LIMIT $DBIPmakecalls[$user_CIPct]";
-						print "|$stmtA|\n";
-						$UDaffected_rows = $dbhA->do($stmtA);
-						print "hopper rows updated to QUEUE: |$UDaffected_rows|\n";
-
-						if ($UDaffected_rows)
+						$event_string="$DBIPcampaign[$user_CIPct] ($DBIPinand_agent_ready_count[$user_CIPct] <> $DBIPinbound_no_agents_no_dial_threshold[$user_CIPct]) $DBIPinand_users[$user_CIPct] '$DBIPinand_container_entry[$user_CIPct]' $DBIPinbound_no_agents_no_dial_trigger[$user_CIPct]: INBOUND NO-AGENT NO DIAL, NO DIALING ($DBIPinbound_no_agents_no_dial[$user_CIPct])";
+						&event_logger;
+						}
+					else
+						{
+						$event_string="$DBIPcampaign[$user_CIPct] $DBIPaddress[$user_CIPct]: CALLING";
+						&event_logger;
+						$call_CMPIPct=0;
+						$lead_id_call_list='|';
+						my $UDaffected_rows=0;
+						if ($call_CMPIPct < $DBIPmakecalls[$user_CIPct])
 							{
-							$lead_id=''; $phone_code=''; $phone_number=''; $called_count='';
-							while ($call_CMPIPct < $UDaffected_rows)
+							$stmtA = "UPDATE vicidial_hopper set status='QUEUE', user='VDAD_$server_ip' where campaign_id='$DBIPcampaign[$user_CIPct]' and status='READY' order by priority desc,hopper_id LIMIT $DBIPmakecalls[$user_CIPct]";
+							print "|$stmtA|\n";
+							$UDaffected_rows = $dbhA->do($stmtA);
+							print "hopper rows updated to QUEUE: |$UDaffected_rows|\n";
+
+							if ($UDaffected_rows)
 								{
-								$stmtA = "SELECT lead_id,alt_dial FROM vicidial_hopper where campaign_id='$DBIPcampaign[$user_CIPct]' and status='QUEUE' and user='VDAD_$server_ip' order by priority desc,hopper_id LIMIT 1";
-								print "|$stmtA|\n";
-								$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-								$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-								$sthArows=$sthA->rows;
-								$rec_count=0;
-								$rec_countCUSTDATA=0;
-								while ($sthArows > $rec_count)
+								$lead_id=''; $phone_code=''; $phone_number=''; $called_count='';
+								while ($call_CMPIPct < $UDaffected_rows)
 									{
-									@aryA = $sthA->fetchrow_array;
-									$lead_id =		$aryA[0];
-									$alt_dial =		$aryA[1];
-									$rec_count++;
-									}
-								$sthA->finish();
-
-							if ($lead_id_call_list =~ /\|$lead_id\|/)
-								{
-								print "!!!!!!!!!!!!!!!!duplicate lead_id for this run: |$lead_id|     $lead_id_call_list\n";
-								if ($SYSLOG)
-									{
-									open(DUPout, ">>$PATHlogs/VDAD_DUPLICATE.$file_date")
-											|| die "Can't open $PATHlogs/VDAD_DUPLICATE.$file_date: $!\n";
-									print DUPout "$now_date-----$lead_id_call_list-----$lead_id\n";
-									close(DUPout);
-									}
-								}
-							else
-								{
-								$stmtA = "UPDATE vicidial_hopper set status='INCALL' where lead_id='$lead_id'";
-								print "|$stmtA|\n";
-								$UQaffected_rows = $dbhA->do($stmtA);
-								print "hopper row updated to INCALL: |$UQaffected_rows|$lead_id|\n";
-
-								### Gather lead data
-								$stmtA = "SELECT list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,address3,alt_phone,called_count,security_phrase,status FROM vicidial_list where lead_id='$lead_id';";
-								$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-								$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-								$sthArows=$sthA->rows;
-								$rec_count=0;
-								$rec_countCUSTDATA=0;
-								if ($sthArows > 0)
-									{
-									@aryA = $sthA->fetchrow_array;
-									$list_id =					$aryA[0];
-									$gmt_offset_now	=			$aryA[1];
-									$called_since_last_reset =	$aryA[2];
-									$phone_code	=				$aryA[3];
-									$phone_number =				$aryA[4];
-									$address3 =					$aryA[5];
-									$alt_phone =				$aryA[6];
-									$called_count =				$aryA[7];
-									$security_phrase =			$aryA[8];
-									$Zstatus =					$aryA[9];
-
-									$doneX = 0;
-									# check only if Zstatus is not NEW
-									if($Zstatus ne 'NEW') {
-										$stmtZ = "SELECT dial_statuses FROM vicidial_campaigns WHERE campaign_id='$DBIPcampaign[$user_CIPct]';";
-										$sthZ = $dbhA->prepare($stmtZ) or die "preparing: ",$dbhA->errstr;
-										$sthZ->execute or die "executing: $stmtZ ", $dbhA->errstr;
-										$sthZrows=$sthZ->rows;
-										if($sthZrows > 0 ) {
-											@aryZ = $sthZ->fetchrow_array;
-											$ZdialStatus = $aryZ[0];
-											if ( index($ZdialStatus, $Zstatus ) == -1) {
-												$doneX = 1;
-											}
-										}
-									}
-									if($doneX > 0) {
-										$stmtX = "DELETE FROM vicidial_hopper where lead_id='$lead_id'";
-										$affected_rows = $dbhA->do($stmtX);
-
-										$event_string="Remove $lead_id from $DBIPcampaign[$user_CIPct] with status $Zstatus";
-										&event_logger;
-									} else {
-										$rec_countCUSTDATA++;
-										$rec_count++;
-									}
-									}
-								$sthA->finish();
-
-								if ($rec_countCUSTDATA)
-									{
-									$campaign_cid_override='';
-									### gather list_id overrides
-									$stmtA = "SELECT campaign_cid_override FROM vicidial_lists where list_id='$list_id';";
+									$stmtA = "SELECT lead_id,alt_dial FROM vicidial_hopper where campaign_id='$DBIPcampaign[$user_CIPct]' and status='QUEUE' and user='VDAD_$server_ip' order by priority desc,hopper_id LIMIT 1";
+									print "|$stmtA|\n";
 									$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 									$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-									$sthArowsL=$sthA->rows;
-									if ($sthArowsL > 0)
+									$sthArows=$sthA->rows;
+									$rec_count=0;
+									$rec_countCUSTDATA=0;
+									while ($sthArows > $rec_count)
 										{
 										@aryA = $sthA->fetchrow_array;
-										$campaign_cid_override =	$aryA[0];
+										$lead_id =		$aryA[0];
+										$alt_dial =		$aryA[1];
+										$rec_count++;
 										}
 									$sthA->finish();
 
-									### update called_count
-									$called_count++;
-									if ($called_since_last_reset =~ /^Y/)
+								if ($lead_id_call_list =~ /\|$lead_id\|/)
+									{
+									print "!!!!!!!!!!!!!!!!duplicate lead_id for this run: |$lead_id|     $lead_id_call_list\n";
+									if ($SYSLOG)
 										{
-										if ($called_since_last_reset =~ /^Y$/) {$CSLR = 'Y1';}
-										else
-											{
-											$called_since_last_reset =~ s/^Y//gi;
-											$called_since_last_reset++;
-											$CSLR = "Y$called_since_last_reset";
-											}
+										open(DUPout, ">>$PATHlogs/VDAD_DUPLICATE.$file_date")
+												|| die "Can't open $PATHlogs/VDAD_DUPLICATE.$file_date: $!\n";
+										print DUPout "$now_date-----$lead_id_call_list-----$lead_id\n";
+										close(DUPout);
 										}
-									else {$CSLR = 'Y';}
-									
-									$LLCT_DATE_offset = ($LOCAL_GMT_OFF - $gmt_offset_now);
-									$LLCT_DATE_offset_epoch = ( $secX - ($LLCT_DATE_offset * 3600) );
-									($Lsec,$Lmin,$Lhour,$Lmday,$Lmon,$Lyear,$Lwday,$Lyday,$Lisdst) = localtime($LLCT_DATE_offset_epoch);
-									$Lyear = ($Lyear + 1900);
-									$Lmon++;
-									if ($Lmon < 10) {$Lmon = "0$Lmon";}
-									if ($Lmday < 10) {$Lmday = "0$Lmday";}
-									if ($Lhour < 10) {$Lhour = "0$Lhour";}
-									if ($Lmin < 10) {$Lmin = "0$Lmin";}
-									if ($Lsec < 10) {$Lsec = "0$Lsec";}
-										$LLCT_DATE = "$Lyear-$Lmon-$Lmday $Lhour:$Lmin:$Lsec";
+									}
+								else
+									{
+									$stmtA = "UPDATE vicidial_hopper set status='INCALL' where lead_id='$lead_id'";
+									print "|$stmtA|\n";
+									$UQaffected_rows = $dbhA->do($stmtA);
+									print "hopper row updated to INCALL: |$UQaffected_rows|$lead_id|\n";
 
-									if ( ($alt_dial =~ /ALT|ADDR3|X/) && ($DBIPautoaltdial[$user_CIPct] =~ /ALT|ADDR|X/) )
+									### Gather lead data
+									$stmtA = "SELECT list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,address3,alt_phone,called_count,security_phrase,status FROM vicidial_list where lead_id='$lead_id';";
+									$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+									$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+									$sthArows=$sthA->rows;
+									$rec_count=0;
+									$rec_countCUSTDATA=0;
+									if ($sthArows > 0)
 										{
-										if ( ($alt_dial =~ /ALT/) && ($DBIPautoaltdial[$user_CIPct] =~ /ALT/) )
-											{
-											$alt_phone =~ s/\D//gi;
-											$phone_number = $alt_phone;
+										@aryA = $sthA->fetchrow_array;
+										$list_id =					$aryA[0];
+										$gmt_offset_now	=			$aryA[1];
+										$called_since_last_reset =	$aryA[2];
+										$phone_code	=				$aryA[3];
+										$phone_number =				$aryA[4];
+										$address3 =					$aryA[5];
+										$alt_phone =				$aryA[6];
+										$called_count =				$aryA[7];
+										$security_phrase =			$aryA[8];
+										$Zstatus =				$aryA[9];
+										
+										$doneX = 0;
+										# check only if Zstatus is not NEW
+										if($Zstatus ne 'NEW') {
+										    $stmtZ = "SELECT dial_statuses FROM vicidial_campaigns WHERE campaign_id='$DBIPcampaign[$user_CIPct]';";
+										    $sthZ = $dbhA->prepare($stmtZ) or die "preparing: ",$dbhA->errstr;
+										    $sthZ->execute or die "executing: $stmtZ ", $dbhA->errstr;
+										    $sthZrows=$sthZ->rows;
+										    if($sthZrows > 0 ) {
+											@aryZ = $sthZ->fetchrow_array;
+											$ZdialStatus = $aryZ[0];
+											if ( index($ZdialStatus, $Zstatus ) == -1) {
+											    $doneX = 1;
 											}
-										if ( ($alt_dial =~ /ADDR3/) && ($DBIPautoaltdial[$user_CIPct] =~ /ADDR3/) )
+										    }
+										}
+										if($doneX > 0) {
+										    $stmtX = "DELETE FROM vicidial_hopper where lead_id='$lead_id'";
+										    $affected_rows = $dbhA->do($stmtX);
+
+										    $event_string="Remove $lead_id from $DBIPcampaign[$user_CIPct] with status $Zstatus";
+										    &event_logger;
+										} else {
+										    $rec_countCUSTDATA++;
+										    $rec_count++;
+										}
+										}
+									    
+
+									$sthA->finish();
+
+									if ($rec_countCUSTDATA)
+										{
+										$campaign_cid_override='';
+										### gather list_id overrides
+										$stmtA = "SELECT campaign_cid_override FROM vicidial_lists where list_id='$list_id';";
+										$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+										$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+										$sthArowsL=$sthA->rows;
+										if ($sthArowsL > 0)
 											{
-											$address3 =~ s/\D//gi;
-											$phone_number = $address3;
+											@aryA = $sthA->fetchrow_array;
+											$campaign_cid_override =	$aryA[0];
 											}
-										if  ( ($alt_dial =~ /X/) && ($DBIPautoaltdial[$user_CIPct] =~ /X/) )
+										$sthA->finish();
+
+										### update called_count
+										$called_count++;
+										if ($called_since_last_reset =~ /^Y/)
 											{
-											if ($alt_dial =~ /LAST/) 
-												{
-												$stmtA = "SELECT phone_code,phone_number FROM vicidial_list_alt_phones where lead_id='$lead_id' order by alt_phone_count desc limit 1;";
-												}
+											if ($called_since_last_reset =~ /^Y$/) {$CSLR = 'Y1';}
 											else
 												{
-												$Talt_dial = $alt_dial;
-												$Talt_dial =~ s/\D//gi;
-												$stmtA = "SELECT phone_code,phone_number FROM vicidial_list_alt_phones where lead_id='$lead_id' and alt_phone_count='$Talt_dial';";										
+												$called_since_last_reset =~ s/^Y//gi;
+												$called_since_last_reset++;
+												$CSLR = "Y$called_since_last_reset";
 												}
+											}
+										else {$CSLR = 'Y';}
+										
+										$LLCT_DATE_offset = ($LOCAL_GMT_OFF - $gmt_offset_now);
+										$LLCT_DATE_offset_epoch = ( $secX - ($LLCT_DATE_offset * 3600) );
+										($Lsec,$Lmin,$Lhour,$Lmday,$Lmon,$Lyear,$Lwday,$Lyday,$Lisdst) = localtime($LLCT_DATE_offset_epoch);
+										$Lyear = ($Lyear + 1900);
+										$Lmon++;
+										if ($Lmon < 10) {$Lmon = "0$Lmon";}
+										if ($Lmday < 10) {$Lmday = "0$Lmday";}
+										if ($Lhour < 10) {$Lhour = "0$Lhour";}
+										if ($Lmin < 10) {$Lmin = "0$Lmin";}
+										if ($Lsec < 10) {$Lsec = "0$Lsec";}
+											$LLCT_DATE = "$Lyear-$Lmon-$Lmday $Lhour:$Lmin:$Lsec";
+
+										if ( ($alt_dial =~ /ALT|ADDR3|X/) && ($DBIPautoaltdial[$user_CIPct] =~ /ALT|ADDR|X/) )
+											{
+											if ( ($alt_dial =~ /ALT/) && ($DBIPautoaltdial[$user_CIPct] =~ /ALT/) )
+												{
+												$alt_phone =~ s/\D//gi;
+												$phone_number = $alt_phone;
+												}
+											if ( ($alt_dial =~ /ADDR3/) && ($DBIPautoaltdial[$user_CIPct] =~ /ADDR3/) )
+												{
+												$address3 =~ s/\D//gi;
+												$phone_number = $address3;
+												}
+											if  ( ($alt_dial =~ /X/) && ($DBIPautoaltdial[$user_CIPct] =~ /X/) )
+												{
+												if ($alt_dial =~ /LAST/) 
+													{
+													$stmtA = "SELECT phone_code,phone_number FROM vicidial_list_alt_phones where lead_id='$lead_id' order by alt_phone_count desc limit 1;";
+													}
+												else
+													{
+													$Talt_dial = $alt_dial;
+													$Talt_dial =~ s/\D//gi;
+													$stmtA = "SELECT phone_code,phone_number FROM vicidial_list_alt_phones where lead_id='$lead_id' and alt_phone_count='$Talt_dial';";										
+													}
+												$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+												$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+												$sthArows=$sthA->rows;
+												if ($sthArows > 0)
+													{
+													@aryA = $sthA->fetchrow_array;
+													$phone_code	=	$aryA[0];
+													$phone_number =	$aryA[1];
+													$phone_number =~ s/\D//gi;
+													}
+												$sthA->finish();
+												}
+
+											$stmtA = "UPDATE vicidial_list set called_since_last_reset='$CSLR',called_count='$called_count',user='VDAD',last_local_call_time='$LLCT_DATE' where lead_id='$lead_id'";
+											}
+										else
+											{
+											$stmtA = "UPDATE vicidial_list set called_since_last_reset='$CSLR', called_count='$called_count',user='VDAD',last_local_call_time='$LLCT_DATE' where lead_id='$lead_id'";
+											}
+										$affected_rows = $dbhA->do($stmtA);
+
+										$stmtA = "DELETE FROM vicidial_hopper where lead_id='$lead_id'";
+										$affected_rows = $dbhA->do($stmtA);
+
+										$CCID_on=0;   $CCID='';
+										$local_DEF = 'Local/';
+										$local_AMP = '@';
+										$Local_out_prefix = '9';
+										$Local_dial_timeout = '60';
+										if ($DBIPdialtimeout[$user_CIPct] > 4) {$Local_dial_timeout = $DBIPdialtimeout[$user_CIPct];}
+										$Local_dial_timeout = ($Local_dial_timeout * 1000);
+										if (length($DBIPdialprefix[$user_CIPct]) > 0) {$Local_out_prefix = "$DBIPdialprefix[$user_CIPct]";}
+										if (length($DBIPvdadexten[$user_CIPct]) > 0) {$VDAD_dial_exten = "$DBIPvdadexten[$user_CIPct]";}
+										else {$VDAD_dial_exten = "$answer_transfer_agent";}
+
+										# add the routing prefix if using Asterisk 13
+										if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} > 11)) 
+											{
+											$VDAD_dial_exten = $routing_prefix . $VDAD_dial_exten;
+											}
+
+										if (length($DBIPcampaigncid[$user_CIPct]) > 6) {$CCID = "$DBIPcampaigncid[$user_CIPct]";   $CCID_on++;}
+										if (length($campaign_cid_override) > 6) {$CCID = "$campaign_cid_override";   $CCID_on++;}
+										if ($DBIPuse_custom_cid[$user_CIPct] =~ /Y/) 
+											{
+											$temp_CID = $security_phrase;
+											$temp_CID =~ s/\D//gi;
+											if (length($temp_CID) > 6) 
+												{$CCID = "$temp_CID";   $CCID_on++;}
+											}
+										if ($DBIPuse_custom_cid[$user_CIPct] =~ /AREACODE/) 
+											{
+											$temp_CID='';
+											$temp_vcca='';
+											$temp_ac='';
+											$temp_ac_two = substr("$phone_number", 0, 2);
+											$temp_ac_three = substr("$phone_number", 0, 3);
+											$temp_ac_four = substr("$phone_number", 0, 4);
+											$temp_ac_five = substr("$phone_number", 0, 5);
+											$stmtA = "SELECT outbound_cid,areacode FROM vicidial_campaign_cid_areacodes where campaign_id='$DBIPcampaign[$user_CIPct]' and areacode IN('$temp_ac_two','$temp_ac_three','$temp_ac_four','$temp_ac_five') and active='Y' order by CAST(areacode as SIGNED INTEGER) asc, call_count_today desc limit 100000;";
 											$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 											$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 											$sthArows=$sthA->rows;
-											if ($sthArows > 0)
+											$act=0;
+											while ($sthArows > $act)
 												{
 												@aryA = $sthA->fetchrow_array;
-												$phone_code	=	$aryA[0];
-												$phone_number =	$aryA[1];
-												$phone_number =~ s/\D//gi;
+												$temp_vcca =	$aryA[0];
+												$temp_ac =		$aryA[1];
+												$act++;
 												}
-											$sthA->finish();
+											if ($act > 0) 
+												{
+												$sthA->finish();
+												$stmtA="UPDATE vicidial_campaign_cid_areacodes set call_count_today=(call_count_today + 1) where campaign_id='$DBIPcampaign[$user_CIPct]' and areacode='$temp_ac' and outbound_cid='$temp_vcca';";
+												$affected_rows = $dbhA->do($stmtA);
+												}
+											else
+												{$sthA->finish();}
+											$temp_CID = $temp_vcca;
+											$temp_CID =~ s/\D//gi;
+											if (length($temp_CID) > 6) 
+												{$CCID = "$temp_CID";   $CCID_on++;}
 											}
 
-										$stmtA = "UPDATE vicidial_list set called_since_last_reset='$CSLR',called_count='$called_count',user='VDAD',last_local_call_time='$LLCT_DATE' where lead_id='$lead_id'";
-										}
-									else
-										{
-										$stmtA = "UPDATE vicidial_list set called_since_last_reset='$CSLR', called_count='$called_count',user='VDAD',last_local_call_time='$LLCT_DATE' where lead_id='$lead_id'";
-										}
-									$affected_rows = $dbhA->do($stmtA);
+										if ($DBIPdialprefix[$user_CIPct] =~ /x/i) {$Local_out_prefix = '';}
 
-									$stmtA = "DELETE FROM vicidial_hopper where lead_id='$lead_id'";
-									$affected_rows = $dbhA->do($stmtA);
-
-									$CCID_on=0;   $CCID='';
-									$local_DEF = 'Local/';
-									$local_AMP = '@';
-									$Local_out_prefix = '9';
-									$Local_dial_timeout = '60';
-									if ($DBIPdialtimeout[$user_CIPct] > 4) {$Local_dial_timeout = $DBIPdialtimeout[$user_CIPct];}
-									$Local_dial_timeout = ($Local_dial_timeout * 1000);
-									if (length($DBIPdialprefix[$user_CIPct]) > 0) {$Local_out_prefix = "$DBIPdialprefix[$user_CIPct]";}
-									if (length($DBIPvdadexten[$user_CIPct]) > 0) {$VDAD_dial_exten = "$DBIPvdadexten[$user_CIPct]";}
-									else {$VDAD_dial_exten = "$answer_transfer_agent";}
-
-									# add the routing prefix if using Asterisk 13
-									if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} > 11)) 
-										{
-										$VDAD_dial_exten = $routing_prefix . $VDAD_dial_exten;
-										}
-
-									if (length($DBIPcampaigncid[$user_CIPct]) > 6) {$CCID = "$DBIPcampaigncid[$user_CIPct]";   $CCID_on++;}
-									if (length($campaign_cid_override) > 6) {$CCID = "$campaign_cid_override";   $CCID_on++;}
-									if ($DBIPuse_custom_cid[$user_CIPct] =~ /Y/) 
-										{
-										$temp_CID = $security_phrase;
-										$temp_CID =~ s/\D//gi;
-										if (length($temp_CID) > 6) 
-											{$CCID = "$temp_CID";   $CCID_on++;}
-										}
-									if ($DBIPuse_custom_cid[$user_CIPct] =~ /AREACODE/) 
-										{
-										$temp_CID='';
-										$temp_vcca='';
-										$temp_ac='';
-										$temp_ac_two = substr("$phone_number", 0, 2);
-										$temp_ac_three = substr("$phone_number", 0, 3);
-										$temp_ac_four = substr("$phone_number", 0, 4);
-										$temp_ac_five = substr("$phone_number", 0, 5);
-										$stmtA = "SELECT outbound_cid,areacode FROM vicidial_campaign_cid_areacodes where campaign_id='$DBIPcampaign[$user_CIPct]' and areacode IN('$temp_ac_two','$temp_ac_three','$temp_ac_four','$temp_ac_five') and active='Y' order by CAST(areacode as SIGNED INTEGER) asc, call_count_today desc limit 100000;";
-										$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-										$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-										$sthArows=$sthA->rows;
-										$act=0;
-										while ($sthArows > $act)
+										if ($RECcount)
 											{
-											@aryA = $sthA->fetchrow_array;
-											$temp_vcca =	$aryA[0];
-											$temp_ac =		$aryA[1];
-											$act++;
+											if ( (length($RECprefix)>0) && ($called_count < $RECcount) )
+											   {$Local_out_prefix .= "$RECprefix";}
 											}
-										if ($act > 0) 
-											{
-											$sthA->finish();
-											$stmtA="UPDATE vicidial_campaign_cid_areacodes set call_count_today=(call_count_today + 1) where campaign_id='$DBIPcampaign[$user_CIPct]' and areacode='$temp_ac' and outbound_cid='$temp_vcca';";
-											$affected_rows = $dbhA->do($stmtA);
-											}
+										$PADlead_id = sprintf("%010s", $lead_id);	while (length($PADlead_id) > 10) {chop($PADlead_id);}
+
+										if ($lists_update !~ /'$list_id'/) {$lists_update .= "'$list_id',"; $LUcount++;}
+
+										$lead_id_call_list .= "$lead_id|";
+
+										if (length($alt_dial)<1) {$alt_dial='MAIN';}
+
+										### whether to omit phone_code or not
+										if ($DBIPomitcode[$user_CIPct] > 0) 
+											{$Ndialstring = "$Local_out_prefix$phone_number";}
 										else
-											{$sthA->finish();}
-										$temp_CID = $temp_vcca;
-										$temp_CID =~ s/\D//gi;
-										if (length($temp_CID) > 6) 
-											{$CCID = "$temp_CID";   $CCID_on++;}
+											{$Ndialstring = "$Local_out_prefix$phone_code$phone_number";}
+
+										if (length($ext_context) < 1) {$ext_context='default';}
+										### use manager middleware-app to connect the next call to the meetme room
+										# VmddhhmmssLLLLLLLLLL
+											$VqueryCID = "V$CIDdate$PADlead_id";
+										if ($CCID_on) {$CIDstring = "\"$VqueryCID\" <$CCID>";}
+										else {$CIDstring = "$VqueryCID";}
+										### insert a NEW record to the vicidial_manager table to be processed
+											$stmtA = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$DBIPaddress[$user_CIPct]','','Originate','$VqueryCID','Exten: $VDAD_dial_exten','Context: $ext_context','Channel: $local_DEF$Ndialstring$local_AMP$ext_context','Priority: 1','Callerid: $CIDstring','Timeout: $Local_dial_timeout','','','','VDACnote: $DBIPcampaign[$user_CIPct]|$lead_id|$phone_code|$phone_number|OUT|$alt_dial|$DBIPqueue_priority[$user_CIPct]')";
+											$affected_rows = $dbhA->do($stmtA);
+
+											$event_string = "|     number call dialed|$DBIPcampaign[$user_CIPct]|$VqueryCID|$stmtA|$gmt_offset_now|$alt_dial|";
+											 &event_logger;
+
+										### insert a SENT record to the vicidial_auto_calls table 
+											$stmtA = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,callerid,phone_code,phone_number,call_time,call_type,alt_dial,queue_priority,last_update_time) values('$DBIPaddress[$user_CIPct]','$DBIPcampaign[$user_CIPct]','SENT','$lead_id','$VqueryCID','$phone_code','$phone_number','$SQLdate','OUT','$alt_dial','$DBIPqueue_priority[$user_CIPct]','$SQLdate')";
+											$affected_rows = $dbhA->do($stmtA);
+
+										### insert log record into vicidial_dial_log table 
+											$stmtA = "INSERT INTO vicidial_dial_log SET caller_code='$VqueryCID',lead_id='$lead_id',server_ip='$DBIPaddress[$user_CIPct]',call_date='$SQLdate',extension='$VDAD_dial_exten',channel='$local_DEF$Ndialstring$local_AMP$ext_context',timeout='$Local_dial_timeout',outbound_cid='$CIDstring',context='$ext_context';";
+											$affected_rows = $dbhA->do($stmtA);
+
+											### sleep for a five hundredths of a second to not flood the server with new calls
+										#	usleep(1*50*1000);
+											usleep(1*$per_call_delay*1000);
+											$calls_placed++;
+											}
 										}
-
-									if ($DBIPdialprefix[$user_CIPct] =~ /x/i) {$Local_out_prefix = '';}
-
-									if ($RECcount)
-										{
-										if ( (length($RECprefix)>0) && ($called_count < $RECcount) )
-										   {$Local_out_prefix .= "$RECprefix";}
-										}
-									$PADlead_id = sprintf("%010s", $lead_id);	while (length($PADlead_id) > 10) {chop($PADlead_id);}
-
-									if ($lists_update !~ /'$list_id'/) {$lists_update .= "'$list_id',"; $LUcount++;}
-
-									$lead_id_call_list .= "$lead_id|";
-
-									if (length($alt_dial)<1) {$alt_dial='MAIN';}
-
-									### whether to omit phone_code or not
-									if ($DBIPomitcode[$user_CIPct] > 0) 
-										{$Ndialstring = "$Local_out_prefix$phone_number";}
-									else
-										{$Ndialstring = "$Local_out_prefix$phone_code$phone_number";}
-
-									if (length($ext_context) < 1) {$ext_context='default';}
-									### use manager middleware-app to connect the next call to the meetme room
-									# VmddhhmmssLLLLLLLLLL
-										$VqueryCID = "V$CIDdate$PADlead_id";
-									if ($CCID_on) {$CIDstring = "\"$VqueryCID\" <$CCID>";}
-									else {$CIDstring = "$VqueryCID";}
-									### insert a NEW record to the vicidial_manager table to be processed
-										$stmtA = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$DBIPaddress[$user_CIPct]','','Originate','$VqueryCID','Exten: $VDAD_dial_exten','Context: $ext_context','Channel: $local_DEF$Ndialstring$local_AMP$ext_context','Priority: 1','Callerid: $CIDstring','Timeout: $Local_dial_timeout','','','','VDACnote: $DBIPcampaign[$user_CIPct]|$lead_id|$phone_code|$phone_number|OUT|$alt_dial|$DBIPqueue_priority[$user_CIPct]')";
-										$affected_rows = $dbhA->do($stmtA);
-
-										$event_string = "|     number call dialed|$DBIPcampaign[$user_CIPct]|$VqueryCID|$stmtA|$gmt_offset_now|$alt_dial|";
-										 &event_logger;
-
-									### insert a SENT record to the vicidial_auto_calls table 
-										$stmtA = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,callerid,phone_code,phone_number,call_time,call_type,alt_dial,queue_priority,last_update_time) values('$DBIPaddress[$user_CIPct]','$DBIPcampaign[$user_CIPct]','SENT','$lead_id','$VqueryCID','$phone_code','$phone_number','$SQLdate','OUT','$alt_dial','$DBIPqueue_priority[$user_CIPct]','$SQLdate')";
-										$affected_rows = $dbhA->do($stmtA);
-
-									### insert log record into vicidial_dial_log table 
-										$stmtA = "INSERT INTO vicidial_dial_log SET caller_code='$VqueryCID',lead_id='$lead_id',server_ip='$DBIPaddress[$user_CIPct]',call_date='$SQLdate',extension='$VDAD_dial_exten',channel='$local_DEF$Ndialstring$local_AMP$ext_context',timeout='$Local_dial_timeout',outbound_cid='$CIDstring',context='$ext_context';";
-										$affected_rows = $dbhA->do($stmtA);
-
-										### sleep for a five hundredths of a second to not flood the server with new calls
-									#	usleep(1*50*1000);
-										usleep(1*$per_call_delay*1000);
-										$calls_placed++;
-										}
+									$call_CMPIPct++;
 									}
-								$call_CMPIPct++;
 								}
 							}
 						}

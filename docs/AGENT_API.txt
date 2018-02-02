@@ -1,4 +1,4 @@
-AGENT API DOCUMENT		Started: 2008-07-03	Updated: 2017-02-20
+AGENT API DOCUMENT		Started: 2008-07-03	Updated: 2018-01-24
 
 This document describes the functions of an API(Application Programming Interface)
 for the VICIDIAL Agent screen. This functionality will be rather limited at first
@@ -34,6 +34,7 @@ call_agent - send a call to connect the agent to their session
 pause_code - set a pause code if the agent is paused
 audio_playback - basic play/pause/resume/stop/restart audio in agent session
 switch_lead - for inbound calls, switches lead_id of live inbound call on agent screen
+calls_in_queue_count - display a count of the calls waiting in queue for the specific agent
 
 
 New scripts:
@@ -881,6 +882,28 @@ ERROR: pause_code not valid - 6666|JUMPING
 ERROR: pause_code error - agent is not paused - 6666
 SUCCESS: pause_code function sent - 6666
 
+
+
+
+
+--------------------------------------------------------------------------------
+calls_in_queue_count - 
+
+DESCRIPTION:
+display a count of the calls waiting in queue for the specific agent
+
+VALUES:
+ value - 
+  REQUIRED, choices are below:
+   DISPLAY - displays number of calls in queue that could be sent to this agent
+
+EXAMPLE URLS:
+http://server/agc/api.php?source=test&user=6666&pass=1234&agent_user=1000&function=calls_in_queue_count&value=DISPLAY
+
+RESPONSES:
+ERROR: no user found - 6666
+ERROR: agent_user is not logged in - 6666 
+SUCCESS: calls_in_queue_count - 0
 
 
 

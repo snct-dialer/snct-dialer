@@ -34,6 +34,48 @@
     - functions.php: New function GetTmpDownLoadDir().
     - install.pl: Add mkdir for directory download.
   * New AST_stat_callbacks.php (2018-002);
+  * Add upstream Rev. 2892:
+    - CALLER_ID_NAME_CODES.txt,
+      vicidial.php,
+      admin.php,
+      admin_header.php,
+      admin_lists_custom.php,
+      admin_soundboard.php,
+      list_split.php,
+      process_report.php: cleanup of enc code.
+  * Add upstream Rev. 2893:
+    - AGENT_API.txt,
+      api.php,
+      admin.php: Added calls_in_queue_count function.
+  * Add upstream Rev. 2894:
+    - admin_lists_custom.php,
+      lead_report_export.php: Add more mysql_reserved_words.
+  * Add upstream Rev. 2895:
+    - admin_lists_custom.php: Added more reserved words from MySQL/MariaDB.
+  * Add upstream Rev. 2896:
+    - vicidial.php: Added more agent api pause debug output.
+  * Add upstream Rev. 2897:
+    - Replace vicidial_whiteboard_functions.js with
+      vicidial_whiteboard_functions.php.
+  * Add upstream Rev. 2898:
+    - AST_VDauto_dial.pl,
+      AST_VDhopper.pl,
+      admin.php,
+      help.php,
+      UPGRADE: Added inbound_no_agents_no_dial campaign options.
+    - MySQL_AST_CREATE_tables.sql,
+      upgrade_2.14.sql: Update to Upstream database version 1533.
+  * Add upstream Rev. 2899:
+    - admin.php: Add link for inbound_no_agents_no_dial_container.
+  * Add upstream Rev. 2900:
+    - vdc_db_query.php: Fixed ereg issue.
+  * Add upstream Rev. 2901 + 2902:
+    - AST_VDauto_dial.pl: Fix some issue.
+  * Add upstream Rev. 2903:
+    - AST_VDauto_dial.pl,
+      campaign_debug.php: Added live call and shortage counts per server tables.
+  * Add upstream Rev. 2904:
+    - admin.php: Add field for email template container
 
 2.25.23 stable
   [Jörg Frings-Fürst]

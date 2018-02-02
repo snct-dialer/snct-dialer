@@ -605,4 +605,11 @@ DELETE from cid_channels_recent;
 
 ALTER TABLE system_settings ADD tmp_download_dir VARCHAR(255) default 'download';
 
+ALTER TABLE vicidial_process_trigger_log MODIFY trigger_results MEDIUMTEXT;
+
+ALTER TABLE vicidial_campaigns ADD inbound_no_agents_no_dial_container VARCHAR(40) default '---DISABLED---';
+ALTER TABLE vicidial_campaigns ADD inbound_no_agents_no_dial_threshold SMALLINT(5) default '0';
+
+ALTER TABLE vicidial_settings_containers MODIFY container_type VARCHAR(40) default 'OTHER';
+
 UPDATE system_settings SET db_schema_version='1530',db_schema_update_date=NOW() where db_schema_version < 1530;

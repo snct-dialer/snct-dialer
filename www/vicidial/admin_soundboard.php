@@ -166,8 +166,6 @@ $browser = getenv("HTTP_USER_AGENT");
 $user = $PHP_AUTH_USER;
 
 $admin_lists_custom = 'admin_lists_custom.php';
-if (preg_match("/cf_encrypt/",$SSactive_modules))
-	{$admin_lists_custom = 'admin_lists_custom_encrypt.php';}
 
 if (file_exists('options.php'))
 	{require('options.php');}
