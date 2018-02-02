@@ -6,6 +6,7 @@
 # Real-time report that allows users to create a customized, graphical display of various data sets
 #
 # 171027-2352 - First build
+# 180129-1745 - Translation corrections, uses vicidial_state_report_functions.php instead of vicidial_state_report_functions.js
 #
 
 $startMS = microtime();
@@ -575,18 +576,18 @@ $MAIN.="<TD VALIGN='TOP' width='300'>";
 $MAIN.="<FONT class='embossed'>"._QXZ("Report Type").":</font> $NWB#rt_whiteboard_report-report_type$NWE<BR>";
 
 $MAIN.="<SELECT NAME=report_type ID=report_type class='form_field sm_shadow round_corners' style='width:270px' onChange=HighlightRelatedFields(this.value)>\n";
-$MAIN.="<option value='' selected>-- Select a report --</option>";
-$MAIN.="<option value='status_performance_total'>Disposition Totals</option>";
-$MAIN.="<option value='agent_performance_total'>Agent Performance Totals</option>";
-$MAIN.="<option value='agent_performance_rates'>Agent Performance Rates</option>";
-$MAIN.="<option value='team_performance_total'>Team Performance Totals</option>";
-$MAIN.="<option value='team_performance_rates'>Team Performance Rates</option>";
-$MAIN.="<option value='floor_performance_total'>Floor Performance Totals (ticker)</option>";
-$MAIN.="<option value='floor_performance_rates'>Floor Performance Rates (ticker)</option>";
-$MAIN.="<option value='ingroup_performance_total'>Ingroup Performance Total</option>"; #  (ticker)
-$MAIN.="<option value='ingroup_performance_rates'>Ingroup Performance Rates</option>"; #  (ticker)
-$MAIN.="<option value='did_performance_total'>DID Performance Total</option>"; #  (ticker)
-$MAIN.="<option value='did_performance_rates'>DID Performance Rates</option>"; #  (ticker)
+$MAIN.="<option value='' selected>-- "._QXZ("Select a report")." --</option>";
+$MAIN.="<option value='status_performance_total'>"._QXZ("Disposition Totals")."</option>";
+$MAIN.="<option value='agent_performance_total'>"._QXZ("Agent Performance Totals")."</option>";
+$MAIN.="<option value='agent_performance_rates'>"._QXZ("Agent Performance Rates")."</option>";
+$MAIN.="<option value='team_performance_total'>"._QXZ("Team Performance Totals")."</option>";
+$MAIN.="<option value='team_performance_rates'>"._QXZ("Team Performance Rates")."</option>";
+$MAIN.="<option value='floor_performance_total'>"._QXZ("Floor Performance Totals (ticker)")."</option>";
+$MAIN.="<option value='floor_performance_rates'>"._QXZ("Floor Performance Rates (ticker)")."</option>";
+$MAIN.="<option value='ingroup_performance_total'>"._QXZ("Ingroup Performance Total")."</option>"; #  (ticker)
+$MAIN.="<option value='ingroup_performance_rates'>"._QXZ("Ingroup Performance Rates")."</option>"; #  (ticker)
+$MAIN.="<option value='did_performance_total'>"._QXZ("DID Performance Total")."</option>"; #  (ticker)
+$MAIN.="<option value='did_performance_rates'>"._QXZ("DID Performance Rates")."</option>"; #  (ticker)
 $MAIN.="</SELECT>\n";
 
 $MAIN.="</TD>\n";
@@ -843,7 +844,7 @@ $MAIN.="</FORM>";
 
 
 $MAIN.="</BODY>";
-$MAIN.="<script language=\"JavaScript\" src=\"vicidial_whiteboard_functions.js\"></script>\n";
+$MAIN.="<script language=\"JavaScript\" src=\"vicidial_whiteboard_functions.php\"></script>\n";
 $MAIN.="</HTML>";
 
 header("Content-type: text/html; charset=utf-8");

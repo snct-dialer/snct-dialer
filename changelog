@@ -54,6 +54,9 @@
     - admin_lists_custom.php: Added more reserved words from MySQL/MariaDB.
   * Add upstream Rev. 2896:
     - vicidial.php: Added more agent api pause debug output.
+  * Add upstream Rev. 2897:
+    - Replace vicidial_whiteboard_functions.js with
+      vicidial_whiteboard_functions.php.
 
 2.25.23 stable
   [Jörg Frings-Fürst]
