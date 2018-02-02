@@ -22279,7 +22279,12 @@ if ($ADD==31)
 				$o++;
 				}
 
-			echo "<tr bgcolor=#$SSalt_row1_background><td align=right>"._QXZ("Inbound No-Agents No-Dial").": </td><td align=left><select size=1 name=inbound_no_agents_no_dial_container>";
+			echo "<tr bgcolor=#$SSalt_row1_background><td align=right>";
+			if ($inand_selected > 0)
+				{echo "<a href=\"$PHP_SELF?ADD=392111111111&container_id=$inbound_no_agents_no_dial_container\">"._QXZ("Inbound No-Agents No-Dial")."</a>";}
+			else
+				{echo _QXZ("Inbound No-Agents No-Dial");}
+			echo ": </td><td align=left><select size=1 name=inbound_no_agents_no_dial_container>";
 			echo "<option value=\"\">"._QXZ("---DISABLED---")."</option>";
 			echo "$inbound_no_agents_no_dial_container_menu";
 			echo "</select>$NWB#campaigns-inbound_no_agents_no_dial_container$NWE</td></tr>\n";
