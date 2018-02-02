@@ -1,7 +1,7 @@
 <?php 
 # campaign_debug.php
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 110514-1231 - First build
@@ -13,6 +13,7 @@
 # 141007-2209 - Finalized adding QXZ translation to all admin files
 # 141229-2042 - Added code for on-the-fly language translations display
 # 170409-1534 - Added IP List validation code
+# 180201-1245 - Added live call and shortage counts per server tables
 #
 
 $startMS = microtime();
@@ -326,6 +327,52 @@ else
 
 		$i++;
 		}
+
+	$stmt="select server_ip,update_time,local_trunk_shortage from vicidial_campaign_server_stats where campaign_id='" . mysqli_real_escape_string($link, $group) . "' order by server_ip limit 100;";
+	$rslt=mysql_to_mysqli($stmt, $link);
+	if ($DB) {echo "$stmt\n";}
+	$shortages_to_print = mysqli_num_rows($rslt);
+	if ($shortages_to_print > 0)
+		{
+		echo "Per-Server Shortages:\n";
+		echo " SERVER         DATE/TIME            SHORT\n";
+		}
+	$i=0;
+	while ($shortages_to_print > $i)
+		{
+		$row=mysqli_fetch_row($rslt);
+
+		echo sprintf("%-15s", $row[0])." ";
+		echo sprintf("%-20s", $row[1])." ";
+		echo sprintf("%-8s", $row[2])."\n";
+
+		$i++;
+		}
+	echo "\n";
+
+
+	$stmt="select count(*),call_type,server_ip from vicidial_auto_calls where campaign_id='" . mysqli_real_escape_string($link, $group) . "' group by call_type,server_ip order by server_ip,call_type limit 100;";
+	$rslt=mysql_to_mysqli($stmt, $link);
+	if ($DB) {echo "$stmt\n";}
+	$shortages_to_print = mysqli_num_rows($rslt);
+	if ($shortages_to_print > 0)
+		{
+		echo "Per-Server and Per-Type Campaign Calls:\n";
+		echo " SERVER         CALL TYPE   COUNT\n";
+		}
+	$i=0;
+	while ($shortages_to_print > $i)
+		{
+		$row=mysqli_fetch_row($rslt);
+
+		echo sprintf("%-15s", $row[2])." ";
+		echo sprintf("%-11s", $row[1])." ";
+		echo sprintf("%-8s", $row[0])."\n";
+
+		$i++;
+		}
+	echo "\n";
+
 
 	$closer_groupsSQL = preg_replace("/^ | -$/","",$closer_campaigns);
 	$closer_groupsSQL = preg_replace("/ /","','",$closer_groupsSQL);
