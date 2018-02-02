@@ -47,6 +47,9 @@
     - AGENT_API.txt,
       api.php,
       admin.php: Added calls_in_queue_count function.
+  * Add upstream Rev. 2894:
+    - admin_lists_custom.php,
+      lead_report_export.php: Add more mysql_reserved_words.
 
 2.25.23 stable
   [Jörg Frings-Fürst]
