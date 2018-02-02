@@ -50,8 +50,10 @@
   * Add upstream Rev. 2894:
     - admin_lists_custom.php,
       lead_report_export.php: Add more mysql_reserved_words.
-  * Add upstream Rev. 2895
+  * Add upstream Rev. 2895:
     - admin_lists_custom.php: Added more reserved words from MySQL/MariaDB.
+  * Add upstream Rev. 2896:
+    - vicidial.php: Added more agent api pause debug output.
 
 2.25.23 stable
   [Jörg Frings-Fürst]
