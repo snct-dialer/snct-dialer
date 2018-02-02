@@ -67,6 +67,8 @@
       upgrade_2.14.sql: Update to Upstream database version 1533.
   * Add upstream Rev. 2899:
     - admin.php: Add link for inbound_no_agents_no_dial_container.
+  * Add upstream Rev. 2900:
+    - vdc_db_query.php: Fixed ereg issue.
 
 2.25.23 stable
   [Jörg Frings-Fürst]
