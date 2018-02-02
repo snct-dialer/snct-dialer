@@ -43,6 +43,10 @@
       admin_soundboard.php,
       list_split.php,
       process_report.php: cleanup of enc code.
+  * Add upstream Rev. 2893:
+    - AGENT_API.txt,
+      api.php,
+      admin.php: Added calls_in_queue_count function.
 
 2.25.23 stable
   [Jörg Frings-Fürst]
