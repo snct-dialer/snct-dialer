@@ -439,8 +439,6 @@ if ($confirm == "confirm")
 		if ( $cf_chk_count > 0 ) 
 			{
 			$admin_lists_custom = 'admin_lists_custom.php';
-			if (preg_match("/cf_encrypt/",$SSactive_modules))
-				{$admin_lists_custom = 'admin_lists_custom_encrypt.php';}
 
 			$url = "http" . (isset($_SERVER['HTTPS']) ? 's' : '') . "://$_SERVER[HTTP_HOST]/vicidial/" . $admin_lists_custom . "?action=COPY_FIELDS_SUBMIT&list_id=$new_list_id&source_list_id=$orig_list&copy_option=APPEND";
 			

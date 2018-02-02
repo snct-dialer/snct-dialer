@@ -34,6 +34,15 @@
     - functions.php: New function GetTmpDownLoadDir().
     - install.pl: Add mkdir for directory download.
   * New AST_stat_callbacks.php (2018-002);
+  * Add upstream Rev. 2892:
+    - CALLER_ID_NAME_CODES.txt,
+      vicidial.php,
+      admin.php,
+      admin_header.php,
+      admin_lists_custom.php,
+      admin_soundboard.php,
+      list_split.php,
+      process_report.php: cleanup of enc code.
 
 2.25.23 stable
   [Jörg Frings-Fürst]

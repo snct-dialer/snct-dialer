@@ -4485,8 +4485,6 @@ else
 	}
 
 $admin_lists_custom = 'admin_lists_custom.php';
-if (preg_match("/cf_encrypt/",$SSactive_modules))
-	{$admin_lists_custom = 'admin_lists_custom_encrypt.php';}
 $x_ra_carrier = 0;
 if (preg_match("/x_ra_carrier/",$SSactive_modules))
 	{$x_ra_carrier = 1;}

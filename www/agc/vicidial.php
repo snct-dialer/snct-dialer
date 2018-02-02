@@ -13391,7 +13391,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 				hideDiv('DispoButtonHideA');
 				hideDiv('DispoButtonHideB');
 				hideDiv('DispoButtonHideC');
-				document.getElementById("debugbottomspan").innerHTML =  "<?php echo _QXZ("Disposition set twice: "); ?>" + document.vicidial_form.lead_id.value + "|" + DispoChoice + "\n"
+				document.getElementById("debugbottomspan").innerHTML =  "<?php echo _QXZ("Disposition set twice: "); ?>" + document.vicidial_form.lead_id.value + "|" + DispoChoice + "\n";
 				button_click_log = button_click_log + "" + SQLdate + "-----dispo_set_twice---" + document.vicidial_form.lead_id.value + " " + DispoChoice + "|";
 				}
 			else
@@ -15176,6 +15176,7 @@ else
 		"&did_custom_five=" + did_custom_five + '' +
 		"&called_count=" + document.vicidial_form.called_count.value + '' +
 		"&email_row_id=" + document.vicidial_form.email_row_id.value + '' +
+		"&inOUT=" + inOUT + '' +
 		"&web_vars=" + LIVE_web_vars + '' +
 		webform_session;
 
@@ -15573,6 +15574,7 @@ else
 		var RGdid_custom_three = new RegExp("--A--did_custom_three--B--","g");
 		var RGdid_custom_four = new RegExp("--A--did_custom_four--B--","g");
 		var RGdid_custom_five = new RegExp("--A--did_custom_five--B--","g");
+		var RGinOUT = new RegExp("--A--inOUT--B--","g");
 		var RGcalled_count = new RegExp("--A--called_count--B--","g");
 		var RGweb_vars = new RegExp("--A--web_vars--B--","g");
 
@@ -15660,6 +15662,7 @@ else
 		encoded = encoded.replace(RGdid_custom_four,SCdid_custom_four);
 		encoded = encoded.replace(RGdid_custom_five,SCdid_custom_five);
 		encoded = encoded.replace(RGcalled_count,SCcalled_count);
+		encoded = encoded.replace(RGinOUT,inOUT);
 		encoded = encoded.replace(RGweb_vars, SCweb_vars);
 		}
 
