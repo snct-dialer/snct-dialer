@@ -887,6 +887,7 @@ while($one_day_interval > 0)
 								{
 								$DBIPinbound_no_agents_no_dial_trigger[$user_CIPct]=0;
 								}
+								if ($DBX) {print "DEBUG: INBOUND NO-AGENT    Agents: $DBIPinand_agent_ready_count[$user_CIPct]  Threshold: $DBIPinbound_no_agents_no_dial_threshold[$user_CIPct]\n";}
 							else
 								{$debug_string .= "   !! INBOUND NO-AGENT NO-DIAL: Agents: $DBIPinand_agent_ready_count[$user_CIPct]  Threshold: $DBIPinbound_no_agents_no_dial_threshold[$user_CIPct]\n";}
 							if ($DBX) {print "DEBUG: INBOUND NO-AGENT    Agents: $DBIPinand_agent_ready_count[$user_CIPct]  Threshold: $DBIPinbound_no_agents_no_dial_threshold[$user_CIPct]\n";}

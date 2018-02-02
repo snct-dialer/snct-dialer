@@ -69,6 +69,8 @@
     - admin.php: Add link for inbound_no_agents_no_dial_container.
   * Add upstream Rev. 2900:
     - vdc_db_query.php: Fixed ereg issue.
+  * Add upstream Rev. 2901:
+    - AST_VDauto_dial.pl: Fix some issue.
 
 2.25.23 stable
   [Jörg Frings-Fürst]
