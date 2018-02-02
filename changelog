@@ -57,6 +57,14 @@
   * Add upstream Rev. 2897:
     - Replace vicidial_whiteboard_functions.js with
       vicidial_whiteboard_functions.php.
+  * Add upstream Rev. 2898:
+    - AST_VDauto_dial.pl,
+      AST_VDhopper.pl,
+      admin.php,
+      help.php,
+      UPGRADE: Added inbound_no_agents_no_dial campaign options.
+    - MySQL_AST_CREATE_tables.sql,
+      upgrade_2.14.sql: Update to Upstream database version 1533.
 
 2.25.23 stable
   [Jörg Frings-Fürst]

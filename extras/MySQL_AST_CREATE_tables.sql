@@ -995,7 +995,9 @@ scheduled_callbacks_email_alert ENUM('Y', 'N') default 'N',
 max_inbound_calls_outcome ENUM('DEFAULT','ALLOW_AGENTDIRECT','ALLOW_MI_PAUSE','ALLOW_AGENTDIRECT_AND_MI_PAUSE') default 'DEFAULT',
 manual_auto_next_options ENUM('DEFAULT','PAUSE_NO_COUNT') default 'DEFAULT',
 agent_screen_time_display ENUM('DISABLED','ENABLED_BASIC','ENABLED_FULL','ENABLED_BILL_BREAK_LUNCH_COACH') default 'DISABLED',
-next_dial_my_callbacks ENUM('DISABLED','ENABLED') default 'DISABLED'
+next_dial_my_callbacks ENUM('DISABLED','ENABLED') default 'DISABLED',
+inbound_no_agents_no_dial_container VARCHAR(40) default '---DISABLED---',
+inbound_no_agents_no_dial_threshold SMALLINT(5) default '0'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_lists (
@@ -2327,7 +2329,7 @@ server_ip VARCHAR(15) NOT NULL,
 trigger_time DATETIME,
 user VARCHAR(20),
 trigger_lines TEXT,
-trigger_results TEXT,
+trigger_results MEDIUMTEXT,
 index (trigger_id),
 index (trigger_time)
 ) ENGINE=MyISAM;
@@ -3506,7 +3508,7 @@ KEY ajax_dbtime_key (db_time)
 CREATE TABLE vicidial_settings_containers (
 container_id VARCHAR(40) PRIMARY KEY NOT NULL,
 container_notes VARCHAR(255) default '',
-container_type ENUM('OTHER','PERL_CLI','EMAIL_TEMPLATE','AGI') default 'OTHER',
+container_type VARCHAR(40) default 'OTHER',
 user_group VARCHAR(20) default '---ALL---',
 container_entry MEDIUMTEXT
 ) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;

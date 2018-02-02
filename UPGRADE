@@ -249,6 +249,10 @@ OTHER CHANGES:
 65. Added "Anyone Callback Inactive Lists" System Setting option to determine
 	how ANYONE scheduled callbacks from inactive lists should be handled.
 
+66. Added "Inbound No-Agents No-Dial" Campaign setting, checks if any agents are
+	ready and waiting for phone calls from listed In-Groups before allowing 
+	outbound auto-dialing. 
+
 
 
 

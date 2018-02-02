@@ -148,6 +148,7 @@
 # 171224-1027 - Added lists-default_xfer_group entry
 # 180108-2115 - Added campaigns-next_dial_my_callbacks entry
 # 180111-1547 - Added settings-anyone_callback_inactive_lists entry
+# 180130-2303 - Added inbound_no_agents_no_dial entries
 #
 
 require("dbconnect_mysqli.php");
@@ -1111,6 +1112,16 @@ if ($SSoutbound_autodial_active > 0)
 	<A NAME="campaigns-inbound_queue_no_dial">
 	<BR>
 	<B><?php echo _QXZ("Inbound Queue No Dial"); ?> -</B><?php echo _QXZ("This feature if set to ENABLED allows you to prevent outbound auto-dialing of this campaign if there are any inbound calls waiting in queue that are part of the allowed inbound groups set in this campaign. Setting this to ALL_SERVERS will change the algorithm to calculate all inbound calls as active calls on this server even if they are on another server which will reduce the chance of placing unnecessary outbound calls if you have calls coming in on another server. Default is DISABLED.") . ' ' . _QXZ("If the selected option includes CHAT, then no outbound auto-dialing will take place while an inbound customer chat is waiting."); ?>
+
+	<BR>
+	<A NAME="campaigns-inbound_no_agents_no_dial_container">
+	<BR>
+	<B><?php echo _QXZ("Inbound No-Agents No-Dial"); ?> -</B><?php echo _QXZ("If set to something other than ---DISABLED---, the selected INGROUP_LIST type of Settings Container will be used to determine if any agents are ready and waiting for phone calls from at least one of the listed In-Groups. If there are less inbound agents available than the Threshold setting below, then no outbound calls will be placed for this campaign. Default is DISABLED."); ?>
+
+	<BR>
+	<A NAME="campaigns-inbound_no_agents_no_dial_threshold">
+	<BR>
+	<B><?php echo _QXZ("Inbound No-Agents No-Dial Threshold"); ?> -</B><?php echo _QXZ("If the Inbound No-Agents No-Dial option is enabled above, then this setting will be used to determine if the campaign will be allowed to place outbound auto-dial calls, if this number is greater than the number of inbound agents available. Default is 0, for disabled."); ?>
 
 	<BR>
 	<A NAME="campaigns-auto_alt_dial">

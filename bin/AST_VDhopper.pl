@@ -2440,6 +2440,7 @@ foreach(@campaign_id)
 			else
 				{
 				$lead_filter_sql[$i] =~ s/^and|and$|^or|or$|^ and|and $|^ or|or $//gi;
+				$lead_filter_sql[$i] =~ s/\r|\n|\t/ /gi;
 				$lead_filter_sql[$i] = "and ($lead_filter_sql[$i])";
 				if ($DB) {print "     lead filter $lead_filter_id[$i] defined for $campaign_id[$i]\n";}
 				if ($DBX) {print "     |$lead_filter_sql[$i]|\n";}
