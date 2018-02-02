@@ -74,6 +74,8 @@
   * Add upstream Rev. 2903:
     - AST_VDauto_dial.pl,
       campaign_debug.php: Added live call and shortage counts per server tables.
+  * Add upstream Rev. 2904:
+    - admin.php: Add field for email template container
 
 2.25.23 stable
   [Jörg Frings-Fürst]

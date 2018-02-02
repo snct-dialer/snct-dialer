@@ -8800,7 +8800,7 @@ if ($ADD==192111111111)
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Container ID").": </td><td align=left><input type=text name=container_id size=40 maxlength=40>$NWB#settings_containers-container_id$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Container Notes").": </td><td align=left><input type=text name=container_notes size=50 maxlength=255>$NWB#settings_containers-container_notes$NWE</td></tr>\n";
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Container Type").": </td><td align=left><select size=1 name=container_type><option value='OTHER'>"._QXZ("OTHER")."</option><option value='PERL_CLI'>"._QXZ("PERL_CLI")."</option><option value='EMAIL_TEMPLATE'>"._QXZ("EMAIL_TEMPLATE")."</option><option value='AGI'>"._QXZ("AGI")."</option>$NWB#settings_containers-container_type$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Container Type").": </td><td align=left><select size=1 name=container_type><option value='OTHER'>"._QXZ("OTHER")."</option><option value='PERL_CLI'>"._QXZ("PERL_CLI")."</option><option value='EMAIL_TEMPLATE'>"._QXZ("EMAIL_TEMPLATE")."</option><option value='AGI'>"._QXZ("AGI")."</option><option value='INGROUP_LIST'>"._QXZ("INGROUP_LIST")."</option><option value='CAMPAIGN_LIST'>"._QXZ("CAMPAIGN_LIST")."</option>$NWB#settings_containers-container_type$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Admin User Group").": </td><td align=left><select size=1 name=user_group>\n";
 		echo "$UUgroups_list";
 		echo "<option SELECTED value=\"---ALL---\">"._QXZ("All Admin User Groups")."</option>\n";
