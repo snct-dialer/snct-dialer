@@ -33,6 +33,7 @@
     - New download.php.
     - functions.php: New function GetTmpDownLoadDir().
     - install.pl: Add mkdir for directory download.
+  * New AST_stat_callbacks.php (2018-002);
 
 2.25.23 stable
   [Jörg Frings-Fürst]

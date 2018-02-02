@@ -1,23 +1,29 @@
 <?php 
-# AST_stat_medi1.php
+# AST_stat_callback.php
 # 
-# Copyright (C) 2016-2018 Jörg Frings-Fürst <jff@flyingpenguim.de>    
-#               2016-2018 flyingpenguin UG <info@flyingpenguin.de> 
+# Copyright (C) 2018 Jörg Frings-Fürst <jff@flyingpenguim.de>    
+#               2018 flyingpenguin UG <info@flyingpenguin.de> 
 #
 # LICENSE: AGPLv2
 #
-# Agent stats for MediCenter Mittelrhein
+# Callback stats
 # 
 # CHANGELOG:
-# 2016-12-13 - Inital release   
-# 2017-01-11 - First Release
-# 2017-01-12 - Zusammenfassung Dispo & Dead, Add Group, change order, add calendar
-# 2018-01-22 - Umstellung auf Liveberechnung und auf alle selectierbaren Stati
-#            - Login_Time test auf doppeltes Logout
-# 2018-01-24 - Neu Zeitraum & Download
+# 2018-27-01 - Inital release   
+# 2018-02-01 - First Release
+#            - Add download
+# 2018-02-02 - Add fields from lead
+#            - Add company to title
+#            - Add Laufzeit
+#
 
-$copyr = "2016-2018 flyingpenguin.de UG, Jörg Frings-Fürst (AGPLv2)";
-$release = '20180124-4';
+#
+# ToDo
+# - Fortschrittsbalken
+# 
+
+$copyr = "2018 flyingpenguin.de UG, Jörg Frings-Fürst (AGPLv2)";
+$release = '20180102-8';
 
 header ("Content-type: text/html; charset=utf-8");
 
@@ -38,9 +44,8 @@ if (isset($_GET["DateBis"]))			{$DateBis=$_GET["DateBis"];}
 
 $report_name = 'Callback Stats';
 $db_source = 'M';
+$DB = 0;
 
-$ArrStati = array();
-$ArrStatiIdx = array();
 $DLDir = "stats/";
 
 #############################################
@@ -75,24 +80,7 @@ if ( (strlen($slave_db_server)>5) and (preg_match("/$report_name/",$reports_use_
 	}
 
 if (!isset($DB))			{$DB=0;}
-if (!isset($RR))			{$RR=40;}
-if (!isset($group))			{$group='ALL-ACTIVE';}
-if (!isset($user_group_filter))		{$user_group_filter='';}
-if (!isset($usergroup))		{$usergroup='';}
-if (!isset($UGdisplay))		{$UGdisplay=0;}	# 0=no, 1=yes
-if (!isset($UidORname))		{$UidORname=1;}	# 0=id, 1=name
-if (!isset($orderby))		{$orderby='timeup';}
-if (!isset($SERVdisplay))	{$SERVdisplay=0;}	# 0=no, 1=yes
-if (!isset($CALLSdisplay))	{$CALLSdisplay=1;}	# 0=no, 1=yes
-if (!isset($PHONEdisplay))	{$PHONEdisplay=0;}	# 0=no, 1=yes
-if (!isset($CUSTPHONEdisplay))	{$CUSTPHONEdisplay=1;}	# 0=no, 1=yes
-if (!isset($PAUSEcodes))	{$PAUSEcodes='N';}  # 0=no, 1=yes
-if (!isset($with_inbound))	{$with_inbound='M';}
 
-$ingroup_detail='';
-
-if ( (strlen($group)>1) and (strlen($groups[0])<1) ) {$groups[0] = $group;  $RR=40;}
-else {$group = $groups[0];}
 
 $NOW_TIME = date("Y-m-d H:i:s");
 $NOW_DAY = date("Y-m-d");
@@ -110,8 +98,6 @@ $epochSIXhoursAGO = ($STARTtime - 21600);
 $timeSIXhoursAGO = date("Y-m-d H:i:s",$epochSIXhoursAGO);
 $epochTWENTYFOURhoursAGO = ($STARTtime - 86400);
 $timeTWENTYFOURhoursAGO = date("Y-m-d H:i:s",$epochTWENTYFOURhoursAGO);
-
-
 
 
 if ($non_latin < 1)
@@ -666,13 +652,13 @@ else
 
 	echo "\n-->\n
 	</STYLE>\n";
-
+	$title = AddCompany2Title($report_name);
 	echo "<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
 	echo "<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 	
 	echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 	#echo"<META URL=$PHP_SELF?RR=$RR&DB=$DB$groupQS&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal\">\n";
-	echo "<TITLE>$report_name: $group</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
+	echo "<TITLE>$title</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 
 		$short_header=1;
 
@@ -680,126 +666,42 @@ else
 
 	}
 
-function GetLoginTime($agent, $datum_von, $datum_bis) {
-    global $DB, $link;
-	    
-	$start_date = $datum_von . " 00:00:00";
-	$end_date   = $datum_bis . " 23:59:59";
-	   
-	$ep_start = 0;
-	$eo_end   = 0;
-	$ep_sum   = 0;
-	    
-	$statement = "SELECT * FROM vicidial_user_log  WHERE user = $agent AND event_date >= \"$start_date\" AND event_date <= \"$end_date\";";
-	if ($DB) print "$statement\n";
-	$result = mysqli_query($link, $statement) or die ("Error : " . mysqli_error($link));
-	while ($row = mysqli_fetch_array($result, MYSQLI_BOTH)) {
-	   if($row["event"] == "LOGIN") {
-	       $ep_start = $row["event_epoch"];
-	   }
-	   if(($row["event"] == "LOGOUT") && ($ep_start > 0)){
-	       $ep_end = $row["event_epoch"];
-	            
-	   }
-	   if(($ep_start > 0) && ($ep_end > 0)) {
-	       $ep_sum = $ep_sum + ($ep_end - $ep_start);
-	       $ep_end = 0;
-	       $ep_start = 0;
-	   }
-    }
-	if(($ep_start > 0) && ($ep_end == 0)) {
-	   $ep_end = time();
-	   $ep_sum = $ep_sum + ($ep_end - $ep_start);
-    }
-	return $ep_sum;
-}
+
+#
+# Ab hier Auswertung
+#
+
+
+#
+# function GetLead
+#
+# Parameter:
+# - LeadID
+#
+# Return:
+# - mysqli row if found
+# - false if not found
+#
+# Use:
+#
+# - $DB for additional Output
+# - $link Mysqli link
+
+function GetLead($LeadId) {
+	global $DB, $link;
 	
-	
-	
-function GetAnz($agent, $datum_von, $datum_bis, $type) {
-    global $DB, $link;
-	    
-	$start_date = $datum_von . " 00:00:00";
-	$end_date   = $datum_bis . " 23:59:59";
-	if($type == "Pause") $field = "pause_sec";
-	if($type == "Wait") $field = "wait_sec";
-	if($type == "Dispo") $field = "dispo_sec";
-	if($type == "Dead") $field = "dead_sec";
-	if($type == "Talk") $field = "talk_sec";
-	    
-	$statement = "SELECT COUNT($field) FROM vicidial_agent_log  WHERE user = $agent AND $field > 0 AND event_time >= \"$start_date\" AND event_time <= \"$end_date\";";
+	$statement = "SELECT * FROM vicidial_list WHERE lead_id = \"$LeadId\";";
 	if ($DB) print "$statement\n";
 	$result = mysqli_query($link, $statement) or die ("Error : " . mysqli_error($link));
 	$row = mysqli_fetch_array($result, MYSQLI_BOTH);
-	    
+	
 	return $row;
-}
-
-function GetSum($agent, $datum_von, $datum_bis, $type) {
-    global $DB, $link;
-    
-    $start_date = $datum_von . " 00:00:00";
-    $end_date   = $datum_bis . " 23:59:59";
-    if($type == "Pause") $field = "pause_sec";
-    if($type == "Wait") $field = "wait_sec";
-    if($type == "Dispo") $field = "dispo_sec";
-    if($type == "Dead") $field = "dead_sec";
-    if($type == "Talk") $field = "talk_sec";
-    
-    $statement = "SELECT SUM($field) FROM vicidial_agent_log  WHERE user = $agent AND event_time >= \"$start_date\" AND event_time <= \"$end_date\";";
-    if ($DB) print "$statement\n";
-    $result = mysqli_query($link, $statement) or die ("Error : " . mysqli_error($link));
-    $row = mysqli_fetch_array($result, MYSQLI_BOTH);
-    
-    return $row;
-}
-
-function GetAnzStati($agent, $datum_von, $datum_bis, $stati) {
-    global $DB, $link;
-    
-    $start_date = $datum_von . " 00:00:00";
-    $end_date   = $datum_bis . " 23:59:59";
-    
-    $statement = "SELECT COUNT(status) FROM vicidial_agent_log  WHERE user = $agent AND status = \"$stati\" AND event_time >= \"$start_date\" AND event_time <= \"$end_date\";";
-    if ($DB) print "$statement\n";
-    $result = mysqli_query($link, $statement) or die ("Error : " . mysqli_error($link));
-    $row = mysqli_fetch_array($result, MYSQLI_BOTH);
-    
-    return $row;
-}
-
 	
-function GetFinalStati() {
-    global $ArrStati, $ArrStatiIdx, $link;
-    
-    $stmt = "SELECT * FROM `vicidial_statuses` WHERE `selectable` = 'Y';";
-    $rslt=mysql_to_mysqli($stmt, $link);
-    if ($DB) {echo "$stmt\n";}
-    $Num = mysqli_num_rows($rslt);
-    if ($Num > 0) {
-        $pos = 0;
-        while($row = mysqli_fetch_assoc($rslt)){
-            $name = $row["status_name"];
-            $ArrStati[$pos] = $name;
-            $ArrStatiIdx[$pos] = $row["status"];
-            $pos++;
-        }
-         
-        
-    }
- #  print_r($ArrStatiIdx);
-    
-}    
-	
-function makeDownload($file, $dir, $type) {
-    
-    header("Content-Type: $type");
-    
-    header("Content-Disposition: attachment; filename=\"$file\"");
-    
-    readfile($dir.$file);
-    
-} 
+}
+
+#
+# move to sep. file
+#
 
 function formatSec($sekunden) {
 
@@ -827,17 +729,11 @@ function formatSec($sekunden) {
 	
 	return "$strStunden:$strMinuten:$strSekunden";
 }
-	
-if ($DateVon == "") {
-	$DateVon = date("Y-m-d", time()-86400);	
-}
-
-if ($DateBis == "") {
-    $DateBis = date("Y-m-d", time()-86400);
-}
 
 
-GetFinalStati();
+#
+# Main loop
+#
 
 $stmt = "SELECT * FROM vicidial_callbacks WHERE status NOT IN (\"INACTIVE\") ORDER BY campaign_id, callback_time";
 $rslt=mysql_to_mysqli($stmt, $link);
@@ -858,11 +754,15 @@ else {
 	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Campaign</font></TH>" . PHP_EOL;
 	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Callback Time</font></TH>" . PHP_EOL;
 	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Status</font></TH>" . PHP_EOL;
-	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">User</font></TH>" . PHP_EOL;
+	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Agent</font></TH>" . PHP_EOL;
 	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Typ</font></TH>" . PHP_EOL;
 	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">LeadStatus</font></TH>" . PHP_EOL;
 	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Lead ID</font></TH>" . PHP_EOL;
-	$CSVPrint = "Kampagne|Callback Zeit|Status|Agent|Typ|Lead - Status|Lead ID";
+	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Name</font></TH>" . PHP_EOL;
+	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Telefon</font></TH>" . PHP_EOL;
+	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Calls</font></TH>" . PHP_EOL;
+	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Comment</font></TH>" . PHP_EOL;
+	$CSVPrint = "Kampagne|Callback Zeit|Status|Agent|Typ|Lead - Status|Lead ID|Name|Telefon|Calls|Comment";
 	$AgentsPrint .= " </TR>" . PHP_EOL;
 	$CSVPrint .= PHP_EOL;
 
@@ -882,7 +782,8 @@ else {
 			$printFarbe = $sBackCol2;
 			
 		}
-
+		$Lrow = GetLead($row[1]);
+		
 		$AgentsPrint .= " <TR bgcolor=$printFarbe>" . PHP_EOL;	
 		$AgentsPrint .= "  <TD nowrap>$row[3]</TD> " . PHP_EOL;
 		$AgentsPrint .= "  <TD nowrap>$row[6]</TD> " . PHP_EOL;
@@ -891,7 +792,12 @@ else {
 		$AgentsPrint .= "  <TD nowrap>$row[9]</TD> " . PHP_EOL;
 		$AgentsPrint .= "  <TD nowrap>$row[12]</TD> " . PHP_EOL;
 		$AgentsPrint .= "  <TD nowrap><a href=/vicidial/admin_modify_lead.php?lead_id=$row[1] target=\"_blank\" >$row[1]</a></TD> " . PHP_EOL;
-		$CSVPrint .= $row[3] . "|" . $row[6] . "|" . $row[4] . "|" . $row[8] . "|" . $row[9] . "|" . $row[12] . "|" . $row[1];
+		$AgentsPrint .= "  <TD nowrap>$Lrow[13] $Lrow[15]</TD> " . PHP_EOL;
+		$AgentsPrint .= "  <TD nowrap>$Lrow[11]</TD> " . PHP_EOL;
+		$AgentsPrint .= "  <TD nowrap>$Lrow[30]</TD> " . PHP_EOL;
+		$AgentsPrint .= "  <TD nowrap>$Lrow[29]</TD> " . PHP_EOL;
+		
+		$CSVPrint .= $row[3] . "|" . $row[6] . "|" . $row[4] . "|" . $row[8] . "|" . $row[9] . "|" . $row[12] . "|" . $row[1] ."|" . $Lrow[13] . " " . $Lrow[15] . "|" . $Lrow[11] . "|" . $Lrow[30] . "|" . $Lrow[29];
 
 		$AgentsPrint .= " </TR>" . PHP_EOL;
 		$CSVPrint .= PHP_EOL;
@@ -921,7 +827,13 @@ fclose($fh);
 echo "<a href=\"http://" . $test_ip . "/vicidial/download.php?file=" . $FileName . "\" target=\"_blank\">Download</a>";
 
 
+
+$ENDtime = date("U");
+
+$Laufzeit = formatSec($ENDtime - $STARTtime);
+
 echo "</br></br></br></br></br>" .PHP_EOL;
+echo "<font size=\"1\"> Laufzeit: $Laufzeit</font></br></br>" . PHP_EOL;
 echo "<font size=\"1\"> Version: $release</font></br>" . PHP_EOL;
 echo "<font size=\"1\"> Copyright: $copyr</font>" . PHP_EOL;
 
