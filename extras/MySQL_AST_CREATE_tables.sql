@@ -1358,7 +1358,7 @@ pause_code VARCHAR(6) default '',
 index (lead_id),
 index (user),
 index (event_time),
-index (uinqueid)
+index (uniqueid)
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_scripts (
@@ -2914,7 +2914,7 @@ group_name VARCHAR(100) default '',
 job_title VARCHAR(100) default '',
 location VARCHAR(100) default '',
 office_num_phone_code VARCHAR(10) COLLATE utf8_unicode_ci DEFAULT '',
-cell_num_phone_code VARCHAR(10) COLLATE utf8_unicode_ci DEFAULT ''
+cell_num_phone_code VARCHAR(10) COLLATE utf8_unicode_ci DEFAULT '',
 other_num1_phone_code VARCHAR(10) COLLATE utf8_unicode_ci DEFAULT '',
 other_num2_phone_code VARCHAR(10) COLLATE utf8_unicode_ci DEFAULT ''
 
