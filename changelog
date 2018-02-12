@@ -101,7 +101,8 @@
       www/vicidial/AST_API_log_report.php,
       www/vicidial/AST_agent_performance_detail.php,
       www/vicidial/non_agent_api.php: Added call_dispo_report function.
-    
+  * Add upstream Rev. 2907:
+    - agi/agi-VDAD_ALL_inbound.agi: Bug fix for recent feature
 
 2.25.23 stable
   [Jörg Frings-Fürst]
