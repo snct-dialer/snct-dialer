@@ -1333,6 +1333,22 @@ function use_archive_table($table_name)
 		}
 	}
 
+function table_exists($table_name) 
+	{
+	global $link;
+	$tbl_stmt="show tables like '".$table_name."'";
+	$tbl_rslt=mysql_to_mysqli($tbl_stmt, $link);
+	if (mysqli_num_rows($tbl_rslt)>0) 
+		{
+		$tbl_row=mysqli_fetch_row($tbl_rslt);
+		return $tbl_row[0];
+		}
+	else
+		{
+		return false;
+		}
+	}
+
 # function to print/echo content, options for length, alignment and ordered internal variables are included
 function _QXZ($English_text, $sprintf=0, $align="l", $v_one='', $v_two='', $v_three='', $v_four='', $v_five='', $v_six='', $v_seven='', $v_eight='', $v_nine='')
 	{

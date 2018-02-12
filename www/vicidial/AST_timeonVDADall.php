@@ -1,7 +1,7 @@
 <?php 
 # AST_timeonVDADall.php
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # live real-time stats for the VICIDIAL Auto-Dialer all servers
 #
@@ -107,10 +107,11 @@
 # 170321-1145 - Added pause code time limits colors
 # 170409-1556 - Added IP List validation code
 # 170615-0023 - Added DIAL status for manual dial agent calls that have not been answered
+# 180204-1538 - Added display of LIVE Inbound Callback Queue Calls
 #
 
-$version = '2.14-95';
-$build = '170615-0023';
+$version = '2.14-96';
+$build = '180204-1538';
 
 header ("Content-type: text/html; charset=utf-8");
 
@@ -1272,10 +1273,8 @@ if ($droppedOFtotal > 0)
 ##### SHOW IN-GROUP STATS OR INBOUND ONLY WITH VIEW-MORE ###
 if ( ($ALLINGROUPstats > 0) or ( (preg_match('/O/',$with_inbound)) and ($adastats > 1) ) )
 	{
-	$stmtB="SELECT calls_today,drops_today,$answers_singleSQL,status_category_1,status_category_count_1,status_category_2,status_category_count_2,status_category_3,status_category_count_3,status_category_4,status_category_count_4,hold_sec_stat_one,hold_sec_stat_two,hold_sec_answer_calls,hold_sec_drop_calls,hold_sec_queue_calls,campaign_id from vicidial_campaign_stats where campaign_id IN ($closer_campaignsSQL) order by campaign_id;";
-
+	$stmtB="SELECT campaign_id from vicidial_campaign_stats where campaign_id IN ($closer_campaignsSQL) order by campaign_id;";
 	if ($DB > 0) {echo "\n|$stmtB|\n";}
-
 	$r=0;
 	$rslt=mysql_to_mysqli($stmtB, $link);
 	$ingroups_to_print = mysqli_num_rows($rslt);
@@ -1284,23 +1283,41 @@ if ( ($ALLINGROUPstats > 0) or ( (preg_match('/O/',$with_inbound)) and ($adastat
 	while ($ingroups_to_print > $r)
 		{
 		$row=mysqli_fetch_row($rslt);
-		$callsTODAY =				$row[0];
-		$dropsTODAY =				$row[1];
-		$answersTODAY =				$row[2];
-		$VSCcat1 =					$row[3];
-		$VSCcat1tally =				$row[4];
-		$VSCcat2 =					$row[5];
-		$VSCcat2tally =				$row[6];
-		$VSCcat3 =					$row[7];
-		$VSCcat3tally =				$row[8];
-		$VSCcat4 =					$row[9];
-		$VSCcat4tally =				$row[10];
-		$hold_sec_stat_one =		$row[11];
-		$hold_sec_stat_two =		$row[12];
-		$hold_sec_answer_calls =	$row[13];
-		$hold_sec_drop_calls =		$row[14];
-		$hold_sec_queue_calls =		$row[15];
-		$ingroupdetail =			$row[16];
+		$ARYingroupdetail[$r] =			$row[0];
+		$r++;
+		}
+
+	$r=0;
+	while ($ingroups_to_print > $r)
+		{
+		$stmtB="SELECT calls_today,drops_today,$answers_singleSQL,status_category_1,status_category_count_1,status_category_2,status_category_count_2,status_category_3,status_category_count_3,status_category_4,status_category_count_4,hold_sec_stat_one,hold_sec_stat_two,hold_sec_answer_calls,hold_sec_drop_calls,hold_sec_queue_calls,campaign_id from vicidial_campaign_stats where campaign_id='$ARYingroupdetail[$r]';";
+
+		if ($DB > 0) {echo "\n|$stmtB|\n";}
+
+		$rslt=mysql_to_mysqli($stmtB, $link);
+		$ingroup_to_print = mysqli_num_rows($rslt);
+		if ($ingroup_to_print > 0)
+			{
+			$row=mysqli_fetch_row($rslt);
+			$callsTODAY =				$row[0];
+			$dropsTODAY =				$row[1];
+			$answersTODAY =				$row[2];
+			$VSCcat1 =					$row[3];
+			$VSCcat1tally =				$row[4];
+			$VSCcat2 =					$row[5];
+			$VSCcat2tally =				$row[6];
+			$VSCcat3 =					$row[7];
+			$VSCcat3tally =				$row[8];
+			$VSCcat4 =					$row[9];
+			$VSCcat4tally =				$row[10];
+			$hold_sec_stat_one =		$row[11];
+			$hold_sec_stat_two =		$row[12];
+			$hold_sec_answer_calls =	$row[13];
+			$hold_sec_drop_calls =		$row[14];
+			$hold_sec_queue_calls =		$row[15];
+			$ingroupdetail =			$row[16];
+			}
+
 		$drpctTODAY = ( MathZDC($dropsTODAY, $answersTODAY) * 100);
 		$drpctTODAY = round($drpctTODAY, 2);
 		$drpctTODAY = sprintf("%01.2f", $drpctTODAY);
@@ -1323,6 +1340,19 @@ if ( ($ALLINGROUPstats > 0) or ( (preg_match('/O/',$with_inbound)) and ($adastat
 		$AVG_ANSWERagent_non_pause_sec = round($AVG_ANSWERagent_non_pause_sec, 2);
 		$AVG_ANSWERagent_non_pause_sec = sprintf("%01.2f", $AVG_ANSWERagent_non_pause_sec);
 
+		$Dicbq_stmt="SELECT count(*) from vicidial_inbound_callback_queue where icbq_status='LIVE' and group_id='$ARYingroupdetail[$r]';";
+		$Dicbq_rslt=mysql_to_mysqli($Dicbq_stmt, $link);
+		$Dicbq_ct = mysqli_num_rows($Dicbq_rslt);
+		$Dicbq_live=0;
+		if ($Dicbq_ct > 0)
+			{
+			$Dicbq_ARY=mysqli_fetch_row($Dicbq_rslt);
+			if ($Dicbq_ARY[0] > 0)
+				{
+				$Dicbq_live = "<font color=red><b>$Dicbq_ARY[0]</b></font>";
+				}
+			}
+
 		if (preg_match('/0$|2$|4$|6$|8$/',$r)) {$bgcolor='#E6E6E6';}
 		else {$bgcolor='white';}
 		$ingroup_detail .= "<TR bgcolor=\"$bgcolor\">";
@@ -1331,18 +1361,21 @@ if ( ($ALLINGROUPstats > 0) or ( (preg_match('/O/',$with_inbound)) and ($adastat
 		$ingroup_detail .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._QXZ("CALLS TODAY").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $callsTODAY&nbsp; &nbsp; </TD>";
 		$ingroup_detail .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._QXZ("TMA")." 1</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $PCThold_sec_stat_one% &nbsp; &nbsp; </TD>";
 		$ingroup_detail .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._QXZ("Average Hold time for Answered Calls").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $AVGhold_sec_answer_calls &nbsp; </TD>";
+		$ingroup_detail .= "<TD ALIGN=RIGHT><font class='top_settings_key'> &nbsp; "._QXZ("LIVE Inbound Callback Queue Calls").":</font><font class='top_settings_val'>&nbsp; $Dicbq_live &nbsp; </TD>";
 		$ingroup_detail .= "</TR>";
 		$ingroup_detail .= "<TR bgcolor=\"$bgcolor\">";
 		$ingroup_detail .= "<TD ALIGN=RIGHT bgcolor=white><font class='top_settings_val'></TD><TD ALIGN=LEFT><font class='top_settings_val'></TD>";
 		$ingroup_detail .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._QXZ("DROPS TODAY").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $dropsTODAY&nbsp; &nbsp; </TD>";
 		$ingroup_detail .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._QXZ("TMA")." 2:</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $PCThold_sec_stat_two% &nbsp; &nbsp; </TD>";
 		$ingroup_detail .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._QXZ("Average Hold time for Dropped Calls").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $AVGhold_sec_drop_calls &nbsp; </TD>";
+		$ingroup_detail .= "<TD ALIGN=RIGHT bgcolor=white><font class='top_settings_val'></TD><TD ALIGN=LEFT><font class='top_settings_val'></TD>";
 		$ingroup_detail .= "</TR>";
 		$ingroup_detail .= "<TR bgcolor=\"$bgcolor\">";
 		$ingroup_detail .= "<TD ALIGN=RIGHT bgcolor=white><font class='top_settings_val'></TD><TD ALIGN=LEFT><font class='top_settings_val'></TD>";
 		$ingroup_detail .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._QXZ("ANSWERS TODAY").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $answersTODAY&nbsp; &nbsp; </TD>";
 		$ingroup_detail .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._QXZ("DROP PERCENT").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $drpctTODAY%&nbsp; &nbsp; </TD>";
 		$ingroup_detail .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._QXZ("Average Hold time for All Calls").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $AVGhold_sec_queue_calls &nbsp; </TD>";
+		$ingroup_detail .= "<TD ALIGN=RIGHT bgcolor=white><font class='top_settings_val'></TD><TD ALIGN=LEFT><font class='top_settings_val'></TD>";
 		$ingroup_detail .= "</TR>";
 
 		$r++;
@@ -2340,6 +2373,14 @@ if ($allow_chats)
 		}
 	}
 
+$icbq_stmt="SELECT count(*) from vicidial_inbound_callback_queue where icbq_status='LIVE' and group_id IN($closer_campaignsSQL);";
+$icbq_rslt=mysql_to_mysqli($icbq_stmt, $link);
+$icbq_ct = mysqli_num_rows($icbq_rslt);
+if ($icbq_ct > 0)
+	{
+	$icbq_ARY=mysqli_fetch_row($icbq_rslt);
+	$icbq_live = $icbq_ARY[0];
+	}
 
 ##### BEGIN HTML output for calls #####
 if ( ($report_display_type=='HTML') or ($report_display_type=='WALL_2') )
@@ -2380,8 +2421,13 @@ if ( ($report_display_type=='HTML') or ($report_display_type=='WALL_2') )
 		echo "<td align='center' valign='middle' rowspan=2>&nbsp;</td>";
 		echo "<td align='center' valign='middle'><font style=\"font-family:HELVETICA;font-size:11;color:white;font-weight:bold;\">&nbsp;</font></td>";
 		}
-	echo "<td align='center' valign='middle' rowspan=2>&nbsp;</td>";
-	echo "<td align='center' valign='middle'><font style=\"font-family:HELVETICA;font-size:11;color:white;font-weight:bold;\">&nbsp;</font></td>";
+#	echo "<td align='center' valign='middle' rowspan=2>&nbsp;</td>";
+
+
+	echo "<td width=6 rowspan=2> &nbsp; </td>";
+	echo "<td align='center' valign='middle' bgcolor='#015b91' rowspan=2><img src=\"images/icon_callswaiting.png\" width=42 height=42></td>";
+	echo "<td align='center' valign='middle' bgcolor='#015b91'><font style=\"font-family:HELVETICA;font-size:11;color:white;font-weight:bold;\">"._QXZ("callback queue calls")."</font></td>";
+
 	echo "</tr>";
 	echo "<tr>";
 	echo "<td align='center' valign='middle' bgcolor='#015b91'><font style=\"font-family:HELVETICA;font-size:18;color:white;font-weight:bold;\">$out_total</font></td>";
@@ -2408,7 +2454,7 @@ if ( ($report_display_type=='HTML') or ($report_display_type=='WALL_2') )
 		{
 		echo "<td align='center' valign='middle'><font style=\"font-family:HELVETICA;font-size:18;color:white;font-weight:bold;\">&nbsp;</font></td>";
 		}
-#	echo "<td align='center' valign='middle'><font style=\"font-family:HELVETICA;font-size:18;color:white;font-weight:bold;\">&nbsp;</font></td>";
+	echo "<td align='center' valign='middle' bgcolor='#015b91'><font style=\"font-family:HELVETICA;font-size:18;color:white;font-weight:bold;\">$icbq_live</font></td>";
 	echo "</tr>";
 	echo "<tr><td colspan=17><font style=\"font-family:HELVETICA;font-size:6;color:white;\">&nbsp;</font></td></tr>";
 #	echo "</TABLE>";

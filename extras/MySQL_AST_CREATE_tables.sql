@@ -512,7 +512,7 @@ processed ENUM('Y','N'),
 queue_seconds DECIMAL(7,2) default '0',
 user_group VARCHAR(20),
 xfercallid INT(9) UNSIGNED,
-term_reason  ENUM('CALLER','AGENT','QUEUETIMEOUT','ABANDON','AFTERHOURS','HOLDRECALLXFER','HOLDTIME','NOAGENT','NONE','MAXCALLS','ACFILTER') default 'NONE',
+term_reason  ENUM('CALLER','AGENT','QUEUETIMEOUT','ABANDON','AFTERHOURS','HOLDRECALLXFER','HOLDTIME','NOAGENT','NONE','MAXCALLS','ACFILTER','CLOSETIME') default 'NONE',
 uniqueid VARCHAR(20) NOT NULL default '',
 agent_only VARCHAR(20) default '',
 queue_position SMALLINT(4) UNSIGNED default '1',
@@ -1250,7 +1250,21 @@ inbound_survey ENUM('DISABLED','ENABLED') default 'DISABLED',
 inbound_survey_filename TEXT,
 inbound_survey_accept_digit VARCHAR(1) default '',
 inbound_survey_question_filename TEXT,
-inbound_survey_callmenu TEXT
+inbound_survey_callmenu TEXT,
+icbq_expiration_hours SMALLINT(5) default '96',
+closing_time_action VARCHAR(30) default 'DISABLED',
+closing_time_now_trigger ENUM('Y','N') default 'N',
+closing_time_filename TEXT,
+closing_time_end_filename TEXT,
+closing_time_lead_reset ENUM('Y','N') default 'N',
+closing_time_option_exten VARCHAR(20) default '8300',
+closing_time_option_callmenu VARCHAR(50) default '',
+closing_time_option_voicemail VARCHAR(20) default '',
+closing_time_option_xfer_group VARCHAR(20) default '---NONE---',
+closing_time_option_callback_list_id BIGINT(14) UNSIGNED default '999',
+add_lead_timezone ENUM('SERVER','PHONE_CODE_AREACODE') default 'SERVER',
+icbq_call_time_id VARCHAR(20) default '24hours',
+icbq_dial_filter VARCHAR(50) default 'NONE'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_stations (
@@ -3956,6 +3970,22 @@ index (serial_id),
 index (run_time)
 ) ENGINE=MyISAM;
 
+CREATE TABLE vicidial_inbound_callback_queue (
+icbq_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+icbq_date DATETIME,
+icbq_status VARCHAR(10),
+icbq_phone_number VARCHAR(20),
+icbq_phone_code VARCHAR(10),
+icbq_nextday_choice ENUM('Y','N','U') default 'U',
+lead_id INT(9) UNSIGNED NOT NULL,
+group_id VARCHAR(20) NOT NULL,
+queue_priority TINYINT(2) default '0',
+call_date DATETIME,
+gmt_offset_now DECIMAL(4,2) DEFAULT '0.00',
+modify_date TIMESTAMP,
+index (icbq_status)
+) ENGINE=MyISAM;
+
 ALTER TABLE vicidial_email_list MODIFY message text character set utf8;
 
 ALTER TABLE vicidial_email_log MODIFY message text character set utf8;
@@ -4159,6 +4189,9 @@ ALTER TABLE user_call_log_archive MODIFY user_call_log_id INT(9) UNSIGNED NOT NU
 
 CREATE TABLE vicidial_inbound_survey_log_archive LIKE vicidial_inbound_survey_log;
 CREATE UNIQUE INDEX visla_key on vicidial_inbound_survey_log_archive(uniqueid, call_date, campaign_id, lead_id);
+
+CREATE TABLE vicidial_inbound_callback_queue_archive LIKE vicidial_inbound_callback_queue; 
+ALTER TABLE vicidial_inbound_callback_queue_archive MODIFY icbq_id INT(9) UNSIGNED NOT NULL;
 
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;

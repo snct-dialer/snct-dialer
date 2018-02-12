@@ -253,6 +253,20 @@ OTHER CHANGES:
 	ready and waiting for phone calls from listed In-Groups before allowing 
 	outbound auto-dialing. 
 
+67. Added new PRESS_CALLBACK_QUEUE option to Hold Time and Wait Time In-Group 
+	settings, allowing for a customer to retain their place in line in the
+	queue and be called back when their turn is reached.
+
+68. Added new Closed Time features to In-Groups that allow all calls in queue
+	to be presented with an option when the in-group closing time for the
+	day has been reached. Also, an option was added to manually force the 
+	end of all queueing of calls for an in-group for the day.
+
+69. Added dial_ingroup option to Agent API external_dial function.
+
+70. Added In-Group option to look up timezone of customer when a new lead is 
+	added during the routing of the call.
+
 
 
 

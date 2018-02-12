@@ -445,13 +445,14 @@
 # 171224-1222 - Added List default_xfer_group override
 # 180108-2048 - Added next_dial_my_callbacks feature
 # 180131-1116 - Fixed ereg issue
+# 180204-1651 - Added update for inbound callback queue functionality
 #
 
-$version = '2.14-339';
-$build = '180131-1116';
+$version = '2.14-340';
+$build = '180204-1651';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=708;
+$mysql_log_count=709;
 $one_mysql_log=0;
 $DB=0;
 $VD_login=0;
@@ -7900,6 +7901,12 @@ if ($ACTION == 'VDADcheckINCOMING')
 				$retry_count++;
 				}
 
+			### update vicidial_inbound_callback_queue record to SENT if one exists in SENDING state for this lead_id
+			$stmt = "UPDATE vicidial_inbound_callback_queue set icbq_status='SENT' where lead_id='$lead_id' and icbq_status='SENDING' order by icbq_date limit 1;";
+			if ($DB) {echo "$stmt\n";}
+			$rslt=mysql_to_mysqli($stmt, $link);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00709',$user,$server_ip,$session_name,$one_mysql_log);}
+
 			$stmt = "UPDATE vicidial_campaign_agents set calls_today='$calls_today' where user='$user' and campaign_id='$campaign';";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);
@@ -9371,7 +9378,7 @@ if ($ACTION == 'VDADcheckINCOMINGother')
 				$row=mysqli_fetch_row($rslt);
 				$get_call_launch = $row[0];
 				}
-			if (!preg_match("/EMAIL|SCRIPT/",$get_call_launch))
+			if (!preg_match("/EMAIL|SCRIPT|WEBFORM/",$get_call_launch))
 				{$get_call_launch='EMAIL';}
 			# Change to better suit the output processed by the agent interface
 			 echo "1\n" . $lead_id . '|'.$uniqueid.'|' . $email_from . '|' . $get_call_launch . '|' . $email_row_id . '|' . $email_row_id . "|EMAIL\n"; # VDIC_data_VDAC

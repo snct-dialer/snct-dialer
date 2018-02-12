@@ -82,7 +82,7 @@
 #exten => _99909*.,2,AGI(agi-VDAD_ALL_inbound.agi)
 #exten => _99909*.,3,Hangup
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # changes:
 # 70828-0924 - First Build
@@ -219,7 +219,8 @@
 # 170930-0913 - Added extension append options
 # 171011-1312 - Bug fix for on-hook agents using Asterisk 1.8 & 11
 # 171124-1159 - Added max_inbound_calls_outcome options
-# 
+# 180204-0120 - Added PRESS_CALLBACK_QUEUE feature, and Closing-Time feature, and add-lead-timezone-lookup feature
+#
 
 $script = 'agi-VDAD_ALL_inbound.agi';
 $dtmf_silent_prefix = '7';
@@ -230,7 +231,7 @@ $wait_prompt_runs=0;
 $at='@';
 $S='*';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=222;
+$mysql_log_count=247;
 $one_mysql_log=0;
 $dial_ingroup_flag=0;
 $called_count=1;
@@ -339,6 +340,7 @@ while ($sthArows > $rec_count)
 	@aryA = $sthA->fetchrow_array;
 	$DBagi_output =		$aryA[0];
 	$local_gmt =		$aryA[1];
+	if ($isdst) {$local_gmt++;}
 	if ($DBagi_output =~ /STDERR/)	{$AGILOG = '1';}
 	if ($DBagi_output =~ /FILE/)	{$AGILOG = '2';}
 	if ($DBagi_output =~ /BOTH/)	{$AGILOG = '3';}
@@ -735,6 +737,13 @@ while ($sthArows > $cbc)
 	if ($DBSERVER_GMT)				{$SERVER_GMT = $DBSERVER_GMT;}
 	if ($asterisk_version)			{$AST_ver = $asterisk_version;}
 	if ($DBmax_vicidial_trunks)		{$max_vicidial_trunks = $DBmax_vicidial_trunks;}
+
+	$LOCAL_GMT_OFF = $SERVER_GMT;
+	$LOCAL_GMT_OFF_STD = $SERVER_GMT;
+
+	if ($isdst) {$LOCAL_GMT_OFF++;}
+	if ($DB) {print "SEED TIME  $now_date_epoch      :   $year-$mon-$mday $hour:$min:$sec  LOCAL GMT OFFSET NOW: $LOCAL_GMT_OFF\n";}
+
 	$cbc++;
 	}
 $sthA->finish();
@@ -747,7 +756,7 @@ $affected_rows = $dbhA->do($stmtA);
 
 ### Grab inbound groups values from the database
 $cbc=0;
-$stmtA = "SELECT call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,drop_call_seconds,drop_action,drop_exten,next_agent_call,voicemail_ext,queue_priority,drop_inbound_group,afterhours_xfer_group,play_place_in_line,play_estimate_hold_time,hold_time_option,hold_time_option_seconds,hold_time_option_exten,hold_time_option_voicemail,hold_time_option_xfer_group,hold_time_option_callback_filename,hold_time_option_callback_list_id,hold_recall_xfer_group,no_delay_call_route,play_welcome_message,no_agent_no_queue,no_agent_action,no_agent_action_value,extension_appended_cidname,uniqueid_status_display,uniqueid_status_prefix,hold_time_option_minimum,hold_time_option_press_filename,hold_time_option_callmenu,onhold_prompt_no_block,onhold_prompt_seconds,hold_time_option_no_block,hold_time_option_prompt_seconds,hold_time_second_option,hold_time_third_option,wait_hold_option_priority,wait_time_option,wait_time_second_option,wait_time_third_option,wait_time_option_seconds,wait_time_option_exten,wait_time_option_voicemail,wait_time_option_xfer_group,wait_time_option_callmenu,wait_time_option_callback_filename,wait_time_option_callback_list_id,wait_time_option_press_filename,wait_time_option_no_block,wait_time_option_prompt_seconds,active,calculate_estimated_hold_seconds,add_lead_url,eht_minimum_prompt_filename,eht_minimum_prompt_no_block,eht_minimum_prompt_seconds,on_hook_ring_time,ingroup_recording_override,ingroup_rec_filename,on_hook_cid,action_xfer_cid,drop_callmenu,after_hours_callmenu,max_calls_method,max_calls_count,max_calls_action,populate_lead_ingroup,na_call_url,drop_lead_reset,after_hours_lead_reset,nanq_lead_reset,wait_time_lead_reset,hold_time_lead_reset,routing_initiated_recordings,on_hook_cid_number,populate_lead_province,areacode_filter,areacode_filter_seconds,areacode_filter_action,areacode_filter_action_value,populate_state_areacode,inbound_survey,inbound_survey_filename,inbound_survey_accept_digit FROM vicidial_inbound_groups where group_id = '$channel_group';";
+$stmtA = "SELECT call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,drop_call_seconds,drop_action,drop_exten,next_agent_call,voicemail_ext,queue_priority,drop_inbound_group,afterhours_xfer_group,play_place_in_line,play_estimate_hold_time,hold_time_option,hold_time_option_seconds,hold_time_option_exten,hold_time_option_voicemail,hold_time_option_xfer_group,hold_time_option_callback_filename,hold_time_option_callback_list_id,hold_recall_xfer_group,no_delay_call_route,play_welcome_message,no_agent_no_queue,no_agent_action,no_agent_action_value,extension_appended_cidname,uniqueid_status_display,uniqueid_status_prefix,hold_time_option_minimum,hold_time_option_press_filename,hold_time_option_callmenu,onhold_prompt_no_block,onhold_prompt_seconds,hold_time_option_no_block,hold_time_option_prompt_seconds,hold_time_second_option,hold_time_third_option,wait_hold_option_priority,wait_time_option,wait_time_second_option,wait_time_third_option,wait_time_option_seconds,wait_time_option_exten,wait_time_option_voicemail,wait_time_option_xfer_group,wait_time_option_callmenu,wait_time_option_callback_filename,wait_time_option_callback_list_id,wait_time_option_press_filename,wait_time_option_no_block,wait_time_option_prompt_seconds,active,calculate_estimated_hold_seconds,add_lead_url,eht_minimum_prompt_filename,eht_minimum_prompt_no_block,eht_minimum_prompt_seconds,on_hook_ring_time,ingroup_recording_override,ingroup_rec_filename,on_hook_cid,action_xfer_cid,drop_callmenu,after_hours_callmenu,max_calls_method,max_calls_count,max_calls_action,populate_lead_ingroup,na_call_url,drop_lead_reset,after_hours_lead_reset,nanq_lead_reset,wait_time_lead_reset,hold_time_lead_reset,routing_initiated_recordings,on_hook_cid_number,populate_lead_province,areacode_filter,areacode_filter_seconds,areacode_filter_action,areacode_filter_action_value,populate_state_areacode,inbound_survey,inbound_survey_filename,inbound_survey_accept_digit,closing_time_action,closing_time_now_trigger,closing_time_filename,closing_time_end_filename,closing_time_lead_reset,closing_time_option_exten,closing_time_option_callmenu,closing_time_option_voicemail,closing_time_option_xfer_group,closing_time_option_callback_list_id,add_lead_timezone FROM vicidial_inbound_groups where group_id = '$channel_group';";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
@@ -856,6 +865,17 @@ if ($sthArows > 0)
 	$inbound_survey =					$aryA[91];
 	$inbound_survey_filename =			$aryA[92];
 	$inbound_survey_accept_digit =		$aryA[93];
+	$closing_time_action =				$aryA[94];
+	$closing_time_now_trigger =			$aryA[95];
+	$closing_time_filename =			$aryA[96];
+	$closing_time_end_filename =		$aryA[97];
+	$closing_time_lead_reset =			$aryA[98];
+	$closing_time_option_exten =		$aryA[99];
+	$closing_time_option_callmenu =		$aryA[100];
+	$closing_time_option_voicemail =	$aryA[101];
+	$closing_time_option_xfer_group =	$aryA[102];
+	$closing_time_option_callback_list_id =	$aryA[103];
+	$add_lead_timezone =				$aryA[104];
 
 	$custom_call_id='';
 	if ($uniqueid_status_display =~ /ENABLED/)
@@ -1085,6 +1105,8 @@ if ($call_handle_method =~ /LOOKUP/)
 		$populate_provinceA='';   $populate_provinceB='';
 		if ($populate_lead_province =~ /did/) 
 			{&populate_lead_province_process;}
+		if ($add_lead_timezone =~ /PHONE_CODE_AREACODE/) 
+			{&lead_timezone_process;}
 		### insert a record into the vicidial_list table 
 		$stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now,comments$entry_list_idSQLa$INSERTstateSQLa$INSERTpostal_codeSQLa$populate_provinceA) values('$SQLdate','$tsSQLdate','INBND','$fronter','$vendor_id','VDCL','$list_id','Y','$phone_code','$phone_number','$ingroup_insert','$called_count','$local_gmt','$VLcomments'$entry_list_idSQLb$INSERTstateSQLb$INSERTpostal_codeSQLb$populate_provinceB);";
 		$affected_rows = $dbhA->do($stmtA);
@@ -1240,6 +1262,8 @@ if ($call_handle_method =~ /LOOKUP/)
 				$populate_provinceA='';   $populate_provinceB='';
 				if ($populate_lead_province =~ /did/i) 
 					{&populate_lead_province_process;}
+				if ($add_lead_timezone =~ /PHONE_CODE_AREACODE/) 
+					{&lead_timezone_process;}
 				### insert a record into the vicidial_list table 
 				$stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now,comments$entry_list_idSQLa$INSERTstateSQLa$INSERTpostal_codeSQLa$populate_provinceA) values('$SQLdate','$tsSQLdate','INBND','$fronter','$vendor_id','VDCL','$list_id','Y','$phone_code','$phone_number','$ingroup_insert','$called_count','$local_gmt','$VLcomments'$entry_list_idSQLb$INSERTstateSQLb$INSERTpostal_codeSQLb$populate_provinceB);";
 				$affected_rows = $dbhA->do($stmtA);
@@ -1329,8 +1353,10 @@ else
 		$populate_provinceA='';   $populate_provinceB='';
 		if ($populate_lead_province =~ /did/i) 
 			{&populate_lead_province_process;}
+		if ($add_lead_timezone =~ /PHONE_CODE_AREACODE/) 
+			{&lead_timezone_process;}
  		### insert a record into the vicidial_list table if no record was found above
-		$stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now,comments$entry_list_idSQLa$INSERTstateSQLa$INSERTpostal_codeSQLa$populate_provinceA) values('$SQLdate','$tsSQLdate','INBND','$fronter','$vendor_id','VDCL','$list_id','Y','$phone_code','$phone_number','$ingroup_insert','$called_count','-5.00','$VLcomments'$entry_list_idSQLb$INSERTstateSQLb$INSERTpostal_codeSQLb$populate_provinceB);";
+		$stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now,comments$entry_list_idSQLa$INSERTstateSQLa$INSERTpostal_codeSQLa$populate_provinceA) values('$SQLdate','$tsSQLdate','INBND','$fronter','$vendor_id','VDCL','$list_id','Y','$phone_code','$phone_number','$ingroup_insert','$called_count','$local_gmt','$VLcomments'$entry_list_idSQLb$INSERTstateSQLb$INSERTpostal_codeSQLb$populate_provinceB);";
  		$affected_rows = $dbhA->do($stmtA);
 			$dbhP=$dbhA;   $mysql_count='02014';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 		$cbc=0;
@@ -2178,7 +2204,7 @@ if ($call_handle_method =~ /CLOSER|DIGITID$/)
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
-		$dbhP=$dbhA;   $mysql_count='02XXX';   $MEL_aff_rows=$sthArows;   &mysql_error_logging;
+		$dbhP=$dbhA;   $mysql_count='02223';   $MEL_aff_rows=$sthArows;   &mysql_error_logging;
 	if ($sthArows > 0)
 		{
 		@aryA = $sthA->fetchrow_array;
@@ -2473,7 +2499,7 @@ if ($populate_lead_province =~ /OW_did/i)
 
 	$stmtA = "UPDATE vicidial_list set modify_date=NOW() $populate_provinceUPDATE $UPDATEstateSQL where lead_id = '$insert_lead_id';";
 	$affected_rows = $dbhA->do($stmtA);
-		$dbhP=$dbhA;   $mysql_count='02XXX';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
+		$dbhP=$dbhA;   $mysql_count='02224';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 	if ($AGILOG) {$agi_string = "--    PROVINCE update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
 	}
 
@@ -2482,8 +2508,45 @@ if ($populate_lead_province =~ /OW_did/i)
 
 ############################################
 ### Loop to try to send call to an agent ###
-while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override < 1) )
+$closing_check=0;
+while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override < 1) && ($closing_check < 1) )
 	{
+	($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+	$year = ($year + 1900);
+	$mon++;
+	if ($mon < 10) {$mon = "0$mon";}
+	if ($mday < 10) {$mday = "0$mday";}
+	if ($hour < 10) {$hour = "0$hour";}
+	if ($min < 10) {$min = "0$min";}
+	if ($sec < 10) {$sec = "0$sec";}
+	$hm = "$hour$min";
+	$hm = ($hm + 0);
+	if ($closing_time_action !~ /DISABLED/) 
+		{
+		if ($ct_default_stop =~ /$hm$/)
+			{$closing_check++;}
+		else
+			{
+			$stmtA = "SELECT closing_time_now_trigger FROM vicidial_inbound_groups where group_id='$channel_group';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArowsTRIG=$sthA->rows;
+				$dbhP=$dbhA;   $mysql_count='02225';   $MEL_aff_rows=$sthArowsTRIG;   &mysql_error_logging;
+			if ($sthArowsTRIG > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$closing_time_now_trigger = $aryA[0];
+				}
+			$sthA->finish();
+			if ($closing_time_now_trigger =~ /Y/)
+				{$closing_check++;}
+			}
+		if ($closing_check > 0)
+			{
+			if ($AGILOG) {$agi_string = "CLOSING CHECK TRIGGER!   ($hm <> $ct_default_stop)   |$closing_time_now_trigger|$channel_group|";   &agi_output;}
+			}
+		}
+
 	$channel_status = $AGI->channel_status("$channel");
 	if ($channel_status < 1)
 		{
@@ -2594,7 +2657,23 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 		$sthA->finish();
 		if ($AGILOG) {$agi_string = "$rec_countWAITrem|$AGENTgrab|$stmtA|";   &agi_output;}
 		
-		if ( ($rec_countWAITrem < 1) || ($AGENTgrab > 0) )
+		$rec_countWAITqueue=0;
+		### Get count of number of calls in the callback-queue for this group that are ahead of this call
+		$stmtA = "SELECT count(*) FROM vicidial_inbound_callback_queue where icbq_status IN('LIVE','SENDING') and group_id='$channel_group' and call_date < \"$SQLdateBEGIN\" and lead_id != '$insert_lead_id' and queue_priority >= '$queue_priority';";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+			$dbhP=$dbhA;   $mysql_count='02226';   $MEL_aff_rows=$sthArows;   &mysql_error_logging;
+		if ($sthArows > 0)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$rec_countWAITqueue = $aryA[0];
+			$cbc++;
+			}
+		$sthA->finish();
+		if ($AGILOG) {$agi_string = "$rec_countWAITqueue|$stmtA|";   &agi_output;}
+		
+		if ( ( ($rec_countWAITrem < 1) && ($rec_countWAITqueue < 1) ) || ($AGENTgrab > 0) )
 			{
 			$qp_countWAIT=0;
 			### Get count of number of waiting calls in higher priority groups than this call or the same priority with longer wait time
@@ -2611,21 +2690,36 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 			$sthA->finish();
 			if ($AGILOG) {$agi_string = "$qp_countWAIT|$stmtA|";   &agi_output;}
 
+			$qp_countWAITqueue=0;
+			### Get count of number of waiting calls in higher priority groups than this call or the same priority with longer wait time
+			$stmtA = "SELECT count(*) FROM vicidial_inbound_callback_queue where icbq_status IN('LIVE','SENDING') and lead_id != '$insert_lead_id' and ( (queue_priority > '$queue_priority') or (queue_priority = '$queue_priority' and call_date < \"$SQLdateBEGIN\") );";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+				$dbhP=$dbhA;   $mysql_count='02227';   $MEL_aff_rows=$sthArows;   &mysql_error_logging;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$qp_countWAITqueue = $aryA[0];
+				}
+			$sthA->finish();
+			if ($AGILOG) {$agi_string = "$qp_countWAITqueue|$stmtA|";   &agi_output;}
+
 			$qp_groupWAIT='';
 			$qp_groupWAIT_SQL='';
 			$qp_groupWAIT_aco='';
 			$qp_groupWAIT_aco_SQL='';
 			$qp_groupWAIT_camp_SQL='';
-			if ( ($qp_countWAIT > 0) && ($AGENTgrab < 1) )
+			if ( ( ($qp_countWAIT > 0) || ($qp_countWAITqueue > 0) ) && ($AGENTgrab < 1) )
 				{
 				### Get group/campaign ids of calls in higher priority groups than this call or the same priority with longer wait time
+				$qp_groupWAIT='';
 				$stmtA = "SELECT distinct campaign_id FROM vicidial_auto_calls where status = 'LIVE' and lead_id != '$insert_lead_id' $ADfindSQL and ( (queue_priority > '$queue_priority') or (queue_priority = '$queue_priority' and call_time < \"$SQLdateBEGIN\") );";
 				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 				$sthArows=$sthA->rows;
 					$dbhP=$dbhA;   $mysql_count='02056';   $MEL_aff_rows=$sthArows;   &mysql_error_logging;
 				$dbc=0;
-				$qp_groupWAIT='';
 				while ($sthArows > $dbc)
 					{
 					@aryA = $sthA->fetchrow_array;
@@ -2637,6 +2731,26 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 					$qp_groupWAIT .= "closer_campaigns NOT LIKE \"% $aryA[0] %\" ";
 					$dbc++;
 					}
+
+				$stmtA = "SELECT distinct group_id FROM vicidial_inbound_callback_queue where icbq_status IN('LIVE','SENDING') and lead_id != '$insert_lead_id' $ADfindSQL and ( (queue_priority > '$queue_priority') or (queue_priority = '$queue_priority' and call_date < \"$SQLdateBEGIN\") );";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+					$dbhP=$dbhA;   $mysql_count='02247';   $MEL_aff_rows=$sthArows;   &mysql_error_logging;
+				$dbcQ=0;
+				while ($sthArows > $dbcQ)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$qp_groupWAIT_aco .= "'$aryA[0]',";
+					if ($dbc > 0) 
+						{
+						$qp_groupWAIT .= "and ";
+						}
+					$qp_groupWAIT .= "closer_campaigns NOT LIKE \"% $aryA[0] %\" ";
+					$dbc++;
+					$dbcQ++;
+					}
+
 				if (length($qp_groupWAIT_aco)>2)
 					{chop($qp_groupWAIT_aco);}
 				else
@@ -4715,6 +4829,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 		# - PRESS_CALLMENU
 		# - PRESS_CID_CALLBACK
 		# - PRESS_INGROUP
+		# - PRESS_CALLBACK_QUEUE
 
 		if ($wait_time_option_SETTING =~ /PRESS_/)
 			{
@@ -4791,6 +4906,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 					if ($wait_time_option_SETTING =~ /PRESS_CALLMENU/)		{$wait_time_option = 'CALL_MENU';   $HT_status='WAITTO';}
 					if ($wait_time_option_SETTING =~ /PRESS_CID_CALLBACK/)	{$wait_time_option = 'CALLERID_CALLBACK';   $HT_status='WAITTO';}
 					if ($wait_time_option_SETTING =~ /PRESS_INGROUP/)		{$wait_time_option = 'IN_GROUP';   $HT_status='WAITTO';}
+					if ($wait_time_option_SETTING =~ /PRESS_CALLBACK_QUEUE/)	{$wait_time_option = 'CALLBACK_QUEUE';   $HT_status='WAITTO';}
 					}
 				if ($pin =~ /2/)
 					{
@@ -4801,6 +4917,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 					if ($wait_time_second_option =~ /PRESS_CALLMENU/)		{$wait_time_option = 'CALL_MENU';   $HT_status='WAITTO';}
 					if ($wait_time_second_option =~ /PRESS_CID_CALLBACK/)	{$wait_time_option = 'CALLERID_CALLBACK';   $HT_status='WAITTO';}
 					if ($wait_time_second_option =~ /PRESS_INGROUP/)		{$wait_time_option = 'IN_GROUP';   $HT_status='WAITTO';}
+					if ($wait_time_second_option =~ /PRESS_CALLBACK_QUEUE/)		{$wait_time_option = 'CALLBACK_QUEUE';   $HT_status='WAITTO';}
 					}
 				if ($pin =~ /3/)
 					{
@@ -4811,6 +4928,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 					if ($wait_time_third_option =~ /PRESS_CALLMENU/)		{$wait_time_option = 'CALL_MENU';   $HT_status='WAITTO';}
 					if ($wait_time_third_option =~ /PRESS_CID_CALLBACK/)	{$wait_time_option = 'CALLERID_CALLBACK';   $HT_status='WAITTO';}
 					if ($wait_time_third_option =~ /PRESS_INGROUP/)			{$wait_time_option = 'IN_GROUP';   $HT_status='WAITTO';}
+					if ($wait_time_third_option =~ /PRESS_CALLBACK_QUEUE/)		{$wait_time_option = 'CALLBACK_QUEUE';   $HT_status='WAITTO';}
 					}
 
 				if ($AGILOG) {$agi_string = "WAIT TIME OPTION PRESSED $pin: $wait_time_option|$HT_status";   &agi_output;}
@@ -4958,6 +5076,8 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 				$populate_provinceA='';   $populate_provinceB='';
 				if ($populate_lead_province =~ /did/i) 
 					{&populate_lead_province_process;}
+				if ($add_lead_timezone =~ /PHONE_CODE_AREACODE/) 
+					{&lead_timezone_process;}
 				### insert a record into the vicidial_list table 
 				$stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now,comments$entry_list_idSQLa$INSERTstateSQLa$INSERTpostal_codeSQLa$populate_provinceA) values('$SQLdate','$tsSQLdate','INBND','$fronter','$vendor_id','VDCL','$wait_time_option_callback_list_id','N','$phone_code','$phone_number','$ingroup_insert','$called_count','$local_gmt','$VLcomments'$entry_list_idSQLb$INSERTstateSQLb$INSERTpostal_codeSQLb$populate_provinceB);";
 				$affected_rows = $dbhA->do($stmtA);
@@ -5006,7 +5126,40 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 				{
 				$wait_in_queue = 2; #continue waiting
 				}
-			
+			}
+		if ($wait_time_option =~ /CALLBACK_QUEUE/)
+			{
+			if (length($wait_time_option_exten)>0)
+				{$DROPexten = "$wait_time_option_exten";}
+			# if callerid is not valid do not execute
+			if ( ( length($phone_number) > 6 ) && ( $phone_number > 0) )
+				{
+				### insert a record into the vicidial_inbound_callback_queue table 
+				$stmtA = "INSERT INTO vicidial_inbound_callback_queue SET icbq_date=NOW(),icbq_status='NEW',icbq_phone_number='$phone_number',icbq_phone_code='$phone_code',icbq_nextday_choice='U',lead_id='$insert_lead_id',group_id='$channel_group',queue_priority='$queue_priority',call_date='$SQLdateBEGIN',gmt_offset_now='$local_gmt';";
+				$affected_rows = $dbhA->do($stmtA);
+					$dbhP=$dbhA;   $mysql_count='02228';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
+				$stmtB = "SELECT LAST_INSERT_ID() LIMIT 1;";
+				$sthA = $dbhA->prepare($stmtB) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+					$dbhP=$dbhA;   $stmtA=$stmtB;   $mysql_count='02229';   $MEL_aff_rows=$sthArows;   &mysql_error_logging;
+				if ($sthArows > 0)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$CALLBACK_insert_icbq_id = $aryA[0];
+					}
+				$sthA->finish();
+
+				if ($AGILOG) {$agi_string = "VDAD vicidial_inbound_callback_queue insert |$CALLBACK_insert_icbq_id|$stmtA|";   &agi_output;}
+
+				$DROPexten = "8300";
+
+				$play_post_press_audio=1;
+				}
+			else
+				{
+				$wait_in_queue = 2; #continue waiting
+				}
 			}
 
 		if ($AGILOG) {$agi_string = "--    VDCL WAIT TIME OPT: |$wait_time_option|$DROPexten|$wait_in_queue|";   &agi_output;}
@@ -5170,6 +5323,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 				# - PRESS_CALLMENU
 				# - PRESS_CID_CALLBACK
 				# - PRESS_INGROUP
+				# - PRESS_CALLBACK_QUEUE
 
 				### BEGIN hold time option press-123 options ###
 				if ($hold_time_option_SETTING =~ /PRESS_/)
@@ -5247,6 +5401,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 							if ($hold_time_option_SETTING =~ /PRESS_CALLMENU/)		{$hold_time_option = 'CALL_MENU';   $HT_status='WAITTO';}
 							if ($hold_time_option_SETTING =~ /PRESS_CID_CALLBACK/)	{$hold_time_option = 'CALLERID_CALLBACK';   $HT_status='WAITTO';}
 							if ($hold_time_option_SETTING =~ /PRESS_INGROUP/)		{$hold_time_option = 'IN_GROUP';   $HT_status='WAITTO';}
+							if ($hold_time_option_SETTING =~ /PRESS_CALLBACK_QUEUE/)	{$hold_time_option = 'CALLBACK_QUEUE';   $HT_status='WAITTO';}
 							}
 						if ($pin =~ /2/)
 							{
@@ -5257,6 +5412,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 							if ($hold_time_second_option =~ /PRESS_CALLMENU/)		{$hold_time_option = 'CALL_MENU';   $HT_status='WAITTO';}
 							if ($hold_time_second_option =~ /PRESS_CID_CALLBACK/)	{$hold_time_option = 'CALLERID_CALLBACK';   $HT_status='WAITTO';}
 							if ($hold_time_second_option =~ /PRESS_INGROUP/)		{$hold_time_option = 'IN_GROUP';   $HT_status='WAITTO';}
+							if ($hold_time_second_option =~ /PRESS_CALLBACK_QUEUE/)		{$hold_time_option = 'CALLBACK_QUEUE';   $HT_status='WAITTO';}
 							}
 						if ($pin =~ /3/)
 							{
@@ -5267,6 +5423,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 							if ($hold_time_third_option =~ /PRESS_CALLMENU/)		{$hold_time_option = 'CALL_MENU';   $HT_status='WAITTO';}
 							if ($hold_time_third_option =~ /PRESS_CID_CALLBACK/)	{$hold_time_option = 'CALLERID_CALLBACK';   $HT_status='WAITTO';}
 							if ($hold_time_third_option =~ /PRESS_INGROUP/)			{$hold_time_option = 'IN_GROUP';   $HT_status='WAITTO';}
+							if ($hold_time_third_option =~ /PRESS_CALLBACK_QUEUE/)		{$hold_time_option = 'CALLBACK_QUEUE';   $HT_status='WAITTO';}
 							}
 
 						if ($AGILOG) {$agi_string = "HOLD TIME OPTION PRESSED $pin: $hold_time_option|$HT_status";   &agi_output;}
@@ -5415,6 +5572,8 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 						$populate_provinceA='';   $populate_provinceB='';
 						if ($populate_lead_province =~ /did/i) 
 							{&populate_lead_province_process;}
+						if ($add_lead_timezone =~ /PHONE_CODE_AREACODE/) 
+							{&lead_timezone_process;}
 						### insert a record into the vicidial_list table 
 						$stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now,comments$entry_list_idSQLa$INSERTstateSQLa$INSERTpostal_codeSQLa$populate_provinceA) values('$SQLdate','$tsSQLdate','INBND','$fronter','$vendor_id','VDCL','$hold_time_option_callback_list_id','N','$phone_code','$phone_number','$ingroup_insert','$called_count','$local_gmt','$VLcomments'$entry_list_idSQLb$INSERTstateSQLb$INSERTpostal_codeSQLb$populate_provinceB);";
 						$affected_rows = $dbhA->do($stmtA);
@@ -5454,6 +5613,40 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 						### END the Add-Lead-URL get process
 
 						if ($AGILOG) {$agi_string = "VDAD vicidial_list insert |$CALLBACK_insert_lead_id|$stmtA|";   &agi_output;}
+
+						$DROPexten = "8300";
+
+						$play_post_press_audio=1;
+						}
+					else
+						{
+						$wait_in_queue = 2; #continue waiting
+						}
+					}
+				if ($hold_time_option =~ /CALLBACK_QUEUE/)
+					{
+					if (length($hold_time_option_exten)>0)
+						{$DROPexten = "$hold_time_option_exten";}
+					# if callerid is not valid do not execute
+					if ( ( length($phone_number) > 6 ) && ( $phone_number > 0) )
+						{
+						### insert a record into the vicidial_inbound_callback_queue table 
+						$stmtA = "INSERT INTO vicidial_inbound_callback_queue SET icbq_date=NOW(),icbq_status='NEW',icbq_phone_number='$phone_number',icbq_phone_code='$phone_code',icbq_nextday_choice='U',lead_id='$insert_lead_id',group_id='$channel_group',queue_priority='$queue_priority',call_date='$SQLdateBEGIN',gmt_offset_now='$local_gmt';";
+						$affected_rows = $dbhA->do($stmtA);
+							$dbhP=$dbhA;   $mysql_count='02230';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
+						$stmtB = "SELECT LAST_INSERT_ID() LIMIT 1;";
+						$sthA = $dbhA->prepare($stmtB) or die "preparing: ",$dbhA->errstr;
+						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+						$sthArows=$sthA->rows;
+							$dbhP=$dbhA;   $stmtA=$stmtB;   $mysql_count='02231';   $MEL_aff_rows=$sthArows;   &mysql_error_logging;
+						if ($sthArows > 0)
+							{
+							@aryA = $sthA->fetchrow_array;
+							$CALLBACK_insert_icbq_id = $aryA[0];
+							}
+						$sthA->finish();
+
+						if ($AGILOG) {$agi_string = "VDAD vicidial_inbound_callback_queue insert |$CALLBACK_insert_icbq_id|$stmtA|";   &agi_output;}
 
 						$DROPexten = "8300";
 
@@ -5668,6 +5861,429 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 	#	if ($AGILOG) {$agi_string = "--    VDAD : |$affected_rows|update vac table: $callerid\n|$stmtA|$drop_timer ($NOWsec - $start_epoch)|";   &agi_output;}
 		}
 	}
+
+
+
+###################################################
+### BEGIN final Closing-Now process options ###
+###################################################
+if ($closing_check > 0)
+	{
+	$pin='';
+	$DROPexten = ''; 
+	$exitwithkey=0;
+	$play_post_press_audio=0;
+	$closing_time_action_SETTING = $closing_time_action;
+
+	### Available Closing-Time options:
+	# - PRESS_VMAIL
+	# - PRESS_VMAIL_NO_INST
+	# - PRESS_EXTEN
+	# - PRESS_CALLMENU
+	# - PRESS_CID_CALLBACK
+	# - PRESS_INGROUP
+	# - PRESS_CALLBACK_QUEUE
+	# - VMAIL
+	# - VMAIL_NO_INST
+	# - EXTEN
+	# - CALLMENU
+	# - INGROUP
+
+	if ($closing_time_action_SETTING =~ /PRESS_/)
+		{
+		$now_date_epoch = time();
+		$HTO_no_block_SQL = '';
+		$NBDtarget = $now_date_epoch;
+		($NBsec,$NBmin,$NBhour,$NBmday,$NBmon,$NByear,$NBwday,$NByday,$NBisdst) = localtime($NBDtarget);
+		$NByear = ($NByear + 1900);
+		$NBmon++;
+		if ($NBmon < 10) {$NBmon = "0$NBmon";}
+		if ($NBmday < 10) {$NBmday = "0$NBmday";}
+		if ($NBhour < 10) {$NBhour = "0$NBhour";}
+		if ($NBmin < 10) {$NBmin = "0$NBmin";}
+		if ($NBsec < 10) {$NBsec = "0$NBsec";}
+			$NB_SQLdate = "$NByear-$NBmon-$NBmday $NBhour:$NBmin:$NBsec";
+		$HTO_no_block_SQL = ",call_time='$NB_SQLdate'";
+
+		$FDtarget = ($now_date_epoch + 60);
+		($Fsec,$Fmin,$Fhour,$Fmday,$Fmon,$Fyear,$Fwday,$Fyday,$Fisdst) = localtime($FDtarget);
+		$Fyear = ($Fyear + 1900);
+		$Fmon++;
+		if ($Fmon < 10) {$Fmon = "0$Fmon";}
+		if ($Fmday < 10) {$Fmday = "0$Fmday";}
+		if ($Fhour < 10) {$Fhour = "0$Fhour";}
+		if ($Fmin < 10) {$Fmin = "0$Fmin";}
+		if ($Fsec < 10) {$Fsec = "0$Fsec";}
+			$FDtsSQLdate = "$Fyear$Fmon$Fmday$Fhour$Fmin$Fsec";
+
+		$stmtA = "UPDATE vicidial_auto_calls set last_update_time='$FDtsSQLdate' $HTO_no_block_SQL where callerid='$callerid' order by call_time desc limit 1;";
+		$affected_rows = $dbhA->do($stmtA);
+			$dbhP=$dbhA;   $mysql_count='02232';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
+		if ($AGILOG) {$agi_string = "--    VDAC posttime record for Closing-Time: |$affected_rows|$FDtsSQLdate|$callerid|$HTO_no_block_SQL|";   &agi_output;}
+
+		$AGI->stream_file('sip-silence'); # stop music-on-hold process
+		$AGI->stream_file('sip-silence'); # stop music-on-hold process
+		$AGI->stream_file('sip-silence'); # stop music-on-hold process
+
+		$HTO_digits="1";
+		$HTO_filename=$closing_time_filename;
+
+		&press_one_hold_time_option_prompt;
+
+		if ($pin =~ /1/)
+			{
+			$now_date_epoch = time();
+			$drop_timer = ($now_date_epoch - $start_epoch);
+
+			if ($pin =~ /1/)
+				{
+				if ($closing_time_action_SETTING =~ /PRESS_VMAIL/)			{$closing_time_action = 'VOICEMAIL';   $HT_status='QVMAIL';}
+				if ($closing_time_action_SETTING =~ /PRESS_VMAIL_NO_INST/)	{$closing_time_action = 'VMAIL_NO_INST';   $HT_status='QVMAIL';}
+				if ($closing_time_action_SETTING =~ /PRESS_EXTEN/)			{$closing_time_action = 'EXTENSION';   $HT_status='CLOSOP';}
+				if ($closing_time_action_SETTING =~ /PRESS_CALLMENU/)		{$closing_time_action = 'CALL_MENU';   $HT_status='CLOSOP';}
+				if ($closing_time_action_SETTING =~ /PRESS_CID_CALLBACK/)	{$closing_time_action = 'CALLERID_CALLBACK';   $HT_status='CLOSOP';}
+				if ($closing_time_action_SETTING =~ /PRESS_INGROUP/)		{$closing_time_action = 'IN_GROUP';   $HT_status='CLOSOP';}
+				if ($closing_time_action_SETTING =~ /PRESS_CALLBACK_QUEUE/)	{$closing_time_action = 'CALLBACK_QUEUE';   $HT_status='CLOSOP';}
+				}
+
+			if ($AGILOG) {$agi_string = "CLOSING TIME OPTION PRESSED $pin: $closing_time_action|$HT_status";   &agi_output;}
+
+			if ($closing_time_action !~ /STAY_IN_QUEUE/)
+				{
+				$play_post_press_audio=1;
+
+				if ($enable_queuemetrics_logging > 0)
+					{
+					$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+					 or die "Couldn't connect to database: " . DBI->errstr;
+
+					$place=0;
+					if ($rec_countWAIT > 0) {$place = $rec_countWAIT;}
+					if ($rec_countWAITrem > 0) {$place = $rec_countWAITrem;}
+					$place++;
+
+					$stmtB = "INSERT INTO queue_log SET `partition`='P01',time_id='$now_date_epoch',call_id='$YqueryCID',queue='$channel_group',agent='NONE',verb='EXITWITHKEY',data1='1',data2='$place',serverid='$queuemetrics_log_id';";
+					$Baffected_rows = $dbhB->do($stmtB);
+						$dbhP=$dbhB;   $stmtA=$stmtB;   $mysql_count='02233';   $MEL_aff_rows=$Baffected_rows;   &mysql_error_logging;
+
+					$stmtB = "INSERT INTO queue_log SET `partition`='P01',time_id='$now_date_epoch',call_id='$YqueryCID',queue='$channel_group',agent='NONE',verb='CALLSTATUS',data1='QVMAIL',serverid='$queuemetrics_log_id';";
+					$Baffected_rows = $dbhB->do($stmtB);
+						$dbhP=$dbhB;   $stmtA=$stmtB;   $mysql_count='02234';   $MEL_aff_rows=$Baffected_rows;   &mysql_error_logging;
+
+					$exitwithkey++;
+
+					$dbhB->disconnect();
+					}
+				}
+			}
+		}
+	### END closing-time option press 1 options ###
+
+	if ($closing_time_action =~ /EXTENSION/)
+		{
+		if (length($closing_time_option_exten)>0)
+			{
+			$DROPexten = "$closing_time_option_exten";
+
+			if ( ($channel_group =~ /AGENTDIRECT/i) && (length($agent_only) > 1) && ($DROPexten =~ /AGENTEXT/) )
+				{
+				### Grab user's custom_five field from the database
+				$stmtA = "SELECT custom_five FROM vicidial_users where user='$agent_only';";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+					$dbhP=$dbhA;   $mysql_count='02246';   $MEL_aff_rows=$sthArows;   &mysql_error_logging;
+				if ($sthArows > 0)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$DROPexten = 	$aryA[0];
+					}
+				$sthA->finish();
+				}
+
+			$newcallerid = "\"$callerid <$transfer_cid>\"";
+			$AGI->set_callerid($newcallerid);
+			print STDERR "Setting CID \"$newcallerid\"\n";
+			checkresult($result);
+			if ($AGILOG) {$agi_string = "callerID changed: \"$callerid\" \<$transfer_cid\>";   &agi_output;}
+			}
+		}
+
+	if ($closing_time_action =~ /VOICEMAIL|VMAIL_NO_INST/)
+		{
+		if ( ($channel_group =~ /AGENTDIRECT/i) && (length($agent_only) > 1) && ($closing_time_option_voicemail =~ /AGENTVMAIL/) )
+			{
+			### Grab user's voicemail ID from the database
+			$stmtA = "SELECT voicemail_id FROM vicidial_users where user='$agent_only';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+				$dbhP=$dbhA;   $mysql_count='02235';   $MEL_aff_rows=$sthArows;   &mysql_error_logging;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$closing_time_option_voicemail = 	$aryA[0];
+				}
+			$sthA->finish();
+			}
+		$newcallerid = "\"$VCcallerid <$transfer_cid>\"";
+		$AGI->set_callerid($newcallerid);
+		print STDERR "Setting CID \"$newcallerid\"\n";
+		checkresult($result);
+		if ($AGILOG) {$agi_string = "callerID changed: $newcallerid";   &agi_output;}
+		if ($closing_time_action =~ /VMAIL_NO_INST/) 
+			{$voicemail_dump_exten = $voicemail_dump_exten_no_inst;}
+		if (length($closing_time_option_voicemail)>0)
+			{$DROPexten = "$voicemail_dump_exten$closing_time_option_voicemail";}
+		}
+	if ($closing_time_action =~ /CALL_MENU/)
+		{
+		$newcallerid = "\"$VCcallerid <$transfer_cid>\"";
+		if ($action_xfer_cid =~ /CLOSER/)
+				{$newcallerid = "\"$XXqueryCID <$transfer_cid>\"";}
+		$AGI->set_callerid($newcallerid);
+		print STDERR "Setting CID \"$newcallerid\"\n";
+		checkresult($result);
+		if ($AGILOG) {$agi_string = "callerID changed: $newcallerid";   &agi_output;}
+		if ( (length($closing_time_option_callmenu)>0) && ($closing_time_option_callmenu !~ /---NONE---/) )
+			{
+			$DROPexten = "s";
+			$ext_context = "$closing_time_option_callmenu";
+
+			if ($enable_queuemetrics_logging > 0)
+				{
+				$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+				 or die "Couldn't connect to database: " . DBI->errstr;
+
+				if ($DBX) {print "CONNECTED TO QM DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
+
+				$stmtB = "INSERT INTO queue_log SET `partition`='P01',time_id='$now_date_epoch',call_id='$YqueryCID',queue='NONE',agent='NONE',verb='INFO',data1='IVRSTART',data2='$phone_number',data3='$channel_group',serverid='$queuemetrics_log_id';";
+				$Baffected_rows = $dbhB->do($stmtB);
+					$dbhP=$dbhB;   $stmtA=$stmtB;   $mysql_count='02236';   $MEL_aff_rows=$Baffected_rows;   &mysql_error_logging;
+				}
+			}
+		}
+	if ($closing_time_action =~ /IN_GROUP/)
+		{ # 90009*CL_uk3survy_*8301*10000123*universal*7275551212*1234*"
+		$DROPexten = "90009*$closing_time_option_xfer_group$S$S$insert_lead_id$S$S$phone_number$S$fronter$S";
+		}
+	if ($closing_time_action =~ /CALLERID_CALLBACK/)
+		{
+		if (length($closing_time_option_exten)>0)
+			{$DROPexten = "$closing_time_option_exten";}
+		# if callerid is not valid do not execute
+		if ( ( length($phone_number) > 6 ) && ( $phone_number > 0) )
+			{
+			$entry_list_idSQLa='';   $entry_list_idSQLb='';
+			if ( ($enable_did_entry_list_id > 0) && ($entry_list_id > 0) ) 
+				{
+				$entry_list_idSQLa=',entry_list_id';
+				$entry_list_idSQLb=",'$entry_list_id'";
+				}
+			$ingroup_insert = $channel_group;
+			if ($populate_lead_ingroup =~ /DISABLED/) {$ingroup_insert='';}
+			$populate_provinceA='';   $populate_provinceB='';
+			if ($populate_lead_province =~ /did/i) 
+				{&populate_lead_province_process;}
+			if ($add_lead_timezone =~ /PHONE_CODE_AREACODE/) 
+				{&lead_timezone_process;}
+			### insert a record into the vicidial_list table 
+			$stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now,comments$entry_list_idSQLa$INSERTstateSQLa$INSERTpostal_codeSQLa$populate_provinceA) values('$SQLdate','$tsSQLdate','INBND','$fronter','$vendor_id','VDCL','$closing_time_option_callback_list_id','N','$phone_code','$phone_number','$ingroup_insert','$called_count','$local_gmt','$VLcomments'$entry_list_idSQLb$INSERTstateSQLb$INSERTpostal_codeSQLb$populate_provinceB);";
+			$affected_rows = $dbhA->do($stmtA);
+				$dbhP=$dbhA;   $mysql_count='02237';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
+			$stmtB = "SELECT LAST_INSERT_ID() LIMIT 1;";
+			$sthA = $dbhA->prepare($stmtB) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+				$dbhP=$dbhA;   $stmtA=$stmtB;   $mysql_count='02238';   $MEL_aff_rows=$sthArows;   &mysql_error_logging;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$CALLBACK_insert_lead_id = $aryA[0];
+				}
+			$sthA->finish();
+
+			### BEGIN the Add-Lead-URL get process
+			if (length($add_lead_url) > 5)
+				{
+				$launch = $PATHhome . "/AST_send_URL.pl";
+				$launch .= " --SYSLOG" if ($SYSLOG);
+				$launch .= " --lead_id=" . $CALLBACK_insert_lead_id;
+				$launch .= " --phone_number=" . $phone_number;
+				$launch .= " --user=";
+				$launch .= " --call_type=IN";
+				$launch .= " --campaign=" . $channel_group;
+				$launch .= " --uniqueid=" . $uniqueid;
+				$launch .= " --call_id=" . $callerid;
+				$launch .= " --list_id=" . $closing_time_option_callback_list_id;
+				$launch .= " --alt_dial=MAIN";
+				$launch .= " --function=INGROUP_ADD_LEAD_URL";
+
+				system($launch . ' &');
+
+				if ($AGILOG) {$agi_string = "$launch|";   &agi_output;}
+				}
+			### END the Add-Lead-URL get process
+
+			if ($AGILOG) {$agi_string = "VDAD vicidial_list insert |$CALLBACK_insert_lead_id|$stmtA|";   &agi_output;}
+
+			$DROPexten = "8300";
+
+			$play_post_press_audio=1;
+			}
+		}
+	if ($closing_time_action =~ /CALLBACK_QUEUE/)
+		{
+		if (length($closing_time_option_exten)>0)
+			{$DROPexten = "$closing_time_option_exten";}
+		# if callerid is not valid do not execute
+		if ( ( length($phone_number) > 6 ) && ( $phone_number > 0) )
+			{
+			### insert a record into the vicidial_inbound_callback_queue table 
+			$stmtA = "INSERT INTO vicidial_inbound_callback_queue SET icbq_date=NOW(),icbq_status='NEW',icbq_phone_number='$phone_number',icbq_phone_code='$phone_code',icbq_nextday_choice='U',lead_id='$insert_lead_id',group_id='$channel_group',queue_priority='$queue_priority',call_date='$SQLdateBEGIN',gmt_offset_now='$local_gmt';";
+			$affected_rows = $dbhA->do($stmtA);
+				$dbhP=$dbhA;   $mysql_count='02239';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
+			$stmtB = "SELECT LAST_INSERT_ID() LIMIT 1;";
+			$sthA = $dbhA->prepare($stmtB) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+				$dbhP=$dbhA;   $stmtA=$stmtB;   $mysql_count='02240';   $MEL_aff_rows=$sthArows;   &mysql_error_logging;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$CALLBACK_insert_icbq_id = $aryA[0];
+				}
+			$sthA->finish();
+
+			if ($AGILOG) {$agi_string = "VDAD vicidial_inbound_callback_queue insert |$CALLBACK_insert_icbq_id|$stmtA|";   &agi_output;}
+
+			$DROPexten = "8300";
+
+			$play_post_press_audio=1;
+			}
+		}
+
+	if ($AGILOG) {$agi_string = "--    VDCL CLOSING-TIME OPT: |$closing_time_action|$DROPexten|";   &agi_output;}
+
+	if (length($DROPexten)>0)
+		{	### if DROP extension is defined then send the dropped call there instead of hangup
+
+		### use STDOUT to send call to proper DROP location
+		$VHqueryCID = "VH$CIDdate$VDADconf_exten";
+
+		if ($no_delay_call_route =~ /N/)
+			{
+			$AGI->stream_file('sip-silence'); # stop music-on-hold process
+			$AGI->stream_file('sip-silence');
+			### sleep for 99 hundredths of a second
+			usleep(1*990*1000);
+			}
+
+		$now_date_epoch = time();
+
+		$stmtA = "DELETE FROM vicidial_auto_calls where callerid='$callerid' and server_ip='$VARserver_ip' order by call_time desc limit 1;";
+		$affected_rows = $dbhA->do($stmtA);
+			$dbhP=$dbhA;   $mysql_count='02241';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
+		if ($AGILOG) {$agi_string = "--    VDCL vac record deleted: |$affected_rows| $channel_group|";   &agi_output;}
+
+		$called_since_last_resetSQL='';
+		if ( ($closing_time_action =~ /VOICEMAIL|HANGUP|MESSAGE|VMAIL_NO_INST/) && ($closing_time_lead_reset =~ /Y/) )
+			{$called_since_last_resetSQL = ",called_since_last_reset='N'";}
+		
+		$populate_provinceUPDATE='';
+		if ($populate_lead_province =~ /OW_did/i) 
+			{&populate_lead_province_process;}
+		$stmtA = "UPDATE vicidial_list set status='CLOSOP' $populate_provinceUPDATE $UPDATEstateSQL $called_since_last_resetSQL where lead_id = '$insert_lead_id';";
+		$affected_rows = $dbhA->do($stmtA);
+			$dbhP=$dbhA;   $mysql_count='02242';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
+		if ($AGILOG) {$agi_string = "--    VDCL vl update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
+
+		if ($drop_seconds < 1) {$drop_seconds = $drop_timer;}
+
+		if (length($HT_status)<1) {$HT_status='CLOSOP';}
+		$stmtA = "UPDATE vicidial_closer_log set status='$HT_status',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds',term_reason='CLOSETIME' where lead_id = '$insert_lead_id' order by closecallid desc limit 1;";
+		$affected_rows = $dbhA->do($stmtA);
+			$dbhP=$dbhA;   $mysql_count='02243';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
+		if ($AGILOG) {$agi_string = "--    VDCL vcl update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
+
+		if ($enable_drop_lists > 0) 
+			{
+			$stmtA="INSERT IGNORE INTO vicidial_drop_log SET uniqueid='$uniqueid',server_ip='$VARserver_ip',drop_date=NOW(),lead_id='$insert_lead_id',campaign_id='$VD_campaign_id',status='$HT_status',phone_code='$phone_code',phone_number='$phone_number';";
+			$VDDLaffected_rows = $dbhA->do($stmtA);
+			if ($AGILOG) {$agi_string = "--    vicidial_drop_log insert: |$VDDLaffected_rows|$uniqueid|$insert_lead_id|$HT_status|";   &agi_output;}
+			}
+
+		if ( ($enable_queuemetrics_logging > 0) && ($exitwithkey < 1) )
+			{
+			$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+			 or die "Couldn't connect to database: " . DBI->errstr;
+
+			if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
+
+			$place=0;
+			if ($rec_countWAIT > 0) {$place = $rec_countWAIT;}
+			if ($rec_countWAITrem > 0) {$place = $rec_countWAITrem;}
+			$place++;
+
+			$stmtB = "INSERT INTO queue_log SET `partition`='P01',time_id='$now_date_epoch',call_id='$YqueryCID',queue='$channel_group',agent='NONE',verb='EXITWITHKEY',data1='2',data2='$place',serverid='$queuemetrics_log_id';";
+			$Baffected_rows = $dbhB->do($stmtB);
+				$dbhP=$dbhB;   $stmtA=$stmtB;   $mysql_count='02244';   $MEL_aff_rows=$Baffected_rows;   &mysql_error_logging;
+
+			$stmtB = "INSERT INTO queue_log SET `partition`='P01',time_id='$now_date_epoch',call_id='$YqueryCID',queue='$channel_group',agent='NONE',verb='CALLSTATUS',data1='CLOSOP',serverid='$queuemetrics_log_id';";
+			$Baffected_rows = $dbhB->do($stmtB);
+				$dbhP=$dbhB;   $stmtA=$stmtB;   $mysql_count='02245';   $MEL_aff_rows=$Baffected_rows;   &mysql_error_logging;
+
+			$dbhB->disconnect();
+			}
+
+		$AGI->stream_file('sip-silence');
+		$AGI->stream_file('sip-silence');
+
+		if ( (length($closing_time_end_filename) > 0) && ($play_post_press_audio > 0) )
+			{
+			$AGI->stream_file('sip-silence'); # stop music-on-hold process
+			$AGI->stream_file('sip-silence'); # stop music-on-hold process
+			if ($closing_time_end_filename =~ /\|/)
+				{
+				@closing_time_end_filename_array = split(/\|/,$closing_time_end_filename);
+				$w=0;
+				foreach(@closing_time_end_filename_array)
+					{
+					if (length($closing_time_end_filename_array[$w])>0)
+						{
+						$AGI->stream_file("$closing_time_end_filename_array[$w]");
+						}
+					$w++;
+					}
+				}
+			else
+				{$AGI->stream_file("$closing_time_end_filename");}
+			}
+
+		$AGI->stream_file('sip-silence');
+		$AGI->stream_file('sip-silence');
+
+		if ($AGILOG) {$agi_string = "exiting the VDAD app at Closing-Time, transferring call to $DROPexten";   &agi_output;}
+		print "SET CONTEXT $ext_context\n";
+			$result = <STDIN>;
+			checkresult($result);
+		print "SET EXTENSION $DROPexten\n";
+			$result = <STDIN>;
+			checkresult($result);
+		print "SET PRIORITY 1\n";
+			$result = <STDIN>;
+			checkresult($result);
+
+		$dbhA->disconnect();
+
+		exit;
+		}
+	}
+###################################################
+### END final Closing-Now process options ###
+###################################################
+
+
 
 ###################################################
 ### End of Loop to try to send call to an agent ###
@@ -6276,6 +6892,826 @@ sub populate_lead_province_process
 	else
 		{if ($AGILOG) {$agi_string = "No DID record found($uniqueid)|";   &agi_output;}}
 	}
+
+sub lead_timezone_process
+	{
+	$USarea = substr($phone_number, 0, 3);
+
+	$PC_processed=0;
+	### UNITED STATES ###
+	if ($phone_code =~ /^1$/)
+		{
+		$stmtA = "SELECT country_code,country,areacode,state,GMT_offset,DST,DST_range,geographic_description from vicidial_phone_codes where country_code='$phone_code' and areacode='$USarea';";
+			if($DBX){print STDERR "\n|$stmtA|\n";}
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		$rec_count=0;
+		while ($sthArows > $rec_count)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$gmt_offset =	$aryA[4];  $gmt_offset =~ s/\+| //gi;
+			$dst =			$aryA[5];
+			$dst_range =	$aryA[6];
+			$PC_processed++;
+			$rec_count++;
+			}
+		$sthA->finish();
+		}
+	### MEXICO ###
+	if ($phone_code =~ /^52$/)
+		{
+		$stmtA = "SELECT country_code,country,areacode,state,GMT_offset,DST,DST_range,geographic_description from vicidial_phone_codes where country_code='$phone_code' and areacode='$USarea';";
+			if($DBX){print STDERR "\n|$stmtA|\n";}
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		$rec_count=0;
+		while ($sthArows > $rec_count)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$gmt_offset =	$aryA[4];  $gmt_offset =~ s/\+| //gi;
+			$dst =			$aryA[5];
+			$dst_range =	$aryA[6];
+			$PC_processed++;
+			$rec_count++;
+			}
+		$sthA->finish();
+		}
+	### AUSTRALIA ###
+	if ($phone_code =~ /^61$/)
+		{
+		$stmtA = "SELECT country_code,country,areacode,state,GMT_offset,DST,DST_range,geographic_description from vicidial_phone_codes where country_code='$phone_code' and state='$state';";
+			if($DBX){print STDERR "\n|$stmtA|\n";}
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		$rec_count=0;
+		while ($sthArows > $rec_count)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$gmt_offset =	$aryA[4];  $gmt_offset =~ s/\+| //gi;
+			$dst =			$aryA[5];
+			$dst_range =	$aryA[6];
+			$PC_processed++;
+			$rec_count++;
+			}
+		$sthA->finish();
+		}
+	### ALL OTHER COUNTRY CODES ###
+	if (!$PC_processed)
+		{
+		$stmtA = "SELECT country_code,country,areacode,state,GMT_offset,DST,DST_range,geographic_description from vicidial_phone_codes where country_code='$phone_code';";
+			if($DBX){print STDERR "\n|$stmtA|\n";}
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		$rec_count=0;
+		while ($sthArows > $rec_count)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$gmt_offset =	$aryA[4];  $gmt_offset =~ s/\+| //gi;
+			$dst =			$aryA[5];
+			$dst_range =	$aryA[6];
+			$PC_processed++;
+			$rec_count++;
+			}
+		$sthA->finish();
+		}
+
+	### Find out if DST to raise the gmt offset ###
+	$now_date_epoch = time();
+		$AC_GMT_diff = ($area_GMT - $LOCAL_GMT_OFF_STD);
+		$AC_localtime = ($now_date_epoch + (3600 * $AC_GMT_diff));
+	($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($AC_localtime);
+	$year = ($year + 1900);
+	$mon++;
+	if ($mon < 10) {$mon = "0$mon";}
+	if ($mday < 10) {$mday = "0$mday";}
+	if ($hour < 10) {$hour = "0$hour";}
+	if ($min < 10) {$min = "0$min";}
+	if ($sec < 10) {$sec = "0$sec";}
+	$dsec = ( ( ($hour * 3600) + ($min * 60) ) + $sec );
+	
+	$AC_processed=0;
+
+	if ( (!$AC_processed) && ($dst_range =~ /SSM-FSN/) )
+		{
+		if ($DBX) {print "     Second Sunday March to First Sunday November\n";}
+		&USACAN_dstcalc;
+		if ($DBX) {print "     DST: $USACAN_DST\n";}
+		if ($USACAN_DST) {$gmt_offset++;}
+		$AC_processed++;
+		}
+	if ( (!$AC_processed) && ($dst_range =~ /FSA-LSO/) )
+		{
+		if ($DBX) {print "     First Sunday April to Last Sunday October\n";}
+		&NA_dstcalc;
+		if ($DBX) {print "     DST: $NA_DST\n";}
+		if ($NA_DST) {$gmt_offset++;}
+		$AC_processed++;
+		}
+	if ( (!$AC_processed) && ($dst_range =~ /LSM-LSO/) )
+		{
+		if ($DBX) {print "     Last Sunday March to Last Sunday October\n";}
+		&GBR_dstcalc;
+		if ($DBX) {print "     DST: $GBR_DST\n";}
+		if ($GBR_DST) {$gmt_offset++;}
+		$AC_processed++;
+		}
+	if ( (!$AC_processed) && ($dst_range =~ /LSO-LSM/) )
+		{
+		if ($DBX) {print "     Last Sunday October to Last Sunday March\n";}
+		&AUS_dstcalc;
+		if ($DBX) {print "     DST: $AUS_DST\n";}
+		if ($AUS_DST) {$gmt_offset++;}
+		$AC_processed++;
+		}
+	if ( (!$AC_processed) && ($dst_range =~ /FSO-LSM/) )
+		{
+		if ($DBX) {print "     First Sunday October to Last Sunday March\n";}
+		&AUST_dstcalc;
+		if ($DBX) {print "     DST: $AUST_DST\n";}
+		if ($AUST_DST) {$gmt_offset++;}
+		$AC_processed++;
+		}
+	if ( (!$AC_processed) && ($area_GMT_method =~ /FSO-FSA/) )
+		{
+		if ($DBX) {print "     First Sunday October to First Sunday April\n";}
+		&AUSE_dstcalc;
+		if ($DBX) {print "     DST: $AUSE_DST\n";}
+		if ($AUSE_DST) {$area_GMT++;}
+		$AC_processed++;
+		}
+	if ( (!$AC_processed) && ($dst_range =~ /FSO-TSM/) )
+		{
+		if ($DBX) {print "     First Sunday October to Third Sunday March\n";}
+		&NZL_dstcalc;
+		if ($DBX) {print "     DST: $NZL_DST\n";}
+		if ($NZL_DST) {$gmt_offset++;}
+		$AC_processed++;
+		}
+	if ( (!$AC_processed) && ($area_GMT_method =~ /LSS-FSA/) )
+		{
+		if ($DBX) {print "     Last Sunday September to First Sunday April\n";}
+		&NZLN_dstcalc;
+		if ($DBX) {print "     DST: $NZLN_DST\n";}
+		if ($NZLN_DST) {$area_GMT++;}
+		$AC_processed++;
+		}
+	if ( (!$AC_processed) && ($dst_range =~ /TSO-LSF/) )
+		{
+		if ($DBX) {print "     Third Sunday October to Last Sunday February\n";}
+		&BZL_dstcalc;
+		if ($DBX) {print "     DST: $BZL_DST\n";}
+		if ($BZL_DST) {$gmt_offset++;}
+		$AC_processed++;
+		}
+	if (!$AC_processed)
+		{
+		if ($DBX) {print "     No DST Method Found\n";}
+		if ($DBX) {print "     DST: 0\n";}
+		$AC_processed++;
+		if ($AGILOG) {$agi_string = "Timezone not found, using server timezone: $local_gmt";   &agi_output;}
+		}
+	else
+		{
+		if ($AGILOG) {$agi_string = "Timezone found: (LEAD: $gmt_offset   SERVER: $local_gmt)";   &agi_output;}
+		$local_gmt = $gmt_offset;
+		}
+	}
+
+
+sub USACAN_dstcalc {
+#**********************************************************************
+# SSM-FSN
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#       Standard time is in effect.
+#     Based on Second Sunday March to First Sunday November at 2 am.
+#     INPUTS:
+#       mm              INTEGER       Month.
+#       dd              INTEGER       Day of the month.
+#       ns              INTEGER       Seconds into the day.
+#       dow             INTEGER       Day of week (0=Sunday, to 6=Saturday)
+#     OPTIONAL INPUT:
+#       timezone        INTEGER       hour difference UTC - local standard time
+#                                      (DEFAULT is blank)
+#                                     make calculations based on UTC time, 
+#                                     which means shift at 10:00 UTC in April
+#                                     and 9:00 UTC in October
+#     OUTPUT: 
+#                       INTEGER       1 = DST, 0 = not DST
+#
+# S  M  T  W  T  F  S
+# 1  2  3  4  5  6  7
+# 8  9 10 11 12 13 14
+#15 16 17 18 19 20 21
+#22 23 24 25 26 27 28
+#29 30 31
+# 
+# S  M  T  W  T  F  S
+#    1  2  3  4  5  6
+# 7  8  9 10 11 12 13
+#14 15 16 17 18 19 20
+#21 22 23 24 25 26 27
+#28 29 30 31
+# 
+#**********************************************************************
+
+	$USACAN_DST=0;
+	$mm = $mon;
+	$dd = $mday;
+	$ns = $dsec;
+	$dow= $wday;
+
+    if ($mm < 3 || $mm > 11) {
+	$USACAN_DST=0;   return 0;
+    } elsif ($mm >= 4 && $mm <= 10) {
+	$USACAN_DST=1;   return 1;
+    } elsif ($mm == 3) {
+	if ($dd > 13) {
+	    $USACAN_DST=1;   return 1;
+	} elsif ($dd >= ($dow+8)) {
+	    if ($timezone) {
+		if ($dow == 0 && $ns < (7200+$timezone*3600)) {
+		    $USACAN_DST=0;   return 0;
+		} else {
+		    $USACAN_DST=1;   return 1;
+		}
+	    } else {
+		if ($dow == 0 && $ns < 7200) {
+		    $USACAN_DST=0;   return 0;
+		} else {
+		    $USACAN_DST=1;   return 1;
+		}
+	    }
+	} else {
+	    $USACAN_DST=0;   return 0;
+	}
+    } elsif ($mm == 11) {
+	if ($dd > 7) {
+	    $USACAN_DST=0;   return 0;
+	} elsif ($dd < ($dow+1)) {
+	    $USACAN_DST=1;   return 1;
+	} elsif ($dow == 0) {
+	    if ($timezone) { # UTC calculations
+		if ($ns < (7200+($timezone-1)*3600)) {
+		    $USACAN_DST=1;   return 1;
+		} else {
+		    $USACAN_DST=0;   return 0;
+		}
+	    } else { # local time calculations
+		if ($ns < 7200) {
+		    $USACAN_DST=1;   return 1;
+		} else {
+		    $USACAN_DST=0;   return 0;
+		}
+	    }
+	} else {
+	    $USACAN_DST=0;   return 0;
+	}
+    } # end of month checks
+} # end of subroutine dstcalc
+
+
+
+
+sub NA_dstcalc {
+#**********************************************************************
+# FSA-LSO
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#       Standard time is in effect.
+#     Based on first Sunday in April and last Sunday in October at 2 am.
+#**********************************************************************
+    
+	$NA_DST=0;
+	$mm = $mon;
+	$dd = $mday;
+	$ns = $dsec;
+	$dow= $wday;
+
+    if ($mm < 4 || $mm > 10) {
+	$NA_DST=0;   return 0;
+    } elsif ($mm >= 5 && $mm <= 9) {
+	$NA_DST=1;   return 1;
+    } elsif ($mm == 4) {
+	if ($dd > 7) {
+	    $NA_DST=1;   return 1;
+	} elsif ($dd >= ($dow+1)) {
+	    if ($timezone) {
+		if ($dow == 0 && $ns < (7200+$timezone*3600)) {
+		    $NA_DST=0;   return 0;
+		} else {
+		    $NA_DST=1;   return 1;
+		}
+	    } else {
+		if ($dow == 0 && $ns < 7200) {
+		    $NA_DST=0;   return 0;
+		} else {
+		    $NA_DST=1;   return 1;
+		}
+	    }
+	} else {
+	    $NA_DST=0;   return 0;
+	}
+    } elsif ($mm == 10) {
+	if ($dd < 25) {
+	    $NA_DST=1;   return 1;
+	} elsif ($dd < ($dow+25)) {
+	    $NA_DST=1;   return 1;
+	} elsif ($dow == 0) {
+	    if ($timezone) { # UTC calculations
+		if ($ns < (7200+($timezone-1)*3600)) {
+		    $NA_DST=1;   return 1;
+		} else {
+		    $NA_DST=0;   return 0;
+		}
+	    } else { # local time calculations
+		if ($ns < 7200) {
+		    $NA_DST=1;   return 1;
+		} else {
+		    $NA_DST=0;   return 0;
+		}
+	    }
+	} else {
+	    $NA_DST=0;   return 0;
+	}
+    } # end of month checks
+} # end of subroutine dstcalc
+
+
+
+
+sub GBR_dstcalc {
+#**********************************************************************
+# LSM-LSO
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#       Standard time is in effect.
+#     Based on last Sunday in March and last Sunday in October at 1 am.
+#**********************************************************************
+    
+	$GBR_DST=0;
+	$mm = $mon;
+	$dd = $mday;
+	$ns = $dsec;
+	$dow= $wday;
+
+    if ($mm < 3 || $mm > 10) {
+	$GBR_DST=0;   return 0;
+    } elsif ($mm >= 4 && $mm <= 9) {
+	$GBR_DST=1;   return 1;
+    } elsif ($mm == 3) {
+	if ($dd < 25) {
+	    $GBR_DST=0;   return 0;
+	} elsif ($dd < ($dow+25)) {
+	    $GBR_DST=0;   return 0;
+	} elsif ($dow == 0) {
+	    if ($timezone) { # UTC calculations
+		if ($ns < (3600+($timezone-1)*3600)) {
+		    $GBR_DST=0;   return 0;
+		} else {
+		    $GBR_DST=1;   return 1;
+		}
+	    } else { # local time calculations
+		if ($ns < 3600) {
+		    $GBR_DST=0;   return 0;
+		} else {
+		    $GBR_DST=1;   return 1;
+		}
+	    }
+	} else {
+	    $GBR_DST=1;   return 1;
+	}
+    } elsif ($mm == 10) {
+	if ($dd < 25) {
+	    $GBR_DST=1;   return 1;
+	} elsif ($dd < ($dow+25)) {
+	    $GBR_DST=1;   return 1;
+	} elsif ($dow == 0) {
+	    if ($timezone) { # UTC calculations
+		if ($ns < (3600+($timezone-1)*3600)) {
+		    $GBR_DST=1;   return 1;
+		} else {
+		    $GBR_DST=0;   return 0;
+		}
+	    } else { # local time calculations
+		if ($ns < 3600) {
+		    $GBR_DST=1;   return 1;
+		} else {
+		    $GBR_DST=0;   return 0;
+		}
+	    }
+	} else {
+	    $GBR_DST=0;   return 0;
+	}
+    } # end of month checks
+} # end of subroutine dstcalc
+
+
+
+
+sub AUS_dstcalc {
+#**********************************************************************
+# LSO-LSM
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#       Standard time is in effect.
+#     Based on last Sunday in October and last Sunday in March at 1 am.
+#**********************************************************************
+    
+	$AUS_DST=0;
+	$mm = $mon;
+	$dd = $mday;
+	$ns = $dsec;
+	$dow= $wday;
+
+    if ($mm < 3 || $mm > 10) {
+	$AUS_DST=1;   return 1;
+    } elsif ($mm >= 4 && $mm <= 9) {
+	$AUS_DST=0;   return 0;
+    } elsif ($mm == 3) {
+	if ($dd < 25) {
+	    $AUS_DST=1;   return 1;
+	} elsif ($dd < ($dow+25)) {
+	    $AUS_DST=1;   return 1;
+	} elsif ($dow == 0) {
+	    if ($timezone) { # UTC calculations
+		if ($ns < (3600+($timezone-1)*3600)) {
+		    $AUS_DST=1;   return 1;
+		} else {
+		    $AUS_DST=0;   return 0;
+		}
+	    } else { # local time calculations
+		if ($ns < 3600) {
+		    $AUS_DST=1;   return 1;
+		} else {
+		    $AUS_DST=0;   return 0;
+		}
+	    }
+	} else {
+	    $AUS_DST=0;   return 0;
+	}
+    } elsif ($mm == 10) {
+	if ($dd < 25) {
+	    $AUS_DST=0;   return 0;
+	} elsif ($dd < ($dow+25)) {
+	    $AUS_DST=0;   return 0;
+	} elsif ($dow == 0) {
+	    if ($timezone) { # UTC calculations
+		if ($ns < (3600+($timezone-1)*3600)) {
+		    $AUS_DST=0;   return 0;
+		} else {
+		    $AUS_DST=1;   return 1;
+		}
+	    } else { # local time calculations
+		if ($ns < 3600) {
+		    $AUS_DST=0;   return 0;
+		} else {
+		    $AUS_DST=1;   return 1;
+		}
+	    }
+	} else {
+	    $AUS_DST=1;   return 1;
+	}
+    } # end of month checks
+} # end of subroutine dstcalc
+
+
+
+
+
+sub AUST_dstcalc {
+#**********************************************************************
+# FSO-LSM
+#   TASMANIA ONLY
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#       Standard time is in effect.
+#     Based on first Sunday in October and last Sunday in March at 1 am.
+#**********************************************************************
+    
+	$AUST_DST=0;
+	$mm = $mon;
+	$dd = $mday;
+	$ns = $dsec;
+	$dow= $wday;
+
+    if ($mm < 3 || $mm > 10) {
+	$AUST_DST=1;   return 1;
+    } elsif ($mm >= 4 && $mm <= 9) {
+	$AUST_DST=0;   return 0;
+    } elsif ($mm == 3) {
+	if ($dd < 25) {
+	    $AUST_DST=1;   return 1;
+	} elsif ($dd < ($dow+25)) {
+	    $AUST_DST=1;   return 1;
+	} elsif ($dow == 0) {
+	    if ($timezone) { # UTC calculations
+		if ($ns < (3600+($timezone-1)*3600)) {
+		    $AUST_DST=1;   return 1;
+		} else {
+		    $AUST_DST=0;   return 0;
+		}
+	    } else { # local time calculations
+		if ($ns < 3600) {
+		    $AUST_DST=1;   return 1;
+		} else {
+		    $AUST_DST=0;   return 0;
+		}
+	    }
+	} else {
+	    $AUST_DST=0;   return 0;
+	}
+    } elsif ($mm == 10) {
+	if ($dd >= 8) {
+	    $AUST_DST=1;   return 1;
+	} elsif ($dd >= ($dow+1)) {
+	    if ($timezone) {
+		if ($dow == 0 && $ns < (7200+$timezone*3600)) {
+		    $AUST_DST=0;   return 0;
+		} else {
+		    $AUST_DST=1;   return 1;
+		}
+	    } else {
+		if ($dow == 0 && $ns < 3600) {
+		    $AUST_DST=0;   return 0;
+		} else {
+		    $AUST_DST=1;   return 1;
+		}
+	    }
+	} else {
+	    $AUST_DST=0;   return 0;
+	}
+    } # end of month checks
+} # end of subroutine dstcalc
+
+
+
+
+
+sub AUSE_dstcalc {
+#**********************************************************************
+# FSO-FSA
+#   2008+ AUSTRALIA ONLY (country code 61)
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#       Standard time is in effect.
+#     Based on first Sunday in October and first Sunday in April at 1 am.
+#**********************************************************************
+    
+	$AUSE_DST=0;
+	$mm = $mon;
+	$dd = $mday;
+	$ns = $dsec;
+	$dow= $wday;
+
+    if ($mm < 4 || $mm > 10) {
+	$AUSE_DST=1;   return 1;
+    } elsif ($mm >= 5 && $mm <= 9) {
+	$AUSE_DST=0;   return 0;
+    } elsif ($mm == 4) {
+	if ($dd > 7) {
+	    $AUSE_DST=0;   return 1;
+	} elsif ($dd >= ($dow+1)) {
+	    if ($timezone) {
+		if ($dow == 0 && $ns < (3600+$timezone*3600)) {
+		    $AUSE_DST=1;   return 0;
+		} else {
+		    $AUSE_DST=0;   return 1;
+		}
+	    } else {
+		if ($dow == 0 && $ns < 7200) {
+		    $AUSE_DST=1;   return 0;
+		} else {
+		    $AUSE_DST=0;   return 1;
+		}
+	    }
+	} else {
+	    $AUSE_DST=1;   return 0;
+	}
+    } elsif ($mm == 10) {
+	if ($dd >= 8) {
+	    $AUSE_DST=1;   return 1;
+	} elsif ($dd >= ($dow+1)) {
+	    if ($timezone) {
+		if ($dow == 0 && $ns < (7200+$timezone*3600)) {
+		    $AUSE_DST=0;   return 0;
+		} else {
+		    $AUSE_DST=1;   return 1;
+		}
+	    } else {
+		if ($dow == 0 && $ns < 3600) {
+		    $AUSE_DST=0;   return 0;
+		} else {
+		    $AUSE_DST=1;   return 1;
+		}
+	    }
+	} else {
+	    $AUSE_DST=0;   return 0;
+	}
+    } # end of month checks
+} # end of subroutine dstcalc
+
+
+
+
+
+sub NZL_dstcalc {
+#**********************************************************************
+# FSO-TSM
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#       Standard time is in effect.
+#     Based on first Sunday in October and third Sunday in March at 1 am.
+#**********************************************************************
+    
+	$NZL_DST=0;
+	$mm = $mon;
+	$dd = $mday;
+	$ns = $dsec;
+	$dow= $wday;
+
+    if ($mm < 3 || $mm > 10) {
+	$NZL_DST=1;   return 1;
+    } elsif ($mm >= 4 && $mm <= 9) {
+	$NZL_DST=0;   return 0;
+    } elsif ($mm == 3) {
+	if ($dd < 14) {
+	    $NZL_DST=1;   return 1;
+	} elsif ($dd < ($dow+14)) {
+	    $NZL_DST=1;   return 1;
+	} elsif ($dow == 0) {
+	    if ($timezone) { # UTC calculations
+		if ($ns < (3600+($timezone-1)*3600)) {
+		    $NZL_DST=1;   return 1;
+		} else {
+		    $NZL_DST=0;   return 0;
+		}
+	    } else { # local time calculations
+		if ($ns < 3600) {
+		    $NZL_DST=1;   return 1;
+		} else {
+		    $NZL_DST=0;   return 0;
+		}
+	    }
+	} else {
+	    $NZL_DST=0;   return 0;
+	}
+    } elsif ($mm == 10) {
+	if ($dd >= 8) {
+	    $NZL_DST=1;   return 1;
+	} elsif ($dd >= ($dow+1)) {
+	    if ($timezone) {
+		if ($dow == 0 && $ns < (7200+$timezone*3600)) {
+		    $NZL_DST=0;   return 0;
+		} else {
+		    $NZL_DST=1;   return 1;
+		}
+	    } else {
+		if ($dow == 0 && $ns < 3600) {
+		    $NZL_DST=0;   return 0;
+		} else {
+		    $NZL_DST=1;   return 1;
+		}
+	    }
+	} else {
+	    $NZL_DST=0;   return 0;
+	}
+    } # end of month checks
+} # end of subroutine dstcalc
+
+
+
+
+sub NZLN_dstcalc {
+#**********************************************************************
+# LSS-FSA
+#   2007+ NEW ZEALAND (country code 64)
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#       Standard time is in effect.
+#     Based on last Sunday in September and first Sunday in April at 1 am.
+#**********************************************************************
+    
+	$NZLN_DST=0;
+	$mm = $mon;
+	$dd = $mday;
+	$ns = $dsec;
+	$dow= $wday;
+
+    if ($mm < 4 || $mm > 9) {
+	$NZLN_DST=1;   return 1;
+    } elsif ($mm >= 5 && $mm <= 9) {
+	$NZLN_DST=0;   return 0;
+    } elsif ($mm == 4) {
+	if ($dd > 7) {
+	    $NZLN_DST=0;   return 1;
+	} elsif ($dd >= ($dow+1)) {
+	    if ($timezone) {
+		if ($dow == 0 && $ns < (3600+$timezone*3600)) {
+		    $NZLN_DST=1;   return 0;
+		} else {
+		    $NZLN_DST=0;   return 1;
+		}
+	    } else {
+		if ($dow == 0 && $ns < 7200) {
+		    $NZLN_DST=1;   return 0;
+		} else {
+		    $NZLN_DST=0;   return 1;
+		}
+	    }
+	} else {
+	    $NZLN_DST=1;   return 0;
+	}
+    } elsif ($mm == 9) {
+	if ($dd < 25) {
+	    $NZLN_DST=0;   return 0;
+	} elsif ($dd < ($dow+25)) {
+	    $NZLN_DST=0;   return 0;
+	} elsif ($dow == 0) {
+	    if ($timezone) { # UTC calculations
+		if ($ns < (3600+($timezone-1)*3600)) {
+		    $NZLN_DST=0;   return 0;
+		} else {
+		    $NZLN_DST=1;   return 1;
+		}
+	    } else { # local time calculations
+		if ($ns < 3600) {
+		    $NZLN_DST=0;   return 0;
+		} else {
+		    $NZLN_DST=1;   return 1;
+		}
+	    }
+	} else {
+	    $NZLN_DST=1;   return 1;
+	}
+    } # end of month checks
+} # end of subroutine dstcalc
+
+
+
+
+
+sub BZL_dstcalc {
+#**********************************************************************
+# TSO-LSF
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#       Standard time is in effect. Brazil
+#     Based on Third Sunday October to Last Sunday February at 1 am.
+#**********************************************************************
+    
+	$BZL_DST=0;
+	$mm = $mon;
+	$dd = $mday;
+	$ns = $dsec;
+	$dow= $wday;
+
+    if ($mm < 2 || $mm > 10) {
+	$BZL_DST=1;   return 1;
+    } elsif ($mm >= 3 && $mm <= 9) {
+	$BZL_DST=0;   return 0;
+    } elsif ($mm == 2) {
+	if ($dd < 22) {
+	    $BZL_DST=1;   return 1;
+	} elsif ($dd < ($dow+22)) {
+	    $BZL_DST=1;   return 1;
+	} elsif ($dow == 0) {
+	    if ($timezone) { # UTC calculations
+		if ($ns < (3600+($timezone-1)*3600)) {
+		    $BZL_DST=1;   return 1;
+		} else {
+		    $BZL_DST=0;   return 0;
+		}
+	    } else { # local time calculations
+		if ($ns < 3600) {
+		    $BZL_DST=1;   return 1;
+		} else {
+		    $BZL_DST=0;   return 0;
+		}
+	    }
+	} else {
+	    $BZL_DST=0;   return 0;
+	}
+    } elsif ($mm == 10) {
+	if ($dd < 22) {
+	    $BZL_DST=0;   return 0;
+	} elsif ($dd < ($dow+22)) {
+	    $BZL_DST=0;   return 0;
+	} elsif ($dow == 0) {
+	    if ($timezone) { # UTC calculations
+		if ($ns < (3600+($timezone-1)*3600)) {
+		    $BZL_DST=0;   return 0;
+		} else {
+		    $BZL_DST=1;   return 1;
+		}
+	    } else { # local time calculations
+		if ($ns < 3600) {
+		    $BZL_DST=0;   return 0;
+		} else {
+		    $BZL_DST=1;   return 1;
+		}
+	    }
+	} else {
+	    $BZL_DST=1;   return 1;
+	}
+    } # end of month checks
+} # end of subroutine dstcalc
+
 
 sub checkresult 
 	{

@@ -74,3 +74,4 @@ UNKXFR - CPD Unknown result Transfer to Call Menu or In-Group
 UNKAM - CPD Unknown call sent to a message to be played
 UNKAL - CPD Unknown call sent to a message and message has been played
 NVAINS - Default status for new inserted lead on phone NVA call
+CLOSOP - In-Group Closing-Time option selected
