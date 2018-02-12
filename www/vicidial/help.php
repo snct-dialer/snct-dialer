@@ -148,8 +148,10 @@
 # 171224-1027 - Added lists-default_xfer_group entry
 # 180108-2115 - Added campaigns-next_dial_my_callbacks entry
 # 180111-1547 - Added settings-anyone_callback_inactive_lists entry
+# 180130-0000 - Added GDPR entries for user and system settings
 # 180130-2303 - Added inbound_no_agents_no_dial entries
 # 180204-0213 - Added inbound_groups-icbq_expiration_hours and closed-time entries
+# 180211-1119 - Added source_vlc_status_report
 #
 
 require("dbconnect_mysqli.php");
@@ -634,6 +636,13 @@ if ($SScustom_fields_enabled > 0)
 <A NAME="users-modify_leads">
 <BR>
 <B><?php echo _QXZ("Modify Leads"); ?> -</B><?php echo _QXZ("This option if set to 1 allows the user to modify leads in the admin section lead search results page."); ?>
+
+<BR>
+<A NAME="users-export_gdpr_leads">
+<BR>
+<B><?php echo _QXZ("GDPR-Compliant Export/Delete Leads"); ?> -</B><?php echo _QXZ("This setting if enabled will allow for the complete download and/or deletion of all customer data for a particular lead, in compliance with the General Data Protection Regulation (GDPR).  Default is 0 for disabled.  A setting of 1 will enable downloading data, and a setting of 2 will enable not just downloading, but also deletion of data, including any recordings. "); ?>
+<BR>
+<B><?php echo _QXZ("You are not allowed to set this user setting higher than the current system setting. "); ?></B>
 
 <?php
 if ($SSallow_emails>0)
@@ -5555,6 +5564,11 @@ FR_SPAC 00 00 00 00 00 - <?php echo _QXZ("France space separated phone number");
 <B><?php echo _QXZ("Expired Lists Auto Inactive"); ?> -</B><?php echo _QXZ("This setting if enabled will automatically change lists that have an expiration date set to a past date to Active equals N. This is performed through both a check every time the List Modify screen is loaded for a specific list as well as a once an hour check on all lists. Default is 0 for disabled."); ?>
 
 <BR>
+<A NAME="settings-enable_gdpr_download_deletion">
+<BR>
+<B><?php echo _QXZ("Enable GDPR-compliant Data Download/Deletion"); ?> -</B><?php echo _QXZ("This setting if enabled will allow for the complete download and/or deletion of all customer data for a particular lead, in compliance with the General Data Protection Regulation (GDPR).  Default is 0 for disabled.  A setting of 1 will enable downloading data, and a setting of 2 will enable not just downloading, but also deletion of data, including any recordings."); ?>
+
+<BR>
 <A NAME="settings-enable_drop_lists">
 <BR>
 <B><?php echo _QXZ("Enable Drop Lists"); ?> -</B><?php echo _QXZ("This setting if enabled will make the Drop Lists feature appear under the LISTS menu. This feature set can take dropped call log records and create new leads in a list from multiple inbound groups. Default is 0 for disabled."); ?>
@@ -6577,6 +6591,10 @@ if ($SSqc_features_active > 0)
 <?php echo _QXZ("<U>HANDLE TIME</U> = Sum of the time the calls ending with the disposition listed were handled by an agent (<U>TALK</U> + <U>DEAD</U>)."); ?><BR><BR>
 <?php echo _QXZ("<U>TOTAL CALLS</U> = Number of calls placed to leads belonging to lists in this campaign within the time frame specified."); ?><BR>
 <?php echo _QXZ("<U>STATUS FLAGS BREAKDOWN</U> = Breakdown of the total calls into status categories, including counts per category and percentage relative to the number of calls to leads in the list within the time frame specified."); ?><BR>
+
+<A NAME="source_vlc_status_report">
+<BR>
+<B><?php echo _QXZ("Outbound Lead Source Report"); ?> -</B><?php echo _QXZ("This report is designed to show the breakdown by either vendor_lead_code or source_id, choice of the user, of the calls and their statuses for all lists within a campaign for a set time period"); ?><BR>
 
 <A NAME="CLOSER_service_level">
 <BR>

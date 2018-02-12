@@ -111,6 +111,14 @@
   * Add upstream Rev. 2910, 2911:
     - www/vicidial/admin.php: Changed campaign dial statuses to allow List and
         allowed In-Group selected status group statuses.
+  * Add upstream Rev. 2912:
+    - docs/conf_examples/extensions.conf.sample-1.8,
+      docs/conf_examples/extensions.conf.sample-13: Correct some typos.
+    - UPGRADE,
+      www/vicidial/admin.php,
+      www/vicidial/help.php,
+      www/vicidial/AST_source_vlc_status_report.php: New
+        AST_source_vlc_status_report.php.
 
 2.25.23 stable
   [Jörg Frings-Fürst]

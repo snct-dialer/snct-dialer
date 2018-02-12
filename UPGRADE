@@ -267,6 +267,8 @@ OTHER CHANGES:
 70. Added In-Group option to look up timezone of customer when a new lead is 
 	added during the routing of the call.
 
+71. Added the Outbound Lead Source Report
+
 
 
 
