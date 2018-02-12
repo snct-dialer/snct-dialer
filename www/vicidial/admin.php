@@ -4357,12 +4357,13 @@ else
 # 180111-1544 - Added anyone_callback_inactive_lists system setting
 # 180130-2309 - Added inbound_no_agents_no_dial options
 # 180204-0208 - Added In-Group Wait-Time option PRESS_CALLBACK_QUEUE, and Closing-Time options
+# 180211-1024 - Changed campaign dial statuses to allow List and allowed In-Group selected status group statuses
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-652a';
-$build = '180204-0208';
+$admin_version = '2.14-653a';
+$build = '180211-1024';
 
 
 $STARTtime = date("U");
@@ -5943,7 +5944,7 @@ if ($ADD==73)
 			$o++;
 			if (preg_match('/Y/', $rowx[1])) {$camp_lists .= "'$rowx[0]',";}
 			}
-		$camp_lists = preg_replace('/.$/i','',$camp_lists);;
+		$camp_lists = preg_replace('/.$/i','',$camp_lists);
 
 		$filterSQL = $filtersql_list[$lead_filter_id];
 		$filterSQL = preg_replace("/\\\\/","",$filterSQL);
@@ -14315,7 +14316,7 @@ if ($ADD==44)
 					{
 					echo "<br>"._QXZ("RESETTING CAMPAIGN LEAD HOPPER")."\n";
 					echo "<br> - "._QXZ("Wait 1 minute before dialing next number")."\n";
-					$stmt="DELETE from vicidial_hopper where campaign_id='$campaign_id' and status IN('READY','QUEUE','DONE');;";
+					$stmt="DELETE from vicidial_hopper where campaign_id='$campaign_id' and status IN('READY','QUEUE','DONE');";
 					$rslt=mysql_to_mysqli($stmt, $link);
 
 					### LOG INSERTION Admin Log Table ###
@@ -21298,7 +21299,7 @@ if ($ADD==31)
 		$display_dialable_count = $row[39];
 		$wrapup_seconds = $row[40];
 		$wrapup_message = $row[41];
-	#	$closer_campaigns = $row[42];
+		$closer_campaigns = $row[42];
 		$use_internal_dnc = $row[43];
 		$allcalls_delay = $row[44];
 		$omit_phone_code = $row[45];
@@ -21558,93 +21559,6 @@ if ($ADD==31)
 			}
 		}
 
-	$dial_statuses = preg_replace("/ -$/","",$dial_statuses);
-	$Dstatuses = explode(" ", $dial_statuses);
-	$Ds_to_print = (count($Dstatuses) -1);
-
-	$qc_statuses = preg_replace("/^ | -$/","",$qc_statuses);
-	$QCstatuses = explode(" ", $qc_statuses);
-	$QCs_to_print = (count($QCstatuses) -0);
-
-	$qc_lists = preg_replace("/^ | -$/","",$qc_lists);
-	$QClists = explode(" ", $qc_lists);
-	$QCL_to_print = (count($QClists) -0);
-
-	##### get status listings for dynamic pulldown
-	$stmt="SELECT status,status_name,selectable,human_answered,category,sale,dnc,customer_contact,not_interested,unworkable,scheduled_callback,completed,min_sec,max_sec,answering_machine from vicidial_statuses order by status;";
-	$rslt=mysql_to_mysqli($stmt, $link);
-	$statuses_to_print = mysqli_num_rows($rslt);
-	$statuses_list='';
-	$dial_statuses_list='';
-	$qc_statuses_list='';
-	$survey_ni_status_list='';
-	$o=0;
-	while ($statuses_to_print > $o) 
-		{
-		$rowx=mysqli_fetch_row($rslt);
-		$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
-		if ($rowx[0] != 'CBHOLD') 
-			{
-			$dial_statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
-			if ($survey_ni_status == $rowx[0])
-				{
-				$survey_ni_status_list .= "<option value=\"$rowx[0]\" SELECTED>$rowx[0] - $rowx[1]</option>\n";
-				}
-			else
-				{
-				$survey_ni_status_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
-				}
-			}
-		$statname_list["$rowx[0]"] = "$rowx[1]";
-		$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
-		if (preg_match('/Y/i', $rowx[2]))
-			{$HKstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";}
-
-		$qc_statuses_list .= "<input type=\"checkbox\" name=\"qc_statuses[]\" value=\"$rowx[0]\"";
-		$p=0;
-		while ($p < $QCs_to_print)
-			{
-			if ($rowx[0] == $QCstatuses[$p]) 
-				{
-				$qc_statuses_list .= " CHECKED";
-				}
-			$p++;
-			}
-		$qc_statuses_list .= "> $rowx[0] - $rowx[1]<BR>\n";
-
-		$o++;
-		}
-
-	$stmt="SELECT status,status_name,selectable,campaign_id,human_answered,category,sale,dnc,customer_contact,not_interested,unworkable,scheduled_callback,completed,min_sec,max_sec,answering_machine from vicidial_campaign_statuses where campaign_id='$campaign_id' $LOGallowed_campaignsSQL order by status;";
-	$rslt=mysql_to_mysqli($stmt, $link);
-	$Cstatuses_to_print = mysqli_num_rows($rslt);
-
-	$o=0;
-	while ($Cstatuses_to_print > $o) 
-		{
-		$rowx=mysqli_fetch_row($rslt);
-		$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
-		if ($rowx[0] != 'CBHOLD') {$dial_statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";}
-		$statname_list["$rowx[0]"] = "$rowx[1]";
-		$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
-		if (preg_match('/Y/i', $rowx[2]))
-			{$HKstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";}
-
-		$qc_statuses_list .= "<input type=\"checkbox\" name=\"qc_statuses[]\" value=\"$rowx[0]\"";
-		$p=0;
-		while ($p < $QCs_to_print)
-			{
-			if ($rowx[0] == $QCstatuses[$p]) 
-				{
-				$qc_statuses_list .= " CHECKED";
-				}
-			$p++;
-			}
-		$qc_statuses_list .= "> $rowx[0] - $rowx[1]<BR>\n";
-
-		$o++;
-		}
-
 	##### get in-groups listings for dynamic drop in-group pulldown
 	$stmt="SELECT group_id,group_name from vicidial_inbound_groups $whereLOGadmin_viewable_groupsSQL order by group_id;";
 #	$stmt="SELECT group_id,group_name from vicidial_inbound_groups where group_id NOT IN('AGENTDIRECT') order by group_id";
@@ -21756,6 +21670,122 @@ if ($ADD==31)
 		{
 		$rowx=mysqli_fetch_row($rslt);
 		$labels_menu .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		$o++;
+		}
+
+	##### get status groups for the lists and in-groups within this campaign
+	$stmt="SELECT status_group_id from vicidial_lists where campaign_id='$campaign_id' $LOGallowed_campaignsSQL;";
+	$rslt=mysql_to_mysqli($stmt, $link);
+	$lists_to_print = mysqli_num_rows($rslt);
+	$camp_status_groups='';
+	if ($DB) {echo "$lists_to_print|$stmt|\n";}
+	$o=0;
+	while ($lists_to_print > $o) 
+		{
+		$rowx=mysqli_fetch_row($rslt);
+		$camp_status_groups .= "'$rowx[0]',";
+		$o++;
+		}
+	$closer_campaigns = preg_replace("/ -$/","",$closer_campaigns);
+	$closer_campaigns = preg_replace("/ /","','",$closer_campaigns);
+	$stmt="SELECT status_group_id from vicidial_inbound_groups where status_group_id NOT IN('','NONE') and group_id IN('$closer_campaigns') $LOGadmin_viewable_groupsSQL ;";
+	$rslt=mysql_to_mysqli($stmt, $link);
+	$lists_to_print = mysqli_num_rows($rslt);
+	if ($DB) {echo "$lists_to_print|$stmt|\n";}
+	$o=0;
+	while ($lists_to_print > $o) 
+		{
+		$rowx=mysqli_fetch_row($rslt);
+		$camp_status_groups .= "'$rowx[0]',";
+		$o++;
+		}
+#	$camp_status_groups = preg_replace('/.$/i','',$camp_status_groups);
+
+	$dial_statuses = preg_replace("/ -$/","",$dial_statuses);
+	$Dstatuses = explode(" ", $dial_statuses);
+	$Ds_to_print = (count($Dstatuses) -1);
+
+	$qc_statuses = preg_replace("/^ | -$/","",$qc_statuses);
+	$QCstatuses = explode(" ", $qc_statuses);
+	$QCs_to_print = (count($QCstatuses) -0);
+
+	$qc_lists = preg_replace("/^ | -$/","",$qc_lists);
+	$QClists = explode(" ", $qc_lists);
+	$QCL_to_print = (count($QClists) -0);
+
+	##### get status listings for dynamic pulldown
+	$stmt="SELECT status,status_name,selectable,human_answered,category,sale,dnc,customer_contact,not_interested,unworkable,scheduled_callback,completed,min_sec,max_sec,answering_machine from vicidial_statuses order by status;";
+	$rslt=mysql_to_mysqli($stmt, $link);
+	$statuses_to_print = mysqli_num_rows($rslt);
+	$statuses_list='';
+	$dial_statuses_list='';
+	$qc_statuses_list='';
+	$survey_ni_status_list='';
+	$o=0;
+	while ($statuses_to_print > $o) 
+		{
+		$rowx=mysqli_fetch_row($rslt);
+		$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		if ($rowx[0] != 'CBHOLD') 
+			{
+			$dial_statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			if ($survey_ni_status == $rowx[0])
+				{
+				$survey_ni_status_list .= "<option value=\"$rowx[0]\" SELECTED>$rowx[0] - $rowx[1]</option>\n";
+				}
+			else
+				{
+				$survey_ni_status_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+				}
+			}
+		$statname_list["$rowx[0]"] = "$rowx[1]";
+		$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
+		if (preg_match('/Y/i', $rowx[2]))
+			{$HKstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";}
+
+		$qc_statuses_list .= "<input type=\"checkbox\" name=\"qc_statuses[]\" value=\"$rowx[0]\"";
+		$p=0;
+		while ($p < $QCs_to_print)
+			{
+			if ($rowx[0] == $QCstatuses[$p]) 
+				{
+				$qc_statuses_list .= " CHECKED";
+				}
+			$p++;
+			}
+		$qc_statuses_list .= "> $rowx[0] - $rowx[1]<BR>\n";
+
+		$o++;
+		}
+
+	$stmt="SELECT status,status_name,selectable,campaign_id,human_answered,category,sale,dnc,customer_contact,not_interested,unworkable,scheduled_callback,completed,min_sec,max_sec,answering_machine from vicidial_campaign_statuses where campaign_id IN($camp_status_groups'$campaign_id') $LOGallowed_campaignsSQL order by status;";
+	$rslt=mysql_to_mysqli($stmt, $link);
+	$Cstatuses_to_print = mysqli_num_rows($rslt);
+	if ($DB) {echo "$Cstatuses_to_print|$stmt|\n";}
+
+	$o=0;
+	while ($Cstatuses_to_print > $o) 
+		{
+		$rowx=mysqli_fetch_row($rslt);
+		$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		if ($rowx[0] != 'CBHOLD') {$dial_statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";}
+		$statname_list["$rowx[0]"] = "$rowx[1]";
+		$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
+		if (preg_match('/Y/i', $rowx[2]))
+			{$HKstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";}
+
+		$qc_statuses_list .= "<input type=\"checkbox\" name=\"qc_statuses[]\" value=\"$rowx[0]\"";
+		$p=0;
+		while ($p < $QCs_to_print)
+			{
+			if ($rowx[0] == $QCstatuses[$p]) 
+				{
+				$qc_statuses_list .= " CHECKED";
+				}
+			$p++;
+			}
+		$qc_statuses_list .= "> $rowx[0] - $rowx[1]<BR>\n";
+
 		$o++;
 		}
 
@@ -23006,7 +23036,7 @@ if ($ADD==31)
 			else
 				{$fSQL = '';}
 
-			$camp_lists = preg_replace('/.$/i','',$camp_lists);;
+			$camp_lists = preg_replace('/.$/i','',$camp_lists);
 			echo "<center><B>"._QXZ("This campaign has")." $active_lists "._QXZ("active lists and")." $inactive_lists "._QXZ("inactive lists")."</B><br><br>\n";
 
 			$dial_statuses_original = $dial_statuses;
@@ -23027,7 +23057,7 @@ if ($ADD==31)
 					$o++;
 					}
 
-				$stmt="SELECT status,status_name,completed from vicidial_campaign_statuses where campaign_id='$campaign_id' $LOGallowed_campaignsSQL order by status;";
+				$stmt="SELECT status,status_name,completed from vicidial_campaign_statuses where campaign_id IN($camp_status_groups'$campaign_id') $LOGallowed_campaignsSQL order by status;";
 				$rslt=mysql_to_mysqli($stmt, $link);
 				$Cstatuses_to_print = mysqli_num_rows($rslt);
 
@@ -23516,7 +23546,7 @@ if ($ADD==31)
 			if (preg_match('/Y/', $rowx[1])) {$camp_lists .= "'$rowx[0]',";}
 			$o++;
 			}
-		$camp_lists = preg_replace('/.$/i','',$camp_lists);;
+		$camp_lists = preg_replace('/.$/i','',$camp_lists);
 
 		$stmt="SELECT recycle_id,campaign_id,status,attempt_delay,attempt_maximum,active from vicidial_lead_recycle where campaign_id='$campaign_id' $LOGallowed_campaignsSQL order by status;";
 		$rslt=mysql_to_mysqli($stmt, $link);
@@ -24060,6 +24090,7 @@ if ($ADD==34)
 		$lead_filter_id = $row[35];
 			if ($lead_filter_id=='') {$lead_filter_id='NONE';}
 		$display_dialable_count = $row[39];
+		$closer_campaigns = $row[42];
 		$dial_method = $row[46];
 		$adaptive_intensity = $row[51];
 		$auto_alt_dial = $row[54];
@@ -24090,44 +24121,72 @@ if ($ADD==34)
 	else
 		{$ALTmultiDISABLE=0;	$ALTmultiLINK='';}
 
-		$stmt="SELECT status,status_name,selectable,human_answered,category,sale,dnc,customer_contact,not_interested,unworkable,scheduled_callback,completed,min_sec,max_sec,answering_machine from vicidial_statuses order by status;";
-		$rslt=mysql_to_mysqli($stmt, $link);
-		$statuses_to_print = mysqli_num_rows($rslt);
-		$statuses_list='';
-		$dial_statuses_list='';
-		$o=0;
-		while ($statuses_to_print > $o) 
-			{
-			$rowx=mysqli_fetch_row($rslt);
-			$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
-			if ($rowx[0] != 'CBHOLD') {$dial_statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";}
-			$statname_list["$rowx[0]"] = "$rowx[1]";
-			$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
-			if (preg_match('/Y/i', $rowx[2]))
-				{$HKstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";}
-			$o++;
-			}
+	##### get status groups for the lists and in-groups within this campaign
+	$stmt="SELECT status_group_id from vicidial_lists where campaign_id='$campaign_id' $LOGallowed_campaignsSQL;";
+	$rslt=mysql_to_mysqli($stmt, $link);
+	$lists_to_print = mysqli_num_rows($rslt);
+	$camp_status_groups='';
+	if ($DB) {echo "$lists_to_print|$stmt|\n";}
+	$o=0;
+	while ($lists_to_print > $o) 
+		{
+		$rowx=mysqli_fetch_row($rslt);
+		$camp_status_groups .= "'$rowx[0]',";
+		$o++;
+		}
+	$closer_campaigns = preg_replace("/ -$/","",$closer_campaigns);
+	$closer_campaigns = preg_replace("/ /","','",$closer_campaigns);
+	$stmt="SELECT status_group_id from vicidial_inbound_groups where status_group_id NOT IN('','NONE') and group_id IN('$closer_campaigns') $LOGadmin_viewable_groupsSQL ;";
+	$rslt=mysql_to_mysqli($stmt, $link);
+	$lists_to_print = mysqli_num_rows($rslt);
+	if ($DB) {echo "$lists_to_print|$stmt|\n";}
+	$o=0;
+	while ($lists_to_print > $o) 
+		{
+		$rowx=mysqli_fetch_row($rslt);
+		$camp_status_groups .= "'$rowx[0]',";
+		$o++;
+		}
+#	$camp_status_groups = preg_replace('/.$/i','',$camp_status_groups);
 
-		$stmt="SELECT status,status_name,selectable,campaign_id,human_answered,category,sale,dnc,customer_contact,not_interested,unworkable,scheduled_callback,completed,min_sec,max_sec,answering_machine from vicidial_campaign_statuses where campaign_id='$campaign_id' $LOGallowed_campaignsSQL order by status;";
-		$rslt=mysql_to_mysqli($stmt, $link);
-		$Cstatuses_to_print = mysqli_num_rows($rslt);
+	$stmt="SELECT status,status_name,selectable,human_answered,category,sale,dnc,customer_contact,not_interested,unworkable,scheduled_callback,completed,min_sec,max_sec,answering_machine from vicidial_statuses order by status;";
+	$rslt=mysql_to_mysqli($stmt, $link);
+	$statuses_to_print = mysqli_num_rows($rslt);
+	$statuses_list='';
+	$dial_statuses_list='';
+	$o=0;
+	while ($statuses_to_print > $o) 
+		{
+		$rowx=mysqli_fetch_row($rslt);
+		$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		if ($rowx[0] != 'CBHOLD') {$dial_statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";}
+		$statname_list["$rowx[0]"] = "$rowx[1]";
+		$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
+		if (preg_match('/Y/i', $rowx[2]))
+			{$HKstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";}
+		$o++;
+		}
 
-		$o=0;
-		while ($Cstatuses_to_print > $o) 
-			{
-			$rowx=mysqli_fetch_row($rslt);
-			$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
-			if ($rowx[0] != 'CBHOLD') {$dial_statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";}
-			$statname_list["$rowx[0]"] = "$rowx[1]";
-			$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
-			if (preg_match('/Y/i', $rowx[2]))
-				{$HKstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";}
-			$o++;
-			}
+	$stmt="SELECT status,status_name,selectable,campaign_id,human_answered,category,sale,dnc,customer_contact,not_interested,unworkable,scheduled_callback,completed,min_sec,max_sec,answering_machine from vicidial_campaign_statuses where campaign_id IN($camp_status_groups'$campaign_id') $LOGallowed_campaignsSQL order by status;";
+	$rslt=mysql_to_mysqli($stmt, $link);
+	$Cstatuses_to_print = mysqli_num_rows($rslt);
 
-		$dial_statuses = preg_replace("/ -$/","",$dial_statuses);
-		$Dstatuses = explode(" ", $dial_statuses);
-		$Ds_to_print = (count($Dstatuses) -1);
+	$o=0;
+	while ($Cstatuses_to_print > $o) 
+		{
+		$rowx=mysqli_fetch_row($rslt);
+		$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		if ($rowx[0] != 'CBHOLD') {$dial_statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";}
+		$statname_list["$rowx[0]"] = "$rowx[1]";
+		$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
+		if (preg_match('/Y/i', $rowx[2]))
+			{$HKstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";}
+		$o++;
+		}
+
+	$dial_statuses = preg_replace("/ -$/","",$dial_statuses);
+	$Dstatuses = explode(" ", $dial_statuses);
+	$Ds_to_print = (count($Dstatuses) -1);
 
 	$stmt="SELECT count(*) from vicidial_campaigns_list_mix where campaign_id='$campaign_id' and status='ACTIVE' $LOGallowed_campaignsSQL;";
 	$rslt=mysql_to_mysqli($stmt, $link);
@@ -24594,7 +24653,7 @@ if ($ADD==34)
 		else
 			{$fSQL = '';}
 
-			$camp_lists = preg_replace('/.$/i','',$camp_lists);;
+			$camp_lists = preg_replace('/.$/i','',$camp_lists);
 		echo _QXZ("This campaign has")." $active_lists "._QXZ("active lists and")." $inactive_lists "._QXZ("inactive lists")."<br><br>\n";
 
 
@@ -24613,7 +24672,7 @@ if ($ADD==34)
 				$o++;
 				}
 
-			$stmt="SELECT status,status_name from vicidial_campaign_statuses where campaign_id='$campaign_id' $LOGallowed_campaignsSQL order by status;";
+			$stmt="SELECT status,status_name from vicidial_campaign_statuses where campaign_id IN($camp_status_groups'$campaign_id') $LOGallowed_campaignsSQL order by status;";
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$Cstatuses_to_print = mysqli_num_rows($rslt);
 
@@ -33808,7 +33867,7 @@ if ($ADD==311111111111)
 
 		echo "<center><b>\n";
 
-			$camp_lists = preg_replace('/.$/i','',$camp_lists);;
+			$camp_lists = preg_replace('/.$/i','',$camp_lists);
 		echo _QXZ("This server has %1s active carriers and %2s inactive carriers",0,'',$active_carriers,$inactive_carriers)."<br><br>\n";
 		echo _QXZ("This server has %1s active phones and %2s inactive phones",0,'',$active_phones,$inactive_phones)."<br><br>\n";
 		echo _QXZ("This server has %1s active conferences",0,'',$active_confs)."<br><br>\n";
