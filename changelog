@@ -108,7 +108,7 @@
         in iframe.
   * Add upstream Rev. 2909:
     - www/agc/vdc_db_query.php: Fix for callback list issue #1062.
-  * Add upstream Rev. 2910:
+  * Add upstream Rev. 2910, 2911:
     - www/vicidial/admin.php: Changed campaign dial statuses to allow List and
         allowed In-Group selected status group statuses.
 
