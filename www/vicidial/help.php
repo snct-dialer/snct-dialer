@@ -148,7 +148,10 @@
 # 171224-1027 - Added lists-default_xfer_group entry
 # 180108-2115 - Added campaigns-next_dial_my_callbacks entry
 # 180111-1547 - Added settings-anyone_callback_inactive_lists entry
+# 180130-0000 - Added GDPR entries for user and system settings
 # 180130-2303 - Added inbound_no_agents_no_dial entries
+# 180204-0213 - Added inbound_groups-icbq_expiration_hours and closed-time entries
+# 180211-1119 - Added source_vlc_status_report
 #
 
 require("dbconnect_mysqli.php");
@@ -633,6 +636,13 @@ if ($SScustom_fields_enabled > 0)
 <A NAME="users-modify_leads">
 <BR>
 <B><?php echo _QXZ("Modify Leads"); ?> -</B><?php echo _QXZ("This option if set to 1 allows the user to modify leads in the admin section lead search results page."); ?>
+
+<BR>
+<A NAME="users-export_gdpr_leads">
+<BR>
+<B><?php echo _QXZ("GDPR-Compliant Export/Delete Leads"); ?> -</B><?php echo _QXZ("This setting if enabled will allow for the complete download and/or deletion of all customer data for a particular lead, in compliance with the General Data Protection Regulation (GDPR).  Default is 0 for disabled.  A setting of 1 will enable downloading data, and a setting of 2 will enable not just downloading, but also deletion of data, including any recordings. "); ?>
+<BR>
+<B><?php echo _QXZ("You are not allowed to set this user setting higher than the current system setting. "); ?></B>
 
 <?php
 if ($SSallow_emails>0)
@@ -2497,6 +2507,11 @@ if ($SSqc_features_active > 0)
 <B><?php echo _QXZ("Admin User Group"); ?> -</B><?php echo _QXZ("This is the administrative user group for this inbound group, this allows admin viewing of this in-group restricted by user group. Default is --ALL-- which allows any admin user to view this in-group."); ?>
 
 <BR>
+<A NAME="inbound_groups-callback_queue_calls">
+<BR>
+<B><?php echo _QXZ("Callback Queue Calls"); ?> -</B><?php echo _QXZ("This will only show up if there are LIVE inbound callback queue calls waiting to be called back by agents when their turn arrives."); ?>
+
+<BR>
 <A NAME="inbound_groups-group_calldate">
 <BR>
 <B><?php echo _QXZ("In-Group Calldate"); ?> -</B><?php echo _QXZ("This is the last date and time that a call was directed to this inbound group."); ?>
@@ -2800,7 +2815,7 @@ if ($SSqc_features_active > 0)
 <BR>
 <A NAME="inbound_groups-wait_time_option">
 <BR>
-<B><?php echo _QXZ("Wait Time Option"); ?> -</B><?php echo _QXZ("This allows you to give customers options to leave the queue if their wait time is over the amount of seconds specified below. Default is NONE. If one of the PRESS_ options is selected, it will play the Press Filename defined below and give the customer the option to press 1 on their phone to leave the queue and run the selected option. The PRESS_STAY option will send the customer back to the queue without loosing their place in line."); ?>
+<B><?php echo _QXZ("Wait Time Option"); ?> -</B><?php echo _QXZ("This allows you to give customers options to leave the queue if their wait time is over the amount of seconds specified below. Default is NONE. If one of the PRESS_ options is selected, it will play the Press Filename defined below and give the customer the option to press 1 on their phone to leave the queue and run the selected option. The PRESS_STAY option will send the customer back to the queue without loosing their place in line. The PRESS_CALLBACK_QUEUE option will preserve the caller place in line and will call the customer back when their place is the next one to go to an agent, this inbound callback queue entry will last until the call is placed back to the customer or as long as the Callback Queue Expire Hours setting below."); ?>
 
 <BR>
 <A NAME="inbound_groups-wait_time_second_option">
@@ -2875,7 +2890,7 @@ if ($SSqc_features_active > 0)
 <BR>
 <A NAME="inbound_groups-hold_time_option">
 <BR>
-<B><?php echo _QXZ("Estimated Hold Time Option"); ?> -</B><?php echo _QXZ("This allows you to specify the routing of the call if the estimated hold time is over the amount of seconds specified below. Default is NONE. If one of the PRESS_ options is selected, it will play the Press Filename defined below and give the customer the option to press 1 on their phone to leave the queue and run the selected option."); ?>
+<B><?php echo _QXZ("Estimated Hold Time Option"); ?> -</B><?php echo _QXZ("This allows you to specify the routing of the call if the estimated hold time is over the amount of seconds specified below. Default is NONE. If one of the PRESS_ options is selected, it will play the Press Filename defined below and give the customer the option to press 1 on their phone to leave the queue and run the selected option. The PRESS_CALLBACK_QUEUE option will preserve the caller place in line and will call the customer back when their place is the next one to go to an agent, this inbound callback queue entry will last until the call is placed back to the customer or as long as the Callback Queue Expire Hours setting below."); ?>
 
 <BR>
 <A NAME="inbound_groups-hold_time_second_option">
@@ -2946,6 +2961,71 @@ if ($SSqc_features_active > 0)
 <A NAME="inbound_groups-hold_time_option_callback_list_id">
 <BR>
 <B><?php echo _QXZ("Hold Time Option Callback List ID"); ?> -</B><?php echo _QXZ("If Hold Time Option is set to CALLERID_CALLBACK, this is the List ID the call is added to as a new lead if the estimated hold time exceeds the Hold Time Option Seconds."); ?>
+
+<BR>
+<A NAME="inbound_groups-icbq_expiration_hours">
+<BR>
+<B><?php echo _QXZ("Callback Queue Expire Hours"); ?> -</B><?php echo _QXZ("If a Hold Time or Wait Time Option is set to PRESS_CALLBACK_QUEUE, this is the maximum number of hours that an entry can stay in the inbound callback queue before it is removed without dialing it. Default is 96 hours."); ?>
+
+<BR>
+<A NAME="inbound_groups-icbq_call_time_id">
+<BR>
+<B><?php echo _QXZ("Callback Queue Call Time"); ?> -</B><?php echo _QXZ("For any inbound callback queue outbound calls to be placed, this is the local call time used to determine if the number can be dialed right now or not."); ?>
+
+<BR>
+<A NAME="inbound_groups-icbq_dial_filter">
+<BR>
+<B><?php echo _QXZ("Callback Queue Dial Filter"); ?> -</B><?php echo _QXZ("This option allows you to remove DNC numbers from your Callback Queue. You can use any combination of: Internal DNC List, Campaign DNC List tied to campaign of the list where the lead is, and Areacode DNC wildcard"); ?>
+
+<BR>
+<A NAME="inbound_groups-closing_time_action">
+<BR>
+<B><?php echo _QXZ("Closing Time Action"); ?> -</B><?php echo _QXZ("This allows you to specify the routing of the call if the closing time of the in-group is reached while the call is still waiting for an agent, Closing time is the end of the Call Time that is defined for this in-group. Default is DISABLED. If one of the PRESS_ options is selected, it will play the Press Filename defined below and give the customer the option to press 1 on their phone to leave the queue and run the selected option. The PRESS_CALLBACK_QUEUE option will preserve the caller place in line and will call the customer back when their place is the next one to go to an agent, this inbound callback queue entry will last until the call is placed back to the customer or as long as the Callback Queue Expire Hours setting above."); ?>
+
+<BR>
+<A NAME="inbound_groups-closing_time_now_trigger">
+<BR>
+<B><?php echo _QXZ("Closing Time Now Trigger"); ?> -</B><?php echo _QXZ("If Closing Time Action is enabled, this flag allows you to send all customers waiting in the queue to the Closing Time Action as defined above, before the actual closing time is reached for the day."); ?>
+
+<BR>
+<A NAME="inbound_groups-closing_time_filename">
+<BR>
+<B><?php echo _QXZ("Closing Time Press Filename"); ?> -</B><?php echo _QXZ("If Closing Time Option is set to one of the PRESS_ options, this is the filename prompt that is played if the in-group has reached the closing time for the day. It is very important that this audio file is 10 seconds or less or there will be problems."); ?>
+
+<BR>
+<A NAME="inbound_groups-closing_time_end_filename">
+<BR>
+<B><?php echo _QXZ("Closing Time End Filename"); ?> -</B><?php echo _QXZ("If Closing Time Option is set to one of the PRESS_ options or PRESS_CID_CALLBACK or PRESS_CALLBACK_QUEUE, this is the filename prompt that is played after the customer has pressed 1 or the call has been added to the callback list or queue."); ?>
+
+<BR>
+<A NAME="inbound_groups-closing_time_lead_reset">
+<BR>
+<B><?php echo _QXZ("Closing Time Option Lead Reset"); ?> -</B><?php echo _QXZ("This option if set to Y, will set the lead called-since-last-reset field to N when the Closing Time Option is triggered and the call is sent to an action like Message, Voicemail or Hangup. Default is N for disabled."); ?>
+
+<BR>
+<A NAME="inbound_groups-closing_time_option_exten">
+<BR>
+<B><?php echo _QXZ("Closing Time Option Extension"); ?> -</B><?php echo _QXZ("If Closing Time Option is set to EXTENSION, this is the dialplan extension that the call will be sent to if the Closing Time is reached. For AGENTDIRECT in-groups, you can put AGENTEXT in this field and the system will look up the user custom five field and send the call to that dialplan number."); ?>
+
+<BR>
+<A NAME="inbound_groups-closing_time_option_callmenu">
+<BR>
+<B><?php echo _QXZ("Closing Time Option Callmenu"); ?> -</B><?php echo _QXZ("If Closing Time Option is set to CALL_MENU, this is the Call Menu that the call will be sent to if the Closing Time is reached."); ?>
+
+<BR>
+<A NAME="inbound_groups-closing_time_option_voicemail">
+<BR>
+<B><?php echo _QXZ("Closing Time Option Voicemail"); ?> -</B><?php echo _QXZ("If Closing Time Option is set to VOICEMAIL, this is the voicemail box that the call will be sent to if the Closing Time is reached. In an AGENTDIRECT in-group, setting this to AGENTVMAIL will select the User voicemail ID to use."); ?>
+
+<BR>
+<A NAME="inbound_groups-closing_time_option_xfer_group">
+<BR>
+<B><?php echo _QXZ("Closing Time Option Transfer In-Group"); ?> -</B><?php echo _QXZ("If Closing Time Option is set to IN_GROUP, this is the inbound group that the call will be sent to if the Closing Time is reached."); ?>
+
+<BR>
+<A NAME="inbound_groups-closing_time_option_callback_list_id">
+<BR>
+<B><?php echo _QXZ("Closing Time Option Callback List ID"); ?> -</B><?php echo _QXZ("If Closing Time Option is set to CALLERID_CALLBACK, this is the List ID the call is added to as a new lead if the Closing Time is reached."); ?>
 
 <BR>
 <A NAME="inbound_groups-agent_alert_exten">
@@ -3043,14 +3123,19 @@ if ($SSqc_features_active > 0)
 <B><?php echo _QXZ("Dispo Call URL"); ?> -</B><?php echo _QXZ("This web URL address is not seen by the agent, but it is called every time a call is dispositioned by an agent if it is populated. Uses the same variables as the web form fields and scripts. dispo and talk_time are the variables you can use to retrieve the agent-defined disposition for the call and the actual talk time in seconds of the call. Default is blank.") . " " . _QXZ("If you put ALT into this field and submit this form, you will be able to go to a separate page where you can define multiple URLs for this action as well as specific statuses that will trigger them.") . " " . _QXZ("If you want the campaign Dispo Call URL to be used for inbound calls, then put CAMP into this field."); ?>
 
 <BR>
+<A NAME="inbound_groups-na_call_url">
+<BR>
+<B><?php echo _QXZ("No Agent Call URL"); ?> -</B><?php echo _QXZ("This web URL address is not seen by the agent, but if it is populated it is called every time a call that is not handled by an agent is hung up or transferred. Uses the same variables as the web form fields and scripts. dispo can be used to retrieve the system-defined disposition for the call. This URL can NOT be a relative path. Default is blank."); ?> <?php echo _QXZ("Custom Fields are not available with this feature."); ?>
+
+<BR>
 <A NAME="inbound_groups-add_lead_url">
 <BR>
 <B><?php echo _QXZ("Add Lead URL"); ?> -</B><?php echo _QXZ("This web URL address is not seen by the agent, but it is called every time a lead is added to the system through the inbound process. Default is blank. You must begin this URL with VAR if you want to use variables, and of course --A-- and --B-- around the actual variable in the URL where you want to use it. Here is the list of variables that are available for this function. lead_id, vendor_lead_code, list_id, phone_number, phone_code, did_id, did_extension, did_pattern, did_description, uniqueid"); ?>
 
 <BR>
-<A NAME="inbound_groups-na_call_url">
+<A NAME="inbound_groups-add_lead_timezone">
 <BR>
-<B><?php echo _QXZ("No Agent Call URL"); ?> -</B><?php echo _QXZ("This web URL address is not seen by the agent, but if it is populated it is called every time a call that is not handled by an agent is hung up or transferred. Uses the same variables as the web form fields and scripts. dispo can be used to retrieve the system-defined disposition for the call. This URL can NOT be a relative path. Default is blank."); ?> <?php echo _QXZ("Custom Fields are not available with this feature."); ?>
+<B><?php echo _QXZ("Add Lead Timezone"); ?> -</B><?php echo _QXZ("This is the method that the system will use to determine the current timezone when a lead is created when a call is being routed through this in-group. SERVER will use the current timezone of the server. PHONE_CODE_AREACODE will look up the timezone based on the phone code set in the lead and the areacode of the phone number. Default is SERVER."); ?>
 
 <BR>
 <A NAME="inbound_groups-default_group_alias">
@@ -5479,6 +5564,11 @@ FR_SPAC 00 00 00 00 00 - <?php echo _QXZ("France space separated phone number");
 <B><?php echo _QXZ("Expired Lists Auto Inactive"); ?> -</B><?php echo _QXZ("This setting if enabled will automatically change lists that have an expiration date set to a past date to Active equals N. This is performed through both a check every time the List Modify screen is loaded for a specific list as well as a once an hour check on all lists. Default is 0 for disabled."); ?>
 
 <BR>
+<A NAME="settings-enable_gdpr_download_deletion">
+<BR>
+<B><?php echo _QXZ("Enable GDPR-compliant Data Download/Deletion"); ?> -</B><?php echo _QXZ("This setting if enabled will allow for the complete download and/or deletion of all customer data for a particular lead, in compliance with the General Data Protection Regulation (GDPR).  Default is 0 for disabled.  A setting of 1 will enable downloading data, and a setting of 2 will enable not just downloading, but also deletion of data, including any recordings."); ?>
+
+<BR>
 <A NAME="settings-enable_drop_lists">
 <BR>
 <B><?php echo _QXZ("Enable Drop Lists"); ?> -</B><?php echo _QXZ("This setting if enabled will make the Drop Lists feature appear under the LISTS menu. This feature set can take dropped call log records and create new leads in a list from multiple inbound groups. Default is 0 for disabled."); ?>
@@ -6502,6 +6592,10 @@ if ($SSqc_features_active > 0)
 <?php echo _QXZ("<U>TOTAL CALLS</U> = Number of calls placed to leads belonging to lists in this campaign within the time frame specified."); ?><BR>
 <?php echo _QXZ("<U>STATUS FLAGS BREAKDOWN</U> = Breakdown of the total calls into status categories, including counts per category and percentage relative to the number of calls to leads in the list within the time frame specified."); ?><BR>
 
+<A NAME="source_vlc_status_report">
+<BR>
+<B><?php echo _QXZ("Outbound Lead Source Report"); ?> -</B><?php echo _QXZ("This report is designed to show the breakdown by either vendor_lead_code or source_id, choice of the user, of the calls and their statuses for all lists within a campaign for a set time period"); ?><BR>
+
 <A NAME="CLOSER_service_level">
 <BR>
 <B><?php echo _QXZ("Inbound Service Level Report"); ?> -</B><?php echo _QXZ("This report is designed to give a daily breakdown of the number of calls, holds, and drop within the specified date range for the selected inbound group."); ?><BR>
@@ -6877,6 +6971,16 @@ if ($SSqc_features_active > 0)
 <?php echo _QXZ("<U>Start date/time</U> = If filled out, the starting date and time that the report will use up through the current date and time when compiling the report."); ?><BR>
 <A NAME="rt_whiteboard_report-show_results">
 <?php echo _QXZ("<U>Show results for the past X hours</U> = If filled out and the start date-time is NOT filled out, the selected report will compile data starting at the time X hours ago up through the current time, which makes it a dynamic starting time as opposed to the set date-time used in the previous parameter."); ?><BR>
+
+
+
+<BR><BR><BR><BR>
+<A NAME="api_log_report">
+<BR>
+<B><?php echo _QXZ("API Log report"); ?> -</B><?php echo _QXZ("This report shows all records in the API logging table that meet the report criteria.  Reports can be run by date range that the API was accessed, the user, agent user, the API function called, and the API result.  The report can also be run to include the actual URL of the API that was called and the IP address the request came from."); ?>
+<BR><BR>
+<?php echo _QXZ("Additionally, if this extended version of the report is run, the variables used in the API call can be listed separately if the user creates a system container in the System Containers settings by the name of API_LOG_URL_COLUMNS <B>(name must be exact)</B>.  In this container, variable names are listed individually per line, and each listed variable is given it's own column in the detailed URL report."); ?><BR><BR>
+<A NAME="api_log_report-parameters">
 
 
 

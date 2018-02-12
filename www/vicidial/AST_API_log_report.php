@@ -3,7 +3,7 @@
 #
 # This report is for viewing the a report of API activity to the vicidial_api_log table
 #
-# Copyright (C) 2017  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -12,6 +12,7 @@
 # 170210-0700 - Reworked Show URLs code to be faster
 # 170409-1553 - Added IP List validation code
 # 170823-2241 - Added HTML formatting and screen colors, fixed CSV output bug
+# 180206-2300 - Added option for displaying individual URL variables
 #
 
 $startMS = microtime();
@@ -67,9 +68,9 @@ if (!isset($api_date_end_T)) {$api_date_end_T="23:59:59";}
 if (!isset($order_by)) {$order_by="api_date";}
 $api_date_from="$api_date_D $api_date_T";
 $api_date_to="$api_date_end_D $api_date_end_T";
-$CSV_text="\"API ACCESS LOG REPORT\"\n";
-$CSV_text.="\"API DATE RANGE:\",\"$api_date_from to $api_date_to\"\n";
-$ASCII_rpt_header="API DATE RANGE: $api_date_from to $api_date_to\n";
+$CSV_text="\""._QXZ("API ACCESS LOG REPORT")."\"\n";
+$CSV_text.="\""._QXZ("API DATE RANGE").":\",\"$api_date_from to $api_date_to\"\n";
+$ASCII_rpt_header=_QXZ("API DATE RANGE").": $api_date_from to $api_date_to\n";
 
 
 #if (!isset($recording_date_D)) {$recording_date_D=$NOW_DATE;}
@@ -376,9 +377,9 @@ if ( (preg_match('/\-\-ALL\-\-/',$user_string) ) or ($user_ct < 1) )
 	{$vu_user_SQL = ""; $vra_user_SQL = ""; $user_SQL="";}
 else
 	{
-	$ASCII_rpt_header.="USERS: ".implode(", ", $users)."\n";
-	$CSV_text.="\"USERS:\",\"".implode(", ", $users)."\"\n";
-	$GRAPH_header.="<th class='column_header grey_graph_cell'>SELECTED USERS</th>";
+	$ASCII_rpt_header.=_QXZ("USERS").": ".implode(", ", $users)."\n";
+	$CSV_text.="\""._QXZ("USERS").":\",\"".implode(", ", $users)."\"\n";
+	$GRAPH_header.="<th class='column_header grey_graph_cell'>"._QXZ("SELECTED USERS")."</th>";
 	}
 
 $i=0;
@@ -396,9 +397,9 @@ if ( (preg_match('/\-\-ALL\-\-/',$agent_user_string) ) or ($agent_user_ct < 1) )
 	{$vu_agent_user_SQL = ""; $vra_agent_user_SQL = ""; $agent_user_SQL="";}
 else
 	{
-	$ASCII_rpt_header.="AGENT USERS: ".implode(", ", $agent_users)."\n";
-	$CSV_text.="\"AGENT USERS:\",\"".implode(", ", $agent_users)."\"\n";
-	$GRAPH_header.="<th class='column_header grey_graph_cell'>SELECTED AGENTS</th>";
+	$ASCII_rpt_header.=_QXZ("AGENT USERS").": ".implode(", ", $agent_users)."\n";
+	$CSV_text.="\""._QXZ("AGENT USERS").":\",\"".implode(", ", $agent_users)."\"\n";
+	$GRAPH_header.="<th class='column_header grey_graph_cell'>"._QXZ("SELECTED AGENTS")."</th>";
 	}
 
 $i=0;
@@ -416,9 +417,9 @@ if ( (preg_match('/\-\-ALL\-\-/',$function_string) ) or ($function_ct < 1) )
 	{$vu_function_SQL = ""; $vra_function_SQL = ""; $function_SQL="";}
 else
 	{
-	$ASCII_rpt_header.="FUNCTIONS: ".implode(", ", $functions)."\n";
-	$CSV_text.="\"FUNCTIONS:\",\"".implode(", ", $functions)."\"\n";
-	$GRAPH_header.="<th class='column_header grey_graph_cell'>SELECTED FUNCTIONS</th>";
+	$ASCII_rpt_header.=_QXZ("FUNCTIONS").": ".implode(", ", $functions)."\n";
+	$CSV_text.="\""._QXZ("FUNCTIONS").":\",\"".implode(", ", $functions)."\"\n";
+	$GRAPH_header.="<th class='column_header grey_graph_cell'>"._QXZ("SELECTED FUNCTIONS")."</th>";
 	}
 
 
@@ -437,9 +438,9 @@ if ( (preg_match('/\-\-ALL\-\-/',$result_string) ) or ($result_ct < 1) )
 	{$vu_result_SQL = ""; $vra_result_SQL = ""; $result_SQL="";}
 else
 	{
-	$ASCII_rpt_header.="RESULTS: ".implode(", ", $results)."\n";
-	$CSV_text.="\"RESULTS:\",\"".implode(", ", $results)."\"\n";
-	$GRAPH_header.="<th class='column_header grey_graph_cell'>SELECTED RESULTS</th>";
+	$ASCII_rpt_header.=_QXZ("RESULTS").": ".implode(", ", $results)."\n";
+	$CSV_text.="\""._QXZ("RESULTS").":\",\"".implode(", ", $results)."\"\n";
+	$GRAPH_header.="<th class='column_header grey_graph_cell'>"._QXZ("SELECTED RESULTS")."</th>";
 	}
 
 /*
@@ -562,6 +563,10 @@ $HTML_head.="<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n"
 $HTML_head.="<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 $HTML_head.="<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 $HTML_text.="<script language=\"JavaScript\">\n";
+$HTML_text.="function openNewWindow(url)\n";
+$HTML_text.="	{\n";
+$HTML_text.="	window.open (url,\"\",'width=620,height=300,scrollbars=yes,menubar=yes,address=yes');\n";
+$HTML_text.="	}\n";
 $HTML_text.="function ToggleSpan(spanID) {\n";
 $HTML_text.="  if (document.getElementById(spanID).style.display == 'none') {\n";
 $HTML_text.="    document.getElementById(spanID).style.display = 'block';\n";
@@ -578,6 +583,7 @@ $HTML_head.="<TITLE>"._QXZ("$report_name")."</TITLE></HEAD><BODY BGCOLOR=WHITE m
 
 #	require("admin_header.php");
 
+$HTML_text.="<B>$report_name</B> $NWB#api_log_report$NWE<BR>";
 $HTML_text.="<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
 
 $HTML_text.="<FORM ACTION=\"$PHP_SELF\" METHOD=GET name=vicidial_report id=vicidial_report>\n";
@@ -699,20 +705,38 @@ if ($SUBMIT && $api_date_D && $api_date_T && $api_date_end_D && $api_date_end_T)
 	$ASCII_border="+---------------------+--------------------------------+------------+----------------------+--------------------------------+------------+----------------------+----------+-----------+-----------+\n";
 	if ($show_urls)
 		{
-		$ASCII_border="+---------------------+--------------------------------+------------+----------------------+--------------------------------+------------+----------------------+----------+-----------+-----------+----------------------+----------\n";
-		$URL_header="  REMOTE IP           |    URL";
+		$ASCII_border="+---------------------+--------------------------------+------------+----------------------+--------------------------------+------------+----------------------+----------+-----------+-----------+";
+
+		$container_id='API_LOG_URL_COLUMNS';
+		$container_stmt="select container_entry from vicidial_settings_containers where container_id='$container_id'";
+		$container_rslt=mysql_to_mysqli($container_stmt, $link);
+		
+		if (mysqli_num_rows($container_rslt)>0) 
+			{
+			$container_row=mysqli_fetch_row($container_rslt);
+			$url_vars=explode("\r\n", $container_row[0]);
+			$URL_header="";
+			for($u=0; $u<count($url_vars); $u++) 
+				{
+				$URL_header.=sprintf("%-20s", $url_vars[$u])." | ";
+				$ASCII_border.="----------------------+";
+				}
+			
+			}
+		$URL_header.=" "._QXZ("REMOTE IP", 19)." |    "._QXZ("URL");
+		$ASCII_border.="----------------------+----------\n";
 		}
 
 	$TEXT.=$ASCII_rpt_header;
 	$TEXT.=sprintf("%110s", " ");
 	$TEXT.="<a href=\"$PHP_SELF?api_date_D=$api_date_D&api_date_T=$api_date_T&api_date_end_D=$api_date_end_D&api_date_end_T=$api_date_end_T$resultQS$functionQS$agent_userQS$userQS&file_download=1&show_urls=$show_urls&search_archived_data=$search_archived_data&SUBMIT=$SUBMIT\">"._QXZ("DOWNLOAD")."</a>\n";
 	$TEXT.=$ASCII_border;
-	$TEXT.="| <a href='$LINKbase&order_by=api_date'>API DATE</a>            | <a href='$LINKbase&order_by=user'>USER</a>                           | <a href='$LINKbase&order_by=api_script'>API SCRIPT</a> | <a href='$LINKbase&order_by=function'>FUNCTION</a>             | <a href='$LINKbase&order_by=agent_user'>AGENT USER</a>                     | <a href='$LINKbase&order_by=result'>RESULT</a>     | <a href='$LINKbase&order_by=source'>SOURCE</a>               | <a href='$LINKbase&order_by=run_time'>RUN TIME</a> | <a href='$LINKbase&order_by=webserver'>WEBSERVER</a> | <a href='$LINKbase&order_by=api_url'>API URL</a>   |$URL_header\n";
+	$TEXT.="| <a href='$LINKbase&order_by=api_date'>"._QXZ("API DATE", 19)."</a> | <a href='$LINKbase&order_by=user'>"._QXZ("USER", 30)."</a> | <a href='$LINKbase&order_by=api_script'>"._QXZ("API SCRIPT", 10)."</a> | <a href='$LINKbase&order_by=function'>"._QXZ("FUNCTION", 20)."</a> | <a href='$LINKbase&order_by=agent_user'>"._QXZ("AGENT USER", 30)."</a> | <a href='$LINKbase&order_by=result'>"._QXZ("RESULT", 10)."</a> | <a href='$LINKbase&order_by=source'>"._QXZ("SOURCE", 20)."</a> | <a href='$LINKbase&order_by=run_time'>"._QXZ("RUN TIME", 8)."</a> | <a href='$LINKbase&order_by=webserver'>"._QXZ("WEBSERVER", 9)."</a> | <a href='$LINKbase&order_by=api_url'>"._QXZ("API URL", 9)."</a> | $URL_header\n";
 	$TEXT.=$ASCII_border;
 
 	$HTML.="<BR><table border='0' cellpadding='3' cellspacing='1'>";
 	$HTML.="<tr bgcolor='#".$SSstd_row1_background."'>";
-	$HTML.="<th colspan='".($show_urls ? "11" : "9")."'><font size='2'>$ASCII_rpt_header</font></th>";
+	$HTML.="<th colspan='".($show_urls ? (11+count($url_vars)) : "9")."'><font size='2'>$ASCII_rpt_header</font></th>";
 	$HTML.="<th><font size='2'><a href=\"$PHP_SELF?api_date_D=$api_date_D&api_date_T=$api_date_T&api_date_end_D=$api_date_end_D&api_date_end_T=$api_date_end_T$resultQS$functionQS$agent_userQS$userQS&file_download=1&show_urls=$show_urls&search_archived_data=$search_archived_data&SUBMIT=$SUBMIT\">"._QXZ("DOWNLOAD")."</a></font></th>";
 	$HTML.="</tr>\n";
 	$HTML.="<tr bgcolor='#".$SSstd_row1_background."'>";
@@ -730,13 +754,21 @@ if ($SUBMIT && $api_date_D && $api_date_T && $api_date_end_D && $api_date_end_T)
 
 	if ($show_urls)
 		{
-		$CSV_text.="\n\"API DATE\",\"USER\",\"API SCRIPT\",\"FUNCTION\",\"AGENT USER\",\"VALUE\",\"RESULT\",\"RESULT REASON\",\"SOURCE\",\"DATA\",\"RUN TIME\",\"WEBSERVER\",\"API URL\",\"REMOTE IP\",\"FULL URL STRING\"\n";
+		$CSV_text.="\n\""._QXZ("API DATE")."\",\""._QXZ("USER")."\",\""._QXZ("API SCRIPT")."\",\""._QXZ("FUNCTION")."\",\""._QXZ("AGENT USER")."\",\""._QXZ("VALUE")."\",\""._QXZ("RESULT")."\",\""._QXZ("RESULT REASON")."\",\""._QXZ("SOURCE")."\",\""._QXZ("DATA")."\",\""._QXZ("RUN TIME")."\",\""._QXZ("WEBSERVER")."\",\""._QXZ("API URL")."\"";
+
+		for($u=0; $u<count($url_vars); $u++) 
+			{
+			$CSV_text.=",\"".$url_vars[$u]."\"";
+			$HTML.="<th><font size='2'>"._QXZ("$url_vars[$u]")."</font></th>";
+			}
+
+		$CSV_text.=",\""._QXZ("REMOTE IP")."\",\""._QXZ("FULL URL STRING")."\"\n";
 		$HTML.="<th><font size='2'>"._QXZ("REMOTE IP")."</font></th>";
 		$HTML.="<th><font size='2'>"._QXZ("FULL URL STRING")."</font></th>";
 		}
 	else
 		{
-		$CSV_text.="\n\"API DATE\",\"USER\",\"API SCRIPT\",\"FUNCTION\",\"AGENT USER\",\"VALUE\",\"RESULT\",\"RESULT REASON\",\"SOURCE\",\"DATA\",\"RUN TIME\",\"WEBSERVER\",\"API URL\"\n";
+		$CSV_text.="\n\""._QXZ("API DATE")."\",\""._QXZ("USER")."\",\""._QXZ("API SCRIPT")."\",\""._QXZ("FUNCTION")."\",\""._QXZ("AGENT USER")."\",\""._QXZ("VALUE")."\",\""._QXZ("RESULT")."\",\""._QXZ("RESULT REASON")."\",\""._QXZ("SOURCE")."\",\""._QXZ("DATA")."\",\""._QXZ("RUN TIME")."\",\""._QXZ("WEBSERVER")."\",\""._QXZ("API URL")."\"\n";
 		}
 
 	$HTML.="</tr>\n";
@@ -794,16 +826,62 @@ if ($SUBMIT && $api_date_D && $api_date_T && $api_date_end_D && $api_date_end_T)
 			$stmt="select remote_ip,url from $vicidial_api_urls_table where api_id='$api_id[$h]';";
 			if ($DB) {print $stmt."\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);
-			while ($row=mysqli_fetch_array($rslt)) 
+			if (mysqli_num_rows($rslt)>0) 
 				{
-				$full_url = $row["url"];
-				$remote_ip = $row["remote_ip"];
-				if ( ($VUmodify_same_user_level < 1) or ($VUuser_level < 9) or ($VUmodify_users < 1) )
-					{$full_url = preg_replace("/&pass=[\s\S]+?&/",'&pass=XXXX&',$full_url);}
-				$TEXT.=sprintf("%-20s", $row["remote_ip"])." | ";
-				$TEXT.=sprintf("%-2000s", $full_url)." | ";
+				while ($row=mysqli_fetch_array($rslt)) 
+					{
+					$full_url = $row["url"];
+					$remote_ip = $row["remote_ip"];
+					$key_array=array();
+					$val_array=array();
+					$CSV_vals="";
+					
+					$url_ary=preg_split("/\?/", $full_url);
+					for($u=2; $u<count($url_ary); $u++)
+						{
+						$url_ary[1].="?".$url_ary[$u];
+						}
+					$var_ary=preg_split("/\&/", $url_ary[1]);
+					for ($v=0; $v<count($var_ary); $v++)
+						{
+						$keyval_pair=preg_split("/\=/", $var_ary[$v]);
+						array_push($key_array, strtolower($keyval_pair[0]));
+						array_push($val_array, substr(urldecode($keyval_pair[1]), 0, 20));
+						}
+
+					for ($v=0; $v<count($url_vars); $v++)
+						{
+						$val="";
+						$key=array_search(strtolower($url_vars[$v]), $key_array, false);
+						if($key) {$val=$val_array[$key];}
+						$TEXT.=sprintf("%-20s", substr($val, 0, 20))." | ";
+						$CSV_vals.=",\"$val\"";
+						$HTML.="<th><font size='2'>".($val=="" ? "&nbsp;" : $val)."</font></th>";
+						}
+
+
+					if ( ($VUmodify_same_user_level < 1) or ($VUuser_level < 9) or ($VUmodify_users < 1) )
+						{$full_url = preg_replace("/&pass=[\s\S]+?&/",'&pass=XXXX&',$full_url);}
+					$TEXT.=sprintf("%-20s", $row["remote_ip"])." | ";
+					$TEXT.=sprintf("%-2000s", $full_url)." | ";
+					}
+				} 
+			else
+				{
+				$CSV_vals="";
+				for ($v=0; $v<count($url_vars); $v++)
+					{
+					$val="";
+					$TEXT.=sprintf("%-20s", $val)." | ";
+					$CSV_vals.=",\"$val\"";
+					$HTML.="<th><font size='2'>".($val=="" ? "&nbsp;" : $val)."</font></th>";
+					}
+				$TEXT.=sprintf("%-20s", "")." | ";
+				$TEXT.=sprintf("%-2000s", "")." | ";
 				}
-				$CSV_text.="\"$api_date[$h]\",\"$full_user[$h]\",\"$api_script[$h]\",\"$function[$h]\",\"$full_agent_user[$h]\",\"$value[$h]\",\"$result[$h]\",\"$result_reason[$h]\",\"$source[$h]\",\"$data[$h]\",\"$run_time[$h]\",\"$webserver[$h]\",\"$api_url[$h]\",\"$remote_ip\",\"$full_url\"\n";
+				$CSV_text.="\"$api_date[$h]\",\"$full_user[$h]\",\"$api_script[$h]\",\"$function[$h]\",\"$full_agent_user[$h]\",\"$value[$h]\",\"$result[$h]\",\"$result_reason[$h]\",\"$source[$h]\",\"$data[$h]\",\"$run_time[$h]\",\"$webserver[$h]\",\"$api_url[$h]\"$CSV_vals";
+				
+				$CSV_text.=",\"$remote_ip\",\"$full_url\"\n";
 				$HTML.="<th><font size='2'>".($remote_ip=="" ? "&nbsp;" : $remote_ip)."</font></th>";
 				$HTML.="<th><font size='2'>".($full_url=="" ? "&nbsp;" : $full_url)."</font></th>";
 			}
