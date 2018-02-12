@@ -446,10 +446,11 @@
 # 180108-2048 - Added next_dial_my_callbacks feature
 # 180131-1116 - Fixed ereg issue
 # 180204-1651 - Added update for inbound callback queue functionality
+# 180210-0707 - Fix for callback list issue #1062
 #
 
-$version = '2.14-340';
-$build = '180204-1651';
+$version = '2.14-341';
+$build = '180210-0707';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=709;
@@ -16036,8 +16037,8 @@ if ($ACTION == 'CalLBacKLisT')
 				$stmt="SELECT count(*) from vicidial_call_times where call_time_id='$list_local_call_time';";
 				$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00616',$user,$server_ip,$session_name,$one_mysql_log);}					
-				$row=mysqli_fetch_row($rslt);
-				$call_time_exists  =	$row[0];
+				$rowy=mysqli_fetch_row($rslt);
+				$call_time_exists  =	$rowy[0];
 				if ($call_time_exists < 1) 
 					{$list_local_call_time = 'campaign';}
 				}

@@ -106,6 +106,8 @@
   * Add upstream Rev. 2908:
     - www/agc/vicidial.php: Added flag for WebRTC webphone compatibility
         in iframe.
+  * Add upstream Rev. 2909:
+    - www/agc/vdc_db_query.php: Fix for callback list issue #1062.
 
 2.25.23 stable
   [Jörg Frings-Fürst]
