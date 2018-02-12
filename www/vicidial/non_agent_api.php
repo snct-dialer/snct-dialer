@@ -128,10 +128,11 @@
 # 171129-0751 - Fixed issue with duplicate custom fields
 # 171229-1602 - Added lead_status_search function
 # 180109-1313 - Added call_status_stats function
+# 180208-1655 - Added call_dispo_report function
 #
 
-$version = '2.14-104';
-$build = '180109-1313';
+$version = '2.14-105';
+$build = '180208-1655';
 $api_url_log = 0;
 
 $startMS = microtime();
@@ -246,6 +247,8 @@ if (isset($_GET["status"]))						{$status=$_GET["status"];}
 	elseif (isset($_POST["status"]))			{$status=$_POST["status"];}
 if (isset($_GET["statuses"]))						{$statuses=$_GET["statuses"];}
 	elseif (isset($_POST["statuses"]))			{$statuses=$_POST["statuses"];}
+if (isset($_GET["categories"]))			{$categories=$_GET["categories"];}
+	elseif (isset($_POST["categories"]))	{$categories=$_POST["categories"];}
 if (isset($_GET["user_field"]))					{$user_field=$_GET["user_field"];}
 	elseif (isset($_POST["user_field"]))		{$user_field=$_POST["user_field"];}
 if (isset($_GET["list_id_field"]))				{$list_id_field=$_GET["list_id_field"];}
@@ -388,6 +391,10 @@ if (isset($_GET["user_groups"]))				{$user_groups=$_GET["user_groups"];}
 	elseif (isset($_POST["user_groups"]))		{$user_groups=$_POST["user_groups"];}
 if (isset($_GET["in_groups"]))				{$in_groups=$_GET["in_groups"];}
 	elseif (isset($_POST["in_groups"]))		{$in_groups=$_POST["in_groups"];}
+if (isset($_GET["did_ids"]))				{$did_ids=$_GET["did_ids"];}
+	elseif (isset($_POST["did_ids"]))		{$did_ids=$_POST["did_ids"];}
+if (isset($_GET["did_patterns"]))				{$did_patterns=$_GET["did_patterns"];}
+	elseif (isset($_POST["did_patterns"]))		{$did_patterns=$_POST["did_patterns"];}
 if (isset($_GET["call_id"]))				{$call_id=$_GET["call_id"];}
 	elseif (isset($_POST["call_id"]))		{$call_id=$_POST["call_id"];}
 if (isset($_GET["group"]))					{$group=$_GET["group"];}
@@ -420,6 +427,12 @@ if (isset($_GET["ingroups"]))			{$ingroups=$_GET["ingroups"];}
 	elseif (isset($_POST["ingroups"]))	{$ingroups=$_POST["ingroups"];}
 if (isset($_GET["campaign_name"]))			{$campaign_name=$_GET["campaign_name"];}
 	elseif (isset($_POST["campaign_name"]))	{$campaign_name=$_POST["campaign_name"];}
+if (isset($_GET["did_ids"]))						{$did_ids=$_GET["did_ids"];}
+	elseif (isset($_POST["did_ids"]))				{$did_ids=$_POST["did_ids"];}
+if (isset($_GET["did_patterns"]))						{$did_patterns=$_GET["did_patterns"];}
+	elseif (isset($_POST["did_patterns"]))				{$did_patterns=$_POST["did_patterns"];}
+if (isset($_GET["users"]))						{$users=$_GET["users"];}
+	elseif (isset($_POST["users"]))				{$users=$_POST["users"];}
 if (isset($_GET["auto_dial_level"]))			{$auto_dial_level=$_GET["auto_dial_level"];}
 	elseif (isset($_POST["auto_dial_level"]))	{$auto_dial_level=$_POST["auto_dial_level"];}
 if (isset($_GET["adaptive_maximum_level"]))				{$adaptive_maximum_level=$_GET["adaptive_maximum_level"];}
@@ -440,6 +453,12 @@ if (isset($_GET["lookup_state"]))			{$lookup_state=$_GET["lookup_state"];}
 	elseif (isset($_POST["lookup_state"]))	{$lookup_state=$_POST["lookup_state"];}
 if (isset($_GET["type"]))				{$type=$_GET["type"];}
 	elseif (isset($_POST["type"]))		{$type=$_POST["type"];}
+if (isset($_GET["status_breakdown"]))						{$status_breakdown=$_GET["status_breakdown"];}
+	elseif (isset($_POST["status_breakdown"]))				{$status_breakdown=$_POST["status_breakdown"];}
+if (isset($_GET["show_percentages"]))						{$show_percentages=$_GET["show_percentages"];}
+	elseif (isset($_POST["show_percentages"]))				{$show_percentages=$_POST["show_percentages"];}
+if (isset($_GET["file_download"]))						{$file_download=$_GET["file_download"];}
+	elseif (isset($_POST["file_download"]))				{$file_download=$_POST["file_download"];}
 if (isset($_GET["force_entry_list_id"]))			{$force_entry_list_id=$_GET["force_entry_list_id"];}
 	elseif (isset($_POST["force_entry_list_id"]))	{$force_entry_list_id=$_POST["force_entry_list_id"];}
 
@@ -472,6 +491,19 @@ if ($qm_conf_ct > 0)
 
 if ($non_latin < 1)
 	{
+	$users=preg_replace('/[^-_0-9a-zA-Z\,]/','',$users);
+	$did_patterns = preg_replace('/[^:\+\*\#\.\_0-9a-zA-Z\,]/','',$did_patterns);
+	$did_ids=preg_replace('/[^0-9\,]/','',$did_ids);
+	$query_date=preg_replace('/[^-0-9]/','',$query_date);
+	$query_time=preg_replace('/[^:0-9]/','',$query_time);
+	$end_date=preg_replace('/[^-0-9]/','',$end_date);
+	$end_time=preg_replace('/[^:0-9]/','',$end_time);
+	$statuses = preg_replace('/[^- \.\,\_0-9a-zA-Z]/','',$statuses);
+	$categories = preg_replace('/[^-_0-9a-zA-Z\,]/','',$categories);
+	$status_breakdown = preg_replace('/[^1Y]/','',$status_breakdown);
+	$show_percentages = preg_replace('/[^1Y]/','',$show_percentages);
+
+
 	$DB=preg_replace('/[^0-9]/','',$DB);
 	$user=preg_replace('/[^-_0-9a-zA-Z]/','',$user);
 	$pass=preg_replace('/[^-_0-9a-zA-Z]/','',$pass);
@@ -600,8 +632,8 @@ if ($non_latin < 1)
 	$group_alias_name = preg_replace('/[^- \+\_0-9a-zA-Z]/','',$group_alias_name);
 	$caller_id_number = preg_replace('/[^0-9]/','',$caller_id_number);
 	$caller_id_name = preg_replace('/[^- \+\_0-9a-zA-Z]/','',$caller_id_name);
-	$user_groups = preg_replace('/[^-\|\_0-9a-zA-Z]/','',$user_groups);
-	$in_groups = preg_replace('/[^-\|\_0-9a-zA-Z]/','',$in_groups);
+	$user_groups = preg_replace('/[^-\|\_0-9a-zA-Z\,]/','',$user_groups); #JCJ
+	$in_groups = preg_replace('/[^-\|\_0-9a-zA-Z\,]/','',$in_groups); #JCJ
 	$call_id = preg_replace('/[^0-9a-zA-Z]/','',$call_id);
 	$group = preg_replace('/[^-\|\_0-9a-zA-Z]/','',$group);
 	$expiration_date = preg_replace('/[^-_0-9a-zA-Z]/','',$expiration_date);
@@ -613,7 +645,7 @@ if ($non_latin < 1)
 	$camp_rg_only = preg_replace('/[^0-9]/','',$camp_rg_only);
 	$wrapup_seconds_override = preg_replace('/[^-0-9]/','',$wrapup_seconds_override);
 	$show_sub_status = preg_replace('/[^A-Z]/','',$show_sub_status);
-	$campaigns = preg_replace('/[^-\|\_0-9a-zA-Z]/','',$campaigns);
+	$campaigns = preg_replace('/[^-\|\_0-9a-zA-Z\,]/','',$campaigns); # JCJ
 	$campaign_name = preg_replace('/[^- \.\,\_0-9a-zA-Z]/','',$campaign_name);
 	$auto_dial_level = preg_replace('/[^\.0-9]/','',$auto_dial_level);
 	$adaptive_maximum_level = preg_replace('/[^\.0-9]/','',$adaptive_maximum_level);
@@ -627,6 +659,7 @@ if ($non_latin < 1)
 	$detail = preg_replace('/[^A-Z]/','',$detail);
 	$type = preg_replace('/[^A-Z]/','',$type);
 	$force_entry_list_id = preg_replace('/[^0-9]/','',$force_entry_list_id);
+	$file_download = preg_replace('/[^0-9]/','',$file_download);
 	}
 else
 	{
@@ -10006,6 +10039,374 @@ if ($function == 'call_status_stats')
 ### END call_status_stats
 ################################################################################
 
+
+################################################################################
+### call_dispo_report - call disposition breakdown report                 
+################################################################################
+if ($function == 'call_dispo_report')
+	{
+	if(strlen($campaigns)<2 && strlen($ingroups)<2 && strlen($did_ids)<2 && strlen($did_patterns)<2)
+		{
+		$result = 'ERROR';
+		$result_reason = "call_dispo_report INVALID OR MISSING CAMPAIGNS, INGROUPS, OR DIDS";
+		echo "$result: $result_reason - $source\n";
+		api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+		echo "ERROR: Invalid Source: |$source|\n";
+		exit;
+		}
+	else
+		{
+		if ( (!preg_match("/ $function /",$api_allowed_functions)) and (!preg_match("/ALL_FUNCTIONS/",$api_allowed_functions)) )
+			{
+			$result = 'ERROR';
+			$result_reason = "auth USER DOES NOT HAVE PERMISSION TO USE THIS FUNCTION";
+			echo "$result: $result_reason: |$user|$function|\n";
+			$data = "$allowed_user";
+			api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+			exit;
+			}
+
+		$stmt="SELECT count(*) from vicidial_users where user='$user' and view_reports='1' and user_level > 8 and active='Y';";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$row=mysqli_fetch_row($rslt);
+		$allowed_user=$row[0];
+		if ($allowed_user < 1)
+			{
+			$result = 'ERROR';
+			$result_reason = "call_status_stats USER DOES NOT HAVE PERMISSION TO VIEW STATS";
+			echo "$result: $result_reason: |$user|$allowed_user|\n";
+			$data = "$allowed_user";
+			api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+			exit;
+			}
+		else
+			{
+			if (!$query_date) {$query_date=date("Y-m-d");}
+			if (!$query_time) {$query_time="00:00:00";}
+			if (!$end_date) {$end_date=$query_date;}
+			if (!$end_time) {$end_time="23:59:59";}
+			if ($show_percentages && !$status_breakdown) {$show_percentages="";}
+
+			# COMPILE INBOUND CAMPAIGN CLAUSE 
+			$skip_inbound=0;
+			if (strlen($ingroups)>0) 
+				{
+				$ingroup_array=explode("-", $ingroups);
+				$inb_SQL="and campaign_id in ('".implode("', '", $ingroup_array)."')";
+				if (in_array("ALLGROUPS", $ingroup_array) || preg_match('/\-\-\-ALL\-\-\-/', $ingroups)) 
+					{
+					$inb_SQL="";
+					}
+				}
+			else 
+				{
+				$skip_inbound=1;
+				}
+			########################
+
+			# COMPILE OUTBOUND CAMPAIGN CLAUSE 
+			$skip_outbound=0;  # 
+			if (strlen($campaigns)>0) 
+				{
+				$campaign_array=explode("-", $campaigns);
+				$campaign_SQL=" and campaign_id in ('".implode("', '", $campaign_array)."') ";
+				if (in_array("ALLCAMPAIGNS", $campaign_array) || preg_match('/\-\-\-ALL\-\-\-/', $campaigns)) 
+					{
+					$campaign_SQL="";
+					}
+				
+				}
+			else
+				{
+				$skip_outbound=1;
+				}
+			########################
+
+			# COMPILE DID CLAUSE 
+			$skip_dids=0;
+			if (strlen($did_patterns)>0 || strlen($did_ids)>0) 
+				{
+				$did_id_array=explode("-", $did_ids);
+				$did_pattern_array=explode("-", $did_patterns);
+				$did_stmt="select did_id, did_pattern from vicidial_inbound_dids where did_pattern in ('".implode("','", $did_pattern_array)."')";
+				if ($DB) {$rpt_str.=$did_stmt."<BR>\n";}
+				$did_rslt=mysql_to_mysqli($did_stmt, $link);
+				while ($did_row=mysqli_fetch_row($did_rslt)) 
+					{
+					if (!in_array($did_row[0], $did_id_array))
+						{
+						array_push($did_id_array, $did_row[0]);
+						array_push($did_pattern_array, $did_row[1]);
+						}
+					}
+				}
+			
+			if (count($did_id_array)>0 && $skip_inbound) # DON'T DO A REPORT FOR INGROUPS AND DIDS YET.
+				{
+				$did_SQL="and did_id in ('".implode("', '", $did_id_array)."')";
+				if (in_array("ALLDIDS", $did_id_array) || preg_match('/\-\-\-ALL\-\-\-/', $did_ids) || in_array("ALLPATTERNS", $did_pattern_array) || preg_match('/\-\-\-ALL\-\-\-/', $did_patterns)) 
+					{
+					$did_SQL="";
+					}
+				}
+			else 
+				{
+				$skip_dids=1;
+				}
+			########################
+
+			# COMPILE STATUS CLAUSE 
+			if (strlen($categories)>0 || strlen($statuses)>0) 
+				{
+				$status_array=explode("-", $statuses);
+				$categories_array=explode("-", $categories);
+				$cat_stmt="select distinct statuses from vicidial_statuses where category in ('".implode("','", $categories_array)."') UNION select distinct statuses from vicidial_campaign_statuses where category in ('".implode("','", $categories_array)."') $campaign_SQL";
+				if ($DB) {$rpt_str.=$cat_stmt."<BR>\n";}
+				$cat_rslt=mysql_to_mysqli($cat_stmt, $link);
+				while($cat_row=mysqli_fetch_row($cat_rslt)) 
+					{
+					if (!in_array($cat_row[0], $status_array))
+						{
+						array_push($status_array, $cat_row[0]);
+						}
+					}
+				}
+
+			if (count($status_array)>0) 
+				{
+				$status_SQL=" and status in ('".implode("', '", $status_array)."') ";
+				if (in_array("ALLSTATUSES", $status_array) || preg_match('/\-\-\-ALL\-\-\-/', $statuses) || in_array("ALLCATEGORIES", $categories_array) || preg_match('/\-\-\-ALL\-\-\-/', $categories)) 
+					{
+					$status_SQL="";
+					}
+				}
+			########################
+
+			# COMPILE USER CLAUSE 
+			if (strlen($user_groups)>0 || strlen($users)>0) 
+				{
+				$user_array=explode("-", $users);
+				$user_group_array=explode("-", $user_groups);
+				$ug_stmt="select user from vicidial_users where user_group in ('".implode("', '", $user_group_array)."')";
+				if ($DB) {$rpt_str.=$ug_stmt."<BR>\n";}
+				$ug_rslt=mysql_to_mysqli($ug_stmt, $link);
+				while ($ug_row=mysqli_fetch_row($ug_rslt)) 
+					{
+					if (!in_array($ug_row[0], $user_array))
+						{
+						array_push($user_array, $ug_row[0]);
+						}
+					}
+				}
+			if (count($user_array)>0) 
+				{
+				$user_SQL=" and user in ('".implode("', '", $user_array)."') ";
+				if (in_array("ALLUSERS", $user_array) || preg_match('/\-\-\-ALL\-\-\-/', $users) || in_array("ALLGROUPS", $user_group_array) || preg_match('/\-\-\-ALL\-\-\-/', $user_groups)) 
+					{
+					$user_SQL="";
+					}
+				}
+			########################
+
+			$outbound_ct_array=array();
+			$inbound_ct_array=array();
+			$did_ct_array=array();
+			$status_ct_array=array();
+			$grand_total_array=array();
+			$grand_total_calls=0;
+			if (!$skip_outbound) 
+				{
+				$stmt="select campaign_id, status, count(*) from vicidial_log where call_date>='$query_date $query_time' and call_date<='$end_date $end_time' $ingroup_SQL $status_SQL $user_SQL group by campaign_id, status order by campaign_id, status asc";
+				if ($DB) {$rpt_str.=$stmt."<BR>\n";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+				while ($row=mysqli_fetch_row($rslt)) 
+					{
+					$outbound_ct_array{"$row[0]"}{"TOTAL CALLS"}+=$row[2];
+					$grand_total_calls+=$row[2];
+					if ($status_breakdown) 
+						{
+						if (!in_array("$row[1]", $status_ct_array)) 
+							{
+							array_push($status_ct_array, "$row[1]");
+							}
+						$outbound_ct_array{"$row[0]"}{"$row[1]"}+=$row[2];
+						$grand_total_array{"$row[1]"}+=$row[2];
+						}
+					}
+				}
+			if (!$skip_inbound)
+				{
+				$stmt="select campaign_id, status, count(*) from vicidial_closer_log where call_date>='$query_date $query_time' and call_date<='$end_date $end_time' $inb_SQL $status_SQL $user_SQL group by campaign_id, status order by campaign_id, status asc";
+				if ($DB) {$rpt_str.=$stmt."<BR>\n";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+				while ($row=mysqli_fetch_row($rslt)) 
+					{
+					$inbound_ct_array{"$row[0]"}{"TOTAL CALLS"}+=$row[2];
+					$grand_total_calls+=$row[2];
+					if ($status_breakdown) 
+						{
+						if (!in_array("$row[1]", $status_ct_array)) 
+							{
+							array_push($status_ct_array, "$row[1]");
+							}
+						$inbound_ct_array{"$row[0]"}{"$row[1]"}+=$row[2];
+						$grand_total_array{"$row[1]"}+=$row[2];
+						}
+					}
+				}
+			if (!$skip_dids)
+				{
+				$stmt="select did_id, extension, campaign_id, status, count(*) from vicidial_did_log vdl, vicidial_closer_log vcl where vdl.call_date>='$query_date $query_time' and vdl.call_date<='$end_date $end_time' $did_SQL $status_SQL $user_SQL and vcl.uniqueid=vdl.uniqueid group by campaign_id, status order by campaign_id, status asc";
+				if ($DB) {$rpt_str.=$stmt."<BR>\n";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+				while ($row=mysqli_fetch_row($rslt)) 
+					{
+					$did_ct_array{"$row[1]"}{"TOTAL CALLS"}+=$row[4];
+					$grand_total_calls+=$row[4];
+					if ($status_breakdown) 
+						{
+						if (!in_array("$row[1]", $status_ct_array)) 
+							{
+							array_push($status_ct_array, "$row[3]");
+							}
+						$did_ct_array{"$row[1]"}{"$row[3]"}+=$row[4];
+						$grand_total_array{"$row[3]"}+=$row[4];
+						}
+					}
+				}
+
+			$rpt_str.="CAMPAIGN,TOTAL CALLS";
+			if ($status_breakdown) 
+				{
+				for ($i=0; $i<count($status_ct_array); $i++) 
+					{
+					$rpt_str.=",$status_ct_array[$i]";
+					}
+				}
+			$rpt_str.="\n";
+			while (list($key, $val)=each($outbound_ct_array)) 
+				{
+				$total_calls=$outbound_ct_array{$key}{"TOTAL CALLS"};
+				$rpt_str.="$key,".$outbound_ct_array{$key}{"TOTAL CALLS"};
+				unset($outbound_ct_array{$key}{"TOTAL CALLS"});
+				if ($status_breakdown) 
+					{
+					for ($i=0; $i<count($status_ct_array); $i++) 
+						{
+						$outbound_ct_array{$key}{"$status_ct_array[$i]"}+=0;
+						}
+					ksort($outbound_ct_array{$key});
+					while (list($key2, $val2)=each($outbound_ct_array{$key})) 
+						{
+						$rpt_str.=",$val2";
+						if ($show_percentages) 
+							{
+							$rpt_str.=" (";
+							$rpt_str.=sprintf("%.1f", (100*$val2/$total_calls));
+							$rpt_str.="%)";
+							}
+						}
+					}
+				$rpt_str.="\n";
+				}
+			while (list($key, $val)=each($inbound_ct_array)) 
+				{
+				$total_calls=$inbound_ct_array{$key}{"TOTAL CALLS"};
+				$rpt_str.="$key,".$inbound_ct_array{$key}{"TOTAL CALLS"};
+				unset($inbound_ct_array{$key}{"TOTAL CALLS"});
+				if ($status_breakdown) 
+					{
+					for ($i=0; $i<count($status_ct_array); $i++) 
+						{
+						$inbound_ct_array{$key}{"$status_ct_array[$i]"}+=0;
+						}
+					ksort($inbound_ct_array{$key});
+					while (list($key2, $val2)=each($inbound_ct_array{$key})) 
+						{
+						$rpt_str.=",$val2";
+						if ($show_percentages) 
+							{
+							$rpt_str.=" (";
+							$rpt_str.=sprintf("%.1f", (100*$val2/$total_calls));
+							$rpt_str.="%)";
+							}
+						}
+					}
+				$rpt_str.="\n";
+				}
+			while (list($key, $val)=each($did_ct_array)) 
+				{
+				$total_calls=$did_ct_array{$key}{"TOTAL CALLS"};
+				$rpt_str.="$key,".$did_ct_array{$key}{"TOTAL CALLS"};
+				unset($did_ct_array{$key}{"TOTAL CALLS"});
+				if ($status_breakdown) 
+					{
+					for ($i=0; $i<count($status_ct_array); $i++) 
+						{
+						$did_ct_array{$key}{"$status_ct_array[$i]"}+=0;
+						}
+					ksort($did_ct_array{$key});
+					while (list($key2, $val2)=each($did_ct_array{$key})) 
+						{
+						$rpt_str.=",$val2";
+						if ($show_percentages) 
+							{
+							$rpt_str.=" (";
+							$rpt_str.=sprintf("%.1f", (100*$val2/$total_calls));
+							$rpt_str.="%)";
+							}
+						}
+					}
+				$rpt_str.="\n";
+				}
+			$rpt_str.="TOTAL,$grand_total_calls";
+			ksort($grand_total_array);
+			while (list($key, $val)=each($grand_total_array)) 
+				{
+				$rpt_str.=",$val";
+				if ($show_percentages) 
+					{
+					$rpt_str.=" (";
+					$rpt_str.=sprintf("%.1f", (100*$val/$grand_total_calls));
+					$rpt_str.="%)";
+					}
+				}
+
+			if ($file_download>0) 
+				{
+				$CSVfilename = "API_call_dispo_report_$ENTRYdate.csv";
+				// We'll be outputting a TXT file
+				header('Content-type: application/octet-stream');
+
+				// It will be called LIST_101_20090209-121212.txt
+				header("Content-Disposition: attachment; filename=\"$CSVfilename\"");
+				header('Expires: 0');
+				header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+				header('Pragma: public');
+				ob_clean();
+				flush();
+
+				echo "$rpt_str";
+				exit;
+				}
+			else 
+				{
+				header('Content-type: text/plain');
+				echo "$rpt_str";
+				if ($DB)
+					{
+					print_r($outbound_ct_array);
+					print_r($inbound_ct_array);
+					print_r($did_ct_array);
+					}
+				}			
+			}
+		}
+	exit;
+	}
+################################################################################
+### END call_dispo_report
+################################################################################
 
 
 $result = 'ERROR';

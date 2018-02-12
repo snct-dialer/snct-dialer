@@ -96,6 +96,12 @@
       www/vicidial/functions.php,
       www/vicidial/help.php: Added PRESS_CALLBACK_QUEUE feature, and
        Closing-Time feature, and add-lead-timezone-lookup feature.
+  * Add upstream Rev. 2906:
+    - docs/NON-AGENT_API.txt,
+      www/vicidial/AST_API_log_report.php,
+      www/vicidial/AST_agent_performance_detail.php,
+      www/vicidial/non_agent_api.php: Added call_dispo_report function.
+    
 
 2.25.23 stable
   [Jörg Frings-Fürst]

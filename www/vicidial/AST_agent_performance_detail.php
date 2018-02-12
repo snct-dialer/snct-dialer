@@ -1,7 +1,7 @@
 <?php 
 # AST_agent_performance_detail.php
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -61,6 +61,7 @@
 # 170409-1547 - Added IP List validation code
 # 170829-0040 - Added screen color settings
 # 171012-2015 - Fixed javascript/apache errors with graphs
+# 180208-1724 - Added times to/from
 #
 
 $startMS = microtime();
@@ -75,6 +76,10 @@ if (isset($_GET["query_date"]))				{$query_date=$_GET["query_date"];}
 	elseif (isset($_POST["query_date"]))	{$query_date=$_POST["query_date"];}
 if (isset($_GET["end_date"]))				{$end_date=$_GET["end_date"];}
 	elseif (isset($_POST["end_date"]))		{$end_date=$_POST["end_date"];}
+if (isset($_GET["query_time"]))				{$query_time=$_GET["query_time"];}
+	elseif (isset($_POST["query_time"]))	{$query_time=$_POST["query_time"];}
+if (isset($_GET["end_time"]))				{$end_time=$_GET["end_time"];}
+	elseif (isset($_POST["end_time"]))		{$end_time=$_POST["end_time"];}
 if (isset($_GET["group"]))					{$group=$_GET["group"];}
 	elseif (isset($_POST["group"]))			{$group=$_POST["group"];}
 if (isset($_GET["user_group"]))				{$user_group=$_GET["user_group"];}
@@ -108,7 +113,7 @@ if (isset($_GET["search_archived_data"]))			{$search_archived_data=$_GET["search
 if (isset($_GET["show_defunct_users"]))				{$show_defunct_users=$_GET["show_defunct_users"];}
 	elseif (isset($_POST["show_defunct_users"]))	{$show_defunct_users=$_POST["show_defunct_users"];}
 
-if (strlen($shift)<2) {$shift='ALL';}
+if (strlen($shift)<2) {$shift='--';}
 if ($search_archived_data=="checked") {$agent_log_table="vicidial_agent_log_archive";} else {$agent_log_table="vicidial_agent_log";}
 
 $TIME_HF_agentperfdetail = 'HF';
@@ -357,6 +362,8 @@ if (!isset($user_group)) {$user_group = array();}
 if (!isset($users)) {$users = array();}
 if (!isset($query_date)) {$query_date = $NOW_DATE;}
 if (!isset($end_date)) {$end_date = $NOW_DATE;}
+if (!isset($query_time)) {$query_time = "00:00:00";}
+if (!isset($end_time)) {$end_time = "23:59:59";}
 
 
 $i=0;
@@ -484,7 +491,7 @@ else
 
 if ($DB) {$HTML_text.="$user_group_string|$user_group_ct|$user_groupQS|$i<BR>";}
 
-$LINKbase = "$PHP_SELF?query_date=$query_date&end_date=$end_date$groupQS$user_groupQS&shift=$shift&DB=$DB&show_percentages=$show_percentages&live_agents=$live_agents&time_in_sec=$time_in_sec&search_archived_data=$search_archived_data&show_defunct_users=$show_defunct_users&breakdown_by_date=$breakdown_by_date&report_display_type=$report_display_type";
+$LINKbase = "$PHP_SELF?query_date=$query_date&end_date=$end_date&query_time=$query_time&end_time=$end_time$groupQS$user_groupQS&shift=$shift&DB=$DB&show_percentages=$show_percentages&live_agents=$live_agents&time_in_sec=$time_in_sec&search_archived_data=$search_archived_data&show_defunct_users=$show_defunct_users&breakdown_by_date=$breakdown_by_date&report_display_type=$report_display_type";
 
 require("screen_colors.php");
 
@@ -540,6 +547,8 @@ $HTML_text.="o_cal.a_tpl.yearscroll = false;\n";
 $HTML_text.="// o_cal.a_tpl.weekstart = 1; // Monday week start\n";
 $HTML_text.="</script>\n";
 
+$HTML_text.="<BR><INPUT TYPE=TEXT NAME=query_time SIZE=10 MAXLENGTH=10 VALUE=\"$query_time\">";
+
 $HTML_text.="<BR> "._QXZ("to")." <BR><INPUT TYPE=TEXT NAME=end_date SIZE=10 MAXLENGTH=10 VALUE=\"$end_date\">";
 
 $HTML_text.="<script language=\"JavaScript\">\n";
@@ -552,6 +561,8 @@ $HTML_text.="});\n";
 $HTML_text.="o_cal.a_tpl.yearscroll = false;\n";
 $HTML_text.="// o_cal.a_tpl.weekstart = 1; // Monday week start\n";
 $HTML_text.="</script>\n";
+
+$HTML_text.="<BR><INPUT TYPE=TEXT NAME=end_time SIZE=10 MAXLENGTH=10 VALUE=\"$end_time\">";
 
 $HTML_text.="</TD><TD VALIGN=TOP> "._QXZ("Campaigns").":<BR>";
 $HTML_text.="<SELECT SIZE=5 NAME=group[] multiple>\n";
@@ -639,6 +650,10 @@ if (!$group)
 
 else
 {
+
+$time_BEGIN=$query_time;
+$time_END=$end_time;
+
 if ($shift == 'AM') 
 	{
 	$time_BEGIN=$AM_shift_BEGIN;
@@ -655,8 +670,8 @@ if ($shift == 'PM')
 	}
 if ($shift == 'ALL') 
 	{
-	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}
-	if (strlen($time_END) < 6) {$time_END = "23:59:59";}
+	$time_BEGIN = "00:00:00";
+	$time_END = "23:59:59";
 	}
 $query_date_BEGIN = "$query_date $time_BEGIN";   
 $query_date_END = "$end_date $time_END";
