@@ -119,6 +119,11 @@
       www/vicidial/help.php,
       www/vicidial/AST_source_vlc_status_report.php: New
         AST_source_vlc_status_report.php.
+  * Add upstream Rev. 2913:
+    - bin/AST_VDadapt.pl,
+      docs/CALL_URL_FEATURES.txt,
+      www/agc/vdc_db_query.php: Added callback_datetime as dispo call url
+        variable.
 
 2.25.23 stable
   [Jörg Frings-Fürst]

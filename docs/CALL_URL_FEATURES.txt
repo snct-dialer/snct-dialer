@@ -23,11 +23,12 @@ dial calls. Default is blank.
 Dispo Call URL - This web URL address is not seen by the agent, but it
 is called every time a call is dispositioned by an agent if it is
 populated. Uses the same variables as the web form fields and scripts.
-dispo, talk_time, call_notes and callback_lead_status are the extra variables 
-you can use with this specific function. 'dispo' is the actual agent-defined 
-status disposition for the call, and callback_lead_status is the agent-selected
-status when a scheduled callback status has been selected by the agent. The 
-actual talk time in seconds of the call is talk_time. This URL can NOT be a 
+dispo, talk_time, call_notes, callback_lead_status and callback_datetime are the
+extra variables you can use with this specific function. 'dispo' is the actual 
+agent-defined status disposition for the call, callback_lead_status is the 
+agent-selected status when a scheduled callback status has been selected by the 
+agent, and callback_datetime is the agent selected date and time for a callback.
+The actual talk time in seconds of the call is talk_time. This URL can NOT be a 
 relative path. It is always called from the webserver. Default is blank.
 
 Add Lead URL -  This web URL address is not seen by the agent, but it is called

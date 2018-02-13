@@ -5462,7 +5462,7 @@ sub calculate_drops_inbound
 				{$update_SQL .= ",max_agents='$itotal_agents[$p]'";}
 			if ($STATSmax_remote_agents < $itotal_remote_agents[$p])
 				{$update_SQL .= ",max_remote_agents='$itotal_remote_agents[$p]'";}
-			if ($STATStotal_calls < $iVCScalls_today[$p]) 
+			if ($STATStotal_calls != $iVCScalls_today[$p]) 
 				{$update_SQL .= ",total_calls='$iVCScalls_today[$p]'";}
 			if (length($update_SQL) > 5) 
 				{

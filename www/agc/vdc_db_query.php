@@ -447,10 +447,11 @@
 # 180131-1116 - Fixed ereg issue
 # 180204-1651 - Added update for inbound callback queue functionality
 # 180210-0707 - Fix for callback list issue #1062
+# 180212-0654 - Added callback_datetime as dispo call url variable
 #
 
-$version = '2.14-341';
-$build = '180210-0707';
+$version = '2.14-342';
+$build = '180212-0654';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=709;
@@ -12783,6 +12784,7 @@ if ($ACTION == 'updateDISPO')
 		$dispo_call_urlARY[$j] = preg_replace('/--A--did_custom_five--B--/i',urlencode(trim($DID_custom_five)),$dispo_call_urlARY[$j]);
 		$dispo_call_urlARY[$j] = preg_replace('/--A--agent_email--B--/i',urlencode(trim($agent_email)),$dispo_call_urlARY[$j]);
 		$dispo_call_urlARY[$j] = preg_replace('/--A--callback_lead_status--B--/i',urlencode(trim($CallBackLeadStatus)),$dispo_call_urlARY[$j]);
+		$dispo_call_urlARY[$j] = preg_replace('/--A--callback_datetime--B--/i',urlencode(trim($CallBackDatETimE)),$dispo_call_urlARY[$j]);
 		$dispo_call_urlARY[$j] = preg_replace('/--A--called_count--B--/i',"$called_count",$dispo_call_urlARY[$j]);
 
 
