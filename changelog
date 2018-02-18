@@ -134,7 +134,10 @@
       www/vicidial/admin.php,
       www/vicidial/admin_modify_lead.php,
       www/vicidial/help.php: Added GDPR system and user settings.
-   -  extras/mysql_update/mysql-1530.sql: Add changes from Rev. 2915. 
+    - extras/mysql_update/mysql-1530.sql: Add changes from Rev. 2915.
+  * Add upstream Rev. 2916:
+    - www/vicidial/AST_source_vlc_status_report.php: Added column to download
+        for VLC or source_id.
 
 2.25.23 stable
   [Jörg Frings-Fürst]

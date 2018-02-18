@@ -10,6 +10,7 @@
 # CHANGES
 #
 # 180211-1111 - First build
+# 180214-2230 - Added column to download for VLC or source_id
 #
 
 $startMS = microtime();
@@ -501,8 +502,8 @@ while($i < $group_ct)
 		$ASCII_text.="| <a href='$report_URL&sort_by=".($sort_by == "dispo_asc" ? "dispo_desc" : "dispo_asc")."'>"._QXZ("DISPOSITION",40)."</a> | <a href='$report_URL&sort_by=".($sort_by == "count_asc" ? "count_desc" : "count_asc")."'>"._QXZ("CALLS",6)."</a> | "._QXZ("PERCENT", 8)." |\n";
 		$ASCII_text.="+------------------------------------------+--------+----------+\n";
 
-		$CSV_text.="\""._QXZ("$rpt_group_title")." : ".($key !="" ? $key : "(NONE)")."\"\n";
-		$CSV_text.="\""._QXZ("DISPOSITION")."\",\""._QXZ("CALLS")."\",\""._QXZ("PERCENT")."\"\n";
+		# $CSV_text.="\""._QXZ("$rpt_group_title")." : ".($key !="" ? $key : "(NONE)")."\"\n";
+		$CSV_text.="\""._QXZ("VENDOR LEAD CODE")."\",\""._QXZ("DISPOSITION")."\",\""._QXZ("CALLS")."\",\""._QXZ("PERCENT")."\"\n";
 
 		$j=0;
 		while(list($key2, $val2)=each($count_ary[$key])) 
@@ -519,7 +520,7 @@ while($i < $group_ct)
 			$percent=sprintf("%.2f", 100*MathZDC($val2, $total_ary["$key"]));
 			$HTML_body.="<tr bgcolor='#".$bgcolor."'><td align='left'>".($dispo_ary["$key2"] !="" ? $dispo_ary["$key2"] : $key2)."</td><td align='center'>".$val2."</td><td align='center'>".$percent." %</td></tr>";
 			$ASCII_text.="| ".sprintf("%-40s", ($dispo_ary["$key2"] !="" ? $dispo_ary["$key2"] : $key2))." | ".sprintf("%6s", $val2)." | ".sprintf("%7s", $percent)."% |\n";
-			$CSV_text.="\"".($dispo_ary["$key2"] !="" ? $dispo_ary["$key2"] : $key2)."\",\"".$val2."\",\"".$percent." %\"\n";
+			$CSV_text.="\"".($key !="" ? $key : "(NONE)")."\",\"".($dispo_ary["$key2"] !="" ? $dispo_ary["$key2"] : $key2)."\",\"".$val2."\",\"".$percent." %\"\n";
 
 			$j++;
 			}
@@ -528,7 +529,7 @@ while($i < $group_ct)
 		$ASCII_text.="+------------------------------------------+--------+----------+\n";
 		$ASCII_text.="| "._QXZ("TOTAL",40)." | ".sprintf("%6s", $total_ary["$key"])." | ".sprintf("%8s", " ")." |\n";
 		$ASCII_text.="+------------------------------------------+--------+----------+\n\n";
-		$CSV_text.="\""._QXZ("TOTAL")."\",\"".$total_ary["$key"]."\",\"\"\n\n";
+		$CSV_text.="\"\",\""._QXZ("TOTAL")."\",\"".$total_ary["$key"]."\",\"\"\n\n";
 		}
 	$i++;
 
@@ -541,8 +542,8 @@ while($i < $group_ct)
 	$ASCII_text.="| <a href='$report_URL&sort_by=".($sort_by == "dispo_asc" ? "dispo_desc" : "dispo_asc")."'>"._QXZ("DISPOSITION",40)."</a> | <a href='$report_URL&sort_by=".($sort_by == "count_asc" ? "count_desc" : "count_asc")."'>"._QXZ("CALLS",6)."</a> | "._QXZ("PERCENT", 8)." |\n";
 	$ASCII_text.="+------------------------------------------+--------+----------+\n";
 
-	$CSV_text.="\""._QXZ("$rpt_group_title")." : TOTALS\"\n";
-	$CSV_text.="\""._QXZ("DISPOSITION")."\",\""._QXZ("CALLS")."\",\""._QXZ("PERCENT")."\"\n";
+	# $CSV_text.="\""._QXZ("$rpt_group_title")." : TOTALS\"\n";
+	$CSV_text.="\""._QXZ("VENDOR LEAD CODE")."\",\""._QXZ("DISPOSITION")."\",\""._QXZ("CALLS")."\",\""._QXZ("PERCENT")."\"\n";
 
 	arsort($status_totals);
 	switch ($sort_by) 
@@ -571,7 +572,7 @@ while($i < $group_ct)
 		$percent=sprintf("%.2f", 100*MathZDC($val, $grand_total));
 		$HTML_body.="<tr bgcolor='#".$bgcolor."'><td align='left'>".($dispo_ary["$key"] !="" ? $dispo_ary["$key"] : $key)."</td><td align='center'>".$val."</td><td align='center'>".$percent." %</td></tr>";
 		$ASCII_text.="| ".sprintf("%-40s", ($dispo_ary["$key"] !="" ? $dispo_ary["$key"] : $key))." | ".sprintf("%6s", $val)." | ".sprintf("%7s", $percent)."% |\n";
-		$CSV_text.="\"".($dispo_ary["$key"] !="" ? $dispo_ary["$key"] : $key)."\",\"".$val."\",\"".$percent." %\"\n";
+		$CSV_text.="\""._QXZ("TOTALS")."\",\"".($dispo_ary["$key"] !="" ? $dispo_ary["$key"] : $key)."\",\"".$val."\",\"".$percent." %\"\n";
 
 		$j++;
 		}
@@ -580,7 +581,7 @@ while($i < $group_ct)
 	$ASCII_text.="+------------------------------------------+--------+----------+\n";
 	$ASCII_text.="| "._QXZ("GRAND TOTAL",40)." | ".sprintf("%6s", $grand_total)." | ".sprintf("%8s", " ")." |\n";
 	$ASCII_text.="+------------------------------------------+--------+----------+\n\n";
-	$CSV_text.="\""._QXZ("GRAND TOTAL")."\",\"".$grand_total."\",\"\"\n\n";
+	$CSV_text.="\"\",\""._QXZ("GRAND TOTAL")."\",\"".$grand_total."\",\"\"\n\n";
 	
 	}
 
