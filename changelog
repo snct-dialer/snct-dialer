@@ -164,6 +164,13 @@
     - www/vicidial/admin.php,
       www/vicidial/admin_soundboard.php: Many translation strings and
         permissions fixes, issue #1065.
+  * Add upstream Rev. 2922:
+    - docs/VICIDIAL_statuses.txt,
+      extras/MySQL_AST_CREATE_tables.sql,
+      extras/upgrade_2.14.sql,
+      www/agc/vicidial.php,
+      www/vicidial/admin.php,
+      www/vicidial/help.php: Added pause_max_dispo, fix for issue #1030.
 
 2.25.23 stable
   [Jörg Frings-Fürst]

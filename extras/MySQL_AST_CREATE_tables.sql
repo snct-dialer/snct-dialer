@@ -999,7 +999,8 @@ agent_screen_time_display ENUM('DISABLED','ENABLED_BASIC','ENABLED_FULL','ENABLE
 next_dial_my_callbacks ENUM('DISABLED','ENABLED') default 'DISABLED',
 inbound_no_agents_no_dial_container VARCHAR(40) default '---DISABLED---',
 inbound_no_agents_no_dial_threshold SMALLINT(5) default '0',
-cid_group_id VARCHAR(20) default '---DISABLED---'
+cid_group_id VARCHAR(20) default '---DISABLED---',
+pause_max_dispo VARCHAR(6) default 'PAUSMX'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_lists (

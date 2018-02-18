@@ -153,6 +153,7 @@
 # 180204-0213 - Added inbound_groups-icbq_expiration_hours and closed-time entries
 # 180211-1119 - Added source_vlc_status_report
 # 180214-0042 - Added cid_groups
+# 180217-0810 - Added pause_max_dispo
 #
 
 require("dbconnect_mysqli.php");
@@ -1784,6 +1785,11 @@ if ($SSoutbound_autodial_active > 0)
 <A NAME="campaigns-pause_max">
 <BR>
 <B><?php echo _QXZ("Agent Pause Max Seconds"); ?> -</B><?php echo _QXZ("If this is set to greater than 0, and the agent has not gone out of PAUSED status in this number of seconds, the agent will automatically be logged out of the agent screen. Default is 0 for disabled."); ?>
+
+<BR>
+<A NAME="campaigns-pause_max_dispo">
+<BR>
+<B><?php echo _QXZ("Agent Pause Max Status"); ?> -</B><?php echo _QXZ("If Agent Pause Max Seconds is enabled, this is the status set for the call when the agent has not selected a status past the number of seconds set above. This situation can happen when manual alt dial is enabled and the agent has not finished the lead they are on. Default is PAUSMX."); ?>
 
 <BR>
 <A NAME="campaigns-ready_max_logout">
