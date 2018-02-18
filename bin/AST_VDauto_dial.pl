@@ -25,7 +25,7 @@
 # It is good practice to keep this program running by placing the associated 
 # KEEPALIVE script running every minute to ensure this program is always running
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG:
 # 50125-1201 - Changed dial timeout to 120 seconds from 180 seconds
@@ -126,6 +126,7 @@
 # 170527-2347 - Fix for rare inbound logging issue #1017
 # 170915-1817 - Added support for per server routing prefix needed for Asterisk 13+
 # 180130-1346 - Added inbound_no_agents_no_dial campaign options
+# 180214-1559 - Added CID Group functionality
 #
 
 ### begin parsing run-time options ###
@@ -388,6 +389,7 @@ while($one_day_interval > 0)
 		@DBIPqueue_priority=@MT;
 		@DBIPdial_method=@MT;
 		@DBIPuse_custom_cid=@MT;
+		@DBIPcid_group_id=@MT;
 		@DBIPinbound_queue_no_dial=@MT;
 		@DBIPinbound_no_agents_no_dial=@MT;
 		@DBIPinbound_no_agents_no_dial_threshold=@MT;
@@ -636,7 +638,7 @@ while($one_day_interval > 0)
 
 			### grab the dial_level and multiply by active agents to get your goalcalls
 			$DBIPadlevel[$user_CIPct]=0;
-			$stmtA = "SELECT auto_dial_level,local_call_time,dial_timeout,dial_prefix,campaign_cid,active,campaign_vdad_exten,closer_campaigns,omit_phone_code,available_only_ratio_tally,auto_alt_dial,campaign_allow_inbound,queue_priority,dial_method,use_custom_cid,inbound_queue_no_dial,available_only_tally_threshold,available_only_tally_threshold_agents,dial_level_threshold,dial_level_threshold_agents,adaptive_dl_diff_target,dl_diff_target_method,inbound_no_agents_no_dial_container,inbound_no_agents_no_dial_threshold FROM vicidial_campaigns where campaign_id='$DBIPcampaign[$user_CIPct]'";
+			$stmtA = "SELECT auto_dial_level,local_call_time,dial_timeout,dial_prefix,campaign_cid,active,campaign_vdad_exten,closer_campaigns,omit_phone_code,available_only_ratio_tally,auto_alt_dial,campaign_allow_inbound,queue_priority,dial_method,use_custom_cid,inbound_queue_no_dial,available_only_tally_threshold,available_only_tally_threshold_agents,dial_level_threshold,dial_level_threshold_agents,adaptive_dl_diff_target,dl_diff_target_method,inbound_no_agents_no_dial_container,inbound_no_agents_no_dial_threshold,cid_group_id FROM vicidial_campaigns where campaign_id='$DBIPcampaign[$user_CIPct]'";
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			$sthArows=$sthA->rows;
@@ -671,6 +673,7 @@ while($one_day_interval > 0)
 				$DBIPdl_diff_target_method[$user_CIPct] =		$aryA[21];
 				$DBIPinbound_no_agents_no_dial[$user_CIPct] =	$aryA[22];
 				$DBIPinbound_no_agents_no_dial_threshold[$user_CIPct] =	$aryA[23];
+				$DBIPcid_group_id[$user_CIPct] =	$aryA[24];
 
 				if ($DBIPdl_diff_target_method[$user_CIPct] =~ /ADAPT_CALC_ONLY/)
 					{
@@ -1202,7 +1205,7 @@ while($one_day_interval > 0)
 									print "hopper row updated to INCALL: |$UQaffected_rows|$lead_id|\n";
 
 									### Gather lead data
-									$stmtA = "SELECT list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,address3,alt_phone,called_count,security_phrase,status FROM vicidial_list where lead_id='$lead_id';";
+									$stmtA = "SELECT list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,address3,alt_phone,called_count,security_phrase,status,state FROM vicidial_list where lead_id='$lead_id';";
 									$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 									$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 									$sthArows=$sthA->rows;
@@ -1221,6 +1224,7 @@ while($one_day_interval > 0)
 										$called_count =				$aryA[7];
 										$security_phrase =			$aryA[8];
 										$Zstatus =				$aryA[9];
+										$state = 				$aryA[10];
 										
 										$doneX = 0;
 										# check only if Zstatus is not NEW
@@ -1358,48 +1362,104 @@ while($one_day_interval > 0)
 											$VDAD_dial_exten = $routing_prefix . $VDAD_dial_exten;
 											}
 
-										if (length($DBIPcampaigncid[$user_CIPct]) > 6) {$CCID = "$DBIPcampaigncid[$user_CIPct]";   $CCID_on++;}
 										if (length($campaign_cid_override) > 6) {$CCID = "$campaign_cid_override";   $CCID_on++;}
-										if ($DBIPuse_custom_cid[$user_CIPct] =~ /Y/) 
+										else
 											{
-											$temp_CID = $security_phrase;
-											$temp_CID =~ s/\D//gi;
-											if (length($temp_CID) > 6) 
-												{$CCID = "$temp_CID";   $CCID_on++;}
-											}
-										if ($DBIPuse_custom_cid[$user_CIPct] =~ /AREACODE/) 
-											{
-											$temp_CID='';
-											$temp_vcca='';
-											$temp_ac='';
-											$temp_ac_two = substr("$phone_number", 0, 2);
-											$temp_ac_three = substr("$phone_number", 0, 3);
-											$temp_ac_four = substr("$phone_number", 0, 4);
-											$temp_ac_five = substr("$phone_number", 0, 5);
-											$stmtA = "SELECT outbound_cid,areacode FROM vicidial_campaign_cid_areacodes where campaign_id='$DBIPcampaign[$user_CIPct]' and areacode IN('$temp_ac_two','$temp_ac_three','$temp_ac_four','$temp_ac_five') and active='Y' order by CAST(areacode as SIGNED INTEGER) asc, call_count_today desc limit 100000;";
-											$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-											$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-											$sthArows=$sthA->rows;
-											$act=0;
-											while ($sthArows > $act)
+											if (length($DBIPcampaigncid[$user_CIPct]) > 6) {$CCID = "$DBIPcampaigncid[$user_CIPct]";   $CCID_on++;}
+											if ($DBIPuse_custom_cid[$user_CIPct] =~ /Y/) 
 												{
-												@aryA = $sthA->fetchrow_array;
-												$temp_vcca =	$aryA[0];
-												$temp_ac =		$aryA[1];
-												$act++;
+												$temp_CID = $security_phrase;
+												$temp_CID =~ s/\D//gi;
+												if (length($temp_CID) > 6) 
+													{$CCID = "$temp_CID";   $CCID_on++;}
 												}
-											if ($act > 0) 
+											$CIDG_set=0;
+											if ($DBIPcid_group_id[$user_CIPct] !~ /\-\-\-DISABLED\-\-\-/)
 												{
-												$sthA->finish();
-												$stmtA="UPDATE vicidial_campaign_cid_areacodes set call_count_today=(call_count_today + 1) where campaign_id='$DBIPcampaign[$user_CIPct]' and areacode='$temp_ac' and outbound_cid='$temp_vcca';";
-												$affected_rows = $dbhA->do($stmtA);
+												$stmtA = "SELECT cid_group_type FROM vicidial_cid_groups where cid_group_id='$DBIPcid_group_id[$user_CIPct]';";
+												$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+												$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+												$sthArows=$sthA->rows;
+												if ($sthArows > 0)
+													{
+													@aryA = $sthA->fetchrow_array;
+													$cid_group_type =	$aryA[0];
+													$temp_CID='';
+													$temp_vcca='';
+													$temp_ac='';
+
+													if ($cid_group_type =~ /AREACODE/)
+														{
+														$temp_ac_two = substr("$phone_number", 0, 2);
+														$temp_ac_three = substr("$phone_number", 0, 3);
+														$temp_ac_four = substr("$phone_number", 0, 4);
+														$temp_ac_five = substr("$phone_number", 0, 5);
+														$stmtA = "SELECT outbound_cid,areacode FROM vicidial_campaign_cid_areacodes where campaign_id='$DBIPcid_group_id[$user_CIPct]' and areacode IN('$temp_ac_two','$temp_ac_three','$temp_ac_four','$temp_ac_five') and active='Y' order by CAST(areacode as SIGNED INTEGER) asc, call_count_today desc limit 100000;";
+														}
+													if ($cid_group_type =~ /STATE/)
+														{
+														$temp_state = $state;
+														$stmtA = "SELECT outbound_cid,areacode FROM vicidial_campaign_cid_areacodes where campaign_id='$DBIPcid_group_id[$user_CIPct]' and areacode IN('$temp_state') and active='Y' order by call_count_today desc limit 100000;";
+														}											$temp_CID='';
+													$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+													$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+													$sthArows=$sthA->rows;
+													$act=0;
+													while ($sthArows > $act)
+														{
+														@aryA = $sthA->fetchrow_array;
+														$temp_vcca =	$aryA[0];
+														$temp_ac =		$aryA[1];
+														$act++;
+														}
+													if ($act > 0) 
+														{
+														$sthA->finish();
+														$stmtA="UPDATE vicidial_campaign_cid_areacodes set call_count_today=(call_count_today + 1) where campaign_id='$DBIPcid_group_id[$user_CIPct]' and areacode='$temp_ac' and outbound_cid='$temp_vcca';";
+														$affected_rows = $dbhA->do($stmtA);
+														}
+													else
+														{$sthA->finish();}
+													$temp_CID = $temp_vcca;
+													$temp_CID =~ s/\D//gi;
+													if (length($temp_CID) > 6) 
+														{$CCID = "$temp_CID";   $CCID_on++;   $CIDG_set++;}
+													}
 												}
-											else
-												{$sthA->finish();}
-											$temp_CID = $temp_vcca;
-											$temp_CID =~ s/\D//gi;
-											if (length($temp_CID) > 6) 
-												{$CCID = "$temp_CID";   $CCID_on++;}
+											if ( ($DBIPuse_custom_cid[$user_CIPct] =~ /AREACODE/) && ($CIDG_set < 1) )
+												{
+												$temp_CID='';
+												$temp_vcca='';
+												$temp_ac='';
+												$temp_ac_two = substr("$phone_number", 0, 2);
+												$temp_ac_three = substr("$phone_number", 0, 3);
+												$temp_ac_four = substr("$phone_number", 0, 4);
+												$temp_ac_five = substr("$phone_number", 0, 5);
+												$stmtA = "SELECT outbound_cid,areacode FROM vicidial_campaign_cid_areacodes where campaign_id='$DBIPcampaign[$user_CIPct]' and areacode IN('$temp_ac_two','$temp_ac_three','$temp_ac_four','$temp_ac_five') and active='Y' order by CAST(areacode as SIGNED INTEGER) asc, call_count_today desc limit 100000;";
+												$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+												$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+												$sthArows=$sthA->rows;
+												$act=0;
+												while ($sthArows > $act)
+													{
+													@aryA = $sthA->fetchrow_array;
+													$temp_vcca =	$aryA[0];
+													$temp_ac =		$aryA[1];
+													$act++;
+													}
+												if ($act > 0) 
+													{
+													$sthA->finish();
+													$stmtA="UPDATE vicidial_campaign_cid_areacodes set call_count_today=(call_count_today + 1) where campaign_id='$DBIPcampaign[$user_CIPct]' and areacode='$temp_ac' and outbound_cid='$temp_vcca';";
+													$affected_rows = $dbhA->do($stmtA);
+													}
+												else
+													{$sthA->finish();}
+												$temp_CID = $temp_vcca;
+												$temp_CID =~ s/\D//gi;
+												if (length($temp_CID) > 6) 
+													{$CCID = "$temp_CID";   $CCID_on++;}
+												}
 											}
 
 										if ($DBIPdialprefix[$user_CIPct] =~ /x/i) {$Local_out_prefix = '';}

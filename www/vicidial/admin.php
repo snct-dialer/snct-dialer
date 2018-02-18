@@ -2397,6 +2397,13 @@ if (isset($_GET["add_lead_timezone"]))			{$add_lead_timezone=$_GET["add_lead_tim
 	elseif (isset($_POST["add_lead_timezone"]))	{$add_lead_timezone=$_POST["add_lead_timezone"];}
 if (isset($_GET["icbq_dial_filter"]))			{$icbq_dial_filter=$_GET["icbq_dial_filter"];}
 	elseif (isset($_POST["icbq_dial_filter"]))	{$icbq_dial_filter=$_POST["icbq_dial_filter"];}
+if (isset($_GET["cid_group_id"]))			{$cid_group_id=$_GET["cid_group_id"];}
+	elseif (isset($_POST["cid_group_id"]))	{$cid_group_id=$_POST["cid_group_id"];}
+if (isset($_GET["cid_group_notes"]))			{$cid_group_notes=$_GET["cid_group_notes"];}
+	elseif (isset($_POST["cid_group_notes"]))	{$cid_group_notes=$_POST["cid_group_notes"];}
+if (isset($_GET["cid_group_type"]))				{$cid_group_type=$_GET["cid_group_type"];}
+	elseif (isset($_POST["cid_group_type"]))	{$cid_group_type=$_POST["cid_group_type"];}
+
 
 if (isset($script_id)) {$script_id= strtoupper($script_id);}
 if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
@@ -3346,6 +3353,8 @@ if ($non_latin < 1)
 	$icbq_call_time_id = preg_replace('/[^-_0-9a-zA-Z]/','',$icbq_call_time_id);
 	$add_lead_timezone = preg_replace('/[^-_0-9a-zA-Z]/','',$add_lead_timezone);
 	$icbq_dial_filter = preg_replace('/[^-_0-9a-zA-Z]/','',$icbq_dial_filter);
+	$cid_group_id = preg_replace('/[^-_0-9a-zA-Z]/','',$cid_group_id);
+	$cid_group_type = preg_replace('/[^-_0-9a-zA-Z]/','',$cid_group_type);
 
 ### ALPHA-NUMERIC and underscore and dash and slash and dot
 	$menu_timeout_prompt = preg_replace('/[^-\/\|\._0-9a-zA-Z]/','',$menu_timeout_prompt);
@@ -3531,6 +3540,7 @@ if ($non_latin < 1)
 	$dl_name = preg_replace('/[^- \.\,\_0-9a-zA-Z]/','',$dl_name);
 	$drop_status = preg_replace('/[^- \.\,\_0-9a-zA-Z]/','',$drop_status);
 	$ip_list_name = preg_replace('/[^- \.\,\_0-9a-zA-Z]/','',$ip_list_name);
+	$cid_group_notes = preg_replace('/[^- \.\,\_0-9a-zA-Z]/','',$cid_group_notes);
 
 	### ALPHA-NUMERIC and underscore and dash and slash and at and dot
 	$call_out_number_group = preg_replace('/[^-\.\:\/\@\_0-9a-zA-Z]/','',$call_out_number_group);
@@ -4367,12 +4377,13 @@ else
 # 180211-1024 - Changed campaign dial statuses to allow List and allowed In-Group selected status group statuses
 # 180211-1126 - Added Outbound Lead Source Report
 # 180213-0010 - Added GDPR system and user settings
+# 180215-1318 - Added CID Groups admin screens
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-655a';
-$build = '180213-0010';
+$admin_version = '2.14-656a';
+$build = '180215-1318';
 
 
 $STARTtime = date("U");
@@ -4943,6 +4954,7 @@ if ($ADD==193111111111)	{$hh='admin';	$sh='sg';	echo _QXZ("ADD STATUS GROUP");}
 if ($ADD==193222222222)	{$hh='admin';	$sh='sg';	echo _QXZ("COPY STATUS GROUP");}
 if ($ADD==194111111111)	{$hh='admin';	$sh='ar';	echo _QXZ("ADD AUTOMATED REPORT");}
 if ($ADD==195111111111)	{$hh='admin';	$sh='il';	echo _QXZ("ADD IP LIST");}
+if ($ADD==196111111111)	{$hh='admin';	$sh='cg';	echo _QXZ("ADD CID GROUP");}
 if ($ADD==1111111111111)	{$hh='admin';	$sh='conference';	echo _QXZ("ADD NEW CONFERENCE");}
 if ($ADD==11111111111111)	{$hh='admin';	$sh='conference';	echo _QXZ("ADD NEW AGENT CONFERENCE");}
 if ($ADD=='2')			{$hh='users';		$sh='new';	echo _QXZ("New User Addition");}
@@ -4997,6 +5009,7 @@ if ($ADD==292111111111)	{$hh='admin';	$sh='sc';	echo _QXZ("ADDING NEW SETTINGS C
 if ($ADD==293111111111)	{$hh='admin';	$sh='sg';	echo _QXZ("ADDING NEW STATUS GROUP");}
 if ($ADD==294111111111)	{$hh='admin';	$sh='ar';	echo _QXZ("ADDING NEW AUTOMATED REPORT");}
 if ($ADD==295111111111)	{$hh='admin';	$sh='il';	echo _QXZ("ADDING NEW IP LIST");}
+if ($ADD==296111111111)	{$hh='admin';	$sh='cg';	echo _QXZ("ADDING NEW CID GROUP");}
 if ($ADD==2111111111111)	{$hh='admin';	$sh='conference';	echo _QXZ("ADDING NEW CONFERENCE");}
 if ($ADD==21111111111111)	{$hh='admin';	$sh='conference';	echo _QXZ("ADDING NEW AGENT CONFERENCE");}
 if ($ADD==221111111111111)	{$hh='admin';	$sh='status';	echo _QXZ("ADDING SYSTEM STATUSES");}
@@ -5079,6 +5092,7 @@ if ($ADD==392111111111)	{$hh='admin';	$sh='sc';	echo _QXZ("MODIFY SETTINGS CONTA
 if ($ADD==393111111111)	{$hh='admin';	$sh='sg';	echo _QXZ("MODIFY STATUS GROUP");}
 if ($ADD==394111111111)	{$hh='admin';	$sh='ar';	echo _QXZ("MODIFY AUTOMATED REPORT");}
 if ($ADD==395111111111)	{$hh='admin';	$sh='il';	echo _QXZ("MODIFY IP LIST");}
+if ($ADD==396111111111)	{$hh='admin';	$sh='cg';	echo _QXZ("MODIFY CID GROUP");}
 if ($ADD==3111111111111)	{$hh='admin';	$sh='conference';	echo _QXZ("MODIFY CONFERENCE");}
 if ($ADD==31111111111111)	{$hh='admin';	$sh='conference';	echo _QXZ("MODIFY AGENT CONFERENCE");}
 if ($ADD==311111111111111)	{$hh='admin';	$sh='settings';	echo _QXZ("MODIFY SYSTEM SETTINGS");}
@@ -5131,6 +5145,7 @@ if ($ADD==491111111111)	{$hh='admin';	$sh='cts';	echo _QXZ("MODIFY CONTACT");}
 if ($ADD==492111111111)	{$hh='admin';	$sh='sc';	echo _QXZ("MODIFY SETTINGS CONTAINER");}
 if ($ADD==493111111111)	{$hh='admin';	$sh='sg';	echo _QXZ("MODIFY STATUS GROUP");}
 if ($ADD==494111111111)	{$hh='admin';	$sh='ar';	echo _QXZ("MODIFY AUTOMATED REPORT");}
+if ($ADD==496111111111)	{$hh='admin';	$sh='cg';	echo _QXZ("MODIFY CID GROUP");}
 if ($ADD==4111111111111)	{$hh='admin';	$sh='conference';	echo _QXZ("MODIFY CONFERENCE");}
 if ($ADD==41111111111111)	{$hh='admin';	$sh='conference';	echo _QXZ("MODIFY CONFERENCE");}
 if ($ADD==411111111111111)	{$hh='admin';	$sh='settings';	echo _QXZ("MODIFY SYSTEM SETTINGS");}
@@ -5174,6 +5189,7 @@ if ($ADD==592111111111)	{$hh='admin';	$sh='sc';	echo _QXZ("DELETE SETTINGS CONTA
 if ($ADD==593111111111)	{$hh='admin';	$sh='sg';	echo _QXZ("DELETE STATUS GROUP");}
 if ($ADD==594111111111)	{$hh='admin';	$sh='ar';	echo _QXZ("DELETE AUTOMATED REPORT");}
 if ($ADD==595111111111)	{$hh='admin';	$sh='il';	echo _QXZ("DELETE IP LIST");}
+if ($ADD==596111111111)	{$hh='admin';	$sh='cg';	echo _QXZ("DELETE CID GROUP");}
 if ($ADD==5111111111111)	{$hh='admin';	$sh='conference';	echo _QXZ("DELETE CONFERENCE");}
 if ($ADD==51111111111111)	{$hh='admin';	$sh='conference';	echo _QXZ("DELETE AGENT CONFERENCE");}
 if ($ADD==6)			{$hh='users';		$sh='list';	echo _QXZ("Delete User");}
@@ -5220,6 +5236,7 @@ if ($ADD==692111111111)	{$hh='admin';	$sh='sc';	echo _QXZ("DELETE SETTINGS CONTA
 if ($ADD==693111111111)	{$hh='admin';	$sh='sg';	echo _QXZ("DELETE STATUS GROUP");}
 if ($ADD==694111111111)	{$hh='admin';	$sh='ar';	echo _QXZ("DELETE AUTOMATED REPORT");}
 if ($ADD==695111111111)	{$hh='admin';	$sh='il';	echo _QXZ("DELETE IP LIST");}
+if ($ADD==696111111111)	{$hh='admin';	$sh='cg';	echo _QXZ("DELETE CID GROUP");}
 if ($ADD==6111111111111)	{$hh='admin';	$sh='conference';	echo _QXZ("DELETE CONFERENCE");}
 if ($ADD==61111111111111)	{$hh='admin';	$sh='conference';	echo _QXZ("DELETE AGENT CONFERENCE");}
 if ($ADD==73)			{$hh='campaigns';	echo _QXZ("Dialable Lead Count");}
@@ -5271,6 +5288,7 @@ if ($ADD==192000000000)	{$hh='admin';	$sh='sc';	echo _QXZ("SETTINGS CONTAINTER L
 if ($ADD==193000000000)	{$hh='admin';	$sh='sg';	echo _QXZ("STATUS GROUP LIST");}
 if ($ADD==194000000000)	{$hh='admin';	$sh='ar';	echo _QXZ("AUTOMATED REPORTS LIST");}
 if ($ADD==195000000000)	{$hh='admin';	$sh='il';	echo _QXZ("IP LISTS");}
+if ($ADD==196000000000)	{$hh='admin';	$sh='cg';	echo _QXZ("CID GROUP LIST");}
 if ($ADD==1000000000000)	{$hh='admin';	$sh='conference';	echo _QXZ("CONFERENCE LIST");}
 if ($ADD==10000000000000)	{$hh='admin';	$sh='conference';	echo _QXZ("AGENT CONFERENCE LIST");}
 if ($ADD==100000000000000)	{$hh='qc';	$sh='list';	echo _QXZ("Quality Control");}
@@ -8964,6 +8982,42 @@ if ($ADD==195111111111)
 
 
 ######################
+# ADD=196111111111 display the ADD NEW CID Group
+######################
+if ($ADD==196111111111)
+	{
+	if ($LOGmodify_statuses==1)
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<img src=\"images/icon_cidgroups.png\" alt=\"CID Groups\" width=42 height=42> <FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		echo "<br>"._QXZ("ADD NEW CID GROUP")."<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=296111111111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("CID Group ID").": </td><td align=left><input type=text name=cid_group_id size=20 maxlength=20>$NWB#cid_groups$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("CID Group Notes").": </td><td align=left><input type=text name=cid_group_notes size=50 maxlength=255>$NWB#cid_groups$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("CID Group Type").": </td><td align=left><select size=1 name=cid_group_type>\n";
+		echo "<option SELECTED value=\"AREACODE\">"._QXZ("AREACODE")."</option>\n";
+		echo "<option value=\"STATE\">"._QXZ("STATE")."</option>\n";
+		echo "</select>$NWB#cid_groups$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Admin User Group").": </td><td align=left><select size=1 name=user_group>\n";
+		echo "$UUgroups_list";
+		echo "<option SELECTED value=\"---ALL---\">"._QXZ("All Admin User Groups")."</option>\n";
+		echo "</select>$NWB#cid_groups$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=center colspan=2><input type=submit name=submit value='"._QXZ("SUBMIT")."'</td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
+	else
+		{
+		echo _QXZ("You do not have permission to view this page")."\n";
+		exit;
+		}
+	}
+
+
+######################
 # ADD=1111111111111 display the ADD NEW CONFERENCE SCREEN
 ######################
 if ($ADD==1111111111111)
@@ -9433,7 +9487,7 @@ if ($ADD=="2A")
 					$pass='';
 					}
 
-				$stmt="INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit,add_timeclock_log,modify_timeclock_log,delete_timeclock_log,alter_custphone_override,vdc_agent_api_access,modify_inbound_dids,delete_inbound_dids,active,alert_enabled,download_lists,agent_shift_enforcement_override,manager_shift_enforcement_override,export_reports,delete_from_dnc,email,user_code,territory,allow_alerts,agent_choose_territories,custom_one,custom_two,custom_three,custom_four,custom_five,voicemail_id,agent_call_log_view_override,callcard_admin,agent_choose_blended,realtime_block_user_info,custom_fields_modify,force_change_password,agent_lead_search_override,modify_shifts,modify_phones,modify_carriers,modify_labels,modify_statuses,modify_voicemail,modify_audiostore,modify_moh,modify_tts,preset_contact_search,modify_contacts,modify_same_user_level,admin_hide_lead_data,admin_hide_phone_data,agentcall_email,agentcall_chat,modify_email_accounts,pass_hash,alter_admin_interface_options,max_inbound_calls,modify_custom_dialplans,wrapup_seconds_override,modify_languages,selected_language,user_choose_language,ignore_group_on_search,api_list_restrict,api_allowed_functions,lead_filter_id,admin_cf_show_hidden,user_hide_realtime,modify_colors,user_nickname,user_new_lead_limit,api_only_user,modify_auto_reports,modify_ip_lists,ignore_ip_list,ready_max_logout,export_gdpr_leads) SELECT \"$user\",\"$pass\",\"$full_name\",user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit,add_timeclock_log,modify_timeclock_log,delete_timeclock_log,alter_custphone_override,vdc_agent_api_access,modify_inbound_dids,delete_inbound_dids,active,alert_enabled,download_lists,agent_shift_enforcement_override,manager_shift_enforcement_override,export_reports,delete_from_dnc,email,user_code,territory,allow_alerts,agent_choose_territories,custom_one,custom_two,custom_three,custom_four,custom_five,voicemail_id,agent_call_log_view_override,callcard_admin,agent_choose_blended,realtime_block_user_info,custom_fields_modify,force_change_password,agent_lead_search_override,modify_shifts,modify_phones,modify_carriers,modify_labels,modify_statuses,modify_voicemail,modify_audiostore,modify_moh,modify_tts,preset_contact_search,modify_contacts,modify_same_user_level,admin_hide_lead_data,admin_hide_phone_data,agentcall_email,agentcall_chat,modify_email_accounts,\"$pass_hash\",alter_admin_interface_options,max_inbound_calls,modify_custom_dialplans,wrapup_seconds_override,modify_languages,selected_language,user_choose_language,ignore_group_on_search,api_list_restrict,api_allowed_functions,lead_filter_id,admin_cf_show_hidden,user_hide_realtime,modify_colors,user_nickname,user_new_lead_limit,api_only_user,modify_auto_reports,modify_ip_lists,ignore_ip_list,ready_max_logout,export_gdpr_leads from vicidial_users where user=\"$source_user_id\";";
+				$stmt="INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit,add_timeclock_log,modify_timeclock_log,delete_timeclock_log,alter_custphone_override,vdc_agent_api_access,modify_inbound_dids,delete_inbound_dids,active,alert_enabled,download_lists,agent_shift_enforcement_override,manager_shift_enforcement_override,export_reports,delete_from_dnc,email,user_code,territory,allow_alerts,agent_choose_territories,custom_one,custom_two,custom_three,custom_four,custom_five,voicemail_id,agent_call_log_view_override,callcard_admin,agent_choose_blended,realtime_block_user_info,custom_fields_modify,force_change_password,agent_lead_search_override,modify_shifts,modify_phones,modify_carriers,modify_labels,modify_statuses,modify_voicemail,modify_audiostore,modify_moh,modify_tts,preset_contact_search,modify_contacts,modify_same_user_level,admin_hide_lead_data,admin_hide_phone_data,agentcall_email,agentcall_chat,modify_email_accounts,pass_hash,alter_admin_interface_options,max_inbound_calls,modify_custom_dialplans,wrapup_seconds_override,modify_languages,selected_language,user_choose_language,ignore_group_on_search,api_list_restrict,api_allowed_functions,lead_filter_id,admin_cf_show_hidden,user_hide_realtime,modify_colors,user_nickname,user_new_lead_limit,api_only_user,modify_auto_reports,modify_ip_lists,ignore_ip_list,ready_max_logout,export_gdpr_leads,access_recordings) SELECT \"$user\",\"$pass\",\"$full_name\",user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit,add_timeclock_log,modify_timeclock_log,delete_timeclock_log,alter_custphone_override,vdc_agent_api_access,modify_inbound_dids,delete_inbound_dids,active,alert_enabled,download_lists,agent_shift_enforcement_override,manager_shift_enforcement_override,export_reports,delete_from_dnc,email,user_code,territory,allow_alerts,agent_choose_territories,custom_one,custom_two,custom_three,custom_four,custom_five,voicemail_id,agent_call_log_view_override,callcard_admin,agent_choose_blended,realtime_block_user_info,custom_fields_modify,force_change_password,agent_lead_search_override,modify_shifts,modify_phones,modify_carriers,modify_labels,modify_statuses,modify_voicemail,modify_audiostore,modify_moh,modify_tts,preset_contact_search,modify_contacts,modify_same_user_level,admin_hide_lead_data,admin_hide_phone_data,agentcall_email,agentcall_chat,modify_email_accounts,\"$pass_hash\",alter_admin_interface_options,max_inbound_calls,modify_custom_dialplans,wrapup_seconds_override,modify_languages,selected_language,user_choose_language,ignore_group_on_search,api_list_restrict,api_allowed_functions,lead_filter_id,admin_cf_show_hidden,user_hide_realtime,modify_colors,user_nickname,user_new_lead_limit,api_only_user,modify_auto_reports,modify_ip_lists,ignore_ip_list,ready_max_logout,export_gdpr_leads,access_recordings from vicidial_users where user=\"$source_user_id\";";
 				$rslt=mysql_to_mysqli($stmt, $link);
 
 				$stmtA="INSERT INTO vicidial_inbound_group_agents (user,group_id,group_rank,group_weight,calls_today,group_type) SELECT \"$user\",group_id,group_rank,group_weight,\"0\",group_type from vicidial_inbound_group_agents where user=\"$source_user_id\";";
@@ -9833,7 +9887,7 @@ if ($ADD==20)
 							$rslt=mysql_to_mysqli($stmtX, $link);
 							}
 
-						$stmt="INSERT INTO vicidial_campaigns (campaign_name,campaign_id,active,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,list_order_mix,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count,qc_get_record_launch,qc_show_recording,qc_shift_id,manual_dial_filter,agent_clipboard_copy,agent_extended_alt_dial,use_campaign_dnc,three_way_call_cid,three_way_dial_prefix,web_form_target,vtiger_search_category,vtiger_create_call_record,vtiger_create_lead_record,vtiger_screen_login,cpd_amd_action,agent_allow_group_alias,default_group_alias,vtiger_search_dead,vtiger_status_call,survey_third_digit,survey_fourth_digit,survey_third_audio_file,survey_fourth_audio_file,survey_third_status,survey_fourth_status,survey_third_exten,survey_fourth_exten,drop_lockout_time,quick_transfer_button,prepopulate_transfer_preset,drop_rate_group,view_calls_in_queue,view_calls_in_queue_launch,grab_calls_in_queue,call_requeue_button,pause_after_each_call,no_hopper_dialing,agent_dial_owner_only,agent_display_dialable_leads,web_form_address_two,waitforsilence_options,agent_select_territories,crm_popup_login,crm_login_address,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,use_custom_cid,scheduled_callbacks_alert,queuemetrics_callstatus_override,extension_appended_cidname,scheduled_callbacks_count,manual_dial_override,blind_monitor_warning,blind_monitor_message,blind_monitor_filename,inbound_queue_no_dial,timer_action_destination,enable_xfer_presets,hide_xfer_number_to_dial,manual_dial_prefix,customer_3way_hangup_logging,customer_3way_hangup_seconds,customer_3way_hangup_action,ivr_park_call,ivr_park_call_agi,manual_preview_dial,realtime_agent_time_stats,use_auto_hopper,auto_hopper_multi,auto_trim_hopper,api_manual_dial,manual_dial_call_time_check,display_leads_count,lead_order_randomize,lead_order_secondary,per_call_notes,my_callback_option,agent_lead_search,agent_lead_search_method,queuemetrics_phone_environment,auto_pause_precall,auto_resume_precall,auto_pause_precall_code,manual_dial_cid,post_phone_time_diff_alert,custom_3way_button_transfer,available_only_tally_threshold,available_only_tally_threshold_agents,dial_level_threshold,dial_level_threshold_agents,safe_harbor_audio,safe_harbor_menu_id,survey_menu_id,callback_days_limit,dl_diff_target_method,disable_dispo_screen,disable_dispo_status,screen_labels,status_display_fields,na_call_url,survey_recording,pllb_grouping,pllb_grouping_limit,call_count_limit,call_count_target,callback_hours_block,callback_list_calltime,user_group,hopper_vlc_dup_check,safe_harbor_audio_field,pause_after_next_call,owner_populate,use_other_campaign_dnc,allow_emails,allow_chats,amd_inbound_group,amd_callmenu,survey_wait_sec,manual_dial_lead_id,dead_max,dispo_max,pause_max,dead_max_dispo,dispo_max_dispo,max_inbound_calls,manual_dial_search_checkbox,hide_call_log_info,timer_alt_seconds,wrapup_bypass,wrapup_after_hotkey,callback_active_limit,callback_active_limit_override,comments_all_tabs,comments_dispo_screen,comments_callback_screen,qc_comment_history,show_previous_callback,clear_script,cpd_unknown_action,manual_dial_search_filter,web_form_address_three,manual_dial_override_field,status_display_ingroup,customer_gone_seconds,agent_display_fields,am_message_wildcards,manual_dial_timeout,routing_initiated_recordings,manual_dial_hopper_check,callback_useronly_move_minutes,ofcom_uk_drop_calc,manual_auto_next,manual_auto_show,allow_required_fields,dead_to_dispo,agent_xfer_validation,ready_max_logout,callback_display_days,three_way_record_stop,hangup_xfer_record_start,scheduled_callbacks_email_alert,max_inbound_calls_outcome,manual_auto_next_options,agent_screen_time_display,next_dial_my_callbacks,inbound_no_agents_no_dial_container,inbound_no_agents_no_dial_threshold) SELECT \"$campaign_name\",\"$campaign_id\",\"N\",dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,\"DISABLED\",campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count,qc_get_record_launch,qc_show_recording,qc_shift_id,manual_dial_filter,agent_clipboard_copy,agent_extended_alt_dial,use_campaign_dnc,three_way_call_cid,three_way_dial_prefix,web_form_target,vtiger_search_category,vtiger_create_call_record,vtiger_create_lead_record,vtiger_screen_login,cpd_amd_action,agent_allow_group_alias,default_group_alias,vtiger_search_dead,vtiger_status_call,survey_third_digit,survey_fourth_digit,survey_third_audio_file,survey_fourth_audio_file,survey_third_status,survey_fourth_status,survey_third_exten,survey_fourth_exten,drop_lockout_time,quick_transfer_button,prepopulate_transfer_preset,drop_rate_group,view_calls_in_queue,view_calls_in_queue_launch,grab_calls_in_queue,call_requeue_button,pause_after_each_call,no_hopper_dialing,agent_dial_owner_only,agent_display_dialable_leads,web_form_address_two,waitforsilence_options,agent_select_territories,crm_popup_login,crm_login_address,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,use_custom_cid,scheduled_callbacks_alert,queuemetrics_callstatus_override,extension_appended_cidname,scheduled_callbacks_count,manual_dial_override,blind_monitor_warning,blind_monitor_message,blind_monitor_filename,inbound_queue_no_dial,timer_action_destination,enable_xfer_presets,hide_xfer_number_to_dial,manual_dial_prefix,customer_3way_hangup_logging,customer_3way_hangup_seconds,customer_3way_hangup_action,ivr_park_call,ivr_park_call_agi,manual_preview_dial,realtime_agent_time_stats,use_auto_hopper,auto_hopper_multi,auto_trim_hopper,api_manual_dial,manual_dial_call_time_check,display_leads_count,lead_order_randomize,lead_order_secondary,per_call_notes,my_callback_option,agent_lead_search,agent_lead_search_method,queuemetrics_phone_environment,auto_pause_precall,auto_resume_precall,auto_pause_precall_code,manual_dial_cid,post_phone_time_diff_alert,custom_3way_button_transfer,available_only_tally_threshold,available_only_tally_threshold_agents,dial_level_threshold,dial_level_threshold_agents,safe_harbor_audio,safe_harbor_menu_id,survey_menu_id,callback_days_limit,dl_diff_target_method,disable_dispo_screen,disable_dispo_status,screen_labels,status_display_fields,na_call_url,survey_recording,pllb_grouping,pllb_grouping_limit,call_count_limit,call_count_target,callback_hours_block,callback_list_calltime,user_group,hopper_vlc_dup_check,safe_harbor_audio_field,pause_after_next_call,owner_populate,use_other_campaign_dnc,allow_emails,allow_chats,amd_inbound_group,amd_callmenu,survey_wait_sec,manual_dial_lead_id,dead_max,dispo_max,pause_max,dead_max_dispo,dispo_max_dispo,max_inbound_calls,manual_dial_search_checkbox,hide_call_log_info,timer_alt_seconds,wrapup_bypass,wrapup_after_hotkey,callback_active_limit,callback_active_limit_override,comments_all_tabs,comments_dispo_screen,comments_callback_screen,qc_comment_history,show_previous_callback,clear_script,cpd_unknown_action,manual_dial_search_filter,web_form_address_three,manual_dial_override_field,status_display_ingroup,customer_gone_seconds,agent_display_fields,am_message_wildcards,manual_dial_timeout,routing_initiated_recordings,manual_dial_hopper_check,callback_useronly_move_minutes,ofcom_uk_drop_calc,manual_auto_next,manual_auto_show,allow_required_fields,dead_to_dispo,agent_xfer_validation,ready_max_logout,callback_display_days,three_way_record_stop,hangup_xfer_record_start,scheduled_callbacks_email_alert,max_inbound_calls_outcome,manual_auto_next_options,agent_screen_time_display,next_dial_my_callbacks,inbound_no_agents_no_dial_container,inbound_no_agents_no_dial_threshold from vicidial_campaigns where campaign_id='$source_campaign_id';";
+						$stmt="INSERT INTO vicidial_campaigns (campaign_name,campaign_id,active,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,list_order_mix,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count,qc_get_record_launch,qc_show_recording,qc_shift_id,manual_dial_filter,agent_clipboard_copy,agent_extended_alt_dial,use_campaign_dnc,three_way_call_cid,three_way_dial_prefix,web_form_target,vtiger_search_category,vtiger_create_call_record,vtiger_create_lead_record,vtiger_screen_login,cpd_amd_action,agent_allow_group_alias,default_group_alias,vtiger_search_dead,vtiger_status_call,survey_third_digit,survey_fourth_digit,survey_third_audio_file,survey_fourth_audio_file,survey_third_status,survey_fourth_status,survey_third_exten,survey_fourth_exten,drop_lockout_time,quick_transfer_button,prepopulate_transfer_preset,drop_rate_group,view_calls_in_queue,view_calls_in_queue_launch,grab_calls_in_queue,call_requeue_button,pause_after_each_call,no_hopper_dialing,agent_dial_owner_only,agent_display_dialable_leads,web_form_address_two,waitforsilence_options,agent_select_territories,crm_popup_login,crm_login_address,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,use_custom_cid,scheduled_callbacks_alert,queuemetrics_callstatus_override,extension_appended_cidname,scheduled_callbacks_count,manual_dial_override,blind_monitor_warning,blind_monitor_message,blind_monitor_filename,inbound_queue_no_dial,timer_action_destination,enable_xfer_presets,hide_xfer_number_to_dial,manual_dial_prefix,customer_3way_hangup_logging,customer_3way_hangup_seconds,customer_3way_hangup_action,ivr_park_call,ivr_park_call_agi,manual_preview_dial,realtime_agent_time_stats,use_auto_hopper,auto_hopper_multi,auto_trim_hopper,api_manual_dial,manual_dial_call_time_check,display_leads_count,lead_order_randomize,lead_order_secondary,per_call_notes,my_callback_option,agent_lead_search,agent_lead_search_method,queuemetrics_phone_environment,auto_pause_precall,auto_resume_precall,auto_pause_precall_code,manual_dial_cid,post_phone_time_diff_alert,custom_3way_button_transfer,available_only_tally_threshold,available_only_tally_threshold_agents,dial_level_threshold,dial_level_threshold_agents,safe_harbor_audio,safe_harbor_menu_id,survey_menu_id,callback_days_limit,dl_diff_target_method,disable_dispo_screen,disable_dispo_status,screen_labels,status_display_fields,na_call_url,survey_recording,pllb_grouping,pllb_grouping_limit,call_count_limit,call_count_target,callback_hours_block,callback_list_calltime,user_group,hopper_vlc_dup_check,safe_harbor_audio_field,pause_after_next_call,owner_populate,use_other_campaign_dnc,allow_emails,allow_chats,amd_inbound_group,amd_callmenu,survey_wait_sec,manual_dial_lead_id,dead_max,dispo_max,pause_max,dead_max_dispo,dispo_max_dispo,max_inbound_calls,manual_dial_search_checkbox,hide_call_log_info,timer_alt_seconds,wrapup_bypass,wrapup_after_hotkey,callback_active_limit,callback_active_limit_override,comments_all_tabs,comments_dispo_screen,comments_callback_screen,qc_comment_history,show_previous_callback,clear_script,cpd_unknown_action,manual_dial_search_filter,web_form_address_three,manual_dial_override_field,status_display_ingroup,customer_gone_seconds,agent_display_fields,am_message_wildcards,manual_dial_timeout,routing_initiated_recordings,manual_dial_hopper_check,callback_useronly_move_minutes,ofcom_uk_drop_calc,manual_auto_next,manual_auto_show,allow_required_fields,dead_to_dispo,agent_xfer_validation,ready_max_logout,callback_display_days,three_way_record_stop,hangup_xfer_record_start,scheduled_callbacks_email_alert,max_inbound_calls_outcome,manual_auto_next_options,agent_screen_time_display,next_dial_my_callbacks,inbound_no_agents_no_dial_container,inbound_no_agents_no_dial_threshold,cid_group_id) SELECT \"$campaign_name\",\"$campaign_id\",\"N\",dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,\"DISABLED\",campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count,qc_get_record_launch,qc_show_recording,qc_shift_id,manual_dial_filter,agent_clipboard_copy,agent_extended_alt_dial,use_campaign_dnc,three_way_call_cid,three_way_dial_prefix,web_form_target,vtiger_search_category,vtiger_create_call_record,vtiger_create_lead_record,vtiger_screen_login,cpd_amd_action,agent_allow_group_alias,default_group_alias,vtiger_search_dead,vtiger_status_call,survey_third_digit,survey_fourth_digit,survey_third_audio_file,survey_fourth_audio_file,survey_third_status,survey_fourth_status,survey_third_exten,survey_fourth_exten,drop_lockout_time,quick_transfer_button,prepopulate_transfer_preset,drop_rate_group,view_calls_in_queue,view_calls_in_queue_launch,grab_calls_in_queue,call_requeue_button,pause_after_each_call,no_hopper_dialing,agent_dial_owner_only,agent_display_dialable_leads,web_form_address_two,waitforsilence_options,agent_select_territories,crm_popup_login,crm_login_address,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,use_custom_cid,scheduled_callbacks_alert,queuemetrics_callstatus_override,extension_appended_cidname,scheduled_callbacks_count,manual_dial_override,blind_monitor_warning,blind_monitor_message,blind_monitor_filename,inbound_queue_no_dial,timer_action_destination,enable_xfer_presets,hide_xfer_number_to_dial,manual_dial_prefix,customer_3way_hangup_logging,customer_3way_hangup_seconds,customer_3way_hangup_action,ivr_park_call,ivr_park_call_agi,manual_preview_dial,realtime_agent_time_stats,use_auto_hopper,auto_hopper_multi,auto_trim_hopper,api_manual_dial,manual_dial_call_time_check,display_leads_count,lead_order_randomize,lead_order_secondary,per_call_notes,my_callback_option,agent_lead_search,agent_lead_search_method,queuemetrics_phone_environment,auto_pause_precall,auto_resume_precall,auto_pause_precall_code,manual_dial_cid,post_phone_time_diff_alert,custom_3way_button_transfer,available_only_tally_threshold,available_only_tally_threshold_agents,dial_level_threshold,dial_level_threshold_agents,safe_harbor_audio,safe_harbor_menu_id,survey_menu_id,callback_days_limit,dl_diff_target_method,disable_dispo_screen,disable_dispo_status,screen_labels,status_display_fields,na_call_url,survey_recording,pllb_grouping,pllb_grouping_limit,call_count_limit,call_count_target,callback_hours_block,callback_list_calltime,user_group,hopper_vlc_dup_check,safe_harbor_audio_field,pause_after_next_call,owner_populate,use_other_campaign_dnc,allow_emails,allow_chats,amd_inbound_group,amd_callmenu,survey_wait_sec,manual_dial_lead_id,dead_max,dispo_max,pause_max,dead_max_dispo,dispo_max_dispo,max_inbound_calls,manual_dial_search_checkbox,hide_call_log_info,timer_alt_seconds,wrapup_bypass,wrapup_after_hotkey,callback_active_limit,callback_active_limit_override,comments_all_tabs,comments_dispo_screen,comments_callback_screen,qc_comment_history,show_previous_callback,clear_script,cpd_unknown_action,manual_dial_search_filter,web_form_address_three,manual_dial_override_field,status_display_ingroup,customer_gone_seconds,agent_display_fields,am_message_wildcards,manual_dial_timeout,routing_initiated_recordings,manual_dial_hopper_check,callback_useronly_move_minutes,ofcom_uk_drop_calc,manual_auto_next,manual_auto_show,allow_required_fields,dead_to_dispo,agent_xfer_validation,ready_max_logout,callback_display_days,three_way_record_stop,hangup_xfer_record_start,scheduled_callbacks_email_alert,max_inbound_calls_outcome,manual_auto_next_options,agent_screen_time_display,next_dial_my_callbacks,inbound_no_agents_no_dial_container,inbound_no_agents_no_dial_threshold,cid_group_id from vicidial_campaigns where campaign_id='$source_campaign_id';";
 						$rslt=mysql_to_mysqli($stmt, $link);
 
 						$stmtA="INSERT INTO vicidial_campaign_stats (campaign_id) values('$campaign_id');";
@@ -12747,6 +12801,57 @@ if ($ADD==295111111111)
 	}
 
 
+
+######################
+# ADD=296111111111 adds new CID group to the system
+######################
+if ($ADD==296111111111)
+	{
+	if ( ($LOGmodify_statuses!=1) or ($add_copy_disabled > 0) )
+		{
+		echo "<br>"._QXZ("You do not have permission to add records on this system")." -system_settings-\n";
+		}
+	else
+		{
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		$stmt="SELECT count(*) from vicidial_cid_groups where cid_group_id='$cid_group_id';";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$row=mysqli_fetch_row($rslt);
+		if ($row[0] > 0)
+			{echo "<br>"._QXZ("CID GROUP NOT ADDED - there is already a CID group in the system with this ID")."\n";}
+		else
+			{
+			$stmt="SELECT count(*) from vicidial_campaigns where campaign_id='$cid_group_id';";
+			$rslt=mysql_to_mysqli($stmt, $link);
+			$row=mysqli_fetch_row($rslt);
+			if ($row[0] > 0)
+				{echo "<br>"._QXZ("CID GROUP NOT ADDED - there is already a campaign in the system with this ID")."\n";}
+			else
+				{
+				if ( (strlen($cid_group_id) < 2) or (strlen($cid_group_notes) < 2) or (strlen($cid_group_type) < 2) )
+					{echo "<br>"._QXZ("CID GROUP NOT ADDED - Please go back and look at the data you entered")."\n";}
+				else
+					{
+					echo "<br>"._QXZ("CID GROUP ADDED")."\n";
+
+					$stmt="INSERT INTO vicidial_cid_groups SET cid_group_id='$cid_group_id',cid_group_notes='$cid_group_notes',cid_group_type='$cid_group_type',user_group='$user_group';";
+					$rslt=mysql_to_mysqli($stmt, $link);
+
+					### LOG INSERTION Admin Log Table ###
+					$SQL_log = "$stmt|";
+					$SQL_log = preg_replace('/;/', '', $SQL_log);
+					$SQL_log = addslashes($SQL_log);
+					$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CIDGROUPS', event_type='ADD', record_id='$cid_group_id', event_code='ADMIN ADD CID GROUP', event_sql=\"$SQL_log\", event_notes='';";
+					if ($DB) {echo "|$stmt|\n";}
+					$rslt=mysql_to_mysqli($stmt, $link);
+					}
+				}
+			}
+		}
+	$ADD=396111111111;
+	}
+
+
 ######################
 # ADD=2111111111111 adds new conference to the system
 ######################
@@ -14055,7 +14160,7 @@ if ($ADD==41)
 					if ($dial_timeout < 4) {$dial_timeout='30';}
 					if ( ($manual_auto_next > 0) and ($manual_auto_next < 5) ) {$manual_auto_next='5';}
 
-					$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',allow_closers='$allow_closers',hopper_level='$hopper_level', auto_trim_hopper='$auto_trim_hopper', use_auto_hopper='$use_auto_hopper', auto_hopper_multi='$auto_hopper_multi', $adlSQL next_agent_call='$next_agent_call', local_call_time='$local_call_time', voicemail_ext='$voicemail_ext', dial_timeout='$dial_timeout', dial_prefix='$dial_prefix', campaign_cid='$campaign_cid', campaign_vdad_exten='$campaign_vdad_exten', web_form_address='" . mysqli_real_escape_string($link, $web_form_address) . "', park_ext='$park_ext', park_file_name='$park_file_name', campaign_rec_exten='$campaign_rec_exten', campaign_recording='$campaign_recording', campaign_rec_filename='$campaign_rec_filename', campaign_script='$script_id', get_call_launch='$get_call_launch', am_message_exten='$am_message_exten', amd_send_to_vmx='$amd_send_to_vmx', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number',xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',lead_filter_id='$lead_filter_id',alt_number_dialing='$alt_number_dialing',scheduled_callbacks='$scheduled_callbacks',drop_action='$drop_action',drop_call_seconds='$drop_call_seconds',safe_harbor_exten='$safe_harbor_exten',wrapup_seconds='$wrapup_seconds',wrapup_message='$wrapup_message',closer_campaigns=$closer_campaignsSQL,use_internal_dnc='$use_internal_dnc',allcalls_delay='$allcalls_delay',omit_phone_code='$omit_phone_code',dial_method='$dial_method',available_only_ratio_tally='$available_only_ratio_tally',adaptive_dropped_percentage='$adaptive_dropped_percentage',adaptive_maximum_level='$adaptive_maximum_level',adaptive_latest_server_time='$adaptive_latest_server_time',adaptive_intensity='$adaptive_intensity',adaptive_dl_diff_target='$adaptive_dl_diff_target',concurrent_transfers='$concurrent_transfers',auto_alt_dial='$auto_alt_dial',agent_pause_codes_active='$agent_pause_codes_active',campaign_description='$campaign_description',campaign_changedate='$SQLdate',campaign_stats_refresh='$campaign_stats_refresh',disable_alter_custdata='$disable_alter_custdata',no_hopper_leads_logins='$no_hopper_leads_logins',list_order_mix='$list_order_mix',campaign_allow_inbound='$campaign_allow_inbound',manual_dial_list_id='$manual_dial_list_id',default_xfer_group='$default_xfer_group',xfer_groups='$XFERgroups_value',queue_priority='$queue_priority',drop_inbound_group='$drop_inbound_group',disable_alter_custphone='$disable_alter_custphone',display_queue_count='$display_queue_count',manual_dial_filter='$manual_dial_filter',agent_clipboard_copy='$agent_clipboard_copy',agent_extended_alt_dial='$agent_extended_alt_dial',use_campaign_dnc='$use_campaign_dnc',three_way_call_cid='$three_way_call_cid',three_way_dial_prefix='$three_way_dial_prefix',web_form_target='$web_form_target',vtiger_search_category='$vtiger_search_category',vtiger_create_call_record='$vtiger_create_call_record',vtiger_create_lead_record='$vtiger_create_lead_record',vtiger_screen_login='$vtiger_screen_login',cpd_amd_action='$cpd_amd_action',agent_allow_group_alias='$agent_allow_group_alias',default_group_alias='$default_group_alias',vtiger_search_dead='$vtiger_search_dead',vtiger_status_call='$vtiger_status_call',drop_lockout_time='$drop_lockout_time',quick_transfer_button='$quick_transfer_button',prepopulate_transfer_preset='$prepopulate_transfer_preset',drop_rate_group='$drop_rate_group',view_calls_in_queue='$view_calls_in_queue',view_calls_in_queue_launch='$view_calls_in_queue_launch',grab_calls_in_queue='$grab_calls_in_queue',call_requeue_button='$call_requeue_button',pause_after_each_call='$pause_after_each_call',no_hopper_dialing='$no_hopper_dialing',agent_dial_owner_only='$agent_dial_owner_only',agent_display_dialable_leads='$agent_display_dialable_leads',web_form_address_two='" . mysqli_real_escape_string($link, $web_form_address_two) . "',waitforsilence_options='$waitforsilence_options',agent_select_territories='$agent_select_territories',crm_popup_login='$crm_popup_login',crm_login_address='" . mysqli_real_escape_string($link, $crm_login_address) . "',timer_action='$timer_action',timer_action_message='$timer_action_message',timer_action_seconds='$timer_action_seconds',start_call_url='" . mysqli_real_escape_string($link, $start_call_url) . "',dispo_call_url='" . mysqli_real_escape_string($link, $dispo_call_url) . "',xferconf_c_number='$xferconf_c_number',xferconf_d_number='$xferconf_d_number',xferconf_e_number='$xferconf_e_number',use_custom_cid='$use_custom_cid',scheduled_callbacks_alert='$scheduled_callbacks_alert',queuemetrics_callstatus_override='$queuemetrics_callstatus',extension_appended_cidname='$extension_appended_cidname',scheduled_callbacks_count='$scheduled_callbacks_count',manual_dial_override='$manual_dial_override',blind_monitor_warning='$blind_monitor_warning',blind_monitor_message='" . mysqli_real_escape_string($link, $blind_monitor_message) . "',blind_monitor_filename='$blind_monitor_filename',inbound_queue_no_dial='$inbound_queue_no_dial',timer_action_destination='$timer_action_destination',enable_xfer_presets='$enable_xfer_presets',hide_xfer_number_to_dial='$hide_xfer_number_to_dial',manual_dial_prefix='$manual_dial_prefix',customer_3way_hangup_logging='$customer_3way_hangup_logging',customer_3way_hangup_seconds='$customer_3way_hangup_seconds',customer_3way_hangup_action='$customer_3way_hangup_action',ivr_park_call='$ivr_park_call',ivr_park_call_agi='$ivr_park_call_agi',manual_preview_dial='$manual_preview_dial',realtime_agent_time_stats='$realtime_agent_time_stats',api_manual_dial='$api_manual_dial',manual_dial_call_time_check='$manual_dial_call_time_check',lead_order_randomize='$lead_order_randomize',lead_order_secondary='$lead_order_secondary',per_call_notes='$per_call_notes',my_callback_option='$my_callback_option',agent_lead_search='$agent_lead_search',agent_lead_search_method='$agent_lead_search_method',queuemetrics_phone_environment='$queuemetrics_phone_environment',auto_pause_precall='$auto_pause_precall',auto_resume_precall='$auto_resume_precall',auto_pause_precall_code='$auto_pause_precall_code',manual_dial_cid='$manual_dial_cid',post_phone_time_diff_alert='$post_phone_time_diff_alert',custom_3way_button_transfer='$custom_3way_button_transfer',available_only_tally_threshold='$available_only_tally_threshold',available_only_tally_threshold_agents='$available_only_tally_threshold_agents',dial_level_threshold='$dial_level_threshold',dial_level_threshold_agents='$dial_level_threshold_agents',safe_harbor_audio='$safe_harbor_audio',safe_harbor_menu_id='$safe_harbor_menu_id',callback_days_limit='$callback_days_limit',dl_diff_target_method='$dl_diff_target_method',disable_dispo_screen='$disable_dispo_screen',disable_dispo_status='$disable_dispo_status',screen_labels='$screen_labels',status_display_fields='$status_display_fields',na_call_url='" . mysqli_real_escape_string($link, $na_call_url) . "',pllb_grouping='$pllb_grouping',pllb_grouping_limit='$pllb_grouping_limit',call_count_limit='$call_count_limit',call_count_target='$call_count_target',callback_hours_block='$callback_hours_block',callback_list_calltime='$callback_list_calltime',user_group='$user_group',hopper_vlc_dup_check='$hopper_vlc_dup_check',in_group_dial='$in_group_dial',in_group_dial_select='$in_group_dial_select',safe_harbor_audio_field='$safe_harbor_audio_field',pause_after_next_call='$pause_after_next_call',owner_populate='$owner_populate',use_other_campaign_dnc='$use_other_campaign_dnc',allow_emails='$allow_emails',allow_chats='$allow_chats',amd_inbound_group='$amd_inbound_group',amd_callmenu='$amd_callmenu',manual_dial_lead_id='$manual_dial_lead_id',dead_max='$dead_max',dispo_max='$dispo_max',pause_max='$pause_max',dead_max_dispo='$dead_max_dispo',dispo_max_dispo='$dispo_max_dispo',max_inbound_calls='$max_inbound_calls',manual_dial_search_checkbox='$manual_dial_search_checkbox',hide_call_log_info='$hide_call_log_info',timer_alt_seconds='$timer_alt_seconds',wrapup_bypass='$wrapup_bypass',wrapup_after_hotkey='$wrapup_after_hotkey',callback_active_limit='$callback_active_limit',callback_active_limit_override='$callback_active_limit_override',comments_all_tabs='$comments_all_tabs',comments_dispo_screen='$comments_dispo_screen',comments_callback_screen='$comments_callback_screen',qc_comment_history='$qc_comment_history',show_previous_callback='$show_previous_callback',clear_script='$clear_script',cpd_unknown_action='$cpd_unknown_action',manual_dial_search_filter='$manual_dial_search_filter',web_form_address_three='" . mysqli_real_escape_string($link, $web_form_address_three) . "',manual_dial_override_field='$manual_dial_override_field',status_display_ingroup='$status_display_ingroup',customer_gone_seconds='$customer_gone_seconds',agent_display_fields='$agent_display_fields',am_message_wildcards='$am_message_wildcards',manual_dial_timeout='$manual_dial_timeout',routing_initiated_recordings='$routing_initiated_recordings',manual_dial_hopper_check='$manual_dial_hopper_check',callback_useronly_move_minutes='$callback_useronly_move_minutes',ofcom_uk_drop_calc='$ofcom_uk_drop_calc',manual_auto_next='$manual_auto_next',manual_auto_show='$manual_auto_show',allow_required_fields='$allow_required_fields',dead_to_dispo='$dead_to_dispo',agent_xfer_validation='$agent_xfer_validation',ready_max_logout='$ready_max_logout',callback_display_days='$callback_display_days',three_way_record_stop='$three_way_record_stop',hangup_xfer_record_start='$hangup_xfer_record_start',scheduled_callbacks_email_alert='$scheduled_callbacks_email_alert',max_inbound_calls_outcome='$max_inbound_calls_outcome',manual_auto_next_options='$manual_auto_next_options',agent_screen_time_display='$agent_screen_time_display',next_dial_my_callbacks='$next_dial_my_callbacks',inbound_no_agents_no_dial_container='$inbound_no_agents_no_dial_container',inbound_no_agents_no_dial_threshold='$inbound_no_agents_no_dial_threshold' where campaign_id='$campaign_id';";
+					$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',allow_closers='$allow_closers',hopper_level='$hopper_level', auto_trim_hopper='$auto_trim_hopper', use_auto_hopper='$use_auto_hopper', auto_hopper_multi='$auto_hopper_multi', $adlSQL next_agent_call='$next_agent_call', local_call_time='$local_call_time', voicemail_ext='$voicemail_ext', dial_timeout='$dial_timeout', dial_prefix='$dial_prefix', campaign_cid='$campaign_cid', campaign_vdad_exten='$campaign_vdad_exten', web_form_address='" . mysqli_real_escape_string($link, $web_form_address) . "', park_ext='$park_ext', park_file_name='$park_file_name', campaign_rec_exten='$campaign_rec_exten', campaign_recording='$campaign_recording', campaign_rec_filename='$campaign_rec_filename', campaign_script='$script_id', get_call_launch='$get_call_launch', am_message_exten='$am_message_exten', amd_send_to_vmx='$amd_send_to_vmx', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number',xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',lead_filter_id='$lead_filter_id',alt_number_dialing='$alt_number_dialing',scheduled_callbacks='$scheduled_callbacks',drop_action='$drop_action',drop_call_seconds='$drop_call_seconds',safe_harbor_exten='$safe_harbor_exten',wrapup_seconds='$wrapup_seconds',wrapup_message='$wrapup_message',closer_campaigns=$closer_campaignsSQL,use_internal_dnc='$use_internal_dnc',allcalls_delay='$allcalls_delay',omit_phone_code='$omit_phone_code',dial_method='$dial_method',available_only_ratio_tally='$available_only_ratio_tally',adaptive_dropped_percentage='$adaptive_dropped_percentage',adaptive_maximum_level='$adaptive_maximum_level',adaptive_latest_server_time='$adaptive_latest_server_time',adaptive_intensity='$adaptive_intensity',adaptive_dl_diff_target='$adaptive_dl_diff_target',concurrent_transfers='$concurrent_transfers',auto_alt_dial='$auto_alt_dial',agent_pause_codes_active='$agent_pause_codes_active',campaign_description='$campaign_description',campaign_changedate='$SQLdate',campaign_stats_refresh='$campaign_stats_refresh',disable_alter_custdata='$disable_alter_custdata',no_hopper_leads_logins='$no_hopper_leads_logins',list_order_mix='$list_order_mix',campaign_allow_inbound='$campaign_allow_inbound',manual_dial_list_id='$manual_dial_list_id',default_xfer_group='$default_xfer_group',xfer_groups='$XFERgroups_value',queue_priority='$queue_priority',drop_inbound_group='$drop_inbound_group',disable_alter_custphone='$disable_alter_custphone',display_queue_count='$display_queue_count',manual_dial_filter='$manual_dial_filter',agent_clipboard_copy='$agent_clipboard_copy',agent_extended_alt_dial='$agent_extended_alt_dial',use_campaign_dnc='$use_campaign_dnc',three_way_call_cid='$three_way_call_cid',three_way_dial_prefix='$three_way_dial_prefix',web_form_target='$web_form_target',vtiger_search_category='$vtiger_search_category',vtiger_create_call_record='$vtiger_create_call_record',vtiger_create_lead_record='$vtiger_create_lead_record',vtiger_screen_login='$vtiger_screen_login',cpd_amd_action='$cpd_amd_action',agent_allow_group_alias='$agent_allow_group_alias',default_group_alias='$default_group_alias',vtiger_search_dead='$vtiger_search_dead',vtiger_status_call='$vtiger_status_call',drop_lockout_time='$drop_lockout_time',quick_transfer_button='$quick_transfer_button',prepopulate_transfer_preset='$prepopulate_transfer_preset',drop_rate_group='$drop_rate_group',view_calls_in_queue='$view_calls_in_queue',view_calls_in_queue_launch='$view_calls_in_queue_launch',grab_calls_in_queue='$grab_calls_in_queue',call_requeue_button='$call_requeue_button',pause_after_each_call='$pause_after_each_call',no_hopper_dialing='$no_hopper_dialing',agent_dial_owner_only='$agent_dial_owner_only',agent_display_dialable_leads='$agent_display_dialable_leads',web_form_address_two='" . mysqli_real_escape_string($link, $web_form_address_two) . "',waitforsilence_options='$waitforsilence_options',agent_select_territories='$agent_select_territories',crm_popup_login='$crm_popup_login',crm_login_address='" . mysqli_real_escape_string($link, $crm_login_address) . "',timer_action='$timer_action',timer_action_message='$timer_action_message',timer_action_seconds='$timer_action_seconds',start_call_url='" . mysqli_real_escape_string($link, $start_call_url) . "',dispo_call_url='" . mysqli_real_escape_string($link, $dispo_call_url) . "',xferconf_c_number='$xferconf_c_number',xferconf_d_number='$xferconf_d_number',xferconf_e_number='$xferconf_e_number',use_custom_cid='$use_custom_cid',scheduled_callbacks_alert='$scheduled_callbacks_alert',queuemetrics_callstatus_override='$queuemetrics_callstatus',extension_appended_cidname='$extension_appended_cidname',scheduled_callbacks_count='$scheduled_callbacks_count',manual_dial_override='$manual_dial_override',blind_monitor_warning='$blind_monitor_warning',blind_monitor_message='" . mysqli_real_escape_string($link, $blind_monitor_message) . "',blind_monitor_filename='$blind_monitor_filename',inbound_queue_no_dial='$inbound_queue_no_dial',timer_action_destination='$timer_action_destination',enable_xfer_presets='$enable_xfer_presets',hide_xfer_number_to_dial='$hide_xfer_number_to_dial',manual_dial_prefix='$manual_dial_prefix',customer_3way_hangup_logging='$customer_3way_hangup_logging',customer_3way_hangup_seconds='$customer_3way_hangup_seconds',customer_3way_hangup_action='$customer_3way_hangup_action',ivr_park_call='$ivr_park_call',ivr_park_call_agi='$ivr_park_call_agi',manual_preview_dial='$manual_preview_dial',realtime_agent_time_stats='$realtime_agent_time_stats',api_manual_dial='$api_manual_dial',manual_dial_call_time_check='$manual_dial_call_time_check',lead_order_randomize='$lead_order_randomize',lead_order_secondary='$lead_order_secondary',per_call_notes='$per_call_notes',my_callback_option='$my_callback_option',agent_lead_search='$agent_lead_search',agent_lead_search_method='$agent_lead_search_method',queuemetrics_phone_environment='$queuemetrics_phone_environment',auto_pause_precall='$auto_pause_precall',auto_resume_precall='$auto_resume_precall',auto_pause_precall_code='$auto_pause_precall_code',manual_dial_cid='$manual_dial_cid',post_phone_time_diff_alert='$post_phone_time_diff_alert',custom_3way_button_transfer='$custom_3way_button_transfer',available_only_tally_threshold='$available_only_tally_threshold',available_only_tally_threshold_agents='$available_only_tally_threshold_agents',dial_level_threshold='$dial_level_threshold',dial_level_threshold_agents='$dial_level_threshold_agents',safe_harbor_audio='$safe_harbor_audio',safe_harbor_menu_id='$safe_harbor_menu_id',callback_days_limit='$callback_days_limit',dl_diff_target_method='$dl_diff_target_method',disable_dispo_screen='$disable_dispo_screen',disable_dispo_status='$disable_dispo_status',screen_labels='$screen_labels',status_display_fields='$status_display_fields',na_call_url='" . mysqli_real_escape_string($link, $na_call_url) . "',pllb_grouping='$pllb_grouping',pllb_grouping_limit='$pllb_grouping_limit',call_count_limit='$call_count_limit',call_count_target='$call_count_target',callback_hours_block='$callback_hours_block',callback_list_calltime='$callback_list_calltime',user_group='$user_group',hopper_vlc_dup_check='$hopper_vlc_dup_check',in_group_dial='$in_group_dial',in_group_dial_select='$in_group_dial_select',safe_harbor_audio_field='$safe_harbor_audio_field',pause_after_next_call='$pause_after_next_call',owner_populate='$owner_populate',use_other_campaign_dnc='$use_other_campaign_dnc',allow_emails='$allow_emails',allow_chats='$allow_chats',amd_inbound_group='$amd_inbound_group',amd_callmenu='$amd_callmenu',manual_dial_lead_id='$manual_dial_lead_id',dead_max='$dead_max',dispo_max='$dispo_max',pause_max='$pause_max',dead_max_dispo='$dead_max_dispo',dispo_max_dispo='$dispo_max_dispo',max_inbound_calls='$max_inbound_calls',manual_dial_search_checkbox='$manual_dial_search_checkbox',hide_call_log_info='$hide_call_log_info',timer_alt_seconds='$timer_alt_seconds',wrapup_bypass='$wrapup_bypass',wrapup_after_hotkey='$wrapup_after_hotkey',callback_active_limit='$callback_active_limit',callback_active_limit_override='$callback_active_limit_override',comments_all_tabs='$comments_all_tabs',comments_dispo_screen='$comments_dispo_screen',comments_callback_screen='$comments_callback_screen',qc_comment_history='$qc_comment_history',show_previous_callback='$show_previous_callback',clear_script='$clear_script',cpd_unknown_action='$cpd_unknown_action',manual_dial_search_filter='$manual_dial_search_filter',web_form_address_three='" . mysqli_real_escape_string($link, $web_form_address_three) . "',manual_dial_override_field='$manual_dial_override_field',status_display_ingroup='$status_display_ingroup',customer_gone_seconds='$customer_gone_seconds',agent_display_fields='$agent_display_fields',am_message_wildcards='$am_message_wildcards',manual_dial_timeout='$manual_dial_timeout',routing_initiated_recordings='$routing_initiated_recordings',manual_dial_hopper_check='$manual_dial_hopper_check',callback_useronly_move_minutes='$callback_useronly_move_minutes',ofcom_uk_drop_calc='$ofcom_uk_drop_calc',manual_auto_next='$manual_auto_next',manual_auto_show='$manual_auto_show',allow_required_fields='$allow_required_fields',dead_to_dispo='$dead_to_dispo',agent_xfer_validation='$agent_xfer_validation',ready_max_logout='$ready_max_logout',callback_display_days='$callback_display_days',three_way_record_stop='$three_way_record_stop',hangup_xfer_record_start='$hangup_xfer_record_start',scheduled_callbacks_email_alert='$scheduled_callbacks_email_alert',max_inbound_calls_outcome='$max_inbound_calls_outcome',manual_auto_next_options='$manual_auto_next_options',agent_screen_time_display='$agent_screen_time_display',next_dial_my_callbacks='$next_dial_my_callbacks',inbound_no_agents_no_dial_container='$inbound_no_agents_no_dial_container',inbound_no_agents_no_dial_threshold='$inbound_no_agents_no_dial_threshold',cid_group_id='$cid_group_id' where campaign_id='$campaign_id';";
 					if ($DB) {echo "|$stmt|\n";}
 					$rslt=mysql_to_mysqli($stmtA, $link);
 
@@ -16936,6 +17041,175 @@ if ($ADD==494111111111)
 
 
 ######################
+# ADD=496111111111 modify CID group record in the system
+######################
+if ($ADD==496111111111)
+	{
+	if ($LOGmodify_statuses==1)
+		{
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		if (strlen($cid_group_id) < 2)
+			{echo "<br>"._QXZ("CID GROUP NOT MODIFIED - Please go back and look at the data you entered")."\n";}
+		else
+			{
+			if ($stage == 'ADD')
+				{
+				$stmt="SELECT count(*) from vicidial_campaign_cid_areacodes where campaign_id='$cid_group_id' and areacode='$areacode' and outbound_cid='$outbound_cid';";
+				$rslt=mysql_to_mysqli($stmt, $link);
+				$row=mysqli_fetch_row($rslt);
+				if ($row[0] > 0)
+					{echo "<br>"._QXZ("CID GROUP CID NOT ADDED - there is already an entry for this group with this CID")."<br>\n";}
+				else
+					{
+					if ( (strlen($cid_group_id) < 2) or (strlen($areacode) < 2) or (strlen($outbound_cid) < 6) )
+						{
+						echo "<br>"._QXZ("CID GROUP CID NOT ADDED - Please go back and look at the data you entered")."<br>\n";
+						}
+					else
+						{
+						echo "<br><B>"._QXZ("CID GROUP CID ADDED").": $cid_group_id - $areacode - $outbound_cid</B><br>\n";
+
+						$stmt="INSERT INTO vicidial_campaign_cid_areacodes(campaign_id,areacode,outbound_cid,cid_description) values('$cid_group_id','$areacode','$outbound_cid','$cid_description');";
+						$rslt=mysql_to_mysqli($stmt, $link);
+
+						### LOG INSERTION Admin Log Table ###
+						$SQL_log = "$stmt|";
+						$SQL_log = preg_replace('/;/', '', $SQL_log);
+						$SQL_log = addslashes($SQL_log);
+						$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CIDGROUPS', event_type='ADD', record_id='$cid_group_id', event_code='ADMIN ADD CID GROUP ENTRY', event_sql=\"$SQL_log\", event_notes='CID: $areacode - $outbound_cid';";
+						if ($DB) {echo "|$stmt|\n";}
+						$rslt=mysql_to_mysqli($stmt, $link);
+						}
+					}
+				}
+			elseif ($stage == 'DELETE')
+				{
+				$stmt="SELECT count(*) from vicidial_campaign_cid_areacodes where campaign_id='$cid_group_id' and areacode='$areacode' and outbound_cid='$outbound_cid' $LOGallowed_campaignsSQL;";
+				$rslt=mysql_to_mysqli($stmt, $link);
+				$row=mysqli_fetch_row($rslt);
+				if ($row[0] < 1)
+					{echo "<br>"._QXZ("CID GROUP CID NOT DELETED - this entry does not exist")."<br>\n";}
+				else
+					{
+					if ( (strlen($cid_group_id) < 2) or (strlen($areacode) < 2) or (strlen($outbound_cid) < 6) )
+						{
+						echo "<br>"._QXZ("CID GROUP CID NOT DELETED - Please go back and look at the data you entered")."<br>\n";
+						}
+					else
+						{
+						echo "<br><B>"._QXZ("CID GROUP CID DELETED").": $cid_group_id - $areacode - $outbound_cid</B><br>\n";
+
+						$stmt="DELETE FROM vicidial_campaign_cid_areacodes WHERE campaign_id='$cid_group_id' and areacode='$areacode' and outbound_cid='$outbound_cid';";
+						$rslt=mysql_to_mysqli($stmt, $link);
+
+						### LOG INSERTION Admin Log Table ###
+						$SQL_log = "$stmt|";
+						$SQL_log = preg_replace('/;/', '', $SQL_log);
+						$SQL_log = addslashes($SQL_log);
+						$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CIDGROUPS', event_type='DELETE', record_id='$cid_group_id', event_code='ADMIN DELETE CID GROUP ENTRY', event_sql=\"$SQL_log\", event_notes='CID: $areacode - $outbound_cid';";
+						if ($DB) {echo "|$stmt|\n";}
+						$rslt=mysql_to_mysqli($stmt, $link);
+						}
+					}
+				}
+			elseif ($stage == 'MODIFY')
+				{
+				$stmt="SELECT areacode,outbound_cid,active,cid_description,call_count_today from vicidial_campaign_cid_areacodes where campaign_id='$cid_group_id' $LOGallowed_campaignsSQL order by areacode,outbound_cid";
+				$rslt=mysql_to_mysqli($stmt, $link);
+				$accids_to_print = mysqli_num_rows($rslt);
+				$o=0;
+				while ($accids_to_print > $o) 
+					{
+					$rowx=mysqli_fetch_row($rslt);
+					$Xareacode[$o] =			$rowx[0];
+					$Xoutbound_cid[$o] =		$rowx[1];
+					$Xactive[$o] =				$rowx[2];
+					$Xcid_description[$o] =		$rowx[3];
+					$Xcall_count_today[$o] =	$rowx[4];
+					$o++;
+					}
+
+				$accid_modified=0;
+				$stmt_log='';
+				$accid_log='';
+				$o=0;
+				while ($accids_to_print > $o) 
+					{
+					$Factive_value='';
+					$Fcid_description_value='';
+					$Factive = "active_$Xareacode[$o]_$Xoutbound_cid[$o]";
+					$Fcid_description = "cid_description_$Xareacode[$o]_$Xoutbound_cid[$o]";
+
+					if (isset($_GET[$Factive]))						{$Factive_value=$_GET[$Factive];}
+						elseif (isset($_POST[$Factive]))			{$Factive_value=$_POST[$Factive];}
+					if (isset($_GET[$Fcid_description]))			{$Fcid_description_value=$_GET[$Fcid_description];}
+						elseif (isset($_POST[$Fcid_description]))	{$Fcid_description_value=$_POST[$Fcid_description];}
+					$Fcid_description_value = preg_replace('/[^- \.\,\_0-9a-zA-Z]/','',$Fcid_description_value);
+					$Factive_value = preg_replace('/[^A-Z]/','',$Factive_value);
+
+				#	echo "$cid_group_id - $Xareacode[$o] - $Xoutbound_cid[$o] - $Factive($Factive_value|$Xactive[$o]) - $Fcid_description($Fcid_description_value|$Xcid_description[$o])<BR>";
+
+					if ( ($Factive_value == $Xactive[$o]) and ($Fcid_description_value == $Xcid_description[$o]) )
+						{
+					#	echo "<br>AREACODE CID NOT MODIFIED - Please go back and look at the data you entered<br>\n";
+						}
+					else
+						{
+						$accid_modified++;
+						echo "<B>"._QXZ("CID GROUP CID MODIFIED").": $Xareacode[$o] - $Xoutbound_cid[$o]</B><br>\n";
+
+						$stmt="UPDATE vicidial_campaign_cid_areacodes SET active='$Factive_value',cid_description='$Fcid_description_value' WHERE campaign_id='$cid_group_id' and areacode='$Xareacode[$o]' and outbound_cid='$Xoutbound_cid[$o]';";
+						$rslt=mysql_to_mysqli($stmt, $link);
+
+						$stmt_log .= "$stmt|";
+						$accid_log .= "CID: $Xareacode[$o] - $Xoutbound_cid[$o] - $Factive_value - $Fcid_description_value|";
+						}
+					$o++;
+					}
+				if ($accid_modified > 0)
+					{
+					### LOG INSERTION Admin Log Table ###
+					$SQL_log = "$stmt_log|";
+					$SQL_log = preg_replace('/;/', '', $SQL_log);
+					$SQL_log = addslashes($SQL_log);
+					$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CIDGROUPS', event_type='MODIFY', record_id='$cid_group_id', event_code='ADMIN MODIFY CID GROUP ENTRY', event_sql=\"$SQL_log\", event_notes='$accid_modified CIDs MODIFIED. CHANGES: $accid_log';";
+					if ($DB) {echo "|$stmt|\n";}
+					$rslt=mysql_to_mysqli($stmt, $link);
+					}
+				}
+			else
+				{
+				if (strlen($cid_group_notes) < 2)
+					{echo "<br>"._QXZ("CID GROUP NOT MODIFIED - Please go back and look at the data you entered")."\n";}
+				else
+					{
+					$stmt="UPDATE vicidial_cid_groups set cid_group_notes='$cid_group_notes',user_group='$user_group' where cid_group_id='$cid_group_id';";
+					$rslt=mysql_to_mysqli($stmt, $link);
+
+					echo "<br>"._QXZ("CID GROUP MODIFIED").": $cid_group_id\n";
+
+					### LOG INSERTION Admin Log Table ###
+					$SQL_log = "$stmt|";
+					$SQL_log = preg_replace('/;/', '', $SQL_log);
+					$SQL_log = addslashes($SQL_log);
+					$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CIDGROUPS', event_type='MODIFY', record_id='$cid_group_id', event_code='ADMIN MODIFY CID GROUP', event_sql=\"$SQL_log\", event_notes='';";
+					if ($DB) {echo "|$stmt|\n";}
+					$rslt=mysql_to_mysqli($stmt, $link);
+					}
+				}
+			}
+		}
+	else
+		{
+		echo _QXZ("You do not have permission to view this page")."\n";
+		exit;
+		}
+	$ADD=396111111111;	# go to CID group entry modification form below
+	}
+
+
+######################
 # ADD=4111111111111 modify conference record in the system
 ######################
 if ($ADD==4111111111111)
@@ -18196,6 +18470,28 @@ if ($ADD==595111111111)
 		}
 	$ADD='395111111111';		# go to IP LIST entry modification below
 	}
+
+
+######################
+# ADD=596111111111 confirmation before deletion of CID group record
+######################
+if ($ADD==596111111111)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	if (strlen($cid_group_id) < 2)
+		{
+		echo "<br>"._QXZ("CID GROUP NOT DELETED - Please go back and look at the data you entered")."\n";
+		echo "<br>"._QXZ("CID Group ID be at least 2 characters in length")."\n";
+		}
+	else
+		{
+		echo "<br><B>"._QXZ("CID GROUP DELETION CONFIRMATION").": $cid_group_id</B>\n";
+		echo "<br><br><a href=\"$PHP_SELF?ADD=696111111111&cid_group_id=$cid_group_id&CoNfIrM=YES\">"._QXZ("Click here to delete CID group")." $cid_group_id</a><br><br><br>\n";
+		}
+	$ADD='396111111111';		# go to CID Group entry modification below
+	}
+
 
 
 ######################
@@ -20567,6 +20863,51 @@ if ($ADD==695111111111)
 
 
 ######################
+# ADD=696111111111 delete CID groups record
+######################
+if ($ADD==696111111111)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	if ( (strlen($cid_group_id) < 2) or ($CoNfIrM != 'YES') or ($LOGmodify_statuses!=1) )
+		{
+		echo "<br>"._QXZ("CID GROUP NOT DELETED - Please go back and look at the data you entered")."\n";
+		echo "<br>"._QXZ("CID Group ID must be at least 2 characters in length")."\n";
+		}
+	else
+		{
+		$stmt="SELECT count(*) from vicidial_cid_groups where cid_group_id='$cid_group_id' $LOGadmin_viewable_groupsSQL;";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$row=mysqli_fetch_row($rslt);
+		if ($row[0] < 1)
+			{echo "<br>"._QXZ("CID GROUP NOT FOUND").": $cid_group_id\n";}
+		else
+			{
+			$stmt="DELETE from vicidial_cid_groups where cid_group_id='$cid_group_id' $LOGadmin_viewable_groupsSQL;";
+			$rslt=mysql_to_mysqli($stmt, $link);
+
+			$stmtB="DELETE from vicidial_campaign_cid_areacodes WHERE campaign_id='$cid_group_id';";
+			$rslt=mysql_to_mysqli($stmtB, $link);
+			$affected_rowsB = mysqli_affected_rows($link);
+			if ($DB) {echo "$affected_rowsB|$stmtB|\n";}
+
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|$stmtB|";
+			$SQL_log = preg_replace('/;/', '', $SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CIDGROUPS', event_type='DELETE', record_id='$cid_group_id', event_code='ADMIN DELETE CID GROUP', event_sql=\"$SQL_log\", event_notes='$affected_rowsB CIDS deleted';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_to_mysqli($stmt, $link);
+
+			echo "<br><B>"._QXZ("CID GROUP DELETION COMPLETED").": $cid_group_id</B>\n";
+			echo "<br><br>\n";
+			}
+		}
+	$ADD='196000000000';		# go to CID groups entry list
+	}
+
+
+######################
 # ADD=6111111111111 delete conference record
 ######################
 if ($ADD==6111111111111)
@@ -21280,7 +21621,7 @@ if ($ADD==31)
 		$enable_vtiger_integration_LU =		$row[0];
 		$vtiger_url_LU =					$row[1];
 
-		$stmt="SELECT campaign_id,campaign_name,active,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,list_order_mix,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,xfer_groups,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,qc_shift_id,qc_get_record_launch,qc_show_recording,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count,manual_dial_filter,agent_clipboard_copy,agent_extended_alt_dial,use_campaign_dnc,three_way_call_cid,three_way_dial_prefix,web_form_target,vtiger_search_category,vtiger_create_call_record,vtiger_create_lead_record,vtiger_screen_login,cpd_amd_action,agent_allow_group_alias,default_group_alias,vtiger_search_dead,vtiger_status_call,survey_third_digit,survey_third_audio_file,survey_third_status,survey_third_exten,survey_fourth_digit,survey_fourth_audio_file,survey_fourth_status,survey_fourth_exten,drop_lockout_time,quick_transfer_button,prepopulate_transfer_preset,drop_rate_group,view_calls_in_queue,view_calls_in_queue_launch,grab_calls_in_queue,call_requeue_button,pause_after_each_call,no_hopper_dialing,agent_dial_owner_only,agent_display_dialable_leads,web_form_address_two,waitforsilence_options,agent_select_territories,campaign_calldate,crm_popup_login,crm_login_address,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,use_custom_cid,scheduled_callbacks_alert,queuemetrics_callstatus_override,extension_appended_cidname,scheduled_callbacks_count,manual_dial_override,blind_monitor_warning,blind_monitor_message,blind_monitor_filename,inbound_queue_no_dial,timer_action_destination,enable_xfer_presets,hide_xfer_number_to_dial,manual_dial_prefix,customer_3way_hangup_logging,customer_3way_hangup_seconds,customer_3way_hangup_action,ivr_park_call,ivr_park_call_agi,manual_preview_dial,realtime_agent_time_stats,use_auto_hopper,auto_hopper_multi,auto_trim_hopper,api_manual_dial,manual_dial_call_time_check,display_leads_count,lead_order_randomize,lead_order_secondary,per_call_notes,my_callback_option,agent_lead_search,agent_lead_search_method,queuemetrics_phone_environment,auto_pause_precall,auto_resume_precall,auto_pause_precall_code,manual_dial_cid,post_phone_time_diff_alert,custom_3way_button_transfer,available_only_tally_threshold,available_only_tally_threshold_agents,dial_level_threshold,dial_level_threshold_agents,safe_harbor_audio,safe_harbor_menu_id,survey_menu_id,callback_days_limit,dl_diff_target_method,disable_dispo_screen,disable_dispo_status,screen_labels,status_display_fields,na_call_url,survey_recording,pllb_grouping,pllb_grouping_limit,call_count_limit,call_count_target,callback_hours_block,callback_list_calltime,user_group,hopper_vlc_dup_check,in_group_dial,in_group_dial_select,safe_harbor_audio_field,pause_after_next_call,owner_populate,use_other_campaign_dnc,allow_emails,amd_inbound_group,amd_callmenu,survey_wait_sec,manual_dial_lead_id,dead_max,dispo_max,pause_max,dead_max_dispo,dispo_max_dispo,max_inbound_calls,manual_dial_search_checkbox,hide_call_log_info,timer_alt_seconds,wrapup_bypass,wrapup_after_hotkey,callback_active_limit,callback_active_limit_override,allow_chats,comments_all_tabs,comments_dispo_screen,comments_callback_screen,qc_comment_history,show_previous_callback,clear_script,cpd_unknown_action,manual_dial_search_filter,web_form_address_three,manual_dial_override_field,status_display_ingroup,customer_gone_seconds,agent_display_fields,am_message_wildcards,manual_dial_timeout,routing_initiated_recordings,manual_dial_hopper_check,callback_useronly_move_minutes,ofcom_uk_drop_calc,manual_auto_next,manual_auto_show,allow_required_fields,dead_to_dispo,agent_xfer_validation,ready_max_logout,callback_display_days,three_way_record_stop,hangup_xfer_record_start,scheduled_callbacks_email_alert,max_inbound_calls_outcome,manual_auto_next_options,agent_screen_time_display,next_dial_my_callbacks,inbound_no_agents_no_dial_container,inbound_no_agents_no_dial_threshold from vicidial_campaigns where campaign_id='$campaign_id' $LOGallowed_campaignsSQL;";
+		$stmt="SELECT campaign_id,campaign_name,active,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,list_order_mix,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,xfer_groups,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,qc_shift_id,qc_get_record_launch,qc_show_recording,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count,manual_dial_filter,agent_clipboard_copy,agent_extended_alt_dial,use_campaign_dnc,three_way_call_cid,three_way_dial_prefix,web_form_target,vtiger_search_category,vtiger_create_call_record,vtiger_create_lead_record,vtiger_screen_login,cpd_amd_action,agent_allow_group_alias,default_group_alias,vtiger_search_dead,vtiger_status_call,survey_third_digit,survey_third_audio_file,survey_third_status,survey_third_exten,survey_fourth_digit,survey_fourth_audio_file,survey_fourth_status,survey_fourth_exten,drop_lockout_time,quick_transfer_button,prepopulate_transfer_preset,drop_rate_group,view_calls_in_queue,view_calls_in_queue_launch,grab_calls_in_queue,call_requeue_button,pause_after_each_call,no_hopper_dialing,agent_dial_owner_only,agent_display_dialable_leads,web_form_address_two,waitforsilence_options,agent_select_territories,campaign_calldate,crm_popup_login,crm_login_address,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,use_custom_cid,scheduled_callbacks_alert,queuemetrics_callstatus_override,extension_appended_cidname,scheduled_callbacks_count,manual_dial_override,blind_monitor_warning,blind_monitor_message,blind_monitor_filename,inbound_queue_no_dial,timer_action_destination,enable_xfer_presets,hide_xfer_number_to_dial,manual_dial_prefix,customer_3way_hangup_logging,customer_3way_hangup_seconds,customer_3way_hangup_action,ivr_park_call,ivr_park_call_agi,manual_preview_dial,realtime_agent_time_stats,use_auto_hopper,auto_hopper_multi,auto_trim_hopper,api_manual_dial,manual_dial_call_time_check,display_leads_count,lead_order_randomize,lead_order_secondary,per_call_notes,my_callback_option,agent_lead_search,agent_lead_search_method,queuemetrics_phone_environment,auto_pause_precall,auto_resume_precall,auto_pause_precall_code,manual_dial_cid,post_phone_time_diff_alert,custom_3way_button_transfer,available_only_tally_threshold,available_only_tally_threshold_agents,dial_level_threshold,dial_level_threshold_agents,safe_harbor_audio,safe_harbor_menu_id,survey_menu_id,callback_days_limit,dl_diff_target_method,disable_dispo_screen,disable_dispo_status,screen_labels,status_display_fields,na_call_url,survey_recording,pllb_grouping,pllb_grouping_limit,call_count_limit,call_count_target,callback_hours_block,callback_list_calltime,user_group,hopper_vlc_dup_check,in_group_dial,in_group_dial_select,safe_harbor_audio_field,pause_after_next_call,owner_populate,use_other_campaign_dnc,allow_emails,amd_inbound_group,amd_callmenu,survey_wait_sec,manual_dial_lead_id,dead_max,dispo_max,pause_max,dead_max_dispo,dispo_max_dispo,max_inbound_calls,manual_dial_search_checkbox,hide_call_log_info,timer_alt_seconds,wrapup_bypass,wrapup_after_hotkey,callback_active_limit,callback_active_limit_override,allow_chats,comments_all_tabs,comments_dispo_screen,comments_callback_screen,qc_comment_history,show_previous_callback,clear_script,cpd_unknown_action,manual_dial_search_filter,web_form_address_three,manual_dial_override_field,status_display_ingroup,customer_gone_seconds,agent_display_fields,am_message_wildcards,manual_dial_timeout,routing_initiated_recordings,manual_dial_hopper_check,callback_useronly_move_minutes,ofcom_uk_drop_calc,manual_auto_next,manual_auto_show,allow_required_fields,dead_to_dispo,agent_xfer_validation,ready_max_logout,callback_display_days,three_way_record_stop,hangup_xfer_record_start,scheduled_callbacks_email_alert,max_inbound_calls_outcome,manual_auto_next_options,agent_screen_time_display,next_dial_my_callbacks,inbound_no_agents_no_dial_container,inbound_no_agents_no_dial_threshold,cid_group_id from vicidial_campaigns where campaign_id='$campaign_id' $LOGallowed_campaignsSQL;";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$row=mysqli_fetch_row($rslt);
 		$campaign_name = $row[1];
@@ -21547,6 +21888,7 @@ if ($ADD==31)
 		$next_dial_my_callbacks=$row[262];
 		$inbound_no_agents_no_dial_container=$row[263];
 		$inbound_no_agents_no_dial_threshold=$row[264];
+		$cid_group_id=$row[265];
 
 	if (preg_match('/DISABLED/', $list_order_mix))
 		{$DEFlistDISABLE = '';	$DEFstatusDISABLED=0;}
@@ -22449,10 +22791,47 @@ if ($ADD==31)
 
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Custom CallerID").": </td><td align=left><select size=1 name=use_custom_cid><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='AREACODE'>"._QXZ("AREACODE")."</option><option value='USER_CUSTOM_1'>"._QXZ("USER_CUSTOM_1")."</option><option value='USER_CUSTOM_2'>"._QXZ("USER_CUSTOM_2")."</option><option value='USER_CUSTOM_3'>"._QXZ("USER_CUSTOM_3")."</option><option value='USER_CUSTOM_4'>"._QXZ("USER_CUSTOM_4")."</option><option value='USER_CUSTOM_5'>"._QXZ("USER_CUSTOM_5")."</option><option value='$use_custom_cid' SELECTED>"._QXZ("$use_custom_cid")."</option></select>$NWB#campaigns-use_custom_cid$NWE</td></tr>\n";
 
+		if ($SScampaign_cid_areacodes_enabled == '1')
+			{
+			##### get vicidial_cid_groups listings for dynamic pulldown list
+			$stmt="SELECT cid_group_id,cid_group_type,cid_group_notes from vicidial_cid_groups $LOGadmin_viewable_groupsSQL order by cid_group_id;";
+			$rslt=mysql_to_mysqli($stmt, $link);
+			$cid_groups_to_print = mysqli_num_rows($rslt);
+			$cid_groups_menu='';
+			$cid_groups_selected=0;
+			$o=0;
+			while ($cid_groups_to_print > $o) 
+				{
+				$rowx=mysqli_fetch_row($rslt);
+				$cid_groups_menu .= "<option ";
+				if ($cid_group_id == "$rowx[0]") 
+					{
+					$cid_groups_menu .= "SELECTED ";
+					$cid_groups_selected++;
+					}
+				$cid_groups_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1] - $rowx[2]</option>\n";
+				$o++;
+				}
+
+			echo "<tr bgcolor=#$SSstd_row3_background><td align=right>";
+			if ($cid_groups_selected > 0)
+				{echo "<a href=\"$PHP_SELF?ADD=396111111111&cid_group_id=$cid_group_id\">"._QXZ("CID Group")."</a>";}
+			else
+				{echo _QXZ("CID Group");}
+			echo ": </td><td align=left><select size=1 name=cid_group_id>";
+			echo "<option value=\"---DISABLED---\">"._QXZ("---DISABLED---")."</option>";
+			echo "$cid_groups_menu";
+			echo "</select>$NWB#campaigns-cid_group_id$NWE</td></tr>\n";
+			}
+		else
+			{echo "<tr bgcolor=#$SSstd_row3_background><td align=right><input type=hidden name=cid_group_id value=\"$cid_group_id\"></td></tr>";}
+
 		if ($SSoutbound_autodial_active > 0)
 			{
 			echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Routing Extension").": </td><td align=left><input type=text name=campaign_vdad_exten size=10 maxlength=20 value=\"$campaign_vdad_exten\">$NWB#campaigns-campaign_vdad_exten$NWE</td></tr>\n";
 			}
+		else
+			{echo "<tr bgcolor=#$SSstd_row3_background><td align=right><input type=hidden name=campaign_vdad_exten value=\"$campaign_vdad_exten\"></td></tr>";}
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Campaign Rec exten").": </td><td align=left><input type=text name=campaign_rec_exten size=10 maxlength=10 value=\"$campaign_rec_exten\">$NWB#campaigns-campaign_rec_exten$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Campaign Recording").": </td><td align=left><select size=1 name=campaign_recording><option value='NEVER'>"._QXZ("NEVER")."</option><option value='ONDEMAND'>"._QXZ("ONDEMAND")."</option><option value='ALLCALLS'>"._QXZ("ALLCALLS")."</option><option value='ALLFORCE'>"._QXZ("ALLFORCE")."</option><option value='$campaign_recording' SELECTED>"._QXZ("$campaign_recording")."</option></select>$NWB#campaigns-campaign_recording$NWE</td></tr>\n";
@@ -30474,7 +30853,6 @@ if ($ADD==3311)
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=3511&menu_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
 			$o++;
 			}
-
 		echo "</TABLE><BR>\n";
 
 
@@ -30491,7 +30869,6 @@ if ($ADD==3311)
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
 			$o++;
 			}
-
 		echo "</TABLE><BR>\n";
 
 
@@ -30508,7 +30885,22 @@ if ($ADD==3311)
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=31&SUB=202&campaign_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
 			$o++;
 			}
+		echo "</TABLE><BR>\n";
 
+
+		echo "<B>"._QXZ("CID GROUPS USING THIS DID").":</B><BR>\n";
+		echo "<TABLE>\n";
+
+		$stmt="SELECT camp.cid_group_id,cid_group_notes from vicidial_campaign_cid_areacodes campac,vicidial_cid_groups camp where outbound_cid='$did_pattern' and camp.cid_group_id=campac.campaign_id $LOGadmin_viewable_groupsSQL;";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$cidgps_to_print = mysqli_num_rows($rslt);
+		$o=0;
+		while ($cidgps_to_print > $o) 
+			{
+			$row=mysqli_fetch_row($rslt);
+			echo "<TR><TD><a href=\"$PHP_SELF?ADD=396111111111&cid_group_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
+			$o++;
+			}
 		echo "</TABLE><BR>\n";
 
 
@@ -30525,7 +30917,6 @@ if ($ADD==3311)
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=3111&group_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
 			$o++;
 			}
-
 		echo "</TABLE><BR>\n";
 
 
@@ -30542,7 +30933,6 @@ if ($ADD==3311)
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
 			$o++;
 			}
-
 		echo "</TABLE><BR>\n";
 
 
@@ -34775,7 +35165,7 @@ if ($ADD==392111111111)
 		$user_group =				$row[2];
 		$container_entry =			$row[3];
 
-		echo "<br>"._QXZ("MODIFY SETTINGS CONTAINER").": $tts_id<form action=$PHP_SELF method=POST>\n";
+		echo "<br>"._QXZ("MODIFY SETTINGS CONTAINER").": $container_id<form action=$PHP_SELF method=POST>\n";
 		echo "<input type=hidden name=ADD value=492111111111>\n";
 		echo "<input type=hidden name=container_id value=\"$container_id\">\n";
 
@@ -34839,7 +35229,7 @@ if ($ADD==393111111111)
 		$status_group_notes =		$row[0];
 		$user_group =				$row[1];
 
-		echo "<br>"._QXZ("MODIFY STATUS GROUP").": $tts_id<form action=$PHP_SELF method=POST>\n";
+		echo "<br>"._QXZ("MODIFY STATUS GROUP").": $status_group_id<form action=$PHP_SELF method=POST>\n";
 		echo "<input type=hidden name=ADD value=493111111111>\n";
 		echo "<input type=hidden name=status_group_id value=\"$status_group_id\">\n";
 
@@ -35373,7 +35763,179 @@ if ($ADD==395111111111)
 
 
 
+######################
+# ADD=396111111111 modify CID group in the system
+######################
+if ($ADD==396111111111)
+	{
+	if ( ($LOGast_admin_access==1) and ($LOGmodify_statuses==1) )
+		{
+		if ( ($SSadmin_modify_refresh > 1) and ($modify_refresh_set < 1) )
+			{
+			$modify_url = "$PHP_SELF?ADD=396111111111&cid_group_id=$cid_group_id";
+			$modify_footer_refresh=1;
+			}
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
+		$stmt="SELECT cid_group_notes,cid_group_type,user_group from vicidial_cid_groups where cid_group_id='$cid_group_id' $LOGadmin_viewable_groupsSQL;";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$row=mysqli_fetch_row($rslt);
+		$cid_group_notes =		$row[0];
+		$cid_group_type =		$row[1];
+		$user_group =			$row[2];
+
+		echo "<br>"._QXZ("MODIFY CID GROUP").": $cid_group_id<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=496111111111>\n";
+		echo "<input type=hidden name=cid_group_id value=\"$cid_group_id\">\n";
+
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("CID Group ID").": </td><td align=left><B>$cid_group_id</B></td></tr>\n";
+
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("CID Group Notes").": </td><td align=left><input type=text name=cid_group_notes size=50 maxlength=255 value=\"$cid_group_notes\">$NWB#cid_groups$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("CID Group Type").": </td><td align=left><B>$cid_group_type</B>$NWB#cid_groups$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Admin User Group").": </td><td align=left><select size=1 name=user_group>\n";
+		echo "$UUgroups_list";
+		echo "<option SELECTED value=\"$user_group\">$user_group</option>\n";
+		echo "</select>$NWB#cid_groups$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=center colspan=2><input type=submit name=submit value='"._QXZ("SUBMIT")."'</td></tr>\n";
+		echo "</TABLE></center></form>\n";
+
+		echo "<center><b>\n";
+
+		$checkbox_list='';
+		$checkbox_count=0;
+		echo "<br><br><b>"._QXZ("CIDS FOR THIS CID GROUP").": &nbsp; $NWB#cid_groups$NWE</b><br>\n";
+		echo "<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=496111111111>\n";
+		echo "<input type=hidden name=stage value=MODIFY>\n";
+		echo "<input type=hidden name=DB value=\"$DB\">\n";
+		echo "<input type=hidden name=cid_group_id value=\"$cid_group_id\">\n";
+		echo "<center><TABLE width=700 cellspacing=2>\n";
+
+		$stmt="SELECT areacode,outbound_cid,active,cid_description,call_count_today from vicidial_campaign_cid_areacodes where campaign_id='$cid_group_id' order by areacode,outbound_cid;";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$accids_to_print = mysqli_num_rows($rslt);
+		$o=0;
+		while ($accids_to_print > $o) 
+			{
+			$rowx=mysqli_fetch_row($rslt);
+			$Xareacode[$o] =			$rowx[0];
+			$Xoutbound_cid[$o] =		$rowx[1];
+			$Xactive[$o] =				$rowx[2];
+			$Xcid_description[$o] =		$rowx[3];
+			$Xcall_count_today[$o] =	$rowx[4];
+			$checkbox_list .= "|active_$Xareacode[$o]_$Xoutbound_cid[$o]";
+			$o++;
+			$checkbox_count++;
+			}
+
+		echo "<tr><td>#</td><td>"._QXZ("$cid_group_type")."</td><td>"._QXZ("CID NUMBER")."</td><td>"._QXZ("DESCRIPTION")."</td><td>"._QXZ("ACTIVE")."<br><span id=ACCID_link><a href=\"#\" onclick=\"FORM_selectall('$checkbox_count','$checkbox_list','on','ACCID_link');return false;\"><font size=1>"._QXZ("select all")."</font></a></span></td><td>"._QXZ("CALLS")."</td><td>"._QXZ("DELETE")."</td></tr>\n";
+
+		$o=0;
+		while ($accids_to_print > $o) 
+			{
+			$ct = ($o + 1);
+			if ($ct == '1')
+				{
+				$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';
+				$bgac = $Xareacode[$o];
+				} 
+			else
+				{
+				if ($Xareacode[$o] != $bgac)
+					{
+					if (preg_match("/1$|3$|5$|7$|9$/i", $bgct))
+						{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';} 
+					else
+						{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
+					$bgct++;
+					$bgac = $Xareacode[$o];
+					}
+				}
+
+			$DID_edit_link_BEGIN='';
+			$DID_edit_link_END='';
+			if (strlen($Xoutbound_cid[$o]) > 0)
+				{
+				$stmt="SELECT did_id from vicidial_inbound_dids where did_pattern='$Xoutbound_cid[$o]' $LOGadmin_viewable_groupsSQL limit 1;";
+				$rslt=mysql_to_mysqli($stmt, $link);
+				$dids_to_print = mysqli_num_rows($rslt);
+				if ($dids_to_print > 0) 
+					{
+					$rowx=mysqli_fetch_row($rslt);
+					$DID_edit_link_BEGIN = "<a href=\"$PHP_SELF?ADD=3311&did_id=$rowx[0]\">";
+					$DID_edit_link_END='</a>';
+					}
+				}
+			echo "<tr $bgcolor><td><font size=2> &nbsp; $ct</font></td>\n";
+			echo "<td><font size=2> &nbsp; $Xareacode[$o]</font></td>\n";
+			echo "<td><font size=2> &nbsp; $DID_edit_link_BEGIN$Xoutbound_cid[$o]$DID_edit_link_END</font></td>\n";
+			echo "<td><input type=text size=30 maxlength=100 name=cid_description_$Xareacode[$o]_$Xoutbound_cid[$o] value=\"$Xcid_description[$o]\" style=\"font-family: sans-serif; font-size: 10px;\"></td>\n";
+			echo "<td>\n";
+			if ($Xactive[$o] == 'Y')
+				{
+				echo "<input type=\"checkbox\" name=\"active_$Xareacode[$o]_$Xoutbound_cid[$o]\" id=\"active_$Xareacode[$o]_$Xoutbound_cid[$o]\" value=\"Y\" CHECKED>";
+				}
+			else
+				{
+				echo "<input type=\"checkbox\" name=\"active_$Xareacode[$o]_$Xoutbound_cid[$o]\" id=\"active_$Xareacode[$o]_$Xoutbound_cid[$o]\" value=\"Y\">";
+				}
+			echo "</td>\n";
+			echo "<td><font size=2> &nbsp; $Xcall_count_today[$o]</font></td>\n";
+			echo "<td><font size=1> &nbsp; <a href=\"$PHP_SELF?ADD=496111111111&stage=DELETE&cid_group_id=$cid_group_id&areacode=$Xareacode[$o]&outbound_cid=$Xoutbound_cid[$o]\">"._QXZ("DELETE")."</a></td></tr>\n";
+			$o++;
+			}
+
+		echo "</table>\n";
+		echo "<input type=submit name=submit value=\""._QXZ("SUBMIT CHANGES")."\"></form><br><br>\n";
+
+		echo "<br>"._QXZ("ADD NEW $cid_group_type CID")."<BR><form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=496111111111>\n";
+		echo "<input type=hidden name=stage value=ADD>\n";
+		echo "<input type=hidden name=DB value=\"$DB\">\n";
+		echo "<input type=hidden name=cid_group_id value=\"$cid_group_id\">\n";
+		echo _QXZ("$cid_group_type").": <input type=text size=7 maxlength=5 name=areacode>\n";
+		echo _QXZ("Outbound CID").": <input type=text size=20 maxlength=20 name=outbound_cid><BR>\n";
+		echo _QXZ("Description").": <input type=text size=50 maxlength=100 name=cid_description>\n";
+		echo "<input type=submit name=submit value='"._QXZ("ADD")."'><BR>\n";
+
+		echo "</center></FORM><br></center>\n";
+
+		echo "<B>"._QXZ("CAMPAIGNS USING THIS CID GROUP").":</B><BR>\n";
+		echo "<TABLE>\n";
+
+		$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns where cid_group_id='$cid_group_id' $LOGallowed_campaignsSQL;";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$camps_to_print = mysqli_num_rows($rslt);
+		$o=0;
+		while ($camps_to_print > $o) 
+			{
+			$row=mysqli_fetch_row($rslt);
+			echo "<TR><TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
+			$o++;
+			}
+
+		echo "</TABLE><BR><center>\n";
+
+		if (($LOGast_admin_access==1) and ($LOGmodify_statuses==1))
+			{
+			echo "<br><br><a href=\"$PHP_SELF?ADD=596111111111&cid_group_id=$cid_group_id\">"._QXZ("DELETE THIS CID GROUP")."</a>\n";
+			}
+		if ( ($LOGuser_level >= 9) and ( (preg_match("/Administration Change Log/",$LOGallowed_reports)) or (preg_match("/ALL REPORTS/",$LOGallowed_reports)) ) )
+			{
+			echo "<br><br><a href=\"$PHP_SELF?ADD=720000000000000&category=CIDGROUPS&stage=$cid_group_id\">"._QXZ("Click here to see Admin changes to this CID GROUP")."</FONT>\n";
+			}
+		}
+	else
+		{
+		echo _QXZ("You do not have permission to view this page")."\n";
+		exit;
+		}
+	}
 
 
 
@@ -36031,7 +36593,7 @@ if ($ADD==311111111111111)
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Cached Realtime Carrier Stats").": </td><td align=left><select size=1 name=cache_carrier_stats_realtime><option>1</option><option>0</option><option selected>$cache_carrier_stats_realtime</option></select>$NWB#settings-cache_carrier_stats_realtime$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Enable Campaign Areacode CID").": </td><td align=left><select size=1 name=campaign_cid_areacodes_enabled><option>1</option><option>0</option><option selected>$campaign_cid_areacodes_enabled</option></select>$NWB#settings-campaign_cid_areacodes_enabled$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Enable CID Groups and Campaign Areacode CID").": </td><td align=left><select size=1 name=campaign_cid_areacodes_enabled><option>1</option><option>0</option><option selected>$campaign_cid_areacodes_enabled</option></select>$NWB#settings-campaign_cid_areacodes_enabled$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Enable Remote Agent Extension Overrides").": </td><td align=left><select size=1 name=did_ra_extensions_enabled><option>1</option><option>0</option><option selected>$did_ra_extensions_enabled</option></select>$NWB#settings-did_ra_extensions_enabled$NWE</td></tr>\n";
 
@@ -39141,6 +39703,65 @@ if ($ADD==195000000000)
 
 
 ######################
+# ADD=196000000000 display all CID group entries
+######################
+if ($ADD==196000000000)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<img src=\"images/icon_cidgroups.png\" width=42 height=42 align=left> <FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT cid_group_id,cid_group_notes,cid_group_type,user_group from vicidial_cid_groups $whereLOGadmin_viewable_groupsSQL order by cid_group_id;";
+	$rslt=mysql_to_mysqli($stmt, $link);
+	$cid_groups_to_print = mysqli_num_rows($rslt);
+
+	echo "<br>"._QXZ("CID GROUP LISTINGS").":\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<TR BGCOLOR=BLACK>";
+	echo "<TD><font size=1 color=white>"._QXZ("CID GROUP ID")."</TD>";
+	echo "<TD><font size=1 color=white>"._QXZ("NOTES")."</TD>";
+	echo "<TD><font size=1 color=white>"._QXZ("TYPE")."</TD>";
+	echo "<TD><font size=1 color=white>"._QXZ("GROUP")."</TD>";
+	echo "<TD><font size=1 color=white>"._QXZ("CIDS")."</TD>";
+	echo "<TD><font size=1 color=white>"._QXZ("MODIFY")."</TD>\n";
+	echo "</TR>\n";
+
+	$o=0;
+	$menu_id = $MT;
+
+	while ($cid_groups_to_print > $o) 
+		{
+		$row=mysqli_fetch_row($rslt);
+		$cid_group_id[$o] =		$row[0];
+		$cid_group_notes[$o] =	$row[1];
+		$cid_group_type[$o] =	$row[2];
+		$admin_group[$o] =		$row[3];
+		$o++;
+		}
+
+	$o=0;
+	while ($cid_groups_to_print > $o) 
+		{
+		$stmt="SELECT count(*) from vicidial_campaign_cid_areacodes where campaign_id=\"$cid_group_id[$o]\";";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$row=mysqli_fetch_row($rslt);
+		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
+			{$bgcolor='class="records_list_x"';} 
+		else
+			{$bgcolor='class="records_list_y"';}
+		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=396111111111&cid_group_id=$cid_group_id[$o]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=396111111111&cid_group_id=$cid_group_id[$o]\"><font size=1 color=black>$cid_group_id[$o]</a></td>";
+		echo "<td><font size=1> $cid_group_notes[$o]</td>";
+		echo "<td><font size=1> $cid_group_type[$o]</td>";
+		echo "<td><font size=1> $admin_group[$o]</td>";
+		echo "<td><font size=1> $row[0]</td>";
+		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=396111111111&cid_group_id=$cid_group_id[$o]\">"._QXZ("MODIFY")."</a></td></tr>\n";
+		$o++;
+		}
+
+	echo "</TABLE></center>\n";
+	}
+
+
+######################
 # ADD=1000000000000 display all conferences
 ######################
 if ($ADD==1000000000000)
@@ -40438,6 +41059,13 @@ if ($ADD==999998)
 	echo "<TD><a href=\"$PHP_SELF?ADD=193000000000\"><img src=\"images/icon_statusgroups.png\" border=0 width=42 height=42 valign=middle> </a></TD>\n";
 	echo "<TD><a href=\"$PHP_SELF?ADD=193000000000\" STYLE=\"text-decoration:none;\"><SPAN $subhead_font> "._QXZ("Status Groups")." </SPAN></a></TD>\n";
 	echo "</TR>\n";
+	if ($SScampaign_cid_areacodes_enabled == '1')
+		{
+		echo "<TR CLASS=\"adminmenu_style_selected\""; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=196000000000';\"";} echo ">\n";
+		echo "<TD><a href=\"$PHP_SELF?ADD=196000000000\"><img src=\"images/icon_cidgroups.png\" border=0 width=42 height=42 valign=middle> </a></TD>\n";
+		echo "<TD><a href=\"$PHP_SELF?ADD=196000000000\" STYLE=\"text-decoration:none;\"><SPAN $subhead_font> "._QXZ("CID Groups")." </SPAN></a></TD>\n";
+		echo "</TR>\n";
+		}
 	echo "</TABLE>\n";
 	echo "</TD>\n";
 

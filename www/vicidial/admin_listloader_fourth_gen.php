@@ -2510,7 +2510,7 @@ if (($leadfile) && ($LF_path))
 			}
 		##### END custom fields columns list ###
 
-
+		if ($DB>0) {echo "$fields_stmt\n";}
 		$rslt=mysql_to_mysqli("$fields_stmt", $link);
 
 		# csv xls xlsx ods sxc conversion

@@ -152,6 +152,7 @@
 # 180130-2303 - Added inbound_no_agents_no_dial entries
 # 180204-0213 - Added inbound_groups-icbq_expiration_hours and closed-time entries
 # 180211-1119 - Added source_vlc_status_report
+# 180214-0042 - Added cid_groups
 #
 
 require("dbconnect_mysqli.php");
@@ -1462,12 +1463,22 @@ if ($SSoutbound_autodial_active > 0)
 <BR>
 <A NAME="campaigns-campaign_cid">
 <BR>
-<B><?php echo _QXZ("Campaign CallerID"); ?> -</B><?php echo _QXZ("This field allows for the sending of a custom callerid number on the outbound calls. This is the number that would show up on the callerid of the person you are calling. The default is UNKNOWN. If you are using T1 or E1s to dial out this option is only available if you are using PRIs - ISDN T1s or E1s - that have the custom callerid feature turned on, this will not work with Robbed-bit service -RBS- circuits. This will also work through most VOIP -SIP or IAX trunks- providers that allow dynamic outbound callerID. The custom callerID only applies to calls placed for the campaign directly, any 3rd party calls or transfers will not send the custom callerID. NOTE: Sometimes putting UNKNOWN or PRIVATE in the field will yield the sending of your default callerID number by your carrier with the calls. You may want to test this and put 0000000000 in the callerid field instead if you do not want to send you CallerID."); ?>
+<B><?php echo _QXZ("Campaign CallerID"); ?> -</B><?php echo _QXZ("This field allows for the sending of a custom callerid number on the outbound calls. This is the number that would show up on the callerid of the person you are calling. The default is UNKNOWN. If you are using T1 or E1s to dial out this option is only available if you are using PRIs - ISDN T1s or E1s - that have the custom callerid feature turned on, this will not work with Robbed-bit service -RBS- circuits. This will also work through most VOIP -SIP or IAX trunks- providers that allow dynamic outbound callerID. The custom callerID only applies to calls placed for the campaign directly, any 3rd party calls or transfers will not send the custom callerID. NOTE: Sometimes putting UNKNOWN or PRIVATE in the field will yield the sending of your default callerID number by your carrier with the calls. You may want to test this and put 0000000000 in the callerid field instead if you do not want to send you CallerID. For more information on CallerID priority, see the CALLERID PRIORITY entry a few entries below this one."); ?>
 
 <BR>
 <A NAME="campaigns-use_custom_cid">
 <BR>
-<B><?php echo _QXZ("Custom CallerID"); ?> -</B><?php echo _QXZ("When set to Y, this option allows you to use the security_phrase field in the list table as the CallerID to send out when placing for each specific lead. If this field has no CID in it then the Campaign CallerID defined above will be used instead. This option will disable the list CallerID Override if there is a CID present in the security_phrase field. Default is N. When set to AREACODE you have the ability to go into the AC-CID submenu and define multiple callerids to be used per areacode. For MANUAL and INBOUND_MAN dial methods only, you can use one of the USER_CUSTOM selections to take a CallerID number put into one of the User Custom fields in the User Modify screen and use that for outbound manual dial calls placed by an agent."); ?>
+<B><?php echo _QXZ("Custom CallerID"); ?> -</B><?php echo _QXZ("When set to Y, this option allows you to use the security_phrase field in the list table as the CallerID to send out when placing for each specific lead. If this field has no CID in it then the Campaign CallerID defined above will be used instead. This option will disable the list CallerID Override if there is a CID present in the security_phrase field. Default is N. When set to AREACODE you have the ability to go into the AC-CID submenu and define multiple callerids to be used per areacode. For MANUAL and INBOUND_MAN dial methods only, you can use one of the USER_CUSTOM selections to take a CallerID number put into one of the User Custom fields in the User Modify screen and use that for outbound manual dial calls placed by an agent. For more information on CallerID priority, see the CALLERID PRIORITY entry a couple entries below this one."); ?>
+
+<BR>
+<A NAME="campaigns-cid_group_id">
+<BR>
+<B><?php echo _QXZ("CID Group"); ?> -</B><?php echo _QXZ("If set to something other than ---DISABLED---, the selected CID Group will override all other campaign CID settings above and will use the state or areacode based CIDs that are defined in the CID Group. Default is ---DISABLED---. For more information on CallerID priority, see the CALLERID PRIORITY entry below this one."); ?>
+
+<BR>
+<A NAME="campaigns-cid_priority">
+<BR>
+<B><?php echo _QXZ("CALLERID PRIORITY"); ?> -</B><?php echo _QXZ("If all of the CallerID options are enabled, this is the priority in which each type of CallerID will be used, 1 is top priority - <BR>1 - List CallerID Override <BR>2 - CID Group entry <BR>3 - AC-CID AREACODE entry <BR>4 - Custom CallerID, Security Phrase <BR>5 - USER_CUSTOM CallerID <BR>6 - Campaign CID <BR>"); ?>
 
 <BR>
 <A NAME="campaigns-campaign_rec_exten">
@@ -3771,6 +3782,17 @@ if ($SSoutbound_autodial_active > 0)
 
 <BR><BR><BR><BR>
 
+<B><FONT SIZE=3>CID GROUPS</FONT></B><BR><BR>
+<A NAME="cid_groups">
+<BR>
+<B><?php echo _QXZ("CID Groups are very similar to Campaign AC-CID, except with CID Groups you can use the same set of CIDs across multiple campaigns, and you can also define CID Groups on a per-state basis as well as per-areacode, instead of just by areacode like with Campaign AC-CID. If the STATE type is used, then the STATE value should match the state field for a lead, and if no match is found, the dialer will use the campaign CID as a default."); ?></B>
+
+
+
+
+
+<BR><BR><BR><BR>
+
 <B><FONT SIZE=3>USER_GROUPS TABLE</FONT></B><BR><BR>
 <A NAME="user_groups-user_group">
 <BR>
@@ -5591,7 +5613,7 @@ FR_SPAC 00 00 00 00 00 - <?php echo _QXZ("France space separated phone number");
 <BR>
 <A NAME="settings-campaign_cid_areacodes_enabled">
 <BR>
-<B><?php echo _QXZ("Enable Campaign Areacode CID"); ?> -</B><?php echo _QXZ("This setting enables the ability to set specific outbound callerid numbers to be used per campaign. Default is 1 for enabled."); ?>
+<B><?php echo _QXZ("Enable CID Groups and Campaign Areacode CID"); ?> -</B><?php echo _QXZ("This setting enables the ability to set specific outbound callerid numbers to be used per areacode for a campaign, as well as CID Groups which allows both per areacode and per state options for groups of CallerID numbers for one or multiple campaigns. Default is 1 for enabled."); ?>
 
 <BR>
 <A NAME="settings-did_ra_extensions_enabled">

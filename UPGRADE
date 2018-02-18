@@ -272,6 +272,10 @@ OTHER CHANGES:
 72. Added basic GDPR features for lead activity download and delete. Must enable
 	System setting and user permission to use.
 
+73. Added CID Groups, allowing for groups of caller IDs to be defined by state
+	or areacode, and allowing a single CID Group to be set across multiple
+	campaigns.
+
 
 
 

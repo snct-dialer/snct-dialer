@@ -998,7 +998,8 @@ manual_auto_next_options ENUM('DEFAULT','PAUSE_NO_COUNT') default 'DEFAULT',
 agent_screen_time_display ENUM('DISABLED','ENABLED_BASIC','ENABLED_FULL','ENABLED_BILL_BREAK_LUNCH_COACH') default 'DISABLED',
 next_dial_my_callbacks ENUM('DISABLED','ENABLED') default 'DISABLED',
 inbound_no_agents_no_dial_container VARCHAR(40) default '---DISABLED---',
-inbound_no_agents_no_dial_threshold SMALLINT(5) default '0'
+inbound_no_agents_no_dial_threshold SMALLINT(5) default '0',
+cid_group_id VARCHAR(20) default '---DISABLED---'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_lists (
@@ -2892,7 +2893,7 @@ index (call_date)
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_campaign_cid_areacodes (
-campaign_id VARCHAR(8) NOT NULL,
+campaign_id VARCHAR(20) NOT NULL,
 areacode VARCHAR(5) NOT NULL,
 outbound_cid VARCHAR(20),
 active ENUM('Y','N','') default '',
@@ -3998,6 +3999,14 @@ date_queued DATETIME,
 date_deleted DATETIME,
 index (date_deleted)
 ) ENGINE=MyISAM;
+
+CREATE TABLE vicidial_cid_groups (
+cid_group_id VARCHAR(20) PRIMARY KEY NOT NULL,
+cid_group_notes VARCHAR(255) default '',
+cid_group_type ENUM('AREACODE','STATE') default 'AREACODE',
+user_group VARCHAR(20) default '---ALL---'
+) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 
 ALTER TABLE vicidial_email_list MODIFY message text character set utf8;
 

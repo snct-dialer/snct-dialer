@@ -78,5 +78,16 @@ index (date_deleted)
 ) ENGINE=MyISAM;
 
 
+CREATE TABLE vicidial_cid_groups (
+cid_group_id VARCHAR(20) PRIMARY KEY NOT NULL,
+cid_group_notes VARCHAR(255) default '',
+cid_group_type ENUM('AREACODE','STATE') default 'AREACODE',
+user_group VARCHAR(20) default '---ALL---'
+) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE vicidial_campaign_cid_areacodes MODIFY campaign_id VARCHAR(20) NOT NULL;
+
+ALTER TABLE vicidial_campaigns ADD cid_group_id VARCHAR(20) default '---DISABLED---';
+
 UPDATE system_settings SET db_schema_version='1530',db_schema_update_date=NOW() where db_schema_version < 1530;
 

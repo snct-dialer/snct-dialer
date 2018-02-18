@@ -579,10 +579,11 @@
 # 180126-0855 - Added more agent api pause debug output
 # 180204-2304 - Added API dial_ingroup option to external_dial
 # 180210-0001 - Added flag for WebRTC webphone compatibility in iframe
+# 180215-1105 - Changes for CID Groups functionality
 #
 
-$version = '2.14-549c';
-$build = '180210-0001';
+$version = '2.14-550c';
+$build = '180215-1105';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -9908,7 +9909,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 			else
 				{var call_prefix = manual_dial_prefix;}
 
-			manDiaLonly_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=manDiaLonly&conf_exten=" + session_id + "&user=" + user + "&pass=" + pass + "&lead_id=" + document.vicidial_form.lead_id.value + "&phone_number=" + manDiaLonly_num + "&phone_code=" + document.vicidial_form.phone_code.value + "&campaign=" + campaign + "&ext_context=" + ext_context + "&dial_timeout=" + manual_dial_timeout + "&dial_prefix=" + call_prefix + "&campaign_cid=" + call_cid + "&omit_phone_code=" + omit_phone_code + "&usegroupalias=" + usegroupalias + "&account=" + active_group_alias + "&agent_dialed_number=" + dialed_number + "&agent_dialed_type=" + dialed_label + "&dial_method=" + dial_method + "&agent_log_id=" + agent_log_id + "&security=" + document.vicidial_form.security_phrase.value + "&qm_extension=" + qm_extension + "&old_CID=" + LastCallCID + "&cid_lock=" + cid_lock;
+			manDiaLonly_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=manDiaLonly&conf_exten=" + session_id + "&user=" + user + "&pass=" + pass + "&lead_id=" + document.vicidial_form.lead_id.value + "&phone_number=" + manDiaLonly_num + "&phone_code=" + document.vicidial_form.phone_code.value + "&campaign=" + campaign + "&ext_context=" + ext_context + "&dial_timeout=" + manual_dial_timeout + "&dial_prefix=" + call_prefix + "&campaign_cid=" + call_cid + "&omit_phone_code=" + omit_phone_code + "&usegroupalias=" + usegroupalias + "&account=" + active_group_alias + "&agent_dialed_number=" + dialed_number + "&agent_dialed_type=" + dialed_label + "&dial_method=" + dial_method + "&agent_log_id=" + agent_log_id + "&security=" + document.vicidial_form.security_phrase.value + "&qm_extension=" + qm_extension + "&old_CID=" + LastCallCID + "&cid_lock=" + cid_lock + "&state=" + encodeURIComponent(document.vicidial_form.state.value);
 			xmlhttp.open('POST', 'vdc_db_query.php'); 
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 			xmlhttp.send(manDiaLonly_query);
