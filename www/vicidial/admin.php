@@ -4378,12 +4378,13 @@ else
 # 180211-1126 - Added Outbound Lead Source Report
 # 180213-0010 - Added GDPR system and user settings
 # 180215-1318 - Added CID Groups admin screens
+# 180216-1332 - Fix for system summary screen, issue #1068
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-656a';
-$build = '180215-1318';
+$admin_version = '2.14-657a';
+$build = '180216-1332';
 
 
 $STARTtime = date("U");
@@ -41676,14 +41677,16 @@ if ($ADD==999990)
 	{
 	if ( (preg_match("/Front Page System Summary/",$LOGallowed_reports)) or (preg_match("/ALL REPORTS/",$LOGallowed_reports)) )
 		{
-		$stmt="SELECT closer_campaigns from vicidial_campaigns;";
+		$stmt="SELECT closer_campaigns from vicidial_campaigns $whereLOGallowed_campaignsSQL;";
+		if ($DB) {echo "|$stmt|\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$row=mysqli_fetch_row($rslt);
 		$closer_campaigns = preg_replace("/^ | -$/","",$row[0]);
 		$closer_campaigns = preg_replace("/ /","','",$closer_campaigns);
 		$closer_campaigns = "'$closer_campaigns'";
 
-		$stmt="SELECT status from vicidial_auto_calls where status NOT IN('XFER') and ( (call_type='IN' and campaign_id IN($closer_campaigns)) or (call_type='OUT') );";
+		$stmt="SELECT status from vicidial_auto_calls where status NOT IN('XFER') and ( (call_type='IN' and campaign_id IN($closer_campaigns)) or (call_type='OUT' $LOGallowed_campaignsSQL) );";
+		if ($DB) {echo "|$stmt|\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$active_calls=mysqli_num_rows($rslt);
 		$ringing_calls=0;
@@ -41696,42 +41699,48 @@ if ($ADD==999990)
 				}
 			}
 
-		$active_stmt="SELECT active from vicidial_users";
+		$active_stmt="SELECT active from vicidial_users $whereLOGadmin_viewable_groupsSQL";
+		if ($DB) {echo "|$active_stmt|\n";}
 		$active_rslt=mysql_to_mysqli($active_stmt, $link);
 		while ($active_row=mysqli_fetch_array($active_rslt)) 
 			{
 			$users[$active_row["active"]]++;
 			}
 
-		$active_stmt="SELECT active from vicidial_campaigns";
+		$active_stmt="SELECT active from vicidial_campaigns $whereLOGallowed_campaignsSQL";
+		if ($DB) {echo "|$active_stmt|\n";}
 		$active_rslt=mysql_to_mysqli($active_stmt, $link);
 		while ($active_row=mysqli_fetch_array($active_rslt)) 
 			{
 			$campaigns[$active_row["active"]]++;
 			}
 
-		$active_stmt="SELECT active from vicidial_lists";
+		$active_stmt="SELECT active from vicidial_lists $whereLOGallowed_campaignsSQL";
+		if ($DB) {echo "|$active_stmt|\n";}
 		$active_rslt=mysql_to_mysqli($active_stmt, $link);
 		while ($active_row=mysqli_fetch_array($active_rslt)) 
 			{
 			$lists[$active_row["active"]]++;
 			}
 
-		$active_stmt="SELECT did_active from vicidial_inbound_dids";
+		$active_stmt="SELECT did_active from vicidial_inbound_dids $whereLOGadmin_viewable_groupsSQL";
+		if ($DB) {echo "|$active_stmt|\n";}
 		$active_rslt=mysql_to_mysqli($active_stmt, $link);
 		while ($active_row=mysqli_fetch_array($active_rslt)) 
 			{
 			$dids[$active_row["did_active"]]++;
 			}
 
-		$active_stmt="SELECT active from vicidial_inbound_groups";
+		$active_stmt="SELECT active from vicidial_inbound_groups $whereLOGadmin_viewable_groupsSQL";
+		if ($DB) {echo "|$active_stmt|\n";}
 		$active_rslt=mysql_to_mysqli($active_stmt, $link);
 		while ($active_row=mysqli_fetch_array($active_rslt)) 
 			{
 			$ingroups[$active_row["active"]]++;
 			}
 
-		$stmt="SELECT extension,user,conf_exten,status,server_ip,UNIX_TIMESTAMP(last_call_time),UNIX_TIMESTAMP(last_call_finish),call_server_ip,campaign_id from vicidial_live_agents";
+		$stmt="SELECT extension,user,conf_exten,status,server_ip,UNIX_TIMESTAMP(last_call_time),UNIX_TIMESTAMP(last_call_finish),call_server_ip,campaign_id from vicidial_live_agents $whereLOGallowed_campaignsSQL";
+		if ($DB) {echo "|$stmt|\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$agent_incall=0; $agent_total=0;
 		while($row=mysqli_fetch_array($rslt)) 
@@ -41801,6 +41810,7 @@ if ($ADD==999990)
 	
 		// New voicemailbox code
 		$stmt="(SELECT voicemail_id,count(*),messages,old_messages,'vm','vm' from vicidial_voicemail where on_login_report='Y' $LOGadmin_viewable_groupsSQL group by voicemail_id) UNION (SELECT voicemail_id,count(*),messages,old_messages,extension,server_ip from phones where on_login_report='Y' $LOGadmin_viewable_groupsSQL group by voicemail_id) order by voicemail_id;";
+		if ($DB) {echo "|$stmt|\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$vm_rows=mysqli_num_rows($rslt);
 		if ($vm_rows>0) 
@@ -41844,7 +41854,8 @@ if ($ADD==999990)
 		$total_calls=0;
 		$total_inbound=0;
 		$total_outbound=0;
-		$stmt="SELECT stats_type,sum(total_calls) from vicidial_daily_max_stats where campaign_id!='' and stats_flag='OPEN' and stats_date='$today' group by stats_type;";
+		$stmt="SELECT stats_type,sum(total_calls) from vicidial_daily_max_stats where campaign_id!='' and stats_flag='OPEN' and stats_date='$today' $LOGallowed_campaignsSQL group by stats_type;";
+		if ($DB) {echo "|$stmt|\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$rows_to_print = mysqli_num_rows($rslt);
 		if ($rows_to_print > 0) 
@@ -41857,7 +41868,8 @@ if ($ADD==999990)
 				}
 			}
 
-		$stmt="SELECT * from vicidial_daily_max_stats where stats_date='$today' and stats_flag='OPEN' and stats_type='TOTAL' order by stats_date, campaign_id asc";
+		$stmt="SELECT * from vicidial_daily_max_stats where stats_date='$today' and stats_flag='OPEN' and stats_type='TOTAL' $LOGallowed_campaignsSQL order by stats_date, campaign_id asc";
+		if ($DB) {echo "|$stmt|\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 		echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 		echo "<tr>";
@@ -41895,7 +41907,8 @@ if ($ADD==999990)
 		$total_calls=0;
 		$total_inbound=0;
 		$total_outbound=0;
-		$stmt="SELECT stats_type,sum(total_calls) from vicidial_daily_max_stats where campaign_id!='' and stats_flag='CLOSED' and stats_date='$yesterday' group by stats_type;";
+		$stmt="SELECT stats_type,sum(total_calls) from vicidial_daily_max_stats where campaign_id!='' and stats_flag='CLOSED' and stats_date='$yesterday' $LOGallowed_campaignsSQL group by stats_type;";
+		if ($DB) {echo "|$stmt|\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$rows_to_print = mysqli_num_rows($rslt);
 		if ($rows_to_print > 0) 
@@ -41920,7 +41933,8 @@ if ($ADD==999990)
 		echo "<td><font size=1 color=white><B>&nbsp; "._QXZ("Total Outbound Calls")." &nbsp;</B></font></td>";
 		echo "<td><font size=1 color=white><B>&nbsp; "._QXZ("Maximum Agents")." &nbsp;</B></font></td>";
 
-		$stmt="SELECT * from vicidial_daily_max_stats where stats_date='$yesterday' and stats_type='TOTAL' order by stats_date, campaign_id asc";
+		$stmt="SELECT * from vicidial_daily_max_stats where stats_date='$yesterday' and stats_type='TOTAL' $LOGallowed_campaignsSQL order by stats_date, campaign_id asc";
+		if ($DB) {echo "|$stmt|\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 		if (mysqli_num_rows($rslt)>0) 
 			{

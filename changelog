@@ -151,9 +151,12 @@
       www/vicidial/admin_header.php,
       www/vicidial/admin_listloader_fourth_gen.php,
       www/vicidial/help.php: Added CID Group functionality.
-    - extras/mysql_update/mysql-1530.sql: Add changes from Rev. 2916.
+    - extras/mysql_update/mysql-1530.sql: Add changes from Rev. 2917.
   * Add upstream Rev. 2918:
     - bin/AST_VDadapt.pl: Select inbound allowed campaigns.
+  * Add upstream Rev. 2919:
+    - www/agc/vicidial.php,
+      www/vicidial/admin.php: Some fixes (issue #1068).
 
 2.25.23 stable
   [Jörg Frings-Fürst]

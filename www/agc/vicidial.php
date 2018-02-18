@@ -13403,6 +13403,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 				hideDiv('DispoButtonHideC');
 				document.getElementById("debugbottomspan").innerHTML =  "<?php echo _QXZ("Disposition set twice: "); ?>" + document.vicidial_form.lead_id.value + "|" + DispoChoice + "\n";
 				button_click_log = button_click_log + "" + SQLdate + "-----dispo_set_twice---" + document.vicidial_form.lead_id.value + " " + DispoChoice + "|";
+				agent_events('dispo_set_twice', '', aec);   aec++;
 				}
 			else
 				{
