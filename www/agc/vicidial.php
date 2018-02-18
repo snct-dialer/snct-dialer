@@ -580,10 +580,11 @@
 # 180204-2304 - Added API dial_ingroup option to external_dial
 # 180210-0001 - Added flag for WebRTC webphone compatibility in iframe
 # 180215-1105 - Changes for CID Groups functionality
+# 180216-1349 - Fix for callback alt dial isssue #1066
 #
 
-$version = '2.14-550c';
-$build = '180215-1105';
+$version = '2.14-551c';
+$build = '180216-1349';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -7292,6 +7293,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							var CB_callback_time = call_array[8];
 							var CB_comments = call_array[9];
 							var CB_dialable = call_array[10];
+							var CB_alt_phone = call_array[11];
 							var CB_comments_ten = CB_comments;
 							if (CB_comments_ten.length > 10)
 								{
@@ -7300,7 +7302,10 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								}
 							if (CB_dialable > 0)
 								{
-								CB_HTML = CB_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</font></td><td align=\"right\"><font class=\"log_text\">" + CB_callback_time + "</td><td align=\"right\"><font class=\"log_text\">" + CB_phone + "</td><td align=\"right\"><font class=\"log_text\">" + CB_comments_ten + " - <a href=\"#\" onclick=\"VieWLeaDInfO('" + CB_lead_id + "','" + CB_id + "');return false;\"><?php echo _QXZ("INFO"); ?></a></font></td><td align=\"right\"><font class=\"log_text\">" + CB_name + "</font></td><td align=\"right\"><font class=\"log_text\">" + CB_status + "</font></td><td align=\"right\"><font class=\"log_text\">" + CB_campaign + "</font></td><td align=\"right\"><font class=\"log_text\">" + CB_lastcall_time + "&nbsp;</font></td><td align=\"right\"><font class=\"log_text\"><a href=\"#\" onclick=\"new_callback_call('" + CB_id + "','" + CB_lead_id + "','MAIN');return false;\"><?php echo _QXZ("DIAL"); ?></a>&nbsp;</font></td><td align=\"right\"><font class=\"log_text\"><a href=\"#\" onclick=\"new_callback_call('" + CB_id + "','" + CB_lead_id + "','ALT');return false;\"><?php echo _QXZ("ALT"); ?></a>&nbsp;</font></td></tr>";
+								var alt_link = "<a href=\"#\" onclick=\"new_callback_call('" + CB_id + "','" + CB_lead_id + "','ALT');return false;\"><?php echo _QXZ("ALT"); ?></a>&nbsp;";
+								if (CB_alt_phone.length < 3)
+									{alt_link = "<?php echo _QXZ("ALT"); ?>&nbsp;";}
+								CB_HTML = CB_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</font></td><td align=\"right\"><font class=\"log_text\">" + CB_callback_time + "</td><td align=\"right\"><font class=\"log_text\">" + CB_phone + "</td><td align=\"right\"><font class=\"log_text\">" + CB_comments_ten + " - <a href=\"#\" onclick=\"VieWLeaDInfO('" + CB_lead_id + "','" + CB_id + "');return false;\"><?php echo _QXZ("INFO"); ?></a></font></td><td align=\"right\"><font class=\"log_text\">" + CB_name + "</font></td><td align=\"right\"><font class=\"log_text\">" + CB_status + "</font></td><td align=\"right\"><font class=\"log_text\">" + CB_campaign + "</font></td><td align=\"right\"><font class=\"log_text\">" + CB_lastcall_time + "&nbsp;</font></td><td align=\"right\"><font class=\"log_text\"><a href=\"#\" onclick=\"new_callback_call('" + CB_id + "','" + CB_lead_id + "','MAIN');return false;\"><?php echo _QXZ("DIAL"); ?></a>&nbsp;</font></td><td align=\"right\"><font class=\"log_text\">" + alt_link + "</font></td></tr>";
 								}
 							else
 								{

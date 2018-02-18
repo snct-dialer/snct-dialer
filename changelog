@@ -157,6 +157,9 @@
   * Add upstream Rev. 2919:
     - www/agc/vicidial.php,
       www/vicidial/admin.php: Some fixes (issue #1068).
+  * Add upstream Rev. 2920:
+    - www/agc/vdc_db_query.php,
+      www/agc/vicidial.php: Fix for callback alt dial isssue #1066.
 
 2.25.23 stable
   [Jörg Frings-Fürst]

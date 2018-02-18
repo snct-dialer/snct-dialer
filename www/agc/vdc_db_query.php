@@ -449,10 +449,11 @@
 # 180210-0707 - Fix for callback list issue #1062
 # 180212-0654 - Added callback_datetime as dispo call url variable
 # 180214-1553 - Added CID Group functionality
+# 180216-1350 - Fix for callback alt dial isssue #1066
 #
 
-$version = '2.14-343';
-$build = '180214-1553';
+$version = '2.14-344';
+$build = '180216-1350';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=709;
@@ -16132,13 +16133,15 @@ if ($ACTION == 'CalLBacKLisT')
 	$loop_count=0;
 	while ($callbacks_count>$loop_count)
 		{
-		$stmt = "SELECT first_name,last_name,phone_number,gmt_offset_now,state,list_id from vicidial_list where lead_id='$lead_id[$loop_count]';";
+		$alt_phone='';
+		$stmt = "SELECT first_name,last_name,phone_number,gmt_offset_now,state,list_id,alt_phone from vicidial_list where lead_id='$lead_id[$loop_count]';";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00179',$user,$server_ip,$session_name,$one_mysql_log);}
 		$row=mysqli_fetch_row($rslt);
-
 		$PHONEdialable=1;
+		$alt_phone =	$row[6];
+
 		if ($callback_list_calltime == 'ENABLED')
 			{
 			$state =		$row[4];
@@ -16180,7 +16183,7 @@ if ($ACTION == 'CalLBacKLisT')
 				$PHONEdialable = dialable_gmt($DB,$link,$local_call_time,$row[3],$row[4]);
 				}
 			}
-		$CBoutput = "$row[0]-!T-$row[1]-!T-$row[2]-!T-$callback_id[$loop_count]-!T-$lead_id[$loop_count]-!T-$campaign_id[$loop_count]-!T-"._QXZ("$status[$loop_count]")."-!T-$entry_time[$loop_count]-!T-$callback_time[$loop_count]-!T-$comments[$loop_count]-!T-$PHONEdialable";
+		$CBoutput = "$row[0]-!T-$row[1]-!T-$row[2]-!T-$callback_id[$loop_count]-!T-$lead_id[$loop_count]-!T-$campaign_id[$loop_count]-!T-"._QXZ("$status[$loop_count]")."-!T-$entry_time[$loop_count]-!T-$callback_time[$loop_count]-!T-$comments[$loop_count]-!T-$PHONEdialable-!T-$alt_phone";
 		echo "$CBoutput\n";
 		$loop_count++;
 		}
