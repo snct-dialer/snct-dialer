@@ -1,7 +1,7 @@
 <?php
 # api.php
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed as an API(Application Programming Interface) to allow
 # other programs to interact with the VICIDIAL Agent screen
@@ -91,10 +91,12 @@
 # 170220-1303 - Added switch_lead function
 # 170527-2250 - Fix for rare inbound logging issue #1017, Added variable filtering
 # 170815-1314 - Added HTTP error code 418
+# 180124-1608 - Added calls_in_queue_count function
+# 180204-2350 - Added dial_ingroup external_dial option
 #
 
-$version = '2.14-57';
-$build = '170815-1314';
+$version = '2.14-59';
+$build = '180204-2350';
 
 $startMS = microtime();
 
@@ -233,6 +235,8 @@ if (isset($_GET["qm_dispo_code"]))			{$qm_dispo_code=$_GET["qm_dispo_code"];}
 	elseif (isset($_POST["qm_dispo_code"]))	{$qm_dispo_code=$_POST["qm_dispo_code"];}
 if (isset($_GET["agent_debug"]))			{$agent_debug=$_GET["agent_debug"];}
 	elseif (isset($_POST["agent_debug"]))	{$agent_debug=$_POST["agent_debug"];}
+if (isset($_GET["dial_ingroup"]))			{$dial_ingroup=$_GET["dial_ingroup"];}
+	elseif (isset($_POST["dial_ingroup"]))	{$dial_ingroup=$_POST["dial_ingroup"];}
 
 
 header ("Content-type: text/html; charset=utf-8");
@@ -356,6 +360,7 @@ if ($non_latin < 1)
 	$postal_code = preg_replace("/[^- \.\_0-9a-zA-Z]/","",$postal_code);
 	$agent_debug = preg_replace("/[^- \.\:\|\_0-9a-zA-Z]/","",$agent_debug);
 	$status = preg_replace("/[^-\_0-9a-zA-Z]/","",$status);
+	$dial_ingroup = preg_replace("/[^-\_0-9a-zA-Z]/","",$dial_ingroup);
 	}
 else
 	{
@@ -1617,7 +1622,19 @@ if ($function == 'external_dial')
 				{
 				$agent_ready=1;
 				}
-			if ($agent_ready > 0)
+			$stmt = "select count(*) from vicidial_inbound_groups where group_id='$dial_ingroup';";
+			if ($DB) {echo "$stmt\n";}
+			$rslt=mysql_to_mysqli($stmt, $link);
+			$row=mysqli_fetch_row($rslt);
+			if ($row[0] < 1)
+				{
+				$result = _QXZ("ERROR");
+				$result_reason = _QXZ("defined dial_ingroup not found");
+				echo "$result: $result_reason - $dial_ingroup\n";
+				api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+				$dial_ingroup='';
+				}
+			if ( ($agent_ready > 0) or (strlen($dial_ingroup)>0) )
 				{
 				$stmt = "select count(*) from vicidial_users where user='$agent_user' and agentcall_manual='1';";
 				if ($DB) {echo "$stmt\n";}
@@ -1828,7 +1845,7 @@ if ($function == 'external_dial')
 					### If no errors, run the update to place the call ###
 					if ($api_manual_dial=='STANDARD')
 						{
-						$stmt="UPDATE vicidial_live_agents set external_dial='$value!$phone_code!$search!$preview!$focus!$vendor_id!$epoch!$dial_prefix!$group_alias!$caller_id_number!$vtiger_callback_id!$lead_id!$alt_dial' where user='$agent_user';";
+						$stmt="UPDATE vicidial_live_agents set external_dial='$value!$phone_code!$search!$preview!$focus!$vendor_id!$epoch!$dial_prefix!$group_alias!$caller_id_number!$vtiger_callback_id!$lead_id!$alt_dial!$dial_ingroup' where user='$agent_user';";
 						$success=1;
 						}
 					else
@@ -1839,7 +1856,7 @@ if ($function == 'external_dial')
 						$row=mysqli_fetch_row($rslt);
 						if ($row[0] < 1)
 							{
-							$stmt="INSERT INTO vicidial_manual_dial_queue set user='$agent_user',phone_number='$value',entry_time=NOW(),status='READY',external_dial='$value!$phone_code!$search!$preview!$focus!$vendor_id!$epoch!$dial_prefix!$group_alias!$caller_id_number!$vtiger_callback_id!$lead_id!$alt_dial';";
+							$stmt="INSERT INTO vicidial_manual_dial_queue set user='$agent_user',phone_number='$value',entry_time=NOW(),status='READY',external_dial='$value!$phone_code!$search!$preview!$focus!$vendor_id!$epoch!$dial_prefix!$group_alias!$caller_id_number!$vtiger_callback_id!$lead_id!$alt_dial!$dial_ingroup';";
 							$success=1;
 							}
 						else
@@ -4051,6 +4068,101 @@ if ($function == 'pause_code')
 ### END - pause_code
 ################################################################################
 
+
+
+
+
+################################################################################
+### BEGIN - calls_in_queue_count - display a count of the calls waiting in queue for the specific agent
+################################################################################
+if ($function == 'calls_in_queue_count')
+	{
+	if ( ($value!='DISPLAY') or ( (strlen($agent_user)<1) and (strlen($alt_user)<2) ) )
+		{
+		$result = _QXZ("ERROR");
+		$result_reason = _QXZ("calls_in_queue_count not valid");
+		echo "$result: $result_reason - $value|$agent_user\n";
+		api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+		}
+	else
+		{
+		if ( (!preg_match("/ $function /",$VUapi_allowed_functions)) and (!preg_match("/ALL_FUNCTIONS/",$VUapi_allowed_functions)) )
+			{
+			$result = _QXZ("ERROR");
+			$result_reason = _QXZ("auth USER DOES NOT HAVE PERMISSION TO USE THIS FUNCTION");
+			echo "$result: $result_reason - $value|$user|$function|$VUuser_group\n";
+			api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+			exit;
+			}
+		if (strlen($alt_user)>1)
+			{
+			$stmt = "select count(*) from vicidial_users where custom_three='$alt_user';";
+			if ($DB) {echo "$stmt\n";}
+			$rslt=mysql_to_mysqli($stmt, $link);
+			$row=mysqli_fetch_row($rslt);
+			if ($row[0] > 0)
+				{
+				$stmt = "select user from vicidial_users where custom_three='$alt_user' order by user;";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+				$row=mysqli_fetch_row($rslt);
+				$agent_user = $row[0];
+				}
+			else
+				{
+				$result = _QXZ("ERROR");
+				$result_reason = _QXZ("no user found");
+				echo "$result: $result_reason - $alt_user\n";
+				api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+				}
+			}
+		$stmt = "SELECT count(*) from vicidial_live_agents where user='$agent_user';";
+		if ($DB) {echo "$stmt\n";}
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$row=mysqli_fetch_row($rslt);
+		if ($row[0] > 0)
+			{
+			$ADsql='';
+			### grab the status, campaign and in-group details for this logged-in agent
+			$stmt="SELECT status,campaign_id,closer_campaigns from vicidial_live_agents where user='$agent_user';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_to_mysqli($stmt, $link);
+			$row=mysqli_fetch_row($rslt);
+			$Alogin=$row[0];
+			$Acampaign=$row[1];
+			$AccampSQL=$row[2];
+			$AccampSQL = preg_replace('/\s\-/','', $AccampSQL);
+			$AccampSQL = preg_replace('/\s/',"','", $AccampSQL);
+			if (preg_match('/AGENTDIRECT/i', $AccampSQL))
+				{
+				$AccampSQL = preg_replace('/AGENTDIRECT/i','', $AccampSQL);
+				$ADsql = "or ( (campaign_id LIKE \"%AGENTDIRECT%\") and (agent_only='$agent_user') )";
+				}
+
+			### grab the number of calls waiting in queue that could be routed to this agent
+			$stmt="SELECT count(*) from vicidial_auto_calls where status IN('LIVE') and ( (campaign_id='$Acampaign') or (campaign_id IN('$AccampSQL')) $ADsql);";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_to_mysqli($stmt, $link);
+			$row=mysqli_fetch_row($rslt);
+			$calls_in_queue_count=$row[0];
+
+			$result = _QXZ("SUCCESS");
+			$result_reason = _QXZ("SUCCESS: calls_in_queue_count") . " - " . $calls_in_queue_count;
+			echo "$result_reason";
+			api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+			}
+		else
+			{
+			$result = _QXZ("ERROR");
+			$result_reason = _QXZ("agent_user is not logged in");
+			echo "$result: $result_reason - $agent_user\n";
+			api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+			}
+		}
+	}
+################################################################################
+### END - calls_in_queue_count
+################################################################################
 
 
 

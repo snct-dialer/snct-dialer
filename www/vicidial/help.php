@@ -1,7 +1,7 @@
 <?php
 # help.php - VICIDIAL administration page
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 # 
 
 # CHANGELOG:
@@ -146,6 +146,14 @@
 # 171124-1353 = Added campaigns-manual_auto_next_options entry
 # 171130-0048 - Added agent_screen_time_display entry
 # 171224-1027 - Added lists-default_xfer_group entry
+# 180108-2115 - Added campaigns-next_dial_my_callbacks entry
+# 180111-1547 - Added settings-anyone_callback_inactive_lists entry
+# 180130-0000 - Added GDPR entries for user and system settings
+# 180130-2303 - Added inbound_no_agents_no_dial entries
+# 180204-0213 - Added inbound_groups-icbq_expiration_hours and closed-time entries
+# 180211-1119 - Added source_vlc_status_report
+# 180214-0042 - Added cid_groups
+# 180217-0810 - Added pause_max_dispo
 #
 
 require("dbconnect_mysqli.php");
@@ -631,6 +639,13 @@ if ($SScustom_fields_enabled > 0)
 <BR>
 <B><?php echo _QXZ("Modify Leads"); ?> -</B><?php echo _QXZ("This option if set to 1 allows the user to modify leads in the admin section lead search results page."); ?>
 
+<BR>
+<A NAME="users-export_gdpr_leads">
+<BR>
+<B><?php echo _QXZ("GDPR-Compliant Export Delete Leads"); ?> -</B><?php echo _QXZ("This setting if enabled will allow for the complete download and/or deletion of all customer data for a particular lead, in compliance with the General Data Protection Regulation (GDPR). Default is 0 for disabled.  A setting of 1 will enable downloading data, and a setting of 2 will enable not just downloading, but also deletion of data, including any recordings. "); ?>
+<BR>
+<B><?php echo _QXZ("You are not allowed to set this user setting higher than the current system setting. "); ?></B>
+
 <?php
 if ($SSallow_emails>0)
 	{
@@ -1111,6 +1126,16 @@ if ($SSoutbound_autodial_active > 0)
 	<B><?php echo _QXZ("Inbound Queue No Dial"); ?> -</B><?php echo _QXZ("This feature if set to ENABLED allows you to prevent outbound auto-dialing of this campaign if there are any inbound calls waiting in queue that are part of the allowed inbound groups set in this campaign. Setting this to ALL_SERVERS will change the algorithm to calculate all inbound calls as active calls on this server even if they are on another server which will reduce the chance of placing unnecessary outbound calls if you have calls coming in on another server. Default is DISABLED.") . ' ' . _QXZ("If the selected option includes CHAT, then no outbound auto-dialing will take place while an inbound customer chat is waiting."); ?>
 
 	<BR>
+	<A NAME="campaigns-inbound_no_agents_no_dial_container">
+	<BR>
+	<B><?php echo _QXZ("Inbound No-Agents No-Dial"); ?> -</B><?php echo _QXZ("If set to something other than ---DISABLED---, the selected INGROUP_LIST type of Settings Container will be used to determine if any agents are ready and waiting for phone calls from at least one of the listed In-Groups. If there are less inbound agents available than the Threshold setting below, then no outbound calls will be placed for this campaign. Default is DISABLED."); ?>
+
+	<BR>
+	<A NAME="campaigns-inbound_no_agents_no_dial_threshold">
+	<BR>
+	<B><?php echo _QXZ("Inbound No-Agents No-Dial Threshold"); ?> -</B><?php echo _QXZ("If the Inbound No-Agents No-Dial option is enabled above, then this setting will be used to determine if the campaign will be allowed to place outbound auto-dial calls, if this number is greater than the number of inbound agents available. Default is 0, for disabled."); ?>
+
+	<BR>
 	<A NAME="campaigns-auto_alt_dial">
 	<BR>
 	<B><?php echo _QXZ("Auto Alt-Number Dialing"); ?> -</B><?php echo _QXZ("This setting is used to automatically dial alternate number fields while dialing in the RATIO and ADAPT dial methods when there is no contact at the main phone number for a lead, the statuses to trigger alt dial can be set in the Auto Alt Dial page. This setting is not used by the MANUAL dial method. EXTENDED alternate numbers are numbers loaded into the system outside of the standard lead information screen. Using EXTENDED you can have hundreds of phone numbers for a single customer record. Using MULTI_LEAD allows you to use a separate lead for each number on a customer account that all share a common vendor_lead_code, and the type of phone number for each is defined with a label in the Owner field. This option will disable some options on the Modify Campaign screen and show a link to the Multi-Alt Settings page which allows you to set which phone number types, defined by the label of each lead, will be dialed and in what order. This will create a special lead filter and will alter the Rank field of all of the leads inside the lists set to this campaign in order to call them in the order you have specified."); ?>
@@ -1439,12 +1464,22 @@ if ($SSoutbound_autodial_active > 0)
 <BR>
 <A NAME="campaigns-campaign_cid">
 <BR>
-<B><?php echo _QXZ("Campaign CallerID"); ?> -</B><?php echo _QXZ("This field allows for the sending of a custom callerid number on the outbound calls. This is the number that would show up on the callerid of the person you are calling. The default is UNKNOWN. If you are using T1 or E1s to dial out this option is only available if you are using PRIs - ISDN T1s or E1s - that have the custom callerid feature turned on, this will not work with Robbed-bit service -RBS- circuits. This will also work through most VOIP -SIP or IAX trunks- providers that allow dynamic outbound callerID. The custom callerID only applies to calls placed for the campaign directly, any 3rd party calls or transfers will not send the custom callerID. NOTE: Sometimes putting UNKNOWN or PRIVATE in the field will yield the sending of your default callerID number by your carrier with the calls. You may want to test this and put 0000000000 in the callerid field instead if you do not want to send you CallerID."); ?>
+<B><?php echo _QXZ("Campaign CallerID"); ?> -</B><?php echo _QXZ("This field allows for the sending of a custom callerid number on the outbound calls. This is the number that would show up on the callerid of the person you are calling. The default is UNKNOWN. If you are using T1 or E1s to dial out this option is only available if you are using PRIs - ISDN T1s or E1s - that have the custom callerid feature turned on, this will not work with Robbed-bit service -RBS- circuits. This will also work through most VOIP -SIP or IAX trunks- providers that allow dynamic outbound callerID. The custom callerID only applies to calls placed for the campaign directly, any 3rd party calls or transfers will not send the custom callerID. NOTE: Sometimes putting UNKNOWN or PRIVATE in the field will yield the sending of your default callerID number by your carrier with the calls. You may want to test this and put 0000000000 in the callerid field instead if you do not want to send you CallerID. For more information on CallerID priority, see the CALLERID PRIORITY entry a few entries below this one."); ?>
 
 <BR>
 <A NAME="campaigns-use_custom_cid">
 <BR>
-<B><?php echo _QXZ("Custom CallerID"); ?> -</B><?php echo _QXZ("When set to Y, this option allows you to use the security_phrase field in the list table as the CallerID to send out when placing for each specific lead. If this field has no CID in it then the Campaign CallerID defined above will be used instead. This option will disable the list CallerID Override if there is a CID present in the security_phrase field. Default is N. When set to AREACODE you have the ability to go into the AC-CID submenu and define multiple callerids to be used per areacode. For MANUAL and INBOUND_MAN dial methods only, you can use one of the USER_CUSTOM selections to take a CallerID number put into one of the User Custom fields in the User Modify screen and use that for outbound manual dial calls placed by an agent."); ?>
+<B><?php echo _QXZ("Custom CallerID"); ?> -</B><?php echo _QXZ("When set to Y, this option allows you to use the security_phrase field in the list table as the CallerID to send out when placing for each specific lead. If this field has no CID in it then the Campaign CallerID defined above will be used instead. This option will disable the list CallerID Override if there is a CID present in the security_phrase field. Default is N. When set to AREACODE you have the ability to go into the AC-CID submenu and define multiple callerids to be used per areacode. For MANUAL and INBOUND_MAN dial methods only, you can use one of the USER_CUSTOM selections to take a CallerID number put into one of the User Custom fields in the User Modify screen and use that for outbound manual dial calls placed by an agent. For more information on CallerID priority, see the CALLERID PRIORITY entry a couple entries below this one."); ?>
+
+<BR>
+<A NAME="campaigns-cid_group_id">
+<BR>
+<B><?php echo _QXZ("CID Group"); ?> -</B><?php echo _QXZ("If set to something other than ---DISABLED---, the selected CID Group will override all other campaign CID settings above and will use the state or areacode based CIDs that are defined in the CID Group. Default is ---DISABLED---. For more information on CallerID priority, see the CALLERID PRIORITY entry below this one."); ?>
+
+<BR>
+<A NAME="campaigns-cid_priority">
+<BR>
+<B><?php echo _QXZ("CALLERID PRIORITY"); ?> -</B><?php echo _QXZ("If all of the CallerID options are enabled, this is the priority in which each type of CallerID will be used, 1 is top priority - <BR>1 - List CallerID Override <BR>2 - CID Group entry <BR>3 - AC-CID AREACODE entry <BR>4 - Custom CallerID, Security Phrase <BR>5 - USER_CUSTOM CallerID <BR>6 - Campaign CID <BR>"); ?>
 
 <BR>
 <A NAME="campaigns-campaign_rec_exten">
@@ -1687,6 +1722,11 @@ if ($SSoutbound_autodial_active > 0)
 <B><?php echo _QXZ("Scheduled Callbacks Useronly Move Minutes"); ?> -</B><?php echo _QXZ("This option if set to a number greater than 0, will change all USERONLY Scheduled Callbacks that are X minutes after their callback time to ANYONE callbacks. This process runs every minute. Default is 0 for disabled."); ?>
 
 <BR>
+<A NAME="campaigns-next_dial_my_callbacks">
+<BR>
+<B><?php echo _QXZ("Next-Dial My Callbacks"); ?> -</B><?php echo _QXZ("This option only works for MANUAL and INBOUND_MAN dial methods, and also only if No Hopper Dialing is enabled. This feature will look for Scheduled Callbacks that have triggered for the agent and dial them next when the agent clicks on the Dial Next Number button on their agent screen. Default is DISABLED."); ?>
+
+<BR>
 <A NAME="campaigns-wrapup_seconds">
 <BR>
 <B><?php echo _QXZ("Wrap Up Seconds"); ?> -</B><?php echo _QXZ("The number of seconds to force an agent to wait before allowing them to receive or dial another call. The timer begins as soon as an agent hangs up on their customer - or in the case of alternate number dialing when the agent finishes the lead - Default is 0 seconds. If the timer runs out before the agent has dispositioned the call, the agent still will NOT move on to the next call until they select a disposition."); ?>
@@ -1745,6 +1785,11 @@ if ($SSoutbound_autodial_active > 0)
 <A NAME="campaigns-pause_max">
 <BR>
 <B><?php echo _QXZ("Agent Pause Max Seconds"); ?> -</B><?php echo _QXZ("If this is set to greater than 0, and the agent has not gone out of PAUSED status in this number of seconds, the agent will automatically be logged out of the agent screen. Default is 0 for disabled."); ?>
+
+<BR>
+<A NAME="campaigns-pause_max_dispo">
+<BR>
+<B><?php echo _QXZ("Agent Pause Max Status"); ?> -</B><?php echo _QXZ("If Agent Pause Max Seconds is enabled, this is the status set for the call when the agent has not selected a status past the number of seconds set above. This situation can happen when manual alt dial is enabled and the agent has not finished the lead they are on. Default is PAUSMX."); ?>
 
 <BR>
 <A NAME="campaigns-ready_max_logout">
@@ -2479,6 +2524,11 @@ if ($SSqc_features_active > 0)
 <B><?php echo _QXZ("Admin User Group"); ?> -</B><?php echo _QXZ("This is the administrative user group for this inbound group, this allows admin viewing of this in-group restricted by user group. Default is --ALL-- which allows any admin user to view this in-group."); ?>
 
 <BR>
+<A NAME="inbound_groups-callback_queue_calls">
+<BR>
+<B><?php echo _QXZ("Callback Queue Calls"); ?> -</B><?php echo _QXZ("This will only show up if there are LIVE inbound callback queue calls waiting to be called back by agents when their turn arrives."); ?>
+
+<BR>
 <A NAME="inbound_groups-group_calldate">
 <BR>
 <B><?php echo _QXZ("In-Group Calldate"); ?> -</B><?php echo _QXZ("This is the last date and time that a call was directed to this inbound group."); ?>
@@ -2667,7 +2717,7 @@ if ($SSqc_features_active > 0)
 <BR>
 <A NAME="inbound_groups-no_agent_no_queue">
 <BR>
-<B><?php echo _QXZ("No Agents No Queueing"); ?> -</B><?php echo _QXZ("If this field is set to Y or NO_PAUSED then no calls will be put into the queue for this in-group if there are no agents logged in and the calls will go to the No Agent No Queue Action. The NO_PAUSED option will also not send the callers into the queue if there are only paused agents in the in-group. Default is N. In an AGENTDIRECT in-group, setting this to AGENTVMAIL will select the User voicemail ID to use. You can also put AGENTEXT in this field if it is set to EXTENSION and the system will look up the user custom five field and send the call to that dialplan number. If set to N, the calls will queue up, even if there are no agents logged in and set to take calls from this in-group."); ?>
+<B><?php echo _QXZ("No Agents No Queueing"); ?> -</B><?php echo _QXZ("If this field is set to Y, NO_READY or NO_PAUSED then no calls will be put into the queue for this in-group if there are no agents logged in and the calls will go to the No Agent No Queue Action. The NO_PAUSED option will also not send the callers into the queue if there are only paused agents in the in-group. The NO_READY option will also not send the callers into the queue if there are no agents ready to take the call in the in-group. Default is N. In an AGENTDIRECT in-group, setting this to AGENTVMAIL will select the User voicemail ID to use. You can also put AGENTEXT in this field if it is set to EXTENSION and the system will look up the user custom five field and send the call to that dialplan number. If set to N, the calls will queue up, even if there are no agents logged in and set to take calls from this in-group."); ?>
 
 <BR>
 <A NAME="inbound_groups-no_agent_action">
@@ -2782,7 +2832,7 @@ if ($SSqc_features_active > 0)
 <BR>
 <A NAME="inbound_groups-wait_time_option">
 <BR>
-<B><?php echo _QXZ("Wait Time Option"); ?> -</B><?php echo _QXZ("This allows you to give customers options to leave the queue if their wait time is over the amount of seconds specified below. Default is NONE. If one of the PRESS_ options is selected, it will play the Press Filename defined below and give the customer the option to press 1 on their phone to leave the queue and run the selected option. The PRESS_STAY option will send the customer back to the queue without loosing their place in line."); ?>
+<B><?php echo _QXZ("Wait Time Option"); ?> -</B><?php echo _QXZ("This allows you to give customers options to leave the queue if their wait time is over the amount of seconds specified below. Default is NONE. If one of the PRESS_ options is selected, it will play the Press Filename defined below and give the customer the option to press 1 on their phone to leave the queue and run the selected option. The PRESS_STAY option will send the customer back to the queue without loosing their place in line. The PRESS_CALLBACK_QUEUE option will preserve the caller place in line and will call the customer back when their place is the next one to go to an agent, this inbound callback queue entry will last until the call is placed back to the customer or as long as the Callback Queue Expire Hours setting below."); ?>
 
 <BR>
 <A NAME="inbound_groups-wait_time_second_option">
@@ -2857,7 +2907,7 @@ if ($SSqc_features_active > 0)
 <BR>
 <A NAME="inbound_groups-hold_time_option">
 <BR>
-<B><?php echo _QXZ("Estimated Hold Time Option"); ?> -</B><?php echo _QXZ("This allows you to specify the routing of the call if the estimated hold time is over the amount of seconds specified below. Default is NONE. If one of the PRESS_ options is selected, it will play the Press Filename defined below and give the customer the option to press 1 on their phone to leave the queue and run the selected option."); ?>
+<B><?php echo _QXZ("Estimated Hold Time Option"); ?> -</B><?php echo _QXZ("This allows you to specify the routing of the call if the estimated hold time is over the amount of seconds specified below. Default is NONE. If one of the PRESS_ options is selected, it will play the Press Filename defined below and give the customer the option to press 1 on their phone to leave the queue and run the selected option. The PRESS_CALLBACK_QUEUE option will preserve the caller place in line and will call the customer back when their place is the next one to go to an agent, this inbound callback queue entry will last until the call is placed back to the customer or as long as the Callback Queue Expire Hours setting below."); ?>
 
 <BR>
 <A NAME="inbound_groups-hold_time_second_option">
@@ -2928,6 +2978,71 @@ if ($SSqc_features_active > 0)
 <A NAME="inbound_groups-hold_time_option_callback_list_id">
 <BR>
 <B><?php echo _QXZ("Hold Time Option Callback List ID"); ?> -</B><?php echo _QXZ("If Hold Time Option is set to CALLERID_CALLBACK, this is the List ID the call is added to as a new lead if the estimated hold time exceeds the Hold Time Option Seconds."); ?>
+
+<BR>
+<A NAME="inbound_groups-icbq_expiration_hours">
+<BR>
+<B><?php echo _QXZ("Callback Queue Expire Hours"); ?> -</B><?php echo _QXZ("If a Hold Time or Wait Time Option is set to PRESS_CALLBACK_QUEUE, this is the maximum number of hours that an entry can stay in the inbound callback queue before it is removed without dialing it. Default is 96 hours."); ?>
+
+<BR>
+<A NAME="inbound_groups-icbq_call_time_id">
+<BR>
+<B><?php echo _QXZ("Callback Queue Call Time"); ?> -</B><?php echo _QXZ("For any inbound callback queue outbound calls to be placed, this is the local call time used to determine if the number can be dialed right now or not."); ?>
+
+<BR>
+<A NAME="inbound_groups-icbq_dial_filter">
+<BR>
+<B><?php echo _QXZ("Callback Queue Dial Filter"); ?> -</B><?php echo _QXZ("This option allows you to remove DNC numbers from your Callback Queue. You can use any combination of: Internal DNC List, Campaign DNC List tied to campaign of the list where the lead is, and Areacode DNC wildcard"); ?>
+
+<BR>
+<A NAME="inbound_groups-closing_time_action">
+<BR>
+<B><?php echo _QXZ("Closing Time Action"); ?> -</B><?php echo _QXZ("This allows you to specify the routing of the call if the closing time of the in-group is reached while the call is still waiting for an agent, Closing time is the end of the Call Time that is defined for this in-group. Default is DISABLED. If one of the PRESS_ options is selected, it will play the Press Filename defined below and give the customer the option to press 1 on their phone to leave the queue and run the selected option. The PRESS_CALLBACK_QUEUE option will preserve the caller place in line and will call the customer back when their place is the next one to go to an agent, this inbound callback queue entry will last until the call is placed back to the customer or as long as the Callback Queue Expire Hours setting above."); ?>
+
+<BR>
+<A NAME="inbound_groups-closing_time_now_trigger">
+<BR>
+<B><?php echo _QXZ("Closing Time Now Trigger"); ?> -</B><?php echo _QXZ("If Closing Time Action is enabled, this flag allows you to send all customers waiting in the queue to the Closing Time Action as defined above, before the actual closing time is reached for the day."); ?>
+
+<BR>
+<A NAME="inbound_groups-closing_time_filename">
+<BR>
+<B><?php echo _QXZ("Closing Time Press Filename"); ?> -</B><?php echo _QXZ("If Closing Time Option is set to one of the PRESS_ options, this is the filename prompt that is played if the in-group has reached the closing time for the day. It is very important that this audio file is 10 seconds or less or there will be problems."); ?>
+
+<BR>
+<A NAME="inbound_groups-closing_time_end_filename">
+<BR>
+<B><?php echo _QXZ("Closing Time End Filename"); ?> -</B><?php echo _QXZ("If Closing Time Option is set to one of the PRESS_ options or PRESS_CID_CALLBACK or PRESS_CALLBACK_QUEUE, this is the filename prompt that is played after the customer has pressed 1 or the call has been added to the callback list or queue."); ?>
+
+<BR>
+<A NAME="inbound_groups-closing_time_lead_reset">
+<BR>
+<B><?php echo _QXZ("Closing Time Option Lead Reset"); ?> -</B><?php echo _QXZ("This option if set to Y, will set the lead called-since-last-reset field to N when the Closing Time Option is triggered and the call is sent to an action like Message, Voicemail or Hangup. Default is N for disabled."); ?>
+
+<BR>
+<A NAME="inbound_groups-closing_time_option_exten">
+<BR>
+<B><?php echo _QXZ("Closing Time Option Extension"); ?> -</B><?php echo _QXZ("If Closing Time Option is set to EXTENSION, this is the dialplan extension that the call will be sent to if the Closing Time is reached. For AGENTDIRECT in-groups, you can put AGENTEXT in this field and the system will look up the user custom five field and send the call to that dialplan number."); ?>
+
+<BR>
+<A NAME="inbound_groups-closing_time_option_callmenu">
+<BR>
+<B><?php echo _QXZ("Closing Time Option Callmenu"); ?> -</B><?php echo _QXZ("If Closing Time Option is set to CALL_MENU, this is the Call Menu that the call will be sent to if the Closing Time is reached."); ?>
+
+<BR>
+<A NAME="inbound_groups-closing_time_option_voicemail">
+<BR>
+<B><?php echo _QXZ("Closing Time Option Voicemail"); ?> -</B><?php echo _QXZ("If Closing Time Option is set to VOICEMAIL, this is the voicemail box that the call will be sent to if the Closing Time is reached. In an AGENTDIRECT in-group, setting this to AGENTVMAIL will select the User voicemail ID to use."); ?>
+
+<BR>
+<A NAME="inbound_groups-closing_time_option_xfer_group">
+<BR>
+<B><?php echo _QXZ("Closing Time Option Transfer In-Group"); ?> -</B><?php echo _QXZ("If Closing Time Option is set to IN_GROUP, this is the inbound group that the call will be sent to if the Closing Time is reached."); ?>
+
+<BR>
+<A NAME="inbound_groups-closing_time_option_callback_list_id">
+<BR>
+<B><?php echo _QXZ("Closing Time Option Callback List ID"); ?> -</B><?php echo _QXZ("If Closing Time Option is set to CALLERID_CALLBACK, this is the List ID the call is added to as a new lead if the Closing Time is reached."); ?>
 
 <BR>
 <A NAME="inbound_groups-agent_alert_exten">
@@ -3025,14 +3140,19 @@ if ($SSqc_features_active > 0)
 <B><?php echo _QXZ("Dispo Call URL"); ?> -</B><?php echo _QXZ("This web URL address is not seen by the agent, but it is called every time a call is dispositioned by an agent if it is populated. Uses the same variables as the web form fields and scripts. dispo and talk_time are the variables you can use to retrieve the agent-defined disposition for the call and the actual talk time in seconds of the call. Default is blank.") . " " . _QXZ("If you put ALT into this field and submit this form, you will be able to go to a separate page where you can define multiple URLs for this action as well as specific statuses that will trigger them.") . " " . _QXZ("If you want the campaign Dispo Call URL to be used for inbound calls, then put CAMP into this field."); ?>
 
 <BR>
+<A NAME="inbound_groups-na_call_url">
+<BR>
+<B><?php echo _QXZ("No Agent Call URL"); ?> -</B><?php echo _QXZ("This web URL address is not seen by the agent, but if it is populated it is called every time a call that is not handled by an agent is hung up or transferred. Uses the same variables as the web form fields and scripts. dispo can be used to retrieve the system-defined disposition for the call. This URL can NOT be a relative path. Default is blank."); ?> <?php echo _QXZ("Custom Fields are not available with this feature."); ?>
+
+<BR>
 <A NAME="inbound_groups-add_lead_url">
 <BR>
 <B><?php echo _QXZ("Add Lead URL"); ?> -</B><?php echo _QXZ("This web URL address is not seen by the agent, but it is called every time a lead is added to the system through the inbound process. Default is blank. You must begin this URL with VAR if you want to use variables, and of course --A-- and --B-- around the actual variable in the URL where you want to use it. Here is the list of variables that are available for this function. lead_id, vendor_lead_code, list_id, phone_number, phone_code, did_id, did_extension, did_pattern, did_description, uniqueid"); ?>
 
 <BR>
-<A NAME="inbound_groups-na_call_url">
+<A NAME="inbound_groups-add_lead_timezone">
 <BR>
-<B><?php echo _QXZ("No Agent Call URL"); ?> -</B><?php echo _QXZ("This web URL address is not seen by the agent, but if it is populated it is called every time a call that is not handled by an agent is hung up or transferred. Uses the same variables as the web form fields and scripts. dispo can be used to retrieve the system-defined disposition for the call. This URL can NOT be a relative path. Default is blank."); ?> <?php echo _QXZ("Custom Fields are not available with this feature."); ?>
+<B><?php echo _QXZ("Add Lead Timezone"); ?> -</B><?php echo _QXZ("This is the method that the system will use to determine the current timezone when a lead is created when a call is being routed through this in-group. SERVER will use the current timezone of the server. PHONE_CODE_AREACODE will look up the timezone based on the phone code set in the lead and the areacode of the phone number. Default is SERVER."); ?>
 
 <BR>
 <A NAME="inbound_groups-default_group_alias">
@@ -3661,6 +3781,17 @@ if ($SSoutbound_autodial_active > 0)
 <A NAME="campaign_cid_areacodes">
 <BR>
 <B><?php echo _QXZ("If the System Setting for Areacode CIDs is enabled and the Campaign setting for Use Custom CallerID is set to AREACODE then you have the ability to define Areacode CIDs that will be used when outbound calling to leads in this specific campaign. You can add multiple callerIDs per areacode and you can activate and deactivate them each in real time. If more than one callerID is active for a specific areacode then the system will use the callerid that has been used the least number of times today. If no callerIDs are active for the areacode then the campaign CallerID or list override CallerID will be used. An areacode in this section can be from 2 to 5 digits in length, and if a shorter defined areacode overlaps with a longer areacode then the longer areacode will be used. For example, if the areacodes 31 and 312 are both defined and active for a campaign, then areacode 312 would be used for phone number 3125551212."); ?></B>
+
+
+
+
+
+<BR><BR><BR><BR>
+
+<B><FONT SIZE=3>CID GROUPS</FONT></B><BR><BR>
+<A NAME="cid_groups">
+<BR>
+<B><?php echo _QXZ("CID Groups are very similar to Campaign AC-CID, except with CID Groups you can use the same set of CIDs across multiple campaigns, and you can also define CID Groups on a per-state basis as well as per-areacode, instead of just by areacode like with Campaign AC-CID. If the STATE type is used, then the STATE value should match the state field for a lead, and if no match is found, the dialer will use the campaign CID as a default."); ?></B>
 
 
 
@@ -5276,6 +5407,11 @@ FR_SPAC 00 00 00 00 00 - <?php echo _QXZ("France space separated phone number");
 <B><?php echo _QXZ("Callback Time 24 Hours"); ?> -</B><?php echo _QXZ("This option defines whether the agent sees 12 hour time with AM PM options or 24 hour time on the Callback setting screen in the agent interface. Default is 0 for disabled."); ?>
 
 <BR>
+<A NAME="settings-anyone_callback_inactive_lists">
+<BR>
+<B><?php echo _QXZ("Anyone Callback Inactive Lists"); ?> -</B><?php echo _QXZ("This option defines whether an ANYONE callback within an inactive list will be placed in the hopper to be dialed or not. The default option will place ANYONE scheduled callbacks from inactive lists into the hopper for up to one minute before removing them from the hopper. Using the NO_ADD_TO_HOPPER option will prevent ANYONE scheduled callbacks from inactive lists from ever being put into the hopper while the list is inactive. The KEEP_IN_HOPPER option will put ANYONE scheduled callbacks from inactive lists into the hopper and will make sure they stay in the hopper until they are dialed, or they are no longer dialable due to a Call Time setting. This feature only affects campaigns that use the dial hopper. Default is default."); ?>
+
+<BR>
 <A NAME="settings-sounds_central_control_active">
 <BR>
 <B><?php echo _QXZ("Central Sound Control Active"); ?> -</B><?php echo _QXZ("This option defines whether the sound synchronization system is active across all servers. Default is 0 for inactive."); ?>
@@ -5456,6 +5592,11 @@ FR_SPAC 00 00 00 00 00 - <?php echo _QXZ("France space separated phone number");
 <B><?php echo _QXZ("Expired Lists Auto Inactive"); ?> -</B><?php echo _QXZ("This setting if enabled will automatically change lists that have an expiration date set to a past date to Active equals N. This is performed through both a check every time the List Modify screen is loaded for a specific list as well as a once an hour check on all lists. Default is 0 for disabled."); ?>
 
 <BR>
+<A NAME="settings-enable_gdpr_download_deletion">
+<BR>
+<B><?php echo _QXZ("Enable GDPR-compliant Data Download Deletion"); ?> -</B><?php echo _QXZ("This setting if enabled will allow for the complete download and/or deletion of all customer data for a particular lead, in compliance with the General Data Protection Regulation (GDPR). Default is 0 for disabled.  A setting of 1 will enable downloading data, and a setting of 2 will enable not just downloading, but also deletion of data, including any recordings."); ?>
+
+<BR>
 <A NAME="settings-enable_drop_lists">
 <BR>
 <B><?php echo _QXZ("Enable Drop Lists"); ?> -</B><?php echo _QXZ("This setting if enabled will make the Drop Lists feature appear under the LISTS menu. This feature set can take dropped call log records and create new leads in a list from multiple inbound groups. Default is 0 for disabled."); ?>
@@ -5478,7 +5619,7 @@ FR_SPAC 00 00 00 00 00 - <?php echo _QXZ("France space separated phone number");
 <BR>
 <A NAME="settings-campaign_cid_areacodes_enabled">
 <BR>
-<B><?php echo _QXZ("Enable Campaign Areacode CID"); ?> -</B><?php echo _QXZ("This setting enables the ability to set specific outbound callerid numbers to be used per campaign. Default is 1 for enabled."); ?>
+<B><?php echo _QXZ("Enable CID Groups and Campaign Areacode CID"); ?> -</B><?php echo _QXZ("This setting enables the ability to set specific outbound callerid numbers to be used per areacode for a campaign, as well as CID Groups which allows both per areacode and per state options for groups of CallerID numbers for one or multiple campaigns. Default is 1 for enabled."); ?>
 
 <BR>
 <A NAME="settings-did_ra_extensions_enabled">
@@ -5841,6 +5982,11 @@ FR_SPAC 00 00 00 00 00 - <?php echo _QXZ("France space separated phone number");
 <A NAME="ticket_mail">
 <BR>
 <B><?php echo _QXZ("Ticket Mail Address"); ?> -</B><?php echo _QXZ("Set the Mailaddress to send Mails into a Ticketsystem."); ?>
+
+<BR>
+<A NAME="downloaddir">
+<BR>
+<B><?php echo _QXZ("Temp. Download Directory"); ?> -</B><?php echo _QXZ("Set the Directory for Downloads."); ?>
 
 <BR>
 <A NAME="servicelevel">
@@ -6474,6 +6620,10 @@ if ($SSqc_features_active > 0)
 <?php echo _QXZ("<U>TOTAL CALLS</U> = Number of calls placed to leads belonging to lists in this campaign within the time frame specified."); ?><BR>
 <?php echo _QXZ("<U>STATUS FLAGS BREAKDOWN</U> = Breakdown of the total calls into status categories, including counts per category and percentage relative to the number of calls to leads in the list within the time frame specified."); ?><BR>
 
+<A NAME="source_vlc_status_report">
+<BR>
+<B><?php echo _QXZ("Outbound Lead Source Report"); ?> -</B><?php echo _QXZ("This report is designed to show the breakdown by either vendor_lead_code or source_id, choice of the user, of the calls and their statuses for all lists within a campaign for a set time period"); ?><BR>
+
 <A NAME="CLOSER_service_level">
 <BR>
 <B><?php echo _QXZ("Inbound Service Level Report"); ?> -</B><?php echo _QXZ("This report is designed to give a daily breakdown of the number of calls, holds, and drop within the specified date range for the selected inbound group."); ?><BR>
@@ -6849,6 +6999,16 @@ if ($SSqc_features_active > 0)
 <?php echo _QXZ("<U>Start date/time</U> = If filled out, the starting date and time that the report will use up through the current date and time when compiling the report."); ?><BR>
 <A NAME="rt_whiteboard_report-show_results">
 <?php echo _QXZ("<U>Show results for the past X hours</U> = If filled out and the start date-time is NOT filled out, the selected report will compile data starting at the time X hours ago up through the current time, which makes it a dynamic starting time as opposed to the set date-time used in the previous parameter."); ?><BR>
+
+
+
+<BR><BR><BR><BR>
+<A NAME="api_log_report">
+<BR>
+<B><?php echo _QXZ("API Log report"); ?> -</B><?php echo _QXZ("This report shows all records in the API logging table that meet the report criteria.  Reports can be run by date range that the API was accessed, the user, agent user, the API function called, and the API result.  The report can also be run to include the actual URL of the API that was called and the IP address the request came from."); ?>
+<BR><BR>
+<?php echo _QXZ("Additionally, if this extended version of the report is run, the variables used in the API call can be listed separately if the user creates a system container in the System Containers settings by the name of API_LOG_URL_COLUMNS <B>(name must be exact)</B>.  In this container, variable names are listed individually per line, and each listed variable is given it's own column in the detailed URL report."); ?><BR><BR>
+<A NAME="api_log_report-parameters">
 
 
 

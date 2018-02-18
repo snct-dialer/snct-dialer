@@ -21,7 +21,7 @@
 #  - R = Recycled leads
 #  - S = Standard hopper load
 #
-# Copyright (C) 2015  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG
 # 50810-1613 - Added database server variable definitions lookup
@@ -88,10 +88,11 @@
 # 150728-1050 - Added option for secondary sorting by vendor_lead_code, Issue #833
 # 150908-1544 - Added debug output for vendor_lead_code duplicate rejections count
 # 170531-0837 - Fixed issue #1019
+# 180111-1559 - Added anyone_callback_inactive_lists option
 #
 
 # constants
-$build = '170531-0837';
+$build = '180111-1559';
 $DB=0;  # Debug flag, set to 0 for no debug messages. Can be overriden with CLI --debug flag
 $US='__';
 $MT[0]='';
@@ -317,6 +318,19 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
  or die "Couldn't connect to database: " . DBI->errstr;
 
 
+### Grab system_settings values from the database
+$anyone_callback_inactive_lists='default';
+$stmtA = "SELECT anyone_callback_inactive_lists FROM system_settings;";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+if ($sthArows > 0)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$anyone_callback_inactive_lists =			$aryA[0];
+	}
+$sthA->finish();
+
 ### Grab Server values from the database
 $stmtA = "SELECT vd_server_logs,local_gmt FROM servers where server_ip = '$VARserver_ip';";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -433,7 +447,10 @@ if ($inactive_lists_count > 0)
 	chop($inactive_lists);
 	if ($allow_inactive_list_leads < 1)
 		{
-		$stmtA = "DELETE from $vicidial_hopper where list_id IN($inactive_lists);";
+		$KEEPanyone_callback_inactive_listsSQL='';
+		if ($anyone_callback_inactive_lists =~ /KEEP_IN_HOPPER/i) 
+			{$KEEPanyone_callback_inactive_listsSQL = "and source!='C'";}
+		$stmtA = "DELETE from $vicidial_hopper where list_id IN($inactive_lists) $KEEPanyone_callback_inactive_listsSQL;";
 		$affected_rows = $dbhA->do($stmtA);
 		if ($DB) {print "Inactive and Expired List Leads Deleted:  $affected_rows |$stmtA|\n";}
 			$event_string = "|INACTIVE LIST DEL|$affected_rows|";
@@ -443,13 +460,21 @@ if ($inactive_lists_count > 0)
 
 
 ##### BEGIN Change CBHOLD status leads to CALLBK if their vicidial_callbacks time has passed
+$vcNOanyone_callback_inactive_listsSQL='';
+$vlNOanyone_callback_inactive_listsSQL='';
+if ($anyone_callback_inactive_lists =~ /NO_ADD_TO_HOPPER/i) 
+	{
+	$vcNOanyone_callback_inactive_listsSQL = "and vicidial_callbacks.list_id NOT IN($inactive_lists)";
+	$vlNOanyone_callback_inactive_listsSQL = "and vicidial_list.list_id NOT IN($inactive_lists)";
+	}
+
 if (length($CLIcampaign)>0)
 	{
-	$stmtA = "SELECT count(*) FROM vicidial_callbacks where callback_time <= '$now_date' and status='ACTIVE' and campaign_id IN('$CLIcampaign');";
+	$stmtA = "SELECT count(*) FROM vicidial_callbacks where callback_time <= '$now_date' and status='ACTIVE' and campaign_id IN('$CLIcampaign') $vcNOanyone_callback_inactive_listsSQL;";
 	}
 else
 	{
-	$stmtA = "SELECT count(*) FROM vicidial_callbacks where callback_time <= '$now_date' and status='ACTIVE';";
+	$stmtA = "SELECT count(*) FROM vicidial_callbacks where callback_time <= '$now_date' and status='ACTIVE' $vcNOanyone_callback_inactive_listsSQL;";
 	}
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -465,11 +490,11 @@ if ($CBHOLD_count > 0)
 	$cba=0;
 	if (length($CLIcampaign)>0)
 		{
-		$stmtA = "SELECT vicidial_callbacks.lead_id,recipient,campaign_id,vicidial_callbacks.list_id,gmt_offset_now,state,vicidial_callbacks.lead_status,vendor_lead_code FROM vicidial_callbacks,vicidial_list where callback_time <= '$now_date' and vicidial_callbacks.status='ACTIVE' and vicidial_callbacks.lead_id=vicidial_list.lead_id and vicidial_callbacks.campaign_id IN('$CLIcampaign');";
+		$stmtA = "SELECT vicidial_callbacks.lead_id,recipient,campaign_id,vicidial_callbacks.list_id,gmt_offset_now,state,vicidial_callbacks.lead_status,vendor_lead_code FROM vicidial_callbacks,vicidial_list where callback_time <= '$now_date' and vicidial_callbacks.status='ACTIVE' and vicidial_callbacks.lead_id=vicidial_list.lead_id and vicidial_callbacks.campaign_id IN('$CLIcampaign') $vlNOanyone_callback_inactive_listsSQL;";
 		}
 	else
 		{
-		$stmtA = "SELECT vicidial_callbacks.lead_id,recipient,campaign_id,vicidial_callbacks.list_id,gmt_offset_now,state,vicidial_callbacks.lead_status,vendor_lead_code FROM vicidial_callbacks,vicidial_list where callback_time <= '$now_date' and vicidial_callbacks.status='ACTIVE' and vicidial_callbacks.lead_id=vicidial_list.lead_id;";
+		$stmtA = "SELECT vicidial_callbacks.lead_id,recipient,campaign_id,vicidial_callbacks.list_id,gmt_offset_now,state,vicidial_callbacks.lead_status,vendor_lead_code FROM vicidial_callbacks,vicidial_list where callback_time <= '$now_date' and vicidial_callbacks.status='ACTIVE' and vicidial_callbacks.lead_id=vicidial_list.lead_id $vlNOanyone_callback_inactive_listsSQL;";
 		}
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -1124,7 +1149,7 @@ foreach(@campaign_id)
 		{
 		if ($DB) {print "Campaign $campaign_id[$i] set to no-hopper-dialing: $no_hopper_dialing[$i]\n";}
 
-		### BEGIN Change CBHOLD status leads to CALLBK if their vicidial_callbacks time has passed
+		### get count of no-hopper dialing hopper entries
 		$stmtA = "SELECT count(*) FROM $vicidial_hopper where campaign_id='$campaign_id[$i]' and status NOT IN('QUEUE','HOLD');";
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -2415,6 +2440,7 @@ foreach(@campaign_id)
 			else
 				{
 				$lead_filter_sql[$i] =~ s/^and|and$|^or|or$|^ and|and $|^ or|or $//gi;
+				$lead_filter_sql[$i] =~ s/\r|\n|\t/ /gi;
 				$lead_filter_sql[$i] = "and ($lead_filter_sql[$i])";
 				if ($DB) {print "     lead filter $lead_filter_id[$i] defined for $campaign_id[$i]\n";}
 				if ($DBX) {print "     |$lead_filter_sql[$i]|\n";}

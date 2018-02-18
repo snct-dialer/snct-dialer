@@ -1,7 +1,7 @@
 <?php
 # admin_lists_custom.php
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # this screen manages the custom lists fields in ViciDial
 #
@@ -33,22 +33,26 @@
 # 141006-0903 - Finalized adding QXZ translation to all admin files
 # 141230-0018 - Added code for on-the-fly language translations display
 # 150626-2120 - Modified mysqli_error() to mysqli_connect_error() where appropriate
+# 150807-2233 - Added enc options
+# 151002-0650 - Fixed issue with non-enc field types
 # 151007-2001 - Fixed issue with field deletion
 # 160325-1431 - Changes for sidebar update
 # 160404-0938 - design changes
-# 160414-1243 - Fixed translation issue with COPY form
-# 160429-1125 - Added admin_row_click option
+# 160414-1244 - Fixed translation issue with COPY form
+# 160429-1121 - Added admin_row_click option
 # 160508-0219 - Added screen colors feature
-# 160510-2108 - Fixing issues with using only standard fields
-# 170228-2254 - Changes to allow URLs in SCRIPT field types
-# 170301-0827 - Enabled required custom fields with INBOUND_ONLY option
-# 170321-1553 - Fixed list view permissions issue #1005
+# 160510-2109 - Fixing issues with using only standard fields
+# 170228-2255 - Changes to allow URLs in SCRIPT field types
+# 170301-0828 - Enabled required custom fields with INBOUND_ONLY option
+# 170321-1554 - Fixed list view permissions issue #1005
 # 170409-1558 - Added IP List validation code
 # 171116-1544 - Added option for duplicate custom field entries(field_duplicate)
+# 180123-1817 - cleanup of enc code
+# 180125-1733 - Added more reserved words from MySQL/MariaDB
 #
 
-$admin_version = '2.14-37';
-$build = '171116-1544';
+$admin_version = '2.14-41';
+$build = '180125-1733';
 
 require("dbconnect_mysqli.php");
 require("functions.php");
@@ -94,6 +98,10 @@ if (isset($_GET["multi_position"]))				{$multi_position=$_GET["multi_position"];
 	elseif (isset($_POST["multi_position"]))	{$multi_position=$_POST["multi_position"];}
 if (isset($_GET["field_order"]))				{$field_order=$_GET["field_order"];}
 	elseif (isset($_POST["field_order"]))		{$field_order=$_POST["field_order"];}
+if (isset($_GET["field_encrypt"]))				{$field_encrypt=$_GET["field_encrypt"];}
+	elseif (isset($_POST["field_encrypt"]))		{$field_encrypt=$_POST["field_encrypt"];}
+if (isset($_GET["field_show_hide"]))			{$field_show_hide=$_GET["field_show_hide"];}
+	elseif (isset($_POST["field_show_hide"]))	{$field_show_hide=$_POST["field_show_hide"];}
 if (isset($_GET["field_duplicate"]))			{$field_duplicate=$_GET["field_duplicate"];}
 	elseif (isset($_POST["field_duplicate"]))	{$field_duplicate=$_POST["field_duplicate"];}
 if (isset($_GET["source_list_id"]))				{$source_list_id=$_GET["source_list_id"];}
@@ -107,7 +115,7 @@ if (isset($_GET["SUBMIT"]))						{$SUBMIT=$_GET["SUBMIT"];}
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$stmt = "SELECT use_non_latin,webroot_writable,outbound_autodial_active,user_territories_active,custom_fields_enabled,enable_languages,language_method FROM system_settings;";
+$stmt = "SELECT use_non_latin,webroot_writable,outbound_autodial_active,user_territories_active,custom_fields_enabled,enable_languages,language_method,active_modules FROM system_settings;";
 $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $qm_conf_ct = mysqli_num_rows($rslt);
@@ -121,6 +129,7 @@ if ($qm_conf_ct > 0)
 	$SScustom_fields_enabled =		$row[4];
 	$SSenable_languages =			$row[5];
 	$SSlanguage_method =			$row[6];
+	$SSactive_modules =				$row[7];
 	}
 ##### END SETTINGS LOOKUP #####
 ###########################################
@@ -152,6 +161,7 @@ if ($non_latin < 1)
 	$source_list_id = preg_replace('/[^0-9]/','',$source_list_id);
 
 	$field_required = preg_replace('/[^_A-Z]/','',$field_required);
+	$field_encrypt = preg_replace('/[^NY]/','',$field_encrypt);
 	$field_duplicate = preg_replace('/[^_A-Z]/','',$field_duplicate);
 
 	$field_type = preg_replace('/[^0-9a-zA-Z]/','',$field_type);
@@ -161,6 +171,7 @@ if ($non_latin < 1)
 
 	$field_label = preg_replace('/[^_0-9a-zA-Z]/','',$field_label);
 	$copy_option = preg_replace('/[^_0-9a-zA-Z]/','',$copy_option);
+	$field_show_hide = preg_replace('/[^_0-9a-zA-Z]/','',$field_show_hide);
 
 	$field_name = preg_replace('/[^ \.\,-\_0-9a-zA-Z]/','',$field_name);
 	$field_description = preg_replace('/[^ \.\,-\_0-9a-zA-Z]/','',$field_description);
@@ -193,8 +204,7 @@ if ($extended_vl_fields > 0)
 	$vicidial_list_fields = '|lead_id|vendor_lead_code|source_id|list_id|gmt_offset_now|called_since_last_reset|phone_code|phone_number|title|first_name|middle_initial|last_name|address1|address2|address3|city|state|province|postal_code|country_code|gender|date_of_birth|alt_phone|email|security_phrase|comments|called_count|last_local_call_time|rank|owner|status|entry_date|entry_list_id|modify_date|user|q01|q02|q03|q04|q05|q06|q07|q08|q09|q10|q11|q12|q13|q14|q15|q16|q17|q18|q19|q20|q21|q22|q23|q24|q25|q26|q27|q28|q29|q30|q31|q32|q33|q34|q35|q36|q37|q38|q39|q40|q41|q42|q43|q44|q45|q46|q47|q48|q49|q50|q51|q52|q53|q54|q55|q56|q57|q58|q59|q60|q61|q62|q63|q64|q65|q66|q67|q68|q69|q70|q71|q72|q73|q74|q75|q76|q77|q78|q79|q80|q81|q82|q83|q84|q85|q86|q87|q88|q89|q90|q91|q92|q93|q94|q95|q96|q97|q98|q99|';
 	}
 
-$mysql_reserved_words =
-'|accessible|action|add|all|alter|analyze|and|as|asc|asensitive|before|between|bigint|binary|bit|blob|both|by|call|cascade|case|change|char|character|check|collate|column|condition|constraint|continue|convert|create|cross|current_date|current_time|current_timestamp|current_user|cursor|database|databases|date|day_hour|day_microsecond|day_minute|day_second|dec|decimal|declare|default|delayed|delete|desc|describe|deterministic|distinct|distinctrow|div|double|drop|dual|each|else|elseif|enclosed|enum|escaped|exists|exit|explain|false|fetch|float|float4|float8|for|force|foreign|from|fulltext|grant|group|having|high_priority|hour_microsecond|hour_minute|hour_second|if|ignore|in|index|infile|inner|inout|insensitive|insert|int|int1|int2|int3|int4|int8|integer|interval|into|is|iterate|join|key|keys|kill|leading|leave|left|like|limit|linear|lines|load|localtime|localtimestamp|lock|long|longblob|longtext|loop|low_priority|master_ssl_verify_server_cert|match|mediumblob|mediumint|mediumtext|middleint|minute_microsecond|minute_second|mod|modifies|mysql|natural|no|no_write_to_binlog|not|null|numeric|on|optimize|option|optionally|or|order|out|outer|outfile|precision|primary|procedure|purge|range|read|read_only|read_write|reads|real|references|regexp|release|remove|rename|repeat|replace|require|restrict|return|revoke|right|rlike|schema|schemas|second_microsecond|select|sensitive|separator|set|show|smallint|spatial|specific|sql|sql_big_result|sql_calc_found_rows|sql_small_result|sqlexception|sqlstate|sqlwarning|ssl|starting|straight_join|table|terminated|text|then|time|timestamp|tinyblob|tinyint|tinytext|to|trailing|trigger|true|undo|union|unique|unlock|unsigned|update|usage|use|using|utc_date|utc_time|utc_timestamp|values|varbinary|varchar|varcharacter|varying|when|where|while|with|write|xor|year_month|zerofill|lead_id|';
+$mysql_reserved_words = '|accessible|action|add|after|against|aggregate|algorithm|all|alter|analyse|analyze|and|any|as|asc|ascii|asensitive|at|authors|auto_increment|autoextend_size|avg|avg_row_length|backup|before|begin|between|bigint|binary|binlog|bit|blob|block|bool|boolean|both|btree|by|byte|cache|call|cascade|cascaded|case|catalog_name|chain|change|changed|char|character|charset|check|checksum|cipher|class_origin|client|close|coalesce|code|collate|collation|column|column_format|column_name|columns|comment|commit|committed|compact|completion|compressed|concurrent|condition|connection|consistent|constraint|constraint_catalog|constraint_name|constraint_schema|contains|context|continue|contributors|convert|cpu|create|cross|cube|current|current_date|current_time|current_timestamp|current_user|cursor|cursor_name|data|database|databases|datafile|date|datetime|day|day_hour|day_microsecond|day_minute|day_second|deallocate|dec|decimal|declare|default|default_auth|definer|delay_key_write|delayed|delete|des_key_file|desc|describe|deterministic|diagnostics|directory|disable|discard|disk|distinct|distinctrow|div|do|double|drop|dual|dumpfile|duplicate|dynamic|each|else|elseif|enable|enclosed|end|ends|engine|engines|enum|error|errors|escape|escaped|event|events|every|exchange|execute|exists|exit|expansion|expire|explain|export|extended|extent_size|false|fast|faults|fetch|fields|file|first|fixed|float|float4|float8|flush|for|force|foreign|format|found|from|full|fulltext|function|general|geometry|geometrycollection|get|get_format|global|grant|grants|group|handler|hash|having|help|high_priority|host|hosts|hour|hour_microsecond|hour_minute|hour_second|identified|if|ignore|ignore_server_ids|import|in|index|indexes|infile|initial_size|inner|inout|insensitive|insert|insert_method|install|int|int1|int2|int3|int4|int8|integer|interval|into|invoker|io|io_after_gtids|io_before_gtids|io_thread|ipc|is|isolation|issuer|iterate|join|key|key_block_size|keys|kill|language|last|leading|leave|leaves|left|less|level|like|limit|linear|lines|linestring|list|load|local|localtime|localtimestamp|lock|locks|logfile|logs|long|longblob|longtext|loop|low_priority|master|master_auto_position|master_bind|master_connect_retry|master_delay|master_heartbeat_period|master_host|master_log_file|master_log_pos|master_password|master_port|master_retry_count|master_server_id|master_ssl|master_ssl_ca|master_ssl_capath|master_ssl_cert|master_ssl_cipher|master_ssl_crl|master_ssl_crlpath|master_ssl_key|master_ssl_verify_server_cert|master_user|match|max_connections_per_hour|max_queries_per_hour|max_rows|max_size|max_updates_per_hour|max_user_connections|maxvalue|medium|mediumblob|mediumint|mediumtext|memory|merge|message_text|microsecond|middleint|migrate|min_rows|minute|minute_microsecond|minute_second|mod|mode|modifies|modify|month|multilinestring|multipoint|multipolygon|mutex|mysql|mysql_errno|name|names|national|natural|nchar|ndb|ndbcluster|new|next|no|no_wait|no_write_to_binlog|nodegroup|none|not|null|number|numeric|nvarchar|offset|old_password|on|one|one_shot|only|open|optimize|option|optionally|options|or|order|out|outer|outfile|owner|pack_keys|page|parser|partial|partition|partitioning|partitions|password|phase|plugin|plugin_dir|plugins|point|polygon|port|precision|prepare|preserve|prev|primary|privileges|procedure|processlist|profile|profiles|proxy|purge|quarter|query|quick|range|read|read_only|read_write|reads|real|rebuild|recover|recursive|redo_buffer_size|redofile|redundant|references|regexp|relay|relay_log_file|relay_log_pos|relay_thread|relaylog|release|reload|remove|rename|reorganize|repair|repeat|repeatable|replace|replication|require|reset|resignal|restore|restrict|resume|return|returned_sqlstate|returned_sqlstate|returning|returns|reverse|revoke|right|rlike|rollback|rollup|routine|row|row_count|row_count|row_format|rows|rtree|savepoint|schedule|schema|schema_name|schemas|second|second_microsecond|security|select|sensitive|separator|serial|serializable|server|session|set|share|show|shutdown|signal|signed|simple|slave|slow|slow|smallint|snapshot|socket|some|soname|sounds|source|spatial|specific|sql|sql_after_gtids|sql_after_gtids|sql_after_mts_gaps|sql_after_mts_gaps|sql_before_gtids|sql_before_gtids|sql_big_result|sql_buffer_result|sql_cache|sql_calc_found_rows|sql_no_cache|sql_small_result|sql_thread|sql_tsi_day|sql_tsi_hour|sql_tsi_minute|sql_tsi_month|sql_tsi_quarter|sql_tsi_second|sql_tsi_week|sql_tsi_year|sqlexception|sqlstate|sqlwarning|ssl|start|starting|starts|stats_auto_recalc|stats_auto_recalc|stats_persistent|stats_persistent|stats_sample_pages|stats_sample_pages|status|stop|storage|straight_join|string|subclass_origin|subject|subpartition|subpartitions|super|suspend|swaps|switches|table|table_checksum|table_name|tables|tablespace|temporary|temptable|terminated|text|than|then|time|timestamp|timestampadd|timestampdiff|tinyblob|tinyint|tinytext|to|trailing|transaction|trigger|triggers|true|truncate|type|types|uncommitted|undefined|undo|undo_buffer_size|undofile|unicode|uninstall|union|unique|unknown|unlock|unsigned|until|update|upgrade|usage|use|use_frm|user_resources|using|utc_date|utc_time|utc_timestamp|value|values|varbinary|varchar|varcharacter|variables|varying|view|wait|warnings|week|weight_string|when|where|while|window|with|work|wrapper|write|x509|xa|xml|xor|year|year_month|zerofill|lead_id|user|';
 
 $stmt="SELECT selected_language from vicidial_users where user='$PHP_AUTH_USER';";
 if ($DB) {echo "|$stmt|\n";}
@@ -273,6 +283,12 @@ if ( (!preg_match('/\-ALL/i', $LOGallowed_campaigns)) )
 	}
 $regexLOGallowed_campaigns = " $LOGallowed_campaigns ";
 
+# check if cf_enrcypt enabled
+$hide_enc=0;
+if (!preg_match("/cf_encrypt/",$SSactive_modules))
+	{
+	$hide_enc=1;
+	}
 
 ?>
 <html>
@@ -350,6 +366,10 @@ $lists_color =		'#FFFF99';
 $lists_font =		'BLACK';
 $lists_color =		'#E6E6E6';
 $subcamp_color =	'#C6C6C6';
+$Msubhead_color =	'#E6E6E6';
+$Mselected_color =	'#C6C6C6';
+$Mhead_color =		'#A3C3D6';
+$Mmain_bgcolor =	'#015B91';
 ##### END Set variables to make header show properly #####
 
 require("admin_header.php");
@@ -373,7 +393,7 @@ $NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIG
 
 if ($DB > 0)
 {
-echo "$DB,$action,$ip,$user,$copy_option,$field_id,$list_id,$source_list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$field_duplicate";
+echo "$DB,$action,$ip,$user,$copy_option,$field_id,$list_id,$source_list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$field_encrypt,$field_show_hide,$field_duplicate";
 }
 
 
@@ -499,7 +519,7 @@ if ( ($action == "COPY_FIELDS_SUBMIT") and ($list_id > 99) and ($source_list_id 
 					while ($fields_to_print > $o) 
 						{
 						### delete field function
-						$SQLsuccess = delete_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$A_field_id[$o],$list_id,$A_field_label[$o],$A_field_name[$o],$A_field_description[$o],$A_field_rank[$o],$A_field_help[$o],$A_field_type[$o],$A_field_options[$o],$A_field_size[$o],$A_field_max[$o],$A_field_default[$o],$A_field_required[$o],$A_field_cost[$o],$A_multi_position[$o],$A_name_position[$o],$A_field_order[$o],$A_field_duplicate[$o],$vicidial_list_fields);
+						$SQLsuccess = delete_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$A_field_id[$o],$list_id,$A_field_label[$o],$A_field_name[$o],$A_field_description[$o],$A_field_rank[$o],$A_field_help[$o],$A_field_type[$o],$A_field_options[$o],$A_field_size[$o],$A_field_max[$o],$A_field_default[$o],$A_field_required[$o],$A_field_cost[$o],$A_multi_position[$o],$A_name_position[$o],$A_field_order[$o],$A_field_encrypt[$o],$A_field_show_hide[$o],$A_field_duplicate[$o],$vicidial_list_fields);
 
 						if ($SQLsuccess > 0)
 							{echo _QXZ("SUCCESS: Custom Field Deleted")." - $list_id|$A_field_label[$o]\n<BR>";}
@@ -512,7 +532,7 @@ if ( ($action == "COPY_FIELDS_SUBMIT") and ($list_id > 99) and ($source_list_id 
 			if ($copy_option=='APPEND')
 				{
 				if ($DB > 0) {echo _QXZ("Starting APPEND copy")."\n<BR>";}
-				$stmt="SELECT field_id,field_label,field_name,field_description,field_rank,field_help,field_type,field_options,field_size,field_max,field_default,field_cost,field_required,multi_position,name_position,field_order,field_duplicate from vicidial_lists_fields where list_id='$source_list_id' order by field_rank,field_order,field_label;";
+				$stmt="SELECT field_id,field_label,field_name,field_description,field_rank,field_help,field_type,field_options,field_size,field_max,field_default,field_cost,field_required,multi_position,name_position,field_order,field_encrypt,field_show_hide,field_duplicate from vicidial_lists_fields where list_id='$source_list_id' order by field_rank,field_order,field_label;";
 				$rslt=mysql_to_mysqli($stmt, $link);
 				$fields_to_print = mysqli_num_rows($rslt);
 				$fields_list='';
@@ -536,7 +556,9 @@ if ( ($action == "COPY_FIELDS_SUBMIT") and ($list_id > 99) and ($source_list_id 
 					$A_multi_position[$o] =		$rowx[13];
 					$A_name_position[$o] =		$rowx[14];
 					$A_field_order[$o] =		$rowx[15];
-					$A_field_duplicate[$o] =	$rowx[16];
+					$A_field_encrypt[$o] =		$rowx[16];
+					$A_field_show_hide[$o] =	$rowx[17];
+					$A_field_duplicate[$o] =	$rowx[18];
 
 					$o++;
 					$rank_select .= "<option>$o</option>";
@@ -580,7 +602,7 @@ if ( ($action == "COPY_FIELDS_SUBMIT") and ($list_id > 99) and ($source_list_id 
 							}
 
 						### add field function
-						$SQLsuccess = add_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$A_field_id[$o],$list_id,$A_field_label[$o],$A_field_name[$o],$A_field_description[$o],$A_field_rank[$o],$A_field_help[$o],$A_field_type[$o],$A_field_options[$o],$A_field_size[$o],$A_field_max[$o],$A_field_default[$o],$A_field_required[$o],$A_field_cost[$o],$A_multi_position[$o],$A_name_position[$o],$A_field_order[$o],$A_field_duplicate[$o],$vicidial_list_fields,$mysql_reserved_words);
+						$SQLsuccess = add_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$A_field_id[$o],$list_id,$A_field_label[$o],$A_field_name[$o],$A_field_description[$o],$A_field_rank[$o],$A_field_help[$o],$A_field_type[$o],$A_field_options[$o],$A_field_size[$o],$A_field_max[$o],$A_field_default[$o],$A_field_required[$o],$A_field_cost[$o],$A_multi_position[$o],$A_name_position[$o],$A_field_order[$o],$A_field_encrypt[$o],$A_field_show_hide[$o],$A_field_duplicate[$o],$vicidial_list_fields,$mysql_reserved_words);
 
 						if ($SQLsuccess > 0)
 							{echo _QXZ("SUCCESS: Custom Field Added")." - $list_id|$A_field_label[$o]\n<BR>";}
@@ -602,7 +624,7 @@ if ( ($action == "COPY_FIELDS_SUBMIT") and ($list_id > 99) and ($source_list_id 
 					{echo "<B><font color=red>"._QXZ("ERROR: Table does not exist")." custom_$list_id</B></font>\n<BR>";}
 				else
 					{
-					$stmt="SELECT field_id,field_label,field_name,field_description,field_rank,field_help,field_type,field_options,field_size,field_max,field_default,field_cost,field_required,multi_position,name_position,field_order,field_duplicate from vicidial_lists_fields where list_id='$source_list_id' order by field_rank,field_order,field_label;";
+					$stmt="SELECT field_id,field_label,field_name,field_description,field_rank,field_help,field_type,field_options,field_size,field_max,field_default,field_cost,field_required,multi_position,name_position,field_order,field_encrypt,field_show_hide,field_duplicate from vicidial_lists_fields where list_id='$source_list_id' order by field_rank,field_order,field_label;";
 					$rslt=mysql_to_mysqli($stmt, $link);
 					$fields_to_print = mysqli_num_rows($rslt);
 					$fields_list='';
@@ -626,6 +648,9 @@ if ( ($action == "COPY_FIELDS_SUBMIT") and ($list_id > 99) and ($source_list_id 
 						$A_multi_position[$o] =		$rowx[13];
 						$A_name_position[$o] =		$rowx[14];
 						$A_field_order[$o] =		$rowx[15];
+						$A_field_encrypt[$o] =		$rowx[16];
+						$A_field_show_hide[$o] =	$rowx[17];
+						$A_field_duplicate[$o] =	$rowx[18];
 						$o++;
 						}
 
@@ -642,7 +667,7 @@ if ( ($action == "COPY_FIELDS_SUBMIT") and ($list_id > 99) and ($source_list_id 
 							$current_field_id =	$rowx[0];
 
 							### modify field function
-							$SQLsuccess = modify_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$current_field_id,$list_id,$A_field_label[$o],$A_field_name[$o],$A_field_description[$o],$A_field_rank[$o],$A_field_help[$o],$A_field_type[$o],$A_field_options[$o],$A_field_size[$o],$A_field_max[$o],$A_field_default[$o],$A_field_required[$o],$A_field_cost[$o],$A_multi_position[$o],$A_name_position[$o],$A_field_order[$o],$A_field_duplicate[$o],$vicidial_list_fields);
+							$SQLsuccess = modify_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$current_field_id,$list_id,$A_field_label[$o],$A_field_name[$o],$A_field_description[$o],$A_field_rank[$o],$A_field_help[$o],$A_field_type[$o],$A_field_options[$o],$A_field_size[$o],$A_field_max[$o],$A_field_default[$o],$A_field_required[$o],$A_field_cost[$o],$A_multi_position[$o],$A_name_position[$o],$A_field_order[$o],$A_field_encrypt[$o],$A_field_show_hide[$o],$A_field_duplicate[$o],$vicidial_list_fields);
 
 							if ($SQLsuccess > 0)
 								{echo _QXZ("SUCCESS: Custom Field Modified")." - $list_id|$A_field_label[$o]\n<BR>";}
@@ -716,6 +741,7 @@ if ( ($action == "DELETE_CUSTOM_FIELD") and ($list_id > 99) and ($field_id > 0) 
 		die('MySQL '._QXZ("connect ERROR").': '. mysqli_connect_error());
 		}
 
+
 	$stmt="SELECT count(*) from vicidial_lists_fields where list_id='$list_id' and field_label='$field_label';";
 	if ($DB>0) {echo "$stmt";}
 	$rslt=mysql_to_mysqli($stmt, $link);
@@ -742,7 +768,8 @@ if ( ($action == "DELETE_CUSTOM_FIELD") and ($list_id > 99) and ($field_id > 0) 
 		else
 			{
 			### delete field function
-			$SQLsuccess = delete_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field_id,$list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$field_duplicate,$vicidial_list_fields);
+			$SQLsuccess = delete_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field_id,$list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$field_encrypt,$field_show_hide,$field_duplicate,$vicidial_list_fields);
+			if ($DB) {echo "delete_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field_id,$list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$field_encrypt,$field_show_hide,$field_duplicate,$vicidial_list_fields);<BR>\n";}
 
 			if ($SQLsuccess > 0)
 				{echo _QXZ("SUCCESS: Custom Field Deleted")." - $list_id|$field_label\n<BR>";}
@@ -854,7 +881,7 @@ if ( ($action == "ADD_CUSTOM_FIELD") and ($list_id > 99) )
 									}
 
 								### add field function
-								$SQLsuccess = add_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field_id,$list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$field_duplicate,$vicidial_list_fields,$mysql_reserved_words);
+								$SQLsuccess = add_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field_id,$list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$field_encrypt,$field_show_hide,$field_duplicate,$vicidial_list_fields,$mysql_reserved_words);
 
 								if ($SQLsuccess > 0)
 									{echo _QXZ("SUCCESS: Custom Field Added")." - $list_id|$field_label\n<BR>";}
@@ -944,7 +971,7 @@ if ( ($action == "MODIFY_CUSTOM_FIELD_SUBMIT") and ($list_id > 99) and ($field_i
 				else
 					{
 					### modify field function
-					$SQLsuccess = modify_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field_id,$list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$field_duplicate,$vicidial_list_fields);
+					$SQLsuccess = modify_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field_id,$list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$field_encrypt,$field_show_hide,$field_duplicate,$vicidial_list_fields);
 
 					if ($SQLsuccess > 0)
 						{echo _QXZ("SUCCESS: Custom Field Modified")." - $list_id|$field_label\n<BR>";}
@@ -1010,7 +1037,7 @@ if ( ($action == "MODIFY_CUSTOM_FIELDS") and ($list_id > 99) )
 	echo _QXZ("Records in this custom table").": $custom_records_count<br>\n";
 	echo "<center><TABLE width=$section_width cellspacing=3>\n";
 
-	$stmt="SELECT field_id,field_label,field_name,field_description,field_rank,field_help,field_type,field_options,field_size,field_max,field_default,field_cost,field_required,multi_position,name_position,field_order,field_duplicate from vicidial_lists_fields where list_id='$list_id' order by field_rank,field_order,field_label;";
+	$stmt="SELECT field_id,field_label,field_name,field_description,field_rank,field_help,field_type,field_options,field_size,field_max,field_default,field_cost,field_required,multi_position,name_position,field_order,field_encrypt,field_show_hide,field_duplicate from vicidial_lists_fields where list_id='$list_id' order by field_rank,field_order,field_label;";
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$fields_to_print = mysqli_num_rows($rslt);
 	$fields_list='';
@@ -1034,7 +1061,9 @@ if ( ($action == "MODIFY_CUSTOM_FIELDS") and ($list_id > 99) )
 		$A_multi_position[$o] =		$rowx[13];
 		$A_name_position[$o] =		$rowx[14];
 		$A_field_order[$o] =		$rowx[15];
-		$A_field_duplicate[$o] =	$rowx[16];
+		$A_field_encrypt[$o] =		$rowx[16];
+		$A_field_show_hide[$o] =	$rowx[17];
+		$A_field_duplicate[$o] =	$rowx[18];
 
 		$o++;
 		$rank_select .= "<option>$o</option>";
@@ -1047,14 +1076,19 @@ if ( ($action == "MODIFY_CUSTOM_FIELDS") and ($list_id > 99) )
 	echo "<br>"._QXZ("SUMMARY OF FIELDS").":\n";
 	echo "<center><TABLE cellspacing=0 cellpadding=1>\n";
 	echo "<TR BGCOLOR=BLACK>";
-	echo "<TD align=right><B><FONT FACE=\"Arial,Helvetica\" size=2 color=white>"._QXZ("RANK")." &nbsp; &nbsp; </B></TD>";
-	echo "<TD align=right><B><FONT FACE=\"Arial,Helvetica\" size=2 color=white>"._QXZ("LABEL")." &nbsp; &nbsp; </B></TD>";
-	echo "<TD align=right><B><FONT FACE=\"Arial,Helvetica\" size=2 color=white>"._QXZ("NAME")." &nbsp; &nbsp; </B></TD>";
-	echo "<TD align=right><B><FONT FACE=\"Arial,Helvetica\" size=2 color=white>"._QXZ("TYPE")." &nbsp; &nbsp; </B></TD>";
-	echo "<TD align=right><B><FONT FACE=\"Arial,Helvetica\" size=2 color=white>"._QXZ("COST")." &nbsp; &nbsp; </B></TD>\n";
+	echo "<TD align=right nowrap><B><FONT FACE=\"Arial,Helvetica\" size=2 color=white>"._QXZ("RANK")." &nbsp; &nbsp; </B></TD>";
+	echo "<TD align=right nowrap><B><FONT FACE=\"Arial,Helvetica\" size=2 color=white>"._QXZ("LABEL")." &nbsp; &nbsp; </B></TD>";
+	echo "<TD align=right nowrap><B><FONT FACE=\"Arial,Helvetica\" size=2 color=white>"._QXZ("NAME")." &nbsp; &nbsp; </B></TD>";
+	echo "<TD align=right nowrap><B><FONT FACE=\"Arial,Helvetica\" size=2 color=white>"._QXZ("TYPE")." &nbsp; &nbsp; </B></TD>";
+	if ($hide_enc < 1)
+		{
+		echo "<TD align=right nowrap><B><FONT FACE=\"Arial,Helvetica\" size=2 color=white>"._QXZ("ENC")." &nbsp; &nbsp; </B></TD>";
+		}
+	echo "<TD align=right nowrap><B><FONT FACE=\"Arial,Helvetica\" size=2 color=white>"._QXZ("COST")." &nbsp; &nbsp; </B></TD>\n";
 	echo "</TR>\n";
 
 	$o=0;
+	$total_enc=0;
 	while ($fields_to_print > $o) 
 		{
 		$LcolorB='';   $LcolorE='';
@@ -1077,8 +1111,13 @@ if ( ($action == "MODIFY_CUSTOM_FIELDS") and ($list_id > 99) )
 		echo "<td align=right><font size=2> <a href=\"#ANCHOR_$A_field_label[$o]\">$LcolorB$A_field_label[$o]$LcolorE</a> &nbsp; &nbsp; </td>";
 		echo "<td align=right><font size=2> $A_field_name[$o] &nbsp; &nbsp; </td>";
 		echo "<td align=right><font size=2> $A_field_type[$o] &nbsp; &nbsp; </td>";
+		if ($hide_enc < 1)
+			{
+			echo "<td align=right><font size=2> $A_field_encrypt[$o] &nbsp; &nbsp; </td>";
+			}
 		echo "<td align=right><font size=2> $A_field_cost[$o] &nbsp; &nbsp; </td></tr>\n";
 
+		if ($A_field_encrypt[$o] == 'Y') {$total_enc++;}
 		$total_cost = ($total_cost + $A_field_cost[$o]);
 		$o++;
 		}
@@ -1091,6 +1130,10 @@ if ( ($action == "MODIFY_CUSTOM_FIELDS") and ($list_id > 99) )
 		echo "<td align=right><font size=2> $o &nbsp; &nbsp; </td>";
 		echo "<td align=right><font size=2> &nbsp; &nbsp; </td>";
 		echo "<td align=right><font size=2> &nbsp; &nbsp; </td>";
+		if ($hide_enc < 1)
+			{
+			echo "<td align=right><font size=2> $total_enc &nbsp; &nbsp; </td>";
+			}
 		echo "<td align=right><font size=2> $total_cost &nbsp; &nbsp; </td></tr>\n";
 		}
 	echo "</table></center><BR><BR>\n";
@@ -1136,6 +1179,9 @@ if ( ($action == "MODIFY_CUSTOM_FIELDS") and ($list_id > 99) )
 			}
 		$field_HTML='';
 
+		$encrypt_icon='';
+		if ($A_field_encrypt[$o] == 'Y')
+			{$encrypt_icon = " <img src=\""._QXZ("../../agc/images/encrypt.gif")."\" width=16 height=20 valign=bottom alt=\""._QXZ("Encrypted Field")."\">";}
 		if ($A_field_type[$o]=='SELECT')
 			{
 			$field_HTML .= "<select size=1 name=$A_field_label[$o] id=$A_field_label[$o]>\n";
@@ -1180,11 +1226,36 @@ if ( ($action == "MODIFY_CUSTOM_FIELDS") and ($list_id > 99) )
 		if ($A_field_type[$o]=='TEXT') 
 			{
 			if ($A_field_default[$o]=='NULL') {$A_field_default[$o]='';}
-			$field_HTML .= "<input type=text size=$A_field_size[$o] maxlength=$A_field_max[$o] name=$A_field_label[$o] id=$A_field_label[$o] value=\"$A_field_default[$o]\">\n";
+			if ($A_field_show_hide[$o] != 'DISABLED')
+				{
+				$field_temp_val = $A_field_default[$o];
+				$field_orig_val = $A_field_default[$o];
+				if (strlen($field_temp_val) > 0)
+					{
+					if ($A_field_show_hide[$o] == 'LAST_4')
+						{$A_field_default[$o] = str_repeat("X", (strlen($field_temp_val) - 4)) . substr($field_temp_val,-4,4);}
+					elseif ($A_field_show_hide[$o] == 'LAST_3')
+						{$A_field_default[$o] = str_repeat("X", (strlen($field_temp_val) - 3)) . substr($field_temp_val,-3,3);}
+					elseif ($A_field_show_hide[$o] == 'LAST_2')
+						{$A_field_default[$o] = str_repeat("X", (strlen($field_temp_val) - 2)) . substr($field_temp_val,-2,2);}
+					elseif ($A_field_show_hide[$o] == 'LAST_1')
+						{$A_field_default[$o] = str_repeat("X", (strlen($field_temp_val) - 1)) . substr($field_temp_val,-1,1);}
+					elseif ($A_field_show_hide[$o] == 'FIRST_1_LAST_4')
+						{$A_field_default[$o] = substr($field_temp_val,0,1) . str_repeat("X", (strlen($field_temp_val) - 5)) . substr($field_temp_val,-4,4);}
+					else # X_OUT_ALL
+						{$A_field_default[$o] = preg_replace("/./",'X',$field_temp_val);}
+					}
+				$field_HTML .= _QXZ("$A_field_default[$o]")." &nbsp; "._QXZ("Overwrite").": <input type=text size=$A_field_size[$o] maxlength=$A_field_max[$o] name=OVERRIDE_$A_field_label[$o] id=OVERRIDE_$A_field_label[$o] value=\"\">$encrypt_icon\n";
+				$A_field_default[$o] = $field_orig_val;
+				}
+			else
+				{
+				$field_HTML .= "<input type=text size=$A_field_size[$o] maxlength=$A_field_max[$o] name=$A_field_label[$o] id=$A_field_label[$o] value=\"$A_field_default[$o]\">$encrypt_icon\n";
+				}
 			}
 		if ($A_field_type[$o]=='AREA') 
 			{
-			$field_HTML .= "<textarea name=$A_field_label[$o] id=$A_field_label[$o] ROWS=$A_field_max[$o] COLS=$A_field_size[$o]></textarea>";
+			$field_HTML .= "<textarea name=$A_field_label[$o] id=$A_field_label[$o] ROWS=$A_field_max[$o] COLS=$A_field_size[$o]></textarea>$encrypt_icon";
 			}
 		if ($A_field_type[$o]=='DISPLAY')
 			{
@@ -1194,7 +1265,31 @@ if ( ($action == "MODIFY_CUSTOM_FIELDS") and ($list_id > 99) )
 		if ($A_field_type[$o]=='READONLY')
 			{
 			if ($A_field_default[$o]=='NULL') {$A_field_default[$o]='';}
-			$field_HTML .= "$A_field_default[$o]\n";
+
+			if ($A_field_show_hide[$o] != 'DISABLED')
+				{
+				$field_temp_val = $A_field_default[$o];
+				if (strlen($field_temp_val) > 0)
+					{
+					if ($A_field_show_hide[$o] == 'LAST_4')
+						{$A_field_default[$o] = str_repeat("X", (strlen($field_temp_val) - 4)) . substr($field_temp_val,-4,4);}
+					elseif ($A_field_show_hide[$o] == 'LAST_3')
+						{$A_field_default[$o] = str_repeat("X", (strlen($field_temp_val) - 3)) . substr($field_temp_val,-3,3);}
+					elseif ($A_field_show_hide[$o] == 'LAST_2')
+						{$A_field_default[$o] = str_repeat("X", (strlen($field_temp_val) - 2)) . substr($field_temp_val,-2,2);}
+					elseif ($A_field_show_hide[$o] == 'LAST_1')
+						{$A_field_default[$o] = str_repeat("X", (strlen($field_temp_val) - 1)) . substr($field_temp_val,-1,1);}
+					elseif ($A_field_show_hide[$o] == 'FIRST_1_LAST_4')
+						{$A_field_default[$o] = substr($field_temp_val,0,1) . str_repeat("X", (strlen($field_temp_val) - 5)) . substr($field_temp_val,-4,4);}
+					else # X_OUT_ALL
+						{$A_field_default[$o] = preg_replace("/./",'X',$field_temp_val);}
+					}
+				$field_HTML .= "$A_field_default[$o]$encrypt_icon\n";
+				}
+			else
+				{
+				$field_HTML .= "$A_field_default[$o]$encrypt_icon\n";
+				}
 			}
 		if ($A_field_type[$o]=='HIDDEN')
 			{
@@ -1223,7 +1318,7 @@ if ( ($action == "MODIFY_CUSTOM_FIELDS") and ($list_id > 99) )
 			$field_HTML .= "	'formname': 'form_custom_$list_id',\n";
 			$field_HTML .= "	'controlname': '$A_field_label[$o]'});\n";
 			$field_HTML .= "o_cal.a_tpl.yearscroll = false;\n";
-			$field_HTML .= "</script>\n";
+			$field_HTML .= "</script>$encrypt_icon\n";
 			}
 		if ($A_field_type[$o]=='TIME') 
 			{
@@ -1273,7 +1368,7 @@ if ( ($action == "MODIFY_CUSTOM_FIELDS") and ($list_id > 99) )
 			$field_HTML .= "<option>50</option>";
 			$field_HTML .= "<option>55</option>";
 			$field_HTML .= "<OPTION value=\"$default_minute\" selected>$default_minute</OPTION>";
-			$field_HTML .= "</SELECT>";
+			$field_HTML .= "</SELECT>$encrypt_icon";
 			}
 
 		if ($A_name_position[$o]=='LEFT') 
@@ -1377,6 +1472,40 @@ if ( ($action == "MODIFY_CUSTOM_FIELDS") and ($list_id > 99) )
 		echo "<option selected>$A_field_required[$o]</option>\n";
 		echo "</select>  $NWB#lists_fields-field_required$NWE </td></tr>\n";
 		echo "<tr $bgcolor><td align=right>"._QXZ("Field Duplicate")." $A_field_rank[$o]: </td><td align=left>$A_field_duplicate[$o]  $NWB#lists_fields-field_duplicate$NWE </td></tr>\n";
+		if ($hide_enc < 1)
+			{
+			if ( ($custom_records_count < 1) and ( ($A_field_type[$o]=='TEXT') or ($A_field_type[$o]=='HIDDEN') or ($A_field_type[$o]=='READONLY') or ($A_field_type[$o]=='HIDEBLOB') or ($A_field_type[$o]=='AREA') or ($A_field_type[$o]=='DATE') or ($A_field_type[$o]=='TIME') ) )
+				{
+				echo "<tr $bgcolor><td align=right>"._QXZ("Field Encrypt")." $A_field_rank[$o]: </td><td align=left><select size=1 name=field_encrypt>\n";
+				echo "<option value=\"Y\">YES</option>\n";
+				echo "<option value=\"N\">NO</option>\n";
+				echo "<option selected>$A_field_encrypt[$o]</option>\n";
+				echo "</select>  $NWB#lists_fields-field_encrypt$NWE </td></tr>\n";
+				}
+			else
+				{
+				echo "<tr $bgcolor><td align=right>"._QXZ("Field Encrypt")." $A_field_rank[$o]: </td><td align=left><input type=hidden name=field_encrypt value=\"$A_field_encrypt[$o]\"> $A_field_encrypt[$o]\n";
+				echo "  $NWB#lists_fields-field_encrypt$NWE </td></tr>\n";
+				}
+			echo "<tr $bgcolor><td align=right>"._QXZ("Field Show Hide").": </td><td align=left><select size=1 name=field_show_hide>\n";
+			echo "<option value=\"DISABLED\">DISABLED</option>\n";
+			echo "<option value=\"X_OUT_ALL\">X_OUT_ALL</option>\n";
+			echo "<option value=\"LAST_1\">LAST_1</option>\n";
+			echo "<option value=\"LAST_2\">LAST_2</option>\n";
+			echo "<option value=\"LAST_3\">LAST_3</option>\n";
+			echo "<option value=\"LAST_4\">LAST_4</option>\n";
+			echo "<option value=\"FIRST_1_LAST_4\">FIRST_1_LAST_4</option>\n";
+			echo "<option selected>$A_field_show_hide[$o]</option>\n";
+			echo "</select>  $NWB#lists_fields-field_show_hide$NWE </td></tr>\n";
+			}
+		else
+			{
+			echo "<tr $bgcolor><td colspan=2>\n";
+			echo "<input type=hidden name=field_show_hide value=\"$A_field_show_hide[$o]\">\n";
+			echo "<input type=hidden name=field_encrypt value=\"$A_field_encrypt[$o]\">\n";
+			echo "</td></tr>\n";
+			}
+
 		echo "<tr $bgcolor><td align=center colspan=2><input type=submit name=submit value=\""._QXZ("SUBMIT")."\"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;\n";
 		echo "<B><a href=\"$PHP_SELF?action=DELETE_CUSTOM_FIELD_CONFIRMATION&list_id=$list_id&field_id=$A_field_id[$o]&field_label=$A_field_label[$o]&field_type=$A_field_type[$o]&field_duplicate=$A_field_duplicate[$o]&DB=$DB\">"._QXZ("DELETE THIS CUSTOM FIELD")."</a></B>";
 		echo "</td></tr>\n";
@@ -1446,6 +1575,29 @@ if ( ($action == "MODIFY_CUSTOM_FIELDS") and ($list_id > 99) )
 	echo "<option value=\"N\" SELECTED>"._QXZ("NO")."</option>\n";
 	echo "<option value=\"Y\">"._QXZ("YES")."</option>\n";
 	echo "</select>  $NWB#lists_fields-field_duplicate$NWE </td></tr>\n";
+	if ($hide_enc < 1)
+		{
+		echo "<tr $bgcolor><td align=right>"._QXZ("Field Encrypt").": </td><td align=left><select size=1 name=field_encrypt>\n";
+		echo "<option value=\"Y\">YES</option>\n";
+		echo "<option selected value=\"N\">NO</option>\n";
+		echo "</select>  $NWB#lists_fields-field_encrypt$NWE </td></tr>\n";
+		echo "<tr $bgcolor><td align=right>"._QXZ("Field Show Hide").": </td><td align=left><select size=1 name=field_show_hide>\n";
+		echo "<option selected value=\"DISABLED\">DISABLED</option>\n";
+		echo "<option value=\"X_OUT_ALL\">X_OUT_ALL</option>\n";
+		echo "<option value=\"LAST_1\">LAST_1</option>\n";
+		echo "<option value=\"LAST_2\">LAST_2</option>\n";
+		echo "<option value=\"LAST_3\">LAST_3</option>\n";
+		echo "<option value=\"LAST_4\">LAST_4</option>\n";
+		echo "<option value=\"FIRST_1_LAST_4\">FIRST_1_LAST_4</option>\n";
+		echo "</select>  $NWB#lists_fields-field_show_hide$NWE </td></tr>\n";
+		}
+	else
+		{
+		echo "<tr $bgcolor><td colspan=2>\n";
+		echo "<input type=hidden name=field_show_hide value=\"DISABLED\">\n";
+		echo "<input type=hidden name=field_encrypt value=\"N\">\n";
+		echo "</td></tr>\n";
+		}
 	echo "<tr $bgcolor><td align=center colspan=2><input type=submit name=submit value=\""._QXZ("Submit")."\"></td></tr>\n";
 	echo "</table></center></form><BR><BR>\n";
 	echo "</table></center><BR><BR>\n";
@@ -1632,7 +1784,7 @@ echo "\n\n\n<br><br><br>\n<font size=1> "._QXZ("runtime").": $RUNtime "._QXZ("se
 
 ################################################################################
 ##### BEGIN add field function
-function add_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field_id,$list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$field_duplicate,$vicidial_list_fields,$mysql_reserved_words)
+function add_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field_id,$list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$field_encrypt,$field_show_hide,$field_duplicate,$vicidial_list_fields,$mysql_reserved_words)
 	{
 	$table_exists=0;
 	$stmt="SHOW TABLES LIKE \"custom_$list_id\";";
@@ -1646,6 +1798,15 @@ function add_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field
 		{$field_sql = "CREATE TABLE custom_$list_id (lead_id INT(9) UNSIGNED PRIMARY KEY NOT NULL, $field_label ";}
 	else
 		{$field_sql = "ALTER TABLE custom_$list_id ADD $field_label ";}
+
+	if ($field_encrypt=='Y')
+		{
+		# override encrypt setting for non-encryptable field types
+		if ( ( ($field_type!='TEXT') and ($field_type!='HIDDEN') and ($field_type!='READONLY') and ($field_type!='HIDEBLOB') and ($field_type!='AREA') and ($field_type!='DATE') and ($field_type!='TIME') ) or ($field_duplicate=='Y') )
+			{
+			$field_encrypt='N';
+			}
+		}
 
 	$field_options_ENUM='';
 	$field_cost=1;
@@ -1689,8 +1850,14 @@ function add_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field
 	if ( ($field_type=='TEXT') or ($field_type=='HIDDEN') or ($field_type=='READONLY') )
 		{
 		if ($field_max < 1) {$field_max=1;};
-		$field_sql .= "VARCHAR($field_max) ";
-		$field_cost = ($field_max + $field_cost);
+		$field_maxSQL = $field_max;
+		if ($field_encrypt == 'Y')
+			{
+			if ($field_max < 8) {$field_maxSQL=30;}
+			else {$field_maxSQL = ($field_max * 4);}
+			}
+		$field_sql .= "VARCHAR($field_maxSQL) ";
+		$field_cost = ($field_maxSQL + $field_cost);
 		}
 	if ($field_type=='HIDEBLOB')
 		{
@@ -1704,18 +1871,37 @@ function add_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field
 		}
 	if ($field_type=='DATE') 
 		{
-		$field_sql .= "DATE ";
-		$field_cost = 10;
+		if ($field_encrypt == 'Y')
+			{
+			$field_sql .= "VARCHAR(30) ";
+			$field_cost = 31;
+			}
+		else
+			{
+			$field_sql .= "DATE ";
+			$field_cost = 10;
+			}
 		}
 	if ($field_type=='TIME') 
 		{
-		$field_sql .= "TIME ";
-		$field_cost = 8;
+		if ($field_encrypt == 'Y')
+			{
+			$field_sql .= "VARCHAR(30) ";
+			$field_cost = 31;
+			}
+		else
+			{
+			$field_sql .= "TIME ";
+			$field_cost = 8;
+			}
 		}
 	$field_cost = ($field_cost * 3); # account for utf8 database
 
 	if ( ($field_default != 'NULL') and ($field_type!='AREA') and ($field_type!='DATE') and ($field_type!='TIME') )
-		{$field_sql .= "default '$field_default'";}
+		{
+		if ( ($field_encrypt=='N') or ( ($field_encrypt=='Y') and ($field_type!='TEXT') and ($field_type!='HIDDEN') and ($field_type!='READONLY') and ($field_type!='HIDEBLOB') ) )
+			{$field_sql .= "default '$field_default'";}
+		}
 
 	if ($table_exists < 1)
 		{$field_sql .= ");";}
@@ -1757,7 +1943,7 @@ function add_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field
 
 	if ($SQLexecuted > 0)
 		{
-		$stmt="INSERT INTO vicidial_lists_fields set field_label='$field_label',field_name='$field_name',field_description='$field_description',field_rank='$field_rank',field_help='$field_help',field_type='$field_type',field_options=\"$field_options\",field_size='$field_size',field_max='$field_max',field_default='$field_default',field_required='$field_required',field_cost='$field_cost',list_id='$list_id',multi_position='$multi_position',name_position='$name_position',field_order='$field_order',field_duplicate='$field_duplicate';";
+		$stmt="INSERT INTO vicidial_lists_fields set field_label='$field_label',field_name='$field_name',field_description='$field_description',field_rank='$field_rank',field_help='$field_help',field_type='$field_type',field_options=\"$field_options\",field_size='$field_size',field_max='$field_max',field_default='$field_default',field_required='$field_required',field_cost='$field_cost',list_id='$list_id',multi_position='$multi_position',name_position='$name_position',field_order='$field_order',field_encrypt='$field_encrypt',field_show_hide='$field_show_hide',field_duplicate='$field_duplicate';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$field_update = mysqli_affected_rows($link);
 		if ($DB) {echo "$field_update|$stmt\n";}
@@ -1782,7 +1968,7 @@ function add_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field
 
 ################################################################################
 ##### BEGIN modify field function
-function modify_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field_id,$list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$field_duplicate,$vicidial_list_fields)
+function modify_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field_id,$list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$field_encrypt,$field_show_hide,$field_duplicate,$vicidial_list_fields)
 	{
 	$field_db_exists=0;
 	if ( ($field_type=='DISPLAY') or ($field_type=='SCRIPT') or (preg_match("/\|$field_label\|/i",$vicidial_list_fields)) or ($field_duplicate=='Y') )
@@ -1801,6 +1987,14 @@ function modify_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$fi
 
 	if ($field_duplicate=='Y')
 		{$field_type='TEXT';}
+	if ($field_encrypt=='Y')
+		{
+		# override encrypt setting for non-encryptable field types
+		if ( ( ($field_type!='TEXT') and ($field_type!='HIDDEN') and ($field_type!='READONLY') and ($field_type!='HIDEBLOB') and ($field_type!='AREA') and ($field_type!='DATE') and ($field_type!='TIME') ) or ($field_duplicate=='Y') )
+			{
+			$field_encrypt='N';
+			}
+		}
 
 	$field_options_ENUM='';
 	$field_cost=1;
@@ -1842,8 +2036,15 @@ function modify_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$fi
 		}
 	if ( ($field_type=='TEXT') or ($field_type=='HIDDEN') or ($field_type=='READONLY') )
 		{
-		$field_sql .= "VARCHAR($field_max) ";
-		$field_cost = ($field_max + $field_cost);
+		if ($field_max < 1) {$field_max=1;};
+		$field_maxSQL = $field_max;
+		if ($field_encrypt == 'Y')
+			{
+			if ($field_max < 8) {$field_maxSQL=30;}
+			else {$field_maxSQL = ($field_max * 4);}
+			}
+		$field_sql .= "VARCHAR($field_maxSQL) ";
+		$field_cost = ($field_maxSQL + $field_cost);
 		}
 	if ($field_type=='HIDEBLOB')
 		{
@@ -1857,20 +2058,41 @@ function modify_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$fi
 		}
 	if ($field_type=='DATE') 
 		{
-		$field_sql .= "DATE ";
-		$field_cost = 10;
+		if ($field_encrypt == 'Y')
+			{
+			$field_sql .= "VARCHAR(30) ";
+			$field_cost = 31;
+			}
+		else
+			{
+			$field_sql .= "DATE ";
+			$field_cost = 10;
+			}
 		}
 	if ($field_type=='TIME') 
 		{
-		$field_sql .= "TIME ";
-		$field_cost = 8;
+		if ($field_encrypt == 'Y')
+			{
+			$field_sql .= "VARCHAR(30) ";
+			$field_cost = 31;
+			}
+		else
+			{
+			$field_sql .= "TIME ";
+			$field_cost = 8;
+			}
 		}
 	$field_cost = ($field_cost * 3); # account for utf8 database
 
 	if ( ($field_default == 'NULL') or ($field_type=='AREA') or ($field_type=='DATE') or ($field_type=='TIME') )
 		{$field_sql .= ";";}
 	else
-		{$field_sql .= "default '$field_default';";}
+		{
+		if ( ($field_encrypt=='N') or ( ($field_encrypt=='Y') and ($field_type!='TEXT') and ($field_type!='HIDDEN') and ($field_type!='READONLY') and ($field_type!='HIDEBLOB') ) )
+			{$field_sql .= "default '$field_default';";}
+		else
+			{$field_sql .= ";";}
+		}
 
 	$SQLexecuted=0;
 
@@ -1900,7 +2122,7 @@ function modify_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$fi
 
 	if ($SQLexecuted > 0)
 		{
-		$stmt="UPDATE vicidial_lists_fields set field_label='$field_label',field_name='$field_name',field_description='$field_description',field_rank='$field_rank',field_help='$field_help',field_type='$field_type',field_options=\"$field_options\",field_size='$field_size',field_max='$field_max',field_default='$field_default',field_required='$field_required',field_cost='$field_cost',multi_position='$multi_position',name_position='$name_position',field_order='$field_order',field_duplicate='$field_duplicate' where list_id='$list_id' and field_id='$field_id';";
+		$stmt="UPDATE vicidial_lists_fields set field_label='$field_label',field_name='$field_name',field_description='$field_description',field_rank='$field_rank',field_help='$field_help',field_type='$field_type',field_options=\"$field_options\",field_size='$field_size',field_max='$field_max',field_default='$field_default',field_required='$field_required',field_cost='$field_cost',multi_position='$multi_position',name_position='$name_position',field_order='$field_order',field_encrypt='$field_encrypt',field_show_hide='$field_show_hide',field_duplicate='$field_duplicate' where list_id='$list_id' and field_id='$field_id';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$field_update = mysqli_affected_rows($link);
 		if ($DB) {echo "$field_update|$stmt\n";}
@@ -1925,7 +2147,7 @@ function modify_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$fi
 
 ################################################################################
 ##### BEGIN delete field function
-function delete_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field_id,$list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$field_duplicate,$vicidial_list_fields)
+function delete_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field_id,$list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$field_encrypt,$field_show_hide,$field_duplicate,$vicidial_list_fields)
 	{
 	$SQLexecuted=0;
 

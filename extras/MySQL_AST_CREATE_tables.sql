@@ -512,7 +512,7 @@ processed ENUM('Y','N'),
 queue_seconds DECIMAL(7,2) default '0',
 user_group VARCHAR(20),
 xfercallid INT(9) UNSIGNED,
-term_reason  ENUM('CALLER','AGENT','QUEUETIMEOUT','ABANDON','AFTERHOURS','HOLDRECALLXFER','HOLDTIME','NOAGENT','NONE','MAXCALLS','ACFILTER') default 'NONE',
+term_reason  ENUM('CALLER','AGENT','QUEUETIMEOUT','ABANDON','AFTERHOURS','HOLDRECALLXFER','HOLDTIME','NOAGENT','NONE','MAXCALLS','ACFILTER','CLOSETIME') default 'NONE',
 uniqueid VARCHAR(20) NOT NULL default '',
 agent_only VARCHAR(20) default '',
 queue_position SMALLINT(4) UNSIGNED default '1',
@@ -666,7 +666,8 @@ api_only_user ENUM('0','1') default '0',
 modify_auto_reports ENUM('1','0') default '0',
 modify_ip_lists ENUM('1','0') default '0',
 ignore_ip_list ENUM('1','0') default '0',
-ready_max_logout MEDIUMINT(7) default '-1'
+ready_max_logout MEDIUMINT(7) default '-1',
+export_gdpr_leads ENUM('0','1','2') default '0'
 ) ENGINE=MyISAM;
 
 CREATE UNIQUE INDEX user ON vicidial_users (user);
@@ -994,7 +995,12 @@ hangup_xfer_record_start ENUM('Y','N') default 'N',
 scheduled_callbacks_email_alert ENUM('Y', 'N') default 'N',
 max_inbound_calls_outcome ENUM('DEFAULT','ALLOW_AGENTDIRECT','ALLOW_MI_PAUSE','ALLOW_AGENTDIRECT_AND_MI_PAUSE') default 'DEFAULT',
 manual_auto_next_options ENUM('DEFAULT','PAUSE_NO_COUNT') default 'DEFAULT',
-agent_screen_time_display ENUM('DISABLED','ENABLED_BASIC','ENABLED_FULL','ENABLED_BILL_BREAK_LUNCH_COACH') default 'DISABLED'
+agent_screen_time_display ENUM('DISABLED','ENABLED_BASIC','ENABLED_FULL','ENABLED_BILL_BREAK_LUNCH_COACH') default 'DISABLED',
+next_dial_my_callbacks ENUM('DISABLED','ENABLED') default 'DISABLED',
+inbound_no_agents_no_dial_container VARCHAR(40) default '---DISABLED---',
+inbound_no_agents_no_dial_threshold SMALLINT(5) default '0',
+cid_group_id VARCHAR(20) default '---DISABLED---',
+pause_max_dispo VARCHAR(6) default 'PAUSMX'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_lists (
@@ -1161,7 +1167,7 @@ play_welcome_message ENUM('ALWAYS','NEVER','IF_WAIT_ONLY','YES_UNLESS_NODELAY') 
 answer_sec_pct_rt_stat_one SMALLINT(5) UNSIGNED default '20',
 answer_sec_pct_rt_stat_two SMALLINT(5) UNSIGNED default '30',
 default_group_alias VARCHAR(30) default '',
-no_agent_no_queue ENUM('N','Y','NO_PAUSED') default 'N',
+no_agent_no_queue ENUM('N','Y','NO_PAUSED','NO_READY') default 'N',
 no_agent_action ENUM('CALLMENU','INGROUP','DID','MESSAGE','EXTENSION','VOICEMAIL','VMAIL_NO_INST') default 'MESSAGE',
 no_agent_action_value VARCHAR(255) default 'nbdy-avail-to-take-call|vm-goodbye',
 web_form_address_two TEXT,
@@ -1247,7 +1253,21 @@ inbound_survey ENUM('DISABLED','ENABLED') default 'DISABLED',
 inbound_survey_filename TEXT,
 inbound_survey_accept_digit VARCHAR(1) default '',
 inbound_survey_question_filename TEXT,
-inbound_survey_callmenu TEXT
+inbound_survey_callmenu TEXT,
+icbq_expiration_hours SMALLINT(5) default '96',
+closing_time_action VARCHAR(30) default 'DISABLED',
+closing_time_now_trigger ENUM('Y','N') default 'N',
+closing_time_filename TEXT,
+closing_time_end_filename TEXT,
+closing_time_lead_reset ENUM('Y','N') default 'N',
+closing_time_option_exten VARCHAR(20) default '8300',
+closing_time_option_callmenu VARCHAR(50) default '',
+closing_time_option_voicemail VARCHAR(20) default '',
+closing_time_option_xfer_group VARCHAR(20) default '---NONE---',
+closing_time_option_callback_list_id BIGINT(14) UNSIGNED default '999',
+add_lead_timezone ENUM('SERVER','PHONE_CODE_AREACODE') default 'SERVER',
+icbq_call_time_id VARCHAR(20) default '24hours',
+icbq_dial_filter VARCHAR(50) default 'NONE'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_stations (
@@ -1355,7 +1375,7 @@ pause_code VARCHAR(6) default '',
 index (lead_id),
 index (user),
 index (event_time),
-index (uinqueid)
+index (uniqueid)
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_scripts (
@@ -1763,7 +1783,11 @@ did_system_filter ENUM('0','1') default '0',
 allow_phonebook ENUM('0','1') default '0',
 servicelevel_direct SMALLINT UNSIGNED DEFAULT '4',
 servicelevel_one SMALLINT UNSIGNED DEFAULT '20',
-servicelevel_two SMALLINT UNSIGNED DEFAULT '40'
+servicelevel_two SMALLINT UNSIGNED DEFAULT '40',
+anyone_callback_inactive_lists ENUM('default','NO_ADD_TO_HOPPER','KEEP_IN_HOPPER') default 'default',
+tmp_download_dir VARCHAR(255) default 'download',
+anyone_callback_inactive_lists ENUM('default','NO_ADD_TO_HOPPER','KEEP_IN_HOPPER') default 'default',
+enable_gdpr_download_deletion ENUM('0','1','2') default '0'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_campaigns_list_mix (
@@ -2324,7 +2348,7 @@ server_ip VARCHAR(15) NOT NULL,
 trigger_time DATETIME,
 user VARCHAR(20),
 trigger_lines TEXT,
-trigger_results TEXT,
+trigger_results MEDIUMTEXT,
 index (trigger_id),
 index (trigger_time)
 ) ENGINE=MyISAM;
@@ -2870,7 +2894,7 @@ index (call_date)
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_campaign_cid_areacodes (
-campaign_id VARCHAR(8) NOT NULL,
+campaign_id VARCHAR(20) NOT NULL,
 areacode VARCHAR(5) NOT NULL,
 outbound_cid VARCHAR(20),
 active ENUM('Y','N','') default '',
@@ -2909,7 +2933,7 @@ group_name VARCHAR(100) default '',
 job_title VARCHAR(100) default '',
 location VARCHAR(100) default '',
 office_num_phone_code VARCHAR(10) COLLATE utf8_unicode_ci DEFAULT '',
-cell_num_phone_code VARCHAR(10) COLLATE utf8_unicode_ci DEFAULT ''
+cell_num_phone_code VARCHAR(10) COLLATE utf8_unicode_ci DEFAULT '',
 other_num1_phone_code VARCHAR(10) COLLATE utf8_unicode_ci DEFAULT '',
 other_num2_phone_code VARCHAR(10) COLLATE utf8_unicode_ci DEFAULT ''
 
@@ -3503,7 +3527,7 @@ KEY ajax_dbtime_key (db_time)
 CREATE TABLE vicidial_settings_containers (
 container_id VARCHAR(40) PRIMARY KEY NOT NULL,
 container_notes VARCHAR(255) default '',
-container_type ENUM('OTHER','PERL_CLI','EMAIL_TEMPLATE','AGI') default 'OTHER',
+container_type VARCHAR(40) default 'OTHER',
 user_group VARCHAR(20) default '---ALL---',
 container_entry MEDIUMTEXT
 ) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -3939,6 +3963,52 @@ ALTER TABLE `WallBoardData`
 
 CREATE TABLE `WallBoardData_archive` LIKE `WallBoardData`;
 
+CREATE TABLE vicidial_process_log (
+serial_id VARCHAR(20) NOT NULL,
+run_time DATETIME,
+run_sec INT,
+server_ip VARCHAR(15) NOT NULL,
+script VARCHAR(100),
+process VARCHAR(100),
+output_lines MEDIUMTEXT,
+index (serial_id),
+index (run_time)
+) ENGINE=MyISAM;
+
+CREATE TABLE vicidial_inbound_callback_queue (
+icbq_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+icbq_date DATETIME,
+icbq_status VARCHAR(10),
+icbq_phone_number VARCHAR(20),
+icbq_phone_code VARCHAR(10),
+icbq_nextday_choice ENUM('Y','N','U') default 'U',
+lead_id INT(9) UNSIGNED NOT NULL,
+group_id VARCHAR(20) NOT NULL,
+queue_priority TINYINT(2) default '0',
+call_date DATETIME,
+gmt_offset_now DECIMAL(4,2) DEFAULT '0.00',
+modify_date TIMESTAMP,
+index (icbq_status)
+) ENGINE=MyISAM;
+
+CREATE TABLE recording_log_deletion_queue (
+recording_id INT(9) UNSIGNED PRIMARY KEY,
+lead_id int(10) UNSIGNED,
+filename VARCHAR(100),
+location VARCHAR(255),
+date_queued DATETIME,
+date_deleted DATETIME,
+index (date_deleted)
+) ENGINE=MyISAM;
+
+CREATE TABLE vicidial_cid_groups (
+cid_group_id VARCHAR(20) PRIMARY KEY NOT NULL,
+cid_group_notes VARCHAR(255) default '',
+cid_group_type ENUM('AREACODE','STATE') default 'AREACODE',
+user_group VARCHAR(20) default '---ALL---'
+) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
 ALTER TABLE vicidial_email_list MODIFY message text character set utf8;
 
 ALTER TABLE vicidial_email_log MODIFY message text character set utf8;
@@ -4143,6 +4213,9 @@ ALTER TABLE user_call_log_archive MODIFY user_call_log_id INT(9) UNSIGNED NOT NU
 CREATE TABLE vicidial_inbound_survey_log_archive LIKE vicidial_inbound_survey_log;
 CREATE UNIQUE INDEX visla_key on vicidial_inbound_survey_log_archive(uniqueid, call_date, campaign_id, lead_id);
 
+CREATE TABLE vicidial_inbound_callback_queue_archive LIKE vicidial_inbound_callback_queue; 
+ALTER TABLE vicidial_inbound_callback_queue_archive MODIFY icbq_id INT(9) UNSIGNED NOT NULL;
+
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;
 
@@ -4219,4 +4292,4 @@ INSERT INTO vicidial_settings_containers(container_id,container_notes,container_
 
 UPDATE system_settings set vdc_agent_api_active='1';
 
-UPDATE system_settings SET db_schema_version='1529',db_schema_update_date=NOW(),reload_timestamp=NOW();
+UPDATE system_settings SET db_schema_version='1530',db_schema_update_date=NOW(),reload_timestamp=NOW();

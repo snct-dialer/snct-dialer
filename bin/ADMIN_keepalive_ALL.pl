@@ -15,7 +15,7 @@
 #  - Auto reset lists at defined times
 #  - Auto restarts Asterisk process if enabled in servers settings
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 61011-1348 - First build
@@ -127,9 +127,10 @@
 # 171010-2254 - Added process debug with --DebugXXX flag and screen logging
 # 171107-1152 - Add allow=ulaw and allow=slin to ASTloop, ASTblind and ASTplay.
 # 171221-1628 - Added rolling of vicidial_ingroup_hour_counts records
+# 180204-0931 - Added rolling of vicidial_inbound_callback_queue records
 #
 
-$build = '171221-1628';
+$build = '180204-0931';
 
 $DB=0; # Debug flag
 $teodDB=0; # flag to log Timeclock End of Day processes to log file
@@ -1371,6 +1372,36 @@ if ($timeclock_end_of_day_NOW > 0)
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			}
+
+		# roll of SENT/EXPIRED vicidial_inbound_callback_queue records
+		if (!$Q) {print "\nProcessing vicidial_inbound_callback_queue table...\n";}
+		$stmtA = "INSERT IGNORE INTO vicidial_inbound_callback_queue_archive SELECT * from vicidial_inbound_callback_queue where icbq_status IN('SENT','EXPIRED','DNCL','DNCC','ORPHAN');";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		
+		$sthArows = $sthA->rows;
+		if (!$Q) {print "$sthArows rows inserted into vicidial_inbound_callback_queue_archive table \n";}
+		
+		$rv = $sthA->err();
+		if (!$rv) 
+			{	
+			$stmtA = "DELETE FROM vicidial_inbound_callback_queue WHERE icbq_status IN('SENT','EXPIRED','DNCL','DNCC','ORPHAN');";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows = $sthA->rows;
+			if (!$Q) {print "$sthArows rows deleted from vicidial_inbound_callback_queue table \n";}
+
+			$stmtA = "optimize table vicidial_inbound_callback_queue;";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			}
+
+		# reset in-group closing_time_now_trigger trigger flag
+		$stmtA = "UPDATE vicidial_inbound_groups SET closing_time_now_trigger='N' WHERE closing_time_now_trigger='Y';";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows = $sthA->rows;
+		if (!$Q) {print "$sthArows vicidial_inbound_groups rows closing_time_now_trigger value reset \n";}
 
 		##### BEGIN max stats end of day process #####
 		# set OPEN max stats records to CLOSING for processing

@@ -1,24 +1,15 @@
 <?php 
-# campaign_debug.php
+# process_report.php
 # 
 # Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
-# 110514-1231 - First build
-# 130413-2342 - Added report logging
-# 130610-0949 - Finalized changing of all ereg instances to preg
-# 130620-0829 - Added filtering of input to prevent SQL injection attacks and new user auth
-# 130901-1937 - Changed to mysqli PHP functions
-# 140108-0726 - Added webserver and hostname to report logging
-# 141007-2209 - Finalized adding QXZ translation to all admin files
-# 141229-2042 - Added code for on-the-fly language translations display
-# 170409-1534 - Added IP List validation code
-# 180201-1245 - Added live call and shortage counts per server tables
+# 180114-1051 - First build
 #
 
 $startMS = microtime();
 
-$report_name='Campaign Debug';
+$report_name='Process Report';
 
 require("dbconnect_mysqli.php");
 require("functions.php");
@@ -132,16 +123,16 @@ else
 	exit;
 	}
 
-$stmt="SELECT modify_campaigns,user_group from vicidial_users where user='$PHP_AUTH_USER';";
+$stmt="SELECT view_reports,user_group from vicidial_users where user='$PHP_AUTH_USER';";
 $rslt=mysql_to_mysqli($stmt, $link);
 $row=mysqli_fetch_row($rslt);
-$LOGmodify_campaigns =	$row[0];
+$LOGview_reports =	$row[0];
 $LOGuser_group =		$row[1];
 
-if ($LOGmodify_campaigns < 1)
+if ($LOGview_reports < 1)
 	{
 	Header ("Content-type: text/html; charset=utf-8");
-	echo _QXZ("You do not have permissions for campaign debugging").": |$PHP_AUTH_USER|\n";
+	echo _QXZ("You do not have permissions for process report viewing").": |$PHP_AUTH_USER|\n";
 	exit;
 	}
 
@@ -157,12 +148,6 @@ $LOGhttp_referer = getenv("HTTP_REFERER");
 $LOGbrowser=preg_replace("/\'|\"|\\\\/","",$LOGbrowser);
 $LOGrequest_uri=preg_replace("/\'|\"|\\\\/","",$LOGrequest_uri);
 $LOGhttp_referer=preg_replace("/\'|\"|\\\\/","",$LOGhttp_referer);
-if(isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'){
-    $HTTPprotokol = 'https://';
-}
-if(isset($_SERVER['HTTP_X_FORWARDED_PORT'])) {
-    $LOGserver_port = $_SERVER['HTTP_X_FORWARDED_PORT'];
-}
 if (preg_match("/443/i",$LOGserver_port)) {$HTTPprotocol = 'https://';}
   else {$HTTPprotocol = 'http://';}
 if (($LOGserver_port == '80') or ($LOGserver_port == '443') ) {$LOGserver_port='';}
@@ -214,7 +199,7 @@ if (!isset($group)) {$group = array();}
 if (!isset($query_date)) {$query_date = $NOW_DATE;}
 if (!isset($server_ip)) {$server_ip = '10.10.10.15';}
 
-$stmt="select campaign_id,campaign_name from vicidial_campaigns order by campaign_id;";
+$stmt="select distinct(serial_id) from vicidial_process_log order by serial_id desc limit 1000;";
 $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $campaigns_to_print = mysqli_num_rows($rslt);
@@ -223,7 +208,6 @@ while ($i < $campaigns_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
 	$campaign_id[$i] =$row[0];
-	$campaign_name[$i] =$row[1];
 	$i++;
 	}
 ?>
@@ -241,7 +225,7 @@ while ($i < $campaigns_to_print)
 
 <?php 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
-echo "<TITLE>"._QXZ("Campaign Debug")."</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
+echo "<TITLE>"._QXZ("Process Report")."</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 
 	$short_header=1;
 
@@ -253,50 +237,38 @@ echo "<SELECT SIZE=1 NAME=group>\n";
 $o=0;
 while ($campaigns_to_print > $o)
 	{
-	if ($campaign_id[$o] == $group) {echo "<option selected value=\"$campaign_id[$o]\">$campaign_id[$o] - $campaign_name[$o]</option>\n";}
-	else {echo "<option value=\"$campaign_id[$o]\">$campaign_id[$o] - $campaign_name[$o]</option>\n";}
+	if ($campaign_id[$o] == $group) {echo "<option selected value=\"$campaign_id[$o]\">$campaign_id[$o]</option>\n";}
+	else {echo "<option value=\"$campaign_id[$o]\">$campaign_id[$o]</option>\n";}
 	$o++;
 	}
 echo "</SELECT>\n";
 echo "<INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'>\n";
-echo " &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=34&campaign_id=$group\">"._QXZ("MODIFY")."</a> \n";
 echo "</FORM>\n\n";
 
 echo "<PRE><FONT SIZE=2>\n\n";
 
-
 if (!$group)
 	{
 	echo "\n\n";
-	echo _QXZ("PLEASE SELECT A CAMPAIGN ABOVE AND CLICK SUBMIT")."\n";
+	echo _QXZ("PLEASE SELECT A SERIAL ABOVE AND CLICK SUBMIT")."\n";
 	}
 
 else
 	{
-	$stmt="select count(*) from vicidial_hopper where campaign_id='" . mysqli_real_escape_string($link, $group) . "';";
+	$stmt="select count(*),sum(run_sec),min(run_time),max(run_time) from vicidial_process_log where serial_id='" . mysqli_real_escape_string($link, $group) . "';";
 	$rslt=mysql_to_mysqli($stmt, $link);
 	if ($DB) {echo "$stmt\n";}
 	$row=mysqli_fetch_row($rslt);
 	$TOTALcalls =	sprintf("%10s", $row[0]);
 
 	echo "\n";
-	echo "---------- "._QXZ("ADAPT DEBUG")."\n";
-	echo "\n";
+	echo "---------- "._QXZ("PROCESS REPORT FOR").": $group\n";
+	echo ""._QXZ("TIME RANGE").": $row[2] - $row[3]\n";
+#	echo ""._QXZ("LENGTH").": $row[1] "._QXZ("seconds")."\n";
+	echo ""._QXZ("PROCESSES").": $row[0]\n";
+	echo "\n\n";
 
-	$stmt="select campaign_name,closer_campaigns from vicidial_campaigns where campaign_id='" . mysqli_real_escape_string($link, $group) . "' limit 1;";
-	$rslt=mysql_to_mysqli($stmt, $link);
-	if ($DB) {echo "$stmt\n";}
-	$camps_to_print = mysqli_num_rows($rslt);
-	if ($camps_to_print > 0)
-		{
-		$row=mysqli_fetch_row($rslt);
-		$closer_campaigns = $row[1];
-
-		echo _QXZ("Campaign Debug").": $group - $row[0]           $NOW_TIME\n\n";
-		echo _QXZ("Total leads in hopper right now").":       $TOTALcalls\n\n";
-		}
-
-	$stmt="select update_time,debug_output,adapt_output from vicidial_campaign_stats_debug where campaign_id='" . mysqli_real_escape_string($link, $group) . "' and server_ip='ADAPT' limit 1;";
+	$stmt="select run_time,run_sec,server_ip,script,process,output_lines from vicidial_process_log where serial_id='" . mysqli_real_escape_string($link, $group) . "' order by run_time limit 1000;";
 	$rslt=mysql_to_mysqli($stmt, $link);
 	if ($DB) {echo "$stmt\n";}
 	$debugs_to_print = mysqli_num_rows($rslt);
@@ -305,94 +277,13 @@ else
 		{
 		$row=mysqli_fetch_row($rslt);
 
-		echo _QXZ("Adapt Debug").":     $row[0]\n";
-		echo "$row[1]\n";
-		echo "$row[2]\n";
+		echo _QXZ("TIME").":   $row[0]     "._QXZ("LENGTH").": $row[1]     "._QXZ("SERVER").": $row[2]\n";
+		echo _QXZ("SCRIPT").": $row[3]     "._QXZ("PROCESS").": $row[4]\n";
+		echo _QXZ("OUTPUT").": \n$row[5]\n";
+		echo "-----------------------------------------------------------------------------------------------\n";
 
 		$i++;
 		}
-
-	$stmt="select update_time,server_ip,debug_output,adapt_output from vicidial_campaign_stats_debug where campaign_id='" . mysqli_real_escape_string($link, $group) . "' and server_ip!='ADAPT' order by server_ip limit 100;";
-	$rslt=mysql_to_mysqli($stmt, $link);
-	if ($DB) {echo "$stmt\n";}
-	$debugs_to_print = mysqli_num_rows($rslt);
-	$i=0;
-	while ($debugs_to_print > $i)
-		{
-		$row=mysqli_fetch_row($rslt);
-
-		echo "$row[1] Debug:     $row[0]\n";
-		echo "$row[2]\n";
-		echo "$row[3]\n";
-
-		$i++;
-		}
-
-	$stmt="select server_ip,update_time,local_trunk_shortage from vicidial_campaign_server_stats where campaign_id='" . mysqli_real_escape_string($link, $group) . "' order by server_ip limit 100;";
-	$rslt=mysql_to_mysqli($stmt, $link);
-	if ($DB) {echo "$stmt\n";}
-	$shortages_to_print = mysqli_num_rows($rslt);
-	if ($shortages_to_print > 0)
-		{
-		echo "Per-Server Shortages:\n";
-		echo " SERVER         DATE/TIME            SHORT\n";
-		}
-	$i=0;
-	while ($shortages_to_print > $i)
-		{
-		$row=mysqli_fetch_row($rslt);
-
-		echo sprintf("%-15s", $row[0])." ";
-		echo sprintf("%-20s", $row[1])." ";
-		echo sprintf("%-8s", $row[2])."\n";
-
-		$i++;
-		}
-	echo "\n";
-
-
-	$stmt="select count(*),call_type,server_ip from vicidial_auto_calls where campaign_id='" . mysqli_real_escape_string($link, $group) . "' group by call_type,server_ip order by server_ip,call_type limit 100;";
-	$rslt=mysql_to_mysqli($stmt, $link);
-	if ($DB) {echo "$stmt\n";}
-	$shortages_to_print = mysqli_num_rows($rslt);
-	if ($shortages_to_print > 0)
-		{
-		echo "Per-Server and Per-Type Campaign Calls:\n";
-		echo " SERVER         CALL TYPE   COUNT\n";
-		}
-	$i=0;
-	while ($shortages_to_print > $i)
-		{
-		$row=mysqli_fetch_row($rslt);
-
-		echo sprintf("%-15s", $row[2])." ";
-		echo sprintf("%-11s", $row[1])." ";
-		echo sprintf("%-8s", $row[0])."\n";
-
-		$i++;
-		}
-	echo "\n";
-
-
-	$closer_groupsSQL = preg_replace("/^ | -$/","",$closer_campaigns);
-	$closer_groupsSQL = preg_replace("/ /","','",$closer_groupsSQL);
-
-	$stmt="select update_time,campaign_id,debug_output,adapt_output from vicidial_campaign_stats_debug where campaign_id IN('$closer_groupsSQL') and server_ip='INBOUND' order by campaign_id limit 10000;";
-	$rslt=mysql_to_mysqli($stmt, $link);
-	if ($DB) {echo "$stmt\n";}
-	$debugs_to_print = mysqli_num_rows($rslt);
-	$i=0;
-	while ($debugs_to_print > $i)
-		{
-		$row=mysqli_fetch_row($rslt);
-
-		echo _QXZ("Inbound Debug").": $row[1]    $row[0]\n";
-		echo "$row[2]\n";
-		echo "$row[3]\n";
-
-		$i++;
-		}
-
 	}
 
 if ($db_source == 'S')

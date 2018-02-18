@@ -166,8 +166,6 @@ $browser = getenv("HTTP_USER_AGENT");
 $user = $PHP_AUTH_USER;
 
 $admin_lists_custom = 'admin_lists_custom.php';
-if (preg_match("/cf_encrypt/",$SSactive_modules))
-	{$admin_lists_custom = 'admin_lists_custom_encrypt.php';}
 
 if (file_exists('options.php'))
 	{require('options.php');}
@@ -1194,6 +1192,7 @@ if ($ADD==362111111111)
 			$o++;
 			}
 		$scripts_SQL = preg_replace("/,$/",'',$scripts_SQL);
+		if (strlen($scripts_SQL) < 2) {$scripts_SQL="''";}
 
 		echo "</TABLE><BR><BR>\n";
 

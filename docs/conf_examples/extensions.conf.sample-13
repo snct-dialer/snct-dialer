@@ -219,10 +219,10 @@ exten => _9119XXXXXXXX,n,Hangup()
 ; exten => _91NXXNXXXXXX,n,Dial(${TRUNKloop}/888${EXTEN:2},55,o)
 ; exten => _91NXXNXXXXXX,n,Hangup()
 ;exten => _888NXXNXXXXXX,1,Goto(loopback-no-log,91${EXTEN:3},1)
-;exten => _888NXXNXXXXXX,n,Hanguo()
+;exten => _888NXXNXXXXXX,n,Hangup()
 
 exten => 8889990011112,1,Goto(loopback-no-log,9990011112,1)
-exten => 8889990011112,n,Hanguo()
+exten => 8889990011112,n,Hangup()
 
 
 ; Inbound call from BINFONE

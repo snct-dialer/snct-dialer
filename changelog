@@ -1,4 +1,190 @@
-2.25.23
+2.25.24
+  [Jörg Frings-Fürst]
+  * Add upstream Rev. 2881:
+    - MySQL_AST_CREATE_tables.sql,
+      upgrade_2.14.sql,
+      vdc_db_query.php,
+      admin.php,
+      UPGRADE,
+      help.php: Added next_dial_my_callbacks campaign option.
+  * New mysql-1530.sql.
+  * Add upstream Rev. 2882:
+    - admin.php,
+      NON-AGENT_API.txt: Added call_status_stats function.
+    - lead_report_export.php: Added vendor lead code filtering option.
+  * Upstream Rev. 2882, 2883, 2284, 2885, 2886, 2887 and 2888 not added.
+  * Add upstream Rev. 2889:
+    - AST_VDhopper.pl,
+      MySQL_AST_CREATE_tables.sql,
+      upgrade_2.14.sql,
+      admin.php,
+      help.php,
+      UPGRADE: Added anyone_callback_inactive_lists option.
+  * Add upstream Rev. 2890:
+    - AST_flush_DBqueue.pl,
+      MySQL_AST_CREATE_tables.sql,
+      upgrade_2.14.sql: Added flush for cid_channels_recent table.
+  * Add upstream Rev. 2891:
+    - lead_report_export.php: Correct SQL statement build.
+  * Add download function (2018-001):
+    - Add field tmp_download_dir to table system_settings.
+    - admin.php: Add field.
+    - help.php: Add tag downloaddir.
+    - New download.php.
+    - functions.php: New function GetTmpDownLoadDir().
+    - install.pl: Add mkdir for directory download.
+  * New AST_stat_callbacks.php (2018-002);
+  * Add upstream Rev. 2892:
+    - CALLER_ID_NAME_CODES.txt,
+      vicidial.php,
+      admin.php,
+      admin_header.php,
+      admin_lists_custom.php,
+      admin_soundboard.php,
+      list_split.php,
+      process_report.php: cleanup of enc code.
+  * Add upstream Rev. 2893:
+    - AGENT_API.txt,
+      api.php,
+      admin.php: Added calls_in_queue_count function.
+  * Add upstream Rev. 2894:
+    - admin_lists_custom.php,
+      lead_report_export.php: Add more mysql_reserved_words.
+  * Add upstream Rev. 2895:
+    - admin_lists_custom.php: Added more reserved words from MySQL/MariaDB.
+  * Add upstream Rev. 2896:
+    - vicidial.php: Added more agent api pause debug output.
+  * Add upstream Rev. 2897:
+    - Replace vicidial_whiteboard_functions.js with
+      vicidial_whiteboard_functions.php.
+  * Add upstream Rev. 2898:
+    - AST_VDauto_dial.pl,
+      AST_VDhopper.pl,
+      admin.php,
+      help.php,
+      UPGRADE: Added inbound_no_agents_no_dial campaign options.
+    - MySQL_AST_CREATE_tables.sql,
+      upgrade_2.14.sql: Update to Upstream database version 1533.
+  * Add upstream Rev. 2899:
+    - admin.php: Add link for inbound_no_agents_no_dial_container.
+  * Add upstream Rev. 2900:
+    - vdc_db_query.php: Fixed ereg issue.
+  * Add upstream Rev. 2901 + 2902:
+    - AST_VDauto_dial.pl: Fix some issue.
+  * Add upstream Rev. 2903:
+    - AST_VDauto_dial.pl,
+      campaign_debug.php: Added live call and shortage counts per server tables.
+  * Add upstream Rev. 2904:
+    - admin.php: Add field for email template container
+  * MySQL_AST_CREATE_tables.sql:
+    - Correct typos.
+  * Add upstream Rev. 2905:
+    - UPGRADE,
+      agi/agi-VDAD_ALL_inbound.agi,
+      bin/ADMIN_keepalive_ALL.pl,
+      bin/AST_VDadapt.pl,
+      docs/AGENT_API.txt,
+      docs/VICIDIAL_statuses.txt,
+      extras/MySQL_AST_CREATE_tables.sql,
+      extras/mysql_update/mysql-1530.sql,
+      extras/upgrade_2.14.sql,
+      www/agc/api.php,
+      www/agc/vdc_db_query.php,
+      www/agc/vicidial.php,
+      www/vicidial/AST_timeonVDADall.php,
+      www/vicidial/admin.php,
+      www/vicidial/functions.php,
+      www/vicidial/help.php: Added PRESS_CALLBACK_QUEUE feature, and
+       Closing-Time feature, and add-lead-timezone-lookup feature.
+  * Add upstream Rev. 2906:
+    - docs/NON-AGENT_API.txt,
+      www/vicidial/AST_API_log_report.php,
+      www/vicidial/AST_agent_performance_detail.php,
+      www/vicidial/non_agent_api.php: Added call_dispo_report function.
+  * Add upstream Rev. 2907:
+    - agi/agi-VDAD_ALL_inbound.agi: Bug fix for recent feature.
+  * Add upstream Rev. 2908:
+    - www/agc/vicidial.php: Added flag for WebRTC webphone compatibility
+        in iframe.
+  * Add upstream Rev. 2909:
+    - www/agc/vdc_db_query.php: Fix for callback list issue #1062.
+  * Add upstream Rev. 2910, 2911:
+    - www/vicidial/admin.php: Changed campaign dial statuses to allow List and
+        allowed In-Group selected status group statuses.
+  * Add upstream Rev. 2912:
+    - docs/conf_examples/extensions.conf.sample-1.8,
+      docs/conf_examples/extensions.conf.sample-13: Correct some typos.
+    - UPGRADE,
+      www/vicidial/admin.php,
+      www/vicidial/help.php,
+      www/vicidial/AST_source_vlc_status_report.php: New
+        AST_source_vlc_status_report.php.
+  * Add upstream Rev. 2913:
+    - bin/AST_VDadapt.pl,
+      docs/CALL_URL_FEATURES.txt,
+      www/agc/vdc_db_query.php: Added callback_datetime as dispo call url
+        variable.
+  * Add upstream Rev. 2914:
+    - agi/agi-VDAD_inbound_calltime_check.agi: Fixed issues with VMAIL_NO_INST
+        timecheck route.
+  * Add upstream Rev. 2915:
+    - UPGRADE,
+      extras/MySQL_AST_CREATE_tables.sql,
+      extras/upgrade_2.14.sql,
+      www/vicidial/admin.php,
+      www/vicidial/admin_modify_lead.php,
+      www/vicidial/help.php: Added GDPR system and user settings.
+    - extras/mysql_update/mysql-1530.sql: Add changes from Rev. 2915.
+  * Add upstream Rev. 2916:
+    - www/vicidial/AST_source_vlc_status_report.php: Added column to download
+        for VLC or source_id.
+  * Add upstream Rev. 2917:
+    - UPGRADE,
+      bin/AST_VDauto_dial.pl,
+      bin/AST_VDauto_dial_FILL.pl,
+      extras/MySQL_AST_CREATE_tables.sql,
+      extras/upgrade_2.14.sql,
+      www/agc/vdc_db_query.php,
+      www/agc/vicidial.php,
+      www/vicidial/admin.php,
+      www/vicidial/admin_bulk_tools.php,
+      www/vicidial/admin_header.php,
+      www/vicidial/admin_listloader_fourth_gen.php,
+      www/vicidial/help.php: Added CID Group functionality.
+    - extras/mysql_update/mysql-1530.sql: Add changes from Rev. 2917.
+  * Add upstream Rev. 2918:
+    - bin/AST_VDadapt.pl: Select inbound allowed campaigns.
+  * Add upstream Rev. 2919:
+    - www/agc/vicidial.php,
+      www/vicidial/admin.php: Some fixes (issue #1068).
+  * Add upstream Rev. 2920:
+    - www/agc/vdc_db_query.php,
+      www/agc/vicidial.php: Fix for callback alt dial isssue #1066.
+  * Add upstream Rev. 2921:
+    - www/vicidial/admin.php,
+      www/vicidial/admin_soundboard.php: Many translation strings and
+        permissions fixes, issue #1065.
+  * Add upstream Rev. 2922:
+    - docs/VICIDIAL_statuses.txt,
+      extras/MySQL_AST_CREATE_tables.sql,
+      extras/upgrade_2.14.sql,
+      www/agc/vicidial.php,
+      www/vicidial/admin.php,
+      www/vicidial/help.php: Added pause_max_dispo, fix for issue #1030.
+    - extras/mysql_update/mysql-1530.sql: Add changes from Rev. 2922.
+  * Add upstream Rev. 2923:
+    - UPGRADE,
+      agi/agi-VDAD_ALL_inbound.agi,
+      extras/MySQL_AST_CREATE_tables.sql,
+      extras/upgrade_2.14.sql,
+      www/vicidial/admin.php,
+      www/vicidial/help.php: Added NO_READY option for no_agent_no_queue
+        in-group feature, issue #1046.
+    - extras/mysql_update/mysql-1530.sql: Add changes from Rev. 2923.
+  * Move comments from FlyInclude.php to changelog.
+  * Release 2.25.24 2018-02-18.
+
+2.25.23 stable
   [Jörg Frings-Fürst]
   * Add upstream Rev. 2876:
     - ADMIN_keepalive_ALL.pl: Added rolling of vicidial_ingroup_hour_counts
@@ -743,3 +929,51 @@
   * Add pause_code to vicidial_agent_log
   * Don't add upstream Rev. 2793 (issue #1028)
   * Release 2.25.2 2017-07-17
+
+#
+# from FlyInclude.php
+#
+
+#
+# 2017-001 JFF 2017-05-18 Add Patchlevel and modify copyright
+# 2017-002 JFF 2017-05-18 replace call_date with closecallid at UPDATE vicidial_closer_log
+# 2017-003 JFF 2017-05-22 Set consultative_checkbox always checked
+# 2017-004 JFF 2017-05-22 Add Mute marker after Status at live_report
+# 2017-005 JFF 2017-05-23 Display git_[commit|release} at System Settings
+# 2017-006 JFF 2017-05-23 Some typos and missing parts
+# 2017-007 JFF 2017-05-24 Cherrypick to svn 2757
+# 2017-008 JFF 2017-05-27 Add svn commit 2758
+# 2017-008 JFF 2017-05-27 Add svn commit 2759
+# 2017-008 JFF 2017-05-27 Add svn commit 2760
+# 2017-008 JFF 2017-05-28 Add svn commit 2761
+#          JFF 2017-05-31 Add svn commit 2762
+#          JFF 2017-05-31 Add svn commit 2763
+#          JFF 2017-05-31 Add svn commit 2764
+#          JFF 2017-05-31 Add svn commit 2765
+#          JFF 2017-05-31 Add svn commit 2766
+#          JFF 2017-05-31 Add svn commit 2767
+#          JFF 2017-06-05 Add svn commit 2768
+#          JFF 2017-06-05 Add svn commit 2769
+#          JFF 2017-06-05 Add svn commit 2770
+#          JFF 2017-06-05 Add svn commit 2771
+#          JFF 2017-06-05 Add svn commit 2772
+#          JFF 2017-06-05 Add svn commit 2773
+#          JFF 2017-06-07 New "copy status groups"
+# 2017-009 JFF 2017-06-08 New "callback caledar with holiday colors"
+#          JFF 2017-06-10 Add svn commit 2774-2777
+# 2017-010 JFF 2017-06-10 Add svn commit 2778
+#          JFF 2017-06-15 Add field 'Campaign Pause' into system_settings
+#          JFF 2017-06-16 Add svn commits 2779-2780
+# 2017-011 JFF 2017-06-16 Finish 'Campaign Pause'
+# 2017-012 JFF 2017-06-17 Add missing ingroup selection
+#          JFF 2017-06-21 Change ulaw to alaw for interconnections
+#          JFF 2017-06-21 Display only active callbacks
+# 2017-013 JFF 2017-06-26 Add svn commits 2781-2782
+# 2017-014 JFF 2017-06-26 Merge
+#          JFF 2017-06-30 Add svn commit 2783-2784
+# 2017-015 JFF 2017-06-30 Add Company Name to Title
+#          JFF 2017-06-30 Add detect 3Way
+# 2017-016 JFF 2017-06-30 Add svn commit 2785
+#          JFF 2017-07-04 Add ExtraMenueReports
+# 2017-017 JFF 2017-07-08 Add svn commit 2786
+#

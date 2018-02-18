@@ -6,7 +6,7 @@
 # adjusts the auto_dial_level for vicidial adaptive-predictive campaigns. 
 # gather call stats for campaigns and in-groups
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG
 # 60823-1302 - First build from AST_VDhopper.pl
@@ -46,6 +46,7 @@
 # 161102-1029 - Fixed QM partition problem
 # 170724-2352 - Added option for cached hour counts for vicidial_log entries per campaign and carrier log totals
 # 171221-1049 - Added caching of inbound call stats
+# 180203-1728 - Added function to check for inbound callback queue calls to be placed
 #
 
 
@@ -669,6 +670,897 @@ while ($master_loop < $CLIloops)
 	if ($RESETdrop_count_updater > 0) {$RESETdrop_count_updater=0;   $drop_count_updater=0;}
 	$diff_ratio_updater = ($diff_ratio_updater + $CLIdelay);
 	$drop_count_updater = ($drop_count_updater + $CLIdelay);
+
+
+
+	##########################################################
+	##### BEGIN check for inbound callback queue entries #####
+	##########################################################
+	$stmtA = "SELECT count(*) from vicidial_inbound_callback_queue where icbq_status='LIVE';";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArowsICBQ=$sthA->rows;
+	if ($sthArowsICBQ > 0)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$ICBQcount =	$aryA[0];
+		}
+	$sthA->finish();
+
+	if ($DB) {print "\nLive Inbound Callback Queue Entries: |$ICBQcount|$stat_count|$stmtA|\n";}
+
+	if ($ICBQcount > 0)
+		{
+		$vci=0;
+		$INBOUNDcampsSQL="''";
+		$stmtA = "SELECT campaign_id FROM vicidial_campaigns where active='Y' and campaign_allow_inbound='Y';";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		while ($sthArows > $vci)
+			{
+			@aryA = $sthA->fetchrow_array;
+			if ($vci < 1) {$INBOUNDcampsSQL	= "'$aryA[0]'";}
+			else {$INBOUNDcampsSQL	.= ",'$aryA[0]'";}
+			$vci++;
+			}
+		$sthA->finish();
+
+		$now_epoch = time();
+		$BDtarget = ($now_epoch - 7);
+		($Bsec,$Bmin,$Bhour,$Bmday,$Bmon,$Byear,$Bwday,$Byday,$Bisdst) = localtime($BDtarget);
+		$Byear = ($Byear + 1900);
+		$Bmon++;
+		if ($Bmon < 10) {$Bmon = "0$Bmon";}
+		if ($Bmday < 10) {$Bmday = "0$Bmday";}
+		if ($Bhour < 10) {$Bhour = "0$Bhour";}
+		if ($Bmin < 10) {$Bmin = "0$Bmin";}
+		if ($Bsec < 10) {$Bsec = "0$Bsec";}
+			$BDtsSQLdate = "$Byear$Bmon$Bmday$Bhour$Bmin$Bsec";
+
+		@ICBQicbq_id=@MT;
+		@ICBQlead_id=@MT;
+		@ICBQicbq_date=@MT;
+		@ICBQgroup_id=@MT;
+		@ICBQcall_date=@MT;
+		@ICBQqueue_priority=@MT;
+		@ICBQicbq_phone_number=@MT;
+		@ICBQicbq_phone_code=@MT;
+		@ICBQicbq_date_epoch=@MT;
+		$routed_ingroup_list='|';
+		if ( (($stat_count =~ /0$|5$/) || ($stat_count==1)) )
+			{$routed_user_list='';}
+
+		$stmtA = "SELECT icbq_id,lead_id,icbq_date,group_id,call_date,queue_priority,icbq_phone_number,icbq_phone_code,UNIX_TIMESTAMP(icbq_date) from vicidial_inbound_callback_queue where icbq_status='LIVE' order by queue_priority desc,call_date limit 1000;";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArowsICBQr=$sthA->rows;
+		$r=0;
+		while ($sthArowsICBQr > $r)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$ICBQicbq_id[$r] =				$aryA[0];
+			$ICBQlead_id[$r] =				$aryA[1];
+			$ICBQicbq_date[$r] =			$aryA[2];
+			$ICBQgroup_id[$r] =				$aryA[3];
+			$ICBQcall_date[$r] =			$aryA[4];
+			$ICBQqueue_priority[$r] =		$aryA[5];
+			$ICBQicbq_phone_number[$r] =	$aryA[6];
+			$ICBQicbq_phone_code[$r] =		$aryA[7];
+			$ICBQicbq_date_epoch[$r] =		$aryA[8];
+
+			$r++;
+			}
+		$sthA->finish();
+
+		$r=0;
+		while ($sthArowsICBQr > $r)
+			{
+			$temp_ingroup = $ICBQgroup_id[$r];
+			if ($routed_ingroup_list !~ /\|$temp_ingroup\|/) 
+				{
+				$routed_ingroup_list .= "$temp_ingroup|";
+				if ($DBX) {print "Live Inbound Callback Queue Entry: $r|$ICBQicbq_id[$r]|$ICBQlead_id[$r]|$ICBQgroup_id[$r]|$ICBQcall_date[$r]|\n";}
+				### Grab inbound group settings from the database
+				$stmtA = "SELECT next_agent_call,queue_priority,active,dial_ingroup_cid,icbq_expiration_hours FROM vicidial_inbound_groups where group_id='$ICBQgroup_id[$r]';";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArowsIG=$sthA->rows;
+				if ($sthArowsIG > 0)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$CAMP_callorder	=			$aryA[0];
+					$queue_priority =			$aryA[1];
+					$ingroup_active =			$aryA[2];
+					$dial_ingroup_cid =			$aryA[3];
+					$icbq_expiration_hours =	$aryA[4];
+					$expire_epoch = ($now_epoch - ($icbq_expiration_hours * 3600));
+					}
+				$sthA->finish();
+
+				$agent_call_order='order by last_call_finish';
+				if ($CAMP_callorder =~ /longest_wait_time/i)	{$agent_call_order = 'order by vicidial_live_agents.last_state_change';}
+				if ($CAMP_callorder =~ /overall_user_level/i)	{$agent_call_order = 'order by user_level desc,last_call_finish';}
+				if ($CAMP_callorder =~ /oldest_call_start/i)	{$agent_call_order = 'order by vicidial_live_agents.last_call_time';}
+				if ($CAMP_callorder =~ /oldest_call_finish/i)	{$agent_call_order = 'order by vicidial_live_agents.last_call_finish';}
+				if ($CAMP_callorder =~ /oldest_inbound_call_start/i)	{$agent_call_order = 'order by vicidial_live_agents.last_inbound_call_time';}
+				if ($CAMP_callorder =~ /oldest_inbound_call_finish/i)	{$agent_call_order = 'order by vicidial_live_agents.last_inbound_call_finish';}
+				if ($CAMP_callorder =~ /random/i)				{$agent_call_order = 'order by random_id';}
+				if ($CAMP_callorder =~ /campaign_rank/i)		{$agent_call_order = 'order by campaign_weight desc,last_call_finish';}
+				if ($CAMP_callorder =~ /fewest_calls_campaign/i) {$agent_call_order = 'order by vicidial_live_agents.calls_today,vicidial_live_agents.last_call_finish';}
+				if ($CAMP_callorder =~ /inbound_group_rank/i)	{$aco_sub=1;	$agent_call_order = 'order by group_weight desc,vicidial_live_inbound_agents.last_call_finish';}
+				if ($CAMP_callorder =~ /ingroup_grade_random/i)	{$aco_sub=1;	$agent_call_order = 'order by random_id';}
+				if ($CAMP_callorder =~ /campaign_grade_random/i) {$aco_sub=1;	$agent_call_order = 'order by random_id';}
+				if ($CAMP_callorder =~ /fewest_calls$/i)		{$aco_sub=1;	$agent_call_order = 'order by vicidial_live_inbound_agents.calls_today,vicidial_live_inbound_agents.last_call_finish';}
+				if ($CAMP_callorder =~ /ring_all$/i)			{$aco_sub=0;	$agent_call_order = 'order by vicidial_live_agents.last_state_change';}
+
+				$rec_countWAITrem=0;
+				### Get count of number of calls in this group that are ahead of this call
+				$stmtA = "SELECT count(*) FROM vicidial_auto_calls where status = 'LIVE' and campaign_id='$ICBQgroup_id[$r]' and call_time < \"$ICBQcall_date[$r]\" and lead_id != '$ICBQlead_id[$r]' and queue_priority >= '$ICBQqueue_priority[$r]' $ADfindSQL;";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				if ($sthArows > 0)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$rec_countWAITrem = $aryA[0];
+					}
+				$sthA->finish();
+				if ($DBX) {$agi_string = "$rec_countWAITrem|$stmtA|";   print "$agi_string\n";}
+				
+				$rec_countWAITqueue=0;
+				### Get count of number of calls in the callback-queue for this group that are ahead of this call
+				$stmtA = "SELECT count(*) FROM vicidial_inbound_callback_queue where icbq_status IN('LIVE','SENDING') and group_id='$ICBQgroup_id[$r]' and call_date < \"$ICBQcall_date[$r]\" and lead_id != '$ICBQlead_id[$r]' and queue_priority >= '$ICBQqueue_priority[$r]';";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				if ($sthArows > 0)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$rec_countWAITqueue = $aryA[0];
+					}
+				$sthA->finish();
+				if ($DBX) {$agi_string = "$rec_countWAITqueue|$stmtA|";   print "$agi_string\n";}
+				
+				if ( ($rec_countWAITrem < 1) && ($rec_countWAITqueue < 1) )
+					{
+					$sthArowsFA=0;
+					$qp_countWAIT=0;
+					### Get count of number of waiting calls in higher priority groups than this call or the same priority with longer wait time
+					$stmtA = "SELECT count(*) FROM vicidial_auto_calls where status = 'LIVE' and lead_id != '$ICBQlead_id[$r]' $ADfindSQL and ( (queue_priority > '$ICBQqueue_priority[$r]') or (queue_priority = '$ICBQqueue_priority[$r]' and call_time < \"$ICBQcall_date[$r]\") );";
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows=$sthA->rows;
+					if ($sthArows > 0)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$qp_countWAIT = $aryA[0];
+						}
+					$sthA->finish();
+					if ($DBX) {$agi_string = "$qp_countWAIT|$stmtA|";   print "$agi_string\n";}
+
+					$qp_countWAITqueue=0;
+					### Get count of number of waiting calls in higher priority groups than this call or the same priority with longer wait time
+					$stmtA = "SELECT count(*) FROM vicidial_inbound_callback_queue where icbq_status IN('LIVE','SENDING') and lead_id != '$ICBQlead_id[$r]' and ( (queue_priority > '$ICBQqueue_priority[$r]') or (queue_priority = '$ICBQqueue_priority[$r]' and call_date < \"$ICBQcall_date[$r]\") );";
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows=$sthA->rows;
+					if ($sthArows > 0)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$qp_countWAITqueue = $aryA[0];
+						}
+					$sthA->finish();
+					if ($DBX) {$agi_string = "$qp_countWAITqueue|$stmtA|";   print "$agi_string\n";}
+
+					$qp_groupWAIT='';
+					$qp_groupWAIT_SQL='';
+					$qp_groupWAIT_aco='';
+					$qp_groupWAIT_aco_SQL='';
+					$qp_groupWAIT_camp_SQL='';
+					if ( ($qp_countWAIT > 0) || ($qp_countWAITqueue > 0) )
+						{
+						### Get group/campaign ids of calls in higher priority groups than this call or the same priority with longer wait time
+						$qp_groupWAIT='';
+						$stmtA = "SELECT distinct campaign_id FROM vicidial_auto_calls where status = 'LIVE' and lead_id != '$ICBQlead_id[$r]' $ADfindSQL and ( (queue_priority > '$ICBQqueue_priority[$r]') or (queue_priority = '$ICBQqueue_priority[$r]' and call_time < \"$ICBQcall_date[$r]\") );";
+						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+						$sthArows=$sthA->rows;
+						$dbc=0;
+						while ($sthArows > $dbc)
+							{
+							@aryA = $sthA->fetchrow_array;
+							$qp_groupWAIT_aco .= "'$aryA[0]',";
+							if ($dbc > 0) 
+								{
+								$qp_groupWAIT .= "and ";
+								}
+							$qp_groupWAIT .= "closer_campaigns NOT LIKE \"% $aryA[0] %\" ";
+							$dbc++;
+							}
+
+						$stmtA = "SELECT distinct group_id FROM vicidial_inbound_callback_queue where icbq_status IN('LIVE','SENDING') and lead_id != '$ICBQlead_id[$r]' $ADfindSQL and ( (queue_priority > '$ICBQqueue_priority[$r]') or (queue_priority = '$ICBQqueue_priority[$r]' and call_date < \"$ICBQcall_date[$r]\") );";
+						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+						$sthArows=$sthA->rows;
+						$dbcQ=0;
+						while ($sthArows > $dbcQ)
+							{
+							@aryA = $sthA->fetchrow_array;
+							$qp_groupWAIT_aco .= "'$aryA[0]',";
+							if ($dbc > 0) 
+								{
+								$qp_groupWAIT .= "and ";
+								}
+							$qp_groupWAIT .= "closer_campaigns NOT LIKE \"% $aryA[0] %\" ";
+							$dbc++;
+							$dbcQ++;
+							}
+
+						if (length($qp_groupWAIT_aco)>2)
+							{chop($qp_groupWAIT_aco);}
+						else
+							{
+							$qp_groupWAIT_aco="''";
+							$qp_groupWAIT = "closer_campaigns != ''";
+							}
+
+						$qp_groupWAIT_SQL = "and ($qp_groupWAIT)";
+						$qp_groupWAIT_aco_SQL = "and vicidial_live_inbound_agents.group_id NOT IN($qp_groupWAIT_aco)";
+						$qp_groupWAIT_camp_SQL = "and campaign_id NOT IN($qp_groupWAIT_aco)";
+
+						if ($DBX) {$agi_string = "$qp_groupWAIT_SQL|$stmtA|";   print "$agi_string\n";}
+						$sthA->finish();
+						}
+
+					$VACagent_grab='|';
+					$stmtA = "SELECT agent_grab from vicidial_auto_calls where agent_grab!='';";
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArowsGRAB=$sthA->rows;
+					if ($sthArowsGRAB > 0)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$VACagent_grab .=			"$aryA[0]|";
+						}
+					$sthA->finish();
+					if ($DBX) {$agi_string = "     AGENTS TAKING CALLS CHECK: $sthArowsGRAB|$VACagent_grab|$stmtA|";   print "$agi_string\n";}
+
+					if ($aco_sub > 0)
+						{
+						### BEGIN in-group-rank-based next-agent-call processing ###
+						$stmtA = "LOCK TABLES vicidial_live_agents WRITE, vicidial_live_inbound_agents WRITE;";
+						my $LOCKaffected_rows = $dbhA->do($stmtA);
+
+						if (length($qp_groupWAIT_aco)<2)
+							{$qp_groupWAIT_aco="''";}
+						### Get list of users that should take higher priority inbound calls first
+						$stmtA = "SELECT distinct user from vicidial_live_inbound_agents where group_id IN($qp_groupWAIT_aco);";
+						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+						$sthArows=$sthA->rows;
+						$dbc=0;
+						$vlia_users='';
+						while ($sthArows > $dbc)
+							{
+							@aryA = $sthA->fetchrow_array;
+							$vlia_users .= "'$aryA[0]',";
+							$dbc++;
+							}
+						if (length($vlia_users)>2)
+							{chop($vlia_users);}
+						else
+							{$vlia_users="''";}
+
+						### if ringing an agent, do not look for one, else, look for one
+						if ($RING_agent > 0)
+							{$sthArows=0;}
+						else
+							{
+							### BEGIN grade random next-agent-call routing ###
+							if ($CAMP_callorder =~ /grade/)
+								{
+								@GRADEuser=@MT;
+								@GRADEgrade=@MT;
+								@userGRADEarray=@MT;
+								$stmtA = "SELECT vicidial_live_agents.user,vicidial_live_inbound_agents.group_grade,vicidial_live_agents.campaign_grade from vicidial_live_agents, vicidial_live_inbound_agents WHERE vicidial_live_agents.user=vicidial_live_inbound_agents.user and status IN('CLOSER','READY') and lead_id<1 $ADUfindSQL and vicidial_live_inbound_agents.group_id='$ICBQgroup_id[$r]' and last_update_time > '$BDtsSQLdate' and vicidial_live_agents.user NOT IN($vlia_users) and ring_callerid='' $qp_groupWAIT_camp_SQL limit 1000;";
+								$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+								$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+								$sthArows=$sthA->rows;
+								$gg=0;
+								$ga=0;
+								while ($gg < $sthArows)
+									{
+									@aryA = $sthA->fetchrow_array;
+									$GRADEuser[$gg] =	$aryA[0];
+									if ($CAMP_callorder =~ /ingroup_grade_random/)
+										{$GRADEgrade[$gg] =		$aryA[1];}
+									else
+										{$GRADEgrade[$gg] =		$aryA[2];}
+									if ($GRADEgrade[$gg] < 1)
+										{$GRADEgrade[$gg] =	1;}
+									$gi=0;
+									while ($gi < $GRADEgrade[$gg]) 
+										{
+										$userGRADEarray[$ga] =	$GRADEuser[$gg];
+									#	print STDERR "     GRADE ENTRY: $userGRADEarray[$ga]|$ga|$gi|$GRADEgrade[$gg]\n";
+										$gi++;
+										$ga++;
+										}
+									$gg++;
+									}
+								$sthA->finish();
+
+								$sthArows=0;
+								if ($ga > 0)
+									{
+									$sthArowsFA=0;
+									$VDADuser='';
+									$GRADErandom = int( rand($ga));
+									$userGRADEchosen = $userGRADEarray[$GRADErandom];
+
+									if ($DBX) {$agi_string = "GRADE RANDOM: $userGRADEchosen|$GRADErandom|$CAMP_callorder|$gg|$ga|$callerid";   print "$agi_string\n";}
+
+									$stmtA = "SELECT vicidial_live_agents.conf_exten,vicidial_live_agents.user,vicidial_live_agents.extension,vicidial_live_agents.server_ip,vicidial_live_inbound_agents.group_weight,ra_user,vicidial_live_agents.campaign_id,on_hook_agent,on_hook_ring_time,vicidial_live_inbound_agents.group_grade,vicidial_live_agents.campaign_grade from vicidial_live_agents, vicidial_live_inbound_agents WHERE vicidial_live_agents.user='$userGRADEchosen' and vicidial_live_agents.user NOT IN($routed_user_list'') and status IN('CLOSER','READY') limit 1;";
+									$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+									$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+									$sthArowsFA=$sthA->rows;
+									if ($sthArowsFA > 0)
+										{
+										@aryA = $sthA->fetchrow_array;
+										$VDADconf_exten =			$aryA[0];
+										$VDADuser =					$aryA[1];
+										$VDADextension =			$aryA[2];
+										$VDADserver_ip =			$aryA[3];
+										$VDADgroup_weight =			$aryA[4];
+										$ra_user =					$aryA[5];
+										$log_campaign =				$aryA[6];
+										$VDADon_hook_agent =		$aryA[7];
+										$VDADon_hook_ring_time =	$aryA[8];
+										$group_grade =				$aryA[9];
+										$campaign_grade =			$aryA[10];
+										}
+									$sthA->finish();
+									}
+								if ($DBX) {$agi_string = "$VDADuser|$VDADgroup_weight|$stmtA|";   print "$agi_string\n";}
+								}
+							### END grade random next-agent-call routing ###
+							else
+								{
+								$sthArowsFA=0;
+								$VDADuser='';
+								$stmtA = "SELECT vicidial_live_agents.conf_exten,vicidial_live_agents.user,vicidial_live_agents.extension,vicidial_live_agents.server_ip,vicidial_live_inbound_agents.group_weight,ra_user,vicidial_live_agents.campaign_id,on_hook_agent,on_hook_ring_time,vicidial_live_inbound_agents.group_grade,vicidial_live_agents.campaign_grade from vicidial_live_agents, vicidial_live_inbound_agents WHERE vicidial_live_agents.user=vicidial_live_inbound_agents.user and status IN('CLOSER','READY') and lead_id<1 $ADUfindSQL and vicidial_live_inbound_agents.group_id='$ICBQgroup_id[$r]' and last_update_time > '$BDtsSQLdate' and vicidial_live_agents.user NOT IN($routed_user_list$vlia_users) and ring_callerid='' $qp_groupWAIT_camp_SQL $agent_call_order limit 1;";
+								$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+								$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+								$sthArowsFA=$sthA->rows;
+								if ($sthArowsFA > 0)
+									{
+									@aryA = $sthA->fetchrow_array;
+									$VDADconf_exten =			$aryA[0];
+									$VDADuser =					$aryA[1];
+									$VDADextension =			$aryA[2];
+									$VDADserver_ip =			$aryA[3];
+									$VDADgroup_weight =			$aryA[4];
+									$ra_user =					$aryA[5];
+									$log_campaign =				$aryA[6];
+									$VDADon_hook_agent =		$aryA[7];
+									$VDADon_hook_ring_time =	$aryA[8];
+									$group_grade =				$aryA[9];
+									$campaign_grade =			$aryA[10];
+									}
+								$sthA->finish();
+								if ($DBX) {$agi_string = "$VDADuser|$VDADgroup_weight|$stmtA|";   print "$agi_string\n";}
+								}
+							}
+						### END in-group-rank-based next-agent-call processing ###
+						}
+					else
+						{
+						### BEGIN standard next-agent-call processing ###
+						$stmtA = "LOCK TABLES vicidial_live_agents WRITE;";
+						my $LOCKaffected_rows = $dbhA->do($stmtA);
+
+						### if ringing an agent, do not look for one, else, look for one
+						if ($RING_agent > 0)
+							{$sthArowsFA=0;}
+						else
+							{
+							$sthArowsFA=0;
+							$stmtA = "SELECT conf_exten,user,extension,server_ip,last_call_time,ra_user,campaign_id,on_hook_agent,on_hook_ring_time FROM vicidial_live_agents where status IN('CLOSER','READY') and lead_id<1 $ADUfindSQL and campaign_id IN($INBOUNDcampsSQL) and closer_campaigns LIKE \"% $ICBQgroup_id[$r] %\" and last_update_time > '$BDtsSQLdate' and user NOT IN($routed_user_list'') $qp_groupWAIT_SQL $qp_groupWAIT_camp_SQL $agent_call_order limit 1;";
+							$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+							$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+							$sthArowsFA=$sthA->rows;
+							if ($sthArowsFA > 0)
+								{
+								@aryA = $sthA->fetchrow_array;
+								$VDADconf_exten =			$aryA[0];
+								$VDADuser =					$aryA[1];
+								$VDADextension =			$aryA[2];
+								$VDADserver_ip =			$aryA[3];
+								$VDADlast_call_time =		$aryA[4];
+								$ra_user =					$aryA[5];
+								$log_campaign =				$aryA[6];
+								$VDADon_hook_agent =		$aryA[7];
+								$VDADon_hook_ring_time =	$aryA[8];
+								}
+							$sthA->finish();
+							if ($DBX) {$agi_string = "$VDADuser|$VDADlast_call_time|$stmtA|";   print "$agi_string\n";}
+							}
+						### END standard next-agent-call processing ###
+						}
+
+					if ( ($sthArowsFA > 0) && (length($VDADuser) > 0) )
+						{
+						$Faffected_rows=0;
+						if ($VACagent_grab !~ /\|$VDADuser\|/) 
+							{
+							$stmtA = "UPDATE vicidial_live_agents set external_dial='$ICBQicbq_phone_number[$r]!$ICBQicbq_phone_code[$r]!NO!NO!NO!!$secX!!!$dial_ingroup_cid!!$ICBQlead_id[$r]!!$ICBQgroup_id[$r]' where user='$VDADuser' and status IN('CLOSER','READY');";
+							$Faffected_rows = $dbhA->do($stmtA);
+
+							if ($Faffected_rows > 0) 
+								{
+								### clear the ringing hold on the ring agents
+								$stmtB = "UPDATE vicidial_live_agents SET ring_callerid='' where ring_callerid='$callerid';";
+								$CRHaffected_rows = $dbhA->do($stmtB);
+
+								$routed_user_list .= "'$VDADuser',";
+								}
+							if ($DBX) {$agi_string = "$Faffected_rows|$stmtA\n$CRHaffected_rows|$stmtB|$routed_user_list|";   print "$agi_string\n";}
+							}
+						else
+							{
+							if ($DBX) {$agi_string = "     SELECTED AGENT GRABBING ANOTHER CALL: $VDADuser   $VACagent_grab";   print "$agi_string\n";}
+							}
+						}
+					else
+						{
+						$Faffected_rows=0;
+						}
+					$found_agents=$Faffected_rows;
+
+					$stmtA = "UNLOCK TABLES;";
+					my $LOCKaffected_rows = $dbhA->do($stmtA);
+					if ($found_agents > 0)
+						{
+						### set the icbq record as SENT
+						$stmtC = "UPDATE vicidial_inbound_callback_queue SET icbq_status='SENDING' where icbq_id='$ICBQicbq_id[$r]';";
+						$ICBQaffected_rows = $dbhA->do($stmtC);
+
+						if ($DBX) {$agi_string = "$ICBQaffected_rows|$stmtC|";   print "$agi_string\n";}
+						}
+					}
+				if ($ICBQicbq_date_epoch[$r] < $expire_epoch)
+					{
+					### set the icbq record as EXPIRED
+					$stmtC = "UPDATE vicidial_inbound_callback_queue SET icbq_status='EXPIRED' where icbq_id='$ICBQicbq_id[$r]' and icbq_status!='SENT';";
+					$ICBQaffected_rowsEXP = $dbhA->do($stmtC);
+
+					if ($DBX) {$agi_string = "$ICBQaffected_rowsEXP|$stmtC|";   print "$agi_string\n";}
+					}
+				}
+			else
+				{
+				if ($DBX) {print "     Already looked at ICBQ Entry for this In-Group: $r|$ICBQicbq_id[$r]|$ICBQgroup_id[$r]|$ICBQcall_date[$r]| ($routed_ingroup_list)\n";}
+				}
+			$r++;
+			}
+		}
+	
+	$icbq_NEW_ct=0;
+	$stmtA = "SELECT count(*) from vicidial_inbound_callback_queue where icbq_status='NEW';";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArowsICBQ=$sthA->rows;
+	if ($sthArowsICBQ > 0)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$icbq_NEW_ct =	$aryA[0];
+		}
+	$sthA->finish();
+	##########################################################
+	##### END check for inbound callback queue entries #####
+	##########################################################
+
+
+
+	##########################################################
+	##### BEGIN check if active inbound callback queue records are able to be dialed right now #####
+	##########################################################
+	if ( ($stat_count =~ /00$|20$|40$|60$|80$/) || ($stat_count==1) || ($icbq_NEW_ct > 0) )
+		{
+		$stmtA = "SELECT count(*) from vicidial_inbound_callback_queue where icbq_status IN('NEW','LIVE','NOCALLTIME');";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArowsICBQa=$sthA->rows;
+		if ($sthArowsICBQa > 0)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$ICBQcountA =	$aryA[0];
+			}
+		$sthA->finish();
+
+		if ($DB) {print "\nActive Inbound Callback Queue Entries: |$ICBQcountA|$stmtA|\n";}
+
+		if ($ICBQcountA > 0)
+			{
+			@ICBQicbq_id=@MT;
+			@ICBQlead_id=@MT;
+			@ICBQgroup_id=@MT;
+			@ICBQicbq_phone_number=@MT;
+			@ICBQicbq_phone_code=@MT;
+			@ICBQgmt_offset_now=@MT;
+			@ICBQicbq_status=@MT;
+
+			$stmtA = "SELECT icbq_id,group_id,icbq_phone_number,icbq_phone_code,gmt_offset_now,icbq_status,lead_id from vicidial_inbound_callback_queue where icbq_status IN('NEW','LIVE','NOCALLTIME') order by group_id,call_date limit 1000;";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArowsICBQr=$sthA->rows;
+			$r=0;
+			while ($sthArowsICBQr > $r)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$ICBQicbq_id[$r] =				$aryA[0];
+				$ICBQgroup_id[$r] =				$aryA[1];
+				$ICBQicbq_phone_number[$r] =	$aryA[2];
+				$ICBQicbq_phone_code[$r] =		$aryA[3];
+				$ICBQgmt_offset_now[$r] =		$aryA[4];
+				$ICBQicbq_status[$r] =			$aryA[5];
+				$ICBQlead_id[$r] =				$aryA[6];
+
+				$r++;
+				}
+			$sthA->finish();
+
+			$r=0;
+			while ($sthArowsICBQr > $r)
+				{
+				if ($DBX) {print "Active Inbound Callback Queue Entry: $r|$ICBQicbq_id[$r]|$ICBQicbq_status[$r]|$ICBQgroup_id[$r]|$ICBQicbq_phone_number[$r]|$ICBQicbq_phone_code[$r]|$ICBQgmt_offset_now[$r]|\n";}
+
+				### Grab inbound group settings from the database
+				$stmtA = "SELECT icbq_call_time_id,icbq_dial_filter FROM vicidial_inbound_groups where group_id='$ICBQgroup_id[$r]';";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArowsIG=$sthA->rows;
+				if ($sthArowsIG > 0)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$icbq_call_time_id	=	$aryA[0];
+					$icbq_dial_filter =		$aryA[1];
+					}
+				$sthA->finish();
+	
+
+				### BEGIN check of call time dialable for this record
+				$dialable=0;
+				$now_epoch = time();
+				$GMT_now = ($now_epoch - (($LOCAL_GMT_OFF - $ICBQgmt_offset_now[$r]) * 3600));
+				($Gsec,$Gmin,$Ghour,$Gmday,$Gmon,$Gyear,$Gwday,$Gyday,$Gisdst) = localtime($GMT_now);
+				$Gmon++;
+				$Gyear = ($Gyear + 1900);
+				if ($Gmon < 10) {$Gmon = "0$Gmon";}
+				if ($Gmday < 10) {$Gmday = "0$Gmday";}
+				if ($Ghour < 10) {$Ghour = "0$Ghour";}
+				if ($Gmin < 10) {$Gmin = "0$Gmin";}
+				if ($Gsec < 10) {$Gsec = "0$Gsec";}
+				$Ghourmin = "$Ghour$Gmin";
+				$YMD = "$Gyear-$Gmon-$Gmday";
+
+				$stmtA = "SELECT call_time_id,call_time_name,call_time_comments,ct_default_start,ct_default_stop,ct_sunday_start,ct_sunday_stop,ct_monday_start,ct_monday_stop,ct_tuesday_start,ct_tuesday_stop,ct_wednesday_start,ct_wednesday_stop,ct_thursday_start,ct_thursday_stop,ct_friday_start,ct_friday_stop,ct_saturday_start,ct_saturday_stop,ct_state_call_times,ct_holidays FROM vicidial_call_times where call_time_id='$icbq_call_time_id';";
+					if ($DBX) {print "   |$stmtA|\n";}
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				$rec_count=0;
+				while ($sthArows > $rec_count)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$Gct_default_start =	$aryA[3];
+					$Gct_default_stop =		$aryA[4];
+					$Gct_sunday_start =		$aryA[5];
+					$Gct_sunday_stop =		$aryA[6];
+					$Gct_monday_start =		$aryA[7];
+					$Gct_monday_stop =		$aryA[8];
+					$Gct_tuesday_start =	$aryA[9];
+					$Gct_tuesday_stop =		$aryA[10];
+					$Gct_wednesday_start =	$aryA[11];
+					$Gct_wednesday_stop =	$aryA[12];
+					$Gct_thursday_start =	$aryA[13];
+					$Gct_thursday_stop =	$aryA[14];
+					$Gct_friday_start =		$aryA[15];
+					$Gct_friday_stop =		$aryA[16];
+					$Gct_saturday_start =	$aryA[17];
+					$Gct_saturday_stop =	$aryA[18];
+					$Gct_state_call_times = $aryA[19];
+					$Gct_holidays =			$aryA[20];
+					$rec_count++;
+					}
+				$sthA->finish();
+				### BEGIN Check for outbound call time holiday ###
+				$holiday_id = '';
+				if (length($Gct_holidays)>2)
+					{
+					$Gct_holidaysSQL = $Gct_holidays;
+					$Gct_holidaysSQL =~ s/^\||\|$//gi;
+					$Gct_holidaysSQL =~ s/\|/','/gi;
+					$Gct_holidaysSQL = "'$Gct_holidaysSQL'";
+
+					$stmtC = "SELECT holiday_id,holiday_date,holiday_name,ct_default_start,ct_default_stop from vicidial_call_time_holidays where holiday_id IN($Gct_holidaysSQL) and holiday_status='ACTIVE' and holiday_date='$YMD' order by holiday_id;";
+					if ($DBX) {print "   |$stmtC|\n";}
+					$sthC = $dbhA->prepare($stmtC) or die "preparing: ",$dbhA->errstr;
+					$sthC->execute or die "executing: $stmtC ", $dbhA->errstr;
+					$sthCrows=$sthC->rows;
+					if ($sthCrows > 0)
+						{
+						@aryC = $sthC->fetchrow_array;
+						$holiday_id =				$aryC[0];
+						$holiday_date =				$aryC[1];
+						$holiday_name =				$aryC[2];
+						if ( ($Gct_default_start < $aryC[3]) && ($Gct_default_stop > 0) )		{$Gct_default_start = $aryC[3];}
+						if ( ($Gct_default_stop > $aryC[4]) && ($Gct_default_stop > 0) )		{$Gct_default_stop = $aryC[4];}
+						if ( ($Gct_sunday_start < $aryC[3]) && ($Gct_sunday_stop > 0) )			{$Gct_sunday_start = $aryC[3];}
+						if ( ($Gct_sunday_stop > $aryC[4]) && ($Gct_sunday_stop > 0) )			{$Gct_sunday_stop = $aryC[4];}
+						if ( ($Gct_monday_start < $aryC[3]) && ($Gct_monday_stop > 0) )			{$Gct_monday_start = $aryC[3];}
+						if ( ($Gct_monday_stop >	$aryC[4]) && ($Gct_monday_stop > 0) )		{$Gct_monday_stop =	$aryC[4];}
+						if ( ($Gct_tuesday_start < $aryC[3]) && ($Gct_tuesday_stop > 0) )		{$Gct_tuesday_start = $aryC[3];}
+						if ( ($Gct_tuesday_stop > $aryC[4]) && ($Gct_tuesday_stop > 0) )		{$Gct_tuesday_stop = $aryC[4];}
+						if ( ($Gct_wednesday_start < $aryC[3]) && ($Gct_wednesday_stop > 0) ) 	{$Gct_wednesday_start = $aryC[3];}
+						if ( ($Gct_wednesday_stop > $aryC[4]) && ($Gct_wednesday_stop > 0) )	{$Gct_wednesday_stop = $aryC[4];}
+						if ( ($Gct_thursday_start < $aryC[3]) && ($Gct_thursday_stop > 0) )		{$Gct_thursday_start = $aryC[3];}
+						if ( ($Gct_thursday_stop > $aryC[4]) && ($Gct_thursday_stop > 0) )		{$Gct_thursday_stop = $aryC[4];}
+						if ( ($Gct_friday_start < $aryC[3]) && ($Gct_friday_stop > 0) )			{$Gct_friday_start = $aryC[3];}
+						if ( ($Gct_friday_stop > $aryC[4]) && ($Gct_friday_stop > 0) )			{$Gct_friday_stop = $aryC[4];}
+						if ( ($Gct_saturday_start < $aryC[3]) && ($Gct_saturday_stop > 0) )		{$Gct_saturday_start = $aryC[3];}
+						if ( ($Gct_saturday_stop > $aryC[4]) && ($Gct_saturday_stop > 0) )		{$Gct_saturday_stop = $aryC[4];}
+						if ($DBX) {print "     CALL TIME HOLIDAY FOUND!   $local_call_time[$i]|$holiday_id|$holiday_date|$holiday_name|$Gct_default_start|$Gct_default_stop|\n";}
+						}
+					$sthC->finish();
+					}
+				### END Check for outbound call time holiday ###
+
+				if ($Gwday==0)	#### Sunday local time
+					{
+					if (($Gct_sunday_start==0) && ($Gct_sunday_stop==0))
+						{
+						if ( ($Ghourmin>=$Gct_default_start) && ($Ghourmin<$Gct_default_stop) )
+							{$dialable++;}
+						}
+					else
+						{
+						if ( ($Ghourmin>=$Gct_sunday_start) && ($Ghourmin<$Gct_sunday_stop) )
+							{$dialable++;}
+						}
+					}
+				if ($Gwday==1)	#### Monday local time
+					{
+					if (($Gct_monday_start==0) && ($Gct_monday_stop==0))
+						{
+						if ( ($Ghourmin>=$Gct_default_start) && ($Ghourmin<$Gct_default_stop) )
+							{$dialable++;}
+						}
+					else
+						{
+						if ( ($Ghourmin>=$Gct_monday_start) && ($Ghourmin<$Gct_monday_stop) )
+							{$dialable++;}
+						}
+					}
+				if ($Gwday==2)	#### Tuesday local time
+					{
+					if (($Gct_tuesday_start==0) && ($Gct_tuesday_stop==0))
+						{
+						if ( ($Ghourmin>=$Gct_default_start) && ($Ghourmin<$Gct_default_stop) )
+							{$dialable++;}
+						}
+					else
+						{
+						if ( ($Ghourmin>=$Gct_tuesday_start) && ($Ghourmin<$Gct_tuesday_stop) )
+							{$dialable++;}
+						}
+					}
+				if ($Gwday==3)	#### Wednesday local time
+					{
+					if (($Gct_wednesday_start==0) && ($Gct_wednesday_stop==0))
+						{
+						if ( ($Ghourmin>=$Gct_default_start) && ($Ghourmin<$Gct_default_stop) )
+							{$dialable++;}
+						}
+					else
+						{
+						if ( ($Ghourmin>=$Gct_wednesday_start) && ($Ghourmin<$Gct_wednesday_stop) )
+							{$dialable++;}
+						}
+					}
+				if ($Gwday==4)	#### Thursday local time
+					{
+					if (($Gct_thursday_start==0) && ($Gct_thursday_stop==0))
+						{
+						if ( ($Ghourmin>=$Gct_default_start) && ($Ghourmin<$Gct_default_stop) )
+							{$dialable++;}
+						}
+					else
+						{
+						if ( ($Ghourmin>=$Gct_thursday_start) && ($Ghourmin<$Gct_thursday_stop) )
+							{$dialable++;}
+						}
+					}
+				if ($Gwday==5)	#### Friday local time
+					{
+					if (($Gct_friday_start==0) && ($Gct_friday_stop==0))
+						{
+						if ( ($Ghourmin>=$Gct_default_start) && ($Ghourmin<$Gct_default_stop) )
+							{$dialable++;}
+						}
+					else
+						{
+						if ( ($Ghourmin>=$Gct_friday_start) && ($Ghourmin<$Gct_friday_stop) )
+							{$dialable++;}
+						}
+					}
+				if ($Gwday==6)	#### Saturday local time
+					{
+					if (($Gct_saturday_start==0) && ($Gct_saturday_stop==0))
+						{
+						if ( ($Ghourmin>=$Gct_default_start) && ($Ghourmin<$Gct_default_stop) )
+							{$dialable++;}
+						}
+					else
+						{
+						if ( ($Ghourmin>=$Gct_saturday_start) && ($Ghourmin<$Gct_saturday_stop) )
+							{$dialable++;}
+						}
+					}
+				if ($dialable > 0) 
+					{$NEWstatus = 'LIVE';}
+				else
+					{$NEWstatus = 'NOCALLTIME';}
+				if ($DBX) {print "     CALL TIME ICBQ DIALABLE CHECK   $Ghourmin|$Gwday|$dialable|$NEWstatus|$Gct_default_start|$Gct_default_stop|\n";}
+				### END check of call time dialable for this record
+
+
+				### BEGIN check of DNC filtering for this record
+				$dnc_internal_match=0;
+				$dnc_campaign_match=0;
+				if ( ($icbq_dial_filter !~ /NONE/i) && (length($icbq_dial_filter) > 4) ) 
+					{
+					$alt_areacode='';
+					if ($icbq_dial_filter =~ /AREACODE/)
+						{
+						$alt_areacode = substr($ICBQicbq_phone_number[$r], 0, 3);
+						$alt_areacode .= "XXXXXXX";
+						$alt_areacode = ",'$alt_areacode'";
+						}
+					if ($icbq_dial_filter =~ /INTERNAL/)
+						{
+						$stmtA = "SELECT count(*) FROM vicidial_dnc where phone_number IN('$ICBQicbq_phone_number[$r]'$alt_areacode);";
+						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+						$sthArows=$sthA->rows;
+						if ($sthArows > 0)
+							{
+							@aryA = $sthA->fetchrow_array;
+							$dnc_internal_match =	$aryA[0];
+							}
+						$sthA->finish();
+						if ($DBX) {print "     CALLBACK DIAL FILTER DNC INTERNAL: |$dnc_internal_match|$stmtA|\n";}
+						}
+					if ($icbq_dial_filter =~ /CAMPAIGN/)
+						{
+						$dnc_campaign_list='';
+						$stmtA = "SELECT list_id FROM vicidial_list where lead_id='$ICBQlead_id[$r]';";
+						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+						$sthArows=$sthA->rows;
+						if ($sthArows > 0)
+							{
+							@aryA = $sthA->fetchrow_array;
+							$dnc_campaign_list =	$aryA[0];
+							}
+						$sthA->finish();
+
+						if (length($dnc_campaign_list) > 1) 
+							{
+							$dnc_campaign='';
+							$stmtA = "SELECT campaign_id FROM vicidial_lists where list_id='$dnc_campaign_list';";
+							$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+							$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+							$sthArows=$sthA->rows;
+							if ($sthArows > 0)
+								{
+								@aryA = $sthA->fetchrow_array;
+								$dnc_campaign =	$aryA[0];
+								}
+							$sthA->finish();
+
+							if (length($dnc_campaign) > 0) 
+								{
+								$stmtA = "SELECT count(*) FROM vicidial_campaign_dnc where campaign_id='$dnc_campaign' and phone_number IN('$ICBQicbq_phone_number[$r]'$alt_areacode);";
+								$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+								$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+								$sthArows=$sthA->rows;
+								if ($sthArows > 0)
+									{
+									@aryA = $sthA->fetchrow_array;
+									$dnc_campaign_match =	$aryA[0];
+									}
+								$sthA->finish();
+								}
+							}
+						if ($DBX) {print "     CALLBACK DIAL FILTER DNC CAMPAIGN: |$dnc_campaign_match|$dnc_campaign_list|$stmtA|\n";}
+						}
+
+					if ($dnc_internal_match > 0) 
+						{$NEWstatus = 'DNCL';}
+					else
+						{
+						if ($dnc_campaign_match > 0) 
+							{$NEWstatus = 'DNCC';}
+						}
+					}
+				### END check of DNC filtering for this record
+
+
+				if ($ICBQicbq_status[$r] !~ /$NEWstatus/) 
+					{
+					### set the icbq record to new status
+					$stmtC = "UPDATE vicidial_inbound_callback_queue SET icbq_status='$NEWstatus' where icbq_id='$ICBQicbq_id[$r]' and icbq_status!='SENT';";
+					$ICBQaffected_rowsNEW = $dbhA->do($stmtC);
+
+					if ($DBX) {$agi_string = "$ICBQaffected_rowsNEW|$stmtC|";   print "$agi_string\n";}
+					}
+				$r++;
+				}
+			}
+		}
+	##########################################################
+	##### END check if active inbound callback queue records are able to be dialed right now #####
+	##########################################################
+
+
+
+	##########################################################
+	##### BEGIN check for stuck SENDING inbound callback queue records #####
+	##########################################################
+	if ( ($stat_count =~ /00$|10$|20$|30$|40$|50$|60$|70$|80$|90$/) || ($stat_count==1) )
+		{
+		$now_epoch = time();
+		$BDtarget = ($now_epoch - 10);
+		($Bsec,$Bmin,$Bhour,$Bmday,$Bmon,$Byear,$Bwday,$Byday,$Bisdst) = localtime($BDtarget);
+		$Byear = ($Byear + 1900);
+		$Bmon++;
+		if ($Bmon < 10) {$Bmon = "0$Bmon";}
+		if ($Bmday < 10) {$Bmday = "0$Bmday";}
+		if ($Bhour < 10) {$Bhour = "0$Bhour";}
+		if ($Bmin < 10) {$Bmin = "0$Bmin";}
+		if ($Bsec < 10) {$Bsec = "0$Bsec";}
+			$BDtsSQLdate = "$Byear-$Bmon-$Bmday $Bhour:$Bmin:$Bsec";
+
+		$ICBQcountS=0;
+		$stmtA = "SELECT count(*) from vicidial_inbound_callback_queue where icbq_status IN('SENDING') and modify_date < \"$BDtsSQLdate\";";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArowsICBQs=$sthA->rows;
+		if ($sthArowsICBQs > 0)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$ICBQcountS =	$aryA[0];
+			}
+		$sthA->finish();
+
+		if ($DB) {print "\nOrphan SENDING Inbound Callback Queue Entries: |$ICBQcountS|$stmtA|\n";}
+
+		if ($ICBQcountS > 0)
+			{
+			### set the icbq record to new status
+			$stmtC = "UPDATE vicidial_inbound_callback_queue SET icbq_status='ORPHAN' where icbq_status IN('SENDING') and modify_date < \"$BDtsSQLdate\";";
+			$ICBQaffected_rowsORPHAN = $dbhA->do($stmtC);
+
+			if ($DBX) {$agi_string = "$ICBQaffected_rowsORPHAN|$stmtC|";   print "$agi_string\n";}
+			}
+		}
+	##########################################################
+	##### END check for stuck SENDING inbound callback queue records #####
+	##########################################################
+
+
 
 	usleep($CLIdelay*1000*1000);
 
@@ -4585,7 +5477,7 @@ sub calculate_drops_inbound
 				{$update_SQL .= ",max_agents='$itotal_agents[$p]'";}
 			if ($STATSmax_remote_agents < $itotal_remote_agents[$p])
 				{$update_SQL .= ",max_remote_agents='$itotal_remote_agents[$p]'";}
-			if ($STATStotal_calls < $iVCScalls_today[$p]) 
+			if ($STATStotal_calls != $iVCScalls_today[$p]) 
 				{$update_SQL .= ",total_calls='$iVCScalls_today[$p]'";}
 			if (length($update_SQL) > 5) 
 				{

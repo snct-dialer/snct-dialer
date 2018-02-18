@@ -1,4 +1,4 @@
-NON-AGENT API DOCUMENT           Started: 2008-07-24         Updated: 2017-12-29
+NON-AGENT API DOCUMENT           Started: 2008-07-24         Updated: 2018-02-08
 
 This document describes the functions of an API(Application Programming 
 Interface) for all functions NOT directly relating to the VICIDIAL Agent screen. 
@@ -44,7 +44,8 @@ update_campaign - updates campaign settings in the system
 phone_number_log - exports list of calls placed to one of more phone numbers
 ccc_lead_info - outputs lead data for cross-cluster-communication call
 lead_status_search - displays all field values of all leads that match the status and call date in request
-
+call_status_stats - report on number of calls made by campaign and ingroup, with hourly and status breakdowns
+call_dispo_report - call disposition breakdown report
 
 New scripts:
 /vicidial/non_agent_api.php - the script that is accessed to execute commands
@@ -131,6 +132,8 @@ Changes:
 170609-1107 - Added ccc_lead_info function
 170615-0006 - Added DIAL status for manual dial agent calls that have not been answered, to 4 functions
 171229-1602 - Added lead_status_search function
+180109-1313 - Added call_status_stats function
+180208-1655 - Added call_dispo_report function
 
 
 API Functions use the 'function' variable
@@ -1483,6 +1486,99 @@ user,campaign_id,session_id,status,lead_id,callerid,calls_today,full_name,user_g
 4545,TESTCAMP,8600052,PAUSED,0,,0,4545,MIKESGROUP,8,LOGIN,
 
 NOTE: real_time_sub_status field can consist of: DEAD, DISPO, 3-WAY, PARK, RING, PREVIEW, DIAL or it can be empty
+
+
+
+
+
+--------------------------------------------------------------------------------
+call_status_stats - report on number of calls made by campaign and ingroup, with hourly and status breakdowns
+
+NOTE: api user for this function must have user_level set to 8 or higher and "view reports" enabled
+
+REQUIRED FIELDS-
+campaigns -		Campaigns to return stats on.  Use "---ALL---" or "ALLCAMPAIGNS" for all campaigns, or use single dash delimiters if 
+                        requesting more than one specific campaign
+
+OPTIONAL FIELDS-
+query_date -	Date to report on, leave blank to default to today's date.  Must be in YYYY-MM-DD format
+ingroups -	List of ingroups to report on.  Leave blank for all ingroups belonging to the campaigns specified in the "campaigns" variable.
+		Use dash delimiters if requesting more than one ingroup.
+statuses -	List of specific statuses to report on.  Leave blank for all, or use dash delimiters if requesting more than one status.
+
+
+Example URL strings for API calls:
+http://server/vicidial/non_agent_api.php?user=6666&pass=1234&function=call_status_stats&campaigns=---ALL---&query_date=2017-11-24 (returns all campaigns and ingroups for 11/24/17)
+http://server/vicidial/non_agent_api.php?user=6666&pass=1234&function=call_status_stats&campaigns=TESTCAMP-TESTCAMP2&query_date=2017-11-24&statuses=NP-TD&ingroups=AGENTDIRECT 
+(returns stat counts for TESTCAMP and TESTCAMP2 campaigns, and AGENTDIRECT ingroup, for 11/24/27 for calls dispositioned as NP and TD)
+
+
+Example responses:
+ERROR: call_status_stats INVALID OR MISSING CAMPAIGNS
+ERROR: auth USER DOES NOT HAVE PERMISSION TO USE THIS FUNCTION
+ERROR: call_status_stats USER DOES NOT HAVE PERMISSION TO VIEW STATS
+
+A SUCCESS response will not show "SUCCESS", but instead will just print the results in the following format:
+campaign_id/ingroup|total calls|human answered calls|hourly breakdown(HH-count,HH-count,etc...)|status breakdown(status-count,status-count,etc...)
+
+Hourly and status breakdowns are delimited by comma, and each hour/status count is delimited by dash, as seen below:
+
+TESTCAMP|26|26|00-0,01-1,02-1,03-0,04-0,05-0,06-0,07-0,08-0,09-0,10-0,11-3,12-4,13-2,14-4,15-1,16-0,17-2,18-0,19-0,20-0,21-6,22-1,23-1|NP-4,TD-22|
+AGENTDIRECT|2|2|00-0,01-0,02-0,03-0,04-0,05-0,06-0,07-0,08-0,09-0,10-0,11-1,12-1,13-0,14-0,15-0,16-0,17-0,18-0,19-0,20-0,21-0,22-0,23-0|TD-2|
+
+
+
+
+
+--------------------------------------------------------------------------------
+call_dispo_report - call disposition breakdown report
+
+
+NOTE: api user for this function must have user_level set to 9 and "view reports" enabled
+
+REQUIRED FIELDS(one of the following)-
+campaigns -		Campaigns to return stats on.  Use single dash delimiters if requesting more than one specific campaign
+ingroups -		In-Groups to return stats on.  Use single dash delimiters if requesting more than one specific inbound group
+dids -			DIDs to return stats on.  Use single dash delimiters if requesting more than one specific DID
+
+OPTIONAL FIELDS-
+query_date -	Date to report on, leave blank to default to today's date.  Must be in YYYY-MM-DD format
+end_date -	Date to report on, leave blank to default to today's date.  Must be in YYYY-MM-DD format
+statuses -	List of specific statuses to report on.  Leave blank for all, or use dash delimiters if requesting more than one status.
+categories -	List of specific status categories to report on.  Leave blank for all, or use dash delimiters if requesting more than one category.
+users -		List of specific users to report on.  Use single dash delimiters if requesting more than one specific user
+status_breakdown -	[0,1] Breakdown of all statuses within selected elements, default 0
+show_percentages -	[0,1] (Only works if status_breakdown above is enabled), will show percentages of statuses, default 0
+file_download -		[0,1] Download as a CSV file, default 0
+
+
+Example URL strings for API calls:
+http://server/vicidial/non_agent_api.php?source=test&user=6666&pass=1234&function=call_dispo_report&ingroups=TEST_IN3-TEST_IN2&query_date=2018-02-05&end_date=2018-02-07
+http://svn.eflo.net:40080/vicidial/non_agent_api.php?source=test&user=6666&pass=1234&function=call_dispo_report&ingroups=TEST_IN3-TEST_IN2&query_date=2018-02-05&end_date=2018-02-07&status_breakdown=1
+http://svn.eflo.net:40080/vicidial/non_agent_api.php?source=test&user=6666&pass=1234&function=call_dispo_report&did_patterns=7275551113&query_date=2018-02-05&end_date=2018-02-07&status_breakdown=1
+http://svn.eflo.net:40080/vicidial/non_agent_api.php?source=test&user=6666&pass=1234&function=call_dispo_report&ingroups=TEST_IN3-TEST_IN2&query_date=2018-02-05&end_date=2018-02-07&status_breakdown=1&show_percentages=1
+
+Example responses:
+ERROR: call_dispo_report INVALID OR MISSING CAMPAIGNS, INGROUPS, OR DIDS
+ERROR: call_dispo_report USER DOES NOT HAVE PERMISSION TO USE THIS FUNCTION
+ERROR: call_dispo_report USER DOES NOT HAVE PERMISSION TO VIEW STATS
+
+A SUCCESS response will not show "SUCCESS", but instead will just print the results in the following format:
+
+CAMPAIGN,TOTAL CALLS
+TEST_IN2,10
+TEST_IN3,110
+TOTAL,120
+
+CAMPAIGN,TOTAL CALLS,ACFLTR,NP,WAITTO,CLOSOP,DROP,INCALL,RQXFER,TD,TESTAM
+TEST_IN2,10,1,0,0,0,5,0,0,0,4
+TEST_IN3,110,0,5,13,9,3,1,47,1,31
+TOTAL,120,1,5,13,9,8,1,47,1,35
+
+CAMPAIGN,TOTAL CALLS,ACFLTR,NP,WAITTO,CLOSOP,DROP,INCALL,RQXFER,TD,TESTAM
+TEST_IN2,10,1 (10.0%),0 (0.0%),0 (0.0%),0 (0.0%),5 (50.0%),0 (0.0%),0 (0.0%),0 (0.0%),4 (40.0%)
+TEST_IN3,110,0 (0.0%),5 (4.5%),13 (11.8%),9 (8.2%),3 (2.7%),1 (0.9%),47 (42.7%),1 (0.9%),31 (28.2%)
+TOTAL,120,1 (0.8%),5 (4.2%),13 (10.8%),9 (7.5%),8 (6.7%),1 (0.8%),47 (39.2%),1 (0.8%),35 (29.2%)
 
 
 
