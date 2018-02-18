@@ -276,6 +276,8 @@ OTHER CHANGES:
 	or areacode, and allowing a single CID Group to be set across multiple
 	campaigns.
 
+74. Added NO_READY option for no_agent_no_queue in-group feature.
+
 
 
 

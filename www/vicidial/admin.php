@@ -4383,12 +4383,13 @@ else
 # 180215-1318 - Added CID Groups admin screens
 # 180216-1332 - Fix for system summary screen, issue #1068
 # 180216-1743 - Many translation strings and permissions fixes, issue #1065
+# 180217-0934 - Added NO_READY option for no_agent_no_queue in-group feature, issue #1046
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-658a';
-$build = '180216-1743';
+$admin_version = '2.14-659a';
+$build = '180217-0934';
 
 
 $STARTtime = date("U");
@@ -27979,7 +27980,7 @@ if ($ADD==3111)
 
 		echo "<tr bgcolor=#CCFFFF><td align=right><a href=\"$PHP_SELF?ADD=3511&menu_id=$after_hours_callmenu\">"._QXZ("After Hours Call Menu").":</a></td><td align=left><select size=1 name=after_hours_callmenu id=after_hours_callmenu>$call_menu_list<option SELECTED>$after_hours_callmenu</option></select>$NWB#inbound_groups-after_hours_callmenu$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("No Agents No Queueing").": </td><td align=left><select size=1 name=no_agent_no_queue><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='NO_PAUSED'>"._QXZ("NO_PAUSED")."</option><option value='$no_agent_no_queue' SELECTED>"._QXZ("$no_agent_no_queue")."</option></select>$NWB#inbound_groups-no_agent_no_queue$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("No Agents No Queueing").": </td><td align=left><select size=1 name=no_agent_no_queue><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='NO_PAUSED'>"._QXZ("NO_PAUSED")."</option><option value='NO_READY'>"._QXZ("NO_READY")."</option><option value='$no_agent_no_queue' SELECTED>"._QXZ("$no_agent_no_queue")."</option></select>$NWB#inbound_groups-no_agent_no_queue$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("No Agent No Queue Action").": </td><td align=left><select size=1 name=no_agent_action id=no_agent_action onChange=\"dynamic_call_action('no_agent_action','$no_agent_action','$no_agent_action_value','600');\"><option value='CALLMENU'>"._QXZ("CALLMENU")."</option><option value='INGROUP'>"._QXZ("INGROUP")."</option><option value='DID'>"._QXZ("DID")."</option><option value='MESSAGE'>"._QXZ("MESSAGE")."</option><option value='EXTENSION'>"._QXZ("EXTENSION")."</option><option value='VOICEMAIL'>"._QXZ("VOICEMAIL")."</option><option value='VMAIL_NO_INST'>"._QXZ("VMAIL_NO_INST")."</option><option value='$no_agent_action' SELECTED>"._QXZ("$no_agent_action")."</option></select>$NWB#inbound_groups-no_agent_no_queue$NWE\n";
 
