@@ -36335,7 +36335,7 @@ if ($ADD==311111111111111)
 		echo "<input type=hidden name=sounds_web_directory value=\"$sounds_web_directory\">\n";
 		echo "<center><TABLE width=$section_width cellspacing=3>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Version").": </td><td align=left> $version</td></tr>\n";
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("SVN Version").": </td><td align=left> <a href=\"$PHP_SELF?ADD=999991\">$svn_revision</a></td></tr>\n";
+#		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("SVN Version").": </td><td align=left> <a href=\"$PHP_SELF?ADD=999991\">$svn_revision</a></td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("DB Schema Version").": </td><td align=left> $db_schema_version";
 		if ($db_schema_version != "$ExpectedDBSchema")
@@ -36344,7 +36344,7 @@ if ($ADD==311111111111111)
 			}
 		echo "</td></tr>\n";
 		
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Git Commit").": </td><td align=left> $git_commit</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Git Commit").": </td><td align=left> <a href=\"$PHP_SELF?ADD=999991\">$git_commit</a></td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Patch-Level").": </td><td align=left> $git_release</td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("DB Schema Update Date").": </td><td align=left> $db_schema_update_date</td></tr>\n";
@@ -42075,7 +42075,7 @@ if ($ADD==999991)
 					$row=mysqli_fetch_row($rslt);
 					$s_time = $row[0];
 					}
-				$stmt="SELECT svn_revision,svn_info from servers where server_ip='$server_ip[$o]';";
+				$stmt="SELECT git_commit from servers where server_ip='$server_ip[$o]';";
 				$rslt=mysql_to_mysqli($stmt, $link);
 				if ($DB) {echo "$stmt\n";}
 				$serverver_to_print = mysqli_num_rows($rslt);
@@ -42083,14 +42083,12 @@ if ($ADD==999991)
 					{
 					$row=mysqli_fetch_row($rslt);
 					$s_ver = $row[0];
-					$s_info = $row[1];
-					$s_info_print = preg_replace("/\n/",'<BR>',$s_info);
 					}
 				if (strlen($s_info_print) < 1) {$s_info_print='no svn information';}
 				echo "<TD NOWRAP>$s_time</TD><TD NOWRAP>$s_ver</TD></TR>";
-				echo "<TR><TD NOWRAP>&nbsp;</TD><TD COLSPAN=8 NOWRAP>$s_info_print</TD>";
-
-				echo "</TR>\n";
+#				echo "<TR><TD NOWRAP>&nbsp;</TD><TD COLSPAN=8 NOWRAP>$s_info_print</TD>";
+#
+#				echo "</TR>\n";
 				$o++;
 				}
 			echo "</TABLE>\n";

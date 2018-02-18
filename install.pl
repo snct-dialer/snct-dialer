@@ -342,7 +342,7 @@ if (length($ARGV[0])>1)
 				$PATHDONEmonitor =~ s/\/$| |\r|\n|\t//gi;
 				$CLIDONEmonitor=1;
 				print "  CLI defined DONEmonitor:    $PATHDONEmonitor\n";
-				}
+		}
 			}
 		if ($args =~ /--server_ip=/i) # CLI defined server IP address
 			{

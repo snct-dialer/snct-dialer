@@ -1,3 +1,7 @@
+2.25.24
+  [Jörg Fring-Fürst]
+  * www/vicidial/admin.php: Switch from SVN-Version to Git-commit.
+
 2.25.24a
   [Jörg Fring-Fürst]
   * www/vicidial/admin.php: Correct typo.
