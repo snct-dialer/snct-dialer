@@ -86,6 +86,7 @@
 # 170826-0858 - Added link to turn on/off archived logs display
 # 171001-1109 - Added in-browser audio control, if recording access control is disabled
 # 171216-2058 - Added ability to modify all active scheduled callbacks, and view callbacks log
+# 180212-2340 - Added GDPR compliance features
 #
 
 require("dbconnect_mysqli.php");
@@ -200,6 +201,8 @@ if (isset($_GET["archive_log"]))			{$archive_log=$_GET["archive_log"];}
 	elseif (isset($_POST["archive_log"]))	{$archive_log=$_POST["archive_log"];}
 if (isset($_GET["date_of_birth"]))			{$date_of_birth=$_GET["date_of_birth"];}
 	elseif (isset($_POST["date_of_birth"]))	{$date_of_birth=$_POST["date_of_birth"];}
+if (isset($_GET["gdpr_action"]))			{$gdpr_action=$_GET["gdpr_action"];}
+	elseif (isset($_POST["gdpr_action"]))	{$gdpr_action=$_POST["gdpr_action"];}
 
 
 if ($archive_search=="Yes") {$vl_table="vicidial_list_archive";} 
@@ -225,7 +228,7 @@ if ($nonselectable_statuses > 0)
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$stmt = "SELECT use_non_latin,custom_fields_enabled,webroot_writable,allow_emails,enable_languages,language_method,active_modules,log_recording_access FROM system_settings;";
+$stmt = "SELECT use_non_latin,custom_fields_enabled,webroot_writable,allow_emails,enable_languages,language_method,active_modules,log_recording_access,admin_screen_colors,enable_gdpr_download_deletion FROM system_settings;";
 $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $qm_conf_ct = mysqli_num_rows($rslt);
@@ -240,6 +243,8 @@ if ($qm_conf_ct > 0)
 	$SSlanguage_method =		$row[5];
 	$active_modules =			$row[6];
 	$log_recording_access =		$row[7];
+	$SSadmin_screen_colors =	$row[8];
+	$enable_gdpr_download_deletion = $row[9];
 	}
 ##### END SETTINGS LOOKUP #####
 ###########################################
@@ -408,6 +413,259 @@ if ( (!preg_match('/\-ALL/i', $LOGallowed_campaigns)) and ($LOGignore_group_on_s
 	$LOGallowed_listsSQL = "and list_id IN($camp_lists)";
 	$whereLOGallowed_listsSQL = "where list_id IN($camp_lists)";
 	}
+
+
+$SSmenu_background='015B91';
+$SSframe_background='D9E6FE';
+$SSstd_row1_background='9BB9FB';
+$SSstd_row2_background='B9CBFD';
+$SSstd_row3_background='8EBCFD';
+$SSstd_row4_background='B6D3FC';
+$SSstd_row5_background='A3C3D6';
+$SSalt_row1_background='BDFFBD';
+$SSalt_row2_background='99FF99';
+$SSalt_row3_background='CCFFCC';
+$SSweb_logo='default_old';
+
+if ($SSadmin_screen_colors != 'default')
+	{
+	$stmt = "SELECT menu_background,frame_background,std_row1_background,std_row2_background,std_row3_background,std_row4_background,std_row5_background,alt_row1_background,alt_row2_background,alt_row3_background,web_logo FROM vicidial_screen_colors where colors_id='$SSadmin_screen_colors';";
+	$rslt=mysql_to_mysqli($stmt, $link);
+	if ($DB) {echo "$stmt\n";}
+	$colors_ct = mysqli_num_rows($rslt);
+	if ($colors_ct > 0)
+		{
+		$row=mysqli_fetch_row($rslt);
+		$SSmenu_background =		$row[0];
+		$SSframe_background =		$row[1];
+		$SSstd_row1_background =	$row[2];
+		$SSstd_row2_background =	$row[3];
+		$SSstd_row3_background =	$row[4];
+		$SSstd_row4_background =	$row[5];
+		$SSstd_row5_background =	$row[6];
+		$SSalt_row1_background =	$row[7];
+		$SSalt_row2_background =	$row[8];
+		$SSalt_row3_background =	$row[9];
+		$SSweb_logo =				$row[10];
+		}
+	}
+
+
+if ($enable_gdpr_download_deletion>0) 
+	{
+	$stmt="SELECT export_gdpr_leads from vicidial_users where user='$PHP_AUTH_USER' and export_gdpr_leads >= 1;";
+	$rslt=mysql_to_mysqli($stmt, $link);
+	$row=mysqli_fetch_row($rslt);
+	$gdpr_display=$row[0];
+
+	if ($gdpr_display>=1 && $gdpr_action && $lead_id)
+		{
+		$table_array=array("vicidial_list", "recording_log", "vicidial_log", "vicidial_xfer_log", "vicidial_closer_log", "vicidial_carrier_log", "vicidial_agent_log");
+		$date_field_array=array("entry_date", "start_time", "call_date", "call_date", "call_date", "call_date", "event_time");
+		$purge_field_array=array(
+			"vicidial_list" => array("phone_code", "phone_number", "title", "first_name", "middle_initial", "last_name", "address1", "address2", "address3", "city", "state", "province", "postal_code", "country_code", "gender", "date_of_birth", "alt_phone", "email", "security_phrase", "comments"),
+			"vicidial_log" => array(),
+			"vicidial_xfer_log" => array(),
+			"vicidial_closer_log" => array(),
+			"vicidial_carrier_log" => array(),
+			"vicidial_agent_log" => array(),
+			"recording_log" => array("filename", "location")
+		);
+		$table_count=count($table_array);
+
+		$CSV_text="";
+		$HTML_text="";
+		$SQL_log = "";
+
+		if ($gdpr_action=="confirm_purge")
+			{
+			$archive_table_name=use_archive_table("vicidial_list");
+			$mysql_stmt="(select list_id from vicidial_list where lead_id='$lead_id')";
+			if ($archive_table_name!="vicidial_list") {$mysql_stmt.=" UNION (select list_id from ".$archive_table_name." where lead_id='$lead_id')";}
+			$mysql_rslt=mysql_to_mysqli($mysql_stmt, $link);
+			if(mysqli_num_rows($mysql_rslt)>0)
+				{
+				$mysql_row=mysqli_fetch_row($mysql_rslt);
+				$list_id=$mysql_row[0];
+				}
+
+			for ($t=0; $t<$table_count; $t++) 
+				{
+				$table_name=$table_array[$t];
+				$archive_table_name=use_archive_table($table_name);
+
+				if ($list_id && $table_name=="vicidial_list" && table_exists("custom_$list_id")) 
+					{
+					array_splice($table_array, 1, 0, "custom_$list_id");
+					array_splice($date_field_array, 1, 0, "lead_id");
+					$custom_table_array=array("custom_$list_id" => array());
+					$purge_field_array=array_merge($purge_field_array, $custom_table_array);
+					$table_count++;
+
+					$custom_stmt="SHOW COLUMNS FROM custom_".$list_id."";
+					$custom_rslt=mysql_to_mysqli($custom_stmt, $link);
+					while($custom_row=mysqli_fetch_row($custom_rslt)) 
+						{
+						if ($custom_row[0]!="lead_id")
+							{
+							array_push($purge_field_array["custom_$list_id"], $custom_row[0]);
+							}
+						}
+					}
+
+				if(count($purge_field_array["$table_name"])>0) 
+					{
+					if ($table_name=="recording_log") 
+						{
+						$ins_stmt="insert ignore into recording_log_deletion_queue(recording_id,lead_id, filename, location, date_queued) (select recording_id,lead_id, filename, location, now() from recording_log where lead_id='$lead_id') UNION (select recording_id,lead_id, filename, location, now() from recording_log_archive where lead_id='$lead_id')";
+						$ins_rslt=mysql_to_mysqli($ins_stmt, $link);
+						}
+					
+					$upd_clause=implode("=null, ", $purge_field_array["$table_name"])."=null ";
+					$upd_stmt="update $table_name set $upd_clause where lead_id='$lead_id'";
+					$upd_rslt=mysql_to_mysqli($upd_stmt, $link);
+					$SQL_log.="$upd_stmt|";
+					if ($archive_table_name!=$table_name) 
+						{
+						$upd_stmt="update $archive_table_name set $upd_clause where lead_id='$lead_id'";
+						$upd_rslt=mysql_to_mysqli($upd_stmt, $link);
+						$SQL_log.="$upd_stmt|";
+						}
+					}
+				}
+
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LEADS', event_type='DELETE', record_id='$lead_id', event_code='GDPR PURGE LEAD DATA', event_sql=\"$SQL_log\", event_notes='';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_to_mysqli($stmt, $link);
+			
+			}
+
+		$HTML_text.="<BR><BR>";
+		$HTML_text.="<TABLE width=1000 cellspacing=1 cellpadding=5>\n";
+		$HTML_text.="<tr>\n";
+		$HTML_text.="\t<td align='left'><B>"._QXZ("GDPR DATA PURGE PREVIEW")."</B> <I>("._QXZ("greyed fields will be emptied").")</I>:</td>";
+		$HTML_text.="\t<th><a href=\"admin_modify_lead.php?lead_id=$lead_id&gdpr_action=download\">"._QXZ("DOWNLOAD")."</a></th>";
+		$HTML_text.="\t<th><a href=\"admin_modify_lead.php?lead_id=$lead_id&gdpr_action=confirm_purge\">"._QXZ("CONFIRM PURGE")."</a></th>";
+		$HTML_text.="</tr>";
+		$HTML_text.="</table><BR><BR>";
+
+		for ($t=0; $t<$table_count; $t++) 
+			{
+			$table_name=$table_array[$t];
+			$archive_table_name=use_archive_table($table_name);
+			$mysql_stmt="(select * from ".$table_name." where lead_id='$lead_id')";
+			if ($archive_table_name!=$table_name) {$mysql_stmt.=" UNION (select * from ".$archive_table_name." where lead_id='$lead_id')";}
+			$list_id=""; $HTML_header=""; $CSV_header=""; $HTML_body=""; $CSV_body="";
+			
+			$mysql_stmt.=" order by ".$date_field_array[$t]." desc";
+			$mysql_rslt=mysql_to_mysqli($mysql_stmt, $link);
+			if ($DB) {echo "|$mysql_stmt|\n";}
+			if (mysqli_num_rows($mysql_rslt)>0)
+				{
+				$CSV_text.="\""._QXZ("TABLE NAME").":\",\"$table_name\"\n";
+				$HTML_text.="<B>"._QXZ("TABLE NAME").": $table_name</B><BR>\n";
+				$HTML_text.="<TABLE width=1000 cellspacing=1 cellpadding=5>\n";
+
+				$j=0;
+				while($row=mysqli_fetch_array($mysql_rslt,MYSQLI_ASSOC)) 
+					{
+					if ($j%2==0) 
+						{
+						$bgcolor=$SSstd_row2_background;
+						} 
+					else 
+						{
+						$bgcolor=$SSstd_row3_background;
+						}
+
+					if ($j==0)
+						{
+						$HTML_header.="<tr>\n";
+						}
+					$HTML_body.="<tr>\n";
+					while (list($key, $val)=each($row)) 
+						{
+						if ($key=="entry_list_id") {$list_id=$val;}
+						if (in_array($key, $purge_field_array["$table_name"]) || (preg_match("/^custom_/", $table_name) && $key!="lead_id")) 
+							{
+							$bgcolor="bgcolor='#999999'";
+							$sb="<B>";
+							$eb="</B>";
+							} 
+						else 
+							{
+							$bgcolor="bgcolor='#$SSstd_row1_background'";
+							$sb="";
+							$eb="";
+							}
+						if ($j==0)
+							{ 
+							$CSV_header.="\"".$key."\",";
+							$HTML_header.="\t<td $bgcolor>$sb<font size='2'>".$key."</font>$eb</td>\n";
+							}
+						$CSV_body.="\"$val\",";
+						$HTML_body.="\t<td $bgcolor>$sb<font size='2'>".$val."</font>$eb</td>\n";
+						}
+					if ($j==0)
+						{
+						$CSV_header=substr($CSV_header, 0, -1)."\n";
+						$HTML_header.="</tr>\n";
+						}
+					$CSV_body=substr($CSV_body, 0, -1)."\n";
+					$HTML_body.="</tr>\n";
+					$j++;
+					}
+
+					$CSV_text.=$CSV_header.$CSV_body;
+					$HTML_text.=$HTML_header.$HTML_body;
+					
+					$CSV_text.="\n";
+					$HTML_text.="</table><BR><BR>";
+
+				}
+
+				if ($list_id && $table_name=="vicidial_list" && table_exists("custom_$list_id") && !in_array("custom_$list_id", $table_array)) 
+				{
+					array_splice($table_array, 1, 0, "custom_$list_id");
+					array_splice($date_field_array, 1, 0, "lead_id");
+					$custom_table_array=array("custom_$list_id" => array());
+					$purge_field_array=array_merge($purge_field_array, $custom_table_array);
+					$table_count++;
+				}
+			}
+
+		if (strlen($CSV_text)>0 && $gdpr_action=="download") 
+			{
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LEADS', event_type='EXPORT', record_id='$lead_id', event_code='GDPR EXPORT LEAD DATA', event_sql=\"$SQL_log\", event_notes='';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_to_mysqli($stmt, $link);
+
+			
+			$FILE_TIME = date("Ymd-His");
+			$CSVfilename = "GDPR_export_$US$FILE_TIME.csv";
+			$CSV_text=preg_replace('/^\s+/', '', $CSV_text);
+			$CSV_text=preg_replace('/ +\"/', '"', $CSV_text);
+			$CSV_text=preg_replace('/\" +/', '"', $CSV_text);
+			// We'll be outputting a TXT file
+			header('Content-type: application/octet-stream');
+
+			// It will be called LIST_101_20090209-121212.txt
+			header("Content-Disposition: attachment; filename=\"$CSVfilename\"");
+			header('Expires: 0');
+			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+			header('Pragma: public');
+			ob_clean();
+			flush();
+
+			echo "$CSV_text";
+			exit;
+			}
+		}
+
+
+	}
+
 
 $label_title =				_QXZ("Title");
 $label_first_name =			_QXZ("First");
@@ -634,6 +892,14 @@ $short_header=1;
 require("admin_header.php");
 
 echo "</span>\n";
+
+if ($gdpr_display==2 && preg_match("/purge$/", $gdpr_action))
+	{
+	echo $HTML_text;
+	echo "</body></html>";
+	exit;
+	}
+
 echo "<span style=\"position:absolute;left:3px;top:30px;z-index:19;\" id=agent_status_stats>\n";
 
 ### BEGIN - Add a new lead in the system ###
@@ -943,9 +1209,9 @@ else
 			{
 			$row=mysqli_fetch_row($rslt);
 			if (preg_match("/1$|3$|5$|7$|9$/i", $c))
-				{$bgcolor='bgcolor="#B9CBFD"';} 
+				{$bgcolor="bgcolor=\"#$SSstd_row2_background\"";} 
 			else
-				{$bgcolor='bgcolor="#9BB9FB"';}
+				{$bgcolor="bgcolor=\"#$SSstd_row1_background\"";}
 
 			$c++;
 			$alts_output .= "<tr $bgcolor>";
@@ -982,9 +1248,9 @@ else
 		$row=mysqli_fetch_row($rslt);
 		if (strlen($log_campaign)<1) {$log_campaign = $row[3];}
 		if (preg_match("/1$|3$|5$|7$|9$/i", $u))
-			{$bgcolor='bgcolor="#B9CBFD"';} 
+			{$bgcolor="bgcolor=\"#$SSstd_row2_background\"";} 
 		else
-			{$bgcolor='bgcolor="#9BB9FB"';}
+			{$bgcolor="bgcolor=\"#$SSstd_row1_background\"";}
 
 		$u++;
 		$call_log .= "<tr $bgcolor>";
@@ -1031,9 +1297,9 @@ else
 		$row=mysqli_fetch_row($rslt);
 		if (strlen($Alog_campaign)<1) {$Alog_campaign = $row[5];}
 		if (preg_match("/1$|3$|5$|7$|9$/i", $y))
-			{$bgcolor='bgcolor="#B9CBFD"';} 
+			{$bgcolor="bgcolor=\"#$SSstd_row2_background\"";} 
 		else
-			{$bgcolor='bgcolor="#9BB9FB"';}
+			{$bgcolor="bgcolor=\"#$SSstd_row1_background\"";}
 
 		$y++;
 		$agent_log .= "<tr $bgcolor>";
@@ -1066,9 +1332,9 @@ else
 		$row=mysqli_fetch_row($rslt);
 		if (strlen($Clog_campaign)<1) {$Clog_campaign = $row[3];}
 		if (preg_match("/1$|3$|5$|7$|9$/i", $y))
-			{$bgcolor='bgcolor="#B9CBFD"';} 
+			{$bgcolor="bgcolor=\"#$SSstd_row2_background\"";} 
 		else
-			{$bgcolor='bgcolor="#9BB9FB"';}
+			{$bgcolor="bgcolor=\"#$SSstd_row1_background\"";}
 
 		$y++;
 		$closer_log .= "<tr $bgcolor>";
@@ -1119,9 +1385,9 @@ else
 			$row=mysqli_fetch_row($rslt);
 			if (strlen($log_campaign)<1) {$log_campaign = $row[3];}
 			if (preg_match("/1$|3$|5$|7$|9$/i", $u))
-				{$bgcolor='bgcolor="#B9CBFD"';} 
+				{$bgcolor="bgcolor=\"#$SSstd_row2_background\"";} 
 			else
-				{$bgcolor='bgcolor="#9BB9FB"';}
+				{$bgcolor="bgcolor=\"#$SSstd_row1_background\"";}
 
 			$u++;
 			$call_log .= "<tr $bgcolor>";
@@ -1168,9 +1434,9 @@ else
 			$row=mysqli_fetch_row($rslt);
 			if (strlen($Alog_campaign)<1) {$Alog_campaign = $row[5];}
 			if (preg_match("/1$|3$|5$|7$|9$/i", $y))
-				{$bgcolor='bgcolor="#B9CBFD"';} 
+				{$bgcolor="bgcolor=\"#$SSstd_row2_background\"";} 
 			else
-				{$bgcolor='bgcolor="#9BB9FB"';}
+				{$bgcolor="bgcolor=\"#$SSstd_row1_background\"";}
 
 			$y++;
 			$agent_log .= "<tr $bgcolor>";
@@ -1203,9 +1469,9 @@ else
 			$row=mysqli_fetch_row($rslt);
 			if (strlen($Clog_campaign)<1) {$Clog_campaign = $row[3];}
 			if (preg_match("/1$|3$|5$|7$|9$/i", $y))
-				{$bgcolor='bgcolor="#B9CBFD"';} 
+				{$bgcolor="bgcolor=\"#$SSstd_row2_background\"";} 
 			else
-				{$bgcolor='bgcolor="#9BB9FB"';}
+				{$bgcolor="bgcolor=\"#$SSstd_row1_background\"";}
 
 			$y++;
 			$closer_log .= "<tr $bgcolor>";
@@ -1498,7 +1764,7 @@ else
 			echo "<tr><td align=center></td><td><hr></td></tr>\n";
 			}
 
-		echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Disposition").": </td><td align=left><select size=1 name=status>\n";
+		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Disposition").": </td><td align=left><select size=1 name=status>\n";
 
 		### find out if status(dispo) is a scheduled callback status
 		$scheduled_callback='';
@@ -1574,10 +1840,10 @@ else
 		echo "</select> <i>("._QXZ("with")." $list_campaign "._QXZ("statuses").")</i></td></tr>\n";
 
 
-		echo "<tr bgcolor=#B6D3FC><td align=left>"._QXZ("Modify vicidial log")." </td><td align=left><input type=checkbox name=modify_logs value=\"1\" CHECKED></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=left>"._QXZ("Modify agent log")." </td><td align=left><input type=checkbox name=modify_agent_logs value=\"1\" CHECKED></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=left>"._QXZ("Modify closer log")." </td><td align=left><input type=checkbox name=modify_closer_logs value=\"1\"></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=left>"._QXZ("Add closer log record")." </td><td align=left><input type=checkbox name=add_closer_record value=\"1\"></td></tr>\n";
+		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=left>"._QXZ("Modify vicidial log")." </td><td align=left><input type=checkbox name=modify_logs value=\"1\" CHECKED></td></tr>\n";
+		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=left>"._QXZ("Modify agent log")." </td><td align=left><input type=checkbox name=modify_agent_logs value=\"1\" CHECKED></td></tr>\n";
+		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=left>"._QXZ("Modify closer log")." </td><td align=left><input type=checkbox name=modify_closer_logs value=\"1\"></td></tr>\n";
+		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=left>"._QXZ("Add closer log record")." </td><td align=left><input type=checkbox name=add_closer_record value=\"1\"></td></tr>\n";
 		}
 	else
 		{
@@ -1593,7 +1859,7 @@ else
 
 	if ($lead_id != 'NEW') 
 		{
-		echo "<TABLE BGCOLOR=#B6D3FC WIDTH=750><TR><TD>\n";
+		echo "<TABLE BGCOLOR=#".$SSstd_row4_background." WIDTH=750><TR><TD>\n";
 		echo _QXZ("Callback Details").":<BR>\n";
 		if ( ($dispo == 'CALLBK') or ($dispo == 'CBHOLD') or ($scheduled_callback == 'Y') )
 			{
@@ -1606,7 +1872,7 @@ else
 			if ($CB_to_print>0)
 				{
 				echo "<form action='$PHP_SELF' method='POST' name='vsn' id='vsn'>";
-				echo "<TABLE BGCOLOR=#B6D3FC WIDTH=800>";
+				echo "<TABLE BGCOLOR=#".$SSstd_row4_background." WIDTH=800>";
 				echo "<tr>";
 				echo "<td><font size=2>"._QXZ("CallBack Date/Time").":</font></td>";
 				echo "<td><font size=2>"._QXZ("CallBack Disposition").":</font></td>";
@@ -1663,9 +1929,9 @@ else
 						{$statuses_list .= "<option SELECTED value=\"$lead_status\">$lead_status</option>\n";}
 
 					if ($u%2==0)
-						{$bgcolor='bgcolor="#B9CBFD"';} 
+						{$bgcolor="bgcolor=\"#$SSstd_row2_background\"";} 
 					else
-						{$bgcolor='bgcolor="#9BB9FB"';}
+						{$bgcolor="bgcolor=\"#$SSstd_row1_background\"";}
 					$u++;
 
 					echo "<tr $bgcolor>";
@@ -1736,9 +2002,9 @@ else
 			while ($CB_to_print > $cb)
 				{
 				if (preg_match("/1$|3$|5$|7$|9$/i", $cb))
-					{$bgcolor='bgcolor="#B9CBFD"';} 
+					{$bgcolor="bgcolor=\"#$SSstd_row2_background\"";} 
 				else
-					{$bgcolor='bgcolor="#9BB9FB"';}
+					{$bgcolor="bgcolor=\"#$SSstd_row1_background\"";}
 				$rowx=mysqli_fetch_row($cb_rslt);
 				$cb++;
 				$callbacks_log .= "<tr $bgcolor>";
@@ -1769,9 +2035,9 @@ else
 				while ($CBA_to_print > $cba)
 					{
 					if (preg_match("/1$|3$|5$|7$|9$/i", $cb))
-						{$bgcolor='bgcolor="#B9CBFD"';} 
+						{$bgcolor="bgcolor=\"#$SSstd_row2_background\"";} 
 					else
-						{$bgcolor='bgcolor="#9BB9FB"';}
+						{$bgcolor="bgcolor=\"#$SSstd_row1_background\"";}
 					$rowx=mysqli_fetch_row($cb_rslt);
 					$cb++;
 					$cba++;
@@ -1822,9 +2088,9 @@ else
 			while ($CB_to_print > $cb)
 				{
 				if (preg_match("/1$|3$|5$|7$|9$/i", $cb))
-					{$bgcolor='bgcolor="#B9CBFD"';} 
+					{$bgcolor="bgcolor=\"#$SSstd_row2_background\"";} 
 				else
-					{$bgcolor='bgcolor="#9BB9FB"';}
+					{$bgcolor="bgcolor=\"#$SSstd_row1_background\"";}
 				$rowx=mysqli_fetch_row($cb_rslt);
 				$cb++;
 				$callbacks_log .= "<tr $bgcolor>";
@@ -1855,9 +2121,9 @@ else
 				while ($CBA_to_print > $cba)
 					{
 					if (preg_match("/1$|3$|5$|7$|9$/i", $cb))
-						{$bgcolor='bgcolor="#B9CBFD"';} 
+						{$bgcolor="bgcolor=\"#$SSstd_row2_background\"";} 
 					else
-						{$bgcolor='bgcolor="#9BB9FB"';}
+						{$bgcolor="bgcolor=\"#$SSstd_row1_background\"";}
 					$rowx=mysqli_fetch_row($cb_rslt);
 					$cb++;
 					$cba++;
@@ -1978,9 +2244,9 @@ else
 			{
 			$row=mysqli_fetch_array($rslt);
 			if (preg_match("/1$|3$|5$|7$|9$/i", $u))
-				{$bgcolor='bgcolor="#B9CBFD"';} 
+				{$bgcolor="bgcolor=\"#$SSstd_row2_background\"";} 
 			else
-				{$bgcolor='bgcolor="#9BB9FB"';}
+				{$bgcolor="bgcolor=\"#$SSstd_row1_background\"";}
 
 			$u++;
 			echo "<tr $bgcolor>";
@@ -2014,9 +2280,9 @@ else
 			{
 			$row=mysqli_fetch_row($rslt);
 			if (preg_match("/1$|3$|5$|7$|9$/i", $u))
-				{$bgcolor='bgcolor="#B9CBFD"';} 
+				{$bgcolor="bgcolor=\"#$SSstd_row2_background\"";} 
 			else
-				{$bgcolor='bgcolor="#9BB9FB"';}
+				{$bgcolor="bgcolor=\"#$SSstd_row1_background\"";}
 
 			$u++;
 			echo "<tr $bgcolor>";
@@ -2047,9 +2313,9 @@ else
 				{
 				$row=mysqli_fetch_row($rslt);
 				if (preg_match("/1$|3$|5$|7$|9$/i", $u))
-					{$bgcolor='bgcolor="#B9CBFD"';} 
+					{$bgcolor="bgcolor=\"#$SSstd_row2_background\"";} 
 				else
-					{$bgcolor='bgcolor="#9BB9FB"';}
+					{$bgcolor="bgcolor=\"#$SSstd_row1_background\"";}
 				if (strlen($row[6])>100) {$row[6]=substr($row[6],0,100)."...";}
 				$row[8]=preg_replace('/\|/', ', ', $row[8]);
 				$row[8]=preg_replace('/,\s+$/', '', $row[8]);
@@ -2085,9 +2351,9 @@ else
 			{
 			$row=mysqli_fetch_row($rslt);
 			if (preg_match("/1$|3$|5$|7$|9$/i", $u))
-				{$bgcolor='bgcolor="#B9CBFD"';} 
+				{$bgcolor="bgcolor=\"#$SSstd_row2_background\"";} 
 			else
-				{$bgcolor='bgcolor="#9BB9FB"';}
+				{$bgcolor="bgcolor=\"#$SSstd_row1_background\"";}
 
 			$location = $row[11];
 
@@ -2162,9 +2428,9 @@ else
 			{
 			$row=mysqli_fetch_row($rslt);
 			if (preg_match("/1$|3$|5$|7$|9$/i", $u))
-				{$bgcolor='bgcolor="#B9CBFD"';} 
+				{$bgcolor="bgcolor=\"#$SSstd_row2_background\"";} 
 			else
-				{$bgcolor='bgcolor="#9BB9FB"';}
+				{$bgcolor="bgcolor=\"#$SSstd_row1_background\"";}
 
 			$location = $row[11];
 
@@ -2249,9 +2515,9 @@ else
 			{
 			$row=mysqli_fetch_row($rslt);
 			if (preg_match("/1$|3$|5$|7$|9$/i", $u))
-				{$bgcolor='bgcolor="#B9CBFD"';} 
+				{$bgcolor="bgcolor=\"#$SSstd_row2_background\"";} 
 			else
-				{$bgcolor='bgcolor="#9BB9FB"';}
+				{$bgcolor="bgcolor=\"#$SSstd_row1_background\"";}
 
 			$u++;
 			echo "<tr $bgcolor>";
@@ -2311,6 +2577,31 @@ else
 		echo "\n";
 		}
 	}
+
+	if ($enable_gdpr_download_deletion > 0)
+		{
+		if ($gdpr_display>=1) 
+			{
+			echo "<br><br><br>";
+			echo "<B>"._QXZ("GDPR compliance").":</B>\n";
+			echo "<TABLE width=750 cellspacing=2 cellpadding=5>\n";
+			echo "<tr bgcolor='#$SSstd_row2_background'>";
+			echo "<td><font size=2>";
+			echo "<a href=\"admin_modify_lead.php?lead_id=$lead_id&gdpr_action=download\">"._QXZ("Click here to download GDPR-formatted data for this lead")."</a><BR>\n";
+			echo "</font></td>";
+			echo "<tr bgcolor='#$SSstd_row1_background'>";
+			echo "<td><font size=2>";
+			if ($gdpr_display>=2) 
+				{
+				echo "<a href=\"admin_modify_lead.php?lead_id=$lead_id&gdpr_action=purge\">"._QXZ("Click here to review and purge customer data on lead")."</a>\n";
+				}
+			echo "</font></td>";
+			echo "</tr>";
+			echo "</table>";
+			}
+		}
+	echo "\n";
+
 
 $ENDtime = date("U");
 

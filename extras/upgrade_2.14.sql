@@ -650,4 +650,34 @@ ALTER TABLE vicidial_inbound_groups ADD icbq_dial_filter VARCHAR(50) default 'NO
 ALTER TABLE vicidial_closer_log MODIFY term_reason  ENUM('CALLER','AGENT','QUEUETIMEOUT','ABANDON','AFTERHOURS','HOLDRECALLXFER','HOLDTIME','NOAGENT','NONE','MAXCALLS','ACFILTER','CLOSETIME') default 'NONE';
 ALTER TABLE vicidial_closer_log_archive MODIFY term_reason  ENUM('CALLER','AGENT','QUEUETIMEOUT','ABANDON','AFTERHOURS','HOLDRECALLXFER','HOLDTIME','NOAGENT','NONE','MAXCALLS','ACFILTER','CLOSETIME') default 'NONE';
 
+
+ALTER TABLE system_settings ADD enable_gdpr_download_deletion ENUM('0','1','2') default '0';
+
+ALTER TABLE vicidial_users ADD export_gdpr_leads ENUM('0','1','2') default '0';
+
+CREATE TABLE recording_log_deletion_queue (
+recording_id INT(9) UNSIGNED PRIMARY KEY, 
+lead_id int(10) UNSIGNED, 
+filename VARCHAR(100), 
+location VARCHAR(255), 
+date_queued DATETIME, 
+date_deleted DATETIME,
+index (date_deleted)
+) ENGINE=MyISAM;
+
+CREATE TABLE vicidial_cid_groups (
+cid_group_id VARCHAR(20) PRIMARY KEY NOT NULL,
+cid_group_notes VARCHAR(255) default '',
+cid_group_type ENUM('AREACODE','STATE') default 'AREACODE',
+user_group VARCHAR(20) default '---ALL---'
+) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE vicidial_campaign_cid_areacodes MODIFY campaign_id VARCHAR(20) NOT NULL;
+
+ALTER TABLE vicidial_campaigns ADD cid_group_id VARCHAR(20) default '---DISABLED---';
+
+ALTER TABLE vicidial_campaigns ADD pause_max_dispo VARCHAR(6) default 'PAUSMX';
+
+ALTER TABLE vicidial_inbound_groups MODIFY no_agent_no_queue ENUM('N','Y','NO_PAUSED','NO_READY') default 'N';
+
 UPDATE system_settings SET db_schema_version='1530',db_schema_update_date=NOW() where db_schema_version < 1530;

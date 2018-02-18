@@ -666,7 +666,8 @@ api_only_user ENUM('0','1') default '0',
 modify_auto_reports ENUM('1','0') default '0',
 modify_ip_lists ENUM('1','0') default '0',
 ignore_ip_list ENUM('1','0') default '0',
-ready_max_logout MEDIUMINT(7) default '-1'
+ready_max_logout MEDIUMINT(7) default '-1',
+export_gdpr_leads ENUM('0','1','2') default '0'
 ) ENGINE=MyISAM;
 
 CREATE UNIQUE INDEX user ON vicidial_users (user);
@@ -997,7 +998,9 @@ manual_auto_next_options ENUM('DEFAULT','PAUSE_NO_COUNT') default 'DEFAULT',
 agent_screen_time_display ENUM('DISABLED','ENABLED_BASIC','ENABLED_FULL','ENABLED_BILL_BREAK_LUNCH_COACH') default 'DISABLED',
 next_dial_my_callbacks ENUM('DISABLED','ENABLED') default 'DISABLED',
 inbound_no_agents_no_dial_container VARCHAR(40) default '---DISABLED---',
-inbound_no_agents_no_dial_threshold SMALLINT(5) default '0'
+inbound_no_agents_no_dial_threshold SMALLINT(5) default '0',
+cid_group_id VARCHAR(20) default '---DISABLED---',
+pause_max_dispo VARCHAR(6) default 'PAUSMX'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_lists (
@@ -1164,7 +1167,7 @@ play_welcome_message ENUM('ALWAYS','NEVER','IF_WAIT_ONLY','YES_UNLESS_NODELAY') 
 answer_sec_pct_rt_stat_one SMALLINT(5) UNSIGNED default '20',
 answer_sec_pct_rt_stat_two SMALLINT(5) UNSIGNED default '30',
 default_group_alias VARCHAR(30) default '',
-no_agent_no_queue ENUM('N','Y','NO_PAUSED') default 'N',
+no_agent_no_queue ENUM('N','Y','NO_PAUSED','NO_READY') default 'N',
 no_agent_action ENUM('CALLMENU','INGROUP','DID','MESSAGE','EXTENSION','VOICEMAIL','VMAIL_NO_INST') default 'MESSAGE',
 no_agent_action_value VARCHAR(255) default 'nbdy-avail-to-take-call|vm-goodbye',
 web_form_address_two TEXT,
@@ -1782,7 +1785,9 @@ servicelevel_direct SMALLINT UNSIGNED DEFAULT '4',
 servicelevel_one SMALLINT UNSIGNED DEFAULT '20',
 servicelevel_two SMALLINT UNSIGNED DEFAULT '40',
 anyone_callback_inactive_lists ENUM('default','NO_ADD_TO_HOPPER','KEEP_IN_HOPPER') default 'default',
-tmp_download_dir VARCHAR(255) default 'download'
+tmp_download_dir VARCHAR(255) default 'download',
+anyone_callback_inactive_lists ENUM('default','NO_ADD_TO_HOPPER','KEEP_IN_HOPPER') default 'default',
+enable_gdpr_download_deletion ENUM('0','1','2') default '0'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_campaigns_list_mix (
@@ -2889,7 +2894,7 @@ index (call_date)
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_campaign_cid_areacodes (
-campaign_id VARCHAR(8) NOT NULL,
+campaign_id VARCHAR(20) NOT NULL,
 areacode VARCHAR(5) NOT NULL,
 outbound_cid VARCHAR(20),
 active ENUM('Y','N','') default '',
@@ -3985,6 +3990,24 @@ gmt_offset_now DECIMAL(4,2) DEFAULT '0.00',
 modify_date TIMESTAMP,
 index (icbq_status)
 ) ENGINE=MyISAM;
+
+CREATE TABLE recording_log_deletion_queue (
+recording_id INT(9) UNSIGNED PRIMARY KEY,
+lead_id int(10) UNSIGNED,
+filename VARCHAR(100),
+location VARCHAR(255),
+date_queued DATETIME,
+date_deleted DATETIME,
+index (date_deleted)
+) ENGINE=MyISAM;
+
+CREATE TABLE vicidial_cid_groups (
+cid_group_id VARCHAR(20) PRIMARY KEY NOT NULL,
+cid_group_notes VARCHAR(255) default '',
+cid_group_type ENUM('AREACODE','STATE') default 'AREACODE',
+user_group VARCHAR(20) default '---ALL---'
+) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 
 ALTER TABLE vicidial_email_list MODIFY message text character set utf8;
 

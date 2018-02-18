@@ -1,7 +1,7 @@
 <?php
 # admin_bulk_tools.php
 #
-# Copyright (C) 2017  Mike Coate, Mike Cargile, Matt Florell	<vicidial@gmail.com>	LICENSE: AGPLv2
+# Copyright (C) 2018  Mike Coate, Mike Cargile, Matt Florell	<vicidial@gmail.com>	LICENSE: AGPLv2
 #
 # This is the admin screen for various bulk copy/delete tools.
 #
@@ -20,13 +20,14 @@
 # 161218-2144 - Added STATE FILL method to AC-CID and upped the max insertion limit to 5K 'cause why not?'
 # 170409-1552 - Added IP List validation code
 # 170915-1105 - Added IGNORE to bulk inserts to not error out entire statement if only one entry is a unique index duplicate
+# 180213-2245 - Added CID Groups ability for AC-CID section
 #
 
 require("dbconnect_mysqli.php");
 require("functions.php");
 
-$version = '2.14-14';
-$build = '170409-1552';
+$version = '2.14-15';
+$build = '180213-2245';
 
 $PHP_AUTH_USER=$_SERVER['PHP_AUTH_USER'];
 $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
@@ -43,6 +44,8 @@ $STARTtime = date("U");
 
 if (isset($_POST["form_to_run"]))					{$form_to_run=$_POST["form_to_run"];}
 	elseif (isset($_GET["form_to_run"]))			{$form_to_run=$_GET["form_to_run"];}
+if (isset($_POST["DB"]))							{$DB=$_POST["DB"];}
+	elseif (isset($_GET["DB"]))						{$DB=$_GET["DB"];}
 if (isset($_POST["ACCIDcampaign"]))					{$ACCIDcampaign=$_POST["ACCIDcampaign"];}
 if (isset($_POST["ACCIDareacode"]))					{$ACCIDareacode=$_POST["ACCIDareacode"];}
 if (isset($_POST["ACCIDdids"]))						{$ACCIDto_insert_raw=$_POST["ACCIDdids"];}
@@ -289,11 +292,11 @@ if ($form_to_run == "help")
 	echo "<BR><BR>";
 	
 	echo "<A NAME=\"ACCIDADD\"><BR>";
-	echo "<B>"._QXZ("AC-CID Bulk Add")." -</B> "._QXZ("This allows you to paste in a listing of CIDs to insert into a campaign AC-CID list. There are two methods to choose from: <ul> <li><b>STATE LOOKUP</b> - This will take a list of CIDs and insert them as Area Code Caller IDs into the selected campaign. The area code lookup is designed to work only with numbers in the North American Numbering Plan as it uses the first three digits of each CID. The description will automatically be filled with the appropriate US state abbreviation corresponding to the given CIDs 3-digit area code. <li><b>CSV</b> - This will take a comma separated list in the format of  NPA,CID,DESCRIPTION  and insert each line into the specified campaigns AC-CID list using the supplied values. For example, given a listing of  813,7271234567,Florida  will result in an AC-CID entry for area code 813 using the CID 7271234567 and a description of -Florida-. Descriptions are limited to 50 characters.<li><b>STATE FILL</b> - Similar to the STATE LOOKUP method above, this will take a list of CIDs and insert them as AC-CIDs in the specified campaign but will also make an entry for each area code in a state based off the state the CID is in. For example, if given the CID 7271234567, 19 CID entries will be created with the same CID, one each for every area code in Florida.</ul> CIDs must be between 6 and 20 digits in length and only digits 0-9 are allowed. Optionally, you can have the AC-CIDs set to active upon insertion.");
+	echo "<B>"._QXZ("AC-CID Bulk Add")." -</B> "._QXZ("This allows you to paste in a listing of CIDs to insert into a campaign AC-CID list or CID Group list. There are two methods to choose from: <ul> <li><b>STATE LOOKUP</b> - This will take a list of CIDs and insert them as Area Code Caller IDs into the selected campaign. The area code lookup is designed to work only with numbers in the North American Numbering Plan as it uses the first three digits of each CID. The description will automatically be filled with the appropriate US state abbreviation corresponding to the given CIDs 3-digit area code. <li><b>CSV</b> - This will take a comma separated list in the format of  NPA,CID,DESCRIPTION and insert each line into the specified campaigns AC-CID list using the supplied values. For example, given a listing of  813,7271234567,Florida  will result in an AC-CID entry for area code 813 using the CID 7271234567 and a description of -Florida-. Descriptions are limited to 50 characters. For CID Groups of a STATE type, use this format for CSV-  STATE,CID,DESCRIPTION.<li><b>STATE FILL</b> - Similar to the STATE LOOKUP method above, this will take a list of CIDs and insert them as AC-CIDs in the specified campaign but will also make an entry for each area code in a state based off the state the CID is in. For example, if given the CID 7271234567, 19 CID entries will be created with the same CID, one each for every area code in Florida. If you are inserting into a CID Group that is a STATE type, then you will not want to use the STATE FILL method.</ul> CIDs must be between 6 and 20 digits in length and only digits 0-9 are allowed. Optionally, you can have the AC-CIDs set to active upon insertion.");
 	echo "<BR><BR>";
 	
 	echo "<A NAME=\"ACCIDDELETE\"><BR>";
-	echo "<B>"._QXZ("AC-CID Bulk Delete")." -</B> "._QXZ("This will delete the Areacode Caller ID entries you select from the next screen based on the campaign you select here. Setting Clear All CIDs to YES will bypass the AC-CID selection and wipe all AC-CIDs for the selected campaign.");
+	echo "<B>"._QXZ("AC-CID Bulk Delete")." -</B> "._QXZ("This will delete the Areacode Caller ID entries you select from the next screen based on the campaign or CID group you select here. Setting Clear All CIDs to YES will bypass the AC-CID selection and wipe all AC-CIDs for the selected campaign or CID group.");
 	echo "<BR><BR></TD></TR></TABLE></BODY><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR></HTML>";
 	
 	exit;
@@ -337,7 +340,7 @@ if ($form_to_run == "ACCID")
 	{
 	if ($ACCIDcampaign=="BLANK")
 		{
-		echo _QXZ("Go back, you did not specify a campaign.")."\n";
+		echo _QXZ("Go back, you did not specify a campaign or CID group.")."\n";
 		exit;
 		}
 	if ($CIDcheck=="BLANK")
@@ -350,46 +353,57 @@ if ($form_to_run == "ACCID")
 		echo _QXZ("This tool has a limit of ")."$INSERTmax_limit"._QXZ(" items. You are trying to insert ") . count($ACCIDto_insert_raw) ._QXZ(". Please go back and make adjustments.")."\n";
 		exit;
 		}
-	
+
+	$CGT = 'AREACODE';
+	$SQL="SELECT cid_group_type FROM vicidial_cid_groups WHERE cid_group_id='$ACCIDcampaign';";
+	if ($DB) {echo "$SQL|";}
+	$SQL_rslt = mysql_to_mysqli($SQL, $link);
+	$cgid_count = mysqli_num_rows($SQL_rslt);
+	if ($cgid_count > 0)
+		{
+		$row = mysqli_fetch_row($SQL_rslt);
+		$CGT = $row[0];
+		}
+
 	$areacode = array();
 	# If using the STATE FILL method, build out the array of ACs and CIDs for each represented state.
 	if ($ACCIDmethod == "STATEFILL") 
-	{
-	$STATEFILLcids = array();
-	$STATEFILLareacodes = array();
-	$i=0;
-	$j=0; # Counts total ACCID to be inserted
-	while ($i < count($ACCIDto_insert_raw))
 		{
-		$STATEFILLareacode[$i] = substr($ACCIDto_insert_raw[$i], 0, 3);
-		$SQL = "SELECT state FROM vicidial_phone_codes WHERE country='USA' AND areacode=$STATEFILLareacode[$i];";
-		if ($DB) {echo "$SQL|";}
-		$SQL_rslt = mysql_to_mysqli($SQL, $link);
-		$state = mysqli_fetch_row($SQL_rslt);
-		
-		$SQL = "SELECT areacode FROM vicidial_phone_codes WHERE country='USA' AND state='$state[0]';";
-		if ($DB) {echo "$SQL|";}
-		$SQL_rslt = mysql_to_mysqli($SQL, $link);
-		$areacode_count = mysqli_num_rows($SQL_rslt);
-		 
-		$k = 0;
-		while ($k < $areacode_count)
+		$STATEFILLcids = array();
+		$STATEFILLareacodes = array();
+		$i=0;
+		$j=0; # Counts total ACCID to be inserted
+		while ($i < count($ACCIDto_insert_raw))
 			{
-			$row = mysqli_fetch_row($SQL_rslt);
-			$areacode[$j] = $row[0];
-			$STATEFILLcids[$j] = $ACCIDto_insert_raw[$i];
-			$j++;
-			$k++;		
+			$STATEFILLareacode[$i] = substr($ACCIDto_insert_raw[$i], 0, 3);
+			$SQL = "SELECT state FROM vicidial_phone_codes WHERE country='USA' AND areacode='$STATEFILLareacode[$i]';";
+			if ($DB) {echo "$SQL|";}
+			$SQL_rslt = mysql_to_mysqli($SQL, $link);
+			$state = mysqli_fetch_row($SQL_rslt);
+			
+			$SQL = "SELECT areacode FROM vicidial_phone_codes WHERE country='USA' AND state='$state[0]';";
+			if ($DB) {echo "$SQL|";}
+			$SQL_rslt = mysql_to_mysqli($SQL, $link);
+			$areacode_count = mysqli_num_rows($SQL_rslt);
+			 
+			$k = 0;
+			while ($k < $areacode_count)
+				{
+				$row = mysqli_fetch_row($SQL_rslt);
+				$areacode[$j] = $row[0];
+				$STATEFILLcids[$j] = $ACCIDto_insert_raw[$i];
+				$j++;
+				$k++;		
+				}
+			$i++;
 			}
-		$i++;
+		$i=0;	
+		while ($i < count($STATEFILLcids))
+			{
+			$ACCIDto_insert_raw[$i] = $STATEFILLcids[$i];
+			$i++;
+			}
 		}
-	$i=0;	
-	while ($i < count($STATEFILLcids))
-		{
-		$ACCIDto_insert_raw[$i] = $STATEFILLcids[$i];
-		$i++;
-		}
-	}
 
 	#Check for duplicates
 	$ACCIDduplicate = array();
@@ -401,9 +415,20 @@ if ($form_to_run == "ACCID")
 	$l=0; #bad length counter
 	while ($i < count($ACCIDto_insert_raw))
 		{
-		if ($ACCIDmethod == "CID") {$areacode[$i] = substr($ACCIDto_insert_raw[$i], 0, 3);}
-		if ($ACCIDmethod == "CSV") {$areacode[$i] = $ACCIDareacode_raw[$i];}	
-		$SQL= "SELECT outbound_cid FROM vicidial_campaign_cid_areacodes WHERE outbound_cid=$ACCIDto_insert_raw[$i] AND areacode=$areacode[$i] AND campaign_id='$ACCIDcampaign';";
+		if ($ACCIDmethod == "CID") 
+			{
+			$areacode[$i] = substr($ACCIDto_insert_raw[$i], 0, 3);
+			if ($CGT == 'STATE')
+				{
+				$SQL = "SELECT state FROM vicidial_phone_codes WHERE country='USA' AND areacode='$areacode[$i]';";
+				if ($DB) {echo "$SQL|";}
+				$SQL_rslt = mysql_to_mysqli($SQL, $link);
+				$row=mysqli_fetch_row($SQL_rslt);
+				$areacode[$i] = $row[0];
+				}
+			}
+		if ($ACCIDmethod == "CSV") {$areacode[$i] = $ACCIDareacode_raw[$i];}
+		$SQL= "SELECT outbound_cid FROM vicidial_campaign_cid_areacodes WHERE outbound_cid='$ACCIDto_insert_raw[$i]' AND areacode='$areacode[$i]' AND campaign_id='$ACCIDcampaign';";
 		if ($DB) {echo "$SQL|";}
 		$SQL_rslt=mysql_to_mysqli($SQL, $link);
 		$row = mysqli_fetch_row($SQL_rslt);
@@ -477,6 +502,7 @@ if ($form_to_run == "ACCID")
 	if ($ACCIDmethod=="CSV") {$ACCIDdescription_raw = serialize($ACCIDdescription_raw);}
 	echo "<html><form action=$PHP_SELF method=POST>";
 	echo "<input type=hidden name=form_to_run value='ACCIDconfirmed'>";
+	echo "<input type=hidden name=DB value='$DB'>";
 	echo "<input type=hidden name=ACCIDto_insert value='$ACCIDto_insert'>";
 	echo "<input type=hidden name=ACCIDcampaign value='$ACCIDcampaign'>";
 	echo "<input type=hidden name=ACCIDareacode value='$ACCIDareacode'>";
@@ -492,10 +518,21 @@ if ($form_to_run == "ACCID")
 ################################################################################
 ##### PROCESS AC-CID add
 elseif ($form_to_run == "ACCIDconfirmed")
-	{		
+	{
+	$CGT = 'AREACODE';
+	$SQL="SELECT cid_group_type FROM vicidial_cid_groups WHERE cid_group_id='$ACCIDcampaign';";
+	if ($DB) {echo "$SQL|";}
+	$SQL_rslt = mysql_to_mysqli($SQL, $link);
+	$cgid_count = mysqli_num_rows($SQL_rslt);
+	if ($cgid_count > 0)
+		{
+		$row = mysqli_fetch_row($SQL_rslt);
+		$CGT = $row[0];
+		}
+
 	$ACCIDto_insert_CONFIRMED = unserialize($ACCIDto_insert_CONFIRMED);
-	$ACCIDareacode = unserialize($ACCIDareacode);	
-	if ($ACCIDmethod=="CSV") 
+	$ACCIDareacode = unserialize($ACCIDareacode);
+	if ($ACCIDmethod=="CSV")
 		{
 		$ACCIDdescription = unserialize($ACCIDdescription);
 		}
@@ -505,21 +542,26 @@ elseif ($form_to_run == "ACCIDconfirmed")
 		$i = 0;
 		while ($i < count($ACCIDto_insert_CONFIRMED))
 			{
-			$SQL="SELECT state FROM vicidial_phone_codes WHERE areacode=$ACCIDareacode[$i];";
-			$SQL_rslt = mysql_to_mysqli($SQL, $link);
-			$row = mysqli_fetch_row($SQL_rslt);
-			if ( $row[0] == null ) #Put something in if NULL because areacode.vicidial_campaign_cid_areacodes cannot be NULL		
+			if (!preg_match("/[A-Z]/i",$ACCIDareacode[$i]))
 				{
-				$ACCIDdescription[$i] = " ";
+				$SQL="SELECT state FROM vicidial_phone_codes WHERE areacode='$ACCIDareacode[$i]';";
+				$SQL_rslt = mysql_to_mysqli($SQL, $link);
+				$row = mysqli_fetch_row($SQL_rslt);
+				if ( $row[0] == null ) #Put something in if NULL because areacode.vicidial_campaign_cid_areacodes cannot be NULL		
+					{
+					$ACCIDdescription[$i] = " ";
+					}
+				else
+					{
+					$ACCIDdescription[$i] = $row[0];
+					}
 				}
 			else
-				{
-				$ACCIDdescription[$i] = $row[0];
-				}
+				{$ACCIDdescription[$i] = $ACCIDareacode[$i];}
 			$i++;
 			}
 		}
-		
+
 	### Divide total AC-CIDs into groups
 	$INSERTtotal = count($ACCIDto_insert_CONFIRMED);
 	$INSERTgroup_counter = 0;
@@ -614,11 +656,12 @@ elseif ($form_to_run == "ACCIDDELETEselect")
 	{
 	if ($ACCIDdelete_campaign=="BLANK")
 		{
-		echo _QXZ("Go back, you did not select a campaign.")."\n";
+		echo _QXZ("Go back, you did not select a campaign or CID group.")."\n";
 		exit;
 		}
 	echo "<html><form action=$PHP_SELF method=POST>";
 	echo "<input type=hidden name=form_to_run value='ACCIDDELETEconfirm'>";
+	echo "<input type=hidden name=DB value='$DB'>";
 	echo "<input type=hidden name=ACCIDdelete_campaign value='$ACCIDdelete_campaign'>";
 	echo "<center><table width=$section_width cellspacing='3'>";
 	echo "<col width=50%><col width=50%>";
@@ -663,12 +706,13 @@ elseif ($form_to_run == "ACCIDDELETEconfirm")
 		{
 		if ($ACCIDdelete_campaign=="BLANK")
 			{
-			echo _QXZ("Go back, you did not select a campaign").".\n";
+			echo _QXZ("Go back, you did not select a campaign or CID group").".\n";
 			exit;
 			}
 		echo "<br><font color=red><b><center>"._QXZ("WANRING! You are about to remove all AC-CID entries for campaign")." $ACCIDdelete_campaign "._QXZ("WARNING!")."</center></b></font><br><br>";
 		echo "<html><form action=$PHP_SELF method=POST>";
 		echo "<input type=hidden name=form_to_run value='ACCIDDELETEconfirmed'>";
+		echo "<input type=hidden name=DB value='$DB'>";
 		echo "<input type=hidden name=ACCIDdelete_campaign value='$ACCIDdelete_campaign'>";
 		echo "<input type=hidden name=ACCIDclear_all_CONFIRMED value='$ACCIDclear_all'>";
 		echo "<tr bgcolor=#". $SSstd_row1_background ."><td colspan=2 align=center><input type=submit name=did_submit value='CONFIRM'></td></tr>\n";
@@ -700,6 +744,7 @@ elseif ($form_to_run == "ACCIDDELETEconfirm")
 		$ACCIDdelete_from = serialize($ACCIDdelete_from);
 		echo "<html><form action=$PHP_SELF method=POST>";
 		echo "<input type=hidden name=form_to_run value='ACCIDDELETEconfirmed'>";
+		echo "<input type=hidden name=DB value='$DB'>";
 		echo "<input type=hidden name=ACCIDdelete_from_CONFIRMED value='$ACCIDdelete_from'>";
 		echo "<input type=hidden name=ACCIDdelete_campaign value='$ACCIDdelete_campaign'>";
 		echo "<tr bgcolor=#". $SSstd_row1_background ."><td colspan=2 align=center><input type=submit name=did_submit value='CONFIRM'></td></tr>\n";
@@ -784,8 +829,7 @@ elseif ($form_to_run == "ACCIDDELETEconfirmed")
 		echo "<br>"._QXZ("AC-CIDs have been deleted").".";
 		echo "<br><a href=\"admin_bulk_tools.php\">"._QXZ("Go back to tools").".</a>";
 		}
-		
-	}	
+	}
 
 
 ################################################################################
@@ -888,6 +932,7 @@ elseif ($form_to_run == "BULKDIDS")
 		$DIDto_insert = serialize($DIDto_insert);
 		echo "<html><form action=$PHP_SELF method=POST>";
 		echo "<input type=hidden name=form_to_run value='DIDADDconfirmed'>";
+		echo "<input type=hidden name=DB value='$DB'>";
 		echo "<input type=hidden name=DIDto_insert_CONFIRMED value='$DIDto_insert'>";
 		echo "<input type=hidden name=DIDcopy_from value='$DIDcopy_from'>";
 		echo "<tr bgcolor=#". $SSstd_row1_background ."><td colspan=2 align=center><input type=submit name=did_submit value='CONFIRM'></td></tr>\n";
@@ -1080,6 +1125,7 @@ elseif ($form_to_run == "BULKDIDSDELETE")
 	$DIDdelete_from = serialize($DIDdelete_from);
 	echo "<html><form action=$PHP_SELF method=POST>";
 	echo "<input type=hidden name=form_to_run value='BULKDIDSDELETEconfirmed'>";
+	echo "<input type=hidden name=DB value='$DB'>";
 	echo "<input type=hidden name=DIDdelete_from_CONFIRMED value='$DIDdelete_from'>";
 	echo "<tr bgcolor=#". $SSstd_row1_background ."><td colspan=2 align=center><input type=submit name=did_submit value='CONFIRM'></td></tr>\n";
 	echo "</table></center></form>\n";
@@ -1229,6 +1275,7 @@ elseif ($form_to_run == "BULKUSERS")
 	$USERto_insert = serialize($USERto_insert);
 	echo "<html><form action=$PHP_SELF method=POST>";
 	echo "<input type=hidden name=form_to_run value='BULKUSERSconfirmed'>";
+	echo "<input type=hidden name=DB value='$DB'>";
 	echo "<input type=hidden name=USERto_insert value='$USERto_insert'>";
 	echo "<input type=hidden name=USERcopy_from value='$USERcopy_from'>";
 	echo "<input type=hidden name=USERforce_pw value='$USERforce_pw'>";
@@ -1471,6 +1518,7 @@ elseif ($form_to_run == "BULKUSERSDELETE") ### BULK USER DELETE
 	$USERdelete_from = serialize($USERdelete_from);
 	echo "<html><form action=$PHP_SELF method=POST>";
 	echo "<input type=hidden name=form_to_run value='BULKUSERSDELETEconfirmed'>";
+	echo "<input type=hidden name=DB value='$DB'>";
 	echo "<input type=hidden name=USERdelete_from_CONFIRMED value='$USERdelete_from'>";
 	echo "<tr bgcolor=#". $SSstd_row1_background ."><td colspan=2 align=center><input type=submit name=did_submit value='CONFIRM'></td></tr>\n";
 	echo "</table></center></form>\n";
@@ -1526,6 +1574,7 @@ else
 		{
 		echo "<form action=$PHP_SELF method='post'>";
 		echo "<input type=hidden name=form_to_run value='BULKDIDS'>";
+		echo "<input type=hidden name=DB value='$DB'>";
 		echo "<center><table width=$section_width cellspacing='3'>";
 		echo "<col width=50%><col width=50%>";
 		echo "<tr bgcolor=#". $SSmenu_background ."><td colspan=2 align=center><font color=white><b>"._QXZ("DID Bulk Copy")."</b>$NWB#DIDADD$NWE</font></td></tr>\n";
@@ -1573,6 +1622,7 @@ else
 		{
 		echo "<html><form action=$PHP_SELF method=POST>";
 		echo "<input type=hidden name=form_to_run value='BULKDIDSDELETE'>";
+		echo "<input type=hidden name=DB value='$DB'>";
 		echo "<center><table width=$section_width cellspacing='3'>";
 		echo "<col width=50%><col width=50%>";
 		echo "<tr bgcolor=#". $SSmenu_background ."><td colspan=2 align=center><font color=white><b>"._QXZ("DID Bulk Delete")."</b>$NWB#DIDDELETE$NWE</font></td></tr>\n";
@@ -1617,6 +1667,7 @@ else
 		{
 		echo "<form action=$PHP_SELF method='post'>";
 		echo "<input type=hidden name=form_to_run value='ACCID'>";
+		echo "<input type=hidden name=DB value='$DB'>";
 		echo "<center><table width=$section_width cellspacing='3'>";
 		echo "<col width=50%><col width=50%>";
 		echo "<tr bgcolor=#". $SSmenu_background ."><td colspan=2 align=center><font color=white><b>"._QXZ("AC-CID Bulk Add")."</b>$NWB#ACCIDADD$NWE</font></td></tr>\n";
@@ -1633,23 +1684,40 @@ else
 		$SQL_rslt = mysql_to_mysqli($SQL, $link);
 		$camp_count = mysqli_num_rows($SQL_rslt);
 		$i = 0;
+		$g = 0;
 		while ($i < $camp_count)
 			{
 			$row = mysqli_fetch_row($SQL_rslt);
-			$ACCIDcampaigns_to_copy[$i] = $row[0];
-			$ACCIDcampaigns_to_copy_names[$i] = $row[1];
+			$ACCIDcampaigns_to_copy[$g] = $row[0];
+			$ACCIDcampaigns_to_copy_names[$g] = $row[1];
+			$ACCIDcampaigns_to_copy_type[$g] = 'AREACODE';
 			$i++;
+			$g++;
 			}
-					
+		$SQL="SELECT cid_group_id,cid_group_notes,cid_group_type FROM vicidial_cid_groups WHERE $admin_viewable_groupsSQL ORDER BY cid_group_id ASC;";
+		if ($DB) {echo "$SQL|";}
+		$SQL_rslt = mysql_to_mysqli($SQL, $link);
+		$cgid_count = mysqli_num_rows($SQL_rslt);
+		$i = 0;
+		while ($i < $cgid_count)
+			{
+			$row = mysqli_fetch_row($SQL_rslt);
+			$ACCIDcampaigns_to_copy[$g] = $row[0];
+			$ACCIDcampaigns_to_copy_names[$g] = $row[1];
+			$ACCIDcampaigns_to_copy_type[$g] = $row[2];
+			$i++;
+			$g++;
+			}
+			
 		echo "<select size=1 name=ACCIDcampaign>\n";
-		echo "<option value='BLANK'>"._QXZ("Select a campaign")."</option>\n";
+		echo "<option value='BLANK'>"._QXZ("Select a campaign or CID group")."</option>\n";
 		
 		$i = 0;
-		while ( $i < $camp_count )
+		while ( $i < $g )
 			{
-			echo "<option value='$ACCIDcampaigns_to_copy[$i]'>$ACCIDcampaigns_to_copy[$i] - $ACCIDcampaigns_to_copy_names[$i]</option>\n";
+			echo "<option value='$ACCIDcampaigns_to_copy[$i]'>$ACCIDcampaigns_to_copy[$i] - $ACCIDcampaigns_to_copy_type[$i] - $ACCIDcampaigns_to_copy_names[$i]</option>\n";
 			$i++;
-			}	
+			}
 
 		echo "</select></td></tr>\n";	
 		echo "<tr bgcolor=#". $SSstd_row1_background ."><td align=right>"._QXZ("Active?").":</td><td align=left><select size=1 name=ACCIDactive>\n";	
@@ -1675,6 +1743,7 @@ else
 		{
 		echo "<form action=$PHP_SELF method='post'>";
 		echo "<input type=hidden name=form_to_run value='ACCIDDELETEselect'>";
+		echo "<input type=hidden name=DB value='$DB'>";
 		echo "<center><table width=$section_width cellspacing='3'>";
 		echo "<col width=50%><col width=50%>";
 		echo "<tr bgcolor=#". $SSmenu_background ."><td colspan=2 align=center><font color=white><b>"._QXZ("AC-CID Bulk Delete")."</b>$NWB#ACCIDDELETE$NWE</font></td></tr>\n";
@@ -1686,21 +1755,38 @@ else
 		$SQL_rslt = mysql_to_mysqli($SQL, $link);
 		$camp_count = mysqli_num_rows($SQL_rslt);
 		$i = 0;
+		$g = 0;
 		while ($i < $camp_count)
 			{
 			$row = mysqli_fetch_row($SQL_rslt);
-			$ACCIDdelete_campaign_selection[$i] = $row[0];
-			$ACCIDdelete_campaign_name[$i] = $row[1];
+			$ACCIDdelete_campaign_selection[$g] = $row[0];
+			$ACCIDdelete_campaign_name[$g] = $row[1];
+			$ACCIDdelete_campaign_type[$g] = 'AREACODE';
 			$i++;
+			$g++;
 			}
-					
+		$SQL="SELECT cid_group_id,cid_group_notes,cid_group_type FROM vicidial_cid_groups WHERE $admin_viewable_groupsSQL ORDER BY cid_group_id ASC;";
+		if ($DB) {echo "$SQL|";}
+		$SQL_rslt = mysql_to_mysqli($SQL, $link);
+		$cgid_count = mysqli_num_rows($SQL_rslt);
+		$i = 0;
+		while ($i < $cgid_count)
+			{
+			$row = mysqli_fetch_row($SQL_rslt);
+			$ACCIDdelete_campaign_selection[$g] = $row[0];
+			$ACCIDdelete_campaign_name[$g] = $row[1];
+			$ACCIDdelete_campaign_type[$g] = $row[2];
+			$i++;
+			$g++;
+			}
+
 		echo "<select size=1 name=ACCIDdelete_campaign>\n";
-		echo "<option value='BLANK'>"._QXZ("Select a campaign")."</option>\n";
+		echo "<option value='BLANK'>"._QXZ("Select a campaign or CID group")."</option>\n";
 		
 		$i = 0;
-		while ( $i < $camp_count )
+		while ( $i < $g )
 			{
-			echo "<option value='$ACCIDdelete_campaign_selection[$i]'>$ACCIDdelete_campaign_selection[$i] - $ACCIDdelete_campaign_name[$i]</option>\n";
+			echo "<option value='$ACCIDdelete_campaign_selection[$i]'>$ACCIDdelete_campaign_selection[$i] - $ACCIDdelete_campaign_type[$i] - $ACCIDdelete_campaign_name[$i]</option>\n";
 			$i++;
 			}	
 
@@ -1726,6 +1812,7 @@ else
 		{
 		echo "<html><form action=$PHP_SELF method=POST>";
 		echo "<input type=hidden name=form_to_run value='BULKUSERS'>";
+		echo "<input type=hidden name=DB value='$DB'>";
 		echo "<center><table width=$section_width cellspacing='3'>";
 		echo "<col width=50%><col width=50%>";
 		echo "<tr bgcolor=#". $SSmenu_background ."><td colspan=2 align=center><font color=white><b>"._QXZ("User Bulk Copy")."</b>$NWB#USERADD$NWE</font></td></tr>\n";
@@ -1779,6 +1866,7 @@ else
 		{
 		echo "<html><form action=$PHP_SELF method=POST>";
 		echo "<input type=hidden name=form_to_run value='BULKUSERSDELETE'>";
+		echo "<input type=hidden name=DB value='$DB'>";
 		echo "<center><table width=$section_width cellspacing='3'>";
 		echo "<col width=50%><col width=50%>";
 		echo "<tr bgcolor=#". $SSmenu_background ."><td colspan=2 align=center><font color=white><b>"._QXZ("User Bulk Delete")."</b>$NWB#USERDELETE$NWE</font></td></tr>\n";

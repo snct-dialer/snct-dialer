@@ -269,6 +269,15 @@ OTHER CHANGES:
 
 71. Added the Outbound Lead Source Report
 
+72. Added basic GDPR features for lead activity download and delete. Must enable
+	System setting and user permission to use.
+
+73. Added CID Groups, allowing for groups of caller IDs to be defined by state
+	or areacode, and allowing a single CID Group to be set across multiple
+	campaigns.
+
+74. Added NO_READY option for no_agent_no_queue in-group feature.
+
 
 
 

@@ -221,6 +221,7 @@
 # 171124-1159 - Added max_inbound_calls_outcome options
 # 180204-0120 - Added PRESS_CALLBACK_QUEUE feature, and Closing-Time feature, and add-lead-timezone-lookup feature
 # 180209-1716 - Big fix for recent feature
+# 180217-1018 - Added NO_READY option for no_agent_no_queue in-group feature, issue #1046
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
@@ -1798,15 +1799,18 @@ else
 
 
 ##### BEGIN NO AGENT NO QUEUE CHECK #####
-if ( ( ($no_agent_no_queue =~ /Y|NO_PAUSED/) || ($MCnanque_override > 0) ) && ($dial_ingroup_flag < 1) )
+if ( ( ($no_agent_no_queue =~ /Y|NO_PAUSED|NO_READY/) || ($MCnanque_override > 0) ) && ($dial_ingroup_flag < 1) )
 	{
 	$NPsql='';
 	$ADsql='';
+	$NCsql='';
 	if ($no_agent_no_queue =~ /NO_PAUSED/) 
 		{$NPsql = "and status NOT IN('PAUSED')";}
+	if ($no_agent_no_queue =~ /NO_READY/) 
+		{$NCsql = "and status IN('READY','CLOSER')";}
 	if ( ( ($channel_group =~ /AGENTDIRECT/i) || ($dial_ingroup_flag > 0) ) && (length($agent_only) > 1) )
 		{$ADsql = "and user='$agent_only'";}
-	$stmtA = "SELECT count(*) FROM vicidial_live_agents where closer_campaigns LIKE \"% $channel_group %\" $NPsql $ADsql;";
+	$stmtA = "SELECT count(*) FROM vicidial_live_agents where closer_campaigns LIKE \"% $channel_group %\" $NPsql $ADsql $NCsql;";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;

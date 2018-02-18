@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# agi-VDAD_inbound_calltime_check.agi   version 2.12
+# agi-VDAD_inbound_calltime_check.agi   version 2.14
 # 
 # Runs when a call comes in from an inbound call. This script will check the
 # settings of the defined calltime scheme in VICIDIAL and either send the call
@@ -31,7 +31,7 @@
 #exten => 1234,2,AGI(agi-VDAD_inbound_calltime_check.agi,INBOUND-----YES-----START-----24hours-----EXTENSION-----101-----default-----NO)
 #exten => 1234,3,Hangup
 #
-# Copyright (C) 2016  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # changes:
 # 80525-0144 - First Build
@@ -53,6 +53,7 @@
 # 130925-1826 - Added variable filter to prevent DID SQL injection attack
 # 140126-1141 - Added VMAIL_NO_INST options
 # 161102-1038 - Fixed QM partition problem
+# 180213-0935 - Fixed issues with VMAIL_NO_INST timecheck route
 #
 
 $script = 'agi-VDAD_inbound_calltime_check.agi';
@@ -565,7 +566,7 @@ if ( ( ($hm < $ct_default_start) || ($hm > $ct_default_stop) ) && ($hm >= $ct_st
 		$dbhB->disconnect();
 		}
 
-	if ($after_hours_action =~ /EXTENSION|VOICEMAIL|IN_GROUP|CALLMENU/)
+	if ($after_hours_action =~ /EXTENSION|VOICEMAIL|VMAIL_NO_INST|IN_GROUP|CALLMENU/)
 		{
 		if ($after_hours_action =~ /CALLMENU/)
 			{
@@ -578,7 +579,7 @@ if ( ( ($hm < $ct_default_start) || ($hm > $ct_default_stop) ) && ($hm >= $ct_st
 			}
 		if ($after_hours_action =~ /VOICEMAIL|VMAIL_NO_INST/)
 			{
-			if ($drop_action =~ /VMAIL_NO_INST/) 
+			if ($after_hours_action =~ /VMAIL_NO_INST/) 
 				{$voicemail_dump_exten = $voicemail_dump_exten_no_inst;}
 			$DROPexten = "$voicemail_dump_exten$after_hours_voicemail";
 			}

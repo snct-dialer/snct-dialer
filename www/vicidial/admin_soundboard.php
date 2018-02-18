@@ -1192,6 +1192,7 @@ if ($ADD==362111111111)
 			$o++;
 			}
 		$scripts_SQL = preg_replace("/,$/",'',$scripts_SQL);
+		if (strlen($scripts_SQL) < 2) {$scripts_SQL="''";}
 
 		echo "</TABLE><BR><BR>\n";
 
