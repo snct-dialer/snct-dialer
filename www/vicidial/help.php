@@ -640,7 +640,7 @@ if ($SScustom_fields_enabled > 0)
 <BR>
 <A NAME="users-export_gdpr_leads">
 <BR>
-<B><?php echo _QXZ("GDPR-Compliant Export/Delete Leads"); ?> -</B><?php echo _QXZ("This setting if enabled will allow for the complete download and/or deletion of all customer data for a particular lead, in compliance with the General Data Protection Regulation (GDPR).  Default is 0 for disabled.  A setting of 1 will enable downloading data, and a setting of 2 will enable not just downloading, but also deletion of data, including any recordings. "); ?>
+<B><?php echo _QXZ("GDPR-Compliant Export Delete Leads"); ?> -</B><?php echo _QXZ("This setting if enabled will allow for the complete download and/or deletion of all customer data for a particular lead, in compliance with the General Data Protection Regulation (GDPR). Default is 0 for disabled.  A setting of 1 will enable downloading data, and a setting of 2 will enable not just downloading, but also deletion of data, including any recordings. "); ?>
 <BR>
 <B><?php echo _QXZ("You are not allowed to set this user setting higher than the current system setting. "); ?></B>
 
@@ -5566,7 +5566,7 @@ FR_SPAC 00 00 00 00 00 - <?php echo _QXZ("France space separated phone number");
 <BR>
 <A NAME="settings-enable_gdpr_download_deletion">
 <BR>
-<B><?php echo _QXZ("Enable GDPR-compliant Data Download/Deletion"); ?> -</B><?php echo _QXZ("This setting if enabled will allow for the complete download and/or deletion of all customer data for a particular lead, in compliance with the General Data Protection Regulation (GDPR).  Default is 0 for disabled.  A setting of 1 will enable downloading data, and a setting of 2 will enable not just downloading, but also deletion of data, including any recordings."); ?>
+<B><?php echo _QXZ("Enable GDPR-compliant Data Download Deletion"); ?> -</B><?php echo _QXZ("This setting if enabled will allow for the complete download and/or deletion of all customer data for a particular lead, in compliance with the General Data Protection Regulation (GDPR). Default is 0 for disabled.  A setting of 1 will enable downloading data, and a setting of 2 will enable not just downloading, but also deletion of data, including any recordings."); ?>
 
 <BR>
 <A NAME="settings-enable_drop_lists">

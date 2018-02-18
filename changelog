@@ -127,6 +127,14 @@
   * Add upstream Rev. 2914:
     - agi/agi-VDAD_inbound_calltime_check.agi: Fixed issues with VMAIL_NO_INST
         timecheck route.
+  * Add upstream Rev. 2915:
+    - UPGRADE,
+      extras/MySQL_AST_CREATE_tables.sql,
+      extras/upgrade_2.14.sql,
+      www/vicidial/admin.php,
+      www/vicidial/admin_modify_lead.php,
+      www/vicidial/help.php: Added GDPR system and user settings.
+   -  extras/mysql_update/mysql-1530.sql: Add changes from Rev. 2915. 
 
 2.25.23 stable
   [Jörg Frings-Fürst]

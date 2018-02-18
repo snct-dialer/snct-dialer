@@ -269,6 +269,9 @@ OTHER CHANGES:
 
 71. Added the Outbound Lead Source Report
 
+72. Added basic GDPR features for lead activity download and delete. Must enable
+	System setting and user permission to use.
+
 
 
 

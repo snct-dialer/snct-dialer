@@ -666,7 +666,8 @@ api_only_user ENUM('0','1') default '0',
 modify_auto_reports ENUM('1','0') default '0',
 modify_ip_lists ENUM('1','0') default '0',
 ignore_ip_list ENUM('1','0') default '0',
-ready_max_logout MEDIUMINT(7) default '-1'
+ready_max_logout MEDIUMINT(7) default '-1',
+export_gdpr_leads ENUM('0','1','2') default '0'
 ) ENGINE=MyISAM;
 
 CREATE UNIQUE INDEX user ON vicidial_users (user);
@@ -1782,7 +1783,9 @@ servicelevel_direct SMALLINT UNSIGNED DEFAULT '4',
 servicelevel_one SMALLINT UNSIGNED DEFAULT '20',
 servicelevel_two SMALLINT UNSIGNED DEFAULT '40',
 anyone_callback_inactive_lists ENUM('default','NO_ADD_TO_HOPPER','KEEP_IN_HOPPER') default 'default',
-tmp_download_dir VARCHAR(255) default 'download'
+tmp_download_dir VARCHAR(255) default 'download',
+anyone_callback_inactive_lists ENUM('default','NO_ADD_TO_HOPPER','KEEP_IN_HOPPER') default 'default',
+enable_gdpr_download_deletion ENUM('0','1','2') default '0'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_campaigns_list_mix (
@@ -3984,6 +3987,16 @@ call_date DATETIME,
 gmt_offset_now DECIMAL(4,2) DEFAULT '0.00',
 modify_date TIMESTAMP,
 index (icbq_status)
+) ENGINE=MyISAM;
+
+CREATE TABLE recording_log_deletion_queue (
+recording_id INT(9) UNSIGNED PRIMARY KEY,
+lead_id int(10) UNSIGNED,
+filename VARCHAR(100),
+location VARCHAR(255),
+date_queued DATETIME,
+date_deleted DATETIME,
+index (date_deleted)
 ) ENGINE=MyISAM;
 
 ALTER TABLE vicidial_email_list MODIFY message text character set utf8;

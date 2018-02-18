@@ -650,4 +650,19 @@ ALTER TABLE vicidial_inbound_groups ADD icbq_dial_filter VARCHAR(50) default 'NO
 ALTER TABLE vicidial_closer_log MODIFY term_reason  ENUM('CALLER','AGENT','QUEUETIMEOUT','ABANDON','AFTERHOURS','HOLDRECALLXFER','HOLDTIME','NOAGENT','NONE','MAXCALLS','ACFILTER','CLOSETIME') default 'NONE';
 ALTER TABLE vicidial_closer_log_archive MODIFY term_reason  ENUM('CALLER','AGENT','QUEUETIMEOUT','ABANDON','AFTERHOURS','HOLDRECALLXFER','HOLDTIME','NOAGENT','NONE','MAXCALLS','ACFILTER','CLOSETIME') default 'NONE';
 
+
+ALTER TABLE system_settings ADD enable_gdpr_download_deletion ENUM('0','1','2') default '0';
+
+ALTER TABLE vicidial_users ADD export_gdpr_leads ENUM('0','1','2') default '0';
+
+CREATE TABLE recording_log_deletion_queue (
+recording_id INT(9) UNSIGNED PRIMARY KEY, 
+lead_id int(10) UNSIGNED, 
+filename VARCHAR(100), 
+location VARCHAR(255), 
+date_queued DATETIME, 
+date_deleted DATETIME,
+index (date_deleted)
+) ENGINE=MyISAM;
+
 UPDATE system_settings SET db_schema_version='1530',db_schema_update_date=NOW() where db_schema_version < 1530;
