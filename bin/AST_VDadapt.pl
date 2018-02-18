@@ -691,6 +691,21 @@ while ($master_loop < $CLIloops)
 
 	if ($ICBQcount > 0)
 		{
+		$vci=0;
+		$INBOUNDcampsSQL="''";
+		$stmtA = "SELECT campaign_id FROM vicidial_campaigns where active='Y' and campaign_allow_inbound='Y';";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		while ($sthArows > $vci)
+			{
+			@aryA = $sthA->fetchrow_array;
+			if ($vci < 1) {$INBOUNDcampsSQL	= "'$aryA[0]'";}
+			else {$INBOUNDcampsSQL	.= ",'$aryA[0]'";}
+			$vci++;
+			}
+		$sthA->finish();
+
 		$now_epoch = time();
 		$BDtarget = ($now_epoch - 7);
 		($Bsec,$Bmin,$Bhour,$Bmday,$Bmon,$Byear,$Bwday,$Byday,$Bisdst) = localtime($BDtarget);
