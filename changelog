@@ -124,6 +124,9 @@
       docs/CALL_URL_FEATURES.txt,
       www/agc/vdc_db_query.php: Added callback_datetime as dispo call url
         variable.
+  * Add upstream Rev. 2914:
+    - agi/agi-VDAD_inbound_calltime_check.agi: Fixed issues with VMAIL_NO_INST
+        timecheck route.
 
 2.25.23 stable
   [Jörg Frings-Fürst]
