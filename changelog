@@ -1,7 +1,8 @@
 2.25.24
   [Jörg Fring-Fürst]
   * www/vicidial/admin.php: Switch from SVN-Version to Git-commit.
-
+  * www/vicidial/AST_stat_callbacks.php: Add lists fields (2018-002).
+  
 2.25.24a
   [Jörg Fring-Fürst]
   * www/vicidial/admin.php: Correct typo.

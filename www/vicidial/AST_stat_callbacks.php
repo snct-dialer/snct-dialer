@@ -15,6 +15,7 @@
 # 2018-02-02 - Add fields from lead
 #            - Add company to title
 #            - Add Laufzeit
+# 2018-02-20 - Add ListId, ListMName and List activ
 #
 
 #
@@ -23,7 +24,7 @@
 # 
 
 $copyr = "2018 flyingpenguin.de UG, Jörg Frings-Fürst (AGPLv2)";
-$release = '20180102-8';
+$release = '20180220-4';
 
 header ("Content-type: text/html; charset=utf-8");
 
@@ -671,6 +672,32 @@ else
 # Ab hier Auswertung
 #
 
+#
+# function GetList
+#
+# Parameter:
+# - LeadID
+#
+# Return:
+# - mysqli row if found
+# - false if not found
+#
+# Use:
+#
+# - $DB for additional Output
+# - $link Mysqli link
+	
+	function GetList($ListId) {
+		global $DB, $link;
+		
+		$statement = "SELECT * FROM vicidial_lists WHERE list_id = \"$ListId\";";
+		if ($DB) print "$statement\n";
+		$result = mysqli_query($link, $statement) or die ("Error : " . mysqli_error($link));
+		$row = mysqli_fetch_array($result, MYSQLI_BOTH);
+		
+		return $row;
+		
+	}
 
 #
 # function GetLead
@@ -752,6 +779,8 @@ else {
 	$AgentsPrint = "<TABLE border=\"0\">" . PHP_EOL;
 	$AgentsPrint .= " <TR bgcolor=\"f6fba5\">" . PHP_EOL;
 	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Campaign</font></TH>" . PHP_EOL;
+	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">List</font></TH>" . PHP_EOL;
+	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">List activ</font></TH>" . PHP_EOL;
 	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Callback Time</font></TH>" . PHP_EOL;
 	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Status</font></TH>" . PHP_EOL;
 	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Agent</font></TH>" . PHP_EOL;
@@ -762,7 +791,7 @@ else {
 	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Telefon</font></TH>" . PHP_EOL;
 	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Calls</font></TH>" . PHP_EOL;
 	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Comment</font></TH>" . PHP_EOL;
-	$CSVPrint = "Kampagne|Callback Zeit|Status|Agent|Typ|Lead - Status|Lead ID|Name|Telefon|Calls|Comment";
+	$CSVPrint = "Kampagne|List|List activ|Callback Zeit|Status|Agent|Typ|Lead - Status|Lead ID|Name|Telefon|Calls|Comment";
 	$AgentsPrint .= " </TR>" . PHP_EOL;
 	$CSVPrint .= PHP_EOL;
 
@@ -783,9 +812,12 @@ else {
 			
 		}
 		$Lrow = GetLead($row[1]);
+		$Lirow = GetList($row[2]);
 		
 		$AgentsPrint .= " <TR bgcolor=$printFarbe>" . PHP_EOL;	
 		$AgentsPrint .= "  <TD nowrap>$row[3]</TD> " . PHP_EOL;
+		$AgentsPrint .= "  <TD nowrap>$Lirow[0] / $Lirow[1] </TD> " . PHP_EOL;
+		$AgentsPrint .= "  <TD nowrap>$Lirow[3] </TD> " . PHP_EOL;
 		$AgentsPrint .= "  <TD nowrap>$row[6]</TD> " . PHP_EOL;
 		$AgentsPrint .= "  <TD nowrap>$row[4]</TD> " . PHP_EOL;
 		$AgentsPrint .= "  <TD nowrap>$row[8]</TD> " . PHP_EOL;
@@ -797,7 +829,7 @@ else {
 		$AgentsPrint .= "  <TD nowrap>$Lrow[30]</TD> " . PHP_EOL;
 		$AgentsPrint .= "  <TD nowrap>$Lrow[29]</TD> " . PHP_EOL;
 		
-		$CSVPrint .= $row[3] . "|" . $row[6] . "|" . $row[4] . "|" . $row[8] . "|" . $row[9] . "|" . $row[12] . "|" . $row[1] ."|" . $Lrow[13] . " " . $Lrow[15] . "|" . $Lrow[11] . "|" . $Lrow[30] . "|" . $Lrow[29];
+		$CSVPrint .= $row[3] . "|" . $Lirow[0] . " / " .$Lirow[1] . "|" . $Lirow[3] . "|" . $row[6] . "|" . $row[4] . "|" . $row[8] . "|" . $row[9] . "|" . $row[12] . "|" . $row[1] ."|" . $Lrow[13] . " " . $Lrow[15] . "|" . $Lrow[11] . "|" . $Lrow[30] . "|" . $Lrow[29];
 
 		$AgentsPrint .= " </TR>" . PHP_EOL;
 		$CSVPrint .= PHP_EOL;
