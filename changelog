@@ -1,8 +1,15 @@
-2.25.24
+2.25.25
   [Jörg Fring-Fürst]
   * www/vicidial/admin.php: Switch from SVN-Version to Git-commit.
   * www/vicidial/AST_stat_callbacks.php: Add lists fields (2018-002).
-  
+  * Add add pickup_delay in ingroups (2018-003):
+    - extras/MySQL_AST_CREATE_tables.sq,l
+      extras/upgrade_2.14.sql,
+      www/vicidial/admin.php,
+      www/vicidial/help.php,
+      readme.fp,
+      extras/mysql_update/mysql-1531.sql.
+
 2.25.24a
   [Jörg Fring-Fürst]
   * www/vicidial/admin.php: Correct typo.

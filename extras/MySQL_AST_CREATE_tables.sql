@@ -1267,7 +1267,8 @@ closing_time_option_xfer_group VARCHAR(20) default '---NONE---',
 closing_time_option_callback_list_id BIGINT(14) UNSIGNED default '999',
 add_lead_timezone ENUM('SERVER','PHONE_CODE_AREACODE') default 'SERVER',
 icbq_call_time_id VARCHAR(20) default '24hours',
-icbq_dial_filter VARCHAR(50) default 'NONE'
+icbq_dial_filter VARCHAR(50) default 'NONE',
+pickup_delay TINYINT NOT NULL DEFAULT '0'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_stations (
@@ -4292,4 +4293,4 @@ INSERT INTO vicidial_settings_containers(container_id,container_notes,container_
 
 UPDATE system_settings set vdc_agent_api_active='1';
 
-UPDATE system_settings SET db_schema_version='1530',db_schema_update_date=NOW(),reload_timestamp=NOW();
+UPDATE system_settings SET db_schema_version='1531',db_schema_update_date=NOW(),reload_timestamp=NOW();

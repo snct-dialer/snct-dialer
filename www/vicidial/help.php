@@ -2575,6 +2575,11 @@ if ($SSqc_features_active > 0)
 <B><?php echo _QXZ("On-Hook CID Number"); ?> -</B><?php echo _QXZ("This option allows you to set a CID Number to be sent out with the On-Hook CID. If you put a Y, YES or CUSTOMER in this field, then the customer CID number will be sent to the ringing agent phone. If you put a different phone number, that number will be sent. Default is blank for disabled."); ?>
 
 <BR>
+<A NAME="inbound_groups-pickup_delay">
+<BR>
+<B><?php echo _QXZ("Pickup Delay"); ?> -</B><?php echo _QXZ("Pickup Delay (in seconds): If Value is greater 0, the call will be ringing while in Queue and not be picked up until the call is either transfered to an Agent or the delay has expired. This allows calls to wait in queue and receive a ringing as opposed to Queue announcements and Music. After the delay has expired all anouncements and music will start. This function requires \"No Delay Call Route\" to be active."); ?>
+
+<BR>
 <A NAME="inbound_groups-queue_priority">
 <BR>
 <B><?php echo _QXZ("Queue Priority"); ?> -</B><?php echo _QXZ("This setting is used to define the order in which the calls from this inbound group should be answered in relation to calls from other inbound groups."); ?>

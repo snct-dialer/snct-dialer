@@ -681,3 +681,7 @@ ALTER TABLE vicidial_campaigns ADD pause_max_dispo VARCHAR(6) default 'PAUSMX';
 ALTER TABLE vicidial_inbound_groups MODIFY no_agent_no_queue ENUM('N','Y','NO_PAUSED','NO_READY') default 'N';
 
 UPDATE system_settings SET db_schema_version='1530',db_schema_update_date=NOW() where db_schema_version < 1530;
+
+ALTER TABLE `vicidial_inbound_groups` ADD `pickup_delay` TINYINT NOT NULL DEFAULT '0' AFTER `icbq_dial_filter`;
+
+UPDATE system_settings SET db_schema_version='1531',db_schema_update_date=NOW() where db_schema_version < 1531;
