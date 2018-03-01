@@ -16,6 +16,8 @@
     - www/vicidial/admin.php: Fixed issue with CID Groups.
   * Add upstream Rev. 2927:
     - www/vicidial/admin.php: Added higher hopper level options.
+  * Add upstream Rev. 2928:
+    - www/agc/vicidial.php: Fix for rare webform VAR url issue.
 
 2.25.24a
   [Jörg Fring-Fürst]

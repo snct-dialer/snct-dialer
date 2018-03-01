@@ -582,10 +582,11 @@
 # 180215-1105 - Changes for CID Groups functionality
 # 180216-1349 - Fix for callback alt dial isssue #1066
 # 180217-0915 - Added pause_max_dispo, fix for issue #1030
+# 180223-1150 - Fix for rare webform VAR url issue
 #
 
-$version = '2.14-552c';
-$build = '180217-0915';
+$version = '2.14-553c';
+$build = '180223-1150';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -15686,6 +15687,9 @@ else
 		encoded = encoded.replace(RGinOUT,inOUT);
 		encoded = encoded.replace(RGweb_vars, SCweb_vars);
 		}
+
+	var regWFAencode = new RegExp("^VAR","ig");
+	encoded = encoded.replace(regWFAencode, '');
 
 	decoded=encoded; // simple no ?
 	decoded = decoded.replace(RGnl, '+');
