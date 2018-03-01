@@ -24,6 +24,9 @@
     - www/agc/options-example.php,
       www/agc/vdc_script_display.php,
       www/agc/vicidial.php: Added $INSERT_ variables: Added LOGINvar variables, and options.php $INSERT_ variables
+  * Add upstream Rev. 2930:
+    - www/agc/vdc_db_query.php: Fix for LogiNCamPaigns function, removed unnecesary onfocus trigger, issue #1074
+    
 
 2.25.24a
   [Jörg Fring-Fürst]
