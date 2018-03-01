@@ -14,6 +14,8 @@
     - www/vicidial/AST_source_vlc_status_report.php: Fixed translation issue #1069.
   * Add upstream Rev. 2926:
     - www/vicidial/admin.php: Fixed issue with CID Groups.
+  * Add upstream Rev. 2927:
+    - www/vicidial/admin.php: Added higher hopper level options.
 
 2.25.24a
   [Jörg Fring-Fürst]
