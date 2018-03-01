@@ -9,6 +9,8 @@
       www/vicidial/help.php,
       readme.fp,
       extras/mysql_update/mysql-1531.sql.
+  * Add upstream Rev. 2924:
+    - www/vicidial/admin_email_accounts.php: Fixed translation issue #1069.
 
 2.25.24a
   [Jörg Fring-Fürst]
