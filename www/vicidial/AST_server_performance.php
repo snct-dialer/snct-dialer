@@ -1,7 +1,7 @@
 <?php 
 # AST_server_performance.php
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -27,6 +27,7 @@
 # 141230-1440 - Added code for on-the-fly language translations display
 # 170409-1550 - Added IP List validation code
 # 170422-0750 - Added input variable filtering
+# 180223-1541 - Fixed blank default date/time ranges
 #
 
 $startMS = microtime();
@@ -248,8 +249,8 @@ $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
 $STARTtime = date("U");
 
-if (!isset($begin_query_time)) {$begin_query_time = "$NOW_DATE 09:00:00";}
-if (!isset($end_query_time)) {$end_query_time = "$NOW_DATE 15:30:00";}
+if (strlen($begin_query_time) < 10) {$begin_query_time = "$NOW_DATE 09:00:00";}
+if (strlen($end_query_time) < 10) {$end_query_time = "$NOW_DATE 15:30:00";}
 if (!isset($group)) {$group = '';}
 
 $stmt="select server_ip from servers order by server_ip;";

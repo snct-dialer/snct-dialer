@@ -1,7 +1,7 @@
 <?php
 # admin_email_accounts.php
 # 
-# Copyright (C) 2017  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This page manages the inbound email accounts in ViciDial
 #
@@ -22,10 +22,11 @@
 # 160429-1123 - Added admin_row_click option
 # 160508-0139 - Added screen colors feature
 # 170409-1540 - Added IP List validation code
+# 180219-1233 - Fixed translation issue #1069
 #
 
-$admin_version = '2.14-16';
-$build = '170409-1540';
+$admin_version = '2.14-17';
+$build = '180219-1233';
 
 $sh="emails"; 
 
@@ -41,6 +42,8 @@ if (isset($_GET["action"]))						{$action=$_GET["action"];}
 	elseif (isset($_POST["action"]))			{$action=$_POST["action"];}
 if (isset($_GET["SUBMIT"]))						{$SUBMIT=$_GET["SUBMIT"];}
 	elseif (isset($_POST["SUBMIT"]))			{$SUBMIT=$_POST["SUBMIT"];}
+if (isset($_GET["stage"]))						{$stage=$_GET["stage"];}
+	elseif (isset($_POST["stage"]))				{$stage=$_POST["stage"];}
 if (isset($_GET["eact"]))						{$eact=$_GET["eact"];}
 	elseif (isset($_POST["eact"]))				{$eact=$_POST["eact"];}
 if (isset($_GET["email_account_id"]))					{$email_account_id=$_GET["email_account_id"];}
@@ -384,7 +387,7 @@ if ($eact=="DELETE" && $confirm_deletion=="yes" && $email_account_id)
 
 
 
-if (($SUBMIT=="SUBMIT" || $SUBMIT=="UPDATE") && $email_account_id)
+if (($stage=="SUBMIT" || $stage=="UPDATE") && $email_account_id)
 	{
 	$error_msg="";
 	if ( (!$default_list_id) or ($default_list_id < 99) ) {$error_msg.="- "._QXZ("Default list ID is invalid or null")."<BR/>";}
@@ -397,7 +400,7 @@ if (($SUBMIT=="SUBMIT" || $SUBMIT=="UPDATE") && $email_account_id)
 
 	if (!$error_msg) 
 		{
-		if ($SUBMIT=="SUBMIT") 
+		if ($stage=="SUBMIT") 
 			{
 			if ($add_copy_disabled > 0)
 				{
@@ -452,7 +455,7 @@ if (($SUBMIT=="SUBMIT" || $SUBMIT=="UPDATE") && $email_account_id)
 			}
 		}
 	}
-else if ($SUBMIT=="COPY") 
+else if ($stage=="COPY") 
 	{
 	$stmt="select * from vicidial_email_accounts where email_account_id='$source_email_account'";
 	$rslt=mysql_to_mysqli($stmt, $link);
@@ -520,6 +523,7 @@ if ($eact == "COPY")
 		echo "<br>"._QXZ("Copy New Account from Existing Account")."<form action='$PHP_SELF' method='GET'>\n";
 		echo "<input type=hidden name=DB value=\"$DB\">\n";
 		echo "<input type=hidden name=action value=COPY_EMAIL_SUBMIT>\n";
+		echo "<input type=hidden name=stage value='COPY'>\n";
 		echo "<center><TABLE width=$section_width cellspacing=3>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Account ID to Copy From").": </td><td align=left><select size=1 name=source_email_account>\n";
 		echo "$accounts_list";
@@ -674,8 +678,8 @@ else if ($eact == "ADD")
 		echo "$campaigns_list";
 		echo "<option SELECTED>$campaign_id</option>\n";
 		echo "</select>$NWB#email_accounts-ingroup_campaign_id$NWE</td></tr>\n";
-		
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=center colspan=2><input type=submit name=SUBMIT VALUE='"._QXZ("SUBMIT")."'><input type=hidden name='eact' value='ADD'></td></tr>\n";
+
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=center colspan=2><input type=submit name=SUBMIT VALUE='"._QXZ("SUBMIT")."'><input type=hidden name='eact' value='ADD'><input type=hidden name=stage value='SUBMIT'></td></tr>\n";
 		echo "</TABLE></center></form>\n";
 		}
 	else
@@ -865,7 +869,7 @@ else if (($eact=="DELETE" || $eact=="UPDATE") && $email_account_id)
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Un-handled Emails").": </td><td align=left><B>$unhandled_emails</B></td></tr>\n";
 ################
 		
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=center colspan=2><input type=submit name=SUBMIT VALUE='"._QXZ("UPDATE")."'><input type=hidden name='eact' value='UPDATE'></td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=center colspan=2><input type=submit name=SUBMIT VALUE='"._QXZ("UPDATE")."'><input type=hidden name='eact' value='UPDATE'><input type=hidden name=stage value='UPDATE'></td></tr>\n";
 		echo "</TABLE><BR><BR>";
 		if ($LOGuser_level >= 9)
 			{

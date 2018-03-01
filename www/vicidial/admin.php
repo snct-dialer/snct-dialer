@@ -2730,7 +2730,6 @@ if ($non_latin < 1)
 	$test_campaign_calls = preg_replace('/[^0-9]/','',$test_campaign_calls);
 	$agents_calls_reset = preg_replace('/[^0-9]/','',$agents_calls_reset);
 	$campaign_cid_areacodes_enabled = preg_replace('/[^0-9]/','',$campaign_cid_areacodes_enabled);
-	$areacode = preg_replace('/[^0-9]/','',$areacode);
 	$pllb_grouping_limit = preg_replace('/[^0-9]/','',$pllb_grouping_limit);
 	$did_ra_extensions_enabled = preg_replace('/[^0-9]/','',$did_ra_extensions_enabled);
 	$modify_shifts = preg_replace('/[^0-9]/','',$modify_shifts);
@@ -3059,6 +3058,7 @@ if ($non_latin < 1)
 	$inbound_survey = preg_replace('/[^0-9a-zA-Z]/','',$inbound_survey);
 	$inbound_list_script_override = preg_replace('/[^0-9a-zA-Z]/','',$inbound_list_script_override);
 	$pause_max_dispo = preg_replace('/[^0-9a-zA-Z]/','',$pause_max_dispo);
+	$areacode = preg_replace('/[^0-9a-zA-Z]/','',$areacode);
 
 	### DIGITS and Dots
 	$server_ip = preg_replace('/[^\.0-9]/','',$server_ip);
@@ -4388,12 +4388,14 @@ else
 # 180216-1332 - Fix for system summary screen, issue #1068
 # 180216-1743 - Many translation strings and permissions fixes, issue #1065
 # 180217-0934 - Added NO_READY option for no_agent_no_queue in-group feature, issue #1046
+# 180219-2204 - Fixed issue with CID Groups
+# 180222-0017 - Added higher hopper level options
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-659a';
-$build = '180217-0934';
+$admin_version = '2.14-661a';
+$build = '180222-0017';
 
 
 $STARTtime = date("U");
@@ -6478,7 +6480,7 @@ if ($ADD==11)
 		if ($SSoutbound_autodial_active > 0)
 			{
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Allow Closers").": </td><td align=left><select size=1 name=allow_closers><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option></select>$NWB#campaigns-allow_closers$NWE</td></tr>\n";
-			echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Minimum Hopper Level").": </td><td align=left><select size=1 name=hopper_level><option>1</option><option>5</option><option>10</option><option>20</option><option>50</option><option>100</option><option>200</option><option>500</option><option>1000</option><option>2000</option></select>$NWB#campaigns-hopper_level$NWE</td></tr>\n";
+			echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Minimum Hopper Level").": </td><td align=left><select size=1 name=hopper_level><option>1</option><option>5</option><option>10</option><option>20</option><option>50</option><option>100</option><option>200</option><option>500</option><option>1000</option><option>2000</option><option>3000</option><option>4000</option><option>5000</option></select>$NWB#campaigns-hopper_level$NWE</td></tr>\n";
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Auto Dial Level").": </td><td align=left><select size=1 name=auto_dial_level><option selected>1</option><option>0</option>\n";
 			$adl=0;
 			while($adl <= $SSauto_dial_limit)
@@ -17077,6 +17079,7 @@ if ($ADD==496111111111)
 					if ( (strlen($cid_group_id) < 2) or (strlen($areacode) < 2) or (strlen($outbound_cid) < 6) )
 						{
 						echo "<br>"._QXZ("CID GROUP CID NOT ADDED - Please go back and look at the data you entered")."<br>\n";
+						if ($DB) {echo "|$cid_group_id|$areacode|$outbound_cid|\n";}
 						}
 					else
 						{
@@ -22514,7 +22517,7 @@ if ($ADD==31)
 
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Call Count Target").": </td><td align=left><input type=text name=call_count_target size=4 maxlength=5 value=\"$call_count_target\"> $NWB#campaigns-call_count_target$NWE</td></tr>\n";
 
-			echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Minimum Hopper Level").": </td><td align=left><select size=1 name=hopper_level><option>1</option><option>5</option><option>10</option><option>20</option><option>50</option><option>100</option><option>200</option><option>500</option><option>700</option><option>1000</option><option>2000</option><option SELECTED>$hopper_level</option></select>$NWB#campaigns-hopper_level$NWE</td></tr>\n";
+			echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Minimum Hopper Level").": </td><td align=left><select size=1 name=hopper_level><option>1</option><option>5</option><option>10</option><option>20</option><option>50</option><option>100</option><option>200</option><option>500</option><option>700</option><option>1000</option><option>2000</option><option>3000</option><option>4000</option><option>5000</option><option SELECTED>$hopper_level</option></select>$NWB#campaigns-hopper_level$NWE</td></tr>\n";
 
 			echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Automatic Hopper Level").": </td><td align=left><select size=1 name=use_auto_hopper><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='$use_auto_hopper' SELECTED>"._QXZ("$use_auto_hopper")."</option></select>$NWB#campaigns-use_auto_hopper$NWE</td></tr>\n";
 
@@ -24874,7 +24877,7 @@ if ($ADD==34)
 				}
 			echo "</td></tr>\n";
 
-			echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Minimum Hopper Level").": </td><td align=left><select size=1 name=hopper_level><option>1</option><option>5</option><option>10</option><option>20</option><option>50</option><option>100</option><option>200</option><option>500</option><option>700</option><option>1000</option><option>2000</option><option SELECTED>$hopper_level</option></select>$NWB#campaigns-hopper_level$NWE</td></tr>\n";
+			echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Minimum Hopper Level").": </td><td align=left><select size=1 name=hopper_level><option>1</option><option>5</option><option>10</option><option>20</option><option>50</option><option>100</option><option>200</option><option>500</option><option>700</option><option>1000</option><option>2000</option><option>3000</option><option>4000</option><option>5000</option><option SELECTED>$hopper_level</option></select>$NWB#campaigns-hopper_level$NWE</td></tr>\n";
 
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Force Reset of Hopper").": </td><td align=left><select size=1 name=reset_hopper><option value='Y'>"._QXZ("Y")."</option><option value=\"N\" SELECTED>"._QXZ("N")."</option></select>$NWB#campaigns-force_reset_hopper$NWE</td></tr>\n";
 

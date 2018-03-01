@@ -9,6 +9,24 @@
       www/vicidial/help.php,
       readme.fp,
       extras/mysql_update/mysql-1531.sql.
+  * Add upstream Rev. 2924-2925:
+    - www/vicidial/admin_email_accounts.php,
+    - www/vicidial/AST_source_vlc_status_report.php: Fixed translation issue #1069.
+  * Add upstream Rev. 2926:
+    - www/vicidial/admin.php: Fixed issue with CID Groups.
+  * Add upstream Rev. 2927:
+    - www/vicidial/admin.php: Added higher hopper level options.
+  * Add upstream Rev. 2928:
+    - www/agc/vicidial.php: Fix for rare webform VAR url issue.
+  * Add upstream Rev. 2929:
+  	- www/vicidial/AST_server_performance.php: Fixed blank default date/time ranges.
+  * Add upstream Rev. 2930:
+    - www/agc/options-example.php,
+      www/agc/vdc_script_display.php,
+      www/agc/vicidial.php: Added $INSERT_ variables: Added LOGINvar variables, and options.php $INSERT_ variables
+  * Add upstream Rev. 2930:
+    - www/agc/vdc_db_query.php: Fix for LogiNCamPaigns function, removed unnecesary onfocus trigger, issue #1074
+    
 
 2.25.24a
   [Jörg Fring-Fürst]

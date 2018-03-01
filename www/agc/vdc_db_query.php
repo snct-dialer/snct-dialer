@@ -450,10 +450,11 @@
 # 180212-0654 - Added callback_datetime as dispo call url variable
 # 180214-1553 - Added CID Group functionality
 # 180216-1350 - Fix for callback alt dial isssue #1066
+# 180228-0726 - Fix for LogiNCamPaigns function, removed unnecesary onfocus trigger, issue #1074
 #
 
-$version = '2.14-344';
-$build = '180216-1350';
+$version = '2.14-345';
+$build = '180228-0726';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=709;
@@ -1156,7 +1157,7 @@ if ($ACTION == 'LogiNCamPaigns')
 	{
 	if ( (strlen($user)<1) )
 		{
-		echo "<select size=1 name=VD_campaign id=VD_campaign onFocus=\"login_allowable_campaigns()\">\n";
+		echo "<select size=1 name=VD_campaign id=VD_campaign>\n";
 		echo "<option value=\"\">-- ERROR --</option>\n";
 		echo "</select>\n";
 		if ($SSagent_debug_logging > 0) {vicidial_ajax_log($NOW_TIME,$startMS,$link,$ACTION,$php_script,$user,$stage,$lead_id,$session_name,$stmt);}
@@ -1260,7 +1261,7 @@ if ($ACTION == 'LogiNCamPaigns')
 			}
 		else
 			{
-			echo "<select size=1 name=VD_campaign id=VD_campaign onFocus=\"login_allowable_campaigns()\">\n";
+			echo "<select size=1 name=VD_campaign id=VD_campaign>\n";
 			echo "<option value=\"\">-- "._QXZ("USER LOGIN ERROR")." --</option>\n";
 			echo "</select>\n";
 			if ($SSagent_debug_logging > 0) {vicidial_ajax_log($NOW_TIME,$startMS,$link,$ACTION,$php_script,$user,$stage,$lead_id,$session_name,$stmt);}
@@ -1399,7 +1400,7 @@ if ($ACTION == 'LogiNCamPaigns')
 		}
 	else
 		{
-		echo "<select size=1 name=VD_campaign id=VD_campaign onFocus=\"login_allowable_campaigns()\">\n";
+		echo "<select size=1 name=VD_campaign id=VD_campaign>\n";
 		echo "<option value=\"\">-- "._QXZ("YOU MUST LOG IN TO THE TIMECLOCK FIRST")." --</option>\n";
 		echo "</select>\n";
 		}
