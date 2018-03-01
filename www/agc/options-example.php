@@ -1,7 +1,7 @@
 <?php
 # options.php - manually defined options for vicidial.php
 # 
-# Copyright (C) 2016  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # rename this file to options.php for the settings here to go into effect
 #
@@ -13,6 +13,7 @@
 # 131121-1719 - Fixed defaults mismatched, HKuser_level and FORM_COLOR
 # 160619-1010 - Added link_to_grey_version option
 # 160910-1317 - Added use_agent_colors option
+# 180223-1657 - Added $INSERT_ variables
 #
 
 $conf_silent_prefix		= '5';	# vicidial_conferences prefix to enter silently and muted for recording
@@ -73,5 +74,11 @@ $win_valid_name			= 'subwindow_launch';	# only window name to allow if validatio
 #	$webphone_height		= 36;	# set the webphone frame height
 #	$webphone_pad			= 0;	# set the table cellpadding for the webphone
 #	$webphone_location		= 'bar';	# set the location on the agent screen 'right' or 'bar'
+
+$INSERT_head_script		= '';	# inserted right above the <script language="Javascript"> line after logging in
+$INSERT_head_js			= '';	# inserted after first javascript function
+$INSERT_window_onload	= '';	# inserted within the onload function
+$INSERT_agent_events	= '';	# inserted within the agent_events function
+
 
 ?>

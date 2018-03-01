@@ -1,7 +1,7 @@
 <?php
 # vdc_script_display.php
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed display the contents of the SCRIPT tab in the agent interface
 #
@@ -37,10 +37,11 @@
 # 170526-2343 - Added additional variable filtering
 # 171006-2055 - Added inbound_list_script_override option
 # 171126-1124 - Added email message display from inbound emails only
+# 180224-1406 - Added LOGINvar variables, and options.php $INSERT_ variables
 #
 
-$version = '2.14-31';
-$build = '171126-1124';
+$version = '2.14-32';
+$build = '180224-1406';
 
 require_once("dbconnect_mysqli.php");
 require_once("functions.php");
@@ -242,6 +243,16 @@ if (isset($_GET["DB"]))				{$DB=$_GET["DB"];}
 	elseif (isset($_POST["DB"]))	{$DB=$_POST["DB"];}
 if (isset($_GET["inOUT"]))			{$inOUT=$_GET["inOUT"];}
 	elseif (isset($_POST["inOUT"]))	{$inOUT=$_POST["inOUT"];}
+if (isset($_GET["LOGINvarONE"]))			{$LOGINvarONE=$_GET["LOGINvarONE"];}
+	elseif (isset($_POST["LOGINvarONE"]))	{$LOGINvarONE=$_POST["LOGINvarONE"];}
+if (isset($_GET["LOGINvarTWO"]))			{$LOGINvarTWO=$_GET["LOGINvarTWO"];}
+	elseif (isset($_POST["LOGINvarTWO"]))	{$LOGINvarTWO=$_POST["LOGINvarTWO"];}
+if (isset($_GET["LOGINvarTHREE"]))			{$LOGINvarTHREE=$_GET["LOGINvarTHREE"];}
+	elseif (isset($_POST["LOGINvarTHREE"]))	{$LOGINvarTHREE=$_POST["LOGINvarTHREE"];}
+if (isset($_GET["LOGINvarFOUR"]))			{$LOGINvarFOUR=$_GET["LOGINvarFOUR"];}
+	elseif (isset($_POST["LOGINvarFOUR"]))	{$LOGINvarFOUR=$_POST["LOGINvarFOUR"];}
+if (isset($_GET["LOGINvarFIVE"]))			{$LOGINvarFIVE=$_GET["LOGINvarFIVE"];}
+	elseif (isset($_POST["LOGINvarFIVE"]))	{$LOGINvarFIVE=$_POST["LOGINvarFIVE"];}
 
 
 header ("Content-type: text/html; charset=utf-8");
@@ -274,6 +285,11 @@ $uniqueid = preg_replace('/[^-_\.0-9a-zA-Z]/','',$uniqueid);
 $campaign = preg_replace('/[^-_0-9a-zA-Z]/','',$campaign);
 $group = preg_replace('/[^-_0-9a-zA-Z]/','',$group);
 $session_name = preg_replace("/\'|\"|\\\\|;/","",$session_name);
+$LOGINvarONE=preg_replace("/[^-_0-9a-zA-Z]/","",$LOGINvarONE);
+$LOGINvarTWO=preg_replace("/[^-_0-9a-zA-Z]/","",$LOGINvarTWO);
+$LOGINvarTHREE=preg_replace("/[^-_0-9a-zA-Z]/","",$LOGINvarTHREE);
+$LOGINvarFOUR=preg_replace("/[^-_0-9a-zA-Z]/","",$LOGINvarFOUR);
+$LOGINvarFIVE=preg_replace("/[^-_0-9a-zA-Z]/","",$LOGINvarFIVE);
 
 #############################################
 ##### START SYSTEM_SETTINGS AND USER LANGUAGE LOOKUP #####
@@ -671,6 +687,11 @@ $script_text = preg_replace('/--A--did_custom_two--B--/i',"$did_custom_two",$scr
 $script_text = preg_replace('/--A--did_custom_three--B--/i',"$did_custom_three",$script_text);
 $script_text = preg_replace('/--A--did_custom_four--B--/i',"$did_custom_four",$script_text);
 $script_text = preg_replace('/--A--did_custom_five--B--/i',"$did_custom_five",$script_text);
+$script_text = preg_replace('/--A--LOGINvarONE--B--/i',"$LOGINvarONE",$script_text);
+$script_text = preg_replace('/--A--LOGINvarTWO--B--/i',"$LOGINvarTWO",$script_text);
+$script_text = preg_replace('/--A--LOGINvarTHREE--B--/i',"$LOGINvarTHREE",$script_text);
+$script_text = preg_replace('/--A--LOGINvarFOUR--B--/i',"$LOGINvarFOUR",$script_text);
+$script_text = preg_replace('/--A--LOGINvarFIVE--B--/i',"$LOGINvarFIVE",$script_text);
 $script_text = preg_replace('/--A--web_vars--B--/i',"$web_vars",$script_text);
 
 if ($CF_uses_custom_fields=='Y')

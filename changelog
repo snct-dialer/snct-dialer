@@ -20,6 +20,10 @@
     - www/agc/vicidial.php: Fix for rare webform VAR url issue.
   * Add upstream Rev. 2929:
   	- www/vicidial/AST_server_performance.php: Fixed blank default date/time ranges.
+  * Add upstream Rev. 2930:
+    - www/agc/options-example.php,
+      www/agc/vdc_script_display.php,
+      www/agc/vicidial.php: Added $INSERT_ variables: Added LOGINvar variables, and options.php $INSERT_ variables
 
 2.25.24a
   [Jörg Fring-Fürst]
