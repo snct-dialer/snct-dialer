@@ -2730,7 +2730,6 @@ if ($non_latin < 1)
 	$test_campaign_calls = preg_replace('/[^0-9]/','',$test_campaign_calls);
 	$agents_calls_reset = preg_replace('/[^0-9]/','',$agents_calls_reset);
 	$campaign_cid_areacodes_enabled = preg_replace('/[^0-9]/','',$campaign_cid_areacodes_enabled);
-	$areacode = preg_replace('/[^0-9]/','',$areacode);
 	$pllb_grouping_limit = preg_replace('/[^0-9]/','',$pllb_grouping_limit);
 	$did_ra_extensions_enabled = preg_replace('/[^0-9]/','',$did_ra_extensions_enabled);
 	$modify_shifts = preg_replace('/[^0-9]/','',$modify_shifts);
@@ -3059,6 +3058,7 @@ if ($non_latin < 1)
 	$inbound_survey = preg_replace('/[^0-9a-zA-Z]/','',$inbound_survey);
 	$inbound_list_script_override = preg_replace('/[^0-9a-zA-Z]/','',$inbound_list_script_override);
 	$pause_max_dispo = preg_replace('/[^0-9a-zA-Z]/','',$pause_max_dispo);
+	$areacode = preg_replace('/[^0-9a-zA-Z]/','',$areacode);
 
 	### DIGITS and Dots
 	$server_ip = preg_replace('/[^\.0-9]/','',$server_ip);
@@ -4388,12 +4388,13 @@ else
 # 180216-1332 - Fix for system summary screen, issue #1068
 # 180216-1743 - Many translation strings and permissions fixes, issue #1065
 # 180217-0934 - Added NO_READY option for no_agent_no_queue in-group feature, issue #1046
+# 180219-2204 - Fixed issue with CID Groups
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-659a';
-$build = '180217-0934';
+$admin_version = '2.14-660a';
+$build = '180219-2204';
 
 
 $STARTtime = date("U");
@@ -17077,6 +17078,7 @@ if ($ADD==496111111111)
 					if ( (strlen($cid_group_id) < 2) or (strlen($areacode) < 2) or (strlen($outbound_cid) < 6) )
 						{
 						echo "<br>"._QXZ("CID GROUP CID NOT ADDED - Please go back and look at the data you entered")."<br>\n";
+						if ($DB) {echo "|$cid_group_id|$areacode|$outbound_cid|\n";}
 						}
 					else
 						{
