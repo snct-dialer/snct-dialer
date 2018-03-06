@@ -54,6 +54,8 @@
 # default path to astguiclient configuration file:
 $defaultPATHconf =		'/etc/astguiclient.conf';
 $PATHconf =		$defaultPATHconf;
+$defaultPATHconfNew =		'/etc/flyingpenguin/vicidial.conf';
+$PATHconfNew =		$defaultPATHconfNew;
 # default path to home directory:
 $PATHhome =		'/usr/share/astguiclient';
 # default path to astguiclient logs directory: 
@@ -2459,6 +2461,19 @@ print conf "# Expected DB Schema version for this install\n";
 print conf "ExpectedDBSchema => $ExpectedDBSchema\n";
 close(conf);
 
+
+print "Writing to configuration file: $PATHconfNew\n";
+
+if (!-e "/etc/flyingpenguin")	{`mkdir -p "/etc/flyingpenguin"`;}
+
+use Config::IniFiles;
+my $cfg = Config::IniFiles->new( -file => $PATHconfNew );
+
+$cfg->AddSection("Database");
+$cfg->setval("Database", "VARDB_server", "localhost");
+$cfg->RewriteConfig();
+
+exit;
 
 print "\nSTARTING ASTGUICLIENT INSTALLATION PHASE...\n";
 
