@@ -26,7 +26,13 @@
       www/agc/vicidial.php: Added $INSERT_ variables: Added LOGINvar variables, and options.php $INSERT_ variables
   * Add upstream Rev. 2930:
     - www/agc/vdc_db_query.php: Fix for LogiNCamPaigns function, removed unnecesary onfocus trigger, issue #1074
-    
+  
+  [Frank Gorgas-Waller]
+  * Add Agent Prefix (2018-004):
+    - extras/mysql_update/mysql-1531.sql,
+      www/agc/vicidial.php,
+      extras/upgrade_2.14.sql,
+      www/vicidial/admin.php: Add Agent Prefix for calls to Agents with AgentNo != PhoneNo..
 
 2.25.24a
   [Jörg Fring-Fürst]

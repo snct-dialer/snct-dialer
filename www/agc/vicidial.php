@@ -722,7 +722,7 @@ if ($sl_ct > 0)
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$stmt = "SELECT use_non_latin,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,webroot_writable,timeclock_end_of_day,vtiger_url,enable_vtiger_integration,outbound_autodial_active,enable_second_webform,user_territories_active,static_agent_url,custom_fields_enabled,pllb_grouping_limit,qc_features_active,allow_emails,callback_time_24hour,enable_languages,language_method,meetme_enter_login_filename,meetme_enter_leave3way_filename,enable_third_webform,default_language,active_modules,allow_chats,chat_url,default_phone_code,agent_screen_colors,manual_auto_next,agent_xfer_park_3way,admin_web_directory,agent_script,agent_push_events,agent_push_url,pause_campaigns,allow_phonebook FROM system_settings;";
+$stmt = "SELECT use_non_latin,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,webroot_writable,timeclock_end_of_day,vtiger_url,enable_vtiger_integration,outbound_autodial_active,enable_second_webform,user_territories_active,static_agent_url,custom_fields_enabled,pllb_grouping_limit,qc_features_active,allow_emails,callback_time_24hour,enable_languages,language_method,meetme_enter_login_filename,meetme_enter_leave3way_filename,enable_third_webform,default_language,active_modules,allow_chats,chat_url,default_phone_code,agent_screen_colors,manual_auto_next,agent_xfer_park_3way,admin_web_directory,agent_script,agent_push_events,agent_push_url,pause_campaigns,allow_phonebook,agent_prefix FROM system_settings;";
 $rslt=mysql_to_mysqli($stmt, $link);
 	if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01001',$VD_login,$server_ip,$session_name,$one_mysql_log);}
 if ($DB) {echo "$stmt\n";}
@@ -766,6 +766,7 @@ if ($qm_conf_ct > 0)
 	$agent_push_url =					$row[33];
 	$pause_campaign =					$row[34];
 	$allow_phonebook =					$row[35];
+	$agent_prefix =						$row[36];
 	}
 else
 	{
@@ -5228,6 +5229,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				// append dial prefix if phone number is greater than 7 digits on non-AGENTDIRECT calls
 				if ( (manual_string.length > 7) && (xfer_agent_selected < 1) )
 					{manual_string = temp_dial_prefix + "" + temp_phone_code + "" + manual_string;}
+
+				// Agent workaround prepending A to dialstring
+				if ( xfer_agent_selected > 0 )
+					{manual_string = $agent_prefix + manual_string;}
 				}
 			else
 				{agent_dialed_type='XFER_OVERRIDE';}
