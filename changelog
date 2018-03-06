@@ -39,6 +39,11 @@
   * Add upstream Rev. 2934:
     - www/vicidial/admin_bulk_tools.php: Fixed issue with STATE CID Groups
         insertion.
+  * Add upstream Rev. 2935:
+    - www/agc/api.php,
+      www/vicidial/non_agent_api.php: Added GET-AND-POST URL logging.
+    - www/vicidial/AST_API_log_report.php: Added DATA column to TEXT/HTML
+        output, Added GET-AND-POST URL logging
 
   [Frank Gorgas-Waller]
   * Add Agent Prefix (2018-004):

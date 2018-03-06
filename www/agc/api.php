@@ -93,10 +93,11 @@
 # 170815-1314 - Added HTTP error code 418
 # 180124-1608 - Added calls_in_queue_count function
 # 180204-2350 - Added dial_ingroup external_dial option
+# 180301-2302 - Added GET-AND-POST URL logging
 #
 
-$version = '2.14-59';
-$build = '180204-2350';
+$version = '2.14-60';
+$build = '180301-2302';
 
 $startMS = microtime();
 
@@ -113,8 +114,10 @@ if (strlen($POST_URI)>1)
 	{$POST_URI = preg_replace("/^&/",'',$POST_URI);}
 $REQUEST_URI = preg_replace("/'|\"|\\\\|;/","",$REQUEST_URI);
 $POST_URI = preg_replace("/'|\"|\\\\|;/","",$POST_URI);
-if ( (strlen($query_string) < 3) and (strlen($POST_URI) > 2) )
+if ( (strlen($query_string) < 1) and (strlen($POST_URI) > 2) )
 	{$query_string = $POST_URI;}
+if ( (strlen($query_string) > 0) and (strlen($POST_URI) > 2) )
+	{$query_string .= "&GET-AND-POST=Y&".$POST_URI;}
 
 ### If you have globals turned off uncomment these lines
 if (isset($_GET["user"]))						{$user=$_GET["user"];}

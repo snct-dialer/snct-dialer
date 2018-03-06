@@ -129,10 +129,11 @@
 # 171229-1602 - Added lead_status_search function
 # 180109-1313 - Added call_status_stats function
 # 180208-1655 - Added call_dispo_report function
+# 180301-2301 - Added GET-AND-POST URL logging
 #
 
-$version = '2.14-105';
-$build = '180208-1655';
+$version = '2.14-107';
+$build = '180301-2301';
 $api_url_log = 0;
 
 $startMS = microtime();
@@ -689,8 +690,10 @@ if (strlen($POST_URI)>1)
 	{$POST_URI = preg_replace("/^&/",'',$POST_URI);}
 $REQUEST_URI = preg_replace("/'|\"|\\\\|;/","",$REQUEST_URI);
 $POST_URI = preg_replace("/'|\"|\\\\|;/","",$POST_URI);
-if ( (strlen($query_string) < 3) and (strlen($POST_URI) > 2) )
+if ( (strlen($query_string) < 1) and (strlen($POST_URI) > 2) )
 	{$query_string = $POST_URI;}
+if ( (strlen($query_string) > 0) and (strlen($POST_URI) > 2) )
+	{$query_string .= "&GET-AND-POST=Y&".$POST_URI;}
 $barge_prefix='';
 
 $MT[0]='';
@@ -9861,7 +9864,6 @@ if ($function == 'call_status_stats')
 			}
 		else
 			{
-
 			if (!$query_date) {$query_date=date("Y-m-d");}
 			if (!$query_time) {$query_time="00:00:00";}
 			if (!$end_date) {$end_date=$query_date;}
@@ -10032,6 +10034,11 @@ if ($function == 'call_status_stats')
 
 				echo $key."|".$inbound_array{$key}[0]."|".$inbound_array{$key}[1]."|".$hour_str."|".$status_str."|\n";
 			}
+
+		$result = 'SUCCESS';
+		$data = "$user|$stage";
+		$result_reason = "call_status_stats";
+		api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
 		}
 	exit;
 	}
@@ -10399,7 +10406,11 @@ if ($function == 'call_dispo_report')
 					print_r($inbound_ct_array);
 					print_r($did_ct_array);
 					}
-				}			
+				}
+			$result = 'SUCCESS';
+			$data = "$user|$stage";
+			$result_reason = "call_dispo_report";
+			api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
 			}
 		}
 	exit;
