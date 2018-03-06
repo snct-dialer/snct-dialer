@@ -222,6 +222,7 @@
 # 180204-0120 - Added PRESS_CALLBACK_QUEUE feature, and Closing-Time feature, and add-lead-timezone-lookup feature
 # 180209-1716 - Big fix for recent feature
 # 180217-1018 - Added NO_READY option for no_agent_no_queue in-group feature, issue #1046
+# 180306-1450 - Fix for Wait/Hold time options when nothing is pressed
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
@@ -4975,7 +4976,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 		### END wait time option press 1 options ###
 
 
-		if ($wait_time_option =~ /EXTENSION/)
+		if ( ($wait_time_option =~ /EXTENSION/) && ($wait_in_queue < 2) )
 			{
 			if (length($wait_time_option_exten)>0)
 				{
@@ -5005,7 +5006,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 				}
 			}
 
-		if ($wait_time_option =~ /VOICEMAIL|VMAIL_NO_INST/)
+		if ( ($wait_time_option =~ /VOICEMAIL|VMAIL_NO_INST/) && ($wait_in_queue < 2) )
 			{
 			if ( ($channel_group =~ /AGENTDIRECT/i) && (length($agent_only) > 1) && ($wait_time_option_voicemail =~ /AGENTVMAIL/) )
 				{
@@ -5032,7 +5033,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 			if (length($wait_time_option_voicemail)>0)
 				{$DROPexten = "$voicemail_dump_exten$wait_time_option_voicemail";}
 			}
-		if ($wait_time_option =~ /CALL_MENU/)
+		if ( ($wait_time_option =~ /CALL_MENU/) && ($wait_in_queue < 2) )
 			{
 			$newcallerid = "\"$VCcallerid <$transfer_cid>\"";
 			if ($action_xfer_cid =~ /CLOSER/)
@@ -5059,11 +5060,11 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 					}
 				}
 			}
-		if ($wait_time_option =~ /IN_GROUP/)
+		if ( ($wait_time_option =~ /IN_GROUP/) && ($wait_in_queue < 2) )
 			{ # 90009*CL_uk3survy_*8301*10000123*universal*7275551212*1234*"
 			$DROPexten = "90009*$wait_time_option_xfer_group$S$S$insert_lead_id$S$S$phone_number$S$fronter$S";
 			}
-		if ($wait_time_option =~ /CALLERID_CALLBACK/)
+		if ( ($wait_time_option =~ /CALLERID_CALLBACK/) && ($wait_in_queue < 2) )
 			{
 			if (length($wait_time_option_exten)>0)
 				{$DROPexten = "$wait_time_option_exten";}
@@ -5132,7 +5133,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 				$wait_in_queue = 2; #continue waiting
 				}
 			}
-		if ($wait_time_option =~ /CALLBACK_QUEUE/)
+		if ( ($wait_time_option =~ /CALLBACK_QUEUE/) && ($wait_in_queue < 2) )
 			{
 			if (length($wait_time_option_exten)>0)
 				{$DROPexten = "$wait_time_option_exten";}
@@ -5471,7 +5472,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 				### END hold time option press 1 options ###
 
 
-				if ($hold_time_option =~ /EXTENSION/)
+				if ( ($hold_time_option =~ /EXTENSION/) && ($wait_in_queue < 2) )
 					{
 					if (length($hold_time_option_exten)>0)
 						{
@@ -5501,7 +5502,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 						}
 					}
 
-				if ($hold_time_option =~ /VOICEMAIL|VMAIL_NO_INST/)
+				if ( ($hold_time_option =~ /VOICEMAIL|VMAIL_NO_INST/) && ($wait_in_queue < 2) )
 					{
 					if ( ($channel_group =~ /AGENTDIRECT/i) && (length($agent_only) > 1) && ($hold_time_option_voicemail =~ /AGENTVMAIL/) )
 						{
@@ -5528,7 +5529,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 					if (length($hold_time_option_voicemail)>0)
 						{$DROPexten = "$voicemail_dump_exten$hold_time_option_voicemail";}
 					}
-				if ($hold_time_option =~ /CALL_MENU/)
+				if ( ($hold_time_option =~ /CALL_MENU/) && ($wait_in_queue < 2) )
 					{
 					$newcallerid = "\"$VCcallerid <$transfer_cid>\"";
 					if ($action_xfer_cid =~ /CLOSER/)
@@ -5555,11 +5556,11 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 							}
 						}
 					}
-				if ($hold_time_option =~ /IN_GROUP/)
+				if ( ($hold_time_option =~ /IN_GROUP/) && ($wait_in_queue < 2) )
 					{ # 90009*CL_uk3survy_*8301*10000123*universal*7275551212*1234*"
 					$DROPexten = "90009*$hold_time_option_xfer_group$S$S$insert_lead_id$S$S$phone_number$S$fronter$S";
 					}
-				if ($hold_time_option =~ /CALLERID_CALLBACK/)
+				if ( ($hold_time_option =~ /CALLERID_CALLBACK/) && ($wait_in_queue < 2) )
 					{
 					if (length($hold_time_option_exten)>0)
 						{$DROPexten = "$hold_time_option_exten";}
@@ -5628,7 +5629,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 						$wait_in_queue = 2; #continue waiting
 						}
 					}
-				if ($hold_time_option =~ /CALLBACK_QUEUE/)
+				if ( ($hold_time_option =~ /CALLBACK_QUEUE/) && ($wait_in_queue < 2) )
 					{
 					if (length($hold_time_option_exten)>0)
 						{$DROPexten = "$hold_time_option_exten";}
