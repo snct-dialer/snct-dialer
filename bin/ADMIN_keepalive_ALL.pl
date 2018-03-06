@@ -128,9 +128,10 @@
 # 171107-1152 - Add allow=ulaw and allow=slin to ASTloop, ASTblind and ASTplay.
 # 171221-1628 - Added rolling of vicidial_ingroup_hour_counts records
 # 180204-0931 - Added rolling of vicidial_inbound_callback_queue records
+# 180301-1257 - Added more teodDB logging
 #
 
-$build = '180204-0931';
+$build = '180301-1257';
 
 $DB=0; # Debug flag
 $teodDB=0; # flag to log Timeclock End of Day processes to log file
@@ -922,7 +923,7 @@ if ($timeclock_auto_logout > 0)
 	`/usr/bin/screen -d -m -S Timeclock $PATHhome/ADMIN_timeclock_auto_logout.pl 2>/dev/null 1>&2`;
 	if ($teodDB) 
 		{
-		$event_string = "running Timeclock auto-logout process|/usr/bin/screen -d -m -S Timeclock $PATHhome/ADMIN_timeclock_auto_logout.pl 2>/dev/null 1>&2";
+		$event_string = "running Timeclock auto-logout process $build|/usr/bin/screen -d -m -S Timeclock $PATHhome/ADMIN_timeclock_auto_logout.pl 2>/dev/null 1>&2";
 		&teod_logger;
 		}
 	}
@@ -956,7 +957,7 @@ $sthA->finish();
 
 if ($timeclock_end_of_day_NOW > 0)
 	{
-	if ($teodDB) {$event_string = "Starting timeclock end of day processes: $stmtA|$timeclock_end_of_day_NOW";   &teod_logger;}
+	if ($teodDB) {$event_string = "Starting timeclock end of day processes: $stmtA|$timeclock_end_of_day_NOW|$build";   &teod_logger;}
 
 	$stmtA = "SELECT agents_calls_reset,usacan_phone_dialcode_fix from system_settings;";
 	if ($DB) {print "|$stmtA|\n";}
@@ -1309,10 +1310,11 @@ if ($timeclock_end_of_day_NOW > 0)
 		$stmtA = "INSERT IGNORE INTO vicidial_campaign_hour_counts_archive SELECT * from vicidial_campaign_hour_counts where date_hour < '$today_start';";
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-		
 		$sthArows = $sthA->rows;
-		if (!$Q) {print "$sthArows rows inserted into vicidial_campaign_hour_counts_archive table \n";}
-		
+		$event_string = "$sthArows rows inserted into vicidial_campaign_hour_counts_archive table";
+		if (!$Q) {print "$event_string \n";}
+		if ($teodDB) {&teod_logger;}
+
 		$rv = $sthA->err();
 		if (!$rv) 
 			{	
@@ -1320,7 +1322,9 @@ if ($timeclock_end_of_day_NOW > 0)
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			$sthArows = $sthA->rows;
-			if (!$Q) {print "$sthArows rows deleted from vicidial_campaign_hour_counts table \n";}
+			$event_string = "$sthArows rows deleted from vicidial_campaign_hour_counts table";
+			if (!$Q) {print "$event_string \n";}
+			if ($teodDB) {&teod_logger;}
 
 			$stmtA = "optimize table vicidial_campaign_hour_counts;";
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -1332,10 +1336,11 @@ if ($timeclock_end_of_day_NOW > 0)
 		$stmtA = "INSERT IGNORE INTO vicidial_carrier_hour_counts_archive SELECT * from vicidial_carrier_hour_counts where date_hour < '$today_start';";
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-		
 		$sthArows = $sthA->rows;
-		if (!$Q) {print "$sthArows rows inserted into vicidial_carrier_hour_counts_archive table \n";}
-		
+		$event_string = "$sthArows rows inserted into vicidial_carrier_hour_counts_archive table";
+		if (!$Q) {print "$event_string \n";}
+		if ($teodDB) {&teod_logger;}
+
 		$rv = $sthA->err();
 		if (!$rv) 
 			{	
@@ -1343,7 +1348,9 @@ if ($timeclock_end_of_day_NOW > 0)
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			$sthArows = $sthA->rows;
-			if (!$Q) {print "$sthArows rows deleted from vicidial_carrier_hour_counts table \n";}
+			$event_string = "$sthArows rows deleted from vicidial_carrier_hour_counts table";
+			if (!$Q) {print "$event_string \n";}
+			if ($teodDB) {&teod_logger;}
 
 			$stmtA = "optimize table vicidial_carrier_hour_counts;";
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -1355,10 +1362,11 @@ if ($timeclock_end_of_day_NOW > 0)
 		$stmtA = "INSERT IGNORE INTO vicidial_ingroup_hour_counts_archive SELECT * from vicidial_ingroup_hour_counts where date_hour < '$today_start';";
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-		
 		$sthArows = $sthA->rows;
-		if (!$Q) {print "$sthArows rows inserted into vicidial_ingroup_hour_counts_archive table \n";}
-		
+		$event_string = "$sthArows rows inserted into vicidial_ingroup_hour_counts_archive table";
+		if (!$Q) {print "$event_string \n";}
+		if ($teodDB) {&teod_logger;}
+
 		$rv = $sthA->err();
 		if (!$rv) 
 			{	
@@ -1366,7 +1374,9 @@ if ($timeclock_end_of_day_NOW > 0)
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			$sthArows = $sthA->rows;
-			if (!$Q) {print "$sthArows rows deleted from vicidial_ingroup_hour_counts table \n";}
+			$event_string = "$sthArows rows deleted from vicidial_ingroup_hour_counts table";
+			if (!$Q) {print "$event_string \n";}
+			if ($teodDB) {&teod_logger;}
 
 			$stmtA = "optimize table vicidial_ingroup_hour_counts;";
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -1378,10 +1388,11 @@ if ($timeclock_end_of_day_NOW > 0)
 		$stmtA = "INSERT IGNORE INTO vicidial_inbound_callback_queue_archive SELECT * from vicidial_inbound_callback_queue where icbq_status IN('SENT','EXPIRED','DNCL','DNCC','ORPHAN');";
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-		
 		$sthArows = $sthA->rows;
-		if (!$Q) {print "$sthArows rows inserted into vicidial_inbound_callback_queue_archive table \n";}
-		
+		$event_string = "$sthArows rows inserted into vicidial_inbound_callback_queue_archive table";
+		if (!$Q) {print "$event_string \n";}
+		if ($teodDB) {&teod_logger;}
+
 		$rv = $sthA->err();
 		if (!$rv) 
 			{	
@@ -1389,7 +1400,9 @@ if ($timeclock_end_of_day_NOW > 0)
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			$sthArows = $sthA->rows;
-			if (!$Q) {print "$sthArows rows deleted from vicidial_inbound_callback_queue table \n";}
+			$event_string = "$sthArows rows deleted from vicidial_inbound_callback_queue table";
+			if (!$Q) {print "$event_string \n";}
+			if ($teodDB) {&teod_logger;}
 
 			$stmtA = "optimize table vicidial_inbound_callback_queue;";
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -1402,6 +1415,7 @@ if ($timeclock_end_of_day_NOW > 0)
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 		$sthArows = $sthA->rows;
 		if (!$Q) {print "$sthArows vicidial_inbound_groups rows closing_time_now_trigger value reset \n";}
+		if ($teodDB) {$event_string = "$sthArows vicidial_inbound_groups rows closing_time_now_trigger value reset";   &teod_logger;}
 
 		##### BEGIN max stats end of day process #####
 		# set OPEN max stats records to CLOSING for processing

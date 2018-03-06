@@ -11,7 +11,8 @@
       extras/mysql_update/mysql-1531.sql.
   * Add upstream Rev. 2924-2925:
     - www/vicidial/admin_email_accounts.php,
-    - www/vicidial/AST_source_vlc_status_report.php: Fixed translation issue #1069.
+    - www/vicidial/AST_source_vlc_status_report.php: Fixed translation
+        issue #1069.
   * Add upstream Rev. 2926:
     - www/vicidial/admin.php: Fixed issue with CID Groups.
   * Add upstream Rev. 2927:
@@ -19,20 +20,46 @@
   * Add upstream Rev. 2928:
     - www/agc/vicidial.php: Fix for rare webform VAR url issue.
   * Add upstream Rev. 2929:
-  	- www/vicidial/AST_server_performance.php: Fixed blank default date/time ranges.
+  	- www/vicidial/AST_server_performance.php: Fixed blank default date/time
+  	    ranges.
   * Add upstream Rev. 2930:
     - www/agc/options-example.php,
       www/agc/vdc_script_display.php,
-      www/agc/vicidial.php: Added $INSERT_ variables: Added LOGINvar variables, and options.php $INSERT_ variables
-  * Add upstream Rev. 2930:
-    - www/agc/vdc_db_query.php: Fix for LogiNCamPaigns function, removed unnecesary onfocus trigger, issue #1074
-  
+      www/agc/vicidial.php: Added $INSERT_ variables: Added LOGINvar variables,
+        and options.php $INSERT_ variables
+  * Add upstream Rev. 2931:
+    - www/agc/vdc_db_query.php: Fix for LogiNCamPaigns function, removed
+        unnecesary onfocus trigger, issue #1074.
+  * Add upstream Rev. 2932:
+    - agi/agi-VDAD_ALL_inbound.agi,
+      bin/ADMIN_keepalive_ALL.pl: Added more teodDB logging.
+    - bin/AST_VDauto_dial.pl: Small changes for Inbound Queue No Dial.
+  * Add upstream Rev. 2933:
+    - bin/AST_VDhopper.pl: Fix to allow for commented(#) lines in filters.
+  * Add upstream Rev. 2934:
+    - www/vicidial/admin_bulk_tools.php: Fixed issue with STATE CID Groups
+        insertion.
+  * Add upstream Rev. 2935:
+    - www/agc/api.php,
+      www/vicidial/non_agent_api.php: Added GET-AND-POST URL logging.
+    - www/vicidial/AST_API_log_report.php: Added DATA column to TEXT/HTML
+        output, Added GET-AND-POST URL logging.
+  * Add upstream Rev. 2936:
+    - www/vicidial/admin_modify_lead.php,
+      New bin/AST_GDPR_audio_purge.pl,
+	  New docs/EU_GDPR_COMPLIANCE.txt: Added complete GDPR compliance
+        features.
+  * Add upstream Rev. 2937:
+    - www/agc/vicidial.php: Fix for pause code issue.
+
   [Frank Gorgas-Waller]
   * Add Agent Prefix (2018-004):
     - extras/mysql_update/mysql-1531.sql,
       www/agc/vicidial.php,
       extras/upgrade_2.14.sql,
-      www/vicidial/admin.php: Add Agent Prefix for calls to Agents with AgentNo != PhoneNo..
+      www/vicidial/help.php,
+      www/vicidial/admin.php: Add Agent Prefix for calls to Agents with 
+        AgentNo != PhoneNo..
 
 2.25.24a
   [Jörg Fring-Fürst]

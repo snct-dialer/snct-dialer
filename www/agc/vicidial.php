@@ -584,10 +584,11 @@
 # 180217-0915 - Added pause_max_dispo, fix for issue #1030
 # 180223-1150 - Fix for rare webform VAR url issue
 # 180224-1433 - Added LOGINvar variables, and options.php $INSERT_ variables
+# 180302-1704 - Fix for pause code issue
 #
 
-$version = '2.14-554c';
-$build = '180224-1433';
+$version = '2.14-555c';
+$build = '180302-1704';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -11214,11 +11215,11 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							xmlhttprequestcheckauto = undefined;
 							delete xmlhttprequestcheckauto;
 
-						if (alert_box_close_counter > 0)
+						if (alert_box_close_counter == 1)
 							{
 							if (VDRP_stage != 'PAUSED')
 								{
-								agent_log_id = AutoDial_ReSume_PauSe("VDADpause",'','','','','1','');
+								agent_log_id = AutoDial_ReSume_PauSe("VDADpause",'','','','','1','','YES');
 								}
 							button_click_log = button_click_log + "" + SQLdate + "-----CFAI_close_pause_alert---" + previous_agent_log_id + " " + agent_log_id + "|";
 							alert_box_close_counter=0;

@@ -5140,9 +5140,9 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 			if ( ( length($phone_number) > 6 ) && ( $phone_number > 0) )
 				{
 				### insert a record into the vicidial_inbound_callback_queue table 
-				$stmtA = "INSERT INTO vicidial_inbound_callback_queue SET icbq_date=NOW(),icbq_status='NEW',icbq_phone_number='$phone_number',icbq_phone_code='$phone_code',icbq_nextday_choice='U',lead_id='$insert_lead_id',group_id='$channel_group',queue_priority='$queue_priority',call_date='$SQLdateBEGIN',gmt_offset_now='$local_gmt';";
-				$affected_rows = $dbhA->do($stmtA);
-					$dbhP=$dbhA;   $mysql_count='02228';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
+				$stmtC = "INSERT INTO vicidial_inbound_callback_queue SET icbq_date=NOW(),icbq_status='NEW',icbq_phone_number='$phone_number',icbq_phone_code='$phone_code',icbq_nextday_choice='U',lead_id='$insert_lead_id',group_id='$channel_group',queue_priority='$queue_priority',call_date='$SQLdateBEGIN',gmt_offset_now='$local_gmt';";
+				$affected_rows = $dbhA->do($stmtC);
+					$dbhP=$dbhA;   $stmtA=$stmtC;   $mysql_count='02228';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 				$stmtB = "SELECT LAST_INSERT_ID() LIMIT 1;";
 				$sthA = $dbhA->prepare($stmtB) or die "preparing: ",$dbhA->errstr;
 				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -5155,7 +5155,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 					}
 				$sthA->finish();
 
-				if ($AGILOG) {$agi_string = "VDAD vicidial_inbound_callback_queue insert |$CALLBACK_insert_icbq_id|$stmtA|";   &agi_output;}
+				if ($AGILOG) {$agi_string = "VDAD vicidial_inbound_callback_queue insert |$CALLBACK_insert_icbq_id|$stmtC|";   &agi_output;}
 
 				$DROPexten = "8300";
 
@@ -5636,9 +5636,9 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 					if ( ( length($phone_number) > 6 ) && ( $phone_number > 0) )
 						{
 						### insert a record into the vicidial_inbound_callback_queue table 
-						$stmtA = "INSERT INTO vicidial_inbound_callback_queue SET icbq_date=NOW(),icbq_status='NEW',icbq_phone_number='$phone_number',icbq_phone_code='$phone_code',icbq_nextday_choice='U',lead_id='$insert_lead_id',group_id='$channel_group',queue_priority='$queue_priority',call_date='$SQLdateBEGIN',gmt_offset_now='$local_gmt';";
-						$affected_rows = $dbhA->do($stmtA);
-							$dbhP=$dbhA;   $mysql_count='02230';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
+						$stmtC = "INSERT INTO vicidial_inbound_callback_queue SET icbq_date=NOW(),icbq_status='NEW',icbq_phone_number='$phone_number',icbq_phone_code='$phone_code',icbq_nextday_choice='U',lead_id='$insert_lead_id',group_id='$channel_group',queue_priority='$queue_priority',call_date='$SQLdateBEGIN',gmt_offset_now='$local_gmt';";
+						$affected_rows = $dbhA->do($stmtC);
+							$dbhP=$dbhA;   $stmtA=$stmtC;   $mysql_count='02230';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 						$stmtB = "SELECT LAST_INSERT_ID() LIMIT 1;";
 						$sthA = $dbhA->prepare($stmtB) or die "preparing: ",$dbhA->errstr;
 						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -5651,7 +5651,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 							}
 						$sthA->finish();
 
-						if ($AGILOG) {$agi_string = "VDAD vicidial_inbound_callback_queue insert |$CALLBACK_insert_icbq_id|$stmtA|";   &agi_output;}
+						if ($AGILOG) {$agi_string = "VDAD vicidial_inbound_callback_queue insert |$CALLBACK_insert_icbq_id|$stmtC|";   &agi_output;}
 
 						$DROPexten = "8300";
 
@@ -6145,9 +6145,9 @@ if ($closing_check > 0)
 		if ( ( length($phone_number) > 6 ) && ( $phone_number > 0) )
 			{
 			### insert a record into the vicidial_inbound_callback_queue table 
-			$stmtA = "INSERT INTO vicidial_inbound_callback_queue SET icbq_date=NOW(),icbq_status='NEW',icbq_phone_number='$phone_number',icbq_phone_code='$phone_code',icbq_nextday_choice='U',lead_id='$insert_lead_id',group_id='$channel_group',queue_priority='$queue_priority',call_date='$SQLdateBEGIN',gmt_offset_now='$local_gmt';";
-			$affected_rows = $dbhA->do($stmtA);
-				$dbhP=$dbhA;   $mysql_count='02239';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
+			$stmtC = "INSERT INTO vicidial_inbound_callback_queue SET icbq_date=NOW(),icbq_status='NEW',icbq_phone_number='$phone_number',icbq_phone_code='$phone_code',icbq_nextday_choice='U',lead_id='$insert_lead_id',group_id='$channel_group',queue_priority='$queue_priority',call_date='$SQLdateBEGIN',gmt_offset_now='$local_gmt';";
+			$affected_rows = $dbhA->do($stmtC);
+				$dbhP=$dbhA;   $stmtA=$stmtC;   $mysql_count='02239';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 			$stmtB = "SELECT LAST_INSERT_ID() LIMIT 1;";
 			$sthA = $dbhA->prepare($stmtB) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -6160,7 +6160,7 @@ if ($closing_check > 0)
 				}
 			$sthA->finish();
 
-			if ($AGILOG) {$agi_string = "VDAD vicidial_inbound_callback_queue insert |$CALLBACK_insert_icbq_id|$stmtA|";   &agi_output;}
+			if ($AGILOG) {$agi_string = "VDAD vicidial_inbound_callback_queue insert |$CALLBACK_insert_icbq_id|$stmtC|";   &agi_output;}
 
 			$DROPexten = "8300";
 

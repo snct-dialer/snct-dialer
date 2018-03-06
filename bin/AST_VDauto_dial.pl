@@ -127,6 +127,7 @@
 # 170915-1817 - Added support for per server routing prefix needed for Asterisk 13+
 # 180130-1346 - Added inbound_no_agents_no_dial campaign options
 # 180214-1559 - Added CID Group functionality
+# 180301-1338 - Small changes for Inbound Queue No Dial
 #
 
 ### begin parsing run-time options ###
@@ -373,6 +374,7 @@ while($one_day_interval > 0)
 		@DBIPexistcalls_IN_ALL=@MT;
 		@DBIPexistchats_IN_LIVE=@MT;
 		@DBIPexistcalls_IN_LIVE=@MT;
+		@DBIPexistcalls_QUEUE_LIVE=@MT;
 		@DBIPexistcalls_OUT=@MT;
 		@DBIPgoalcalls=@MT;
 		@DBIPmakecalls=@MT;
@@ -825,9 +827,26 @@ while($one_day_interval > 0)
 					$DBIPexistchats_IN_LIVE[$user_CIPct] = $aryA[0];
 					}
 				$sthA->finish();
+
+				$stmtA = "SELECT count(*) FROM vicidial_inbound_callback_queue where icbq_status IN('LIVE','SENDING','NEW') and group_id IN($DBIPclosercamp[$user_CIPct]);";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				if ($sthArows > 0)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$DBIPexistcalls_QUEUE_LIVE[$user_CIPct] = $aryA[0];
+					}
+				$sthA->finish();
 				}
 			else 
-				{$DBIPexistcalls_IN[$user_CIPct]=0;}
+				{
+				$DBIPexistcalls_IN[$user_CIPct]=0;
+				$DBIPexistcalls_IN_ALL[$user_CIPct]=0;
+				$DBIPexistcalls_IN_LIVE[$user_CIPct]=0;
+				$DBIPexistchats_IN_LIVE[$user_CIPct]=0;
+				$DBIPexistcalls_QUEUE_LIVE[$user_CIPct]=0;
+				}
 
 			### Check for inbound no-agents no-dial
 			$DBIPinbound_no_agents_no_dial_trigger[$user_CIPct]=0;
@@ -973,7 +992,7 @@ while($one_day_interval > 0)
 			if ($DBIPmakecalls[$user_CIPct] > 0) 
 				{$active_line_counter = ($DBIPmakecalls[$user_CIPct] + $active_line_counter);}
 
-			$event_string="$DBIPcampaign[$user_CIPct] $DBIPaddress[$user_CIPct]: Calls to place: $DBIPmakecalls[$user_CIPct] ($DBIPgoalcalls[$user_CIPct] - $DBIPexistcalls[$user_CIPct] [$DBIPexistcalls_IN[$user_CIPct] + $DBIPexistcalls_OUT[$user_CIPct]|$DBIPexistcalls_IN_ALL[$user_CIPct]|$DBIPexistcalls_IN_LIVE[$user_CIPct]]) $active_line_counter $MVT_msg";
+			$event_string="$DBIPcampaign[$user_CIPct] $DBIPaddress[$user_CIPct]: Calls to place: $DBIPmakecalls[$user_CIPct] ($DBIPgoalcalls[$user_CIPct] - $DBIPexistcalls[$user_CIPct] [$DBIPexistcalls_IN[$user_CIPct] + $DBIPexistcalls_OUT[$user_CIPct]|$DBIPexistcalls_IN_ALL[$user_CIPct]|$DBIPexistcalls_IN_LIVE[$user_CIPct]|$DBIPexistcalls_QUEUE_LIVE[$user_CIPct]]) $active_line_counter $MVT_msg";
 			$debug_string .= "$event_string\n";
 			&event_logger;
 
@@ -1089,9 +1108,9 @@ while($one_day_interval > 0)
 					&event_logger;
 					$DBIPtrunk_shortage[$user_CIPct] = 0;
 					}
-				if ( ( ($DBIPinbound_queue_no_dial[$user_CIPct] =~ /ENABLED/) && ($DBIPexistcalls_IN_LIVE[$user_CIPct] > 0) ) || ( ($DBIPinbound_queue_no_dial[$user_CIPct] =~ /CHAT/) && ($DBIPexistchats_IN_LIVE[$user_CIPct] > 0) ) )
+				if ( ( ($DBIPinbound_queue_no_dial[$user_CIPct] =~ /ENABLED|ALL_SERVERS/) && ( ($DBIPexistcalls_IN_LIVE[$user_CIPct] > 0) || ($DBIPexistcalls_QUEUE_LIVE[$user_CIPct] > 0) ) ) || ( ($DBIPinbound_queue_no_dial[$user_CIPct] =~ /CHAT/) && ($DBIPexistchats_IN_LIVE[$user_CIPct] > 0) ) )
 					{
-					$event_string="Inbound Queue No-Dial Override for Shortage |$DBIPexistcalls_IN_LIVE[$user_CIPct]|$DBIPtrunk_shortage[$user_CIPct]|";
+					$event_string="Inbound Queue No-Dial Override for Shortage |$DBIPexistcalls_IN_LIVE[$user_CIPct]|$DBIPexistcalls_QUEUE_LIVE[$user_CIPct]|$DBIPtrunk_shortage[$user_CIPct]|";
 					$debug_string .= "$event_string\n";
 					&event_logger;
 					$DBIPtrunk_shortage[$user_CIPct] = 0;
@@ -1139,9 +1158,9 @@ while($one_day_interval > 0)
 				}
 			else
 				{
-				if ( ( ($DBIPinbound_queue_no_dial[$user_CIPct] =~ /ENABLED/) && ($DBIPexistcalls_IN_LIVE[$user_CIPct] > 0) ) || ( ($DBIPinbound_queue_no_dial[$user_CIPct] =~ /CHAT/) && ($DBIPexistchats_IN_LIVE[$user_CIPct] > 0) ) )
+				if ( ( ($DBIPinbound_queue_no_dial[$user_CIPct] =~ /ENABLED|ALL_SERVERS/) && ( ($DBIPexistcalls_IN_LIVE[$user_CIPct] > 0) || ($DBIPexistcalls_QUEUE_LIVE[$user_CIPct] > 0) ) ) || ( ($DBIPinbound_queue_no_dial[$user_CIPct] =~ /CHAT/) && ($DBIPexistchats_IN_LIVE[$user_CIPct] > 0) ) )
 					{
-					$event_string="$DBIPcampaign[$user_CIPct] $DBIPexistcalls_IN_LIVE[$user_CIPct] $DBIPexistchats_IN_LIVE[$user_CIPct]: INBOUND QUEUE NO DIAL, NO DIALING ($DBIPinbound_queue_no_dial[$user_CIPct])";
+					$event_string="$DBIPcampaign[$user_CIPct] $DBIPexistcalls_IN_LIVE[$user_CIPct] $DBIPexistcalls_QUEUE_LIVE[$user_CIPct] $DBIPexistchats_IN_LIVE[$user_CIPct]: INBOUND QUEUE NO DIAL, NO DIALING ($DBIPinbound_queue_no_dial[$user_CIPct])";
 					&event_logger;
 					}
 				else

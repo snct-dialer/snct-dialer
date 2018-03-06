@@ -13,6 +13,7 @@
 # 170409-1553 - Added IP List validation code
 # 170823-2241 - Added HTML formatting and screen colors, fixed CSV output bug
 # 180206-2300 - Added option for displaying individual URL variables
+# 180301-2303 - Added DATA column to TEXT/HTML output, Added GET-AND-POST URL logging
 #
 
 $startMS = microtime();
@@ -702,10 +703,10 @@ if ($SUBMIT && $api_date_D && $api_date_T && $api_date_end_D && $api_date_end_T)
 	# print $stmt."\n";
 
 	$URL_header='';
-	$ASCII_border="+---------------------+--------------------------------+------------+----------------------+--------------------------------+------------+----------------------+----------+-----------+-----------+\n";
+	$ASCII_border="+---------------------+--------------------------------+------------+----------------------+--------------------------------+------------+----------------------+----------+-----------+----------------------+-----------+\n";
 	if ($show_urls)
 		{
-		$ASCII_border="+---------------------+--------------------------------+------------+----------------------+--------------------------------+------------+----------------------+----------+-----------+-----------+";
+		$ASCII_border="+---------------------+--------------------------------+------------+----------------------+--------------------------------+------------+----------------------+----------+-----------+----------------------+-----------+";
 
 		$container_id='API_LOG_URL_COLUMNS';
 		$container_stmt="select container_entry from vicidial_settings_containers where container_id='$container_id'";
@@ -731,7 +732,7 @@ if ($SUBMIT && $api_date_D && $api_date_T && $api_date_end_D && $api_date_end_T)
 	$TEXT.=sprintf("%110s", " ");
 	$TEXT.="<a href=\"$PHP_SELF?api_date_D=$api_date_D&api_date_T=$api_date_T&api_date_end_D=$api_date_end_D&api_date_end_T=$api_date_end_T$resultQS$functionQS$agent_userQS$userQS&file_download=1&show_urls=$show_urls&search_archived_data=$search_archived_data&SUBMIT=$SUBMIT\">"._QXZ("DOWNLOAD")."</a>\n";
 	$TEXT.=$ASCII_border;
-	$TEXT.="| <a href='$LINKbase&order_by=api_date'>"._QXZ("API DATE", 19)."</a> | <a href='$LINKbase&order_by=user'>"._QXZ("USER", 30)."</a> | <a href='$LINKbase&order_by=api_script'>"._QXZ("API SCRIPT", 10)."</a> | <a href='$LINKbase&order_by=function'>"._QXZ("FUNCTION", 20)."</a> | <a href='$LINKbase&order_by=agent_user'>"._QXZ("AGENT USER", 30)."</a> | <a href='$LINKbase&order_by=result'>"._QXZ("RESULT", 10)."</a> | <a href='$LINKbase&order_by=source'>"._QXZ("SOURCE", 20)."</a> | <a href='$LINKbase&order_by=run_time'>"._QXZ("RUN TIME", 8)."</a> | <a href='$LINKbase&order_by=webserver'>"._QXZ("WEBSERVER", 9)."</a> | <a href='$LINKbase&order_by=api_url'>"._QXZ("API URL", 9)."</a> | $URL_header\n";
+	$TEXT.="| <a href='$LINKbase&order_by=api_date'>"._QXZ("API DATE", 19)."</a> | <a href='$LINKbase&order_by=user'>"._QXZ("USER", 30)."</a> | <a href='$LINKbase&order_by=api_script'>"._QXZ("API SCRIPT", 10)."</a> | <a href='$LINKbase&order_by=function'>"._QXZ("FUNCTION", 20)."</a> | <a href='$LINKbase&order_by=agent_user'>"._QXZ("AGENT USER", 30)."</a> | <a href='$LINKbase&order_by=result'>"._QXZ("RESULT", 10)."</a> | <a href='$LINKbase&order_by=source'>"._QXZ("SOURCE", 20)."</a> | <a href='$LINKbase&order_by=run_time'>"._QXZ("RUN TIME", 8)."</a> | <a href='$LINKbase&order_by=webserver'>"._QXZ("WEBSERVER", 9)."</a> | <a href='$LINKbase&order_by=data'>"._QXZ("DATA", 20)."</a> | <a href='$LINKbase&order_by=api_url'>"._QXZ("API URL", 9)."</a> | $URL_header\n";
 	$TEXT.=$ASCII_border;
 
 	$HTML.="<BR><table border='0' cellpadding='3' cellspacing='1'>";
@@ -749,6 +750,7 @@ if ($SUBMIT && $api_date_D && $api_date_T && $api_date_end_D && $api_date_end_T)
 	$HTML.="<th><font size='2'>"._QXZ("SOURCE")."</font></th>";
 	$HTML.="<th><font size='2'>"._QXZ("RUN TIME")."</font></th>";
 	$HTML.="<th><font size='2'>"._QXZ("WEBSERVER")."</font></th>";
+	$HTML.="<th><font size='2'>"._QXZ("DATA")."</font></th>";
 	$HTML.="<th><font size='2'>"._QXZ("API URL")."</font></th>";
 
 
@@ -807,6 +809,7 @@ if ($SUBMIT && $api_date_D && $api_date_T && $api_date_end_D && $api_date_end_T)
 		$TEXT.=sprintf("%-20s", $source[$h])." | ";
 		$TEXT.=sprintf("%-8s", $run_time[$h])." | ";
 		$TEXT.=sprintf("%-9s", $webserver[$h])." | ";
+		$TEXT.=sprintf("%-20s", substr($data[$h],0,20))." | ";
 		$TEXT.=sprintf("%-9s", $api_url[$h])." | ";
 
 		$HTML.="<tr bgcolor='#".$SSstd_row2_background."'>";
@@ -819,6 +822,7 @@ if ($SUBMIT && $api_date_D && $api_date_T && $api_date_end_D && $api_date_end_T)
 		$HTML.="<th><font size='2'>".$source[$h]."</font></th>";
 		$HTML.="<th><font size='2'>".$run_time[$h]."</font></th>";
 		$HTML.="<th><font size='2'>".$webserver[$h]."</font></th>";
+		$HTML.="<th><font size='2'>".sprintf("%-20s", substr($data[$h],0,20))."</font></th>";
 		$HTML.="<th><font size='2'>".$api_url[$h]."</font></th>";
 
 		if ($show_urls)
