@@ -29,11 +29,13 @@
         and options.php $INSERT_ variables
   * Add upstream Rev. 2931:
     - www/agc/vdc_db_query.php: Fix for LogiNCamPaigns function, removed
-        unnecesary onfocus trigger, issue #1074
+        unnecesary onfocus trigger, issue #1074.
   * Add upstream Rev. 2932:
     - agi/agi-VDAD_ALL_inbound.agi,
       bin/ADMIN_keepalive_ALL.pl: Added more teodDB logging.
     - bin/AST_VDauto_dial.pl: Small changes for Inbound Queue No Dial.
+  * Add upstream Rev. 2933:
+    - bin/AST_VDhopper.pl: Fix to allow for commented(#) lines in filters.
 
   [Frank Gorgas-Waller]
   * Add Agent Prefix (2018-004):
