@@ -44,6 +44,11 @@
       www/vicidial/non_agent_api.php: Added GET-AND-POST URL logging.
     - www/vicidial/AST_API_log_report.php: Added DATA column to TEXT/HTML
         output, Added GET-AND-POST URL logging
+  * Add upstream Rev. 2936:
+    - www/vicidial/admin_modify_lead.php,
+      New bin/AST_GDPR_audio_purge.pl,
+	  New docs/EU_GDPR_COMPLIANCE.txt: Added complete GDPR compliance
+        features.
 
   [Frank Gorgas-Waller]
   * Add Agent Prefix (2018-004):
