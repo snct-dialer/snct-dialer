@@ -51,6 +51,9 @@
         features.
   * Add upstream Rev. 2937:
     - www/agc/vicidial.php: Fix for pause code issue.
+  * New config file (2018-005):
+    - install.pl: Add handling for /etc/flyingpenguin/vicidial.conf.
+    - New extras/master.conf: master configuration.
 
   [Frank Gorgas-Waller]
   * Add Agent Prefix (2018-004):
