@@ -36,6 +36,9 @@
     - bin/AST_VDauto_dial.pl: Small changes for Inbound Queue No Dial.
   * Add upstream Rev. 2933:
     - bin/AST_VDhopper.pl: Fix to allow for commented(#) lines in filters.
+  * Add upstream Rev. 2934:
+    - www/vicidial/admin_bulk_tools.php: Fixed issue with STATE CID Groups
+        insertion.
 
   [Frank Gorgas-Waller]
   * Add Agent Prefix (2018-004):

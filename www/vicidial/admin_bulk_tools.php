@@ -21,13 +21,14 @@
 # 170409-1552 - Added IP List validation code
 # 170915-1105 - Added IGNORE to bulk inserts to not error out entire statement if only one entry is a unique index duplicate
 # 180213-2245 - Added CID Groups ability for AC-CID section
+# 180301-1538 - Fixed issue with STATE CID Groups insertion
 #
 
 require("dbconnect_mysqli.php");
 require("functions.php");
 
-$version = '2.14-15';
-$build = '180213-2245';
+$version = '2.14-16';
+$build = '180301-1538';
 
 $PHP_AUTH_USER=$_SERVER['PHP_AUTH_USER'];
 $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
@@ -85,7 +86,7 @@ if ($ACCIDmethod == "CSV")
 		$ACCIDdescription_raw[$i] = $ACCIDrow[2];
 		$i++;
 		}
-	$ACCIDareacode_raw = preg_replace('/[^0-9]/','',$ACCIDareacode_raw);
+	$ACCIDareacode_raw = preg_replace('/[^0-9a-zA-Z]/','',$ACCIDareacode_raw);
 	$ACCIDto_insert_raw = preg_replace('/[^0-9]/','',$ACCIDto_insert_raw);
 	$ACCIDto_insert_raw_ArFilter = array_filter($ACCIDto_insert_raw);
 	$ACCIDdescription_raw = preg_replace('/[^-_.0-9a-zA-Z ]/','',$ACCIDdescription_raw);
