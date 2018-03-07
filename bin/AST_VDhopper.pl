@@ -89,10 +89,11 @@
 # 150908-1544 - Added debug output for vendor_lead_code duplicate rejections count
 # 170531-0837 - Fixed issue #1019
 # 180111-1559 - Added anyone_callback_inactive_lists option
+# 180301-1453 - Fix to allow for commented(#) lines in filters
 #
 
 # constants
-$build = '180111-1559';
+$build = '180301-1453';
 $DB=0;  # Debug flag, set to 0 for no debug messages. Can be overriden with CLI --debug flag
 $US='__';
 $MT[0]='';
@@ -2440,6 +2441,7 @@ foreach(@campaign_id)
 			else
 				{
 				$lead_filter_sql[$i] =~ s/^and|and$|^or|or$|^ and|and $|^ or|or $//gi;
+				$lead_filter_sql[$i] =~ s/#.*\n//gi;
 				$lead_filter_sql[$i] =~ s/\r|\n|\t/ /gi;
 				$lead_filter_sql[$i] = "and ($lead_filter_sql[$i])";
 				if ($DB) {print "     lead filter $lead_filter_id[$i] defined for $campaign_id[$i]\n";}

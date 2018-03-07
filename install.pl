@@ -54,6 +54,11 @@
 # default path to astguiclient configuration file:
 $defaultPATHconf =		'/etc/astguiclient.conf';
 $PATHconf =		$defaultPATHconf;
+$defaultPATHconfNew =		'/etc/flyingpenguin/vicidial.conf';
+$PATHconfNew =		$defaultPATHconfNew;
+$defaultPATHmasterConf = 	'extras/master.conf';
+$PATHmasterConf =	$defaultPATHmasterConf;
+
 # default path to home directory:
 $PATHhome =		'/usr/share/astguiclient';
 # default path to astguiclient logs directory: 
@@ -342,7 +347,7 @@ if (length($ARGV[0])>1)
 				$PATHDONEmonitor =~ s/\/$| |\r|\n|\t//gi;
 				$CLIDONEmonitor=1;
 				print "  CLI defined DONEmonitor:    $PATHDONEmonitor\n";
-				}
+		}
 			}
 		if ($args =~ /--server_ip=/i) # CLI defined server IP address
 			{
@@ -2458,6 +2463,60 @@ print conf "\n";
 print conf "# Expected DB Schema version for this install\n";
 print conf "ExpectedDBSchema => $ExpectedDBSchema\n";
 close(conf);
+
+
+print "Writing to configuration file: $PATHconfNew\n";
+
+if (!-e "/etc/flyingpenguin")	{`mkdir -p "/etc/flyingpenguin"`;}
+if (!-e $PATHconfNew)	{`cp $PATHmasterConf  $PATHconfNew`}
+
+use Config::IniFiles;
+
+my $master  = Config::IniFiles->new(-file => $PATHmasterConf);
+my $cfg = Config::IniFiles->new( -file => $PATHconfNew, -import => $master);
+
+$cfg->newval("Database", "VARDB_server", $VARDB_server);
+$cfg->newval("Database", "VARDB_database", $VARDB_database);
+$cfg->newval("Database", "VARDB_port", $VARDB_port);
+$cfg->newval("Database", "VARDB_user", $VARDB_user);
+$cfg->newval("Database", "VARDB_pass", $VARDB_pass);
+$cfg->newval("Database", "VARDB_custom_user", $VARDB_custom_user);
+$cfg->newval("Database", "VARDB_custom_pass", $VARDB_custom_pass);
+
+$cfg->newval("Path", "PATHhome", $PATHhome);
+$cfg->newval("Path", "PATHlogs", $PATHlogs);
+$cfg->newval("Path", "PATHagi", $PATHagi);
+$cfg->newval("Path", "PATHweb", $PATHweb);
+$cfg->newval("Path", "PATHsounds", $PATHsounds);
+$cfg->newval("Path", "PATHmonitor", $PATHmonitor);
+$cfg->newval("Path", "PATHDONEmonitor", $PATHDONEmonitor);
+
+$cfg->newval("Setup", "VARactive_keepalives", $VARactive_keepalives);
+$cfg->newval("Setup", "VARasterisk_version", $VARasterisk_version);
+$cfg->newval("Setup", "ExpectedDBSchema",$ExpectedDBSchema);
+
+$cfg->newval("FTP", "VARFTP_host", $VARFTP_host);
+$cfg->newval("FTP", "VARFTP_user", $VARFTP_user);
+$cfg->newval("FTP", "VARFTP_pass", $VARFTP_pass);
+$cfg->newval("FTP", "VARFTP_port", $VARFTP_port);
+$cfg->newval("FTP", "VARFTP_dir", $VARFTP_dir);
+$cfg->newval("FTP", "VARHTTP_path", $VARHTTP_path);
+
+$cfg->newval("Report", "VARREPORT_host", $VARREPORT_host);
+$cfg->newval("Report", "VARREPORT_user", $VARREPORT_user);
+$cfg->newval("Report", "VARREPORT_pass", $VARREPORT_pass);
+$cfg->newval("Report", "VARREPORT_port", $VARREPORT_port);
+$cfg->newval("Report", "VARREPORT_dir", $VARREPORT_dir);
+
+$cfg->newval("Fastagi", "VARfastagi_log_min_servers", $VARfastagi_log_min_servers);
+$cfg->newval("Fastagi", "VARfastagi_log_max_servers", $VARfastagi_log_max_servers);
+$cfg->newval("Fastagi", "VARfastagi_log_min_spare_servers", $VARfastagi_log_min_spare_servers);
+$cfg->newval("Fastagi", "VARfastagi_log_max_spare_servers", $VARfastagi_log_max_spare_servers);
+$cfg->newval("Fastagi", "VARfastagi_log_max_requests", $VARfastagi_log_max_requests);
+$cfg->newval("Fastagi", "VARfastagi_log_checkfordead", $VARfastagi_log_checkfordead);
+$cfg->newval("Fastagi", "VARfastagi_log_checkforwait", $VARfastagi_log_checkforwait);
+
+$cfg->WriteConfig($PATHconfNew);
 
 
 print "\nSTARTING ASTGUICLIENT INSTALLATION PHASE...\n";

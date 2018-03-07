@@ -1,31 +1,23 @@
 <?php 
-# AST_stat_callback.php
+# AST_stat_usergroup.php
 # 
-# Copyright (C) 2018 Jörg Frings-Fürst <jff@flyingpenguim.de>    
-#               2018 flyingpenguin UG <info@flyingpenguin.de> 
+# Copyright (C) 2016-2018 Jörg Frings-Fürst <jff@flyingpenguim.de>    
+#               2016-2018 flyingpenguin UG <info@flyingpenguin.de> 
 #
 # LICENSE: AGPLv2
 #
-# Callback stats
+# Usergroup stats for XPRESS
 # 
 # CHANGELOG:
-# 2018-27-01 - Inital release   
-# 2018-02-01 - First Release
-#            - Add download
-# 2018-02-02 - Add fields from lead
-#            - Add company to title
-#            - Add Laufzeit
-# 2018-02-20 - Add ListId, ListMName and List activ
-# 2018-02-27 - Add Kundennummer from vendor_lead_code
-#
+# 2016-12-13 - Inital release   
+# 2017-01-11 - First Release
+# 2017-01-12 - Zusammenfassung Dispo & Dead, Add Group, change order, add calendar
+# 2018-01-22 - Umstellung auf Liveberechnung und auf alle selectierbaren Stati
+#            - Login_Time test auf doppeltes Logout
+# 2018-01-24 - Neu Zeitraum & Download
 
-#
-# ToDo
-# - Fortschrittsbalken
-# 
-
-$copyr = "2018 flyingpenguin.de UG, Jörg Frings-Fürst (AGPLv2)";
-$release = '20180227-2';
+$copyr = "2016-2018 flyingpenguin.de UG, Jörg Frings-Fürst (AGPLv2)";
+$release = '20180124-4';
 
 header ("Content-type: text/html; charset=utf-8");
 
@@ -42,13 +34,16 @@ if (isset($_GET["DateVon"]))			{$DateVon=$_GET["DateVon"];}
 	elseif (isset($_POST["DateVon"]))	{$DateVon=$_POST["DateVon"];}
 if (isset($_GET["DateBis"]))			{$DateBis=$_GET["DateBis"];}
 	elseif (isset($_POST["DateBis"]))	{$DateBis=$_POST["DateBis"];}
+if (isset($_GET["user_group"]))			{$UserGroup=$_GET["user_group"];}
+	elseif (isset($_POST["user_group"]))	{$UserGroup=$_POST["user_group"];}
 
 
-$report_name = 'Callback Stats';
+$report_name = 'Usergroup Agenten Stat';
 $db_source = 'M';
-$DB = 0;
 
-$DLDir = "stats/";
+$ArrStati = array();
+$ArrStatiIdx = array();
+$DLDir = "download/";
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
@@ -82,7 +77,24 @@ if ( (strlen($slave_db_server)>5) and (preg_match("/$report_name/",$reports_use_
 	}
 
 if (!isset($DB))			{$DB=0;}
+if (!isset($RR))			{$RR=40;}
+if (!isset($group))			{$group='ALL-ACTIVE';}
+if (!isset($user_group_filter))		{$user_group_filter='';}
+if (!isset($usergroup))		{$usergroup='';}
+if (!isset($UGdisplay))		{$UGdisplay=0;}	# 0=no, 1=yes
+if (!isset($UidORname))		{$UidORname=1;}	# 0=id, 1=name
+if (!isset($orderby))		{$orderby='timeup';}
+if (!isset($SERVdisplay))	{$SERVdisplay=0;}	# 0=no, 1=yes
+if (!isset($CALLSdisplay))	{$CALLSdisplay=1;}	# 0=no, 1=yes
+if (!isset($PHONEdisplay))	{$PHONEdisplay=0;}	# 0=no, 1=yes
+if (!isset($CUSTPHONEdisplay))	{$CUSTPHONEdisplay=1;}	# 0=no, 1=yes
+if (!isset($PAUSEcodes))	{$PAUSEcodes='N';}  # 0=no, 1=yes
+if (!isset($with_inbound))	{$with_inbound='M';}
 
+$ingroup_detail='';
+
+if ( (strlen($group)>1) and (strlen($groups[0])<1) ) {$groups[0] = $group;  $RR=40;}
+else {$group = $groups[0];}
 
 $NOW_TIME = date("Y-m-d H:i:s");
 $NOW_DAY = date("Y-m-d");
@@ -100,6 +112,8 @@ $epochSIXhoursAGO = ($STARTtime - 21600);
 $timeSIXhoursAGO = date("Y-m-d H:i:s",$epochSIXhoursAGO);
 $epochTWENTYFOURhoursAGO = ($STARTtime - 86400);
 $timeTWENTYFOURhoursAGO = date("Y-m-d H:i:s",$epochTWENTYFOURhoursAGO);
+
+
 
 
 if ($non_latin < 1)
@@ -176,14 +190,16 @@ else
 $test_ip = $_SERVER['SERVER_ADDR'];	
 $doc_root = $_SERVER['DOCUMENT_ROOT'];
 
+
 $loadn = sys_getloadavg();
 if ($loadn[0] > 2.0) {
-#		header('HTTP/1.1 503 Too busy, try again later');
+	header('HTTP/1.1 503 Too busy, try again later');
 	echo "Serverauslastung (".$loadn[0].") zu hoch! Versuchen Sie es später noch einmal." . PHP_EOL;
 	exit;
 }
 
-	
+
+
 $stmt="SELECT user_id,user,pass,full_name,user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit,add_timeclock_log,modify_timeclock_log,delete_timeclock_log,alter_custphone_override,vdc_agent_api_access,modify_inbound_dids,delete_inbound_dids,active,alert_enabled,download_lists,agent_shift_enforcement_override,manager_shift_enforcement_override,shift_override_flag,export_reports,delete_from_dnc,email,user_code,territory,allow_alerts,callcard_admin,force_change_password,modify_shifts,modify_phones,modify_carriers,modify_labels,modify_statuses,modify_voicemail,modify_audiostore,modify_moh,modify_tts,modify_contacts,modify_same_user_level from vicidial_users where user='$PHP_AUTH_USER';";
 $rslt=mysql_to_mysqli($stmt, $link);
 $row=mysqli_fetch_row($rslt);
@@ -654,13 +670,13 @@ else
 
 	echo "\n-->\n
 	</STYLE>\n";
-	$title = AddCompany2Title($report_name);
+
 	echo "<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
 	echo "<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 	
 	echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 	#echo"<META URL=$PHP_SELF?RR=$RR&DB=$DB$groupQS&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal\">\n";
-	echo "<TITLE>$title</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
+	echo "<TITLE>$report_name: $group</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 
 		$short_header=1;
 
@@ -668,68 +684,182 @@ else
 
 	}
 
-
-#
-# Ab hier Auswertung
-#
-
-#
-# function GetList
-#
-# Parameter:
-# - LeadID
-#
-# Return:
-# - mysqli row if found
-# - false if not found
-#
-# Use:
-#
-# - $DB for additional Output
-# - $link Mysqli link
+function GetLoginTime($agent, $datum_von, $datum_bis) {
+    global $DB, $link;
+	    
+	$start_date = $datum_von . " 00:00:00";
+	$end_date   = $datum_bis . " 23:59:59";
+	   
+	$ep_start = 0;
+	$eo_end   = 0;
+	$ep_sum   = 0;
+	    
+	$statement = "SELECT * FROM vicidial_user_log  WHERE user = $agent AND event_date >= \"$start_date\" AND event_date <= \"$end_date\";";
+	if ($DB) print "$statement\n";
+	$result = mysqli_query($link, $statement) or die ("Error : " . mysqli_error($link));
+	while ($row = mysqli_fetch_array($result, MYSQLI_BOTH)) {
+	   if($row["event"] == "LOGIN") {
+	       $ep_start = $row["event_epoch"];
+	   }
+	   if(($row["event"] == "LOGOUT") && ($ep_start > 0)){
+	       $ep_end = $row["event_epoch"];
+	            
+	   }
+	   if(($ep_start > 0) && ($ep_end > 0)) {
+	       $ep_sum = $ep_sum + ($ep_end - $ep_start);
+	       $ep_end = 0;
+	       $ep_start = 0;
+	   }
+    }
+	if(($ep_start > 0) && ($ep_end == 0)) {
+	   $ep_end = time();
+	   $ep_sum = $ep_sum + ($ep_end - $ep_start);
+    }
+	return $ep_sum;
+}
 	
-	function GetList($ListId) {
-		global $DB, $link;
-		
-		$statement = "SELECT * FROM vicidial_lists WHERE list_id = \"$ListId\";";
-		if ($DB) print "$statement\n";
-		$result = mysqli_query($link, $statement) or die ("Error : " . mysqli_error($link));
-		$row = mysqli_fetch_array($result, MYSQLI_BOTH);
-		
-		return $row;
-		
-	}
-
-#
-# function GetLead
-#
-# Parameter:
-# - LeadID
-#
-# Return:
-# - mysqli row if found
-# - false if not found
-#
-# Use:
-#
-# - $DB for additional Output
-# - $link Mysqli link
-
-function GetLead($LeadId) {
-	global $DB, $link;
 	
-	$statement = "SELECT * FROM vicidial_list WHERE lead_id = \"$LeadId\";";
+	
+function GetAnz($agent, $datum_von, $datum_bis, $type) {
+    global $DB, $link;
+	    
+	$start_date = $datum_von . " 00:00:00";
+	$end_date   = $datum_bis . " 23:59:59";
+	if($type == "Pause") $field = "pause_sec";
+	if($type == "Wait") $field = "wait_sec";
+	if($type == "Dispo") $field = "dispo_sec";
+	if($type == "Dead") $field = "dead_sec";
+	if($type == "Talk") $field = "talk_sec";
+	    
+	$statement = "SELECT COUNT($field) FROM vicidial_agent_log  WHERE user = $agent AND $field > 0 AND event_time >= \"$start_date\" AND event_time <= \"$end_date\";";
 	if ($DB) print "$statement\n";
 	$result = mysqli_query($link, $statement) or die ("Error : " . mysqli_error($link));
 	$row = mysqli_fetch_array($result, MYSQLI_BOTH);
-	
+	    
 	return $row;
-	
 }
 
-#
-# move to sep. file
-#
+function GetUserGroups() {
+    global $DB, $link;
+    
+    $statement = "SELECT * FROM vicidial_user_groups;";
+    if ($DB) print "$statement\n";
+    $result = mysqli_query($link, $statement) or die ("Error : " . mysqli_error($link));
+    
+    return $result;
+}
+
+function GetSum($agent, $datum_von, $datum_bis, $type) {
+    global $DB, $link;
+    
+    $start_date = $datum_von . " 00:00:00";
+    $end_date   = $datum_bis . " 23:59:59";
+    if($type == "Pause") $field = "pause_sec";
+    if($type == "Wait") $field = "wait_sec";
+    if($type == "Dispo") $field = "dispo_sec";
+    if($type == "Dead") $field = "dead_sec";
+    if($type == "Talk") $field = "talk_sec";
+    
+    $statement = "SELECT SUM($field) FROM vicidial_agent_log  WHERE user = $agent AND event_time >= \"$start_date\" AND event_time <= \"$end_date\";";
+    if ($DB) print "$statement\n";
+    $result = mysqli_query($link, $statement) or die ("Error : " . mysqli_error($link));
+    $row = mysqli_fetch_array($result, MYSQLI_BOTH);
+    
+    return $row;
+}
+
+function GetAnzStati($agent, $datum_von, $datum_bis, $stati) {
+    global $DB, $link;
+    
+    $start_date = $datum_von . " 00:00:00";
+    $end_date   = $datum_bis . " 23:59:59";
+    
+    $statement = "SELECT COUNT(status) FROM vicidial_agent_log  WHERE user = $agent AND status = \"$stati\" AND event_time >= \"$start_date\" AND event_time <= \"$end_date\";";
+    if ($DB) print "$statement\n";
+    $result = mysqli_query($link, $statement) or die ("Error : " . mysqli_error($link));
+    $row = mysqli_fetch_array($result, MYSQLI_BOTH);
+    
+    return $row;
+}
+
+
+
+function GetFinalStati() {
+    global $ArrStati, $ArrStatiIdx, $link;
+    
+    $stmt = "SELECT * FROM `vicidial_statuses` WHERE `selectable` = 'Y';";
+    $rslt=mysql_to_mysqli($stmt, $link);
+    if ($DB) {echo "$stmt\n";}
+    $Num = mysqli_num_rows($rslt);
+    if ($Num > 0) {
+        $pos = 0;
+        while($row = mysqli_fetch_assoc($rslt)){
+            $name = $row["status_name"];
+            $ArrStati[$pos] = $name;
+            $ArrStatiIdx[$pos] = $row["status"];
+            $pos++;
+        }
+         
+        
+    }
+ #  print_r($ArrStatiIdx);
+    
+}
+
+function GetRueckbuchungen($ClientID, $datum_von, $datum_bis) {
+	global $DB, $link;
+	
+	$start_date = $datum_von;
+	$end_date   = $datum_bis;
+	
+	$statement = "SELECT betrag, datum FROM fly_crm.rueck_last WHERE m_ID = \"$ClientID\" AND datum >= \"$start_date\" AND datum <= \"$end_date\";";
+	if ($DB)
+		print "$statement\n";
+		$result = mysqli_query($link, $statement) or die ("Error : " . mysqli_error($link));
+		#$row = mysqli_fetch_array($result, MYSQLI_BOTH);
+		
+		return $result;
+}
+
+function GetBuchungen($ClientID, $datum_von, $datum_bis) {
+    global $DB, $link;
+    
+    $start_date = $datum_von;
+    $end_date   = $datum_bis;
+    
+    $statement = "SELECT Betrag, Termin FROM fly_crm.buchungs_anforderungen WHERE VWZ1 LIKE \"%$ClientID\" AND Termin >= \"$start_date\" AND Termin <= \"$end_date\";";
+    if ($DB) 
+        print "$statement\n";
+    $result = mysqli_query($link, $statement) or die ("Error : " . mysqli_error($link));
+    #$row = mysqli_fetch_array($result, MYSQLI_BOTH);
+    
+    return $result;
+}
+
+function GetClient($LeadId) {
+    global $DB, $link;
+    
+    $statement = "SELECT * FROM fly_crm.clients WHERE lead_id = \"$LeadId\"";
+    if ($DB) 
+        print "$statement\n";
+    $result = mysqli_query($link, $statement) or die ("Error : " . mysqli_error($link));
+    if ( mysqli_num_rows($result) > 0) {
+        $row = mysqli_fetch_array($result, MYSQLI_BOTH);
+#        print_r ($row);
+        return $row;
+    }
+    return -1;
+}
+
+function makeDownload($file, $dir, $type) {
+    
+    header("Content-Type: $type");
+    
+    header("Content-Disposition: attachment; filename=\"$file\"");
+    
+    readfile($dir.$file);
+    
+} 
 
 function formatSec($sekunden) {
 
@@ -757,43 +887,116 @@ function formatSec($sekunden) {
 	
 	return "$strStunden:$strMinuten:$strSekunden";
 }
-
-
-#
-# Main loop
-#
-
-$stmt = "SELECT * FROM vicidial_callbacks WHERE status NOT IN (\"INACTIVE\") ORDER BY campaign_id, callback_time";
-$rslt=mysql_to_mysqli($stmt, $link);
-if ($DB) {
-	echo "$stmt\n";
+	
+if ($DateVon == "") {
+	$DateVon = date("Y-m-d", time()-86400);	
 }
-$cb_to_print = mysqli_num_rows($rslt);
 
-echo "<h1>Callbacks Übersicht</h1>" . PHP_EOL;
+if ($DateBis == "") {
+    $DateBis = date("Y-m-d", time()-86400);
+}
 
 
-if($cb_to_print < 1) {
+# GetFinalStati();
+
+$agents_to_print = 0;
+
+if($UserGroup != "") {
+
+    $stmt = "SELECT lead_id,first_name,last_name FROM vicidial_list WHERE user in (SELECT user FROM vicidial_users WHERE user_group = \"$UserGroup\") OR owner in (SELECT user FROM vicidial_users WHERE user_group = \"$UserGroup\")";
+    $rslt=mysql_to_mysqli($stmt, $link);
+    if ($DB) {
+	   echo "$stmt\n";
+    }
+    $agents_to_print = mysqli_num_rows($rslt);
+}
+
+echo "<h1>Agentur Übersicht</h1>" . PHP_EOL;
+echo "<form name=Datum id=Datum>" .PHP_EOL;
+echo " <label for=\"DateVon\">Datum (JJJJ-MM-TT)</label>" . PHP_EOL; 
+echo " <input type=\"date\" name=\"DateVon\" id=\"DateVon\" value=\"$DateVon\" size=\"10\"> " . PHP_EOL;
+
+?>
+
+<script language="JavaScript">
+function openNewWindow(url)
+{
+	window.open (url,"",'width=620,height=300,scrollbars=yes,menubar=yes,address=yes');
+}
+
+var o_cal = new tcal ({
+	// form name
+	'formname': 'Datum',
+	// input name
+	'controlname': 'DateVon'
+});
+o_cal.a_tpl.yearscroll = false;
+// o_cal.a_tpl.weekstart = 1; // Monday week start
+</script>
+
+<?php
+
+
+echo " <label for=\"DateBis\">Datum (JJJJ-MM-TT)</label>" . PHP_EOL;
+echo " <input type=\"date\" name=\"DateBis\" id=\"DateBis\" value=\"$DateBis\" size=\"10\"> " . PHP_EOL;
+
+
+?>
+
+<script language="JavaScript">
+function openNewWindow(url)
+{
+	window.open (url,"",'width=620,height=300,scrollbars=yes,menubar=yes,address=yes');
+}
+
+var o_cal = new tcal ({
+	// form name
+	'formname': 'Datum',
+	// input name
+	'controlname': 'DateBis'
+});
+o_cal.a_tpl.yearscroll = false;
+// o_cal.a_tpl.weekstart = 1; // Monday week start
+</script>
+
+<?php
+
+$UGres = GetUserGroups();
+
+echo "<select multiple name=\"user_group[]\">";
+$pos = 0;
+$ug_to_print = mysqli_num_rows($UGres);
+
+while($pos < $ug_to_print) {
+    $UGrow=mysqli_fetch_row($UGres);
+    if($UserGroup == $UGrow[0]) {
+        echo "<option selected value='$UGrow[0]'>$UGrow[1]</option>";
+    } else {
+        echo "<option value='$UGrow[0]'>$UGrow[1]</option>";
+    }
+    $pos++;
+} 
+echo "</select>";
+
+echo " <button type=\"submit\">Absenden</button>" . PHP_EOL;
+echo "</form>" . PHP_EOL;
+
+$SumZahlungen = 0.0;
+$SumRuecklast = 0.0;
+
+print_r( $UserGroup ) . PHP_EOL;
+
+if($agents_to_print < 1) {
 	$AgentsPrint = "keine Daten!";
 }
 else {	
 	$AgentsPrint = "<TABLE border=\"0\">" . PHP_EOL;
 	$AgentsPrint .= " <TR bgcolor=\"f6fba5\">" . PHP_EOL;
-	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Campaign</font></TH>" . PHP_EOL;
-	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">List</font></TH>" . PHP_EOL;
-	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">List activ</font></TH>" . PHP_EOL;
-	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Callback Time</font></TH>" . PHP_EOL;
-	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Status</font></TH>" . PHP_EOL;
-	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Agent</font></TH>" . PHP_EOL;
-	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Typ</font></TH>" . PHP_EOL;
-	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">LeadStatus</font></TH>" . PHP_EOL;
-	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Lead ID</font></TH>" . PHP_EOL;
-	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Kundennummer</font></TH>" . PHP_EOL;
+	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Kundennr.</font></TH>" . PHP_EOL;
 	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Name</font></TH>" . PHP_EOL;
-	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Telefon</font></TH>" . PHP_EOL;
-	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Calls</font></TH>" . PHP_EOL;
-	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Comment</font></TH>" . PHP_EOL;
-	$CSVPrint = "Kampagne|List|List activ|Callback Zeit|Status|Agent|Typ|Lead - Status|Lead ID|Kundennummer|Name|Telefon|Calls|Comment";
+	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Datum</font></TH>" . PHP_EOL;
+	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Betrag</font></TH>" . PHP_EOL;
+	$CSVPrint = "Kundennr.|Name|Datum|Betrag";
 	$AgentsPrint .= " </TR>" . PHP_EOL;
 	$CSVPrint .= PHP_EOL;
 
@@ -801,9 +1004,84 @@ else {
 	$farb = 0;
 	$sBackCol1 = "ccff99";
 	$sBackCol2 = "ccf5ff";
-	while($pos < $cb_to_print) {
+	while($pos < $agents_to_print) {
+		
+	    $row=mysqli_fetch_array($rslt, MYSQLI_BOTH);
+		
+        $CLrow = GetClient($row[lead_id]);
+        
+        if ($CLrow != -1) {
+            
+#		$printFarbe =
+		#if($Talk_Anz[0] >0 ) {
+		    if($farb == 0) {
+		        $farb = 1;
+		        $printFarbe = $sBackCol1;
+		    }
+		    else {
+		        $farb = 0;
+		        $printFarbe = $sBackCol2;
+		        
+		    }
+		#}
+		$AgentsPrint .= " <TR bgcolor=$printFarbe>" . PHP_EOL;	
+		$AgentsPrint .= "  <TD nowrap>$CLrow[client_id]</TD> " . PHP_EOL;
+		$AgentsPrint .= "  <TD nowrap>$row[first_name] $row[last_name]</TD> " . PHP_EOL;
+		$CSVPrint .= "$CLrow[client_id]|$row[first_name] $row[last_name]";
+		$bPos = 0;
+		$BUres = GetBuchungen($CLrow[client_id], $DateVon, $DateBis);
+		if(mysqli_num_rows($BUres) > 0) {
+		    while ($bPos < mysqli_num_rows($BUres)) {
+		      $BUrow = mysqli_fetch_array($BUres, MYSQLI_BOTH);
+		      if($bPos != 0) {
+		        $AgentsPrint .= " <TR bgcolor=$printFarbe><TD> </TD> <TD> </TD> " .PHP_EOL; 
+		        $CSVPrint .= "|";
+		      }
+		      $AgentsPrint .= " <TD>$BUrow[Termin]</TD>  " .PHP_EOL;
+		      $AgentsPrint .= " <TD>$BUrow[Betrag]</TD>  " .PHP_EOL;
+		      $AgentsPrint .= "</TR>" .PHP_EOL;
+		      $CSVPrint .= "|$BUrow[Termin]|$BUrow[Betrag]" .PHP_EOL;
+		      $SumZahlungen += $BUrow[Betrag];
+	          $bPos++;
+		    }
+		}
+		$RPos = 0;
+		$RBres = GetRueckbuchungen($CLrow[client_id], $DateVon, $DateBis);
+		if(mysqli_num_rows($RBres) > 0) {
+			while ($RPos < mysqli_num_rows($RBres)) {
+				$RBrow = mysqli_fetch_array($RBres, MYSQLI_BOTH);
+				if($bPos != 0) {
+					$AgentsPrint .= " <TR bgcolor=$printFarbe><TD> </TD> <TD> </TD> " .PHP_EOL;
+					$CSVPrint .= "|";
+				}
+				$AgentsPrint .= " <TD>$RBrow[datum]</TD>  " .PHP_EOL;
+				$AgentsPrint .= " <TD><font color=\"red\">$RBrow[betrag]</font></TD>  " .PHP_EOL;
+				$AgentsPrint .= "</TR>" .PHP_EOL;
+				$CSVPrint .= "|$RBrow[datum]|-$RBrow[betrag]" . PHP_EOL;
+				$SumRuecklast += $RBrow[betrag];
+				$bPos++;
+				$RPos++;
+			}
+		}
+		if(($bPos == 0) && ($RPos == 0)) {
+			$AgentsPrint .= "</TR> " .PHP_EOL;
+			$CSVPrint .= PHP_EOL;
+		}
+        }
+		$pos++;
 
-		$row=mysqli_fetch_row($rslt);
+	}
+	if($farb == 0) {
+		$farb = 1;
+		$printFarbe = $sBackCol1;
+	}
+	else {
+		$farb = 0;
+		$printFarbe = $sBackCol2;
+		
+	}
+	$AgentsPrint .= "<TR bgcolor=$printFarbe><TD> </TD> </TR>" . PHP_EOL;
+	if($SumZahlungen != 0.0) {
 		if($farb == 0) {
 			$farb = 1;
 			$printFarbe = $sBackCol1;
@@ -813,37 +1091,26 @@ else {
 			$printFarbe = $sBackCol2;
 			
 		}
-		$Lrow = GetLead($row[1]);
-		$Lirow = GetList($row[2]);
-		
-		$AgentsPrint .= " <TR bgcolor=$printFarbe>" . PHP_EOL;	
-		$AgentsPrint .= "  <TD nowrap>$row[3]</TD> " . PHP_EOL;
-		$AgentsPrint .= "  <TD nowrap>$Lirow[0] / $Lirow[1] </TD> " . PHP_EOL;
-		$AgentsPrint .= "  <TD nowrap>$Lirow[3] </TD> " . PHP_EOL;
-		$AgentsPrint .= "  <TD nowrap>$row[6]</TD> " . PHP_EOL;
-		$AgentsPrint .= "  <TD nowrap>$row[4]</TD> " . PHP_EOL;
-		$AgentsPrint .= "  <TD nowrap>$row[8]</TD> " . PHP_EOL;
-		$AgentsPrint .= "  <TD nowrap>$row[9]</TD> " . PHP_EOL;
-		$AgentsPrint .= "  <TD nowrap>$row[12]</TD> " . PHP_EOL;
-		$AgentsPrint .= "  <TD nowrap><a href=/vicidial/admin_modify_lead.php?lead_id=$row[1] target=\"_blank\" >$row[1]</a></TD> " . PHP_EOL;
-		$AgentsPrint .= "  <TD nowrap>$Lrow[5]</TD> " . PHP_EOL;
-		$AgentsPrint .= "  <TD nowrap>$Lrow[13] $Lrow[15]</TD> " . PHP_EOL;
-		$AgentsPrint .= "  <TD nowrap>$Lrow[11]</TD> " . PHP_EOL;
-		$AgentsPrint .= "  <TD nowrap>$Lrow[30]</TD> " . PHP_EOL;
-		$AgentsPrint .= "  <TD nowrap>$Lrow[29]</TD> " . PHP_EOL;
-		
-		$CSVPrint .= $row[3] . "|" . $Lirow[0] . " / " .$Lirow[1] . "|" . $Lirow[3] . "|" . $row[6] . "|" . $row[4] . "|" . $row[8] . "|" . $row[9] . "|" . $row[12] . "|" . $row[1] ."|" . "|" . $Lrow[5] ."|" . $Lrow[13] . " " . $Lrow[15] . "|" . $Lrow[11] . "|" . $Lrow[30] . "|" . $Lrow[29];
-
-		$AgentsPrint .= " </TR>" . PHP_EOL;
-		$CSVPrint .= PHP_EOL;
-
-		$pos++;
-
+		$AgentsPrint .= "<TR bgcolor=$printFarbe><TD></TD><TD>Summe Zahlungen:</TD><TD></TD><TD> $SumZahlungen €</TD></TR>" . PHP_EOL;
+		$CSVPrint .= "|Summe Zahlungen:||$SumZahlungen" .PHP_EOL;
+	}
+	
+	if($SumRuecklast != 0.0) {
+		if($farb == 0) {
+			$farb = 1;
+			$printFarbe = $sBackCol1;
+		}
+		else {
+			$farb = 0;
+			$printFarbe = $sBackCol2;
+			
+		}
+		$AgentsPrint .= "<TR bgcolor=$printFarbe><TD></TD><TD>Summe Rücklastschriften:</TD><TD></TD><TD> $SumRuecklast €</TD></TR>" . PHP_EOL;
+		$CSVPrint .= "|Summe Rücklastschriften:||$SumRuecklast" .PHP_EOL;
 	}
 
-
 	$AgentsPrint .= "</TABLE> </br>" . PHP_EOL;
-
+	
 }
 
 
@@ -851,7 +1118,7 @@ echo $AgentsPrint;
 
 echo "<br>";
 
-$FileName = "Callback_Übersicht.csv";
+$FileName = "Agentur_Übersicht_" . $DateVon . "_" . $DateBis . ".csv";
 
 $DLURL = $test_ip . "://" . $DLDir . $FileName;
 
@@ -859,20 +1126,13 @@ $fh = fopen($doc_root . "/" . $DLDir . $FileName, "w+");
 fwrite($fh, $CSVPrint);
 fclose($fh);
 
-echo "<a href=\"http://" . $test_ip . "/vicidial/download.php?file=" . $FileName . "\" target=\"_blank\">Download</a>";
+echo "<a href=\"http://" . $test_ip . "/vicidial/download.php?file=" . $FileName . "\">Download</a>";
 
-
-
-$ENDtime = date("U");
-
-$Laufzeit = formatSec($ENDtime - $STARTtime);
 
 echo "</br></br></br></br></br>" .PHP_EOL;
-echo "<font size=\"1\"> Laufzeit: $Laufzeit</font></br></br>" . PHP_EOL;
 echo "<font size=\"1\"> Version: $release</font></br>" . PHP_EOL;
 echo "<font size=\"1\"> Copyright: $copyr</font>" . PHP_EOL;
 
 ?>
 
 </BODY></HTML>
-

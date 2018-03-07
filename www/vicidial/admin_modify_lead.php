@@ -8,7 +8,7 @@
 # just needs to enter the leadID and then they can view and modify the 
 # information in the record for that lead
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -86,7 +86,8 @@
 # 170826-0858 - Added link to turn on/off archived logs display
 # 171001-1109 - Added in-browser audio control, if recording access control is disabled
 # 171216-2058 - Added ability to modify all active scheduled callbacks, and view callbacks log
-# 180212-2340 - Added GDPR compliance features
+# 180212-2340 - Added basic GDPR compliance features
+# 180302-1605 - Added complete GDPR compliance features
 #
 
 require("dbconnect_mysqli.php");
@@ -637,6 +638,32 @@ if ($enable_gdpr_download_deletion>0)
 
 		if (strlen($CSV_text)>0 && $gdpr_action=="download") 
 			{
+			$rec_stmt="select start_time, location, filename from recording_log where lead_id='$lead_id' order by start_time asc";
+			$rec_rslt=mysql_to_mysqli($rec_stmt, $link);
+			$files_to_zip=array();
+			while ($rec_row=mysqli_fetch_row($rec_rslt)) {
+				$start_time=$rec_row[0];
+				$start_date=substr($start_time, 1, 10);
+				$location=$rec_row[1];
+				$filename=$rec_row[2];
+				preg_match("/$filename.*$/", $location, $matches);
+				
+				$destination_filename=$matches[0];
+
+				set_time_limit(0);
+
+				$fp = fopen("/tmp/$destination_filename", 'w+');
+				$ch = curl_init(str_replace(" ","%20",$location));
+				curl_setopt($ch, CURLOPT_TIMEOUT, 50);
+				curl_setopt($ch, CURLOPT_FILE, $fp);
+				curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+				curl_exec($ch);
+				curl_close($ch);
+				fclose($fp);
+
+				array_push($files_to_zip, "$destination_filename");
+			}
+
 			$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LEADS', event_type='EXPORT', record_id='$lead_id', event_code='GDPR EXPORT LEAD DATA', event_sql=\"$SQL_log\", event_notes='';";
 			if ($DB) {echo "|$stmt|\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);
@@ -647,6 +674,27 @@ if ($enable_gdpr_download_deletion>0)
 			$CSV_text=preg_replace('/^\s+/', '', $CSV_text);
 			$CSV_text=preg_replace('/ +\"/', '"', $CSV_text);
 			$CSV_text=preg_replace('/\" +/', '"', $CSV_text);
+
+			array_push($files_to_zip, "$CSVfilename");
+			$fp = fopen("/tmp/$CSVfilename", 'w+');
+			fwrite($fp, $CSV_text);
+			fclose($fp);
+
+			$zipname = "$lead_id.zip";
+			$zip = new ZipArchive;
+			$zip->open($zipname, ZipArchive::CREATE);
+			foreach ($files_to_zip as $file) {
+				$tempfile="/tmp/$file";
+				$zip->addFile($tempfile);
+			}
+			$zip->close();
+
+			header('Content-Type: application/zip');
+			header('Content-disposition: attachment; filename='.$zipname);
+			header('Content-Length: ' . filesize($zipname));
+			readfile($zipname);
+
+			/*
 			// We'll be outputting a TXT file
 			header('Content-type: application/octet-stream');
 
@@ -659,6 +707,8 @@ if ($enable_gdpr_download_deletion>0)
 			flush();
 
 			echo "$CSV_text";
+			*/
+
 			exit;
 			}
 		}
