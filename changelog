@@ -67,6 +67,7 @@
     - agi/agi-VDAD_ALL_inbound.agi: Fix for Wait/Hold time options when
         nothing is pressed.
   * Some minor changes on bin/ADMIN_backup.pl: Use /tmp to pack into tar.
+  * Replace vicidial_admin_web_logo.png with a new one.
   * Release 2.25.25 2018-03-07.
 
 2.25.24a
