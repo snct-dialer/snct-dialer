@@ -1,4 +1,13 @@
 2.25.25
+  [Frank Gorgas-Waller]
+  * Add Agent Prefix (2018-004):
+    - extras/mysql_update/mysql-1531.sql,
+      www/agc/vicidial.php,
+      extras/upgrade_2.14.sql,
+      www/vicidial/help.php,
+      www/vicidial/admin.php: Add Agent Prefix for calls to Agents with 
+        AgentNo != PhoneNo.
+
   [Jörg Fring-Fürst]
   * www/vicidial/admin.php: Switch from SVN-Version to Git-commit.
   * www/vicidial/AST_stat_callbacks.php: Add lists fields (2018-002).
@@ -57,15 +66,8 @@
   * Add upstream Rev. 2938:
     - agi/agi-VDAD_ALL_inbound.agi: Fix for Wait/Hold time options when
         nothing is pressed.
-
-  [Frank Gorgas-Waller]
-  * Add Agent Prefix (2018-004):
-    - extras/mysql_update/mysql-1531.sql,
-      www/agc/vicidial.php,
-      extras/upgrade_2.14.sql,
-      www/vicidial/help.php,
-      www/vicidial/admin.php: Add Agent Prefix for calls to Agents with 
-        AgentNo != PhoneNo.
+  * Some minor changes on bin/ADMIN_backup.pl: Use /tmp to pack into tar.
+  * Release 2.25.25 2018-03-07.
 
 2.25.24a
   [Jörg Fring-Fürst]

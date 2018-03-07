@@ -289,6 +289,7 @@ $server_ip = $VARserver_ip;		# Asterisk server IP
 
 if (!$ARCHIVEpath) {$ARCHIVEpath = "$PATHlogs/archive";}
 if (!$TEMPpath) {$TEMPpath = "/tmp/vicibackup";}
+if (!$TEMPpathComp) {$TEMPpathComp = "/tmp";}
 if (!$VARDB_port) {$VARDB_port='3306';}
 
 ### find tar binary to do the archiving
@@ -492,8 +493,8 @@ if ( ($without_db < 1) && ($conf_only < 1) )
 				}
 			else
 				{
-				if ($DBX) {print "$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname | $xzbin -9 > $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday$xz\n";}
-				`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname | $xzbin -9 > $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday$xz`;
+				if ($DBX) {print "$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname | $xzbin -1 > $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday$xz\n";}
+				`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname | $xzbin -1 > $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday$xz`;
 				}
 			$c++;
 			}
@@ -588,17 +589,27 @@ if ( ($conf_only < 1) && ($db_only < 1) && ($without_voicemail < 1) )
 	`$tarbin -Jcf $TEMPpath/$VARserver_ip$voicemail$wday$txz /var/spool/asterisk/voicemail`;
 	}
 
-### REMOVE OLD GZ AND xz FILE
+### REMOVE OLD GZ, xz and tar FILE
 if ($DBX) {print "rm -f $ARCHIVEpath/$VARserver_ip$all$wday$tar$gz\n";}
 `rm -f $ARCHIVEpath/$VARserver_ip$all$wday$tar$gz`;
 if ($DBX) {print "rm -f $ARCHIVEpath/$VARserver_ip$all$wday.old$txz\n";}
 `rm -f $ARCHIVEpath/$VARserver_ip$all$wday.old$txz`;
+if ($DBX) {print "rm -f $ARCHIVEpath/$VARserver_ip$all$wday.old$tar\n";}
+`rm -f $ARCHIVEpath/$VARserver_ip$all$wday.old$tar`;
 if ($DBX) {print "mv $ARCHIVEpath/$VARserver_ip$all$wday$txz $ARCHIVEpath/$VARserver_ip$all$wday.old$txz\n";}
 `mv $ARCHIVEpath/$VARserver_ip$all$wday$txz $ARCHIVEpath/$VARserver_ip$all$wday.old$txz`;
+if ($DBX) {print "mv $ARCHIVEpath/$VARserver_ip$all$wday$tar $ARCHIVEpath/$VARserver_ip$all$wday.old$tar\n";}
+`mv $ARCHIVEpath/$VARserver_ip$all$wday$tar $ARCHIVEpath/$VARserver_ip$all$wday.old$tar`;
+
 
 ### PUT EVERYTHING TOGETHER TO BE COMPRESSED ###
 if ($DBX) {print "$tarbin -Jcf $ARCHIVEpath/$VARserver_ip$all$wday$txz $TEMPpath\n";}
-`$tarbin -Jcf $ARCHIVEpath/$VARserver_ip$all$wday$txz $TEMPpath`;
+`$tarbin -cf $TEMPpathComp/$VARserver_ip$all$wday$tar $TEMPpath`;
+
+### Move to ArchivePath ###
+if ($DBX) {print "mv $TEMPpathComp/$VARserver_ip$all$wday$tar $ARCHIVEpath/\n";}
+`cp $TEMPpathComp/$VARserver_ip$all$wday$tar $ARCHIVEpath/`;
+
 
 ### COMPRESS THE ALL FILE ###
 #if ($DBX) {print "$gzipbin -9 $ARCHIVEpath/$VARserver_ip$all$wday$tar\n";}
