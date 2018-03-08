@@ -1,3 +1,8 @@
+2.25.25a
+  [Jörg Frings-Fürst]
+  * changelog: Correct some typos.
+  * bin/ADMIN_backup.pl: Add LOCALpath if requested.
+  
 2.25.25
   [Frank Gorgas-Waller]
   * Add Agent Prefix (2018-004):
