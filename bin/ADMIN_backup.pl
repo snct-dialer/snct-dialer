@@ -292,6 +292,8 @@ if (!$TEMPpath) {$TEMPpath = "/tmp/vicibackup";}
 if (!$TEMPpathComp) {$TEMPpathComp = "/tmp";}
 if (!$VARDB_port) {$VARDB_port='3306';}
 
+$LOCALpath="";
+
 ### find tar binary to do the archiving
 $tarbin = '';
 if ( -e ('/usr/bin/tar')) {$tarbin = '/usr/bin/tar';}
@@ -606,10 +608,15 @@ if ($DBX) {print "mv $ARCHIVEpath/$VARserver_ip$all$wday$tar $ARCHIVEpath/$VARse
 if ($DBX) {print "$tarbin -Jcf $ARCHIVEpath/$VARserver_ip$all$wday$txz $TEMPpath\n";}
 `$tarbin -cf $TEMPpathComp/$VARserver_ip$all$wday$tar $TEMPpath`;
 
-### Move to ArchivePath ###
-if ($DBX) {print "mv $TEMPpathComp/$VARserver_ip$all$wday$tar $ARCHIVEpath/\n";}
+### Copy to ArchivePath ###
+if ($DBX) {print "cp $TEMPpathComp/$VARserver_ip$all$wday$tar $ARCHIVEpath/\n";}
 `cp $TEMPpathComp/$VARserver_ip$all$wday$tar $ARCHIVEpath/`;
 
+### Move to LocalPath ###
+if($LOCALpath) {
+	if ($DBX) print "mv -f $TEMPpathComp/$VARserver_ip$all$wday$tar $LOCALpath/\n";}
+	`mv -f $TEMPpathComp/$VARserver_ip$all$wday$tar $LOCALpath/`;
+}
 
 ### COMPRESS THE ALL FILE ###
 #if ($DBX) {print "$gzipbin -9 $ARCHIVEpath/$VARserver_ip$all$wday$tar\n";}
@@ -619,7 +626,7 @@ if ($DBX) {print "mv $TEMPpathComp/$VARserver_ip$all$wday$tar $ARCHIVEpath/\n";}
 #if ($DBX) {print "rm -fR $ARCHIVEpath/temp\n";}
 #`rm -fR $ARCHIVEpath/temp`;
 
-if ($DBX) {print "rm -fR $TEMPpathn";}
+if ($DBX) {print "rm -fR $TEMPpath";}
 `rm -fR $TEMPpath`;
 
 
