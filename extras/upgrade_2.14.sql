@@ -686,3 +686,9 @@ ALTER TABLE `vicidial_inbound_groups` ADD `pickup_delay` TINYINT NOT NULL DEFAUL
 ALTER TABLE `system_settings` ADD `agent_prefix` VARCHAR(3) default ''; 
 
 UPDATE system_settings SET db_schema_version='1531',db_schema_update_date=NOW() where db_schema_version < 1531;
+
+
+ALTER TABLE `recording_log` ADD INDEX `UserTime` (`user`, `start_time`);
+ALTER TABLE `recording_log_archive` ADD INDEX `UserTime` (`user`, `start_time`);
+
+UPDATE system_settings SET db_schema_version='1532',db_schema_update_date=NOW() where db_schema_version < 1532;

@@ -219,7 +219,8 @@ vicidial_id VARCHAR(20),
 index(filename),
 index(lead_id),
 index(user),
-index(vicidial_id)
+index(vicidial_id),
+index UserTime(user,start_time)
 ) ENGINE=MyISAM;
 
 CREATE TABLE live_inbound (
@@ -4293,4 +4294,4 @@ INSERT INTO vicidial_settings_containers(container_id,container_notes,container_
 
 UPDATE system_settings set vdc_agent_api_active='1';
 
-UPDATE system_settings SET db_schema_version='1531',db_schema_update_date=NOW(),reload_timestamp=NOW();
+UPDATE system_settings SET db_schema_version='1532',db_schema_update_date=NOW(),reload_timestamp=NOW();
