@@ -8,7 +8,7 @@
       www/vicidial/admin.php: Add Agent Prefix for calls to Agents with 
         AgentNo != PhoneNo.
 
-  [Jörg Fring-Fürst]
+  [Jörg Frings-Fürst]
   * www/vicidial/admin.php: Switch from SVN-Version to Git-commit.
   * www/vicidial/AST_stat_callbacks.php: Add lists fields (2018-002).
   * Add add pickup_delay in ingroups (2018-003):
@@ -71,7 +71,7 @@
   * Release 2.25.25 2018-03-07.
 
 2.25.24a
-  [Jörg Fring-Fürst]
+  [Jörg Frings-Fürst]
   * www/vicidial/admin.php: Correct typo.
   * Release 2.25.24a 2018-02-18.
 
