@@ -7,6 +7,7 @@
       + New extras/mysql_update/mysql-1532.sql.
       + Changed extras/upgrade_2.14.sql,
         extras/MySQL_AST_CREATE_tables.sql.
+  * Release 2.25.25a 2018-03-09.
 
 2.25.25
   [Frank Gorgas-Waller]
