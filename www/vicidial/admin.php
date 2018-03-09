@@ -17432,7 +17432,7 @@ if ($ADD==411111111111111)
 			agent_push_events='$agent_push_events',agent_push_url='$agent_push_url',pause_campaigns='$pause_campaigns',hide_inactive_lists='$hide_inactive_lists',
 			detect_3way='$detect_3way',company_name='$company_name',ticket_mail='$ticket_mail',allow_manage_active_lists='$allow_manage_active_lists',expired_lists_inactive='$expired_lists_inactive',
 			did_system_filter='$did_system_filter',allow_phonebook='$allow_phonebook',servicelevel_direct='$servicelevel_direct',servicelevel_one='$servicelevel_one',
-			servicelevel_two='$servicelevel_two',anyone_callback_inactive_lists='$anyone_callback_inactive_lists',tmp_download_dir='$syss_tmp_download_dir',agent_prefix='$agent_prefix'
+			servicelevel_two='$servicelevel_two',anyone_callback_inactive_lists='$anyone_callback_inactive_lists',tmp_download_dir='$syss_tmp_download_dir',agent_prefix='$agent_prefix',
 			enable_gdpr_download_deletion='$enable_gdpr_download_deletion'$custom_dialplanSQL";
 
 		$rslt=mysql_to_mysqli($stmt, $link);
