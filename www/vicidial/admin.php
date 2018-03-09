@@ -3620,8 +3620,8 @@ if ($non_latin < 1)
 	### ALPHA-NUMERIC and newlines and period and colon
 	$ip_address = preg_replace('/[^\n\.\:\0-9a-zA-Z]/', '',$ip_address);
 
-	### ALPHA-NUMERIC and underscore and dash and at and space and parantheses
-	$agent_prefix = preg_replace('/[^G-Z]/','', $agent_prefix);
+	### ALPHACAPS
+	$agent_prefix = preg_replace('/[^A-Z]/','', $agent_prefix);
 	
 	### remove semi-colons ###
 	$lead_filter_sql = preg_replace('/;/','',$lead_filter_sql);
