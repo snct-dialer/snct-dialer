@@ -1,3 +1,14 @@
+2.25.25a
+  [Jörg Frings-Fürst]
+  * changelog: Correct some typos.
+  * bin/ADMIN_backup.pl: Add LOCALpath if requested.
+  * Add Index UserTime to recordings-log and _archive (2018-006):
+  	- New DB-Schema 1532:
+      + New extras/mysql_update/mysql-1532.sql.
+      + Changed extras/upgrade_2.14.sql,
+        extras/MySQL_AST_CREATE_tables.sql.
+  * Release 2.25.25a 2018-03-09.
+
 2.25.25
   [Frank Gorgas-Waller]
   * Add Agent Prefix (2018-004):
@@ -8,11 +19,11 @@
       www/vicidial/admin.php: Add Agent Prefix for calls to Agents with 
         AgentNo != PhoneNo.
 
-  [Jörg Fring-Fürst]
+  [Jörg Frings-Fürst]
   * www/vicidial/admin.php: Switch from SVN-Version to Git-commit.
   * www/vicidial/AST_stat_callbacks.php: Add lists fields (2018-002).
   * Add add pickup_delay in ingroups (2018-003):
-    - extras/MySQL_AST_CREATE_tables.sq,l
+    - extras/MySQL_AST_CREATE_tables.sql,
       extras/upgrade_2.14.sql,
       www/vicidial/admin.php,
       www/vicidial/help.php,
@@ -71,7 +82,7 @@
   * Release 2.25.25 2018-03-07.
 
 2.25.24a
-  [Jörg Fring-Fürst]
+  [Jörg Frings-Fürst]
   * www/vicidial/admin.php: Correct typo.
   * Release 2.25.24a 2018-02-18.
 
