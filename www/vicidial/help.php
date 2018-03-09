@@ -5999,7 +5999,7 @@ FR_SPAC 00 00 00 00 00 - <?php echo _QXZ("France space separated phone number");
 <B><?php echo _QXZ("Service Level"); ?> -</B><?php echo _QXZ("Set the time in seconds for the Servicelevel Direct|One|Two only for the Wallboard."); ?>
 
 <BR>
-<A NAME="service-agent_prefix">
+<A NAME="settings-agent_prefix">
 <BR>
 <B><?php echo _QXZ("Agent Prefix"); ?> -</B><?php echo _QXZ("If you have Agents with AgentNo != PhoneNo you can add a Prefix for use in the dialplan."); ?>
 
