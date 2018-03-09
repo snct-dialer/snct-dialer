@@ -614,7 +614,7 @@ if ($DBX) {print "cp $TEMPpathComp/$VARserver_ip$all$wday$tar $ARCHIVEpath/\n";}
 
 ### Move to LocalPath ###
 if($LOCALpath) {
-	if ($DBX) print "mv -f $TEMPpathComp/$VARserver_ip$all$wday$tar $LOCALpath/\n";}
+	if ($DBX) {print "mv -f $TEMPpathComp/$VARserver_ip$all$wday$tar $LOCALpath/\n";}
 	`mv -f $TEMPpathComp/$VARserver_ip$all$wday$tar $LOCALpath/`;
 }
 
