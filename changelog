@@ -1,3 +1,11 @@
+2.25.26
+  [Jörg Frings-Fürst]
+  * www/vicidial/AST_stat_agent1.php: 
+    - Add Campaign status,
+      Switch to AGPLv3.
+  * New LICENSE.
+  * New license/AGPLv3.
+  
 2.25.25b
   [Jörg Frings-Fürst]
   * www/vicidial/help.php: Correct anchor.
