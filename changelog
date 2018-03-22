@@ -5,7 +5,8 @@
       Switch to AGPLv3.
   * New LICENSE.
   * New license/AGPLv3.
-  
+  * New silence files with length 1 - 10 sec..
+
 2.25.25b
   [Jörg Frings-Fürst]
   * www/vicidial/help.php: Correct anchor.
