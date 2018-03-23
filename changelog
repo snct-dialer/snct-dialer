@@ -11,6 +11,7 @@
     - Changed extras/upgrade_2.14.sql,
       extras/MySQL_AST_CREATE_tables.sql.
   * New function AutoAnswer (2018-007):
+    - www/vicidial/admin.php: Add new fields.
   
 
 2.25.25b

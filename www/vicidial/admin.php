@@ -2411,6 +2411,14 @@ if (isset($_GET["pickup_delay"]))				{$pickup_delay=$_GET["pickup_delay"];}
 	elseif (isset($_POST["pickup_delay"]))		{$pickup_delay=$_POST["pickup_delay"];}
 if (isset($_GET["agent_prefix"]))				{$agent_prefix=$_GET["agent_prefix"];}
 	elseif (isset($_POST["agent_prefix"]))		{$agent_prefix=$_POST["agent_prefix"];}
+if (isset($_GET["autoanswer_enable"]))				{$autoanswer_enable=$_GET["autoanswer_enable"];}
+	elseif (isset($_POST["autoanswer_enable"]))		{$autoanswer_enable=$_POST["autoanswer_enable"];}
+if (isset($_GET["autoanswer_prefix"]))				{$autoanswer_prefix=$_GET["autoanswer_prefix"];}
+	elseif (isset($_POST["autoanswer_prefix"]))		{$autoanswer_prefix=$_POST["autoanswer_prefix"];}
+if (isset($_GET["autoanswer_delay"]))				{$autoanswer_delay=$_GET["autoanswer_delay"];}
+	elseif (isset($_POST["autoanswer_delay"]))		{$autoanswer_delay=$_POST["autoanswer_delay"];}
+if (isset($_GET["autoanswer_type"]))				{$autoanswer_type=$_GET["autoanswer_type"];}
+	elseif (isset($_POST["autoanswer_type"]))		{$autoanswer_type=$_POST["autoanswer_type"];}
 	
 
 if (isset($script_id)) {$script_id= strtoupper($script_id);}
@@ -2846,6 +2854,7 @@ if ($non_latin < 1)
 	$ready_max_logout = preg_replace('/[^-0-9]/','',$ready_max_logout);
 	$inbound_no_agents_no_dial_threshold = preg_replace('/[^-0-9]/','',$inbound_no_agents_no_dial_threshold);
 	$pickup_delay = preg_replace('/[^-0-9]/','',$pickup_delay);
+	$autoanswer_delay = preg_replace('/[^-0-9]/','',$autoanswer_delay);
 	
 	### DIGITS and COLONS
 	$shift_length = preg_replace('/[^\:0-9]/','',$shift_length);
@@ -3623,6 +3632,9 @@ if ($non_latin < 1)
 	### ALPHACAPS
 	$agent_prefix = preg_replace('/[^A-Z]/','', $agent_prefix);
 	
+	### NUMERIC and A-D	
+	$autoanswer_prefix = preg_replace('/[^0-9A-D]/','', $autoanswer_prefix);
+
 	### remove semi-colons ###
 	$lead_filter_sql = preg_replace('/;/','',$lead_filter_sql);
 	$list_mix_container = preg_replace('/;/','',$list_mix_container);
@@ -16221,7 +16233,7 @@ if ($ADD==41111111111)
 					if ( ($voicemail_greeting == '') and (strlen($old_voicemail_greeting) > 0) )
 						{$voicemail_greeting = '---DELETE---';}
 
-					$stmt="UPDATE phones set extension='$extension', dialplan_number='$dialplan_number', voicemail_id='$voicemail_id', phone_ip='$phone_ip', computer_ip='$computer_ip', server_ip='$server_ip', login='$login', pass='$pass', status='$status', active='$active', phone_type='$phone_type', fullname='$fullname', company='$company', picture='$picture', protocol='$protocol', local_gmt='$local_gmt', ASTmgrUSERNAME='$ASTmgrUSERNAME', ASTmgrSECRET='$ASTmgrSECRET', login_user='$login_user', login_pass='$login_pass', login_campaign='$login_campaign', park_on_extension='$park_on_extension', conf_on_extension='$conf_on_extension', VICIDIAL_park_on_extension='$VICIDIAL_park_on_extension', VICIDIAL_park_on_filename='$VICIDIAL_park_on_filename', monitor_prefix='$monitor_prefix', recording_exten='$recording_exten', voicemail_exten='$voicemail_exten', voicemail_dump_exten='$voicemail_dump_exten', ext_context='$ext_context', dtmf_send_extension='$dtmf_send_extension', call_out_number_group='$call_out_number_group', client_browser='$client_browser', install_directory='$install_directory', local_web_callerID_URL='" . mysqli_real_escape_string($link, $local_web_callerID_URL) . "', VICIDIAL_web_URL='" . mysqli_real_escape_string($link, $VICIDIAL_web_URL) . "', AGI_call_logging_enabled='$AGI_call_logging_enabled', user_switching_enabled='$user_switching_enabled', conferencing_enabled='$conferencing_enabled', admin_hangup_enabled='$admin_hangup_enabled', admin_hijack_enabled='$admin_hijack_enabled', admin_monitor_enabled='$admin_monitor_enabled', call_parking_enabled='$call_parking_enabled', updater_check_enabled='$updater_check_enabled', AFLogging_enabled='$AFLogging_enabled', QUEUE_ACTION_enabled='$QUEUE_ACTION_enabled', CallerID_popup_enabled='$CallerID_popup_enabled', voicemail_button_enabled='$voicemail_button_enabled', enable_fast_refresh='$enable_fast_refresh', fast_refresh_rate='$fast_refresh_rate', enable_persistant_mysql='$enable_persistant_mysql', auto_dial_next_number='$auto_dial_next_number', VDstop_rec_after_each_call='$VDstop_rec_after_each_call', DBX_server='$DBX_server', DBX_database='$DBX_database', DBX_user='$DBX_user', DBX_pass='$DBX_pass', DBX_port='$DBX_port', DBY_server='$DBY_server', DBY_database='$DBY_database', DBY_user='$DBY_user', DBY_pass='$DBY_pass', DBY_port='$DBY_port', outbound_cid='$outbound_cid', enable_sipsak_messages='$enable_sipsak_messages', email='$email', template_id='$template_id', conf_override='$conf_override',phone_context='$phone_context',phone_ring_timeout='$phone_ring_timeout',conf_secret='$conf_secret', delete_vm_after_email='$delete_vm_after_email',is_webphone='$is_webphone',use_external_server_ip='$use_external_server_ip',codecs_list='$codecs_list',codecs_with_template='$codecs_with_template',webphone_dialpad='$webphone_dialpad',on_hook_agent='$on_hook_agent',webphone_auto_answer='$webphone_auto_answer',voicemail_timezone='$voicemail_timezone',voicemail_options='$voicemail_options',user_group='$user_group',voicemail_greeting='$voicemail_greeting',voicemail_dump_exten_no_inst='$voicemail_dump_exten_no_inst',voicemail_instructions='$voicemail_instructions',on_login_report='$show_vm_on_summary',unavail_dialplan_fwd_exten='$unavail_dialplan_fwd_exten',unavail_dialplan_fwd_context='$unavail_dialplan_fwd_context', nva_call_url='" . mysqli_real_escape_string($link, $nva_call_url) . "', nva_search_method='$nva_search_method', nva_error_filename='$nva_error_filename',nva_new_list_id='$nva_new_list_id',nva_new_phone_code='$nva_new_phone_code',nva_new_status='$nva_new_status',webphone_dialbox='$webphone_dialbox',webphone_mute='$webphone_mute',webphone_volume='$webphone_volume',webphone_debug='$webphone_debug',outbound_alt_cid='$outbound_alt_cid',conf_qualify='$conf_qualify',webphone_layout='" . mysqli_real_escape_string($link, $webphone_layout) . "' where extension='$old_extension' and server_ip='$old_server_ip';";
+					$stmt="UPDATE phones set extension='$extension', dialplan_number='$dialplan_number', voicemail_id='$voicemail_id', phone_ip='$phone_ip', computer_ip='$computer_ip', server_ip='$server_ip', login='$login', pass='$pass', status='$status', active='$active', phone_type='$phone_type', fullname='$fullname', company='$company', picture='$picture', protocol='$protocol', local_gmt='$local_gmt', ASTmgrUSERNAME='$ASTmgrUSERNAME', ASTmgrSECRET='$ASTmgrSECRET', login_user='$login_user', login_pass='$login_pass', login_campaign='$login_campaign', park_on_extension='$park_on_extension', conf_on_extension='$conf_on_extension', VICIDIAL_park_on_extension='$VICIDIAL_park_on_extension', VICIDIAL_park_on_filename='$VICIDIAL_park_on_filename', monitor_prefix='$monitor_prefix', recording_exten='$recording_exten', voicemail_exten='$voicemail_exten', voicemail_dump_exten='$voicemail_dump_exten', ext_context='$ext_context', dtmf_send_extension='$dtmf_send_extension', call_out_number_group='$call_out_number_group', client_browser='$client_browser', install_directory='$install_directory', local_web_callerID_URL='" . mysqli_real_escape_string($link, $local_web_callerID_URL) . "', VICIDIAL_web_URL='" . mysqli_real_escape_string($link, $VICIDIAL_web_URL) . "', AGI_call_logging_enabled='$AGI_call_logging_enabled', user_switching_enabled='$user_switching_enabled', conferencing_enabled='$conferencing_enabled', admin_hangup_enabled='$admin_hangup_enabled', admin_hijack_enabled='$admin_hijack_enabled', admin_monitor_enabled='$admin_monitor_enabled', call_parking_enabled='$call_parking_enabled', updater_check_enabled='$updater_check_enabled', AFLogging_enabled='$AFLogging_enabled', QUEUE_ACTION_enabled='$QUEUE_ACTION_enabled', CallerID_popup_enabled='$CallerID_popup_enabled', voicemail_button_enabled='$voicemail_button_enabled', enable_fast_refresh='$enable_fast_refresh', fast_refresh_rate='$fast_refresh_rate', enable_persistant_mysql='$enable_persistant_mysql', auto_dial_next_number='$auto_dial_next_number', VDstop_rec_after_each_call='$VDstop_rec_after_each_call', DBX_server='$DBX_server', DBX_database='$DBX_database', DBX_user='$DBX_user', DBX_pass='$DBX_pass', DBX_port='$DBX_port', DBY_server='$DBY_server', DBY_database='$DBY_database', DBY_user='$DBY_user', DBY_pass='$DBY_pass', DBY_port='$DBY_port', outbound_cid='$outbound_cid', enable_sipsak_messages='$enable_sipsak_messages', email='$email', template_id='$template_id', conf_override='$conf_override',phone_context='$phone_context',phone_ring_timeout='$phone_ring_timeout',conf_secret='$conf_secret', delete_vm_after_email='$delete_vm_after_email',is_webphone='$is_webphone',use_external_server_ip='$use_external_server_ip',codecs_list='$codecs_list',codecs_with_template='$codecs_with_template',webphone_dialpad='$webphone_dialpad',on_hook_agent='$on_hook_agent',webphone_auto_answer='$webphone_auto_answer',voicemail_timezone='$voicemail_timezone',voicemail_options='$voicemail_options',user_group='$user_group',voicemail_greeting='$voicemail_greeting',voicemail_dump_exten_no_inst='$voicemail_dump_exten_no_inst',voicemail_instructions='$voicemail_instructions',on_login_report='$show_vm_on_summary',unavail_dialplan_fwd_exten='$unavail_dialplan_fwd_exten',unavail_dialplan_fwd_context='$unavail_dialplan_fwd_context', nva_call_url='" . mysqli_real_escape_string($link, $nva_call_url) . "', nva_search_method='$nva_search_method', nva_error_filename='$nva_error_filename',nva_new_list_id='$nva_new_list_id',nva_new_phone_code='$nva_new_phone_code',nva_new_status='$nva_new_status',webphone_dialbox='$webphone_dialbox',webphone_mute='$webphone_mute',webphone_volume='$webphone_volume',webphone_debug='$webphone_debug',outbound_alt_cid='$outbound_alt_cid',conf_qualify='$conf_qualify',webphone_layout='" . mysqli_real_escape_string($link, $webphone_layout) . ",autoanswer_type='$autoanswer_type' where extension='$old_extension' and server_ip='$old_server_ip';";
 					$rslt=mysql_to_mysqli($stmt, $link);
 
 					$stmtA="UPDATE servers SET rebuild_conf_files='Y' where generate_vicidial_conf='Y' and active_asterisk_server='Y' and server_ip='$server_ip';";
@@ -17433,7 +17445,8 @@ if ($ADD==411111111111111)
 			detect_3way='$detect_3way',company_name='$company_name',ticket_mail='$ticket_mail',allow_manage_active_lists='$allow_manage_active_lists',expired_lists_inactive='$expired_lists_inactive',
 			did_system_filter='$did_system_filter',allow_phonebook='$allow_phonebook',servicelevel_direct='$servicelevel_direct',servicelevel_one='$servicelevel_one',
 			servicelevel_two='$servicelevel_two',anyone_callback_inactive_lists='$anyone_callback_inactive_lists',tmp_download_dir='$syss_tmp_download_dir',agent_prefix='$agent_prefix',
-			enable_gdpr_download_deletion='$enable_gdpr_download_deletion'$custom_dialplanSQL";
+			enable_gdpr_download_deletion='$enable_gdpr_download_deletion'$custom_dialplanSQL,autoanswer_enable='$autoanswer_enable',autoanser_prefix='$autoanswer_prefix',
+			autoanswer_delay='$autoanswer_delay'";
 
 		$rslt=mysql_to_mysqli($stmt, $link);
 
@@ -31786,8 +31799,9 @@ if ($ADD==31111)
 			echo "$campaigns_list";
 			echo "<option SELECTED>$campaign_id</option>\n";
 			echo "</select>$NWB#remote_agents-campaign_id$NWE</td></tr>\n";
-			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("On-Hook Agent").": </td><td align=left><select size=1 name=on_hook_agent><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='$on_hook_agent' SELECTED>"._QXZ("$on_hook_agent")."</option></select>$NWB#remote_agents-on_hook_agent$NWE</td></tr>\n";
+			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("On-Hook Agent").": </td><td align=left><select size=1 name=on_hook_agent><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='AutoAnswer'>"._QXZ("AutoAnswer")."</option><option value='$on_hook_agent' SELECTED>"._QXZ("$on_hook_agent")."</option></select>$NWB#remote_agents-on_hook_agent$NWE</td></tr>\n";
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("On-Hook Ring Time").": </td><td align=left><input type=text name=on_hook_ring_time size=5 maxlength=4 value=\"$on_hook_ring_time\"> $NWB#remote_agents-on_hook_ring_time$NWE</td></tr>\n";
+			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("AutoAnswer Type").": </td><td align=left><select size=1 name=autoanswer_type><option value=''>"._QXZ("")."</option><option value='SNOM'>"._QXZ("SNOM")."</option><option value='$autoanswer_type' SELECTED>"._QXZ("$autoanswer_type")."</option></select>$NWB#remote_agents-on_hook_agent$NWE</td></tr>\n";
 
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=center colspan=2>\n";
 				$temp_chart_title = _QXZ("8 Day call count for this remote-agent");
@@ -36931,7 +36945,11 @@ if ($ADD==311111111111111)
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Servicelevel One").": </td><td align=left><input type=text name=servicelevel_one size=4 maxlen=4 value=\"$servicelevel_one\">$NWB#servicelevel$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Servicelevel Two").": </td><td align=left><input type=text name=servicelevel_two size=4 maxlen=4 value=\"$servicelevel_two\">$NWB#servicelevel$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row2_background><td align=right>"._QXZ("Agent Prefix").": </td><td align=left><input type=text name=agent_prefix size=2 maxlength=2 value=\"$agent_prefix\">$NWB#settings-agent_prefix$NWE</td></tr>\n";
-
+		
+		echo "<tr bgcolor=#$SSstd_row1_background><td align=right>"._QXZ("Enable AutoAnswer").": </td><td align=left><select size=1 name=autoanswer_enable><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='$autoanswer_enable' selected>"._QXZ("$autoanswer_enable")."</option></select>$NWB#autoanswer_enable$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row1_background><td align=right>"._QXZ("AutoAnswer Prefix").": </td><td align=left><input type=text name=autoanswer_prefix size=4 maxlength=4 value=\"$autoanswer_prefix\">$NWB#autoanswer_prefix$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row1_background><td align=right>"._QXZ("AutoAnswer Delay").": </td><td align=left><input type=text name=autoanswer_delay size=4 maxlength=4 value=\"$autoanswer_delay\">$NWB#autoanswer_delay$NWE</td></tr>\n";
+		
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=center colspan=2><input type=submit name=submit value='"._QXZ("SUBMIT")."'</td></tr>\n";
 		echo "</TABLE></center>\n";
 		echo "</form>\n";
