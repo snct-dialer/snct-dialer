@@ -78,7 +78,7 @@ use_external_server_ip ENUM('Y','N') default 'N',
 codecs_list VARCHAR(100) default '',
 codecs_with_template ENUM('0','1') default '0',
 webphone_dialpad ENUM('Y','N','TOGGLE','TOGGLE_OFF') default 'Y',
-on_hook_agent ENUM('Y','N') default 'N',
+on_hook_agent ENUM('Y','N', 'AutoAnswer') default 'N',
 webphone_auto_answer ENUM('Y','N') default 'Y',
 voicemail_timezone VARCHAR(30) default 'eastern',
 voicemail_options VARCHAR(255) default '',
@@ -105,7 +105,8 @@ webphone_layout VARCHAR(255) default '',
 index (server_ip),
 index (voicemail_id),
 index (dialplan_number),
-unique index extenserver (extension, server_ip)
+autoanswer_type ENUM('','SNOM') default '',
+unique index extenserver (extension, server_ip),
 ) ENGINE=MyISAM;
 
 CREATE TABLE servers (
@@ -1789,7 +1790,10 @@ servicelevel_two SMALLINT UNSIGNED DEFAULT '40',
 anyone_callback_inactive_lists ENUM('default','NO_ADD_TO_HOPPER','KEEP_IN_HOPPER') default 'default',
 tmp_download_dir VARCHAR(255) default 'download',
 anyone_callback_inactive_lists ENUM('default','NO_ADD_TO_HOPPER','KEEP_IN_HOPPER') default 'default',
-enable_gdpr_download_deletion ENUM('0','1','2') default '0'
+enable_gdpr_download_deletion ENUM('0','1','2') default '0',
+autoanswer_enable ENUM('Y','N') default 'N',
+autoanswer_prefix VARCHAR(5) default 'AA',
+autoanswer_delay TINYINT default '1'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_campaigns_list_mix (

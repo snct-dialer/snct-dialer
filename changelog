@@ -6,6 +6,12 @@
   * New LICENSE.
   * New license/AGPLv3.
   * New silence files with length 1 - 10 sec..
+  * New DB-Schema 1533:
+    - New extras/mysql_update/mysql-1533.sql.
+    - Changed extras/upgrade_2.14.sql,
+      extras/MySQL_AST_CREATE_tables.sql.
+  * New function AutoAnswer (2018-007):
+  
 
 2.25.25b
   [Jörg Frings-Fürst]
