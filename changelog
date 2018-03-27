@@ -1,8 +1,7 @@
 2.25.26
   [Jörg Frings-Fürst]
-  * www/vicidial/AST_stat_agent1.php: 
-    - Add Campaign status,
-      Switch to AGPLv3.
+  * www/vicidial/AST_stat_agent1.php:
+    - Add Campaign status.
   * New LICENSE.
   * New license/AGPLv3.
   * New silence files with length 1 - 10 sec..
@@ -15,7 +14,8 @@
   * bin/ADMIN_backup.pl:
     - Add /etc/flyingpenguin.
   * Change license to AGPLv3:
-    - bin/ADMIN_backup.pl
+    - bin/ADMIN_backup.pl,
+      www/vicidial/AST_stat_agent1.php
 
 2.25.25b
   [Jörg Frings-Fürst]
