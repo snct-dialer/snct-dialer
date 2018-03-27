@@ -12,7 +12,10 @@
       extras/MySQL_AST_CREATE_tables.sql.
   * New function AutoAnswer (2018-007):
     - www/vicidial/admin.php: Add new fields.
-  
+  * bin/ADMIN_backup.pl:
+    - Add /etc/flyingpenguin.
+  * Change license to AGPLv3:
+    - bin/ADMIN_backup.pl
 
 2.25.25b
   [Jörg Frings-Fürst]
