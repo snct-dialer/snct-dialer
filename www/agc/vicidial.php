@@ -598,6 +598,7 @@ require_once("dbconnect_mysqli.php");
 require_once("functions.php");
 require_once("FlyInclude.php");
 
+
 if (isset($_GET["DB"]))						    {$DB=$_GET["DB"];}
         elseif (isset($_POST["DB"]))            {$DB=$_POST["DB"];}
 if (isset($_GET["JS_browser_width"]))				{$JS_browser_width=$_GET["JS_browser_width"];}
@@ -982,6 +983,12 @@ echo '<?xml version="1.0" encoding="UTF-8"?>
 ';
 echo "<!-- VERSION: $version     "._QXZ("BUILD:")." $build -->\n";
 echo "<!-- BROWSER: $BROWSER_WIDTH x $BROWSER_HEIGHT     $JS_browser_width x $JS_browser_height -->\n";
+
+?>
+<script type="text/javascript" src="../tools/floating.js"></script>
+<script src="../tools/jspanel.js"></script>
+
+<?php
 
 if ($campaign_login_list > 0)
 	{
@@ -4842,6 +4849,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 	var pc_var = "";
 	var pc_var_ingroup = "";
+	var PPanel = "";
 
 <?php
 	if ($window_validation > 0)
@@ -10176,6 +10184,8 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 				var add_pause_code='';
 				if (taskaction == 'VDADready')
 					{
+					if(PPanel) { PPanel.close(); };
+					ToggleFloatingLayer("PauseLayer",0);
 					VDRP_stage = 'READY';
 					VDRP_stage_seconds=0;
 					safe_pause_counter=0;
@@ -13999,6 +14009,24 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 //		return agent_log_id;
 		LastCallCID='';
 		scroll(0,0);
+		
+		PPanel = jsPanel.create({
+			id:          'PausePanel',
+		    theme:       'purple',
+		    headerTitle: 'Pause',
+		    position:    'center-top 0 58',
+		    contentSize: '450 250',
+		    content:     '<h1>' + newpausecode + '</h1>',
+		    callback: function () {
+		        this.content.style.padding = '20px';
+		    },
+		    onbeforeclose: function () {
+		        return confirm('Do you really want to close the panel?');
+		    }
+		});
+		InitFloatingWindow("PauseLayer", "Pause", newpausecode);
+		ToggleFloatingLayer("PauseLayer",1);
+		PPanel.front();
 		}
 
 
