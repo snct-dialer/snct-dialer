@@ -38,6 +38,9 @@
     - www/vicidial/admin_modify_lead.php: Added CIDdisplay.
   * Add upstream Rev. 2942:
     - www/vicidial/AST_parkstats.php: Added unique lead ID count.
+  * Add upstream Rev. 2943:
+    - www/agc/vicidial.php: Fix for lead search screen hidden fields,
+        issue #1079.
 
 2.25.25b
   [Jörg Frings-Fürst]

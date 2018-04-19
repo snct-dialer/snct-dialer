@@ -586,10 +586,11 @@
 # 180224-1433 - Added LOGINvar variables, and options.php $INSERT_ variables
 # 180302-1704 - Fix for pause code issue
 # 180306-1717 - Added script_top_dispo feature
+# 180314-2222 - Fix for lead search screen hidden fields, issue #1079
 #
 
-$version = '2.14-556c';
-$build = '180306-1717';
+$version = '2.14-557c';
+$build = '180314-2222';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -20302,9 +20303,10 @@ if ($agent_display_dialable_leads > 0)
 	<?php
 	if ($webphone_location == 'bar')
 		{echo "<br /><img src=\"./images/"._QXZ("pixel.gif")."\" width=\"1px\" height=\"".$webphone_height."px\" /><br />\n";}
+	$TEMPlabel_vendor_lead_code = preg_replace("/---READONLY---|---REQUIRED---|---HIDE---/","",$label_vendor_lead_code);
 	?>
 	<br /><br />
-	<?php echo _QXZ("Notes: when doing a search for a lead, the phone number, lead ID or %1s are the best fields to use.",0,'',$label_vendor_lead_code); ?> <br /><?php echo _QXZ("Using the other fields may be slower. Lead searching does not allow for wildcard or partial search terms."); ?> <br /><?php echo _QXZ("Lead search requests are all logged in the system."); ?>
+	<?php echo _QXZ("Notes: when doing a search for a lead, the phone number, lead ID or %1s are the best fields to use.",0,'',$TEMPlabel_vendor_lead_code); ?> <br /><?php echo _QXZ("Using the other fields may be slower. Lead searching does not allow for wildcard or partial search terms."); ?> <br /><?php echo _QXZ("Lead search requests are all logged in the system."); ?>
 	<br /><br />
 	<center>
 	<table border="0">
@@ -20324,24 +20326,64 @@ if ($agent_display_dialable_leads > 0)
 	<td align="right"> <font class="sh_text"><?php echo _QXZ("Lead ID:"); ?></font> </td><td align="left"><input type="text" size="11" maxlength="10" name="search_lead_id" id="search_lead_id"></td>
 	</tr>
 	<tr>
-	<td align="right"> <font class="sh_text"><?php echo $label_vendor_lead_code ?>:</font> </td><td align="left"><input type="text" size="18" maxlength="<?php echo $MAXvendor_lead_code ?>" name="search_vendor_lead_code" id="search_vendor_lead_code"></td>
-	</tr>
-	<tr>
-	<td align="right"> <font class="sh_text"><?php echo $label_first_name ?>:</font> </td><td align="left"><input type="text" size="18" maxlength="<?php echo $MAXfirst_name ?>" name="search_first_name" id="search_first_name"></td>
-	</tr>
-	<tr>
-	<td align="right"> <font class="sh_text"><?php echo $label_last_name ?>:</font> </td><td align="left"><input type="text" size="18" maxlength="<?php echo $MAXlast_name ?>" name="search_last_name" id="search_last_name"></td>
-	</tr>
-	<tr>
-	<td align="right"> <font class="sh_text"><?php echo $label_city ?>:</font> </td><td align="left"><input type="text" size="18" maxlength="<?php echo $MAXcity ?>" name="search_city" id="search_city"></td>
-	</tr>
-	<tr>
-	<td align="right"> <font class="sh_text"><?php echo $label_state ?>:</font> </td><td align="left"><input type="text" size="18" maxlength="<?php echo $MAXstate ?>" name="search_state" id="search_state"></td>
-	</tr>
-	<tr>
-	<td align="right"> <font class="sh_text"><?php echo $label_postal_code ?>:</font> </td><td align="left"><input type="text" size="10" maxlength="<?php echo $MAXpostal_code ?>" name="search_postal_code" id="search_postal_code"></td>
-	</tr>
-	<tr>
+
+	<?php
+	if ($label_vendor_lead_code == '---HIDE---')
+        {echo " </td><td align=\"left\"><input type=\"hidden\" name=\"search_vendor_lead_code\" id=\"search_vendor_lead_code\" value=\"\" />";}
+	else
+        {
+		$label_vendor_lead_code = preg_replace("/---READONLY---|---REQUIRED---/","",$label_vendor_lead_code);
+		echo "<td align=\"right\"> <font class=\"sh_text\">$label_vendor_lead_code:</font> </td><td align=\"left\"><input type=\"text\" size=\"18\" maxlength=\"$MAXvendor_lead_code\" name=\"search_vendor_lead_code\" id=\"search_vendor_lead_code\"></td>\n";
+		}
+	echo "</tr><tr>\n";
+
+	if ($label_first_name == '---HIDE---')
+        {echo " </td><td align=\"left\"><input type=\"hidden\" name=\"search_first_name\" id=\"search_first_name\" value=\"\" />";}
+	else
+        {
+		$label_first_name = preg_replace("/---READONLY---|---REQUIRED---/","",$label_first_name);
+		echo "<td align=\"right\"> <font class=\"sh_text\">$label_first_name:</font> </td><td align=\"left\"><input type=\"text\" size=\"18\" maxlength=\"$MAXfirst_name\" name=\"search_first_name\" id=\"search_first_name\"></td>\n";
+		}
+	echo "</tr><tr>\n";
+
+	if ($label_last_name == '---HIDE---')
+        {echo " </td><td align=\"left\"><input type=\"hidden\" name=\"search_last_name\" id=\"search_last_name\" value=\"\" />";}
+	else
+        {
+		$label_last_name = preg_replace("/---READONLY---|---REQUIRED---/","",$label_last_name);
+		echo "<td align=\"right\"> <font class=\"sh_text\">$label_last_name:</font> </td><td align=\"left\"><input type=\"text\" size=\"18\" maxlength=\"$MAXlast_name\" name=\"search_last_name\" id=\"search_last_name\"></td>\n";
+		}
+	echo "</tr><tr>\n";
+
+	if ($label_city == '---HIDE---')
+        {echo " </td><td align=\"left\"><input type=\"hidden\" name=\"search_city\" id=\"search_city\" value=\"\" />";}
+	else
+        {
+		$label_city = preg_replace("/---READONLY---|---REQUIRED---/","",$label_city);
+		echo "<td align=\"right\"> <font class=\"sh_text\">$label_city:</font> </td><td align=\"left\"><input type=\"text\" size=\"18\" maxlength=\"$MAXcity\" name=\"search_city\" id=\"search_city\"></td>\n";
+		}
+	echo "</tr><tr>\n";
+
+	if ($label_state == '---HIDE---')
+        {echo " </td><td align=\"left\"><input type=\"hidden\" name=\"search_state\" id=\"search_state\" value=\"\" />";}
+	else
+        {
+		$label_state = preg_replace("/---READONLY---|---REQUIRED---/","",$label_state);
+		echo "<td align=\"right\"> <font class=\"sh_text\">$label_state:</font> </td><td align=\"left\"><input type=\"text\" size=\"18\" maxlength=\"$MAXstate\" name=\"search_state\" id=\"search_state\"></td>\n";
+		}
+	echo "</tr><tr>\n";
+
+	if ($label_postal_code == '---HIDE---')
+        {echo " </td><td align=\"left\"><input type=\"hidden\" name=\"search_postal_code\" id=\"search_postal_code\" value=\"\" />";}
+	else
+        {
+		$label_postal_code = preg_replace("/---READONLY---|---REQUIRED---/","",$label_postal_code);
+		echo "<td align=\"right\"> <font class=\"sh_text\">$label_postal_code:</font> </td><td align=\"left\"><input type=\"text\" size=\"10\" maxlength=\"$MAXpostal_code\" name=\"search_postal_code\" id=\"search_postal_code\"></td>\n";
+		}
+	echo "</tr><tr>\n";
+
+	?>
+
 	<td align="center" colspan="2"><br /> <font class="sh_text"><a href="#" onclick="LeadSearchSubmit();return false;"><?php echo _QXZ("SUBMIT SEARCH"); ?></a> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a href="#" onclick="LeadSearchReset();return false;"><?php echo _QXZ("reset form"); ?></a></font></td>
 	</tr>
 	</table>
