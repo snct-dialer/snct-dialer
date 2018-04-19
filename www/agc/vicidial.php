@@ -8714,7 +8714,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 			delete xmlhttp;
 			}
 
-		if ( (MD_ring_secondS > 49) && (MD_ring_secondS > manual_dial_timeout) )
+		if ( (MD_ring_secondS > 29) && (MD_ring_secondS > manual_dial_timeout) )
 			{
 			alert_box("Dial timed out, contact your system administrator\n");
 			button_click_log = button_click_log + "" + SQLdate + "-----DialTimedOut---" + MD_ring_secondS + " " + manual_dial_timeout + " " + MD_channel_look + " " + "|";
