@@ -66,6 +66,10 @@
   * Add upstream Rev. 2950:
     - www/vicidial/admin_bulk_tools.php: Updated column labels in user copy
         function to add ones that had been created since script was made.
+  * Add upstream Rev. 2951:
+    - www/vicidial/AST_admin_template_maker.php,
+      www/vicidial/admin_listloader_fourth_gen.php: Enforce User Group campaign
+        permissions for templates based on list_id.
 
 2.25.25b
   [Jörg Frings-Fürst]

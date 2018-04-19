@@ -1,7 +1,7 @@
 <?php
 # AST_admin_template_maker.php - version 2.10
 # 
-# Copyright (C) 2017  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 120402-2132 - First Build
@@ -14,6 +14,7 @@
 # 141114-0912 - Finalized adding QXZ translation to all admin files
 # 141229-2024 - Added code for on-the-fly language translations display
 # 170409-1532 - Added IP List validation code
+# 180324-0942 - Enforce User Group campaign permissions for templates based on list_id
 #
 
 require("dbconnect_mysqli.php");
@@ -210,10 +211,10 @@ $LOGallowed_campaignsSQL='';
 $whereLOGallowed_campaignsSQL='';
 if (!preg_match('/\-ALL/i', $LOGallowed_campaigns))
 	{
-	echo "<BR/>**$LOGallowed_campaigns**";
+#	echo "<BR/>**$LOGallowed_campaigns**";
 	$rawLOGallowed_campaignsSQL = preg_replace("/ -/",'',$LOGallowed_campaigns);
 	$rawLOGallowed_campaignsSQL = preg_replace("/ /","','",$rawLOGallowed_campaignsSQL);
-	echo "<BR/>##$rawLOGallowed_campaignsSQL##";
+#	echo "<BR/>##$rawLOGallowed_campaignsSQL##";
 	$LOGallowed_campaignsSQL = "and campaign_id IN('$rawLOGallowed_campaignsSQL')";
 	$whereLOGallowed_campaignsSQL = "where campaign_id IN('$rawLOGallowed_campaignsSQL')";
 	}
@@ -422,7 +423,7 @@ if ($success_msg)
 		</td>
 		<td align="left" width='50%'><form action="<?php echo $PHP_SELF; ?>" method="post"><font class="standard"><?php echo _QXZ("Select template to delete"); ?>:</font><?php echo "$NWB#template_maker-delete_template$NWE"; ?><BR><select name="template_id" onChange="loadIFrame('hide_new_template_form', '')">
 <?php
-$template_stmt="select template_id, template_name from vicidial_custom_leadloader_templates order by template_id asc";
+$template_stmt="SELECT template_id, template_name FROM vicidial_custom_leadloader_templates WHERE list_id IN (SELECT list_id FROM vicidial_lists $whereLOGallowed_campaignsSQL) ORDER BY template_id asc;";
 $template_rslt=mysql_to_mysqli($template_stmt, $link);
 if (mysqli_num_rows($template_rslt)>0) {
 	if ($update_template) {echo "<option value='$update_template' selected>$update_template</option>\n";} else {echo "<option value='' selected>--"._QXZ("Choose an existing template")."--</option>\n";}
