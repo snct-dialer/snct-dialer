@@ -14,11 +14,25 @@ the variable names that you want to use --A--phone_number--B-- just
 like in the SCRIPTS tab section. If you want to use custom fields in a web form 
 address, you need to add &CF_uses_custom_fields=Y as part of your URL.
 
+For multi-home networks where the agents may have more than one restricted path
+to the webserver, you can use the "LOCALFQDN" variable as part of the webform 
+URL to grab the server that the agent used to get to the agent screen and use
+that as the server in the URL. So, if you have http://LOCALFQDN/agc/test.php as
+the webform URL, and one agent goes to http://10.0.0.2/agc/vicidial.php to log
+in to the agent screen, then the agent screen will change that webform link to
+http://10.0.0.2/agc/test.php. If another agent, on a different network segment,
+has to log in to the same server using http://10.0.1.2:8080/agc/vicidial.php, 
+then that agent will have the same webform URL changed to 
+http://10.0.1.2:8080/agc/test.php. This allows you to still use absolute links
+in both webforms and script IFRAMES to avoid issues with using relative links.
+
+
 Start Call URL -  This web URL address is not seen by the agent, but
 it is called every time a call is sent to an agent if it is populated.
 Uses the same variables as the web form fields and scripts. This URL
 can NOT be a relative path. The Start URL does not work for Manual
 dial calls. Default is blank.
+
 
 Dispo Call URL - This web URL address is not seen by the agent, but it
 is called every time a call is dispositioned by an agent if it is
@@ -31,6 +45,7 @@ agent, and callback_datetime is the agent selected date and time for a callback.
 The actual talk time in seconds of the call is talk_time. This URL can NOT be a 
 relative path. It is always called from the webserver. Default is blank.
 
+
 Add Lead URL -  This web URL address is not seen by the agent, but it is called
 every time a lead is added to the system through the inbound process. Default 
 is blank. You must begin this URL with VAR if you want to use variables, and of
@@ -40,6 +55,7 @@ lead_id, vendor_lead_code, list_id, phone_number, phone_code, did_id,
 did_extension, did_pattern, did_description, uniqueid, call_id. This feature is
 only available for In-Groups.
 
+
 No Agent Call URL - This is similar to Dispo Call URL, but it is for calls
 that are not sent to agents such as DROPs, No Answers, Busys and timeouts. This 
 option is available for Campaigns and In-Groups. This feature will only work for
@@ -47,8 +63,10 @@ auto-dial and inbound calls, not manual dial calls. For inbound calls, the
 specific in-group that a call was sent to needs to have the No Agent Call URL 
 field filled in or this function will not run for that call.
 
+
 CRM Popup Login - If set to Y, the CRM Popup Address is used to open a new 
 window on agent login to this campaign. Default is N.
+
 
 CRM Popup Address - The web address of a CRM login page, it can have variables 
 populated just like the web form address, with the VAR in the front and using 

@@ -70,6 +70,13 @@
     - www/vicidial/AST_admin_template_maker.php,
       www/vicidial/admin_listloader_fourth_gen.php: Enforce User Group campaign
         permissions for templates based on list_id.
+  * Add upstream Rev. 2952:
+    - UPGRADE,
+      docs/CALL_URL_FEATURES.txt,
+      www/agc/functions.php,
+      www/agc/vdc_script_display.php,
+      www/agc/vicidial.php: Added code for LOCALFQDN conversion to browser
+        used server URL script iframes.
 
 2.25.25b
   [Jörg Frings-Fürst]
