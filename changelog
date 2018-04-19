@@ -99,6 +99,11 @@
       docs/NON-AGENT_API.txt,
       www/vicidial/admin.php,
       www/vicidial/non_agent_api.php: Added update_did non-agent API function.
+  * Add upstream Rev. 2960:
+    - bin/AST_output_update.pl,
+      bin/AST_phone_update.pl,
+      bin/AST_send_action_child.pl: Updated telnet login process to work with
+        newer Asterisk versions.
 
 2.25.25b
   [Jörg Frings-Fürst]
