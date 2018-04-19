@@ -34,6 +34,10 @@
       www/vicidial/admin_modify_lead.php,
       www/vicidial/help.php: Added bulk change function for campaign a. ingroup
         ranks in user modify page, Added source_id_display system option.
+  * Add upstream Rev. 2941:
+    - www/vicidial/admin_modify_lead.php: Added CIDdisplay.
+  * Add upstream Rev. 2942:
+    - www/vicidial/AST_parkstats.php: Added unique lead ID count.
 
 2.25.25b
   [Jörg Frings-Fürst]
