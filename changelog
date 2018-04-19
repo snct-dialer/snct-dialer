@@ -63,6 +63,9 @@
       www/vicidial/AST_CLOSERstats_v2.php,
       www/vicidial/user_stats.php:  Fix for user time calculation,
         subtracted queue_seconds.
+  * Add upstream Rev. 2950:
+    - www/vicidial/admin_bulk_tools.php: Updated column labels in user copy
+        function to add ones that had been created since script was made.
 
 2.25.25b
   [Jörg Frings-Fürst]
