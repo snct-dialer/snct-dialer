@@ -1,7 +1,7 @@
 <?php
 # user_stats.php
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -56,6 +56,8 @@
 # 170228-1626 - Change to display emergency manager logout note
 # 170409-1555 - Added IP List validation code
 # 170412-2150 - Added park_rpt display option
+# 180323-2308 - Fix for user time calculation, subtracted queue_seconds
+# 180410-1754 - Added Agent lead switch log and manager pause code approval log displays
 #
 
 $startMS = microtime();
@@ -150,6 +152,7 @@ if ($search_archived_data)
 	$user_call_log_table=use_archive_table("user_call_log");
 	$vicidial_lead_search_log_table=use_archive_table("vicidial_lead_search_log");
 	$vicidial_agent_skip_log_table=use_archive_table("vicidial_agent_skip_log");
+	$vicidial_agent_function_log=use_archive_table("vicidial_agent_function_log");
 	$call_log_table=use_archive_table("call_log");
 	$vicidial_log_table=use_archive_table("vicidial_log");
 	}
@@ -165,6 +168,7 @@ else
 	$user_call_log_table="user_call_log";
 	$vicidial_lead_search_log_table="vicidial_lead_search_log";
 	$vicidial_agent_skip_log_table="vicidial_agent_skip_log";
+	$vicidial_agent_function_log="vicidial_agent_function_log";
 	$call_log_table="call_log";
 	$vicidial_log_table="vicidial_log";
 	}
@@ -702,7 +706,7 @@ else
 			$o++;
 			}
 
-		$stmt="SELECT count(*),status, sum(length_in_sec) from ".$vicidial_closer_log_table." where user='" . mysqli_real_escape_string($link, $user) . "' and call_date >= '" . mysqli_real_escape_string($link, $begin_date) . " 0:00:01'  and call_date <= '" . mysqli_real_escape_string($link, $end_date) . " 23:59:59' $query_call_status group by status order by status";
+		$stmt="SELECT count(*),status, sum(length_in_sec-queue_seconds) from ".$vicidial_closer_log_table." where user='" . mysqli_real_escape_string($link, $user) . "' and call_date >= '" . mysqli_real_escape_string($link, $begin_date) . " 0:00:01'  and call_date <= '" . mysqli_real_escape_string($link, $end_date) . " 23:59:59' $query_call_status group by status order by status";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$VCLstatuses_to_print = mysqli_num_rows($rslt);
 		$o=0;
@@ -1630,6 +1634,72 @@ else
 			$MAIN.="<td align=right><font size=2> $row[5] </td>\n";
 			$MAIN.="<td align=right><font size=2> $row[3] </td></tr>\n";
 			$CSV_text11.="\"\",\"$u\",\"$row[1]\",\"$row[2]\",\"$row[4]\",\"$row[5]\",\"$row[3]\"\n";
+			}
+		$MAIN.="</TABLE><BR><BR>\n";
+
+	##### BEGIN switch lead log entries #####
+		$MAIN.="<B>"._QXZ("AGENT LEAD SWITCHES FOR THIS TIME PERIOD: (10000 record limit)")."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='$download_link&file_download=13'>["._QXZ("DOWNLOAD")."]</a></B>\n";
+		$MAIN.="<TABLE width=750 cellspacing=0 cellpadding=1>\n";
+		$MAIN.="<tr><td><font size=1># </td><td NOWRAP><font size=2>"._QXZ("DATE/TIME")." &nbsp; </td><td align=right NOWRAP><font size=2> "._QXZ("FROM LEAD ID")." &nbsp; </td><td align=right NOWRAP><font size=2> "._QXZ("TO LEAD ID")." &nbsp; </td><td align=right NOWRAP><font size=2> "._QXZ("CALL ID")." &nbsp; </td><td align=right NOWRAP><font size=2> "._QXZ("UNIQUEID")." &nbsp; </td><td align=right NOWRAP><font size=2> "._QXZ("PHONE")." &nbsp; </td><td align=right NOWRAP><font size=2> "._QXZ("CAMPAIGN")."</td></tr>\n";
+		$CSV_text13.="\""._QXZ("AGENT LEAD SWITCHES FOR THIS TIME PERIOD: (10000 record limit)")."\"\n";
+		$CSV_text13.="\"\",\"#\",\""._QXZ("DATE/TIME")."\",\""._QXZ("FROM LEAD ID")."\",\""._QXZ("TO LEAD ID")."\",\""._QXZ("CALL ID")."\",\""._QXZ("UNIQUEID")."\",\""._QXZ("PHONE")."\",\""._QXZ("CAMPAIGN")."\"\n";
+
+		$stmt="SELECT event_time,lead_id,stage,caller_code,uniqueid,comments,campaign_id from ".$vicidial_agent_function_log." where user='" . mysqli_real_escape_string($link, $user) . "' and event_time >= '" . mysqli_real_escape_string($link, $begin_date) . " 0:00:01'  and event_time <= '" . mysqli_real_escape_string($link, $end_date) . " 23:59:59' and function='switch_lead' order by event_time desc limit 10000;";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$logs_to_print = mysqli_num_rows($rslt);
+
+		$u=0;
+		while ($logs_to_print > $u) 
+			{
+			$row=mysqli_fetch_row($rslt);
+			if (preg_match("/1$|3$|5$|7$|9$/i", $u))
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+			else
+				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
+
+			$u++;
+			$MAIN.="<tr $bgcolor>";
+			$MAIN.="<td><font size=1>$u</td>";
+			$MAIN.="<td><font size=2>$row[0]</td>";
+			$MAIN.="<td align=center><font size=2> <A HREF=\"admin_modify_lead.php?lead_id=$row[1]\" target=\"_blank\">$row[1]</A> </td>\n";
+			$MAIN.="<td align=center><font size=2> <A HREF=\"admin_modify_lead.php?lead_id=$row[2]\" target=\"_blank\">$row[2]</A> </td>\n";
+			$MAIN.="<td><font size=2>$row[3]</td>";
+			$MAIN.="<td align=right><font size=2> $row[4] </td>\n";
+			$MAIN.="<td align=right><font size=2> $row[5] </td>\n";
+			$MAIN.="<td align=right><font size=2> $row[6] </td></tr>\n";
+			$CSV_text13.="\"\",\"$u\",\"$row[0]\",\"$row[1]\",\"$row[2]\",\"$row[3]\",\"$row[4]\",\"$row[5]\",\"$row[6]\"\n";
+			}
+		$MAIN.="</TABLE><BR><BR>\n";
+
+	##### BEGIN manager pause code approval entries #####
+		$MAIN.="<B>"._QXZ("MANAGER PAUSE CODE APPROVALS FOR THIS TIME PERIOD: (10000 record limit)")."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='$download_link&file_download=14'>["._QXZ("DOWNLOAD")."]</a></B>\n";
+		$MAIN.="<TABLE width=750 cellspacing=0 cellpadding=1>\n";
+		$MAIN.="<tr><td><font size=1># </td><td NOWRAP><font size=2>"._QXZ("DATE/TIME")." &nbsp; </td><td align=right NOWRAP><font size=2> "._QXZ("AGENT")." &nbsp; </td><td align=center NOWRAP><font size=2> "._QXZ("AGENT USER GROUP")." &nbsp; </td><td align=center NOWRAP><font size=2> "._QXZ("CAMPAIGN")." &nbsp; </td><td align=right NOWRAP><font size=2> "._QXZ("PAUSE CODE")." &nbsp; </td></tr>\n";
+		$CSV_text14.="\""._QXZ("MANAGER PAUSE CODE APPROVALS FOR THIS TIME PERIOD: (10000 record limit)")."\"\n";
+		$CSV_text14.="\"\",\"#\",\""._QXZ("DATE/TIME")."\",\""._QXZ("AGENT")."\",\""._QXZ("AGENT USER GROUP")."\",\""._QXZ("CAMPAIGN")."\",\""._QXZ("PAUSE CODE")."\"\n";
+
+		$stmt="SELECT event_time,user,user_group,campaign_id,comments from ".$vicidial_agent_function_log." where stage='" . mysqli_real_escape_string($link, $user) . "' and event_time >= '" . mysqli_real_escape_string($link, $begin_date) . " 0:00:01'  and event_time <= '" . mysqli_real_escape_string($link, $end_date) . " 23:59:59' and function='mgrapr_pause_code' order by event_time desc limit 10000;";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$logs_to_print = mysqli_num_rows($rslt);
+
+		$u=0;
+		while ($logs_to_print > $u) 
+			{
+			$row=mysqli_fetch_row($rslt);
+			if (preg_match("/1$|3$|5$|7$|9$/i", $u))
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+			else
+				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
+
+			$u++;
+			$MAIN.="<tr $bgcolor>";
+			$MAIN.="<td><font size=1>$u</td>";
+			$MAIN.="<td><font size=2>$row[0]</td>";
+			$MAIN.="<td align=center><font size=2> <A HREF=\"$PHP_SELF?user=$row[1]\" target=\"_blank\">$row[1]</A> </td>\n";
+			$MAIN.="<td align=center><font size=2>$row[2]</td>";
+			$MAIN.="<td align=center><font size=2>$row[3]</td>";
+			$MAIN.="<td align=right><font size=2> $row[4] </td>\n";
+			$CSV_text14.="\"\",\"$u\",\"$row[0]\",\"$row[1]\",\"$row[2]\",\"$row[3]\",\"$row[4]\"\n";
 			}
 		$MAIN.="</TABLE><BR><BR>\n";
 		}

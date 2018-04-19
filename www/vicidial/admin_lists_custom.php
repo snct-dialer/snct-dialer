@@ -49,10 +49,11 @@
 # 171116-1544 - Added option for duplicate custom field entries(field_duplicate)
 # 180123-1817 - cleanup of enc code
 # 180125-1733 - Added more reserved words from MySQL/MariaDB
+# 180316-0754 - Translated phrases fixes, issue #1081
 #
 
-$admin_version = '2.14-41';
-$build = '180125-1733';
+$admin_version = '2.14-42';
+$build = '180316-0754';
 
 require("dbconnect_mysqli.php");
 require("functions.php");
@@ -1110,7 +1111,7 @@ if ( ($action == "MODIFY_CUSTOM_FIELDS") and ($list_id > 99) )
 		echo "<tr $bgcolor align=right><td><font size=1>$A_field_rank[$o] - $A_field_order[$o] &nbsp; &nbsp; </td>";
 		echo "<td align=right><font size=2> <a href=\"#ANCHOR_$A_field_label[$o]\">$LcolorB$A_field_label[$o]$LcolorE</a> &nbsp; &nbsp; </td>";
 		echo "<td align=right><font size=2> $A_field_name[$o] &nbsp; &nbsp; </td>";
-		echo "<td align=right><font size=2> $A_field_type[$o] &nbsp; &nbsp; </td>";
+		echo "<td align=right><font size=2> "._QXZ("$A_field_type[$o]")." &nbsp; &nbsp; </td>";
 		if ($hide_enc < 1)
 			{
 			echo "<td align=right><font size=2> $A_field_encrypt[$o] &nbsp; &nbsp; </td>";

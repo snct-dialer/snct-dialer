@@ -1641,8 +1641,10 @@ sub process_request
 								$epc_countCAMPDATA++;
 								}
 							$sthA->finish();
+				#			if ($AGILOG) {$agi_string = "AUTO-ALT TEST: |$VD_status|$VDL_status|$VD_auto_alt_dial_statuses|$VD_auto_alt_dial|";   &agi_output;}
 							if ($VD_auto_alt_dial_statuses =~ / $VD_status | $VDL_status /)
 								{
+								if ($AGILOG) {$agi_string = "AUTO-ALT MATCH: |$VD_status|$VDL_status|$VD_auto_alt_dial_statuses|$VD_auto_alt_dial|";   &agi_output;}
 								if ( ($VD_auto_alt_dial =~ /(ALT_ONLY|ALT_AND_ADDR3|ALT_AND_EXTENDED)/) && ($VD_alt_dial =~ /NONE|MAIN/) )
 									{
 									$alt_dial_skip=0;

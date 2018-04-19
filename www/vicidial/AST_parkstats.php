@@ -1,7 +1,7 @@
 <?php 
 # AST_parkstats.php
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -18,6 +18,7 @@
 # 170412-2129 - Updated for new park logging
 # 170808-0220 - Added detailed log option
 # 170823-2154 - Added HTML formatting and screen colors
+# 180311-0327 - Added unique lead ID count
 #
 
 $startMS = microtime();
@@ -387,7 +388,7 @@ $HTML.="<tr bgcolor='#".$SSstd_row1_background."'>";
 $HTML.="<th><font size='2'>"._QXZ("Park Stats",48)." $NOW_TIME</th>";
 $HTML.="</tr>\n";
 
-$stmt="select count(*),sum(parked_sec) from park_log where parked_time >= '$query_date 00:00:01' and parked_time <= '$query_date 23:59:59' and status IN('HUNGUP','GRABBED','GRABBEDIVR','IVRPARKED','PARKED') and channel_group='" . mysqli_real_escape_string($link, $group) . "';";
+$stmt="select count(*),sum(parked_sec) from park_log where parked_time >= '$query_date 00:00:00' and parked_time <= '$query_date 23:59:59' and status IN('HUNGUP','GRABBED','GRABBEDIVR','IVRPARKED','PARKED') and channel_group='" . mysqli_real_escape_string($link, $group) . "';";
 $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {$MAIN.="$stmt\n";}
 $row=mysqli_fetch_row($rslt);
@@ -397,7 +398,14 @@ $average_hold_seconds = MathZDC($row[1], $row[0]);
 $average_hold_seconds = round($average_hold_seconds, 0);
 $average_hold_seconds =	sprintf("%10s", $average_hold_seconds);
 
+$stmt="select count(distinct lead_id) from park_log where parked_time >= '$query_date 00:00:00' and parked_time <= '$query_date 23:59:59' and status IN('HUNGUP','GRABBED','GRABBEDIVR','IVRPARKED','PARKED') and channel_group='" . mysqli_real_escape_string($link, $group) . "';";
+$rslt=mysql_to_mysqli($stmt, $link);
+if ($DB) {$MAIN.="$stmt\n";}
+$row=mysqli_fetch_row($rslt);
+$TOTALleads =	sprintf("%10s", $row[0]);
+
 $TEXT.=_QXZ("Total Calls parked in this Group:",45)." $TOTALcalls\n";
+$TEXT.=_QXZ("Total Leads parked in this Group:",45)." $TOTALleads\n";
 $TEXT.=_QXZ("Average Hold Time(seconds) for Parked Calls:",45)." $average_hold_seconds\n";
 $TEXT.="\n";
 $TEXT.="---------- "._QXZ("DROPS")."\n";
@@ -405,11 +413,12 @@ $TEXT.="---------- "._QXZ("DROPS")."\n";
 $HTML.="<tr bgcolor='#".$SSstd_row2_background."'>";
 $HTML.="<td><font size=2><B>"._QXZ("TOTALS")."</B></BR>";
 $HTML.=_QXZ("Total Calls parked in this Group:")." $TOTALcalls</BR>";
+$HTML.=_QXZ("Total Leads parked in this Group:")." $TOTALleads</BR>";
 $HTML.=_QXZ("Average Hold Time(seconds) for Parked Calls:")." $average_hold_seconds";
 $HTML.="</BR></BR>";
 $HTML.="<B>"._QXZ("DROPS")."</B></BR>";
 
-$stmt="select count(*),sum(parked_sec) from park_log where parked_time >= '$query_date 00:00:01' and parked_time <= '$query_date 23:59:59' and status ='HUNGUP' and channel_group='" . mysqli_real_escape_string($link, $group) . "' and (talked_sec < 5 or talked_sec is null);";
+$stmt="select count(*),sum(parked_sec) from park_log where parked_time >= '$query_date 00:00:00' and parked_time <= '$query_date 23:59:59' and status ='HUNGUP' and channel_group='" . mysqli_real_escape_string($link, $group) . "' and (talked_sec < 5 or talked_sec is null);";
 $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {$MAIN.="$stmt\n";}
 $row=mysqli_fetch_row($rslt);
@@ -435,9 +444,9 @@ $HTML.="</font></td></tr></table>";
 
 $TEXT.="\n";
 $TEXT.="---------- "._QXZ("USER PARK STATS").":\n";
-$TEXT.="+---------------------------------------------+------------+--------+--------+------------+--------+--------+\n";
-$TEXT.="| "._QXZ("USER",43)." | "._QXZ("CALLS",10)." | "._QXZ("TIME M",6)." | "._QXZ("AVRG M",6)." | "._QXZ("DROPS",10)." | "._QXZ("TIME M",6)." | "._QXZ("AVRG M",6)." |\n";
-$TEXT.="+---------------------------------------------+------------+--------+--------+------------+--------+--------+\n";
+$TEXT.="+---------------------------------------------+------------+------------+--------+--------+------------+--------+--------+\n";
+$TEXT.="| "._QXZ("USER",43)." | "._QXZ("CALLS",10)." | "._QXZ("LEADS",10)." | "._QXZ("TIME M",6)." | "._QXZ("AVRG M",6)." | "._QXZ("DROPS",10)." | "._QXZ("TIME M",6)." | "._QXZ("AVRG M",6)." |\n";
+$TEXT.="+---------------------------------------------+------------+------------+--------+--------+------------+--------+--------+\n";
 
 $HTML.="<BR><table border='0' cellpadding='3' cellspacing='1'>";
 $HTML.="<tr bgcolor='#".$SSstd_row1_background."'>";
@@ -446,6 +455,7 @@ $HTML.="</tr>\n";
 $HTML.="<tr bgcolor='#".$SSstd_row1_background."'>";
 $HTML.="<th><font size='2'>"._QXZ("USER")."</font></th>";
 $HTML.="<th><font size='2'>"._QXZ("CALLS")."</font></th>";
+$HTML.="<th><font size='2'>"._QXZ("LEADS")."</font></th>";
 $HTML.="<th><font size='2'>"._QXZ("TIME M")."</font></th>";
 $HTML.="<th><font size='2'>"._QXZ("AVRG M")."</font></th>";
 $HTML.="<th><font size='2'>"._QXZ("DROPS")."</font></th>";
@@ -453,7 +463,7 @@ $HTML.="<th><font size='2'>"._QXZ("TIME M")."</font></th>";
 $HTML.="<th><font size='2'>"._QXZ("AVRG M")."</font></th>";
 $HTML.="</tr>\n";
 
-$stmt="select park_log.user,full_name,count(*),sum(parked_sec),avg(parked_sec) from park_log,vicidial_users where parked_time >= '$query_date 00:00:01' and parked_time <= '$query_date 23:59:59' and status IN('HUNGUP','GRABBED','GRABBEDIVR','IVRPARKED','PARKED') and channel_group='" . mysqli_real_escape_string($link, $group) . "' and parked_sec is not null and park_log.user is not null and park_log.user=vicidial_users.user group by park_log.user;";
+$stmt="select park_log.user,full_name,count(*),sum(parked_sec),avg(parked_sec) from park_log,vicidial_users where parked_time >= '$query_date 00:00:00' and parked_time <= '$query_date 23:59:59' and status IN('HUNGUP','GRABBED','GRABBEDIVR','IVRPARKED','PARKED') and channel_group='" . mysqli_real_escape_string($link, $group) . "' and parked_sec is not null and park_log.user is not null and park_log.user=vicidial_users.user group by park_log.user;";
 $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {$MAIN.="$stmt\n";}
 $users_to_print = mysqli_num_rows($rslt);
@@ -465,6 +475,7 @@ while ($i < $users_to_print)
 	$user[$i] =			$row[0];
 	$full_name[$i] =	sprintf("%-43s", "$row[0] - $row[1]"); while(strlen($full_name[$i])>43) {$full_name[$i] = substr("$full_name[$i]", 0, -1);}
 	$USERcalls[$i] =	sprintf("%10s", $row[2]);
+	$USERleads[$i] =	0;
 	$USERtotTALK =	$row[3];
 	$USERavgTALK =	$row[4];
 
@@ -493,7 +504,7 @@ while ($i < $users_to_print)
 $i=0;
 while ($i < $users_to_print)
 	{
-	$stmt="select count(*),sum(parked_sec),avg(parked_sec) from park_log where parked_time >= '$query_date 00:00:01' and parked_time <= '$query_date 23:59:59' and status IN('HUNGUP') and channel_group='" . mysqli_real_escape_string($link, $group) . "' and parked_sec is not null and park_log.user='$user[$i]' group by park_log.user;";
+	$stmt="select count(*),sum(parked_sec),avg(parked_sec) from park_log where parked_time >= '$query_date 00:00:00' and parked_time <= '$query_date 23:59:59' and status IN('HUNGUP') and channel_group='" . mysqli_real_escape_string($link, $group) . "' and parked_sec is not null and park_log.user='$user[$i]' group by park_log.user;";
 	$rslt=mysql_to_mysqli($stmt, $link);
 	if ($DB) {$MAIN.="$stmt\n";}
 	$drop_to_print = mysqli_num_rows($rslt);
@@ -525,11 +536,22 @@ while ($i < $users_to_print)
 		$USERavgDROP_MS[$i] =		sprintf("%6s", $USERavgDROP_MS[$i]);
 		}
 
-	$TEXT.="| <a href=\"user_stats.php?park_rpt=1&begin_date=$query_date&end_date=$query_date&user=$user[$i]\">$full_name[$i]</a> | $USERcalls[$i] | $USERtotTALK_MS[$i] | $USERavgTALK_MS[$i] | $USERdrops[$i] | $USERtotDROP_MS[$i] | $USERavgDROP_MS[$i] |\n";
+	$stmt="select count(distinct lead_id) from park_log where parked_time >= '$query_date 00:00:00' and parked_time <= '$query_date 23:59:59' and status IN('HUNGUP','GRABBED','GRABBEDIVR','IVRPARKED','PARKED') and channel_group='" . mysqli_real_escape_string($link, $group) . "' and parked_sec is not null and park_log.user='$user[$i]' group by park_log.user;";
+	$rslt=mysql_to_mysqli($stmt, $link);
+	if ($DB) {$MAIN.="$stmt\n";}
+	$drop_to_print = mysqli_num_rows($rslt);
+	if ($users_to_print > 0)
+		{
+		$row=mysqli_fetch_row($rslt);
+		$USERleads[$i] =	sprintf("%10s", $row[0]);
+		}
+
+	$TEXT.="| <a href=\"user_stats.php?park_rpt=1&begin_date=$query_date&end_date=$query_date&user=$user[$i]\">$full_name[$i]</a> | $USERcalls[$i] | $USERleads[$i] | $USERtotTALK_MS[$i] | $USERavgTALK_MS[$i] | $USERdrops[$i] | $USERtotDROP_MS[$i] | $USERavgDROP_MS[$i] |\n";
 
 	$HTML.="<tr bgcolor='#".$SSstd_row2_background."'>";
 	$HTML.="<th><font size='2'><a href=\"user_stats.php?park_rpt=1&begin_date=$query_date&end_date=$query_date&user=$user[$i]\">$full_name[$i]</a></font></th>";
 	$HTML.="<th><font size='2'>$USERcalls[$i]</font></th>";
+	$HTML.="<th><font size='2'>$USERleads[$i]</font></th>";
 	$HTML.="<th><font size='2'>$USERtotTALK_MS[$i]</font></th>";
 	$HTML.="<th><font size='2'>$USERavgTALK_MS[$i]</font></th>";
 	$HTML.="<th><font size='2'>$USERdrops[$i]</font></th>";
@@ -540,7 +562,7 @@ while ($i < $users_to_print)
 	$i++;
 	}
 
-$TEXT.="+---------------------------------------------+------------+--------+--------+------------+--------+--------+\n";
+$TEXT.="+---------------------------------------------+------------+------------+--------+--------+------------+--------+--------+\n";
 $HTML.="</table>\n";
 
 ##############################
@@ -741,7 +763,7 @@ $TEXT.=$MAIN2."\n";
 $HTML.=$MAIN2."</font></pre></td></tr></table>";
 
 if ($show_details) {
-	$stmt="select * from park_log where parked_time >= '$query_date 00:00:01' and parked_time <= '$query_date 23:59:59' and channel_group='" . mysqli_real_escape_string($link, $group) . "'  order by parked_time, grab_time, hangup_time desc"; 
+	$stmt="select * from park_log where parked_time >= '$query_date 00:00:00' and parked_time <= '$query_date 23:59:59' and channel_group='" . mysqli_real_escape_string($link, $group) . "'  order by parked_time, grab_time, hangup_time desc"; 
 	$rslt=mysql_to_mysqli($stmt, $link);
 
 	if (!$lower_limit) {$lower_limit=1;}

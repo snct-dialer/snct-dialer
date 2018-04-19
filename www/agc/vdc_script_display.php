@@ -38,9 +38,10 @@
 # 171006-2055 - Added inbound_list_script_override option
 # 171126-1124 - Added email message display from inbound emails only
 # 180224-1406 - Added LOGINvar variables, and options.php $INSERT_ variables
+# 180327-1356 - Added code for LOCALFQDN conversion to browser-used server URL for script iframes
 #
 
-$version = '2.14-32';
+$version = '2.14-33';
 $build = '180224-1406';
 
 require_once("dbconnect_mysqli.php");
@@ -269,6 +270,13 @@ $MT[0]='';
 $agents='@agents';
 $script_height = ($script_height - 20);
 $full_script_height = ($script_height + 200);
+
+$server_name = getenv("SERVER_NAME");
+$server_port = getenv("SERVER_PORT");
+$CL=':';
+if (($server_port == '80') or ($server_port == '443') ) {$server_port='';}
+else {$server_port = "$CL$server_port";}
+$FQDN = "$server_name$server_port";
 
 $IFRAME=0;
 $IFRAMEencode=1;
@@ -693,6 +701,7 @@ $script_text = preg_replace('/--A--LOGINvarTHREE--B--/i',"$LOGINvarTHREE",$scrip
 $script_text = preg_replace('/--A--LOGINvarFOUR--B--/i',"$LOGINvarFOUR",$script_text);
 $script_text = preg_replace('/--A--LOGINvarFIVE--B--/i',"$LOGINvarFIVE",$script_text);
 $script_text = preg_replace('/--A--web_vars--B--/i',"$web_vars",$script_text);
+$script_text = preg_replace("/LOCALFQDN/",$FQDN,$script_text);
 
 if ($CF_uses_custom_fields=='Y')
 	{

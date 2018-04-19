@@ -4,7 +4,7 @@
 #
 # functions for agent scripts
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 #
 # CHANGES:
@@ -43,6 +43,8 @@
 # 171021-1340 - Fix to update default field if duplicate field in custom fields changed
 # 171116-2333 - Added code for duplicate custom fields
 # 171129-0812 - Fixed issue with duplicate custom fields
+# 180319-1339 - Added entry_date as custom field SCRIPT type variable
+# 180327-1357 - Added code for LOCALFQDN conversion to browser-used server URL script iframes
 #
 
 # $mysql_queries = 26
@@ -321,6 +323,13 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user,$DB,$call_i
 	$STARTtime = date("U");
 	$TODAY = date("Y-m-d");
 	$NOW_TIME = date("Y-m-d H:i:s");
+
+	$server_name = getenv("SERVER_NAME");
+	$server_port = getenv("SERVER_PORT");
+	$CL=':';
+	if (($server_port == '80') or ($server_port == '443') ) {$server_port='';}
+	else {$server_port = "$CL$server_port";}
+	$FQDN = "$server_name$server_port";
 
 	$vicidial_list_fields = '|lead_id|vendor_lead_code|source_id|list_id|gmt_offset_now|called_since_last_reset|phone_code|phone_number|title|first_name|middle_initial|last_name|address1|address2|address3|city|state|province|postal_code|country_code|gender|date_of_birth|alt_phone|email|security_phrase|comments|called_count|last_local_call_time|rank|owner|';
 	$custom_required_fields='|';
@@ -1005,6 +1014,7 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user,$DB,$call_i
 		if ($list_lead_ct > 0)
 			{
 			$row=mysqli_fetch_row($rslt);
+			$entry_date			= trim($row[1]);
 			$dispo				= trim($row[3]);
 			$tsr				= trim($row[4]);
 			$vendor_id			= trim($row[5]);
@@ -1078,6 +1088,7 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user,$DB,$call_i
 			}
 
 		$CFoutput = preg_replace('/--U--lead_id--V--/i',urlencode($lead_id),$CFoutput);
+		$CFoutput = preg_replace('/--U--entry_date--V--/i',urlencode($entry_date),$CFoutput);
 		$CFoutput = preg_replace('/--U--vendor_id--V--/i',urlencode($vendor_id),$CFoutput);
 		$CFoutput = preg_replace('/--U--vendor_lead_code--V--/i',urlencode($vendor_lead_code),$CFoutput);
 		$CFoutput = preg_replace('/--U--list_id--V--/i',urlencode($list_id),$CFoutput);
@@ -1145,6 +1156,7 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user,$DB,$call_i
 		$CFoutput = preg_replace('/--U--list_description--V--/i',urlencode($list_description),$CFoutput);
 
 		$CFoutput = preg_replace('/--A--lead_id--B--/i',"$lead_id",$CFoutput);
+		$CFoutput = preg_replace('/--A--entry_date--B--/i',"$entry_date",$CFoutput);
 		$CFoutput = preg_replace('/--A--vendor_id--B--/i',"$vendor_id",$CFoutput);
 		$CFoutput = preg_replace('/--A--vendor_lead_code--B--/i',"$vendor_lead_code",$CFoutput);
 		$CFoutput = preg_replace('/--A--list_id--B--/i',"$list_id",$CFoutput);
@@ -1212,6 +1224,7 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user,$DB,$call_i
 		$CFoutput = preg_replace('/--A--list_description--B--/i',"$list_description",$CFoutput);
 
 		$CFoutput = preg_replace('/--A--TABLEper_call_notes--B--/i',"$NOTESout",$CFoutput);
+		$CFoutput = preg_replace("/LOCALFQDN/",$FQDN,$CFoutput);
 
 		# custom fields replacement
 		$o=0;

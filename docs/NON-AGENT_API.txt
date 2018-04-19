@@ -1,4 +1,4 @@
-NON-AGENT API DOCUMENT           Started: 2008-07-24         Updated: 2018-02-08
+NON-AGENT API DOCUMENT           Started: 2008-07-24         Updated: 2018-03-31
 
 This document describes the functions of an API(Application Programming 
 Interface) for all functions NOT directly relating to the VICIDIAL Agent screen. 
@@ -41,6 +41,7 @@ server_refresh - forces a conf file refresh on all telco servers in the cluster
 check_phone_number - allows you to check if a phone number is valid and dialable
 logged_in_agents - list of agents that are logged in to the system
 update_campaign - updates campaign settings in the system
+update_did - updates Inbound DID information in the system
 phone_number_log - exports list of calls placed to one of more phone numbers
 ccc_lead_info - outputs lead data for cross-cluster-communication call
 lead_status_search - displays all field values of all leads that match the status and call date in request
@@ -134,6 +135,7 @@ Changes:
 171229-1602 - Added lead_status_search function
 180109-1313 - Added call_status_stats function
 180208-1655 - Added call_dispo_report function
+180331-1716 - Added options to update_campaign, add_user, update_phone. Added function update_did
 
 
 API Functions use the 'function' variable
@@ -997,6 +999,10 @@ custom_three -		1-100 characters
 custom_four -		1-100 characters
 custom_five -		1-100 characters
 wrapup_seconds_override - number from -1 to 9999
+agent_choose_ingroups - 0 or 1, default 1
+agent_choose_blended -	0 or 1, default 1
+closer_default_blended - 0 or 1, default 0
+in_groups -		pipe-delimited list of inbound groups to make selected for the user "SALESLINE|SUPPORT"
 
 NOTE: This function does not work with Vtiger integration
 
@@ -1177,10 +1183,13 @@ protocol -		Must be one of these: 'IAX2','SIP','Zap','EXTERNAL'
 registration_password -	1-20 characters
 phone_full_name -	1-50 characters
 local_gmt -		timezone setting, not adjusting for DST, default: '-5.00'
-outbound_cid -		1-20 digits
+outbound_cid -		6-18 digits
+outbound_alt_cid -	6-18 digits, to clear this field send '--BLANK--'
 phone_context -		a phone context, default is 'default'
-email -			1-100 characters
+email -			5-100 characters, email address for voicemail, to clear this field send '--BLANK--'
 admin_user_group -	a valid user group or '---ALL---'
+phone_ring_timeout -	1-3 digits, default '60'
+delete_vm_after_email - Y or N, default 'N'
 
 Example URL strings for API calls:
 http://server/vicidial/non_agent_api.php?source=test&function=update_phone&user=6666&pass=1234&extension=55000&dialplan_number=55000&voicemail_id=55000&phone_login=55000&phone_pass=test&server_ip=192.168.198.5&protocol=SIP&registration_password=test&phone_full_name=Extension+55000&local_gmt=-5.00&outbound_cid=7275551212
@@ -1201,7 +1210,14 @@ ERROR: update_phone YOU MUST USE A VALID REGISTRATION PASSWORD - 6666|0
 ERROR: update_phone YOU MUST USE A VALID PROTOCOL - 6666|0
 ERROR: update_phone YOU MUST USE A VALID PHONE NAME - 6666|0
 ERROR: update_phone YOU MUST USE A VALID PHONE CONTEXT - 6666|0
+ERROR: update_phone YOU MUST USE A VALID EMAIL - 6666|x.com
 ERROR: update_phone NO UPDATES DEFINED - 6666|0
+ERROR: update_phone ACTIVE MUST BE Y OR N, THIS IS AN OPTIONAL FIELD - 6666|0
+ERROR: update_phone OUTBOUND CID MUST BE FROM 6 TO 18 DIGITS, THIS IS AN OPTIONAL FIELD - 6666|0
+ERROR: update_phone OUTBOUND ALT CID MUST BE FROM 6 TO 18 DIGITS, THIS IS AN OPTIONAL FIELD - 6666|0
+ERROR: update_phone USER GROUP MUST BE FROM 2 TO 20 CHARACTERS, THIS IS AN OPTIONAL FIELD - 6666|0
+ERROR: update_phone PHONE RING TIMEOUT MUST BE FROM 2 TO 180 SECONDS, THIS IS AN OPTIONAL FIELD - 6666|0
+ERROR: update_phone DELETE VOICEMAIL AFTER EMAIL MUST BE Y OR N, THIS IS AN OPTIONAL FIELD - 6666|0
 SUCCESS: update_phone PHONE HAS BEEN UPDATED - 6666|cc100|10.0.9.8|SIP|100
 SUCCESS: update_phone PHONE HAS BEEN DELETED - 6666|cc100|10.0.9.8|
 NOTICE: update_phone USER DOES NOT HAVE PERMISSION TO DELETE PHONES - 6666|7878
@@ -1603,6 +1619,8 @@ hopper_level -		Must be from 1 to 2000
 reset_hopper -		Must be one of these: 'Y','N', will default to 'N'
 dial_method -		Must be one of these: 'MANUAL','RATIO','INBOUND_MAN','ADAPT_AVERAGE','ADAPT_HARD_LIMIT','ADAPT_TAPERED'
 dial_timeout -		Must be from 1 to 120
+outbound_cid -		1-20 digits
+lead_filter_id -	Must be a valid Filter in the system, or '---NONE---' to not use a filter
 NOTES: 
  - please use no special characters like apostrophes, quotes or amphersands
 
@@ -1623,10 +1641,64 @@ ERROR: update_campaign ROUTING EXTENSION MUST BE FROM 3 TO 20 CHARACTERS, THIS I
 ERROR: update_campaign HOPPER LEVEL MUST BE FROM 1 TO 2000, THIS IS AN OPTIONAL FIELD - 6666|12345
 ERROR: update_campaign DIAL TIMEOUT MUST BE FROM 1 TO 120, THIS IS AN OPTIONAL FIELD - 6666|123
 ERROR: update_campaign CAMPAIGN NAME MUST BE FROM 6 TO 40 CHARACTERS, THIS IS AN OPTIONAL FIELD - 6666|test
+ERROR: update_campaign CAMPAIGN CID MUST BE FROM 6 TO 20 CHARACTERS, THIS IS AN OPTIONAL FIELD - 6666|test
+ERROR: update_campaign CAMPAIGN LEAD FILTER MUST BE A VALID FILTER IN THE SYSTEM, THIS IS AN OPTIONAL FIELD - 6666|test
 ERROR: update_campaign ACTIVE MUST BE Y OR N, THIS IS AN OPTIONAL FIELD - 6666|U
 NOTICE: update_campaign NO UPDATES DEFINED - 6666|
 NOTICE: update_campaign HOPPER HAS BEEN RESET - 6666|1101|324
 SUCCESS: update_campaign CAMPAIGN HAS BEEN UPDATED - 6666|1101
+
+
+
+
+
+--------------------------------------------------------------------------------
+update_did - updates Inbound DID information in the vicidial_inbound_dids table
+
+NOTE: api user for this function must have user_level set to 8 or higher and "Modify DIDs" enabled
+
+REQUIRED FIELDS-
+did_pattern -		2-50 characters, must be a valid DID in the system
+			   NOTE: special characters in the did_pattern need to be URL encoded, for example the plus sign '+' must be sent as '%2B'
+source -		description of what originated the API call (maximum 20 characters)
+
+EDITABLE FIELDS- 
+did_description -	6-50 characters
+active -		Must be one of these: 'Y','N'
+did_route -		must be one of these: 'EXTEN','VOICEMAIL','AGENT','PHONE','IN_GROUP','CALLMENU','VMAIL_NO_INST'
+record_call -		must be one of these: 'Y','N','Y_QUEUESTOP'
+extension -		1-50 digits
+exten_context -		1-50 characters
+voicemail_ext -		1-10 digits
+phone_extension -	1-100 characters
+server_ip -		must be all numbers and dots, max 15 characters
+group -			a valid in-group group_id
+filter_clean_cid_number - 1-20 characters
+
+Example URL strings for API calls:
+http://server/vicidial/non_agent_api.php?source=test&user=6666&pass=1234&function=update_did&did_pattern=%2B1727555112&did_description=Updated+test+API+DID&active=Y
+http://server/vicidial/non_agent_api.php?source=test&user=6666&pass=1234&function=update_did&did_pattern=7275553331&did_description=Testing+DID&active=N&did_route=EXTEN&record_call=Y_QUEUESTOP&extension=8300&exten_context=notdefault&voicemail_ext=8301&phone_extension=55000&server_ip=192.168.198.5&group=TEST_IN2&filter_clean_cid_number=R10
+
+Example responses:
+ERROR: update_did USER DOES NOT HAVE PERMISSION TO UPDATE DIDS - 6666
+ERROR: update_did YOU MUST USE ALL REQUIRED FIELDS - 6666|1
+ERROR: update_did NOT AN ALLOWED DID - 98762
+ERROR: update_did DID DOES NOT EXIST - 6666|1000
+ERROR: update_did DID DESCRIPTION MUST BE FROM 6 TO 50 CHARACTERS, THIS IS AN OPTIONAL FIELD - 6666|012
+ERROR: update_did ACTIVE MUST BE Y OR N, THIS IS AN OPTIONAL FIELD - 6666|U
+ERROR: update_did DID ROUTE IS NOT VALID, THIS IS AN OPTIONAL FIELD - 6666|12
+ERROR: update_did RECORD CALL MUST BE Y OR N, THIS IS AN OPTIONAL FIELD - 6666|
+ERROR: update_did EXTENSION MUST BE FROM 1 TO 50 CHARACTERS, THIS IS AN OPTIONAL FIELD - 6666|
+ERROR: update_did EXTENSION CONTEXT MUST BE FROM 1 TO 50 CHARACTERS, THIS IS AN OPTIONAL FIELD - 6666|
+ERROR: update_did VOICEMAIL EXTENSION MUST BE FROM 1 TO 10 CHARACTERS, THIS IS AN OPTIONAL FIELD - 6666|
+ERROR: update_did PHONE EXTENSION MUST BE FROM 1 TO 100 CHARACTERS, THIS IS AN OPTIONAL FIELD - 6666|
+ERROR: update_did SERVER IP MUST BE A VALID SERVER IN THE SYSTEM, THIS IS AN OPTIONAL FIELD - 6666|0.0.0.0
+ERROR: update_did GROUP ID MUST BE A VALID INBOUND GROUP IN THE SYSTEM, THIS IS AN OPTIONAL FIELD - 6666|test
+ERROR: update_did CLEAN CID NUMBER MUST BE FROM 1 TO 20 CHARACTERS, THIS IS AN OPTIONAL FIELD - 6666|
+NOTICE: update_did NO UPDATES DEFINED - 6666|
+SUCCESS: update_did DID HAS BEEN UPDATED - 6666|1101
+
+
 
 
 ERROR: NO FUNCTION SPECIFIED

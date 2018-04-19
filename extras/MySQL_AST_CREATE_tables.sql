@@ -669,7 +669,8 @@ modify_auto_reports ENUM('1','0') default '0',
 modify_ip_lists ENUM('1','0') default '0',
 ignore_ip_list ENUM('1','0') default '0',
 ready_max_logout MEDIUMINT(7) default '-1',
-export_gdpr_leads ENUM('0','1','2') default '0'
+export_gdpr_leads ENUM('0','1','2') default '0',
+pause_code_approval ENUM('1','0') default '0'
 ) ENGINE=MyISAM;
 
 CREATE UNIQUE INDEX user ON vicidial_users (user);
@@ -1002,7 +1003,8 @@ next_dial_my_callbacks ENUM('DISABLED','ENABLED') default 'DISABLED',
 inbound_no_agents_no_dial_container VARCHAR(40) default '---DISABLED---',
 inbound_no_agents_no_dial_threshold SMALLINT(5) default '0',
 cid_group_id VARCHAR(20) default '---DISABLED---',
-pause_max_dispo VARCHAR(6) default 'PAUSMX'
+pause_max_dispo VARCHAR(6) default 'PAUSMX',
+script_top_dispo ENUM('Y', 'N') default 'N'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_lists (
@@ -1597,6 +1599,7 @@ pause_code_name VARCHAR(30),
 billable ENUM('NO','YES','HALF') default 'NO',
 campaign_id VARCHAR(8),
 time_limit SMALLINT(5) UNSIGNED default '65000',
+require_mgr_approval ENUM('NO','YES') default 'NO',
 index (campaign_id)
 ) ENGINE=MyISAM;
 
@@ -1793,7 +1796,8 @@ anyone_callback_inactive_lists ENUM('default','NO_ADD_TO_HOPPER','KEEP_IN_HOPPER
 enable_gdpr_download_deletion ENUM('0','1','2') default '0',
 autoanswer_enable ENUM('Y','N') default 'N',
 autoanswer_prefix VARCHAR(5) default 'AA',
-autoanswer_delay TINYINT default '1'
+autoanswer_delay TINYINT default '1',
+source_id_display ENUM('0','1') default '0'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_campaigns_list_mix (
@@ -4014,6 +4018,26 @@ cid_group_type ENUM('AREACODE','STATE') default 'AREACODE',
 user_group VARCHAR(20) default '---ALL---'
 ) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+CREATE TABLE vicidial_agent_function_log (
+agent_function_log_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+agent_log_id INT(9) UNSIGNED,
+user VARCHAR(20),
+function VARCHAR(20),
+event_time DATETIME,
+lead_id INT(9) UNSIGNED,
+campaign_id VARCHAR(8),
+user_group VARCHAR(20),
+caller_code VARCHAR(30) default '',
+comments VARCHAR(40) default '',
+stage VARCHAR(40) default '',
+uniqueid VARCHAR(20) default '',
+index (event_time),
+index (caller_code),
+index (user),
+index (lead_id),
+index (stage)
+) ENGINE=MyISAM;
+
 
 ALTER TABLE vicidial_email_list MODIFY message text character set utf8;
 
@@ -4222,6 +4246,9 @@ CREATE UNIQUE INDEX visla_key on vicidial_inbound_survey_log_archive(uniqueid, c
 CREATE TABLE vicidial_inbound_callback_queue_archive LIKE vicidial_inbound_callback_queue; 
 ALTER TABLE vicidial_inbound_callback_queue_archive MODIFY icbq_id INT(9) UNSIGNED NOT NULL;
 
+CREATE TABLE vicidial_agent_function_log_archive LIKE vicidial_agent_function_log;
+ALTER TABLE vicidial_agent_function_log_archive MODIFY agent_function_log_id INT(9) UNSIGNED NOT NULL;
+
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;
 
@@ -4298,4 +4325,4 @@ INSERT INTO vicidial_settings_containers(container_id,container_notes,container_
 
 UPDATE system_settings set vdc_agent_api_active='1';
 
-UPDATE system_settings SET db_schema_version='1532',db_schema_update_date=NOW(),reload_timestamp=NOW();
+UPDATE system_settings SET db_schema_version='1533',db_schema_update_date=NOW(),reload_timestamp=NOW();

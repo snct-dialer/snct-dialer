@@ -5,7 +5,7 @@
 # and/or vicidial_closer_log information by status, list_id and date range. 
 # downloads to a flat text file that is tab delimited
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -53,6 +53,7 @@
 # 161111-1232 - Fixed debug output to work with export
 # 161122-1136 - Added code to check for recordings in archived/non-archived tables if none found
 # 170409-1547 - Added IP List validation code
+# 180418-1555 - Fix for missing call notes on inbound calls
 #
 
 $startMS = microtime();
@@ -1086,7 +1087,7 @@ if ($run_export > 0)
 				{
 				if (strlen($export_vicidial_id[$i]) > 0)
 					{
-					$stmt = "SELECT call_notes from vicidial_call_notes where vicidial_id='$export_vicidial_id[$i]' LIMIT 1;";
+					$stmt = "SELECT call_notes from vicidial_call_notes where vicidial_id IN('$export_vicidial_id[$i]','$export_uniqueid[$i]') order by notesid desc LIMIT 1;";
 					$rslt=mysql_to_mysqli($stmt, $link);
 					if ($DB) {echo "$stmt\n";}
 					$notes_ct = mysqli_num_rows($rslt);
