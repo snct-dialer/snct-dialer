@@ -1,7 +1,7 @@
 <?php 
 # realtime_report.php
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # live real-time stats for the VICIDIAL Auto-Dialer all servers
 #
@@ -39,12 +39,13 @@
 # 170318-0942 - Added websocket variable for embedded webphone
 # 170321-1145 - Added pause code time limits colors
 # 170409-1557 - Added IP List validation code
+# 180330-1344 - Added fix for WebRTC webphone microphone permissions
 #
 
 $startMS = microtime();
 
-$version = '2.14-27';
-$build = '170409-1557';
+$version = '2.14-28';
+$build = '180330-1344';
 
 header ("Content-type: text/html; charset=utf-8");
 
@@ -1034,7 +1035,7 @@ if (strlen($monitor_phone)>1)
 			$b64_system_key =		base64_encode($system_key);
 
 			$WebPhonEurl = "$webphone_url?phone_login=$b64_phone_login&phone_login=$b64_phone_login&phone_pass=$b64_phone_pass&server_ip=$b64_server_ip&callerid=$b64_callerid&protocol=$b64_protocol&codecs=$b64_codecs&options=$b64_options&system_key=$b64_system_key";
-			$webphone_content = "<iframe src=\"$WebPhonEurl\" style=\"width:" . $webphone_width . ";height:" . $webphone_height . ";background-color:transparent;z-index:17;\" scrolling=\"auto\" frameborder=\"0\" allowtransparency=\"true\" id=\"webphone\" name=\"webphone\" width=\"" . $webphone_width . "\" height=\"" . $webphone_height . "\"> </iframe>";
+			$webphone_content = "<iframe src=\"$WebPhonEurl\" style=\"width:" . $webphone_width . ";height:" . $webphone_height . ";background-color:transparent;z-index:17;\" scrolling=\"auto\" frameborder=\"0\" allowtransparency=\"true\" id=\"webphone\" name=\"webphone\" width=\"" . $webphone_width . "\" height=\"" . $webphone_height . "\" allow=\"microphone\"> </iframe>";
 			}
 		}
 	}

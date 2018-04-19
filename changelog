@@ -79,6 +79,12 @@
         used server URL script iframes.
   * Add upstream Rev. 2953:
     - www/vicidial/admin_campaign_multi_alt.php: Added screen colors.
+  * Add upstream Rev. 2954:
+    - www/agc/vicidial.php: Typo. 
+  * Add upstream Rev. 2955:
+    - www/vicidial/realtime_report.php: Added fix for WebRTC webphone
+       microphone permissions.
+
 2.25.25b
   [Jörg Frings-Fürst]
   * www/vicidial/help.php: Correct anchor.
