@@ -41,6 +41,11 @@
   * Add upstream Rev. 2943:
     - www/agc/vicidial.php: Fix for lead search screen hidden fields,
         issue #1079.
+  * Add upstream Rev. 2944:
+    - New bin/AST_expired_list_exporter.pl.
+    - www/vicidial/admin.php,
+      www/vicidial/admin_lists_custom.php:Translated phrases fixes, issue #1081. 
+      
 
 2.25.25b
   [Jörg Frings-Fürst]

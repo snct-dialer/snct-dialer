@@ -4417,12 +4417,13 @@ else
 # 180306-1718 - Added script_top_dispo feature
 # 180310-2230 - Added bulk change function for campaign and ingroup ranks in user modify page
 # 180310-2321 - Added source_id_display system option
+# 180316-0751 - Translated phrases fixes, issue #1081
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-664a';
-$build = '180310-2321';
+$admin_version = '2.14-665a';
+$build = '180316-0751';
 
 
 $STARTtime = date("U");
@@ -22655,7 +22656,7 @@ if ($ADD==31)
 				echo "<select size=1 name=list_order_mix>\n";
 				echo "$mixes_list";
 				if (preg_match('/DISABLED/', $list_order_mix))
-					{echo "<option selected value=\"$list_order_mix\">"._QXZ("$list_order_mix")." - $mixname_list[$list_order_mix]</option>\n";}
+					{echo "<option selected value=\"$list_order_mix\">"._QXZ("$list_order_mix")." - "._QXZ("$mixname_list[$list_order_mix]")."</option>\n";}
 				else
 					{echo "<option selected value=\"ACTIVE\">"._QXZ("ACTIVE")." ($mixname_list[ACTIVE])</option>\n";}
 				echo "</select>$NWB#campaigns-list_order_mix$NWE";
@@ -25032,7 +25033,7 @@ if ($ADD==34)
 				echo "<select size=1 name=list_order_mix>\n";
 				echo "$mixes_list";
 				if (preg_match('/DISABLED/', $list_order_mix))
-					{echo "<option selected value=\"$list_order_mix\">"._QXZ("$list_order_mix")." - $mixname_list[$list_order_mix]</option>\n";}
+					{echo "<option selected value=\"$list_order_mix\">"._QXZ("$list_order_mix")." - "._QXZ("$mixname_list[$list_order_mix]")."</option>\n";}
 				else
 					{echo "<option selected value=\"ACTIVE\">"._QXZ("ACTIVE")." ($mixname_list[ACTIVE])</option>\n";}
 				echo "</select>$NWB#campaigns-list_order_mix$NWE";
