@@ -130,6 +130,9 @@
   * Add upstream Rev. 2965:
     - www/vicidial/call_report_export.php: Fix for missing call notes on
        inbound calls.
+  * Add upstream Rev. 2966:
+    - www/agc/vdc_db_query.php: Fix for not using campaign in
+        vicidial_campaign_statuses queries.
 
 2.25.25b
   [Jörg Frings-Fürst]
