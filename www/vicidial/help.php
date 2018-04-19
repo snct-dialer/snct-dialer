@@ -154,6 +154,7 @@
 # 180211-1119 - Added source_vlc_status_report
 # 180214-0042 - Added cid_groups
 # 180217-0810 - Added pause_max_dispo
+# 180306-1639 - Added script_top_dispo
 #
 
 require("dbconnect_mysqli.php");
@@ -1755,6 +1756,11 @@ if ($SSoutbound_autodial_active > 0)
 <A NAME="campaigns-disable_dispo_status">
 <BR>
 <B><?php echo _QXZ("Disable Dispo Status"); ?> -</B><?php echo _QXZ("If the Disable Dispo Screen option is set to DISPO_DISABLED, then this field must be filled in. You can use any disposition you want for this field as long as it is 1 to 6 characters in length with only letters and numbers."); ?>
+
+<BR>
+<A NAME="campaigns-script_top_dispo">
+<BR>
+<B><?php echo _QXZ("Script on top of Dispo"); ?> -</B><?php echo _QXZ("If you are using an IFRAME in your SCRIPT tab contents, and the page you are using is sending statuses through the Agent API, you may want to use this feature to cover the Dispostion screen with the script tab after a call is hung up. Default is N for disabled."); ?>
 
 <BR>
 <A NAME="campaigns-dead_max">

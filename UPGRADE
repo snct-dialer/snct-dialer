@@ -278,6 +278,10 @@ OTHER CHANGES:
 
 74. Added NO_READY option for no_agent_no_queue in-group feature.
 
+75. Added campaign option "Script on top of Dispo" to allow the agent screen
+	script tab to cover the dispo screen after hanging up the customer to
+	allow for Agent-API-enabled IFRAMEs to control the agent dispo process.
+
 
 
 
