@@ -84,6 +84,11 @@
   * Add upstream Rev. 2955:
     - www/vicidial/realtime_report.php: Added fix for WebRTC webphone
        microphone permissions.
+  * Add upstream Rev. 2956:
+    - www/vicidial/admin.php,
+      www/vicidial/admin_bulk_tools.php,
+      www/vicidial/list_download.php: Added download of CID Group records
+        feature.
 
 2.25.25b
   [Jörg Frings-Fürst]

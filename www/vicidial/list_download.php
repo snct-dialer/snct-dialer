@@ -4,7 +4,7 @@
 # downloads the entire contents of a vicidial list ID to a flat text file
 # that is tab delimited
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -34,6 +34,7 @@
 # 150903-1538 - Added compatibility for custom fields data options
 # 170306-0858 - Added proper report URL logging
 # 170409-1556 - Added IP List validation code
+# 180330-1414 - Added option for downloading of CID Groups
 #
 
 $startMS = microtime();
@@ -357,6 +358,44 @@ elseif ($download_type == 'fpgn')
 		exit;
 		}
 	}
+elseif ($download_type == 'cidgroup')
+	{
+	##### CID Group list validation #####
+	$event_code_type='CID GROUP';
+	$stmt="select count(*) from vicidial_cid_groups where cid_group_id='$group_id';";
+	$rslt=mysql_to_mysqli($stmt, $link);
+	if ($DB) {echo "$stmt\n";}
+	$count_to_print = mysqli_num_rows($rslt);
+	if ($count_to_print > 0)
+		{
+		$row=mysqli_fetch_row($rslt);
+		$lists_allowed =$row[0];
+		$i++;
+		}
+
+	if ($lists_allowed < 1)
+		{
+		echo _QXZ("You are not allowed to download this list").": $group_id\n";
+		exit;
+		}
+
+	$stmt="select count(*) from vicidial_campaign_cid_areacodes where campaign_id='$group_id';";
+	$rslt=mysql_to_mysqli($stmt, $link);
+	if ($DB) {echo "$stmt\n";}
+	$count_to_print = mysqli_num_rows($rslt);
+	if ($count_to_print > 0)
+		{
+		$row=mysqli_fetch_row($rslt);
+		$leads_count =$row[0];
+		$i++;
+		}
+
+	if ($leads_count < 1)
+		{
+		echo _QXZ("There are no records in this CID group").": $group_id\n";
+		exit;
+		}
+	}
 else
 	{
 	##### list download validation #####
@@ -433,6 +472,13 @@ elseif ($download_type == 'fpgn')
 	$header_columns='';
 	$stmt="select phone_number from vicidial_filter_phone_numbers where filter_phone_group_id='$group_id';";
 	}
+elseif ($download_type == 'cidgroup')
+	{
+	$TXTfilename = "CIDGROUP_$group_id$US$FILE_TIME.txt";
+	$header_row = "areacodestate,cid,description,active";
+	$header_columns='';
+	$stmt="select areacode,outbound_cid,cid_description,active from vicidial_campaign_cid_areacodes where campaign_id='$group_id';";
+	}
 else
 	{
 	$TXTfilename = "LIST_$list_id$US$FILE_TIME.txt";
@@ -471,6 +517,10 @@ while ($i < $leads_to_print)
 	if ( ($download_type == 'systemdnc') or ($download_type == 'dnc') or ($download_type == 'fpgn') )
 		{
 		$row_data[$i] .= "$row[0]";
+		}
+	elseif ($download_type == 'cidgroup')
+		{
+		$row_data[$i] .= "$row[0],$row[1],$row[2],$row[3]";
 		}
 	else
 		{

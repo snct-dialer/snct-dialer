@@ -4418,12 +4418,13 @@ else
 # 180310-2230 - Added bulk change function for campaign and ingroup ranks in user modify page
 # 180310-2321 - Added source_id_display system option
 # 180316-0751 - Translated phrases fixes, issue #1081
+# 180330-1425 - Added download of CID Group records feature
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-665a';
-$build = '180316-0751';
+$admin_version = '2.14-666a';
+$build = '180330-1425';
 
 
 $STARTtime = date("U");
@@ -36128,7 +36129,9 @@ if ($ADD==396111111111)
 			}
 		if ( ($LOGuser_level >= 9) and ( (preg_match("/Administration Change Log/",$LOGallowed_reports)) or (preg_match("/ALL REPORTS/",$LOGallowed_reports)) ) )
 			{
-			echo "<br><br><a href=\"$PHP_SELF?ADD=720000000000000&category=CIDGROUPS&stage=$cid_group_id\">"._QXZ("Click here to see Admin changes to this CID GROUP")."</FONT>\n";
+			echo "<br><br><a href=\"$PHP_SELF?ADD=720000000000000&category=CIDGROUPS&stage=$cid_group_id\">"._QXZ("Click here to see Admin changes to this CID GROUP")."\n";
+
+			echo "<br><br><a href=\"list_download.php?group_id=$cid_group_id&download_type=cidgroup\">"._QXZ("Click here to download this CID GROUP")."</FONT>\n";
 			}
 		}
 	else

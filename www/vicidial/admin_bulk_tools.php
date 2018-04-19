@@ -23,13 +23,14 @@
 # 180213-2245 - Added CID Groups ability for AC-CID section
 # 180301-1538 - Fixed issue with STATE CID Groups insertion
 # 180323-1643 - Updated column labels in user copy function to add ones that had been created since script was made.
+# 180330-1427 - Added 'active' column to CID Group import
 #
 
 require("dbconnect_mysqli.php");
 require("functions.php");
 
-$version = '2.14-17';
-$build = '180323-1643';
+$version = '2.14-18';
+$build = '180330-1427';
 
 $PHP_AUTH_USER=$_SERVER['PHP_AUTH_USER'];
 $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
@@ -54,6 +55,7 @@ if (isset($_POST["ACCIDdids"]))						{$ACCIDto_insert_raw=$_POST["ACCIDdids"];}
 if (isset($_POST["ACCIDto_insert"]))				{$ACCIDto_insert_CONFIRMED=$_POST["ACCIDto_insert"];}
 if (isset($_POST["ACCIDdescription"]))				{$ACCIDdescription=$_POST["ACCIDdescription"];}
 if (isset($_POST["ACCIDactive"]))					{$ACCIDactive=$_POST["ACCIDactive"];}
+if (isset($_POST["ACCIDactiveinput"]))				{$ACCIDactiveinput=$_POST["ACCIDactiveinput"];}
 if (isset($_POST["ACCIDdelete_campaign"]))			{$ACCIDdelete_campaign=$_POST["ACCIDdelete_campaign"];}
 if (isset($_POST["ACCIDdelete_from"]))				{$ACCIDdelete_from=$_POST["ACCIDdelete_from"];}
 if (isset($_POST["ACCIDdelete_from_CONFIRMED"]))	{$ACCIDdelete_from_CONFIRMED=$_POST["ACCIDdelete_from_CONFIRMED"];}
@@ -85,12 +87,14 @@ if ($ACCIDmethod == "CSV")
 		$ACCIDareacode_raw[$i] = $ACCIDrow[0];
 		$ACCIDto_insert_raw[$i] = $ACCIDrow[1];
 		$ACCIDdescription_raw[$i] = $ACCIDrow[2];
+		$ACCIDactiveinput_raw[$i] = $ACCIDrow[3];
 		$i++;
 		}
 	$ACCIDareacode_raw = preg_replace('/[^0-9a-zA-Z]/','',$ACCIDareacode_raw);
 	$ACCIDto_insert_raw = preg_replace('/[^0-9]/','',$ACCIDto_insert_raw);
 	$ACCIDto_insert_raw_ArFilter = array_filter($ACCIDto_insert_raw);
 	$ACCIDdescription_raw = preg_replace('/[^-_.0-9a-zA-Z ]/','',$ACCIDdescription_raw);
+	$ACCIDactiveinput_raw = preg_replace('/[^A-Z ]/','',$ACCIDactiveinput_raw);
 	}
 else 
 	{
@@ -294,7 +298,7 @@ if ($form_to_run == "help")
 	echo "<BR><BR>";
 	
 	echo "<A NAME=\"ACCIDADD\"><BR>";
-	echo "<B>"._QXZ("AC-CID Bulk Add")." -</B> "._QXZ("This allows you to paste in a listing of CIDs to insert into a campaign AC-CID list or CID Group list. There are two methods to choose from: <ul> <li><b>STATE LOOKUP</b> - This will take a list of CIDs and insert them as Area Code Caller IDs into the selected campaign. The area code lookup is designed to work only with numbers in the North American Numbering Plan as it uses the first three digits of each CID. The description will automatically be filled with the appropriate US state abbreviation corresponding to the given CIDs 3-digit area code. <li><b>CSV</b> - This will take a comma separated list in the format of  NPA,CID,DESCRIPTION and insert each line into the specified campaigns AC-CID list using the supplied values. For example, given a listing of  813,7271234567,Florida  will result in an AC-CID entry for area code 813 using the CID 7271234567 and a description of -Florida-. Descriptions are limited to 50 characters. For CID Groups of a STATE type, use this format for CSV-  STATE,CID,DESCRIPTION.<li><b>STATE FILL</b> - Similar to the STATE LOOKUP method above, this will take a list of CIDs and insert them as AC-CIDs in the specified campaign but will also make an entry for each area code in a state based off the state the CID is in. For example, if given the CID 7271234567, 19 CID entries will be created with the same CID, one each for every area code in Florida. If you are inserting into a CID Group that is a STATE type, then you will not want to use the STATE FILL method.</ul> CIDs must be between 6 and 20 digits in length and only digits 0-9 are allowed. Optionally, you can have the AC-CIDs set to active upon insertion.");
+	echo "<B>"._QXZ("AC-CID Bulk Add")." -</B> "._QXZ("This allows you to paste in a listing of CIDs to insert into a campaign AC-CID list or CID Group list. There are two methods to choose from: <ul> <li><b>STATE LOOKUP</b> - This will take a list of CIDs and insert them as Area Code Caller IDs into the selected campaign. The area code lookup is designed to work only with numbers in the North American Numbering Plan as it uses the first three digits of each CID. The description will automatically be filled with the appropriate US state abbreviation corresponding to the given CIDs 3-digit area code. <li><b>CSV</b> - This will take a comma separated list in the format of  NPA,CID,DESCRIPTION,ACTIVE and insert each line into the specified campaigns AC-CID list using the supplied values. For example, given a listing of  813,7271234567,Florida,Y  will result in an AC-CID entry for area code 813 using the CID 7271234567 and a description of -Florida- with the status being active. Descriptions are limited to 50 characters. For CID Groups of a STATE type, use this format for CSV-  STATE,CID,DESCRIPTION,ACTIVE. The -ACTIVE- column will only be used if the Active select list above is set to -Input-.<li><b>STATE FILL</b> - Similar to the STATE LOOKUP method above, this will take a list of CIDs and insert them as AC-CIDs in the specified campaign but will also make an entry for each area code in a state based off the state the CID is in. For example, if given the CID 7271234567, 19 CID entries will be created with the same CID, one each for every area code in Florida. If you are inserting into a CID Group that is a STATE type, then you will not want to use the STATE FILL method.</ul> CIDs must be between 6 and 20 digits in length and only digits 0-9 are allowed. Optionally, you can have the AC-CIDs set to active upon insertion.");
 	echo "<BR><BR>";
 	
 	echo "<A NAME=\"ACCIDDELETE\"><BR>";
@@ -502,6 +506,7 @@ if ($form_to_run == "ACCID")
 	$ACCIDto_insert = serialize($ACCIDto_insert);
 	$ACCIDareacode = serialize($ACCIDareacode);
 	if ($ACCIDmethod=="CSV") {$ACCIDdescription_raw = serialize($ACCIDdescription_raw);}
+	if ($ACCIDmethod=="CSV") {$ACCIDactiveinput_raw = serialize($ACCIDactiveinput_raw);}
 	echo "<html><form action=$PHP_SELF method=POST>";
 	echo "<input type=hidden name=form_to_run value='ACCIDconfirmed'>";
 	echo "<input type=hidden name=DB value='$DB'>";
@@ -509,6 +514,7 @@ if ($form_to_run == "ACCID")
 	echo "<input type=hidden name=ACCIDcampaign value='$ACCIDcampaign'>";
 	echo "<input type=hidden name=ACCIDareacode value='$ACCIDareacode'>";
 	echo "<input type=hidden name=ACCIDdescription value='$ACCIDdescription_raw'>";
+	echo "<input type=hidden name=ACCIDactiveinput value='$ACCIDactiveinput_raw'>";
 	echo "<input type=hidden name=ACCIDactive value='$ACCIDactive'>";
 	echo "<input type=hidden name=ACCIDmethod value='$ACCIDmethod'>";
 	echo "<tr bgcolor=#". $SSstd_row1_background ."><td colspan=2 align=center><input type=submit name=did_submit value='CONFIRM'></td></tr>\n";
@@ -537,6 +543,7 @@ elseif ($form_to_run == "ACCIDconfirmed")
 	if ($ACCIDmethod=="CSV")
 		{
 		$ACCIDdescription = unserialize($ACCIDdescription);
+		$ACCIDactiveinput = unserialize($ACCIDactiveinput);
 		}
 	else
 		{
@@ -604,15 +611,30 @@ elseif ($form_to_run == "ACCIDconfirmed")
 	$INSERTsqlLOG='';
 	while ($INSERTloopflag == "TRUE")
 		{
-		$SQL = "INSERT IGNORE INTO vicidial_campaign_cid_areacodes (campaign_id,areacode,outbound_cid,active,cid_description) VALUES ('$ACCIDcampaign','$ACCIDareacode[$INSERTindex]','$ACCIDto_insert_CONFIRMED[$INSERTindex]','$ACCIDactive','$ACCIDdescription[$INSERTindex]')";
+		$tempACCIDactive = $ACCIDactive;
+		if ($ACCIDactive=='F') 
+			{
+			if (strlen($ACCIDactiveinput[$INSERTindex]) > 0) {$tempACCIDactive = $ACCIDactiveinput[$INSERTindex];}
+			else {$tempACCIDactive='N';}
+			}
+		if ($DB) {echo "|ACCIDactive: $ACCIDactive|$ACCIDactiveinput[$INSERTindex]|$tempACCIDactive|";}
+
+		$SQL = "INSERT IGNORE INTO vicidial_campaign_cid_areacodes (campaign_id,areacode,outbound_cid,active,cid_description) VALUES ('$ACCIDcampaign','$ACCIDareacode[$INSERTindex]','$ACCIDto_insert_CONFIRMED[$INSERTindex]','$tempACCIDactive','$ACCIDdescription[$INSERTindex]')";
 		$INSERTindex++;
 		if ($INSERTgroup_counter > 0)
 			{
 			$i = 1;
 			while ($i < $INSERTgroup_limit)
 				{
-				$SQL.= ",('" . $ACCIDcampaign . "','" . $ACCIDareacode[$INSERTindex] . "','" . $ACCIDto_insert_CONFIRMED[$INSERTindex] . "','" . $ACCIDactive . "','" . $ACCIDdescription[$INSERTindex] . "')";
-				$SQL_sentence.= " |$ACCIDareacode[$INSERTindex]|$ACCIDto_insert_CONFIRMED[$INSERTindex]|$ACCIDdescription[$INSERTindex]";
+				$tempACCIDactive = $ACCIDactive;
+				if ($ACCIDactive=='F') 
+					{
+					if (strlen($ACCIDactiveinput[$INSERTindex]) > 0) {$tempACCIDactive = $ACCIDactiveinput[$INSERTindex];}
+					else {$tempACCIDactive='N';}
+					}
+				if ($DB) {echo "|ACCIDactive: $ACCIDactive|$ACCIDactiveinput[$INSERTindex]|$tempACCIDactive|";}
+				$SQL.= ",('" . $ACCIDcampaign . "','" . $ACCIDareacode[$INSERTindex] . "','" . $ACCIDto_insert_CONFIRMED[$INSERTindex] . "','" . $tempACCIDactive . "','" . $ACCIDdescription[$INSERTindex] . "')";
+				$SQL_sentence.= " |$ACCIDareacode[$INSERTindex]|$ACCIDto_insert_CONFIRMED[$INSERTindex]|$ACCIDdescription[$INSERTindex]|$tempACCIDactive";
 				$i++;
 				$INSERTindex++;
 				}	
@@ -623,8 +645,15 @@ elseif ($form_to_run == "ACCIDconfirmed")
 			$i = 1;
 			while ($i < $INSERTremainder)
 				{
-				$SQL.= ",('" . $ACCIDcampaign . "','" . $ACCIDareacode[$INSERTindex] . "','" . $ACCIDto_insert_CONFIRMED[$INSERTindex] . "','" . $ACCIDactive . "','" . $ACCIDdescription[$INSERTindex] . "')";
-				$SQL_sentence.= " |$ACCIDareacode[$INSERTindex]|$ACCIDto_insert_CONFIRMED[$INSERTindex]|$ACCIDdescription[$INSERTindex]";
+				$tempACCIDactive = $ACCIDactive;
+				if ($ACCIDactive=='F') 
+					{
+					if (strlen($ACCIDactiveinput[$INSERTindex]) > 0) {$tempACCIDactive = $ACCIDactiveinput[$INSERTindex];}
+					else {$tempACCIDactive='N';}
+					}
+				if ($DB) {echo "|ACCIDactive: $ACCIDactive|$ACCIDactiveinput[$INSERTindex]|$tempACCIDactive|";}
+				$SQL.= ",('" . $ACCIDcampaign . "','" . $ACCIDareacode[$INSERTindex] . "','" . $ACCIDto_insert_CONFIRMED[$INSERTindex] . "','" . $tempACCIDactive . "','" . $ACCIDdescription[$INSERTindex] . "')";
+				$SQL_sentence.= " |$ACCIDareacode[$INSERTindex]|$ACCIDto_insert_CONFIRMED[$INSERTindex]|$ACCIDdescription[$INSERTindex]|$tempACCIDactive";
 				$i++;
 				$INSERTindex++;
 				}
@@ -1735,6 +1764,7 @@ else
 		echo "<tr bgcolor=#". $SSstd_row1_background ."><td align=right>"._QXZ("Active?").":</td><td align=left><select size=1 name=ACCIDactive>\n";	
 		echo "<option value='N'>No</option>\n";
 		echo "<option value='Y'>Yes</option>\n";
+		echo "<option value='F'>Input</option>\n";
 		echo "</select></td></tr>\n";	
 		echo "<tr bgcolor=#". $SSstd_row1_background ."><td align=right>"._QXZ("AC-CIDs").":</td><td align=left><textarea name='ACCIDdids' cols='70' rows='10'></textarea></td>\n";	
 		echo "<tr bgcolor=#". $SSstd_row1_background ."><td colspan=2 align=center><input type=submit name=accid_submit value='Submit'></td></tr>\n";
