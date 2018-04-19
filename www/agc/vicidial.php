@@ -589,10 +589,11 @@
 # 180314-2222 - Fix for lead search screen hidden fields, issue #1079
 # 180323-2228 - Added more logging for notices
 # 180327-1355 - Added code for LOCALFQDN conversion to browser-used server URL for webform and script iframes
+# 180405-0913 - Fix for API Hangup after dial timeout
 #
 
-$version = '2.14-559c';
-$build = '180327-1355';
+$version = '2.14-560c';
+$build = '180405-0913';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -4768,6 +4769,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var LOGINvarTHREE='<?php echo $LOGINvarTHREE ?>';
 	var LOGINvarFOUR='<?php echo $LOGINvarFOUR ?>';
 	var LOGINvarFIVE='<?php echo $LOGINvarFIVE ?>';
+	var MD_dial_timed_out=0;
 	var DiaLControl_auto_HTML = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready','','','','','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_paused.gif") ?>\" border=\"0\" alt=\"You are paused\" /></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause','','','','','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_active.gif") ?>\" border=\"0\" alt=\"You are active\" /></a>";
 	var DiaLControl_auto_HTML_OFF = "<img src=\"./images/<?php echo _QXZ("vdc_LB_blank_OFF.gif") ?>\" border=\"0\" alt=\"pause button disabled\" />";
@@ -5916,7 +5918,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							timer_action_destination = api_timer_action_destination;
 						//	alert("TIMER_API:" + timer_action + '|' + timer_action_message + '|' + timer_action_seconds + '|' + timer_action_destination + '|');
 							}
-						if ( (APIHanguP==1) && ( (VD_live_customer_call==1) || (MD_channel_look==1) ) )
+						if ( (APIHanguP==1) && ( (VD_live_customer_call==1) || (MD_channel_look==1) || (MD_dial_timed_out > 0) ) )
 							{
 							button_click_log = button_click_log + "" + SQLdate + "-----api_hangup---" + APIHanguP + "|";
 							hideDiv('CustomerGoneBox');
@@ -8720,6 +8722,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 			button_click_log = button_click_log + "" + SQLdate + "-----DialTimedOut---" + MD_ring_secondS + " " + manual_dial_timeout + " " + MD_channel_look + " " + "|";
 			MD_channel_look=0;
 			MD_ring_secondS=0;
+			MD_dial_timed_out=1;
 
 			if (taskCheckOR == 'YES')
 				{
@@ -12541,6 +12544,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 				CalLCID = '';
 				MDnextCID = '';
 				cid_lock=0;
+				MD_dial_timed_out=0;
 
 			//	UPDATE VICIDIAL_LOG ENTRY FOR THIS CALL PROCESS
 				DialLog("end",nodeletevdac);
@@ -12809,6 +12813,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 			consult_custom_go=0;
 			consult_custom_sent=0;
 			xfer_agent_selected=0;
+			MD_dial_timed_out=0;
 			if (manual_dial_preview < 1)
 				{
 				document.vicidial_form.LeadPreview.checked=false;
@@ -13723,6 +13728,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 					consult_custom_wait=0;
 					consult_custom_go=0;
 					consult_custom_sent=0;
+					MD_dial_timed_out=0;
 					document.getElementById("ParkCounterSpan").innerHTML = '';
 					document.vicidial_form.xfername.value='';
 					document.vicidial_form.xfernumhidden.value='';

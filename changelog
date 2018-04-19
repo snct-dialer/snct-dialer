@@ -107,6 +107,8 @@
   * Add upstream Rev. 2961:
     - bin/VICIDIAL_fix_list_statuses.pl: Added look-ups from archive log tables
        if no recent log entries found.
+  * Add upstream Rev. 2962:
+    - www/agc/vicidial.php: Fix for API Hangup after dial timeout.
 
 2.25.25b
   [Jörg Frings-Fürst]
