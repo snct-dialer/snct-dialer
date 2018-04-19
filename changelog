@@ -56,6 +56,8 @@
       www/agc/api.php,
       www/agc/vicidial.php: Fix for dial_ingroup error message on external_dial
         function.
+  * Add upstream Rev. 2948:
+    - docs/AGENT_API.txt: Change ERORR to NOTICE for one tag.
 
 2.25.25b
   [Jörg Frings-Fürst]
