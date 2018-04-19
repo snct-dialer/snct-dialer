@@ -91,6 +91,9 @@
         feature.
   * Add upstream Rev. 2957:
     - www/vicidial/list_download.php: Set row[3] to 'n' if empty.
+  * Add upstream Rev. 2958:
+    - www/vicidial/AST_agent_performance_detail.php: Fixed display bug for
+        individual user selection.
 
 2.25.25b
   [Jörg Frings-Fürst]
