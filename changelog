@@ -48,6 +48,9 @@
   * Add upstream Rev. 2945:
     - www/agc/functions.php: Added entry_date as custom field SCRIPT type
        variable.
+  * Add upstream Rev. 2946:
+    - agi/agi-VDAD_ALL_inbound.agi: Added source_id as optional channel
+        variable to populate when inserting new leads.
 
 2.25.25b
   [Jörg Frings-Fürst]
