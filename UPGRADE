@@ -291,6 +291,8 @@ OTHER CHANGES:
 77. Added LOCALFQDN trigger for webforms and script Iframes to allow for use of 
 	absolute URLs on multi-home networks. See CALL_URL_FEATURES.txt doc.
 
+78. Added update_did Non-Agent API function
+
 
 
 

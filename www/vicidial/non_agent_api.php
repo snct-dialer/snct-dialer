@@ -130,10 +130,11 @@
 # 180109-1313 - Added call_status_stats function
 # 180208-1655 - Added call_dispo_report function
 # 180301-2301 - Added GET-AND-POST URL logging
+# 180331-1716 - Added options to update_campaign, add_user, update_phone. Added function update_did
 #
 
-$version = '2.14-107';
-$build = '180301-2301';
+$version = '2.14-108';
+$build = '180331-1716';
 $api_url_log = 0;
 
 $startMS = microtime();
@@ -430,8 +431,8 @@ if (isset($_GET["campaign_name"]))			{$campaign_name=$_GET["campaign_name"];}
 	elseif (isset($_POST["campaign_name"]))	{$campaign_name=$_POST["campaign_name"];}
 if (isset($_GET["did_ids"]))						{$did_ids=$_GET["did_ids"];}
 	elseif (isset($_POST["did_ids"]))				{$did_ids=$_POST["did_ids"];}
-if (isset($_GET["did_patterns"]))						{$did_patterns=$_GET["did_patterns"];}
-	elseif (isset($_POST["did_patterns"]))				{$did_patterns=$_POST["did_patterns"];}
+if (isset($_GET["did_pattern"]))						{$did_pattern=$_GET["did_pattern"];}
+	elseif (isset($_POST["did_pattern"]))				{$did_pattern=$_POST["did_pattern"];}
 if (isset($_GET["users"]))						{$users=$_GET["users"];}
 	elseif (isset($_POST["users"]))				{$users=$_POST["users"];}
 if (isset($_GET["auto_dial_level"]))			{$auto_dial_level=$_GET["auto_dial_level"];}
@@ -462,6 +463,34 @@ if (isset($_GET["file_download"]))						{$file_download=$_GET["file_download"];}
 	elseif (isset($_POST["file_download"]))				{$file_download=$_POST["file_download"];}
 if (isset($_GET["force_entry_list_id"]))			{$force_entry_list_id=$_GET["force_entry_list_id"];}
 	elseif (isset($_POST["force_entry_list_id"]))	{$force_entry_list_id=$_POST["force_entry_list_id"];}
+if (isset($_GET["lead_filter_id"]))				{$lead_filter_id=$_GET["lead_filter_id"];}
+	elseif (isset($_POST["lead_filter_id"]))	{$lead_filter_id=$_POST["lead_filter_id"];}
+if (isset($_GET["agent_choose_ingroups"]))			{$agent_choose_ingroups=$_GET["agent_choose_ingroups"];}
+	elseif (isset($_POST["agent_choose_ingroups"]))	{$agent_choose_ingroups=$_POST["agent_choose_ingroups"];}
+if (isset($_GET["agent_choose_blended"]))			{$agent_choose_blended=$_GET["agent_choose_blended"];}
+	elseif (isset($_POST["agent_choose_blended"]))	{$agent_choose_blended=$_POST["agent_choose_blended"];}
+if (isset($_GET["closer_default_blended"]))				{$closer_default_blended=$_GET["closer_default_blended"];}
+	elseif (isset($_POST["closer_default_blended"]))	{$closer_default_blended=$_POST["closer_default_blended"];}
+if (isset($_GET["outbound_alt_cid"]))				{$outbound_alt_cid=$_GET["outbound_alt_cid"];}
+	elseif (isset($_POST["outbound_alt_cid"]))		{$outbound_alt_cid=$_POST["outbound_alt_cid"];}
+if (isset($_GET["phone_ring_timeout"]))				{$phone_ring_timeout=$_GET["phone_ring_timeout"];}
+	elseif (isset($_POST["phone_ring_timeout"]))	{$phone_ring_timeout=$_POST["phone_ring_timeout"];}
+if (isset($_GET["delete_vm_after_email"]))			{$delete_vm_after_email=$_GET["delete_vm_after_email"];}
+	elseif (isset($_POST["delete_vm_after_email"]))	{$delete_vm_after_email=$_POST["delete_vm_after_email"];}
+if (isset($_GET["did_description"]))			{$did_description=$_GET["did_description"];}
+	elseif (isset($_POST["did_description"]))	{$did_description=$_POST["did_description"];}
+if (isset($_GET["did_route"]))			{$did_route=$_GET["did_route"];}
+	elseif (isset($_POST["did_route"]))	{$did_route=$_POST["did_route"];}
+if (isset($_GET["record_call"]))			{$record_call=$_GET["record_call"];}
+	elseif (isset($_POST["record_call"]))	{$record_call=$_POST["record_call"];}
+if (isset($_GET["exten_context"]))			{$exten_context=$_GET["exten_context"];}
+	elseif (isset($_POST["exten_context"]))	{$exten_context=$_POST["exten_context"];}
+if (isset($_GET["voicemail_ext"]))			{$voicemail_ext=$_GET["voicemail_ext"];}
+	elseif (isset($_POST["voicemail_ext"]))	{$voicemail_ext=$_POST["voicemail_ext"];}
+if (isset($_GET["phone_extension"]))			{$phone_extension=$_GET["phone_extension"];}
+	elseif (isset($_POST["phone_extension"]))	{$phone_extension=$_POST["phone_extension"];}
+if (isset($_GET["filter_clean_cid_number"]))			{$filter_clean_cid_number=$_GET["filter_clean_cid_number"];}
+	elseif (isset($_POST["filter_clean_cid_number"]))	{$filter_clean_cid_number=$_POST["filter_clean_cid_number"];}
 
 
 header ("Content-type: text/html; charset=utf-8");
@@ -503,7 +532,6 @@ if ($non_latin < 1)
 	$categories = preg_replace('/[^-_0-9a-zA-Z\,]/','',$categories);
 	$status_breakdown = preg_replace('/[^1Y]/','',$status_breakdown);
 	$show_percentages = preg_replace('/[^1Y]/','',$show_percentages);
-
 
 	$DB=preg_replace('/[^0-9]/','',$DB);
 	$user=preg_replace('/[^-_0-9a-zA-Z]/','',$user);
@@ -661,6 +689,21 @@ if ($non_latin < 1)
 	$type = preg_replace('/[^A-Z]/','',$type);
 	$force_entry_list_id = preg_replace('/[^0-9]/','',$force_entry_list_id);
 	$file_download = preg_replace('/[^0-9]/','',$file_download);
+	$lead_filter_id = preg_replace('/[^-_0-9a-zA-Z]/','',$lead_filter_id);
+	$agent_choose_ingroups = preg_replace('/[^0-9]/','',$agent_choose_ingroups);
+	$agent_choose_blended = preg_replace('/[^0-9]/','',$agent_choose_blended);
+	$closer_default_blended = preg_replace('/[^0-9]/','',$closer_default_blended);
+	$outbound_alt_cid = preg_replace('/[^0-9a-zA-Z]/','',$outbound_alt_cid);
+	$phone_ring_timeout = preg_replace('/[^0-9]/','',$phone_ring_timeout);
+	$delete_vm_after_email = preg_replace('/[^a-zA-Z]/','',$delete_vm_after_email);
+	$did_pattern = preg_replace('/[^:\+\*\#\.\_0-9a-zA-Z]/','',$did_pattern);
+	$did_description = preg_replace('/[^- \.\,\_0-9a-zA-Z]/','',$did_description);
+	$did_route = preg_replace('/[^-_0-9a-zA-Z]/','',$did_route);
+	$record_call = preg_replace('/[^-_0-9a-zA-Z]/','',$record_call);
+	$exten_context = preg_replace('/[^-_0-9a-zA-Z]/','',$exten_context);
+	$voicemail_ext = preg_replace('/[^\*\#\.\_0-9a-zA-Z]/','',$voicemail_ext);
+	$extension = preg_replace('/[^-\*\#\.\:\/\@\_0-9a-zA-Z]/','',$extension);
+	$filter_clean_cid_number = preg_replace('/[^- \.\,\_0-9a-zA-Z]/','',$filter_clean_cid_number);
 	}
 else
 	{
@@ -2075,6 +2118,9 @@ if ($function == 'add_user')
 
 							if (strlen($hotkeys_active)<1) {$hotkeys_active='0';}
 							if (strlen($wrapup_seconds_override)<1) {$wrapup_seconds_override='-1';}
+							if (strlen($agent_choose_ingroups)<1) {$agent_choose_ingroups='1';}
+							if (strlen($agent_choose_blended)<1) {$agent_choose_blended='1';}
+							if (strlen($closer_default_blended)<1) {$closer_default_blended='0';}
 
 							$pass_hash='';
 							if ( ($SSpass_hash_enabled > 0) and (strlen($agent_pass) > 1) )
@@ -2085,7 +2131,13 @@ if ($function == 'add_user')
 								$agent_pass='';
 								}
 
-							$stmt="INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,phone_login,phone_pass,hotkeys_active,voicemail_id,email,custom_one,custom_two,custom_three,custom_four,custom_five,pass_hash,wrapup_seconds_override) values('$agent_user','$agent_pass','$agent_full_name','$agent_user_level','$agent_user_group','$phone_login','$phone_pass','$hotkeys_active','$voicemail_id','$email','$custom_one','$custom_two','$custom_three','$custom_four','$custom_five','$pass_hash','$wrapup_seconds_override');";
+							if (strlen($in_groups) > 0)
+								{
+								$in_groups = preg_replace("/\|/"," ",$in_groups);
+								$in_groups = " ".$in_groups." -";
+								}
+
+							$stmt="INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,phone_login,phone_pass,hotkeys_active,voicemail_id,email,custom_one,custom_two,custom_three,custom_four,custom_five,pass_hash,wrapup_seconds_override,agent_choose_ingroups,agent_choose_blended,closer_default_blended,closer_campaigns) values('$agent_user','$agent_pass','$agent_full_name','$agent_user_level','$agent_user_group','$phone_login','$phone_pass','$hotkeys_active','$voicemail_id','$email','$custom_one','$custom_two','$custom_three','$custom_four','$custom_five','$pass_hash','$wrapup_seconds_override','$agent_choose_ingroups','$agent_choose_blended','$closer_default_blended','$in_groups');";
 							$rslt=mysql_to_mysqli($stmt, $link);
 
 							### LOG INSERTION Admin Log Table ###
@@ -3086,6 +3138,9 @@ if ($function == 'update_phone')
 						$emailSQL='';
 						$local_gmtSQL='';
 						$admin_user_groupSQL='';
+						$outbound_alt_cidSQL='';
+						$phone_ring_timeoutSQL='';
+						$delete_vm_after_emailSQL='';
 
 						if (strlen($local_gmt) > 0)
 							{
@@ -3107,7 +3162,7 @@ if ($function == 'update_phone')
 								{$emailSQL = " ,email=''";}
 							else
 								{
-								if ( (strlen($email) > 300) or (strlen($email) < 4) )
+								if ( (strlen($email) > 300) or (strlen($email) < 5) )
 									{
 									$result = 'ERROR';
 									$result_reason = "update_phone YOU MUST USE A VALID EMAIL";
@@ -3298,9 +3353,56 @@ if ($function == 'update_phone')
 							else
 								{$admin_user_groupSQL = " ,user_group='$admin_user_group'";}
 							}
+						if (strlen($outbound_alt_cid) > 0)
+							{
+							if ($outbound_alt_cid == '--BLANK--')
+								{$outbound_alt_cidSQL = " ,outbound_alt_cid=''";}
+							else
+								{
+								if ( (strlen($outbound_alt_cid) > 18) or (strlen($outbound_alt_cid) < 6) )
+									{
+									$result = 'ERROR';
+									$result_reason = "update_phone OUTBOUND ALT CID MUST BE FROM 6 TO 18 DIGITS, THIS IS AN OPTIONAL FIELD";
+									$data = "$outbound_alt_cid";
+									echo "$result: $result_reason: |$user|$data\n";
+									api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+									exit;
+									}
+								else
+									{$outbound_alt_cidSQL = " ,outbound_alt_cid='$outbound_alt_cid'";}
+								}
+							}
+						if (strlen($phone_ring_timeout) > 0)
+							{
+							if ( ($phone_ring_timeout > 180) or ($phone_ring_timeout < 2) )
+								{
+								$result = 'ERROR';
+								$result_reason = "update_phone PHONE RING TIMEOUT MUST BE FROM 2 TO 180 SECONDS, THIS IS AN OPTIONAL FIELD";
+								$data = "$outbound_alt_cid";
+								echo "$result: $result_reason: |$user|$data\n";
+								api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+								exit;
+								}
+							else
+								{$phone_ring_timeoutSQL = " ,phone_ring_timeout='$phone_ring_timeout'";}
+							}
+						if (strlen($delete_vm_after_email) > 0)
+							{
+							if ( ($delete_vm_after_email != 'N') and ($delete_vm_after_email != 'Y') )
+								{
+								$result = 'ERROR';
+								$result_reason = "update_phone DELETE VOICEMAIL AFTER EMAIL MUST BE Y OR N, THIS IS AN OPTIONAL FIELD";
+								$data = "$delete_vm_after_email";
+								echo "$result: $result_reason: |$user|$data\n";
+								api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+								exit;
+								}
+							else
+								{$delete_vm_after_emailSQL = " ,delete_vm_after_email='$delete_vm_after_email'";}
+							}
 
 
-						$updateSQL = "$dialplan_numberSQL$activeSQL$outboundcidSQL$voicemail_idSQL$phone_loginSQL$phone_passSQL$protocolSQL$registration_passwordSQL$phone_full_nameSQL$phone_contextSQL$emailSQL$local_gmtSQL$admin_user_groupSQL";
+						$updateSQL = "$dialplan_numberSQL$activeSQL$outboundcidSQL$voicemail_idSQL$phone_loginSQL$phone_passSQL$protocolSQL$registration_passwordSQL$phone_full_nameSQL$phone_contextSQL$emailSQL$local_gmtSQL$admin_user_groupSQL$outbound_alt_cidSQL$phone_ring_timeoutSQL$delete_vm_after_emailSQL";
 
 
 						if (strlen($updateSQL)< 3)
@@ -4547,6 +4649,8 @@ if ($function == 'update_campaign')
 					$hopperlevelSQL='';
 					$dialtimeoutSQL='';
 					$campaignnameSQL='';
+					$campaigncidSQL='';
+					$campaignfilterSQL='';
 					$activeSQL='';
 					$autodiallevelSQL='';
 
@@ -4566,7 +4670,7 @@ if ($function == 'update_campaign')
 						}
 					if (strlen($dial_method) > 0)
 						{
-						if (preg_match("/MANUAL|RATIO|INBOUND_MAN|ADAPT_AVERAGE|ADAPT_HARD_LIMIT|ADAPT_TAPERED/",$dial_method))
+						if (preg_match("/^MANUAL$|^RATIO$|^INBOUND_MAN$|^ADAPT_AVERAGE$|^ADAPT_HARD_LIMIT$|^ADAPT_TAPERED$/",$dial_method))
 							{$dialmethodSQL = " ,dial_method='$dial_method'";}
 						else
 							{
@@ -4648,6 +4752,43 @@ if ($function == 'update_campaign')
 						else
 							{$campaignnameSQL = " ,campaign_name='$campaign_name'";}
 						}
+					if (strlen($outbound_cid) > 0)
+						{
+						if ( (strlen($outbound_cid) > 20) or (strlen($outbound_cid) < 6) )
+							{
+							$result = 'ERROR';
+							$result_reason = "update_campaign CAMPAIGN CID MUST BE FROM 6 TO 20 CHARACTERS, THIS IS AN OPTIONAL FIELD";
+							$data = "$outbound_cid";
+							echo "$result: $result_reason: |$user|$data\n";
+							api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+							exit;
+							}
+						else
+							{$campaigncidSQL = " ,campaign_cid='$outbound_cid'";}
+						}
+					if (strlen($lead_filter_id) > 0)
+						{
+						if ($lead_filter_id == '---NONE---')
+							{$lead_filter_id='';}
+						else
+							{
+							$stmt="SELECT count(*) from vicidial_lead_filters where lead_filter_id='$lead_filter_id';";
+							$rslt=mysql_to_mysqli($stmt, $link);
+							$row=mysqli_fetch_row($rslt);
+							$filter_exists=$row[0];
+
+							if ($filter_exists < 1)
+								{
+								$result = 'ERROR';
+								$result_reason = "update_campaign CAMPAIGN LEAD FILTER MUST BE A VALID FILTER IN THE SYSTEM, THIS IS AN OPTIONAL FIELD";
+								$data = "$lead_filter_id";
+								echo "$result: $result_reason: |$user|$data\n";
+								api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+								exit;
+								}
+							}
+						$campaignfilterSQL = " ,lead_filter_id='$lead_filter_id'";
+						}
 					if (strlen($active) > 0)
 						{
 						if ( ($active != 'Y') and ($active != 'N') )
@@ -4663,7 +4804,7 @@ if ($function == 'update_campaign')
 							{$activeSQL = " ,active='$active'";}
 						}
 
-					$updateSQL = "$campaignnameSQL$activeSQL$dialtimeoutSQL$hopperlevelSQL$campaignvdadextenSQL$adaptivemaximumlevelSQL$dialmethodSQL$autodiallevelSQL";
+					$updateSQL = "$campaignnameSQL$activeSQL$dialtimeoutSQL$hopperlevelSQL$campaignvdadextenSQL$adaptivemaximumlevelSQL$dialmethodSQL$autodiallevelSQL$campaigncidSQL$campaignfilterSQL";
 
 					if (strlen($updateSQL)< 3)
 						{
@@ -4722,6 +4863,318 @@ if ($function == 'update_campaign')
 	}
 ################################################################################
 ### END update_campaign
+################################################################################
+
+
+
+
+
+################################################################################
+### update_did - updates Inbound DID information in the vicidial_inbound_dids table
+################################################################################
+if ($function == 'update_did')
+	{
+	if(strlen($source)<2)
+		{
+		$result = 'ERROR';
+		$result_reason = "Invalid Source";
+		echo "$result: $result_reason - $source\n";
+		api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+		echo "ERROR: Invalid Source: |$source|\n";
+		exit;
+		}
+	else
+		{
+		if ( (!preg_match("/ $function /",$api_allowed_functions)) and (!preg_match("/ALL_FUNCTIONS/",$api_allowed_functions)) )
+			{
+			$result = 'ERROR';
+			$result_reason = "auth USER DOES NOT HAVE PERMISSION TO USE THIS FUNCTION";
+			echo "$result: $result_reason: |$user|$function|\n";
+			$data = "$allowed_user";
+			api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+			exit;
+			}
+		$stmt="SELECT count(*) from vicidial_users where user='$user' and vdc_agent_api_access='1' and modify_inbound_dids='1' and user_level >= 8 and active='Y';";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$row=mysqli_fetch_row($rslt);
+		$allowed_user=$row[0];
+		if ($allowed_user < 1)
+			{
+			$result = 'ERROR';
+			$result_reason = "update_did USER DOES NOT HAVE PERMISSION TO UPDATE DIDS";
+			$data = "$allowed_user";
+			echo "$result: $result_reason: |$user|$data\n";
+			api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+			exit;
+			}
+		else
+			{
+			if ( (strlen($did_pattern)<2) or (strlen($did_pattern)>50) )
+				{
+				$result = 'ERROR';
+				$result_reason = "update_did YOU MUST USE ALL REQUIRED FIELDS";
+				$data = "$did_pattern";
+				echo "$result: $result_reason: |$user|$data\n";
+				api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+				exit;
+				}
+			else
+				{
+				$stmt="SELECT allowed_campaigns,admin_viewable_groups from vicidial_user_groups where user_group='$LOGuser_group';";
+				if ($DB>0) {echo "|$stmt|\n";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+				$row=mysqli_fetch_row($rslt);
+				$LOGallowed_campaigns =			$row[0];
+				$LOGadmin_viewable_groups =		$row[1];
+
+				$admin_viewable_groupsSQL='';
+				$WHEREadmin_viewable_groupsSQL='';
+				if  (!preg_match('/\-\-ALL\-\-/i',$LOGadmin_viewable_groups))
+					{
+					$rawLOGadmin_viewable_groupsSQL = preg_replace("/ -/",'',$LOGadmin_viewable_groups);
+					$rawLOGadmin_viewable_groupsSQL = preg_replace("/ /","','",$rawLOGadmin_viewable_groupsSQL);
+					$admin_viewable_groupsSQL = "and user_group IN('---ALL---','$rawLOGadmin_viewable_groupsSQL')";
+					$WHEREadmin_viewable_groupsSQL = "where user_group IN('---ALL---','$rawLOGadmin_viewable_groupsSQL')";
+					}
+
+				$stmt="SELECT count(*) from vicidial_inbound_dids where did_pattern='$did_pattern' $admin_viewable_groupsSQL;";
+				if ($DB>0) {echo "|$stmt|\n";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+				$row=mysqli_fetch_row($rslt);
+				$did_exists=$row[0];
+				if ($did_exists < 1)
+					{
+					$result = 'ERROR';
+					$result_reason = "update_did DID DOES NOT EXIST";
+					$data = "$did_pattern";
+					echo "$result: $result_reason: |$user|$data\n";
+					api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+					exit;
+					}
+				else
+					{
+					$stmt="SELECT did_id from vicidial_inbound_dids where did_pattern='$did_pattern' $admin_viewable_groupsSQL;";
+					$rslt=mysql_to_mysqli($stmt, $link);
+					$row=mysqli_fetch_row($rslt);
+					$did_id=$row[0];
+
+					$did_descriptionSQL='';
+					$activeSQL='';
+					$did_routeSQL='';
+					$record_callSQL='';
+					$extensionSQL='';
+					$exten_contextSQL='';
+					$voicemail_extSQL='';
+					$phone_extensionSQL='';
+					$server_ipSQL='';
+					$groupSQL='';
+					$filter_clean_cid_numberSQL='';
+
+					if (strlen($did_description) > 0)
+						{
+						if ( (strlen($did_description) > 50) or (strlen($did_description) < 6) )
+							{
+							$result = 'ERROR';
+							$result_reason = "update_did DID DESCRIPTION MUST BE FROM 6 TO 50 CHARACTERS, THIS IS AN OPTIONAL FIELD";
+							$data = "$did_description";
+							echo "$result: $result_reason: |$user|$data\n";
+							api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+							exit;
+							}
+						else
+							{$did_descriptionSQL = " ,did_description='$did_description'";}
+						}
+					if (strlen($active) > 0)
+						{
+						if ( ($active != 'Y') and ($active != 'N') )
+							{
+							$result = 'ERROR';
+							$result_reason = "update_did ACTIVE MUST BE Y OR N, THIS IS AN OPTIONAL FIELD";
+							$data = "$active";
+							echo "$result: $result_reason: |$user|$data\n";
+							api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+							exit;
+							}
+						else
+							{$activeSQL = " ,did_active='$active'";}
+						}
+					if (strlen($did_route) > 0)
+						{
+						if (preg_match("/^EXTEN$|^VOICEMAIL$|^AGENT$|^PHONE$|^IN_GROUP$|^CALLMENU$|^VMAIL_NO_INST$/",$did_route))
+							{$did_routeSQL = " ,did_route='$did_route'";}
+						else
+							{
+							$result = 'ERROR';
+							$result_reason = "update_did DID ROUTE IS NOT VALID, THIS IS AN OPTIONAL FIELD";
+							$data = "$did_route";
+							echo "$result: $result_reason: |$user|$data\n";
+							api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+							exit;
+							}
+						}
+					if (strlen($record_call) > 0)
+						{
+						if ( ($record_call != 'Y') and ($record_call != 'N') and ($record_call != 'Y_QUEUESTOP') )
+							{
+							$result = 'ERROR';
+							$result_reason = "update_did RECORD CALL MUST BE Y OR N, THIS IS AN OPTIONAL FIELD";
+							$data = "$record_call";
+							echo "$result: $result_reason: |$user|$data\n";
+							api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+							exit;
+							}
+						else
+							{$record_callSQL = " ,record_call='$record_call'";}
+						}
+					if (strlen($extension) > 0)
+						{
+						if (strlen($extension) > 50)
+							{
+							$result = 'ERROR';
+							$result_reason = "update_did EXTENSION MUST BE FROM 1 TO 50 CHARACTERS, THIS IS AN OPTIONAL FIELD";
+							$data = "$extension";
+							echo "$result: $result_reason: |$user|$data\n";
+							api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+							exit;
+							}
+						else
+							{$extensionSQL = " ,extension='$extension'";}
+						}
+					if (strlen($exten_context) > 0)
+						{
+						if (strlen($exten_context) > 50)
+							{
+							$result = 'ERROR';
+							$result_reason = "update_did EXTENSION CONTEXT MUST BE FROM 1 TO 50 CHARACTERS, THIS IS AN OPTIONAL FIELD";
+							$data = "$exten_context";
+							echo "$result: $result_reason: |$user|$data\n";
+							api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+							exit;
+							}
+						else
+							{$exten_contextSQL = " ,exten_context='$exten_context'";}
+						}
+					if (strlen($voicemail_ext) > 0)
+						{
+						if ( (strlen($voicemail_ext) > 10) or (strlen($voicemail_ext) < 1) )
+							{
+							$result = 'ERROR';
+							$result_reason = "update_did VOICEMAIL EXTENSION MUST BE FROM 1 TO 10 CHARACTERS, THIS IS AN OPTIONAL FIELD";
+							$data = "$voicemail_ext";
+							echo "$result: $result_reason: |$user|$data\n";
+							api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+							exit;
+							}
+						else
+							{$voicemail_extSQL = " ,voicemail_ext='$voicemail_ext'";}
+						}
+					if (strlen($phone_extension) > 0)
+						{
+						if ( (strlen($phone_extension) > 100) or (strlen($phone_extension) < 1) )
+							{
+							$result = 'ERROR';
+							$result_reason = "update_did PHONE EXTENSION MUST BE FROM 1 TO 100 CHARACTERS, THIS IS AN OPTIONAL FIELD";
+							$data = "$phone_extension";
+							echo "$result: $result_reason: |$user|$data\n";
+							api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+							exit;
+							}
+						else
+							{$phone_extensionSQL = " ,phone='$phone_extension'";}
+						}
+					if (strlen($server_ip) > 0)
+						{
+						$stmt="SELECT count(*) from servers where server_ip='$server_ip';";
+						$rslt=mysql_to_mysqli($stmt, $link);
+						$row=mysqli_fetch_row($rslt);
+						$server_exists=$row[0];
+
+						if ($server_exists < 1)
+							{
+							$result = 'ERROR';
+							$result_reason = "update_did SERVER IP MUST BE A VALID SERVER IN THE SYSTEM, THIS IS AN OPTIONAL FIELD";
+							$data = "$server_ip";
+							echo "$result: $result_reason: |$user|$data\n";
+							api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+							exit;
+							}
+						$server_ipSQL = " ,server_ip='$server_ip'";
+						}
+					if (strlen($group) > 0)
+						{
+						$stmt="SELECT count(*) from vicidial_inbound_groups where group_id='$group';";
+						$rslt=mysql_to_mysqli($stmt, $link);
+						$row=mysqli_fetch_row($rslt);
+						$group_exists=$row[0];
+
+						if ($group_exists < 1)
+							{
+							$result = 'ERROR';
+							$result_reason = "update_did GROUP ID MUST BE A VALID INBOUND GROUP IN THE SYSTEM, THIS IS AN OPTIONAL FIELD";
+							$data = "$group";
+							echo "$result: $result_reason: |$user|$data\n";
+							api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+							exit;
+							}
+						$groupSQL = " ,group_id='$group'";
+						}
+					if (strlen($filter_clean_cid_number) > 0)
+						{
+						if ( (strlen($filter_clean_cid_number) > 20) or (strlen($filter_clean_cid_number) < 1) )
+							{
+							$result = 'ERROR';
+							$result_reason = "update_did CLEAN CID NUMBER MUST BE FROM 1 TO 20 CHARACTERS, THIS IS AN OPTIONAL FIELD";
+							$data = "$filter_clean_cid_number";
+							echo "$result: $result_reason: |$user|$data\n";
+							api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+							exit;
+							}
+						else
+							{$filter_clean_cid_numberSQL = " ,filter_clean_cid_number='$filter_clean_cid_number'";}
+						}
+
+
+					$updateSQL = "$did_descriptionSQL$activeSQL$did_routeSQL$record_callSQL$extensionSQL$exten_contextSQL$voicemail_extSQL$phone_extensionSQL$server_ipSQL$groupSQL$filter_clean_cid_numberSQL";
+
+
+					if (strlen($updateSQL)< 3)
+						{
+						$result = 'NOTICE';
+						$result_reason = "update_did NO UPDATES DEFINED";
+						$data = "$updateSQL";
+						echo "$result: $result_reason: |$user|$data\n";
+						api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+						}
+					else
+						{
+						$updateSQL = preg_replace("/^ ,/",'',$updateSQL);
+						$stmt="UPDATE vicidial_inbound_dids SET $updateSQL WHERE did_pattern='$did_pattern';";
+						$rslt=mysql_to_mysqli($stmt, $link);
+						$update_count = mysqli_affected_rows($link);
+						if ($DB) {echo "$update_count|$stmt|\n";}
+
+						### LOG INSERTION Admin Log Table ###
+						$SQL_log = "$stmt|";
+						$SQL_log = preg_replace('/;/', '', $SQL_log);
+						$SQL_log = addslashes($SQL_log);
+						$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$user', ip_address='$ip', event_section='DIDS', event_type='MODIFY', record_id='$did_id', event_code='ADMIN API UPDATE DID', event_sql=\"$SQL_log\", event_notes='did: $did_pattern did_id: $did_id';";
+						if ($DB) {echo "|$stmt|\n";}
+						$rslt=mysql_to_mysqli($stmt, $link);
+
+						$result = 'SUCCESS';
+						$result_reason = "update_did DID HAS BEEN UPDATED";
+						$data = "$did_pattern";
+						echo "$result: $result_reason - $user|$data\n";
+						api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+						}				
+					}
+				}
+			}
+		}
+	exit;
+	}
+################################################################################
+### END update_did
 ################################################################################
 
 

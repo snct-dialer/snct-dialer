@@ -94,6 +94,11 @@
   * Add upstream Rev. 2958:
     - www/vicidial/AST_agent_performance_detail.php: Fixed display bug for
         individual user selection.
+  * Add upstream Rev. 2959:
+    - UPGRADE,
+      docs/NON-AGENT_API.txt,
+      www/vicidial/admin.php,
+      www/vicidial/non_agent_api.php: Added update_did non-agent API function.
 
 2.25.25b
   [Jörg Frings-Fürst]
