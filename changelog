@@ -104,6 +104,9 @@
       bin/AST_phone_update.pl,
       bin/AST_send_action_child.pl: Updated telnet login process to work with
         newer Asterisk versions.
+  * Add upstream Rev. 2961:
+    - bin/VICIDIAL_fix_list_statuses.pl: Added look-ups from archive log tables
+       if no recent log entries found.
 
 2.25.25b
   [Jörg Frings-Fürst]
