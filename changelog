@@ -44,8 +44,10 @@
   * Add upstream Rev. 2944:
     - New bin/AST_expired_list_exporter.pl.
     - www/vicidial/admin.php,
-      www/vicidial/admin_lists_custom.php:Translated phrases fixes, issue #1081. 
-      
+      www/vicidial/admin_lists_custom.php:Translated phrases fixes, issue #1081.
+  * Add upstream Rev. 2945:
+    - www/agc/functions.php: Added entry_date as custom field SCRIPT type
+       variable.
 
 2.25.25b
   [Jörg Frings-Fürst]
