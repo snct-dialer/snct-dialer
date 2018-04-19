@@ -452,13 +452,14 @@
 # 180216-1350 - Fix for callback alt dial isssue #1066
 # 180228-0726 - Fix for LogiNCamPaigns function, removed unnecesary onfocus trigger, issue #1074
 # 180410-1630 - Added Pause Code manager approval feature, Added switch_lead logging
+# 180411-1833 - Added Dispo URL Filter feature
 #
 
-$version = '2.14-346';
-$build = '180410-1630';
+$version = '2.14-347';
+$build = '180411-1833';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=712;
+$mysql_log_count=719;
 $one_mysql_log=0;
 $DB=0;
 $VD_login=0;
@@ -4275,7 +4276,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 							{
 							$stmt = "SELECT cid_group_type FROM vicidial_cid_groups where cid_group_id='$cid_group_id';";
 							$rslt=mysql_to_mysqli($stmt, $link);
-								if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+								if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00714',$user,$server_ip,$session_name,$one_mysql_log);}
 							if ($DB) {echo "$stmt\n";}
 							$cidg_ct = mysqli_num_rows($rslt);
 							if ($cidg_ct > 0)
@@ -4299,7 +4300,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 									$stmt = "SELECT outbound_cid,areacode FROM vicidial_campaign_cid_areacodes where campaign_id='$cid_group_id' and areacode IN('$temp_state') and active='Y' order by call_count_today desc limit 100000;";
 									}
 								$rslt=mysql_to_mysqli($stmt, $link);
-									if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+									if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00715',$user,$server_ip,$session_name,$one_mysql_log);}
 								if ($DB) {echo "$stmt\n";}
 								$vcca_ct = mysqli_num_rows($rslt);
 								$act=0;
@@ -4315,7 +4316,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 									$stmt="UPDATE vicidial_campaign_cid_areacodes set call_count_today=(call_count_today + 1) where campaign_id='$cid_group_id' and areacode='$temp_ac' and outbound_cid='$temp_vcca';";
 										if ($format=='debug') {echo "\n<!-- $stmt -->";}
 									$rslt=mysql_to_mysqli($stmt, $link);
-										if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+										if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00716',$user,$server_ip,$session_name,$one_mysql_log);}
 									}
 								}
 							$temp_CID = preg_replace("/\D/",'',$temp_vcca);
@@ -5620,7 +5621,7 @@ if ($ACTION == 'manDiaLonly')
 					{
 					$stmt = "SELECT cid_group_type FROM vicidial_cid_groups where cid_group_id='$cid_group_id';";
 					$rslt=mysql_to_mysqli($stmt, $link);
-						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00717',$user,$server_ip,$session_name,$one_mysql_log);}
 					if ($DB) {echo "$stmt\n";}
 					$cidg_ct = mysqli_num_rows($rslt);
 					if ($cidg_ct > 0)
@@ -5644,7 +5645,7 @@ if ($ACTION == 'manDiaLonly')
 							$stmt = "SELECT outbound_cid,areacode FROM vicidial_campaign_cid_areacodes where campaign_id='$cid_group_id' and areacode IN('$temp_state') and active='Y' order by call_count_today desc limit 100000;";
 							}
 						$rslt=mysql_to_mysqli($stmt, $link);
-							if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00718',$user,$server_ip,$session_name,$one_mysql_log);}
 						if ($DB) {echo "$stmt\n";}
 						$vcca_ct = mysqli_num_rows($rslt);
 						$act=0;
@@ -5660,7 +5661,7 @@ if ($ACTION == 'manDiaLonly')
 							$stmt="UPDATE vicidial_campaign_cid_areacodes set call_count_today=(call_count_today + 1) where campaign_id='$cid_group_id' and areacode='$temp_ac' and outbound_cid='$temp_vcca';";
 								if ($format=='debug') {echo "\n<!-- $stmt -->";}
 							$rslt=mysql_to_mysqli($stmt, $link);
-								if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+								if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00719',$user,$server_ip,$session_name,$one_mysql_log);}
 							}
 						}
 					$temp_CID = preg_replace("/\D/",'',$temp_vcca);
@@ -12842,6 +12843,134 @@ if ($ACTION == 'updateDISPO')
 				}
 			}
 
+		##### Check for a dispo filter in the URL
+		$dispo_filter_enabled=0;
+		if (preg_match('/dispo_filter_container=/i',$dispo_call_urlARY[$j]))
+			{
+			$df_fields='|';
+			$temp_filter = explode('dispo_filter_container=',$dispo_call_urlARY[$j]);
+			$temp_filter[1] = preg_replace("/&.*/",'',$temp_filter[1]);
+			$filter_container = $temp_filter[1];
+
+			### Gather container entry (example: "first_name,,TEST")
+			$stmt = "SELECT container_entry from vicidial_settings_containers where container_id='$filter_container' limit 1;";
+			if ($DB) {echo "$stmt\n";}
+			$rslt=mysql_to_mysqli($stmt, $link);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00713',$user,$server_ip,$session_name,$one_mysql_log);}
+			$VSC_ct = mysqli_num_rows($rslt);
+			if ($VSC_ct > 0)
+				{
+				$row=mysqli_fetch_row($rslt);
+				$container_entry =	$row[0];
+				if (strlen($container_entry) > 4)
+					{
+					$dispo_filter_enabled++;
+					$container_entry = preg_replace("/\r|\t/",'',$container_entry);
+					$dispo_filters = explode("\n",$container_entry);
+					$dispo_filters_ct = count($dispo_filters);
+					if ($DB) {echo "DF-Debug 1: $dispo_filters_ct|$dispo_filter_enabled|$container_entry|\n";}
+					$dct=0;
+					while ($dispo_filters_ct > $dct)
+						{
+						$temp_df = explode(',',$dispo_filters[$dct]);
+						$df_fields .= "$temp_df[0]|";
+						$lm=0;
+
+						if ( (preg_match("/^lead_id$/i",$temp_df[0])) and ($lead_id == $temp_df[1]) )						{$lead_id = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^vendor_id$/i",$temp_df[0])) and ($vendor_id == $temp_df[1]) )					{$vendor_id = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^vendor_lead_code$/i",$temp_df[0])) and ($vendor_lead_code == $temp_df[1]) )		{$vendor_lead_code = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^list_id$/i",$temp_df[0])) and ($list_id == $temp_df[1]) )						{$list_id = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^list_name$/i",$temp_df[0])) and ($list_name == $temp_df[1]) )					{$list_name = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^list_description$/i",$temp_df[0])) and ($list_description == $temp_df[1]) )		{$list_description = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^gmt_offset_now$/i",$temp_df[0])) and ($gmt_offset_now == $temp_df[1]) )			{$gmt_offset_now = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^phone_code$/i",$temp_df[0])) and ($phone_code == $temp_df[1]) )					{$phone_code = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^phone_number$/i",$temp_df[0])) and ($phone_number == $temp_df[1]) )				{$phone_number = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^title$/i",$temp_df[0])) and ($title == $temp_df[1]) )							{$title = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^first_name$/i",$temp_df[0])) and ($first_name == $temp_df[1]) )					{$first_name = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^middle_initial$/i",$temp_df[0])) and ($middle_initial == $temp_df[1]) )			{$middle_initial = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^last_name$/i",$temp_df[0])) and ($last_name == $temp_df[1]) )					{$last_name = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^address1$/i",$temp_df[0])) and ($address1 == $temp_df[1]) )						{$address1 = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^address2$/i",$temp_df[0])) and ($address2 == $temp_df[1]) )						{$address2 = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^address3$/i",$temp_df[0])) and ($address3 == $temp_df[1]) )						{$address3 = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^city$/i",$temp_df[0])) and ($city == $temp_df[1]) )								{$city = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^state$/i",$temp_df[0])) and ($state == $temp_df[1]) )							{$state = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^province$/i",$temp_df[0])) and ($province == $temp_df[1]) )						{$province = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^postal_code$/i",$temp_df[0])) and ($postal_code == $temp_df[1]) )				{$postal_code = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^country_code$/i",$temp_df[0])) and ($country_code == $temp_df[1]) )				{$country_code = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^gender$/i",$temp_df[0])) and ($gender == $temp_df[1]) )							{$gender = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^date_of_birth$/i",$temp_df[0])) and ($date_of_birth == $temp_df[1]) )			{$date_of_birth = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^alt_phone$/i",$temp_df[0])) and ($alt_phone == $temp_df[1]) )					{$alt_phone = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^email$/i",$temp_df[0])) and ($email == $temp_df[1]) )							{$email = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^security_phrase$/i",$temp_df[0])) and ($security_phrase == $temp_df[1]) )		{$security_phrase = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^comments$/i",$temp_df[0])) and ($comments == $temp_df[1]) )						{$comments = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^user$|^closer$/i",$temp_df[0])) and ($user == $temp_df[1]) )					{$user = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^pass$/i",$temp_df[0])) and ($orig_pass == $temp_df[1]) )						{$orig_pass = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^campaign$/i",$temp_df[0])) and ($campaign == $temp_df[1]) )						{$campaign = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^phone_login$/i",$temp_df[0])) and ($phone_login == $temp_df[1]) )				{$phone_login = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^original_phone_login$/i",$temp_df[0])) and ($original_phone_login == $temp_df[1]) ) {$original_phone_login = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^phone_pass$/i",$temp_df[0])) and ($phone_pass == $temp_df[1]) )					{$phone_pass = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^fronter$/i",$temp_df[0])) and ($fronter == $temp_df[1]) )						{$fronter = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^group$|^channel_group$/i",$temp_df[0])) and ($VDADchannel_group == $temp_df[1]) ) {$VDADchannel_group = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^SQLdate$/i",$temp_df[0])) and ($SQLdate == $temp_df[1]) )						{$SQLdate = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^epoch$/i",$temp_df[0])) and ($epoch == $temp_df[1]) )							{$epoch = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^uniqueid$/i",$temp_df[0])) and ($uniqueid == $temp_df[1]) )						{$uniqueid = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^customer_zap_channel$/i",$temp_df[0])) and ($customer_zap_channel == $temp_df[1]) )	{$customer_zap_channel = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^customer_server_ip$/i",$temp_df[0])) and ($customer_server_ip == $temp_df[1]) ) {$customer_server_ip = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^server_ip$/i",$temp_df[0])) and ($server_ip == $temp_df[1]) )					{$server_ip = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^SIPexten$/i",$temp_df[0])) and ($exten == $temp_df[1]) )						{$exten = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^session_id$/i",$temp_df[0])) and ($conf_exten == $temp_df[1]) )					{$conf_exten = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^phone$/i",$temp_df[0])) and ($phone_number == $temp_df[1]) )					{$phone_number = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^parked_by$/i",$temp_df[0])) and ($parked_by == $temp_df[1]) )					{$parked_by = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^dispo$/i",$temp_df[0])) and ($dispo == $temp_df[1]) )							{$dispo = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^dispo_name$/i",$temp_df[0])) and ($dispo_name == $temp_df[1]) )					{$dispo_name = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^dialed_number$/i",$temp_df[0])) and ($dialed_number == $temp_df[1]) )			{$dialed_number = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^dialed_label$/i",$temp_df[0])) and ($dialed_label == $temp_df[1]) )				{$dialed_label = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^source_id$/i",$temp_df[0])) and ($source_id == $temp_df[1]) )					{$source_id = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^rank$/i",$temp_df[0])) and ($rank == $temp_df[1]) )								{$rank = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^owner$/i",$temp_df[0])) and ($owner == $temp_df[1]) )							{$owner = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^camp_script$/i",$temp_df[0])) and ($camp_script == $temp_df[1]) )				{$camp_script = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^in_script$/i",$temp_df[0])) and ($in_script == $temp_df[1]) )					{$in_script = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^fullname$/i",$temp_df[0])) and ($fullname == $temp_df[1]) )						{$fullname = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^user_custom_one$/i",$temp_df[0])) and ($user_custom_one == $temp_df[1]) )		{$user_custom_one = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^user_custom_two$/i",$temp_df[0])) and ($user_custom_two == $temp_df[1]) )		{$user_custom_two = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^user_custom_three$/i",$temp_df[0])) and ($user_custom_three == $temp_df[1]) )	{$user_custom_three = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^user_custom_four$/i",$temp_df[0])) and ($user_custom_four == $temp_df[1]) )		{$user_custom_four = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^user_custom_five$/i",$temp_df[0])) and ($user_custom_five == $temp_df[1]) )		{$user_custom_five = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^talk_time$/i",$temp_df[0])) and ($talk_time == $temp_df[1]) )					{$talk_time = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^talk_time_ms$/i",$temp_df[0])) and ($talk_time_ms == $temp_df[1]) )				{$talk_time_ms = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^talk_time_min$/i",$temp_df[0])) and ($talk_time_min == $temp_df[1]) )			{$talk_time_min = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^agent_log_id$/i",$temp_df[0])) and ($CALL_agent_log_id == $temp_df[1]) )		{$CALL_agent_log_id = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^entry_list_id$/i",$temp_df[0])) and ($entry_list_id == $temp_df[1]) )			{$entry_list_id = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^did_id$/i",$temp_df[0])) and ($DID_id == $temp_df[1]) )							{$DID_id = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^did_extension$/i",$temp_df[0])) and ($DID_extension == $temp_df[1]) )			{$DID_extension = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^did_pattern$/i",$temp_df[0])) and ($DID_pattern == $temp_df[1]) )				{$DID_pattern = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^did_description$/i",$temp_df[0])) and ($DID_description == $temp_df[1]) )		{$DID_description = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^closecallid$/i",$temp_df[0])) and ($INclosecallid == $temp_df[1]) )				{$INclosecallid = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^xfercallid$/i",$temp_df[0])) and ($INxfercallid == $temp_df[1]) )				{$INxfercallid = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^call_id$/i",$temp_df[0])) and ($MDnextCID == $temp_df[1]) )						{$MDnextCID = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^user_group$/i",$temp_df[0])) and ($user_group == $temp_df[1]) )					{$user_group = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^call_notes$/i",$temp_df[0])) and ($url_call_notes == $temp_df[1]) )				{$url_call_notes = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^recording_id$/i",$temp_df[0])) and ($recording_id == $temp_df[1]) )				{$recording_id = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^recording_filename$/i",$temp_df[0])) and ($recording_filename == $temp_df[1]) ) {$recording_filename = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^entry_date$/i",$temp_df[0])) and ($entry_date == $temp_df[1]) )					{$entry_date = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^did_custom_one$/i",$temp_df[0])) and ($DID_custom_one == $temp_df[1]) )			{$DID_custom_one = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^did_custom_two$/i",$temp_df[0])) and ($DID_custom_two == $temp_df[1]) )			{$DID_custom_two = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^did_custom_three$/i",$temp_df[0])) and ($DID_custom_three == $temp_df[1]) )		{$DID_custom_three = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^did_custom_four$/i",$temp_df[0])) and ($DID_custom_four == $temp_df[1]) )		{$DID_custom_four = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^did_custom_five$/i",$temp_df[0])) and ($DID_custom_five == $temp_df[1]) )		{$DID_custom_five = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^agent_email$/i",$temp_df[0])) and ($agent_email == $temp_df[1]) )				{$agent_email = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^callback_lead_status$/i",$temp_df[0])) and ($CallBackLeadStatus == $temp_df[1]) ) {$CallBackLeadStatus = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^callback_datetime$/i",$temp_df[0])) and ($CallBackDatETimE == $temp_df[1]) )	{$CallBackDatETimE = $temp_df[2];   $lm++;}
+						if ( (preg_match("/^called_count$/i",$temp_df[0])) and ($called_count == $temp_df[1]) )				{$called_count = $temp_df[2];   $lm++;}
+
+						if ($DB) {echo "DF-Debug 2: $dct|$lm|$temp_df[0]|$temp_df[1]|$temp_df[2]|\n";}
+						$dct++;
+						}
+					}
+				}
+			}
+
+
 		$dispo_call_urlARY[$j] = preg_replace('/^VAR/','',$dispo_call_urlARY[$j]);
 		$dispo_call_urlARY[$j] = preg_replace('/--A--lead_id--B--/i',"$lead_id",$dispo_call_urlARY[$j]);
 		$dispo_call_urlARY[$j] = preg_replace('/--A--vendor_id--B--/i',"$vendor_id",$dispo_call_urlARY[$j]);
@@ -13007,6 +13136,22 @@ if ($ACTION == 'updateDISPO')
 								}
 							}
 						$form_field_value =		urlencode(trim("$row[$o]"));
+
+						### Check for dispo filter, run if enabled and field matches
+						if ( ($dispo_filter_enabled > 0) and (preg_match("/\|$field_name_id\|/",$df_fields)) )
+							{
+							$dct=0;
+							while ($dispo_filters_ct > $dct)
+								{
+								$temp_df = explode(',',$dispo_filters[$dct]);
+								$lm=0;
+
+								if ( (preg_match("/^$field_name_id$/i",$temp_df[0])) and ($form_field_value == $temp_df[1]) )	{$form_field_value = $temp_df[2];   $lm++;}
+
+								if ($DB) {echo "DF-Debug 3: $dct|$lm|$temp_df[0]($field_name_id)|$temp_df[1]($form_field_value)|$temp_df[2]|\n";}
+								$dct++;
+								}
+							}
 						$dispo_call_urlARY[$j] = preg_replace("/$field_name_tag/i","$form_field_value",$dispo_call_urlARY[$j]);
 						$o++;
 						}

@@ -298,6 +298,9 @@ OTHER CHANGES:
 	their agent screen. Manager approves by entering their login credentials
 	into a window on the agent's screen.
 
+80. Added DISPO_FILTER Settings Container option allowing for match-and-replace
+	function in Dispo Call URLs. See CALL_URL_FEATURES.txt doc for details.
+
 
 
 

@@ -5,6 +5,9 @@ Call URL features(start call url, dispo call url, etc...)
 Details on the Call URL and webform-type fields and dynamic URL construction:
 
 
+################################################################################
+# WEB FORM
+################################################################################
 
 Web Form -  This is where you can set the custom web page that will be
 opened when the user clicks on the WEB FORM button. To customize the
@@ -27,6 +30,10 @@ http://10.0.1.2:8080/agc/test.php. This allows you to still use absolute links
 in both webforms and script IFRAMES to avoid issues with using relative links.
 
 
+################################################################################
+# START CALL URL
+################################################################################
+
 Start Call URL -  This web URL address is not seen by the agent, but
 it is called every time a call is sent to an agent if it is populated.
 Uses the same variables as the web form fields and scripts. This URL
@@ -34,17 +41,50 @@ can NOT be a relative path. The Start URL does not work for Manual
 dial calls. Default is blank.
 
 
+################################################################################
+# DISPO CALL URL
+################################################################################
+
 Dispo Call URL - This web URL address is not seen by the agent, but it
 is called every time a call is dispositioned by an agent if it is
 populated. Uses the same variables as the web form fields and scripts.
-dispo, talk_time, call_notes, callback_lead_status and callback_datetime are the
-extra variables you can use with this specific function. 'dispo' is the actual 
-agent-defined status disposition for the call, callback_lead_status is the 
-agent-selected status when a scheduled callback status has been selected by the 
-agent, and callback_datetime is the agent selected date and time for a callback.
-The actual talk time in seconds of the call is talk_time. This URL can NOT be a 
-relative path. It is always called from the webserver. Default is blank.
 
+You can set the Dispo Call URL on a per-campaign and per-in-group basis. You can
+also set more than one Dispo Call URL by entering "ALT" into the Dispo Call URL
+field for a campaign or in-groupand submitting the page, then a link to a new
+page will be shown where you can go to configure many Dispo Call URLs. In this
+Alternate dispo URL page, you will have additional options, like being able to 
+specify that the URL be called only for specific statuses or specific lists.
+
+These are the extra variables you can use with this specific function:
+- 'dispo' is the actual agent-defined status disposition for the call
+- 'talk_time' is the actual talk time in seconds of the call
+- 'call_notes' is the agent-entered call notes for the call, if enabled
+- 'callback_lead_status' is the agent-selected status when a scheduled callback 
+	status has been selected by the agent
+- 'callback_datetime' is the agent selected date and time for a callback
+
+With Dispo Call URLs you can also use a DISPO_FILTER Settings Container to 
+define replacements for specific field values before they are sent out. For
+example, you can replace a blank 'state' field with 'NA' when sending out the
+Dispo Call URL that contains --A--state--B-- in it, just by including the 
+following line in a DISPO_FILTER settings container: "state,,NA". The second
+field is case-sensitive, so of you want to allow for a matching 'state' in both
+upper case and lower case you would need to include four lines in your settings
+container: "state,MC,MI", "state,mc,MI", "state,mC,MI", "state,Mc,MI"
+The above example would change a 'state' of "MC" to "MI" in the Dispo Call URL.
+To enable this feature for a Dispo Call URL, just include 
+'dispo_filter_container=' in your URL with the Settings Container ID at the end:
+"&dispo_filter_container=TEST_NA"
+
+The Dispo Call URL can NOT be a relative path, it must be an absolute URL
+The Dispo Call URL is always called from the webserver.
+Default is blank.
+
+
+################################################################################
+# ADD LEAD URL
+################################################################################
 
 Add Lead URL -  This web URL address is not seen by the agent, but it is called
 every time a lead is added to the system through the inbound process. Default 
@@ -56,6 +96,10 @@ did_extension, did_pattern, did_description, uniqueid, call_id. This feature is
 only available for In-Groups.
 
 
+################################################################################
+# NO AGENT CALL URL
+################################################################################
+
 No Agent Call URL - This is similar to Dispo Call URL, but it is for calls
 that are not sent to agents such as DROPs, No Answers, Busys and timeouts. This 
 option is available for Campaigns and In-Groups. This feature will only work for
@@ -63,6 +107,10 @@ auto-dial and inbound calls, not manual dial calls. For inbound calls, the
 specific in-group that a call was sent to needs to have the No Agent Call URL 
 field filled in or this function will not run for that call.
 
+
+################################################################################
+# CRM POPUP LOGIN/ADDRESS
+################################################################################
 
 CRM Popup Login - If set to Y, the CRM Popup Address is used to open a new 
 window on agent login to this campaign. Default is N.
@@ -74,6 +122,10 @@ populated just like the web form address, with the VAR in the front and using
 
 
 
+
+################################################################################
+# AVAILABLE FIELDS
+################################################################################
 
 You can have lead information be auto-populated in the URL
 options(webform, webform2, start_call_url, dispo_call_url, crm_popup_url) using
@@ -89,12 +141,21 @@ group, channel_group, SQLdate, epoch, uniqueid, customer_zap_channel,
 server_ip, SIPexten, session_id, dialed_number, dialed_label, rank,
 owner, camp_script, in_script, script_width, script_height,
 recording_filename, recording_id, user_custom_one, user_custom_two,
-user_custom_three, user_custom_four, user_custom_five,
-preset_number_a, preset_number_b, preset_number_c, preset_number_d,
-preset_number_e, preset_number_f, preset_dtmf_a, preset_dtmf_b,
-did_id, did_extension, did_pattern, did_description, closecallid,
-xfercallid, agent_log_id, entry_list_id, call_id, user_group, list_name.
+user_custom_three, user_custom_four, user_custom_five, list_description,
+preset_number_a, preset_number_b, preset_number_c, preset_number_d, agent_email,
+preset_number_e, preset_number_f, preset_dtmf_a, preset_dtmf_b, entry_date,
+did_id, did_extension, did_pattern, did_description, closecallid, called_count,
+xfercallid, agent_log_id, entry_list_id, call_id, user_group, list_name,
+did_custom_one, did_custom_two, did_custom_three, did_custom_four, 
+did_custom_five
 
+For most of the functions above, you can also reference custom list fields using
+the standard --A-- and --B-- around the custom field ID
+
+
+################################################################################
+# EXAMPLES
+################################################################################
 
 For examples(and sample result URL):
 

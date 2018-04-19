@@ -122,6 +122,11 @@
       www/vicidial/help.php,
       www/vicidial/user_stats.php: Added vicidial_agent_function_log archiving,
         Added Pause Code manager approval feature, Added switch_lead logging.
+  * Add upstream Rev. 2964:
+    - UPGRADE,
+      docs/CALL_URL_FEATURES.txt,
+      www/agc/vdc_db_query.php,
+      www/vicidial/admin.php: Added Dispo URL Filter feature.
 
 2.25.25b
   [Jörg Frings-Fürst]
