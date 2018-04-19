@@ -127,6 +127,9 @@
       docs/CALL_URL_FEATURES.txt,
       www/agc/vdc_db_query.php,
       www/vicidial/admin.php: Added Dispo URL Filter feature.
+  * Add upstream Rev. 2965:
+    - www/vicidial/call_report_export.php: Fix for missing call notes on
+       inbound calls.
 
 2.25.25b
   [Jörg Frings-Fürst]
