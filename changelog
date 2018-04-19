@@ -89,6 +89,8 @@
       www/vicidial/admin_bulk_tools.php,
       www/vicidial/list_download.php: Added download of CID Group records
         feature.
+  * Add upstream Rev. 2957:
+    - www/vicidial/list_download.php: Set row[3] to 'n' if empty.
 
 2.25.25b
   [Jörg Frings-Fürst]
