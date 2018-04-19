@@ -58,6 +58,11 @@
         function.
   * Add upstream Rev. 2948:
     - docs/AGENT_API.txt: Change ERORR to NOTICE for one tag.
+  * Add upstream Rev. 2949:
+    - www/vicidial/AST_CLOSERstats.php,
+      www/vicidial/AST_CLOSERstats_v2.php,
+      www/vicidial/user_stats.php:  Fix for user time calculation,
+        subtracted queue_seconds.
 
 2.25.25b
   [Jörg Frings-Fürst]

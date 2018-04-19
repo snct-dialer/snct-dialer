@@ -1,7 +1,7 @@
 <?php 
 # AST_CLOSERstats_v2.php
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES:
 # 60619-1714 - Added variable filtering to eliminate SQL injection attack threat
@@ -63,6 +63,7 @@
 # 170409-1559 - Added IP List validation code
 # 170829-0040 - Added screen color settings
 # 171012-2015 - Fixed javascript/apache errors with graphs
+# 180323-2307 - Fix for user time calculation, subtracted queue_seconds
 #
 
 $startMS = microtime();
@@ -3016,10 +3017,10 @@ $max_calls=1;
 $max_timehms=1;
 $max_average=1;
 $graph_stats=array();
-$stmt="select ".$vicidial_closer_log_table.".user,full_name,count(*),sum(length_in_sec),avg(length_in_sec) from ".$vicidial_closer_log_table.",vicidial_users where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and  campaign_id IN($group_SQL) and ".$vicidial_closer_log_table.".user is not null and length_in_sec is not null and ".$vicidial_closer_log_table.".user=vicidial_users.user group by ".$vicidial_closer_log_table.".user;";
+$stmt="select ".$vicidial_closer_log_table.".user,full_name,count(*),sum(length_in_sec-queue_seconds),avg(length_in_sec-queue_seconds) from ".$vicidial_closer_log_table.",vicidial_users where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and  campaign_id IN($group_SQL) and ".$vicidial_closer_log_table.".user is not null and length_in_sec is not null and ".$vicidial_closer_log_table.".user=vicidial_users.user group by ".$vicidial_closer_log_table.".user;";
 if ($DID=='Y')
 	{
-	$stmt="select ".$vicidial_closer_log_table.".user,full_name,count(*),sum(length_in_sec),avg(length_in_sec) from ".$vicidial_closer_log_table.",vicidial_users where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and uniqueid IN($unid_SQL) and ".$vicidial_closer_log_table.".user is not null and length_in_sec is not null and ".$vicidial_closer_log_table.".user=vicidial_users.user group by ".$vicidial_closer_log_table.".user;";
+	$stmt="select ".$vicidial_closer_log_table.".user,full_name,count(*),sum(length_in_sec-queue_seconds),avg(length_in_sec-queue_seconds) from ".$vicidial_closer_log_table.",vicidial_users where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and uniqueid IN($unid_SQL) and ".$vicidial_closer_log_table.".user is not null and length_in_sec is not null and ".$vicidial_closer_log_table.".user=vicidial_users.user group by ".$vicidial_closer_log_table.".user;";
 	}
 $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {$ASCII_text.="$stmt\n";}

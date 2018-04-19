@@ -1,7 +1,7 @@
 <?php
 # user_stats.php
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -56,6 +56,7 @@
 # 170228-1626 - Change to display emergency manager logout note
 # 170409-1555 - Added IP List validation code
 # 170412-2150 - Added park_rpt display option
+# 180323-2308 - Fix for user time calculation, subtracted queue_seconds
 #
 
 $startMS = microtime();
@@ -702,7 +703,7 @@ else
 			$o++;
 			}
 
-		$stmt="SELECT count(*),status, sum(length_in_sec) from ".$vicidial_closer_log_table." where user='" . mysqli_real_escape_string($link, $user) . "' and call_date >= '" . mysqli_real_escape_string($link, $begin_date) . " 0:00:01'  and call_date <= '" . mysqli_real_escape_string($link, $end_date) . " 23:59:59' $query_call_status group by status order by status";
+		$stmt="SELECT count(*),status, sum(length_in_sec-queue_seconds) from ".$vicidial_closer_log_table." where user='" . mysqli_real_escape_string($link, $user) . "' and call_date >= '" . mysqli_real_escape_string($link, $begin_date) . " 0:00:01'  and call_date <= '" . mysqli_real_escape_string($link, $end_date) . " 23:59:59' $query_call_status group by status order by status";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$VCLstatuses_to_print = mysqli_num_rows($rslt);
 		$o=0;
