@@ -77,7 +77,8 @@
       www/agc/vdc_script_display.php,
       www/agc/vicidial.php: Added code for LOCALFQDN conversion to browser
         used server URL script iframes.
-
+  * Add upstream Rev. 2953:
+    - www/vicidial/admin_campaign_multi_alt.php: Added screen colors.
 2.25.25b
   [Jörg Frings-Fürst]
   * www/vicidial/help.php: Correct anchor.
