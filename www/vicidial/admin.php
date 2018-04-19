@@ -2421,6 +2421,8 @@ if (isset($_GET["autoanswer_delay"]))				{$autoanswer_delay=$_GET["autoanswer_de
 	elseif (isset($_POST["autoanswer_delay"]))		{$autoanswer_delay=$_POST["autoanswer_delay"];}
 if (isset($_GET["autoanswer_type"]))				{$autoanswer_type=$_GET["autoanswer_type"];}
 	elseif (isset($_POST["autoanswer_type"]))		{$autoanswer_type=$_POST["autoanswer_type"];}
+if (isset($_GET["source_id_display"]))			{$source_id_display=$_GET["source_id_display"];}
+	elseif (isset($_POST["source_id_display"]))	{$source_id_display=$_POST["source_id_display"];}
 
 
 if (isset($script_id)) {$script_id= strtoupper($script_id);}
@@ -2847,6 +2849,7 @@ if ($non_latin < 1)
 	$enable_gdpr_download_deletion = preg_replace('/[^0-9]/','',$enable_gdpr_download_deletion);
 	$did_system_filter = preg_replace('/[^0-9]/','',$did_system_filter);
 	$icbq_expiration_hours = preg_replace('/[^0-9]/','',$icbq_expiration_hours);
+	$source_id_display = preg_replace('/[^0-9]/','',$source_id_display);
 
 	$user_new_lead_limit = preg_replace('/[^-0-9]/','',$user_new_lead_limit);
 	$drop_call_seconds = preg_replace('/[^-0-9]/','',$drop_call_seconds);
@@ -4412,12 +4415,14 @@ else
 # 180219-2204 - Fixed issue with CID Groups
 # 180222-0017 - Added higher hopper level options
 # 180306-1718 - Added script_top_dispo feature
+# 180310-2230 - Added bulk change function for campaign and ingroup ranks in user modify page
+# 180310-2321 - Added source_id_display system option
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-662a';
-$build = '180306-1718';
+$admin_version = '2.14-664a';
+$build = '180310-2321';
 
 
 $STARTtime = date("U");
@@ -5460,12 +5465,31 @@ if ( ( (strlen($ADD)>4) and ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($AD
 	{
 	##### BEGIN get campaigns listing for rankings #####
 
+	$h="9";
+	$headRANKcampaigns_list='';
+	while ($h>=-9)
+		{
+		$headRANKcampaigns_list .= "<option value=\"$h\">$h</option>";
+		$h--;
+		}
+	$h="10";
+	$headGRADEcampaigns_list='';
+	while ($h>=1)
+		{
+		$headGRADEcampaigns_list .= "<option value=\"$h\">$h</option>";
+		$h--;
+		}
+
 	$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns $whereLOGallowed_campaignsSQL order by campaign_id";
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$campaigns_to_print = mysqli_num_rows($rslt);
 	$campaigns_list='';
 	$campaigns_value='';
-	$RANKcampaigns_list="<tr><td>"._QXZ("CAMPAIGN")."</td><td> &nbsp; &nbsp; "._QXZ("RANK")."</td><td> &nbsp; &nbsp; "._QXZ("GRADE")."</td><td> &nbsp; &nbsp; "._QXZ("CALLS")."</td><td ALIGN=CENTER>"._QXZ("WEB VARS")."</td></tr>\n";
+	$RANKcampaigns_list='';
+	$RANKcampaigns_list.="<tr bgcolor=#$SSmenu_background><td><font color=white> &nbsp; "._QXZ("CAMPAIGN")."</td>\n";
+	$RANKcampaigns_list.="<td nowrap><font color=white> &nbsp; "._QXZ("RANK")." &nbsp; <br><select name=\"campaign_js_rank_select\" id=\"campaign_js_rank_select\" size=1 style=\"font-family: sans-serif; font-size: 10px; overflow: hidden;\"><option value=\"\">-></option>$headRANKcampaigns_list</select><a href=\"#\" onclick=\"campaign_rank_val_change();return false;\"><font size=1 color=white>change</font></a></td>\n";
+	$RANKcampaigns_list.="<td nowrap><font color=white> &nbsp; "._QXZ("GRADE")." &nbsp; <br><select name=\"campaign_js_grade_select\" id=\"campaign_js_grade_select\" size=1 style=\"font-family: sans-serif; font-size: 10px; overflow: hidden;\"><option value=\"\">-></option>$headGRADEcampaigns_list</select><a href=\"#\" onclick=\"campaign_grade_val_change();return false;\"><font size=1 color=white>change</font></a></td>\n";
+	$RANKcampaigns_list.="<td nowrap><font color=white> &nbsp; "._QXZ("CALLS")." &nbsp; </td><td ALIGN=CENTER><font color=white>"._QXZ("WEB VARS")."</td></tr>\n";
 
 	$o=0;
 	while ($campaigns_to_print > $o)
@@ -5479,6 +5503,11 @@ if ( ( (strlen($ADD)>4) and ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($AD
 
 	$o=0;
 	$stmt_grp_values='';
+	$campaign_js_rank='';
+	$campaign_js_grade='';
+	$campaign_js_rank_ct=0;
+	$campaign_js_grade_ct=0;
+
 	while ($campaigns_to_print > $o)
 		{
 		$group_web_vars='';
@@ -5565,12 +5594,25 @@ if ( ( (strlen($ADD)>4) and ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($AD
 				$p++;
 				}
 			}
-		if ($RANK_camp_active < 1) {$CR_disabled = 'DISABLED';}
+		if ($RANK_camp_active < 1) 
+			{$CR_disabled = 'DISABLED';}
+		else
+			{
+			$campaign_js_rank_ct++;
+			$campaign_js_grade_ct++;
+			if (strlen($campaign_js_rank) > 1)
+				{
+				$campaign_js_rank .= ",";
+				$campaign_js_grade .= ",";
+				}
+			$campaign_js_rank .= "'RANK_$campaign_id_values[$o]'";
+			$campaign_js_grade .= "'GRADE_$campaign_id_values[$o]'";
+			}
 
 		$RANKcampaigns_list .= "<tr $bgcolor><td>";
 		$campaigns_list .= "<a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id_values[$o]\">$campaign_id_values[$o]</a> - $campaign_name_values[$o] <BR>\n";
 		$RANKcampaigns_list .= "<a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id_values[$o]\">$campaign_id_values[$o]</a> - $campaign_name_values[$o] </td>";
-		$RANKcampaigns_list .= "<td> &nbsp; <select size=1 name=RANK_$campaign_id_values[$o] $CR_disabled>\n";
+		$RANKcampaigns_list .= "<td> &nbsp; <select size=1 name=RANK_$campaign_id_values[$o] id=RANK_$campaign_id_values[$o] $CR_disabled>\n";
 		$h="9";
 		while ($h>=-9)
 			{
@@ -5583,7 +5625,7 @@ if ( ( (strlen($ADD)>4) and ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($AD
 		if ( (strlen($campaign_web) < 1) and (strlen($group_web_vars) > 0) )
 			{$campaign_web=$group_web_vars;}
 		$RANKcampaigns_list .= "</select></td>\n";
-		$RANKcampaigns_list .= "<td> &nbsp; <select size=1 name=GRADE_$campaign_id_values[$o] $CR_disabled>\n";
+		$RANKcampaigns_list .= "<td> &nbsp; <select size=1 name=GRADE_$campaign_id_values[$o] id=GRADE_$campaign_id_values[$o] $CR_disabled>\n";
 		$h="10";
 		while ($h>=1)
 			{
@@ -5654,6 +5696,22 @@ if ( ( (strlen($ADD)>4) and ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($AD
 		$groups = explode(" ", $closer_campaigns);
 		}
 
+	$h="9";
+	$headRANKgroups_list='';
+	while ($h>=-9)
+		{
+		$headRANKgroups_list .= "<option value=\"$h\">$h</option>";
+		$h--;
+		}
+	$h="10";
+	$headGRADEgroups_list='';
+	while ($h>=1)
+		{
+		$headGRADEgroups_list .= "<option value=\"$h\">$h</option>";
+		$h--;
+		}
+
+
 	$stmt="SELECT group_id,group_name from vicidial_inbound_groups $whereLOGadmin_viewable_groupsSQL order by group_id;";
 #	$stmt="SELECT group_id,group_name from vicidial_inbound_groups where group_id NOT IN('AGENTDIRECT') order by group_id";
 	$rslt=mysql_to_mysqli($stmt, $link);
@@ -5661,7 +5719,11 @@ if ( ( (strlen($ADD)>4) and ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($AD
 	$groups_list='';
 	$groups_value='';
 	$XFERgroups_list='';
-	$RANKgroups_list="<tr><td>"._QXZ("INBOUND GROUP")."</td><td> &nbsp; &nbsp; "._QXZ("RANK")."</td><td> &nbsp; &nbsp; "._QXZ("GRADE")."</td><td> &nbsp; &nbsp; "._QXZ("CALLS")."</td><td ALIGN=CENTER>"._QXZ("WEB VARS")."</td></tr>\n";
+	$RANKgroups_list='';
+	$RANKgroups_list.="<tr bgcolor=#$SSmenu_background><td><font color=white> &nbsp; "._QXZ("INBOUND GROUP")."</td>\n";
+	$RANKgroups_list.="<td nowrap><font color=white> &nbsp; "._QXZ("RANK")." &nbsp; <br><select name=\"ingroup_js_rank_select\" id=\"ingroup_js_rank_select\" size=1 style=\"font-family: sans-serif; font-size: 10px; overflow: hidden;\"><option value=\"\">-></option>$headRANKgroups_list</select><a href=\"#\" onclick=\"ingroup_rank_val_change();return false;\"><font size=1 color=white>change</font></a></td>\n";
+	$RANKgroups_list.="<td nowrap><font color=white> &nbsp; "._QXZ("GRADE")." &nbsp; <br><select name=\"ingroup_js_grade_select\" id=\"ingroup_js_grade_select\" size=1 style=\"font-family: sans-serif; font-size: 10px; overflow: hidden;\"><option value=\"\">-></option>$headGRADEgroups_list</select><a href=\"#\" onclick=\"ingroup_grade_val_change();return false;\"><font size=1 color=white>change</font></a></td>\n";
+	$RANKgroups_list.="<td nowrap><font color=white> &nbsp; "._QXZ("CALLS")." &nbsp; </td><td ALIGN=CENTER><font color=white>"._QXZ("WEB VARS")."</td></tr>\n";
 
 	$o=0;
 	while ($groups_to_print > $o)
@@ -5674,6 +5736,11 @@ if ( ( (strlen($ADD)>4) and ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($AD
 
 	$o=0;
 	$USER_inbound_calls_today=0;
+	$ingroup_js_rank='';
+	$ingroup_js_grade='';
+	$ingroup_js_rank_ct=0;
+	$ingroup_js_grade_ct=0;
+
 	while ($groups_to_print > $o)
 		{
 		$group_web_vars='';
@@ -5766,10 +5833,20 @@ if ( ( (strlen($ADD)>4) and ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($AD
 		$row=mysqli_fetch_row($rslt);
 		$VIG_priority =			$row[0];
 
+		$ingroup_js_rank_ct++;
+		$ingroup_js_grade_ct++;
+		if (strlen($ingroup_js_rank) > 1)
+			{
+			$ingroup_js_rank .= ",";
+			$ingroup_js_grade .= ",";
+			}
+		$ingroup_js_rank .= "'RANK_$group_id_values[$o]'";
+		$ingroup_js_grade .= "'GRADE_$group_id_values[$o]'";
+
 		$groups_list .= "> <a href=\"$PHP_SELF?ADD=3111&group_id=$group_id_values[$o]\">$group_id_values[$o]</a> - $group_name_values[$o] - $VIG_priority <BR>\n";
 		$XFERgroups_list .= "> <a href=\"$PHP_SELF?ADD=3111&group_id=$group_id_values[$o]\">$group_id_values[$o]</a> - $group_name_values[$o] <BR>\n";
 		$RANKgroups_list .= "> <a href=\"$PHP_SELF?ADD=3111&group_id=$group_id_values[$o]\">$group_id_values[$o]</a> - $group_name_values[$o] </td>";
-		$RANKgroups_list .= "<td> &nbsp; <select size=1 name=RANK_$group_id_values[$o]>\n";
+		$RANKgroups_list .= "<td> &nbsp; <select size=1 name=RANK_$group_id_values[$o] id=RANK_$group_id_values[$o]>\n";
 		$h="9";
 		while ($h>=-9)
 			{
@@ -5782,7 +5859,7 @@ if ( ( (strlen($ADD)>4) and ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($AD
 		if ( (strlen($group_web) < 1) and (strlen($group_web_vars) > 0) )
 			{$group_web=$group_web_vars;}
 		$RANKgroups_list .= "</select></td>\n";
-		$RANKgroups_list .= "<td> &nbsp; <select size=1 name=GRADE_$group_id_values[$o]>\n";
+		$RANKgroups_list .= "<td> &nbsp; <select size=1 name=GRADE_$group_id_values[$o] id=GRADE_$group_id_values[$o]>\n";
 		$h="10";
 		while ($h>=1)
 			{
@@ -17449,8 +17526,8 @@ if ($ADD==411111111111111)
 			detect_3way='$detect_3way',company_name='$company_name',ticket_mail='$ticket_mail',allow_manage_active_lists='$allow_manage_active_lists',expired_lists_inactive='$expired_lists_inactive',
 			did_system_filter='$did_system_filter',allow_phonebook='$allow_phonebook',servicelevel_direct='$servicelevel_direct',servicelevel_one='$servicelevel_one',
 			servicelevel_two='$servicelevel_two',anyone_callback_inactive_lists='$anyone_callback_inactive_lists',tmp_download_dir='$syss_tmp_download_dir',agent_prefix='$agent_prefix',
-			enable_gdpr_download_deletion='$enable_gdpr_download_deletion'$custom_dialplanSQL,autoanswer_enable='$autoanswer_enable',autoanswer_prefix='$autoanswer_prefix',
-			autoanswer_delay='$autoanswer_delay'";
+			enable_gdpr_download_deletion='$enable_gdpr_download_deletion',autoanswer_enable='$autoanswer_enable',autoanswer_prefix='$autoanswer_prefix',
+			autoanswer_delay='$autoanswer_delay',source_id_display='$source_id_display'$custom_dialplanSQL";
 
 		$rslt=mysql_to_mysqli($stmt, $link);
 
@@ -21358,6 +21435,79 @@ if ($ADD==3)
 				echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Wrap Seconds Override").": </td><td align=left><input type=text name=wrapup_seconds_override size=6 maxlength=5 value=\"$wrapup_seconds_override\">$NWB#users-wrapup_seconds_override$NWE</td></tr>\n";
 
 				echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Agent Ready Max Logout Override").": </td><td align=left><input type=text name=ready_max_logout size=7 maxlength=6 value=\"$ready_max_logout\">$NWB#users-ready_max_logout$NWE</td></tr>\n";
+
+
+				if (strlen($campaign_js_rank) < 2) {$campaign_js_rank="''";}
+				if (strlen($campaign_js_grade) < 2) {$campaign_js_grade="''";}
+				if (strlen($ingroup_js_rank) < 2) {$ingroup_js_rank="''";}
+				if (strlen($ingroup_js_grade) < 2) {$ingroup_js_grade="''";}
+				echo "<script language=\"JavaScript\">\n";
+				echo "ARYcampaign_js_rank = new Array($campaign_js_rank);\n";
+				echo "ARYcampaign_js_grade = new Array($campaign_js_grade);\n";
+				echo "ARYingroup_js_rank = new Array($ingroup_js_rank);\n";
+				echo "ARYingroup_js_grade = new Array($ingroup_js_grade);\n";
+				echo "var campaign_js_rank_ct = '$campaign_js_rank_ct';\n";
+				echo "var campaign_js_grade_ct = '$campaign_js_grade_ct';\n";
+				echo "var ingroup_js_rank_ct = '$ingroup_js_rank_ct';\n";
+				echo "var ingroup_js_grade_ct = '$ingroup_js_grade_ct';\n";
+				echo "\n";
+				echo "function campaign_rank_val_change()\n";
+				echo "	{\n";
+				echo "	var camp_rank_select = document.getElementById(\"campaign_js_rank_select\");\n";
+				echo "	var camp_rank_selected = camp_rank_select.value\n";
+				echo "	if (camp_rank_selected.length > 0)\n";
+				echo "		{\n";
+				echo "		var loop_ct=0;\n";
+				echo "		while(loop_ct < campaign_js_rank_ct)\n";
+				echo "			{\n";
+				echo "			document.getElementById(ARYcampaign_js_rank[loop_ct]).value = camp_rank_selected;\n";
+				echo "			loop_ct++;\n";
+				echo "			}\n";
+				echo "		}\n";
+				echo "	}\n";
+				echo "function campaign_grade_val_change()\n";
+				echo "	{\n";
+				echo "	var camp_grade_select = document.getElementById(\"campaign_js_grade_select\");\n";
+				echo "	var camp_grade_selected = camp_grade_select.value\n";
+				echo "	if (camp_grade_selected.length > 0)\n";
+				echo "		{\n";
+				echo "		var loop_ct=0;\n";
+				echo "		while(loop_ct < campaign_js_grade_ct)\n";
+				echo "			{\n";
+				echo "			document.getElementById(ARYcampaign_js_grade[loop_ct]).value = camp_grade_selected;\n";
+				echo "			loop_ct++;\n";
+				echo "			}\n";
+				echo "		}\n";
+				echo "	}\n";
+				echo "function ingroup_rank_val_change()\n";
+				echo "	{\n";
+				echo "	var camp_rank_select = document.getElementById(\"ingroup_js_rank_select\");\n";
+				echo "	var camp_rank_selected = camp_rank_select.value\n";
+				echo "	if (camp_rank_selected.length > 0)\n";
+				echo "		{\n";
+				echo "		var loop_ct=0;\n";
+				echo "		while(loop_ct < ingroup_js_rank_ct)\n";
+				echo "			{\n";
+				echo "			document.getElementById(ARYingroup_js_rank[loop_ct]).value = camp_rank_selected;\n";
+				echo "			loop_ct++;\n";
+				echo "			}\n";
+				echo "		}\n";
+				echo "	}\n";
+				echo "function ingroup_grade_val_change()\n";
+				echo "	{\n";
+				echo "	var camp_grade_select = document.getElementById(\"ingroup_js_grade_select\");\n";
+				echo "	var camp_grade_selected = camp_grade_select.value\n";
+				echo "	if (camp_grade_selected.length > 0)\n";
+				echo "		{\n";
+				echo "		var loop_ct=0;\n";
+				echo "		while(loop_ct < ingroup_js_grade_ct)\n";
+				echo "			{\n";
+				echo "			document.getElementById(ARYingroup_js_grade[loop_ct]).value = camp_grade_selected;\n";
+				echo "			loop_ct++;\n";
+				echo "			}\n";
+				echo "		}\n";
+				echo "	}\n";
+				echo "</script>\n";
 
 				echo "<tr bgcolor=#$SSstd_row4_background><td align=center colspan=2>"._QXZ("Campaign Ranks").": $NWB#users-campaign_ranks$NWE<BR>\n";
 				echo "<table border=0 width=850>\n";
@@ -36177,7 +36327,7 @@ if ($ADD==311111111111111)
 			$ALLagent_count =		$rowx[2];
 			}
 
-		$stmt="SELECT version,install_date,use_non_latin,webroot_writable,enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_url,queuemetrics_log_id,queuemetrics_eq_prepend,vicidial_agent_disable,allow_sipsak_messages,admin_home_url,enable_agc_xfer_log,db_schema_version,auto_user_add_value,timeclock_end_of_day,timeclock_last_reset_date,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,vdc_agent_api_active,qc_last_pull_time,enable_vtiger_integration,vtiger_server_ip,vtiger_dbname,vtiger_login,vtiger_pass,vtiger_url,qc_features_active,outbound_autodial_active,outbound_calls_per_second,enable_tts_integration,agentonly_callback_campaign_lock,sounds_central_control_active,sounds_web_server,sounds_web_directory,active_voicemail_server,auto_dial_limit,user_territories_active,allow_custom_dialplan,db_schema_update_date,enable_second_webform,default_webphone,default_external_server_ip,webphone_url,enable_agc_dispo_log,custom_dialplan_entry,queuemetrics_loginout,callcard_enabled,queuemetrics_callstatus,default_codecs,admin_web_directory,label_title,label_first_name,label_middle_initial,label_last_name,label_address1,label_address2,label_address3,label_city,label_state,label_province,label_postal_code,label_vendor_lead_code,label_gender,label_phone_number,label_phone_code,label_alt_phone,label_security_phrase,label_email,label_comments,custom_fields_enabled,slave_db_server,reports_use_slave_db,webphone_systemkey,first_login_trigger,default_phone_registration_password,default_phone_login_password,default_server_password,admin_modify_refresh,nocache_admin,generate_cross_server_exten,queuemetrics_addmember_enabled,queuemetrics_dispo_pause,label_hide_field_logs,queuemetrics_pe_phone_append,test_campaign_calls,agents_calls_reset,default_voicemail_timezone,default_local_gmt,noanswer_log,alt_log_server_ip,alt_log_dbname,alt_log_login,alt_log_pass,tables_use_alt_log_db,did_agent_log,campaign_cid_areacodes_enabled,pllb_grouping_limit,did_ra_extensions_enabled,expanded_list_stats,contacts_enabled,call_menu_qualify_enabled,admin_list_counts,allow_voicemail_greeting,svn_revision,queuemetrics_socket,queuemetrics_socket_url,enhanced_disconnect_logging,allow_emails,level_8_disable_add,pass_hash_enabled,pass_key,pass_cost,disable_auto_dial,queuemetrics_record_hold,country_code_list_stats,reload_timestamp,queuemetrics_pause_type,frozen_server_call_clear,callback_time_24hour,allow_chats,chat_url,chat_timeout,enable_languages,language_method,meetme_enter_login_filename,meetme_enter_leave3way_filename,enable_did_entry_list_id,enable_third_webform,agent_debug_logging,default_language,agent_whisper_enabled,user_hide_realtime_enabled,usacan_phone_dialcode_fix,cache_carrier_stats_realtime,oldest_logs_date,log_recording_access,report_default_format,alt_ivr_logging,default_phone_code,admin_row_click,admin_screen_colors,ofcom_uk_drop_calc,agent_screen_colors,script_remove_js,manual_auto_next,user_new_lead_limit,agent_xfer_park_3way,rec_prompt_count,agent_soundboards,web_loader_phone_length,agent_script,agent_chat_screen_colors,enable_auto_reports,enable_pause_code_limits,enable_drop_lists,allow_ip_lists,system_ip_blacklist, git_commit, git_release ,agent_push_events,agent_push_url,pause_campaigns,hide_inactive_lists,detect_3way,company_name,ticket_mail,allow_manage_active_lists,expired_lists_inactive,did_system_filter,allow_phonebook,servicelevel_direct,servicelevel_one,servicelevel_two,anyone_callback_inactive_lists,tmp_download_dir,enable_gdpr_download_deletion,agent_prefix,autoanswer_enable,autoanswer_prefix,autoanswer_delay from system_settings;";
+		$stmt="SELECT version,install_date,use_non_latin,webroot_writable,enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_url,queuemetrics_log_id,queuemetrics_eq_prepend,vicidial_agent_disable,allow_sipsak_messages,admin_home_url,enable_agc_xfer_log,db_schema_version,auto_user_add_value,timeclock_end_of_day,timeclock_last_reset_date,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,vdc_agent_api_active,qc_last_pull_time,enable_vtiger_integration,vtiger_server_ip,vtiger_dbname,vtiger_login,vtiger_pass,vtiger_url,qc_features_active,outbound_autodial_active,outbound_calls_per_second,enable_tts_integration,agentonly_callback_campaign_lock,sounds_central_control_active,sounds_web_server,sounds_web_directory,active_voicemail_server,auto_dial_limit,user_territories_active,allow_custom_dialplan,db_schema_update_date,enable_second_webform,default_webphone,default_external_server_ip,webphone_url,enable_agc_dispo_log,custom_dialplan_entry,queuemetrics_loginout,callcard_enabled,queuemetrics_callstatus,default_codecs,admin_web_directory,label_title,label_first_name,label_middle_initial,label_last_name,label_address1,label_address2,label_address3,label_city,label_state,label_province,label_postal_code,label_vendor_lead_code,label_gender,label_phone_number,label_phone_code,label_alt_phone,label_security_phrase,label_email,label_comments,custom_fields_enabled,slave_db_server,reports_use_slave_db,webphone_systemkey,first_login_trigger,default_phone_registration_password,default_phone_login_password,default_server_password,admin_modify_refresh,nocache_admin,generate_cross_server_exten,queuemetrics_addmember_enabled,queuemetrics_dispo_pause,label_hide_field_logs,queuemetrics_pe_phone_append,test_campaign_calls,agents_calls_reset,default_voicemail_timezone,default_local_gmt,noanswer_log,alt_log_server_ip,alt_log_dbname,alt_log_login,alt_log_pass,tables_use_alt_log_db,did_agent_log,campaign_cid_areacodes_enabled,pllb_grouping_limit,did_ra_extensions_enabled,expanded_list_stats,contacts_enabled,call_menu_qualify_enabled,admin_list_counts,allow_voicemail_greeting,svn_revision,queuemetrics_socket,queuemetrics_socket_url,enhanced_disconnect_logging,allow_emails,level_8_disable_add,pass_hash_enabled,pass_key,pass_cost,disable_auto_dial,queuemetrics_record_hold,country_code_list_stats,reload_timestamp,queuemetrics_pause_type,frozen_server_call_clear,callback_time_24hour,allow_chats,chat_url,chat_timeout,enable_languages,language_method,meetme_enter_login_filename,meetme_enter_leave3way_filename,enable_did_entry_list_id,enable_third_webform,agent_debug_logging,default_language,agent_whisper_enabled,user_hide_realtime_enabled,usacan_phone_dialcode_fix,cache_carrier_stats_realtime,oldest_logs_date,log_recording_access,report_default_format,alt_ivr_logging,default_phone_code,admin_row_click,admin_screen_colors,ofcom_uk_drop_calc,agent_screen_colors,script_remove_js,manual_auto_next,user_new_lead_limit,agent_xfer_park_3way,rec_prompt_count,agent_soundboards,web_loader_phone_length,agent_script,agent_chat_screen_colors,enable_auto_reports,enable_pause_code_limits,enable_drop_lists,allow_ip_lists,system_ip_blacklist, git_commit, git_release ,agent_push_events,agent_push_url,pause_campaigns,hide_inactive_lists,detect_3way,company_name,ticket_mail,allow_manage_active_lists,expired_lists_inactive,did_system_filter,allow_phonebook,servicelevel_direct,servicelevel_one,servicelevel_two,anyone_callback_inactive_lists,tmp_download_dir,enable_gdpr_download_deletion,agent_prefix,autoanswer_enable,autoanswer_prefix,autoanswer_delay,source_id_display from system_settings;";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$row=mysqli_fetch_row($rslt);
 		$version =						$row[0];
@@ -36365,6 +36515,7 @@ if ($ADD==311111111111111)
 		$autoanswer_enable					= $row[182];
 		$autoanswer_prefix					= $row[183];
 		$autoanswer_delay					= $row[184];
+		$source_id_display =			$row[185];
 
 		if ($pass_hash_enabled > 0) {$pass_hash_enabled = 'ENABLED';}	
 		else {$pass_hash_enabled = 'DISABLED';}
@@ -36640,6 +36791,8 @@ if ($ADD==311111111111111)
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Expired Lists Auto Inactive").": </td><td align=left><select size=1 name=expired_lists_inactive><option>1</option><option>0</option><option selected>$expired_lists_inactive</option></select>$NWB#settings-expired_lists_inactive$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Enable Drop Lists").": </td><td align=left><select size=1 name=enable_drop_lists><option>0</option><option>1</option><option>2</option><option selected>$enable_drop_lists</option></select>$NWB#settings-enable_drop_lists$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Admin Lead Source ID Display").": </td><td align=left><select size=1 name=source_id_display><option>0</option><option>1</option><option selected>$source_id_display</option></select>$NWB#settings-source_id_display$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Agent Screen Debug Logging").": </td><td align=left><input type=text name=agent_debug_logging size=20 maxlength=20 value=\"$agent_debug_logging\">$NWB#settings-agent_debug_logging$NWE</td></tr>\n";
 

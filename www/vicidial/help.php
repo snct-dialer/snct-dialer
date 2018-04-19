@@ -155,6 +155,7 @@
 # 180214-0042 - Added cid_groups
 # 180217-0810 - Added pause_max_dispo
 # 180306-1639 - Added script_top_dispo
+# 180310-2246 - Added settings-source_id_display
 #
 
 require("dbconnect_mysqli.php");
@@ -5611,6 +5612,11 @@ FR_SPAC 00 00 00 00 00 - <?php echo _QXZ("France space separated phone number");
 <A NAME="settings-enable_drop_lists">
 <BR>
 <B><?php echo _QXZ("Enable Drop Lists"); ?> -</B><?php echo _QXZ("This setting if enabled will make the Drop Lists feature appear under the LISTS menu. This feature set can take dropped call log records and create new leads in a list from multiple inbound groups. Default is 0 for disabled."); ?>
+
+<BR>
+<A NAME="settings-source_id_display">
+<BR>
+<B><?php echo _QXZ("Admin Lead Source ID Display"); ?> -</B><?php echo _QXZ("This setting if enabled will show the source_id field of a lead in the hopper display and the Modify Lead page. Default is 0 for disabled."); ?>
 
 <BR>
 <A NAME="settings-agent_debug_logging">

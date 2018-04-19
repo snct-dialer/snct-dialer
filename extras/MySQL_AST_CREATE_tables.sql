@@ -1794,7 +1794,8 @@ anyone_callback_inactive_lists ENUM('default','NO_ADD_TO_HOPPER','KEEP_IN_HOPPER
 enable_gdpr_download_deletion ENUM('0','1','2') default '0',
 autoanswer_enable ENUM('Y','N') default 'N',
 autoanswer_prefix VARCHAR(5) default 'AA',
-autoanswer_delay TINYINT default '1'
+autoanswer_delay TINYINT default '1',
+source_id_display ENUM('0','1') default '0'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_campaigns_list_mix (

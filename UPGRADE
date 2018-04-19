@@ -282,6 +282,12 @@ OTHER CHANGES:
 	script tab to cover the dispo screen after hanging up the customer to
 	allow for Agent-API-enabled IFRAMEs to control the agent dispo process.
 
+77. Added feature to allow for bulk change of campaign and in-group ranks and
+	grades in the User Modify page.
+
+76. Added "Admin Lead Source ID Display" System Settings option to allow Modify
+	Lead page modification of Source ID field, and display in hopper list.
+
 
 
 

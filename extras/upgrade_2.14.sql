@@ -702,4 +702,6 @@ ALTER TABLE `phones` ADD `autoanswer_type` ENUM('','SNOM') default '';
 
 ALTER TABLE vicidial_campaigns ADD script_top_dispo ENUM('Y', 'N') default 'N';
 
+ALTER TABLE system_settings ADD source_id_display ENUM('0','1') default '0';
+
 UPDATE system_settings SET db_schema_version='1533',db_schema_update_date=NOW() where db_schema_version < 1533;
