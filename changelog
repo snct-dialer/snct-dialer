@@ -109,6 +109,19 @@
        if no recent log entries found.
   * Add upstream Rev. 2962:
     - www/agc/vicidial.php: Fix for API Hangup after dial timeout.
+  * Add upstream Rev. 2963:
+    - UPGRADE,
+      bin/ADMIN_archive_log_tables.pl,
+      extras/MySQL_AST_CREATE_tables.sql,
+      extras/mysql_update/mysql-1533.sql,
+      extras/upgrade_2.14.sql,
+      www/agc/vdc_db_query.php,
+      www/agc/vicidial.php,
+      www/vicidial/admin.php,
+      www/vicidial/admin_modify_lead.php,
+      www/vicidial/help.php,
+      www/vicidial/user_stats.php: Added vicidial_agent_function_log archiving,
+        Added Pause Code manager approval feature, Added switch_lead logging.
 
 2.25.25b
   [Jörg Frings-Fürst]

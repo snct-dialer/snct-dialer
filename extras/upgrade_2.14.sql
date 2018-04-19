@@ -704,4 +704,32 @@ ALTER TABLE vicidial_campaigns ADD script_top_dispo ENUM('Y', 'N') default 'N';
 
 ALTER TABLE system_settings ADD source_id_display ENUM('0','1') default '0';
 
+ALTER TABLE vicidial_pause_codes ADD require_mgr_approval ENUM('NO','YES') default 'NO';
+
+ALTER TABLE vicidial_users ADD pause_code_approval ENUM('1','0') default '0';
+
+CREATE TABLE vicidial_agent_function_log (
+agent_function_log_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+agent_log_id INT(9) UNSIGNED,
+user VARCHAR(20),
+function VARCHAR(20),
+event_time DATETIME,
+lead_id INT(9) UNSIGNED,
+campaign_id VARCHAR(8),
+user_group VARCHAR(20),
+caller_code VARCHAR(30) default '',
+comments VARCHAR(40) default '',
+stage VARCHAR(40) default '',
+uniqueid VARCHAR(20) default '',
+index (event_time),
+index (caller_code),
+index (user),
+index (lead_id),
+index (stage)
+) ENGINE=MyISAM;
+
+CREATE TABLE vicidial_agent_function_log_archive LIKE vicidial_agent_function_log;
+ALTER TABLE vicidial_agent_function_log_archive MODIFY agent_function_log_id INT(9) UNSIGNED NOT NULL;
+
+
 UPDATE system_settings SET db_schema_version='1533',db_schema_update_date=NOW() where db_schema_version < 1533;

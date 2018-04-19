@@ -451,13 +451,14 @@
 # 180214-1553 - Added CID Group functionality
 # 180216-1350 - Fix for callback alt dial isssue #1066
 # 180228-0726 - Fix for LogiNCamPaigns function, removed unnecesary onfocus trigger, issue #1074
+# 180410-1630 - Added Pause Code manager approval feature, Added switch_lead logging
 #
 
-$version = '2.14-345';
-$build = '180228-0726';
+$version = '2.14-346';
+$build = '180410-1630';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=709;
+$mysql_log_count=712;
 $one_mysql_log=0;
 $DB=0;
 $VD_login=0;
@@ -741,6 +742,12 @@ if (isset($_GET["url_link"]))			{$url_link=$_GET["url_link"];}
 	elseif (isset($_POST["url_link"]))	{$url_link=$_POST["url_link"];}
 if (isset($_GET["newPauseCode"]))		{$newpausecode=$_GET["newPauseCode"];}
 	elseif (isset($_POST["newPauseCode"]))	{$newpausecode=$_POST["newPauseCode"];}
+if (isset($_GET["user_group"]))				{$user_group=$_GET["user_group"];}
+	elseif (isset($_POST["user_group"]))	{$user_group=$_POST["user_group"];}
+if (isset($_GET["MgrApr_user"]))			{$MgrApr_user=$_GET["MgrApr_user"];}
+	elseif (isset($_POST["MgrApr_user"]))	{$MgrApr_user=$_POST["MgrApr_user"];}
+if (isset($_GET["MgrApr_pass"]))			{$MgrApr_pass=$_GET["MgrApr_pass"];}
+	elseif (isset($_POST["MgrApr_pass"]))	{$MgrApr_pass=$_POST["MgrApr_pass"];}
 
 header ("Content-type: text/html; charset=utf-8");
 header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
@@ -952,6 +959,8 @@ if ($non_latin < 1)
 	$phone_code = preg_replace("/[^0-9a-zA-Z]/","",$phone_code);
 	$phone_number = preg_replace("/[^0-9a-zA-Z]/","",$phone_number);
 	$status = preg_replace("/[^-_0-9a-zA-Z]/","",$status);
+	$MgrApr_user = preg_replace("/[^-_0-9a-zA-Z]/","",$MgrApr_user);
+	$MgrApr_pass = preg_replace("/[^-_0-9a-zA-Z]/","",$MgrApr_pass);
 	}
 else
 	{
@@ -959,6 +968,8 @@ else
 	$pass=preg_replace("/\'|\"|\\\\|;| /","",$pass);
 	$orig_pass = preg_replace("/\'|\"|\\\\|;/","",$orig_pass);
 	$status = preg_replace("/\'|\"|\\\\|;/","",$status);
+	$MgrApr_user = preg_replace("/\'|\"|\\\\|;/","",$MgrApr_user);
+	$MgrApr_pass = preg_replace("/\'|\"|\\\\|;/","",$MgrApr_pass);
 	}
 
 $session_name = preg_replace("/\'|\"|\\\\|;/","",$session_name);
@@ -1063,6 +1074,7 @@ $user_abb = preg_replace("/\'|\"|\\\\|;/","",$user_abb);
 $vtiger_callback_id = preg_replace("/\'|\"|\\\\|;/","",$vtiger_callback_id);
 $wrapup = preg_replace("/\'|\"|\\\\|;/","",$wrapup);
 $url_link = preg_replace("/\'|\"|\\\\|;/","",$url_link);
+$user_group = preg_replace('/[^-_0-9a-zA-Z]/','',$user_group);
 
 
 # default optional vars if not set
@@ -10649,7 +10661,7 @@ if ($ACTION == 'LeaDSearcHSelecTUpdatE')
 	else
 		{
 		### grab the call info from the vicidial_live_agents table
-		$stmt = "SELECT uniqueid,callerid,channel,call_server_ip,comments FROM vicidial_live_agents where server_ip = '$server_ip' and user='$user' and campaign_id='$campaign';";
+		$stmt = "SELECT uniqueid,callerid,channel,call_server_ip,comments,lead_id FROM vicidial_live_agents where server_ip = '$server_ip' and user='$user' and campaign_id='$campaign';";
 		if ($non_latin > 0) {$rslt=mysql_to_mysqli("SET NAMES 'UTF8'", $link);}
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
@@ -10664,6 +10676,7 @@ if ($ACTION == 'LeaDSearcHSelecTUpdatE')
 			$channel =			$row[2];
 			$call_server_ip =	$row[3];
 			$VLAcomments =		$row[4];
+			$old_lead_id =		$row[4];
 
 			if (strlen($call_server_ip)<7) {$call_server_ip = $server_ip;}
 			echo "1\n" . $lead_id . '|' . $uniqueid . '|' . $callerid . '|' . $channel . '|' . $call_server_ip . "|\n";
@@ -10714,6 +10727,12 @@ if ($ACTION == 'LeaDSearcHSelecTUpdatE')
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {$errno = mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00454',$user,$server_ip,$session_name,$one_mysql_log);}
+
+			### insert into the vicidial_agent_function_log table that the switch happened
+			$stmt = "INSERT INTO vicidial_agent_function_log set agent_log_id='$agent_log_id',user='$user',function='switch_lead',event_time=NOW(),campaign_id='$campaign',user_group='$user_group',lead_id='$stage',uniqueid='$uniqueid',caller_code='$callerid',stage='$lead_id',comments='$phone_number';";
+			if ($DB) {echo "$stmt\n";}
+			$rslt=mysql_to_mysqli($stmt, $link);
+				if ($mel > 0) {$errno = mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00710',$user,$server_ip,$session_name,$one_mysql_log);}
 
 			##### grab the data from vicidial_list for the lead_id
 			$stmt="SELECT lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id FROM vicidial_list where lead_id='$lead_id' LIMIT 1;";
@@ -14056,6 +14075,61 @@ if ($ACTION == 'PauseCodeSubmit')
 		}
 	echo _QXZ(" Pause Code %1s has been recorded",0,'',$status)."\nNext agent_log_id:\n" . $agent_log_id . "\n";
 	$stage .= "|$pause_to_code_jump|$agent_log|$agent_log_id|$status|";
+	}
+
+
+################################################################################
+### PauseCodeMgrApr - Manager approval of agent pause code
+################################################################################
+if ($ACTION == 'PauseCodeMgrApr')
+	{
+	$row='';   $rowx='';
+	if ( (strlen($status)<1) or (strlen($MgrApr_user)<1) or (strlen($MgrApr_pass)<1) )
+		{
+		echo _QXZ("manager username %1s, password or pause_code %2s is not valid",0,'',$MgrApr_user,$status)."\n";
+		if ($SSagent_debug_logging > 0) {vicidial_ajax_log($NOW_TIME,$startMS,$link,$ACTION,$php_script,$user,$stage,$lead_id,$session_name,$stmt);}
+		exit;
+		}
+	else
+		{
+		$auth_message = user_authorization($MgrApr_user,$MgrApr_pass,'',0,0,0,0);
+		if ($auth_message == 'GOOD')
+			{
+			$auth_pca=0;
+			$stmt = "SELECT count(*) from vicidial_users where user='$MgrApr_user' and pause_code_approval='1';";
+			if ($DB) {echo "$stmt\n";}
+			$rslt=mysql_to_mysqli($stmt, $link);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00711',$user,$server_ip,$session_name,$one_mysql_log);}
+			$VUpca_ct = mysqli_num_rows($rslt);
+			if ($VUpca_ct > 0)
+				{
+				$row=mysqli_fetch_row($rslt);
+				$auth_pca = $row[0];
+				}
+
+			if ($auth_pca > 0)
+				{
+				### insert into the vicidial_agent_function_log table that the switch happened
+				$stmt = "INSERT INTO vicidial_agent_function_log set agent_log_id='$agent_log_id',user='$user',function='mgrapr_pause_code',event_time=NOW(),campaign_id='$campaign',user_group='$user_group',lead_id='0',uniqueid='',caller_code='',stage='$MgrApr_user',comments='$status';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+					if ($mel > 0) {$errno = mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00712',$user,$server_ip,$session_name,$one_mysql_log);}
+
+				echo _QXZ("Manager Approval of Pause Code is Accepted %1s",0,'',$status)." STATUS:\n" . $auth_message . "\n";
+				$stage .= "|$MgrApr_user|$status|$auth_message|";
+				}
+			else
+				{
+				echo _QXZ("Invalid Manager Permissions %1s",0,'',$MgrApr_user)." STATUS:\nBAD PERMISSIONS\n";
+				$stage .= "|$MgrApr_user|$status|$auth_message|";
+				}
+			}
+		else
+			{
+			echo _QXZ("Invalid Manager Credentials %1s",0,'',$MgrApr_user)." STATUS:\n" . $auth_message . "\n";
+			$stage .= "|$MgrApr_user|$status|$auth_message|";
+			}
+		}
 	}
 
 

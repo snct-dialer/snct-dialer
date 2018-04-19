@@ -156,6 +156,7 @@
 # 180217-0810 - Added pause_max_dispo
 # 180306-1639 - Added script_top_dispo
 # 180310-2246 - Added settings-source_id_display
+# 180410-1609 - Added users-pause_code_approval
 #
 
 require("dbconnect_mysqli.php");
@@ -757,6 +758,11 @@ if ($SSqc_features_active > 0)
 <A NAME="users-manager_shift_enforcement_override">
 <BR>
 <B><?php echo _QXZ("Manager Shift Enforcement Override"); ?> -</B><?php echo _QXZ("This setting if set to 1 will allow a manager to enter their user and password on an agent screen to override the shift restrictions on an agent session if the agent is trying to log in outside of their shift. Default is 0."); ?>
+
+<BR>
+<A NAME="users-pause_code_approval">
+<BR>
+<B><?php echo _QXZ("Manager Pause Code Approval"); ?> -</B><?php echo _QXZ("If a campaign pause code is set to require manager approval, the manager that approves the agent pause code selection must have this setting set to 1. Default is 0."); ?>
 
 <BR>
 <A NAME="users-vdc_agent_api_access">
@@ -3770,7 +3776,7 @@ if ($SSoutbound_autodial_active > 0)
 <B><FONT SIZE=3>AGENT PAUSE CODES</FONT></B><BR><BR>
 <A NAME="pause_codes">
 <BR>
-<B><?php echo _QXZ("If the Agent Pause Codes Active field is set to active then the agents will be able to select from these pause codes when they click on the PAUSE button on their screens. This data is then stored in the agent log. The Pause code must contain only letters and numbers and be less than 7 characters long. The pause code name can be no longer than 30 characters.") . ' ' . _QXZ("The Time Limit field, if enabled in System Settings, will change the color of the agent on the Real-Time Report if they are in that pause code for more than the defined amount of seconds."); ?></B>
+<B><?php echo _QXZ("If the Agent Pause Codes Active field is set to active then the agents will be able to select from these pause codes when they click on the PAUSE button on their screens. This data is then stored in the agent log. The Pause code must contain only letters and numbers and be less than 7 characters long. The pause code name can be no longer than 30 characters.") . ' ' . _QXZ("The Time Limit field, if enabled in System Settings, will change the color of the agent on the Real-Time Report if they are in that pause code for more than the defined amount of seconds.") . ' ' . _QXZ("The Mgr Approval field, if enabled, will require a manager to go to the agent screen and enter their login credentials to allow the agent to enter that pause code."); ?></B>
 
 
 

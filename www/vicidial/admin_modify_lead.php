@@ -90,6 +90,7 @@
 # 180302-1605 - Added complete GDPR compliance features
 # 180310-2300 - Added optional source_id display
 # 180311-0008 - Added CIDdisplay
+# 180410-1720 - Added switch lead log entry display
 #
 
 require("dbconnect_mysqli.php");
@@ -2428,8 +2429,85 @@ else
 
 		echo "</TABLE><BR><BR>\n";
 
-	##### vicidial agent outbound calls for this time period #####
 
+	##### BEGIN switch lead log entries #####
+		$stmt="SELECT * from vicidial_agent_function_log where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' and function='switch_lead' order by event_time desc limit 500;";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$logs_to_print = mysqli_num_rows($rslt);
+		if ($DB) {echo "$logs_to_print|$stmt|\n";}
+
+		if ($logs_to_print > 0)
+			{
+			echo "<B>"._QXZ("AGENT FROM SWITCH-LEADS FOR THIS LEAD").":</B>\n";
+			echo "<TABLE width=750 cellspacing=1 cellpadding=1>\n";
+			echo "<tr><td><font size=1># </td><td align=left><font size=2> "._QXZ("SWITCH TIME")."</td><td><font size=2>"._QXZ("CAMPAIGN")." </td><td align=left><font size=2>"._QXZ("TSR")." </td><td align=left><font size=2> &nbsp; "._QXZ("TO LEAD ID")."</td><td align=left><font size=2> "._QXZ("CALL ID")."</td><td align=left><font size=2> "._QXZ("UNIQUEID")."</td><td align=left><font size=2> "._QXZ("PHONE NUMBER")."</td></tr>\n";
+
+
+			$u=0;
+			while ($logs_to_print > $u) 
+				{
+				$row=mysqli_fetch_array($rslt);
+				if (preg_match("/1$|3$|5$|7$|9$/i", $u))
+					{$bgcolor="bgcolor=\"#$SSstd_row2_background\"";} 
+				else
+					{$bgcolor="bgcolor=\"#$SSstd_row1_background\"";}
+
+				$u++;
+				echo "<tr $bgcolor>";
+				echo "<td><font size=1>$u</td>";
+				echo "<td align=left><font size=1> $row[event_time] </td>";
+				echo "<td align=left><font size=1> $row[campaign_id] </td>\n";
+				echo "<td align=left><font size=2> $row[user] </td>\n";
+				echo "<td align=left><font size=2> <a href=\"$PHP_SELF?lead_id=$row[stage]\">$row[stage]</a> </td>\n";
+				echo "<td align=left><font size=1> $row[caller_code] </td>\n";
+				echo "<td align=left><font size=1> $row[uniqueid] </td>\n";
+				echo "<td align=left><font size=2> $row[comments] </td>\n";
+				echo "</tr>\n";
+				}
+
+			echo "</TABLE><BR><BR>\n";
+			}
+
+		$stmt="SELECT * from vicidial_agent_function_log where stage='" . mysqli_real_escape_string($link, $lead_id) . "' and function='switch_lead' order by event_time desc limit 500;";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$logs_to_print = mysqli_num_rows($rslt);
+		if ($DB) {echo "$logs_to_print|$stmt|\n";}
+
+		if ($logs_to_print > 0)
+			{
+			echo "<B>"._QXZ("AGENT TO SWITCH-LEADS FOR THIS LEAD").":</B>\n";
+			echo "<TABLE width=750 cellspacing=1 cellpadding=1>\n";
+			echo "<tr><td><font size=1># </td><td align=left><font size=2> "._QXZ("SWITCH TIME")."</td><td><font size=2>"._QXZ("CAMPAIGN")." </td><td align=left><font size=2>"._QXZ("TSR")." </td><td align=left><font size=2> &nbsp; "._QXZ("FROM LEAD ID")."</td><td align=left><font size=2> "._QXZ("CALL ID")."</td><td align=left><font size=2> "._QXZ("UNIQUEID")."</td><td align=left><font size=2> "._QXZ("PHONE NUMBER")."</td></tr>\n";
+
+
+			$u=0;
+			while ($logs_to_print > $u) 
+				{
+				$row=mysqli_fetch_array($rslt);
+				if (preg_match("/1$|3$|5$|7$|9$/i", $u))
+					{$bgcolor="bgcolor=\"#$SSstd_row2_background\"";} 
+				else
+					{$bgcolor="bgcolor=\"#$SSstd_row1_background\"";}
+
+				$u++;
+				echo "<tr $bgcolor>";
+				echo "<td><font size=1>$u</td>";
+				echo "<td align=left><font size=1> $row[event_time] </td>";
+				echo "<td align=left><font size=1> $row[campaign_id] </td>\n";
+				echo "<td align=left><font size=2> $row[user] </td>\n";
+				echo "<td align=left><font size=2> <a href=\"$PHP_SELF?lead_id=$row[lead_id]\">$row[lead_id]</a> </td>\n";
+				echo "<td align=left><font size=1> $row[caller_code] </td>\n";
+				echo "<td align=left><font size=1> $row[uniqueid] </td>\n";
+				echo "<td align=left><font size=2> $row[comments] </td>\n";
+				echo "</tr>\n";
+				}
+
+			echo "</TABLE><BR><BR>\n";
+			}
+	##### END switch lead log entries #####
+
+
+	##### vicidial agent outbound calls for this time period #####
 		if ($allow_emails>0) 
 			{
 			echo "<B>"._QXZ("OUTBOUND EMAILS FOR THIS LEAD").":</B>\n";

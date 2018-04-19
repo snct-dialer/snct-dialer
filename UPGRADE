@@ -293,6 +293,11 @@ OTHER CHANGES:
 
 78. Added update_did Non-Agent API function
 
+79. Added pause code manager approval option, requires a manager to approve a
+	specific flagged pause code before the agent is allowed to use it in 
+	their agent screen. Manager approves by entering their login credentials
+	into a window on the agent's screen.
+
 
 
 

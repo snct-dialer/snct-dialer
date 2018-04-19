@@ -590,10 +590,11 @@
 # 180323-2228 - Added more logging for notices
 # 180327-1355 - Added code for LOCALFQDN conversion to browser-used server URL for webform and script iframes
 # 180405-0913 - Fix for API Hangup after dial timeout
+# 180410-1629 - Added Pause Code manager approval feature, Added switch_lead logging
 #
 
-$version = '2.14-560c';
-$build = '180405-0913';
+$version = '2.14-561c';
+$build = '180410-1629';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -2368,25 +2369,30 @@ else
 				if ( (preg_match('/Y/',$agent_pause_codes_active)) or (preg_match('/FORCE/',$agent_pause_codes_active)) )
 					{
 					##### grab the pause codes for this campaign
-					$stmt="SELECT pause_code,pause_code_name FROM vicidial_pause_codes WHERE campaign_id='$VD_campaign' order by pause_code limit 100;";
+					$stmt="SELECT pause_code,pause_code_name,require_mgr_approval FROM vicidial_pause_codes WHERE campaign_id='$VD_campaign' order by pause_code limit 100;";
 					$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01014',$VD_login,$server_ip,$session_name,$one_mysql_log);}
 					if ($DB) {echo "$stmt\n";}
 					$VD_pause_codes = mysqli_num_rows($rslt);
 					$j=0;
+					$mgrapr_ct=0;
 					while ($j < $VD_pause_codes)
 						{
 						$row=mysqli_fetch_row($rslt);
-						$pause_codes[$i] =$row[0];
-						$pause_code_names[$i] =$row[1];
+						$pause_codes[$i] =			$row[0];
+						$pause_code_names[$i] =		$row[1];
+						$pause_code_mgrapr[$i] =	$row[2];
 						$VARpause_codes = "$VARpause_codes'$pause_codes[$i]',";
 						$VARpause_code_names = "$VARpause_code_names'$pause_code_names[$i]',";
+						$VARpause_code_mgrapr = "$VARpause_code_mgrapr'$pause_code_mgrapr[$i]',";
+						if ($pause_code_mgrapr[$i] == 'YES') {$mgrapr_ct++;}
 						$i++;
 						$j++;
 						}
 					$VD_pause_codes_ct = ($VD_pause_codes_ct+$VD_pause_codes);
-					$VARpause_codes = substr("$VARpause_codes", 0, -1); 
-					$VARpause_code_names = substr("$VARpause_code_names", 0, -1); 
+					$VARpause_codes = substr("$VARpause_codes", 0, -1);
+					$VARpause_code_names = substr("$VARpause_code_names", 0, -1);
+					$VARpause_code_mgrapr = substr("$VARpause_code_mgrapr", 0, -1);
 					}
 
 				##### grab the inbound groups to choose from if campaign contains CLOSER
@@ -4128,6 +4134,7 @@ $CCAL_OUT .= "</table>";
 	var agent_pause_codes_active = '<?php echo $agent_pause_codes_active ?>';
 	VARpause_codes = new Array(<?php echo $VARpause_codes ?>);
 	VARpause_code_names = new Array(<?php echo $VARpause_code_names ?>);
+	VARpause_code_mgrapr = new Array(<?php echo $VARpause_code_mgrapr ?>);
 	var VD_pause_codes_ct = '<?php echo $VD_pause_codes_ct ?>';
 	VARpreset_names = new Array(<?php echo $VARpreset_names ?>);
 	VARpreset_numbers = new Array(<?php echo $VARpreset_numbers ?>);
@@ -7749,7 +7756,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 					}
 				if (xmlhttprequestselectupdate) 
 					{ 
-					checkVDAI_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&campaign=" + campaign + "&ACTION=LeaDSearcHSelecTUpdatE" + "&lead_id=" + LSSlead_id + "&stage=" + document.vicidial_form.lead_id.value + "&agent_log_id=" + agent_log_id + "&phone_number=" + document.vicidial_form.phone_number.value;
+					checkVDAI_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&campaign=" + campaign + "&ACTION=LeaDSearcHSelecTUpdatE" + "&lead_id=" + LSSlead_id + "&stage=" + document.vicidial_form.lead_id.value + "&agent_log_id=" + agent_log_id + "&phone_number=" + document.vicidial_form.phone_number.value + "&user_group=" + VU_user_group;
 					xmlhttprequestselectupdate.open('POST', 'vdc_db_query.php'); 
 					xmlhttprequestselectupdate.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 					xmlhttprequestselectupdate.send(checkVDAI_query); 
@@ -13180,13 +13187,24 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 					pc_HTLM = pc_HTML + "<hr>";
 				}
 				PauseCode_HTML = '';
+				var mgrapr_ct=0;
 				document.vicidial_form.PauseCodeSelection.value = '';		
 				var VD_pause_codes_ct_half = parseInt(VD_pause_codes_ct / 2);
                 PauseCode_HTML = "<table cellpadding=\"5\" cellspacing=\"5\" width=\"500px\"><tr><td colspan=\"2\"><font class=sh_text'></font></td></tr><tr><td bgcolor=\"#99FF99\" height=\"300px\" width=\"240px\" valign=\"top\"><font class=\"log_text\"><span id=\"PauseCodeSelectA\">";
 				var loop_ct = 0;
 				while (loop_ct < VD_pause_codes_ct)
 					{
-                    PauseCode_HTML = PauseCode_HTML + "<font size=\"3\" face=\"Arial, Helvetica, sans-serif\" style=\"BACKGROUND-COLOR: #FFFFCC\"><b><a href=\"#\" onclick=\"PauseCodeSelect_submit('" + VARpause_codes[loop_ct] + "','YES');return false;\">" + VARpause_codes[loop_ct] + " - " + VARpause_code_names[loop_ct] + "</a></b></font><br /><br />";
+					var temp_mgrapr='';
+					if (VARpause_code_mgrapr[loop_ct] == 'YES') 
+						{
+						mgrapr_ct++;
+						temp_mgrapr=' *';
+						PauseCode_HTML = PauseCode_HTML + "<font size=\"3\" face=\"Arial, Helvetica, sans-serif\" style=\"BACKGROUND-COLOR: #FFFFCC\"><b><a href=\"#\" onclick=\"PauseCodeOpen_mgrapr('" + VARpause_codes[loop_ct] + "','" + VARpause_code_names[loop_ct] + "','YES');return false;\">" + VARpause_codes[loop_ct] + " - " + VARpause_code_names[loop_ct] + '' + temp_mgrapr + "</a></b></font><br /><br />";
+						}
+					else
+						{
+						PauseCode_HTML = PauseCode_HTML + "<font size=\"3\" face=\"Arial, Helvetica, sans-serif\" style=\"BACKGROUND-COLOR: #FFFFCC\"><b><a href=\"#\" onclick=\"PauseCodeSelect_submit('" + VARpause_codes[loop_ct] + "','YES');return false;\">" + VARpause_codes[loop_ct] + " - " + VARpause_code_names[loop_ct] + "</a></b></font><br /><br />";
+						}
 					loop_ct++;
 					if (loop_ct == VD_pause_codes_ct_half) 
                         {PauseCode_HTML = PauseCode_HTML + "</span></font></td><td bgcolor=\"#99FF99\" height=\"300px\" width=\"240px\" valign=\"top\"><font class=\"log_text\"><span id=PauseCodeSelectB>";}
@@ -14052,6 +14070,89 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 		InitFloatingWindow("PauseLayer", "Pause", newpausecode);
 		ToggleFloatingLayer("PauseLayer",1);
 		PPanel.front();
+		}
+
+
+// ################################################################################
+// Open the Manager Approval for agent Pause Code Box
+	function PauseCodeOpen_mgrapr(newpausecode,newpausecodename,PCSclick)
+		{
+		button_click_log = button_click_log + "" + SQLdate + "-----PauseCodeOpen_mgrapr---" + newpausecode + "|";
+		showDiv('PauseCodeMgrAprBox');
+		document.getElementById("PauseCodeMgrAprSelection").value = newpausecode;
+		document.getElementById("PauseCodeMgrAprContent").innerHTML = '<?php echo _QXZ("Pause Code Selected"); ?>: ' + newpausecode + ' - ' + newpausecodename;
+		}
+
+
+// ################################################################################
+// Cancel the Manager Approval for agent Pause Code Box
+	function PauseCodeCancel_mgrapr()
+		{
+		button_click_log = button_click_log + "" + SQLdate + "-----PauseCodeCancel_mgrapr---" + document.getElementById("PauseCodeMgrAprSelection").value + "|";
+		hideDiv('PauseCodeMgrAprBox');
+		document.getElementById("MgrApr_user").value = '';
+		document.getElementById("MgrApr_pass").value = '';
+		document.getElementById("PauseCodeMgrAprSelection").value = '';
+		document.getElementById("PauseCodeMgrAprContent").innerHTML = '';
+		}
+
+
+// ################################################################################
+// Submit the Manager Approval for agent Pause Code 
+	function PauseCodeSelect_MgrApr()
+		{
+		button_click_log = button_click_log + "" + SQLdate + "-----PauseCodeSelect_MgrApr---" + document.getElementById("PauseCodeMgrAprSelection").value + "|";
+	//	hideDiv('PauseCodeSelectBox');
+		var temp_MgrApr_user = document.getElementById("MgrApr_user").value;
+		var temp_MgrApr_pass = document.getElementById("MgrApr_pass").value;
+		var xmlhttp=false;
+		/*@cc_on @*/
+		/*@if (@_jscript_version >= 5)
+		// JScript gives us Conditional compilation, we can cope with old IE versions.
+		// and security blocked creation of the objects.
+		 try {
+		  xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+		 } catch (e) {
+		  try {
+		   xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+		  } catch (E) {
+		   xmlhttp = false;
+		  }
+		 }
+		@end @*/
+		if (!xmlhttp && typeof XMLHttpRequest!='undefined')
+			{
+			xmlhttp = new XMLHttpRequest();
+			}
+		if (xmlhttp) 
+			{ 
+			VMCpausecodeMgrApr_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass  + "&ACTION=PauseCodeMgrApr&format=text&MgrApr_user=" + temp_MgrApr_user + "&MgrApr_pass=" + temp_MgrApr_pass + "&campaign=" + campaign + "&status=" + document.getElementById("PauseCodeMgrAprSelection").value + "&agent_log_id=" + agent_log_id + "&user_group=" + VU_user_group;
+			xmlhttp.open('POST', 'vdc_db_query.php'); 
+			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
+			xmlhttp.send(VMCpausecodeMgrApr_query); 
+			xmlhttp.onreadystatechange = function() 
+				{ 
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+					{
+					var check_pause_code = null;
+					var check_pause_code = xmlhttp.responseText;
+					var check_PC_array=check_pause_code.split("\n");
+					if (check_PC_array[1] == 'GOOD')
+						{
+						PauseCodeSelect_submit(document.getElementById("PauseCodeMgrAprSelection").value,'YES');
+						PauseCodeCancel_mgrapr();
+						}
+					else
+						{
+						alert_box("<?php echo _QXZ("Invalid Manager Pause Code Approval"); ?>: " + temp_MgrApr_user + '');
+						}
+				//	alert(VMCpausecodeMgrApr_query);
+				//	alert(xmlhttp.responseText + "\n|" + check_PC_array[0] + "\n|" + check_PC_array[1] + "|" + agent_log_id + "|" + pause_code_counter);
+					}
+				}
+			delete xmlhttp;
+			}
+		scroll(0,0);
 		}
 
 
@@ -17426,6 +17527,7 @@ function phone_number_format(formatphone) {
 			hideDiv('CallBacKsLisTBox');
 			hideDiv('NeWManuaLDiaLBox');
 			hideDiv('PauseCodeSelectBox');
+			hideDiv('PauseCodeMgrAprBox');
 			hideDiv('PresetsSelectBox');
 			hideDiv('GroupAliasSelectBox');
 			hideDiv('DiaLInGrouPSelectBox');
@@ -20456,6 +20558,33 @@ if ($agent_display_dialable_leads > 0)
 	?>
 	<span id="PauseCodeSelectContent"> <?php echo _QXZ("Pause Code Selection"); ?> </span>
 	<input type="hidden" name="PauseCodeSelection" id="PauseCodeSelection" />
+	<?php
+	if ($mgrapr_ct > 0)
+		{echo "<br /><br /><b>* "._QXZ("These pause codes require manager approval")."</b>\n";}
+	?>
+	<br /><br /> &nbsp;</font>
+	</td></tr></table>
+</span>
+
+<span style="position:absolute;left:0px;top:0px;z-index:<?php $zi++; echo $zi ?>;" id="PauseCodeMgrAprBox">
+	<table border="0" bgcolor="#CCFFCC" width="<?php echo $CAwidth ?>px" height="<?php echo $WRheight ?>px"><tr><td align="center" valign="top"> <font class="sd_text"><?php echo _QXZ("Pause Code Manager Approval"); ?>:</font><br /><br /><font class="sh_text">
+	<?php
+	if ($webphone_location == 'bar')
+		{echo "<br /><img src=\"./images/"._QXZ("pixel.gif")."\" width=\"1px\" height=\"".$webphone_height."px\" /><br />\n";}
+	?>
+	<span id="PauseCodeMgrAprContent"> <?php echo _QXZ("Pause Code Selection"); ?> </span>
+	<br />
+	<input type="hidden" name="PauseCodeMgrAprSelection" id="PauseCodeMgrAprSelection" value="" />
+
+	<br /><br /><br />
+	<?php echo _QXZ("Manager Username"); ?>: <input type="text" size="20" name="MgrApr_user" id="MgrApr_user" maxlength="20" class="cust_form" value="" />
+	<br />
+	<?php echo _QXZ("Manager Password"); ?>: <input type="password" size="20" name="MgrApr_pass" id="MgrApr_pass" maxlength="20" class="cust_form" value="" />
+	<br /><br />
+
+	<font size="3" face="Arial, Helvetica, sans-serif" style="BACKGROUND-COLOR: #FFFFCC"><b><a href="#" onclick="PauseCodeSelect_MgrApr();return false;"><?php echo _QXZ("Submit"); ?></a></font> &nbsp; &nbsp; 
+	<font size="3" face="Arial, Helvetica, sans-serif" style="BACKGROUND-COLOR: #FFFFCC"><b><a href="#" onclick="PauseCodeCancel_mgrapr();return false;"><?php echo _QXZ("Cancel"); ?></a></font>
+
 	<br /><br /> &nbsp;</font>
 	</td></tr></table>
 </span>
