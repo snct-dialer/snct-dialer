@@ -51,6 +51,11 @@
   * Add upstream Rev. 2946:
     - agi/agi-VDAD_ALL_inbound.agi: Added source_id as optional channel
         variable to populate when inserting new leads.
+  * Add upstream Rev. 2947:
+    - bin/FastAGI_log.pl,
+      www/agc/api.php,
+      www/agc/vicidial.php: Fix for dial_ingroup error message on external_dial
+        function.
 
 2.25.25b
   [Jörg Frings-Fürst]

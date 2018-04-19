@@ -94,10 +94,11 @@
 # 180124-1608 - Added calls_in_queue_count function
 # 180204-2350 - Added dial_ingroup external_dial option
 # 180301-2302 - Added GET-AND-POST URL logging
+# 180323-2227 - Fix for dial_ingroup error message on external_dial function
 #
 
-$version = '2.14-60';
-$build = '180301-2302';
+$version = '2.14-61';
+$build = '180323-2227';
 
 $startMS = microtime();
 
@@ -1625,17 +1626,20 @@ if ($function == 'external_dial')
 				{
 				$agent_ready=1;
 				}
-			$stmt = "select count(*) from vicidial_inbound_groups where group_id='$dial_ingroup';";
-			if ($DB) {echo "$stmt\n";}
-			$rslt=mysql_to_mysqli($stmt, $link);
-			$row=mysqli_fetch_row($rslt);
-			if ($row[0] < 1)
+			if (strlen($dial_ingroup)>0)
 				{
-				$result = _QXZ("ERROR");
-				$result_reason = _QXZ("defined dial_ingroup not found");
-				echo "$result: $result_reason - $dial_ingroup\n";
-				api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
-				$dial_ingroup='';
+				$stmt = "select count(*) from vicidial_inbound_groups where group_id='$dial_ingroup';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+				$row=mysqli_fetch_row($rslt);
+				if ($row[0] < 1)
+					{
+					$result = _QXZ("NOTICE");
+					$result_reason = _QXZ("defined dial_ingroup not found");
+					echo "$result: $result_reason - $dial_ingroup\n";
+					api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+					$dial_ingroup='';
+					}
 				}
 			if ( ($agent_ready > 0) or (strlen($dial_ingroup)>0) )
 				{

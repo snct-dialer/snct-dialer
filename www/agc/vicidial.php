@@ -587,10 +587,11 @@
 # 180302-1704 - Fix for pause code issue
 # 180306-1717 - Added script_top_dispo feature
 # 180314-2222 - Fix for lead search screen hidden fields, issue #1079
+# 180323-2228 - Added more logging for notices
 #
 
-$version = '2.14-557c';
-$build = '180314-2222';
+$version = '2.14-558c';
+$build = '180323-2228';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -14282,6 +14283,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 // Show message that customer has hungup the call before agent has
 	function CustomerChanneLGone()
 		{
+		button_click_log = button_click_log + "" + SQLdate + "-----CustomerGoneShow---|";
 		showDiv('CustomerGoneBox');
 
 		agent_events('customer_gone', '', aec);   aec++;
@@ -14312,6 +14314,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 // Show message that there are no voice channels in the VICIDIAL session
 	function NoneInSession()
 		{
+		button_click_log = button_click_log + "" + SQLdate + "-----NoneInSessionShow---|";
 		showDiv('NoneInSessionBox');
 		agent_events('none_in_session', '', aec);   aec++;
 		document.getElementById("NoneInSessionID").innerHTML = session_id;
