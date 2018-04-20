@@ -90,10 +90,11 @@
 # 170531-0837 - Fixed issue #1019
 # 180111-1559 - Added anyone_callback_inactive_lists option
 # 180301-1453 - Fix to allow for commented(#) lines in filters
+# 180419-1109 - Fix for list mix to use call count limit on initial count, issue #1094
 #
 
 # constants
-$build = '180301-1453';
+$build = '180419-1109';
 $DB=0;  # Debug flag, set to 0 for no debug messages. Can be overriden with CLI --debug flag
 $US='__';
 $MT[0]='';
@@ -2480,7 +2481,7 @@ foreach(@campaign_id)
 		else
 			{
 			if (length($list_mix_dialableSQL)<3) {$list_mix_dialableSQL="called_count < 0";}
-			$stmtA = "SELECT count(*) FROM vicidial_list $VLforce_index where called_since_last_reset='N' and ($list_mix_dialableSQL) and ($all_gmtSQL[$i]) $lead_filter_sql[$i] $DLTsql[$i];";
+			$stmtA = "SELECT count(*) FROM vicidial_list $VLforce_index where called_since_last_reset='N' and ($list_mix_dialableSQL) and ($all_gmtSQL[$i]) $lead_filter_sql[$i] $DLTsql[$i] $CCLsql[$i];";
 			}
 			if ($DBX) {print "     |$stmtA|\n";}
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;

@@ -133,6 +133,9 @@
   * Add upstream Rev. 2966:
     - www/agc/vdc_db_query.php: Fix for not using campaign in
         vicidial_campaign_statuses queries.
+  * Add upstream Rev. 2967:
+    - bin/AST_VDhopper.pl: Fix for list mix to use call count limit on initial
+        count, issue #1094.
 
 2.25.25b
   [Jörg Frings-Fürst]
