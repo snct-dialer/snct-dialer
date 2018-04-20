@@ -1,7 +1,7 @@
 <?php
 # dispo_move_list.php
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed to be used in the "Dispo URL" field of a campaign
 # or in-group (although it can also be used in the "No Agent Call URL" field). 
@@ -21,6 +21,9 @@
 # 
 # Another example of what to put in the Dispo URL field(using status exclude with talk trigger):
 # VARhttp://192.168.1.1/agc/dispo_move_list.php?lead_id=--A--lead_id--B--&dispo=--A--dispo--B--&talk_time=--A--talk_time--B--&called_count=--A--called_count--B--&user=--A--user--B--&pass=--A--pass--B--&new_list_id=332&sale_status=DNC---BILLNW---POST&exclude_status=Y&talk_time_trigger=240&called_count_trigger=4&log_to_file=1
+# 
+# Another example of what to put in the Dispo URL field(using status exclude with lead age and called count triggers):
+# VARhttp://192.168.1.1/agc/dispo_move_list.php?lead_id=--A--lead_id--B--&dispo=--A--dispo--B--&user=--A--user--B--&pass=--A--pass--B--&new_list_id=99105&called_count=--A--called_count--B--&called_count_trigger=9&lead_age=15&entry_date=--A--entry_date--B--&exclude_status=Y&sale_status=SALE---XFER&reset_dialed=Y&log_to_file=1
 #
 # Example of what to put in the No Agent Call URL field:
 # (IMPORTANT: user needs to be NOAGENTURL and pass needs to be set to the call_id)
@@ -41,6 +44,7 @@
 # - populate_comm_old_date -	(Y,N) if set to Y, will populate the comments field of the lead with the date and time when the lead was last called
 #    Multiple sets of statuses:
 # - sale_status_1, new_list_id_1, reset_dialed_1, exclude_status_1, called_count_trigger_1 - adding an underscore and number(1-99) will allow for another set of statuses to check for and what to do with them
+# - multi_trigger - (talk-age...) if set to 1 or more of "talk,age,list,count,status"(separated by '-') it will check for only one of included triggers to be met for the lead to be moved, (does not work with multiple sets)
 #
 # CHANGES
 # 100915-1600 - First Build
@@ -60,6 +64,7 @@
 # 161021-1016 - Added lead_age option
 # 170402-0906 - Added list_id_trigger option, cleaned up outputs
 # 170526-2310 - Added additional variable filtering
+# 180419-2257 - Added multi_trigger option
 #
 
 $api_script = 'movelist';
@@ -117,6 +122,8 @@ if (isset($_GET["list_id"]))			{$list_id=$_GET["list_id"];}
 	elseif (isset($_POST["list_id"]))	{$list_id=$_POST["list_id"];}
 if (isset($_GET["list_id_trigger"]))			{$list_id_trigger=$_GET["list_id_trigger"];}
 	elseif (isset($_POST["list_id_trigger"]))	{$list_id_trigger=$_POST["list_id_trigger"];}
+if (isset($_GET["multi_trigger"]))			{$multi_trigger=$_GET["multi_trigger"];}
+	elseif (isset($_POST["multi_trigger"]))	{$multi_trigger=$_POST["multi_trigger"];}
 
 
 #$DB = '1';	# DEBUG override
@@ -140,6 +147,7 @@ $lead_id = preg_replace('/[^_0-9]/', '', $lead_id);
 $list_id = preg_replace('/[^_0-9]/', '', $list_id);
 $new_list_id = preg_replace('/[^_0-9]/', '', $new_list_id);
 $list_id_trigger = preg_replace('/[^_0-9]/', '', $list_id_trigger);
+$multi_trigger=preg_replace("/\'|\"|\\\\|;| /","",$multi_trigger);
 
 #############################################
 ##### START SYSTEM_SETTINGS AND USER LANGUAGE LOOKUP #####
@@ -147,7 +155,7 @@ $VUselected_language = '';
 $stmt="SELECT selected_language from vicidial_users where user='$user';";
 if ($DB) {echo "|$stmt|\n";}
 $rslt=mysql_to_mysqli($stmt, $link);
-	if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+	if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02002',$user,$server_ip,$session_name,$one_mysql_log);}
 $sl_ct = mysqli_num_rows($rslt);
 if ($sl_ct > 0)
 	{
@@ -192,7 +200,7 @@ if ($lead_age > 0)
 		}
 	}
 
-if ($DB>0) {echo "$lead_id|$sale_status|$exclude_status|$dispo|$user|$pass|$DB|$log_to_file|$talk_time|$talk_time_trigger|$called_count|$called_count_trigger|$lead_age|$age_trigger|$list_id|$list_id_trigger|\n";}
+if ($DB>0) {echo "$lead_id|$sale_status|$exclude_status|$dispo|$user|$pass|$DB|$log_to_file|$talk_time|$talk_time_trigger|$called_count|$called_count_trigger|$lead_age|$age_trigger|$list_id|$list_id_trigger|$multi_trigger|\n";}
 
 if ( ( (strlen($list_id_trigger) > 2) and (strlen($list_id) > 2) and ($list_id == $list_id_trigger) ) or ( (strlen($list_id_trigger) < 3) or (strlen($list_id) < 3) ) )
 	{
@@ -203,12 +211,69 @@ if ( ( (strlen($list_id_trigger) > 2) and (strlen($list_id) > 2) and ($list_id =
 			if ( ( (strlen($talk_time_trigger)>0) and ($talk_time >= $talk_time_trigger) ) or (strlen($talk_time_trigger)<1) or ($talk_time_trigger < 1) )
 				{
 				if ( ( (preg_match("/$TD$dispo$TD/",$sale_status)) and ($exclude_status!='Y') ) or ( (!preg_match("/$TD$dispo$TD/",$sale_status)) and ($exclude_status=='Y') ) )
-					{$primary_match_found=1;}
+					{
+					$primary_match_found=1;
+					if ($DB>0) {echo "primary match found: |$primary_match_found|\n";}
+					}
 				}
 			}
 		}
 	}
 $first_pass_vars = "$new_list_id|$reset_dialed|$sale_status|$talk_time_trigger|$exclude_status$called_count_trigger|";
+
+
+### BEGIN multi_trigger section (talk,age,list,count,status) ###
+$multi_match=0;
+$multi_nomatch=0;
+if ( ($primary_match_found < 1) and (strlen($multi_trigger) > 2) )
+	{
+	$match_text='';
+	if ($DB>0) {echo "starting multi_trigger check: |$multi_trigger|$primary_match_found|\n";}
+	if (preg_match("/talk/",$multi_trigger))
+		{
+		if ( (strlen($talk_time_trigger)>0) and ($talk_time >= $talk_time_trigger) )
+			{$multi_match++;   $match_text.="talk|";}
+		else
+			{$multi_nomatch++;}
+		}
+	if (preg_match("/age/",$multi_trigger))
+		{
+		if ( ($lead_age > 0) and ($age_trigger > 0) )
+			{$multi_match++;   $match_text.="age|";}
+		else
+			{$multi_nomatch++;}
+		}
+	if (preg_match("/list/",$multi_trigger))
+		{
+		if ( (strlen($list_id_trigger) > 2) and (strlen($list_id) > 2) and ($list_id == $list_id_trigger) )
+			{$multi_match++;   $match_text.="list|";}
+		else
+			{$multi_nomatch++;}
+		}
+	if (preg_match("/count/",$multi_trigger))
+		{
+		if ( (strlen($called_count_trigger)>0) and ($called_count >= $called_count_trigger) )
+			{$multi_match++;   $match_text.="count|";}
+		else
+			{$multi_nomatch++;}
+		}
+	if (preg_match("/status/",$multi_trigger))
+		{
+		if ( ( (preg_match("/$TD$dispo$TD/",$sale_status)) and ($exclude_status!='Y') ) or ( (!preg_match("/$TD$dispo$TD/",$sale_status)) and ($exclude_status=='Y') ) )
+			{$multi_match++;   $match_text.="status|";}
+		else
+			{$multi_nomatch++;}
+		}
+	
+	if ($multi_match > 0)
+		{
+		$primary_match_found=1;
+		if ($DB>0) {echo "multi_trigger good: |$multi_trigger|$match_text|$multi_match|$multi_nomatch|\n";}
+		}
+	}
+### END multi_trigger section (talk,age,list,count) ###
+
+
 if ($primary_match_found > 0)
 	{$match_found=1;}
 else
@@ -440,6 +505,6 @@ else
 if ($log_to_file > 0)
 	{
 	$fp = fopen ("./dispo_move_list.txt", "a");
-	fwrite ($fp, "$NOW_TIME|$k|$lead_id|$dispo|$user|XXXX|$DB|$log_to_file|$talk_time|$called_count|$first_pass_vars|$new_list_id|$original_sale_status|$talk_time_trigger|$exclude_status|$called_count_trigger|$list_id|$list_id_trigger|$MESSAGE|\n");
+	fwrite ($fp, "$NOW_TIME|$k|$lead_id|$dispo|$user|XXXX|$DB|$log_to_file|$talk_time|$called_count|$first_pass_vars|$new_list_id|$original_sale_status|$talk_time_trigger|$exclude_status|$called_count_trigger|$list_id|$list_id_trigger|$multi_trigger|$MESSAGE|\n");
 	fclose($fp);
 	}

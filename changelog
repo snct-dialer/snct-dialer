@@ -136,6 +136,8 @@
   * Add upstream Rev. 2967:
     - bin/AST_VDhopper.pl: Fix for list mix to use call count limit on initial
         count, issue #1094.
+  * Add upstream Rev. 2968:
+    - dispo_move_list.php: Added multi_trigger option.
 
 2.25.25b
   [Jörg Frings-Fürst]
