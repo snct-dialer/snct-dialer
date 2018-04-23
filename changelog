@@ -145,7 +145,9 @@
       www/vicidial/admin.php,
       www/vicidial/help.php: Fix for high-volume systems, added varibles to
         hangup queryCID.
-    
+  * Add upstream Rev. 2970:
+    - www/agc/vicidial.php: Moved AGENT TIME link and Dialable Leads display
+        to not overlap.
 
 2.25.25b
   [Jörg Frings-Fürst]

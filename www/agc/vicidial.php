@@ -591,10 +591,11 @@
 # 180327-1355 - Added code for LOCALFQDN conversion to browser-used server URL for webform and script iframes
 # 180405-0913 - Fix for API Hangup after dial timeout
 # 180410-1629 - Added Pause Code manager approval feature, Added switch_lead logging
+# 180421-0754 - Moved AGENT TIME link and Dialable Leads display to not overlap
 #
 
-$version = '2.14-561c';
-$build = '180410-1629';
+$version = '2.14-562c';
+$build = '180421-0754';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -3906,6 +3907,7 @@ $HKheight =  ($MASTERheight + 105);	# 405 - HotKey active Button
 $AMheight =  ($MASTERheight + 100);	# 400 - Agent mute buttons
 $PBheight =  ($MASTERheight + 90);	# 390 - preset dial links
 $MBheight =  ($MASTERheight + 65);	# 365 - Manual Dial Buttons
+$SDLheight = ($MASTERheight + 67);	# 367 - Show Dialable Leads
 $CBheight =  ($MASTERheight + 50);	# 350 - Agent Callback, pause code, volume control Buttons and agent status
 $SSheight =  ($MASTERheight + 31);	# 331 - script content
 $HTheight =  ($MASTERheight + 10);	# 310 - transfer frame, callback comments and hotkey
@@ -7234,7 +7236,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 					{
 				//	alert(xmlhttp.responseText);
 					var DLcounT = xmlhttp.responseText;
-                        document.getElementById("dialableleadsspan").innerHTML ="<?php echo _QXZ("Dialable Leads:"); ?><br /> " + DLcounT;
+                        document.getElementById("dialableleadsspan").innerHTML ="<?php echo _QXZ("Dialable Leads:"); ?> " + DLcounT;
 						
 					}
 				}
@@ -19590,7 +19592,7 @@ $zi=2;
 <span id="CallLogButtons"><font class="body_text"><span id="CallLogLinkSpan"><a href="#" onclick="VieWCalLLoG();return false;"><?php echo _QXZ("VIEW CALL LOG"); ?></a></span><br /></font></span>
 </span>
 
-<span style="position:absolute;left:180px;top:<?php echo $MBheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="AgentTimeSpan">
+<span style="position:absolute;left:165px;top:<?php echo $CBheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="AgentTimeSpan">
 <font class="body_text"><a href="#" onclick="AgentTimeReport('open');return false;"><?php echo _QXZ("AGENT TIME"); ?></a></font>
 </span>
 
@@ -19713,11 +19715,11 @@ if ($is_webphone=='Y')
 	}
 ?>
 
-<font class="body_small"><span style="position:absolute;left:200px;top:<?php echo $CBheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="dialableleadsspan">
+<font class="body_small"><span style="position:absolute;left:165px;top:<?php echo $SDLheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="dialableleadsspan">
 <?php 
 if ($agent_display_dialable_leads > 0)
 	{ 
-    echo _QXZ("Dialable Leads:")."<br /> &nbsp;\n";
+    echo _QXZ("Dialable Leads:")." &nbsp;\n";
 	}
 ?>
 </span></font>
