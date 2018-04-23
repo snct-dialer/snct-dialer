@@ -148,6 +148,8 @@
   * Add upstream Rev. 2970:
     - www/agc/vicidial.php: Moved AGENT TIME link and Dialable Leads display
         to not overlap.
+  * Add upstream Rev. 2971:
+    - www/vicidial/admin_search_lead.php: Fix for slave db use, issue #1092.
 
 2.25.25b
   [Jörg Frings-Fürst]

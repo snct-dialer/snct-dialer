@@ -1,7 +1,7 @@
 <?php
 # admin_search_lead.php   version 2.14
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # AST GUI database administration search for lead info
 # admin_modify_lead.php
@@ -47,6 +47,7 @@
 # 160325-1427 - Changes for sidebar update
 # 160508-0753 - Added colors features
 # 170409-1541 - Added IP List validation code
+# 180421-0813 - Fix for slave db use, issue #1092
 #
 
 require("dbconnect_mysqli.php");
@@ -1074,8 +1075,16 @@ else
 	$stmtL="INSERT INTO vicidial_lead_search_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', source='admin', results='0', search_query=\"$SQL_log\";";
 	if ($DB) {echo "|$stmtL|\n";}
 	$rslt=mysql_to_mysqli($stmtL, $link);
-		if ($mel > 0) {mysqli_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
 	$search_log_id = mysqli_insert_id($link);
+
+	if ( (strlen($slave_db_server)>5) and (preg_match("/$report_name/",$reports_use_slave_db)) )
+		{
+		mysqli_close($link);
+		$use_slave_server=1;
+		$db_source = 'S';
+		require("dbconnect_mysqli.php");
+		echo "<!-- Using slave server $slave_db_server $db_source -->\n";
+		}
 
 	$rslt=mysql_to_mysqli("$stmt", $link);
 	$results_to_print = mysqli_num_rows($rslt);
@@ -1185,6 +1194,14 @@ else
 			}
 		echo "</TABLE>\n";
 		}
+	
+	if ($db_source == 'S')
+		{
+		mysqli_close($link);
+		$use_slave_server=0;
+		$db_source = 'M';
+		require("dbconnect_mysqli.php");
+		}
 
 	### LOG INSERTION Admin Log Table ###
 	$SQL_log = "$stmt|";
@@ -1212,13 +1229,9 @@ $RUNtime = ($ENDtime - $STARTtime);
 
 echo "\n\n\n<br><br><br>\n<a href=\"$PHP_SELF\">"._QXZ("NEW SEARCH")."</a>";
 
-
 echo "\n\n\n<br><br><br>\n"._QXZ("script runtime").": $RUNtime "._QXZ("seconds");
 
-
 ?>
-
-
 
 </body>
 </html>
