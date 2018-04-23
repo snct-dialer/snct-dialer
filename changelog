@@ -138,6 +138,14 @@
         count, issue #1094.
   * Add upstream Rev. 2968:
     - dispo_move_list.php: Added multi_trigger option.
+  * Add upstream Rev. 2969:
+    - bin/AST_conf_update.pl,
+      bin/AST_conf_update_3way.pl,
+      docs/CALLER_ID_NAME_CODES.txt,
+      www/vicidial/admin.php,
+      www/vicidial/help.php: Fix for high-volume systems, added varibles to
+        hangup queryCID.
+    
 
 2.25.25b
   [Jörg Frings-Fürst]

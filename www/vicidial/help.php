@@ -829,6 +829,10 @@ if ($SSqc_features_active > 0)
 <BR>
 <B><?php echo _QXZ("Search Lead Ignore Group Restrictions"); ?> -</B><?php echo _QXZ("Changing this setting to 1 will allow this user to search for leads throughout the entire system instead of just within the allowed campaigns that are set within their User Group. This will also allow modifying of those leads in the administrative lead modification page. Default is 0 for disabled. To be able to modify this setting, you must belong to a user group that has ALL CAMPAIGNS selected in the Allowed Campaigns section."); ?>
 
+<BR>
+<A NAME="users-alter_admin_interface_options">
+<BR>
+<B><?php echo _QXZ("Alter Admin Interface Options"); ?> -</B><?php echo _QXZ("Changing this setting to 1 will allow this user to alter admin interface options."); ?>
 
 
 
@@ -1417,6 +1421,21 @@ if ($SSoutbound_autodial_active > 0)
 	<A NAME="campaigns-survey_third_exten">
 	<BR>
 	<B><?php echo _QXZ("Survey Third Extension"); ?> -</B><?php echo _QXZ("This is the third extension used for the call upon the selection by the customer of the Third Digit option. Default is 8300 which immediately hangs up the call after the Audio File message is played."); ?>
+
+	<BR>
+	<A NAME="campaigns-survey_fourth_audio_file">
+	<BR>
+	<B><?php echo _QXZ("Survey Fourth Audio File"); ?> -</B><?php echo _QXZ("This is the fourth audio file to be played upon the selection by the customer of the Fourth Digit option."); ?>
+
+	<BR>
+	<A NAME="campaigns-survey_fourth_status">
+	<BR>
+	<B><?php echo _QXZ("Survey Fourth Status"); ?> -</B><?php echo _QXZ("This is the fourth status used for the call upon the selection by the customer of the Fourth Digit option."); ?>
+
+	<BR>
+	<A NAME="campaigns-survey_fourth_exten">
+	<BR>
+	<B><?php echo _QXZ("Survey Fourth Extension"); ?> -</B><?php echo _QXZ("This is the fourth extension used for the call upon the selection by the customer of the Fourth Digit option. Default is 8300 which immediately hangs up the call after the Audio File message is played."); ?>
 
 	<BR>
 	<A NAME="campaigns-agent_display_dialable_leads">
