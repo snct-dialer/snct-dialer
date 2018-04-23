@@ -150,6 +150,9 @@
         to not overlap.
   * Add upstream Rev. 2971:
     - www/vicidial/admin_search_lead.php: Fix for slave db use, issue #1092.
+  * Add upstream Rev. 2972:
+    - www/vicidial/lead_report_export.php: Fix for missing header row in
+        translated language, issue #1090.
 
 2.25.25b
   [Jörg Frings-Fürst]

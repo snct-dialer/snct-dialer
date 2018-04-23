@@ -30,6 +30,7 @@
 # 170531-2230 - Added DID filtering option
 # 170615-2245 - Refined DID filtering to calculate call length w/internal transfers
 # 180109-2005 - Added vendor lead code filtering option
+# 180422-0923 - Fix for missing header row in translated language, issue #1090
 #
 
 $startMS = microtime();
@@ -1123,7 +1124,7 @@ if ($run_export > 0)
 			$i++;
 			}
 
-		if ($header_row==_QXZ("YES"))
+		if ($header_row=="YES")
 			{
 			$RFheader = '';
 			$NFheader = '';
