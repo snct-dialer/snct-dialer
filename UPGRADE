@@ -301,6 +301,8 @@ OTHER CHANGES:
 80. Added DISPO_FILTER Settings Container option allowing for match-and-replace
 	function in Dispo Call URLs. See CALL_URL_FEATURES.txt doc for details.
 
+81. Added populate_lead_vendor and populate_lead_source options for In-Groups.
+
 
 
 

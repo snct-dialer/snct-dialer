@@ -224,6 +224,7 @@
 # 180217-1018 - Added NO_READY option for no_agent_no_queue in-group feature, issue #1046
 # 180306-1450 - Fix for Wait/Hold time options when nothing is pressed
 # 180321-0824 - Added source_id as optional channel variable to populate when inserting new leads
+# 180424-1539 - Added in-group populate_lead_source, populate_lead_vendor options
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
@@ -654,10 +655,6 @@ if ($call_handle_method =~ /^ANI/)
 		}
 	}
 
-# When VID or  VIDPROMPT, methods are not used, no Vendor Lead Code can be supplied. Fill it with inbound_number
-if ($call_handle_method !~ /^VID/) 
-	{$vendor_id = $inbound_number;}
-
 foreach $i (sort keys %AGI) 
 	{
 	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
@@ -760,7 +757,7 @@ $affected_rows = $dbhA->do($stmtA);
 
 ### Grab inbound groups values from the database
 $cbc=0;
-$stmtA = "SELECT call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,drop_call_seconds,drop_action,drop_exten,next_agent_call,voicemail_ext,queue_priority,drop_inbound_group,afterhours_xfer_group,play_place_in_line,play_estimate_hold_time,hold_time_option,hold_time_option_seconds,hold_time_option_exten,hold_time_option_voicemail,hold_time_option_xfer_group,hold_time_option_callback_filename,hold_time_option_callback_list_id,hold_recall_xfer_group,no_delay_call_route,play_welcome_message,no_agent_no_queue,no_agent_action,no_agent_action_value,extension_appended_cidname,uniqueid_status_display,uniqueid_status_prefix,hold_time_option_minimum,hold_time_option_press_filename,hold_time_option_callmenu,onhold_prompt_no_block,onhold_prompt_seconds,hold_time_option_no_block,hold_time_option_prompt_seconds,hold_time_second_option,hold_time_third_option,wait_hold_option_priority,wait_time_option,wait_time_second_option,wait_time_third_option,wait_time_option_seconds,wait_time_option_exten,wait_time_option_voicemail,wait_time_option_xfer_group,wait_time_option_callmenu,wait_time_option_callback_filename,wait_time_option_callback_list_id,wait_time_option_press_filename,wait_time_option_no_block,wait_time_option_prompt_seconds,active,calculate_estimated_hold_seconds,add_lead_url,eht_minimum_prompt_filename,eht_minimum_prompt_no_block,eht_minimum_prompt_seconds,on_hook_ring_time,ingroup_recording_override,ingroup_rec_filename,on_hook_cid,action_xfer_cid,drop_callmenu,after_hours_callmenu,max_calls_method,max_calls_count,max_calls_action,populate_lead_ingroup,na_call_url,drop_lead_reset,after_hours_lead_reset,nanq_lead_reset,wait_time_lead_reset,hold_time_lead_reset,routing_initiated_recordings,on_hook_cid_number,populate_lead_province,areacode_filter,areacode_filter_seconds,areacode_filter_action,areacode_filter_action_value,populate_state_areacode,inbound_survey,inbound_survey_filename,inbound_survey_accept_digit,closing_time_action,closing_time_now_trigger,closing_time_filename,closing_time_end_filename,closing_time_lead_reset,closing_time_option_exten,closing_time_option_callmenu,closing_time_option_voicemail,closing_time_option_xfer_group,closing_time_option_callback_list_id,add_lead_timezone FROM vicidial_inbound_groups where group_id = '$channel_group';";
+$stmtA = "SELECT call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,drop_call_seconds,drop_action,drop_exten,next_agent_call,voicemail_ext,queue_priority,drop_inbound_group,afterhours_xfer_group,play_place_in_line,play_estimate_hold_time,hold_time_option,hold_time_option_seconds,hold_time_option_exten,hold_time_option_voicemail,hold_time_option_xfer_group,hold_time_option_callback_filename,hold_time_option_callback_list_id,hold_recall_xfer_group,no_delay_call_route,play_welcome_message,no_agent_no_queue,no_agent_action,no_agent_action_value,extension_appended_cidname,uniqueid_status_display,uniqueid_status_prefix,hold_time_option_minimum,hold_time_option_press_filename,hold_time_option_callmenu,onhold_prompt_no_block,onhold_prompt_seconds,hold_time_option_no_block,hold_time_option_prompt_seconds,hold_time_second_option,hold_time_third_option,wait_hold_option_priority,wait_time_option,wait_time_second_option,wait_time_third_option,wait_time_option_seconds,wait_time_option_exten,wait_time_option_voicemail,wait_time_option_xfer_group,wait_time_option_callmenu,wait_time_option_callback_filename,wait_time_option_callback_list_id,wait_time_option_press_filename,wait_time_option_no_block,wait_time_option_prompt_seconds,active,calculate_estimated_hold_seconds,add_lead_url,eht_minimum_prompt_filename,eht_minimum_prompt_no_block,eht_minimum_prompt_seconds,on_hook_ring_time,ingroup_recording_override,ingroup_rec_filename,on_hook_cid,action_xfer_cid,drop_callmenu,after_hours_callmenu,max_calls_method,max_calls_count,max_calls_action,populate_lead_ingroup,na_call_url,drop_lead_reset,after_hours_lead_reset,nanq_lead_reset,wait_time_lead_reset,hold_time_lead_reset,routing_initiated_recordings,on_hook_cid_number,populate_lead_province,areacode_filter,areacode_filter_seconds,areacode_filter_action,areacode_filter_action_value,populate_state_areacode,inbound_survey,inbound_survey_filename,inbound_survey_accept_digit,closing_time_action,closing_time_now_trigger,closing_time_filename,closing_time_end_filename,closing_time_lead_reset,closing_time_option_exten,closing_time_option_callmenu,closing_time_option_voicemail,closing_time_option_xfer_group,closing_time_option_callback_list_id,add_lead_timezone,populate_lead_source,populate_lead_vendor FROM vicidial_inbound_groups where group_id = '$channel_group';";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
@@ -880,6 +877,8 @@ if ($sthArows > 0)
 	$closing_time_option_xfer_group =	$aryA[102];
 	$closing_time_option_callback_list_id =	$aryA[103];
 	$add_lead_timezone =				$aryA[104];
+	$populate_lead_source =				$aryA[105];
+	$populate_lead_vendor =				$aryA[106];
 
 	$custom_call_id='';
 	if ($uniqueid_status_display =~ /ENABLED/)
@@ -888,6 +887,17 @@ if ($sthArows > 0)
 		{$custom_call_id = "$uniqueid_status_prefix$uniqueid";}
 	}
 $sthA->finish();
+
+# When VID or VIDPROMPT, methods are not used, no Vendor Lead Code can be supplied. Fill it with inbound_number
+if ($call_handle_method !~ /^VID/) 
+	{
+	if ($populate_lead_vendor =~ /INBOUND_NUMBER/)
+		{$vendor_id = $inbound_number;}
+	if (length($populate_lead_vendor) < 1) 
+		{$vendor_id = '';}
+	if ( (length($populate_lead_vendor) > 0) && (length($vendor_id) < 1) ) 
+		{$vendor_id = $populate_lead_vendor;}
+	}
 
 if ($wday==0) 
 	{
@@ -1032,7 +1042,14 @@ if (length($source_id) > 0)
 	$source_id =~ s/\'|\"|\\\\|\\\|\\|\\;|\\\;|\;|;//gi;
 	}
 else
-	{$source_id='VDCL';}
+	{
+	if ($populate_lead_source =~ /INBOUND_NUMBER/)
+		{$source_id = $inbound_number;}
+	if ( (length($populate_lead_source) < 1) || ($populate_lead_source =~ /BLANK/) )
+		{$source_id = '';}
+	if ($populate_lead_source =~ /DISABLED/) 
+		{$source_id = 'VDCL';}
+	}
 
 if ($populate_state_areacode =~ /NEW_LEAD_ONLY|OVERWRITE_ALWAYS/) 
 	{

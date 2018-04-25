@@ -6,7 +6,6 @@
 # CSS/PHP file that uses the system-defined screen colors to display report elements
 #
 # 170830-2123 - First build
-#
 
 require("dbconnect_mysqli.php");
 require("functions.php");
@@ -43,6 +42,11 @@ redalert {font-size: 18px; font-weight:bold; font-family: Arial, Sans-Serif; col
 	border-radius: 5px;
 	}
 .embossed {
+	text-shadow: -1px -1px 2px #fff, 1px 1px 2px #000;
+	opacity: 1.0;
+}
+.embossed_bold {
+	font-weight:bold;
 	text-shadow: -1px -1px 2px #fff, 1px 1px 2px #000;
 	opacity: 1.0;
 }
@@ -253,6 +257,21 @@ TABLE.question_td {
 	vertical-align: top;
 	border:solid 2px #<?php echo $SSmenu_background; ?>
 }
+TABLE.help_td {
+	-moz-border-radius: 10px 10px 10px 10px;
+	-webkit-border-radius: 10px 10px 10px 10px;
+	border-radius: 10px 10px 10px 10px;
+	box-shadow: 5px 5px 12px #000000;
+	padding: 5px;
+	font-family: Arial, Helvetica, sans-serif; 
+	color: black; 
+	font-size: 10pt; 
+	background: #<?php echo $SSframe_background; ?>;
+	color: #000000;
+	vertical-align: top;
+	border:solid 4px #<?php echo $SSmenu_background; ?>
+}
+
 TD.panel_td {
 	padding: 5px;
 	font-family: Arial, Helvetica, sans-serif; 
@@ -322,6 +341,7 @@ FONT-SIZE: 12pt;
 FONT-FAMILY: Courier;
 padding-left:10px;
 }
+
 div.shadowbox_4th
 {
 background-color:#FF6666;
@@ -333,3 +353,5 @@ FONT-SIZE: 12pt;
 FONT-FAMILY: Courier;
 padding-left:10px;
 }
+
+div.help_info {position:absolute; top:0; left:0; display:none;}

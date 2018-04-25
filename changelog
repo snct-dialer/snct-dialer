@@ -153,6 +153,16 @@
   * Add upstream Rev. 2972:
     - www/vicidial/lead_report_export.php: Fix for missing header row in
         translated language, issue #1090.
+  * Add upstream Rev. 2973:
+    - UPGRADE,
+      agi/agi-VDAD_ALL_inbound.agi,
+      extras/MySQL_AST_CREATE_tables.sql,
+      extras/mysql_update/mysql-1533.sql,
+      extras/upgrade_2.14.sql,
+      www/vicidial/admin.php,
+      www/vicidial/help.php,
+      www/vicidial/vicidial_stylesheet.php: Added in-group
+         populate_lead_source, populate_lead_vendor options.
 
 2.25.25b
   [Jörg Frings-Fürst]

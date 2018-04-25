@@ -157,6 +157,7 @@
 # 180306-1639 - Added script_top_dispo
 # 180310-2246 - Added settings-source_id_display
 # 180410-1609 - Added users-pause_code_approval
+# 180424-1530 - Added in-group populate_lead_source, populate_lead_vendor entries
 #
 
 require("dbconnect_mysqli.php");
@@ -2566,6 +2567,16 @@ if ($SSqc_features_active > 0)
 <B><?php echo _QXZ("In-Group Calldate"); ?> -</B><?php echo _QXZ("This is the last date and time that a call was directed to this inbound group."); ?>
 
 <BR>
+<A NAME="inbound_groups-group_emaildate">
+<BR>
+<B><?php echo _QXZ("In-Group Email Date"); ?> -</B><?php echo _QXZ("This is the last date and time that an email was directed to this inbound group."); ?>
+
+<BR>
+<A NAME="inbound_groups-group_chatdate">
+<BR>
+<B><?php echo _QXZ("In-Group Chat Date"); ?> -</B><?php echo _QXZ("This is the last date and time that a chat was directed to this inbound group."); ?>
+
+<BR>
 <A NAME="inbound_groups-web_form_address">
 <BR>
 <B><?php echo _QXZ("Web Form"); ?> -</B><?php echo _QXZ("This is the custom address that clicking on the WEB FORM button in the agent screen will take you to for calls that come in on this group. If you want to use custom fields in a web form address, you need to add &CF_uses_custom_fields=Y as part of your URL."); ?>
@@ -2587,6 +2598,48 @@ if ($SSqc_features_active > 0)
  <BR> &nbsp; - <?php echo _QXZ("fewest_calls: orders by the number of calls received by an agent for that specific inbound group. Least calls first."); ?>
  <BR> &nbsp; - <?php echo _QXZ("fewest_calls_campaign: orders by the number of calls received by an agent for the campaign. Least calls first."); ?>
  <BR> &nbsp; - <?php echo _QXZ("longest_wait_time: orders by the amount of time agent has been actively waiting for a call."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("ring_all: rings all available agents until one picks up the phone."); ?>
+ <BR> <?php echo _QXZ("NOTES: For ring_all, the agents that are using phones that have On Hook Agent enabled will have their phones ring and the first one to answer will receive the call and the information on the agent screen. Since ring_all ignores agent wait time and ranking and will call every agent that is available for the queue, we do not recommend using this method for large queues. When using ring_all, agents logged with phones that have the On Hook Agent disabled will have to use the Calls In Queue panel and click on the TAKE CALL link to take calls in queue. The amount of time the agents phone will ring for ring_all is set to the On-Hook Ring Time setting or the shortest ring time of the phones that will be called. We do not recommend using ring_all on high call volume queues, or queues with many agents. The ring_all method is intended to be used with only a few agents and on low call volume in-groups."); ?>
+<BR>
+
+<BR>
+<A NAME="inbound_groups-next_agent_email">
+<BR>
+<B><?php echo _QXZ("Next Agent Email"); ?> -</B><?php echo _QXZ("This determines which agent receives the next email that is available:"); ?>
+ <BR> &nbsp; - <?php echo _QXZ("random: orders by the random update value in the live_agents table"); ?>
+ <BR> &nbsp; - <?php echo _QXZ("oldest_call_start: orders by the last time an agent was sent a call/email. Results in agents receiving about the same number of calls/emails overall."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("oldest_call_finish: orders by the last time an agent finished a call/email. AKA agent waiting longest receives first call."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("oldest_inbound_call_start: orders by the last time an agent was sent an inbound call. Results in agents receiving about the same number of calls/emails overall."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("oldest_inbound_call_finish: orders by the last time an agent finished an inbound call. AKA agent waiting longest receives first call."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("overall_user_level: orders by the user_level of the agent as defined in the users table a higher user_level will receive more calls/emails."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("inbound_group_rank: orders by the rank given to the agent for the specific inbound group. Highest to Lowest."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("campaign_rank: orders by the rank given to the agent for the campaign. Highest to Lowest."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("ingroup_grade_random: gives a higher probability of getting a call/email to the higher graded agents by in-group."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("campaign_grade_random: gives a higher probability of getting a call/email to the higher graded agents by campaign."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("fewest_calls: orders by the number of calls/emails received by an agent for that specific inbound group. Least calls/emails first."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("fewest_calls_campaign: orders by the number of calls/emails received by an agent for the campaign. Least calls/emails first."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("longest_wait_time: orders by the amount of time agent has been actively waiting for a call/email."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("ring_all: rings all available agents until one picks up the phone."); ?>
+ <BR> <?php echo _QXZ("NOTES: For ring_all, the agents that are using phones that have On Hook Agent enabled will have their phones ring and the first one to answer will receive the call and the information on the agent screen. Since ring_all ignores agent wait time and ranking and will call every agent that is available for the queue, we do not recommend using this method for large queues. When using ring_all, agents logged with phones that have the On Hook Agent disabled will have to use the Calls In Queue panel and click on the TAKE CALL link to take calls in queue. The amount of time the agents phone will ring for ring_all is set to the On-Hook Ring Time setting or the shortest ring time of the phones that will be called. We do not recommend using ring_all on high call volume queues, or queues with many agents. The ring_all method is intended to be used with only a few agents and on low call volume in-groups."); ?>
+<BR>
+
+<BR>
+<A NAME="inbound_groups-next_agent_chat">
+<BR>
+<B><?php echo _QXZ("Next Agent Chat"); ?> -</B><?php echo _QXZ("This determines which agent receives the next chat that is available:"); ?>
+ <BR> &nbsp; - <?php echo _QXZ("random: orders by the random update value in the live_agents table"); ?>
+ <BR> &nbsp; - <?php echo _QXZ("oldest_call_start: orders by the last time an agent was sent a call/chat. Results in agents receiving about the same number of calls/chats overall."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("oldest_call_finish: orders by the last time an agent finished a call/chat. AKA agent waiting longest receives first call."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("oldest_inbound_call_start: orders by the last time an agent was sent an inbound call. Results in agents receiving about the same number of calls/chats overall."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("oldest_inbound_call_finish: orders by the last time an agent finished an inbound call. AKA agent waiting longest receives first call."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("overall_user_level: orders by the user_level of the agent as defined in the users table a higher user_level will receive more calls/chats."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("inbound_group_rank: orders by the rank given to the agent for the specific inbound group. Highest to Lowest."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("campaign_rank: orders by the rank given to the agent for the campaign. Highest to Lowest."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("ingroup_grade_random: gives a higher probability of getting a call/chat to the higher graded agents by in-group."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("campaign_grade_random: gives a higher probability of getting a call/chat to the higher graded agents by campaign."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("fewest_calls: orders by the number of calls/chats received by an agent for that specific inbound group. Least calls/chats first."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("fewest_calls_campaign: orders by the number of calls/chats received by an agent for the campaign. Least calls/chats first."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("longest_wait_time: orders by the amount of time agent has been actively waiting for a call/chat."); ?>
  <BR> &nbsp; - <?php echo _QXZ("ring_all: rings all available agents until one picks up the phone."); ?>
  <BR> <?php echo _QXZ("NOTES: For ring_all, the agents that are using phones that have On Hook Agent enabled will have their phones ring and the first one to answer will receive the call and the information on the agent screen. Since ring_all ignores agent wait time and ranking and will call every agent that is available for the queue, we do not recommend using this method for large queues. When using ring_all, agents logged with phones that have the On Hook Agent disabled will have to use the Calls In Queue panel and click on the TAKE CALL link to take calls in queue. The amount of time the agents phone will ring for ring_all is set to the On-Hook Ring Time setting or the shortest ring time of the phones that will be called. We do not recommend using ring_all on high call volume queues, or queues with many agents. The ring_all method is intended to be used with only a few agents and on low call volume in-groups."); ?>
 <BR>
@@ -3187,6 +3240,36 @@ if ($SSqc_features_active > 0)
 <B><?php echo _QXZ("Add Lead URL"); ?> -</B><?php echo _QXZ("This web URL address is not seen by the agent, but it is called every time a lead is added to the system through the inbound process. Default is blank. You must begin this URL with VAR if you want to use variables, and of course --A-- and --B-- around the actual variable in the URL where you want to use it. Here is the list of variables that are available for this function. lead_id, vendor_lead_code, list_id, phone_number, phone_code, did_id, did_extension, did_pattern, did_description, uniqueid"); ?>
 
 <BR>
+<A NAME="inbound_groups-start_email_url">
+<BR>
+<B><?php echo _QXZ("Start Email URL"); ?> -</B><?php echo _QXZ("This web URL address is not seen by the agent, but it is emailed every time a email is sent to an agent if it is populated. Uses the same variables as the web form fields and scripts. Default is blank."); ?>
+
+<BR>
+<A NAME="inbound_groups-dispo_email_url">
+<BR>
+<B><?php echo _QXZ("Dispo Email URL"); ?> -</B><?php echo _QXZ("This web URL address is not seen by the agent, but it is emailed every time a email is dispositioned by an agent if it is populated. Uses the same variables as the web form fields and scripts. dispo and talk_time are the variables you can use to retrieve the agent-defined disposition for the email and the actual talk time in seconds of the email. Default is blank.") . " " . _QXZ("If you put ALT into this field and submit this form, you will be able to go to a separate page where you can define multiple URLs for this action as well as specific statuses that will trigger them.") . " " . _QXZ("If you want the campaign Dispo email URL to be used for inbound emails, then put CAMP into this field."); ?>
+
+<BR>
+<A NAME="inbound_groups-default_list_id">
+<BR>
+<B><?php echo _QXZ("Default List ID"); ?> -</B><?php echo _QXZ("This is the List ID that leads may be searched through and that leads will be inserted into if necessary."); ?>
+
+<BR>
+<A NAME="inbound_groups-start_chat_url">
+<BR>
+<B><?php echo _QXZ("Start Chat URL"); ?> -</B><?php echo _QXZ("This web URL address is not seen by the agent, but it is called every time a chat is sent to an agent if it is populated. Uses the same variables as the web form fields and scripts. Default is blank."); ?>
+
+<BR>
+<A NAME="inbound_groups-dispo_chat_url">
+<BR>
+<B><?php echo _QXZ("Dispo Chat URL"); ?> -</B><?php echo _QXZ("This web URL address is not seen by the agent, but it is called every time a chat is dispositioned by an agent if it is populated. Uses the same variables as the web form fields and scripts. dispo and talk_time are the variables you can use to retrieve the agent-defined disposition for the chat and the actual talk time in seconds of the chat. Default is blank.") . " " . _QXZ("If you put ALT into this field and submit this form, you will be able to go to a separate page where you can define multiple URLs for this action as well as specific statuses that will trigger them.") . " " . _QXZ("If you want the campaign Dispo Chat URL to be used for inbound chats, then put CAMP into this field."); ?>
+
+<BR>
+<A NAME="inbound_groups-na_chat_url">
+<BR>
+<B><?php echo _QXZ("No Agent Chat URL"); ?> -</B><?php echo _QXZ("This web URL address is not seen by the agent, but if it is populated it is called every time a chat that is not handled by an agent is hung up or transferred. Uses the same variables as the web form fields and scripts. dispo can be used to retrieve the system-defined disposition for the chat. This URL can NOT be a relative path. Default is blank."); ?> <?php echo _QXZ("Custom Fields are not available with this feature."); ?>
+
+<BR>
 <A NAME="inbound_groups-add_lead_timezone">
 <BR>
 <B><?php echo _QXZ("Add Lead Timezone"); ?> -</B><?php echo _QXZ("This is the method that the system will use to determine the current timezone when a lead is created when a call is being routed through this in-group. SERVER will use the current timezone of the server. PHONE_CODE_AREACODE will look up the timezone based on the phone code set in the lead and the areacode of the phone number. Default is SERVER."); ?>
@@ -3245,6 +3328,16 @@ if ($SSqc_features_active > 0)
 <A NAME="inbound_groups-populate_state_areacode">
 <BR>
 <B><?php echo _QXZ("Populate Lead State Areacode"); ?> -</B><?php echo _QXZ("If this option is not DISABLED, then the system will look up the state that the areacode of the phone number is from and populate the state field with that value. If the OVERWRITE_ALWAYS option is selected, then every time that lead goes through this in-group, the state field will be looked up and populated again. Default is DISABLED."); ?>
+
+<BR>
+<A NAME="inbound_groups-populate_lead_source">
+<BR>
+<B><?php echo _QXZ("Populate Lead Source"); ?> -</B><?php echo _QXZ("If this option is not DISABLED and there is no source_id channel variable set on the call, then the system will fill the source_id lead field with one of the other options when leads are added with an inbound call. INBOUND_NUMBER will use the inbound phone number dialed. BLANK will leave the source_id field blank. DISABLED will use the default behavior which will set the source_id field to VDCL. Default is DISABLED."); ?>
+
+<BR>
+<A NAME="inbound_groups-populate_lead_vendor">
+<BR>
+<B><?php echo _QXZ("Populate Lead Vendor"); ?> -</B><?php echo _QXZ("If this option is not DISABLED, and the inbound call was not delivered with a VID option, then the system will put the value entered in this setting into the vendor_lead_code field when a new lead is inserted. Special options include INBOUND_NUMBER which will use the inbound phone number dialed. Default is INBOUND_NUMBER."); ?>
 
 <BR>
 <A NAME="inbound_groups-inbound_survey">

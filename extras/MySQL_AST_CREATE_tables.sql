@@ -1272,7 +1272,9 @@ closing_time_option_callback_list_id BIGINT(14) UNSIGNED default '999',
 add_lead_timezone ENUM('SERVER','PHONE_CODE_AREACODE') default 'SERVER',
 icbq_call_time_id VARCHAR(20) default '24hours',
 icbq_dial_filter VARCHAR(50) default 'NONE',
-pickup_delay TINYINT NOT NULL DEFAULT '0'
+pickup_delay TINYINT NOT NULL DEFAULT '0',
+populate_lead_source VARCHAR(20) default 'DISABLED',
+populate_lead_vendor VARCHAR(20) default 'INBOUND_NUMBER'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_stations (
