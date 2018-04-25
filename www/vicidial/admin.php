@@ -10606,6 +10606,7 @@ if ($ADD==211)
 				echo "<br>"._QXZ("List ID must be between 2 and 8 characters in length")."\n";
 				echo "<br>"._QXZ("List name must be at least 2 characters in length")."\n";
 				echo "<br>"._QXZ("List ID must be greater than 100")."\n";
+				echo "<br>"._QXZ("A Campaign must selected")."\n";
 				}
 			else
 				{
@@ -15120,6 +15121,7 @@ if ($ADD==411)
 				{
 				echo "<br>"._QXZ("LIST NOT MODIFIED - Please go back and look at the data you entered")."\n";
 				echo "<br>"._QXZ("list name must be at least 2 characters in length")."\n";
+				echo "<br>"._QXZ("A Campaign must selected")."\n";
 				}
 			else
 				{

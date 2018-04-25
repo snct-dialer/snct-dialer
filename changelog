@@ -163,6 +163,7 @@
       www/vicidial/help.php,
       www/vicidial/vicidial_stylesheet.php: Added in-group
          populate_lead_source, populate_lead_vendor options.
+  * Fix error messages while saving lists.
 
 2.25.25b
   [Jörg Frings-Fürst]
