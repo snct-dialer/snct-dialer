@@ -734,4 +734,6 @@ ALTER TABLE vicidial_agent_function_log_archive MODIFY agent_function_log_id INT
 ALTER TABLE vicidial_inbound_groups ADD populate_lead_source VARCHAR(20) default 'DISABLED';
 ALTER TABLE vicidial_inbound_groups ADD populate_lead_vendor VARCHAR(20) default 'INBOUND_NUMBER';
 
+ALTER TABLE vicidial_inbound_groups ADD park_file_name VARCHAR(100) default '';
+
 UPDATE system_settings SET db_schema_version='1533',db_schema_update_date=NOW() where db_schema_version < 1533;

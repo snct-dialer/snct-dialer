@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# park_CID.agi version 2.6
+# park_CID.agi version 2.14
 # 
 # runs before the park extension to populate the parked_channels entry with the channel's callerid
 # 
@@ -12,7 +12,7 @@
 # exten => 8301,3,Playback(park)
 # exten => 8301,4,Hangup 
 #
-# Copyright (C) 2013  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # changes:
 # 60731-1423 - changed to use DBI-DBD::mysql
@@ -21,6 +21,7 @@
 # 90909-0922 - Fixed calleridname issue
 # 101004-1012 - Changed park to Music On Hold, added option for park on AGI
 # 130108-1817 - Changes for Asterisk 1.8 compatibility
+# 180430-1842 - Added inbound_groups-park_ext option
 #
 
 $script = 'park_CID.agi';
@@ -263,6 +264,40 @@ if ($VACcount > 0)
 			$VC_ivr_park_call_agi =	$aryA[1];
 			}
 		$sthA->finish();
+
+		if ($calleridname =~ /^Y\d\d\d\d\d\d\d\d\d\d\d\d\d\d/i)
+			{
+			if ($AGILOG) {$agi_string = "--    In-Group MOH override check:   |$VAC_campaign_id|$VAC_call_type|$VLA_user|   |$callerid|";   &agi_output;}
+			$stmtA = "SELECT park_file_name FROM vicidial_inbound_groups where group_id='$VAC_campaign_id' and park_file_name!='' and park_file_name IS NOT NULL;";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$VICcount=$sthA->rows;
+			if ($VICcount > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$VICpark_context =			$aryA[0];
+				}
+			$sthA->finish();
+
+			if ($VICcount > 0)
+				{
+				$stmtA = "SELECT count(*) FROM vicidial_music_on_hold_files where moh_id='$VICpark_context';";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$MOHIcount=$sthA->rows;
+				if ($MOHIcount > 0)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$MOHIfiles =			$aryA[0];
+					}
+				$sthA->finish();
+				if ($MOHIfiles > 0)
+					{
+					if ($AGILOG) {$agi_string = "--    In-Group MOH override confirmed:   |$park_context|$VICpark_context|$VAC_call_type|$VLA_user|   |$callerid|";   &agi_output;}
+					$park_context = $VICpark_context;
+					}
+				}
+			}
 
 		$stmtA = "SELECT count(*) FROM vicidial_music_on_hold_files where moh_id='$park_context';";
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;

@@ -303,6 +303,8 @@ OTHER CHANGES:
 
 81. Added populate_lead_vendor and populate_lead_source options for In-Groups.
 
+82. Added In-Group option to override the Park Music-on-Hold.
+
 
 
 

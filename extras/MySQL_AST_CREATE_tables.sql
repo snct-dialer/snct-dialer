@@ -1274,7 +1274,8 @@ icbq_call_time_id VARCHAR(20) default '24hours',
 icbq_dial_filter VARCHAR(50) default 'NONE',
 pickup_delay TINYINT NOT NULL DEFAULT '0',
 populate_lead_source VARCHAR(20) default 'DISABLED',
-populate_lead_vendor VARCHAR(20) default 'INBOUND_NUMBER'
+populate_lead_vendor VARCHAR(20) default 'INBOUND_NUMBER',
+park_file_name VARCHAR(100) default ''
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_stations (
