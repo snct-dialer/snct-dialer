@@ -164,6 +164,17 @@
       www/vicidial/vicidial_stylesheet.php: Added in-group
          populate_lead_source, populate_lead_vendor options.
   * Fix error messages while saving lists.
+  * Add upstream Rev. 2974:
+    - www/agc/options-example.php,
+      www/agc/vicidial.php: Added #INSERT_first_onload variable.
+  * Add upstream Rev. 2975:
+    - UPGRADE,
+      agi/park_CID.agi,
+      extras/MySQL_AST_CREATE_tables.sql,
+      extras/mysql_update/mysql-1533.sql,
+      extras/upgrade_2.14.sql,
+      www/vicidial/admin.php,
+      www/vicidial/help.php: Added inbound_groups-park_ext entry.
 
 2.25.25b
   [Jörg Frings-Fürst]

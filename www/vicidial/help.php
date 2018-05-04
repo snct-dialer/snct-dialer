@@ -158,6 +158,7 @@
 # 180310-2246 - Added settings-source_id_display
 # 180410-1609 - Added users-pause_code_approval
 # 180424-1530 - Added in-group populate_lead_source, populate_lead_vendor entries
+# 180430-1837 - Added inbound_groups-park_ext entry
 #
 
 require("dbconnect_mysqli.php");
@@ -2555,6 +2556,11 @@ if ($SSqc_features_active > 0)
 <A NAME="inbound_groups-user_group">
 <BR>
 <B><?php echo _QXZ("Admin User Group"); ?> -</B><?php echo _QXZ("This is the administrative user group for this inbound group, this allows admin viewing of this in-group restricted by user group. Default is --ALL-- which allows any admin user to view this in-group."); ?>
+
+<BR>
+<A NAME="inbound_groups-park_ext">
+<BR>
+<B><?php echo _QXZ("Park Music-on-Hold"); ?> -</B><?php echo _QXZ("This optional setting will override the agent campaign setting for Park Music-on-Hold, if populated. Default is empty for disabled."); ?>
 
 <BR>
 <A NAME="inbound_groups-callback_queue_calls">
