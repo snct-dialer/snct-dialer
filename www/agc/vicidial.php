@@ -592,10 +592,11 @@
 # 180405-0913 - Fix for API Hangup after dial timeout
 # 180410-1629 - Added Pause Code manager approval feature, Added switch_lead logging
 # 180421-0754 - Moved AGENT TIME link and Dialable Leads display to not overlap
+# 180425-2036 - Added INSERT_first_onload variable
 #
 
-$version = '2.14-562c';
-$build = '180421-0754';
+$version = '2.14-563c';
+$build = '180425-2036';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -857,7 +858,8 @@ $win_valid_name			= 'subwindow_launch';	# only window name to allow if validatio
 
 $INSERT_head_script		= '';	# inserted right above the <script language="Javascript"> line after logging in
 $INSERT_head_js			= '';	# inserted after first javascript function
-$INSERT_window_onload	= '';	# inserted within the onload function
+$INSERT_first_onload	= '';	# inserted at the beginning of the first section of the onload function
+$INSERT_window_onload	= '';	# inserted at the end of the onload function
 $INSERT_agent_events	= '';	# inserted within the agent_events function
 
 # if options file exists, use the override values for the above variables
@@ -17482,6 +17484,7 @@ function phone_number_format(formatphone) {
 	function begin_all_refresh()
 		{
 		<?php if ( ($HK_statuses_camp > 0) && ($user_level>=$HKuser_level) && ($VU_hotkeys_active > 0) ) {echo "document.onkeypress = hotkeypress;\n";} ?>
+		<?php	echo $INSERT_first_onload; ?>
 		all_refresh();
 		}
 	function start_all_refresh()

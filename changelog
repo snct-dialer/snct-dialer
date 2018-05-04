@@ -164,6 +164,10 @@
       www/vicidial/vicidial_stylesheet.php: Added in-group
          populate_lead_source, populate_lead_vendor options.
   * Fix error messages while saving lists.
+  * Add upstream Rev. 2974:
+    - www/agc/options-example.php,
+      www/agc/vicidial.php: Added #INSERT_first_onload variable.
+    
 
 2.25.25b
   [Jörg Frings-Fürst]
