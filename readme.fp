@@ -1,5 +1,6 @@
 Patchlevel:
 
+2018-008 Remove use of prompt_count.txt
 2018-007 New function AutoAnswer for callcenter agents.
 2018-006 New Index UserTime on reccording_log and _achive.
 2018-005 New config file.

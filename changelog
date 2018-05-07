@@ -15,7 +15,9 @@
     - Add /etc/flyingpenguin.
   * Change license to AGPLv3:
     - Changed bin/ADMIN_backup.pl,
-      www/vicidial/AST_stat_agent1.php
+      www/vicidial/AST_stat_agent1.php,
+      agi/agi-record_prompts.agi,
+      bin/ADMIN_keepalive_ALL.pl
   * Add upstream Rev. 2939:
     - Changed UPGRADE,
       extras/MySQL_AST_CREATE_tables.sql,
@@ -110,7 +112,7 @@
   * Add upstream Rev. 2962:
     - Changed www/agc/vicidial.php: Fix for API Hangup after dial timeout.
   * Add upstream Rev. 2963:
-    - Cahnged UPGRADE,
+    - Changed UPGRADE,
       bin/ADMIN_archive_log_tables.pl,
       extras/MySQL_AST_CREATE_tables.sql,
       extras/mysql_update/mysql-1533.sql,
@@ -192,6 +194,11 @@
       www/vicidial/admin_modify_lead.php,
       www/vicidial/help.php,
       www/vicidial/vicidial_stylesheet.php: Added code for SWITCH field type.
+  * Remove use of prompt_count.txt (2018-008):
+    - Changed: agi/agi-record_prompts.agi,
+      bin/ADMIN_keepalive_ALL.pl,
+      bin/ADMIN_backup.pl,
+      readme.fp.
 
 2.25.25b
   [Jörg Frings-Fürst]

@@ -15,7 +15,11 @@
 #  - Auto reset lists at defined times
 #  - Auto restarts Asterisk process if enabled in servers settings
 #
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# LICENSE: AGPLv3
+#
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>
+# Copyright (c) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
 #
 # CHANGES
 # 61011-1348 - First build
@@ -129,9 +133,11 @@
 # 171221-1628 - Added rolling of vicidial_ingroup_hour_counts records
 # 180204-0931 - Added rolling of vicidial_inbound_callback_queue records
 # 180301-1257 - Added more teodDB logging
+# 180507-1620 - Remove use of prompt_count.txt
+#
 #
 
-$build = '180301-1257';
+$build = '180507-1620';
 
 $DB=0; # Debug flag
 $teodDB=0; # flag to log Timeclock End of Day processes to log file
@@ -4025,15 +4031,19 @@ $soundsec=0;
 
 if ( ($active_voicemail_server =~ /$server_ip/) && ((length($active_voicemail_server)) eq (length($server_ip))) )
 	{
-	if (-e "/prompt_count.txt")
-		{
-		open(test, "/prompt_count.txt") || die "can't open /prompt_count.txt: $!\n";
-		@test = <test>;
-		close(test);
-		chomp($test[0]);
-		$test[0] = ($test[0] + 85100000);
-		$last_file_gsm = "$test[0].gsm";
-		$last_file_wav = "$test[0].wav";
+	### Gather current rec_prompt_count from system_settings ###
+	$stmtA= "SELECT rec_prompt_count from system_settings;";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	if ($sthArows > 0) {
+		@aryA = $sthA->fetchrow_array;
+		$REC_count = $aryA[0];
+	}
+	$sthA->finish();
+	if ($REC_count > 0) {
+		$REC_count = ($REC_count + 85100000);
+		$last_file_gsm = "$REC_count.gsm";
+		$last_file_wav = "$REC_count.wav";
 
 		if (-e "$PATHsounds/$last_file_gsm")
 			{
@@ -4051,7 +4061,7 @@ if ( ($active_voicemail_server =~ /$server_ip/) && ((length($active_voicemail_se
 			$upload_audio = 1;
 			$upload_flag = '--upload';
 			}
-		}
+	}
 	### start the chat timeout process
 	if ($SSallow_chats > 0) 
 		{

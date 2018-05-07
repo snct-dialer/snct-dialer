@@ -36,6 +36,7 @@
 #               Add prompt_count.txt to linux backup.
 # 180227-0658 - Add /etc/flyingpenguin
 #               Change license from AGPLv2 to AGPLv3
+# 180507-1612 - Remove prompt_count.txt from backup
 #
 #
 
