@@ -460,7 +460,7 @@ $version = '2.14-348';
 $build = '180418-1713';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=719;
+$mysql_log_count=721;
 $one_mysql_log=0;
 $DB=0;
 $VD_login=0;
@@ -1791,7 +1791,7 @@ if ($ACTION == 'UpdateFields')
                 $lead_comment_count		= trim("$row[0]");
 
 		##### grab the data from vicidial_list for the lead_id
-		$stmt="SELECT vendor_lead_code,source_id,gmt_offset_now,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,rank,owner,entry_date FROM vicidial_list where lead_id='$lead_id' LIMIT 1;";
+		$stmt="SELECT vendor_lead_code,source_id,gmt_offset_now,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,rank,owner,entry_date,entry_list_id FROM vicidial_list where lead_id='$lead_id' LIMIT 1;";
 		$rslt=mysql_to_mysqli($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00546',$user,$server_ip,$session_name,$one_mysql_log);}
 		if ($DB) {echo "$stmt\n";}
@@ -1825,9 +1825,57 @@ if ($ACTION == 'UpdateFields')
 			$rank			= trim("$row[23]");
 			$owner			= trim("$row[24]");
 			$entry_date		= trim("$row[25]");
+			$entry_list_id	= trim("$row[26]");
 
 			$comments = preg_replace("/\r/i",'',$comments);
 			$comments = preg_replace("/\n/i",'!N',$comments);
+
+			if (strlen($entry_list_id) > 1)
+				{
+				$custom_field_names='|';
+				$custom_field_names_SQL='';
+				$custom_field_values='----------';
+				$custom_field_types='|';
+				### find the names of all custom fields, if any
+				$stmt = "SELECT field_label,field_type FROM vicidial_lists_fields where list_id='$entry_list_id' and field_type NOT IN('SCRIPT','DISPLAY','SWITCH') and field_label NOT IN('entry_date','vendor_lead_code','source_id','list_id','gmt_offset_now','called_since_last_reset','phone_code','phone_number','title','first_name','middle_initial','last_name','address1','address2','address3','city','state','province','postal_code','country_code','gender','date_of_birth','alt_phone','email','security_phrase','comments','called_count','last_local_call_time','rank','owner') and field_label NOT LIKE \"%_DUPLICATE_%\";";
+				$rslt=mysql_to_mysqli($stmt, $link);
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00720',$user,$server_ip,$session_name,$one_mysql_log);}
+				if ($DB) {echo "$stmt\n";}
+				$cffn_ct = mysqli_num_rows($rslt);
+				$d=0;
+				while ($cffn_ct > $d)
+					{
+					$row=mysqli_fetch_row($rslt);
+					$custom_field_names .=	"$row[0]|";
+					$custom_field_names_SQL .=	"$row[0],";
+					$custom_field_types .=	"$row[1]|";
+					$custom_field_values .=	"----------";
+					$d++;
+					}
+				if ($cffn_ct > 0)
+					{
+					$custom_field_names_SQL = preg_replace("/.$/i","",$custom_field_names_SQL);
+					### find the values of the named custom fields
+					$stmt = "SELECT $custom_field_names_SQL FROM custom_$entry_list_id where lead_id='$lead_id' limit 1;";
+					$rslt=mysql_to_mysqli($stmt, $link);
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00721',$user,$server_ip,$session_name,$one_mysql_log);}
+					if ($DB) {echo "$stmt\n";}
+					$cffv_ct = mysqli_num_rows($rslt);
+					if ($cffv_ct > 0)
+						{
+						$custom_field_values='----------';
+						$row=mysqli_fetch_row($rslt);
+						$d=0;
+						while ($cffn_ct > $d)
+							{
+							$custom_field_values .=	"$row[$d]----------";
+							$d++;
+							}
+						$custom_field_values = preg_replace("/\n/"," ",$custom_field_values);
+						$custom_field_values = preg_replace("/\r/","",$custom_field_values);
+						}
+					}
+				}
 
 			$LeaD_InfO  =	"GOOD\n";
 			$LeaD_InfO .=	$vendor_id . "\n";
@@ -1856,6 +1904,10 @@ if ($ACTION == 'UpdateFields')
 			$LeaD_InfO .=	$rank . "\n";
 			$LeaD_InfO .=	$owner . "\n";
 			$LeaD_InfO .=	$lead_comment_count . "\n";
+			$LeaD_InfO .=	$entry_list_id . "\n";
+			$LeaD_InfO .=	$custom_field_names . "\n";
+			$LeaD_InfO .=	$custom_field_values . "\n";
+			$LeaD_InfO .=	$custom_field_types . "\n";
 			$LeaD_InfO .=	"\n";
 
 			echo $LeaD_InfO;
@@ -5087,7 +5139,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 				$custom_field_values='----------';
 				$custom_field_types='|';
 				### find the names of all custom fields, if any
-				$stmt = "SELECT field_label,field_type FROM vicidial_lists_fields where list_id='$entry_list_id' and field_type NOT IN('SCRIPT','DISPLAY') and field_label NOT IN('entry_date','vendor_lead_code','source_id','list_id','gmt_offset_now','called_since_last_reset','phone_code','phone_number','title','first_name','middle_initial','last_name','address1','address2','address3','city','state','province','postal_code','country_code','gender','date_of_birth','alt_phone','email','security_phrase','comments','called_count','last_local_call_time','rank','owner') and field_label NOT LIKE \"%_DUPLICATE_%\";";
+				$stmt = "SELECT field_label,field_type FROM vicidial_lists_fields where list_id='$entry_list_id' and field_type NOT IN('SCRIPT','DISPLAY','SWITCH') and field_label NOT IN('entry_date','vendor_lead_code','source_id','list_id','gmt_offset_now','called_since_last_reset','phone_code','phone_number','title','first_name','middle_initial','last_name','address1','address2','address3','city','state','province','postal_code','country_code','gender','date_of_birth','alt_phone','email','security_phrase','comments','called_count','last_local_call_time','rank','owner') and field_label NOT LIKE \"%_DUPLICATE_%\";";
 				$rslt=mysql_to_mysqli($stmt, $link);
 					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00334',$user,$server_ip,$session_name,$one_mysql_log);}
 				if ($DB) {echo "$stmt\n";}
@@ -8824,7 +8876,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 			$custom_field_values='----------';
 			$custom_field_types='|';
 			### find the names of all custom fields, if any
-			$stmt = "SELECT field_label,field_type FROM vicidial_lists_fields where list_id='$entry_list_id' and field_type NOT IN('SCRIPT','DISPLAY') and field_label NOT IN('entry_date','vendor_lead_code','source_id','list_id','gmt_offset_now','called_since_last_reset','phone_code','phone_number','title','first_name','middle_initial','last_name','address1','address2','address3','city','state','province','postal_code','country_code','gender','date_of_birth','alt_phone','email','security_phrase','comments','called_count','last_local_call_time','rank','owner') and field_label NOT LIKE \"%_DUPLICATE_%\";";
+			$stmt = "SELECT field_label,field_type FROM vicidial_lists_fields where list_id='$entry_list_id' and field_type NOT IN('SCRIPT','DISPLAY','SWITCH') and field_label NOT IN('entry_date','vendor_lead_code','source_id','list_id','gmt_offset_now','called_since_last_reset','phone_code','phone_number','title','first_name','middle_initial','last_name','address1','address2','address3','city','state','province','postal_code','country_code','gender','date_of_birth','alt_phone','email','security_phrase','comments','called_count','last_local_call_time','rank','owner') and field_label NOT LIKE \"%_DUPLICATE_%\";";
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00339',$user,$server_ip,$session_name,$one_mysql_log);}
 			if ($DB) {echo "$stmt\n";}
@@ -10128,7 +10180,7 @@ if ($ACTION == 'VDADcheckINCOMINGother')
 			$custom_field_values='----------';
 			$custom_field_types='|';
 			### find the names of all custom fields, if any
-			$stmt = "SELECT field_label,field_type FROM vicidial_lists_fields where list_id='$entry_list_id' and field_type NOT IN('SCRIPT','DISPLAY') and field_label NOT IN('entry_date','vendor_lead_code','source_id','list_id','gmt_offset_now','called_since_last_reset','phone_code','phone_number','title','first_name','middle_initial','last_name','address1','address2','address3','city','state','province','postal_code','country_code','gender','date_of_birth','alt_phone','email','security_phrase','comments','called_count','last_local_call_time','rank','owner') and field_label NOT LIKE \"%_DUPLICATE_%\";";
+			$stmt = "SELECT field_label,field_type FROM vicidial_lists_fields where list_id='$entry_list_id' and field_type NOT IN('SCRIPT','DISPLAY','SWITCH') and field_label NOT IN('entry_date','vendor_lead_code','source_id','list_id','gmt_offset_now','called_since_last_reset','phone_code','phone_number','title','first_name','middle_initial','last_name','address1','address2','address3','city','state','province','postal_code','country_code','gender','date_of_birth','alt_phone','email','security_phrase','comments','called_count','last_local_call_time','rank','owner') and field_label NOT LIKE \"%_DUPLICATE_%\";";
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00512',$user,$server_ip,$session_name,$one_mysql_log);}
 			if ($DB) {echo "$stmt\n";}
@@ -11219,7 +11271,7 @@ if ($ACTION == 'LeaDSearcHSelecTUpdatE')
 			$custom_field_values='----------';
 			$custom_field_types='|';
 			### find the names of all custom fields, if any
-			$stmt = "SELECT field_label,field_type FROM vicidial_lists_fields where list_id='$entry_list_id' and field_type NOT IN('SCRIPT','DISPLAY') and field_label NOT IN('entry_date','vendor_lead_code','source_id','list_id','gmt_offset_now','called_since_last_reset','phone_code','phone_number','title','first_name','middle_initial','last_name','address1','address2','address3','city','state','province','postal_code','country_code','gender','date_of_birth','alt_phone','email','security_phrase','comments','called_count','last_local_call_time','rank','owner') and field_label NOT LIKE \"%_DUPLICATE_%\";";
+			$stmt = "SELECT field_label,field_type FROM vicidial_lists_fields where list_id='$entry_list_id' and field_type NOT IN('SCRIPT','DISPLAY','SWITCH') and field_label NOT IN('entry_date','vendor_lead_code','source_id','list_id','gmt_offset_now','called_since_last_reset','phone_code','phone_number','title','first_name','middle_initial','last_name','address1','address2','address3','city','state','province','postal_code','country_code','gender','date_of_birth','alt_phone','email','security_phrase','comments','called_count','last_local_call_time','rank','owner') and field_label NOT LIKE \"%_DUPLICATE_%\";";
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00479',$user,$server_ip,$session_name,$one_mysql_log);}
 			if ($DB) {echo "$stmt\n";}
@@ -14255,7 +14307,7 @@ if ($ACTION == 'PauseCodeMgrApr')
 
 			if ($auth_pca > 0)
 				{
-				### insert into the vicidial_agent_function_log table that the switch happened
+				### insert into the vicidial_agent_function_log table that the pause code approval happened
 				$stmt = "INSERT INTO vicidial_agent_function_log set agent_log_id='$agent_log_id',user='$user',function='mgrapr_pause_code',event_time=NOW(),campaign_id='$campaign',user_group='$user_group',lead_id='0',uniqueid='',caller_code='',stage='$MgrApr_user',comments='$status';";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_to_mysqli($stmt, $link);

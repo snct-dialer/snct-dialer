@@ -50,10 +50,12 @@
 # 180123-1817 - cleanup of enc code
 # 180125-1733 - Added more reserved words from MySQL/MariaDB
 # 180316-0754 - Translated phrases fixes, issue #1081
+# 180502-2215 - Added new help display
+# 180504-1807 - Added new SWITCH field type
 #
 
-$admin_version = '2.14-42';
-$build = '180316-0754';
+$admin_version = '2.14-43';
+$build = '180504-1807';
 
 require("dbconnect_mysqli.php");
 require("functions.php");
@@ -321,6 +323,10 @@ function close_help(taskspan,taskhelp)
 	}
 ?>
 
+<link rel="stylesheet" type="text/css" href="vicidial_stylesheet.php">
+<script language="JavaScript" src="help.js"></script>
+<div id='HelpDisplayDiv' class='help_info' style='display:none;'></div>
+
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
 <title><?php echo _QXZ("ADMINISTRATION: Lists Custom Fields"); ?>
 <?php 
@@ -388,8 +394,11 @@ if ($SScustom_fields_enabled < 1)
 	}
 
 
-$NWB = " &nbsp; <a href=\"javascript:openNewWindow('./help.php?action=HELP";
+$NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
 $NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+
+#$NWB = "<IMG SRC=\"help.gif\" onClick=\"FillAndShowHelpDiv(event, '";
+#$NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
 
 
 if ($DB > 0)
@@ -811,11 +820,12 @@ if ( ($action == "ADD_CUSTOM_FIELD") and ($list_id > 99) )
 			else
 				{
 				$TEST_valid_options=0;
-				if ( ($field_type=='SELECT') or ($field_type=='MULTI') or ($field_type=='RADIO') or ($field_type=='CHECKBOX') )
+				if ( ($field_type=='SELECT') or ($field_type=='MULTI') or ($field_type=='RADIO') or ($field_type=='CHECKBOX') or ($field_type=='SWITCH') )
 					{
 					$TESTfield_options_array = explode("\n",$field_options);
 					$TESTfield_options_count = count($TESTfield_options_array);
 					$te=0;
+					$switch_list_self=0;
 					while ($te < $TESTfield_options_count)
 						{
 						if (preg_match("/,/",$TESTfield_options_array[$te]))
@@ -823,6 +833,8 @@ if ( ($action == "ADD_CUSTOM_FIELD") and ($list_id > 99) )
 							$TESTfield_options_value_array = explode(",",$TESTfield_options_array[$te]);
 							if ( (strlen($TESTfield_options_value_array[0]) > 0) and (strlen($TESTfield_options_value_array[1]) > 0) )
 								{$TEST_valid_options++;}
+							if ( ($field_type=='SWITCH') and ($TESTfield_options_value_array[0] == "$list_id") )
+								{$switch_list_self++;}
 							}
 						$te++;
 						}
@@ -830,62 +842,67 @@ if ( ($action == "ADD_CUSTOM_FIELD") and ($list_id > 99) )
 					}
 
 				if ( ( ($field_type=='SELECT') or ($field_type=='MULTI') or ($field_type=='RADIO') or ($field_type=='CHECKBOX') ) and ( (!preg_match("/,/",$field_options)) or (!preg_match("/\n/",$field_options)) or (strlen($field_options)<6) or ($TEST_valid_options < 1) ) )
-					{echo "<B><font color=red>"._QXZ("ERROR: You must enter field options when adding a SELECT, MULTI, RADIO or CHECKBOX field type")."  - $list_id|$field_label|$field_type|$field_options</B></font>\n<BR>";}
+					{echo "<B><font color=red>"._QXZ("ERROR: You must enter field options when adding a SELECT, MULTI, RADIO or CHECKBOX field type")."  - $list_id|$field_label|$field_type|$switch_list_self|$field_options</B></font>\n<BR>";}
 				else
 					{
-					if ( ($field_exists > 0) and ($field_duplicate != 'Y') )
-						{echo "<B><font color=red>"._QXZ("ERROR: Field already exists for this list")." - $list_id|$field_label</B></font>\n<BR>";}
+					if ( ($field_type=='SWITCH') and ($switch_list_self < 1) )
+						{echo "<B><font color=red>"._QXZ("ERROR: You must include the current List ID in field options when adding a SWITCH field type")."  - $list_id|$field_label|$field_type|$field_options</B></font>\n<BR>";}
 					else
 						{
-						if ( ($field_exists < 1) and ($field_duplicate == 'Y') )
-							{echo "<B><font color=red>"._QXZ("ERROR: Field set to duplicate but original does not exist for this list")." - $list_id|$field_label|$field_duplicate</B></font>\n<BR>";}
+						if ( ($field_exists > 0) and ($field_duplicate != 'Y') )
+							{echo "<B><font color=red>"._QXZ("ERROR: Field already exists for this list")." - $list_id|$field_label</B></font>\n<BR>";}
 						else
 							{
-							if ( ($field_type!='TEXT') and ($field_duplicate == 'Y') )
-								{echo "<B><font color=red>"._QXZ("ERROR: Field set to duplicate but not TEXT type")." - $list_id|$field_label|$field_duplicate|$field_type</B></font>\n<BR>";}
+							if ( ($field_exists < 1) and ($field_duplicate == 'Y') )
+								{echo "<B><font color=red>"._QXZ("ERROR: Field set to duplicate but original does not exist for this list")." - $list_id|$field_label|$field_duplicate</B></font>\n<BR>";}
 							else
 								{
-								$table_exists=0;
-								#$linkCUSTOM=mysql_connect("$VARDB_server:$VARDB_port", "$VARDB_custom_user","$VARDB_custom_pass");
-								#if (!$linkCUSTOM) {die("Could not connect: $VARDB_server|$VARDB_port|$VARDB_database|$VARDB_custom_user|$VARDB_custom_pass" . mysqli_error());}
-								#mysql_select_db("$VARDB_database", $linkCUSTOM);
-
-								$linkCUSTOM=mysqli_connect("$VARDB_server", "$VARDB_custom_user", "$VARDB_custom_pass", "$VARDB_database", "$VARDB_port");
-								if (!$linkCUSTOM)
+								if ( ($field_type!='TEXT') and ($field_duplicate == 'Y') )
+									{echo "<B><font color=red>"._QXZ("ERROR: Field set to duplicate but not TEXT type")." - $list_id|$field_label|$field_duplicate|$field_type</B></font>\n<BR>";}
+								else
 									{
-									die('MySQL '._QXZ("connect ERROR").': '. mysqli_connect_error());
-									}
+									$table_exists=0;
+									#$linkCUSTOM=mysql_connect("$VARDB_server:$VARDB_port", "$VARDB_custom_user","$VARDB_custom_pass");
+									#if (!$linkCUSTOM) {die("Could not connect: $VARDB_server|$VARDB_port|$VARDB_database|$VARDB_custom_user|$VARDB_custom_pass" . mysqli_error());}
+									#mysql_select_db("$VARDB_database", $linkCUSTOM);
 
-								$stmt="SHOW TABLES LIKE \"custom_$list_id\";";
-								$rslt=mysql_to_mysqli($stmt, $link);
-								$tablecount_to_print = mysqli_num_rows($rslt);
-								if ($tablecount_to_print > 0) 
-									{$table_exists =	1;}
-								if ($DB>0) {echo "$stmt|$tablecount_to_print|$table_exists";}
-							
-								if (preg_match("/\|$field_label\|/i",$vicidial_list_fields))
-									{$field_label = strtolower($field_label);}
-
-								if ($field_duplicate == 'Y')
-									{
-									$duplicate_field_count=0;
-									$stmt="SELECT count(*) from vicidial_lists_fields where list_id='$list_id' and field_label LIKE \"$field_label%\";";
-									if ($DB>0) {echo "$stmt";}
-									$rslt=mysql_to_mysqli($stmt, $link);
-									$dupscount_to_print = mysqli_num_rows($rslt);
-									if ($dupscount_to_print > 0) 
+									$linkCUSTOM=mysqli_connect("$VARDB_server", "$VARDB_custom_user", "$VARDB_custom_pass", "$VARDB_database", "$VARDB_port");
+									if (!$linkCUSTOM)
 										{
-										$rowx=mysqli_fetch_row($rslt);
-										$duplicate_field_count =	$rowx[0];
+										die('MySQL '._QXZ("connect ERROR").': '. mysqli_connect_error());
 										}
-									$field_label .= "_DUPLICATE_" . sprintf('%03d', $duplicate_field_count);
+
+									$stmt="SHOW TABLES LIKE \"custom_$list_id\";";
+									$rslt=mysql_to_mysqli($stmt, $link);
+									$tablecount_to_print = mysqli_num_rows($rslt);
+									if ($tablecount_to_print > 0) 
+										{$table_exists =	1;}
+									if ($DB>0) {echo "$stmt|$tablecount_to_print|$table_exists";}
+								
+									if (preg_match("/\|$field_label\|/i",$vicidial_list_fields))
+										{$field_label = strtolower($field_label);}
+
+									if ($field_duplicate == 'Y')
+										{
+										$duplicate_field_count=0;
+										$stmt="SELECT count(*) from vicidial_lists_fields where list_id='$list_id' and field_label LIKE \"$field_label%\";";
+										if ($DB>0) {echo "$stmt";}
+										$rslt=mysql_to_mysqli($stmt, $link);
+										$dupscount_to_print = mysqli_num_rows($rslt);
+										if ($dupscount_to_print > 0) 
+											{
+											$rowx=mysqli_fetch_row($rslt);
+											$duplicate_field_count =	$rowx[0];
+											}
+										$field_label .= "_DUPLICATE_" . sprintf('%03d', $duplicate_field_count);
+										}
+
+									### add field function
+									$SQLsuccess = add_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field_id,$list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$field_encrypt,$field_show_hide,$field_duplicate,$vicidial_list_fields,$mysql_reserved_words);
+
+									if ($SQLsuccess > 0)
+										{echo _QXZ("SUCCESS: Custom Field Added")." - $list_id|$field_label\n<BR>";}
 									}
-
-								### add field function
-								$SQLsuccess = add_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field_id,$list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$field_encrypt,$field_show_hide,$field_duplicate,$vicidial_list_fields,$mysql_reserved_words);
-
-								if ($SQLsuccess > 0)
-									{echo _QXZ("SUCCESS: Custom Field Added")." - $list_id|$field_label\n<BR>";}
 								}
 							}
 						}
@@ -949,11 +966,12 @@ if ( ($action == "MODIFY_CUSTOM_FIELD_SUBMIT") and ($list_id > 99) and ($field_i
 			else
 				{
 				$TEST_valid_options=0;
-				if ( ($field_type=='SELECT') or ($field_type=='MULTI') or ($field_type=='RADIO') or ($field_type=='CHECKBOX') )
+				if ( ($field_type=='SELECT') or ($field_type=='MULTI') or ($field_type=='RADIO') or ($field_type=='CHECKBOX') or ($field_type=='SWITCH') )
 					{
 					$TESTfield_options_array = explode("\n",$field_options);
 					$TESTfield_options_count = count($TESTfield_options_array);
 					$te=0;
+					$switch_list_self=0;
 					while ($te < $TESTfield_options_count)
 						{
 						if (preg_match("/,/",$TESTfield_options_array[$te]))
@@ -961,6 +979,9 @@ if ( ($action == "MODIFY_CUSTOM_FIELD_SUBMIT") and ($list_id > 99) and ($field_i
 							$TESTfield_options_value_array = explode(",",$TESTfield_options_array[$te]);
 							if ( (strlen($TESTfield_options_value_array[0]) > 0) and (strlen($TESTfield_options_value_array[1]) > 0) )
 								{$TEST_valid_options++;}
+							if ( ($field_type=='SWITCH') and ($TESTfield_options_value_array[0] == "$list_id") )
+								{$switch_list_self++;}
+							if ($DB) {echo "DEBUG: |$list_id|$field_label|$field_type|$switch_list_self|$TESTfield_options_value_array[0]|$TESTfield_options_value_array[1]|\n";}
 							}
 						$te++;
 						}
@@ -971,11 +992,16 @@ if ( ($action == "MODIFY_CUSTOM_FIELD_SUBMIT") and ($list_id > 99) and ($field_i
 					{echo "<B><font color=red>"._QXZ("ERROR: You must enter field options when updating a SELECT, MULTI, RADIO or CHECKBOX field type")."  - $list_id|$field_label|$field_type|$field_options</B></font>\n<BR>";}
 				else
 					{
-					### modify field function
-					$SQLsuccess = modify_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field_id,$list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$field_encrypt,$field_show_hide,$field_duplicate,$vicidial_list_fields);
+					if ( ($field_type=='SWITCH') and ($switch_list_self < 1) )
+						{echo "<B><font color=red>"._QXZ("ERROR: You must include the current List ID in field options when modifying a SWITCH field type")."  - $list_id|$field_label|$field_type|$switch_list_self|$field_options</B></font>\n<BR>";}
+					else
+						{
+						### modify field function
+						$SQLsuccess = modify_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field_id,$list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$field_encrypt,$field_show_hide,$field_duplicate,$vicidial_list_fields);
 
-					if ($SQLsuccess > 0)
-						{echo _QXZ("SUCCESS: Custom Field Modified")." - $list_id|$field_label\n<BR>";}
+						if ($SQLsuccess > 0)
+							{echo _QXZ("SUCCESS: Custom Field Modified")." - $list_id|$field_label\n<BR>";}
+						}
 					}
 				}
 			}
@@ -1191,7 +1217,7 @@ if ( ($action == "MODIFY_CUSTOM_FIELDS") and ($list_id > 99) )
 			{
 			$field_HTML .= "<select MULTIPLE size=$A_field_size[$o] name=$A_field_label[$o] id=$A_field_label[$o]>\n";
 			}
-		if ( ($A_field_type[$o]=='SELECT') or ($A_field_type[$o]=='MULTI') or ($A_field_type[$o]=='RADIO') or ($A_field_type[$o]=='CHECKBOX') )
+		if ( ($A_field_type[$o]=='SELECT') or ($A_field_type[$o]=='MULTI') or ($A_field_type[$o]=='RADIO') or ($A_field_type[$o]=='CHECKBOX') or ($A_field_type[$o]=='SWITCH') )
 			{
 			$field_options_array = explode("\n",$A_field_options[$o]);
 			$field_options_count = count($field_options_array);
@@ -1213,6 +1239,21 @@ if ( ($action == "MODIFY_CUSTOM_FIELDS") and ($list_id > 99) )
 							{$field_HTML .= " &nbsp; ";}
 						if ($A_field_default[$o] == "$field_options_value_array[0]") {$field_selected = 'CHECKED';}
 						$field_HTML .= "<input type=$A_field_type[$o] name=$A_field_label[$o][] id=$A_field_label[$o][] value=\"$field_options_value_array[0]\" $field_selected> $field_options_value_array[1]\n";
+						if ($A_multi_position[$o]=='VERTICAL') 
+							{$field_HTML .= "<BR>\n";}
+						}
+					if ($A_field_type[$o]=='SWITCH')
+						{
+						if ($A_multi_position[$o]=='VERTICAL') 
+							{$field_HTML .= " &nbsp; ";}
+						if ($list_id == "$field_options_value_array[0]") 
+							{
+							$field_HTML .= "<button class='button_inactive' disabled onclick=\"nothing();\"> "._QXZ("$field_options_value_array[1]")." </button> ";
+							}
+						else
+							{
+							$field_HTML .= "<button class='button_active' disabled onclick=\"switch_list('$field_options_value_array[0]');\"> "._QXZ("$field_options_value_array[1]")." </button> \n";
+							}
 						if ($A_multi_position[$o]=='VERTICAL') 
 							{$field_HTML .= "<BR>\n";}
 						}
@@ -1454,6 +1495,7 @@ if ( ($action == "MODIFY_CUSTOM_FIELDS") and ($list_id > 99) )
 		echo "<option value='SCRIPT'>"._QXZ("SCRIPT")."</option>\n";
 		echo "<option value='HIDDEN'>"._QXZ("HIDDEN")."</option>\n";
 		echo "<option value='HIDEBLOB'>"._QXZ("HIDEBLOB")."</option>\n";
+		echo "<option value='SWITCH'>"._QXZ("SWITCH")."</option>\n";
 		echo "<option value='READONLY'>"._QXZ("READONLY")."</option>\n";
 		echo "<option value='$A_field_type[$o]' selected>"._QXZ("$A_field_type[$o]")."</option>\n";
 		echo "</select>  $NWB#lists_fields-field_type$NWE </td></tr>\n";
@@ -1556,6 +1598,7 @@ if ( ($action == "MODIFY_CUSTOM_FIELDS") and ($list_id > 99) )
 	echo "<option value='SCRIPT'>"._QXZ("SCRIPT")."</option>\n";
 	echo "<option value='HIDDEN'>"._QXZ("HIDDEN")."</option>\n";
 	echo "<option value='HIDEBLOB'>"._QXZ("HIDEBLOB")."</option>\n";
+	echo "<option value='SWITCH'>"._QXZ("SWITCH")."</option>\n";
 	echo "<option value='READONLY'>"._QXZ("READONLY")."</option>\n";
 	echo "<option selected value='TEXT'>"._QXZ("TEXT")."</option>\n";
 	echo "</select>  $NWB#lists_fields-field_type$NWE </td></tr>\n";
@@ -1911,7 +1954,7 @@ function add_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field
 
 	$SQLexecuted=0;
 
-	if ( ($field_type=='DISPLAY') or ($field_type=='SCRIPT') or (preg_match("/\|$field_label\|/i",$vicidial_list_fields)) or ($field_duplicate=='Y') )
+	if ( ($field_type=='DISPLAY') or ($field_type=='SCRIPT') or ($field_type=='SWITCH') or (preg_match("/\|$field_label\|/i",$vicidial_list_fields)) or ($field_duplicate=='Y') )
 		{
 		if ($DB) {echo "Non-DB $field_type field type, $field_label\n";}
 
@@ -1972,7 +2015,7 @@ function add_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field
 function modify_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field_id,$list_id,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order,$field_encrypt,$field_show_hide,$field_duplicate,$vicidial_list_fields)
 	{
 	$field_db_exists=0;
-	if ( ($field_type=='DISPLAY') or ($field_type=='SCRIPT') or (preg_match("/\|$field_label\|/i",$vicidial_list_fields)) or ($field_duplicate=='Y') )
+	if ( ($field_type=='DISPLAY') or ($field_type=='SCRIPT') or ($field_type=='SWITCH') or (preg_match("/\|$field_label\|/i",$vicidial_list_fields)) or ($field_duplicate=='Y') )
 		{$field_db_exists=1;}
 	else
 		{
@@ -2097,7 +2140,7 @@ function modify_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$fi
 
 	$SQLexecuted=0;
 
-	if ( ($field_type=='DISPLAY') or ($field_type=='SCRIPT') or (preg_match("/\|$field_label\|/i",$vicidial_list_fields)) or ($field_duplicate=='Y') )
+	if ( ($field_type=='DISPLAY') or ($field_type=='SCRIPT') or ($field_type=='SWITCH') or (preg_match("/\|$field_label\|/i",$vicidial_list_fields)) or ($field_duplicate=='Y') )
 		{
 		if ($DB) {echo _QXZ("Non-DB")." $field_type "._QXZ("field type").", $field_label\n";}
 		$SQLexecuted++;
@@ -2152,7 +2195,7 @@ function delete_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$fi
 	{
 	$SQLexecuted=0;
 
-	if ( ($field_type=='DISPLAY') or ($field_type=='SCRIPT') or (preg_match("/\|$field_label\|/i",$vicidial_list_fields)) or ($field_duplicate=='Y') )
+	if ( ($field_type=='DISPLAY') or ($field_type=='SCRIPT') or ($field_type=='SWITCH') or (preg_match("/\|$field_label\|/i",$vicidial_list_fields)) or ($field_duplicate=='Y') )
 		{
 		if ($DB) {echo "Non-DB $field_type field type, $field_label\n";}
 		$SQLexecuted++;

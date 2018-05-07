@@ -100,3 +100,29 @@ div.scrolling_chat_display {
 	background-color: #FFF;
 	padding: 2px;
 }
+
+.button_active {
+    background-color: #4CAF50; /* Green */
+	border: 1px solid green;
+	border-radius: 2px;
+    color: white;
+    padding: 10px 22px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+	}
+
+.button_inactive {
+    background-color: #4CAF50; /* Green */
+    border: 1px solid green;
+	border-radius: 2px;
+    color: white;
+    padding: 10px 22px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+	opacity: 0.6;
+    cursor: not-allowed;
+	}

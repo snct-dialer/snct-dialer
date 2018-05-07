@@ -45,6 +45,7 @@
 # 171129-0812 - Fixed issue with duplicate custom fields
 # 180319-1339 - Added entry_date as custom field SCRIPT type variable
 # 180327-1357 - Added code for LOCALFQDN conversion to browser-used server URL script iframes
+# 180503-1817 - Added code for SWITCH field type
 #
 
 # $mysql_queries = 26
@@ -412,7 +413,7 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user,$DB,$call_i
 					}
 				if ( (!preg_match("/\|$A_field_label[$o]\|/i",$vicidial_list_fields)) and (!preg_match("/\|$A_master_field[$o]\|/i",$vicidial_list_fields)) )
 					{
-					if ( ($A_field_type[$o]=='DISPLAY') or ($A_field_type[$o]=='SCRIPT') )
+					if ( ($A_field_type[$o]=='DISPLAY') or ($A_field_type[$o]=='SCRIPT') or ($A_field_type[$o]=='SWITCH') )
 						{
 						$select_SQL .= "8,";
 						$A_field_select[$o]='----EMPTY----';
@@ -522,7 +523,7 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user,$DB,$call_i
 					{
 					$field_HTML .= "<select MULTIPLE size=$A_field_size[$o] name=$A_field_label[$o][] id=$A_field_label[$o][]>\n";
 					}
-				if ( ($A_field_type[$o]=='SELECT') or ($A_field_type[$o]=='MULTI') or ($A_field_type[$o]=='RADIO') or ($A_field_type[$o]=='CHECKBOX') )
+				if ( ($A_field_type[$o]=='SELECT') or ($A_field_type[$o]=='MULTI') or ($A_field_type[$o]=='RADIO') or ($A_field_type[$o]=='CHECKBOX') or ($A_field_type[$o]=='SWITCH') )
 					{
 					$field_options_array = explode("\n",$A_field_options[$o]);
 					$field_options_count = count($field_options_array);
@@ -568,6 +569,24 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user,$DB,$call_i
 								$field_HTML .= "<input type=$A_field_type[$o] name=$A_field_label[$o][] id=$A_field_label[$o][] value=\"$field_options_value_array[0]\" $field_selected> "._QXZ("$field_options_value_array[1]")."\n";
 								if ($A_multi_position[$o]=='VERTICAL') 
 									{$field_HTML .= "<BR>\n";}
+								$te_printed++;
+								}
+							if ($A_field_type[$o]=='SWITCH')
+								{
+								if ($A_multi_position[$o]=='VERTICAL')
+									{$field_HTML .= " &nbsp; ";}
+								$temp_opt_val = $field_options_value_array[0];
+								if (preg_match("/^$temp_opt_val$/",$list_id))
+									{
+									$field_HTML .= "<button class='button_inactive' disabled onclick=\"nothing();\"> "._QXZ("$field_options_value_array[1]")." </button> \n";
+									}
+								else
+									{
+									$field_HTML .= "<button class='button_active' onclick=\"switch_list('$field_options_value_array[0]');\"> "._QXZ("$field_options_value_array[1]")." </button> \n";
+									}
+								if ($A_multi_position[$o]=='VERTICAL') 
+									{$field_HTML .= "<BR>\n";}
+								if ($DB > 0) {echo "DEBUG3: |$temp_options_value|$A_field_value[$o]|$field_selected|\n";}
 								$te_printed++;
 								}
 							}

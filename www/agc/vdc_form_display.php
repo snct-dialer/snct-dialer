@@ -1,7 +1,7 @@
 <?php
 # vdc_form_display.php
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed display the contents of the FORM tab in the agent 
 # interface, as well as take submission of the form submission when the agent 
@@ -42,10 +42,11 @@
 # 170428-1215 - Small fix for admin modify lead display
 # 171021-1339 - Fix to update default field if duplicate field in custom fields changed
 # 171116-2333 - Added code for duplicate fields
+# 180503-1813 - Added code for SWITCH field type
 #
 
-$version = '2.14-32';
-$build = '171116-2333';
+$version = '2.14-33';
+$build = '180503-1813';
 $php_script = 'vdc_form_display.php';
 
 require_once("dbconnect_mysqli.php");
@@ -57,6 +58,8 @@ if (isset($_GET["lead_id"]))			{$lead_id=$_GET["lead_id"];}
 	elseif (isset($_POST["lead_id"]))	{$lead_id=$_POST["lead_id"];}
 if (isset($_GET["list_id"]))			{$list_id=$_GET["list_id"];}
 	elseif (isset($_POST["list_id"]))	{$list_id=$_POST["list_id"];}
+if (isset($_GET["new_list_id"]))			{$new_list_id=$_GET["new_list_id"];}
+	elseif (isset($_POST["new_list_id"]))	{$new_list_id=$_POST["new_list_id"];}
 if (isset($_GET["user"]))				{$user=$_GET["user"];}
 	elseif (isset($_POST["user"]))		{$user=$_POST["user"];}
 if (isset($_GET["pass"]))				{$pass=$_GET["pass"];}
@@ -96,8 +99,6 @@ if (isset($_GET["SQLdate"]))	{$SQLdate=$_GET["SQLdate"];}
 	elseif (isset($_POST["SQLdate"]))	{$SQLdate=$_POST["SQLdate"];}
 if (isset($_GET["epoch"]))	{$epoch=$_GET["epoch"];}
 	elseif (isset($_POST["epoch"]))	{$epoch=$_POST["epoch"];}
-if (isset($_GET["uniqueid"]))	{$uniqueid=$_GET["uniqueid"];}
-	elseif (isset($_POST["uniqueid"]))	{$uniqueid=$_POST["uniqueid"];}
 if (isset($_GET["customer_zap_channel"]))	{$customer_zap_channel=$_GET["customer_zap_channel"];}
 	elseif (isset($_POST["customer_zap_channel"]))	{$customer_zap_channel=$_POST["customer_zap_channel"];}
 if (isset($_GET["customer_server_ip"]))	{$customer_server_ip=$_GET["customer_server_ip"];}
@@ -225,15 +226,19 @@ $startMS = microtime();
 $vicidial_list_fields = '|lead_id|entry_date|vendor_lead_code|source_id|list_id|gmt_offset_now|called_since_last_reset|phone_code|phone_number|title|first_name|middle_initial|last_name|address1|address2|address3|city|state|province|postal_code|country_code|gender|date_of_birth|alt_phone|email|security_phrase|comments|called_count|last_local_call_time|rank|owner|';
 
 $IFRAME=0;
+$SUBMIT_only=0;
 
 $user = preg_replace("/\'|\"|\\\\|;| /","",$user);
 $pass = preg_replace("/\'|\"|\\\\|;| /","",$pass);
 $lead_id = preg_replace('/[^0-9]/', '', $lead_id);
 $list_id = preg_replace('/[^0-9]/', '', $list_id);
+$new_list_id = preg_replace('/[^0-9]/', '', $new_list_id);
+$agent_log_id = preg_replace('/[^0-9]/', '', $agent_log_id);
 $server_ip = preg_replace("/\'|\"|\\\\|;/","",$server_ip);
 $session_id = preg_replace('/[^0-9]/','',$session_id);
 $uniqueid = preg_replace('/[^-_\.0-9a-zA-Z]/','',$uniqueid);
 $campaign = preg_replace('/[^-_0-9a-zA-Z]/','',$campaign);
+$user_group = preg_replace('/[^-_0-9a-zA-Z]/','',$user_group);
 
 #############################################
 ##### START SYSTEM_SETTINGS AND USER LANGUAGE LOOKUP #####
@@ -241,7 +246,7 @@ $VUselected_language = '';
 $stmt="SELECT selected_language from vicidial_users where user='$user';";
 if ($DB) {echo "|$stmt|\n";}
 $rslt=mysql_to_mysqli($stmt, $link);
-	if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+	if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'06002',$user,$server_ip,$session_name,$one_mysql_log);}
 $sl_ct = mysqli_num_rows($rslt);
 if ($sl_ct > 0)
 	{
@@ -251,7 +256,7 @@ if ($sl_ct > 0)
 
 $stmt = "SELECT use_non_latin,timeclock_end_of_day,agentonly_callback_campaign_lock,custom_fields_enabled,enable_languages,language_method,agent_debug_logging FROM system_settings;";
 $rslt=mysql_to_mysqli($stmt, $link);
-	if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+	if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'06005',$user,$server_ip,$session_name,$one_mysql_log);}
 if ($DB) {echo "$stmt\n";}
 $qm_conf_ct = mysqli_num_rows($rslt);
 if ($qm_conf_ct > 0)
@@ -336,12 +341,13 @@ else
 ### BEGIN parse submission of the custom fields form ###
 if ($stage=='SUBMIT')
 	{
+	$SUBMIT_only=1;
 	if ($SSagent_debug_logging > 0) 
 		{
 		$stage .= " custom_$list_id";
 		}
 	$update_sent=0;
-	$CFoutput='';
+	$SUBMIT_output='';
 	$stmt="SHOW TABLES LIKE \"custom_$list_id\";";
 	if ($non_latin > 0) {$rslt=mysql_to_mysqli("SET NAMES 'UTF8'", $link);}
 	if ($DB>0) {echo "$stmt";}
@@ -403,9 +409,9 @@ if ($stage=='SUBMIT')
 
 			$A_field_value[$o] = $form_field_value;
 
-			if ( ($A_field_type[$o]=='DISPLAY') or ($A_field_type[$o]=='SCRIPT') or ($A_field_type[$o]=='HIDDEN') or ($A_field_type[$o]=='HIDEBLOB') or ($A_field_type[$o]=='READONLY') )
+			if ( ($A_field_type[$o]=='DISPLAY') or ($A_field_type[$o]=='SCRIPT') or ($A_field_type[$o]=='SWITCH') or ($A_field_type[$o]=='HIDDEN') or ($A_field_type[$o]=='HIDEBLOB') or ($A_field_type[$o]=='READONLY') )
 				{
-                if (($A_field_type[$o]=='DISPLAY') or ($A_field_type[$o]=='SCRIPT') or ($A_field_type[$o]=='READONLY'))
+                if (($A_field_type[$o]=='DISPLAY') or ($A_field_type[$o]=='SCRIPT') or ($A_field_type[$o]=='SWITCH') or ($A_field_type[$o]=='READONLY'))
 					{
 					$SUBMIT_output .= "<b>$A_field_name[$o]:</b> $A_field_value[$o]<BR>";
 					}
@@ -497,19 +503,48 @@ if ($stage=='SUBMIT')
 			}
 		}
 	else
-		{$CFoutput .= _QXZ("ERROR: no custom list fields table")."\n";}
+		{$SUBMIT_output .= _QXZ("ERROR: no custom list fields table")."\n";}
 
-	echo  _QXZ("Custom Form Output:")."\n<BR>\n";
+	if (strlen($new_list_id) > 1)
+		{
+		$SUBMIT_only=0;
 
-	echo "$SUBMIT_output";
+		### change the entry_list_id for this lead to new list ID
+		$new_list_table_update_SQL = "UPDATE vicidial_list SET entry_list_id='$new_list_id' where lead_id='$lead_id';";
+		$rslt=mysql_to_mysqli($new_list_table_update_SQL, $link);
+		$new_list_update_count = mysqli_affected_rows($link);
+		if ($DB) {echo "$new_list_update_count|$new_list_table_update_SQL \n";}
+		if (!$rslt) {die('Could not execute: ' . mysqli_error($link));}
 
-	echo "<form action=./vdc_form_display.php method=POST name=form_custom_fields id=form_custom_fields>\n";
-	echo "<input type=hidden name=user id=user value=\"$user\">\n";
-	echo "<input type=hidden name=pass id=pass value=\"$pass\">\n";
-	echo "</form>\n";
+		### update the vicidial_live_agents record to update the entry_list_id
+		$vla_update_SQL = "UPDATE vicidial_live_agents SET external_update_fields='1',external_update_fields_data='entry_list_id,custom_field_names' where user='$user';";
+		$rslt=mysql_to_mysqli($vla_update_SQL, $link);
+		$vla_update_count = mysqli_affected_rows($link);
+		if ($DB) {echo "$vla_update_count|$vla_update_SQL \n";}
+		if (!$rslt) {die('Could not execute: ' . mysqli_error($link));}
+
+		### insert into the vicidial_agent_function_log table that the list switch happened
+		$stmt = "INSERT INTO vicidial_agent_function_log set agent_log_id='$agent_log_id',user='$user',function='switch_list',event_time=NOW(),campaign_id='$campaign',user_group='$user_group',lead_id='$lead_id',uniqueid='$uniqueid',caller_code='$call_id',stage='$new_list_id',comments='$list_id';";
+		if ($DB) {echo "$stmt\n";}
+		$rslt=mysql_to_mysqli($stmt, $link);
+			if ($mel > 0) {$errno = mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'06006',$user,$server_ip,$session_name,$one_mysql_log);}
+
+		$list_id = $new_list_id;
+		}
+	else
+		{
+		echo  _QXZ("Custom Form Output:")."\n<BR>\n";
+
+		echo "$SUBMIT_output";
+
+		echo "<form action=./vdc_form_display.php method=POST name=form_custom_fields id=form_custom_fields>\n";
+		echo "<input type=hidden name=user id=user value=\"$user\">\n";
+		echo "<input type=hidden name=pass id=pass value=\"$pass\">\n";
+		echo "</form>\n";
+		}
 	}
 ### END parse submission of the custom fields form ###
-else
+if ($SUBMIT_only < 1)
 	{
 	if ($SSagent_debug_logging > 0) 
 		{
@@ -523,6 +558,7 @@ else
 
 	echo "<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
 	echo "	<link rel=\"stylesheet\" href=\"calendar.css\">\n";
+	echo "	<link rel=\"stylesheet\" href=\"./css/vicidial_stylesheet.css\">\n";
 	echo "	<script language=\"Javascript\">\n";
 	echo "	function open_help(taskspan,taskhelp) \n";
 	echo "		{\n";
@@ -556,6 +592,17 @@ else
 	echo "      if (taskdefaultflag=='1')\n";
 	echo "			{parent.document.getElementById(taskdefaultfield).value = tempmastervalue;}\n";
 	echo "		}\n";
+	echo "	function switch_list(temp_new_list_id)\n";
+	echo "		{\n";
+#	echo "		alert('new list:'+ temp_new_list_id);\n";
+	echo "		if (temp_new_list_id.length > 1)\n";
+	echo "			{\n";
+	echo "			document.getElementById('new_list_id').value = temp_new_list_id;\n";
+	echo "			document.form_custom_fields.submit();\n";
+	echo "			}\n";
+	echo "		}\n";
+	echo "	function nothing()\n";
+	echo "		{}\n";
 	echo "	</script>\n";
 	echo "	<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 	echo "</head>\n";
@@ -564,9 +611,14 @@ else
 	echo "<form action=./vdc_form_display.php method=POST name=form_custom_fields id=form_custom_fields>\n";
 	echo "<input type=hidden name=lead_id id=lead_id value=\"$lead_id\">\n";
 	echo "<input type=hidden name=list_id id=list_id value=\"$list_id\">\n";
+	echo "<input type=hidden name=new_list_id id=new_list_id value=''>\n";
 	echo "<input type=hidden name=user id=user value=\"$user\">\n";
 	echo "<input type=hidden name=pass id=pass value=\"$pass\">\n";
 	echo "<input type=hidden name=call_id id=call_id value=\"$call_id\">\n";
+	echo "<input type=hidden name=agent_log_id id=agent_log_id value=\"$agent_log_id\">\n";
+	echo "<input type=hidden name=campaign id=campaign value=\"$campaign\">\n";
+	echo "<input type=hidden name=user_group id=user_group value=\"$user_group\">\n";
+	echo "<input type=hidden name=uniqueid id=uniqueid value=\"$uniqueid\">\n";
 	echo "\n";
 
 
@@ -576,10 +628,10 @@ else
 
 	echo "$CFoutput";
 
+	if ($bcrypt=='0')
+		{echo "<input type=hidden name=bcrypt id=bcrypt value=\"OFF\">\n";}
 	if ($submit_button=='YES')
 		{
-		if ($bcrypt=='0')
-			{echo "<input type=hidden name=bcrypt id=bcrypt value=\"OFF\">\n";}
 		echo "<input type=hidden name=admin_submit id=admin_submit value=\"YES\">\n";
 		echo "<BR><BR><input type=submit name=VCformSubmit id=VCformSubmit value=submit>\n";
 		}

@@ -91,6 +91,7 @@
 # 180310-2300 - Added optional source_id display
 # 180311-0008 - Added CIDdisplay
 # 180410-1720 - Added switch lead log entry display
+# 180506-1813 - Added switch_list log entry display
 #
 
 require("dbconnect_mysqli.php");
@@ -2505,6 +2506,45 @@ else
 			echo "</TABLE><BR><BR>\n";
 			}
 	##### END switch lead log entries #####
+
+
+	##### BEGIN switch list(for custom fields) log entries #####
+		$stmt="SELECT * from vicidial_agent_function_log where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' and function='switch_list' order by event_time desc limit 500;";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$logs_to_print = mysqli_num_rows($rslt);
+		if ($DB) {echo "$logs_to_print|$stmt|\n";}
+
+		if ($logs_to_print > 0)
+			{
+			echo "<B>"._QXZ("AGENT CUSTOM FIELDS SWITCH-LISTS FOR THIS LEAD").":</B>\n";
+			echo "<TABLE width=750 cellspacing=1 cellpadding=1>\n";
+			echo "<tr><td><font size=1># </td><td align=left><font size=2> "._QXZ("SWITCH TIME")."</td><td><font size=2>"._QXZ("CAMPAIGN")." </td><td align=left><font size=2>"._QXZ("TSR")." </td><td align=left><font size=2> &nbsp; "._QXZ("TO LIST ID")."</td><td align=left><font size=2> "._QXZ("FROM LIST ID")."</td><td align=left><font size=2> "._QXZ("CALL ID")."</td></tr>\n";
+
+
+			$u=0;
+			while ($logs_to_print > $u) 
+				{
+				$row=mysqli_fetch_array($rslt);
+				if (preg_match("/1$|3$|5$|7$|9$/i", $u))
+					{$bgcolor="bgcolor=\"#$SSstd_row2_background\"";} 
+				else
+					{$bgcolor="bgcolor=\"#$SSstd_row1_background\"";}
+
+				$u++;
+				echo "<tr $bgcolor>";
+				echo "<td><font size=1>$u</td>";
+				echo "<td align=left><font size=1> $row[event_time] </td>";
+				echo "<td align=left><font size=1> $row[campaign_id] </td>\n";
+				echo "<td align=left><font size=2> $row[user] </td>\n";
+				echo "<td align=left><font size=2> <a href=\"$PHP_SELF?ADD=311&list_id=$row[stage]\">$row[stage]</a> </td>\n";
+				echo "<td align=left><font size=2> <a href=\"$PHP_SELF?ADD=311&list_id=$row[stage]\">$row[comments]</a> </td>\n";
+				echo "<td align=left><font size=1> $row[caller_code] </td>\n";
+				echo "</tr>\n";
+				}
+
+			echo "</TABLE><BR><BR>\n";
+			}
+	##### END switch list log entries #####
 
 
 	##### vicidial agent outbound calls for this time period #####
