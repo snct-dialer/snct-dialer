@@ -10,14 +10,14 @@
     - Changed extras/upgrade_2.14.sql,
       extras/MySQL_AST_CREATE_tables.sql.
   * New function AutoAnswer (2018-007):
-    - www/vicidial/admin.php: Add new fields.
+    - Changed www/vicidial/admin.php: Add new fields.
   * bin/ADMIN_backup.pl:
     - Add /etc/flyingpenguin.
   * Change license to AGPLv3:
-    - bin/ADMIN_backup.pl,
+    - Changed bin/ADMIN_backup.pl,
       www/vicidial/AST_stat_agent1.php
   * Add upstream Rev. 2939:
-    - UPGRADE,
+    - Changed UPGRADE,
       extras/MySQL_AST_CREATE_tables.sql,
       extras/mysql_update/mysql-1533.sql,
       extras/upgrade_2.14.sql,
@@ -25,7 +25,7 @@
       www/vicidial/admin.php,
       www/vicidial/help.php: Added script_top_dispo feature.
   * Add upstream Rev. 2940:
-    - UPGRADE,
+    - Changed UPGRADE,
       extras/MySQL_AST_CREATE_tables.sql,
       extras/mysql_update/mysql-1533.sql,
       extras/upgrade_2.14.sql,
@@ -35,82 +35,82 @@
       www/vicidial/help.php: Added bulk change function for campaign a. ingroup
         ranks in user modify page, Added source_id_display system option.
   * Add upstream Rev. 2941:
-    - www/vicidial/admin_modify_lead.php: Added CIDdisplay.
+    - Changed www/vicidial/admin_modify_lead.php: Added CIDdisplay.
   * Add upstream Rev. 2942:
-    - www/vicidial/AST_parkstats.php: Added unique lead ID count.
+    - Changed www/vicidial/AST_parkstats.php: Added unique lead ID count.
   * Add upstream Rev. 2943:
-    - www/agc/vicidial.php: Fix for lead search screen hidden fields,
+    - Changed www/agc/vicidial.php: Fix for lead search screen hidden fields,
         issue #1079.
   * Add upstream Rev. 2944:
-    - New bin/AST_expired_list_exporter.pl.
+    - Changed New bin/AST_expired_list_exporter.pl.
     - www/vicidial/admin.php,
       www/vicidial/admin_lists_custom.php:Translated phrases fixes, issue #1081.
   * Add upstream Rev. 2945:
-    - www/agc/functions.php: Added entry_date as custom field SCRIPT type
-       variable.
+    - Changed www/agc/functions.php: Added entry_date as custom field SCRIPT
+        type variable.
   * Add upstream Rev. 2946:
-    - agi/agi-VDAD_ALL_inbound.agi: Added source_id as optional channel
+    - Changed agi/agi-VDAD_ALL_inbound.agi: Added source_id as optional channel
         variable to populate when inserting new leads.
   * Add upstream Rev. 2947:
-    - bin/FastAGI_log.pl,
+    - Changed bin/FastAGI_log.pl,
       www/agc/api.php,
       www/agc/vicidial.php: Fix for dial_ingroup error message on external_dial
         function.
   * Add upstream Rev. 2948:
-    - docs/AGENT_API.txt: Change ERORR to NOTICE for one tag.
+    - Changed docs/AGENT_API.txt: Change ERORR to NOTICE for one tag.
   * Add upstream Rev. 2949:
-    - www/vicidial/AST_CLOSERstats.php,
+    - Changed www/vicidial/AST_CLOSERstats.php,
       www/vicidial/AST_CLOSERstats_v2.php,
       www/vicidial/user_stats.php:  Fix for user time calculation,
         subtracted queue_seconds.
   * Add upstream Rev. 2950:
-    - www/vicidial/admin_bulk_tools.php: Updated column labels in user copy
+    - Changed www/vicidial/admin_bulk_tools.php: Updated column labels in user copy
         function to add ones that had been created since script was made.
   * Add upstream Rev. 2951:
-    - www/vicidial/AST_admin_template_maker.php,
+    - changed www/vicidial/AST_admin_template_maker.php,
       www/vicidial/admin_listloader_fourth_gen.php: Enforce User Group campaign
         permissions for templates based on list_id.
   * Add upstream Rev. 2952:
-    - UPGRADE,
+    - Changed UPGRADE,
       docs/CALL_URL_FEATURES.txt,
       www/agc/functions.php,
       www/agc/vdc_script_display.php,
       www/agc/vicidial.php: Added code for LOCALFQDN conversion to browser
         used server URL script iframes.
   * Add upstream Rev. 2953:
-    - www/vicidial/admin_campaign_multi_alt.php: Added screen colors.
+    - Changed www/vicidial/admin_campaign_multi_alt.php: Added screen colors.
   * Add upstream Rev. 2954:
-    - www/agc/vicidial.php: Typo. 
+    - Changed dwww/agc/vicidial.php: Typo. 
   * Add upstream Rev. 2955:
-    - www/vicidial/realtime_report.php: Added fix for WebRTC webphone
+    - Changed www/vicidial/realtime_report.php: Added fix for WebRTC webphone
        microphone permissions.
   * Add upstream Rev. 2956:
-    - www/vicidial/admin.php,
+    - Changed www/vicidial/admin.php,
       www/vicidial/admin_bulk_tools.php,
       www/vicidial/list_download.php: Added download of CID Group records
         feature.
   * Add upstream Rev. 2957:
-    - www/vicidial/list_download.php: Set row[3] to 'n' if empty.
+    - Changed www/vicidial/list_download.php: Set row[3] to 'n' if empty.
   * Add upstream Rev. 2958:
-    - www/vicidial/AST_agent_performance_detail.php: Fixed display bug for
-        individual user selection.
+    - Changed www/vicidial/AST_agent_performance_detail.php: Fixed display bug
+        for individual user selection.
   * Add upstream Rev. 2959:
-    - UPGRADE,
+    - Changed UPGRADE,
       docs/NON-AGENT_API.txt,
       www/vicidial/admin.php,
       www/vicidial/non_agent_api.php: Added update_did non-agent API function.
   * Add upstream Rev. 2960:
-    - bin/AST_output_update.pl,
+    - Changed bin/AST_output_update.pl,
       bin/AST_phone_update.pl,
       bin/AST_send_action_child.pl: Updated telnet login process to work with
         newer Asterisk versions.
   * Add upstream Rev. 2961:
-    - bin/VICIDIAL_fix_list_statuses.pl: Added look-ups from archive log tables
-       if no recent log entries found.
+    - Changed bin/VICIDIAL_fix_list_statuses.pl: Added look-ups from archive
+        log tables if no recent log entries found.
   * Add upstream Rev. 2962:
-    - www/agc/vicidial.php: Fix for API Hangup after dial timeout.
+    - Changed www/agc/vicidial.php: Fix for API Hangup after dial timeout.
   * Add upstream Rev. 2963:
-    - UPGRADE,
+    - Cahnged UPGRADE,
       bin/ADMIN_archive_log_tables.pl,
       extras/MySQL_AST_CREATE_tables.sql,
       extras/mysql_update/mysql-1533.sql,
@@ -123,38 +123,39 @@
       www/vicidial/user_stats.php: Added vicidial_agent_function_log archiving,
         Added Pause Code manager approval feature, Added switch_lead logging.
   * Add upstream Rev. 2964:
-    - UPGRADE,
+    - Changed UPGRADE,
       docs/CALL_URL_FEATURES.txt,
       www/agc/vdc_db_query.php,
       www/vicidial/admin.php: Added Dispo URL Filter feature.
   * Add upstream Rev. 2965:
-    - www/vicidial/call_report_export.php: Fix for missing call notes on
-       inbound calls.
+    - Changed www/vicidial/call_report_export.php: Fix for missing call notes
+      on inbound calls.
   * Add upstream Rev. 2966:
-    - www/agc/vdc_db_query.php: Fix for not using campaign in
+    - Changed www/agc/vdc_db_query.php: Fix for not using campaign in
         vicidial_campaign_statuses queries.
   * Add upstream Rev. 2967:
-    - bin/AST_VDhopper.pl: Fix for list mix to use call count limit on initial
-        count, issue #1094.
+    - Changrd bin/AST_VDhopper.pl: Fix for list mix to use call count limit on
+        initial count, issue #1094.
   * Add upstream Rev. 2968:
-    - dispo_move_list.php: Added multi_trigger option.
+    - Changed dispo_move_list.php: Added multi_trigger option.
   * Add upstream Rev. 2969:
-    - bin/AST_conf_update.pl,
+    - Changed bin/AST_conf_update.pl,
       bin/AST_conf_update_3way.pl,
       docs/CALLER_ID_NAME_CODES.txt,
       www/vicidial/admin.php,
       www/vicidial/help.php: Fix for high-volume systems, added varibles to
         hangup queryCID.
   * Add upstream Rev. 2970:
-    - www/agc/vicidial.php: Moved AGENT TIME link and Dialable Leads display
-        to not overlap.
+    - Changed www/agc/vicidial.php: Moved AGENT TIME link and Dialable Leads
+        display to not overlap.
   * Add upstream Rev. 2971:
-    - www/vicidial/admin_search_lead.php: Fix for slave db use, issue #1092.
+    - Changed www/vicidial/admin_search_lead.php: Fix for slave db use,
+        issue #1092.
   * Add upstream Rev. 2972:
-    - www/vicidial/lead_report_export.php: Fix for missing header row in
-        translated language, issue #1090.
+    - Changed www/vicidial/lead_report_export.php: Fix for missing header row
+        in translated language, issue #1090.
   * Add upstream Rev. 2973:
-    - UPGRADE,
+    - Changed UPGRADE,
       agi/agi-VDAD_ALL_inbound.agi,
       extras/MySQL_AST_CREATE_tables.sql,
       extras/mysql_update/mysql-1533.sql,
@@ -165,7 +166,7 @@
          populate_lead_source, populate_lead_vendor options.
   * Fix error messages while saving lists.
   * Add upstream Rev. 2974:
-    - www/agc/options-example.php,
+    - Changed www/agc/options-example.php,
       www/agc/vicidial.php: Added #INSERT_first_onload variable.
   * Add upstream Rev. 2975:
     - Changed UPGRADE,
