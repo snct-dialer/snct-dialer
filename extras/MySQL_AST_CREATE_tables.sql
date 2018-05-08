@@ -544,7 +544,7 @@ index (call_date)
 CREATE TABLE vicidial_users (
 user_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
 user VARCHAR(20) NOT NULL,
-pass VARCHAR(100) NOT NULL,
+pass VARCHAR(100) COLLATE utf8_bin NOT NULL,
 full_name VARCHAR(50),
 user_level TINYINT(3) UNSIGNED default '1',
 user_group VARCHAR(20),

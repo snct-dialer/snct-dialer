@@ -43,4 +43,6 @@ ALTER TABLE vicidial_inbound_groups ADD populate_lead_vendor VARCHAR(20) default
 ALTER TABLE vicidial_inbound_groups ADD park_file_name VARCHAR(100) default '';
 ALTER TABLE vicidial_lists_fields MODIFY field_type ENUM('TEXT','AREA','SELECT','MULTI','RADIO','CHECKBOX','DATE','TIME','DISPLAY','SCRIPT','HIDDEN','READONLY','HIDEBLOB','SWITCH') default 'TEXT';
 
+ALTER TABLE `vicidial_users` CHANGE `pass` `pass` VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;
+
 UPDATE system_settings SET db_schema_version='1533',db_schema_update_date=NOW() where db_schema_version < 1533;

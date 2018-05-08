@@ -199,6 +199,10 @@
       bin/ADMIN_keepalive_ALL.pl,
       bin/ADMIN_backup.pl,
       readme.fp.
+  * Change password handling (2018-009):
+    - Change database field to COLLATE utf8_bin to use case sensitiv passwords.
+    - Allow all chars.
+    - 
 
 2.25.25b
   [Jörg Frings-Fürst]

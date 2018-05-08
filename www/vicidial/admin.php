@@ -3159,7 +3159,7 @@ if ($non_latin < 1)
 	$pass = preg_replace('/[^-_0-9a-zA-Z]/','',$pass);
 	$phone_login = preg_replace('/[^-_0-9a-zA-Z]/','',$phone_login);
 	$phone_pass = preg_replace('/[^-_0-9a-zA-Z]/','',$phone_pass);
-	$PHP_AUTH_PW = preg_replace('/[^-_0-9a-zA-Z]/','',$PHP_AUTH_PW);
+#	$PHP_AUTH_PW = preg_replace('/[^-_0-9a-zA-Z]/','',$PHP_AUTH_PW);
 	$PHP_AUTH_USER = preg_replace('/[^-_0-9a-zA-Z]/','',$PHP_AUTH_USER);
 	$protocol = preg_replace('/[^-_0-9a-zA-Z]/','',$protocol);
 	$server_id = preg_replace('/[^-_0-9a-zA-Z]/','',$server_id);
@@ -3741,7 +3741,7 @@ if ($non_latin < 1)
 	}	# end of non_latin
 else
 	{
-	$PHP_AUTH_PW = preg_replace('/\'|\"|\\\\|;/', '',$PHP_AUTH_PW);
+#	$PHP_AUTH_PW = preg_replace('/\'|\"|\\\\|;/', '',$PHP_AUTH_PW);
 	$PHP_AUTH_USER = preg_replace('/\'|\"|\\\\|;/', '',$PHP_AUTH_USER);
 	}
 
