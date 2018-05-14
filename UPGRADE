@@ -311,6 +311,9 @@ OTHER CHANGES:
 84. Rewrote HELP display in web admin screens to function as database-driven
 	javascript popup.
 
+85. Added per-user options for maximum number of outbound manual dial hopper 
+	calls per-hour and per-day.
+
 
 
 

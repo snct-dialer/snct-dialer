@@ -454,13 +454,14 @@
 # 180410-1630 - Added Pause Code manager approval feature, Added switch_lead logging
 # 180411-1833 - Added Dispo URL Filter feature
 # 180418-1713 - Fix for not using campaign in vicidial_campaign_statuses queries
+# 180512-2227 - Added support for users-max_hopper_calls features
 #
 
-$version = '2.14-348';
-$build = '180418-1713';
+$version = '2.14-349';
+$build = '180512-2227';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=721;
+$mysql_log_count=724;
 $one_mysql_log=0;
 $DB=0;
 $VD_login=0;
@@ -2593,12 +2594,69 @@ if ($ACTION == 'manDiaLnextCaLL')
 				if (preg_match("/N/i",$no_hopper_dialing))
 					{
 					$no_hopper_dialing_used=0;
-					### grab the next lead in the hopper for this campaign and reserve it for the user
-					$stmt = "UPDATE vicidial_hopper set status='QUEUE', user='$user' where campaign_id='$campaign' and status='READY' order by priority desc,hopper_id LIMIT 1";
-					if ($DB) {echo "$stmt\n";}
+					$max_hopper_calls=0;
+					$max_hopper_calls_hour=0;
+					$hopper_calls_today=0;
+					$hopper_calls_hour=0;
+					##### grab the data from vicidial_users for the user
+					$stmt="SELECT max_hopper_calls,max_hopper_calls_hour FROM vicidial_users where user='$user' LIMIT 1;";
 					$rslt=mysql_to_mysqli($stmt, $link);
-					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00024',$user,$server_ip,$session_name,$one_mysql_log);}
-					$affected_rows = mysqli_affected_rows($link);
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00722',$user,$server_ip,$session_name,$one_mysql_log);}
+					if ($DB) {echo "$stmt\n";}
+					$user_set_ct = mysqli_num_rows($rslt);
+					if ($user_set_ct > 0)
+						{
+						$row=mysqli_fetch_row($rslt);
+						$max_hopper_calls =			trim("$row[0]");
+						$max_hopper_calls_hour =	trim("$row[1]");
+						}
+					if ( ($max_hopper_calls > 0) or ($max_hopper_calls_hour > 0) )
+						{
+						##### grab the data from vicidial_users for the user
+						$stmt="SELECT sum(hopper_calls_today),sum(hopper_calls_hour) FROM vicidial_campaign_agents where user='$user' LIMIT 1;";
+						$rslt=mysql_to_mysqli($stmt, $link);
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00723',$user,$server_ip,$session_name,$one_mysql_log);}
+						if ($DB) {echo "$stmt\n";}
+						$user_vca_ct = mysqli_num_rows($rslt);
+						if ($user_vca_ct > 0)
+							{
+							$row=mysqli_fetch_row($rslt);
+							$hopper_calls_today =		trim("$row[0]");
+							$hopper_calls_hour =		trim("$row[1]");
+							}
+						}
+					if ( ($hopper_calls_today >= $max_hopper_calls) and ($max_hopper_calls > 0) )
+						{
+						$stage .= "|MAXHOPPERDAY|$hopper_calls_today|$max_hopper_calls|";
+						$affected_rows=0;
+						}
+					else
+						{
+						if ( ($hopper_calls_hour >= $max_hopper_calls_hour) and ($max_hopper_calls_hour > 0) )
+							{
+							$stage .= "|MAXHOPPERHOUR|$hopper_calls_hour|$max_hopper_calls_hour|";
+							$affected_rows=0;
+							}
+						else
+							{
+							### grab the next lead in the hopper for this campaign and reserve it for the user
+							$stmt = "UPDATE vicidial_hopper set status='QUEUE', user='$user' where campaign_id='$campaign' and status='READY' order by priority desc,hopper_id LIMIT 1;";
+							if ($DB) {echo "$stmt\n";}
+							$rslt=mysql_to_mysqli($stmt, $link);
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00024',$user,$server_ip,$session_name,$one_mysql_log);}
+							$affected_rows = mysqli_affected_rows($link);
+
+							if ($affected_rows > 0)
+								{
+								### update hopper dial counter for user
+								$stmt = "UPDATE vicidial_campaign_agents set hopper_calls_today=(hopper_calls_today + 1), hopper_calls_hour=(hopper_calls_hour + 1) where user='$user' and campaign_id='$campaign';";
+								if ($DB) {echo "$stmt\n";}
+								$rslt=mysql_to_mysqli($stmt, $link);
+								if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00724',$user,$server_ip,$session_name,$one_mysql_log);}
+								$VCAaffected_rows = mysqli_affected_rows($link);
+								}
+							}
+						}
 					}
 				else
 					{

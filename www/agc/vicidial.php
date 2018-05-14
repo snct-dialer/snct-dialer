@@ -594,10 +594,11 @@
 # 180421-0754 - Moved AGENT TIME link and Dialable Leads display to not overlap
 # 180425-2036 - Added INSERT_first_onload variable
 # 180506-2222 - Added SWITCH custom field type
+# 180512-2226 - Added support for users-max_hopper_calls feature
 #
 
-$version = '2.14-564c';
-$build = '180506-2222';
+$version = '2.14-565c';
+$build = '180512-2226';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;

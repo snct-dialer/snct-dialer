@@ -134,10 +134,10 @@
 # 180204-0931 - Added rolling of vicidial_inbound_callback_queue records
 # 180301-1257 - Added more teodDB logging
 # 180507-1620 - Remove use of prompt_count.txt
-#
+# 180512-2214 - Added reset of hopper_calls_today
 #
 
-$build = '180507-1620';
+$build = '180512-2214';
 
 $DB=0; # Debug flag
 $teodDB=0; # flag to log Timeclock End of Day processes to log file
@@ -1172,7 +1172,7 @@ if ($timeclock_end_of_day_NOW > 0)
 		if ($DB) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 		$sthA->finish();
 
-		$stmtA = "update vicidial_campaign_agents SET calls_today=0;";
+		$stmtA = "update vicidial_campaign_agents SET calls_today=0,hopper_calls_today=0,hopper_calls_hour=0;";
 		if($DBX){print STDERR "\n|$stmtA|\n";}
 		$affected_rows = $dbhA->do($stmtA);
 		if($DB){print STDERR "\n|$affected_rows vicidial_campaign_agents call counts reset|\n";}
@@ -4247,6 +4247,23 @@ if ($SSenable_drop_lists > 0)
 	}
 ################################################################################
 #####  END  drop lists
+################################################################################
+
+
+
+
+################################################################################
+#####  BEGIN Reset per-hour hopper dial counts for users
+################################################################################
+if ( ($AST_VDadapt > 0) && ($reset_test =~ /00$/) )
+	{
+	$stmtA="UPDATE vicidial_campaign_agents set hopper_calls_hour='0';";
+	$affected_rows = $dbhA->do($stmtA);
+
+	if ($DB) {print "Reset per-hour hopper dial counts for users: $affected_rows\n";}
+	}
+################################################################################
+#####  END Reset per-hour hopper dial counts for users
 ################################################################################
 
 
