@@ -23,11 +23,14 @@
 # --GSW = GSM 6.10 codec with RIFF headers (.wav extension)
 # --GPG = GnuPG encrypted audio files
 #
-# FLAG FOR NO DATE DIRECTORY ON FTP
+# FLAG FOR NO DATE DIRECTORY ON FTP (default is to create YYYYMMDD directory)
 # --NODATEDIR
 #
-# FLAG FOR Y/M/D DATE DIRECTORY ON FTP
+# FLAG FOR YYYY/MM/DD DATE DIRECTORIES ON FTP
 # --YMDdatedir
+#
+# FLAG FOR YYYY/YYYYMMDD DATE DIRECTORIES ON FTP
+# --YearYMDdatedir
 #
 # if pinging is not working, try the 'icmp' Ping command in the code instead
 # 
@@ -36,7 +39,7 @@
 # 
 # This program assumes that recordings are saved by Asterisk as .wav
 # 
-# Copyright (C) 2016  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # 
 # 80302-1958 - First Build
@@ -54,6 +57,7 @@
 # 130116-1536 - Added ftp port CLI flag
 # 150911-2336 - Added GPG encrypted audio file compatibility
 # 160406-2055 - Added YMDdatedir option
+# 180511-2018 - Added --YearYMDdatedir option
 #
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
@@ -109,6 +113,7 @@ if (length($ARGV[0])>1)
 		print "  [--GPG] = copy GPG encrypted files\n";
 		print "  [--nodatedir] = do not put into dated directories\n";
 		print "  [--YMDdatedir] = put into Year/Month/Day dated directories\n";
+		print "  [--YearYMDdatedir] = put into Year/YYYYMMDD dated directories\n";
 		print "  [--run-check] = concurrency check, die if another instance is running\n";
 		print "  [--max-files=x] = maximum number of files to process, defaults to 100000\n";
 		print "  [--ftp-server=XXX] = FTP server\n";
@@ -147,6 +152,11 @@ if (length($ARGV[0])>1)
 			{
 			$YMDdatedir=1;
 			if ($DB) {print "\n----- Y/M/D DATED DIRECTORIES -----\n\n";}
+			}
+		if ($args =~ /--YearYMDdatedir/i)
+			{
+			$YearYMDdatedir=1;
+			if ($DB) {print "\n----- Year/YYYYMMDD DATED DIRECTORIES -----\n\n";}
 			}
 		if ($args =~ /--run-check/i)
 			{
@@ -473,7 +483,14 @@ foreach(@FILES)
 							}
 						else
 							{
-							$ftp->cwd("../");
+							if ($YearYMDdatedir > 0) 
+								{
+								$ftp->cwd("../../");
+								}
+							else
+								{
+								$ftp->cwd("../");
+								}
 							}
 						}
 					}
@@ -497,9 +514,20 @@ foreach(@FILES)
 						}
 					else
 						{
-						$ftp->mkdir("$start_date");
-						$ftp->cwd("$start_date");
-						$start_date_PATH = "$start_date/";
+						if ($YearYMDdatedir > 0) 
+							{
+							$ftp->mkdir("$year");
+							$ftp->cwd("$year");
+							$ftp->mkdir("$start_date");
+							$ftp->cwd("$start_date");
+							$start_date_PATH = "$year/$start_date/";
+							}
+						else
+							{
+							$ftp->mkdir("$start_date");
+							$ftp->cwd("$start_date");
+							$start_date_PATH = "$start_date/";
+							}
 						}
 					}
 				$ftp->binary();

@@ -806,6 +806,19 @@ if ($ftp_transfer > 0)
 		$ssh2->auth_password("$VARREPORT_user","$VARREPORT_pass") or die "Unable to login $@ \n";
 		$ssh2->scp_put("$PATHweb/vicidial/server_reports/$outfile", "$VARREPORT_dir/$outfile");
 		$ssh2->disconnect();
+
+	#	use Net::SFTP::Foreign;
+	#	if (!$Q) {print "Sending File Over SFTP: $outfile to $VARREPORT_host \n";}
+	#	my $sftp = Net::SFTP::Foreign->new(host => "$VARREPORT_host", port => "$VARREPORT_port", user => "$VARREPORT_user", password => "$VARREPORT_pass", more => ['-v', qw(-o PreferredAuthentications=password), qw(-o KexAlgorithms=diffie-hellman-group14-sha1)]);
+	#	$sftp->die_on_error("Unable to establish SFTP connection");
+	#		if ($DB > 0) {print "SFTP connected\n";}
+	#	$sftp->setcwd($VARREPORT_dir) or die "unable to change cwd: " . $sftp->error;
+	#		if ($DB > 0) {print "Changed working directory to $VARREPORT_dir\n";}
+	#	$sftp->put("$PATHweb/vicidial/server_reports/$outfile", "$VARREPORT_dir/$outfile") or die "put failed: " . $sftp->error;
+	#		if ($DBX > 0) {print "putting $PATHweb/vicidial/server_reports/$outfile $VARREPORT_dir/$outfile\n";}
+	#	$sftp->disconnect;
+	#		if ($DB > 0) {print "SFTP disconnected\n";}
+
 		}
 	else
 		{

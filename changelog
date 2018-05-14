@@ -207,6 +207,9 @@
       bin/AST_flush_DBqueue.pl,
       bin/AST_update_AMI2.pl: Changed to use server-specific
         cid_channels_recent table.
+  * Add upstream Rev. 2978:
+    - Changed bin/AST_CRON_audio_3_ftp.pl,
+      bin/AST_VDsales_export_SFTPSSH2.pl: Added --YearYMDdatedir option.
 
 2.25.25b
   [Jörg Frings-Fürst]
