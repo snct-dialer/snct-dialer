@@ -7,11 +7,12 @@
 # two digits stripped off. IE 138368 -> 8368. This is to overcome the change
 # to Local channels in Asterisk 12 and later.
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG
 # 170104-1700 - First build
 # 170420-1100 - Indexed call_date and added it to the channel lookup
+# 180511-1220 - Changed to use server-specific cid_channels_recent table
 #
 
 use strict;
@@ -73,6 +74,9 @@ my $AGI = new Asterisk::AGI;
 my $dbhA = DBI->connect("DBI:mysql:" . $conf{VARDB_database} . ":" . $conf{VARDB_server} . ":" . $conf{VARDB_port},
         $conf{VARDB_user}, $conf{VARDB_pass}) or die "Couldn't connect to database: " . DBI->errstr;
 
+my $PADserver_ip = $conf{VARserver_ip};
+$PADserver_ip =~ s/(\d+)(\.|$)/sprintf "%3.3d$2",$1/eg; 
+$PADserver_ip =~ s/\.//eg; 
 
 my %agi_vars = $AGI->ReadParse();
 
@@ -86,8 +90,19 @@ my $dest_channel = "";
 
 my $new_extension = substr( $extension, 2 );
 
+my $cid_channels_recent = 'cid_channels_recent';
+my $CCRrec=0;
+my $stmtA = "SHOW TABLES LIKE \"cid_channels_recent_$PADserver_ip\";";
+my $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$CCRrec=$sthA->rows;
+$sthA->finish();
+if ($CCRrec > 0)
+	{$cid_channels_recent = "cid_channels_recent_$PADserver_ip";}
+print STDERR "$CCRrec|$cid_channels_recent|$stmtA\n";
+
 # find the local channel's real channel
-my $stmtA = "SELECT dest_channel FROM cid_channels_recent where (caller_id_name = '$cid_name' or connected_line_name = '$connected_line_name' or caller_id_name = '$connected_line_name' or connected_line_name = '$cid_name') and ( linkedid = '$uniqueid' or dest_uniqueid = '$uniqueid' or uniqueid = '$uniqueid') and call_date > '$SQL2mindate'";
+my $stmtA = "SELECT dest_channel FROM $cid_channels_recent where (caller_id_name = '$cid_name' or connected_line_name = '$connected_line_name' or caller_id_name = '$connected_line_name' or connected_line_name = '$cid_name') and ( linkedid = '$uniqueid' or dest_uniqueid = '$uniqueid' or uniqueid = '$uniqueid') and call_date > '$SQL2mindate'";
 my $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 
 print STDERR "$stmtA\n";
