@@ -1,7 +1,7 @@
 <?php 
 # AST_VDADstats.php
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 60619-1718 - Added variable filtering to eliminate SQL injection attack threat
@@ -54,6 +54,7 @@
 # 170629-2080 - Added download option
 # 170829-0040 - Added screen color settings
 # 171012-2015 - Fixed javascript/apache errors with graphs
+# 180508-0115 - Added new help display
 #
 
 $startMS = microtime();
@@ -530,8 +531,11 @@ else
 
 require("screen_colors.php");
 
-$NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
-$NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+# $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
+# $NWE = "')\"><IMG SRC=\"help.png\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+
+$NWB = "<IMG SRC=\"help.png\" onClick=\"FillAndShowHelpDiv(event, '";
+$NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
 
 $HEADER.="<!DOCTYPE HTML>\n";
 $HEADER.="<HEAD>\n";
@@ -543,6 +547,10 @@ $HEADER.="   .blue {color: white; background-color: blue}\n";
 $HEADER.="   .purple {color: white; background-color: purple}\n";
 $HEADER.="-->\n";
 $HEADER.=" </STYLE>\n";
+
+$HEADER.="<link rel=\"stylesheet\" type=\"text/css\" href=\"vicidial_stylesheet.php\">\n";
+$HEADER.="<script language=\"JavaScript\" src=\"help.js\"></script>\n";
+$HEADER.="<div id='HelpDisplayDiv' class='help_info' style='display:none;'></div>";
 
 $HEADER.="<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"calendar.css\">\n";

@@ -1800,7 +1800,8 @@ enable_gdpr_download_deletion ENUM('0','1','2') default '0',
 autoanswer_enable ENUM('Y','N') default 'N',
 autoanswer_prefix VARCHAR(5) default 'AA',
 autoanswer_delay TINYINT default '1',
-source_id_display ENUM('0','1') default '0'
+source_id_display ENUM('0','1') default '0',
+help_modification_date VARCHAR(20) default '0'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_campaigns_list_mix (
@@ -4040,6 +4041,12 @@ index (user),
 index (lead_id),
 index (stage)
 ) ENGINE=MyISAM;
+
+CREATE TABLE help_documentation (
+help_id varchar(100) PRIMARY KEY COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+help_title text COLLATE utf8_unicode_ci,
+help_text text COLLATE utf8_unicode_ci
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
 ALTER TABLE vicidial_email_list MODIFY message text character set utf8;

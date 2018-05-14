@@ -1,7 +1,7 @@
 <?php
 # admin_languages.php
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # this screen manages the optional language tables in ViciDial
 #
@@ -17,6 +17,7 @@
 # 160508-0210 - Added screen colors feature
 # 161120-0919 - Added CHAT option
 # 170409-1547 - Added IP List validation code
+# 180502-2215 - Added new help display
 #
 
 $admin_version = '2.14-11';
@@ -439,6 +440,10 @@ if ( ($SSadmin_modify_refresh > 1) and (preg_match("/^3/",$ADD)) )
 
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
 
+<link rel="stylesheet" type="text/css" href="vicidial_stylesheet.php">
+<script language="JavaScript" src="help.js"></script>
+<div id='HelpDisplayDiv' class='help_info' style='display:none;'></div>
+
 <title><?php echo _QXZ("ADMINISTRATION: Languages"); ?>
 <?php 
 
@@ -714,8 +719,11 @@ if ($ADD==163000000000)	{$hh='admin';	$sh='languages';	echo _QXZ("LANGUAGE LIST"
 if ($ADD==763000000000)	{$hh='admin';	$sh='languages';	echo _QXZ("ADMIN LOG");}
 
 
-$NWB = " &nbsp; <a href=\"javascript:openNewWindow('$PHP_SELF?action=HELP";
-$NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+# $NWB = " &nbsp; <a href=\"javascript:openNewWindow('$PHP_SELF?action=HELP";
+# $NWE = "')\"><IMG SRC=\"help.png\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+
+$NWB = "<IMG SRC=\"help.png\" onClick=\"FillAndShowHelpDiv(event, '";
+$NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
 
 
 
@@ -914,7 +922,7 @@ if ($ADD==163311111111)
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Import Action").": </td><td align=left><select size=1 name=stage><option SELECTED value='ADD'>"._QXZ("Only Add Missing Phrases")."</option><option value='UPDATE'>"._QXZ("Only Update Existing Phrases")."</option><option value='ADD_UPDATE'>"._QXZ("Add and Update Phrases")."</option></select>$NWB#languages-import_action$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Import Data").": </td><td align=left><TEXTAREA name=\"import_data\" id=\"import_data\" ROWS=40 COLS=120></TEXTAREA>$NWB#languages-import_data$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Import Data").": <br>$NWB#languages-import_data$NWE</td><td align=left><TEXTAREA name=\"import_data\" id=\"import_data\" ROWS=40 COLS=120></TEXTAREA></td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=center colspan=2><input type=submit name=submit VALUE='"._QXZ("SUBMIT")."'></td></tr>\n";
 		echo "</TABLE></center>\n";

@@ -1,7 +1,7 @@
 <?php
 # audio_store.php
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # Central Audio Storage script
 # 
@@ -27,6 +27,7 @@
 # 170301-1650 - Added validation that sounds web dir exists
 # 170409-1555 - Added IP List validation code
 # 170630-1440 - Require modify_audiostore user permissions to access this page
+# 180508-0115 - Added new help display
 #
 
 $version = '2.14-22';
@@ -437,6 +438,11 @@ if ($action == "COPYFILE")
 <head>
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
 <!-- VERSION: <?php echo $version ?>     BUILD: <?php echo $build ?> -->
+
+<link rel="stylesheet" type="text/css" href="vicidial_stylesheet.php">
+<script language="JavaScript" src="help.js"></script>
+<div id='HelpDisplayDiv' class='help_info' style='display:none;'></div>
+
 <title><?php echo _QXZ("ADMINISTRATION"); ?>: <?php echo _QXZ("Audio Store"); ?>
 <?php
 
@@ -496,8 +502,11 @@ if (preg_match("/443/i",$server_port)) {$HTTPprotocol = 'https://';}
 $admDIR = "$HTTPprotocol$server_name:$server_port$script_name";
 $admDIR = preg_replace('/audio_store\.php/i', '',$admDIR);
 $admSCR = 'admin.php';
-$NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
-$NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+# $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
+# $NWE = "')\"><IMG SRC=\"help.png\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+
+$NWB = "<IMG SRC=\"help.png\" onClick=\"FillAndShowHelpDiv(event, '";
+$NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
 
 $secX = date("U");
 $pulldate0 = "$year-$mon-$mday $hour:$min:$sec";

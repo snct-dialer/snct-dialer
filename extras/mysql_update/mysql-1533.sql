@@ -45,4 +45,13 @@ ALTER TABLE vicidial_lists_fields MODIFY field_type ENUM('TEXT','AREA','SELECT',
 
 ALTER TABLE `vicidial_users` CHANGE `pass` `pass` VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;
 
+ALTER TABLE system_settings ADD help_modification_date VARCHAR(20) default '0';
+
+CREATE TABLE help_documentation (
+help_id varchar(100) PRIMARY KEY COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+help_title text COLLATE utf8_unicode_ci,
+help_text text COLLATE utf8_unicode_ci
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
 UPDATE system_settings SET db_schema_version='1533',db_schema_update_date=NOW() where db_schema_version < 1533;

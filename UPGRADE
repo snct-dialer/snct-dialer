@@ -308,6 +308,9 @@ OTHER CHANGES:
 83. Added SWITCH custom field type to put buttons on the agent FORM to allow for
 	the form to be switched while on an active call.
 
+84. Rewrote HELP display in web admin screens to function as database-driven
+	javascript popup.
+
 
 
 

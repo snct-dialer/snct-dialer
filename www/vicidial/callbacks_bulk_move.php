@@ -1,13 +1,14 @@
 <?php
 # callbacks_bulk_move.php
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 150218-0923 - First build based on callbacks_bulk_change.php
 # 151025-1041 - Fixed issue with check-all
 # 161105-0056 - Added options to purge uncalled callbacks, and also to revert callbacks to their most recent non-callback-dispo based on the callback entry time and the log tables.
 # 170409-1548 - Added IP List validation code
+# 180508-0115 - Added new help display
 #
 
 require("dbconnect_mysqli.php");
@@ -342,8 +343,11 @@ else
 	$group_SQL = "and ($group_SQL or selected_campaigns='|')";
 	}
 
-$NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
-$NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+# $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
+# $NWE = "')\"><IMG SRC=\"help.png\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+
+$NWB = "<IMG SRC=\"help.png\" onClick=\"FillAndShowHelpDiv(event, '";
+$NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
 
 ### PRELOAD ###
 $preload_campaigns=array();
@@ -469,6 +473,11 @@ if ($user_group)
 <html>
 <head>
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+
+<link rel="stylesheet" type="text/css" href="vicidial_stylesheet.php">
+<script language="JavaScript" src="help.js"></script>
+<div id='HelpDisplayDiv' class='help_info' style='display:none;'></div>
+
 <title><?php echo _QXZ("ADMINISTRATION: Callbacks Bulk Move"); ?>
 <?php
 

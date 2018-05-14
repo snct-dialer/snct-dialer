@@ -4,7 +4,7 @@
 # This User-Group based report runs some very intensive SQL queries, so it is
 # not recommended to run this on long time periods. 
 #
-# Copyright (C) 2017  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -22,6 +22,7 @@
 # 160121-2218 - Added report title header, default report format, cleaned up formatting
 # 170409-1538 - Added IP List validation code
 # 170829-0040 - Added screen color settings
+# 180507-2315 - Added new help display
 #
 
 $startMS = microtime();
@@ -318,8 +319,11 @@ if ($DB) {$HTML_text.="$user_group_string|$user_group_ct|$user_groupQS|$i<BR>";}
 
 require("screen_colors.php");
 
-$NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
-$NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+# $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
+# $NWE = "')\"><IMG SRC=\"help.png\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+
+$NWB = "<IMG SRC=\"help.png\" onClick=\"FillAndShowHelpDiv(event, '";
+$NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
 
 ###########################
 
@@ -333,6 +337,11 @@ $HTML_head.="   .blue {color: white; background-color: blue}\n";
 $HTML_head.="   .purple {color: white; background-color: purple}\n";
 $HTML_head.="-->\n";
 $HTML_head.=" </STYLE>\n";
+
+$HTML_head.="<link rel=\"stylesheet\" type=\"text/css\" href=\"vicidial_stylesheet.php\">\n";
+$HTML_head.="<script language=\"JavaScript\" src=\"help.js\"></script>\n";
+$HTML_head.="<div id='HelpDisplayDiv' class='help_info' style='display:none;'></div>";
+
 $HTML_text.="<script language=\"JavaScript\">\n";
 $HTML_text.="function openNewWindow(url)\n";
 $HTML_text.="  {\n";

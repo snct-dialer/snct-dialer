@@ -1,7 +1,7 @@
 <?php
 # called_counts_multilist_report.php
 # 
-# Copyright (C) 2017  Joe Johnson <freewermadmin@gmail.com>, Matt Florell <mattf@vicidial.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Joe Johnson <freewermadmin@gmail.com>, Matt Florell <mattf@vicidial.com>    LICENSE: AGPLv2
 #
 # This is a report designed for showing called counts similar to the results
 # at the bottom of each list detail screen, but for multiple lists and using
@@ -17,6 +17,7 @@
 # 160227-1036 - Uniform form format
 # 170409-1539 - Added IP List validation code
 # 170829-0040 - Added screen color settings
+# 180508-0115 - Added new help display
 #
 
 $startMS = microtime();
@@ -472,8 +473,11 @@ else
 
 require("screen_colors.php");
 
-$NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
-$NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+# $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
+# $NWE = "')\"><IMG SRC=\"help.png\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+
+$NWB = "<IMG SRC=\"help.png\" onClick=\"FillAndShowHelpDiv(event, '";
+$NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
 
 $HEADER.="<!DOCTYPE HTML>\n";
 $HEADER.="<HEAD>\n";
@@ -485,6 +489,10 @@ $HEADER.="   .blue {color: white; background-color: blue}\n";
 $HEADER.="   .purple {color: white; background-color: purple}\n";
 $HEADER.="-->\n";
 $HEADER.=" </STYLE>\n";
+
+$HEADER.="<link rel=\"stylesheet\" type=\"text/css\" href=\"vicidial_stylesheet.php\">\n";
+$HEADER.="<script language=\"JavaScript\" src=\"help.js\"></script>\n";
+$HEADER.="<div id='HelpDisplayDiv' class='help_info' style='display:none;'></div>";
 
 $HEADER.="<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"calendar.css\">\n";

@@ -18,10 +18,11 @@
 # 161103-1605 - Updated code for new admin links
 # 161111-1646 - Added HIDENUMBERS display option, Font size, button type and layout options
 # 170409-1549 - Added IP List validation code
+# 180503-2215 - Added new help display
 #
 
-$admin_version = '2.14-12';
-$build = '170409-1549';
+$admin_version = '2.14-13';
+$build = '180503-2215';
 
 require("dbconnect_mysqli.php");
 require("functions.php");
@@ -237,6 +238,10 @@ $LOGadmin_viewable_call_times =	$row[3];
 <html>
 <head>
 
+<link rel="stylesheet" type="text/css" href="vicidial_stylesheet.php">
+<script language="JavaScript" src="help.js"></script>
+<div id='HelpDisplayDiv' class='help_info' style='display:none;'></div>
+
 <?php
 if ($action != "HELP")
 	{
@@ -449,8 +454,11 @@ if ( (!preg_match("/soundboard/i",$SSactive_modules)) and ($SSagent_soundboards 
 	}
 
 
-$NWB = " &nbsp; <a href=\"javascript:openNewWindow('$PHP_SELF?soundboard_id=$soundboard_id&action=HELP";
-$NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+# $NWB = " &nbsp; <a href=\"javascript:openNewWindow('$PHP_SELF?soundboard_id=$soundboard_id&action=HELP";
+# $NWE = "')\"><IMG SRC=\"help.png\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+
+$NWB = "<IMG SRC=\"help.png\" onClick=\"FillAndShowHelpDiv(event, '";
+$NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
 
 
 

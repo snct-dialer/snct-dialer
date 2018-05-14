@@ -1,7 +1,7 @@
 <?php
 # manager_chat_interface.php
 # 
-# Copyright (C) 2017  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This page is for managers (level 8 or higher) to chat with live agents
 #
@@ -14,6 +14,7 @@
 # 161029-2127 - Fixed menu displays, text sizes
 # 161217-0819 - Added chat-type to allow for multi-user internal chat sessions
 # 170409-1551 - Added IP List validation code
+# 180508-2215 - Added new help display
 #
 
 $admin_version = '2.14-8';
@@ -339,7 +340,11 @@ header ("Pragma: no-cache");                          // HTTP/1.0
 <head>
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
 </head>
-<link rel="stylesheet" href="vicidial_stylesheet.css">
+
+<link rel="stylesheet" type="text/css" href="vicidial_stylesheet.php">
+<script language="JavaScript" src="help.js"></script>
+<div id='HelpDisplayDiv' class='help_info' style='display:none;'></div>
+
 <script language="JavaScript">
 
 function RefreshChatDisplay(manager_chat_id) {
@@ -719,8 +724,11 @@ if ($SSallow_chats < 1)
 	}
 
 
-$NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
-$NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+# $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
+# $NWE = "')\"><IMG SRC=\"help.png\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+
+$NWB = "<IMG SRC=\"help.png\" onClick=\"FillAndShowHelpDiv(event, '";
+$NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
 
 	echo "<span id='ManagerChatDisplay'>";
 	if (!$manager_chat_id) { # DO NOT ALLOW NEW CHATS WHILE AN OLD ONE IS OPEN!!!

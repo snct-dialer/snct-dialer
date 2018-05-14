@@ -3,13 +3,14 @@
 #
 # This report is for viewing the a report of which users accessed which recordings
 #
-# Copyright (C) 2017  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
 # 160115-2303 - First build
 # 170409-1538 - Added IP List validation code
 # 170824-2130 - Added HTML formatting and screen colors
+# 180507-2315 - Added new help display
 #
 
 $startMS = microtime();
@@ -433,8 +434,11 @@ if ($DB) {echo "$user_group_string|$user_group_ct|$user_groupQS|$i<BR>\n";}
 
 $LINKbase = "$PHP_SELF?query_date=$query_date&end_date=$end_date$groupQS$user_groupQS&shift=$shift&DB=$DB&show_percentages=$show_percentages";
 
-$NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
-$NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+# $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
+# $NWE = "')\"><IMG SRC=\"help.png\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+
+$NWB = "<IMG SRC=\"help.png\" onClick=\"FillAndShowHelpDiv(event, '";
+$NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
 
 $HTML_head.="<HTML>\n";
 $HTML_head.="<HEAD>\n";
@@ -447,6 +451,9 @@ $HTML_head.="   .purple {color: white; background-color: purple}\n";
 $HTML_head.="-->\n";
 $HTML_head.=" </STYLE>\n";
 
+$HTML_head.="<link rel=\"stylesheet\" type=\"text/css\" href=\"vicidial_stylesheet.php\">\n";
+$HTML_head.="<script language=\"JavaScript\" src=\"help.js\"></script>\n";
+$HTML_head.="<div id='HelpDisplayDiv' class='help_info' style='display:none;'></div>";
 
 $HTML_head.="<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
 $HTML_head.="<link rel=\"stylesheet\" href=\"calendar.css\">\n";

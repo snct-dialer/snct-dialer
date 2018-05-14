@@ -1,7 +1,7 @@
 <?php
 # medialog_inventory_report.php
 # 
-# Copyright (C) 2017  Joe Johnson <freewermadmin@gmail.com>, Matt Florell <mattf@vicidial.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Joe Johnson <freewermadmin@gmail.com>, Matt Florell <mattf@vicidial.com>    LICENSE: AGPLv2
 #
 # This is a report designed for showing custom statistics based on client
 # requirements. This is not a standard VICIdial report.
@@ -11,6 +11,7 @@
 # 160412-2022 - Callback bug fixed, modified Total count to use modify_date instead of entry_date
 # 160427-1655 - Added called count categories
 # 170409-1540 - Added IP List validation code
+# 180508-2315 - Added new help display
 #
 
 $startMS = microtime();
@@ -19,6 +20,7 @@ header ("Content-type: text/html; charset=utf-8");
 
 require("dbconnect_mysqli.php");
 require("functions.php");
+require("screen_colors.php");
 
 $PHP_AUTH_USER=$_SERVER['PHP_AUTH_USER'];
 $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
@@ -474,8 +476,11 @@ else
 	}
 */
 
-$NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
-$NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+# $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
+# $NWE = "')\"><IMG SRC=\"help.png\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+
+$NWB = "<IMG SRC=\"help.png\" onClick=\"FillAndShowHelpDiv(event, '";
+$NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
 
 $HEADER.="<!DOCTYPE HTML>\n";
 $HEADER.="<HEAD>\n";
@@ -487,6 +492,10 @@ $HEADER.="   .blue {color: white; background-color: blue}\n";
 $HEADER.="   .purple {color: white; background-color: purple}\n";
 $HEADER.="-->\n";
 $HEADER.=" </STYLE>\n";
+
+$HEADER.="<link rel=\"stylesheet\" type=\"text/css\" href=\"vicidial_stylesheet.php\">\n";
+$HEADER.="<script language=\"JavaScript\" src=\"help.js\"></script>\n";
+$HEADER.="<div id='HelpDisplayDiv' class='help_info' style='display:none;'></div>";
 
 $HEADER.="<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"calendar.css\">\n";
@@ -579,7 +588,7 @@ $MAIN.="<b>"._QXZ("$report_name")."</b> \n";
 $MAIN.="<TABLE CELLPADDING=3 CELLSPACING=0><TR><TD>";
 
 $MAIN.="<FORM ACTION=\"$PHP_SELF\" METHOD=GET name=vicidial_report id=vicidial_report>\n";
-$MAIN.="<TABLE CELLPADDING=3 CELLSPACING=0 BGCOLOR=\"#e3e3ff\"><TR><TD VALIGN=TOP>"._QXZ("Dates").":<BR>";
+$MAIN.="<TABLE CELLPADDING=3 CELLSPACING=0 BGCOLOR=\"#".$SSstd_row1_background."\"><TR><TD VALIGN=TOP>"._QXZ("Dates").":<BR>";
 $MAIN.="<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 $MAIN.="<INPUT TYPE=HIDDEN NAME=outbound_rate VALUE=\"$outbound_rate\">\n";
 $MAIN.="<INPUT TYPE=TEXT NAME=query_date SIZE=10 MAXLENGTH=10 VALUE=\"$query_date\">";

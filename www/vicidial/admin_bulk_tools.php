@@ -24,21 +24,25 @@
 # 180301-1538 - Fixed issue with STATE CID Groups insertion
 # 180323-1643 - Updated column labels in user copy function to add ones that had been created since script was made.
 # 180330-1427 - Added 'active' column to CID Group import
+# 180502-2115 - Added new help display
 #
 
 require("dbconnect_mysqli.php");
 require("functions.php");
 
-$version = '2.14-18';
-$build = '180330-1427';
+$version = '2.14-19';
+$build = '180502-2115';
 
 $PHP_AUTH_USER=$_SERVER['PHP_AUTH_USER'];
 $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
 $PHP_SELF=$_SERVER['PHP_SELF'];
 $ip = getenv("REMOTE_ADDR");
 $SQLdate = date("Y-m-d H:i:s");
-$NWB = " &nbsp; <a href=\"javascript:openNewWindow('$PHP_SELF?form_to_run=help";
-$NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+# $NWB = " &nbsp; <a href=\"javascript:openNewWindow('$PHP_SELF?form_to_run=help";
+# $NWE = "')\"><IMG SRC=\"help.png\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+
+$NWB = "<IMG SRC=\"help.png\" onClick=\"FillAndShowHelpDiv(event, '";
+$NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
 $form_to_run = "NONE";
 $DB=0; 						# Debug flag
 $INSERTmax_limit = 5000; 	# Maximum number of items allowed to insert
@@ -271,7 +275,11 @@ if ($user_level < 9)
 	echo "You do not have permission to be here.";
 	exit;
 	}
-	
+
+echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"vicidial_stylesheet.php\">\n";
+echo "<script language=\"JavaScript\" src=\"help.js\"></script>\n";
+echo "<div id='HelpDisplayDiv' class='help_info' style='display:none;'></div>";	
+
 ################################################################################
 ##### Help
 if ($form_to_run == "help")
