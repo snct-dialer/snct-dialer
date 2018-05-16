@@ -202,6 +202,7 @@
   * Change password handling (2018-009):
     - Change database field to COLLATE utf8_bin to use case sensitiv passwords.
     - Allow all chars.
+    - New www/tools/UserHandling.php.
   * Add upstream Rev. 2977:
     - Changed agi/agi-VDAD_local_optimize.agi,
       bin/AST_flush_DBqueue.pl,
