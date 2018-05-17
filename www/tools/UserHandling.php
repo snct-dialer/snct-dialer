@@ -29,12 +29,13 @@
 #
 # 09.04.2018 0.1.1 jff   First Version.
 # 08.05.2018 0.1.2 jff   Add function SetFailLogin
+# 17.05.2018 0.1.3 jff   Add function LogUserLogin
 #
 #
 #
 
 
-$Version = "0.1.2";
+$Version = "0.1.3";
 $Modul = "TUserHandling";
 
 #
@@ -42,6 +43,43 @@ $Modul = "TUserHandling";
 #
 $DB=0;
 
+
+#######################################
+#
+# function LogUserLogin
+#
+# Parameter $User (requested)
+#           $Status (requested)
+#
+# Return ok:    0
+#        fail: -1
+#
+# Version 0.0.1
+#
+function LogUserLogin($User, $Status) {
+	global $link;
+	
+	# Test for requested vars
+	if (empty($User)) {
+		return -1;
+	}
+	$ip = getenv("REMOTE_ADDR");
+	
+	if($Status != 0) {
+		if($mStmt = $link->prepare("INSERT INTO vicidial_faillogin_log (user, status, ip, login_time) VALUES(?, ?, ?, NOW();")) {
+			$mStmt->bind_param('sis', $User, $Status, $ip);
+			$mStmt->execute();
+			$mStmt->close();
+			return 0;
+		} else {
+			if($DB) {
+				echo("Statement Prepare failed: " . $mysqli->error . PHP_EOL);
+			}
+		}
+		return -1;
+	}
+	return 0;
+}
 
 
 #######################################
@@ -91,13 +129,14 @@ function SetFailLogin($User, $FailCount = 0) {
 #         if wrong User/Pass: 0
 #         if error: <0
 #
-# Version : 0.0.2
+# Version : 0.0.3
 #
 function CheckUserCred($User, $Pass) {
 	global $link;
 	
 	# Test for requested vars
 	if ((empty($User)) || (empty($Pass))) {
+		LogUserLogin($User, -1);
 		return -1;
 	}
 	
@@ -141,6 +180,7 @@ function CheckUserCred($User, $Pass) {
 		$mStmt->bind_result($ul, $failCount, $lld);
 		if($mStmt->fetch()) {
 			$mStmt->close();
+			LogUserLogin($User, 0);
 			return $ul;;
 		}
 		$mStmt->close();
@@ -149,6 +189,8 @@ function CheckUserCred($User, $Pass) {
 			echo("Statement Prepare failed: " . $mysqli->error . PHP_EOL);
 		}
 	}
+	
+	LogUserLogin($User, -1);
 	SetFailLogin($User, $failCount, $lld);
 	return 0;
 }

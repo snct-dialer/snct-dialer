@@ -4046,6 +4046,14 @@ index (lead_id),
 index (stage)
 ) ENGINE=MyISAM;
 
+CREATE TABLE vicidial_faillogin_log (
+ID INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+user VARCHAR(20),
+status INT(9)
+ip VARCHAR(18),
+login_time DATETIME,
+) ENGINE=MyISAM;
+
 CREATE TABLE help_documentation (
 help_id varchar(100) PRIMARY KEY COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
 help_title text COLLATE utf8_unicode_ci,
