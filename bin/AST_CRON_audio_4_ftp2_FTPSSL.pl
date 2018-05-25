@@ -39,11 +39,12 @@
 # 
 # This program assumes that recordings are saved by Asterisk as .wav
 # 
-# Copyright (C) 2016  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES:
 # 130730-1849 - First Build based upon AST_CRON_audio_4_ftp2.pl script
 # 161212-1650 - Changed to use hard-coded encryption flag for module
+# 180516-2011 - Added --noping option
 #
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
@@ -93,6 +94,7 @@ if (length($ARGV[0])>1)
 		print "  [--list-limit=XXX] = number of files to list in the directory before moving on\n";
 		print "  [--debugX] = super debug\n";
 		print "  [--nodatedir] = do not put into dated directories\n";
+		print "  [--noping] = do not attempt to ping FTP server\n";
 		print "  [--ftp-server=XXX] = FTPSSL server\n";
 		print "  [--ftp-port=XXX] = FTPSSL server port\n";
 		print "  [--ftp-login=XXX] = FTPSSL server login account\n";
@@ -125,6 +127,11 @@ if (length($ARGV[0])>1)
 			{
 			$NODATEDIR=1;
 			if ($DB) {print "\n----- NO DATE DIRECTORIES -----\n\n";}
+			}
+		if ($args =~ /--noping/i)
+			{
+			$no_ping=1;
+			if ($DB) {print "\n----- NO PING ----- $no_ping \n\n";}
 			}
 		if ($args =~ /--run-check/i)
 			{
@@ -376,7 +383,7 @@ foreach(@FILES)
 			if ($DB) {print "|$recording_id|$start_date|$ALLfile|     |$SQLfile|\n";}
 
 	### BEGIN Remote file transfer
-			if ( ($FTPpersistent > 0) && ($ping_good > 0) )
+			if ( ( ($FTPpersistent > 0) && ($ping_good > 0) ) || ($no_ping > 0) )
 				{$ping_good=1;}
 			else
 				{

@@ -277,6 +277,8 @@
       www/vicidial/admin.php,
       www/vicidial/help_documentation.txt: Added reset of hopper_calls_today,
         Added support for users-max_hopper_calls feature.
+  * Add upstream Rev. 2981:
+    - Changed bin/AST_CRON_audio_4_ftp2_FTPSSL.pl: Added --noping option
 
 2.25.25b
   [Jörg Frings-Fürst]
