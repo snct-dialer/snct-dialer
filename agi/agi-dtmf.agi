@@ -15,11 +15,12 @@
 #
 # Can also be used in a Call Menu: agi-dtmf.agi,signalonly---12345   # optional signal only DTMF with CLI-defined DTMF values
 #
-# Copyright (C) 2014  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 90312-1534 - Added signalonly option
 # 140611-1330 - Added CLI dtmf variable option
+# 180520-0942 - Fix for inconsistency problem, issue #1099
 #
 
 $signalonly=0;
@@ -72,10 +73,10 @@ my $clidname = $agi->get_variable('CALLERIDNAME');
 print STDERR "X.  |$clid|$caller_id|$clidname|     |$signalonly|$cli_vars_set|$cli_vars|\n";
 
 
+print "STREAM FILE silence \"\"\n";
+
 ### sleep for 5 tenths of a second
 usleep(1*500*1000);
-
-print "STREAM FILE silence \"\"\n";
 
 $caller_id = "$caller_id$caller_idname";
 
