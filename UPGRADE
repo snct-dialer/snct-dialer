@@ -314,6 +314,10 @@ OTHER CHANGES:
 85. Added per-user options for maximum number of outbound manual dial hopper 
 	calls per-hour and per-day.
 
+86. Added In-Group option for Waiting Call On/Off URL, which we added to allow
+	a client to control a web-power-switch to turn lights on and off if 
+	there are any calls waiting in an In-Group.
+
 
 
 

@@ -281,7 +281,21 @@
     - Changed bin/AST_CRON_audio_4_ftp2_FTPSSL.pl: Added --noping option.
   * Add upstream Rev. 2982:
     - Changed bin/AST_CRON_audio_3_ftp_FTPSSL.pl: Add Debug output.
-    - New bin/AST_CRON_audio_4_ftp2_FTPSSL.pl. 
+    - New bin/AST_CRON_audio_4_ftp2_FTPSSL.pl.
+  * Add upstream Rev. 2983:
+    Changed docs/ASTERISK_13.txt: Renew text.
+  * Add upstream Rev. 2984:
+    - Changed: UPGRADE,
+      bin/AST_VDadapt.pl,
+      bin/AST_flush_DBqueue.pl,
+      bin/AST_send_URL.pl,
+      extras/MySQL_AST_CREATE_tables.sql,
+      extras/mysql_update/mysql-1533.sql,
+      extras/upgrade_2.14.sql,
+      www/vicidial/admin.php,
+      www/vicidial/help_documentation.txt,
+      New: extras/vdc_webpowerswitch.php: Added Waiting Call On/Off URL
+        feature for in-groups.
 
 2.25.25b
   [Jörg Frings-Fürst]

@@ -67,4 +67,8 @@ ip VARCHAR(18),
 login_time DATETIME,
 ) ENGINE=MyISAM;
 
+ALTER TABLE vicidial_inbound_groups ADD waiting_call_url_on TEXT;
+ALTER TABLE vicidial_inbound_groups ADD waiting_call_url_off TEXT;
+ALTER TABLE vicidial_inbound_groups ADD waiting_call_count SMALLINT(5) UNSIGNED default '0';
+
 UPDATE system_settings SET db_schema_version='1533',db_schema_update_date=NOW() where db_schema_version < 1533;

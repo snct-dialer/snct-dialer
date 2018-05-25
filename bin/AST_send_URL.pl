@@ -8,7 +8,7 @@
 # This script is also used for the Add-Lead-URL feature in In-groups and for
 # QM socket-send as well as from call menus using a settings container.
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 100622-0929 - First Build
@@ -25,6 +25,7 @@
 # 150711-1501 - Changed to add more logging and better HTTPS support
 # 170202-2321 - Added SC_CALL_URL function
 # 170509-1545 - Added --A--SQLdate--B-- variable
+# 180519-1741 - Added INGROUP_WCU_ON & INGROUP_WCU_OFF functions
 #
 
 $|++;
@@ -193,20 +194,24 @@ if (length($lead_id) > 0)
 	$sthA->finish();
 
 	if ($call_type =~ /IN/)
-		{$stmtG = "SELECT start_call_url,add_lead_url,na_call_url FROM vicidial_inbound_groups where group_id='$campaign';";}
+		{$stmtG = "SELECT start_call_url,add_lead_url,na_call_url,waiting_call_url_on,waiting_call_url_off FROM vicidial_inbound_groups where group_id='$campaign';";}
 	else
-		{$stmtG = "SELECT start_call_url,'NONE',na_call_url FROM vicidial_campaigns where campaign_id='$campaign';";}
+		{$stmtG = "SELECT start_call_url,'NONE',na_call_url,'NONE','NONE' FROM vicidial_campaigns where campaign_id='$campaign';";}
 	$sthA = $dbhA->prepare($stmtG) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtG ", $dbhA->errstr;
 	$start_url_ct=$sthA->rows;
 	if ($start_url_ct > 0)
 		{
 		@aryA = $sthA->fetchrow_array;
-		$start_call_url =	$aryA[0];
-		$add_lead_url =		$aryA[1];
-		$na_call_url =		$aryA[2];
+		$start_call_url =		$aryA[0];
+		$add_lead_url =			$aryA[1];
+		$na_call_url =			$aryA[2];
+		$waiting_call_url_on =	$aryA[3];
+		$waiting_call_url_off =	$aryA[4];
 		}
 	$sthA->finish();
+	
+	if ($DBX) {print "DEBUG: $stmtG\n";}
 
 	if ($function =~ /SC_CALL_URL/)
 		{
@@ -294,6 +299,28 @@ if (length($lead_id) > 0)
 		$parse_url = $compat_url;
 		$url_function = 'qm_socket';
 		##### END QM socket-send URL function #####
+		}
+	elsif ($function =~ /INGROUP_WCU_ON/)
+		{
+		##### BEGIN Waiting-Call URL ON function #####
+		$waiting_call_url_on =~ s/^VAR//gi;
+		$waiting_call_url_on =~ s/--A--SQLdate--B--/$now_date/gi;
+		$waiting_call_url_on =~ s/ /+/gi;
+		$waiting_call_url_on =~ s/&/\\&/gi;
+		$parse_url = $waiting_call_url_on;
+		$url_function = 'wcu_on';
+		##### END Waiting-Call URL ON function #####
+		}
+	elsif ($function =~ /INGROUP_WCU_OFF/)
+		{
+		##### BEGIN Waiting-Call URL OFF function #####
+		$waiting_call_url_off =~ s/^VAR//gi;
+		$waiting_call_url_off =~ s/--A--SQLdate--B--/$now_date/gi;
+		$waiting_call_url_off =~ s/ /+/gi;
+		$waiting_call_url_off =~ s/&/\\&/gi;
+		$parse_url = $waiting_call_url_off;
+		$url_function = 'wcu_off';
+		##### END Waiting-Call URL OFF function #####
 		}
 	elsif ($function =~ /INGROUP_ADD_LEAD_URL/)
 		{
