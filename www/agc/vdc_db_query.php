@@ -455,13 +455,14 @@
 # 180411-1833 - Added Dispo URL Filter feature
 # 180418-1713 - Fix for not using campaign in vicidial_campaign_statuses queries
 # 180512-2227 - Added support for users-max_hopper_calls features
+# 180520-1031 - Added use of screen labels in search results, Issue #1104
 #
 
-$version = '2.14-349';
-$build = '180512-2227';
+$version = '2.14-350';
+$build = '180520-1031';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=724;
+$mysql_log_count=727;
 $one_mysql_log=0;
 $DB=0;
 $VD_login=0;
@@ -14965,6 +14966,104 @@ if ($ACTION == 'SEARCHRESULTSview')
 	if (strlen($stage) < 3)
 		{$stage = '670';}
 
+	### find the screen_label for this campaign
+	$stmt="SELECT screen_labels,hide_call_log_info from vicidial_campaigns where campaign_id='$campaign';";
+	$rslt=mysql_to_mysqli($stmt, $link);
+		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00727',$user,$server_ip,$session_name,$one_mysql_log);}
+	$csl_to_print = mysqli_num_rows($rslt);
+	if ($format=='debug') {echo "|$csl_to_print|$stmt|";}
+	if ($csl_to_print > 0)
+		{
+		$row=mysqli_fetch_row($rslt);
+		$screen_labels =		$row[0];
+		$hide_call_log_info =	$row[1];
+		}
+
+	### BEGIN Display lead info and custom fields ###
+	### BEGIN find any custom field labels ###
+	$INFOout='';
+	$label_title =				_QXZ(" Title");
+	$label_first_name =			_QXZ("First");
+	$label_middle_initial =		_QXZ("MI");
+	$label_last_name =			_QXZ("Last ");
+	$label_address1 =			_QXZ("Address1");
+	$label_address2 =			_QXZ("Address2");
+	$label_address3 =			_QXZ("Address3");
+	$label_city =				_QXZ("City");
+	$label_state =				_QXZ(" State");
+	$label_province =			_QXZ("Province");
+	$label_postal_code =		_QXZ("PostCode");
+	$label_vendor_lead_code =	_QXZ("Vendor ID");
+	$label_gender =				_QXZ(" Gender");
+	$label_phone_number =		_QXZ("Phone");
+	$label_phone_code =			_QXZ("DialCode");
+	$label_alt_phone =			_QXZ("Alt. Phone");
+	$label_security_phrase =	_QXZ("Show");
+	$label_email =				_QXZ(" Email");
+	$label_comments =			_QXZ(" Comments");
+
+	$stmt="SELECT label_title,label_first_name,label_middle_initial,label_last_name,label_address1,label_address2,label_address3,label_city,label_state,label_province,label_postal_code,label_vendor_lead_code,label_gender,label_phone_number,label_phone_code,label_alt_phone,label_security_phrase,label_email,label_comments,label_hide_field_logs from system_settings;";
+	$rslt=mysql_to_mysqli($stmt, $link);
+		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00725',$user,$server_ip,$session_name,$one_mysql_log);}
+	$row=mysqli_fetch_row($rslt);
+	if (strlen($row[0])>0)	{$label_title =				$row[0];}
+	if (strlen($row[1])>0)	{$label_first_name =		$row[1];}
+	if (strlen($row[2])>0)	{$label_middle_initial =	$row[2];}
+	if (strlen($row[3])>0)	{$label_last_name =			$row[3];}
+	if (strlen($row[4])>0)	{$label_address1 =			$row[4];}
+	if (strlen($row[5])>0)	{$label_address2 =			$row[5];}
+	if (strlen($row[6])>0)	{$label_address3 =			$row[6];}
+	if (strlen($row[7])>0)	{$label_city =				$row[7];}
+	if (strlen($row[8])>0)	{$label_state =				$row[8];}
+	if (strlen($row[9])>0)	{$label_province =			$row[9];}
+	if (strlen($row[10])>0) {$label_postal_code =		$row[10];}
+	if (strlen($row[11])>0) {$label_vendor_lead_code =	$row[11];}
+	if (strlen($row[12])>0) {$label_gender =			$row[12];}
+	if (strlen($row[13])>0) {$label_phone_number =		$row[13];}
+	if (strlen($row[14])>0) {$label_phone_code =		$row[14];}
+	if (strlen($row[15])>0) {$label_alt_phone =			$row[15];}
+	if (strlen($row[16])>0) {$label_security_phrase =	$row[16];}
+	if (strlen($row[17])>0) {$label_email =				$row[17];}
+	if (strlen($row[18])>0) {$label_comments =			$row[18];}
+	$label_hide_field_logs =	$row[19];
+
+	if ( ($screen_labels != '--SYSTEM-SETTINGS--') and (strlen($screen_labels)>1) )
+		{
+		$stmt="SELECT label_title,label_first_name,label_middle_initial,label_last_name,label_address1,label_address2,label_address3,label_city,label_state,label_province,label_postal_code,label_vendor_lead_code,label_gender,label_phone_number,label_phone_code,label_alt_phone,label_security_phrase,label_email,label_comments,label_hide_field_logs from vicidial_screen_labels where label_id='$screen_labels' and active='Y' limit 1;";
+		$rslt=mysql_to_mysqli($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00726',$user,$server_ip,$session_name,$one_mysql_log);}
+		$screenlabels_count = mysqli_num_rows($rslt);
+		if ($screenlabels_count > 0)
+			{
+			$row=mysqli_fetch_row($rslt);
+			if (strlen($row[0])>0)	{$label_title =				$row[0];}
+			if (strlen($row[1])>0)	{$label_first_name =		$row[1];}
+			if (strlen($row[2])>0)	{$label_middle_initial =	$row[2];}
+			if (strlen($row[3])>0)	{$label_last_name =			$row[3];}
+			if (strlen($row[4])>0)	{$label_address1 =			$row[4];}
+			if (strlen($row[5])>0)	{$label_address2 =			$row[5];}
+			if (strlen($row[6])>0)	{$label_address3 =			$row[6];}
+			if (strlen($row[7])>0)	{$label_city =				$row[7];}
+			if (strlen($row[8])>0)	{$label_state =				$row[8];}
+			if (strlen($row[9])>0)	{$label_province =			$row[9];}
+			if (strlen($row[10])>0) {$label_postal_code =		$row[10];}
+			if (strlen($row[11])>0) {$label_vendor_lead_code =	$row[11];}
+			if (strlen($row[12])>0) {$label_gender =			$row[12];}
+			if (strlen($row[13])>0) {$label_phone_number =		$row[13];}
+			if (strlen($row[14])>0) {$label_phone_code =		$row[14];}
+			if (strlen($row[15])>0) {$label_alt_phone =			$row[15];}
+			if (strlen($row[16])>0) {$label_security_phrase =	$row[16];}
+			if (strlen($row[17])>0) {$label_email =				$row[17];}
+			if (strlen($row[18])>0) {$label_comments =			$row[18];}
+			$label_hide_field_logs =	$row[19];
+			### END find any custom field labels ###
+			$hide_gender=0;
+			if ($label_gender == '---HIDE---')
+				{$hide_gender=1;}
+			}
+		}
+	### END find any custom field labels ###
+	
 	$stmt="SELECT agent_lead_search_method,manual_dial_list_id from vicidial_campaigns where campaign_id='$campaign';";
 	if ($non_latin > 0) {$rslt=mysql_to_mysqli("SET NAMES 'UTF8'", $link);}
 	$rslt=mysql_to_mysqli($stmt, $link);
@@ -15206,14 +15305,14 @@ if ($ACTION == 'SEARCHRESULTSview')
 			echo "<TABLE CELLPADDING=0 CELLSPACING=1 BORDER=0 WIDTH=$stage>";
 			echo "<TR>";
 			echo "<TD BGCOLOR=\"#CCCCCC\"><font style=\"font-size:10px;font-family:sans-serif;\"><B> &nbsp; # &nbsp; </font></TD>";
-			echo "<TD BGCOLOR=\"#CCCCCC\"><font style=\"font-size:11px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("FULL NAME")." &nbsp; </font></TD>";
-			echo "<TD BGCOLOR=\"#CCCCCC\"><font style=\"font-size:11px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("PHONE")." &nbsp; </font></TD>";
+			echo "<TD BGCOLOR=\"#CCCCCC\"><font style=\"font-size:11px;font-family:sans-serif;\"><B> &nbsp; "._QXZ($label_first_name)." "._QXZ($label_last_name)."&nbsp; </font></TD>";
+			echo "<TD BGCOLOR=\"#CCCCCC\"><font style=\"font-size:11px;font-family:sans-serif;\"><B> &nbsp; "._QXZ($label_phone_number)." &nbsp; </font></TD>";
 			echo "<TD BGCOLOR=\"#CCCCCC\"><font style=\"font-size:11px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("STATUS")." &nbsp; </font></TD>";
 			echo "<TD BGCOLOR=\"#CCCCCC\"><font style=\"font-size:11px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("LAST CALL")." &nbsp; </font></TD>";
-			echo "<TD BGCOLOR=\"#CCCCCC\"><font style=\"font-size:11px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("CITY")." &nbsp; </font></TD>";
-			echo "<TD BGCOLOR=\"#CCCCCC\"><font style=\"font-size:11px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("STATE")." &nbsp; </font></TD>";
-			echo "<TD BGCOLOR=\"#CCCCCC\"><font style=\"font-size:11px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("ZIP")." &nbsp; </font></TD>";
-			echo "<TD BGCOLOR=\"#CCCCCC\"><font style=\"font-size:11px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("VENDOR ID")." &nbsp; </font></TD>";
+			echo "<TD BGCOLOR=\"#CCCCCC\"><font style=\"font-size:11px;font-family:sans-serif;\"><B> &nbsp; "._QXZ($label_city)." &nbsp; </font></TD>";
+			echo "<TD BGCOLOR=\"#CCCCCC\"><font style=\"font-size:11px;font-family:sans-serif;\"><B> &nbsp; "._QXZ($label_state)." &nbsp; </font></TD>";
+			echo "<TD BGCOLOR=\"#CCCCCC\"><font style=\"font-size:11px;font-family:sans-serif;\"><B> &nbsp; "._QXZ($label_postal_code)." &nbsp; </font></TD>";
+			echo "<TD BGCOLOR=\"#CCCCCC\"><font style=\"font-size:11px;font-family:sans-serif;\"><B> &nbsp; "._QXZ($label_vendor_lead_code)." &nbsp; </font></TD>";
 			echo "<TD BGCOLOR=\"#CCCCCC\"><font style=\"font-size:11px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("INFO")." &nbsp; </font></TD>";
 			echo "<TD BGCOLOR=\"#CCCCCC\"><font style=\"font-size:11px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("DIAL")." &nbsp; </font></TD>";
 			echo "</TR>";
