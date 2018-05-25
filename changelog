@@ -321,6 +321,8 @@
       www/agc/vicidial.php: Added more agent debug output for recordings.
   * Add upstream Rev. 2990:
     - New extras/vdc_hipchat.php.
+  * Add upstream Rev. 2991:
+    - New bin/AST_lead_select_export.pl.
 
 2.25.25b
   [Jörg Frings-Fürst]
