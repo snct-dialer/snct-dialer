@@ -226,6 +226,7 @@
 # 180321-0824 - Added source_id as optional channel variable to populate when inserting new leads
 # 180424-1539 - Added in-group populate_lead_source, populate_lead_vendor options
 # 180520-1802 - Added enter_ingroup_url feature
+# 180521-0736 - Changed closer logs for AGENTDIRECT calls to log destination user
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
@@ -1095,6 +1096,8 @@ if ( ($channel_group =~ /AGENTDIRECT/i) && (length($agent_only) < 1) )
 	$drop_call_seconds = 1;
 	}
 
+$LOGuser='VDCL';
+
 $AGI->stream_file('sip-silence');
 $AGI->stream_file('sip-silence');
 
@@ -1579,6 +1582,10 @@ if ($ct_yest_stop > 2400)
 	{$ct_stop_overflow = ($ct_yest_stop - 2400);}
 if ( ( ( ( ($hm < $ct_default_start) || ($hm > $ct_default_stop) ) && ($hm >= $ct_stop_overflow) ) || ($MCafterhours_override > 0) ) && ($dial_ingroup_flag < 1) )
 	{
+	# set the log-user to the agentdirect destination user, if set
+	if ( ($channel_group =~ /AGENTDIRECT/i) && (length($agent_only) > 1) )
+		{$LOGuser = $agent_only;}
+
 	$VHqueryCID = "VA$CIDdate$hour$min$sec$sec";
 	$AHstatus='AFTHRS';
 	$AHterm='AFTERHOURS';
@@ -1589,7 +1596,7 @@ if ( ( ( ( ($hm < $ct_default_start) || ($hm > $ct_default_stop) ) && ($hm >= $c
 		$AHterm = $MCterm;
 		$AHcomments = $MCcomments;
 		}
-	$stmtA = "INSERT INTO vicidial_closer_log set status='$AHstatus',start_epoch='$now_date_epoch',end_epoch='$now_date_epoch',length_in_sec='1',queue_seconds='0',lead_id = '$insert_lead_id',campaign_id='$channel_group',user='VDCL',list_id='$list_id',call_date='$now_date',phone_code='$phone_code',phone_number='$phone_number',comments='$AHcomments',term_reason='$AHterm',uniqueid='$uniqueid',called_count='$called_count';";
+	$stmtA = "INSERT INTO vicidial_closer_log set status='$AHstatus',start_epoch='$now_date_epoch',end_epoch='$now_date_epoch',length_in_sec='1',queue_seconds='0',lead_id = '$insert_lead_id',campaign_id='$channel_group',user='$LOGuser',list_id='$list_id',call_date='$now_date',phone_code='$phone_code',phone_number='$phone_number',comments='$AHcomments',term_reason='$AHterm',uniqueid='$uniqueid',called_count='$called_count';";
 	$affected_rows = $dbhA->do($stmtA);
 		$dbhP=$dbhA;   $mysql_count='02016';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 	$stmtB = "SELECT LAST_INSERT_ID() LIMIT 1;";
@@ -1863,8 +1870,11 @@ if ( ( ($no_agent_no_queue =~ /Y|NO_PAUSED|NO_READY/) || ($MCnanque_override > 0
 			$NQterm = $MCterm;
 			$NQcomments = $MCcomments;
 			}
+		# set the log-user to the agentdirect destination user, if set
+		if ( ($channel_group =~ /AGENTDIRECT/i) && (length($agent_only) > 1) )
+			{$LOGuser = $agent_only;}
 
-		$stmtA = "INSERT INTO vicidial_closer_log set status='$NQstatus',start_epoch='$now_date_epoch',end_epoch='$now_date_epoch',length_in_sec='1',queue_seconds='0',lead_id='$insert_lead_id',campaign_id='$channel_group',user='VDCL',list_id='$list_id',call_date='$now_date',phone_code='$phone_code',phone_number='$phone_number',comments='$NQcomments',term_reason='$NQterm',uniqueid='$uniqueid',called_count='$called_count';";
+		$stmtA = "INSERT INTO vicidial_closer_log set status='$NQstatus',start_epoch='$now_date_epoch',end_epoch='$now_date_epoch',length_in_sec='1',queue_seconds='0',lead_id='$insert_lead_id',campaign_id='$channel_group',user='$LOGuser',list_id='$list_id',call_date='$now_date',phone_code='$phone_code',phone_number='$phone_number',comments='$NQcomments',term_reason='$NQterm',uniqueid='$uniqueid',called_count='$called_count';";
 		$affected_rows = $dbhA->do($stmtA);
 			$dbhP=$dbhA;   $mysql_count='02105';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 		$stmtB = "SELECT LAST_INSERT_ID() LIMIT 1;";
@@ -2380,7 +2390,7 @@ $Uaffected_rows = $dbhA->do($stmtA);
 	$dbhP=$dbhA;   $mysql_count='02121';   $MEL_aff_rows=$Uaffected_rows;   &mysql_error_logging;
 
 ### INSERT vicidial_closer_log record, call is entering the queue
-$stmtA = "INSERT INTO vicidial_closer_log SET lead_id='$insert_lead_id', campaign_id='$channel_group', call_date='$SQLdate', start_epoch='$now_date_epoch', status='QUEUE', phone_code='$phone_code', phone_number='$phone_number', user='VDCL', processed='N', xfercallid='$insert_xfer_id', uniqueid='$uniqueid', queue_position='$queue_position',called_count='$called_count',list_id='$list_id' $adSQL;";
+$stmtA = "INSERT INTO vicidial_closer_log SET lead_id='$insert_lead_id', campaign_id='$channel_group', call_date='$SQLdate', start_epoch='$now_date_epoch', status='QUEUE', phone_code='$phone_code', phone_number='$phone_number', user='$LOGuser', processed='N', xfercallid='$insert_xfer_id', uniqueid='$uniqueid', queue_position='$queue_position',called_count='$called_count',list_id='$list_id' $adSQL;";
 	if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 $affected_rows = $dbhA->do($stmtA);
 	$dbhP=$dbhA;   $mysql_count='02031';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
@@ -4187,7 +4197,12 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 
 			if ($drop_seconds < 1) {$drop_seconds = $drop_timer;}
 
-			$stmtA = "UPDATE vicidial_closer_log set status='HXFER',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds',term_reason='HOLDRECALLXFER' where lead_id = '$insert_lead_id' order by closecallid desc limit 1;";
+			# set the log-user to the agentdirect destination user, if set
+			$LOGuserSQL='';
+			if ( ($channel_group =~ /AGENTDIRECT/i) && (length($agent_only) > 1) )
+				{$LOGuserSQL = ",user='$agent_only'";}
+
+			$stmtA = "UPDATE vicidial_closer_log set status='HXFER',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds',term_reason='HOLDRECALLXFER'$LOGuserSQL where lead_id = '$insert_lead_id' order by closecallid desc limit 1;";
 			$affected_rows = $dbhA->do($stmtA);
 				$dbhP=$dbhA;   $mysql_count='02076';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 			if ($AGILOG) {$agi_string = "--    VDCL vcl update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
@@ -4650,7 +4665,12 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 
 			if ($drop_seconds < 1) {$drop_seconds = $drop_timer;}
 
-			$stmtA = "UPDATE vicidial_closer_log set status='$NQstatus',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds',term_reason='$NQterm',comments='$NQcomments' where lead_id = '$insert_lead_id' order by closecallid desc limit 1;";
+			# set the log-user to the agentdirect destination user, if set
+			$LOGuserSQL='';
+			if ( ($channel_group =~ /AGENTDIRECT/i) && (length($agent_only) > 1) )
+				{$LOGuserSQL = ",user='$agent_only'";}
+
+			$stmtA = "UPDATE vicidial_closer_log set status='$NQstatus',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds',term_reason='$NQterm',comments='$NQcomments'$LOGuserSQL where lead_id = '$insert_lead_id' order by closecallid desc limit 1;";
 			$affected_rows = $dbhA->do($stmtA);
 				$dbhP=$dbhA;   $mysql_count='02105';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 			if ($AGILOG) {$agi_string = "--  ACF VDCL vcl update: |$affected_rows|$insert_lead_id|$insert_close_id|$MCareacode_override|\n|$stmtA|";   &agi_output;}
@@ -5259,8 +5279,13 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 
 				if ($drop_seconds < 1) {$drop_seconds = $drop_timer;}
 
+				# set the log-user to the agentdirect destination user, if set
+				$LOGuserSQL='';
+				if ( ($channel_group =~ /AGENTDIRECT/i) && (length($agent_only) > 1) )
+					{$LOGuserSQL = ",user='$agent_only'";}
+
 				if (length($HT_status)<1) {$HT_status='WAITTO';}
-				$stmtA = "UPDATE vicidial_closer_log set status='$HT_status',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds',term_reason='HOLDTIME' where lead_id = '$insert_lead_id' order by closecallid desc limit 1;";
+				$stmtA = "UPDATE vicidial_closer_log set status='$HT_status',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds',term_reason='HOLDTIME'$LOGuserSQL where lead_id = '$insert_lead_id' order by closecallid desc limit 1;";
 				$affected_rows = $dbhA->do($stmtA);
 					$dbhP=$dbhA;   $mysql_count='02091';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 				if ($AGILOG) {$agi_string = "--    VDCL vcl update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
@@ -5755,8 +5780,13 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 
 						if ($drop_seconds < 1) {$drop_seconds = $drop_timer;}
 
+						# set the log-user to the agentdirect destination user, if set
+						$LOGuserSQL='';
+						if ( ($channel_group =~ /AGENTDIRECT/i) && (length($agent_only) > 1) )
+							{$LOGuserSQL = ",user='$agent_only'";}
+
 						if (length($HT_status)<1) {$HT_status='HOLDTO';}
-						$stmtA = "UPDATE vicidial_closer_log set status='$HT_status',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds',term_reason='HOLDTIME' where lead_id = '$insert_lead_id' order by closecallid desc limit 1;";
+						$stmtA = "UPDATE vicidial_closer_log set status='$HT_status',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds',term_reason='HOLDTIME'$LOGuserSQL where lead_id = '$insert_lead_id' order by closecallid desc limit 1;";
 						$affected_rows = $dbhA->do($stmtA);
 							$dbhP=$dbhA;   $mysql_count='02091';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 						if ($AGILOG) {$agi_string = "--    VDCL vcl update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
@@ -6258,8 +6288,13 @@ if ($closing_check > 0)
 
 		if ($drop_seconds < 1) {$drop_seconds = $drop_timer;}
 
+		# set the log-user to the agentdirect destination user, if set
+		$LOGuserSQL='';
+		if ( ($channel_group =~ /AGENTDIRECT/i) && (length($agent_only) > 1) )
+			{$LOGuserSQL = ",user='$agent_only'";}
+
 		if (length($HT_status)<1) {$HT_status='CLOSOP';}
-		$stmtA = "UPDATE vicidial_closer_log set status='$HT_status',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds',term_reason='CLOSETIME' where lead_id = '$insert_lead_id' order by closecallid desc limit 1;";
+		$stmtA = "UPDATE vicidial_closer_log set status='$HT_status',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds',term_reason='CLOSETIME'$LOGuserSQL where lead_id = '$insert_lead_id' order by closecallid desc limit 1;";
 		$affected_rows = $dbhA->do($stmtA);
 			$dbhP=$dbhA;   $mysql_count='02243';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 		if ($AGILOG) {$agi_string = "--    VDCL vcl update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
@@ -6545,7 +6580,12 @@ if ( ($drop_timer > $DROP_TIME) || ($MCdrop_override > 0) )
 		$dbhP=$dbhA;   $mysql_count='02099';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 	if ($AGILOG) {$agi_string = "--    VDCL vac record deleted: |$affected_rows| $channel_group|";   &agi_output;}
 
-	$stmtA = "UPDATE vicidial_closer_log set status='$DRstatus',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds',term_reason='$DRterm' where lead_id='$insert_lead_id' order by closecallid desc limit 1;";
+	# set the log-user to the agentdirect destination user, if set
+	$LOGuserSQL='';
+	if ( ($channel_group =~ /AGENTDIRECT/i) && (length($agent_only) > 1) )
+		{$LOGuserSQL = ",user='$agent_only'";}
+
+	$stmtA = "UPDATE vicidial_closer_log set status='$DRstatus',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds',term_reason='$DRterm'$LOGuserSQL where lead_id='$insert_lead_id' order by closecallid desc limit 1;";
 	$affected_rows = $dbhA->do($stmtA);
 		$dbhP=$dbhA;   $mysql_count='02100';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 	if ($AGILOG) {$agi_string = "--    VDCL vcl update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}

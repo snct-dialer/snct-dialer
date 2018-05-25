@@ -25,7 +25,7 @@
 # exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})
 # 
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG:
 # 61010-1007 - First test build
@@ -80,6 +80,7 @@
 # 170508-1148 - Added blind monitor call end logging
 # 170527-2340 - Fix for rare inbound logging issue #1017
 # 170915-1753 - Asterisk 13 compatibility
+# 180521-1153 - Changed closer log logging to use agent if call was AGENTDIRECT
 #
 
 # defaults for PreFork
@@ -1088,7 +1089,7 @@ sub process_request
 					{
 					########## FIND AND DELETE vicidial_auto_calls ##########
 					$VD_alt_dial = 'NONE';
-					$stmtA = "SELECT lead_id,callerid,campaign_id,alt_dial,stage,UNIX_TIMESTAMP(call_time),uniqueid,status,call_time,phone_code,phone_number,queue_position,server_ip FROM vicidial_auto_calls where uniqueid = '$uniqueid' or callerid = '$callerid' limit 1;";
+					$stmtA = "SELECT lead_id,callerid,campaign_id,alt_dial,stage,UNIX_TIMESTAMP(call_time),uniqueid,status,call_time,phone_code,phone_number,queue_position,server_ip,agent_only FROM vicidial_auto_calls where uniqueid = '$uniqueid' or callerid = '$callerid' limit 1;";
 						if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -1110,6 +1111,7 @@ sub process_request
 						$VD_phone_number =		$aryA[10];
 						$VD_queue_position =	$aryA[11];
 						$VD_server_ip =			$aryA[12];
+						$VD_agent_only =		$aryA[13];
 						$rec_countCUSTDATA++;
 						}
 					$sthA->finish();
@@ -1581,9 +1583,14 @@ sub process_request
 										$VDCLSQL_update = "$VDCLSQL_status$VDCLSQL_term_reason$VDCLSQL_queue_seconds";
 										}
 
+									# set the log-user to the agentdirect destination user, if set
+									$LOGuserSQL='';
+									if ( ($VD_campaign_id =~ /AGENTDIRECT/i) && (length($VD_agent_only) > 1) )
+										{$LOGuserSQL = ",user='$VD_agent_only'";}
+
 									$VD_seconds = ($now_date_epoch - $VD_start_epoch);
-									$stmtA = "UPDATE vicidial_closer_log set $VDCLSQL_update end_epoch='$now_date_epoch',length_in_sec='$VD_seconds' where closecallid = '$VD_closecallid';";
-										if ($AGILOG) {$agi_string = "|$VDCLSQL_update|$VD_status|$VD_length_in_sec|$VD_term_reason|$VD_queue_seconds|\n|$stmtA|";   &agi_output;}
+									$stmtA = "UPDATE vicidial_closer_log set $VDCLSQL_update end_epoch='$now_date_epoch',length_in_sec='$VD_seconds'$LOGuserSQL where closecallid = '$VD_closecallid';";
+										if ($AGILOG) {$agi_string = "|$VDCLSQL_update|$VD_status|$VD_length_in_sec|$VD_term_reason|$VD_queue_seconds|$VD_campaign_id|$VD_agent_only|\n|$stmtA|";   &agi_output;}
 									$affected_rows = $dbhA->do($stmtA);
 									if ($AGILOG) {$agi_string = "--    VDCL update: |$affected_rows|$uniqueid|$VD_closecallid|";   &agi_output;}
 

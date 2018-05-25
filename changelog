@@ -310,6 +310,10 @@
       extras/upgrade_2.14.sql,
       www/vicidial/admin.php,
       www/vicidial/help_documentation.txt: Added enter_ingroup_url feature.
+  * Add upstream Rev. 2988:
+    - Changed agi/agi-VDAD_ALL_inbound.agi,
+      bin/FastAGI_log.pl: Changed closer logs for AGENTDIRECT calls to log
+        destination user.
 
 2.25.25b
   [Jörg Frings-Fürst]
