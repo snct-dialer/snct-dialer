@@ -1,11 +1,9 @@
 #!/usr/bin/perl
 #
-# AST_CRON_audio_4_ftp2_FTPSSL.pl
+# AST_CRON_audio_3_ftp_FTPSSL.pl
 #
-# This is a STEP-4 program in the audio archival process
+# This is a STEP-3 program in the audio archival process
 #
-# runs every 3 minutes and copies the recording files to an FTPSSL server
-# 
 # ************* IMPORTANT!!!!!!!!!!!!!!!!!!!! ***************************
 #  THIS SCRIPT REQUIRES THE Net::FTPSSL PERL MODULE TO RUN!!!
 #  $ cpan
@@ -19,18 +17,33 @@
 #
 # ************* IMPORTANT!!!!!!!!!!!!!!!!!!!! ***************************
 #
+# runs every 3 minutes and copies the recording files to an FTP server using SSL encryption
+# 
 # put an entry into the cron of of your asterisk machine to run this script 
 # every 3 minutes or however often you desire
 #
 # ### recording mixing/compressing/ftping scripts
 ##0,3,6,9,12,15,18,21,24,27,30,33,36,39,42,45,48,51,54,57 * * * * /usr/share/astguiclient/AST_CRON_audio_1_move_mix.pl
 # 0,3,6,9,12,15,18,21,24,27,30,33,36,39,42,45,48,51,54,57 * * * * /usr/share/astguiclient/AST_CRON_audio_1_move_VDonly.pl
-# 1,4,7,10,13,16,19,22,25,28,31,34,37,40,43,46,49,52,55,58 * * * * /usr/share/astguiclient/AST_CRON_audio_2_compress.pl --GSM
-# 2,5,8,11,14,17,20,23,26,29,32,35,38,41,44,47,50,53,56,59 * * * * /usr/share/astguiclient/AST_CRON_audio_3_ftp.pl --GSM
-# 0,3,6,9,12,15,18,21,24,27,30,33,36,39,42,45,48,51,54,57 * * * * /usr/share/astguiclient/AST_CRON_audio_4_ftp2_FTPSSL.pl
+# 1,4,7,10,13,16,19,22,25,28,31,34,37,40,43,46,49,52,55,58 * * * * /usr/share/astguiclient/AST_CRON_audio_2_compress.pl --MP3
+# 2,5,8,11,14,17,20,23,26,29,32,35,38,41,44,47,50,53,56,59 * * * * /usr/share/astguiclient/AST_CRON_audio_3_ftp_FTPSSL.pl --MP3
 #
-# FLAG FOR NO DATE DIRECTORY ON FTP
+# FLAGS FOR COMPRESSION FILES TO TRANSFER
+# --GSM = GSM 6.10 files
+# --MP3 = MPEG Layer3 files
+# --OGG = OGG Vorbis files
+# --WAV = WAV files
+# --GSW = GSM 6.10 codec with RIFF headers (.wav extension)
+# --GPG = GnuPG encrypted audio files
+#
+# FLAG FOR NO DATE DIRECTORY ON FTP (default is to create YYYYMMDD directory)
 # --NODATEDIR
+#
+# FLAG FOR YYYY/MM/DD DATE DIRECTORIES ON FTP
+# --YMDdatedir
+#
+# FLAG FOR YYYY/YYYYMMDD DATE DIRECTORIES ON FTP
+# --YearYMDdatedir
 #
 # if pinging is not working, try the 'icmp' Ping command in the code instead
 # 
@@ -41,10 +54,8 @@
 # 
 # Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
-# CHANGES:
-# 130730-1849 - First Build based upon AST_CRON_audio_4_ftp2.pl script
-# 161212-1650 - Changed to use hard-coded encryption flag for module
-# 180516-2011 - Added --noping option
+# 
+# 180518-0732 - First Build based upon AST_CRON_audio_3_ftp.pl script
 #
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
@@ -57,7 +68,7 @@ if ($mon < 10) {$mon = "0$mon";}
 if ($mday < 10) {$mday = "0$mday";}
 $FTPdate = "$year-$mon-$mday";
 
-$GSM=0;   $MP3=0;   $OGG=0;   $WAV=0;   $GSW=0;   $NODATEDIR=0;
+$GSM=0;   $MP3=0;   $OGG=0;   $WAV=0;   $GSW=0;   $GPG=0;   $NODATEDIR=0;   $YMDdatedir=0;
 
 # Default variables for FTP
 $VARFTP_host = '10.0.0.4';
@@ -89,17 +100,26 @@ if (length($ARGV[0])>1)
 		print "  [--debug] = debug\n";
 		print "  [--debugX] = super debug\n";
 		print "  [--test] = test\n";
-		print "  [--run-check] = concurrency check, die if another instance is running\n";
 		print "  [--transfer-limit=XXX] = number of files to transfer before exiting\n";
 		print "  [--list-limit=XXX] = number of files to list in the directory before moving on\n";
 		print "  [--debugX] = super debug\n";
+		print "  [--GSM] = copy GSM files\n";
+		print "  [--MP3] = copy MPEG-Layer-3 files\n";
+		print "  [--OGG] = copy OGG Vorbis files\n";
+		print "  [--WAV] = copy WAV files\n";
+		print "  [--GSW] = copy GSM with RIFF headers and .wav extension files\n";
+		print "  [--GPG] = copy GPG encrypted files\n";
 		print "  [--nodatedir] = do not put into dated directories\n";
+		print "  [--YMDdatedir] = put into Year/Month/Day dated directories\n";
+		print "  [--YearYMDdatedir] = put into Year/YYYYMMDD dated directories\n";
 		print "  [--noping] = do not attempt to ping FTP server\n";
-		print "  [--ftp-server=XXX] = FTPSSL server\n";
-		print "  [--ftp-port=XXX] = FTPSSL server port\n";
-		print "  [--ftp-login=XXX] = FTPSSL server login account\n";
-		print "  [--ftp-pass=XXX] = FTPSSL server password\n";
-		print "  [--ftp-dir=XXX] = FTPSSL server directory\n";
+		print "  [--run-check] = concurrency check, die if another instance is running\n";
+		print "  [--max-files=x] = maximum number of files to process, defaults to 100000\n";
+		print "  [--ftp-server=XXX] = FTP server\n";
+		print "  [--ftp-port=XXX] = FTP server port\n";
+		print "  [--ftp-login=XXX] = FTP server login account\n";
+		print "  [--ftp-pass=XXX] = FTP server password\n";
+		print "  [--ftp-dir=XXX] = FTP server directory\n";
 		print "  [--ftp-encrypt=X] = FTPSSL encryption type, E=Explicit, I=Implicit, default=E\n";
 		print "  [--ftp-persistent] = Does not log out between every file transmission\n";
 	#	print "  [--ftp-validate] = Checks for a file size on the file after transmission\n";
@@ -123,15 +143,25 @@ if (length($ARGV[0])>1)
 			$T=1;   $TEST=1;
 			print "\n----- TESTING -----\n\n";
 			}
+		if ($args =~ /--noping/i)
+			{
+			$no_ping=1;
+			if ($DB) {print "\n----- NO PING ----- $no_ping \n\n";}
+			}
 		if ($args =~ /--nodatedir/i)
 			{
 			$NODATEDIR=1;
 			if ($DB) {print "\n----- NO DATE DIRECTORIES -----\n\n";}
 			}
-		if ($args =~ /--noping/i)
+		if ($args =~ /--YMDdatedir/i)
 			{
-			$no_ping=1;
-			if ($DB) {print "\n----- NO PING ----- $no_ping \n\n";}
+			$YMDdatedir=1;
+			if ($DB) {print "\n----- Y/M/D DATED DIRECTORIES -----\n\n";}
+			}
+		if ($args =~ /--YearYMDdatedir/i)
+			{
+			$YearYMDdatedir=1;
+			if ($DB) {print "\n----- Year/YYYYMMDD DATED DIRECTORIES -----\n\n";}
 			}
 		if ($args =~ /--run-check/i)
 			{
@@ -152,6 +182,51 @@ if (length($ARGV[0])>1)
 			$list_limit =~ s/ .*//gi;
 			print "\n----- FILE LIST LIMIT: $list_limit -----\n\n";
 			}
+		if ($args =~ /--GSM/i)
+			{
+			$GSM=1;
+			if ($DB) {print "GSM audio files\n";}
+			}
+		else
+			{
+			if ($args =~ /--MP3/i)
+				{
+				$MP3=1;
+				if ($DB) {print "MP3 audio files\n";}
+				}
+			else
+				{
+				if ($args =~ /--OGG/i)
+					{
+					$OGG=1;
+					if ($DB) {print "OGG audio files\n";}
+					}
+				else
+					{
+					if ($args =~ /--WAV/i)
+						{
+						$WAV=1;
+						if ($DB) {print "WAV audio files\n";}
+						}
+					else
+						{
+						if ($args =~ /--GSW/i)
+							{
+							$GSW=1;
+							if ($DB) {print "GSW audio files\n";}
+							}
+						else
+							{
+							if ($args =~ /--GPG/i)
+								{
+								$GPG=1;
+								if ($DB) {print "GPG encrypted audio files\n";}
+								}
+							}
+						}
+					}
+				}
+			}
 		if ($args =~ /--ftp-server=/i) 
 			{
 			my @data_in = split(/--ftp-server=/,$args);
@@ -159,7 +234,7 @@ if (length($ARGV[0])>1)
 			$VARFTP_host =~ s/ .*//gi;
 			$CLIFTP_host=1;
 			if ($DB > 0) 
-				{print "\n----- FTPSSL SERVER: $VARFTP_host -----\n\n";}
+				{print "\n----- FTP SERVER: $VARFTP_host -----\n\n";}
 			}
 		if ($args =~ /--ftp-port=/i)
 			{
@@ -168,7 +243,7 @@ if (length($ARGV[0])>1)
 			$VARFTP_port =~ s/ .*//gi;
 			$CLIFTP_port=1;
 			if ($DB > 0)
-				{print "\n----- FTPSSL PORT: $VARFTP_port -----\n\n";}
+				{print "\n----- FTP PORT: $VARFTP_port -----\n\n";}
 			}
 		if ($args =~ /--ftp-login=/i) 
 			{
@@ -177,7 +252,7 @@ if (length($ARGV[0])>1)
 			$VARFTP_user =~ s/ .*//gi;
 			$CLIFTP_user=1;
 			if ($DB > 0) 
-				{print "\n----- FTPSSL LOGIN: $VARFTP_user -----\n\n";}
+				{print "\n----- FTP LOGIN: $VARFTP_user -----\n\n";}
 			}
 		if ($args =~ /--ftp-pass=/i) 
 			{
@@ -186,7 +261,7 @@ if (length($ARGV[0])>1)
 			$VARFTP_pass =~ s/ .*//gi;
 			$CLIFTP_pass=1;
 			if ($DB > 0) 
-				{print "\n----- FTPSSL PASS: $VARFTP_pass -----\n\n";}
+				{print "\n----- FTP PASS: $VARFTP_pass -----\n\n";}
 			}
 		if ($args =~ /--ftp-dir=/i) 
 			{
@@ -195,7 +270,7 @@ if (length($ARGV[0])>1)
 			$VARFTP_dir =~ s/ .*//gi;
 			$CLIFTP_dir=1;
 			if ($DB > 0) 
-				{print "\n----- FTPSSL DIRECTORY: $VARFTP_dir -----\n\n";}
+				{print "\n----- FTP DIRECTORY: $VARFTP_dir -----\n\n";}
 			}
 		if ($args =~ /--ftp-encrypt=/i) 
 			{
@@ -213,14 +288,14 @@ if (length($ARGV[0])>1)
 			{
 			$FTPpersistent=1;
 			if ($DB > 0) 
-				{print "\n----- FTPSSL PERSISTENT: $FTPpersistent -----\n\n";}
+				{print "\n----- FTP PERSISTENT: $FTPpersistent -----\n\n";}
 			}
-	#	if ($args =~ /--ftp-validate/i) 
-	#		{
-	#		$FTPvalidate=1;
-	#		if ($DB > 0) 
-	#			{print "\n----- FTPSSL VALIDATE: $FTPvalidate -----\n\n";}
-	#		}
+		if ($args =~ /--ftp-validate/i) 
+			{
+			$FTPvalidate=1;
+			if ($DB > 0) 
+				{print "\n----- FTP VALIDATE: $FTPvalidate -----\n\n";}
+			}
 		}
 	}
 else
@@ -228,7 +303,6 @@ else
 	#print "no command line options set\n";
 	$WAV=1;
 	}
-if (length($VARFTP_encrypt)<5) {$VARFTP_encrypt = 'EXP_CRYPT';}
 
 
 # default path to astguiclient configuration file:
@@ -283,7 +357,6 @@ foreach(@conf)
 	$i++;
 	}
 
-
 ### concurrency check
 if ($run_check > 0)
 	{
@@ -296,6 +369,7 @@ if ($run_check > 0)
 		exit;
 		}
 	}
+
 
 # Customized Variables
 $server_ip = $VARserver_ip;		# Asterisk server IP
@@ -311,7 +385,12 @@ use Net::Ping;
 use Net::FTPSSL;
 
 ### directory where -all recordings are
-$dir2 = "$PATHDONEmonitor/FTP";
+$dir2 = "$PATHDONEmonitor";
+if ($MP3 > 0) {$dir2 = "$PATHDONEmonitor/MP3";}
+if ($GSM > 0) {$dir2 = "$PATHDONEmonitor/GSM";}
+if ($OGG > 0) {$dir2 = "$PATHDONEmonitor/OGG";}
+if ($GSW > 0) {$dir2 = "$PATHDONEmonitor/GSW";}
+if ($GPG > 0) {$dir2 = "$PATHDONEmonitor/GPG";}
 
 opendir(FILE, "$dir2/");
 @FILES = readdir(FILE);
@@ -331,7 +410,7 @@ foreach(@FILES)
 	$i++;
 	if ($files_that_count >= $list_limit)
 		{
-		last();
+			last();
 		}		
 	}
 
@@ -347,6 +426,7 @@ foreach(@FILES)
 
 	if ( (length($FILES[$i]) > 4) && (!-d "$dir2/$FILES[$i]") )
 		{
+
 		$FILEsize2[$i] = (-s "$dir2/$FILES[$i]");
 		if ($DBX) {print "$dir2/$FILES[$i] $FILEsize2[$i]\n\n";}
 		
@@ -371,9 +451,14 @@ foreach(@FILES)
 			if ($sthArows > 0)
 				{
 				@aryA = $sthA->fetchrow_array;
-				$recording_id =	$aryA[0];
-				$start_date =	$aryA[1];
+				$recording_id =	"$aryA[0]";
+				$start_date =	"$aryA[1]";
 				$start_date =~ s/ .*//gi;
+
+				@filedate = split(/-/,$start_date);
+				$year = $filedate[0];
+				$mon = $filedate[1];
+				$mday = $filedate[2];
 				}
 			$sthA->finish();
 
@@ -409,7 +494,21 @@ foreach(@FILES)
 					if($DBX){print STDERR "FTPSSL PERSISTENT, skipping login\n";}
 					if ($NODATEDIR < 1)
 						{
-						$ftps->cwd("../");
+						if ($YMDdatedir > 0) 
+							{
+							$ftps->cwd("../../../");
+							}
+						else
+							{
+							if ($YearYMDdatedir > 0) 
+								{
+								$ftps->cwd("../../");
+								}
+							else
+								{
+								$ftps->cwd("../");
+								}
+							}
 						}
 					}
 				else
@@ -430,9 +529,33 @@ foreach(@FILES)
 					}
 				if ($NODATEDIR < 1)
 					{
-					$ftps->Net::FTPSSL::mkdir("$start_date");
-					$ftps->cwd("$start_date");
-					$start_date_PATH = "$start_date/";
+					if ($YMDdatedir > 0) 
+						{
+						$ftps->Net::FTPSSL::mkdir("$year");
+						$ftps->cwd("$year");
+						$ftps->Net::FTPSSL::mkdir("$mon");
+						$ftps->cwd("$mon");
+						$ftps->Net::FTPSSL::mkdir("$mday");
+						$ftps->cwd("$mday");
+						$start_date_PATH = "$year/$mon/$mday/";
+						}
+					else
+						{
+						if ($YearYMDdatedir > 0) 
+							{
+							$ftps->Net::FTPSSL::mkdir("$year");
+							$ftps->cwd("$year");
+							$ftps->Net::FTPSSL::mkdir("$start_date");
+							$ftps->cwd("$start_date");
+							$start_date_PATH = "$year/$start_date/";
+							}
+						else
+							{
+							$ftps->Net::FTPSSL::mkdir("$start_date");
+							$ftps->cwd("$start_date");
+							$start_date_PATH = "$start_date/";
+							}
+						}
 					}
 				$ftps->binary();
 				$ftps->put("$dir2/$ALLfile", "$ALLfile");
@@ -451,14 +574,13 @@ foreach(@FILES)
 					$ftps->quit;
 					}
 
-			# FTP2 scripts do not alter the URL of the recording
-			#	$stmtA = "UPDATE recording_log set location='$VARHTTP_path/$start_date_PATH$ALLfile' where recording_id='$recording_id';";
-			#		if($DB){print STDERR "\n|$stmtA|\n";}
-			#	$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query:|$stmtA|\n";
+				$stmtA = "UPDATE recording_log set location='$VARHTTP_path/$start_date_PATH$ALLfile' where recording_id='$recording_id';";
+					if($DB){print STDERR "\n|$stmtA|\n";}
+				$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query:|$stmtA|\n";
 
 				if (!$T)
 					{
-					`mv -f "$dir2/$ALLfile" "$PATHDONEmonitor/FTP2/$ALLfile"`;
+					`mv -f "$dir2/$ALLfile" "$PATHDONEmonitor/FTP/$ALLfile"`;
 					}
 				
 				if($DBX){print STDERR "Transfered $transfered_files files\n";}
