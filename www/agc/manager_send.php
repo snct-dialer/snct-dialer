@@ -1,7 +1,7 @@
 <?php
 # manager_send.php    version 2.14
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed purely to insert records into the vicidial_manager table to signal Actions to an asterisk server
 # This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
@@ -139,10 +139,11 @@
 # 170526-2241 - Added additional variable filtering
 # 170528-0850 - Fix for rare inbound logging issue #1017, Added additional variable filtering
 # 170921-2009 - Fix for CALLID in beginning of recording filename
+# 180522-1920 - Added more agent debug output for recordings
 #
 
-$version = '2.14-86';
-$build = '170921-2009';
+$version = '2.14-87';
+$build = '180522-1920';
 $php_script = 'manager_send.php';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=142;
@@ -1161,7 +1162,7 @@ if ($ACTION=="RedirectFromPark")
 			$stmt = "INSERT INTO parked_channels_recent SET server_ip='$server_ip', channel='$channel', channel_group='$CalLCID', park_end_time=NOW();";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_to_mysqli($stmt, $link);
-				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02143',$user,$server_ip,$session_name,$one_mysql_log);}
 
 			$stmt = "DELETE FROM parked_channels where server_ip='$server_ip' and channel='$channel';";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
@@ -1409,7 +1410,7 @@ if ($ACTION=="RedirectFromParkIVR")
 			$stmt = "INSERT INTO parked_channels_recent SET server_ip='$server_ip', channel='$channel', channel_group='$CalLCID', park_end_time=NOW();";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_to_mysqli($stmt, $link);
-				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02144',$user,$server_ip,$session_name,$one_mysql_log);}
 
 			$stmt = "DELETE FROM parked_channels where server_ip='$server_ip' and channel='$channel';";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
@@ -1584,7 +1585,7 @@ if ($ACTION=="RedirectFromParkXfer")
 			$stmt = "INSERT INTO parked_channels_recent SET server_ip='$server_ip', channel='$channel', channel_group='$CalLCID', park_end_time=NOW();";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_to_mysqli($stmt, $link);
-				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02145',$user,$server_ip,$session_name,$one_mysql_log);}
 
 			$stmt = "DELETE FROM parked_channels where server_ip='$server_ip' and channel='$channel';";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
@@ -2332,6 +2333,7 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 		{
 		$channel_live=0;
 		echo _QXZ("Channel %1s is not valid or exten %2s is not valid or filename: %3s is not valid, %4s command not inserted",0,'',$channel,$exten,$filename,$ACTION)."\n";
+		$stage .= " REC-Invalid $exten $filename $channel";
 		}
 	else
 		{
@@ -2354,6 +2356,8 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
 				$rslt=mysql_to_mysqli($stmt, $link);
 					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02140',$user,$server_ip,$session_name,$one_mysql_log);}
+
+				$stage .= " RIR $recording_id";
 				}
 			else
 				{
@@ -2447,6 +2451,7 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02076',$user,$server_ip,$session_name,$one_mysql_log);}
 						}
 					}
+				$stage .= " AIR $recording_id $filename";
 				}
 			}
 		##### StopMonitorConf steps #####

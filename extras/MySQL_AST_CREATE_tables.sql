@@ -1277,7 +1277,11 @@ icbq_dial_filter VARCHAR(50) default 'NONE',
 pickup_delay TINYINT NOT NULL DEFAULT '0',
 populate_lead_source VARCHAR(20) default 'DISABLED',
 populate_lead_vendor VARCHAR(20) default 'INBOUND_NUMBER',
-park_file_name VARCHAR(100) default ''
+park_file_name VARCHAR(100) default '',
+waiting_call_url_on TEXT,
+waiting_call_url_off TEXT,
+waiting_call_count SMALLINT(5) UNSIGNED default '0',
+enter_ingroup_url TEXT
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_stations (

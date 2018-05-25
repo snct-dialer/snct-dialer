@@ -314,6 +314,17 @@ OTHER CHANGES:
 85. Added per-user options for maximum number of outbound manual dial hopper 
 	calls per-hour and per-day.
 
+86. Added In-Group option for Waiting Call On/Off URL, which we added to allow
+	a client to control a web-power-switch to turn lights on and off if 
+	there are any calls waiting in an In-Group.
+
+87. Added In-Group option for Enter In-Group URL, which can send a URL request
+	when a caller enters an In-Group right before the system looks for an 
+	agent to send the call to.
+
+88. Added Manual Dial Routing Initiated Recording, must enable setting at the
+	campaign level and have a 0 recording delay.
+
 
 
 

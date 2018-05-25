@@ -277,6 +277,54 @@
       www/vicidial/admin.php,
       www/vicidial/help_documentation.txt: Added reset of hopper_calls_today,
         Added support for users-max_hopper_calls feature.
+  * Add upstream Rev. 2981:
+    - Changed bin/AST_CRON_audio_4_ftp2_FTPSSL.pl: Added --noping option.
+  * Add upstream Rev. 2982:
+    - Changed bin/AST_CRON_audio_3_ftp_FTPSSL.pl: Add Debug output.
+    - New bin/AST_CRON_audio_4_ftp2_FTPSSL.pl.
+  * Add upstream Rev. 2983:
+    Changed docs/ASTERISK_13.txt: Renew text.
+  * Add upstream Rev. 2984:
+    - Changed UPGRADE,
+      bin/AST_VDadapt.pl,
+      bin/AST_flush_DBqueue.pl,
+      bin/AST_send_URL.pl,
+      extras/MySQL_AST_CREATE_tables.sql,
+      extras/mysql_update/mysql-1533.sql,
+      extras/upgrade_2.14.sql,
+      www/vicidial/admin.php,
+      www/vicidial/help_documentation.txt,
+      New extras/vdc_webpowerswitch.php: Added Waiting Call On/Off URL
+        feature for in-groups.
+  * Add upstream Rev. 2985:
+    - Changed agi/agi-dtmf.agi: Fix for inconsistency problem, issue #1099.
+  * Add upstream Rev. 2986:
+    - Changed www/agc/vdc_db_query.php: Added use of screen labels in search
+        results, Issue #1104.
+  * Add upstream Rev. 2987:
+    - Change UPGRADE,
+      agi/agi-VDAD_ALL_inbound.agi,
+      bin/AST_send_URL.pl,
+      extras/MySQL_AST_CREATE_tables.sql,
+      extras/mysql_update/mysql-1533.sql,
+      extras/upgrade_2.14.sql,
+      www/vicidial/admin.php,
+      www/vicidial/help_documentation.txt: Added enter_ingroup_url feature.
+  * Add upstream Rev. 2988:
+    - Changed agi/agi-VDAD_ALL_inbound.agi,
+      bin/FastAGI_log.pl: Changed closer logs for AGENTDIRECT calls to log
+        destination user.
+  * Add upstream Rev. 2989:
+    - Changed UPGRADE,
+      www/agc/manager_send.php,
+      www/agc/vdc_db_query.php,
+      www/agc/vicidial.php: Added more agent debug output for recordings.
+  * Add upstream Rev. 2990:
+    - New extras/vdc_hipchat.php.
+  * Add upstream Rev. 2991:
+    - New bin/AST_lead_select_export.pl.
+  * Add upstream Rev. 2992:
+    - Changed www/vicidial/help_documentation.txt.
 
 2.25.25b
   [Jörg Frings-Fürst]

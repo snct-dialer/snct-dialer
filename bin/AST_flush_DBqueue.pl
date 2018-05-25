@@ -24,6 +24,7 @@
 # 161214-1039 - Added flush of parked_channels_recent table
 # 180112-0915 - Added flush for cid_channels_recent table
 # 180511-1223 - Added flush for server-specific cid_channels_recent_ tables
+# 180519-1431 - Added vicidial_inbound_groups optimization
 #
 
 ### begin parsing run-time options ###
@@ -357,6 +358,20 @@ if (!$T)
 	$sthA->finish();
 	}
 if (!$Q) {print " - OPTIMIZE vicidial_lists          \n";}
+
+
+$stmtA = "OPTIMIZE table vicidial_inbound_groups;";
+if($DB){print STDERR "\n|$stmtA|\n";}
+if (!$T) 
+	{
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	@aryA = $sthA->fetchrow_array;
+	if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+	$sthA->finish();
+	}
+if (!$Q) {print " - OPTIMIZE vicidial_inbound_groups          \n";}
 
 
 ### Gather active servers from the database
