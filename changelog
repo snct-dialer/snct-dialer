@@ -325,6 +325,7 @@
     - New bin/AST_lead_select_export.pl.
   * Add upstream Rev. 2992:
     - Changed www/vicidial/help_documentation.txt.
+  * bin/AST_CRON_WallBoard3_gen.php:  Disable test against 0201 for forwarding.
 
 2.25.25b
   [Jörg Frings-Fürst]
