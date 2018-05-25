@@ -326,7 +326,8 @@
   * Add upstream Rev. 2992:
     - Changed www/vicidial/help_documentation.txt.
   * bin/AST_CRON_WallBoard3_gen.php:  Disable test against 0201 for forwarding.
-
+  * Issue #FP0001: Remove duplicate table column anyone_callback_inactive_lists.
+  
 2.25.25b
   [Jörg Frings-Fürst]
   * www/vicidial/help.php: Correct anchor.
