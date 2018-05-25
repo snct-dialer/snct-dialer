@@ -319,6 +319,8 @@
       www/agc/manager_send.php,
       www/agc/vdc_db_query.php,
       www/agc/vicidial.php: Added more agent debug output for recordings.
+  * Add upstream Rev. 2990:
+    - New extras/vdc_hipchat.php.
 
 2.25.25b
   [Jörg Frings-Fürst]
