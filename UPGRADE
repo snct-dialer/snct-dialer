@@ -318,6 +318,10 @@ OTHER CHANGES:
 	a client to control a web-power-switch to turn lights on and off if 
 	there are any calls waiting in an In-Group.
 
+87. Added In-Group option for Enter In-Group URL, which can send a URL request
+	when a caller enters an In-Group right before the system looks for an 
+	agent to send the call to.
+
 
 
 

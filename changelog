@@ -298,6 +298,18 @@
         feature for in-groups.
   * Add upstream Rev. 2985:
     - Changed agi/agi-dtmf.agi: Fix for inconsistency problem, issue #1099.
+  * Add upstream Rev. 2986:
+    - Changed www/agc/vdc_db_query.php: Added use of screen labels in search
+        results, Issue #1104.
+  * Add upstream Rev. 2987:
+    - Change UPGRADE,
+      agi/agi-VDAD_ALL_inbound.agi,
+      bin/AST_send_URL.pl,
+      extras/MySQL_AST_CREATE_tables.sql,
+      extras/mysql_update/mysql-1533.sql,
+      extras/upgrade_2.14.sql,
+      www/vicidial/admin.php,
+      www/vicidial/help_documentation.txt: Added enter_ingroup_url feature.
 
 2.25.25b
   [Jörg Frings-Fürst]
