@@ -314,6 +314,11 @@
     - Changed agi/agi-VDAD_ALL_inbound.agi,
       bin/FastAGI_log.pl: Changed closer logs for AGENTDIRECT calls to log
         destination user.
+  * Add upstream Rev. 2989:
+    - Changed UPGRADE,
+      www/agc/manager_send.php,
+      www/agc/vdc_db_query.php,
+      www/agc/vicidial.php: Added more agent debug output for recordings.
 
 2.25.25b
   [Jörg Frings-Fürst]

@@ -322,6 +322,9 @@ OTHER CHANGES:
 	when a caller enters an In-Group right before the system looks for an 
 	agent to send the call to.
 
+88. Added Manual Dial Routing Initiated Recording, must enable setting at the
+	campaign level and have a 0 recording delay.
+
 
 
 

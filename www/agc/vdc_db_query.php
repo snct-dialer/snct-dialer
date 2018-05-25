@@ -456,13 +456,14 @@
 # 180418-1713 - Fix for not using campaign in vicidial_campaign_statuses queries
 # 180512-2227 - Added support for users-max_hopper_calls features
 # 180520-1031 - Added use of screen labels in search results, Issue #1104
+# 180522-1920 - Added Routing Initiated Recording ability for manual dial calls
 #
 
-$version = '2.14-350';
-$build = '180520-1031';
+$version = '2.14-351';
+$build = '180522-1920';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=727;
+$mysql_log_count=742;
 $one_mysql_log=0;
 $DB=0;
 $VD_login=0;
@@ -752,6 +753,8 @@ if (isset($_GET["MgrApr_user"]))			{$MgrApr_user=$_GET["MgrApr_user"];}
 	elseif (isset($_POST["MgrApr_user"]))	{$MgrApr_user=$_POST["MgrApr_user"];}
 if (isset($_GET["MgrApr_pass"]))			{$MgrApr_pass=$_GET["MgrApr_pass"];}
 	elseif (isset($_POST["MgrApr_pass"]))	{$MgrApr_pass=$_POST["MgrApr_pass"];}
+if (isset($_GET["routing_initiated_recording"]))			{$routing_initiated_recording=$_GET["routing_initiated_recording"];}
+	elseif (isset($_POST["routing_initiated_recording"]))	{$routing_initiated_recording=$_POST["routing_initiated_recording"];}
 
 header ("Content-type: text/html; charset=utf-8");
 header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
@@ -1079,6 +1082,7 @@ $vtiger_callback_id = preg_replace("/\'|\"|\\\\|;/","",$vtiger_callback_id);
 $wrapup = preg_replace("/\'|\"|\\\\|;/","",$wrapup);
 $url_link = preg_replace("/\'|\"|\\\\|;/","",$url_link);
 $user_group = preg_replace('/[^-_0-9a-zA-Z]/','',$user_group);
+$routing_initiated_recording = preg_replace('/[^-_0-9a-zA-Z]/','',$routing_initiated_recording);
 
 
 # default optional vars if not set
@@ -4627,6 +4631,82 @@ if ($ACTION == 'manDiaLnextCaLL')
 						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00191',$user,$server_ip,$session_name,$one_mysql_log);}
 					}
 
+				if ( ($routing_initiated_recording == 'Y') and (strlen($recording_filename) > 3) )
+					{
+					$recFULLDATE = date("Ymd-His");
+					$recTINYDATE = date("ymdHis");
+					$cleanVLC = preg_replace("/ /",'',$vendor_id);
+					$recording_filename = preg_replace("/CAMPAIGN/","$campaign",$recording_filename);
+					$recording_filename = preg_replace("/INGROUP/","$dial_ingroup",$recording_filename);
+					$recording_filename = preg_replace("/CUSTPHONE/","$agent_dialed_number",$recording_filename);
+					$recording_filename = preg_replace("/AGENT/","$user",$recording_filename);
+					$recording_filename = preg_replace("/VENDORLEADCODE/","$cleanVLC",$recording_filename);
+					$recording_filename = preg_replace("/LEADID/","$lead_id",$recording_filename);
+					$recording_filename = preg_replace("/CALLID/","$MqueryCID",$recording_filename);
+					$recording_filename = preg_replace("/FULLDATE/","$recFULLDATE",$recording_filename);
+					$recording_filename = preg_replace("/TINYDATE/","$recTINYDATE",$recording_filename);
+					$recording_filename = preg_replace("/EPOCH/","$StarTtime",$recording_filename);
+					$recording_filename = preg_replace("/\"|\'/",'',$recording_filename);
+
+					if (preg_match("/RECID/",$recording_filename) )
+						{
+						$stmt = "INSERT INTO recording_log (channel,server_ip,extension,start_time,start_epoch,filename,lead_id,user,vicidial_id) values('$channel','$server_ip','$exten','$NOW_TIME','$StarTtime','$recording_filename','$lead_id','$user','$MqueryCID')";
+							if ($format=='debug') {echo "\n<!-- $stmt -->";}
+						$rslt=mysql_to_mysqli($stmt, $link);
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00728',$user,$server_ip,$session_name,$one_mysql_log);}
+						$RLaffected_rows = mysqli_affected_rows($link);
+						if ($RLaffected_rows > 0)
+							{
+							$recording_id = mysqli_insert_id($link);
+							}
+
+						$recording_filename = preg_replace("/RECID/","$recording_id",$recording_filename);
+
+						$stmt = "UPDATE recording_log SET filename='$recording_filename' where recording_id='$recording_id';";
+							if ($format=='debug') {echo "\n<!-- $stmt -->";}
+						$rslt=mysql_to_mysqli($stmt, $link);
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00729',$user,$server_ip,$session_name,$one_mysql_log);}
+
+						$vmgr_callerid = substr($recording_filename, 0, 17) . '...';
+						$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$vmgr_callerid','Channel: $channel','Context: $ext_context','Exten: $exten','Priority: 1','Callerid: $recording_filename','','','','','');";
+							if ($format=='debug') {echo "\n<!-- $stmt -->";}
+						$rslt=mysql_to_mysqli($stmt, $link);
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00730',$user,$server_ip,$session_name,$one_mysql_log);}
+						}
+					else
+						{
+						$vmgr_callerid = substr($recording_filename, 0, 17) . '...';
+						$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$vmgr_callerid','Channel: $channel','Context: $ext_context','Exten: $exten','Priority: 1','Callerid: $recording_filename','','','','','');";
+							if ($format=='debug') {echo "\n<!-- $stmt -->";}
+						$rslt=mysql_to_mysqli($stmt, $link);
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00731',$user,$server_ip,$session_name,$one_mysql_log);}
+
+						$stmt = "INSERT INTO recording_log (channel,server_ip,extension,start_time,start_epoch,filename,lead_id,user,vicidial_id) values('$channel','$server_ip','$exten','$NOW_TIME','$StarTtime','$recording_filename','$lead_id','$user','$MqueryCID')";
+							if ($format=='debug') {echo "\n<!-- $stmt -->";}
+						$rslt=mysql_to_mysqli($stmt, $link);
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00732',$user,$server_ip,$session_name,$one_mysql_log);}
+						$RLaffected_rows = mysqli_affected_rows($link);
+						if ($RLaffected_rows > 0)
+							{
+							$recording_id = mysqli_insert_id($link);
+							}
+						}
+
+					##### insert into routing_initiated_recordings
+					$stmt = "INSERT INTO routing_initiated_recordings (recording_id,filename,launch_time,lead_id,vicidial_id,user,processed) values('$recording_id','$recording_filename','$NOW_TIME','$lead_id','$MqueryCID','$user','0')";
+						if ($format=='debug') {echo "\n<!-- $stmt -->";}
+					$rslt=mysql_to_mysqli($stmt, $link);
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00733',$user,$server_ip,$session_name,$one_mysql_log);}
+
+					##### update vla record with recording_id
+					$stmt = "UPDATE vicidial_live_agents SET external_recording='$recording_id' where user='$user';";
+						if ($format=='debug') {echo "\n<!-- $stmt -->";}
+					$rslt=mysql_to_mysqli($stmt, $link);
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00734',$user,$server_ip,$session_name,$one_mysql_log);}
+
+					$stage .= "|RIR";
+					}
+
 				### Skip logging and list overrides if dial in-group is used
 				if (strlen($dial_ingroup) < 1)
 					{
@@ -5364,7 +5444,7 @@ if ($ACTION == 'alt_phone_change')
 ### 
 ################################################################################
 if ($ACTION == 'AlertControl')
-{
+	{
 	if (strlen($stage)<1)
 		{
 		$channel_live=0;
@@ -5385,7 +5465,7 @@ if ($ACTION == 'AlertControl')
 
 		echo _QXZ("AGENT ALERT SETTING CHANGED %1s",0,'',$stage)."\n";
 		}
-}
+	}
 
 
 ################################################################################
@@ -6004,6 +6084,81 @@ if ($ACTION == 'manDiaLonly')
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00192',$user,$server_ip,$session_name,$one_mysql_log);}
 			}
 
+		if ( ($routing_initiated_recording == 'Y') and (strlen($recording_filename) > 3) )
+			{
+			$recFULLDATE = date("Ymd-His");
+			$recTINYDATE = date("ymdHis");
+			$cleanVLC = preg_replace("/ /",'',$vendor_lead_code);
+			$recording_filename = preg_replace("/CAMPAIGN/","$campaign",$recording_filename);
+			$recording_filename = preg_replace("/INGROUP/","$dial_ingroup",$recording_filename);
+			$recording_filename = preg_replace("/CUSTPHONE/","$phone_number",$recording_filename);
+			$recording_filename = preg_replace("/AGENT/","$user",$recording_filename);
+			$recording_filename = preg_replace("/VENDORLEADCODE/","$cleanVLC",$recording_filename);
+			$recording_filename = preg_replace("/LEADID/","$lead_id",$recording_filename);
+			$recording_filename = preg_replace("/CALLID/","$MqueryCID",$recording_filename);
+			$recording_filename = preg_replace("/FULLDATE/","$recFULLDATE",$recording_filename);
+			$recording_filename = preg_replace("/TINYDATE/","$recTINYDATE",$recording_filename);
+			$recording_filename = preg_replace("/EPOCH/","$StarTtime",$recording_filename);
+			$recording_filename = preg_replace("/\"|\'/",'',$recording_filename);
+
+			if (preg_match("/RECID/",$recording_filename) )
+				{
+				$stmt = "INSERT INTO recording_log (channel,server_ip,extension,start_time,start_epoch,filename,lead_id,user,vicidial_id) values('$channel','$server_ip','$exten','$NOW_TIME','$StarTtime','$recording_filename','$lead_id','$user','$MqueryCID')";
+					if ($format=='debug') {echo "\n<!-- $stmt -->";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00735',$user,$server_ip,$session_name,$one_mysql_log);}
+				$RLaffected_rows = mysqli_affected_rows($link);
+				if ($RLaffected_rows > 0)
+					{
+					$recording_id = mysqli_insert_id($link);
+					}
+
+				$recording_filename = preg_replace("/RECID/","$recording_id",$recording_filename);
+
+				$stmt = "UPDATE recording_log SET filename='$recording_filename' where recording_id='$recording_id';";
+					if ($format=='debug') {echo "\n<!-- $stmt -->";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00736',$user,$server_ip,$session_name,$one_mysql_log);}
+
+				$vmgr_callerid = substr($recording_filename, 0, 17) . '...';
+				$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$vmgr_callerid','Channel: $channel','Context: $ext_context','Exten: $exten','Priority: 1','Callerid: $recording_filename','','','','','');";
+					if ($format=='debug') {echo "\n<!-- $stmt -->";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00737',$user,$server_ip,$session_name,$one_mysql_log);}
+				}
+			else
+				{
+				$vmgr_callerid = substr($recording_filename, 0, 17) . '...';
+				$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$vmgr_callerid','Channel: $channel','Context: $ext_context','Exten: $exten','Priority: 1','Callerid: $recording_filename','','','','','');";
+					if ($format=='debug') {echo "\n<!-- $stmt -->";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00738',$user,$server_ip,$session_name,$one_mysql_log);}
+
+				$stmt = "INSERT INTO recording_log (channel,server_ip,extension,start_time,start_epoch,filename,lead_id,user,vicidial_id) values('$channel','$server_ip','$exten','$NOW_TIME','$StarTtime','$recording_filename','$lead_id','$user','$MqueryCID')";
+					if ($format=='debug') {echo "\n<!-- $stmt -->";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00739',$user,$server_ip,$session_name,$one_mysql_log);}
+				$RLaffected_rows = mysqli_affected_rows($link);
+				if ($RLaffected_rows > 0)
+					{
+					$recording_id = mysqli_insert_id($link);
+					}
+				}
+
+			##### insert into routing_initiated_recordings
+			$stmt = "INSERT INTO routing_initiated_recordings (recording_id,filename,launch_time,lead_id,vicidial_id,user,processed) values('$recording_id','$recording_filename','$NOW_TIME','$lead_id','$MqueryCID','$user','0')";
+				if ($format=='debug') {echo "\n<!-- $stmt -->";}
+			$rslt=mysql_to_mysqli($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00740',$user,$server_ip,$session_name,$one_mysql_log);}
+
+			##### update vla record with recording_id
+			$stmt = "UPDATE vicidial_live_agents SET external_recording='$recording_id' where user='$user';";
+				if ($format=='debug') {echo "\n<!-- $stmt -->";}
+			$rslt=mysql_to_mysqli($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00741',$user,$server_ip,$session_name,$one_mysql_log);}
+
+			$stage .= "|RIR";
+			}
 
 		#############################################
 		##### START QUEUEMETRICS LOGGING LOOKUP #####
@@ -6641,10 +6796,24 @@ if ($ACTION == 'manDiaLlookCaLL')
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00300',$user,$server_ip,$session_name,$one_mysql_log);}
 
+			if ( ($routing_initiated_recording == 'Y') and (preg_match("/^M/",$MDnextCID)) )
+				{
+				$stmt="UPDATE recording_log set vicidial_id='$uniqueid' where lead_id='$lead_id' and vicidial_id='$MDnextCID';";
+					if ($format=='debug') {echo "\n<!-- $stmt -->";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00742',$user,$server_ip,$session_name,$one_mysql_log);}
+				}
+
 			echo "$call_output";
+
+			$stage .= " $uniqueid $channel";
 			}
 		else
-			{echo "NO\n$DiaL_SecondS\n";}
+			{
+			echo "NO\n$DiaL_SecondS\n";
+
+			$stage .= " $DiaL_SecondS";
+			}
 		}
 	}
 
