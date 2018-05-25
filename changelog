@@ -323,6 +323,8 @@
     - New extras/vdc_hipchat.php.
   * Add upstream Rev. 2991:
     - New bin/AST_lead_select_export.pl.
+  * Add upstream Rev. 2992:
+    - Changed www/vicidial/help_documentation.txt.
 
 2.25.25b
   [Jörg Frings-Fürst]
