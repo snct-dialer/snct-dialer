@@ -50,6 +50,7 @@
 # 150223-1443 - Added DYN filename prefix for non-TTS dynamic files to be used for am message
 # 151109-1708 - Added new campaign feature allowing for different messages based on answering machine message wildcards
 # 170426-1711 - Fixed double-logging issue
+# 180529-1707 - Fix for missing called_count value in vicidial_log insertions
 #
 
 $script = 'VD_amd.agi';
@@ -347,14 +348,15 @@ else
 		}
 
 	### find list_id for this lead
-	$stmtA = "SELECT list_id from vicidial_list where lead_id = '$VD_lead_id';";
+	$stmtA = "SELECT list_id,called_count from vicidial_list where lead_id = '$VD_lead_id';";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArowsL=$sthA->rows;
 	if ($sthArowsL > 0)
 		{
 		@aryA = $sthA->fetchrow_array;
-		$VD_list_id =	$aryA[0];
+		$VD_list_id =		$aryA[0];
+		$VD_called_count =	$aryA[1];
 		}
 	$sthA->finish();
 
@@ -366,7 +368,7 @@ else
 	########## FIND AND UPDATE vicidial_log ##########
 	$Euniqueid=$uniqueid;
 	$Euniqueid =~ s/\.\d+$//gi;
-	$stmtA = "SELECT start_epoch,uniqueid FROM vicidial_log where lead_id='$VD_lead_id' and ( (uniqueid LIKE \"$Euniqueid%\") $VD_uniqueidSQL ) order by call_date desc limit 10;";
+	$stmtA = "SELECT start_epoch,uniqueid,called_count FROM vicidial_log where lead_id='$VD_lead_id' and ( (uniqueid LIKE \"$Euniqueid%\") $VD_uniqueidSQL ) order by call_date desc limit 10;";
 		if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -378,6 +380,7 @@ else
 		@aryA = $sthA->fetchrow_array;
 		$VD_start_epoch		= $aryA[0];
 		$uniqueid			= $aryA[1];
+		$DB_called_count	= $aryA[2];
 		if ($epc_countCUSTDATA < 1) {$first_uniqueid = $aryA[1];}
 		$epc_countCUSTDATA++;
 		}
@@ -388,24 +391,24 @@ else
 		$stmtA = "DELETE from vicidial_log where uniqueid='$first_uniqueid' and lead_id='$VD_lead_id' limit 1;";
 			if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 		$affected_rows = $dbhA->do($stmtA);
-		if ($AGILOG) {$agi_string = "--    VDAD vicidial_log duplicate delete: |$affected_rows|$uniqueid|$first_uniqueid|$VD_lead_id|";   &agi_output;}
+		if ($AGILOG) {$agi_string = "--    VDAD vicidial_log duplicate delete: |$affected_rows|$uniqueid|$first_uniqueid|$VD_lead_id|$DB_called_count|";   &agi_output;}
 		}
 
 	if (!$epc_countCUSTDATA)
 		{
 		if ($AGILOG) {$agi_string = "no VDL record found: $uniqueid $calleridname $VD_lead_id $uniqueid";   &agi_output;}
 		$end_epoch = ($now_date_epoch + 3);
-		$stmtA = "INSERT INTO vicidial_log (uniqueid,lead_id,campaign_id,call_date,start_epoch,status,phone_code,phone_number,user,processed,length_in_sec,end_epoch,list_id) values('$uniqueid','$VD_lead_id','$VD_campaign_id','$now_date','$now_date_epoch','AA','$VD_phone_code','$VD_phone_number','VDAD','N','3','$end_epoch','$VD_list_id')";
+		$stmtA = "INSERT INTO vicidial_log (uniqueid,lead_id,campaign_id,call_date,start_epoch,status,phone_code,phone_number,user,processed,length_in_sec,end_epoch,list_id,called_count) values('$uniqueid','$VD_lead_id','$VD_campaign_id','$now_date','$now_date_epoch','AA','$VD_phone_code','$VD_phone_number','VDAD','N','3','$end_epoch','$VD_list_id','$VD_called_count')";
 			if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 		$affected_rows = $dbhA->do($stmtA);
 		}
 	else
 		{
 		$VD_seconds = ($now_date_epoch - $VD_start_epoch);
-		$stmtA = "UPDATE vicidial_log set status='AA',end_epoch='$now_date_epoch',length_in_sec='$VD_seconds',list_id='$VD_list_id' where uniqueid='$uniqueid' and  lead_id='$VD_lead_id' order by call_date desc limit 1;";
+		$stmtA = "UPDATE vicidial_log set status='AA',end_epoch='$now_date_epoch',length_in_sec='$VD_seconds',list_id='$VD_list_id',called_count='$VD_called_count' where uniqueid='$uniqueid' and  lead_id='$VD_lead_id' order by call_date desc limit 1;";
 			if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 		$affected_rows = $dbhA->do($stmtA);
-		if ($AGILOG) {$agi_string = "--    VDAD vicidial_log update: |$affected_rows|$uniqueid|";   &agi_output;}
+		if ($AGILOG) {$agi_string = "--    VDAD vicidial_log update: |$affected_rows|$uniqueid|$DB_called_count|$VD_called_count|";   &agi_output;}
 		}
 
 	$selected_campaign='';

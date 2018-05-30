@@ -336,6 +336,9 @@
       www/vicidial/xml_rpc_audio_server_vicidial.php: Switched to mysqli,
         fixed variable filtering bug, Added debug logging, Fix for QM live
         monitoring.
+  * Add upstream Rev. 2994:
+    - Changed agi/VD_amd.agi: Fix for missing called_count value in
+       vicidial_log insertions.
 
 2.25.25b
   [Jörg Frings-Fürst]
