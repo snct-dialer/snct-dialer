@@ -62,9 +62,9 @@ ALTER TABLE vicidial_users ADD max_hopper_calls_hour SMALLINT(5) UNSIGNED defaul
 CREATE TABLE vicidial_faillogin_log (
 ID INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
 user VARCHAR(20),
-status INT(9)
+status INT(9),
 ip VARCHAR(18),
-login_time DATETIME,
+login_time DATETIME
 ) ENGINE=MyISAM;
 
 ALTER TABLE vicidial_inbound_groups ADD waiting_call_url_on TEXT;
