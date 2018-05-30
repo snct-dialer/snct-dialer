@@ -764,4 +764,11 @@ ALTER TABLE vicidial_inbound_groups ADD waiting_call_url_off TEXT;
 ALTER TABLE vicidial_inbound_groups ADD waiting_call_count SMALLINT(5) UNSIGNED default '0';
 ALTER TABLE vicidial_inbound_groups ADD enter_ingroup_url TEXT;
 
+ALTER TABLE `phones` ADD `on_hook_auto_answer` ENUM('Y','N') NOT NULL DEFAULT 'N';
+ALTER TABLE `phones` ADD `auto_answer_sipheader` VARCHAR(255) NOT NULL DEFAULT '';
+ALTER TABLE `phones` ADD `auto_answer_prefix` VARCHAR(4) NOT NULL DEFAULT '';
+
+ALTER TABLE `vicidial_live_agents` ADD `on_hook_auto_answer` ENUM('Y','N') NOT NULL DEFAULT 'N';
+ALTER TABLE `vicidial_live_agents` ADD `auto_answer_prefix` VARCHAR(4) NOT NULL DEFAULT '';
+
 UPDATE system_settings SET db_schema_version='1533',db_schema_update_date=NOW() where db_schema_version < 1533;

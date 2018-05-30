@@ -2913,7 +2913,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 
 								if ($AGILOG) {$agi_string = "GRADE RANDOM: $userGRADEchosen|$GRADErandom|$CAMP_callorder|$gg|$ga|$callerid";   &agi_output;}
 
-								$stmtA = "SELECT vicidial_live_agents.conf_exten,vicidial_live_agents.user,vicidial_live_agents.extension,vicidial_live_agents.server_ip,vicidial_live_inbound_agents.group_weight,ra_user,vicidial_live_agents.campaign_id,on_hook_agent,on_hook_ring_time,vicidial_live_inbound_agents.group_grade,vicidial_live_agents.campaign_grade from vicidial_live_agents, vicidial_live_inbound_agents WHERE vicidial_live_agents.user='$userGRADEchosen' limit 1;";
+								$stmtA = "SELECT vicidial_live_agents.conf_exten,vicidial_live_agents.user,vicidial_live_agents.extension,vicidial_live_agents.server_ip,vicidial_live_inbound_agents.group_weight,ra_user,vicidial_live_agents.campaign_id,on_hook_agent,on_hook_ring_time,vicidial_live_inbound_agents.group_grade,vicidial_live_agents.campaign_grade,vicidial_live_agents.on_hook_auto_answer,vicidial_live_agents.auto_answer_prefix FROM vicidial_live_agents, vicidial_live_inbound_agents WHERE vicidial_live_agents.user='$userGRADEchosen' and vicidial_live_inbound_agents.user='$userGRADEchosen' and vicidial_live_inbound_agents.group_id='$channel_group' limit 1;";
 								$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 								$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 								$sthArows=$sthA->rows;
@@ -2932,6 +2932,8 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 									$VDADon_hook_ring_time =	$aryA[8];
 									$group_grade =				$aryA[9];
 									$campaign_grade =			$aryA[10];
+                		                                        $VDADon_hook_auto_answer =      $aryA[11];
+									$VDADauto_answer_prefix =      $aryA[12];
 									}
 								$sthA->finish();
 								}
@@ -2940,7 +2942,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 						### END grade random next-agent-call routing ###
 						else
 							{
-							$stmtA = "SELECT vicidial_live_agents.conf_exten,vicidial_live_agents.user,vicidial_live_agents.extension,vicidial_live_agents.server_ip,vicidial_live_inbound_agents.group_weight,ra_user,vicidial_live_agents.campaign_id,on_hook_agent,on_hook_ring_time,vicidial_live_inbound_agents.group_grade,vicidial_live_agents.campaign_grade from vicidial_live_agents, vicidial_live_inbound_agents WHERE vicidial_live_agents.user=vicidial_live_inbound_agents.user and status IN('CLOSER','READY') and lead_id<1 $ADUfindSQL and vicidial_live_inbound_agents.group_id='$channel_group' and last_update_time > '$BDtsSQLdate' and vicidial_live_agents.user NOT IN($ring_no_answer_agents$vlia_users) and ring_callerid='' $qp_groupWAIT_camp_SQL $agent_call_order limit 1;";
+							$stmtA = "SELECT vicidial_live_agents.conf_exten,vicidial_live_agents.user,vicidial_live_agents.extension,vicidial_live_agents.server_ip,vicidial_live_inbound_agents.group_weight,ra_user,vicidial_live_agents.campaign_id,on_hook_agent,on_hook_ring_time,vicidial_live_inbound_agents.group_grade,vicidial_live_agents.campaign_grade,vicidial_live_agents.on_hook_auto_answer,vicidial_live_agents.auto_answer_prefix FROM vicidial_live_agents, vicidial_live_inbound_agents WHERE vicidial_live_agents.user=vicidial_live_inbound_agents.user and status IN('CLOSER','READY') and lead_id<1 $ADUfindSQL and vicidial_live_inbound_agents.group_id='$channel_group' and last_update_time > '$BDtsSQLdate' and vicidial_live_agents.user NOT IN($ring_no_answer_agents$vlia_users) and ring_callerid='' $qp_groupWAIT_camp_SQL $agent_call_order limit 1;";
 							$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 							$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 							$sthArows=$sthA->rows;
@@ -2959,6 +2961,8 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 								$VDADon_hook_ring_time =	$aryA[8];
 								$group_grade =				$aryA[9];
 								$campaign_grade =			$aryA[10];
+	                                                        $VDADon_hook_auto_answer =      $aryA[11];
+								$VDADauto_answer_prefix = 	$aryA[12];
 								}
 							$sthA->finish();
 							if ($AGILOG) {$agi_string = "$VDADuser|$VDADgroup_weight|$stmtA|";   &agi_output;}
@@ -2978,7 +2982,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 						{$sthArows=0;}
 					else
 						{
-						$stmtA = "SELECT conf_exten,user,extension,server_ip,last_call_time,ra_user,campaign_id,on_hook_agent,on_hook_ring_time FROM vicidial_live_agents where status IN('CLOSER','READY') and lead_id<1 $ADUfindSQL and campaign_id IN($INBOUNDcampsSQL) and closer_campaigns LIKE \"% $channel_group %\" and last_update_time > '$BDtsSQLdate' and vicidial_live_agents.user NOT IN($ring_no_answer_agents'') $qp_groupWAIT_SQL $qp_groupWAIT_camp_SQL $agent_call_order limit 1;";
+						$stmtA = "SELECT conf_exten,user,extension,server_ip,last_call_time,ra_user,campaign_id,on_hook_agent,on_hook_ring_time,on_hook_auto_answer,auto_answer_prefix FROM vicidial_live_agents where status IN('CLOSER','READY') and lead_id<1 $ADUfindSQL and campaign_id IN($INBOUNDcampsSQL) and closer_campaigns LIKE \"% $channel_group %\" and last_update_time > '$BDtsSQLdate' and vicidial_live_agents.user NOT IN($ring_no_answer_agents'') $qp_groupWAIT_SQL $qp_groupWAIT_camp_SQL $agent_call_order limit 1;";
 						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 						$sthArows=$sthA->rows;
@@ -2995,6 +2999,8 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 							$log_campaign =				$aryA[6];
 							$VDADon_hook_agent =		$aryA[7];
 							$VDADon_hook_ring_time =	$aryA[8];
+							$VDADon_hook_auto_answer = 	$aryA[9];
+							$VDADauto_answer_prefix = 	$aryA[10];
 							}
 						$sthA->finish();
 						if ($AGILOG) {$agi_string = "$VDADuser|$VDADlast_call_time|$stmtA|";   &agi_output;}
@@ -3215,12 +3221,13 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 					if ($CAMP_callorder =~ /ring_all$/i)
 						{
 						### gather all available agents phones information (don't call more than 50 phones at once)
-						$stmtA = "SELECT conf_exten,user,extension,server_ip,ra_user,on_hook_ring_time from vicidial_live_agents where status IN('CLOSER','READY') and on_hook_agent='Y' and lead_id<1 $ADUfindSQL and campaign_id IN($INBOUNDcampsSQL) and closer_campaigns LIKE \"% $channel_group %\" and last_update_time > '$BDtsSQLdate' $qp_groupWAIT_SQL $qp_groupWAIT_camp_SQL $agent_call_order limit 50;";
+						$stmtA = "SELECT conf_exten,user,extension,server_ip,ra_user,on_hook_ring_time,on_hook_auto_answer,auto_answer_prefix from vicidial_live_agents where status IN('CLOSER','READY') and on_hook_agent='Y' and lead_id<1 $ADUfindSQL and campaign_id IN($INBOUNDcampsSQL) and closer_campaigns LIKE \"% $channel_group %\" and last_update_time > '$BDtsSQLdate' $qp_groupWAIT_SQL $qp_groupWAIT_camp_SQL $agent_call_order limit 50;";
 						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 						$sthArowsAR=$sthA->rows;
 							$dbhP=$dbhA;   $mysql_count='02162';   $MEL_aff_rows=$sthArows;   &mysql_error_logging;
 						$ragp=0;	
+						$ARauto_answer_phones=0;
 						while ($sthArowsAR > $ragp)
 							{
 							@aryA = $sthA->fetchrow_array;
@@ -3230,9 +3237,12 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 							$ARserver_ip[$ragp] =			$aryA[3];
 							$ARra_user[$ragp] =				$aryA[4];
 							$ARon_hook_ring_time[$ragp] =	$aryA[5];
+							$ARon_hook_auto_answer[$ragp] =   $aryA[6]; 
+							$ARauto_answer_prefix[$ragp] =   $aryA[7];
 							$AR_DIALstr[$ragp] =			'';
 							$ring_all_DIALstr[$ragp] =		'';
 							$ARdialplan_number[$ragp] =		'';
+							$ARauto_answer_phones += ( $ARon_hook_auto_answer[$ragp] eq "Y" ? 1 : 0); 
 							$ragp++;
 							}
 						$sthA->finish();
@@ -3247,6 +3257,9 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 						$ARserver_ip[0] =			$VDADserver_ip;
 						$ARra_user[0] =				$ra_user;
 						$ARon_hook_ring_time[0] =	$VDADon_hook_ring_time;
+                                                $ARon_hook_auto_answer[0] =  $VDADon_hook_auto_answer;
+                                                $ARauto_answer_prefix[0] =   $VDADauto_answer_prefix;
+						$ARauto_answer_phones = ( $ARon_hook_auto_answer[0] eq "Y" ? 1 : 0);
 						$AR_DIALstr[0] =			'';
 						$ring_all_DIALstr[0] =		'';
 						$ARdialplan_number[0] =		'';
@@ -3358,6 +3371,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 							}
 						else
 							{
+							 if ($AGILOG) {$agi_string = "Processing on_hook_phones: $ARextension[$ragp]|$ARon_hook_auto_answer[$ragp]|$ARauto_answer_prefix[$ragp]|";   &agi_output;}
 							$ARon_hook_ring_time[$ragp] = ($ARon_hook_ring_time[$ragp] - 2); # set ring timeout lower so it doesn't go to vmail
 							$phone_extension = $ARextension[$ragp];
 							$phone_protocol = $ARextension[$ragp];
@@ -3384,8 +3398,11 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 								$dialplan_number =				$aryA[0];
 								$ARdialplan_number[$ragp] =		$aryA[0];
 								}
-							if (length($dialplan_number) > 0)
-								{$ring_all_DIALstr[$ragp] = "Local/$AR_DIALstr[$ragp]$dialplan_number" . '@default';}
+							
+							if (length($dialplan_number) > 0) {
+								$ring_all_DIALstr[$ragp] = "Local/$AR_DIALstr[$ragp]".( $ARon_hook_auto_answer[$ragp] eq "Y" ? $ARauto_answer_prefix[$ragp]:"" )."$dialplan_number" . '@default';
+								 if ($AGILOG) {$agi_string = "on_hook_DIALstr: $insert_lead_id|$phone_number|   |$Jnewcallerid|";   &agi_output;}
+								}
 							}
 
 						### set the ring time lower if the phones ring time is lower
@@ -3443,6 +3460,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 										}
 									}
 								}
+					### Ring telephones for on_hook_agents
 							$stmtA = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$VARserver_ip','','Originate','$RINGALLqueryCID','Exten: $RINGALLexten','Context: default','Channel: $ring_all_DIALstr[$ragp]','Priority: 1','Callerid: $RINGALLqueryCIDfull','Timeout: $commandTEMPon_hook_ring_time','','','','')";
 							$affected_rows = $dbhA->do($stmtA);
 								$dbhP=$dbhA;   $mysql_count='02168';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;

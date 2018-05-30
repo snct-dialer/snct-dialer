@@ -77,7 +77,7 @@ $build = '171208-1543';
 $SYSPERF=0;	# system performance logging to MySQL server_performance table every 5 seconds
 $SYSPERF_rec=0;	# is dial-time recording turned on
 $SYSLOG=0; # set to 1 to write log to a file
-$DB=0;	# Debug flag, set to 1 for debug messages  WARNING LOTS OF OUTPUT!!!
+$DB=1;	# Debug flag, set to 1 for debug messages  WARNING LOTS OF OUTPUT!!!
 $DBX=0;	# Debug flag, set to 1 for debug messages  WARNING EVEN MORE OUTPUT!!!
 $US='__';
 $AMP='@';
@@ -86,6 +86,20 @@ $cpuUSERprev=0;
 $cpuSYSTprev=0;
 $cpuIDLEprev=0;
 $run_check=1; # concurrency check
+
+$hangupOnHookPhones="SELECT 0"; 
+$hangupOnHookPhones="INSERT INTO vicidial_manager (entry_date, status, server_ip, action, cmd_line_b, callerid) 	
+SELECT now() AS entry_date, 'NEW' as status, lsc.server_ip AS server_ip, 'Hangup' AS action, CONCAT('Channel: ',lsc.channel) AS cmd_line_b, lsc.extension AS callerid
+FROM `live_sip_channels` AS lsc, 
+	`vicidial_live_agents` AS vla,
+	( SELECT lsct.extension, count(lsct.extension) AS total FROM `live_sip_channels` AS lsct GROUP BY lsct.extension HAVING total=1 ) AS c
+WHERE vla.conf_exten = lsc.extension 
+	AND c.extension = vla.conf_exten
+	AND vla.on_hook_agent = 'Y'
+	AND vla.channel = ''
+	AND vla.status = 'PAUSED'
+	AND vla.ring_callerid = ''
+	AND lsc.channel LIKE CONCAT(vla.extension,'%')";
 
 # find proper locations of bin utils
 
@@ -1014,6 +1028,13 @@ while($one_day_interval > 0)
 								$stmtA = "INSERT INTO $live_sip_channels (channel,server_ip,extension,channel_data) values('$channel','$server_ip','$extension','$channel_data')";
 									if( ($DB) or ( ($UD_bad_grab) && ($Q < 1) ) ){print STDERR "\n|$stmtA|\n";}
 								$affected_rows = $dbhA->do($stmtA) or die  "Couldn't execute query: |$stmtA|\n";
+								# if Agent logged in on phone and phone is "on hook agent" update Agent to be in call
+								my ($sipphone) = $channel =~ /^(SIP\/.*)\-.*/; 
+								if ( $sipphone && ! ($extension eq "ring" ) ) {
+                                                                	$stmtA = "UPDATE vicidial_live_agents SET on_hook_saved_status=status, status='INCAll' WHERE extension='$sipphone' AND on_hook_agent='Y' AND status IN ('READY','CLOSER','PAUSED','LOGIN') AND server_ip='$server_ip'";
+                                                                        	if( ($DB) or ( ($UD_bad_grab) && ($Q < 1) ) ){print STDERR "\n|$stmtA|\non channel: $channel\nextension: $extension\n";}
+                                                                	$affected_rows = $dbhA->do($stmtA) or die  "Couldn't execute query: |$stmtA|\n";
+									}
 								}
 							}
 						}
@@ -1033,6 +1054,10 @@ while($one_day_interval > 0)
 						$stmtB = "DELETE FROM $live_channels where server_ip='$server_ip' and channel='$DELchannel' and extension='$DELextension' limit 1";
 							if( ($DB) or ( ($UD_bad_grab) && ($Q < 1) ) ){print STDERR "\n|$stmtB|\n";}
 						$affected_rows = $dbhA->do($stmtB);
+						### if outside call was hungup we should check if AgentPhone has to be hung up as well
+                                                $stmtB = $hangupOnHookPhones;
+                                                        if( ($DB) or ( ($UD_bad_grab) && ($Q < 1) ) ){print STDERR "\n|$stmtB|\n";}
+                                                $affected_rows = $dbhA->do($stmtB);
 						}
 					$d++;
 					}
@@ -1049,10 +1074,19 @@ while($one_day_interval > 0)
 						$stmtB = "DELETE FROM $live_sip_channels where server_ip='$server_ip' and channel='$DELchannel' and extension='$DELextension' limit 1";
 							if( ($DB) or ( ($UD_bad_grab) && ($Q < 1) ) ){print STDERR "\n|$stmtB|\n";}
 						$affected_rows = $dbhA->do($stmtB);
+                                                my ($sipphone) = $DELchannel =~ /^(SIP\/.*)\-.*/;
+                                                $stmtA = "UPDATE vicidial_live_agents SET status=on_hook_saved_status, on_hook_saved_status=NULL WHERE extension='$sipphone' AND on_hook_agent='Y' AND on_hook_saved_status IN ('READY','CLOSER','PAUSED') AND server_ip='$server_ip'";
+                                                        if( ($DB) or ( ($UD_bad_grab) && ($Q < 1) ) ){print STDERR "\n|$stmtA|\n";}
+                                                $affected_rows = $dbhA->do($stmtA) or die  "Couldn't execute query: |$stmtA|\n";
+
 						}
 					$d++;
 					}
 				}
+
+                        $stmtB = $hangupOnHookPhones;
+                        $affected_rows = $dbhA->do($stmtB);
+                        if( $DB  ){print STDERR "\n|$stmtB|\n$affected_rows rows affected\n";}
 
 			### sleep for 45 hundredths of a second
 			usleep(1*450*1000);
@@ -1116,6 +1150,15 @@ while($one_day_interval > 0)
 					$stmtB = "DELETE FROM $live_channels where server_ip='$server_ip'";
 						if( ($DB) or ( ($UD_bad_grab) && ($Q < 1) ) ){print STDERR "\n|$stmtB|\n";}
 					$affected_rows = $dbhA->do($stmtB);
+					### cleanup remaining live agents
+                                        $stmtA = "UPDATE vicidial_live_agents SET status=on_hook_saved_status, on_hook_saved_status=NULL WHERE on_hook_agent='Y' AND on_hook_saved_status IS NOT NULL AND server_ip='$server_ip'";
+                                                if( ($DB) or ( ($UD_bad_grab) && ($Q < 1) ) ){print STDERR "\n|$stmtA|\n";}
+                                        $affected_rows = $dbhA->do($stmtA) or die  "Couldn't execute query: |$stmtA|\n";
+					### hangup AgentOnHookPhones
+                                        $stmtB = $hangupOnHookPhones;
+                                                if( ($DB) or ( ($UD_bad_grab) && ($Q < 1) ) ){print STDERR "\n|$stmtB|\n";}
+                                        $affected_rows = $dbhA->do($stmtB);
+
 					}
 				}
 			}
@@ -1161,7 +1204,7 @@ sub get_current_channels
 	$local_client_counter=0;
 	$sip_client_counter=0;
 
-	if($DB){print STDERR "\n|SELECT channel,extension FROM $live_channels where server_ip = '$server_ip'|\n";}
+	if($DBX){print STDERR "\n|SELECT channel,extension FROM $live_channels where server_ip = '$server_ip'|\n";}
 
 	$stmtA = "SELECT channel,extension FROM $live_channels where server_ip='$server_ip';";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -1171,7 +1214,7 @@ sub get_current_channels
 	while ($sthArows > $rec_count)
 		{
 		@aryA = $sthA->fetchrow_array;
-		if($DB){print STDERR $aryA[0],"|", $aryA[1],"\n";}
+		if($DBX){print STDERR $aryA[0],"|", $aryA[1],"\n";}
 			$DBchannels[$channel_counter] = "$aryA[0]$US$aryA[1]";
 		$channel_counter++;
 		$rec_count++;
@@ -1201,7 +1244,7 @@ sub get_current_channels
 		&get_time_now;
 
 	$stmtU = "UPDATE $server_updater set last_update='$now_date' where server_ip='$server_ip'";
-		if($DB){print STDERR "\n|$stmtU|\n";}
+		if($DBX){print STDERR "\n|$stmtU|\n";}
 	$affected_rows = $dbhA->do($stmtU);
 	}
 

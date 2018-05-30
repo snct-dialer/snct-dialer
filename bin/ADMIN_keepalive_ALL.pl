@@ -2481,6 +2481,9 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 	$Pext .= "\n";
 	$Pext .= "; Phones direct dial extensions:\n";
 
+	$PAext .= "\n";
+	$PAext .= "; Phones with automatic Pickup extensions:\n";
+
 
 	##### BEGIN Generate the IAX phone entries #####
 	$stmtA = "SELECT extension,dialplan_number,voicemail_id,pass,template_id,conf_override,email,template_id,conf_override,outbound_cid,fullname,phone_context,phone_ring_timeout,conf_secret,delete_vm_after_email,codecs_list,codecs_with_template,voicemail_timezone,voicemail_options,voicemail_instructions,unavail_dialplan_fwd_exten,unavail_dialplan_fwd_context,conf_qualify FROM phones where server_ip='$server_ip' and protocol='IAX2' and active='Y' order by extension;";
@@ -2653,7 +2656,7 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 
 
 	##### BEGIN Generate the SIP phone entries #####
-	$stmtA = "SELECT extension,dialplan_number,voicemail_id,pass,template_id,conf_override,email,template_id,conf_override,outbound_cid,fullname,phone_context,phone_ring_timeout,conf_secret,delete_vm_after_email,codecs_list,codecs_with_template,voicemail_timezone,voicemail_options,voicemail_instructions,unavail_dialplan_fwd_exten,unavail_dialplan_fwd_context FROM phones where server_ip='$server_ip' and protocol='SIP' and active='Y' order by extension;";
+	$stmtA = "SELECT extension,dialplan_number,voicemail_id,pass,template_id,conf_override,email,template_id,conf_override,outbound_cid,fullname,phone_context,phone_ring_timeout,conf_secret,delete_vm_after_email,codecs_list,codecs_with_template,voicemail_timezone,voicemail_options,voicemail_instructions,unavail_dialplan_fwd_exten,unavail_dialplan_fwd_context,auto_answer_sipheader,auto_answer_prefix FROM phones where server_ip='$server_ip' and protocol='SIP' and active='Y' order by extension;";
 	#	print "$stmtA\n";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -2684,6 +2687,8 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 		$voicemail_instructions[$i] =	$aryA[19];
 		$unavail_dialplan_fwd_exten[$i] =	$aryA[20];
 		$unavail_dialplan_fwd_context[$i] =	$aryA[21];
+		$auto_answer_sipheader[$i] =	$aryA[22];	
+		$auto_answer_prefix[$i] =		$aryA[23];	
 		if ( (length($SSdefault_codecs) > 2) && (length($codecs_list[$i]) < 3) )
 			{$codecs_list[$i] = $SSdefault_codecs;}
 		$active_dialplan_numbers .= "'$aryA[1]',";
@@ -2775,6 +2780,20 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 		else
 			{
 			$Pext .= "exten => $dialplan[$i],1,Dial(SIP/$extension[$i],$phone_ring_timeout[$i],)\n";
+
+			# create auto pickup extension if asterisk version is at least 1.6 and a prefix is set
+			if ( $auto_answer_prefix[$i] ne "" ) {
+				$PAext .= "exten => $auto_answer_prefix[$i]$dialplan[$i],1,Noop()\n";
+				@SipHeader = split (/\|/,$auto_answer_sipheader[$i]);
+				foreach $Header (@SipHeader) {
+					$Header =~ s/^\s+|\s+$//g; #trim whitespaces
+					if ($Header ne "") {
+						$PAext .= " same => n,$Header\n";
+					}
+				}
+				$PAext .= " same => n,Dial(SIP/$extension[$i],$phone_ring_timeout[$i],)\n";
+				$PAext .= " same => n,Hangup()\n";
+			}
 			}
 		if (length($unavail_dialplan_fwd_exten[$i]) > 0) 
 			{
@@ -3619,14 +3638,19 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 	print ext "\n";
 	print ext "$Pext\n";
 
-	print ext "[vicidial-auto]\n";
+        print ext "[vicidial-auto-answer-phones]\n";
+        print ext $hangup_exten_line;
+        print ext "\n";
+        print ext "$PAext\n";
 
+	print ext "[vicidial-auto]\n";
 	print ext $hangup_exten_line;
 	print ext "\n";
 	print ext "\n";
 	print ext "include => vicidial-auto-internal\n";
 	print ext "include => vicidial-auto-phones\n";
 	print ext "include => vicidial-auto-external\n";
+        print ext "include => vicidial-auto-answer-phones\n";
 	if (length($SERVERcustom_dialplan_entry)>5)
 		{print ext "include => vicidial-auto-server-custom\n";}
 	if (length($SScustom_dialplan_entry)>5)
