@@ -1,7 +1,7 @@
 <?php 
 # QM_live_monitor.php
 # 
-# Copyright (C) 2013  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # Script to initiate live monitoring from QueueMetrics link
 #
@@ -10,10 +10,13 @@
 # 130610-1130 - Finalized changing of all ereg instances to preg
 # 130617-2128 - Added filtering of input to prevent SQL injection attacks
 # 130901-0859 - Changed to mysqli PHP functions
+# 180529-1005 - Added debug logging
 #
 
-$version = '2.8-4';
-$build = '130901-0859';
+$version = '2.14-5';
+$build = '180529-1005';
+
+$DBlogfile=0; # set to 1 for logfile writing
 
 header ("Content-type: text/html; charset=utf-8");
 
@@ -53,6 +56,12 @@ $phone = preg_replace("/'|\"|\\\\|;/", '', $phone);
 $type = preg_replace("/'|\"|\\\\|;/", '', $type);
 $QMuser = preg_replace("/'|\"|\\\\|;/", '', $QMuser);
 
+if ($DBlogfile > 0)
+	{
+	$logfile=fopen('qm_rpc_debug.txt', "a");
+	fwrite($logfile, "QM Live-Monitor: " . date("U") . ' - ' . date("Y-m-d H:i:s") . " $version $build\nParameters: |$call|$user|$extension|$server_ip|$stage|$campaign|$phone|$type|$QMuser|\n");
+	fclose($logfile);
+	}
 
 $ERR=0;
 $ERRstring='';
@@ -111,12 +120,18 @@ if ($enable_queuemetrics_logging > 0)
 				$admDIR = preg_replace('/QM_live_monitor\.php/i', '',$admDIR);
 				$monitor_script = 'non_agent_api.php';
 
-				$monitorURL = "$admDIR$monitor_script?source=queuemetrics&function=blind_monitor&user=$user&pass=$call&phone_login=$extension&session_id=$session&server_ip=$server_ip&stage=$stage";
+				$monitorURL = "$admDIR$monitor_script?source=queuemetrics&function=blind_monitor&user=$user&pass=$call&phone_login=$extension&session_id=$session&server_ip=$server_ip&stage=$stage&value=$stage&agent_user=$user";
 				$monitorCONTENTS = file("$monitorURL");
 	
 				if (preg_match('/SUCCESS/i',$monitorCONTENTS[0]))
 					{
 					echo "<HTML><BODY BGCOLOR=\"E6E6E6\" onLoad=\"javascript:window.close();\">\n";
+					if ($DBlogfile > 0)
+						{
+						$logfile=fopen('qm_rpc_debug.txt', "a");
+						fwrite($logfile, "QM Live-Monitor Closing: $monitorCONTENTS[0]\n");
+						fclose($logfile);
+						}
 					}
 				else
 					{
@@ -155,8 +170,10 @@ if ($enable_queuemetrics_logging > 0)
 				echo "<TR><TD ALIGN=RIGHT>Queue: </TD><TD>$campaign</TD></TR>";
 				echo "<TR><TD ALIGN=RIGHT>Extension: </TD>";
 				echo "<TD><INPUT TYPE=TEXT NAME=extension SIZE=20 MAXLENGTH=20></TD></TR>\n";
-				echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=BUTTON VALUE=\"Close Window\"  onClick=\"javascript:window.close();\">";
+				echo "<TR><TD ALIGN=CENTER COLSPAN=2>";
+			#	echo "<INPUT TYPE=BUTTON VALUE=\"Close Window\" onClick=\"javascript:window.close();\">";
 				echo "<INPUT TYPE=SUBMIT NAME=SUBMIT VALUE=SUBMIT></TD></TR>\n";
+				echo "</TD></TR>\n";
 				echo "</FORM>";
 				echo "</BODY></HTML>";
 				exit;

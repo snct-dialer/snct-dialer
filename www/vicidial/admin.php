@@ -5861,7 +5861,7 @@ if ( ( (strlen($ADD)>4) and ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($AD
 		$XFERgroups_list .= "<input type=\"checkbox\" name=\"XFERgroups[]\" value=\"$group_id_values[$o]\"";
 		$RANKgroups_list .= "<tr $bgcolor><td><input type=\"checkbox\" name=\"groups[]\" value=\"$group_id_values[$o]\"";
 		$p=0;
-		$group_ct = count($groups);
+		if (is_array($groups)) {$group_ct = count($groups);} else {$group_ct=0;}
 		while ($p < $group_ct)
 			{
 			if ($group_id_values[$o] == $groups[$p]) 
@@ -5873,7 +5873,7 @@ if ( ( (strlen($ADD)>4) and ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($AD
 			$p++;
 			}
 		$p=0;
-		$XFERgroup_ct = count($XFERgroups);
+		if (is_array($XFERgroups)) {$XFERgroup_ct = count($XFERgroups);} else {$XFERgroup_ct=0;}
 		while ($p < $XFERgroup_ct)
 			{
 			if ($group_id_values[$o] == $XFERgroups[$p]) 

@@ -327,7 +327,16 @@
     - Changed www/vicidial/help_documentation.txt.
   * bin/AST_CRON_WallBoard3_gen.php:  Disable test against 0201 for forwarding.
   * Issue #FP0001: Remove duplicate table column anyone_callback_inactive_lists.
-  
+  * Add upstream Rev. 2993:
+    - Changed extras/SCRIPT_multirecording.php,
+      extras/SCRIPT_multirecording_AJAX.php,
+      www/vicidial/QM_live_monitor.php,
+      www/vicidial/admin.php,
+      www/vicidial/non_agent_api.php,
+      www/vicidial/xml_rpc_audio_server_vicidial.php: Switched to mysqli,
+        fixed variable filtering bug, Added debug logging, Fix for QM live
+        monitoring.
+
 2.25.25b
   [Jörg Frings-Fürst]
   * www/vicidial/help.php: Correct anchor.

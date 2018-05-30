@@ -131,10 +131,11 @@
 # 180208-1655 - Added call_dispo_report function
 # 180301-2301 - Added GET-AND-POST URL logging
 # 180331-1716 - Added options to update_campaign, add_user, update_phone. Added function update_did
+# 180529-1102 - Fix for QM live monitoring
 #
 
-$version = '2.14-108';
-$build = '180331-1716';
+$version = '2.14-109';
+$build = '180529-1102';
 $api_url_log = 0;
 
 $startMS = microtime();
@@ -833,6 +834,21 @@ $auth_message = user_authorization($user,$pass,'REPORTS',1,1);
 if ($auth_message == 'GOOD')
 	{$auth=1;}
 
+if ($auth < 1)
+	{
+	if ( ($function == 'blind_monitor') and ($source == 'queuemetrics') and ($stage == 'MONITOR') )
+		{
+		$stmt="SELECT count(*) from vicidial_auto_calls where callerid='$pass';";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		if ($DB) {echo "$stmt\n";}
+		$monauth_to_check = mysqli_num_rows($rslt);
+		if ($monauth_to_check > 0)
+			{
+			$rowvac=mysqli_fetch_row($rslt);
+			$auth =	$rowvac[0];
+			}
+		}
+	}
 if ($auth < 1)
 	{
 	$VDdisplayMESSAGE = "ERROR: Login incorrect, please try again";
@@ -6180,7 +6196,7 @@ if ($function == 'user_group_status')
 											$rslt=mysql_to_mysqli($stmt, $link);
 											if ($DB) {echo "$stmt\n";}
 											$mandial_to_check = mysqli_num_rows($rslt);
-												if ($mandial_to_check > 0)
+											if ($mandial_to_check > 0)
 												{
 												$rowvac=mysqli_fetch_row($rslt);
 												if ( (strlen($rowvac[0])<5) and (strlen($rowvac[1])<5) )

@@ -3,7 +3,7 @@
 # 
 # Used for integration with QueueMetrics of audio recordings
 #
-# Copyright (C) 2013  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 # Copyright (C) 2007  Lenz Emilitri <lenz.loway@gmail.com> LICENSE: ????
 # 
 # CHANGES
@@ -16,6 +16,7 @@
 # 130610-1100 - Finalized changing of all ereg instances to preg
 # 130615-2324 - Added filtering of input to prevent SQL injection attacks
 # 130901-0829 - Changed to mysqli PHP functions
+# 180529-1016 - Added debug logging
 #
 
 // $Id: xmlrpc_audio_server.php,v 1.3 2007/11/12 17:53:09 lenz Exp $
@@ -42,6 +43,14 @@
 //  "pear install XML_RPC-1.5.1"
 //
 
+$DBlogfile=0; # set to 1 for logfile writing
+
+if ($DBlogfile > 0)
+	{
+	$logfile=fopen('qm_rpc_debug.txt', "a");
+	fwrite($logfile, "Starting QM XML/RPC query: " . date("U") . ' - ' . date("Y-m-d H:i:s") . "\n");
+	fclose($logfile);
+	}
 
 require_once 'XML/RPC/Server.php';
 
@@ -72,11 +81,14 @@ function find_file( $ServerID, $AsteriskID, $QMUserID, $QMUserName )
 	global $FILE_LENGTH;
 	global $FILE_ENCODING;
 	global $FILE_DURATION;
+	global $DBlogfile;
 
-# uncomment below to enable basic logging of requests
-#	$fp = fopen ("./qm_rpc_debug.txt", "a");
-#	fwrite ($fp, date("U") . "|$ServerID|$AsteriskID|$QMUserID|$QMUserName|\n");
-#	fclose($fp);
+	if ($DBlogfile > 0)
+		{
+		$logfile=fopen('qm_rpc_debug.txt', "a");
+		fwrite($logfile, date("U") . "|$ServerID|$AsteriskID|$QMUserID|$QMUserName|\n");
+		fclose($logfile);
+		}
 
 	require("dbconnect_mysqli.php");
 	require("functions.php");
@@ -194,6 +206,13 @@ function find_file( $ServerID, $AsteriskID, $QMUserID, $QMUserName )
 		mysqli_close($linkB);
 		}
 
+	if ($DBlogfile > 0)
+		{
+		$logfile=fopen('qm_rpc_debug.txt', "a");
+		fwrite($logfile, date("U") . "|find_file|$FILE_FOUND|$FILE_LISTEN_URL|$FILE_LENGTH|$FILE_ENCODING|$FILE_DURATION|\n");
+		fclose($logfile);
+		}
+
 #	$FILE_FOUND      = true;
 #	$FILE_LISTEN_URL = "http://listennow.server/$ServerID/$AsteriskID/$QMUserID/$QMUserName";
 #	$FILE_LENGTH     = "125000";
@@ -207,6 +226,7 @@ function listen_call( $ServerID, $AsteriskID, $Agent, $QMUserID, $QMUserName )
 	global $CALL_LISTEN_URL;
 	global $CALL_POPUP_WIDTH;
 	global $CALL_POPUP_HEIGHT;
+	global $DBlogfile;
 
 	require("dbconnect_mysqli.php");
 	require("functions.php");
@@ -284,6 +304,13 @@ function listen_call( $ServerID, $AsteriskID, $Agent, $QMUserID, $QMUserName )
 			}
 		}
 
+	if ($DBlogfile > 0)
+		{
+		$logfile=fopen('qm_rpc_debug.txt', "a");
+		fwrite($logfile, date("U") . "|listen_call|$CALL_FOUND|$CALL_LISTEN_URL|\n");
+		fclose($logfile);
+		}
+
 #	$CALL_FOUND      = true;
 #	$CALL_LISTEN_URL = "http://listennow.server/$ServerID/$AsteriskID/$QMUserID/$QMUserName/$Agent";
 	}
@@ -299,12 +326,20 @@ function xmlrpc_find_file( $params ) {
 	global $FILE_LENGTH;
 	global $FILE_ENCODING;	
 	global $FILE_DURATION;
+	global $DBlogfile;
 	
 	$p0 = $params->getParam(0)->scalarval(); // server ID
 	$p1 = $params->getParam(1)->scalarval(); // Asterisk call ID
 	$p2 = $params->getParam(2)->scalarval(); // QM User ID
 	$p3 = $params->getParam(3)->scalarval(); // Qm user name
-	
+
+	if ($DBlogfile > 0)
+		{
+		$logfile=fopen('qm_rpc_debug.txt', "a");
+		fwrite($logfile, date("U") . "|TRIGGER_find_file|$p0|$p1|$p2|$p3|\n");
+		fclose($logfile);
+		}
+
 	find_file( $p0, $p1, $p2, $p3 ); 		
 	
 	$response = new XML_RPC_Value(array(
@@ -325,13 +360,21 @@ function xmlrpc_listen_call( $params ) {
 	global $CALL_LISTEN_URL;
 	global $CALL_POPUP_WIDTH;
 	global $CALL_POPUP_HEIGHT;
+	global $DBlogfile;
 
 	$p0 = $params->getParam(0)->scalarval(); // server ID
 	$p1 = $params->getParam(1)->scalarval(); // asterisk call ID
 	$p2 = $params->getParam(2)->scalarval(); // agent code
 	$p3 = $params->getParam(3)->scalarval(); // QM user ID
 	$p4 = $params->getParam(3)->scalarval(); // QM user name
-	
+
+	if ($DBlogfile > 0)
+		{
+		$logfile=fopen('qm_rpc_debug.txt', "a");
+		fwrite($logfile, date("U") . "|TRIGGER_listen_call|$p0|$p1|$p2|$p3|$p4|\n");
+		fclose($logfile);
+		}
+
 	listen_call( $p0, $p1, $p2, $p3, $p4 ); 		
 	
 	$response = new XML_RPC_Value(array(
@@ -345,6 +388,17 @@ function xmlrpc_listen_call( $params ) {
 }
 
 
+
+if ($DBlogfile > 0)
+	{
+	if (getenv('REQUEST_METHOD') == 'POST') 
+		{
+		$client_data = file_get_contents("php://input");
+		}
+	$logfile=fopen('qm_rpc_debug.txt', "a");
+	fwrite($logfile, date("U") . "|START_request|\n$client_data\nEND_request|\n");
+	fclose($logfile);
+	}
 
 //
 // Instantiates a very simple XML-RPC audio server for QueueMetrics
