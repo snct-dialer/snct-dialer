@@ -768,6 +768,7 @@ ALTER TABLE `phones` ADD `on_hook_auto_answer` ENUM('Y','N') NOT NULL DEFAULT 'N
 ALTER TABLE `phones` ADD `auto_answer_sipheader` VARCHAR(255) NOT NULL DEFAULT '';
 ALTER TABLE `phones` ADD `auto_answer_prefix` VARCHAR(4) NOT NULL DEFAULT '';
 
+ALTER TABLE `vicidial_live_agents` ADD `on_hook_saved_status` ENUM('READY','CLOSER','PAUSED','LOGIN') NULL DEFAULT NULL;
 ALTER TABLE `vicidial_live_agents` ADD `on_hook_auto_answer` ENUM('Y','N') NOT NULL DEFAULT 'N';
 ALTER TABLE `vicidial_live_agents` ADD `auto_answer_prefix` VARCHAR(4) NOT NULL DEFAULT '';
 
