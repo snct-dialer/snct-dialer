@@ -339,6 +339,9 @@
   * Add upstream Rev. 2994:
     - Changed agi/VD_amd.agi: Fix for missing called_count value in
        vicidial_log insertions.
+  * Add upstream Rev. 2995:
+    - Changed www/vicidial/admin.php: Small DID bug fix, added Call Menus list
+        on Modify Call Time page.
 
 2.25.25b
   [Jörg Frings-Fürst]

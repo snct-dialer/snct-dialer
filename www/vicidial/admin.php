@@ -4461,12 +4461,13 @@ else
 # 180512-2217 - Added users-max_hopper_calls,max_hopper_calls_hour settings
 # 180516-1246 - Added waiting_call_url_ feature to In-Groups
 # 180520-1749 - Added enter_ingroup_url feature to In-Groups
+# 180530-0017 - Small DID bug fix, added Call Menus list on Modify Call Time page
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-675a';
-$build = '180520-1749';
+$admin_version = '2.14-676a';
+$build = '180530-0017';
 
 
 $STARTtime = date("U");
@@ -30956,7 +30957,7 @@ if ($ADD==3311)
 			}
 
 
-		echo "<br>"._QXZ("MODIFY A DID RECORD").": $row[0]<form action=$PHP_SELF method=POST>\n";
+		echo "<br>"._QXZ("MODIFY A DID RECORD").": $did_pattern<form action=$PHP_SELF method=POST>\n";
 		echo "<input type=hidden name=ADD value=4311>\n";
 		echo "<input type=hidden name=did_id value=\"$did_id\">\n";
 		echo "<input type=hidden name=did_pattern value=\"$did_pattern\">\n";
@@ -33445,7 +33446,7 @@ if ($ADD==311111111)
 			$o++;
 			}
 
-		echo "</TABLE>\n";
+		echo "</TABLE><BR>\n";
 		echo "<B>"._QXZ("INBOUND GROUPS USING THIS CALL TIME").":</B><BR>\n";
 		echo "<TABLE>\n";
 
@@ -33460,7 +33461,22 @@ if ($ADD==311111111)
 			$o++;
 			}
 
-		echo "</TABLE>\n";
+		echo "</TABLE><BR>\n";
+		echo "<B>"._QXZ("CALL MENUS USING THIS CALL TIME").":</B><BR>\n";
+		echo "<TABLE>\n";
+
+		$stmt="SELECT menu_id,menu_name from vicidial_call_menu where call_time_id='$call_time_id' $LOGadmin_viewable_groupsSQL;";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$menus_to_print = mysqli_num_rows($rslt);
+		$o=0;
+		while ($menus_to_print > $o) 
+			{
+			$row=mysqli_fetch_row($rslt);
+			echo "<TR><TD><a href=\"$PHP_SELF?ADD=3511&menu_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
+			$o++;
+			}
+
+		echo "</TABLE><BR>\n";
 		echo "<B>"._QXZ("LISTS SET TO THIS CALL TIME").":</B><BR>\n";
 		echo "<TABLE>\n";
 
