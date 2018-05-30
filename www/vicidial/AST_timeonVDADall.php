@@ -2863,7 +2863,7 @@ if ( (preg_match('/ALL\-GROUPS/i',$user_group_string)) and (strlen($user_group_S
 else {$user_group_filter_SQL = " and vicidial_users.user_group IN($user_group_SQL)";}
 
 $ring_agents=0;
-$stmt="SELECT extension,vicidial_live_agents.user,conf_exten,vicidial_live_agents.status,vicidial_live_agents.server_ip,UNIX_TIMESTAMP(last_call_time),UNIX_TIMESTAMP(last_call_finish),call_server_ip,vicidial_live_agents.campaign_id,vicidial_users.user_group,vicidial_users.full_name,vicidial_live_agents.comments,vicidial_live_agents.calls_today,vicidial_live_agents.callerid,lead_id,UNIX_TIMESTAMP(last_state_change),on_hook_agent,ring_callerid,agent_log_id from vicidial_live_agents,vicidial_users where vicidial_live_agents.user=vicidial_users.user and vicidial_users.user_hide_realtime='0' $UgroupSQL $usergroupSQL $user_group_filter_SQL order by $orderSQL;";
+$stmt="SELECT extension,vicidial_live_agents.user,conf_exten,vicidial_live_agents.status,vicidial_live_agents.server_ip,UNIX_TIMESTAMP(last_call_time),UNIX_TIMESTAMP(last_call_finish),call_server_ip,vicidial_live_agents.campaign_id,vicidial_users.user_group,vicidial_users.full_name,vicidial_live_agents.comments,vicidial_live_agents.calls_today,vicidial_live_agents.callerid,lead_id,UNIX_TIMESTAMP(last_state_change),on_hook_agent,ring_callerid,agent_log_id,vicidial_live_agents.on_hook_saved_status  from vicidial_live_agents,vicidial_users where vicidial_live_agents.user=vicidial_users.user and vicidial_users.user_hide_realtime='0' $UgroupSQL $usergroupSQL $user_group_filter_SQL order by $orderSQL;";
 $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $talking_to_print = mysqli_num_rows($rslt);
@@ -2893,6 +2893,7 @@ if ($talking_to_print > 0)
 		$Aon_hook_agent[$i] =	$row[16];
 		$Aring_callerid[$i] =	$row[17];
 		$Aagent_log_id[$i] =	$row[18];
+		$Aagent_onhook_status[$i] = $row[19];
 		$Aring_note[$i] =		' ';
 
 		if ($Aon_hook_agent[$i] == 'Y')
@@ -3111,7 +3112,6 @@ if ($talking_to_print > 0)
 			}
 		else
 			{$pausecode='';}
-
 		if (preg_match("/INCALL/i",$Lstatus)) 
 			{
 			$stmtP="SELECT count(*) from parked_channels where channel_group='$Acallerid[$i]';";
@@ -3128,7 +3128,7 @@ if ($talking_to_print > 0)
 				}
 			else
 				{
-				if (!preg_match("/$Acallerid[$i]\|/",$callerids) && !preg_match("/EMAIL/i",$comments) && !preg_match("/CHAT/i",$comments))
+				if (!preg_match("/$Acallerid[$i]\|/",$callerids) && !preg_match("/EMAIL/i",$comments) && !preg_match("/CHAT/i",$comments) && strlen($Aagent_onhook_status[$i] == 0))
 					{
 					$Acall_time[$i]=$Astate_change[$i];
 
@@ -3155,6 +3155,12 @@ if ($talking_to_print > 0)
 								}
 							}
 						}
+					}
+					if(strlen($Aagent_onhook_status) > 0) {
+						$Astatus[$i] =	'INCALL';
+						$Lstatus =		'INCALL';
+						$status =		' INCALL ';
+						$CM =			'O';
 					}
 				if (preg_match("/CHAT/i",$comments))
 					{

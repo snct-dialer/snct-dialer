@@ -73,8 +73,8 @@
       www/vicidial/user_stats.php:  Fix for user time calculation,
         subtracted queue_seconds.
   * Add upstream Rev. 2950:
-    - Changed www/vicidial/admin_bulk_tools.php: Updated column labels in user copy
-        function to add ones that had been created since script was made.
+    - Changed www/vicidial/admin_bulk_tools.php: Updated column labels in user
+        copy function to add ones that had been created since script was made.
   * Add upstream Rev. 2951:
     - changed www/vicidial/AST_admin_template_maker.php,
       www/vicidial/admin_listloader_fourth_gen.php: Enforce User Group campaign
