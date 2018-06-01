@@ -1,7 +1,17 @@
 <?php
 # admin_search_lead.php   version 2.14
 #
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# LICENSE: AGPLv3
+#
+# Copyright (©) 2018  Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
+#
+#
+# FP - Changelog
+#
+# 2018-06-01 18:30:53 Extension of the search function around street and 
+#                     city (2018-009).
 #
 # AST GUI database administration search for lead info
 # admin_modify_lead.php
@@ -61,7 +71,11 @@ if (isset($_GET["vendor_id"]))			{$vendor_id=$_GET["vendor_id"];}
 if (isset($_GET["first_name"]))				{$first_name=$_GET["first_name"];}
 	elseif (isset($_POST["first_name"]))	{$first_name=$_POST["first_name"];}
 if (isset($_GET["last_name"]))			{$last_name=$_GET["last_name"];}
-	elseif (isset($_POST["last_name"]))	{$last_name=$_POST["last_name"];}
+    elseif (isset($_POST["last_name"]))	{$last_name=$_POST["last_name"];}
+if (isset($_GET["address1"]))			{$address1=$_GET["address1"];}
+    elseif (isset($_POST["address1"]))	{$address1=$_POST["address1"];}
+if (isset($_GET["city"]))	      		{$city=$_GET["city"];}
+    elseif (isset($_POST["city"]))      {$city=$_POST["city"];}
 if (isset($_GET["email"]))			{$email=$_GET["email"];}
 	elseif (isset($_POST["email"]))	{$email=$_POST["email"];}
 if (isset($_GET["phone"]))				{$phone=$_GET["phone"];}
@@ -326,7 +340,7 @@ echo " "._QXZ("Lead search").": $vendor_id $phone $lead_id $status $list_id $use
 echo date("l F j, Y G:i:s A");
 echo "<BR>\n";
 
-if ( (!$vendor_id) and (!$phone)  and (!$lead_id) and (!$log_phone)  and (!$log_lead_id) and (!$log_phone_archive)  and (!$log_lead_id_archive) and ( (strlen($status)<1) and (strlen($list_id)<1) and (strlen($user)<1) and (strlen($owner)<1) ) and ( (strlen($first_name)<1) and (strlen($last_name)<1) and (strlen($email)<1) ))
+if ( (!$vendor_id) and (!$phone)  and (!$lead_id) and (!$log_phone)  and (!$log_lead_id) and (!$log_phone_archive)  and (!$log_lead_id_archive) and ( (strlen($status)<1) and (strlen($list_id)<1) and (strlen($user)<1) and (strlen($owner)<1) ) and ( (strlen($first_name)<1) and (strlen($last_name)<1) and (strlen($address1)<1) and (strlen($city)<1) and (strlen($email)<1) ))
 	{
 	### Lead search
 	echo "<br><center>\n";
@@ -383,9 +397,13 @@ if ( (!$vendor_id) and (!$phone)  and (!$lead_id) and (!$log_phone)  and (!$log_
 	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
 
 	echo "<TD ALIGN=right>$label_first_name: &nbsp; </TD><TD ALIGN=left><input type=text name=first_name size=15 maxlength=30></TD>";
-	echo "<TD rowspan=2><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'></TD>\n";
+	echo "<TD rowspan=4><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'></TD>\n";
 	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
 	echo "<TD ALIGN=right>$label_last_name: &nbsp; </TD><TD ALIGN=left><input type=text name=last_name size=15 maxlength=30></TD>";
+	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
+	echo "<TD ALIGN=right>$label_address1: &nbsp; </TD><TD ALIGN=left><input type=text name=address1 size=15 maxlength=30></TD>";
+	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
+	echo "<TD ALIGN=right>$label_city: &nbsp; </TD><TD ALIGN=left><input type=text name=city size=15 maxlength=30></TD>";
 	echo "</TR><TR bgcolor=#$SSmenu_background>";
 	echo "<TD colspan=3 align=center height=1></TD>";
 	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
@@ -663,7 +681,7 @@ else
 		$SQL_log = "$stmtA|$stmtB|$stmtC|";
 		$SQL_log = preg_replace('/;/', '', $SQL_log);
 		$SQL_log = addslashes($SQL_log);
-		$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LEADS', event_type='SEARCH', record_id='$search_lead', event_code='ADMIN SEARCH LEAD', event_sql=\"$SQL_log\", event_notes=\"$DB|$SUBMIT|$alt_phone_search|$archive_search|$first_name|$last_name|$lead_id|$list_id|$log_lead_id|$log_lead_id_archive|$log_phone|$log_phone_archive|$owner|$phone|$status|$submit|$user|$vendor_id|$called_count\";";
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LEADS', event_type='SEARCH', record_id='$search_lead', event_code='ADMIN SEARCH LEAD', event_sql=\"$SQL_log\", event_notes=\"$DB|$SUBMIT|$alt_phone_search|$archive_search|$first_name|$last_name|$address1|$city|$lead_id|$list_id|$log_lead_id|$log_lead_id_archive|$log_phone|$log_phone_archive|$owner|$phone|$status|$submit|$user|$vendor_id|$called_count\";";
 		if ($DB) {echo "|$stmt|\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 
@@ -909,7 +927,7 @@ else
 		$SQL_log = "$stmtA|$stmtB|$stmtC|";
 		$SQL_log = preg_replace('/;/', '', $SQL_log);
 		$SQL_log = addslashes($SQL_log);
-		$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LEADS', event_type='SEARCH', record_id='$search_lead', event_code='ADMIN SEARCH LEAD', event_sql=\"$SQL_log\", event_notes=\"ARCHIVE   $DB|$SUBMIT|$alt_phone_search|$archive_search|$first_name|$last_name|$lead_id|$list_id|$log_lead_id|$log_lead_id_archive|$log_phone|$log_phone_archive|$owner|$phone|$status|$submit|$user|$vendor_id|$called_count\";";
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LEADS', event_type='SEARCH', record_id='$search_lead', event_code='ADMIN SEARCH LEAD', event_sql=\"$SQL_log\", event_notes=\"ARCHIVE   $DB|$SUBMIT|$alt_phone_search|$archive_search|$first_name|$last_name|$address1|$city|$lead_id|$list_id|$log_lead_id|$log_lead_id_archive|$log_phone|$log_phone_archive|$owner|$phone|$status|$submit|$user|$vendor_id|$called_count\";";
 		if ($DB) {echo "|$stmt|\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 
@@ -990,20 +1008,30 @@ else
 					}
 				else
 					{
-					if ( (strlen($first_name)>0) or (strlen($last_name)>0) )
+					if ( (strlen($first_name)>0) or (strlen($last_name)>0) or (strlen($address1)>0) or (strlen($city)>0))
 						{
 						$first_nameSQL = '';
 						$last_nameSQL = '';
+						$address1SQL = '';
+						$citySQL = '';
 						if (strlen($first_name)>0)	
 							{
-							$first_nameSQL = "first_name='" . mysqli_real_escape_string($link, $first_name) . "'"; $SQLctA++;
+							$first_nameSQL = "first_name LIKE '" . mysqli_real_escape_string($link, $first_name) . "'"; $SQLctA++;
 							}
 						if (strlen($last_name)>0) 
 							{
 							if ($SQLctA > 0) {$andA = 'and';}
-							$last_nameSQL = "$andA last_name='" . mysqli_real_escape_string($link, $last_name) . "'";
+							$last_nameSQL = "$andA last_name LIKE '" . mysqli_real_escape_string($link, $last_name) . "'"; $SQLctA++;
 							}
-						$stmt="SELECT $vicidial_list_fields from $vl_table where $first_nameSQL $last_nameSQL $LOGallowed_listsSQL";
+						if (strlen($address1) >0) {
+							if ($SQLctA > 0) {$andA = 'and';}
+							$address1SQL = "$andA address1 LIKE '" . mysqli_real_escape_string($link, $address1) . "'"; $SQLctA++;
+						}
+						if (strlen($city) >0) {
+						    if ($SQLctA > 0) {$andA = 'and';}
+						    $citySQL = "$andA city LIKE '" . mysqli_real_escape_string($link, $city) . "'"; $SQLctA++;
+						}
+						$stmt="SELECT $vicidial_list_fields from $vl_table where $first_nameSQL $last_nameSQL $address1SQL $citySQL $LOGallowed_listsSQL";
 						}
 					else
 						{

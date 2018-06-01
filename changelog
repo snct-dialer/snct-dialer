@@ -349,6 +349,8 @@
   * Add upstream Rev. 2995:
     - Changed www/vicidial/admin.php: Small DID bug fix, added Call Menus list
         on Modify Call Time page.
+  * Extension of the search function around street and city (2018-009):
+    - Changed www/vicidial/admin_search_lead.php.
 
 2.25.25b
   [Jörg Frings-Fürst]
