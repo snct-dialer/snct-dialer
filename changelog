@@ -355,6 +355,8 @@
     - Changed agi/agi-VDAD_ALL_inbound.agi,
       bin/AST_send_URL.pl: Added user variable sending option on
         enter_ingroup_url feature.
+  * Add upstream Rev. 2997:
+    - Changed extras/SCRIPT_multirecording.php: fixed variable filtering bug.
 
 2.25.25b
   [Jörg Frings-Fürst]
