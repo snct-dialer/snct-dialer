@@ -351,6 +351,10 @@
         on Modify Call Time page.
   * Extension of the search function around street and city (2018-009):
     - Changed www/vicidial/admin_search_lead.php.
+  * Add upstream Rev. 2996:
+    - Changed agi/agi-VDAD_ALL_inbound.agi,
+      bin/AST_send_URL.pl: Added user variable sending option on
+        enter_ingroup_url feature.
 
 2.25.25b
   [Jörg Frings-Fürst]

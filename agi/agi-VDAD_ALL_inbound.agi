@@ -227,6 +227,7 @@
 # 180424-1539 - Added in-group populate_lead_source, populate_lead_vendor options
 # 180520-1802 - Added enter_ingroup_url feature
 # 180521-0736 - Changed closer logs for AGENTDIRECT calls to log destination user
+# 180601-0932 - Added user variable sending option on enter_ingroup_url feature
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
@@ -2553,11 +2554,15 @@ if ($populate_lead_province =~ /OW_did/i)
 ### BEGIN the Enter-InGroup-URL get process
 if (length($enter_ingroup_url) > 5)
 	{
+	$temp_user='';
+	if ( ($channel_group =~ /AGENTDIRECT/i) && (length($agent_only) > 1) )
+		{$temp_user = $agent_only;}
+
 	$launch = $PATHhome . "/AST_send_URL.pl";
 	$launch .= " --SYSLOG" if ($SYSLOG);
 	$launch .= " --lead_id=" . $insert_lead_id;
 	$launch .= " --phone_number=" . $phone_number;
-	$launch .= " --user=";
+	$launch .= " --user=" . $temp_user;
 	$launch .= " --call_type=IN";
 	$launch .= " --campaign=" . $channel_group;
 	$launch .= " --uniqueid=" . $uniqueid;

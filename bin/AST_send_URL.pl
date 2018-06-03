@@ -27,6 +27,7 @@
 # 170509-1545 - Added --A--SQLdate--B-- variable
 # 180519-1741 - Added INGROUP_WCU_ON & INGROUP_WCU_OFF functions
 # 180520-2002 - Added ENTER_INGROUP_URL function
+# 180601-0929 - Added full_name and launch_user variable options
 #
 
 $|++;
@@ -489,6 +490,25 @@ if (length($lead_id) > 0)
 			$sthA->finish();
 			}
 
+		if ($enter_ingroup_url =~ /--A--user_custom_|--A--full_name--B--/)
+			{
+			$stmtA = "SELECT custom_one,custom_two,custom_three,custom_four,custom_five,user_group,full_name from vicidial_users where user='$user';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$VAR_user_custom_one =		$aryA[0];
+				$VAR_user_custom_two =		$aryA[1];
+				$VAR_user_custom_three =	$aryA[2];
+				$VAR_user_custom_four =		$aryA[3];
+				$VAR_user_custom_five =		$aryA[4];
+				$VAR_user_group =			$aryA[5];
+				$VAR_full_name =			$aryA[6];
+				}
+			}
+
 		if ($enter_ingroup_url =~ /--A--closecallid--B--/)
 			{
 			$stmtA = "SELECT closecallid FROM vicidial_closer_log where uniqueid='$uniqueid' order by closecallid limit 1;";
@@ -568,6 +588,8 @@ if (length($lead_id) > 0)
 		$enter_ingroup_url =~ s/--A--user_custom_three--B--/$VAR_user_custom_three/gi;
 		$enter_ingroup_url =~ s/--A--user_custom_four--B--/$VAR_user_custom_four/gi;
 		$enter_ingroup_url =~ s/--A--user_custom_five--B--/$VAR_user_custom_five/gi;
+		$enter_ingroup_url =~ s/--A--full_name--B--/$VAR_full_name/gi;
+		$enter_ingroup_url =~ s/--A--launch_user--B--/$user/gi;
 		$enter_ingroup_url =~ s/--A--did_id--B--/$VAR_did_id/gi;
 		$enter_ingroup_url =~ s/--A--did_extension--B--/$VAR_did_extension/gi;
 		$enter_ingroup_url =~ s/--A--did_pattern--B--/$VAR_did_pattern/gi;
@@ -630,9 +652,9 @@ if (length($lead_id) > 0)
 			}
 		$sthA->finish();
 
-		if ($na_call_url =~ /--A--user_custom_/)
+		if ($na_call_url =~ /--A--user_custom_|--A--full_name--B--/)
 			{
-			$stmtA = "SELECT custom_one,custom_two,custom_three,custom_four,custom_five,user_group from vicidial_users where user='$user';";
+			$stmtA = "SELECT custom_one,custom_two,custom_three,custom_four,custom_five,user_group,full_name from vicidial_users where user='$user';";
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			$sthArows=$sthA->rows;
@@ -645,6 +667,7 @@ if (length($lead_id) > 0)
 				$VAR_user_custom_four =		$aryA[3];
 				$VAR_user_custom_five =		$aryA[4];
 				$VAR_user_group =			$aryA[5];
+				$VAR_full_name =			$aryA[6];
 				}
 			}
 
@@ -754,6 +777,8 @@ if (length($lead_id) > 0)
 		$na_call_url =~ s/--A--user_custom_three--B--/$VAR_user_custom_three/gi;
 		$na_call_url =~ s/--A--user_custom_four--B--/$VAR_user_custom_four/gi;
 		$na_call_url =~ s/--A--user_custom_five--B--/$VAR_user_custom_five/gi;
+		$na_call_url =~ s/--A--full_name--B--/$VAR_full_name/gi;
+		$na_call_url =~ s/--A--launch_user--B--/$user/gi;
 		$na_call_url =~ s/--A--did_id--B--/$VAR_did_id/gi;
 		$na_call_url =~ s/--A--did_extension--B--/$VAR_did_extension/gi;
 		$na_call_url =~ s/--A--did_pattern--B--/$VAR_did_pattern/gi;
@@ -838,9 +863,9 @@ if (length($lead_id) > 0)
 			}
 		$sthA->finish();
 
-		if ($sc_call_url =~ /--A--user_custom_/)
+		if ($sc_call_url =~ /--A--user_custom_|--A--full_name--B--/)
 			{
-			$stmtA = "SELECT custom_one,custom_two,custom_three,custom_four,custom_five,user_group from vicidial_users where user='$user';";
+			$stmtA = "SELECT custom_one,custom_two,custom_three,custom_four,custom_five,user_group,full_name from vicidial_users where user='$user';";
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			$sthArows=$sthA->rows;
@@ -853,6 +878,7 @@ if (length($lead_id) > 0)
 				$VAR_user_custom_four =		$aryA[3];
 				$VAR_user_custom_five =		$aryA[4];
 				$VAR_user_group =			$aryA[5];
+				$VAR_full_name =			$aryA[6];
 				}
 			}
 
@@ -962,6 +988,8 @@ if (length($lead_id) > 0)
 		$sc_call_url =~ s/--A--user_custom_three--B--/$VAR_user_custom_three/gi;
 		$sc_call_url =~ s/--A--user_custom_four--B--/$VAR_user_custom_four/gi;
 		$sc_call_url =~ s/--A--user_custom_five--B--/$VAR_user_custom_five/gi;
+		$sc_call_url =~ s/--A--full_name--B--/$VAR_full_name/gi;
+		$sc_call_url =~ s/--A--launch_user--B--/$user/gi;
 		$sc_call_url =~ s/--A--did_id--B--/$VAR_did_id/gi;
 		$sc_call_url =~ s/--A--did_extension--B--/$VAR_did_extension/gi;
 		$sc_call_url =~ s/--A--did_pattern--B--/$VAR_did_pattern/gi;
@@ -1027,9 +1055,9 @@ if (length($lead_id) > 0)
 			}
 		$sthA->finish();
 
-		if ($start_call_url =~ /--A--user_custom_/)
+		if ($start_call_url =~ /--A--user_custom_|--A--full_name--B--/)
 			{
-			$stmtA = "SELECT custom_one,custom_two,custom_three,custom_four,custom_five,user_group from vicidial_users where user='$user';";
+			$stmtA = "SELECT custom_one,custom_two,custom_three,custom_four,custom_five,user_group,full_name from vicidial_users where user='$user';";
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			$sthArows=$sthA->rows;
@@ -1042,6 +1070,7 @@ if (length($lead_id) > 0)
 				$VAR_user_custom_four =		$aryA[3];
 				$VAR_user_custom_five =		$aryA[4];
 				$VAR_user_group =			$aryA[5];
+				$VAR_full_name =			$aryA[6];
 				}
 			}
 
@@ -1150,6 +1179,8 @@ if (length($lead_id) > 0)
 		$start_call_url =~ s/--A--user_custom_three--B--/$VAR_user_custom_three/gi;
 		$start_call_url =~ s/--A--user_custom_four--B--/$VAR_user_custom_four/gi;
 		$start_call_url =~ s/--A--user_custom_five--B--/$VAR_user_custom_five/gi;
+		$start_call_url =~ s/--A--full_name--B--/$VAR_full_name/gi;
+		$start_call_url =~ s/--A--launch_user--B--/$user/gi;
 		$start_call_url =~ s/--A--did_id--B--/$VAR_did_id/gi;
 		$start_call_url =~ s/--A--did_extension--B--/$VAR_did_extension/gi;
 		$start_call_url =~ s/--A--did_pattern--B--/$VAR_did_pattern/gi;
