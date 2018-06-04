@@ -1,7 +1,7 @@
 <?php
 # admin_url_multi.php
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # this screen will control the *url* settings needed when the Campaign or 
 # In-Group or List URL setting is set to "ALT". This screen allows for multiple 
@@ -15,10 +15,11 @@
 # 160508-0815 - Added colors features
 # 160801-0657 - Added lists qualifier fields
 # 170409-1545 - Added IP List validation code
+# 180503-2215 - Added new help display
 #
 
-$admin_version = '2.14-5';
-$build = '170409-1545';
+$admin_version = '2.14-6';
+$build = '180503-2215';
 
 require("dbconnect_mysqli.php");
 require("functions.php");
@@ -103,8 +104,11 @@ $date = date("r");
 $ip = getenv("REMOTE_ADDR");
 $browser = getenv("HTTP_USER_AGENT");
 $user = $PHP_AUTH_USER;
-$NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php";
-$NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+# $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
+# $NWE = "')\"><IMG SRC=\"help.png\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+
+$NWB = "<IMG SRC=\"help.png\" onClick=\"FillAndShowHelpDiv(event, '";
+$NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
 
 $stmt="SELECT selected_language,qc_enabled from vicidial_users where user='$PHP_AUTH_USER';";
 if ($DB) {echo "|$stmt|\n";}
@@ -268,6 +272,10 @@ if ($names_to_print > 0)
 ?>
 <html>
 <head>
+
+<link rel="stylesheet" type="text/css" href="vicidial_stylesheet.php">
+<script language="JavaScript" src="help.js"></script>
+<div id='HelpDisplayDiv' class='help_info' style='display:none;'></div>
 
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
 <title><?php echo _QXZ("ADMINISTRATION: URL Multi Entry") . " " . $campaign_id . " - " . $camp_name; ?>

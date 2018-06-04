@@ -278,6 +278,53 @@ OTHER CHANGES:
 
 74. Added NO_READY option for no_agent_no_queue in-group feature.
 
+75. Added campaign option "Script on top of Dispo" to allow the agent screen
+	script tab to cover the dispo screen after hanging up the customer to
+	allow for Agent-API-enabled IFRAMEs to control the agent dispo process.
+
+77. Added feature to allow for bulk change of campaign and in-group ranks and
+	grades in the User Modify page.
+
+76. Added "Admin Lead Source ID Display" System Settings option to allow Modify
+	Lead page modification of Source ID field, and display in hopper list.
+
+77. Added LOCALFQDN trigger for webforms and script Iframes to allow for use of 
+	absolute URLs on multi-home networks. See CALL_URL_FEATURES.txt doc.
+
+78. Added update_did Non-Agent API function
+
+79. Added pause code manager approval option, requires a manager to approve a
+	specific flagged pause code before the agent is allowed to use it in 
+	their agent screen. Manager approves by entering their login credentials
+	into a window on the agent's screen.
+
+80. Added DISPO_FILTER Settings Container option allowing for match-and-replace
+	function in Dispo Call URLs. See CALL_URL_FEATURES.txt doc for details.
+
+81. Added populate_lead_vendor and populate_lead_source options for In-Groups.
+
+82. Added In-Group option to override the Park Music-on-Hold.
+
+83. Added SWITCH custom field type to put buttons on the agent FORM to allow for
+	the form to be switched while on an active call.
+
+84. Rewrote HELP display in web admin screens to function as database-driven
+	javascript popup.
+
+85. Added per-user options for maximum number of outbound manual dial hopper 
+	calls per-hour and per-day.
+
+86. Added In-Group option for Waiting Call On/Off URL, which we added to allow
+	a client to control a web-power-switch to turn lights on and off if 
+	there are any calls waiting in an In-Group.
+
+87. Added In-Group option for Enter In-Group URL, which can send a URL request
+	when a caller enters an In-Group right before the system looks for an 
+	agent to send the call to.
+
+88. Added Manual Dial Routing Initiated Recording, must enable setting at the
+	campaign level and have a 0 recording delay.
+
 
 
 

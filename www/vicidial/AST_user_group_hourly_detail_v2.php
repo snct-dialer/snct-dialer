@@ -1,7 +1,7 @@
 <?php 
 # AST_user_group_hourly_detail.php
 #
-# Copyright (C) 2017  Liz Tejada <liz@softkyrios.com> 
+# Copyright (C) 2018  Liz Tejada <liz@softkyrios.com> 
 #                     Joseph Johnson <freewermadmin@gmail.com>
 #                     Matt Florell <vicidial@gmail.com>
 #  
@@ -16,6 +16,7 @@
 # 170816-2152 - Added HTML option
 # 170818-0749 - Added upgraded code, fixes and link to v1 of report
 # 170829-0040 - Added screen color settings
+# 180507-2315 - Added new help display
 #
 
 $startMS = microtime();
@@ -370,8 +371,11 @@ else
 
 $LINKbase = "$PHP_SELF?query_date=$query_date&end_date=$end_date&shift=$shift&DB=$DB&user=$user$groupQS&search_archived_data=$search_archived_data&report_display_type=$report_display_type";
 
-$NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
-$NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+# $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
+# $NWE = "')\"><IMG SRC=\"help.png\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+
+$NWB = "<IMG SRC=\"help.png\" onClick=\"FillAndShowHelpDiv(event, '";
+$NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
 
 if ($file_download < 1)
 	{
@@ -385,6 +389,10 @@ if ($file_download < 1)
 	echo "   .purple {color: white; background-color: purple}\n";
 	echo "-->\n";
 	echo " </STYLE>\n";
+
+	echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"vicidial_stylesheet.php\">\n";
+	echo "<script language=\"JavaScript\" src=\"help.js\"></script>\n";
+	echo "<div id='HelpDisplayDiv' class='help_info' style='display:none;z-index:99;'></div>";
 
 	echo "<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
 	echo "<link rel=\"stylesheet\" href=\"calendar.css\">\n";
@@ -400,7 +408,7 @@ if ($file_download < 1)
 
 	echo "</span>\n";
 	echo "<span style=\"position:absolute;left:3px;top:30px;z-index:19;\"  id=agent_status_stats>\n";
-	echo "<b>"._QXZ("$report_name")."</b>\n";
+	echo "<b>"._QXZ("$report_name")." $NWB#user_group_hourly_detail$NWE</b>\n";
 	echo "<PRE><FONT SIZE=2>";
 	}
 

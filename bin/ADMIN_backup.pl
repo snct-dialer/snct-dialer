@@ -5,7 +5,11 @@
 # DESCRIPTION:
 # Backs-up the asterisk database, conf/agi/sounds/bin files 
 #
-# Copyright (C) 2016  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# LICENSE: AGPLv3
+#
+# Copyright (C) 2016  Matt Florell <vicidial@gmail.com>
+# Copyright (c) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
 #
 # CHANGELOG
 #
@@ -30,6 +34,10 @@
 #                 no cron access.
 #               Switch temp directory to /tmp/vicibackup.
 #               Add prompt_count.txt to linux backup.
+# 180227-0658 - Add /etc/flyingpenguin
+#               Change license from AGPLv2 to AGPLv3
+# 180507-1612 - Remove prompt_count.txt from backup
+#
 #
 
 $secT = time();
@@ -558,6 +566,7 @@ if ( ($without_conf < 1) && ($db_only < 1) )
 	if ( -e ('/etc/rc.d/rc.local')) {$files .= "/etc/rc.d/rc.local ";}
 	if ( -e ('/etc/resolv.conf')) {$files .= "/etc/resolv.conf ";}
 	if ( -e ('/prompt_count.txt')) {$files .= "/prompt_count.txt ";}
+	if ( -e ('/etc/flyingpenguin')) {$files .= "/etc/flyingpenguin ";}
 
 	if ($DBX) {print "$tarbin -Jcf $TEMPpath/$VARserver_ip$linux$wday$txz $files\n";}
 	`$tarbin -Jcf $TEMPpath/$VARserver_ip$linux$wday$txz $files`;

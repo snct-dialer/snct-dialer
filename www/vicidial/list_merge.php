@@ -1,12 +1,14 @@
 <?php
 # list_merge.php - merge smaller lists into a larger one. Part of Admin Utilities.
 #
-# Copyright (C) 2017  Matt Florell,Joseph Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell,Joseph Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 161004-2240 - Initial Build
 # 170409-1548 - Added IP List validation code
 # 170819-1000 - Added allow_manage_active_lists option
+# 180508-2215 - Added new help display
+
 #
 
 $version = '2.14-3';
@@ -194,6 +196,11 @@ echo "<html>\n";
 echo "<head>\n";
 echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"vicidial_stylesheet.css\" />";
 echo "<script language=\"JavaScript\" src=\"functions.js\"></script>\n";
+
+echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"vicidial_stylesheet.php\">\n";
+echo "<script language=\"JavaScript\" src=\"help.js\"></script>\n";
+echo "<div id='HelpDisplayDiv' class='help_info' style='display:none;'></div>";
+
 echo "<META HTTP-EQUIV='Content-Type' CONTENT='text/html; charset=utf-8'>\n";
 echo "<!-- "._QXZ("VERSION").": <?php echo $version ?>     "._QXZ("BUILD").": <?php echo $build ?> -->\n";
 echo "<title>"._QXZ("ADMINISTRATION: List Merge Tool")."</title>\n";
@@ -215,8 +222,11 @@ $SSadmin_color =	  '#FFFF99';
 $admin_font =	   'BLACK';
 $SSadmin_color =	  '#E6E6E6';
 $subcamp_color =	'#C6C6C6';
-$NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php";
-$NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+# $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
+# $NWE = "')\"><IMG SRC=\"help.png\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+
+$NWB = "<IMG SRC=\"help.png\" onClick=\"FillAndShowHelpDiv(event, '";
+$NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
 
 $SSmenu_background='015B91';
 $SSframe_background='D9E6FE';
@@ -406,7 +416,8 @@ if ($submit == "submit" )
 	echo "<input type=hidden name=orig_count value='$orig_count'>\n";
 	echo "<input type=hidden name=destination_list_id value='$destination_list_id'>\n";
 	echo "<input type=hidden name=new_list_id value='$new_list_id'>\n";
-	echo "<input type=hidden name=new_list_name value='$new_list_name'>\n";
+
+	echo "<input type=hidden name=new_list_name value='$new_list_name'>\n";
 	echo "<input type=hidden name=new_list_description value='$new_list_description'>\n";
 	echo "<input type=hidden name=campaign_id value='$campaign_id'>\n";
 	echo "<input type=hidden name=active value='$active'>\n";
@@ -458,7 +469,8 @@ if ($confirm == "CONFIRM")
 		$admin_log_rslt=mysql_to_mysqli($admin_log_stmt, $link);
 		}
 */
-	
+
+	
 	# move the leads to the new list from the old list
 	$move_lead_stmt = "UPDATE vicidial_list SET list_id = '$destination_list_id' WHERE list_id in ('".implode("', '", $available_lists_array)."');";
 	if ($DB) { echo "|$move_lead_stmt|\n"; }
@@ -475,7 +487,8 @@ if ($confirm == "CONFIRM")
 		
 	# reset the PHP max execution so this script does not exit prematurely
 	set_time_limit( 120 );
-	
+	
+
 	echo "<p>"._QXZ("List(s)")." ".implode(", ", $available_lists_array)." "._QXZ("was merged into list")." $destination_list_id "._QXZ("with")." $move_lead_count "._QXZ("lead(s) moved.")."</p>";
 	echo "<p><a href='$PHP_SELF'>"._QXZ("Click here to start over.")."</a></p>\n";
 	}

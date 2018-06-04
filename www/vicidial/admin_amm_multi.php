@@ -1,7 +1,7 @@
 <?php
 # admin_amm_multi.php
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # this screen will control the *amd* settings needed when the Campaign setting 
 # "AM Message Wildcards" is enabled. This screen allows for multiple messages 
@@ -12,6 +12,7 @@
 # 151109-1653 - First Build
 # 160801-1201 - Added colors features
 # 170409-1544 - Added IP List validation code
+# 180502-2115 - Added new help display
 #
 
 $admin_version = '2.14-3';
@@ -98,8 +99,11 @@ $date = date("r");
 $ip = getenv("REMOTE_ADDR");
 $browser = getenv("HTTP_USER_AGENT");
 $user = $PHP_AUTH_USER;
-$NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php";
-$NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+# $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
+# $NWE = "')\"><IMG SRC=\"help.png\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+
+$NWB = "<IMG SRC=\"help.png\" onClick=\"FillAndShowHelpDiv(event, '";
+$NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
 
 $stmt="SELECT selected_language,qc_enabled from vicidial_users where user='$PHP_AUTH_USER';";
 if ($DB) {echo "|$stmt|\n";}
@@ -228,6 +232,11 @@ if ($names_to_print > 0)
 <head>
 
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+
+<link rel="stylesheet" type="text/css" href="vicidial_stylesheet.php">
+<script language="JavaScript" src="help.js"></script>
+<div id='HelpDisplayDiv' class='help_info' style='display:none;'></div>
+
 <title><?php echo _QXZ("ADMINISTRATION: AM Message Multi Entry") . " " . $campaign_id . " - " . $camp_name; ?>
 <?php 
 

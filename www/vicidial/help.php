@@ -154,6 +154,12 @@
 # 180211-1119 - Added source_vlc_status_report
 # 180214-0042 - Added cid_groups
 # 180217-0810 - Added pause_max_dispo
+# 180306-1639 - Added script_top_dispo
+# 180310-2246 - Added settings-source_id_display
+# 180410-1609 - Added users-pause_code_approval
+# 180424-1530 - Added in-group populate_lead_source, populate_lead_vendor entries
+# 180430-1837 - Added inbound_groups-park_ext entry
+# 180506-1822 - Added text for custom list fields SWITCH field type
 #
 
 require("dbconnect_mysqli.php");
@@ -757,6 +763,11 @@ if ($SSqc_features_active > 0)
 <B><?php echo _QXZ("Manager Shift Enforcement Override"); ?> -</B><?php echo _QXZ("This setting if set to 1 will allow a manager to enter their user and password on an agent screen to override the shift restrictions on an agent session if the agent is trying to log in outside of their shift. Default is 0."); ?>
 
 <BR>
+<A NAME="users-pause_code_approval">
+<BR>
+<B><?php echo _QXZ("Manager Pause Code Approval"); ?> -</B><?php echo _QXZ("If a campaign pause code is set to require manager approval, the manager that approves the agent pause code selection must have this setting set to 1. Default is 0."); ?>
+
+<BR>
 <A NAME="users-vdc_agent_api_access">
 <BR>
 <B><?php echo _QXZ("Agent API Access"); ?> -</B><?php echo _QXZ("This option allows the account to be used with the agent and non-agent API commands."); ?>
@@ -821,6 +832,10 @@ if ($SSqc_features_active > 0)
 <BR>
 <B><?php echo _QXZ("Search Lead Ignore Group Restrictions"); ?> -</B><?php echo _QXZ("Changing this setting to 1 will allow this user to search for leads throughout the entire system instead of just within the allowed campaigns that are set within their User Group. This will also allow modifying of those leads in the administrative lead modification page. Default is 0 for disabled. To be able to modify this setting, you must belong to a user group that has ALL CAMPAIGNS selected in the Allowed Campaigns section."); ?>
 
+<BR>
+<A NAME="users-alter_admin_interface_options">
+<BR>
+<B><?php echo _QXZ("Alter Admin Interface Options"); ?> -</B><?php echo _QXZ("Changing this setting to 1 will allow this user to alter admin interface options."); ?>
 
 
 
@@ -1411,6 +1426,21 @@ if ($SSoutbound_autodial_active > 0)
 	<B><?php echo _QXZ("Survey Third Extension"); ?> -</B><?php echo _QXZ("This is the third extension used for the call upon the selection by the customer of the Third Digit option. Default is 8300 which immediately hangs up the call after the Audio File message is played."); ?>
 
 	<BR>
+	<A NAME="campaigns-survey_fourth_audio_file">
+	<BR>
+	<B><?php echo _QXZ("Survey Fourth Audio File"); ?> -</B><?php echo _QXZ("This is the fourth audio file to be played upon the selection by the customer of the Fourth Digit option."); ?>
+
+	<BR>
+	<A NAME="campaigns-survey_fourth_status">
+	<BR>
+	<B><?php echo _QXZ("Survey Fourth Status"); ?> -</B><?php echo _QXZ("This is the fourth status used for the call upon the selection by the customer of the Fourth Digit option."); ?>
+
+	<BR>
+	<A NAME="campaigns-survey_fourth_exten">
+	<BR>
+	<B><?php echo _QXZ("Survey Fourth Extension"); ?> -</B><?php echo _QXZ("This is the fourth extension used for the call upon the selection by the customer of the Fourth Digit option. Default is 8300 which immediately hangs up the call after the Audio File message is played."); ?>
+
+	<BR>
 	<A NAME="campaigns-agent_display_dialable_leads">
 	<BR>
 	<B><?php echo _QXZ("Agent Display Dialable Leads"); ?> -</B><?php echo _QXZ("This option if enabled will show the number of dialable leads available in the campaign in the agent screen. This number is updated in the system once a minute and will be refreshed on the agent screen every few seconds."); ?>
@@ -1755,6 +1785,11 @@ if ($SSoutbound_autodial_active > 0)
 <A NAME="campaigns-disable_dispo_status">
 <BR>
 <B><?php echo _QXZ("Disable Dispo Status"); ?> -</B><?php echo _QXZ("If the Disable Dispo Screen option is set to DISPO_DISABLED, then this field must be filled in. You can use any disposition you want for this field as long as it is 1 to 6 characters in length with only letters and numbers."); ?>
+
+<BR>
+<A NAME="campaigns-script_top_dispo">
+<BR>
+<B><?php echo _QXZ("Script on top of Dispo"); ?> -</B><?php echo _QXZ("If you are using an IFRAME in your SCRIPT tab contents, and the page you are using is sending statuses through the Agent API, you may want to use this feature to cover the Dispostion screen with the script tab after a call is hung up. Default is N for disabled."); ?>
 
 <BR>
 <A NAME="campaigns-dead_max">
@@ -2430,12 +2465,12 @@ if ($SSqc_features_active > 0)
 <BR>
 <A NAME="lists_fields-field_type">
 <BR>
-<B><?php echo _QXZ("Field Type"); ?> -</B><?php echo _QXZ("This option defines the type of field that will be displayed. TEXT is a standard single-line entry form, AREA is a multi-line text box, SELECT is a single-selection pull-down menu, MULTI is a multiple-select box, RADIO is a list of radio buttons where only one option can be selected, CHECKBOX is a list of checkboxes where multiple options can be selected, DATE is a year month day calendar popup where the agent can select the date and TIME is a time selection box. The default is TEXT. For the SELECT, MULTI, RADIO and CHECKBOX options you must define the option values below in the Field Options box. DISPLAY will display only and not allow for modification by the agent. SCRIPT will also display only, but you are able to use script variables just like in the Scripts feature. SCRIPT fields will also only display the content in the Options, and not the field name like the DISPLAY type does. HIDDEN will not show the agent the field, but will allow the field to have data imported into it and exported from it, as well as have it available to the script tab and web form address. READONLY will display the value of the data in the field, but will not allow the agent to alter the data. HIDEBLOB is similar to HIDDEN except the data storage type on the database is a BLOB type, suitable for binary data or data that needs to be secured."); ?>
+<B><?php echo _QXZ("Field Type"); ?> -</B><?php echo _QXZ("This option defines the type of field that will be displayed. TEXT is a standard single-line entry form, AREA is a multi-line text box, SELECT is a single-selection pull-down menu, MULTI is a multiple-select box, RADIO is a list of radio buttons where only one option can be selected, CHECKBOX is a list of checkboxes where multiple options can be selected, DATE is a year month day calendar popup where the agent can select the date and TIME is a time selection box. The default is TEXT. For the SELECT, MULTI, RADIO and CHECKBOX options you must define the option values below in the Field Options box. DISPLAY will display only and not allow for modification by the agent. SCRIPT will also display only, but you are able to use script variables just like in the Scripts feature. SCRIPT fields will also only display the content in the Options, and not the field name like the DISPLAY type does. HIDDEN will not show the agent the field, but will allow the field to have data imported into it and exported from it, as well as have it available to the script tab and web form address. READONLY will display the value of the data in the field, but will not allow the agent to alter the data. HIDEBLOB is similar to HIDDEN except the data storage type on the database is a BLOB type, suitable for binary data or data that needs to be secured. The SWITCH field type allows the agent to switch the lead custom fields to another list, as well as reloading the FORM tab with the new set of list custom fields for the new list. To configure SWITCH type fields, you must define the button values below in the Field Options box."); ?>
 
 <BR>
 <A NAME="lists_fields-field_options">
 <BR>
-<B><?php echo _QXZ("Field Options"); ?> -</B><?php echo _QXZ("For the SELECT, MULTI, RADIO and CHECKBOX field types, you must define the option values in this box. You must put a list of comma separated option label and option text here with each option one its own line. The first value should have no spaces in it, and neither values should have any punctuation. For example - electric_meter, Electric Meter") . ". " . _QXZ("For the SCRIPT field types, this field is where you put your script contents. You can use single quote and amphersand characters as well so that you can create links and iframe elements. If you want to put urlencoded fields in this area, make sure you use the --U-- and --V-- flags for your variables instead of using A and B, for example --U--test_field--V--."); ?>
+<B><?php echo _QXZ("Field Options"); ?> -</B><?php echo _QXZ("For the SELECT, MULTI, RADIO and CHECKBOX field types, you must define the option values in this box. You must put a list of comma separated option label and option text here with each option one its own line. The first value should have no spaces in it, and neither values should have any punctuation. For example - electric_meter, Electric Meter") . ". " . _QXZ("For the SCRIPT field types, this field is where you put your script contents. You can use single quote and amphersand characters as well so that you can create links and iframe elements. If you want to put urlencoded fields in this area, make sure you use the --U-- and --V-- flags for your variables instead of using A and B, for example --U--test_field--V--. For the SWITCH field type, you should define the list ID for the custom fields as well as the text that you want to appear in the button to activate the new form in a comma separated line, with one line for each button you want to appear. For the SWITCH field type, it is a requirement that one of the entries be the current list ID."); ?>
 
 <BR>
 <A NAME="lists_fields-multi_position">
@@ -2524,6 +2559,11 @@ if ($SSqc_features_active > 0)
 <B><?php echo _QXZ("Admin User Group"); ?> -</B><?php echo _QXZ("This is the administrative user group for this inbound group, this allows admin viewing of this in-group restricted by user group. Default is --ALL-- which allows any admin user to view this in-group."); ?>
 
 <BR>
+<A NAME="inbound_groups-park_ext">
+<BR>
+<B><?php echo _QXZ("Park Music-on-Hold"); ?> -</B><?php echo _QXZ("This optional setting will override the agent campaign setting for Park Music-on-Hold, if populated. Default is empty for disabled."); ?>
+
+<BR>
 <A NAME="inbound_groups-callback_queue_calls">
 <BR>
 <B><?php echo _QXZ("Callback Queue Calls"); ?> -</B><?php echo _QXZ("This will only show up if there are LIVE inbound callback queue calls waiting to be called back by agents when their turn arrives."); ?>
@@ -2532,6 +2572,16 @@ if ($SSqc_features_active > 0)
 <A NAME="inbound_groups-group_calldate">
 <BR>
 <B><?php echo _QXZ("In-Group Calldate"); ?> -</B><?php echo _QXZ("This is the last date and time that a call was directed to this inbound group."); ?>
+
+<BR>
+<A NAME="inbound_groups-group_emaildate">
+<BR>
+<B><?php echo _QXZ("In-Group Email Date"); ?> -</B><?php echo _QXZ("This is the last date and time that an email was directed to this inbound group."); ?>
+
+<BR>
+<A NAME="inbound_groups-group_chatdate">
+<BR>
+<B><?php echo _QXZ("In-Group Chat Date"); ?> -</B><?php echo _QXZ("This is the last date and time that a chat was directed to this inbound group."); ?>
 
 <BR>
 <A NAME="inbound_groups-web_form_address">
@@ -2555,6 +2605,48 @@ if ($SSqc_features_active > 0)
  <BR> &nbsp; - <?php echo _QXZ("fewest_calls: orders by the number of calls received by an agent for that specific inbound group. Least calls first."); ?>
  <BR> &nbsp; - <?php echo _QXZ("fewest_calls_campaign: orders by the number of calls received by an agent for the campaign. Least calls first."); ?>
  <BR> &nbsp; - <?php echo _QXZ("longest_wait_time: orders by the amount of time agent has been actively waiting for a call."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("ring_all: rings all available agents until one picks up the phone."); ?>
+ <BR> <?php echo _QXZ("NOTES: For ring_all, the agents that are using phones that have On Hook Agent enabled will have their phones ring and the first one to answer will receive the call and the information on the agent screen. Since ring_all ignores agent wait time and ranking and will call every agent that is available for the queue, we do not recommend using this method for large queues. When using ring_all, agents logged with phones that have the On Hook Agent disabled will have to use the Calls In Queue panel and click on the TAKE CALL link to take calls in queue. The amount of time the agents phone will ring for ring_all is set to the On-Hook Ring Time setting or the shortest ring time of the phones that will be called. We do not recommend using ring_all on high call volume queues, or queues with many agents. The ring_all method is intended to be used with only a few agents and on low call volume in-groups."); ?>
+<BR>
+
+<BR>
+<A NAME="inbound_groups-next_agent_email">
+<BR>
+<B><?php echo _QXZ("Next Agent Email"); ?> -</B><?php echo _QXZ("This determines which agent receives the next email that is available:"); ?>
+ <BR> &nbsp; - <?php echo _QXZ("random: orders by the random update value in the live_agents table"); ?>
+ <BR> &nbsp; - <?php echo _QXZ("oldest_call_start: orders by the last time an agent was sent a call/email. Results in agents receiving about the same number of calls/emails overall."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("oldest_call_finish: orders by the last time an agent finished a call/email. AKA agent waiting longest receives first call."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("oldest_inbound_call_start: orders by the last time an agent was sent an inbound call. Results in agents receiving about the same number of calls/emails overall."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("oldest_inbound_call_finish: orders by the last time an agent finished an inbound call. AKA agent waiting longest receives first call."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("overall_user_level: orders by the user_level of the agent as defined in the users table a higher user_level will receive more calls/emails."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("inbound_group_rank: orders by the rank given to the agent for the specific inbound group. Highest to Lowest."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("campaign_rank: orders by the rank given to the agent for the campaign. Highest to Lowest."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("ingroup_grade_random: gives a higher probability of getting a call/email to the higher graded agents by in-group."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("campaign_grade_random: gives a higher probability of getting a call/email to the higher graded agents by campaign."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("fewest_calls: orders by the number of calls/emails received by an agent for that specific inbound group. Least calls/emails first."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("fewest_calls_campaign: orders by the number of calls/emails received by an agent for the campaign. Least calls/emails first."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("longest_wait_time: orders by the amount of time agent has been actively waiting for a call/email."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("ring_all: rings all available agents until one picks up the phone."); ?>
+ <BR> <?php echo _QXZ("NOTES: For ring_all, the agents that are using phones that have On Hook Agent enabled will have their phones ring and the first one to answer will receive the call and the information on the agent screen. Since ring_all ignores agent wait time and ranking and will call every agent that is available for the queue, we do not recommend using this method for large queues. When using ring_all, agents logged with phones that have the On Hook Agent disabled will have to use the Calls In Queue panel and click on the TAKE CALL link to take calls in queue. The amount of time the agents phone will ring for ring_all is set to the On-Hook Ring Time setting or the shortest ring time of the phones that will be called. We do not recommend using ring_all on high call volume queues, or queues with many agents. The ring_all method is intended to be used with only a few agents and on low call volume in-groups."); ?>
+<BR>
+
+<BR>
+<A NAME="inbound_groups-next_agent_chat">
+<BR>
+<B><?php echo _QXZ("Next Agent Chat"); ?> -</B><?php echo _QXZ("This determines which agent receives the next chat that is available:"); ?>
+ <BR> &nbsp; - <?php echo _QXZ("random: orders by the random update value in the live_agents table"); ?>
+ <BR> &nbsp; - <?php echo _QXZ("oldest_call_start: orders by the last time an agent was sent a call/chat. Results in agents receiving about the same number of calls/chats overall."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("oldest_call_finish: orders by the last time an agent finished a call/chat. AKA agent waiting longest receives first call."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("oldest_inbound_call_start: orders by the last time an agent was sent an inbound call. Results in agents receiving about the same number of calls/chats overall."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("oldest_inbound_call_finish: orders by the last time an agent finished an inbound call. AKA agent waiting longest receives first call."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("overall_user_level: orders by the user_level of the agent as defined in the users table a higher user_level will receive more calls/chats."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("inbound_group_rank: orders by the rank given to the agent for the specific inbound group. Highest to Lowest."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("campaign_rank: orders by the rank given to the agent for the campaign. Highest to Lowest."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("ingroup_grade_random: gives a higher probability of getting a call/chat to the higher graded agents by in-group."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("campaign_grade_random: gives a higher probability of getting a call/chat to the higher graded agents by campaign."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("fewest_calls: orders by the number of calls/chats received by an agent for that specific inbound group. Least calls/chats first."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("fewest_calls_campaign: orders by the number of calls/chats received by an agent for the campaign. Least calls/chats first."); ?>
+ <BR> &nbsp; - <?php echo _QXZ("longest_wait_time: orders by the amount of time agent has been actively waiting for a call/chat."); ?>
  <BR> &nbsp; - <?php echo _QXZ("ring_all: rings all available agents until one picks up the phone."); ?>
  <BR> <?php echo _QXZ("NOTES: For ring_all, the agents that are using phones that have On Hook Agent enabled will have their phones ring and the first one to answer will receive the call and the information on the agent screen. Since ring_all ignores agent wait time and ranking and will call every agent that is available for the queue, we do not recommend using this method for large queues. When using ring_all, agents logged with phones that have the On Hook Agent disabled will have to use the Calls In Queue panel and click on the TAKE CALL link to take calls in queue. The amount of time the agents phone will ring for ring_all is set to the On-Hook Ring Time setting or the shortest ring time of the phones that will be called. We do not recommend using ring_all on high call volume queues, or queues with many agents. The ring_all method is intended to be used with only a few agents and on low call volume in-groups."); ?>
 <BR>
@@ -3155,6 +3247,36 @@ if ($SSqc_features_active > 0)
 <B><?php echo _QXZ("Add Lead URL"); ?> -</B><?php echo _QXZ("This web URL address is not seen by the agent, but it is called every time a lead is added to the system through the inbound process. Default is blank. You must begin this URL with VAR if you want to use variables, and of course --A-- and --B-- around the actual variable in the URL where you want to use it. Here is the list of variables that are available for this function. lead_id, vendor_lead_code, list_id, phone_number, phone_code, did_id, did_extension, did_pattern, did_description, uniqueid"); ?>
 
 <BR>
+<A NAME="inbound_groups-start_email_url">
+<BR>
+<B><?php echo _QXZ("Start Email URL"); ?> -</B><?php echo _QXZ("This web URL address is not seen by the agent, but it is emailed every time a email is sent to an agent if it is populated. Uses the same variables as the web form fields and scripts. Default is blank."); ?>
+
+<BR>
+<A NAME="inbound_groups-dispo_email_url">
+<BR>
+<B><?php echo _QXZ("Dispo Email URL"); ?> -</B><?php echo _QXZ("This web URL address is not seen by the agent, but it is emailed every time a email is dispositioned by an agent if it is populated. Uses the same variables as the web form fields and scripts. dispo and talk_time are the variables you can use to retrieve the agent-defined disposition for the email and the actual talk time in seconds of the email. Default is blank.") . " " . _QXZ("If you put ALT into this field and submit this form, you will be able to go to a separate page where you can define multiple URLs for this action as well as specific statuses that will trigger them.") . " " . _QXZ("If you want the campaign Dispo email URL to be used for inbound emails, then put CAMP into this field."); ?>
+
+<BR>
+<A NAME="inbound_groups-default_list_id">
+<BR>
+<B><?php echo _QXZ("Default List ID"); ?> -</B><?php echo _QXZ("This is the List ID that leads may be searched through and that leads will be inserted into if necessary."); ?>
+
+<BR>
+<A NAME="inbound_groups-start_chat_url">
+<BR>
+<B><?php echo _QXZ("Start Chat URL"); ?> -</B><?php echo _QXZ("This web URL address is not seen by the agent, but it is called every time a chat is sent to an agent if it is populated. Uses the same variables as the web form fields and scripts. Default is blank."); ?>
+
+<BR>
+<A NAME="inbound_groups-dispo_chat_url">
+<BR>
+<B><?php echo _QXZ("Dispo Chat URL"); ?> -</B><?php echo _QXZ("This web URL address is not seen by the agent, but it is called every time a chat is dispositioned by an agent if it is populated. Uses the same variables as the web form fields and scripts. dispo and talk_time are the variables you can use to retrieve the agent-defined disposition for the chat and the actual talk time in seconds of the chat. Default is blank.") . " " . _QXZ("If you put ALT into this field and submit this form, you will be able to go to a separate page where you can define multiple URLs for this action as well as specific statuses that will trigger them.") . " " . _QXZ("If you want the campaign Dispo Chat URL to be used for inbound chats, then put CAMP into this field."); ?>
+
+<BR>
+<A NAME="inbound_groups-na_chat_url">
+<BR>
+<B><?php echo _QXZ("No Agent Chat URL"); ?> -</B><?php echo _QXZ("This web URL address is not seen by the agent, but if it is populated it is called every time a chat that is not handled by an agent is hung up or transferred. Uses the same variables as the web form fields and scripts. dispo can be used to retrieve the system-defined disposition for the chat. This URL can NOT be a relative path. Default is blank."); ?> <?php echo _QXZ("Custom Fields are not available with this feature."); ?>
+
+<BR>
 <A NAME="inbound_groups-add_lead_timezone">
 <BR>
 <B><?php echo _QXZ("Add Lead Timezone"); ?> -</B><?php echo _QXZ("This is the method that the system will use to determine the current timezone when a lead is created when a call is being routed through this in-group. SERVER will use the current timezone of the server. PHONE_CODE_AREACODE will look up the timezone based on the phone code set in the lead and the areacode of the phone number. Default is SERVER."); ?>
@@ -3213,6 +3335,16 @@ if ($SSqc_features_active > 0)
 <A NAME="inbound_groups-populate_state_areacode">
 <BR>
 <B><?php echo _QXZ("Populate Lead State Areacode"); ?> -</B><?php echo _QXZ("If this option is not DISABLED, then the system will look up the state that the areacode of the phone number is from and populate the state field with that value. If the OVERWRITE_ALWAYS option is selected, then every time that lead goes through this in-group, the state field will be looked up and populated again. Default is DISABLED."); ?>
+
+<BR>
+<A NAME="inbound_groups-populate_lead_source">
+<BR>
+<B><?php echo _QXZ("Populate Lead Source"); ?> -</B><?php echo _QXZ("If this option is not DISABLED and there is no source_id channel variable set on the call, then the system will fill the source_id lead field with one of the other options when leads are added with an inbound call. INBOUND_NUMBER will use the inbound phone number dialed. BLANK will leave the source_id field blank. DISABLED will use the default behavior which will set the source_id field to VDCL. Default is DISABLED."); ?>
+
+<BR>
+<A NAME="inbound_groups-populate_lead_vendor">
+<BR>
+<B><?php echo _QXZ("Populate Lead Vendor"); ?> -</B><?php echo _QXZ("If this option is not DISABLED, and the inbound call was not delivered with a VID option, then the system will put the value entered in this setting into the vendor_lead_code field when a new lead is inserted. Special options include INBOUND_NUMBER which will use the inbound phone number dialed. Default is INBOUND_NUMBER."); ?>
 
 <BR>
 <A NAME="inbound_groups-inbound_survey">
@@ -3763,7 +3895,7 @@ if ($SSoutbound_autodial_active > 0)
 <B><FONT SIZE=3>AGENT PAUSE CODES</FONT></B><BR><BR>
 <A NAME="pause_codes">
 <BR>
-<B><?php echo _QXZ("If the Agent Pause Codes Active field is set to active then the agents will be able to select from these pause codes when they click on the PAUSE button on their screens. This data is then stored in the agent log. The Pause code must contain only letters and numbers and be less than 7 characters long. The pause code name can be no longer than 30 characters.") . ' ' . _QXZ("The Time Limit field, if enabled in System Settings, will change the color of the agent on the Real-Time Report if they are in that pause code for more than the defined amount of seconds."); ?></B>
+<B><?php echo _QXZ("If the Agent Pause Codes Active field is set to active then the agents will be able to select from these pause codes when they click on the PAUSE button on their screens. This data is then stored in the agent log. The Pause code must contain only letters and numbers and be less than 7 characters long. The pause code name can be no longer than 30 characters.") . ' ' . _QXZ("The Time Limit field, if enabled in System Settings, will change the color of the agent on the Real-Time Report if they are in that pause code for more than the defined amount of seconds.") . ' ' . _QXZ("The Mgr Approval field, if enabled, will require a manager to go to the agent screen and enter their login credentials to allow the agent to enter that pause code."); ?></B>
 
 
 
@@ -5605,6 +5737,11 @@ FR_SPAC 00 00 00 00 00 - <?php echo _QXZ("France space separated phone number");
 <A NAME="settings-enable_drop_lists">
 <BR>
 <B><?php echo _QXZ("Enable Drop Lists"); ?> -</B><?php echo _QXZ("This setting if enabled will make the Drop Lists feature appear under the LISTS menu. This feature set can take dropped call log records and create new leads in a list from multiple inbound groups. Default is 0 for disabled."); ?>
+
+<BR>
+<A NAME="settings-source_id_display">
+<BR>
+<B><?php echo _QXZ("Admin Lead Source ID Display"); ?> -</B><?php echo _QXZ("This setting if enabled will show the source_id field of a lead in the hopper display and the Modify Lead page. Default is 0 for disabled."); ?>
 
 <BR>
 <A NAME="settings-agent_debug_logging">

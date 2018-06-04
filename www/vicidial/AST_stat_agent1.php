@@ -1,10 +1,10 @@
 <?php 
-# AST_stat_medi1.php
+# AST_stat_agent1.php
 # 
 # Copyright (C) 2016-2018 Jörg Frings-Fürst <jff@flyingpenguim.de>    
 #               2016-2018 flyingpenguin UG <info@flyingpenguin.de> 
 #
-# LICENSE: AGPLv2
+# LICENSE: AGPLv3
 #
 # Agent stats for MediCenter Mittelrhein
 # 
@@ -15,9 +15,11 @@
 # 2018-01-22 - Umstellung auf Liveberechnung und auf alle selectierbaren Stati
 #            - Login_Time test auf doppeltes Logout
 # 2018-01-24 - Neu Zeitraum & Download
+# 2018-03-19 - Add Campaign Status
+#
 
 $copyr = "2016-2018 flyingpenguin.de UG, Jörg Frings-Fürst (AGPLv2)";
-$release = '20180124-4';
+$release = '20180319-3';
 
 header ("Content-type: text/html; charset=utf-8");
 
@@ -775,12 +777,12 @@ function GetAnzStati($agent, $datum_von, $datum_bis, $stati) {
 function GetFinalStati() {
     global $ArrStati, $ArrStatiIdx, $link;
     
+    $pos  = 0;
     $stmt = "SELECT * FROM `vicidial_statuses` WHERE `selectable` = 'Y';";
     $rslt=mysql_to_mysqli($stmt, $link);
     if ($DB) {echo "$stmt\n";}
     $Num = mysqli_num_rows($rslt);
     if ($Num > 0) {
-        $pos = 0;
         while($row = mysqli_fetch_assoc($rslt)){
             $name = $row["status_name"];
             $ArrStati[$pos] = $name;
@@ -791,7 +793,20 @@ function GetFinalStati() {
         
     }
  #  print_r($ArrStatiIdx);
-    
+    $stmt = "SELECT * FROM `vicidial_campaign_statuses` WHERE `selectable` = 'Y';";
+    $rslt=mysql_to_mysqli($stmt, $link);
+    if ($DB) {echo "$stmt\n";}
+    $Num = mysqli_num_rows($rslt);
+    if ($Num > 0) {
+    	while($row = mysqli_fetch_assoc($rslt)){
+    		if(! in_array($row["status_name"], $ArrStati)) {
+    			$name = $row["status_name"];
+    			$ArrStati[$pos] = $name;
+    			$ArrStatiIdx[$pos] = $row["status"];
+    			$pos++;
+    		}
+    	}
+    }
 }    
 	
 function makeDownload($file, $dir, $type) {

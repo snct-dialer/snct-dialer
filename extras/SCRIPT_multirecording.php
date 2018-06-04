@@ -1,7 +1,7 @@
 <?php
 # SCRIPT_multirecording.php - script page that stops/starts recordings being made over a forced-recording (ALLFORCE) call
 # 
-# Copyright (C) 2017  Joe Johnson <joej@vicidial.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Joe Johnson <joej@vicidial.com>    LICENSE: AGPLv2
 # - works in conjunction with SCRIPT_multirecording_AJAX.php to allow reps the ability to make their own recordings over the course of a call while the entire call is being recorded into its own file, as in ALLFORCE recording.
 #
 # Implementation is done by creating a script in the Scripts section that calls this page within an <iframe> tag which passes several essential dialer variables to the page 
@@ -16,9 +16,10 @@
 # 120227-1512 - First Build
 # 160401-0026 - HTML formatting fixes
 # 170526-2158 - Added variable filtering
+# 180514-2230 - Switched to mysqli, fixed variable filtering bug
 #
 
-require("dbconnect.php");
+require("dbconnect_mysqli.php");
 if (isset($_GET["campaign"]))	{$campaign=$_GET["campaign"];}
 	elseif (isset($_POST["campaign"]))	{$campaign=$_POST["campaign"];}
 if (isset($_GET["lead_id"]))	{$lead_id=$_GET["lead_id"];}
@@ -47,7 +48,7 @@ $user = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$user);
 $server_ip = preg_replace('/[^\.0-9]/','',$server_ip);
 $uniqueid = preg_replace('/[^-_\.0-9a-zA-Z]/','',$uniqueid);
 $rec_action = preg_replace('/[^0-9a-zA-Z]/','',$rec_action);
-$recording_channel = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$recording_channel);
+$recording_channel = preg_replace("/\||`|&|\'|\"|\\\\| /","",$recording_channel);
 
 
 ?>

@@ -1,0 +1,52 @@
+<html>
+
+<head>
+<title>
+Test of something
+</title>
+
+</head>
+
+<body>
+
+<?php 
+
+$FloatTop=200;
+$FloatLeft="200";
+
+?>
+
+<script type="text/javascript" src="floating.js"></script>
+
+<!-- Start Floating Layer -->
+
+<div id="FloatingLayer"' style="position:absolute;width:300px;left:300px;top:400px;z-index:100;visibility:hidden;border:solid 1px #FF6600;">
+    <div id="titleBar" style="cursor:move; width:100%; position:relative; border-bottom:solid 1px #FF6600; background-color:#FF9933;">
+        <div id="title" style="margin-right:30px; padding-left:3px;">
+            <font face="Arial" color="#333333">Pause</font>
+        </div>
+        <div id="closeX" style="cursor:hand; position:absolute; right:5px; top:0px;">
+            <a href="#" onClick="ToggleFloatingLayer('FloatingLayer',0);return false"  style="text-decoration:none"><font color="#333333" size="2" face="arial">X</font></a>
+        </div>
+    </div>
+    <div id="floatingContent" style="padding:3px; background-color:#CCCCCC; color:#333333;">
+        <!-- place your HTML content here-->
+        <h1><center>Mittagspause</center></h1>
+
+        <!-- End of content area -->
+    </div>
+</div>
+
+
+
+<a href="javascript:ToggleFloatingLayer('FloatingLayer',1);">Show</a>
+<input type="button" onClick="ToggleFloatingLayer('FloatingLayer',1);" value="Show Layer">
+
+<!-- To Hide The Layer -->
+<a href="javascript:ToggleFloatingLayer('FloatingLayer',0);">Hide</a>
+<input type="button" onClick="ToggleFloatingLayer('FloatingLayer',0);" value="Hide Layer">
+
+
+
+</body>
+</html>

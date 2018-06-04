@@ -1,7 +1,7 @@
 <?php 
 # AST_user_group_hourly_detail.php
 #
-# Copyright (C) 2017  Joseph Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Joseph Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
 #
 # Gives hourly count of distinct agents per user group, with totals.
 # For single days only
@@ -11,6 +11,7 @@
 # 170409-1542 - Added IP List validation code
 # 170816-2026 - Added HTML formatting
 # 170829-0040 - Added screen color settings
+# 180507-2315 - Added new help display
 #
 
 $startMS = microtime();
@@ -377,8 +378,11 @@ $LINKbase = "$PHP_SELF?query_date=$query_date&end_date=$end_date&shift=$shift&DB
 
 require("screen_colors.php");
 
-$NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
-$NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+# $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
+# $NWE = "')\"><IMG SRC=\"help.png\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+
+$NWB = "<IMG SRC=\"help.png\" onClick=\"FillAndShowHelpDiv(event, '";
+$NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
 
 if ($file_download < 1)
 	{
@@ -392,6 +396,10 @@ if ($file_download < 1)
 	echo "   .purple {color: white; background-color: purple}\n";
 	echo "-->\n";
 	echo " </STYLE>\n";
+
+	echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"vicidial_stylesheet.php\">\n";
+	echo "<script language=\"JavaScript\" src=\"help.js\"></script>\n";
+	echo "<div id='HelpDisplayDiv' class='help_info' style='display:none;z-index:99;'></div>";
 
 	echo "<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
 	echo "<link rel=\"stylesheet\" href=\"calendar.css\">\n";
@@ -410,7 +418,7 @@ if ($file_download < 1)
 
 	echo "</span>\n";
 	echo "<span style=\"position:absolute;left:3px;top:30px;z-index:19;\"  id=agent_status_stats>\n";
-	echo "<b>"._QXZ("$report_name")."</b>\n";
+	echo "<b>"._QXZ("$report_name")." $NWB#user_group_hourly_detail$NWE</b>\n";
 	echo "<PRE><FONT SIZE=2>";
 	}
 

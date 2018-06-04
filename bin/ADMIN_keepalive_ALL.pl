@@ -15,7 +15,11 @@
 #  - Auto reset lists at defined times
 #  - Auto restarts Asterisk process if enabled in servers settings
 #
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# LICENSE: AGPLv3
+#
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>
+# Copyright (c) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
 #
 # CHANGES
 # 61011-1348 - First build
@@ -129,9 +133,11 @@
 # 171221-1628 - Added rolling of vicidial_ingroup_hour_counts records
 # 180204-0931 - Added rolling of vicidial_inbound_callback_queue records
 # 180301-1257 - Added more teodDB logging
+# 180507-1620 - Remove use of prompt_count.txt
+# 180512-2214 - Added reset of hopper_calls_today
 #
 
-$build = '180301-1257';
+$build = '180512-2214';
 
 $DB=0; # Debug flag
 $teodDB=0; # flag to log Timeclock End of Day processes to log file
@@ -1166,7 +1172,7 @@ if ($timeclock_end_of_day_NOW > 0)
 		if ($DB) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 		$sthA->finish();
 
-		$stmtA = "update vicidial_campaign_agents SET calls_today=0;";
+		$stmtA = "update vicidial_campaign_agents SET calls_today=0,hopper_calls_today=0,hopper_calls_hour=0;";
 		if($DBX){print STDERR "\n|$stmtA|\n";}
 		$affected_rows = $dbhA->do($stmtA);
 		if($DB){print STDERR "\n|$affected_rows vicidial_campaign_agents call counts reset|\n";}
@@ -2475,6 +2481,9 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 	$Pext .= "\n";
 	$Pext .= "; Phones direct dial extensions:\n";
 
+	$PAext .= "\n";
+	$PAext .= "; Phones with automatic Pickup extensions:\n";
+
 
 	##### BEGIN Generate the IAX phone entries #####
 	$stmtA = "SELECT extension,dialplan_number,voicemail_id,pass,template_id,conf_override,email,template_id,conf_override,outbound_cid,fullname,phone_context,phone_ring_timeout,conf_secret,delete_vm_after_email,codecs_list,codecs_with_template,voicemail_timezone,voicemail_options,voicemail_instructions,unavail_dialplan_fwd_exten,unavail_dialplan_fwd_context,conf_qualify FROM phones where server_ip='$server_ip' and protocol='IAX2' and active='Y' order by extension;";
@@ -2647,7 +2656,7 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 
 
 	##### BEGIN Generate the SIP phone entries #####
-	$stmtA = "SELECT extension,dialplan_number,voicemail_id,pass,template_id,conf_override,email,template_id,conf_override,outbound_cid,fullname,phone_context,phone_ring_timeout,conf_secret,delete_vm_after_email,codecs_list,codecs_with_template,voicemail_timezone,voicemail_options,voicemail_instructions,unavail_dialplan_fwd_exten,unavail_dialplan_fwd_context FROM phones where server_ip='$server_ip' and protocol='SIP' and active='Y' order by extension;";
+	$stmtA = "SELECT extension,dialplan_number,voicemail_id,pass,template_id,conf_override,email,template_id,conf_override,outbound_cid,fullname,phone_context,phone_ring_timeout,conf_secret,delete_vm_after_email,codecs_list,codecs_with_template,voicemail_timezone,voicemail_options,voicemail_instructions,unavail_dialplan_fwd_exten,unavail_dialplan_fwd_context,auto_answer_sipheader,auto_answer_prefix FROM phones where server_ip='$server_ip' and protocol='SIP' and active='Y' order by extension;";
 	#	print "$stmtA\n";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -2678,6 +2687,8 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 		$voicemail_instructions[$i] =	$aryA[19];
 		$unavail_dialplan_fwd_exten[$i] =	$aryA[20];
 		$unavail_dialplan_fwd_context[$i] =	$aryA[21];
+		$auto_answer_sipheader[$i] =	$aryA[22];	
+		$auto_answer_prefix[$i] =		$aryA[23];	
 		if ( (length($SSdefault_codecs) > 2) && (length($codecs_list[$i]) < 3) )
 			{$codecs_list[$i] = $SSdefault_codecs;}
 		$active_dialplan_numbers .= "'$aryA[1]',";
@@ -2769,6 +2780,20 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 		else
 			{
 			$Pext .= "exten => $dialplan[$i],1,Dial(SIP/$extension[$i],$phone_ring_timeout[$i],)\n";
+
+			# create auto pickup extension if asterisk version is at least 1.6 and a prefix is set
+			if ( $auto_answer_prefix[$i] ne "" ) {
+				$PAext .= "exten => $auto_answer_prefix[$i]$dialplan[$i],1,Noop()\n";
+				@SipHeader = split (/\|/,$auto_answer_sipheader[$i]);
+				foreach $Header (@SipHeader) {
+					$Header =~ s/^\s+|\s+$//g; #trim whitespaces
+					if ($Header ne "") {
+						$PAext .= " same => n,$Header\n";
+					}
+				}
+				$PAext .= " same => n,Dial(SIP/$extension[$i],$phone_ring_timeout[$i],)\n";
+				$PAext .= " same => n,Hangup()\n";
+			}
 			}
 		if (length($unavail_dialplan_fwd_exten[$i]) > 0) 
 			{
@@ -3613,14 +3638,19 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 	print ext "\n";
 	print ext "$Pext\n";
 
-	print ext "[vicidial-auto]\n";
+        print ext "[vicidial-auto-answer-phones]\n";
+        print ext $hangup_exten_line;
+        print ext "\n";
+        print ext "$PAext\n";
 
+	print ext "[vicidial-auto]\n";
 	print ext $hangup_exten_line;
 	print ext "\n";
 	print ext "\n";
 	print ext "include => vicidial-auto-internal\n";
 	print ext "include => vicidial-auto-phones\n";
 	print ext "include => vicidial-auto-external\n";
+        print ext "include => vicidial-auto-answer-phones\n";
 	if (length($SERVERcustom_dialplan_entry)>5)
 		{print ext "include => vicidial-auto-server-custom\n";}
 	if (length($SScustom_dialplan_entry)>5)
@@ -4025,15 +4055,19 @@ $soundsec=0;
 
 if ( ($active_voicemail_server =~ /$server_ip/) && ((length($active_voicemail_server)) eq (length($server_ip))) )
 	{
-	if (-e "/prompt_count.txt")
-		{
-		open(test, "/prompt_count.txt") || die "can't open /prompt_count.txt: $!\n";
-		@test = <test>;
-		close(test);
-		chomp($test[0]);
-		$test[0] = ($test[0] + 85100000);
-		$last_file_gsm = "$test[0].gsm";
-		$last_file_wav = "$test[0].wav";
+	### Gather current rec_prompt_count from system_settings ###
+	$stmtA= "SELECT rec_prompt_count from system_settings;";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	if ($sthArows > 0) {
+		@aryA = $sthA->fetchrow_array;
+		$REC_count = $aryA[0];
+	}
+	$sthA->finish();
+	if ($REC_count > 0) {
+		$REC_count = ($REC_count + 85100000);
+		$last_file_gsm = "$REC_count.gsm";
+		$last_file_wav = "$REC_count.wav";
 
 		if (-e "$PATHsounds/$last_file_gsm")
 			{
@@ -4051,7 +4085,7 @@ if ( ($active_voicemail_server =~ /$server_ip/) && ((length($active_voicemail_se
 			$upload_audio = 1;
 			$upload_flag = '--upload';
 			}
-		}
+	}
 	### start the chat timeout process
 	if ($SSallow_chats > 0) 
 		{
@@ -4237,6 +4271,23 @@ if ($SSenable_drop_lists > 0)
 	}
 ################################################################################
 #####  END  drop lists
+################################################################################
+
+
+
+
+################################################################################
+#####  BEGIN Reset per-hour hopper dial counts for users
+################################################################################
+if ( ($AST_VDadapt > 0) && ($reset_test =~ /00$/) )
+	{
+	$stmtA="UPDATE vicidial_campaign_agents set hopper_calls_hour='0';";
+	$affected_rows = $dbhA->do($stmtA);
+
+	if ($DB) {print "Reset per-hour hopper dial counts for users: $affected_rows\n";}
+	}
+################################################################################
+#####  END Reset per-hour hopper dial counts for users
 ################################################################################
 
 

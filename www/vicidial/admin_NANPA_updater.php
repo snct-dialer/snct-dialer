@@ -1,7 +1,7 @@
 <?php
 # admin_NANPA_updater.php
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed to launch NANPA filter batch proccesses through the
 # triggering process
@@ -15,6 +15,7 @@
 # 160108-2300 - Changed some mysqli_query to mysql_to_mysqli for consistency
 # 170409-1536 - Added IP List validation code
 # 170822-2230 - Added screen color settings
+# 180503-2015 - Added new help display
 #
 
 $version = '2.14-7';
@@ -389,12 +390,18 @@ function openNewWindow(url)
 
 </script>
 <?php
+echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"vicidial_stylesheet.php\">\n";
+echo "<script language=\"JavaScript\" src=\"help.js\"></script>\n";
+echo "<div id='HelpDisplayDiv' class='help_info' style='display:none;'></div>";
 echo "</head>\n";
 $ADMIN=$PHP_SELF;
 $short_header=1;
 
-$NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php";
-$NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+# $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
+# $NWE = "')\"><IMG SRC=\"help.png\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+
+$NWB = "<IMG SRC=\"help.png\" onClick=\"FillAndShowHelpDiv(event, '";
+$NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
 
 echo "\n<BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0 onLoad='RefreshNANPA(\"$iframe_url\"); StartRefresh()'>\n";
 

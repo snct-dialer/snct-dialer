@@ -223,6 +223,10 @@
 # 180209-1716 - Big fix for recent feature
 # 180217-1018 - Added NO_READY option for no_agent_no_queue in-group feature, issue #1046
 # 180306-1450 - Fix for Wait/Hold time options when nothing is pressed
+# 180321-0824 - Added source_id as optional channel variable to populate when inserting new leads
+# 180424-1539 - Added in-group populate_lead_source, populate_lead_vendor options
+# 180520-1802 - Added enter_ingroup_url feature
+# 180521-0736 - Changed closer logs for AGENTDIRECT calls to log destination user
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
@@ -653,10 +657,6 @@ if ($call_handle_method =~ /^ANI/)
 		}
 	}
 
-# When VID or  VIDPROMPT, methods are not used, no Vendor Lead Code can be supplied. Fill it with inbound_number
-if ($call_handle_method !~ /^VID/) 
-	{$vendor_id = $inbound_number;}
-
 foreach $i (sort keys %AGI) 
 	{
 	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
@@ -759,7 +759,7 @@ $affected_rows = $dbhA->do($stmtA);
 
 ### Grab inbound groups values from the database
 $cbc=0;
-$stmtA = "SELECT call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,drop_call_seconds,drop_action,drop_exten,next_agent_call,voicemail_ext,queue_priority,drop_inbound_group,afterhours_xfer_group,play_place_in_line,play_estimate_hold_time,hold_time_option,hold_time_option_seconds,hold_time_option_exten,hold_time_option_voicemail,hold_time_option_xfer_group,hold_time_option_callback_filename,hold_time_option_callback_list_id,hold_recall_xfer_group,no_delay_call_route,play_welcome_message,no_agent_no_queue,no_agent_action,no_agent_action_value,extension_appended_cidname,uniqueid_status_display,uniqueid_status_prefix,hold_time_option_minimum,hold_time_option_press_filename,hold_time_option_callmenu,onhold_prompt_no_block,onhold_prompt_seconds,hold_time_option_no_block,hold_time_option_prompt_seconds,hold_time_second_option,hold_time_third_option,wait_hold_option_priority,wait_time_option,wait_time_second_option,wait_time_third_option,wait_time_option_seconds,wait_time_option_exten,wait_time_option_voicemail,wait_time_option_xfer_group,wait_time_option_callmenu,wait_time_option_callback_filename,wait_time_option_callback_list_id,wait_time_option_press_filename,wait_time_option_no_block,wait_time_option_prompt_seconds,active,calculate_estimated_hold_seconds,add_lead_url,eht_minimum_prompt_filename,eht_minimum_prompt_no_block,eht_minimum_prompt_seconds,on_hook_ring_time,ingroup_recording_override,ingroup_rec_filename,on_hook_cid,action_xfer_cid,drop_callmenu,after_hours_callmenu,max_calls_method,max_calls_count,max_calls_action,populate_lead_ingroup,na_call_url,drop_lead_reset,after_hours_lead_reset,nanq_lead_reset,wait_time_lead_reset,hold_time_lead_reset,routing_initiated_recordings,on_hook_cid_number,populate_lead_province,areacode_filter,areacode_filter_seconds,areacode_filter_action,areacode_filter_action_value,populate_state_areacode,inbound_survey,inbound_survey_filename,inbound_survey_accept_digit,closing_time_action,closing_time_now_trigger,closing_time_filename,closing_time_end_filename,closing_time_lead_reset,closing_time_option_exten,closing_time_option_callmenu,closing_time_option_voicemail,closing_time_option_xfer_group,closing_time_option_callback_list_id,add_lead_timezone FROM vicidial_inbound_groups where group_id = '$channel_group';";
+$stmtA = "SELECT call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,drop_call_seconds,drop_action,drop_exten,next_agent_call,voicemail_ext,queue_priority,drop_inbound_group,afterhours_xfer_group,play_place_in_line,play_estimate_hold_time,hold_time_option,hold_time_option_seconds,hold_time_option_exten,hold_time_option_voicemail,hold_time_option_xfer_group,hold_time_option_callback_filename,hold_time_option_callback_list_id,hold_recall_xfer_group,no_delay_call_route,play_welcome_message,no_agent_no_queue,no_agent_action,no_agent_action_value,extension_appended_cidname,uniqueid_status_display,uniqueid_status_prefix,hold_time_option_minimum,hold_time_option_press_filename,hold_time_option_callmenu,onhold_prompt_no_block,onhold_prompt_seconds,hold_time_option_no_block,hold_time_option_prompt_seconds,hold_time_second_option,hold_time_third_option,wait_hold_option_priority,wait_time_option,wait_time_second_option,wait_time_third_option,wait_time_option_seconds,wait_time_option_exten,wait_time_option_voicemail,wait_time_option_xfer_group,wait_time_option_callmenu,wait_time_option_callback_filename,wait_time_option_callback_list_id,wait_time_option_press_filename,wait_time_option_no_block,wait_time_option_prompt_seconds,active,calculate_estimated_hold_seconds,add_lead_url,eht_minimum_prompt_filename,eht_minimum_prompt_no_block,eht_minimum_prompt_seconds,on_hook_ring_time,ingroup_recording_override,ingroup_rec_filename,on_hook_cid,action_xfer_cid,drop_callmenu,after_hours_callmenu,max_calls_method,max_calls_count,max_calls_action,populate_lead_ingroup,na_call_url,drop_lead_reset,after_hours_lead_reset,nanq_lead_reset,wait_time_lead_reset,hold_time_lead_reset,routing_initiated_recordings,on_hook_cid_number,populate_lead_province,areacode_filter,areacode_filter_seconds,areacode_filter_action,areacode_filter_action_value,populate_state_areacode,inbound_survey,inbound_survey_filename,inbound_survey_accept_digit,closing_time_action,closing_time_now_trigger,closing_time_filename,closing_time_end_filename,closing_time_lead_reset,closing_time_option_exten,closing_time_option_callmenu,closing_time_option_voicemail,closing_time_option_xfer_group,closing_time_option_callback_list_id,add_lead_timezone,populate_lead_source,populate_lead_vendor,enter_ingroup_url FROM vicidial_inbound_groups where group_id = '$channel_group';";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
@@ -879,6 +879,9 @@ if ($sthArows > 0)
 	$closing_time_option_xfer_group =	$aryA[102];
 	$closing_time_option_callback_list_id =	$aryA[103];
 	$add_lead_timezone =				$aryA[104];
+	$populate_lead_source =				$aryA[105];
+	$populate_lead_vendor =				$aryA[106];
+	$enter_ingroup_url =				$aryA[107];
 
 	$custom_call_id='';
 	if ($uniqueid_status_display =~ /ENABLED/)
@@ -887,6 +890,17 @@ if ($sthArows > 0)
 		{$custom_call_id = "$uniqueid_status_prefix$uniqueid";}
 	}
 $sthA->finish();
+
+# When VID or VIDPROMPT, methods are not used, no Vendor Lead Code can be supplied. Fill it with inbound_number
+if ($call_handle_method !~ /^VID/) 
+	{
+	if ($populate_lead_vendor =~ /INBOUND_NUMBER/)
+		{$vendor_id = $inbound_number;}
+	if (length($populate_lead_vendor) < 1) 
+		{$vendor_id = '';}
+	if ( (length($populate_lead_vendor) > 0) && (length($vendor_id) < 1) ) 
+		{$vendor_id = $populate_lead_vendor;}
+	}
 
 if ($wday==0) 
 	{
@@ -1025,6 +1039,20 @@ if (length($postal_code) > 0)
 	$INSERTpostal_codeSQLa=',postal_code';
 	$INSERTpostal_codeSQLb=",'$postal_code'";
 	}
+$source_id = $AGI->get_variable('source_id');
+if (length($source_id) > 0)
+	{
+	$source_id =~ s/\'|\"|\\\\|\\\|\\|\\;|\\\;|\;|;//gi;
+	}
+else
+	{
+	if ($populate_lead_source =~ /INBOUND_NUMBER/)
+		{$source_id = $inbound_number;}
+	if ( (length($populate_lead_source) < 1) || ($populate_lead_source =~ /BLANK/) )
+		{$source_id = '';}
+	if ($populate_lead_source =~ /DISABLED/) 
+		{$source_id = 'VDCL';}
+	}
 
 if ($populate_state_areacode =~ /NEW_LEAD_ONLY|OVERWRITE_ALWAYS/) 
 	{
@@ -1067,6 +1095,8 @@ if ( ($channel_group =~ /AGENTDIRECT/i) && (length($agent_only) < 1) )
 	$DROP_TIME = 1;
 	$drop_call_seconds = 1;
 	}
+
+$LOGuser='VDCL';
 
 $AGI->stream_file('sip-silence');
 $AGI->stream_file('sip-silence');
@@ -1111,7 +1141,7 @@ if ($call_handle_method =~ /LOOKUP/)
 		if ($add_lead_timezone =~ /PHONE_CODE_AREACODE/) 
 			{&lead_timezone_process;}
 		### insert a record into the vicidial_list table 
-		$stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now,comments$entry_list_idSQLa$INSERTstateSQLa$INSERTpostal_codeSQLa$populate_provinceA) values('$SQLdate','$tsSQLdate','INBND','$fronter','$vendor_id','VDCL','$list_id','Y','$phone_code','$phone_number','$ingroup_insert','$called_count','$local_gmt','$VLcomments'$entry_list_idSQLb$INSERTstateSQLb$INSERTpostal_codeSQLb$populate_provinceB);";
+		$stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now,comments$entry_list_idSQLa$INSERTstateSQLa$INSERTpostal_codeSQLa$populate_provinceA) values('$SQLdate','$tsSQLdate','INBND','$fronter','$vendor_id','$source_id','$list_id','Y','$phone_code','$phone_number','$ingroup_insert','$called_count','$local_gmt','$VLcomments'$entry_list_idSQLb$INSERTstateSQLb$INSERTpostal_codeSQLb$populate_provinceB);";
 		$affected_rows = $dbhA->do($stmtA);
 			$dbhP=$dbhA;   $mysql_count='02007';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 		$cbc=0;
@@ -1268,7 +1298,7 @@ if ($call_handle_method =~ /LOOKUP/)
 				if ($add_lead_timezone =~ /PHONE_CODE_AREACODE/) 
 					{&lead_timezone_process;}
 				### insert a record into the vicidial_list table 
-				$stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now,comments$entry_list_idSQLa$INSERTstateSQLa$INSERTpostal_codeSQLa$populate_provinceA) values('$SQLdate','$tsSQLdate','INBND','$fronter','$vendor_id','VDCL','$list_id','Y','$phone_code','$phone_number','$ingroup_insert','$called_count','$local_gmt','$VLcomments'$entry_list_idSQLb$INSERTstateSQLb$INSERTpostal_codeSQLb$populate_provinceB);";
+				$stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now,comments$entry_list_idSQLa$INSERTstateSQLa$INSERTpostal_codeSQLa$populate_provinceA) values('$SQLdate','$tsSQLdate','INBND','$fronter','$vendor_id','$source_id','$list_id','Y','$phone_code','$phone_number','$ingroup_insert','$called_count','$local_gmt','$VLcomments'$entry_list_idSQLb$INSERTstateSQLb$INSERTpostal_codeSQLb$populate_provinceB);";
 				$affected_rows = $dbhA->do($stmtA);
 					$dbhP=$dbhA;   $mysql_count='02011';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 				$cbc=0;
@@ -1359,7 +1389,7 @@ else
 		if ($add_lead_timezone =~ /PHONE_CODE_AREACODE/) 
 			{&lead_timezone_process;}
  		### insert a record into the vicidial_list table if no record was found above
-		$stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now,comments$entry_list_idSQLa$INSERTstateSQLa$INSERTpostal_codeSQLa$populate_provinceA) values('$SQLdate','$tsSQLdate','INBND','$fronter','$vendor_id','VDCL','$list_id','Y','$phone_code','$phone_number','$ingroup_insert','$called_count','$local_gmt','$VLcomments'$entry_list_idSQLb$INSERTstateSQLb$INSERTpostal_codeSQLb$populate_provinceB);";
+		$stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now,comments$entry_list_idSQLa$INSERTstateSQLa$INSERTpostal_codeSQLa$populate_provinceA) values('$SQLdate','$tsSQLdate','INBND','$fronter','$vendor_id','$source_id','$list_id','Y','$phone_code','$phone_number','$ingroup_insert','$called_count','$local_gmt','$VLcomments'$entry_list_idSQLb$INSERTstateSQLb$INSERTpostal_codeSQLb$populate_provinceB);";
  		$affected_rows = $dbhA->do($stmtA);
 			$dbhP=$dbhA;   $mysql_count='02014';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 		$cbc=0;
@@ -1552,6 +1582,10 @@ if ($ct_yest_stop > 2400)
 	{$ct_stop_overflow = ($ct_yest_stop - 2400);}
 if ( ( ( ( ($hm < $ct_default_start) || ($hm > $ct_default_stop) ) && ($hm >= $ct_stop_overflow) ) || ($MCafterhours_override > 0) ) && ($dial_ingroup_flag < 1) )
 	{
+	# set the log-user to the agentdirect destination user, if set
+	if ( ($channel_group =~ /AGENTDIRECT/i) && (length($agent_only) > 1) )
+		{$LOGuser = $agent_only;}
+
 	$VHqueryCID = "VA$CIDdate$hour$min$sec$sec";
 	$AHstatus='AFTHRS';
 	$AHterm='AFTERHOURS';
@@ -1562,7 +1596,7 @@ if ( ( ( ( ($hm < $ct_default_start) || ($hm > $ct_default_stop) ) && ($hm >= $c
 		$AHterm = $MCterm;
 		$AHcomments = $MCcomments;
 		}
-	$stmtA = "INSERT INTO vicidial_closer_log set status='$AHstatus',start_epoch='$now_date_epoch',end_epoch='$now_date_epoch',length_in_sec='1',queue_seconds='0',lead_id = '$insert_lead_id',campaign_id='$channel_group',user='VDCL',list_id='$list_id',call_date='$now_date',phone_code='$phone_code',phone_number='$phone_number',comments='$AHcomments',term_reason='$AHterm',uniqueid='$uniqueid',called_count='$called_count';";
+	$stmtA = "INSERT INTO vicidial_closer_log set status='$AHstatus',start_epoch='$now_date_epoch',end_epoch='$now_date_epoch',length_in_sec='1',queue_seconds='0',lead_id = '$insert_lead_id',campaign_id='$channel_group',user='$LOGuser',list_id='$list_id',call_date='$now_date',phone_code='$phone_code',phone_number='$phone_number',comments='$AHcomments',term_reason='$AHterm',uniqueid='$uniqueid',called_count='$called_count';";
 	$affected_rows = $dbhA->do($stmtA);
 		$dbhP=$dbhA;   $mysql_count='02016';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 	$stmtB = "SELECT LAST_INSERT_ID() LIMIT 1;";
@@ -1836,8 +1870,11 @@ if ( ( ($no_agent_no_queue =~ /Y|NO_PAUSED|NO_READY/) || ($MCnanque_override > 0
 			$NQterm = $MCterm;
 			$NQcomments = $MCcomments;
 			}
+		# set the log-user to the agentdirect destination user, if set
+		if ( ($channel_group =~ /AGENTDIRECT/i) && (length($agent_only) > 1) )
+			{$LOGuser = $agent_only;}
 
-		$stmtA = "INSERT INTO vicidial_closer_log set status='$NQstatus',start_epoch='$now_date_epoch',end_epoch='$now_date_epoch',length_in_sec='1',queue_seconds='0',lead_id='$insert_lead_id',campaign_id='$channel_group',user='VDCL',list_id='$list_id',call_date='$now_date',phone_code='$phone_code',phone_number='$phone_number',comments='$NQcomments',term_reason='$NQterm',uniqueid='$uniqueid',called_count='$called_count';";
+		$stmtA = "INSERT INTO vicidial_closer_log set status='$NQstatus',start_epoch='$now_date_epoch',end_epoch='$now_date_epoch',length_in_sec='1',queue_seconds='0',lead_id='$insert_lead_id',campaign_id='$channel_group',user='$LOGuser',list_id='$list_id',call_date='$now_date',phone_code='$phone_code',phone_number='$phone_number',comments='$NQcomments',term_reason='$NQterm',uniqueid='$uniqueid',called_count='$called_count';";
 		$affected_rows = $dbhA->do($stmtA);
 			$dbhP=$dbhA;   $mysql_count='02105';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 		$stmtB = "SELECT LAST_INSERT_ID() LIMIT 1;";
@@ -2353,7 +2390,7 @@ $Uaffected_rows = $dbhA->do($stmtA);
 	$dbhP=$dbhA;   $mysql_count='02121';   $MEL_aff_rows=$Uaffected_rows;   &mysql_error_logging;
 
 ### INSERT vicidial_closer_log record, call is entering the queue
-$stmtA = "INSERT INTO vicidial_closer_log SET lead_id='$insert_lead_id', campaign_id='$channel_group', call_date='$SQLdate', start_epoch='$now_date_epoch', status='QUEUE', phone_code='$phone_code', phone_number='$phone_number', user='VDCL', processed='N', xfercallid='$insert_xfer_id', uniqueid='$uniqueid', queue_position='$queue_position',called_count='$called_count',list_id='$list_id' $adSQL;";
+$stmtA = "INSERT INTO vicidial_closer_log SET lead_id='$insert_lead_id', campaign_id='$channel_group', call_date='$SQLdate', start_epoch='$now_date_epoch', status='QUEUE', phone_code='$phone_code', phone_number='$phone_number', user='$LOGuser', processed='N', xfercallid='$insert_xfer_id', uniqueid='$uniqueid', queue_position='$queue_position',called_count='$called_count',list_id='$list_id' $adSQL;";
 	if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 $affected_rows = $dbhA->do($stmtA);
 	$dbhP=$dbhA;   $mysql_count='02031';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
@@ -2510,6 +2547,31 @@ if ($populate_lead_province =~ /OW_did/i)
 	}
 
 ##### END update province if option set #####
+
+
+
+### BEGIN the Enter-InGroup-URL get process
+if (length($enter_ingroup_url) > 5)
+	{
+	$launch = $PATHhome . "/AST_send_URL.pl";
+	$launch .= " --SYSLOG" if ($SYSLOG);
+	$launch .= " --lead_id=" . $insert_lead_id;
+	$launch .= " --phone_number=" . $phone_number;
+	$launch .= " --user=";
+	$launch .= " --call_type=IN";
+	$launch .= " --campaign=" . $channel_group;
+	$launch .= " --uniqueid=" . $uniqueid;
+	$launch .= " --alt_dial=MAIN";
+	$launch .= " --call_id=" . $YqueryCID;
+	$launch .= " --list_id=" . $list_id;
+	$launch .= " --function=ENTER_INGROUP_URL";
+
+	system($launch . ' &');
+
+	if ($AGILOG) {$agi_string = "$launch|";   &agi_output;}
+	}
+### END the Enter-InGroup-URL get process
+
 
 
 ############################################
@@ -2851,7 +2913,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 
 								if ($AGILOG) {$agi_string = "GRADE RANDOM: $userGRADEchosen|$GRADErandom|$CAMP_callorder|$gg|$ga|$callerid";   &agi_output;}
 
-								$stmtA = "SELECT vicidial_live_agents.conf_exten,vicidial_live_agents.user,vicidial_live_agents.extension,vicidial_live_agents.server_ip,vicidial_live_inbound_agents.group_weight,ra_user,vicidial_live_agents.campaign_id,on_hook_agent,on_hook_ring_time,vicidial_live_inbound_agents.group_grade,vicidial_live_agents.campaign_grade from vicidial_live_agents, vicidial_live_inbound_agents WHERE vicidial_live_agents.user='$userGRADEchosen' limit 1;";
+								$stmtA = "SELECT vicidial_live_agents.conf_exten,vicidial_live_agents.user,vicidial_live_agents.extension,vicidial_live_agents.server_ip,vicidial_live_inbound_agents.group_weight,ra_user,vicidial_live_agents.campaign_id,on_hook_agent,on_hook_ring_time,vicidial_live_inbound_agents.group_grade,vicidial_live_agents.campaign_grade,vicidial_live_agents.on_hook_auto_answer,vicidial_live_agents.auto_answer_prefix FROM vicidial_live_agents, vicidial_live_inbound_agents WHERE vicidial_live_agents.user='$userGRADEchosen' and vicidial_live_inbound_agents.user='$userGRADEchosen' and vicidial_live_inbound_agents.group_id='$channel_group' limit 1;";
 								$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 								$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 								$sthArows=$sthA->rows;
@@ -2870,6 +2932,8 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 									$VDADon_hook_ring_time =	$aryA[8];
 									$group_grade =				$aryA[9];
 									$campaign_grade =			$aryA[10];
+                		                                        $VDADon_hook_auto_answer =      $aryA[11];
+									$VDADauto_answer_prefix =      $aryA[12];
 									}
 								$sthA->finish();
 								}
@@ -2878,7 +2942,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 						### END grade random next-agent-call routing ###
 						else
 							{
-							$stmtA = "SELECT vicidial_live_agents.conf_exten,vicidial_live_agents.user,vicidial_live_agents.extension,vicidial_live_agents.server_ip,vicidial_live_inbound_agents.group_weight,ra_user,vicidial_live_agents.campaign_id,on_hook_agent,on_hook_ring_time,vicidial_live_inbound_agents.group_grade,vicidial_live_agents.campaign_grade from vicidial_live_agents, vicidial_live_inbound_agents WHERE vicidial_live_agents.user=vicidial_live_inbound_agents.user and status IN('CLOSER','READY') and lead_id<1 $ADUfindSQL and vicidial_live_inbound_agents.group_id='$channel_group' and last_update_time > '$BDtsSQLdate' and vicidial_live_agents.user NOT IN($ring_no_answer_agents$vlia_users) and ring_callerid='' $qp_groupWAIT_camp_SQL $agent_call_order limit 1;";
+							$stmtA = "SELECT vicidial_live_agents.conf_exten,vicidial_live_agents.user,vicidial_live_agents.extension,vicidial_live_agents.server_ip,vicidial_live_inbound_agents.group_weight,ra_user,vicidial_live_agents.campaign_id,on_hook_agent,on_hook_ring_time,vicidial_live_inbound_agents.group_grade,vicidial_live_agents.campaign_grade,vicidial_live_agents.on_hook_auto_answer,vicidial_live_agents.auto_answer_prefix FROM vicidial_live_agents, vicidial_live_inbound_agents WHERE vicidial_live_agents.user=vicidial_live_inbound_agents.user and status IN('CLOSER','READY') and lead_id<1 $ADUfindSQL and vicidial_live_inbound_agents.group_id='$channel_group' and last_update_time > '$BDtsSQLdate' and vicidial_live_agents.user NOT IN($ring_no_answer_agents$vlia_users) and ring_callerid='' $qp_groupWAIT_camp_SQL $agent_call_order limit 1;";
 							$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 							$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 							$sthArows=$sthA->rows;
@@ -2897,6 +2961,8 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 								$VDADon_hook_ring_time =	$aryA[8];
 								$group_grade =				$aryA[9];
 								$campaign_grade =			$aryA[10];
+	                                                        $VDADon_hook_auto_answer =      $aryA[11];
+								$VDADauto_answer_prefix = 	$aryA[12];
 								}
 							$sthA->finish();
 							if ($AGILOG) {$agi_string = "$VDADuser|$VDADgroup_weight|$stmtA|";   &agi_output;}
@@ -2916,7 +2982,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 						{$sthArows=0;}
 					else
 						{
-						$stmtA = "SELECT conf_exten,user,extension,server_ip,last_call_time,ra_user,campaign_id,on_hook_agent,on_hook_ring_time FROM vicidial_live_agents where status IN('CLOSER','READY') and lead_id<1 $ADUfindSQL and campaign_id IN($INBOUNDcampsSQL) and closer_campaigns LIKE \"% $channel_group %\" and last_update_time > '$BDtsSQLdate' and vicidial_live_agents.user NOT IN($ring_no_answer_agents'') $qp_groupWAIT_SQL $qp_groupWAIT_camp_SQL $agent_call_order limit 1;";
+						$stmtA = "SELECT conf_exten,user,extension,server_ip,last_call_time,ra_user,campaign_id,on_hook_agent,on_hook_ring_time,on_hook_auto_answer,auto_answer_prefix FROM vicidial_live_agents where status IN('CLOSER','READY') and lead_id<1 $ADUfindSQL and campaign_id IN($INBOUNDcampsSQL) and closer_campaigns LIKE \"% $channel_group %\" and last_update_time > '$BDtsSQLdate' and vicidial_live_agents.user NOT IN($ring_no_answer_agents'') $qp_groupWAIT_SQL $qp_groupWAIT_camp_SQL $agent_call_order limit 1;";
 						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 						$sthArows=$sthA->rows;
@@ -2933,6 +2999,8 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 							$log_campaign =				$aryA[6];
 							$VDADon_hook_agent =		$aryA[7];
 							$VDADon_hook_ring_time =	$aryA[8];
+							$VDADon_hook_auto_answer = 	$aryA[9];
+							$VDADauto_answer_prefix = 	$aryA[10];
 							}
 						$sthA->finish();
 						if ($AGILOG) {$agi_string = "$VDADuser|$VDADlast_call_time|$stmtA|";   &agi_output;}
@@ -3153,12 +3221,13 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 					if ($CAMP_callorder =~ /ring_all$/i)
 						{
 						### gather all available agents phones information (don't call more than 50 phones at once)
-						$stmtA = "SELECT conf_exten,user,extension,server_ip,ra_user,on_hook_ring_time from vicidial_live_agents where status IN('CLOSER','READY') and on_hook_agent='Y' and lead_id<1 $ADUfindSQL and campaign_id IN($INBOUNDcampsSQL) and closer_campaigns LIKE \"% $channel_group %\" and last_update_time > '$BDtsSQLdate' $qp_groupWAIT_SQL $qp_groupWAIT_camp_SQL $agent_call_order limit 50;";
+						$stmtA = "SELECT conf_exten,user,extension,server_ip,ra_user,on_hook_ring_time,on_hook_auto_answer,auto_answer_prefix from vicidial_live_agents where status IN('CLOSER','READY') and on_hook_agent='Y' and lead_id<1 $ADUfindSQL and campaign_id IN($INBOUNDcampsSQL) and closer_campaigns LIKE \"% $channel_group %\" and last_update_time > '$BDtsSQLdate' $qp_groupWAIT_SQL $qp_groupWAIT_camp_SQL $agent_call_order limit 50;";
 						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 						$sthArowsAR=$sthA->rows;
 							$dbhP=$dbhA;   $mysql_count='02162';   $MEL_aff_rows=$sthArows;   &mysql_error_logging;
 						$ragp=0;	
+						$ARauto_answer_phones=0;
 						while ($sthArowsAR > $ragp)
 							{
 							@aryA = $sthA->fetchrow_array;
@@ -3168,9 +3237,12 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 							$ARserver_ip[$ragp] =			$aryA[3];
 							$ARra_user[$ragp] =				$aryA[4];
 							$ARon_hook_ring_time[$ragp] =	$aryA[5];
+							$ARon_hook_auto_answer[$ragp] =   $aryA[6]; 
+							$ARauto_answer_prefix[$ragp] =   $aryA[7];
 							$AR_DIALstr[$ragp] =			'';
 							$ring_all_DIALstr[$ragp] =		'';
 							$ARdialplan_number[$ragp] =		'';
+							$ARauto_answer_phones += ( $ARon_hook_auto_answer[$ragp] eq "Y" ? 1 : 0); 
 							$ragp++;
 							}
 						$sthA->finish();
@@ -3185,6 +3257,9 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 						$ARserver_ip[0] =			$VDADserver_ip;
 						$ARra_user[0] =				$ra_user;
 						$ARon_hook_ring_time[0] =	$VDADon_hook_ring_time;
+                                                $ARon_hook_auto_answer[0] =  $VDADon_hook_auto_answer;
+                                                $ARauto_answer_prefix[0] =   $VDADauto_answer_prefix;
+						$ARauto_answer_phones = ( $ARon_hook_auto_answer[0] eq "Y" ? 1 : 0);
 						$AR_DIALstr[0] =			'';
 						$ring_all_DIALstr[0] =		'';
 						$ARdialplan_number[0] =		'';
@@ -3196,11 +3271,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 						### format the remote server dialstring to get the call to the agent
 						if($ARserver_ip[$ragp] =~ m/(\S+)\.(\S+)\.(\S+)\.(\S+)/ )
 							{
-							$a = leading_zero($1);
-							$b = leading_zero($2);
-							$c = leading_zero($3);
-							$d = leading_zero($4);
-							$AR_DIALstr[$ragp] = "$a$S$b$S$c$S$d$S";
+							$AR_DIALstr[$ragp] = star_ip($ARserver_ip[$ragp]);
 							}
 
 						### if a remote agent, find out where to ring
@@ -3296,6 +3367,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 							}
 						else
 							{
+							 if ($AGILOG) {$agi_string = "Processing on_hook_phones: $ARextension[$ragp]|$ARon_hook_auto_answer[$ragp]|$ARauto_answer_prefix[$ragp]|";   &agi_output;}
 							$ARon_hook_ring_time[$ragp] = ($ARon_hook_ring_time[$ragp] - 2); # set ring timeout lower so it doesn't go to vmail
 							$phone_extension = $ARextension[$ragp];
 							$phone_protocol = $ARextension[$ragp];
@@ -3322,8 +3394,11 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 								$dialplan_number =				$aryA[0];
 								$ARdialplan_number[$ragp] =		$aryA[0];
 								}
-							if (length($dialplan_number) > 0)
-								{$ring_all_DIALstr[$ragp] = "Local/$AR_DIALstr[$ragp]$dialplan_number" . '@default';}
+							
+							if (length($dialplan_number) > 0) {
+								$ring_all_DIALstr[$ragp] = "Local/$AR_DIALstr[$ragp]".( $ARon_hook_auto_answer[$ragp] eq "Y" ? $ARauto_answer_prefix[$ragp]:"" )."$dialplan_number" . '@default';
+								 if ($AGILOG) {$agi_string = "on_hook_DIALstr: $insert_lead_id|$phone_number|   |$Jnewcallerid|";   &agi_output;}
+								}
 							}
 
 						### set the ring time lower if the phones ring time is lower
@@ -3381,6 +3456,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 										}
 									}
 								}
+					### Ring telephones for on_hook_agents
 							$stmtA = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$VARserver_ip','','Originate','$RINGALLqueryCID','Exten: $RINGALLexten','Context: default','Channel: $ring_all_DIALstr[$ragp]','Priority: 1','Callerid: $RINGALLqueryCIDfull','Timeout: $commandTEMPon_hook_ring_time','','','','')";
 							$affected_rows = $dbhA->do($stmtA);
 								$dbhP=$dbhA;   $mysql_count='02168';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
@@ -3578,12 +3654,8 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 				### format the remote server dialstring to get the call to the overflow agent meetme room
 				if( $VDADserver_ip =~ m/(\S+)\.(\S+)\.(\S+)\.(\S+)/ )
 					{
-					$a = leading_zero($1); 
-					$b = leading_zero($2); 
-					$c = leading_zero($3); 
-					$d = leading_zero($4);
-					$VDADremDIALstr = "$a$S$b$S$c$S$d$S";
-					$RAredDIALstr = "$a$S$b$S$c$S$d$S";
+					$VDADremDIALstr = star_ip($VDADserver_ip);
+					$RAredDIALstr = star_ip($VDADserver_ip);
 					}
 				$alertVDADremDIALstr = "$VDADremDIALstr";
 				$alertVDADremDIALstr .= "$dtmf_silent_prefix$VDADconf_exten";
@@ -4135,7 +4207,12 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 
 			if ($drop_seconds < 1) {$drop_seconds = $drop_timer;}
 
-			$stmtA = "UPDATE vicidial_closer_log set status='HXFER',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds',term_reason='HOLDRECALLXFER' where lead_id = '$insert_lead_id' order by closecallid desc limit 1;";
+			# set the log-user to the agentdirect destination user, if set
+			$LOGuserSQL='';
+			if ( ($channel_group =~ /AGENTDIRECT/i) && (length($agent_only) > 1) )
+				{$LOGuserSQL = ",user='$agent_only'";}
+
+			$stmtA = "UPDATE vicidial_closer_log set status='HXFER',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds',term_reason='HOLDRECALLXFER'$LOGuserSQL where lead_id = '$insert_lead_id' order by closecallid desc limit 1;";
 			$affected_rows = $dbhA->do($stmtA);
 				$dbhP=$dbhA;   $mysql_count='02076';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 			if ($AGILOG) {$agi_string = "--    VDCL vcl update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
@@ -4598,7 +4675,12 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 
 			if ($drop_seconds < 1) {$drop_seconds = $drop_timer;}
 
-			$stmtA = "UPDATE vicidial_closer_log set status='$NQstatus',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds',term_reason='$NQterm',comments='$NQcomments' where lead_id = '$insert_lead_id' order by closecallid desc limit 1;";
+			# set the log-user to the agentdirect destination user, if set
+			$LOGuserSQL='';
+			if ( ($channel_group =~ /AGENTDIRECT/i) && (length($agent_only) > 1) )
+				{$LOGuserSQL = ",user='$agent_only'";}
+
+			$stmtA = "UPDATE vicidial_closer_log set status='$NQstatus',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds',term_reason='$NQterm',comments='$NQcomments'$LOGuserSQL where lead_id = '$insert_lead_id' order by closecallid desc limit 1;";
 			$affected_rows = $dbhA->do($stmtA);
 				$dbhP=$dbhA;   $mysql_count='02105';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 			if ($AGILOG) {$agi_string = "--  ACF VDCL vcl update: |$affected_rows|$insert_lead_id|$insert_close_id|$MCareacode_override|\n|$stmtA|";   &agi_output;}
@@ -5085,7 +5167,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 				if ($add_lead_timezone =~ /PHONE_CODE_AREACODE/) 
 					{&lead_timezone_process;}
 				### insert a record into the vicidial_list table 
-				$stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now,comments$entry_list_idSQLa$INSERTstateSQLa$INSERTpostal_codeSQLa$populate_provinceA) values('$SQLdate','$tsSQLdate','INBND','$fronter','$vendor_id','VDCL','$wait_time_option_callback_list_id','N','$phone_code','$phone_number','$ingroup_insert','$called_count','$local_gmt','$VLcomments'$entry_list_idSQLb$INSERTstateSQLb$INSERTpostal_codeSQLb$populate_provinceB);";
+				$stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now,comments$entry_list_idSQLa$INSERTstateSQLa$INSERTpostal_codeSQLa$populate_provinceA) values('$SQLdate','$tsSQLdate','INBND','$fronter','$vendor_id','$source_id','$wait_time_option_callback_list_id','N','$phone_code','$phone_number','$ingroup_insert','$called_count','$local_gmt','$VLcomments'$entry_list_idSQLb$INSERTstateSQLb$INSERTpostal_codeSQLb$populate_provinceB);";
 				$affected_rows = $dbhA->do($stmtA);
 					$dbhP=$dbhA;   $mysql_count='02089';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 				$stmtB = "SELECT LAST_INSERT_ID() LIMIT 1;";
@@ -5207,8 +5289,13 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 
 				if ($drop_seconds < 1) {$drop_seconds = $drop_timer;}
 
+				# set the log-user to the agentdirect destination user, if set
+				$LOGuserSQL='';
+				if ( ($channel_group =~ /AGENTDIRECT/i) && (length($agent_only) > 1) )
+					{$LOGuserSQL = ",user='$agent_only'";}
+
 				if (length($HT_status)<1) {$HT_status='WAITTO';}
-				$stmtA = "UPDATE vicidial_closer_log set status='$HT_status',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds',term_reason='HOLDTIME' where lead_id = '$insert_lead_id' order by closecallid desc limit 1;";
+				$stmtA = "UPDATE vicidial_closer_log set status='$HT_status',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds',term_reason='HOLDTIME'$LOGuserSQL where lead_id = '$insert_lead_id' order by closecallid desc limit 1;";
 				$affected_rows = $dbhA->do($stmtA);
 					$dbhP=$dbhA;   $mysql_count='02091';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 				if ($AGILOG) {$agi_string = "--    VDCL vcl update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
@@ -5581,7 +5668,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 						if ($add_lead_timezone =~ /PHONE_CODE_AREACODE/) 
 							{&lead_timezone_process;}
 						### insert a record into the vicidial_list table 
-						$stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now,comments$entry_list_idSQLa$INSERTstateSQLa$INSERTpostal_codeSQLa$populate_provinceA) values('$SQLdate','$tsSQLdate','INBND','$fronter','$vendor_id','VDCL','$hold_time_option_callback_list_id','N','$phone_code','$phone_number','$ingroup_insert','$called_count','$local_gmt','$VLcomments'$entry_list_idSQLb$INSERTstateSQLb$INSERTpostal_codeSQLb$populate_provinceB);";
+						$stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now,comments$entry_list_idSQLa$INSERTstateSQLa$INSERTpostal_codeSQLa$populate_provinceA) values('$SQLdate','$tsSQLdate','INBND','$fronter','$vendor_id','$source_id','$hold_time_option_callback_list_id','N','$phone_code','$phone_number','$ingroup_insert','$called_count','$local_gmt','$VLcomments'$entry_list_idSQLb$INSERTstateSQLb$INSERTpostal_codeSQLb$populate_provinceB);";
 						$affected_rows = $dbhA->do($stmtA);
 							$dbhP=$dbhA;   $mysql_count='02089';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 						$stmtB = "SELECT LAST_INSERT_ID() LIMIT 1;";
@@ -5703,8 +5790,13 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 
 						if ($drop_seconds < 1) {$drop_seconds = $drop_timer;}
 
+						# set the log-user to the agentdirect destination user, if set
+						$LOGuserSQL='';
+						if ( ($channel_group =~ /AGENTDIRECT/i) && (length($agent_only) > 1) )
+							{$LOGuserSQL = ",user='$agent_only'";}
+
 						if (length($HT_status)<1) {$HT_status='HOLDTO';}
-						$stmtA = "UPDATE vicidial_closer_log set status='$HT_status',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds',term_reason='HOLDTIME' where lead_id = '$insert_lead_id' order by closecallid desc limit 1;";
+						$stmtA = "UPDATE vicidial_closer_log set status='$HT_status',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds',term_reason='HOLDTIME'$LOGuserSQL where lead_id = '$insert_lead_id' order by closecallid desc limit 1;";
 						$affected_rows = $dbhA->do($stmtA);
 							$dbhP=$dbhA;   $mysql_count='02091';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 						if ($AGILOG) {$agi_string = "--    VDCL vcl update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
@@ -6094,7 +6186,7 @@ if ($closing_check > 0)
 			if ($add_lead_timezone =~ /PHONE_CODE_AREACODE/) 
 				{&lead_timezone_process;}
 			### insert a record into the vicidial_list table 
-			$stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now,comments$entry_list_idSQLa$INSERTstateSQLa$INSERTpostal_codeSQLa$populate_provinceA) values('$SQLdate','$tsSQLdate','INBND','$fronter','$vendor_id','VDCL','$closing_time_option_callback_list_id','N','$phone_code','$phone_number','$ingroup_insert','$called_count','$local_gmt','$VLcomments'$entry_list_idSQLb$INSERTstateSQLb$INSERTpostal_codeSQLb$populate_provinceB);";
+			$stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now,comments$entry_list_idSQLa$INSERTstateSQLa$INSERTpostal_codeSQLa$populate_provinceA) values('$SQLdate','$tsSQLdate','INBND','$fronter','$vendor_id','$source_id','$closing_time_option_callback_list_id','N','$phone_code','$phone_number','$ingroup_insert','$called_count','$local_gmt','$VLcomments'$entry_list_idSQLb$INSERTstateSQLb$INSERTpostal_codeSQLb$populate_provinceB);";
 			$affected_rows = $dbhA->do($stmtA);
 				$dbhP=$dbhA;   $mysql_count='02237';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 			$stmtB = "SELECT LAST_INSERT_ID() LIMIT 1;";
@@ -6206,8 +6298,13 @@ if ($closing_check > 0)
 
 		if ($drop_seconds < 1) {$drop_seconds = $drop_timer;}
 
+		# set the log-user to the agentdirect destination user, if set
+		$LOGuserSQL='';
+		if ( ($channel_group =~ /AGENTDIRECT/i) && (length($agent_only) > 1) )
+			{$LOGuserSQL = ",user='$agent_only'";}
+
 		if (length($HT_status)<1) {$HT_status='CLOSOP';}
-		$stmtA = "UPDATE vicidial_closer_log set status='$HT_status',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds',term_reason='CLOSETIME' where lead_id = '$insert_lead_id' order by closecallid desc limit 1;";
+		$stmtA = "UPDATE vicidial_closer_log set status='$HT_status',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds',term_reason='CLOSETIME'$LOGuserSQL where lead_id = '$insert_lead_id' order by closecallid desc limit 1;";
 		$affected_rows = $dbhA->do($stmtA);
 			$dbhP=$dbhA;   $mysql_count='02243';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 		if ($AGILOG) {$agi_string = "--    VDCL vcl update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
@@ -6477,11 +6574,7 @@ if ( ($drop_timer > $DROP_TIME) || ($MCdrop_override > 0) )
 		### format the remote server dialstring to get the call to the overflow agent meetme room
 		if( $did_phone_server_ip =~ m/(\S+)\.(\S+)\.(\S+)\.(\S+)/ )
 			{
-			$a = leading_zero($1); 
-			$b = leading_zero($2); 
-			$c = leading_zero($3); 
-			$d = leading_zero($4);
-			$DIDphoneDIALstr = "$a$S$b$S$c$S$d$S";
+			$DIDphoneDIALstr = star_ip($did_phone_server_ip);
 			}
 		$DROPexten = "$DIDphoneDIALstr$did_phone_dialplan_number";
 		}
@@ -6493,7 +6586,12 @@ if ( ($drop_timer > $DROP_TIME) || ($MCdrop_override > 0) )
 		$dbhP=$dbhA;   $mysql_count='02099';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 	if ($AGILOG) {$agi_string = "--    VDCL vac record deleted: |$affected_rows| $channel_group|";   &agi_output;}
 
-	$stmtA = "UPDATE vicidial_closer_log set status='$DRstatus',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds',term_reason='$DRterm' where lead_id='$insert_lead_id' order by closecallid desc limit 1;";
+	# set the log-user to the agentdirect destination user, if set
+	$LOGuserSQL='';
+	if ( ($channel_group =~ /AGENTDIRECT/i) && (length($agent_only) > 1) )
+		{$LOGuserSQL = ",user='$agent_only'";}
+
+	$stmtA = "UPDATE vicidial_closer_log set status='$DRstatus',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds',term_reason='$DRterm'$LOGuserSQL where lead_id='$insert_lead_id' order by closecallid desc limit 1;";
 	$affected_rows = $dbhA->do($stmtA);
 		$dbhP=$dbhA;   $mysql_count='02100';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 	if ($AGILOG) {$agi_string = "--    VDCL vcl update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
@@ -7747,13 +7845,11 @@ sub checkresult
 	}
 
 
-sub leading_zero($) 
-	{
-	$_ = $_[0];
-	s/^(\d)$/0$1/;
-	s/^(\d\d)$/0$1/;
-	return $_;
-	} # End of the leading_zero() routine.
+
+sub star_ip($) { # returns IP 10.11.1.190 as 010*011*001*190*
+        return sprintf("%03d\*%03d\*%03d\*%03d\*",  split (/\./, $_[0], 4) );
+}
+
 
 
 

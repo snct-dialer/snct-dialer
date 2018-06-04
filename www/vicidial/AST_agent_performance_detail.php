@@ -62,6 +62,7 @@
 # 170829-0040 - Added screen color settings
 # 171012-2015 - Fixed javascript/apache errors with graphs
 # 180208-1724 - Added times to/from
+# 180330-1750 - Fixed display bug for individual user selection
 #
 
 $startMS = microtime();
@@ -491,7 +492,7 @@ else
 
 if ($DB) {$HTML_text.="$user_group_string|$user_group_ct|$user_groupQS|$i<BR>";}
 
-$LINKbase = "$PHP_SELF?query_date=$query_date&end_date=$end_date&query_time=$query_time&end_time=$end_time$groupQS$user_groupQS&shift=$shift&DB=$DB&show_percentages=$show_percentages&live_agents=$live_agents&time_in_sec=$time_in_sec&search_archived_data=$search_archived_data&show_defunct_users=$show_defunct_users&breakdown_by_date=$breakdown_by_date&report_display_type=$report_display_type";
+$LINKbase = "$PHP_SELF?query_date=$query_date&end_date=$end_date&query_time=$query_time&end_time=$end_time$groupQS$user_groupQS$userQS&shift=$shift&DB=$DB&show_percentages=$show_percentages&live_agents=$live_agents&time_in_sec=$time_in_sec&search_archived_data=$search_archived_data&show_defunct_users=$show_defunct_users&breakdown_by_date=$breakdown_by_date&report_display_type=$report_display_type";
 
 require("screen_colors.php");
 
@@ -771,7 +772,7 @@ $max_customeravg=1;
 		}
 	else
 		{
-		$user_stmt="SELECT distinct full_name,vicidial_users.user,vicidial_users.user_group from vicidial_users,".$agent_log_table." where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN' and vicidial_users.user=".$agent_log_table.".user $live_user_SQLvu $group_SQL $user_group_SQL order by full_name asc";
+		$user_stmt="SELECT distinct full_name,vicidial_users.user,vicidial_users.user_group from vicidial_users,".$agent_log_table." where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN' and vicidial_users.user=".$agent_log_table.".user $live_user_SQLvu $group_SQL $user_group_SQL $user_agent_log_SQL order by full_name asc";
 		}
 		if ($DB) {echo "$user_stmt\n";}
 	$user_rslt=mysql_to_mysqli($user_stmt, $link);

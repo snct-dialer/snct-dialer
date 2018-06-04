@@ -1,7 +1,7 @@
 <?php
 # AST_admin_template_maker.php - version 2.10
 # 
-# Copyright (C) 2017  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 120402-2132 - First Build
@@ -14,6 +14,8 @@
 # 141114-0912 - Finalized adding QXZ translation to all admin files
 # 141229-2024 - Added code for on-the-fly language translations display
 # 170409-1532 - Added IP List validation code
+# 180324-0942 - Enforce User Group campaign permissions for templates based on list_id
+# 180503-2215 - Added new help display
 #
 
 require("dbconnect_mysqli.php");
@@ -59,7 +61,7 @@ $vicidial_listloader_fields = '|vendor_lead_code|source_id|phone_code|phone_numb
 $US='_';
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$stmt = "SELECT use_non_latin,admin_web_directory,custom_fields_enabled,webroot_writable,enable_languages,language_method FROM system_settings;";
+$stmt = "SELECT use_non_latin,admin_web_directory,custom_fields_enabled,webroot_writable,enable_languages,language_method,admin_screen_colors FROM system_settings;";
 $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $qm_conf_ct = mysqli_num_rows($rslt);
@@ -72,6 +74,7 @@ if ($qm_conf_ct > 0)
 	$webroot_writable =			$row[3];
 	$SSenable_languages =		$row[4];
 	$SSlanguage_method =		$row[5];
+	$SSadmin_screen_colors =	$row[6];
 	}
 ##### END SETTINGS LOOKUP #####
 ###########################################
@@ -210,10 +213,10 @@ $LOGallowed_campaignsSQL='';
 $whereLOGallowed_campaignsSQL='';
 if (!preg_match('/\-ALL/i', $LOGallowed_campaigns))
 	{
-	echo "<BR/>**$LOGallowed_campaigns**";
+#	echo "<BR/>**$LOGallowed_campaigns**";
 	$rawLOGallowed_campaignsSQL = preg_replace("/ -/",'',$LOGallowed_campaigns);
 	$rawLOGallowed_campaignsSQL = preg_replace("/ /","','",$rawLOGallowed_campaignsSQL);
-	echo "<BR/>##$rawLOGallowed_campaignsSQL##";
+#	echo "<BR/>##$rawLOGallowed_campaignsSQL##";
 	$LOGallowed_campaignsSQL = "and campaign_id IN('$rawLOGallowed_campaignsSQL')";
 	$whereLOGallowed_campaignsSQL = "where campaign_id IN('$rawLOGallowed_campaignsSQL')";
 	}
@@ -234,14 +237,23 @@ $admDIR = "$HTTPprotocol$server_name$script_name";
 $admDIR = preg_replace('/AST_admin_template_maker\.php/i', '',$admDIR);
 $admDIR = "/vicidial/";
 $admSCR = 'admin.php';
-$NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
-$NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+# $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
+# $NWE = "')\"><IMG SRC=\"help.png\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
 
+$NWB = "<IMG SRC=\"help.png\" onClick=\"FillAndShowHelpDiv(event, '";
+$NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
+
+require("screen_colors.php");
 ?>
 <html>
 <head>
 <title>ADMIN: Lead Loader Template Maker</title>
 </head>
+
+<link rel="stylesheet" type="text/css" href="vicidial_stylesheet.php">
+<script language="JavaScript" src="help.js"></script>
+<div id='HelpDisplayDiv' class='help_info' style='display:none;'></div>
+
 <script language="Javascript">
 var form_file_name='';
 
@@ -393,10 +405,10 @@ $short_header=1;
 require("admin_header.php");
 ?>
 <BR/>
-<table border="2" bordercolor="#000099" cellpadding="10" width="800" align="left">
-<tr height="20"><th bgcolor="#000099"><font class="standard_bold" color="#FFFFFF"><?php echo _QXZ("Listloader Custom Template Maker"); ?><?php echo "$NWB#vicidial_template_maker$NWE"; ?></font></th></tr>
-<tr><td align="center" bgcolor="#CCFFFF">
-<table border=0 cellpadding=15 cellspacing=0 width="90%" align="center" bgcolor="#D9E6FE">
+<table border="2" bordercolor="#<?php echo $SSmenu_background; ?>" cellpadding="10" width="800" align="left">
+<tr height="20"><th bgcolor="#<?php echo $SSmenu_background; ?>"><font class="standard_bold" color="#FFFFFF"><?php echo _QXZ("Listloader Custom Template Maker"); ?><?php echo "$NWB#vicidial_template_maker$NWE"; ?></font></th></tr>
+<tr><td align="center" bgcolor="#<?php echo $SSstd_row4_background; ?>">
+<table border=0 cellpadding=15 cellspacing=0 width="90%" align="center" bgcolor="#<?php echo $SSframe_background; ?>">
 <?php
 if ($error_msg) 
 	{
@@ -422,7 +434,7 @@ if ($success_msg)
 		</td>
 		<td align="left" width='50%'><form action="<?php echo $PHP_SELF; ?>" method="post"><font class="standard"><?php echo _QXZ("Select template to delete"); ?>:</font><?php echo "$NWB#template_maker-delete_template$NWE"; ?><BR><select name="template_id" onChange="loadIFrame('hide_new_template_form', '')">
 <?php
-$template_stmt="select template_id, template_name from vicidial_custom_leadloader_templates order by template_id asc";
+$template_stmt="SELECT template_id, template_name FROM vicidial_custom_leadloader_templates WHERE list_id IN (SELECT list_id FROM vicidial_lists $whereLOGallowed_campaignsSQL) ORDER BY template_id asc;";
 $template_rslt=mysql_to_mysqli($template_stmt, $link);
 if (mysqli_num_rows($template_rslt)>0) {
 	if ($update_template) {echo "<option value='$update_template' selected>$update_template</option>\n";} else {echo "<option value='' selected>--"._QXZ("Choose an existing template")."--</option>\n";}
@@ -450,19 +462,19 @@ if (mysqli_num_rows($template_rslt)>0) {
 	<tr>
 		<th colspan="2" bgcolor="#330099"><font class="standard" color="white"><?php echo _QXZ("New template form"); ?></font></th>
 	</tr>
-	<tr bgcolor="#D9E6FE">
+	<tr bgcolor="#<?php echo $SSframe_background; ?>">
 		<td align="right" width='25%'><font class="standard"><?php echo _QXZ("Template ID"); ?>:</font></td>
 		<td align="left" width='75%'><input type='text' name='template_id' size='15' maxlength='20'><?php echo "$NWB#template_maker-template_id$NWE"; ?></td>
 	</tr>
-	<tr bgcolor="#D9E6FE">
+	<tr bgcolor="#<?php echo $SSframe_background; ?>">
 		<td align="right" width='25%'><font class="standard"><?php echo _QXZ("Template Name"); ?>:</font></td>
 		<td align="left" width='75%'><input type='text' name='template_name' size='15' maxlength='30'><?php echo "$NWB#template_maker-template_name$NWE"; ?></td>
 	</tr>
-	<tr bgcolor="#D9E6FE">
+	<tr bgcolor="#<?php echo $SSframe_background; ?>">
 		<td align="right" width='25%'><font class="standard"><?php echo _QXZ("Template Description"); ?>:</font></td>
 		<td align="left" width='75%'><input type='text' name='template_description' size='50' maxlength='255'><?php echo "$NWB#template_maker-template_description$NWE"; ?></td>
 	</tr>
-	<tr bgcolor="#D9E6FE">
+	<tr bgcolor="#<?php echo $SSframe_background; ?>">
 		<td width='25%' align="right"><font class="standard"><?php echo _QXZ("List ID template will load into"); ?>:</font></td>
 		<td width='75%'>
 			<select id='template_list_id' name='template_list_id' onChange="DisplayTemplateFields(this.value)">
@@ -483,7 +495,7 @@ if (mysqli_num_rows($template_rslt)>0) {
 			</select></font><?php echo "$NWB#template_maker-list_id$NWE"; ?>
 		</td>
 	</tr>
-	<tr bgcolor="#D9E6FE">
+	<tr bgcolor="#<?php echo $SSframe_background; ?>">
 		<td width='25%' align="right"><font class="standard"><?php echo _QXZ("Statuses to dedupe against (optional)"); ?>:</font></td>
 		<td width='75%'>
 		<span id='statuses_display'>
@@ -506,16 +518,16 @@ if (mysqli_num_rows($template_rslt)>0) {
 		</span>
 		</td>
 	</tr>
-	<tr bgcolor="#D9E6FE">
+	<tr bgcolor="#<?php echo $SSframe_background; ?>">
 		<th colspan='2'><input type='submit' name='submit_template' onClick="return checkForm(this.form)" value='SUBMIT TEMPLATE'></th>
 	</tr>
-<tr bgcolor="#D9E6FE"><td align="center" colspan=2>
+<tr bgcolor="#<?php echo $SSframe_background; ?>"><td align="center" colspan=2>
 <table border=0 cellpadding=3 cellspacing=1 width="100%" align="center">
 	<tr>
 		<th colspan="2" bgcolor="#330099"><font class="standard" color="white"><?php echo _QXZ("Assign columns to file fields"); ?><BR/><font size='-2'>(<?php echo _QXZ("selecting a different list will reset columns"); ?>)</font></font><?php echo "$NWB#template_maker-assign_columns$NWE"; ?></th>
 	</tr>
 	<tr valign="top">
-		<td border="1" align="center" bgcolor="#D9E6FE" width="50%"><font class="standard"><?php echo _QXZ("Standard Field"); ?></font></td>
+		<td border="1" align="center" bgcolor="#<?php echo $SSframe_background; ?>" width="50%"><font class="standard"><?php echo _QXZ("Standard Field"); ?></font></td>
 		<td border="0" align="center" bgcolor="#FED9D9" width="50%"><font class="standard"><?php echo _QXZ("Custom Field"); ?></font></td>
 	</tr>
 	<tr valign="top">

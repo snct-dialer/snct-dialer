@@ -4,7 +4,7 @@
 #
 # functions for administrative scripts and reports
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 #
 # CHANGES:
@@ -32,6 +32,7 @@
 # 170503-2130 - Patched sec_convert to fix rounding time bug, issue #1011
 # 170526-2142 - Added additional auth variable filtering, issue #1016
 # 170930-0852 - Added code for custom reports variable display
+# 180508-2215 - Added new help display
 #
 
 ##### BEGIN validate user login credentials, check for failed lock out #####
@@ -318,8 +319,11 @@ function horizontal_bar_chart($campaign_id,$days_graph,$title,$link,$metric,$met
 	$link_text='';
 	$max_count=0;
 	$i=0;
-	$NWB = "$download_link &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
-	$NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+	# $NWB = "$download_link &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
+	# $NWE = "')\"><IMG SRC=\"help.png\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+
+	$NWB = "<IMG SRC=\"help.png\" onClick=\"FillAndShowHelpDiv(event, '";
+	$NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
 
 
 	### get stats for last X days

@@ -23,10 +23,11 @@
 # 160508-0139 - Added screen colors feature
 # 170409-1540 - Added IP List validation code
 # 180219-1233 - Fixed translation issue #1069
+# 180502-2215 - Added new help display
 #
 
-$admin_version = '2.14-17';
-$build = '180219-1233';
+$admin_version = '2.14-18';
+$build = '180502-2215';
 
 $sh="emails"; 
 
@@ -334,6 +335,11 @@ $Mhead_color =	$SSstd_row5_background;
 <html>
 <head>
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+
+<link rel="stylesheet" type="text/css" href="vicidial_stylesheet.php">
+<script language="JavaScript" src="help.js"></script>
+<div id='HelpDisplayDiv' class='help_info' style='display:none;'></div>
+
 <title><?php echo _QXZ("ADMINISTRATION: Dialer Email Account fields"); ?>
 <?php 
 
@@ -368,8 +374,11 @@ if ($SSemail_enabled < 1)
 	}
 
 
-$NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
-$NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+# $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
+# $NWE = "')\"><IMG SRC=\"help.png\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+
+$NWB = "<IMG SRC=\"help.png\" onClick=\"FillAndShowHelpDiv(event, '";
+$NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
 
 
 if ($DB > 0)
@@ -529,7 +538,7 @@ if ($eact == "COPY")
 		echo "$accounts_list";
 		echo "</select></td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("New Account ID").": </td><td align=left><input type=text name=new_account_id value='$new_account_id' size=10 maxlength=20></td></tr>\n";
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("New Account Name").": </td><td align=left><input type=text name=email_account_name size=40 maxlength=100>$NWB#email_accounts-carrier_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("New Account Name").": </td><td align=left><input type=text name=email_account_name size=40 maxlength=100>$NWB#email_accounts-email_account_name$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=center colspan=2><input type=submit name=SUBMIT value='"._QXZ("COPY")."'></td></tr>\n";
 		echo "</TABLE></center>\n";
 		echo "</TD></TR></TABLE>\n";

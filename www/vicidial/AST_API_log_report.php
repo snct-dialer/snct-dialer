@@ -14,6 +14,7 @@
 # 170823-2241 - Added HTML formatting and screen colors, fixed CSV output bug
 # 180206-2300 - Added option for displaying individual URL variables
 # 180301-2303 - Added DATA column to TEXT/HTML output, Added GET-AND-POST URL logging
+# 180502-2115 - Added new help display
 #
 
 $startMS = microtime();
@@ -545,8 +546,12 @@ if ($DB) {echo "$user_group_string|$user_group_ct|$user_groupQS|$i<BR>\n";}
 
 $LINKbase = "$PHP_SELF?DB=$DB&api_date_D=$api_date_D&api_date_T=$api_date_T&api_date_end_D=$api_date_end_D&api_date_end_T=$api_date_end_T$resultQS$functionQS$agent_userQS$userQS&shift=$shift&DB=$DB&show_percentages=$show_percentages&show_urls=$show_urls&search_archived_data=$search_archived_data&SUBMIT=1";
 
-$NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
-$NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+# $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
+# $NWE = "')\"><IMG SRC=\"help.png\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+
+$NWB = "<IMG SRC=\"help.png\" onClick=\"FillAndShowHelpDiv(event, '";
+$NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
+
 
 $HTML_head.="<HTML>\n";
 $HTML_head.="<HEAD>\n";
@@ -563,6 +568,11 @@ $HTML_head.=" </STYLE>\n";
 $HTML_head.="<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
 $HTML_head.="<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 $HTML_head.="<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
+
+$HTML_head.="<link rel=\"stylesheet\" type=\"text/css\" href=\"vicidial_stylesheet.php\">\n";
+$HTML_head.="<script language=\"JavaScript\" src=\"help.js\"></script>\n";
+$HTML_head.="<div id='HelpDisplayDiv' class='help_info' style='display:none;'></div>";
+
 $HTML_text.="<script language=\"JavaScript\">\n";
 $HTML_text.="function openNewWindow(url)\n";
 $HTML_text.="	{\n";

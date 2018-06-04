@@ -1,7 +1,7 @@
 <?php 
 # AST_IVRfilter.php
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -20,6 +20,7 @@
 # 141230-1449 - Added code for on-the-fly language translations display
 # 160227-1931 - Uniform form format
 # 170409-1538 - Added IP List validation code
+# 180507-2315 - Added new help display
 #
 
 $startMS = microtime();
@@ -229,8 +230,12 @@ if (!isset($end_date)) {$end_date = $NOW_DATE;}
 $i=0;
 
 
-$NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
-$NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+
+# $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
+# $NWE = "')\"><IMG SRC=\"help.png\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+
+$NWB = "<IMG SRC=\"help.png\" onClick=\"FillAndShowHelpDiv(event, '";
+$NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
 
 $HTML_header.="<HTML>\n";
 $HTML_header.="<HEAD>\n";
@@ -248,6 +253,9 @@ $HTML_header.="<TITLE>"._QXZ("VICIDIAL: VDL IVR Filter Stats")."</TITLE></HEAD><
 $HTML_header.="<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
 $HTML_header.="<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 
+$HTML_header.="<link rel=\"stylesheet\" type=\"text/css\" href=\"vicidial_stylesheet.php\">\n";
+$HTML_header.="<script language=\"JavaScript\" src=\"help.js\"></script>\n";
+$HTML_header.="<div id='HelpDisplayDiv' class='help_info' style='display:none;'></div>";
 
 	$short_header=1;
 

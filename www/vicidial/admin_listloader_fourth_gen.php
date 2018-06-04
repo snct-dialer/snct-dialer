@@ -2,7 +2,7 @@
 # admin_listloader_fourth_gen.php - version 2.14
 #  (based upon - new_listloader_superL.php script)
 # 
-# Copyright (C) 2017  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # ViciDial web-based lead loader from formatted file
 # 
@@ -72,10 +72,12 @@
 # 170409-1553 - Added IP List validation code
 # 171001-0908 - Fixed issue #1041
 # 171204-1517 - Fix for custom field duplicate issue, removed link to old lead loader
+# 180324-0943 - Enforce User Group campaign permissions for templates based on list_id
+# 180502-2215 - Added new help display
 #
 
-$version = '2.14-70';
-$build = '171204-1517';
+$version = '2.14-72';
+$build = '180502-2215';
 
 require("dbconnect_mysqli.php");
 require("functions.php");
@@ -368,9 +370,11 @@ $admDIR = "$HTTPprotocol$server_name$script_name";
 $admDIR = preg_replace('/admin_listloader_fourth_gen\.php/i', '',$admDIR);
 $admDIR = "/vicidial/";
 $admSCR = 'admin.php';
-$NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
-$NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+# $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
+# $NWE = "')\"><IMG SRC=\"help.png\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
 
+$NWB = "<IMG SRC=\"help.png\" onClick=\"FillAndShowHelpDiv(event, '";
+$NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
 $secX = date("U");
 $hour = date("H");
 $min = date("i");
@@ -466,6 +470,9 @@ header ("Content-type: text/html; charset=utf-8");
 
 echo "<html>\n";
 echo "<head>\n";
+echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"vicidial_stylesheet.php\">\n";
+echo "<script language=\"JavaScript\" src=\"help.js\"></script>\n";
+echo "<div id='HelpDisplayDiv' class='help_info' style='display:none;'></div>";
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo "<!-- VERSION: $version     BUILD: $build -->\n";
 echo "<!-- SEED TIME  $secX:   $year-$mon-$mday $hour:$min:$sec  LOCAL GMT OFFSET NOW: $LOCAL_GMT_OFF  DST: $isdst -->\n";
@@ -687,7 +694,7 @@ if ( (!$OK_to_process) or ( ($leadfile) and ($file_layout!="standard" && $file_l
 			<td align=right width="20%"><font face="arial, helvetica" size=2><?php echo _QXZ("Custom Layout to Use"); ?>: </font></td>
 			<td align=left><select name="template_id" id="template_id">
 <?php
-				$template_stmt="SELECT template_id, template_name from vicidial_custom_leadloader_templates order by template_id asc";
+				$template_stmt="SELECT template_id, template_name FROM vicidial_custom_leadloader_templates WHERE list_id IN (SELECT list_id FROM vicidial_lists $whereLOGallowed_campaignsSQL) ORDER BY template_id asc;";
 				$template_rslt=mysql_to_mysqli($template_stmt, $link);
 				if (mysqli_num_rows($template_rslt)>0) {
 					echo "<option value='' selected>--"._QXZ("Select custom template")."--</option>";

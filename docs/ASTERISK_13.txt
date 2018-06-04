@@ -1,4 +1,4 @@
-ASTERISK 13 COMPATIBILITY	   START: 2017-09-16	    UPDATE: 2017-09-22
+ASTERISK 13 COMPATIBILITY	   START: 2017-09-16	    UPDATE: 2018-05-19
 
 
 
@@ -8,7 +8,7 @@ VERY IMPORTANT: Make sure you set the "Asterisk Version" properly in the Modify 
 
 These changes in Asterisk have necessitated some changes in the default Asterisk configurations for VICIdial:
 NOTE: These are installed by the install.pl script if you select Asterisk version 13 and choose to copy sample conf files
-
+NOTE: Asterisk 13.20 and higher has a functioning version of the AMD app, unlike earlier Asterisk 13 versions
 
 In extensions.conf (from extensions.conf.sample-13):
 
@@ -64,10 +64,10 @@ make
 make install
 cd ../../
 
-wget http://download.vicidial.com/beta-apps/asterisk-13.17.2-vici.tar.gz
-tar xvfz asterisk-13.17.2-vici.tar.gz
-cd asterisk-13.17.2-vici/
-./configure --with-dahdi=/usr/src/asterisk/dahdi-linux-complete-2.11.1+2.11.1/ --with-gsm=internal --with-ogg=/usr/lib64/
+wget http://download.vicidial.com/beta-apps/asterisk-13.21.0-vici.tar.gz
+tar xvfz asterisk-13.21.0-vici.tar.gz
+cd asterisk-13.21.0-vici/
+./configure --with-dahdi=/usr/src/asterisk/dahdi-linux-complete-2.11.1+2.11.1/ --with-gsm=internal --with-opus=/usr/lib64/ --with-speex=/usr/lib64/ --with-srtp=/usr/lib64/ --with-ogg=/usr/lib64/ --with-ssl --enable-asteriskssl --with-pjproject-bundled
 make menuselect   <MAKE SURE APP_MEETME IS SELECTED IN APPLICATIONS!!!!!!!!!!!!!!!!!!!!!!!!!!>
 make
 make install
@@ -99,17 +99,15 @@ make
 make install
 cd ../../
 
-wget http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-13-current.tar.gz
-tar xvfz asterisk-13-current.tar.gz
-cd asterisk-13.17.2/
+wget http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-13.21.0.tar.gz
+tar xvfz asterisk-13.21.0.tar.gz
+cd asterisk-13.21.0/
 wget http://download.vicidial.com/asterisk-patches/leave.h
 wget http://download.vicidial.com/asterisk-patches/enter.h
 mv -f enter.h apps/enter.h
 mv -f leave.h apps/leave.h
-./configure --with-dahdi=/usr/src/asterisk/dahdi-linux-complete-2.11.1+2.11.1/ --with-gsm=internal --with-ogg=/usr/lib64/
+./configure --with-dahdi=/usr/src/asterisk/dahdi-linux-complete-2.11.1+2.11.1/ --with-gsm=internal --with-opus=/usr/lib64/ --with-speex=/usr/lib64/ --with-srtp=/usr/lib64/ --with-ogg=/usr/lib64/ --with-ssl --enable-asteriskssl --with-pjproject-bundled
 make menuselect   <MAKE SURE APP_MEETME IS SELECTED IN APPLICATIONS!!!!!!!!!!!!!!!!!!!!!!!!!!>
 make
 make install
 asterisk -vvvvvvvvvvvvvvvvvvgc
-
-

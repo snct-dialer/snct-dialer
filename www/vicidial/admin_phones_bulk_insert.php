@@ -1,7 +1,7 @@
 <?php
 # admin_phones_bulk_insert.php
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # this screen will insert phones into your multi-server system with aliases
 #
@@ -18,6 +18,7 @@
 # 141007-1145 - Finalized adding QXZ translation to all admin files
 # 141229-2101 - Added code for on-the-fly language translations display
 # 170409-1532 - Added IP List validation code
+# 180503-2015 - Added new help display
 #
 
 $admin_version = '2.14-12';
@@ -69,7 +70,7 @@ if (strlen($DB) < 1)
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$stmt = "SELECT use_non_latin,webroot_writable,enable_languages,language_method FROM system_settings;";
+$stmt = "SELECT use_non_latin,webroot_writable,enable_languages,language_method,admin_screen_colors FROM system_settings;";
 $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $ss_conf_ct = mysqli_num_rows($rslt);
@@ -80,6 +81,7 @@ if ($ss_conf_ct > 0)
 	$webroot_writable =			$row[1];
 	$SSenable_languages =		$row[2];
 	$SSlanguage_method =		$row[3];
+	$SSadmin_screen_colors =	$row[4];
 	}
 ##### END SETTINGS LOOKUP #####
 ###########################################
@@ -182,6 +184,10 @@ $LOGuser_level =			$row[3];
 ?>
 <html>
 <head>
+
+<link rel="stylesheet" type="text/css" href="vicidial_stylesheet.php">
+<script language="JavaScript" src="help.js"></script>
+<div id='HelpDisplayDiv' class='help_info' style='display:none;'></div>
 
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
 <title><?php echo _QXZ("ADMINISTRATION: Phones Bulk Insert"); ?>
@@ -310,9 +316,44 @@ if ($DB > 0)
 echo "$DB,$action,$servers,$phones,$conf_secret,$pass,$alias_option,$protocol,$logal_gmt,$alias_suffix\n<BR>";
 }
 
-$NWB = " &nbsp; <a href=\"javascript:openNewWindow('$PHP_SELF?action=HELP";
-$NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+# $NWB = " &nbsp; <a href=\"javascript:openNewWindow('$PHP_SELF?action=HELP";
+# $NWE = "')\"><IMG SRC=\"help.png\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
 
+$NWB = "<IMG SRC=\"help.png\" onClick=\"FillAndShowHelpDiv(event, '";
+$NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
+
+$SSmenu_background='015B91';
+$SSframe_background='D9E6FE';
+$SSstd_row1_background='9BB9FB';
+$SSstd_row2_background='B9CBFD';
+$SSstd_row3_background='8EBCFD';
+$SSstd_row4_background='B6D3FC';
+$SSstd_row5_background='A3C3D6';
+$SSalt_row1_background='BDFFBD';
+$SSalt_row2_background='99FF99';
+$SSalt_row3_background='CCFFCC';
+
+if ($SSadmin_screen_colors != 'default')
+	{
+	$stmt = "SELECT menu_background,frame_background,std_row1_background,std_row2_background,std_row3_background,std_row4_background,std_row5_background,alt_row1_background,alt_row2_background,alt_row3_background FROM vicidial_screen_colors where colors_id='$SSadmin_screen_colors';";
+	$rslt=mysql_to_mysqli($stmt, $link);
+	if ($DB) {echo "$stmt\n";}
+	$colors_ct = mysqli_num_rows($rslt);
+	if ($colors_ct > 0)
+		{
+		$row=mysqli_fetch_row($rslt);
+		$SSmenu_background =		$row[0];
+		$SSframe_background =		$row[1];
+		$SSstd_row1_background =	$row[2];
+		$SSstd_row2_background =	$row[3];
+		$SSstd_row3_background =	$row[4];
+		$SSstd_row4_background =	$row[5];
+		$SSstd_row5_background =	$row[6];
+		$SSalt_row1_background =	$row[7];
+		$SSalt_row2_background =	$row[8];
+		$SSalt_row3_background =	$row[9];
+		}
+	}
 
 
 
@@ -326,24 +367,24 @@ if ($action == "BLANK")
 	echo "<input type=hidden name=DB value=\"$DB\">\n";
 	echo "<input type=hidden name=action value=ADD_PHONES_SUBMIT>\n";
 	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Servers").": <BR><BR> ("._QXZ("one server_ip per line only").")<BR></td><td align=left><TEXTAREA name=servers ROWS=10 COLS=20></TEXTAREA> $NWB#servers$NWE </td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Phones").": <BR><BR> ("._QXZ("one extension per line only").")<BR></td><td align=left><TEXTAREA name=phones ROWS=20 COLS=20></TEXTAREA> $NWB#phones$NWE </td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Registration Password").": </td><td align=left><input type=text name=conf_secret size=20 maxlength=20> $NWB#registration_password$NWE </td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Login Password").": </td><td align=left><input type=text name=pass size=20 maxlength=20> $NWB#login_password$NWE </td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Create Alias Entries").": </td><td align=left><select size=1 name=alias_option>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Servers").": <BR><BR> ("._QXZ("one server_ip per line only").")<BR></td><td align=left><TEXTAREA name=servers ROWS=10 COLS=20></TEXTAREA> $NWB#admin_phones_bulk_insert-servers$NWE </td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Phones").": <BR><BR> ("._QXZ("one extension per line only").")<BR></td><td align=left><TEXTAREA name=phones ROWS=20 COLS=20></TEXTAREA> $NWB#admin_phones_bulk_insert-phones$NWE </td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Registration Password").": </td><td align=left><input type=text name=conf_secret size=20 maxlength=20> $NWB#admin_phones_bulk_insert-registration_password$NWE </td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Login Password").": </td><td align=left><input type=text name=pass size=20 maxlength=20> $NWB#admin_phones_bulk_insert-login_password$NWE </td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Create Alias Entries").": </td><td align=left><select size=1 name=alias_option>\n";
 	echo "<option selected>"._QXZ("YES")."</option>";
 	echo "<option>"._QXZ("NO")."</option>";
-	echo "</select> $NWB#create_alias$NWE </td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Alias Suffix").": </td><td align=left><input type=text name=alias_suffix size=2 maxlength=4> $NWB#alias_suffix$NWE </td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Client Protocol").": </td><td align=left><select size=1 name=protocol><option>SIP</option><option>Zap</option><option>IAX2</option><option>EXTERNAL</option></select> $NWB#protocol$NWE </td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Local GMT").": </td><td align=left><select size=1 name=local_gmt><option>12.75</option><option>12.00</option><option>11.00</option><option>10.00</option><option>9.50</option><option>9.00</option><option>8.00</option><option>7.00</option><option>6.50</option><option>6.00</option><option>5.75</option><option>5.50</option><option>5.00</option><option>4.50</option><option>4.00</option><option>3.50</option><option>3.00</option><option>2.00</option><option>1.00</option><option>0.00</option><option>-1.00</option><option>-2.00</option><option>-3.00</option><option>-3.50</option><option>-4.00</option><option selected>-5.00</option><option>-6.00</option><option>-7.00</option><option>-8.00</option><option>-9.00</option><option>-10.00</option><option>-11.00</option><option>-12.00</option></select> ("._QXZ("Do NOT Adjust for DST").") $NWB#gmt$NWE </td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Phone Context").": </td><td align=left><input type=text name=phone_context size=20 maxlength=20> $NWB#phone_context$NWE </td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Set As Webphone").": </td><td align=left><select size=1 name=is_webphone><option>Y</option><option selected>N</option><option>Y_API_LAUNCH</option></select>$NWB#is_webphone$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Webphone Dialpad").": </td><td align=left><select size=1 name=webphone_dialpad><option selected>Y</option><option>N</option><option>TOGGLE</option><option>TOGGLE_OFF</option></select>$NWB#webphone_dialpad$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Webphone Auto-Answer").": </td><td align=left><select size=1 name=webphone_auto_answer><option selected>Y</option><option>N</option></select>$NWB#webphone_auto_answer$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>"._QXZ("Use External Server IP").": </td><td align=left><select size=1 name=use_external_server_ip><option>Y</option><option selected>N</option></select>$NWB#use_external_server_ip$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2>"._QXZ("NOTE: Submitting this form will NOT trigger a conf file rebuild")."</td></tr>\n";
+	echo "</select> $NWB#admin_phones_bulk_insert-create_alias$NWE </td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Alias Suffix").": </td><td align=left><input type=text name=alias_suffix size=2 maxlength=4> $NWB#admin_phones_bulk_insert-alias_suffix$NWE </td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Client Protocol").": </td><td align=left><select size=1 name=protocol><option>SIP</option><option>Zap</option><option>IAX2</option><option>EXTERNAL</option></select> $NWB#admin_phones_bulk_insert-protocol$NWE </td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Local GMT").": </td><td align=left><select size=1 name=local_gmt><option>12.75</option><option>12.00</option><option>11.00</option><option>10.00</option><option>9.50</option><option>9.00</option><option>8.00</option><option>7.00</option><option>6.50</option><option>6.00</option><option>5.75</option><option>5.50</option><option>5.00</option><option>4.50</option><option>4.00</option><option>3.50</option><option>3.00</option><option>2.00</option><option>1.00</option><option>0.00</option><option>-1.00</option><option>-2.00</option><option>-3.00</option><option>-3.50</option><option>-4.00</option><option selected>-5.00</option><option>-6.00</option><option>-7.00</option><option>-8.00</option><option>-9.00</option><option>-10.00</option><option>-11.00</option><option>-12.00</option></select> ("._QXZ("Do NOT Adjust for DST").") $NWB#admin_phones_bulk_insert-gmt$NWE </td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Phone Context").": </td><td align=left><input type=text name=phone_context size=20 maxlength=20> $NWB#admin_phones_bulk_insert-phone_context$NWE </td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Set As Webphone").": </td><td align=left><select size=1 name=is_webphone><option>Y</option><option selected>N</option><option>Y_API_LAUNCH</option></select>$NWB#admin_phones_bulk_insert-is_webphone$NWE</td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Webphone Dialpad").": </td><td align=left><select size=1 name=webphone_dialpad><option selected>Y</option><option>N</option><option>TOGGLE</option><option>TOGGLE_OFF</option></select>$NWB#admin_phones_bulk_insert-webphone_dialpad$NWE</td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Webphone Auto-Answer").": </td><td align=left><select size=1 name=webphone_auto_answer><option selected>Y</option><option>N</option></select>$NWB#admin_phones_bulk_insert-webphone_auto_answer$NWE</td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Use External Server IP").": </td><td align=left><select size=1 name=use_external_server_ip><option>Y</option><option selected>N</option></select>$NWB#admin_phones_bulk_insert-use_external_server_ip$NWE</td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=center colspan=2><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'></td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=center colspan=2>"._QXZ("NOTE: Submitting this form will NOT trigger a conf file rebuild")."</td></tr>\n";
 	echo "</TABLE></center>\n";
 	echo "</TD></TR></TABLE>\n";
 	}

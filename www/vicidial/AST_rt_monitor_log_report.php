@@ -1,12 +1,13 @@
 <?php
 # AST_rt_monitor_log_report.php
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>, Joe Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>, Joe Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
 # 170513-0040 - First build
 # 170822-2231 - Modified to use screen colors
+# 180507-2315 - Added new help display
 #
 
 $startMS = microtime();
@@ -450,8 +451,11 @@ else
 	$manager_SQL = "and manager_user IN($manager_SQL)";
 	}
 
-$NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
-$NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+# $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
+# $NWE = "')\"><IMG SRC=\"help.png\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+
+$NWB = "<IMG SRC=\"help.png\" onClick=\"FillAndShowHelpDiv(event, '";
+$NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
 
 $rerun_rpt_URL="$PHP_SELF?query_date=$query_date&end_date=$end_date&report_display_type=$report_display_type$campaignQS$userQS$managerQS&SUBMIT=$SUBMIT";
 
@@ -514,6 +518,11 @@ $HEADER.="	}\n";
 $HEADER.=".records_list_y:hover{background-color: #E6E6E6;}\n";
 $HEADER.="-->\n";
 $HEADER.=" </STYLE>\n";
+
+$HEADER.="<link rel=\"stylesheet\" type=\"text/css\" href=\"vicidial_stylesheet.php\">\n";
+$HEADER.="<script language=\"JavaScript\" src=\"help.js\"></script>\n";
+$HEADER.="<div id='HelpDisplayDiv' class='help_info' style='display:none;'></div>";
+
 $HEADER.="<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
@@ -529,7 +538,7 @@ $MAIN.="<FORM ACTION=\"$PHP_SELF\" METHOD=GET name=vicidial_report id=vicidial_r
 $MAIN.="<b>"._QXZ("$report_name")."</b> $NWB#rt_monitor_log_report$NWE\n";
 
 #$MAIN.="<FORM ACTION=\"$PHP_SELF\" METHOD=GET name=vicidial_report id=vicidial_report>\n";
-$MAIN.="<TABLE CELLPADDING=3 CELLSPACING=0><TR BGCOLOR=\"#e3e3ff\"><TD VALIGN=TOP> <b>"._QXZ("Dates").":</b><BR>";
+$MAIN.="<TABLE CELLPADDING=3 CELLSPACING=0><TR BGCOLOR=\"#".$SSframe_background."\"><TD VALIGN=TOP> <b>"._QXZ("Dates").":</b><BR>";
 $MAIN.="<INPUT TYPE=hidden NAME=DB VALUE=\"$DB\">\n";
 
 

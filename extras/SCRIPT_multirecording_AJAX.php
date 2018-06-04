@@ -1,7 +1,7 @@
 <?php
 # SCRIPT_multirecording_AJAX.php - script that stops/starts recordings being made over a forced-recording (ALLFORCE) call
 # 
-# Copyright (C) 2017  Joe Johnson, Matt Florell <mattf@vicidial.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Joe Johnson, Matt Florell <mattf@vicidial.com>    LICENSE: AGPLv2
 #
 # Other scripts that this application depends on:
 # - SCRIPT_multirecording.php: Gives agents ability to stop and start recordings over a forced-recording (ALLFORCE) call
@@ -11,9 +11,10 @@
 # 130328-0009 - Converted ereg to preg functions
 # 160401-0026 - Fix for Asterisk 1.8
 # 170526-2157 - Added variable filtering
+# 180514-2230 - Switched to mysqli, fixed variable filtering bug
 #
 
-require("dbconnect.php");
+require("dbconnect_mysqli.php");
 if (isset($_GET["campaign"]))	{$campaign=$_GET["campaign"];}
 	elseif (isset($_POST["campaign"]))	{$campaign=$_POST["campaign"];}
 if (isset($_GET["lead_id"]))	{$lead_id=$_GET["lead_id"];}
@@ -53,11 +54,11 @@ $user = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$user);
 $server_ip = preg_replace('/[^\.0-9]/','',$server_ip);
 $uniqueid = preg_replace('/[^-_\.0-9a-zA-Z]/','',$uniqueid);
 $rec_action = preg_replace('/[^0-9a-zA-Z]/','',$rec_action);
-$recording_channel = preg_replace("/\||`|&|\'|\"|\\\\|;| /","",$recording_channel);
+$recording_channel = preg_replace("/\||`|&|\'|\"|\\\\| /","",$recording_channel);
 
 $stmt="select campaign_rec_filename from vicidial_campaigns where campaign_id='$campaign'";
-$rslt=mysql_query($stmt, $link);
-$row=mysql_fetch_array($rslt);
+$rslt=mysqli_query($link, $stmt);
+$row=mysqli_fetch_array($rslt);
 $filename=$row["campaign_rec_filename"];
 $filename=preg_replace("/CAMPAIGN/i", $campaign, $filename);
 $filename=preg_replace("/INGROUP/i", $campaign, $filename);
@@ -85,9 +86,9 @@ if ($rec_action=="START")
 	######################## START RECORDING ##########################
 
 		$stmt="SELECT channel FROM live_sip_channels where server_ip = '$server_ip' and channel LIKE \"$channel%\" and (channel LIKE \"%,1\" or channel LIKE \"%;1\");";
-		$rslt=mysql_query($stmt, $link);
+		$rslt=mysqli_query($link, $stmt);
 		$channel_SQL=" and channel not in (";
-		while($row=mysql_fetch_array($rslt))
+		while($row=mysqli_fetch_array($rslt))
 			{
 			$channel_SQL.="'$row[channel]',";
 			}
@@ -98,25 +99,25 @@ if ($rec_action=="START")
 
 		$VDvicidial_id='';
 		$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$filename','Channel: $channel','Context: $ext_context','Exten: $exten','Priority: $ext_priority','Callerid: $filename','','','','','');";
-		$rslt=mysql_query($stmt, $link);
+		$rslt=mysqli_query($link, $stmt);
 
 		$stmt = "INSERT INTO recording_log (channel,server_ip,extension,start_time,start_epoch,filename,lead_id,user) values('$channel','$server_ip','$exten','$NOW_TIME','$StarTtime','$filename','$lead_id','$user')";
-		$rslt=mysql_query($stmt, $link);
-		$RLaffected_rows = mysql_affected_rows($link);
+		$rslt=mysqli_query($link, $stmt);
+		$RLaffected_rows = mysqli_affected_rows($link);
 		if ($RLaffected_rows > 0) {
 			usleep(2000000);
-			$recording_id = mysql_insert_id($link);
+			$recording_id = mysqli_insert_id($link);
 			$current_rec_filename=$filename;
 			$channel_stmt="SELECT channel FROM live_sip_channels where server_ip = '$server_ip' and channel LIKE \"$channel%\" and (channel LIKE \"%,1\" or channel LIKE \"%;1\") $channel_SQL;";
-			$channel_rslt=mysql_query($channel_stmt, $link);
-			if (mysql_num_rows($channel_rslt)==1) 
+			$channel_rslt=mysqli_query($link, $channel_stmt);
+			if (mysqli_num_rows($channel_rslt)==1) 
 				{
-				$channel_row=mysql_fetch_row($channel_rslt);
+				$channel_row=mysqli_fetch_row($channel_rslt);
 				echo "$recording_id|$channel_row[0]";
 				}
 			else 
 				{
-				echo "Error 2\n$channel_stmt\n".mysql_num_rows($channel_rslt);
+				echo "Error 2\n$channel_stmt\n".mysqli_num_rows($channel_rslt);
 				}
 		} else {
 			echo "Error 3";
@@ -125,10 +126,10 @@ if ($rec_action=="START")
 		##### get call type from vicidial_live_agents table
 		$VLA_inOUT='NONE';
 		$stmt="SELECT comments FROM vicidial_live_agents where user='$user' order by last_update_time desc limit 1;";
-		$rslt=mysql_query($stmt, $link);
-		$VLA_inOUT_ct = mysql_num_rows($rslt);
+		$rslt=mysqli_query($link, $stmt);
+		$VLA_inOUT_ct = mysqli_num_rows($rslt);
 		if ($VLA_inOUT_ct > 0) {
-			$row=mysql_fetch_row($rslt);
+			$row=mysqli_fetch_row($rslt);
 			$VLA_inOUT =		$row[0];
 		}
 		if ($VLA_inOUT == 'INBOUND') {
@@ -141,13 +142,13 @@ if ($rec_action=="START")
 			$stmt="SELECT uniqueid FROM vicidial_log where uniqueid='$uniqueid' and lead_id='$lead_id';";
 		}
 /*
-		$rslt=mysql_query($stmt, $link);
-		$VM_mancall_ct = mysql_num_rows($rslt);
+		$rslt=mysqli_query($link, $stmt);
+		$VM_mancall_ct = mysqli_num_rows($rslt);
 		if ($VM_mancall_ct > 0) {
-			$row=mysql_fetch_row($rslt);
+			$row=mysqli_fetch_row($rslt);
 			$VDvicidial_id =	$row[0];	
 			$stmt = "UPDATE recording_log SET vicidial_id='$VDvicidial_id' where recording_id='$recording_id';";
-			$rslt=mysql_query($stmt, $link);
+			$rslt=mysqli_query($link, $stmt);
 		}
 */
 	}
@@ -157,10 +158,10 @@ else
 	{
 ############### STOP RECORDING ########
 	$stmt="SELECT recording_id,start_epoch FROM recording_log where recording_id='$rec_action' and end_epoch is null";
-	$rslt=mysql_query($stmt, $link);
-	$rec_count = mysql_num_rows($rslt);
+	$rslt=mysqli_query($link, $stmt);
+	$rec_count = mysqli_num_rows($rslt);
 	if ($rec_count>0) {
-		$row=mysql_fetch_row($rslt);
+		$row=mysqli_fetch_row($rslt);
 		$recording_id = $row[0];
 		$start_time = $row[1];
 		$length_in_sec = ($StarTtime - $start_time);
@@ -168,23 +169,24 @@ else
 		$length_in_min = sprintf("%8.2f", $length_in_min);
 
 		$stmt = "UPDATE recording_log set end_time='$NOW_TIME',end_epoch='$StarTtime',length_in_sec=$length_in_sec,length_in_min='$length_in_min' where recording_id='$rec_action'";
-		$rslt=mysql_query($stmt, $link);
+		$rslt=mysqli_query($link, $stmt);
 	}
 
 	# find and hang up the recording 
 	$stmt="SELECT channel FROM live_sip_channels where server_ip = '$server_ip' and channel LIKE \"$recording_channel%\" and (channel LIKE \"%,1\" or channel LIKE \"%;1\");";
-	$rslt=mysql_query($stmt, $link);
-	$rec_count = mysql_num_rows($rslt);
+	$rslt=mysqli_query($link, $stmt);
+	$rec_count = mysqli_num_rows($rslt);
+
 	$h=0;
 	while ($rec_count>$h) {
-		$rowx=mysql_fetch_row($rslt);
+		$rowx=mysqli_fetch_row($rslt);
 		$HUchannel[$h] = $rowx[0];
 		$h++;
 	}
 	$i=0;
 	while ($h>$i) {
 		$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Hangup','RH12345$StarTtime$i','Channel: $HUchannel[$i]','','','','','','','','','');";
-		$rslt=mysql_query($stmt, $link);
+		$rslt=mysqli_query($link, $stmt);
 		$i++;
 		echo "HANGUP SUCCESSFUL";
 	}

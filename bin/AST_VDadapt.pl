@@ -47,6 +47,7 @@
 # 170724-2352 - Added option for cached hour counts for vicidial_log entries per campaign and carrier log totals
 # 171221-1049 - Added caching of inbound call stats
 # 180203-1728 - Added function to check for inbound callback queue calls to be placed
+# 180519-2303 - Added Waiting Call On/Off URL feature for in-groups
 #
 
 
@@ -106,6 +107,7 @@ $VCSPAUSED[$i]=0;
 $VCSagents[$i]=0;
 $VCSagents_calc[$i]=0;
 $VCSagents_active[$i]=0;
+$cwu_any_on=0;
 
 # set to 61 initially so that a baseline drop count is pulled
 $drop_count_updater=61;
@@ -1558,6 +1560,189 @@ while ($master_loop < $CLIloops)
 		}
 	##########################################################
 	##### END check for stuck SENDING inbound callback queue records #####
+	##########################################################
+
+
+
+	##########################################################
+	##### BEGIN check for inbound group Calls Waiting URL On/Off #####
+	##########################################################
+	$sthArowsWCU=0;   $WCUlist='';
+	### Find out how many In-Groups are set to use the Waiting-Call URL feature
+	$stmtA = "SELECT group_id from vicidial_inbound_groups where active='Y' and waiting_call_url_on!='' and waiting_call_url_off!='' and waiting_call_url_on IS NOT NULL and waiting_call_url_off IS NOT NULL order by group_id;";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArowsWCU=$sthA->rows;
+	$wcu=0;
+	while ($sthArowsWCU > $wcu)
+		{
+		@aryA = $sthA->fetchrow_array;
+		if ($wcu > 0) {$WCUlist .=	",";}
+		$WCUlist .=	"'$aryA[0]'";
+		$wcu++;
+		}
+	$sthA->finish();
+	if ($DB) {print "Waiting Call URL In-Groups enabled: |$sthArowsWCU|$stmtA|\n";}
+
+	if ($sthArowsWCU > 0)
+		{
+		### Count number of waiting calls in WCU-configured in-groups
+		$vacWCUcount=0;
+		$stmtA = "SELECT count(*) from vicidial_auto_calls where campaign_id IN($WCUlist) and status='LIVE';";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArowsWCUagc=$sthA->rows;
+		if ($sthArowsWCUagc > 0)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$vacWCUcount =	$aryA[0];
+			}
+		$sthA->finish();
+		if ($DB) {print "Waiting Call URL In-Group calls waiting: |$vacWCUcount($cwu_any_on)|$stmtA|\n";}
+
+		### if there are waiting calls in WCU in-groups, or the WCU indicator had been on after the last loop, run through the Waiting Call URL process
+		if ( ($cwu_any_on > 0) || ($vacWCUcount > 0) ) 
+			{
+			$cwu_any_onNEW=0;   $last_group_id='';
+			if ($DB) {print "Waiting Call URL calculations starting: |$cwu_any_on|$vacWCUcount|\n";}
+
+			$sthArowsWCUg=0;   $WCUlistGROUP='';
+			### Gather unique On/Off Waiting-Call-URLs for selected in-groups
+			$stmtA = "SELECT waiting_call_url_on,waiting_call_url_off,count(*) from vicidial_inbound_groups where group_id IN($WCUlist) group by waiting_call_url_on,waiting_call_url_off;";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArowsWCUg=$sthA->rows;
+			$wcu=0;
+			while ($sthArowsWCUg > $wcu)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$WCUon[$wcu] =	$aryA[0];
+				$WCUoff[$wcu] =	$aryA[1];
+				$WCUct[$wcu] =	$aryA[2];
+				$wcu++;
+				}
+			$sthA->finish();
+			if ($DB) {print "Waiting Call URL unique On/Off URLs gathered: |$sthArowsWCUg|$stmtA|\n";}
+
+			$wcu=0;
+			while ($sthArowsWCUg > $wcu)
+				{
+				$sthArowsWCUnf=0;   $WCUlistNF='';   $WCUlistNFct=0;   $WCUgroupNF=$MT;   $WCUgroupNFct=$MT;   $WCUgroupNFctNEW=$MT;
+				### Find out the In-Groups that are set to use each set of specific Waiting-Call URL On/Off settings
+				$stmtA = "SELECT group_id,waiting_call_count from vicidial_inbound_groups where waiting_call_url_on=\"$WCUon[$wcu]\" and waiting_call_url_off=\"$WCUoff[$wcu]\" order by group_id;";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArowsWCUnf=$sthA->rows;
+				$wcunf=0;
+				while ($sthArowsWCUnf > $wcunf)
+					{
+					@aryA = $sthA->fetchrow_array;
+					if ($wcunf > 0) {$WCUlistNF .=	",";}
+					$WCUlistNF .=	"'$aryA[0]'";
+					$WCUlistNFct = ($WCUlistNFct + $aryA[1]);
+					$WCUgroupNF[$wcunf] =	$aryA[0];
+					$WCUgroupNFct[$wcunf] = $aryA[1];
+					$last_group_id =		$aryA[0];
+					$wcunf++;
+					}
+				$sthA->finish();
+				if ($DB) {print "Waiting Call URL In-Group DB calls waiting: |$WCUlistNFct($wcunf)|$stmtA|\n";}
+
+				### Count number of waiting calls for this set of specific Waiting-Call URL On/Off settings
+				$vacWCUcountNF=0;   $WCUgroupNFvac=$MT;   $WCUgroupNFvacct=$MT;
+				$stmtA = "SELECT campaign_id,count(*) from vicidial_auto_calls where campaign_id IN($WCUlistNF) and status='LIVE' group by campaign_id order by campaign_id;";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArowsWCUagcNF=$sthA->rows;
+				$wcuvac=0;
+				while ($sthArowsWCUagcNF > $wcuvac)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$WCUgroupNFvac[$wcuvac] =	$aryA[0];
+					$WCUgroupNFvacct[$wcuvac] =	$aryA[1];
+					$vacWCUcountNF = ($vacWCUcountNF + $aryA[1]);
+					if ($DBX) {print "          WCU LIVEvac check: |$WCUgroupNFvac[$wcuvac]|$WCUgroupNFvacct[$wcuvac]|$wcuvac|\n";}
+					$wcuvac++;
+					}
+				$sthA->finish();
+				$cwu_any_onNEW = ($cwu_any_onNEW + $vacWCUcountNF);
+				if ($DB) {print "Waiting Call URL In-Group calls waiting: |$vacWCUcountNF($wcuvac)|$stmtA|\n";}
+
+				$wcunf=0;
+				while ($sthArowsWCUnf > $wcunf)
+					{
+					$wcut=0; $wcut_found=0; $wcut_new=0;
+					while ($wcut < $wcuvac) 
+						{
+						$temp_group = $WCUgroupNFvac[$wcut];
+						if ($WCUgroupNF[$wcunf] =~ /^$temp_group$/i) 
+							{
+							$wcut_found++;
+							$wcut_new = $WCUgroupNFvacct[$wcut];
+							}
+						$wcut++;
+						if ($DBX) {print "        $wcunf|$wcut  WCU compare check: |$WCUgroupNF[$wcunf]|$temp_group|$wcut|$wcut_new|$wcut_found|\n";}
+						}
+					if ( ($wcut_new > $WCUgroupNFct[$wcunf]) || ($wcut_new < $WCUgroupNFct[$wcunf]) ) 
+						{
+						$stmtA = "UPDATE vicidial_inbound_groups SET waiting_call_count='$wcut_new' where group_id='$WCUgroupNF[$wcunf]';";
+						$WCUaffected_rows = $dbhA->do($stmtA);
+						if ($DBX) {print "     WCU change update($wcut_new|$WCUgroupNFct[$wcunf]): |$WCUaffected_rows|$stmtA|\n";}
+						}
+					$wcunf++;
+					}
+				### If last waiting-count was 0 and new waiting-count is greater than 0, trigger ON URL
+				if ( ($vacWCUcountNF > 0) && ($WCUlistNFct < 1) ) 
+					{
+					$launch = $PATHhome . "/AST_send_URL.pl";
+					$launch .= " --SYSLOG" if ($SYSLOG);
+					$launch .= " --lead_id=0";
+					$launch .= " --phone_number=0";
+					$launch .= " --user=0";
+					$launch .= " --call_type=IN";
+					$launch .= " --campaign=" . $last_group_id;
+					$launch .= " --uniqueid=0";
+					$launch .= " --call_id=0";
+					$launch .= " --list_id=0";
+					$launch .= " --alt_dial=MAIN";
+					$launch .= " --function=INGROUP_WCU_ON";
+					system($launch . ' &');
+					if ($DB) {print "     LAUNCHING WCU ON URL: |$vacWCUcountNF|$WCUlistNFct|$launch|\n";}
+					}
+				else
+					{
+					### If last waiting-count greater than 0 and new waiting-count is 0, trigger OFF URL
+					if ( ($vacWCUcountNF < 1) && ($WCUlistNFct > 0) ) 
+						{
+						$launch = $PATHhome . "/AST_send_URL.pl";
+						$launch .= " --SYSLOG" if ($SYSLOG);
+						$launch .= " --lead_id=0";
+						$launch .= " --phone_number=0";
+						$launch .= " --user=0";
+						$launch .= " --call_type=IN";
+						$launch .= " --campaign=" . $last_group_id;
+						$launch .= " --uniqueid=0";
+						$launch .= " --call_id=0";
+						$launch .= " --list_id=0";
+						$launch .= " --alt_dial=MAIN";
+						$launch .= " --function=INGROUP_WCU_OFF";
+						system($launch . ' &');
+						if ($DB) {print "     LAUNCHING WCU OFF URL: |$vacWCUcountNF|$WCUlistNFct|$launch|\n";}
+						}
+					}
+
+				$wcu++;
+				}
+			if ( ($cwu_any_onNEW > $cwu_any_on) || ($cwu_any_onNEW < $cwu_any_on) ) 
+				{
+				if ($DBX) {print "     Updating CWA any variable: |$cwu_any_on|$cwu_any_onNEW|\n";}
+				$cwu_any_on = $cwu_any_onNEW;
+				}
+			}
+		if ($DB) {print "Waiting Call URL In-Groups check loop completed \n";}
+		}
+	##########################################################
+	##### END check for inbound group Calls Waiting URL On/Off #####
 	##########################################################
 
 

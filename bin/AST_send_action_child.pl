@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_send_action_child.pl version 2.12
+# AST_send_action_child.pl version 2.14
 # 
 # Part of the Asterisk Central Queue System (ACQS)
 #
@@ -14,7 +14,7 @@
 # to be executed. connect to the manager interface, send the action and logoff
 # then exit.
 #
-# Copyright (C) 2015  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 50810-1547 - Added database server variable definitions lookup
@@ -32,6 +32,7 @@
 # 100625-1206 - Use strict is a performance hit and should only be uncommented for debugging <MikeC>
 # 130108-1714 - Changes for Asterisk 1.8 compatibility
 # 150610-1200 - Added support for AMI version 1.3
+# 180403-1544 - Updated telnet login process to work with newer Asterisk versions
 #
 
 $|++;
@@ -161,20 +162,27 @@ if ($action) {
 
 	### connect to asterisk manager through telnet
 	my $tn = new Net::Telnet (Port => $telnet_port,
-		Prompt => '/.*[\$%#>] $/',
+		Prompt => '/\r\n/',
 		Output_record_separator => '',
 		Errmode    => "return");
-	#$fh = $tn->dump_log("$PATHlogs/SAC_telnet_log.txt");  # uncomment for telnet log
-	my $telnet_login;
-	if ($ASTmgrUSERNAMEsend) {
-		$telnet_login = $ASTmgrUSERNAMEsend;
-	} else {
-		$telnet_login = $ASTmgrUSERNAME;
-	}
-	$tn->open($telnet_host); 
-	$tn->waitfor('/[0123]\n$/'); # print login
+
+	##### uncomment both lines below for telnet log
+	#        $LItelnetlog = "$PATHlogs/send_child_telnet_log.txt";
+	#        $fh = $tn->dump_log("$LItelnetlog");
+
+	if (length($ASTmgrUSERNAMEsend) > 3) {$telnet_login = $ASTmgrUSERNAMEsend;}
+	else {$telnet_login = $ASTmgrUSERNAME;}
+	$tn->open("$telnet_host");
+	$tn->waitfor('/Asterisk Call Manager\//');
+
+	# get the AMI version number
+	$ami_version = $tn->getline(Errmode => Return, Timeout => 1,);
+	$ami_version =~ s/\n//gi;
+	if ($DB) {print "----- AMI Version $ami_version -----\n";}
+
+	# Login
 	$tn->print("Action: Login\nUsername: $telnet_login\nSecret: $ASTmgrSECRET\n\n");
-	$tn->waitfor('/Authentication accepted/'); # waitfor auth accepted
+	$tn->waitfor('/Authentication accepted/');              # waitfor auth accepted
 
 	$tn->buffer_empty;
 

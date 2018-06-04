@@ -32,7 +32,7 @@
 # 20160224-1016 Add parameter to test the global alias
 # 20171130-1159 Add fields *_phone_code
 # 20171130-1439 Change to $_SERVER['SERVER_NAME'];
-#
+# 20180423-1335 Remove Protokol and Server-IP from links
 #
 
 #
@@ -639,8 +639,8 @@ function PrintTableHeader() {
     }
     print "<TABLE $TABLE_PARA>\n";
     print "<TR>\n";
-    print "  <TH nowrap>"._QXZ("Last Name")."<a href=\"$HTTPprotocol//$Server_ip_ext/agc/vdc_phonebook_display.php?first_row=0&user=$user&pass=$pass&Server_ip_ext=$Server_ip_ext&clickat=1&direction=$AnzDir[1]\"><img src=\"./images/up-down-arrow32.png\" width=\"$IMAGE_SIZE\" height=\"$IMAGE_SIZE\" alt=\"up/down\" /></a> </TH>\n";
-    print "  <TH nowrap>"._QXZ("First Name")."<a href=\"$HTTPprotocol//$Server_ip_ext/agc/vdc_phonebook_display.php?first_row=0&user=$user&pass=$pass&server_ip=$Server_ip_ext&clickat=2&direction=$AnzDir[2]\"><img src=\"./images/up-down-arrow32.png\" width=\"$IMAGE_SIZE\" height=\"$IMAGE_SIZE\" alt=\"up/down\" /></a></TH>\n";
+    print "  <TH nowrap>"._QXZ("Last Name")."<a href=\"./vdc_phonebook_display.php?first_row=0&user=$user&pass=$pass&Server_ip_ext=$Server_ip_ext&clickat=1&direction=$AnzDir[1]\"><img src=\"./images/up-down-arrow32.png\" width=\"$IMAGE_SIZE\" height=\"$IMAGE_SIZE\" alt=\"up/down\" /></a> </TH>\n";
+    print "  <TH nowrap>"._QXZ("First Name")."<a href=\"./vdc_phonebook_display.php?first_row=0&user=$user&pass=$pass&server_ip=$Server_ip_ext&clickat=2&direction=$AnzDir[2]\"><img src=\"./images/up-down-arrow32.png\" width=\"$IMAGE_SIZE\" height=\"$IMAGE_SIZE\" alt=\"up/down\" /></a></TH>\n";
     if($dispColum[0]) {
 	print "  <TH nowrap colspan=\"2\">"._QXZ("Office")."</TH>\n";
     }
@@ -654,16 +654,16 @@ function PrintTableHeader() {
         print "  <TH nowrap colspan=\"2\">"._QXZ("Other 2")."</TH>\n";
     }
     if($dispColum[6]) {
-        print "  <TH nowrap>"._QXZ("Group")."<a href=\"$HTTPprotocol//$Server_ip_ext/agc/vdc_phonebook_display.php?first_row=0&user=$user&pass=$pass&server_ip=$Server_ip_ext&clickat=3&direction=$AnzDir[3]\"><img src=\"./images/up-down-arrow32.png\" width=\"$IMAGE_SIZE\" height=\"$IMAGE_SIZE\" alt=\"up/down\" /></a></TH>\n";
+        print "  <TH nowrap>"._QXZ("Group")."<a href=\"./vdc_phonebook_display.php?first_row=0&user=$user&pass=$pass&server_ip=$Server_ip_ext&clickat=3&direction=$AnzDir[3]\"><img src=\"./images/up-down-arrow32.png\" width=\"$IMAGE_SIZE\" height=\"$IMAGE_SIZE\" alt=\"up/down\" /></a></TH>\n";
     }
     if($dispColum[4]) {
-        print "  <TH nowrap>"._QXZ("BU")."<a href=\"$HTTPprotocol//$Server_ip_ext/agc/vdc_phonebook_display.php?first_row=0&user=$user&pass=$pass&server_ip=$Server_ip_ext&clickat=4&direction=$AnzDir[4]\"><img src=\"./images/up-down-arrow32.png\" width=\"$IMAGE_SIZE\" height=\"$IMAGE_SIZE\" alt=\"up/down\" /></a></TH>\n";
+        print "  <TH nowrap>"._QXZ("BU")."<a href=\"./vdc_phonebook_display.php?first_row=0&user=$user&pass=$pass&server_ip=$Server_ip_ext&clickat=4&direction=$AnzDir[4]\"><img src=\"./images/up-down-arrow32.png\" width=\"$IMAGE_SIZE\" height=\"$IMAGE_SIZE\" alt=\"up/down\" /></a></TH>\n";
     }
     if($dispColum[5]) {
-        print "  <TH nowrap>"._QXZ("Department")."<a href=\"$HTTPprotocol//$Server_ip_ext/agc/vdc_phonebook_display.php?first_row=0&user=$user&pass=$pass&server_ip=$Server_ip_ext&clickat=5&direction=$AnzDir[5]\"><img src=\"./images/up-down-arrow32.png\" width=\"$IMAGE_SIZE\" height=\"$IMAGE_SIZE\" alt=\"up/down\" /></a></TH>\n";
+        print "  <TH nowrap>"._QXZ("Department")."<a href=\"./vdc_phonebook_display.php?first_row=0&user=$user&pass=$pass&server_ip=$Server_ip_ext&clickat=5&direction=$AnzDir[5]\"><img src=\"./images/up-down-arrow32.png\" width=\"$IMAGE_SIZE\" height=\"$IMAGE_SIZE\" alt=\"up/down\" /></a></TH>\n";
     }
     if($dispColum[8]) {
-	print "  <TH nowrap>"._QXZ("Location")."<a href=\"$HTTPprotocol//$Server_ip_ext/agc/vdc_phonebook_display.php?first_row=0&user=$user&pass=$pass&server_ip=$Server_ip_ext&clickat=6&direction=$AnzDir[6]\"><img src=\"./images/up-down-arrow32.png\" width=\"$IMAGE_SIZE\" height=\"$IMAGE_SIZE\" alt=\"up/down\" /></a></TH>\n";
+	print "  <TH nowrap>"._QXZ("Location")."<a href=\"./vdc_phonebook_display.php?first_row=0&user=$user&pass=$pass&server_ip=$Server_ip_ext&clickat=6&direction=$AnzDir[6]\"><img src=\"./images/up-down-arrow32.png\" width=\"$IMAGE_SIZE\" height=\"$IMAGE_SIZE\" alt=\"up/down\" /></a></TH>\n";
     }
     if($dispColum[7]) {
 	print "  <TH nowrap>"._QXZ("Job Title")."</TH>\n";
@@ -690,8 +690,8 @@ function PrintTableLast($first, $anz) {
     $prev = $first - $MAX_ANZ;
     # row can not lesser 0
     if ($prev < 0) $prev = 0;
-    if($first > 0) print "<a href=\"$HTTPprotocol//$Server_ip_ext/agc/vdc_phonebook_display.php?first_row=$prev&user=$user&pass=$pass&server_ip=$Server_ip_ext&clickat=$clickAt&direction=$direction\"><img src=\"./images/arrow_left32.png\" width=\"$IMAGE_SIZE2\" height=\"$IMAGE_SIZE2\" alt=\"Prev\" /></a> ";
-    if($anz == $MAX_ANZ) print "<a href=\"$HTTPprotocol//$Server_ip_ext/agc/vdc_phonebook_display.php?first_row=$next&user=$user&pass=$pass&server_ip=$Server_ip_ext&clickat=$clickAt&direction=$direction\"><img src=\"./images/arrow_right32.png\" width=\"$IMAGE_SIZE2\" height=\"$IMAGE_SIZE2\" alt=\"Next\" /></a>\n";
+    if($first > 0) print "<a href=\"./vdc_phonebook_display.php?first_row=$prev&user=$user&pass=$pass&server_ip=$Server_ip_ext&clickat=$clickAt&direction=$direction\"><img src=\"./images/arrow_left32.png\" width=\"$IMAGE_SIZE2\" height=\"$IMAGE_SIZE2\" alt=\"Prev\" /></a> ";
+    if($anz == $MAX_ANZ) print "<a href=\"./vdc_phonebook_display.php?first_row=$next&user=$user&pass=$pass&server_ip=$Server_ip_ext&clickat=$clickAt&direction=$direction\"><img src=\"./images/arrow_right32.png\" width=\"$IMAGE_SIZE2\" height=\"$IMAGE_SIZE2\" alt=\"Next\" /></a>\n";
 }
 
 #
@@ -783,7 +783,7 @@ if(($count == 0) && ($first > 0)) {
 	PBLog("<ch_status2>User: $user, IP: $Server_ip_ext; Proto: $HTTPprotocol\n");
     }
     
-    print "<form action=\"$HTTPprotocol//$Server_ip_ext/agc/vdc_phonebook_display.php\" method=\"post\" autocomplete=\"off\">\n";
+    print "<form action=\"./vdc_phonebook_display.php\" method=\"post\" autocomplete=\"off\">\n";
     print "  <label for \"searchtag\">"._QXZ("Search:")."\n";
     print "    <input id=\"searchtag\" name=\"searchtag\" value=\"$searchTag\">\n";
     print "  </label>\n";

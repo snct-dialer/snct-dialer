@@ -5,7 +5,7 @@
 # custom reports and make them available to user groups
 # of their choosing
 #
-# Copyright (C) 2017 Joseph Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018 Joseph Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -15,6 +15,7 @@
 # 170823-1411 - Fixed delete bug
 # 170829-0040 - Added screen color settings
 # 171002-2140 - Added capability to add/modify preset variables
+# 180508-2215 - Added new help display
 #
 
 $startMS = microtime();
@@ -318,8 +319,11 @@ if ($add_custom_report=="ADD REPORT") {
 
 require("screen_colors.php");
 
-$NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php";
-$NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+# $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
+# $NWE = "')\"><IMG SRC=\"help.png\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+
+$NWB = "<IMG SRC=\"help.png\" onClick=\"FillAndShowHelpDiv(event, '";
+$NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
 
 	echo "<HTML><HEAD>\n";
 
@@ -429,7 +433,9 @@ function RemoveConstant(array_index) {
 </script>
 <?php
 	echo "<link rel=\"stylesheet\" href=\"calendar.css\">\n";
-	echo "<link rel=\"stylesheet\" href=\"vicidial_stylesheet.php\">\n";
+	echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"vicidial_stylesheet.php\">\n";
+	echo "<script language=\"JavaScript\" src=\"help.js\"></script>\n";
+	echo "<div id='HelpDisplayDiv' class='help_info' style='display:none;'></div>";
 
 	echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 	echo "<TITLE>"._QXZ("ADMINISTRATION").": "._QXZ("Custom Reports");

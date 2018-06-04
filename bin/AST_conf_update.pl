@@ -4,7 +4,7 @@
 #
 # This script checks if there are channels in reserved conferences
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # 50810-1532 - Added database server variable definitions lookup
 # 50823-1456 - Added commandline arguments for debug at runtime
@@ -19,6 +19,7 @@
 # 130108-1712 - Changes for Asterisk 1.8 compatibility
 # 150610-1200 - Added support for AMI version 1.3
 # 170916-0947 - Added support for AMI version 2+
+# 180420-2302 - Fix for high-volume systems, added varibles to hangup queryCID
 #
 
 # constants
@@ -184,7 +185,9 @@ if ($Thour < 10) {$Thour = "0$Thour";}
 if ($Tmin < 10) {$Tmin = "0$Tmin";}
 if ($Tsec < 10) {$Tsec = "0$Tsec";}
 $TDSQLdate = "$Tyear-$Tmon-$Tmday $Thour:$Tmin:$Tsec";
-$TDnum = "$Tyear$Tmon$Tmday$Thour$Tmin$Tsec";
+$TDrand = int( rand(99)) + 100;
+$TDnum = "$Tmon$Tmday$Thour$Tmin$Tsec$TDrand";
+$TDinc = 1;
 
 ######################################################################
 ##### CLEAR vicidial_conferences ENTRIES IN LEAVE-3WAY FOR MORE THAN ONE HOUR
@@ -211,7 +214,8 @@ while ($k < $rec_count)
 	$local_DEF = 'Local/5555';
 	$local_AMP = '@';
 	$kick_local_channel = "$local_DEF$PT_conf_extens[$k]$local_AMP$ext_context";
-	$queryCID = "ULGC35$TDnum";
+	$padTDinc = sprintf("%03s", $TDinc);	while (length($padTDinc) > 3) {chop($padTDinc);}
+	$queryCID = "ULGH$padTDinc$TDnum";
 
 	$stmtA="INSERT INTO vicidial_manager values('','','$now_date','NEW','N','$server_ip','','Originate','$queryCID','Channel: $kick_local_channel','Context: $ext_context','Exten: 8300','Priority: 1','Callerid: $queryCID','','','','','');";
 		$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query:|$stmtA|\n";
@@ -221,6 +225,7 @@ while ($k < $rec_count)
 	$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query:|$stmtA|\n";
 
 	$k++;
+	$TDinc++;
 	}
 
 
@@ -358,11 +363,13 @@ if ($no_vc_3way_check < 1)
 					$local_DEF = 'Local/5555';
 					$local_AMP = '@';
 					$kick_local_channel = "$local_DEF$PT_conf_extens[$i]$local_AMP$ext_context";
-					$queryCID = "ULGC36$TDnum";
+					$padTDinc = sprintf("%03s", $TDinc);	while (length($padTDinc) > 3) {chop($padTDinc);}
+					$queryCID = "ULGC$padTDinc$TDnum";
 
 					$stmtA="INSERT INTO vicidial_manager values('','','$now_date','NEW','N','$server_ip','','Originate','$queryCID','Channel: $kick_local_channel','Context: $ext_context','Exten: 8300','Priority: 1','Callerid: $queryCID','','','','','');";
 					$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query:|$stmtA|\n";
 					if($DB){print STDERR "\n|$affected_rows|$stmtA|\n";}
+					$TDinc++;
 					}
 
 				$stmtA = "UPDATE vicidial_conferences set extension='$NEWexten[$i]',leave_3way='$leave_3waySQL' where server_ip='$server_ip' and conf_exten='$PT_conf_extens[$i]';";

@@ -1,7 +1,7 @@
 <?php
 # callcard_admin.php
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This callcard script is to administer the callcard accounts in ViciDial
 # it is separate from the standard admin.php script. callcard_enabled in
@@ -21,6 +21,7 @@
 # 160330-1551 - navigation changes and fixes
 # 170409-1539 - Added IP List validation code
 # 170829-0040 - Added screen color settings
+# 180508-0115 - Added new help display
 #
 
 $version = '2.14-12';
@@ -280,6 +281,11 @@ header ("Pragma: no-cache");                          // HTTP/1.0
 <html>
 <head>
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+
+<link rel="stylesheet" type="text/css" href="vicidial_stylesheet.php">
+<script language="JavaScript" src="help.js"></script>
+<div id='HelpDisplayDiv' class='help_info' style='display:none;'></div>
+
 <!-- VERSION: <?php echo $version ?>     BUILD: <?php echo $build ?> -->
 <title>ADMINISTRATION: CallCard Admin
 <?php
@@ -341,8 +347,11 @@ if (preg_match("/443/i",$server_port)) {$HTTPprotocol = 'https://';}
 $admDIR = "$HTTPprotocol$server_name:$server_port$script_name";
 $admDIR = preg_replace('/callcard_admin\.php/i', '',$admDIR);
 $admSCR = 'admin.php';
-$NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
-$NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+# $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
+# $NWE = "')\"><IMG SRC=\"help.png\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+
+$NWB = "<IMG SRC=\"help.png\" onClick=\"FillAndShowHelpDiv(event, '";
+$NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
 
 $secX = date("U");
 $pulldate0 = "$year-$mon-$mday $hour:$min:$sec";

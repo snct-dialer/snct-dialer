@@ -1,13 +1,14 @@
 #!/usr/bin/perl
 #
-# AST_output_update.pl version 2.12
+# AST_output_update.pl version 2.14
 #
 # DESCRIPTION:
 # populates "show peers" output for SIP and IAX as well as tail of last 1000 lines of Asterisk output into database
 #
-# Copyright (C) 2015  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # 151229-1548 - first build
+# 180403-1546 - Updated telnet login process to work with newer Asterisk versions
 #
 
 # constants
@@ -175,16 +176,28 @@ if($DB){print "\n\nSIP SHOW PEERS:\n";}
 
 ### connect to asterisk manager through telnet
 $t = new Net::Telnet (Port => 5038,
-					  Prompt => '/.*[\$%#>] $/',
+					  Prompt => '/\r\n/',
 					  Output_record_separator => '',);
-#$fh = $t->dump_log("$telnetlog");  # uncomment for telnet log
+
+##### uncomment both lines below for telnet log
+#        $LItelnetlog = "$PATHlogs/output_telnet_log.txt";
+#        $fh = $t->dump_log("$LItelnetlog");
+
 if (length($ASTmgrUSERNAMEsend) > 3) {$telnet_login = $ASTmgrUSERNAMEsend;}
 else {$telnet_login = $ASTmgrUSERNAME;}
+$t->open("$telnet_host");
+$t->waitfor('/Asterisk Call Manager\//');
 
-$t->open("$telnet_host"); 
-$t->waitfor('/[0123]\n$/');			# print login
+# get the AMI version number
+$ami_version = $t->getline(Errmode => Return, Timeout => 1,);
+$ami_version =~ s/\n//gi;
+if ($DB) {print "----- AMI Version $ami_version -----\n";}
+
+# Login
 $t->print("Action: Login\nUsername: $telnet_login\nSecret: $ASTmgrSECRET\n\n");
-$t->waitfor('/Authentication accepted/');		# waitfor auth accepted
+$t->waitfor('/Authentication accepted/');              # waitfor auth accepted
+
+$t->buffer_empty;
 
 $sip_show_peers='';
 @list_channels=@MT;

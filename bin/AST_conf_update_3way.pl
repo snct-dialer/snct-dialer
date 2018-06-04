@@ -11,7 +11,7 @@
 #      script's crontab entry that does some of these functions:
 #      AST_conf_update.pl --no-vc-3way-check
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # 100811-2119 - First build, based upon AST_conf_update.pl script
 # 100928-1506 - Changed from hard-coded 60 minute limit to servers.vicidial_recording_limit
@@ -19,6 +19,8 @@
 # 160608-1549 - Added support for AMI version 1.3
 # 170222-0939 - Changed to file logging using server settings
 # 170921-1814 - Added support for AMI2
+# 180420-2301 - Fix for high-volume systems, added varibles to hangup queryCID
+#
 
 # constants
 $DB=0;  # Debug flag
@@ -228,7 +230,9 @@ while ($loops > $loop_counter)
 	if ($Tmin < 10) {$Tmin = "0$Tmin";}
 	if ($Tsec < 10) {$Tsec = "0$Tsec";}
 	$TDSQLdate = "$Tyear-$Tmon-$Tmday $Thour:$Tmin:$Tsec";
-	$TDnum = "$Tyear$Tmon$Tmday$Thour$Tmin$Tsec";
+	$TDrand = int( rand(99)) + 100;
+	$TDnum = "$Tmon$Tmday$Thour$Tmin$Tsec$TDrand";
+	$TDinc = 1;
 
 
 	######################################################################
@@ -368,12 +372,15 @@ while ($loops > $loop_counter)
 					$local_DEF = 'Local/5555';
 					$local_AMP = '@';
 					$kick_local_channel = "$local_DEF$PT_conf_extens[$i]$local_AMP$ext_context";
-					$queryCID = "ULGC36$TDnum";
+					$padTDinc = sprintf("%03s", $TDinc);	while (length($padTDinc) > 3) {chop($padTDinc);}
+					$queryCID = "ULGC$padTDinc$TDnum";
 
 					$stmtA="INSERT INTO vicidial_manager values('','','$now_date','NEW','N','$server_ip','','Originate','$queryCID','Channel: $kick_local_channel','Context: $ext_context','Exten: 8300','Priority: 1','Callerid: $queryCID','','','','','');";
 						$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query:|$stmtA|\n";
 					$event_string = "|$affected_rows|$stmtA|";
 					 &event_logger;
+					
+					$TDinc++;
 					}
 
 				$stmtA = "UPDATE vicidial_conferences set extension='$NEWexten[$i]',leave_3way='$leave_3waySQL' where server_ip='$server_ip' and conf_exten='$PT_conf_extens[$i]';";

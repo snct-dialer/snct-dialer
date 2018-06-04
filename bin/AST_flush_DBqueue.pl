@@ -23,6 +23,8 @@
 # 160101-1124 - Added flush of routing_initiated_recordings table
 # 161214-1039 - Added flush of parked_channels_recent table
 # 180112-0915 - Added flush for cid_channels_recent table
+# 180511-1223 - Added flush for server-specific cid_channels_recent_ tables
+# 180519-1431 - Added vicidial_inbound_groups optimization
 #
 
 ### begin parsing run-time options ###
@@ -358,6 +360,58 @@ if (!$T)
 if (!$Q) {print " - OPTIMIZE vicidial_lists          \n";}
 
 
+$stmtA = "OPTIMIZE table vicidial_inbound_groups;";
+if($DB){print STDERR "\n|$stmtA|\n";}
+if (!$T) 
+	{
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	@aryA = $sthA->fetchrow_array;
+	if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+	$sthA->finish();
+	}
+if (!$Q) {print " - OPTIMIZE vicidial_inbound_groups          \n";}
+
+
+### Gather active servers from the database
+$stmtA = "SELECT server_ip,server_id FROM servers where active='Y' and active_asterisk_server='Y';";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$aas=0;
+while ($sthArows > $aas)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$dialer_ip[$aas] =			$aryA[0];
+	$dialer_id[$aas] =			$aryA[1];
+	$PADserver_ip[$aas] =		$aryA[0];
+	$PADserver_ip[$aas] =~ s/(\d+)(\.|$)/sprintf "%3.3d$2",$1/eg; 
+	$PADserver_ip[$aas] =~ s/\.//eg; 
+	$aas++;
+	}
+$sthA->finish();
+
+$aas=0;
+while ($sthArows > $aas)
+	{
+	$CCRrec=0;
+	$stmtA = "SHOW TABLES LIKE \"cid_channels_recent_$PADserver_ip[$aas]\";";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$CCRrec=$sthA->rows;
+	if($DB){print STDERR "\n|$CCRrec|$stmtA|\n";}
+
+	if ($CCRrec > 0)
+		{
+		$stmtA = "DELETE from cid_channels_recent_$PADserver_ip[$aas] where call_date < '$SQLdate_NEG_2min';";
+		if($DB){print STDERR "\n|$stmtA|\n";}
+		if (!$T) {      $affected_rows = $dbhA->do($stmtA);}
+		if (!$Q) {print " - cid_channels_recent_$PADserver_ip[$aas] flush: $affected_rows rows\n";}
+		}
+	$aas++;
+	}
+$sthA->finish();
 
 $dbhA->disconnect();
 

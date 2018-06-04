@@ -78,7 +78,7 @@ use_external_server_ip ENUM('Y','N') default 'N',
 codecs_list VARCHAR(100) default '',
 codecs_with_template ENUM('0','1') default '0',
 webphone_dialpad ENUM('Y','N','TOGGLE','TOGGLE_OFF') default 'Y',
-on_hook_agent ENUM('Y','N') default 'N',
+on_hook_agent ENUM('Y','N', 'AutoAnswer') default 'N',
 webphone_auto_answer ENUM('Y','N') default 'Y',
 voicemail_timezone VARCHAR(30) default 'eastern',
 voicemail_options VARCHAR(255) default '',
@@ -105,7 +105,11 @@ webphone_layout VARCHAR(255) default '',
 index (server_ip),
 index (voicemail_id),
 index (dialplan_number),
-unique index extenserver (extension, server_ip)
+autoanswer_type ENUM('','SNOM') default '',
+on_hook_auto_answer ENUM('Y','N') NOT NULL DEFAULT 'N',
+auto_answer_sipheader VARCHAR(255) NOT NULL DEFAULT '',
+auto_answer_prefix VARCHAR(4) NOT NULL DEFAULT '',
+unique index extenserver (extension, server_ip),
 ) ENGINE=MyISAM;
 
 CREATE TABLE servers (
@@ -438,6 +442,9 @@ external_pause_code VARCHAR(6) default '',
 pause_code VARCHAR(6) default '',
 preview_lead_id INT(9) UNSIGNED default '0',
 external_lead_id INT(9) UNSIGNED default '0',
+on_hook_saved_status ENUM('READY','CLOSER','PAUSED','LOGIN') NULL DEFAULT NULL,
+hook_auto_answer ENUM('Y','N') NOT NULL DEFAULT 'N',
+auto_answer_prefix VARCHAR(4) NOT NULL DEFAULT '',
 index (random_id),
 index (last_call_time),
 index (last_update_time),
@@ -543,7 +550,7 @@ index (call_date)
 CREATE TABLE vicidial_users (
 user_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
 user VARCHAR(20) NOT NULL,
-pass VARCHAR(100) NOT NULL,
+pass VARCHAR(100) COLLATE utf8_bin NOT NULL,
 full_name VARCHAR(50),
 user_level TINYINT(3) UNSIGNED default '1',
 user_group VARCHAR(20),
@@ -668,7 +675,10 @@ modify_auto_reports ENUM('1','0') default '0',
 modify_ip_lists ENUM('1','0') default '0',
 ignore_ip_list ENUM('1','0') default '0',
 ready_max_logout MEDIUMINT(7) default '-1',
-export_gdpr_leads ENUM('0','1','2') default '0'
+export_gdpr_leads ENUM('0','1','2') default '0',
+pause_code_approval ENUM('1','0') default '0',
+max_hopper_calls SMALLINT(5) UNSIGNED default '0',
+max_hopper_calls_hour SMALLINT(5) UNSIGNED default '0'
 ) ENGINE=MyISAM;
 
 CREATE UNIQUE INDEX user ON vicidial_users (user);
@@ -1001,7 +1011,8 @@ next_dial_my_callbacks ENUM('DISABLED','ENABLED') default 'DISABLED',
 inbound_no_agents_no_dial_container VARCHAR(40) default '---DISABLED---',
 inbound_no_agents_no_dial_threshold SMALLINT(5) default '0',
 cid_group_id VARCHAR(20) default '---DISABLED---',
-pause_max_dispo VARCHAR(6) default 'PAUSMX'
+pause_max_dispo VARCHAR(6) default 'PAUSMX',
+script_top_dispo ENUM('Y', 'N') default 'N'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_lists (
@@ -1269,7 +1280,14 @@ closing_time_option_callback_list_id BIGINT(14) UNSIGNED default '999',
 add_lead_timezone ENUM('SERVER','PHONE_CODE_AREACODE') default 'SERVER',
 icbq_call_time_id VARCHAR(20) default '24hours',
 icbq_dial_filter VARCHAR(50) default 'NONE',
-pickup_delay TINYINT NOT NULL DEFAULT '0'
+pickup_delay TINYINT NOT NULL DEFAULT '0',
+populate_lead_source VARCHAR(20) default 'DISABLED',
+populate_lead_vendor VARCHAR(20) default 'INBOUND_NUMBER',
+park_file_name VARCHAR(100) default '',
+waiting_call_url_on TEXT,
+waiting_call_url_off TEXT,
+waiting_call_count SMALLINT(5) UNSIGNED default '0',
+enter_ingroup_url TEXT
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_stations (
@@ -1596,6 +1614,7 @@ pause_code_name VARCHAR(30),
 billable ENUM('NO','YES','HALF') default 'NO',
 campaign_id VARCHAR(8),
 time_limit SMALLINT(5) UNSIGNED default '65000',
+require_mgr_approval ENUM('NO','YES') default 'NO',
 index (campaign_id)
 ) ENGINE=MyISAM;
 
@@ -1788,8 +1807,12 @@ servicelevel_one SMALLINT UNSIGNED DEFAULT '20',
 servicelevel_two SMALLINT UNSIGNED DEFAULT '40',
 anyone_callback_inactive_lists ENUM('default','NO_ADD_TO_HOPPER','KEEP_IN_HOPPER') default 'default',
 tmp_download_dir VARCHAR(255) default 'download',
-anyone_callback_inactive_lists ENUM('default','NO_ADD_TO_HOPPER','KEEP_IN_HOPPER') default 'default',
-enable_gdpr_download_deletion ENUM('0','1','2') default '0'
+enable_gdpr_download_deletion ENUM('0','1','2') default '0',
+autoanswer_enable ENUM('Y','N') default 'N',
+autoanswer_prefix VARCHAR(5) default 'AA',
+autoanswer_delay TINYINT default '1',
+source_id_display ENUM('0','1') default '0',
+help_modification_date VARCHAR(20) default '0'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_campaigns_list_mix (
@@ -1905,6 +1928,8 @@ campaign_weight TINYINT(1) default '0',
 calls_today SMALLINT(5) UNSIGNED default '0',
 group_web_vars VARCHAR(255) default '',
 campaign_grade TINYINT(2) UNSIGNED default '1',
+hopper_calls_today SMALLINT(5) UNSIGNED default '0',
+hopper_calls_hour SMALLINT(5) UNSIGNED default '0',
 index (campaign_id),
 index (user),
 unique index vlca_user_campaign_id (user, campaign_id)
@@ -2708,7 +2733,7 @@ field_name VARCHAR(5000),
 field_description VARCHAR(100),
 field_rank SMALLINT(5),
 field_help VARCHAR(1000),
-field_type ENUM('TEXT','AREA','SELECT','MULTI','RADIO','CHECKBOX','DATE','TIME','DISPLAY','SCRIPT','HIDDEN','READONLY','HIDEBLOB') default 'TEXT',
+field_type ENUM('TEXT','AREA','SELECT','MULTI','RADIO','CHECKBOX','DATE','TIME','DISPLAY','SCRIPT','HIDDEN','READONLY','HIDEBLOB','SWITCH') default 'TEXT',
 field_options VARCHAR(5000),
 field_size SMALLINT(5),
 field_max SMALLINT(5),
@@ -4010,6 +4035,40 @@ cid_group_type ENUM('AREACODE','STATE') default 'AREACODE',
 user_group VARCHAR(20) default '---ALL---'
 ) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+CREATE TABLE vicidial_agent_function_log (
+agent_function_log_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+agent_log_id INT(9) UNSIGNED,
+user VARCHAR(20),
+function VARCHAR(20),
+event_time DATETIME,
+lead_id INT(9) UNSIGNED,
+campaign_id VARCHAR(8),
+user_group VARCHAR(20),
+caller_code VARCHAR(30) default '',
+comments VARCHAR(40) default '',
+stage VARCHAR(40) default '',
+uniqueid VARCHAR(20) default '',
+index (event_time),
+index (caller_code),
+index (user),
+index (lead_id),
+index (stage)
+) ENGINE=MyISAM;
+
+CREATE TABLE vicidial_faillogin_log (
+ID INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+user VARCHAR(20),
+status INT(9)
+ip VARCHAR(18),
+login_time DATETIME,
+) ENGINE=MyISAM;
+
+CREATE TABLE help_documentation (
+help_id varchar(100) PRIMARY KEY COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+help_title text COLLATE utf8_unicode_ci,
+help_text text COLLATE utf8_unicode_ci
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 
 ALTER TABLE vicidial_email_list MODIFY message text character set utf8;
 
@@ -4218,6 +4277,9 @@ CREATE UNIQUE INDEX visla_key on vicidial_inbound_survey_log_archive(uniqueid, c
 CREATE TABLE vicidial_inbound_callback_queue_archive LIKE vicidial_inbound_callback_queue; 
 ALTER TABLE vicidial_inbound_callback_queue_archive MODIFY icbq_id INT(9) UNSIGNED NOT NULL;
 
+CREATE TABLE vicidial_agent_function_log_archive LIKE vicidial_agent_function_log;
+ALTER TABLE vicidial_agent_function_log_archive MODIFY agent_function_log_id INT(9) UNSIGNED NOT NULL;
+
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;
 
@@ -4294,4 +4356,4 @@ INSERT INTO vicidial_settings_containers(container_id,container_notes,container_
 
 UPDATE system_settings set vdc_agent_api_active='1';
 
-UPDATE system_settings SET db_schema_version='1532',db_schema_update_date=NOW(),reload_timestamp=NOW();
+UPDATE system_settings SET db_schema_version='1533',db_schema_update_date=NOW(),reload_timestamp=NOW();

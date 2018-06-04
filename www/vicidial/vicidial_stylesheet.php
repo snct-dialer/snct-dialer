@@ -6,7 +6,7 @@
 # CSS/PHP file that uses the system-defined screen colors to display report elements
 #
 # 170830-2123 - First build
-#
+# 180501-0045 - New elements added
 
 require("dbconnect_mysqli.php");
 require("functions.php");
@@ -14,7 +14,7 @@ header("Content-type: text/css");
 
 require("screen_colors.php");
 ?>
-/* TEXT/DISPLAY STYLES */
+/* TEXT / DISPLAY STYLES */
 .vertical-text {
 	-ms-writing-mode: tb-rl;
 	-webkit-writing-mode: vertical-rl;
@@ -43,7 +43,17 @@ redalert {font-size: 18px; font-weight:bold; font-family: Arial, Sans-Serif; col
 	border-radius: 5px;
 	}
 .embossed {
-	text-shadow: -1px -1px 2px #fff, 1px 1px 2px #000;
+	text-shadow: -1px -1px 1px #fff, 1px 1px 1px #000;
+	opacity: 1.0;
+}
+.embossed_bold {
+	font-weight:bold;
+	text-shadow: -1px -1px 1px #fff, 1px 1px 1px #000;
+	opacity: 1.0;
+}
+.help_bold {
+	font-weight:bold;
+	font-size: 12pt;
 	opacity: 1.0;
 }
 .green {color: black; background-color: #99FF99}
@@ -239,9 +249,9 @@ input.tiny_green_btn{
 
 /* TABLE ELEMENTS */
 TABLE.question_td {
-	-moz-border-radius: 10px 10px 10px 10px;
-	-webkit-border-radius: 10px 10px 10px 10px;
-	border-radius: 10px 10px 10px 10px;
+	-moz-border-radius: 5px 5px 5px 5px;
+	-webkit-border-radius: 5px 5px 5px 5px;
+	border-radius: 5px 5px 5px 5px;
 	box-shadow: 5px 5px 12px #000000;
 	padding: 5px;
 	font-family: Arial, Helvetica, sans-serif; 
@@ -253,6 +263,21 @@ TABLE.question_td {
 	vertical-align: top;
 	border:solid 2px #<?php echo $SSmenu_background; ?>
 }
+TABLE.help_td {
+	-moz-border-radius: 5px 5px 5px 5px;
+	-webkit-border-radius: 5px 5px 5px 5px;
+	border-radius: 5px 5px 5px 5px;
+	box-shadow: 5px 5px 12px #000000;
+	padding: 5px;
+	font-family: Arial, Helvetica, sans-serif; 
+	color: black; 
+	font-size: 10pt; 
+	background: #<?php echo $SSframe_background; ?>;
+	color: #000000;
+	vertical-align: top;
+	border:solid 4px #<?php echo $SSmenu_background; ?>
+}
+
 TD.panel_td {
 	padding: 5px;
 	font-family: Arial, Helvetica, sans-serif; 
@@ -283,7 +308,7 @@ div.shadowbox
 {
 box-shadow: 6px 6px 3px #888888;
 border:2px solid;
-border-radius:25px;
+border-radius:5px;
 FONT-WEIGHT: bold;
 FONT-SIZE: 12pt;
 FONT-FAMILY: Courier;
@@ -294,7 +319,7 @@ div.shadowbox_1st
 background-color:#66FF66;
 box-shadow: 6px 6px 3px #888888;
 border:2px solid;
-border-radius:25px;
+border-radius:5px;
 padding-left:10px;
 FONT-WEIGHT: bold;
 FONT-SIZE: 12pt;
@@ -305,7 +330,7 @@ div.shadowbox_2nd
 background-color:#FFFF66;
 box-shadow: 6px 6px 3px #888888;
 border:2px solid;
-border-radius:25px;
+border-radius:5px;
 FONT-WEIGHT: bold;
 FONT-SIZE: 12pt;
 FONT-FAMILY: Courier;
@@ -316,20 +341,49 @@ div.shadowbox_3rd
 background-color:#66FFFF;
 box-shadow: 6px 6px 3px #888888;
 border:2px solid;
-border-radius:25px;
+border-radius:5px;
 FONT-WEIGHT: bold;
 FONT-SIZE: 12pt;
 FONT-FAMILY: Courier;
 padding-left:10px;
 }
+
 div.shadowbox_4th
 {
 background-color:#FF6666;
 box-shadow: 6px 6px 3px #888888;
 border:2px solid;
-border-radius:25px;
+border-radius:5px;
 FONT-WEIGHT: bold;
 FONT-SIZE: 12pt;
 FONT-FAMILY: Courier;
 padding-left:10px;
 }
+
+div.help_info {position:absolute; top:0; left:0; display:none;}
+
+.button_active {
+    background-color: #4CAF50; /* Green */
+	border: 1px solid green;
+	border-radius: 2px;
+    color: white;
+    padding: 10px 22px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+	}
+
+.button_inactive {
+    background-color: #4CAF50; /* Green */
+    border: 1px solid green;
+	border-radius: 2px;
+    color: white;
+    padding: 10px 22px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+	opacity: 0.6;
+    cursor: not-allowed;
+	}

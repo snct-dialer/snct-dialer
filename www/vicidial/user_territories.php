@@ -1,7 +1,7 @@
 <?php
 # user_territories.php
 # 
-# Copyright (C) 2016  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This territories script is for use with custom tables in Vtiger which is why
 # it is separate from the standard admin.php script. user_territories_active in
@@ -23,10 +23,11 @@
 # 160429-1126 - Added admin_row_click option
 # 160508-0211 - Added screen colors feature
 # 161101-2126 - Fixed missing menu items
+# 180508-2215 - Added new help display
 #
 
-$version = '2.12-15';
-$build = '161101-2126';
+$version = '2.14-16';
+$build = '180508-2215';
 
 $MT[0]='';
 
@@ -177,6 +178,11 @@ if (strlen($action) < 1)
 ?>
 <html>
 <head>
+
+<link rel="stylesheet" type="text/css" href="vicidial_stylesheet.php">
+<script language="JavaScript" src="help.js"></script>
+<div id='HelpDisplayDiv' class='help_info' style='display:none;'></div>
+
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
 <!-- VERSION: <?php echo $version ?>     BUILD: <?php echo $build ?> -->
 <title><?php echo _QXZ("ADMINISTRATION: User Territories"); ?>
@@ -379,8 +385,11 @@ if (preg_match("/443/i",$server_port)) {$HTTPprotocol = 'https://';}
 $admDIR = "$HTTPprotocol$server_name:$server_port$script_name";
 $admDIR = preg_replace('/user_territories\.php/i', '',$admDIR);
 $admSCR = 'admin.php';
-$NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
-$NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+# $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
+# $NWE = "')\"><IMG SRC=\"help.png\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+
+$NWB = "<IMG SRC=\"help.png\" onClick=\"FillAndShowHelpDiv(event, '";
+$NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
 
 $secX = date("U");
 $pulldate0 = "$year-$mon-$mday $hour:$min:$sec";

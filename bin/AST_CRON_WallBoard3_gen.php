@@ -1,7 +1,7 @@
 <?php
 #
-# Copyright (c) 2017 Jörg Frings-Fürst <jff@flyingpenguin.de>   LICENSE: AGPLv3
-#               2017 flyingpenguin UG <info@flyingpenguin.de>
+# Copyright (c) 2017-2018 Jörg Frings-Fürst <jff@flyingpenguin.de>   LICENSE: AGPLv3
+#               2017-2018 flyingpenguin UG <info@flyingpenguin.de>
 #
 # Generation of Wallbaoard 3.0 Statistics
 #
@@ -13,14 +13,15 @@
 # 20171118-1232 - Add function GetServicelevel
 # 20171121-1624 - Add maxwaittime and Tmaxwaittime.
 # 20171122-0930 - Typo in statement15
+# 20180525-1445 - Disable test against 0201 for forwarding
 #
 
-$version="1.0.5";
-$build = "20171122-0930";
+$version="1.0.6;
+$build = "20180525-1445";
 
 
 ####  collect wallboard data should only be active on a single server
-#*/1 * * * * php /usr/share/astguiclient/AST_CRON_WallBoard3_gen.php
+#*/1 * * * * php /usr/share/astguiclient/AST_CRON_WallBoard3_gen.php 
 
 
 #
@@ -790,12 +791,13 @@ function GenWBStatsTime($IBG, $TimeAnf, $TimeEnd) {
 		$result10=mysql_to_mysqli($statement10, $link);
 		$KundenErr = mysqli_num_rows($result10);
 
-		$statement11 = "SELECT COUNT(*) from call_log WHERE start_time >= '$Date' and number_dialed LIKE '%02018321672%' AND `start_time` >= '$DateAnf' AND `start_time` <= '$DateEnd';";
-		if ($DB)
-			print "$statement\n";
-		$result11 = mysql_to_mysqli($statement11, $link);
-		$row11=mysqli_fetch_row($result11);
-		$Weiter = $row11[0];
+#		$statement11 = "SELECT COUNT(*) from call_log WHERE start_time >= '$Date' and number_dialed LIKE '%02018321672%' AND `start_time` >= '$DateAnf' AND `start_time` <= '$DateEnd';";
+#		if ($DB)
+#			print "$statement\n";
+#		$result11 = mysql_to_mysqli($statement11, $link);
+#		$row11=mysqli_fetch_row($result11);
+#		$Weiter = $row11[0];
+		$Weiter = 0
 
 		$statement12 = "SELECT COUNT(*) from `$TableName` WHERE `Status` = 'MAILBOX' AND `did_route` != 'PHONE' AND `DateTBegin` >= '$DateAnf' AND `DateTBegin` <= '$DateEnd';";
 		if ($DB)
@@ -1099,12 +1101,13 @@ function GenWBStats($IBG) {
 		$result10=mysql_to_mysqli($statement10, $link);
 		$KundenErr = mysqli_num_rows($result10);
 		
-		$statement11 = "SELECT COUNT(*) from call_log WHERE start_time >= '$Date' and number_dialed LIKE '%02018321672%';";
-		if ($DB) 
-			print "$statement\n";
-		$result11 = mysql_to_mysqli($statement11, $link);
-		$row11=mysqli_fetch_row($result11);
-		$Weiter = $row11[0];
+#		$statement11 = "SELECT COUNT(*) from call_log WHERE start_time >= '$Date' and number_dialed LIKE '%02018321672%';";
+#		if ($DB) 
+#			print "$statement\n";
+#		$result11 = mysql_to_mysqli($statement11, $link);
+#		$row11=mysqli_fetch_row($result11);
+#		$Weiter = $row11[0];
+		$Weiter = 0;
 		
 		$statement12 = "SELECT COUNT(*) from `$TableName` WHERE `Status` = 'MAILBOX' AND `did_route` != 'PHONE';";
 		if ($DB) 

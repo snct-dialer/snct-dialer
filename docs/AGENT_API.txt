@@ -1,4 +1,4 @@
-AGENT API DOCUMENT		Started: 2008-07-03	Updated: 2018-02-05
+AGENT API DOCUMENT		Started: 2008-07-03	Updated: 2018-03-23
 
 This document describes the functions of an API(Application Programming Interface)
 for the VICIDIAL Agent screen. This functionality will be rather limited at first
@@ -261,11 +261,11 @@ http://server/agc/api.php?source=test&user=6666&pass=1234&agent_user=1000&functi
 http://server/agc/api.php?source=test&user=6666&pass=1234&agent_user=1000&function=external_dial&value=7275551212&phone_code=1&search=YES&preview=NO&focus=YES&dial_prefix=88&group_alias=DEFAULT
 
 RESPONSES:
+NOTICE: defined dial_ingroup not found - FAKE_INGROUP
 ERROR: external_dial not valid - 7275551212|1|YES|6666
 ERROR: no user found - 6666
 ERROR: agent_user is not logged in - 6666
 ERROR: agent_user is not allowed to place manual dial calls - 6666
-ERROR: defined dial_ingroup not found - FAKE_INGROUP
 ERROR: caller_id_number from group_alias is not valid - 6666|TESTING|123
 ERROR: group_alias is not valid - 6666|TESTING
 ERROR: vtiger callback activity does not exist in vtiger system - 12345

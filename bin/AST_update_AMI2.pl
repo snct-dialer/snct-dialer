@@ -5,12 +5,13 @@
 # This script uses the Asterisk Manager interface to update the live_channels
 # tables and verify the parked_channels table in the asterisk MySQL database
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 170915-2110 - Initial version for Asterisk 13, based upon AST_update.pl
 # 171002-1111 - Fixed timeout erase channels issue, added more debug output
 # 171228-1832 - Added more debug logging
+# 180511-1146 - Changed to use server-specific cid_channels_recent table
 #
 
 # constants
@@ -93,6 +94,8 @@ foreach(@conf)
 	if ($line =~ /^VARDB_database/)	{$VARDB_database = $line;   $VARDB_database =~ s/.*=//gi;}
 	if ($line =~ /^VARDB_user/)	{$VARDB_user = $line;   $VARDB_user =~ s/.*=//gi;}
 	if ($line =~ /^VARDB_pass/)	{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
+	if ($line =~ /^VARDB_custom_user/)	{$VARDB_custom_user = $line;   $VARDB_custom_user =~ s/.*=//gi;}
+	if ($line =~ /^VARDB_custom_pass/)	{$VARDB_custom_pass = $line;   $VARDB_custom_pass =~ s/.*=//gi;}
 	if ($line =~ /^VARDB_port/)	{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
 	$i++;
 	}
@@ -139,6 +142,7 @@ if (try_load($module))
 	{
 	$bs_loaded=1;
 	}
+
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
 or die "Couldn't connect to database: " . DBI->errstr;
@@ -202,6 +206,50 @@ if ($SUrec < 1)
 
 $event_string='LOGGED INTO MYSQL SERVER ON 1 CONNECTION|';
 event_logger($SYSLOG,$event_string);
+
+
+##### BEGIN Check for a cid_channels_recent_IPXXXXX... table, and if not present, create one
+$cid_channels_recent = 'cid_channels_recent';
+$PADserver_ip = $server_ip;
+$PADserver_ip =~ s/(\d+)(\.|$)/sprintf "%3.3d$2",$1/eg; 
+$PADserver_ip =~ s/\.//eg; 
+$CCRrec=0;   $affected_rowsCCR=0;
+$stmtA = "SHOW TABLES LIKE \"cid_channels_recent_$PADserver_ip\";";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$CCRrec=$sthA->rows;
+if($DB){print STDERR "\n|$CCRrec|$stmtA|\n";}
+
+if ($CCRrec > 0)
+	{$cid_channels_recent = "cid_channels_recent_$PADserver_ip";}
+else
+	{
+	$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_custom_user", "$VARDB_custom_pass")
+	or warn "Couldn't connect to database: " . DBI->errstr;
+
+	$stmtB = "CREATE TABLE cid_channels_recent_$PADserver_ip (caller_id_name VARCHAR(30) NOT NULL, connected_line_name VARCHAR(30) NOT NULL, call_date DATETIME, channel VARCHAR(100) DEFAULT '', dest_channel VARCHAR(100) DEFAULT '', linkedid VARCHAR(20) DEFAULT '', dest_uniqueid VARCHAR(20) DEFAULT '', uniqueid VARCHAR(20) DEFAULT '', index(call_date)) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
+	if($DB){print STDERR "\n$stmtB\n";}
+	eval { $affected_rowsCCR = $dbhB->do($stmtB) };
+	print "Query failed: $@\n" if $@;
+
+	eval { $dbhB->disconnect() };
+	print "Disconnect failed: $@\n" if $@;
+
+	$stmtA = "SHOW TABLES LIKE \"cid_channels_recent_$PADserver_ip\";";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$CCRrec=$sthA->rows;
+	if($DB){print STDERR "\n|$CCRrec|$stmtA|\n";}
+
+	if ($CCRrec > 0)
+		{$cid_channels_recent = "cid_channels_recent_$PADserver_ip";}
+	}
+print STDERR "$CCRrec|$cid_channels_recent|$stmtA\n";
+
+$event_string='TABLE CHECK cid_channels_recent_$PADserver_ip complete|$CCRrec|$affected_rowsCCR|';
+event_logger($SYSLOG,$event_string);
+##### END Check for a cid_channels_recent_IPXXXXX... table, and if not present, create one
+
 
 ### concurrency check (SCREEN uses script path, so check for more than 2 entries)
 if ($run_check > 0)
@@ -937,7 +985,7 @@ sub process_channels
 			}
 		elsif ($DB) { print STDERR "|no trunk channels to delete|\n"; }
 
-		# build the cid_channels_recent insert
+		# build the cid_channels_recent_$PADserver_ip insert
 		$cid_chan_sql = '';
 		$cid_chan_count = 0;
 		foreach $call_id (keys %cid_chan_hash)
@@ -948,7 +996,7 @@ sub process_channels
 				$cid_chan_sql .= "( ";
 				$cid_chan_sql .= "'" . $cid_chan_hash{"$call_id"}->{'calleridname'} . "', ";
 				$cid_chan_sql .= "'" . $cid_chan_hash{"$call_id"}->{'connectedlinename'} . "', ";
-				$cid_chan_sql .= "'$server_ip', ";
+			#	$cid_chan_sql .= "'$server_ip', ";
 				$cid_chan_sql .= "NOW(), ";
 				$cid_chan_sql .= "'" . $cid_chan_hash{"$call_id"}->{'channel'} . "', ";
 				$cid_chan_sql .= "'" . $cid_chan_hash{"$call_id"}->{'dest_channel'} . "', ";
@@ -962,7 +1010,8 @@ sub process_channels
 
 		if ( $cid_chan_count > 0 ) 
 			{
-			$stmtA = "INSERT IGNORE INTO cid_channels_recent (caller_id_name, connected_line_name, server_ip, call_date, channel, dest_channel, linkedid, dest_uniqueid, uniqueid) values \n\t";
+		#	$stmtA = "INSERT IGNORE INTO cid_channels_recent (caller_id_name, connected_line_name, server_ip, call_date, channel, dest_channel, linkedid, dest_uniqueid, uniqueid) values \n\t";
+			$stmtA = "INSERT IGNORE INTO $cid_channels_recent (caller_id_name, connected_line_name, call_date, channel, dest_channel, linkedid, dest_uniqueid, uniqueid) values \n\t";
 			$stmtA .= $cid_chan_sql;
 			if ($DB) { print STDERR "$stmtA\n"; }
 			$stmtA =~ s/\n|\t//gi;
