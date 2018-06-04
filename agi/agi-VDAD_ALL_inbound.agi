@@ -227,7 +227,6 @@
 # 180424-1539 - Added in-group populate_lead_source, populate_lead_vendor options
 # 180520-1802 - Added enter_ingroup_url feature
 # 180521-0736 - Changed closer logs for AGENTDIRECT calls to log destination user
-# 180601-0932 - Added user variable sending option on enter_ingroup_url feature
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
@@ -2554,15 +2553,11 @@ if ($populate_lead_province =~ /OW_did/i)
 ### BEGIN the Enter-InGroup-URL get process
 if (length($enter_ingroup_url) > 5)
 	{
-	$temp_user='';
-	if ( ($channel_group =~ /AGENTDIRECT/i) && (length($agent_only) > 1) )
-		{$temp_user = $agent_only;}
-
 	$launch = $PATHhome . "/AST_send_URL.pl";
 	$launch .= " --SYSLOG" if ($SYSLOG);
 	$launch .= " --lead_id=" . $insert_lead_id;
 	$launch .= " --phone_number=" . $phone_number;
-	$launch .= " --user=" . $temp_user;
+	$launch .= " --user=";
 	$launch .= " --call_type=IN";
 	$launch .= " --campaign=" . $channel_group;
 	$launch .= " --uniqueid=" . $uniqueid;
@@ -3276,11 +3271,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 						### format the remote server dialstring to get the call to the agent
 						if($ARserver_ip[$ragp] =~ m/(\S+)\.(\S+)\.(\S+)\.(\S+)/ )
 							{
-							$a = leading_zero($1);
-							$b = leading_zero($2);
-							$c = leading_zero($3);
-							$d = leading_zero($4);
-							$AR_DIALstr[$ragp] = "$a$S$b$S$c$S$d$S";
+							$AR_DIALstr[$ragp] = star_ip($ARserver_ip[$ragp]);
 							}
 
 						### if a remote agent, find out where to ring
@@ -3663,12 +3654,8 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 				### format the remote server dialstring to get the call to the overflow agent meetme room
 				if( $VDADserver_ip =~ m/(\S+)\.(\S+)\.(\S+)\.(\S+)/ )
 					{
-					$a = leading_zero($1); 
-					$b = leading_zero($2); 
-					$c = leading_zero($3); 
-					$d = leading_zero($4);
-					$VDADremDIALstr = "$a$S$b$S$c$S$d$S";
-					$RAredDIALstr = "$a$S$b$S$c$S$d$S";
+					$VDADremDIALstr = star_ip($VDADserver_ip);
+					$RAredDIALstr = star_ip($VDADserver_ip);
 					}
 				$alertVDADremDIALstr = "$VDADremDIALstr";
 				$alertVDADremDIALstr .= "$dtmf_silent_prefix$VDADconf_exten";
@@ -6587,11 +6574,7 @@ if ( ($drop_timer > $DROP_TIME) || ($MCdrop_override > 0) )
 		### format the remote server dialstring to get the call to the overflow agent meetme room
 		if( $did_phone_server_ip =~ m/(\S+)\.(\S+)\.(\S+)\.(\S+)/ )
 			{
-			$a = leading_zero($1); 
-			$b = leading_zero($2); 
-			$c = leading_zero($3); 
-			$d = leading_zero($4);
-			$DIDphoneDIALstr = "$a$S$b$S$c$S$d$S";
+			$DIDphoneDIALstr = star_ip($did_phone_server_ip);
 			}
 		$DROPexten = "$DIDphoneDIALstr$did_phone_dialplan_number";
 		}
@@ -7862,13 +7845,11 @@ sub checkresult
 	}
 
 
-sub leading_zero($) 
-	{
-	$_ = $_[0];
-	s/^(\d)$/0$1/;
-	s/^(\d\d)$/0$1/;
-	return $_;
-	} # End of the leading_zero() routine.
+
+sub star_ip($) { # returns IP 10.11.1.190 as 010*011*001*190*
+        return sprintf("%03d\*%03d\*%03d\*%03d\*",  split (/\./, $_[0], 4) );
+}
+
 
 
 

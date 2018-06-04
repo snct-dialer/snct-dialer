@@ -96,6 +96,7 @@ FROM `live_sip_channels` AS lsc,
 WHERE vla.conf_exten = lsc.extension 
 	AND c.extension = vla.conf_exten
 	AND vla.on_hook_agent = 'Y'
+	AND vla.on_hook_auto_answer = 'Y'
 	AND vla.channel = ''
 	AND vla.status = 'PAUSED'
 	AND vla.ring_callerid = ''
