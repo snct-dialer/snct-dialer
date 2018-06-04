@@ -357,6 +357,7 @@
         enter_ingroup_url feature.
   * Add upstream Rev. 2997:
     - Changed extras/SCRIPT_multirecording.php: fixed variable filtering bug.
+  * Release 2.25.26 2018-06-04.
 
 2.25.25b
   [Jörg Frings-Fürst]

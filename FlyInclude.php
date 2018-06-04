@@ -1,7 +1,7 @@
 <?php
 
-$FLY_patch_level = "2018-006";
-$FLY_SVN_base = "2938";
-$FLY_version  = "2.25.25b";
+$FLY_patch_level = "2018-009";
+$FLY_SVN_base = "2997";
+$FLY_version  = "2.25.26";
 
 ?>
