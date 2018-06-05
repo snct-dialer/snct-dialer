@@ -1,3 +1,10 @@
+2.25.27
+  [Jörg Fring-Fürst]
+  * Correct typo:
+    - www/agc/vicidial.php,
+      www/vicidial/admin.php.
+  * Release 2.25.27 2018-06-05.
+
 2.25.26
   [Jörg Frings-Fürst]
   * www/vicidial/AST_stat_agent1.php:

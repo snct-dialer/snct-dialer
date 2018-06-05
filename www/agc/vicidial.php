@@ -1002,7 +1002,7 @@ echo "<!-- BROWSER: $BROWSER_WIDTH x $BROWSER_HEIGHT     $JS_browser_width x $JS
 
 ?>
 <script type="text/javascript" src="../tools/floating.js"></script>
-<script src="../tools/jspanel.js"></script>
+#<script src="../tools/jspanel.js"></script>
 
 <?php
 
@@ -4883,7 +4883,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 	var pc_var = "";
 	var pc_var_ingroup = "";
-	var PPanel = "";
+//	var PPanel = "";
 
 <?php
 	if ($window_validation > 0)
@@ -10249,7 +10249,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 				var add_pause_code='';
 				if (taskaction == 'VDADready')
 					{
-					if(PPanel) { PPanel.close(); };
+//					if(PPanel) { PPanel.close(); };
 					ToggleFloatingLayer("PauseLayer",0);
 					VDRP_stage = 'READY';
 					VDRP_stage_seconds=0;
@@ -14094,24 +14094,24 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 		LastCallCID='';
 		scroll(0,0);
 		
-		PPanel = jsPanel.create({
-			id:          'PausePanel',
-		    theme:       'purple',
-		    headerTitle: 'Pause',
-		    position:    'center-top 0 58',
-		    contentSize: '450 250',
-		    content:     '<h1>' + newpausecode + '</h1>',
-		    callback: function () {
-		        this.content.style.padding = '20px';
-		    },
-		    onbeforeclose: function () {
-		        return confirm('Do you really want to close the panel?');
-		    }
-		});
-		InitFloatingWindow("PauseLayer", "Pause", newpausecode);
-		ToggleFloatingLayer("PauseLayer",1);
-		PPanel.front();
-		}
+//		PPanel = jsPanel.create({
+//			id:          'PausePanel',
+//		    theme:       'purple',
+//		    headerTitle: 'Pause',
+//		    position:    'center-top 0 58',
+//		    contentSize: '450 250',
+//		    content:     '<h1>' + newpausecode + '</h1>',
+//		    callback: function () {
+//		        this.content.style.padding = '20px';
+//		    },
+//		    onbeforeclose: function () {
+//		        return confirm('Do you really want to close the panel?');
+//		    }
+//		});
+//		InitFloatingWindow("PauseLayer", "Pause", newpausecode);
+//		ToggleFloatingLayer("PauseLayer",1);
+//		PPanel.front();
+	}
 
 
 // ################################################################################
