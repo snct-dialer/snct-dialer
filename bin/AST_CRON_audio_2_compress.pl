@@ -40,6 +40,15 @@
 # 170212-0732 - Added --file-sorting option to put files into dated directories (THIS WILL NOT ALLOW FTP ARCHIVING)
 #
 
+###### Test that the script is running only once
+use Fcntl qw(:flock);
+# print "start of program\n";
+unless (flock(DATA, LOCK_EX|LOCK_NB)) {
+    print "$0 is already running. Exiting.\n";
+    exit(1);
+}
+
+
 $GSM=0;   $MP3=0;   $OGG=0;   $GSW=0;
 $HTTPS=0;
 $maxfiles = 100000;
@@ -414,3 +423,7 @@ $dbhA->disconnect();
 
 
 exit;
+
+__DATA__
+This exists so flock() code above works.
+DO NOT REMOVE THIS DATA SECTION.

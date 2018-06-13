@@ -1,6 +1,8 @@
 2.25.28
   [Jörg Frings-Fürst]
-	* www/vicidial/admin.php: Fix escaping for auto_answer_sipheader.
+    * www/vicidial/admin.php: Fix escaping for auto_answer_sipheader.
+    * Add sniplet into perl scripts to run only once a time (2018-0010):
+      - Change bin/AST_CRON_audio_2_compress.pl
 
 2.25.27
   [Jörg Fring-Fürst]

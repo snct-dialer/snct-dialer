@@ -1,5 +1,6 @@
 Patchlevel:
 
+2018-010 Add sniplet into perl scripts to run only once a time.
 2018-009 Extension of the search function around street and city.
 2018-008 Remove use of prompt_count.txt
 2018-007 New function AutoAnswer for callcenter agents.
