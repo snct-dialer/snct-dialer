@@ -18,7 +18,7 @@
 # LICENSE: AGPLv3
 #
 # Copyright (C) 2018  Matt Florell <vicidial@gmail.com>
-# Copyright (c) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
 #               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
 #
 # CHANGES
@@ -135,9 +135,18 @@
 # 180301-1257 - Added more teodDB logging
 # 180507-1620 - Remove use of prompt_count.txt
 # 180512-2214 - Added reset of hopper_calls_today
-#
+# 180613-1615 - Add sniplet into perl scripts to run only once a time
 
-$build = '180512-2214';
+$build = '180613-1615';
+
+###### Test that the script is running only once a time
+use Fcntl qw(:flock);
+# print "start of program $0\n";
+unless (flock(DATA, LOCK_EX|LOCK_NB)) {
+    print "$0 is already running. Exiting.\n";
+    exit(1);
+}
+
 
 $DB=0; # Debug flag
 $teodDB=0; # flag to log Timeclock End of Day processes to log file
@@ -4450,3 +4459,9 @@ sub parse_asterisk_version
 
 	return ( %ast_ver_hash );
 	}
+
+__DATA__
+This exists so flock() code above works.
+DO NOT REMOVE THIS DATA SECTION.
+
+	
