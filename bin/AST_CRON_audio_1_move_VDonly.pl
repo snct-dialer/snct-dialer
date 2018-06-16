@@ -25,15 +25,30 @@
 # This program assumes that recordings are saved by Asterisk as .wav
 # should be easy to change this code if you use .gsm instead
 # 
-# Copyright (C) 2016  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
+# LICENSE: AGPLv3
+#
+# Copyright (C) 2016  Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
+
 # 
 # 80302-1958 - First Build
 # 80731-2253 - Changed size comparisons for more efficiency
 # 130805-1450 - Added check for length and gather length of recording for database record
 # 160523-0654 - Added --HTTPS option to use https instead of http in local location
 # 160731-2103 - Added --POST options to change filename with variable lookups
+# 180616-1825 - Add sniplet into perl scripts to run only once a time
 #
+
+
+###### Test that the script is running only once a time
+use Fcntl qw(:flock);
+# print "start of program $0\n";
+unless (flock(DATA, LOCK_EX|LOCK_NB)) {
+    print "$0 is already running. Exiting.\n";
+    exit(1);
+}
 
 $HTTPS=0;
 
@@ -478,3 +493,7 @@ $dbhA->disconnect();
 
 
 exit;
+
+__DATA__
+This exists so flock() code above works.
+DO NOT REMOVE THIS DATA SECTION.

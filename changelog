@@ -3,7 +3,30 @@
     * www/vicidial/admin.php: Fix escaping for auto_answer_sipheader.
     * Add sniplet into perl scripts to run only once a time (2018-0010):
       - Change bin/AST_CRON_audio_2_compress.pl,
-        bin/ADMIN_keepalive_ALL.pl
+        bin/ADMIN_keepalive_ALL.pl,
+        bin/ADMIN_adjust_GMTnow_on_leads.pl,
+        bin/ADMIN_archive_log_tables.pl,
+        bin/ADMIN_area_code_populate.pl,
+        bin/ADMIN_audio_store_sync.pl,
+        bin/ADMIN_backup.pl,
+        bin/ADMIN_purge_log_tables.pl,
+        bin/ADMIN_qm_sync.pl,
+        bin/ADMIN_reset_failed_count.pl,
+        bin/ADMIN_restart_roll_logs.pl,
+        bin/ADMIN_update_archive_url.pl,
+        bin/AST_CRON_GSM_SALE_recordings.pl,
+        bin/AST_CRON_audio_1_move_VDonly.pl,
+        bin/AST_CRON_audio_1_move_mix.pl,
+        bin/AST_CRON_audio_2_encrypt.pl,
+        bin/AST_CRON_audio_3_ftp.pl,
+        bin/AST_CRON_audio_3_ftp_FTPSSL.pl,
+        bin/AST_CRON_audio_3_newftp.pl,
+        bin/AST_CRON_audio_4_ftp2.pl,
+        bin/AST_CRON_audio_4_ftp2_FTPSSL.pl,
+        bin/AST_CRON_purge_recordings.pl,
+        bin/AST_conf_update.pl,
+        bin/AST_manager_kill_hung_congested.pl,
+        bin/AST_vm_update.pl
 
 2.25.27
   [Jörg Fring-Fürst]

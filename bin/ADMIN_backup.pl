@@ -37,8 +37,17 @@
 # 180227-0658 - Add /etc/flyingpenguin
 #               Change license from AGPLv2 to AGPLv3
 # 180507-1612 - Remove prompt_count.txt from backup
+# 180616-1825 - Add sniplet into perl scripts to run only once a time
 #
-#
+
+
+###### Test that the script is running only once a time
+use Fcntl qw(:flock);
+# print "start of program $0\n";
+unless (flock(DATA, LOCK_EX|LOCK_NB)) {
+    print "$0 is already running. Exiting.\n";
+    exit(1);
+}
 
 $secT = time();
 $secX = time();
@@ -663,3 +672,8 @@ if (!$Q) {print "script execution time in seconds: $secZ     minutes: $secZm\n";
 if ($DBX) {print "DONE, Exiting...\n";}
 
 exit;
+
+
+__DATA__
+This exists so flock() code above works.
+DO NOT REMOVE THIS DATA SECTION.

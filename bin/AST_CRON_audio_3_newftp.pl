@@ -53,13 +53,28 @@
 #    --ftp-host="10.10.10.15" --ftp-port=21 --ftp-user="username" --ftp-pass="password" --ftp-dir="RECORDINGS" \
 #    --url-path="http://10.10.10.15/RECORDINGS" --transfer-limit=50 --list-limit=200 --campaign_id="TESTCAMP1-TESTCAMP2"
 #
-# Copyright (C) 2015  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# LICENSE: AGPLv3
 #
+# Copyright (C) 2015 Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
+
 # CHANGELOG:
 # 90930-1405 - mikec - first build
 # 110524-1054 - Added run-check concurrency check option
 # 150912-0837 - Added GPG encrypted audio file compatibility
+# 180616-1925 - Add sniplet into perl scripts to run only once a time
 #
+
+
+###### Test that the script is running only once a time
+use Fcntl qw(:flock);
+# print "start of program $0\n";
+unless (flock(DATA, LOCK_EX|LOCK_NB)) {
+    print "$0 is already running. Exiting.\n";
+    exit(1);
+}
+
 
 use 5.008;
 use strict;
@@ -656,3 +671,8 @@ $dbhA->disconnect();
 
 
 exit;
+
+__DATA__
+This exists so flock() code above works.
+DO NOT REMOVE THIS DATA SECTION.
+

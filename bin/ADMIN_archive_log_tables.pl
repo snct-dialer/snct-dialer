@@ -20,7 +20,13 @@
 # Based on perl scripts in ViciDial from Matt Florell and post: 
 # http://www.vicidial.org/VICIDIALforum/viewtopic.php?p=22506&sid=ca5347cffa6f6382f56ce3db9fb3d068#22506
 #
-# Copyright (C) 2018  I. Taushanov, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# LICENSE: AGPLv3
+#
+# Copyright (C) 2018 I. Taushanov, Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
+
 #
 # CHANGES
 # 90615-1701 - First version
@@ -53,7 +59,17 @@
 # 170825-2243 - Added rolling of vicidial_xfer_log
 # 171026-0105 - Added --wipe-closer-log flag
 # 180410-1728 - Added vicidial_agent_function_log archiving
+# 180616-1825 - Add sniplet into perl scripts to run only once a time
 #
+
+
+###### Test that the script is running only once a time
+use Fcntl qw(:flock);
+# print "start of program $0\n";
+unless (flock(DATA, LOCK_EX|LOCK_NB)) {
+    print "$0 is already running. Exiting.\n";
+    exit(1);
+}
 
 $CALC_TEST=0;
 $T=0;   $TEST=0;
@@ -2395,3 +2411,9 @@ $secZm = ($secZ /60);
 if (!$Q) {print "\nscript execution time in seconds: $secZ     minutes: $secZm\n";}
 
 exit;
+
+
+__DATA__
+This exists so flock() code above works.
+DO NOT REMOVE THIS DATA SECTION.
+

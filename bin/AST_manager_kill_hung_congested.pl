@@ -11,15 +11,29 @@
 # 
 # put this in the cron to run every minute
 #
-# Copyright (C) 2011  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# LICENSE: AGPLv3
 #
+# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
+
 # CHANGES
 # 50823-1525 - Added commandline debug options with debug printouts
 # 60717-1247 - changed to DBI by Marin Blu
 # 60717-1536 - changed to use /etc/astguiclient.conf for configs
 # 60814-1706 - added option for no logging to file
 # 110318-1940 - fixed issue #441
+# 180616-1825 - Add sniplet into perl scripts to run only once a time
 #
+
+
+###### Test that the script is running only once a time
+use Fcntl qw(:flock);
+# print "start of program $0\n";
+unless (flock(DATA, LOCK_EX|LOCK_NB)) {
+    print "$0 is already running. Exiting.\n";
+    exit(1);
+}
 
 # constants
 $DB=0;  # Debug flag, set to 0 for no debug messages, On an active system this will generate thousands of lines of output per minute
@@ -379,3 +393,7 @@ if ($SYSLOG)
 	}
 $event_string='';
 }
+
+__DATA__
+This exists so flock() code above works.
+DO NOT REMOVE THIS DATA SECTION.

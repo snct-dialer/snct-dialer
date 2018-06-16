@@ -4,7 +4,11 @@
 #
 # This script checks if there are channels in reserved conferences
 #
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# LICENSE: AGPLv3
+#
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
 #
 # 50810-1532 - Added database server variable definitions lookup
 # 50823-1456 - Added commandline arguments for debug at runtime
@@ -20,7 +24,17 @@
 # 150610-1200 - Added support for AMI version 1.3
 # 170916-0947 - Added support for AMI version 2+
 # 180420-2302 - Fix for high-volume systems, added varibles to hangup queryCID
+# 180616-1615 - Add sniplet into perl scripts to run only once a time
 #
+
+
+###### Test that the script is running only once a time
+use Fcntl qw(:flock);
+# print "start of program $0\n";
+unless (flock(DATA, LOCK_EX|LOCK_NB)) {
+    print "$0 is already running. Exiting.\n";
+    exit(1);
+}
 
 # constants
 $DB=0;  # Debug flag, set to 0 for no debug messages per minute
@@ -595,3 +609,8 @@ sub parse_asterisk_version
 
 	return ( %ast_ver_hash );
 }
+
+__DATA__
+This exists so flock() code above works.
+DO NOT REMOVE THIS DATA SECTION.
+

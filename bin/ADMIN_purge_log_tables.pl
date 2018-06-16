@@ -24,10 +24,26 @@
 #
 # Copyright (C) 2017  James Pearson <jamesp@vicidial.com>, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
+# LICENSE: AGPLv3
+#
+# Copyright (C) 2017 James Pearson <jamesp@vicidial.com>, Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
+
 #
 # CHANGES
 # 170117-1316 - First version
+# 180616-1925 - Add sniplet into perl scripts to run only once a time
 #
+
+
+###### Test that the script is running only once a time
+use Fcntl qw(:flock);
+# print "start of program $0\n";
+unless (flock(DATA, LOCK_EX|LOCK_NB)) {
+    print "$0 is already running. Exiting.\n";
+    exit(1);
+}
 
 # All my lovely little modules
 use warnings;
@@ -437,3 +453,8 @@ while ( $i < @DBTOPROC ) {
 }
 $RUNTIME = time() - $STARTTIME;
 if ($VERBOSE==1) { print "Done in $RUNTIME seconds.\n"; }
+
+
+__DATA__
+This exists so flock() code above works.
+DO NOT REMOVE THIS DATA SECTION.

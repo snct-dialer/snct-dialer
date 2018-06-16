@@ -5,9 +5,13 @@
 # DESCRIPTION:
 # syncronizes audio between audio store and this server
 #
-# 
-# Copyright (C) 2015  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
+# LICENSE: AGPLv3
+#
+# Copyright (C) 2015  Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#   
+
 # CHANGELOG
 # 90513-0458 - First Build
 # 90518-2107 - Added force-upload option
@@ -19,7 +23,18 @@
 # 141124-2309 - Fixed Fhour variable bug
 # 141125-1555 - Added audio_store_details audio file info gathering and DB population
 # 150712-2210 - Added touch of conf files to Asterisk will notice changes
+# 180616-1825 - Add sniplet into perl scripts to run only once a time
 #
+
+
+###### Test that the script is running only once a time
+use Fcntl qw(:flock);
+# print "start of program $0\n";
+unless (flock(DATA, LOCK_EX|LOCK_NB)) {
+    print "$0 is already running. Exiting.\n";
+    exit(1);
+}
+
 
 # constants
 $SYSLOG=1; # log to a logfile
@@ -784,3 +799,6 @@ sub event_logger
 	$event_string='';
 	}
 
+__DATA__
+This exists so flock() code above works.
+DO NOT REMOVE THIS DATA SECTION.
