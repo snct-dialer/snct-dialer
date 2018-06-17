@@ -27,14 +27,17 @@
 # 180616-1615 - Add sniplet into perl scripts to run only once a time
 #
 
-
 ###### Test that the script is running only once a time
 use Fcntl qw(:flock);
 # print "start of program $0\n";
 unless (flock(DATA, LOCK_EX|LOCK_NB)) {
-    print "$0 is already running. Exiting.\n";
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    or print "Can't open the fscking file: $!";
+    $datestring = localtime();
+    print $fh "[$datestring] $0 is already running. Exiting.\n";
     exit(1);
 }
+
 
 # constants
 $DB=0;  # Debug flag, set to 0 for no debug messages per minute
