@@ -79,6 +79,7 @@
 # 170526-2228 - Added additional variable filtering
 # 170709-1017 - Added xfer dead call checking process
 # 170817-0739 - Small change to xfer dead call checking process
+# 180602-0149 - Changed SQL query for email queue count for accuracy
 #
 
 $version = '2.14-54';
@@ -440,7 +441,8 @@ if ($ACTION == 'refresh')
 				} 
 			else 
 				{
-				$email_stmt="select count(*) from vicidial_email_list, vicidial_xfer_log where vicidial_email_list.status='QUEUE' and vicidial_email_list.user='$user' and vicidial_xfer_log.xfercallid=vicidial_email_list.xfercallid and direction='INBOUND' and vicidial_xfer_log.campaign_id in ('$AccampSQL') and closer='EMAIL_XFER'";
+#				$email_stmt="select count(*) from vicidial_email_list, vicidial_xfer_log where vicidial_email_list.status='QUEUE' and vicidial_email_list.user='$user' and vicidial_xfer_log.xfercallid=vicidial_email_list.xfercallid and direction='INBOUND' and vicidial_xfer_log.campaign_id in ('$AccampSQL') and closer='EMAIL_XFER'";
+				$email_stmt="select count(*) from vicidial_email_list, vicidial_xfer_log where vicidial_email_list.user!='$user' and vicidial_xfer_log.xfercallid=vicidial_email_list.xfercallid and direction='INBOUND' and vicidial_xfer_log.campaign_id in ('$AccampSQL') and closer='EMAIL_XFER'";
 				$email_rslt=mysql_to_mysqli($email_stmt, $link);
 		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$email_stmt,'03042',$user,$server_ip,$session_name,$one_mysql_log);}
 				$email_row=mysqli_fetch_row($email_rslt);

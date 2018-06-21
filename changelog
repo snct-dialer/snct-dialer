@@ -27,6 +27,12 @@
         bin/AST_conf_update.pl,
         bin/AST_manager_kill_hung_congested.pl,
         bin/AST_vm_update.pl
+  * Add upstream Rev. 2998: 
+   - Changed  bin/VD_email_inbound.pl,
+      www/agc/conf_exten_check.php,
+      www/agc/vicidial.php,
+      www/vicidial/lead_report_export.php: Added code to not allow XFER emails
+        to go to user who transferred.
 
 2.25.27
   [Jörg Fring-Fürst]
