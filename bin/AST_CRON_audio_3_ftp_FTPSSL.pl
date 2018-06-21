@@ -61,6 +61,7 @@
 # 
 # 180518-0732 - First Build based upon AST_CRON_audio_3_ftp.pl script
 # 180616-1925 - Add sniplet into perl scripts to run only once a time
+# 180616-2248 - Added --localdatedir option
 #
 
 
@@ -129,6 +130,7 @@ if (length($ARGV[0])>1)
 		print "  [--nodatedir] = do not put into dated directories\n";
 		print "  [--YMDdatedir] = put into Year/Month/Day dated directories\n";
 		print "  [--YearYMDdatedir] = put into Year/YYYYMMDD dated directories\n";
+		print "  [--localdatedir] = create dated directories inside of FTP directory on local server\n";
 		print "  [--noping] = do not attempt to ping FTP server\n";
 		print "  [--run-check] = concurrency check, die if another instance is running\n";
 		print "  [--max-files=x] = maximum number of files to process, defaults to 100000\n";
@@ -179,6 +181,11 @@ if (length($ARGV[0])>1)
 			{
 			$YearYMDdatedir=1;
 			if ($DB) {print "\n----- Year/YYYYMMDD DATED DIRECTORIES -----\n\n";}
+			}
+		if ($args =~ /--localdatedir/i)
+			{
+			$localdatedir=1;
+			if ($DB) {print "\n----- CREATE LOCAL DATED DIRECTORIES: $localdatedir -----\n\n";}
 			}
 		if ($args =~ /--run-check/i)
 			{
@@ -574,7 +581,7 @@ foreach(@FILES)
 							}
 						}
 					}
-				$ftps->binary();
+				$ftps->binary() or die "Cannot set binary transfer, is server connected?";
 				$ftps->put("$dir2/$ALLfile", "$ALLfile");
 			#	if ($FTPvalidate > 0)
 			#		{
@@ -597,7 +604,52 @@ foreach(@FILES)
 
 				if (!$T)
 					{
-					`mv -f "$dir2/$ALLfile" "$PATHDONEmonitor/FTP/$ALLfile"`;
+					$localDIR='';
+					if ( ($localdatedir > 0) && ($NODATEDIR < 1) )
+						{
+						if ($YMDdatedir > 0) 
+							{
+							if (-d "$PATHDONEmonitor/FTP/$year") 
+								{if($DBX) {print "Year directory exists: $PATHDONEmonitor/FTP/$year\n";}}
+							else 
+								{mkdir("$PATHDONEmonitor/FTP/$year",0755);   if($DBX) {print "Year directory created: $PATHDONEmonitor/FTP/$year\n";}}
+							if (-d "$PATHDONEmonitor/FTP/$year/$mon") 
+								{if($DBX) {print "Month directory exists: $PATHDONEmonitor/FTP/$year/$mon\n";}}
+							else 
+								{mkdir("$PATHDONEmonitor/FTP/$year/$mon",0755);   if($DBX) {print "Month directory created: $PATHDONEmonitor/FTP/$year/$mon\n";}}
+							if (-d "$PATHDONEmonitor/FTP/$year/$mon/$mday") 
+								{if($DBX) {print "Day directory exists: $PATHDONEmonitor/FTP/$year/$mon/$mday\n";}}
+							else 
+								{mkdir("$PATHDONEmonitor/FTP/$year/$mon/$mday",0755);   if($DBX) {print "Day directory created: $PATHDONEmonitor/FTP/$year/$mon/$mday\n";}}
+							$localDIR = "$year/$mon/$mday/";
+							}
+						else
+							{
+							if ($YearYMDdatedir > 0) 
+								{
+								if (-d "$PATHDONEmonitor/FTP/$year") 
+									{if($DBX) {print "Year directory exists: $PATHDONEmonitor/FTP/$year\n";}}
+								else 
+									{mkdir("$PATHDONEmonitor/FTP/$year",0755);   if($DBX) {print "Year directory created: $PATHDONEmonitor/FTP/$year\n";}}
+								if (-d "$PATHDONEmonitor/FTP/$year/$start_date") 
+									{if($DBX) {print "Full-date directory exists: $PATHDONEmonitor/FTP/$year/$start_date\n";}}
+								else 
+									{mkdir("$PATHDONEmonitor/FTP/$year/$start_date",0755);   if($DBX) {print "Year directory created: $PATHDONEmonitor/FTP/$year/$start_date\n";}}
+								$localDIR = "$year/$start_date/";
+								}
+							else
+								{
+								if (-d "$PATHDONEmonitor/FTP/$start_date") 
+									{if($DBX) {print "Full-date directory exists: $PATHDONEmonitor/FTP/$start_date\n";}}
+								else 
+									{mkdir("$PATHDONEmonitor/FTP/$start_date",0755);   if($DBX) {print "Year directory created: $PATHDONEmonitor/FTP/$start_date\n";}}
+								$ftp->mkdir("$start_date");
+								$ftp->cwd("$start_date");
+								$localDIR = "$start_date/";
+								}
+							}
+						}
+					`mv -f "$dir2/$ALLfile" "$PATHDONEmonitor/FTP/$localDIR$ALLfile"`;
 					}
 				
 				if($DBX){print STDERR "Transfered $transfered_files files\n";}

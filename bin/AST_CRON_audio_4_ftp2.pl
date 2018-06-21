@@ -412,7 +412,7 @@ foreach(@FILES)
 					$ftp->cwd("$start_date");
 					$start_date_PATH = "$start_date/";
 					}
-				$ftp->binary();
+				$ftp->binary() or die "Cannot set binary transfer, is server connected?";
 				$ftp->put("$dir2/$ALLfile", "$ALLfile");
 				if ($FTPvalidate > 0)
 					{

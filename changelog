@@ -45,7 +45,12 @@
         Trigger URL.
     - New: extras/mysql_update/mysql-1534.sql.
   * Add upstream Rev. 3000:
-    - Changed: www/vicidial/admin.php: Fix for issue #1108
+    - Changed: www/vicidial/admin.php: Fix for issue #1108.
+  * Add upstream Rev. 3001:
+    - Changed: bin/AST_CRON_audio_3_ftp.pl,
+      bin/AST_CRON_audio_3_ftp_FTPSSL.pl,
+      bin/AST_CRON_audio_4_ftp2.pl,
+      docs/CALL_URL_FEATURES.txt: Added --localdatedir option.
 
 2.25.27
   [Jörg Fring-Fürst]
