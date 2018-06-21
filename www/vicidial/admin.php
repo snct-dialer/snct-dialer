@@ -42597,6 +42597,15 @@ echo "</FONT>\n";
 </TD><TD BGCOLOR=#<?php echo $SSframe_background ?>>
 </TD></TR><TABLE>
 </body>
+<script language="Javascript">
+if (!window.A_TCALSIDX)
+	{
+	if (document.addEventListener)
+		window.removeEventListener('scroll', f_tcalHideAll);
+	if (window.attachEvent)
+		window.detachEvent('onscroll', f_tcalHideAll);
+	}
+</script>
 <?php
 
 if ( ($SSnocache_admin=='1') or ( ($SSadmin_modify_refresh > 1) and ($modify_footer_refresh > 0) and (strlen($modify_url)>10) ) )

@@ -458,7 +458,7 @@ if ($action == "BLANK")
 	echo "</tr>";
 	echo "<tr $bgcolor>";
 	echo "<td><font size=1>"._QXZ("FIELD").": <select name=amm_field><option>vendor_lead_code</option><option>source_id</option><option>list_id</option><option>phone_number</option><option>title</option><option>first_name</option><option>middle_initial</option><option>last_name</option><option>address1</option><option>address2</option><option>address3</option><option>city</option><option>state</option><option>province</option><option>postal_code</option><option>country_code</option><option>gender</option><option>date_of_birth</option><option>alt_phone</option><option>email</option><option>security_phrase</option><option>comments</option><option>rank</option><option>owner</option></select></td>";
-	echo "<td colspan=2><font size=1>"._QXZ("AM MESSAGE").":<input type=text size=40 maxlength=255 name=amm_filename id=amm_filename value=\"\"> <a href=\"javascript:launch_chooser('amm_filename','date',100);\">"._QXZ("audio chooser")."</a></td>";
+	echo "<td colspan=2><font size=1>"._QXZ("AM MESSAGE").":<input type=text size=40 maxlength=255 name=amm_filename id=amm_filename value=\"\"> <a href=\"javascript:launch_chooser('amm_filename','date');\">"._QXZ("audio chooser")."</a></td>";
 	echo "</form>\n";
 	echo "</tr>\n";
 	echo "</table></center><br>\n";
