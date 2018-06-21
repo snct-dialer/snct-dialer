@@ -1012,7 +1012,12 @@ inbound_no_agents_no_dial_container VARCHAR(40) default '---DISABLED---',
 inbound_no_agents_no_dial_threshold SMALLINT(5) default '0',
 cid_group_id VARCHAR(20) default '---DISABLED---',
 pause_max_dispo VARCHAR(6) default 'PAUSMX',
-script_top_dispo ENUM('Y', 'N') default 'N'
+script_top_dispo ENUM('Y', 'N') default 'N',
+dead_trigger_seconds SMALLINT(5) default '0',
+dead_trigger_action ENUM('DISABLED','AUDIO','URL','AUDIO_AND_URL') default 'DISABLED',
+dead_trigger_repeat ENUM('NO','REPEAT_ALL','REPEAT_AUDIO','REPEAT_URL') default 'NO',
+dead_trigger_filename TEXT,
+dead_trigger_url TEXT
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_lists (
@@ -4069,6 +4074,21 @@ help_title text COLLATE utf8_unicode_ci,
 help_text text COLLATE utf8_unicode_ci
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+CREATE TABLE vicidial_ccc_log (
+call_date DATETIME,
+remote_call_id VARCHAR(30) default '',
+local_call_id VARCHAR(30) default '',
+lead_id INT(9) UNSIGNED,
+uniqueid VARCHAR(20) default '',
+channel VARCHAR(100) default '',
+server_ip VARCHAR(60) NOT NULL,
+list_id BIGINT(14) UNSIGNED,
+container_id VARCHAR(40) default '',
+index (call_date),
+index (local_call_id),
+index (lead_id)
+) ENGINE=MyISAM;
+
 
 ALTER TABLE vicidial_email_list MODIFY message text character set utf8;
 
@@ -4356,4 +4376,4 @@ INSERT INTO vicidial_settings_containers(container_id,container_notes,container_
 
 UPDATE system_settings set vdc_agent_api_active='1';
 
-UPDATE system_settings SET db_schema_version='1533',db_schema_update_date=NOW(),reload_timestamp=NOW();
+UPDATE system_settings SET db_schema_version='1534',db_schema_update_date=NOW(),reload_timestamp=NOW();

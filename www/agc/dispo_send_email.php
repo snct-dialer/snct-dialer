@@ -1,7 +1,7 @@
 <?php
 # dispo_send_email.php
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed to be used in the "Dispo URL" field of a campaign
 # or in-group. It will send out an email to a fixed email address as defined
@@ -13,6 +13,10 @@
 # Examples of what to put in the Dispo URL field:
 # VARhttp://192.168.1.1/agc/dispo_send_email.php?container_id=TEST_CONTAINER&lead_id=--A--lead_id--B--&call_id=--A--call_id--B--&dispo=--A--dispo--B--&user=--A--user--B--&pass=--A--pass--B--&sale_status=SALE---SSALE---XSALE&log_to_file=1
 # VARhttp://192.168.1.1/agc/dispo_send_email.php?container_id=TEST_CONTAINER&lead_id=--A--lead_id--B--&call_id=--A--call_id--B--&dispo=--A--dispo--B--&user=--A--user--B--&pass=--A--pass--B--&sale_status=ALL-STATUSES&called_count=--A--called_count--B--&called_count_trigger=40&log_to_file=1
+#
+#
+# Example of what to put in Dead Trigger URL campaign setting field:
+# VARhttp://192.168.1.1/agc/dispo_send_email.php?container_id=TEST_CONTAINER&lead_id=--A--lead_id--B--&call_id=--A--call_id--B--&dispo=DEAD&user=NOAGENTURL--A--user--B--&pass=--A--call_id--B--&sale_status=ALL-STATUSES&called_count=--A--called_count--B--&log_to_file=1
 # 
 # Definable Fields: (other fields should be left as they are)
 # - log_to_file -	(0,1) if set to 1, will create a log file in the agc directory
@@ -30,6 +34,7 @@
 # 171120-0910 - Added ALL-STATUSES option and called_count_trigger option
 # 171120-1535 - Added additional_notes option and email attachments options(1-5)
 # 171207-0659 - Added option of up to 20 attachments
+# 180611-1703 - Added instructions for Dead Trigger URL
 #
 
 $api_script = 'send_email';
@@ -219,6 +224,7 @@ if ($match_found > 0)
 
 	if (preg_match("/NOAGENTURL/",$user))
 		{
+		if (strlen($user) > 11) {$user = preg_replace("/NOAGENTURL/",'',$user);}
 		$PADlead_id = sprintf("%010s", $lead_id);
 		if ( (strlen($pass) > 15) and (preg_match("/$PADlead_id$/",$pass)) )
 			{

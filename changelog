@@ -33,6 +33,17 @@
       www/agc/vicidial.php,
       www/vicidial/lead_report_export.php: Added code to not allow XFER emails
         to go to user who transferred.
+  * Add upstream Rev. 2999:
+    - Changed: UPGRADE,
+      extras/MySQL_AST_CREATE_tables.sql,
+      extras/upgrade_2.14.sql,
+      www/agc/dispo_send_email.php,
+      www/agc/vdc_db_query.php,
+      www/agc/vicidial.php,
+      www/vicidial/admin.php,
+      www/vicidial/help_documentation.txt: Added instructions for Dead
+        Trigger URL.
+    - New: extras/mysql_update/mysql-1534.sql.
 
 2.25.27
   [Jörg Fring-Fürst]

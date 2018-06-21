@@ -325,6 +325,10 @@ OTHER CHANGES:
 88. Added Manual Dial Routing Initiated Recording, must enable setting at the
 	campaign level and have a 0 recording delay.
 
+89. Added campaign features for Dead Call Trigger. Allowing an audio alert to be
+	sent to an agent and/or a back-end URL to be submitted when an agent has
+	been in a dead call for X number of seconds.
+
 
 
 
