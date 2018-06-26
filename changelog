@@ -57,7 +57,9 @@
         www/vicidial/admin_header.php,
         www/vicidial/admin_soundboard.php,
         www/vicidial/audio_store.php: Modified audio chooser window to appear
-          at height where mouse was clicked in JS functions. 
+          at height where mouse was clicked in JS functions.
+  * Add upstream Rev. 3003:
+    - Changed: docs/EU_GDPR_COMPLIANCE.txt. Add hint to install missing package.
 
 2.25.27
   [Jörg Fring-Fürst]
