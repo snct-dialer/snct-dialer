@@ -2,7 +2,7 @@
   [Jörg Frings-Fürst]
     * www/vicidial/admin.php: Fix escaping for auto_answer_sipheader.
     * Add sniplet into perl scripts to run only once a time (2018-0010):
-      - Change bin/AST_CRON_audio_2_compress.pl,
+      - Update: bin/AST_CRON_audio_2_compress.pl,
         bin/ADMIN_keepalive_ALL.pl,
         bin/ADMIN_adjust_GMTnow_on_leads.pl,
         bin/ADMIN_archive_log_tables.pl,
@@ -28,13 +28,13 @@
         bin/AST_manager_kill_hung_congested.pl,
         bin/AST_vm_update.pl
   * Add upstream Rev. 2998: 
-   - Changed: bin/VD_email_inbound.pl,
+   - Update: bin/VD_email_inbound.pl,
       www/agc/conf_exten_check.php,
       www/agc/vicidial.php,
       www/vicidial/lead_report_export.php: Added code to not allow XFER emails
         to go to user who transferred.
   * Add upstream Rev. 2999:
-    - Changed: UPGRADE,
+    - Update: UPGRADE,
       extras/MySQL_AST_CREATE_tables.sql,
       extras/upgrade_2.14.sql,
       www/agc/dispo_send_email.php,
@@ -45,21 +45,22 @@
         Trigger URL.
     - New: extras/mysql_update/mysql-1534.sql.
   * Add upstream Rev. 3000:
-    - Changed: www/vicidial/admin.php: Fix for issue #1108.
+    - Update: www/vicidial/admin.php: Fix for issue #1108.
   * Add upstream Rev. 3001:
-    - Changed: bin/AST_CRON_audio_3_ftp.pl,
+    - Update: bin/AST_CRON_audio_3_ftp.pl,
       bin/AST_CRON_audio_3_ftp_FTPSSL.pl,
       bin/AST_CRON_audio_4_ftp2.pl,
       docs/CALL_URL_FEATURES.txt: Added --localdatedir option.
   * Add upstream Rev. 3002:
-    - Changed: www/vicidial/admin.php,
+    - Update: www/vicidial/admin.php,
         www/vicidial/admin_amm_multi.php,
         www/vicidial/admin_header.php,
         www/vicidial/admin_soundboard.php,
         www/vicidial/audio_store.php: Modified audio chooser window to appear
           at height where mouse was clicked in JS functions.
   * Add upstream Rev. 3003:
-    - Changed: docs/EU_GDPR_COMPLIANCE.txt. Add hint to install missing package.
+    - Update: docs/EU_GDPR_COMPLIANCE.txt. Add hint to install missing package.
+  * bin/ADMIN_backup.pl: Split mysqldump and packing
 
 2.25.27
   [Jörg Fring-Fürst]

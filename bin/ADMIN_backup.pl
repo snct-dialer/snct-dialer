@@ -38,8 +38,8 @@
 #               Change license from AGPLv2 to AGPLv3
 # 180507-1612 - Remove prompt_count.txt from backup
 # 180616-1825 - Add sniplet into perl scripts to run only once a time
+# 180626-1030 - Split mysqldump and packing.
 #
-
 
 ###### Test that the script is running only once a time
 use Fcntl qw(:flock);
@@ -513,11 +513,14 @@ if ( ($without_db < 1) && ($conf_only < 1) )
 				if ($DBX) {print "$dump_non_log_command\nNOT ARCHIVED: $dump_log_command\n";}
 				`$dump_non_log_command`;
 				}
-			else
-				{
-				if ($DBX) {print "$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname | $xzbin -1 > $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday$xz\n";}
-				`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname | $xzbin -1 > $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday$xz`;
+			else {
+				if ($DBX) {
+					print "$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname > $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday.sql";
+					print "$xzbin $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday.sql";
 				}
+				`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname > $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday.sql`; 
+				`$xzbin $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday.sql`;
+			}
 			$c++;
 			}
 		}
