@@ -8,13 +8,14 @@
 # This script is launched by the ADMIN_keepalive_ALL.pl script with the '9' flag
 # defined in astguiclient.conf
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG
 # 80526-0958 - First Build
 # 80604-0733 - Fixed minor bug in update
 # 90812-0103 - Formatting fixes
 # 170705-0911 - Added concurrency check, and skip CLI option
+# 180629-2341 - Fix for concurrency check and debug output
 #
 
 # constants
@@ -138,9 +139,10 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 ### concurrency check
 if ($run_check > 0)
 	{
-	my $grepout = `/bin/ps ax | grep timeclock | grep -v grep | grep -v '/bin/sh'`;
+	my $grepout = `/bin/ps ax | grep timeclock | grep -v grep | grep -v '/bin/sh' | grep -v 'Timeclock'`;
 	my $grepnum=0;
 	$grepnum++ while ($grepout =~ m/\n/g);
+	if ($DBX) {print "CONCURRENCY CHECK: |$grepnum|\n$grepout\n";}
 	if ($grepnum > 1) 
 		{
 		$SYSLOG = 1;
@@ -149,7 +151,6 @@ if ($run_check > 0)
 		if ($DB) {print "I am not alone! Another $0 is running! Exiting...($grepnum)\n";}
 		exit;
 		}
-	if ($DBX) {print "CONCURRENCY CHECK: |$grepnum|\n$grepout\n";}
 	}
 
 

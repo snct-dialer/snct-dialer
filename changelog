@@ -60,7 +60,10 @@
           at height where mouse was clicked in JS functions.
   * Add upstream Rev. 3003:
     - Update: docs/EU_GDPR_COMPLIANCE.txt. Add hint to install missing package.
-  * bin/ADMIN_backup.pl: Split mysqldump and packing
+  * bin/ADMIN_backup.pl: Split mysqldump and packing.
+  * Add upstream Rev. 3004:
+    - Update: bin/ADMIN_timeclock_auto_logout.pl:  Fix for concurrency check
+        and debug output.
 
 2.25.27
   [Jörg Fring-Fürst]
