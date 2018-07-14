@@ -73,7 +73,9 @@
         www/vicidial/audio_store.php: Added options to use different date
           ranges for exports and deletes; Modified calls to audio file chooser
           function; 
-    
+  * Add upstream Rev. 3006:
+    - Update: bin/AST_CRON_audio_3_ftp.pl,
+        bin/AST_CRON_audio_3_ftp_FTPSSL.pl: Change some function calls.
 
 2.25.27
   [Jörg Fring-Fürst]
