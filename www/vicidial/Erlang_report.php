@@ -11,6 +11,7 @@
 # 171012-2015 - Fixed javascript/apache errors with graphs
 # 171205-2304 - Modified to include disposition seconds in C report
 # 180508-2215 - Added new help display
+# 180712-1508 - Fix for rare allowed reports issue
 #
 
 $startMS = microtime();
@@ -229,7 +230,7 @@ if ($DB) {$MAIN.="|$stmt|\n";}
 $rslt=mysql_to_mysqli($stmt, $link);
 $row=mysqli_fetch_row($rslt);
 $LOGallowed_campaigns =			$row[0];
-$LOGallowed_reports =			$row[1];
+$LOGallowed_reports =			"$row[1],";
 $LOGadmin_viewable_groups =		$row[2];
 $LOGadmin_viewable_call_times =	$row[3];
 
