@@ -13,10 +13,11 @@
 # 160801-1201 - Added colors features
 # 170409-1544 - Added IP List validation code
 # 180502-2115 - Added new help display
+# 180618-2300 - Modified calls to audio file chooser function
 #
 
-$admin_version = '2.14-3';
-$build = '170409-1544';
+$admin_version = '2.14-5';
+$build = '180618-2300';
 
 require("dbconnect_mysqli.php");
 require("functions.php");
