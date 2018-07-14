@@ -60,7 +60,28 @@
           at height where mouse was clicked in JS functions.
   * Add upstream Rev. 3003:
     - Update: docs/EU_GDPR_COMPLIANCE.txt. Add hint to install missing package.
-  * bin/ADMIN_backup.pl: Split mysqldump and packing
+  * bin/ADMIN_backup.pl: Split mysqldump and packing.
+  * Add upstream Rev. 3004:
+    - Update: bin/ADMIN_timeclock_auto_logout.pl:  Fix for concurrency check
+        and debug output.
+  * Add upstream Rev. 3005:
+    - Update: bin/AST_expired_list_exporter.pl,
+        www/vicidial/admin.php,
+        www/vicidial/admin_amm_multi.php,
+        www/vicidial/admin_header.php,
+        www/vicidial/admin_soundboard.php,
+        www/vicidial/audio_store.php: Added options to use different date
+          ranges for exports and deletes; Modified calls to audio file chooser
+          function;
+  * Add upstream Rev. 3006:
+    - Update: bin/AST_CRON_audio_3_ftp.pl,
+        bin/AST_CRON_audio_3_ftp_FTPSSL.pl: Change some function calls.
+  * Add upstream Rev. 3007:
+    - Change: www/vicidial/AST_CLOSERstats.php,
+        www/vicidial/AST_CLOSERstats_v2.php,
+        www/vicidial/AST_inbound_forecasting.php,
+        www/vicidial/AST_rt_monitor_log_report.php,
+        www/vicidial/Erlang_report.php: Fix for rare allowed reports issue.
 
 2.25.27
   [Jörg Fring-Fürst]

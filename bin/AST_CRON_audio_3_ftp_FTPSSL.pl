@@ -643,8 +643,6 @@ foreach(@FILES)
 									{if($DBX) {print "Full-date directory exists: $PATHDONEmonitor/FTP/$start_date\n";}}
 								else 
 									{mkdir("$PATHDONEmonitor/FTP/$start_date",0755);   if($DBX) {print "Year directory created: $PATHDONEmonitor/FTP/$start_date\n";}}
-								$ftp->mkdir("$start_date");
-								$ftp->cwd("$start_date");
 								$localDIR = "$start_date/";
 								}
 							}

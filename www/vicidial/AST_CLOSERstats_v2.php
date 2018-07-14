@@ -64,6 +64,7 @@
 # 170829-0040 - Added screen color settings
 # 171012-2015 - Fixed javascript/apache errors with graphs
 # 180323-2307 - Fix for user time calculation, subtracted queue_seconds
+# 180712-1508 - Fix for rare allowed reports issue
 #
 
 $startMS = microtime();
@@ -256,7 +257,7 @@ if ($DB) {$MAIN.="|$stmt|\n";}
 $rslt=mysql_to_mysqli($stmt, $link);
 $row=mysqli_fetch_row($rslt);
 $LOGallowed_campaigns =			$row[0];
-$LOGallowed_reports =			$row[1];
+$LOGallowed_reports =			"$row[1],";
 $LOGadmin_viewable_groups =		$row[2];
 $LOGadmin_viewable_call_times =	$row[3];
 

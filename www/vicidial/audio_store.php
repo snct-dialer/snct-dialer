@@ -28,6 +28,7 @@
 # 170409-1555 - Added IP List validation code
 # 170630-1440 - Require modify_audiostore user permissions to access this page
 # 180508-0115 - Added new help display
+# 180618-2300 - Modified calls to audio file chooser function
 #
 
 $version = '2.14-22';

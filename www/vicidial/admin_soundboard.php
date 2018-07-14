@@ -19,6 +19,7 @@
 # 161111-1646 - Added HIDENUMBERS display option, Font size, button type and layout options
 # 170409-1549 - Added IP List validation code
 # 180503-2215 - Added new help display
+# 180618-2300 - Modified calls to audio file chooser function
 #
 
 $admin_version = '2.14-13';

@@ -8,6 +8,7 @@
 # 170513-0040 - First build
 # 170822-2231 - Modified to use screen colors
 # 180507-2315 - Added new help display
+# 180712-1508 - Fix for rare allowed reports issue
 #
 
 $startMS = microtime();
@@ -156,7 +157,7 @@ if ($DB) {$MAIN.="|$stmt|\n";}
 $rslt=mysql_to_mysqli($stmt, $link);
 $row=mysqli_fetch_row($rslt);
 $LOGallowed_campaigns =			$row[0];
-$LOGallowed_reports =			$row[1];
+$LOGallowed_reports =			"$row[1],";
 $LOGadmin_viewable_groups =		$row[2];
 $LOGadmin_viewable_call_times =	$row[3];
 
