@@ -82,7 +82,10 @@
         www/vicidial/AST_inbound_forecasting.php,
         www/vicidial/AST_rt_monitor_log_report.php,
         www/vicidial/Erlang_report.php: Fix for rare allowed reports issue.
-  * www/agc/functions.php: Add missing global debug vars ($DB, $mel).
+  * www/agc/functions.php: Add missing global debug vars (DB, mel).
+  * Add upstream Rev. 3008:
+    - Change: www/vicidial/admin_header.php: Fix for audio chooser bug on call
+        menu screen.
 
 2.25.27
   [Jörg Fring-Fürst]
