@@ -475,6 +475,30 @@ $startMS = microtime();
 require_once("dbconnect_mysqli.php");
 require_once("functions.php");
 
+$user = $pass = $orig_pass = $status = $alt_phone = $phone_code =
+$phone_number = $closer_choice = $lead_id = $list_id = $uniqueid =
+$length_in_sec = $CallBackDatETimE = $CallBackLeadStatus = $DiaL_SecondS =
+$LogouTKicKAlL = $MDnextCID = $VDRP_stage = $VDstop_rec_after_each_call =
+$account = $agent_dialed_number = $agent_dialed_type = $agent_email =
+$agent_log = $agent_log_id = $agent_territories = $agentchannel = $alt_dial =
+$alt_num_status = $auto_dial_level = $blind_transfer = $callback_id =
+$called_count = $camp_script = $campaign_cid = $channel = $cid_lock =
+$closer_blended = $conf_dialed = $custom_field_names = $customer_server_ip =
+$customer_zap_channel = $date = $dial_ingroup = $dial_method = $dial_prefix =
+$dial_timeout = $disable_alter_custphone = $dispo_choice = $email_enabled =
+$email_row_id = $enable_sipsak_messages = $ext_priority = $exten =
+$favorites_list = $gender = $group_name = $hangup_all_non_reserved = $inOUT =
+$in_script = $inbound_lead_search = $last_VDRP_stage = $leaving_threeway =
+$manual_dial_call_time_check = $manual_dial_filter =
+$manual_dial_search_filter = $no_delete_sessions = $nocall_dial_flag =
+$nodeletevdac = $old_CID = $omit_phone_code = $original_phone_login =
+$parked_hangup = $pause_trigger = $phone_login = $phone_pass = $preview =
+$previous_agent_log_id = $qm_dispo_code = $qm_extension = $qm_phone =
+$recipient = $recording_filename = $recording_id = $search = $start_epoch =
+$sub_status = $url_ids = $use_campaign_dnc = $use_internal_dnc =
+$usegroupalias = $user_abb = $vtiger_callback_id = $wrapup = $url_link =
+$stage = $protocol = $format = $extension = $conf_exten = "";
+
 ### If you have globals turned off uncomment these lines
 if (isset($_GET["user"]))						{$user=$_GET["user"];}
 	elseif (isset($_POST["user"]))				{$user=$_POST["user"];}

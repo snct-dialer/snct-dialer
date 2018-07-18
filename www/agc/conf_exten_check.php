@@ -98,6 +98,9 @@ require_once("functions.php");
 
 $bcrypt=1;
 
+$server_ip = $session_name = $user = $pass = $format = $ACTION = $client =
+$conf_exten = $exten = $auto_dial_level = $campagentstdisp = "";
+
 ### If you have globals turned off uncomment these lines
 if (isset($_GET["DB"]))						{$DB=$_GET["DB"];}
 	elseif (isset($_POST["DB"]))			{$DB=$_POST["DB"];}

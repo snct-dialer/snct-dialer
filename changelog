@@ -82,7 +82,10 @@
         www/vicidial/AST_inbound_forecasting.php,
         www/vicidial/AST_rt_monitor_log_report.php,
         www/vicidial/Erlang_report.php: Fix for rare allowed reports issue.
-  * www/agc/functions.php: Add missing global debug vars (DB, mel).
+  * Rewrite for php7:
+    - Change: www/agc/functions.php,
+        www/agc/conf_exten_check.php,
+        www/agc/vdc_db_query.php.
   * Add upstream Rev. 3008:
     - Change: www/vicidial/admin_header.php: Fix for audio chooser bug on call
         menu screen.
