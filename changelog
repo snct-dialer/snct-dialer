@@ -89,6 +89,10 @@
   * Add upstream Rev. 3008:
     - Change: www/vicidial/admin_header.php: Fix for audio chooser bug on call
         menu screen.
+  * Add index modify_date to vicidial_list, new fields corrd_one, corrd_two
+      type POINT into vicidial_list:
+    - Change: extras/MySQL_AST_CREATE_tables.sql,
+        extras/mysql_update/mysql-1534.sql.
 
 2.25.27
   [Jörg Fring-Fürst]

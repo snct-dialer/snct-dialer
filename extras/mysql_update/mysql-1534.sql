@@ -20,4 +20,8 @@ index (local_call_id),
 index (lead_id)
 ) ENGINE=MyISAM;
 
+ALTER TABLE vicidial_list ADD INDEX `modify_date` (`modify_date`);
+ALTER TABLE vicidial_list ADD coord_one POINT NOT NULL DEFAULT ST_GeomFromText('POINT(0 0)'));
+ALTER TABLE vicidial_list ADD coord_two POINT NOT NULL DEFAULT ST_GeomFromText('POINT(0 0)'));
+
 UPDATE system_settings SET db_schema_version='1534',db_schema_update_date=NOW() where db_schema_version < 1534;

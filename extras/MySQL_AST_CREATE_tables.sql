@@ -359,6 +359,8 @@ last_local_call_time DATETIME,
 rank SMALLINT(5) NOT NULL default '0',
 owner VARCHAR(20) default '',
 entry_list_id BIGINT(14) UNSIGNED NOT NULL DEFAULT '0',
+coord_one POINT NOT NULL DEFAULT ST_GeomFromText('POINT(0 0)')),
+coord_two POINT NOT NULL DEFAULT ST_GeomFromText('POINT(0 0)')),
 index (phone_number),
 index (list_id),
 index (called_since_last_reset),
@@ -367,7 +369,8 @@ index (gmt_offset_now),
 index (postal_code),
 index (last_local_call_time),
 index (rank),
-index (owner)
+index (owner),
+index (modify_date)
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_hopper (
