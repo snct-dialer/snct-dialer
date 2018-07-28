@@ -598,11 +598,10 @@
 # 180522-1921 - Added Routing Initiated Recording ability for manual dial calls
 # 180606-0024 - Fixed email transfers bugs, modified transfer-conf panel for same
 # 180610-2305 - Added dead_trigger_ features
-# 180727-2044 - Small fix for pause code issue
 #
 
-$version = '2.14-568c';
-$build = '180727-2044';
+$version = '2.14-567c';
+$build = '180610-2305';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -11308,7 +11307,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							{
 							if (VDRP_stage != 'PAUSED')
 								{
-								agent_log_id = AutoDial_ReSume_PauSe("VDADpause",'','','','','','','YES');
+								agent_log_id = AutoDial_ReSume_PauSe("VDADpause",'','','','','1','','YES');
 								}
 							button_click_log = button_click_log + "" + SQLdate + "-----CFAI_close_pause_alert---" + previous_agent_log_id + " " + agent_log_id + "|";
 							alert_box_close_counter=0;

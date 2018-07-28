@@ -77,22 +77,27 @@
     - Update: bin/AST_CRON_audio_3_ftp.pl,
         bin/AST_CRON_audio_3_ftp_FTPSSL.pl: Change some function calls.
   * Add upstream Rev. 3007:
-    - Change: www/vicidial/AST_CLOSERstats.php,
+    - Update: www/vicidial/AST_CLOSERstats.php,
         www/vicidial/AST_CLOSERstats_v2.php,
         www/vicidial/AST_inbound_forecasting.php,
         www/vicidial/AST_rt_monitor_log_report.php,
         www/vicidial/Erlang_report.php: Fix for rare allowed reports issue.
   * Rewrite for php7:
-    - Change: www/agc/functions.php,
+    - Update: www/agc/functions.php,
         www/agc/conf_exten_check.php,
         www/agc/vdc_db_query.php.
   * Add upstream Rev. 3008:
-    - Change: www/vicidial/admin_header.php: Fix for audio chooser bug on call
+    - Update: www/vicidial/admin_header.php: Fix for audio chooser bug on call
         menu screen.
   * Add index modify_date to vicidial_list, new fields coord_one, coord_two
       type POINT into vicidial_list:
-    - Change: extras/MySQL_AST_CREATE_tables.sql,
+    - Update: extras/MySQL_AST_CREATE_tables.sql,
         extras/mysql_update/mysql-1534.sql.
+  * Add upstream Rev. 3009:
+    - Update: bin/ADMIN_archive_log_tables.pl: Added --wipe-all-being-archived
+        AND --did-log-days options.
+  * Add upstream Rev. 3010: 
+    - Update: www/agc/vicidial.php: Small fix for pause code issue.
 
 2.25.27
   [Jörg Fring-Fürst]
