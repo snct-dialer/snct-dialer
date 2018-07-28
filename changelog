@@ -96,6 +96,8 @@
   * Add upstream Rev. 3009:
     - Update: bin/ADMIN_archive_log_tables.pl: Added --wipe-all-being-archived
         AND --did-log-days options.
+  * Add upstream Rev. 3010: 
+    - Update: www/agc/vicidial.php: Small fix for pause code issue.
 
 2.25.27
   [Jörg Fring-Fürst]
