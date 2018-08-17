@@ -809,5 +809,6 @@ ALTER TABLE vicidial_inbound_groups ADD cid_cb_invalid_filename TEXT;
 ALTER TABLE vicidial_inbound_groups ADD cid_cb_reenter_filename TEXT;
 ALTER TABLE vicidial_inbound_groups ADD cid_cb_error_filename TEXT;
 
+ALTER TABLE system_settings ADD agent_logout_link ENUM('0','1','2','3','4') default '1';
 
 UPDATE system_settings SET db_schema_version='1534',db_schema_update_date=NOW() where db_schema_version < 1534;

@@ -1831,7 +1831,8 @@ autoanswer_enable ENUM('Y','N') default 'N',
 autoanswer_prefix VARCHAR(5) default 'AA',
 autoanswer_delay TINYINT default '1',
 source_id_display ENUM('0','1') default '0',
-help_modification_date VARCHAR(20) default '0'
+help_modification_date VARCHAR(20) default '0',
+agent_logout_link ENUM('0','1','2','3','4') default '1'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_campaigns_list_mix (

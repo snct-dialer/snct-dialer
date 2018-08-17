@@ -119,6 +119,16 @@
   * Add upstream Rev. 3015:
     - Update: www/vicidial/AST_campaign_status_list_report.php: Fixed log query
         issue.
+  * Add upstream Rev. 3016:
+    - Update: UPGRADE,
+        extras/MySQL_AST_CREATE_tables.sql,
+        extras/mysql_update/mysql-1534.sql,
+        extras/upgrade_2.14.sql,
+        www/agc/vicidial.php,
+        www/agc/vicidial.php.orig,
+        www/vicidial/admin.php,
+        www/vicidial/help_documentation.txt: Added agent_logout_link credentials
+          system setting.
 
 2.25.27
   [Jörg Fring-Fürst]

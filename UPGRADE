@@ -334,6 +334,9 @@ OTHER CHANGES:
 
 91. Added the new Callmenu Survey Report(linked as "Callmenu Agent" in Reports).
 
+92. Added "Agent Screen Logout Link Credentials" System Setting to change the 
+	agent screen logout page login link to not include user credentials.
+	
 
 
 
