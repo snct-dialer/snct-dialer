@@ -329,6 +329,11 @@ OTHER CHANGES:
 	sent to an agent and/or a back-end URL to be submitted when an agent has
 	been in a dead call for X number of seconds.
 
+90. Added the ability for customers to be able to enter a new phone number to be
+	called back on for the CallerID CallBack Queue feature.
+
+91. Added the new Callmenu Survey Report(linked as "Callmenu Agent" in Reports).
+
 
 
 

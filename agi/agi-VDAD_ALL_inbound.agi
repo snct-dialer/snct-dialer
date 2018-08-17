@@ -227,6 +227,7 @@
 # 180424-1539 - Added in-group populate_lead_source, populate_lead_vendor options
 # 180520-1802 - Added enter_ingroup_url feature
 # 180521-0736 - Changed closer logs for AGENTDIRECT calls to log destination user
+# 180806-0809 - Added CID callback number validation and change features
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
@@ -238,7 +239,7 @@ $wait_prompt_runs=0;
 $at='@';
 $S='*';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=247;
+$mysql_log_count=256;
 $one_mysql_log=0;
 $dial_ingroup_flag=0;
 $called_count=1;
@@ -759,7 +760,7 @@ $affected_rows = $dbhA->do($stmtA);
 
 ### Grab inbound groups values from the database
 $cbc=0;
-$stmtA = "SELECT call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,drop_call_seconds,drop_action,drop_exten,next_agent_call,voicemail_ext,queue_priority,drop_inbound_group,afterhours_xfer_group,play_place_in_line,play_estimate_hold_time,hold_time_option,hold_time_option_seconds,hold_time_option_exten,hold_time_option_voicemail,hold_time_option_xfer_group,hold_time_option_callback_filename,hold_time_option_callback_list_id,hold_recall_xfer_group,no_delay_call_route,play_welcome_message,no_agent_no_queue,no_agent_action,no_agent_action_value,extension_appended_cidname,uniqueid_status_display,uniqueid_status_prefix,hold_time_option_minimum,hold_time_option_press_filename,hold_time_option_callmenu,onhold_prompt_no_block,onhold_prompt_seconds,hold_time_option_no_block,hold_time_option_prompt_seconds,hold_time_second_option,hold_time_third_option,wait_hold_option_priority,wait_time_option,wait_time_second_option,wait_time_third_option,wait_time_option_seconds,wait_time_option_exten,wait_time_option_voicemail,wait_time_option_xfer_group,wait_time_option_callmenu,wait_time_option_callback_filename,wait_time_option_callback_list_id,wait_time_option_press_filename,wait_time_option_no_block,wait_time_option_prompt_seconds,active,calculate_estimated_hold_seconds,add_lead_url,eht_minimum_prompt_filename,eht_minimum_prompt_no_block,eht_minimum_prompt_seconds,on_hook_ring_time,ingroup_recording_override,ingroup_rec_filename,on_hook_cid,action_xfer_cid,drop_callmenu,after_hours_callmenu,max_calls_method,max_calls_count,max_calls_action,populate_lead_ingroup,na_call_url,drop_lead_reset,after_hours_lead_reset,nanq_lead_reset,wait_time_lead_reset,hold_time_lead_reset,routing_initiated_recordings,on_hook_cid_number,populate_lead_province,areacode_filter,areacode_filter_seconds,areacode_filter_action,areacode_filter_action_value,populate_state_areacode,inbound_survey,inbound_survey_filename,inbound_survey_accept_digit,closing_time_action,closing_time_now_trigger,closing_time_filename,closing_time_end_filename,closing_time_lead_reset,closing_time_option_exten,closing_time_option_callmenu,closing_time_option_voicemail,closing_time_option_xfer_group,closing_time_option_callback_list_id,add_lead_timezone,populate_lead_source,populate_lead_vendor,enter_ingroup_url FROM vicidial_inbound_groups where group_id = '$channel_group';";
+$stmtA = "SELECT call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,drop_call_seconds,drop_action,drop_exten,next_agent_call,voicemail_ext,queue_priority,drop_inbound_group,afterhours_xfer_group,play_place_in_line,play_estimate_hold_time,hold_time_option,hold_time_option_seconds,hold_time_option_exten,hold_time_option_voicemail,hold_time_option_xfer_group,hold_time_option_callback_filename,hold_time_option_callback_list_id,hold_recall_xfer_group,no_delay_call_route,play_welcome_message,no_agent_no_queue,no_agent_action,no_agent_action_value,extension_appended_cidname,uniqueid_status_display,uniqueid_status_prefix,hold_time_option_minimum,hold_time_option_press_filename,hold_time_option_callmenu,onhold_prompt_no_block,onhold_prompt_seconds,hold_time_option_no_block,hold_time_option_prompt_seconds,hold_time_second_option,hold_time_third_option,wait_hold_option_priority,wait_time_option,wait_time_second_option,wait_time_third_option,wait_time_option_seconds,wait_time_option_exten,wait_time_option_voicemail,wait_time_option_xfer_group,wait_time_option_callmenu,wait_time_option_callback_filename,wait_time_option_callback_list_id,wait_time_option_press_filename,wait_time_option_no_block,wait_time_option_prompt_seconds,active,calculate_estimated_hold_seconds,add_lead_url,eht_minimum_prompt_filename,eht_minimum_prompt_no_block,eht_minimum_prompt_seconds,on_hook_ring_time,ingroup_recording_override,ingroup_rec_filename,on_hook_cid,action_xfer_cid,drop_callmenu,after_hours_callmenu,max_calls_method,max_calls_count,max_calls_action,populate_lead_ingroup,na_call_url,drop_lead_reset,after_hours_lead_reset,nanq_lead_reset,wait_time_lead_reset,hold_time_lead_reset,routing_initiated_recordings,on_hook_cid_number,populate_lead_province,areacode_filter,areacode_filter_seconds,areacode_filter_action,areacode_filter_action_value,populate_state_areacode,inbound_survey,inbound_survey_filename,inbound_survey_accept_digit,closing_time_action,closing_time_now_trigger,closing_time_filename,closing_time_end_filename,closing_time_lead_reset,closing_time_option_exten,closing_time_option_callmenu,closing_time_option_voicemail,closing_time_option_xfer_group,closing_time_option_callback_list_id,add_lead_timezone,populate_lead_source,populate_lead_vendor,enter_ingroup_url,cid_cb_confirm_number, cid_cb_invalid_filter_phone_group, cid_cb_valid_length, cid_cb_valid_filename, cid_cb_confirmed_filename, cid_cb_enter_filename, cid_cb_you_entered_filename, cid_cb_press_to_confirm_filename, cid_cb_invalid_filename, cid_cb_reenter_filename, cid_cb_error_filename FROM vicidial_inbound_groups where group_id = '$channel_group';";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
@@ -882,6 +883,17 @@ if ($sthArows > 0)
 	$populate_lead_source =				$aryA[105];
 	$populate_lead_vendor =				$aryA[106];
 	$enter_ingroup_url =				$aryA[107];
+	$cid_cb_confirm_number =			$aryA[108];
+	$cid_cb_invalid_filter_phone_group = $aryA[109];
+	$cid_cb_valid_length =				$aryA[110];
+	$cid_cb_valid_filename =			$aryA[111];
+	$cid_cb_confirmed_filename =		$aryA[112];
+	$cid_cb_enter_filename =			$aryA[113];
+	$cid_cb_you_entered_filename =		$aryA[114];
+	$cid_cb_press_to_confirm_filename =	$aryA[115];
+	$cid_cb_invalid_filename =			$aryA[116];
+	$cid_cb_reenter_filename =			$aryA[117];
+	$cid_cb_error_filename =			$aryA[118];
 
 	$custom_call_id='';
 	if ($uniqueid_status_display =~ /ENABLED/)
@@ -5148,10 +5160,17 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 			}
 		if ( ($wait_time_option =~ /CALLERID_CALLBACK/) && ($wait_in_queue < 2) )
 			{
+			##### CID Callback Number Validation if enabled #####
+			$cid_cb_number = $phone_number;
+
+			if ( ($cid_cb_confirm_number !~ /^NO/i) && (length($cid_cb_valid_length) > 0) && (length($cid_cb_valid_length) > 0) && (length($cid_cb_valid_filename) > 0) && (length($cid_cb_confirmed_filename) > 0) && (length($cid_cb_enter_filename) > 0) && (length($cid_cb_you_entered_filename) > 0) && (length($cid_cb_press_to_confirm_filename) > 0) && (length($cid_cb_invalid_filename) > 0) && (length($cid_cb_reenter_filename) > 0) && (length($cid_cb_error_filename) > 0) )
+				{
+				&cid_cb_number_validation;
+				}
 			if (length($wait_time_option_exten)>0)
 				{$DROPexten = "$wait_time_option_exten";}
 			# if callerid is not valid do not execute
-			if ( ( length($phone_number) > 6 ) && ( $phone_number > 0) )
+			if ( ( length($cid_cb_number) > 6 ) && ( $cid_cb_number > 0) )
 				{
 				$entry_list_idSQLa='';   $entry_list_idSQLb='';
 				if ( ($enable_did_entry_list_id > 0) && ($entry_list_id > 0) ) 
@@ -5167,7 +5186,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 				if ($add_lead_timezone =~ /PHONE_CODE_AREACODE/) 
 					{&lead_timezone_process;}
 				### insert a record into the vicidial_list table 
-				$stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now,comments$entry_list_idSQLa$INSERTstateSQLa$INSERTpostal_codeSQLa$populate_provinceA) values('$SQLdate','$tsSQLdate','INBND','$fronter','$vendor_id','$source_id','$wait_time_option_callback_list_id','N','$phone_code','$phone_number','$ingroup_insert','$called_count','$local_gmt','$VLcomments'$entry_list_idSQLb$INSERTstateSQLb$INSERTpostal_codeSQLb$populate_provinceB);";
+				$stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now,comments$entry_list_idSQLa$INSERTstateSQLa$INSERTpostal_codeSQLa$populate_provinceA) values('$SQLdate','$tsSQLdate','INBND','$fronter','$vendor_id','$source_id','$wait_time_option_callback_list_id','N','$phone_code','$cid_cb_number','$ingroup_insert','$called_count','$local_gmt','$VLcomments'$entry_list_idSQLb$INSERTstateSQLb$INSERTpostal_codeSQLb$populate_provinceB);";
 				$affected_rows = $dbhA->do($stmtA);
 					$dbhP=$dbhA;   $mysql_count='02089';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 				$stmtB = "SELECT LAST_INSERT_ID() LIMIT 1;";
@@ -5188,7 +5207,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 					$launch = $PATHhome . "/AST_send_URL.pl";
 					$launch .= " --SYSLOG" if ($SYSLOG);
 					$launch .= " --lead_id=" . $CALLBACK_insert_lead_id;
-					$launch .= " --phone_number=" . $phone_number;
+					$launch .= " --phone_number=" . $cid_cb_number;
 					$launch .= " --user=";
 					$launch .= " --call_type=IN";
 					$launch .= " --campaign=" . $channel_group;
@@ -5213,17 +5232,30 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 			else
 				{
 				$wait_in_queue = 2; #continue waiting
+
+				### Set the call time back to original call time
+				$stmtA = "UPDATE vicidial_auto_calls set call_time='$ORIGINAL_call_time' where callerid='$callerid' order by call_time desc limit 1;";
+				$affected_rows = $dbhA->do($stmtA);
+					$dbhP=$dbhA;   $mysql_count='02152';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
+				if ($AGILOG) {$agi_string = "--    Reset original call time: |$affected_rows|$ORIGINAL_call_time|$callerid|";   &agi_output;}
 				}
 			}
 		if ( ($wait_time_option =~ /CALLBACK_QUEUE/) && ($wait_in_queue < 2) )
 			{
+			##### CID Callback Number Validation if enabled #####
+			$cid_cb_number = $phone_number;
+
+			if ( ($cid_cb_confirm_number !~ /^NO/i) && (length($cid_cb_valid_length) > 0) && (length($cid_cb_valid_length) > 0) && (length($cid_cb_valid_filename) > 0) && (length($cid_cb_confirmed_filename) > 0) && (length($cid_cb_enter_filename) > 0) && (length($cid_cb_you_entered_filename) > 0) && (length($cid_cb_press_to_confirm_filename) > 0) && (length($cid_cb_invalid_filename) > 0) && (length($cid_cb_reenter_filename) > 0) && (length($cid_cb_error_filename) > 0) )
+				{
+				&cid_cb_number_validation;
+				}
 			if (length($wait_time_option_exten)>0)
 				{$DROPexten = "$wait_time_option_exten";}
 			# if callerid is not valid do not execute
-			if ( ( length($phone_number) > 6 ) && ( $phone_number > 0) )
+			if ( ( length($cid_cb_number) > 6 ) && ( $cid_cb_number > 0) )
 				{
 				### insert a record into the vicidial_inbound_callback_queue table 
-				$stmtC = "INSERT INTO vicidial_inbound_callback_queue SET icbq_date=NOW(),icbq_status='NEW',icbq_phone_number='$phone_number',icbq_phone_code='$phone_code',icbq_nextday_choice='U',lead_id='$insert_lead_id',group_id='$channel_group',queue_priority='$queue_priority',call_date='$SQLdateBEGIN',gmt_offset_now='$local_gmt';";
+				$stmtC = "INSERT INTO vicidial_inbound_callback_queue SET icbq_date=NOW(),icbq_status='NEW',icbq_phone_number='$cid_cb_number',icbq_phone_code='$phone_code',icbq_nextday_choice='U',lead_id='$insert_lead_id',group_id='$channel_group',queue_priority='$queue_priority',call_date='$SQLdateBEGIN',gmt_offset_now='$local_gmt';";
 				$affected_rows = $dbhA->do($stmtC);
 					$dbhP=$dbhA;   $stmtA=$stmtC;   $mysql_count='02228';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 				$stmtB = "SELECT LAST_INSERT_ID() LIMIT 1;";
@@ -5238,7 +5270,20 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 					}
 				$sthA->finish();
 
-				if ($AGILOG) {$agi_string = "VDAD vicidial_inbound_callback_queue insert |$CALLBACK_insert_icbq_id|$stmtC|";   &agi_output;}
+				$affected_rowsD=0; $affected_rowsE=0;
+				if ($cid_cb_number ne $phone_number) 
+					{
+					### update the vicidial_list phone_number if different 
+					$stmtD = "UPDATE vicidial_list SET phone_number='$cid_cb_number' where lead_id='$insert_lead_id';";
+					$affected_rowsD = $dbhA->do($stmtD);
+						$dbhP=$dbhA;   $stmtA=$stmtD;   $mysql_count='02248';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
+
+					$stmtE = "INSERT INTO vicidial_call_notes SET lead_id='$insert_lead_id', call_date='$SQLdateBEGIN', vicidial_id='$insert_close_id', call_notes='CID Callback new number: $cid_cb_number  old number: $phone_number';";
+					$affected_rowsE = $dbhA->do($stmtE);
+						$dbhP=$dbhA;   $stmtA=$stmtE;   $mysql_count='02249';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
+					}
+
+				if ($AGILOG) {$agi_string = "VDAD vicidial_inbound_callback_queue insert |$CALLBACK_insert_icbq_id|$stmtC|$affected_rowsD|$stmtD|$affected_rowsE|$stmtE|";   &agi_output;}
 
 				$DROPexten = "8300";
 
@@ -5247,6 +5292,12 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 			else
 				{
 				$wait_in_queue = 2; #continue waiting
+
+				### Set the call time back to original call time
+				$stmtA = "UPDATE vicidial_auto_calls set call_time='$ORIGINAL_call_time' where callerid='$callerid' order by call_time desc limit 1;";
+				$affected_rows = $dbhA->do($stmtA);
+					$dbhP=$dbhA;   $mysql_count='02152';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
+				if ($AGILOG) {$agi_string = "--    Reset original call time: |$affected_rows|$ORIGINAL_call_time|$callerid|";   &agi_output;}
 				}
 			}
 
@@ -5649,10 +5700,17 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 					}
 				if ( ($hold_time_option =~ /CALLERID_CALLBACK/) && ($wait_in_queue < 2) )
 					{
+					##### CID Callback Number Validation if enabled #####
+					$cid_cb_number = $phone_number;
+
+					if ( ($cid_cb_confirm_number !~ /^NO/i) && (length($cid_cb_valid_length) > 0) && (length($cid_cb_valid_length) > 0) && (length($cid_cb_valid_filename) > 0) && (length($cid_cb_confirmed_filename) > 0) && (length($cid_cb_enter_filename) > 0) && (length($cid_cb_you_entered_filename) > 0) && (length($cid_cb_press_to_confirm_filename) > 0) && (length($cid_cb_invalid_filename) > 0) && (length($cid_cb_reenter_filename) > 0) && (length($cid_cb_error_filename) > 0) )
+						{
+						&cid_cb_number_validation;
+						}
 					if (length($hold_time_option_exten)>0)
 						{$DROPexten = "$hold_time_option_exten";}
 					# if callerid is not valid do not execute
-					if ( ( length($phone_number) > 6 ) && ( $phone_number > 0) )
+					if ( ( length($cid_cb_number) > 6 ) && ( $cid_cb_number > 0) )
 						{
 						$entry_list_idSQLa='';   $entry_list_idSQLb='';
 						if ( ($enable_did_entry_list_id > 0) && ($entry_list_id > 0) ) 
@@ -5668,7 +5726,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 						if ($add_lead_timezone =~ /PHONE_CODE_AREACODE/) 
 							{&lead_timezone_process;}
 						### insert a record into the vicidial_list table 
-						$stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now,comments$entry_list_idSQLa$INSERTstateSQLa$INSERTpostal_codeSQLa$populate_provinceA) values('$SQLdate','$tsSQLdate','INBND','$fronter','$vendor_id','$source_id','$hold_time_option_callback_list_id','N','$phone_code','$phone_number','$ingroup_insert','$called_count','$local_gmt','$VLcomments'$entry_list_idSQLb$INSERTstateSQLb$INSERTpostal_codeSQLb$populate_provinceB);";
+						$stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now,comments$entry_list_idSQLa$INSERTstateSQLa$INSERTpostal_codeSQLa$populate_provinceA) values('$SQLdate','$tsSQLdate','INBND','$fronter','$vendor_id','$source_id','$hold_time_option_callback_list_id','N','$phone_code','$cid_cb_number','$ingroup_insert','$called_count','$local_gmt','$VLcomments'$entry_list_idSQLb$INSERTstateSQLb$INSERTpostal_codeSQLb$populate_provinceB);";
 						$affected_rows = $dbhA->do($stmtA);
 							$dbhP=$dbhA;   $mysql_count='02089';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 						$stmtB = "SELECT LAST_INSERT_ID() LIMIT 1;";
@@ -5689,7 +5747,7 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 							$launch = $PATHhome . "/AST_send_URL.pl";
 							$launch .= " --SYSLOG" if ($SYSLOG);
 							$launch .= " --lead_id=" . $CALLBACK_insert_lead_id;
-							$launch .= " --phone_number=" . $phone_number;
+							$launch .= " --phone_number=" . $cid_cb_number;
 							$launch .= " --user=";
 							$launch .= " --call_type=IN";
 							$launch .= " --campaign=" . $channel_group;
@@ -5714,17 +5772,30 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 					else
 						{
 						$wait_in_queue = 2; #continue waiting
+
+						### Set the call time back to original call time
+						$stmtA = "UPDATE vicidial_auto_calls set call_time='$ORIGINAL_call_time' where callerid='$callerid' order by call_time desc limit 1;";
+						$affected_rows = $dbhA->do($stmtA);
+							$dbhP=$dbhA;   $mysql_count='02152';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
+						if ($AGILOG) {$agi_string = "--    Reset original call time: |$affected_rows|$ORIGINAL_call_time|$callerid|";   &agi_output;}
 						}
 					}
 				if ( ($hold_time_option =~ /CALLBACK_QUEUE/) && ($wait_in_queue < 2) )
 					{
+					##### CID Callback Number Validation if enabled #####
+					$cid_cb_number = $phone_number;
+
+					if ( ($cid_cb_confirm_number !~ /^NO/i) && (length($cid_cb_valid_length) > 0) && (length($cid_cb_valid_length) > 0) && (length($cid_cb_valid_filename) > 0) && (length($cid_cb_confirmed_filename) > 0) && (length($cid_cb_enter_filename) > 0) && (length($cid_cb_you_entered_filename) > 0) && (length($cid_cb_press_to_confirm_filename) > 0) && (length($cid_cb_invalid_filename) > 0) && (length($cid_cb_reenter_filename) > 0) && (length($cid_cb_error_filename) > 0) )
+						{
+						&cid_cb_number_validation;
+						}
 					if (length($hold_time_option_exten)>0)
 						{$DROPexten = "$hold_time_option_exten";}
 					# if callerid is not valid do not execute
-					if ( ( length($phone_number) > 6 ) && ( $phone_number > 0) )
+					if ( ( length($cid_cb_number) > 6 ) && ( $cid_cb_number > 0) )
 						{
 						### insert a record into the vicidial_inbound_callback_queue table 
-						$stmtC = "INSERT INTO vicidial_inbound_callback_queue SET icbq_date=NOW(),icbq_status='NEW',icbq_phone_number='$phone_number',icbq_phone_code='$phone_code',icbq_nextday_choice='U',lead_id='$insert_lead_id',group_id='$channel_group',queue_priority='$queue_priority',call_date='$SQLdateBEGIN',gmt_offset_now='$local_gmt';";
+						$stmtC = "INSERT INTO vicidial_inbound_callback_queue SET icbq_date=NOW(),icbq_status='NEW',icbq_phone_number='$cid_cb_number',icbq_phone_code='$phone_code',icbq_nextday_choice='U',lead_id='$insert_lead_id',group_id='$channel_group',queue_priority='$queue_priority',call_date='$SQLdateBEGIN',gmt_offset_now='$local_gmt';";
 						$affected_rows = $dbhA->do($stmtC);
 							$dbhP=$dbhA;   $stmtA=$stmtC;   $mysql_count='02230';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 						$stmtB = "SELECT LAST_INSERT_ID() LIMIT 1;";
@@ -5739,7 +5810,20 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 							}
 						$sthA->finish();
 
-						if ($AGILOG) {$agi_string = "VDAD vicidial_inbound_callback_queue insert |$CALLBACK_insert_icbq_id|$stmtC|";   &agi_output;}
+						$affected_rowsD=0;
+						if ($cid_cb_number ne $phone_number) 
+							{
+							### update the vicidial_list phone_number if different 
+							$stmtD = "UPDATE vicidial_list SET phone_number='$cid_cb_number' where lead_id='$insert_lead_id';";
+							$affected_rowsD = $dbhA->do($stmtD);
+								$dbhP=$dbhA;   $stmtA=$stmtD;   $mysql_count='02250';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
+
+							$stmtE = "INSERT INTO vicidial_call_notes SET lead_id='$insert_lead_id', call_date='$SQLdateBEGIN', vicidial_id='$insert_close_id', call_notes='CID Callback new number: $cid_cb_number  old number: $phone_number';";
+							$affected_rowsE = $dbhA->do($stmtE);
+								$dbhP=$dbhA;   $stmtA=$stmtE;   $mysql_count='02251';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
+							}
+
+						if ($AGILOG) {$agi_string = "VDAD vicidial_inbound_callback_queue insert |$CALLBACK_insert_icbq_id|$stmtC|$affected_rowsD|$stmtD|$affected_rowsE|$stmtE|";   &agi_output;}
 
 						$DROPexten = "8300";
 
@@ -5748,6 +5832,12 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 					else
 						{
 						$wait_in_queue = 2; #continue waiting
+
+						### Set the call time back to original call time
+						$stmtA = "UPDATE vicidial_auto_calls set call_time='$ORIGINAL_call_time' where callerid='$callerid' order by call_time desc limit 1;";
+						$affected_rows = $dbhA->do($stmtA);
+							$dbhP=$dbhA;   $mysql_count='02152';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
+						if ($AGILOG) {$agi_string = "--    Reset original call time: |$affected_rows|$ORIGINAL_call_time|$callerid|";   &agi_output;}
 						}
 					}
 
@@ -6167,10 +6257,17 @@ if ($closing_check > 0)
 		}
 	if ($closing_time_action =~ /CALLERID_CALLBACK/)
 		{
+		##### CID Callback Number Validation if enabled #####
+		$cid_cb_number = $phone_number;
+
+		if ( ($cid_cb_confirm_number !~ /^NO/i) && (length($cid_cb_valid_length) > 0) && (length($cid_cb_valid_length) > 0) && (length($cid_cb_valid_filename) > 0) && (length($cid_cb_confirmed_filename) > 0) && (length($cid_cb_enter_filename) > 0) && (length($cid_cb_you_entered_filename) > 0) && (length($cid_cb_press_to_confirm_filename) > 0) && (length($cid_cb_invalid_filename) > 0) && (length($cid_cb_reenter_filename) > 0) && (length($cid_cb_error_filename) > 0) )
+			{
+			&cid_cb_number_validation;
+			}
 		if (length($closing_time_option_exten)>0)
 			{$DROPexten = "$closing_time_option_exten";}
 		# if callerid is not valid do not execute
-		if ( ( length($phone_number) > 6 ) && ( $phone_number > 0) )
+		if ( ( length($cid_cb_number) > 6 ) && ( $cid_cb_number > 0) )
 			{
 			$entry_list_idSQLa='';   $entry_list_idSQLb='';
 			if ( ($enable_did_entry_list_id > 0) && ($entry_list_id > 0) ) 
@@ -6186,7 +6283,7 @@ if ($closing_check > 0)
 			if ($add_lead_timezone =~ /PHONE_CODE_AREACODE/) 
 				{&lead_timezone_process;}
 			### insert a record into the vicidial_list table 
-			$stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now,comments$entry_list_idSQLa$INSERTstateSQLa$INSERTpostal_codeSQLa$populate_provinceA) values('$SQLdate','$tsSQLdate','INBND','$fronter','$vendor_id','$source_id','$closing_time_option_callback_list_id','N','$phone_code','$phone_number','$ingroup_insert','$called_count','$local_gmt','$VLcomments'$entry_list_idSQLb$INSERTstateSQLb$INSERTpostal_codeSQLb$populate_provinceB);";
+			$stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now,comments$entry_list_idSQLa$INSERTstateSQLa$INSERTpostal_codeSQLa$populate_provinceA) values('$SQLdate','$tsSQLdate','INBND','$fronter','$vendor_id','$source_id','$closing_time_option_callback_list_id','N','$phone_code','$cid_cb_number','$ingroup_insert','$called_count','$local_gmt','$VLcomments'$entry_list_idSQLb$INSERTstateSQLb$INSERTpostal_codeSQLb$populate_provinceB);";
 			$affected_rows = $dbhA->do($stmtA);
 				$dbhP=$dbhA;   $mysql_count='02237';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 			$stmtB = "SELECT LAST_INSERT_ID() LIMIT 1;";
@@ -6207,7 +6304,7 @@ if ($closing_check > 0)
 				$launch = $PATHhome . "/AST_send_URL.pl";
 				$launch .= " --SYSLOG" if ($SYSLOG);
 				$launch .= " --lead_id=" . $CALLBACK_insert_lead_id;
-				$launch .= " --phone_number=" . $phone_number;
+				$launch .= " --phone_number=" . $cid_cb_number;
 				$launch .= " --user=";
 				$launch .= " --call_type=IN";
 				$launch .= " --campaign=" . $channel_group;
@@ -6232,13 +6329,20 @@ if ($closing_check > 0)
 		}
 	if ($closing_time_action =~ /CALLBACK_QUEUE/)
 		{
+		##### CID Callback Number Validation if enabled #####
+		$cid_cb_number = $phone_number;
+
+		if ( ($cid_cb_confirm_number !~ /^NO/i) && (length($cid_cb_valid_length) > 0) && (length($cid_cb_valid_length) > 0) && (length($cid_cb_valid_filename) > 0) && (length($cid_cb_confirmed_filename) > 0) && (length($cid_cb_enter_filename) > 0) && (length($cid_cb_you_entered_filename) > 0) && (length($cid_cb_press_to_confirm_filename) > 0) && (length($cid_cb_invalid_filename) > 0) && (length($cid_cb_reenter_filename) > 0) && (length($cid_cb_error_filename) > 0) )
+			{
+			&cid_cb_number_validation;
+			}
 		if (length($closing_time_option_exten)>0)
 			{$DROPexten = "$closing_time_option_exten";}
 		# if callerid is not valid do not execute
-		if ( ( length($phone_number) > 6 ) && ( $phone_number > 0) )
+		if ( ( length($cid_cb_number) > 6 ) && ( $cid_cb_number > 0) )
 			{
 			### insert a record into the vicidial_inbound_callback_queue table 
-			$stmtC = "INSERT INTO vicidial_inbound_callback_queue SET icbq_date=NOW(),icbq_status='NEW',icbq_phone_number='$phone_number',icbq_phone_code='$phone_code',icbq_nextday_choice='U',lead_id='$insert_lead_id',group_id='$channel_group',queue_priority='$queue_priority',call_date='$SQLdateBEGIN',gmt_offset_now='$local_gmt';";
+			$stmtC = "INSERT INTO vicidial_inbound_callback_queue SET icbq_date=NOW(),icbq_status='NEW',icbq_phone_number='$cid_cb_number',icbq_phone_code='$phone_code',icbq_nextday_choice='U',lead_id='$insert_lead_id',group_id='$channel_group',queue_priority='$queue_priority',call_date='$SQLdateBEGIN',gmt_offset_now='$local_gmt';";
 			$affected_rows = $dbhA->do($stmtC);
 				$dbhP=$dbhA;   $stmtA=$stmtC;   $mysql_count='02239';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 			$stmtB = "SELECT LAST_INSERT_ID() LIMIT 1;";
@@ -6253,7 +6357,20 @@ if ($closing_check > 0)
 				}
 			$sthA->finish();
 
-			if ($AGILOG) {$agi_string = "VDAD vicidial_inbound_callback_queue insert |$CALLBACK_insert_icbq_id|$stmtC|";   &agi_output;}
+			$affected_rowsD=0;
+			if ($cid_cb_number ne $phone_number) 
+				{
+				### update the vicidial_list phone_number if different 
+				$stmtD = "UPDATE vicidial_list SET phone_number='$cid_cb_number' where lead_id='$insert_lead_id';";
+				$affected_rowsD = $dbhA->do($stmtD);
+					$dbhP=$dbhA;   $stmtA=$stmtD;   $mysql_count='02252';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
+
+				$stmtE = "INSERT INTO vicidial_call_notes SET lead_id='$insert_lead_id', call_date='$SQLdateBEGIN', vicidial_id='$insert_close_id', call_notes='CID Callback new number: $cid_cb_number  old number: $phone_number';";
+				$affected_rowsE = $dbhA->do($stmtE);
+					$dbhP=$dbhA;   $stmtA=$stmtE;   $mysql_count='02253';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
+				}
+
+			if ($AGILOG) {$agi_string = "VDAD vicidial_inbound_callback_queue insert |$CALLBACK_insert_icbq_id|$stmtC|$affected_rowsD|$stmtD|$affected_rowsE|$stmtE|";   &agi_output;}
 
 			$DROPexten = "8300";
 
@@ -6944,6 +7061,401 @@ sub press_one_hold_time_option_prompt
 	if ($totalDTMF) {if ($AGILOG) {$agi_string = "digit |$digit|     TotalDTMF |$totalDTMF|";   &agi_output;}}
 	}
 
+
+
+sub temp_12_choice_entry($)
+	{
+	$temp_prompt = $temp_12_choice_prompt;
+
+	$digits_to_collect = 1;
+
+	# press 1 or press 2 ...
+
+	$AGI->stream_file('sip-silence');
+	$AGI->stream_file('sip-silence');
+
+	$digit='';
+	undef $digit;
+	$interrupt_digit='';
+	undef $interrupt_digit;
+	$digit_loop_counter=0;
+
+	$interrupt_digit = $AGI->stream_file('sip-silence',"12");
+
+	$interrupt_digit='';
+	undef $interrupt_digit;
+
+	if ($temp_prompt =~ /\|/)
+		{
+		@temp_prompt_array = split(/\|/,$temp_prompt);
+		$w=0;
+		foreach(@temp_prompt_array)
+			{
+			if ( (length($temp_prompt_array[$w])>0) && ($interrupt_digit < 2) )
+				{
+				$interrupt_digit = $AGI->stream_file("$temp_prompt_array[$w]","12");
+				}
+			$w++;
+			}
+		}
+	else
+		{$interrupt_digit = $AGI->stream_file("$temp_prompt","12");} # this prompt should be less than 10 seconds long
+
+	if ($AGILOG) {$agi_string = "interrupt_digit |$interrupt_digit|    |$temp_prompt|";   &agi_output;}
+
+	$digits_being_entered=1;
+	$totalDTMF='';
+	if ($interrupt_digit > 1)
+		{
+		if ($interrupt_digit == 48) {$interrupt_digit=0;}
+		if ($interrupt_digit == 49) {$interrupt_digit=1;}
+		if ($interrupt_digit == 50) {$interrupt_digit=2;}
+		if ($interrupt_digit == 51) {$interrupt_digit=3;}
+		if ($interrupt_digit == 52) {$interrupt_digit=4;}
+		if ($interrupt_digit == 53) {$interrupt_digit=5;}
+		if ($interrupt_digit == 54) {$interrupt_digit=6;}
+		if ($interrupt_digit == 55) {$interrupt_digit=7;}
+		if ($interrupt_digit == 56) {$interrupt_digit=8;}
+		if ($interrupt_digit == 57) {$interrupt_digit=9;}
+		
+		$totalDTMF=$interrupt_digit;
+		$digit_loop_counter++;
+		}
+
+
+	while ( ($digit_loop_counter < $digits_to_collect) )
+		{
+		$digit = chr($AGI->wait_for_digit('4000'));  # wait 4 seconds for input or until the key is pressed
+		if ($digit =~ /\d/)
+			{
+			$totalDTMF = "$totalDTMF$digit";
+			if ($AGILOG) {$agi_string = "digit |$digit|     TotalDTMF |$totalDTMF|";   &agi_output;}
+	#		$AGI->say_digits("$digit");
+			undef $digit;
+			}
+		else
+			{
+			$digit_loop_counter=$digits_to_collect;
+			}
+		
+		$digit_loop_counter++;
+		}
+
+	$totalDTMF =~ s/\D//gi;
+	$temp_12_value = $totalDTMF;
+	if ($totalDTMF) {if ($AGILOG) {$agi_string = "digit |$digit|     TotalDTMF |$totalDTMF|$temp_12_value|";   &agi_output;}}
+	}
+
+
+
+### BEGIN Enter CID CB phone number section ###
+sub enter_cid_cb_number
+	{
+	# PROMPTS USED:
+	# cid_cb_enter_filename - "Please enter the phone number you want to be called back on followed by the # key
+	# cid_cb_you_entered_filename - "You have entered"
+	# cid_cb_press_to_confirm_filename - "Press 1 if it is correct. Press 2 to repeat entry"
+	# cid_cb_invalid_filename - "We are sorry but we cannot recognize the number that you have entered"
+	# cid_cb_reenter_filename - "Okay, lets try again"
+	# cid_cb_error_filename - "It looks like we are having some difficulty, please hold and we will transfer you to one of our team members as soon as possible"
+	$cid_cb_number='';
+
+	if ($AGILOG) {$agi_string = "Enter CID CB number started: |$cid_cb_enter_filename|";   &agi_output;}
+
+	$confirmation=0;
+	$confirmation_chances=0;
+	while ( ($confirmation_chances < 3) && ($confirmation < 1) )
+		{
+		$entry_chances=0;
+		$digits_being_entered=1;
+
+		if ($AGILOG) {$agi_string = "DEBUG------------------ $entry_chances";   &agi_output;}
+
+		while ( ($entry_chances < 3) && ($digits_being_entered > 0) )
+			{
+			$entry_chances++;
+			$digits_being_entered=1;
+			$id_number='';
+			$interrupt_digit='';
+			$interrupt_digit = $AGI->stream_file("$cid_cb_enter_filename",'0123456789');   
+
+			if ($AGILOG) {$agi_string = "interrupt_digit |$interrupt_digit|";   &agi_output;}
+			if ($interrupt_digit > 0)
+				{
+			#	if ($interrupt_digit == 35) {$interrupt_digit='#';}
+			#	if ($interrupt_digit == 42) {$interrupt_digit='*';}
+				if ($interrupt_digit == 48) {$interrupt_digit=0;}
+				if ($interrupt_digit == 49) {$interrupt_digit=1;}
+				if ($interrupt_digit == 50) {$interrupt_digit=2;}
+				if ($interrupt_digit == 51) {$interrupt_digit=3;}
+				if ($interrupt_digit == 52) {$interrupt_digit=4;}
+				if ($interrupt_digit == 53) {$interrupt_digit=5;}
+				if ($interrupt_digit == 54) {$interrupt_digit=6;}
+				if ($interrupt_digit == 55) {$interrupt_digit=7;}
+				if ($interrupt_digit == 56) {$interrupt_digit=8;}
+				if ($interrupt_digit == 57) {$interrupt_digit=9;}
+				
+				$id_number=$interrupt_digit;
+				}
+
+			$digit_loop_counter=0;
+			while ($digits_being_entered > 0)
+				{
+				$digit = chr($AGI->wait_for_digit('5000'));  # wait 5 seconds for input or until the pound key is pressed
+				if ($digit =~ /\d/)
+					{
+					$id_number = "$id_number$digit";
+					if ($AGILOG) {$agi_string = "digit |$digit|     id_number |$id_number|";   &agi_output;}
+					undef $digit;
+					}
+				else
+					{
+					$digits_being_entered=0;
+					}
+				$Lid_number = length($id_number);
+				if ($Lid_number >= 20) 
+					{
+					$digits_being_entered=0;
+					}
+				
+				$digit_loop_counter++;
+				}
+
+			$id_number =~ s/\D//gi;
+			$cid_cb_number = $id_number;
+			}
+
+		$AGI->stream_file("$cid_cb_you_entered_filename");
+		$AGI->say_digits("$cid_cb_number");
+
+		### if CID CB number has been set, ask to confirm it
+		if (length($cid_cb_number) > 0)
+			{
+			$interrupt_digit = $AGI->stream_file("$cid_cb_press_to_confirm_filename",'12');   
+
+			if ($AGILOG) {$agi_string = "interrupt_digit |$interrupt_digit|";   &agi_output;}
+			$digits_being_entered=1;
+			$ANSWER_confirm='';
+			if ($interrupt_digit > 0)
+				{
+				if ($interrupt_digit == 49) {$interrupt_digit=1;}
+				if ($interrupt_digit == 50) {$interrupt_digit=2;}
+				$ANSWER_confirm=$interrupt_digit;
+				}
+
+			if (length($ANSWER_confirm) < 1)
+				{
+				$digit_loop_counter=0;
+				while ( ($digits_being_entered > 0) && ($digit_loop_counter < 1) )
+					{
+					$digit = chr($AGI->wait_for_digit('5000'));  # wait 5 seconds for input
+					if ($digit =~ /\d/)
+						{
+						$ANSWER_confirm = "$ANSWER_confirm$digit";
+						if ($AGILOG) {$agi_string = "digit |$digit|     ANSWER_confirm |$ANSWER_confirm|";   &agi_output;}
+						undef $digit;
+						}
+					else
+						{
+						$digits_being_entered=0;
+						}
+					
+					$digit_loop_counter++;
+					}
+				}
+
+			$ANSWER_confirm =~ s/\D//gi;
+
+			if ($ANSWER_confirm > 1)
+				{$cid_cb_number='';}
+			if ( ($ANSWER_confirm > 0) && ($ANSWER_confirm < 2) )
+				{$confirmation=1;}
+			}
+		if ($confirmation < 1) 
+			{
+			$AGI->stream_file('buzz');
+			}
+		else
+			{
+			$cid_cb_length_is_valid=0;
+			$cid_cb_FPG_phone_found=0;
+			### check for valid length and invalid filter phone group entry
+			&cid_cb_length_and_fpg;
+
+			if ($cid_cb_length_is_valid < 1) 
+				{
+				if ($AGILOG) {$agi_string = "EN CID Callback Number Length is Invalid |$cid_cb_number(phone_number_length)|$cid_cb_valid_length|";   &agi_output;}
+				}
+			if ($cid_cb_FPG_phone_found > 0) 
+				{
+				if ($AGILOG) {$agi_string = "EN CID Callback Number found in the Invalid Filter Phone Group |$cid_cb_number|$cid_cb_invalid_filter_phone_group|";   &agi_output;}
+				}
+			if ( ($cid_cb_length_is_valid < 1) || ($cid_cb_FPG_phone_found > 0) )
+				{
+				$confirmation=0;
+				$AGI->stream_file("$cid_cb_invalid_filename");
+				if ($confirmation_chances < 2) 
+					{$AGI->stream_file("$cid_cb_reenter_filename");}
+				else 
+					{$AGI->stream_file("$cid_cb_error_filename");}
+				}
+			else
+				{
+				if ($AGILOG) {$agi_string = "EN CID Callback Number is valid: |$cid_cb_number|$confirmation|";   &agi_output;}
+				}
+			}
+		$confirmation_chances++;
+		}
+	}
+### END Enter CID CB phone number section ###
+
+
+### BEGIN subroutine for number validation and option of entering new one ###
+sub cid_cb_number_validation
+	{
+	if ($AGILOG) {$agi_string = "CID Callback Number Validation Enabled |$phone_number|$cid_cb_confirm_number|$cid_cb_valid_length|$cid_cb_invalid_filter_phone_group|";   &agi_output;}
+
+	$FDtarget = ($now_date_epoch + 360);
+	($Fsec,$Fmin,$Fhour,$Fmday,$Fmon,$Fyear,$Fwday,$Fyday,$Fisdst) = localtime($FDtarget);
+	$Fyear = ($Fyear + 1900);
+	$Fmon++;
+	if ($Fmon < 10) {$Fmon = "0$Fmon";}
+	if ($Fmday < 10) {$Fmday = "0$Fmday";}
+	if ($Fhour < 10) {$Fhour = "0$Fhour";}
+	if ($Fmin < 10) {$Fmin = "0$Fmin";}
+	if ($Fsec < 10) {$Fsec = "0$Fsec";}
+		$FDtsSQLdate = "$Fyear$Fmon$Fmday$Fhour$Fmin$Fsec";
+
+	$stmtA = "UPDATE vicidial_auto_calls set last_update_time='$FDtsSQLdate' where callerid='$callerid' order by call_time desc limit 1;";
+	$affected_rows = $dbhA->do($stmtA);
+		$dbhP=$dbhA;   $mysql_count='02254';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
+	if ($AGILOG) {$agi_string = "--    VDAC posttime record for CID CB Confirmation: |$affected_rows|$FDtsSQLdate|$callerid|";   &agi_output;}
+
+	$cid_cb_length_is_valid=0;
+	$cid_cb_FPG_phone_found=0;
+	$cid_cb_play_confirmed=0;
+	### check for valid length and invalid filter phone group entry
+	&cid_cb_length_and_fpg;
+
+	if ($cid_cb_length_is_valid < 1) 
+		{
+		if ($AGILOG) {$agi_string = "CID Callback Number Length is Invalid |$cid_cb_number(phone_number_length)|$cid_cb_valid_length|";   &agi_output;}
+		}
+	if ($cid_cb_FPG_phone_found > 0) 
+		{
+		if ($AGILOG) {$agi_string = "CID Callback Number found in the Invalid Filter Phone Group |$cid_cb_number|$cid_cb_invalid_filter_phone_group|";   &agi_output;}
+		}
+	$enter_cid_cb_process=1;
+	if ( ($cid_cb_length_is_valid > 0) && ($cid_cb_FPG_phone_found < 1) )
+		{
+		if ($cid_cb_confirm_number !~ /IF_INVALID/i)
+			{
+			if ($AGILOG) {$agi_string = "CID Callback Number is valid, continuing... |$cid_cb_number|";   &agi_output;}
+			# number is valid, play valid prompt (press 1 to be called back on this number or press 2 to enter a different number)
+			$AGI->stream_file('sip-silence'); # stop music-on-hold process
+			$AGI->stream_file('sip-silence'); # stop music-on-hold process
+			$temp_12_choice_prompt = $cid_cb_valid_filename;
+			if ($cid_cb_valid_filename =~ /\|/)
+				{
+				@cid_cb_valid_filename_array = split(/\|/,$cid_cb_valid_filename);
+				$ct_cid_cb_valid_filename = ($#cid_cb_valid_filename_array + 0);
+				$w=0;
+				foreach(@cid_cb_valid_filename_array)
+					{
+					if ($AGILOG) {$agi_string = "DEBUG: CID CB valid: |$w($ct_cid_cb_valid_filename)|$cid_cb_valid_filename_array[$w]|";   &agi_output;}
+					if ($ct_cid_cb_valid_filename == $w) 
+						{
+						$temp_12_choice_prompt = $cid_cb_valid_filename_array[$w];
+						}
+					else
+						{
+						if (length($cid_cb_valid_filename_array[$w])>0)
+							{
+							if ($cid_cb_valid_filename_array[$w] =~ /--PHONE--/i) 
+								{
+								$AGI->say_digits("$cid_cb_number");
+								}
+							else
+								{
+								$AGI->stream_file("$cid_cb_valid_filename_array[$w]");
+								}
+							}
+						}
+					$w++;
+					}
+				}
+			# offer option 1 or 2
+			&temp_12_choice_entry($temp_12_choice_prompt);
+
+			if ($AGILOG) {$agi_string = "CID Callback option response |$temp_12_value|$temp_12_choice_prompt|";   &agi_output;}
+
+			if ($temp_12_value == '1')
+				{
+				$enter_cid_cb_process=0;
+				$cid_cb_play_confirmed=1;
+				}
+			}
+		else
+			{
+			$enter_cid_cb_process=0;
+			$cid_cb_play_confirmed=1;
+			}
+		}
+	if ($enter_cid_cb_process > 0)
+		{
+		# play number entry prompt (enter the number you want to be called back at)
+		&enter_cid_cb_number;
+
+		if ( ($confirmation_chances > 2) && ($confirmation < 1) ) 
+			{
+			$cid_cb_number='';
+			}
+		else
+			{
+			$cid_cb_play_confirmed=1;
+			}
+		}
+	if ($cid_cb_play_confirmed > 0) 
+		{
+		### BEGIN Play the confirmed message ###
+		# cid_cb_confirmed_filename - we will keep your place in the queue and call you back as soon as one of our team members is available
+		if ($cid_cb_confirmed_filename =~ /\|/)
+			{
+			@cid_cb_confirmed_filename_array = split(/\|/,$cid_cb_confirmed_filename);
+			$ct_cid_cb_confirmed_filename = ($#cid_cb_confirmed_filename_array + 0);
+			$w=0;
+			foreach(@cid_cb_confirmed_filename_array)
+				{
+				if ($AGILOG) {$agi_string = "DEBUG: CID CB confirm: |$w($ct_cid_cb_confirmed_filename)|$cid_cb_confirmed_filename_array[$w]|";   &agi_output;}
+				if ($ct_cid_cb_confirmed_filename == $w) 
+					{
+					$temp_12_choice_prompt = $cid_cb_confirmed_filename_array[$w];
+					}
+				else
+					{
+					if (length($cid_cb_confirmed_filename_array[$w])>0)
+						{
+						if ($cid_cb_confirmed_filename_array[$w] =~ /--PHONE--/i) 
+							{
+							$AGI->say_digits("$cid_cb_number");
+							}
+						else
+							{
+							$AGI->stream_file("$cid_cb_confirmed_filename_array[$w]");
+							}
+						}
+					}
+				$w++;
+				}
+			}
+		else
+			{
+			$AGI->stream_file("$cid_cb_confirmed_filename");
+			}
+		### END Play the confirmed message ###
+		}
+	}
+### END subroutine for number validation and option of entering new one ###
 
 
 sub populate_lead_province_process
@@ -7815,6 +8327,67 @@ sub BZL_dstcalc {
 	}
     } # end of month checks
 } # end of subroutine dstcalc
+
+
+### check for valid length and invalid filter phone group entry
+sub cid_cb_length_and_fpg 
+	{
+	### BEGIN check for valid length of customer phone number ###
+	$phone_number_length = length($cid_cb_number);
+	$cid_cb_length_is_valid=0;
+	if ($cid_cb_valid_length =~ /-/) 
+		{
+		@cid_cb_valid_lengths = split(/-/,$cid_cb_valid_length);
+		$w=0;
+		foreach(@cid_cb_valid_lengths)
+			{
+			if (length($cid_cb_valid_lengths[$w])>0)
+				{
+				if ($phone_number_length eq $cid_cb_valid_lengths[$w]) {$cid_cb_length_is_valid++;}
+				}
+			$w++;
+			}
+		}
+	else
+		{
+		if ($phone_number_length eq $cid_cb_valid_length) {$cid_cb_length_is_valid++;}
+		}
+	### END check for valid length of customer phone number ###
+
+	### BEGIN check for invalid customer phone number in filter phone group, if defined ###
+	$cid_cb_FPG_phone_found=0;
+	if ( (length($cid_cb_invalid_filter_phone_group) > 0) && ($cid_cb_invalid_filter_phone_group !~ /^NONE$/i) ) 
+		{
+		$cid_cb_FPGvalid=0;
+		$stmtA = "SELECT count(*) FROM vicidial_filter_phone_groups where filter_phone_group_id='$cid_cb_invalid_filter_phone_group';";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+			$dbhP=$dbhA;   $mysql_count='02255';   $MEL_aff_rows=$sthArows;   &mysql_error_logging;
+		if ($sthArows > 0)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$cid_cb_FPGvalid = 	$aryA[0];
+			}
+		$sthA->finish();
+
+		if ($cid_cb_FPGvalid > 0) 
+			{
+			$stmtA = "SELECT count(*) FROM vicidial_filter_phone_numbers where filter_phone_group_id='$cid_cb_invalid_filter_phone_group' and phone_number='$cid_cb_number';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+				$dbhP=$dbhA;   $mysql_count='02256';   $MEL_aff_rows=$sthArows;   &mysql_error_logging;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$cid_cb_FPG_phone_found = 	$aryA[0];
+				}
+			$sthA->finish();
+			}
+		}
+	}
+	### END check for invalid customer phone number in filter phone group, if defined ###
 
 
 sub checkresult 

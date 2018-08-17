@@ -1295,7 +1295,18 @@ park_file_name VARCHAR(100) default '',
 waiting_call_url_on TEXT,
 waiting_call_url_off TEXT,
 waiting_call_count SMALLINT(5) UNSIGNED default '0',
-enter_ingroup_url TEXT
+enter_ingroup_url TEXT,
+cid_cb_confirm_number VARCHAR(20) default 'NO',
+cid_cb_invalid_filter_phone_group VARCHAR(20) default '',
+cid_cb_valid_length VARCHAR(30) default '10',
+cid_cb_valid_filename TEXT,
+cid_cb_confirmed_filename TEXT,
+cid_cb_enter_filename TEXT,
+cid_cb_you_entered_filename TEXT,
+cid_cb_press_to_confirm_filename TEXT,
+cid_cb_invalid_filename TEXT,
+cid_cb_reenter_filename TEXT,
+cid_cb_error_filename TEXT
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_stations (
@@ -2188,7 +2199,7 @@ country VARCHAR(2) default '',
 lata_type VARCHAR(1) default ''
 ) ENGINE=MyISAM;
 
-CREATE INDEX areaprefix on vicidial_nanpa_prefix_codes (areacode,prefix);
+CREATE UNIQUE INDEX areaprefix on vicidial_nanpa_prefix_codes (areacode,prefix);
 
 CREATE TABLE vicidial_cpd_log (
 cpd_id INT(10) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
@@ -4302,6 +4313,9 @@ ALTER TABLE vicidial_inbound_callback_queue_archive MODIFY icbq_id INT(9) UNSIGN
 
 CREATE TABLE vicidial_agent_function_log_archive LIKE vicidial_agent_function_log;
 ALTER TABLE vicidial_agent_function_log_archive MODIFY agent_function_log_id INT(9) UNSIGNED NOT NULL;
+
+CREATE TABLE vicidial_did_log_archive LIKE vicidial_did_log;
+CREATE UNIQUE INDEX vdidla_key on vicidial_did_log_archive(uniqueid, call_date, server_ip);
 
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;

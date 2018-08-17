@@ -1,4 +1,4 @@
-CELLPHONE FILTERING DOC	  Started: 2013-09-20	Updated: 2015-06-26
+CELLPHONE FILTERING DOC	  Started: 2013-09-20	Updated: 2018-08-05
 
 On October 16th, 2013 the FCC issued a rule change to not allow auto-dialing cellphones in the USA unless you have "express consent" from the person you are calling. This document is a summary of what this rule change means to businesses and organizations, and goes over how they can make sure they are in compliance with the TCPA(Telephone Consumer Protection Act of 1991) depending on their interpretation of the regulatory language. 
 
@@ -69,6 +69,7 @@ Here is a list of scripts that we have added in order to integrate with DNC.COM'
    bin/nanpa_type_populate.pl - 
 Requires "Net::SFTP::Foreign" and "IO::Pty" CPAN modules to run. Automatically goes to DNC.COM SFTP server and downloads the 3 required data files(Prefixes, Wired-to-wireless, Wireless-to-wired), then loads that data into database tables on the vicidial system to be used by the other scripts. This process should be set to run in the crontab every morning. There is an "--adminlog" run time option you can use to log the results of this process to the admin log under the server that it is run on, these log entries are viewable in the Administration web interface.
   NOTE: before you can run this script, you will need to sftp into the dnc.com server first on the Linux command line, (sftp XXXX@sftp.dncscrub.com)
+  NOTE: you may need to edit the "/etc/ssh/ssh_config" file to include a line like this "Ciphers 3des-cbc,blowfish-cbc,aes128-cbc,aes128-ctr,aes256-ctr,aes256-cbc"
 
    bin/nanpa_type_preload.pl - 
 This script is designed to load all of the prefixes and portability data into RAM and run against your entire database to scrub it for cellphone numbers every night after the data is refreshed. It takes several minutes to initialize, but runs very fast after that. This process should be set to run in the crontab every morning AFTER the populate script is finished running. The results of this process log to the admin log under the server that it is run on, these log entries are viewable in the Administration web interface.
