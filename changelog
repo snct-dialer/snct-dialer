@@ -116,6 +116,9 @@
         www/vicidial/admin_modify_lead.php: Added change for admin change log
           for Admin Modify Lead to better show lead changes;Added new diff
           logging code.
+  * Add upstream Rev. 3015:
+    - Update: www/vicidial/AST_campaign_status_list_report.php: Fixed log query
+        issue.
 
 2.25.27
   [Jörg Fring-Fürst]

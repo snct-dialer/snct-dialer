@@ -4,7 +4,7 @@
 # This report is designed to show the breakdown by list_id of the calls and 
 # their statuses for all lists within a campaign for a set time period
 #
-# Copyright (C) 2017  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -27,6 +27,7 @@
 # 170409-1555 - Added IP List validation code
 # 170829-0040 - Added screen color settings
 # 171012-2015 - Fixed javascript/apache errors with graphs
+# 180807-1204 - Fixed log query issue
 #
 
 $startMS = microtime();
@@ -504,7 +505,7 @@ while($i < $group_ct)
 		$CSV_text.="\""._QXZ("List ID")." #$list_id: $list_name\"\n";
 
 
-		$stat_stmt="SELECT ".$vicidial_log_table.".status, ".$vicidial_log_table.".uniqueid, ".$vicidial_log_table.".length_in_sec as duration, cast(".$vicidial_agent_log_table.".talk_sec as signed)-cast(".$vicidial_agent_log_table.".dead_sec as signed) as handle_time from ".$vicidial_log_table." LEFT OUTER JOIN ".$vicidial_agent_log_table." on ".$vicidial_log_table.".lead_id=".$vicidial_agent_log_table.".lead_id and ".$vicidial_log_table.".uniqueid=".$vicidial_agent_log_table.".uniqueid where ".$vicidial_log_table.".call_date>='$query_date' and ".$vicidial_log_table.".call_date<='$end_date' and ".$vicidial_log_table.".list_id='$list_id' UNION SELECT ".$vicidial_closer_log_table.".status, ".$vicidial_closer_log_table.".uniqueid, ".$vicidial_closer_log_table.".length_in_sec as duration, cast(".$vicidial_agent_log_table.".talk_sec as signed)-cast(".$vicidial_agent_log_table.".dead_sec as signed) as handle_time from ".$vicidial_closer_log_table." LEFT OUTER JOIN ".$vicidial_agent_log_table." on ".$vicidial_closer_log_table.".lead_id=".$vicidial_agent_log_table.".lead_id and ".$vicidial_closer_log_table.".uniqueid=".$vicidial_agent_log_table.".uniqueid where call_date>='$query_date' and call_date<='$end_date' and list_id='$list_id' order by status";
+		$stat_stmt="SELECT ".$vicidial_log_table.".status, ".$vicidial_log_table.".uniqueid, ".$vicidial_log_table.".length_in_sec as duration, cast(".$vicidial_agent_log_table.".talk_sec as signed)-cast(".$vicidial_agent_log_table.".dead_sec as signed) as handle_time from ".$vicidial_log_table." LEFT OUTER JOIN ".$vicidial_agent_log_table." on ".$vicidial_log_table.".lead_id=".$vicidial_agent_log_table.".lead_id and ".$vicidial_log_table.".uniqueid=".$vicidial_agent_log_table.".uniqueid and ".$vicidial_log_table.".user=".$vicidial_agent_log_table.".user where ".$vicidial_log_table.".call_date>='$query_date' and ".$vicidial_log_table.".call_date<='$end_date' and ".$vicidial_log_table.".list_id='$list_id' UNION SELECT ".$vicidial_closer_log_table.".status, ".$vicidial_closer_log_table.".uniqueid, ".$vicidial_closer_log_table.".length_in_sec as duration, cast(".$vicidial_agent_log_table.".talk_sec as signed)-cast(".$vicidial_agent_log_table.".dead_sec as signed) as handle_time from ".$vicidial_closer_log_table." LEFT OUTER JOIN ".$vicidial_agent_log_table." on ".$vicidial_closer_log_table.".lead_id=".$vicidial_agent_log_table.".lead_id and ".$vicidial_closer_log_table.".uniqueid=".$vicidial_agent_log_table.".uniqueid and ".$vicidial_closer_log_table.".user=".$vicidial_agent_log_table.".user where call_date>='$query_date' and call_date<='$end_date' and list_id='$list_id' order by status";
 		if ($DB) {$HTML_text.="|$stat_stmt|\n";}
 		# $ASCII_text.=$stat_stmt."\n";
 		$stat_rslt=mysql_to_mysqli($stat_stmt, $link);
