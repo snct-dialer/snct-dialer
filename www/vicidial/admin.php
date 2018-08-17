@@ -40788,6 +40788,10 @@ if ($ADD==730000000000000)
 				{
 				if ( ($log_description == 'ADMIN MODIFY LEAD') and (strlen($log_notes) > 50) )
 					{
+					echo "</TR><TR>\n";
+					echo "<TD ALIGN=CENTER COLSPAN=2><B><FONT FACE=\"Arial,Helvetica\" size=2><BR>"._QXZ("DIFF FROM PREVIOUS VALUES")."</B></TD></TR>";
+					echo "<TR><TD ALIGN=LEFT COLSPAN=2>";
+
 					// include the Diff class
 					require_once './class.Diff.php';
 
