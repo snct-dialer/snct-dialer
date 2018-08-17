@@ -600,10 +600,11 @@
 # 180610-2305 - Added dead_trigger_ features
 # 180727-2044 - Small fix for pause code issue
 # 180807-1703 - Added agent_logout_link credentials system setting
+# 180809-1649 - Added scheduled_callbacks_force_dial campaign feature
 #
 
-$version = '2.14-569c';
-$build = '180807-1703';
+$version = '2.14-570c';
+$build = '180809-1649';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -739,7 +740,7 @@ if ($sl_ct > 0)
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$stmt = "SELECT use_non_latin,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,webroot_writable,timeclock_end_of_day,vtiger_url,enable_vtiger_integration,outbound_autodial_active,enable_second_webform,user_territories_active,static_agent_url,custom_fields_enabled,pllb_grouping_limit,qc_features_active,allow_emails,callback_time_24hour,enable_languages,language_method,meetme_enter_login_filename,meetme_enter_leave3way_filename,enable_third_webform,default_language,active_modules,allow_chats,chat_url,default_phone_code,agent_screen_colors,manual_auto_next,agent_xfer_park_3way,admin_web_directory,agent_script,agent_push_events,agent_push_url,pause_campaigns,allow_phonebook,agent_prefix,agent_logout_link FROM system_settings;";
+$stmt = "SELECT use_non_latin,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,webroot_writable,timeclock_end_of_day,vtiger_url,enable_vtiger_integration,outbound_autodial_active,enable_second_webform,user_territories_active,static_agent_url,custom_fields_enabled,pllb_grouping_limit,qc_features_active,allow_emails,callback_time_24hour,enable_languages,language_method,meetme_enter_login_filename,meetme_enter_leave3way_filename,enable_third_webform,default_language,active_modules,allow_chats,chat_url,default_phone_code,agent_screen_colors,manual_auto_next,agent_xfer_park_3way,admin_web_directory,agent_script,agent_push_events,agent_push_url,pause_campaigns,allow_phonebook,agent_prefix,agent_logout_link,agentonly_callback_campaign_lock FROM system_settings;";
 
 $rslt=mysql_to_mysqli($stmt, $link);
 	if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01001',$VD_login,$server_ip,$session_name,$one_mysql_log);}
@@ -786,6 +787,7 @@ if ($qm_conf_ct > 0)
 	$allow_phonebook =					$row[35];
 	$agent_prefix =						$row[36];
 	$agent_logout_link =				$row[37];
+	$agentonly_callback_campaign_lock = $row[38];
 	}
 else
 	{
@@ -1938,7 +1940,7 @@ else
 				$HKstatusnames = substr("$HKstatusnames", 0, -1); 
 
 				##### grab the campaign settings
-				$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active,no_hopper_leads_logins,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,xfer_groups,disable_alter_custphone,display_queue_count,manual_dial_filter,agent_clipboard_copy,use_campaign_dnc,three_way_call_cid,dial_method,three_way_dial_prefix,web_form_target,vtiger_screen_login,agent_allow_group_alias,default_group_alias,quick_transfer_button,prepopulate_transfer_preset,view_calls_in_queue,view_calls_in_queue_launch,call_requeue_button,pause_after_each_call,no_hopper_dialing,agent_dial_owner_only,agent_display_dialable_leads,web_form_address_two,agent_select_territories,crm_popup_login,crm_login_address,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,use_custom_cid,scheduled_callbacks_alert,scheduled_callbacks_count,manual_dial_override,blind_monitor_warning,blind_monitor_message,blind_monitor_filename,timer_action_destination,enable_xfer_presets,hide_xfer_number_to_dial,manual_dial_prefix,customer_3way_hangup_logging,customer_3way_hangup_seconds,customer_3way_hangup_action,ivr_park_call,manual_preview_dial,api_manual_dial,manual_dial_call_time_check,my_callback_option,per_call_notes,agent_lead_search,agent_lead_search_method,queuemetrics_phone_environment,auto_pause_precall,auto_pause_precall_code,auto_resume_precall,manual_dial_cid,custom_3way_button_transfer,callback_days_limit,disable_dispo_screen,disable_dispo_status,screen_labels,status_display_fields,pllb_grouping,pllb_grouping_limit,in_group_dial,in_group_dial_select,pause_after_next_call,owner_populate,manual_dial_lead_id,dead_max,dispo_max,pause_max,dead_max_dispo,dispo_max_dispo,max_inbound_calls,manual_dial_search_checkbox,hide_call_log_info,timer_alt_seconds,wrapup_bypass,wrapup_after_hotkey,callback_active_limit,callback_active_limit_override,comments_all_tabs,comments_dispo_screen,comments_callback_screen,qc_comment_history,show_previous_callback,clear_script,manual_dial_search_filter,web_form_address_three,manual_dial_override_field,status_display_ingroup,customer_gone_seconds,agent_display_fields,manual_dial_timeout,manual_auto_next,manual_auto_show,allow_required_fields,dead_to_dispo,agent_xfer_validation,ready_max_logout,callback_display_days,three_way_record_stop,hangup_xfer_record_start,max_inbound_calls_outcome,manual_auto_next_options,agent_screen_time_display,pause_max_dispo,script_top_dispo,routing_initiated_recordings,dead_trigger_seconds,dead_trigger_action,dead_trigger_repeat,dead_trigger_filename FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
+				$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active,no_hopper_leads_logins,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,xfer_groups,disable_alter_custphone,display_queue_count,manual_dial_filter,agent_clipboard_copy,use_campaign_dnc,three_way_call_cid,dial_method,three_way_dial_prefix,web_form_target,vtiger_screen_login,agent_allow_group_alias,default_group_alias,quick_transfer_button,prepopulate_transfer_preset,view_calls_in_queue,view_calls_in_queue_launch,call_requeue_button,pause_after_each_call,no_hopper_dialing,agent_dial_owner_only,agent_display_dialable_leads,web_form_address_two,agent_select_territories,crm_popup_login,crm_login_address,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,use_custom_cid,scheduled_callbacks_alert,scheduled_callbacks_count,manual_dial_override,blind_monitor_warning,blind_monitor_message,blind_monitor_filename,timer_action_destination,enable_xfer_presets,hide_xfer_number_to_dial,manual_dial_prefix,customer_3way_hangup_logging,customer_3way_hangup_seconds,customer_3way_hangup_action,ivr_park_call,manual_preview_dial,api_manual_dial,manual_dial_call_time_check,my_callback_option,per_call_notes,agent_lead_search,agent_lead_search_method,queuemetrics_phone_environment,auto_pause_precall,auto_pause_precall_code,auto_resume_precall,manual_dial_cid,custom_3way_button_transfer,callback_days_limit,disable_dispo_screen,disable_dispo_status,screen_labels,status_display_fields,pllb_grouping,pllb_grouping_limit,in_group_dial,in_group_dial_select,pause_after_next_call,owner_populate,manual_dial_lead_id,dead_max,dispo_max,pause_max,dead_max_dispo,dispo_max_dispo,max_inbound_calls,manual_dial_search_checkbox,hide_call_log_info,timer_alt_seconds,wrapup_bypass,wrapup_after_hotkey,callback_active_limit,callback_active_limit_override,comments_all_tabs,comments_dispo_screen,comments_callback_screen,qc_comment_history,show_previous_callback,clear_script,manual_dial_search_filter,web_form_address_three,manual_dial_override_field,status_display_ingroup,customer_gone_seconds,agent_display_fields,manual_dial_timeout,manual_auto_next,manual_auto_show,allow_required_fields,dead_to_dispo,agent_xfer_validation,ready_max_logout,callback_display_days,three_way_record_stop,hangup_xfer_record_start,max_inbound_calls_outcome,manual_auto_next_options,agent_screen_time_display,pause_max_dispo,script_top_dispo,routing_initiated_recordings,dead_trigger_seconds,dead_trigger_action,dead_trigger_repeat,dead_trigger_filename,scheduled_callbacks_force_dial,callback_hours_block,callback_display_days FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
 				$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01013',$VD_login,$server_ip,$session_name,$one_mysql_log);}
 				if ($DB) {echo "$stmt\n";}
@@ -2094,6 +2096,9 @@ else
 				$dead_trigger_action =		$row[148];
 				$dead_trigger_repeat =		$row[149];
 				$dead_trigger_filename =	$row[150];
+				$scheduled_callbacks_force_dial = $row[151];
+				$callback_hours_block =		$row[152];
+				$callback_display_days =	$row[153];
 
 				$MI_PAUSE = 0;
 				if (preg_match("/MI_PAUSE/",$max_inbound_calls_outcome))
@@ -2176,6 +2181,39 @@ else
 						### END find any custom field labels ###
 						if ($label_gender == '---HIDE---')
 							{$hide_gender=1;}
+						}
+					}
+
+				$launch_scb_force_dial=0;
+				if ( ($VC_scheduled_callbacks=='Y') and ($VU_scheduled_callbacks=='1') )
+					{
+					$scheduled_callbacks='1';
+					
+					# check for any existing triggered USERONLY Scheduled Callbacks
+					if ($scheduled_callbacks_force_dial == 'Y')
+						{
+						$campaignCBsql = '';
+						$campaignCBhoursSQL = '';
+						$campaignCBdisplaydaysSQL = '';
+						if ($agentonly_callback_campaign_lock > 0)
+							{$campaignCBsql = "and campaign_id='$VD_campaign'";}
+						if ($callback_hours_block > 0)
+							{
+							$x_hours_ago = date("Y-m-d H:i:s", mktime(date("H")-$callback_hours_block,date("i"),date("s"),date("m"),date("d"),date("Y")));
+							$campaignCBhoursSQL = "and entry_time < \"$x_hours_ago\"";
+							}
+						if ($callback_display_days > 0)
+							{
+							$x_days_from_now = date("Y-m-d H:i:s", mktime(0,0,0,date("m"),date("d")+$callback_display_days,date("Y")));
+							$campaignCBdisplaydaysSQL = "and callback_time < \"$x_days_from_now\"";
+							}
+
+						$stmt = "SELECT count(*) from vicidial_callbacks where recipient='USERONLY' and user='$VD_login' $campaignCBsql $campaignCBhoursSQL $campaignCBdisplaydaysSQL and status IN('LIVE');";
+						if ($DB) {echo "$stmt\n";}
+						$rslt=mysql_to_mysqli($stmt, $link);
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+						$row=mysqli_fetch_row($rslt);
+						$launch_scb_force_dial=$row[0];
 						}
 					}
 
@@ -2343,8 +2381,6 @@ else
 					$campaign_recording = $VU_vicidial_recording_override;
 					echo "<!-- USER RECORDING OVERRIDE: |$VU_vicidial_recording_override|$campaign_recording| -->\n";
 					}
-				if ( ($VC_scheduled_callbacks=='Y') and ($VU_scheduled_callbacks=='1') )
-					{$scheduled_callbacks='1';}
 				if ($VU_vicidial_recording=='0')
 					{$campaign_recording='NEVER';}
 				if ($VU_alter_custphone_override=='ALLOW_ALTER')
@@ -4805,6 +4841,9 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var dead_trigger_repeat='<?php echo $dead_trigger_repeat ?>';
 	var dead_trigger_filename='<?php echo $dead_trigger_filename ?>';
 	var agent_logout_link='<?php echo $agent_logout_link ?>';
+	var scheduled_callbacks_force_dial='<?php echo $scheduled_callbacks_force_dial ?>';
+	var launch_scb_force_dial='<?php echo $launch_scb_force_dial ?>';
+	var liveCBcounT=0;
 	var DiaLControl_auto_HTML = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready','','','','','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_paused.gif") ?>\" border=\"0\" alt=\"You are paused\" /></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause','','','','','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_active.gif") ?>\" border=\"0\" alt=\"You are active\" /></a>";
 	var DiaLControl_auto_HTML_OFF = "<img src=\"./images/<?php echo _QXZ("vdc_LB_blank_OFF.gif") ?>\" border=\"0\" alt=\"pause button disabled\" />";
@@ -7314,6 +7353,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 					var CBcounT = CBcounTtotal_array[0];
 					if (scheduled_callbacks_count=='LIVE')
 						{CBcounT = CBcounTtotal_array[1];}
+					liveCBcounT = CBcounTtotal_array[1];
 					if (CBcounT == 0) {var CBprint = "<?php echo _QXZ("NO"); ?>";}
 					else 
 						{
@@ -7647,6 +7687,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 			document.vicidial_form.LeadPreview.checked=true;
 		//	document.vicidial_form.DiaLAltPhonE.checked=true;
 			hideDiv('CallBacKsLisTBox');
+			hideDiv('SCForceDialBox');
 			ManualDialNext(taskCBid,taskLEADid,'','','','0','',taskCBalt);
 			}
 		}
@@ -8329,6 +8370,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 		else
 			{
 			hideDiv('NeWManuaLDiaLBox');
+			hideDiv('SCForceDialBox');
 		//	document.getElementById("debugbottomspan").innerHTML = "DEBUG OUTPUT" + document.vicidial_form.MDPhonENumbeR.value + "|" + active_group_alias;
 
 			var sending_group_alias = 0;
@@ -13955,8 +13997,14 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						{
 						if (wrapup_waiting == 0)
 							{
-							if (document.vicidial_form.DispoSelectStop.checked==true)
+							if ( (document.vicidial_form.DispoSelectStop.checked==true) || ( (liveCBcounT > 0) && (scheduled_callbacks_force_dial == 'Y') ) )
 								{
+								if ( (liveCBcounT > 0) && (scheduled_callbacks_force_dial == 'Y') )
+									{
+									VieWCBForcedDialInfO();
+									temp_dispo_pause_code = auto_pause_precall_code;
+									temp_use_pause_code=1;
+									}
 								if (auto_dial_level != '0')
 									{
 									AutoDialWaiting = 0;
@@ -16576,6 +16624,64 @@ function phone_number_format(formatphone) {
 
 
 // ################################################################################
+// View Forced-Dial Scheduled Callback information
+	function VieWCBForcedDialInfO()
+		{
+		button_click_log = button_click_log + "" + SQLdate + "-----VieWCBForcedDialInfO---" + user + " " + campaign + "|";
+		document.getElementById('SCForceDialSpan').innerHTML = "<?php echo _QXZ("Loading"); ?>...\n";
+
+		var xmlhttp=false;
+		/*@cc_on @*/
+		/*@if (@_jscript_version >= 5)
+		// JScript gives us Conditional compilation, we can cope with old IE versions.
+		// and security blocked creation of the objects.
+		 try {
+		  xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+		 } catch (e) {
+		  try {
+		   xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+		  } catch (E) {
+		   xmlhttp = false;
+		  }
+		 }
+		@end @*/
+		if (!xmlhttp && typeof XMLHttpRequest!='undefined')
+			{
+			xmlhttp = new XMLHttpRequest();
+			}
+		if (xmlhttp) 
+			{ 
+			RAview_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=LEADINFOview&format=text&user=" + user + "&pass=" + pass + "&conf_exten=" + session_id + "&extension=" + extension + "&protocol=" + protocol + "&disable_alter_custphone=" + disable_alter_custphone + "&campaign=" + campaign + "&callback_id=FORCED&manual_dial_filter=" + agentcall_manual + "&stage=<?php echo $HCwidth ?>";
+			xmlhttp.open('POST', 'vdc_db_query.php'); 
+			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
+			xmlhttp.send(RAview_query); 
+			xmlhttp.onreadystatechange = function() 
+				{ 
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+					{
+					var temp_response = xmlhttp.responseText;
+				//	alert(xmlhttp.responseText);
+					var regCDS = new RegExp("ERROR: no","ig");
+					if (temp_response.match(regCDS))
+						{
+					//	alert_box(temp_response);
+						hideDiv('SCForceDialBox');
+						button_click_log = button_click_log + "" + SQLdate + "-----CBForcedDialNONE---" + user + "|";
+						}
+					else
+						{
+						showDiv('SCForceDialBox');
+						document.getElementById('SCForceDialSpan').innerHTML = xmlhttp.responseText + "\n";
+						button_click_log = button_click_log + "" + SQLdate + "-----CBForcedDialFOUND---" + user + "|";
+						}
+					}
+				}
+			delete xmlhttp;
+			}
+		}
+
+
+// ################################################################################
 // Refresh the call log display
 	function VieWCalLLoG(logdate,formdate)
 		{
@@ -17691,6 +17797,10 @@ function phone_number_format(formatphone) {
 			hideDiv('InvalidOpenerSpan');
 			hideDiv('OtherTabCommentsSpan');
 			hideDiv('AgentTimeDisplayBox');
+			if (launch_scb_force_dial < 1)
+				{hideDiv('SCForceDialBox');}
+			else
+				{VieWCBForcedDialInfO();}
 			if (deactivated_old_session < 1)
 				{hideDiv('DeactivateDOlDSessioNSpan');}
 			if (is_webphone!='Y')
@@ -20360,6 +20470,20 @@ if ($agent_display_dialable_leads > 0)
 	<span id="CBcommentsBoxD"></span>
     </font></td>
     </tr></table>
+</span>
+
+<span style="position:absolute;left:0px;top:0px;z-index:<?php $zi++; echo $zi ?>;" id="SCForceDialBox">
+	<table border="0" bgcolor="#CCFFCC" width="<?php echo $CAwidth ?>px" height="<?php echo $WRheight ?>px"><tr><td align="center" valign="top"> &nbsp; &nbsp; &nbsp; <font class="sd_text"><?php echo _QXZ("Scheduled Callback to Dial:"); ?></font>
+	<br />
+	<?php
+	if ($webphone_location == 'bar')
+		{echo "<br /><img src=\"./images/"._QXZ("pixel.gif")."\" width=\"1px\" height=\"".$webphone_height."px\" /><br />\n";}
+	?>
+	<span id="SCForceDialSpan"> <?php echo _QXZ("Lead Info"); ?> </span>
+	<br /><br /> &nbsp;
+	<!--<a href="#" onclick="hideDiv('SCForceDialBox');return false;"><?php echo _QXZ("Close Box"); ?></a>-->
+	</font>
+	</td></tr></table>
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:<?php $zi++; echo $zi ?>;" id="CallBacKsLisTBox">

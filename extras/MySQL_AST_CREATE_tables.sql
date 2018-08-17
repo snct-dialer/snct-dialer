@@ -1020,7 +1020,8 @@ dead_trigger_seconds SMALLINT(5) default '0',
 dead_trigger_action ENUM('DISABLED','AUDIO','URL','AUDIO_AND_URL') default 'DISABLED',
 dead_trigger_repeat ENUM('NO','REPEAT_ALL','REPEAT_AUDIO','REPEAT_URL') default 'NO',
 dead_trigger_filename TEXT,
-dead_trigger_url TEXT
+dead_trigger_url TEXT,
+scheduled_callbacks_force_dial ENUM('N','Y') default 'N'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_lists (

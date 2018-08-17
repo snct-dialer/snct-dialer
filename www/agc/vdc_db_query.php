@@ -16421,9 +16421,60 @@ if ($ACTION == 'SEARCHCONTACTSRESULTSview')
 ################################################################################
 if ($ACTION == 'LEADINFOview')
 	{
+	$CB_force_dial_flag=0;
 	if (strlen($lead_id) < 1)
-		{echo "ERROR: "._QXZ("no Lead ID");}
-	else
+		{
+		if ($callback_id == 'FORCED')
+			{
+			$CB_force_dial_flag=1;
+			$campaignCBhoursSQL = '';
+			$campaignCBdisplaydaysSQL = '';
+			$stmt = "SELECT callback_hours_block,callback_list_calltime,local_call_time,callback_display_days from vicidial_campaigns where campaign_id='$campaign';";
+			$rslt=mysql_to_mysqli($stmt, $link);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+			if ($rslt) {$camp_count = mysqli_num_rows($rslt);}
+			if ($camp_count > 0)
+				{
+				$row=mysqli_fetch_row($rslt);
+				$callback_hours_block =		$row[0];
+				$callback_list_calltime =	$row[1];
+				$local_call_time =			$row[2];
+				$callback_display_days =	$row[3];
+				if ($callback_hours_block > 0)
+					{
+					$x_hours_ago = date("Y-m-d H:i:s", mktime(date("H")-$callback_hours_block,date("i"),date("s"),date("m"),date("d"),date("Y")));
+					$campaignCBhoursSQL = "and entry_time < \"$x_hours_ago\"";
+					}
+				if ($callback_display_days > 0)
+					{
+					$x_days_from_now = date("Y-m-d H:i:s", mktime(0,0,0,date("m"),date("d")+$callback_display_days,date("Y")));
+					$campaignCBdisplaydaysSQL = "and callback_time < \"$x_days_from_now\"";
+					}
+				}
+			$campaignCBsql = '';
+			if ($agentonly_callback_campaign_lock > 0)
+				{$campaignCBsql = "and campaign_id='$campaign'";}
+
+			$stmt = "SELECT callback_id,lead_id from vicidial_callbacks where recipient='USERONLY' and user='$user' $campaignCBsql $campaignCBhoursSQL $campaignCBdisplaydaysSQL and status IN('LIVE') order by callback_time limit 1;";
+			if ($DB) {echo "$stmt\n";}
+			$rslt=mysql_to_mysqli($stmt, $link);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+			if ($rslt) {$callbacks_count = mysqli_num_rows($rslt);}
+			if ($callbacks_count > 0)
+				{
+				$row=mysqli_fetch_row($rslt);
+				$callback_id =	$row[0];
+				$lead_id =		$row[1];
+				}
+			else
+				{
+				echo "ERROR: "._QXZ("no LIVE Callbacks found");
+				}
+			}
+		else
+			{echo "ERROR: "._QXZ("no Lead ID");}
+		}
+	if (strlen($lead_id) > 0)
 		{
 		$hide_dial_links=0;
 		echo "<CENTER>\n";
@@ -16454,7 +16505,8 @@ if ($ACTION == 'LEADINFOview')
 				echo "<tr bgcolor=white><td ALIGN=right><font class='sb_text'>"._QXZ("Callback Comments:")." &nbsp; </td><td ALIGN=left><font class='sb_text'>$row[6]</td></tr>";
 				echo "</TABLE>";
 				echo "<BR>";
-				$hide_dial_links++;
+				if ($CB_force_dial_flag < 1)
+					{$hide_dial_links++;}
 				}
 			}
 		### END Display callback information ###
@@ -16689,7 +16741,16 @@ if ($ACTION == 'LEADINFOview')
 				if ($hide_dial_links < 1)
 					{
 					if ($manual_dial_filter > 0)
-						{$INFOout .= "<a href=\"#\" onclick=\"NeWManuaLDiaLCalL('CALLLOG',$row[5], $row[6], $lead_id,'','YES');return false;\"> "._QXZ("DIAL")." </a>";}
+						{
+						if ($CB_force_dial_flag > 0)
+							{
+							$INFOout .= "<a href=\"#\" onclick=\"new_callback_call('$callback_id','$lead_id','MAIN');return false;\"> "._QXZ("DIAL")." </a>";
+							}
+						else
+							{
+							$INFOout .= "<a href=\"#\" onclick=\"NeWManuaLDiaLCalL('CALLLOG',$row[5], $row[6], $lead_id,'','YES');return false;\"> "._QXZ("DIAL")." </a>";
+							}
+						}
 					else
 						{$INFOout .= _QXZ(" DIAL ");}
 					}
@@ -16697,7 +16758,16 @@ if ($ACTION == 'LEADINFOview')
 			if ( ($label_phone_number=='---HIDE---') and ($hide_dial_links < 1) )
 				{
 				if ($manual_dial_filter > 0)
-					{$INFOout .= "<tr bgcolor=white><td ALIGN=right><font class='sb_text'>"._QXZ("Dial Link:")." &nbsp; </td><td ALIGN=left><font class='sb_text'><a href=\"#\" onclick=\"NeWManuaLDiaLCalL('CALLLOG',$row[5], $row[6], $lead_id,'','YES');return false;\"> "._QXZ("DIAL")." </a>";}
+					{
+					if ($CB_force_dial_flag > 0)
+						{
+						$INFOout .= "<tr bgcolor=white><td ALIGN=right><font class='sb_text'>"._QXZ("Dial Link:")." &nbsp; </td><td ALIGN=left><font class='sb_text'><a href=\"#\" onclick=\"new_callback_call('$callback_id','$lead_id','MAIN');return false;\"> "._QXZ("DIAL")." </a>";
+						}
+					else
+						{
+						$INFOout .= "<tr bgcolor=white><td ALIGN=right><font class='sb_text'>"._QXZ("Dial Link:")." &nbsp; </td><td ALIGN=left><font class='sb_text'><a href=\"#\" onclick=\"NeWManuaLDiaLCalL('CALLLOG',$row[5], $row[6], $lead_id,'','YES');return false;\"> "._QXZ("DIAL")." </a>";
+						}
+					}
 				else
 					{$INFOout .= "<tr bgcolor=white><td ALIGN=right><font class='sb_text'>"._QXZ("Dial Link:")." &nbsp; </td><td ALIGN=left><font class='sb_text'>"._QXZ(" DIAL ");}
 				}
@@ -16735,7 +16805,16 @@ if ($ACTION == 'LEADINFOview')
 				if ($hide_dial_links < 1)
 					{
 					if ($manual_dial_filter > 0)
-						{$INFOout .= "<a href=\"#\" onclick=\"NeWManuaLDiaLCalL('CALLLOG',$row[5], $row[20], $lead_id, 'ALT','YES');return false;\"> "._QXZ("DIAL")." </a>";}
+						{
+						if ($CB_force_dial_flag > 0)
+							{
+							$INFOout .= "<a href=\"#\" onclick=\"new_callback_call('$callback_id','$lead_id','ALT');return false;\"> "._QXZ("DIAL")." </a>";
+							}
+						else
+							{
+							$INFOout .= "<a href=\"#\" onclick=\"NeWManuaLDiaLCalL('CALLLOG',$row[5], $row[20], $lead_id, 'ALT','YES');return false;\"> "._QXZ("DIAL")." </a>";
+							}
+						}
 					else
 						{$INFOout .= " DIAL ";}
 					}
