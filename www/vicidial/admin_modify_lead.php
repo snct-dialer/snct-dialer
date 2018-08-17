@@ -92,6 +92,7 @@
 # 180311-0008 - Added CIDdisplay
 # 180410-1720 - Added switch lead log entry display
 # 180506-1813 - Added switch_list log entry display
+# 180807-0957 - Added new diff logging code
 #
 
 require("dbconnect_mysqli.php");
@@ -1089,6 +1090,18 @@ if ($end_call > 0)
 
 	if ( ($list_valid > 0) or (preg_match('/\-ALL/i', $LOGallowed_campaigns)) )
 		{
+		$diff_orig=''; $diff_new='';
+		# gather existing lead data to store for admin log diff
+		$stmt="SELECT lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id from $vl_table where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' $LOGallowed_listsSQL";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$diff_to_print = mysqli_num_rows($rslt);
+		if ($DB) {echo "$diff_to_print|$stmt\n";}
+		if ($diff_to_print > 0)
+			{
+			$row=mysqli_fetch_row($rslt);
+			$diff_orig = "lead_id=$row[0]|entry_date=$row[1]|modify_date=$row[2]|status=$row[3]|user=$row[4]|vendor_lead_code=$row[5]|source_id=$row[6]|list_id=$row[7]|gmt_offset_now=$row[8]|called_since_last_reset=$row[9]|phone_code=$row[10]|phone_number=$row[11]|title=$row[12]|first_name=$row[13]|middle_initial=$row[14]|last_name=$row[15]|address1=$row[16]|address2=$row[17]|address3=$row[18]|city=$row[19]|state=$row[20]|province=$row[21]|postal_code=$row[22]|country_code=$row[23]|gender=$row[24]|date_of_birth=$row[25]|alt_phone=$row[26]|email=$row[27]|security_phrase=$row[28]|comments=$row[29]|called_count=$row[30]|last_local_call_time=$row[31]|rank=$row[32]|owner=$row[33]|entry_list_id=$row[34]|";
+			}
+
 		$source_idSQL='';
 		if ($SSsource_id_display > 0)
 			{$source_idSQL = ",source_id='" . mysqli_real_escape_string($link, $source_id) . "'";}
@@ -1096,6 +1109,17 @@ if ($end_call > 0)
 		$stmtA="UPDATE $vl_table set status='" . mysqli_real_escape_string($link, $status) . "',title='" . mysqli_real_escape_string($link, $title) . "',first_name='" . mysqli_real_escape_string($link, $first_name) . "',middle_initial='" . mysqli_real_escape_string($link, $middle_initial) . "',last_name='" . mysqli_real_escape_string($link, $last_name) . "',address1='" . mysqli_real_escape_string($link, $address1) . "',address2='" . mysqli_real_escape_string($link, $address2) . "',address3='" . mysqli_real_escape_string($link, $address3) . "',city='" . mysqli_real_escape_string($link, $city) . "',state='" . mysqli_real_escape_string($link, $state) . "',province='" . mysqli_real_escape_string($link, $province) . "',postal_code='" . mysqli_real_escape_string($link, $postal_code) . "',country_code='" . mysqli_real_escape_string($link, $country_code) . "',alt_phone='" . mysqli_real_escape_string($link, $alt_phone) . "',phone_number='$phone_number',phone_code='$phone_code',email='" . mysqli_real_escape_string($link, $email) . "',security_phrase='" . mysqli_real_escape_string($link, $security) . "',comments='" . mysqli_real_escape_string($link, $comments) . "',rank='" . mysqli_real_escape_string($link, $rank) . "',owner='" . mysqli_real_escape_string($link, $owner) . "',vendor_lead_code='" . mysqli_real_escape_string($link, $vendor_id) . "'$source_idSQL,date_of_birth='" . mysqli_real_escape_string($link, $date_of_birth) . "' where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "'";
 		if ($DB) {echo "|$stmt|\n";}
 		$rslt=mysql_to_mysqli($stmtA, $link);
+
+		# gather new lead data to store for admin log diff
+		$stmt="SELECT lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id from $vl_table where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' $LOGallowed_listsSQL";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$diff_to_print = mysqli_num_rows($rslt);
+		if ($DB) {echo "$diff_to_print|$stmt\n";}
+		if ($diff_to_print > 0)
+			{
+			$row=mysqli_fetch_row($rslt);
+			$diff_new = "lead_id=$row[0]|entry_date=$row[1]|modify_date=$row[2]|status=$row[3]|user=$row[4]|vendor_lead_code=$row[5]|source_id=$row[6]|list_id=$row[7]|gmt_offset_now=$row[8]|called_since_last_reset=$row[9]|phone_code=$row[10]|phone_number=$row[11]|title=$row[12]|first_name=$row[13]|middle_initial=$row[14]|last_name=$row[15]|address1=$row[16]|address2=$row[17]|address3=$row[18]|city=$row[19]|state=$row[20]|province=$row[21]|postal_code=$row[22]|country_code=$row[23]|gender=$row[24]|date_of_birth=$row[25]|alt_phone=$row[26]|email=$row[27]|security_phrase=$row[28]|comments=$row[29]|called_count=$row[30]|last_local_call_time=$row[31]|rank=$row[32]|owner=$row[33]|entry_list_id=$row[34]|";
+			}
 
 		echo _QXZ("information modified")."<BR><BR>\n";
 		echo "<a href=\"$PHP_SELF?lead_id=$lead_id&DB=$DB&archive_search=$archive_search&archive_log=$archive_log\">"._QXZ("Go back to the lead modification page")."</a><BR><BR>\n";
@@ -1207,7 +1231,7 @@ if ($end_call > 0)
 		$SQL_log = "$stmtA|$stmtB|$stmtC|$stmtE|$stmtF|$stmtG|$stmtH|$stmtI|$stmtJ|";
 		$SQL_log = preg_replace('/;/', '', $SQL_log);
 		$SQL_log = addslashes($SQL_log);
-		$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LEADS', event_type='MODIFY', record_id='$lead_id', event_code='ADMIN MODIFY LEAD', event_sql=\"$SQL_log\", event_notes='';";
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LEADS', event_type='MODIFY', record_id='$lead_id', event_code='ADMIN MODIFY LEAD', event_sql=\"$SQL_log\", event_notes=\"".$diff_orig."---ORIG---NEW---".$diff_new."\";";
 		if ($DB) {echo "|$stmt|\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 		}

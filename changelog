@@ -110,7 +110,12 @@
         www/vicidial/help_documentation.txt: Added CID callback number
           validation and change features, Added link to Callmenu Survey Report,
           Added fields for In-Group Callback CID features.
-    - Resync direcrory sounds
+    - Resync direcrory sounds.
+  * Add upstream Rev. 3012:
+    - Update: www/vicidial/admin.php,
+        www/vicidial/admin_modify_lead.php: Added change for admin change log
+          for Admin Modify Lead to better show lead changes;Added new diff
+          logging code.
 
 2.25.27
   [Jörg Fring-Fürst]

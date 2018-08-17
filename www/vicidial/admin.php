@@ -4524,12 +4524,13 @@ else
 # 180613-0943 - Fix for issue #1108
 # 180618-2300 - Modified calls to audio file chooser function
 # 180806-0752 - Added link to Callmenu Survey Report, Added fields for In-Group Callback CID features
+# 180807-0958 - Added change for admin change log for Admin Modify Lead to better show lead changes
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-680a';
-$build = '180806-0752';
+$admin_version = '2.14-681a';
+$build = '180807-0958';
 
 
 $STARTtime = date("U");
@@ -40764,13 +40765,25 @@ if ($ADD==730000000000000)
 				// include the Diff class
 				require_once './class.Diff.php';
 
-				$new_sql = preg_replace('/\',/i', '\' ,',$new_sql);
-				$new_sql = preg_replace('/ ,/', "\n",$new_sql);
-				$rowx[9] = preg_replace('/\',/i', '\' ,',$rowx[9]);
-				$rowx[9] = preg_replace('/ ,/', "\n",$rowx[9]);
 
 				// output the result of comparing two files as HTML
-				echo Diff::toTable(Diff::compare($rowx[9], $new_sql));
+				if ( ($log_description == 'ADMIN MODIFY LEAD') and (strlen($log_notes) > 50) )
+					{
+					$log_notes_ARY = explode("---ORIG---NEW---",$log_notes);
+					$log_notes_ARY[0] = preg_replace('/\',/i', '\' ,',$log_notes_ARY[0]);
+					$log_notes_ARY[0] = preg_replace('/\|/', "\n",$log_notes_ARY[0]);
+					$log_notes_ARY[1] = preg_replace('/\',/i', '\' ,',$log_notes_ARY[1]);
+					$log_notes_ARY[1] = preg_replace('/\|/', "\n",$log_notes_ARY[1]);
+					echo Diff::toTable(Diff::compare($log_notes_ARY[0], $log_notes_ARY[1]));
+					}
+				else
+					{
+					$new_sql = preg_replace('/\',/i', '\' ,',$new_sql);
+					$new_sql = preg_replace('/ ,/', "\n",$new_sql);
+					$rowx[9] = preg_replace('/\',/i', '\' ,',$rowx[9]);
+					$rowx[9] = preg_replace('/ ,/', "\n",$rowx[9]);
+					echo Diff::toTable(Diff::compare($rowx[9], $new_sql));
+					}
 				}
 
 			echo "</TD>";
