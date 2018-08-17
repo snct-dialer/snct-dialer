@@ -40765,7 +40765,6 @@ if ($ADD==730000000000000)
 				// include the Diff class
 				require_once './class.Diff.php';
 
-
 				// output the result of comparing two files as HTML
 				if ( ($log_description == 'ADMIN MODIFY LEAD') and (strlen($log_notes) > 50) )
 					{
@@ -40783,6 +40782,21 @@ if ($ADD==730000000000000)
 					$rowx[9] = preg_replace('/\',/i', '\' ,',$rowx[9]);
 					$rowx[9] = preg_replace('/ ,/', "\n",$rowx[9]);
 					echo Diff::toTable(Diff::compare($rowx[9], $new_sql));
+					}
+				}
+			else
+				{
+				if ( ($log_description == 'ADMIN MODIFY LEAD') and (strlen($log_notes) > 50) )
+					{
+					// include the Diff class
+					require_once './class.Diff.php';
+
+					$log_notes_ARY = explode("---ORIG---NEW---",$log_notes);
+					$log_notes_ARY[0] = preg_replace('/\',/i', '\' ,',$log_notes_ARY[0]);
+					$log_notes_ARY[0] = preg_replace('/\|/', "\n",$log_notes_ARY[0]);
+					$log_notes_ARY[1] = preg_replace('/\',/i', '\' ,',$log_notes_ARY[1]);
+					$log_notes_ARY[1] = preg_replace('/\|/', "\n",$log_notes_ARY[1]);
+					echo Diff::toTable(Diff::compare($log_notes_ARY[0], $log_notes_ARY[1]));
 					}
 				}
 

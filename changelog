@@ -111,7 +111,7 @@
           validation and change features, Added link to Callmenu Survey Report,
           Added fields for In-Group Callback CID features.
     - Resync direcrory sounds.
-  * Add upstream Rev. 3012:
+  * Add upstream Rev. 3012, 3013:
     - Update: www/vicidial/admin.php,
         www/vicidial/admin_modify_lead.php: Added change for admin change log
           for Admin Modify Lead to better show lead changes;Added new diff
