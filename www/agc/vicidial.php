@@ -601,6 +601,7 @@
 # 180727-2044 - Small fix for pause code issue
 # 180807-1703 - Added agent_logout_link credentials system setting
 # 180809-1649 - Added scheduled_callbacks_force_dial campaign feature
+# 180824-1317 - Add Selector Agent/Phone for Transfer
 #
 
 $version = '2.14-570c';
@@ -957,6 +958,15 @@ if($DB) {
 }
 
 ### End Get EmailAdresses ###
+
+### Selector Phone / Agent ###
+# 
+# content only Phone or Agent
+#
+
+$SelectorPhoneAgent = "Phone";
+
+### End Selector Phone / Agent ###
 	
 $hide_gender=0;
 $US='_';
@@ -4935,8 +4945,14 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		image_chat_alert_UNMUTE.src="./images/<?php echo _QXZ("vdc_volume_UNMUTE.gif") ?>";
 	var image_chat_alert_MUTE = new Image();
 		image_chat_alert_MUTE.src="./images/<?php echo _QXZ("vdc_volume_MUTE.gif") ?>";
-        var PhoneBookAgentStatus = "";
+	var PhoneBookAgentStatus = "";
 
+	var SelectorPhoneAgent = '<?php echo $SelectorPhoneAgent ?>';
+	var image_vdc_XB_number = new Image();
+		image_vdc_XB_number.src="./images/<?php echo _QXZ("vdc_XB_number.gif") ?>";
+	var image_vdc_XB_agent = new Image();
+		image_vdc_XB_agent.src="./images/<?php echo _QXZ("vdc_XB_agent.png") ?>";
+	
 	var pc_var = "";
 	var pc_var_ingroup = "";
 //	var PPanel = "";
@@ -4976,6 +4992,32 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		}
 
 <?php	echo $INSERT_head_js; ?>
+
+// ################################################################################
+// Change SelectorPhoneAgent
+// Para: NewSel: - "" = Change to the Opposite
+//               - Phone = Change to Phone
+//               - Agent = Change to Agent
+	function ChangeSelectorPhoneAgent(NewSel) {
+		
+		if (NewSel == "Phone") {
+			SelectorPhoneAgent = "Phone";
+			document.getElementById("PhoneAgent").src="./images/<?php echo _QXZ('vdc_XB_number.gif'); ?>";
+		}
+		if (NewSel == "Agent") {
+			SelectorPhoneAgent = "Agent";
+			document.getElementById("PhoneAgent").src="./images/<?php echo _QXZ('vdc_XB_agent.png'); ?>";
+		}
+		if (NewSel == "") {
+			if (SelectorPhoneAgent == "Phone") {
+				SelectorPhoneAgent = "Agent";
+				document.getElementById("PhoneAgent").src="./images/<?php echo _QXZ('vdc_XB_agent.png'); ?>";
+			} else {
+				SelectorPhoneAgent = "Phone";
+				document.getElementById("PhoneAgent").src="./images/<?php echo _QXZ('vdc_XB_number.gif'); ?>";
+			}
+		}
+	}
 
 // ################################################################################
 // Send Hangup command for Live call connected to phone now to Manager
@@ -20150,7 +20192,18 @@ if ($agent_display_dialable_leads > 0)
 
     <tr>
     <td align="left" colspan="2">
-    <img src="./images/<?php echo _QXZ("vdc_XB_number.gif"); ?>" border="0" alt="Number to call" style="vertical-align:middle" />
+	<script>
+
+	var TmpOut;
+
+	if(SelectorPhoneAgent == 'Phone') {
+		TmpOut = "<input type=\"image\" src=\"./images/<?php echo _QXZ('vdc_XB_number.gif'); ?>\" id=\"PhoneAgent\" border=\"0\" alt=\"Number to call\" style=\"vertical-align:middle\" onclick=\"ChangeSelectorPhoneAgent('');\" />";
+	} else {
+		TmpOut = "<input type=\"image\" src=\"./images/<?php echo _QXZ('vdc_XB_agent.png'); ?>\" id=\"PhoneAgent\" border=\"0\" alt=\"Agent to call\" style=\"vertical-align:middle\" onclick=\"ChangeSelectorPhoneAgent('');\" />";
+	}
+	document.write(TmpOut);
+	</script>
+
 	&nbsp; 
 	<?php
 	if ($hide_xfer_number_to_dial=='ENABLED')

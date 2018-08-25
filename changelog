@@ -138,6 +138,9 @@
         www/vicidial/admin.php,
         www/vicidial/help_documentation.txt: Addedscheduled_callbacks_force_dial
           campaign feature.
+  * Add selector Phone / Agent for calltransfer (2018-011):
+    - New: www/agc/images/vdc_XB_agent.png.
+    - Update: www/agc/vicidial.php.
 
 2.25.27
   [Jörg Fring-Fürst]
