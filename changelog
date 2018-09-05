@@ -170,7 +170,7 @@
           scheduled_callbacks_timezones_... features.
   * Add upstream Rev. 3021:
     - Upgrade: www/vicidial/AST_CMstats.php: Added totals.
-  * Add upstream Rev. 3022:
+  * Add upstream Rev. 3022, 3024:
     - Update: extras/MySQL_AST_CREATE_tables.sql,
         extras/mysql_update/mysql-1534.sql,
         extras/upgrade_2.14.sql,
