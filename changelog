@@ -170,6 +170,14 @@
           scheduled_callbacks_timezones_... features.
   * Add upstream Rev. 3021:
     - Upgrade: www/vicidial/AST_CMstats.php: Added totals.
+  * Add upstream Rev. 3022:
+    - Update: extras/MySQL_AST_CREATE_tables.sql,
+        extras/mysql_update/mysql-1534.sql,
+        extras/upgrade_2.14.sql,
+        www/agc/api.php,
+        www/agc/vdc_script_display.php: Added count for waiting emails to
+          calls_in_queue_count function, Patch for proper url encoding of
+          variables replaced when within href and src attributes.
 
 2.25.27
   [Jörg Fring-Fürst]

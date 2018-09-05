@@ -95,10 +95,11 @@
 # 180204-2350 - Added dial_ingroup external_dial option
 # 180301-2302 - Added GET-AND-POST URL logging
 # 180323-2227 - Fix for dial_ingroup error message on external_dial function
+# 180903-1606 - Added count for waiting emails to calls_in_queue_count function
 #
 
-$version = '2.14-61';
-$build = '180323-2227';
+$version = '2.14-62';
+$build = '180903-1606';
 
 $startMS = microtime();
 
@@ -4153,8 +4154,17 @@ if ($function == 'calls_in_queue_count')
 			$row=mysqli_fetch_row($rslt);
 			$calls_in_queue_count=$row[0];
 
+			### grab the number of emails waiting in queue that could be routed to this agent
+			$stmt="SELECT count(*) from vicidial_email_list where status IN('NEW','QUEUE') and (group_id IN('$AccampSQL'));";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_to_mysqli($stmt, $link);
+			$row=mysqli_fetch_row($rslt);
+			$emails_in_queue_count=$row[0];
+
+			$total_in_queue_count = ($calls_in_queue_count + $emails_in_queue_count);
+
 			$result = _QXZ("SUCCESS");
-			$result_reason = _QXZ("SUCCESS: calls_in_queue_count") . " - " . $calls_in_queue_count;
+			$result_reason = _QXZ("SUCCESS: calls_in_queue_count") . " - " . $total_in_queue_count;
 			echo "$result_reason";
 			api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
 			}
