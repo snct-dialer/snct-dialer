@@ -43,4 +43,25 @@ ALTER TABLE system_settings ADD agent_logout_link ENUM('0','1','2','3','4') defa
 
 ALTER TABLE vicidial_campaigns ADD scheduled_callbacks_force_dial ENUM('N','Y') default 'N';
 
+
+ALTER TABLE vicidial_campaigns ADD scheduled_callbacks_auto_reschedule VARCHAR(10) default 'DISABLED';
+
+CREATE TABLE vicidial_recent_ascb_calls (
+call_date DATETIME,
+callback_date DATETIME,
+callback_id INT(9) UNSIGNED default '0',
+caller_code VARCHAR(30) default '',
+lead_id INT(9) UNSIGNED,
+server_ip VARCHAR(60) NOT NULL,
+orig_status VARCHAR(6) default 'CALLBK',
+reschedule VARCHAR(10) default '',
+list_id BIGINT(14) UNSIGNED,
+rescheduled ENUM('U','P','Y','N') default 'U',
+unique index (caller_code),
+index (call_date),
+index (lead_id)
+) ENGINE=MyISAM;
+
+CREATE TABLE vicidial_recent_ascb_calls_archive LIKE vicidial_recent_ascb_calls;
+
 UPDATE system_settings SET db_schema_version='1534',db_schema_update_date=NOW() where db_schema_version < 1534;

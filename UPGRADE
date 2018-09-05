@@ -337,6 +337,12 @@ OTHER CHANGES:
 92. Added "Agent Screen Logout Link Credentials" System Setting to change the 
 	agent screen logout page login link to not include user credentials.
 	
+93. Added new campaign feature to force agents to call back their triggered 
+	USERONLY Scheduled Callbacks.
+
+94. Added new campaign feature to automatically reschedule ANYONE callbacks when
+	they are dispositioned as a non-Human-Answered status flag status.
+
 
 
 

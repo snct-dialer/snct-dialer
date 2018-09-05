@@ -458,13 +458,14 @@
 # 180520-1031 - Added use of screen labels in search results, Issue #1104
 # 180522-1920 - Added Routing Initiated Recording ability for manual dial calls
 # 180610-2308 - Added code for Dead Call Trigger features
+# 180818-2147 - Added code for scheduled_callbacks_auto_reschedule
 #
 
-$version = '2.14-352';
-$build = '180610-2308';
+$version = '2.14-353';
+$build = '180818-2147';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=756;
+$mysql_log_count=762;
 $one_mysql_log=0;
 $DB=0;
 $VD_login=0;
@@ -4282,7 +4283,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 				if (strlen($campaign_cid) > 6) {$CCID = "$campaign_cid";   $CCID_on++;}
 				### check for custom cid use
 				$use_custom_cid=0;
-				$stmt = "SELECT use_custom_cid,manual_dial_hopper_check,start_call_url,manual_dial_filter,use_internal_dnc,use_campaign_dnc,use_other_campaign_dnc,cid_group_id FROM vicidial_campaigns where campaign_id='$campaign';";
+				$stmt = "SELECT use_custom_cid,manual_dial_hopper_check,start_call_url,manual_dial_filter,use_internal_dnc,use_campaign_dnc,use_other_campaign_dnc,cid_group_id,scheduled_callbacks_auto_reschedule FROM vicidial_campaigns where campaign_id='$campaign';";
 				$rslt=mysql_to_mysqli($stmt, $link);
 					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00313',$user,$server_ip,$session_name,$one_mysql_log);}
 				if ($DB) {echo "$stmt\n";}
@@ -4290,14 +4291,15 @@ if ($ACTION == 'manDiaLnextCaLL')
 				if ($uccid_ct > 0)
 					{
 					$row=mysqli_fetch_row($rslt);
-					$use_custom_cid =			$row[0];
-					$manual_dial_hopper_check =	$row[1];
-					$OUT_start_call_url =		$row[2];
-					$manual_dial_filter =		$row[3];
-					$use_internal_dnc =			$row[4];
-					$use_campaign_dnc =			$row[5];
-					$use_other_campaign_dnc =	$row[6];
-					$cid_group_id =				$row[7];
+					$use_custom_cid =						$row[0];
+					$manual_dial_hopper_check =				$row[1];
+					$OUT_start_call_url =					$row[2];
+					$manual_dial_filter =					$row[3];
+					$use_internal_dnc =						$row[4];
+					$use_campaign_dnc =						$row[5];
+					$use_other_campaign_dnc =				$row[6];
+					$cid_group_id =							$row[7];
+					$scheduled_callbacks_auto_reschedule =	$row[8];
 					}
 
 				if ($no_hopper_dialing_used > 0)
@@ -4612,6 +4614,33 @@ if ($ACTION == 'manDiaLnextCaLL')
 					$dial_wait_seconds = '0';	# 1 digit only
 					$dial_ingroup_dialstring = "90009*$dial_ingroup" . "**$lead_id" . "**$agent_dialed_number" . "*$user" . "*$user" . "**1*$conf_exten";
 					$Ndialstring = "$loop_ingroup_dial_prefix$dial_wait_seconds$dial_ingroup_dialstring";
+					}
+
+				if ( ($scheduled_callbacks_auto_reschedule != 'DISABLED') and (strlen($scheduled_callbacks_auto_reschedule) > 0) )
+					{
+					### gather vicidial_callbacks information for this lead, if any
+					$stmt = "SELECT callback_id,callback_time,lead_status,list_id FROM vicidial_callbacks where lead_id='$lead_id' and status='LIVE' and recipient='ANYONE' order by callback_id limit 1;";
+					$rslt=mysql_to_mysqli($stmt, $link);
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00757',$user,$server_ip,$session_name,$one_mysql_log);}
+					if ($DB) {echo "$stmt\n";}
+					$vcb_ct = mysqli_num_rows($rslt);
+					if ($vcb_ct > 0)
+						{
+						$row=mysqli_fetch_row($rslt);
+						$PSCBcallback_id =		$row[0];
+						$PSCBcallback_time =	$row[1];
+						$PSCBlead_status =		$row[2];
+						$PSCBlist_id =			$row[3];
+						}
+
+					### insert record in recent callbacks table
+					if ($vcb_ct > 0)
+						{
+						$stmt = "INSERT INTO vicidial_recent_ascb_calls SET call_date=NOW(),callback_date='$PSCBcallback_time',callback_id='$PSCBcallback_id',caller_code='$MqueryCID',lead_id='$lead_id',server_ip='$server_ip',orig_status='$PSCBlead_status',reschedule='$scheduled_callbacks_auto_reschedule',list_id='$PSCBlist_id',rescheduled='U';";
+						if ($DB) {echo "$stmt\n";}
+						$rslt=mysql_to_mysqli($stmt, $link);
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00758',$user,$server_ip,$session_name,$one_mysql_log);}
+						}
 					}
 
 				if ($CCID_on) {$CIDstring = "\"$MqueryCID$EAC\" <$CCID>";}
@@ -5606,7 +5635,7 @@ if ($ACTION == 'manDiaLonly')
 		### check for manual dial filter and extension append settings in campaign
 		$use_eac=0;
 		$use_custom_cid=0;
-		$stmt = "SELECT manual_dial_filter,use_internal_dnc,use_campaign_dnc,use_other_campaign_dnc,extension_appended_cidname,start_call_url FROM vicidial_campaigns where campaign_id='$campaign';";
+		$stmt = "SELECT manual_dial_filter,use_internal_dnc,use_campaign_dnc,use_other_campaign_dnc,extension_appended_cidname,start_call_url,scheduled_callbacks_auto_reschedule FROM vicidial_campaigns where campaign_id='$campaign';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00325',$user,$server_ip,$session_name,$one_mysql_log);}
 		if ($DB) {echo "$stmt\n";}
@@ -5614,12 +5643,13 @@ if ($ACTION == 'manDiaLonly')
 		if ($vcstgs_ct > 0)
 			{
 			$row=mysqli_fetch_row($rslt);
-			$manual_dial_filter =			$row[0];
-			$use_internal_dnc =				$row[1];
-			$use_campaign_dnc =				$row[2];
-			$use_other_campaign_dnc =		$row[3];
-			$extension_appended_cidname =	$row[4];
-			$start_call_url =				$row[5];
+			$manual_dial_filter =					$row[0];
+			$use_internal_dnc =						$row[1];
+			$use_campaign_dnc =						$row[2];
+			$use_other_campaign_dnc =				$row[3];
+			$extension_appended_cidname =			$row[4];
+			$start_call_url =						$row[5];
+			$scheduled_callbacks_auto_reschedule =	$row[6];
 			if ($extension_appended_cidname == 'Y')
 				{$use_eac++;}
 			}
@@ -5973,6 +6003,32 @@ if ($ACTION == 'manDiaLonly')
 		else
 			{$account='';   $variable='';}
 
+		if ( ($scheduled_callbacks_auto_reschedule != 'DISABLED') and (strlen($scheduled_callbacks_auto_reschedule) > 0) )
+			{
+			### gather vicidial_callbacks information for this lead, if any
+			$stmt = "SELECT callback_id,callback_time,lead_status,list_id FROM vicidial_callbacks where lead_id='$lead_id' and status='LIVE' and recipient='ANYONE' order by callback_id limit 1;";
+			$rslt=mysql_to_mysqli($stmt, $link);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00759',$user,$server_ip,$session_name,$one_mysql_log);}
+			if ($DB) {echo "$stmt\n";}
+			$vcb_ct = mysqli_num_rows($rslt);
+			if ($vcb_ct > 0)
+				{
+				$row=mysqli_fetch_row($rslt);
+				$PSCBcallback_id =		$row[0];
+				$PSCBcallback_time =	$row[1];
+				$PSCBlead_status =		$row[2];
+				$PSCBlist_id =			$row[3];
+				}
+
+			### insert record in recent callbacks table
+			if ($vcb_ct > 0)
+				{
+				$stmt = "INSERT INTO vicidial_recent_ascb_calls SET call_date=NOW(),callback_date='$PSCBcallback_time',callback_id='$PSCBcallback_id',caller_code='$MqueryCID',lead_id='$lead_id',server_ip='$server_ip',orig_status='$PSCBlead_status',reschedule='$scheduled_callbacks_auto_reschedule',list_id='$PSCBlist_id',rescheduled='U';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00760',$user,$server_ip,$session_name,$one_mysql_log);}
+				}
+			}
 		### whether to omit phone_code or not
 		if (preg_match('/Y/i',$omit_phone_code)) 
 			{$Ndialstring = "$Local_out_prefix$phone_number";}
@@ -16431,7 +16487,7 @@ if ($ACTION == 'LEADINFOview')
 			$campaignCBdisplaydaysSQL = '';
 			$stmt = "SELECT callback_hours_block,callback_list_calltime,local_call_time,callback_display_days from vicidial_campaigns where campaign_id='$campaign';";
 			$rslt=mysql_to_mysqli($stmt, $link);
-				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00761',$user,$server_ip,$session_name,$one_mysql_log);}
 			if ($rslt) {$camp_count = mysqli_num_rows($rslt);}
 			if ($camp_count > 0)
 				{
@@ -16458,7 +16514,7 @@ if ($ACTION == 'LEADINFOview')
 			$stmt = "SELECT callback_id,lead_id from vicidial_callbacks where recipient='USERONLY' and user='$user' $campaignCBsql $campaignCBhoursSQL $campaignCBdisplaydaysSQL and status IN('LIVE') order by callback_time limit 1;";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);
-				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00762',$user,$server_ip,$session_name,$one_mysql_log);}
 			if ($rslt) {$callbacks_count = mysqli_num_rows($rslt);}
 			if ($callbacks_count > 0)
 				{
