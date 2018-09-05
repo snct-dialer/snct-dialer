@@ -184,6 +184,8 @@
   * Add upstream Rev. 3025:
     - Update: www/vicidial/admin.php: Added copying of in-group user
         grades/ranks when copying an in-group.
+  * Remove commas from mailboxname:
+  	- Update: bin/ADMIN_keepalive_ALL.pl.
 
 2.25.27
   [Jörg Fring-Fürst]

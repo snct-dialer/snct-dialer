@@ -2701,6 +2701,7 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 		else {
 			$PrintMailbox = "$extension[$i] Mailbox";
 		}
+		$PrintMailbox =~ tr/,//d;
 		if ($delete_vm_after_email[$i] =~ /Y/)
 			{$vm  .= "$voicemail[$i] => $pass[$i],$PrintMailbox,$email[$i],,|delete=yes|tz=$voicemail_timezone[$i]|$voicemail_options[$i]\n";}
 		else
@@ -2881,6 +2882,7 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 			$PrintMailbox = "$extension[$i] Mailbox";
 		}
 		
+		$PrintMailbox =~ tr/,//d;
 		if ($delete_vm_after_email[$i] =~ /Y/)
 			{$vm  .= "$voicemail[$i] => $pass[$i],$PrintMailbox,$email[$i],,|delete=yes|tz=$voicemail_timezone[$i]|$voicemail_options[$i]\n";}
 		else
@@ -3494,6 +3496,8 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 				else {
 					$PrintMailbox = "$extension[$i] Mailbox";
 				}
+			
+				$PrintMailbox =~ tr/,//d;
 				if ($delete_vm_after_email[$i] =~ /Y/)
 					{$vm  .= "$voicemail[$i] => $pass[$i],$PrintMailbox,$email[$i],,|delete=yes|tz=$voicemail_timezone[$i]|$voicemail_options[$i]\n";}
 				else
