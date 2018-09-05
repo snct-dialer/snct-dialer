@@ -5,6 +5,7 @@
 #
 # CHANGES
 # 180724-2109 - First build
+# 180829-1155 - Added totals
 #
 
 $startMS = microtime();
@@ -341,6 +342,7 @@ if (strlen($group_SQL)<3) {$group_SQL="''";}
 $i=0;
 $callmenu_string='|';
 $callmenu_ct = count($callmenus);
+$selected_callmenus=$callmenus;
 while($i < $callmenu_ct)
 	{
 	$callmenu_string .= "$callmenus[$i]|";
@@ -499,9 +501,9 @@ $MAIN.="o_cal.a_tpl.yearscroll = false;\n";
 $MAIN.="// o_cal.a_tpl.weekstart = 1; // Monday week start\n";
 $MAIN.="</script>\n";
 
-$MAIN.="</TD><TD VALIGN=TOP>\n";
+$MAIN.="</TD><TD ROWSPAN=2 VALIGN=TOP>\n";
 
-
+/*
 	$MAIN.=_QXZ("Campaigns").": \n";
 	$MAIN.="</TD><TD ROWSPAN=2 VALIGN=TOP>\n";
 	$MAIN.="<SELECT SIZE=5 NAME=group[] multiple>\n";
@@ -516,16 +518,17 @@ $MAIN.="</TD><TD VALIGN=TOP>\n";
 		}
 	$MAIN.="</SELECT>\n";
 	$MAIN.="</TD><TD ROWSPAN=2 VALIGN=TOP>\n";
+*/
 
-/*
-	$MAIN.=_QXZ("Callmenus").": \n";
-	$MAIN.="</TD><TD VALIGN=TOP>\n";
+
+	$MAIN.=_QXZ("Callmenu")." /<BR>"._QXZ("Tracking Group").": \n";
+	$MAIN.="</TD><TD ROWSPAN=2 VALIGN=TOP>\n";
 	$MAIN.="<SELECT SIZE=5 NAME=callmenus[] multiple>\n";
 	$o=0;
 
 	while ($callmenus_to_print > $o)
 		{
-		if (preg_match("/\|$LISTcallmenus\|/",$callmenu_string)) 
+		if (preg_match("/\|$LISTcallmenus[$o]\|/",$callmenu_string)) 
 			{$MAIN.="<option value='$LISTcallmenus[$o]' selected>$LISTcallmenus[$o] - $LISTcallmenus_names[$o]</option>\n";}
 		else
 			{$MAIN.="<option value='$LISTcallmenus[$o]'>$LISTcallmenus[$o] - $LISTcallmenus_names[$o]</option>\n";}
@@ -533,7 +536,8 @@ $MAIN.="</TD><TD VALIGN=TOP>\n";
 		}
 
 	$MAIN.="</SELECT>\n";
-	$MAIN.="</TD><TD VALIGN=TOP>\n";
+	$MAIN.="</TD><TD ROWSPAN=2 VALIGN=TOP>\n";
+/*
 	$MAIN.="<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ";
 	$MAIN.="<a href=\"$PHP_SELF?DB=$DB&type=$type&query_date=$query_date&end_date=$end_date&query_date_D=$query_date_D&query_date_T=$query_date_T&end_date_D=$end_date_D&end_date_T=$end_date_T$callmenuQS&shift=$shift&file_download=1&search_archived_data=$search_archived_data\">"._QXZ("DOWNLOAD")."</a> | ";
 	$MAIN.="<a href=\"./admin.php?ADD=3111&group_id=$group[0]\">"._QXZ("MODIFY")."</a> | ";
@@ -562,7 +566,7 @@ $MAIN.="<input type='text' name='user' value='$user' size='10' maxlength='10'><B
 
 $MAIN.="</TD><TD ROWSPAN=2 VALIGN=TOP>\n";
 $MAIN.="<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-$MAIN.="<a href=\"$PHP_SELF?DB=$DB&type=$type&query_date=$query_date&end_date=$end_date$groupQS&shift=$shift&file_download=1&search_archived_data=$search_archived_data&user=$user&report_type=$report_type\">"._QXZ("DOWNLOAD")."</a> | ";
+$MAIN.="<a href=\"$PHP_SELF?DB=$DB&type=$type&query_date=$query_date&end_date=$end_date$callmenuQS&shift=$shift&file_download=1&search_archived_data=$search_archived_data&user=$user&report_type=$report_type&submit=1\">"._QXZ("DOWNLOAD")."</a> | ";
 $MAIN.="<a href=\"./admin.php?ADD=31&campaign_id=$group[0]\">"._QXZ("MODIFY")."</a> | ";
 $MAIN.="<a href=\"./admin.php?ADD=999999\">"._QXZ("REPORTS")."</a> | ";
 $MAIN.="<a href=\"./AST_VDADstats.php?query_date=$query_date&end_date=$end_date&shift=$shift$groupQS\">"._QXZ("OUTBOUND REPORT")."</a> \n";
@@ -589,7 +593,8 @@ else
 	{
 	$MAIN.=_QXZ("Callmenu Report").": $query_date_BEGIN "._QXZ("to")." $query_date_END               $NOW_TIME\n";
 	$MAIN.="                  "._QXZ("Report").": $report_type\n";
-	$MAIN.="               "._QXZ("Campaigns").": $group_string\n";
+#	$MAIN.="               "._QXZ("Campaigns").": $group_string\n";
+	$MAIN.="         "._QXZ("Tracking groups").": $callmenu_string\n";
 
 	$CSV_text="\""._QXZ("Callmenu Report").": $query_date_BEGIN "._QXZ("to")." $query_date_END\",\"$NOW_TIME\"\n";
 
@@ -622,16 +627,18 @@ else
 
 	if ($report_type=="SINGLE_AGENT") {
 		$MAIN.="                   "._QXZ("Agent").": $user\n";
-		$al_stmt="select uniqueid from ".$vicidial_agent_log_table." where uniqueid is not null and uniqueid!='' and event_time>='$query_date_BEGIN 00:00:00' and event_time<='$query_date_END 23:59:59' and campaign_id in ($group_SQL) and user='$user' order by uniqueid asc";
+		$al_stmt="select uniqueid, event_time from ".$vicidial_agent_log_table." where uniqueid is not null and uniqueid!='' and event_time>='$query_date_BEGIN 00:00:00' and event_time<='$query_date_END 23:59:59' and user='$user' order by uniqueid asc";
 		if ($DB) {$MAIN.="$al_stmt\n";}
 		$al_rslt=mysql_to_mysqli($al_stmt, $link);
 		$max_prompts=0;
 		$prompts_array=array();
 		$calls_array=array();
+		$total_calls_array=array();
 		$HTML_text="";
 		while ($al_row=mysqli_fetch_row($al_rslt)) 
 			{
 			$uniqueid=$al_row[0];
+			$start_time=$al_row[1];
 			$vl_stmt="select phone_ext, comment_b, comment_d, start_time from ".$live_inbound_log_table." where uniqueid='$uniqueid' and comment_d like '%>%' order by start_time";
 			if ($DB) {$MAIN.="$vl_stmt\n";}
 			$vl_rslt=mysql_to_mysqli($vl_stmt, $link);
@@ -644,26 +651,31 @@ else
 				$phone_ext=$vl_row[0];
 				$comment_b=$vl_row[1];
 				$comment_d=$vl_row[2];
-				$start_time=$vl_row[3];
-				$calls_array["$uniqueid"]["start_time"]="$start_time";
-				$calls_array["$uniqueid"]["phone"]="$phone_ext";
+				# $start_time=$vl_row[3];
+				
 				if (preg_match('/\>[0-9]$/', $comment_d)) 
 					{
 					$qa_array=explode(">", $comment_d);
-					$total_points+=$qa_array[1];
-					$prompts_array["$qa_array[0]"]+=$qa_array[1];
-					$calls_array["$uniqueid"]["$qa_array[0]"]=($qa_array[1]+0);
+					if (in_array($qa_array[0], $selected_callmenus)) 
+						{
+						$calls_array["$uniqueid"]["start_time"]="$start_time";
+						$calls_array["$uniqueid"]["phone"]="$phone_ext";
+						$total_points+=$qa_array[1];
+						$prompts_array["$qa_array[0]"]+=$qa_array[1];
+						$calls_array["$uniqueid"]["$qa_array[0]"]=($qa_array[1]+0);
+						$total_calls_array["$uniqueid"]++;
+						}
 					}
 				}
 			if ($prompts>$max_prompts) {$max_prompts=$prompts;}
 			}
-
+		$total_calls=count($total_calls_array);
 		$CSV_text="\""._QXZ("PHONE")."\",\""._QXZ("START TIME")."\",";
-		$CSV_text_end="\"\",\""._QXZ("GRAND TOTAL").":\",";
+		$CSV_text_end="\""._QXZ("TOT. CALLS").": $total_calls\",\""._QXZ("POINT TOTALS").":\",";
 
 		$HTML_text="<table border='0' cellpadding='2' cellspacing='1'>";
 		$HTML_text.="<tr bgcolor='".$SSmenu_background."'><th><font color='#FFF'>PHONE</font></th><th><font color='#FFF'>"._QXZ("START TIME")."</font></th>";
-		$HTML_text_end="<tr bgcolor='".$SSmenu_background."'><td colspan='2' align='right'><font color='#FFF'>"._QXZ("GRAND TOTAL").":</font></td>";
+		$HTML_text_end="<tr bgcolor='".$SSmenu_background."'><th align='right'><font color='#FFF'>"._QXZ("TOT. CALLS").": $total_calls</font></th><th align='right'><font color='#FFF'>"._QXZ("POINT TOTALS").":</font></th>";
 
 		ksort($prompts_array);
 		$grand_total=0;
@@ -703,12 +715,14 @@ else
 		$HTML_text.=$HTML_text_end;
 		$HTML_text.="</table>";
 	} else {
-		$al_stmt="select uniqueid,user from ".$vicidial_agent_log_table." where uniqueid is not null and uniqueid!='' and event_time>='$query_date_BEGIN 00:00:00' and event_time<='$query_date_END 23:59:59' and campaign_id in ($group_SQL)  order by uniqueid asc";
+		$al_stmt="select uniqueid,user from ".$vicidial_agent_log_table." where uniqueid is not null and uniqueid!='' and event_time>='$query_date_BEGIN 00:00:00' and event_time<='$query_date_END 23:59:59' order by uniqueid asc";
 		if ($DB) {$MAIN.="$al_stmt\n";}
 		$al_rslt=mysql_to_mysqli($al_stmt, $link);
 		$max_prompts=0;
 		$prompts_array=array();
 		$agents_array=array();
+		$calls_array=array();
+		$total_calls_array=array();
 		$HTML_text="";
 		$CSV_text="";
 		while ($al_row=mysqli_fetch_row($al_rslt)) 
@@ -723,7 +737,6 @@ else
 			} else {
 				$full_name=$agent;
 			}
-			$agent_array["$agent"]["AGENT"]=$full_name;
 			$vl_stmt="select phone_ext, comment_b, comment_d, start_time from ".$live_inbound_log_table." where uniqueid='$uniqueid' and comment_d like '%>%' order by start_time";
 			if ($DB) {$MAIN.="$vl_stmt\n";}
 			$vl_rslt=mysql_to_mysqli($vl_stmt, $link);
@@ -737,17 +750,24 @@ else
 				$comment_b=$vl_row[1];
 				$comment_d=$vl_row[2];
 				$start_time=$vl_row[3];
+				$calls_array["$uniqueid"]++;
 				if (preg_match('/\>[0-9]$/', $comment_d)) 
 					{
 					$qa_array=explode(">", $comment_d);
-					$total_points+=$qa_array[1];
-					$prompts_array["$qa_array[0]"]+=$qa_array[1];
-					$agent_array["$agent"]["$qa_array[0]"]+=$qa_array[1];
-					$agent_array["$agent"]["TOTAL"]+=$qa_array[1];
+					if (in_array($qa_array[0], $selected_callmenus)) 
+						{
+						$agent_array["$agent"]["AGENT"]=$full_name;
+						$total_points+=$qa_array[1];
+						$prompts_array["$qa_array[0]"]+=$qa_array[1];
+						$agent_array["$agent"]["$qa_array[0]"]+=$qa_array[1];
+						$agent_array["$agent"]["TOTAL"]+=$qa_array[1];
+						$total_calls_array["$agent"]["$uniqueid"]++;
+						}
 					}
 				}
 			if ($prompts>$max_prompts) {$max_prompts=$prompts;}
 			}
+		# $total_calls=count($total_calls_array);
 
 		$CSV_text="\""._QXZ("AGENT")."\",";
 		$CSV_text_end="\""._QXZ("TOTALS").":\",";
@@ -755,7 +775,7 @@ else
 
 		$HTML_text="<table border='0' cellpadding='2' cellspacing='1'>";
 		$HTML_text.="<tr bgcolor='".$SSmenu_background."'><th><font color='#FFF'>"._QXZ("AGENT")."</font></th>";
-		$HTML_text_end="<tr bgcolor='".$SSmenu_background."'><td align='right'><font color='#FFF'>"._QXZ("TOTALS").":</font></td>";
+		$HTML_text_end="<tr bgcolor='".$SSmenu_background."'><th align='right'><font color='#FFF'>"._QXZ("TOTALS").":</font></th>";
 
 
 		
@@ -770,12 +790,10 @@ else
 			$HTML_text.="<th><font color='#FFF'>$key</font></th>";
 			$HTML_text_end.="<th><font color='#FFF'>$val</font></th>";
 			}	
-		$HTML_text.="<th><font color='#FFF'>"._QXZ("TOTAL POINTS").":</font></th></tr>";
-		$CSV_text.="\""._QXZ("TOTAL POINTS")."\"\n";
-
-		$HTML_text_end.="<th><font color='#FFF'>$grand_total</font></th></tr>";
-		$CSV_text_end.="\"$grand_total\"\n";
-
+		$HTML_text.="<th><font color='#FFF'>"._QXZ("TOTAL POINTS").":</font></th>";
+		$HTML_text.="<th><font color='#FFF'>"._QXZ("TOTAL CALLS").":</font></th></tr>";
+		$CSV_text.="\""._QXZ("TOTAL POINTS")."\",";
+		$CSV_text.="\""._QXZ("TOTAL CALLS")."\"\n";
 
 		uasort($agent_array, function ($i, $j) 
 			{
@@ -786,6 +804,7 @@ else
 			else return 1;
 			});
 
+		$total_calls=0;
 		while (list($key, $val)=each($agent_array)) 
 			{
 			$CSV_text.="\"".$agent_array[$key]["AGENT"]."\",";
@@ -797,9 +816,15 @@ else
 				$HTML_text.="<th>".($agent_array[$key][$key2]+0)."</th>";
 				$call_points+=($agent_array[$key][$key2]+0);
 				}	
-			$CSV_text.="\"".($agent_array[$key]["TOTAL"]+0)."\"\n";
-			$HTML_text.="<th>".($agent_array[$key]["TOTAL"]+0)."</th></tr>";
+			$CSV_text.="\"".($agent_array[$key]["TOTAL"]+0)."\"";
+			$CSV_text.="\"".(count($total_calls_array[$key])+0)."\"\n";
+			$HTML_text.="<th>".($agent_array[$key]["TOTAL"]+0)."</th>";
+			$HTML_text.="<th>".(count($total_calls_array[$key])+0)."</th></tr>";
+			$total_calls+=count($total_calls_array[$key]);
 			}
+		$HTML_text_end.="<th><font color='#FFF'>$grand_total</font></th><th><font color='#FFF'>$total_calls</font></th></tr>";
+		$CSV_text_end.="\"$grand_total\",\"$total_calls\"\n";
+
 
 		$CSV_text.=$CSV_text_end;
 

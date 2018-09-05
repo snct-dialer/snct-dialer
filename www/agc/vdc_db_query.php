@@ -458,13 +458,16 @@
 # 180520-1031 - Added use of screen labels in search results, Issue #1104
 # 180522-1920 - Added Routing Initiated Recording ability for manual dial calls
 # 180610-2308 - Added code for Dead Call Trigger features
+# 180818-2147 - Added code for scheduled_callbacks_auto_reschedule
+# 180827-1225 - Added code for scheduled_callbacks_timezones_... features
+# 180904-0131 - Fix for calls_today count when using dial-ingroup
 #
 
-$version = '2.14-352';
-$build = '180610-2308';
+$version = '2.14-355';
+$build = '180904-0131';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=756;
+$mysql_log_count=762;
 $one_mysql_log=0;
 $DB=0;
 $VD_login=0;
@@ -782,6 +785,10 @@ if (isset($_GET["routing_initiated_recording"]))			{$routing_initiated_recording
 	elseif (isset($_POST["routing_initiated_recording"]))	{$routing_initiated_recording=$_POST["routing_initiated_recording"];}
 if (isset($_GET["dead_time"]))			{$dead_time=$_GET["dead_time"];}
 	elseif (isset($_POST["dead_time"]))	{$dead_time=$_POST["dead_time"];}
+if (isset($_GET["callback_gmt_offset"]))			{$callback_gmt_offset=$_GET["callback_gmt_offset"];}
+	elseif (isset($_POST["callback_gmt_offset"]))	{$callback_gmt_offset=$_POST["callback_gmt_offset"];}
+if (isset($_GET["callback_timezone"]))			{$callback_timezone=$_GET["callback_timezone"];}
+	elseif (isset($_POST["callback_timezone"]))	{$callback_timezone=$_POST["callback_timezone"];}
 
 
 header ("Content-type: text/html; charset=utf-8");
@@ -1112,6 +1119,9 @@ $url_link = preg_replace("/\'|\"|\\\\|;/","",$url_link);
 $user_group = preg_replace('/[^-_0-9a-zA-Z]/','',$user_group);
 $routing_initiated_recording = preg_replace('/[^-_0-9a-zA-Z]/','',$routing_initiated_recording);
 $dead_time = preg_replace('/[^0-9]/','',$dead_time);
+$callback_gmt_offset = preg_replace('/[^- \._0-9a-zA-Z]/','',$callback_gmt_offset);
+$callback_timezone = preg_replace('/[^-, _0-9a-zA-Z]/','',$callback_timezone);
+
 
 # default optional vars if not set
 if (!isset($format))   {$format="text";}
@@ -4282,7 +4292,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 				if (strlen($campaign_cid) > 6) {$CCID = "$campaign_cid";   $CCID_on++;}
 				### check for custom cid use
 				$use_custom_cid=0;
-				$stmt = "SELECT use_custom_cid,manual_dial_hopper_check,start_call_url,manual_dial_filter,use_internal_dnc,use_campaign_dnc,use_other_campaign_dnc,cid_group_id FROM vicidial_campaigns where campaign_id='$campaign';";
+				$stmt = "SELECT use_custom_cid,manual_dial_hopper_check,start_call_url,manual_dial_filter,use_internal_dnc,use_campaign_dnc,use_other_campaign_dnc,cid_group_id,scheduled_callbacks_auto_reschedule FROM vicidial_campaigns where campaign_id='$campaign';";
 				$rslt=mysql_to_mysqli($stmt, $link);
 					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00313',$user,$server_ip,$session_name,$one_mysql_log);}
 				if ($DB) {echo "$stmt\n";}
@@ -4290,14 +4300,15 @@ if ($ACTION == 'manDiaLnextCaLL')
 				if ($uccid_ct > 0)
 					{
 					$row=mysqli_fetch_row($rslt);
-					$use_custom_cid =			$row[0];
-					$manual_dial_hopper_check =	$row[1];
-					$OUT_start_call_url =		$row[2];
-					$manual_dial_filter =		$row[3];
-					$use_internal_dnc =			$row[4];
-					$use_campaign_dnc =			$row[5];
-					$use_other_campaign_dnc =	$row[6];
-					$cid_group_id =				$row[7];
+					$use_custom_cid =						$row[0];
+					$manual_dial_hopper_check =				$row[1];
+					$OUT_start_call_url =					$row[2];
+					$manual_dial_filter =					$row[3];
+					$use_internal_dnc =						$row[4];
+					$use_campaign_dnc =						$row[5];
+					$use_other_campaign_dnc =				$row[6];
+					$cid_group_id =							$row[7];
+					$scheduled_callbacks_auto_reschedule =	$row[8];
 					}
 
 				if ($no_hopper_dialing_used > 0)
@@ -4614,6 +4625,33 @@ if ($ACTION == 'manDiaLnextCaLL')
 					$Ndialstring = "$loop_ingroup_dial_prefix$dial_wait_seconds$dial_ingroup_dialstring";
 					}
 
+				if ( ($scheduled_callbacks_auto_reschedule != 'DISABLED') and (strlen($scheduled_callbacks_auto_reschedule) > 0) )
+					{
+					### gather vicidial_callbacks information for this lead, if any
+					$stmt = "SELECT callback_id,callback_time,lead_status,list_id FROM vicidial_callbacks where lead_id='$lead_id' and status='LIVE' and recipient='ANYONE' order by callback_id limit 1;";
+					$rslt=mysql_to_mysqli($stmt, $link);
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00757',$user,$server_ip,$session_name,$one_mysql_log);}
+					if ($DB) {echo "$stmt\n";}
+					$vcb_ct = mysqli_num_rows($rslt);
+					if ($vcb_ct > 0)
+						{
+						$row=mysqli_fetch_row($rslt);
+						$PSCBcallback_id =		$row[0];
+						$PSCBcallback_time =	$row[1];
+						$PSCBlead_status =		$row[2];
+						$PSCBlist_id =			$row[3];
+						}
+
+					### insert record in recent callbacks table
+					if ($vcb_ct > 0)
+						{
+						$stmt = "INSERT INTO vicidial_recent_ascb_calls SET call_date=NOW(),callback_date='$PSCBcallback_time',callback_id='$PSCBcallback_id',caller_code='$MqueryCID',lead_id='$lead_id',server_ip='$server_ip',orig_status='$PSCBlead_status',reschedule='$scheduled_callbacks_auto_reschedule',list_id='$PSCBlist_id',rescheduled='U';";
+						if ($DB) {echo "$stmt\n";}
+						$rslt=mysql_to_mysqli($stmt, $link);
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00758',$user,$server_ip,$session_name,$one_mysql_log);}
+						}
+					}
+
 				if ($CCID_on) {$CIDstring = "\"$MqueryCID$EAC\" <$CCID>";}
 				else {$CIDstring = "$MqueryCID$EAC";}
 
@@ -4630,6 +4668,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 				$rslt=mysql_to_mysqli($stmt, $link);
 					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00442',$user,$server_ip,$session_name,$one_mysql_log);}
 
+				$calls_todaySQL = ",calls_today='$calls_today'";
 				### Skip logging and list overrides if dial in-group is used
 				if (strlen($dial_ingroup) < 1)
 					{
@@ -4637,19 +4676,23 @@ if ($ACTION == 'manDiaLnextCaLL')
 					if ($DB) {echo "$stmt\n";}
 					$rslt=mysql_to_mysqli($stmt, $link);
 						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00034',$user,$server_ip,$session_name,$one_mysql_log);}
+
+					### update calls_today count in vicidial_campaign_agents
+					$stmt = "UPDATE vicidial_campaign_agents set calls_today='$calls_today' where user='$user' and campaign_id='$campaign';";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_to_mysqli($stmt, $link);
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00036',$user,$server_ip,$session_name,$one_mysql_log);}
+					}
+				else
+					{
+					$calls_todaySQL='';
 					}
 
 				### update the agent status to INCALL in vicidial_live_agents
-				$stmt = "UPDATE vicidial_live_agents set status='INCALL',last_call_time='$NOW_TIME',callerid='$MqueryCID',lead_id='$lead_id',comments='MANUAL',calls_today='$calls_today',external_hangup=0,external_status='',external_pause='',external_dial='',last_state_change='$NOW_TIME',pause_code='' where user='$user' and server_ip='$server_ip';";
+				$stmt = "UPDATE vicidial_live_agents set status='INCALL',last_call_time='$NOW_TIME',callerid='$MqueryCID',lead_id='$lead_id',comments='MANUAL',external_hangup=0,external_status='',external_pause='',external_dial='',last_state_change='$NOW_TIME',pause_code=''$calls_todaySQL where user='$user' and server_ip='$server_ip';";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_to_mysqli($stmt, $link);
 					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00035',$user,$server_ip,$session_name,$one_mysql_log);}
-
-				### update calls_today count in vicidial_campaign_agents
-				$stmt = "UPDATE vicidial_campaign_agents set calls_today='$calls_today' where user='$user' and campaign_id='$campaign';";
-				if ($DB) {echo "$stmt\n";}
-				$rslt=mysql_to_mysqli($stmt, $link);
-					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00036',$user,$server_ip,$session_name,$one_mysql_log);}
 
 				if ($agent_dialed_number > 0)
 					{
@@ -5606,7 +5649,7 @@ if ($ACTION == 'manDiaLonly')
 		### check for manual dial filter and extension append settings in campaign
 		$use_eac=0;
 		$use_custom_cid=0;
-		$stmt = "SELECT manual_dial_filter,use_internal_dnc,use_campaign_dnc,use_other_campaign_dnc,extension_appended_cidname,start_call_url FROM vicidial_campaigns where campaign_id='$campaign';";
+		$stmt = "SELECT manual_dial_filter,use_internal_dnc,use_campaign_dnc,use_other_campaign_dnc,extension_appended_cidname,start_call_url,scheduled_callbacks_auto_reschedule FROM vicidial_campaigns where campaign_id='$campaign';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00325',$user,$server_ip,$session_name,$one_mysql_log);}
 		if ($DB) {echo "$stmt\n";}
@@ -5614,12 +5657,13 @@ if ($ACTION == 'manDiaLonly')
 		if ($vcstgs_ct > 0)
 			{
 			$row=mysqli_fetch_row($rslt);
-			$manual_dial_filter =			$row[0];
-			$use_internal_dnc =				$row[1];
-			$use_campaign_dnc =				$row[2];
-			$use_other_campaign_dnc =		$row[3];
-			$extension_appended_cidname =	$row[4];
-			$start_call_url =				$row[5];
+			$manual_dial_filter =					$row[0];
+			$use_internal_dnc =						$row[1];
+			$use_campaign_dnc =						$row[2];
+			$use_other_campaign_dnc =				$row[3];
+			$extension_appended_cidname =			$row[4];
+			$start_call_url =						$row[5];
+			$scheduled_callbacks_auto_reschedule =	$row[6];
 			if ($extension_appended_cidname == 'Y')
 				{$use_eac++;}
 			}
@@ -5973,6 +6017,32 @@ if ($ACTION == 'manDiaLonly')
 		else
 			{$account='';   $variable='';}
 
+		if ( ($scheduled_callbacks_auto_reschedule != 'DISABLED') and (strlen($scheduled_callbacks_auto_reschedule) > 0) )
+			{
+			### gather vicidial_callbacks information for this lead, if any
+			$stmt = "SELECT callback_id,callback_time,lead_status,list_id FROM vicidial_callbacks where lead_id='$lead_id' and status='LIVE' and recipient='ANYONE' order by callback_id limit 1;";
+			$rslt=mysql_to_mysqli($stmt, $link);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00759',$user,$server_ip,$session_name,$one_mysql_log);}
+			if ($DB) {echo "$stmt\n";}
+			$vcb_ct = mysqli_num_rows($rslt);
+			if ($vcb_ct > 0)
+				{
+				$row=mysqli_fetch_row($rslt);
+				$PSCBcallback_id =		$row[0];
+				$PSCBcallback_time =	$row[1];
+				$PSCBlead_status =		$row[2];
+				$PSCBlist_id =			$row[3];
+				}
+
+			### insert record in recent callbacks table
+			if ($vcb_ct > 0)
+				{
+				$stmt = "INSERT INTO vicidial_recent_ascb_calls SET call_date=NOW(),callback_date='$PSCBcallback_time',callback_id='$PSCBcallback_id',caller_code='$MqueryCID',lead_id='$lead_id',server_ip='$server_ip',orig_status='$PSCBlead_status',reschedule='$scheduled_callbacks_auto_reschedule',list_id='$PSCBlist_id',rescheduled='U';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00760',$user,$server_ip,$session_name,$one_mysql_log);}
+				}
+			}
 		### whether to omit phone_code or not
 		if (preg_match('/Y/i',$omit_phone_code)) 
 			{$Ndialstring = "$Local_out_prefix$phone_number";}
@@ -12123,11 +12193,22 @@ if ($ACTION == 'updateDISPO')
 	### CALLBACK ENTRY
 	if ( ($dispo_choice == 'CBHOLD') and (strlen($CallBackDatETimE)>10) )
 		{
+		$customer_time = $CallBackDatETimE;
+		if ( ($callback_gmt_offset <> '0') and (strlen($callback_gmt_offset) > 0) and (strlen($callback_timezone) > 0) )
+			{
+			$CBdatetime_array = explode(" ",$CallBackDatETimE);
+			$CBdate_array = explode("-",$CBdatetime_array[0]);
+			$CBtime_array = explode(":",$CBdatetime_array[1]);
+
+			$CBserver_epoch = mktime($CBtime_array[0],$CBtime_array[1],$CBtime_array[2],$CBdate_array[1],$CBdate_array[2],$CBdate_array[0]);
+			$CBserver_epoch = ($CBserver_epoch + ($callback_gmt_offset * 3600));
+			$CallBackDatETimE = date("Y-m-d H:i:s", $CBserver_epoch);
+			}
 		$comments = preg_replace('/"/i','',$comments);
 		$comments = preg_replace("/'/i",'',$comments);
 		$comments = preg_replace('/;/i','',$comments);
 		$comments = preg_replace("/\\\\/i",' ',$comments);
-		$stmt="INSERT INTO vicidial_callbacks (lead_id,list_id,campaign_id,status,entry_time,callback_time,user,recipient,comments,user_group,lead_status) values('$lead_id','$list_id','$campaign','ACTIVE','$NOW_TIME','$CallBackDatETimE','$user','$recipient','$comments','$user_group','$CallBackLeadStatus');";
+		$stmt="INSERT INTO vicidial_callbacks (lead_id,list_id,campaign_id,status,entry_time,callback_time,user,recipient,comments,user_group,lead_status,customer_timezone,customer_timezone_diff,customer_time) values('$lead_id','$list_id','$campaign','ACTIVE','$NOW_TIME','$CallBackDatETimE','$user','$recipient','$comments','$user_group','$CallBackLeadStatus','$callback_timezone','$callback_gmt_offset','$customer_time');";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00154',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -15048,6 +15129,131 @@ if ($ACTION == 'PauseCodeMgrApr')
 
 
 ################################################################################
+### SBC_timezone_build - Build scheduled callbacks timezone select content
+################################################################################
+if ($ACTION == 'SBC_timezone_build')
+	{
+	$orig_zone = date_default_timezone_get();
+	$cust_timezones_enabled=0;
+	$cust_timezones_HTML='';
+
+	### Grab Server GMT value from the database
+	$stmt="SELECT local_gmt FROM servers where server_ip='$server_ip' limit 1;";
+	$rslt=mysql_to_mysqli($stmt, $link);
+		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+	$gmt_recs = mysqli_num_rows($rslt);
+	if ($gmt_recs > 0)
+		{
+		$row=mysqli_fetch_row($rslt);
+		$DBSERVER_GMT		=		$row[0];
+		if (strlen($DBSERVER_GMT)>0)	{$SERVER_GMT = $DBSERVER_GMT;}
+		if ($isdst) {$SERVER_GMT++;} 
+		}
+
+	### Grab current GMT value of the lead that was called
+	$stmt="SELECT gmt_offset_now from vicidial_list where lead_id='$lead_id';";
+	$rslt=mysql_to_mysqli($stmt, $link);
+		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+	$scb_lead_recs = mysqli_num_rows($rslt);
+	if ($scb_lead_recs > 0)
+		{
+		$row=mysqli_fetch_row($rslt);
+		$LEAD_gmt_offset_now =	$row[0];
+		}
+	
+	$LEAD_gmt_diff = ($SERVER_GMT - $LEAD_gmt_offset_now);
+	$SERVER_datetime = date("Y-m-d H:i:s");
+	$LEAD_datetime = date("Y-m-d H:i:s", mktime(date("H")-$LEAD_gmt_diff,date("i"),date("s"),date("m"),date("d"),date("Y")));
+	$cust_timezones_HTML .= "<table bgcolor='white' cellpadding=10 cellspacing=0><tr><td>\n";
+	$cust_timezones_HTML .= "<table bgcolor='#CCCCCC' cellpadding=4 cellspacing=2>\n";
+	$cust_timezones_HTML .= "<tr bgcolor=white><td align=\"center\" valign=\"top\" colspan=\"2\"><font color=\"#000066\"><b><font face=\"Arial, Helvetica, sans-serif\" size=\"3\">Select a Customer Timezone:</font> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <font face=\"Arial, Helvetica, sans-serif\" size=\"1\"><a href=\"#\" onclick=\"hideDiv('SBC_timezone_span')\">"._QXZ("close")."</a></td></tr>\n";
+	$cust_timezones_HTML .= "<tr bgcolor=white><td align=\"right\"><font color=\"#000066\"><b><font face=\"Arial, Helvetica, sans-serif\" size=\"2\"><a href=\"#\" onclick=\"SBC_timezone_choose('0','SERVER TIME','SERVER TIME')\">"._QXZ("SERVER TIME")."</a>: </font></td><td align=\"left\"><font size=2 face=\"Arial,Helvetica\"> $SERVER_datetime</font></td></tr>\n";
+	$cust_timezones_HTML .= "<tr bgcolor=white><td align=\"right\"><font color=\"#000066\"><b><font face=\"Arial, Helvetica, sans-serif\" size=\"2\"><a href=\"#\" onclick=\"SBC_timezone_choose('$LEAD_gmt_diff','LEAD TIME','LEAD TIME')\">"._QXZ("LEAD TIME")."</a>: </font></td><td align=\"left\"><font size=2 face=\"Arial,Helvetica\"> $LEAD_datetime ($LEAD_gmt_diff "._QXZ("hours difference").")</font></td></tr>\n";
+
+	### Grab campaign setting for scheduled_callbacks_timezones_container
+	$stmt="SELECT scheduled_callbacks_timezones_container from vicidial_campaigns where campaign_id='$campaign';";
+	$rslt=mysql_to_mysqli($stmt, $link);
+		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+	$scb_lead_recs = mysqli_num_rows($rslt);
+	if ($scb_lead_recs > 0)
+		{
+		$row=mysqli_fetch_row($rslt);
+		$scheduled_callbacks_timezones_container =	$row[0];
+		}
+
+	if ( ($scheduled_callbacks_timezones_container != 'DISABLED') and (strlen($scheduled_callbacks_timezones_container) > 0) )
+		{
+		### Gather container entry (example: "USA,EST,Y,Eastern Time Zone")
+		$stmt = "SELECT container_entry from vicidial_settings_containers where container_id='$scheduled_callbacks_timezones_container' limit 1;";
+		if ($DB) {echo "$stmt\n";}
+		$rslt=mysql_to_mysqli($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+		$VSC_ct = mysqli_num_rows($rslt);
+		if ($VSC_ct > 0)
+			{
+			$row=mysqli_fetch_row($rslt);
+			$container_entry =	$row[0];
+			if (strlen($container_entry) > 10)
+				{
+				$container_entry = preg_replace("/\r|\t|\'|\"/",'',$container_entry);
+				$cust_timezones = explode("\n",$container_entry);
+				$cust_timezones_ct = count($cust_timezones);
+				if ($DB) {echo "DF-Debug 1: $cust_timezones_ct|$dispo_filter_enabled|$container_entry|\n";}
+				$tzl=0;
+				while ($cust_timezones_ct >= $tzl)
+					{
+					$cust_timezome_line = explode(",",$cust_timezones[$tzl]);
+					$line_country = $cust_timezome_line[0];
+					$line_zone =	$cust_timezome_line[1];
+					$line_dst =		$cust_timezome_line[2];
+					$line_name = preg_replace('/[^-, _0-9a-zA-Z]/','',$cust_timezome_line[3]);
+					$stmt = "SELECT php_tz from vicidial_phone_codes where country='$line_country' and DST='$line_dst' and tz_code='$line_zone' limit 1;";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_to_mysqli($stmt, $link);
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+					$VPC_ct = mysqli_num_rows($rslt);
+					if ($VPC_ct > 0)
+						{
+						$row=mysqli_fetch_row($rslt);
+						$line_php_tz =	$row[0];
+						$cust_timezones_enabled++;
+
+						date_default_timezone_set($line_php_tz);
+						$TEMP_gmt = date("Z");
+						$TEMP_gmt = ($TEMP_gmt / 3600);
+						$TEMP_gmt_diff = ($SERVER_GMT - $TEMP_gmt);
+						$TEMP_datetime = date("Y-m-d H:i:s");
+
+						$cust_timezones_HTML .= "<tr bgcolor=white><td align=\"right\"><font color=\"#000066\"><b><font face=\"Arial, Helvetica, sans-serif\" size=\"2\"><a href=\"#\" onclick=\"SBC_timezone_choose('$TEMP_gmt_diff','$cust_timezones[$tzl]','$line_name')\">$line_name</a>: </font></td><td align=\"left\"><font size=2 face=\"Arial,Helvetica\"> $TEMP_datetime ($TEMP_gmt_diff "._QXZ("hours difference").")</font></td></tr>\n";
+						}
+					else
+						{if ($DB) {echo "NO MATCH FOUND: country='$line_country', DST='$line_dst', tz_code='$line_zone'\n";}}
+
+					$tzl++;
+					}
+				date_default_timezone_set($orig_zone);
+				}
+			}
+		$cust_timezones_HTML .= "</table></td></tr></table>";
+		}
+	else
+		{
+		echo "TIMEZONES NOT AVAILABLE\n";
+		}
+
+	if ($cust_timezones_enabled > 0)
+		{
+		echo "$cust_timezones_HTML\n";
+		}
+	else
+		{
+		echo "TIMEZONES NOT AVAILABLE\n";
+		}
+	$stage .= "|cust_timezones_enabled";
+	}
+
+
+################################################################################
 ### AGENTSview - List statuses of other agents in sidebar or xfer frame
 ################################################################################
 if ($ACTION == 'AGENTSview')
@@ -16431,7 +16637,7 @@ if ($ACTION == 'LEADINFOview')
 			$campaignCBdisplaydaysSQL = '';
 			$stmt = "SELECT callback_hours_block,callback_list_calltime,local_call_time,callback_display_days from vicidial_campaigns where campaign_id='$campaign';";
 			$rslt=mysql_to_mysqli($stmt, $link);
-				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00761',$user,$server_ip,$session_name,$one_mysql_log);}
 			if ($rslt) {$camp_count = mysqli_num_rows($rslt);}
 			if ($camp_count > 0)
 				{
@@ -16458,7 +16664,7 @@ if ($ACTION == 'LEADINFOview')
 			$stmt = "SELECT callback_id,lead_id from vicidial_callbacks where recipient='USERONLY' and user='$user' $campaignCBsql $campaignCBhoursSQL $campaignCBdisplaydaysSQL and status IN('LIVE') order by callback_time limit 1;";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);
-				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00762',$user,$server_ip,$session_name,$one_mysql_log);}
 			if ($rslt) {$callbacks_count = mysqli_num_rows($rslt);}
 			if ($callbacks_count > 0)
 				{
@@ -16489,7 +16695,7 @@ if ($ACTION == 'LEADINFOview')
 		$callback_id = preg_replace('/\D/','',$callback_id);
 		if (strlen($callback_id) > 0)
 			{
-			$stmt="SELECT status,entry_time,callback_time,modify_date,user,recipient,comments,lead_status from vicidial_callbacks where lead_id='$lead_id' and callback_id='$callback_id' limit 1;";
+			$stmt="SELECT status,entry_time,callback_time,modify_date,user,recipient,comments,lead_status,customer_timezone,customer_timezone_diff,customer_time from vicidial_callbacks where lead_id='$lead_id' and callback_id='$callback_id' limit 1;";
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00397',$user,$server_ip,$session_name,$one_mysql_log);}
 			$cb_to_print = mysqli_num_rows($rslt);
@@ -16502,6 +16708,12 @@ if ($ACTION == 'LEADINFOview')
 				echo "<tr bgcolor=white><td ALIGN=right><font class='sb_text'>"._QXZ("Callback Lead Status:")." &nbsp; </td><td ALIGN=left><font class='sb_text'>$row[7]</td></tr>";
 				echo "<tr bgcolor=white><td ALIGN=right><font class='sb_text'>"._QXZ("Callback Entry Time:")." &nbsp; </td><td ALIGN=left><font class='sb_text'>$row[1]</td></tr>";
 				echo "<tr bgcolor=white><td ALIGN=right><font class='sb_text'>"._QXZ("Callback Trigger Time:")." &nbsp; </td><td ALIGN=left><font class='sb_text'>$row[2]</td></tr>";
+				if ( (strlen($row[8]) > 8) and (strlen($row[9]) > 0) )
+					{
+					$temp_timezone = preg_replace("/.*,/",'',$row[8]);
+					echo "<tr bgcolor=white><td ALIGN=right><font class='sb_text'>"._QXZ("Callback Customer Timezone:")." &nbsp; </td><td ALIGN=left><font class='sb_text'>$temp_timezone</td></tr>";
+					echo "<tr bgcolor=white><td ALIGN=right><font class='sb_text'>"._QXZ("Callback Customer Time:")." &nbsp; </td><td ALIGN=left><font class='sb_text'>$row[10]</td></tr>";
+					}
 				echo "<tr bgcolor=white><td ALIGN=right><font class='sb_text'>"._QXZ("Callback Comments:")." &nbsp; </td><td ALIGN=left><font class='sb_text'>$row[6]</td></tr>";
 				echo "</TABLE>";
 				echo "<BR>";
@@ -17277,7 +17489,7 @@ if ($ACTION == 'CalLBacKLisT')
 	if ($agentonly_callback_campaign_lock > 0)
 		{$campaignCBsql = "and campaign_id='$campaign'";}
 
-	$stmt = "SELECT callback_id,lead_id,campaign_id,status,entry_time,callback_time,comments from vicidial_callbacks where recipient='USERONLY' and user='$user' $campaignCBsql $campaignCBhoursSQL $campaignCBdisplaydaysSQL $statusSQL order by callback_time;";
+	$stmt = "SELECT callback_id,lead_id,campaign_id,status,entry_time,callback_time,comments,customer_timezone,customer_time,customer_timezone_diff from vicidial_callbacks where recipient='USERONLY' and user='$user' $campaignCBsql $campaignCBhoursSQL $campaignCBdisplaydaysSQL $statusSQL order by callback_time;";
 	if ($DB) {echo "$stmt\n";}
 	$rslt=mysql_to_mysqli($stmt, $link);
 		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00178',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -17287,13 +17499,16 @@ if ($ACTION == 'CalLBacKLisT')
 	while ($callbacks_count>$loop_count)
 		{
 		$row=mysqli_fetch_row($rslt);
-		$callback_id[$loop_count]	= $row[0];
-		$lead_id[$loop_count]		= $row[1];
-		$campaign_id[$loop_count]	= $row[2];
-		$status[$loop_count]		= $row[3];
-		$entry_time[$loop_count]	= $row[4];
-		$callback_time[$loop_count]	= $row[5];
-		$comments[$loop_count]		= $row[6];
+		$callback_id[$loop_count] =				$row[0];
+		$lead_id[$loop_count] =					$row[1];
+		$campaign_id[$loop_count] =				$row[2];
+		$status[$loop_count] =					$row[3];
+		$entry_time[$loop_count] =				$row[4];
+		$callback_time[$loop_count] =			$row[5];
+		$comments[$loop_count] =				$row[6];
+		$customer_timezone[$loop_count] =		preg_replace("/.*,/",'',$row[7]);
+		$customer_time[$loop_count] =			$row[8];
+		$customer_timezone_diff[$loop_count] =	$row[9];
 		$loop_count++;
 		}
 	$loop_count=0;
@@ -17349,7 +17564,12 @@ if ($ACTION == 'CalLBacKLisT')
 				$PHONEdialable = dialable_gmt($DB,$link,$local_call_time,$row[3],$row[4]);
 				}
 			}
-		$CBoutput = "$row[0]-!T-$row[1]-!T-$row[2]-!T-$callback_id[$loop_count]-!T-$lead_id[$loop_count]-!T-$campaign_id[$loop_count]-!T-"._QXZ("$status[$loop_count]")."-!T-$entry_time[$loop_count]-!T-$callback_time[$loop_count]-!T-$comments[$loop_count]-!T-$PHONEdialable-!T-$alt_phone";
+		$customer_time_CB_output = '-!T--!T-';
+		if ( (strlen($customer_timezone[$loop_count]) > 0) and (strlen($customer_timezone_diff[$loop_count]) > 0) and ($customer_timezone_diff[$loop_count] <> 0) )
+			{
+			$customer_time_CB_output = "-!T-$customer_timezone[$loop_count]-!T-$customer_time[$loop_count]";
+			}
+		$CBoutput = "$row[0]-!T-$row[1]-!T-$row[2]-!T-$callback_id[$loop_count]-!T-$lead_id[$loop_count]-!T-$campaign_id[$loop_count]-!T-"._QXZ("$status[$loop_count]")."-!T-$entry_time[$loop_count]-!T-$callback_time[$loop_count]-!T-$comments[$loop_count]-!T-$PHONEdialable-!T-$alt_phone$customer_time_CB_output";
 		echo "$CBoutput\n";
 		$loop_count++;
 		}

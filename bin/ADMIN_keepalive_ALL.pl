@@ -136,8 +136,9 @@
 # 180507-1620 - Remove use of prompt_count.txt
 # 180512-2214 - Added reset of hopper_calls_today
 # 180613-1615 - Add sniplet into perl scripts to run only once a time
-
-$build = '180613-1615';
+# 180818-2229 - Added rolling of vicidial_recent_ascb_calls records
+ 
+$build = '180818-2229';
 
 ###### Test that the script is running only once a time
 use Fcntl qw(:flock);
@@ -1427,6 +1428,32 @@ if ($timeclock_end_of_day_NOW > 0)
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			}
 
+		# roll of SENT/EXPIRED vicidial_recent_ascb_calls records
+		if (!$Q) {print "\nProcessing vicidial_recent_ascb_calls table...\n";}
+		$stmtA = "INSERT IGNORE INTO vicidial_recent_ascb_calls_archive SELECT * from vicidial_recent_ascb_calls where call_date < \"$TDSQLdate\";";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows = $sthA->rows;
+		$event_string = "$sthArows rows inserted into vicidial_recent_ascb_calls_archive table";
+		if (!$Q) {print "$event_string \n";}
+		if ($teodDB) {&teod_logger;}
+
+		$rv = $sthA->err();
+		if (!$rv) 
+			{	
+			$stmtA = "DELETE FROM vicidial_recent_ascb_calls WHERE call_date < \"$TDSQLdate\";";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows = $sthA->rows;
+			$event_string = "$sthArows rows deleted from vicidial_recent_ascb_calls table";
+			if (!$Q) {print "$event_string \n";}
+			if ($teodDB) {&teod_logger;}
+
+			$stmtA = "optimize table vicidial_recent_ascb_calls;";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			}
+
 		# reset in-group closing_time_now_trigger trigger flag
 		$stmtA = "UPDATE vicidial_inbound_groups SET closing_time_now_trigger='N' WHERE closing_time_now_trigger='Y';";
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -1645,6 +1672,24 @@ if ($timeclock_end_of_day_NOW > 0)
 		if ($DB) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 		$sthA->finish();
 		##### END vicidial_vdad_log end of day process removing records older than 7 days #####
+
+
+		##### BEGIN vicidial_recent_ascb_calls_archive end of day process removing records older than 7 days #####
+		$stmtA = "DELETE from vicidial_recent_ascb_calls_archive where call_date < \"$SDSQLdate\";";
+		if($DBX){print STDERR "\n|$stmtA|\n";}
+		$affected_rows = $dbhA->do($stmtA);
+		if($DB){print STDERR "\n|$affected_rows vicidial_recent_ascb_calls_archive records older than 7 days purged|\n";}
+		if ($teodDB) {$event_string = "vicidial_recent_ascb_calls_archive records older than 7 days purged: |$stmtA|$affected_rows|";   &teod_logger;}
+
+		$stmtA = "optimize table vicidial_recent_ascb_calls_archive;";
+		if($DBX){print STDERR "\n|$stmtA|\n";}
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		@aryA = $sthA->fetchrow_array;
+		if ($DB) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+		$sthA->finish();
+		##### END vicidial_recent_ascb_calls_archive end of day process removing records older than 7 days #####
 
 
 		##### BEGIN usacan_phone_dialcode_fix funciton #####
