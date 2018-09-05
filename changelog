@@ -141,7 +141,7 @@
   * Add selector Phone / Agent for calltransfer (2018-011):
     - New: www/agc/images/vdc_XB_agent.png.
     - Update: www/agc/vicidial.php.
-  * Add upstream Rev. 3018:
+  * Add upstream Rev. 3018, 3019:
     - Update: UPGRADE,
       bin/ADMIN_keepalive_ALL.pl,
       bin/AST_VDauto_dial.pl,
