@@ -178,6 +178,9 @@
         www/agc/vdc_script_display.php: Added count for waiting emails to
           calls_in_queue_count function, Patch for proper url encoding of
           variables replaced when within href and src attributes.
+  * Add upstream Rev. 3023:
+    - Update: www/agc/vdc_db_query.php: Fix for calls_today count when using
+        dial-ingroup.
 
 2.25.27
   [Jörg Fring-Fürst]
