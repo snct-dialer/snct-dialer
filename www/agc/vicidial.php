@@ -602,10 +602,12 @@
 # 180807-1703 - Added agent_logout_link credentials system setting
 # 180809-1649 - Added scheduled_callbacks_force_dial campaign feature
 # 180824-1317 - Add Selector Agent/Phone for Transfer
+# 180827-1224 - Added scheduled_callbacks_timezones_... features
 #
 
-$version = '2.14-570c';
-$build = '180809-1649';
+$version = '2.14-571c';
+$build = '180827-1224';
+
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -1950,7 +1952,7 @@ else
 				$HKstatusnames = substr("$HKstatusnames", 0, -1); 
 
 				##### grab the campaign settings
-				$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active,no_hopper_leads_logins,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,xfer_groups,disable_alter_custphone,display_queue_count,manual_dial_filter,agent_clipboard_copy,use_campaign_dnc,three_way_call_cid,dial_method,three_way_dial_prefix,web_form_target,vtiger_screen_login,agent_allow_group_alias,default_group_alias,quick_transfer_button,prepopulate_transfer_preset,view_calls_in_queue,view_calls_in_queue_launch,call_requeue_button,pause_after_each_call,no_hopper_dialing,agent_dial_owner_only,agent_display_dialable_leads,web_form_address_two,agent_select_territories,crm_popup_login,crm_login_address,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,use_custom_cid,scheduled_callbacks_alert,scheduled_callbacks_count,manual_dial_override,blind_monitor_warning,blind_monitor_message,blind_monitor_filename,timer_action_destination,enable_xfer_presets,hide_xfer_number_to_dial,manual_dial_prefix,customer_3way_hangup_logging,customer_3way_hangup_seconds,customer_3way_hangup_action,ivr_park_call,manual_preview_dial,api_manual_dial,manual_dial_call_time_check,my_callback_option,per_call_notes,agent_lead_search,agent_lead_search_method,queuemetrics_phone_environment,auto_pause_precall,auto_pause_precall_code,auto_resume_precall,manual_dial_cid,custom_3way_button_transfer,callback_days_limit,disable_dispo_screen,disable_dispo_status,screen_labels,status_display_fields,pllb_grouping,pllb_grouping_limit,in_group_dial,in_group_dial_select,pause_after_next_call,owner_populate,manual_dial_lead_id,dead_max,dispo_max,pause_max,dead_max_dispo,dispo_max_dispo,max_inbound_calls,manual_dial_search_checkbox,hide_call_log_info,timer_alt_seconds,wrapup_bypass,wrapup_after_hotkey,callback_active_limit,callback_active_limit_override,comments_all_tabs,comments_dispo_screen,comments_callback_screen,qc_comment_history,show_previous_callback,clear_script,manual_dial_search_filter,web_form_address_three,manual_dial_override_field,status_display_ingroup,customer_gone_seconds,agent_display_fields,manual_dial_timeout,manual_auto_next,manual_auto_show,allow_required_fields,dead_to_dispo,agent_xfer_validation,ready_max_logout,callback_display_days,three_way_record_stop,hangup_xfer_record_start,max_inbound_calls_outcome,manual_auto_next_options,agent_screen_time_display,pause_max_dispo,script_top_dispo,routing_initiated_recordings,dead_trigger_seconds,dead_trigger_action,dead_trigger_repeat,dead_trigger_filename,scheduled_callbacks_force_dial,callback_hours_block,callback_display_days FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
+				$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active,no_hopper_leads_logins,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,xfer_groups,disable_alter_custphone,display_queue_count,manual_dial_filter,agent_clipboard_copy,use_campaign_dnc,three_way_call_cid,dial_method,three_way_dial_prefix,web_form_target,vtiger_screen_login,agent_allow_group_alias,default_group_alias,quick_transfer_button,prepopulate_transfer_preset,view_calls_in_queue,view_calls_in_queue_launch,call_requeue_button,pause_after_each_call,no_hopper_dialing,agent_dial_owner_only,agent_display_dialable_leads,web_form_address_two,agent_select_territories,crm_popup_login,crm_login_address,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,use_custom_cid,scheduled_callbacks_alert,scheduled_callbacks_count,manual_dial_override,blind_monitor_warning,blind_monitor_message,blind_monitor_filename,timer_action_destination,enable_xfer_presets,hide_xfer_number_to_dial,manual_dial_prefix,customer_3way_hangup_logging,customer_3way_hangup_seconds,customer_3way_hangup_action,ivr_park_call,manual_preview_dial,api_manual_dial,manual_dial_call_time_check,my_callback_option,per_call_notes,agent_lead_search,agent_lead_search_method,queuemetrics_phone_environment,auto_pause_precall,auto_pause_precall_code,auto_resume_precall,manual_dial_cid,custom_3way_button_transfer,callback_days_limit,disable_dispo_screen,disable_dispo_status,screen_labels,status_display_fields,pllb_grouping,pllb_grouping_limit,in_group_dial,in_group_dial_select,pause_after_next_call,owner_populate,manual_dial_lead_id,dead_max,dispo_max,pause_max,dead_max_dispo,dispo_max_dispo,max_inbound_calls,manual_dial_search_checkbox,hide_call_log_info,timer_alt_seconds,wrapup_bypass,wrapup_after_hotkey,callback_active_limit,callback_active_limit_override,comments_all_tabs,comments_dispo_screen,comments_callback_screen,qc_comment_history,show_previous_callback,clear_script,manual_dial_search_filter,web_form_address_three,manual_dial_override_field,status_display_ingroup,customer_gone_seconds,agent_display_fields,manual_dial_timeout,manual_auto_next,manual_auto_show,allow_required_fields,dead_to_dispo,agent_xfer_validation,ready_max_logout,callback_display_days,three_way_record_stop,hangup_xfer_record_start,max_inbound_calls_outcome,manual_auto_next_options,agent_screen_time_display,pause_max_dispo,script_top_dispo,routing_initiated_recordings,dead_trigger_seconds,dead_trigger_action,dead_trigger_repeat,dead_trigger_filename,scheduled_callbacks_force_dial,callback_hours_block,callback_display_days,scheduled_callbacks_timezones_container FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
 				$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01013',$VD_login,$server_ip,$session_name,$one_mysql_log);}
 				if ($DB) {echo "$stmt\n";}
@@ -2109,6 +2111,11 @@ else
 				$scheduled_callbacks_force_dial = $row[151];
 				$callback_hours_block =		$row[152];
 				$callback_display_days =	$row[153];
+				$scheduled_callbacks_timezones_container = $row[154];
+
+				$scheduled_callbacks_timezones_enabled=0;
+				if ( ($scheduled_callbacks_timezones_container != 'DISABLED') and (strlen($scheduled_callbacks_timezones_container) > 0) )
+					{$scheduled_callbacks_timezones_enabled++;}
 
 				$MI_PAUSE = 0;
 				if (preg_match("/MI_PAUSE/",$max_inbound_calls_outcome))
@@ -4854,6 +4861,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var scheduled_callbacks_force_dial='<?php echo $scheduled_callbacks_force_dial ?>';
 	var launch_scb_force_dial='<?php echo $launch_scb_force_dial ?>';
 	var liveCBcounT=0;
+	var scheduled_callbacks_timezones_container='<?php echo $scheduled_callbacks_timezones_container ?>';
+	var scheduled_callbacks_timezones_enabled='<?php echo $scheduled_callbacks_timezones_enabled ?>';
+	var callback_timezone='';
+	var callback_gmt_offset='';
 	var DiaLControl_auto_HTML = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready','','','','','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_paused.gif") ?>\" border=\"0\" alt=\"You are paused\" /></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause','','','','','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_active.gif") ?>\" border=\"0\" alt=\"You are active\" /></a>";
 	var DiaLControl_auto_HTML_OFF = "<img src=\"./images/<?php echo _QXZ("vdc_LB_blank_OFF.gif") ?>\" border=\"0\" alt=\"pause button disabled\" />";
@@ -6063,6 +6074,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 									CallBackLeadStatus =	APIcbSTATUS;
 									CallBackCommenTs =		APIcbCOMMENTS;
 									hideDiv('CallBackSelectBox');
+									hideDiv('SBC_timezone_span');
 									document.vicidial_form.DispoSelection.value = 'CBHOLD';
 									}
 								else
@@ -7524,7 +7536,14 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							var CB_comments = call_array[9];
 							var CB_dialable = call_array[10];
 							var CB_alt_phone = call_array[11];
+							var CB_cust_timezone = call_array[12];
+							var CB_cust_time = call_array[13];
 							var CB_comments_ten = CB_comments;
+							var CB_cust_content='';
+							if (CB_cust_timezone.length > 0)
+								{
+								CB_cust_content = "<tr><td></td><td align=\"left\" colspan=\"9\" bgcolor=\"" + row_color + "\"><font class=\"log_text\"> &nbsp; <?php echo _QXZ("Customer Time"); ?>: " + CB_cust_time + " &nbsp; <?php echo _QXZ("Customer Timezone"); ?>: " + CB_cust_timezone + "</td></tr>"; 
+								}
 							if (CB_comments_ten.length > 10)
 								{
 								CB_comments_ten = CB_comments_ten.substr(0,10);
@@ -7535,11 +7554,11 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								var alt_link = "<a href=\"#\" onclick=\"new_callback_call('" + CB_id + "','" + CB_lead_id + "','ALT');return false;\"><?php echo _QXZ("ALT"); ?></a>&nbsp;";
 								if (CB_alt_phone.length < 3)
 									{alt_link = "<?php echo _QXZ("ALT"); ?>&nbsp;";}
-								CB_HTML = CB_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</font></td><td align=\"right\"><font class=\"log_text\">" + CB_callback_time + "</td><td align=\"right\"><font class=\"log_text\">" + CB_phone + "</td><td align=\"right\"><font class=\"log_text\">" + CB_comments_ten + " - <a href=\"#\" onclick=\"VieWLeaDInfO('" + CB_lead_id + "','" + CB_id + "');return false;\"><?php echo _QXZ("INFO"); ?></a></font></td><td align=\"right\"><font class=\"log_text\">" + CB_name + "</font></td><td align=\"right\"><font class=\"log_text\">" + CB_status + "</font></td><td align=\"right\"><font class=\"log_text\">" + CB_campaign + "</font></td><td align=\"right\"><font class=\"log_text\">" + CB_lastcall_time + "&nbsp;</font></td><td align=\"right\"><font class=\"log_text\"><a href=\"#\" onclick=\"new_callback_call('" + CB_id + "','" + CB_lead_id + "','MAIN');return false;\"><?php echo _QXZ("DIAL"); ?></a>&nbsp;</font></td><td align=\"right\"><font class=\"log_text\">" + alt_link + "</font></td></tr>";
+								CB_HTML = CB_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</font></td><td align=\"left\"><font class=\"log_text\">" + CB_callback_time + "</td><td align=\"right\"><font class=\"log_text\">" + CB_phone + "</td><td align=\"right\"><font class=\"log_text\">" + CB_comments_ten + " - <a href=\"#\" onclick=\"VieWLeaDInfO('" + CB_lead_id + "','" + CB_id + "');return false;\"><?php echo _QXZ("INFO"); ?></a></font></td><td align=\"right\"><font class=\"log_text\">" + CB_name + "</font></td><td align=\"right\"><font class=\"log_text\">" + CB_status + "</font></td><td align=\"right\"><font class=\"log_text\">" + CB_campaign + "</font></td><td align=\"right\"><font class=\"log_text\">" + CB_lastcall_time + "&nbsp;</font></td><td align=\"right\"><font class=\"log_text\"><a href=\"#\" onclick=\"new_callback_call('" + CB_id + "','" + CB_lead_id + "','MAIN');return false;\"><?php echo _QXZ("DIAL"); ?></a>&nbsp;</font></td><td align=\"right\"><font class=\"log_text\">" + alt_link + "</font></td></tr>" + CB_cust_content;
 								}
 							else
 								{
-								CB_HTML = CB_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</font></td><td align=\"right\"><font class=\"log_text\">" + CB_callback_time + "</td><td align=\"right\"><font class=\"log_text\">" + CB_phone + "</td><td align=\"right\"><font class=\"log_text\">" + CB_comments_ten + " - INFO</font></td><td align=\"right\"><font class=\"log_text\">" + CB_name + "</font></td><td align=\"right\"><font class=\"log_text\">" + CB_status + "</font></td><td align=\"right\"><font class=\"log_text\">" + CB_campaign + "</font></td><td align=\"right\"><font class=\"log_text\">" + CB_lastcall_time + "&nbsp;</font></td><td align=\"right\" colspan=2><font class=\"log_text\"><?php echo _QXZ("NON-DIALABLE"); ?>&nbsp;</font></td></tr>";
+								CB_HTML = CB_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</font></td><td align=\"left\"><font class=\"log_text\">" + CB_callback_time + "</td><td align=\"right\"><font class=\"log_text\">" + CB_phone + "</td><td align=\"right\"><font class=\"log_text\">" + CB_comments_ten + " - INFO</font></td><td align=\"right\"><font class=\"log_text\">" + CB_name + "</font></td><td align=\"right\"><font class=\"log_text\">" + CB_status + "</font></td><td align=\"right\"><font class=\"log_text\">" + CB_campaign + "</font></td><td align=\"right\"><font class=\"log_text\">" + CB_lastcall_time + "&nbsp;</font></td><td align=\"right\" colspan=2><font class=\"log_text\"><?php echo _QXZ("NON-DIALABLE"); ?>&nbsp;</font></td></tr> + CB_cust_content";
 								}
 							}
 						CB_HTML = CB_HTML + "</table>";
@@ -13740,6 +13759,50 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						document.getElementById("CBCommentsContent").innerHTML = "<input type=\"hidden\" name=\"cbcomment_comments\" id=\"cbcomment_comments\" value=\"" + document.vicidial_form.dispo_comments.value + "\" />";
 						}
 
+					// BEGIN customer timezones code
+					if (scheduled_callbacks_timezones_enabled > 0)
+						{
+						var xmlhttp=false;
+						/*@cc_on @*/
+						/*@if (@_jscript_version >= 5)
+						// JScript gives us Conditional compilation, we can cope with old IE versions.
+						// and security blocked creation of the objects.
+						 try {
+						  xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+						 } catch (e) {
+						  try {
+						   xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+						  } catch (E) {
+						   xmlhttp = false;
+						  }
+						 }
+						@end @*/
+						if (!xmlhttp && typeof XMLHttpRequest!='undefined')
+							{
+							xmlhttp = new XMLHttpRequest();
+							}
+						if (xmlhttp) 
+							{ 
+							SCB_timezone_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass  + "&ACTION=SBC_timezone_build&format=text&lead_id=" + document.vicidial_form.lead_id.value + "&campaign=" + campaign + "&stage=" + scheduled_callbacks_timezones_container;
+							xmlhttp.open('POST', 'vdc_db_query.php'); 
+							xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
+							xmlhttp.send(SCB_timezone_query); 
+							xmlhttp.onreadystatechange = function() 
+								{ 
+								if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+									{
+									document.getElementById("SBC_timezone_span").innerHTML = xmlhttp.responseText;
+								//	showDiv('SBC_timezone_span');
+
+								//	alert(SCB_timezone_query);
+								//	alert(xmlhttp.responseText + "\n|" + check_PC_array[1] + "\n|" + check_PC_array[2] + "|" + agent_log_id + "|" + pause_code_counter);
+									}
+								}
+							delete xmlhttp;
+							}
+						}
+					// END customer timezones code
+
 					showDiv('CallBackSelectBox');
 
 					agent_events('callback_select_open', '', aec);   aec++;
@@ -13767,7 +13830,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						}
 					if (xmlhttp) 
 						{
-						DSupdate_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=updateDISPO&format=text&user=" + user + "&pass=" + pass + "&orig_pass=" + orig_pass + "&dispo_choice=" + DispoChoice + "&lead_id=" + document.vicidial_form.lead_id.value + "&campaign=" + campaign + "&auto_dial_level=" + auto_dial_level + "&agent_log_id=" + agent_log_id + "&CallBackDatETimE=" + CallBackDatETimE + "&list_id=" + document.vicidial_form.list_id.value + "&recipient=" + CallBackrecipient + "&use_internal_dnc=" + use_internal_dnc + "&use_campaign_dnc=" + use_campaign_dnc + "&MDnextCID=" + LasTCID + "&stage=" + group + "&vtiger_callback_id=" + vtiger_callback_id + "&phone_number=" + document.vicidial_form.phone_number.value + "&phone_code=" + document.vicidial_form.phone_code.value + "&dial_method=" + dial_method + "&uniqueid=" + document.vicidial_form.uniqueid.value + "&CallBackLeadStatus=" + CallBackLeadStatus + "&comments=" + encodeURIComponent(CallBackCommenTs) + "&custom_field_names=" + custom_field_names + "&call_notes=" + encodeURIComponent(document.vicidial_form.call_notes_dispo.value) + "&dispo_comments=" + encodeURIComponent(document.vicidial_form.dispo_comments.value) + "&cbcomment_comments=" + encodeURIComponent(document.vicidial_form.cbcomment_comments.value) + "&qm_dispo_code=" + DispoQMcsCODE + "&email_enabled=" + email_enabled + "&recording_id=" + VDDCU_recording_id + "&recording_filename=" + VDDCU_recording_filename + "&called_count=" + document.vicidial_form.called_count.value + "&parked_hangup=" + parked_hangup + "&phone_login=" + phone_login + "&agent_email=" + LOGemail + "&conf_exten=" + session_id + "&camp_script=" + campaign_script + '' + "&in_script=" + CalL_ScripT_id + "&customer_server_ip=" + lastcustserverip + "&exten=" + extension + "&original_phone_login=" + original_phone_login + "&phone_pass=" + phone_pass;
+						DSupdate_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=updateDISPO&format=text&user=" + user + "&pass=" + pass + "&orig_pass=" + orig_pass + "&dispo_choice=" + DispoChoice + "&lead_id=" + document.vicidial_form.lead_id.value + "&campaign=" + campaign + "&auto_dial_level=" + auto_dial_level + "&agent_log_id=" + agent_log_id + "&CallBackDatETimE=" + CallBackDatETimE + "&list_id=" + document.vicidial_form.list_id.value + "&recipient=" + CallBackrecipient + "&use_internal_dnc=" + use_internal_dnc + "&use_campaign_dnc=" + use_campaign_dnc + "&MDnextCID=" + LasTCID + "&stage=" + group + "&vtiger_callback_id=" + vtiger_callback_id + "&phone_number=" + document.vicidial_form.phone_number.value + "&phone_code=" + document.vicidial_form.phone_code.value + "&dial_method=" + dial_method + "&uniqueid=" + document.vicidial_form.uniqueid.value + "&CallBackLeadStatus=" + CallBackLeadStatus + "&comments=" + encodeURIComponent(CallBackCommenTs) + "&custom_field_names=" + custom_field_names + "&call_notes=" + encodeURIComponent(document.vicidial_form.call_notes_dispo.value) + "&dispo_comments=" + encodeURIComponent(document.vicidial_form.dispo_comments.value) + "&cbcomment_comments=" + encodeURIComponent(document.vicidial_form.cbcomment_comments.value) + "&qm_dispo_code=" + DispoQMcsCODE + "&email_enabled=" + email_enabled + "&recording_id=" + VDDCU_recording_id + "&recording_filename=" + VDDCU_recording_filename + "&called_count=" + document.vicidial_form.called_count.value + "&parked_hangup=" + parked_hangup + "&phone_login=" + phone_login + "&agent_email=" + LOGemail + "&conf_exten=" + session_id + "&camp_script=" + campaign_script + '' + "&in_script=" + CalL_ScripT_id + "&customer_server_ip=" + lastcustserverip + "&exten=" + extension + "&original_phone_login=" + original_phone_login + "&phone_pass=" + phone_pass + "&callback_gmt_offset=" + callback_gmt_offset + "&callback_timezone=" + callback_timezone;
 						xmlhttp.open('POST', 'vdc_db_query.php');
 						xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 						xmlhttp.send(DSupdate_query); 
@@ -13922,10 +13985,13 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 					active_ingroup_dial='';
 					CalL_ScripT_id='';
 					CalL_ScripT_color='';
+					callback_gmt_offset='';
+					callback_timezone='';
+					document.getElementById("SBC_timezone_span").innerHTML = '<?php echo _QXZ("Loading"); ?>...';
+					document.getElementById("CallBackTimezone").innerHTML = '<?php echo _QXZ("server time") ?>';
 					nocall_dial_flag='DISABLED';
 					document.vicidial_form.CallBackDatESelectioN.value = '';
 					document.vicidial_form.CallBackCommenTsField.value = '';
-
 					document.vicidial_form.search_phone_number.value='';
 					document.vicidial_form.search_lead_id.value='';
 					document.vicidial_form.search_vendor_lead_code.value='';
@@ -14110,6 +14176,19 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 				scroll(0,0);
 				}
 			}
+		}
+
+
+// ################################################################################
+// Agent has selected a timezone
+	function SBC_timezone_choose(temp_offset,temp_timezone,temp_timezone_name)
+		{
+		callback_gmt_offset = temp_offset;
+		callback_timezone = temp_timezone;
+
+		document.getElementById("CallBackTimezone").innerHTML = temp_timezone_name;
+
+		hideDiv('SBC_timezone_span');
 		}
 
 
@@ -17624,6 +17703,7 @@ function phone_number_format(formatphone) {
 			
 			document.vicidial_form.DispoSelection.value = 'CBHOLD';
 			hideDiv('CallBackSelectBox');
+			hideDiv('SBC_timezone_span');
 			DispoSelect_submit();
 			}
 		}
@@ -17812,6 +17892,7 @@ function phone_number_format(formatphone) {
 			hideDiv('TransferMain');
 			hideDiv('WelcomeBoxA');
 			hideDiv('CallBackSelectBox');
+			hideDiv('SBC_timezone_span');
 			hideDiv('DispoButtonHideA');
 			hideDiv('DispoButtonHideB');
 			hideDiv('DispoButtonHideC');
@@ -19313,8 +19394,8 @@ function phone_number_format(formatphone) {
 <style type="text/css">
 <!--
 	div.scroll_calllog {height: <?php echo $CQheight ?>px; width: <?php echo $MNwidth ?>px; overflow: scroll;}
-	div.scroll_callback {height: 300px; width: <?php echo $MNwidth ?>px; overflow: scroll;}
-	div.scroll_callback_auto {height: 300px; width: <?php echo $MNwidth ?>px; overflow: auto;}
+	div.scroll_callback {height: 400px; width: <?php echo $MNwidth ?>px; overflow: scroll;}
+	div.scroll_callback_auto {height: 400px; width: <?php echo $MNwidth ?>px; overflow: auto;}
 	div.scroll_script {height: <?php echo $SSheight ?>px; width: <?php echo $SDwidth ?>px; background: transparent; overflow: auto; font-size: 12px;  font-family: sans-serif;}
 	div.noscroll_script {height: <?php echo $SSheight ?>px; width: <?php echo $SDwidth ?>px; background: #FFF5EC; overflow: hidden; font-size: 12px;  font-family: sans-serif;}
 -->
@@ -20475,8 +20556,19 @@ if ($agent_display_dialable_leads > 0)
 	<?php
 	}
 	?>
-	&nbsp;<br />
+	&nbsp; &nbsp; 
 	<?php
+	if ($scheduled_callbacks_timezones_enabled > 0)
+		{
+		echo "<a href=\"#\" onclick=\"showDiv('SBC_timezone_span');return false;\">"._QXZ("Customer Timezone")."</a>: ";
+		echo "<font class=\"sh_text\"><span id=\"CallBackTimezone\">"._QXZ("server time")."</span> &nbsp;</font>\n";
+		}
+	else
+		{
+		echo "<span id=\"CallBackTimezone\"><font class=\"sh_text\"></span> &nbsp;\n";
+		}
+	echo "<br />";
+
 	if ($agentonly_callbacks)
         {echo "<input type=\"checkbox\" name=\"CallBackOnlyMe\" id=\"CallBackOnlyMe\" size=\"1\" value=\"0\" /> "._QXZ("MY CALLBACK ONLY")." <br />";}
 
@@ -20493,6 +20585,8 @@ if ($agent_display_dialable_leads > 0)
     <br /><br /> &nbsp;</font>
     </td></tr></table>
 </span>
+
+<span style="position:absolute;left:560px;top:20px;z-index:<?php $zi++; echo $zi ?>;" id="SBC_timezone_span"><?php echo _QXZ("Loading"); ?>...</span>
 
 <?php //AUDIT COMMENTS ADDED BY POUNDTEAM // ?>
 <span style="position:absolute;left:5px;top:350px;z-index:<?php $zi++; echo $zi ?>;" id="ViewCommentsBox">

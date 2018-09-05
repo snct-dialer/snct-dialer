@@ -1022,7 +1022,8 @@ dead_trigger_repeat ENUM('NO','REPEAT_ALL','REPEAT_AUDIO','REPEAT_URL') default 
 dead_trigger_filename TEXT,
 dead_trigger_url TEXT,
 scheduled_callbacks_force_dial ENUM('N','Y') default 'N',
-scheduled_callbacks_auto_reschedule VARCHAR(10) default 'DISABLED'
+scheduled_callbacks_auto_reschedule VARCHAR(10) default 'DISABLED',
+scheduled_callbacks_timezones_container VARCHAR(40) default 'DISABLED'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_lists (
@@ -1129,7 +1130,8 @@ GMT_offset VARCHAR(6),
 DST enum('Y','N'),
 DST_range VARCHAR(8),
 geographic_description VARCHAR(100),
-tz_code VARCHAR(4) default ''
+tz_code VARCHAR(4) default '',
+php_tz VARCHAR(100) default ''
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_inbound_groups (
@@ -1451,6 +1453,9 @@ user_group VARCHAR(20),
 lead_status VARCHAR(6) default 'CALLBK',
 email_alert datetime,
 email_result ENUM('SENT','FAILED','NOT AVAILABLE'),
+customer_timezone VARCHAR(100) default '',
+customer_timezone_diff VARCHAR(6) default '',
+customer_time DATETIME,
 index (lead_id),
 index (status),
 index (callback_time)
@@ -4411,6 +4416,9 @@ INSERT INTO vicidial_configuration (id, name, value) VALUES (NULL, 'qc_database_
 UPDATE vicidial_configuration set value='1766' where name='qc_database_version';
 
 INSERT INTO vicidial_settings_containers(container_id,container_notes,container_type,user_group,container_entry) VALUES ('AGENT_CALLBACK_EMAIL ','Scheduled callback email alert settings','OTHER','---ALL---','; sending email address\r\nemail_from => vicidial@local.server\r\n\r\n; subject of the email\r\nemail_subject => Scheduled callback alert for --A--agent_name--B--\r\n\r\nemail_body_begin => \r\nThis is a reminder that you have a scheduled callback right now for the following lead:\r\n\r\nName: --A--first_name--B-- --A--last_name--B--\r\nPhone: --A--phone_number--B--\r\nAlt. phone: --A--alt_phone--B--\r\nEmail: --A--email--B--\r\nCB Comments: --A--callback_comments--B--\r\nLead Comments: --A--comments--B--\r\n\r\nPlease don\'t respond to this, fool.\r\n\r\nemail_body_end');
+INSERT INTO vicidial_settings_containers(container_id,container_notes,container_type,user_group,container_entry) VALUES ('TIMEZONES_USA','USA Timezone List','TIMEZONE_LIST','---ALL---','USA,AST,N,Atlantic Time Zone\nUSA,EST,Y,Eastern Time Zone\nUSA,CST,Y,Central Time Zone\nUSA,MST,Y,Mountain Time Zone\nUSA,MST,N,Arizona Time Zone\nUSA,PST,Y,Pacific Time Zone\nUSA,AKST,Y,Alaska Time Zone\nUSA,HST,N,Hawaii Time Zone\n');
+INSERT INTO vicidial_settings_containers(container_id,container_notes,container_type,user_group,container_entry) VALUES ('TIMEZONES_CANADA','Canadian Timezone List','TIMEZONE_LIST','---ALL---','CAN,NST,Y,Newfoundland Time Zone\nCAN,AST,Y,Atlantic Time Zone\nCAN,EST,Y,Eastern Time Zone\nCAN,CST,Y,Central Time Zone\nCAN,CST,N,Saskatchewan Time Zone\nCAN,MST,Y,Mountain Time Zone\nCAN,PST,Y,Pacific Time Zone\n');
+INSERT INTO vicidial_settings_containers(container_id,container_notes,container_type,user_group,container_entry) VALUES ('TIMEZONES_AUSTRALIA','Australian Timezone List','TIMEZONE_LIST','---ALL---','AUS,AEST,Y,Eastern Australia Time Zone\nAUS,AEST,N,Queensland Time Zone\nAUS,ACST,Y,Central Australia Time Zone\nAUS,ACST,N,Northern Territory Time Zone\nAUS,AWST,N,Western Australia Time Zone\n');
 
 UPDATE system_settings set vdc_agent_api_active='1';
 
