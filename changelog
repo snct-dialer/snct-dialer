@@ -168,6 +168,8 @@
         www/vicidial/help_documentation.txt: Added php_tz field to
           vicidial_phone_codes table, Added code for
           scheduled_callbacks_timezones_... features.
+  * Add upstream Rev. 3021:
+    - Upgrade: www/vicidial/AST_CMstats.php: Added totals.
 
 2.25.27
   [Jörg Fring-Fürst]
