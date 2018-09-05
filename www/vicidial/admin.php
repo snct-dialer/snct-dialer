@@ -4542,12 +4542,13 @@ else
 # 180809-1547 - Added scheduled_callbacks_force_dial campaign setting
 # 180812-0902 - Added scheduled_callbacks_auto_reschedule campaign setting
 # 180825-2100 - Added scheduled_callbacks_timezones_container campaign setting and timezones display
+# 180904-1206 - Added copying of in-group user grades/ranks when copying an in-group
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-685a';
-$build = '180825-2100';
+$admin_version = '2.14-686a';
+$build = '180904-1206';
 
 
 $STARTtime = date("U");
@@ -11093,10 +11094,14 @@ if ($ADD==2011)
 					$stmtB="INSERT INTO vicidial_campaign_stats_debug (campaign_id) values('$group_id');";
 					$rslt=mysql_to_mysqli($stmtB, $link);
 
-					echo "<br><B>"._QXZ("GROUP ADDED").": $group_id</B>\n";
+					# copy agent ranks and grades from source in-group
+					$stmtC="INSERT INTO vicidial_inbound_group_agents (user,group_id,group_rank,group_weight,group_grade,group_web_vars) SELECT user,'$group_id',group_rank,group_weight,group_grade,group_web_vars from vicidial_inbound_group_agents where group_id=\"$source_group_id\";";
+					$rslt=mysql_to_mysqli($stmtC, $link);
+
+					echo "<br><B>"._QXZ("INBOUND GROUP ADDED").": $group_id</B>\n";
 
 					### LOG INSERTION Admin Log Table ###
-					$SQL_log = "$stmt|$stmtA|$stmtB|";
+					$SQL_log = "$stmt|$stmtA|$stmtB|$stmtC|";
 					$SQL_log = preg_replace('/;/', '', $SQL_log);
 					$SQL_log = addslashes($SQL_log);
 					$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='INGROUPS', event_type='COPY', record_id='$group_id', event_code='ADMIN COPY INBOUND GROUP', event_sql=\"$SQL_log\", event_notes='';";
@@ -11168,10 +11173,14 @@ if ( ($ADD==2911) and ($SSallow_emails>0) )
 					$stmtB="INSERT INTO vicidial_campaign_stats_debug (campaign_id) values('$group_id');";
 					$rslt=mysql_to_mysqli($stmtB, $link);
 
+					# copy agent ranks and grades from source in-group
+					$stmtC="INSERT INTO vicidial_inbound_group_agents (user,group_id,group_rank,group_weight,group_grade,group_web_vars) SELECT user,'$group_id',group_rank,group_weight,group_grade,group_web_vars from vicidial_inbound_group_agents where group_id=\"$source_group_id\";";
+					$rslt=mysql_to_mysqli($stmtC, $link);
+
 					echo "<br><B>"._QXZ("EMAIL GROUP ADDED").": $group_id</B>\n";
 
 					### LOG INSERTION Admin Log Table ###
-					$SQL_log = "$stmt|$stmtA|$stmtB|";
+					$SQL_log = "$stmt|$stmtA|$stmtB|$stmtC|";
 					$SQL_log = preg_replace('/;/', '', $SQL_log);
 					$SQL_log = addslashes($SQL_log);
 					$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='INGROUPS', event_type='COPY', record_id='$group_id', event_code='ADMIN COPY INBOUND GROUP', event_sql=\"$SQL_log\", event_notes='';";
@@ -11243,10 +11252,14 @@ if ( ($ADD==29111) and ($SSallow_chats>0) )
 					$stmtB="INSERT INTO vicidial_campaign_stats_debug (campaign_id) values('$group_id');";
 					$rslt=mysql_to_mysqli($stmtB, $link);
 
+					# copy agent ranks and grades from source in-group
+					$stmtC="INSERT INTO vicidial_inbound_group_agents (user,group_id,group_rank,group_weight,group_grade,group_web_vars) SELECT user,'$group_id',group_rank,group_weight,group_grade,group_web_vars from vicidial_inbound_group_agents where group_id=\"$source_group_id\";";
+					$rslt=mysql_to_mysqli($stmtC, $link);
+
 					echo "<br><B>CHAT GROUP ADDED: $group_id</B>\n";
 
 					### LOG INSERTION Admin Log Table ###
-					$SQL_log = "$stmt|$stmtA|$stmtB|";
+					$SQL_log = "$stmt|$stmtA|$stmtB|$stmtC|";
 					$SQL_log = preg_replace('/;/', '', $SQL_log);
 					$SQL_log = addslashes($SQL_log);
 					$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='INGROUPS', event_type='COPY', record_id='$group_id', event_code='ADMIN COPY INBOUND GROUP', event_sql=\"$SQL_log\", event_notes='';";

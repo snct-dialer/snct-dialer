@@ -181,6 +181,9 @@
   * Add upstream Rev. 3023:
     - Update: www/agc/vdc_db_query.php: Fix for calls_today count when using
         dial-ingroup.
+  * Add upstream Rev. 3025:
+    - Update: www/vicidial/admin.php: Added copying of in-group user
+        grades/ranks when copying an in-group.
 
 2.25.27
   [Jörg Fring-Fürst]
