@@ -1,7 +1,7 @@
 <?php
 # agc_agent_manager_chat_interface.php
 # 
-# Copyright (C) 2016  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This page is for agents to chat with managers via the agent interface.
 #
@@ -14,10 +14,11 @@
 # 160523-0630 - Fixed vicidial_stylesheet issues
 # 161217-0827 - Added code for multi-user internal chat sessions
 # 161221-0801 - Added color-coding for users in internal chat sessions
+# 180927-0624 - Fix for missing translationm issue #1125
 #
 
-$admin_version = '2.14-8';
-$build = '161221-0801';
+$admin_version = '2.14-9';
+$build = '180927-0624';
 
 $sh="managerchats"; 
 
@@ -757,7 +758,7 @@ echo "<div class='scrolling_chat_display' id='AllActiveChats'>\n";
 	}
 	echo "</ul>\n";
 echo "\t</div>\n";
-echo "<font class='small_arial_bold'>(bolded chats = unread messages)<BR><input type='checkbox' id='MuteChatAlert' name='MuteChatAlert'>"._QXZ("Mute alert sound")."</font>\n";
+echo "<font class='small_arial_bold'>("._QXZ("bolded chats = unread messages").")<BR><input type='checkbox' id='MuteChatAlert' name='MuteChatAlert'>"._QXZ("Mute alert sound")."</font>\n";
 echo "\t<BR><input class='green_btn' type='button' style='width:200px' value='"._QXZ("CHAT WITH LIVE AGENT")."' onClick=\"document.getElementById('AgentChatSpan').style.display='none'; document.getElementById('AgentNewChatSpan').style.display='block'; ReloadAgentNewChatSpan('$user');\">\n";
 echo "\t<span id='AgentEndChatSpan' style='display: none;'><div align='left'><BR><input class='red_btn' type='button' style='width:200px' value='"._QXZ("END CHAT")."' onClick='EndAgentToAgentChat()'></div></span>";
 echo "\t<span id='AgentAddChatSpan' style='display: none;'><BR><input class='blue_btn' type='button' style='width:200px' value='"._QXZ("ADD AGENT TO CURRENT CHAT")."' onClick=\"LoadAvailableAgentsForChat('AllLiveNonChatAgents', 'agent_to_add'); ToggleSpan('AllLiveNonChatAgents');\"></span>\n";

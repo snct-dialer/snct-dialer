@@ -265,6 +265,9 @@
         www/vicidial/admin.php,
         www/vicidial/help_documentation.txt: Added _wait_time options for next
           agent call options in campaigns and in-groups.
+  * Add upstream Rev. 3043:
+    - Update: www/agc/agc_agent_manager_chat_interface.php: Fix for missing
+        translationm issue #1125.
 
 2.25.27
   [Jörg Fring-Fürst]
