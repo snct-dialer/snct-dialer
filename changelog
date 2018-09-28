@@ -271,6 +271,9 @@
   * Add upstream Rev. 3044:
     - Update: www/vicidial/AST_admin_template_maker.php: Fix for deleted
         template function in alternate language, issue #1127.
+  * Add upstream Rev. 3045:
+    - Update: vicidial/admin_listloader_fourth_gen.php: Fixed
+        translation-related issue #1114.
 
 2.25.27
   [Jörg Fring-Fürst]
