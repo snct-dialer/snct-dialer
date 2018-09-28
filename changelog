@@ -220,6 +220,10 @@
   * Add upstream Rev. 3033:
     - Update: www/agc/vdc_db_query.php: Change to use the same new function for
         manual dial DNC filtering.
+  * Add upstream Rev. 3034:
+    - Update: agi/VD_amd.agi,
+        bin/FastAGI_log.pl: Fix for logging issue, Fix for rare
+          non-NA-set-as-NA call logging issue.
 
 2.25.27
   [Jörg Fring-Fürst]

@@ -51,6 +51,7 @@
 # 151109-1708 - Added new campaign feature allowing for different messages based on answering machine message wildcards
 # 170426-1711 - Fixed double-logging issue
 # 180529-1707 - Fix for missing called_count value in vicidial_log insertions
+# 180919-1831 - Fix for logging issue
 #
 
 $script = 'VD_amd.agi';
@@ -177,7 +178,7 @@ while(<STDIN>)
 	if (/^agi_priority\:\s+(.*)$/)		{$priority = $1;}
 	if (/^agi_channel\:\s+(.*)$/)		{$channel = $1;}
 	if (/^agi_extension\:\s+(.*)$/)		{$extension = $1;}
-	if (/^agi_type\:\s+(.*)$/)		{$type = $1;}
+	if (/^agi_type\:\s+(.*)$/)			{$type = $1;}
 	if (/^agi_callerid\:\s+(.*)$/)		{$callerid = $1;   $calleridnum = $callerid;}
 	if (/^agi_calleridname\:\s+(.*)$/)	{$calleridname = $1;}
 	}
@@ -293,7 +294,7 @@ else
 
 
 	########## FIND vicidial_auto_calls record ##########
-	$stmtA = "SELECT campaign_id,phone_code,phone_number,uniqueid,server_ip FROM vicidial_auto_calls where callerid='$callerid' order by auto_call_id desc limit 1;";
+	$stmtA = "SELECT campaign_id,phone_code,phone_number,uniqueid,server_ip,status FROM vicidial_auto_calls where callerid='$callerid' order by auto_call_id desc limit 1;";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
@@ -301,11 +302,12 @@ else
 	if ($sthArows > 0)
 		{
 		@aryA = $sthA->fetchrow_array;
-		$VD_campaign_id		= $aryA[0];
-		$VD_phone_code		= $aryA[1];
-		$VD_phone_number	= $aryA[2];
-		$VD_uniqueid		= $aryA[3];
-		$VD_server_ip		= $aryA[4];
+		$VD_campaign_id =	$aryA[0];
+		$VD_phone_code =	$aryA[1];
+		$VD_phone_number =	$aryA[2];
+		$VD_uniqueid =		$aryA[3];
+		$VD_server_ip =		$aryA[4];
+		$VD_status =		$aryA[5];
 		$sthA->finish();
 		}
 	else
@@ -361,9 +363,9 @@ else
 	$sthA->finish();
 
 	########## UPDATE vicidial_auto_calls entry ##########
-	$stmtA = "UPDATE vicidial_auto_calls set status='AA' where callerid='$callerid' order by auto_call_id desc limit 1;";
+	$stmtA = "UPDATE vicidial_auto_calls set status='XFER' where callerid='$callerid' order by auto_call_id desc limit 1;";
 		$affected_rows = $dbhA->do($stmtA);
-	if ($AGILOG) {$agi_string = "--    VDAC record updated: |$affected_rows|   |$VD_lead_id|$uniqueid|$VD_callerid|$VD_server_ip";   &agi_output;}
+	if ($AGILOG) {$agi_string = "--    VDAC record updated: |$affected_rows|   |$VD_lead_id|$uniqueid|$callerid|$VD_status|$VD_server_ip";   &agi_output;}
 
 	########## FIND AND UPDATE vicidial_log ##########
 	$Euniqueid=$uniqueid;
