@@ -203,6 +203,8 @@
     - Update: bin/AST_VDauto_dial_FILL.pl: Small fix for data validation.
   * Add upstream Rev. 3030:
     - Update: www/agc/vdc_db_query.php: Small fix for call notes display.
+  * Add upstream Rev. 3031:
+    - Update: extras/MySQL_AST_CREATE_tables.sql: Small fix.
 
 2.25.27
   [Jörg Fring-Fürst]

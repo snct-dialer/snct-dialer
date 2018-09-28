@@ -3184,7 +3184,7 @@ xfercallid INT(9) UNSIGNED DEFAULT NULL,
 PRIMARY KEY (email_row_id),
 KEY email_list_account_key (email_account_id),
 KEY email_list_user_key (user),
-KEY vicidial_email_lead_id_key (lead_id)
+KEY vicidial_email_lead_id_key (lead_id),
 KEY vicidial_email_group_key (group_id)
 ) ENGINE=MyISAM;
 
