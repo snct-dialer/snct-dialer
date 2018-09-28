@@ -224,6 +224,9 @@
     - Update: agi/VD_amd.agi,
         bin/FastAGI_log.pl: Fix for logging issue, Fix for rare
           non-NA-set-as-NA call logging issue.
+  * Add upstream Rev. 3035:
+    - Update: www/vicidial/admin.php: Added copying of user selected in-groups
+        in copying of an in-group.
 
 2.25.27
   [Jörg Fring-Fürst]
