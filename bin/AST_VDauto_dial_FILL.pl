@@ -602,7 +602,11 @@ while($one_day_interval > 0)
 								$VALIDATEcalls_to_place = ($DBfill_needed[$camp_CIPct] - $DB_camp_servers_calls_placed);
 								if ($VALIDATEcalls_to_place < 0) {$VALIDATEcalls_to_place=0;}
 								if ($DB_camp_server_trunks_to_dial[$server_CIPct] > $VALIDATEcalls_to_place) 
-									{$DB_camp_server_trunks_to_dial[$server_CIPct] = $VALIDATEcalls_to_place;}
+									{
+									$event_string="Calls-to-place VALIDATE OVERRIDE: |$DB_camp_server_trunks_to_dial[$server_CIPct]|$VALIDATEcalls_to_place|$DBfill_needed[$camp_CIPct]|$DB_camp_servers_calls_placed|";
+									&event_logger;
+									$DB_camp_server_trunks_to_dial[$server_CIPct] = $VALIDATEcalls_to_place;
+									}
 								if ($call_CMPIPct < $DB_camp_server_trunks_to_dial[$server_CIPct])
 									{
 									$stmtA = "UPDATE vicidial_hopper set status='QUEUE', user='VDFC_$DB_camp_server_server_ip[$server_CIPct]' where campaign_id='$DBfill_campaign[$camp_CIPct]' and status='READY' order by priority desc,hopper_id LIMIT $DB_camp_server_trunks_to_dial[$server_CIPct];";
