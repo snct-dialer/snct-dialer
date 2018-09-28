@@ -132,10 +132,11 @@
 # 180301-2301 - Added GET-AND-POST URL logging
 # 180331-1716 - Added options to update_campaign, add_user, update_phone. Added function update_did
 # 180529-1102 - Fix for QM live monitoring
+# 180916-1059 - Added check for daily list reset limit
 #
 
-$version = '2.14-109';
-$build = '180529-1102';
+$version = '2.14-110';
+$build = '180916-1059';
 $api_url_log = 0;
 
 $startMS = microtime();
@@ -4232,28 +4233,50 @@ if ($function == 'update_list')
 
 					if ($reset_list == 'Y')
 						{
-						$stmt="UPDATE vicidial_lists SET list_changedate='$NOW_TIME' WHERE list_id='$list_id';";
+						$stmt="SELECT daily_reset_limit,resets_today from vicidial_lists where list_id='$list_id' $LOGallowed_campaignsSQL;";
 						$rslt=mysql_to_mysqli($stmt, $link);
-						if ($DB) {echo "|$stmt|\n";}
+						$row=mysqli_fetch_row($rslt);
+						$daily_reset_limit =	$row[0];
+						$resets_today =			$row[1];
+						if ( ($daily_reset_limit > $resets_today) or ($daily_reset_limit < 0) )
+							{
+							$stmt="UPDATE vicidial_lists SET list_changedate='$NOW_TIME',resets_today=(resets_today + 1) WHERE list_id='$list_id';";
+							$rslt=mysql_to_mysqli($stmt, $link);
+							if ($DB) {echo "|$stmt|\n";}
 
-						$stmt="UPDATE vicidial_list SET called_since_last_reset='N' WHERE list_id='$list_id';";
-						$rslt=mysql_to_mysqli($stmt, $link);
-						$affected_rows = mysqli_affected_rows($link);
-						if ($DB) {echo "|$stmt|\n";}
+							$resets_today = ($resets_today + 1);
 
-						### LOG INSERTION Admin Log Table ###
-						$SQL_log = "$stmt|";
-						$SQL_log = preg_replace('/;/', '', $SQL_log);
-						$SQL_log = addslashes($SQL_log);
-						$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$user', ip_address='$ip', event_section='LISTS', event_type='RESET', record_id='$list_id', event_code='ADMIN API RESET LIST', event_sql=\"$SQL_log\", event_notes='list: $list_id';";
-						if ($DB) {echo "|$stmt|\n";}
-						$rslt=mysql_to_mysqli($stmt, $link);
+							$stmtB="UPDATE vicidial_list SET called_since_last_reset='N' WHERE list_id='$list_id';";
+							$rslt=mysql_to_mysqli($stmtB, $link);
+							$affected_rowsB = mysqli_affected_rows($link);
+							if ($DB) {echo "|$stmtB|\n";}
 
-						$result = 'NOTICE';
-						$result_reason = "update_list LEADS IN LIST HAVE BEEN RESET";
-						$data = "$list_id|$affected_rows";
-						echo "$result: $result_reason - $user|$data\n";
-						api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+							### LOG INSERTION Admin Log Table ###
+							$SQL_log = "$stmt|$stmtB|";
+							$SQL_log = preg_replace('/;/', '', $SQL_log);
+							$SQL_log = addslashes($SQL_log);
+							$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$user', ip_address='$ip', event_section='LISTS', event_type='RESET', record_id='$list_id', event_code='ADMIN API RESET LIST', event_sql=\"$SQL_log\", event_notes='$affected_rowsB leads reset, list resets today: $resets_today';";
+							if ($DB) {echo "|$stmt|\n";}
+							$rslt=mysql_to_mysqli($stmt, $link);
+
+							$result = 'NOTICE';
+							$result_reason = "update_list LEADS IN LIST HAVE BEEN RESET";
+							$data = "$list_id|$affected_rows";
+							echo "$result: $result_reason - $user|$data\n";
+							api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+							}
+						else
+							{
+							$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$user', ip_address='$ip', event_section='LISTS', event_type='RESET', record_id='$list_id', event_code='ADMIN API RESET LIST FAILED', event_sql=\"\", event_notes='daily list resets limit reached: $resets_today / $daily_reset_limit';";
+							if ($DB) {echo "|$stmt|\n";}
+							$rslt=mysql_to_mysqli($stmt, $link);
+
+							$result = 'NOTICE';
+							$result_reason = "update_list LIST RESET FAILED, daily reset limit reached: $resets_today / $daily_reset_limit";
+							$data = "$list_id";
+							echo "$result: $result_reason - $user|$data\n";
+							api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+							}
 						}
 
 					if ($delete_list == 'Y')

@@ -2492,6 +2492,8 @@ if (isset($_GET["scheduled_callbacks_auto_reschedule"]))			{$scheduled_callbacks
 	elseif (isset($_POST["scheduled_callbacks_auto_reschedule"]))	{$scheduled_callbacks_auto_reschedule=$_POST["scheduled_callbacks_auto_reschedule"];}
 if (isset($_GET["scheduled_callbacks_timezones_container"]))			{$scheduled_callbacks_timezones_container=$_GET["scheduled_callbacks_timezones_container"];}
 	elseif (isset($_POST["scheduled_callbacks_timezones_container"]))	{$scheduled_callbacks_timezones_container=$_POST["scheduled_callbacks_timezones_container"];}
+if (isset($_GET["daily_reset_limit"]))			{$daily_reset_limit=$_GET["daily_reset_limit"];}
+	elseif (isset($_POST["daily_reset_limit"]))	{$daily_reset_limit=$_POST["daily_reset_limit"];}
 
 
 if (isset($script_id)) {$script_id= strtoupper($script_id);}
@@ -2935,6 +2937,7 @@ if ($non_latin < 1)
 	$autoanswer_delay = preg_replace('/[^-0-9]/','',$autoanswer_delay);
 	$dead_trigger_seconds = preg_replace('/[^-0-9]/','',$dead_trigger_seconds);
 	$cid_cb_valid_length = preg_replace('/[^-0-9]/','',$cid_cb_valid_length);
+	$daily_reset_limit = preg_replace('/[^-0-9]/','',$daily_reset_limit);
 
 	### DIGITS and COLONS
 	$shift_length = preg_replace('/[^\:0-9]/','',$shift_length);
@@ -4544,12 +4547,13 @@ else
 # 180825-2100 - Added scheduled_callbacks_timezones_container campaign setting and timezones display
 # 180904-1206 - Added copying of in-group user grades/ranks when copying an in-group
 # 180908-1618 - Added force_fronter_leave_3way API function
+# 180916-0824 - Added daily_reset_limit Lists feature(level 9 users only)
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-687a';
-$build = '180908-1618';
+$admin_version = '2.14-688a';
+$build = '180916-0824';
 
 
 $STARTtime = date("U");
@@ -15262,9 +15266,12 @@ if ($ADD==411)
 				if (strlen($reset_time) < 4) {$reset_time='';}
 				if (strlen($expiration_date) < 10) {$expiration_date='2099-12-31';}
 
+				$daily_reset_limitSQL='';
+				if ($LOGuser_level >= 9) {$daily_reset_limitSQL = ",daily_reset_limit='$daily_reset_limit'";}
+
 				echo "<br><B>"._QXZ("LIST MODIFIED").": $list_id</B>\n";
 
-				$stmt="UPDATE vicidial_lists set list_name='$list_name',campaign_id='$campaign_id',active='$active',list_description='$list_description',list_changedate='$SQLdate',reset_time='$reset_time',agent_script_override='$agent_script_override',inbound_list_script_override='$inbound_list_script_override',campaign_cid_override='$campaign_cid_override',am_message_exten_override='$am_message_exten_override',drop_inbound_group_override='$drop_inbound_group_override',xferconf_a_number='$xferconf_a_number',xferconf_b_number='$xferconf_b_number',xferconf_c_number='$xferconf_c_number',xferconf_d_number='$xferconf_d_number',xferconf_e_number='$xferconf_e_number',web_form_address='" . mysqli_real_escape_string($link, $web_form_address) . "',web_form_address_two='" . mysqli_real_escape_string($link, $web_form_address_two) . "',time_zone_setting='$time_zone_setting',inventory_report='$inventory_report',expiration_date='$expiration_date',na_call_url='" . mysqli_real_escape_string($link, $na_call_url) . "',local_call_time='$local_call_time',web_form_address_three='" . mysqli_real_escape_string($link, $web_form_address_three) . "',status_group_id='$status_group_id',custom_one='$list_custom_one',custom_two='$list_custom_two',custom_three='$list_custom_three',custom_four='$list_custom_four',custom_five='$list_custom_five',user_new_lead_limit='$user_new_lead_limit',default_xfer_group='$default_xfer_group'  where list_id='$list_id';";
+				$stmt="UPDATE vicidial_lists set list_name='$list_name',campaign_id='$campaign_id',active='$active',list_description='$list_description',list_changedate='$SQLdate',reset_time='$reset_time',agent_script_override='$agent_script_override',inbound_list_script_override='$inbound_list_script_override',campaign_cid_override='$campaign_cid_override',am_message_exten_override='$am_message_exten_override',drop_inbound_group_override='$drop_inbound_group_override',xferconf_a_number='$xferconf_a_number',xferconf_b_number='$xferconf_b_number',xferconf_c_number='$xferconf_c_number',xferconf_d_number='$xferconf_d_number',xferconf_e_number='$xferconf_e_number',web_form_address='" . mysqli_real_escape_string($link, $web_form_address) . "',web_form_address_two='" . mysqli_real_escape_string($link, $web_form_address_two) . "',time_zone_setting='$time_zone_setting',inventory_report='$inventory_report',expiration_date='$expiration_date',na_call_url='" . mysqli_real_escape_string($link, $na_call_url) . "',local_call_time='$local_call_time',web_form_address_three='" . mysqli_real_escape_string($link, $web_form_address_three) . "',status_group_id='$status_group_id',custom_one='$list_custom_one',custom_two='$list_custom_two',custom_three='$list_custom_three',custom_four='$list_custom_four',custom_five='$list_custom_five',user_new_lead_limit='$user_new_lead_limit',default_xfer_group='$default_xfer_group' $daily_reset_limitSQL where list_id='$list_id';";
 				$rslt=mysql_to_mysqli($stmt, $link);
 
 				## QC Addition for Audited Comments
@@ -15282,17 +15289,33 @@ if ($ADD==411)
 
 				if ($reset_list == 'Y')
 					{
-					echo "<br>"._QXZ("RESETTING LIST-CALLED-STATUS")."\n";
-					$stmtB="UPDATE vicidial_list set called_since_last_reset='N' where list_id='$list_id';";
-					$rslt=mysql_to_mysqli($stmtB, $link);
-
-					### LOG INSERTION Admin Log Table ###
-					$SQL_log = "$stmtB|";
-					$SQL_log = preg_replace('/;/', '', $SQL_log);
-					$SQL_log = addslashes($SQL_log);
-					$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LISTS', event_type='RESET', record_id='$list_id', event_code='ADMIN RESET LIST', event_sql=\"$SQL_log\", event_notes='';";
-					if ($DB) {echo "|$stmt|\n";}
+					$stmt="SELECT daily_reset_limit,resets_today from vicidial_lists where list_id='$list_id';";
 					$rslt=mysql_to_mysqli($stmt, $link);
+					$row=mysqli_fetch_row($rslt);
+					if ( ($row[0] > $row[1]) or ($row[0] < 0) )
+						{
+						echo "<br>"._QXZ("RESETTING LIST-CALLED-STATUS")."\n";
+						$stmtB="UPDATE vicidial_lists set resets_today=(resets_today + 1) where list_id='$list_id';";
+						$rslt=mysql_to_mysqli($stmtB, $link);
+
+						$stmtC="UPDATE vicidial_list set called_since_last_reset='N' where list_id='$list_id';";
+						$rslt=mysql_to_mysqli($stmtC, $link);
+						$affected_rowsC = mysqli_affected_rows($link);
+
+						$row[1] = ($row[1] + 1);
+
+						### LOG INSERTION Admin Log Table ###
+						$SQL_log = "$stmtB|$stmtC|";
+						$SQL_log = preg_replace('/;/', '', $SQL_log);
+						$SQL_log = addslashes($SQL_log);
+						$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LISTS', event_type='RESET', record_id='$list_id', event_code='ADMIN RESET LIST', event_sql=\"$SQL_log\", event_notes='leads reset: $affected_rowsC  list resets today: $row[1]  limit: $row[0]';";
+						if ($DB) {echo "|$stmt|\n";}
+						$rslt=mysql_to_mysqli($stmt, $link);
+						}
+					else
+						{
+						echo "<br>"._QXZ("CANNOT RESET LIST, LIMIT REACHED").": $row[0] / $row[1]\n";
+						}
 					}
 				if ($campaign_id != "$old_campaign_id")
 					{
@@ -26487,7 +26510,7 @@ if ($ADD==311)
 				}
 			}
 
-		$stmt="SELECT vicidial_lists.list_id,list_name,campaign_id,active,list_description,list_changedate,list_lastcalldate,reset_time,agent_script_override,campaign_cid_override,am_message_exten_override,drop_inbound_group_override,xferconf_a_number,xferconf_b_number,xferconf_c_number,xferconf_d_number,xferconf_e_number,web_form_address,web_form_address_two,time_zone_setting,inventory_report,IFNULL(audit_comments,0),expiration_date,DATE_FORMAT(expiration_date,'%Y%m%d'),na_call_url,local_call_time,web_form_address_three,status_group_id,user_new_lead_limit,custom_one, custom_two, custom_three, custom_four, custom_five, inbound_list_script_override,default_xfer_group from vicidial_lists left outer join vicidial_lists_custom on vicidial_lists.list_id=vicidial_lists_custom.list_id where vicidial_lists.list_id='$list_id' $LOGallowed_campaignsSQL;";
+		$stmt="SELECT vicidial_lists.list_id,list_name,campaign_id,active,list_description,list_changedate,list_lastcalldate,reset_time,agent_script_override,campaign_cid_override,am_message_exten_override,drop_inbound_group_override,xferconf_a_number,xferconf_b_number,xferconf_c_number,xferconf_d_number,xferconf_e_number,web_form_address,web_form_address_two,time_zone_setting,inventory_report,IFNULL(audit_comments,0),expiration_date,DATE_FORMAT(expiration_date,'%Y%m%d'),na_call_url,local_call_time,web_form_address_three,status_group_id,user_new_lead_limit,custom_one, custom_two, custom_three, custom_four, custom_five, inbound_list_script_override,default_xfer_group,daily_reset_limit,resets_today from vicidial_lists left outer join vicidial_lists_custom on vicidial_lists.list_id=vicidial_lists_custom.list_id where vicidial_lists.list_id='$list_id' $LOGallowed_campaignsSQL;";
 
 		$rslt=mysql_to_mysqli($stmt, $link);
                 if ($DB) {echo "$stmt\n";}
@@ -26527,6 +26550,8 @@ if ($ADD==311)
 		$list_custom_five =         $row[33];
 		$inbound_list_script_override =		$row[34];
 		$default_xfer_group =		$row[35];
+		$daily_reset_limit =		$row[36];
+		$resets_today =			$row[37];
 
 		# grab names of global statuses and statuses in the selected campaign
 		$stmt="SELECT status,status_name,selectable,human_answered,category,sale,dnc,customer_contact,not_interested,unworkable,scheduled_callback,completed,min_sec,max_sec,answering_machine from vicidial_statuses order by status;";
@@ -26625,6 +26650,17 @@ if ($ADD==311)
 		echo "</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Reset Lead-Called-Status for this list").": </td><td align=left><select size=1 name=reset_list><option value='Y'>"._QXZ("Y")."</option><option value='N' SELECTED>"._QXZ("N")."</option></select>$NWB#lists-reset_list$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Reset Times").": </td><td align=left><input type=text name=reset_time size=30 maxlength=100 value=\"$reset_time\">$NWB#lists-reset_time$NWE</td></tr>\n";
+
+		if ($LOGuser_level >= 9)
+			{
+			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Daily Reset Limit").": </td><td align=left><input type=text name=daily_reset_limit size=4 maxlength=3 value=\"$daily_reset_limit\"> &nbsp; <i>"._QXZ("Resets Today").":</i> $resets_today &nbsp; $NWB#lists-daily_reset_limit$NWE</td></tr>\n";
+			}
+		else
+			{
+			$daily_reset_limitTEXT = $daily_reset_limit;
+			if ($daily_reset_limit < 0) {$daily_reset_limitTEXT=_QXZ("none");}
+			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Daily Reset Limit").": </td><td align=left><input type=hidden name=daily_reset_limit value=\"$daily_reset_limit\">$daily_reset_limitTEXT &nbsp; <i>"._QXZ("Resets Today").":</i> $resets_today &nbsp; $NWB#lists-daily_reset_limit$NWE</td></tr>\n";
+			}
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Expiration Date").": </td><td align=left><input type=text name=expiration_date size=12 maxlength=10 value=\"$expiration_date\"> \n";
 		echo "<script language=\"JavaScript\">\n";

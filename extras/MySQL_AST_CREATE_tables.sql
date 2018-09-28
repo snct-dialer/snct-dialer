@@ -1060,8 +1060,9 @@ custom_three VARCHAR(100) default '',
 custom_four VARCHAR(100) default '',
 custom_five VARCHAR(100) default '',
 inbound_list_script_override VARCHAR(20),
-default_xfer_group VARCHAR(20) default '---NONE---'
-
+default_xfer_group VARCHAR(20) default '---NONE---',
+daily_reset_limit SMALLINT(5) default '-1',
+resets_today SMALLINT(5) UNSIGNED default '0'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_statuses (

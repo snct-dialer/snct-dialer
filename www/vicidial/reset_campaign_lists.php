@@ -1,7 +1,7 @@
 <?php
 # reset_campaign_lists.php - VICIDIAL administration page
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>, Joe Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>, Joe Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 130711-2051 - First build
@@ -10,10 +10,11 @@
 # 141229-2009 - Added code for on-the-fly language translations display
 # 160508-2301 - Added colors features, fixed allowed campaigns bug
 # 170409-1541 - Added IP List validation code
+# 180916-1027 - Added per-list daily reset limit
 #
 
-$admin_version = '2.14-6';
-$build = '170409-1541';
+$admin_version = '2.14-7';
+$build = '180916-1027';
 
 require("dbconnect_mysqli.php");
 require("functions.php");
@@ -260,7 +261,7 @@ if ( ($LOGuser_level >= 9) and $LOGmodify_campaigns>0 and $LOGmodify_lists>0 and
 	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$campaign_stmt="select vl.campaign_id, vc.campaign_name, count(*) as ct from vicidial_lists vl, vicidial_campaigns vc where vc.active='Y' and vc.campaign_id=vl.campaign_id $LOGallowed_campaignsSQL group by campaign_id order by campaign_id, campaign_name asc";
+	$campaign_stmt="SELECT vl.campaign_id, vc.campaign_name, count(*) as ct from vicidial_lists vl, vicidial_campaigns vc where vc.active='Y' and vc.campaign_id=vl.campaign_id $LOGallowed_campaignsSQL group by campaign_id order by campaign_id, campaign_name asc";
 	$campaign_rslt=mysql_to_mysqli($campaign_stmt, $link);
 	if ($DB > 0) {echo $campaign_stmt;}
 
@@ -275,15 +276,18 @@ if ( ($LOGuser_level >= 9) and $LOGmodify_campaigns>0 and $LOGmodify_lists>0 and
 	echo "<tr bgcolor='#$SSstd_row2_background'>";
 	echo "<td align='left'>";
 	echo "<select name='reset_lead_called_campaigns'>\n";
-	while ($campaign_row=mysqli_fetch_array($campaign_rslt)) {
-		if ($campaign_row["ct"]>0) {
+	while ($campaign_row=mysqli_fetch_array($campaign_rslt)) 
+		{
+		if ($campaign_row["ct"]>0) 
+			{
 			$selected="";
-			if ($reset_lead_called_campaigns==$campaign_row["campaign_id"]) {
+			if ($reset_lead_called_campaigns==$campaign_row["campaign_id"]) 
+				{
 				$selected="selected";
-			}
+				}
 			echo "<option value='$campaign_row[campaign_id]' $selected>$campaign_row[campaign_id] - $campaign_row[campaign_name], $campaign_row[ct] list(s)</option>\n";
+			}
 		}
-	}
 	echo "</select></td>";
 	echo "<td><select name='all_or_active_only'>";
 	echo "<option value='Y'>"._QXZ("Active lists only")."</option>";
@@ -293,13 +297,15 @@ if ( ($LOGuser_level >= 9) and $LOGmodify_campaigns>0 and $LOGmodify_lists>0 and
 	echo "<td align='right'><input type='submit' name='submit_campaign_reset' value='"._QXZ("SUBMIT")."'></td></tr>";
 	echo "<tr ><td colspan='3'>";
 
-	if ($submit_campaign_reset && $reset_lead_called_campaigns) {
+	if ($submit_campaign_reset && $reset_lead_called_campaigns) 
+		{
 		if ($all_or_active_only=="Y") {$list_id_clause="and active='Y'";  $verbiage="(active lists only)";}
 				
-		$list_id_stmt="select list_id from vicidial_lists where campaign_id='$reset_lead_called_campaigns' $list_id_clause order by list_id asc";
+		$list_id_stmt="SELECT list_id,daily_reset_limit,resets_today from vicidial_lists where campaign_id='$reset_lead_called_campaigns' $list_id_clause order by list_id asc";
 		if ($DB > 0) {echo $list_id_stmt;}
 		$list_id_rslt=mysql_to_mysqli($list_id_stmt, $link);
-		if (mysqli_num_rows($list_id_rslt)>0) {
+		if (mysqli_num_rows($list_id_rslt)>0) 
+			{
 			echo _QXZ("CAMPAIGN")." <B>$reset_lead_called_campaigns</B> "._QXZ("LISTS RESETTING")." $verbiage:<BR>\n<UL>";
 			
 			### LOG INSERTION Admin Log Table ###
@@ -310,32 +316,51 @@ if ( ($LOGuser_level >= 9) and $LOGmodify_campaigns>0 and $LOGmodify_lists>0 and
 			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGNS', event_type='RESET', record_id='$reset_lead_called_campaigns', event_code='ADMIN RESET CAMPAIGN LISTS', event_sql=\"$SQL_log\", event_notes='';";
 			if ($DB) {echo "|$stmt|\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);
-		}
+			}
 
-		while ($list_id_row=mysqli_fetch_array($list_id_rslt)) {
-			$list_id=$list_id_row["list_id"];
-			$upd_stmt="UPDATE vicidial_list SET called_since_last_reset='N' where list_id='$list_id';";
-			$upd_rslt=mysql_to_mysqli($upd_stmt, $link);
+		while ($list_id_row=mysqli_fetch_array($list_id_rslt)) 
+			{
+			$list_id =				$list_id_row["list_id"];
+			$daily_reset_limit =	$list_id_row["daily_reset_limit"];
+			$resets_today =			$list_id_row["resets_today"];
+			if ( ($daily_reset_limit > $resets_today) or ($daily_reset_limit < 0) )
+				{
+				$upd_stmt="UPDATE vicidial_lists SET resets_today=(resets_today + 1) where list_id='$list_id';";
+				$upd_rslt=mysql_to_mysqli($upd_stmt, $link);
 
-			### LOG INSERTION Admin Log Table ###
-			$SQLdate=date("Y-m-d H:i:s");
-			$SQL_log = "$upd_stmt|";
-			$SQL_log = preg_replace('/;/', '', $SQL_log);
-			$SQL_log = addslashes($SQL_log);
-			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LISTS', event_type='RESET', record_id='$list_id', event_code='ADMIN RESET LIST', event_sql=\"$SQL_log\", event_notes='';";
-			if ($DB) {echo "|$stmt|\n";}
-			$rslt=mysql_to_mysqli($stmt, $link);
-			
-			echo "<LI>"._QXZ("LIST ID")." $list_id - ";
-			if (mysqli_affected_rows($link)>0) {echo _QXZ("RESET")."<BR>";} else {echo "<B>"._QXZ("NOT")."</B> "._QXZ("RESET")."<BR>";}
-		}
+				$resets_today=($resets_today + 1);
+
+				$upd_stmtB="UPDATE vicidial_list SET called_since_last_reset='N' where list_id='$list_id';";
+				$upd_rsltB=mysql_to_mysqli($upd_stmtB, $link);
+				$affected_rowsB = mysqli_affected_rows($link);
+
+				### LOG INSERTION Admin Log Table ###
+				$SQLdate=date("Y-m-d H:i:s");
+				$SQL_log = "$upd_stmt|$upd_stmtB|";
+				$SQL_log = preg_replace('/;/', '', $SQL_log);
+				$SQL_log = addslashes($SQL_log);
+				$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LISTS', event_type='RESET', record_id='$list_id', event_code='ADMIN RESET LIST', event_sql=\"$SQL_log\", event_notes='$affected_rowsB leads reset, list resets today: $resets_today';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+				
+				echo "<LI>"._QXZ("LIST ID")." $list_id - ";
+				if ($affected_rowsB > 0) {echo _QXZ("RESET")."<BR>";} else {echo "<B>"._QXZ("NOT")."</B> "._QXZ("RESET")."<BR>";}
+				}
+			else
+				{
+				echo "<LI>"._QXZ("LIST ID")." $list_id - <B>"._QXZ("NOT RESET, daily reset limit reached").": $daily_reset_limit / $resets_today</B><BR>";
+				}
+			}
 		if (mysqli_num_rows($list_id_rslt)>0) {echo "</UL>";}
-		if (mysqli_num_rows($list_id_rslt)<7) {
+		if (mysqli_num_rows($list_id_rslt)<7) 
+			{
 			for ($j=mysqli_num_rows($list_id_rslt); $j<7; $j++) {echo "<BR>";}
+			}
 		}
-	} else {
+	else 
+		{
 		echo "<BR><BR><BR><BR><BR><BR><BR>&nbsp;";
-	}
+		}
 	echo "</td></tr>";
 	echo "</TABLE></center></form>\n";
 
@@ -349,15 +374,17 @@ if ( ($LOGuser_level >= 9) and $LOGmodify_campaigns>0 and $LOGmodify_lists>0 and
 	if (!preg_match("/_BUILD_/",$SShosted_settings))
 		{echo "<BR><a href=\"$PHP_SELF?ADD=999995\"><font color=white>&copy; 2016 "._QXZ("ViciDial Group")."</font></a><BR><img src=\"images/pixel.gif\">";}
 	echo "</font>\n";
-?>
+	?>
 
-</TD><TD BGCOLOR=#<?php echo $SSframe_background; ?>>
-</TD></TR><TABLE>
-</body>
-</html>
-<?php
-} else {
+	</TD><TD BGCOLOR=#<?php echo $SSframe_background; ?>>
+	</TD></TR><TABLE>
+	</body>
+	</html>
+	<?php
+	}
+else 
+	{
 	echo _QXZ("You are not authorized to view this page."); 
 	exit;
-}
+	}
 ?>

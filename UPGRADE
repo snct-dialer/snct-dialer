@@ -351,6 +351,8 @@ OTHER CHANGES:
 96. Added new 'force_fronter_leave_3way' Agent API function, allowing an API
 	command to be sent to the fronter of a call to leave-3way their call.
 
+97. Added List Daily Reset Limit option, only editable by level 9 users.
+
 
 
 

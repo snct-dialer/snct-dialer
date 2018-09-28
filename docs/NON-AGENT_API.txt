@@ -1,4 +1,4 @@
-NON-AGENT API DOCUMENT           Started: 2008-07-24         Updated: 2018-03-31
+NON-AGENT API DOCUMENT           Started: 2008-07-24         Updated: 2018-09-16
 
 This document describes the functions of an API(Application Programming 
 Interface) for all functions NOT directly relating to the VICIDIAL Agent screen. 
@@ -136,6 +136,7 @@ Changes:
 180109-1313 - Added call_status_stats function
 180208-1655 - Added call_dispo_report function
 180331-1716 - Added options to update_campaign, add_user, update_phone. Added function update_did
+180916-1059 - Added check for daily list reset limit
 
 
 API Functions use the 'function' variable
@@ -1405,6 +1406,7 @@ ERROR: update_list EXPIRATION DATE IS NOT VALID, THIS IS AN OPTIONAL FIELD - 666
 NOTICE: update_list NO UPDATES DEFINED - 6666|
 SUCCESS: update_list LIST HAS BEEN UPDATED - 6666|1101
 NOTICE: update_list LEADS IN LIST HAVE BEEN RESET - 6666|1101|324
+NOTICE: update_list LIST RESET FAILED, daily reset limit reached: 2 / 2 - 6666|1101
 NOTICE: update_list USER DOES NOT HAVE PERMISSION TO DELETE LISTS - 6666|0
 NOTICE: update_list LIST HAS BEEN DELETED - 6666|1101|1
 NOTICE: update_list USER DOES NOT HAVE PERMISSION TO DELETE LEADS - 6666|0
