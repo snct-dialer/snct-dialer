@@ -249,6 +249,8 @@
         www/vicidial/help_documentation.txt: Added callback_dnc campaign option.
   * Add upstream Rev. 3039:
     - Update: docs/CALLER_ID_NAME_CODES.txt: Add DV.
+  * Add upstream Rev. 3040:
+    - Update: www/agc/vicidial.php: Fix for rare webform URL issue.
 
 2.25.27
   [Jörg Fring-Fürst]
