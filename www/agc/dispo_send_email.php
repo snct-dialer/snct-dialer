@@ -35,6 +35,7 @@
 # 171120-1535 - Added additional_notes option and email attachments options(1-5)
 # 171207-0659 - Added option of up to 20 attachments
 # 180611-1703 - Added instructions for Dead Trigger URL
+# 180909-1907 - Added channel_group variable
 #
 
 $api_script = 'send_email';
@@ -82,6 +83,8 @@ if (isset($_GET["called_count_trigger"]))			{$called_count_trigger=$_GET["called
 	elseif (isset($_POST["called_count_trigger"]))	{$called_count_trigger=$_POST["called_count_trigger"];}
 if (isset($_GET["email_to"]))				{$email_to=$_GET["email_to"];}
 	elseif (isset($_POST["email_to"]))		{$email_to=$_POST["email_to"];}
+if (isset($_GET["channel_group"]))			{$channel_group=$_GET["channel_group"];}
+	elseif (isset($_POST["channel_group"]))	{$channel_group=$_POST["channel_group"];}
 if (isset($_GET["email_attachment_1"]))				{$email_attachment_1=$_GET["email_attachment_1"];}
 	elseif (isset($_POST["email_attachment_1"]))	{$email_attachment_1=$_POST["email_attachment_1"];}
 if (isset($_GET["email_attachment_2"]))				{$email_attachment_2=$_GET["email_attachment_2"];}
@@ -578,12 +581,12 @@ if ($match_found > 0)
 						$email_subject = preg_replace('/--A--did_custom_four--B--/i',"$DID_custom_four",$email_subject);
 						$email_subject = preg_replace('/--A--did_custom_five--B--/i',"$DID_custom_five",$email_subject);
 						$email_subject = preg_replace('/--A--uniqueid--B--/i',"$uniqueid",$email_subject);
+						$email_subject = preg_replace('/--A--group--B--/i',"$channel_group",$email_subject);
+						$email_subject = preg_replace('/--A--channel_group--B--/i',"$channel_group",$email_subject);
 
 						# not currently active
 						$email_subject = preg_replace('/--A--campaign--B--/i',"$campaign",$email_subject);
 						$email_subject = preg_replace('/--A--phone_login--B--/i',"$phone_login",$email_subject);
-						$email_subject = preg_replace('/--A--group--B--/i',"$VDADchannel_group",$email_subject);
-						$email_subject = preg_replace('/--A--channel_group--B--/i',"$VDADchannel_group",$email_subject);
 						$email_subject = preg_replace('/--A--customer_zap_channel--B--/i',"$customer_zap_channel",$email_subject);
 						$email_subject = preg_replace('/--A--customer_server_ip--B--/i',"$customer_server_ip",$email_subject);
 						$email_subject = preg_replace('/--A--server_ip--B--/i',"$server_ip",$email_subject);
@@ -674,6 +677,8 @@ if ($match_found > 0)
 						$email_body = preg_replace('/--A--uniqueid--B--/i',"$uniqueid",$email_body);
 						$email_body = preg_replace('/--A--call_notes--B--/i',"$call_notes",$email_body);
 						$email_body = preg_replace('/--A--additional_notes--B--/i',"$additional_notes",$email_body);
+						$email_body = preg_replace('/--A--group--B--/i',"$channel_group",$email_body);
+						$email_body = preg_replace('/--A--channel_group--B--/i',"$channel_group",$email_body);
 						$email_body = urldecode($email_body);
 						}
 

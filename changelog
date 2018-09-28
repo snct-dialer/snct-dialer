@@ -197,6 +197,8 @@
         extras/upgrade_2.14.sql,
         www/agc/api.php,
         www/vicidial/admin.php: Added daily rolling of vicidial_ccc_log records.
+  * Add upstream Rev. 3027:
+    - Update: www/agc/dispo_send_email.php: Added channel_group variable.
 
 2.25.27
   [Jörg Fring-Fürst]
