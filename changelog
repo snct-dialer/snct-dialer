@@ -236,6 +236,9 @@
         www/vicidial/admin.php,
         www/vicidial/help_documentation.txt: Added three_way_volume_buttons
           campaign feature.
+  * Add upstream Rev. 3037:
+    - Update: agi/VD_amd.agi,
+        www/vicidial/admin_amm_multi.php: Added called_count as AMM wildcard.
 
 2.25.27
   [Jörg Fring-Fürst]
