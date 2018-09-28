@@ -348,6 +348,9 @@ OTHER CHANGES:
 	updated on your system using the following command:
     /usr/share/astguiclient/ADMIN_area_code_populate.pl --purge-table --debug
 
+96. Added new 'force_fronter_leave_3way' Agent API function, allowing an API
+	command to be sent to the fronter of a call to leave-3way their call.
+
 
 
 

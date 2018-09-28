@@ -82,4 +82,11 @@ INSERT INTO vicidial_settings_containers(container_id,container_notes,container_
 
 CREATE INDEX vicidial_email_group_key on vicidial_email_list(group_id);
 
+ALTER TABLE vicidial_ccc_log ADD remote_lead_id INT(9) UNSIGNED;
+
+CREATE TABLE vicidial_ccc_log_archive LIKE vicidial_ccc_log;
+CREATE UNIQUE INDEX ccc_unq_key on vicidial_ccc_log_archive(uniqueid, call_date, lead_id);
+
+
 UPDATE system_settings SET db_schema_version='1534',db_schema_update_date=NOW() where db_schema_version < 1534;
+
