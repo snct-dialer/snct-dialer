@@ -251,6 +251,9 @@
     - Update: docs/CALLER_ID_NAME_CODES.txt: Add DV.
   * Add upstream Rev. 3040:
     - Update: www/agc/vicidial.php: Fix for rare webform URL issue.
+  * Add upstream Rev. 3041:
+    - Update: www/agc/vdc_db_query.php: Added translatable phrases, related to
+        issue #1114.
 
 2.25.27
   [Jörg Fring-Fürst]
