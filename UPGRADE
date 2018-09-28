@@ -360,6 +360,9 @@ OTHER CHANGES:
 99. Added campaign setting to filter ANYONE Scheduled Callbacks by the DNC 
 	settings set in the campaign
 
+100. Added _wait_time options to Next Agent Call settings for Campaigns and
+	Inbound Groups.
+
 
 
 

@@ -254,6 +254,17 @@
   * Add upstream Rev. 3041:
     - Update: www/agc/vdc_db_query.php: Added translatable phrases, related to
         issue #1114.
+  * Add upstream Rev. 3042:
+    - Update: UPGRADE,
+        agi/agi-VDAD_ALL_inbound.agi,
+        agi/agi-VDAD_ALL_outbound.agi,
+        bin/AST_expired_list_exporter.pl,
+        extras/MySQL_AST_CREATE_tables.sql,
+        extras/mysql_update/mysql-1534.sql,
+        extras/upgrade_2.14.sql,
+        www/vicidial/admin.php,
+        www/vicidial/help_documentation.txt: Added _wait_time options for next
+          agent call options in campaigns and in-groups.
 
 2.25.27
   [Jörg Fring-Fürst]

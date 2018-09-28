@@ -16,6 +16,8 @@
 # seven settings that can be recognized by this script:
 # --campaign_id (required, name of holding campaign)
 # --last_call_date_days (required, number of days list must be inactive before purging)
+#    --last_call_date_days_export (separate date option for exporting only)
+#    --last_call_date_days_delete (separate date option for deleting only)
 # --custom_ftp_host (required, FTP host)
 # --custom_ftp_user (required, FTP user)
 # --custom_ftp_pwd (required, FTP password)
@@ -28,6 +30,7 @@
 #
 # 180307-2120 - First Build
 # 180625-0211 - Added options to use different date ranges for exports and deletes
+#
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
 $year = ($year + 1900);
