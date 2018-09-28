@@ -353,6 +353,10 @@ OTHER CHANGES:
 
 97. Added List Daily Reset Limit option, only editable by level 9 users.
 
+98. Added 3-Way Volume Buttons campaign setting to allow disabling of volume
+	and mute buttons in the LIVE CALLS IN YOUR SESSION panel during a 3-way
+	call.
+
 
 
 

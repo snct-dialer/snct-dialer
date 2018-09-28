@@ -90,5 +90,7 @@ CREATE UNIQUE INDEX ccc_unq_key on vicidial_ccc_log_archive(uniqueid, call_date,
 ALTER TABLE vicidial_lists ADD daily_reset_limit SMALLINT(5) default '-1';
 ALTER TABLE vicidial_lists ADD resets_today SMALLINT(5) UNSIGNED default '0';
 
+ALTER TABLE vicidial_campaigns ADD three_way_volume_buttons VARCHAR(20) default 'ENABLED';
+
 UPDATE system_settings SET db_schema_version='1534',db_schema_update_date=NOW() where db_schema_version < 1534;
 

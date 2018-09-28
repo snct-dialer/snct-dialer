@@ -1023,7 +1023,8 @@ dead_trigger_filename TEXT,
 dead_trigger_url TEXT,
 scheduled_callbacks_force_dial ENUM('N','Y') default 'N',
 scheduled_callbacks_auto_reschedule VARCHAR(10) default 'DISABLED',
-scheduled_callbacks_timezones_container VARCHAR(40) default 'DISABLED'
+scheduled_callbacks_timezones_container VARCHAR(40) default 'DISABLED',
+three_way_volume_buttons VARCHAR(20) default 'ENABLED'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_lists (
