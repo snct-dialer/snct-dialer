@@ -461,10 +461,11 @@
 # 180818-2147 - Added code for scheduled_callbacks_auto_reschedule
 # 180827-1225 - Added code for scheduled_callbacks_timezones_... features
 # 180904-0131 - Fix for calls_today count when using dial-ingroup
+# 180910-2340 - Small fix for call notes display
 #
 
-$version = '2.14-355';
-$build = '180904-0131';
+$version = '2.14-356';
+$build = '180910-2340';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=762;
@@ -17185,7 +17186,7 @@ if ($ACTION == 'LEADINFOview')
 				$ALLin_out[$g] =		"OUT-AUTO";
 				if ($row[10] == 'MANUAL') {$ALLin_out[$g] = "OUT-MANUAL";}
 
-				$stmtA="SELECT call_notes FROM vicidial_call_notes WHERE lead_id='$ALLlead_id[$g]' and vicidial_id='$ALLuniqueid[$g]';";
+				$stmtA="SELECT call_notes FROM vicidial_call_notes WHERE lead_id='$ALLlead_id[$g]' and vicidial_id='$ALLuniqueid[$g]' order by notesid desc;";
 				$rsltA=mysql_to_mysqli($stmtA, $link);
 					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmtA,'00581',$user,$server_ip,$session_name,$one_mysql_log);}
 				$out_notes_to_print = mysqli_num_rows($rslt);
@@ -17238,7 +17239,7 @@ if ($ACTION == 'LEADINFOview')
 				$ALLalt_dial[$g] =		"MAIN";
 				$ALLin_out[$g] =		"IN";
 
-				$stmtA="SELECT call_notes FROM vicidial_call_notes WHERE lead_id='$ALLlead_id[$g]' and vicidial_id IN('$ALLuniqueid[$g]','$ALLclosecallid[$g]');";
+				$stmtA="SELECT call_notes FROM vicidial_call_notes WHERE lead_id='$ALLlead_id[$g]' and vicidial_id IN('$ALLuniqueid[$g]','$ALLclosecallid[$g]') order by notesid desc;";
 				$rsltA=mysql_to_mysqli($stmtA, $link);
 					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmtA,'00584',$user,$server_ip,$session_name,$one_mysql_log);}
 				$in_notes_to_print = mysqli_num_rows($rslt);
