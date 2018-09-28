@@ -92,5 +92,7 @@ ALTER TABLE vicidial_lists ADD resets_today SMALLINT(5) UNSIGNED default '0';
 
 ALTER TABLE vicidial_campaigns ADD three_way_volume_buttons VARCHAR(20) default 'ENABLED';
 
+ALTER TABLE vicidial_campaigns ADD callback_dnc ENUM('ENABLED','DISABLED') default 'DISABLED';
+
 UPDATE system_settings SET db_schema_version='1534',db_schema_update_date=NOW() where db_schema_version < 1534;
 

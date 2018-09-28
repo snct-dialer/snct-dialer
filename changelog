@@ -239,6 +239,14 @@
   * Add upstream Rev. 3037:
     - Update: agi/VD_amd.agi,
         www/vicidial/admin_amm_multi.php: Added called_count as AMM wildcard.
+  * Add upstream Rev. 3038:
+    - Update: UPGRADE,
+        bin/AST_VDhopper.pl,
+        extras/MySQL_AST_CREATE_tables.sql,
+        extras/mysql_update/mysql-1534.sql,
+        extras/upgrade_2.14.sql,
+        www/vicidial/admin.php,
+        www/vicidial/help_documentation.txt: Added callback_dnc campaign option.
 
 2.25.27
   [Jörg Fring-Fürst]
