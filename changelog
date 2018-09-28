@@ -268,6 +268,9 @@
   * Add upstream Rev. 3043:
     - Update: www/agc/agc_agent_manager_chat_interface.php: Fix for missing
         translationm issue #1125.
+  * Add upstream Rev. 3044:
+    - Update: www/vicidial/AST_admin_template_maker.php: Fix for deleted
+        template function in alternate language, issue #1127.
 
 2.25.27
   [Jörg Fring-Fürst]
