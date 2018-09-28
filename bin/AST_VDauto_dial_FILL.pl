@@ -42,6 +42,7 @@
 # 171205-2022 - Fix for double-dialing issue on high-volume systems
 # 180214-1558 - Added CID Group functionality
 # 180812-1025 - Added code for scheduled_callbacks_auto_reschedule campaign feature
+# 180910-1759 - Small fix for data validation
 #
 
 ### begin parsing run-time options ###
@@ -436,14 +437,15 @@ while($one_day_interval > 0)
 					$sthA->finish();
 
 					##################################################################################
-					##### CONTINUE IF THERE ARE BALANCE SERVERS AVAILABLE THAT ARE NOT IN TRUNK SHORTAGE
+					##### CONTINUE IF THERE ARE BALANCE SERVERS AVAILABLE THAT ARE NOT IN TRUNK SHORTAGE, AND ADDITIONAL FILL CALLS ARE NEEDED
 					##################################################################################
-					if ($AVAIL_balance_servers > 0)
+					if ( ($AVAIL_balance_servers > 0) && ($DBfill_needed[$camp_CIPct] > 0) )
 						{
 						$event_string="Balance Servers available: $AVAIL_balance_servers";
 						&event_logger;
 
 						$DB_camp_servers=0;
+						$DB_camp_servers_calls_placed=0;
 						@DB_camp_server_server_ip=@MT;
 						@DB_camp_server_max_vicidial_trunks=@MT;
 						@DB_camp_server_balance_trunks_offlimits=@MT;
@@ -597,6 +599,14 @@ while($one_day_interval > 0)
 								$call_CMPIPct=0;
 								$lead_id_call_list='|';
 								my $UDaffected_rows=0;
+								$VALIDATEcalls_to_place = ($DBfill_needed[$camp_CIPct] - $DB_camp_servers_calls_placed);
+								if ($VALIDATEcalls_to_place < 0) {$VALIDATEcalls_to_place=0;}
+								if ($DB_camp_server_trunks_to_dial[$server_CIPct] > $VALIDATEcalls_to_place) 
+									{
+									$event_string="Calls-to-place VALIDATE OVERRIDE: |$DB_camp_server_trunks_to_dial[$server_CIPct]|$VALIDATEcalls_to_place|$DBfill_needed[$camp_CIPct]|$DB_camp_servers_calls_placed|";
+									&event_logger;
+									$DB_camp_server_trunks_to_dial[$server_CIPct] = $VALIDATEcalls_to_place;
+									}
 								if ($call_CMPIPct < $DB_camp_server_trunks_to_dial[$server_CIPct])
 									{
 									$stmtA = "UPDATE vicidial_hopper set status='QUEUE', user='VDFC_$DB_camp_server_server_ip[$server_CIPct]' where campaign_id='$DBfill_campaign[$camp_CIPct]' and status='READY' order by priority desc,hopper_id LIMIT $DB_camp_server_trunks_to_dial[$server_CIPct];";
@@ -962,6 +972,7 @@ while($one_day_interval > 0)
 
 														$vddl_inserts[$staggered_ct] = "INSERT INTO vicidial_dial_log SET caller_code='$VqueryCID',lead_id='$lead_id',server_ip='XXXXXXXXXXXXXXX',call_date='$SQLdate',extension='$VDAD_dial_exten',channel='$local_DEF$Ndialstring$local_AMP$ext_context',timeout='$Local_dial_timeout',outbound_cid='$CIDstring',context='$ext_context';";
 
+														$DB_camp_servers_calls_placed++;
 														$calls_placed++;
 														$staggered_ct++;
 														}
@@ -990,7 +1001,7 @@ while($one_day_interval > 0)
 						}
 					else
 						{
-						$event_string.="No Balance Servers available that do not have a shortage";
+						$event_string.="No Balance Servers available that do not have a shortage, or no fill calls required";
 						&event_logger;
 						}
 

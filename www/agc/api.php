@@ -96,10 +96,11 @@
 # 180301-2302 - Added GET-AND-POST URL logging
 # 180323-2227 - Fix for dial_ingroup error message on external_dial function
 # 180903-1606 - Added count for waiting emails to calls_in_queue_count function
+# 180908-1433 - Added force_fronter_leave_3way function
 #
 
-$version = '2.14-62';
-$build = '180903-1606';
+$version = '2.14-63';
+$build = '180908-1433';
 
 $startMS = microtime();
 
@@ -4179,6 +4180,208 @@ if ($function == 'calls_in_queue_count')
 	}
 ################################################################################
 ### END - calls_in_queue_count
+################################################################################
+
+
+
+
+
+################################################################################
+### BEGIN - force_fronter_leave_3way - will send a command to fronter agent to leave-3way call that executing agent is on
+################################################################################
+if ($function == 'force_fronter_leave_3way')
+	{
+	if ( ( ($value!='LOCAL_ONLY') and ($value!='LOCAL_AND_CCC') and ($value!='CCC_REMOTE') ) or ( (strlen($agent_user)<1) and (strlen($alt_user)<2) ) )
+		{
+		$result = _QXZ("ERROR");
+		$result_reason = _QXZ("force_fronter_leave_3way not valid");
+		echo "$result: $result_reason - $value|$agent_user\n";
+		api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+		}
+	else
+		{
+		if ( (!preg_match("/ $function /",$VUapi_allowed_functions)) and (!preg_match("/ALL_FUNCTIONS/",$VUapi_allowed_functions)) )
+			{
+			$result = _QXZ("ERROR");
+			$result_reason = _QXZ("auth USER DOES NOT HAVE PERMISSION TO USE THIS FUNCTION");
+			echo "$result: $result_reason - $value|$user|$function|$VUuser_group\n";
+			api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+			exit;
+			}
+		if (strlen($alt_user)>1)
+			{
+			$stmt = "select count(*) from vicidial_users where custom_three='$alt_user';";
+			if ($DB) {echo "$stmt\n";}
+			$rslt=mysql_to_mysqli($stmt, $link);
+			$row=mysqli_fetch_row($rslt);
+			if ($row[0] > 0)
+				{
+				$stmt = "select user from vicidial_users where custom_three='$alt_user' order by user;";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+				$row=mysqli_fetch_row($rslt);
+				$agent_user = $row[0];
+				}
+			else
+				{
+				$result = _QXZ("ERROR");
+				$result_reason = _QXZ("no user found");
+				echo "$result: $result_reason - $alt_user\n";
+				api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+				}
+			}
+		$stmt = "SELECT count(*) from vicidial_live_agents where user='$agent_user';";
+		if ($DB) {echo "$stmt\n";}
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$row=mysqli_fetch_row($rslt);
+		if ( ($row[0] > 0) or ($value == 'CCC_REMOTE') )
+			{
+			$Alead_id=0;
+			### grab the lead_id for this logged-in agent
+			$stmt="SELECT lead_id from vicidial_live_agents where user='$agent_user';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_to_mysqli($stmt, $link);
+			$vla_ct = mysqli_num_rows($rslt);
+			if ($vla_ct > 0)
+				{
+				$row=mysqli_fetch_row($rslt);
+				$Alead_id = $row[0];
+				}
+
+			if ( ($Alead_id > 0) or ( (strlen($lead_id) > 0) and ($value == 'CCC_REMOTE') ) )
+				{
+				$QUERYlead_id = $Alead_id;
+				if ($value == 'CCC_REMOTE')
+					{$QUERYlead_id = $lead_id;}
+
+				$other_user='';
+				$fronter_found=0;
+				### user ID of fronter agent
+				$stmt="SELECT user from vicidial_live_agents where user!='$agent_user' and lead_id='$QUERYlead_id' order by last_call_time limit 1;";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+				$vla_ct = mysqli_num_rows($rslt);
+				if ($vla_ct > 0)
+					{
+					$row=mysqli_fetch_row($rslt);
+					$other_user = $row[0];
+					$fronter_found++;
+
+					$external_transferconf = "LEAVE_3WAY_CALL---------NO------------$epoch";
+					$stmt="UPDATE vicidial_live_agents set external_transferconf='$external_transferconf' where user='$other_user';";
+					$rslt=mysql_to_mysqli($stmt, $link);
+					$affected_rows = mysqli_affected_rows($link);
+
+					$result = _QXZ("SUCCESS");
+					$result_reason = _QXZ("SUCCESS: force_fronter_leave_3way SENT")." - $other_user";
+					echo "$result_reason";
+					api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+					}
+				else
+					{
+					if ($value == 'LOCAL_AND_CCC')
+						{
+						# check for CCC-fronted call on this server
+						$stmt="SELECT remote_lead_id,container_id from vicidial_ccc_log where lead_id='$QUERYlead_id';";
+						if ($DB) {echo "|$stmt|\n";}
+						$rslt=mysql_to_mysqli($stmt, $link);
+						$vcl_ct = mysqli_num_rows($rslt);
+						if ($vcl_ct > 0)
+							{
+							$row=mysqli_fetch_row($rslt);
+							$remote_lead_id =	$row[0];
+							$container_id =		$row[1];
+
+							$stmt="SELECT container_entry from vicidial_settings_containers where container_id='$container_id';";
+							if ($DB) {echo "|$stmt|\n";}
+							$rslt=mysql_to_mysqli($stmt, $link);
+							$vsc_ct = mysqli_num_rows($rslt);
+							if ($vsc_ct > 0)
+								{
+								$row=mysqli_fetch_row($rslt);
+								$container_entry =	$row[0];
+								$container_entry = preg_replace("/ccc_lead_info/","force_fronter_leave_3way&value=CCC_REMOTE&lead_id=$remote_lead_id&agent_user=CCC_REMOTE",$container_entry);
+								$container_entry = preg_replace("/vicidial\/non_agent_|admin\/non_agent_/","agc/",$container_entry);
+
+								$SQL_log = "$container_entry";
+								$SQL_log = preg_replace('/;/','',$SQL_log);
+								$SQL_log = addslashes($SQL_log);
+								$stmt = "INSERT INTO vicidial_url_log SET uniqueid='$uniqueid',url_date='$NOW_TIME',url_type='start',url='$SQL_log',url_response='';";
+								if ($DB) {echo "$stmt\n";}
+								$rslt=mysql_to_mysqli($stmt, $link);
+								$affected_rows = mysqli_affected_rows($link);
+								$url_id = mysqli_insert_id($link);
+
+								$URLstart_sec = date("U");
+
+								### grab the call_start_url ###
+								if ($DB > 0) {echo "$container_entry<BR>\n";}
+								$SCUfile = file("$container_entry");
+								if ( !($SCUfile) )
+									{
+									$error_array = error_get_last();
+									$error_type = $error_array["type"];
+									$error_message = $error_array["message"];
+									$error_line = $error_array["line"];
+									$error_file = $error_array["file"];
+									}
+
+								if ($DB > 0) {echo "$SCUfile[0]<BR>\n";}
+
+								### update url log entry
+								$URLend_sec = date("U");
+								$URLdiff_sec = ($URLend_sec - $URLstart_sec);
+								if ($SCUfile)
+									{
+									$SCUfile_contents = implode("", $SCUfile);
+									$SCUfile_contents = preg_replace('/;/','',$SCUfile_contents);
+									$SCUfile_contents = addslashes($SCUfile_contents);
+									$fronter_found++;
+
+									$result = _QXZ("SUCCESS");
+									$result_reason = _QXZ("force_fronter_leave_3way command sent over CCC")." - $container_id";
+									echo "$result: $result_reason\n";
+									api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+									}
+								else
+									{
+									$SCUfile_contents = "PHP ERROR: Type=$error_type - Message=$error_message - Line=$error_line - File=$error_file";
+									}
+								$stmt = "UPDATE vicidial_url_log SET response_sec='$URLdiff_sec',url_response='$SCUfile_contents' where url_log_id='$url_id';";
+								if ($DB) {echo "$stmt\n";}
+								$rslt=mysql_to_mysqli($stmt, $link);
+								$affected_rows = mysqli_affected_rows($link);
+								}
+							}
+						}
+					}
+				if ($fronter_found < 1)
+					{
+					$result = _QXZ("ERROR");
+					$result_reason = _QXZ("no fronter found");
+					echo "$result: $result_reason - $agent_user\n";
+					api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+					}
+				}
+			else
+				{
+				$result = _QXZ("ERROR");
+				$result_reason = _QXZ("agent_user is not on a phone call");
+				echo "$result: $result_reason - $agent_user\n";
+				api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+				}
+			}
+		else
+			{
+			$result = _QXZ("ERROR");
+			$result_reason = _QXZ("agent_user is not logged in");
+			echo "$result: $result_reason - $agent_user\n";
+			api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+			}
+		}
+	}
+################################################################################
+### END - force_fronter_leave_3way
 ################################################################################
 
 

@@ -762,7 +762,7 @@ web_form_address TEXT,
 allow_closers ENUM('Y','N'),
 hopper_level INT(8) UNSIGNED default '1',
 auto_dial_level VARCHAR(6) default '0',
-next_agent_call ENUM('random','oldest_call_start','oldest_call_finish','campaign_rank','overall_user_level','fewest_calls','longest_wait_time','campaign_grade_random') default 'longest_wait_time',
+next_agent_call VARCHAR(40) default 'longest_wait_time',
 local_call_time VARCHAR(10) DEFAULT '9am-9pm',
 voicemail_ext VARCHAR(10),
 dial_timeout TINYINT UNSIGNED default '60',
@@ -1023,7 +1023,9 @@ dead_trigger_filename TEXT,
 dead_trigger_url TEXT,
 scheduled_callbacks_force_dial ENUM('N','Y') default 'N',
 scheduled_callbacks_auto_reschedule VARCHAR(10) default 'DISABLED',
-scheduled_callbacks_timezones_container VARCHAR(40) default 'DISABLED'
+scheduled_callbacks_timezones_container VARCHAR(40) default 'DISABLED',
+three_way_volume_buttons VARCHAR(20) default 'ENABLED',
+callback_dnc ENUM('ENABLED','DISABLED') default 'DISABLED'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_lists (
@@ -1060,8 +1062,9 @@ custom_three VARCHAR(100) default '',
 custom_four VARCHAR(100) default '',
 custom_five VARCHAR(100) default '',
 inbound_list_script_override VARCHAR(20),
-default_xfer_group VARCHAR(20) default '---NONE---'
-
+default_xfer_group VARCHAR(20) default '---NONE---',
+daily_reset_limit SMALLINT(5) default '-1',
+resets_today SMALLINT(5) UNSIGNED default '0'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_statuses (
@@ -1141,7 +1144,7 @@ group_color VARCHAR(7),
 active ENUM('Y','N'),
 web_form_address TEXT,
 voicemail_ext VARCHAR(10),
-next_agent_call VARCHAR(30) default 'longest_wait_time',
+next_agent_call VARCHAR(40) default 'longest_wait_time',
 fronter_display ENUM('Y','N') default 'Y',
 ingroup_script VARCHAR(20),
 get_call_launch ENUM('NONE','SCRIPT','WEBFORM','WEBFORMTWO','WEBFORMTHREE','FORM','EMAIL') default 'NONE',
@@ -3184,7 +3187,7 @@ xfercallid INT(9) UNSIGNED DEFAULT NULL,
 PRIMARY KEY (email_row_id),
 KEY email_list_account_key (email_account_id),
 KEY email_list_user_key (user),
-KEY vicidial_email_lead_id_key (lead_id)
+KEY vicidial_email_lead_id_key (lead_id),
 KEY vicidial_email_group_key (group_id)
 ) ENGINE=MyISAM;
 
@@ -4107,6 +4110,7 @@ channel VARCHAR(100) default '',
 server_ip VARCHAR(60) NOT NULL,
 list_id BIGINT(14) UNSIGNED,
 container_id VARCHAR(40) default '',
+remote_lead_id INT(9) UNSIGNED,
 index (call_date),
 index (local_call_id),
 index (lead_id)
@@ -4343,6 +4347,9 @@ CREATE TABLE vicidial_did_log_archive LIKE vicidial_did_log;
 CREATE UNIQUE INDEX vdidla_key on vicidial_did_log_archive(uniqueid, call_date, server_ip);
 
 CREATE TABLE vicidial_recent_ascb_calls_archive LIKE vicidial_recent_ascb_calls;
+
+CREATE TABLE vicidial_ccc_log_archive LIKE vicidial_ccc_log;
+CREATE UNIQUE INDEX ccc_unq_key on vicidial_ccc_log_archive(uniqueid, call_date, lead_id);
 
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;

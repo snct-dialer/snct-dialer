@@ -137,8 +137,12 @@
 # 180512-2214 - Added reset of hopper_calls_today
 # 180613-1615 - Add sniplet into perl scripts to run only once a time
 # 180818-2229 - Added rolling of vicidial_recent_ascb_calls records
- 
-$build = '180818-2229';
+# 180908-1428 - Added daily rolling of vicidial_ccc_log records
+# 180916-1003 - Added vicidial_lists.resets_today resetting at TEOD, timed reset resets_today verification before reset
+#
+
+$build = '180916-1003';
+
 
 ###### Test that the script is running only once a time
 use Fcntl qw(:flock);
@@ -1185,6 +1189,21 @@ if ($timeclock_end_of_day_NOW > 0)
 		if ($DB) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 		$sthA->finish();
 
+		$stmtA = "update vicidial_lists SET resets_today=0;";
+		if($DBX){print STDERR "\n|$stmtA|\n";}
+		$affected_rows = $dbhA->do($stmtA);
+		if($DB){print STDERR "\n|$affected_rows vicidial_lists resets counts reset|\n";}
+		if ($teodDB) {$event_string = "vicidial_lists records reset: $affected_rows";   &teod_logger;}
+
+		$stmtA = "optimize table vicidial_lists;";
+		if($DBX){print STDERR "\n|$stmtA|\n";}
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		@aryA = $sthA->fetchrow_array;
+		if ($DB) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+		$sthA->finish();
+
 		$stmtA = "update vicidial_campaign_agents SET calls_today=0,hopper_calls_today=0,hopper_calls_hour=0;";
 		if($DBX){print STDERR "\n|$stmtA|\n";}
 		$affected_rows = $dbhA->do($stmtA);
@@ -1453,6 +1472,34 @@ if ($timeclock_end_of_day_NOW > 0)
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			}
+
+
+		# roll of vicidial_ccc_log records, keep only 1 day of records in active table
+		if (!$Q) {print "\nProcessing vicidial_ccc_log table...\n";}
+		$stmtA = "INSERT IGNORE INTO vicidial_ccc_log_archive SELECT * from vicidial_ccc_log;";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows = $sthA->rows;
+		$event_string = "$sthArows rows inserted into vicidial_ccc_log_archive table";
+		if (!$Q) {print "$event_string \n";}
+		if ($teodDB) {&teod_logger;}
+
+		$rv = $sthA->err();
+		if (!$rv) 
+			{	
+			$stmtA = "DELETE FROM vicidial_ccc_log WHERE call_date < \"$RMSQLdate\";";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows = $sthA->rows;
+			$event_string = "$sthArows rows deleted from vicidial_ccc_log table";
+			if (!$Q) {print "$event_string \n";}
+			if ($teodDB) {&teod_logger;}
+
+			$stmtA = "optimize table vicidial_ccc_log;";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			}
+
 
 		# reset in-group closing_time_now_trigger trigger flag
 		$stmtA = "UPDATE vicidial_inbound_groups SET closing_time_now_trigger='N' WHERE closing_time_now_trigger='Y';";
@@ -4360,7 +4407,7 @@ if ( ($AST_VDadapt > 0) && ($reset_test =~ /00$/) )
 if ($AST_VDadapt > 0)
 	{
 	### reset lists if reset time matches
-	$stmtA = "SELECT list_id FROM vicidial_lists where reset_time LIKE \"%$reset_test%\";";
+	$stmtA = "SELECT list_id,daily_reset_limit,resets_today FROM vicidial_lists where reset_time LIKE \"%$reset_test%\";";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthBrows=$sthA->rows;
@@ -4368,7 +4415,9 @@ if ($AST_VDadapt > 0)
 	while ($sthBrows > $i)
 		{
 		@aryA = $sthA->fetchrow_array;
-		$list_id[$i] = "$aryA[0]";
+		$list_id[$i] =				$aryA[0];
+		$daily_reset_limit[$i] = 	$aryA[1];
+		$resets_today[$i] = 		$aryA[2];
 		$i++;
 		}
 	$sthA->finish();
@@ -4378,18 +4427,32 @@ if ($AST_VDadapt > 0)
 	$i=0;
 	while ($sthBrows > $i)
 		{
-		$stmtA="UPDATE vicidial_list set called_since_last_reset='N' where list_id='$list_id[$i]';";
-		$affected_rows = $dbhA->do($stmtA);
+		if ( ($daily_reset_limit[$i] > $resets_today[$i]) || ($daily_reset_limit[$i] < 0) ) 
+			{
+			$stmtA="UPDATE vicidial_lists set resets_today=(resets_today + 1) where list_id='$list_id[$i]';";
+			$affected_rows = $dbhA->do($stmtA);
 
-		$SQL_log = "$stmtA|";
-		$SQL_log =~ s/;|\\|\'|\"//gi;
+			$stmtB="UPDATE vicidial_list set called_since_last_reset='N' where list_id='$list_id[$i]';";
+			$affected_rowsB = $dbhA->do($stmtB);
 
-		if ($DB) {print "DONE\n";}
-		if ($DB) {print "$trigger_results\n";}
+			$SQL_log = "$stmtA|$stmtB|";
+			$SQL_log =~ s/;|\\|\'|\"//gi;
+			$resets_today[$i] = ($resets_today[$i] + 1);
 
-		$stmtA="INSERT INTO vicidial_admin_log set event_date='$now_date', user='VDAD', ip_address='1.1.1.1', event_section='LISTS', event_type='RESET', record_id='$list_id[$i]', event_code='ADMIN RESET LIST', event_sql=\"$SQL_log\", event_notes='$affected_rows leads reset';";
-		$Iaffected_rows = $dbhA->do($stmtA);
-		if ($DB) {print "FINISHED:   $affected_rows|$Iaffected_rows|$stmtA";}
+			if ($DB) {print "List Reset DONE: $list_id[$i]($affected_rows)\n";}
+
+			$stmtA="INSERT INTO vicidial_admin_log set event_date='$now_date', user='VDAD', ip_address='1.1.1.1', event_section='LISTS', event_type='RESET', record_id='$list_id[$i]', event_code='ADMIN RESET LIST', event_sql=\"$SQL_log\", event_notes='$affected_rowsB leads reset, list resets today: $resets_today[$i]';";
+			$Iaffected_rows = $dbhA->do($stmtA);
+			if ($DB) {print "FINISHED:   $affected_rows|$Iaffected_rows|$stmtA";}
+			}
+		else
+			{
+			if ($DB) {print "List Reset FAILED: $list_id[$i](Reset Limit $daily_reset_limit[$i] / $resets_today[$i])\n";}
+
+			$stmtA="INSERT INTO vicidial_admin_log set event_date='$now_date', user='VDAD', ip_address='1.1.1.1', event_section='LISTS', event_type='RESET', record_id='$list_id[$i]', event_code='ADMIN RESET LIST FAILED', event_sql=\"Reset Limit Reached $daily_reset_limit[$i] / $resets_today[$i]\", event_notes='Reset failed';";
+			$Iaffected_rows = $dbhA->do($stmtA);
+			if ($DB) {print "FINISHED:   $affected_rows|$Iaffected_rows|$stmtA";}
+			}
 
 		$i++;
 		}
@@ -4424,7 +4487,6 @@ if ($AST_VDadapt > 0)
 			$SQL_log =~ s/;|\\|\'|\"//gi;
 
 			if ($DB) {print "DONE\n";}
-			if ($DB) {print "$trigger_results\n";}
 
 			$stmtA="INSERT INTO vicidial_admin_log set event_date='$now_date', user='VDAD', ip_address='1.1.1.1', event_section='LISTS', event_type='MODIFY', record_id='$expired_list_id[$i]', event_code='ADMIN EXPIRED LIST INACTIVE', event_sql=\"$SQL_log\", event_notes='$affected_rows list expired';";
 			$Iaffected_rows = $dbhA->do($stmtA);

@@ -23,10 +23,11 @@
 # by the administrator of the external system. It should look something like this:
 # http://server/vicidial/non_agent_api.php?user=6666&pass=1234&source=test&function=ccc_lead_info&call_id=--A--call_id--B--
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # changes:
 # 170609-1326 - First build
+# 180908-1414 - Added extra logging
 #
 
 $script = 'cm_sc_ccc_lookup_insert.agi';
@@ -151,14 +152,19 @@ $extension =~ s/\'|\"|\\\\|\\\|\\|\\;|\\\;|\;|;//gi;
 
 $blind_xfer=0;
 $three_way=0;
+$remote_lead_id=0;
 
 if ($calleridname =~ /^V\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d|^Y\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d|^M\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d|^J\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d/)
 	{
 	$blind_xfer=1;
+	$remote_lead_id = substr($calleridname, 10, 10);
+	$remote_lead_id = ($remote_lead_id + 0);
 	}
 elsif ($calleridname =~ /^DC\d\d\d\d\d\dW\d\d\d\d\d\d\d\d\d\dW/)
 	{
 	$three_way=1;
+	$remote_lead_id = substr($calleridname, 9, 10);
+	$remote_lead_id = ($remote_lead_id + 0);
 	}
 else
 	{
@@ -394,6 +400,9 @@ if ( (length($Wdocline_cat) > 29) && ($Wdocline_cat !~ /ERROR: ccc_lead_info /) 
 		$Ynewcallerid = "\"$YqueryCID <$LEADphone_number>\"";
 		$AGI->set_callerid($Ynewcallerid);
 		if ($AGILOG) {$agi_string = "callerID changed: $Ynewcallerid";   &agi_output;}
+
+		$stmtA = "INSERT INTO vicidial_ccc_log SET call_date=NOW(),remote_call_id='$calleridname',local_call_id='$YqueryCID',lead_id='$new_lead_id',uniqueid='$uniqueid',channel='$channel',server_ip='$VARserver_ip',list_id='$LEADlist_id',container_id='$container_id',remote_lead_id='$remote_lead_id';";
+		$affected_rows = $dbhA->do($stmtA);
 
 		$external_found=1;
 		}

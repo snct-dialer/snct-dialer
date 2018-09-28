@@ -348,6 +348,21 @@ OTHER CHANGES:
 	updated on your system using the following command:
     /usr/share/astguiclient/ADMIN_area_code_populate.pl --purge-table --debug
 
+96. Added new 'force_fronter_leave_3way' Agent API function, allowing an API
+	command to be sent to the fronter of a call to leave-3way their call.
+
+97. Added List Daily Reset Limit option, only editable by level 9 users.
+
+98. Added 3-Way Volume Buttons campaign setting to allow disabling of volume
+	and mute buttons in the LIVE CALLS IN YOUR SESSION panel during a 3-way
+	call.
+
+99. Added campaign setting to filter ANYONE Scheduled Callbacks by the DNC 
+	settings set in the campaign
+
+100. Added _wait_time options to Next Agent Call settings for Campaigns and
+	Inbound Groups.
+
 
 
 

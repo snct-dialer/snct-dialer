@@ -789,6 +789,7 @@ channel VARCHAR(100) default '',
 server_ip VARCHAR(60) NOT NULL,
 list_id BIGINT(14) UNSIGNED,
 container_id VARCHAR(40) default '',
+remote_lead_id INT(9) UNSIGNED,
 index (call_date),
 index (local_call_id),
 index (lead_id)
@@ -852,5 +853,21 @@ INSERT INTO vicidial_settings_containers(container_id,container_notes,container_
 INSERT INTO vicidial_settings_containers(container_id,container_notes,container_type,user_group,container_entry) VALUES ('TIMEZONES_AUSTRALIA','Australian Timezone List','TIMEZONE_LIST','---ALL---','AUS,AEST,Y,Eastern Australia Time Zone\nAUS,AEST,N,Queensland Time Zone\nAUS,ACST,Y,Central Australia Time Zone\nAUS,ACST,N,Northern Territory Time Zone\nAUS,AWST,N,Western Australia Time Zone\n');
 
 CREATE INDEX vicidial_email_group_key on vicidial_email_list(group_id);
+
+
+ALTER TABLE vicidial_ccc_log ADD remote_lead_id INT(9) UNSIGNED;
+
+CREATE TABLE vicidial_ccc_log_archive LIKE vicidial_ccc_log;
+CREATE UNIQUE INDEX ccc_unq_key on vicidial_ccc_log_archive(uniqueid, call_date, lead_id);
+
+ALTER TABLE vicidial_lists ADD daily_reset_limit SMALLINT(5) default '-1';
+ALTER TABLE vicidial_lists ADD resets_today SMALLINT(5) UNSIGNED default '0';
+
+ALTER TABLE vicidial_campaigns ADD three_way_volume_buttons VARCHAR(20) default 'ENABLED';
+
+ALTER TABLE vicidial_campaigns ADD callback_dnc ENUM('ENABLED','DISABLED') default 'DISABLED';
+
+ALTER TABLE vicidial_campaigns MODIFY next_agent_call VARCHAR(40) default 'longest_wait_time';
+ALTER TABLE vicidial_inbound_groups MODIFY next_agent_call VARCHAR(40) default 'longest_wait_time';
 
 UPDATE system_settings SET db_schema_version='1534',db_schema_update_date=NOW() where db_schema_version < 1534;

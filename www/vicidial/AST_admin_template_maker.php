@@ -1,5 +1,5 @@
 <?php
-# AST_admin_template_maker.php - version 2.10
+# AST_admin_template_maker.php - version 2.14
 # 
 # Copyright (C) 2018  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
 #
@@ -16,6 +16,7 @@
 # 170409-1532 - Added IP List validation code
 # 180324-0942 - Enforce User Group campaign permissions for templates based on list_id
 # 180503-2215 - Added new help display
+# 180927-0633 - Fix for deleted template function in alternate language, issue #1127
 #
 
 require("dbconnect_mysqli.php");
@@ -158,7 +159,7 @@ header ("Content-type: text/html; charset=utf-8");
 header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
 header ("Pragma: no-cache");                          // HTTP/1.0
 
-if ($submit_template=="SUBMIT TEMPLATE" && $template_id && $template_name && $template_list_id && $standard_fields_layout) 
+if ($submit_template==_QXZ("SUBMIT TEMPLATE") && $template_id && $template_name && $template_list_id && $standard_fields_layout) 
 	{
 
 	$status_str="";
@@ -192,7 +193,7 @@ if ($submit_template=="SUBMIT TEMPLATE" && $template_id && $template_name && $te
 		$error_msg=_QXZ("TEMPLATE CREATION FAILED")."<br>\n$errno - $error<br>\n[$ins_stmt]";
 		}
 	}
-else if ($delete_template=="DELETE TEMPLATE" && $template_id) 
+else if ( ($delete_template == _QXZ("DELETE TEMPLATE")) and (strlen($template_id) > 0) ) 
 	{
 	$delete_stmt="delete from vicidial_custom_leadloader_templates where template_id='$template_id'";
 	$delete_rslt=mysql_to_mysqli($delete_stmt, $link);
@@ -351,12 +352,12 @@ function loadIFrame(form_action, field_value) {
 	document.forms[0].action="leadloader_template_display.php?form_action="+form_action;
 }
 function checkForm(form_name) {
-	var error_msg="The form cannot be submitted for the following reasons: \n";
-	if (form_name.template_id.value=="") {error_msg+=" - Template ID is missing\n";}
-	else if (form_name.template_id.value.length<2) {error_msg+=" - Template ID needs to be at least 2 characters long<\n";}
-	if (form_name.template_name.value=="") {error_msg+=" - Template name is missing\n";}
-	if (form_name.template_list_id.value=="") {error_msg+=" - List ID is missing\n";}
-	if (form_name.standard_fields_layout.value=="" && form_name.custom_fields_layout.value=="") {error_msg+=" - There does not seem to be a layout\n";}
+	var error_msg = "<?php echo _QXZ("The form cannot be submitted for the following reasons"); ?>: \n";
+	if (form_name.template_id.value=="") {error_msg += " - <?php echo _QXZ("Template ID is missing"); ?>\n";}
+	else if (form_name.template_id.value.length<2) {error_msg += " - <?php echo _QXZ("Template ID needs to be at least 2 characters long"); ?>\n";}
+	if (form_name.template_name.value=="") {error_msg += " - <?php echo _QXZ("Template name is missing"); ?>\n";}
+	if (form_name.template_list_id.value=="") {error_msg += " - <?php echo _QXZ("List ID is missing"); ?>\n";}
+	if (form_name.standard_fields_layout.value=="" && form_name.custom_fields_layout.value=="") {error_msg += " - <?php echo _QXZ("There does not seem to be a layout"); ?>\n";}
 	if (error_msg.length>=80) {alert(error_msg); return false;} else {return true;}
 }
 </script>
@@ -519,7 +520,7 @@ if (mysqli_num_rows($template_rslt)>0) {
 		</td>
 	</tr>
 	<tr bgcolor="#<?php echo $SSframe_background; ?>">
-		<th colspan='2'><input type='submit' name='submit_template' onClick="return checkForm(this.form)" value='SUBMIT TEMPLATE'></th>
+		<th colspan='2'><input type='submit' name='submit_template' onClick="return checkForm(this.form)" value='<?php echo _QXZ("SUBMIT TEMPLATE"); ?>'></th>
 	</tr>
 <tr bgcolor="#<?php echo $SSframe_background; ?>"><td align="center" colspan=2>
 <table border=0 cellpadding=3 cellspacing=1 width="100%" align="center">

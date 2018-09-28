@@ -91,10 +91,11 @@
 # 180111-1559 - Added anyone_callback_inactive_lists option
 # 180301-1453 - Fix to allow for commented(#) lines in filters
 # 180419-1109 - Fix for list mix to use call count limit on initial count, issue #1094
+# 180924-1734 - Added callback_dnc campaign option
 #
 
 # constants
-$build = '180419-1109';
+$build = '180924-1734';
 $DB=0;  # Debug flag, set to 0 for no debug messages. Can be overriden with CLI --debug flag
 $US='__';
 $MT[0]='';
@@ -540,15 +541,121 @@ if ($CBHOLD_count > 0)
 		$CAu=0;
 		foreach(@CA_lead_id)
 			{
-			$stmtA = "UPDATE vicidial_list set status='$CA_status[$CAu]', called_since_last_reset='N' where lead_id='$CA_lead_id[$CAu]';";
-			$affected_rows = $dbhA->do($stmtA);
-			if ($DB) {print "Scheduled Callbacks Activated:  $affected_rows\n";}
-			$event_string = "|CALLBACKS LISTACT|$affected_rows|";
-			&event_logger;
+			$DNClead=0;
+			$DNCC=0;
+			$DNCL=0;
 
-			$stmtA = "INSERT INTO $vicidial_hopper SET lead_id='$CA_lead_id[$CAu]',campaign_id='$CA_campaign_id[$CAu]',list_id='$CA_list_id[$CAu]',gmt_offset_now='$CA_gmt_offset_now[$CAu]',user='',state='$CA_state[$CAu]',priority='50',source='C',vendor_lead_code=\"$CA_vendor_lead_code[$CAu]\";";
-			$affected_rows = $dbhA->do($stmtA);
-			if ($DB) {print "ANYONE Scheduled Callback Inserted into hopper:  $affected_rows|$CA_lead_id[$CAu]\n";}
+			### look up callback DNC settings for campaign
+			$stmtA = "SELECT callback_dnc,use_internal_dnc,use_campaign_dnc,use_other_campaign_dnc FROM vicidial_campaigns where campaign_id='$CA_campaign_id[$CAu]';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$VD_callback_dnc =				$aryA[0];
+				$VD_use_internal_dnc =			$aryA[1];
+				$VD_use_campaign_dnc =			$aryA[2];
+				$VD_use_other_campaign_dnc =	$aryA[3];
+				}
+			$sthA->finish();
+
+			if ($VD_callback_dnc =~ /ENABLED/i) 
+				{
+				$VD_phone_number='';
+				### look up lead information
+				$stmtA = "SELECT phone_number FROM vicidial_list where lead_id='$CA_lead_id[$CAu]';";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				if ($sthArows > 0)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$VD_phone_number = $aryA[0];
+					}
+				$sthA->finish();
+
+				if ( ($VD_use_internal_dnc =~ /Y/) || ($VD_use_internal_dnc =~ /AREACODE/) )
+					{
+					if ($VD_use_internal_dnc =~ /AREACODE/)
+						{
+						$pth_areacode = substr($VD_phone_number, 0, 3);
+						$pth_areacode .= "XXXXXXX";
+						$stmtA="SELECT count(*) FROM vicidial_dnc where phone_number IN('$VD_phone_number','$pth_areacode');";
+						}
+					else
+						{$stmtA="SELECT count(*) FROM vicidial_dnc where phone_number='$VD_phone_number';";}
+					if ($DB) {print "     Doing DNC Check: $VD_phone_number - $VD_use_internal_dnc\n";}
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows=$sthA->rows;
+					if ($sthArows > 0)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$DNClead =		 $aryA[0];
+						}
+					$sthA->finish();
+					if ($DNClead != '0')
+						{
+						$DNCL++;
+						$stmtA = "UPDATE vicidial_list SET status='DNCL' where lead_id='$CA_lead_id[$CAu]';";
+						$affected_rows = $dbhA->do($stmtA);
+						if ($DBX) {print "Flagging DNC lead:     $affected_rows  $VD_phone_number\n";}
+
+						$stmtA = "UPDATE vicidial_callbacks SET status='DEAD' where lead_id='$CA_lead_id[$CAu]';";
+						$affected_rows = $dbhA->do($stmtA);
+						if ($DBX) {print "Setting Callback entry to DEAD:     $affected_rows  $CA_lead_id[$CAu]\n";}
+						}
+					}
+				if ( ( ($VD_use_campaign_dnc =~ /Y/) || ($VD_use_campaign_dnc =~ /AREACODE/) ) && ($DNClead == '0') )
+					{
+					$temp_campaign_id = $CA_campaign_id[$CAu];
+					if (length($VD_use_other_campaign_dnc) > 0) {$temp_campaign_id = $VD_use_other_campaign_dnc}
+					if ($VD_use_campaign_dnc =~ /AREACODE/)
+						{
+						$pth_areacode = substr($VD_phone_number, 0, 3);
+						$pth_areacode .= "XXXXXXX";
+						$stmtA="SELECT count(*) FROM vicidial_campaign_dnc where phone_number IN('$VD_phone_number','$pth_areacode') and campaign_id='$temp_campaign_id';";
+						}
+					else
+						{$stmtA="SELECT count(*) FROM vicidial_campaign_dnc where phone_number='$VD_phone_number' and campaign_id='$temp_campaign_id';";}
+					if ($DBX) {print "$VD_use_other_campaign_dnc|$stmtA\n";}
+					if ($DB) {print "Doing CAMP DNC Check: $VD_phone_number - $VD_use_campaign_dnc - $temp_campaign_id\n";}
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows=$sthA->rows;
+					if ($sthArows > 0)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$DNClead =	($DNClead + $aryA[0]);
+						}
+					$sthA->finish();
+					if ($aryA[0] != '0')
+						{
+						$DNCC++;
+						$stmtA = "UPDATE vicidial_list SET status='DNCC' where lead_id='$CA_lead_id[$CAu]';";
+						$affected_rows = $dbhA->do($stmtA);
+						if ($DBX) {print "Flagging DNC lead:     $affected_rows  $VD_phone_number $CA_campaign_id[$CAu]\n";}
+
+						$stmtA = "UPDATE vicidial_callbacks SET status='DEAD' where lead_id='$CA_lead_id[$CAu]';";
+						$affected_rows = $dbhA->do($stmtA);
+						if ($DBX) {print "Setting Callback entry to DEAD:     $affected_rows  $CA_lead_id[$CAu]\n";}
+						}
+					}
+				}
+
+			if ($DNClead < 1) 
+				{
+				$stmtA = "UPDATE vicidial_list set status='$CA_status[$CAu]', called_since_last_reset='N' where lead_id='$CA_lead_id[$CAu]';";
+				$affected_rows = $dbhA->do($stmtA);
+				if ($DB) {print "Scheduled Callbacks Activated:  $affected_rows\n";}
+				$event_string = "|CALLBACKS LISTACT|$affected_rows|";
+				&event_logger;
+
+				$stmtA = "INSERT INTO $vicidial_hopper SET lead_id='$CA_lead_id[$CAu]',campaign_id='$CA_campaign_id[$CAu]',list_id='$CA_list_id[$CAu]',gmt_offset_now='$CA_gmt_offset_now[$CAu]',user='',state='$CA_state[$CAu]',priority='50',source='C',vendor_lead_code=\"$CA_vendor_lead_code[$CAu]\";";
+				$affected_rows = $dbhA->do($stmtA);
+				if ($DB) {print "ANYONE Scheduled Callback Inserted into hopper:  $affected_rows|$CA_lead_id[$CAu]\n";}
+				}
 			$CAu++;
 			}
 		}
@@ -945,11 +1052,11 @@ $ANY_hopper_vlc_dup_check='N';
 
 if (length($CLIcampaign)>1)
 	{
-	$stmtA = "SELECT campaign_id,lead_order,hopper_level,auto_dial_level,local_call_time,lead_filter_id,use_internal_dnc,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,dial_statuses,list_order_mix,use_campaign_dnc,drop_lockout_time,no_hopper_dialing,auto_alt_dial_statuses,dial_timeout,auto_hopper_multi,use_auto_hopper,auto_trim_hopper,lead_order_randomize,lead_order_secondary,call_count_limit,hopper_vlc_dup_check from vicidial_campaigns where campaign_id IN('$CLIcampaign');";
+	$stmtA = "SELECT campaign_id,lead_order,hopper_level,auto_dial_level,local_call_time,lead_filter_id,use_internal_dnc,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,dial_statuses,list_order_mix,use_campaign_dnc,drop_lockout_time,no_hopper_dialing,auto_alt_dial_statuses,dial_timeout,auto_hopper_multi,use_auto_hopper,auto_trim_hopper,lead_order_randomize,lead_order_secondary,call_count_limit,hopper_vlc_dup_check,use_other_campaign_dnc,callback_dnc from vicidial_campaigns where campaign_id IN('$CLIcampaign');";
 	}
 else
 	{
-	$stmtA = "SELECT campaign_id,lead_order,hopper_level,auto_dial_level,local_call_time,lead_filter_id,use_internal_dnc,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,dial_statuses,list_order_mix,use_campaign_dnc,drop_lockout_time,no_hopper_dialing,auto_alt_dial_statuses,dial_timeout,auto_hopper_multi,use_auto_hopper,auto_trim_hopper,lead_order_randomize,lead_order_secondary,call_count_limit,hopper_vlc_dup_check,use_other_campaign_dnc from vicidial_campaigns where active='Y';";
+	$stmtA = "SELECT campaign_id,lead_order,hopper_level,auto_dial_level,local_call_time,lead_filter_id,use_internal_dnc,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,dial_statuses,list_order_mix,use_campaign_dnc,drop_lockout_time,no_hopper_dialing,auto_alt_dial_statuses,dial_timeout,auto_hopper_multi,use_auto_hopper,auto_trim_hopper,lead_order_randomize,lead_order_secondary,call_count_limit,hopper_vlc_dup_check,use_other_campaign_dnc,callback_dnc from vicidial_campaigns where active='Y';";
 	}
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -987,6 +1094,7 @@ while ($sthArows > $rec_count)
 	$call_count_limit[$rec_count] =				$aryA[23];
 	$hopper_vlc_dup_check[$rec_count] =			$aryA[24];
 	$use_other_campaign_dnc[$rec_count] =		$aryA[25];
+	$callback_dnc[$rec_count] =					$aryA[26];
 
 	if ($hopper_vlc_dup_check[$rec_count] =~ /Y/)
 		{$ANY_hopper_vlc_dup_check = 'Y';}
