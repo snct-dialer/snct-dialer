@@ -277,6 +277,11 @@
   * Add upstream Rev. 3046:
     - Update: bin/ADMIN_update_server_ip.pl: Added update of report_server, 
         active_twin_server_ip and active_voicemail_server, issue #1109.
+  * Add upstream Rev. 3047:
+    - Update: bin/ADMIN_keepalive_ALL.pl,
+        docs/Sangoma_Netborder_CPD_Walkthrough.txt,
+        www/vicidial/help_documentation.txt: Added more allowed codecs to conf
+          file generation.
 
 2.25.27
   [Jörg Fring-Fürst]

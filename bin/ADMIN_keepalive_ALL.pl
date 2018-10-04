@@ -139,9 +139,10 @@
 # 180818-2229 - Added rolling of vicidial_recent_ascb_calls records
 # 180908-1428 - Added daily rolling of vicidial_ccc_log records
 # 180916-1003 - Added vicidial_lists.resets_today resetting at TEOD, timed reset resets_today verification before reset
+# 180930-1007 - Added more allowed codecs to conf file generation
 #
 
-$build = '180916-1003';
+$build = '180930-1007';
 
 
 ###### Test that the script is running only once a time
@@ -2638,17 +2639,20 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 		$Pcodec='';
 		if (length($codecs_list[$i]) > 2)
 			{
-			if ($codecs_list[$i] =~ /gsm/i)			{$Pcodec .= "allow=gsm\n";}
-			if ($codecs_list[$i] =~ /alaw|a-law/i)	{$Pcodec .= "allow=alaw\n";}
-			if ($codecs_list[$i] =~ /ulaw|u-law/i)	{$Pcodec .= "allow=ulaw\n";}
-			if ($codecs_list[$i] =~ /g722|g\.722/i)	{$Pcodec .= "allow=g722\n";}
-			if ($codecs_list[$i] =~ /g723|g\.723/i)	{$Pcodec .= "allow=g723.1\n";}
-			if ($codecs_list[$i] =~ /g726|g\.726/i)	{$Pcodec .= "allow=g726\n";}
-			if ($codecs_list[$i] =~ /g729|g\.729/i)	{$Pcodec .= "allow=g729\n";}
-			if ($codecs_list[$i] =~ /ilbc/i)		{$Pcodec .= "allow=ilbc\n";}
-			if ($codecs_list[$i] =~ /lpc10/i)		{$Pcodec .= "allow=lpc10\n";}
-			if ($codecs_list[$i] =~ /speex/i)		{$Pcodec .= "allow=speex\n";}
-			if ($codecs_list[$i] =~ /adpcm/i)		{$Pcodec .= "allow=adpcm\n";}
+			if ($codecs_list[$i] =~ /gsm/i)					{$Pcodec .= "allow=gsm\n";}
+			if ($codecs_list[$i] =~ /ulaw|u-law/i)			{$Pcodec .= "allow=ulaw\n";}
+			if ($codecs_list[$i] =~ /alaw|a-law/i)			{$Pcodec .= "allow=alaw\n";}
+			if ($codecs_list[$i] =~ /g719|g\.719/i)			{$Pcodec .= "allow=g719\n";}
+			if ($codecs_list[$i] =~ /g722|g\.722/i)			{$Pcodec .= "allow=g722\n";}
+			if ($codecs_list[$i] =~ /g723|g\.723|g723\.1/i)	{$Pcodec .= "allow=g723\n";}
+			if ($codecs_list[$i] =~ /g726|g\.726/i)			{$Pcodec .= "allow=g726\n";}
+			if ($codecs_list[$i] =~ /g729|g\.729|g729a/i)	{$Pcodec .= "allow=g729\n";}
+			if ($codecs_list[$i] =~ /ilbc/i)				{$Pcodec .= "allow=ilbc\n";}
+			if ($codecs_list[$i] =~ /lpc10/i)				{$Pcodec .= "allow=lpc10\n";}
+			if ($codecs_list[$i] =~ /speex/i)				{$Pcodec .= "allow=speex\n";}
+			if ($codecs_list[$i] =~ /adpcm/i)				{$Pcodec .= "allow=adpcm\n";}
+			if ($codecs_list[$i] =~ /opus/i)				{$Pcodec .= "allow=opus\n";}
+			if ($codecs_list[$i] =~ /slin/i)				{$Pcodec .= "allow=slin\n";}
 			if (length($Pcodec) > 2)
 				{$Pcodec = "disallow=all\n$Pcodec";}
 			}
@@ -2810,17 +2814,20 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 		$Pcodec='';
 		if (length($codecs_list[$i]) > 2)
 			{
-			if ($codecs_list[$i] =~ /gsm/i)			{$Pcodec .= "allow=gsm\n";}
-			if ($codecs_list[$i] =~ /alaw|a-law/i)	{$Pcodec .= "allow=alaw\n";}
-			if ($codecs_list[$i] =~ /ulaw|u-law/i)	{$Pcodec .= "allow=ulaw\n";}
-			if ($codecs_list[$i] =~ /g722|g\.722/i)	{$Pcodec .= "allow=g722\n";}
-			if ($codecs_list[$i] =~ /g723|g\.723/i)	{$Pcodec .= "allow=g723.1\n";}
-			if ($codecs_list[$i] =~ /g726|g\.726/i)	{$Pcodec .= "allow=g726\n";}
-			if ($codecs_list[$i] =~ /g729|g\.729/i)	{$Pcodec .= "allow=g729\n";}
-			if ($codecs_list[$i] =~ /ilbc/i)		{$Pcodec .= "allow=ilbc\n";}
-			if ($codecs_list[$i] =~ /lpc10/i)		{$Pcodec .= "allow=lpc10\n";}
-			if ($codecs_list[$i] =~ /speex/i)		{$Pcodec .= "allow=speex\n";}
-			if ($codecs_list[$i] =~ /adpcm/i)		{$Pcodec .= "allow=adpcm\n";}
+			if ($codecs_list[$i] =~ /gsm/i)					{$Pcodec .= "allow=gsm\n";}
+			if ($codecs_list[$i] =~ /ulaw|u-law/i)			{$Pcodec .= "allow=ulaw\n";}
+			if ($codecs_list[$i] =~ /alaw|a-law/i)			{$Pcodec .= "allow=alaw\n";}
+			if ($codecs_list[$i] =~ /g719|g\.719/i)			{$Pcodec .= "allow=g719\n";}
+			if ($codecs_list[$i] =~ /g722|g\.722/i)			{$Pcodec .= "allow=g722\n";}
+			if ($codecs_list[$i] =~ /g723|g\.723|g723\.1/i)	{$Pcodec .= "allow=g723\n";}
+			if ($codecs_list[$i] =~ /g726|g\.726/i)			{$Pcodec .= "allow=g726\n";}
+			if ($codecs_list[$i] =~ /g729|g\.729|g729a/i)	{$Pcodec .= "allow=g729\n";}
+			if ($codecs_list[$i] =~ /ilbc/i)				{$Pcodec .= "allow=ilbc\n";}
+			if ($codecs_list[$i] =~ /lpc10/i)				{$Pcodec .= "allow=lpc10\n";}
+			if ($codecs_list[$i] =~ /speex/i)				{$Pcodec .= "allow=speex\n";}
+			if ($codecs_list[$i] =~ /adpcm/i)				{$Pcodec .= "allow=adpcm\n";}
+			if ($codecs_list[$i] =~ /opus/i)				{$Pcodec .= "allow=opus\n";}
+			if ($codecs_list[$i] =~ /slin/i)				{$Pcodec .= "allow=slin\n";}
 			if (length($Pcodec) > 2)
 				{$Pcodec = "disallow=all\n$Pcodec";}
 			}
