@@ -25,6 +25,7 @@
 # 180112-0915 - Added flush for cid_channels_recent table
 # 180511-1223 - Added flush for server-specific cid_channels_recent_ tables
 # 180519-1431 - Added vicidial_inbound_groups optimization
+# 181003-2115 - Added optimize of cid_channels_recent_ tables
 #
 
 ### begin parsing run-time options ###
@@ -408,6 +409,19 @@ while ($sthArows > $aas)
 		if($DB){print STDERR "\n|$stmtA|\n";}
 		if (!$T) {      $affected_rows = $dbhA->do($stmtA);}
 		if (!$Q) {print " - cid_channels_recent_$PADserver_ip[$aas] flush: $affected_rows rows\n";}
+
+		$stmtA = "OPTIMIZE table cid_channels_recent_$PADserver_ip[$aas];";
+		if($DB){print STDERR "\n|$stmtA|\n";}
+		if (!$T) 
+			{
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			@aryA = $sthA->fetchrow_array;
+			if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+			$sthA->finish();
+			}
+		if (!$Q) {print " - OPTIMIZE cid_channels_recent_$PADserver_ip[$aas]          \n";}
 		}
 	$aas++;
 	}

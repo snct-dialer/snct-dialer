@@ -292,6 +292,9 @@
         www/vicidial/admin.php,
         www/vicidial/help_documentation.txt: Fix for RINGAGENT calls, Added
           external_web_socket_url option.
+  * Add upstream Rev. 3049:
+    - Update: bin/AST_flush_DBqueue.pl: Added optimize of cid_channels_recent_
+        tables.
 
 2.25.27
   [Jörg Fring-Fürst]
