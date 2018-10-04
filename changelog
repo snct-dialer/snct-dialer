@@ -274,6 +274,9 @@
   * Add upstream Rev. 3045:
     - Update: vicidial/admin_listloader_fourth_gen.php: Fixed
         translation-related issue #1114.
+  * Add upstream Rev. 3046:
+    - Update: bin/ADMIN_update_server_ip.pl: Added update of report_server, 
+        active_twin_server_ip and active_voicemail_server, issue #1109.
 
 2.25.27
   [Jörg Fring-Fürst]
