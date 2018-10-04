@@ -605,10 +605,11 @@
 # 180827-1224 - Added scheduled_callbacks_timezones_... features
 # 180924-0002 - Added three_way_volume_buttons campaign feature
 # 180926-1757 - Fix for rare webform URL issue
+# 181003-1737 - Added external_web_socket_url option
 #
 
-$version = '2.14-573c';
-$build = '180926-1757';
+$version = '2.14-574c';
+$build = '181003-1737';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -3120,13 +3121,16 @@ else
 			$local_gmt = ($local_gmt + $isdst);
 			}
 
-		$stmt="SELECT asterisk_version,web_socket_url from servers where server_ip='$server_ip';";
+		$stmt="SELECT asterisk_version,web_socket_url,external_web_socket_url from servers where server_ip='$server_ip';";
 		if ($DB) {echo "|$stmt|\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01028',$VD_login,$server_ip,$session_name,$one_mysql_log);}
 		$row=mysqli_fetch_row($rslt);
-		$asterisk_version=$row[0];
-		$web_socket_url=$row[1];
+		$asterisk_version =			$row[0];
+		$web_socket_url =			$row[1];
+		$external_web_socket_url =	$row[2];
+		if ( ($use_external_server_ip=='Y') and (strlen($external_web_socket_url) > 5) )
+			{$web_socket_url = $external_web_socket_url;}
 
 		if ($protocol == 'EXTERNAL')
 			{
@@ -3512,11 +3516,11 @@ else
 					{
 					if ($webphone_location == 'bar')
 						{
-						$webphone_content = "<iframe src=\"$WebPhonEurl\" style=\"width:" . $webphone_width . "px;height:" . $webphone_height . "px;background-color:transparent;z-index:17;\" scrolling=\"no\" frameborder=\"0\" allowtransparency=\"true\" id=\"webphone\" name=\"webphone\" width=\"" . $webphone_width . "px\" height=\"" . $webphone_height . "px\" allow=\"microphone\"> </iframe>";
+						$webphone_content = "<iframe src=\"$WebPhonEurl\" style=\"width:" . $webphone_width . "px;height:" . $webphone_height . "px;background-color:transparent;z-index:17;\" scrolling=\"no\" frameborder=\"0\" allowtransparency=\"true\" id=\"webphone\" name=\"webphone\" width=\"" . $webphone_width . "px\" height=\"" . $webphone_height . "px\" allow=\"microphone *; speakers *;\"> </iframe>";
 						}
 					else
 						{
-						$webphone_content = "<iframe src=\"$WebPhonEurl\" style=\"width:" . $webphone_width . "px;height:" . $webphone_height . "px;background-color:transparent;z-index:17;\" scrolling=\"auto\" frameborder=\"0\" allowtransparency=\"true\" id=\"webphone\" name=\"webphone\" width=\"" . $webphone_width . "px\" height=\"" . $webphone_height . "px\" allow=\"microphone\"> </iframe>";
+						$webphone_content = "<iframe src=\"$WebPhonEurl\" style=\"width:" . $webphone_width . "px;height:" . $webphone_height . "px;background-color:transparent;z-index:17;\" scrolling=\"auto\" frameborder=\"0\" allowtransparency=\"true\" id=\"webphone\" name=\"webphone\" width=\"" . $webphone_width . "px\" height=\"" . $webphone_height . "px\" allow=\"microphone *; speakers *;\"> </iframe>";
 						}
 					}
 				}

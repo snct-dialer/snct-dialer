@@ -168,7 +168,8 @@ web_socket_url VARCHAR(255) default '',
 conf_qualify ENUM('Y','N') default 'Y',
 routing_prefix VARCHAR(10) default '13',
 git_commit VARCHAR(55) default '',
-git_release VARCHAR(25) default ''
+git_release VARCHAR(25) default '',
+external_web_socket_url VARCHAR(255) default ''
 ) ENGINE=MyISAM;
 
 CREATE UNIQUE INDEX server_id on servers (server_id);

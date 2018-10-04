@@ -1,7 +1,7 @@
 <?php
 # phone_only.php - the web-based web-phone-only client application
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG
 # 110511-1336 - First Build
@@ -17,10 +17,11 @@
 # 141216-2127 - Added language settings lookups and user/pass variable standardization
 # 170409-1600 - Added IP List validation code
 # 170511-1107 - Added code for WebRTC phones
+# 181003-1736 - Added external_web_socket_url option
 #
 
-$version = '2.14-13p';
-$build = '170511-1107';
+$version = '2.14-14p';
+$build = '181003-1736';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=74;
 $one_mysql_log=0;
@@ -763,12 +764,15 @@ else
 		$codecs_list = preg_replace("/&/",'',$codecs_list);
 		$webphone_server_ip = $server_ip;
 
-		$stmt="SELECT asterisk_version,web_socket_url from servers where server_ip='$webphone_server_ip' LIMIT 1;";
+		$stmt="SELECT asterisk_version,web_socket_url,external_web_socket_url from servers where server_ip='$webphone_server_ip' LIMIT 1;";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$row=mysqli_fetch_row($rslt);
-		$asterisk_version =		$row[0];
-		$web_socket_url =		$row[1];
+		$asterisk_version =			$row[0];
+		$web_socket_url =			$row[1];
+		$external_web_socket_url =	$row[2];
+		if ( ($use_external_server_ip=='Y') and (strlen($external_web_socket_url) > 5) )
+			{$web_socket_url = $external_web_socket_url;}
 
 		if ($use_external_server_ip=='Y')
 			{
@@ -836,11 +840,11 @@ else
 		$WebPhonEurl = "$webphone_url?phone_login=$b64_phone_login&phone_login=$b64_phone_login&phone_pass=$b64_phone_pass&server_ip=$b64_server_ip&callerid=$b64_callerid&protocol=$b64_protocol&codecs=$b64_codecs&options=$b64_options&system_key=$b64_system_key";
 		if ($webphone_location == 'bar')
 			{
-			$webphone_content = "<iframe src=\"$WebPhonEurl\" style=\"width:1100px;height:500px;background-color:transparent;z-index:17;\" scrolling=\"no\" frameborder=\"0\" allowtransparency=\"true\" id=\"webphone\" name=\"webphone\" width=\"" . $webphone_width . "px\" height=\"" . $webphone_height . "px\"> </iframe>";
+			$webphone_content = "<iframe src=\"$WebPhonEurl\" style=\"width:1100px;height:500px;background-color:transparent;z-index:17;\" scrolling=\"no\" frameborder=\"0\" allowtransparency=\"true\" id=\"webphone\" name=\"webphone\" width=\"" . $webphone_width . "px\" height=\"" . $webphone_height . "px\" allow=\"microphone *; speakers *;\"> </iframe>";
 			}
 		else
 			{
-			$webphone_content = "<iframe src=\"$WebPhonEurl\" style=\"width:1100px;height:500px;background-color:transparent;z-index:17;\" scrolling=\"auto\" frameborder=\"0\" allowtransparency=\"true\" id=\"webphone\" name=\"webphone\" width=\"" . $webphone_width . "px\" height=\"" . $webphone_height . "px\"> </iframe>";
+			$webphone_content = "<iframe src=\"$WebPhonEurl\" style=\"width:1100px;height:500px;background-color:transparent;z-index:17;\" scrolling=\"auto\" frameborder=\"0\" allowtransparency=\"true\" id=\"webphone\" name=\"webphone\" width=\"" . $webphone_width . "px\" height=\"" . $webphone_height . "px\" allow=\"microphone *; speakers *;\"> </iframe>";
 			}
 
 		if (preg_match('/MSIE/',$browser)) 

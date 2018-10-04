@@ -12,6 +12,7 @@
 # 171002-1111 - Fixed timeout erase channels issue, added more debug output
 # 171228-1832 - Added more debug logging
 # 180511-1146 - Changed to use server-specific cid_channels_recent table
+# 181003-1728 - Fix for RINGAGENT calls
 #
 
 # constants
@@ -741,8 +742,8 @@ sub process_channels
 		{
 		$call_id = get_valid_callid($channel_ref->{'CallerIDName'},$channel_ref->{'ConnectedLineName'});
 
-		# only need to match local channels to real channels on VDAD calls
-		if ( ( $call_id =~ /^V\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d$/ ) && ( $channel_ref->{'ConnectedLineName'} ne "<unknown>" ))
+		# only need to match local channels to real channels on VDAD and RINGAGENT calls
+		if ( ( $call_id =~ /^V\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d$|^RINGAGENT/ ) && ( $channel_ref->{'ConnectedLineName'} ne "<unknown>" ))
 			{
 			if ( $channel_ref->{'Channel'} =~ /^Local/ ) 
 				{
