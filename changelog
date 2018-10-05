@@ -295,6 +295,8 @@
   * Add upstream Rev. 3049:
     - Update: bin/AST_flush_DBqueue.pl: Added optimize of cid_channels_recent_
         tables.
+  * Add upstream Rev. 3050:
+    - Update: www/agc/functions.php: Fix for defaut field in AREA type.
 
 2.25.27
   [Jörg Fring-Fürst]

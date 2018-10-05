@@ -701,6 +701,14 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user,$DB,$call_i
 					}
 				if ($A_field_type[$o]=='AREA') 
 					{
+					$change_trigger='';
+					$default_field_flag=0;
+					if (preg_match("/\|$A_field_label[$o]\|/i",$vicidial_list_fields))
+						{
+						$change_trigger="onchange=\"update_default_vd_field('$A_field_label[$o]');\"";
+						$default_field_flag++;
+						}
+
 					if ($A_field_default[$o]=='NULL') {$A_field_default[$o]='';}
 					if (strlen($A_field_value[$o]) < 1) {$A_field_value[$o] = $A_field_default[$o];}
 					$field_HTML .= "<textarea name=$A_field_label[$o] id=$A_field_label[$o] ROWS=$A_field_max[$o] COLS=$A_field_size[$o]>$A_field_value[$o]</textarea>";
