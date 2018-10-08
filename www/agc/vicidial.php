@@ -606,10 +606,11 @@
 # 180924-0002 - Added three_way_volume_buttons campaign feature
 # 180926-1757 - Fix for rare webform URL issue
 # 181003-1737 - Added external_web_socket_url option
+# 181005-1909 - Added SYSTEM manual_dial_filter option
 #
 
-$version = '2.14-574c';
-$build = '181003-1737';
+$version = '2.14-575c';
+$build = '181005-1909';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -9384,8 +9385,9 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							var regMDFvarDNC = new RegExp("DNC","ig");
 							var regMNHDNCvar = new RegExp("NO-HOPPER DNC","ig");
 							var regMDFvarCAMP = new RegExp("CAMPLISTS","ig");
+							var regMDFvarSYS = new RegExp("SYSTEM","ig");
 							var regMDFvarTIME = new RegExp("OUTSIDE","ig");
-							if ( (MDnextCID.match(regMNCvar)) || (MDnextCID.match(regMDFvarDNC)) || (MDnextCID.match(regMDFvarCAMP)) || (MDnextCID.match(regMDFvarTIME)) )
+							if ( (MDnextCID.match(regMNCvar)) || (MDnextCID.match(regMDFvarDNC)) || (MDnextCID.match(regMDFvarCAMP)) || (MDnextCID.match(regMDFvarSYS)) || (MDnextCID.match(regMDFvarTIME)) )
 								{
 								button_click_log = button_click_log + "" + SQLdate + "-----DialNextFailed---" + MDnextCID + " " + "|";
 
@@ -9404,6 +9406,8 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 									{alert_box("<?php echo _QXZ("This phone number is in the DNC list:"); ?>\n" + mdnPhonENumbeR);   alert_displayed=1;}
 								if (MDnextCID.match(regMDFvarCAMP))
 									{alert_box("<?php echo _QXZ("This phone number is not in the campaign lists:"); ?>\n" + mdnPhonENumbeR);   alert_displayed=1;}
+								if (MDnextCID.match(regMDFvarSYS))
+									{alert_box("<?php echo _QXZ("This phone number is not in the system lists:"); ?>\n" + mdnPhonENumbeR);   alert_displayed=1;}
 								if (MDnextCID.match(regMDFvarTIME))
 									{alert_box("<?php echo _QXZ("This phone number is outside of the local call time:"); ?>\n" + mdnPhonENumbeR);   alert_displayed=1;}
 

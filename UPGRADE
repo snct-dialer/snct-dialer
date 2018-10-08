@@ -363,6 +363,11 @@ OTHER CHANGES:
 100. Added _wait_time options to Next Agent Call settings for Campaigns and
 	Inbound Groups.
 
+101. Added External Web Socket URL option so a WebRTC phone can be used outside
+	a network if the Phone is set to Use External Server IP = Y
+
+102. Added SYSTEM options to the campaign detail Manual Dial Filter feature
+
 
 
 

@@ -297,6 +297,13 @@
         tables.
   * Add upstream Rev. 3050:
     - Update: www/agc/functions.php: Fix for defaut field in AREA type.
+  * Add upstream Rev. 3051:
+    - Update:  UPGRADE,
+        www/agc/vdc_db_query.php,
+        www/agc/vicidial.php,
+        www/vicidial/admin.php,
+        www/vicidial/help_documentation.txt: Added SYSTEM manual_dial_filter
+          option.
 
 2.25.27
   [Jörg Fring-Fürst]

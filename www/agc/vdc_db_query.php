@@ -464,13 +464,14 @@
 # 180910-2340 - Small fix for call notes display
 # 180918-2231 - Change to use the same new function for manual dial DNC filtering
 # 180926-2150 - Added translatable phrases, related to issue #1114
+# 181005-1744 - Added SYSTEM option for manual_dial_filter
 #
 
-$version = '2.14-358';
-$build = '180926-2150';
+$version = '2.14-359';
+$build = '181005-1744';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=762;
+$mysql_log_count=787;
 $one_mysql_log=0;
 $DB=0;
 $VD_login=0;
@@ -2442,6 +2443,56 @@ if ($ACTION == 'manDiaLnextCaLL')
 					$VLAEDaffected_rows = mysqli_affected_rows($link);
 
 					echo "NUMBER NOT IN CAMPLISTS\n";
+					if ($SSagent_debug_logging > 0) {vicidial_ajax_log($NOW_TIME,$startMS,$link,$ACTION,$php_script,$user,$stage,$lead_id,$session_name,$stmt);}
+					exit;
+					}
+				}
+
+			if (preg_match("/SYSTEM/",$manual_dial_filter))
+				{
+				$stmt="SELECT count(*) FROM vicidial_list where phone_number='$phone_number';";
+				$rslt=mysql_to_mysqli($stmt, $link);
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00763',$user,$server_ip,$session_name,$one_mysql_log);}
+				if ($DB) {echo "$stmt\n";}
+				$row=mysqli_fetch_row($rslt);
+				$MDF_search_flag='MAIN';
+
+				if ( ($row[0] < 1) and (preg_match("/WITH_ALT/",$manual_dial_filter)) )
+					{
+					$stmt="SELECT count(*) FROM vicidial_list where alt_phone='$phone_number';";
+					$rslt=mysql_to_mysqli($stmt, $link);
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00764',$user,$server_ip,$session_name,$one_mysql_log);}
+					if ($DB) {echo "$stmt\n";}
+					$row=mysqli_fetch_row($rslt);
+					$MDF_search_flag='ALT';
+					}
+
+				if ( ($row[0] < 1) and (preg_match("/WITH_ALT_ADDR3/",$manual_dial_filter)) )
+					{
+					$stmt="SELECT count(*) FROM vicidial_list where address3='$phone_number';";
+					$rslt=mysql_to_mysqli($stmt, $link);
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00765',$user,$server_ip,$session_name,$one_mysql_log);}
+					if ($DB) {echo "$stmt\n";}
+					$row=mysqli_fetch_row($rslt);
+					$MDF_search_flag='ADDR3';
+					}
+
+				if ($row[0] < 1)
+					{
+					### purge from the dial queue and api
+					$stmt = "DELETE from vicidial_manual_dial_queue where phone_number='$phone_number' and user='$user';";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_to_mysqli($stmt, $link);
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00766',$user,$server_ip,$session_name,$one_mysql_log);}
+					$VMDQaffected_rows = mysqli_affected_rows($link);
+
+					$stmt = "UPDATE vicidial_live_agents set external_dial='' where user='$user';";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_to_mysqli($stmt, $link);
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00767',$user,$server_ip,$session_name,$one_mysql_log);}
+					$VLAEDaffected_rows = mysqli_affected_rows($link);
+
+					echo "NUMBER NOT IN SYSTEM\n";
 					if ($SSagent_debug_logging > 0) {vicidial_ajax_log($NOW_TIME,$startMS,$link,$ACTION,$php_script,$user,$stage,$lead_id,$session_name,$stmt);}
 					exit;
 					}
@@ -5507,6 +5558,43 @@ if ($ACTION == 'manDiaLonly')
 			if ($row[0] < 1)
 				{
 				echo " CALL NOT PLACED\nNUMBER NOT IN CAMPLISTS\n";
+				if ($SSagent_debug_logging > 0) {vicidial_ajax_log($NOW_TIME,$startMS,$link,$ACTION,$php_script,$user,$stage,$lead_id,$session_name,$stmt);}
+				exit;
+				}
+			}
+
+		if (preg_match("/SYSTEM/",$manual_dial_filter))
+			{
+			$stmt="SELECT count(*) FROM vicidial_list where phone_number='$phone_number';";
+			$rslt=mysql_to_mysqli($stmt, $link);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00768',$user,$server_ip,$session_name,$one_mysql_log);}
+			if ($DB) {echo "$stmt\n";}
+			$row=mysqli_fetch_row($rslt);
+			$MDF_search_flag='MAIN';
+
+			if ( ($row[0] < 1) and (preg_match("/WITH_ALT/",$manual_dial_filter)) )
+				{
+				$stmt="SELECT count(*) FROM vicidial_list where alt_phone='$phone_number';";
+				$rslt=mysql_to_mysqli($stmt, $link);
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00769',$user,$server_ip,$session_name,$one_mysql_log);}
+				if ($DB) {echo "$stmt\n";}
+				$row=mysqli_fetch_row($rslt);
+				$MDF_search_flag='ALT';
+				}
+
+			if ( ($row[0] < 1) and (preg_match("/WITH_ALT_ADDR3/",$manual_dial_filter)) )
+				{
+				$stmt="SELECT count(*) FROM vicidial_list where address3='$phone_number';";
+				$rslt=mysql_to_mysqli($stmt, $link);
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00770',$user,$server_ip,$session_name,$one_mysql_log);}
+				if ($DB) {echo "$stmt\n";}
+				$row=mysqli_fetch_row($rslt);
+				$MDF_search_flag='ADDR3';
+				}
+
+			if ($row[0] < 1)
+				{
+				echo " CALL NOT PLACED\nNUMBER NOT IN SYSTEM\n";
 				if ($SSagent_debug_logging > 0) {vicidial_ajax_log($NOW_TIME,$startMS,$link,$ACTION,$php_script,$user,$stage,$lead_id,$session_name,$stmt);}
 				exit;
 				}
@@ -14871,7 +14959,7 @@ if ($ACTION == 'SBC_timezone_build')
 	### Grab Server GMT value from the database
 	$stmt="SELECT local_gmt FROM servers where server_ip='$server_ip' limit 1;";
 	$rslt=mysql_to_mysqli($stmt, $link);
-		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00771',$user,$server_ip,$session_name,$one_mysql_log);}
 	$gmt_recs = mysqli_num_rows($rslt);
 	if ($gmt_recs > 0)
 		{
@@ -14884,7 +14972,7 @@ if ($ACTION == 'SBC_timezone_build')
 	### Grab current GMT value of the lead that was called
 	$stmt="SELECT gmt_offset_now from vicidial_list where lead_id='$lead_id';";
 	$rslt=mysql_to_mysqli($stmt, $link);
-		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00772',$user,$server_ip,$session_name,$one_mysql_log);}
 	$scb_lead_recs = mysqli_num_rows($rslt);
 	if ($scb_lead_recs > 0)
 		{
@@ -14904,7 +14992,7 @@ if ($ACTION == 'SBC_timezone_build')
 	### Grab campaign setting for scheduled_callbacks_timezones_container
 	$stmt="SELECT scheduled_callbacks_timezones_container from vicidial_campaigns where campaign_id='$campaign';";
 	$rslt=mysql_to_mysqli($stmt, $link);
-		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00773',$user,$server_ip,$session_name,$one_mysql_log);}
 	$scb_lead_recs = mysqli_num_rows($rslt);
 	if ($scb_lead_recs > 0)
 		{
@@ -14918,7 +15006,7 @@ if ($ACTION == 'SBC_timezone_build')
 		$stmt = "SELECT container_entry from vicidial_settings_containers where container_id='$scheduled_callbacks_timezones_container' limit 1;";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
-			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00774',$user,$server_ip,$session_name,$one_mysql_log);}
 		$VSC_ct = mysqli_num_rows($rslt);
 		if ($VSC_ct > 0)
 			{
@@ -14941,7 +15029,7 @@ if ($ACTION == 'SBC_timezone_build')
 					$stmt = "SELECT php_tz from vicidial_phone_codes where country='$line_country' and DST='$line_dst' and tz_code='$line_zone' limit 1;";
 					if ($DB) {echo "$stmt\n";}
 					$rslt=mysql_to_mysqli($stmt, $link);
-						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00775',$user,$server_ip,$session_name,$one_mysql_log);}
 					$VPC_ct = mysqli_num_rows($rslt);
 					if ($VPC_ct > 0)
 						{
@@ -17929,13 +18017,13 @@ function manual_dnc_check($temp_phone_number, $temp_no_hopper, $temp_dial_only)
 					$stmt = "UPDATE vicidial_list set status='DNCL' where lead_id='$lead_id';";
 					if ($DB) {echo "$stmt\n";}
 					$rslt=mysql_to_mysqli($stmt, $link);
-						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00776',$user,$server_ip,$session_name,$one_mysql_log);}
 
 					### reset agent log record
 					$stmt="UPDATE vicidial_agent_log set lead_id=NULL,comments='' where agent_log_id='$agent_log_id';";
 						if ($format=='debug') {echo "\n<!-- $stmt -->";}
 					$rslt=mysql_to_mysqli($stmt, $link);
-						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00777',$user,$server_ip,$session_name,$one_mysql_log);}
 
 					echo " NO-HOPPER DNC CAMPAIGN\nTRY AGAIN\n";
 					$stage .= "|$agent_log_id|$vla_status|$agent_dialed_type|$agent_dialed_number|";
@@ -17969,7 +18057,7 @@ function manual_dnc_check($temp_phone_number, $temp_no_hopper, $temp_dial_only)
 		else
 			{$stmt="SELECT count(*) FROM vicidial_campaign_dnc where phone_number='$temp_phone_number' and campaign_id='$temp_campaign_id';";}
 		$rslt=mysql_to_mysqli($stmt, $link);
-			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00778',$user,$server_ip,$session_name,$one_mysql_log);}
 		if ($DB) {echo "$stmt\n";}
 		$row=mysqli_fetch_row($rslt);
 		if ($row[0] > 0)
@@ -17978,13 +18066,13 @@ function manual_dnc_check($temp_phone_number, $temp_no_hopper, $temp_dial_only)
 			$stmt = "DELETE from vicidial_manual_dial_queue where phone_number='$temp_phone_number' and user='$user';";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);
-				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00779',$user,$server_ip,$session_name,$one_mysql_log);}
 			$VMDQaffected_rows = mysqli_affected_rows($link);
 
 			$stmt = "UPDATE vicidial_live_agents set external_dial='' where user='$user';";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);
-				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00780',$user,$server_ip,$session_name,$one_mysql_log);}
 			$VLAEDaffected_rows = mysqli_affected_rows($link);
 
 			if ($temp_no_hopper > 0)
@@ -17993,13 +18081,13 @@ function manual_dnc_check($temp_phone_number, $temp_no_hopper, $temp_dial_only)
 				$stmt = "UPDATE vicidial_list set status='DNCL' where lead_id='$lead_id';";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_to_mysqli($stmt, $link);
-					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00781',$user,$server_ip,$session_name,$one_mysql_log);}
 
 				### reset agent log record
 				$stmt="UPDATE vicidial_agent_log set lead_id=NULL,comments='' where agent_log_id='$agent_log_id';";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
 				$rslt=mysql_to_mysqli($stmt, $link);
-					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00782',$user,$server_ip,$session_name,$one_mysql_log);}
 
 				echo " NO-HOPPER DNC\nTRY AGAIN\n";
 				$stage .= "|$agent_log_id|$vla_status|$agent_dialed_type|$agent_dialed_number|";
@@ -18032,7 +18120,7 @@ function manual_dnc_check($temp_phone_number, $temp_no_hopper, $temp_dial_only)
 		else
 			{$stmt="SELECT count(*) FROM vicidial_dnc where phone_number='$temp_phone_number';";}
 		$rslt=mysql_to_mysqli($stmt, $link);
-			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00783',$user,$server_ip,$session_name,$one_mysql_log);}
 		if ($DB) {echo "$stmt\n";}
 		$row=mysqli_fetch_row($rslt);
 		if ($row[0] > 0)
@@ -18041,13 +18129,13 @@ function manual_dnc_check($temp_phone_number, $temp_no_hopper, $temp_dial_only)
 			$stmt = "DELETE from vicidial_manual_dial_queue where phone_number='$temp_phone_number' and user='$user';";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);
-				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00784',$user,$server_ip,$session_name,$one_mysql_log);}
 			$VMDQaffected_rows = mysqli_affected_rows($link);
 
 			$stmt = "UPDATE vicidial_live_agents set external_dial='' where user='$user';";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);
-				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00785',$user,$server_ip,$session_name,$one_mysql_log);}
 			$VLAEDaffected_rows = mysqli_affected_rows($link);
 
 			if ($temp_no_hopper > 0)
@@ -18056,13 +18144,13 @@ function manual_dnc_check($temp_phone_number, $temp_no_hopper, $temp_dial_only)
 				$stmt = "UPDATE vicidial_list set status='DNCL' where lead_id='$lead_id';";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_to_mysqli($stmt, $link);
-					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00786',$user,$server_ip,$session_name,$one_mysql_log);}
 
 				### reset agent log record
 				$stmt="UPDATE vicidial_agent_log set lead_id=NULL,comments='' where agent_log_id='$agent_log_id';";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
 				$rslt=mysql_to_mysqli($stmt, $link);
-					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00787',$user,$server_ip,$session_name,$one_mysql_log);}
 
 				echo " NO-HOPPER DNC\nTRY AGAIN\n";
 				$stage .= "|$agent_log_id|$vla_status|$agent_dialed_type|$agent_dialed_number|";
