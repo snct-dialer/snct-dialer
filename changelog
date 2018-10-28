@@ -304,6 +304,8 @@
         www/vicidial/admin.php,
         www/vicidial/help_documentation.txt: Added SYSTEM manual_dial_filter
           option.
+  * Fix Drop Percent Today:
+    - Update: AST_timeonVDADall.php.
 
 2.25.27
   [Jörg Fring-Fürst]

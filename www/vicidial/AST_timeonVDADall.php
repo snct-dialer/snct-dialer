@@ -1318,7 +1318,7 @@ if ( ($ALLINGROUPstats > 0) or ( (preg_match('/O/',$with_inbound)) and ($adastat
 			$ingroupdetail =			$row[16];
 			}
 
-		$drpctTODAY = ( MathZDC($dropsTODAY, $answersTODAY) * 100);
+		$drpctTODAY = ( MathZDC($dropsTODAY, $answersTODAY + $dropsTODAY) * 100);
 		$drpctTODAY = round($drpctTODAY, 2);
 		$drpctTODAY = sprintf("%01.2f", $drpctTODAY);
 
@@ -1704,7 +1704,7 @@ if (preg_match('/O/',$with_inbound))
 	$hold_sec_answer_calls =	$row[13];
 	$hold_sec_drop_calls =		$row[14];
 	$hold_sec_queue_calls =		$row[15];
-	$drpctTODAY = ( MathZDC($dropsTODAY, $answersTODAY) * 100);
+	$drpctTODAY = ( MathZDC($dropsTODAY, $answersTODAY + $dropsTODAY) * 100);
 	$drpctTODAY = round($drpctTODAY, 2);
 	$drpctTODAY = sprintf("%01.2f", $drpctTODAY);
 
