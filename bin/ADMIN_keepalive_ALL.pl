@@ -140,9 +140,10 @@
 # 180908-1428 - Added daily rolling of vicidial_ccc_log records
 # 180916-1003 - Added vicidial_lists.resets_today resetting at TEOD, timed reset resets_today verification before reset
 # 180930-1007 - Added more allowed codecs to conf file generation
+# 181028-1451 - Added vicidial_list stuck QUEUE reset at TEoD
 #
 
-$build = '180930-1007';
+$build = '181028-1451';
 
 
 ###### Test that the script is running only once a time
@@ -1204,6 +1205,12 @@ if ($timeclock_end_of_day_NOW > 0)
 		@aryA = $sthA->fetchrow_array;
 		if ($DB) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 		$sthA->finish();
+
+		$stmtA = "UPDATE vicidial_list SET user='' where user LIKE \"QUEUE%\";";
+		if($DBX){print STDERR "\n|$stmtA|\n";}
+		$affected_rows = $dbhA->do($stmtA);
+		if($DB){print STDERR "\n|$affected_rows vicidial_list stuck QUEUE reset|\n";}
+		if ($teodDB) {$event_string = "vicidial_list stuck QUEUE reset: $affected_rows";   &teod_logger;}
 
 		$stmtA = "update vicidial_campaign_agents SET calls_today=0,hopper_calls_today=0,hopper_calls_hour=0;";
 		if($DBX){print STDERR "\n|$stmtA|\n";}
