@@ -308,7 +308,8 @@
     - Update: AST_timeonVDADall.php.
   * Add upstream Rev. 3052:
     - Update: bin/ADMIN_keepalive_ALL.pl: Added vicidial_list stuck
-        QUEUE reset at TEoD
+        QUEUE reset at TEoD.
+  * New www/.htaccess: Disable webaccess to log files.
 
 2.25.27
   [Jörg Fring-Fürst]
