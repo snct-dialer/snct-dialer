@@ -312,6 +312,8 @@
   * New www/.htaccess: Disable webaccess to log files.
   * Add upstream Rev. 3053:
     - Update: bin/AST_expired_list_exporter.pl.
+  * Add upstream Rev. 3054:
+    - Update: www/vicidial/admin.php: Fix for DID server IP de-assignment.
 
 2.25.27
   [Jörg Fring-Fürst]
