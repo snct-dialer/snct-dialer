@@ -1,4 +1,4 @@
-# version: 201810051743
+# version: 201811301709
 users-user	User ID	<QXZ>This field is where you put the users ID number, can be up to 8 digits in length, Must be at least 2 characters in length.</QXZ>
 users-pass	Password	<QXZ>This field is where you put the users password. Must be at least 2 characters in length. A medium strength user password will be at least 10 characters in length, and a strong user password will be at least 20 characters in length and have letters as well as at least one number. It is recommended that you use a longer password if possible, stringing together several unrelated words with no spaces, and a number somewhere in the string. The maximum size of a password is 100 characters.</QXZ>
 users-force_change_password	Force Change Password	<QXZ>If this option is set to Y then the user will be prompted to change their password the next time they log in to the administration webpage. Default is N.</QXZ>
@@ -1249,6 +1249,7 @@ admin_phones_bulk_insert-is_webphone	Set As Webphone	<QXZ>Setting this option to
 admin_phones_bulk_insert-webphone_dialpad	Webphone Dialpad	<QXZ>This setting allows you to activate or deactivate the dialpad for this webphone. Default is Y for enabled. TOGGLE will allow the user to view and hide the dialpad by clicking a link. This feature is not available on all webphone versions. TOGGLE_OFF will default to not show the dialpad on first load, but will allow the user to show the dialpad by clicking on the dialpad link.</QXZ>
 admin_phones_bulk_insert-webphone_auto_answer	Webphone Auto-Answer	<QXZ>This setting allows the web phone to be set to automatically answer calls that come in by setting it to Y, or to have calls ring by setting it to N. Default is Y.</QXZ>
 admin_phones_bulk_insert-use_external_server_ip	Use External Server IP	<QXZ>If using as a web phone, you can set this to Y to use the servers External IP to register to instead of the Server IP. Default is empty.</QXZ>
+admin_phones_bulk_insert-template_id	Template ID	<QXZ>Use this optoin to assign a phone template to all of the phone entries created by this bulk insert utility. Default is empty.</QXZ>
 soundboard-soundboard_id	Soundboard ID	<QXZ>The unique ID of the soundboard, must contain no spaces or special characters other than letters numbers dashes or underscores.</QXZ>
 soundboard-avatar_name	Soundboard Name	<QXZ>The name of the soundboard, will be displayed to the agent at the top of the Soundboard control screen.</QXZ>
 soundboard-avatar_notes	Soundboard Notes	<QXZ>For administrative notes only, not displayed to agents.</QXZ>
