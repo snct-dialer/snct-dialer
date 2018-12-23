@@ -39,6 +39,9 @@
 # 180507-1612 - Remove prompt_count.txt from backup
 # 180616-1825 - Add sniplet into perl scripts to run only once a time
 # 180626-1030 - Split mysqldump and packing.
+# 181223-1820 - Use tar | xy for packing
+#             - Pack database tables in own files
+-             - Remove passwords from logging
 #
 
 ###### Test that the script is running only once a time
@@ -364,7 +367,6 @@ $sgSTRING='';
 $underl='_';
 
 `cd $ARCHIVEpath`;
-#`mkdir $ARCHIVEpath/temp`;
 `mkdir $TEMPpath`;
 
 if ( ($without_db < 1) && ($conf_only < 1) )
@@ -462,10 +464,12 @@ if ( ($without_db < 1) && ($conf_only < 1) )
 			$log_tables='';
 			$archive_tables='';
 			$regular_tables='';
+			my @all_tables = ();
 				
 			while ($sthArows > $rec_count)
 				{
 				@aryA = $sthA->fetchrow_array;
+				push(@all_tables, $aryA[0]);
 				if ($aryA[0] =~ /_archive/) 
 					{
 					$archive_tables .= " $aryA[0]";
@@ -490,36 +494,44 @@ if ( ($without_db < 1) && ($conf_only < 1) )
 			if ($db_without_logs)
 				{
 				$dump_non_log_command = "$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname $regular_tables $conf_tables | $xzbin -9 > $TEMPpath/LOGS_$VARserver_ip$underl$temp_dbname$underl$wday$xz";
-				$dump_log_command = "$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --no-data --no-create-db --routines $temp_dbname $log_tables $archive_tables | $xzbin -9 > $TEMPpath/LOGS_$VARserver_ip$underl$temp_dbname$underl$wday$xz";
+				$dump_non_log_commandOP = "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --routines $temp_dbname $regular_tables $conf_tables | $xzbin -9 > $TEMPpath/LOGS_$VARserver_ip$underl$temp_dbname$underl$wday$xz";
+				$dump_log_command = "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --no-data --no-create-db --routines $temp_dbname $log_tables $archive_tables | $xzbin -9 > $TEMPpath/LOGS_$VARserver_ip$underl$temp_dbname$underl$wday$xz";
 
-				if ($DBX) {print "$dump_non_log_command\nDEBUG: LOG EXPORT COMMAND(not run): $dump_log_command\n";}
+				if ($DBX) {print "$dump_non_log_commandOP\nDEBUG: LOG EXPORT COMMAND(not run): $dump_log_command\n";}
 				`$dump_non_log_command`;
 				}
 				
 			elsif ($db_without_archives)
 				{
 				$dump_non_archive_command = "$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname $regular_tables $conf_tables $log_tables | $xzbin -9 > $TEMPEpath/ARCHIVES_$VARserver_ip_$underl$temp_dbname$underl$wday$xz";
-				$dump_archive_command = "$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --no-data --no-create-db --routines $temp_dbname $archive_tables | $xzbin -9 > $TEMPpath/ARCHIVES_$VARserver_ip$underl$temp_dbname$underl$wday$xz";
+				$dump_non_archive_commandOP = "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --routines $temp_dbname $regular_tables $conf_tables $log_tables | $xzbin -9 > $TEMPEpath/ARCHIVES_$VARserver_ip_$underl$temp_dbname$underl$wday$xz";
+				$dump_archive_command = "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --no-data --no-create-db --routines $temp_dbname $archive_tables | $xzbin -9 > $TEMPpath/ARCHIVES_$VARserver_ip$underl$temp_dbname$underl$wday$xz";
 
-				if ($DBX) {print "$dump_non_archive_command\nDEBUG: ARCHIVE EXPORT COMMAND(not run): $dump_archive_command\n";}
+				if ($DBX) {print "$dump_non_archive_commandOP\nDEBUG: ARCHIVE EXPORT COMMAND(not run): $dump_archive_command\n";}
 				`$dump_non_archive_command`;
 				}
 				
 			elsif ($db_settings_only)
 				{
 				$dump_non_log_command = "$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname $conf_tables | $zxbin -9 > $TEMPpath/SETTINGSONLY_$VARserver_ip$underl$temp_dbname$underl$wday$xz";
-				$dump_log_command = "$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --no-data --no-create-db --routines $temp_dbname $log_tables $archive_tables $regular_tables | $xzbin -9 > $TEMPpath/SETTINGSONLY_$VARserver_ip$underl$temp_dbname$underl$wday$xz";
+				$dump_non_log_commandOP = "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --routines $temp_dbname $conf_tables | $zxbin -9 > $TEMPpath/SETTINGSONLY_$VARserver_ip$underl$temp_dbname$underl$wday$xz";
+				$dump_log_command = "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --no-data --no-create-db --routines $temp_dbname $log_tables $archive_tables $regular_tables | $xzbin -9 > $TEMPpath/SETTINGSONLY_$VARserver_ip$underl$temp_dbname$underl$wday$xz";
 
-				if ($DBX) {print "$dump_non_log_command\nNOT ARCHIVED: $dump_log_command\n";}
+				if ($DBX) {print "$dump_non_log_commandOP\nNOT ARCHIVED: $dump_log_command\n";}
 				`$dump_non_log_command`;
 				}
 			else {
-				if ($DBX) {
-					print "$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname > $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday.sql";
-					print "$xzbin $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday.sql";
+				foreach ( @all_tables ){
+					if ($DBX) {
+						print "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --routines $temp_dbname $_ > $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$_$underl$wday.sql\n";
+					}
+					`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname $_ > $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$_$underl$wday.sql`; 
 				}
-				`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname > $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday.sql`; 
-				`$xzbin $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday.sql`;
+				if ($DBX) {
+					print "$tarbin cf - $TEMPpath/*.sql | $xzbin -1 -T0 - > $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday$txz\n";
+				}
+				`$tarbin cf - $TEMPpath/*.sql | $xzbin -1 -T0 - > $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday$txz`;
+				`rm $TEMPpath/*.sql`;
 			}
 			$c++;
 			}
@@ -543,8 +555,9 @@ if ( ($without_conf < 1) && ($db_only < 1) )
 	if (-e "/etc/letsencrypt") {$zapdahdi .= " /etc/letsencrypt";}
 	if (-e "/usr/share/astguiclient/AST_DB_lead_status_change.pl") {$zapdahdi .= " /usr/share/astguiclient/AST_DB_lead_status_change.pl";}
 	if (-e "/usr/local/sbin") {$zapdahdi .= " /usr/local/sbin";}
-	if ($DBX) {print "$tarbin -Jcf $TEMPpath/$VARserver_ip$conf$wday$txz /etc/astguiclient.conf $zapdahdi /etc/asterisk\n";}
-	`$tarbin -Jcf $TEMPpath/$VARserver_ip$conf$wday$txz /etc/astguiclient.conf $zapdahdi /etc/asterisk`;
+	if (-e ("/etc/flyingpenguin")) {$zapdahdi .= " /etc/flyingpenguin";}
+	if ($DBX) {print "$tarbin -cf - /etc/astguiclient.conf $zapdahdi /etc/asterisk | $xzbin -1 -T0 - > $TEMPpath/$VARserver_ip$conf$wday$txz \n";}
+	`$tarbin -cf - /etc/astguiclient.conf $zapdahdi /etc/asterisk | $xzbin -1 -T0 - > $TEMPpath/$VARserver_ip$conf$wday$txz`;
 
 
 	### BACKUP THE WANPIPE CONF FILES(if there are any) ###
@@ -560,8 +573,8 @@ if ( ($without_conf < 1) && ($db_only < 1) )
 		if ( -e ('/etc/wanpipe/wanpipe8.conf')) {$sgSTRING .= '/etc/wanpipe/wanpipe8.conf ';}
 		if ( -e ('/etc/wanpipe/wanrouter.rc')) {$sgSTRING .= '/etc/wanpipe/wanrouter.rc ';}
 
-		if ($DBX) {print "$tarbin -Jcf $TEMPpath/VARserver_ip$sangoma$wday$txz $sgSTRING\n";}
-		`$tarbin -Jcf $TEMPpath/$VARserver_ip$sangoma$wday$txz $sgSTRING`;
+		if ($DBX) {print "$tarbin -cf -  $sgSTRING | $xzbin -1 -T0 - >  $TEMPpath/$VARserver_ip$sangoma$wday$txz\n";}
+		`$tarbin -cf -  $sgSTRING | $xzbin -1 -T0 - >  $TEMPpath/$VARserver_ip$sangoma$wday$txz`;
 		}
 
 	### BACKUP OTHER CONF FILES ON THE SERVER ###
@@ -581,38 +594,37 @@ if ( ($without_conf < 1) && ($db_only < 1) )
 	if ( -e ('/etc/rc.d/rc.local')) {$files .= "/etc/rc.d/rc.local ";}
 	if ( -e ('/etc/resolv.conf')) {$files .= "/etc/resolv.conf ";}
 	if ( -e ('/prompt_count.txt')) {$files .= "/prompt_count.txt ";}
-	if ( -e ('/etc/flyingpenguin')) {$files .= "/etc/flyingpenguin ";}
 
-	if ($DBX) {print "$tarbin -Jcf $TEMPpath/$VARserver_ip$linux$wday$txz $files\n";}
-	`$tarbin -Jcf $TEMPpath/$VARserver_ip$linux$wday$txz $files`;
+	if ($DBX) {print "$tarbin -cf - $files | $xzbin -1 -T0 - >  $TEMPpath/$VARserver_ip$linux$wday$txz\n";}
+	`$tarbin -cf - $files | $xzbin -1 -T0 - >  $TEMPpath/$VARserver_ip$linux$wday$txz`;
 	}
 
 if ( ($conf_only < 1) && ($db_only < 1) && ($without_web < 1) )
 	{
 	### BACKUP THE WEB FILES ON THE SERVER ###
-	if ($DBX) {print "$tarbin -Jcf $TEMPpath/$VARserver_ip$web$wday$txz $PATHweb\n";}
-	`$tarbin -Jcf $TEMPpath/$VARserver_ip$web$wday$txz $PATHweb`;
+	if ($DBX) {print "$tarbin -cf - $PATHweb |  $xzbin -1 -T0 - > $TEMPpath/$VARserver_ip$web$wday$txz\n";}
+	`$tarbin -cf - $PATHweb | $xzbin -1 -T0 - > $TEMPpath/$VARserver_ip$web$wday$txz`;
 	}
 
 if ( ($conf_only < 1) && ($db_only < 1) )
 	{
 	### BACKUP THE ASTGUICLIENT AND AGI FILES ON THE SERVER ###
-	if ($DBX) {print "$tarbin -Jcf $TEMPpath/$VARserver_ip$bin$wday$txz $PATHagi $PATHhome\n";}
-	`$tarbin -Jcf $TEMPpath/$VARserver_ip$bin$wday$txz $PATHagi $PATHhome`;
+	if ($DBX) {print "$tarbin -cf - $PATHagi $PATHhome | $xzbin -1 -T0 - > $TEMPpath/$VARserver_ip$bin$wday$txz\n";}
+	`$tarbin -cf - $PATHagi $PATHhome | $xzbin -1 -T0 - > $TEMPpath/$VARserver_ip$bin$wday$txz`;
 	}
 
 if ( ($conf_only < 1) && ($db_only < 1) && ($without_sounds < 1) )
 	{
 	### BACKUP THE ASTERISK SOUNDS ON THE SERVER ###
-	if ($DBX) {print "$tarbin -Jhcf $TEMPpath/$VARserver_ip$sounds$wday$txz $PATHsounds\n";}
-	`$tarbin -Jhcf $TEMPpath/$VARserver_ip$sounds$wday$txz $PATHsounds`;
+	if ($DBX) {print "$tarbin -hcf - $PATHsounds | $xzbin -1 -T0 - > $TEMPpath/$VARserver_ip$sounds$wday$txz\n";}
+	`$tarbin -hcf - $PATHsounds | $xzbin -1 -T0 - > $TEMPpath/$VARserver_ip$sounds$wday$txz`;
 	}
 
 if ( ($conf_only < 1) && ($db_only < 1) && ($without_voicemail < 1) )
 	{
 	### BACKUP THE ASTERISK VOICEMAIL ON THE SERVER ###
-	if ($DBX) {print "$tarbin -Jcf $TEMPpath/$VARserver_ip$voicemail$wday$txz /var/spool/asterisk/voicemail\n";}
-	`$tarbin -Jcf $TEMPpath/$VARserver_ip$voicemail$wday$txz /var/spool/asterisk/voicemail`;
+	if ($DBX) {print "$tarbin -cf - /var/spool/asterisk/voicemail | $xzbin -1 -T0 - > $TEMPpath/$VARserver_ip$voicemail$wday$txz\n";}
+	`$tarbin -cf - /var/spool/asterisk/voicemail | $xzbin -1 -T0 - > $TEMPpath/$VARserver_ip$voicemail$wday$txz`;
 	}
 
 ### REMOVE OLD GZ, xz and tar FILE
