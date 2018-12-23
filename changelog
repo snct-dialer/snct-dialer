@@ -310,6 +310,21 @@
     - Update: bin/ADMIN_keepalive_ALL.pl: Added vicidial_list stuck
         QUEUE reset at TEoD.
   * New www/.htaccess: Disable webaccess to log files.
+  * Add upstream Rev. 3053:
+    - Update: bin/AST_expired_list_exporter.pl.
+  * Add upstream Rev. 3054:
+    - Update: www/vicidial/admin.php: Fix for DID server IP de-assignment.
+  * Add upstream Rev. 3055:
+    - Update: www/vicidial/realtime_report.php: Added external_web_socket_url
+        option.
+  * Add upstream Rev. 3056:
+    - Update: www/vicidial/admin_phones_bulk_insert.php,
+        www/vicidial/call_report_export.php,
+        www/vicidial/help_documentation.txt: Added template option.
+  * Add upstream Rev. 3057:
+    - Update: UPGRADE,
+        docs/NON-AGENT_API.txt,
+        www/vicidial/non_agent_api.php: Added lead_callback_info function.
 
 2.25.27
   [Jörg Fring-Fürst]

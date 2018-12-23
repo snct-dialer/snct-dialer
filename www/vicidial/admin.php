@@ -4563,12 +4563,13 @@ else
 # 180927-0018 - Added _wait_time options for next agent call options in campaigns and in-groups
 # 181003-1619 - Added external_web_socket_url server setting
 # 181005-1738 - Added SYSTEM to Manual Dial Filter campaign options
+# 181116-1133 - Fix for DID server IP de-assignment
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-694a';
-$build = '181005-1738';
+$admin_version = '2.14-695a';
+$build = '181116-1133';
 
 
 $STARTtime = date("U");
@@ -31318,6 +31319,7 @@ if ($ADD==3311)
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Server IP").": </td><td align=left><select size=1 name=server_ip>\n";
 			echo "$servers_list";
 			echo "<option SELECTED>$server_ip</option>\n";
+			echo "<option value=''>---"._QXZ("NONE")."---</option>\n";
 			echo "</select>$NWB#inbound_dids-server_ip$NWE</td></tr>\n";
 
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=right><a href=\"$PHP_SELF?ADD=3511&menu_id=$menu_id\">"._QXZ("Call Menu").":</a> </td><td align=left><select size=1 name=menu_id>$menu_list<option SELECTED>$menu_id</option></select>$NWB#inbound_dids-menu_id$NWE</td></tr>\n";
@@ -31388,6 +31390,7 @@ if ($ADD==3311)
 		echo "<tr bgcolor=#CCFFFF><td align=right>"._QXZ("Filter Server IP").": </td><td align=left><select size=1 name=filter_server_ip>\n";
 		echo "$servers_list";
 		echo "<option SELECTED>$filter_server_ip</option>\n";
+		echo "<option value=''>---"._QXZ("NONE")."---</option>\n";
 		echo "</select>$NWB#inbound_dids-server_ip$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#CCFFFF><td align=right><a href=\"$PHP_SELF?ADD=3511&menu_id=$filter_menu_id\">"._QXZ("Filter Call Menu").":</a> </td><td align=left><select size=1 name=filter_menu_id>$menu_list<option SELECTED>$filter_menu_id</option></select>$NWB#inbound_dids-menu_id$NWE</td></tr>\n";
