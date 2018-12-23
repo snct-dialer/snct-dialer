@@ -41,7 +41,7 @@
 # 180626-1030 - Split mysqldump and packing.
 # 181223-1820 - Use tar | xy for packing
 #             - Pack database tables in own files
--             - Remove passwords from logging
+#             - Remove passwords from logging
 #
 
 ###### Test that the script is running only once a time
