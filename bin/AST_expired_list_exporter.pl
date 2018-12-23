@@ -281,6 +281,7 @@ if ($rslt->rows>0)
 			my @data_in = split(/--destination_folder=/,$args);
 			$destination_folder = $data_in[1];
 			$destination_folder =~ s/ .*//gi;
+			$destination_folder =~ s/-------/ /gi;
 			if ($DB) {print "\n----- DESTINATION FOLDER: $destination_folder -----\n\n";}
 			}
 		}

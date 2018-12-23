@@ -109,7 +109,7 @@ autoanswer_type ENUM('','SNOM') default '',
 on_hook_auto_answer ENUM('Y','N') NOT NULL DEFAULT 'N',
 auto_answer_sipheader VARCHAR(255) NOT NULL DEFAULT '',
 auto_answer_prefix VARCHAR(4) NOT NULL DEFAULT '',
-unique index extenserver (extension, server_ip),
+unique index extenserver (extension, server_ip)
 ) ENGINE=MyISAM;
 
 CREATE TABLE servers (
@@ -4090,9 +4090,9 @@ index (stage)
 CREATE TABLE vicidial_faillogin_log (
 ID INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
 user VARCHAR(20),
-status INT(9)
+status INT(9),
 ip VARCHAR(18),
-login_time DATETIME,
+login_time DATETIME
 ) ENGINE=MyISAM;
 
 CREATE TABLE help_documentation (

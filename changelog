@@ -310,6 +310,8 @@
     - Update: bin/ADMIN_keepalive_ALL.pl: Added vicidial_list stuck
         QUEUE reset at TEoD.
   * New www/.htaccess: Disable webaccess to log files.
+  * Add upstream Rev. 3053:
+    - Update: bin/AST_expired_list_exporter.pl.
 
 2.25.27
   [Jörg Fring-Fürst]
