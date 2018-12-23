@@ -523,15 +523,15 @@ if ( ($without_db < 1) && ($conf_only < 1) )
 			else {
 				foreach ( @all_tables ){
 					if ($DBX) {
-						print "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --routines $temp_dbname $_ > $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$_$underl$wday.sql\n";
+						print "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --routines $temp_dbname $_ | $xzbin -2 -T0 - > $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$_$underl$wday.sql.xz\n";
 					}
-					`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname $_ > $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$_$underl$wday.sql`; 
+					`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname $_ | $xzbin -2 -T0 - > $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$_$underl$wday.sql.xz`;
 				}
 				if ($DBX) {
-					print "$tarbin cf - $TEMPpath/*.sql | $xzbin -1 -T0 - > $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday$txz\n";
+					print "$tarbin -cf $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday$tar $TEMPpath/*.sql.xz`\n";
 				}
-				`$tarbin cf - $TEMPpath/*.sql | $xzbin -1 -T0 - > $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday$txz`;
-				`rm $TEMPpath/*.sql`;
+				`$tarbin -cf $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday$tar $TEMPpath/*.sql.xz`;
+				`rm $TEMPpath/*.sql.xz`;
 			}
 			$c++;
 			}
