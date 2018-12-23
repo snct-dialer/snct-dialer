@@ -314,6 +314,9 @@
     - Update: bin/AST_expired_list_exporter.pl.
   * Add upstream Rev. 3054:
     - Update: www/vicidial/admin.php: Fix for DID server IP de-assignment.
+  * Add upstream Rev. 3055:
+    - Update: www/vicidial/realtime_report.php: Added external_web_socket_url
+        option.
 
 2.25.27
   [Jörg Fring-Fürst]
