@@ -133,10 +133,11 @@
 # 180331-1716 - Added options to update_campaign, add_user, update_phone. Added function update_did
 # 180529-1102 - Fix for QM live monitoring
 # 180916-1059 - Added check for daily list reset limit
+# 181214-1606 - Added lead_callback_info function
 #
 
-$version = '2.14-110';
-$build = '180916-1059';
+$version = '2.14-111';
+$build = '181214-1606';
 $api_url_log = 0;
 
 $startMS = microtime();
@@ -7195,6 +7196,229 @@ if ($function == 'ccc_lead_info')
 ################################################################################
 ### ccc_lead_info - outputs lead data for cross-cluster-communication call
 ################################################################################
+
+
+
+
+
+################################################################################
+### lead_callback_info - outputs scheduled callback data for a specific lead
+################################################################################
+if ($function == 'lead_callback_info')
+	{
+	if(strlen($source)<2)
+		{
+		$result = 'ERROR';
+		$result_reason = "Invalid Source";
+		echo "$result: $result_reason - $source\n";
+		api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+		echo "ERROR: Invalid Source: |$source|\n";
+		exit;
+		}
+	else
+		{
+		if ( (!preg_match("/ $function /",$api_allowed_functions)) and (!preg_match("/ALL_FUNCTIONS/",$api_allowed_functions)) )
+			{
+			$result = 'ERROR';
+			$result_reason = "auth USER DOES NOT HAVE PERMISSION TO USE THIS FUNCTION";
+			echo "$result: $result_reason: |$user|$function|\n";
+			$data = "$allowed_user";
+			api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+			exit;
+			}
+		$stmt="SELECT count(*) from vicidial_users where user='$user' and vdc_agent_api_access='1' and view_reports='1' and user_level > 6 and active='Y';";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$row=mysqli_fetch_row($rslt);
+		$allowed_user=$row[0];
+		if ($allowed_user < 1)
+			{
+			$result = 'ERROR';
+			$result_reason = "lead_callback_info USER DOES NOT HAVE PERMISSION TO GET LEAD INFO";
+			echo "$result: $result_reason: |$user|$allowed_user|\n";
+			$data = "$allowed_user";
+			api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+			exit;
+			}
+		else
+			{
+			$call_search_SQL='';
+			$search_ready=0;
+
+			if ( (strlen($lead_id)>0) and (strlen($lead_id)<12) )
+				{
+				$call_search_SQL .= "where lead_id='$lead_id'";
+				$search_ready++;
+				}
+			if ($search_ready < 1)
+				{
+				$result = 'ERROR';
+				$result_reason = "lead_callback_info INVALID SEARCH PARAMETERS";
+				$data = "$user|$lead_id";
+				echo "$result: $result_reason: $data\n";
+				api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+				exit;
+				}
+			else
+				{
+				$stmt="SELECT admin_viewable_groups,allowed_campaigns from vicidial_user_groups where user_group='$LOGuser_group';";
+				if ($DB) {$MAIN.="|$stmt|\n";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+				$row=mysqli_fetch_row($rslt);
+				$LOGadmin_viewable_groups =		$row[0];
+				$LOGallowed_campaigns =			$row[1];
+
+				$LOGallowed_campaignsSQL='';
+				if ( (!preg_match("/ALL-CAMPAIGNS/i",$LOGallowed_campaigns)) )
+					{
+					$LOGallowed_campaignsSQL = preg_replace('/\s-/i','',$LOGallowed_campaigns);
+					$LOGallowed_campaignsSQL = preg_replace('/\s/i',"','",$LOGallowed_campaignsSQL);
+					$LOGallowed_campaignsSQL = "and campaign_id IN('$LOGallowed_campaignsSQL')";
+					}
+
+				$k=0;
+				$output='';
+				$DLset=0;
+				if ($stage == 'csv')
+					{$DL = ',';   $DLset++;}
+				if ($stage == 'tab')
+					{$DL = "\t";   $DLset++;}
+				if ($stage == 'newline')
+					{$DL = "\n";   $DLset++;}
+				if ($stage == 'pipe')
+					{$DL = '|';   $DLset++;}
+				if ($DLset < 1)
+					{$DL='|';   $stage='pipe';}
+				if (strlen($time_format) < 1)
+					{$time_format = 'HF';}
+				if ($header == 'YES')
+					{
+					$output .= 'lead_id' . $DL . 'callback_type' . $DL . 'recipient' . $DL . 'callback_status' . $DL . 'lead_status' . $DL . 'callback_date' . $DL . 'entry_date' . $DL . 'user' . $DL . 'list_id' . $DL . 'campaign_id' . $DL . 'user_group' . $DL . 'customer_timezone' . $DL . 'customer_time' . $DL . 'comments' . "\n";
+					}
+
+				if ( ($search_location == 'ARCHIVE') or ($search_location == 'ALL') )
+					{
+					# search archive callbacks
+					$stmt="SELECT recipient,status,lead_status,callback_time,entry_time,user,list_id,campaign_id,user_group,comments,customer_timezone,customer_time from vicidial_callbacks_archive $call_search_SQL order by callback_id;";
+					$rslt=mysql_to_mysqli($stmt, $link);
+					if ($DB) {echo "$stmt\n";}
+					$vcb_to_list = mysqli_num_rows($rslt);
+					$r=0;
+					while ($vcb_to_list > $r)
+						{
+						$row=mysqli_fetch_row($rslt);
+						$callback_type = 		'ARCHIVE';
+						$CBrecipient = 			$row[0];
+						$CBstatus = 			$row[1];
+						$CBlead_status = 		$row[2];
+						$CBcallback_time = 		$row[3];
+						$CBentry_time = 		$row[4];
+						$CBuser = 				$row[5];
+						$CBlist_id = 			$row[6];
+						$CBcampaign_id = 		$row[7];
+						$CBuser_group = 		$row[8];
+						$CBcomments =			$row[9];
+						$CBcustomer_timezone = 	$row[10];
+							$CBcustomer_timezone = preg_replace("/,/",'-',$CBcustomer_timezone);
+						$CBcustomer_time = 		$row[11];
+
+						if ( (strlen($LOGallowed_campaignsSQL) > 3) and ($api_list_restrict > 0) )
+							{
+							$stmt="SELECT count(*) from vicidial_lists where list_id='$CBlist_id' $LOGallowed_campaignsSQL;";
+							$rslt=mysql_to_mysqli($stmt, $link);
+							$row=mysqli_fetch_row($rslt);
+							$allowed_list=$row[0];
+							if ($allowed_list < 1)
+								{
+								$result = 'ERROR';
+								$result_reason = "lead_callback_info LEAD NOT FOUND";
+								echo "$result: $result_reason: |$user|$allowed_user|\n";
+								$data = "$allowed_user";
+								api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+								exit;
+								}
+							}
+
+						$output .= "$lead_id$DL$callback_type$DL$CBrecipient$DL$CBstatus$DL$CBlead_status$DL$CBcallback_time$DL$CBentry_time$DL$CBuser$DL$CBlist_id$DL$CBcampaign_id$DL$CBuser_group$DL$CBcustomer_timezone$DL$CBcustomer_time$DL$CBcomments\n";
+						$r++;
+						}
+					}
+
+				if ( ($search_location == 'CURRENT') or ($search_location == 'ALL') or ($search_location == '') )
+					{
+					# search current callbacks
+					$stmt="SELECT recipient,status,lead_status,callback_time,entry_time,user,list_id,campaign_id,user_group,comments,customer_timezone,customer_time from vicidial_callbacks $call_search_SQL order by callback_id;";
+					$rslt=mysql_to_mysqli($stmt, $link);
+					if ($DB) {echo "$stmt\n";}
+					$vcb_to_list = mysqli_num_rows($rslt);
+					$r=0;
+					while ($vcb_to_list > $r)
+						{
+						$row=mysqli_fetch_row($rslt);
+						$callback_type = 		'CURRENT';
+						$CBrecipient = 			$row[0];
+						$CBstatus = 			$row[1];
+						$CBlead_status = 		$row[2];
+						$CBcallback_time = 		$row[3];
+						$CBentry_time = 		$row[4];
+						$CBuser = 				$row[5];
+						$CBlist_id = 			$row[6];
+						$CBcampaign_id = 		$row[7];
+						$CBuser_group = 		$row[8];
+						$CBcomments =			$row[9];
+						$CBcustomer_timezone = 	$row[10];
+							$CBcustomer_timezone = preg_replace("/,/",'-',$CBcustomer_timezone);
+						$CBcustomer_time = 		$row[11];
+
+						if ( (strlen($LOGallowed_campaignsSQL) > 3) and ($api_list_restrict > 0) )
+							{
+							$stmt="SELECT count(*) from vicidial_lists where list_id='$CBlist_id' $LOGallowed_campaignsSQL;";
+							$rslt=mysql_to_mysqli($stmt, $link);
+							$row=mysqli_fetch_row($rslt);
+							$allowed_list=$row[0];
+							if ($allowed_list < 1)
+								{
+								$result = 'ERROR';
+								$result_reason = "lead_callback_info LEAD NOT FOUND";
+								echo "$result: $result_reason: |$user|$allowed_user|\n";
+								$data = "$allowed_user";
+								api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+								exit;
+								}
+							}
+
+						$output .= "$lead_id$DL$callback_type$DL$CBrecipient$DL$CBstatus$DL$CBlead_status$DL$CBcallback_time$DL$CBentry_time$DL$CBuser$DL$CBlist_id$DL$CBcampaign_id$DL$CBuser_group$DL$CBcustomer_timezone$DL$CBcustomer_time$DL$CBcomments\n";
+						$r++;
+						}
+					}
+
+				if ( ( ( ($header == 'NO') or ($header == '') ) and (strlen($output) > 10) ) or ( ($header == 'YES') and (strlen($output) > 170) ) )
+					{
+					echo "$output";
+
+					$result = 'SUCCESS';
+					$data = "$user|$lead_id|$stage|$search_location";
+					$result_reason = "lead_callback_info $output";
+
+					api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+					}
+				else
+					{
+					$result = 'ERROR';
+					$result_reason = "lead_callback_info CALLBACK NOT FOUND";
+					$data = "$user|$lead_id|$stage|$search_location";
+					echo "$result: $result_reason: $data\n";
+					api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+					exit;
+					}
+				}
+			}
+		}
+	exit;
+	}
+################################################################################
+### lead_callback_info - outputs lead data for cross-cluster-communication call
+################################################################################
+
 
 
 

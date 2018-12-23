@@ -321,6 +321,10 @@
     - Update: www/vicidial/admin_phones_bulk_insert.php,
         www/vicidial/call_report_export.php,
         www/vicidial/help_documentation.txt: Added template option.
+  * Add upstream Rev. 3057:
+    - Update: UPGRADE,
+        docs/NON-AGENT_API.txt,
+        www/vicidial/non_agent_api.php: Added lead_callback_info function.
 
 2.25.27
   [Jörg Fring-Fürst]

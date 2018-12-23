@@ -368,6 +368,9 @@ OTHER CHANGES:
 
 102. Added SYSTEM options to the campaign detail Manual Dial Filter feature
 
+103. Added lead_callback_info Non-Agent API function, it outputs scheduled 
+	callback data for a specific lead
+
 
 
 
