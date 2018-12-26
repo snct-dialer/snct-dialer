@@ -42,7 +42,11 @@
 # 181223-1820 - Use tar | xy for packing
 #             - Pack database tables in own files
 #             - Remove passwords from logging
+# 181216-1210 - Add PrgVersion
+#             - Add tests for file exists
 #
+
+$PrgVersion = "2.9.1";
 
 ###### Test that the script is running only once a time
 use Fcntl qw(:flock);
@@ -69,6 +73,9 @@ $file_date = "$year-$mon-$mday";
 $now_date = "$year-$mon-$mday $hour:$min:$sec";
 $VDL_date = "$year-$mon-$mday 00:00:01";
 $db_raw_files_copy=0;
+
+
+print "$0 Version: $PrgVersion \n";
 
 
 # default path to astguiclient configuration file:
@@ -301,10 +308,10 @@ if (length($ARGV[0])>1)
 			}
 		}
 	}
-else
-	{
-	print "no command line options set\n";
-	}
+#else
+#	{
+#	print "no command line options set\n";
+#	}
 
 
 # Customized Variables
@@ -523,9 +530,9 @@ if ( ($without_db < 1) && ($conf_only < 1) )
 			else {
 				foreach ( @all_tables ){
 					if ($DBX) {
-						print "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --routines $temp_dbname $_ | $xzbin -2 -T0 - > $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$_$underl$wday.sql.xz\n";
+						print "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --routines $temp_dbname $_ | $xzbin -3 -T0 - > $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$_$underl$wday.sql.xz\n";
 					}
-					`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname $_ | $xzbin -2 -T0 - > $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$_$underl$wday.sql.xz`;
+					`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname $_ | $xzbin -3 -T0 - > $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$_$underl$wday.sql.xz`;
 				}
 				if ($DBX) {
 					print "$tarbin -cf $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday$tar $TEMPpath/*.sql.xz`\n";
@@ -628,20 +635,31 @@ if ( ($conf_only < 1) && ($db_only < 1) && ($without_voicemail < 1) )
 	}
 
 ### REMOVE OLD GZ, xz and tar FILE
-if ($DBX) {print "rm -f $ARCHIVEpath/$VARserver_ip$all$wday$tar$gz\n";}
-`rm -f $ARCHIVEpath/$VARserver_ip$all$wday$tar$gz`;
-if ($DBX) {print "rm -f $ARCHIVEpath/$VARserver_ip$all$wday.old$txz\n";}
-`rm -f $ARCHIVEpath/$VARserver_ip$all$wday.old$txz`;
-if ($DBX) {print "rm -f $ARCHIVEpath/$VARserver_ip$all$wday.old$tar\n";}
-`rm -f $ARCHIVEpath/$VARserver_ip$all$wday.old$tar`;
-if ($DBX) {print "mv $ARCHIVEpath/$VARserver_ip$all$wday$txz $ARCHIVEpath/$VARserver_ip$all$wday.old$txz\n";}
-`mv $ARCHIVEpath/$VARserver_ip$all$wday$txz $ARCHIVEpath/$VARserver_ip$all$wday.old$txz`;
-if ($DBX) {print "mv $ARCHIVEpath/$VARserver_ip$all$wday$tar $ARCHIVEpath/$VARserver_ip$all$wday.old$tar\n";}
-`mv $ARCHIVEpath/$VARserver_ip$all$wday$tar $ARCHIVEpath/$VARserver_ip$all$wday.old$tar`;
+ if ( -e "$ARCHIVEpath/$VARserver_ip$all$wday$tar$gz" ) {
+	if ($DBX) {print "rm -f $ARCHIVEpath/$VARserver_ip$all$wday$tar$gz\n";}
+	`rm -f $ARCHIVEpath/$VARserver_ip$all$wday$tar$gz`;
+}
 
+ if ( -e "$ARCHIVEpath/$VARserver_ip$all$wday.old$txz" ) {
+	if ($DBX) {print "rm -f $ARCHIVEpath/$VARserver_ip$all$wday.old$txz\n";}
+	`rm -f $ARCHIVEpath/$VARserver_ip$all$wday.old$txz`;
+}
+if ( -e "$ARCHIVEpath/$VARserver_ip$all$wday.old$tar" ) {
+	if ($DBX) {print "rm -f $ARCHIVEpath/$VARserver_ip$all$wday.old$tar\n";}
+	`rm -f $ARCHIVEpath/$VARserver_ip$all$wday.old$tar`;
+}
+
+if ( -e "$ARCHIVEpath/$VARserver_ip$all$wday$txz" ) {
+	if ($DBX) {print "mv $ARCHIVEpath/$VARserver_ip$all$wday$txz $ARCHIVEpath/$VARserver_ip$all$wday.old$txz\n";}
+	`mv $ARCHIVEpath/$VARserver_ip$all$wday$txz $ARCHIVEpath/$VARserver_ip$all$wday.old$txz`;
+}
+if ( -e "$ARCHIVEpath/$VARserver_ip$all$wday$tar" ) {
+	if ($DBX) {print "mv $ARCHIVEpath/$VARserver_ip$all$wday$tar $ARCHIVEpath/$VARserver_ip$all$wday.old$tar\n";}
+	`mv $ARCHIVEpath/$VARserver_ip$all$wday$tar $ARCHIVEpath/$VARserver_ip$all$wday.old$tar`;
+}
 
 ### PUT EVERYTHING TOGETHER TO BE COMPRESSED ###
-if ($DBX) {print "$tarbin -Jcf $ARCHIVEpath/$VARserver_ip$all$wday$txz $TEMPpath\n";}
+if ($DBX) {print "$tarbin -Jcf $TEMPpathComp/$VARserver_ip$all$wday$tar $TEMPpath\n";}
 `$tarbin -cf $TEMPpathComp/$VARserver_ip$all$wday$tar $TEMPpath`;
 
 ### Copy to ArchivePath ###
@@ -654,6 +672,7 @@ if($LOCALpath) {
 	`mv -f $TEMPpathComp/$VARserver_ip$all$wday$tar $LOCALpath/`;
 }
 
+
 ### COMPRESS THE ALL FILE ###
 #if ($DBX) {print "$gzipbin -9 $ARCHIVEpath/$VARserver_ip$all$wday$tar\n";}
 #`$gzipbin -9 $ARCHIVEpath/$VARserver_ip$all$wday$tar`;
@@ -662,7 +681,7 @@ if($LOCALpath) {
 #if ($DBX) {print "rm -fR $ARCHIVEpath/temp\n";}
 #`rm -fR $ARCHIVEpath/temp`;
 
-if ($DBX) {print "rm -fR $TEMPpath";}
+if ($DBX) {print "rm -fR $TEMPpath\n";}
 `rm -fR $TEMPpath`;
 
 
@@ -679,6 +698,11 @@ if ($ftp_transfer > 0)
 	$ftp->quit;
 	}
 
+# remove temp tar file
+if ( -e "$TEMPpathComp/$VARserver_ip$all$wday$tar") {
+	if ($DBX) {print "rm -f $TEMPpathComp/$VARserver_ip$all$wday$tar\n";}
+	`rm -f $TEMPpathComp/$VARserver_ip$all$wday$tar`;
+}
 
 ### calculate time to run script ###
 $secY = time();
@@ -686,6 +710,7 @@ $secZ = ($secY - $secX);
 $secZm = ($secZ /60);
 
 if (!$Q) {print "script execution time in seconds: $secZ     minutes: $secZm\n";}
+
 
 if ($DBX) {print "DONE, Exiting...\n";}
 

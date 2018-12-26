@@ -326,7 +326,7 @@
         docs/NON-AGENT_API.txt,
         www/vicidial/non_agent_api.php: Added lead_callback_info function.
   *  bin/ADMIN_backup.pl: Use tar | xy for packing; Pack database tables in own
-       files; Remove passwords from logging.
+       files; Remove passwords from logging, add tests for file exists.
   
 2.25.27
   [Jörg Fring-Fürst]
