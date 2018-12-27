@@ -46,9 +46,10 @@
 #             - Add tests for file exists
 # 181226-1810 - Switch to new config file.
 #             - Use FTPBACKUP_* instead $VARREPORT_* for ftp backup.
+# 181227-1030 - Allow table names with whitespaces
+#
 
-
-$PrgVersion = "3.0.0";
+$PrgVersion = "3.0.1";
 
 ###### Test that the script is running only once a time
 use Fcntl qw(:flock);
@@ -470,14 +471,14 @@ if ( ($without_db < 1) && ($conf_only < 1) ) {
 			} else {
 				foreach ( @all_tables ){
 					if ($DBX) {
-						print "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --routines $temp_dbname '$_' | $xzbin -3 -T0 - > $TEMPpath/$Server_name$underl$temp_dbname$underl$_$underl$wday.sql.xz\n";
+						print "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --routines $temp_dbname '$_' | $xzbin -3 -T0 - > '$TEMPpath/$Server_name$underl$temp_dbname$underl$_$underl$wday.sql.xz'\n";
 					}
-					`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname '$_' | $xzbin -3 -T0 - > $TEMPpath/$Server_name$underl$temp_dbname$underl$_$underl$wday.sql.xz`;
+					`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname '$_' | $xzbin -3 -T0 - > '$TEMPpath/$Server_name$underl$temp_dbname$underl$_$underl$wday.sql.xz'`;
 				}
 				if ($DBX) {
-					print "$tarbin -cf $TEMPpath/$Server_name$underl$temp_dbname$underl$wday$tar $TEMPpath/*.sql.xz`\n";
+					print "$tarbin -cf $TEMPpath/$Server_name$underl$temp_dbname$underl$wday$tar '$TEMPpath/*.sql.xz'`\n";
 				}
-				`$tarbin -cf $TEMPpath/$Server_name$underl$temp_dbname$underl$wday$tar $TEMPpath/*.sql.xz`;
+				`$tarbin -cf $TEMPpath/$Server_name$underl$temp_dbname$underl$wday$tar '$TEMPpath/*.sql.xz'`;
 				`rm $TEMPpath/*.sql.xz`;
 			}
 			$c++;
