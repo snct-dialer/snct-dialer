@@ -2491,6 +2491,8 @@ $cfg->newval("Path", "PATHsounds", $PATHsounds);
 $cfg->newval("Path", "PATHmonitor", $PATHmonitor);
 $cfg->newval("Path", "PATHDONEmonitor", $PATHDONEmonitor);
 
+$cfg->newval("Server", "Server_ip", $VARserver_ip);
+
 $cfg->newval("Setup", "VARactive_keepalives", $VARactive_keepalives);
 $cfg->newval("Setup", "VARasterisk_version", $VARasterisk_version);
 $cfg->newval("Setup", "ExpectedDBSchema",$ExpectedDBSchema);

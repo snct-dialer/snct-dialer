@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# ADMIN_backup.pl    version 2.12
+# ADMIN_backup_ng.pl
 #
 # DESCRIPTION:
 # Backs-up the asterisk database, conf/agi/sounds/bin files 
@@ -42,11 +42,13 @@
 # 181223-1820 - Use tar | xy for packing
 #             - Pack database tables in own files
 #             - Remove passwords from logging
-# 181216-1210 - Add PrgVersion
+# 181226-1210 - Add PrgVersion
 #             - Add tests for file exists
-#
+# 181226-1810 - Switch to new config file.
+#             - Use FTPBACKUP_* instead $VARREPORT_* for ftp backup.
 
-$PrgVersion = "2.9.1";
+
+$PrgVersion = "3.0.0";
 
 ###### Test that the script is running only once a time
 use Fcntl qw(:flock);
@@ -77,57 +79,35 @@ $db_raw_files_copy=0;
 
 print "$0 Version: $PrgVersion \n";
 
+use Config::IniFiles;
 
-# default path to astguiclient configuration file:
-$PATHconf =		'/etc/astguiclient.conf';
+my $defcfg = Config::IniFiles->new( -file => "/etc/flyingpenguin/vicidial.conf" );
+my $newcfg = Config::IniFiles->new( -file => "/etc/flyingpenguin/vicidial.ini", -import => $defcfg  );
+my $cfg    = Config::IniFiles->new( -file => "/etc/flyingpenguin/vicidial.local", -import => $newcfg );
 
-open(conf, "$PATHconf") || die "can't open $PATHconf: $!\n";
-@conf = <conf>;
-close(conf);
-$i=0;
-foreach(@conf)
-	{
-	$line = $conf[$i];
-	$line =~ s/ |>|\n|\r|\t|\#.*|;.*//gi;
-	if ( ($line =~ /^PATHhome/) && ($CLIhome < 1) )
-		{$PATHhome = $line;   $PATHhome =~ s/.*=//gi;}
-	if ( ($line =~ /^PATHlogs/) && ($CLIlogs < 1) )
-		{$PATHlogs = $line;   $PATHlogs =~ s/.*=//gi;}
-	if ( ($line =~ /^PATHagi/) && ($CLIagi < 1) )
-		{$PATHagi = $line;   $PATHagi =~ s/.*=//gi;}
-	if ( ($line =~ /^PATHweb/) && ($CLIweb < 1) )
-		{$PATHweb = $line;   $PATHweb =~ s/.*=//gi;}
-	if ( ($line =~ /^PATHsounds/) && ($CLIsounds < 1) )
-		{$PATHsounds = $line;   $PATHsounds =~ s/.*=//gi;}
-	if ( ($line =~ /^VARserver_ip/) && ($CLIserver_ip < 1) )
-		{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
-	if ( ($line =~ /^VARDB_server/) && ($CLIDB_server < 1) )
-		{$VARDB_server = $line;   $VARDB_server =~ s/.*=//gi;}
-	if ( ($line =~ /^VARDB_database/) && ($CLIDB_database < 1) )
-		{$VARDB_database = $line;   $VARDB_database =~ s/.*=//gi;}
-	if ( ($line =~ /^VARDB_user/) && ($CLIDB_user < 1) )
-		{$VARDB_user = $line;   $VARDB_user =~ s/.*=//gi;}
-	if ( ($line =~ /^VARDB_pass/) && ($CLIDB_pass < 1) )
-		{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
-	if ( ($line =~ /^VARDB_backup_user/) && ($CLIDB_backup_user < 1) )
-		{$VARDB_backup_user = $line;   $VARDB_backup_user =~ s/.*=//gi;}
-	if ( ($line =~ /^VARDB_backup_pass/) && ($CLIDB_backup_pass < 1) )
-		{$VARDB_backup_pass = $line;   $VARDB_backup_pass =~ s/.*=//gi;}
-	if ( ($line =~ /^VARDB_port/) && ($CLIDB_port < 1) )
-		{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
-	if ( ($line =~ /^VARREPORT_host/) && ($CLIREPORT_host < 1) )
-		{$VARREPORT_host = $line;   $VARREPORT_host =~ s/.*=//gi;}
-	if ( ($line =~ /^VARREPORT_user/) && ($CLIREPORT_user < 1) )
-		{$VARREPORT_user = $line;   $VARREPORT_user =~ s/.*=//gi;}
-	if ( ($line =~ /^VARREPORT_pass/) && ($CLIREPORT_pass < 1) )
-		{$VARREPORT_pass = $line;   $VARREPORT_pass =~ s/.*=//gi;}
-	if ( ($line =~ /^VARREPORT_port/) && ($CLIREPORT_port < 1) )
-		{$VARREPORT_port = $line;   $VARREPORT_port =~ s/.*=//gi;}
-	if ( ($line =~ /^VARREPORT_dir/) && ($CLIREPORT_dir < 1) )
-		{$VARREPORT_dir = $line;   $VARREPORT_dir =~ s/.*=//gi;}
+$PATHhome   = $cfg->val( 'Path', 'PATHhome' );
+$PATHlogs   = $cfg->val( 'Path', 'PATHlogs' );
+$PATHagi    = $cfg->val( 'Path', 'PATHagi' );
+$PATHweb    = $cfg->val( 'Path', 'PATHweb' );
+$PATHsounds = $cfg->val( 'Path', 'PATHsounds' );
 
-	$i++;
-	}
+$Server_name = $cfg->val( 'Server', 'Server_name' );
+
+$VARDB_server      = $cfg->val( 'Database', 'VARDB_server' );
+$VARDB_database    = $cfg->val( 'Database', 'VARDB_database' );
+$VARDB_user        = $cfg->val( 'Database', 'VARDB_user' );
+$VARDB_pass        = $cfg->val( 'Database', 'VARDB_pass' );
+$VARDB_backup_user = $cfg->val( 'Database', 'VARDB_backup_user' );
+$VARDB_backup_pass = $cfg->val( 'Database', 'VARDB_backup_pass' );
+$VARDB_port        = $cfg->val( 'Database', 'VARDB_port' );
+
+$FTPBACKUP_enable = $cfg->val( 'Backup', 'FTPBACKUP_enable' );
+$FTPBACKUP_host   = $cfg->val( 'Backup', 'FTPBACKUP_host' );
+$FTPBACKUP_user   = $cfg->val( 'Backup', 'FTPBACKUP_user' );
+$FTPBACKUP_pass   = $cfg->val( 'Backup', 'FTPBACKUP_pass' );
+$FTPBACKUP_port   = $cfg->val( 'Backup', 'FTPBACKUP_port' );
+$FTPBACKUP_dir    = $cfg->val( 'Backup', 'FTPBACKUP_dir' );
+
 
 ### set dbuser ###
 if(!$VARDB_backup_user) {
@@ -259,7 +239,7 @@ if (length($ARGV[0])>1)
 			}
 		if ($args =~ /--ftp-transfer/i)
 			{
-			$ftp_transfer=1;
+			$FTPBACKUP_enable=1;
 			print "\n----- FTP transfer -----\n\n";
 			}
 		if ($args =~ /--db_raw_files_copy/i)
@@ -277,34 +257,34 @@ if (length($ARGV[0])>1)
 		if ($args =~ /--ftp-server=/i)
 			{
 			@data_in = split(/--ftp-server=/,$args);
-			$VARREPORT_host = $data_in[1];
-			$VARREPORT_host =~ s/ .*//gi;
-			$VARREPORT_host =~ s/:/,/gi;
-			if ($DB > 0) {print "\n----- FTP SERVER: $VARREPORT_host -----\n\n";}
+			$FTPBACKUP_host = $data_in[1];
+			$FTPBACKUP_host =~ s/ .*//gi;
+			$FTPBACKUP_host =~ s/:/,/gi;
+			if ($DB > 0) {print "\n----- FTP SERVER: $FTPBACKUP_host -----\n\n";}
 			}
 		if ($args =~ /--ftp-login=/i)
 			{
 			@data_in = split(/--ftp-login=/,$args);
-			$VARREPORT_user = $data_in[1];
-			$VARREPORT_user =~ s/ .*//gi;
-			$VARREPORT_user =~ s/:/,/gi;
-			if ($DB > 0) {print "\n----- FTP LOGIN: $VARREPORT_user -----\n\n";}
+			$FTPBACKUP_user = $data_in[1];
+			$FTPBACKUP_user =~ s/ .*//gi;
+			$FTPBACKUP_user =~ s/:/,/gi;
+			if ($DB > 0) {print "\n----- FTP LOGIN: $FTPBACKUP_user -----\n\n";}
 			}
 		if ($args =~ /--ftp-pass=/i)
 			{
 			@data_in = split(/--ftp-pass=/,$args);
-			$VARREPORT_pass = $data_in[1];
-			$VARREPORT_pass =~ s/ .*//gi;
-			$VARREPORT_pass =~ s/:/,/gi;
+			$FTPBACKUP_pass = $data_in[1];
+			$FTPBACKUP_pass =~ s/ .*//gi;
+			$FTPBACKUP_pass =~ s/:/,/gi;
 			if ($DB > 0) {print "\n----- FTP PASS: <SET> -----\n\n";}
 			}
 		if ($args =~ /--ftp-dir=/i)
 			{
 			@data_in = split(/--ftp-dir=/,$args);
-			$VARREPORT_dir = $data_in[1];
-			$VARREPORT_dir =~ s/ .*//gi;
-			$VARREPORT_dir =~ s/:/,/gi;
-			if ($DB > 0) {print "\n----- FTP DIR: $VARREPORT_dir -----\n\n";}
+			$FTPBACKUP_dir = $data_in[1];
+			$FTPBACKUP_dir =~ s/ .*//gi;
+			$FTPBACKUP_dir =~ s/:/,/gi;
+			if ($DB > 0) {print "\n----- FTP DIR: $FTPBACKUP_dir -----\n\n";}
 			}
 		}
 	}
@@ -313,9 +293,6 @@ if (length($ARGV[0])>1)
 #	print "no command line options set\n";
 #	}
 
-
-# Customized Variables
-$server_ip = $VARserver_ip;		# Asterisk server IP
 
 if (!$ARCHIVEpath) {$ARCHIVEpath = "$PATHlogs/archive";}
 if (!$TEMPpath) {$TEMPpath = "/tmp/vicibackup";}
@@ -327,36 +304,30 @@ $LOCALpath="";
 ### find tar binary to do the archiving
 $tarbin = '';
 if ( -e ('/usr/bin/tar')) {$tarbin = '/usr/bin/tar';}
-else 
-	{
+else {
 	if ( -e ('/usr/local/bin/tar')) {$tarbin = '/usr/local/bin/tar';}
-	else
-		{
+	else {
 		if ( -e ('/bin/tar')) {$tarbin = '/bin/tar';}
-		else
-			{
+		else {
 			print "Can't find tar binary! Exiting...\n";
 			exit;
-			}
 		}
 	}
+}
 
 ### find xz binary to do the archiving
 $xzbin = '';
 if ( -e ('/usr/bin/xz')) {$xzbin = '/usr/bin/xz';}
-else 
-	{
+else {
 	if ( -e ('/usr/local/bin/xz')) {$xzbin = '/usr/local/bin/xz';}
-	else
-		{
+	else {
 		if ( -e ('/bin/xz')) {$xzbin = '/bin/xz';}
-		else
-			{
+		else {
 			print "Can't find xz binary! Exiting...\n";
 			exit;
-			}
 		}
 	}
+}
 
 $conf='_CONF_';
 $sangoma='_SANGOMA_';
@@ -376,34 +347,27 @@ $underl='_';
 `cd $ARCHIVEpath`;
 `mkdir $TEMPpath`;
 
-if ( ($without_db < 1) && ($conf_only < 1) )
-	{
-	if ($db_raw_files_copy < 1)
-		{
+if ( ($without_db < 1) && ($conf_only < 1) ) {
+	if ($db_raw_files_copy < 1) {
 		### find mysqldump binary to do the database dump
 		print "\n----- Mysql dump -----\n\n";
 		$mysqldumpbin = '';
 		if ( -e ('/usr/bin/mysqldump')) {$mysqldumpbin = '/usr/bin/mysqldump';}
-		else 
-			{
+		else {
 			if ( -e ('/usr/local/mysql/bin/mysqldump')) {$mysqldumpbin = '/usr/local/mysql/bin/mysqldump';}
-			else
-				{
+			else {
 				if ( -e ('/bin/mysqldump')) {$mysqldumpbin = '/bin/mysqldump';}
-				else
-					{
+				else {
 					print "Can't find mysqldump binary! MySQL backups will not work...\n";
-					}
 				}
 			}
+		}
 
 		use DBI;
 
 		$dbs_to_backup[0]="$VARDB_database";
-		if (length($dbs_selected)> 0) 
-			{
-			if ($dbs_selected =~ /--ALL--|--ALLNS--/) 
-				{
+		if (length($dbs_selected)> 0) {
+			if ($dbs_selected =~ /--ALL--|--ALLNS--/) {
 				if ($DBX > 0) {print "DBX-  ALL DATABASES OPTION ENABLED! GATHERING DBS...\n";}
 				### connect to MySQL database defined in the conf file so we can get database list
 				$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
@@ -416,45 +380,36 @@ if ( ($without_db < 1) && ($conf_only < 1) )
 				$db_ct=0;
 				$db_s_ct=0;
 					
-				while ($dbArows > $db_ct)
-					{
+				while ($dbArows > $db_ct) {
 					@aryA = $sthA->fetchrow_array;
-					if ($dbs_selected =~ /--ALLNS--/) 
-						{
-						if ($aryA[0] !~ /^test$|^mysql$|^information_schema$/)
-							{
+					if ($dbs_selected =~ /--ALLNS--/) {
+						if ($aryA[0] !~ /^test$|^mysql$|^information_schema$/) {
 							$dbs_to_backup[$db_s_ct] = $aryA[0];
 							$db_s_ct++;
 							if ($DBX > 0) {print "DBX-  database $db_ct($db_s_ct): $aryA[0]\n";}
-							}
 						}
-					else
-						{
+					} else {
 						$dbs_to_backup[$db_s_ct] = $aryA[0];
 						$db_s_ct++;
 						if ($DBX > 0) {print "DBX-  database $db_ct($db_s_ct): $aryA[0]\n";}
-						}
-					$db_ct++;
 					}
+					$db_ct++;
+				}
 				
 				$sthA->finish;
 				$dbhA->disconnect;
-				}
-			else
-				{
-				if ($dbs_selected =~ /---/)
-					{
+			} else {
+				if ($dbs_selected =~ /---/) {
 					@dbs_to_backup = split(/---/,$dbs_selected);
 					if ($DBX > 0) {printf "DBX-  databases %d\n", $#dbs_to_backup + 1;}
-					}
-				else
-					{$dbs_to_backup[0]="$dbs_selected";}
+				} else {
+					$dbs_to_backup[0]="$dbs_selected";
 				}
 			}
+		}
 
 		$c=0;
-		while ($c <= $#dbs_to_backup) 
-			{
+		while ($c <= $#dbs_to_backup) {
 			$temp_dbname = $dbs_to_backup[$c];
 			if ($DBX > 0) {print "DBX-  starting to backup database $c: $temp_dbname\n";}
 			### BACKUP THE MYSQL FILES ON THE DB SERVER ###
@@ -473,84 +428,67 @@ if ( ($without_db < 1) && ($conf_only < 1) )
 			$regular_tables='';
 			my @all_tables = ();
 				
-			while ($sthArows > $rec_count)
-				{
+			while ($sthArows > $rec_count) {
 				@aryA = $sthA->fetchrow_array;
 				push(@all_tables, $aryA[0]);
-				if ($aryA[0] =~ /_archive/) 
-					{
+				if ($aryA[0] =~ /_archive/) {
 					$archive_tables .= " $aryA[0]";
-					}
-				elsif ($aryA[0] =~ /_log|server_performance|vicidial_ivr|vicidial_hopper|vicidial_manager|web_client_sessions|imm_outcomes/) 
-					{
-					$log_tables .= " $aryA[0]";
-					}
-				elsif ($aryA[0] =~ /server|^phones|conferences|stats|vicidial_list$|^custom/) 
-					{
-					$regular_tables .= " $aryA[0]";
-					}				
-				else 
-					{
-					$conf_tables .= " $aryA[0]";
-					}
-				$rec_count++;
 				}
+				elsif ($aryA[0] =~ /_log|server_performance|vicidial_ivr|vicidial_hopper|vicidial_manager|web_client_sessions|imm_outcomes/) {
+					$log_tables .= " $aryA[0]";
+				}
+				elsif ($aryA[0] =~ /server|^phones|conferences|stats|vicidial_list$|^custom/) {
+					$regular_tables .= " $aryA[0]";
+				} else {
+					$conf_tables .= " $aryA[0]";
+				}
+				$rec_count++;
+			}
 			$sthA->finish();
 
-					
-			if ($db_without_logs)
-				{
-				$dump_non_log_command = "$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname $regular_tables $conf_tables | $xzbin -9 > $TEMPpath/LOGS_$VARserver_ip$underl$temp_dbname$underl$wday$xz";
-				$dump_non_log_commandOP = "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --routines $temp_dbname $regular_tables $conf_tables | $xzbin -9 > $TEMPpath/LOGS_$VARserver_ip$underl$temp_dbname$underl$wday$xz";
-				$dump_log_command = "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --no-data --no-create-db --routines $temp_dbname $log_tables $archive_tables | $xzbin -9 > $TEMPpath/LOGS_$VARserver_ip$underl$temp_dbname$underl$wday$xz";
+			if ($db_without_logs) {
+				$dump_non_log_command = "$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname $regular_tables $conf_tables | $xzbin -9 > $TEMPpath/LOGS_$Server_name$underl$temp_dbname$underl$wday$xz";
+				$dump_non_log_commandOP = "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --routines $temp_dbname $regular_tables $conf_tables | $xzbin -9 > $TEMPpath/LOGS_$Server_name$underl$temp_dbname$underl$wday$xz";
+				$dump_log_command = "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --no-data --no-create-db --routines $temp_dbname $log_tables $archive_tables | $xzbin -9 > $TEMPpath/LOGS_$Server_name$underl$temp_dbname$underl$wday$xz";
 
 				if ($DBX) {print "$dump_non_log_commandOP\nDEBUG: LOG EXPORT COMMAND(not run): $dump_log_command\n";}
 				`$dump_non_log_command`;
-				}
-				
-			elsif ($db_without_archives)
-				{
-				$dump_non_archive_command = "$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname $regular_tables $conf_tables $log_tables | $xzbin -9 > $TEMPEpath/ARCHIVES_$VARserver_ip_$underl$temp_dbname$underl$wday$xz";
-				$dump_non_archive_commandOP = "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --routines $temp_dbname $regular_tables $conf_tables $log_tables | $xzbin -9 > $TEMPEpath/ARCHIVES_$VARserver_ip_$underl$temp_dbname$underl$wday$xz";
-				$dump_archive_command = "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --no-data --no-create-db --routines $temp_dbname $archive_tables | $xzbin -9 > $TEMPpath/ARCHIVES_$VARserver_ip$underl$temp_dbname$underl$wday$xz";
+			} elsif ($db_without_archives) {
+				$dump_non_archive_command = "$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname $regular_tables $conf_tables $log_tables | $xzbin -9 > $TEMPEpath/ARCHIVES_$Server_name_$underl$temp_dbname$underl$wday$xz";
+				$dump_non_archive_commandOP = "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --routines $temp_dbname $regular_tables $conf_tables $log_tables | $xzbin -9 > $TEMPEpath/ARCHIVES_$Server_name_$underl$temp_dbname$underl$wday$xz";
+				$dump_archive_command = "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --no-data --no-create-db --routines $temp_dbname $archive_tables | $xzbin -9 > $TEMPpath/ARCHIVES_$Server_name$underl$temp_dbname$underl$wday$xz";
 
 				if ($DBX) {print "$dump_non_archive_commandOP\nDEBUG: ARCHIVE EXPORT COMMAND(not run): $dump_archive_command\n";}
 				`$dump_non_archive_command`;
-				}
-				
-			elsif ($db_settings_only)
-				{
-				$dump_non_log_command = "$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname $conf_tables | $zxbin -9 > $TEMPpath/SETTINGSONLY_$VARserver_ip$underl$temp_dbname$underl$wday$xz";
-				$dump_non_log_commandOP = "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --routines $temp_dbname $conf_tables | $zxbin -9 > $TEMPpath/SETTINGSONLY_$VARserver_ip$underl$temp_dbname$underl$wday$xz";
-				$dump_log_command = "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --no-data --no-create-db --routines $temp_dbname $log_tables $archive_tables $regular_tables | $xzbin -9 > $TEMPpath/SETTINGSONLY_$VARserver_ip$underl$temp_dbname$underl$wday$xz";
+			} elsif ($db_settings_only) {
+				$dump_non_log_command = "$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname $conf_tables | $zxbin -9 > $TEMPpath/SETTINGSONLY_$Server_name$underl$temp_dbname$underl$wday$xz";
+				$dump_non_log_commandOP = "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --routines $temp_dbname $conf_tables | $zxbin -9 > $TEMPpath/SETTINGSONLY_$Server_name$underl$temp_dbname$underl$wday$xz";
+				$dump_log_command = "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --no-data --no-create-db --routines $temp_dbname $log_tables $archive_tables $regular_tables | $xzbin -9 > $TEMPpath/SETTINGSONLY_$Server_name$underl$temp_dbname$underl$wday$xz";
 
 				if ($DBX) {print "$dump_non_log_commandOP\nNOT ARCHIVED: $dump_log_command\n";}
 				`$dump_non_log_command`;
-				}
-			else {
+			} else {
 				foreach ( @all_tables ){
 					if ($DBX) {
-						print "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --routines $temp_dbname `$_` | $xzbin -3 -T0 - > $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$_$underl$wday.sql.xz\n";
+						print "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --routines $temp_dbname '$_' | $xzbin -3 -T0 - > $TEMPpath/$Server_name$underl$temp_dbname$underl$_$underl$wday.sql.xz\n";
 					}
-					`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname `$_` | $xzbin -3 -T0 - > $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$_$underl$wday.sql.xz`;
+					`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname '$_' | $xzbin -3 -T0 - > $TEMPpath/$Server_name$underl$temp_dbname$underl$_$underl$wday.sql.xz`;
 				}
 				if ($DBX) {
-					print "$tarbin -cf $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday$tar $TEMPpath/*.sql.xz`\n";
+					print "$tarbin -cf $TEMPpath/$Server_name$underl$temp_dbname$underl$wday$tar $TEMPpath/*.sql.xz`\n";
 				}
-				`$tarbin -cf $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday$tar $TEMPpath/*.sql.xz`;
+				`$tarbin -cf $TEMPpath/$Server_name$underl$temp_dbname$underl$wday$tar $TEMPpath/*.sql.xz`;
 				`rm $TEMPpath/*.sql.xz`;
 			}
 			$c++;
-			}
 		}
-	else
-		{
+	} else {
 		print "\n----- Mysql Raw Copy -----\n\n";
 		`service mysql stop`;
-		`$tarbin -Jcvf $TEMPpath/"$VARserver_ip$underl"mysql_raw_"$wday"$txz /var/lib/mysql/test /var/lib/mysql/mysql /var/lib/mysql/performance_schema /var/lib/mysql/asterisk`;
+		`$tarbin -Jcvf $TEMPpath/"$Server_name$underl"mysql_raw_"$wday"$txz /var/lib/mysql/test /var/lib/mysql/mysql /var/lib/mysql/performance_schema /var/lib/mysql/asterisk`;
 		`service mysql start`;
-		}
 	}
+}
 
 if ( ($without_conf < 1) && ($db_only < 1) )
 	{
@@ -563,8 +501,8 @@ if ( ($without_conf < 1) && ($db_only < 1) )
 	if (-e "/usr/share/astguiclient/AST_DB_lead_status_change.pl") {$zapdahdi .= " /usr/share/astguiclient/AST_DB_lead_status_change.pl";}
 	if (-e "/usr/local/sbin") {$zapdahdi .= " /usr/local/sbin";}
 	if (-e ("/etc/flyingpenguin")) {$zapdahdi .= " /etc/flyingpenguin";}
-	if ($DBX) {print "$tarbin -cf - /etc/astguiclient.conf $zapdahdi /etc/asterisk | $xzbin -1 -T0 - > $TEMPpath/$VARserver_ip$conf$wday$txz \n";}
-	`$tarbin -cf - /etc/astguiclient.conf $zapdahdi /etc/asterisk | $xzbin -1 -T0 - > $TEMPpath/$VARserver_ip$conf$wday$txz`;
+	if ($DBX) {print "$tarbin -cf - /etc/astguiclient.conf $zapdahdi /etc/asterisk | $xzbin -1 -T0 - > $TEMPpath/$Server_name$conf$wday$txz \n";}
+	`$tarbin -cf - /etc/astguiclient.conf $zapdahdi /etc/asterisk | $xzbin -1 -T0 - > $TEMPpath/$Server_name$conf$wday$txz`;
 
 
 	### BACKUP THE WANPIPE CONF FILES(if there are any) ###
@@ -580,8 +518,8 @@ if ( ($without_conf < 1) && ($db_only < 1) )
 		if ( -e ('/etc/wanpipe/wanpipe8.conf')) {$sgSTRING .= '/etc/wanpipe/wanpipe8.conf ';}
 		if ( -e ('/etc/wanpipe/wanrouter.rc')) {$sgSTRING .= '/etc/wanpipe/wanrouter.rc ';}
 
-		if ($DBX) {print "$tarbin -cf -  $sgSTRING | $xzbin -1 -T0 - >  $TEMPpath/$VARserver_ip$sangoma$wday$txz\n";}
-		`$tarbin -cf -  $sgSTRING | $xzbin -1 -T0 - >  $TEMPpath/$VARserver_ip$sangoma$wday$txz`;
+		if ($DBX) {print "$tarbin -cf -  $sgSTRING | $xzbin -1 -T0 - >  $TEMPpath/$Server_name$sangoma$wday$txz\n";}
+		`$tarbin -cf -  $sgSTRING | $xzbin -1 -T0 - >  $TEMPpath/$Server_name$sangoma$wday$txz`;
 		}
 
 	### BACKUP OTHER CONF FILES ON THE SERVER ###
@@ -602,80 +540,80 @@ if ( ($without_conf < 1) && ($db_only < 1) )
 	if ( -e ('/etc/resolv.conf')) {$files .= "/etc/resolv.conf ";}
 	if ( -e ('/prompt_count.txt')) {$files .= "/prompt_count.txt ";}
 
-	if ($DBX) {print "$tarbin -cf - $files | $xzbin -1 -T0 - >  $TEMPpath/$VARserver_ip$linux$wday$txz\n";}
-	`$tarbin -cf - $files | $xzbin -1 -T0 - >  $TEMPpath/$VARserver_ip$linux$wday$txz`;
+	if ($DBX) {print "$tarbin -cf - $files | $xzbin -1 -T0 - >  $TEMPpath/$Server_name$linux$wday$txz\n";}
+	`$tarbin -cf - $files | $xzbin -1 -T0 - >  $TEMPpath/$Server_name$linux$wday$txz`;
 	}
 
 if ( ($conf_only < 1) && ($db_only < 1) && ($without_web < 1) )
 	{
 	### BACKUP THE WEB FILES ON THE SERVER ###
-	if ($DBX) {print "$tarbin -cf - $PATHweb |  $xzbin -1 -T0 - > $TEMPpath/$VARserver_ip$web$wday$txz\n";}
-	`$tarbin -cf - $PATHweb | $xzbin -1 -T0 - > $TEMPpath/$VARserver_ip$web$wday$txz`;
+	if ($DBX) {print "$tarbin -cf - $PATHweb |  $xzbin -1 -T0 - > $TEMPpath/$Server_name$web$wday$txz\n";}
+	`$tarbin -cf - $PATHweb | $xzbin -1 -T0 - > $TEMPpath/$Server_name$web$wday$txz`;
 	}
 
 if ( ($conf_only < 1) && ($db_only < 1) )
 	{
 	### BACKUP THE ASTGUICLIENT AND AGI FILES ON THE SERVER ###
-	if ($DBX) {print "$tarbin -cf - $PATHagi $PATHhome | $xzbin -1 -T0 - > $TEMPpath/$VARserver_ip$bin$wday$txz\n";}
-	`$tarbin -cf - $PATHagi $PATHhome | $xzbin -1 -T0 - > $TEMPpath/$VARserver_ip$bin$wday$txz`;
+	if ($DBX) {print "$tarbin -cf - $PATHagi $PATHhome | $xzbin -1 -T0 - > $TEMPpath/$Server_name$bin$wday$txz\n";}
+	`$tarbin -cf - $PATHagi $PATHhome | $xzbin -1 -T0 - > $TEMPpath/$Server_name$bin$wday$txz`;
 	}
 
 if ( ($conf_only < 1) && ($db_only < 1) && ($without_sounds < 1) )
 	{
 	### BACKUP THE ASTERISK SOUNDS ON THE SERVER ###
-	if ($DBX) {print "$tarbin -hcf - $PATHsounds | $xzbin -1 -T0 - > $TEMPpath/$VARserver_ip$sounds$wday$txz\n";}
-	`$tarbin -hcf - $PATHsounds | $xzbin -1 -T0 - > $TEMPpath/$VARserver_ip$sounds$wday$txz`;
+	if ($DBX) {print "$tarbin -hcf - $PATHsounds | $xzbin -1 -T0 - > $TEMPpath/$Server_name$sounds$wday$txz\n";}
+	`$tarbin -hcf - $PATHsounds | $xzbin -1 -T0 - > $TEMPpath/$Server_name$sounds$wday$txz`;
 	}
 
 if ( ($conf_only < 1) && ($db_only < 1) && ($without_voicemail < 1) )
 	{
 	### BACKUP THE ASTERISK VOICEMAIL ON THE SERVER ###
-	if ($DBX) {print "$tarbin -cf - /var/spool/asterisk/voicemail | $xzbin -1 -T0 - > $TEMPpath/$VARserver_ip$voicemail$wday$txz\n";}
-	`$tarbin -cf - /var/spool/asterisk/voicemail | $xzbin -1 -T0 - > $TEMPpath/$VARserver_ip$voicemail$wday$txz`;
+	if ($DBX) {print "$tarbin -cf - /var/spool/asterisk/voicemail | $xzbin -1 -T0 - > $TEMPpath/$Server_name$voicemail$wday$txz\n";}
+	`$tarbin -cf - /var/spool/asterisk/voicemail | $xzbin -1 -T0 - > $TEMPpath/$Server_name$voicemail$wday$txz`;
 	}
 
 ### REMOVE OLD GZ, xz and tar FILE
- if ( -e "$ARCHIVEpath/$VARserver_ip$all$wday$tar$gz" ) {
-	if ($DBX) {print "rm -f $ARCHIVEpath/$VARserver_ip$all$wday$tar$gz\n";}
-	`rm -f $ARCHIVEpath/$VARserver_ip$all$wday$tar$gz`;
+ if ( -e "$ARCHIVEpath/$Server_name$all$wday$tar$gz" ) {
+	if ($DBX) {print "rm -f $ARCHIVEpath/$Server_name$all$wday$tar$gz\n";}
+	`rm -f $ARCHIVEpath/$Server_name$all$wday$tar$gz`;
 }
 
- if ( -e "$ARCHIVEpath/$VARserver_ip$all$wday.old$txz" ) {
-	if ($DBX) {print "rm -f $ARCHIVEpath/$VARserver_ip$all$wday.old$txz\n";}
-	`rm -f $ARCHIVEpath/$VARserver_ip$all$wday.old$txz`;
+ if ( -e "$ARCHIVEpath/$Server_name$all$wday.old$txz" ) {
+	if ($DBX) {print "rm -f $ARCHIVEpath/$Server_name$all$wday.old$txz\n";}
+	`rm -f $ARCHIVEpath/$Server_name$all$wday.old$txz`;
 }
-if ( -e "$ARCHIVEpath/$VARserver_ip$all$wday.old$tar" ) {
-	if ($DBX) {print "rm -f $ARCHIVEpath/$VARserver_ip$all$wday.old$tar\n";}
-	`rm -f $ARCHIVEpath/$VARserver_ip$all$wday.old$tar`;
+if ( -e "$ARCHIVEpath/$Server_name$all$wday.old$tar" ) {
+	if ($DBX) {print "rm -f $ARCHIVEpath/$Server_name$all$wday.old$tar\n";}
+	`rm -f $ARCHIVEpath/$Server_name$all$wday.old$tar`;
 }
 
-if ( -e "$ARCHIVEpath/$VARserver_ip$all$wday$txz" ) {
-	if ($DBX) {print "mv $ARCHIVEpath/$VARserver_ip$all$wday$txz $ARCHIVEpath/$VARserver_ip$all$wday.old$txz\n";}
-	`mv $ARCHIVEpath/$VARserver_ip$all$wday$txz $ARCHIVEpath/$VARserver_ip$all$wday.old$txz`;
+if ( -e "$ARCHIVEpath/$Server_name$all$wday$txz" ) {
+	if ($DBX) {print "mv $ARCHIVEpath/$Server_name$all$wday$txz $ARCHIVEpath/$Server_name$all$wday.old$txz\n";}
+	`mv $ARCHIVEpath/$Server_name$all$wday$txz $ARCHIVEpath/$Server_name$all$wday.old$txz`;
 }
-if ( -e "$ARCHIVEpath/$VARserver_ip$all$wday$tar" ) {
-	if ($DBX) {print "mv $ARCHIVEpath/$VARserver_ip$all$wday$tar $ARCHIVEpath/$VARserver_ip$all$wday.old$tar\n";}
-	`mv $ARCHIVEpath/$VARserver_ip$all$wday$tar $ARCHIVEpath/$VARserver_ip$all$wday.old$tar`;
+if ( -e "$ARCHIVEpath/$Server_name$all$wday$tar" ) {
+	if ($DBX) {print "mv $ARCHIVEpath/$Server_name$all$wday$tar $ARCHIVEpath/$Server_name$all$wday.old$tar\n";}
+	`mv $ARCHIVEpath/$Server_name$all$wday$tar $ARCHIVEpath/$Server_name$all$wday.old$tar`;
 }
 
 ### PUT EVERYTHING TOGETHER TO BE COMPRESSED ###
-if ($DBX) {print "$tarbin -Jcf $TEMPpathComp/$VARserver_ip$all$wday$tar $TEMPpath\n";}
-`$tarbin -cf $TEMPpathComp/$VARserver_ip$all$wday$tar $TEMPpath`;
+if ($DBX) {print "$tarbin -Jcf $TEMPpathComp/$Server_name$all$wday$tar $TEMPpath\n";}
+`$tarbin -cf $TEMPpathComp/$Server_name$all$wday$tar $TEMPpath`;
 
 ### Copy to ArchivePath ###
-if ($DBX) {print "cp $TEMPpathComp/$VARserver_ip$all$wday$tar $ARCHIVEpath/\n";}
-`cp $TEMPpathComp/$VARserver_ip$all$wday$tar $ARCHIVEpath/`;
+if ($DBX) {print "cp $TEMPpathComp/$Server_name$all$wday$tar $ARCHIVEpath/\n";}
+`cp $TEMPpathComp/$Server_name$all$wday$tar $ARCHIVEpath/`;
 
 ### Move to LocalPath ###
 if($LOCALpath) {
-	if ($DBX) {print "mv -f $TEMPpathComp/$VARserver_ip$all$wday$tar $LOCALpath/\n";}
-	`mv -f $TEMPpathComp/$VARserver_ip$all$wday$tar $LOCALpath/`;
+	if ($DBX) {print "mv -f $TEMPpathComp/$Server_name$all$wday$tar $LOCALpath/\n";}
+	`mv -f $TEMPpathComp/$Server_name$all$wday$tar $LOCALpath/`;
 }
 
 
 ### COMPRESS THE ALL FILE ###
-#if ($DBX) {print "$gzipbin -9 $ARCHIVEpath/$VARserver_ip$all$wday$tar\n";}
-#`$gzipbin -9 $ARCHIVEpath/$VARserver_ip$all$wday$tar`;
+#if ($DBX) {print "$gzipbin -9 $ARCHIVEpath/$Server_name$all$wday$tar\n";}
+#`$gzipbin -9 $ARCHIVEpath/$Server_name$all$wday$tar`;
 
 ### REMOVE TEMP FILES ###
 #if ($DBX) {print "rm -fR $ARCHIVEpath/temp\n";}
@@ -686,22 +624,21 @@ if ($DBX) {print "rm -fR $TEMPpath\n";}
 
 
 #### FTP to the Backup server and upload the final file
-if ($ftp_transfer > 0)
-	{
-	if ($DBX) {print "Starting FTP transfer...($VARREPORT_user at $VARREPORT_host dir: $VARREPORT_dir)\n";}
+if ($FTPBACKUP_enable > 0) {
+	if ($DBX) {print "Starting FTP transfer...($FTPBACKUP_user at $FTPBACKUP_host dir: $FTPBACKUP_dir)\n";}
 	use Net::FTP;
-	$ftp = Net::FTP->new("$VARREPORT_host", Port => "$VARREPORT_port", Debug => "$FTPdebug");
-	$ftp->login("$VARREPORT_user","$VARREPORT_pass");
-	$ftp->cwd("$VARREPORT_dir");
+	$ftp = Net::FTP->new("$FTPBACKUP_host", Port => "$FTPBACKUP_port", Debug => "$FTPdebug");
+	$ftp->login("$FTPBACKUP_user","$FTPBACKUP_pass");
+	$ftp->cwd("$FTPBACKUP_dir");
 	$ftp->binary();
-	$ftp->put("$ARCHIVEpath/$VARserver_ip$all$wday$tar$gz", "$VARserver_ip$all$wday$tar$gz");
+	$ftp->put("$TEMPpathComp/$Server_name$all$wday$tar", "$Server_name$all$wday$tar");
 	$ftp->quit;
-	}
+}
 
 # remove temp tar file
-if ( -e "$TEMPpathComp/$VARserver_ip$all$wday$tar") {
-	if ($DBX) {print "rm -f $TEMPpathComp/$VARserver_ip$all$wday$tar\n";}
-	`rm -f $TEMPpathComp/$VARserver_ip$all$wday$tar`;
+if ( -e "$TEMPpathComp/$Server_name$all$wday$tar") {
+	if ($DBX) {print "rm -f $TEMPpathComp/$Server_name$all$wday$tar\n";}
+	`rm -f $TEMPpathComp/$Server_name$all$wday$tar`;
 }
 
 ### calculate time to run script ###
