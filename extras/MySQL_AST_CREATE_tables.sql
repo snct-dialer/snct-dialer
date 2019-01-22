@@ -1026,7 +1026,8 @@ scheduled_callbacks_force_dial ENUM('N','Y') default 'N',
 scheduled_callbacks_auto_reschedule VARCHAR(10) default 'DISABLED',
 scheduled_callbacks_timezones_container VARCHAR(40) default 'DISABLED',
 three_way_volume_buttons VARCHAR(20) default 'ENABLED',
-callback_dnc ENUM('ENABLED','DISABLED') default 'DISABLED'
+callback_dnc ENUM('ENABLED','DISABLED') default 'DISABLED',
+manual_dial_validation ENUM('Y','N') default 'N'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_lists (
@@ -1843,7 +1844,8 @@ autoanswer_prefix VARCHAR(5) default 'AA',
 autoanswer_delay TINYINT default '1',
 source_id_display ENUM('0','1') default '0',
 help_modification_date VARCHAR(20) default '0',
-agent_logout_link ENUM('0','1','2','3','4') default '1'
+agent_logout_link ENUM('0','1','2','3','4') default '1',
+manual_dial_validation ENUM('0','1','2','3','4') default '0'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_campaigns_list_mix (

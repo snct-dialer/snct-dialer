@@ -1,7 +1,7 @@
 <?php
 # vdc_db_query.php
 # 
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed to exchange information between vicidial.php and the database server for various actions
 # 
@@ -465,10 +465,11 @@
 # 180918-2231 - Change to use the same new function for manual dial DNC filtering
 # 180926-2150 - Added translatable phrases, related to issue #1114
 # 181005-1744 - Added SYSTEM option for manual_dial_filter
+# 190106-1353 - Added manual_dial_validation feature
 #
 
-$version = '2.14-359';
-$build = '181005-1744';
+$version = '2.14-360';
+$build = '190106-1353';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=787;
@@ -793,7 +794,8 @@ if (isset($_GET["callback_gmt_offset"]))			{$callback_gmt_offset=$_GET["callback
 	elseif (isset($_POST["callback_gmt_offset"]))	{$callback_gmt_offset=$_POST["callback_gmt_offset"];}
 if (isset($_GET["callback_timezone"]))			{$callback_timezone=$_GET["callback_timezone"];}
 	elseif (isset($_POST["callback_timezone"]))	{$callback_timezone=$_POST["callback_timezone"];}
-
+if (isset($_GET["manual_dial_validation"]))				{$manual_dial_validation=$_GET["manual_dial_validation"];}
+	elseif (isset($_POST["manual_dial_validation"]))	{$manual_dial_validation=$_POST["manual_dial_validation"];}
 
 header ("Content-type: text/html; charset=utf-8");
 header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
@@ -1125,6 +1127,7 @@ $routing_initiated_recording = preg_replace('/[^-_0-9a-zA-Z]/','',$routing_initi
 $dead_time = preg_replace('/[^0-9]/','',$dead_time);
 $callback_gmt_offset = preg_replace('/[^- \._0-9a-zA-Z]/','',$callback_gmt_offset);
 $callback_timezone = preg_replace('/[^-, _0-9a-zA-Z]/','',$callback_timezone);
+$manual_dial_validation = preg_replace('/[^-_0-9a-zA-Z]/','',$manual_dial_validation);
 
 
 # default optional vars if not set
@@ -4172,7 +4175,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 				}
 
 			##### BEGIN if preview dialing, do not send the call #####
-			if ($preview == 'YES')
+			if ( ($preview == 'YES') or ($manual_dial_validation == 'Y') )
 				{
 				### update the agent record with the preview_lead_id in vicidial_live_agents
 				$stmt = "UPDATE vicidial_live_agents set preview_lead_id='$lead_id' where user='$user' and server_ip='$server_ip';";
@@ -15627,7 +15630,7 @@ if ($ACTION == 'CALLLOGview')
 		echo "<td align=right><font class='sb_text'> $ALLhangup_reason[$i] </td>\n";
 		echo "<td align=right><font class='sb_text'> <a href=\"#\" onclick=\"VieWLeaDInfO($ALLlead_id[$i]);return false;\"> "._QXZ("INFO")."</A> </td>\n";
 		if ($manual_dial_filter > 0)
-			{echo "<td align=right><font class='sb_text'> <a href=\"#\" onclick=\"NeWManuaLDiaLCalL('CALLLOG','$ALLphone_code[$i]','$ALLphone_number[$i]','$ALLlead_id[$i]','','YES');return false;\"> "._QXZ("DIAL")." </A> </td>\n";}
+			{echo "<td align=right><font class='sb_text'> <a href=\"#\" onclick=\"NeWManuaLDiaLCalL('CALLLOG','$ALLphone_code[$i]','$ALLphone_number[$i]','$ALLlead_id[$i]','','YES','NO');return false;\"> "._QXZ("DIAL")." </A> </td>\n";}
 		else
 			{echo "<td align=right><font class='sb_text'> "._QXZ("DIAL")." </td>\n";}
 		echo "</tr>\n";
@@ -16057,7 +16060,7 @@ if ($ACTION == 'SEARCHRESULTSview')
 					if ($inbound_lead_search < 1)
 						{
 						if ($manual_dial_filter > 0)
-							{echo "<td align=right><font class=\"sb_text\"> <a href=\"#\" onclick=\"NeWManuaLDiaLCalL('LEADSEARCH','$ALLphone_code[$i]','$ALLphone_number[$i]','$ALLlead_id[$i]','','YES');return false;\"> "._QXZ("DIAL")." </A> </font></td>\n";}
+							{echo "<td align=right><font class=\"sb_text\"> <a href=\"#\" onclick=\"NeWManuaLDiaLCalL('LEADSEARCH','$ALLphone_code[$i]','$ALLphone_number[$i]','$ALLlead_id[$i]','','YES','NO');return false;\"> "._QXZ("DIAL")." </A> </font></td>\n";}
 						else
 							{echo "<td align=right><font class=\"sb_text\"> "._QXZ("DIAL")." </font></td>\n";}
 						}
@@ -16779,7 +16782,7 @@ if ($ACTION == 'LEADINFOview')
 							}
 						else
 							{
-							$INFOout .= "<a href=\"#\" onclick=\"NeWManuaLDiaLCalL('CALLLOG',$row[5], $row[6], $lead_id,'','YES');return false;\"> "._QXZ("DIAL")." </a>";
+							$INFOout .= "<a href=\"#\" onclick=\"NeWManuaLDiaLCalL('CALLLOG',$row[5], $row[6], $lead_id,'','YES','NO');return false;\"> "._QXZ("DIAL")." </a>";
 							}
 						}
 					else
@@ -16796,7 +16799,7 @@ if ($ACTION == 'LEADINFOview')
 						}
 					else
 						{
-						$INFOout .= "<tr bgcolor=white><td ALIGN=right><font class='sb_text'>"._QXZ("Dial Link:")." &nbsp; </td><td ALIGN=left><font class='sb_text'><a href=\"#\" onclick=\"NeWManuaLDiaLCalL('CALLLOG',$row[5], $row[6], $lead_id,'','YES');return false;\"> "._QXZ("DIAL")." </a>";
+						$INFOout .= "<tr bgcolor=white><td ALIGN=right><font class='sb_text'>"._QXZ("Dial Link:")." &nbsp; </td><td ALIGN=left><font class='sb_text'><a href=\"#\" onclick=\"NeWManuaLDiaLCalL('CALLLOG',$row[5], $row[6], $lead_id,'','YES','NO');return false;\"> "._QXZ("DIAL")." </a>";
 						}
 					}
 				else
@@ -16843,7 +16846,7 @@ if ($ACTION == 'LEADINFOview')
 							}
 						else
 							{
-							$INFOout .= "<a href=\"#\" onclick=\"NeWManuaLDiaLCalL('CALLLOG',$row[5], $row[20], $lead_id, 'ALT','YES');return false;\"> "._QXZ("DIAL")." </a>";
+							$INFOout .= "<a href=\"#\" onclick=\"NeWManuaLDiaLCalL('CALLLOG',$row[5], $row[20], $lead_id, 'ALT','YES','NO');return false;\"> "._QXZ("DIAL")." </a>";
 							}
 						}
 					else

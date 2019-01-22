@@ -14,6 +14,7 @@
 # 180511-1146 - Changed to use server-specific cid_channels_recent table
 # 181003-1728 - Fix for RINGAGENT calls
 # 190102-1509 - More fixes for RINGAGENT Calls
+# 190121-1505 - Added RA_USER_PHONE On-Hook CID to solve last RINGAGENT issues
 #
 
 # constants
@@ -744,7 +745,7 @@ sub process_channels
 		$call_id = get_valid_callid($channel_ref->{'CallerIDName'},$channel_ref->{'ConnectedLineName'});
 
 		# only need to match local channels to real channels on VDAD and RINGAGENT calls
-		if ( (( $call_id =~ /^V\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d$/ ) && ( $channel_ref->{'ConnectedLineName'} ne "<unknown>" )) || ( $call_id =~ /^RINGAGENT/ ) )
+		if ( (( $call_id =~ /^V\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d$/ ) && ( $channel_ref->{'ConnectedLineName'} ne "<unknown>" )) || ( $call_id =~ /^RINGAGENT|^RA_/ ) )
 			{
 			if ( $channel_ref->{'Channel'} =~ /^Local/ ) 
 				{
@@ -1344,7 +1345,7 @@ sub validate_cid_name
 		( $cid_name =~ /M\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d/) ||	# Manual Dials
 		( $cid_name =~ /V\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d/) ||	# Auto Dials
 		( $cid_name =~ /Y\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d/) ||	# Inbound Calls
-		( $cid_name =~ /^RINGAGENT/ )
+		( $cid_name =~ /^RINGAGENT|^RA_/ )
 	) 
 		{
 		return 1; # if so return 1 for true

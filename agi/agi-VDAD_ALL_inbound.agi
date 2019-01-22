@@ -229,6 +229,7 @@
 # 180521-0736 - Changed closer logs for AGENTDIRECT calls to log destination user
 # 180806-0809 - Added CID callback number validation and change features
 # 180926-2351 - Added _wait_time options for next_agent_call
+# 190121-1505 - Added RA_USER_PHONE On-Hook CID to solve last RINGAGENT issues
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
@@ -3448,6 +3449,11 @@ while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) && ($MCdrop_override
 
 							$PADauto_call_id = sprintf("%011s", $auto_call_id);	while (length($PADauto_call_id) > 11) {chop($PADauto_call_id);}
 							$RINGALLqueryCID = "RINGAGENT$PADauto_call_id";
+							if ($on_hook_cid =~ /RA_AGENT_PHONE/)
+                                                                {
+                                                                $RINGALLqueryCID = "RA_$ARuser[$ragp]_$phone_number";
+                                                                $RINGALLqueryCID = substr( $RINGALLqueryCID, 0, 20);
+                                                                }
 							if ($on_hook_cid =~ /INGROUP/)
 								{$RINGALLqueryCID = "$channel_group";}
 							if ($on_hook_cid =~ /CUSTOMER_PHONE/)

@@ -99,5 +99,9 @@ ALTER TABLE vicidial_inbound_groups MODIFY next_agent_call VARCHAR(40) default '
 
 ALTER TABLE servers ADD external_web_socket_url VARCHAR(255) default '';
 
-UPDATE system_settings SET db_schema_version='1534',db_schema_update_date=NOW() where db_schema_version < 1534;
 
+ALTER TABLE system_settings ADD manual_dial_validation ENUM('0','1','2','3','4') default '0';
+
+ALTER TABLE vicidial_campaigns ADD manual_dial_validation ENUM('Y','N') default 'N';
+
+UPDATE system_settings SET db_schema_version='1534',db_schema_update_date=NOW() where db_schema_version < 1534;

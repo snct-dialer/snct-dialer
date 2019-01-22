@@ -23,6 +23,7 @@
 # 170915-2106 - Initial version based off the orginal AST_manager_listen.pl script
 # 170920-1418 - Fix for issue with recordings beginning with CALLID variable
 # 170930-0923 - Commented out handle_sip_event and handle_cpd_event functions, not needed anymore, to be deleted later
+# 190121-1505 - Added RA_USER_PHONE On-Hook CID to solve last RINGAGENT issues
 #
 
 # constants
@@ -493,7 +494,8 @@ sub validate_cid_name
 		( $cid_name =~ /DC\d\d\d\d\d\dW\d\d\d\d\d\d\d\d\d\dW/ ) ||	# 3way transfers
 		( $cid_name =~ /M\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d/) ||	# Manual Dials
 		( $cid_name =~ /V\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d/) ||	# Auto Dials
-		( $cid_name =~ /Y\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d/)	# Inbound Calls
+		( $cid_name =~ /Y\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d/) ||	# Inbound Calls
+		( $cid_name =~ /^RINGAGENT|^RA_/ )
 	) 
 		{
 		return 1; # if so return 1 for true
