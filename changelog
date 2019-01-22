@@ -347,6 +347,12 @@
   * Add upstream Rev. 3060:
     - Update www/vicidial/call_report_export.php: Added ---ALL--- options for
         Campaigns and In-Groups.
+  * Add upstream Rev. 3061:
+    - Update agi/agi-VDAD_ALL_inbound.agi,
+        bin/AST_manager_listen_AMI2.pl,
+        bin/AST_update_AMI2.pl,
+        www/vicidial/admin.php: Added RA_USER_PHONE On-Hook CID to solve last
+          RINGAGENT issues.
 
 2.25.27
   [Jörg Fring-Fürst]

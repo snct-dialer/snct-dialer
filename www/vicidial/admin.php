@@ -4568,12 +4568,13 @@ else
 # 181005-1738 - Added SYSTEM to Manual Dial Filter campaign options
 # 181116-1133 - Fix for DID server IP de-assignment
 # 190108-0806 - Added manual_dial_validation system and campaign options, update date for 2019
+# 190121-2019 - Added RA_AGENT_PHONE on-hook agent option
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-696a';
-$build = '190108-0806';
+$admin_version = '2.14-697a';
+$build = '190121-2019';
 
 
 $STARTtime = date("U");
@@ -28387,7 +28388,7 @@ if ($ADD==3111)
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("On-Hook Ring Time").": </td><td align=left><input type=text name=on_hook_ring_time size=5 maxlength=4 value=\"$on_hook_ring_time\">$NWB#inbound_groups-on_hook_ring_time$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("On-Hook CID").": </td><td align=left><select size=1 name=on_hook_cid><option value='GENERIC' SELECTED>"._QXZ("GENERIC")."</option><option value='INGROUP'>"._QXZ("INGROUP")."</option><option value='CUSTOMER_PHONE'>"._QXZ("CUSTOMER_PHONE")."</option><option value='CUSTOMER_PHONE_RINGAGENT'>"._QXZ("CUSTOMER_PHONE_RINGAGENT")."</option><option value='CUSTOMER_PHONE_INGROUP'>"._QXZ("CUSTOMER_PHONE_INGROUP")."</option><option value='$on_hook_cid' SELECTED>"._QXZ("$on_hook_cid")."</option></select>$NWB#inbound_groups-on_hook_cid$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("On-Hook CID").": </td><td align=left><select size=1 name=on_hook_cid><option value='GENERIC' SELECTED>"._QXZ("GENERIC")."</option><option value='INGROUP'>"._QXZ("INGROUP")."</option><option value='CUSTOMER_PHONE'>"._QXZ("CUSTOMER_PHONE")."</option><option value='CUSTOMER_PHONE_RINGAGENT'>"._QXZ("CUSTOMER_PHONE_RINGAGENT")."</option><option value='CUSTOMER_PHONE_INGROUP'>"._QXZ("CUSTOMER_PHONE_INGROUP")."</option><option value='RA_AGENT_PHONE'>"._QXZ("RA_AGENT_PHONE")."</option><option value='$on_hook_cid' SELECTED>"._QXZ("$on_hook_cid")."</option></select>$NWB#inbound_groups-on_hook_cid$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("On-Hook CID Number").": </td><td align=left><input type=text name=on_hook_cid_number size=12 maxlength=18 value=\"$on_hook_cid_number\">$NWB#inbound_groups-on_hook_cid_number$NWE</td></tr>\n";
 		
