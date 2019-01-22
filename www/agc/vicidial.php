@@ -1,7 +1,7 @@
 <?php
 # vicidial.php - the web-based version of the astVICIDIAL client application
 # 
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # Other scripts that this application depends on:
 # - vdc_db_query.php: Updates information in the database
@@ -607,10 +607,11 @@
 # 180926-1757 - Fix for rare webform URL issue
 # 181003-1737 - Added external_web_socket_url option
 # 181005-1909 - Added SYSTEM manual_dial_filter option
+# 190108-0833 - Added manual_dial_validation option, updated dates for 2019
 #
 
-$version = '2.14-575c';
-$build = '181005-1909';
+$version = '2.14-576c';
+$build = '190108-0833';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -746,7 +747,7 @@ if ($sl_ct > 0)
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$stmt = "SELECT use_non_latin,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,webroot_writable,timeclock_end_of_day,vtiger_url,enable_vtiger_integration,outbound_autodial_active,enable_second_webform,user_territories_active,static_agent_url,custom_fields_enabled,pllb_grouping_limit,qc_features_active,allow_emails,callback_time_24hour,enable_languages,language_method,meetme_enter_login_filename,meetme_enter_leave3way_filename,enable_third_webform,default_language,active_modules,allow_chats,chat_url,default_phone_code,agent_screen_colors,manual_auto_next,agent_xfer_park_3way,admin_web_directory,agent_script,agent_push_events,agent_push_url,pause_campaigns,allow_phonebook,agent_prefix,agent_logout_link,agentonly_callback_campaign_lock FROM system_settings;";
+$stmt = "SELECT use_non_latin,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,webroot_writable,timeclock_end_of_day,vtiger_url,enable_vtiger_integration,outbound_autodial_active,enable_second_webform,user_territories_active,static_agent_url,custom_fields_enabled,pllb_grouping_limit,qc_features_active,allow_emails,callback_time_24hour,enable_languages,language_method,meetme_enter_login_filename,meetme_enter_leave3way_filename,enable_third_webform,default_language,active_modules,allow_chats,chat_url,default_phone_code,agent_screen_colors,manual_auto_next,agent_xfer_park_3way,admin_web_directory,agent_script,agent_push_events,agent_push_url,pause_campaigns,allow_phonebook,agent_prefix,agent_logout_link,agentonly_callback_campaign_lock,manual_dial_validation FROM system_settings;";
 
 $rslt=mysql_to_mysqli($stmt, $link);
 	if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01001',$VD_login,$server_ip,$session_name,$one_mysql_log);}
@@ -794,6 +795,7 @@ if ($qm_conf_ct > 0)
 	$agent_prefix =						$row[36];
 	$agent_logout_link =				$row[37];
 	$agentonly_callback_campaign_lock = $row[38];
+	$SSmanual_dial_validation =			$row[39];
 	}
 else
 	{
@@ -1955,7 +1957,7 @@ else
 				$HKstatusnames = substr("$HKstatusnames", 0, -1); 
 
 				##### grab the campaign settings
-				$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active,no_hopper_leads_logins,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,xfer_groups,disable_alter_custphone,display_queue_count,manual_dial_filter,agent_clipboard_copy,use_campaign_dnc,three_way_call_cid,dial_method,three_way_dial_prefix,web_form_target,vtiger_screen_login,agent_allow_group_alias,default_group_alias,quick_transfer_button,prepopulate_transfer_preset,view_calls_in_queue,view_calls_in_queue_launch,call_requeue_button,pause_after_each_call,no_hopper_dialing,agent_dial_owner_only,agent_display_dialable_leads,web_form_address_two,agent_select_territories,crm_popup_login,crm_login_address,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,use_custom_cid,scheduled_callbacks_alert,scheduled_callbacks_count,manual_dial_override,blind_monitor_warning,blind_monitor_message,blind_monitor_filename,timer_action_destination,enable_xfer_presets,hide_xfer_number_to_dial,manual_dial_prefix,customer_3way_hangup_logging,customer_3way_hangup_seconds,customer_3way_hangup_action,ivr_park_call,manual_preview_dial,api_manual_dial,manual_dial_call_time_check,my_callback_option,per_call_notes,agent_lead_search,agent_lead_search_method,queuemetrics_phone_environment,auto_pause_precall,auto_pause_precall_code,auto_resume_precall,manual_dial_cid,custom_3way_button_transfer,callback_days_limit,disable_dispo_screen,disable_dispo_status,screen_labels,status_display_fields,pllb_grouping,pllb_grouping_limit,in_group_dial,in_group_dial_select,pause_after_next_call,owner_populate,manual_dial_lead_id,dead_max,dispo_max,pause_max,dead_max_dispo,dispo_max_dispo,max_inbound_calls,manual_dial_search_checkbox,hide_call_log_info,timer_alt_seconds,wrapup_bypass,wrapup_after_hotkey,callback_active_limit,callback_active_limit_override,comments_all_tabs,comments_dispo_screen,comments_callback_screen,qc_comment_history,show_previous_callback,clear_script,manual_dial_search_filter,web_form_address_three,manual_dial_override_field,status_display_ingroup,customer_gone_seconds,agent_display_fields,manual_dial_timeout,manual_auto_next,manual_auto_show,allow_required_fields,dead_to_dispo,agent_xfer_validation,ready_max_logout,callback_display_days,three_way_record_stop,hangup_xfer_record_start,max_inbound_calls_outcome,manual_auto_next_options,agent_screen_time_display,pause_max_dispo,script_top_dispo,routing_initiated_recordings,dead_trigger_seconds,dead_trigger_action,dead_trigger_repeat,dead_trigger_filename,scheduled_callbacks_force_dial,callback_hours_block,callback_display_days,scheduled_callbacks_timezones_container,three_way_volume_buttons FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
+				$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active,no_hopper_leads_logins,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,xfer_groups,disable_alter_custphone,display_queue_count,manual_dial_filter,agent_clipboard_copy,use_campaign_dnc,three_way_call_cid,dial_method,three_way_dial_prefix,web_form_target,vtiger_screen_login,agent_allow_group_alias,default_group_alias,quick_transfer_button,prepopulate_transfer_preset,view_calls_in_queue,view_calls_in_queue_launch,call_requeue_button,pause_after_each_call,no_hopper_dialing,agent_dial_owner_only,agent_display_dialable_leads,web_form_address_two,agent_select_territories,crm_popup_login,crm_login_address,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,use_custom_cid,scheduled_callbacks_alert,scheduled_callbacks_count,manual_dial_override,blind_monitor_warning,blind_monitor_message,blind_monitor_filename,timer_action_destination,enable_xfer_presets,hide_xfer_number_to_dial,manual_dial_prefix,customer_3way_hangup_logging,customer_3way_hangup_seconds,customer_3way_hangup_action,ivr_park_call,manual_preview_dial,api_manual_dial,manual_dial_call_time_check,my_callback_option,per_call_notes,agent_lead_search,agent_lead_search_method,queuemetrics_phone_environment,auto_pause_precall,auto_pause_precall_code,auto_resume_precall,manual_dial_cid,custom_3way_button_transfer,callback_days_limit,disable_dispo_screen,disable_dispo_status,screen_labels,status_display_fields,pllb_grouping,pllb_grouping_limit,in_group_dial,in_group_dial_select,pause_after_next_call,owner_populate,manual_dial_lead_id,dead_max,dispo_max,pause_max,dead_max_dispo,dispo_max_dispo,max_inbound_calls,manual_dial_search_checkbox,hide_call_log_info,timer_alt_seconds,wrapup_bypass,wrapup_after_hotkey,callback_active_limit,callback_active_limit_override,comments_all_tabs,comments_dispo_screen,comments_callback_screen,qc_comment_history,show_previous_callback,clear_script,manual_dial_search_filter,web_form_address_three,manual_dial_override_field,status_display_ingroup,customer_gone_seconds,agent_display_fields,manual_dial_timeout,manual_auto_next,manual_auto_show,allow_required_fields,dead_to_dispo,agent_xfer_validation,ready_max_logout,callback_display_days,three_way_record_stop,hangup_xfer_record_start,max_inbound_calls_outcome,manual_auto_next_options,agent_screen_time_display,pause_max_dispo,script_top_dispo,routing_initiated_recordings,dead_trigger_seconds,dead_trigger_action,dead_trigger_repeat,dead_trigger_filename,scheduled_callbacks_force_dial,callback_hours_block,callback_display_days,scheduled_callbacks_timezones_container,three_way_volume_buttons,manual_dial_validation FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
 				$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01013',$VD_login,$server_ip,$session_name,$one_mysql_log);}
 				if ($DB) {echo "$stmt\n";}
@@ -2116,6 +2118,10 @@ else
 				$callback_display_days =	$row[153];
 				$scheduled_callbacks_timezones_container = $row[154];
 				$three_way_volume_buttons = $row[155];
+				$manual_dial_validation =	$row[156];
+
+				if ($SSmanual_dial_validation == '2') {$manual_dial_validation='Y';}
+				if ($SSmanual_dial_validation == '0') {$manual_dial_validation='N';}
 
 				$scheduled_callbacks_timezones_enabled=0;
 				if ( ($scheduled_callbacks_timezones_container != 'DISABLED') and (strlen($scheduled_callbacks_timezones_container) > 0) )
@@ -4874,6 +4880,11 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var callback_timezone='';
 	var callback_gmt_offset='';
 	var three_way_volume_buttons='<?php echo $three_way_volume_buttons ?>';
+	var manual_dial_validation='<?php echo $manual_dial_validation ?>';
+	var trigger_manual_validation=0;
+	var manual_cancel_skip=0;
+	var MDOalt='';
+	var manual_entry_dial=0;
 	var DiaLControl_auto_HTML = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready','','','','','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_paused.gif") ?>\" border=\"0\" alt=\"You are paused\" /></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause','','','','','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_active.gif") ?>\" border=\"0\" alt=\"You are active\" /></a>";
 	var DiaLControl_auto_HTML_OFF = "<img src=\"./images/<?php echo _QXZ("vdc_LB_blank_OFF.gif") ?>\" border=\"0\" alt=\"pause button disabled\" />";
@@ -6225,15 +6236,15 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								}
 							if (APIDiaL == 'DIALONLY')
 								{
-								ManualDialOnly('MaiNPhonE');
+								ManualDialOnly('MaiNPhonE','NO','0');
 								}
 							if (APIDiaL == 'ALTDIAL')
 								{
-								ManualDialOnly('ALTPhonE');
+								ManualDialOnly('ALTPhonE','NO','0');
 								}
 							if (APIDiaL == 'ADR3DIAL')
 								{
-								ManualDialOnly('AddresS3');
+								ManualDialOnly('AddresS3','NO','0');
 								}
 							if ( (alt_dial_status_display==1) && (APIDiaL == 'FINISH') )
 								{
@@ -7231,7 +7242,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						timer_alt_count=timer_alt_seconds;
 						timer_alt_trigger=1;
 						}
-					var man_status = "<?php echo _QXZ("Dial Alt Phone Number:"); ?> <a href=\"#\" onclick=\"ManualDialOnly('MaiNPhonE','YES')\"><font class=\"preview_text\"><?php echo _QXZ("MAIN PHONE"); ?></font></a> <?php echo _QXZ("or"); ?> <a href=\"#\" onclick=\"ManualDialOnly('ALTPhonE','YES')\"><font class=\"preview_text\"><?php echo _QXZ("ALT PHONE"); ?></font></a> <?php echo _QXZ("or"); ?> <a href=\"#\" onclick=\"ManualDialOnly('AddresS3','YES')\"><font class=\"preview_text\"><?php echo _QXZ("ADDRESS3"); ?></font></a> <?php echo _QXZ("or"); ?> <a href=\"#\" onclick=\"ManualDialAltDonE('YES')\"><font class=\"preview_text_red\"><?php echo _QXZ("FINISH LEAD"); ?></font></a>" + status_display_content; 
+					var man_status = "<?php echo _QXZ("Dial Alt Phone Number:"); ?> <a href=\"#\" onclick=\"ManualDialOnly('MaiNPhonE','YES','0')\"><font class=\"preview_text\"><?php echo _QXZ("MAIN PHONE"); ?></font></a> <?php echo _QXZ("or"); ?> <a href=\"#\" onclick=\"ManualDialOnly('ALTPhonE','YES','0')\"><font class=\"preview_text\"><?php echo _QXZ("ALT PHONE"); ?></font></a> <?php echo _QXZ("or"); ?> <a href=\"#\" onclick=\"ManualDialOnly('AddresS3','YES','0')\"><font class=\"preview_text\"><?php echo _QXZ("ADDRESS3"); ?></font></a> <?php echo _QXZ("or"); ?> <a href=\"#\" onclick=\"ManualDialAltDonE('YES')\"><font class=\"preview_text_red\"><?php echo _QXZ("FINISH LEAD"); ?></font></a>" + status_display_content; 
 					document.getElementById("MainStatuSSpan").innerHTML = man_status;
 					}
 				}
@@ -7779,10 +7790,12 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 // ################################################################################
 // Open page to enter details for a new manual dial lead
-	function NeWManuaLDiaLCalL(TVfast,TVphone_code,TVphone_number,TVlead_id,TVtype,NMCclick)
+	function NeWManuaLDiaLCalL(TVfast,TVphone_code,TVphone_number,TVlead_id,TVtype,NMCclick,MEdial)
 		{
 		if (NMCclick=='YES')
 			{button_click_log = button_click_log + "" + SQLdate + "-----NeWManuaLDiaLCalL---" + TVfast + " " + TVphone_code + " " + TVphone_number + " " + TVlead_id + " " + TVtype + "|";}
+		if (MEdial=='YES')
+			{manual_entry_dial=1;}
 		var move_on=1;
 		if ( (starting_dial_level != 0) && (dial_next_failed < 1) && ( (AutoDialWaiting == 1) || (VD_live_customer_call==1) || (alt_dial_active==1) || (MD_channel_look==1) || (in_lead_preview_state==1) ) )
 			{
@@ -9282,26 +9295,27 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 				if (mdtype == 'ADDR3')
 					{manual_dial_only_type_flag = 'AddresS3';}
 				}
-			if ( (document.vicidial_form.LeadPreview.checked==true) && (active_ingroup_dial.length < 1) )
+			if ( ( (document.vicidial_form.LeadPreview.checked==true) || ( (manual_dial_validation == 'Y') && (manual_entry_dial < 1) ) ) && (active_ingroup_dial.length < 1) )
 				{
 				reselect_preview_dial = 1;
 				in_lead_preview_state = 1;
 				var man_preview = 'YES';
+				trigger_manual_validation=0;
 
 				if (alt_phone_dialing == 1)
 					{
-					var man_status = "Preview the Lead then <a href=\"#\" onclick=\"ManualDialOnly('" + manual_dial_only_type_flag + "','YES')\"><font class=\"preview_text\"> <?php echo _QXZ("DIAL LEAD"); ?></font></a> or <a href=\"#\" onclick=\"ManualDialSkip('YES')\"><font class=\"preview_text\"><?php echo _QXZ("SKIP LEAD"); ?></font></a> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"ManualDialOnly('ALTPhonE','YES')\"><font class=\"preview_text\"><?php echo _QXZ("ALT PHONE"); ?></font></a> or <a href=\"#\" onclick=\"ManualDialOnly('AddresS3','YES')\"><font class=\"preview_text\"><?php echo _QXZ("ADDRESS3"); ?></font></a>"; 
+					var man_status = "Preview the Lead then <a href=\"#\" onclick=\"ManualDialOnly('" + manual_dial_only_type_flag + "','YES','0')\"><font class=\"preview_text\"> <?php echo _QXZ("DIAL LEAD"); ?></font></a> or <a href=\"#\" onclick=\"ManualDialSkip('YES')\"><font class=\"preview_text\"><?php echo _QXZ("SKIP LEAD"); ?></font></a> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"ManualDialOnly('ALTPhonE','YES','0')\"><font class=\"preview_text\"><?php echo _QXZ("ALT PHONE"); ?></font></a> or <a href=\"#\" onclick=\"ManualDialOnly('AddresS3','YES','0')\"><font class=\"preview_text\"><?php echo _QXZ("ADDRESS3"); ?></font></a>"; 
 					if (manual_preview_dial=='PREVIEW_ONLY')
 						{
-						var man_status = "Preview the Lead then <a href=\"#\" onclick=\"ManualDialOnly('" + manual_dial_only_type_flag + "','YES')\"><font class=\"preview_text\"> <?php echo _QXZ("DIAL LEAD"); ?></font></a> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"ManualDialOnly('ALTPhonE','YES')\"><font class=\"preview_text\"><?php echo _QXZ("ALT PHONE"); ?></font></a> or <a href=\"#\" onclick=\"ManualDialOnly('AddresS3','YES')\"><font class=\"preview_text\"><?php echo _QXZ("ADDRESS3"); ?></font></a>"; 
+						var man_status = "Preview the Lead then <a href=\"#\" onclick=\"ManualDialOnly('" + manual_dial_only_type_flag + "','YES','0')\"><font class=\"preview_text\"> <?php echo _QXZ("DIAL LEAD"); ?></font></a> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"ManualDialOnly('ALTPhonE','YES','0')\"><font class=\"preview_text\"><?php echo _QXZ("ALT PHONE"); ?></font></a> or <a href=\"#\" onclick=\"ManualDialOnly('AddresS3','YES','0')\"><font class=\"preview_text\"><?php echo _QXZ("ADDRESS3"); ?></font></a>"; 
 						}
 					}
 				else
 					{
-					var man_status = "Preview the Lead then <a href=\"#\" onclick=\"ManualDialOnly('" + manual_dial_only_type_flag + "','YES')\"><font class=\"preview_text\"> <?php echo _QXZ("DIAL LEAD"); ?></font></a> or <a href=\"#\" onclick=\"ManualDialSkip('YES')\"><font class=\"preview_text\"><?php echo _QXZ("SKIP LEAD"); ?></font></a>"; 
+					var man_status = "Preview the Lead then <a href=\"#\" onclick=\"ManualDialOnly('" + manual_dial_only_type_flag + "','YES','0')\"><font class=\"preview_text\"> <?php echo _QXZ("DIAL LEAD"); ?></font></a> or <a href=\"#\" onclick=\"ManualDialSkip('YES')\"><font class=\"preview_text\"><?php echo _QXZ("SKIP LEAD"); ?></font></a>"; 
 					if (manual_preview_dial=='PREVIEW_ONLY')
 						{
-						var man_status = "<?php echo _QXZ("Preview the Lead then"); ?> <a href=\"#\" onclick=\"ManualDialOnly('" + manual_dial_only_type_flag + "','YES')\"><font class=\"preview_text\"> <?php echo _QXZ("DIAL LEAD"); ?></font></a>"; 
+						var man_status = "<?php echo _QXZ("Preview the Lead then"); ?> <a href=\"#\" onclick=\"ManualDialOnly('" + manual_dial_only_type_flag + "','YES','0')\"><font class=\"preview_text\"> <?php echo _QXZ("DIAL LEAD"); ?></font></a>"; 
 						}
 					}
 				}
@@ -9356,7 +9370,10 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 				if ( (script_recording_delay < 1) && (routing_initiated_recording == 'Y') && ( (LIVE_campaign_recording == 'ALLCALLS') || (LIVE_campaign_recording == 'ALLFORCE') ) )
 					{temp_rir='Y';}
 
-				manDiaLnext_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=manDiaLnextCaLL&conf_exten=" + session_id + "&user=" + user + "&pass=" + pass + "&campaign=" + campaign + "&ext_context=" + ext_context + "&dial_timeout=" + manual_dial_timeout + "&dial_prefix=" + call_prefix + "&campaign_cid=" + call_cid + "&preview=" + man_preview + "&agent_log_id=" + agent_log_id + "&callback_id=" + mdnCBid + "&lead_id=" + mdnBDleadid + "&phone_code=" + mdnDiaLCodE + "&phone_number=" + mdnPhonENumbeR + "&list_id=" + mdnLisT_id + "&stage=" + mdnStagE  + "&use_internal_dnc=" + use_internal_dnc + "&use_campaign_dnc=" + use_campaign_dnc + "&omit_phone_code=" + omit_phone_code + "&manual_dial_filter=" + manual_dial_filter + "&manual_dial_search_filter=" + manual_dial_search_filter + "&vendor_lead_code=" + mdVendorid + "&usegroupalias=" + mdgroupalias + "&account=" + active_group_alias + "&agent_dialed_number=" + agent_dialed_number + "&agent_dialed_type=" + agent_dialed_type + "&vtiger_callback_id=" + vtiger_callback_id + "&dial_method=" + dial_method + "&manual_dial_call_time_check=" + manual_dial_call_time_check + "&qm_extension=" + qm_extension + "&dial_ingroup=" + active_ingroup_dial + "&nocall_dial_flag=" + nocall_dial_flag + "&cid_lock=" + cid_lock + "&last_VDRP_stage=" + last_VDRP_stage + "&routing_initiated_recording=" + temp_rir + "&exten=" + recording_exten + "&recording_filename=" + LIVE_campaign_rec_filename + "&channel=" + channelrec;
+				var temp_manual_dial_validation = manual_dial_validation;
+				if (manual_entry_dial > 0) {temp_manual_dial_validation='N';}
+
+				manDiaLnext_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=manDiaLnextCaLL&conf_exten=" + session_id + "&user=" + user + "&pass=" + pass + "&campaign=" + campaign + "&ext_context=" + ext_context + "&dial_timeout=" + manual_dial_timeout + "&dial_prefix=" + call_prefix + "&campaign_cid=" + call_cid + "&preview=" + man_preview + "&agent_log_id=" + agent_log_id + "&callback_id=" + mdnCBid + "&lead_id=" + mdnBDleadid + "&phone_code=" + mdnDiaLCodE + "&phone_number=" + mdnPhonENumbeR + "&list_id=" + mdnLisT_id + "&stage=" + mdnStagE  + "&use_internal_dnc=" + use_internal_dnc + "&use_campaign_dnc=" + use_campaign_dnc + "&omit_phone_code=" + omit_phone_code + "&manual_dial_filter=" + manual_dial_filter + "&manual_dial_search_filter=" + manual_dial_search_filter + "&vendor_lead_code=" + mdVendorid + "&usegroupalias=" + mdgroupalias + "&account=" + active_group_alias + "&agent_dialed_number=" + agent_dialed_number + "&agent_dialed_type=" + agent_dialed_type + "&vtiger_callback_id=" + vtiger_callback_id + "&dial_method=" + dial_method + "&manual_dial_call_time_check=" + manual_dial_call_time_check + "&qm_extension=" + qm_extension + "&dial_ingroup=" + active_ingroup_dial + "&nocall_dial_flag=" + nocall_dial_flag + "&cid_lock=" + cid_lock + "&last_VDRP_stage=" + last_VDRP_stage + "&routing_initiated_recording=" + temp_rir + "&exten=" + recording_exten + "&recording_filename=" + LIVE_campaign_rec_filename + "&channel=" + channelrec + "&manual_dial_validation=" + manual_dial_validation;
 				//		alert(manual_dial_filter + "\n" +manDiaLnext_query);
 				xmlhttp.open('POST', 'vdc_db_query.php');
 				xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
@@ -9757,7 +9774,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								if (CalL_ScripT_color.length > 1)
 									{document.getElementById("ScriptContents").style.backgroundColor = CalL_ScripT_color;}
 
-								if (document.vicidial_form.LeadPreview.checked==false)
+								if ( (document.vicidial_form.LeadPreview.checked==false) && ( (manual_dial_validation != 'Y') || (manual_entry_dial > 0) ) )
 									{
 									reselect_preview_dial = 0;
 									MD_channel_look=1;
@@ -9893,6 +9910,11 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 										window.open(TEMP_VDIC_web_form_address_three, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
 										webform_click_log('Awebform3');
 										}
+									if ( (document.vicidial_form.LeadPreview.checked==false) && (manual_dial_validation == 'Y') )
+										{
+										trigger_manual_validation=1;
+										document.getElementById("MainStatuSSpan").innerHTML = " <a href=\"#\" onclick=\"showDiv('ManualValidateBox');\"><?php echo _QXZ("Validating Call"); ?></a> ... &nbsp; ";
+										}
 									}
 								}
 							}
@@ -9900,7 +9922,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 					}
 				delete xmlhttp;
 
-				if (document.vicidial_form.LeadPreview.checked==false)
+				if ( (document.vicidial_form.LeadPreview.checked==false) && ( (manual_dial_validation != 'Y') || (manual_entry_dial > 0) ) )
 					{
 					active_group_alias='';
 					cid_choice='';
@@ -10085,6 +10107,9 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 				inbound_post_call_survey='';
 				inbound_survey_participate='';
 				dead_trigger_first_ran=0;
+				manual_cancel_skip=0;
+				trigger_manual_validation=0;
+				manual_entry_dial=0;
 				if (manual_dial_preview < 1)
 					{
 					document.vicidial_form.LeadPreview.checked=false;
@@ -10097,28 +10122,59 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 
 // ################################################################################
+// For manual dial validation only - confirm proper number entered and dial the number
+	function ManualValidateSubmit()
+		{
+		var temp_validate_entry = document.vicidial_form.ManualValidateEntry.value;
+		button_click_log = button_click_log + "" + SQLdate + "-----ManualValidateSubmit---" + temp_validate_entry + " " + document.vicidial_form.ManualValidateNumber.value + " " + manual_dial_validation + "|";
+
+		if ( (temp_validate_entry == document.vicidial_form.ManualValidateNumber.value) && (temp_validate_entry != '') )
+			{
+			// number match, dial the number
+			button_click_log = button_click_log + "" + SQLdate + "-----ManualValidateSuccess---" + temp_validate_entry + " " + document.vicidial_form.ManualValidateNumber.value + " " + "|";
+			hideDiv('ManualValidateBox');
+			manual_cancel_skip=0;
+			ManualDialOnly(MDOalt,'0','1');
+			}
+		else
+			{
+			// number does NOT match, show error
+			alert_box("<?php echo _QXZ("The number you entered does not match:"); ?>\n" + temp_validate_entry + " - " + document.vicidial_form.ManualValidateNumber.value);
+			button_click_log = button_click_log + "" + SQLdate + "-----ManualValidateFailed---" + temp_validate_entry + " " + document.vicidial_form.ManualValidateNumber.value + " " + "|";
+			}
+		}
+
+
+// ################################################################################
+// For manual dial validation only - cancel validation screen, skip lead
+	function ManualValidateCancel()
+		{
+		button_click_log = button_click_log + "" + SQLdate + "-----ManualValidateCancel---" + document.vicidial_form.ManualValidateNumber.value + " " + manual_dial_validation + "|";
+
+		hideDiv('ManualValidateBox');
+
+		if (manual_cancel_skip > 0)
+			{
+			button_click_log = button_click_log + "" + SQLdate + "-----ManualValidateDNskip---" + manual_cancel_skip + " " + manual_dial_validation + "|";
+			manual_cancel_skip=0;
+			ManualDialSkip('NO');
+			}
+		}
+
+
+// ################################################################################
 // Send the Manual Dial Only - dial the previewed lead
-	function ManualDialOnly(taskaltnum,MDOclick)
+	function ManualDialOnly(taskaltnum,MDOclick,MDvalidation)
 		{
 		if (MDOclick=='YES')
-			{button_click_log = button_click_log + "" + SQLdate + "-----ManualDialOnly---" + taskaltnum + "|";}
-		UpdatESettingS();
-		in_lead_preview_state=0;
-		inOUT = 'OUT';
-		alt_dial_status_display = 0;
-		all_record = 'NO';
-		all_record_count=0;
-		document.vicidial_form.uniqueid.value='';
-		var usegroupalias=0;
+			{button_click_log = button_click_log + "" + SQLdate + "-----ManualDialOnly---" + taskaltnum + " " + manual_dial_validation + " " + MDvalidation + "|";}
+
 		if (taskaltnum == 'ALTPhonE')
 			{
 			var manDiaLonly_num = document.vicidial_form.alt_phone.value;
 			lead_dial_number = document.vicidial_form.alt_phone.value;
 			dialed_number = lead_dial_number;
 			dialed_label = 'ALT';
-			WebFormRefresH('');
-			WebFormTwoRefresH('');
-			WebFormThreeRefresH('');
 			}
 		else
 			{
@@ -10128,9 +10184,6 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 				lead_dial_number = document.vicidial_form.address3.value;
 				dialed_number = lead_dial_number;
 				dialed_label = 'ADDR3';
-				WebFormRefresH('');
-				WebFormTwoRefresH('');
-				WebFormThreeRefresH('');
 				}
 			else
 				{
@@ -10138,227 +10191,239 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 				lead_dial_number = document.vicidial_form.phone_number.value;
 				dialed_number = lead_dial_number;
 				dialed_label = 'MAIN';
-				WebFormRefresH('');
-				WebFormTwoRefresH('');
-				WebFormThreeRefresH('');
 				}
 			}
-		if (dialed_label == 'ALT')
-            {document.getElementById("CusTInfOSpaN").innerHTML = " <b> <?php echo _QXZ("ALT DIAL NUMBER: ALT"); ?> </b>";}
-		if (dialed_label == 'ADDR3')
-            {document.getElementById("CusTInfOSpaN").innerHTML = " <b> <?php echo _QXZ("ALT DIAL NUMBER: ADDRESS3"); ?> </b>";}
-		last_mdtype = dialed_label;
-		var REGalt_dial = new RegExp("X","g");
-		if (dialed_label.match(REGalt_dial))
+
+		if ( (MDvalidation=='0') && (manual_dial_validation == 'Y') && (manual_entry_dial < 1) )
 			{
-            document.getElementById("CusTInfOSpaN").innerHTML = " <b> <?php echo _QXZ("ALT DIAL NUMBER:"); ?> " + dialed_label + "</b>";
-			document.getElementById("EAcommentsBoxA").innerHTML = "<b><?php echo _QXZ("Phone Code and Number:"); ?> </b>" + EAphone_code + " " + EAphone_number;
-
-			var EAactive_link = '';
-			if (EAalt_phone_active == 'Y') 
-				{EAactive_link = "<a href=\"#\" onclick=\"alt_phone_change('" + EAphone_number + "','" + EAalt_phone_count + "','" + document.vicidial_form.lead_id.value + "','N');\">Change this phone number to INACTIVE</a>";}
-			else
-				{EAactive_link = "<a href=\"#\" onclick=\"alt_phone_change('" + EAphone_number + "','" + EAalt_phone_count + "','" + document.vicidial_form.lead_id.value + "','Y');\">Change this phone number to ACTIVE</a>";}
-
-            document.getElementById("EAcommentsBoxB").innerHTML = "<b><?php echo _QXZ("Active:"); ?> </b>" + EAalt_phone_active + "<br />" + EAactive_link;
-			document.getElementById("EAcommentsBoxC").innerHTML = "<b><?php echo _QXZ("Alt Count:"); ?> </b>" + EAalt_phone_count;
-            document.getElementById("EAcommentsBoxD").innerHTML = "<b><?php echo _QXZ("Notes:"); ?> </b><br />" + EAalt_phone_notes;
-			showDiv('EAcommentsBox');
+			// number not validated yet, bring up validation screen for agent to enter number
+			MDOalt = taskaltnum;
+			document.vicidial_form.ManualValidateNumber.value = dialed_number;
+			document.vicidial_form.ManualValidateEntry.value = '';
+			document.getElementById("ManualValidateContent").innerHTML = dialed_number;
+			showDiv('ManualValidateBox');
 			}
-
-		var xmlhttp=false;
-		/*@cc_on @*/
-		/*@if (@_jscript_version >= 5)
-		// JScript gives us Conditional compilation, we can cope with old IE versions.
-		// and security blocked creation of the objects.
-		 try {
-		  xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
-		 } catch (e) {
-		  try {
-		   xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-		  } catch (E) {
-		   xmlhttp = false;
-		  }
-		 }
-		@end @*/
-		if (!xmlhttp && typeof XMLHttpRequest!='undefined')
+		else
 			{
-			xmlhttp = new XMLHttpRequest();
-			}
-		if (xmlhttp) 
-			{ 
-			if (cid_choice.length > 3) 
-				{
-				var call_cid = cid_choice;
-				usegroupalias=1;
-				}
-			else 
-				{
-				var call_cid = campaign_cid;
-				if (manual_dial_cid == 'AGENT_PHONE')
-					{
-					cid_lock=1;
-					call_cid = outbound_cid;
-					}
-				}
-			if (prefix_choice.length > 0)
-				{var call_prefix = prefix_choice;}
-			else
-				{var call_prefix = manual_dial_prefix;}
+			UpdatESettingS();
+			in_lead_preview_state=0;
+			inOUT = 'OUT';
+			alt_dial_status_display = 0;
+			all_record = 'NO';
+			all_record_count=0;
+			document.vicidial_form.uniqueid.value='';
+			var usegroupalias=0;
+			WebFormRefresH('');
+			WebFormTwoRefresH('');
+			WebFormThreeRefresH('');
 
-			var channelrec = "Local/" + conf_silent_prefix + '' + session_id + "@" + ext_context;
-			var temp_rir='N';
-			if ( (script_recording_delay < 1) && (routing_initiated_recording == 'Y') && ( (LIVE_campaign_recording == 'ALLCALLS') || (LIVE_campaign_recording == 'ALLFORCE') ) )
-				{temp_rir='Y';}
+			if (dialed_label == 'ALT')
+				{document.getElementById("CusTInfOSpaN").innerHTML = " <b> <?php echo _QXZ("ALT DIAL NUMBER: ALT"); ?> </b>";}
+			if (dialed_label == 'ADDR3')
+				{document.getElementById("CusTInfOSpaN").innerHTML = " <b> <?php echo _QXZ("ALT DIAL NUMBER: ADDRESS3"); ?> </b>";}
+			last_mdtype = dialed_label;
+			var REGalt_dial = new RegExp("X","g");
+			if (dialed_label.match(REGalt_dial))
+				{
+				document.getElementById("CusTInfOSpaN").innerHTML = " <b> <?php echo _QXZ("ALT DIAL NUMBER:"); ?> " + dialed_label + "</b>";
+				document.getElementById("EAcommentsBoxA").innerHTML = "<b><?php echo _QXZ("Phone Code and Number:"); ?> </b>" + EAphone_code + " " + EAphone_number;
 
-			manDiaLonly_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=manDiaLonly&conf_exten=" + session_id + "&user=" + user + "&pass=" + pass + "&lead_id=" + document.vicidial_form.lead_id.value + "&phone_number=" + manDiaLonly_num + "&phone_code=" + document.vicidial_form.phone_code.value + "&campaign=" + campaign + "&ext_context=" + ext_context + "&dial_timeout=" + manual_dial_timeout + "&dial_prefix=" + call_prefix + "&campaign_cid=" + call_cid + "&omit_phone_code=" + omit_phone_code + "&usegroupalias=" + usegroupalias + "&account=" + active_group_alias + "&agent_dialed_number=" + dialed_number + "&agent_dialed_type=" + dialed_label + "&dial_method=" + dial_method + "&agent_log_id=" + agent_log_id + "&security=" + document.vicidial_form.security_phrase.value + "&qm_extension=" + qm_extension + "&old_CID=" + LastCallCID + "&cid_lock=" + cid_lock + "&routing_initiated_recording=" + temp_rir + "&exten=" + recording_exten + "&recording_filename=" + LIVE_campaign_rec_filename + "&channel=" + channelrec + "&vendor_lead_code=" + document.vicidial_form.search_vendor_lead_code.value + "&state=" + encodeURIComponent(document.vicidial_form.state.value);
-			xmlhttp.open('POST', 'vdc_db_query.php'); 
-			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(manDiaLonly_query);
-			xmlhttp.onreadystatechange = function() 
+				var EAactive_link = '';
+				if (EAalt_phone_active == 'Y') 
+					{EAactive_link = "<a href=\"#\" onclick=\"alt_phone_change('" + EAphone_number + "','" + EAalt_phone_count + "','" + document.vicidial_form.lead_id.value + "','N');\">Change this phone number to INACTIVE</a>";}
+				else
+					{EAactive_link = "<a href=\"#\" onclick=\"alt_phone_change('" + EAphone_number + "','" + EAalt_phone_count + "','" + document.vicidial_form.lead_id.value + "','Y');\">Change this phone number to ACTIVE</a>";}
+
+				document.getElementById("EAcommentsBoxB").innerHTML = "<b><?php echo _QXZ("Active:"); ?> </b>" + EAalt_phone_active + "<br />" + EAactive_link;
+				document.getElementById("EAcommentsBoxC").innerHTML = "<b><?php echo _QXZ("Alt Count:"); ?> </b>" + EAalt_phone_count;
+				document.getElementById("EAcommentsBoxD").innerHTML = "<b><?php echo _QXZ("Notes:"); ?> </b><br />" + EAalt_phone_notes;
+				showDiv('EAcommentsBox');
+				}
+
+			var xmlhttp=false;
+			/*@cc_on @*/
+			/*@if (@_jscript_version >= 5)
+			// JScript gives us Conditional compilation, we can cope with old IE versions.
+			// and security blocked creation of the objects.
+			 try {
+			  xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+			 } catch (e) {
+			  try {
+			   xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+			  } catch (E) {
+			   xmlhttp = false;
+			  }
+			 }
+			@end @*/
+			if (!xmlhttp && typeof XMLHttpRequest!='undefined')
+				{
+				xmlhttp = new XMLHttpRequest();
+				}
+			if (xmlhttp) 
 				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+				if (cid_choice.length > 3) 
 					{
-					var MDOnextResponse = null;
-			//		alert(manDiaLonly_query);
-			//		alert(xmlhttp.responseText);
-					MDOnextResponse = xmlhttp.responseText;
-
-					var MDOnextResponse_array=MDOnextResponse.split("\n");
-					MDnextCID =		MDOnextResponse_array[0];
-					LastCallCID =	MDOnextResponse_array[0];
-					if (agent_log_id.length > 0) {previous_agent_log_id = agent_log_id;}
-					agent_log_id =	MDOnextResponse_array[1];
-					if (MDnextCID == " CALL NOT PLACED")
+					var call_cid = cid_choice;
+					usegroupalias=1;
+					}
+				else 
+					{
+					var call_cid = campaign_cid;
+					if (manual_dial_cid == 'AGENT_PHONE')
 						{
-						alert_box("<?php echo _QXZ("call was not placed, there was an error:"); ?>\n" + MDOnextResponse);
-						button_click_log = button_click_log + "" + SQLdate + "-----DialOnlyFailed---" + MDOnextResponse + " " + "|";
+						cid_lock=1;
+						call_cid = outbound_cid;
 						}
-					else
+					}
+				if (prefix_choice.length > 0)
+					{var call_prefix = prefix_choice;}
+				else
+					{var call_prefix = manual_dial_prefix;}
+
+				var channelrec = "Local/" + conf_silent_prefix + '' + session_id + "@" + ext_context;
+				var temp_rir='N';
+				if ( (script_recording_delay < 1) && (routing_initiated_recording == 'Y') && ( (LIVE_campaign_recording == 'ALLCALLS') || (LIVE_campaign_recording == 'ALLFORCE') ) )
+					{temp_rir='Y';}
+
+				manDiaLonly_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=manDiaLonly&conf_exten=" + session_id + "&user=" + user + "&pass=" + pass + "&lead_id=" + document.vicidial_form.lead_id.value + "&phone_number=" + manDiaLonly_num + "&phone_code=" + document.vicidial_form.phone_code.value + "&campaign=" + campaign + "&ext_context=" + ext_context + "&dial_timeout=" + manual_dial_timeout + "&dial_prefix=" + call_prefix + "&campaign_cid=" + call_cid + "&omit_phone_code=" + omit_phone_code + "&usegroupalias=" + usegroupalias + "&account=" + active_group_alias + "&agent_dialed_number=" + dialed_number + "&agent_dialed_type=" + dialed_label + "&dial_method=" + dial_method + "&agent_log_id=" + agent_log_id + "&security=" + document.vicidial_form.security_phrase.value + "&qm_extension=" + qm_extension + "&old_CID=" + LastCallCID + "&cid_lock=" + cid_lock + "&routing_initiated_recording=" + temp_rir + "&exten=" + recording_exten + "&recording_filename=" + LIVE_campaign_rec_filename + "&channel=" + channelrec + "&vendor_lead_code=" + document.vicidial_form.search_vendor_lead_code.value + "&state=" + encodeURIComponent(document.vicidial_form.state.value);
+				xmlhttp.open('POST', 'vdc_db_query.php'); 
+				xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
+				xmlhttp.send(manDiaLonly_query);
+				xmlhttp.onreadystatechange = function() 
+					{ 
+					if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
 						{
-						LasTCID =	MDOnextResponse_array[0];
-						MD_channel_look=1;
-						custchannellive=1;
+						var MDOnextResponse = null;
+				//		alert(manDiaLonly_query);
+				//		alert(xmlhttp.responseText);
+						MDOnextResponse = xmlhttp.responseText;
 
-						var dispnum = manDiaLonly_num;
-						var status_display_number = phone_number_format(dispnum);
-
-						if (alt_dial_status_display=='0')
+						var MDOnextResponse_array=MDOnextResponse.split("\n");
+						MDnextCID =		MDOnextResponse_array[0];
+						LastCallCID =	MDOnextResponse_array[0];
+						if (agent_log_id.length > 0) {previous_agent_log_id = agent_log_id;}
+						agent_log_id =	MDOnextResponse_array[1];
+						if (MDnextCID == " CALL NOT PLACED")
 							{
-							var status_display_content='';
-							if (status_display_NAME > 0) {status_display_content = status_display_content + " <?php echo _QXZ("Name:"); ?> " + document.vicidial_form.first_name.value + " " + document.vicidial_form.last_name.value;}
-							if (status_display_CALLID > 0) {status_display_content = status_display_content + " <?php echo _QXZ("UID:"); ?> " + MDnextCID;}
-							if (status_display_LEADID > 0) {status_display_content = status_display_content + " <?php echo _QXZ("Lead:"); ?> " + document.vicidial_form.lead_id.value;}
-							if (status_display_LISTID > 0) {status_display_content = status_display_content + " <?php echo _QXZ("List:"); ?> " + document.vicidial_form.list_id.value;}
-
-							document.getElementById("MainStatuSSpan").innerHTML = " <?php echo _QXZ("Calling:"); ?> " + status_display_number + " " + status_display_content + " &nbsp; <?php echo _QXZ("Waiting for Ring..."); ?>";
-							
-                            document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup('','','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_hangupcustomer.gif"); ?>\" border=\"0\" alt=\"Hangup Customer\" /></a>";
+							alert_box("<?php echo _QXZ("call was not placed, there was an error:"); ?>\n" + MDOnextResponse);
+							button_click_log = button_click_log + "" + SQLdate + "-----DialOnlyFailed---" + MDOnextResponse + " " + "|";
 							}
-						if ( (LIVE_campaign_recording == 'ALLCALLS') || (LIVE_campaign_recording == 'ALLFORCE') )
-							{all_record = 'YES';}
-
-						if (CalL_ScripT_color.length > 1)
-							{document.getElementById("ScriptContents").style.backgroundColor = CalL_ScripT_color;}
-						if (view_scripts == 1)
+						else
 							{
-							if (campaign_script.length > 0)
-								{
-								var SCRIPT_web_form = 'http://127.0.0.1/testing.php';
-								var TEMP_SCRIPT_web_form = URLDecode(SCRIPT_web_form,'YES','DEFAULT','1');
+							LasTCID =	MDOnextResponse_array[0];
+							MD_channel_look=1;
+							custchannellive=1;
 
-								if ( (script_recording_delay > 0) && ( (LIVE_campaign_recording == 'ALLCALLS') || (LIVE_campaign_recording == 'ALLFORCE') ) )
+							var dispnum = manDiaLonly_num;
+							var status_display_number = phone_number_format(dispnum);
+
+							if (alt_dial_status_display=='0')
+								{
+								var status_display_content='';
+								if (status_display_NAME > 0) {status_display_content = status_display_content + " <?php echo _QXZ("Name:"); ?> " + document.vicidial_form.first_name.value + " " + document.vicidial_form.last_name.value;}
+								if (status_display_CALLID > 0) {status_display_content = status_display_content + " <?php echo _QXZ("UID:"); ?> " + MDnextCID;}
+								if (status_display_LEADID > 0) {status_display_content = status_display_content + " <?php echo _QXZ("Lead:"); ?> " + document.vicidial_form.lead_id.value;}
+								if (status_display_LISTID > 0) {status_display_content = status_display_content + " <?php echo _QXZ("List:"); ?> " + document.vicidial_form.list_id.value;}
+
+								document.getElementById("MainStatuSSpan").innerHTML = " <?php echo _QXZ("Calling:"); ?> " + status_display_number + " " + status_display_content + " &nbsp; <?php echo _QXZ("Waiting for Ring..."); ?>";
+								
+								document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup('','','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_hangupcustomer.gif"); ?>\" border=\"0\" alt=\"Hangup Customer\" /></a>";
+								}
+							if ( (LIVE_campaign_recording == 'ALLCALLS') || (LIVE_campaign_recording == 'ALLFORCE') )
+								{all_record = 'YES';}
+
+							if (CalL_ScripT_color.length > 1)
+								{document.getElementById("ScriptContents").style.backgroundColor = CalL_ScripT_color;}
+							if (view_scripts == 1)
+								{
+								if (campaign_script.length > 0)
 									{
-									delayed_script_load = 'YES';
-									RefresHScript('CLEAR');
+									var SCRIPT_web_form = 'http://127.0.0.1/testing.php';
+									var TEMP_SCRIPT_web_form = URLDecode(SCRIPT_web_form,'YES','DEFAULT','1');
+
+									if ( (script_recording_delay > 0) && ( (LIVE_campaign_recording == 'ALLCALLS') || (LIVE_campaign_recording == 'ALLFORCE') ) )
+										{
+										delayed_script_load = 'YES';
+										RefresHScript('CLEAR');
+										}
+									else
+										{
+										load_script_contents('ScriptContents','');
+										}
 									}
 								else
 									{
-									load_script_contents('ScriptContents','');
+									RefresHScript('','YES');
 									}
 								}
-							else
-								{
-								RefresHScript('','YES');
-								}
-							}
 
-						if (custom_fields_enabled > 0)
-							{
-							// commented out because it is already loaded and will reset the form
-						//	FormContentsLoad();
-							}
-						// JOEJ 082812 - new for email feature
-						// Will populate email tab in case this is a customer with an email record
-						if (email_enabled > 0)
-							{
-							EmailContentsLoad();
-							}
-						// JOEJ 060514 - new for email feature
-						// Will populate chat tab in case this is a customer awaiting a chat with an agent
-						if (chat_enabled > 0)
-							{
-							CustomerChatContentsLoad();
-							}
-							
-						if (allow_phonebook > 0) {
-							PhoneBookContentsLoad();
-						}
-						if (get_call_launch == 'SCRIPT')
-							{
-							if (delayed_script_load == 'YES')
+							if (custom_fields_enabled > 0)
 								{
-								load_script_contents('ScriptContents','');
+								// commented out because it is already loaded and will reset the form
+							//	FormContentsLoad();
 								}
-							ScriptPanelToFront();
-							}
-						if (get_call_launch == 'FORM')
-							{
-							FormPanelToFront();
-							}
-						if (get_call_launch == 'EMAIL')
-							{
-							EmailPanelToFront();
-							}
-						if (get_call_launch == 'CHAT')
-							{
-							CustomerChatPanelToFront();
-							}
-
-						if (get_call_launch == 'PHONEBOOK')
-							{
-							PhoneBookPanelToFront();
-							}
-						if (get_call_launch == 'WEBFORM')
-							{
-							window.open(TEMP_VDIC_web_form_address, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
-							webform_click_log('Awebform1');
-							}
-						if (get_call_launch == 'WEBFORMTWO')
-							{
-							window.open(TEMP_VDIC_web_form_address_two, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
-							webform_click_log('Awebform2');
-							}
-						if (get_call_launch == 'WEBFORMTHREE')
-							{
-							window.open(TEMP_VDIC_web_form_address_three, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
-							webform_click_log('Awebform3');
+							// JOEJ 082812 - new for email feature
+							// Will populate email tab in case this is a customer with an email record
+							if (email_enabled > 0)
+								{
+								EmailContentsLoad();
+								}
+							// JOEJ 060514 - new for email feature
+							// Will populate chat tab in case this is a customer awaiting a chat with an agent
+							if (chat_enabled > 0)
+								{
+								CustomerChatContentsLoad();
+								}
+							if (get_call_launch == 'SCRIPT')
+								{
+								if (delayed_script_load == 'YES')
+									{
+									load_script_contents('ScriptContents','');
+									}
+								ScriptPanelToFront();
+								}
+							if (get_call_launch == 'FORM')
+								{
+								FormPanelToFront();
+								}
+							if (get_call_launch == 'EMAIL')
+								{
+								EmailPanelToFront();
+								}
+							if (get_call_launch == 'CHAT')
+								{
+								CustomerChatPanelToFront();
+								}
+							if (get_call_launch == 'WEBFORM')
+								{
+								window.open(TEMP_VDIC_web_form_address, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
+								webform_click_log('Awebform1');
+								}
+							if (get_call_launch == 'WEBFORMTWO')
+								{
+								window.open(TEMP_VDIC_web_form_address_two, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
+								webform_click_log('Awebform2');
+								}
+							if (get_call_launch == 'WEBFORMTHREE')
+								{
+								window.open(TEMP_VDIC_web_form_address_three, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
+								webform_click_log('Awebform3');
+								}
 							}
 						}
 					}
+				delete xmlhttp;
+				active_group_alias='';
+				cid_choice='';
+				prefix_choice='';
+				agent_dialed_number='';
+				agent_dialed_type='';
+			//	CalL_ScripT_id='';
+			//	CalL_ScripT_color='';
+				xfer_agent_selected=0;
 				}
-			delete xmlhttp;
-			active_group_alias='';
-			cid_choice='';
-			prefix_choice='';
-			agent_dialed_number='';
-			agent_dialed_type='';
-		//	CalL_ScripT_id='';
-		//	CalL_ScripT_color='';
-			xfer_agent_selected=0;
 			}
 		}
-
 
 // ################################################################################
 // Set the client to READY and start looking for calls (VDADready, VDADpause)
@@ -12846,13 +12911,13 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						reselect_alt_dial = 1;
 						if (altdispo == 'ALTPH2')
 							{
-							ManualDialOnly('ALTPhonE');
+							ManualDialOnly('ALTPhonE','NO','0');
 							}
 						else
 							{
 							if (altdispo == 'ADDR3')
 								{
-								ManualDialOnly('AddresS3');
+								ManualDialOnly('AddresS3','NO','0');
 								}
 							else
 								{
@@ -12888,13 +12953,13 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						reselect_alt_dial = 1;
 						if (altdispo == 'ALTPH2')
 							{
-							ManualDialOnly('ALTPhonE');
+							ManualDialOnly('ALTPhonE','NO','0');
 							}
 						else
 							{
 							if (altdispo == 'ADDR3')
 								{
-								ManualDialOnly('AddresS3');
+								ManualDialOnly('AddresS3','NO','0');
 								}
 							else
 								{
@@ -12936,6 +13001,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 				ShoWTransferMain('OFF');
 				}
 			}
+		manual_entry_dial=0;
 		}
 
 
@@ -14046,6 +14112,9 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 					inbound_post_call_survey='';
 					inbound_survey_participate='';
 					dead_trigger_first_ran=0;
+					manual_cancel_skip=0;
+					trigger_manual_validation=0;
+					manual_entry_dial=0;
 					if (manual_auto_next > 0)
 						{manual_auto_next_trigger=1;   manual_auto_next_count=manual_auto_next;}
 					if (agent_display_fields.match(adfREGentry_date))
@@ -17066,6 +17135,7 @@ function phone_number_format(formatphone) {
 // Hide manual dial form
 	function ManualDialHide()
 		{
+		manual_entry_dial=0;
 		button_click_log = button_click_log + "" + SQLdate + "-----ManualDialHide---|";
 		if (auto_resume_precall == 'Y')
 			{
@@ -17885,6 +17955,7 @@ function phone_number_format(formatphone) {
 			hideDiv('AlertBox');
 		//	hideDiv('NothingBox2');
 			hideDiv('ScriptTopBGspan');
+			hideDiv('ManualValidateBox');
 			hideDiv('CBcommentsBox');
 			hideDiv('EAcommentsBox');
 			hideDiv('EAcommentsMinBox');
@@ -18302,9 +18373,9 @@ function phone_number_format(formatphone) {
 						timer_alt_count=timer_alt_seconds;
 						document.getElementById("timer_alt_display").innerHTML = '';
 						if (alt_number_dialing == 'SELECTED_TIMER_ALT')
-							{ManualDialOnly('ALTPhonE');}
+							{ManualDialOnly('ALTPhonE','NO','0');}
 						if (alt_number_dialing == 'SELECTED_TIMER_ADDR3')
-							{ManualDialOnly('AddresS3');}
+							{ManualDialOnly('AddresS3','NO','0');}
 						}
 					else
 						{
@@ -18335,7 +18406,13 @@ function phone_number_format(formatphone) {
 							manual_auto_next_count--;
 							}
 						}
-					}				
+					}
+				if (trigger_manual_validation > 0)
+					{
+					manual_cancel_skip=1;
+					trigger_manual_validation=0;
+					ManualDialOnly('','YES','0');
+					}
 				if (VD_live_customer_call==1)
 					{
 					VD_live_call_secondS++;
@@ -20014,7 +20091,7 @@ $zi=2;
 <span style="position:absolute;left:0px;top:<?php echo $DBheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="debugbottomspan"></span>
 
 <span style="position:absolute;left:300px;top:<?php echo $MBheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="DiaLlOgButtonspan">
-<span id="ManuaLDiaLButtons"><font class="body_text"><span id="MDstatusSpan"><a href="#" onclick="NeWManuaLDiaLCalL('NO','','','','','YES');return false;"><?php echo _QXZ("MANUAL DIAL"); ?></a></span>&nbsp; &nbsp; <a href="#" onclick="NeWManuaLDiaLCalL('FAST','','','','','YES');return false;"><?php echo _QXZ("FAST DIAL"); ?></a></span>&nbsp; &nbsp; </font>
+<span id="ManuaLDiaLButtons"><font class="body_text"><span id="MDstatusSpan"><a href="#" onclick="NeWManuaLDiaLCalL('NO','','','','','YES','YES');return false;"><?php echo _QXZ("MANUAL DIAL"); ?></a></span>&nbsp; &nbsp; <a href="#" onclick="NeWManuaLDiaLCalL('FAST','','','','','YES','YES');return false;"><?php echo _QXZ("FAST DIAL"); ?></a></span>&nbsp; &nbsp; </font>
 <span id="CallLogButtons"><font class="body_text"><span id="CallLogLinkSpan"><a href="#" onclick="VieWCalLLoG();return false;"><?php echo _QXZ("VIEW CALL LOG"); ?></a></span><br /></font></span>
 </span>
 
@@ -21093,6 +21170,27 @@ if ($agent_display_dialable_leads > 0)
 <span style="position:absolute;left:0px;top:0px;z-index:99;" id="ScriptTopBGspan">
     <table border="0" bgcolor="#FFFFFF" width="<?php echo $CAwidth ?>px" height="<?php echo $WRheight ?>px"><tr><td align="center"><font class="sd_text"> &nbsp; </font><br />
     </td></tr></table>
+</span>
+
+<span style="position:absolute;left:0px;top:0px;z-index:<?php $zi++; echo $zi ?>;" id="ManualValidateBox">
+	<table border="0" bgcolor="#CCFFCC" width="<?php echo $CAwidth ?>px" height="<?php echo $WRheight ?>px"><tr><td align="center" valign="top"> <font class="sd_text"><?php echo _QXZ("Manual Dial Validation"); ?>:</font><br /><br /><font class="sh_text">
+	<?php
+	if ($webphone_location == 'bar')
+		{echo "<br /><img src=\"./images/"._QXZ("pixel.gif")."\" width=\"1px\" height=\"".$webphone_height."px\" /><br />\n";}
+	?>
+	<span id="ManualValidateContent"> <?php echo _QXZ("Number to be dialed"); ?> </span>
+	<br />
+	<input type="hidden" name="ManualValidateNumber" id="ManualValidateNumber" value="" />
+
+	<br /><br />
+	<?php echo _QXZ("Enter number to dial to confirm"); ?>: <input type="text" size="20" name="ManualValidateEntry" id="ManualValidateEntry" maxlength="20" class="cust_form" value="" />
+	<br /><br />
+
+	<font size="3" face="Arial, Helvetica, sans-serif" style="BACKGROUND-COLOR: #FFFFCC"><b><a href="#" onclick="ManualValidateSubmit();return false;"><?php echo _QXZ("Submit"); ?></a></font> &nbsp; &nbsp; 
+	<font size="3" face="Arial, Helvetica, sans-serif" style="BACKGROUND-COLOR: #FFFFCC"><b><a href="#" onclick="ManualValidateCancel();return false;"><?php echo _QXZ("Cancel"); ?></a></font>
+
+	<br /><br /> &nbsp;</font>
+	</td></tr></table>
 </span>
 
 

@@ -371,6 +371,10 @@ OTHER CHANGES:
 103. Added lead_callback_info Non-Agent API function, it outputs scheduled 
 	callback data for a specific lead
 
+104. Added Manual Dial Validation campaign and system settings, forces agent to
+	manually enter in the phone number before a call is placed. Does not 
+	affect 3way calls or transfers.
+
 
 
 
