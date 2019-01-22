@@ -5,7 +5,7 @@
 # and/or vicidial_closer_log information by status, list_id and date range. 
 # downloads to a flat text file that is tab delimited
 #
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -54,6 +54,7 @@
 # 161122-1136 - Added code to check for recordings in archived/non-archived tables if none found
 # 170409-1547 - Added IP List validation code
 # 180418-1555 - Fix for missing call notes on inbound calls
+# 190116-2116 - Added ---ALL--- options for Campaigns and In-Groups
 #
 
 $startMS = microtime();
@@ -423,9 +424,17 @@ if ($run_export > 0)
 		}
 	else
 		{
-		$campaign_SQL = preg_replace('/,$/i', '',$campaign_SQL);
-		$campaign_SQL = "and vl.campaign_id IN($campaign_SQL)";
-		$RUNcampaign++;
+		if (preg_match("/\-\-ALL\-\-/",$campaign_string) )
+			{
+			$campaign_SQL = "";
+			$RUNcampaign++;
+			}
+		else
+			{
+			$campaign_SQL = preg_replace('/,$/i', '',$campaign_SQL);
+			$campaign_SQL = "and vl.campaign_id IN($campaign_SQL)";
+			$RUNcampaign++;
+			}
 		}
 
 	$i=0;
@@ -443,9 +452,17 @@ if ($run_export > 0)
 		}
 	else
 		{
-		$group_SQL = preg_replace('/,$/i', '',$group_SQL);
-		$group_SQL = "and vl.campaign_id IN($group_SQL)";
-		$RUNgroup++;
+		if ( (preg_match("/\-\-ALL\-\-/",$group_string) ) or ($group_ct < 1) )
+			{
+			$group_SQL = "";
+			$RUNgroup++;
+			}
+		else
+			{
+			$group_SQL = preg_replace('/,$/i', '',$group_SQL);
+			$group_SQL = "and vl.campaign_id IN($group_SQL)";
+			$RUNgroup++;
+			}
 		}
 
 	$i=0;
@@ -556,6 +573,7 @@ if ($run_export > 0)
 		if ( ($outbound_to_print < 1) and ($RUNgroup < 1) )
 			{
 			echo _QXZ("There are no outbound calls during this time period for these parameters")."\n";
+			if ($DB) {echo "$stmt\n";}
 			exit;
 			}
 		else
@@ -679,6 +697,7 @@ if ($run_export > 0)
 		if ( ($inbound_to_print < 1) and ($outbound_calls < 1) )
 			{
 			echo _QXZ("There are no inbound calls during this time period for these parameters")."\n";
+			if ($DB) {echo "$stmt\n";}
 			exit;
 			}
 		else
@@ -1321,6 +1340,9 @@ else
 		$LISTcampaigns[$i]='---NONE---';
 		$i++;
 		$campaigns_to_print++;
+		$LISTcampaigns[$i]='---ALL---';
+		$i++;
+		$campaigns_to_print++;
 	while ($i < $campaigns_to_print)
 		{
 		$row=mysqli_fetch_row($rslt);
@@ -1334,6 +1356,9 @@ else
 	$groups_to_print = mysqli_num_rows($rslt);
 	$i=0;
 		$LISTgroups[$i]='---NONE---';
+		$i++;
+		$groups_to_print++;
+		$LISTgroups[$i]='---ALL---';
 		$i++;
 		$groups_to_print++;
 	while ($i < $groups_to_print)

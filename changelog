@@ -344,6 +344,9 @@
         www/vicidial/help_documentation.txt: Added manual_dial_validation
           feature.
   * New experimental/CheckRestoreStatus.php.
+  * Add upstream Rev. 3060:
+    - Update www/vicidial/call_report_export.php: Added ---ALL--- options for
+        Campaigns and In-Groups.
 
 2.25.27
   [Jörg Fring-Fürst]
