@@ -353,6 +353,9 @@
         bin/AST_update_AMI2.pl,
         www/vicidial/admin.php: Added RA_USER_PHONE On-Hook CID to solve last
           RINGAGENT issues.
+  * Add upstream Rev. 3062:
+    - Update  agi/agi-dtmf.agi: Added alphabet letters translation to phone
+        DTMF digits feature.
 
 2.25.27
   [Jörg Fring-Fürst]
