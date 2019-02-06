@@ -1,7 +1,7 @@
 <?php
 # dispo_send_email.php
 # 
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed to be used in the "Dispo URL" field of a campaign
 # or in-group. It will send out an email to a fixed email address as defined
@@ -36,6 +36,7 @@
 # 171207-0659 - Added option of up to 20 attachments
 # 180611-1703 - Added instructions for Dead Trigger URL
 # 180909-1907 - Added channel_group variable
+# 190129-1855 - Added --A--RUSfullname--B-- special variable flag
 #
 
 $api_script = 'send_email';
@@ -473,6 +474,7 @@ if ($match_found > 0)
 							$fullname =				urlencode(trim($row[5]));
 							$user_group =			urlencode(trim($row[6]));
 							$agent_email =			urlencode(trim($row[7]));
+							$RUSfullname = preg_replace("/^.*_/",'',$fullname);
 							}
 						
 						if ( (preg_match('/--A--CF_uses_custom_fields--B--/i',$email_subject)) or (preg_match('/--A--CF_uses_custom_fields--B--/i',$email_body)) )
@@ -563,6 +565,7 @@ if ($match_found > 0)
 						$email_subject = preg_replace('/--A--call_id--B--/i',urlencode(trim($call_id)),$email_subject);
 						$email_subject = preg_replace('/--A--entry_date--B--/i',"$entry_date",$email_subject);
 						$email_subject = preg_replace('/--A--fullname--B--/i',"$fullname",$email_subject);
+						$email_subject = preg_replace('/--A--RUSfullname--B--/i',"$RUSfullname",$email_subject);
 						$email_subject = preg_replace('/--A--user_custom_one--B--/i',"$user_custom_one",$email_subject);
 						$email_subject = preg_replace('/--A--user_custom_two--B--/i',"$user_custom_two",$email_subject);
 						$email_subject = preg_replace('/--A--user_custom_three--B--/i',"$user_custom_three",$email_subject);
@@ -657,6 +660,7 @@ if ($match_found > 0)
 						$email_body = preg_replace('/--A--call_id--B--/i',urlencode(trim($call_id)),$email_body);
 						$email_body = preg_replace('/--A--entry_date--B--/i',"$entry_date",$email_body);
 						$email_body = preg_replace('/--A--fullname--B--/i',"$fullname",$email_body);
+						$email_body = preg_replace('/--A--RUSfullname--B--/i',"$RUSfullname",$email_body);
 						$email_body = preg_replace('/--A--user_custom_one--B--/i',"$user_custom_one",$email_body);
 						$email_body = preg_replace('/--A--user_custom_two--B--/i',"$user_custom_two",$email_body);
 						$email_body = preg_replace('/--A--user_custom_three--B--/i',"$user_custom_three",$email_body);

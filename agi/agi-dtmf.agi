@@ -15,12 +15,13 @@
 #
 # Can also be used in a Call Menu: agi-dtmf.agi,signalonly---12345   # optional signal only DTMF with CLI-defined DTMF values
 #
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 90312-1534 - Added signalonly option
 # 140611-1330 - Added CLI dtmf variable option
 # 180520-0942 - Fix for inconsistency problem, issue #1099
+# 190129-1030 - Added alphabet letters translation to phone DTMF digits feature
 #
 
 $signalonly=0;
@@ -76,9 +77,10 @@ print STDERR "X.  |$clid|$caller_id|$clidname|     |$signalonly|$cli_vars_set|$c
 print "STREAM FILE silence \"\"\n";
 
 ### sleep for 5 tenths of a second
-usleep(1*500*1000);
+usleep(1*10*1000);
 
 $caller_id = "$caller_id$caller_idname";
+$caller_id =~ s/unknown//g;
 
 if ($cli_vars_set > 0) 
 	{$caller_id = $cli_vars;}
@@ -97,12 +99,14 @@ foreach (@CALLERID_DIGITS)
 		}
 	else
 		{
+		$dtmf_played=0;
 		if ($CALLERID_DIGITS[$g] =~ /\#/) 
 			{
 			if ($signalonly > 0)
 				{print "EXEC SendDTMF \# \"\"\n";}
 			else
 				{print "STREAM FILE hash \"\"\n";}
+			$dtmf_played++;
 			}
 		if ($CALLERID_DIGITS[$g] =~ /\*/) 
 			{
@@ -110,9 +114,33 @@ foreach (@CALLERID_DIGITS)
 				{print "EXEC SendDTMF \* \"\"\n";}
 			else
 				{print "STREAM FILE star \"\"\n";}
+			$dtmf_played++;
 			}
-		if ($CALLERID_DIGITS[$g] =~ /\,|S/) 
-			{sleep(1);}
+		if ($CALLERID_DIGITS[$g] =~ /\,/) 
+			{
+			sleep(1);
+			$dtmf_played++;
+			}
+		if ($CALLERID_DIGITS[$g] =~ /[A-Za-z]/) 
+			{
+			$translated_digit='';
+			if ($CALLERID_DIGITS[$g] =~ /[A-Ca-c]/) {$translated_digit=2;}
+			if ($CALLERID_DIGITS[$g] =~ /[D-Fd-f]/) {$translated_digit=3;}
+			if ($CALLERID_DIGITS[$g] =~ /[G-Ig-i]/) {$translated_digit=4;}
+			if ($CALLERID_DIGITS[$g] =~ /[J-Lj-l]/) {$translated_digit=5;}
+			if ($CALLERID_DIGITS[$g] =~ /[M-Om-o]/) {$translated_digit=6;}
+			if ($CALLERID_DIGITS[$g] =~ /[P-Sp-s]/) {$translated_digit=7;}
+			if ($CALLERID_DIGITS[$g] =~ /[T-Vt-v]/) {$translated_digit=8;}
+			if ($CALLERID_DIGITS[$g] =~ /[W-Zw-z]/) {$translated_digit=9;}
+
+			if ($signalonly > 0)
+				{print "EXEC SendDTMF $translated_digit \"\"\n";}
+			else
+				{print "STREAM FILE $translated_digit \"\"\n";}
+			print STDERR "DIGIT: $translated_digit\n";
+
+			$dtmf_played++;
+			}
 		print STDERR "NON-DIGIT: $CALLERID_DIGITS[$g]\n";
 		}
 	$g++;
