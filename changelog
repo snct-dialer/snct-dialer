@@ -356,6 +356,9 @@
   * Add upstream Rev. 3062:
     - Update  agi/agi-dtmf.agi: Added alphabet letters translation to phone
         DTMF digits feature.
+  * Add upstream Rev. 3063:
+    - Update www/agc/dispo_send_email.php: Added --A--RUSfullname--B-- special
+        variable flag.
 
 2.25.27
   [Jörg Fring-Fürst]
