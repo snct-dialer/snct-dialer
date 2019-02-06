@@ -359,6 +359,8 @@
   * Add upstream Rev. 3063:
     - Update www/agc/dispo_send_email.php: Added --A--RUSfullname--B-- special
         variable flag.
+  * Correct typo:
+    - bin/AST_CRON_WallBoard3_gen.php.
 
 2.25.27
   [Jörg Fring-Fürst]
