@@ -677,6 +677,15 @@ if (!isset($flag_channels))
 	$flag_string='';
 	}
 
+#
+# set error reporting level E_NOTICE only if $DB is set
+#
+if($DB) {
+	error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
+} else {
+	error_reporting(E_ERROR | E_WARNING | E_PARSE);
+}
+
 ### security strip all non-alphanumeric characters out of the variables ###
 $DB=preg_replace("/[^0-9a-z]/","",$DB);
 $phone_login=preg_replace("/[^\,0-9a-zA-Z]/","",$phone_login);

@@ -106,6 +106,11 @@ autoanswer_type ENUM('','SNOM') default '',
 on_hook_auto_answer ENUM('Y','N') NOT NULL DEFAULT 'N',
 auto_answer_sipheader VARCHAR(255) NOT NULL DEFAULT '',
 auto_answer_prefix VARCHAR(4) NOT NULL DEFAULT '',
+redirect_user VARCHAR(16) NULL DEFAULT NULL,
+redirect_busy VARCHAR(16) NULL DEFAULT NULL,
+redirect_timeout VARCHAR(16) NULL DEFAULT NULL,
+redirect_notavailable VARCHAR(16) NULL DEFAULT NULL,
+redirect_context VARCHAR(20) NOT NULL DEFAULT 'default',
 index (server_ip),
 index (voicemail_id),
 index (dialplan_number),
@@ -1315,7 +1320,8 @@ cid_cb_you_entered_filename TEXT,
 cid_cb_press_to_confirm_filename TEXT,
 cid_cb_invalid_filename TEXT,
 cid_cb_reenter_filename TEXT,
-cid_cb_error_filename TEXT
+cid_cb_error_filename TEXT,
+group_exten VARCHAR(20) NULL DEFAULT NULL
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_stations (

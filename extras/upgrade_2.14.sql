@@ -876,4 +876,13 @@ ALTER TABLE system_settings ADD manual_dial_validation ENUM('0','1','2','3','4')
 
 ALTER TABLE vicidial_campaigns ADD manual_dial_validation ENUM('Y','N') default 'N';
 
+ALTER TABLE phones ADD redirect_user VARCHAR(16) NULL DEFAULT NULL;
+ALTER TABLE phones ADD redirect_busy VARCHAR(16) NULL DEFAULT NULL;
+ALTER TABLE phones ADD redirect_timeout VARCHAR(16) NULL DEFAULT NULL;
+ALTER TABLE phones ADD redirect_notavailable VARCHAR(16) NULL DEFAULT NULL;
+ALTER TABLE phones ADD redirect_context VARCHAR(20) NOT NULL DEFAULT 'default';
+
+ALTER TABLE vicidial_inbound_groups ADD group_exten VARCHAR(20) NULL DEFAULT NULL;
+
 UPDATE system_settings SET db_schema_version='1534',db_schema_update_date=NOW() where db_schema_version < 1534;
+

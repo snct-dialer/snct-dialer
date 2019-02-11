@@ -362,6 +362,13 @@
   * Correct typo:
     - bin/AST_CRON_WallBoard3_gen.php,
       extras/MySQL_AST_CREATE_tables.sql.
+  * New Phone Redirekt feature, Phones Switch to MYSQLI_BOTH for using
+    fieldnames:
+    - Update extras/MySQL_AST_CREATE_tables.sql,
+        extras/mysql_update/mysql-1534.sql,
+        extras/upgrade_2.14.sql,
+        www/agc/vicidial.php,
+        www/vicidial/admin.php.
 
 2.25.27
   [Jörg Fring-Fürst]
