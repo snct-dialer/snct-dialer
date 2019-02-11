@@ -772,6 +772,7 @@ ALTER TABLE `vicidial_live_agents` ADD `on_hook_saved_status` ENUM('READY','CLOS
 ALTER TABLE `vicidial_live_agents` ADD `on_hook_auto_answer` ENUM('Y','N') NOT NULL DEFAULT 'N';
 ALTER TABLE `vicidial_live_agents` ADD `auto_answer_prefix` VARCHAR(4) NOT NULL DEFAULT '';
 
+UPDATE system_settings SET db_schema_version='1533',db_schema_update_date=NOW() where db_schema_version < 1533;
 
 ALTER TABLE vicidial_campaigns ADD dead_trigger_seconds SMALLINT(5) default '0';
 ALTER TABLE vicidial_campaigns ADD dead_trigger_action ENUM('DISABLED','AUDIO','URL','AUDIO_AND_URL') default 'DISABLED';
@@ -794,6 +795,10 @@ index (call_date),
 index (local_call_id),
 index (lead_id)
 ) ENGINE=MyISAM;
+
+ALTER TABLE vicidial_list ADD INDEX `modify_date` (`modify_date`);
+ALTER TABLE vicidial_list ADD coord_one POINT NULL DEFAULT NULL;
+ALTER TABLE vicidial_list ADD coord_two POINT NULL DEFAULT NULL;
 
 CREATE TABLE vicidial_did_log_archive LIKE vicidial_did_log;
 CREATE UNIQUE INDEX vdidla_key on vicidial_did_log_archive(uniqueid, call_date, server_ip);
