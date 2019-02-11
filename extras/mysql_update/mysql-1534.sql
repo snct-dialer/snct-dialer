@@ -21,8 +21,8 @@ index (lead_id)
 ) ENGINE=MyISAM;
 
 ALTER TABLE vicidial_list ADD INDEX `modify_date` (`modify_date`);
-ALTER TABLE vicidial_list ADD coord_one POINT NOT NULL DEFAULT ST_GeomFromText('POINT(0 0)'));
-ALTER TABLE vicidial_list ADD coord_two POINT NOT NULL DEFAULT ST_GeomFromText('POINT(0 0)'));
+ALTER TABLE vicidial_list ADD coord_one POINT NULL DEFAULT NULL;
+ALTER TABLE vicidial_list ADD coord_two POINT NULL DEFAULT NULL;
 
 CREATE TABLE vicidial_did_log_archive LIKE vicidial_did_log;
 CREATE UNIQUE INDEX vdidla_key on vicidial_did_log_archive(uniqueid, call_date, server_ip);
