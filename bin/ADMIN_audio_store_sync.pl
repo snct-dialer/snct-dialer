@@ -182,7 +182,7 @@ foreach(@conf)
 	$i++;
 	}
 
-if (!$VASLOGfile) {$VASLOGfile = "$PATHlogs/audiostore.$year-$mon-$mday";}
+if (!$VASLOGfile) {$VASLOGfile = "$PATHlogs/audiostore";}
 if (!$VARDB_port) {$VARDB_port='3306';}
 
 use DBI;	  

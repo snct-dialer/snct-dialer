@@ -69,7 +69,7 @@ foreach(@conf)
 	$i++;
 	}
 
-if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/dupleads.$year-$mon-$mday";}
+if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/dupleads";}
 
 print "\n\n\n\n\n\n\n\n\n\n\n\n-- VICIDIAL_rebuild_list_statuses.pl --\n\n";
 print "This program is designed to scan all leads marked NOUSE and set them to their proper status, called_count, last_local_call_time and user according to the logs. \n\n";

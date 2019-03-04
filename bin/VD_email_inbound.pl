@@ -89,10 +89,10 @@ foreach(@conf)
 $|=1;
 
 if (!$VARDB_port) {$VARDB_port='3306';}
-if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout.$year-$mon-$mday";}
-if (!$PRSLOGfile) {$PRSLOGfile = "$PATHlogs/prsout.$year-$mon-$mday";}
-if (!$PRSTESTfile) {$PRSTESTfile = "$PATHlogs/prstest.$year-$mon-$mday";}
-if (!$ERRLOGfile) {$ERRLOGfile = "$PATHlogs/MySQLerror.$year-$mon-$mday";}
+if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout";}
+if (!$PRSLOGfile) {$PRSLOGfile = "$PATHlogs/prsout";}
+if (!$PRSTESTfile) {$PRSTESTfile = "$PATHlogs/prstest";}
+if (!$ERRLOGfile) {$ERRLOGfile = "$PATHlogs/MySQLerror";}
 
 use DBI;
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second

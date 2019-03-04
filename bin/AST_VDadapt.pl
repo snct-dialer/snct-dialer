@@ -1776,7 +1776,7 @@ sub event_logger
 	{
 	if ($SYSLOG)
 		{
-		if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/adapt.$year-$mon-$mday";}
+		if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/adapt";}
 
 		### open the log file for writing ###
 		open(Lout, ">>$VDHLOGfile")
@@ -1792,7 +1792,7 @@ sub adaptive_logger
 	{
 	if ($SYSLOG)
 		{
-		$VDHCLOGfile = "$PATHlogs/VDadaptive-$campaign_id[$i].$file_date";
+		$VDHCLOGfile = "$PATHlogs/VDadaptive-$campaign_id[$i]";
 
 		### open the log file for writing ###
 		open(Aout, ">>$VDHCLOGfile")

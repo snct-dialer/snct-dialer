@@ -75,8 +75,8 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port)	{$VARDB_port='3306';}
-if (!$CMLOGfile)	{$CMLOGfile = "$PATHlogs/cmout.$year-$mon-$mday";}
-if (!$AGILOGfile)	{$AGILOGfile = "$PATHlogs/agiout.$year-$mon-$mday";}
+if (!$CMLOGfile)	{$CMLOGfile = "$PATHlogs/cmout";}
+if (!$AGILOGfile)	{$AGILOGfile = "$PATHlogs/agiout";}
 
 use DBI;
 use Asterisk::AGI;

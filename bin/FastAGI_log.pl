@@ -26,6 +26,9 @@
 # 
 #
 # Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (©) 2019  SNCT GmbH <info@snct-gmbh.de>
+#               2019 Jörg Frings-Fürst <entwicklung@jff.email>
+
 #
 # CHANGELOG:
 # 61010-1007 - First test build
@@ -83,6 +86,12 @@
 # 180521-1153 - Changed closer log logging to use agent if call was AGENTDIRECT
 # 180919-1729 - Fix for rare non-NA-set-as-NA call logging issue
 #
+
+
+# JFF changelog
+# 190301-1635 - Remove date from logfiles
+#
+
 
 # defaults for PreFork
 $VARfastagi_log_min_servers =	'3';
@@ -169,7 +178,7 @@ $dbhB->disconnect();
 
 if ($SERVERLOG =~ /Y/) 
 	{
-	$childLOGfile = "$PATHlogs/FastAGIchildLOG.$year-$mon-$mday";
+	$childLOGfile = "$PATHlogs/FastAGIchildLOG";
 	$log_level = "4";
 	print "SERVER LOGGING ON: LEVEL-$log_level FILE-$childLOGfile\n";
 	}
@@ -248,7 +257,7 @@ sub process_request
 		}
 
 	if (!$VARDB_port) {$VARDB_port='3306';}
-	if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/FASTagiout.$year-$mon-$mday";}
+	if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/FASTagiout";}
 
 	$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
 		or die "Couldn't connect to database: " . DBI->errstr;

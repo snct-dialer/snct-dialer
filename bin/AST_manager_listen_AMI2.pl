@@ -924,8 +924,8 @@ sub event_logger
 	if ($SYSLOG)
 		{
 		### open the log file for writing ###
-		open(Lout, ">>$PATHlogs/listen_process.$action_log_date")
-				|| die "Can't open $PATHlogs/listen_process.$action_log_date: $!\n";
+		open(Lout, ">>$PATHlogs/listen_process")
+				|| die "Can't open $PATHlogs/listen_process: $!\n";
 		print Lout "$now_date|$event_string|\n";
 		close(Lout);
 		}
@@ -938,8 +938,8 @@ sub manager_output_logger
 	{
 	if ($SYSLOG)
 		{
-		open(MOout, ">>$PATHlogs/listen.$action_log_date")
-				|| die "Can't open $PATHlogs/listen.$action_log_date: $!\n";
+		open(MOout, ">>$PATHlogs/listen")
+				|| die "Can't open $PATHlogs/listen: $!\n";
 		print MOout "$now_date|$manager_string|\n";
 		close(MOout);
 		}
@@ -949,8 +949,8 @@ sub dtmf_logger
 	{
 	if ($SYSLOG)
 		{
-		open(Dout, ">>$PATHlogs/dtmf.$action_log_date")
-				|| die "Can't open $PATHlogs/dtmf.$action_log_date: $!\n";
+		open(Dout, ">>$PATHlogs/dtmf")
+				|| die "Can't open $PATHlogs/dtmf: $!\n";
 		print Dout "|$dtmf_string|\n";
 		close(Dout);
 		}

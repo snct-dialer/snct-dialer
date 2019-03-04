@@ -80,7 +80,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
  or die "Couldn't connect to database: " . DBI->errstr;
 
 
-if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/dupleads.$year-$mon-$mday";}
+if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/dupleads";}
 
 print "\n\n\n\n\n\n\n\n\n\n\n\n-- VICIDIAL_last_local_call_time_UPDATE.pl --\n\n";
 print "populates the new last_local_call_time field in the vicidial_list table from records in the vicidial_log and vicidial_closer_log table. \n\n";

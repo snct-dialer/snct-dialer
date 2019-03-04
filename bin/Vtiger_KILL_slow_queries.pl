@@ -83,7 +83,7 @@ foreach(@conf)
 $server_ip = $VARserver_ip;		# Asterisk server IP
 
 
-if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/VTkillslow.$year-$mon-$mday";}
+if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/VTkillslow";}
 
 ### begin parsing run-time options ###
 if (length($ARGV[0])>1)

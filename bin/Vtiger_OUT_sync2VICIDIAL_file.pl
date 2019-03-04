@@ -91,7 +91,7 @@ foreach(@conf)
 $server_ip = $VARserver_ip;		# Asterisk server IP
 
 
-if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/newleads.$year-$mon-$mday";}
+if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/newleads";}
 
 
 

@@ -133,7 +133,7 @@ foreach(@conf)
 	$i++;
 	}
 
-if (!$VDALOGfile) {$VDALOGfile = "$PATHlogs/timeclockautologout.$year-$mon-$mday";}
+if (!$VDALOGfile) {$VDALOGfile = "$PATHlogs/timeclockautologout";}
 if (!$VARDB_port) {$VARDB_port='3306';}
 
 ### concurrency check

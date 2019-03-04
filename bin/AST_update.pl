@@ -267,8 +267,8 @@ $server_ip = $VARserver_ip;		# Asterisk server IP
 
 &get_time_now;
 
-if (!$UPLOGfile) {$UPLOGfile = "$PATHlogs/update.$year-$mon-$mday";}
-if (!$UPERRfile) {$UPERRfile = "$PATHlogs/updateERROR.$year-$mon-$mday";}
+if (!$UPLOGfile) {$UPLOGfile = "$PATHlogs/update";}
+if (!$UPERRfile) {$UPERRfile = "$PATHlogs/updateERROR";}
 if (!$VARDB_port) {$VARDB_port='3306';}
 
 $event_string='PROGRAM STARTED||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||';

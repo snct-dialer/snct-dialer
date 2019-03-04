@@ -1385,8 +1385,8 @@ sub event_logger
 	if ($SYSLOG)
 		{
 		### open the log file for writing ###
-		open(Lout, ">>$PATHlogs/update.$action_log_date")
-				|| die "Can't open $PATHlogs/update.$action_log_date: $!\n";
+		open(Lout, ">>$PATHlogs/update")
+				|| die "Can't open $PATHlogs/update: $!\n";
 		print Lout "$now_date|$event_string|\n";
 		close(Lout);
 		}

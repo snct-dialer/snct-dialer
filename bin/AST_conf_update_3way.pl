@@ -196,7 +196,7 @@ if ($hour < 10) {$hour = "0$hour";}
 if ($min < 10) {$min = "0$min";}
 if ($sec < 10) {$sec = "0$sec";}
 
-if (!$CONFLOGfile) {$CONFLOGfile = "$PATHlogs/3way_conf.$year-$mon-$mday";}
+if (!$CONFLOGfile) {$CONFLOGfile = "$PATHlogs/3way_conf";}
 
 $event_string = "AST_conf_update_3way.pl script starting: $year-$mon-$mday $hour:$min:$sec";
  &event_logger;

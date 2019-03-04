@@ -4527,7 +4527,7 @@ exit;
 
 sub teod_logger
 	{
-	if (!$teodLOGfile) {$teodLOGfile = "$PATHlogs/teod.$year-$mon-$mday";}
+	if (!$teodLOGfile) {$teodLOGfile = "$PATHlogs/teod";}
 
 	### open the log file for writing ###
 	open(Lout, ">>$teodLOGfile")

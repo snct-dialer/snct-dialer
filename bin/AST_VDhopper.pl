@@ -311,8 +311,8 @@ foreach(@conf)
 	$i++;
 	}
 
-if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/hopper.$year-$mon-$mday";}
-if (!$VDHDLOGfile) {$VDHDLOGfile = "$PATHlogs/hopper-detail.$year-$mon-$mday";}
+if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/hopper";}
+if (!$VDHDLOGfile) {$VDHDLOGfile = "$PATHlogs/hopper-detail";}
 if (!$VARDB_port) {$VARDB_port='3306';}
 
 use DBI;	  

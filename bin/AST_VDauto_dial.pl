@@ -242,8 +242,8 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 
 	&get_time_now;	# update time/date variables
 
-if (!$VDADLOGfile) {$VDADLOGfile = "$PATHlogs/vdautodial.$year-$mon-$mday";}
-if (!$JAMdebugFILE) {$JAMdebugFILE = "$PATHlogs/vdad-JAM.$year-$mon-$mday";}
+if (!$VDADLOGfile) {$VDADLOGfile = "$PATHlogs/vdautodial";}
+if (!$JAMdebugFILE) {$JAMdebugFILE = "$PATHlogs/vdad-JAM";}
 
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
 use Time::Local;
@@ -347,7 +347,7 @@ while($one_day_interval > 0)
 		{
 		&get_time_now;
 
-		$VDADLOGfile = "$PATHlogs/vdautodial.$year-$mon-$mday";
+		$VDADLOGfile = "$PATHlogs/vdautodial";
 
 	###############################################################################
 	###### first figure out how many calls should be placed for each campaign per server

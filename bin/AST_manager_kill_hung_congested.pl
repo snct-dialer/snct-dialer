@@ -127,7 +127,7 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 
 	&get_time_now;
 
-if (!$KHLOGfile) {$KHLOGfile = "$PATHlogs/congest.$year-$mon-$mday";}
+if (!$KHLOGfile) {$KHLOGfile = "$PATHlogs/congest";}
 
 use DBI;
 
