@@ -453,7 +453,9 @@
         bin/Vtiger_OUT_sync2VICIDIAL_file.pl,
         experimental/AST_update.pl,
         experimental/FastAGI_log_multi_server.pl.
-
+  * Fix asterisk 13 issue:
+    - Change bin/AST_update.pl.
+    
 2.25.27
   [Jörg Fring-Fürst]
   * Correct typo:

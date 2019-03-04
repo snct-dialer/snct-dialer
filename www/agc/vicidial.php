@@ -975,6 +975,8 @@ if($DB) {
 
 ### End Get EmailAdresses ###
 
+$PauseName = GetPauseName($VD_login);
+
 ### Selector Phone / Agent ###
 # 
 # content only Phone or Agent
@@ -20244,6 +20246,10 @@ if ($agent_display_dialable_leads > 0)
 
 <span style="position:absolute;left:<?php echo $AMwidth ?>px;top:<?php echo $MAheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="MailCommit">
 <a href="#" onclick="MailCustomerData('YES')"><font class="body_small"><?php echo _QXZ("Ticket Mail"); ?></font></a>
+</span>
+
+<span style="position:absolute;left:<?php echo $AMwidth ?>px;top:<?php echo $MAheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="PauseName">
+<a href="#" onclick="MailCustomerData('YES')"><font class="body_small"><?php echo $PauseName; ?></font></a>
 </span>
 
 <span style="position:absolute;left:154px;top:<?php echo $SFheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="ScriptPanel">

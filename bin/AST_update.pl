@@ -334,6 +334,7 @@ if ($AST_ver =~ /^1\.8/i) {$show_channels_format = 4;}
 if ($AST_ver =~ /^10\./i) {$show_channels_format = 4;}
 if ($AST_ver =~ /^11\./i) {$show_channels_format = 4;}
 if ($AST_ver =~ /^12\./i) {$show_channels_format = 4;}
+if ($AST_ver =~ /^13\./i) {$show_channels_format = 4;}
 if ($Q < 1)
 	{print STDERR "SHOW CHANNELS format: $show_channels_format\n";}
 

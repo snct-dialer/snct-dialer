@@ -2605,4 +2605,24 @@ function TestTicketMail($Agent, $type, $link) {
 	}
 }
 
+function GetPauseName($Agent) {
+    
+    global $DB, $mel;
+    
+    $Pause_Name = "";
+    $stmt = "SELECT VPC.`pause_code_name` FROM `vicidial_live_agents` VLA, `vicidial_pause_codes` VPC WHERE VLA.`user` = '$Agent' AND VLA.`status` = 'PAUSED' and VPC.`campaign_id` = VLA.`campaign_id` AND VPC.`pause_code` = VLA.`pause_code`;";
+    
+    $rslt=mysqli_query($link, $stmt);
+    if(! $rslt ) {  echo "Error: " .  mysqli_error($link) . PHP_EOL; }
+    if ($DB) {echo "$stmt\n";}
+    
+    $TT_ct = mysqli_num_rows($rslt);
+    if ($TT_ct > 0)
+    {
+        $row=mysqli_fetch_all($rslt, MYSQLI_BOTH);
+        $Pause_Name = $row[0];
+    }
+    return $Pause_Name;
+}
+
 ?>
