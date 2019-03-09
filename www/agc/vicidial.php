@@ -1,7 +1,14 @@
 <?php
 # vicidial.php - the web-based version of the astVICIDIAL client application
 # 
-# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+
+# LICENSE: AGPLv3
+#
+# Copyright (©) 2019  Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2017-2019 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2019      SNCT GmbH <info@snct-gmbh.de>
+#               2017-2019 Jörg Frings-Fürst <j.fringsfuerst@snct-dialer.
+
 #
 # Other scripts that this application depends on:
 # - vdc_db_query.php: Updates information in the database
