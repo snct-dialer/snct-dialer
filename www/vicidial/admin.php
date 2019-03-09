@@ -5,7 +5,8 @@
 #
 # Copyright (©) 2019  Matt Florell <vicidial@gmail.com>
 # Copyright (©) 2017-2019 flyingpenguin.de UG <info@flyingpenguin.de>
-#               2017-2019 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
+#               2019      SNCT GmbH <info@snct-gmbh.de>
+#               2017-2019 Jörg Frings-Fürst <j.fringsfuerst@snct-dialer.de>
 
 #
 # FP - Changelog
