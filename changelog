@@ -461,6 +461,7 @@
     - Update www/agc/conf_exten_check.php,
         www/agc/functions.php,
         www/agc/vicidial.php.
+  * Remove old stuff.
 
 2.25.27
   [Jörg Fring-Fürst]
