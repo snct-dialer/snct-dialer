@@ -975,7 +975,6 @@ if($DB) {
 
 ### End Get EmailAdresses ###
 
-$PauseName = GetPauseName($VD_login);
 
 ### Selector Phone / Agent ###
 # 
@@ -3990,7 +3989,7 @@ $HKwidth =  ($MASTERwidth + 20);	# 450 - Hotkeys button
 $HSwidth =  ($MASTERwidth + 1);		# 431 - Header spacer
 $PBwidth =  ($MASTERwidth + 0);		# 430 - Presets list
 $CLwidth =  ($MASTERwidth - 120);	# 310 - Calls in queue link
-
+$PAwidth = (550);
 
 $GHheight =  ($MASTERheight + 1260);# 1560 - Gender Hide span
 $DBheight =  ($MASTERheight + 260);	# 560 - Debug span
@@ -4011,6 +4010,7 @@ $SCheight =	 49;	# 49 - seconds on call display
 $SFheight =	 65;	# 65 - height of the script and form contents
 $SRheight =	 69;	# 69 - height of the script and form refrech links
 $MAheight =	 84;	# 84 - height of the ticket mail link
+$PAheight =   5;    #    - height of the pause name display
 $CHheight =  ($JS_browser_height - 50);
 if ($webphone_location == 'bar') 
 	{
@@ -5929,6 +5929,10 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						var DEADxfer = DEADxfer_array[1];
 						var APIdtmf_array = check_time_array[20].split("APIdtmf: ");
 						api_dtmf = APIdtmf_array[1];
+						var PNameX = check_time_array[32].split("PauseNamE: ");
+						if(agent_pause_codes_active === "FORCE") {
+							document.getElementById("PauseName").innerHTML = "<p style='color: #ffffff; background-color: #ff0000'>" + PNameX[1] + "</p>";
+						}
 						var APItransfercond_array = check_time_array[21].split("APItransferconf: ");
 						var api_transferconf_values_array = APItransfercond_array[1].split("---");
 						api_transferconf_function = api_transferconf_values_array[0];
@@ -16652,6 +16656,7 @@ function phone_number_format(formatphone) {
 
 				}
 			}
+			
 		}
 
 
@@ -20249,7 +20254,7 @@ if ($agent_display_dialable_leads > 0)
 </span>
 
 <span style="position:absolute;left:<?php echo $AMwidth ?>px;top:<?php echo $MAheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="PauseName">
-<a href="#" onclick="MailCustomerData('YES')"><font class="body_small"><?php echo $PauseName; ?></font></a>
+<font class="body_small"></font>
 </span>
 
 <span style="position:absolute;left:154px;top:<?php echo $SFheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="ScriptPanel">

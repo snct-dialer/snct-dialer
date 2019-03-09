@@ -455,7 +455,13 @@
         experimental/FastAGI_log_multi_server.pl.
   * Fix asterisk 13 issue:
     - Change bin/AST_update.pl.
-    
+  * New tools/VD-block.php:
+    - Block all inbounds from a list.
+  * New Display Pause Name on agent screen:
+    - Update www/agc/conf_exten_check.php,
+        www/agc/functions.php,
+        www/agc/vicidial.php.
+
 2.25.27
   [Jörg Fring-Fürst]
   * Correct typo:
