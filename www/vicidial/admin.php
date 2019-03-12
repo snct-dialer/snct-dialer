@@ -4602,12 +4602,13 @@ else
 # 190207-2301 - Fix for user-group, in-group and campaign allowed/permissions matching issues
 # 190221-1831 - Added force_fronter_audio_stop API function
 # 190223-0850 - Added static prompt fields for in-group play-place-in-line
+# 190302-1745 - Added disclaimers for pure-knob code
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-700a';
-$build = '190223-0850';
+$admin_version = '2.14-701a';
+$build = '190302-1745';
 
 
 $STARTtime = date("U");
@@ -42130,16 +42131,28 @@ if ($ADD==999995)
 
 	echo "<tr bgcolor=#$SSstd_row4_background><td align=right valign=top><B><font size=3>"._QXZ("Trademark").": </B></td><td align=left> &nbsp; \"VICIDIAL\" "._QXZ("is a registered trademark of the")." <a href=\"http://www.vicidial.com/\" target=\"_blank\">ViciDial Group</a>. Here is our <a href=\"http://www.vicidial.com/?page_id=262\" target=\"_blank\">"._QXZ("trademark use policy")."</a></td></tr>\n";
 
-	echo "<tr bgcolor=#$SSstd_row4_background><td align=right valign=top><B><font size=3>"._QXZ("License").": </B></td><td align=left> &nbsp; "._QXZ("The ViciDial Contact Center Suite is released under the")." <a href=\"http://www.vicidial.com/?page_id=260\" target=\"_blank\">AGPLv2 "._QXZ("open source license")."</a></td></tr>\n";
+	echo "<tr bgcolor=#$SSstd_row4_background><td align=right valign=top><B><font size=3>"._QXZ("License").": </B></td><td align=left> &nbsp; "._QXZ("The ViciDial Contact Center Suite is released under the")." <a href=\"http://www.vicidial.com/?page_id=260\" target=\"_blank\">AGPLv2 "._QXZ("open source license")."</a>.</td></tr>\n";
 
 	echo "<tr bgcolor=#$SSstd_row4_background><td align=right valign=top nowrap><B><font size=3>"._QXZ("Source Code").": </B></td><td align=left> &nbsp; "._QXZ("The ViciDial Call Center Suite software is available for download, and for use, free of cost. You can download the easy to install")." <a href=\"http://vicibox.com/server/index.html\" target=\"_blank\">"._QXZ("ViciBox CD ISO version")."</a>, "._QXZ("or only the")." <a href=\"http://sourceforge.net/projects/astguiclient/files/\" target=\"_blank\">"._QXZ("source code")."</a></td></tr>\n";
 
-	echo "</TABLE></center></form>\n";
+	echo "</TABLE></center>\n";
+
 	if ($first_login_link > 0)
 		{
 		echo "<BR><BR>";
-		echo "<BR><center><a href=\"$PHP_SELF?ADD=999996\"><B><font size=4>"._QXZ("Continue on to the Initial Setup")."</font></b></a></center><BR> &nbsp; \n";
+		echo "<BR><center><a href=\"$PHP_SELF?ADD=999996\"><B><font size=4>"._QXZ("Continue on to the Initial Setup")."</font></b></a></center><BR><BR><BR> &nbsp; \n";
 		}
+
+	echo "<br><br><B> "._QXZ("Other integrated software disclaimers").":</B><BR><BR>\n";
+	echo "<center><TABLE width=$section_width cellspacing=5 cellpadding=2>\n";
+
+	echo "<tr bgcolor=#$SSstd_row4_background><td align=right valign=top><B><font size=2>"._QXZ("Pure-knob Copyright").": </B></td><td align=left><font size=1> &nbsp; "._QXZ("The pure-knob javascript library was written by Andre Pl&ouml;tze").", &copy; 2018</td></tr>\n";
+
+	echo "<tr bgcolor=#$SSstd_row4_background><td align=right valign=top><B><font size=2>"._QXZ("Pure-knob License").": </B></td><td align=left><font size=1> &nbsp; "._QXZ("Pure-knob is licensed under the")." <a href=\"https://github.com/andrepxx/pure-knob/blob/master/LICENSE\" target=\"_blank\">Apache 2.0 "._QXZ("open source license")."</a></td></tr>\n";
+
+	echo "<tr bgcolor=#$SSstd_row4_background><td align=right valign=top nowrap><B><font size=2>"._QXZ("Pure-knob Source Code").": </B></td><td align=left><font size=1> &nbsp; "._QXZ("Pure-knob source code is available at")." <a href=\"https://github.com/andrepxx/pure-knob/\" target=\"_blank\">"._QXZ("this link")."</a>.</td></tr>\n";
+
+	echo "</TABLE></center>\n";
 	}
 ##### END copyright trademark license page #####
 

@@ -527,6 +527,25 @@
         www/vicidial/admin.php,
         www/vicidial/help_documentation.txt: Added definable play-place-in-line
           static prompts.
+  * Add upstream Rev. 3068:
+    - Update: UPGRADE,
+       docs/LICENSE.txt,
+       www/vicidial/AST_timeonVDADall.php,
+       www/vicidial/admin.php,
+       www/vicidial/admin_header.php,
+       www/vicidial/vicidial_stylesheet.php,
+       www/vicidial/vicidial_whiteboard_functions.php,
+       www/vicidial/whiteboard_reports.php: Added mobile device display
+         variable; Added disclaimers for pure-knob code; Added special
+         streamlined header option for mobile devices; New mobile display
+         elements added; Added code to exclude active calls from being
+         counted with some stats.
+    - New: www/vicidial/AST_rt_whiteboard_rpt_mobile.php,
+        www/vicidial/AST_timeonVDADallSUMMARY_mobile.php,
+        www/vicidial/admin_mobile.php,
+        www/vicidial/campaign_summary_mobile_report.php,
+        www/vicidial/pureknob.js,
+        www/vicidial/realtime_report_mobile.php.
 
 2.25.27
   [Jörg Fring-Fürst]

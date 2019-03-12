@@ -1,14 +1,19 @@
 <?php
 header('Content-Type: application/javascript');
 require("functions.php");
+
+if (isset($_GET["mobile"]))				{$mobile=$_GET["mobile"];}
+	elseif (isset($_POST["mobile"]))		{$mobile=$_POST["mobile"];}
+
 ?>
 // vicidial_whiteboard_functions.php
 // 
-// Copyright (C) 2017  Matt Florell <vicidial@gmail.com>, Joe Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
+// Copyright (C) 2019  Matt Florell <vicidial@gmail.com>, Joe Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
 //
-// Javascript file used in AST_rt_whiteboard_reports.php
+// Javascript file used in AST_rt_whiteboard_reports.php and AST_rt_whiteboard_report_mobile.php
 //
 // 171027-2352 - First build
+// 190226-1645 - Added mobile variable for mobile versions of reports
 //
 
 var main_canvas = document.getElementById("MainReportCanvas");
@@ -36,7 +41,7 @@ var TGArray_holder=new Array();
 
 function StartRefresh(refresh_rate) {
 		document.getElementById("loading_display").style.display="block";
-		if (!refresh_rate) {refresh_rate=5;}
+		if (!refresh_rate) {refresh_rate=30; RefreshReportWindow();} 
 		document.getElementById("query_date2").value=document.getElementById("query_date").value;
 		// document.getElementById("end_date2").value=document.getElementById("end_date").value;
 		document.getElementById("query_time2").value=document.getElementById("query_time").value;
@@ -110,9 +115,11 @@ function HighlightRelatedFields(report_type) {
 	}
 }
 
+<?php if (!$mobile) { ?>
 document.getElementById("goto_reports").onclick = function() {
 	location.href = "./admin.php?ADD=999999";
 };
+<?php } ?>
 document.getElementById("adjust_report").onclick = function() {
 	document.getElementById("query_date").value=document.getElementById("query_date2").value;
 	// document.getElementById("end_date").value=document.getElementById("end_date2").value;
@@ -126,7 +133,6 @@ document.getElementById("adjust_report").onclick = function() {
 
 
 function RefreshReportWindow() {
-	document.getElementById("loading_display").style.display="none";
 	var query_date=document.getElementById("query_date").value;
 	// var end_date=document.getElementById("end_date").value;
 	var query_time=document.getElementById("query_time").value;
@@ -289,6 +295,7 @@ function RefreshReportWindow() {
 				var Top10Entries=0;
 				var PrevTop10Value=0;
 				var Top10Limit="off";
+				var alert_text="";
 
 				for (var i = 0; i < arrayLength; i++) 
 					{
@@ -335,6 +342,7 @@ function RefreshReportWindow() {
 					SPHArray[i]=agent_array[7];
 					TotalCallCountArray[i]=agent_array[8]; TotalCallCount=agent_array[8];
 					TotalSaleCountArray[i]=agent_array[9]; TotalSaleCount=agent_array[9];
+					alert_text=agent_array[10];
 					TPAArray[i]=target_per_agent;
 					TGArray[i]=target_gross;
 					}
@@ -344,7 +352,7 @@ function RefreshReportWindow() {
 
 				var Top10HTMLChart="<div class='embossed border2px round_corners sm_shadow alt_row1' align='center'><table cellpadding='8' valign='top'>";
 				Top10HTMLChart+="<tr>";
-				Top10HTMLChart+="<th colspan='3'><font size='+2'><?php echo _QXZ("TOP 10 PERFORMERS"); ?></font></th>";
+				Top10HTMLChart+="<th colspan='3'><font size='+2'><?php echo _QXZ("TOP 10 PERFORMERS"); ?></font>"+"<BR>"+alert_text+"</th>";
 				Top10HTMLChart+="<td align='right'><input type='button' class='red_btn sm_shadow' style='width:20px;height:20px' value=' X' onClick=\"ToggleVisibility('top_10_display'); ToggleVisibility('graph_display');\"></td>";
 				Top10HTMLChart+="</tr>";
 				Top10HTMLChart+="<tr>";
@@ -640,6 +648,8 @@ function RefreshReportWindow() {
 				}
 				// MainGraph.update();
 			}
+
+	document.getElementById("loading_display").style.display="none";
 
 
 /*
