@@ -370,7 +370,7 @@ else
 	else
 		{
 		$auth=0;
-		$auth_message = user_authorization($VD_login,$VD_pass,'',1,0,0,0);
+		$auth_message = user_authorization($VD_login,$VD_pass,'',1,0,0,0,'phone_only');
 		if ($auth_message == 'GOOD')
 			{$auth=1;}
 

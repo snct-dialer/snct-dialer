@@ -462,6 +462,130 @@
         www/agc/functions.php,
         www/agc/vicidial.php.
   * Remove old stuff.
+  * Add upstream Rev. 3064:
+    - Update: bin/AST_flush_DBqueue.pl: Fix for cid_recent_ table optimization
+        issue.
+  * Add upstream Rev. 3065:
+    - Update: UPGRADE,
+        agi/VD_amd.agi,
+        agi/agi-DID_route.agi,
+        agi/agi-VDAD_ALL_inbound.agi,
+        bin/AST_VDadapt.pl,
+        bin/AST_VDhopper.pl,
+        bin/VD_email_inbound.pl,
+        www/agc/vdc_db_query.php,
+        www/vicidial/AST_VICIDIAL_ingrouplist.php,
+        www/vicidial/admin.php,
+        www/vicidial/fcstats.php,
+        www/vicidial/fcstats_detail.php,
+        www/vicidial/process_report.php: Fix for cid_recent_ table optimization
+          issue; Fix for user-group, in-group and campaign settings matching
+          issues; ix for user-group, in-group and campaign allowed/permissions
+          matching issues; Added additional $VLforce_index flags, for high
+          volume dialing systems; 
+    - New: translations/LANGUAGE_ALL_el_Greek_20190207-005409.txt.
+  * Add upstream Rev. 3066:
+    - Update: UPGRADE,
+        bin/ADMIN_keepalive_ALL.pl,
+        bin/AST_flush_DBqueue.pl,
+        docs/AGENT_API.txt,
+        docs/CROSS_CLUSTER_COMMUNICATION.txt,
+        extras/MySQL_AST_CREATE_tables.sql,
+        extras/mysql_update/mysql-1534.sql,
+        extras/upgrade_2.14.sql,
+        www/agc/agc_agent_manager_chat_interface.php,
+        www/agc/api.php,
+        www/agc/chat_db_query.php,
+        www/agc/conf_exten_check.php,
+        www/agc/deactivate_lead.php,
+        www/agc/dispo_add_FPG.php,
+        www/agc/dispo_change_status.php,
+        www/agc/dispo_move_list.php,
+        www/agc/dispo_send_email.php,
+        www/agc/functions.php,
+        www/agc/manager_send.php,
+        www/agc/phone_only.php,
+        www/agc/vdc_chat_display.php,
+        www/agc/vdc_db_query.php,
+        www/agc/vdc_email_display.php,
+        www/agc/vdc_form_display.php,
+        www/agc/vdc_script_display.php,
+        www/agc/vdc_script_notes.php,
+        www/agc/vdc_soundboard_display.php,
+        www/agc/vicidial.php,
+        www/agc/voicemail_check.php,
+        www/vicidial/admin.php: Added flushing of vicidial_sessions_recent
+          table; Added force_fronter_audio_stop function; Added recent session
+          per-call logging; Added vicidial_sessions_recent inserts when lead
+          is set to INCALL status.
+  * Add upstream Rev. 3067:
+    - Update: UPGRADE,
+        agi/agi-VDAD_ALL_inbound.agi,
+        extras/MySQL_AST_CREATE_tables.sql,
+        extras/mysql_update/mysql-1534.sql,
+        extras/upgrade_2.14.sql,
+        www/vicidial/admin.php,
+        www/vicidial/help_documentation.txt: Added definable play-place-in-line
+          static prompts.
+  * Add upstream Rev. 3068:
+    - Update: UPGRADE,
+       docs/LICENSE.txt,
+       www/vicidial/AST_timeonVDADall.php,
+       www/vicidial/admin.php,
+       www/vicidial/admin_header.php,
+       www/vicidial/vicidial_stylesheet.php,
+       www/vicidial/vicidial_whiteboard_functions.php,
+       www/vicidial/whiteboard_reports.php: Added mobile device display
+         variable; Added disclaimers for pure-knob code; Added special
+         streamlined header option for mobile devices; New mobile display
+         elements added; Added code to exclude active calls from being
+         counted with some stats.
+    - New: www/vicidial/AST_rt_whiteboard_rpt_mobile.php,
+        www/vicidial/AST_timeonVDADallSUMMARY_mobile.php,
+        www/vicidial/admin_mobile.php,
+        www/vicidial/campaign_summary_mobile_report.php,
+        www/vicidial/pureknob.js,
+        www/vicidial/realtime_report_mobile.php.
+  * Add upstream Rev. 3069:
+    - Update: www/vicidial/realtime_report.php: Added variable-length header
+        icon tables.
+  * Add upstream Rev. 3070:
+    - Update: www/vicidial/AST_timeonVDADallSUMMARY_mobile.php: Correct typo.
+  * Add upstream Rev. 3071:
+    - Update: docs/LICENSE.txt,
+        www/vicidial/admin.php,
+        www/vicidial/vicidial_whiteboard_functions.php: Change auto-resize on 
+          load if device is mobile, removed debug.
+  * Add upstream Rev. 3072:
+    - Update: UPGRADE,
+        docs/CALLER_ID_NAME_CODES.txt,
+        extras/MySQL_AST_CREATE_tables.sql,
+        extras/mysql_update/mysql-1534.sql,
+        extras/upgrade_2.14.sql,
+        www/agc/manager_send.php,
+        www/agc/vicidial.php,
+        www/vicidial/admin.php,
+        www/vicidial/admin_modify_lead.php,
+        www/vicidial/help_documentation.txt,
+        www/vicidial/user_stats.php: Added MuteRecording function.
+    - New: www/agc/images/vdc_LB_mute_recording_AVAILABLE.gif,
+        www/agc/images/vdc_LB_mute_recording_AVAILABLE_es.gif,
+        www/agc/images/vdc_LB_mute_recording_AVAILABLE_jp.gif,
+        www/agc/images/vdc_LB_mute_recording_DISABLED.gif,
+        www/agc/images/vdc_LB_mute_recording_DISABLED_es.gif,
+        www/agc/images/vdc_LB_mute_recording_DISABLED_jp.gif,
+        www/agc/images/vdc_LB_mute_recording_ON.gif,
+        www/agc/images/vdc_LB_mute_recording_ON_es.gif,
+        www/agc/images/vdc_LB_mute_recording_ON_jp.gif.
+  * Add upstream Rev. 3073:
+    - Update: bin/AST_CRON_audio_1_move_VDonly.pl,
+        www/vicidial/help_documentation.txt: Added code to check for
+          agent-muted recordings.
+  * Add upstream Rev. 3074:
+    - Update: extras/MySQL_AST_CREATE_tables.sql: Set new parameter.
+  * Add upstream Rev. 3075:
+    - Update: www/vicidial/admin.php: Added indicators for lists being assigned
+        to non-existing campaigns.
 
 2.25.27
   [Jörg Fring-Fürst]

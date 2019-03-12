@@ -9,7 +9,7 @@
 # !!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!
 # THIS SCRIPT SHOULD ONLY BE RUN ON ONE SERVER ON YOUR CLUSTER
 #
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 60717-1214 - changed to DBI by Marin Blu
@@ -26,7 +26,11 @@
 # 180511-1223 - Added flush for server-specific cid_channels_recent_ tables
 # 180519-1431 - Added vicidial_inbound_groups optimization
 # 181003-2115 - Added optimize of cid_channels_recent_ tables
+# 190214-1758 - Fix for cid_recent_ table optimization issue
+# 190222-1321 - Added optional flushing of vicidial_sessions_recent table
 #
+
+$session_flush=0;
 
 ### begin parsing run-time options ###
 if (length($ARGV[0])>1)
@@ -45,6 +49,7 @@ if (length($ARGV[0])>1)
 		print "  [-t] = test\n";
 		print "  [--debug] = debugging messages\n";
 		print "  [--seconds=XXX] = optional, minimum number of seconds worth of records to keep(default 3600)\n";
+		print "  [--session-flush] = flush the vicidial_sessions_recent table\n";
 		print "\n";
 
 		exit;
@@ -64,6 +69,11 @@ if (length($ARGV[0])>1)
 			{
 			$T=1; $TEST=1;
 			print "\n-----TESTING -----\n\n";
+			}
+		if ($args =~ /--session-flush/i)
+			{
+			$session_flush=1;
+			print "\n----- SESSION FLUSH(vicidial_sessions_recent) ----- $session_flush \n\n";
 			}
 		if ($args =~ /--seconds=/i)
 			{
@@ -379,9 +389,9 @@ if (!$Q) {print " - OPTIMIZE vicidial_inbound_groups          \n";}
 $stmtA = "SELECT server_ip,server_id FROM servers where active='Y' and active_asterisk_server='Y';";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-$sthArows=$sthA->rows;
+$sthArowsSERVERS=$sthA->rows;
 $aas=0;
-while ($sthArows > $aas)
+while ($sthArowsSERVERS > $aas)
 	{
 	@aryA = $sthA->fetchrow_array;
 	$dialer_ip[$aas] =			$aryA[0];
@@ -394,7 +404,7 @@ while ($sthArows > $aas)
 $sthA->finish();
 
 $aas=0;
-while ($sthArows > $aas)
+while ($sthArowsSERVERS > $aas)
 	{
 	$CCRrec=0;
 	$stmtA = "SHOW TABLES LIKE \"cid_channels_recent_$PADserver_ip[$aas]\";";
@@ -427,6 +437,27 @@ while ($sthArows > $aas)
 	}
 $sthA->finish();
 
+
+if ($session_flush > 0) 
+	{
+	$stmtA = "DELETE from vicidial_sessions_recent where call_date < '$SQLdate_NEG_1hour';";
+	if($DB){print STDERR "\n|$stmtA|\n";}
+	if (!$T) {      $affected_rows = $dbhA->do($stmtA);}
+	if (!$Q) {print " - vicidial_sessions_recent flush: $affected_rows rows\n";}
+
+	$stmtA = "OPTIMIZE table vicidial_sessions_recent;";
+	if($DB){print STDERR "\n|$stmtA|\n";}
+	if (!$T) 
+		{
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		@aryA = $sthA->fetchrow_array;
+		if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+		$sthA->finish();
+		}
+	if (!$Q) {print " - OPTIMIZE vicidial_sessions_recent          \n";}
+	}
 $dbhA->disconnect();
 
 

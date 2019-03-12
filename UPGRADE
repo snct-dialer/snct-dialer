@@ -375,6 +375,23 @@ OTHER CHANGES:
 	manually enter in the phone number before a call is placed. Does not 
 	affect 3way calls or transfers.
 
+105. Added alphabet letters translation to phone DTMF digits feature in Agent
+	Screen. For example, Putting "SMITH" in the SendDTMF field would result
+	in "76484" being sent over DTMF.
+
+106. Added "force_fronter_audio_stop" Agent API function, allowing an API
+	command to be sent to the fronter session of a closer call to stop
+	playing of an audio_playback pre-recorded audio stream
+
+107. Added options to define the static prompts to use for the Inbound Group 
+	"Play Place in Line" feature
+
+108. Added new web pages for mobile application
+
+109. Added feature allowing agents to mute recordings of calls from the agent
+	screen. Must be enabled in System Settings to be able to use it in
+	campaigns. There is also a User Override option.
+
 
 
 

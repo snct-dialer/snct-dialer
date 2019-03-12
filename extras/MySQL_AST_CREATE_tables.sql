@@ -687,7 +687,8 @@ ready_max_logout MEDIUMINT(7) default '-1',
 export_gdpr_leads ENUM('0','1','2') default '0',
 pause_code_approval ENUM('1','0') default '0',
 max_hopper_calls SMALLINT(5) UNSIGNED default '0',
-max_hopper_calls_hour SMALLINT(5) UNSIGNED default '0'
+max_hopper_calls_hour SMALLINT(5) UNSIGNED default '0',
+mute_recordings ENUM('DISABLED','Y','N') default 'DISABLED'
 ) ENGINE=MyISAM;
 
 CREATE UNIQUE INDEX user ON vicidial_users (user);
@@ -1032,7 +1033,8 @@ scheduled_callbacks_auto_reschedule VARCHAR(10) default 'DISABLED',
 scheduled_callbacks_timezones_container VARCHAR(40) default 'DISABLED',
 three_way_volume_buttons VARCHAR(20) default 'ENABLED',
 callback_dnc ENUM('ENABLED','DISABLED') default 'DISABLED',
-manual_dial_validation ENUM('Y','N') default 'N'
+manual_dial_validation ENUM('Y','N') default 'N',
+mute_recordings ENUM('Y','N') default 'N'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_lists (
@@ -1321,7 +1323,9 @@ cid_cb_press_to_confirm_filename TEXT,
 cid_cb_invalid_filename TEXT,
 cid_cb_reenter_filename TEXT,
 cid_cb_error_filename TEXT,
-group_exten VARCHAR(20) NULL DEFAULT NULL
+group_exten VARCHAR(20) NULL DEFAULT NULL,
+place_in_line_caller_number_filename TEXT,
+place_in_line_you_next_filename TEXT
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_stations (
@@ -1851,7 +1855,8 @@ autoanswer_delay TINYINT default '1',
 source_id_display ENUM('0','1') default '0',
 help_modification_date VARCHAR(20) default '0',
 agent_logout_link ENUM('0','1','2','3','4') default '1',
-manual_dial_validation ENUM('0','1','2','3','4') default '0'
+manual_dial_validation ENUM('0','1','2','3','4') default '0',
+mute_recordings ENUM('1','0') default '0'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_campaigns_list_mix (
@@ -4141,6 +4146,18 @@ index (call_date),
 index (lead_id)
 ) ENGINE=MyISAM;
 
+CREATE TABLE vicidial_sessions_recent (
+lead_id INT(9) UNSIGNED,
+server_ip VARCHAR(15) NOT NULL,
+call_date DATETIME,
+user VARCHAR(20),
+campaign_id VARCHAR(20),
+conf_exten VARCHAR(20),
+call_type VARCHAR(1) default '',
+index(lead_id),
+index(call_date)
+) ENGINE=MyISAM;
+
 
 ALTER TABLE vicidial_email_list MODIFY message text character set utf8;
 
@@ -4180,7 +4197,7 @@ INSERT INTO system_settings (version,install_date,first_login_trigger) values('2
 
 INSERT INTO vicidial_status_categories (vsc_id,vsc_name) values('UNDEFINED','Default Category');
 
-INSERT INTO vicidial_user_groups SET user_group='ADMIN',group_name='VICIDIAL ADMINISTRATORS',allowed_campaigns=' -ALL-CAMPAIGNS- - -',agent_status_viewable_groups=' --ALL-GROUPS-- ';
+INSERT INTO vicidial_user_groups SET user_group='ADMIN',group_name='VICIDIAL ADMINISTRATORS',allowed_campaigns=' -ALL-CAMPAIGNS- - -',agent_status_viewable_groups=' --ALL-GROUPS-- ',admin_viewable_groups=' ---ALL--- ',admin_viewable_call_times=' ---ALL--- ',agent_allowed_chat_groups=' --ALL-GROUPS-- ';
 
 INSERT INTO vicidial_call_times SET call_time_id='24hours',call_time_name='default 24 hours calling',ct_default_start='0',ct_default_stop='2400';
 INSERT INTO vicidial_call_times SET call_time_id='9am-9pm',call_time_name='default 9am to 9pm calling',ct_default_start='900',ct_default_stop='2100';
@@ -4359,6 +4376,8 @@ CREATE TABLE vicidial_recent_ascb_calls_archive LIKE vicidial_recent_ascb_calls;
 
 CREATE TABLE vicidial_ccc_log_archive LIKE vicidial_ccc_log;
 CREATE UNIQUE INDEX ccc_unq_key on vicidial_ccc_log_archive(uniqueid, call_date, lead_id);
+
+CREATE TABLE vicidial_sessions_recent_archive LIKE vicidial_sessions_recent;
 
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;
