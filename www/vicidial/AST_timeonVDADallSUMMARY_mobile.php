@@ -288,7 +288,7 @@ while($k<$groups_to_print)
 	$group = $groups[$k];
 	$JS_text.="'$group',";
 	$JS_text2.="'$group',";
-	$sub_pct_display.="<BR><span id='".$group."_SPD_span'><table class='android_table' border='0'><tr><th class='android_auto_percent'>$group</th><th class='android_auto_percent'><div id='".$group."_SPD_drop'></div></th><th class='android_auto_percent'><div id='".$group."_SPD_diff'></th><th class='android_auto_percent'><div id='".$group."_SPD_diff1min'></th></tr>";
+	$sub_pct_display.="<span id='".$group."_SPD_span'><BR><table class='android_table' border='0'><tr><th class='android_auto_percent'>$group</th><th class='android_auto_percent'><div id='".$group."_SPD_drop'></div></th><th class='android_auto_percent'><div id='".$group."_SPD_diff'></th><th class='android_auto_percent'><div id='".$group."_SPD_diff1min'></th></tr>";
 	$sub_pct_display.="</table></span>";
 
 	$CSV_text.="\"$group\"\n";

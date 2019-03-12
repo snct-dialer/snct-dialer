@@ -549,6 +549,8 @@
   * Add upstream Rev. 3069:
     - Update: www/vicidial/realtime_report.php: Added variable-length header
         icon tables.
+  * Add upstream Rev. 3070:
+    - Update: www/vicidial/AST_timeonVDADallSUMMARY_mobile.php: Correct typo.
 
 2.25.27
   [Jörg Fring-Fürst]
