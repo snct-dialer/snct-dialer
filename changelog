@@ -583,6 +583,9 @@
           agent-muted recordings.
   * Add upstream Rev. 3074:
     - Update: extras/MySQL_AST_CREATE_tables.sql: Set new parameter.
+  * Add upstream Rev. 3075:
+    - Update: www/vicidial/admin.php: Added indicators for lists being assigned
+        to non-existing campaigns.
 
 2.25.27
   [Jörg Fring-Fürst]

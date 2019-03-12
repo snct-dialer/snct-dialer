@@ -4608,12 +4608,13 @@ else
 # 190223-0850 - Added static prompt fields for in-group play-place-in-line
 # 190302-1745 - Added disclaimers for pure-knob code
 # 190310-1909 - Added mute_recordings system setting and campaign/user options
+# 190311-2153 - Added indicators for lists being assigned to non-existing campaigns
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-702a';
-$build = '190310-1909';
+$admin_version = '2.14-703a';
+$build = '190311-2153';
 
 
 $STARTtime = date("U");
@@ -26772,16 +26773,21 @@ if ($ADD==311)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$campaigns_to_print = mysqli_num_rows($rslt);
 		$campaigns_list='';
+		$camp_list='|';
 		$o=0;
 		while ($campaigns_to_print > $o) 
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$campaigns_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$camp_list .= "$rowx[0]|";
 			$o++;
 			}
 		echo "$campaigns_list";
 		echo "<option SELECTED>$campaign_id</option>\n";
-		echo "</select>$NWB#lists-campaign_id$NWE</td></tr>\n";
+		echo "</select>$NWB#lists-campaign_id$NWE";
+		if (!preg_match("/\|$campaign_id\|/",$camp_list))
+			{echo "<br> &nbsp; &nbsp; <font color=red><B>"._QXZ("CAMPAIGN DOES NOT EXIST")."</B></font>";}
+		echo "</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Active").": </td><td align=left><select size=1 name=active><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='$active' SELECTED>"._QXZ("$active")."</option></select>$NWB#lists-active$NWE \n";
 		if ( ($expiration_dateINT < $EXPtestdate) and ($active == 'Y') )
 			{echo " &nbsp; &nbsp; <font color=red><B>"._QXZ("LIST EXPIRED AND SET TO ACTIVE")."</B></font>";}
@@ -38471,6 +38477,19 @@ if ($ADD==100)
 	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
+	##### get list of campaign IDs for validation of list campaign
+	$stmt="SELECT campaign_id from vicidial_campaigns;";
+	$rsltx=mysql_to_mysqli($stmt, $link);
+	$camps_to_print = mysqli_num_rows($rsltx);
+	$camp_list='|';
+	$o=0;
+	while ($camps_to_print > $o)
+		{
+		$rowx=mysqli_fetch_row($rsltx);
+		$camp_list .= "$rowx[0]|";
+		$o++;
+		}
+
 	$LISTlink='stage=LISTIDDOWN';
 	$NAMElink='stage=LISTNAMEDOWN';
 	$CALLTIMElink='stage=CALLTIMEDOWN';
@@ -38568,7 +38587,10 @@ if ($ADD==100)
 			{echo " <font color=red><B>"._QXZ("EXP")."</B></font>";}
 		echo "</td>";
 		echo "<td><font size=1> $row[5]</td>";
-		echo "<td><font size=1> $row[6]</td>";
+		if (!preg_match("/\|$row[6]\|/",$camp_list))
+			{echo "<td><font size=1> <font color=red><B>$row[6]</B></font></td>";}
+		else
+			{echo "<td><font size=1> $row[6]</td>";}
 		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">"._QXZ("MODIFY")."</a></td></tr>\n";
 		$lists_printed .= "'$row[0]',";
 		$o++;
@@ -38599,7 +38621,10 @@ if ($ADD==100)
 			{echo " <font color=red><B>"._QXZ("EXP")."</B></font>";}
 		echo "</td>";
 		echo "<td><font size=1> $row[5]</td>";
-		echo "<td><font size=1> $row[6]</td>";
+		if (!preg_match("/\|$row[6]\|/",$camp_list))
+			{echo "<td><font size=1> <font color=red><B>$row[6]</B></font></td>";}
+		else
+			{echo "<td><font size=1> $row[6]</td>";}
 		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">"._QXZ("MODIFY")."</a></td></tr>\n";
 		$p++;
 		$o++;
