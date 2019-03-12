@@ -462,6 +462,9 @@
         www/agc/functions.php,
         www/agc/vicidial.php.
   * Remove old stuff.
+  * Add upstream Rev. 3064:
+    - Update: bin/AST_flush_DBqueue.pl: Fix for cid_recent_ table optimization
+        issue.
 
 2.25.27
   [Jörg Fring-Fürst]
