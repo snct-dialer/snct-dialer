@@ -546,6 +546,9 @@
         www/vicidial/campaign_summary_mobile_report.php,
         www/vicidial/pureknob.js,
         www/vicidial/realtime_report_mobile.php.
+  * Add upstream Rev. 3069:
+    - Update: www/vicidial/realtime_report.php: Added variable-length header
+        icon tables.
 
 2.25.27
   [Jörg Fring-Fürst]

@@ -1,7 +1,7 @@
 <?php 
 # realtime_report.php
 # 
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # live real-time stats for the VICIDIAL Auto-Dialer all servers
 #
@@ -41,12 +41,13 @@
 # 170409-1557 - Added IP List validation code
 # 180330-1344 - Added fix for WebRTC webphone microphone permissions
 # 181128-1040 - Added external_web_socket_url option
+# 190302-1927 - Added variable-length header icon tables
 #
 
 $startMS = microtime();
 
-$version = '2.14-29';
-$build = '181128-1040';
+$version = '2.14-30';
+$build = '190302-1927';
 
 header ("Content-type: text/html; charset=utf-8");
 
@@ -704,7 +705,7 @@ $NFB = '<b><font size=6 face="courier">';
 $NFE = '</font></b>';
 $F=''; $FG=''; $B=''; $BG='';
 
-$select_list = "<TABLE WIDTH=700 CELLPADDING=5 BGCOLOR='#D9E6FE'><TR><TD VALIGN=TOP>"._QXZ("Select Campaigns").": <BR>";
+$select_list = "<TABLE class='realtime_settings_table' CELLPADDING=5 BGCOLOR='#D9E6FE'><TR><TD VALIGN=TOP>"._QXZ("Select Campaigns").": <BR>";
 $select_list .= "<SELECT SIZE=8 NAME=groups[] ID=groups[] multiple>";
 $o=0;
 while ($groups_to_print > $o)
@@ -1660,7 +1661,12 @@ function update_variables(task_option,task_choice,force_reload)
 	.top_settings_key {color: black; font-family: HELVETICA; font-size: 11; font-weight: bold;}
 	.top_settings_val {color: black; font-family: HELVETICA; font-size: 11;}
 	.top_head_key {color: black; font-family: HELVETICA; font-size: 12; font-weight: bold;}
-	.top_shead_val {color: black; font-family: HELVETICA; font-size: 12;}
+	.top_head_val {color: black; font-family: HELVETICA; font-size: 12;}
+
+	.realtime_img_icon {width: 42px; height: 42px;}
+	.realtime_img_text {font-family:HELVETICA; font-size:11; color:white; font-weight:bold;}
+	.realtime_table {width: 860px; max-width: 860px; }
+	.realtime_settings_table {width: 700px; max-width: 700px; }
 
 <?php
 	$stmt="select group_id,group_color from vicidial_inbound_groups;";
