@@ -581,6 +581,8 @@
     - Update: bin/AST_CRON_audio_1_move_VDonly.pl,
         www/vicidial/help_documentation.txt: Added code to check for
           agent-muted recordings.
+  * Add upstream Rev. 3074:
+    - Update: extras/MySQL_AST_CREATE_tables.sql: Set new parameter.
 
 2.25.27
   [Jörg Fring-Fürst]
