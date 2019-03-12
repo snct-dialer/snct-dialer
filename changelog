@@ -577,6 +577,10 @@
         www/agc/images/vdc_LB_mute_recording_ON.gif,
         www/agc/images/vdc_LB_mute_recording_ON_es.gif,
         www/agc/images/vdc_LB_mute_recording_ON_jp.gif.
+  * Add upstream Rev. 3073:
+    - Update: bin/AST_CRON_audio_1_move_VDonly.pl,
+        www/vicidial/help_documentation.txt: Added code to check for
+          agent-muted recordings.
 
 2.25.27
   [Jörg Fring-Fürst]
