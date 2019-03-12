@@ -484,6 +484,40 @@
           matching issues; Added additional $VLforce_index flags, for high
           volume dialing systems; 
     - New: translations/LANGUAGE_ALL_el_Greek_20190207-005409.txt.
+  * Add upstream Rev. 3066:
+    - Update: UPGRADE,
+        bin/ADMIN_keepalive_ALL.pl,
+        bin/AST_flush_DBqueue.pl,
+        docs/AGENT_API.txt,
+        docs/CROSS_CLUSTER_COMMUNICATION.txt,
+        extras/MySQL_AST_CREATE_tables.sql,
+        extras/mysql_update/mysql-1534.sql,
+        extras/upgrade_2.14.sql,
+        www/agc/agc_agent_manager_chat_interface.php,
+        www/agc/api.php,
+        www/agc/chat_db_query.php,
+        www/agc/conf_exten_check.php,
+        www/agc/deactivate_lead.php,
+        www/agc/dispo_add_FPG.php,
+        www/agc/dispo_change_status.php,
+        www/agc/dispo_move_list.php,
+        www/agc/dispo_send_email.php,
+        www/agc/functions.php,
+        www/agc/manager_send.php,
+        www/agc/phone_only.php,
+        www/agc/vdc_chat_display.php,
+        www/agc/vdc_db_query.php,
+        www/agc/vdc_email_display.php,
+        www/agc/vdc_form_display.php,
+        www/agc/vdc_script_display.php,
+        www/agc/vdc_script_notes.php,
+        www/agc/vdc_soundboard_display.php,
+        www/agc/vicidial.php,
+        www/agc/voicemail_check.php,
+        www/vicidial/admin.php: Added flushing of vicidial_sessions_recent
+          table; Added force_fronter_audio_stop function; Added recent session
+          per-call logging; Added vicidial_sessions_recent inserts when lead
+          is set to INCALL status; 
     
 
 2.25.27

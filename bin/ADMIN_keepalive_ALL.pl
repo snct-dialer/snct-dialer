@@ -17,9 +17,10 @@
 #
 # LICENSE: AGPLv3
 #
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>
 # Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
-#               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
+#               2019      SNCT Gmbh <info@snct-gmbh.de>
+#               2017-2019 Jörg Frings-Fürst <j.fringsfuerst@snct-dialer>
 #
 # CHANGES
 # 61011-1348 - First build
@@ -141,9 +142,10 @@
 # 180916-1003 - Added vicidial_lists.resets_today resetting at TEOD, timed reset resets_today verification before reset
 # 180930-1007 - Added more allowed codecs to conf file generation
 # 181028-1451 - Added vicidial_list stuck QUEUE reset at TEoD
+# 190220-2258 - Added flushing of vicidial_sessions_recent table
 #
 
-$build = '181028-1451';
+$build = '190220-2258';
 
 
 ###### Test that the script is running only once a time
@@ -1482,6 +1484,33 @@ if ($timeclock_end_of_day_NOW > 0)
 			}
 
 
+		# roll of SENT/EXPIRED vicidial_sessions_recent records
+		if (!$Q) {print "\nProcessing vicidial_sessions_recent table...\n";}
+		$stmtA = "INSERT IGNORE INTO vicidial_sessions_recent_archive SELECT * from vicidial_sessions_recent where call_date < \"$TDSQLdate\";";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows = $sthA->rows;
+		$event_string = "$sthArows rows inserted into vicidial_sessions_recent_archive table";
+		if (!$Q) {print "$event_string \n";}
+		if ($teodDB) {&teod_logger;}
+
+		$rv = $sthA->err();
+		if (!$rv) 
+			{	
+			$stmtA = "DELETE FROM vicidial_sessions_recent WHERE call_date < \"$TDSQLdate\";";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows = $sthA->rows;
+			$event_string = "$sthArows rows deleted from vicidial_sessions_recent table";
+			if (!$Q) {print "$event_string \n";}
+			if ($teodDB) {&teod_logger;}
+
+			$stmtA = "optimize table vicidial_sessions_recent;";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			}
+
+
 		# roll of vicidial_ccc_log records, keep only 1 day of records in active table
 		if (!$Q) {print "\nProcessing vicidial_ccc_log table...\n";}
 		$stmtA = "INSERT IGNORE INTO vicidial_ccc_log_archive SELECT * from vicidial_ccc_log;";
@@ -1745,6 +1774,24 @@ if ($timeclock_end_of_day_NOW > 0)
 		if ($DB) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 		$sthA->finish();
 		##### END vicidial_recent_ascb_calls_archive end of day process removing records older than 7 days #####
+
+
+		##### BEGIN vicidial_sessions_recent_archive end of day process removing records older than 7 days #####
+		$stmtA = "DELETE from vicidial_sessions_recent_archive where call_date < \"$SDSQLdate\";";
+		if($DBX){print STDERR "\n|$stmtA|\n";}
+		$affected_rows = $dbhA->do($stmtA);
+		if($DB){print STDERR "\n|$affected_rows vicidial_sessions_recent_archive records older than 7 days purged|\n";}
+		if ($teodDB) {$event_string = "vicidial_sessions_recent_archive records older than 7 days purged: |$stmtA|$affected_rows|";   &teod_logger;}
+
+		$stmtA = "optimize table vicidial_sessions_recent_archive;";
+		if($DBX){print STDERR "\n|$stmtA|\n";}
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		@aryA = $sthA->fetchrow_array;
+		if ($DB) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+		$sthA->finish();
+		##### END vicidial_sessions_recent_archive end of day process removing records older than 7 days #####
 
 
 		##### BEGIN usacan_phone_dialcode_fix funciton #####

@@ -889,5 +889,19 @@ ALTER TABLE phones ADD redirect_context VARCHAR(20) NOT NULL DEFAULT 'default';
 
 ALTER TABLE vicidial_inbound_groups ADD group_exten VARCHAR(20) NULL DEFAULT NULL;
 
+CREATE TABLE vicidial_sessions_recent (
+lead_id INT(9) UNSIGNED,
+server_ip VARCHAR(15) NOT NULL,
+call_date DATETIME,
+user VARCHAR(20),
+campaign_id VARCHAR(20),
+conf_exten VARCHAR(20),
+call_type VARCHAR(1) default '',
+index(lead_id),
+index(call_date)
+) ENGINE=MyISAM;
+
+CREATE TABLE vicidial_sessions_recent_archive LIKE vicidial_sessions_recent;
+
 UPDATE system_settings SET db_schema_version='1534',db_schema_update_date=NOW() where db_schema_version < 1534;
 

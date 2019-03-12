@@ -4141,6 +4141,18 @@ index (call_date),
 index (lead_id)
 ) ENGINE=MyISAM;
 
+CREATE TABLE vicidial_sessions_recent (
+lead_id INT(9) UNSIGNED,
+server_ip VARCHAR(15) NOT NULL,
+call_date DATETIME,
+user VARCHAR(20),
+campaign_id VARCHAR(20),
+conf_exten VARCHAR(20),
+call_type VARCHAR(1) default '',
+index(lead_id),
+index(call_date)
+) ENGINE=MyISAM;
+
 
 ALTER TABLE vicidial_email_list MODIFY message text character set utf8;
 
@@ -4359,6 +4371,8 @@ CREATE TABLE vicidial_recent_ascb_calls_archive LIKE vicidial_recent_ascb_calls;
 
 CREATE TABLE vicidial_ccc_log_archive LIKE vicidial_ccc_log;
 CREATE UNIQUE INDEX ccc_unq_key on vicidial_ccc_log_archive(uniqueid, call_date, lead_id);
+
+CREATE TABLE vicidial_sessions_recent_archive LIKE vicidial_sessions_recent;
 
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;
