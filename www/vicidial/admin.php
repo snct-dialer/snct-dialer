@@ -4593,12 +4593,13 @@ else
 # 181116-1133 - Fix for DID server IP de-assignment
 # 190108-0806 - Added manual_dial_validation system and campaign options, update date for 2019
 # 190121-2019 - Added RA_AGENT_PHONE on-hook agent option
+# 190207-2301 - Fix for user-group, in-group and campaign allowed/permissions matching issues
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-697a';
-$build = '190121-2019';
+$admin_version = '2.14-698a';
+$build = '190207-2301';
 
 
 $STARTtime = date("U");
@@ -5778,7 +5779,7 @@ if ( ( (strlen($ADD)>4) and ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($AD
 			$UGcampaign_ct = count($UGcampaigns);
 			while ($p < $UGcampaign_ct)
 				{
-				if ($campaign_id_values[$o] == $UGcampaigns[$p]) 
+				if ($campaign_id_values[$o] === $UGcampaigns[$p]) 
 					{$RANK_camp_active++;   $GRADE_camp_active++;}
 				$p++;
 				}
@@ -5998,7 +5999,7 @@ if ( ( (strlen($ADD)>4) and ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($AD
 		if (is_array($groups)) {$group_ct = count($groups);} else {$group_ct=0;}
 		while ($p < $group_ct)
 			{
-			if ($group_id_values[$o] == $groups[$p]) 
+			if ($group_id_values[$o] === $groups[$p]) 
 				{
 				$groups_list .= " CHECKED";
 				$RANKgroups_list .= " CHECKED";
@@ -6010,7 +6011,7 @@ if ( ( (strlen($ADD)>4) and ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($AD
 		if (is_array($XFERgroups)) {$XFERgroup_ct = count($XFERgroups);} else {$XFERgroup_ct=0;}
 		while ($p < $XFERgroup_ct)
 			{
-			if ($group_id_values[$o] == $XFERgroups[$p]) 
+			if ($group_id_values[$o] === $XFERgroups[$p]) 
 				{
 				$XFERgroups_list .= " CHECKED";
 				$XFERgroups_value .= " $group_id_values[$o]";
@@ -6141,13 +6142,13 @@ if ( ($ADD==211111) or ($ADD==311111) or ($ADD==411111) or ($ADD==511111) or ($A
 		$p=0;
 		while ($p<1000)
 			{
-			if ( ($campaign_id_value == $campaigns[$p]) and (strlen($campaign_id_value) > 1) )
+			if ( ($campaign_id_value === $campaigns[$p]) and (strlen($campaign_id_value) > 1) )
 				{
 			#	echo "<!--  X $p|$campaign_id_value|$campaigns[$p]| -->";
 				$campaigns_list .= " CHECKED";
 				$campaigns_value .= " $campaign_id_value";
 				}
-			if ($campaign_id_value == $qc_campaigns[$p]) 
+			if ($campaign_id_value === $qc_campaigns[$p]) 
 				{
 				$qc_campaigns_list .= " CHECKED";
 				$qc_campaigns_value .= " $campaign_id_value";
@@ -6174,7 +6175,7 @@ if ( ($ADD==211111) or ($ADD==311111) or ($ADD==411111) or ($ADD==511111) or ($A
 		$p=0;
 		while ($p<2000)
 			{
-			if ( ($group_id_value == $qc_groups[$p]) and (strlen($group_id_value) > 1) )
+			if ( ($group_id_value === $qc_groups[$p]) and (strlen($group_id_value) > 1) )
 				{
 				$qc_groups_list .= " CHECKED";
 				$qc_groups_value .= " $group_id_value";
@@ -11154,7 +11155,9 @@ if ($ADD==2011)
 					$affected_rowsC = mysqli_affected_rows($link);
 
 					# add new in-group to user's agent-selected in-groups
-					$stmtD="UPDATE vicidial_users set closer_campaigns=REPLACE( closer_campaigns, ' $source_group_id ', ' $source_group_id $group_id ' ) where closer_campaigns LIKE \"% $source_group_id %\" and closer_campaigns NOT LIKE \"% $group_id %\";";
+					$SQL_group_id = preg_replace("/_/",'\\_',$group_id);
+					$SQL_source_group_id = preg_replace("/_/",'\\_',$source_group_id);
+					$stmtD="UPDATE vicidial_users set closer_campaigns=REPLACE( closer_campaigns, ' $source_group_id ', ' $source_group_id $group_id ' ) where closer_campaigns LIKE \"% $SQL_source_group_id %\" and closer_campaigns NOT LIKE \"% $SQL_group_id %\";";
 					$rslt=mysql_to_mysqli($stmtD, $link);
 					$affected_rowsD = mysqli_affected_rows($link);
 
@@ -11242,7 +11245,9 @@ if ( ($ADD==2911) and ($SSallow_emails>0) )
 					$affected_rowsC = mysqli_affected_rows($link);
 
 					# add new in-group to user's agent-selected in-groups
-					$stmtD="UPDATE vicidial_users set closer_campaigns=REPLACE( closer_campaigns, ' $source_group_id ', ' $source_group_id $group_id ' ) where closer_campaigns LIKE \"% $source_group_id %\" and closer_campaigns NOT LIKE \"% $group_id %\";";
+					$SQL_group_id = preg_replace("/_/",'\\_',$group_id);
+					$SQL_source_group_id = preg_replace("/_/",'\\_',$source_group_id);
+					$stmtD="UPDATE vicidial_users set closer_campaigns=REPLACE( closer_campaigns, ' $source_group_id ', ' $source_group_id $group_id ' ) where closer_campaigns LIKE \"% $SQL_source_group_id %\" and closer_campaigns NOT LIKE \"% $SQL_group_id %\";";
 					$rslt=mysql_to_mysqli($stmtD, $link);
 					$affected_rowsD = mysqli_affected_rows($link);
 
@@ -11329,7 +11334,9 @@ if ( ($ADD==29111) and ($SSallow_chats>0) )
 					$rslt=mysql_to_mysqli($stmtC, $link);
 
 					# add new in-group to user's agent-selected in-groups
-					$stmtD="UPDATE vicidial_users set closer_campaigns=REPLACE( closer_campaigns, ' $source_group_id ', ' $source_group_id $group_id ' ) where closer_campaigns LIKE \"% $source_group_id %\" and closer_campaigns NOT LIKE \"% $group_id %\";";
+					$SQL_group_id = preg_replace("/_/",'\\_',$group_id);
+					$SQL_source_group_id = preg_replace("/_/",'\\_',$source_group_id);
+					$stmtD="UPDATE vicidial_users set closer_campaigns=REPLACE( closer_campaigns, ' $source_group_id ', ' $source_group_id $group_id ' ) where closer_campaigns LIKE \"% $SQL_source_group_id %\" and closer_campaigns NOT LIKE \"% $SQL_group_id %\";";
 					$rslt=mysql_to_mysqli($stmtD, $link);
 					$affected_rowsD = mysqli_affected_rows($link);
 
@@ -14475,7 +14482,7 @@ if ($ADD==41)
 							$group_ct = count($groups);
 							while ($p < $group_ct)
 								{
-								if ($group_id_values[$o] == $groups[$p]) 
+								if ($group_id_values[$o] === $groups[$p]) 
 									{
 									$groups_list .= " CHECKED";
 									$groups_value .= " $group_id_values[$o]";
@@ -27951,7 +27958,7 @@ if ($ADD==331)
 					$group_ct = count($groups);
 					while ($p < $group_ct)
 						{
-						if ($group_id_values[$o] == $groups[$p]) 
+						if ($group_id_values[$o] === $groups[$p]) 
 							{
 							$groups_list .= " CHECKED";
 							$groups_value .= " $group_id_values[$o]";
@@ -28337,7 +28344,8 @@ if ($ADD==3111)
 
 		$allowed_campaigns_count=0;
 		$allowed_campaigns_warning='';
-		$stmt="SELECT count(*) from vicidial_campaigns where closer_campaigns LIKE \"% $query_group_id %\" $LOGallowed_campaignsSQL;";
+		$SQL_query_group_id = preg_replace("/_/",'\\_',$query_group_id);
+		$stmt="SELECT count(*) from vicidial_campaigns where closer_campaigns LIKE \"% $SQL_query_group_id %\" $LOGallowed_campaignsSQL;";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$campin_to_print = mysqli_num_rows($rslt);
 		$vc_allowed_ct=0;
@@ -29058,7 +29066,7 @@ if ($ADD==3111)
 				$p=0;
 				while ($p < $QCs_to_print)
 					{
-					if ($rowx[0] == $QCstatuses[$p]) 
+					if ($rowx[0] === $QCstatuses[$p]) 
 						{
 						$qc_statuses_list .= " CHECKED";
 						}
@@ -29083,7 +29091,7 @@ if ($ADD==3111)
 					$p=0;
 					while ($p < $QCs_to_print)
 						{
-						if ($rowx[0] == $QCstatuses[$p]) 
+						if ($rowx[0] === $QCstatuses[$p]) 
 							{
 							$qc_statuses_list .= " CHECKED";
 							}
@@ -29398,9 +29406,11 @@ if ($ADD==3111)
 		echo "<B>"._QXZ("CAMPAIGNS ALLOWING THIS IN-GROUP").":</B><BR>\n";
 		echo "<TABLE>\n";
 
-		$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns where closer_campaigns LIKE \"% $group_id %\" $LOGallowed_campaignsSQL;";
+		$SQL_group_id = preg_replace("/_/",'\\_',$group_id);
+		$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns where closer_campaigns LIKE \"% $SQL_group_id %\" $LOGallowed_campaignsSQL;";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$campin_to_print = mysqli_num_rows($rslt);
+		if ($DB > 0) {echo "|$SQL_group_id|$group_id|$stmt|\n";}
 		$o=0;
 		while ($campin_to_print > $o) 
 			{
@@ -29689,7 +29699,8 @@ if ($ADD==3811)
 
 		$allowed_campaigns_count=0;
 		$allowed_campaigns_warning='';
-		$stmt="SELECT count(*) from vicidial_campaigns where closer_campaigns LIKE \"% $query_group_id %\" $LOGallowed_campaignsSQL;";
+		$SQL_group_id = preg_replace("/_/",'\\_',$query_group_id);
+		$stmt="SELECT count(*) from vicidial_campaigns where closer_campaigns LIKE \"% $SQL_group_id %\" $LOGallowed_campaignsSQL;";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$campin_to_print = mysqli_num_rows($rslt);
 		$vc_allowed_ct=0;
@@ -29891,7 +29902,7 @@ if ($ADD==3811)
 				$p=0;
 				while ($p < $QCs_to_print)
 					{
-					if ($rowx[0] == $QCstatuses[$p]) 
+					if ($rowx[0] === $QCstatuses[$p]) 
 						{
 						$qc_statuses_list .= " CHECKED";
 						}
@@ -29916,7 +29927,7 @@ if ($ADD==3811)
 					$p=0;
 					while ($p < $QCs_to_print)
 						{
-						if ($rowx[0] == $QCstatuses[$p]) 
+						if ($rowx[0] === $QCstatuses[$p]) 
 							{
 							$qc_statuses_list .= " CHECKED";
 							}
@@ -30216,7 +30227,8 @@ if ($ADD==3811)
 		echo "<B>"._QXZ("CAMPAIGNS ALLOWING THIS IN-GROUP").":</B><BR>\n";
 		echo "<TABLE>\n";
 
-		$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns where closer_campaigns LIKE \"% $group_id %\" $LOGallowed_campaignsSQL;";
+		$SQL_group_id = preg_replace("/_/",'\\_',$group_id);
+		$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns where closer_campaigns LIKE \"% $SQL_group_id %\" $LOGallowed_campaignsSQL;";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$campin_to_print = mysqli_num_rows($rslt);
 		$o=0;
@@ -30512,7 +30524,8 @@ if ($ADD==3911)
 
 		$allowed_campaigns_count=0;
 		$allowed_campaigns_warning='';
-		$stmt="SELECT count(*) from vicidial_campaigns where closer_campaigns LIKE \"% $query_group_id %\" $LOGallowed_campaignsSQL;";
+		$SQL_group_id = preg_replace("/_/",'\\_',$query_group_id);
+		$stmt="SELECT count(*) from vicidial_campaigns where closer_campaigns LIKE \"% $SQL_group_id %\" $LOGallowed_campaignsSQL;";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$campin_to_print = mysqli_num_rows($rslt);
 		$vc_allowed_ct=0;
@@ -30719,7 +30732,7 @@ if ($ADD==3911)
 				$p=0;
 				while ($p < $QCs_to_print)
 					{
-					if ($rowx[0] == $QCstatuses[$p]) 
+					if ($rowx[0] === $QCstatuses[$p]) 
 						{
 						$qc_statuses_list .= " CHECKED";
 						}
@@ -30744,7 +30757,7 @@ if ($ADD==3911)
 					$p=0;
 					while ($p < $QCs_to_print)
 						{
-						if ($rowx[0] == $QCstatuses[$p]) 
+						if ($rowx[0] === $QCstatuses[$p]) 
 							{
 							$qc_statuses_list .= " CHECKED";
 							}
@@ -31029,7 +31042,8 @@ if ($ADD==3911)
 		echo "<B>"._QXZ("CAMPAIGNS ALLOWING THIS CHAT GROUP").":</B><BR>\n";
 		echo "<TABLE>\n";
 
-		$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns where closer_campaigns LIKE \"% $group_id %\" $LOGallowed_campaignsSQL;";
+		$SQL_group_id = preg_replace("/_/",'\\_',$group_id);
+		$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns where closer_campaigns LIKE \"% $SQL_group_id %\" $LOGallowed_campaignsSQL;";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$campin_to_print = mysqli_num_rows($rslt);
 		$o=0;
@@ -38666,7 +38680,8 @@ if ($ADD==1000)
 		{
 		$allowed_campaigns_count=0;
 		$allowed_campaigns_warning='';
-		$stmt="SELECT count(*) from vicidial_campaigns where closer_campaigns LIKE \"% $group_id_ary[$o] %\" $LOGallowed_campaignsSQL;";
+		$SQL_group_id = preg_replace("/_/",'\\_',$group_id_ary[$o]);
+		$stmt="SELECT count(*) from vicidial_campaigns where closer_campaigns LIKE \"% $SQL_group_id %\" $LOGallowed_campaignsSQL;";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$campin_to_print = mysqli_num_rows($rslt);
 		$vc_allowed_ct=0;
@@ -38749,7 +38764,8 @@ if ( ($ADD==1800) and ($SSallow_emails>0) )
 		
 		$allowed_campaigns_warning='';
 		## Get campaign allowed count
-		$ct_stmt="SELECT count(*) from vicidial_campaigns where closer_campaigns LIKE \"% $row[0] %\" $LOGallowed_campaignsSQL;";
+		$SQL_group_id = preg_replace("/_/",'\\_',$row[0]);
+		$ct_stmt="SELECT count(*) from vicidial_campaigns where closer_campaigns LIKE \"% $SQL_group_id %\" $LOGallowed_campaignsSQL;";
 		$ct_rslt=mysql_to_mysqli($ct_stmt, $link);
 		$ct_row=mysqli_fetch_row($ct_rslt);
 		$email_allowed_campaigns_count=$ct_row[0];
@@ -38808,7 +38824,8 @@ if ( ($ADD==1900) and ($SSallow_chats>0) )
 
 		$allowed_campaigns_warning='';
 		## Get campaign allowed count
-		$ct_stmt="SELECT count(*) from vicidial_campaigns where closer_campaigns LIKE \"% $row[0] %\" $LOGallowed_campaignsSQL;";
+		$SQL_group_id = preg_replace("/_/",'\\_',$row[0]);
+		$ct_stmt="SELECT count(*) from vicidial_campaigns where closer_campaigns LIKE \"% $SQL_group_id %\" $LOGallowed_campaignsSQL;";
 		$ct_rslt=mysql_to_mysqli($ct_stmt, $link);
 		$ct_row=mysqli_fetch_row($ct_rslt);
 		$chat_allowed_campaigns_count=$ct_row[0];

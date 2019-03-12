@@ -465,6 +465,26 @@
   * Add upstream Rev. 3064:
     - Update: bin/AST_flush_DBqueue.pl: Fix for cid_recent_ table optimization
         issue.
+  * Add upstream Rev. 3065:
+    - Update: UPGRADE,
+        agi/VD_amd.agi,
+        agi/agi-DID_route.agi,
+        agi/agi-VDAD_ALL_inbound.agi,
+        bin/AST_VDadapt.pl,
+        bin/AST_VDhopper.pl,
+        bin/VD_email_inbound.pl,
+        www/agc/vdc_db_query.php,
+        www/vicidial/AST_VICIDIAL_ingrouplist.php,
+        www/vicidial/admin.php,
+        www/vicidial/fcstats.php,
+        www/vicidial/fcstats_detail.php,
+        www/vicidial/process_report.php: Fix for cid_recent_ table optimization
+          issue; Fix for user-group, in-group and campaign settings matching
+          issues; ix for user-group, in-group and campaign allowed/permissions
+          matching issues; Added additional $VLforce_index flags, for high
+          volume dialing systems; 
+    - New: translations/LANGUAGE_ALL_el_Greek_20190207-005409.txt.
+    
 
 2.25.27
   [Jörg Fring-Fürst]
