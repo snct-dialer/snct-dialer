@@ -8,12 +8,13 @@ if (isset($_GET["mobile"]))				{$mobile=$_GET["mobile"];}
 ?>
 // vicidial_whiteboard_functions.php
 // 
-// Copyright (C) 2019  Matt Florell <vicidial@gmail.com>, Joe Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
+// Copyright (C) 2017  Matt Florell <vicidial@gmail.com>, Joe Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
 //
 // Javascript file used in AST_rt_whiteboard_reports.php and AST_rt_whiteboard_report_mobile.php
 //
 // 171027-2352 - First build
 // 190226-1645 - Added mobile variable for mobile versions of reports
+// 190307-0142 - Change auto-resize on load if device is mobile, removed debug
 //
 
 var main_canvas = document.getElementById("MainReportCanvas");
@@ -21,8 +22,13 @@ var size = {
   width: window.innerWidth || document.body.clientWidth,
   height: window.innerHeight || document.body.clientHeight
 }
+<?php if (!$mobile) { ?>
 main_canvas.width=size.width-220;
 main_canvas.height=size.height-220;
+<?php } else { ?>
+main_canvas.width=size.width-220;
+main_canvas.height=size.height-300;
+<?php } ?>
 
 // global chart names
 var MainGraph=null;
@@ -352,7 +358,7 @@ function RefreshReportWindow() {
 
 				var Top10HTMLChart="<div class='embossed border2px round_corners sm_shadow alt_row1' align='center'><table cellpadding='8' valign='top'>";
 				Top10HTMLChart+="<tr>";
-				Top10HTMLChart+="<th colspan='3'><font size='+2'><?php echo _QXZ("TOP 10 PERFORMERS"); ?></font>"+"<BR>"+alert_text+"</th>";
+				Top10HTMLChart+="<th colspan='3'><font size='+2'><?php echo _QXZ("TOP 10 PERFORMERS"); ?></font></th>";
 				Top10HTMLChart+="<td align='right'><input type='button' class='red_btn sm_shadow' style='width:20px;height:20px' value=' X' onClick=\"ToggleVisibility('top_10_display'); ToggleVisibility('graph_display');\"></td>";
 				Top10HTMLChart+="</tr>";
 				Top10HTMLChart+="<tr>";

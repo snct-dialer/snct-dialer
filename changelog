@@ -551,6 +551,11 @@
         icon tables.
   * Add upstream Rev. 3070:
     - Update: www/vicidial/AST_timeonVDADallSUMMARY_mobile.php: Correct typo.
+  * Add upstream Rev. 3071:
+    - Update: docs/LICENSE.txt,
+        www/vicidial/admin.php,
+        www/vicidial/vicidial_whiteboard_functions.php: Change auto-resize on 
+          load if device is mobile, removed debug.
 
 2.25.27
   [Jörg Fring-Fürst]

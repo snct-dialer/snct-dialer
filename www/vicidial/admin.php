@@ -42144,14 +42144,19 @@ if ($ADD==999995)
 		}
 
 	echo "<br><br><B> "._QXZ("Other integrated software disclaimers").":</B><BR><BR>\n";
+
 	echo "<center><TABLE width=$section_width cellspacing=5 cellpadding=2>\n";
+	echo "<tr bgcolor=#$SSstd_row4_background><td align=right valign=middle rowspan=3 nowrap><B><font size=3>"._QXZ("Pure-knob").": </B></td>";
+	echo "<td align=right valign=top><B><font size=2>"._QXZ("Copyright").": </B></td><td align=left><font size=1> &nbsp; "._QXZ("The pure-knob javascript library was written by Andre Pl&ouml;tze").", &copy; 2018</td></tr>\n";
+	echo "<tr bgcolor=#$SSstd_row4_background><td align=right valign=top><B><font size=2>"._QXZ("License").": </B></td><td align=left><font size=1> &nbsp; "._QXZ("Pure-knob is licensed under the")." <a href=\"https://github.com/andrepxx/pure-knob/blob/master/LICENSE\" target=\"_blank\">Apache 2.0 "._QXZ("open source license")."</a></td></tr>\n";
+	echo "<tr bgcolor=#$SSstd_row4_background><td align=right valign=top nowrap><B><font size=2>"._QXZ("Source Code").": </B></td><td align=left><font size=1> &nbsp; "._QXZ("Pure-knob original source code is available at")." <a href=\"https://github.com/andrepxx/pure-knob/\" target=\"_blank\">"._QXZ("this link")."</a>.</td></tr>\n";
 
-	echo "<tr bgcolor=#$SSstd_row4_background><td align=right valign=top><B><font size=2>"._QXZ("Pure-knob Copyright").": </B></td><td align=left><font size=1> &nbsp; "._QXZ("The pure-knob javascript library was written by Andre Pl&ouml;tze").", &copy; 2018</td></tr>\n";
+	echo "<tr><td colspan=3> &nbsp; </tr>";
 
-	echo "<tr bgcolor=#$SSstd_row4_background><td align=right valign=top><B><font size=2>"._QXZ("Pure-knob License").": </B></td><td align=left><font size=1> &nbsp; "._QXZ("Pure-knob is licensed under the")." <a href=\"https://github.com/andrepxx/pure-knob/blob/master/LICENSE\" target=\"_blank\">Apache 2.0 "._QXZ("open source license")."</a></td></tr>\n";
-
-	echo "<tr bgcolor=#$SSstd_row4_background><td align=right valign=top nowrap><B><font size=2>"._QXZ("Pure-knob Source Code").": </B></td><td align=left><font size=1> &nbsp; "._QXZ("Pure-knob source code is available at")." <a href=\"https://github.com/andrepxx/pure-knob/\" target=\"_blank\">"._QXZ("this link")."</a>.</td></tr>\n";
-
+	echo "<tr bgcolor=#$SSstd_row4_background><td align=right valign=middle rowspan=3 nowrap><B><font size=3>"._QXZ("Chart.js").": </B></td>";
+	echo "<td align=right valign=top><B><font size=2>"._QXZ("Copyright").": </B></td><td align=left><font size=1> &nbsp; "._QXZ("The Chart.js javascript library was written by Chart.js Contributors").", &copy; 2018</td></tr>\n";
+	echo "<tr bgcolor=#$SSstd_row4_background><td align=right valign=top><B><font size=2>"._QXZ("License").": </B></td><td align=left><font size=1> &nbsp; "._QXZ("Chart.js is licensed under the")." <a href=\"https://github.com/chartjs/Chart.js/blob/master/LICENSE.md\" target=\"_blank\">MIT "._QXZ("open source license")."</a></td></tr>\n";
+	echo "<tr bgcolor=#$SSstd_row4_background><td align=right valign=top nowrap><B><font size=2>"._QXZ("Source Code").": </B></td><td align=left><font size=1> &nbsp; "._QXZ("Chart.js original source code is available at")." <a href=\"https://github.com/chartjs/Chart.js\" target=\"_blank\">"._QXZ("this link")."</a>.</td></tr>\n";
 	echo "</TABLE></center>\n";
 	}
 ##### END copyright trademark license page #####
