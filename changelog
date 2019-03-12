@@ -556,6 +556,27 @@
         www/vicidial/admin.php,
         www/vicidial/vicidial_whiteboard_functions.php: Change auto-resize on 
           load if device is mobile, removed debug.
+  * Add upstream Rev. 3072:
+    - Update: UPGRADE,
+        docs/CALLER_ID_NAME_CODES.txt,
+        extras/MySQL_AST_CREATE_tables.sql,
+        extras/mysql_update/mysql-1534.sql,
+        extras/upgrade_2.14.sql,
+        www/agc/manager_send.php,
+        www/agc/vicidial.php,
+        www/vicidial/admin.php,
+        www/vicidial/admin_modify_lead.php,
+        www/vicidial/help_documentation.txt,
+        www/vicidial/user_stats.php: Added MuteRecording function.
+    - New: www/agc/images/vdc_LB_mute_recording_AVAILABLE.gif,
+        www/agc/images/vdc_LB_mute_recording_AVAILABLE_es.gif,
+        www/agc/images/vdc_LB_mute_recording_AVAILABLE_jp.gif,
+        www/agc/images/vdc_LB_mute_recording_DISABLED.gif,
+        www/agc/images/vdc_LB_mute_recording_DISABLED_es.gif,
+        www/agc/images/vdc_LB_mute_recording_DISABLED_jp.gif,
+        www/agc/images/vdc_LB_mute_recording_ON.gif,
+        www/agc/images/vdc_LB_mute_recording_ON_es.gif,
+        www/agc/images/vdc_LB_mute_recording_ON_jp.gif.
 
 2.25.27
   [Jörg Fring-Fürst]

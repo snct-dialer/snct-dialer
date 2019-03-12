@@ -388,6 +388,10 @@ OTHER CHANGES:
 
 108. Added new web pages for mobile application
 
+109. Added feature allowing agents to mute recordings of calls from the agent
+	screen. Must be enabled in System Settings to be able to use it in
+	campaigns. There is also a User Override option.
+
 
 
 

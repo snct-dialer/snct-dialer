@@ -906,6 +906,11 @@ CREATE TABLE vicidial_sessions_recent_archive LIKE vicidial_sessions_recent;
 ALTER TABLE vicidial_inbound_groups ADD place_in_line_caller_number_filename TEXT;
 ALTER TABLE vicidial_inbound_groups ADD place_in_line_you_next_filename TEXT;
 
+ALTER TABLE system_settings ADD mute_recordings ENUM('1','0') default '0';
+
+ALTER TABLE vicidial_campaigns ADD mute_recordings ENUM('Y','N') default 'N';
+
+ALTER TABLE vicidial_users ADD mute_recordings ENUM('DISABLED','Y','N') default 'DISABLED';
 
 UPDATE system_settings SET db_schema_version='1534',db_schema_update_date=NOW() where db_schema_version < 1534;
 
