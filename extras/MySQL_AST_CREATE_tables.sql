@@ -1321,7 +1321,9 @@ cid_cb_press_to_confirm_filename TEXT,
 cid_cb_invalid_filename TEXT,
 cid_cb_reenter_filename TEXT,
 cid_cb_error_filename TEXT,
-group_exten VARCHAR(20) NULL DEFAULT NULL
+group_exten VARCHAR(20) NULL DEFAULT NULL,
+place_in_line_caller_number_filename TEXT,
+place_in_line_you_next_filename TEXT
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_stations (
