@@ -601,6 +601,7 @@
   * Add upstream Rev. 3078:
     - Update: www/vicidial/non_agent_api.php: Fix for update_lead custom fields
         issue #1134.
+  * New experimental/innodb/*: Experimental InnoDB Database Engine.
 
 2.25.27
   [Jörg Fring-Fürst]
