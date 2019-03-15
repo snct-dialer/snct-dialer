@@ -688,7 +688,8 @@ export_gdpr_leads ENUM('0','1','2') default '0',
 pause_code_approval ENUM('1','0') default '0',
 max_hopper_calls SMALLINT(5) UNSIGNED default '0',
 max_hopper_calls_hour SMALLINT(5) UNSIGNED default '0',
-mute_recordings ENUM('DISABLED','Y','N') default 'DISABLED'
+mute_recordings ENUM('DISABLED','Y','N') default 'DISABLED',
+hide_call_log_info ENUM('DISABLED','Y','N','SHOW_1','SHOW_2','SHOW_3','SHOW_4','SHOW_5','SHOW_6','SHOW_7','SHOW_8','SHOW_9','SHOW_10') default 'DISABLED'
 ) ENGINE=MyISAM;
 
 CREATE UNIQUE INDEX user ON vicidial_users (user);
@@ -978,7 +979,7 @@ dispo_max_dispo VARCHAR(6) default 'DISMX',
 pause_max SMALLINT(5) UNSIGNED default '0',
 max_inbound_calls SMALLINT(5) UNSIGNED default '0',
 manual_dial_search_checkbox ENUM('SELECTED','SELECTED_RESET','UNSELECTED','UNSELECTED_RESET','SELECTED_LOCK','UNSELECTED_LOCK') default 'SELECTED',
-hide_call_log_info ENUM('Y','N') default 'N',
+hide_call_log_info ENUM('Y','N','SHOW_1','SHOW_2','SHOW_3','SHOW_4','SHOW_5','SHOW_6','SHOW_7','SHOW_8','SHOW_9','SHOW_10') default 'N',
 timer_alt_seconds SMALLINT(5) default '0',
 wrapup_bypass ENUM('DISABLED','ENABLED') default 'ENABLED',
 wrapup_after_hotkey ENUM('DISABLED','ENABLED') default 'DISABLED',
