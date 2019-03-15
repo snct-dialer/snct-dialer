@@ -598,6 +598,9 @@
   * Add upstream Rev. 3077:
     - Update: www/vicidial/AST_timeonVDADall.php: Fix for columns display
         issue #1141.
+  * Add upstream Rev. 3078:
+    - Update: www/vicidial/non_agent_api.php: Fix for update_lead custom fields
+        issue #1134.
 
 2.25.27
   [Jörg Fring-Fürst]
