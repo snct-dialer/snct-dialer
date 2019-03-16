@@ -602,6 +602,8 @@
     - Update: www/vicidial/non_agent_api.php: Fix for update_lead custom fields
         issue #1134.
   * New experimental/innodb/*: Experimental InnoDB Database Engine.
+  * Fix CVE-2019-9654:
+    - Update www/agc/vicidial.php: Remove all passwords from default URLDecode.
 
 2.25.27
   [Jörg Fring-Fürst]

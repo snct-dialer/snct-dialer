@@ -617,10 +617,12 @@
 # 190108-0833 - Added manual_dial_validation option, updated dates for 2019
 # 190222-1316 - Added recent session per-call logging
 # 190310-2017 - Added mute_recordings system/campaign/user option
+# 190316-0915 - Remove all passwords from default URLDecode.
+#
 #
 
 $version = '2.14-578c';
-$build = '190310-2017';
+$build = '190316-0915';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -15900,13 +15902,10 @@ else
 		"&email=" + encodeURIComponent(document.vicidial_form.email.value) + 
 		"&security_phrase=" + encodeURIComponent(document.vicidial_form.security_phrase.value) + 
 		"&comments=" + encodeURIComponent(document.vicidial_form.comments.value) + 
-		"&user=" + user + 
-		"&pass=" + pass + 
-		"&orig_pass=" + orig_pass +
+		"&user=" + user +
 		"&campaign=" + campaign + 
 		"&phone_login=" + phone_login + 
 		"&original_phone_login=" + original_phone_login +
-		"&phone_pass=" + phone_pass + 
 		"&fronter=" + fronter + 
 		"&closer=" + user + 
 		"&group=" + group + 
