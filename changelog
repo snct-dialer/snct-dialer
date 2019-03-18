@@ -609,6 +609,8 @@
         docs/conf_examples/manager.conf.sample-1.8,
         docs/conf_examples/manager.conf.sample-13: Bind interface only on
           127.0.0.1.
+  * Fix hangup handling:
+    - Update: www/agc/conf_exten_check.php.
 
 2.25.27
   [Jörg Fring-Fürst]
