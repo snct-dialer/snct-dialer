@@ -20369,7 +20369,7 @@ if ($agent_display_dialable_leads > 0)
 <a href="#" onclick="MailCustomerData('YES')"><font class="body_small"><?php echo _QXZ("Ticket Mail"); ?></font></a>
 </span>
 
-<span style="position:absolute;left:<?php echo $AMwidth ?>px;top:<?php echo $MAheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="PauseName">
+<span style="position:absolute;left:<?php echo $PAwidth ?>px;top:<?php echo $PAheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="PauseName">
 <font class="body_small"></font>
 </span>
 

@@ -603,7 +603,7 @@
         issue #1134.
   * New experimental/innodb/*: Experimental InnoDB Database Engine.
   * Fix CVE-2019-9654:
-    - Update www/agc/vicidial.php: Remove all passwords from default URLDecode.
+    - Update: www/agc/vicidial.php: Remove all passwords from default URLDecode.
   * Fix open port 5038: 
     - Update: docs/conf_examples/manager.conf.sample,
         docs/conf_examples/manager.conf.sample-1.8,
@@ -611,6 +611,8 @@
           127.0.0.1.
   * Fix hangup handling:
     - Update: www/agc/conf_exten_check.php.
+  * Use own position for PauseName:
+    - Update: www/agc/vicidial.php.
 
 2.25.27
   [Jörg Fring-Fürst]
