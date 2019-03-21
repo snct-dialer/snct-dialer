@@ -613,6 +613,10 @@
     - Update: www/agc/conf_exten_check.php.
   * Use own position for PauseName:
     - Update: www/agc/vicidial.php.
+  * Set error reporting level E_NOTICE only if $DB is set:
+    - Update: agc/conf_exten_check.php.
+  * Don't use date in logfilename:
+    - Update: agi/agi-VDAD_local_optimize.agi.
 
 2.25.27
   [Jörg Fring-Fürst]

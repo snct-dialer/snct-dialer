@@ -144,6 +144,15 @@ header ("Pragma: no-cache");                          // HTTP/1.0
 $user=preg_replace("/\'|\"|\\\\|;| /","",$user);
 $pass=preg_replace("/\'|\"|\\\\|;| /","",$pass);
 
+#
+# set error reporting level E_NOTICE only if $DB is set
+#
+if($DB) {
+    error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
+} else {
+    error_reporting(E_ERROR | E_WARNING | E_PARSE);
+}
+
 
 #############################################
 ##### START SYSTEM_SETTINGS AND USER LANGUAGE LOOKUP #####
