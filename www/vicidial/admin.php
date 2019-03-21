@@ -17802,7 +17802,7 @@ if ($ADD==411111111111111)
 			did_system_filter='$did_system_filter',allow_phonebook='$allow_phonebook',servicelevel_direct='$servicelevel_direct',servicelevel_one='$servicelevel_one',
 			servicelevel_two='$servicelevel_two',anyone_callback_inactive_lists='$anyone_callback_inactive_lists',tmp_download_dir='$syss_tmp_download_dir',agent_prefix='$agent_prefix',
 			enable_gdpr_download_deletion='$enable_gdpr_download_deletion',autoanswer_enable='$autoanswer_enable',autoanswer_prefix='$autoanswer_prefix',
-			autoanswer_delay='$autoanswer_delay',source_id_display='$source_id_display,agent_logout_link='$agent_logout_link',manual_dial_validation='$manual_dial_validation',
+			autoanswer_delay='$autoanswer_delay',source_id_display='$source_id_display',agent_logout_link='$agent_logout_link',manual_dial_validation='$manual_dial_validation',
 			mute_recordings='$mute_recordings'$custom_dialplanSQL";
 
 		$rslt=mysql_to_mysqli($stmt, $link);

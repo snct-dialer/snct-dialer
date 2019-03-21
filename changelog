@@ -617,6 +617,8 @@
     - Update: agc/conf_exten_check.php.
   * Don't use date in logfilename:
     - Update: agi/agi-VDAD_local_optimize.agi.
+  * Add missing ':
+    - Update: vicidial/admin.php.
 
 2.25.27
   [Jörg Fring-Fürst]
