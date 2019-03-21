@@ -15972,6 +15972,7 @@ else
 		"&LOGINvarTHREE=" + LOGINvarTHREE + '' +
 		"&LOGINvarFOUR=" + LOGINvarFOUR + '' +
 		"&LOGINvarFIVE=" + LOGINvarFIVE + '' +
+		"&pass=" + pass +
 		"&web_vars=" + LIVE_web_vars + '' +
 		webform_session;
 
