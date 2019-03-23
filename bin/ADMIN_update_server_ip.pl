@@ -6,7 +6,7 @@
 # astguiclient.conf file to reflect a change in IP address. The script will 
 # automatically default to the first eth address in the ifconfig output.
 #
-# Copyright (C) 2015  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG
 # 71205-2144 - Added display of extensions.conf example for call routing
@@ -15,6 +15,7 @@
 # 90630-2256 - vicidial_process_triggers
 # 100428-0943 - Added DB custom user/pass fields
 # 150312-1000 - Added ExpectedDBSchema
+# 180928-1958 - Added update of report_server, active_twin_server_ip and active_voicemail_server, issue #1109
 #
 
 # default path to astguiclient configuration file:
@@ -396,8 +397,23 @@ use DBI;
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
 	or die "Couldn't connect to database: " . DBI->errstr;
 
-print "  Updating servers table...\n";
+print "  Updating servers table: server_ip...\n";
 $stmtA = "UPDATE servers SET server_ip='$VARserver_ip' where server_ip='$VARold_server_ip';";
+$affected_rows = $dbhA->do($stmtA);
+if ($DB) {print "     |$affected_rows|$stmtA|\n";}
+
+print "  Updating servers table: active_twin_server_ip...\n";
+$stmtA = "UPDATE servers SET active_twin_server_ip='$VARserver_ip' where active_twin_server_ip='$VARold_server_ip';";
+$affected_rows = $dbhA->do($stmtA);
+if ($DB) {print "     |$affected_rows|$stmtA|\n";}
+
+print "  Updating system_settings table: active_voicemail_server...\n";
+$stmtA = "UPDATE system_settings SET active_voicemail_server='$VARserver_ip' where active_voicemail_server='$VARold_server_ip';";
+$affected_rows = $dbhA->do($stmtA);
+if ($DB) {print "     |$affected_rows|$stmtA|\n";}
+
+print "  Updating vicidial_automated_reports table: report_server...\n";
+$stmtA = "UPDATE vicidial_automated_reports SET report_server='$VARserver_ip' where report_server='$VARold_server_ip';";
 $affected_rows = $dbhA->do($stmtA);
 if ($DB) {print "     |$affected_rows|$stmtA|\n";}
 
@@ -451,8 +467,13 @@ $stmtA = "UPDATE vicidial_server_carriers SET server_ip='$VARserver_ip' where se
 $affected_rows = $dbhA->do($stmtA);
 if ($DB) {print "     |$affected_rows|$stmtA|\n";}
 
-print "  Updating vicidial_inbound_dids table...\n";
+print "  Updating vicidial_inbound_dids table: server_ip...\n";
 $stmtA = "UPDATE vicidial_inbound_dids SET server_ip='$VARserver_ip' where server_ip='$VARold_server_ip';";
+$affected_rows = $dbhA->do($stmtA);
+if ($DB) {print "     |$affected_rows|$stmtA|\n";}
+
+print "  Updating vicidial_inbound_dids table: filter_server_ip...\n";
+$stmtA = "UPDATE vicidial_inbound_dids SET filter_server_ip='$VARserver_ip' where filter_server_ip='$VARold_server_ip';";
 $affected_rows = $dbhA->do($stmtA);
 if ($DB) {print "     |$affected_rows|$stmtA|\n";}
 

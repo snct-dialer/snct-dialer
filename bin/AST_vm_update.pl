@@ -14,7 +14,12 @@
 #
 # NOTE: THIS SHOULD ONLY BE RUN ON THE DESIGNATED VOICEMAIL SERVER IN A CLUSTER!
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# LICENSE: AGPLv3
+#
+# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
+
 #
 # 50823-1422 - Added database server variable definitions lookup
 # 50823-1452 - Added commandline arguments for debug at runtime
@@ -26,7 +31,20 @@
 # 141124-1019 - Changed to only allow running on designated voicemail server, run for all mailboxes
 # 150610-1200 - Added support for AMI version 1.3
 # 170609-0936 - Added support for Asterisk 13
+# 180616-1820 - Add sniplet into perl scripts to run only once a time
 #
+
+###### Test that the script is running only once a time
+use Fcntl qw(:flock);
+# print "start of program $0\n";
+unless (flock(DATA, LOCK_EX|LOCK_NB)) {
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    or print "Can't open the fscking file: $!";
+    $datestring = localtime();
+    print $fh "[$datestring] $0 is already running. Exiting.\n";
+    exit(1);
+}
+
 
 # constants
 $DB=0;  # Debug flag, set to 0 for no debug messages per minute, can be overridden by CLI flag
@@ -557,3 +575,8 @@ sub parse_asterisk_version
 
 	return ( %ast_ver_hash );
 }
+
+__DATA__
+This exists so flock() code above works.
+DO NOT REMOVE THIS DATA SECTION.
+

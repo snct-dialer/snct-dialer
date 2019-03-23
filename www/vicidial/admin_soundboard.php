@@ -19,6 +19,7 @@
 # 161111-1646 - Added HIDENUMBERS display option, Font size, button type and layout options
 # 170409-1549 - Added IP List validation code
 # 180503-2215 - Added new help display
+# 180618-2300 - Modified calls to audio file chooser function
 #
 
 $admin_version = '2.14-13';
@@ -1173,7 +1174,7 @@ if ($ADD==362111111111)
 
 		echo "</table></td></tr>\n";
 
-		echo "<tr bgcolor=#". $SSstd_row1_background ."><td align=right>"._QXZ("Add An Audio File").": </td><td><input type=text size=70 maxlength=100 name=audio_filename id=audio_filename value=\"\"> <a href=\"javascript:launch_chooser('audio_filename','date',30);\">"._QXZ("audio chooser")."</a>  $NWB#soundboard-audio_filename$NWE</td></tr>\n";
+		echo "<tr bgcolor=#". $SSstd_row1_background ."><td align=right>"._QXZ("Add An Audio File").": </td><td><input type=text size=70 maxlength=100 name=audio_filename id=audio_filename value=\"\"> <a href=\"javascript:launch_chooser('audio_filename','date');\">"._QXZ("audio chooser")."</a>  $NWB#soundboard-audio_filename$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#". $SSstd_row2_background ."><td align=center colspan=2><input type=submit name=submit VALUE='"._QXZ("SUBMIT")."'></td></tr>\n";
 		echo "</TABLE></center>\n";

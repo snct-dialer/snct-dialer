@@ -19,10 +19,11 @@
 # 141229-2101 - Added code for on-the-fly language translations display
 # 170409-1532 - Added IP List validation code
 # 180503-2015 - Added new help display
+# 181130-1304 - Added template option
 #
 
-$admin_version = '2.14-12';
-$build = '170409-1532';
+$admin_version = '2.14-13';
+$build = '181130-1304';
 
 require("dbconnect_mysqli.php");
 require("functions.php");
@@ -62,6 +63,8 @@ if (isset($_GET["use_external_server_ip"]))			{$use_external_server_ip=$_GET["us
 	elseif (isset($_POST["use_external_server_ip"])){$use_external_server_ip=$_POST["use_external_server_ip"];}
 if (isset($_GET["phone_context"]))				{$phone_context=$_GET["phone_context"];}
 	elseif (isset($_POST["phone_context"]))		{$phone_context=$_POST["phone_context"];}
+if (isset($_GET["template_id"]))				{$template_id=$_GET["template_id"];}
+	elseif (isset($_POST["template_id"]))		{$template_id=$_POST["template_id"];}
 
 if (strlen($action) < 2)
 	{$action = 'BLANK';}
@@ -112,6 +115,7 @@ if ($non_latin < 1)
 	$webphone_auto_answer = preg_replace("/[^NY]/","",$webphone_auto_answer);
 	$use_external_server_ip = preg_replace("/[^NY]/","",$use_external_server_ip);
 	$phone_context = preg_replace("/[^-\_0-9a-zA-Z]/","",$phone_context);
+	$template_id = preg_replace('/[^-_0-9a-zA-Z]/','',$template_id);
 	}	# end of non_latin
 else
 	{
@@ -173,13 +177,34 @@ if ( $ast_delete_phones < 1 )
 	exit;
 	}
 
-$stmt="SELECT full_name,ast_delete_phones,ast_admin_access,user_level from vicidial_users where user='$PHP_AUTH_USER';";
+$stmt="SELECT full_name,ast_delete_phones,ast_admin_access,user_level,user_group from vicidial_users where user='$PHP_AUTH_USER';";
 $rslt=mysql_to_mysqli($stmt, $link);
 $row=mysqli_fetch_row($rslt);
 $LOGfullname =				$row[0];
 $LOGast_delete_phones =		$row[1];
 $LOGast_admin_access =		$row[2];
 $LOGuser_level =			$row[3];
+$LOGuser_group =			$row[4];
+
+$stmt="SELECT allowed_campaigns,allowed_reports,admin_viewable_groups,admin_viewable_call_times from vicidial_user_groups where user_group='$LOGuser_group';";
+if ($DB) {$DBout .= "|$stmt|\n";}
+$rslt=mysql_to_mysqli($stmt, $link);
+$row=mysqli_fetch_row($rslt);
+$LOGallowed_campaigns =			$row[0];
+$LOGallowed_reports =			$row[1];
+$LOGadmin_viewable_groups =		$row[2];
+$LOGadmin_viewable_call_times =	$row[3];
+
+$LOGadmin_viewable_groupsSQL='';
+$whereLOGadmin_viewable_groupsSQL='';
+if ( (!preg_match('/\-\-ALL\-\-/i',$LOGadmin_viewable_groups)) and (strlen($LOGadmin_viewable_groups) > 3) )
+	{
+	$rawLOGadmin_viewable_groupsSQL = preg_replace("/ -/",'',$LOGadmin_viewable_groups);
+	$rawLOGadmin_viewable_groupsSQL = preg_replace("/ /","','",$rawLOGadmin_viewable_groupsSQL);
+	$LOGadmin_viewable_groupsSQL = "and user_group IN('---ALL---','$rawLOGadmin_viewable_groupsSQL')";
+	$whereLOGadmin_viewable_groupsSQL = "where user_group IN('---ALL---','$rawLOGadmin_viewable_groupsSQL')";
+	}
+
 
 ?>
 <html>
@@ -271,6 +296,11 @@ if ($action == "HELP")
 	<A NAME="use_external_server_ip">
 	<BR>
 	<B><?php echo _QXZ("Use External Server IP"); ?> -</B>  <?php echo _QXZ("If using as a web phone, you can set this to Y to use the servers External IP to register to instead of the Server IP. Default is empty."); ?>
+
+	<BR>
+	<A NAME="template_id">
+	<BR>
+	<B><?php echo _QXZ("Template ID"); ?> -</B>  <?php echo _QXZ("Use this optoin to assign a phone template to all of the phone entries created by this bulk insert utility. Default is empty."); ?>
 
 
 	</TD></TR></TABLE>
@@ -383,6 +413,23 @@ if ($action == "BLANK")
 	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Webphone Dialpad").": </td><td align=left><select size=1 name=webphone_dialpad><option selected>Y</option><option>N</option><option>TOGGLE</option><option>TOGGLE_OFF</option></select>$NWB#admin_phones_bulk_insert-webphone_dialpad$NWE</td></tr>\n";
 	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Webphone Auto-Answer").": </td><td align=left><select size=1 name=webphone_auto_answer><option selected>Y</option><option>N</option></select>$NWB#admin_phones_bulk_insert-webphone_auto_answer$NWE</td></tr>\n";
 	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Use External Server IP").": </td><td align=left><select size=1 name=use_external_server_ip><option>Y</option><option selected>N</option></select>$NWB#admin_phones_bulk_insert-use_external_server_ip$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Template ID")."</a>: </td><td align=left><select size=1 name=template_id>\n";
+	$stmt="SELECT template_id,template_name from vicidial_conf_templates $whereLOGadmin_viewable_groupsSQL order by template_id;";
+	$rslt=mysql_to_mysqli($stmt, $link);
+	$templates_to_print = mysqli_num_rows($rslt);
+	$templates_list='<option value=\'\' SELECTED>--'._QXZ("NONE").'--</option>';
+	$o=0;
+	while ($templates_to_print > $o) 
+		{
+		$rowx=mysqli_fetch_row($rslt);
+		$templates_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		$o++;
+		}
+	echo "$templates_list";
+#	echo "<option SELECTED value=\"\">---NONE---</option>\n";
+	echo "</select>$NWB#admin_phones_bulk_insert-template_id$NWE</td></tr>\n";
+
 	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=center colspan=2><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'></td></tr>\n";
 	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=center colspan=2>"._QXZ("NOTE: Submitting this form will NOT trigger a conf file rebuild")."</td></tr>\n";
 	echo "</TABLE></center>\n";
@@ -507,7 +554,7 @@ if ($action == "ADD_PHONES_SUBMIT")
 							$phone_type =		"CCagent";
 							$fullname =			"ext $PN[$p]";
 
-							$stmt = "INSERT INTO phones (extension,dialplan_number,voicemail_id,server_ip,login,pass,status,active,phone_type,fullname,protocol,local_gmt,outbound_cid,conf_secret,is_webphone,webphone_dialpad,webphone_auto_answer,use_external_server_ip,phone_context) values('$extension','$dialplan_number','$voicemail_id','$phone_server_ip','$login','$pass','ACTIVE','Y','$phone_type','$fullname','$protocol','$local_gmt','0000000000','$conf_secret','$is_webphone','$webphone_dialpad','$webphone_auto_answer','$use_external_server_ip','$phone_context');";
+							$stmt = "INSERT INTO phones (extension,dialplan_number,voicemail_id,server_ip,login,pass,status,active,phone_type,fullname,protocol,local_gmt,outbound_cid,conf_secret,is_webphone,webphone_dialpad,webphone_auto_answer,use_external_server_ip,phone_context,template_id) values('$extension','$dialplan_number','$voicemail_id','$phone_server_ip','$login','$pass','ACTIVE','Y','$phone_type','$fullname','$protocol','$local_gmt','0000000000','$conf_secret','$is_webphone','$webphone_dialpad','$webphone_auto_answer','$use_external_server_ip','$phone_context','$template_id');";
 							$rslt=mysql_to_mysqli($stmt, $link);
 							$affected_rows = mysqli_affected_rows($link);
 							if ($DB > 0) {echo "$s|$p|$SN[$s]|$PN[$p]|$affected_rows|$stmt\n<BR>";}

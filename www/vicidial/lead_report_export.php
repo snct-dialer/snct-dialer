@@ -31,6 +31,7 @@
 # 170615-2245 - Refined DID filtering to calculate call length w/internal transfers
 # 180109-2005 - Added vendor lead code filtering option
 # 180422-0923 - Fix for missing header row in translated language, issue #1090
+# 180610-1634 - Added option to allow --ALL-- as a campaign value
 #
 
 $startMS = microtime();
@@ -413,6 +414,11 @@ if ($run_export > 0)
 		$campaign_SQL = "campaign_id IN('')";
 		$RUNcampaign=0;
 		}
+	else if ( preg_match('/\-\-ALL\-\-/',$campaign_string) )
+		{
+		$campaign_SQL = "";
+		$RUNcampaign=$campaign_ct;
+		}
 	else
 		{
 		$campaign_SQL = preg_replace('/,$/i', '',$campaign_SQL);
@@ -548,7 +554,7 @@ if ($run_export > 0)
 	if ($DB > 0)
 		{
 		echo "<BR>\n";
-		echo "$campaign_ct|$campaign_string|$campaign_SQL\n";
+		echo "***$campaign_ct|$campaign_string|$campaign_SQL\n";
 		echo "<BR>\n";
 		echo "$group_ct|$group_string|$group_SQL\n";
 		echo "<BR>\n";
@@ -571,7 +577,7 @@ if ($run_export > 0)
 		{
 		$stmt = "SELECT vl.call_date,vl.phone_number,vi.status,vl.user,vu.full_name,vl.campaign_id,vi.vendor_lead_code,vi.source_id,vi.list_id,vi.gmt_offset_now,vi.phone_code,vi.phone_number,vi.title,vi.first_name,vi.middle_initial,vi.last_name,vi.address1,vi.address2,vi.address3,vi.city,vi.state,vi.province,vi.postal_code,vi.country_code,vi.gender,vi.date_of_birth,vi.alt_phone,vi.email,vi.security_phrase,vi.comments,vl.length_in_sec,vl.user_group,vl.alt_dial,vi.rank,vi.owner,vi.lead_id,vl.uniqueid,vi.entry_list_id,UNIX_TIMESTAMP(vl.call_date)$export_fields_SQL from vicidial_users vu,".$vicidial_log_table." vl,".$vicidial_list_table." vi where ".$date_field." >= '$query_date 00:00:00' and ".$date_field." <= '$end_date 23:59:59' and vu.user=vl.user and vi.lead_id=vl.lead_id $list_SQL $campaign_SQL $user_group_SQL $status_SQL $vlc_SQL order by ".$date_field." desc limit 500000;";
 		$rslt=mysql_to_mysqli($stmt, $link);
-		if ($DB) {echo "$stmt\n";}
+		if ($DB) {echo "****$stmt****\n";}
 		$outbound_to_print = mysqli_num_rows($rslt);
 		if ( ($outbound_to_print < 1) and ($RUNgroup < 1) )
 			{
@@ -1207,6 +1213,9 @@ else
 	$campaigns_to_print = mysqli_num_rows($rslt);
 	$i=0;
 		$LISTcampaigns[$i]='---NONE---';
+		$i++;
+		$campaigns_to_print++;
+		$LISTcampaigns[$i]='---ALL---';
 		$i++;
 		$campaigns_to_print++;
 	while ($i < $campaigns_to_print)

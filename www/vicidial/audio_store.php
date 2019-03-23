@@ -28,6 +28,7 @@
 # 170409-1555 - Added IP List validation code
 # 170630-1440 - Require modify_audiostore user permissions to access this page
 # 180508-0115 - Added new help display
+# 180618-2300 - Modified calls to audio file chooser function
 #
 
 $version = '2.14-22';
@@ -582,7 +583,7 @@ if ($action == "MANUALUPLOAD")
 <BR><BR>
 <CENTER><B><?php echo _QXZ("We STRONGLY recommend uploading only 16bit Mono 8k PCM WAV audio files"); ?>(.wav)</B>
 <BR><BR><font size=1><?php echo _QXZ("All spaces will be stripped from uploaded audio file names"); ?></font><BR><BR>
-<B><a href="javascript:launch_chooser('master_audiofile','date',30);"><?php echo _QXZ("audio file list"); ?></a></CENTER>
+<B><a href="javascript:launch_chooser('master_audiofile','date');"><?php echo _QXZ("audio file list"); ?></a></CENTER>
 
 <?php
 
@@ -603,7 +604,7 @@ echo "<input type=submit name=submit value=submit></form>\n";
 <?php
 if ($auth_delete > 0)
 	{
-	echo "<center>"._QXZ("File to Delete").": <a href=\"javascript:launch_chooser('delete_file','date',200);\">". _QXZ("select file")."</a><BR>\n";
+	echo "<center>"._QXZ("File to Delete").": <a href=\"javascript:launch_chooser('delete_file','date');\">". _QXZ("select file")."</a><BR>\n";
 	echo "<form action=$PHP_SELF method=post>\n";
 	echo "<input type=hidden name=action value=\"DELETE\">\n";
 	echo "<input type=hidden name=DB value=\"$DB\">\n";

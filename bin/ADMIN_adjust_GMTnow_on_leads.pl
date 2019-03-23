@@ -6,9 +6,14 @@
 # field to change it to today's offset if needed because of Daylight Saving Time
 #
 # run every time you load leads into the vicidial_list table
-# 
-# Copyright (C) 2012  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
+#
+# LICENSE: AGPLv3
+#
+# Copyright (C) 2016  Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
+
 #
 # CHANGES
 # 50810-1540 - Added database server variable definitions lookup
@@ -30,7 +35,20 @@
 # 110424-0834 - Added ownertimezone option
 # 110513-1444 - Added list-settings option to use settings from the vicidial_lists table
 # 121129-1858 - Fixes for issue #562, reported by DomeDan
+# 180616-1925 - Add sniplet into perl scripts to run only once a time
 #
+
+
+###### Test that the script is running only once a time
+use Fcntl qw(:flock);
+# print "start of program $0\n";
+unless (flock(DATA, LOCK_EX|LOCK_NB)) {
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    or print "Can't open the fscking file: $!";
+    $datestring = localtime();
+    print $fh "[$datestring] $0 is already running. Exiting.\n";
+    exit(1);
+}
 
 use Time::Local;
 
@@ -1867,3 +1885,6 @@ sub BZL_dstcalc {
     } # end of month checks
 } # end of subroutine dstcalc
 
+__DATA__
+This exists so flock() code above works.
+DO NOT REMOVE THIS DATA SECTION.

@@ -1,7 +1,7 @@
 <?php 
 # realtime_report.php
 # 
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # live real-time stats for the VICIDIAL Auto-Dialer all servers
 #
@@ -40,12 +40,14 @@
 # 170321-1145 - Added pause code time limits colors
 # 170409-1557 - Added IP List validation code
 # 180330-1344 - Added fix for WebRTC webphone microphone permissions
+# 181128-1040 - Added external_web_socket_url option
+# 190302-1927 - Added variable-length header icon tables
 #
 
 $startMS = microtime();
 
-$version = '2.14-28';
-$build = '180330-1344';
+$version = '2.14-30';
+$build = '190302-1927';
 
 header ("Content-type: text/html; charset=utf-8");
 
@@ -703,7 +705,7 @@ $NFB = '<b><font size=6 face="courier">';
 $NFE = '</font></b>';
 $F=''; $FG=''; $B=''; $BG='';
 
-$select_list = "<TABLE WIDTH=700 CELLPADDING=5 BGCOLOR='#D9E6FE'><TR><TD VALIGN=TOP>"._QXZ("Select Campaigns").": <BR>";
+$select_list = "<TABLE class='realtime_settings_table' CELLPADDING=5 BGCOLOR='#D9E6FE'><TR><TD VALIGN=TOP>"._QXZ("Select Campaigns").": <BR>";
 $select_list .= "<SELECT SIZE=8 NAME=groups[] ID=groups[] multiple>";
 $o=0;
 while ($groups_to_print > $o)
@@ -962,12 +964,15 @@ if (strlen($monitor_phone)>1)
 			$codecs_list = preg_replace("/-/",'',$codecs_list);
 			$codecs_list = preg_replace("/&/",'',$codecs_list);
 
-			$stmt="SELECT asterisk_version,web_socket_url from servers where server_ip='$webphone_server_ip' LIMIT 1;";
+			$stmt="SELECT asterisk_version,web_socket_url,external_web_socket_url from servers where server_ip='$webphone_server_ip' LIMIT 1;";
 			if ($DB) {echo "|$stmt|\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$row=mysqli_fetch_row($rslt);
-			$asterisk_version =		$row[0];
-			$web_socket_url =		$row[1];
+			$asterisk_version =			$row[0];
+			$web_socket_url =			$row[1];
+			$external_web_socket_url =	$row[2];
+			if ( ($use_external_server_ip=='Y') and (strlen($external_web_socket_url) > 5) )
+				{$web_socket_url = $external_web_socket_url;}
 
 			if ($use_external_server_ip=='Y')
 				{
@@ -1035,7 +1040,7 @@ if (strlen($monitor_phone)>1)
 			$b64_system_key =		base64_encode($system_key);
 
 			$WebPhonEurl = "$webphone_url?phone_login=$b64_phone_login&phone_login=$b64_phone_login&phone_pass=$b64_phone_pass&server_ip=$b64_server_ip&callerid=$b64_callerid&protocol=$b64_protocol&codecs=$b64_codecs&options=$b64_options&system_key=$b64_system_key";
-			$webphone_content = "<iframe src=\"$WebPhonEurl\" style=\"width:" . $webphone_width . ";height:" . $webphone_height . ";background-color:transparent;z-index:17;\" scrolling=\"auto\" frameborder=\"0\" allowtransparency=\"true\" id=\"webphone\" name=\"webphone\" width=\"" . $webphone_width . "\" height=\"" . $webphone_height . "\" allow=\"microphone\"> </iframe>";
+			$webphone_content = "<iframe src=\"$WebPhonEurl\" style=\"width:" . $webphone_width . ";height:" . $webphone_height . ";background-color:transparent;z-index:17;\" scrolling=\"auto\" frameborder=\"0\" allowtransparency=\"true\" id=\"webphone\" name=\"webphone\" width=\"" . $webphone_width . "\" height=\"" . $webphone_height . "\" allow=\"microphone *; speakers *;\"> </iframe>";
 			}
 		}
 	}
@@ -1656,7 +1661,12 @@ function update_variables(task_option,task_choice,force_reload)
 	.top_settings_key {color: black; font-family: HELVETICA; font-size: 11; font-weight: bold;}
 	.top_settings_val {color: black; font-family: HELVETICA; font-size: 11;}
 	.top_head_key {color: black; font-family: HELVETICA; font-size: 12; font-weight: bold;}
-	.top_shead_val {color: black; font-family: HELVETICA; font-size: 12;}
+	.top_head_val {color: black; font-family: HELVETICA; font-size: 12;}
+
+	.realtime_img_icon {width: 42px; height: 42px;}
+	.realtime_img_text {font-family:HELVETICA; font-size:11; color:white; font-weight:bold;}
+	.realtime_table {width: 860px; max-width: 860px; }
+	.realtime_settings_table {width: 700px; max-width: 700px; }
 
 <?php
 	$stmt="select group_id,group_color from vicidial_inbound_groups;";

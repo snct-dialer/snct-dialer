@@ -21,7 +21,7 @@
 # exten => _8320*.,1,AGI(VD_amd.agi,${EXTEN}-----YES)
 # exten => _8320*.,2,Hangup
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # changes:
 # 60206-1434 - first build
@@ -51,6 +51,9 @@
 # 151109-1708 - Added new campaign feature allowing for different messages based on answering machine message wildcards
 # 170426-1711 - Fixed double-logging issue
 # 180529-1707 - Fix for missing called_count value in vicidial_log insertions
+# 180919-1831 - Fix for logging issue
+# 180924-1557 - Added called_count as AMM wildcard
+# 190216-0813 - Fix for user-group, in-group and campaign allowed/permissions matching issues
 #
 
 $script = 'VD_amd.agi';
@@ -110,8 +113,8 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port)	{$VARDB_port='3306';}
-if (!$AGILOGfile)	{$AGILOGfile = "$PATHlogs/agiout.$year-$mon-$mday";}
-if (!$CEPLOGfile)	{$CEPLOGfile = "$PATHlogs/Cepstral.$year-$mon-$mday";}
+if (!$AGILOGfile)	{$AGILOGfile = "$PATHlogs/agiout";}
+if (!$CEPLOGfile)	{$CEPLOGfile = "$PATHlogs/Cepstral";}
 
 use DBI;
 use Asterisk::AGI;
@@ -177,7 +180,7 @@ while(<STDIN>)
 	if (/^agi_priority\:\s+(.*)$/)		{$priority = $1;}
 	if (/^agi_channel\:\s+(.*)$/)		{$channel = $1;}
 	if (/^agi_extension\:\s+(.*)$/)		{$extension = $1;}
-	if (/^agi_type\:\s+(.*)$/)		{$type = $1;}
+	if (/^agi_type\:\s+(.*)$/)			{$type = $1;}
 	if (/^agi_callerid\:\s+(.*)$/)		{$callerid = $1;   $calleridnum = $callerid;}
 	if (/^agi_calleridname\:\s+(.*)$/)	{$calleridname = $1;}
 	}
@@ -293,7 +296,7 @@ else
 
 
 	########## FIND vicidial_auto_calls record ##########
-	$stmtA = "SELECT campaign_id,phone_code,phone_number,uniqueid,server_ip FROM vicidial_auto_calls where callerid='$callerid' order by auto_call_id desc limit 1;";
+	$stmtA = "SELECT campaign_id,phone_code,phone_number,uniqueid,server_ip,status FROM vicidial_auto_calls where callerid='$callerid' order by auto_call_id desc limit 1;";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
@@ -301,11 +304,12 @@ else
 	if ($sthArows > 0)
 		{
 		@aryA = $sthA->fetchrow_array;
-		$VD_campaign_id		= $aryA[0];
-		$VD_phone_code		= $aryA[1];
-		$VD_phone_number	= $aryA[2];
-		$VD_uniqueid		= $aryA[3];
-		$VD_server_ip		= $aryA[4];
+		$VD_campaign_id =	$aryA[0];
+		$VD_phone_code =	$aryA[1];
+		$VD_phone_number =	$aryA[2];
+		$VD_uniqueid =		$aryA[3];
+		$VD_server_ip =		$aryA[4];
+		$VD_status =		$aryA[5];
 		$sthA->finish();
 		}
 	else
@@ -361,9 +365,9 @@ else
 	$sthA->finish();
 
 	########## UPDATE vicidial_auto_calls entry ##########
-	$stmtA = "UPDATE vicidial_auto_calls set status='AA' where callerid='$callerid' order by auto_call_id desc limit 1;";
+	$stmtA = "UPDATE vicidial_auto_calls set status='XFER' where callerid='$callerid' order by auto_call_id desc limit 1;";
 		$affected_rows = $dbhA->do($stmtA);
-	if ($AGILOG) {$agi_string = "--    VDAC record updated: |$affected_rows|   |$VD_lead_id|$uniqueid|$VD_callerid|$VD_server_ip";   &agi_output;}
+	if ($AGILOG) {$agi_string = "--    VDAC record updated: |$affected_rows|   |$VD_lead_id|$uniqueid|$callerid|$VD_status|$VD_server_ip";   &agi_output;}
 
 	########## FIND AND UPDATE vicidial_log ##########
 	$Euniqueid=$uniqueid;
@@ -438,7 +442,8 @@ else
 		{
 		$sthA->finish();
 		### Grab vmail forward message values from the database
-		$stmtA = "SELECT am_message_exten,amd_send_to_vmx,waitforsilence_options,survey_recording,campaign_rec_filename,cpd_amd_action,amd_inbound_group,amd_callmenu,cpd_unknown_action,campaign_id,am_message_wildcards FROM vicidial_campaigns where closer_campaigns LIKE \"% $VD_campaign_id %\" order by campaign_id limit 1;";
+		$SQL_group_id=$VD_campaign_id;   $SQL_group_id =~ s/_/\\_/gi;
+		$stmtA = "SELECT am_message_exten,amd_send_to_vmx,waitforsilence_options,survey_recording,campaign_rec_filename,cpd_amd_action,amd_inbound_group,amd_callmenu,cpd_unknown_action,campaign_id,am_message_wildcards FROM vicidial_campaigns where closer_campaigns LIKE \"% $SQL_group_id %\" order by campaign_id limit 1;";
 			if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -1057,7 +1062,14 @@ else
 								if ($AGILOG) {$agi_string = "AMM owner Match Found: |$amm_field|$amm_rank|$amm_wildcard($AMM_owner)|$amm_filename|";   &agi_output;}
 								}
 							}
-
+						if ($amm_field =~ /called_count/) 
+							{
+							if ($AMM_called_count =~ /^$amm_wildcard$/i) 
+								{
+								$amm_filename_match = $amm_filename;
+								if ($AGILOG) {$agi_string = "AMM called_count Match Found: |$amm_field|$amm_rank|$amm_wildcard($AMM_owner)|$amm_filename|";   &agi_output;}
+								}
+							}
 
 						if (length($amm_filename_match) > 0)
 							{$DB_am_message_exten = $amm_filename_match;}

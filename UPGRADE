@@ -325,6 +325,77 @@ OTHER CHANGES:
 88. Added Manual Dial Routing Initiated Recording, must enable setting at the
 	campaign level and have a 0 recording delay.
 
+89. Added campaign features for Dead Call Trigger. Allowing an audio alert to be
+	sent to an agent and/or a back-end URL to be submitted when an agent has
+	been in a dead call for X number of seconds.
+
+90. Added the ability for customers to be able to enter a new phone number to be
+	called back on for the CallerID CallBack Queue feature.
+
+91. Added the new Callmenu Survey Report(linked as "Callmenu Agent" in Reports).
+
+92. Added "Agent Screen Logout Link Credentials" System Setting to change the 
+	agent screen logout page login link to not include user credentials.
+	
+93. Added new campaign feature to force agents to call back their triggered 
+	USERONLY Scheduled Callbacks.
+
+94. Added new campaign feature to automatically reschedule ANYONE callbacks when
+	they are dispositioned as a non-Human-Answered status flag status.
+
+95. Added new campaign feature to allow agents to select a specific timezone to
+	use when scheduling callbacks. For this to work, the Phone Codes must be
+	updated on your system using the following command:
+    /usr/share/astguiclient/ADMIN_area_code_populate.pl --purge-table --debug
+
+96. Added new 'force_fronter_leave_3way' Agent API function, allowing an API
+	command to be sent to the fronter of a call to leave-3way their call.
+
+97. Added List Daily Reset Limit option, only editable by level 9 users.
+
+98. Added 3-Way Volume Buttons campaign setting to allow disabling of volume
+	and mute buttons in the LIVE CALLS IN YOUR SESSION panel during a 3-way
+	call.
+
+99. Added campaign setting to filter ANYONE Scheduled Callbacks by the DNC 
+	settings set in the campaign
+
+100. Added _wait_time options to Next Agent Call settings for Campaigns and
+	Inbound Groups.
+
+101. Added External Web Socket URL option so a WebRTC phone can be used outside
+	a network if the Phone is set to Use External Server IP = Y
+
+102. Added SYSTEM options to the campaign detail Manual Dial Filter feature
+
+103. Added lead_callback_info Non-Agent API function, it outputs scheduled 
+	callback data for a specific lead
+
+104. Added Manual Dial Validation campaign and system settings, forces agent to
+	manually enter in the phone number before a call is placed. Does not 
+	affect 3way calls or transfers.
+
+105. Added alphabet letters translation to phone DTMF digits feature in Agent
+	Screen. For example, Putting "SMITH" in the SendDTMF field would result
+	in "76484" being sent over DTMF.
+
+106. Added "force_fronter_audio_stop" Agent API function, allowing an API
+	command to be sent to the fronter session of a closer call to stop
+	playing of an audio_playback pre-recorded audio stream
+
+107. Added options to define the static prompts to use for the Inbound Group 
+	"Play Place in Line" feature
+
+108. Added new web pages for mobile application
+
+109. Added feature allowing agents to mute recordings of calls from the agent
+	screen. Must be enabled in System Settings to be able to use it in
+	campaigns. There is also a User Override option.
+
+110. Added more options to the Campaign "Hide Call Log Info" feature to be able
+	to show only the last X number of calls in the Lead Info screen. Also 
+	added a User Override setting for this feature.
+
 
 
 

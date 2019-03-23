@@ -1,10 +1,19 @@
 <?php
-# 
+#
 # functions.php    version 2.14
 #
 # functions for agent scripts
 #
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# LICENSE: AGPLv3
+#
+# Copyright (©) 2018  Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
+
+#
+# FP - Changelog
+#
+# 2018-07-18 jff Add missing global debug vars ($DB, $mel);
 #
 #
 # CHANGES:
@@ -50,9 +59,20 @@
 
 # $mysql_queries = 26
 
+
+#
+# Global Vars
+# Debug Otput
+$DB = 0; # Enable debug output with 1
+$mel = 0; # Enable sql debug with 1 
+
+
 ##### BEGIN validate user login credentials, check for failed lock out #####
-function user_authorization($user,$pass,$user_option,$user_update,$bcrypt,$return_hash,$api_call)
+function user_authorization($user,$pass,$user_option,$user_update,$bcrypt,$return_hash,$api_call,$source)
+
 	{
+        global $DB, $mel;
+
 	require("dbconnect_mysqli.php");
 
 	#############################################
@@ -114,7 +134,7 @@ function user_authorization($user,$pass,$user_option,$user_update,$bcrypt,$retur
 
 	if ($auth < 1)
 		{
-		$auth_key='BAD'."|$stmt";
+		$auth_key='BAD'."|$bcrypt|$source|$stmt";
 		$stmt="SELECT failed_login_count,UNIX_TIMESTAMP(last_login_date) from vicidial_users where user='$user';";
 		if ($non_latin > 0) {$rslt=mysql_to_mysqli("SET NAMES 'UTF8'", $link);}
 		$rslt=mysql_to_mysqli($stmt, $link);
@@ -320,7 +340,9 @@ function user_authorization($user,$pass,$user_option,$user_update,$bcrypt,$retur
 
 ##### BEGIN custom_list_fields_values - gather values for display of custom list fields for a lead #####
 function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user,$DB,$call_id,$did_id,$did_extension,$did_pattern,$did_description,$dialed_number,$dialed_label)
-	{
+{
+    global $DB, $mel;
+    
 	$STARTtime = date("U");
 	$TODAY = date("Y-m-d");
 	$NOW_TIME = date("Y-m-d H:i:s");
@@ -680,6 +702,14 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user,$DB,$call_i
 					}
 				if ($A_field_type[$o]=='AREA') 
 					{
+					$change_trigger='';
+					$default_field_flag=0;
+					if (preg_match("/\|$A_field_label[$o]\|/i",$vicidial_list_fields))
+						{
+						$change_trigger="onchange=\"update_default_vd_field('$A_field_label[$o]');\"";
+						$default_field_flag++;
+						}
+
 					if ($A_field_default[$o]=='NULL') {$A_field_default[$o]='';}
 					if (strlen($A_field_value[$o]) < 1) {$A_field_value[$o] = $A_field_default[$o];}
 					$field_HTML .= "<textarea name=$A_field_label[$o] id=$A_field_label[$o] ROWS=$A_field_max[$o] COLS=$A_field_size[$o]>$A_field_value[$o]</textarea>";
@@ -1274,6 +1304,8 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user,$DB,$call_i
 
 function lookup_gmt($phone_code,$USarea,$state,$LOCAL_GMT_OFF_STD,$Shour,$Smin,$Ssec,$Smon,$Smday,$Syear,$postalgmt,$postal_code)
 	{
+	    
+	    global $DB, $mel;
 	require("dbconnect_mysqli.php");
 
 	$postalgmt_found=0;
@@ -2034,7 +2066,10 @@ function lookup_gmt($phone_code,$USarea,$state,$LOCAL_GMT_OFF_STD,$Shour,$Smin,$
 
 ##### DETERMINE IF LEAD IS DIALABLE #####
 function dialable_gmt($DB,$link,$local_call_time,$gmt_offset,$state)
-	{				
+	{
+	    
+	global $DB, $mel;
+	
 	require("dbconnect_mysqli.php");
 	$dialable=0;
 
@@ -2401,6 +2436,9 @@ function dialable_gmt($DB,$link,$local_call_time,$gmt_offset,$state)
 ##### AJAX process logging #####
 function vicidial_ajax_log($NOW_TIME,$startMS,$link,$ACTION,$php_script,$user,$stage,$lead_id,$session_name,$stmt)
 	{
+    
+	global $DB, $mel;
+	
 	$endMS = microtime();
 	$startMSary = explode(" ",$startMS);
 	$endMSary = explode(" ",$endMS);
@@ -2433,6 +2471,9 @@ function vicidial_ajax_log($NOW_TIME,$startMS,$link,$ACTION,$php_script,$user,$s
 ##### MySQL Error Logging #####
 function mysql_error_logging($NOW_TIME,$link,$mel,$stmt,$query_id,$user,$server_ip,$session_name,$one_mysql_log)
 	{
+
+	    global $DB, $mel;
+
 	$NOW_TIME = date("Y-m-d H:i:s");
 	#	mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00001',$user,$server_ip,$session_name,$one_mysql_log);
 	$errno='';   $error='';
@@ -2518,7 +2559,9 @@ function _QXZ($English_text, $sprintf=0, $align="l", $v_one='', $v_two='', $v_th
 	}
 
 function TestTicketMail($Agent, $type, $link) {
-	
+    
+    global $DB, $mel;
+    
 	$return = 0;
 	
 	$stmt = "SELECT ticket_mail FROM `system_settings`;";
@@ -2562,5 +2605,26 @@ function TestTicketMail($Agent, $type, $link) {
 		return $Agent_Mail[0];
 	}
 }
-	
+
+function GetPauseName($Agent) {
+
+    global $DB, $mel;
+
+    require("dbconnect_mysqli.php");
+
+    $Pause_Name = "";
+    $stmt = "SELECT `VPC`.`pause_code_name` FROM `vicidial_live_agents` VLA, `vicidial_pause_codes` VPC WHERE VLA.`user` = '$Agent' AND VLA.`status` = 'PAUSED' and VPC.`campaign_id` = VLA.`campaign_id` AND VPC.`pause_code` = VLA.`pause_code`;";
+    $rslt=mysqli_query($link, $stmt);
+    if(! $rslt ) {  echo "Error: " .  mysqli_error($link) . PHP_EOL; }
+    if ($DB) {echo "$stmt\n";}
+
+    $TT_ct = mysqli_num_rows($rslt);
+    if ($TT_ct > 0) {
+        $row=mysqli_fetch_all($rslt, MYSQLI_BOTH);
+        $Erg = $row[0];
+        $Pause_Name= $Erg[0];
+    }
+    return $Pause_Name;
+}
+
 ?>

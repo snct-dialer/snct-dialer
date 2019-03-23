@@ -28,8 +28,11 @@
 #
 # This program assumes that recordings are saved by Asterisk as .wav
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# LICENSE: AGPLv3
 #
+# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
 # 
 # 80302-1958 - First Build
 # 80731-2253 - Changed size comparisons for more efficiency
@@ -38,7 +41,20 @@
 # 110524-1059 - Added run-check concurrency check option
 # 160523-0652 - Added --HTTPS option to use https instead of http in local location
 # 170212-0732 - Added --file-sorting option to put files into dated directories (THIS WILL NOT ALLOW FTP ARCHIVING)
+# 180613-1616 - Add sniplet into perl scripts to run only once a time
 #
+
+###### Test that the script is running only once a time
+use Fcntl qw(:flock);
+# print "start of program $0\n";
+unless (flock(DATA, LOCK_EX|LOCK_NB)) {
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    or print "Can't open the fscking file: $!";
+    $datestring = localtime();
+    print $fh "[$datestring] $0 is already running. Exiting.\n";
+    exit(1);
+}
+
 
 $GSM=0;   $MP3=0;   $OGG=0;   $GSW=0;
 $HTTPS=0;
@@ -414,3 +430,7 @@ $dbhA->disconnect();
 
 
 exit;
+
+__DATA__
+This exists so flock() code above works.
+DO NOT REMOVE THIS DATA SECTION.

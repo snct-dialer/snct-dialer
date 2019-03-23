@@ -74,10 +74,11 @@
 # 171204-1517 - Fix for custom field duplicate issue, removed link to old lead loader
 # 180324-0943 - Enforce User Group campaign permissions for templates based on list_id
 # 180502-2215 - Added new help display
+# 180927-0702 - Fixed translation-related issue #1114
 #
 
-$version = '2.14-72';
-$build = '180502-2215';
+$version = '2.14-73';
+$build = '180927-0702';
 
 require("dbconnect_mysqli.php");
 require("functions.php");
@@ -662,7 +663,7 @@ if ( (!$OK_to_process) or ( ($leadfile) and ($file_layout!="standard" && $file_l
 				$count++;
 				}
 			?>
-			</select><input type='checkbox' name='master_list_override' value='1'>(override template setting)
+			</select><input type='checkbox' name='master_list_override' value='1'>(<?php echo _QXZ("override template setting"); ?>)
 			</font></td>
 		  </tr>
 		  <tr>

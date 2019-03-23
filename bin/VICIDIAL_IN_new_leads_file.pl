@@ -140,7 +140,7 @@ foreach(@conf)
 $server_ip = $VARserver_ip;		# Asterisk server IP
 
 
-if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/newleads.$year-$mon-$mday";}
+if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/newleads";}
 
 ### begin parsing run-time options ###
 if (length($ARGV[0])>1)

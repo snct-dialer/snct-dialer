@@ -105,7 +105,8 @@ that are not sent to agents such as DROPs, No Answers, Busys and timeouts. This
 option is available for Campaigns and In-Groups. This feature will only work for
 auto-dial and inbound calls, not manual dial calls. For inbound calls, the 
 specific in-group that a call was sent to needs to have the No Agent Call URL 
-field filled in or this function will not run for that call.
+field filled in or this function will not run for that call. To send the 
+status of the call, just use the --A--status--B-- variable.
 
 
 ################################################################################
@@ -151,6 +152,11 @@ did_custom_five
 
 For most of the functions above, you can also reference custom list fields using
 the standard --A-- and --B-- around the custom field ID
+
+NOTE: Most of these URL features have variables available for use that are not 
+documented on this page. If you want to confirm what variables are available 
+outside of the ones mentioned here, you should look in the code.
+
 
 
 ################################################################################

@@ -1,7 +1,7 @@
 <?php
 # dispo_send_email.php
 # 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed to be used in the "Dispo URL" field of a campaign
 # or in-group. It will send out an email to a fixed email address as defined
@@ -13,6 +13,10 @@
 # Examples of what to put in the Dispo URL field:
 # VARhttp://192.168.1.1/agc/dispo_send_email.php?container_id=TEST_CONTAINER&lead_id=--A--lead_id--B--&call_id=--A--call_id--B--&dispo=--A--dispo--B--&user=--A--user--B--&pass=--A--pass--B--&sale_status=SALE---SSALE---XSALE&log_to_file=1
 # VARhttp://192.168.1.1/agc/dispo_send_email.php?container_id=TEST_CONTAINER&lead_id=--A--lead_id--B--&call_id=--A--call_id--B--&dispo=--A--dispo--B--&user=--A--user--B--&pass=--A--pass--B--&sale_status=ALL-STATUSES&called_count=--A--called_count--B--&called_count_trigger=40&log_to_file=1
+#
+#
+# Example of what to put in Dead Trigger URL campaign setting field:
+# VARhttp://192.168.1.1/agc/dispo_send_email.php?container_id=TEST_CONTAINER&lead_id=--A--lead_id--B--&call_id=--A--call_id--B--&dispo=DEAD&user=NOAGENTURL--A--user--B--&pass=--A--call_id--B--&sale_status=ALL-STATUSES&called_count=--A--called_count--B--&log_to_file=1
 # 
 # Definable Fields: (other fields should be left as they are)
 # - log_to_file -	(0,1) if set to 1, will create a log file in the agc directory
@@ -30,6 +34,9 @@
 # 171120-0910 - Added ALL-STATUSES option and called_count_trigger option
 # 171120-1535 - Added additional_notes option and email attachments options(1-5)
 # 171207-0659 - Added option of up to 20 attachments
+# 180611-1703 - Added instructions for Dead Trigger URL
+# 180909-1907 - Added channel_group variable
+# 190129-1855 - Added --A--RUSfullname--B-- special variable flag
 #
 
 $api_script = 'send_email';
@@ -77,6 +84,8 @@ if (isset($_GET["called_count_trigger"]))			{$called_count_trigger=$_GET["called
 	elseif (isset($_POST["called_count_trigger"]))	{$called_count_trigger=$_POST["called_count_trigger"];}
 if (isset($_GET["email_to"]))				{$email_to=$_GET["email_to"];}
 	elseif (isset($_POST["email_to"]))		{$email_to=$_POST["email_to"];}
+if (isset($_GET["channel_group"]))			{$channel_group=$_GET["channel_group"];}
+	elseif (isset($_POST["channel_group"]))	{$channel_group=$_POST["channel_group"];}
 if (isset($_GET["email_attachment_1"]))				{$email_attachment_1=$_GET["email_attachment_1"];}
 	elseif (isset($_POST["email_attachment_1"]))	{$email_attachment_1=$_POST["email_attachment_1"];}
 if (isset($_GET["email_attachment_2"]))				{$email_attachment_2=$_GET["email_attachment_2"];}
@@ -219,6 +228,7 @@ if ($match_found > 0)
 
 	if (preg_match("/NOAGENTURL/",$user))
 		{
+		if (strlen($user) > 11) {$user = preg_replace("/NOAGENTURL/",'',$user);}
 		$PADlead_id = sprintf("%010s", $lead_id);
 		if ( (strlen($pass) > 15) and (preg_match("/$PADlead_id$/",$pass)) )
 			{
@@ -246,7 +256,7 @@ if ($match_found > 0)
 	else
 		{
 		$auth=0;
-		$auth_message = user_authorization($user,$pass,'',0,0,0,0);
+		$auth_message = user_authorization($user,$pass,'',0,0,0,0,'dispo_send_email');
 		if ($auth_message == 'GOOD')
 			{$auth=1;}
 
@@ -464,6 +474,7 @@ if ($match_found > 0)
 							$fullname =				urlencode(trim($row[5]));
 							$user_group =			urlencode(trim($row[6]));
 							$agent_email =			urlencode(trim($row[7]));
+							$RUSfullname = preg_replace("/^.*_/",'',$fullname);
 							}
 						
 						if ( (preg_match('/--A--CF_uses_custom_fields--B--/i',$email_subject)) or (preg_match('/--A--CF_uses_custom_fields--B--/i',$email_body)) )
@@ -554,6 +565,7 @@ if ($match_found > 0)
 						$email_subject = preg_replace('/--A--call_id--B--/i',urlencode(trim($call_id)),$email_subject);
 						$email_subject = preg_replace('/--A--entry_date--B--/i',"$entry_date",$email_subject);
 						$email_subject = preg_replace('/--A--fullname--B--/i',"$fullname",$email_subject);
+						$email_subject = preg_replace('/--A--RUSfullname--B--/i',"$RUSfullname",$email_subject);
 						$email_subject = preg_replace('/--A--user_custom_one--B--/i',"$user_custom_one",$email_subject);
 						$email_subject = preg_replace('/--A--user_custom_two--B--/i',"$user_custom_two",$email_subject);
 						$email_subject = preg_replace('/--A--user_custom_three--B--/i',"$user_custom_three",$email_subject);
@@ -572,12 +584,12 @@ if ($match_found > 0)
 						$email_subject = preg_replace('/--A--did_custom_four--B--/i',"$DID_custom_four",$email_subject);
 						$email_subject = preg_replace('/--A--did_custom_five--B--/i',"$DID_custom_five",$email_subject);
 						$email_subject = preg_replace('/--A--uniqueid--B--/i',"$uniqueid",$email_subject);
+						$email_subject = preg_replace('/--A--group--B--/i',"$channel_group",$email_subject);
+						$email_subject = preg_replace('/--A--channel_group--B--/i',"$channel_group",$email_subject);
 
 						# not currently active
 						$email_subject = preg_replace('/--A--campaign--B--/i',"$campaign",$email_subject);
 						$email_subject = preg_replace('/--A--phone_login--B--/i',"$phone_login",$email_subject);
-						$email_subject = preg_replace('/--A--group--B--/i',"$VDADchannel_group",$email_subject);
-						$email_subject = preg_replace('/--A--channel_group--B--/i',"$VDADchannel_group",$email_subject);
 						$email_subject = preg_replace('/--A--customer_zap_channel--B--/i',"$customer_zap_channel",$email_subject);
 						$email_subject = preg_replace('/--A--customer_server_ip--B--/i',"$customer_server_ip",$email_subject);
 						$email_subject = preg_replace('/--A--server_ip--B--/i',"$server_ip",$email_subject);
@@ -648,6 +660,7 @@ if ($match_found > 0)
 						$email_body = preg_replace('/--A--call_id--B--/i',urlencode(trim($call_id)),$email_body);
 						$email_body = preg_replace('/--A--entry_date--B--/i',"$entry_date",$email_body);
 						$email_body = preg_replace('/--A--fullname--B--/i',"$fullname",$email_body);
+						$email_body = preg_replace('/--A--RUSfullname--B--/i',"$RUSfullname",$email_body);
 						$email_body = preg_replace('/--A--user_custom_one--B--/i',"$user_custom_one",$email_body);
 						$email_body = preg_replace('/--A--user_custom_two--B--/i',"$user_custom_two",$email_body);
 						$email_body = preg_replace('/--A--user_custom_three--B--/i',"$user_custom_three",$email_body);
@@ -668,6 +681,8 @@ if ($match_found > 0)
 						$email_body = preg_replace('/--A--uniqueid--B--/i',"$uniqueid",$email_body);
 						$email_body = preg_replace('/--A--call_notes--B--/i',"$call_notes",$email_body);
 						$email_body = preg_replace('/--A--additional_notes--B--/i',"$additional_notes",$email_body);
+						$email_body = preg_replace('/--A--group--B--/i',"$channel_group",$email_body);
+						$email_body = preg_replace('/--A--channel_group--B--/i',"$channel_group",$email_body);
 						$email_body = urldecode($email_body);
 						}
 

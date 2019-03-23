@@ -1,7 +1,7 @@
 <?php
 # manager_send.php    version 2.14
 # 
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed purely to insert records into the vicidial_manager table to signal Actions to an asterisk server
 # This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
@@ -140,13 +140,15 @@
 # 170528-0850 - Fix for rare inbound logging issue #1017, Added additional variable filtering
 # 170921-2009 - Fix for CALLID in beginning of recording filename
 # 180522-1920 - Added more agent debug output for recordings
+# 190222-1318 - Added recent session per-call logging
+# 190310-1202 - Added MuteRecording function
 #
 
-$version = '2.14-87';
-$build = '180522-1920';
+$version = '2.14-89';
+$build = '190310-1202';
 $php_script = 'manager_send.php';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=142;
+$mysql_log_count=143;
 $one_mysql_log=0;
 $SSagent_debug_logging=0;
 $startMS = microtime();
@@ -247,6 +249,8 @@ if (isset($_GET["qm_extension"]))			{$qm_extension=$_GET["qm_extension"];}
 	elseif (isset($_POST["qm_extension"]))	{$qm_extension=$_POST["qm_extension"];}
 if (isset($_GET["customerparked"]))				{$customerparked=$_GET["customerparked"];}
 	elseif (isset($_POST["customerparked"]))	{$customerparked=$_POST["customerparked"];}
+if (isset($_GET["user_group"]))				{$user_group=$_GET["user_group"];}
+	elseif (isset($_POST["user_group"]))	{$user_group=$_POST["user_group"];}
 
 
 header ("Content-type: text/html; charset=utf-8");
@@ -270,6 +274,7 @@ $ACTION = preg_replace("/\'|\"|\\\\|;/","",$ACTION);
 $CalLCID = preg_replace("/\'|\"|\\\\|;/","",$CalLCID);
 $FROMvdc = preg_replace('/[^-_0-9a-zA-Z]/','',$FROMvdc);
 $account = preg_replace('/[^-_0-9a-zA-Z]/','',$account);
+$user_group = preg_replace('/[^-_0-9a-zA-Z]/','',$user_group);
 $agent_dialed_number = preg_replace('/[^-_0-9a-zA-Z]/','',$agent_dialed_number);
 $agent_dialed_type = preg_replace('/[^-_0-9a-zA-Z]/','',$agent_dialed_type);
 $agent_log_id = preg_replace('/[^-_0-9a-zA-Z]/','',$agent_log_id);
@@ -362,7 +367,7 @@ if (strlen($meetme_enter_leave3way_filename) > 0)
 	{$threeway_context = 'meetme-enter-leave3way';}
 
 $auth=0;
-$auth_message = user_authorization($user,$pass,'',0,1,0,0);
+$auth_message = user_authorization($user,$pass,'',0,1,0,0,'manager_send');
 if ($auth_message == 'GOOD')
 	{$auth=1;}
 
@@ -575,6 +580,14 @@ if ($ACTION=="Originate")
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02119',$user,$server_ip,$session_name,$one_mysql_log);}
+
+		if ( (strlen($lead_id) > 0) and (strlen($session_id) > 0) and (preg_match("/^DC/",$queryCID)) )
+			{
+			$stmt="INSERT INTO vicidial_sessions_recent SET lead_id='$lead_id',server_ip='$server_ip',call_date=NOW(),user='$user',campaign_id='$campaign',conf_exten='$session_id',call_type='X';";
+				if ($format=='debug') {echo "\n<!-- $stmt -->";}
+			$rslt=mysql_to_mysqli($stmt, $link);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02143',$user,$server_ip,$session_name,$one_mysql_log);}
+			}
 
 		if ($agent_dialed_number > 0)
 			{
@@ -2575,6 +2588,36 @@ if ($ACTION=="VolumeControl")
 		echo _QXZ("Volume command sent for Conference %1s, Stage %2s Channel %3s on %4s",0,'',$exten,$stage,$channel,$server_ip)."\n";
 		}
 	}
+
+
+
+
+######################
+# ACTION=MuteRecording  - Mute/Unmute audio recording of call
+######################
+if ($ACTION=="MuteRecording")
+	{
+	if ( (strlen($channel)<1) or (strlen($stage)<1) or (strlen($queryCID)<1) )
+		{
+		echo _QXZ("Recording %1s, Muting %2s is not valid or queryCID %3s is not valid, Originate command not inserted",0,'',$channel,$stage,$queryCID)."\n";
+		}
+	else
+		{
+		### insert into the vicidial_agent_function_log table that the recording mute has happened
+		$stmt = "INSERT INTO vicidial_agent_function_log set agent_log_id='$agent_log_id',user='$user',function='mute_rec',event_time=NOW(),campaign_id='$campaign',user_group='$user_group',lead_id='$lead_id',uniqueid='$uniqueid',caller_code='$queryCID',stage='$stage',comments='$channel';";
+		if ($DB) {echo "$stmt\n";}
+		$rslt=mysql_to_mysqli($stmt, $link);
+			if ($mel > 0) {$errno = mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02144',$user,$server_ip,$session_name,$one_mysql_log);}
+
+		$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','MuteAudio','$queryCID','Channel: $channel','Direction: all','State: $stage','Callerid: $queryCID','','','','','$channel','$stage');";
+			if ($format=='debug') {echo "\n<!-- $stmt -->";}
+		$rslt=mysql_to_mysqli($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02145',$user,$server_ip,$session_name,$one_mysql_log);}
+		echo _QXZ("Mute command sent for Recording %1s, Muting %2s on %3s",0,'',$channel,$stage,$server_ip)."\n";
+		}
+	}
+
+
 
 
 

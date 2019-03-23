@@ -189,7 +189,7 @@ $dbhB->disconnect();
 
 if ($SERVERLOG =~ /Y/) 
 	{
-	$childLOGfile = "$PATHlogs/FastAGIchildLOG.$year-$mon-$mday";
+	$childLOGfile = "$PATHlogs/FastAGIchildLOG";
 	$log_level = "4";
 	print "SERVER LOGGING ON: LEVEL-$log_level FILE-$childLOGfile\n";
 	}
@@ -300,7 +300,7 @@ sub process_request {
 		}
 
 	if (!$VARDB_port) {$VARDB_port='3306';}
-	if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/FASTagiout.$year-$mon-$mday";}
+	if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/FASTagiout";}
 
 	$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
 		or die "Couldn't connect to database: " . DBI->errstr;

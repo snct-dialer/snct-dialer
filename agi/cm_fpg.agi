@@ -81,8 +81,8 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port) {$VARDB_port='3306';}
-if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout.$year-$mon-$mday";}
-if (!$FPGLOGfile) {$FPGLOGfile = "$PATHlogs/fpgout.$year-$mon-$mday";}
+if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout";}
+if (!$FPGLOGfile) {$FPGLOGfile = "$PATHlogs/fpgout";}
 
 use DBI;
 use Asterisk::AGI;

@@ -2,8 +2,12 @@
 #
 # ADMIN_area_code_populate.pl    version 2.14
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# LICENSE: AGPLv3
 #
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
+
 # Description:
 # server application that allows load areacodes into to asterisk list database
 #
@@ -24,7 +28,20 @@
 # 151228-1043 - Added ISO-TLD table and import
 # 160611-0933 - Added more documentation
 # 170614-2146 - Added some dirty input filtering and more debug output
+# 180616-1925 - Add sniplet into perl scripts to run only once a time
+# 180825-2038 - Added php_tz field to vicidial_phone_codes table
 #
+
+###### Test that the script is running only once a time
+use Fcntl qw(:flock);
+# print "start of program $0\n";
+unless (flock(DATA, LOCK_EX|LOCK_NB)) {
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    or print "Can't open the fscking file: $!";
+    $datestring = localtime();
+    print $fh "[$datestring] $0 is already running. Exiting.\n";
+    exit(1);
+}
 
 
 # default path to astguiclient configuration file:
@@ -359,6 +376,7 @@ else
 		if ($codefile[$pc] !~ /GEOGRAPHIC DESCRIPTION/)
 			{
 			$pc++;
+			$row[9] =~ s/\r|\n|\t| $//gi;
 			$row[8] =~ s/\r|\n|\t| $//gi;
 			$row[7] =~ s/\r|\n|\t| $//gi;
 			$row[6] =~ s/\r|\n|\t| $//gi;
@@ -368,7 +386,7 @@ else
 			$row[2] =~ s/\r|\n|\t| $//gi;
 			$row[1] =~ s/\r|\n|\t| $//gi;
 			$row[0] =~ s/\r|\n|\t| $//gi;
-			$ins_stmt.="('$row[0]', '$row[1]', '$row[2]', '$row[3]', '$row[4]', '$row[5]', '$row[6]', '$row[7]', '$row[8]'), ";
+			$ins_stmt.="('$row[0]', '$row[1]', '$row[2]', '$row[3]', '$row[4]', '$row[5]', '$row[6]', '$row[7]', '$row[8]', '$row[9]'), ";
 			if ($pc =~ /00$/) 
 				{
 				chop($ins_stmt);
@@ -483,3 +501,7 @@ else
 $dbhA->disconnect();
 
 exit;
+
+__DATA__
+This exists so flock() code above works.
+DO NOT REMOVE THIS DATA SECTION.

@@ -26,6 +26,9 @@
 # 
 #
 # Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (©) 2019  SNCT GmbH <info@snct-gmbh.de>
+#               2019 Jörg Frings-Fürst <entwicklung@jff.email>
+
 #
 # CHANGELOG:
 # 61010-1007 - First test build
@@ -81,7 +84,14 @@
 # 170527-2340 - Fix for rare inbound logging issue #1017
 # 170915-1753 - Asterisk 13 compatibility
 # 180521-1153 - Changed closer log logging to use agent if call was AGENTDIRECT
+# 180919-1729 - Fix for rare non-NA-set-as-NA call logging issue
 #
+
+
+# JFF changelog
+# 190301-1635 - Remove date from logfiles
+#
+
 
 # defaults for PreFork
 $VARfastagi_log_min_servers =	'3';
@@ -168,7 +178,7 @@ $dbhB->disconnect();
 
 if ($SERVERLOG =~ /Y/) 
 	{
-	$childLOGfile = "$PATHlogs/FastAGIchildLOG.$year-$mon-$mday";
+	$childLOGfile = "$PATHlogs/FastAGIchildLOG";
 	$log_level = "4";
 	print "SERVER LOGGING ON: LEVEL-$log_level FILE-$childLOGfile\n";
 	}
@@ -247,7 +257,7 @@ sub process_request
 		}
 
 	if (!$VARDB_port) {$VARDB_port='3306';}
-	if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/FASTagiout.$year-$mon-$mday";}
+	if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/FASTagiout";}
 
 	$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
 		or die "Couldn't connect to database: " . DBI->errstr;
@@ -995,86 +1005,93 @@ sub process_request
 								}
 							}
 
-						$stmtA = "UPDATE vicidial_list set status='$VDL_status' where lead_id = '$CIDlead_id';";
-							if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
-						$VDADaffected_rows = $dbhA->do($stmtA);
-						if ($AGILOG) {$agi_string = "--    VDAD vicidial_list update: |$VDADaffected_rows|$CIDlead_id";   &agi_output;}
-
-						$stmtA = "UPDATE vicidial_auto_calls set status='$VDAC_status' where callerid = '$callerid';";
-							if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
-						$VDACaffected_rows = $dbhA->do($stmtA);
-						if ($AGILOG) {$agi_string = "--    VDAC update: |$VDACaffected_rows|$CIDlead_id";   &agi_output;}
-
-							$Euniqueid=$uniqueid;
-							$Euniqueid =~ s/\.\d+$//gi;
-						$stmtA = "UPDATE vicidial_log FORCE INDEX(lead_id) set status='$VDL_status' where lead_id = '$CIDlead_id' and uniqueid LIKE \"$Euniqueid%\";";
-							if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
-						$VDLaffected_rows = $dbhA->do($stmtA);
-						if ($AGILOG) {$agi_string = "--    VDAD vicidial_log update: |$VDLaffected_rows|$uniqueid|$VDACuniqueid|";   &agi_output;}
-						if ($VDLaffected_rows < 1)
+						if (length($VDL_status) > 0) 
 							{
-							$VD_alt_dial = 'NONE';
-							$stmtA = "SELECT lead_id,callerid,campaign_id,alt_dial,stage,UNIX_TIMESTAMP(call_time),uniqueid,status,call_time,phone_code,phone_number,queue_position FROM vicidial_auto_calls where uniqueid = '$uniqueid' or callerid = '$callerid' limit 1;";
+							$stmtA = "UPDATE vicidial_list set status='$VDL_status' where lead_id = '$CIDlead_id';";
 								if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
-							$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-							$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-							$sthArows=$sthA->rows;
-							$rec_countCUSTDATA=0;
-							if ($sthArows > 0)
-								{
-								@aryA = $sthA->fetchrow_array;
-								$VD_lead_id	=			$aryA[0];
-								$VD_callerid	=		$aryA[1];
-								$VD_campaign_id	=		$aryA[2];
-								$VD_alt_dial	=		$aryA[3];
-								$VD_stage =				$aryA[4];
-								$VD_start_epoch =		$aryA[5];
-								$VD_uniqueid =			$aryA[6];
-								$VD_status =			$aryA[7];
-								$VD_call_time =			$aryA[8];
-								$VD_phone_code =		$aryA[9];
-								$VD_phone_number =		$aryA[10];
-								$VD_queue_position =	$aryA[11];
-								$rec_countCUSTDATA++;
-								}
-							$sthA->finish();
+							$VDADaffected_rows = $dbhA->do($stmtA);
+							if ($AGILOG) {$agi_string = "--    VDAD vicidial_list update: |$VDADaffected_rows|$CIDlead_id";   &agi_output;}
 
-							if ($sthArows > 0)
+							$stmtA = "UPDATE vicidial_auto_calls set status='$VDAC_status' where callerid = '$callerid';";
+								if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+							$VDACaffected_rows = $dbhA->do($stmtA);
+							if ($AGILOG) {$agi_string = "--    VDAC update: |$VDACaffected_rows|$CIDlead_id";   &agi_output;}
+
+								$Euniqueid=$uniqueid;
+								$Euniqueid =~ s/\.\d+$//gi;
+							$stmtA = "UPDATE vicidial_log FORCE INDEX(lead_id) set status='$VDL_status' where lead_id = '$CIDlead_id' and uniqueid LIKE \"$Euniqueid%\";";
+								if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+							$VDLaffected_rows = $dbhA->do($stmtA);
+							if ($AGILOG) {$agi_string = "--    VDAD vicidial_log update: |$VDLaffected_rows|$uniqueid|$VDACuniqueid|";   &agi_output;}
+							if ($VDLaffected_rows < 1)
 								{
-								$called_count=0;
-								$stmtA = "SELECT list_id,called_count FROM vicidial_list where lead_id='$VD_lead_id' limit 1;";
+								$VD_alt_dial = 'NONE';
+								$stmtA = "SELECT lead_id,callerid,campaign_id,alt_dial,stage,UNIX_TIMESTAMP(call_time),uniqueid,status,call_time,phone_code,phone_number,queue_position FROM vicidial_auto_calls where uniqueid = '$uniqueid' or callerid = '$callerid' limit 1;";
 									if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 								$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 								$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-								$sthArowsVLd=$sthA->rows;
-								if ($sthArowsVLd > 0)
+								$sthArows=$sthA->rows;
+								$rec_countCUSTDATA=0;
+								if ($sthArows > 0)
 									{
 									@aryA = $sthA->fetchrow_array;
-									$VD_list_id	=		$aryA[0];
-									$called_count =		$aryA[1];
+									$VD_lead_id	=			$aryA[0];
+									$VD_callerid	=		$aryA[1];
+									$VD_campaign_id	=		$aryA[2];
+									$VD_alt_dial	=		$aryA[3];
+									$VD_stage =				$aryA[4];
+									$VD_start_epoch =		$aryA[5];
+									$VD_uniqueid =			$aryA[6];
+									$VD_status =			$aryA[7];
+									$VD_call_time =			$aryA[8];
+									$VD_phone_code =		$aryA[9];
+									$VD_phone_number =		$aryA[10];
+									$VD_queue_position =	$aryA[11];
+									$rec_countCUSTDATA++;
 									}
 								$sthA->finish();
 
-								$vl_commentsSQL = '';
-								if ($callerid =~ /^M\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d/)
-									{$vl_commentsSQL=",comments='MANUAL'";}
-								$stmtA = "INSERT INTO vicidial_log SET uniqueid='$uniqueid',lead_id='$VD_lead_id',list_id='$VD_list_id',status='$VDL_status',campaign_id='$VD_campaign_id',call_date='$VD_call_time',start_epoch='$VD_start_epoch',phone_code='$VD_phone_code',phone_number='$VD_phone_number',user='VDAD',processed='N',length_in_sec='0',end_epoch='$VD_start_epoch',alt_dial='$VD_alt_dial',called_count='$called_count' $vl_commentsSQL;";
-									if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
-								$VDLIaffected_rows = $dbhA->do($stmtA);
-								if ($AGILOG) {$agi_string = "--    VDAD vicidial_log insert: |$VDLIaffected_rows|$uniqueid|$CIDlead_id|$VDL_status|";   &agi_output;}
+								if ($sthArows > 0)
+									{
+									$called_count=0;
+									$stmtA = "SELECT list_id,called_count FROM vicidial_list where lead_id='$VD_lead_id' limit 1;";
+										if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+									$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+									$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+									$sthArowsVLd=$sthA->rows;
+									if ($sthArowsVLd > 0)
+										{
+										@aryA = $sthA->fetchrow_array;
+										$VD_list_id	=		$aryA[0];
+										$called_count =		$aryA[1];
+										}
+									$sthA->finish();
 
-								$stmtA="INSERT IGNORE INTO vicidial_log_extended SET uniqueid='$uniqueid',server_ip='$VARserver_ip',call_date='$VD_call_time',lead_id='$VD_lead_id',caller_code='$VD_callerid',custom_call_id='' ON DUPLICATE KEY UPDATE server_ip='$VARserver_ip',call_date='$VD_call_time',lead_id='$VD_lead_id',caller_code='$VD_callerid';";
+									$vl_commentsSQL = '';
+									if ($callerid =~ /^M\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d/)
+										{$vl_commentsSQL=",comments='MANUAL'";}
+									$stmtA = "INSERT INTO vicidial_log SET uniqueid='$uniqueid',lead_id='$VD_lead_id',list_id='$VD_list_id',status='$VDL_status',campaign_id='$VD_campaign_id',call_date='$VD_call_time',start_epoch='$VD_start_epoch',phone_code='$VD_phone_code',phone_number='$VD_phone_number',user='VDAD',processed='N',length_in_sec='0',end_epoch='$VD_start_epoch',alt_dial='$VD_alt_dial',called_count='$called_count' $vl_commentsSQL;";
+										if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+									$VDLIaffected_rows = $dbhA->do($stmtA);
+									if ($AGILOG) {$agi_string = "--    VDAD vicidial_log insert: |$VDLIaffected_rows|$uniqueid|$CIDlead_id|$VDL_status|";   &agi_output;}
+
+									$stmtA="INSERT IGNORE INTO vicidial_log_extended SET uniqueid='$uniqueid',server_ip='$VARserver_ip',call_date='$VD_call_time',lead_id='$VD_lead_id',caller_code='$VD_callerid',custom_call_id='' ON DUPLICATE KEY UPDATE server_ip='$VARserver_ip',call_date='$VD_call_time',lead_id='$VD_lead_id',caller_code='$VD_callerid';";
+										if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+									$VDLXaffected_rows = $dbhA->do($stmtA);
+									if ($AGILOG) {$agi_string = "--    VDAD vicidial_extended_log insert: |$VDLXaffected_rows|$uniqueid|$CIDlead_id|$VDL_status|";   &agi_output;}
+									}
+								}
+							if ( ($CPDfound > 0) && ($VDL_status !~ /AA/) )
+								{
+								$stmtA = "DELETE FROM vicidial_auto_calls where callerid = '$callerid';";
 									if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
-								$VDLXaffected_rows = $dbhA->do($stmtA);
-								if ($AGILOG) {$agi_string = "--    VDAD vicidial_extended_log insert: |$VDLXaffected_rows|$uniqueid|$CIDlead_id|$VDL_status|";   &agi_output;}
+								$VDACDELaffected_rows = $dbhA->do($stmtA);
+								if ($AGILOG) {$agi_string = "--    CPD VDAC deleted: |$VDACDELaffected_rows|$callerid";   &agi_output;}
 								}
 							}
-						if ( ($CPDfound > 0) && ($VDL_status !~ /AA/) )
+						else
 							{
-							$stmtA = "DELETE FROM vicidial_auto_calls where callerid = '$callerid';";
-								if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
-							$VDACDELaffected_rows = $dbhA->do($stmtA);
-							if ($AGILOG) {$agi_string = "--    CPD VDAC deleted: |$VDACDELaffected_rows|$callerid";   &agi_output;}
+							if ($AGILOG) {$agi_string = "--    VD_hangup Local STATUS EMPTY: |$PRI|$callerid|$dialstatus|$hangup_cause|$CPDfound|$VDL_status|";   &agi_output;}
 							}
 						}
 					else

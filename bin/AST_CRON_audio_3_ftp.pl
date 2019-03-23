@@ -38,9 +38,13 @@
 # /var/spool/asterisk/monitorDONE	# where the mixed -all files are put
 # 
 # This program assumes that recordings are saved by Asterisk as .wav
-# 
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
+# LICENSE: AGPLv3
+#
+# Copyright (C) 2018 Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
+
 # 
 # 80302-1958 - First Build
 # 80317-2349 - Added FTP debug if debugX
@@ -58,7 +62,21 @@
 # 150911-2336 - Added GPG encrypted audio file compatibility
 # 160406-2055 - Added YMDdatedir option
 # 180511-2018 - Added --YearYMDdatedir option
+# 180616-1825 - Add sniplet into perl scripts to run only once a time
+# 180616-2248 - Added --localdatedir option
 #
+
+
+###### Test that the script is running only once a time
+use Fcntl qw(:flock);
+# print "start of program $0\n";
+unless (flock(DATA, LOCK_EX|LOCK_NB)) {
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    or print "Can't open the fscking file: $!";
+    $datestring = localtime();
+    print $fh "[$datestring] $0 is already running. Exiting.\n";
+    exit(1);
+}
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
 $year = ($year + 1900);
@@ -114,6 +132,7 @@ if (length($ARGV[0])>1)
 		print "  [--nodatedir] = do not put into dated directories\n";
 		print "  [--YMDdatedir] = put into Year/Month/Day dated directories\n";
 		print "  [--YearYMDdatedir] = put into Year/YYYYMMDD dated directories\n";
+		print "  [--localdatedir] = create dated directories inside of FTP directory on local server\n";
 		print "  [--run-check] = concurrency check, die if another instance is running\n";
 		print "  [--max-files=x] = maximum number of files to process, defaults to 100000\n";
 		print "  [--ftp-server=XXX] = FTP server\n";
@@ -157,6 +176,11 @@ if (length($ARGV[0])>1)
 			{
 			$YearYMDdatedir=1;
 			if ($DB) {print "\n----- Year/YYYYMMDD DATED DIRECTORIES -----\n\n";}
+			}
+		if ($args =~ /--localdatedir/i)
+			{
+			$localdatedir=1;
+			if ($DB) {print "\n----- CREATE LOCAL DATED DIRECTORIES: $localdatedir -----\n\n";}
 			}
 		if ($args =~ /--run-check/i)
 			{
@@ -530,7 +554,7 @@ foreach(@FILES)
 							}
 						}
 					}
-				$ftp->binary();
+				$ftp->binary() or die "Cannot set binary transfer, is server connected?";
 				$ftp->put("$dir2/$ALLfile", "$ALLfile");
 				if ($FTPvalidate > 0)
 					{
@@ -554,7 +578,50 @@ foreach(@FILES)
 
 				if (!$T)
 					{
-					`mv -f "$dir2/$ALLfile" "$PATHDONEmonitor/FTP/$ALLfile"`;
+					$localDIR='';
+					if ( ($localdatedir > 0) && ($NODATEDIR < 1) )
+						{
+						if ($YMDdatedir > 0) 
+							{
+							if (-d "$PATHDONEmonitor/FTP/$year") 
+								{if($DBX) {print "Year directory exists: $PATHDONEmonitor/FTP/$year\n";}}
+							else 
+								{mkdir("$PATHDONEmonitor/FTP/$year",0755);   if($DBX) {print "Year directory created: $PATHDONEmonitor/FTP/$year\n";}}
+							if (-d "$PATHDONEmonitor/FTP/$year/$mon") 
+								{if($DBX) {print "Month directory exists: $PATHDONEmonitor/FTP/$year/$mon\n";}}
+							else 
+								{mkdir("$PATHDONEmonitor/FTP/$year/$mon",0755);   if($DBX) {print "Month directory created: $PATHDONEmonitor/FTP/$year/$mon\n";}}
+							if (-d "$PATHDONEmonitor/FTP/$year/$mon/$mday") 
+								{if($DBX) {print "Day directory exists: $PATHDONEmonitor/FTP/$year/$mon/$mday\n";}}
+							else 
+								{mkdir("$PATHDONEmonitor/FTP/$year/$mon/$mday",0755);   if($DBX) {print "Day directory created: $PATHDONEmonitor/FTP/$year/$mon/$mday\n";}}
+							$localDIR = "$year/$mon/$mday/";
+							}
+						else
+							{
+							if ($YearYMDdatedir > 0) 
+								{
+								if (-d "$PATHDONEmonitor/FTP/$year") 
+									{if($DBX) {print "Year directory exists: $PATHDONEmonitor/FTP/$year\n";}}
+								else 
+									{mkdir("$PATHDONEmonitor/FTP/$year",0755);   if($DBX) {print "Year directory created: $PATHDONEmonitor/FTP/$year\n";}}
+								if (-d "$PATHDONEmonitor/FTP/$year/$start_date") 
+									{if($DBX) {print "Full-date directory exists: $PATHDONEmonitor/FTP/$year/$start_date\n";}}
+								else 
+									{mkdir("$PATHDONEmonitor/FTP/$year/$start_date",0755);   if($DBX) {print "Year directory created: $PATHDONEmonitor/FTP/$year/$start_date\n";}}
+								$localDIR = "$year/$start_date/";
+								}
+							else
+								{
+								if (-d "$PATHDONEmonitor/FTP/$start_date") 
+									{if($DBX) {print "Full-date directory exists: $PATHDONEmonitor/FTP/$start_date\n";}}
+								else 
+									{mkdir("$PATHDONEmonitor/FTP/$start_date",0755);   if($DBX) {print "Year directory created: $PATHDONEmonitor/FTP/$start_date\n";}}
+								$localDIR = "$start_date/";
+								}
+							}
+						}
+					`mv -f "$dir2/$ALLfile" "$PATHDONEmonitor/FTP/$localDIR$ALLfile"`;
 					}
 				
 				if($DBX){print STDERR "Transfered $transfered_files files\n";}
@@ -585,3 +652,8 @@ $dbhA->disconnect();
 
 
 exit;
+
+__DATA__
+This exists so flock() code above works.
+DO NOT REMOVE THIS DATA SECTION.
+

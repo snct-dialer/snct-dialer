@@ -16,10 +16,12 @@
 # seven settings that can be recognized by this script:
 # --campaign_id (required, name of holding campaign)
 # --last_call_date_days (required, number of days list must be inactive before purging)
+#    --last_call_date_days_export (separate date option for exporting only)
+#    --last_call_date_days_delete (separate date option for deleting only)
 # --custom_ftp_host (required, FTP host)
 # --custom_ftp_user (required, FTP user)
 # --custom_ftp_pwd (required, FTP password)
-# --ftp_passive (optional, set to a non-zero value to FTP transfer in passive mode, defaults to active if not set)
+# --ftp_passive (optional, set to non-zero value to FTP transfer in passive mode, defaults to active if not set)
 # --custom_ftp_port (optional, defaults to 21)
 # --destination_folder (optional, used for specifying a destination folder to 
 #                       transfer to once logged into the FTP account)
@@ -27,6 +29,7 @@
 # Copyright (C) 2018  Matt Florell <vicidial@gmail.com>, Joe Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
 #
 # 180307-2120 - First Build
+# 180625-0211 - Added options to use different date ranges for exports and deletes
 #
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
@@ -206,13 +209,29 @@ if ($rslt->rows>0)
 			$campaign_id =~ s/ .*//gi;
 			if ($DB) {print "\n----- CAMPAIGN ID: $campaign_id -----\n\n";}
 			}
-		if ($args =~ /--last_call_date_days/i)
+		if ($args =~ /--last_call_date_days\=/i)
 			{
 			my @data_in = split(/--last_call_date_days=/,$args);
 			$last_call_date_days = $data_in[1];
 			$last_call_date_days =~ s/ .*//gi;
 			$last_call_date_days =~ s/[^0-9]//gi;
 			if ($DB) {print "\n----- LAST CALL DATE EXPIRATION DAYS: $last_call_date_days -----\n\n";}
+			}
+		if ($args =~ /--last_call_date_days_export/i)
+			{
+			my @data_in = split(/--last_call_date_days_export=/,$args);
+			$last_call_date_days_export = $data_in[1];
+			$last_call_date_days_export =~ s/ .*//gi;
+			$last_call_date_days_export =~ s/[^0-9]//gi;
+			if ($DB) {print "\n----- LAST CALL DATE EXPIRATION DAYS, EXPORT ONLY: $last_call_date_days_export -----\n\n";}
+			}
+		if ($args =~ /--last_call_date_days_delete/i)
+			{
+			my @data_in = split(/--last_call_date_days_delete=/,$args);
+			$last_call_date_days_delete = $data_in[1];
+			$last_call_date_days_delete =~ s/ .*//gi;
+			$last_call_date_days_delete =~ s/[^0-9]//gi;
+			if ($DB) {print "\n----- LAST CALL DATE EXPIRATION DAYS, DELETE ONLY: $last_call_date_days_delete -----\n\n";}
 			}
 		if ($args =~ /--custom_ftp_host/i)
 			{
@@ -267,12 +286,21 @@ if ($rslt->rows>0)
 			}
 		}
 
+	if (!$last_call_date_days_export) 
+		{
+		$last_call_date_days_export=$last_call_date_days;
+		}
+	if (!$last_call_date_days_delete) 
+		{
+		$last_call_date_days_delete=$last_call_date_days;
+		}
+
 	if (!$campaign_id) 
 		{
 		print "Script failed - no campaign to pull from.\n";
 		exit;
 		}
-	if (!$last_call_date_days) 
+	if (!$last_call_date_days_export) 
 		{
 		print "Script failed - no last call date range given.\n";
 		exit;
@@ -284,9 +312,10 @@ if ($rslt->rows>0)
 		}
 	if (!$custom_ftp_port) {$custom_ftp_port=21;}
 
-	$list_stmt="select list_id from vicidial_lists where active='N' and campaign_id='$campaign_id' and list_lastcalldate<=now()-INTERVAL $last_call_date_days DAY";
-	if ($DBX) {print "\n$list_stmt\n\n";}
-	$list_rslt=$dbhB->prepare($list_stmt);
+	#### EXPORT SEGMENT
+	$list_export_stmt="select list_id from vicidial_lists where active='N' and campaign_id='$campaign_id' and list_lastcalldate<=now()-INTERVAL $last_call_date_days_export DAY";
+	if ($DBX) {print "\n$list_export_stmt\n\n";}
+	$list_rslt=$dbhB->prepare($list_export_stmt);
 	$list_rslt->execute();
 	$lists_to_export=$list_rslt->rows;
 
@@ -318,7 +347,7 @@ if ($rslt->rows>0)
 	else
 		{
 		if($DB){print "No lists to export\n";}
-		exit;
+		# exit;
 		}
 
 	$l=0;
@@ -402,29 +431,52 @@ if ($rslt->rows>0)
 			exit;
 			}
 
-		if (!$T) 
-			{
-			$del_stmt="delete from vicidial_list where list_id='$list_id'";
-			$del_rslt=$dbhC->prepare($del_stmt);
-			$del_rslt->execute();
-			$del_rslt->finish;
-			
-			$del_stmt="delete from vicidial_lists where list_id='$list_id'";
-			$del_rslt=$dbhC->prepare($del_stmt);
-			$del_rslt->execute();
-			$del_rslt->finish;
-
-			$del_stmt="delete from vicidial_hopper where list_id='$list_id'";
-			$del_rslt=$dbhC->prepare($del_stmt);
-			$del_rslt->execute();
-			$del_rslt->finish;
-			}
-
 		$l++;
 		}
 		
 	$list_rslt->finish;
 
+	if ($last_call_date_days_delete<$last_call_date_days_export) {
+		$last_call_date_days_delete=$last_call_date_days_export;
+		print "WARNING! Current settings delete lists before exporting - delete day range defaulting to export day range of $last_call_date_days_export day(s)\n";
+	}
+
+	$list_delete_stmt="select list_id from vicidial_lists where active='N' and campaign_id='$campaign_id' and list_lastcalldate<=now()-INTERVAL $last_call_date_days_delete DAY";
+	if ($DBX) {print "\n$list_delete_stmt\n\n";}
+
+	# Put test check here so you can see the delete statement if you're running in debug mode as well.
+	if (!$T) 
+		{
+		$list_rslt=$dbhB->prepare($list_delete_stmt);
+		$list_rslt->execute();
+		$lists_to_delete=$list_rslt->rows;
+
+		$l=0;
+		while ($l<$lists_to_delete) 
+			{
+			@list_row=$list_rslt->fetchrow_array;
+			$list_id=$list_row[0];
+
+			$del_stmt="delete from vicidial_list where list_id='$list_id'";
+			if ($DBX) {print "\n\n$del_stmt";}
+			$del_rslt=$dbhC->prepare($del_stmt);
+			$del_rslt->execute();
+			$del_rslt->finish;
+				
+			$del_stmt="delete from vicidial_lists where list_id='$list_id'";
+			if ($DBX) {print "\n$del_stmt";}
+			$del_rslt=$dbhC->prepare($del_stmt);
+			$del_rslt->execute();
+			$del_rslt->finish;
+
+			$del_stmt="delete from vicidial_hopper where list_id='$list_id'";
+			if ($DBX) {print "\n$del_stmt\n\n";}
+			$del_rslt=$dbhC->prepare($del_stmt);
+			$del_rslt->execute();
+			$del_rslt->finish;
+			$l++;
+			}
+		}
 	}
 else
 	{

@@ -80,7 +80,7 @@ $DB=1;
 
 $liveupdate=0;
 
-if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/dupleads.$year-$mon-$mday";}
+if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/dupleads";}
 
 print "\n\n\n\n\n\n\n\n\n\n\n\n-- VICIDIAL_fix_status_mismatch.pl --\n\n";
 print "This program is designed to scan all leads marked A4 and set them to their proper status according to the logs. \n\n";

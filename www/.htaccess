@@ -1,0 +1,6 @@
+<FilesMatch "(\.(txt|bak|config|inc|ini|log|sh|sql|swp)|~)$">
+    Require all denied
+#    order         allow,deny
+#    Deny from all
+</FilesMatch>
+

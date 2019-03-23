@@ -46,7 +46,7 @@
 #exten => 8366,4,AGI(agi-VDAD_ALL_outbound.agi,SURVEY-----LB-----US_pol_survey_hello-----1238-----8-----US_pol_survey_transfer-----US_thanks_no_contact-----OPTOUT-----DNC)
 #exten => 8366,5,Hangup
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # changes:
 # 80218-2027 - First Build
@@ -118,6 +118,7 @@
 # 161201-1003 - Fixed LRERR logging issue
 # 170921-2007 - Fix for CALLID in beginning of recording filename
 # 170930-0913 - Added extension append options
+# 180926-2350 - Added _wait_time options for next_agent_call
 #
 
 $script = 'agi-VDAD_ALL_outbound.agi';
@@ -221,11 +222,11 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port)	{$VARDB_port='3306';}
-if (!$AGILOGfile)	{$AGILOGfile = "$PATHlogs/agiout.$year-$mon-$mday";}
-if (!$PRSLOGfile)	{$PRSLOGfile = "$PATHlogs/prsout.$year-$mon-$mday";}
-if (!$PRSTESTfile)	{$PRSTESTfile = "$PATHlogs/prstest.$year-$mon-$mday";}
-if (!$ERRLOGfile)	{$ERRLOGfile = "$PATHlogs/MySQLerror.$year-$mon-$mday";}
-if (!$CEPLOGfile)	{$CEPLOGfile = "$PATHlogs/Cepstral.$year-$mon-$mday";}
+if (!$AGILOGfile)	{$AGILOGfile = "$PATHlogs/agiout";}
+if (!$PRSLOGfile)	{$PRSLOGfile = "$PATHlogs/prsout";}
+if (!$PRSTESTfile)	{$PRSTESTfile = "$PATHlogs/prstest";}
+if (!$ERRLOGfile)	{$ERRLOGfile = "$PATHlogs/MySQLerror";}
+if (!$CEPLOGfile)	{$CEPLOGfile = "$PATHlogs/Cepstral";}
 
 use DBI;
 use Asterisk::AGI;
@@ -2162,8 +2163,11 @@ while ($drop_timer <= $DROP_TIME)
 	if ($CAMP_callorder =~ /oldest_call_finish/i)	{$agent_call_order = 'order by last_call_finish';}
 	if ($CAMP_callorder =~ /random/i)				{$agent_call_order = 'order by random_id';}
 	if ($CAMP_callorder =~ /campaign_rank/i)		{$agent_call_order = 'order by campaign_weight desc,last_call_finish';}
-	if ($CAMP_callorder =~ /fewest_calls/i)			{$aco_sub=1;	$agent_call_order = 'order by calls_today';}
+	if ($CAMP_callorder =~ /fewest_calls/i)			{$aco_sub=1;	$agent_call_order = 'order by calls_today,last_call_finish';}
 	if ($CAMP_callorder =~ /campaign_grade_random/i) {$aco_sub=1;	$agent_call_order = 'order by random_id';}
+	if ($CAMP_callorder =~ /overall_user_level_wait_time/i)	{$agent_call_order = 'order by user_level desc,last_state_change';}
+	if ($CAMP_callorder =~ /campaign_rank_wait_time/i)		{$agent_call_order = 'order by campaign_weight desc,last_state_change';}
+	if ($CAMP_callorder =~ /fewest_calls_wait_time/i)		{$aco_sub=1;	$agent_call_order = 'order by calls_today,last_state_change';}
 
 
 	##### Attempt to send call to an agent on this server only #####

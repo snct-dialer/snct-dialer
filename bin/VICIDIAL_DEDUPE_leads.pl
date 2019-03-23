@@ -72,7 +72,7 @@ $server_ip = $VARserver_ip;		# Asterisk server IP
 
 $liveupdate=0;
 
-if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/dupleads.$year-$mon-$mday";}
+if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/dupleads";}
 
 print "\n\n\n\n\n\n\n\n\n\n\n\n-- VICIDIAL_DEDUPE_leads.pl --\n\n";
 print "This program is designed to scan all leads for a campaign or entire system that are duplicates and move the newer lead into a different list_id. \n\n";

@@ -8,7 +8,7 @@
 # just needs to enter the leadID and then they can view and modify the 
 # information in the record for that lead
 #
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -92,6 +92,8 @@
 # 180311-0008 - Added CIDdisplay
 # 180410-1720 - Added switch lead log entry display
 # 180506-1813 - Added switch_list log entry display
+# 180807-0957 - Added new diff logging code
+# 190310-2223 - Added indication of muted recordings by agent
 #
 
 require("dbconnect_mysqli.php");
@@ -239,7 +241,7 @@ if ($nonselectable_statuses > 0)
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$stmt = "SELECT use_non_latin,custom_fields_enabled,webroot_writable,allow_emails,enable_languages,language_method,active_modules,log_recording_access,admin_screen_colors,enable_gdpr_download_deletion,source_id_display FROM system_settings;";
+$stmt = "SELECT use_non_latin,custom_fields_enabled,webroot_writable,allow_emails,enable_languages,language_method,active_modules,log_recording_access,admin_screen_colors,enable_gdpr_download_deletion,source_id_display,mute_recordings FROM system_settings;";
 $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $qm_conf_ct = mysqli_num_rows($rslt);
@@ -257,6 +259,7 @@ if ($qm_conf_ct > 0)
 	$SSadmin_screen_colors =	$row[8];
 	$enable_gdpr_download_deletion = $row[9];
 	$SSsource_id_display =		$row[10];
+	$SSmute_recordings =		$row[11];
 	}
 ##### END SETTINGS LOOKUP #####
 ###########################################
@@ -1089,6 +1092,18 @@ if ($end_call > 0)
 
 	if ( ($list_valid > 0) or (preg_match('/\-ALL/i', $LOGallowed_campaigns)) )
 		{
+		$diff_orig=''; $diff_new='';
+		# gather existing lead data to store for admin log diff
+		$stmt="SELECT lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id from $vl_table where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' $LOGallowed_listsSQL";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$diff_to_print = mysqli_num_rows($rslt);
+		if ($DB) {echo "$diff_to_print|$stmt\n";}
+		if ($diff_to_print > 0)
+			{
+			$row=mysqli_fetch_row($rslt);
+			$diff_orig = "lead_id=$row[0]|entry_date=$row[1]|modify_date=$row[2]|status=$row[3]|user=$row[4]|vendor_lead_code=$row[5]|source_id=$row[6]|list_id=$row[7]|gmt_offset_now=$row[8]|called_since_last_reset=$row[9]|phone_code=$row[10]|phone_number=$row[11]|title=$row[12]|first_name=$row[13]|middle_initial=$row[14]|last_name=$row[15]|address1=$row[16]|address2=$row[17]|address3=$row[18]|city=$row[19]|state=$row[20]|province=$row[21]|postal_code=$row[22]|country_code=$row[23]|gender=$row[24]|date_of_birth=$row[25]|alt_phone=$row[26]|email=$row[27]|security_phrase=$row[28]|comments=$row[29]|called_count=$row[30]|last_local_call_time=$row[31]|rank=$row[32]|owner=$row[33]|entry_list_id=$row[34]|";
+			}
+
 		$source_idSQL='';
 		if ($SSsource_id_display > 0)
 			{$source_idSQL = ",source_id='" . mysqli_real_escape_string($link, $source_id) . "'";}
@@ -1096,6 +1111,17 @@ if ($end_call > 0)
 		$stmtA="UPDATE $vl_table set status='" . mysqli_real_escape_string($link, $status) . "',title='" . mysqli_real_escape_string($link, $title) . "',first_name='" . mysqli_real_escape_string($link, $first_name) . "',middle_initial='" . mysqli_real_escape_string($link, $middle_initial) . "',last_name='" . mysqli_real_escape_string($link, $last_name) . "',address1='" . mysqli_real_escape_string($link, $address1) . "',address2='" . mysqli_real_escape_string($link, $address2) . "',address3='" . mysqli_real_escape_string($link, $address3) . "',city='" . mysqli_real_escape_string($link, $city) . "',state='" . mysqli_real_escape_string($link, $state) . "',province='" . mysqli_real_escape_string($link, $province) . "',postal_code='" . mysqli_real_escape_string($link, $postal_code) . "',country_code='" . mysqli_real_escape_string($link, $country_code) . "',alt_phone='" . mysqli_real_escape_string($link, $alt_phone) . "',phone_number='$phone_number',phone_code='$phone_code',email='" . mysqli_real_escape_string($link, $email) . "',security_phrase='" . mysqli_real_escape_string($link, $security) . "',comments='" . mysqli_real_escape_string($link, $comments) . "',rank='" . mysqli_real_escape_string($link, $rank) . "',owner='" . mysqli_real_escape_string($link, $owner) . "',vendor_lead_code='" . mysqli_real_escape_string($link, $vendor_id) . "'$source_idSQL,date_of_birth='" . mysqli_real_escape_string($link, $date_of_birth) . "' where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "'";
 		if ($DB) {echo "|$stmt|\n";}
 		$rslt=mysql_to_mysqli($stmtA, $link);
+
+		# gather new lead data to store for admin log diff
+		$stmt="SELECT lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id from $vl_table where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' $LOGallowed_listsSQL";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$diff_to_print = mysqli_num_rows($rslt);
+		if ($DB) {echo "$diff_to_print|$stmt\n";}
+		if ($diff_to_print > 0)
+			{
+			$row=mysqli_fetch_row($rslt);
+			$diff_new = "lead_id=$row[0]|entry_date=$row[1]|modify_date=$row[2]|status=$row[3]|user=$row[4]|vendor_lead_code=$row[5]|source_id=$row[6]|list_id=$row[7]|gmt_offset_now=$row[8]|called_since_last_reset=$row[9]|phone_code=$row[10]|phone_number=$row[11]|title=$row[12]|first_name=$row[13]|middle_initial=$row[14]|last_name=$row[15]|address1=$row[16]|address2=$row[17]|address3=$row[18]|city=$row[19]|state=$row[20]|province=$row[21]|postal_code=$row[22]|country_code=$row[23]|gender=$row[24]|date_of_birth=$row[25]|alt_phone=$row[26]|email=$row[27]|security_phrase=$row[28]|comments=$row[29]|called_count=$row[30]|last_local_call_time=$row[31]|rank=$row[32]|owner=$row[33]|entry_list_id=$row[34]|";
+			}
 
 		echo _QXZ("information modified")."<BR><BR>\n";
 		echo "<a href=\"$PHP_SELF?lead_id=$lead_id&DB=$DB&archive_search=$archive_search&archive_log=$archive_log\">"._QXZ("Go back to the lead modification page")."</a><BR><BR>\n";
@@ -1207,7 +1233,7 @@ if ($end_call > 0)
 		$SQL_log = "$stmtA|$stmtB|$stmtC|$stmtE|$stmtF|$stmtG|$stmtH|$stmtI|$stmtJ|";
 		$SQL_log = preg_replace('/;/', '', $SQL_log);
 		$SQL_log = addslashes($SQL_log);
-		$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LEADS', event_type='MODIFY', record_id='$lead_id', event_code='ADMIN MODIFY LEAD', event_sql=\"$SQL_log\", event_notes='';";
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LEADS', event_type='MODIFY', record_id='$lead_id', event_code='ADMIN MODIFY LEAD', event_sql=\"$SQL_log\", event_notes=\"".$diff_orig."---ORIG---NEW---".$diff_new."\";";
 		if ($DB) {echo "|$stmt|\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 		}
@@ -2586,10 +2612,15 @@ else
 			}
 
 
+		$mute_column='';
+		if ($SSmute_recordings > 0)
+			{
+			$mute_column = "<td align=left><font size=2>"._QXZ("MUTE")."</td>";
+			}
 
 		echo "<B>"._QXZ("RECORDINGS FOR THIS LEAD").":</B>\n";
 		echo "<TABLE width=800 cellspacing=1 cellpadding=1>\n";
-		echo "<tr><td><font size=1># </td><td align=left><font size=2> "._QXZ("LEAD")."</td><td><font size=2>"._QXZ("DATE/TIME")." </td><td align=left><font size=2>"._QXZ("SECONDS")." </td><td align=left><font size=2> &nbsp; "._QXZ("RECID")."</td><td align=center><font size=2>"._QXZ("FILENAME")."</td><td align=left><font size=2>"._QXZ("LOCATION")."</td><td align=left><font size=2>"._QXZ("TSR")."</td><td align=left><font size=2> </td></tr>\n";
+		echo "<tr><td><font size=1># </td><td align=left><font size=2> "._QXZ("LEAD")."</td><td><font size=2>"._QXZ("DATE/TIME")." </td><td align=left><font size=2>"._QXZ("SECONDS")." </td><td align=left><font size=2> &nbsp; "._QXZ("RECID")."</td><td align=center><font size=2>"._QXZ("FILENAME")."</td><td align=left><font size=2>"._QXZ("LOCATION")."</td><td align=left><font size=2>"._QXZ("TSR")."</td>$mute_column<td align=left><font size=2> </td></tr>\n";
 
 		$stmt="SELECT recording_id,channel,server_ip,extension,start_time,start_epoch,end_time,end_epoch,length_in_sec,length_in_min,filename,location,lead_id,user,vicidial_id from recording_log where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' order by recording_id desc limit 500;";
 		$rslt=mysql_to_mysqli($stmt, $link);
@@ -2634,6 +2665,19 @@ else
 					}
 				}
 
+			if ($SSmute_recordings > 0)
+				{
+				$mute_events=0;
+				$stmt="SELECT count(*) from vicidial_agent_function_log where user='$row[13]' and event_time >= '$row[4]'  and event_time <= '$row[6]' and function='mute_rec' and lead_id='$row[12]' and stage='on';";
+				$rsltx=mysql_to_mysqli($stmt, $link);
+				$flogs_to_print = mysqli_num_rows($rsltx);
+				if ($flogs_to_print > 0) 
+					{
+					$rowx=mysqli_fetch_row($rsltx);
+					$mute_events = $rowx[0];
+					}
+				}
+
 			if (strlen($location)>30)
 				{$locat = substr($location,0,27);  $locat = "$locat...";}
 			else
@@ -2663,6 +2707,11 @@ else
 			echo "<td align=center><font size=1> $row[10] </td>\n";
 			echo "<td align=left><font size=2> $location </td>\n";
 			echo "<td align=left><font size=2> <A HREF=\"user_stats.php?user=$row[13]\" target=\"_blank\">$row[13]</A> </td>";
+			if ($SSmute_recordings > 0)
+				{
+				if ($mute_events < 1) {$mute_events='';}
+				echo "<td align=center><font size=2> $mute_events &nbsp; </td>\n";
+				}
 			echo "$play_audio";
 			echo "</tr>\n";
 			$rec_ids .= ",'$row[0]'";
@@ -2711,6 +2760,19 @@ else
 					}
 				}
 
+			if ($SSmute_recordings > 0)
+				{
+				$mute_events=0;
+				$stmt="SELECT count(*) from vicidial_agent_function_log where user='$row[13]' and event_time >= '$row[4]'  and event_time <= '$row[6]' and function='mute_rec' and lead_id='$row[12]' and stage='on';";
+				$rsltx=mysql_to_mysqli($stmt, $link);
+				$flogs_to_print = mysqli_num_rows($rsltx);
+				if ($flogs_to_print > 0) 
+					{
+					$rowx=mysqli_fetch_row($rsltx);
+					$mute_events = $rowx[0];
+					}
+				}
+
 			if (strlen($location)>30)
 				{$locat = substr($location,0,27);  $locat = "$locat...";}
 			else
@@ -2741,6 +2803,11 @@ else
 			echo "<td align=center><font size=1> $row[10] </td>\n";
 			echo "<td align=left><font size=2> $location *</td>\n";
 			echo "<td align=left><font size=2> <A HREF=\"user_stats.php?user=$row[13]\" target=\"_blank\">$row[13]</A> </td>";
+			if ($SSmute_recordings > 0)
+				{
+				if ($mute_events < 1) {$mute_events='';}
+				echo "<td align=center><font size=2> $mute_events &nbsp; </td>\n";
+				}
 			echo "$play_audio";
 			echo "</tr>\n";
 			}

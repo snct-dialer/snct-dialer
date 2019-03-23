@@ -135,7 +135,7 @@ foreach(@conf)
 	$i++;
 	}
 
-if (!$VDALOGfile) {$VDALOGfile = "$PATHlogs/agentlogout.$year-$mon-$mday";}
+if (!$VDALOGfile) {$VDALOGfile = "$PATHlogs/agentlogout";}
 if (!$VARDB_port) {$VARDB_port='3306';}
 
 use DBI;	  

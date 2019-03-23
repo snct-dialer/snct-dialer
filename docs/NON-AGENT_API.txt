@@ -1,4 +1,4 @@
-NON-AGENT API DOCUMENT           Started: 2008-07-24         Updated: 2018-03-31
+NON-AGENT API DOCUMENT           Started: 2008-07-24         Updated: 2018-12-14
 
 This document describes the functions of an API(Application Programming 
 Interface) for all functions NOT directly relating to the VICIDIAL Agent screen. 
@@ -47,6 +47,8 @@ ccc_lead_info - outputs lead data for cross-cluster-communication call
 lead_status_search - displays all field values of all leads that match the status and call date in request
 call_status_stats - report on number of calls made by campaign and ingroup, with hourly and status breakdowns
 call_dispo_report - call disposition breakdown report
+lead_callback_info - outputs scheduled callback data for a specific lead
+
 
 New scripts:
 /vicidial/non_agent_api.php - the script that is accessed to execute commands
@@ -136,6 +138,8 @@ Changes:
 180109-1313 - Added call_status_stats function
 180208-1655 - Added call_dispo_report function
 180331-1716 - Added options to update_campaign, add_user, update_phone. Added function update_did
+180916-1059 - Added check for daily list reset limit
+181214-1606 - Added lead_callback_info function
 
 
 API Functions use the 'function' variable
@@ -653,6 +657,44 @@ ERROR: ccc_lead_info LEAD NOT FOUND - 6666||
 A SUCCESS response will not show "SUCCESS", but instead will just print the results in the following format:
 status|user|vendor_lead_code|source_id|list_id|gmt_offset_now|phone_code|phone_number|title|first_name|middle_initial|last_name|address1|address2|address3|city|state|province|postal_code|country_code|gender|date_of_birth|alt_phone|email|security_phrase|comments|called_count|last_local_call_time|rank|owner
 TD|6666|554443||501|-4.00|1|9998887112|Mr|Billy'Oj|U|O'Reillyo|ad1|ad2|ad3|city next|FL|U|33777||U|0000-00-00|bobo'brien|test@test.com||2017-06-01 18:38:41|79|2017-06-09 14:53:27|0|4646
+
+
+
+
+
+--------------------------------------------------------------------------------
+lead_callback_info - outputs scheduled callback data for a specific lead
+
+NOTE: api user for this function must have user_level set to 7 or higher and "view reports" enabled
+
+REQUIRED FIELDS-
+source -		description of what originated the API call (maximum 20 characters)
+lead_id -		16-40 characters
+
+SETTINGS FIELDS-
+stage -			the format of the exported data: csv, tab, newline, pipe(default)
+header -		include a header(YES) or not(NO). This is optional, default is not to include a header
+search_location -	Where to check for scheduled callback records in the system, can select only one(default is CURRENT):
+				CURRENT - check for active scheduled callbacks
+				ARCHIVE - check for archived scheduled callbacks
+				ALL - check for both active and archived scheduled callbacks
+
+Example URL strings for API calls:
+http://server/vicidial/non_agent_api.php?source=test&user=6666&pass=1234&function=lead_callback_info&lead_id=12345&stage=pipe&header=YES&search_location=ALL
+http://server/vicidial/non_agent_api.php?source=test&user=6666&pass=1234&function=lead_callback_info&lead_id=846446&search_location=ALL&header=YES
+
+Example responses:
+ERROR: lead_callback_info USER DOES NOT HAVE PERMISSION TO GET LEAD INFO - 6666|0
+ERROR: lead_callback_info INVALID SEARCH PARAMETERS - 6666||
+ERROR: lead_callback_info LEAD NOT FOUND - 6666||
+ERROR: lead_callback_info CALLBACK NOT FOUND - 6666||
+
+A SUCCESS response will not show "SUCCESS", but instead will just print the results in the following format(The most recent callback entry will be at the bottom of the results):
+lead_id|callback_type|recipient|callback_status|lead_status|callback_date|entry_date|user|list_id|campaign_id|user_group|customer_timezone|customer_time|comments
+846446|ARCHIVE|USERONLY|INACTIVE|CBTEST|2018-09-01 15:00:00|2018-08-27 01:06:45|6666|107|TESTCAMP|ADMIN|AUS-ACST-N-Northern Territory Time Zone|2018-08-27 00:00:00|
+846446|ARCHIVE|USERONLY|INACTIVE|CBTEST|2018-12-14 14:00:00|2018-12-14 16:42:32|6666|107|TESTCAMP|ADMIN||2018-12-14 14:00:00|Call back after lunch
+846446|CURRENT|USERONLY|INACTIVE|CBTEST|2018-12-14 19:00:00|2018-12-14 16:44:08|6666|107|TESTCAMP|ADMIN||2018-12-14 19:00:00|Call back after dinner
+846446|CURRENT|USERONLY|ACTIVE|CBLEAD|2018-12-17 10:00:00|2018-12-14 16:50:56|6666|107|TESTCAMP|ADMIN|USA-EST-Y-Eastern US Time Zone|2018-12-17 10:00:00|try back Monday morning
 
 
 
@@ -1405,6 +1447,7 @@ ERROR: update_list EXPIRATION DATE IS NOT VALID, THIS IS AN OPTIONAL FIELD - 666
 NOTICE: update_list NO UPDATES DEFINED - 6666|
 SUCCESS: update_list LIST HAS BEEN UPDATED - 6666|1101
 NOTICE: update_list LEADS IN LIST HAVE BEEN RESET - 6666|1101|324
+NOTICE: update_list LIST RESET FAILED, daily reset limit reached: 2 / 2 - 6666|1101
 NOTICE: update_list USER DOES NOT HAVE PERMISSION TO DELETE LISTS - 6666|0
 NOTICE: update_list LIST HAS BEEN DELETED - 6666|1101|1
 NOTICE: update_list USER DOES NOT HAVE PERMISSION TO DELETE LEADS - 6666|0

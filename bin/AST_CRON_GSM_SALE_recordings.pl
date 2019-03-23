@@ -13,11 +13,28 @@
 # This program assumes that recordings are saved as .wav
 # should be easy to change this code if you use .gsm instead
 #
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# LICENSE: AGPLv3
 #
+# Copyright (C) 2008 Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
+
 # 
 # 1112-1245 - first build 
+# 180616-1825 - Add sniplet into perl scripts to run only once a time
 #
+
+
+###### Test that the script is running only once a time
+use Fcntl qw(:flock);
+# print "start of program $0\n";
+unless (flock(DATA, LOCK_EX|LOCK_NB)) {
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    or print "Can't open the fscking file: $!";
+    $datestring = localtime();
+    print $fh "[$datestring] $0 is already running. Exiting.\n";
+    exit(1);
+}
 
 $save_statuses = '|SALE|UPSALE|UPSELL|XFER|A1|A2|A3|A4|';
 $save_statusesSQL = "'SALE','UPSALE','UPSELL','XFER','A1','A2','A3','A4'";
@@ -162,3 +179,7 @@ $dbhA->disconnect();
 
 
 exit;
+
+__DATA__
+This exists so flock() code above works.
+DO NOT REMOVE THIS DATA SECTION.

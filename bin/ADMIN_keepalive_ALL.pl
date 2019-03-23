@@ -17,9 +17,10 @@
 #
 # LICENSE: AGPLv3
 #
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>
-# Copyright (c) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
-#               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2019      SNCT Gmbh <info@snct-gmbh.de>
+#               2017-2019 Jörg Frings-Fürst <j.fringsfuerst@snct-dialer>
 #
 # CHANGES
 # 61011-1348 - First build
@@ -135,9 +136,29 @@
 # 180301-1257 - Added more teodDB logging
 # 180507-1620 - Remove use of prompt_count.txt
 # 180512-2214 - Added reset of hopper_calls_today
+# 180613-1615 - Add sniplet into perl scripts to run only once a time
+# 180818-2229 - Added rolling of vicidial_recent_ascb_calls records
+# 180908-1428 - Added daily rolling of vicidial_ccc_log records
+# 180916-1003 - Added vicidial_lists.resets_today resetting at TEOD, timed reset resets_today verification before reset
+# 180930-1007 - Added more allowed codecs to conf file generation
+# 181028-1451 - Added vicidial_list stuck QUEUE reset at TEoD
+# 190220-2258 - Added flushing of vicidial_sessions_recent table
 #
 
-$build = '180512-2214';
+$build = '190220-2258';
+
+
+###### Test that the script is running only once a time
+use Fcntl qw(:flock);
+# print "start of program $0\n";
+unless (flock(DATA, LOCK_EX|LOCK_NB)) {
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    or print "Can't open the fscking file: $!";
+    $datestring = localtime();
+    print $fh "[$datestring] $0 is already running. Exiting.\n";
+    exit(1);
+}
+
 
 $DB=0; # Debug flag
 $teodDB=0; # flag to log Timeclock End of Day processes to log file
@@ -1172,6 +1193,27 @@ if ($timeclock_end_of_day_NOW > 0)
 		if ($DB) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 		$sthA->finish();
 
+		$stmtA = "update vicidial_lists SET resets_today=0;";
+		if($DBX){print STDERR "\n|$stmtA|\n";}
+		$affected_rows = $dbhA->do($stmtA);
+		if($DB){print STDERR "\n|$affected_rows vicidial_lists resets counts reset|\n";}
+		if ($teodDB) {$event_string = "vicidial_lists records reset: $affected_rows";   &teod_logger;}
+
+		$stmtA = "optimize table vicidial_lists;";
+		if($DBX){print STDERR "\n|$stmtA|\n";}
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		@aryA = $sthA->fetchrow_array;
+		if ($DB) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+		$sthA->finish();
+
+		$stmtA = "UPDATE vicidial_list SET user='' where user LIKE \"QUEUE%\";";
+		if($DBX){print STDERR "\n|$stmtA|\n";}
+		$affected_rows = $dbhA->do($stmtA);
+		if($DB){print STDERR "\n|$affected_rows vicidial_list stuck QUEUE reset|\n";}
+		if ($teodDB) {$event_string = "vicidial_list stuck QUEUE reset: $affected_rows";   &teod_logger;}
+
 		$stmtA = "update vicidial_campaign_agents SET calls_today=0,hopper_calls_today=0,hopper_calls_hour=0;";
 		if($DBX){print STDERR "\n|$stmtA|\n";}
 		$affected_rows = $dbhA->do($stmtA);
@@ -1415,6 +1457,87 @@ if ($timeclock_end_of_day_NOW > 0)
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			}
 
+		# roll of SENT/EXPIRED vicidial_recent_ascb_calls records
+		if (!$Q) {print "\nProcessing vicidial_recent_ascb_calls table...\n";}
+		$stmtA = "INSERT IGNORE INTO vicidial_recent_ascb_calls_archive SELECT * from vicidial_recent_ascb_calls where call_date < \"$TDSQLdate\";";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows = $sthA->rows;
+		$event_string = "$sthArows rows inserted into vicidial_recent_ascb_calls_archive table";
+		if (!$Q) {print "$event_string \n";}
+		if ($teodDB) {&teod_logger;}
+
+		$rv = $sthA->err();
+		if (!$rv) 
+			{	
+			$stmtA = "DELETE FROM vicidial_recent_ascb_calls WHERE call_date < \"$TDSQLdate\";";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows = $sthA->rows;
+			$event_string = "$sthArows rows deleted from vicidial_recent_ascb_calls table";
+			if (!$Q) {print "$event_string \n";}
+			if ($teodDB) {&teod_logger;}
+
+			$stmtA = "optimize table vicidial_recent_ascb_calls;";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			}
+
+
+		# roll of SENT/EXPIRED vicidial_sessions_recent records
+		if (!$Q) {print "\nProcessing vicidial_sessions_recent table...\n";}
+		$stmtA = "INSERT IGNORE INTO vicidial_sessions_recent_archive SELECT * from vicidial_sessions_recent where call_date < \"$TDSQLdate\";";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows = $sthA->rows;
+		$event_string = "$sthArows rows inserted into vicidial_sessions_recent_archive table";
+		if (!$Q) {print "$event_string \n";}
+		if ($teodDB) {&teod_logger;}
+
+		$rv = $sthA->err();
+		if (!$rv) 
+			{	
+			$stmtA = "DELETE FROM vicidial_sessions_recent WHERE call_date < \"$TDSQLdate\";";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows = $sthA->rows;
+			$event_string = "$sthArows rows deleted from vicidial_sessions_recent table";
+			if (!$Q) {print "$event_string \n";}
+			if ($teodDB) {&teod_logger;}
+
+			$stmtA = "optimize table vicidial_sessions_recent;";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			}
+
+
+		# roll of vicidial_ccc_log records, keep only 1 day of records in active table
+		if (!$Q) {print "\nProcessing vicidial_ccc_log table...\n";}
+		$stmtA = "INSERT IGNORE INTO vicidial_ccc_log_archive SELECT * from vicidial_ccc_log;";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows = $sthA->rows;
+		$event_string = "$sthArows rows inserted into vicidial_ccc_log_archive table";
+		if (!$Q) {print "$event_string \n";}
+		if ($teodDB) {&teod_logger;}
+
+		$rv = $sthA->err();
+		if (!$rv) 
+			{	
+			$stmtA = "DELETE FROM vicidial_ccc_log WHERE call_date < \"$RMSQLdate\";";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows = $sthA->rows;
+			$event_string = "$sthArows rows deleted from vicidial_ccc_log table";
+			if (!$Q) {print "$event_string \n";}
+			if ($teodDB) {&teod_logger;}
+
+			$stmtA = "optimize table vicidial_ccc_log;";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			}
+
+
 		# reset in-group closing_time_now_trigger trigger flag
 		$stmtA = "UPDATE vicidial_inbound_groups SET closing_time_now_trigger='N' WHERE closing_time_now_trigger='Y';";
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -1633,6 +1756,42 @@ if ($timeclock_end_of_day_NOW > 0)
 		if ($DB) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 		$sthA->finish();
 		##### END vicidial_vdad_log end of day process removing records older than 7 days #####
+
+
+		##### BEGIN vicidial_recent_ascb_calls_archive end of day process removing records older than 7 days #####
+		$stmtA = "DELETE from vicidial_recent_ascb_calls_archive where call_date < \"$SDSQLdate\";";
+		if($DBX){print STDERR "\n|$stmtA|\n";}
+		$affected_rows = $dbhA->do($stmtA);
+		if($DB){print STDERR "\n|$affected_rows vicidial_recent_ascb_calls_archive records older than 7 days purged|\n";}
+		if ($teodDB) {$event_string = "vicidial_recent_ascb_calls_archive records older than 7 days purged: |$stmtA|$affected_rows|";   &teod_logger;}
+
+		$stmtA = "optimize table vicidial_recent_ascb_calls_archive;";
+		if($DBX){print STDERR "\n|$stmtA|\n";}
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		@aryA = $sthA->fetchrow_array;
+		if ($DB) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+		$sthA->finish();
+		##### END vicidial_recent_ascb_calls_archive end of day process removing records older than 7 days #####
+
+
+		##### BEGIN vicidial_sessions_recent_archive end of day process removing records older than 7 days #####
+		$stmtA = "DELETE from vicidial_sessions_recent_archive where call_date < \"$SDSQLdate\";";
+		if($DBX){print STDERR "\n|$stmtA|\n";}
+		$affected_rows = $dbhA->do($stmtA);
+		if($DB){print STDERR "\n|$affected_rows vicidial_sessions_recent_archive records older than 7 days purged|\n";}
+		if ($teodDB) {$event_string = "vicidial_sessions_recent_archive records older than 7 days purged: |$stmtA|$affected_rows|";   &teod_logger;}
+
+		$stmtA = "optimize table vicidial_sessions_recent_archive;";
+		if($DBX){print STDERR "\n|$stmtA|\n";}
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		@aryA = $sthA->fetchrow_array;
+		if ($DB) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+		$sthA->finish();
+		##### END vicidial_sessions_recent_archive end of day process removing records older than 7 days #####
 
 
 		##### BEGIN usacan_phone_dialcode_fix funciton #####
@@ -2534,17 +2693,20 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 		$Pcodec='';
 		if (length($codecs_list[$i]) > 2)
 			{
-			if ($codecs_list[$i] =~ /gsm/i)			{$Pcodec .= "allow=gsm\n";}
-			if ($codecs_list[$i] =~ /alaw|a-law/i)	{$Pcodec .= "allow=alaw\n";}
-			if ($codecs_list[$i] =~ /ulaw|u-law/i)	{$Pcodec .= "allow=ulaw\n";}
-			if ($codecs_list[$i] =~ /g722|g\.722/i)	{$Pcodec .= "allow=g722\n";}
-			if ($codecs_list[$i] =~ /g723|g\.723/i)	{$Pcodec .= "allow=g723.1\n";}
-			if ($codecs_list[$i] =~ /g726|g\.726/i)	{$Pcodec .= "allow=g726\n";}
-			if ($codecs_list[$i] =~ /g729|g\.729/i)	{$Pcodec .= "allow=g729\n";}
-			if ($codecs_list[$i] =~ /ilbc/i)		{$Pcodec .= "allow=ilbc\n";}
-			if ($codecs_list[$i] =~ /lpc10/i)		{$Pcodec .= "allow=lpc10\n";}
-			if ($codecs_list[$i] =~ /speex/i)		{$Pcodec .= "allow=speex\n";}
-			if ($codecs_list[$i] =~ /adpcm/i)		{$Pcodec .= "allow=adpcm\n";}
+			if ($codecs_list[$i] =~ /gsm/i)					{$Pcodec .= "allow=gsm\n";}
+			if ($codecs_list[$i] =~ /ulaw|u-law/i)			{$Pcodec .= "allow=ulaw\n";}
+			if ($codecs_list[$i] =~ /alaw|a-law/i)			{$Pcodec .= "allow=alaw\n";}
+			if ($codecs_list[$i] =~ /g719|g\.719/i)			{$Pcodec .= "allow=g719\n";}
+			if ($codecs_list[$i] =~ /g722|g\.722/i)			{$Pcodec .= "allow=g722\n";}
+			if ($codecs_list[$i] =~ /g723|g\.723|g723\.1/i)	{$Pcodec .= "allow=g723\n";}
+			if ($codecs_list[$i] =~ /g726|g\.726/i)			{$Pcodec .= "allow=g726\n";}
+			if ($codecs_list[$i] =~ /g729|g\.729|g729a/i)	{$Pcodec .= "allow=g729\n";}
+			if ($codecs_list[$i] =~ /ilbc/i)				{$Pcodec .= "allow=ilbc\n";}
+			if ($codecs_list[$i] =~ /lpc10/i)				{$Pcodec .= "allow=lpc10\n";}
+			if ($codecs_list[$i] =~ /speex/i)				{$Pcodec .= "allow=speex\n";}
+			if ($codecs_list[$i] =~ /adpcm/i)				{$Pcodec .= "allow=adpcm\n";}
+			if ($codecs_list[$i] =~ /opus/i)				{$Pcodec .= "allow=opus\n";}
+			if ($codecs_list[$i] =~ /slin/i)				{$Pcodec .= "allow=slin\n";}
 			if (length($Pcodec) > 2)
 				{$Pcodec = "disallow=all\n$Pcodec";}
 			}
@@ -2644,6 +2806,7 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 		else {
 			$PrintMailbox = "$extension[$i] Mailbox";
 		}
+		$PrintMailbox =~ tr/,//d;
 		if ($delete_vm_after_email[$i] =~ /Y/)
 			{$vm  .= "$voicemail[$i] => $pass[$i],$PrintMailbox,$email[$i],,|delete=yes|tz=$voicemail_timezone[$i]|$voicemail_options[$i]\n";}
 		else
@@ -2705,17 +2868,20 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 		$Pcodec='';
 		if (length($codecs_list[$i]) > 2)
 			{
-			if ($codecs_list[$i] =~ /gsm/i)			{$Pcodec .= "allow=gsm\n";}
-			if ($codecs_list[$i] =~ /alaw|a-law/i)	{$Pcodec .= "allow=alaw\n";}
-			if ($codecs_list[$i] =~ /ulaw|u-law/i)	{$Pcodec .= "allow=ulaw\n";}
-			if ($codecs_list[$i] =~ /g722|g\.722/i)	{$Pcodec .= "allow=g722\n";}
-			if ($codecs_list[$i] =~ /g723|g\.723/i)	{$Pcodec .= "allow=g723.1\n";}
-			if ($codecs_list[$i] =~ /g726|g\.726/i)	{$Pcodec .= "allow=g726\n";}
-			if ($codecs_list[$i] =~ /g729|g\.729/i)	{$Pcodec .= "allow=g729\n";}
-			if ($codecs_list[$i] =~ /ilbc/i)		{$Pcodec .= "allow=ilbc\n";}
-			if ($codecs_list[$i] =~ /lpc10/i)		{$Pcodec .= "allow=lpc10\n";}
-			if ($codecs_list[$i] =~ /speex/i)		{$Pcodec .= "allow=speex\n";}
-			if ($codecs_list[$i] =~ /adpcm/i)		{$Pcodec .= "allow=adpcm\n";}
+			if ($codecs_list[$i] =~ /gsm/i)					{$Pcodec .= "allow=gsm\n";}
+			if ($codecs_list[$i] =~ /ulaw|u-law/i)			{$Pcodec .= "allow=ulaw\n";}
+			if ($codecs_list[$i] =~ /alaw|a-law/i)			{$Pcodec .= "allow=alaw\n";}
+			if ($codecs_list[$i] =~ /g719|g\.719/i)			{$Pcodec .= "allow=g719\n";}
+			if ($codecs_list[$i] =~ /g722|g\.722/i)			{$Pcodec .= "allow=g722\n";}
+			if ($codecs_list[$i] =~ /g723|g\.723|g723\.1/i)	{$Pcodec .= "allow=g723\n";}
+			if ($codecs_list[$i] =~ /g726|g\.726/i)			{$Pcodec .= "allow=g726\n";}
+			if ($codecs_list[$i] =~ /g729|g\.729|g729a/i)	{$Pcodec .= "allow=g729\n";}
+			if ($codecs_list[$i] =~ /ilbc/i)				{$Pcodec .= "allow=ilbc\n";}
+			if ($codecs_list[$i] =~ /lpc10/i)				{$Pcodec .= "allow=lpc10\n";}
+			if ($codecs_list[$i] =~ /speex/i)				{$Pcodec .= "allow=speex\n";}
+			if ($codecs_list[$i] =~ /adpcm/i)				{$Pcodec .= "allow=adpcm\n";}
+			if ($codecs_list[$i] =~ /opus/i)				{$Pcodec .= "allow=opus\n";}
+			if ($codecs_list[$i] =~ /slin/i)				{$Pcodec .= "allow=slin\n";}
 			if (length($Pcodec) > 2)
 				{$Pcodec = "disallow=all\n$Pcodec";}
 			}
@@ -2824,6 +2990,7 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 			$PrintMailbox = "$extension[$i] Mailbox";
 		}
 		
+		$PrintMailbox =~ tr/,//d;
 		if ($delete_vm_after_email[$i] =~ /Y/)
 			{$vm  .= "$voicemail[$i] => $pass[$i],$PrintMailbox,$email[$i],,|delete=yes|tz=$voicemail_timezone[$i]|$voicemail_options[$i]\n";}
 		else
@@ -3437,6 +3604,8 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 				else {
 					$PrintMailbox = "$extension[$i] Mailbox";
 				}
+			
+				$PrintMailbox =~ tr/,//d;
 				if ($delete_vm_after_email[$i] =~ /Y/)
 					{$vm  .= "$voicemail[$i] => $pass[$i],$PrintMailbox,$email[$i],,|delete=yes|tz=$voicemail_timezone[$i]|$voicemail_options[$i]\n";}
 				else
@@ -4299,7 +4468,7 @@ if ( ($AST_VDadapt > 0) && ($reset_test =~ /00$/) )
 if ($AST_VDadapt > 0)
 	{
 	### reset lists if reset time matches
-	$stmtA = "SELECT list_id FROM vicidial_lists where reset_time LIKE \"%$reset_test%\";";
+	$stmtA = "SELECT list_id,daily_reset_limit,resets_today FROM vicidial_lists where reset_time LIKE \"%$reset_test%\";";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthBrows=$sthA->rows;
@@ -4307,7 +4476,9 @@ if ($AST_VDadapt > 0)
 	while ($sthBrows > $i)
 		{
 		@aryA = $sthA->fetchrow_array;
-		$list_id[$i] = "$aryA[0]";
+		$list_id[$i] =				$aryA[0];
+		$daily_reset_limit[$i] = 	$aryA[1];
+		$resets_today[$i] = 		$aryA[2];
 		$i++;
 		}
 	$sthA->finish();
@@ -4317,18 +4488,32 @@ if ($AST_VDadapt > 0)
 	$i=0;
 	while ($sthBrows > $i)
 		{
-		$stmtA="UPDATE vicidial_list set called_since_last_reset='N' where list_id='$list_id[$i]';";
-		$affected_rows = $dbhA->do($stmtA);
+		if ( ($daily_reset_limit[$i] > $resets_today[$i]) || ($daily_reset_limit[$i] < 0) ) 
+			{
+			$stmtA="UPDATE vicidial_lists set resets_today=(resets_today + 1) where list_id='$list_id[$i]';";
+			$affected_rows = $dbhA->do($stmtA);
 
-		$SQL_log = "$stmtA|";
-		$SQL_log =~ s/;|\\|\'|\"//gi;
+			$stmtB="UPDATE vicidial_list set called_since_last_reset='N' where list_id='$list_id[$i]';";
+			$affected_rowsB = $dbhA->do($stmtB);
 
-		if ($DB) {print "DONE\n";}
-		if ($DB) {print "$trigger_results\n";}
+			$SQL_log = "$stmtA|$stmtB|";
+			$SQL_log =~ s/;|\\|\'|\"//gi;
+			$resets_today[$i] = ($resets_today[$i] + 1);
 
-		$stmtA="INSERT INTO vicidial_admin_log set event_date='$now_date', user='VDAD', ip_address='1.1.1.1', event_section='LISTS', event_type='RESET', record_id='$list_id[$i]', event_code='ADMIN RESET LIST', event_sql=\"$SQL_log\", event_notes='$affected_rows leads reset';";
-		$Iaffected_rows = $dbhA->do($stmtA);
-		if ($DB) {print "FINISHED:   $affected_rows|$Iaffected_rows|$stmtA";}
+			if ($DB) {print "List Reset DONE: $list_id[$i]($affected_rows)\n";}
+
+			$stmtA="INSERT INTO vicidial_admin_log set event_date='$now_date', user='VDAD', ip_address='1.1.1.1', event_section='LISTS', event_type='RESET', record_id='$list_id[$i]', event_code='ADMIN RESET LIST', event_sql=\"$SQL_log\", event_notes='$affected_rowsB leads reset, list resets today: $resets_today[$i]';";
+			$Iaffected_rows = $dbhA->do($stmtA);
+			if ($DB) {print "FINISHED:   $affected_rows|$Iaffected_rows|$stmtA";}
+			}
+		else
+			{
+			if ($DB) {print "List Reset FAILED: $list_id[$i](Reset Limit $daily_reset_limit[$i] / $resets_today[$i])\n";}
+
+			$stmtA="INSERT INTO vicidial_admin_log set event_date='$now_date', user='VDAD', ip_address='1.1.1.1', event_section='LISTS', event_type='RESET', record_id='$list_id[$i]', event_code='ADMIN RESET LIST FAILED', event_sql=\"Reset Limit Reached $daily_reset_limit[$i] / $resets_today[$i]\", event_notes='Reset failed';";
+			$Iaffected_rows = $dbhA->do($stmtA);
+			if ($DB) {print "FINISHED:   $affected_rows|$Iaffected_rows|$stmtA";}
+			}
 
 		$i++;
 		}
@@ -4363,7 +4548,6 @@ if ($AST_VDadapt > 0)
 			$SQL_log =~ s/;|\\|\'|\"//gi;
 
 			if ($DB) {print "DONE\n";}
-			if ($DB) {print "$trigger_results\n";}
 
 			$stmtA="INSERT INTO vicidial_admin_log set event_date='$now_date', user='VDAD', ip_address='1.1.1.1', event_section='LISTS', event_type='MODIFY', record_id='$expired_list_id[$i]', event_code='ADMIN EXPIRED LIST INACTIVE', event_sql=\"$SQL_log\", event_notes='$affected_rows list expired';";
 			$Iaffected_rows = $dbhA->do($stmtA);
@@ -4390,7 +4574,7 @@ exit;
 
 sub teod_logger
 	{
-	if (!$teodLOGfile) {$teodLOGfile = "$PATHlogs/teod.$year-$mon-$mday";}
+	if (!$teodLOGfile) {$teodLOGfile = "$PATHlogs/teod";}
 
 	### open the log file for writing ###
 	open(Lout, ">>$teodLOGfile")
@@ -4450,3 +4634,9 @@ sub parse_asterisk_version
 
 	return ( %ast_ver_hash );
 	}
+
+__DATA__
+This exists so flock() code above works.
+DO NOT REMOVE THIS DATA SECTION.
+
+	

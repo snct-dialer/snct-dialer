@@ -4,13 +4,31 @@
 # 
 # resets the failed_login_count for a given user
 #
-# Copyright (C) 2013  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# LICENSE: AGPLv3
 #
+# Copyright (C) 2013  Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
+
 #
 # CHANGES
 # 
 # 130909-1222 - Mikec - First build
+# 180616-1925 - Add sniplet into perl scripts to run only once a time
 #
+
+
+###### Test that the script is running only once a time
+use Fcntl qw(:flock);
+# print "start of program $0\n";
+unless (flock(DATA, LOCK_EX|LOCK_NB)) {
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    or print "Can't open the fscking file: $!";
+    $datestring = localtime();
+    print $fh "[$datestring] $0 is already running. Exiting.\n";
+    exit(1);
+}
+
 
 $T=0;
 $DB=1;
@@ -130,3 +148,8 @@ if ($DBX > 0) {print "SQL:   |$stmtA|\n";}
 $i++;
 
 exit;
+
+__DATA__
+This exists so flock() code above works.
+DO NOT REMOVE THIS DATA SECTION.
+

@@ -13,10 +13,12 @@
 # 160801-1201 - Added colors features
 # 170409-1544 - Added IP List validation code
 # 180502-2115 - Added new help display
+# 180618-2300 - Modified calls to audio file chooser function
+# 180924-1606 - Added called_count as field
 #
 
-$admin_version = '2.14-3';
-$build = '170409-1544';
+$admin_version = '2.14-6';
+$build = '180924-1606';
 
 require("dbconnect_mysqli.php");
 require("functions.php");
@@ -296,7 +298,7 @@ if ($action == "AMM_MULTI_MODIFY")
 		echo _QXZ("ERROR: You must fill in all fields").":  |$amm_id|$active|$amm_rank|$amm_wildcard|$amm_description|$amm_filename|\n<BR>";
 		exit;
 		}
-	$stmt="SELECT count(*) from vicidial_amm_multi where campaign_id='$campaign_id' and entry_type='$entry_type' and amm_field='$amm_field' and amm_id='$amm_id';";
+	$stmt="SELECT count(*) from vicidial_amm_multi where campaign_id='$campaign_id' and entry_type='$entry_type' and amm_id='$amm_id';";
 	if ($DB) {echo "|$stmt|\n";}
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$row=mysqli_fetch_row($rslt);
@@ -306,7 +308,7 @@ if ($action == "AMM_MULTI_MODIFY")
 		echo _QXZ("ERROR: AM MESSAGE entry does not exist").":  |$amm_id|$campaign_id|$entry_type|$amm_field|\n<BR>";
 		exit;
 		}
-	$stmt="UPDATE vicidial_amm_multi SET active='$active',amm_rank='$amm_rank',amm_wildcard='$amm_wildcard',amm_description='$amm_description',amm_filename='" . mysqli_real_escape_string($link, $amm_filename) . "' where campaign_id='$campaign_id' and entry_type='$entry_type' and amm_field='$amm_field' and amm_id='$amm_id';";
+	$stmt="UPDATE vicidial_amm_multi SET active='$active',amm_field='$amm_field',amm_rank='$amm_rank',amm_wildcard='$amm_wildcard',amm_description='$amm_description',amm_filename='" . mysqli_real_escape_string($link, $amm_filename) . "' where campaign_id='$campaign_id' and entry_type='$entry_type' and amm_id='$amm_id';";
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$affected_rows = mysqli_affected_rows($link);
 	if ($DB > 0) {echo "$affected_rows|$stmt\n<BR>";}
@@ -349,7 +351,7 @@ if ($action == "AMM_MULTI_DELETE")
 		}
 	else
 		{
-		$stmt="DELETE FROM vicidial_amm_multi where campaign_id='$campaign_id' and entry_type='$entry_type' and amm_field='$amm_field' and amm_id='$amm_id' and active='N';";
+		$stmt="DELETE FROM vicidial_amm_multi where campaign_id='$campaign_id' and entry_type='$entry_type' and amm_id='$amm_id' and active='N';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$affected_rows = mysqli_affected_rows($link);
 		if ($DB > 0) {echo "$affected_rows|$stmt\n<BR>";}
@@ -432,7 +434,7 @@ if ($action == "BLANK")
 		echo "</td>";
 		echo "</tr>";
 		echo "<tr $bgcolor>";
-		echo "<td colspan=2><font size=1><select name=amm_field><option>vendor_lead_code</option><option>source_id</option><option>list_id</option><option>phone_number</option><option>title</option><option>first_name</option><option>middle_initial</option><option>last_name</option><option>address1</option><option>address2</option><option>address3</option><option>city</option><option>state</option><option>province</option><option>postal_code</option><option>country_code</option><option>gender</option><option>date_of_birth</option><option>alt_phone</option><option>email</option><option>security_phrase</option><option>comments</option><option>rank</option><option>owner</option><option selected>$Ramm_field</option></select></td>";
+		echo "<td colspan=2><font size=1><select name=amm_field><option>vendor_lead_code</option><option>source_id</option><option>list_id</option><option>phone_number</option><option>title</option><option>first_name</option><option>middle_initial</option><option>last_name</option><option>address1</option><option>address2</option><option>address3</option><option>city</option><option>state</option><option>province</option><option>postal_code</option><option>country_code</option><option>gender</option><option>date_of_birth</option><option>alt_phone</option><option>email</option><option>security_phrase</option><option>comments</option><option>rank</option><option>owner</option><option>called_count</option><option selected>$Ramm_field</option></select></td>";
 		echo "<td colspan=3><font size=1>"._QXZ("AM MESSAGE").":<input type=text size=40 maxlength=255 name=amm_filename value=\"$Ramm_filename\"></td>";
 		echo "</form>\n";
 		echo "</tr>\n";
@@ -457,8 +459,8 @@ if ($action == "BLANK")
 	echo "<td rowspan=2><font size=1><input type=submit name=SUBMIT value='"._QXZ("SUBMIT")."'></td>";
 	echo "</tr>";
 	echo "<tr $bgcolor>";
-	echo "<td><font size=1>"._QXZ("FIELD").": <select name=amm_field><option>vendor_lead_code</option><option>source_id</option><option>list_id</option><option>phone_number</option><option>title</option><option>first_name</option><option>middle_initial</option><option>last_name</option><option>address1</option><option>address2</option><option>address3</option><option>city</option><option>state</option><option>province</option><option>postal_code</option><option>country_code</option><option>gender</option><option>date_of_birth</option><option>alt_phone</option><option>email</option><option>security_phrase</option><option>comments</option><option>rank</option><option>owner</option></select></td>";
-	echo "<td colspan=2><font size=1>"._QXZ("AM MESSAGE").":<input type=text size=40 maxlength=255 name=amm_filename id=amm_filename value=\"\"> <a href=\"javascript:launch_chooser('amm_filename','date',100);\">"._QXZ("audio chooser")."</a></td>";
+	echo "<td><font size=1>"._QXZ("FIELD").": <select name=amm_field><option>vendor_lead_code</option><option>source_id</option><option>list_id</option><option>phone_number</option><option>title</option><option>first_name</option><option>middle_initial</option><option>last_name</option><option>address1</option><option>address2</option><option>address3</option><option>city</option><option>state</option><option>province</option><option>postal_code</option><option>country_code</option><option>gender</option><option>date_of_birth</option><option>alt_phone</option><option>email</option><option>security_phrase</option><option>comments</option><option>rank</option><option>owner</option><option>called_count</option></select></td>";
+	echo "<td colspan=2><font size=1>"._QXZ("AM MESSAGE").":<input type=text size=40 maxlength=255 name=amm_filename id=amm_filename value=\"\"> <a href=\"javascript:launch_chooser('amm_filename','date');\">"._QXZ("audio chooser")."</a></td>";
 	echo "</form>\n";
 	echo "</tr>\n";
 	echo "</table></center><br>\n";

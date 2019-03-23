@@ -1,7 +1,7 @@
 <?php
 #
-# Copyright (c) 2017-2018 Jörg Frings-Fürst <jff@flyingpenguin.de>   LICENSE: AGPLv3
-#               2017-2018 flyingpenguin UG <info@flyingpenguin.de>
+# Copyright (c) 2017-2019 Jörg Frings-Fürst <jff@flyingpenguin.de>   LICENSE: AGPLv3
+#               2017-2019 flyingpenguin UG <info@flyingpenguin.de>
 #
 # Generation of Wallbaoard 3.0 Statistics
 #
@@ -14,10 +14,11 @@
 # 20171121-1624 - Add maxwaittime and Tmaxwaittime.
 # 20171122-0930 - Typo in statement15
 # 20180525-1445 - Disable test against 0201 for forwarding
+# 20190206-1001 - Correct typo
 #
 
-$version="1.0.6;
-$build = "20180525-1445";
+$version="1.0.7";
+$build = "20190206-1001";
 
 
 ####  collect wallboard data should only be active on a single server

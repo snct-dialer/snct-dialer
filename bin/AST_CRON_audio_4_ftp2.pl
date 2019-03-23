@@ -26,15 +26,33 @@
 # 
 # This program assumes that recordings are saved by Asterisk as .wav
 # 
-# Copyright (C) 2015  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# LICENSE: AGPLv3
 #
+# Copyright (C) 2015 Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
+
 # CHANGES:
 # 91123-0005 - First Build
 # 110524-1052 - Added run-check concurrency check option
 # 111128-1617 - Added Ftp persistence option
 # 111130-1801 - Added Ftp validate option
 # 130116-1536 - Added ftp port CLI flag
+# 180616-1925 - Add sniplet into perl scripts to run only once a time
 #
+
+
+###### Test that the script is running only once a time
+use Fcntl qw(:flock);
+# print "start of program $0\n";
+unless (flock(DATA, LOCK_EX|LOCK_NB)) {
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    or print "Can't open the fscking file: $!";
+    $datestring = localtime();
+    print $fh "[$datestring] $0 is already running. Exiting.\n";
+    exit(1);
+}
+
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
 $year = ($year + 1900);
@@ -394,7 +412,7 @@ foreach(@FILES)
 					$ftp->cwd("$start_date");
 					$start_date_PATH = "$start_date/";
 					}
-				$ftp->binary();
+				$ftp->binary() or die "Cannot set binary transfer, is server connected?";
 				$ftp->put("$dir2/$ALLfile", "$ALLfile");
 				if ($FTPvalidate > 0)
 					{
@@ -450,3 +468,7 @@ $dbhA->disconnect();
 
 
 exit;
+
+__DATA__
+This exists so flock() code above works.
+DO NOT REMOVE THIS DATA SECTION.

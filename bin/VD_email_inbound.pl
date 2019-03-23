@@ -2,7 +2,7 @@
 # default path to astguiclient configuration file:
 $PATHconf =		'/etc/astguiclient.conf';
 
-# Copyright (C) 2012  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2019  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # VD_email_inbound.pl
 # This script is responsible for assigning transferred and new emails to 
@@ -23,6 +23,8 @@ $PATHconf =		'/etc/astguiclient.conf';
 # 
 # changes:
 # 121214-2303 - First Build
+# 180610-1812 - Added code to not allow XFER emails to go to user who transferred
+# 190216-0810 - Fix for user-group, email-group and campaign allowed/permissions matching issues
 #
 
 if ($ARGV[0]=~/--help/) 
@@ -88,10 +90,10 @@ foreach(@conf)
 $|=1;
 
 if (!$VARDB_port) {$VARDB_port='3306';}
-if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout.$year-$mon-$mday";}
-if (!$PRSLOGfile) {$PRSLOGfile = "$PATHlogs/prsout.$year-$mon-$mday";}
-if (!$PRSTESTfile) {$PRSTESTfile = "$PATHlogs/prstest.$year-$mon-$mday";}
-if (!$ERRLOGfile) {$ERRLOGfile = "$PATHlogs/MySQLerror.$year-$mon-$mday";}
+if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout";}
+if (!$PRSLOGfile) {$PRSLOGfile = "$PATHlogs/prsout";}
+if (!$PRSTESTfile) {$PRSTESTfile = "$PATHlogs/prstest";}
+if (!$ERRLOGfile) {$ERRLOGfile = "$PATHlogs/MySQLerror";}
 
 use DBI;
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
@@ -185,7 +187,7 @@ for ($i=0; $i<=1000000; $i++)
 
 		$email_ct=0;
 		## CHECK IF THERE ARE ANY TRANSFERS TO ASSIGN
-		$xfer_stmt="select email_row_id, vicidial_xfer_log.lead_id, vicidial_xfer_log.campaign_id, vicidial_inbound_groups.next_agent_call from vicidial_email_list, vicidial_inbound_groups, vicidial_xfer_log where vicidial_inbound_groups.group_handling='EMAIL' and vicidial_inbound_groups.active='Y' and vicidial_inbound_groups.group_id=vicidial_xfer_log.campaign_id and vicidial_xfer_log.closer='EMAIL_XFER' and vicidial_xfer_log.lead_id=vicidial_email_list.lead_id and vicidial_xfer_log.xfercallid=vicidial_email_list.xfercallid order by queue_priority desc, email_date asc";
+		$xfer_stmt="select email_row_id, vicidial_xfer_log.lead_id, vicidial_xfer_log.campaign_id, vicidial_inbound_groups.next_agent_call, vicidial_xfer_log.user from vicidial_email_list, vicidial_inbound_groups, vicidial_xfer_log where vicidial_inbound_groups.group_handling='EMAIL' and vicidial_inbound_groups.active='Y' and vicidial_inbound_groups.group_id=vicidial_xfer_log.campaign_id and vicidial_xfer_log.closer='EMAIL_XFER' and vicidial_xfer_log.lead_id=vicidial_email_list.lead_id and vicidial_xfer_log.xfercallid=vicidial_email_list.xfercallid order by queue_priority desc, email_date asc";
 		if ($ARGV[0]=~/debug/i) {print $xfer_stmt."\n";}
 		$xfer_rslt=$dbhB->prepare($xfer_stmt);
 		$xfer_rslt->execute or die "executing: $xfer_stmt ", $dbhB->errstr;
@@ -198,6 +200,7 @@ for ($i=0; $i<=1000000; $i++)
 				$row_id_ary[$email_ct]=$xfer_row[0];
 				$lead_id_ary[$email_ct]=$xfer_row[1];
 				$group_id_ary[$email_ct]=$xfer_row[2];
+				$user_id_ary[$email_ct]=$xfer_row[3];
 				$email_type_ary[$email_ct]="XFER";
 
 				$email_ct++;
@@ -206,7 +209,7 @@ for ($i=0; $i<=1000000; $i++)
 		$xfer_rslt->finish();
 
 		## CHECK IF THERE ARE ANY REGULAR EMAILS TO ASSIGN
-		$inb_stmt="select email_row_id, lead_id, vicidial_email_list.group_id, vicidial_inbound_groups.next_agent_call from vicidial_email_list, vicidial_inbound_groups where group_handling='EMAIL' and active='Y' and vicidial_inbound_groups.group_id=vicidial_email_list.group_id and vicidial_email_list.status='NEW' order by queue_priority desc, email_date asc";
+		$inb_stmt="select email_row_id, lead_id, vicidial_email_list.group_id, vicidial_inbound_groups.next_agent_call, vicidial_email_list.user from vicidial_email_list, vicidial_inbound_groups where group_handling='EMAIL' and active='Y' and vicidial_inbound_groups.group_id=vicidial_email_list.group_id and vicidial_email_list.status='NEW' order by queue_priority desc, email_date asc";
 		if ($ARGV[0]=~/debug/i) {print $inb_stmt."\n";}
 		$inb_rslt=$dbhB->prepare($inb_stmt);
 		$inb_rslt->execute or die "executing: $inb_stmt ", $dbhB->errstr;
@@ -218,6 +221,7 @@ for ($i=0; $i<=1000000; $i++)
 				$row_id_ary[$email_ct]=$inb_row[0];
 				$lead_id_ary[$email_ct]=$inb_row[1];
 				$group_id_ary[$email_ct]=$inb_row[2];
+				$user_id_ary[$email_ct]=$xfer_row[3];
 				$email_type_ary[$email_ct]="INCOMING";
 
 				$email_ct++;
@@ -242,6 +246,7 @@ sub AssignAgents()
 		$lead_id=$lead_id_ary[$q];
 		$email_type=$email_type_ary[$q];
 		$group_id=$group_id_ary[$q];
+		$user_id=$user_id_ary[$q];
 
 		$ADUfindSQL='';
 		$user='';
@@ -273,20 +278,6 @@ sub AssignAgents()
 			$sthArows=$sthA->rows;
 			if ($ARGV[0]=~/debug/i) {print $stmtA."\n";}
 
-#			if ($CAMP_callorder =~ /grade/)
-#				{
-#				$stmtA = "SELECT vicidial_live_agents.user,vicidial_live_inbound_agents.group_grade,vicidial_live_agents.campaign_grade from vicidial_live_agents, vicidial_live_inbound_agents WHERE vicidial_live_agents.user=vicidial_live_inbound_agents.user and status IN('CLOSER','READY') and lead_id<1 $ADUfindSQL and vicidial_live_inbound_agents.group_id='$group_id' and last_update_time > '$BDtsSQLdate' and vicidial_live_agents.user NOT IN($ring_no_answer_agents$vlia_users) and ring_callerid='' $qp_groupWAIT_camp_SQL limit 1000;";
-#				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-#				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-#				$sthArows=$sthA->rows;
-#				}
-#			else 
-#				{
-#				$stmtA = "SELECT vicidial_live_agents.conf_exten,vicidial_live_agents.user,vicidial_live_agents.extension,vicidial_live_agents.server_ip,vicidial_live_inbound_agents.group_weight,ra_user,vicidial_live_agents.campaign_id,on_hook_agent,on_hook_ring_time,vicidial_live_inbound_agents.group_grade,vicidial_live_agents.campaign_grade from vicidial_live_agents, vicidial_live_inbound_agents WHERE vicidial_live_agents.user=vicidial_live_inbound_agents.user and status IN('CLOSER','READY') and lead_id<1 $ADUfindSQL and vicidial_live_inbound_agents.group_id='$group_id' and last_update_time > '$BDtsSQLdate' and vicidial_live_agents.user NOT IN($ring_no_answer_agents$vlia_users) and ring_callerid='' $qp_groupWAIT_camp_SQL $agent_call_order limit 1;";
-#				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-#				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-#				$sthArows=$sthA->rows;
-#				}
 
 			if ($sthArows>0) 
 				{
@@ -299,16 +290,30 @@ sub AssignAgents()
 
 			if ($user ne "") 
 				{
-				$upd_stmt="update vicidial_email_list set status='QUEUE', user='$user' where email_row_id='$email_row_id'";
+				# If XFER, cannot go to person who transferred
+				if ($email_type eq "XFER") 
+					{
+					$user_clause=" and user!='$user'";
+					} 
+				else 
+					{
+					$user_clause="";
+					}
+
+				$upd_stmt="update vicidial_email_list set status='QUEUE', user='$user' where email_row_id='$email_row_id' $user_clause";
 				$upd_rslt=$dbhB->prepare($upd_stmt);
 				$upd_rslt->execute or die "executing: $upd_stmt ", $dbhB->errstr;
-				$upd_rslt->finish();
 				if ($ARGV[0]=~/debug/i) {print $upd_stmt."\n";}
-				$upd_stmt="update vicidial_live_agents set status='MQUEUE' where user='$user'";
-				$upd_rslt=$dbhA->prepare($upd_stmt);
-				$upd_rslt->execute or die "executing: $upd_stmt ", $dbhB->errstr;
+
+				if ($upd_rslt->rows>0) 
+					{
+					$upd_rslt->finish();
+					$upd_stmt="update vicidial_live_agents set status='MQUEUE' where user='$user'";
+					$upd_rslt=$dbhA->prepare($upd_stmt);
+					$upd_rslt->execute or die "executing: $upd_stmt ", $dbhB->errstr;
+					if ($ARGV[0]=~/debug/i) {print $upd_stmt."\n";}
+					}
 				$upd_rslt->finish();
-				if ($ARGV[0]=~/debug/i) {print $upd_stmt."\n";}
 				}
 
 			$stmtA = "UNLOCK TABLES;";
@@ -320,7 +325,8 @@ sub AssignAgents()
 			my $LOCKaffected_rows = $dbhA->do($stmtA);
 			$dbhP=$dbhA;   $mysql_count='02158';   $MEL_aff_rows=$LOCKaffected_rows;   &mysql_error_logging;
 
-			$stmtA = "SELECT user FROM vicidial_live_agents where status IN('CLOSER','READY') and lead_id<1 $ADUfindSQL and campaign_id IN($INBOUNDcampsSQL) and closer_campaigns LIKE \"% $group_id %\" and last_update_time > '$BDtsSQLdate' and vicidial_live_agents.user NOT IN($ring_no_answer_agents) $qp_groupWAIT_SQL $qp_groupWAIT_camp_SQL $agent_call_order limit 1;";
+			$SQL_group_id=$group_id;   $SQL_group_id =~ s/_/\\_/gi;
+			$stmtA = "SELECT user FROM vicidial_live_agents where status IN('CLOSER','READY') and lead_id<1 $ADUfindSQL and campaign_id IN($INBOUNDcampsSQL) and closer_campaigns LIKE \"% $SQL_group_id %\" and last_update_time > '$BDtsSQLdate' and vicidial_live_agents.user NOT IN($ring_no_answer_agents) $qp_groupWAIT_SQL $qp_groupWAIT_camp_SQL $agent_call_order limit 1;";
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			if ($ARGV[0]=~/debug/i) {print $stmtA."\n";}
@@ -337,16 +343,30 @@ sub AssignAgents()
 
 			if ($user ne "") 
 				{
-				$upd_stmt="update vicidial_email_list set status='QUEUE', user='$user' where email_row_id='$email_row_id'";
+				# If XFER, cannot go to person who transferred
+				if ($email_type eq "XFER") 
+					{
+					$user_clause=" and user!='$user'";
+					} 
+				else 
+					{
+					$user_clause="";
+					}
+
+				$upd_stmt="update vicidial_email_list set status='QUEUE', user='$user' where email_row_id='$email_row_id' $user_clause";
 				$upd_rslt=$dbhB->prepare($upd_stmt);
 				$upd_rslt->execute or die "executing: $upd_stmt ", $dbhB->errstr;
-				$upd_rslt->finish();
 				if ($ARGV[0]=~/debug/i) {print $upd_stmt."\n";}
-				$upd_stmt="update vicidial_live_agents set status='MQUEUE' where user='$user'";
-				$upd_rslt=$dbhA->prepare($upd_stmt);
-				$upd_rslt->execute or die "executing: $upd_stmt ", $dbhB->errstr;
+
+				if ($upd_rslt->rows>0) 
+					{
+					$upd_rslt->finish();
+					$upd_stmt="update vicidial_live_agents set status='MQUEUE' where user='$user'";
+					$upd_rslt=$dbhA->prepare($upd_stmt);
+					$upd_rslt->execute or die "executing: $upd_stmt ", $dbhB->errstr;
+					if ($ARGV[0]=~/debug/i) {print $upd_stmt."\n";}
+					}
 				$upd_rslt->finish();
-				if ($ARGV[0]=~/debug/i) {print $upd_stmt."\n";}
 				}
 
 			$stmtA = "UNLOCK TABLES;";

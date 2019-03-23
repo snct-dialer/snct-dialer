@@ -41,6 +41,8 @@
 # 170915-1915 - Added support for per server routing prefix needed for Asterisk 13+
 # 171205-2022 - Fix for double-dialing issue on high-volume systems
 # 180214-1558 - Added CID Group functionality
+# 180812-1025 - Added code for scheduled_callbacks_auto_reschedule campaign feature
+# 180910-1759 - Small fix for data validation
 #
 
 ### begin parsing run-time options ###
@@ -157,7 +159,7 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 
 &get_time_now;	# update time/date variables
 
-if (!$VDADLOGfile) {$VDADLOGfile = "$PATHlogs/vdautodial_FILL.$year-$mon-$mday";}
+if (!$VDADLOGfile) {$VDADLOGfile = "$PATHlogs/vdautodial_FILL";}
 
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
 use DBI;
@@ -215,7 +217,7 @@ while($one_day_interval > 0)
 		{
 		&get_time_now;
 
-		$VDADLOGfile = "$PATHlogs/vdautodial_FILL.$year-$mon-$mday";
+		$VDADLOGfile = "$PATHlogs/vdautodial_FILL";
 
 		###############################################################################
 		###### first figure out how many calls should be placed for each campaign per server
@@ -341,7 +343,7 @@ while($one_day_interval > 0)
 
 					### grab the dial_level and multiply by active agents to get your goalcalls
 					$DBIPadlevel[$camp_CIPct]=0;
-					$stmtA = "SELECT dial_timeout,dial_prefix,campaign_cid,active,campaign_vdad_exten,omit_phone_code,auto_alt_dial,queue_priority,use_custom_cid,cid_group_id FROM vicidial_campaigns where campaign_id='$DBfill_campaign[$camp_CIPct]';";
+					$stmtA = "SELECT dial_timeout,dial_prefix,campaign_cid,active,campaign_vdad_exten,omit_phone_code,auto_alt_dial,queue_priority,use_custom_cid,cid_group_id,scheduled_callbacks_auto_reschedule FROM vicidial_campaigns where campaign_id='$DBfill_campaign[$camp_CIPct]';";
 					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 					$sthArows=$sthA->rows;
@@ -360,6 +362,7 @@ while($one_day_interval > 0)
 						$DBIPqueue_priority[$camp_CIPct] =	$aryA[7];
 						$DBIPuse_custom_cid[$camp_CIPct] =	$aryA[8];
 						$DBIPcid_group_id[$camp_CIPct] =	$aryA[9];
+						$DBIPscheduled_callbacks_auto_reschedule[$camp_CIPct] =	$aryA[10];
 
 						if ($omit_phone_code =~ /Y/) {$DBIPomitcode[$camp_CIPct] = 1;}
 						else {$DBIPomitcode[$camp_CIPct] = 0;}
@@ -434,14 +437,15 @@ while($one_day_interval > 0)
 					$sthA->finish();
 
 					##################################################################################
-					##### CONTINUE IF THERE ARE BALANCE SERVERS AVAILABLE THAT ARE NOT IN TRUNK SHORTAGE
+					##### CONTINUE IF THERE ARE BALANCE SERVERS AVAILABLE THAT ARE NOT IN TRUNK SHORTAGE, AND ADDITIONAL FILL CALLS ARE NEEDED
 					##################################################################################
-					if ($AVAIL_balance_servers > 0)
+					if ( ($AVAIL_balance_servers > 0) && ($DBfill_needed[$camp_CIPct] > 0) )
 						{
 						$event_string="Balance Servers available: $AVAIL_balance_servers";
 						&event_logger;
 
 						$DB_camp_servers=0;
+						$DB_camp_servers_calls_placed=0;
 						@DB_camp_server_server_ip=@MT;
 						@DB_camp_server_max_vicidial_trunks=@MT;
 						@DB_camp_server_balance_trunks_offlimits=@MT;
@@ -595,6 +599,14 @@ while($one_day_interval > 0)
 								$call_CMPIPct=0;
 								$lead_id_call_list='|';
 								my $UDaffected_rows=0;
+								$VALIDATEcalls_to_place = ($DBfill_needed[$camp_CIPct] - $DB_camp_servers_calls_placed);
+								if ($VALIDATEcalls_to_place < 0) {$VALIDATEcalls_to_place=0;}
+								if ($DB_camp_server_trunks_to_dial[$server_CIPct] > $VALIDATEcalls_to_place) 
+									{
+									$event_string="Calls-to-place VALIDATE OVERRIDE: |$DB_camp_server_trunks_to_dial[$server_CIPct]|$VALIDATEcalls_to_place|$DBfill_needed[$camp_CIPct]|$DB_camp_servers_calls_placed|";
+									&event_logger;
+									$DB_camp_server_trunks_to_dial[$server_CIPct] = $VALIDATEcalls_to_place;
+									}
 								if ($call_CMPIPct < $DB_camp_server_trunks_to_dial[$server_CIPct])
 									{
 									$stmtA = "UPDATE vicidial_hopper set status='QUEUE', user='VDFC_$DB_camp_server_server_ip[$server_CIPct]' where campaign_id='$DBfill_campaign[$camp_CIPct]' and status='READY' order by priority desc,hopper_id LIMIT $DB_camp_server_trunks_to_dial[$server_CIPct];";
@@ -607,7 +619,7 @@ while($one_day_interval > 0)
 										$lead_id=''; $phone_code=''; $phone_number=''; $called_count='';
 										while ($call_CMPIPct < $UDaffected_rows)
 											{
-											$stmtA = "SELECT lead_id,alt_dial FROM vicidial_hopper where campaign_id='$DBfill_campaign[$camp_CIPct]' and status='QUEUE' and user='VDFC_$DB_camp_server_server_ip[$server_CIPct]' order by priority desc,hopper_id LIMIT 1;";
+											$stmtA = "SELECT lead_id,alt_dial,source FROM vicidial_hopper where campaign_id='$DBfill_campaign[$camp_CIPct]' and status='QUEUE' and user='VDFC_$DB_camp_server_server_ip[$server_CIPct]' order by priority desc,hopper_id LIMIT 1;";
 											print "|$stmtA|\n";
 											$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 											$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -616,8 +628,9 @@ while($one_day_interval > 0)
 											if ($sthArows > 0)
 												{
 												@aryA = $sthA->fetchrow_array;
-												$lead_id =		$aryA[0];
-												$alt_dial =		$aryA[1];
+												$lead_id =			$aryA[0];
+												$alt_dial =			$aryA[1];
+												$hopper_source =	$aryA[2];
 												}
 											$sthA->finish();
 
@@ -755,6 +768,34 @@ while($one_day_interval > 0)
 														$vl_updates[$staggered_ct] = $stmtA;
 														}
 
+													$PADlead_id = sprintf("%010s", $lead_id);	while (length($PADlead_id) > 10) {chop($PADlead_id);}
+													# VmddhhmmssLLLLLLLLLL Set the callerIDname to a unique call_id string
+													$VqueryCID = "V$CIDdate$PADlead_id";
+
+													if ( ( ($DBIPscheduled_callbacks_auto_reschedule[$camp_CIPct] !~ /DISABLED/) && (length($DBIPscheduled_callbacks_auto_reschedule[$camp_CIPct]) > 0) ) || ($hopper_source eq 'C') )
+														{
+														### gather vicidial_callbacks information for this lead, if any
+														$stmtA = "SELECT callback_id,callback_time,lead_status,list_id FROM vicidial_callbacks where lead_id='$lead_id' and status='LIVE' and recipient='ANYONE' order by callback_id limit 1;";
+														$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+														$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+														$sthArowsPSCB=$sthA->rows;
+														if ($sthArowsPSCB > 0)
+															{
+															@aryA = $sthA->fetchrow_array;
+															$PSCBcallback_id =		$aryA[0];
+															$PSCBcallback_time =	$aryA[1];
+															$PSCBlead_status =		$aryA[2];
+															$PSCBlist_id =			$aryA[3];
+															}
+														$sthA->finish();
+														### insert record in recent callbacks table
+														if ($sthArowsPSCB > 0)
+															{
+															$stmtA = "INSERT INTO vicidial_recent_ascb_calls SET call_date=NOW(),callback_date='$PSCBcallback_time',callback_id='$PSCBcallback_id',caller_code='$VqueryCID',lead_id='$lead_id',server_ip='$DB_camp_server_server_ip[$server_CIPct]',orig_status='$PSCBlead_status',reschedule='$DBIPscheduled_callbacks_auto_reschedule[$camp_CIPct]',list_id='$PSCBlist_id',rescheduled='U';";
+															$affected_rows = $dbhA->do($stmtA);
+															}
+														}
+
 													$stmtA = "DELETE FROM vicidial_hopper where lead_id='$lead_id';";
 													$affected_rows = $dbhA->do($stmtA);
 
@@ -876,7 +917,6 @@ while($one_day_interval > 0)
 														if ( (length($RECprefix)>0) && ($called_count < $RECcount) )
 														   {$Local_out_prefix .= "$RECprefix";}
 														}
-													$PADlead_id = sprintf("%010s", $lead_id);	while (length($PADlead_id) > 10) {chop($PADlead_id);}
 
 													if ($lists_update !~ /'$list_id'/) {$lists_update .= "'$list_id',"; $LUcount++;}
 
@@ -892,8 +932,6 @@ while($one_day_interval > 0)
 
 													if (length($ext_context) < 1) {$ext_context='default';}
 													### use manager middleware-app to connect the next call to the meetme room
-													# VmmddhhmmssLLLLLLLLL
-														$VqueryCID = "V$CIDdate$PADlead_id";
 													if ($CCID_on) {$CIDstring = "\"$VqueryCID\" <$CCID>";}
 													else {$CIDstring = "$VqueryCID";}
 
@@ -934,6 +972,7 @@ while($one_day_interval > 0)
 
 														$vddl_inserts[$staggered_ct] = "INSERT INTO vicidial_dial_log SET caller_code='$VqueryCID',lead_id='$lead_id',server_ip='XXXXXXXXXXXXXXX',call_date='$SQLdate',extension='$VDAD_dial_exten',channel='$local_DEF$Ndialstring$local_AMP$ext_context',timeout='$Local_dial_timeout',outbound_cid='$CIDstring',context='$ext_context';";
 
+														$DB_camp_servers_calls_placed++;
 														$calls_placed++;
 														$staggered_ct++;
 														}
@@ -962,7 +1001,7 @@ while($one_day_interval > 0)
 						}
 					else
 						{
-						$event_string.="No Balance Servers available that do not have a shortage";
+						$event_string.="No Balance Servers available that do not have a shortage, or no fill calls required";
 						&event_logger;
 						}
 

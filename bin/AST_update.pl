@@ -267,8 +267,8 @@ $server_ip = $VARserver_ip;		# Asterisk server IP
 
 &get_time_now;
 
-if (!$UPLOGfile) {$UPLOGfile = "$PATHlogs/update.$year-$mon-$mday";}
-if (!$UPERRfile) {$UPERRfile = "$PATHlogs/updateERROR.$year-$mon-$mday";}
+if (!$UPLOGfile) {$UPLOGfile = "$PATHlogs/update";}
+if (!$UPERRfile) {$UPERRfile = "$PATHlogs/updateERROR";}
 if (!$VARDB_port) {$VARDB_port='3306';}
 
 $event_string='PROGRAM STARTED||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||';
@@ -334,6 +334,7 @@ if ($AST_ver =~ /^1\.8/i) {$show_channels_format = 4;}
 if ($AST_ver =~ /^10\./i) {$show_channels_format = 4;}
 if ($AST_ver =~ /^11\./i) {$show_channels_format = 4;}
 if ($AST_ver =~ /^12\./i) {$show_channels_format = 4;}
+if ($AST_ver =~ /^13\./i) {$show_channels_format = 4;}
 if ($Q < 1)
 	{print STDERR "SHOW CHANNELS format: $show_channels_format\n";}
 

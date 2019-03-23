@@ -21,12 +21,28 @@
 # FLAGS FOR ENCRYPTION OPTIONS
 # --GPG = GnuPG encryption(assumes recipient public keys are loaded on server)
 #
-# Copyright (C) 2016  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# LICENSE: AGPLv3
 #
+# Copyright (C) 2016 Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
+
 # 
 # 150911-1814 - First Build based upon 110524-1059 AST_CRON_audio_2_compress.pl
 # 160523-0651 - Added --HTTPS option to use https instead of http in local location
+# 180616-1825 - Add sniplet into perl scripts to run only once a time
 #
+
+###### Test that the script is running only once a time
+use Fcntl qw(:flock);
+# print "start of program $0\n";
+unless (flock(DATA, LOCK_EX|LOCK_NB)) {
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    or print "Can't open the fscking file: $!";
+    $datestring = localtime();
+    print $fh "[$datestring] $0 is already running. Exiting.\n";
+    exit(1);
+}
 
 $WAV=0;   $GSM=0;   $MP3=0;   $OGG=0;   $GSW=0;
 $GPG=0;
@@ -373,3 +389,7 @@ $dbhA->disconnect();
 
 
 exit;
+
+__DATA__
+This exists so flock() code above works.
+DO NOT REMOVE THIS DATA SECTION.

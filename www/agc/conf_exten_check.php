@@ -79,6 +79,7 @@
 # 170526-2228 - Added additional variable filtering
 # 170709-1017 - Added xfer dead call checking process
 # 170817-0739 - Small change to xfer dead call checking process
+# 180602-0149 - Changed SQL query for email queue count for accuracy
 #
 
 $version = '2.14-54';
@@ -142,6 +143,15 @@ header ("Pragma: no-cache");                          // HTTP/1.0
 
 $user=preg_replace("/\'|\"|\\\\|;| /","",$user);
 $pass=preg_replace("/\'|\"|\\\\|;| /","",$pass);
+
+#
+# set error reporting level E_NOTICE only if $DB is set
+#
+if($DB) {
+    error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
+} else {
+    error_reporting(E_ERROR | E_WARNING | E_PARSE);
+}
 
 
 #############################################
@@ -211,7 +221,7 @@ $random = (rand(1000000, 9999999) + 10000000);
 
 
 $auth=0;
-$auth_message = user_authorization($user,$pass,'',0,$bcrypt,0,0);
+$auth_message = user_authorization($user,$pass,'',0,$bcrypt,0,0,'conf_exten_check');
 if ($auth_message == 'GOOD')
 	{$auth=1;}
 
@@ -440,7 +450,8 @@ if ($ACTION == 'refresh')
 				} 
 			else 
 				{
-				$email_stmt="select count(*) from vicidial_email_list, vicidial_xfer_log where vicidial_email_list.status='QUEUE' and vicidial_email_list.user='$user' and vicidial_xfer_log.xfercallid=vicidial_email_list.xfercallid and direction='INBOUND' and vicidial_xfer_log.campaign_id in ('$AccampSQL') and closer='EMAIL_XFER'";
+#				$email_stmt="select count(*) from vicidial_email_list, vicidial_xfer_log where vicidial_email_list.status='QUEUE' and vicidial_email_list.user='$user' and vicidial_xfer_log.xfercallid=vicidial_email_list.xfercallid and direction='INBOUND' and vicidial_xfer_log.campaign_id in ('$AccampSQL') and closer='EMAIL_XFER'";
+				$email_stmt="select count(*) from vicidial_email_list, vicidial_xfer_log where vicidial_email_list.user!='$user' and vicidial_xfer_log.xfercallid=vicidial_email_list.xfercallid and direction='INBOUND' and vicidial_xfer_log.campaign_id in ('$AccampSQL') and closer='EMAIL_XFER'";
 				$email_rslt=mysql_to_mysqli($email_stmt, $link);
 		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$email_stmt,'03042',$user,$server_ip,$session_name,$one_mysql_log);}
 				$email_row=mysqli_fetch_row($email_rslt);
@@ -865,9 +876,10 @@ if ($ACTION == 'refresh')
 					$rslt=mysql_to_mysqli($stmt, $link);
 					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'03046',$user,$server_ip,$session_name,$one_mysql_log);}
 					}
-				}
+				}				
+			$PauseName = GetPauseName($user);
 
-			echo 'DateTime: ' . $NOW_TIME . '|UnixTime: ' . $StarTtime . '|Logged-in: ' . $Alogin . '|CampCalls: ' . $RingCalls . '|Status: ' . $Astatus . '|DiaLCalls: ' . $DiaLCalls . '|APIHanguP: ' . $external_hangup . '|APIStatuS: ' . $external_status . '|APIPausE: ' . $external_pause . '|APIDiaL: ' . $external_dial . '|DEADcall: ' . $DEADcustomer . '|InGroupChange: ' . $InGroupChangeDetails . '|APIFields: ' . $external_update_fields . '|APIFieldsData: ' . $external_update_fields_data . '|APITimerAction: ' . $timer_action . '|APITimerMessage: ' . $timer_action_message . '|APITimerSeconds: ' . $timer_action_seconds . '|APIdtmf: ' . $external_dtmf . '|APItransferconf: ' . $external_transferconf . '|APIpark: ' . $external_park . '|APITimerDestination: ' . $timer_action_destination . '|APIManualDialQueue: ' . $MDQ_count . '|APIRecording: ' . $external_recording . '|APIPaUseCodE: ' . $external_pause_code . '|WaitinGChats: ' . $WaitinGChats . '|WaitinGEmails: ' . $WaitinGEmails . '|LivEAgentCommentS: ' . $live_agents_comments . '|LeadIDSwitch: ' . $external_lead_id .'|DEADxfer: '.$DEADxfer. "\n";
+			echo 'DateTime: ' . $NOW_TIME . '|UnixTime: ' . $StarTtime . '|Logged-in: ' . $Alogin . '|CampCalls: ' . $RingCalls . '|Status: ' . $Astatus . '|DiaLCalls: ' . $DiaLCalls . '|APIHanguP: ' . $external_hangup . '|APIStatuS: ' . $external_status . '|APIPausE: ' . $external_pause . '|APIDiaL: ' . $external_dial . '|DEADcall: ' . $DEADcustomer . '|InGroupChange: ' . $InGroupChangeDetails . '|APIFields: ' . $external_update_fields . '|APIFieldsData: ' . $external_update_fields_data . '|APITimerAction: ' . $timer_action . '|APITimerMessage: ' . $timer_action_message . '|APITimerSeconds: ' . $timer_action_seconds . '|APIdtmf: ' . $external_dtmf . '|APItransferconf: ' . $external_transferconf . '|APIpark: ' . $external_park . '|APITimerDestination: ' . $timer_action_destination . '|APIManualDialQueue: ' . $MDQ_count . '|APIRecording: ' . $external_recording . '|APIPaUseCodE: ' . $external_pause_code . '|WaitinGChats: ' . $WaitinGChats . '|WaitinGEmails: ' . $WaitinGEmails . '|LivEAgentCommentS: ' . $live_agents_comments . '|LeadIDSwitch: ' . $external_lead_id .'|DEADxfer: '.$DEADxfer.'|PauseNamE: '. $PauseName . "\n";
 
 			if (strlen($timer_action) > 3)
 				{

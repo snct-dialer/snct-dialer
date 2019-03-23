@@ -1,5 +1,7 @@
 Configuring Sangoma's NetBorder CPA(Call Progress Analysis, aka ParaXip) to work with VICIDIAL.
 
+NOTE: Sangoma's CPD/CPA/Lyra product went end-of-life July 2017 and is no longer available for purchase
+
 This walk through assumes the following things:
 - That you have a working installation of Vicidial that is able to place outbound calls. VICIbox Server (www.vicibox.com) will set this up for you.
 - That you have the asterisk source code on the VICIDIAL server. VICIbox server installs Asterisk from source so it will meet this requirement.

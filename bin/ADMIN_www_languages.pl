@@ -175,7 +175,7 @@ foreach(@conf)
 	$i++;
 	}
 
-if (!$VASLOGfile) {$VASLOGfile = "$PATHlogs/wwwlang.$year-$mon-$mday";}
+if (!$VASLOGfile) {$VASLOGfile = "$PATHlogs/wwwlang";}
 if (!$VARDB_port) {$VARDB_port='3306';}
 
 use DBI;	  

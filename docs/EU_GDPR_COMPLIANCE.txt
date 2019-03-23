@@ -1,4 +1,4 @@
-EUROPEAN UNION GDPR COMPLIANCE	  Started: 2018-03-02	Updated: 2018-03-02
+EUROPEAN UNION GDPR COMPLIANCE	  Started: 2018-03-02	Updated: 2018-06-22
 
 
 !!!!! NOTE THIS SET OF FEATURES IS NOT ENABLED IN VICIDIAL BY DEFAULT !!!!!
@@ -57,6 +57,10 @@ Click here to review and purge customer data on lead
 The "download" option will provide you with a ZIP file containing all lead and log data for the lead record in the system as well as all of the recordings that are available for the lead record.
 
 The "review and purge" option will take you to a confirmation page where you can permanently delete the personal information that is stored in the system
+
+
+NOTE: if you are not using a VICIbox 8.x or newer web server, make sure that your installation of PHP has the ZipArchive class installed:
+http://php.net/manual/en/zip.installation.php
 
 
 

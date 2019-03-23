@@ -8,15 +8,33 @@
 #
 # This program only needs to be run by one server
 #
-# Copyright (C) 2013  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
+# LICENSE: AGPLv3
+#
+# Copyright (C) 2013 Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
+
 # CHANGES
 # 110425-0853 - First Build
 # 110506-1516 - Added DIDs, IVRs, in-groups(queues), campaigns(queues) and all-alias to the sync options
 # 111203-0737 - Added queue key options for in-group ID and ALLQ
 # 121115-1908 - Added CLI options for alternate QM MySQL connection information
 # 130131-2225 - Added key-id-wipe options
+# 180616-1825 - Add sniplet into perl scripts to run only once a time
 #
+
+
+###### Test that the script is running only once a time
+use Fcntl qw(:flock);
+# print "start of program $0\n";
+unless (flock(DATA, LOCK_EX|LOCK_NB)) {
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    or print "Can't open the fscking file: $!";
+    $datestring = localtime();
+    print $fh "[$datestring] $0 is already running. Exiting.\n";
+    exit(1);
+}
 
 # constants
 $version = '130131-2225';
@@ -1087,3 +1105,7 @@ sub event_logger
 	close(Lout);
 	$event_string='';
 	}
+
+__DATA__
+This exists so flock() code above works.
+DO NOT REMOVE THIS DATA SECTION.
