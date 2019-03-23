@@ -619,6 +619,10 @@
     - Update: agi/agi-VDAD_local_optimize.agi.
   * Add missing ':
     - Update: vicidial/admin.php.
+  * Release 2.25.28 2019-03-23:
+    - First release from SNCT GmbH.
+    - This is the last stable release with the old agent interface.
+    - I dedicate this release to my girlfriend.
 
 2.25.27
   [Jörg Fring-Fürst]

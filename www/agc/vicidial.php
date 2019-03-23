@@ -1047,11 +1047,6 @@ echo '<?xml version="1.0" encoding="UTF-8"?>
 echo "<!-- VERSION: $version     "._QXZ("BUILD:")." $build -->\n";
 echo "<!-- BROWSER: $BROWSER_WIDTH x $BROWSER_HEIGHT     $JS_browser_width x $JS_browser_height -->\n";
 
-?>
-<script type="text/javascript" src="../tools/floating.js"></script>
-#<script src="../tools/jspanel.js"></script>
-
-<?php
 
 if ($campaign_login_list > 0)
 	{
