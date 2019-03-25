@@ -2,6 +2,8 @@
   [Jörg Frings-Fürst]
     * Add missing copyright:
       - Update: www/vicidial/admin.php.
+    * Change realtime report startup refresh time to 4 sec.:
+      - Update: www/vicidial/admin.php. 
 
 2.25.28
   [Jörg Frings-Fürst]
