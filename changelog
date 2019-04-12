@@ -35,6 +35,9 @@
       - Update: www/agc/options-example.php,
           www/agc/vicidial.php: Added logged_in_refresh_link, Added
             logged_in_refresh_link option.
+    * Add upstream Rev. 3087:
+      - Update: bin/AST_DNCcom_filter.pl: Small fix based on DNC.com response
+          values.
 
 2.26.29
   [Jörg Frings-Fürst]
