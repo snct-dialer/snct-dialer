@@ -470,10 +470,11 @@
 # 190220-1005 - Added vicidial_sessions_recent inserts when lead is set to INCALL status
 # 190312-0927 - Added more hide_call_log_info options
 # 190322-1557 - Fix for issue with wrong script background with list-script-override on outbound autodial calls
+# 190406-1614 - Added agent next_dial_my_callbacks override
 #
 
-$version = '2.14-364';
-$build = '190322-1557';
+$version = '2.14-365';
+$build = '190406-1614';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=793;
@@ -2622,10 +2623,10 @@ if ($ACTION == 'manDiaLnextCaLL')
 					##########################################################
 				#	$DB=1;
 
-					##### gather user lead filter setting
+					##### gather user lead filter, next_dial_my_callbacks settings
 					$USERlead_filter_id='';
 					$USERfSQL='';
-					$stmt="SELECT lead_filter_id FROM vicidial_users where user='$user';";
+					$stmt="SELECT lead_filter_id,next_dial_my_callbacks FROM vicidial_users where user='$user';";
 					$rslt=mysql_to_mysqli($stmt, $link);
 					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00621',$user,$server_ip,$session_name,$one_mysql_log);}
 					if ($DB) {echo "$stmt\n";}
@@ -2633,7 +2634,8 @@ if ($ACTION == 'manDiaLnextCaLL')
 					if ($camp_nohopper_ct > 0)
 						{
 						$row=mysqli_fetch_row($rslt);
-						$USERlead_filter_id = $row[0];
+						$USERlead_filter_id =			$row[0];
+						$USERnext_dial_my_callbacks =	$row[1];
 						}
 					if ( ($USERlead_filter_id != 'NONE') and (strlen($USERlead_filter_id) > 0) )
 						{
@@ -2649,6 +2651,8 @@ if ($ACTION == 'manDiaLnextCaLL')
 							$USERfSQL = preg_replace('/\\\\/','',$USERfSQL);
 							}
 						}
+					if ( ($USERnext_dial_my_callbacks == 'ENABLED') or ($USERnext_dial_my_callbacks == 'DISABLED') )
+						{$next_dial_my_callbacks = $USERnext_dial_my_callbacks;}
 
 					$origUSERfSQL = $USERfSQL;
 					$find_lead_ct=0;
