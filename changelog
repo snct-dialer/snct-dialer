@@ -6,6 +6,10 @@
     * Add upstream Rev. 3080:
       - Update www/agc/vdc_db_query.php: Fix for issue with wrong script
           background with list-script-override on outbound autodial calls.
+    * Add upstream Rev. 3081:
+      - Update docs/NON-AGENT_API.txt,
+          www/vicidial/non_agent_api.php: Added agent_campaigns function.
+    
 2.26.29
   [Jörg Frings-Fürst]
     * Add missing copyright:
