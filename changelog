@@ -31,6 +31,10 @@
           www/vicidial/admin_modify_lead.php: Added AMD Log Report, Added
           display of AMD log info when CIDdisplay=Yes is set.
       - New: www/vicidial/AST_AMD_log_report.php.
+    * Add upstream Rev. 3086:
+      - Update: www/agc/options-example.php,
+          www/agc/vicidial.php: Added logged_in_refresh_link, Added
+            logged_in_refresh_link option.
 
 2.26.29
   [Jörg Frings-Fürst]
