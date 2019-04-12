@@ -18,6 +18,10 @@
       - New: bin/AST_activity_log_export.pl,
           extras/ast13_amd_noaudio.patch,
           extras/mysql_update/mysql-1567.sql: Added more logging options.
+    * Add upstream Rev. 3083:
+      - Update: www/vicidial/admin.php,
+          www/vicidial/help_documentation.txt: Added READ_ONLY settings
+            container type.
 
 2.26.29
   [Jörg Frings-Fürst]
