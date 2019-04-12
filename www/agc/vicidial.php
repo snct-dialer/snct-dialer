@@ -19785,6 +19785,7 @@ $zi=2;
     <span style="background-color: #FFCCFF" id="HangupControl"><img src="./images/<?php echo _QXZ("vdc_LB_hangupcustomer_OFF.gif"); ?>" border="0" alt="Hangup Customer" /></span><br />
     <span id="SpacerSpanD"><img src="./images/<?php echo _QXZ("blank.gif"); ?>" width="145px" height="16px" border="0" /></span><br />
     <div class="text_input" id="SendDTMFdiv"><span style="background-color: <?php echo $MAIN_COLOR ?>" id="SendDTMF"><a href="#" onclick="SendConfDTMF(session_id,'YES');return false;"><img src="./images/<?php echo _QXZ("vdc_LB_senddtmf.gif"); ?>" border="0" alt="Send DTMF" align="bottom" /></a>  <input type="text" size="5" name="conf_dtmf" class="cust_form" value="" maxlength="50" /></div></span><br />
+    <span id="PauseName"></span>
 	</center>
 	</font>
 	</td>
@@ -20363,10 +20364,6 @@ if ($agent_display_dialable_leads > 0)
 
 <span style="position:absolute;left:<?php echo $AMwidth ?>px;top:<?php echo $MAheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="MailCommit">
 <a href="#" onclick="MailCustomerData('YES')"><font class="body_small"><?php echo _QXZ("Ticket Mail"); ?></font></a>
-</span>
-
-<span style="position:absolute;left:<?php echo $PAwidth ?>px;top:<?php echo $PAheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="PauseName">
-<font class="body_small"></font>
 </span>
 
 <span style="position:absolute;left:154px;top:<?php echo $SFheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="ScriptPanel">
