@@ -3,7 +3,9 @@
     * Add upstream Rev. 3079:
       - Update www/vicidial/admin.php,
           www/vicidial/help_documentation.txt: Some Typos.
-
+    * Add upstream Rev. 3080:
+      - Update www/agc/vdc_db_query.php: Fix for issue with wrong script
+          background with list-script-override on outbound autodial calls.
 2.26.29
   [Jörg Frings-Fürst]
     * Add missing copyright:
