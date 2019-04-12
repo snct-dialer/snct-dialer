@@ -22,6 +22,9 @@
       - Update: www/vicidial/admin.php,
           www/vicidial/help_documentation.txt: Added READ_ONLY settings
             container type.
+    * Add upstream Rev. 3084:
+      - Update: bin/AST_activity_log_export.pl: Added agent_log_id to
+          vicidial_agent_log export.
 
 2.26.29
   [Jörg Frings-Fürst]
