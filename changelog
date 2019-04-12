@@ -1,15 +1,24 @@
 2.26.30
   [Jörg Frings-Fürst]
     * Add upstream Rev. 3079:
-      - Update www/vicidial/admin.php,
+      - Update: www/vicidial/admin.php,
           www/vicidial/help_documentation.txt: Some Typos.
     * Add upstream Rev. 3080:
-      - Update www/agc/vdc_db_query.php: Fix for issue with wrong script
+      - Update: www/agc/vdc_db_query.php: Fix for issue with wrong script
           background with list-script-override on outbound autodial calls.
     * Add upstream Rev. 3081:
       - Update docs/NON-AGENT_API.txt,
           www/vicidial/non_agent_api.php: Added agent_campaigns function.
-    
+    * Add upstream Rev. 3082:
+      - Update: UPGRADE,
+          agi/VD_amd.agi,
+          bin/ADMIN_archive_log_tables.pl,
+          extras/MySQL_AST_CREATE_tables.sql,
+          extras/upgrade_2.14.sql
+      - New: bin/AST_activity_log_export.pl,
+          extras/ast13_amd_noaudio.patch,
+          extras/mysql_update/mysql-1567.sql: Added more logging options.
+
 2.26.29
   [Jörg Frings-Fürst]
     * Add missing copyright:
