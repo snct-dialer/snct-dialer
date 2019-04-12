@@ -1,3 +1,9 @@
+2.26.30
+  [Jörg Frings-Fürst]
+    * Add upstream Rev. 3079:
+      - Update www/vicidial/admin.php,
+          www/vicidial/help_documentation.txt: Some Typos.
+
 2.26.29
   [Jörg Frings-Fürst]
     * Add missing copyright:
