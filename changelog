@@ -48,6 +48,18 @@
           www/vicidial/help_documentation.txt: Added agent
             next_dial_my_callbacks override, Added user override option for
             next_dial_my_callbacks.
+    * Add upstream Rev. 3089:
+      - Update: UPGRADE,
+          extras/MySQL_AST_CREATE_tables.sql,
+          extras/mysql_update/mysql-1567.sql,
+          extras/upgrade_2.14.sql,
+          www/vicidial/admin.php,
+          www/vicidial/help_documentation.txt: Added user_admin_redirect
+            system setting and user option.
+    * Add upstream Rev. 3090:
+      - Update: www/vicidial/options-example.php,
+          www/vicidial/realtime_report.php: Made admin and summary report links
+            conditional, RS_logoutLINK options.php option.
 
 2.26.29
   [Jörg Frings-Fürst]
