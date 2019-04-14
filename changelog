@@ -60,6 +60,8 @@
       - Update: www/vicidial/options-example.php,
           www/vicidial/realtime_report.php: Made admin and summary report links
             conditional, RS_logoutLINK options.php option.
+    * Set error reporting level E_NOTICE only if $DB is set:
+      - Update www/vicidial/realtime_report.php.
 
 2.26.29
   [Jörg Frings-Fürst]

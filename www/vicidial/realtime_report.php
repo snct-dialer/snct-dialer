@@ -1,7 +1,11 @@
 <?php 
 # realtime_report.php
 # 
-# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# LICENSE: AGPLv3
+#
+# Copyright (©) 2019  Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2019  SNCT GmbH <info@snct-gmbh.de>
+#               2019  Jörg Frings-Fürst <open_source@jff.email>
 #
 # live real-time stats for the VICIDIAL Auto-Dialer all servers
 #
@@ -10,6 +14,12 @@
 #
 # * Requires AST_timeonVDADall.php for AJAX-derived stats information
 # 
+#
+# FP - Changelog
+#
+# 2019-04-14 18:32 Set error reporting level E_NOTICE only if $DB is set.
+#
+#
 # CHANGELOG:
 # 101216-1355 - First Build
 # 101218-1520 - Small time reload bug fix and formatting fixes
@@ -125,6 +135,15 @@ if (isset($_GET["report_display_type"]))			{$report_display_type=$_GET["report_d
 
 $report_name = 'Real-Time Main Report';
 $db_source = 'M';
+
+#
+# set error reporting level E_NOTICE only if $DB is set
+#
+if($DB) {
+    error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
+} else {
+    error_reporting(E_ERROR | E_WARNING | E_PARSE);
+}
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
