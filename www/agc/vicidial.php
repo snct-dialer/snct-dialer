@@ -8,7 +8,6 @@
 # Copyright (©) 2017-2019 flyingpenguin.de UG <info@flyingpenguin.de>
 #               2019      SNCT GmbH <info@snct-gmbh.de>
 #               2017-2019 Jörg Frings-Fürst <j.fringsfuerst@snct-dialer>.
-
 #
 # Other scripts that this application depends on:
 # - vdc_db_query.php: Updates information in the database
@@ -20,6 +19,13 @@
 # - vdc_chat_display.php: display chat interface
 # - agc_agent_manager_chat_interface.php: display internal chats
 #
+#
+# FP - Changelog
+#
+# 2019-04-14 19:22 Remove old PausenDisplay stuff.
+#
+#
+
 # CHANGELOG
 # 50607-1426 - First Build of VICIDIAL web client basic login process finished
 # 50628-1620 - Added some basic formatting and worked on process flow
@@ -10574,8 +10580,6 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 				var add_pause_code='';
 				if (taskaction == 'VDADready')
 					{
-//					if(PPanel) { PPanel.close(); };
-					ToggleFloatingLayer("PauseLayer",0);
 					VDRP_stage = 'READY';
 					VDRP_stage_seconds=0;
 					safe_pause_counter=0;
@@ -14563,24 +14567,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 //		return agent_log_id;
 		LastCallCID='';
 		scroll(0,0);
-		
-//		PPanel = jsPanel.create({
-//			id:          'PausePanel',
-//		    theme:       'purple',
-//		    headerTitle: 'Pause',
-//		    position:    'center-top 0 58',
-//		    contentSize: '450 250',
-//		    content:     '<h1>' + newpausecode + '</h1>',
-//		    callback: function () {
-//		        this.content.style.padding = '20px';
-//		    },
-//		    onbeforeclose: function () {
-//		        return confirm('Do you really want to close the panel?');
-//		    }
-//		});
-//		InitFloatingWindow("PauseLayer", "Pause", newpausecode);
-//		ToggleFloatingLayer("PauseLayer",1);
-//		PPanel.front();
+
 	}
 
 

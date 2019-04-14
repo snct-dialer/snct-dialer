@@ -62,6 +62,8 @@
             conditional, RS_logoutLINK options.php option.
     * Set error reporting level E_NOTICE only if $DB is set:
       - Update www/vicidial/realtime_report.php.
+    * Remove old PausenDisplay stuff:
+      - Update www/vicidial/vicidial.php
 
 2.26.29
   [Jörg Frings-Fürst]
