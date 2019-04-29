@@ -81,8 +81,12 @@
 	      www/vicidial/AST_dialer_inventory_report.php,
 	      www/vicidial/dbconnect_mysqli.php,
 	      www/vicidial/admin.php.
-	 * Add missing field into extras/MySQL_AST_CREATE_tables.sql.
-	
+	* Add missing field into extras/MySQL_AST_CREATE_tables.sql.
+	* New function to display missed inbounds:
+	  - Change: www/agc/conf_exten_check.php,
+	      www/agc/functions.php,
+	      www/agc/vicidial.php.
+
 2.26.29
   [Jörg Frings-Fürst]
     * Add missing copyright:

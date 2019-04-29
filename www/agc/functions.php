@@ -2627,4 +2627,19 @@ function GetPauseName($Agent) {
     return $Pause_Name;
 }
 
+function GetMissingInboundsCalls($Agent) {
+    global $DB, $mel;
+    
+    require("dbconnect_mysqli.php");
+    
+    $Count = 0;
+    $SearchDate = date("Y-M-d H:i:s", (time() - 1800));
+    $stmt = "SELECT * FROM `vicidial_closer_log` WHERE `campaign_id` LIKE 'AGENTDIRECT%' AND `user` = '$Agent' AND status = 'DROP' AND `term_reason` = 'ABANDON' AND `call_date` >= '$SearchDate' ";
+    $rslt=mysqli_query($link, $stmt);
+    if(! $rslt ) {  echo "Error: " .  mysqli_error($link) . PHP_EOL; }
+    if ($DB) {echo "$stmt\n";}
+    
+    $Count = mysqli_num_rows($rslt);
+    return $Count;
+}
 ?>

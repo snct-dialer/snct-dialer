@@ -6022,6 +6022,10 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						if(agent_pause_codes_active === "FORCE") {
 							document.getElementById("PauseName").innerHTML = "<p style='color: #ffffff; background-color: #ff0000'>" + PNameX[1] + "</p>";
 						}
+						var AnzMiss = check_time_array[33].split("AnzMisInbCalls: ");
+						if(AnzMiss[1] != 0) {
+							document.getElementById("AnzMissInb").innerHTML = "<p style='color: #ffffff; background-color: #00ff00'>Verpasste Anrufe: " + AnzMiss[1] + "</p>";
+						}
 						var APItransfercond_array = check_time_array[21].split("APItransferconf: ");
 						var api_transferconf_values_array = APItransfercond_array[1].split("---");
 						api_transferconf_function = api_transferconf_values_array[0];
@@ -19774,6 +19778,7 @@ $zi=2;
     <span id="SpacerSpanD"><img src="./images/<?php echo _QXZ("blank.gif"); ?>" width="145px" height="16px" border="0" /></span><br />
     <div class="text_input" id="SendDTMFdiv"><span style="background-color: <?php echo $MAIN_COLOR ?>" id="SendDTMF"><a href="#" onclick="SendConfDTMF(session_id,'YES');return false;"><img src="./images/<?php echo _QXZ("vdc_LB_senddtmf.gif"); ?>" border="0" alt="Send DTMF" align="bottom" /></a>  <input type="text" size="5" name="conf_dtmf" class="cust_form" value="" maxlength="50" /></div></span><br />
     <span id="PauseName"></span>
+    <span id="AnzMissInb"></span>
 	</center>
 	</font>
 	</td>
