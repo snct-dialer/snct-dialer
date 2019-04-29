@@ -1,7 +1,8 @@
 <?php
 #
-# Copyright (c) 2015-2017 Jörg Frings-Fürst <jff@flyingpenguin.de>   LICENSE: AGPLv2
+# Copyright (c) 2015-2019 Jörg Frings-Fürst <open_source@jff.email>   LICENSE: AGPLv3
 #		        2015-2017 flyingpenguin UG <info@flyingpenguin.de>
+#               2019      SNCT GmbH <info@snct-gmbh.de>
 #
 # Display module for table contact_information
 #
@@ -33,6 +34,8 @@
 # 20171130-1159 Add fields *_phone_code
 # 20171130-1439 Change to $_SERVER['SERVER_NAME'];
 # 20180423-1335 Remove Protokol and Server-IP from links
+# 20190429-1000 Change License to AGPLv3
+# 20190429-1002 Add system_wide_settings.php
 #
 
 #
@@ -49,8 +52,8 @@
 #
 #
 
-$version = '0.1.7';
-$build = '20171130-1439';
+$version = '0.1.8';
+$build = '20190429-1005';
 
 
 require_once("phonebook_setup.php");
@@ -113,6 +116,8 @@ if (isset($_GET["searchtag"]))                          {$searchTag=$_GET["searc
         elseif (isset($_POST["searchtag"]))             {$searchTag=$_POST["searchtag"];}
 if (isset($_GET["searchfield"]))                        {$searchField=$_GET["searchfield"];}
         elseif (isset($_POST["searchfield"]))           {$searchField=$_POST["searchfield"];}
+
+require_once("../tools/system_wide_settings.php");
 
 $Server_ip_ext = $_SERVER['SERVER_NAME'];
 if ($DB) { print $Server_ip_ext; }

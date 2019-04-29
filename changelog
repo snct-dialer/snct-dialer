@@ -64,7 +64,25 @@
       - Update www/vicidial/realtime_report.php.
     * Remove old PausenDisplay stuff:
       - Update www/vicidial/vicidial.php
-
+	* Fix the lot of error message about unset vars if $DB isn't set:
+	  - New www/tools/system_wide_settings.php.
+	  - Include www/tools/system_wide_settings.php into:
+	    + www/agc/vdc_phonebook_display.php,
+	      www/agc/vdc_script_display.php,
+	      www/agc/vdc_db_query.php,
+	      www/agc/conf_exten_check.php,
+	      www/agc/vicidial.php,
+	      www/agc/vdc_email_display.php,
+	      www/agc/manager_send.php,
+	      www/agc/api.php,
+	      www/agc/vdc_chat_display,
+	      www/vicidial/AST_timeonVDADall.php,
+	      www/vicidial/realtime_report.php,
+	      www/vicidial/AST_dialer_inventory_report.php,
+	      www/vicidial/dbconnect_mysqli.php,
+	      www/vicidial/admin.php.
+	 * Add missing field into extras/MySQL_AST_CREATE_tables.sql.
+	
 2.26.29
   [Jörg Frings-Fürst]
     * Add missing copyright:

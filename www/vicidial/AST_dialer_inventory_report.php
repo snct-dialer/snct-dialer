@@ -1,12 +1,23 @@
 <?php 
 # AST_dialer_inventory_report.php
-# 
-# Copyright (C) 2017  Joe Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
-#                     Matt Florell <vicidial@gmail.com>
+#
+# LICENSE: AGPLv3
+#
+# Copyright (©) 2017  Matt Florell <vicidial@gmail.com>
+#                     Joe Johnson <freewermadmin@gmail.com>
+# Copyright (©) 2019  SNCT GmbH <info@snct-gmbh.de>
+#               2019  Jörg Frings-Fürst <open_source@jff.email>
 #
 # NOTES:
 # - For snapshots, the AST_dialer_inventory_snapshot.pl script should be put in
 #    the crontab and run on a nightly basis after-hours
+
+# Other - Changelog
+#
+# 2019-04-29 10:23 Change lisense to AGPLv3
+# 2019-04-29 10:25 Add system_wide_settings.php
+#
+
 #
 #
 # CHANGES
@@ -29,7 +40,6 @@
 
 $startMS = microtime();
 
-error_reporting(0);
 
 require("dbconnect_mysqli.php");
 require("functions.php");
@@ -59,6 +69,10 @@ if (isset($_GET["snapshot_time"]))			{$snapshot_time=$_GET["snapshot_time"];}
 	elseif (isset($_POST["snapshot_time"]))	{$snapshot_time=$_POST["snapshot_time"];}
 if (isset($_GET["override_24hours"]))			{$override_24hours=$_GET["override_24hours"];}
 	elseif (isset($_POST["override_24hours"]))	{$override_24hours=$_POST["override_24hours"];}
+
+
+require_once("../tools/system_wide_settings.php");
+
 
 $MT[0]='';
 $NOW_DATE = date("Y-m-d");

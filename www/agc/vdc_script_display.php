@@ -1,7 +1,11 @@
 <?php
 # vdc_script_display.php
 # 
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# LICENSE: AGPLv3
+#
+# Copyright (©) 2018  Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2019      SNCT GmbH <info@snct-gmbh.de>
+#               2017-2019 Jörg Frings-Fürst <open_source@jff.email>.
 #
 # This script is designed display the contents of the SCRIPT tab in the agent interface
 #
@@ -39,6 +43,12 @@
 # 171126-1124 - Added email message display from inbound emails only
 # 180224-1406 - Added LOGINvar variables, and options.php $INSERT_ variables
 # 180327-1356 - Added code for LOCALFQDN conversion to browser-used server URL for script iframes
+#
+
+# Other - Changelog
+#
+# 2019-04-29 10:06 Change lisense to AGPLv3
+# 2019-04-29 10:08 Add system_wide_settings.php
 #
 
 $version = '2.14-33';
@@ -255,6 +265,7 @@ if (isset($_GET["LOGINvarFOUR"]))			{$LOGINvarFOUR=$_GET["LOGINvarFOUR"];}
 if (isset($_GET["LOGINvarFIVE"]))			{$LOGINvarFIVE=$_GET["LOGINvarFIVE"];}
 	elseif (isset($_POST["LOGINvarFIVE"]))	{$LOGINvarFIVE=$_POST["LOGINvarFIVE"];}
 
+require_once("../tools/system_wide_settings.php");
 
 header ("Content-type: text/html; charset=utf-8");
 header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1

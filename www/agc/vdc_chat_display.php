@@ -1,7 +1,11 @@
 <?php
 # vdc_chat_display.php
 #
-# Copyright (C) 2017  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# LICENSE: AGPLv3
+#
+# Copyright (©) 2017      Joe Johnson, Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2019      SNCT GmbH <info@snct-gmbh.de>
+#               2017-2019 Jörg Frings-Fürst <open_source@jff.email>.
 #
 # This is the interface for agents to chat with customers and each other.  It's separate from the manager-to-agent 
 # chat interface out of necessity and calls the chat_db_query.php page to send information and display it.  It will
@@ -18,6 +22,13 @@
 # 160818-1235 - Added line colors and scrolling
 # 170528-1001 - Added variable filtering
 #
+
+# Other - Changelog
+#
+# 2019-04-29 10:23 Change lisense to AGPLv3
+# 2019-04-29 10:25 Add system_wide_settings.php
+#
+
 
 require("dbconnect_mysqli.php");
 require("functions.php");
@@ -56,6 +67,10 @@ if (isset($_GET["clickmute"]))						{$clickmute=$_GET["clickmute"];}
 	elseif (isset($_POST["clickmute"]))				{$clickmute=$_POST["clickmute"];}
 if (isset($_GET["stage"]))							{$stage=$_GET["stage"];}
 	elseif (isset($_POST["stage"]))					{$stage=$_POST["stage"];}
+
+
+require_once("../tools/system_wide_settings.php");
+
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
@@ -189,7 +204,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>
 <script type="text/javascript" src="simpletreemenu.js">
 
 /***********************************************
-* Simple Tree Menu- � Dynamic Drive DHTML code library (www.dynamicdrive.com)
+* Simple Tree Menu- � Dynamic Drive DHTML code library (www.dynamicdrive.com)
 * This notice MUST stay intact for legal use
 * Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
 ***********************************************/

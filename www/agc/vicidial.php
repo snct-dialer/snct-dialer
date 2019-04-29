@@ -7,7 +7,7 @@
 # Copyright (©) 2019  Matt Florell <vicidial@gmail.com>
 # Copyright (©) 2017-2019 flyingpenguin.de UG <info@flyingpenguin.de>
 #               2019      SNCT GmbH <info@snct-gmbh.de>
-#               2017-2019 Jörg Frings-Fürst <j.fringsfuerst@snct-dialer>.
+#               2017-2019 Jörg Frings-Fürst <open_source@jff.email>.
 #
 # Other scripts that this application depends on:
 # - vdc_db_query.php: Updates information in the database
@@ -20,9 +20,10 @@
 # - agc_agent_manager_chat_interface.php: display internal chats
 #
 #
-# FP - Changelog
+# Other - Changelog
 #
 # 2019-04-14 19:22 Remove old PausenDisplay stuff.
+# 2019-04-29 10:17 Add system_wide_settings.php.
 #
 #
 
@@ -695,14 +696,8 @@ if (!isset($flag_channels))
 	$flag_string='';
 	}
 
-#
-# set error reporting level E_NOTICE only if $DB is set
-#
-if($DB) {
-	error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
-} else {
-	error_reporting(E_ERROR | E_WARNING | E_PARSE);
-}
+
+require_once("../tools/system_wide_settings.php");
 
 ### security strip all non-alphanumeric characters out of the variables ###
 $DB=preg_replace("/[^0-9a-z]/","",$DB);

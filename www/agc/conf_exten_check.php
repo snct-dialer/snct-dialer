@@ -1,7 +1,12 @@
 <?php
 # conf_exten_check.php    version 2.14
-# 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+#
+# LICENSE: AGPLv3
+#
+# Copyright (©) 2017  Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2019      SNCT GmbH <info@snct-gmbh.de>
+#               2017-2019 Jörg Frings-Fürst <open_source@jff.email>.
 #
 # This script is designed purely to send whether the meetme conference has live channels connected and which they are
 # This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
@@ -82,6 +87,13 @@
 # 180602-0149 - Changed SQL query for email queue count for accuracy
 #
 
+
+# Other - Changelog
+#
+# 2019-04-29 10:13 Change lisense to AGPLv3
+# 2019-04-29 10:14 Add system_wide_settings.php
+#
+
 $version = '2.14-54';
 $build = '170817-0739';
 $php_script = 'conf_exten_check.php';
@@ -134,6 +146,10 @@ if (isset($_GET["live_call_seconds"]))			{$live_call_seconds=$_GET["live_call_se
 if (isset($_GET["xferchannel"]))			{$xferchannel=$_GET["xferchannel"];}
 	elseif (isset($_POST["xferchannel"]))	{$xferchannel=$_POST["xferchannel"];}
 
+
+require_once("../tools/system_wide_settings.php");
+
+
 if ($bcrypt == 'OFF')
 	{$bcrypt=0;}
 
@@ -143,15 +159,6 @@ header ("Pragma: no-cache");                          // HTTP/1.0
 
 $user=preg_replace("/\'|\"|\\\\|;| /","",$user);
 $pass=preg_replace("/\'|\"|\\\\|;| /","",$pass);
-
-#
-# set error reporting level E_NOTICE only if $DB is set
-#
-if($DB) {
-    error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
-} else {
-    error_reporting(E_ERROR | E_WARNING | E_PARSE);
-}
 
 
 #############################################

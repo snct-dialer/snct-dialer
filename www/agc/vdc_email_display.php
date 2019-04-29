@@ -1,7 +1,11 @@
 <?php
 # vdc_email_display.php - VICIDIAL agent email display script
 #
-# Copyright (C) 2017  Matt Florell, Joe Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
+# LICENSE: AGPLv3
+#
+# Copyright (©) 2017  Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2019      SNCT GmbH <info@snct-gmbh.de>
+#               2017-2019 Jörg Frings-Fürst <open_source@jff.email>.
 #
 # This page displays any incoming emails in the Vicidial user interface.  It 
 # also allows the user to download and view any attachments sent in the email,
@@ -23,6 +27,12 @@
 # 150603-1541 - Fixed email attachments issue
 # 170526-2330 - Added additional variable filtering
 # 171126-1406 - Added fault tolerance and extra debug
+#
+
+# Other - Changelog
+#
+# 2019-04-29 10:22 Change lisense to AGPLv3
+# 2019-04-29 10:23 Add system_wide_settings.php
 #
 
 $version = '2.14-13';
@@ -61,6 +71,9 @@ if (isset($_GET["REPLY"]))	{$REPLY=$_GET["REPLY"];}
 	elseif (isset($_POST["REPLY"]))	{$REPLY=$_POST["REPLY"];}
 if (isset($_GET["agent_email"]))	{$agent_email=$_GET["agent_email"];}
 	elseif (isset($_POST["agent_email"]))	{$agent_email=$_POST["agent_email"];}
+
+
+require_once("../tools/system_wide_settings.php");
 
 
 $attachment1=$_FILES["attachment1"];

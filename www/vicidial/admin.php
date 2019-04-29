@@ -6,10 +6,10 @@
 # Copyright (©) 2019  Matt Florell <vicidial@gmail.com>
 # Copyright (©) 2017-2019 flyingpenguin.de UG <info@flyingpenguin.de>
 #               2019      SNCT GmbH <info@snct-gmbh.de>
-#               2017-2019 Jörg Frings-Fürst <j.fringsfuerst@snct-dialer.de>
+#               2017-2019 Jörg Frings-Fürst <open_source@jff.email>
 
 #
-# FP - Changelog
+# Other - Changelog
 #
 # 2017-12-21 09:53 Allow Clear Lists for User Level >= 8 (2017-061).
 # 2018-02-27 11:05 Add pickup_delay into ingroups (2018-003)
@@ -19,6 +19,7 @@
 # 2018-06-06 11:52 Escape pho_auto_answer_sipheader
 # 2019-02-11 20:09 Phones add redirect feature
 #                  Phones Switch to MYSQLI_BOTH for using fieldnames
+# 2019-04-29 10:45 Add system_wide_settings.php.
 #
 
 $startMS = microtime();
@@ -2539,14 +2540,10 @@ if (strlen($dial_status) > 0)
 	$status = $dial_status;
 	}
 
-#
-# set error reporting level E_NOTICE only if $DB is set
-#
-if($DB) { 
-    error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
-} else {
-    error_reporting(E_ERROR | E_WARNING | E_PARSE);
-}
+
+require_once("../tools/system_wide_settings.php");
+
+
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####

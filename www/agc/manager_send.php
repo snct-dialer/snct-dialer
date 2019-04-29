@@ -1,7 +1,11 @@
 <?php
 # manager_send.php    version 2.14
 # 
-# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# LICENSE: AGPLv3
+#
+# Copyright (©) 2019  Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2019      SNCT GmbH <info@snct-gmbh.de>
+#               2017-2019 Jörg Frings-Fürst <open_source@jff.email>.
 #
 # This script is designed purely to insert records into the vicidial_manager table to signal Actions to an asterisk server
 # This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
@@ -144,6 +148,13 @@
 # 190310-1202 - Added MuteRecording function
 #
 
+# Other - Changelog
+#
+# 2019-04-29 10:23 Change lisense to AGPLv3
+# 2019-04-29 10:25 Add system_wide_settings.php
+#
+
+
 $version = '2.14-89';
 $build = '190310-1202';
 $php_script = 'manager_send.php';
@@ -251,6 +262,9 @@ if (isset($_GET["customerparked"]))				{$customerparked=$_GET["customerparked"];
 	elseif (isset($_POST["customerparked"]))	{$customerparked=$_POST["customerparked"];}
 if (isset($_GET["user_group"]))				{$user_group=$_GET["user_group"];}
 	elseif (isset($_POST["user_group"]))	{$user_group=$_POST["user_group"];}
+
+
+require_once("../tools/system_wide_settings.php");
 
 
 header ("Content-type: text/html; charset=utf-8");

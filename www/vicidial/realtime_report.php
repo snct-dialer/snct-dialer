@@ -15,9 +15,10 @@
 # * Requires AST_timeonVDADall.php for AJAX-derived stats information
 # 
 #
-# FP - Changelog
+# Other - Changelog
 #
 # 2019-04-14 18:32 Set error reporting level E_NOTICE only if $DB is set.
+# 2019-04-29 10:25 Add system_wide_settings.php
 #
 #
 # CHANGELOG:
@@ -133,17 +134,13 @@ if (isset($_GET["droppedOFtotal"]))				{$droppedOFtotal=$_GET["droppedOFtotal"];
 if (isset($_GET["report_display_type"]))			{$report_display_type=$_GET["report_display_type"];}
 	elseif (isset($_POST["report_display_type"]))	{$report_display_type=$_POST["report_display_type"];}
 
+
+require_once("../tools/system_wide_settings.php");
+
+
 $report_name = 'Real-Time Main Report';
 $db_source = 'M';
 
-#
-# set error reporting level E_NOTICE only if $DB is set
-#
-if($DB) {
-    error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
-} else {
-    error_reporting(E_ERROR | E_WARNING | E_PARSE);
-}
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####

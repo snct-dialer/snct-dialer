@@ -1,7 +1,11 @@
 <?php
 # api.php
-# 
-# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# LICENSE: AGPLv3
+#
+# Copyright (©) 2019  Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2019      SNCT GmbH <info@snct-gmbh.de>
+#               2017-2019 Jörg Frings-Fürst <open_source@jff.email>.
 #
 # This script is designed as an API(Application Programming Interface) to allow
 # other programs to interact with the VICIDIAL Agent screen
@@ -98,6 +102,13 @@
 # 180903-1606 - Added count for waiting emails to calls_in_queue_count function
 # 180908-1433 - Added force_fronter_leave_3way function
 # 190222-1152 - Added force_fronter_audio_stop function
+#
+
+
+# Other - Changelog
+#
+# 2019-04-29 10:23 Change lisense to AGPLv3
+# 2019-04-29 10:25 Add system_wide_settings.php
 #
 
 $version = '2.14-64';
@@ -244,6 +255,10 @@ if (isset($_GET["agent_debug"]))			{$agent_debug=$_GET["agent_debug"];}
 	elseif (isset($_POST["agent_debug"]))	{$agent_debug=$_POST["agent_debug"];}
 if (isset($_GET["dial_ingroup"]))			{$dial_ingroup=$_GET["dial_ingroup"];}
 	elseif (isset($_POST["dial_ingroup"]))	{$dial_ingroup=$_POST["dial_ingroup"];}
+
+
+
+require_once("../tools/system_wide_settings.php");
 
 
 header ("Content-type: text/html; charset=utf-8");

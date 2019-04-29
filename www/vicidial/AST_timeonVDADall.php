@@ -1,12 +1,23 @@
 <?php 
 # AST_timeonVDADall.php
-# 
-# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# LICENSE: AGPLv3
+#
+# Copyright (©) 2019  Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2019      SNCT GmbH <info@snct-gmbh.de>
+#               2017-2019 Jörg Frings-Fürst <open_source@jff.email>.
 #
 # live real-time stats for the VICIDIAL Auto-Dialer all servers
 #
 # STOP=4000, SLOW=40, GO=4 seconds refresh interval
 # 
+
+# Other - Changelog
+#
+# 2019-04-29 10:23 Change lisense to AGPLv3
+# 2019-04-29 10:25 Add system_wide_settings.php
+#
+
 # CHANGELOG:
 # 50406-0920 - Added Paused agents < 1 min
 # 51130-1218 - Modified layout and info to show all servers in a vicidial system
@@ -195,6 +206,9 @@ if (isset($_GET["report_display_type"]))			{$report_display_type=$_GET["report_d
 	elseif (isset($_POST["report_display_type"]))	{$report_display_type=$_POST["report_display_type"];}
 if (isset($_GET["mobile_device"]))				{$mobile_device=$_GET["mobile_device"];}
 	elseif (isset($_POST["mobile_device"]))	{$mobile_device=$_POST["mobile_device"];}
+
+
+require_once("../tools/system_wide_settings.php");
 
 
 $report_name = 'Real-Time Main Report';
@@ -3176,7 +3190,7 @@ if ($talking_to_print > 0)
 							}
 						}
 					}
-					if(strlen($Aagent_onhook_status) > 0) {
+					if(strlen($Aagent_onhook_status[$i]) > 0) {
 						$Astatus[$i] =	'INCALL';
 						$Lstatus =		'INCALL';
 						$status =		' INCALL ';

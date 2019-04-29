@@ -4,8 +4,19 @@
 #
 # database connection settings and some global web settings
 #
-# Copyright (C) 2016  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# LICENSE: AGPLv3
 #
+# Copyright (©) 2016  Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2019      SNCT GmbH <info@snct-gmbh.de>
+#               2017-2019 Jörg Frings-Fürst <open_source@jff.email>.
+#
+
+# Other - Changelog
+#
+# 2019-04-29 10:23 Change lisense to AGPLv3
+# 2019-04-29 10:25 Add system_wide_settings.php
+#
+
 # CHANGES:
 # 130328-0022 - Converted ereg to preg functions
 # 130802-0957 - Changed to PHP mysqli functions, added 
@@ -59,6 +70,9 @@ else
 	$VARDB_database = '1234';
 	$WeBServeRRooT = '/usr/local/apache2/htdocs';
 	}
+
+
+require_once("../tools/system_wide_settings.php");
 
 
 $server_string = $VARDB_server;
