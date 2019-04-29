@@ -6022,9 +6022,12 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						if(agent_pause_codes_active === "FORCE") {
 							document.getElementById("PauseName").innerHTML = "<p style='color: #ffffff; background-color: #ff0000'>" + PNameX[1] + "</p>";
 						}
-						var AnzMiss = check_time_array[33].split("AnzMisInbCalls: ");
-						if(AnzMiss[1] != 0) {
-							document.getElementById("AnzMissInb").innerHTML = "<p style='color: #ffffff; background-color: #00ff00'>Verpasste Anrufe: " + AnzMiss[1] + "</p>";
+						var AnzMiss_array = check_time_array[33].split("AnzMisInbCalls: ");
+						var AnzMiss = AnzMiss_array[1];
+						if(AnzMiss != 0) {
+							document.getElementById("AnzMissInb").innerHTML = "<p style='color: #ffffff; background-color: #088A29'>Verpasste Anrufe: " + AnzMiss + "</p>";
+						} else {
+							document.getElementById("AnzMissInb").innerHTML = "<p style='color: #ffffff; background-color: #088A29'></p>";
 						}
 						var APItransfercond_array = check_time_array[21].split("APItransferconf: ");
 						var api_transferconf_values_array = APItransfercond_array[1].split("---");
