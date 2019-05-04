@@ -485,6 +485,7 @@
 #
 # 2019-04-29 10:10 Change lisense to AGPLv3
 # 2019-04-29 10:11 Add system_wide_settings.php
+# 2019-05-02 12:03 Add OnlyInbounds to CALLLOGview
 #
 
 $version = '2.14-365';
@@ -791,7 +792,9 @@ if (isset($_GET["callback_gmt_offset"]))			{$callback_gmt_offset=$_GET["callback
 if (isset($_GET["callback_timezone"]))			{$callback_timezone=$_GET["callback_timezone"];}
 	elseif (isset($_POST["callback_timezone"]))	{$callback_timezone=$_POST["callback_timezone"];}
 if (isset($_GET["manual_dial_validation"]))				{$manual_dial_validation=$_GET["manual_dial_validation"];}
-	elseif (isset($_POST["manual_dial_validation"]))	{$manual_dial_validation=$_POST["manual_dial_validation"];}
+    elseif (isset($_POST["manual_dial_validation"]))	{$manual_dial_validation=$_POST["manual_dial_validation"];}
+if (isset($_GET["OnlyInbounds"]))				{$OnlyInbounds=$_GET["OnlyInbounds"];}
+    elseif (isset($_POST["OnlyInbounds"]))	    {$OnlyInbounds=$_POST["OnlyInbounds"];}
 
 
 require_once("../tools/system_wide_settings.php");
@@ -15524,7 +15527,9 @@ if ($ACTION == 'CALLLOGview')
 		{$date = $NOW_DATE;}
 	if (strlen($stage) < 3)
 		{$stage = '670';}
-
+	if(!isset($OnlyInbounds)) {
+	    $OnlyInbounds = 0;
+	}
 	$date_array = explode("-",$date);
 	$day_next = mktime(7, 0, 0, $date_array[1], ($date_array[2] + 1), $date_array[0]);
 	$next_day_date = date("Y-m-d",$day_next);
@@ -15560,7 +15565,7 @@ if ($ACTION == 'CALLLOGview')
 	echo "<TD BGCOLOR=\"#CCCCCC\"><font style=\"font-size:11px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("DIAL")." &nbsp; </font></TD>";
 	echo "</TR>";
 
-
+	if($OnlyInbounds != 1) {
 	$stmt="SELECT start_epoch,call_date,campaign_id,length_in_sec,status,phone_code,phone_number,lead_id,term_reason,alt_dial,comments from vicidial_log where user='$user' and call_date >= '$date 0:00:00'  and call_date <= '$date 23:59:59' order by call_date desc limit 10000;";
 	$rslt=mysql_to_mysqli($stmt, $link);
 		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00576',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -15596,7 +15601,7 @@ if ($ACTION == 'CALLLOGview')
 		$g++;
 		$u++;
 		}
-
+	} // if($OnlyInbounds != 1)
 	$stmt="SELECT start_epoch,call_date,campaign_id,length_in_sec,status,phone_code,phone_number,lead_id,term_reason,queue_seconds from vicidial_closer_log where user='$user' and call_date >= '$date 0:00:00'  and call_date <= '$date 23:59:59' order by closecallid desc limit 10000;";
 	$rslt=mysql_to_mysqli($stmt, $link);
 		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00578',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -15662,8 +15667,11 @@ if ($ACTION == 'CALLLOGview')
 		echo "<td align=right><font class='sb_text'> $ALLcampaign_id[$i] </td>\n";
 		echo "<td align=right><font class='sb_text'> $ALLin_out[$i] </td>\n";
 		echo "<td align=right><font class='sb_text'> $ALLalt_dial[$i] </td>\n";
-		echo "<td align=right><font class='sb_text'> $ALLhangup_reason[$i] </td>\n";
-		echo "<td align=right><font class='sb_text'> <a href=\"#\" onclick=\"VieWLeaDInfO($ALLlead_id[$i]);return false;\"> "._QXZ("INFO")."</A> </td>\n";
+		if($ALLhangup_reason[$i] == "ABANDON" ) {
+		    echo "<td align=right><font class='sb_text' color='#ff0000'> $ALLhangup_reason[$i] </td>\n";
+		} else {
+		    echo "<td align=right><font class='sb_text'> <a href=\"#\" onclick=\"VieWLeaDInfO($ALLlead_id[$i]);return false;\"> "._QXZ("INFO")."</A> </td>\n";
+		}
 		if ($manual_dial_filter > 0)
 			{echo "<td align=right><font class='sb_text'> <a href=\"#\" onclick=\"NeWManuaLDiaLCalL('CALLLOG','$ALLphone_code[$i]','$ALLphone_number[$i]','$ALLlead_id[$i]','','YES','NO');return false;\"> "._QXZ("DIAL")." </A> </td>\n";}
 		else

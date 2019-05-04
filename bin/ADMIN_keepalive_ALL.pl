@@ -2423,6 +2423,8 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 		$Liax .= "permit=0.0.0.0/0.0.0.0\n";
 		$Liax .= "disallow=all\n";
 		$Liax .= "allow=alaw\n";
+		$Liax .= "allow=ulaw\n";
+		$Liax .= "allow=slin\n";
 		if ($conf_qualify =~ /Y/) 
 			{$Liax .= "qualify=yes\n";}
 

@@ -5026,6 +5026,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var pc_var = "";
 	var pc_var_ingroup = "";
 //	var PPanel = "";
+	var ShowOnlyInbounds = 0;
 
 <?php
 	if ($window_validation > 0)
@@ -6025,7 +6026,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						var AnzMiss_array = check_time_array[33].split("AnzMisInbCalls: ");
 						var AnzMiss = AnzMiss_array[1];
 						if(AnzMiss != 0) {
-							document.getElementById("AnzMissInb").innerHTML = "<p style='color: #ffffff; background-color: #088A29'>Verpasste Anrufe: " + AnzMiss + "</p>";
+							document.getElementById("AnzMissInb").innerHTML = "<p style='color: #ffffff; background-color: #088A29'><a href='#' onclick='CallViewLogInbounds();return false;'>Verpasste Anrufe: " + AnzMiss + "</a></p>";
 						} else {
 							document.getElementById("AnzMissInb").innerHTML = "<p style='color: #ffffff; background-color: #088A29'></p>";
 						}
@@ -17007,6 +17008,14 @@ function phone_number_format(formatphone) {
 			}
 		}
 
+// ################################################################################
+// Set ShowOnlyInbouds and call ViewCalLLog
+function CallViewLogInbounds() {
+	button_click_log = button_click_log + "" + SQLdate + "-----CallViewLogInbounds---" + "|";
+	ShowOnlyInbounds = 1;
+	VieWCalLLoG();
+	ShowOnlyInbounds = 0;
+}
 
 // ################################################################################
 // Refresh the call log display
@@ -17082,7 +17091,7 @@ function phone_number_format(formatphone) {
 				}
 			if (xmlhttp) 
 				{ 
-				RAview_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=CALLLOGview&format=text&user=" + user + "&pass=" + pass + "&conf_exten=" + session_id + "&extension=" + extension + "&protocol=" + protocol + "&date=" + logdate + "&disable_alter_custphone=" + disable_alter_custphone +"&campaign=" + campaign + "&manual_dial_filter=" + agentcall_manual + "&stage=<?php echo $HCwidth ?>";
+				RAview_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=CALLLOGview&format=text&user=" + user + "&pass=" + pass + "&conf_exten=" + session_id + "&extension=" + extension + "&protocol=" + protocol + "&date=" + logdate + "&disable_alter_custphone=" + disable_alter_custphone +"&campaign=" + campaign + "&manual_dial_filter=" + agentcall_manual + "&stage=<?php echo $HCwidth ?>"  + "&OnlyInbounds=" + ShowOnlyInbounds;
 				xmlhttp.open('POST', 'vdc_db_query.php'); 
 				xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 				xmlhttp.send(RAview_query); 

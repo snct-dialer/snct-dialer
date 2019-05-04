@@ -2634,7 +2634,8 @@ function GetMissingInboundsCalls($Agent) {
     
     $Count = 0;
     $SearchDate = date("Y-m-d H:i:s", (time() - (30 * 60)));
-    $stmt = "SELECT * FROM `vicidial_closer_log` WHERE `campaign_id` LIKE 'AGENTDIRECT%' AND `user` = '$Agent' AND `status` = 'DROP' AND `term_reason` = 'ABANDON' AND `call_date` >= '$SearchDate' ";
+#    $stmt = "SELECT * FROM `vicidial_closer_log` WHERE `campaign_id` LIKE 'AGENTDIRECT%' AND `user` = '$Agent' AND `status` = 'DROP' AND `term_reason` = 'ABANDON' AND `call_date` >= '$SearchDate' ";
+    $stmt = "SELECT * FROM `vicidial_closer_log` WHERE `user` = '$Agent' AND `status` = 'DROP' AND `term_reason` = 'ABANDON' AND `call_date` >= '$SearchDate' ";
     $rslt=mysqli_query($link, $stmt);
     if(! $rslt ) {  echo "Error: " .  mysqli_error($link) . PHP_EOL; }
     if ($DB) {echo "$stmt\n";}
