@@ -2973,7 +2973,7 @@ if ($talking_to_print > 0)
 
 	$callerids='';
 	$pausecode='';
-	$stmt="SELECT callerid,lead_id,phone_number from vicidial_auto_calls;";
+	$stmt="SELECT callerid,lead_id,phone_number, phone_code from vicidial_auto_calls;";
 	$rslt=mysql_to_mysqli($stmt, $link);
 	if ($DB) {echo "$stmt\n";}
 	$calls_to_list = mysqli_num_rows($rslt);
@@ -3001,7 +3001,7 @@ if ($talking_to_print > 0)
 				}
 			$callerids .=	"$row[0]|";
 			$VAClead_ids[$i] =	$row[1];
-			$VACphones[$i] =	$row[2];
+			$VACphones[$i] =	"+".$row[3] . $row[2];
 			$i++;
 			}
 		}
