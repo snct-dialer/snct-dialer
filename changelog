@@ -86,7 +86,7 @@
 	  - Change: www/agc/conf_exten_check.php,
 	      www/agc/functions.php,
 	      www/agc/vicidial.php.
-	* Add phone code into Real-Time Main Reort Field Cust Phone:
+	* Add phone code into Real-Time Main Report Field Cust Phone:
 	  - Change www/vicidial/AST_timeonVDADall.php.
 
 2.26.29
