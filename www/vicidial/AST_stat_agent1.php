@@ -1,12 +1,14 @@
 <?php 
 # AST_stat_agent1.php
 # 
-# Copyright (C) 2016-2018 Jörg Frings-Fürst <jff@flyingpenguim.de>    
-#               2016-2018 flyingpenguin UG <info@flyingpenguin.de> 
+# Copyright (©) 2016-2019 Jörg Frings-Fürst <open_source@jff.email>    
+#               2016-2018 flyingpenguin UG <info@flyingpenguin.de>
+#               2019      SNCT GmbH <info@snct-gmbh.de>
 #
 # LICENSE: AGPLv3
 #
-# Agent stats for MediCenter Mittelrhein
+# Agent stats for snct GmbH
+# based on Agent stats for MediCenter Mittelrhein
 # 
 # CHANGELOG:
 # 2016-12-13 - Inital release   
@@ -15,11 +17,13 @@
 # 2018-01-22 - Umstellung auf Liveberechnung und auf alle selectierbaren Stati
 #            - Login_Time test auf doppeltes Logout
 # 2018-01-24 - Neu Zeitraum & Download
-# 2018-03-19 - Add Campaign Status
+# 2019-03-19 - Add Campaign Status
+# 2019-05-18 - Add viewable Data only for allowed user_groups
+#
 #
 
-$copyr = "2016-2018 flyingpenguin.de UG, Jörg Frings-Fürst (AGPLv2)";
-$release = '20180319-3';
+$copyr = "2016-2019 SNCT GmbH, Jörg Frings-Fürst (AGPLv3)";
+$release = '20190514-15';
 
 header ("Content-type: text/html; charset=utf-8");
 
@@ -190,15 +194,15 @@ else
 $test_ip = $_SERVER['SERVER_ADDR'];	
 $doc_root = $_SERVER['DOCUMENT_ROOT'];
 
-if($test_ip != "172.16.2.13") {
-	$loadn = sys_getloadavg();
-	if ($loadn[0] > 2.0) {
+#if($test_ip != "172.16.2.13") {
+#	$loadn = sys_getloadavg();
+#	if ($loadn[0] > 2.0) {
 #		header('HTTP/1.1 503 Too busy, try again later');
-		echo "Serverauslastung (".$loadn[0].") zu hoch! Versuchen Sie es später noch einmal." . PHP_EOL;
-		exit;
-	}
-	echo "<br>Bitte verwenden Sie für den Aufruf des $report_name nur den Server ViciDB2 (172.16.2.13)" . PHP_EOL;
-}
+#		echo "Serverauslastung (".$loadn[0].") zu hoch! Versuchen Sie es später noch einmal." . PHP_EOL;
+#		exit;
+#	}
+#	echo "<br>Bitte verwenden Sie für den Aufruf des $report_name nur den Server ViciDB2 (172.16.2.13)" . PHP_EOL;
+#}
 
 	
 $stmt="SELECT user_id,user,pass,full_name,user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit,add_timeclock_log,modify_timeclock_log,delete_timeclock_log,alter_custphone_override,vdc_agent_api_access,modify_inbound_dids,delete_inbound_dids,active,alert_enabled,download_lists,agent_shift_enforcement_override,manager_shift_enforcement_override,shift_override_flag,export_reports,delete_from_dnc,email,user_code,territory,allow_alerts,callcard_admin,force_change_password,modify_shifts,modify_phones,modify_carriers,modify_labels,modify_statuses,modify_voicemail,modify_audiostore,modify_moh,modify_tts,modify_contacts,modify_same_user_level from vicidial_users where user='$PHP_AUTH_USER';";
@@ -293,12 +297,13 @@ $LOGuser_group =			$row[1];
 $LOGadmin_hide_lead_data =	$row[2];
 $LOGadmin_hide_phone_data =	$row[3];
 
-$stmt="SELECT allowed_campaigns,allowed_reports from vicidial_user_groups where user_group='$LOGuser_group';";
+$stmt="SELECT allowed_campaigns,allowed_reports,admin_viewable_groups from vicidial_user_groups where user_group='$LOGuser_group';";
 if ($DB) {echo "|$stmt|\n";}
 $rslt=mysql_to_mysqli($stmt, $link);
 $row=mysqli_fetch_row($rslt);
 $LOGallowed_campaigns = $row[0];
 $LOGallowed_reports =	$row[1];
+$LOGallowed_ugroups = $row[2];
 
 if ( (!preg_match("/$report_name/",$LOGallowed_reports)) and (!preg_match("/ALL REPORTS/",$LOGallowed_reports)) )
 	{
@@ -426,9 +431,10 @@ elseif ( preg_match('/ALL\-GROUPS/i',$user_group_string) )
 else
 	{
 	$all_active_groups = 0;
-#	$user_group_SQLand = "and user_group IN($user_group_SQL)";
+	$user_group_SQLand = "and user_group IN($user_group_SQL)";
 #	$user_group_SQLwhere = "where user_group IN($user_group_SQL)";
 	}
+
 
 
 $stmt="SELECT user_group from vicidial_user_groups $whereLOGadmin_viewable_groupsSQL order by user_group;";
@@ -718,7 +724,32 @@ function GetLoginTime($agent, $datum_von, $datum_bis) {
     }
 	return $ep_sum;
 }
-	
+
+function GetLoginDays($agent, $datum_von, $datum_bis) {
+    global $DB, $link;
+    
+    $start_date = $datum_von . " 00:00:00";
+    $end_date   = $datum_bis . " 23:59:59";
+        
+    $statement = "SELECT * FROM vicidial_user_log  WHERE user = $agent AND event_date >= \"$start_date\" AND event_date <= \"$end_date\" GROUP by DATE(event_date);";
+    if ($DB)  print "$statement\n";
+    $result = mysqli_query($link, $statement) or die ("Error : " . mysqli_error($link));
+    $days = mysqli_num_rows($result);
+    return $days;
+}
+
+function GetTrueSales($agent, $datum_von, $datum_bis) {
+    global $DB, $link;
+    
+    $start_date = $datum_von . " 00:00:00";
+    $end_date   = $datum_bis . " 23:59:59";
+    
+    $statement = "SELECT * FROM order_transaction  WHERE user_ID = $agent AND transaction_type = 'order' AND transaction_date >= \"$start_date\" AND transaction_date <= \"$end_date\" GROUP BY lead_ID;";
+    if ($DB)  print "$statement\n";
+    $result = mysqli_query($link, $statement) or die ("Error : " . mysqli_error($link));
+    $Sales = mysqli_num_rows($result);
+    return $Sales;
+}
 	
 	
 function GetAnz($agent, $datum_von, $datum_bis, $type) {
@@ -759,6 +790,21 @@ function GetSum($agent, $datum_von, $datum_bis, $type) {
     return $row;
 }
 
+function GetPauseSum($agent, $datum_von, $datum_bis, $type) {
+    global $DB, $link;
+    
+    $start_date = $datum_von . " 00:00:00";
+    $end_date   = $datum_bis . " 23:59:59";
+    $field = "pause_sec";
+    
+    $statement = "SELECT SUM($field) FROM vicidial_agent_log  WHERE user = $agent AND event_time >= \"$start_date\" AND event_time <= \"$end_date\" AND pause_code = '$type';";
+    if ($DB) print "$statement\n";
+    $result = mysqli_query($link, $statement) or die ("Error : " . mysqli_error($link));
+    $row = mysqli_fetch_array($result, MYSQLI_BOTH);
+    
+    return $row;
+}
+
 function GetAnzStati($agent, $datum_von, $datum_bis, $stati) {
     global $DB, $link;
     
@@ -778,7 +824,7 @@ function GetFinalStati() {
     global $ArrStati, $ArrStatiIdx, $link;
     
     $pos  = 0;
-    $stmt = "SELECT * FROM `vicidial_statuses` WHERE `selectable` = 'Y';";
+    $stmt = "SELECT * FROM `vicidial_statuses` WHERE `selectable` = 'Y' AND `status` LIKE 'SALE';";
     $rslt=mysql_to_mysqli($stmt, $link);
     if ($DB) {echo "$stmt\n";}
     $Num = mysqli_num_rows($rslt);
@@ -793,20 +839,20 @@ function GetFinalStati() {
         
     }
  #  print_r($ArrStatiIdx);
-    $stmt = "SELECT * FROM `vicidial_campaign_statuses` WHERE `selectable` = 'Y';";
-    $rslt=mysql_to_mysqli($stmt, $link);
-    if ($DB) {echo "$stmt\n";}
-    $Num = mysqli_num_rows($rslt);
-    if ($Num > 0) {
-    	while($row = mysqli_fetch_assoc($rslt)){
-    		if(! in_array($row["status_name"], $ArrStati)) {
-    			$name = $row["status_name"];
-    			$ArrStati[$pos] = $name;
-    			$ArrStatiIdx[$pos] = $row["status"];
-    			$pos++;
-    		}
-    	}
-    }
+ #   $stmt = "SELECT * FROM `vicidial_campaign_statuses` WHERE `selectable` = 'Y';";
+ #   $rslt=mysql_to_mysqli($stmt, $link);
+ #   if ($DB) {echo "$stmt\n";}
+ #   $Num = mysqli_num_rows($rslt);
+ #   if ($Num > 0) {
+ #   	while($row = mysqli_fetch_assoc($rslt)){
+ #   		if(! in_array($row["status_name"], $ArrStati)) {
+ #   			$name = $row["status_name"];
+ #   			$ArrStati[$pos] = $name;
+ #   			$ArrStatiIdx[$pos] = $row["status"];
+ #   			$pos++;
+ #   		}
+ #   	}
+ #   }
 }    
 	
 function makeDownload($file, $dir, $type) {
@@ -857,7 +903,32 @@ if ($DateBis == "") {
 
 GetFinalStati();
 
-$stmt = "SELECT user,full_name,user_group FROM vicidial_users WHERE active = 'Y' and user_level <= 9 ORDER BY user_group, full_name";
+$admin_allowed_ugroupsSQL='';
+if  (!preg_match('/\-\-ALL\-\-/i',$LOGallowed_ugroups))
+{
+    $rawLOGallowed_ugroupsSQL = preg_replace("/ -/",'',$LOGallowed_ugroups);
+    $rawLOGallowed_ugroupsSQL = preg_replace("/ /","','",$rawLOGallowed_ugroupsSQL);
+    $admin_allowed_ugroupsSQL = "user_group IN('$rawLOGallowed_ugroupsSQL')";
+}
+else
+{
+    $rights_stmt = "SELECT user_group FROM vicidial_user_groups;";
+    if ($DB) {echo "$rights_stmt|";}
+    $rights_rslt=mysql_to_mysqli($rights_stmt, $link);
+    $rights_rsltCOUNT = mysqli_num_rows($rights_rslt);
+    $admin_allowed_ugroupsSQL = "user_group IN('---ALL---',";
+    $i=0;
+    while ($i < $rights_rsltCOUNT)
+    {
+        $rights_row=mysqli_fetch_row($rights_rslt);
+        $admin_allowed_ugroupsSQL.= "'" . $rights_row[0] . "',";
+        $i++;
+    }
+    $admin_allowed_ugroupsSQL .= "'')";
+}
+
+
+$stmt = "SELECT user,full_name,user_group, custom_three FROM vicidial_users WHERE user_level <= 9 AND custom_three != '' and " . $admin_allowed_ugroupsSQL . " ORDER BY user_group, custom_three, full_name";
 $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {
 	echo "$stmt\n";
@@ -884,7 +955,7 @@ var o_cal = new tcal ({
 	'controlname': 'DateVon'
 });
 o_cal.a_tpl.yearscroll = false;
-// o_cal.a_tpl.weekstart = 1; // Monday week start
+o_cal.a_tpl.weekstart = 1; // Monday week start
 </script>
 
 <?php
@@ -908,7 +979,7 @@ var o_cal = new tcal ({
 	'controlname': 'DateBis'
 });
 o_cal.a_tpl.yearscroll = false;
-// o_cal.a_tpl.weekstart = 1; // Monday week start
+o_cal.a_tpl.weekstart = 1; // Monday week start
 </script>
 
 <?php
@@ -926,23 +997,24 @@ else {
 	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Name</font></TH>" . PHP_EOL;
 	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Datum von </font></TH>" . PHP_EOL;
 	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Datum bis </font></TH>" . PHP_EOL;
-	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Anrufe</font></TH>" . PHP_EOL;
-	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Loginzeit</font></TH>" . PHP_EOL;
-	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Pause</font></TH>" . PHP_EOL;
-	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Pause ᴓ</font></TH>" . PHP_EOL;
-	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Pause %</font></TH>" . PHP_EOL;
-	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Wartezeit</font></TH>" . PHP_EOL;
-	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Wartezeit ᴓ</font></TH>" . PHP_EOL;
-	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Dispo</font></TH>" . PHP_EOL;
-	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Dispo ᴓ</font></TH>" . PHP_EOL;L;
-	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Anrufdauer</font></font></TH>" . PHP_EOL;
-	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Anrufdauer ᴓ</font></TH>" . PHP_EOL;
+	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Tage </font></TH>" . PHP_EOL;
+	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Arbeitszeit </font></TH>" . PHP_EOL;
+	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Dispo max</font></TH>" . PHP_EOL;
+	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Dispo ist</font></TH>" . PHP_EOL;
+	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Dispo Diff</font></TH>" . PHP_EOL;
+	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Dead max</font></TH>" . PHP_EOL;
+	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Dead ist</font></TH>" . PHP_EOL;
+	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Dead Diff</font></TH>" . PHP_EOL;
+	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Sales Status</font></TH>" . PHP_EOL;
+	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Sales ist</font></TH>" . PHP_EOL;
+	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Sales Zeit Vorgabe</font></TH>" . PHP_EOL;
+	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Sales Zeit ist</font></TH>" . PHP_EOL;
+	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Sales Diff</font></TH>" . PHP_EOL;
+	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Raucherpause</font></TH>" . PHP_EOL;
+	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">WC-Pause</font></TH>" . PHP_EOL;
+	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Abzüge Sek.</font></TH>" . PHP_EOL;
+	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Abzüge Min.</font></TH>" . PHP_EOL;
 	$CSVPrint = "Gruppe|Name|Datum von|Datum bis|Anrufe|Loginzeit|Pause|Pause ᴓ|Pause %|Wartezeit|Wartezeit ᴓ|Dispo|Dispo ᴓ|Anrufdauer|Anrufdauer ᴓ";
-	$Anz = count($ArrStati);
-	for($n = 0; $n < $Anz; $n++) {
-	   $AgentsPrint .= "  <TH nowrap><font size=\"-1\">$ArrStati[$n]</font></TH>" . PHP_EOL;
-	   $CSVPrint .= "|$ArrStati[$n]";
-	}
 	$AgentsPrint .= " </TR>" . PHP_EOL;
 	$CSVPrint .= PHP_EOL;
 
@@ -972,91 +1044,58 @@ else {
 		$AgentsPrint .= "  <TD nowrap>$row[1]</TD> " . PHP_EOL;
 		$AgentsPrint .= "  <TD nowrap>$DateVon</TD> " . PHP_EOL;
 		$AgentsPrint .= "  <TD nowrap>$DateBis</TD> " . PHP_EOL;
-		$AgentsPrint .= "  <TD nowrap align=\"right\">$Talk_Anz[0]</TD> " . PHP_EOL;
-		$CSVPrint .= "$row[2]|$row[1]|$DateVon|$DateBis|$Talk_Anz[0]";
-		$Login_Time = GetLoginTime($row[0], $DateVon, $DateBis);
-		$str=formatSec($Login_Time);
-		$AgentsPrint .= "  <TD nowrap align=\"right\">$str</TD> " . PHP_EOL;
-		$CSVPrint .= "|$str";
-		
-		$Pause_ges = GetSum($row[0], $DateVon, $DateBis, "Pause");
-		$Pause_Anz = GetAnz($row[0], $DateVon, $DateBis, "Pause");
-		if($Pause_Anz[0] > 0) {
-		    $Pause_Avg = $Pause_ges[0] / $Pause_Anz[0];
-		}
-		$str=formatSec($Pause_ges[0]);
-		$AgentsPrint .= "  <TD nowrap align=\"right\">$str</TD> " . PHP_EOL;
-		$CSVPrint .= "|$str";
-		$str=formatSec($Pause_Avg);
-		$AgentsPrint .= "  <TD nowrap align=\"right\">$str</TD> " . PHP_EOL;
-		$CSVPrint .= "|$str";
-
-		$proz = $Pause_ges[0] * 100 / $Login_Time; 
-		$str= number_format ($proz , 2, ",", "." );
-		$AgentsPrint .= "  <TD nowrap align=\"right\">$str</TD> " . PHP_EOL;
-		$CSVPrint .= "|$str";
-
-		$Wait_ges = GetSum($row[0], $DateVon, $DateBis, "Wait");
-		$Wait_Anz = GetAnz($row[0], $DateVon, $DateBis, "Wait");
-		$Wait_Avg = 0;
-		if($Wait_Anz[0] > 0) {
-		    $Wait_Avg = $Wait_ges[0] / $Wait_Anz[0];
-		}
-		$str=formatSec($Wait_ges[0]);
-		$AgentsPrint .= "  <TD nowrap align=\"right\">$str</TD> " . PHP_EOL;
-		$CSVPrint .= "|$str";
-		$str=formatSec($Wait_Avg);
-		$AgentsPrint .= "  <TD nowrap align=\"right\">$str</TD> " . PHP_EOL;
-		$CSVPrint .= "|$str";
-		
+		$LoginDays = GetLoginDays($row[0], $DateVon, $DateBis);
+		$AgentsPrint .= "  <TD nowrap>$LoginDays</TD> " . PHP_EOL;
+		$DispoMax = $row[3] * 230 * $LoginDays;
+		$AgentsPrint .= "  <TD nowrap>$row[3]</TD> " . PHP_EOL;
+		$AgentsPrint .= "  <TD nowrap>$DispoMax</TD> " . PHP_EOL;
 		$Dispo_ges = GetSum($row[0], $DateVon, $DateBis, "Dispo");
-		$Dispo_Anz = GetAnz($row[0], $DateVon, $DateBis, "Dispo");
-		$Dispo_Avg = 0;
-		if($Dispo_Anz[0] > 0) {
-		    $Dispo_Avg = $Dispo_ges[0] / $Dispo_Anz[0];
+		$AgentsPrint .= "  <TD nowrap>$Dispo_ges[0]</TD> " . PHP_EOL;
+		$DispoDiff = "";
+		if($DispoMax < $Dispo_ges[0]) {
+		    $DispoDiff = $DispoMax - $Dispo_ges[0];
 		}
-		$Dead_ges = GetSum($row[0], $DateVon, $DateBis, "Dead");
-		$Dead_Anz = GetAnz($row[0], $DateVon, $DateBis, "Dead");
-		$Dead_Avg = 0;
-		if($Dead_Anz[0] > 0) {
-		    $Dead_Avg = $Dead_ges[0] / $Dead_Anz[0];
-		}
+		$AgentsPrint .= "  <TD nowrap>$DispoDiff</TD> " . PHP_EOL;
 				
-		$sum1 = $Dispo_ges[0] + $Dead_ges[0];
-		$durch1 = 0;
-		if($Talk_Anz[0] > 0) {
-			$durch1 = $sum1 / $Talk_Anz[0];
-		}
-		$str=formatSec($sum1);
-		$AgentsPrint .= "  <TD nowrap align=\"right\">$str</TD> " . PHP_EOL;
-		$CSVPrint .= "|$str";
-		$str=formatSec($durch1);
-		$AgentsPrint .= "  <TD nowrap align=\"right\">$str</TD> " . PHP_EOL;
-		$CSVPrint .= "|$str";
-
+		$DeadMax = $row[3] * 240 * $LoginDays;
+		$AgentsPrint .= "  <TD nowrap>$DeadMax</TD> " . PHP_EOL;
 		
-		$Talk_ges = GetSum($row[0], $DateVon, $DateBis, "Talk");
-		$Talk_Anz = GetAnz($row[0], $DateVon, $DateBis, "Talk");
-		$Talk_Avg = 0;
-		if($Talk_Anz[0] > 0) {
-		    $Talk_Avg = $Talk_ges[0] / $Talk_Anz[0];
+		$Dead_ges = GetSum($row[0], $DateVon, $DateBis, "Dead");
+		$AgentsPrint .= "  <TD nowrap>$Dead_ges[0]</TD> " . PHP_EOL;
+		$DeadDiff = "";
+		if($DeadMax < $Dead_ges[0]) {
+		    $DeadDiff = $DeadMax - $Dead_ges[0];
 		}
+		$AgentsPrint .= "  <TD nowrap>$DeadDiff</TD> " . PHP_EOL;
+		
+		$SalesStatus = GetAnzStati($row[0], $DateVon, $DateBis, "SALE");
+		$SalesStatusRS = GetAnzStati($row[0], $DateVon, $DateBis, "SALERS");
+		$AgentsPrint .= "  <TD nowrap>$SalesStatus[0] + $SalesStatusRS[0]</TD> " . PHP_EOL;
+		$Sales_ist = $SalesStatus[0] + $SalesStatusRS[0];
+		$Sales_ist = GetTrueSales($row[0], $DateVon, $DateBis);
+		$AgentsPrint .= "  <TD nowrap>$Sales_ist</TD> " . PHP_EOL;
+		$SalesVorgabe = 78 * $Sales_ist;
+		$AgentsPrint .= "  <TD nowrap>$SalesVorgabe</TD> " . PHP_EOL;
+		$Sales_ges = GetPauseSum($row[0], $DateVon, $DateBis, "SALE");
+		$AgentsPrint .= "  <TD nowrap>$Sales_ges[0]</TD> " . PHP_EOL;
+		$SalesDiff = "";
+		if($SalesVorgabe < $Sales_ges[0]) {
+		    $SalesDiff = $SalesVorgabe - $Sales_ges[0];
+		}
+		$AgentsPrint .= "  <TD nowrap>$SalesDiff</TD> " . PHP_EOL;
 		
 		
-		$str=formatSec($Talk_ges[0] - $Dead_ges[0]);
-		$AgentsPrint .= "  <TD nowrap align=\"right\">$str</TD> " . PHP_EOL;
-		$CSVPrint .= "|$str";
-//		$str=formatSec($row[15]);
-		$str=formatSec(($Talk_ges[0] - $Dead_ges[0]) / $Talk_Anz[0]);
-		$AgentsPrint .= "  <TD nowrap align=\"right\">$str</TD> " . PHP_EOL;
-		$CSVPrint .= "|$str";
-	
-		for($x = 0; $x < $Anz; $x++) {
-		    $Wert = GetAnzStati($row[0], $DateVon, $DateBis, $ArrStatiIdx[$x]);
-		    $AgentsPrint .= "  <TD nowrap align=\"right\">$Wert[0]</TD> " . PHP_EOL;
-		    $CSVPrint .= "|$Wert[0]";
-		    
-		}
+		$Rauch_ges = GetPauseSum($row[0], $DateVon, $DateBis, "RAUCH");
+		$AgentsPrint .= "  <TD nowrap>-$Rauch_ges[0]</TD> " . PHP_EOL;
+		
+		
+		$WC_ges = GetPauseSum($row[0], $DateVon, $DateBis, "WC");
+		$AgentsPrint .= "  <TD nowrap>-$WC_ges[0]</TD> " . PHP_EOL;
+		
+		$Abzug_Gesamt = $DispoDiff + $DeadDiff + $SalesDiff + (-1 * $Rauch_ges[0]);
+		$AgentsPrint .= "  <TD nowrap>$Abzug_Gesamt</TD> " . PHP_EOL;
+		$str = formatSec(abs($Abzug_Gesamt));
+		$AgentsPrint .= "  <TD nowrap>-$str</TD> " . PHP_EOL;
 		$AgentsPrint .= " </TR>" . PHP_EOL;
 		$CSVPrint .= PHP_EOL;
         }
@@ -1074,7 +1113,7 @@ echo $AgentsPrint;
 
 echo "<br>";
 
-$FileName = "Mitglieder_Übersicht_" . $DateVon . "_" . $DateBis . ".csv";
+$FileName = "Mitarbeiter_Übersicht_" . $DateVon . "_" . $DateBis . ".csv";
 
 $DLURL = $test_ip . "://" . $DLDir . $FileName;
 

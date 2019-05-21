@@ -9,7 +9,8 @@
 #
 # Copyright (C) 2016  Matt Florell <vicidial@gmail.com>
 # Copyright (c) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
-#               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
+#               2017-2019 Jörg Frings-Fürst <open_source@jff.email>
+#               2019      SNTC GmbH <info@snct-gmbh.de>
 #
 # CHANGELOG
 #
@@ -46,6 +47,7 @@
 #             - Add tests for file exists
 # 181227-1030 - Allow table names with whitespaces
 # 181228-1210 - Correct typo
+# 190521-0555 - Add sep. backup for trigger and routines
 #
 
 $PrgVersion = "2.9.3";
@@ -532,10 +534,21 @@ if ( ($without_db < 1) && ($conf_only < 1) )
 			else {
 				foreach ( @all_tables ){
 					if ($DBX) {
-						print "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --routines $temp_dbname '$_' | $xzbin -3 -T0 - > '$TEMPpath/$VARserver_ip$underl$temp_dbname$underl$_$underl$wday.sql.xz'\n";
+						print "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --routines --triggers $temp_dbname '$_' | $xzbin -3 -T0 - > '$TEMPpath/$VARserver_ip$underl$temp_dbname$underl$_$underl$wday.sql.xz'\n";
 					}
-					`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname '$_' | $xzbin -3 -T0 - > '$TEMPpath/$VARserver_ip$underl$temp_dbname$underl$_$underl$wday.sql.xz'`;
+					`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines --triggers $temp_dbname '$_' | $xzbin -3 -T0 - > '$TEMPpath/$VARserver_ip$underl$temp_dbname$underl$_$underl$wday.sql.xz'`;
 				}
+				$triggers = "triggers";
+				if ($DBX) {
+				    print "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --no-data --triggers $temp_dbname | $xzbin -3 -T0 - > '$TEMPpath/$VARserver_ip$underl$temp_dbname$underl$triggers$underl$wday.sql.xz'\n";
+				}
+				`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --no-data --triggers $temp_dbname  | $xzbin -3 -T0 - > '$TEMPpath/$VARserver_ip$underl$temp_dbname$underl$triggers$underl$wday.sql.xz'`;
+
+				$routines = "routines";
+				if ($DBX) {
+				    print "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --no-data --no-create-info --routines $temp_dbname | $xzbin -3 -T0 - > '$TEMPpath/$VARserver_ip$underl$temp_dbname$underl$routines$underl$wday.sql.xz'\n";
+				}
+				`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --no-data --no-create-info --routines $temp_dbname  | $xzbin -3 -T0 - > '$TEMPpath/$VARserver_ip$underl$temp_dbname$underl$routines$underl$wday.sql.xz'`;
 				if ($DBX) {
 					print "$tarbin -cf $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday$tar $TEMPpath/*.sql.xz`\n";
 				}
