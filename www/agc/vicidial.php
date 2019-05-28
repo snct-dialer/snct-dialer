@@ -4408,6 +4408,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var phone_pass = '<?php echo $phone_pass ?>';
 	var user = '<?php echo $VD_login ?>';
 	var user_abb = '<?php echo $user_abb ?>';
+	var user_level = '<?php echo $user_level ?>';
 	var pass = '<?php if (strlen($pass_hash)>12) {echo $pass_hash;} else {echo $VD_pass;} ?>';
 	var orig_pass = '<?php echo $VD_pass ?>';
 	var pass_hash = '<?php echo $pass_hash ?>';
@@ -18156,7 +18157,7 @@ function CallViewLogInbounds() {
 			if (allow_alerts < 1)
 				{hideDiv('AgentAlertSpan');}
 		//	if ( (agentcall_manual != '1') && (starting_dial_level > 0) )
-			if (agentcall_manual != '1')
+			if ((agentcall_manual != '1') || (user_level < 2))
 				{hideDiv('ManuaLDiaLButtons');}
 			if (agent_call_log_view != '1')
 				{
