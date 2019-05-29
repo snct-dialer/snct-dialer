@@ -137,6 +137,11 @@
           manual dialed leads.
     * Add upstream Rev. 3102:
       - Update: www/vicidial/AST_timeonVDADall.php.
+    * Add upstream Rev. 3103:
+      - Update: www/vicidial/AST_timeonVDADall.php,
+          www/vicidial/options-example.php,
+          www/vicidial/realtime_report.php: Added new agent time segment
+            display; Added RS_agentWAIT option; Added rust color definition.
 
 2.26.29
   [Jörg Frings-Fürst]
