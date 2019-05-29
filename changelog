@@ -98,7 +98,9 @@
 	      www/vicidial/help.php.
     * Add upstream Rev. 3091:
       - Change: bin/AST_flush_DBqueue.pl.
-      
+    * Add upstream Rev. 3092:
+      - Change: bin/AST_activity_log_export.pl: Added --quoted-vl option. 
+
 2.26.29
   [Jörg Frings-Fürst]
     * Add missing copyright:
