@@ -96,7 +96,9 @@
 	      extras/mysql_update/mysql-1567.sql,
 	      extras/upgrade_2.14.sql,
 	      www/vicidial/help.php.
-
+    * Add upstream Rev. 3091:
+      - Change: bin/AST_flush_DBqueue.pl.
+      
 2.26.29
   [Jörg Frings-Fürst]
     * Add missing copyright:
