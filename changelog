@@ -94,7 +94,8 @@
 	      www/vicidial/admin.php,
 	      extras/MySQL_AST_CREATE_tables.sql,
 	      extras/mysql_update/mysql-1567.sql,
-	      extras/upgrade_2.14.sql.
+	      extras/upgrade_2.14.sql,
+	      www/vicidial/help.php.
 
 2.26.29
   [Jörg Frings-Fürst]

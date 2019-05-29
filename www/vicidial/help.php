@@ -434,6 +434,16 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <B><?php echo _QXZ("Agent Call Manual"); ?> -</B><?php echo _QXZ("This option allows an agent to manually enter a new lead into the system and call them. This also allows the calling of any phone number from their agent screen and puts that call into their session. Use this option with caution."); ?>
 
 <BR>
+<A NAME="users-agent_disable_manual">
+<BR>
+<B><?php echo _QXZ("Agent Disable Manual"); ?> -</B><?php echo _QXZ("This option disable the Manual Dial Link."); ?>
+
+<BR>
+<A NAME="users-agent_disable_alt_dial">
+<BR>
+<B><?php echo _QXZ("Agent Disable Alt Dial"); ?> -</B><?php echo _QXZ("This option disable the Alt Phone Dial Link."); ?>
+
+<BR>
 <A NAME="users-agentcall_email">
 <BR>
 <B><?php echo _QXZ("Agent Call Email"); ?> -</B><?php echo _QXZ("This option is disabled."); ?>
