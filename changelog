@@ -104,7 +104,10 @@
       - Change: www/vicidial/AST_timeonVDADall.php,
           www/vicidial/options-example.php,
           www/vicidial/realtime_report.php: Added RS_ListenBarge options.php
-            setting.
+            setting. 
+    * Add upstream Rev. 3094:
+      - Changed: extras/MySQL_AST_CREATE_tables.sql,
+          extras/upgrade_2.12.sql.
 
 2.26.29
   [Jörg Frings-Fürst]
