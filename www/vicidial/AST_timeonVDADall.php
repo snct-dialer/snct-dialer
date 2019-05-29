@@ -2294,6 +2294,7 @@ if ($campaign_allow_inbound > 0)
 		$closer_campaignsSQL=$filter_closer_campaigns;
 		}
 
+	$closer_campaignsSQL=preg_replace('/,$/', '', $closer_campaignsSQL);
 	
 	$stmtB="from vicidial_auto_calls where status NOT IN('XFER') and ( (call_type='IN' and campaign_id IN($closer_campaignsSQL)) or (call_type IN('OUT','OUTBALANCE') $group_SQLand) ) order by queue_priority desc,campaign_id,call_time;";
 	}

@@ -135,6 +135,8 @@
     * Add upstream Rev. 3101:
       - Update. www/agc/vdc_db_query.php: Added gmt_offset population to new
           manual dialed leads.
+    * Add upstream Rev. 3102:
+      - Update: www/vicidial/AST_timeonVDADall.php.
 
 2.26.29
   [Jörg Frings-Fürst]
