@@ -124,6 +124,11 @@
     * Add upstream Rev. 3098:
       - Update: www/vicidial/AST_timeonVDADall.php,
           www/vicidial/realtime_report.php: Added ingroup filter.
+    * Add upstream Rev. 3099:
+      - Update: www/agc/dispo_send_email.php,
+          www/agc/vdc_db_query.php: Added --A--dispo--B-- and
+            --A--dispo_name--B-- to email_body; Fixed scheduled callback email
+            alert bug.
 
 2.26.29
   [Jörg Frings-Fürst]

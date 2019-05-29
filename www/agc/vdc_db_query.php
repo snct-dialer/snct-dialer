@@ -478,6 +478,7 @@
 # 190312-0927 - Added more hide_call_log_info options
 # 190322-1557 - Fix for issue with wrong script background with list-script-override on outbound autodial calls
 # 190406-1614 - Added agent next_dial_my_callbacks override
+# 190515-1556 - Fixed scheduled callback email alert bug
 #
 
 
@@ -488,8 +489,8 @@
 # 2019-05-02 12:03 Add OnlyInbounds to CALLLOGview
 #
 
-$version = '2.14-365';
-$build = '190406-1614';
+$version = '2.14-366';
+$build = '190515-1556';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=793;
@@ -17543,16 +17544,16 @@ if ($ACTION == 'CalLBacKCounT')
 					if (preg_match("/^email_from/",$line))
 						{$email_from = $line;   $email_from = trim(preg_replace("/.*=/",'',$email_from));}
 					if (preg_match("/^email_subject/",$line))
-						{$email_subject = $line;   $email_subject = trim(preg_replace("/.*=/",'',$email_subject));}
+						{$container_email_subject = $line;   $container_email_subject = trim(preg_replace("/.*=/",'',$container_email_subject));}
 					if (preg_match("/^email_body_begin/",$line))
-						{$email_body = $line;   $email_body = trim(preg_replace("/.*=/",'',$email_body)) . "\n";   $email_body_gather++;}
+						{$container_email_body = $line;   $container_email_body = trim(preg_replace("/.*=/",'',$container_email_body)) . "\n";   $email_body_gather++;}
 					}
 				else
 					{
 					if (preg_match("/^email_body_end/",$line))
 						{$email_body_gather=0;}
 					else
-						{$email_body .= $line;}
+						{$container_email_body .= $line;}
 					}
 				$p++;
 				}
@@ -17565,6 +17566,8 @@ if ($ACTION == 'CalLBacKCounT')
 				$CB_id=$email_row["callback_id"];
 				$CB_lead_id=$email_row["lead_id"];
 				$callback_comments=$email_row["comments"];
+				$email_subject=$container_email_subject;
+				$email_body=$container_email_body;
 
 				##### grab the data from vicidial_list for the lead_id
 				$stmt="SELECT lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id FROM vicidial_list where lead_id='$CB_lead_id' LIMIT 1;";
