@@ -83,44 +83,47 @@
 	      www/vicidial/admin.php.
 	* Add missing field into extras/MySQL_AST_CREATE_tables.sql.
 	* New function to display missed inbounds:
-	  - Change: www/agc/conf_exten_check.php,
+	  - Update: www/agc/conf_exten_check.php,
 	      www/agc/functions.php,
 	      www/agc/vicidial.php.
 	* Add phone code into Real-Time Main Report Field Cust Phone:
-	  - Change www/vicidial/AST_timeonVDADall.php.
+	  - Update: www/vicidial/AST_timeonVDADall.php.
 	* Rename to SNCTDialer.
 	* New Agent disable links for [manual dial| alt phone dial]:
-	  - Change: www/agc/vicidial.php,
+	  - Update: www/agc/vicidial.php,
 	      www/vicidial/admin.php,
 	      extras/MySQL_AST_CREATE_tables.sql,
 	      extras/mysql_update/mysql-1567.sql,
 	      extras/upgrade_2.14.sql,
 	      www/vicidial/help.php.
     * Add upstream Rev. 3091:
-      - Change: bin/AST_flush_DBqueue.pl.
+      - Update: bin/AST_flush_DBqueue.pl.
     * Add upstream Rev. 3092:
-      - Change: bin/AST_activity_log_export.pl: Added --quoted-vl option. 
+      - Update: bin/AST_activity_log_export.pl: Added --quoted-vl option. 
     * Add upstream Rev. 3093:
-      - Change: www/vicidial/AST_timeonVDADall.php,
+      - Update: www/vicidial/AST_timeonVDADall.php,
           www/vicidial/options-example.php,
           www/vicidial/realtime_report.php: Added RS_ListenBarge options.php
             setting. 
     * Add upstream Rev. 3094:
-      - Changed: extras/MySQL_AST_CREATE_tables.sql,
+      - Update: extras/MySQL_AST_CREATE_tables.sql,
           extras/upgrade_2.12.sql.
     * Add upstream Rev. 3095:
-      - Changed: extras/MySQL_AST_CREATE_tables.sql,
+      - Update: extras/MySQL_AST_CREATE_tables.sql,
           www/vicidial/admin_listloader_fourth_gen.php,
           www/vicidial/help_documentation.txt,
           www/vicidial/options-example.php: 
             Added enable_status_mismatch_leadloader_option.
     * Add upstream Rev. 3096:
-      - Changed: www/vicidial/AST_CLOSERstats.php,
+      - Update: www/vicidial/AST_CLOSERstats.php,
           www/vicidial/AST_CLOSERstats_v2.php: Streamlined DID check to
             optimize page load.
     * Add upstream Rev. 3097:
-      - Changed: www/vicidial/admin_listloader_fourth_gen.php: Load option.php
+      - Update: www/vicidial/admin_listloader_fourth_gen.php: Load option.php
           only if exists.
+    * Add upstream Rev. 3098:
+      - Update: www/vicidial/AST_timeonVDADall.php,
+          www/vicidial/realtime_report.php: Added ingroup filter.
 
 2.26.29
   [Jörg Frings-Fürst]
