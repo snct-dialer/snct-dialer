@@ -100,6 +100,11 @@
       - Change: bin/AST_flush_DBqueue.pl.
     * Add upstream Rev. 3092:
       - Change: bin/AST_activity_log_export.pl: Added --quoted-vl option. 
+    * Add upstream Rev. 3093:
+      - Change: www/vicidial/AST_timeonVDADall.php,
+          www/vicidial/options-example.php,
+          www/vicidial/realtime_report.php: Added RS_ListenBarge options.php
+            setting.
 
 2.26.29
   [Jörg Frings-Fürst]
