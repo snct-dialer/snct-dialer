@@ -118,6 +118,9 @@
       - Changed: www/vicidial/AST_CLOSERstats.php,
           www/vicidial/AST_CLOSERstats_v2.php: Streamlined DID check to
             optimize page load.
+    * Add upstream Rev. 3097:
+      - Changed: www/vicidial/admin_listloader_fourth_gen.php: Load option.php
+          only if exists.
 
 2.26.29
   [Jörg Frings-Fürst]
