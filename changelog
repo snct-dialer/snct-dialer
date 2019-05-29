@@ -108,6 +108,12 @@
     * Add upstream Rev. 3094:
       - Changed: extras/MySQL_AST_CREATE_tables.sql,
           extras/upgrade_2.12.sql.
+    * Add upstream Rev. 3095:
+      - Changed: extras/MySQL_AST_CREATE_tables.sql,
+          www/vicidial/admin_listloader_fourth_gen.php,
+          www/vicidial/help_documentation.txt,
+          www/vicidial/options-example.php: 
+            Added enable_status_mismatch_leadloader_option. 
 
 2.26.29
   [Jörg Frings-Fürst]
