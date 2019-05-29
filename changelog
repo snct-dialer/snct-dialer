@@ -129,6 +129,9 @@
           www/agc/vdc_db_query.php: Added --A--dispo--B-- and
             --A--dispo_name--B-- to email_body; Fixed scheduled callback email
             alert bug.
+    * Add upstream Rev. 3100:
+      - Update: bin/AST_VDhopper.pl: Fix for lead filters with 'NONE' in the
+          filter ID.
 
 2.26.29
   [Jörg Frings-Fürst]
