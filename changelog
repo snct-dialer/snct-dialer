@@ -88,8 +88,13 @@
 	      www/agc/vicidial.php.
 	* Add phone code into Real-Time Main Report Field Cust Phone:
 	  - Change www/vicidial/AST_timeonVDADall.php.
-	* Show manual dial only if user level > 1.
 	* Rename to SNCTDialer.
+	* New Agent disable links for [manual dial| alt phone dial]:
+	  - Change: www/agc/vicidial.php,
+	      www/vicidial/admin.php,
+	      extras/MySQL_AST_CREATE_tables.sql,
+	      extras/mysql_update/mysql-1567.sql,
+	      extras/upgrade_2.14.sql.
 
 2.26.29
   [Jörg Frings-Fürst]

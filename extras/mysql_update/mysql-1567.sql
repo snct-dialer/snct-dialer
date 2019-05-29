@@ -28,3 +28,8 @@ ALTER TABLE system_settings ADD user_admin_redirect ENUM('1','0') default '0';
 ALTER TABLE vicidial_users ADD user_admin_redirect_url TEXT;
 
 UPDATE system_settings SET db_schema_version='1569',db_schema_update_date=NOW() where db_schema_version < 1569;
+
+ALTER TABLE vicidial_users ADD agent_disable_manual ENUM('0','1') default '0';
+ALTER TABLE vicidial_users ADD agent_disable_alt_dial ENUM('0','1') default '0';
+
+UPDATE system_settings SET db_schema_version='1570',db_schema_update_date=NOW() where db_schema_version < 1570;

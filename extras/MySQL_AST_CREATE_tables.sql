@@ -691,7 +691,9 @@ max_hopper_calls_hour SMALLINT(5) UNSIGNED default '0',
 mute_recordings ENUM('DISABLED','Y','N') default 'DISABLED',
 hide_call_log_info ENUM('DISABLED','Y','N','SHOW_1','SHOW_2','SHOW_3','SHOW_4','SHOW_5','SHOW_6','SHOW_7','SHOW_8','SHOW_9','SHOW_10') default 'DISABLED',
 next_dial_my_callbacks ENUM('NOT_ACTIVE','DISABLED','ENABLED') default 'NOT_ACTIVE',
-user_admin_redirect_url TEXT
+user_admin_redirect_url TEXT,
+agent_disable_manual ENUM('0','1') default '0',
+agent_disable_alt_dial ENUM('0','1') default '0'
 ) ENGINE=MyISAM;
 
 CREATE UNIQUE INDEX user ON vicidial_users (user);

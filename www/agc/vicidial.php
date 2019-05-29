@@ -7,7 +7,7 @@
 # Copyright (©) 2019  Matt Florell <vicidial@gmail.com>
 # Copyright (©) 2017-2019 flyingpenguin.de UG <info@flyingpenguin.de>
 #               2019      SNCT GmbH <info@snct-gmbh.de>
-#               2017-2019 Jörg Frings-Fürst <open_source@jff.email>.
+#               2017-2019 Jörg Frings-Fürst <open_source@jff.email>
 #
 # Other scripts that this application depends on:
 # - vdc_db_query.php: Updates information in the database
@@ -24,6 +24,8 @@
 #
 # 2019-04-14 19:22 Remove old PausenDisplay stuff.
 # 2019-04-29 10:17 Add system_wide_settings.php.
+# 2019-05-28 09:18 Show Manual Dial only if UserLevel > 1
+#
 #
 #
 
@@ -1489,7 +1491,7 @@ else
 		if($auth>0)
 			{
 			##### grab the full name and other settings of the agent
-			$stmt="SELECT full_name,user_level,hotkeys_active,agent_choose_ingroups,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,closer_default_blended,user_group,vicidial_recording_override,alter_custphone_override,alert_enabled,agent_shift_enforcement_override,shift_override_flag,allow_alerts,closer_campaigns,agent_choose_territories,custom_one,custom_two,custom_three,custom_four,custom_five,agent_call_log_view_override,agent_choose_blended,agent_lead_search_override,preset_contact_search,max_inbound_calls,wrapup_seconds_override,email,user_choose_language,ready_max_logout,vdc_agent_api_access,mute_recordings from vicidial_users where user='$VD_login' and active='Y' and api_only_user != '1';";
+			$stmt="SELECT full_name,user_level,hotkeys_active,agent_choose_ingroups,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,closer_default_blended,user_group,vicidial_recording_override,alter_custphone_override,alert_enabled,agent_shift_enforcement_override,shift_override_flag,allow_alerts,closer_campaigns,agent_choose_territories,custom_one,custom_two,custom_three,custom_four,custom_five,agent_call_log_view_override,agent_choose_blended,agent_lead_search_override,preset_contact_search,max_inbound_calls,wrapup_seconds_override,email,user_choose_language,ready_max_logout,vdc_agent_api_access,mute_recordings,agent_disable_manual, agent_disable_alt_dial from vicidial_users where user='$VD_login' and active='Y' and api_only_user != '1';";
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01007',$VD_login,$server_ip,$session_name,$one_mysql_log);}
 			$row=mysqli_fetch_row($rslt);
@@ -1527,8 +1529,10 @@ else
 			$VU_user_choose_language =				$row[31];
 			$VU_ready_max_logout =					$row[32];
 			$VU_vdc_agent_api_access =				$row[33];
-			$VU_mute_recordings =					$row[34]; 
-
+			$VU_mute_recordings =					$row[34];
+			$agent_disable_manual = 				$row[35];
+			$agent_disable_alt_dial = 				$row[36];
+			
 			if ( ($VU_alert_enabled > 0) and ($VU_allow_alerts > 0) ) {$VU_alert_enabled = 'ON';}
 			else {$VU_alert_enabled = 'OFF';}
 			$AgentAlert_allowed = $VU_allow_alerts;
@@ -4920,6 +4924,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var manual_entry_dial=0;
 	var mute_recordings='<?php echo $mute_recordings ?>';
 	var active_rec_channel='';
+	var agent_disable_manual='<?php echo $agent_disable_manual ?>';
+	var agent_disable_alt_dial='<?php echo $agent_disable_alt_dial ?>';
 	var DiaLControl_auto_HTML = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready','','','','','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_paused.gif") ?>\" border=\"0\" alt=\"You are paused\" /></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause','','','','','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_active.gif") ?>\" border=\"0\" alt=\"You are active\" /></a>";
 	var DiaLControl_auto_HTML_OFF = "<img src=\"./images/<?php echo _QXZ("vdc_LB_blank_OFF.gif") ?>\" border=\"0\" alt=\"pause button disabled\" />";
@@ -18157,7 +18163,7 @@ function CallViewLogInbounds() {
 			if (allow_alerts < 1)
 				{hideDiv('AgentAlertSpan');}
 		//	if ( (agentcall_manual != '1') && (starting_dial_level > 0) )
-			if ((agentcall_manual != '1') || (user_level < 2))
+			if ((agentcall_manual != '1') || (agent_disable_manual = 1))
 				{hideDiv('ManuaLDiaLButtons');}
 			if (agent_call_log_view != '1')
 				{
@@ -18170,7 +18176,7 @@ function CallViewLogInbounds() {
 				{hideDiv('AgentStatusSpan');}
 			if ( ( (auto_dial_level > 0) && (dial_method != "INBOUND_MAN") ) || (manual_dial_preview < 1) )
 				{clearDiv('DiaLLeaDPrevieW');}
-			if (alt_phone_dialing != 1)
+			if ((alt_phone_dialing != 1) || (agent_disable_alt_dial = 1))
 				{clearDiv('DiaLDiaLAltPhonE');}
 			if (pause_after_next_call != 'ENABLED')
 				{clearDiv('NexTCalLPausE');}
