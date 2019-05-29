@@ -132,6 +132,9 @@
     * Add upstream Rev. 3100:
       - Update: bin/AST_VDhopper.pl: Fix for lead filters with 'NONE' in the
           filter ID.
+    * Add upstream Rev. 3101:
+      - Update. www/agc/vdc_db_query.php: Added gmt_offset population to new
+          manual dialed leads.
 
 2.26.29
   [Jörg Frings-Fürst]
