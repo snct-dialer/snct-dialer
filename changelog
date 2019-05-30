@@ -142,6 +142,9 @@
           www/vicidial/options-example.php,
           www/vicidial/realtime_report.php: Added new agent time segment
             display; Added RS_agentWAIT option; Added rust color definition.
+    * Add upstream Rev. 3104:
+      - Update: www/agc/vicidial.php: Fix for shift enforcement dispo-call-url
+          issue.
 
 2.26.29
   [Jörg Frings-Fürst]

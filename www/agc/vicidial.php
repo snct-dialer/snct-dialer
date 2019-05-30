@@ -629,10 +629,11 @@
 # 190316-0915 - Remove all passwords from default URLDecode.
 # 190330-0815 - Added logged_in_refresh_link option
 # 190406-1615 - Added agent next_dial_my_callbacks override
+# 190529-2144 - Fix for shift enforcement dispo-call-url issue
 #
 
-$version = '2.14-580c';
-$build = '190406-1615';
+$version = '2.14-581c';
+$build = '190529-2144';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -4926,6 +4927,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var active_rec_channel='';
 	var agent_disable_manual='<?php echo $agent_disable_manual ?>';
 	var agent_disable_alt_dial='<?php echo $agent_disable_alt_dial ?>';
+	var trigger_shift_logout=0;
 	var DiaLControl_auto_HTML = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready','','','','','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_paused.gif") ?>\" border=\"0\" alt=\"You are paused\" /></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause','','','','','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_active.gif") ?>\" border=\"0\" alt=\"You are active\" /></a>";
 	var DiaLControl_auto_HTML_OFF = "<img src=\"./images/<?php echo _QXZ("vdc_LB_blank_OFF.gif") ?>\" border=\"0\" alt=\"pause button disabled\" />";
@@ -14394,7 +14396,10 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 					else
 						{
 						if (shift_logout_flag > 0)
-							{LogouT('SHIFT','');}
+							{
+							trigger_shift_logout=10;
+							showDiv('LogouTBox');
+							}
 						else
 							{LogouT('API','');}
 						}
@@ -18854,6 +18859,17 @@ function CallViewLogInbounds() {
 				}
 			if (left_3way_timeout > 0)
 				{left_3way_timeout = (left_3way_timeout - 1);}
+
+			if (trigger_shift_logout > 0)
+				{
+				if (trigger_shift_logout > 1)
+					{trigger_shift_logout =(trigger_shift_logout - 1);}
+				else
+					{
+					LogouT('SHIFT','');
+					trigger_shift_logout=0;
+					}
+				}
 			}
 		setTimeout("all_refresh()", refresh_interval);
 		}
