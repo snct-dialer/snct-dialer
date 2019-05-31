@@ -154,6 +154,11 @@
           www/vicidial/admin_header.php,
           www/vicidial/help_documentation.txt: Added
             list_status_modification_confirmation feature.
+    * Change backup:
+      - Update: bin/ADMIN_backup_ng.pl
+          bin/ADMIN_backup.pl: Change all db backups to one file per table; 
+            Change setupfile location; Switch from service to systemctl; Change
+            the directory for Backup files; Create backuppath if not exists.
 
 2.26.29
   [Jörg Frings-Fürst]

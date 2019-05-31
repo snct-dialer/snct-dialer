@@ -48,9 +48,10 @@
 # 181227-1030 - Allow table names with whitespaces
 # 181228-1210 - Correct typo
 # 190521-0555 - Add sep. backup for trigger and routines
+# 190531-1422 - Change all db backups to one file per table.
 #
 
-$PrgVersion = "2.9.3";
+$PrgVersion = "2.9.4";
 
 ###### Test that the script is running only once a time
 use Fcntl qw(:flock);
@@ -540,20 +541,21 @@ if ( ($without_db < 1) && ($conf_only < 1) )
 				}
 				$triggers = "triggers";
 				if ($DBX) {
-				    print "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --no-data --triggers $temp_dbname | $xzbin -3 -T0 - > '$TEMPpath/$VARserver_ip$underl$temp_dbname$underl$triggers$underl$wday.sql.xz'\n";
+				    print "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --no-data --triggers $temp_dbname | $xzbin -3 -T0 - > '$TEMPpath/$VARserver_ip$underl$temp_dbname$underl$triggers$underl$wday.txt.xz'\n";
 				}
-				`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --no-data --triggers $temp_dbname  | $xzbin -3 -T0 - > '$TEMPpath/$VARserver_ip$underl$temp_dbname$underl$triggers$underl$wday.sql.xz'`;
+				`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --no-data --triggers $temp_dbname  | $xzbin -3 -T0 - > '$TEMPpath/$VARserver_ip$underl$temp_dbname$underl$triggers$underl$wday.txt.xz'`;
 
 				$routines = "routines";
 				if ($DBX) {
-				    print "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --no-data --no-create-info --routines $temp_dbname | $xzbin -3 -T0 - > '$TEMPpath/$VARserver_ip$underl$temp_dbname$underl$routines$underl$wday.sql.xz'\n";
+				    print "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --no-data --no-create-info --routines $temp_dbname | $xzbin -3 -T0 - > '$TEMPpath/$VARserver_ip$underl$temp_dbname$underl$routines$underl$wday.txt.xz'\n";
 				}
-				`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --no-data --no-create-info --routines $temp_dbname  | $xzbin -3 -T0 - > '$TEMPpath/$VARserver_ip$underl$temp_dbname$underl$routines$underl$wday.sql.xz'`;
+				`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --no-data --no-create-info --routines $temp_dbname  | $xzbin -3 -T0 - > '$TEMPpath/$VARserver_ip$underl$temp_dbname$underl$routines$underl$wday.txt.xz'`;
 				if ($DBX) {
-					print "$tarbin -cf $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday$tar $TEMPpath/*.sql.xz`\n";
+					print "$tarbin -cf $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday$tar $TEMPpath/*.txt.xz`\n";
 				}
-				`$tarbin -cf $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday$tar $TEMPpath/*.sql.xz`;
+				`$tarbin -cf $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday$tar $TEMPpath/*.sql.xz $TEMPpath/*.txt.xz`;
 				`rm $TEMPpath/*.sql.xz`;
+				`rm $TEMPpath/*.txt.xz`;
 			}
 			$c++;
 			}
@@ -561,9 +563,9 @@ if ( ($without_db < 1) && ($conf_only < 1) )
 	else
 		{
 		print "\n----- Mysql Raw Copy -----\n\n";
-		`service mysql stop`;
+		`systemctl stop mysql`;
 		`$tarbin -Jcvf $TEMPpath/"$VARserver_ip$underl"mysql_raw_"$wday"$txz /var/lib/mysql/test /var/lib/mysql/mysql /var/lib/mysql/performance_schema /var/lib/mysql/asterisk`;
-		`service mysql start`;
+		`systemctl start mysql`;
 		}
 	}
 
