@@ -1113,6 +1113,8 @@ if (isset($_GET["auto_dial_limit"]))			{$auto_dial_limit=$_GET["auto_dial_limit"
 	elseif (isset($_POST["auto_dial_limit"]))	{$auto_dial_limit=$_POST["auto_dial_limit"];}
 if (isset($_GET["user_territories_active"]))			{$user_territories_active=$_GET["user_territories_active"];}
 	elseif (isset($_POST["user_territories_active"]))	{$user_territories_active=$_POST["user_territories_active"];}
+if (isset($_GET["list_status_modification_confirmation"]))	{$list_status_modification_confirmation=$_GET["list_status_modification_confirmation"];}
+	elseif (isset($_POST["list_status_modification_confirmation"]))	{$list_status_modification_confirmation=$_POST["list_status_modification_confirmation"];}
 if (isset($_GET["vicidial_recording_limit"]))			{$vicidial_recording_limit=$_GET["vicidial_recording_limit"];}
 	elseif (isset($_POST["vicidial_recording_limit"]))	{$vicidial_recording_limit=$_POST["vicidial_recording_limit"];}
 if (isset($_GET["phone_context"]))				{$phone_context=$_GET["phone_context"];}
@@ -2553,7 +2555,7 @@ require_once("../tools/system_wide_settings.php");
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$stmt = "SELECT use_non_latin,enable_queuemetrics_logging,enable_vtiger_integration,qc_features_active,outbound_autodial_active,sounds_central_control_active,enable_second_webform,user_territories_active,custom_fields_enabled,admin_web_directory,webphone_url,first_login_trigger,hosted_settings,default_phone_registration_password,default_phone_login_password,default_server_password,test_campaign_calls,active_voicemail_server,voicemail_timezones,default_voicemail_timezone,default_local_gmt,campaign_cid_areacodes_enabled,pllb_grouping_limit,did_ra_extensions_enabled,expanded_list_stats,contacts_enabled,alt_log_server_ip,alt_log_dbname,alt_log_login,alt_log_pass,tables_use_alt_log_db,call_menu_qualify_enabled,admin_list_counts,allow_voicemail_greeting,svn_revision,allow_emails,level_8_disable_add,pass_key,pass_hash_enabled,disable_auto_dial,country_code_list_stats,frozen_server_call_clear,active_modules,allow_chats,enable_languages,language_method,meetme_enter_login_filename,meetme_enter_leave3way_filename,enable_did_entry_list_id,enable_third_webform,default_language,user_hide_realtime_enabled,log_recording_access,alt_ivr_logging,admin_row_click,admin_screen_colors,ofcom_uk_drop_calc,agent_screen_colors,script_remove_js,manual_auto_next,user_new_lead_limit,agent_xfer_park_3way,agent_soundboards,web_loader_phone_length,agent_script,enable_auto_reports,enable_pause_code_limits,enable_drop_lists,allow_ip_lists,system_ip_blacklist,hide_inactive_lists,allow_manage_active_lists,expired_lists_inactive,did_system_filter,enable_gdpr_download_deletion,mute_recordings,user_admin_redirect FROM system_settings;";
+$stmt = "SELECT use_non_latin,enable_queuemetrics_logging,enable_vtiger_integration,qc_features_active,outbound_autodial_active,sounds_central_control_active,enable_second_webform,user_territories_active,custom_fields_enabled,admin_web_directory,webphone_url,first_login_trigger,hosted_settings,default_phone_registration_password,default_phone_login_password,default_server_password,test_campaign_calls,active_voicemail_server,voicemail_timezones,default_voicemail_timezone,default_local_gmt,campaign_cid_areacodes_enabled,pllb_grouping_limit,did_ra_extensions_enabled,expanded_list_stats,contacts_enabled,alt_log_server_ip,alt_log_dbname,alt_log_login,alt_log_pass,tables_use_alt_log_db,call_menu_qualify_enabled,admin_list_counts,allow_voicemail_greeting,svn_revision,allow_emails,level_8_disable_add,pass_key,pass_hash_enabled,disable_auto_dial,country_code_list_stats,frozen_server_call_clear,active_modules,allow_chats,enable_languages,language_method,meetme_enter_login_filename,meetme_enter_leave3way_filename,enable_did_entry_list_id,enable_third_webform,default_language,user_hide_realtime_enabled,log_recording_access,alt_ivr_logging,admin_row_click,admin_screen_colors,ofcom_uk_drop_calc,agent_screen_colors,script_remove_js,manual_auto_next,user_new_lead_limit,agent_xfer_park_3way,agent_soundboards,web_loader_phone_length,agent_script,enable_auto_reports,enable_pause_code_limits,enable_drop_lists,allow_ip_lists,system_ip_blacklist,hide_inactive_lists,allow_manage_active_lists,expired_lists_inactive,did_system_filter,enable_gdpr_download_deletion,mute_recordings,user_admin_redirect,list_status_modification_confirmation FROM system_settings;";
 $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $qm_conf_ct = mysqli_num_rows($rslt);
@@ -2637,6 +2639,7 @@ if ($qm_conf_ct > 0)
 	$SSenable_gdpr_download_deletion =		$row[74];
 	$SSmute_recordings =					$row[75];
 	$SSuser_admin_redirect =				$row[76];
+	$SSlist_status_modification_confirmation =				$row[77];
 	}
 ##### END SETTINGS LOOKUP #####
 ###########################################
@@ -4624,12 +4627,13 @@ else
 # 190329-1909 - Added AMD Log Report
 # 190406-1437 - Added user override option for next_dial_my_callbacks
 # 190414-0924 - Added user_admin_redirect system setting and user option
+# 190530-1014 - Added list_status_modification_confirmation feature
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-708a';
-$build = '190414-0924';
+$admin_version = '2.14-709a';
+$build = '190530-1014';
 
 
 $STARTtime = date("U");
@@ -17834,7 +17838,7 @@ if ($ADD==411111111111111)
 			servicelevel_two='$servicelevel_two',anyone_callback_inactive_lists='$anyone_callback_inactive_lists',tmp_download_dir='$syss_tmp_download_dir',agent_prefix='$agent_prefix',
 			enable_gdpr_download_deletion='$enable_gdpr_download_deletion',autoanswer_enable='$autoanswer_enable',autoanswer_prefix='$autoanswer_prefix',
 			autoanswer_delay='$autoanswer_delay',source_id_display='$source_id_display',agent_logout_link='$agent_logout_link',manual_dial_validation='$manual_dial_validation',
-			mute_recordings='$mute_recordings',user_admin_redirect='$user_admin_redirect'$custom_dialplanSQL";
+			mute_recordings='$mute_recordings',user_admin_redirect='$user_admin_redirect',list_status_modification_confirmation='$list_status_modification_confirmation$custom_dialplanSQL";
 
 		$rslt=mysql_to_mysqli($stmt, $link);
 
@@ -24038,9 +24042,11 @@ if ($ADD==31)
 			echo "</TR>\n";
 
 			$o=0;
+			$last_list_statuses="";
 			while ($lists_to_print > $o)
 				{
 				$row=mysqli_fetch_row($rslt);
+				$last_list_statuses.="$row[0]|$row[4]|";
 				if (preg_match('/1$|3$|5$|7$|9$/i', $o))
 					{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
 				else
@@ -24081,8 +24087,10 @@ if ($ADD==31)
 				$o++;
 				}
 
-			echo "<TR><TD COLSPAN=9 ALIGN=CENTER><input type=submit value=\""._QXZ("SUBMIT ACTIVE LIST CHANGES")."\"></TD></TR>\n";
-			echo "</TABLE></center><BR></FORM>\n";
+			echo "<TR><TD COLSPAN=9 ALIGN=CENTER><input type=button onClick='return ConfirmListStatusChange($SSlist_status_modification_confirmation, this.form)' value=\""._QXZ("SUBMIT ACTIVE LIST CHANGES")."\"></TD></TR>\n";
+			echo "</TABLE>";
+			echo "<input type='hidden' name='last_list_statuses' id='last_list_statuses' value='$last_list_statuses'>";
+			echo "</center><BR></FORM>\n";
 
 			$filterSQL = $filtersql_list[$lead_filter_id];
 			$filterSQL = preg_replace("/\\\\/","",$filterSQL);
@@ -25657,9 +25665,11 @@ if ($ADD==34)
 		echo "</TR>\n";
 
 		$o=0;
+		$last_list_statuses="";
 		while ($lists_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
+			$last_list_statuses.="$row[0]|$row[4]|";
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
 				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
 			else
@@ -25699,8 +25709,10 @@ if ($ADD==34)
 			$o++;
 			}
 
-		echo "<TR><TD COLSPAN=9 ALIGN=CENTER><input type=submit value=\""._QXZ("SUBMIT ACTIVE LIST CHANGES")."\"></TD></TR>\n";
-		echo "</TABLE></center><BR></FORM>\n";
+		echo "<TR><TD COLSPAN=9 ALIGN=CENTER><input type=button onClick='return ConfirmListStatusChange($SSlist_status_modification_confirmation, this.form)' value=\""._QXZ("SUBMIT ACTIVE LIST CHANGES")."\"></TD></TR>\n";
+		echo "</TABLE>";
+		echo "<input type='hidden' name='last_list_statuses' id='last_list_statuses' value='$last_list_statuses'>";
+		echo "</center><BR></FORM>\n";
 		echo "<center><b>\n";
 
 		$filterSQL = $filtersql_list[$lead_filter_id];
@@ -36918,7 +36930,8 @@ if ($ADD==311111111111111)
 			$ALLagent_count =		$rowx[2];
 			}
 
-		$stmt="SELECT version,install_date,use_non_latin,webroot_writable,enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_url,queuemetrics_log_id,queuemetrics_eq_prepend,vicidial_agent_disable,allow_sipsak_messages,admin_home_url,enable_agc_xfer_log,db_schema_version,auto_user_add_value,timeclock_end_of_day,timeclock_last_reset_date,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,vdc_agent_api_active,qc_last_pull_time,enable_vtiger_integration,vtiger_server_ip,vtiger_dbname,vtiger_login,vtiger_pass,vtiger_url,qc_features_active,outbound_autodial_active,outbound_calls_per_second,enable_tts_integration,agentonly_callback_campaign_lock,sounds_central_control_active,sounds_web_server,sounds_web_directory,active_voicemail_server,auto_dial_limit,user_territories_active,allow_custom_dialplan,db_schema_update_date,enable_second_webform,default_webphone,default_external_server_ip,webphone_url,enable_agc_dispo_log,custom_dialplan_entry,queuemetrics_loginout,callcard_enabled,queuemetrics_callstatus,default_codecs,admin_web_directory,label_title,label_first_name,label_middle_initial,label_last_name,label_address1,label_address2,label_address3,label_city,label_state,label_province,label_postal_code,label_vendor_lead_code,label_gender,label_phone_number,label_phone_code,label_alt_phone,label_security_phrase,label_email,label_comments,custom_fields_enabled,slave_db_server,reports_use_slave_db,webphone_systemkey,first_login_trigger,default_phone_registration_password,default_phone_login_password,default_server_password,admin_modify_refresh,nocache_admin,generate_cross_server_exten,queuemetrics_addmember_enabled,queuemetrics_dispo_pause,label_hide_field_logs,queuemetrics_pe_phone_append,test_campaign_calls,agents_calls_reset,default_voicemail_timezone,default_local_gmt,noanswer_log,alt_log_server_ip,alt_log_dbname,alt_log_login,alt_log_pass,tables_use_alt_log_db,did_agent_log,campaign_cid_areacodes_enabled,pllb_grouping_limit,did_ra_extensions_enabled,expanded_list_stats,contacts_enabled,call_menu_qualify_enabled,admin_list_counts,allow_voicemail_greeting,svn_revision,queuemetrics_socket,queuemetrics_socket_url,enhanced_disconnect_logging,allow_emails,level_8_disable_add,pass_hash_enabled,pass_key,pass_cost,disable_auto_dial,queuemetrics_record_hold,country_code_list_stats,reload_timestamp,queuemetrics_pause_type,frozen_server_call_clear,callback_time_24hour,allow_chats,chat_url,chat_timeout,enable_languages,language_method,meetme_enter_login_filename,meetme_enter_leave3way_filename,enable_did_entry_list_id,enable_third_webform,agent_debug_logging,default_language,agent_whisper_enabled,user_hide_realtime_enabled,usacan_phone_dialcode_fix,cache_carrier_stats_realtime,oldest_logs_date,log_recording_access,report_default_format,alt_ivr_logging,default_phone_code,admin_row_click,admin_screen_colors,ofcom_uk_drop_calc,agent_screen_colors,script_remove_js,manual_auto_next,user_new_lead_limit,agent_xfer_park_3way,rec_prompt_count,agent_soundboards,web_loader_phone_length,agent_script,agent_chat_screen_colors,enable_auto_reports,enable_pause_code_limits,enable_drop_lists,allow_ip_lists,system_ip_blacklist, git_commit, git_release ,agent_push_events,agent_push_url,pause_campaigns,hide_inactive_lists,detect_3way,company_name,ticket_mail,allow_manage_active_lists,expired_lists_inactive,did_system_filter,allow_phonebook,servicelevel_direct,servicelevel_one,servicelevel_two,anyone_callback_inactive_lists,tmp_download_dir,enable_gdpr_download_deletion,agent_prefix,autoanswer_enable,autoanswer_prefix,autoanswer_delay,source_id_display,agent_logout_link,manual_dial_validation,mute_recordings,user_admin_redirect from system_settings;";
+		$stmt="SELECT version,install_date,use_non_latin,webroot_writable,enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_url,queuemetrics_log_id,queuemetrics_eq_prepend,vicidial_agent_disable,allow_sipsak_messages,admin_home_url,enable_agc_xfer_log,db_schema_version,auto_user_add_value,timeclock_end_of_day,timeclock_last_reset_date,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,vdc_agent_api_active,qc_last_pull_time,enable_vtiger_integration,vtiger_server_ip,vtiger_dbname,vtiger_login,vtiger_pass,vtiger_url,qc_features_active,outbound_autodial_active,outbound_calls_per_second,enable_tts_integration,agentonly_callback_campaign_lock,sounds_central_control_active,sounds_web_server,sounds_web_directory,active_voicemail_server,auto_dial_limit,user_territories_active,allow_custom_dialplan,db_schema_update_date,enable_second_webform,default_webphone,default_external_server_ip,webphone_url,enable_agc_dispo_log,custom_dialplan_entry,queuemetrics_loginout,callcard_enabled,queuemetrics_callstatus,default_codecs,admin_web_directory,label_title,label_first_name,label_middle_initial,label_last_name,label_address1,label_address2,label_address3,label_city,label_state,label_province,label_postal_code,label_vendor_lead_code,label_gender,label_phone_number,label_phone_code,label_alt_phone,label_security_phrase,label_email,label_comments,custom_fields_enabled,slave_db_server,reports_use_slave_db,webphone_systemkey,first_login_trigger,default_phone_registration_password,default_phone_login_password,default_server_password,admin_modify_refresh,nocache_admin,generate_cross_server_exten,queuemetrics_addmember_enabled,queuemetrics_dispo_pause,label_hide_field_logs,queuemetrics_pe_phone_append,test_campaign_calls,agents_calls_reset,default_voicemail_timezone,default_local_gmt,noanswer_log,alt_log_server_ip,alt_log_dbname,alt_log_login,alt_log_pass,tables_use_alt_log_db,did_agent_log,campaign_cid_areacodes_enabled,pllb_grouping_limit,did_ra_extensions_enabled,expanded_list_stats,contacts_enabled,call_menu_qualify_enabled,admin_list_counts,allow_voicemail_greeting,svn_revision,queuemetrics_socket,queuemetrics_socket_url,enhanced_disconnect_logging,allow_emails,level_8_disable_add,pass_hash_enabled,pass_key,pass_cost,disable_auto_dial,queuemetrics_record_hold,country_code_list_stats,reload_timestamp,queuemetrics_pause_type,frozen_server_call_clear,callback_time_24hour,allow_chats,chat_url,chat_timeout,enable_languages,language_method,meetme_enter_login_filename,meetme_enter_leave3way_filename,enable_did_entry_list_id,enable_third_webform,agent_debug_logging,default_language,agent_whisper_enabled,user_hide_realtime_enabled,usacan_phone_dialcode_fix,cache_carrier_stats_realtime,oldest_logs_date,log_recording_access,report_default_format,alt_ivr_logging,default_phone_code,admin_row_click,admin_screen_colors,ofcom_uk_drop_calc,agent_screen_colors,script_remove_js,manual_auto_next,user_new_lead_limit,agent_xfer_park_3way,rec_prompt_count,agent_soundboards,web_loader_phone_length,agent_script,agent_chat_screen_colors,enable_auto_reports,enable_pause_code_limits,enable_drop_lists,allow_ip_lists,system_ip_blacklist, git_commit, git_release ,agent_push_events,agent_push_url,pause_campaigns,hide_inactive_lists,detect_3way,company_name,ticket_mail,allow_manage_active_lists,expired_lists_inactive,did_system_filter,allow_phonebook,servicelevel_direct,servicelevel_one,servicelevel_two,anyone_callback_inactive_lists,tmp_download_dir,enable_gdpr_download_deletion,agent_prefix,autoanswer_enable,autoanswer_prefix,autoanswer_delay,source_id_display,agent_logout_link,manual_dial_validation,mute_recordings,user_admin_redirect,list_status_modification_confirmation  from system_settings;";
+
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$row=mysqli_fetch_row($rslt);
 		$version =						$row[0];
@@ -37110,7 +37123,8 @@ if ($ADD==311111111111111)
 		$agent_logout_link =			$row[186];
 		$manual_dial_validation =		$row[187];
 		$mute_recordings =				$row[188];
-		$user_admin_redirect =			$row[174];
+		$user_admin_redirect =			$row[189];
+		$list_status_modification_confirmation = $row[190];
 
 		if ($pass_hash_enabled > 0) {$pass_hash_enabled = 'ENABLED';}	
 		else {$pass_hash_enabled = 'DISABLED';}
@@ -37356,6 +37370,8 @@ if ($ADD==311111111111111)
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Default Phone Code").": </td><td align=left><input type=text name=default_phone_code size=8 maxlength=8 value=\"$default_phone_code\">$NWB#settings-default_phone_code$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("User Territories Active").": </td><td align=left><select size=1 name=user_territories_active><option>1</option><option>0</option><option selected>$user_territories_active</option></select>$NWB#settings-user_territories_active$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("List Status Modification Confirmation").": </td><td align=left><select size=1 name=list_status_modification_confirmation><option>1</option><option>0</option><option selected>$list_status_modification_confirmation</option></select>$NWB#settings-list_status_modification_confirmation$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Enable Second Webform").": </td><td align=left><select size=1 name=enable_second_webform><option>1</option><option>0</option><option selected>$enable_second_webform</option></select>$NWB#settings-enable_second_webform$NWE</td></tr>\n";
 

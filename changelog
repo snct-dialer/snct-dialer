@@ -145,6 +145,14 @@
     * Add upstream Rev. 3104:
       - Update: www/agc/vicidial.php: Fix for shift enforcement dispo-call-url
           issue.
+    * Add upstream Rev. 3105:
+      - Update: extras/MySQL_AST_CREATE_tables.sql,
+          extras/mysql_update/mysql-1567.sql,
+          extras/upgrade_2.14.sql,
+          www/vicidial/admin.php,
+          www/vicidial/admin_header.php,
+          www/vicidial/help_documentation.txt: Added
+            list_status_modification_confirmation feature.
 
 2.26.29
   [Jörg Frings-Fürst]
