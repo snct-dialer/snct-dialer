@@ -89,7 +89,7 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port) {$VARDB_port='3306';}
-if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/rebeep";}
+if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/rebeep.$year-$mon-$mday";}
 
 use DBI;
 use Asterisk::AGI;

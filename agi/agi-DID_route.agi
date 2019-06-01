@@ -115,8 +115,8 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port) {$VARDB_port='3306';}
-if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout";}
-if (!$DIDLOGfile) {$DIDLOGfile = "$PATHlogs/didin";}
+if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout.$year-$mon-$mday";}
+if (!$DIDLOGfile) {$DIDLOGfile = "$PATHlogs/didin.$year-$mon-$mday";}
 
 use DBI;
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
@@ -787,28 +787,7 @@ $affected_rowsL = $dbhA->do($stmtA);
 if ($AGILOG) {$agi_string = "--    DID LOG : |$affected_rowsL|$stmtA|";   &agi_output;}
 
 ### Log the call to call_log
-$stmtZus = " ON DUPLICATE KEY UPDATE";
-if(length($channel) > 0) {
-	$stmtZus = $stmtZus . " channel='$channel',";
-}
-if(length($VARserver_ip) > 0) {
-	$stmtZus = $stmtZus . " server_ip='$VARserver_ip',";
-}
-if(length($extention) > 0) {
-	$stmtZus = $stmtZus . " extension='$extension', number_dialed='$extension', ";
-}
-if(length($callerid) > 0) {
-	$stmtZus = $stmtZus . " caller_code='$callerid',";
-}
-if(length($SQLdate) > 0) {
-	$stmtZus = $stmtZus . " start_time='$SQLdate',";
-}
-if($now_date_epoch > 0) {
-	$stmtZus = $stmtZus . " start_epoch='$now_date_epoch'";
-}
-
-
-$stmtA = "INSERT INTO call_log SET uniqueid='$unique_id', channel='$channel', channel_group='DID_INBOUND', server_ip='$VARserver_ip', type='$type', extension='$extension', number_dialed='$extension', caller_code='$callerid', start_time='$SQLdate', start_epoch='$now_date_epoch'" . $stmtZus . ";";
+$stmtA = "INSERT INTO call_log SET uniqueid='$unique_id', channel='$channel', channel_group='DID_INBOUND', server_ip='$VARserver_ip', type='$type', extension='$extension', number_dialed='$extension', caller_code='$callerid', start_time='$SQLdate', start_epoch='$now_date_epoch';";
 $affected_rowsC = $dbhA->do($stmtA);
 if ($AGILOG) {$agi_string = "--    CALL LOG : |$affected_rowsC|$stmtA|";   &agi_output;}
 

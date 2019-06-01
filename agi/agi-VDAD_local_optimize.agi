@@ -154,7 +154,7 @@ if ( $dest_channel ne "" )
 	eventLogger($conf{'PATHlogs'}, 'launch', $launch . "  " .
 		$cid_name . " " . $uniqueid . " " . $dest_channel);
 
-	$launch .= " >> " . $conf{PATHlogs} . "/action_send" if ($SYSLOG);
+	$launch .= " >> " . $conf{PATHlogs} . "/action_send." . logDate() if ($SYSLOG);
 	system($launch . ' &');
 
 	print STDERR "$launch\n";
@@ -201,8 +201,9 @@ sub getServerConfig
 sub eventLogger
         {
         my ($path,$type,$string) = @_;
-        open(LOG, ">>" . $path . "/action_" . $type
-                || die "Can't open " . $path . "/action_" . $type . ": " . $! . "\n";
+        open(LOG, ">>" . $path . "/action_" . $type . "." . logDate())
+                || die "Can't open " . $path . "/action_" . $type . "." .
+                        logDate() . ": " . $! . "\n";
         print LOG nowDate() . "|" . $string . "|\n";
         close(LOG);
         }

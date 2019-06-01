@@ -29,19 +29,13 @@
 #	- vm-msgsaved
 #	- vm-goodbye
 #
-# LICENSE: AGPLv3
-#
-# Copyright (C) 2016  Matt Florell <vicidial@gmail.com>
-# Copyright (c) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
-#               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
+# Copyright (C) 2016  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG
 # 71226-1303 - Added option to change format GSM/WAV and timeout through flags
 # 90519-1019 - Changed formatting to conform to other scripts
 # 130108-1815 - Changes for Asterisk 1.8 compatibility
 # 161029-2239 - Changed to database storage for prompt count
-# 180507-1620 - Remove use of prompt_count.txt
-#
 #
 
 $script = 'agi-record_prompts.agi';
@@ -88,7 +82,7 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port) {$VARDB_port='3306';}
-if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout";}
+if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout.$year-$mon-$mday";}
 
 use DBI;
 use Asterisk::AGI;
@@ -177,18 +171,37 @@ if ($sthArows > 0)
 	{
 	@aryA = $sthA->fetchrow_array;
 	$rec_prompt_count = $aryA[0];
-	$REC_next = ($rec_prompt_count + 1);
-	
+	$rec_prompt_count_next = ($rec_prompt_count + 1);
 	}
 $sthA->finish();
 
-$REC_id = ($REC_id + $REC_next);
+if (-e "/prompt_count.txt")
+	{
+	open(test, "/prompt_count.txt") || die "can't open /prompt_count.txt: $!\n";
+	@test = <test>;
+	close(test);
 
-### update the rec_prompt_count in system_settings
-###$stmtA = "UPDATE system_settings SET rec_prompt_count='$REC_next';";
-###$affected_rows = $dbhA->do($stmtA);
-##if ($AGILOG) {$agi_string = "$affected_rows|$stmtA|";   &agi_output;}
-
+	$test[0] = ($test[0] + 0);
+	if ($rec_prompt_count > $test[0]) 
+		{$test[0] = $rec_prompt_count;}
+	if ($rec_prompt_count < $test[0]) 
+		{
+		$rec_prompt_count = $test[0];
+		### update the rec_prompt_count in system_settings
+		$stmtA = "UPDATE system_settings SET rec_prompt_count='$rec_prompt_count';";
+		$affected_rows = $dbhA->do($stmtA);
+			if ($AGILOG) {$agi_string = "$affected_rows|$stmtA|";   &agi_output;}
+		}
+	$REC_next = ($test[0] + 1);
+	$REC_id = ($REC_id + $REC_next);
+	}
+else
+	{
+	open(test, ">/prompt_count.txt") || die "can't open /prompt_count.txt: $!\n";
+	print test "$rec_prompt_count";
+	close(test);
+	$REC_id = ($REC_id + $rec_prompt_count);
+	}
 
 $session_recording = "$REC_id";
 print STDERR "Recording ID: $REC_id\n";
@@ -252,6 +265,9 @@ sub welcome_1
 	$affected_rows = $dbhA->do($stmtA);
 		if ($AGILOG) {$agi_string = "$affected_rows|$stmtA|";   &agi_output;}
 
+	open(test, ">/prompt_count.txt") || die "can't open /prompt_count.txt: $!\n";
+	print test "$REC_next";
+	close(test);
 
 	&record_prompts;
 	}
