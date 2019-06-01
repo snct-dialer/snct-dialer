@@ -193,6 +193,8 @@
           www/agc/vdc_db_query.php,
           www/vicidial/AST_timeonVDADall.php: Work on sip logger; Upgraded
             ingroup filter.
+    * Add upstream Rev. 3109:
+      - Update: www/vicidial/admin.php. 
 
 2.26.29
   [Jörg Frings-Fürst]

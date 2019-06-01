@@ -41441,6 +41441,8 @@ if ($ADD==999999)
 	{
 	if ($LOGview_reports==1)
 		{
+		$server_id=$MT; $server_description=$MT; $server_ip=$MT; $active=$MT; $sysload=$MT; $channels_total=$MT; $cpu_idle_percent=$MT; $disk_usage=$MT; $active_agent_login_server=$MT; $active_asterisk_server=$MT;
+
 		echo "<TABLE><TR><TD>\n";
 		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
