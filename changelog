@@ -184,6 +184,9 @@
             logger code; Added mising commented-out keepalives in conf file;
             Added flushing of vicidial_sip_event_recent table;
       - Attention: asterisk 13 version > 13.26.0~se-3 requested.
+    * Add upstream Rev. 3107:
+      - Update: agi/agi-VDAD_ALL_outbound.agi,
+          www/agc/vdc_db_query.php: Correct typos.
 
 2.26.29
   [Jörg Frings-Fürst]

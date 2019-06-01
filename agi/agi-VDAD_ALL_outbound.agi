@@ -414,7 +414,7 @@ if ($SSsip_event_logging > 0)
 
 	if ($affected_rows > 0) 
 		{
-		$stmtA = "SELECT invite_date,first_180_date,first_183_date,200_date,(200_date - invite_date) as dial,(first_180_date - invite_date) as prog,(first_180_date - invite_date) as pdd from vicidial_sip_event_recent where caller_code='$callerid' LIMIT 1;";
+		$stmtA = "SELECT invite_date,first_180_date,first_183_date,200_date,(200_date - invite_date) as dial,(first_180_date - invite_date) as prog,(first_183_date - invite_date) as pdd from vicidial_sip_event_recent where caller_code='$callerid' LIMIT 1;";
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 		$sthArowsVSER=$sthA->rows;
@@ -454,7 +454,7 @@ if ($SSsip_event_logging > 0)
 				}
 
 			# insert a record into the vicidial_log_extended_sip table for this call
-			$stmtA = "INSERT INTO vicidial_log_extended_sip SET call_date='$invite_date', caller_code='$callerid', invite_to_ring='$invite_to_ring', ring_to_final='$ring_to_final', invite_to_final='$dial_time', last_event_code='200' LIMIT 1;";
+			$stmtA = "INSERT INTO vicidial_log_extended_sip SET call_date='$invite_date', caller_code='$callerid', invite_to_ring='$invite_to_ring', ring_to_final='$ring_to_final', invite_to_final='$dial_time', last_event_code='200';";
 				if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 			$affected_rows = $dbhA->do($stmtA);
 				$dbhP=$dbhA;   $mysql_count='01139';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;

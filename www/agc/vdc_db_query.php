@@ -6754,7 +6754,7 @@ if ($ACTION == 'manDiaLlookCaLL')
 
 				if ($affected_rowsX > 0) 
 					{
-					$stmt = "SELECT invite_date,first_180_date,first_183_date,200_date,(200_date - invite_date) as dial,(first_180_date - invite_date) as prog,(first_180_date - invite_date) as pdd from vicidial_sip_event_recent where caller_code='$MDnextCID' LIMIT 1;";
+					$stmt = "SELECT invite_date,first_180_date,first_183_date,200_date,(200_date - invite_date) as dial,(first_180_date - invite_date) as prog,(first_183_date - invite_date) as pdd from vicidial_sip_event_recent where caller_code='$MDnextCID' LIMIT 1;";
 					if ($DB) {echo "$stmt\n";}
 					$rslt=mysql_to_mysqli($stmt, $link);
 						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -6790,7 +6790,7 @@ if ($ACTION == 'manDiaLlookCaLL')
 							}
 
 						# insert a record into the vicidial_log_extended_sip table for this call
-						$stmt = "INSERT INTO vicidial_log_extended_sip SET call_date='$invite_date', caller_code='$MDnextCID', invite_to_ring='$invite_to_ring', ring_to_final='$ring_to_final', invite_to_final='$dial_time', last_event_code='200' LIMIT 1;";
+						$stmt = "INSERT INTO vicidial_log_extended_sip SET call_date='$invite_date', caller_code='$MDnextCID', invite_to_ring='$invite_to_ring', ring_to_final='$ring_to_final', invite_to_final='$dial_time', last_event_code='200';";
 						if ($DB) {echo "$stmt\n";}
 						$rslt=mysql_to_mysqli($stmt, $link);
 							if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
