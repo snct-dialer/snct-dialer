@@ -187,6 +187,12 @@
     * Add upstream Rev. 3107:
       - Update: agi/agi-VDAD_ALL_outbound.agi,
           www/agc/vdc_db_query.php: Correct typos.
+    * Add upstream Rev. 3108:
+      - Update: agi/agi-VDAD_ALL_outbound.agi,
+          docs/SIP_EVENT_LOGGING.txt,
+          www/agc/vdc_db_query.php,
+          www/vicidial/AST_timeonVDADall.php: Work on sip logger; Upgraded
+            ingroup filter.
 
 2.26.29
   [Jörg Frings-Fürst]

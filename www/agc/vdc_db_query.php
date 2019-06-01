@@ -494,7 +494,7 @@ $version = '2.14-368';
 $build = '190531-1045';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=793;
+$mysql_log_count=797;
 $one_mysql_log=0;
 $DB=0;
 $VD_login=0;
@@ -6749,15 +6749,16 @@ if ($ACTION == 'manDiaLlookCaLL')
 				$stmt="UPDATE vicidial_sip_event_recent set processed='U' where caller_code='$MDnextCID' LIMIT 1;;";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_to_mysqli($stmt, $link);
-					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00794',$user,$server_ip,$session_name,$one_mysql_log);}
 				$affected_rowsX = mysqli_affected_rows($link);
 
 				if ($affected_rowsX > 0) 
 					{
-					$stmt = "SELECT invite_date,first_180_date,first_183_date,200_date,(200_date - invite_date) as dial,(first_180_date - invite_date) as prog,(first_183_date - invite_date) as pdd from vicidial_sip_event_recent where caller_code='$MDnextCID' LIMIT 1;";
+					$dial_time = 0;
+					$stmt = "SELECT invite_date,first_180_date,first_183_date,200_date,TIMESTAMPDIFF(MICROSECOND,invite_date,200_date) as dial,TIMESTAMPDIFF(MICROSECOND,invite_date,first_180_date) as prog,TIMESTAMPDIFF(MICROSECOND,invite_date,first_183_date) as pdd from vicidial_sip_event_recent where caller_code='$MDnextCID' LIMIT 1;";
 					if ($DB) {echo "$stmt\n";}
 					$rslt=mysql_to_mysqli($stmt, $link);
-						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00795',$user,$server_ip,$session_name,$one_mysql_log);}
 					$VSER_ct = mysqli_num_rows($rslt);
 					if ($VSER_ct > 0)
 						{
@@ -6770,38 +6771,49 @@ if ($ACTION == 'manDiaLlookCaLL')
 						$time_to_progress = $row[5];
 						$time_to_ring = 	$row[6];
 
-						if ( ($time_to_progress > 0) && ($time_to_progress != 'NULL') ) 
+						if ( ($dial_time > 0) and ($dial_time != 'NULL') )
 							{
-							$invite_to_ring = $time_to_progress;
-							$ring_to_final = ($dial_time - $invite_to_ring);
-							}
-						else
-							{
-							if ( ($time_to_ring > 0) && ($time_to_ring != 'NULL') ) 
+							if ( ($time_to_progress > 0) and ($time_to_progress != 'NULL') ) 
 								{
-								$invite_to_ring = $time_to_ring;
+								if ( ($dial_time <= 0) or ($dial_time == 'NULL') ) 
+									{$dial_time = $time_to_progress;}
+								$invite_to_ring = $time_to_progress;
 								$ring_to_final = ($dial_time - $invite_to_ring);
 								}
 							else
 								{
-								$invite_to_ring = 0;
-								$ring_to_final = 0;
+								if ( ($time_to_ring > 0) and ($time_to_ring != 'NULL') ) 
+									{
+									if ( ($dial_time <= 0) or ($dial_time == 'NULL') ) 
+										{$dial_time = $time_to_ring;}
+									$invite_to_ring = $time_to_ring;
+									$ring_to_final = ($dial_time - $invite_to_ring);
+									}
+								else
+									{
+									$invite_to_ring = 0;
+									$ring_to_final = 0;
+									}
 								}
+
+							if ($invite_to_ring != '0') {$invite_to_ring = ($invite_to_ring / 1000000);}
+							if ($ring_to_final != '0') {$ring_to_final = ($ring_to_final / 1000000);}
+							if ($dial_time != '0') {$dial_time = ($dial_time / 1000000);}
+
+							# insert a record into the vicidial_log_extended_sip table for this call
+							$stmt = "INSERT INTO vicidial_log_extended_sip SET call_date='$invite_date', caller_code='$MDnextCID', invite_to_ring='$invite_to_ring', ring_to_final='$ring_to_final', invite_to_final='$dial_time', last_event_code='200';";
+							if ($DB) {echo "$stmt\n";}
+							$rslt=mysql_to_mysqli($stmt, $link);
+								if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00796',$user,$server_ip,$session_name,$one_mysql_log);}
+							$affected_rowsX = mysqli_affected_rows($link);
+
+							# flag the vicidial_sip_event_recent record as processed
+							$stmt = "UPDATE vicidial_sip_event_recent set processed='Y' where caller_code='$MDnextCID' LIMIT 1;";
+							if ($DB) {echo "$stmt\n";}
+							$rslt=mysql_to_mysqli($stmt, $link);
+								if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00797',$user,$server_ip,$session_name,$one_mysql_log);}
+							$affected_rowsX = mysqli_affected_rows($link);
 							}
-
-						# insert a record into the vicidial_log_extended_sip table for this call
-						$stmt = "INSERT INTO vicidial_log_extended_sip SET call_date='$invite_date', caller_code='$MDnextCID', invite_to_ring='$invite_to_ring', ring_to_final='$ring_to_final', invite_to_final='$dial_time', last_event_code='200';";
-						if ($DB) {echo "$stmt\n";}
-						$rslt=mysql_to_mysqli($stmt, $link);
-							if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
-						$affected_rowsX = mysqli_affected_rows($link);
-
-						# flag the vicidial_sip_event_recent record as processed
-						$stmt = "UPDATE vicidial_sip_event_recent set processed='Y' where caller_code='$MDnextCID' LIMIT 1;";
-						if ($DB) {echo "$stmt\n";}
-						$rslt=mysql_to_mysqli($stmt, $link);
-							if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
-						$affected_rowsX = mysqli_affected_rows($link);
 						}
 					}
 				}

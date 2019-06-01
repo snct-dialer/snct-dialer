@@ -414,7 +414,8 @@ if ($SSsip_event_logging > 0)
 
 	if ($affected_rows > 0) 
 		{
-		$stmtA = "SELECT invite_date,first_180_date,first_183_date,200_date,(200_date - invite_date) as dial,(first_180_date - invite_date) as prog,(first_183_date - invite_date) as pdd from vicidial_sip_event_recent where caller_code='$callerid' LIMIT 1;";
+		$dial_time = 0;
+		$stmtA = "SELECT invite_date,first_180_date,first_183_date,200_date,TIMESTAMPDIFF(MICROSECOND,invite_date,200_date) as dial,TIMESTAMPDIFF(MICROSECOND,invite_date,first_180_date) as prog,TIMESTAMPDIFF(MICROSECOND,invite_date,first_183_date) as pdd from vicidial_sip_event_recent where caller_code='$callerid' LIMIT 1;";
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 		$sthArowsVSER=$sthA->rows;
@@ -436,6 +437,8 @@ if ($SSsip_event_logging > 0)
 			{
 			if ( ($time_to_progress > 0) && ($time_to_progress != 'NULL') ) 
 				{
+				if ( ($dial_time <= 0) || ($dial_time == 'NULL') ) 
+					{$dial_time = $time_to_progress;}
 				$invite_to_ring = $time_to_progress;
 				$ring_to_final = ($dial_time - $invite_to_ring);
 				}
@@ -443,6 +446,8 @@ if ($SSsip_event_logging > 0)
 				{
 				if ( ($time_to_ring > 0) && ($time_to_ring != 'NULL') ) 
 					{
+					if ( ($dial_time <= 0) || ($dial_time == 'NULL') ) 
+						{$dial_time = $time_to_ring;}
 					$invite_to_ring = $time_to_ring;
 					$ring_to_final = ($dial_time - $invite_to_ring);
 					}
@@ -452,6 +457,9 @@ if ($SSsip_event_logging > 0)
 					$ring_to_final = 0;
 					}
 				}
+			if ($invite_to_ring != '0') {$invite_to_ring = ($invite_to_ring / 1000000);}
+			if ($ring_to_final != '0') {$ring_to_final = ($ring_to_final / 1000000);}
+			if ($dial_time != '0') {$dial_time = ($dial_time / 1000000);}
 
 			# insert a record into the vicidial_log_extended_sip table for this call
 			$stmtA = "INSERT INTO vicidial_log_extended_sip SET call_date='$invite_date', caller_code='$callerid', invite_to_ring='$invite_to_ring', ring_to_final='$ring_to_final', invite_to_final='$dial_time', last_event_code='200';";

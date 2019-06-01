@@ -1,13 +1,20 @@
-SIP EVENT LOGGING DOC	Started: 2019-05-30	Updated: 2019-05-30
+SIP EVENT LOGGING DOC	Started: 2019-05-30	Updated: 2019-05-31
 
-!!!! THIS IS A WORK IN PROGRESS, NOT FINISHED !!!!
+!!!! THIS IS AN EXPERIMENTAL FEATURE, PLEASE READ ALL IMPORTANT NOTES !!!!
 
 
 
 
 This document will go over the details of the new SIP event logging features that were added to VICIdial for use with patched versions of Asterisk 13
 
-The purpose of this SIP event logging is to hopefully help to be able to better identify FAS(False Answer Supervision) and PDD(Post Dial Delay), as well as manual dial call progress updates to the agent.
+The purpose of this SIP event logging is to hopefully help to be able to better identify FAS(False Answer Supervision) and PDD(Post Dial Delay), as well as manual dial call progress updates to the agent. For phase 1 of this project, which is all that is completed at this time, the basic framework of logging the SIP messages on all outbound calls is complete, as well as extended logging of answered calls. The maintenance of all involved new database log tables is also complete.
+
+
+
+
+IMPORTANT VICIDIAL VERSION NOTE!!!
+
+You will need to be running VICIdial svn/trunk revision 3108 or newer on all of the servers in your cluster in order to use these new features
 
 
 
@@ -168,3 +175,17 @@ MariaDB [asterisk]> SELECT * FROM vicidial_sip_event_log limit 10;
 |       118761 | M5301113160609819452 | SIP/proxy1-0000687b | 192.168.201.77 | 1559229196.141527 | 5c3fc41572b6d91b04f1770d175f873d@118.98.355.182:5060 | 2019-05-30 11:13:16.292730 | INVITE    |
 |       118762 | M5301113160609819452 | SIP/proxy1-0000687b | 192.168.201.77 | 1559229196.141527 | 5c3fc41572b6d91b04f1770d175f873d@118.98.355.182:5060 | 2019-05-30 11:13:16.293336 | 100       |
 +--------------+----------------------+---------------------+----------------+-------------------+------------------------------------------------------+----------------------------+-----------+
+
+
+MariaDB [asterisk]> select * from vicidial_log_extended_sip;
++----------------------------+----------------------+----------------+---------------+-----------------+-----------------+
+| call_date                  | caller_code          | invite_to_ring | ring_to_final | invite_to_final | last_event_code |
++----------------------------+----------------------+----------------+---------------+-----------------+-----------------+
+| 2019-05-31 14:44:41.820638 | V5311444410051765735 |      12.649792 |      9.486446 |       22.136238 |             200 |
+| 2019-05-31 14:44:30.615591 | V5311444290051826986 |       3.702375 |      0.198128 |        3.900503 |             200 |
+| 2019-05-31 14:44:24.227877 | V5311444230051773996 |       4.168916 |      0.169864 |        4.338780 |             200 |
+| 2019-05-31 14:44:17.887899 | V5311444170051774117 |       1.588209 |     28.109085 |       29.697294 |             200 |
+| 2019-05-31 14:44:09.180187 | V5311444080051793093 |       2.029566 |     29.918390 |       31.947956 |             200 |
+| 2019-05-31 14:43:51.428842 | V5311443510051782192 |       0.000000 |      0.000000 |        0.771248 |             200 |
++----------------------------+----------------------+----------------+---------------+-----------------+-----------------+
+
