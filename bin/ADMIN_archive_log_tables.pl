@@ -62,6 +62,7 @@
 # 180616-1825 - Add sniplet into perl scripts to run only once a time
 # 180712-1641 - Added --wipe-all-being-archived AND --did-log-days options
 # 190318-1541 - Added vicidial_amd_log archiving
+# 190531-0841 - Added vicidial_log_extended_sip archiving
 #
 
 ###### Test that the script is running only once a time
@@ -390,6 +391,19 @@ use DBI;
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
  or die "Couldn't connect to database: " . DBI->errstr;
 
+#############################################
+##### Gather system_settings #####
+$stmtA = "SELECT sip_event_logging FROM system_settings;";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+if ($sthArows > 0)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$SSsip_event_logging =	$aryA[0];
+	}
+$sthA->finish();
+###########################################
 
 if (!$T) 
 	{
@@ -466,6 +480,38 @@ if (!$T)
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			}
 		##### END vicidial_log_extended_archive trim processing #####
+
+		if ($SSsip_event_logging > 0)
+			{
+			##### BEGIN vicidial_log_extended_sip_archive trim processing #####
+			$stmtA = "SELECT count(*) from vicidial_log_extended_sip_archive;";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$vicidial_log_extended_sip_archive_count =	$aryA[0];
+				}
+			$sthA->finish();
+
+			if (!$Q) {print "Trimming vicidial_log_extended_sip_archive table...  ($vicidial_log_extended_sip_archive_count)\n";}
+			
+			$rv = $sthA->err();
+			if (!$rv) 
+				{
+				$stmtA = "DELETE FROM vicidial_log_extended_sip_archive WHERE call_date < '$del_time';";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows = $sthA->rows;
+				if (!$Q) {print "$sthArows rows deleted from vicidial_log_extended_sip_archive table \n";}
+
+				$stmtA = "optimize table vicidial_log_extended_sip_archive;";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				}
+			##### END vicidial_log_extended_sip_archive trim processing #####
+			}
 
  		##### BEGIN vicidial_drop_log_archive trim processing #####
 		$stmtA = "SELECT count(*) from vicidial_drop_log_archive;";
@@ -872,6 +918,56 @@ if (!$T)
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			}
 		##### END vicidial_log_extended DAILY processing #####
+
+
+		if ($SSsip_event_logging > 0)
+			{
+			##### BEGIN vicidial_log_extended_sip DAILY processing #####
+			$stmtA = "SELECT count(*) from vicidial_log_extended_sip;";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$vicidial_log_extended_sip_count =	$aryA[0];
+				}
+			$sthA->finish();
+
+			$stmtA = "SELECT count(*) from vicidial_log_extended_sip_archive;";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$vicidial_log_extended_sip_archive_count =	$aryA[0];
+				}
+			$sthA->finish();
+
+			if (!$Q) {print "\nProcessing vicidial_log_extended_sip table...  ($vicidial_log_extended_sip_count|$vicidial_log_extended_sip_archive_count)\n";}
+			$stmtA = "INSERT IGNORE INTO vicidial_log_extended_sip_archive SELECT * from vicidial_log_extended_sip;";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			
+			$sthArows = $sthA->rows;
+			if (!$Q) {print "$sthArows rows inserted into vicidial_log_extended_sip_archive table \n";}
+			
+			$rv = $sthA->err();
+			if (!$rv) 
+				{
+				$stmtA = "DELETE FROM vicidial_log_extended_sip WHERE call_date < '$del_time';";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows = $sthA->rows;
+				if (!$Q) {print "$sthArows rows deleted from vicidial_log_extended_sip table \n";}
+
+				$stmtA = "optimize table vicidial_log_extended_sip;";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				}
+			##### END vicidial_log_extended_sip DAILY processing #####
+			}
 
 
 		##### BEGIN vicidial_drop_log DAILY processing #####
@@ -1583,6 +1679,62 @@ if (!$T)
 		$stmtA = "optimize table vicidial_log_extended_archive;";
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		}
+
+
+	if ($SSsip_event_logging > 0)
+		{
+		##### vicidial_log_extended_sip
+		$stmtA = "SELECT count(*) from vicidial_log_extended_sip;";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		if ($sthArows > 0)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$vicidial_log_extended_sip_count =	$aryA[0];
+			}
+		$sthA->finish();
+
+		$stmtA = "SELECT count(*) from vicidial_log_extended_sip_archive;";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		if ($sthArows > 0)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$vicidial_log_extended_sip_archive_count =	$aryA[0];
+			}
+		$sthA->finish();
+
+		if (!$Q) {print "\nProcessing vicidial_log_extended_sip table...  ($vicidial_log_extended_sip_count|$vicidial_log_extended_sip_archive_count)\n";}
+		$stmtA = "INSERT IGNORE INTO vicidial_log_extended_sip_archive SELECT * from vicidial_log_extended_sip;";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		
+		$sthArows = $sthA->rows;
+		if (!$Q) {print "$sthArows rows inserted into vicidial_log_extended_sip_archive table \n";}
+		
+		$rv = $sthA->err();
+		if (!$rv) 
+			{	
+			if ($wipe_all > 0)
+				{$stmtA = "DELETE FROM vicidial_log_extended_sip;";}
+			else
+				{$stmtA = "DELETE FROM vicidial_log_extended_sip WHERE call_date < '$del_time';";}
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows = $sthA->rows;
+			if (!$Q) {print "$sthArows rows deleted from vicidial_log_extended_sip table \n";}
+
+			$stmtA = "optimize table vicidial_log_extended_sip;";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+
+			$stmtA = "optimize table vicidial_log_extended_sip_archive;";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			}
 		}
 
 

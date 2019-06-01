@@ -160,6 +160,30 @@
             Change setupfile location; Switch from service to systemctl; Change
             the directory for Backup files; Create backuppath if not exists;
             Add KW and Hour to archive file name; Add WebPath2.
+    * Add upstream Rev. 3106:
+      - Update: UPGRADE,
+          agi/agi-VDAD_ALL_outbound.agi,
+          bin/ADMIN_archive_log_tables.pl,
+          bin/ADMIN_keepalive_ALL.pl,
+          bin/ADMIN_update_server_ip.pl,
+          bin/AST_flush_DBqueue.pl,
+          docs/conf_examples/extensions.conf.sample-13,
+          docs/conf_examples/manager.conf.sample-13,
+          extras/MySQL_AST_CREATE_tables.sql,
+          extras/mysql_update/mysql-1567.sql,
+          extras/upgrade_2.14.sql,
+          install.pl,
+          www/agc/vdc_db_query.php,
+          www/vicidial/admin.php,
+          www/vicidial/help_documentation.txt
+      - New: bin/AST_manager_sip_AMI2.pl,
+          docs/SIP_EVENT_LOGGING.txt,
+          extras/sip_logging.patch: Changed dialplan inputs to accept
+            connected-line name for CIDname validation, added SIP event
+            processing; Added vicidial_log_extended_sip archiving; Added SIP
+            logger code; Added mising commented-out keepalives in conf file;
+            Added flushing of vicidial_sip_event_recent table;
+      - Attention: asterisk 13 version > 13.26.0~se-3 requested.
 
 2.26.29
   [Jörg Frings-Fürst]
