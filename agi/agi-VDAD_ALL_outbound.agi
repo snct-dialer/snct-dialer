@@ -415,7 +415,7 @@ if ($SSsip_event_logging > 0)
 	if ($affected_rows > 0) 
 		{
 		$dial_time = 0;
-		$stmtA = "SELECT invite_date,first_180_date,first_183_date,200_date,TIMESTAMPDIFF(MICROSECOND,invite_date,200_date) as dial,TIMESTAMPDIFF(MICROSECOND,invite_date,first_180_date) as prog,TIMESTAMPDIFF(MICROSECOND,invite_date,first_183_date) as pdd from vicidial_sip_event_recent where caller_code='$callerid' LIMIT 1;";
+		$stmtA = "SELECT invite_date,UNIX_TIMESTAMP(first_180_date),UNIX_TIMESTAMP(first_183_date),UNIX_TIMESTAMP(200_date),TIMESTAMPDIFF(MICROSECOND,invite_date,200_date) as dial,TIMESTAMPDIFF(MICROSECOND,invite_date,first_180_date) as prog,TIMESTAMPDIFF(MICROSECOND,invite_date,first_183_date) as pdd from vicidial_sip_event_recent where caller_code='$callerid' LIMIT 1;";
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 		$sthArowsVSER=$sthA->rows;
@@ -430,6 +430,8 @@ if ($SSsip_event_logging > 0)
 			$dial_time = 		$aryA[4];
 			$time_to_progress = $aryA[5];
 			$time_to_ring = 	$aryA[6];
+			if ( ($first_180_date > 0) && ($first_180_date != 'NULL') && ($first_183_date > 0) && ($first_183_date != 'NULL')) 
+				{if ($first_180_date > $first_183_date) {$time_to_progress=$time_to_ring;}}
 			}
 		$sthA->finish();
 

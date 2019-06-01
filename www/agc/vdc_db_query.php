@@ -6755,7 +6755,7 @@ if ($ACTION == 'manDiaLlookCaLL')
 				if ($affected_rowsX > 0) 
 					{
 					$dial_time = 0;
-					$stmt = "SELECT invite_date,first_180_date,first_183_date,200_date,TIMESTAMPDIFF(MICROSECOND,invite_date,200_date) as dial,TIMESTAMPDIFF(MICROSECOND,invite_date,first_180_date) as prog,TIMESTAMPDIFF(MICROSECOND,invite_date,first_183_date) as pdd from vicidial_sip_event_recent where caller_code='$MDnextCID' LIMIT 1;";
+					$stmt = "SELECT invite_date,UNIX_TIMESTAMP(first_180_date),UNIX_TIMESTAMP(first_183_date),UNIX_TIMESTAMP(200_date),TIMESTAMPDIFF(MICROSECOND,invite_date,200_date) as dial,TIMESTAMPDIFF(MICROSECOND,invite_date,first_180_date) as prog,TIMESTAMPDIFF(MICROSECOND,invite_date,first_183_date) as pdd from vicidial_sip_event_recent where caller_code='$MDnextCID' LIMIT 1;";
 					if ($DB) {echo "$stmt\n";}
 					$rslt=mysql_to_mysqli($stmt, $link);
 						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00795',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -6770,6 +6770,8 @@ if ($ACTION == 'manDiaLlookCaLL')
 						$dial_time = 		$row[4];
 						$time_to_progress = $row[5];
 						$time_to_ring = 	$row[6];
+						if ( ($first_180_date > 0) and ($first_180_date != 'NULL') and ($first_183_date > 0) and ($first_183_date != 'NULL')) 
+							{if ($first_180_date > $first_183_date) {$time_to_progress=$time_to_ring;}}
 
 						if ( ($dial_time > 0) and ($dial_time != 'NULL') )
 							{
