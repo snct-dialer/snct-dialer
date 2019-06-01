@@ -158,8 +158,8 @@
       - Update: bin/ADMIN_backup_ng.pl
           bin/ADMIN_backup.pl: Change all db backups to one file per table; 
             Change setupfile location; Switch from service to systemctl; Change
-            the directory for Backup files; Create backuppath if not exists.
-            Add KW and Hour to archive file name.
+            the directory for Backup files; Create backuppath if not exists;
+            Add KW and Hour to archive file name; Add WebPath2.
 
 2.26.29
   [Jörg Frings-Fürst]

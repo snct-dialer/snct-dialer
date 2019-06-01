@@ -28,9 +28,10 @@
 #                           Change the directory for Backup files. 
 #                           Create backuppath if not exists.
 # 190601-1008 - 3.1.1 - jff Add KW and hour to archive filename.
+# 190601-1556 - 3.1.2 - jff Add WebPath2
 #
 
-$PrgVersion = "3.1.1";
+$PrgVersion = "3.1.2";
 
 ###### Test that the script is running only once a time
 use Fcntl qw(:flock);
@@ -89,6 +90,7 @@ $VARDB_backup_pass = $cfg->val( 'Database', 'VARDB_backup_pass' );
 $VARDB_port        = $cfg->val( 'Database', 'VARDB_port' );
 
 $BackupUseHour    = $cfg->val( 'Backup', 'BackupHour' );
+$BackupWebPath2   = $cfg->val( 'Backup', 'WebPath2' );
 
 $FTPBACKUP_enable = $cfg->val( 'Backup', 'FTPBACKUP_enable' );
 $FTPBACKUP_host   = $cfg->val( 'Backup', 'FTPBACKUP_host' );
@@ -328,7 +330,7 @@ $bin='_BIN_';
 $web='_WEB_';
 $sounds='_SOUNDS_';
 $voicemail='_VOICEMAIL_';
-$all='_ALL_';
+$all='_';
 $tar='.tar';
 $gz='.gz';
 $xz='.xz';
@@ -573,8 +575,8 @@ if ( ($without_conf < 1) && ($db_only < 1) )
 if ( ($conf_only < 1) && ($db_only < 1) && ($without_web < 1) )
 	{
 	### BACKUP THE WEB FILES ON THE SERVER ###
-	if ($DBX) {print "$tarbin -cf - $PATHweb |  $xzbin -1 -T0 - > $TEMPpath/$Server_name$web$wday$txz\n";}
-	`$tarbin -cf - $PATHweb | $xzbin -1 -T0 - > $TEMPpath/$Server_name$web$wday$txz`;
+	if ($DBX) {print "$tarbin -cf - $PATHweb $BackupWebPath2 |  $xzbin -1 -T0 - > $TEMPpath/$Server_name$web$wday$txz\n";}
+	`$tarbin -cf - $PATHweb $BackupWebPath2 | $xzbin -1 -T0 - > $TEMPpath/$Server_name$web$wday$txz`;
 	}
 
 if ( ($conf_only < 1) && ($db_only < 1) )
