@@ -29,9 +29,10 @@
 #                           Create backuppath if not exists.
 # 190601-1008 - 3.1.1 - jff Add KW and hour to archive filename.
 # 190601-1556 - 3.1.2 - jff Add WebPath2
+# 190602-0953 - 3.1.3 - jff Use YYYY-MM-DD[-HH] for archive file name.
 #
 
-$PrgVersion = "3.1.2";
+$PrgVersion = "3.1.3";
 
 ###### Test that the script is running only once a time
 use Fcntl qw(:flock);
@@ -47,9 +48,6 @@ unless (flock(DATA, LOCK_EX|LOCK_NB)) {
 $secT = time();
 $secX = time();
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
-my $donthisweek = $yday+5-$wday;
-my $donfirst    = $donthisweek % 7;
-my $kw          = ($donthisweek - $donfirst)/7 + 1;
 $year = ($year + 1900);
 $mon++;
 if ($mon < 10) {$mon = "0$mon";}
@@ -61,6 +59,7 @@ $file_date = "$year-$mon-$mday";
 $now_date = "$year-$mon-$mday $hour:$min:$sec";
 $VDL_date = "$year-$mon-$mday 00:00:01";
 $db_raw_files_copy=0;
+$DateTag = "$year-$mon-$mday";
 
 
 print "$0 Version: $PrgVersion \n";
@@ -107,8 +106,8 @@ if(!$VARDB_backup_user) {
 }
 
 if ($BackupUseHour = "1") {
-	$kw .= "-";
-	$kw .= $hour; 
+	$DateTag .= "-";
+	$DateTag .= $hour; 
 }
 
 ### begin parsing run-time options ###
@@ -600,51 +599,18 @@ if ( ($conf_only < 1) && ($db_only < 1) && ($without_voicemail < 1) )
 	`$tarbin -cf - /var/spool/asterisk/voicemail | $xzbin -1 -T0 - > $TEMPpath/$Server_name$voicemail$wday$txz`;
 	}
 
-### REMOVE old archives with KW after 1 year
-
-
- if ( -e "$PATHbackup/$Server_name$all$wday_$kw$tar$tgz" ) {
-	if ($DBX) {print "rm -f $PATHbackup/$Server_name$all$wday-$kw$tar$tgz\n";}
-	`rm -f $PATHbackup/$Server_name$all$wday_$kw$tar$tgz`;
-}
-
-### REMOVE OLD GZ, xz and tar FILEiaMiU
-
- if ( -e "$PATHbackup/$Server_name$all$wday$tar$gz" ) {
-	if ($DBX) {print "rm -f $PATHbackup/$Server_name$all$wday$tar$gz\n";}
-	`rm -f $PATHbackup/$Server_name$all$wday$tar$gz`;
-}
-
- if ( -e "$PATHbackup/$Server_name$all$wday.old$txz" ) {
-	if ($DBX) {print "rm -f $PATHbackup/$Server_name$all$wday.old$txz\n";}
-	`rm -f $PATHbackup/$Server_name$all$wday.old$txz`;
-}
-if ( -e "$PATHbackup/$Server_name$all$wday.old$tar" ) {
-	if ($DBX) {print "rm -f $PATHbackup/$Server_name$all$wday.old$tar\n";}
-	`rm -f $PATHbackup/$Server_name$all$wday.old$tar`;
-}
-
-if ( -e "$PATHbackup/$Server_name$all$wday$txz" ) {
-	if ($DBX) {print "mv $PATHbackup/$Server_name$all$wday$txz $PATHbackup/$Server_name$all$wday.old$txz\n";}
-	`mv $PATHbackup/$Server_name$all$wday$txz $PATHbackup/$Server_name$all$wday.old$txz`;
-}
-if ( -e "$PATHbackup/$Server_name$all$wday$tar" ) {
-	if ($DBX) {print "mv $PATHbackup/$Server_name$all$wday$tar $PATHbackup/$Server_name$all$wday.old$tar\n";}
-	`mv $PATHbackup/$Server_name$all$wday$tar $PATHbackup/$Server_name$all$wday.old$tar`;
-}
-
 ### PUT EVERYTHING TOGETHER TO BE COMPRESSED ###
-if ($DBX) {print "$tarbin -Jcf $TEMPpathComp/$Server_name$all$wday-$kw$tar $TEMPpath\n";}
-`$tarbin -cf $TEMPpathComp/$Server_name$all$wday-$kw$tar $TEMPpath`;
+if ($DBX) {print "$tarbin -Jcf $TEMPpathComp/$Server_name$all$DateTag$tar $TEMPpath\n";}
+`$tarbin -cf $TEMPpathComp/$Server_name$all$DateTag$tar $TEMPpath`;
 
 ### Copy to ArchivePath ###
-if ($DBX) {print "cp $TEMPpathComp/$Server_name$all$wday-$kw$tar $PATHbackup/\n";}
-`cp $TEMPpathComp/$Server_name$all$wday-$kw$tar $PATHbackup/`;
+if ($DBX) {print "cp $TEMPpathComp/$Server_name$all$DateTag$tar $PATHbackup/\n";}
+`cp $TEMPpathComp/$Server_name$all$DateTag$tar $PATHbackup/`;
 
 ### Move to LocalPath ###
 if($LOCALpath) {
-	if ($DBX) {print "mv -f $TEMPpathComp/$Server_name$all$wday-$kw$tar $LOCALpath/\n";}
-	`mv -f $TEMPpathComp/$Server_name$all$wday-$kw$tar $LOCALpath/`;
+	if ($DBX) {print "mv -f $TEMPpathComp/$Server_name$all$DateTag$tar $LOCALpath/\n";}
+	`mv -f $TEMPpathComp/$Server_name$all$DateTag$tar $LOCALpath/`;
 }
 
 
@@ -668,14 +634,14 @@ if ($FTPBACKUP_enable > 0) {
 	$ftp->login("$FTPBACKUP_user","$FTPBACKUP_pass");
 	$ftp->cwd("$FTPBACKUP_dir");
 	$ftp->binary();
-	$ftp->put("$TEMPpathComp/$Server_name$all$wday-$kw$tar", "$Server_name$all$wday-$kw$tar");
+	$ftp->put("$TEMPpathComp/$Server_name$all$DateTag$tar", "$Server_name$all$DateTag$tar");
 	$ftp->quit;
 }
 
 # remove temp tar file
-if ( -e "$TEMPpathComp/$Server_name$all$wday-$kw$tar") {
-	if ($DBX) {print "rm -f $TEMPpathComp/$Server_name$all$wday-$kw$tar\n";}
-	`rm -f $TEMPpathComp/$Server_name$all$wday-$kw$tar`;
+if ( -e "$TEMPpathComp/$Server_name$all$DateTag$tar") {
+	if ($DBX) {print "rm -f $TEMPpathComp/$Server_name$all$DateTag$tar\n";}
+	`rm -f $TEMPpathComp/$Server_name$all$DateTag$tar`;
 }
 
 ### calculate time to run script ###
