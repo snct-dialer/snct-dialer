@@ -71,9 +71,11 @@ else
 	$WeBServeRRooT = '/usr/local/apache2/htdocs';
 	}
 
-
-require_once("../tools/system_wide_settings.php");
-
+if (file_exists("../tools/system_wide_settings.php")) {
+	require_once("../tools/system_wide_settings.php");
+} else {
+	require_once("/var/www/html/tools/system_wide_settings.php");
+}
 
 $server_string = $VARDB_server;
 if ( ($use_slave_server > 0) and (strlen($slave_db_server)>1) )

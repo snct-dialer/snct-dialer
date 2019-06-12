@@ -204,6 +204,8 @@
           archive file name.
     * Change new config dir and name:
       - Update: install.pl
+    * Fix path to tools/system_wide_settings.php:
+      - Update www/vicidial/dbconnect_mysqli.php.
 
 2.26.29
   [Jörg Frings-Fürst]
