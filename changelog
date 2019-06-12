@@ -202,6 +202,8 @@
     * Change backup:
       - Update bin/ADMIN_backup_ng.pl (V3.1.3) : Use YYYY-MM-DD[-HH] for
           archive file name.
+    * Change new config dir and name:
+      - Update: install.pl
 
 2.26.29
   [Jörg Frings-Fürst]

@@ -55,7 +55,7 @@
 # default path to astguiclient configuration file:
 $defaultPATHconf =		'/etc/astguiclient.conf';
 $PATHconf =		$defaultPATHconf;
-$defaultPATHconfNew =		'/etc/flyingpenguin/vicidial.conf';
+$defaultPATHconfNew =		'/etc/snct-dialer/snct-dialer.conf';
 $PATHconfNew =		$defaultPATHconfNew;
 $defaultPATHmasterConf = 	'extras/master.conf';
 $PATHmasterConf =	$defaultPATHmasterConf;
@@ -2471,7 +2471,7 @@ close(conf);
 
 print "Writing to configuration file: $PATHconfNew\n";
 
-if (!-e "/etc/flyingpenguin")	{`mkdir -p "/etc/flyingpenguin"`;}
+if (!-e "/etc/snct-dialer")	{`mkdir -p "/etc/snct-dialer"`;}
 if (!-e $PATHconfNew)	{`cp $PATHmasterConf  $PATHconfNew`}
 
 use Config::IniFiles;
