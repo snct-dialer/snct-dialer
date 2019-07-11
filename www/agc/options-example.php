@@ -84,5 +84,6 @@ $INSERT_first_onload	= '';	# inserted at the beginning of the first section of t
 $INSERT_window_onload	= '';	# inserted at the end of the onload function
 $INSERT_agent_events	= '';	# inserted within the agent_events function
 
+$OnlyInbounds = 0; # Used in vdc_db_query to display only AGENTDIRECT inbounds in call log
 
 ?>

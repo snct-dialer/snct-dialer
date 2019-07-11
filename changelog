@@ -213,6 +213,9 @@
           www/vicidial/options-example.php.
     * Remove sound_server URL tests:
       - Update www/vicidial/audio_store.php
+    * Call Log display only agent inbounds (Use $OnlyInbounds from options.php):
+      - Update www/agc/options-example.php,
+         www/agc/vdc_db_query.php.
     * Change next release to 3.0.1.
 
 2.26.29
