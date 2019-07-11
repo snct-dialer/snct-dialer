@@ -801,7 +801,9 @@ if (isset($_GET["OnlyInbounds"]))				{$OnlyInbounds=$_GET["OnlyInbounds"];}
 
 require_once("../tools/system_wide_settings.php");
 
-require_once("options.php");
+if(file_exists("options.php")) {
+	require_once("options.php");
+}
 
 header ("Content-type: text/html; charset=utf-8");
 header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
