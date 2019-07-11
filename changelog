@@ -1,4 +1,4 @@
-2.26.30
+3.0.1
   [Jörg Frings-Fürst]
     * Add upstream Rev. 3079:
       - Update: www/vicidial/admin.php,
@@ -206,6 +206,14 @@
       - Update: install.pl
     * Fix path to tools/system_wide_settings.php:
       - Update www/vicidial/dbconnect_mysqli.php.
+    * Fix agent_disable_[alt_dial|manual]:
+      - Update: www/agc/vicidial.php.
+    * Allow display all Inbounds if Campaigns are selected at RTV:
+      - Update www/vicidial/AST_timeonVDADall.php,
+          www/vicidial/options-example.php.
+    * Remove sound_server URL tests:
+      - Update www/vicidial/audio_store.php
+    * Change next release to 3.0.1.
 
 2.26.29
   [Jörg Frings-Fürst]

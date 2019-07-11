@@ -112,4 +112,7 @@ $graph_canvas_size=600;
 # enable the leadloader's duplicate-with-status-mismatch setting
 $enable_status_mismatch_leadloader_option=0;
 
+# on RealtimeReport display all Inbounds if selected Campaignes
+$displayAllInbound = 'Y';
+
 ?>

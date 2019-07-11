@@ -2269,6 +2269,10 @@ if ( ($with_inbound != 'O') and ($NOLEADSalert == 'YES') )
 ###################################################################################
 if ($campaign_allow_inbound > 0)
 	{
+		if($displayAllInbound == 'Y') { 
+			$org_group_string = $group_string;
+			$group_string = "ALL-ACTIVE";
+		}
 	if (preg_match('/ALL\-ACTIVE/i',$group_string)) 
 		{
 		$stmt="SELECT closer_campaigns from vicidial_campaigns where active='Y' $group_SQLand";
@@ -2301,6 +2305,9 @@ if ($campaign_allow_inbound > 0)
 	$closer_campaignsSQL=preg_replace('/,$/', '', $closer_campaignsSQL);
 	
 	$stmtB="from vicidial_auto_calls where status NOT IN('XFER') and ( (call_type='IN' and campaign_id IN($closer_campaignsSQL)) or (call_type IN('OUT','OUTBALANCE') $group_SQLand) ) order by queue_priority desc,campaign_id,call_time;";
+	if($displayAllInbound == 'Y') {
+		$group_string = $org_group_string;
+	}
 	}
 else
 	{

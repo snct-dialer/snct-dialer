@@ -18168,7 +18168,7 @@ function CallViewLogInbounds() {
 			if (allow_alerts < 1)
 				{hideDiv('AgentAlertSpan');}
 		//	if ( (agentcall_manual != '1') && (starting_dial_level > 0) )
-			if ((agentcall_manual != '1') || (agent_disable_manual = 1))
+			if ((agentcall_manual != '1') || (agent_disable_manual == '1'))
 				{hideDiv('ManuaLDiaLButtons');}
 			if (agent_call_log_view != '1')
 				{
@@ -18181,7 +18181,7 @@ function CallViewLogInbounds() {
 				{hideDiv('AgentStatusSpan');}
 			if ( ( (auto_dial_level > 0) && (dial_method != "INBOUND_MAN") ) || (manual_dial_preview < 1) )
 				{clearDiv('DiaLLeaDPrevieW');}
-			if ((alt_phone_dialing != 1) || (agent_disable_alt_dial = 1))
+			if ((alt_phone_dialing != '1') || (agent_disable_alt_dial == '1'))
 				{clearDiv('DiaLDiaLAltPhonE');}
 			if (pause_after_next_call != 'ENABLED')
 				{clearDiv('NexTCalLPausE');}

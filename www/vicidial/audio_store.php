@@ -102,11 +102,10 @@ if ($ss_conf_ct > 0)
 
 
 ### check if sounds server matches this server IP, if not then exit with an error
-if ( ( ( (strlen($sounds_web_server)) != (strlen($server_name)) ) or (!preg_match("/$sounds_web_server/i",$server_name) ) ) and ($force_allow!='FORCED') )
-	{
+if ( strlen($sounds_web_server) == 0) {
 	echo _QXZ("ERROR").": "._QXZ("server")."($server_name) "._QXZ("does not match sounds web server ip")."($sounds_web_server)\n";
 	exit;
-	}
+}
 
 if (preg_match("/;|:|\/|\^|\[|\]|\"|\'|\*/",$AF_orig))
 	{
