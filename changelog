@@ -216,6 +216,10 @@
     * Call Log display only agent inbounds (Use $OnlyInbounds from options.php):
       - Update www/agc/options-example.php,
          www/agc/vdc_db_query.php.
+    * Display "LIVE" and "ACTIVE" callbacks in the agent callbacks list if
+      "Scheduled Callbacks Display Days" is negative:
+      - Update: www/agc/vdc_db_query.php,
+          www/vicidial/help_documentation.txt.
     * Change next release to 3.0.1.
 
 2.26.29

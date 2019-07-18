@@ -17449,9 +17449,7 @@ if ($ACTION == 'CalLBacKLisT')
 			}
 		$statusSQL = "and status = \"LIVE\"";
 		if($callback_display_days < 0) {
-			if($callback_count == "ALL_ACTIVE") {
-				$statusSQL = "AND status IN (\"LIVE\", \"ACTIVE\")";
-			}
+			$statusSQL = "AND status IN (\"LIVE\", \"ACTIVE\")";
 			$callback_display_days *= (-1);
 		}
 		if ($callback_display_days > 0)
