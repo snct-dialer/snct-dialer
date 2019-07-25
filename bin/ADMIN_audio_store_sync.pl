@@ -10,6 +10,8 @@
 #
 # Copyright (C) 2015  Matt Florell <vicidial@gmail.com>
 # Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+# Copyright (©) 2019      SNCT GmbH <info@snct-gmbh.de>
+# Copyright (©) 2017-2019 Jörg Frings-Fürst <open_source@jff-email.de>
 #   
 
 # CHANGELOG
@@ -24,8 +26,8 @@
 # 141125-1555 - Added audio_store_details audio file info gathering and DB population
 # 150712-2210 - Added touch of conf files to Asterisk will notice changes
 # 180616-1825 - Add sniplet into perl scripts to run only once a time
+# 190725-1321 - Use only https without certcheck
 #
-
 
 ###### Test that the script is running only once a time
 use Fcntl qw(:flock);
@@ -303,7 +305,7 @@ else
 	}
 
 
-$URL = "http://$sounds_web_server/$admin_web_directory/audio_store.php?action=LIST&audio_server_ip=$VARserver_ip";
+$URL = "https://$sounds_web_server/$admin_web_directory/audio_store.php?action=LIST&audio_server_ip=$VARserver_ip";
 
 $URL =~ s/&/\\&/gi;
 if ($DB) 
@@ -354,7 +356,7 @@ while ($i <= $#list)
 
 	if ( ($found_file < 1) || ($force_download > 0) )
 		{
-		`$wgetbin -q --output-document=$PATHsounds/$filename http://$sounds_web_server/$web_prefix$sounds_web_directory/$filename`;
+		`$wgetbin -q --no-check-certificate --output-document=$PATHsounds/$filename https://$sounds_web_server/$web_prefix$sounds_web_directory/$filename`;
 		$event_string = "DOWNLOADING: $filename     $filesize";
 		if ($DB > 0) {print "          $event_string\n";}
 		&event_logger;
@@ -428,7 +430,7 @@ if ($upload > 0)
 
 			if ( ($found_file < 1) || ($force_upload > 0) )
 				{
-				$curloptions = "-s 'http://$sounds_web_server/$admin_web_directory/audio_store.php?action=AUTOUPLOAD&audio_server_ip=$VARserver_ip' -F \"audiofile=\@$PATHsounds/$soundname\"";
+				$curloptions = "-sk 'https://$sounds_web_server/$admin_web_directory/audio_store.php?action=AUTOUPLOAD&audio_server_ip=$VARserver_ip' -F \"audiofile=\@$PATHsounds/$soundname\"";
 				`$curlbin $curloptions`;
 				$event_string = "UPLOADING: $soundname     $soundsize";
 				if ($DB > 0) {print "          $event_string\n|$curlbin $curloptions|\n";}

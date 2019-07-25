@@ -220,6 +220,8 @@
       "Scheduled Callbacks Display Days" is negative:
       - Update: www/agc/vdc_db_query.php,
           www/vicidial/help_documentation.txt.
+    * Fix error on sync audiostore if only https is available:
+      - Update bin/ADMIN_audio_store_sync.pl.
     * Change next release to 3.0.1.
 
 2.26.29
