@@ -222,6 +222,14 @@
           www/vicidial/help_documentation.txt.
     * Fix error on sync audiostore if only https is available:
       - Update bin/ADMIN_audio_store_sync.pl.
+    * Fix some php issues: 
+      - Update www/agc/vicidial.php,
+          www/vicidial/AST_rt_whiteboard_rpt.php,
+          www/vicidial/AST_rt_whiteboard_rpt_mobile.php,
+          www/vicidial/AST_stat_agent1.php,
+          www/vicidial/AST_stat_callbacks.php,
+          www/vicidial/AST_stat_usergroup.php,
+          www/vicidial/WallBoard3.php.
     * Change next release to 3.0.1.
 
 2.26.29

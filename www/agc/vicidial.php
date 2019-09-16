@@ -4172,7 +4172,7 @@ while ($CINC < 12)
 					$live_days++;
 					}
 				# Add holiday colors
-				$tDate = $CYyear . "-" . $Cmonth . "-" . $Cdayarray[mday];
+				$tDate = $CYyear . "-" . $Cmonth . "-" . $Cdayarray['mday'];
 				$bkCol = "$CDCLR";
 				$FTErg = GetHoliday($tDate);
 				if(($FTErg != 'false') && ($FTErg != '')) {
