@@ -230,6 +230,8 @@
           www/vicidial/AST_stat_callbacks.php,
           www/vicidial/AST_stat_usergroup.php,
           www/vicidial/WallBoard3.php.
+    * Fix issue VD-0001184:
+      - Update www/agc/vdc_db_query.db.
     * Change next release to 3.0.1.
 
 2.26.29

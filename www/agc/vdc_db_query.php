@@ -17469,6 +17469,16 @@ if ($ACTION == 'CalLBacKLisT')
 	if ($rslt) {$callbacks_count = mysqli_num_rows($rslt);}
 	echo "$callbacks_count\n";
 	$loop_count=0;
+	$callback_id = array();
+	$lead_id = array();
+	$campaign_id = array();
+	$status = array();
+	$entry_time = array();
+	$callback_time = array();
+	$comments = array();
+	$customer_timezone = array();
+	$customer_time = array();
+	$customer_timezone_diff = array();
 	while ($callbacks_count>$loop_count)
 		{
 		$row=mysqli_fetch_row($rslt);
