@@ -13301,7 +13301,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 
 // ################################################################################
-// Update vicidial_list lead record with all altered values from form
+// Send ticketmail
 	function MailCustomerData(commitclick) {
 
 		if (commitclick=='YES')
@@ -13310,6 +13310,8 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 		var uri = "---------------------------------------\n";
 		uri += "Lead ID = "  + encodeURIComponent(document.vicidial_form.lead_id.value) + "\n";
 		uri += "Comments = " + document.vicidial_form.comments.value + "\n";
+		uri += "Agent = " + user + "\n";
+		uri += "Phone = " + phone_login  "\n";
 		uri += "---------------------------------------\n\n\n";
 		var MailText = encodeURI(uri);
 
