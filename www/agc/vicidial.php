@@ -632,10 +632,11 @@
 # 190529-2144 - Fix for shift enforcement dispo-call-url issue
 # 190617-1116 - Fix for script variable issue
 # 190627-2134 - Added new options for campaign agent_screen_time_display feature
+# 190723-1655 - Fix for script tab custom fields
 #
 
-$version = '2.14-583c';
-$build = '190627-2134';
+$version = '2.14-584c';
+$build = '190723-1655';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -15986,8 +15987,6 @@ else
 		"&web_vars=" + LIVE_web_vars + '' +
 		webform_session;
 
-		SCRIPTweb_form_vars = web_form_varsX;
-
 		if (custom_field_names.length > 2)
 			{
 			var url_custom_field='';
@@ -16010,6 +16009,8 @@ else
 			web_form_varsX = web_form_varsX + '' + url_custom_field;
 			scriptformat='YES';
 			}
+
+		SCRIPTweb_form_vars = web_form_varsX;
 
 		web_form_varsX = web_form_varsX.replace(RGplus, '+');
 		web_form_varsX = web_form_varsX.replace(RGnl, '+');
@@ -16121,6 +16122,11 @@ else
 				CFN_tick++;
 				}
 //			document.getElementById("debugbottomspan").innerHTML = CFN_debug;
+			}
+
+		if (custom_field_names.length > 2)
+			{
+			SCRIPTweb_form_vars = web_form_varsX;
 			}
 
 		if (webformnumber == '1')

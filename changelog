@@ -306,7 +306,9 @@
       - Update: www/agc/vdc_db_query.php,
           www/vicidial/admin.php,
           www/vicidial/help_documentation.txt: Added ENABLED_EXTENDED_RANGE
-            Agent Screen Time Display option. 
+            Agent Screen Time Display option.
+    * Add upstream Rev. 3128:
+      - Update: www/agc/vicidial.php: Fix for script tab custom fields.
     * Change next release to 3.0.1.
 
 2.26.29
