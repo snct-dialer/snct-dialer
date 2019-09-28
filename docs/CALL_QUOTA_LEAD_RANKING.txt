@@ -122,6 +122,7 @@ TIPS & SUGGESTIONS:
 - Do not change your sessions after you have started calling on your campaign
 - Keep less than 400,000 leads in the lists of a single campaign. Move your unused lists to an inactive campaign
 - When you start a brand-new campaign, you will have to dial only NEW leads, but after the first day, you should remove NEW from your campaign dialing statuses and use the Call Quota "new_shuffle" setting to shuffle in NEW leads instead. As your campaign progresses, you should be able to change new_shuffle from 2 down to 4, 5 or 6.
+- To ensure that leads with a negative rank are not called, you may want to create a Filter in the system with a Filter SQL of "(rank > 0)" and enable it for your campaign. This will help to ensure that unranked leads are not dialed. If you insert NEW leads with no rank, you will want to change this to use "(rank >= 0)".
 
 
 

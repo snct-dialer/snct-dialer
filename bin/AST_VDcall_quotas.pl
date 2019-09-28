@@ -378,7 +378,7 @@ if ($populate_call_quota_logs > 0)
 				$lead_ct=0;
 				while ($sthArowsLEADS > $lead_ct)
 					{
-					$stmtA = "SELECT call_date,UNIX_TIMESTAMP(call_date) from vicidial_dial_log where lead_id='$LEADlead_id[$lead_ct]' and call_date >= \"$SVSQLdate\" order by call_date limit 1000;";
+					$stmtA = "SELECT call_date,UNIX_TIMESTAMP(call_date) from vicidial_dial_log where lead_id='$LEADlead_id[$lead_ct]' and call_date >= \"$SVSQLdate\" and uniqueid !='' order by call_date limit 1000;";
 					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 					$sthArowsCALLS=$sthA->rows;
