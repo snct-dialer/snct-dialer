@@ -563,7 +563,8 @@ ALTER TABLE contact_information ADD cell_num_phone_code VARCHAR(10) COLLATE utf8
 ALTER TABLE contact_information ADD other_num1_phone_code VARCHAR(10) COLLATE utf8_unicode_ci DEFAULT '';
 ALTER TABLE contact_information ADD other_num2_phone_code VARCHAR(10) COLLATE utf8_unicode_ci DEFAULT '';
 
-ALTER TABLE vicidial_campaigns ADD agent_screen_time_display ENUM('DISABLED','ENABLED_BASIC','ENABLED_FULL','ENABLED_BILL_BREAK_LUNCH_COACH') default 'DISABLED';
+ALTER TABLE vicidial_campaigns ADD agent_screen_time_display VARCHAR(40) default 'DISABLED';
+
 ALTER TABLE vicidial_campaigns MODIFY get_call_launch ENUM('NONE','SCRIPT','WEBFORM','WEBFORMTWO','WEBFORMTHREE','FORM','PREVIEW_WEBFORM','PREVIEW_WEBFORMTWO','PREVIEW_WEBFORMTHREE') default 'NONE';
 
 UPDATE system_settings SET db_schema_version='1528',db_schema_update_date=NOW() where db_schema_version < 1528;
@@ -1030,3 +1031,9 @@ CREATE TABLE vicidial_log_extended_sip_archive LIKE vicidial_log_extended_sip;
 CREATE UNIQUE INDEX vlesa on vicidial_log_extended_sip_archive (caller_code,call_date);
 
 UPDATE system_settings SET db_schema_version='1571',db_schema_update_date=NOW() where db_schema_version < 1571;
+
+CREATE INDEX vicidial_email_xfer_key on vicidial_email_list (xfercallid);
+
+ALTER TABLE vicidial_campaigns MODIFY agent_screen_time_display VARCHAR(40) default 'DISABLED';
+
+UPDATE system_settings SET db_schema_version='1572',db_schema_update_date=NOW() where db_schema_version < 1572;

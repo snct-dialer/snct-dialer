@@ -4635,12 +4635,13 @@ else
 # 190530-1014 - Added list_status_modification_confirmation feature
 # 190530-1715 - Added sip_event_logging system setting
 # 190607-1525 - Added SIP Event Report link
+# 190627-1528 - Added new options for campaign agent_screen_time_display setting
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-711a';
-$build = '190607-1525';
+$admin_version = '2.14-712a';
+$build = '190627-1528';
 
 
 $STARTtime = date("U");
@@ -23756,7 +23757,7 @@ if ($ADD==31)
 
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Agent Display Fields").": </td><td align=left><input type=text name=agent_display_fields size=60 maxlength=100 value=\"$agent_display_fields\">$NWB#campaigns-agent_display_fields$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Agent Screen Time Display").": </td><td align=left><select size=1 name=agent_screen_time_display><option value='DISABLED'>"._QXZ("DISABLED")."</option><option value='ENABLED_BASIC'>"._QXZ("ENABLED_BASIC")."</option><option value='ENABLED_FULL'>"._QXZ("ENABLED_FULL")."</option><option value='ENABLED_BILL_BREAK_LUNCH_COACH'>"._QXZ("ENABLED_BILL_BREAK_LUNCH_COACH")."</option><option value='$agent_screen_time_display' SELECTED>"._QXZ("$agent_screen_time_display")."</option></select>$NWB#campaigns-agent_screen_time_display$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Agent Screen Time Display").": </td><td align=left><select size=1 name=agent_screen_time_display><option value='DISABLED'>"._QXZ("DISABLED")."</option><option value='ENABLED_BASIC'>"._QXZ("ENABLED_BASIC")."</option><option value='ENABLED_FULL'>"._QXZ("ENABLED_FULL")."</option><option value='ENABLED_BILL_BREAK_LUNCH_COACH'>"._QXZ("ENABLED_BILL_BREAK_LUNCH_COACH")."</option><option value='ENABLED_BASIC_RANGE'>"._QXZ("ENABLED_BASIC_RANGE")."</option><option value='ENABLED_FULL_RANGE'>"._QXZ("ENABLED_FULL_RANGE")."</option><option value='ENABLED_BILL_BREAK_LUNCH_COACH_RANGE'>"._QXZ("ENABLED_BILL_BREAK_LUNCH_COACH_RANGE")."</option><option value='$agent_screen_time_display' SELECTED>"._QXZ("$agent_screen_time_display")."</option></select>$NWB#campaigns-agent_screen_time_display$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Agent Display Queue Count").": </td><td align=left><select size=1 name=display_queue_count><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='$display_queue_count' SELECTED>"._QXZ("$display_queue_count")."</option></select>$NWB#campaigns-display_queue_count$NWE</td></tr>\n";
 

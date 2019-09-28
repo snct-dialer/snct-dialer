@@ -248,7 +248,19 @@
       - Update: changelog,
           www/agc/vicidial.php: Fix for script variable issue.
     * Add upstream Rev. 3114:
-      - New: www/vicidial/TCPAlitigatorlist_inbound_filter.php: 
+      - New: www/vicidial/TCPAlitigatorlist_inbound_filter.php:
+    * Add upstream Rev. 3115:
+      - Update: bin/FastAGI_log.pl,
+          extras/MySQL_AST_CREATE_tables.sql,
+          extras/mysql_update/mysql-1567.sql,
+          extras/upgrade_2.14.sql,
+          www/agc/vdc_db_query.php,
+          www/agc/vicidial.php,
+          www/vicidial/AST_agent_time_detail.php,
+          www/vicidial/admin.php,
+          www/vicidial/help_documentation.txt: Added more logging for
+            Auto-Alt-Dial debug; Added new options for campaign
+            agent_screen_time_display feature.
     * Change next release to 3.0.1.
 
 2.26.29
