@@ -317,6 +317,11 @@
           www/vicidial/admin.php,
           www/vicidial/help_documentation.txt: Added sip_event_logging
             campaign actions.
+    * Add upstream Rev. 3130:
+      - Update: docs/SIP_EVENT_LOGGING.txt,
+          www/agc/conf_exten_check.php,
+          www/agc/vdc_db_query.php,
+          www/agc/vicidial.php: Added campaign SIP Actions processing.
     * Change next release to 3.0.1.
 
 2.26.29
