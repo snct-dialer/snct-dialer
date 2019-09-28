@@ -102,6 +102,7 @@
 # 180903-1606 - Added count for waiting emails to calls_in_queue_count function
 # 180908-1433 - Added force_fronter_leave_3way function
 # 190222-1152 - Added force_fronter_audio_stop function
+# 190901-0952 - Added cid_choice option to transfer_conference function
 #
 
 
@@ -111,8 +112,8 @@
 # 2019-04-29 10:25 Add system_wide_settings.php
 #
 
-$version = '2.14-64';
-$build = '190222-1152';
+$version = '2.14-65';
+$build = '190901-0952';
 
 $startMS = microtime();
 
@@ -255,7 +256,8 @@ if (isset($_GET["agent_debug"]))			{$agent_debug=$_GET["agent_debug"];}
 	elseif (isset($_POST["agent_debug"]))	{$agent_debug=$_POST["agent_debug"];}
 if (isset($_GET["dial_ingroup"]))			{$dial_ingroup=$_GET["dial_ingroup"];}
 	elseif (isset($_POST["dial_ingroup"]))	{$dial_ingroup=$_POST["dial_ingroup"];}
-
+if (isset($_GET["cid_choice"]))				{$cid_choice=$_GET["cid_choice"];}
+	elseif (isset($_POST["cid_choice"]))	{$cid_choice=$_POST["cid_choice"];}
 
 
 require_once("../tools/system_wide_settings.php");
@@ -383,6 +385,7 @@ if ($non_latin < 1)
 	$agent_debug = preg_replace("/[^- \.\:\|\_0-9a-zA-Z]/","",$agent_debug);
 	$status = preg_replace("/[^-\_0-9a-zA-Z]/","",$status);
 	$dial_ingroup = preg_replace("/[^-\_0-9a-zA-Z]/","",$dial_ingroup);
+	$cid_choice = preg_replace("/[^-\_0-9a-zA-Z]/","",$cid_choice);
 	}
 else
 	{
@@ -3740,8 +3743,20 @@ if ($function == 'transfer_conference')
 									exit;
 									}
 								}
+							if (strlen($cid_choice)>1)
+								{
+								if (!preg_match("/CAMPAIGN|AGENT_PHONE|CUSTOMER|CUSTOM_CID/",$cid_choice))
+									{
+									$result = _QXZ("ERROR");
+									$result_reason = _QXZ("cid_choice is not valid");
+									$data = "$cid_choice";
+									echo "$result: $result_reason - $agent_user|$data\n";
+									api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+									exit;
+									}
+								}
 
-							$external_transferconf = "$value---$ingroup_choices---$phone_number---$consultative------$group_alias---$caller_id_number---$epoch";
+							$external_transferconf = "$value---$ingroup_choices---$phone_number---$consultative------$group_alias---$caller_id_number---$epoch---$cid_choice";
 							}
 						}
 					}
@@ -3781,9 +3796,20 @@ if ($function == 'transfer_conference')
 							exit;
 							}
 						}
-
+					if (strlen($cid_choice)>1)
+						{
+						if (!preg_match("/CAMPAIGN|AGENT_PHONE|CUSTOMER|CUSTOM_CID/",$cid_choice))
+							{
+							$result = _QXZ("ERROR");
+							$result_reason = _QXZ("cid_choice is not valid");
+							$data = "$cid_choice";
+							echo "$result: $result_reason - $agent_user|$data\n";
+							api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+							exit;
+							}
+						}
 					$processed++;
-					$external_transferconf = "$value------$phone_number---NO---$dial_override---$group_alias---$caller_id_number---$epoch";
+					$external_transferconf = "$value------$phone_number---NO---$dial_override---$group_alias---$caller_id_number---$epoch---$cid_choice";
 					$SUCCESS++;
 					}
 
@@ -3816,6 +3842,7 @@ if ($function == 'transfer_conference')
 						{
 						$stmt="UPDATE vicidial_live_agents set external_transferconf='$external_transferconf' where user='$agent_user';";
 							if ($format=='debug') {echo "\n<!-- $stmt -->";}
+						if ($DB) {echo "$stmt\n";}
 						$rslt=mysql_to_mysqli($stmt, $link);
 						$result = _QXZ("SUCCESS");
 						$result_reason = _QXZ("transfer_conference function set");

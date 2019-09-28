@@ -634,10 +634,11 @@
 # 190627-2134 - Added new options for campaign agent_screen_time_display feature
 # 190723-1655 - Fix for script tab custom fields
 # 190730-0925 - Added campaign SIP Actions processing
+# 190901-0956 - Added cid_choice option to API transfer_conference function
 #
 
-$version = '2.14-585c';
-$build = '190730-0925';
+$version = '2.14-586c';
+$build = '190901-0956';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -4568,6 +4569,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var use_internal_dnc = '<?php echo $use_internal_dnc ?>';
 	var use_campaign_dnc = '<?php echo $use_campaign_dnc ?>';
 	var three_way_call_cid = '<?php echo $three_way_call_cid ?>';
+	var orig_three_way_call_cid = '<?php echo $three_way_call_cid ?>';
 	var outbound_cid = '<?php echo $outbound_cid ?>';
 	var threeway_cid = '';
 	var cid_choice = '';
@@ -4741,6 +4743,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var api_transferconf_override='';
 	var api_transferconf_group_alias='';
 	var api_transferconf_cid_number='';
+	var api_transferconf_cid_choice='';
 	var api_parkcustomer='';
 	var API_selected_xfergroup='';
 	var API_selected_callmenu='';
@@ -5759,6 +5762,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		//	CalL_ScripT_color='';
 			call_variables='';
 			xfer_agent_selected=0;
+			three_way_call_cid = orig_three_way_call_cid;
 			}
 		}
 
@@ -6063,6 +6067,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						api_transferconf_override = api_transferconf_values_array[4];
 						api_transferconf_group_alias = api_transferconf_values_array[5];
 						api_transferconf_cid_number = api_transferconf_values_array[6];
+						api_transferconf_cid_choice = api_transferconf_values_array[8];
 						var APIpark_array = check_time_array[22].split("APIpark: ");
 						api_parkcustomer = APIpark_array[1];
 
@@ -6202,7 +6207,8 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 										document.vicidial_form.xfernumber.value = api_transferconf_number;
 										active_group_alias = api_transferconf_group_alias;
 										cid_choice = api_transferconf_cid_number;
-										SendManualDial('YES');
+										if (api_transferconf_cid_choice.length > 3) {three_way_call_cid = api_transferconf_cid_choice;}
+										SendManualDial('YES','YES');
 										}
 									if (api_transferconf_function == 'PARK_CUSTOMER_DIAL')
 										{
@@ -10370,6 +10376,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 				manual_entry_dial=0;
 				SCRIPTweb_form_vars='';
 				MDcheck_for_answer=0;
+				three_way_call_cid = orig_three_way_call_cid;
 				if (manual_dial_preview < 1)
 					{
 					document.vicidial_form.LeadPreview.checked=false;
@@ -10681,6 +10688,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 			//	CalL_ScripT_id='';
 			//	CalL_ScripT_color='';
 				xfer_agent_selected=0;
+				three_way_call_cid = orig_three_way_call_cid;
 				}
 			}
 		}
@@ -14379,6 +14387,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 					manual_entry_dial=0;
 					SCRIPTweb_form_vars='';
 					MDcheck_for_answer=0;
+					three_way_call_cid = orig_three_way_call_cid;
 					if (manual_auto_next > 0)
 						{manual_auto_next_trigger=1;   manual_auto_next_count=manual_auto_next;}
 					if (agent_display_fields.match(adfREGentry_date))

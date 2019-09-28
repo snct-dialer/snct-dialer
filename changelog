@@ -332,6 +332,11 @@
           www/vicidial/AST_VDADstats.php: Fixed download archive bug; Added
             bench_agent_assign.php script to allow managers to move
             'owner-assigned' to another agent.
+    * Add upstream Rev. 3132:
+      - Update: docs/AGENT_API.txt,
+          www/agc/api.php,
+          www/agc/vicidial.php: Added cid_choice option to transfer_conference
+            function.
     * Change next release to 3.0.1.
 
 2.26.29
