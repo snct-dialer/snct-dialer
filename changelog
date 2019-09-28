@@ -233,6 +233,11 @@
     * Fix issue VD-0001184:
       - Update www/agc/vdc_db_query.db.
     * Add Phone_login and user to ticketmail.
+    * Add upstream Rev. 3111:
+      - New: www/vicidial/AST_SIP_event_report.php.
+      - Update: docs/SIP_EVENT_LOGGING.txt,
+          www/vicidial/admin.php,
+          www/vicidial/admin_modify_lead.php: Added SIP Event Report.
     * Change next release to 3.0.1.
 
 2.26.29
