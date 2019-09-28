@@ -273,6 +273,12 @@
           function.
     * Add upstream Rev. 3119:
       - Update: www/agc/vdc_db_query.php: Fix date.
+    * Add upstream Rev. 3120:
+      - Update: UPGRADE,
+          docs/NON-AGENT_API.txt,
+          www/vicidial/list_split.php,
+          www/vicidial/non_agent_api.php: Added custom_fields_copy option to
+            add_list function; Added use of admin_web_directory system setting.
     * Change next release to 3.0.1.
 
 2.26.29
