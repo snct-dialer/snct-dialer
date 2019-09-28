@@ -352,6 +352,10 @@
           www/agc/vdc_db_query.php,
           www/agc/vicidial.php: Added campaign SIP Actions processing; Added
             logtable SIP Action.
+    * Add upstream Rev. 3135:
+      - Update: www/vicidial/call_report_export.php,
+          www/vicidial/call_report_export_carrier.php,
+          www/vicidial/lead_report_export.php: Fixes for PHP7.
     * Change next release to 3.0.1.
 
 2.26.29
