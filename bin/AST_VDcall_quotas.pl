@@ -13,6 +13,7 @@
 #
 # CHANGELOG
 # 190705-1353 - First build
+# 190722-1005 - Added more log-audit code and log-fixing
 #
 
 # constants
@@ -307,6 +308,8 @@ if ($populate_call_quota_logs > 0)
 	$update_status_ct=0;
 	$update_session_ct=0;
 	$update_day_ct=0;
+	$skip_dial_log_no_uid=0;
+	$updated_dial_log_no_uid=0;
 
 	# Gather a list of all lists within a campaign
 	$stmtA = "SELECT list_id from vicidial_lists where campaign_id IN('$CLIcampaign');";
@@ -378,7 +381,7 @@ if ($populate_call_quota_logs > 0)
 				$lead_ct=0;
 				while ($sthArowsLEADS > $lead_ct)
 					{
-					$stmtA = "SELECT call_date,UNIX_TIMESTAMP(call_date) from vicidial_dial_log where lead_id='$LEADlead_id[$lead_ct]' and call_date >= \"$SVSQLdate\" and uniqueid !='' order by call_date limit 1000;";
+					$stmtA = "SELECT call_date,UNIX_TIMESTAMP(call_date),uniqueid,caller_code from vicidial_dial_log where lead_id='$LEADlead_id[$lead_ct]' and call_date >= \"$SVSQLdate\" order by call_date limit 1000;";
 					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 					$sthArowsCALLS=$sthA->rows;
@@ -389,9 +392,42 @@ if ($populate_call_quota_logs > 0)
 						@aryA = $sthA->fetchrow_array;
 						$LEADcall_date[$call_ct] = 		$aryA[0];
 						$LEADcall_epoch[$call_ct] = 	$aryA[1];
+						$LEADuniqueid[$call_ct] = 		$aryA[2];
+						$LEADcaller_code[$call_ct] = 	$aryA[3];
 						$call_ct++;
 						}
 					$sthA->finish();
+
+					$call_ct=0;
+					while ($sthArowsCALLS > $call_ct)
+						{
+						if (length($LEADuniqueid[$call_ct]) < 9) 
+							{
+							# Look for extended log from dial log entry with no uniqueid
+							$stmtA = "SELECT uniqueid from vicidial_log_extended where caller_code='$LEADcaller_code[$call_ct]' and lead_id='$LEADlead_id[$lead_ct]';";
+							$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+							$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+							$sthArowsVLEUID=$sthA->rows;
+							if ($DBX > 0) {print "$sthArowsVLEUID|$stmtA\n";}
+							if ($sthArowsVLEUID > 0)
+								{
+								@aryA = $sthA->fetchrow_array;
+								$LEADuniqueid[$call_ct] = 		$aryA[0];
+								}
+							$sthA->finish();
+							if ( ($sthArowsVLEUID > 0) && (length($LEADuniqueid[$call_ct]) >= 9) )
+								{
+								# Update list record with cache counts
+								$stmtA = "UPDATE vicidial_dial_log SET uniqueid='$LEADuniqueid[$call_ct]' where caller_code='$LEADcaller_code[$call_ct]' and lead_id='$LEADlead_id[$lead_ct]' limit 1;";
+								$affected_rows = $dbhA->do($stmtA);
+								if ($DBX) {print "vicidial_dial_log UPDATED: $affected_rows|$stmtA|\n";}
+								$event_string = "--    vicidial_dial_log record updated:   $affected_rows|$stmtA|$update_debug|";   &event_logger;
+								$updated_dial_log_no_uid = ($updated_dial_log_no_uid + $affected_rows);
+								}
+							}
+						$call_ct++;
+						}
+
 					if ($call_ct < 1) 
 						{
 						if ($DBX > 0) {print "NO CALLS FOUND IN THE LAST 7 DAYS ON THIS LEAD: $LEADlead_id[$lead_ct]|$LEADlist_id[$lead_ct]|$call_ct \n";}
@@ -443,70 +479,75 @@ if ($populate_call_quota_logs > 0)
 							$start_day=1;
 							while ($sthArowsCALLS > $call_ct)
 								{
-								@VDLcall_datetimeARY = split(/ /,$LEADcall_date[$call_ct]);
-								@VDLcall_timeARY = split(/:/,$VDLcall_datetimeARY[1]);
-								$VDLcall_hourmin = "$VDLcall_timeARY[0]$VDLcall_timeARY[1]";
-
-								if ( ($session_one_start <= $VDLcall_hourmin) and ($session_one_end > $VDLcall_hourmin) ) {$session_one_calls++;}
-								if ( ($session_two_start <= $VDLcall_hourmin) and ($session_two_end > $VDLcall_hourmin) ) {$session_two_calls++;}
-								if ( ($session_three_start <= $VDLcall_hourmin) and ($session_three_end > $VDLcall_hourmin) ) {$session_three_calls++;}
-								if ( ($session_four_start <= $VDLcall_hourmin) and ($session_four_end > $VDLcall_hourmin) ) {$session_four_calls++;}
-								if ( ($session_five_start <= $VDLcall_hourmin) and ($session_five_end > $VDLcall_hourmin) ) {$session_five_calls++;}
-								if ( ($session_six_start <= $VDLcall_hourmin) and ($session_six_end > $VDLcall_hourmin) ) {$session_six_calls++;}
-
-								$VLCQClast_call_epoch = $LEADcall_epoch[$call_ct];   $VLCQClast_call_date = $LEADcall_date[$call_ct];
-								if ($call_ct < 1) 
+								if (length($LEADuniqueid[$call_ct]) >= 9) 
 									{
-									$VLCQCfirst_call_epoch = $LEADcall_epoch[$call_ct];
-									$VLCQCfirst_call_date = $LEADcall_date[$call_ct];
-									
-									if ($VLCQCfirst_call_epoch >= $today_start_epoch) 
-										{$start_day_epoch=$today_start_epoch;   $start_day=1;}
-									if ( ($VLCQCfirst_call_epoch >= $day_two_start_epoch) and ($VLCQCfirst_call_epoch < $today_start_epoch) ) 
-										{$start_day_epoch=$day_two_start_epoch;   $start_day=2;}
-									if ( ($VLCQCfirst_call_epoch >= $day_three_start_epoch) and ($VLCQCfirst_call_epoch < $day_two_start_epoch) ) 
-										{$start_day_epoch=$day_three_start_epoch;   $start_day=3;}
-									if ( ($VLCQCfirst_call_epoch >= $day_four_start_epoch) and ($VLCQCfirst_call_epoch < $day_three_start_epoch) ) 
-										{$start_day_epoch=$day_four_start_epoch;   $start_day=4;}
-									if ( ($VLCQCfirst_call_epoch >= $day_five_start_epoch) and ($VLCQCfirst_call_epoch < $day_four_start_epoch) ) 
-										{$start_day_epoch=$day_five_start_epoch;   $start_day=5;}
-									if ( ($VLCQCfirst_call_epoch >= $day_six_start_epoch) and ($VLCQCfirst_call_epoch < $day_five_start_epoch) ) 
-										{$start_day_epoch=$day_six_start_epoch;   $start_day=6;}
-									if ( ($VLCQCfirst_call_epoch >= $day_seven_start_epoch) and ($VLCQCfirst_call_epoch < $day_six_start_epoch) ) 
-										{$start_day_epoch=$day_seven_start_epoch;   $start_day=7;}
-									
-									$day_one_calls++;
+									@VDLcall_datetimeARY = split(/ /,$LEADcall_date[$call_ct]);
+									@VDLcall_timeARY = split(/:/,$VDLcall_datetimeARY[1]);
+									$VDLcall_hourmin = "$VDLcall_timeARY[0]$VDLcall_timeARY[1]";
 
-									# calculate back to day 7 starting with day 1 = $start_day_epoch
-									$Sday_two_start_epoch = ($start_day_epoch + (86400 * 1));
-									$Sday_three_start_epoch = ($start_day_epoch + (86400 * 2));
-									$Sday_four_start_epoch = ($start_day_epoch + (86400 * 3));
-									$Sday_five_start_epoch = ($start_day_epoch + (86400 * 4));
-									$Sday_six_start_epoch = ($start_day_epoch + (86400 * 5));
-									$Sday_seven_start_epoch = ($start_day_epoch + (86400 * 6));
-									$Sday_seven_end_epoch = ($start_day_epoch + (86400 * 7));
-									if ($DBX > 0) {print "CQ-Debug 0: $VLCQCfirst_call_date|$start_day|$VLCQCfirst_call_epoch|$start_day_epoch|$Sday_two_start_epoch|$Sday_three_start_epoch|$Sday_four_start_epoch|$Sday_five_start_epoch|$Sday_six_start_epoch|$Sday_seven_start_epoch|\n";}
+									if ( ($session_one_start <= $VDLcall_hourmin) and ($session_one_end > $VDLcall_hourmin) ) {$session_one_calls++;}
+									if ( ($session_two_start <= $VDLcall_hourmin) and ($session_two_end > $VDLcall_hourmin) ) {$session_two_calls++;}
+									if ( ($session_three_start <= $VDLcall_hourmin) and ($session_three_end > $VDLcall_hourmin) ) {$session_three_calls++;}
+									if ( ($session_four_start <= $VDLcall_hourmin) and ($session_four_end > $VDLcall_hourmin) ) {$session_four_calls++;}
+									if ( ($session_five_start <= $VDLcall_hourmin) and ($session_five_end > $VDLcall_hourmin) ) {$session_five_calls++;}
+									if ( ($session_six_start <= $VDLcall_hourmin) and ($session_six_end > $VDLcall_hourmin) ) {$session_six_calls++;}
+
+									$VLCQClast_call_epoch = $LEADcall_epoch[$call_ct];   $VLCQClast_call_date = $LEADcall_date[$call_ct];
+									if ($call_ct < 1) 
+										{
+										$VLCQCfirst_call_epoch = $LEADcall_epoch[$call_ct];
+										$VLCQCfirst_call_date = $LEADcall_date[$call_ct];
+										
+										if ($VLCQCfirst_call_epoch >= $today_start_epoch) 
+											{$start_day_epoch=$today_start_epoch;   $start_day=1;}
+										if ( ($VLCQCfirst_call_epoch >= $day_two_start_epoch) and ($VLCQCfirst_call_epoch < $today_start_epoch) ) 
+											{$start_day_epoch=$day_two_start_epoch;   $start_day=2;}
+										if ( ($VLCQCfirst_call_epoch >= $day_three_start_epoch) and ($VLCQCfirst_call_epoch < $day_two_start_epoch) ) 
+											{$start_day_epoch=$day_three_start_epoch;   $start_day=3;}
+										if ( ($VLCQCfirst_call_epoch >= $day_four_start_epoch) and ($VLCQCfirst_call_epoch < $day_three_start_epoch) ) 
+											{$start_day_epoch=$day_four_start_epoch;   $start_day=4;}
+										if ( ($VLCQCfirst_call_epoch >= $day_five_start_epoch) and ($VLCQCfirst_call_epoch < $day_four_start_epoch) ) 
+											{$start_day_epoch=$day_five_start_epoch;   $start_day=5;}
+										if ( ($VLCQCfirst_call_epoch >= $day_six_start_epoch) and ($VLCQCfirst_call_epoch < $day_five_start_epoch) ) 
+											{$start_day_epoch=$day_six_start_epoch;   $start_day=6;}
+										if ( ($VLCQCfirst_call_epoch >= $day_seven_start_epoch) and ($VLCQCfirst_call_epoch < $day_six_start_epoch) ) 
+											{$start_day_epoch=$day_seven_start_epoch;   $start_day=7;}
+										
+										$day_one_calls++;
+
+										# calculate back to day 7 starting with day 1 = $start_day_epoch
+										$Sday_two_start_epoch = ($start_day_epoch + (86400 * 1));
+										$Sday_three_start_epoch = ($start_day_epoch + (86400 * 2));
+										$Sday_four_start_epoch = ($start_day_epoch + (86400 * 3));
+										$Sday_five_start_epoch = ($start_day_epoch + (86400 * 4));
+										$Sday_six_start_epoch = ($start_day_epoch + (86400 * 5));
+										$Sday_seven_start_epoch = ($start_day_epoch + (86400 * 6));
+										$Sday_seven_end_epoch = ($start_day_epoch + (86400 * 7));
+										if ($DBX > 0) {print "CQ-Debug 0: $VLCQCfirst_call_date|$start_day|$VLCQCfirst_call_epoch|$start_day_epoch|$Sday_two_start_epoch|$Sday_three_start_epoch|$Sday_four_start_epoch|$Sday_five_start_epoch|$Sday_six_start_epoch|$Sday_seven_start_epoch|\n";}
+										}
+									else
+										{
+										if ($DBX > 0) {print "CQ-Debug 1: $call_ct|$VLCQCfirst_call_date|$start_day|$VLCQCfirst_call_epoch|$start_day_epoch(".($LEADcall_epoch[$call_ct]-$start_day_epoch).")|$Sday_two_start_epoch(".($LEADcall_epoch[$call_ct]-$Sday_two_start_epoch).")|$Sday_three_start_epoch(".($LEADcall_epoch[$call_ct]-$Sday_three_start_epoch).")|$Sday_four_start_epoch(".($LEADcall_epoch[$call_ct]-$Sday_four_start_epoch).")|$Sday_five_start_epoch(".($LEADcall_epoch[$call_ct]-$Sday_five_start_epoch).")|$Sday_six_start_epoch(".($LEADcall_epoch[$call_ct]-$Sday_six_start_epoch).")|$Sday_seven_start_epoch(".($LEADcall_epoch[$call_ct]-$Sday_seven_start_epoch).")|$Sday_seven_end_epoch(".($LEADcall_epoch[$call_ct]-$Sday_seven_end_epoch).")|   |$LEADcall_epoch[$call_ct]|\n";}
+										if ( ($LEADcall_epoch[$call_ct] >= $start_day_epoch) && ($LEADcall_epoch[$call_ct] < $Sday_two_start_epoch) ) {$day_one_calls++;}
+										if ( ($LEADcall_epoch[$call_ct] >= $Sday_two_start_epoch) && ($LEADcall_epoch[$call_ct] < $Sday_three_start_epoch) ) {$day_two_calls++;}
+										if ( ($LEADcall_epoch[$call_ct] >= $Sday_three_start_epoch) && ($LEADcall_epoch[$call_ct] < $Sday_four_start_epoch) ) {$day_three_calls++;}
+										if ( ($LEADcall_epoch[$call_ct] >= $Sday_four_start_epoch) && ($LEADcall_epoch[$call_ct] < $Sday_five_start_epoch) ) {$day_four_calls++;}
+										if ( ($LEADcall_epoch[$call_ct] >= $Sday_five_start_epoch) && ($LEADcall_epoch[$call_ct] < $Sday_six_start_epoch) ) {$day_five_calls++;}
+										if ( ($LEADcall_epoch[$call_ct] >= $Sday_six_start_epoch) && ($LEADcall_epoch[$call_ct] < $Sday_seven_start_epoch) ) {$day_six_calls++;}
+										if ( ($LEADcall_epoch[$call_ct] >= $Sday_seven_start_epoch) && ($LEADcall_epoch[$call_ct] < $Sday_seven_end_epoch) ) {$day_seven_calls++;}
+										}
+									if ($LEADcall_epoch[$call_ct] >= $today_start_epoch) 
+										{
+										if ( ($session_one_start <= $VDLcall_hourmin) and ($session_one_end > $VDLcall_hourmin) ) {$session_one_today_calls++;}
+										if ( ($session_two_start <= $VDLcall_hourmin) and ($session_two_end > $VDLcall_hourmin) ) {$session_two_today_calls++;}
+										if ( ($session_three_start <= $VDLcall_hourmin) and ($session_three_end > $VDLcall_hourmin) ) {$session_three_today_calls++;}
+										if ( ($session_four_start <= $VDLcall_hourmin) and ($session_four_end > $VDLcall_hourmin) ) {$session_four_today_calls++;}
+										if ( ($session_five_start <= $VDLcall_hourmin) and ($session_five_end > $VDLcall_hourmin) ) {$session_five_today_calls++;}
+										if ( ($session_six_start <= $VDLcall_hourmin) and ($session_six_end > $VDLcall_hourmin) ) {$session_six_today_calls++;}
+										}
 									}
 								else
-									{
-									if ($DBX > 0) {print "CQ-Debug 1: $call_ct|$VLCQCfirst_call_date|$start_day|$VLCQCfirst_call_epoch|$start_day_epoch(".($LEADcall_epoch[$call_ct]-$start_day_epoch).")|$Sday_two_start_epoch(".($LEADcall_epoch[$call_ct]-$Sday_two_start_epoch).")|$Sday_three_start_epoch(".($LEADcall_epoch[$call_ct]-$Sday_three_start_epoch).")|$Sday_four_start_epoch(".($LEADcall_epoch[$call_ct]-$Sday_four_start_epoch).")|$Sday_five_start_epoch(".($LEADcall_epoch[$call_ct]-$Sday_five_start_epoch).")|$Sday_six_start_epoch(".($LEADcall_epoch[$call_ct]-$Sday_six_start_epoch).")|$Sday_seven_start_epoch(".($LEADcall_epoch[$call_ct]-$Sday_seven_start_epoch).")|$Sday_seven_end_epoch(".($LEADcall_epoch[$call_ct]-$Sday_seven_end_epoch).")|   |$LEADcall_epoch[$call_ct]|\n";}
-									if ( ($LEADcall_epoch[$call_ct] >= $start_day_epoch) && ($LEADcall_epoch[$call_ct] < $Sday_two_start_epoch) ) {$day_one_calls++;}
-									if ( ($LEADcall_epoch[$call_ct] >= $Sday_two_start_epoch) && ($LEADcall_epoch[$call_ct] < $Sday_three_start_epoch) ) {$day_two_calls++;}
-									if ( ($LEADcall_epoch[$call_ct] >= $Sday_three_start_epoch) && ($LEADcall_epoch[$call_ct] < $Sday_four_start_epoch) ) {$day_three_calls++;}
-									if ( ($LEADcall_epoch[$call_ct] >= $Sday_four_start_epoch) && ($LEADcall_epoch[$call_ct] < $Sday_five_start_epoch) ) {$day_four_calls++;}
-									if ( ($LEADcall_epoch[$call_ct] >= $Sday_five_start_epoch) && ($LEADcall_epoch[$call_ct] < $Sday_six_start_epoch) ) {$day_five_calls++;}
-									if ( ($LEADcall_epoch[$call_ct] >= $Sday_six_start_epoch) && ($LEADcall_epoch[$call_ct] < $Sday_seven_start_epoch) ) {$day_six_calls++;}
-									if ( ($LEADcall_epoch[$call_ct] >= $Sday_seven_start_epoch) && ($LEADcall_epoch[$call_ct] < $Sday_seven_end_epoch) ) {$day_seven_calls++;}
-									}
-								if ($LEADcall_epoch[$call_ct] >= $today_start_epoch) 
-									{
-									if ( ($session_one_start <= $VDLcall_hourmin) and ($session_one_end > $VDLcall_hourmin) ) {$session_one_today_calls++;}
-									if ( ($session_two_start <= $VDLcall_hourmin) and ($session_two_end > $VDLcall_hourmin) ) {$session_two_today_calls++;}
-									if ( ($session_three_start <= $VDLcall_hourmin) and ($session_three_end > $VDLcall_hourmin) ) {$session_three_today_calls++;}
-									if ( ($session_four_start <= $VDLcall_hourmin) and ($session_four_end > $VDLcall_hourmin) ) {$session_four_today_calls++;}
-									if ( ($session_five_start <= $VDLcall_hourmin) and ($session_five_end > $VDLcall_hourmin) ) {$session_five_today_calls++;}
-									if ( ($session_six_start <= $VDLcall_hourmin) and ($session_six_end > $VDLcall_hourmin) ) {$session_six_today_calls++;}
-									}
+									{$skip_dial_log_no_uid++;}
 								$call_ct++;
 								$total_call_count++;
 								}
@@ -624,7 +665,7 @@ if ($populate_call_quota_logs > 0)
 						if ($lead_ct =~ /900$/i) {print STDERR "0     $lead_ct / $sthArowsLEADS \r";}
 						if ($lead_ct =~ /0000$/i) 
 							{
-							print "$lead_ct / $sthArowsLEADS   ($log_updated|$log_inserted|   |$LEADlist_id[$lead_ct]|$LEADINFOrank| \n";
+							print "$lead_ct / $sthArowsLEADS   ($log_updated|$log_inserted|$total_call_count|$skip_dial_log_no_uid|$updated_dial_log_no_uid|   |$LEADlist_id[$lead_ct]|$LEADINFOrank| \n";
 							}
 						}
 					}
@@ -639,7 +680,7 @@ if ($populate_call_quota_logs > 0)
 					if ($no_insert_call_quota_logs < 1)	{print "Logs inserted:                   $log_inserted \n";}
 					else								{print "Logs were not inserted:          $log_inserted \n";}
 					print "Total leads:                     $lead_ct \n";
-					print "Total call entries analyzed:     $total_call_count \n";
+					print "Total call entries analyzed:     $total_call_count ($skip_dial_log_no_uid|$updated_dial_log_no_uid) \n";
 					}
 				### END Gather calls for each lead, analyze and update call_quota log record ###
 				}

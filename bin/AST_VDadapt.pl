@@ -50,6 +50,7 @@
 # 180519-2303 - Added Waiting Call On/Off URL feature for in-groups
 # 190216-0809 - Fix for user-group, in-group and campaign allowed/permissions matching issues
 # 190720-2122 - Added audit and fixing of missing outbound auto-dial logs if Call Quotas is enabled
+# 190722-1004 - Added more logging and log-audit portions to Call Quotas log audit code
 #
 
 
@@ -1759,6 +1760,8 @@ while ($master_loop < $CLIloops)
 	if ( ( ($stat_count =~ /30$|80$/) || ($stat_count==1) ) && ($SScall_quota_lead_ranking > 0) )
 		{
 		$audit_inserts=0;
+		$updated_dial_log_no_uid=0;
+		$count_dial_log_no_uid=0;
 
 		$now_epoch = time();
 		$NBtarget = ($now_epoch - 420);
@@ -1783,7 +1786,7 @@ while ($master_loop < $CLIloops)
 		if ($Nsec < 10) {$Nsec = "0$Nsec";}
 			$NEtsSQLdate = "$Nyear-$Nmon-$Nmday $Nhour:$Nmin:$Nsec";
 
-		$stmtA = "SELECT caller_code,lead_id,server_ip,call_date,uniqueid from vicidial_dial_log where call_date > \"$NBtsSQLdate\" and call_date < \"$NEtsSQLdate\" and uniqueid!='';";
+		$stmtA = "SELECT caller_code,lead_id,server_ip,call_date,uniqueid from vicidial_dial_log where call_date > \"$NBtsSQLdate\" and call_date < \"$NEtsSQLdate\";";
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 		$sthArowsMVL=$sthA->rows;
@@ -1808,139 +1811,153 @@ while ($master_loop < $CLIloops)
 			while ($sthArowsMVL > $mvl)
 				{
 				### see if call was logged properly to vicidial_log_extended
-				$VLEcount=0;
-				$stmtA = "SELECT count(*) from vicidial_log_extended where caller_code='$Mcaller_code[$mvl]';";
+				$VLEuniqueid='';
+				$stmtA = "SELECT uniqueid from vicidial_log_extended where caller_code='$Mcaller_code[$mvl]' and lead_id='$Mlead_id[$mvl]';";
 				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 				$sthArowsVLEc=$sthA->rows;
 				if ($sthArowsVLEc > 0)
 					{
 					@aryA = $sthA->fetchrow_array;
-					$VLEcount =	$aryA[0];
+					$VLEuniqueid =	$aryA[0];
 					}
 				$sthA->finish();
+				if ( (length($Muniqueid[$mvl]) < 9) && (length($VLEuniqueid) >= 9) )
+					{
+					$Muniqueid[$mvl] = $VLEuniqueid;
+					# Update dial log record with correct uniqueid
+					$stmtA = "UPDATE vicidial_dial_log SET uniqueid='$VLEuniqueid' where caller_code='$Mcaller_code[$mvl]' and lead_id='$Mlead_id[$mvl]' limit 1;";
+					$affected_rows = $dbhA->do($stmtA);
+					if ($DBX) {print "vicidial_dial_log UPDATED: $affected_rows|$stmtA|\n";}
+					$updated_dial_log_no_uid = ($updated_dial_log_no_uid + $affected_rows);
+					}
 
-				if ($VLEcount > 0) 
+				if ($sthArowsVLEc > 0) 
 					{$do_nothing=1;}
 				else
 					{
-					### see if call was logged properly to vicidial_log
-					$VLcount=0;
-					$temp_uniquiid = $Muniqueid[$mvl];
-					$temp_uniquiid =~ s/\..*//gi;
-					$stmtA = "SELECT count(*) from vicidial_log where uniqueid LIKE \"$temp_uniquiid%\" and lead_id='$Mlead_id[$mvl]';";
-					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-					$sthArowsVLc=$sthA->rows;
-					if ($sthArowsVLc > 0)
-						{
-						@aryA = $sthA->fetchrow_array;
-						$VLcount =	$aryA[0];
-						}
-					$sthA->finish();
-
-					if ($VLcount > 0) 
-						{$do_nothing=1;}
+					if (length($Muniqueid[$mvl]) < 9)
+						{$count_dial_log_no_uid++;}
 					else
 						{
-						# no vicidial_log entry found, look for call_log entry
+						### see if call was logged properly to vicidial_log
 						$VLcount=0;
-						$stmtA = "SELECT number_dialed,length_in_sec,end_time,end_epoch from call_log where uniqueid='$Muniqueid[$mvl]' limit 1;";
+						$temp_uniquiid = $Muniqueid[$mvl];
+						$temp_uniquiid =~ s/\..*//gi;
+						$stmtA = "SELECT count(*) from vicidial_log where uniqueid LIKE \"$temp_uniquiid%\" and lead_id='$Mlead_id[$mvl]';";
 						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-						$sthArowsCLc=$sthA->rows;
-						if ($sthArowsCLc > 0)
+						$sthArowsVLc=$sthA->rows;
+						if ($sthArowsVLc > 0)
 							{
 							@aryA = $sthA->fetchrow_array;
-							$Mnumber_dialed[$mvl] =		$aryA[0];
-							$Mlength_in_sec[$mvl] =		$aryA[1];
-							$Mend_time[$mvl] =			$aryA[2];
-							$Mend_epoch[$mvl] =			$aryA[3];
+							$VLcount =	$aryA[0];
 							}
 						$sthA->finish();
 
-						if ($sthArowsCLc > 0)
+						if ($VLcount > 0) 
+							{$do_nothing=1;}
+						else
 							{
-							# call_log entry found, look for lead details in vicidial_list
-							$stmtA = "SELECT list_id,status,phone_code,phone_number,alt_phone,address3,called_count from vicidial_list where lead_id='$Mlead_id[$mvl]' limit 1;";
+							# no vicidial_log entry found, look for call_log entry
+							$VLcount=0;
+							$stmtA = "SELECT number_dialed,length_in_sec,end_time,end_epoch from call_log where uniqueid='$Muniqueid[$mvl]' limit 1;";
 							$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 							$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-							$sthArowsLEADc=$sthA->rows;
-							if ($sthArowsLEADc > 0)
+							$sthArowsCLc=$sthA->rows;
+							if ($sthArowsCLc > 0)
 								{
 								@aryA = $sthA->fetchrow_array;
-								$Llist_id =			$aryA[0];
-								$Lstatus =			$aryA[1];
-								$Lphone_code =		$aryA[2];
-								$Lphone_number =	$aryA[3];
-								$Lalt_phone =		$aryA[4];
-								$Laddress3 =		$aryA[5];
-								$Lcalled_count =	$aryA[6];
+								$Mnumber_dialed[$mvl] =		$aryA[0];
+								$Mlength_in_sec[$mvl] =		$aryA[1];
+								$Mend_time[$mvl] =			$aryA[2];
+								$Mend_epoch[$mvl] =			$aryA[3];
 								}
 							$sthA->finish();
 
-							if ($sthArowsLEADc < 1)
-								{$no_lead_found=1;}
-							else
+							if ($sthArowsCLc > 0)
 								{
-								# vicidial_list entry found, look for list details in vicidial_lists
-								$stmtA = "SELECT campaign_id from vicidial_lists where list_id='$Llist_id' limit 1;";
+								# call_log entry found, look for lead details in vicidial_list
+								$stmtA = "SELECT list_id,status,phone_code,phone_number,alt_phone,address3,called_count from vicidial_list where lead_id='$Mlead_id[$mvl]' limit 1;";
 								$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 								$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 								$sthArowsLEADc=$sthA->rows;
 								if ($sthArowsLEADc > 0)
 									{
 									@aryA = $sthA->fetchrow_array;
-									$Lcampaign_id =			$aryA[0];
+									$Llist_id =			$aryA[0];
+									$Lstatus =			$aryA[1];
+									$Lphone_code =		$aryA[2];
+									$Lphone_number =	$aryA[3];
+									$Lalt_phone =		$aryA[4];
+									$Laddress3 =		$aryA[5];
+									$Lcalled_count =	$aryA[6];
 									}
 								$sthA->finish();
 
-								$Lalt='MAIN';
-								if ( ($Mnumber_dialed[$mvl] =~ /$Lphone_number$/) && (length($Lphone_number) >= 6) ) {$Lalt='MAIN';}
+								if ($sthArowsLEADc < 1)
+									{$no_lead_found=1;}
 								else
 									{
-									if ( ($Mnumber_dialed[$mvl] =~ /$Lalt_phone$/) && (length($Lalt_phone) >= 6) ) {$Lalt='ALT';}
-									else
-										{
-										if ( ($Mnumber_dialed[$mvl] =~ /$Laddress3$/) && (length($Laddress3) >= 6) ) {$Lalt='ADDR3';}
-										}
-									}
-
-								$stmtVL = "INSERT INTO vicidial_log SET uniqueid='$Muniqueid[$mvl]',lead_id='$Mlead_id[$mvl]',campaign_id='$Lcampaign_id',call_date='$Mend_time[$mvl]',start_epoch='$Mend_epoch[$mvl]',status='NA',phone_code='$Lphone_code',phone_number='$Lphone_number',user='VDAD',processed='N',length_in_sec=0,end_epoch='$Mend_epoch[$mvl]',alt_dial='$Lalt',list_id='$Llist_id',called_count='$Lcalled_count',comments='AUTONA',term_reason='NONE';";
-								$affected_rowsVL = $dbhA->do($stmtVL);
-								if($DBX){print "$mvl|$affected_rowsVL|$stmtVL|\n";}
-								$audit_inserts = ($audit_inserts + $affected_rowsVL);
-
-								$stmtVLE = "INSERT INTO vicidial_log_extended set uniqueid='$Muniqueid[$mvl]',server_ip='$Mserver_ip[$mvl]',call_date='$Mend_time[$mvl]',lead_id = '$Mlead_id[$mvl]',caller_code='$Mcaller_code[$mvl]',custom_call_id='';";
-								$affected_rowsVLE = $dbhA->do($stmtVLE);
-								if($DBX){print "$mvl|$affected_rowsVLE|$stmtVLE|\n";}
-
-								if ($Lstatus ne 'NA') 
-									{
-									$stmtLEAD = "UPDATE vicidial_list set status='NA where lead_id='$Mlead_id[$mvl]';";
-									$affected_rowsLEAD = $dbhA->do($stmtLEAD);
-									if($DBX){print "$mvl|$affected_rowsLEAD|$stmtLEAD|\n";}
-									}
-								if ($SScall_quota_lead_ranking > 0) 
-									{
-									$VD_call_quota_lead_ranking='DISABLED';
-									# find call quota setting for campaign, to see if call quota logging is enabled
-									$stmtA = "SELECT call_quota_lead_ranking from vicidial_campaigns where campaign_id='$Lcampaign_id' limit 1;";
+									# vicidial_list entry found, look for list details in vicidial_lists
+									$stmtA = "SELECT campaign_id from vicidial_lists where list_id='$Llist_id' limit 1;";
 									$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 									$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-									$sthArowsCAMPc=$sthA->rows;
-									if ($sthArowsCAMPc > 0)
+									$sthArowsLEADc=$sthA->rows;
+									if ($sthArowsLEADc > 0)
 										{
 										@aryA = $sthA->fetchrow_array;
-										$VD_call_quota_lead_ranking =			$aryA[0];
+										$Lcampaign_id =			$aryA[0];
 										}
 									$sthA->finish();
 
-									if ($VD_call_quota_lead_ranking !~ /^DISABLED$/i)
+									$Lalt='MAIN';
+									if ( ($Mnumber_dialed[$mvl] =~ /$Lphone_number$/) && (length($Lphone_number) >= 6) ) {$Lalt='MAIN';}
+									else
 										{
-										$CIDlead_id = $Mlead_id[$mvl];
-										$temp_status = 'NA';
-										&call_quota_logging;
+										if ( ($Mnumber_dialed[$mvl] =~ /$Lalt_phone$/) && (length($Lalt_phone) >= 6) ) {$Lalt='ALT';}
+										else
+											{
+											if ( ($Mnumber_dialed[$mvl] =~ /$Laddress3$/) && (length($Laddress3) >= 6) ) {$Lalt='ADDR3';}
+											}
+										}
+
+									$stmtVL = "INSERT INTO vicidial_log SET uniqueid='$Muniqueid[$mvl]',lead_id='$Mlead_id[$mvl]',campaign_id='$Lcampaign_id',call_date='$Mend_time[$mvl]',start_epoch='$Mend_epoch[$mvl]',status='NA',phone_code='$Lphone_code',phone_number='$Lphone_number',user='VDAD',processed='N',length_in_sec=0,end_epoch='$Mend_epoch[$mvl]',alt_dial='$Lalt',list_id='$Llist_id',called_count='$Lcalled_count',comments='AUTONA',term_reason='NONE';";
+									$affected_rowsVL = $dbhA->do($stmtVL);
+									if($DBX){print "$mvl|$affected_rowsVL|$stmtVL|\n";}
+									$audit_inserts = ($audit_inserts + $affected_rowsVL);
+
+									$stmtVLE = "INSERT INTO vicidial_log_extended set uniqueid='$Muniqueid[$mvl]',server_ip='$Mserver_ip[$mvl]',call_date='$Mend_time[$mvl]',lead_id = '$Mlead_id[$mvl]',caller_code='$Mcaller_code[$mvl]',custom_call_id='';";
+									$affected_rowsVLE = $dbhA->do($stmtVLE);
+									if($DBX){print "$mvl|$affected_rowsVLE|$stmtVLE|\n";}
+
+									if ($Lstatus ne 'NA') 
+										{
+										$stmtLEAD = "UPDATE vicidial_list set status='NA' where lead_id='$Mlead_id[$mvl]';";
+										$affected_rowsLEAD = $dbhA->do($stmtLEAD);
+										if($DBX){print "$mvl|$affected_rowsLEAD|$stmtLEAD|\n";}
+										}
+									if ($SScall_quota_lead_ranking > 0) 
+										{
+										$VD_call_quota_lead_ranking='DISABLED';
+										# find call quota setting for campaign, to see if call quota logging is enabled
+										$stmtA = "SELECT call_quota_lead_ranking from vicidial_campaigns where campaign_id='$Lcampaign_id' limit 1;";
+										$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+										$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+										$sthArowsCAMPc=$sthA->rows;
+										if ($sthArowsCAMPc > 0)
+											{
+											@aryA = $sthA->fetchrow_array;
+											$VD_call_quota_lead_ranking =			$aryA[0];
+											}
+										$sthA->finish();
+
+										if ($VD_call_quota_lead_ranking !~ /^DISABLED$/i)
+											{
+											$CIDlead_id = $Mlead_id[$mvl];
+											$temp_status = 'NA';
+											&call_quota_logging;
+											}
 										}
 									}
 								}
@@ -1961,12 +1978,12 @@ while ($master_loop < $CLIloops)
 					if ($mvl =~ /90$/i) {print STDERR "0     $mvl / $sthArowsMVL \r";}
 					if ($mvl =~ /00$/i) 
 						{
-						print "$mvl / $sthArowsMVL   ($log_updated|$log_inserted|   |$LEADlist_id[$mvl]|$LEADINFOrank| \n";
+						print "$mvl / $sthArowsMVL   ($log_updated|$log_inserted|$count_dial_log_no_uid|$updated_dial_log_no_uid|   |$LEADlist_id[$mvl]|$LEADINFOrank| \n";
 						}
 					}
 				}
 			}
-		if ($DB) {print "Outbound call log audit -   calls: $mvl   inserts: $audit_inserts \n";}
+		if ($DB) {print "Outbound call log audit -   calls: $mvl   inserts: $audit_inserts ($count_dial_log_no_uid|$updated_dial_log_no_uid) \n";}
 		}
 	##########################################################
 	##### END check for stuck SENDING inbound callback queue records #####

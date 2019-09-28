@@ -1,4 +1,4 @@
-CALL QUOTA LEAD RANKING		Started: 2019-07-01	Updated: 2019-07-19
+CALL QUOTA LEAD RANKING		Started: 2019-07-01	Updated: 2019-07-22
 
 !!!! THIS IS AN EXPERIMENTAL FEATURE, PLEASE READ ALL IMPORTANT NOTES !!!!
 (If you plan on using this feature-set in production, you should read and understand everything in this document)
@@ -92,18 +92,33 @@ session_five =>
 session_six => 
 
 For the Call Quota Settings Container to be valid, the first 11 core settings listed above must be set to valid values, see below:
+
 - redial_statuses: a comma-delimited list of the statuses that you want to recycle-dial
-- total_goal: must be set to a number from 1 to 100, goal total number of calls during min_consecutive_days
-- daily_goal: must be set to a number from 1 to 20, goal number of calls per day
-- daily_max: must be set to a number from 1 to 20, maximum number of calls per day
+			NOTE: Make sure you have these statuses also set as campaign dial statuses
+
+- total_goal: must be set to a number from 1 to 100, goal total number of calls during min_consecutive_days, since this is a "goal" the called count can go over this number
+
+- daily_goal: must be set to a number from 1 to 20, goal number of calls per day, since this is a "goal" the called count can go over this number
+
+- daily_max: must be set to a number from 1 to 20, maximum number of calls per day, leads that hit this count will have rank set < 0
+			NOTE: See note in the "TIPS & SUGGESTIONS" section about adding a filter to prevent these leads from being dialed any more
+
 - session_goal: must be set to a number from 1 to 20, goal number of calls during session, total across all days
-- session_day_max: must be set to a number from 1 to 20, maximum number of calls during each session for current day
+
+- session_day_max: must be set to a number from 1 to 20, maximum number of calls during each session for current day, leads that hit this count will have rank set < 0
+			NOTE: See note in the "TIPS & SUGGESTIONS" section about adding a filter to prevent these leads from being dialed any more
+
 - new_shuffle: must be set to a number from 0 to 6, 0 is no NEW lead shuffle, '1' is assumed to be '2' for every-other lead
+
 - min_consecutive_days: must be set to a number from 1 to 7, this is the number of days allowed to reach the "total_goal"
+
 - active_days_of_week: must be from one to seven digits, one for each day of the week, Sunday=0, example: "0123456" for all 7 days of the week
+
 - zero_rank_after_call: set to 0 or 1, if set to 1, the lead's rank will be set to 0 when the call is completed, if the lead's rank is above 0
-- call_quota_run_time: a comma-delimited list of the "minutes" of each hour when the call quota lead ranking process is to be run, we recommend 1-4 times an hour
+
+- call_quota_run_time: a comma-delimited list of the "minutes" of each hour when the call quota lead ranking process is to be run, once an hour, "01", is usually fine.
 			NOTE: If you are using Call Quotas on multiple campaigns, we recommend you schedule their run times to not overlap
+
 
 There are also up to 6 sessions that can be defined, they all follow the same format and must be put in chronological order.
 All times are based on server time, not the customer time. 
@@ -116,12 +131,21 @@ Sessions are not designed to start earler than "0000", or go past "2400".
 
 
 TIPS & SUGGESTIONS:
+
 - Set the campaign's hopper level to the number of leads your campaign dials in 1-3 minutes, so that the updated rankings will be most effective, especially at session time boundaries
+
 - Deactivate lists after all leads have been called your desired amount of times. You can see that by looking at the data table on the List Modify page at the bottom
-- Set your call quota sessions to be equal lengths of time, and make sure all of your calling hours are covered by your sessions
-- Do not change your sessions after you have started calling on your campaign
+
+- Set your call quota sessions to be similar lengths of time, and make sure all of your calling hours are covered by your sessions
+
+- Do not change your "sessions" after you have activated Call Quotas on your campaign
+
 - Keep less than 400,000 leads in the lists of a single campaign. Move your unused lists to an inactive campaign
+
+- Since there can sometimes be rare inconsistencies in how the multiple call logging processes work, you may have a call-quota log entry for a lead that shows a status different from the lead's current status. For instance, one may show "AB" while the other may show "B" for a busy number. You should include all possible statuses you want to re-dial in your "redial_statuses" setting.
+
 - When you start a brand-new campaign, you will have to dial only NEW leads, but after the first day, you should remove NEW from your campaign dialing statuses and use the Call Quota "new_shuffle" setting to shuffle in NEW leads instead. As your campaign progresses, you should be able to change new_shuffle from 2 down to 4, 5 or 6.
+
 - To ensure that leads with a negative rank are not called, you may want to create a Filter in the system with a Filter SQL of "(rank > 0)" and enable it for your campaign. This will help to ensure that unranked leads are not dialed. If you insert NEW leads with no rank, you will want to change this to use "(rank >= 0)".
 
 
@@ -135,8 +159,10 @@ Scripts modified/added:
 - bin/FastAGI_log.pl
 - bin/AST_VDauto_dial.pl
 - bin/AST_VDremote_agents.pl
+- bin/AST_VDadapt.pl
 - bin/ADMIN_keepalive_ALL.pl
 - agi/agi-VDAD_ALL_outbound.agi
+- agi/VD_amd.agi
 - www/agc/vdc_db_query.php
 - www/vicidial/campaign_debug.php
 
@@ -186,6 +212,9 @@ LIST CACHE STATS UPDATED: 100000011   TOTAL: 60000   NEW: 59995   DIALABLE NEW: 
 LIST CACHE STATS UPDATED: 999888999777   TOTAL: 0   NEW: 0   DIALABLE NEW: 0 
  Call Quota run time: 56 seconds
 
+
+
+A new outbound auto-dial log-auditing function has been added to the AST_VDadapt.pl script when Call Quotas is enabled. This function validates logs and fixes them if logging at the end of a call does not happen in the way it is supposed to, which can happen on overloaded systems.
 
 
 
