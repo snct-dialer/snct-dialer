@@ -238,6 +238,15 @@
       - Update: docs/SIP_EVENT_LOGGING.txt,
           www/vicidial/admin.php,
           www/vicidial/admin_modify_lead.php: Added SIP Event Report.
+    * Add upstream Rev. 3112:
+      - Update: vicidial/call_report_export.php,
+          vicidial/call_report_export_carrier.php,
+          vicidial/lead_report_export.php: Fixed admin hide phone issue.
+    * Add upstream Rev. 3113:
+      - New: extras/add_DNC_test.php: add numbers to the DNC list using the
+          admin.php form.
+      - Update: changelog,
+          www/agc/vicidial.php: Fix for script variable issue.
     * Change next release to 3.0.1.
 
 2.26.29
