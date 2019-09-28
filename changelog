@@ -247,6 +247,8 @@
           admin.php form.
       - Update: changelog,
           www/agc/vicidial.php: Fix for script variable issue.
+    * Add upstream Rev. 3114:
+      - New: www/vicidial/TCPAlitigatorlist_inbound_filter.php: 
     * Change next release to 3.0.1.
 
 2.26.29
