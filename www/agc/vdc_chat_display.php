@@ -3,7 +3,7 @@
 #
 # LICENSE: AGPLv3
 #
-# Copyright (©) 2017      Joe Johnson, Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2019      Joe Johnson, Matt Florell <vicidial@gmail.com>
 # Copyright (©) 2019      SNCT GmbH <info@snct-gmbh.de>
 #               2017-2019 Jörg Frings-Fürst <open_source@jff.email>.
 #
@@ -21,6 +21,7 @@
 # 160303-0051 - Added code for chat transfers
 # 160818-1235 - Added line colors and scrolling
 # 170528-1001 - Added variable filtering
+# 190902-0914 - Fix for PHP 7.2
 #
 
 # Other - Changelog
@@ -29,6 +30,9 @@
 # 2019-04-29 10:25 Add system_wide_settings.php
 #
 
+
+$MT[0]='';
+$chat_group_ids=$MT;
 
 require("dbconnect_mysqli.php");
 require("functions.php");

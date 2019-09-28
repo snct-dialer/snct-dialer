@@ -635,10 +635,11 @@
 # 190723-1655 - Fix for script tab custom fields
 # 190730-0925 - Added campaign SIP Actions processing
 # 190901-0956 - Added cid_choice option to API transfer_conference function
+# 190902-0914 - Fix for PHP 7.2
 #
 
-$version = '2.14-586c';
-$build = '190901-0956';
+$version = '2.14-587c';
+$build = '190902-0914';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -4105,7 +4106,7 @@ while ($CINC < 12)
 	$CCAL_OUT .= "<tr>";
 	$CCAL_OUT .= "<td colspan=\"7\" bordercolor=\"#ffffff\" bgcolor=\"#FFFFCC\">";
 	$CCAL_OUT .= "<div align=\"center\"><font color=\"#000066\"><b><font face=\"Arial, Helvetica, sans-serif\" size=\"2\">";
-	$CCAL_OUT .= $Cmonths[$CfirstdayARY[mon]]." $CfirstdayARY[year]";
+	$CCAL_OUT .= $Cmonths[$CfirstdayARY['mon']]." $CfirstdayARY[year]";
 	$CCAL_OUT .= "</font></b></font></div>";
 	$CCAL_OUT .= "</td>";
 	$CCAL_OUT .= "</tr>";

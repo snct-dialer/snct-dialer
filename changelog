@@ -337,6 +337,10 @@
           www/agc/api.php,
           www/agc/vicidial.php: Added cid_choice option to transfer_conference
             function.
+    * Add upstream Rev. 3133:
+      - Update: www/agc/vdc_chat_display.php,
+          www/agc/vicidial.php,
+          www/vicidial/admin.php: Fixes for PHP 7.2.
     * Change next release to 3.0.1.
 
 2.26.29
