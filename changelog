@@ -264,6 +264,10 @@
     * Add upstream Rev. 3116:
       - Update: www/vicidial/admin.php: Added copying/deleting of
           vicidial_url_multi records when copying/deleting campaigns/in-groups.
+    * Add upstream Rev. 3117:
+      - Update: docs/NON-AGENT_API.txt,
+          www/vicidial/help_documentation.txt,
+          www/vicidial/non_agent_api.php: Added update_cid_group_entry function.
     * Change next release to 3.0.1.
 
 2.26.29
