@@ -1811,7 +1811,6 @@ if ($call_handle_method =~ /SURVEY/)
 			print "SET PRIORITY 1\n";
 				$result = <STDIN>;
 				checkresult($result);
-
 			}
 		else
 			{$AGI->hangup();}
@@ -2203,6 +2202,12 @@ if ($call_handle_method =~ /SURVEY/)
 			&agi_output;
 			}
 
+		if ( ($SScall_quota_lead_ranking > 0) && ($VD_call_quota_lead_ranking !~ /^DISABLED$/i) )
+			{
+			$temp_status = 'PM';
+			&call_quota_logging;
+			}
+
 		if ($survey_no_response_action !~ /DROP/)
 			{
 			$stmtA = "DELETE FROM vicidial_auto_calls where callerid='$callerid' order by call_time desc limit 1;";
@@ -2224,12 +2229,6 @@ if ($call_handle_method =~ /SURVEY/)
 			$drop_timer = (($drop_timer + $DROP_TIME) + 1);
 			$agi_string = "--    VDAD survey no-response go to campaign DROP   |$drop_timer|$DROP_TIME|";
 			&agi_output;
-			}
-
-		if ( ($SScall_quota_lead_ranking > 0) && ($VD_call_quota_lead_ranking !~ /^DISABLED$/i) )
-			{
-			$temp_status = 'PM';
-			&call_quota_logging;
 			}
 		}
 	}

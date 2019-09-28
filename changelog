@@ -281,7 +281,7 @@
             add_list function; Added use of admin_web_directory system setting.
     * Add upstream Rev. 3121:
       - Update: bin/AST_VDhopper.pl: Allow for single-quotes in state field.
-    * Add upstream Rev. 3122:
+    * Add upstream Rev. 3122 - 3123:
       - New: bin/AST_VDcall_quotas.pl,
           docs/CALL_QUOTA_LEAD_RANKING.txt,
           translations/LANGUAGE_ALL_es_Spanish_20190718-094833.txt
@@ -297,7 +297,8 @@
           www/vicidial/AST_VICIDIAL_hopperlist.php,
           www/vicidial/admin.php,
           www/vicidial/campaign_debug.php,
-          www/vicidial/help_documentation.txt: Added Call Quota logging.
+          www/vicidial/help_documentation.txt,
+          agi/agi-VDAD_ALL_outbound.agi: Added Call Quota logging.
     * Change next release to 3.0.1.
 
 2.26.29
