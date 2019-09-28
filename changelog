@@ -268,6 +268,9 @@
       - Update: docs/NON-AGENT_API.txt,
           www/vicidial/help_documentation.txt,
           www/vicidial/non_agent_api.php: Added update_cid_group_entry function.
+    * Add upstream Rev. 3118:
+      - Update: www/vicidial/admin.php: Added API update_cid_group_entry
+          function.
     * Change next release to 3.0.1.
 
 2.26.29
