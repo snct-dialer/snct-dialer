@@ -322,6 +322,16 @@
           www/agc/conf_exten_check.php,
           www/agc/vdc_db_query.php,
           www/agc/vicidial.php: Added campaign SIP Actions processing.
+    * Add upstream Rev. 3131:
+      - New: www/vicidial/AST_VDADstats.php.orig,
+          www/vicidial/bench_agent_assign.php,
+      - Update: UPGRADE,
+          extras/MySQL_AST_CREATE_tables.sql,
+          extras/mysql_update/mysql-1567.sql,
+          extras/upgrade_2.14.sql,
+          www/vicidial/AST_VDADstats.php: Fixed download archive bug; Added
+            bench_agent_assign.php script to allow managers to move
+            'owner-assigned' to another agent.
     * Change next release to 3.0.1.
 
 2.26.29
