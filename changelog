@@ -261,6 +261,9 @@
           www/vicidial/help_documentation.txt: Added more logging for
             Auto-Alt-Dial debug; Added new options for campaign
             agent_screen_time_display feature.
+    * Add upstream Rev. 3116:
+      - Update: www/vicidial/admin.php: Added copying/deleting of
+          vicidial_url_multi records when copying/deleting campaigns/in-groups.
     * Change next release to 3.0.1.
 
 2.26.29
