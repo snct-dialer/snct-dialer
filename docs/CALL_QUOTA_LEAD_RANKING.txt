@@ -22,7 +22,7 @@ While the feature-set that was built offers more flexibility than the requiremen
 
 IMPORTANT VICIDIAL VERSION NOTE!!!
 
-You will need to be running VICIdial svn/trunk revision 3122 or newer on all of the servers in your cluster in order to use these new features
+You will need to be running VICIdial svn/trunk revision 3125 or newer on all of the servers in your cluster in order to use these new features
 
 
 IMPORTANT FEATURE ENABLING NOTE!!!
