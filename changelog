@@ -309,6 +309,14 @@
             Agent Screen Time Display option.
     * Add upstream Rev. 3128:
       - Update: www/agc/vicidial.php: Fix for script tab custom fields.
+    * Add upstream Rev. 3129:
+      - Update: docs/CALL_QUOTA_LEAD_RANKING.txt,
+          extras/MySQL_AST_CREATE_tables.sql,
+          extras/mysql_update/mysql-1567.sql,
+          extras/upgrade_2.14.sql,
+          www/vicidial/admin.php,
+          www/vicidial/help_documentation.txt: Added sip_event_logging
+            campaign actions.
     * Change next release to 3.0.1.
 
 2.26.29
