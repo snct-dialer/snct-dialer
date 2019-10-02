@@ -369,6 +369,8 @@
       - Update: docs/NON-AGENT_API.txt,
           www/vicidial/non_agent_api.php: Added list_description field to
             add_list and update_list functions.
+    * Add upstream Rev. 3138:
+      - Update: bin/FastAGI_log.pl: Small fix for monitoring issue.
     * Change next release to 3.0.1.
 
 2.26.29
