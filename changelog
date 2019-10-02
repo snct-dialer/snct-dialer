@@ -357,6 +357,10 @@
           www/vicidial/call_report_export_carrier.php,
           www/vicidial/lead_report_export.php,
           www/vicidial/list_download.php: Fixes for PHP7.
+    * Add upstream Rev. 3137
+      - Update: docs/NON-AGENT_API.txt,
+          www/vicidial/non_agent_api.php: Added list_description field to
+            add_list and update_list functions.
     * Change next release to 3.0.1.
 
 2.26.29
