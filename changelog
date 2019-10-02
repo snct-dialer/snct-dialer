@@ -371,6 +371,12 @@
             add_list and update_list functions.
     * Add upstream Rev. 3138:
       - Update: bin/FastAGI_log.pl: Small fix for monitoring issue.
+    * New stucture at vicidial_list:
+      - New field address_source,
+        New index alt_phone:
+        - Update: extras/MySQL_AST_CREATE_tables.sql,
+            extras/mysql_update/mysql-1567.sql,
+            extras/upgrade_2.14.sql.
     * Change next release to 3.0.1.
 
 2.26.29

@@ -367,6 +367,7 @@ owner VARCHAR(20) default '',
 entry_list_id BIGINT(14) UNSIGNED NOT NULL DEFAULT '0',
 coord_one POINT NULL DEFAULT NULL,
 coord_two POINT NULL DEFAULT NULL,
+address_source VARCHAR(150) DEFAULT '',
 index (phone_number),
 index (list_id),
 index (called_since_last_reset),
@@ -376,7 +377,8 @@ index (postal_code),
 index (last_local_call_time),
 index (rank),
 index (owner),
-index (modify_date)
+index (modify_date),
+index (alt_phone)
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_hopper (
