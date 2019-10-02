@@ -1089,6 +1089,7 @@ resets_today SMALLINT(5) UNSIGNED default '0',
 auto_active_list_rank SMALLINT(5) default '0',
 cache_count INT(9) UNSIGNED default '0',
 cache_count_new INT(9) UNSIGNED default '0',
+cache_count_dialable_new INT(9) UNSIGNED default '0',
 cache_date DATETIME
 ) ENGINE=MyISAM;
 
