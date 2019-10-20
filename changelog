@@ -352,7 +352,7 @@
           www/agc/vdc_db_query.php,
           www/agc/vicidial.php: Added campaign SIP Actions processing; Added
             logtable SIP Action.
-    * Add upstream Rev. 3135 - 3136, 3138:
+    * Add upstream Rev. 3135 - 3136, 3138, 3141:
       - Update: www/vicidial/call_report_export.php,
           www/vicidial/call_report_export_carrier.php,
           www/vicidial/lead_report_export.php,
@@ -364,7 +364,16 @@
           www/vicidial/AST_timeonVDADall.php,
           www/vicidial/AST_timeonVDADallSUMMARY.php,
           www/vicidial/admin.php,
-          www/vicidial/realtime_report.php: Fixes for PHP7.
+          www/vicidial/realtime_report.php,
+          www/agc/active_list_refresh.php,
+          www/agc/astguiclient.php,
+          www/agc/call_log_display.php,
+          www/agc/inbound_popup.php,
+          www/agc/live_exten_check.php,
+          www/agc/park_calls_display.php,
+          www/agc/timeclock.php,
+          www/agc/vdc_script_dispo_example.php,
+          www/agc/vicidial-grey.php: Fixes for PHP7.
     * Add upstream Rev. 3137:
       - Update: docs/NON-AGENT_API.txt,
           www/vicidial/non_agent_api.php: Added list_description field to
