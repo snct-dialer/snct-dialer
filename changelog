@@ -454,6 +454,9 @@
     * Add upstream Rev. 3146:
       - Update: vicidial/admin_search_lead.php: Fix for foreign language,
           issue #1187.
+    * Add upstream Rev. 3148:
+      - Update: www/vicidial/xml_rpc_audio_server_vicidial.php: Added alternate
+          recording lookup method.
     * Change next release to 3.0.1.
 
 2.26.29
