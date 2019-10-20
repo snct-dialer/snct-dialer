@@ -451,6 +451,9 @@
             extras/upgrade_2.14.sql.
     * Add upstream Rev. 3140:
       - Update: extras/MySQL_AST_CREATE_tables.sql: Small fix.
+    * Add upstream Rev. 3146:
+      - Update: vicidial/admin_search_lead.php: Fix for foreign language,
+          issue #1187.
     * Change next release to 3.0.1.
 
 2.26.29
