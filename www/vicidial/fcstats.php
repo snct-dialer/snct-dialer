@@ -40,6 +40,7 @@
 # 171012-2015 - Fixed javascript/apache errors with graphs
 # 180508-2215 - Added new help display
 # 190216-0807 - Fix for user-group, in-group and campaign allowed/permissions matching issues
+# 191013-0821 - Fixes for PHP7
 #
 
 $startMS = microtime();
@@ -321,6 +322,7 @@ if ($DB) {$HTML_text.="$stmt\n";}
 $groups_to_print = mysqli_num_rows($rslt);
 $i=0;
 $groups_string='|';
+$groups=array();
 while ($i < $groups_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -525,6 +527,10 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {$ASCII_text.="$stmt\n";}
 $users_to_print = mysqli_num_rows($rslt);
 $i=0;
+$userRAW=array();
+$user=array();
+$USERcallsRAW=array();
+$USERcalls=array();
 while ($i < $users_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -540,6 +546,7 @@ while ($i < $users_to_print)
 	}
 
 $i=0;
+$full_name=array();
 while ($i < $users_to_print)
 	{
 	$stmt="select full_name from vicidial_users where user='$userRAW[$i]' $LOGadmin_viewable_groupsSQL;";
@@ -769,6 +776,10 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {$ASCII_text.="$stmt\n";}
 $users_to_print = mysqli_num_rows($rslt);
 $i=0;
+$userRAW=array();
+$user=array();
+$USERcallsRAW=array();
+$USERcalls=array();
 while ($i < $users_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -783,6 +794,7 @@ while ($i < $users_to_print)
 	}
 
 $i=0;
+$full_name=array();
 while ($i < $users_to_print)
 	{
 	$stmt="select full_name from vicidial_users where user='$userRAW[$i]' $LOGadmin_viewable_groupsSQL;";
