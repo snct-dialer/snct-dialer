@@ -123,7 +123,7 @@ use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sle
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
     or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
@@ -493,7 +493,7 @@ if ($SSdid_system_filter > 0)
 
 					if ( ($tables_use_alt_log_db =~ /did_agent_log/i) && (length($alt_log_server_ip)>4) && (length($alt_log_dbname)>0) )
 						{
-						$dbhD = DBI->connect("DBI:mysql:$alt_log_dbname:$alt_log_server_ip:3306", "$alt_log_login", "$alt_log_pass")
+						$dbhD = DBI->connect("DBI:mysql:$alt_log_dbname:$alt_log_server_ip:3306", "$alt_log_login", "$alt_log_pass", { mysql_enable_utf8 => 1 })
 						 or die "Couldn't connect to database: " . DBI->errstr;
 
 						if ($AGILOG) {$agi_string = "CONNECTED TO ALT-LOG DATABASE:  $alt_log_server_ip|$alt_log_dbname|$uniqueid";   &agi_output;}
@@ -577,7 +577,7 @@ if ($SSdid_system_filter > 0)
 				### QueueMetrics logging if enabled
 				if ( ($did_route =~ /EXTEN|CALLMENU/) && ($enable_queuemetrics_logging > 0) )
 					{
-					$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+					$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass", { mysql_enable_utf8 => 1 })
 					 or die "Couldn't connect to database: " . DBI->errstr;
 
 					if ($DBX) {print "CONNECTED TO QueueMetrics DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
@@ -627,7 +627,7 @@ if ($SSdid_system_filter > 0)
 					{
 					if ($enable_queuemetrics_logging > 0)
 						{
-						$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+						$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass", { mysql_enable_utf8 => 1 })
 						 or die "Couldn't connect to database: " . DBI->errstr;
 
 						if ($DBX) {print "CONNECTED TO QM DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
@@ -801,7 +801,7 @@ if ($did_agent_log =~ /Y/)
 
 	if ( ($tables_use_alt_log_db =~ /did_agent_log/i) && (length($alt_log_server_ip)>4) && (length($alt_log_dbname)>0) )
 		{
-		$dbhD = DBI->connect("DBI:mysql:$alt_log_dbname:$alt_log_server_ip:3306", "$alt_log_login", "$alt_log_pass")
+		$dbhD = DBI->connect("DBI:mysql:$alt_log_dbname:$alt_log_server_ip:3306", "$alt_log_login", "$alt_log_pass", { mysql_enable_utf8 => 1 })
 		 or die "Couldn't connect to database: " . DBI->errstr;
 
 		if ($AGILOG) {$agi_string = "CONNECTED TO ALT-LOG DATABASE:  $alt_log_server_ip|$alt_log_dbname|$uniqueid";   &agi_output;}
@@ -1314,7 +1314,7 @@ if ($did_route =~ /AGENT/)
 ### QueueMetrics logging if enabled
 if ( ($did_route =~ /EXTEN|CALLMENU/) && ($enable_queuemetrics_logging > 0) )
 	{
-	$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+	$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass", { mysql_enable_utf8 => 1 })
 	 or die "Couldn't connect to database: " . DBI->errstr;
 
 	if ($DBX) {print "CONNECTED TO QueueMetrics DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
@@ -1367,7 +1367,7 @@ if ($did_route =~ /CALLMENU/)
 	{
 	if ($enable_queuemetrics_logging > 0)
 		{
-		$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+		$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass", { mysql_enable_utf8 => 1 })
 		 or die "Couldn't connect to database: " . DBI->errstr;
 
 		if ($DBX) {print "CONNECTED TO QM DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}

@@ -95,7 +95,7 @@ use DBI;
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
     or die "Couldn't connect to database: " . DBI->errstr;
 
 
@@ -219,7 +219,7 @@ while ( ($entry_chances < 3) && ($VALID_login < 1) )
 
 		if ( ($tables_use_alt_log_db =~ /contact_information/) && (length($alt_log_server_ip)>4) && (length($alt_log_dbname)>0) )
 			{
-			$linkALT = DBI->connect("DBI:mysql:$alt_log_dbname:$alt_log_server_ip:$VARDB_port", "$alt_log_login", "$alt_log_pass")
+			$linkALT = DBI->connect("DBI:mysql:$alt_log_dbname:$alt_log_server_ip:$VARDB_port", "$alt_log_login", "$alt_log_pass", { mysql_enable_utf8 => 1 })
 				or die "Couldn't connect to database: " . DBI->errstr;
 			}
 		else

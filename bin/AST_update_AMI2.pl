@@ -147,7 +147,7 @@ if (try_load($module))
 	}
 
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
 or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
@@ -227,7 +227,7 @@ if ($CCRrec > 0)
 	{$cid_channels_recent = "cid_channels_recent_$PADserver_ip";}
 else
 	{
-	$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_custom_user", "$VARDB_custom_pass")
+	$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_custom_user", "$VARDB_custom_pass", { mysql_enable_utf8 => 1 })
 	or warn "Couldn't connect to database: " . DBI->errstr;
 
 	$stmtB = "CREATE TABLE cid_channels_recent_$PADserver_ip (caller_id_name VARCHAR(30) NOT NULL, connected_line_name VARCHAR(30) NOT NULL, call_date DATETIME, channel VARCHAR(100) DEFAULT '', dest_channel VARCHAR(100) DEFAULT '', linkedid VARCHAR(20) DEFAULT '', dest_uniqueid VARCHAR(20) DEFAULT '', uniqueid VARCHAR(20) DEFAULT '', index(call_date)) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";

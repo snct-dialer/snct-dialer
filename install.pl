@@ -752,7 +752,7 @@ if (length($ARGV[0])>1)
 
 			use DBI;	  
 
-			$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+			$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
 			 or die "Couldn't connect to database: " . DBI->errstr;
 
 			### format the new server_ip dialstring for example to use with extensions.conf
@@ -918,7 +918,7 @@ if (length($ARGV[0])>1)
 
 			use DBI;	  
 
-			$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+			$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
 			 or die "Couldn't connect to database: " . DBI->errstr;
 
 			$ext  = "\nAdd the following lines to your extensions.conf file:\n";
@@ -2758,7 +2758,7 @@ if ( ($PROMPTcopy_conf_files =~ /y/i) || ($CLIcopy_conf_files =~ /y/i) )
 ##### BEGIN attempt to connect to database, if successful then update code information in database #####
 use DBI;	  
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or warn "Couldn't connect to database: " . DBI->errstr;
 
 if ($dbhA)

@@ -437,7 +437,7 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 
 use DBI;	  
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 
@@ -1870,7 +1870,7 @@ if ($timeclock_end_of_day_NOW > 0)
 		##### END usacan_phone_dialcode_fix funciton #####
 
 
-		$dbhC = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_custom_user", "$VARDB_custom_pass")
+		$dbhC = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_custom_user", "$VARDB_custom_pass", { mysql_enable_utf8 => 1 })
 		 or die "Couldn't connect to database: " . DBI->errstr;
 
 		##### find MEMORY tables for reset of empty space #####

@@ -205,11 +205,11 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 
 use DBI;	  
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
-$dbhA2 = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA2 = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
-$dbhA3 = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA3 = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
@@ -647,7 +647,7 @@ while (@row=$rslt->fetchrow_array) {
 										$PADemail_id = sprintf("%09s", $email_id);	while (length($PADemail_id) > 9) {$PADemail_id = substr($PADemail_id,1);}
 										$caller_code = "E$PADemail_id$PADlead_id";
 
-										$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+										$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass", { mysql_enable_utf8 => 1 })
 										 or die "Couldn't connect to database: " . DBI->errstr;
 
 										if ($DBX) {print "CONNECTED TO QueueMetrics DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
@@ -1018,7 +1018,7 @@ while (@row=$rslt->fetchrow_array) {
 						$PADemail_id = sprintf("%09s", $email_id);	while (length($PADemail_id) > 9) {$PADemail_id = substr($PADemail_id,1);}
 						$caller_code = "E$PADemail_id$PADlead_id";
 
-						$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+						$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass", { mysql_enable_utf8 => 1 })
 						 or die "Couldn't connect to database: " . DBI->errstr;
 
 						if ($DBX) {print "CONNECTED TO QueueMetrics DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}

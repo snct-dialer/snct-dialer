@@ -72,7 +72,7 @@ print STDERR "$seconds.$microseconds\n";
 my $AGI = new Asterisk::AGI;
 
 my $dbhA = DBI->connect("DBI:mysql:" . $conf{VARDB_database} . ":" . $conf{VARDB_server} . ":" . $conf{VARDB_port},
-        $conf{VARDB_user}, $conf{VARDB_pass}) or die "Couldn't connect to database: " . DBI->errstr;
+        $conf{VARDB_user}, $conf{VARDB_pass}, { mysql_enable_utf8 => 1 }) or die "Couldn't connect to database: " . DBI->errstr;
 
 my $PADserver_ip = $conf{VARserver_ip};
 $PADserver_ip =~ s/(\d+)(\.|$)/sprintf "%3.3d$2",$1/eg; 

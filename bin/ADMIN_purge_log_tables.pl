@@ -374,7 +374,7 @@ if ($DB==1) {
 }
 
 ### Connect to database schema
-$dbhDB = DBI->connect("DBI:mysql:information_schema:$DBHOST:$DBPORT", "$DBUSER", "$DBPASS") or die "Couldn't connect to ViciDial database: " . DBI->errstr;
+$dbhDB = DBI->connect("DBI:mysql:information_schema:$DBHOST:$DBPORT", "$DBUSER", "$DBPASS", { mysql_enable_utf8 => 1 }) or die "Couldn't connect to ViciDial database: " . DBI->errstr;
 
 ### Parse through our databases, make sure they're vicidial ones
 if ($VERBOSE==1) { print "Checking for ViciDial Databases...\n"; }

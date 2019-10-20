@@ -271,13 +271,13 @@ $server_ip = $VARserver_ip;		# Asterisk server IP
 if (!$VARDB_port) {$VARDB_port='3306';}
 
 use DBI;
-$dbh = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbh = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
 	or die "Couldn't connect to database: " . DBI->errstr;
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 ### connect to phone type prefix DB
-$dbhN = DBI->connect("DBI:mysql:$PREFIX_DB_database:$PREFIX_DB_server:$PREFIX_DB_port", "$PREFIX_DB_user", "$PREFIX_DB_pass")
+$dbhN = DBI->connect("DBI:mysql:$PREFIX_DB_database:$PREFIX_DB_server:$PREFIX_DB_port", "$PREFIX_DB_user", "$PREFIX_DB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 if (!%six_digit_wireless_hash) {&CompilePrefixHashes;}

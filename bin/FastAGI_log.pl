@@ -162,7 +162,7 @@ $SERVERLOG = 'N';
 $log_level = '0';
 
 use DBI;
-$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
 	or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
@@ -263,7 +263,7 @@ sub process_request
 	if (!$VARDB_port) {$VARDB_port='3306';}
 	if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/FASTagiout";}
 
-	$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+	$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
 		or die "Couldn't connect to database: " . DBI->errstr;
 
 	### Grab Server values from the database
@@ -1284,7 +1284,7 @@ sub process_request
 								$VD_stage =~ s/.*-//gi;
 								if ($VD_stage < 0.25) {$VD_stage=0;}
 
-								$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+								$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass", { mysql_enable_utf8 => 1 })
 								 or die "Couldn't connect to database: " . DBI->errstr;
 
 								if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}

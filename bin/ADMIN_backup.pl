@@ -411,7 +411,7 @@ if ( ($without_db < 1) && ($conf_only < 1) )
 				{
 				if ($DBX > 0) {print "DBX-  ALL DATABASES OPTION ENABLED! GATHERING DBS...\n";}
 				### connect to MySQL database defined in the conf file so we can get database list
-				$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+				$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
 				or die "Couldn't connect to database: " . DBI->errstr;
 
 				$stmtA = "show databases;";
@@ -465,7 +465,7 @@ if ( ($without_db < 1) && ($conf_only < 1) )
 			### BACKUP THE MYSQL FILES ON THE DB SERVER ###
 
 			### connect to MySQL database defined in the conf file
-			$dbhA = DBI->connect("DBI:mysql:$temp_dbname:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+			$dbhA = DBI->connect("DBI:mysql:$temp_dbname:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
 			or die "Couldn't connect to database: " . DBI->errstr;
 
 			$stmtA = "show tables;";

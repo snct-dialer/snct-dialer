@@ -235,7 +235,7 @@ use DBI;
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
     or die "Couldn't connect to database: " . DBI->errstr;
 
 #############################################
@@ -1354,7 +1354,7 @@ if ($VDACaffected_rows > 0)
 			$sthA->finish();
 			}
 
-		$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+		$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass", { mysql_enable_utf8 => 1 })
 		 or die "Couldn't connect to database: " . DBI->errstr;
 
 		if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
@@ -2066,7 +2066,7 @@ if ($call_handle_method =~ /SURVEY/)
 				$qm_complete_time = ($now_date_epoch + 1);
 				$qm_complete_sec = ($qm_call_time + 1);
 
-				$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+				$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass", { mysql_enable_utf8 => 1 })
 				 or die "Couldn't connect to database: " . DBI->errstr;
 
 				if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
@@ -3040,7 +3040,7 @@ while ($drop_timer <= $DROP_TIME)
 
 				if ($enable_queuemetrics_logging > 0)
 					{
-					$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+					$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass", { mysql_enable_utf8 => 1 })
 					 or die "Couldn't connect to database: " . DBI->errstr;
 
 					if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
@@ -3766,7 +3766,7 @@ while ($drop_timer <= $DROP_TIME)
 
 				if ($enable_queuemetrics_logging > 0)
 					{
-					$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+					$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass", { mysql_enable_utf8 => 1 })
 					 or die "Couldn't connect to database: " . DBI->errstr;
 
 					if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
@@ -4013,7 +4013,7 @@ if ($drop_timer > $DROP_TIME)
 
 		if ($enable_queuemetrics_logging > 0)
 			{
-			$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+			$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass", { mysql_enable_utf8 => 1 })
 			 or die "Couldn't connect to database: " . DBI->errstr;
 
 			if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
@@ -4045,7 +4045,7 @@ if ($drop_timer > $DROP_TIME)
 		{
 		if ($enable_queuemetrics_logging > 0)
 			{
-			$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+			$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass", { mysql_enable_utf8 => 1 })
 			 or die "Couldn't connect to database: " . DBI->errstr;
 
 			if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
@@ -4689,7 +4689,7 @@ sub cpd_end_call
 
 	if ($enable_queuemetrics_logging > 0)
 		{
-		$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+		$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass", { mysql_enable_utf8 => 1 })
 		 or die "Couldn't connect to database: " . DBI->errstr;
 
 		if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}

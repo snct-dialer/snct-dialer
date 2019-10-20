@@ -117,7 +117,7 @@ use Time::HiRes qw( gettimeofday );
 use WWW::Curl::Easy;
 use WWW::Curl::Form;
 	  
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 $stmtA = "SELECT container_entry FROM vicidial_settings_containers WHERE container_id = 'DNCDOTCOM';";

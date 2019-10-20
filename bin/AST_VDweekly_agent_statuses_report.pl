@@ -184,7 +184,7 @@ my $csv_path = "$PATHweb/$csv_file_name";
 if ( !$VARDB_port ) { $VARDB_port='3306'; }
 
 # connect to the db
-my $dbh = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass") or die "Couldn't connect to database: " . DBI->errstr;
+my $dbh = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 }) or die "Couldn't connect to database: " . DBI->errstr;
 
 # setup the queries
 my $sys_status_stmt = "SELECT status, status_name FROM vicidial_statuses;";

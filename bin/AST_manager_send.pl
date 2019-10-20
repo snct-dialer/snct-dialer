@@ -100,7 +100,7 @@ $conf{VARDB_port} = '3306' unless ($conf{VARDB_port});
 
 # Connect to DB 
 my $dbhA = DBI->connect("DBI:mysql:" . $conf{VARDB_database} . ":" . $conf{VARDB_server} . ":" . $conf{VARDB_port},
-	$conf{VARDB_user}, $conf{VARDB_pass}) or die "Couldn't connect to database: " . DBI->errstr;
+	$conf{VARDB_user}, $conf{VARDB_pass}, { mysql_enable_utf8 => 1 }) or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
 $servConf = getServerConfig($dbhA, $conf{VARserver_ip});

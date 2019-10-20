@@ -197,7 +197,7 @@ if (length($passlength)>0 and $password!='RND') {
 
 # Set-up our database connection strings, die if we cant connect to either DB
 use DBI;
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass") or die "Couldn't connect to database: " . DBI->errstr;
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 }) or die "Couldn't connect to database: " . DBI->errstr;
  
 # Find our servers
 if (length($server)>2) {

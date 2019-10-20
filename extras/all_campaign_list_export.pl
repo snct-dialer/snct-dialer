@@ -96,7 +96,7 @@ foreach(@config)
 	$i++;
 	}
 
-$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
 	or die "Couldn't connect to database: " . DBI->errstr;
 
 # get a list of the campaign ids

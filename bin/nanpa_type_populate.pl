@@ -210,7 +210,7 @@ if ($skip_download < 1)
 use DBI;
 
 ### connect to phone type prefix DB
-$dbhN = DBI->connect("DBI:mysql:$PREFIX_DB_database:$PREFIX_DB_server:$PREFIX_DB_port;mysql_local_infile=1", "$PREFIX_DB_user", "$PREFIX_DB_pass")
+$dbhN = DBI->connect("DBI:mysql:$PREFIX_DB_database:$PREFIX_DB_server:$PREFIX_DB_port;mysql_local_infile=1", "$PREFIX_DB_user", "$PREFIX_DB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 $stmtN = "SELECT count(*) FROM nanpa_wired_to_wireless;";

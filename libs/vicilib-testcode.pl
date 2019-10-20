@@ -121,7 +121,8 @@ print "config_hash{ 'report_dir' } = $config_hash{ 'report_dir' }\n\n";
 my $dbh = DBI->connect(
 		"DBI:mysql:$config_hash{ 'db_database' }:$config_hash{ 'db_server' }:$config_hash{ 'db_port' }",
 		"$config_hash{ 'db_user' }",
-		"$config_hash{ 'db_pass' }" 
+		"$config_hash{ 'db_pass' }",
+		{ mysql_enable_utf8 => 1 } 
 	) or die "Couldn't connect to database: " . DBI->errstr;
 
 

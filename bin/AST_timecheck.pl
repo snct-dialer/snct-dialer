@@ -192,7 +192,7 @@ if ($DBX) {print "Start time: $timestamp($web_u_time)   TIME SYNC SECONDS: $seco
 
 use DBI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 $SSfrozen_server_call_clear=0;
@@ -238,7 +238,7 @@ while ($sthArowsSERVERS > $i)
 
 		if ( ($web_u_time > $reset_time) && ($web_u_time > $Sdb_time) && ($SSfrozen_server_call_clear > 0) )
 			{
-			$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+			$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
 			 or die "Couldn't connect to database: " . DBI->errstr;
 
 			$servercalls_count=0;

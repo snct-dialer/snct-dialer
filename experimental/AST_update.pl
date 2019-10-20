@@ -219,7 +219,7 @@ use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sle
 use Net::Telnet ();
 use DBI;	  
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 	$event_string='LOGGED INTO MYSQL SERVER ON 1 CONNECTION|';
@@ -1079,7 +1079,7 @@ if (!$run_validate_parked_channels_now)
 		$PQparked_time_UNIX =	$aryA[3];
 			if($DB){print STDERR "\n|$PQchannel|$PQextension|$PQparked_time|$PQparked_time_UNIX|\n";}
 
-		$dbhC = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+		$dbhC = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 		$AR=0;
@@ -1115,7 +1115,7 @@ if (!$run_validate_parked_channels_now)
 			$ARparked_time_UNIX[$rec_count] =	$aryA[3];
 		
 
-		$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+		$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 
