@@ -432,7 +432,7 @@ function SetAgentToPause() {
 	}
     }
     delete xmlhttp;
-    myFunction();
+//    myFunction();
 //  window.PhoneBookPanelToFront("yes");
 }
 

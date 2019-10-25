@@ -656,6 +656,10 @@
             multiple prompts in DYN messages; Added reset of
             calls_today_filtered fields; Added code for filtered maximum
             inbound calls; Added filtered routing options.
+    * Bugfix remove dead call and correct missing parameter:
+      - Update: www/agc/conf_exten_check.php,
+          www/agc/vdc_phonebook_display.php.
+        Thanks to Stefan Kolloch.
     * Change next release to 3.0.1.
 
 2.26.29
