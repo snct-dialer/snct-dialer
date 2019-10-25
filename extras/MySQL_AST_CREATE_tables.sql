@@ -456,6 +456,8 @@ external_lead_id INT(9) UNSIGNED default '0',
 on_hook_saved_status ENUM('READY','CLOSER','PAUSED','LOGIN') NULL DEFAULT NULL,
 hook_auto_answer ENUM('Y','N') NOT NULL DEFAULT 'N',
 auto_answer_prefix VARCHAR(4) NOT NULL DEFAULT '',
+last_inbound_call_time_filtered DATETIME,
+last_inbound_call_finish_filtered DATETIME,
 index (random_id),
 index (last_call_time),
 index (last_update_time),
@@ -695,7 +697,11 @@ hide_call_log_info ENUM('DISABLED','Y','N','SHOW_1','SHOW_2','SHOW_3','SHOW_4','
 next_dial_my_callbacks ENUM('NOT_ACTIVE','DISABLED','ENABLED') default 'NOT_ACTIVE',
 user_admin_redirect_url TEXT,
 agent_disable_manual ENUM('0','1') default '0',
-agent_disable_alt_dial ENUM('0','1') default '0'
+agent_disable_alt_dial ENUM('0','1') default '0',
+max_inbound_filter_enabled ENUM('0','1') default '0',
+max_inbound_filter_statuses TEXT,
+max_inbound_filter_ingroups TEXT,
+max_inbound_filter_min_sec SMALLINT(5) default '-1'
 ) ENGINE=MyISAM;
 
 CREATE UNIQUE INDEX user ON vicidial_users (user);
@@ -1968,6 +1974,7 @@ calls_today SMALLINT(5) UNSIGNED default '0',
 group_web_vars VARCHAR(255) default '',
 group_grade TINYINT(2) UNSIGNED default '1',
 group_type VARCHAR(1) default 'C',
+calls_today_filtered SMALLINT(5) UNSIGNED default '0',
 index (group_id),
 index (user),
 unique index viga_user_group_id (user, group_id)
@@ -1981,6 +1988,9 @@ calls_today SMALLINT(5) UNSIGNED default '0',
 last_call_time DATETIME,
 last_call_finish DATETIME,
 group_grade TINYINT(2) UNSIGNED default '1',
+calls_today_filtered SMALLINT(5) UNSIGNED default '0',
+last_call_time_filtered DATETIME,
+last_call_finish_filtered DATETIME,
 index (group_id),
 index (group_weight),
 unique index vlia_user_group_id (user, group_id)
@@ -4661,4 +4671,4 @@ INSERT INTO vicidial_settings_containers(container_id,container_notes,container_
 
 UPDATE system_settings set vdc_agent_api_active='1';
 
-UPDATE system_settings SET db_schema_version='1576',db_schema_update_date=NOW(),reload_timestamp=NOW();
+UPDATE system_settings SET db_schema_version='1577',db_schema_update_date=NOW(),reload_timestamp=NOW();

@@ -427,6 +427,11 @@ OTHER CHANGES:
 118. Added bench_agent_assign.php script to allow managers to move 
 	'owner-assigned' to another agent.
 
+119. Added User Inbound Max Calls filtering options. Allowing selective counting
+	of inbound calls excluding calls involving set in-groups, statuses and 
+	with a minimum time threshold. Also, new in-group routing options based
+	on last non-filtered call times
+
 
 
 

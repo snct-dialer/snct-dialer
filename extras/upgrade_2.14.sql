@@ -1161,3 +1161,19 @@ ALTER TABLE vicidial_list ADD address_source VARCHAR(150) DEFAULT '';
 ALTER TABLE vicidial_list ADD INDEX alt_phone (alt_phone);
 
 UPDATE system_settings SET db_schema_version='1576',db_schema_update_date=NOW() where db_schema_version < 1576;
+
+ALTER TABLE vicidial_users ADD max_inbound_filter_enabled ENUM('0','1') default '0';
+ALTER TABLE vicidial_users ADD max_inbound_filter_statuses TEXT;
+ALTER TABLE vicidial_users ADD max_inbound_filter_ingroups TEXT;
+ALTER TABLE vicidial_users ADD max_inbound_filter_min_sec SMALLINT(5) default '-1';
+
+ALTER TABLE vicidial_live_inbound_agents ADD calls_today_filtered SMALLINT(5) UNSIGNED default '0';
+ALTER TABLE vicidial_live_inbound_agents ADD last_call_time_filtered DATETIME;
+ALTER TABLE vicidial_live_inbound_agents ADD last_call_finish_filtered DATETIME;
+
+ALTER TABLE vicidial_inbound_group_agents ADD calls_today_filtered SMALLINT(5) UNSIGNED default '0';
+
+ALTER TABLE vicidial_live_agents ADD last_inbound_call_time_filtered DATETIME;
+ALTER TABLE vicidial_live_agents ADD last_inbound_call_finish_filtered DATETIME;
+
+UPDATE system_settings SET db_schema_version='1577',db_schema_update_date=NOW() where db_schema_version < 1577;

@@ -56,6 +56,7 @@
 # 190216-0813 - Fix for user-group, in-group and campaign allowed/permissions matching issues
 # 190320-2331 - Added more logging options
 # 190720-1007 - Added Call Quota logging
+# 191017-1051 - Added option for multiple prompts in DYN messages
 #
 
 $script = 'VD_amd.agi';
@@ -664,10 +665,18 @@ else
 			{
 			$useTTS=0;
 			if ($DB_am_message_exten =~ /^TTS/) 
-				{$useTTS++;}
-			$TTS_filename = $DB_am_message_exten;
-			$TTS_filename =~s/^TTS|^DYN//gi;
-			$TTS_filename =~s/\|.*//gi;
+				{
+				$useTTS++;
+				$TTS_filename = $DB_am_message_exten;
+				$TTS_filename =~s/^TTS//gi;
+				$TTS_filename =~s/\|.*//gi;
+				}
+			else
+				{
+				$TTS_filename = $DB_am_message_exten;
+				$TTS_filename =~s/^DYN//gi;
+				$TTS_text = $TTS_filename;
+				}
 
 			if ($AGILOG) {$agi_string = "--    TTS : |$useTTS|$TTS_filename|";   &agi_output;}
 
