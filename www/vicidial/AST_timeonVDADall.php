@@ -215,8 +215,9 @@ if (isset($_GET["mobile_device"]))				{$mobile_device=$_GET["mobile_device"];}
 	elseif (isset($_POST["mobile_device"]))	{$mobile_device=$_POST["mobile_device"];}
 
 
-require_once("../tools/system_wide_settings.php");
+if(!isset($mobile_device)) { $mobile_device = 0; }
 
+require_once("../tools/system_wide_settings.php");
 
 $report_name = 'Real-Time Main Report';
 $db_source = 'M';
@@ -496,6 +497,8 @@ $LOGadmin_viewable_call_times =	$row[3];
 $LOGadmin_viewable_groupsSQL='';
 $valLOGadmin_viewable_groupsSQL='';
 $vmLOGadmin_viewable_groupsSQL='';
+$rawLOGadmin_viewable_groupsSQL = '';
+$whereLOGadmin_viewable_groupsSQL = '';
 if ( (!preg_match('/\-\-ALL\-\-/i',$LOGadmin_viewable_groups)) and (strlen($LOGadmin_viewable_groups) > 3) )
 	{
 	$rawLOGadmin_viewable_groupsSQL = preg_replace("/ -/",'',$LOGadmin_viewable_groups);
@@ -562,6 +565,7 @@ $i=0;
 $LISTgroups=array();
 $LISTnames=array();
 $LISTgroups[$i]='ALL-ACTIVE';
+$LISTnames[$i]='';
 $i++;
 $groups_to_print++;
 while ($i < $groups_to_print)
@@ -577,6 +581,8 @@ $allactivecampaigns .= "''";
 $i=0;
 $group_string='|';
 $group_ct = count($groups);
+$group_SQL = '';
+$groupQS = '';
 while($i < $group_ct)
 	{
 	$groups[$i] = preg_replace("/'|\"|\\\\|;/","",$groups[$i]);
@@ -594,6 +600,8 @@ $group_SQL = preg_replace('/,$/i', '',$group_SQL);
 $i=0;
 $user_group_string='|';
 $user_group_ct = count($user_group_filter);
+$user_group_SQL = '';
+$usergroupQS = '';
 while($i < $user_group_ct)
 	{
 	$user_group_filter[$i] = preg_replace("/'|\"|\\\\|;/","",$user_group_filter[$i]);
@@ -610,6 +618,8 @@ $user_group_SQL = preg_replace('/,$/i', '',$user_group_SQL);
 $i=0;
 $ingroup_string='|';
 $ingroup_ct = count($ingroup_filter);
+$ingroup_SQL = '';
+$ingroupQS = '';
 while($i < $ingroup_ct)
 	{
 	$ingroup_filter[$i] = preg_replace('/[^-_0-9a-zA-Z]/', '', $ingroup_filter[$i]);
@@ -706,7 +716,7 @@ else
 	$all_active_ingroups = 0;
 	}
 
-$stmt="SELECT user_group from vicidial_user_groups $whereLOGadmin_viewable_groupsSQL order by user_group;";
+$stmt="SELECT user_group, group_name from vicidial_user_groups $whereLOGadmin_viewable_groupsSQL order by user_group;";
 $rslt=mysql_to_mysqli($stmt, $link);
 if (!isset($DB))   {$DB=0;}
 if ($DB) {echo "$stmt\n";}
@@ -722,6 +732,7 @@ while ($i < $usergroups_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
 	$usergroups[$i] =$row[0];
+	$usergroupnames[$i] = $row[1];
 	$i++;
 	}
 
@@ -733,6 +744,7 @@ $i=0;
 $LISTingroups=array();
 $LISTingroup_names=array();
 $LISTingroups[$i]='ALL-INGROUPS';
+$LISTingroup_names[$i] = '';
 $i++;
 $ingroups_to_print++;
 $ingroups_string='|';
@@ -768,6 +780,7 @@ $select_list .= "<BR><font class=\"top_settings_val\">"._QXZ("(To select more th
 $select_list .= "<BR><BR>"._QXZ("Select User Groups").": <BR>";
 $select_list .= "<SELECT SIZE=8 NAME=user_group_filter[] ID=user_group_filter[] multiple>";
 $o=0;
+$user_group_filter_string = "";
 while ($o < $usergroups_to_print)
 	{
 	if (preg_match("/\|$usergroups[$o]\|/",$user_group_filter_string)) 
@@ -781,6 +794,7 @@ $select_list .= "</SELECT>";
 $select_list .= "<BR><BR>"._QXZ("Select In-Groups").": <BR>";
 $select_list .= "<SELECT SIZE=8 NAME=ingroup_filter[] ID=ingroup_filter[] multiple>";
 $o=0;
+$in_group_none = 0;
 while ($o < $ingroups_to_print)
 	{
 	if (preg_match("/\|$LISTingroups[$o]\|/",$ingroup_string))
@@ -1345,6 +1359,7 @@ $stmt = "SELECT group_id from vicidial_inbound_groups;";
 $rslt=mysql_to_mysqli($stmt, $link);
 $ingroups_to_print = mysqli_num_rows($rslt);
 $c=0;
+$ALLcloser_campaignsSQL = '';
 while ($ingroups_to_print > $c)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -1356,7 +1371,7 @@ if (strlen($ALLcloser_campaignsSQL)<2)
 	{$ALLcloser_campaignsSQL="''";}
 if ($DB > 0) {echo "\n|$ALLcloser_campaignsSQL|$stmt|\n";}
 
-
+$closer_campaignsSQL = "";
 ##### INBOUND #####
 if ( ( preg_match('/Y/',$with_inbound) or preg_match('/O/',$with_inbound) ) and ($campaign_allow_inbound > 0) )
 	{
@@ -1405,6 +1420,7 @@ if ($droppedOFtotal > 0)
 	}
 
 ##### SHOW IN-GROUP STATS OR INBOUND ONLY WITH VIEW-MORE ###
+$ARYingroupdetail= array();
 if ( ($ALLINGROUPstats > 0) or ( (preg_match('/O/',$with_inbound)) and ($adastats > 1) ) )
 	{
 	$stmtB="SELECT campaign_id from vicidial_campaign_stats where campaign_id IN ($closer_campaignsSQL) order by campaign_id;";
@@ -2286,6 +2302,7 @@ if ( ($with_inbound != 'O') and ($NOLEADSalert == 'YES') )
 ###################################################################################
 if ($campaign_allow_inbound > 0)
 	{
+	$closer_campaignsSQL = '';
 		if($displayAllInbound == 'Y') { 
 			$org_group_string = $group_string;
 			$group_string = "ALL-ACTIVE";
@@ -2299,10 +2316,26 @@ if ($campaign_allow_inbound > 0)
 			{
 			$closer_campaigns.="$row[0]";
 			}
+#		$closer_campaignsArryDup = explode(' ', $closer_campaigns);
+#		$closer_campaignsArry = array_unique ($closer_campaignsArryDup);
 		$closer_campaigns = preg_replace("/^ | -$/","",$closer_campaigns);
 		$closer_campaigns = preg_replace("/ - /"," ",$closer_campaigns);
 		$closer_campaigns = preg_replace("/ /","','",$closer_campaigns);
 		$closer_campaignsSQL = "'$closer_campaigns'";
+		$iPos = 0;
+		$TmpStr = '';
+		$closer_campaignsArryDup = explode(',', $closer_campaigns);
+		$closer_campaignsArry = array_unique ($closer_campaignsArryDup);
+		foreach ($closer_campaignsArry as $closerStr) {
+		    if($closerStr !=  "''") {
+			if($iPos != 0) {
+			    $TmpStr .= ',';
+			}
+			$TmpStr .= $closerStr;
+			$iPos++;
+		    }
+		}
+		$closer_campaignsSQL = "'$TmpStr'";
 		}	
 
 	# Clean up closer campaigns to only include specifically selected ones

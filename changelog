@@ -636,6 +636,8 @@
           www/agc/bp.pl,
           www/vicidial/listloader_rowdisplay.pl,
           www/vicidial/spreadsheet_sales_viewer.pl.
+    * Fix some sql issues and undefined vars:
+      - Update: www/vicidial/AST_timeonVDADall.php.
     * Change next release to 3.0.1.
 
 2.26.29
