@@ -668,6 +668,8 @@
           extras/MySQL_AST_CREATE_tables.sql,
           extras/mysql_update/mysql-1567.sql,
           extras/upgrade_2.14.sql.
+    * Add upstream Rev. 3150:
+      - Change: www/vicidial/AST_agent_performance_detail.php: Query fixes.
     * Change next release to 3.0.1.
 
 2.26.29
