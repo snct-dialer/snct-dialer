@@ -779,6 +779,11 @@
       - Update: www/vicidial/list_merge.php,
           www/vicidial/vicidial_whiteboard_functions.php: Added new help
             display.
+    * Add upstream Rev. 3153:
+      - Update: www/agc/phone_only.php,
+          www/agc/vdc_db_query.php,
+          www/agc/vdc_script_display.php,
+          www/agc/vicidial.php: Fixes for translations.
     * Change next release to 3.0.1.
 
 2.26.29

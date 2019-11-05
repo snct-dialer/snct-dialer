@@ -918,9 +918,9 @@ if (preg_match('/--A--TABLEper_call_notes--B--/i',$script_text))
 			$NOTESout .= "<td align=right><font size=2> $ALLstatus[$i]</td>\n";
 			$NOTESout .= "<td align=right><font size=2> $ALLphone_code[$i] $phone_number_display </td>\n";
 			$NOTESout .= "<td align=right><font size=2> $ALLcampaign_id[$i] </td>\n";
-			$NOTESout .= "<td align=right><font size=2> $ALLin_out[$i] </td>\n";
-			$NOTESout .= "<td align=right><font size=2> $ALLalt_dial[$i] </td>\n";
-			$NOTESout .= "<td align=right><font size=2> $ALLhangup_reason[$i] </td>\n";
+			$NOTESout .= "<td align=right><font size=2> "._QXZ("$ALLin_out[$i]")." </td>\n";
+			$NOTESout .= "<td align=right><font size=2> "._QXZ("$ALLalt_dial[$i]")." </td>\n";
+			$NOTESout .= "<td align=right><font size=2> "._QXZ("$ALLhangup_reason[$i]")." </td>\n";
 			$NOTESout .= "</TR><TR>";
 			$NOTESout .= "<td></td>";
 			$NOTESout .= "<TD $bgcolor COLSPAN=9 align=left><font style=\"font-size:11px;font-family:sans-serif;\"> $Allcall_notes[$i] </font></TD>";

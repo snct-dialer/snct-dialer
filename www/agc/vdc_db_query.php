@@ -496,13 +496,14 @@
 # 191013-0934 - Fixes for PHP7 issues
 # 191017-2205 - Added code for filtered inbound max calls
 # 191030-1536 - Added code to gather VM Message Group entries
+# 191104-1800 - Fixes for translations
 #
 
-$version = '2.14-375';
-$build = '191030-1536';
+$version = '2.14-376';
+$build = '191104-1800';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=817;
+$mysql_log_count=824;
 $one_mysql_log=0;
 $DB=0;
 $VD_login=0;
@@ -8842,7 +8843,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 					$stmt = "SELECT script_color from vicidial_scripts where script_id='$VDCL_campaign_script_two';";
 					if ($DB) {echo "$stmt\n";}
 					$rslt=mysql_to_mysqli($stmt, $link);
-						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00819',$user,$server_ip,$session_name,$one_mysql_log);}
 					$VDIG_scrptcolor_ct = mysqli_num_rows($rslt);
 					if ($VDIG_scrptcolor_ct > 0)
 						{
@@ -9178,7 +9179,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 					$stmt = "SELECT script_color from vicidial_scripts where script_id='$VDCL_ingroup_script_two';";
 					if ($DB) {echo "$stmt\n";}
 					$rslt=mysql_to_mysqli($stmt, $link);
-						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00820',$user,$server_ip,$session_name,$one_mysql_log);}
 					$VDIG_scrptcolor_ct = mysqli_num_rows($rslt);
 					if ($VDIG_scrptcolor_ct > 0)
 						{
@@ -9892,6 +9893,8 @@ if ($ACTION == 'VDADcheckINCOMINGother')
 	$chat_group_str="";
 	$VLA_inOUT='NONE';
 	$queue_seconds=0;
+	if (!isset($inbound_email_groups)) {$inbound_email_groups=array();}
+	if (!isset($inbound_chat_groups)) {$inbound_chat_groups=array();}
 
 	$email_group_ct=count($inbound_email_groups); # This should always be greater than zero for the script to reach this point, but just in case...
 	for ($i=0; $i<$email_group_ct; $i++) 
@@ -10520,7 +10523,7 @@ if ($ACTION == 'VDADcheckINCOMINGother')
 				$stmt = "SELECT script_color from vicidial_scripts where script_id='$VDCL_ingroup_script_two';";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_to_mysqli($stmt, $link);
-					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00821',$user,$server_ip,$session_name,$one_mysql_log);}
 				$VDIG_scrptcolor_ct = mysqli_num_rows($rslt);
 				if ($VDIG_scrptcolor_ct > 0)
 					{
@@ -11620,7 +11623,7 @@ if ($ACTION == 'LeaDSearcHSelecTUpdatE')
 				$stmt = "SELECT script_color from vicidial_scripts where script_id='$VDCL_ingroup_script_two';";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_to_mysqli($stmt, $link);
-					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00822',$user,$server_ip,$session_name,$one_mysql_log);}
 				$VDIG_scrptcolor_ct = mysqli_num_rows($rslt);
 				if ($VDIG_scrptcolor_ct > 0)
 					{
@@ -15689,7 +15692,7 @@ if ($ACTION == 'VMMG_list_build')
 	### Grab Server GMT value from the database
 	$stmt="SELECT audio_filename,audio_name,rank,time_start,time_end FROM leave_vm_message_groups_entries where leave_vm_message_group_id='$stage' order by rank limit 1000;";
 	$rslt=mysql_to_mysqli($stmt, $link);
-		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00823',$user,$server_ip,$session_name,$one_mysql_log);}
 	$vmmg_recs = mysqli_num_rows($rslt);
 	$v=0;
 	while ($vmmg_recs > $v)
@@ -15754,7 +15757,7 @@ if ($ACTION == 'VMMG_selected')
 		$stmtL="INSERT INTO vicidial_agent_vmm_overrides set call_date=NOW(),caller_code='$MDnextCID',lead_id='$lead_id',user='$user',vm_message='$stage';";
 		if ($DB) {echo "|$stmtL|\n";}
 		$rslt=mysql_to_mysqli($stmtL, $link);
-			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00824',$user,$server_ip,$session_name,$one_mysql_log);}
 		$VAVOaffected_rows = mysqli_affected_rows($link);
 		echo "SUCCESS: $VAVOaffected_rows $MDnextCID $stage\n";
 		}
@@ -16471,8 +16474,8 @@ if ($ACTION == 'CALLLOGview')
 		echo "<td align=right><font class='sb_text'> $ALLphone_code[$i] $phone_number_display </td>\n";
 		echo "<td align=right><font class='sb_text'> $Allfirst_name[$i] $Alllast_name[$i] </td>\n";
 		echo "<td align=right><font class='sb_text'> $ALLcampaign_id[$i] </td>\n";
-		echo "<td align=right><font class='sb_text'> $ALLin_out[$i] </td>\n";
-		echo "<td align=right><font class='sb_text'> $ALLalt_dial[$i] </td>\n";
+		echo "<td align=right><font class='sb_text'> "._QXZ("$ALLin_out[$i]")." </td>\n";
+		echo "<td align=right><font class='sb_text'> "._QXZ("$ALLalt_dial[$i]")." </td>\n";
 		if($ALLhangup_reason[$i] == "ABANDON" ) {
 		    echo "<td align=right><font class='sb_text' color='#ff0000'> $ALLhangup_reason[$i] </td>\n";
 		} else {
@@ -18026,9 +18029,9 @@ if ($ACTION == 'LEADINFOview')
 				$NOTESout .= "<td align=right><font class='sb_text'> $ALLstatus[$i]</td>\n";
 				$NOTESout .= "<td align=right><font class='sb_text'> $ALLphone_code[$i] $phone_number_display </td>\n";
 				$NOTESout .= "<td align=right><font class='sb_text'> $ALLcampaign_id[$i] </td>\n";
-				$NOTESout .= "<td align=right><font class='sb_text'> $ALLin_out[$i] </td>\n";
-				$NOTESout .= "<td align=right><font class='sb_text'> $ALLalt_dial[$i] </td>\n";
-				$NOTESout .= "<td align=right><font class='sb_text'> $ALLhangup_reason[$i] </td>\n";
+				$NOTESout .= "<td align=right><font class='sb_text'> "._QXZ("$ALLin_out[$i]")." </td>\n";
+				$NOTESout .= "<td align=right><font class='sb_text'> "._QXZ("$ALLalt_dial[$i]")." </td>\n";
+				$NOTESout .= "<td align=right><font class='sb_text'> "._QXZ("$ALLhangup_reason[$i]")." </td>\n";
 				$NOTESout .= "</TR><TR>";
 				$NOTESout .= "<td></td>";
 				$NOTESout .= "<TD $bgcolor COLSPAN=9 align=left><font style=\"font-size:11px;font-family:sans-serif;\"> $Allcall_notes[$i] </font></TD>";

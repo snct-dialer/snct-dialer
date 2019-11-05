@@ -639,12 +639,13 @@
 # 190925-1346 - Changes for more SIP Event Action features
 # 191018-0904 - Added User Inbound Filtered features
 # 191101-1150 - Added VM Message Groups features, second script tab
+# 191104-1759 - Fixes for translations
 #
 
-$version = '2.14-590c';
-$build = '191101-1150';
+$version = '2.14-591c';
+$build = '191104-1759';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=87;
+$mysql_log_count=91;
 $one_mysql_log=0;
 $DB=0;
 
@@ -942,7 +943,7 @@ if ($agent_screen_colors != 'default')
 	{
 	$stmt = "SELECT menu_background,frame_background,std_row1_background,std_row2_background,std_row3_background,std_row4_background,std_row5_background,alt_row1_background,alt_row2_background,alt_row3_background,web_logo FROM vicidial_screen_colors where colors_id='$agent_screen_colors';";
 	$rslt=mysql_to_mysqli($stmt, $link);
-		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01XXX',$VD_login,$server_ip,$session_name,$one_mysql_log);}
+		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01088',$VD_login,$server_ip,$session_name,$one_mysql_log);}
 	if ($DB) {echo "$stmt\n";}
 	$qm_conf_ct = mysqli_num_rows($rslt);
 	if ($qm_conf_ct > 0)
@@ -1253,7 +1254,7 @@ if ($LogiNAJAX > 0)
 					//	alert(logincampaign_query);
 					//	alert(xmlhttp.responseText);
 						document.getElementById("LogiNCamPaigns").innerHTML = Nactiveext;
-                        document.getElementById("LogiNReseT").innerHTML = "<input type=\"button\" value=\"Refresh Campaign List\" onclick=\"login_allowable_campaigns()\" />";
+						document.getElementById("LogiNReseT").innerHTML = "<input type=\"button\" value=\"<?php echo _QXZ("Refresh Campaign List"); ?>\" onclick=\"login_allowable_campaigns()\" />";
 						document.getElementById("VD_campaign").focus();
 						}
 					}
@@ -2240,7 +2241,7 @@ else
 					$leave_vm_message_group_exists=0;
 					$stmt="SELECT count(*) from leave_vm_message_groups where leave_vm_message_group_id='$leave_vm_message_group_id' and active='Y';";
 					$rslt=mysql_to_mysqli($stmt, $link);
-					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01XXX',$VD_login,$server_ip,$session_name,$one_mysql_log);}
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01089',$VD_login,$server_ip,$session_name,$one_mysql_log);}
 					$vmmg_count = mysqli_num_rows($rslt);
 					if ($vmmg_count > 0)
 						{
@@ -2251,7 +2252,7 @@ else
 						{
 						$stmt="SELECT count(*) from leave_vm_message_groups_entries where leave_vm_message_group_id='$leave_vm_message_group_id';";
 						$rslt=mysql_to_mysqli($stmt, $link);
-						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01XXX',$VD_login,$server_ip,$session_name,$one_mysql_log);}
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01090',$VD_login,$server_ip,$session_name,$one_mysql_log);}
 						$vmmge_count = mysqli_num_rows($rslt);
 						if ($vmmge_count > 0)
 							{
@@ -2322,7 +2323,7 @@ else
 						$stmt = "SELECT count(*) from vicidial_callbacks where recipient='USERONLY' and user='$VD_login' $campaignCBsql $campaignCBhoursSQL $campaignCBdisplaydaysSQL and status IN('LIVE');";
 						if ($DB) {echo "$stmt\n";}
 						$rslt=mysql_to_mysqli($stmt, $link);
-							if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01091',$user,$server_ip,$session_name,$one_mysql_log);}
 						$row=mysqli_fetch_row($rslt);
 						$launch_scb_force_dial=$row[0];
 						}
@@ -4149,7 +4150,7 @@ while ($CINC < 12)
 	$CCAL_OUT .= "<tr>";
 	$CCAL_OUT .= "<td colspan=\"7\" bordercolor=\"#ffffff\" bgcolor=\"#FFFFCC\">";
 	$CCAL_OUT .= "<div align=\"center\"><font color=\"#000066\"><b><font face=\"Arial, Helvetica, sans-serif\" size=\"2\">";
-	$CCAL_OUT .= $Cmonths[$CfirstdayARY['mon']]." $CfirstdayARY[year]";
+	$CCAL_OUT .= _QXZ($Cmonths[$CfirstdayARY['mon']])." $CfirstdayARY[year]";
 	$CCAL_OUT .= "</font></b></font></div>";
 	$CCAL_OUT .= "</td>";
 	$CCAL_OUT .= "</tr>";
@@ -4159,7 +4160,7 @@ while ($CINC < 12)
 		$CDCLR="#ffffff";
 		$CCAL_OUT .= "<td bordercolor=\"$CDCLR\">";
 		$CCAL_OUT .= "<div align=\"center\"><font color=\"#000066\"><b><font face=\"Arial, Helvetica, sans-serif\" size=\"1\">";
-		$CCAL_OUT .= "$Cday";
+		$CCAL_OUT .= _QXZ("$Cday", 3);
 		$CCAL_OUT .= "</font></b></font></div>";
 		$CCAL_OUT .= "</td>";
 		}
@@ -20931,7 +20932,7 @@ if ($webphone_location == 'bar')
 else
 	{
     echo "<span style=\"position:absolute;left:" . $SBwidth . "px;top:15px;height:500px;overflow:scroll;z-index:$zi;background-color:$SIDEBAR_COLOR;\" id=\"webphoneSpan\"><table cellpadding=\"$webphone_pad\" cellspacing=\"0\" border=\"0\"><tr><td width=\"5px\" rowspan=\"2\">&nbsp;</td><td align=\"center\"><font class=\"body_text\">
-    Web Phone: &nbsp; </font></td></tr><tr><td align=\"center\"><span id=\"webphonecontent\">$webphone_content</span></td></tr></table></span>\n";
+    "._QXZ("Web Phone").": &nbsp; </font></td></tr><tr><td align=\"center\"><span id=\"webphonecontent\">$webphone_content</span></td></tr></table></span>\n";
 	}
 ?>
 
