@@ -565,7 +565,7 @@ ALTER TABLE contact_information ADD other_num2_phone_code VARCHAR(10) COLLATE ut
 
 ALTER TABLE vicidial_campaigns ADD agent_screen_time_display VARCHAR(40) default 'DISABLED';
 
-ALTER TABLE vicidial_campaigns MODIFY get_call_launch ENUM('NONE','SCRIPT','WEBFORM','WEBFORMTWO','WEBFORMTHREE','FORM','PREVIEW_WEBFORM','PREVIEW_WEBFORMTWO','PREVIEW_WEBFORMTHREE') default 'NONE';
+ALTER TABLE vicidial_campaigns MODIFY get_call_launch ENUM('NONE','SCRIPT','SCRIPTTWO','WEBFORM','WEBFORMTWO','WEBFORMTHREE','FORM','PREVIEW_WEBFORM','PREVIEW_WEBFORMTWO','PREVIEW_WEBFORMTHREE') default 'NONE';
 
 UPDATE system_settings SET db_schema_version='1528',db_schema_update_date=NOW() where db_schema_version < 1528;
 
@@ -1179,3 +1179,42 @@ ALTER TABLE vicidial_live_agents ADD last_inbound_call_finish_filtered DATETIME;
 UPDATE system_settings SET db_schema_version='1577',db_schema_update_date=NOW() where db_schema_version < 1577;
 
 UPDATE vicidial_screen_colors SET web_logo="SNCT.png";
+
+ALTER TABLE system_settings ADD enable_second_script ENUM('0','1') default '0';
+
+ALTER TABLE vicidial_inbound_groups ADD ingroup_script_two VARCHAR(20) default '';
+ALTER TABLE vicidial_inbound_groups MODIFY get_call_launch ENUM('NONE','SCRIPT','SCRIPTTWO','WEBFORM','WEBFORMTWO','WEBFORMTHREE','FORM','EMAIL') default 'NONE';
+
+ALTER TABLE vicidial_campaigns ADD campaign_script_two VARCHAR(20) default '';
+ALTER TABLE vicidial_campaigns MODIFY get_call_launch ENUM('NONE','SCRIPT','SCRIPTTWO','WEBFORM','WEBFORMTWO','WEBFORMTHREE','FORM','PREVIEW_WEBFORM','PREVIEW_WEBFORMTWO','PREVIEW_WEBFORMTHREE') default 'NONE';
+ALTER TABLE vicidial_campaigns ADD leave_vm_no_dispo ENUM('ENABLED','DISABLED') default 'DISABLED';
+ALTER TABLE vicidial_campaigns ADD leave_vm_message_group_id VARCHAR(40) default '---NONE---';
+
+CREATE TABLE leave_vm_message_groups (
+leave_vm_message_group_id VARCHAR(40) PRIMARY KEY NOT NULL,
+leave_vm_message_group_notes VARCHAR(255) default '',
+active ENUM('Y','N') default 'Y',
+user_group VARCHAR(20) default '---ALL---'
+) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE leave_vm_message_groups_entries (
+leave_vm_message_group_id VARCHAR(40) NOT NULL,
+audio_filename VARCHAR(255) NOT NULL,
+audio_name VARCHAR(255) default '',
+rank SMALLINT(5) default '0',
+time_start VARCHAR(4) default '0000',
+time_end VARCHAR(4) default '2400'
+) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE vicidial_agent_vmm_overrides (
+call_date DATETIME,
+caller_code VARCHAR(30) default '',
+lead_id INT(9) UNSIGNED,
+user VARCHAR(20) default '',
+vm_message VARCHAR(255) default '',
+index (caller_code),
+index (call_date),
+index (lead_id)
+) ENGINE=MyISAM;
+
+UPDATE system_settings SET db_schema_version='1578',db_schema_update_date=NOW() where db_schema_version < 1578;

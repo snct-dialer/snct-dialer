@@ -432,6 +432,15 @@ OTHER CHANGES:
 	with a minimum time threshold. Also, new in-group routing options based
 	on last non-filtered call times
 
+120. Added System Settings option for second agent screen script tab
+
+121. Added a Campaign option for VoiceMail Message Groups, allowing agents to be
+	able to select a message to transfer a customer answering machine to
+	from a list of pre-recorded messages that can be defined by time-of-day.
+
+122. Added a Campaign option to not send an agent immediately to the disposition
+	screen after transferring a customer call to a VoiceMail Message.
+
 
 
 
