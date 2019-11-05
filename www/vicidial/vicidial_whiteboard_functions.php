@@ -416,7 +416,7 @@ function RefreshReportWindow() {
 				TotalMinutes="0"+TotalMinutes;
 				TotalSeconds="0"+TotalSeconds;
 
-				if (response_txt && response_txt=="REPORT RETURNED NO RESULTS") {
+				if (response_txt && response_txt=="<?php echo _QXZ("REPORT RETURNED NO RESULTS"); ?>") {
 					document.getElementById("total_calls_div").innerHTML="** <?php echo _QXZ("NO RESULTS"); ?> **";
 					document.getElementById("total_sales_div").innerHTML="** <?php echo _QXZ("NO RESULTS"); ?> **";
 					document.getElementById("total_time_div").innerHTML="** <?php echo _QXZ("NO RESULTS"); ?> **";

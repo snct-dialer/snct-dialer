@@ -883,7 +883,7 @@ else
 		while ($row=mysqli_fetch_array($rslt)) 
 			{
 			if (in_array($row["campaign_id"], $preload_campaigns)) {$s=" selected";} else {$s="";}
-			echo "\t<option value='$row[campaign_id]'$s>".($row["campaign_id"] ? $row["campaign_id"] : "(none)")." - ($row[ct] callbacks)</option>\n";
+			echo "\t<option value='$row[campaign_id]'$s>".($row["campaign_id"] ? $row["campaign_id"] : "(none)")." - ($row[ct] "._QXZ("callbacks").")</option>\n";
 			}
 		}
 	else
@@ -913,7 +913,7 @@ else
 		while ($row=mysqli_fetch_array($rslt)) 
 			{
 			if (in_array($row["list_id"], $preload_lists)) {$s=" selected";} else {$s="";}
-			echo "\t<option value='$row[list_id]'$s>$row[list_id] - $row[list_name] - $row[campaign_id] - ($row[ct] callbacks)</option>\n";
+			echo "\t<option value='$row[list_id]'$s>$row[list_id] - $row[list_name] - $row[campaign_id] - ($row[ct] "._QXZ("callbacks").")</option>\n";
 			}
 		}
 	else
@@ -936,7 +936,7 @@ else
 		while ($row=mysqli_fetch_array($rslt)) 
 			{
 			if (in_array($row["user_group"], $preload_user_groups)) {$s=" selected";} else {$s="";}
-			echo "\t<option value='$row[user_group]'$s>$row[user_group] - ($row[ct] callbacks)</option>\n";
+			echo "\t<option value='$row[user_group]'$s>$row[user_group] - ($row[ct] "._QXZ("callbacks").")</option>\n";
 			}
 		}
 	else
@@ -961,7 +961,7 @@ else
 				{
 				$user_row=mysqli_fetch_array($user_rslt);
 				if (in_array($row["user"], $preload_users)) {$s=" selected";} else {$s="";}
-				echo "\t<option value='$row[user]'$s>$row[user] - $user_row[full_name] - ($row[ct] callbacks)</option>\n";
+				echo "\t<option value='$row[user]'$s>$row[user] - $user_row[full_name] - ($row[ct] "._QXZ("callbacks").")</option>\n";
 				}
 			}
 		}

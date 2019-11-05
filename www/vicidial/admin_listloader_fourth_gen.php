@@ -748,11 +748,11 @@ if ( (!$OK_to_process) or ( ($leadfile) and ($file_layout!="standard" && $file_l
 		<td width='80%'>
 		<span id='status_mismatch_display'>
 			<select id='status_mismatch_action' name='status_mismatch_action'>
-			<option value='' selected>NONE</option>
-			<option value='MOVE RECENT FROM SYSTEM'>MOVE MOST RECENT PHONE DUPLICATE, CHECK ENTIRE SYSTEM</option>
-			<option value='MOVE ALL FROM SYSTEM'>MOVE ALL PHONE DUPLICATES, CHECK ENTIRE SYSTEM</option>
-			<option value='MOVE RECENT USING CHECK'>MOVE MOST RECENT PHONE FROM DUPLICATE CHECK TO CURRENT LIST</option>
-			<option value='MOVE ALL USING CHECK'>MOVE ALL PHONES FROM DUPLICATE CHECK TO CURRENT LIST</option>
+			<option value='' selected><?php echo _QXZ("NONE"); ?></option>
+			<option value='MOVE RECENT FROM SYSTEM'><?php echo _QXZ("MOVE MOST RECENT PHONE DUPLICATE, CHECK ENTIRE SYSTEM"); ?></option>
+			<option value='MOVE ALL FROM SYSTEM'><?php echo _QXZ("MOVE ALL PHONE DUPLICATES, CHECK ENTIRE SYSTEM"); ?></option>
+			<option value='MOVE RECENT USING CHECK'><?php echo _QXZ("MOVE MOST RECENT PHONE FROM DUPLICATE CHECK TO CURRENT LIST"); ?></option>
+			<option value='MOVE ALL USING CHECK'><?php echo _QXZ("MOVE ALL PHONES FROM DUPLICATE CHECK TO CURRENT LIST"); ?></option>
 			</select></font>		
 		</span> <?php echo "$NWB#list_loader-status_mismatch_action$NWE"; ?>
 		</td>

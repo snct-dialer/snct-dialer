@@ -1457,9 +1457,9 @@ if ($file_exported < 1)
 		while ($campaigns_to_print > $o)
 		{
 			if (preg_match("/\|$LISTcampaigns[$o]\|/",$campaign_string)) 
-				{echo "<option selected value=\"$LISTcampaigns[$o]\">$LISTcampaigns[$o]</option>\n";}
+				{echo "<option selected value=\"$LISTcampaigns[$o]\">"._QXZ("$LISTcampaigns[$o]")."</option>\n";}
 			else 
-				{echo "<option value=\"$LISTcampaigns[$o]\">$LISTcampaigns[$o]</option>\n";}
+				{echo "<option value=\"$LISTcampaigns[$o]\">"._QXZ("$LISTcampaigns[$o]")."</option>\n";}
 			$o++;
 		}
 	echo "</SELECT>\n";
@@ -1473,9 +1473,9 @@ if ($file_exported < 1)
 			while ($groups_to_print > $o)
 			{
 				if (preg_match("/\|$LISTgroups[$o]\|/",$group_string)) 
-					{echo "<option selected value=\"$LISTgroups[$o]\">$LISTgroups[$o]</option>\n";}
+					{echo "<option selected value=\"$LISTgroups[$o]\">"._QXZ("$LISTgroups[$o]")."</option>\n";}
 				else
-					{echo "<option value=\"$LISTgroups[$o]\">$LISTgroups[$o]</option>\n";}
+					{echo "<option value=\"$LISTgroups[$o]\">"._QXZ("$LISTgroups[$o]")."</option>\n";}
 				$o++;
 			}
 		echo "</SELECT>\n";
@@ -1487,9 +1487,9 @@ if ($file_exported < 1)
 		while ($lists_to_print > $o)
 		{
 			if (preg_match("/\|$LISTlists[$o]\|/",$list_string)) 
-				{echo "<option selected value=\"$LISTlists[$o]\">$LISTlists[$o]</option>\n";}
+				{echo "<option selected value=\"$LISTlists[$o]\">"._QXZ("$LISTlists[$o]")."</option>\n";}
 			else 
-				{echo "<option value=\"$LISTlists[$o]\">$LISTlists[$o]</option>\n";}
+				{echo "<option value=\"$LISTlists[$o]\">"._QXZ("$LISTlists[$o]")."</option>\n";}
 			$o++;
 		}
 	echo "</SELECT>\n";
@@ -1500,9 +1500,9 @@ if ($file_exported < 1)
 		while ($statuses_to_print > $o)
 		{
 			if (preg_match("/\|$LISTstatus[$o]\|/",$list_string)) 
-				{echo "<option selected value=\"$LISTstatus[$o]\">$LISTstatus[$o]</option>\n";}
+				{echo "<option selected value=\"$LISTstatus[$o]\">"._QXZ("$LISTstatus[$o]")."</option>\n";}
 			else 
-				{echo "<option value=\"$LISTstatus[$o]\">$LISTstatus[$o]</option>\n";}
+				{echo "<option value=\"$LISTstatus[$o]\">"._QXZ("$LISTstatus[$o]")."</option>\n";}
 			$o++;
 		}
 	echo "</SELECT>\n";
@@ -1515,9 +1515,9 @@ if ($file_exported < 1)
 			while ($user_groups_to_print > $o)
 			{
 				if (preg_match("/\|$LISTuser_groups[$o]\|/",$user_group_string)) 
-					{echo "<option selected value=\"$LISTuser_groups[$o]\">$LISTuser_groups[$o]</option>\n";}
+					{echo "<option selected value=\"$LISTuser_groups[$o]\">"._QXZ("$LISTuser_groups[$o]")."</option>\n";}
 				else 
-					{echo "<option value=\"$LISTuser_groups[$o]\">$LISTuser_groups[$o]</option>\n";}
+					{echo "<option value=\"$LISTuser_groups[$o]\">"._QXZ("$LISTuser_groups[$o]")."</option>\n";}
 				$o++;
 			}
 		echo "</SELECT>\n";

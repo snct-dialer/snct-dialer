@@ -638,10 +638,11 @@
 # 190902-0914 - Fix for PHP 7.2
 # 190925-1346 - Changes for more SIP Event Action features
 # 191018-0904 - Added User Inbound Filtered features
+# 191101-1150 - Added VM Message Groups features, second script tab
 #
 
-$version = '2.14-589c';
-$build = '191018-0904';
+$version = '2.14-590c';
+$build = '191101-1150';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=87;
 $one_mysql_log=0;
@@ -781,7 +782,7 @@ if ($sl_ct > 0)
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$stmt = "SELECT use_non_latin,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,webroot_writable,timeclock_end_of_day,vtiger_url,enable_vtiger_integration,outbound_autodial_active,enable_second_webform,user_territories_active,static_agent_url,custom_fields_enabled,pllb_grouping_limit,qc_features_active,allow_emails,callback_time_24hour,enable_languages,language_method,meetme_enter_login_filename,meetme_enter_leave3way_filename,enable_third_webform,default_language,active_modules,allow_chats,chat_url,default_phone_code,agent_screen_colors,manual_auto_next,agent_xfer_park_3way,admin_web_directory,agent_script,agent_push_events,agent_push_url,pause_campaigns,allow_phonebook,agent_prefix,agent_logout_link,agentonly_callback_campaign_lock,manual_dial_validation,mute_recordings FROM system_settings;";
+$stmt = "SELECT use_non_latin,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,webroot_writable,timeclock_end_of_day,vtiger_url,enable_vtiger_integration,outbound_autodial_active,enable_second_webform,user_territories_active,static_agent_url,custom_fields_enabled,pllb_grouping_limit,qc_features_active,allow_emails,callback_time_24hour,enable_languages,language_method,meetme_enter_login_filename,meetme_enter_leave3way_filename,enable_third_webform,default_language,active_modules,allow_chats,chat_url,default_phone_code,agent_screen_colors,manual_auto_next,agent_xfer_park_3way,admin_web_directory,agent_script,agent_push_events,agent_push_url,pause_campaigns,allow_phonebook,agent_prefix,agent_logout_link,agentonly_callback_campaign_lock,manual_dial_validation,mute_recordings,enable_second_script FROM system_settings;";
 
 $rslt=mysql_to_mysqli($stmt, $link);
 	if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01001',$VD_login,$server_ip,$session_name,$one_mysql_log);}
@@ -831,6 +832,7 @@ if ($qm_conf_ct > 0)
 	$agentonly_callback_campaign_lock = $row[38];
 	$SSmanual_dial_validation =			$row[39];
 	$SSmute_recordings =				$row[40];
+	$SSenable_second_script =			$row[41];
 	}
 else
 	{
@@ -1996,7 +1998,7 @@ else
 				$HKstatusnames = substr("$HKstatusnames", 0, -1); 
 
 				##### grab the campaign settings
-				$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active,no_hopper_leads_logins,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,xfer_groups,disable_alter_custphone,display_queue_count,manual_dial_filter,agent_clipboard_copy,use_campaign_dnc,three_way_call_cid,dial_method,three_way_dial_prefix,web_form_target,vtiger_screen_login,agent_allow_group_alias,default_group_alias,quick_transfer_button,prepopulate_transfer_preset,view_calls_in_queue,view_calls_in_queue_launch,call_requeue_button,pause_after_each_call,no_hopper_dialing,agent_dial_owner_only,agent_display_dialable_leads,web_form_address_two,agent_select_territories,crm_popup_login,crm_login_address,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,use_custom_cid,scheduled_callbacks_alert,scheduled_callbacks_count,manual_dial_override,blind_monitor_warning,blind_monitor_message,blind_monitor_filename,timer_action_destination,enable_xfer_presets,hide_xfer_number_to_dial,manual_dial_prefix,customer_3way_hangup_logging,customer_3way_hangup_seconds,customer_3way_hangup_action,ivr_park_call,manual_preview_dial,api_manual_dial,manual_dial_call_time_check,my_callback_option,per_call_notes,agent_lead_search,agent_lead_search_method,queuemetrics_phone_environment,auto_pause_precall,auto_pause_precall_code,auto_resume_precall,manual_dial_cid,custom_3way_button_transfer,callback_days_limit,disable_dispo_screen,disable_dispo_status,screen_labels,status_display_fields,pllb_grouping,pllb_grouping_limit,in_group_dial,in_group_dial_select,pause_after_next_call,owner_populate,manual_dial_lead_id,dead_max,dispo_max,pause_max,dead_max_dispo,dispo_max_dispo,max_inbound_calls,manual_dial_search_checkbox,hide_call_log_info,timer_alt_seconds,wrapup_bypass,wrapup_after_hotkey,callback_active_limit,callback_active_limit_override,comments_all_tabs,comments_dispo_screen,comments_callback_screen,qc_comment_history,show_previous_callback,clear_script,manual_dial_search_filter,web_form_address_three,manual_dial_override_field,status_display_ingroup,customer_gone_seconds,agent_display_fields,manual_dial_timeout,manual_auto_next,manual_auto_show,allow_required_fields,dead_to_dispo,agent_xfer_validation,ready_max_logout,callback_display_days,three_way_record_stop,hangup_xfer_record_start,max_inbound_calls_outcome,manual_auto_next_options,agent_screen_time_display,pause_max_dispo,script_top_dispo,routing_initiated_recordings,dead_trigger_seconds,dead_trigger_action,dead_trigger_repeat,dead_trigger_filename,scheduled_callbacks_force_dial,callback_hours_block,callback_display_days,scheduled_callbacks_timezones_container,three_way_volume_buttons,manual_dial_validation,mute_recordings FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
+				$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active,no_hopper_leads_logins,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,xfer_groups,disable_alter_custphone,display_queue_count,manual_dial_filter,agent_clipboard_copy,use_campaign_dnc,three_way_call_cid,dial_method,three_way_dial_prefix,web_form_target,vtiger_screen_login,agent_allow_group_alias,default_group_alias,quick_transfer_button,prepopulate_transfer_preset,view_calls_in_queue,view_calls_in_queue_launch,call_requeue_button,pause_after_each_call,no_hopper_dialing,agent_dial_owner_only,agent_display_dialable_leads,web_form_address_two,agent_select_territories,crm_popup_login,crm_login_address,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,use_custom_cid,scheduled_callbacks_alert,scheduled_callbacks_count,manual_dial_override,blind_monitor_warning,blind_monitor_message,blind_monitor_filename,timer_action_destination,enable_xfer_presets,hide_xfer_number_to_dial,manual_dial_prefix,customer_3way_hangup_logging,customer_3way_hangup_seconds,customer_3way_hangup_action,ivr_park_call,manual_preview_dial,api_manual_dial,manual_dial_call_time_check,my_callback_option,per_call_notes,agent_lead_search,agent_lead_search_method,queuemetrics_phone_environment,auto_pause_precall,auto_pause_precall_code,auto_resume_precall,manual_dial_cid,custom_3way_button_transfer,callback_days_limit,disable_dispo_screen,disable_dispo_status,screen_labels,status_display_fields,pllb_grouping,pllb_grouping_limit,in_group_dial,in_group_dial_select,pause_after_next_call,owner_populate,manual_dial_lead_id,dead_max,dispo_max,pause_max,dead_max_dispo,dispo_max_dispo,max_inbound_calls,manual_dial_search_checkbox,hide_call_log_info,timer_alt_seconds,wrapup_bypass,wrapup_after_hotkey,callback_active_limit,callback_active_limit_override,comments_all_tabs,comments_dispo_screen,comments_callback_screen,qc_comment_history,show_previous_callback,clear_script,manual_dial_search_filter,web_form_address_three,manual_dial_override_field,status_display_ingroup,customer_gone_seconds,agent_display_fields,manual_dial_timeout,manual_auto_next,manual_auto_show,allow_required_fields,dead_to_dispo,agent_xfer_validation,ready_max_logout,callback_display_days,three_way_record_stop,hangup_xfer_record_start,max_inbound_calls_outcome,manual_auto_next_options,agent_screen_time_display,pause_max_dispo,script_top_dispo,routing_initiated_recordings,dead_trigger_seconds,dead_trigger_action,dead_trigger_repeat,dead_trigger_filename,scheduled_callbacks_force_dial,callback_hours_block,callback_display_days,scheduled_callbacks_timezones_container,three_way_volume_buttons,manual_dial_validation,mute_recordings,leave_vm_no_dispo,leave_vm_message_group_id,campaign_script_two FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
 				$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01013',$VD_login,$server_ip,$session_name,$one_mysql_log);}
 				if ($DB) {echo "$stmt\n";}
@@ -2159,6 +2161,14 @@ else
 				$three_way_volume_buttons = $row[155];
 				$manual_dial_validation =	$row[156];
 				$mute_recordings =			$row[157];
+				$leave_vm_no_dispo =		$row[158];
+				$leave_vm_message_group_id = $row[159];
+				$campaign_script_two =		$row[160];
+
+				if ($leave_vm_no_dispo == 'ENABLED')
+					{$leave_vm_no_dispo = 'VMNOHANG';}
+				else
+					{$leave_vm_no_dispo = '';}
 
 				if ($SSmute_recordings < 1)
 					{$mute_recordings='N';}
@@ -2224,6 +2234,32 @@ else
 					{$status_display_LEADID=1;}
 				if (preg_match("/LISTID/",$status_display_fields))
 					{$status_display_LISTID=1;}
+
+				if ( (strlen($leave_vm_message_group_id) > 1) and ($leave_vm_message_group_id != '---NONE---') )
+					{
+					$leave_vm_message_group_exists=0;
+					$stmt="SELECT count(*) from leave_vm_message_groups where leave_vm_message_group_id='$leave_vm_message_group_id' and active='Y';";
+					$rslt=mysql_to_mysqli($stmt, $link);
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01XXX',$VD_login,$server_ip,$session_name,$one_mysql_log);}
+					$vmmg_count = mysqli_num_rows($rslt);
+					if ($vmmg_count > 0)
+						{
+						$row=mysqli_fetch_row($rslt);
+						if (strlen($row[0])>0)	{$leave_vm_message_group_exists=1;}
+						}
+					if ($leave_vm_message_group_exists > 0)
+						{
+						$stmt="SELECT count(*) from leave_vm_message_groups_entries where leave_vm_message_group_id='$leave_vm_message_group_id';";
+						$rslt=mysql_to_mysqli($stmt, $link);
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01XXX',$VD_login,$server_ip,$session_name,$one_mysql_log);}
+						$vmmge_count = mysqli_num_rows($rslt);
+						if ($vmmge_count > 0)
+							{
+							$row=mysqli_fetch_row($rslt);
+							if (strlen($row[0])>0)	{$leave_vm_message_group_exists = $row[0];}
+							}
+						}
+					}
 
 				if ( ($screen_labels != '--SYSTEM-SETTINGS--') and (strlen($screen_labels)>1) )
 					{
@@ -4446,6 +4482,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var VDIC_web_form_address_three = '<?php echo $VICIDiaL_web_form_address_three ?>';
 	var CalL_ScripT_id = '';
 	var CalL_ScripT_color = '';
+	var CalL_ScripT_id_two = '';
+	var CalL_ScripT_color_two = '';
 	var CalL_AutO_LauncH = '';
 	var panel_bgcolor = '<?php echo $MAIN_COLOR ?>';
 	var CusTCB_bgcolor = '#FFFF66';
@@ -4472,6 +4510,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var LIVE_web_vars = '<?php echo $default_web_vars ?>';
 	var default_web_vars = '<?php echo $default_web_vars ?>';
 	var campaign_script = '<?php echo $campaign_script ?>';
+	var campaign_script_two = '<?php echo $campaign_script_two ?>';
 	var get_call_launch = '<?php echo $get_call_launch ?>';
 	var campaign_am_message_exten = '<?php echo $campaign_am_message_exten ?>';
 	var park_on_extension = '<?php echo $VICIDiaL_park_on_extension ?>';
@@ -4947,15 +4986,21 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var MDOalt='';
 	var manual_entry_dial=0;
 	var mute_recordings='<?php echo $mute_recordings ?>';
+	var leave_vm_no_dispo='<?php echo $leave_vm_no_dispo ?>';
+	var leave_vm_message_group_id='<?php echo $leave_vm_message_group_id ?>';
+	var leave_vm_message_group_exists='<?php echo $leave_vm_message_group_exists ?>';
 	var active_rec_channel='';
-	var agent_disable_manual='<?php echo $agent_disable_manual ?>';
-	var agent_disable_alt_dial='<?php echo $agent_disable_alt_dial ?>';
 	var trigger_shift_logout=0;
 	var SCRIPTweb_form_vars='';
+	var SCRIPT2web_form_vars='';
+	var customer_HHMM='0000';
+	var SSenable_second_script='<?php echo $SSenable_second_script ?>';
+	var agent_disable_manual='<?php echo $agent_disable_manual ?>';
+	var agent_disable_alt_dial='<?php echo $agent_disable_alt_dial ?>';
 	var DiaLControl_auto_HTML = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready','','','','','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_paused.gif") ?>\" border=\"0\" alt=\"You are paused\" /></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause','','','','','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_active.gif") ?>\" border=\"0\" alt=\"You are active\" /></a>";
 	var DiaLControl_auto_HTML_OFF = "<img src=\"./images/<?php echo _QXZ("vdc_LB_blank_OFF.gif") ?>\" border=\"0\" alt=\"pause button disabled\" />";
-    var DiaLControl_manual_HTML = "<a href=\"#\" onclick=\"ManualDialNext('','','','','','0','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_dialnextnumber.gif") ?>\" border=\"0\" alt=\"Dial Next Number\" /></a>";
+        var DiaLControl_manual_HTML = "<a href=\"#\" onclick=\"ManualDialNext('','','','','','0','','','YES');\"><img src=\"./images/<?php echo _QXZ("vdc_LB_dialnextnumber.gif") ?>\" border=\"0\" alt=\"Dial Next Number\" /></a>";
 	var image_loading = new Image();
 		image_loading.src="./images/<?php echo _QXZ("agent_loading_animation.gif") ?>";
 	var image_loading_done = new Image();
@@ -7323,7 +7368,12 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 					document.vicidial_form.callserverip.value = '';
 					if( document.images ) { document.images['livecall'].src = image_livecall_OFF.src;}
 				//	alert(RedirecTxFEr + "|" + auto_dial_level);
-					dialedcall_send_hangup(taskdispowindow,'','',no_delete_VDAC);
+					if (taskdispowindow == 'VMNOHANG')
+						{button_click_log = button_click_log + "" + SQLdate + "-----VMMessageNoHangup---|";}
+					else
+						{
+						dialedcall_send_hangup(taskdispowindow,'','',no_delete_VDAC);
+						}
 					}
 				} // END ELSE FOR EMAIL CHECK
 			}
@@ -8214,6 +8264,10 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 									{VDIC_web_form_address_three = change_data[34];}
 								if (change_data[35].length > 1)
 									{CalL_ScripT_color = change_data[35];}
+								if (change_data[36].length > 0)
+									{CalL_ScripT_id_two = change_data[36];}
+								if (change_data[37].length > 0)
+									{CalL_ScripT_color_two = change_data[37];}
 
 								document.vicidial_form.lead_id.value			= VDIC_data_VDAC[0];
 								LeaDPreVDispO									= change_array[6];
@@ -8577,6 +8631,8 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 								if (CalL_ScripT_color.length > 1)
 									{document.getElementById("ScriptContents").style.backgroundColor = CalL_ScripT_color;}
+								if ( (CalL_ScripT_color_two.length > 1) && (SSenable_second_script > 0) )
+									{document.getElementById("Script2Contents").style.backgroundColor = CalL_ScripT_color_two;}
 								if (view_scripts == 1)
 									{
 									if (CalL_ScripT_id.length > 0)
@@ -8598,6 +8654,25 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 										{
 										RefresHScript('','YES');
 										}
+									if ( (CalL_ScripT_id_TWO.length > 0) && (SSenable_second_script > 0) )
+										{
+										var SCRIPT_web_form = 'http://127.0.0.1/testing.php';
+										var TEMP_SCRIPT_web_form = URLDecode(SCRIPT_web_form,'YES','DEFAULT','1');
+
+										if ( (script_recording_delay > 0) && ( (LIVE_campaign_recording == 'ALLCALLS') || (LIVE_campaign_recording == 'ALLFORCE') ) )
+											{
+											delayed_script_load = 'YES';
+											RefresHScript2('CLEAR');
+											}
+										else
+											{
+											load_script_contents('Script2Contents','');
+											}
+										}
+									else
+										{
+										RefresHScript2('','YES');
+										}
 									}
 
 								if (custom_fields_enabled > 0)
@@ -8611,6 +8686,14 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 										load_script_contents('ScriptContents','');
 										}
 									ScriptPanelToFront();
+									}
+								if ( (CalL_AutO_LauncH == 'SCRIPTTWO') && (SSenable_second_script > 0) )
+									{
+									if (delayed_script_load == 'YES')
+										{
+										load_script_contents('Script2Contents','');
+										}
+									ScriptPanel2ToFront();
 									}
 								if (CalL_AutO_LauncH == 'FORM')
 									{
@@ -9012,7 +9095,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
                                 document.getElementById("DialBlindTransfer").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRBLIND','" + lastcustchannel + "','" + lastcustserverip + "','','','','YES');return false;\"><img src=\"./images/<?php echo _QXZ("vdc_XB_blindtransfer.gif"); ?>\" border=\"0\" alt=\"Dial Blind Transfer\" style=\"vertical-align:middle\" /></a>";
 
-                                document.getElementById("DialBlindVMail").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRVMAIL','" + lastcustchannel + "','" + lastcustserverip + "','','','','YES');return false;\"><img src=\"./images/<?php echo _QXZ("vdc_XB_ammessage.gif"); ?>\" border=\"0\" alt=\"Blind Transfer VMail Message\" style=\"vertical-align:middle\" /></a>";
+                                document.getElementById("DialBlindVMail").innerHTML = "<a href=\"#\" onclick=\"vmmessages_button('YES');return false;\"><img src=\"./images/<?php echo _QXZ("vdc_XB_ammessage.gif"); ?>\" border=\"0\" alt=\"Blind Transfer VMail Message\" style=\"vertical-align:middle\" /></a>";
 
                                 document.getElementById("VolumeUpSpan").innerHTML = "<a href=\"#\" onclick=\"volume_control('UP','" + MDchannel + "','');return false;\"><img src=\"./images/<?php echo _QXZ("vdc_volume_up.gif"); ?>\" border=\"0\"></a>";
                                 document.getElementById("VolumeDownSpan").innerHTML = "<a href=\"#\" onclick=\"volume_control('DOWN','" + MDchannel + "','');return false;\"><img src=\"./images/<?php echo _QXZ("vdc_volume_down.gif"); ?>\" border=\"0\"></a>";
@@ -9777,7 +9860,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								source_id										= MDnextResponse_array[34];
 								document.vicidial_form.rank.value				= MDnextResponse_array[35];
 								document.vicidial_form.owner.value				= MDnextResponse_array[36];
-							//	CalL_ScripT_id									= MDnextResponse_array[37];
+								CalL_ScripT_id									= MDnextResponse_array[37];
 								script_recording_delay							= MDnextResponse_array[38];
 								CalL_XC_a_NuMber								= MDnextResponse_array[39];
 								CalL_XC_b_NuMber								= MDnextResponse_array[40];
@@ -9818,6 +9901,8 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								status_group_statuses_data						= MDnextResponse_array[58];
 								last_call_date									= MDnextResponse_array[59];
 								LIVE_default_xfer_group							= MDnextResponse_array[60];
+								CalL_ScripT_id_two								= MDnextResponse_array[61];
+								CalL_ScripT_color_two							= MDnextResponse_array[62];
 
 								// build statuses list for disposition screen
 								VARstatuses = [];
@@ -10046,6 +10131,9 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								if (CalL_ScripT_color.length > 1)
 									{document.getElementById("ScriptContents").style.backgroundColor = CalL_ScripT_color;}
 
+								if ( (CalL_ScripT_color_two.length > 1) && (SSenable_second_script > 0) )
+									{document.getElementById("Script2Contents").style.backgroundColor = CalL_ScripT_color_two;}
+
 								if ( (document.vicidial_form.LeadPreview.checked==false) && ( (manual_dial_validation != 'Y') || (manual_entry_dial > 0) ) )
 									{
 									reselect_preview_dial = 0;
@@ -10059,7 +10147,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 									if (view_scripts == 1)
 										{
-										if (campaign_script.length > 0)
+										if ( (campaign_script.length > 0) || (CalL_ScripT_id.length > 0) )
 											{
 											var SCRIPT_web_form = 'http://127.0.0.1/testing.php';
 											var TEMP_SCRIPT_web_form = URLDecode(SCRIPT_web_form,'YES','DEFAULT','1');
@@ -10068,15 +10156,18 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 												{
 												delayed_script_load = 'YES';
 												RefresHScript('CLEAR');
+												RefresHScript2('CLEAR');
 												}
 											else
 												{
 												load_script_contents('ScriptContents','');
+												if (SSenable_second_script > 0) {load_script_contents('Script2Contents','');}
 												}
 											}
 										else
 											{
 											RefresHScript('','YES');
+											RefresHScript2('','YES');
 											}
 										}
 
@@ -10108,6 +10199,14 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 											load_script_contents('ScriptContents','');
 											}
 										ScriptPanelToFront();
+										}
+									if ( (get_call_launch == 'SCRIPTTWO') && (SSenable_second_script > 0) )
+										{
+										if (delayed_script_load == 'YES')
+											{
+											load_script_contents('Script2Contents','');
+											}
+										ScriptPanel2ToFront();
 										}
 
 									if (get_call_launch == 'FORM')
@@ -10154,15 +10253,17 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 										}
 									if (view_scripts == 1)
 										{
-										if (campaign_script.length > 0)
+										if ( (campaign_script.length > 0) || (CalL_ScripT_id.length > 0) )
 											{
 											var SCRIPT_web_form = 'http://127.0.0.1/testing.php';
 											var TEMP_SCRIPT_web_form = URLDecode(SCRIPT_web_form,'YES','DEFAULT','1');
 											RefresHScript();
+											RefresHScript2();
 											}
 										else
 											{
 											RefresHScript('','YES');
+											RefresHScript2('','YES');
 											}
 										}
 									reselect_preview_dial = 1;
@@ -10374,6 +10475,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 				dial_next_failed=0;
 				xfer_agent_selected=0;
 				RefresHScript('CLEAR');
+				RefresHScript2('CLEAR');
 				ViewComments('OFF','OFF');
 				last_call_date='';
 				inbound_post_call_survey='';
@@ -10383,6 +10485,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 				trigger_manual_validation=0;
 				manual_entry_dial=0;
 				SCRIPTweb_form_vars='';
+				SCRIPT2web_form_vars='';
 				MDcheck_for_answer=0;
 				three_way_call_cid = orig_three_way_call_cid;
 				if (manual_dial_preview < 1)
@@ -10609,9 +10712,11 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 							if (CalL_ScripT_color.length > 1)
 								{document.getElementById("ScriptContents").style.backgroundColor = CalL_ScripT_color;}
+							if ( (CalL_ScripT_color_two.length > 1) && (SSenable_second_script > 0) )
+								{document.getElementById("Script2Contents").style.backgroundColor = CalL_ScripT_color_two;}
 							if (view_scripts == 1)
 								{
-								if (campaign_script.length > 0)
+								if ( (campaign_script.length > 0) || (CalL_ScripT_id.length > 0) )
 									{
 									var SCRIPT_web_form = 'http://127.0.0.1/testing.php';
 									var TEMP_SCRIPT_web_form = URLDecode(SCRIPT_web_form,'YES','DEFAULT','1');
@@ -10620,15 +10725,18 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 										{
 										delayed_script_load = 'YES';
 										RefresHScript('CLEAR');
+										RefresHScript2('CLEAR');
 										}
 									else
 										{
 										load_script_contents('ScriptContents','');
+										if (SSenable_second_script > 0) {load_script_contents('Script2Contents','');}
 										}
 									}
 								else
 									{
 									RefresHScript('','YES');
+									RefresHScript2('','YES');
 									}
 								}
 
@@ -10656,6 +10764,14 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 									load_script_contents('ScriptContents','');
 									}
 								ScriptPanelToFront();
+								}
+							if ( (get_call_launch == 'SCRIPTTWO') && (SSenable_second_script > 0) )
+								{
+								if (delayed_script_load == 'YES')
+									{
+									load_script_contents('Script2Contents','');
+									}
+								ScriptPanel2ToFront();
 								}
 							if (get_call_launch == 'FORM')
 								{
@@ -10899,6 +11015,15 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 // pull the script contents sending the webform variables to the script display script
 	function load_script_contents(script_span,script_override)
 		{
+		var temp_campaign_script = campaign_script;
+		var temp_in_script = CalL_ScripT_id;
+		var temp_SCRIPTweb_form_vars = SCRIPTweb_form_vars;
+		if ( (script_span == 'Script2Contents') && (SSenable_second_script > 0) )
+			{
+			temp_campaign_script = campaign_script_two;
+			temp_in_script = CalL_ScripT_id_two;
+			temp_SCRIPTweb_form_vars = SCRIPT2web_form_vars;
+			}
 		var new_script_content = null;
 		var xmlhttp=false;
 		/*@cc_on @*/
@@ -10921,8 +11046,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 			}
 		if (xmlhttp) 
 			{ 
-			NeWscript_query = "server_ip=" + server_ip + "&inOUT=" + inOUT + "&camp_script=" + campaign_script + '' + "&in_script=" + CalL_ScripT_id + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&called_count=" + document.vicidial_form.called_count.value + "&script_override=" + script_override + "&ScrollDIV=1&" + SCRIPTweb_form_vars;
-		//	alert(NeWscript_query);
+			NeWscript_query = "server_ip=" + server_ip + "&inOUT=" + inOUT + "&SCRIPTcamp_script=" + temp_campaign_script + '' + "&SCRIPTin_script=" + temp_in_script + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&called_count=" + document.vicidial_form.called_count.value + "&script_override=" + script_override + "&script_span=" + script_span + "&ScrollDIV=1&" + temp_SCRIPTweb_form_vars;
 			xmlhttp.open('POST', 'vdc_script_display.php'); 
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 			xmlhttp.send(NeWscript_query);
@@ -10930,6 +11054,8 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 				{ 
 				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
 					{
+				//	alert(NeWscript_query);
+				//	document.getElementById("debugbottomspan").innerHTML = NeWscript_query + "\n" + xmlhttp.responseText;
 					new_script_content = xmlhttp.responseText;
 					document.getElementById(script_span).innerHTML = new_script_content;
 					agent_events('call_script', script_span, aec);   aec++;
@@ -11039,7 +11165,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						CFAI_sent=0;
 						check_incoming = xmlhttprequestcheckauto.responseText;
 					//	alert(checkVDAI_query);
-					//	alert(xmlhttprequestcheckauto.responseText);
+					//	document.getElementById("debugbottomspan").innerHTML = checkVDAI_query + "\n" + xmlhttp.responseText;
 						var check_VDIC_array=check_incoming.split("\n");
 						if (check_VDIC_array[0] == '1')
 							{
@@ -11149,6 +11275,10 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								{CalL_ScripT_color = VDIC_data_VDIG[35];}
 							inbound_post_call_survey	= VDIC_data_VDIG[36];
 							inbound_survey_participate	= VDIC_data_VDIG[37];
+							if (VDIC_data_VDIG[38].length > 0)
+								{CalL_ScripT_id_two = VDIC_data_VDIG[38];}
+							if (VDIC_data_VDIG[39].length > 0)
+								{CalL_ScripT_color_two = VDIC_data_VDIG[39];}
 
 							var VDIC_data_VDFR=check_VDIC_array[3].split("|");
 							if ( (VDIC_data_VDFR[1].length > 1) && (VDCL_fronter_display == 'Y') )
@@ -11269,6 +11399,8 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							did_custom_five									= check_VDIC_array[64];
 							status_group_statuses_data						= check_VDIC_array[65];
 							last_call_date									= check_VDIC_array[66];
+						//	CalL_ScripT_id_two								= check_VDIC_array[67];
+						//	CalL_ScripT_color_two							= check_VDIC_array[68];
 
 							// build statuses list for disposition screen
 							VARstatuses = [];
@@ -11392,6 +11524,8 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 							if (CalL_ScripT_color.length > 1)
 								{document.getElementById("ScriptContents").style.backgroundColor = CalL_ScripT_color;}
+							if ( (CalL_ScripT_color_two.length > 1) && (SSenable_second_script > 0) )
+								{document.getElementById("Script2Contents").style.backgroundColor = CalL_ScripT_color_two;}
 
 							if (hide_gender > 0)
 								{
@@ -11490,7 +11624,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
                             document.getElementById("DialBlindTransfer").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRBLIND','" + lastcustchannel + "','" + lastcustserverip + "','','','','YES');return false;\"><img src=\"./images/<?php echo _QXZ("vdc_XB_blindtransfer.gif"); ?>\" border=\"0\" alt=\"Dial Blind Transfer\" style=\"vertical-align:middle\" /></a>";
 
-                            document.getElementById("DialBlindVMail").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRVMAIL','" + lastcustchannel + "','" + lastcustserverip + "','','','','YES');return false;\"><img src=\"./images/<?php echo _QXZ("vdc_XB_ammessage.gif"); ?>\" border=\"0\" alt=\"Blind Transfer VMail Message\" style=\"vertical-align:middle\" /></a>";
+                            document.getElementById("DialBlindVMail").innerHTML = "<a href=\"#\" onclick=\"vmmessages_button('YES');return false;\"><img src=\"./images/<?php echo _QXZ("vdc_XB_ammessage.gif"); ?>\" border=\"0\" alt=\"Blind Transfer VMail Message\" style=\"vertical-align:middle\" /></a>";
 		
 							if ( (quick_transfer_button == 'IN_GROUP') || (quick_transfer_button == 'LOCKED_IN_GROUP') )
 								{
@@ -11664,15 +11798,37 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 										{
 										delayed_script_load = 'YES';
 										RefresHScript('CLEAR');
+										RefresHScript2('CLEAR');
 										}
 									else
 										{
 										load_script_contents('ScriptContents','');
+										if (SSenable_second_script > 0) {load_script_contents('Script2Contents','');}
 										}
 									}
 								else
 									{
 									RefresHScript('','YES');
+									RefresHScript2('','YES');
+									}
+								if ( (CalL_ScripT_id_two.length > 0) && (SSenable_second_script > 0) )
+									{
+									var SCRIPT_web_form = 'http://127.0.0.1/testing.php';
+									var TEMP_SCRIPT_web_form = URLDecode(SCRIPT_web_form,'YES','DEFAULT','1');
+
+									if ( (script_recording_delay > 0) && ( (LIVE_campaign_recording == 'ALLCALLS') || (LIVE_campaign_recording == 'ALLFORCE') ) )
+										{
+										delayed_script_load = 'YES';
+										RefresHScript2('CLEAR');
+										}
+									else
+										{
+										load_script_contents('Script2Contents','');
+										}
+									}
+								else
+									{
+									RefresHScript2('','YES');
 									}
 								}
 
@@ -11700,6 +11856,14 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 									load_script_contents('ScriptContents','');
 									}
 								ScriptPanelToFront();
+								}
+							if ( (CalL_AutO_LauncH == 'SCRIPTTWO') && (SSenable_second_script > 0) )
+								{
+								if (delayed_script_load == 'YES')
+									{
+									load_script_contents('Script2Contents','');
+									}
+								ScriptPanel2ToFront();
 								}
 							if (CalL_AutO_LauncH == 'FORM')
 								{
@@ -11940,6 +12104,10 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								{VDIC_web_form_address_three = VDIC_data_VDIG[34];}
 							if (VDIC_data_VDIG[35].length > 1)
 								{CalL_ScripT_color = VDIC_data_VDIG[35];}
+							if (VDIC_data_VDIG[36].length > 0)
+								{CalL_ScripT_id_two = VDIC_data_VDIG[36];}
+							if (VDIC_data_VDIG[37].length > 0)
+								{CalL_ScripT_color_two = VDIC_data_VDIG[37];}
 
 							var VDIC_data_VDFR=check_VDIC_array[3].split("|");
 							if ( (VDIC_data_VDFR[1].length > 1) && (VDCL_fronter_display == 'Y') )
@@ -12275,7 +12443,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							document.getElementById("LocalCloser").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRLOCAL','" + lastcustchannel + "','" + lastcustserverip + "','','','','YES');return false;\"><img src=\"./images/<?php echo _QXZ("vdc_XB_localcloser.gif"); ?>\" border=\"0\" alt=\"LOCAL CLOSER\" style=\"vertical-align:middle\" /></a>";
 
 
-							document.getElementById("DialBlindVMail").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRVMAIL','" + lastcustchannel + "','" + lastcustserverip + "','','','','YES');return false;\"><img src=\"./images/<?php echo _QXZ("vdc_XB_ammessage.gif"); ?>\" border=\"0\" alt=\"Blind Transfer VMail Message\" style=\"vertical-align:middle\" /></a>";
+							document.getElementById("DialBlindVMail").innerHTML = "<a href=\"#\" onclick=\"vmmessages_button('YES');return false;\"><img src=\"./images/<?php echo _QXZ("vdc_XB_ammessage.gif"); ?>\" border=\"0\" alt=\"Blind Transfer VMail Message\" style=\"vertical-align:middle\" /></a>";
 
 							if ( (quick_transfer_button == 'IN_GROUP') || (quick_transfer_button == 'LOCKED_IN_GROUP') )
 								{
@@ -12427,6 +12595,9 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 							if (CalL_ScripT_color.length > 1)
 								{document.getElementById("ScriptContents").style.backgroundColor = CalL_ScripT_color;}
+							if ( (CalL_ScripT_color_two.length > 1) && (SSenable_second_script > 0) )
+								{document.getElementById("Script2Contents").style.backgroundColor = CalL_ScripT_color_two;}
+
 							if (view_scripts == 1)
 								{
 								if (CalL_ScripT_id.length > 0)
@@ -12447,6 +12618,25 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								else
 									{
 									RefresHScript('','YES');
+									}
+								if ( (CalL_ScripT_id_two.length > 0) && (SSenable_second_script > 0) )
+									{
+									var SCRIPT_web_form = 'http://127.0.0.1/testing.php';
+									var TEMP_SCRIPT_web_form = URLDecode(SCRIPT_web_form,'YES','DEFAULT','1');
+
+									if ( (script_recording_delay > 0) && ( (LIVE_campaign_recording == 'ALLCALLS') || (LIVE_campaign_recording == 'ALLFORCE') ) )
+										{
+										delayed_script_load = 'YES';
+										RefresHScript2('CLEAR');
+										}
+									else
+										{
+										load_script_contents('Script2Contents','');
+										}
+									}
+								else
+									{
+									RefresHScript2('','YES');
 									}
 								}
 
@@ -12474,6 +12664,14 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 									load_script_contents('ScriptContents','');
 									}
 								ScriptPanelToFront();
+								}
+							if ( (CalL_AutO_LauncH == 'SCRIPTTWO') && (SSenable_second_script > 0) )
+								{
+								if (delayed_script_load == 'YES')
+									{
+									load_script_contents('Script2Contents','');
+									}
+								ScriptPanel2ToFront();
 								}
 							if (CalL_AutO_LauncH == 'FORM')
 								{
@@ -12559,6 +12757,30 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 			}
 		}
 
+
+// ################################################################################
+// refresh or clear the SCRIPT 2 frame contents
+	function RefresHScript2(temp_wipe,RFSclick)
+		{
+		if (SSenable_second_script > 0)
+			{
+			if (RFSclick=='YES')
+				{button_click_log = button_click_log + "" + SQLdate + "-----RefresHScript2---" + temp_wipe + "|";}
+			if (temp_wipe == 'CLEAR')
+				{
+				document.getElementById("Script2Contents").innerHTML = '';
+				}
+			else
+				{
+				document.getElementById("Script2Contents").innerHTML = '';
+				WebFormRefresH('','','1');
+				WebFormTwoRefresH('','','1');
+				WebFormThreeRefresH('','','1');
+				var TEMP_script_vars = URLDecode('','YES','DEFAULT','1');
+				load_script_contents('Script2Contents','');
+				}
+			}
+		}
 
 // ################################################################################
 // refresh the content of the web form URL
@@ -13921,6 +14143,130 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 
 // ################################################################################
+// Process the "VM" transfer button click
+	function vmmessages_button(PREclick)
+		{
+		if (leave_vm_message_group_exists > 0)
+			{
+			generate_vmmessages_pulldown(PREclick);
+			}
+		else
+			{
+			mainxfer_send_redirect('XfeRVMAIL',lastcustchannel,lastcustserverip,'',leave_vm_no_dispo,'',PREclick);
+			}
+		}
+
+
+// ################################################################################
+// Generate the VM Messages Chooser span content
+	function generate_vmmessages_pulldown(PREclick)
+		{
+		if (PREclick=='YES')
+			{button_click_log = button_click_log + "" + SQLdate + "-----generate_vmmessage_pulldown---|";}
+		showDiv('VMMessageSelectBox');
+		VMMessages_HTML = '';
+		document.vicidial_form.VMMessageSelection.value = '';
+		document.getElementById("VMMessageSelectBoxContent").innerHTML = '<?php echo _QXZ("Generating VM Messages list"); ?>...';
+
+		var xmlhttp=false;
+		/*@cc_on @*/
+		/*@if (@_jscript_version >= 5)
+		// JScript gives us Conditional compilation, we can cope with old IE versions.
+		// and security blocked creation of the objects.
+		 try {
+		  xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+		 } catch (e) {
+		  try {
+		   xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+		  } catch (E) {
+		   xmlhttp = false;
+		  }
+		 }
+		@end @*/
+		if (!xmlhttp && typeof XMLHttpRequest!='undefined')
+			{
+			xmlhttp = new XMLHttpRequest();
+			}
+		if (xmlhttp) 
+			{ 
+			VMMG_list_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass  + "&ACTION=VMMG_list_build&format=text&campaign=" + campaign + "&stage=" + leave_vm_message_group_id + "&start_date=" + customer_HHMM;
+			xmlhttp.open('POST', 'vdc_db_query.php'); 
+			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
+			xmlhttp.send(VMMG_list_query); 
+			xmlhttp.onreadystatechange = function() 
+				{ 
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+					{
+					document.getElementById("VMMessageSelectBoxContent").innerHTML = xmlhttp.responseText;
+
+				//	document.getElementById("debugbottomspan").innerHTML =  "VMM Debug: " + VMMG_list_query + "|\n<br>" + xmlhttp.responseText + "\n";
+					}
+				}
+			delete xmlhttp;
+			}
+		}
+
+
+// ################################################################################
+// Submit chosen VM Message
+	function VMMessageSelect_submit(taskvmmessagefile,taskvmmessagename,taskvmmessagetime,taskvmmessagerank)
+		{
+		var regVMFILE = new RegExp('|',"g");
+		var LOGtaskvmmessagefile = taskvmmessagefile.replace(/\|/g, ' ');
+		button_click_log = button_click_log + "" + SQLdate + "-----VMMessageSelect_submit---" + LOGtaskvmmessagefile + " " + taskvmmessagename + " " + taskvmmessagetime + " " + taskvmmessagerank + "|";
+		hideDiv('VMMessageSelectBox');
+		document.vicidial_form.VMMessageSelection.value = taskvmmessagefile;
+
+		var xmlhttp=false;
+		/*@cc_on @*/
+		/*@if (@_jscript_version >= 5)
+		// JScript gives us Conditional compilation, we can cope with old IE versions.
+		// and security blocked creation of the objects.
+		 try {
+		  xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+		 } catch (e) {
+		  try {
+		   xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+		  } catch (E) {
+		   xmlhttp = false;
+		  }
+		 }
+		@end @*/
+		if (!xmlhttp && typeof XMLHttpRequest!='undefined')
+			{
+			xmlhttp = new XMLHttpRequest();
+			}
+		if (xmlhttp) 
+			{ 
+			VMMG_list_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass  + "&ACTION=VMMG_selected&format=text&campaign=" + campaign + "&stage=" + taskvmmessagefile + "&MDnextCID=" + LasTCID + "&lead_id=" + document.vicidial_form.lead_id.value;
+			xmlhttp.open('POST', 'vdc_db_query.php'); 
+			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
+			xmlhttp.send(VMMG_list_query); 
+			xmlhttp.onreadystatechange = function() 
+				{ 
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+					{
+					var VMMselectresponse = xmlhttp.responseText;
+					var regVMMerror = new RegExp("ERROR","ig");
+					if (VMMselectresponse.match(regVMMerror))
+						{
+						alert_box(VMMselectresponse);
+						button_click_log = button_click_log + "" + SQLdate + "-----VMMselectError---" + VMMselectresponse + "|";
+						}
+					else
+						{
+						mainxfer_send_redirect('XfeRVMAIL',lastcustchannel,lastcustserverip,'',leave_vm_no_dispo,'','');
+						}
+					}
+				}
+			delete xmlhttp;
+			}
+		
+		scroll(0,0);
+		}
+
+
+// ################################################################################
 // Generate the Group Alias Chooser panel
 	function GroupAliasSelectContent_create(task3way)
 		{
@@ -14356,6 +14702,8 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 					active_ingroup_dial='';
 					CalL_ScripT_id='';
 					CalL_ScripT_color='';
+					CalL_ScripT_id_two='';
+					CalL_ScripT_color_two='';
 					callback_gmt_offset='';
 					callback_timezone='';
 					document.getElementById("SBC_timezone_span").innerHTML = '<?php echo _QXZ("Loading"); ?>...';
@@ -14397,6 +14745,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 					trigger_manual_validation=0;
 					manual_entry_dial=0;
 					SCRIPTweb_form_vars='';
+					SCRIPT2web_form_vars='';
 					MDcheck_for_answer=0;
 					three_way_call_cid = orig_three_way_call_cid;
 					if (manual_auto_next > 0)
@@ -14461,7 +14810,10 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						document.getElementById("ScriptPanel").style.zIndex = script_span_zindex;
 						}
 					if (clear_script == 'ENABLED')
-						{document.getElementById("ScriptContents").innerHTML = '';}
+						{
+						document.getElementById("ScriptContents").innerHTML = '';
+						document.getElementById("Script2Contents").innerHTML = '';
+						}
 					parked_hangup='0';
 
 					// Set customer chat tab to OFF, just to be sure
@@ -16070,6 +16422,7 @@ else
 		"&owner=" + document.vicidial_form.owner.value + '' +
 		"&camp_script=" + campaign_script + '' +
 		"&in_script=" + CalL_ScripT_id + '' +
+		"&in_script_two=" + CalL_ScripT_id_two + '' +
 		"&script_width=" + script_width + '' +
 		"&script_height=" + script_height + '' +
 		"&fullname=" + LOGfullname + '' +
@@ -16142,6 +16495,7 @@ else
 			}
 
 		SCRIPTweb_form_vars = web_form_varsX;
+		SCRIPT2web_form_vars = web_form_varsX;
 
 		web_form_varsX = web_form_varsX.replace(RGplus, '+');
 		web_form_varsX = web_form_varsX.replace(RGnl, '+');
@@ -16258,6 +16612,7 @@ else
 		if (custom_field_names.length > 2)
 			{
 			SCRIPTweb_form_vars = web_form_varsX;
+			SCRIPT2web_form_vars = web_form_varsX;
 			}
 
 		if (webformnumber == '1')
@@ -16319,6 +16674,7 @@ else
 		var SCowner = document.vicidial_form.owner.value;
 		var SCcamp_script = campaign_script;
 		var SCin_script = CalL_ScripT_id;
+		var SCin_script_two = CalL_ScripT_id_two;
 		var SCscript_width = script_width;
 		var SCscript_height = script_height;
 		var SCrecording_filename = recording_filename;
@@ -18264,6 +18620,8 @@ function CallViewLogInbounds() {
 			hideDiv('MailCommit');
 			hideDiv('ScriptPanel');
 			hideDiv('ScriptRefresH');
+			hideDiv('Script2Panel');
+			hideDiv('Script2RefresH');
 			hideDiv('EmailPanel');
 			hideDiv('EmailRefresH');
 			hideDiv('PhoneBookPanel');
@@ -18293,6 +18651,7 @@ function CallViewLogInbounds() {
 			hideDiv('PauseCodeSelectBox');
 			hideDiv('PauseCodeMgrAprBox');
 			hideDiv('PresetsSelectBox');
+			hideDiv('VMMessageSelectBox');
 			hideDiv('GroupAliasSelectBox');
 			hideDiv('DiaLInGrouPSelectBox');
 			hideDiv('AgentViewSpan');
@@ -19152,52 +19511,47 @@ function CallViewLogInbounds() {
 			if (Cmin < 10) {Cmin = "0" + Cmin;}
 			if (Csec < 10) {Csec = "0" + Csec;}
 			VDRP_stage_seconds=0;
+			var customer_date = '';
+			var customer_time = Chours + ":" + Cmin + ":" + Csec;
+			customer_HHMM = Chours + '' + Cmin;
+			if (vdc_customer_date_format.match(regMSdate))
+				{
+				customer_date = Cyear + "-" + Cmon + "-" + Cdaym;
+				}
+			if (vdc_customer_date_format.match(regUSdate))
+				{
+				customer_date = Cmon + "/" + Cdaym + "/" + Cyear;
+				}
+			if (vdc_customer_date_format.match(regEUdate))
+				{
+				customer_date = Cdaym + "/" + Cmon + "/" + Cyear;
+				}
+			if (vdc_customer_date_format.match(regALdate))
+				{
+				var customermon='';
+				if (Cmon == 1) {customermon = "<?php echo _QXZ("JAN"); ?>";}
+				if (Cmon == 2) {customermon = "<?php echo _QXZ("FEB"); ?>";}
+				if (Cmon == 3) {customermon = "<?php echo _QXZ("MAR"); ?>";}
+				if (Cmon == 4) {customermon = "<?php echo _QXZ("APR"); ?>";}
+				if (Cmon == 5) {customermon = "<?php echo _QXZ("MAY"); ?>";}
+				if (Cmon == 6) {customermon = "<?php echo _QXZ("JUN"); ?>";}
+				if (Cmon == 7) {customermon = "<?php echo _QXZ("JLY"); ?>";}
+				if (Cmon == 8) {customermon = "<?php echo _QXZ("AUG"); ?>";}
+				if (Cmon == 9) {customermon = "<?php echo _QXZ("SEP"); ?>";}
+				if (Cmon == 10) {customermon = "<?php echo _QXZ("OCT"); ?>";}
+				if (Cmon == 11) {customermon = "<?php echo _QXZ("NOV"); ?>";}
+				if (Cmon == 12) {customermon = "<?php echo _QXZ("DEC"); ?>";}
 
-		var customer_date = '';
-		var customer_time = Chours + ":" + Cmin + ":" + Csec;
-		if (vdc_customer_date_format.match(regMSdate))
-			{
-			customer_date = Cyear + "-" + Cmon + "-" + Cdaym;
-			}
-		if (vdc_customer_date_format.match(regUSdate))
-			{
-			customer_date = Cmon + "/" + Cdaym + "/" + Cyear;
-			}
-		if (vdc_customer_date_format.match(regEUdate))
-			{
-			customer_date = Cdaym + "/" + Cmon + "/" + Cyear;
-			}
-		if (vdc_header_date_format.match(regEUDotdate))
-			{
-			status_date = daym + "." + month + "." + year;
-			}
-		if (vdc_customer_date_format.match(regALdate))
-			{
-			var customermon='';
-			if (Cmon == 1) {customermon = "<?php echo _QXZ("JAN"); ?>";}
-			if (Cmon == 2) {customermon = "<?php echo _QXZ("FEB"); ?>";}
-			if (Cmon == 3) {customermon = "<?php echo _QXZ("MAR"); ?>";}
-			if (Cmon == 4) {customermon = "<?php echo _QXZ("APR"); ?>";}
-			if (Cmon == 5) {customermon = "<?php echo _QXZ("MAY"); ?>";}
-			if (Cmon == 6) {customermon = "<?php echo _QXZ("JUN"); ?>";}
-			if (Cmon == 7) {customermon = "<?php echo _QXZ("JLY"); ?>";}
-			if (Cmon == 8) {customermon = "<?php echo _QXZ("AUG"); ?>";}
-			if (Cmon == 9) {customermon = "<?php echo _QXZ("SEP"); ?>";}
-			if (Cmon == 10) {customermon = "<?php echo _QXZ("OCT"); ?>";}
-			if (Cmon == 11) {customermon = "<?php echo _QXZ("NOV"); ?>";}
-			if (Cmon == 12) {customermon = "<?php echo _QXZ("DEC"); ?>";}
-
-			customer_date = customermon + " " + Cdaym + " ";
-			}
-		if (vdc_customer_date_format.match(regAMPMdate))
-			{
-			var AMPM = 'AM';
-			if (Chours == 12) {AMPM = 'PM';}
-			if (Chours == 0) {AMPM = 'AM'; Chours = '12';}
-			if (Chours > 12) {Chours = (Chours - 12);   AMPM = 'PM';}
-			customer_time = Chours + ":" + Cmin + ":" + Csec + " " + AMPM;
-			}
-
+				customer_date = customermon + " " + Cdaym + " ";
+				}
+			if (vdc_customer_date_format.match(regAMPMdate))
+				{
+				var AMPM = 'AM';
+				if (Chours == 12) {AMPM = 'PM';}
+				if (Chours == 0) {AMPM = 'AM'; Chours = '12';}
+				if (Chours > 12) {Chours = (Chours - 12);   AMPM = 'PM';}
+				customer_time = Chours + ":" + Cmin + ":" + Csec + " " + AMPM;
+				}
 			var customer_local_time = customer_date + " " + customer_time;
 			document.getElementById("custdatetime").innerHTML = customer_local_time;
 			}
@@ -19543,6 +19897,8 @@ function CallViewLogInbounds() {
 			}
 		hideDiv('ScriptPanel');
 		hideDiv('ScriptRefresH');
+		hideDiv('Script2Panel');
+		hideDiv('Script2RefresH');
 		hideDiv('FormPanel');
 		hideDiv('FormRefresH');
 		hideDiv('EmailPanel');
@@ -19611,7 +19967,7 @@ function CallViewLogInbounds() {
 	function ScriptPanelToFront(SPFclick)
 		{
 		if (SPFclick=='YES')
-			{button_click_log = button_click_log + "" + SQLdate + "-----ScriptPanelToFront---|";}
+			{button_click_log = button_click_log + "" + SQLdate + "-----ScriptPanelToFront---" + CalL_ScripT_id + " " + CalL_ScripT_color + "|";}
 		var CBSPheight = '<?php echo $QLheight ?>px';
 		document.getElementById("CallbacksButtons").style.top = CBSPheight;
 		document.getElementById("CallbacksButtons").style.left = '340px';
@@ -19627,12 +19983,49 @@ function CallViewLogInbounds() {
 			}
 		hideDiv('MainCommit');
 		hideDiv('MailCommit');
+		hideDiv('Script2Panel');
+		hideDiv('Script2RefresH');
 		hideDiv('FormPanel');
 		hideDiv('FormRefresH');
 		hideDiv('EmailPanel');
 		hideDiv('EmailRefresH');
 		hideDiv('PhoneBookPanel');
 		hideDiv('PhoneBookRefresH');
+		hideDiv('CustomerChatPanel');
+		hideDiv('CustomerChatRefresH');
+		hideDiv('InternalChatPanel');
+		document.getElementById("MainTable").style.backgroundColor="<?php echo $SCRIPT_COLOR ?>";
+		document.getElementById("MaiNfooter").style.backgroundColor="<?php echo $SCRIPT_COLOR ?>";
+		panel_bgcolor='<?php echo $SCRIPT_COLOR ?>';
+	//	document.getElementById("MainStatuSSpan").style.background = panel_bgcolor;
+
+		HidEGenDerPulldown();
+		}
+
+	function ScriptPanel2ToFront(SPFclick)
+		{
+		if (SPFclick=='YES')
+			{button_click_log = button_click_log + "" + SQLdate + "-----ScriptPanel2ToFront---" + CalL_ScripT_id_two + " " + CalL_ScripT_color_two + "|";}
+		var CBSPheight = '<?php echo $QLheight ?>px';
+		document.getElementById("CallbacksButtons").style.top = CBSPheight;
+		document.getElementById("CallbacksButtons").style.left = '340px';
+		showDiv('Script2Panel');
+		showDiv('Script2RefresH');
+		if ( (OtherTab == '0') && (comments_all_tabs == 'ENABLED') )
+			{
+			OtherTab='1';
+			var test_otc = document.vicidial_form.comments.value;
+			if (test_otc.length > 0)
+				{document.vicidial_form.other_tab_comments.value = document.vicidial_form.comments.value}
+			showDiv('OtherTabCommentsSpan');
+			}
+		hideDiv('MainCommit');
+		hideDiv('ScriptPanel');
+		hideDiv('ScriptRefresH');
+		hideDiv('FormPanel');
+		hideDiv('FormRefresH');
+		hideDiv('EmailPanel');
+		hideDiv('EmailRefresH');
 		hideDiv('CustomerChatPanel');
 		hideDiv('CustomerChatRefresH');
 		hideDiv('InternalChatPanel');
@@ -19885,6 +20278,9 @@ $zi=2;
     <tr valign="top" align="left">
     <td align="left" width="115px" bgcolor="#<?php echo $SSstd_row5_background ?>"><a href="#" onclick="MainPanelToFront('NO','YES');"><img src="<?php echo $selected_logo ?>" alt="MAIN" width="115px" height="30px" border="0" /></a></td>
     <td align="left" width="67px"><a href="#" onclick="ScriptPanelToFront('YES');"><img src="./images/<?php echo _QXZ("vdc_tab_script.gif"); ?>" alt="SCRIPT" width="67px" height="30px" border="0" /></a></td>
+	<?php if ($SSenable_second_script > 0)
+    {echo "<td align=\"left\" width=\"67px\"><a href=\"#\" onclick=\"ScriptPanel2ToFront('YES');\"><img src=\"./images/"._QXZ("vdc_tab_script2.gif")."\" alt=\"SCRIPT 2\" width=\"67px\" height=\"30px\" border=\"0\" /></a></td>\n";}
+	?>
 	<?php if ($custom_fields_enabled > 0)
     {echo "<td align=\"left\" width=\"67px\"><a href=\"#\" onclick=\"FormPanelToFront('YES');\"><img src=\"./images/"._QXZ("vdc_tab_form.gif")."\" alt=\"FORM\" width=\"67px\" height=\"30px\" border=\"0\" /></a></td>\n";}
 	?>
@@ -20582,6 +20978,18 @@ if ($agent_display_dialable_leads > 0)
 
 <span style="position:absolute;left:<?php echo $AMwidth ?>px;top:<?php echo $SRheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="ScriptRefresH">
 <a href="#" onclick="RefresHScript('','YES')"><font class="body_small"><?php echo _QXZ("refresh"); ?></font></a>
+</span>
+
+<span style="position:absolute;left:154px;top:<?php echo $SFheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="Script2Panel">
+	<?php
+	if ($webphone_location == 'bar')
+        {echo "<img src=\"./images/"._QXZ("pixel.gif")."\" width=\"1px\" height=\"".$webphone_height."px\" /><br />\n";}
+	?>
+    <table border="0" bgcolor="<?php echo $SCRIPT_COLOR ?>" width="<?php echo $SSwidth ?>px" height="<?php echo $SSheight ?>px"><tr><td align="left" valign="top"><font class="sb_text"><div class="noscroll_script" id="Script2Contents"><?php echo _QXZ("AGENT SCRIPT 2"); ?></div></font></td></tr></table>
+</span>
+
+<span style="position:absolute;left:<?php echo $AMwidth ?>px;top:<?php echo $SRheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="Script2RefresH">
+<a href="#" onclick="RefresHScript2('','YES')"><font class="body_small"><?php echo _QXZ("refresh"); ?></font></a>
 </span>
 
 <span style="position:absolute;left:154px;top:<?php echo $SFheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="FormPanel">
@@ -21503,6 +21911,17 @@ if ($agent_display_dialable_leads > 0)
 	?>
 	<span id="PresetsSelectBoxContent"> <?php echo _QXZ("Presets Selection"); ?> </span>
 	<input type="hidden" name="PresetSelection" id="PresetSelection" /></font>
+	</td></tr></table>
+</span>
+
+<span style="position:absolute;left:<?php echo $PBwidth ?>px;top:40px;z-index:<?php $zi++; echo $zi ?>;" id="VMMessageSelectBox">
+	<table border="0" bgcolor="#9999FF" width="400px" height="<?php echo $HTheight ?>px"><tr><td align="center" valign="top"> <font class="sd_text"><?php echo _QXZ("SELECT A VM MESSAGE"); ?>:</font> &nbsp; &nbsp; <a href="#" onclick="hideDiv('VMMessageSelectBox');return false;"><?php echo _QXZ("close"); ?></a><br /><font class="sh_text">
+	<?php
+	if ($webphone_location == 'bar')
+		{echo "<br /><img src=\"./images/"._QXZ("pixel.gif")."\" width=\"1px\" height=\"".$webphone_height."px\" /><br />\n";}
+	?>
+	<span id="VMMessageSelectBoxContent"> <?php echo _QXZ("VM Message Selection"); ?> </span>
+	<input type="hidden" name="VMMessageSelection" id="VMMessageSelection" /></font>
 	</td></tr></table>
 </span>
 

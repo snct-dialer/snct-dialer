@@ -495,10 +495,11 @@
 # 190925-1347 - Added logtable SIP Action
 # 191013-0934 - Fixes for PHP7 issues
 # 191017-2205 - Added code for filtered inbound max calls
+# 191030-1536 - Added code to gather VM Message Group entries
 #
 
-$version = '2.14-374';
-$build = '191013-0934';
+$version = '2.14-375';
+$build = '191030-1536';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=817;
@@ -2142,7 +2143,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 
 		$script_recording_delay=0;
 		##### find if script contains recording fields
-		$stmt="SELECT count(*) FROM vicidial_scripts vs,vicidial_campaigns vc WHERE campaign_id='$campaign' and vs.script_id=vc.campaign_script and script_text LIKE \"%--A--recording_%\";";
+		$stmt="SELECT count(*) FROM vicidial_scripts vs,vicidial_campaigns vc WHERE campaign_id='$campaign' and ( (vs.script_id=vc.campaign_script) or (vs.script_id=vc.campaign_script_two) ) and script_text LIKE \"%--A--recording_%\";";
 		$rslt=mysql_to_mysqli($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00257',$user,$server_ip,$session_name,$one_mysql_log);}
 		if ($DB) {echo "$stmt\n";}
@@ -5127,7 +5128,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 				}
 			##### END if NOT preview dialing, send the call #####
 
-			$stmt = "SELECT campaign_script from vicidial_campaigns where campaign_id='$campaign';";
+			$stmt = "SELECT campaign_script,campaign_script_two from vicidial_campaigns where campaign_id='$campaign';";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00623',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -5135,7 +5136,8 @@ if ($ACTION == 'manDiaLnextCaLL')
 			if ($VC_script_ct > 0)
 				{
 				$row=mysqli_fetch_row($rslt);
-				$VDCL_campaign_script =	$row[0];
+				$VDCL_campaign_script =		$row[0];
+				$VDCL_campaign_script_two =	$row[1];
 				}
 
 			##### find if script contains recording fields
@@ -5282,6 +5284,20 @@ if ($ACTION == 'manDiaLnextCaLL')
 					$VDCL_ingroup_script_color	= $row[0];
 					}
 				}
+			$VDCL_ingroup_script_color_two='';
+			if ( (strlen($VDCL_campaign_script_two)>1) and ($VDCL_campaign_script_two != 'NONE') )
+				{
+				$stmt = "SELECT script_color from vicidial_scripts where script_id='$VDCL_campaign_script_two';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00625',$user,$server_ip,$session_name,$one_mysql_log);}
+				$VDIG_scrptcolor_ct = mysqli_num_rows($rslt);
+				if ($VDIG_scrptcolor_ct > 0)
+					{
+					$row=mysqli_fetch_row($rslt);
+					$VDCL_ingroup_script_color_two	= $row[0];
+					}
+				}
 
 
 			$comments = preg_replace("/\r/i",'',$comments);
@@ -5324,7 +5340,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 			$LeaD_InfO .=	$source_id . "\n";
 			$LeaD_InfO .=	$rank . "\n";
 			$LeaD_InfO .=	$owner . "\n";
-			$LeaD_InfO .=	"\n";
+			$LeaD_InfO .=	$VDCL_campaign_script . "\n";
 			$LeaD_InfO .=	$script_recording_delay . "\n";
 			$LeaD_InfO .=	$VDCL_xferconf_a_number . "\n";
 			$LeaD_InfO .=	$VDCL_xferconf_b_number . "\n";
@@ -5348,6 +5364,8 @@ if ($ACTION == 'manDiaLnextCaLL')
 			$LeaD_InfO .=	$status_group_gather_data . "\n";
 			$LeaD_InfO .=	$call_date . "\n";
 			$LeaD_InfO .=	$default_xfer_group . "\n";
+			$LeaD_InfO .=	$VDCL_campaign_script_two . "\n";
+			$LeaD_InfO .=	$VDCL_ingroup_script_color_two . "\n";
 
 			echo $LeaD_InfO;
 			}
@@ -8736,7 +8754,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 					$script_recording_delay = $row[0];
 					}
 
-				$stmt = "SELECT campaign_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,default_xfer_group,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,timer_action,timer_action_message,timer_action_seconds,timer_action_destination from vicidial_campaigns where campaign_id='$campaign';";
+				$stmt = "SELECT campaign_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,default_xfer_group,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,timer_action,timer_action_message,timer_action_seconds,timer_action_destination,campaign_script_two from vicidial_campaigns where campaign_id='$campaign';";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_to_mysqli($stmt, $link);
 					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00114',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -8761,6 +8779,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 					$VDCL_timer_action_message =	$row[13];
 					$VDCL_timer_action_seconds =	$row[14];
 					$VDCL_timer_action_destination =	$row[15];
+					$VDCL_campaign_script_two =		$row[16];
 					}
 
 				$VDCL_group_web='';
@@ -8817,8 +8836,22 @@ if ($ACTION == 'VDADcheckINCOMING')
 						$VDCL_ingroup_script_color	= $row[0];
 						}
 					}
+				$VDCL_ingroup_script_color_two='';
+				if ( (strlen($VDCL_campaign_script_two)>1) and ($VDCL_campaign_script_two != 'NONE') )
+					{
+					$stmt = "SELECT script_color from vicidial_scripts where script_id='$VDCL_campaign_script_two';";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_to_mysqli($stmt, $link);
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+					$VDIG_scrptcolor_ct = mysqli_num_rows($rslt);
+					if ($VDIG_scrptcolor_ct > 0)
+						{
+						$row=mysqli_fetch_row($rslt);
+						$VDCL_ingroup_script_color_two	= $row[0];
+						}
+					}
 
-				echo "$VDCL_group_web|$VDCL_group_name||||$VDCL_campaign_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|$VDCL_default_xfer_group|X|X||||$VDCL_group_web_two|$VDCL_timer_action|$VDCL_timer_action_message|$VDCL_timer_action_seconds|$VDCL_xferconf_c_number|$VDCL_xferconf_d_number|$VDCL_xferconf_e_number||||$VDCL_timer_action_destination||||||$VDCL_group_web_three|$VDCL_ingroup_script_color|\n|\n";
+				echo "$VDCL_group_web|$VDCL_group_name||||$VDCL_campaign_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|$VDCL_default_xfer_group|X|X||||$VDCL_group_web_two|$VDCL_timer_action|$VDCL_timer_action_message|$VDCL_timer_action_seconds|$VDCL_xferconf_c_number|$VDCL_xferconf_d_number|$VDCL_xferconf_e_number||||$VDCL_timer_action_destination||||||$VDCL_group_web_three|$VDCL_ingroup_script_color|$VDCL_campaign_script_two|$VDCL_ingroup_script_color_two\n|\n";
 				
 				if (preg_match('/X/',$dialed_label))
 					{
@@ -8883,7 +8916,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 
 				$script_recording_delay=0;
 				##### find if script contains recording fields
-				$stmt="SELECT count(*) FROM vicidial_scripts vs,vicidial_inbound_groups vig WHERE group_id='$VDADchannel_group' and vs.script_id=vig.ingroup_script and script_text LIKE \"%--A--recording_%\";";
+				$stmt="SELECT count(*) FROM vicidial_scripts vs,vicidial_inbound_groups vig WHERE group_id='$VDADchannel_group' and ( (vs.script_id=vig.ingroup_script) or (vs.script_id=vig.ingroup_script_two) ) and script_text LIKE \"%--A--recording_%\";";
 				$rslt=mysql_to_mysqli($stmt, $link);
 					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00262',$user,$server_ip,$session_name,$one_mysql_log);}
 				if ($DB) {echo "$stmt\n";}
@@ -8894,7 +8927,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 					$script_recording_delay = $row[0];
 					}
 
-				$stmt = "SELECT group_name,group_color,web_form_address,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,default_xfer_group,ingroup_recording_override,ingroup_rec_filename,default_group_alias,web_form_address_two,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,uniqueid_status_display,uniqueid_status_prefix,timer_action_destination,web_form_address_three,status_group_id,inbound_survey from vicidial_inbound_groups where group_id='$VDADchannel_group';";
+				$stmt = "SELECT group_name,group_color,web_form_address,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,default_xfer_group,ingroup_recording_override,ingroup_rec_filename,default_group_alias,web_form_address_two,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,uniqueid_status_display,uniqueid_status_prefix,timer_action_destination,web_form_address_three,status_group_id,inbound_survey,ingroup_script_two from vicidial_inbound_groups where group_id='$VDADchannel_group';";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_to_mysqli($stmt, $link);
 					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00119',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -8930,10 +8963,11 @@ if ($ACTION == 'VDADcheckINCOMING')
 					$VDCL_timer_action_destination =	$row[25];
 					$VDCL_group_web_three =		stripslashes($row[26]);
 					$VDCL_inbound_survey =				$row[28];
+					$VDCL_ingroup_script_two =			$row[29];
 
 					$status_group_gather_data = status_group_gather($row[27],'INGROUP');
 
-					$stmt = "SELECT campaign_script,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,default_group_alias,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,timer_action_destination,default_xfer_group from vicidial_campaigns where campaign_id='$campaign';";
+					$stmt = "SELECT campaign_script,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,default_group_alias,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,timer_action_destination,default_xfer_group,campaign_script_two from vicidial_campaigns where campaign_id='$campaign';";
 					if ($DB) {echo "$stmt\n";}
 					$rslt=mysql_to_mysqli($stmt, $link);
 						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00181',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -8986,6 +9020,21 @@ if ($ACTION == 'VDADcheckINCOMING')
 								{
 								$row=mysqli_fetch_row($rslt);
 								$script_recording_delay = $row[0];
+								}
+							}
+						if ( ( (preg_match('/NONE/',$VDCL_ingroup_script_two)) and (strlen($VDCL_ingroup_script_two) < 5) ) or (strlen($VDCL_ingroup_script_two) < 1) )
+							{
+							$VDCL_ingroup_script_two =		$row[16];
+							##### find if script contains recording fields
+							$stmt="SELECT count(*) FROM vicidial_scripts vs,vicidial_campaigns vc WHERE campaign_id='$campaign' and vs.script_id=vc.campaign_script_two and script_text LIKE \"%--A--recording_%\";";
+							$rslt=mysql_to_mysqli($stmt, $link);
+								if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00263',$user,$server_ip,$session_name,$one_mysql_log);}
+							if ($DB) {echo "$stmt\n";}
+							$vs_vc_ct = mysqli_num_rows($rslt);
+							if ($vs_vc_ct > 0)
+								{
+								$row=mysqli_fetch_row($rslt);
+								if ($row[0] > 0) {$script_recording_delay++;}
 								}
 							}
 						}
@@ -9042,7 +9091,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 					}
 				else
 					{
-					$stmt = "SELECT campaign_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,default_group_alias,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,timer_action_destination from vicidial_campaigns where campaign_id='$VDADchannel_group';";
+					$stmt = "SELECT campaign_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,default_group_alias,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,timer_action_destination,campaign_script_two from vicidial_campaigns where campaign_id='$VDADchannel_group';";
 					if ($DB) {echo "$stmt\n";}
 					$rslt=mysql_to_mysqli($stmt, $link);
 						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00121',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -9066,11 +9115,12 @@ if ($ACTION == 'VDADcheckINCOMING')
 						$VDCL_xferconf_d_number =		$row[13];
 						$VDCL_xferconf_e_number =		$row[14];
 						$VDCL_timer_action_destination = $row[15];
+						$VDCL_ingroup_script_two = 		$row[16];
 						}
 
 					$script_recording_delay=0;
 					##### find if script contains recording fields
-					$stmt="SELECT count(*) FROM vicidial_scripts vs,vicidial_campaigns vc WHERE campaign_id='$VDADchannel_group' and vs.script_id=vc.campaign_script and script_text LIKE \"%--A--recording_%\";";
+					$stmt="SELECT count(*) FROM vicidial_scripts vs,vicidial_campaigns vc WHERE campaign_id='$VDADchannel_group' and ( (vs.script_id=vc.campaign_script) or (vs.script_id=vc.campaign_script_two) ) and script_text LIKE \"%--A--recording_%\";";
 					$rslt=mysql_to_mysqli($stmt, $link);
 						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00264',$user,$server_ip,$session_name,$one_mysql_log);}
 					if ($DB) {echo "$stmt\n";}
@@ -9120,6 +9170,20 @@ if ($ACTION == 'VDADcheckINCOMING')
 						{
 						$row=mysqli_fetch_row($rslt);
 						$VDCL_ingroup_script_color	= $row[0];
+						}
+					}
+				$VDCL_ingroup_script_color_two='';
+				if ( (strlen($VDCL_ingroup_script_two)>1) and ($VDCL_ingroup_script_two != 'NONE') )
+					{
+					$stmt = "SELECT script_color from vicidial_scripts where script_id='$VDCL_ingroup_script_two';";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_to_mysqli($stmt, $link);
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+					$VDIG_scrptcolor_ct = mysqli_num_rows($rslt);
+					if ($VDIG_scrptcolor_ct > 0)
+						{
+						$row=mysqli_fetch_row($rslt);
+						$VDCL_ingroup_script_color_two	= $row[0];
 						}
 					}
 
@@ -9195,8 +9259,8 @@ if ($ACTION == 'VDADcheckINCOMING')
 					}
 
 				### if web form is set then send on to vicidial.php for override of WEB_FORM address
-				if ( (strlen($VDCL_group_web)>5) or (strlen($VDCL_group_name)>0) ) {echo "$VDCL_group_web|$VDCL_group_name|$VDCL_group_color|$VDCL_fronter_display|$VDADchannel_group|$VDCL_ingroup_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|$VDCL_default_xfer_group|$VDCL_ingroup_recording_override|$VDCL_ingroup_rec_filename|$VDCL_default_group_alias|$VDCL_caller_id_number|$VDCL_group_web_vars|$VDCL_group_web_two|$VDCL_timer_action|$VDCL_timer_action_message|$VDCL_timer_action_seconds|$VDCL_xferconf_c_number|$VDCL_xferconf_d_number|$VDCL_xferconf_e_number|$VDCL_uniqueid_status_display|$custom_call_id|$VDCL_uniqueid_status_prefix|$VDCL_timer_action_destination|$DID_id|$DID_extension|$DID_pattern|$DID_description|$INclosecallid|$INxfercallid|$VDCL_group_web_three|$VDCL_ingroup_script_color|$VDCL_inbound_survey|$VDCL_survey_participate|\n";}
-				else {echo "X|$VDCL_group_name|$VDCL_group_color|$VDCL_fronter_display|$VDADchannel_group|$VDCL_ingroup_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|$VDCL_default_xfer_group|$VDCL_ingroup_recording_override|$VDCL_ingroup_rec_filename|$VDCL_default_group_alias|$VDCL_caller_id_number|$VDCL_group_web_vars|$VDCL_group_web_two|$VDCL_timer_action|$VDCL_timer_action_message|$VDCL_timer_action_seconds|$VDCL_xferconf_c_number|$VDCL_xferconf_d_number|$VDCL_xferconf_e_number|$VDCL_uniqueid_status_display|$custom_call_id|$VDCL_uniqueid_status_prefix|$VDCL_timer_action_destination|$DID_id|$DID_extension|$DID_pattern|$DID_description|$INclosecallid|$INxfercallid|$VDCL_group_web_three|$VDCL_ingroup_script_color|$VDCL_inbound_survey|$VDCL_survey_participate|\n";}
+				if ( (strlen($VDCL_group_web)>5) or (strlen($VDCL_group_name)>0) ) {echo "$VDCL_group_web|$VDCL_group_name|$VDCL_group_color|$VDCL_fronter_display|$VDADchannel_group|$VDCL_ingroup_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|$VDCL_default_xfer_group|$VDCL_ingroup_recording_override|$VDCL_ingroup_rec_filename|$VDCL_default_group_alias|$VDCL_caller_id_number|$VDCL_group_web_vars|$VDCL_group_web_two|$VDCL_timer_action|$VDCL_timer_action_message|$VDCL_timer_action_seconds|$VDCL_xferconf_c_number|$VDCL_xferconf_d_number|$VDCL_xferconf_e_number|$VDCL_uniqueid_status_display|$custom_call_id|$VDCL_uniqueid_status_prefix|$VDCL_timer_action_destination|$DID_id|$DID_extension|$DID_pattern|$DID_description|$INclosecallid|$INxfercallid|$VDCL_group_web_three|$VDCL_ingroup_script_color|$VDCL_inbound_survey|$VDCL_survey_participate|$VDCL_ingroup_script_two|$VDCL_ingroup_script_color_two|\n";}
+				else {echo "X|$VDCL_group_name|$VDCL_group_color|$VDCL_fronter_display|$VDADchannel_group|$VDCL_ingroup_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|$VDCL_default_xfer_group|$VDCL_ingroup_recording_override|$VDCL_ingroup_rec_filename|$VDCL_default_group_alias|$VDCL_caller_id_number|$VDCL_group_web_vars|$VDCL_group_web_two|$VDCL_timer_action|$VDCL_timer_action_message|$VDCL_timer_action_seconds|$VDCL_xferconf_c_number|$VDCL_xferconf_d_number|$VDCL_xferconf_e_number|$VDCL_uniqueid_status_display|$custom_call_id|$VDCL_uniqueid_status_prefix|$VDCL_timer_action_destination|$DID_id|$DID_extension|$DID_pattern|$DID_description|$INclosecallid|$INxfercallid|$VDCL_group_web_three|$VDCL_ingroup_script_color|$VDCL_inbound_survey|$VDCL_survey_participate|$VDCL_ingroup_script_two|$VDCL_ingroup_script_color_two|\n";}
 
 				$stmt = "SELECT full_name from vicidial_users where user='$tsr';";
 				if ($DB) {echo "$stmt\n";}
@@ -9349,6 +9413,8 @@ if ($ACTION == 'VDADcheckINCOMING')
 			$LeaD_InfO .=	$DID_custom_five . "\n";
 			$LeaD_InfO .=	$status_group_gather_data . "\n";
 			$LeaD_InfO .=	$call_date . "\n";
+			$LeaD_InfO .=	$VDCL_ingroup_script_two . "\n";
+			$LeaD_InfO .=	$VDCL_ingroup_script_color_two . "\n";
 
 			echo $LeaD_InfO;
 
@@ -10285,7 +10351,7 @@ if ($ACTION == 'VDADcheckINCOMINGother')
 				$row=mysqli_fetch_row($rslt);
 				$VDCL_front_VDlog	=$row[0];
 				}
-			$stmt = "SELECT group_name,group_color,web_form_address,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,default_xfer_group,ingroup_recording_override,ingroup_rec_filename,default_group_alias,web_form_address_two,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,uniqueid_status_display,uniqueid_status_prefix,timer_action_destination,web_form_address_three,status_group_id from vicidial_inbound_groups where group_id='$VDADchannel_group';";
+			$stmt = "SELECT group_name,group_color,web_form_address,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,default_xfer_group,ingroup_recording_override,ingroup_rec_filename,default_group_alias,web_form_address_two,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,uniqueid_status_display,uniqueid_status_prefix,timer_action_destination,web_form_address_three,status_group_id,ingroup_script_two from vicidial_inbound_groups where group_id='$VDADchannel_group';";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00500',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -10320,10 +10386,11 @@ if ($ACTION == 'VDADcheckINCOMINGother')
 				$VDCL_uniqueid_status_prefix =		$row[24];
 				$VDCL_timer_action_destination =	$row[25];
 				$VDCL_group_web_three =		stripslashes($row[26]);
+				$VDCL_ingroup_script_two =			$row[28];
 
 				$status_group_gather_data = status_group_gather($row[27],'INGROUP');
 
-				$stmt = "SELECT campaign_script,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,default_group_alias,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,timer_action_destination from vicidial_campaigns where campaign_id='$campaign';";
+				$stmt = "SELECT campaign_script,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,default_group_alias,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,timer_action_destination,campaign_script_two from vicidial_campaigns where campaign_id='$campaign';";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_to_mysqli($stmt, $link);
 					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00501',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -10395,7 +10462,7 @@ if ($ACTION == 'VDADcheckINCOMINGother')
 				}
 			else
 				{
-				$stmt = "SELECT campaign_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,default_group_alias,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,timer_action_destination from vicidial_campaigns where campaign_id='$VDADchannel_group';";
+				$stmt = "SELECT campaign_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,default_group_alias,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,timer_action_destination,campaign_script_two from vicidial_campaigns where campaign_id='$VDADchannel_group';";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_to_mysqli($stmt, $link);
 					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00505',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -10445,6 +10512,20 @@ if ($ACTION == 'VDADcheckINCOMINGother')
 					{
 					$row=mysqli_fetch_row($rslt);
 					$VDCL_ingroup_script_color	= $row[0];
+					}
+				}
+			$VDCL_ingroup_script_color_two='';
+			if ( (strlen($VDCL_ingroup_script_two)>1) and ($VDCL_ingroup_script_two != 'NONE') )
+				{
+				$stmt = "SELECT script_color from vicidial_scripts where script_id='$VDCL_ingroup_script_two';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+				$VDIG_scrptcolor_ct = mysqli_num_rows($rslt);
+				if ($VDIG_scrptcolor_ct > 0)
+					{
+					$row=mysqli_fetch_row($rslt);
+					$VDCL_ingroup_script_color_two	= $row[0];
 					}
 				}
 
@@ -10535,8 +10616,8 @@ if ($ACTION == 'VDADcheckINCOMINGother')
 				}
 
 			### if web form is set then send on to vicidial.php for override of WEB_FORM address
-			if ( (strlen($VDCL_group_web)>5) or (strlen($VDCL_group_name)>0) ) {echo "$VDCL_group_web|$VDCL_group_name|$VDCL_group_color|$VDCL_fronter_display|$VDADchannel_group|$VDCL_ingroup_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|$VDCL_default_xfer_group|$VDCL_ingroup_recording_override|$VDCL_ingroup_rec_filename|$VDCL_default_group_alias|$VDCL_caller_id_number|$VDCL_group_web_vars|$VDCL_group_web_two|$VDCL_timer_action|$VDCL_timer_action_message|$VDCL_timer_action_seconds|$VDCL_xferconf_c_number|$VDCL_xferconf_d_number|$VDCL_xferconf_e_number|$VDCL_uniqueid_status_display|$custom_call_id|$VDCL_uniqueid_status_prefix|$VDCL_timer_action_destination|$DID_id|$DID_extension|$DID_pattern|$DID_description|$INclosecallid|$INxfercallid|$VDCL_group_web_three|$VDCL_ingroup_script_color|\n";}
-			else {echo "X|$VDCL_group_name|$VDCL_group_color|$VDCL_fronter_display|$VDADchannel_group|$VDCL_ingroup_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|$VDCL_default_xfer_group|$VDCL_ingroup_recording_override|$VDCL_ingroup_rec_filename|$VDCL_default_group_alias|$VDCL_caller_id_number|$VDCL_group_web_vars|$VDCL_group_web_two|$VDCL_timer_action|$VDCL_timer_action_message|$VDCL_timer_action_seconds|$VDCL_xferconf_c_number|$VDCL_xferconf_d_number|$VDCL_xferconf_e_number|$VDCL_uniqueid_status_display|$custom_call_id|$VDCL_uniqueid_status_prefix|$VDCL_timer_action_destination|$DID_id|$DID_extension|$DID_pattern|$DID_description|$INclosecallid|$INxfercallid|$VDCL_group_web_three|$VDCL_ingroup_script_color|\n";}
+			if ( (strlen($VDCL_group_web)>5) or (strlen($VDCL_group_name)>0) ) {echo "$VDCL_group_web|$VDCL_group_name|$VDCL_group_color|$VDCL_fronter_display|$VDADchannel_group|$VDCL_ingroup_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|$VDCL_default_xfer_group|$VDCL_ingroup_recording_override|$VDCL_ingroup_rec_filename|$VDCL_default_group_alias|$VDCL_caller_id_number|$VDCL_group_web_vars|$VDCL_group_web_two|$VDCL_timer_action|$VDCL_timer_action_message|$VDCL_timer_action_seconds|$VDCL_xferconf_c_number|$VDCL_xferconf_d_number|$VDCL_xferconf_e_number|$VDCL_uniqueid_status_display|$custom_call_id|$VDCL_uniqueid_status_prefix|$VDCL_timer_action_destination|$DID_id|$DID_extension|$DID_pattern|$DID_description|$INclosecallid|$INxfercallid|$VDCL_group_web_three|$VDCL_ingroup_script_color|$VDCL_ingroup_script_two|$VDCL_ingroup_script_color_two|\n";}
+			else {echo "X|$VDCL_group_name|$VDCL_group_color|$VDCL_fronter_display|$VDADchannel_group|$VDCL_ingroup_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|$VDCL_default_xfer_group|$VDCL_ingroup_recording_override|$VDCL_ingroup_rec_filename|$VDCL_default_group_alias|$VDCL_caller_id_number|$VDCL_group_web_vars|$VDCL_group_web_two|$VDCL_timer_action|$VDCL_timer_action_message|$VDCL_timer_action_seconds|$VDCL_xferconf_c_number|$VDCL_xferconf_d_number|$VDCL_xferconf_e_number|$VDCL_uniqueid_status_display|$custom_call_id|$VDCL_uniqueid_status_prefix|$VDCL_timer_action_destination|$DID_id|$DID_extension|$DID_pattern|$DID_description|$INclosecallid|$INxfercallid|$VDCL_group_web_three|$VDCL_ingroup_script_color|$VDCL_ingroup_script_two|$VDCL_ingroup_script_color_two|\n";}
 
 			$stmt = "SELECT full_name from vicidial_users where user='$tsr';";
 			if ($DB) {echo "$stmt\n";}
@@ -10658,6 +10739,8 @@ if ($ACTION == 'VDADcheckINCOMINGother')
 			$LeaD_InfO .=	$DID_custom_five . "\n";
 			$LeaD_InfO .=	$status_group_gather_data . "\n";
 			$LeaD_InfO .=	$call_date . "\n";
+			$LeaD_InfO .=	$VDCL_ingroup_script_two . "\n";
+			$LeaD_InfO .=	$VDCL_ingroup_script_color_two . "\n";
 
 			echo $LeaD_InfO;
 
@@ -11384,7 +11467,7 @@ if ($ACTION == 'LeaDSearcHSelecTUpdatE')
 
 			$script_recording_delay=0;
 			##### find if script contains recording fields
-			$stmt="SELECT count(*) FROM vicidial_scripts vs,vicidial_inbound_groups vig WHERE group_id='$VDADchannel_group' and vs.script_id=vig.ingroup_script and script_text LIKE \"%--A--recording_%\";";
+			$stmt="SELECT count(*) FROM vicidial_scripts vs,vicidial_inbound_groups vig WHERE group_id='$VDADchannel_group' and ( (vs.script_id=vig.ingroup_script) or (vs.script_id=vig.ingroup_script_two) ) and script_text LIKE \"%--A--recording_%\";";
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00467',$user,$server_ip,$session_name,$one_mysql_log);}
 			if ($DB) {echo "$stmt\n";}
@@ -11395,7 +11478,7 @@ if ($ACTION == 'LeaDSearcHSelecTUpdatE')
 				$script_recording_delay = $row[0];
 				}
 
-			$stmt = "SELECT group_name,group_color,web_form_address,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,default_xfer_group,ingroup_recording_override,ingroup_rec_filename,default_group_alias,web_form_address_two,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,uniqueid_status_display,uniqueid_status_prefix,timer_action_destination,web_form_address_three,status_group_id from vicidial_inbound_groups where group_id='$VDADchannel_group';";
+			$stmt = "SELECT group_name,group_color,web_form_address,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,default_xfer_group,ingroup_recording_override,ingroup_rec_filename,default_group_alias,web_form_address_two,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,uniqueid_status_display,uniqueid_status_prefix,timer_action_destination,web_form_address_three,status_group_id,ingroup_script from vicidial_inbound_groups where group_id='$VDADchannel_group';";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00468',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -11430,10 +11513,11 @@ if ($ACTION == 'LeaDSearcHSelecTUpdatE')
 				$VDCL_uniqueid_status_prefix =		$row[24];
 				$VDCL_timer_action_destination =	$row[25];
 				$VDCL_group_web_three =		stripslashes($row[26]);
+				$VDCL_ingroup_script_two =			$row[28];
 
 				$status_group_gather_data = status_group_gather($row[27],'INGROUP');
 
-				$stmt = "SELECT campaign_script,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,default_group_alias,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,timer_action_destination from vicidial_campaigns where campaign_id='$campaign';";
+				$stmt = "SELECT campaign_script,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,default_group_alias,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,timer_action_destination,campaign_script_two from vicidial_campaigns where campaign_id='$campaign';";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_to_mysqli($stmt, $link);
 					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00469',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -11475,7 +11559,7 @@ if ($ACTION == 'LeaDSearcHSelecTUpdatE')
 						$VDCL_ingroup_script =		$row[0];
 						$script_recording_delay=0;
 						##### find if script contains recording fields
-						$stmt="SELECT count(*) FROM vicidial_scripts vs,vicidial_campaigns vc WHERE campaign_id='$campaign' and vs.script_id=vc.campaign_script and script_text LIKE \"%--A--recording_%\";";
+						$stmt="SELECT count(*) FROM vicidial_scripts vs,vicidial_campaigns vc WHERE campaign_id='$campaign' and ( (vs.script_id=vc.campaign_script) or (vs.script_id=vc.campaign_script_two) ) and script_text LIKE \"%--A--recording_%\";";
 						$rslt=mysql_to_mysqli($stmt, $link);
 							if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00470',$user,$server_ip,$session_name,$one_mysql_log);}
 						if ($DB) {echo "$stmt\n";}
@@ -11528,6 +11612,20 @@ if ($ACTION == 'LeaDSearcHSelecTUpdatE')
 					{
 					$row=mysqli_fetch_row($rslt);
 					$VDCL_ingroup_script_color	= $row[0];
+					}
+				}
+			$VDCL_ingroup_script_color_two='';
+			if ( (strlen($VDCL_ingroup_script_two)>1) and ($VDCL_ingroup_script_two != 'NONE') )
+				{
+				$stmt = "SELECT script_color from vicidial_scripts where script_id='$VDCL_ingroup_script_two';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+				$VDIG_scrptcolor_ct = mysqli_num_rows($rslt);
+				if ($VDIG_scrptcolor_ct > 0)
+					{
+					$row=mysqli_fetch_row($rslt);
+					$VDCL_ingroup_script_color_two	= $row[0];
 					}
 				}
 
@@ -11604,8 +11702,8 @@ if ($ACTION == 'LeaDSearcHSelecTUpdatE')
 				}
 
 			### if web form is set then send on to vicidial.php for override of WEB_FORM address
-			if ( (strlen($VDCL_group_web)>5) or (strlen($VDCL_group_name)>0) ) {echo "$VDCL_group_web|$VDCL_group_name|$VDCL_group_color|$VDCL_fronter_display|$VDADchannel_group|$VDCL_ingroup_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|$VDCL_default_xfer_group|$VDCL_ingroup_recording_override|$VDCL_ingroup_rec_filename|$VDCL_default_group_alias|$VDCL_caller_id_number|$VDCL_group_web_vars|$VDCL_group_web_two|$VDCL_timer_action|$VDCL_timer_action_message|$VDCL_timer_action_seconds|$VDCL_xferconf_c_number|$VDCL_xferconf_d_number|$VDCL_xferconf_e_number|$VDCL_uniqueid_status_display|$custom_call_id|$VDCL_uniqueid_status_prefix|$VDCL_timer_action_destination|$DID_id|$DID_extension|$DID_pattern|$DID_description|$INclosecallid|$INxfercallid|$VDCL_group_web_three|$VDCL_ingroup_script_color|\n";}
-			else {echo "X|$VDCL_group_name|$VDCL_group_color|$VDCL_fronter_display|$VDADchannel_group|$VDCL_ingroup_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|$VDCL_default_xfer_group|$VDCL_ingroup_recording_override|$VDCL_ingroup_rec_filename|$VDCL_default_group_alias|$VDCL_caller_id_number|$VDCL_group_web_vars|$VDCL_group_web_two|$VDCL_timer_action|$VDCL_timer_action_message|$VDCL_timer_action_seconds|$VDCL_xferconf_c_number|$VDCL_xferconf_d_number|$VDCL_xferconf_e_number|$VDCL_uniqueid_status_display|$custom_call_id|$VDCL_uniqueid_status_prefix|$VDCL_timer_action_destination|$DID_id|$DID_extension|$DID_pattern|$DID_description|$INclosecallid|$INxfercallid|$VDCL_group_web_three|$VDCL_ingroup_script_color|\n";}
+			if ( (strlen($VDCL_group_web)>5) or (strlen($VDCL_group_name)>0) ) {echo "$VDCL_group_web|$VDCL_group_name|$VDCL_group_color|$VDCL_fronter_display|$VDADchannel_group|$VDCL_ingroup_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|$VDCL_default_xfer_group|$VDCL_ingroup_recording_override|$VDCL_ingroup_rec_filename|$VDCL_default_group_alias|$VDCL_caller_id_number|$VDCL_group_web_vars|$VDCL_group_web_two|$VDCL_timer_action|$VDCL_timer_action_message|$VDCL_timer_action_seconds|$VDCL_xferconf_c_number|$VDCL_xferconf_d_number|$VDCL_xferconf_e_number|$VDCL_uniqueid_status_display|$custom_call_id|$VDCL_uniqueid_status_prefix|$VDCL_timer_action_destination|$DID_id|$DID_extension|$DID_pattern|$DID_description|$INclosecallid|$INxfercallid|$VDCL_group_web_three|$VDCL_ingroup_script_color|$VDCL_ingroup_script_two|$VDCL_ingroup_script_color_two|\n";}
+			else {echo "X|$VDCL_group_name|$VDCL_group_color|$VDCL_fronter_display|$VDADchannel_group|$VDCL_ingroup_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|$VDCL_default_xfer_group|$VDCL_ingroup_recording_override|$VDCL_ingroup_rec_filename|$VDCL_default_group_alias|$VDCL_caller_id_number|$VDCL_group_web_vars|$VDCL_group_web_two|$VDCL_timer_action|$VDCL_timer_action_message|$VDCL_timer_action_seconds|$VDCL_xferconf_c_number|$VDCL_xferconf_d_number|$VDCL_xferconf_e_number|$VDCL_uniqueid_status_display|$custom_call_id|$VDCL_uniqueid_status_prefix|$VDCL_timer_action_destination|$DID_id|$DID_extension|$DID_pattern|$DID_description|$INclosecallid|$INxfercallid|$VDCL_group_web_three|$VDCL_ingroup_script_color|$VDCL_ingroup_script_two|$VDCL_ingroup_script_color_two|\n";}
 
 			$stmt = "SELECT full_name from vicidial_users where user='$tsr';";
 			if ($DB) {echo "$stmt\n";}
@@ -11769,6 +11867,8 @@ if ($ACTION == 'LeaDSearcHSelecTUpdatE')
 			$LeaD_InfO .=	$DID_custom_five . "\n";
 			$LeaD_InfO .=	$status_group_gather_data . "\n";
 			$LeaD_InfO .=	$call_date . "\n";
+			$LeaD_InfO .=	$VDCL_ingroup_script_two . "\n";
+			$LeaD_InfO .=	$VDCL_ingroup_script_color_two . "\n";
 
 			echo $LeaD_InfO;
 
@@ -15570,6 +15670,96 @@ if ($ACTION == 'PauseCodeMgrApr')
 			$stage .= "|$MgrApr_user|$status|$auth_message|";
 			}
 		}
+	}
+
+
+################################################################################
+### VMMG_list_build - Build Voicemail Message Groups selection content
+################################################################################
+if ($ACTION == 'VMMG_list_build')
+	{
+	$HHMM = date("Hi");
+	$start_date = ($start_date + 0);
+	$VMMGaudio_filename = array();
+	$VMMGaudio_name = array();
+	$VMMGrank = array();
+	$VMMGtime_start = array();
+	$VMMGtime_end = array();
+
+	### Grab Server GMT value from the database
+	$stmt="SELECT audio_filename,audio_name,rank,time_start,time_end FROM leave_vm_message_groups_entries where leave_vm_message_group_id='$stage' order by rank limit 1000;";
+	$rslt=mysql_to_mysqli($stmt, $link);
+		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+	$vmmg_recs = mysqli_num_rows($rslt);
+	$v=0;
+	while ($vmmg_recs > $v)
+		{
+		$row=mysqli_fetch_row($rslt);
+		$VMMGaudio_filename[$v] =	$row[0];
+		$VMMGaudio_name[$v] =		$row[1];
+		$VMMGrank[$v] =				$row[2];
+		$VMMGtime_start[$v] =		$row[3];
+		$VMMGtime_end[$v] =			$row[4];
+		$v++;
+		}
+
+	$VM_Messages_HTML='';
+	$VM_Messages_HTML_rows='';
+	$v=0; $rows_found=0;
+	while ($vmmg_recs > $v)
+		{
+		$VMMGtime_start[$v] = ($VMMGtime_start[$v] + 0);
+		$VMMGtime_end[$v] = ($VMMGtime_end[$v] + 0);
+		$HHMMdebug = "$start_date $VMMGtime_start[$v] $VMMGtime_end[$v] $HHMM";
+		if ( ($start_date >= $VMMGtime_start[$v]) and ($start_date < $VMMGtime_end[$v]) )
+			{
+			$VM_Messages_HTML_rows .= "<tr bgcolor=white><td align=\"left\"><font color=\"#000066\"><b><font face=\"Arial, Helvetica, sans-serif\" size=\"2\"><a href=\"#\" onclick=\"VMMessageSelect_submit('$VMMGaudio_filename[$v]','$VMMGaudio_name[$v]','$HHMMdebug','$VMMGrank[$v]')\">$VMMGaudio_name[$v]</a></font></td></tr>\n";
+
+			$rows_found++;
+			}
+		$VMMGaudio_filename[$v] =	$row[0];
+		$VMMGaudio_name[$v] =		$row[1];
+		$VMMGrank[$v] =				$row[2];
+		$v++;
+		}
+
+	if ($rows_found > 0)
+		{
+		$VM_Messages_HTML .= "<table bgcolor='white' cellpadding=10 cellspacing=0><tr><td>\n";
+		$VM_Messages_HTML .= "<table bgcolor='#CCCCCC' cellpadding=4 cellspacing=2>\n";
+		$VM_Messages_HTML .= $VM_Messages_HTML_rows;
+		$VM_Messages_HTML .= "</table></td></tr></table>";
+		echo "$VM_Messages_HTML\n";
+		}
+	else
+		{
+		echo ""._QXZ("ERROR").": "._QXZ("No VM Messages Available")."\n";
+		}
+
+	$stage .= "|$rows_found $HHMMdebug";
+	}
+
+
+################################################################################
+### VMMG_selected - Log the Voicemail Message to be played for this phone call
+################################################################################
+if ($ACTION == 'VMMG_selected')
+	{
+	if ( (strlen($MDnextCID) < 17) or (strlen($stage) < 1) )
+		{
+		echo "ERROR: "._QXZ("Call ID or Message not defined")."\n";
+		}
+	else
+		{
+		$stmtL="INSERT INTO vicidial_agent_vmm_overrides set call_date=NOW(),caller_code='$MDnextCID',lead_id='$lead_id',user='$user',vm_message='$stage';";
+		if ($DB) {echo "|$stmtL|\n";}
+		$rslt=mysql_to_mysqli($stmtL, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+		$VAVOaffected_rows = mysqli_affected_rows($link);
+		echo "SUCCESS: $VAVOaffected_rows $MDnextCID $stage\n";
+		}
+
+	$stage .= "|$VAVOaffected_rows $MDnextCID";
 	}
 
 

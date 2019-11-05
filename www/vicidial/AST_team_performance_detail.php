@@ -515,7 +515,7 @@ $HTML_text.="<FORM ACTION=\"$PHP_SELF\" METHOD=GET name=vicidial_report id=vicid
 $HTML_text.="<TABLE CELLSPACING=3 BGCOLOR=\"#".$SSframe_background."\"><TR><TD VALIGN=TOP>";
 $HTML_text.="<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 $HTML_text.="<INPUT TYPE=HIDDEN NAME=type VALUE=\"$type\">\n";
-$HTML_text.="Date Range:<BR>\n";
+$HTML_text.=_QXZ("Date Range").":<BR>\n";
 
 $HTML_text.="<INPUT TYPE=hidden NAME=query_date ID=query_date VALUE=\"$query_date\">\n";
 $HTML_text.="<INPUT TYPE=hidden NAME=end_date ID=end_date VALUE=\"$end_date\">\n";
@@ -617,7 +617,7 @@ $HTML_text.="</SELECT></TD>\n";
 $HTML_text.="<TD VALIGN=TOP>\n";
 $HTML_text.=_QXZ("Display as").":<BR>";
 $HTML_text.="<select name='report_display_type'>";
-if ($report_display_type) {$HTML_text.="<option value='$report_display_type' selected>$report_display_type</option>";}
+if ($report_display_type) {$HTML_text.="<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
 $HTML_text.="<option value='TEXT'>"._QXZ("TEXT")."</option><option value='HTML'>"._QXZ("HTML")."</option></select>\n<BR><BR>";
 $HTML_text.="<INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'>\n";
 $HTML_text.="</TD><TD VALIGN=TOP> &nbsp; &nbsp; &nbsp; &nbsp; ";
