@@ -660,6 +660,14 @@
       - Update: www/agc/conf_exten_check.php,
           www/agc/vdc_phonebook_display.php.
         Thanks to Stefan Kolloch.
+    * Change Logo and Favicon:
+      - New: www/agc/images/vicidial_admin_web_logoSNCT.png,
+          www/favicon.png,
+          www/vicidial/images/vicidial_admin_web_logoSNCT.png,
+      - Change: www/favicon.ico,
+          extras/MySQL_AST_CREATE_tables.sql,
+          extras/mysql_update/mysql-1567.sql,
+          extras/upgrade_2.14.sql.
     * Change next release to 3.0.1.
 
 2.26.29
