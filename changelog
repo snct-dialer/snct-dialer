@@ -784,6 +784,8 @@
           www/agc/vdc_db_query.php,
           www/agc/vdc_script_display.php,
           www/agc/vicidial.php: Fixes for translations.
+    * Add upstream Rev. 3154:
+      - Update: www/agc/vicidial.php: Fix for issue #1177.
     * Change next release to 3.0.1.
 
 2.26.29

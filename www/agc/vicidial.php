@@ -640,10 +640,11 @@
 # 191018-0904 - Added User Inbound Filtered features
 # 191101-1150 - Added VM Message Groups features, second script tab
 # 191104-1759 - Fixes for translations
+# 191105-0824 - Fix for issue #1177
 #
 
-$version = '2.14-591c';
-$build = '191104-1759';
+$version = '2.14-592c';
+$build = '191105-0824';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=91;
 $one_mysql_log=0;
@@ -18830,7 +18831,7 @@ function CallViewLogInbounds() {
 				{
 				HidEGenDerPulldown();
 				}
-			if (is_webphone=='Y')
+			if ( (is_webphone=='Y') && (no_empty_session_warnings < 1) )
 				{
 				NoneInSession();
 				document.getElementById("NoneInSessionLink").innerHTML = "<a href=\"#\" onclick=\"NoneInSessionCalL('LOGIN');return false;\"><?php echo _QXZ("Call Agent Webphone"); ?> -></a>";
