@@ -1,11 +1,17 @@
 <?php
 # welcome.php - VICIDIAL welcome page
 # 
-# Copyright (C) 2016  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# LICENSE: AGPLv3
+#
+# Copyright (©) 2016 Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2019 SNCT GmbH <info@snct-gmbh.de>
+#               2019 Jörg Frings-Fürst <open_source@jff.email>.
 #
 # CHANGELOG:
 # 141007-2140 - Finalized adding QXZ translation to all admin files
 # 161106-1920 - Changed to use newer design and dynamic links
+# 191106-1445 - Add New Logo
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -83,8 +89,10 @@ $Mhead_color =	$SSstd_row5_background;
 $selected_logo = "./images/vicidial_admin_web_logo.png";
 $logo_new=0;
 $logo_old=0;
+$logo_snct=0;
 if (file_exists('../$admin_web_directory/images/vicidial_admin_web_logo.png')) {$logo_new++;}
 if (file_exists('vicidial_admin_web_logo.gif')) {$logo_old++;}
+if (file_exists('./images/vicidial_admin_web_logoSNCT.png')) {$logo_snct++;}
 if ($SSweb_logo=='default_new')
 	{
 	$selected_logo = "./images/vicidial_admin_web_logo.png";
@@ -93,7 +101,10 @@ if ( ($SSweb_logo=='default_old') and ($logo_old > 0) )
 	{
 	$selected_logo = "../$admin_web_directory/vicidial_admin_web_logo.gif";
 	}
-if ( ($SSweb_logo!='default_new') and ($SSweb_logo!='default_old') )
+if (($$SSWeb_logo == "SNCT.png") and ($logo_snct > 0)) {
+	$selected_logo = "./images/vicidial_admin_web_logoSNCT.png";
+}
+if ( ($SSweb_logo!='default_new') and ($SSweb_logo!='default_old') and ($SSweb_logo!='SNCT.png'))
 	{
 	if (file_exists("../$admin_web_directory/images/vicidial_admin_web_logo$SSweb_logo")) 
 		{

@@ -786,6 +786,8 @@
           www/agc/vicidial.php: Fixes for translations.
     * Add upstream Rev. 3154:
       - Update: www/agc/vicidial.php: Fix for issue #1177.
+    * Change Logo Handling:
+      - Update www/vicidial/welcome.php.
     * Change next release to 3.0.1.
 
 2.26.29
