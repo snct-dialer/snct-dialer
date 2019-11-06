@@ -1,4 +1,4 @@
-﻿# de_language.txt - this file is for the internationalization of the astGUIclient 
+# de_language.txt - this file is for the internationalization of the astGUIclient 
 # client web pages. The associated install.pl file will take the language as an 
 # argument and alter the php scripts to the language typed in the command line:
 # example: ./install.pl --language=de
