@@ -75,10 +75,10 @@ else
 ### find cvt binary    "cvt 800 600"
 $cvtbin = '';
 if ( -e ('/bin/cvt')) {$cvtbin = '/bin/cvt';}
-else 
+else
 	{
 	if ( -e ('/usr/bin/cvt')) {$cvtbin = '/usr/bin/cvt';}
-	else 
+	else
 		{
 		if ( -e ('/usr/local/bin/cvt')) {$cvtbin = '/usr/local/bin/cvt';}
 		else
@@ -92,10 +92,10 @@ else
 ### find xrandr binary
 $xrandrbin = '';
 if ( -e ('/bin/xrandr')) {$xrandrbin = '/bin/xrandr';}
-else 
+else
 	{
 	if ( -e ('/usr/bin/xrandr')) {$xrandrbin = '/usr/bin/xrandr';}
-	else 
+	else
 		{
 		if ( -e ('/usr/local/bin/xrandr')) {$xrandrbin = '/usr/local/bin/xrandr';}
 		else

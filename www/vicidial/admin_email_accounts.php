@@ -1,6 +1,6 @@
 <?php
 # admin_email_accounts.php
-# 
+#
 # Copyright (C) 2018  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This page manages the inbound email accounts in ViciDial
@@ -29,7 +29,7 @@
 $admin_version = '2.14-18';
 $build = '180502-2215';
 
-$sh="emails"; 
+$sh="emails";
 
 require("dbconnect_mysqli.php");
 require("functions.php");
@@ -252,7 +252,7 @@ if ( (!preg_match("/\-\-ALL\-\-/i",$LOGadmin_viewable_groups)) and (strlen($LOGa
 	$valLOGadmin_viewable_groupsSQL = "and val.user_group IN('---ALL---','$rawLOGadmin_viewable_groupsSQL')";
 	$vmLOGadmin_viewable_groupsSQL = "and vm.user_group IN('---ALL---','$rawLOGadmin_viewable_groupsSQL')";
 	}
-else 
+else
 	{$admin_viewable_groupsALL=1;}
 $regexLOGadmin_viewable_groups = " $LOGadmin_viewable_groups ";
 
@@ -263,7 +263,7 @@ $stmt="SELECT user_group,group_name from vicidial_user_groups $whereLOGadmin_vie
 $rslt=mysql_to_mysqli($stmt, $link);
 $UUgroups_to_print = mysqli_num_rows($rslt);
 $o=0;
-while ($UUgroups_to_print > $o) 
+while ($UUgroups_to_print > $o)
 	{
 	$rowx=mysqli_fetch_row($rslt);
 	$UUgroups_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -277,11 +277,11 @@ $Dgroups_to_print = mysqli_num_rows($rslt);
 $Dgroups_menu='';
 $Dgroups_selected=0;
 $o=0;
-while ($Dgroups_to_print > $o) 
+while ($Dgroups_to_print > $o)
 	{
 	$rowx=mysqli_fetch_row($rslt);
 	$Dgroups_menu .= "<option ";
-	if ($drop_inbound_group == "$rowx[0]") 
+	if ($drop_inbound_group == "$rowx[0]")
 		{
 		$Dgroups_menu .= "SELECTED ";
 		$Dgroups_selected++;
@@ -289,9 +289,9 @@ while ($Dgroups_to_print > $o)
 	$Dgroups_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 	$o++;
 	}
-if ($Dgroups_selected < 1) 
+if ($Dgroups_selected < 1)
 	{$Dgroups_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-else 
+else
 	{$Dgroups_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
 
 
@@ -341,7 +341,7 @@ $Mhead_color =	$SSstd_row5_background;
 <div id='HelpDisplayDiv' class='help_info' style='display:none;'></div>
 
 <title><?php echo _QXZ("ADMINISTRATION: Dialer Email Account fields"); ?>
-<?php 
+<?php
 
 ##### BEGIN Set variables to make header show properly #####
 $ADD =					'0';
@@ -386,7 +386,7 @@ if ($DB > 0)
 echo "$DB,$action,$ip,$user,$copy_option,$field_id,$list_id,$source_email_account,$field_label,$field_name,$field_description,$field_rank,$field_help,$field_type,$field_options,$field_size,$field_max,$field_default,$field_required,$field_cost,$multi_position,$name_position,$field_order";
 }
 
-if ($eact=="DELETE" && $confirm_deletion=="yes" && $email_account_id) 
+if ($eact=="DELETE" && $confirm_deletion=="yes" && $email_account_id)
 	{
 	$del_stmt="delete from vicidial_email_accounts where email_account_id='$email_account_id'";
 	$del_rslt=mysql_to_mysqli($del_stmt, $link);
@@ -407,9 +407,9 @@ if (($stage=="SUBMIT" || $stage=="UPDATE") && $email_account_id)
 	if (!$email_account_pass) {$error_msg.="- "._QXZ("Email account password is invalid or null")."<BR/>";}
 	if (!filter_var($email_replyto_address, FILTER_VALIDATE_EMAIL)) {$error_msg.="- "._QXZ("Email reply-to address is invalid or null")."<BR/>";}
 
-	if (!$error_msg) 
+	if (!$error_msg)
 		{
-		if ($stage=="SUBMIT") 
+		if ($stage=="SUBMIT")
 			{
 			if ($add_copy_disabled > 0)
 				{
@@ -419,12 +419,12 @@ if (($stage=="SUBMIT" || $stage=="UPDATE") && $email_account_id)
 				{
 				$ins_stmt="INSERT INTO vicidial_email_accounts(email_account_id, email_account_name, email_account_description, user_group, email_replyto_address, protocol, email_account_server, email_account_user, email_account_pass, pop3_auth_mode, active, email_frequency_check_mins, group_id, default_list_id, email_account_type, call_handle_method, agent_search_method, list_id, campaign_id) VALUES('$email_account_id', '$email_account_name', '$email_account_description', '$user_group', '$email_replyto_address', '$protocol', '$email_account_server', '$email_account_user', '$email_account_pass', '$pop3_auth_mode', '$active', '$email_frequency_check_mins', '$group_id', '$default_list_id', '$email_account_type', '$call_handle_method', '$agent_search_method', '$list_id', '$campaign_id')";
 				$ins_rslt=mysql_to_mysqli($ins_stmt, $link);
-				if (mysqli_affected_rows($link)==0) 
+				if (mysqli_affected_rows($link)==0)
 					{
 					$error_msg.="- "._QXZ("There was an unknown error when attempting to create the new account")."<BR/>";
 					if($DB>0) {$error_msg.="<B>$ins_stmt</B><BR>";}
 					}
-				else 
+				else
 					{
 					$message=_QXZ("NEW ACCOUNT")." $email_account_id "._QXZ("SUCCESSFULLY CREATED");
 					$eact="";
@@ -443,12 +443,12 @@ if (($stage=="SUBMIT" || $stage=="UPDATE") && $email_account_id)
 			{
 			$upd_stmt="update vicidial_email_accounts set email_account_name='$email_account_name', email_account_description='$email_account_description', user_group='$user_group', protocol='$protocol', email_replyto_address='$email_replyto_address', email_account_server='$email_account_server', email_account_user='$email_account_user', email_account_pass='$email_account_pass', pop3_auth_mode='$pop3_auth_mode', active='$active', email_frequency_check_mins='$email_frequency_check_mins', group_id='$group_id', default_list_id='$default_list_id', email_account_type='$email_account_type', call_handle_method='$call_handle_method', agent_search_method='$agent_search_method', campaign_id='$campaign_id', list_id='$list_id' WHERE email_account_id='$email_account_id'";
 			$upd_rslt=mysql_to_mysqli($upd_stmt, $link);
-			if (mysqli_affected_rows($link)==0) 
+			if (mysqli_affected_rows($link)==0)
 				{
 				$error_msg.="- "._QXZ("There was an unknown error when attempting to update account")." $email_account_id<BR/>";
 				if($DB>0) {$error_msg.="<B>$upd_stmt</B><BR>";}
 				}
-			else 
+			else
 				{
 				$message=_QXZ("ACCOUNT")." $email_account_id "._QXZ("SUCCESSFULLY MODIFIED");
 				# $eact="";
@@ -464,11 +464,11 @@ if (($stage=="SUBMIT" || $stage=="UPDATE") && $email_account_id)
 			}
 		}
 	}
-else if ($stage=="COPY") 
+else if ($stage=="COPY")
 	{
 	$stmt="select * from vicidial_email_accounts where email_account_id='$source_email_account'";
 	$rslt=mysql_to_mysqli($stmt, $link);
-	if (mysqli_num_rows($rslt)>0) 
+	if (mysqli_num_rows($rslt)>0)
 		{
 		if ($add_copy_disabled > 0)
 			{
@@ -479,7 +479,7 @@ else if ($stage=="COPY")
 			$row=mysqli_fetch_array($rslt);
 			$ins_stmt="insert into vicidial_email_accounts(email_account_id, email_account_name, email_account_description, user_group, protocol, email_replyto_address, email_account_server, email_account_user, email_account_pass, pop3_auth_mode, active, email_frequency_check_mins, group_id, default_list_id, email_account_type, call_handle_method, agent_search_method, list_id, campaign_id) VALUES('$new_account_id', '$email_account_name', '$row[email_account_description]', '$row[user_group]', '$row[protocol]', '$row[email_replyto_address]', '$row[email_account_server]', '$row[email_account_user]', '$row[email_account_pass]', '$row[pop3_auth_mode]', '$row[active]', '$row[email_frequency_check_mins]', '$row[group_id]','$row[default_list_id]', '$row[email_account_type]', '$row[call_handle_method]','$row[agent_search_method]', '$row[list_id]', '$row[campaign_id]')";
 			$ins_rslt=mysql_to_mysqli($ins_stmt, $link);
-			if (mysqli_affected_rows($link)==0) 
+			if (mysqli_affected_rows($link)==0)
 				{
 				$error_msg.="- "._QXZ("There was an unknown error when attempting to copy the new account")."<BR/>";
 				if($DB>0) {$error_msg.="<B>$ins_stmt</B><BR>";}
@@ -517,7 +517,7 @@ if ($eact == "COPY")
 	$accounts_to_print = mysqli_num_rows($rsltx);
 	$accounts_list='';
 	$o=0;
-	if ($accounts_to_print>0) 
+	if ($accounts_to_print>0)
 		{
 		while ($accounts_to_print > $o)
 			{
@@ -543,7 +543,7 @@ if ($eact == "COPY")
 		echo "</TABLE></center>\n";
 		echo "</TD></TR></TABLE>\n";
 		}
-	else 
+	else
 		{
 		echo "<TABLE><TR><TD>\n";
 		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
@@ -561,7 +561,7 @@ else if ($eact == "ADD")
 		$campaigns_to_print = mysqli_num_rows($rslt);
 		$campaigns_list='';
 		$o=0;
-		while ($campaigns_to_print > $o) 
+		while ($campaigns_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$campaigns_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -577,17 +577,17 @@ else if ($eact == "ADD")
 		$FXgroups_menu='';
 		$FXgroups_selected=0;
 		$o=0;
-		while ($Xgroups_to_print > $o) 
+		while ($Xgroups_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$Xgroups_menu .= "<option ";
 			$FXgroups_menu .= "<option ";
-			if ($user_route_settings_ingroup == "$rowx[0]") 
+			if ($user_route_settings_ingroup == "$rowx[0]")
 				{
 				$Xgroups_menu .= "SELECTED ";
 				$Xgroups_selected++;
 				}
-			if ($filter_user_route_settings_ingroup == "$rowx[0]") 
+			if ($filter_user_route_settings_ingroup == "$rowx[0]")
 				{
 				$FXgroups_menu .= "SELECTED ";
 				$FXgroups_selected++;
@@ -596,13 +596,13 @@ else if ($eact == "ADD")
 			$FXgroups_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 			$o++;
 			}
-		if ($Xgroups_selected < 1) 
+		if ($Xgroups_selected < 1)
 			{$Xgroups_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		else 
+		else
 			{$Xgroups_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		if ($FXgroups_selected < 1) 
+		if ($FXgroups_selected < 1)
 			{$FXgroups_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		else 
+		else
 			{$FXgroups_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
 
 
@@ -615,17 +615,17 @@ else if ($eact == "ADD")
 		$FDgroups_menu='';
 		$FDgroups_selected=0;
 		$o=0;
-		while ($Dgroups_to_print > $o) 
+		while ($Dgroups_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$Dgroups_menu .= "<option ";
 			$FDgroups_menu .= "<option ";
-			if ($group_id == "$rowx[0]") 
+			if ($group_id == "$rowx[0]")
 				{
 				$Dgroups_menu .= "SELECTED ";
 				$Dgroups_selected++;
 				}
-			if ($filter_group_id == "$rowx[0]") 
+			if ($filter_group_id == "$rowx[0]")
 				{
 				$FDgroups_menu .= "SELECTED ";
 				$FDgroups_selected++;
@@ -634,16 +634,16 @@ else if ($eact == "ADD")
 			$FDgroups_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 			$o++;
 			}
-		if ($Dgroups_selected < 1) 
+		if ($Dgroups_selected < 1)
 			{$Dgroups_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		else 
+		else
 			{$Dgroups_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		if ($FDgroups_selected < 1) 
+		if ($FDgroups_selected < 1)
 			{$FDgroups_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		else 
+		else
 			{$FDgroups_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
 
-		
+
 		echo "<TABLE>\n";
 		echo "<TR><TD>\n";
 		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
@@ -668,7 +668,7 @@ else if ($eact == "ADD")
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Email Account Password").": </td><td align=left><input type=text name=email_account_pass size=30 maxlength=100 value='$email_account_pass'>$NWB#email_accounts-email_account_pass$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Email Frequency Check Rate (mins)").": </td><td align=left><select name='email_frequency_check_mins'>";
 		$i=5;
-		while ($i<=60) 
+		while ($i<=60)
 			{
 			echo "<option value='$i'>$i</option>";
 			$i+=5;
@@ -697,7 +697,7 @@ else if ($eact == "ADD")
 		exit;
 		}
 	}
-else if (($eact=="DELETE" || $eact=="UPDATE") && $email_account_id)  
+else if (($eact=="DELETE" || $eact=="UPDATE") && $email_account_id)
 	{
 	if ( ($LOGemails_modify==1) )
 		{
@@ -725,7 +725,7 @@ else if (($eact=="DELETE" || $eact=="UPDATE") && $email_account_id)
 		$default_list_id=$row["default_list_id"];
 		$email_account_type=$row["email_account_type"];
 
-		if ($eact=="DELETE" && $email_account_id)  
+		if ($eact=="DELETE" && $email_account_id)
 			{
 			echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 			echo "<br><B>"._QXZ("CONFIRM DELETION OF INBOUND EMAIL ACCOUNT")." $email_account_id</B><BR>\n";
@@ -737,7 +737,7 @@ else if (($eact=="DELETE" || $eact=="UPDATE") && $email_account_id)
 		$campaigns_to_print = mysqli_num_rows($rslt);
 		$campaigns_list='';
 		$o=0;
-		while ($campaigns_to_print > $o) 
+		while ($campaigns_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$campaigns_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -753,17 +753,17 @@ else if (($eact=="DELETE" || $eact=="UPDATE") && $email_account_id)
 		$FXgroups_menu='';
 		$FXgroups_selected=0;
 		$o=0;
-		while ($Xgroups_to_print > $o) 
+		while ($Xgroups_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$Xgroups_menu .= "<option ";
 			$FXgroups_menu .= "<option ";
-			if ($user_route_settings_ingroup == "$rowx[0]") 
+			if ($user_route_settings_ingroup == "$rowx[0]")
 				{
 				$Xgroups_menu .= "SELECTED ";
 				$Xgroups_selected++;
 				}
-			if ($filter_user_route_settings_ingroup == "$rowx[0]") 
+			if ($filter_user_route_settings_ingroup == "$rowx[0]")
 				{
 				$FXgroups_menu .= "SELECTED ";
 				$FXgroups_selected++;
@@ -772,13 +772,13 @@ else if (($eact=="DELETE" || $eact=="UPDATE") && $email_account_id)
 			$FXgroups_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 			$o++;
 			}
-		if ($Xgroups_selected < 1) 
+		if ($Xgroups_selected < 1)
 			{$Xgroups_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		else 
+		else
 			{$Xgroups_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		if ($FXgroups_selected < 1) 
+		if ($FXgroups_selected < 1)
 			{$FXgroups_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		else 
+		else
 			{$FXgroups_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
 
 
@@ -791,17 +791,17 @@ else if (($eact=="DELETE" || $eact=="UPDATE") && $email_account_id)
 		$FDgroups_menu='';
 		$FDgroups_selected=0;
 		$o=0;
-		while ($Dgroups_to_print > $o) 
+		while ($Dgroups_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$Dgroups_menu .= "<option ";
 			$FDgroups_menu .= "<option ";
-			if ($group_id == "$rowx[0]") 
+			if ($group_id == "$rowx[0]")
 				{
 				$Dgroups_menu .= "SELECTED ";
 				$Dgroups_selected++;
 				}
-			if ($filter_group_id == "$rowx[0]") 
+			if ($filter_group_id == "$rowx[0]")
 				{
 				$FDgroups_menu .= "SELECTED ";
 				$FDgroups_selected++;
@@ -810,13 +810,13 @@ else if (($eact=="DELETE" || $eact=="UPDATE") && $email_account_id)
 			$FDgroups_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 			$o++;
 			}
-		if ($Dgroups_selected < 1) 
+		if ($Dgroups_selected < 1)
 			{$Dgroups_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		else 
+		else
 			{$Dgroups_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		if ($FDgroups_selected < 1) 
+		if ($FDgroups_selected < 1)
 			{$FDgroups_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		else 
+		else
 			{$FDgroups_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
 
 		## Get unhandled count
@@ -824,7 +824,7 @@ else if (($eact=="DELETE" || $eact=="UPDATE") && $email_account_id)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$row=mysqli_fetch_row($rslt);
 		$unhandled_emails=$row[0];
-		
+
 		echo "<TABLE>\n";
 		echo "<TR><TD>\n";
 		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
@@ -854,7 +854,7 @@ else if (($eact=="DELETE" || $eact=="UPDATE") && $email_account_id)
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Email Frequency Check Rate (mins)").": </td><td align=left><select name='email_frequency_check_mins'>";
 		echo "<option value='$email_frequency_check_mins' selected>$email_frequency_check_mins</option>";
 		$i=5;
-		while ($i<=60) 
+		while ($i<=60)
 			{
 			echo "<option value='$i'>$i</option>";
 			$i+=5;
@@ -877,7 +877,7 @@ else if (($eact=="DELETE" || $eact=="UPDATE") && $email_account_id)
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Un-handled Emails").": </td><td align=left><B>$unhandled_emails</B></td></tr>\n";
 ################
-		
+
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=center colspan=2><input type=submit name=SUBMIT VALUE='"._QXZ("UPDATE")."'><input type=hidden name='eact' value='UPDATE'><input type=hidden name=stage value='UPDATE'></td></tr>\n";
 		echo "</TABLE><BR><BR>";
 		if ($LOGuser_level >= 9)
@@ -892,7 +892,7 @@ else if (($eact=="DELETE" || $eact=="UPDATE") && $email_account_id)
 		exit;
 		}
 	}
-else 
+else
 	{
 	echo "<img src=\"images/icon_email.png\" width=42 height=42 align=left> <FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	if ($message) {echo "<B>$message</B><BR>";}
@@ -914,7 +914,7 @@ else
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$accounts_to_print = mysqli_num_rows($rslt);
 	$o=0;
-	while ($accounts_to_print > $o) 
+	while ($accounts_to_print > $o)
 		{
 		$row=mysqli_fetch_array($rslt);
 
@@ -923,9 +923,9 @@ else
 		$ct_rslt=mysql_to_mysqli($ct_stmt, $link);
 		$ct_row=mysqli_fetch_row($ct_rslt);
 		$unhandled_emails=$ct_row[0];
-		
+
 		if (preg_match("/1$|3$|5$|7$|9$/i", $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?eact=UPDATE&email_account_id=$row[email_account_id]'\"";} echo "><td><a href=\"$PHP_SELF?eact=UPDATE&email_account_id=$row[email_account_id]\"><font size=1 color=black>$row[email_account_id]</a></font></td>";

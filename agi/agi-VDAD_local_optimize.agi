@@ -75,8 +75,8 @@ my $dbhA = DBI->connect("DBI:mysql:" . $conf{VARDB_database} . ":" . $conf{VARDB
         $conf{VARDB_user}, $conf{VARDB_pass}, { mysql_enable_utf8 => 1 }) or die "Couldn't connect to database: " . DBI->errstr;
 
 my $PADserver_ip = $conf{VARserver_ip};
-$PADserver_ip =~ s/(\d+)(\.|$)/sprintf "%3.3d$2",$1/eg; 
-$PADserver_ip =~ s/\.//eg; 
+$PADserver_ip =~ s/(\d+)(\.|$)/sprintf "%3.3d$2",$1/eg;
+$PADserver_ip =~ s/\.//eg;
 
 my %agi_vars = $AGI->ReadParse();
 
@@ -116,7 +116,7 @@ if ($sthArows > 0)
 	}
 $sthA->finish();
 
-if ( $dest_channel ne "" ) 
+if ( $dest_channel ne "" )
 	{
 	print STDERR "$sthArows|$dest_channel\n";
 
@@ -125,7 +125,7 @@ if ( $dest_channel ne "" )
 
 	print STDERR "$stmtA\n";
 
-	my $affected_rows = $dbhA->do($stmtA); 
+	my $affected_rows = $dbhA->do($stmtA);
 	my $man_id = $dbhA->{'mysql_insertid'};
 
 	### Grab Server values from the database

@@ -11,44 +11,44 @@ use MIME::Base64;
 use MIME::QuotedPrint;
 
 # Copyright (C) 2017  Matt Florell, Joe Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
-# 
-# AST_inbound_email_parser.pl - This script is essential for periodically checking any active POP3 or IMAP 
+#
+# AST_inbound_email_parser.pl - This script is essential for periodically checking any active POP3 or IMAP
 # email accounts set up through the Vicidial admin.
-# 
-# You cannot check an email account more often than 5 minutes at a time.  This is in place because several 
+#
+# You cannot check an email account more often than 5 minutes at a time.  This is in place because several
 # email providers will lock an email account if it is being checked too often; currently the most restrictive
 # email provider encountered allows no more than three logins every 15 minutes, hence 5 minutes being the
 # most frequent time allowed.
-# 
-# Upon execution, this script will query the vicidial_email_accounts table in the asterisk database and 
+#
+# Upon execution, this script will query the vicidial_email_accounts table in the asterisk database and
 # gather the information for all email accounts set up through the dialer that are currently active.  It
-# will then check the time setting on each of those accounts to see if it is time to check that particular 
+# will then check the time setting on each of those accounts to see if it is time to check that particular
 # account.  If so, the program then will attempt to access the account using the appropriate Perl module
-# depending on the account protocol (POP3 or IMAP).  If the program successfully connects to the email 
-# account, then it will download any unread email messages, and grab any important information in the 
-# email headers, along with any attachments and the message itself.  Each bit of information will be 
-# stored in the vicidial_email_list table, and any attachments will be stored in the 
+# depending on the account protocol (POP3 or IMAP).  If the program successfully connects to the email
+# account, then it will download any unread email messages, and grab any important information in the
+# email headers, along with any attachments and the message itself.  Each bit of information will be
+# stored in the vicidial_email_list table, and any attachments will be stored in the
 # inbound_email_attachments table as BLOB data.
-# 
-# Additionally, depending on the email account settings, prior to putting the email record into the 
-# vicidial_email_list table, the accounts can be set up to check if the "from" address is already part 
-# of a lead in the vicidial_list table.  The accounts can be set up to not check at all (EMAIL), in 
-# which all email messages go in as new leads, first in the vicidial_list table and then in the 
+#
+# Additionally, depending on the email account settings, prior to putting the email record into the
+# vicidial_email_list table, the accounts can be set up to check if the "from" address is already part
+# of a lead in the vicidial_list table.  The accounts can be set up to not check at all (EMAIL), in
+# which all email messages go in as new leads, first in the vicidial_list table and then in the
 # vicidial_email_list table with the lead_id gleaned from the vicidial_list insert.  They can also be
 # set up to check if the email address is already on a lead in a particular list (EMAILLOOKUPRL), or
-# if the email address is in a lead belonging to any list in a given campaign (EMAILLOOKUPRC), or if 
-# the email address is on any lead currently in the vicidial_list table (EMAILLOOKUP).  In these 
-# cases, the script will grab the lead_id of the most recently loaded lead (i.e. highest lead_id value), 
+# if the email address is in a lead belonging to any list in a given campaign (EMAILLOOKUPRC), or if
+# the email address is on any lead currently in the vicidial_list table (EMAILLOOKUP).  In these
+# cases, the script will grab the lead_id of the most recently loaded lead (i.e. highest lead_id value),
 # and use that as the lead_id in the vicidial_email_list table without creating a new lead.
-# 
-# After checking and downloading any unread messages, the script will then log off the email account, 
+#
+# After checking and downloading any unread messages, the script will then log off the email account,
 # and when all active email accounts have been checked in this manner, the script will exit.
 #
 # This script should be set up in the cron to run once per minute, not continuously.
 # * * * * * /usr/share/astguiclient/AST_inbound_email_parser.pl
 #
 # Use the --debug variable when executing the script to have it print out what it is attempting to do on a
-# step-by-step basis.  Use the --debugX variable to include outputting of mail information and SQL queries the script 
+# step-by-step basis.  Use the --debugX variable to include outputting of mail information and SQL queries the script
 # attempts to execute.
 #
 # changes:
@@ -203,7 +203,7 @@ foreach(@conf)
 
 if (!$VARDB_port) {$VARDB_port='3306';}
 
-use DBI;	  
+use DBI;
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
@@ -269,7 +269,7 @@ while (@row=$rslt->fetchrow_array) {
 
 	if ($DBX) {print "$h - $VARemail_ID - $VARemail_groupid\n";}
 
-	if ( ($minutes%$VARemail_frequency==0) || ($force_check > 0) ) 
+	if ( ($minutes%$VARemail_frequency==0) || ($force_check > 0) )
 		{
 		if ($DB) {print "Attempting to connect to $VARemail_protocol server ($VARemail_server)  -  $h - $VARemail_ID - $VARemail_groupid\n\n";}
 		if ($VARemail_protocol eq "IMAP") {
@@ -317,9 +317,9 @@ while (@row=$rslt->fetchrow_array) {
 				#print "Folders:\n";
 				$new_messages=0;
 				my @folder_array=$client->folders("INBOX");
-				for (my $i=0; $i<scalar(@folder_array); $i++) 
+				for (my $i=0; $i<scalar(@folder_array); $i++)
 					{
-					#print "- ".$folder_array[$i]."\n" ;  
+					#print "- ".$folder_array[$i]."\n" ;
 					my $msgcount = $client->message_count($folder_array[$i]);
 					#print "+---+ Messages: ".$msgcount."\n";
 					if ($msgcount>0) {
@@ -384,8 +384,8 @@ while (@row=$rslt->fetchrow_array) {
 									StripHTML();
 								} elsif ($content_type=~/^multipart\/(alternative|mixed|related)/i) {
 									## Message is multipart/alternative, so it needs to be read and partitioned.  The multipart/alternative subtype indicates that each part is an "alternative"
-									## version of the same (or similar) content, each in a different format denoted by its "Content-Type" header. The formats are ordered by how faithful they are to 
-									## the original, with the least faithful first and the most faithful last. Systems can then choose the "best" representation they are capable of processing; in 
+									## version of the same (or similar) content, each in a different format denoted by its "Content-Type" header. The formats are ordered by how faithful they are to
+									## the original, with the least faithful first and the most faithful last. Systems can then choose the "best" representation they are capable of processing; in
 									## general, this will be the last part that the system can understand, although other factors may affect this.
 									if ($DB) {print "Email message is multipart.  Need to select the best format type and parse it.\n";}
 
@@ -409,7 +409,7 @@ while (@row=$rslt->fetchrow_array) {
 											$attachment_filename="";
 											$attachment_type="";
 
-											if ($alt_email_text=~/Content\-Type\:\s+(.*?)\n/i) {$sub_content_type=$&;} 
+											if ($alt_email_text=~/Content\-Type\:\s+(.*?)\n/i) {$sub_content_type=$&;}
 											if ($alt_email_text=~/Content\-Disposition\:\s+(.*?)\n/i) {$sub_content_disposition=$&;}
 											if ($alt_email_text=~/Content\-Transfer\-Encoding\:\s+(.*?)\n/i) {
 												$encoding_type=$&;
@@ -418,7 +418,7 @@ while (@row=$rslt->fetchrow_array) {
 											}
 											$sub_content_type=~s/[\r\n]//g;
 											$sub_content_disposition=~s/[\r\n]//g;
-											
+
 											my $msg = Mail::Message->read($alt_email_text);
 											$body_contents=$msg->body;
 											$attachment_filesize=$msg->size();
@@ -545,7 +545,7 @@ while (@row=$rslt->fetchrow_array) {
 
 								$message=~s/(\"|\||\'|\;)/\\$&/g;
 								$email_to=~s/(\"|\||\'|\;)/\\$&/g;
-								$email_from=~s/(\"|\||\'|\;)/\\$&/g;								
+								$email_from=~s/(\"|\||\'|\;)/\\$&/g;
 								$subject=~s/(\"|\||\'|\;)/\\$&/g;
 								$mime_type=~s/(\"|\||\'|\;)/\\$&/g;
 								$content_type=~s/(\"|\||\'|\;)/\\$&/g;
@@ -617,13 +617,13 @@ while (@row=$rslt->fetchrow_array) {
 
 								if ($DBX) {print $ins_stmt."\n";}
 								my $ins_rslt=$dbhA->prepare($ins_stmt);
-								if ($ins_rslt->execute()) 
+								if ($ins_rslt->execute())
 									{
 									$email_id=$dbhA->last_insert_id(undef, undef, 'vicidial_email_list', 'email_row_id');
-									if ($attach_ct>0) 
+									if ($attach_ct>0)
 										{
 										$multistmt="";
-										for ($k=0; $k<$attach_ct; $k++) 
+										for ($k=0; $k<$attach_ct; $k++)
 											{
 											$ins_values[$k]="('$email_id',$ins_values[$k])";
 											$multistmt.="$ins_values[$k],";
@@ -664,7 +664,7 @@ while (@row=$rslt->fetchrow_array) {
 										$dbhB->disconnect();
 										}
 									}
-								else 
+								else
 									{
 									die "Email insert failed.  Check SQL in:\n $ins_stmt\n";
 									}
@@ -698,12 +698,12 @@ while (@row=$rslt->fetchrow_array) {
 			  or die "Cannot connect through POP3Client: $!";
 
 			if ($pop->Count()<0) {die "Error connecting to server.  Please try again later.\n";}
-			for( $i = 1; $i <= $pop->Count(); $i++ ) 
+			for( $i = 1; $i <= $pop->Count(); $i++ )
 				{
-				foreach( $pop->Head( $i ) ) 
+				foreach( $pop->Head( $i ) )
 					{
 					# print $_."\n";
-					if ($_=~/^(To|From|Date|Subject|MIME-Version|Content-Type|Content-Transfer-Encoding|X-Mailer|Authentication-Results|Message|Body):\s+/i) 
+					if ($_=~/^(To|From|Date|Subject|MIME-Version|Content-Type|Content-Transfer-Encoding|X-Mailer|Authentication-Results|Message|Body):\s+/i)
 						{
 						$value=$_;
 						$ptn=$&;
@@ -714,7 +714,7 @@ while (@row=$rslt->fetchrow_array) {
 						$varname=lc($ptn);
 						$$varname=$value;
 						}
-					if ($_=~/boundary\=\"?[^\"]+\"?/i) 
+					if ($_=~/boundary\=\"?[^\"]+\"?/i)
 						{
 						$bkup_boundary=$&;
 						}
@@ -728,7 +728,7 @@ while (@row=$rslt->fetchrow_array) {
 				$attach_ct=0; ## Keeps number
 				@ins_values=();
 				@output_ins_values=();
-		
+
 				# Check for charset, in case decoding is necessary
 				$content_type=~/charset\=\"?(KOI8\-R|ISO\-8859\-[0-9]+|windows\-12[0-9]+|utf\-8|us\-ascii)\"?/i;
 				$charset=$&;
@@ -744,8 +744,8 @@ while (@row=$rslt->fetchrow_array) {
 					StripHTML();
 				} elsif ($content_type=~/^multipart\/(alternative|mixed|related)/i) {
 					## Message is multipart/alternative, so it needs to be read and partitioned.  The multipart/alternative subtype indicates that each part is an "alternative"
-					## version of the same (or similar) content, each in a different format denoted by its "Content-Type" header. The formats are ordered by how faithful they are to 
-					## the original, with the least faithful first and the most faithful last. Systems can then choose the "best" representation they are capable of processing; in 
+					## version of the same (or similar) content, each in a different format denoted by its "Content-Type" header. The formats are ordered by how faithful they are to
+					## the original, with the least faithful first and the most faithful last. Systems can then choose the "best" representation they are capable of processing; in
 					## general, this will be the last part that the system can understand, although other factors may affect this.
 					if ($DB) {print "Email message is multipart.  Need to select the best format type and parse it.\n";}
 
@@ -773,7 +773,7 @@ while (@row=$rslt->fetchrow_array) {
 							$attachment_filename="";
 							$attachment_type="";
 
-							if ($alt_email_text=~/Content\-Type\:\s+(.*?)\n/i) {$sub_content_type=$&;} 
+							if ($alt_email_text=~/Content\-Type\:\s+(.*?)\n/i) {$sub_content_type=$&;}
 							if ($alt_email_text=~/Content\-Disposition\:\s+(.*?)\n/i) {$sub_content_disposition=$&;}
 							if ($alt_email_text=~/Content\-Transfer\-Encoding\:\s+(.*?)\n/i) {
 								$encoding_type=$&;
@@ -782,7 +782,7 @@ while (@row=$rslt->fetchrow_array) {
 							}
 							$sub_content_type=~s/[\r\n]//g;
 							$sub_content_disposition=~s/[\r\n]//g;
-							
+
 							my $msg = Mail::Message->read($alt_email_text);
 							$body_contents=$msg->body;
 							$attachment_filesize=$msg->size();
@@ -988,14 +988,14 @@ while (@row=$rslt->fetchrow_array) {
 				my $ins_stmt="insert into vicidial_email_list(lead_id, protocol, email_date, email_to, email_from, email_from_name, subject, mime_type, content_type, content_transfer_encoding, x_mailer, sender_ip, message, email_account_id, group_id, status, direction) values('$lead_id', 'POP3', STR_TO_DATE('$date', '%d %b %Y %T'), '$email_to', '$email_from', '$email_from_name', '$subject', '$mime_type', '$content_type', '$content_transfer_encoding', '$x_mailer', '$sender_ip', trim('$message'), '$VARemail_ID', '$VARemail_groupid', '$status', 'INBOUND')";
 				if ($DBX) {print $ins_stmt."\n";}
 				my $ins_rslt=$dbhA->prepare($ins_stmt);
-				if ($ins_rslt->execute()) 
+				if ($ins_rslt->execute())
 					{
 					$email_id=$dbhA->last_insert_id(undef, undef, 'vicidial_email_list', 'email_row_id');
 					$pop->Delete($i);
-					if ($attach_ct>0) 
+					if ($attach_ct>0)
 						{
 						$multistmt="";
-						for ($k=0; $k<$attach_ct; $k++) 
+						for ($k=0; $k<$attach_ct; $k++)
 							{
 							$ins_values[$k]="('$email_id',$ins_values[$k])";
 							$multistmt.="$ins_values[$k],";
@@ -1035,7 +1035,7 @@ while (@row=$rslt->fetchrow_array) {
 						$dbhB->disconnect();
 						}
 					}
-				else 
+				else
 					{
 					die "Email insert failed.  Check SQL in:\n $ins_stmt\n";
 					}
@@ -1097,5 +1097,5 @@ sub StripHTML()
 		my $hs = HTML::Strip->new();
 		$message = $hs->parse( $message );
 		$hs->eof;
-	} 
+	}
 }

@@ -41,7 +41,7 @@ The multi-alt-entries field is formatted as a field of phone-number/phone-code/p
 
 MULTI LEAD Auto Alt number dialing:
 
-Using MULTI_LEAD is different from the other standard Auto-Alt-Dial functions, it allows you to use a separate lead for each number on a customer account that all share a common vendor_lead_code, and the type of phone number for each is to be defined with a label in the Owner field. This option will disable some options on the Modify Campaign screen and show a link to the Multi-Alt Settings page which allows you to set which phone number types, defined by the label of each lead, will be dialed and in what order. This will create a special lead filter and will alter the Rank field of all of the leads inside the lists set to this campaign in order to call them in the order you have specified. 
+Using MULTI_LEAD is different from the other standard Auto-Alt-Dial functions, it allows you to use a separate lead for each number on a customer account that all share a common vendor_lead_code, and the type of phone number for each is to be defined with a label in the Owner field. This option will disable some options on the Modify Campaign screen and show a link to the Multi-Alt Settings page which allows you to set which phone number types, defined by the label of each lead, will be dialed and in what order. This will create a special lead filter and will alter the Rank field of all of the leads inside the lists set to this campaign in order to call them in the order you have specified.
 
 The Auto-Alt-Statuses are still in used for MULTI_LEAD so you may want to make sure that statuses like DROP, PDROP and others to your campaign's auto-alt-dial statuses so that the other leads tied by vendor_lead_code in the campaign's lists are not deactivated.
 
@@ -101,7 +101,7 @@ First, a new field in vicidial_campaigns was needed to tell the dialer that it s
 ALTER TABLE vicidial_campaigns ADD auto_alt_dial ENUM('NONE','ALT_ONLY','ADDR3_ONLY','ALT_AND_ADDR3') default 'NONE';
 
 
-Second, a new field in vicidial_auto_calls and vicidial_hopper tables was needed to tell the dialer that when this call is terminated as no-contact(NA/B/DC/N), it needs to try dialing the next alternate number(s). This field is populated accordingly: 
+Second, a new field in vicidial_auto_calls and vicidial_hopper tables was needed to tell the dialer that when this call is terminated as no-contact(NA/B/DC/N), it needs to try dialing the next alternate number(s). This field is populated accordingly:
 - If the main phone_number is currently being dialed, the alt_dial field will be MAIN
 - If the alt_phone is being dialed, ALT
 - If the address3 field is being dialed, ADDR3

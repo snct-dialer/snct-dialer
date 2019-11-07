@@ -1,9 +1,9 @@
 <?php
 # phone_stats.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
-# 
+#
 # changes:
 # 60620-1333 - Added variable filtering to eliminate SQL injection attack threat
 #            - Added required user/pass to gain access to this page
@@ -181,7 +181,7 @@ $fullname = $row[0];
 <TR BGCOLOR=#F0F5FE><TD ALIGN=LEFT COLSPAN=2><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1><B> &nbsp; <a href="<?php echo $admin_page ?>?ADD=1000000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1><?php echo _QXZ("SHOW ALL CONFERENCES"); ?></a> | <a href="<?php echo $admin_page ?>?ADD=1111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1><?php echo _QXZ("ADD A NEW CONFERENCE"); ?></a></TD></TR>
 
 
-<?php 
+<?php
 
 echo "<TR BGCOLOR=\"#F0F5FE\"><TD ALIGN=LEFT COLSPAN=2><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2><B> &nbsp; \n";
 
@@ -213,11 +213,11 @@ echo "<tr><td><font size=2>"._QXZ("CHANNEL GROUP")." </td><td align=right><font 
 
 $total_calls=0;
 $o=0;
-while ($statuses_to_print > $o) 
+while ($statuses_to_print > $o)
 	{
 	$row=mysqli_fetch_row($rslt);
 	if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-		{$bgcolor='bgcolor="#B9CBFD"';} 
+		{$bgcolor='bgcolor="#B9CBFD"';}
 	else
 		{$bgcolor='bgcolor="#9BB9FB"';}
 
@@ -272,11 +272,11 @@ $total_calls=0;
 $o=0;
 $event_start_seconds='';
 $event_stop_seconds='';
-while ($events_to_print > $o) 
+while ($events_to_print > $o)
 	{
 	$row=mysqli_fetch_row($rslt);
 	if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-		{$bgcolor='bgcolor="#B9CBFD"';} 
+		{$bgcolor='bgcolor="#B9CBFD"';}
 	else
 		{$bgcolor='bgcolor="#9BB9FB"';}
 	echo "<tr $bgcolor><td><font size=2>$row[0]</td>";
@@ -305,8 +305,8 @@ echo "<font size=0>\n\n\n<br><br><br>\n"._QXZ("script runtime").": $RUNtime "._Q
 </html>
 
 <?php
-	
-exit; 
+
+exit;
 
 ?>
 

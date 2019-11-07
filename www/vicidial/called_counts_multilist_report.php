@@ -1,6 +1,6 @@
 <?php
 # called_counts_multilist_report.php
-# 
+#
 # Copyright (C) 2019  Joe Johnson <freewermadmin@gmail.com>, Matt Florell <mattf@vicidial.com>    LICENSE: AGPLv2
 #
 # This is a report designed for showing called counts similar to the results
@@ -93,14 +93,14 @@ if ($qm_conf_ct > 0)
 ### ARCHIVED DATA CHECK CONFIGURATION
 $archives_available="N";
 $log_tables_array=array("vicidial_list", "vicidial_log", "vicidial_closer_log", "user_call_log");
-for ($t=0; $t<count($log_tables_array); $t++) 
+for ($t=0; $t<count($log_tables_array); $t++)
 	{
 	$table_name=$log_tables_array[$t];
 	$archive_table_name=use_archive_table($table_name);
 	if ($archive_table_name!=$table_name) {$archives_available="Y";}
 	}
 
-if ($search_archived_data) 
+if ($search_archived_data)
 	{
 	$vicidial_list_table=use_archive_table("vicidial_list");
 	$vicidial_closer_log_table=use_archive_table("vicidial_closer_log");
@@ -344,7 +344,7 @@ $statuses_to_print = mysqli_num_rows($rslt);
 
 $o=0;
 $statuses_list=array();
-while ($statuses_to_print > $o) 
+while ($statuses_to_print > $o)
 	{
 	$rowx=mysqli_fetch_row($rslt);
 	$statuses_list["$rowx[0]"] = "$rowx[1]";
@@ -356,7 +356,7 @@ $rslt=mysql_to_mysqli($stmt, $link);
 $Cstatuses_to_print = mysqli_num_rows($rslt);
 
 $o=0;
-while ($Cstatuses_to_print > $o) 
+while ($Cstatuses_to_print > $o)
 	{
 	$rowx=mysqli_fetch_row($rslt);
 	$statuses_list["$rowx[0]"] = "$rowx[1]";
@@ -440,7 +440,7 @@ if ( preg_match('/\-\-ALL\-\-/',$list_id_string) )
 	$list_stmt="select list_id from vicidial_lists $group_SQL";
 	if ($DB) {echo $list_stmt."\n";}
 	$list_rslt=mysql_to_mysqli($list_stmt, $link);
-	while ($list_row=mysqli_fetch_row($list_rslt)) 
+	while ($list_row=mysqli_fetch_row($list_rslt))
 		{
 		$list_id_string .= "$list_row[0]|";
 		$list_id_SQL .= "'$list_row[0]',";
@@ -452,7 +452,7 @@ $list_id_SQL = preg_replace('/,$/i', '',$list_id_SQL);
 $list_id_SQLandVLJOIN = "and ".$vicidial_log_table.".lead_id=".$vicidial_list_table.".lead_id";
 $list_id_SQLandVCLJOIN = "and ".$vicidial_closer_log_table.".lead_id=".$vicidial_list_table.".lead_id";
 $list_id_SQLandUCLJOIN = "and ".$user_call_log_table.".lead_id=".$vicidial_list_table.".lead_id";
-if (strlen($list_id_SQL)>0) 
+if (strlen($list_id_SQL)>0)
 	{
 	$list_id_SQLandVLJOIN .= " and ".$vicidial_list_table.".list_id IN($list_id_SQL)";
 	$list_id_SQLandVCLJOIN .= " and ".$vicidial_list_table.".list_id IN($list_id_SQL)";
@@ -468,7 +468,7 @@ if ( (preg_match('/\-\-ALL\-\-/',$list_id_string) ) or ($list_id_ct < 1) or (str
 	$list_id_drop_SQL = "";
 	$skip_productivity_calc=0;
 	}
-else 
+else
 	{
 	$list_id_SQL = preg_replace('/,$/i', '',$list_id_SQL);
 	$skip_productivity_calc=1;
@@ -642,7 +642,7 @@ $MAIN.=_QXZ("Lists").": <font size=1>("._QXZ("optional, possibly slow").")</font
 $MAIN.=$list_options;
 $MAIN.="</TD><TD VALIGN=TOP ALIGN=CENTER>";
 
-if ($archives_available=="Y") 
+if ($archives_available=="Y")
 	{
 	$MAIN.="<BR><input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."\n";
 	}
@@ -671,7 +671,7 @@ if (strlen($QUERY_STRING) > 5)
 	$leads_in_list = 0;
 	$leads_in_list_N = 0;
 	$leads_in_list_Y = 0;
-	
+
 	if (!$override_date) {
 		$date_range_title=" "._QXZ("FOR LEADS CALLED")." $query_date "._QXZ("THROUGH")." $end_date";
 		$stmt="select distinct ".$vicidial_list_table.".lead_id from ".$vicidial_list_table.", ".$vicidial_log_table." where ".$vicidial_log_table.".call_date>='$query_date 00:00:00' and ".$vicidial_log_table.".call_date<='$end_date 23:59:59' $list_id_SQLandVLJOIN UNION select distinct ".$vicidial_list_table.".lead_id from ".$vicidial_list_table.", ".$vicidial_closer_log_table." where ".$vicidial_closer_log_table.".call_date>='$query_date 00:00:00' and ".$vicidial_closer_log_table.".call_date<='$end_date 23:59:59' $list_id_SQLandVCLJOIN;";
@@ -714,7 +714,7 @@ if (strlen($QUERY_STRING) > 5)
 	$count_called=array();
 	$count_count=array();
 	$all_called_count=array();
-	while ($status_called_to_print > $o) 
+	while ($status_called_to_print > $o)
 		{
 		$rowx=mysqli_fetch_row($rslt);
 		$leads_in_list = ($leads_in_list + $rowx[2]);
@@ -748,7 +748,7 @@ if (strlen($QUERY_STRING) > 5)
 	$first = $all_called_first;
 	while ($first <= $all_called_last)
 		{
-		if (preg_match('/1$|3$|5$|7$|9$/i', $first)) {$AB='bgcolor="#AFEEEE"';} 
+		if (preg_match('/1$|3$|5$|7$|9$/i', $first)) {$AB='bgcolor="#AFEEEE"';}
 		else{$AB='bgcolor="#E0FFFF"';}
 		if ($first >= 100) {$Fplus='+';}
 		else {$Fplus='';}
@@ -761,11 +761,11 @@ if (strlen($QUERY_STRING) > 5)
 
 	$sts=0;
 	$statuses_called_to_print = count($status);
-	while ($statuses_called_to_print > $sts) 
+	while ($statuses_called_to_print > $sts)
 		{
 		$Pstatus = $status[$sts];
 		if (preg_match("/1$|3$|5$|7$|9$/i", $sts))
-			{$bgcolor='bgcolor="#B9CBFD"';   $AB='bgcolor="#9BB9FB"';} 
+			{$bgcolor='bgcolor="#B9CBFD"';   $AB='bgcolor="#9BB9FB"';}
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';   $AB='bgcolor="#B9CBFD"';}
 	#	$MAIN.="$status[$sts]|$status_called_first[$sts]|$status_called_last[$sts]|$leads_in_sts[$sts]|\n";
@@ -778,18 +778,18 @@ if (strlen($QUERY_STRING) > 5)
 			{
 			if (preg_match("/1$|3$|5$|7$|9$/i", $sts))
 				{
-				if (preg_match('/1$|3$|5$|7$|9$/i', $first)) {$AB='bgcolor="#9BB9FB"';} 
+				if (preg_match('/1$|3$|5$|7$|9$/i', $first)) {$AB='bgcolor="#9BB9FB"';}
 				else{$AB='bgcolor="#B9CBFD"';}
 				}
 			else
 				{
-				if (preg_match("/0$|2$|4$|6$|8$/i", $first)) {$AB='bgcolor="#9BB9FB"';} 
+				if (preg_match("/0$|2$|4$|6$|8$/i", $first)) {$AB='bgcolor="#9BB9FB"';}
 				else{$AB='bgcolor="#B9CBFD"';}
 				}
 
 			$called_printed=0;
 			$o=0;
-			while ($status_called_to_print > $o) 
+			while ($status_called_to_print > $o)
 				{
 				if ( ($count_statuses[$o] == "$Pstatus") and ($count_called[$o] == "$first") )
 					{
@@ -800,7 +800,7 @@ if (strlen($QUERY_STRING) > 5)
 
 				$o++;
 				}
-			if (!$called_printed) 
+			if (!$called_printed)
 				{
 				$MAIN.="<td $AB><font size=1> &nbsp;</td>";
 				$CSV_text.="\"\",";
@@ -818,7 +818,7 @@ if (strlen($QUERY_STRING) > 5)
 	$first = $all_called_first;
 	while ($first <= $all_called_last)
 		{
-		if (preg_match('/1$|3$|5$|7$|9$/i', $first)) {$AB='bgcolor="#AFEEEE"';} 
+		if (preg_match('/1$|3$|5$|7$|9$/i', $first)) {$AB='bgcolor="#AFEEEE"';}
 		else{$AB='bgcolor="#E0FFFF"';}
 		$MAIN.="<td align=center $AB><b><font size=1>$all_called_count[$first]</td>";
 		$CSV_text.="\"$all_called_count[$first]\",";
@@ -830,7 +830,7 @@ if (strlen($QUERY_STRING) > 5)
 	$MAIN.="</table></center><br>\n";
 	$MAIN.="</BODY></HTML>\n";
 
-	if ($file_download>0) 
+	if ($file_download>0)
 		{
 		$FILE_TIME = date("Ymd-His");
 		$CSVfilename = "CALLED_COUNTS_MULTILIST_report_$US$FILE_TIME.csv";
@@ -849,8 +849,8 @@ if (strlen($QUERY_STRING) > 5)
 		flush();
 
 		echo "$CSV_text";
-		} 
-	else 
+		}
+	else
 		{
 		echo $HEADER;
 		require("admin_header.php");

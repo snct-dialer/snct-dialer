@@ -115,10 +115,10 @@ else
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
 use DBI;
 use Net::Telnet ();
-	  
+
  $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
- 
+
 ### Grab Server values from the database
 $stmtA = "SELECT telnet_host,telnet_port,ASTmgrUSERNAME,ASTmgrSECRET,ASTmgrUSERNAMEupdate,ASTmgrUSERNAMElisten,ASTmgrUSERNAMEsend,max_vicidial_trunks,answer_transfer_agent,local_gmt,ext_context,asterisk_version FROM servers where server_ip = '$server_ip';";
 
@@ -154,8 +154,8 @@ if ($sthArows > 0)
 	if ($DBSERVER_GMT)				{$SERVER_GMT = $DBSERVER_GMT;}
 	if ($DBext_context)				{$ext_context = $DBext_context;}
 	}
-$sthA->finish(); 
-	
+$sthA->finish();
+
 $secX = time();
 
 $BDtarget = ($secX - 86400);
@@ -206,11 +206,11 @@ $t->buffer_empty;
 %ast_ver_str = parse_asterisk_version($asterisk_version);
 if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 6))
 	{
-	@list_channels = $t->cmd(String => "Action: Command\nCommand: sip show peers\n\nAction: Ping\n\n", Prompt => '/Response: Pong.*/'); 
+	@list_channels = $t->cmd(String => "Action: Command\nCommand: sip show peers\n\nAction: Ping\n\n", Prompt => '/Response: Pong.*/');
 	}
 else
 	{
-	@list_channels = $t->cmd(String => "Action: Command\nCommand: sip show peers\n\nAction: Ping\n\n", Prompt => '/Response: Success\nPing: Pong.*/'); 
+	@list_channels = $t->cmd(String => "Action: Command\nCommand: sip show peers\n\nAction: Ping\n\n", Prompt => '/Response: Success\nPing: Pong.*/');
 	}
 
 $j=0;
@@ -226,11 +226,11 @@ $t->buffer_empty;
 %ast_ver_str = parse_asterisk_version($asterisk_version);
 if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 6))
 	{
-	@list_channels = $t->cmd(String => "Action: Command\nCommand: sip show registry\n\nAction: Ping\n\n", Prompt => '/Response: Pong.*/'); 
+	@list_channels = $t->cmd(String => "Action: Command\nCommand: sip show registry\n\nAction: Ping\n\n", Prompt => '/Response: Pong.*/');
 	}
 else
 	{
-	@list_channels = $t->cmd(String => "Action: Command\nCommand: sip show registry\n\nAction: Ping\n\n", Prompt => '/Response: Success\nPing: Pong.*/'); 
+	@list_channels = $t->cmd(String => "Action: Command\nCommand: sip show registry\n\nAction: Ping\n\n", Prompt => '/Response: Success\nPing: Pong.*/');
 	}
 
 $j=0;
@@ -260,11 +260,11 @@ $t->buffer_empty;
 %ast_ver_str = parse_asterisk_version($asterisk_version);
 if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 6))
 	{
-	@list_channels = $t->cmd(String => "Action: Command\nCommand: iax2 show peers\n\nAction: Ping\n\n", Prompt => '/Response: Pong.*/'); 
+	@list_channels = $t->cmd(String => "Action: Command\nCommand: iax2 show peers\n\nAction: Ping\n\n", Prompt => '/Response: Pong.*/');
 	}
 else
 	{
-	@list_channels = $t->cmd(String => "Action: Command\nCommand: iax2 show peers\n\nAction: Ping\n\n", Prompt => '/Response: Success\nPing: Pong.*/'); 
+	@list_channels = $t->cmd(String => "Action: Command\nCommand: iax2 show peers\n\nAction: Ping\n\n", Prompt => '/Response: Success\nPing: Pong.*/');
 	}
 
 $j=0;
@@ -280,11 +280,11 @@ $t->buffer_empty;
 %ast_ver_str = parse_asterisk_version($asterisk_version);
 if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 6))
 	{
-	@list_channels = $t->cmd(String => "Action: Command\nCommand: iax2 show registry\n\nAction: Ping\n\n", Prompt => '/Response: Pong.*/'); 
+	@list_channels = $t->cmd(String => "Action: Command\nCommand: iax2 show registry\n\nAction: Ping\n\n", Prompt => '/Response: Pong.*/');
 	}
 else
 	{
-	@list_channels = $t->cmd(String => "Action: Command\nCommand: iax2 show registry\n\nAction: Ping\n\n", Prompt => '/Response: Success\nPing: Pong.*/'); 
+	@list_channels = $t->cmd(String => "Action: Command\nCommand: iax2 show registry\n\nAction: Ping\n\n", Prompt => '/Response: Success\nPing: Pong.*/');
 	}
 
 $j=0;
@@ -304,7 +304,7 @@ usleep(1*100*1000);
 
 
 $t->buffer_empty;
-@hangup = $t->cmd(String => "Action: Logoff\n\n", Prompt => "/.*/"); 
+@hangup = $t->cmd(String => "Action: Logoff\n\n", Prompt => "/.*/");
 $t->buffer_empty;
 $t->waitfor(Match => '/Message:.*\n\n/', Timeout => 10);
 $ok = $t->close;

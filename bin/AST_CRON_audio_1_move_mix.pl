@@ -4,11 +4,11 @@
 #
 # This is a STEP-1 program in the audio archival process
 #
-# runs every 3 minutes and copies and mixes the -in and -out recordings in the 
-# monitor to the DONE directory for further processing. Very important for 
+# runs every 3 minutes and copies and mixes the -in and -out recordings in the
+# monitor to the DONE directory for further processing. Very important for
 # RAM-drive usage
-# 
-# put an entry into the cron of of your asterisk machine to run this script 
+#
+# put an entry into the cron of of your asterisk machine to run this script
 # every 3 minutes or however often you desire
 #
 # ### recording mixing/compressing/ftping scripts
@@ -20,16 +20,16 @@
 # make sure that the following directories exist:
 # /var/spool/asterisk/monitor		# default Asterisk recording directory
 # /var/spool/asterisk/monitorDONE	# where the mixed -all files are put
-# 
+#
 # This program assumes that recordings are saved by Asterisk as .wav
 # should be easy to change this code if you use .gsm instead
-# 
+#
 # LICENSE: AGPLv3
 #
 # Copyright (C) 2016  Matt Florell <vicidial@gmail.com>
 # Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
 #               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
-# 
+#
 # 80302-1958 - First Build
 # 80731-2253 - Changed size comparisons for more efficiency
 # 91105-1353 - Added --MIX option to only check the /var/spool/asterisk/monitor/MIX directory
@@ -43,7 +43,7 @@
 use Fcntl qw(:flock);
 # print "start of program $0\n";
 unless (flock(DATA, LOCK_EX|LOCK_NB)) {
-    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log'
     or print "Can't open the fscking file: $!";
     $datestring = localtime();
     print $fh "[$datestring] $0 is already running. Exiting.\n";
@@ -174,7 +174,7 @@ $server_ip = $VARserver_ip;		# Asterisk server IP
 if (!$VARDB_port) {$VARDB_port='3306';}
 
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
-use DBI;	  
+use DBI;
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
@@ -183,14 +183,14 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 ### find soxmix or sox to do the mixing
 $soxmixbin = '';
 if ( -e ('/usr/bin/soxmix')) {$soxmixbin = '/usr/bin/soxmix';}
-else 
+else
 	{
 	if ( -e ('/usr/local/bin/soxmix')) {$soxmixbin = '/usr/local/bin/soxmix';}
 	else
 		{
 		if ($DB) {print "Can't find soxmix binary! Trying sox...\n";}
 		if ( -e ('/usr/bin/sox')) {$soxmixbin = '/usr/bin/sox -m';}
-		else 
+		else
 			{
 			if ( -e ('/usr/local/bin/sox')) {$soxmixbin = '/usr/local/bin/sox -m';}
 			else
@@ -205,13 +205,13 @@ else
 ### find soxi to gather the length info if needed
 $soxibin = '';
 if ( -e ('/usr/bin/soxi')) {$soxibin = '/usr/bin/soxi';}
-else 
+else
 	{
 	if ( -e ('/usr/local/bin/soxi')) {$soxibin = '/usr/local/bin/soxi';}
 	else
 		{
 		if ( -e ('/usr/sbin/soxi')) {$soxibin = '/usr/sbin/soxi';}
-		else 
+		else
 			{
 			if ($DB) {print "Can't find soxi binary! No length calculations will be available...\n";}
 			}

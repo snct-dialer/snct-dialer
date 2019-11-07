@@ -1,6 +1,6 @@
 <?php
 # callbacks_bulk_move.php
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -156,11 +156,11 @@ $modify_timeclock_log =		$row[2];
 $LOGuser_group =			$row[3];
 $user_level =				$row[4];
 $LOGmodify_leads =			$row[5];
-if ($user_level==9) 
+if ($user_level==9)
 	{
 	$ul_clause="where user_level<=9";
 	}
-else 
+else
 	{
 	$ul_clause="where user_level<$user_level";
 	}
@@ -361,14 +361,14 @@ $preload_campaigns=array();
 $preload_lists=array();
 $preload_user_groups=array();
 $preload_users=array();
-if ($campaign_id) 
+if ($campaign_id)
 	{
 	# Trying a three-level UNION statement to see if that's faster
 	$stmt="SELECT distinct campaign_id, 'CAMPAIGN' as dtype FROM vicidial_callbacks where campaign_id='$campaign_id' UNION SELECT distinct user_group, 'USER_GROUP' as dtype FROM vicidial_callbacks where campaign_id='$campaign_id' UNION SELECT distinct list_id, 'LIST_ID' as dtype from vicidial_callbacks where campaign_id='$campaign_id' UNION SELECT distinct user, 'USER' as dtype from vicidial_callbacks where campaign_id='$campaign_id' order by dtype asc;";
 	$rslt=mysql_to_mysqli($stmt, $link);
-	while ($row=mysqli_fetch_row($rslt)) 
+	while ($row=mysqli_fetch_row($rslt))
 		{
-		switch ($row[1]) 
+		switch ($row[1])
 			{
 			case "CAMPAIGN":
 				array_push($preload_campaigns, "$row[0]");
@@ -386,7 +386,7 @@ if ($campaign_id)
 		}
 	}
 
-if ($list_id) 
+if ($list_id)
 	{
 	$preload_campaigns=array();
 	$preload_lists=array();
@@ -395,9 +395,9 @@ if ($list_id)
 	# Trying a three-level UNION statement to see if that's faster
 	$stmt="SELECT distinct campaign_id, 'CAMPAIGN' as dtype FROM vicidial_callbacks where list_id='$list_id' UNION SELECT distinct user_group, 'USER_GROUP' as dtype FROM vicidial_callbacks where list_id='$list_id' UNION SELECT distinct list_id, 'LIST_ID' as dtype from vicidial_callbacks where list_id='$list_id' UNION SELECT distinct user, 'USER' as dtype from vicidial_callbacks where list_id='$list_id' order by dtype asc;";
 	$rslt=mysql_to_mysqli($stmt, $link);
-	while ($row=mysqli_fetch_row($rslt)) 
+	while ($row=mysqli_fetch_row($rslt))
 		{
-		switch ($row[1]) 
+		switch ($row[1])
 			{
 			case "CAMPAIGN":
 				array_push($preload_campaigns, "$row[0]");
@@ -415,7 +415,7 @@ if ($list_id)
 		}
 	}
 
-if ($user) 
+if ($user)
 	{
 	$preload_campaigns=array();
 	$preload_lists=array();
@@ -424,9 +424,9 @@ if ($user)
 	# Trying a three-level UNION statement to see if that's faster
 	$stmt="SELECT distinct campaign_id, 'CAMPAIGN' as dtype FROM vicidial_callbacks where user='$user' UNION SELECT distinct user_group, 'USER_GROUP' as dtype FROM vicidial_callbacks where user='$user' UNION SELECT distinct list_id, 'LIST_ID' as dtype from vicidial_callbacks where user='$user' UNION SELECT distinct user, 'USER' as dtype from vicidial_callbacks where user='$user' order by dtype asc;";
 	$rslt=mysql_to_mysqli($stmt, $link);
-	while ($row=mysqli_fetch_row($rslt)) 
+	while ($row=mysqli_fetch_row($rslt))
 		{
-		switch ($row[1]) 
+		switch ($row[1])
 			{
 			case "CAMPAIGN":
 				array_push($preload_campaigns, "$row[0]");
@@ -444,7 +444,7 @@ if ($user)
 		}
 	}
 
-if ($user_group) 
+if ($user_group)
 	{
 	$preload_campaigns=array();
 	$preload_lists=array();
@@ -453,9 +453,9 @@ if ($user_group)
 	# Trying a three-level UNION statement to see if that's faster
 	$stmt="SELECT distinct campaign_id, 'CAMPAIGN' as dtype FROM vicidial_callbacks where user_group='$user_group' UNION SELECT distinct user_group, 'USER_GROUP' as dtype FROM vicidial_callbacks where user_group='$user_group' UNION SELECT distinct list_id, 'LIST_ID' as dtype from vicidial_callbacks where user_group='$user_group' UNION SELECT distinct user, 'USER' as dtype from vicidial_callbacks where user_group='$user_group' order by dtype asc;";
 	$rslt=mysql_to_mysqli($stmt, $link);
-	while ($row=mysqli_fetch_row($rslt)) 
+	while ($row=mysqli_fetch_row($rslt))
 		{
-		switch ($row[1]) 
+		switch ($row[1])
 			{
 			case "CAMPAIGN":
 				array_push($preload_campaigns, "$row[0]");
@@ -515,7 +515,7 @@ require("admin_header.php");
 
 
 
-<?php 
+<?php
 
 echo "<TR BGCOLOR=\"#".$SSstd_row1_background."\"><TD ALIGN=center COLSPAN=2><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=3><B> &nbsp; \n";
 
@@ -526,9 +526,9 @@ echo "<input type=hidden name=DB value=\"$DB\">\n";
 
 
 
-if ($SUBMIT && $new_list_id && ($new_status || $revert_status)) 
+if ($SUBMIT && $new_list_id && ($new_status || $revert_status))
 	{
-	if (count($cb_users)>0) 
+	if (count($cb_users)>0)
 		{
 		if (in_array("ALL", $cb_users))
 			{
@@ -536,7 +536,7 @@ if ($SUBMIT && $new_list_id && ($new_status || $revert_status))
 			$user_rslt=mysql_to_mysqli($user_stmt, $link);
 			$usersSQL=" and vc.user in (";
 			$usersQS="";
-			while($user_row=mysqli_fetch_row($user_rslt)) 
+			while($user_row=mysqli_fetch_row($user_rslt))
 				{
 				$usersSQL.="'$user_row[0]',";
 				$usersQS.="&cb_users[]=".$user_row[0];
@@ -544,26 +544,26 @@ if ($SUBMIT && $new_list_id && ($new_status || $revert_status))
 			$usersSQL=preg_replace('/,$/', '', $usersSQL);
 			$usersSQL.=") ";
 			}
-		else 
+		else
 			{
 			$usersSQL=" and vc.user in ('".implode("','", $cb_users)."') ";
 			$usersQS="";
-			for ($i=0; $i<count($cb_users); $i++) 
+			for ($i=0; $i<count($cb_users); $i++)
 				{
 				$usersQS.="&cb_users[]=".$cb_users[$i];
 				}
 			}
 		}
 
-	if (count($cb_user_groups)>0) 
+	if (count($cb_user_groups)>0)
 		{
-		if (in_array("ALL", $cb_user_groups)) 
+		if (in_array("ALL", $cb_user_groups))
 			{
 			$UGstmt="SELECT distinct user_group from vicidial_callbacks $whereLOGadmin_viewable_groupsSQL order by user_group";
 			$UGrslt=mysql_to_mysqli($UGstmt, $link);
 			$user_groupsSQL=" and vc.user_group in (";
 			$user_groupsQS="";
-			while($UGrow=mysqli_fetch_row($UGrslt)) 
+			while($UGrow=mysqli_fetch_row($UGrslt))
 				{
 				$user_groupsSQL.="'$UGrow[0]',";
 				$user_groupsQS.="&cb_user_groups[]=".$UGrow[0];
@@ -571,25 +571,25 @@ if ($SUBMIT && $new_list_id && ($new_status || $revert_status))
 			$user_groupsSQL=preg_replace('/,$/', '', $user_groupsSQL);
 			$user_groupsSQL.=") ";
 			}
-		else 
+		else
 			{
 			$user_groupsSQL=" and vc.user_group in ('".implode("','", $cb_user_groups)."') ";
 			$user_groupsQS="";
-			for ($i=0; $i<count($cb_user_groups); $i++) 
+			for ($i=0; $i<count($cb_user_groups); $i++)
 				{
 				$user_groupsQS.="&cb_user_groups[]=".$cb_user_groups[$i];
 				}
 			}
 		}
 
-	if (count($cb_lists)>0) 
+	if (count($cb_lists)>0)
 		{
-		if (in_array("ALL", $cb_lists)) 
+		if (in_array("ALL", $cb_lists))
 			{
 			$list_stmt="SELECT list_id from vicidial_lists $whereLOGallowed_campaignsSQL";
 			$list_rslt=mysql_to_mysqli($list_stmt, $link);
 			$list_id_str="";
-			while($list_row=mysqli_fetch_row($list_rslt)) 
+			while($list_row=mysqli_fetch_row($list_rslt))
 				{
 				$list_id_str.="'$list_row[0]',";
 				}
@@ -599,7 +599,7 @@ if ($SUBMIT && $new_list_id && ($new_status || $revert_status))
 			$list_rslt=mysql_to_mysqli($list_stmt, $link);
 			$listsSQL=" and vc.list_id in (";
 			$listsQS="";
-			while($list_row=mysqli_fetch_row($list_rslt)) 
+			while($list_row=mysqli_fetch_row($list_rslt))
 				{
 				$listsSQL.="'$list_row[0]',";
 				$listsQS.="&cb_lists[]=".$list_row[0];
@@ -607,26 +607,26 @@ if ($SUBMIT && $new_list_id && ($new_status || $revert_status))
 			$listsSQL=preg_replace('/,$/', '', $listsSQL);
 			$listsSQL.=") ";
 			}
-		else 
+		else
 			{
 			$listsSQL=" and vc.list_id in ('".implode("','", $cb_lists)."') ";
 			$listsQS="";
-			for ($i=0; $i<count($cb_lists); $i++) 
+			for ($i=0; $i<count($cb_lists); $i++)
 				{
 				$listsQS.="&cb_lists[]=".$cb_lists[$i];
 				}
 			}
 		}
 
-	if (count($cb_groups)>0) 
+	if (count($cb_groups)>0)
 		{
-		if (in_array("ALL", $cb_groups)) 
+		if (in_array("ALL", $cb_groups))
 			{
 			$groups_stmt="SELECT distinct campaign_id from vicidial_callbacks $whereLOGallowed_campaignsSQL";
 			$groups_rslt=mysql_to_mysqli($groups_stmt, $link);
 			$groupsSQL=" and vc.campaign_id in (";
 			$groupsQS="";
-			while($groups_row=mysqli_fetch_row($groups_rslt)) 
+			while($groups_row=mysqli_fetch_row($groups_rslt))
 				{
 				$groupsSQL.="'$groups_row[0]',";
 				$groupsQS.="&cb_groups[]=".$groups_row[0];
@@ -638,25 +638,25 @@ if ($SUBMIT && $new_list_id && ($new_status || $revert_status))
 			{
 			$groupsSQL=" and vc.campaign_id in ('".implode("','", $cb_groups)."') ";
 			$groupsQS="";
-			for ($i=0; $i<count($cb_groups); $i++) 
+			for ($i=0; $i<count($cb_groups); $i++)
 				{
 				$groupsQS.="&cb_groups[]=".$cb_groups[$i];
 				}
 			}
 		}
 
-	if ($days_uncalled>0 && $days_uncalled<=30) 
+	if ($days_uncalled>0 && $days_uncalled<=30)
 		{
 		$daySQL=" and vc.callback_time<='".date("Y-m-d H:i:s")."'-INTERVAL $days_uncalled DAY ";
 		}
-#	else 
+#	else
 #		{}
 
 	$callback_dispo_stmt="SELECT distinct status from vicidial_statuses where scheduled_callback='Y' UNION SELECT distinct status from vicidial_campaign_statuses where scheduled_callback='Y' ".preg_replace("/vc\./", "", $groupsSQL);
 	if ($DB) {echo $callback_dispo_stmt."<BR>";}
 	$callback_dispo_rslt=mysql_to_mysqli($callback_dispo_stmt, $link);
 	$cb_dispos=array("CALLBK","CBHOLD");
-	while ($cb_dispo_row=mysqli_fetch_row($callback_dispo_rslt)) 
+	while ($cb_dispo_row=mysqli_fetch_row($callback_dispo_rslt))
 		{
 		array_push($cb_dispos, "$cb_dispo_row[0]");
 		}
@@ -665,15 +665,15 @@ if ($SUBMIT && $new_list_id && ($new_status || $revert_status))
 $purge_trigger=0;
 $callback_statuses="'LIVE'";
 $purge_verbiage=array();
-if ($purge_called_records) 
+if ($purge_called_records)
 	{
 	### DELETE INACTIVE RECORDS
 	$purge_called_clause="(vc.status='INACTIVE' or (vc.status='LIVE' and vl.status not in ('".implode("','", $cb_dispos)."')))";
 	$purge_trigger++;
 	array_push($purge_verbiage, "CALLED", "INACTIVE");
 	}
-	
-if ($purge_uncalled_records) 
+
+if ($purge_uncalled_records)
 	{
 	### DELETE ACTIVE RECORDS
 	$purge_uncalled_clause="(vc.status in ('ACTIVE', 'LIVE') and vl.status in ('".implode("','", $cb_dispos)."'))";
@@ -682,17 +682,17 @@ if ($purge_uncalled_records)
 	array_push($purge_verbiage, "UNCALLED");
 	}
 
-if ($purge_trigger==1) 
+if ($purge_trigger==1)
 	{
 	$purge_clause=$purge_called_clause.$purge_uncalled_clause;
-	} 
-else if ($purge_trigger==2) 
+	}
+else if ($purge_trigger==2)
 	{
 	$purge_clause="(".$purge_called_clause." or ".$purge_uncalled_clause.")";
 	}
 
 
-if ($SUBMIT && $new_list_id && ($new_status || $revert_status) && (count($cb_users)>0 || count($cb_user_groups)>0 || count($cb_lists)>0 || count($cb_groups)>0) && $confirm_transfer) 
+if ($SUBMIT && $new_list_id && ($new_status || $revert_status) && (count($cb_users)>0 || count($cb_user_groups)>0 || count($cb_lists)>0 || count($cb_groups)>0) && $confirm_transfer)
 	{
 	$actual_archived_ct=0;
 	$actual_purged_ct=0;
@@ -703,9 +703,9 @@ if ($SUBMIT && $new_list_id && ($new_status || $revert_status) && (count($cb_use
 		{
 		$stmt = "SELECT vc.callback_id, vc.lead_id, vc.status from vicidial_callbacks vc, vicidial_list vl where $purge_clause and vc.lead_id=vl.lead_id $usersSQL $user_groupsSQL $listsSQL $groupsSQL $daySQL;";
 		$rslt = mysql_to_mysqli($stmt, $link);
-		$purge_ct=mysqli_num_rows($rslt); 
-		
-		while($row=mysqli_fetch_row($rslt)) 
+		$purge_ct=mysqli_num_rows($rslt);
+
+		while($row=mysqli_fetch_row($rslt))
 			{
 			$archive_stmt = "INSERT INTO vicidial_callbacks_archive SELECT * from vicidial_callbacks where callback_id='$row[0]';";
 			$archive_rslt=mysql_to_mysqli($archive_stmt, $link);
@@ -717,7 +717,7 @@ if ($SUBMIT && $new_list_id && ($new_status || $revert_status) && (count($cb_use
 			$actual_purged_ct+=mysqli_affected_rows($link);
 			$del_stmts .= " $delete_stmt";
 			}
-		
+
 			# $callback_stmt="SELECT vc.callback_id, vc.lead_id, vc.status from vicidial_callbacks vc, vicidial_list vl where vc.status='LIVE' and vl.status in ('".implode("','", $cb_dispos)."') and vc.lead_id=vl.lead_id $usersSQL $user_groupsSQL $listsSQL $groupsSQL $daySQL";
 		}
 
@@ -731,7 +731,7 @@ if ($SUBMIT && $new_list_id && ($new_status || $revert_status) && (count($cb_use
 	if ($new_list_id == 'X')
 		{$new_listSQL='';}
 	$upd_stmts='';
-	while ($cb_row=mysqli_fetch_row($callback_rslt)) 
+	while ($cb_row=mysqli_fetch_row($callback_rslt))
 		{
 		$lead_id=$cb_row[1];
 
@@ -752,7 +752,7 @@ if ($SUBMIT && $new_list_id && ($new_status || $revert_status) && (count($cb_use
 					$new_status=$revert_row[1];
 					$callback_time_clause="  and call_date>='$callback_entry_time' and call_date<'$cb_row[3]' ";
 				}
-			} 
+			}
 
 			# FIND ANY OUTBOUND CALL MADE AFTER CALL WAS DISPO'ED BY AGENT AND NOT A CALLBACK
 			$revert_stmt2="select call_date, status, uniqueid from vicidial_log where lead_id='$lead_id' $callback_time_clause and status not in ('".implode("','", $cb_dispos)."') order by call_date desc limit 1";
@@ -804,7 +804,7 @@ if ($SUBMIT && $new_list_id && ($new_status || $revert_status) && (count($cb_use
 	$rslt=mysql_to_mysqli($stmt, $link);
 
 	echo "<table width='500' align='center'><tr><td align='left'>";
-	if ($purge_called_records) 
+	if ($purge_called_records)
 		{
 		echo "<B>"._QXZ("PURGE COMPLETE")."</B>";
 		echo "<UL><LI>$purge_ct "._QXZ("RECORDS FOUND")."</LI>";
@@ -817,14 +817,14 @@ if ($SUBMIT && $new_list_id && ($new_status || $revert_status) && (count($cb_use
 
 	echo "<a href='$PHP_SELF?DB=$DB'>"._QXZ("BACK")."</a><BR><BR>";
 	}
-else if ($SUBMIT && $new_list_id  && ($new_status || $revert_status) && (count($cb_users)>0 || count($cb_user_groups)>0 || count($cb_lists)>0 || count($cb_groups)>0) && !$confirm_transfer) 
+else if ($SUBMIT && $new_list_id  && ($new_status || $revert_status) && (count($cb_users)>0 || count($cb_user_groups)>0 || count($cb_lists)>0 || count($cb_groups)>0) && !$confirm_transfer)
 	{
 #	$DB=1;
-	if ($purge_trigger==0) 
+	if ($purge_trigger==0)
 		{
 		$callback_stmt="SELECT * from vicidial_callbacks vc where status='LIVE' $usersSQL $user_groupsSQL $listsSQL $groupsSQL $daySQL";
 		}
-	else 
+	else
 		{
 		$callback_stmt="SELECT * from vicidial_callbacks vc, vicidial_list vl where $purge_clause and vc.lead_id=vl.lead_id $usersSQL $user_groupsSQL $listsSQL $groupsSQL $daySQL";
 
@@ -833,10 +833,10 @@ else if ($SUBMIT && $new_list_id  && ($new_status || $revert_status) && (count($
 		$purge_ct=mysqli_num_rows($purge_rslt);
 		$purge_called_ct=0;
 		$purge_uncalled_ct=0;
-		while ($purge_row=mysqli_fetch_row($purge_rslt)) 
+		while ($purge_row=mysqli_fetch_row($purge_rslt))
 			{
-			if ($purge_row[0]=="INACTIVE" || ($purge_row[0]=="LIVE" && !in_array("$purge_row[1]", $cb_dispos))) {$purge_called_ct++;} 
-			if ($purge_row[0]=="ACTIVE" || ($purge_row[0]=="LIVE" && in_array("$purge_row[1]", $cb_dispos))) {$purge_uncalled_ct++;} 
+			if ($purge_row[0]=="INACTIVE" || ($purge_row[0]=="LIVE" && !in_array("$purge_row[1]", $cb_dispos))) {$purge_called_ct++;}
+			if ($purge_row[0]=="ACTIVE" || ($purge_row[0]=="LIVE" && in_array("$purge_row[1]", $cb_dispos))) {$purge_uncalled_ct++;}
 			}
 		}
 	$callback_rslt=mysql_to_mysqli($callback_stmt, $link);
@@ -868,7 +868,7 @@ else if ($SUBMIT && $new_list_id  && ($new_status || $revert_status) && (count($
 	echo "<a href='$PHP_SELF?DB=$DB'>"._QXZ("CLICK TO CANCEL")."</a><BR><BR>";
 
 	}
-else 
+else
 	{
 	echo "<table width='650' align='center' border=0>";
 	echo "<tr>";
@@ -878,9 +878,9 @@ else
 	if ($DB) {echo "$stmt\n";}
 	echo "<B>"._QXZ("Campaigns with callbacks").":</B>$NWB#cb-bulk-campaigns$NWE<BR><select name='cb_groups[]' size=5 multiple>\n";
 	echo "<option value='ALL'>"._QXZ("CHECK ALL CAMPAIGNS")."</option>\n";
-	if (mysqli_num_rows($rslt)>0) 
+	if (mysqli_num_rows($rslt)>0)
 		{
-		while ($row=mysqli_fetch_array($rslt)) 
+		while ($row=mysqli_fetch_array($rslt))
 			{
 			if (in_array($row["campaign_id"], $preload_campaigns)) {$s=" selected";} else {$s="";}
 			echo "\t<option value='$row[campaign_id]'$s>".($row["campaign_id"] ? $row["campaign_id"] : "(none)")." - ($row[ct] "._QXZ("callbacks").")</option>\n";
@@ -897,7 +897,7 @@ else
 	$list_stmt="SELECT list_id from vicidial_lists $whereLOGallowed_campaignsSQL";
 	$list_rslt=mysql_to_mysqli($list_stmt, $link);
 	$list_id_str="";
-	while($list_row=mysqli_fetch_row($list_rslt)) 
+	while($list_row=mysqli_fetch_row($list_rslt))
 		{
 		$list_id_str.="'$list_row[0]',";
 		}
@@ -908,9 +908,9 @@ else
 	if ($DB) {echo "$stmt\n";}
 	echo "<B>"._QXZ("Lists with callbacks").":</B>$NWB#cb-bulk-lists$NWE<BR><select name='cb_lists[]' size=5 multiple>\n";
 	echo "<option value='ALL'>"._QXZ("CHECK ALL LISTS")."</option>\n";
-	if (mysqli_num_rows($rslt)>0) 
+	if (mysqli_num_rows($rslt)>0)
 		{
-		while ($row=mysqli_fetch_array($rslt)) 
+		while ($row=mysqli_fetch_array($rslt))
 			{
 			if (in_array($row["list_id"], $preload_lists)) {$s=" selected";} else {$s="";}
 			echo "\t<option value='$row[list_id]'$s>$row[list_id] - $row[list_name] - $row[campaign_id] - ($row[ct] "._QXZ("callbacks").")</option>\n";
@@ -931,9 +931,9 @@ else
 	if ($DB) {echo "$stmt\n";}
 	echo "<B>"._QXZ("User groups with callbacks").":</B>$NWB#cb-bulk-usergroups$NWE<BR><select name='cb_user_groups[]' size=5 multiple>\n";
 	echo "<option value='ALL'>"._QXZ("CHECK ALL USER GROUPS")."</option>\n";
-	if (mysqli_num_rows($rslt)>0) 
+	if (mysqli_num_rows($rslt)>0)
 		{
-		while ($row=mysqli_fetch_array($rslt)) 
+		while ($row=mysqli_fetch_array($rslt))
 			{
 			if (in_array($row["user_group"], $preload_user_groups)) {$s=" selected";} else {$s="";}
 			echo "\t<option value='$row[user_group]'$s>$row[user_group] - ($row[ct] "._QXZ("callbacks").")</option>\n";
@@ -951,13 +951,13 @@ else
 	if ($DB) {echo "$stmt\n";}
 	echo "<B>"._QXZ("Agents with callbacks (USERONLY)").":</B>$NWB#cb-bulk-agents$NWE<BR><select name='cb_users[]' size=5 multiple>\n";
 	echo "<option value='ALL'>"._QXZ("CHECK ALL AGENTS")."</option>\n";
-	if (mysqli_num_rows($rslt)>0) 
+	if (mysqli_num_rows($rslt)>0)
 		{
-		while ($row=mysqli_fetch_array($rslt)) 
+		while ($row=mysqli_fetch_array($rslt))
 			{
 			$user_stmt="SELECT full_name from vicidial_users $ul_clause and user='$row[user]' $LOGadmin_viewable_groupsSQL";
 			$user_rslt=mysql_to_mysqli($user_stmt, $link);
-			if (mysqli_num_rows($user_rslt)>0) 
+			if (mysqli_num_rows($user_rslt)>0)
 				{
 				$user_row=mysqli_fetch_array($user_rslt);
 				if (in_array($row["user"], $preload_users)) {$s=" selected";} else {$s="";}
@@ -965,7 +965,7 @@ else
 				}
 			}
 		}
-	else 
+	else
 		{
 		echo "\t<option value=''>**"._QXZ("NO CALLBACKS")."**</option>\n";
 		}
@@ -981,7 +981,7 @@ else
 	echo "<td align='left' width='400'>";
 	echo "<B>"._QXZ("Live and uncalled for over")." <select name='days_uncalled'>";
 	echo "<option value='0'>--</option>\n";
-	for ($i=1; $i<=31; $i++) 
+	for ($i=1; $i<=31; $i++)
 		{
 		echo "<option value='$i'>$i</option>\n";
 		}
@@ -1010,14 +1010,14 @@ else
 	echo "<td align='left' width='400'><B>";
 	echo _QXZ("List ID").": <select name='new_list_id' size=1>\n";
 	echo "<option value='X'>"._QXZ("DO NOT ALTER LIST ID")."</option>";
-	while ($row=mysqli_fetch_array($rslt)) 
+	while ($row=mysqli_fetch_array($rslt))
 		{
 		echo "\t<option value='$row[list_id]'>$row[list_id] - $row[list_name]</option>\n";
 		}
 	echo "</select>$NWB#cb-bulk-newlist$NWE\n";
 	echo "</B></td>";
 
-	echo "<td align='right' width='250'><B>";	
+	echo "<td align='right' width='250'><B>";
 	echo _QXZ("New Status").": <input type=text name='new_status' size=7 maxlength=6 value='$new_status'>$NWB#cb-bulk-newstatus$NWE<BR>\n";
 	echo "</td>";
 	echo "</tr>";
@@ -1054,8 +1054,8 @@ echo "<font size=0>\n\n\n<br><br><br>\n"._QXZ("script runtime").": $RUNtime "._Q
 </html>
 
 <?php
-	
-exit; 
+
+exit;
 
 
 ?>

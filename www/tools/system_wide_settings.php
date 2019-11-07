@@ -16,8 +16,8 @@ $build = "20190429-2253";
 #
 # set error reporting level E_NOTICE only if $DB is set
 #
-if(!isset($DB)) { 
-    $DB=0; 
+if(!isset($DB)) {
+    $DB=0;
 }
 if($DB) {
     error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);

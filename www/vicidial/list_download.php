@@ -1,6 +1,6 @@
 <?php
 # list_download.php
-# 
+#
 # downloads the entire contents of a vicidial list ID to a flat text file
 # that is tab delimited
 #
@@ -487,7 +487,7 @@ else
 	$stmt="select lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id $extended_vl_fields_SQL from vicidial_list where list_id='$list_id';";
 	if ($list_id=='ALL-LISTS')
 		{
-		$list_id_header="list_id\t";   
+		$list_id_header="list_id\t";
 		$stmt="select list_id,lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id $extended_vl_fields_SQL from vicidial_list where list_id > 0;";
 		}
 	$header_row = $list_id_header . "lead_id\tentry_date\tmodify_date\tstatus\tuser\tvendor_lead_code\tsource_id\tlist_id\tgmt_offset_now\tcalled_since_last_reset\tphone_code\tphone_number\ttitle\tfirst_name\tmiddle_initial\tlast_name\taddress1\taddress2\taddress3\tcity\tstate\tprovince\tpostal_code\tcountry_code\tgender\tdate_of_birth\talt_phone\temail\tsecurity_phrase\tcomments\tcalled_count\tlast_local_call_time\trank\towner\tentry_list_id$extended_vl_fields_HEADER";
@@ -583,7 +583,7 @@ while ($i < $leads_to_print)
 			if (strlen($row[28]) > 0)
 				{$data_temp = $row[28];   $row[28] = preg_replace("/./",'X',$data_temp);}
 			}
-			
+
 		$row[29] = preg_replace("/\n|\r/",'!N',$row[29]);
 		$extended_vl_fields_DATA='';
 
@@ -665,7 +665,7 @@ if ( ($custom_fields_enabled > 0) and ($event_code_type=='LIST') )
 		if ($DB>0) {echo "$stmt";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$tablecount_to_print = mysqli_num_rows($rslt);
-		if ($tablecount_to_print > 0) 
+		if ($tablecount_to_print > 0)
 			{
 			$stmtA = "describe custom_$list_id;";
 			$rslt=mysql_to_mysqli($stmtA, $link);
@@ -791,7 +791,7 @@ if ( ($custom_fields_enabled > 0) and ($event_code_type=='LIST') )
 						{
 						$row=mysqli_fetch_row($rslt);
 						$t=0;
-						while ($columns_ct >= $t) 
+						while ($columns_ct >= $t)
 							{
 							if ($enc_fields > 0)
 								{

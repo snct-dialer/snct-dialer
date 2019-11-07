@@ -17,13 +17,13 @@ This document will be depricated and not supported after the 2.2.0 release.
 
 
 
-This document is meant to be a very in-depth step-by-step explanation of 
-installing the Asterisk open-source PBX on a Linux system and also installing 
-the astGUIclient suite. The instructions will assume starting from nothing and 
-will try to give several side step instructions to account for some differences 
+This document is meant to be a very in-depth step-by-step explanation of
+installing the Asterisk open-source PBX on a Linux system and also installing
+the astGUIclient suite. The instructions will assume starting from nothing and
+will try to give several side step instructions to account for some differences
 in choices of hardware and software.
 
-The actual installation that I am doing as I write these instructions will be on 
+The actual installation that I am doing as I write these instructions will be on
 the following hardware:
  (Changed to more realistic modern hardware)
  - Intel Core 2 Quad CPU
@@ -36,18 +36,18 @@ the following hardware:
 
 All of these parts cost less than $1500 together.
 
-This is our test Asterisk server and functions well for 100 or so extensions 
-in use if it were to be used in production. A size that is optimal for many 
-small offices operating with a fractional data/voice T1 for instance. This 
-hardware would also be good for a stand-alone ViciDial system with about 50 
+This is our test Asterisk server and functions well for 100 or so extensions
+in use if it were to be used in production. A size that is optimal for many
+small offices operating with a fractional data/voice T1 for instance. This
+hardware would also be good for a stand-alone ViciDial system with about 50
 agents handling inbound calls with full recording, or 25 agents doing heavy
 predictive outbound dialing.
 
 For hardware you can use almost any modern CPU processor(Intel core2, Xeon, etc)
-, and you can use any Digium or Sangoma telco interface card or USB timer. Both 
-of these choices will determine what the capacity of your Asterisk/ViciDial 
-server will be. If you want to do simple IVR or conference calling and a few 
-extensions, then an Intel Celeron 2GHz with a single Sangoma USB VoiceTime 
+, and you can use any Digium or Sangoma telco interface card or USB timer. Both
+of these choices will determine what the capacity of your Asterisk/ViciDial
+server will be. If you want to do simple IVR or conference calling and a few
+extensions, then an Intel Celeron 2GHz with a single Sangoma USB VoiceTime
 dongle will work just fine for you. If you want to use the ViciDial applications
 , you will usually want to get as high-powered of a machine as you can afford.
 
@@ -59,7 +59,7 @@ The following is assumed for these installation procedures:
 	- a pentium-class computer
 	- a digium telco interface card with appropriate telco lines
 	- at least 1 SIP/IAX VOIP device(this can be a softphone too)
-	- a Local Area Network(LAN) with extra ports enough for the new server 
+	- a Local Area Network(LAN) with extra ports enough for the new server
 and the number of phones you want
 
 
@@ -69,55 +69,55 @@ and the number of phones you want
 PHASE 1: INSTALLING AN OPERATING SYSTEM
 
 
-This installation will be using Slackware 12 for the linux distribution, 
-Slackware 12.X will also work with these instructions. There are several easier 
-linux distributions and there are others that are more popular, but Slackware is 
-a nice non-commercial distro that has been around for a long time and proven 
+This installation will be using Slackware 12 for the linux distribution,
+Slackware 12.X will also work with these instructions. There are several easier
+linux distributions and there are others that are more popular, but Slackware is
+a nice non-commercial distro that has been around for a long time and proven
 itself to be a very uncluttered and stable platform for development.
 
-1.	Go to http://www.ultimatebootcd.com/ , download the latest bootcd and 
-burn it to a CD. This will be needed to partition the hard drive prior to 
+1.	Go to http://www.ultimatebootcd.com/ , download the latest bootcd and
+burn it to a CD. This will be needed to partition the hard drive prior to
 installation of Slackware linux. The latest version as of this writing is 4.1
 (If you have problems with your hardware booting some of the utilities with 4.1
-I suggest trying 1.7, that version has older utilities, but still gets the job 
+I suggest trying 1.7, that version has older utilities, but still gets the job
 done and works on every machine I've tried it on).
 
-2.	Insert the ultimatebootcd you just burned into your CDROM drive and boot 
+2.	Insert the ultimatebootcd you just burned into your CDROM drive and boot
 to it. You will select "filesystem utilities" and then "XFDISK"
 
-3.	Select any old partitions and delete them and then create 2 new 
+3.	Select any old partitions and delete them and then create 2 new
 partitions:
    - 150000 MB, select yes to validate, change partition type to "Linux Native"
    - 3332 MB, select yes to validate, change partition type to "Linux Swap"
    - press F3 to exit and let it do it's thing, this will take an hour or so.
 
-4.	Go to http://www.slackware.com/getslack/ to download Slackware linux. 
+4.	Go to http://www.slackware.com/getslack/ to download Slackware linux.
 The most recent release we recommend is 11.0. This release fits on 3 CDs
 or 1 DVD. Download both installation disks from any close server listed on the
 download page and burn them both to CDs.
 
-5.	Insert Disk 1 of the Slackware installation CD and boot your computer. 
-If you have a simple computer with just an IDE drive just hit enter at the boot: 
-prompt. If you have other hard drive adapters(SCSI/RAID/SATA/etc..) you will 
-need to look at the Slackware installation help page to determine what boot 
+5.	Insert Disk 1 of the Slackware installation CD and boot your computer.
+If you have a simple computer with just an IDE drive just hit enter at the boot:
+prompt. If you have other hard drive adapters(SCSI/RAID/SATA/etc..) you will
+need to look at the Slackware installation help page to determine what boot
 image you will need to use to install Slackware correctly.
 
 6.	Login as root and type "setup" at the prompt to go to the setup menu.
 7.	Go to ADDSWAP and hit Enter
-8.	Select the swap partition you just created and hit Yes, The swap 
+8.	Select the swap partition you just created and hit Yes, The swap
 partition will then be formatted
-9.	Select the root partiton you just created as Linux Native and hit 
-Select, then select "ext3" for the file system, then select 4096 for the inodes 
+9.	Select the root partiton you just created as Linux Native and hit
+Select, then select "ext3" for the file system, then select 4096 for the inodes
 and the root partition will then be formatted
 10.	Select "Install Slackware from a CD" and hit OK
 11.	Select "auto" installation and hit OK
 12.	Select every package except for "KDEI" and hit OK
 13.	Select "full" installation and hit OK
-14.	Insert the next Slackware installation disk (disk 2) when it prompts 
+14.	Insert the next Slackware installation disk (disk 2) when it prompts
 you, and hit OK to continue
-15.	Now you will select the boot kernel that you will use from now on. If 
-you have a simple system with IDE drives you can probably just select "skip" and 
-go to the next step. If not then you should probably select "cdrom" and select 
+15.	Now you will select the boot kernel that you will use from now on. If
+you have a simple system with IDE drives you can probably just select "skip" and
+go to the next step. If not then you should probably select "cdrom" and select
 the kernel from the list that you selected to boot into the installation.
 16.	You can make a bootdisk if you like, but you don't have to.
 17.	For Modem you can select "no modem" and hit OK to continue
@@ -131,7 +131,7 @@ the kernel from the list that you selected to boot into the installation.
 25.	select Yes to configure your network
 26.	Hostname, we are typing "phone"
 27.	network, we are typing our local domain name
-28.	IP address, we are selecting Static IP, here's what we enter for 
+28.	IP address, we are selecting Static IP, here's what we enter for
 network, you should enter a network setup that will work with your local LAN:
 	 - IP address: 10.10.10.15
 	 - subnet: 255.255.0.0
@@ -142,11 +142,11 @@ network, you should enter a network setup that will work with your local LAN:
 31.	select NO for custom screen fonts
 32.	Hardware clock to UTC, select NO
 33.	Select your time zone and hit OK
-34.	I usually select gnome as the window manager, even though you won't be 
+34.	I usually select gnome as the window manager, even though you won't be
 using it on this machine
-35.	Select Yes to enter a root password. type something that you will 
+35.	Select Yes to enter a root password. type something that you will
 remember.
-36.	Setup of Slackware Linux is complete, hit OK and EXIT then press 
+36.	Setup of Slackware Linux is complete, hit OK and EXIT then press
 CTRL-ALT-DELETE to reboot your computer
 
 
@@ -156,20 +156,20 @@ CTRL-ALT-DELETE to reboot your computer
 PHASE 2: COMPILING A CUSTOM LINUX KERNEL
 
 
-From this step on you should be able to continue the installation remotely 
-although it is wise to at least have quick access to the machine if something 
+From this step on you should be able to continue the installation remotely
+although it is wise to at least have quick access to the machine if something
 goes wrong.
 
-To connect remotely through SSH on linux type "slogin serveripaddress" or to use 
-Windows to connect you can use a piece of free software called putty available 
+To connect remotely through SSH on linux type "slogin serveripaddress" or to use
+Windows to connect you can use a piece of free software called putty available
 here: http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html
 Also, for windows you can use SSH file transferring(SFTP) with a program called
 filezilla: http://filezilla.sourceforge.net/
 
-This is an optional step if your linux system is running, but compiling your own 
-custom kernel is always a way to optimize your system for the hardware you have 
-installed or a way to remove the unnecesary modules that are in the default 
-kernel. You will definately want to build your own kernel if you have a multi 
+This is an optional step if your linux system is running, but compiling your own
+custom kernel is always a way to optimize your system for the hardware you have
+installed or a way to remove the unnecesary modules that are in the default
+kernel. You will definately want to build your own kernel if you have a multi
 processor machine. If you are new to Linux you probably do not want to do this.
 
 If you are using a newer Digium Octasic-based echo-cancellation quad T1/E1 card
@@ -205,7 +205,7 @@ OPTION 1: compile Linux kernel 2.6.17 *NOT REQUIRED*
 	->Timer frequency (1000 HZ)
 	  (change to 1000Hz if using ztdummy for timer on pre 2.6.17 kernel)
 	->[*]Tickless System (enable UNLESS using ztdummy on pre 2.6.17 kernel)
-	->[*]Enable Kernel irq balancing  
+	->[*]Enable Kernel irq balancing
 	->Preemption Model (No Forced Preemption (Server))
 	  (^This one is very important!!!)
      Power management options (ACPI, APM)  --->
@@ -277,7 +277,7 @@ OPTION 1: compile Linux kernel 2.6.17 *NOT REQUIRED*
 21. shutdown -r 0			# reboot machine and hope it worked
 
 
-After compiling your kernel you can run a few commands to verify that you are 
+After compiling your kernel you can run a few commands to verify that you are
 running your new kernel and that devices are running as they are supposed to:
  ps --info   (will show you your linux kernel version and other info)
  cat /proc/cpuinfo   (will show you processor type and more than one if SMP)
@@ -288,11 +288,11 @@ running your new kernel and that devices are running as they are supposed to:
 
 PHASE 3: INSTALLING SOFTWARE BEFORE ASTERISK
 
-In this step we will be installing software that Asterisk and/or astGUIclient 
-needs to be able to function to its fullest ability. Not all of these software 
-packages are manditory to successfully install Asterisk and some of them can be 
-installed on other machines on your network like MySQL or Apache. But, in this 
-installation we are assuming that there are no other machines on our network to 
+In this step we will be installing software that Asterisk and/or astGUIclient
+needs to be able to function to its fullest ability. Not all of these software
+packages are manditory to successfully install Asterisk and some of them can be
+installed on other machines on your network like MySQL or Apache. But, in this
+installation we are assuming that there are no other machines on our network to
 help the Asterisk server, so it must have everything it needs installed locally.
 
 
@@ -315,19 +315,19 @@ if you will be building Asterisk from the 1.4 release tree.
 
 SUBPHASE 3.1: MySQL requirements
 
-You must at least have Mysql client installed on each VICIDIAL server, but you 
+You must at least have Mysql client installed on each VICIDIAL server, but you
 only need one database server.
 
-MySQL is a fast database system that is very easy to integrate with any 
-application. You can either install the server on the local Asterisk system or 
-have one somewhere on your network. For our purposes, we are creating an Asterisk 
+MySQL is a fast database system that is very easy to integrate with any
+application. You can either install the server on the local Asterisk system or
+have one somewhere on your network. For our purposes, we are creating an Asterisk
 installation that is self contained and needs no other local servers to operate,
 so we will need to install mysql on this machine.
-*REQUIRED and OPTIONAL* (only install MySQL server locally if you don't want to use an installation 
+*REQUIRED and OPTIONAL* (only install MySQL server locally if you don't want to use an installation
 on another machine, Mysql client is required on all VICIDIAL servers)
 NOTE: a minimum of MySQL server 5.0.X is required
-You should increase the connect_timeout so connections do not fail on 
-a more loaded system.  
+You should increase the connect_timeout so connections do not fail on
+a more loaded system.
 
   Go to http://www.mysql.com/ and download the mysql package
    - to install this directly on the command line type:
@@ -381,7 +381,7 @@ a more loaded system.
    Every machine that you will be using the newer BDI perl scripts on will need
    to have the perl modules DBI and DBD::mysql installed on them. To do this
    you will also need to at least have the MySQL client installed on the server
-   (see above) then you will need to go to 'cpan' and "install DBI" and 
+   (see above) then you will need to go to 'cpan' and "install DBI" and
    "install DBD::mysql". You may need to "force install DBD::mysql" if the DBD
    tests fail on your first try, but that is OK since the tests are not needed
 
@@ -392,27 +392,27 @@ SUBPHASE 3.2: Installing Perl Modules
 NOTE - you can install ActiveState http://www.activestate.com perl, but it is not required.
 	http://www.activestate.com/activeperl/downloads
 
-cpan is the "Comprehensive Perl Archive Network". It's a mirrored archive of 
-most of the perl modules out there complete with a installation and management 
+cpan is the "Comprehensive Perl Archive Network". It's a mirrored archive of
+most of the perl modules out there complete with a installation and management
 command-line interface. Here's what you do to start it:
 *REQUIRED* (needed for perl AGIs)
 
-1.  perl -MCPAN -e shell		# type in the command line 
-2.  You will then go through CPAN setup, just hit ENTER for most prompts except 
+1.  perl -MCPAN -e shell		# type in the command line
+2.  You will then go through CPAN setup, just hit ENTER for most prompts except
 for the mirrors list, you will want to select at least 4 mirrors
 	- yes for manual configuration
 	- enter for the next 18 prompts
-	- for the "make install options" it's a good idea to add UNINST=1 
+	- for the "make install options" it's a good idea to add UNINST=1
 	- enter for the next 4 prompts
 	- select your continent and country
 	- select a few cpan mirrors
 	- enter for the next 2 prompts
 3.  Once you see the cpan> prompt you can begin installing modules
-4.  If you've never installed cpan before you should probably install the 
+4.  If you've never installed cpan before you should probably install the
 following modules first:   (say YES if asked to install prerequisites)
    - install MD5
-   - install Digest::MD5	
-   - install Digest::SHA1	
+   - install Digest::MD5
+   - install Digest::SHA1
    - install readline		(just hit Enter when it asks for operator)
    - install Bundle::CPAN
    - reload cpan
@@ -484,8 +484,8 @@ NOTE: Do NOT use the 0.09 or any newer version, they do not work with VICIDIAL
 
 SUBPHASE 3.3: Installing other utilities
 
-Sox is an audio utility that allows you to mix audio files together at their 
-start point into one file. it is necessary for Asterisk recordings that record 
+Sox is an audio utility that allows you to mix audio files together at their
+start point into one file. it is necessary for Asterisk recordings that record
 in and out as separate files
 *REQUIRED* (needed for recording mixing)
 
@@ -522,9 +522,9 @@ to be loaded to use that option.
 
 
 
-Screen is a terminal emulator that allows you to run a process as command line 
-and be able to detach from them('Ctrl+a' then 'd') and log all output of the 
-terminal to a screenlog file if desired(add a '-L' to the launching command). 
+Screen is a terminal emulator that allows you to run a process as command line
+and be able to detach from them('Ctrl+a' then 'd') and log all output of the
+terminal to a screenlog file if desired(add a '-L' to the launching command).
 In our installations this is how we launch Asterisk upon startup and still have
 the ability to log output and still attach to the screen that executed asterisk
 originally.
@@ -545,12 +545,12 @@ originally.
    - you are done
 
 
-ttyload is a simple terminal application that shows the processor load in a 
-graphical time-based scrolling graph. We use it to view how loaded the system is 
+ttyload is a simple terminal application that shows the processor load in a
+graphical time-based scrolling graph. We use it to view how loaded the system is
 and it visualizes load spikes very well
 *OPTIONAL* (only for obsessive admins like me)
 
-4.  Go to http://www.daveltd.com/src/util/ttyload/ and download the ttyload 
+4.  Go to http://www.daveltd.com/src/util/ttyload/ and download the ttyload
 package
    - to install this directly on the command line type:
 	- cd /usr/local
@@ -563,8 +563,8 @@ package
    - you are done
 
 
-ntpd is the network time protocol daemon that matches the time on your machine 
-with the time of a master server somewhere in the world. We use it to make sure 
+ntpd is the network time protocol daemon that matches the time on your machine
+with the time of a master server somewhere in the world. We use it to make sure
 the time is the same on our client computers and our servers.
 *MANDITORY FOR VICIDIAL SERVERS* (install on server and all clients)
 
@@ -587,8 +587,8 @@ the time is the same on our client computers and our servers.
    - you are done
 
 
-iftop is a good console bandwidth visualization tool that shows you active 
-connections, where they are going to/from and how much of your precious bandwidth 
+iftop is a good console bandwidth visualization tool that shows you active
+connections, where they are going to/from and how much of your precious bandwidth
 they are using. *OPTIONAL*
 NOTE: another good network analysis utility is "iptraf" and is on most system
 
@@ -615,15 +615,15 @@ NOTE: another good network analysis utility is "iptraf" and is on most system
 
 
 ploticus is a free graph creation package that allows you to create line graphs
-within PNG files simply by creating a config file and a data file. We use this 
+within PNG files simply by creating a config file and a data file. We use this
 package along with the included PHP script to generate server performance graphs
-that can be displayed real-time on a web page. 
+that can be displayed real-time on a web page.
 *OPTIONAL* (only needed for server performance graphing web reports)
 
 7. Go to http://ploticus.sourceforge.net/ and download the package
    - to install this directly on the command line type:
 	NOTE: you may have to edit the Makefile to remove X11 if you don't have it
-	- cd /usr/local	
+	- cd /usr/local
 	- wget http://superb-west.dl.sourceforge.net/sourceforge/ploticus/pl240src.tar.gz
 	- gunzip pl240src.tar.gz
 	- tar xvf pl240src.tar
@@ -636,12 +636,12 @@ that can be displayed real-time on a web page.
 	NOXFLAG = -DNOX11
 	XLIBS =
 	XOBJ =
-   NOTE: for the graphics to work on the AST_server_performance page you will 
+   NOTE: for the graphics to work on the AST_server_performance page you will
    need the 'pl' script to be linked or copied into your htdocs/vicidial/ploticus directory
    NOTE: you may need to edit the Makefile for ploticus if you do not have X11
 
 
-openssh is a remote login protocol server that is always a good idea to have 
+openssh is a remote login protocol server that is always a good idea to have
 updated on your system, so we're going to install a new version now.
 *OPTIONAL* (only updated as a precaution, not manditory)
 	[NOTE: newer zlib is needed before installing]
@@ -667,9 +667,9 @@ updated on your system, so we're going to install a new version now.
    - you are done
 
 
-openssl is the open-source SSL libraries package, and to install a fake SSL cert 
+openssl is the open-source SSL libraries package, and to install a fake SSL cert
 locally and have it work with apache, you need it installed on your machine
-*OPTIONAL* (only install openssl if you want to use SSL secured web pages on 
+*OPTIONAL* (only install openssl if you want to use SSL secured web pages on
 your locally installed copy of Apache web server)
 
 9. Go to http://www.openssl.org/ and download the linux source for openssl
@@ -685,10 +685,10 @@ your locally installed copy of Apache web server)
    - you are done
 
 
-apache is a web server that allows you to use many different modules with it to 
-extend it's functionality. In order to use some of the astguiclient 
+apache is a web server that allows you to use many different modules with it to
+extend it's functionality. In order to use some of the astguiclient
 functionalities we need to have Apache and PHP installed on this machine.
-*OPTIONAL* (only install Apache and PHP locally if you don't want to use an 
+*OPTIONAL* (only install Apache and PHP locally if you don't want to use an
 installation on another machine)
 
 10. Go to http://www.apache.org/ and download the apache unix source
@@ -757,9 +757,9 @@ installation on another machine)
 
    OPTIONAL- Load eAccelerator PHP-caching application:
    Even so this is technically an optional part, it is strongly recommended that you install eAccelerator
-   since it will slash PHPs processing power requirements greatly. Without eAccelerator load on the system 
-   can be ten times as high, which can cause all kinds of problems, this is especially true for single 
-   system setups. 
+   since it will slash PHPs processing power requirements greatly. Without eAccelerator load on the system
+   can be ten times as high, which can cause all kinds of problems, this is especially true for single
+   system setups.
    - Go to http://eaccelerator.net and download the most recent package
 	- cd /usr/local
 	- wget http://bart.eaccelerator.net/source/0.9.5/eaccelerator-0.9.5.3.zip
@@ -810,7 +810,7 @@ NOTE: there is now a utility available to manage eaccelerator from a web interfa
 
 
 balance is a load-balancing application for Linux that will allow you to spread
-the load of your web traffic across many servers. If you are running more than 
+the load of your web traffic across many servers. If you are running more than
 70 agents on a single server you may want to install this application and build
 another cheap web server to handle the extra load.
 *OPTIONAL*
@@ -825,12 +825,12 @@ another cheap web server to handle the extra load.
 	- make
 	- make install
 	- /usr/sbin/balance -f 81 localhost:80 10.10.10.16:80
-	That command will take port 81 traffic and send it evenly to the local 
-	server and the 10.10.10.16 server reducing the load and speeding up 
+	That command will take port 81 traffic and send it evenly to the local
+	server and the 10.10.10.16 server reducing the load and speeding up
 	the applications. More info on balance: http://www.inlab.de/balance.pdf
 
 
-subversion is the new code control framework use by the Asterisk community. If 
+subversion is the new code control framework use by the Asterisk community. If
 you want to use the latest development code of Asterisk you will need to have
 this loaded on your system.
 *OPTIONAL*
@@ -857,7 +857,7 @@ are running in it.
 	- gunzip mtop-0.6.6.tar.gz
 	- tar xvf mtop-0.6.6.tar
 	- cd mtop-0.6.6
-	- cpan 
+	- cpan
 		- install Curses
 		- install Net::Domain
 		- quit
@@ -867,7 +867,7 @@ are running in it.
 	- /usr/local/bin/mtop --dbuser=root --seconds=3
 
 
-sipsak is an optional utility that VICIDIAL can use to send messages to an 
+sipsak is an optional utility that VICIDIAL can use to send messages to an
 agent's SIP-based phone(like the Snom 320) to display text on their LCD screen.
 If you want to use this, make sure it is installed on the same server that your
 web server is installed on(Apache).
@@ -890,10 +890,10 @@ web server is installed on(Apache).
 
 PHASE 4: INSTALLING ASTERISK
 
-OK, all the prep work is done, now it's time to start having fun with Asterisk. 
-There are two basic ways to install Asterisk, an official release(at the time of 
+OK, all the prep work is done, now it's time to start having fun with Asterisk.
+There are two basic ways to install Asterisk, an official release(at the time of
 this writing the recommended release is 1.4.21.2). These instructions are how we
-get our Asterisk system with it's T1 line installed with our Zoiper softphone. 
+get our Asterisk system with it's T1 line installed with our Zoiper softphone.
 
 NOTE: If you want to use Asterisk 1.2, you will need to make sure that you set
 the servers table "asterisk_version" field to the proper version number and you
@@ -907,7 +907,7 @@ dialplan
 	wget http://downloads.digium.com/pub/zaptel/zaptel-1.4.12.1.tar.gz
 	wget http://downloads.digium.com/pub/libpri/libpri-1.4.9.tar.gz
 	tar xzf asterisk-1.4.21.2.tar.gz
-	tar xzf zaptel-1.4.12.1.tar.gz 
+	tar xzf zaptel-1.4.12.1.tar.gz
 	tar xzf libpri-1.4.9.tar.gz
 	cd libpri-1.4.9
 	make clean; make; make install
@@ -936,11 +936,11 @@ dialplan
 	modprobe zaptel
 
 	- modprobe zaptel	# this loads the zaptel module
-	- install the module for the digium device that you are using, we are 
+	- install the module for the digium device that you are using, we are
 using the T100P single span T1 card so we use:
 	- modprobe wct1xxp
 	or if you have no timer, just "modprobe ztdummy"
-	   Here's the list of all digium cards and the modules you use with 
+	   Here's the list of all digium cards and the modules you use with
 them:
 		Card      Module
 		-----------------
@@ -960,11 +960,11 @@ them:
 		TE210P    wct2xxp
 		TE205P    wct2xxp
 		TDM2400P  wctdm24xxp
-	- If you have chosen a Sangoma T1/E1 or analog card, you will need to 
+	- If you have chosen a Sangoma T1/E1 or analog card, you will need to
 	  follow their instructions for installation of their driver software
-	  LATEST Sangoma Wanpipe drivers: 
+	  LATEST Sangoma Wanpipe drivers:
 	  ftp://ftp.sangoma.com/linux/current_wanpipe/wanpipe-3.3.9.tgz
-   - now your asterisk installation is built and loaded and it's time to 
+   - now your asterisk installation is built and loaded and it's time to
 configure it.
 
 NOTES: If you want to install zttool diagnostics you may need the newt package installed:
@@ -977,7 +977,7 @@ NOTES: If you want to install zttool diagnostics you may need the newt package i
 	- make install
 	- cd ../
 	- ln -s /usr/lib/libnewt.so.0.51.6 /usr/lib/libnewt.so.0.51
-then go to your zaptel folder and do 'make zttool' 
+then go to your zaptel folder and do 'make zttool'
 
 Digium/Clone X100P EXAMPLE:
 Here is an example of a configuration where an X100P single FXO card is used for
@@ -1002,7 +1002,7 @@ NOTE: you can get an X100P through ebay for $10-$30 that will work with Asterisk
 	modprobe zaptel
 	modprobe wcfxo
 
-If you will be doing native music-on-hold for your inbound calls, you will need 
+If you will be doing native music-on-hold for your inbound calls, you will need
 musiconhold audio files to be converted to native formats like GSM, ULAW and ALAW:
 
 	cd /var/lib/asterisk/mohmp3/
@@ -1037,32 +1037,32 @@ musiconhold audio files to be converted to native formats like GSM, ULAW and ALA
 
 PHASE 5: CONFIGURING ASTERISK AND YOUR SIP PHONES
 
-As of the 2.0.5 release it is possible to configure SIP and IAX phones and 
+As of the 2.0.5 release it is possible to configure SIP and IAX phones and
 carrier trunks without editing conf files, just by using the web administration
 interface. For more information on this, please read the VICIDIAL Manager
 Manual available at www.eflo.net
 
-In this phase we will configure the telco lines, the SIP phones, the extensions, 
-meetme(conference calling) rooms, dialplan extensions and the voicemail boxes. 
-After this phase your Asterisk system should be able to place and receive calls 
-to and from the SIP phones you have installed over the telco lines you've hooked 
-up. There are several things that we will not be showing how to do because 
-Asterisk is extremely flexible and has so many different ways of being 
-configured, that if we were to try to explain them all in this document it would 
-be 99% asterisk configuration and be 20,000 lines long, and that would 
-just be a barrier for those who just want to get it set up. The "Wiki" and the 
-mailing list are two very good resources for finding answers if you run into 
+In this phase we will configure the telco lines, the SIP phones, the extensions,
+meetme(conference calling) rooms, dialplan extensions and the voicemail boxes.
+After this phase your Asterisk system should be able to place and receive calls
+to and from the SIP phones you have installed over the telco lines you've hooked
+up. There are several things that we will not be showing how to do because
+Asterisk is extremely flexible and has so many different ways of being
+configured, that if we were to try to explain them all in this document it would
+be 99% asterisk configuration and be 20,000 lines long, and that would
+just be a barrier for those who just want to get it set up. The "Wiki" and the
+mailing list are two very good resources for finding answers if you run into
 problems configuring your system, here are links to them:
 The Wiki:  http://www.voip-info.org/tiki-index.php
 The Lists: http://www.asterisk.org/index.php?menu=support
 
-I need to note that it is possible to install Asterisk and use astGUIclient 
+I need to note that it is possible to install Asterisk and use astGUIclient
 applications with no Zaptel(Digium/Sangoma/Rhino/etc...) cards installed, but it
 is not recommended even if you are not going to use Zap trunks for your inbound-
 outbound calls with no real Zap devices, you would need to use a dummy timer
-(zt_dummy) based on you USB ports to get meetme conference rooms working 
-properly and you may have other issues along the way. We would at least 
-recommend getting a X100 or X101 board from Digium or a clone manufacturer so 
+(zt_dummy) based on you USB ports to get meetme conference rooms working
+properly and you may have other issues along the way. We would at least
+recommend getting a X100 or X101 board from Digium or a clone manufacturer so
 there is a dedicated hardware timer in place on your system.
 
 
@@ -1071,11 +1071,11 @@ SUBPHASE 5.0: setting up your Asterisk configuration files
 
 1. edit zaptel.conf
 	- vi /etc/zaptel.conf
-	   There are many examples inside of the zaptel.conf file that is 
-generated with the "make samples" command that we issued at the end 
-of the last phase. There are many different parameters for the 
-different telco line possibilities, because we are installing a T1 
-that is NON-PRI-isdn B8ZS ExtendedSuperframe(ESF) E&M Wink start and 24 
+	   There are many examples inside of the zaptel.conf file that is
+generated with the "make samples" command that we issued at the end
+of the last phase. There are many different parameters for the
+different telco line possibilities, because we are installing a T1
+that is NON-PRI-isdn B8ZS ExtendedSuperframe(ESF) E&M Wink start and 24
 channels, we will use the following settings for zaptel.conf:
 	span=1,1,0,esf,b8zs
 	e&m=1-24
@@ -1088,9 +1088,9 @@ channels, we will use the following settings for zaptel.conf:
 
 2. edit zapata.conf
 	- vi /etc/asterisk/zapata.conf
-	   There are also many examples of how to configure zapata.conf online. 
-we decided to separate our T1 into two line groups to keep some 
-incoming calls from being busy if we filled up all of our lines. 
+	   There are also many examples of how to configure zapata.conf online.
+we decided to separate our T1 into two line groups to keep some
+incoming calls from being busy if we filled up all of our lines.
 Here's what we used(you can set echocancel=no if you are using PRIs):
 	[channels]
 	group=1
@@ -1133,16 +1133,16 @@ Here's what we used(you can set echocancel=no if you are using PRIs):
 3. edit sip.conf
 
 !!!!! IMPORTANT NOTE !!!!!
-As of the 2.0.5 release it is possible to configure SIP and IAX phones and 
+As of the 2.0.5 release it is possible to configure SIP and IAX phones and
 carrier trunks without editing conf files, just by using the web administration
 interface. For more information on this, please read the VICIDIAL Manager
 Manual available at www.eflo.net
 
 	- vi /etc/asterisk/sip.conf
-	   here is where we will edit the configuration of our SIP compatible 
-phone devices. As stated at the beginning, we will be setting up a 
-Grandstream Budgetone 102 phone and a Sipura/Linksys SPA-2000 adapter with 
-two analog phones connected(each with it's own extension). Here are 
+	   here is where we will edit the configuration of our SIP compatible
+phone devices. As stated at the beginning, we will be setting up a
+Grandstream Budgetone 102 phone and a Sipura/Linksys SPA-2000 adapter with
+two analog phones connected(each with it's own extension). Here are
 the settings we used to set each of them up:
 	[general]
 	port = 5060
@@ -1201,8 +1201,8 @@ the settings we used to set each of them up:
 	mailbox=2001
 4.  edit meetme.conf
 	- vi /etc/asterisk/meetme.conf
-	   This is known as the conference calling configuration file. We are 
-just going to add two conferences(one without a pin number and one 
+	   This is known as the conference calling configuration file. We are
+just going to add two conferences(one without a pin number and one
 with a pin number required for entry):
 	[rooms]
 	conf => 8600
@@ -1210,20 +1210,20 @@ with a pin number required for entry):
 5.  edit iax.conf
 
 !!!!! IMPORTANT NOTE !!!!!
-As of the 2.0.5 release it is possible to configure SIP and IAX phones and 
+As of the 2.0.5 release it is possible to configure SIP and IAX phones and
 carrier trunks without editing conf files, just by using the web administration
 interface. For more information on this, please read the VICIDIAL Manager
 Manual available at www.eflo.net
 
 	- vi /etc/asterisk/iax.conf
 	   This is the IAX configuration file, below is a very simple config for
-	   having two Asterisk servers connect natively to each other, if you 
-	   will be using this, make sure to add the optional lines included 
-	   after the extensions.conf section. Also, there is an account setup 
+	   having two Asterisk servers connect natively to each other, if you
+	   will be using this, make sure to add the optional lines included
+	   after the extensions.conf section. Also, there is an account setup
 	   here for a firefly IAX softphone to use.(details on that later)
-	   * IMPORTANT NOTE * if you plan to use IAX2 trunks for VICIDIAL 
-	   outbound dialing you must register with the remote IAX2 server 
-	   through the iax.conf file, not just in the Dial or TRUNK line 
+	   * IMPORTANT NOTE * if you plan to use IAX2 trunks for VICIDIAL
+	   outbound dialing you must register with the remote IAX2 server
+	   through the iax.conf file, not just in the Dial or TRUNK line
 	   of the extensions.conf dialplan.
 	[general]
 	bindport=4569
@@ -1267,7 +1267,7 @@ This works for most customers.  Folks that want inbound then also sign up for
 DIDs, each of which has its own IAX username.  (Which is the 10 digit DID).
 Each username has its own password which is managed through their web interface.
 
-NOTE: If you will be using the G729 codec through binfone there is now a 
+NOTE: If you will be using the G729 codec through binfone there is now a
 dedicated G729 gateway that only handles G729 calls. Please use this address to
 register to if you plan on using G729 as your codec: iax-g729.binfone.com
 
@@ -1312,12 +1312,12 @@ register to if you plan on using G729 as your codec: iax-g729.binfone.com
 
 !!!!! IMPORTANT NOTE !!!!!
 As of release 2.2.0 it is now possible to configure voicemail and musiconhold
-without editing conf files, just by using the web administration interface. 
+without editing conf files, just by using the web administration interface.
 For more information on this, please read the VICIDIAL Manager Manual available
 at www.eflo.net
 
 	- vi /etc/asterisk/voicemail.conf
-	   This is where we set up the voicemail boxes for the extensions that 
+	   This is where we set up the voicemail boxes for the extensions that
 we have set up:
 	[general]
 	format=wav49|gsm|wav
@@ -1338,9 +1338,9 @@ we have set up:
 	3001 => 3001,Firefly Mailbox 1
 7.  edit manager.conf
 	- vi /etc/asterisk/manager.conf
-	   This is where we set up remote logins to the asterisk manager 
-interface, to allow sending of Action commands from remote 
-connections to the Asterisk server, this will be important for the 
+	   This is where we set up remote logins to the asterisk manager
+interface, to allow sending of Action commands from remote
+connections to the Asterisk server, this will be important for the
 astguiclient applications so let's set that up now:
 	[general]
 	enabled = yes
@@ -1365,10 +1365,10 @@ astguiclient applications so let's set that up now:
 
 8.  edit logger.conf
 	- vi /etc/asterisk/logger.conf
-	   This file determines the messages that are logged to the console and 
-the /var/log/asterisk/messages file. We usually turn on full logging 
-to the messages file to more easily diagnose any problems that we may 
-run into, the problem with this is that is does produce very large 
+	   This file determines the messages that are logged to the console and
+the /var/log/asterisk/messages file. We usually turn on full logging
+to the messages file to more easily diagnose any problems that we may
+run into, the problem with this is that is does produce very large
 files, so be warned:
 	[logfiles]
 	console => notice,warning,error
@@ -1378,7 +1378,7 @@ files, so be warned:
 
 !!!!! IMPORTANT NOTE !!!!!
 You should be using the sample extensions.conf that is included with the
-release of VICIDIAL that you installed. There is also an auto-generated 
+release of VICIDIAL that you installed. There is also an auto-generated
 extensions-vicidial.conf file that contains dynamic dialplan entries.
 
 10. edit dnsmgr.conf:   # It is very helpful to enable dnsmgr
@@ -1387,18 +1387,18 @@ extensions-vicidial.conf file that contains dynamic dialplan entries.
 	refreshinterval=300	; refresh managed DNS lookups every <n> seconds
 
 
-11.  Now that you have configured Asterisk, it is time to try to start it for the 
+11.  Now that you have configured Asterisk, it is time to try to start it for the
 first time.
-   - First make sure that your T1 line(or other telco line) is connected to the 
-digium card. 
+   - First make sure that your T1 line(or other telco line) is connected to the
+digium card.
    - next type the following at the command prompt: "ztcfg -vvvvvv"
 	- you should see a confirmation that the Zaptel device has loaded
    - now you can launch asterisk with the following command:
 	"asterisk -vvvvvvvvvvvvgc"
-	- you should see a lot of messages scroll by and at the end you should 
+	- you should see a lot of messages scroll by and at the end you should
 be given a CLI> prompt if everything loaded OK. To get out of Asterisk you can
-type "stop now". Now that you are sure it is running you can either run it in a 
-separate terminal window or use the start_asterisk_boot.pl that you will 
+type "stop now". Now that you are sure it is running you can either run it in a
+separate terminal window or use the start_asterisk_boot.pl that you will
 install with astguiclient to start Asterisk:
 	/usr/share/astguiclient/start_asterisk_boot.pl
 
@@ -1406,16 +1406,16 @@ install with astguiclient to start Asterisk:
 
 SUBPHASE 5.1: setting up your SIP phones
 
-You will need to follow the instructions for the phones that you are using with 
-your system, but here's the way to set up a Grandstream 102 and a Linksys/Sipura 
+You will need to follow the instructions for the phones that you are using with
+your system, but here's the way to set up a Grandstream 102 and a Linksys/Sipura
 SPA-2000
 
 1.  Here are basic instructions for setting up a Grandstream BT 102:
-   - On the phone plug it in to power only at first and follow these 
+   - On the phone plug it in to power only at first and follow these
 instructions:
 	- wait for the phone to boot up and press the MENU button
-	- go through the menu screens with the menu key and the up/down arrow 
-keys to move from setting to setting. We are setting the following 
+	- go through the menu screens with the menu key and the up/down arrow
+keys to move from setting to setting. We are setting the following
 values:
 	   - DHCP OFF
 	   - IP Addr: 010.010.010.016
@@ -1428,7 +1428,7 @@ values:
 	- you can also plug the network cable into the LAN port on the phone
 	- at this time you can go to your workstation and open a new web browser
 	- go to http://10.10.10.16/ the password is "admin"
-	- here is where you will enter in the configuration details for the 
+	- here is where you will enter in the configuration details for the
 phone to register with the Asterisk server
 	   - SIP server: 10.10.10.15
 	   - SIP user ID: gs102
@@ -1439,11 +1439,11 @@ phone to register with the Asterisk server
 	   - Send DTMF: in-audio
 	   - NTP Server: tick.mit.edu
 	- then click update, click review changes, and click reboot
-   - your phone should now be able to register with the Asterisk server. If you 
-still have your console screen up you should see a registration message 
+   - your phone should now be able to register with the Asterisk server. If you
+still have your console screen up you should see a registration message
 appear telling you that gs102 has registered.
 
-2. Here are the basic instructions for setting up a Sipura SPA-2000 analog 
+2. Here are the basic instructions for setting up a Sipura SPA-2000 analog
 adapter with 2 lines.
    - Plug power and two analog phones into the adapter.
    - pick up the phone plugged into line1 and press **** to enter admin menu
@@ -1451,7 +1451,7 @@ adapter with 2 lines.
    - press 111# then 10*10*10*17# to change the IP address
    - press 121# then 255*255*0*0# to change the subnet mask
    - press 131# then 10*10*10*1# to change the default gateway
-   - hang up the phone, unplug the power, plug in the network cable and plug in 
+   - hang up the phone, unplug the power, plug in the network cable and plug in
 the power cable
    - now you can go the the admin website: http://10.10.10.17/admin/advanced
    - you will need to make these setting changes:
@@ -1463,12 +1463,12 @@ the power cable
 	- authID: spa2000
 	- change the dialplan to the following:
 (*xx|xxx|xxxx|xxxxx|xxxxxx|xxxxxxx|xxxxxxxx|xxxxxxxxxxx|xxxxxxxxxxxx|xxxxxxxxxxxxxxx|xxxxxxxxxxxxxxxx.)
-	- then click the "submit all changes" button at the bottom of the page 
+	- then click the "submit all changes" button at the bottom of the page
 and your first phone line should work now
-   - to register the second line, simply click on the "Line 2" tab and go 
+   - to register the second line, simply click on the "Line 2" tab and go
 through the above steps except use spa2001 instead of spa2000 for the use IDs
 
-3. Now both of your phone devices are set up and you can try making phone calls 
+3. Now both of your phone devices are set up and you can try making phone calls
 between the three phones
 
 
@@ -1476,8 +1476,8 @@ between the three phones
 SUBPHASE 5.2: setting up an IAX2 phone
 
 This is optinal and we won't go into too much detail about this, but currently
-there are several IAX hard and softphones on the market and more are coming 
-every month. Follow the instructions with the IAX phone you have chosen and 
+there are several IAX hard and softphones on the market and more are coming
+every month. Follow the instructions with the IAX phone you have chosen and
 follow the steps below:
 
 1. Add an entry into your iax.conf file like below if you have not already
@@ -1516,8 +1516,8 @@ follow the steps below:
 SUBPHASE 5.3: setting up a Zap phone
 
 This is optinal and we won't go into too much detail about this either, there
-are a few ways to use Zap devices as phones on your Asterisk system: Zaptel 
-phone cards, Channel Banks going through Zaptel T1 card, outside line call 
+are a few ways to use Zap devices as phones on your Asterisk system: Zaptel
+phone cards, Channel Banks going through Zaptel T1 card, outside line call
 coming in going through Zaptel line card. There isn't much to do but set your
 Zaptel config files up and put entries into your extensions.conf file:
 
@@ -1531,8 +1531,8 @@ Zaptel config files up and put entries into your extensions.conf file:
 
 PHASE 6: INSTALLING ASTGUICLIENT AND VICIDIAL
 
-Now that Asterisk is installed and running we can add the astGUIclient and 
-VICIDIAL components to the system. 
+Now that Asterisk is installed and running we can add the astGUIclient and
+VICIDIAL components to the system.
 
 
 
@@ -1540,7 +1540,7 @@ SUBPHASE 6.0: putting the files in place
 
 There are two methods for downloading astGUIclient/VICIDIAL, a release and SVN
 
-1. Go to http://astguiclient.sf.net/ and download the latest astguiclient 
+1. Go to http://astguiclient.sf.net/ and download the latest astguiclient
 package(as of this writing it is 2.2.0)
    - for 2.0.X release:
 	- mkdir /usr/src/astguiclient
@@ -1563,9 +1563,9 @@ package(as of this writing it is 2.2.0)
 	    select to do interactive setup and customize to your server
 	    NOTE: if this is a fresh install, it is strongly suggested that you
 	    select 'Y' to copy the sample conf files.
-   - there is one more file you need that's not included with the download 
-package, it's the conf.gsm file(this is the half-hour music file that we use 
-to put people on hold). I have a free classical music file that is available 
+   - there is one more file you need that's not included with the download
+package, it's the conf.gsm file(this is the half-hour music file that we use
+to put people on hold). I have a free classical music file that is available
 free for download at the following two sites:
 	http://download.vicidial.com/sounds/conf.gsm
 	http://astguiclient.sf.net/conf.gsm
@@ -1584,20 +1584,20 @@ free for download at the following two sites:
 
 SUBPHASE 6.1: creating the MySQL "asterisk" database
 
-we will create the database and add a few initial records so that we can 
-use the administrative web interface. Since this is a new install it is easier 
+we will create the database and add a few initial records so that we can
+use the administrative web interface. Since this is a new install it is easier
 to use our new mysql script file to add the tables to the database:
 
-1.  at the command prompt type go to the mysql client: 
+1.  at the command prompt type go to the mysql client:
 /usr/local/mysql/bin/mysql
 2.  type the following into the mysql client prompt:
    (make sure you put your IP address in place of "10.10.10.15" in the queries below)
 ######------ BEGIN Mysql data entry(you can copy and paste this into terminal) #
 create database asterisk;
 
-NOTE: if you will be using lead files with a language that does not use the 
-standard latin character set then you will want to use UTF8 for your default 
-characterset in the MySQL database. This requires at least MySQL 5.0.X and you 
+NOTE: if you will be using lead files with a language that does not use the
+standard latin character set then you will want to use UTF8 for your default
+characterset in the MySQL database. This requires at least MySQL 5.0.X and you
 can use the following query to create the database:
 	CREATE DATABASE `asterisk` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 
@@ -1613,7 +1613,7 @@ GRANT ALTER,CREATE on asterisk.* TO custom@localhost IDENTIFIED BY 'custom1234';
 
 flush privileges;
 
-# To make sure that new processes can connect to the Database under load we should 
+# To make sure that new processes can connect to the Database under load we should
 # increase the global connect_timeout
 
 SET GLOBAL connect_timeout=60;
@@ -1658,26 +1658,26 @@ quit
 
 ######------ END Mysql data entry ------######
 
-NOTE: If you will be using channelbanks for agent phones you can use the 
+NOTE: If you will be using channelbanks for agent phones you can use the
 /extras/single_channelbank_phones.sql file to help enter the phones table entries.
 
-NOTE: If you will be using IAX or SIP phones for agent phones you can use the 
+NOTE: If you will be using IAX or SIP phones for agent phones you can use the
 /extras/sip-iax_phones.sql file to help enter the phones table entries.
 
-NOTE: if you are not installing using default user/pass or have MySQL on another 
-server, you will need to edit either the /etc/astguiclient.conf file or the 
-dbconnect.php files in the astguiclient, vicidial and agc directories of your 
+NOTE: if you are not installing using default user/pass or have MySQL on another
+server, you will need to edit either the /etc/astguiclient.conf file or the
+dbconnect.php files in the astguiclient, vicidial and agc directories of your
 webroot.
 
 3. Enter the vicidial administration page:
 http://10.10.10.15/vicidial/admin.php
 NOTE: if you click on the Logout button you must leave the user/pass empty and click OK
-   - Here you will enter the login and password that you inserted into the mysql 
+   - Here you will enter the login and password that you inserted into the mysql
 database in the vicidial_users table (subphase 6.1 [6666/1234])
-   - Now that you are logged into the astGUIclient administration system we can 
+   - Now that you are logged into the astGUIclient administration system we can
 add a new phone entry for each of the sipura lines we created.
 	- click on the "Admin" link at the top, then the "ADD PHONE" link below
-that and enter in the proper information for each of the new phone lines. 
+that and enter in the proper information for each of the new phone lines.
 Here's what we entered for spa2000:
 	   - Phone extension: spa2000
 	   - Dialplan Number: 2000
@@ -1689,30 +1689,30 @@ Here's what we entered for spa2000:
 	   - Password: test
 	   - Conf File Secret: test
 	   - Status: ACTIVE
-	   - Active Account: Y	
+	   - Active Account: Y
 	   - Phone Type: Sipura SPA-2000 line 1
 	   - Full Name: Sipura line 1 test
 	   - Company: TEST
 	   - Picture:
 	- for the next phone simply replace 2000 with 2001 in the above example
-   - now your phones are all all set up in the astguiclient system and you can 
-use this website to add new phones to be used with astguiclient and monitor 
+   - now your phones are all all set up in the astguiclient system and you can
+use this website to add new phones to be used with astguiclient and monitor
 the number of calls people are making.
-	- now your database is set up for the astguiclient conferences which 
-	will allow you to have over 6 remote parties that you called from your 
+	- now your database is set up for the astguiclient conferences which
+	will allow you to have over 6 remote parties that you called from your
 	GUI client application in one conference.
 	- click on the "LIST ALL SERVERS" link at the top then click on the
-	server to modify. Verify that the GMT time zone and all other fields 
+	server to modify. Verify that the GMT time zone and all other fields
 	are what you want them to be. There is a setting(Max VICIDIAL Trunks)
-	that can be modified to limit the number of VICIDIAL outbound trunks 
+	that can be modified to limit the number of VICIDIAL outbound trunks
 	that will be allowed to use on this server.
 
-4. **OPTIONAL** For IAX clients you will need to use full phone name as the 
-extension on the admin page entry: "firefly01@firefly01" for our IAX phone example 
+4. **OPTIONAL** For IAX clients you will need to use full phone name as the
+extension on the admin page entry: "firefly01@firefly01" for our IAX phone example
 previously. And do not forget to set the protocol on this page to IAX2
 
 5. **OPTIONAL** For Zap clients you will need to use full Zap Channel name as the
-extension on the admin page entry: "1-1" for our Zap phone example 
+extension on the admin page entry: "1-1" for our Zap phone example
 previously. And do not forget to set the protocol on this page to Zap
 
 
@@ -1720,23 +1720,23 @@ previously. And do not forget to set the protocol on this page to Zap
 
 SUBPHASE 6.2: making additions to your Asterisk conf files
 
-Now that the database is set up and our phones have entries in the system we can 
-make the additions to the running Asterisk system that will allow astguiclient 
+Now that the database is set up and our phones have entries in the system we can
+make the additions to the running Asterisk system that will allow astguiclient
 to work with it.
 
 !!!!! IMPORTANT NOTE !!!!!
-Again, if you have selected to use the sample conf files during installation 
-then you do not have to add any of these lines to your conf files, they should 
-already be included. There is also an auto-generated 
+Again, if you have selected to use the sample conf files during installation
+then you do not have to add any of these lines to your conf files, they should
+already be included. There is also an auto-generated
 extensions-vicidial.conf file that contains dynamic dialplan entries.
 
 
 1. Add the call_log entries to all incoming/outgoing extensions entries:
-   - here is how our sample dialplan changes for adding call_log entries(only 
+   - here is how our sample dialplan changes for adding call_log entries(only
 effected extension groups are show):
 ######------ START extensions.conf changes for call_log ------######
 
-##### This 'h' exten is VERY important for VICIDIAL usage, 
+##### This 'h' exten is VERY important for VICIDIAL usage,
 ##### you will have problems if it is not in your dialplan!
 exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})
 
@@ -1758,13 +1758,13 @@ exten => _**3429,1,Ringing
 exten => _**3429,2,AGI(agi://127.0.0.1:4577/call_log)
 exten => _**3429,3,Answer
 exten => _**3429,4,Dial,sip/spa2000&sip/spa2001,30,to
-exten => _**3429,5,Voicemail,u2000           
+exten => _**3429,5,Voicemail,u2000
 ; Extension 3429 - with ANI [callerID]
 exten => _*NXXNXXXXXX*3429,1,Ringing
 exten => _*NXXNXXXXXX*3429,2,AGI(agi://127.0.0.1:4577/call_log)
 exten => _*NXXNXXXXXX*3429,3,Answer
 exten => _*NXXNXXXXXX*3429,4,Dial,sip/spa2000&sip/spa2001,30,to
-exten => _*NXXNXXXXXX*3429,5,Voicemail,u2000           
+exten => _*NXXNXXXXXX*3429,5,Voicemail,u2000
 
 ; Extension 7275551212 - Inbound local number from PRI with 10 digit delivery
 ;    SEE extensions.conf.sample-1.4 for changes needed for use with Asterisk 1.4
@@ -1775,7 +1775,7 @@ exten => 7275551212,4,Answer
 exten => 7275551212,5,Dial,sip/spa2000&sip/spa2001,30,to
 exten => 7275551212,6,Voicemail,u2000
 
-; This 'o' Dial flag is VERY important for VICIDIAL on outbound calls, 
+; This 'o' Dial flag is VERY important for VICIDIAL on outbound calls,
 
 ; dial a long distance outbound number to the UK
 exten => _901144XXXXXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
@@ -1787,7 +1787,7 @@ exten => _901161XXXXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 exten => _901161XXXXXXXXX,2,Dial(${TRUNKX}/${EXTEN:1},,tTo)
 exten => _901161XXXXXXXXX,3,Hangup
 
-; Extensions for performance testing 
+; Extensions for performance testing
 exten => _91999NXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 exten => _91999NXXXXXX,2,Dial(${TRUNKloop}/${EXTEN:2},,tTo)
 exten => _91999NXXXXXX,3,Hangup
@@ -1814,7 +1814,7 @@ exten => _9727NXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 exten => _9727NXXXXXX,2,Dial(${TRUNK}/1${EXTEN:1},,tTo)
 exten => _9727NXXXXXX,3,Hangup
 
-; This 'o' Dial flag is VERY important for VICIDIAL on outbound calls, 
+; This 'o' Dial flag is VERY important for VICIDIAL on outbound calls,
 ; dial a long distance outbound number
 exten => _91NXXNXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 exten => _91NXXNXXXXXX,2,Dial(${TRUNKX}/${EXTEN:1},,tTo)
@@ -1828,11 +1828,11 @@ exten => _9NXXXXXX,3,Hangup
 ######------ END extensions.conf changes ------######
 
 
-2. Add the call_inbound entries to all incoming extensions entries that you want 
+2. Add the call_inbound entries to all incoming extensions entries that you want
 CallerID popups on(ONLY WORKS IN astguiclient.php APPLICATION):
 (Using the DID configuration is the preferred method of call routing in ViciDial)
 
-   - here is how our sample dialplan changes for adding call_inbound 
+   - here is how our sample dialplan changes for adding call_inbound
 entries(only effected extension groups are show):
 ######------ START extensions.conf changes for call_inbound ------######
 ; parameters for call_inbound.agi (7 fields separated by five dashes "-----"):
@@ -1862,23 +1862,23 @@ exten => _*NXXNXXXXXX*3429,5,Voicemail,u2000
 
 
 3. Add the ZapBarge entries for all zap lines:
-   - here is how our sample dialplan changes for adding zapbarge line-specific 
+   - here is how our sample dialplan changes for adding zapbarge line-specific
 entries(this is a pure addition, nothing is being modified):
 
 ; ZapBarge direct channel extensions
 exten => _86120XX,1,ZapBarge(${EXTEN:5})
 
 
-4. Add the meetme entries for astguiclient and VICIDIAL conferences to 
+4. Add the meetme entries for astguiclient and VICIDIAL conferences to
 meetme.conf:
 
 !!!!! IMPORTANT NOTE !!!!!
-Again, if you have selected to use the sample conf files during installation 
-then you do not have to add any of these lines to your conf files, they should 
-already be included. There is also an auto-generated 
+Again, if you have selected to use the sample conf files during installation
+then you do not have to add any of these lines to your conf files, they should
+already be included. There is also an auto-generated
 meetme-vicidial.conf file that contains dynamic conference entries.
 
-   - here is how our sample meetme.conf file changes for adding conference 
+   - here is how our sample meetme.conf file changes for adding conference
 entries (this is a pure addition, nothing is being modified):
 ######------ START meetme.conf additions for conferences ------######
 conf => 8600001
@@ -2085,7 +2085,7 @@ conf => 8600200
 
 
 5. Add the conference entries for astguiclient conferences:
-   - here is how our sample dialplan changes for adding conference entries (this 
+   - here is how our sample dialplan changes for adding conference entries (this
 is a pure addition, nothing is being modified):
 
 ; astGUIclient conferences
@@ -2093,7 +2093,7 @@ exten => _86000[0-4]X,1,Meetme,${EXTEN}|q
 
 
 6. Add the conference entries for VICIDIAL conferences:
-   - here is how our sample dialplan changes for adding VICIDIAL conference 
+   - here is how our sample dialplan changes for adding VICIDIAL conference
 entries(this is already in the sample extensions.conf file):
 NOTE: see below these entries for app_conference instructions is used
 ######------ START extensions.conf changes for VD conf ------######
@@ -2136,7 +2136,7 @@ NOTE: If you want to do DTMF passthru with app_conference bee sure to add the
 
 
 7. Add the more entries for astGUIclient specific uses:
-   - here are some more dialplan additions needed to use astGUIclient(this is a 
+   - here are some more dialplan additions needed to use astGUIclient(this is a
 pure addition, nothing is being modified):
 (this is already in the sample extensions.conf file)
 ######------ START extensions.conf other additions ------######
@@ -2146,11 +2146,11 @@ pure addition, nothing is being modified):
 exten => 8301,1,Answer
 exten => 8301,2,AGI(park_CID.agi)
 exten => 8301,3,Playback(park)
-exten => 8301,4,Hangup 
+exten => 8301,4,Hangup
 exten => 8303,1,Answer
 exten => 8303,2,AGI(park_CID.agi)
 exten => 8303,3,Playback(conf)
-exten => 8303,4,Hangup 
+exten => 8303,4,Hangup
 
 ; park channel for client GUI conferencing, hangup after 30 minutes
 ;    create a GSM formatted audio file named "conf.gsm" that is 30 minutes long
@@ -2263,7 +2263,7 @@ exten => 8368,5,Hangup
 
 ; VICIDIAL_auto_dialer transfer script AMD with Load Balanced:
 exten => 8369,1,AGI(agi://127.0.0.1:4577/call_log)
-exten => 8369,2,AMD(2000|2000|1000|5000|120|50|4|256) 
+exten => 8369,2,AMD(2000|2000|1000|5000|120|50|4|256)
 exten => 8369,3,AGI(VD_amd.agi,${EXTEN})
 exten => 8369,4,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
 exten => 8369,5,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
@@ -2279,7 +2279,7 @@ exten => 8372,5,Hangup
 
 ; VICIDIAL SURVEY transfer script AMD with Load Balanced:
 exten => 8373,1,AGI(agi://127.0.0.1:4577/call_log)
-exten => 8373,2,AMD(2000|2000|1000|5000|120|50|4|256) 
+exten => 8373,2,AMD(2000|2000|1000|5000|120|50|4|256)
 exten => 8373,3,AGI(VD_amd.agi,${EXTEN})
 exten => 8373,4,AGI(agi-VDAD_ALL_outbound.agi,SURVEYCAMP-----LB)
 exten => 8373,5,AGI(agi-VDAD_ALL_outbound.agi,SURVEYCAMP-----LB)
@@ -2326,7 +2326,7 @@ exten => 8373,6,Hangup
 ;; VICIDIAL_auto_dialer transfer script AMD with Load Balanced:
 ;exten => 8369,1,Playback(sip-silence)
 ;exten => 8369,2,AGI(agi://127.0.0.1:4577/call_log)
-;exten => 8369,3,AMD(2000|2000|1000|5000|120|50|4|256) 
+;exten => 8369,3,AMD(2000|2000|1000|5000|120|50|4|256)
 ;exten => 8369,4,AGI(VD_amd.agi,${EXTEN})
 ;exten => 8369,5,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
 ;exten => 8369,6,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
@@ -2342,7 +2342,7 @@ exten => 8373,6,Hangup
 ;; VICIDIAL SURVEY transfer script AMD with Load Balanced:
 ;exten => 8373,1,Playback(sip-silence)
 ;exten => 8373,2,AGI(agi://127.0.0.1:4577/call_log)
-;exten => 8373,3,AMD(2000|2000|1000|5000|120|50|4|256) 
+;exten => 8373,3,AMD(2000|2000|1000|5000|120|50|4|256)
 ;exten => 8373,4,AGI(VD_amd.agi,${EXTEN})
 ;exten => 8373,5,AGI(agi-VDAD_ALL_outbound.agi,SURVEYCAMP-----LB)
 ;exten => 8373,6,AGI(agi-VDAD_ALL_outbound.agi,SURVEYCAMP-----LB)
@@ -2350,10 +2350,10 @@ exten => 8373,6,Hangup
 
 
 
-SUBPHASE 6.3: adding entries to your MySQL "asterisk" database for vicidial 
+SUBPHASE 6.3: adding entries to your MySQL "asterisk" database for vicidial
 applications
 
-We need to add a few initial values to the vicidial tables in the "asterisk" 
+We need to add a few initial values to the vicidial tables in the "asterisk"
 database in order to start setting up the vicidial dialer system for use.
 
 #### REMOVED, not necessary if you run the first_server_install.sql file above
@@ -2510,9 +2510,9 @@ SUBPHASE 6.5: setting up astguiclient scripts for continuous running
 
 
 
-   - once your system starts up you can attach to the screen running asterisk by 
-typing "screen -r <screen>" find which screen by typing "screen -r" and 
-looking for the lowest screen number. Then to detach again from the screen 
+   - once your system starts up you can attach to the screen running asterisk by
+typing "screen -r <screen>" find which screen by typing "screen -r" and
+looking for the lowest screen number. Then to detach again from the screen
 while you are in it type 'Ctrl+a' then 'd'
    - you are done
 
@@ -2525,37 +2525,37 @@ NOTES:
 
 
 
-SUBPHASE 6.6: adding test leads to the VICIDIAL database and configuring a 
+SUBPHASE 6.6: adding test leads to the VICIDIAL database and configuring a
 VICIDIAL campaign and users
 
-First we will add a few test leads to the vicidial_list table so that we can 
-test our system. There is also an application included with the distribution 
+First we will add a few test leads to the vicidial_list table so that we can
+test our system. There is also an application included with the distribution
 that will accept a delimited file of leads placed in the /usr/share/astguiclient/VICIDIAL/LEADS_IN/
 directory and load it into the database automatically(VICIDIAL_IN_new_leads_file.pl
 [a sample lead file in the proper format is included with this release:
  - test_VICIDIAL_lead_file.txt])
 If you want to use the lead import script I suggest looking at the code to make
-sure it is entering what you want it to. We are not going to go over that 
+sure it is entering what you want it to. We are not going to go over that
 particular script in this document.
 
 Also, there is a web-based lead loader that was made available as of the 1.1.1
-release and is accessible from the VICIDIAL admin.php web page(click on the 
-"LOAD NEW LEADS" link at the top of the admin page). To get to this page you 
-must have permissions in the vicidial_user table(Load Leads set to 1) . 
-Instructions on it's use are included on the page through the help question 
+release and is accessible from the VICIDIAL admin.php web page(click on the
+"LOAD NEW LEADS" link at the top of the admin page). To get to this page you
+must have permissions in the vicidial_user table(Load Leads set to 1) .
+Instructions on it's use are included on the page through the help question
 mark link.
 NOTE: in PHP you must have "fileuploads" enabled for this page to work.
 NOTE: it is important to have your proper country code in the phone_code field of your leads so that the GMT offset encodding will properly code the time zones for your leads. For the USA/Canada/Caribbean this would be 1. For the UK this is 44 and Mexico is 52 and so on.
 
-Second we need to add the disposition statuses into the system, all of these 
+Second we need to add the disposition statuses into the system, all of these
 queries are below:
-(Note: you may want to replace 7275551212 with a real number to test in these 
+(Note: you may want to replace 7275551212 with a real number to test in these
 records)
 
 #### REMOVED, not necessary if you run the first_server_install.sql file above
 
 
-Now that the sample leads and disposition codes have been entered, we can go 
+Now that the sample leads and disposition codes have been entered, we can go
 into the VICIDIAL administration website and set up our campaigns, lists and users.
 But first let's make sure that they have the right GMT offset:
 	run this on the command line:
@@ -2563,24 +2563,24 @@ But first let's make sure that they have the right GMT offset:
 
 3. Enter the astguiclient administration page:
 http://10.10.10.15/vicidial/admin.php
-(use the username and password created when we entered a record into the 
+(use the username and password created when we entered a record into the
 vicidial_users table in SUBPHASE 6.1, In our case this is 6666 and 1234)
 NOTE: if you click on the Logout button you must leave the user/pass empty and click OK
-   - Now that you are logged into the vicidial administration system we can add 
-new user entries for each of the new users and enter new campaigns and new 
+   - Now that you are logged into the vicidial administration system we can add
+new user entries for each of the new users and enter new campaigns and new
 lists.
-	- The first step is to enter your new users, Click on the ADD A NEW USER 
-and fill in the appropriate information for each now user you want to 
+	- The first step is to enter your new users, Click on the ADD A NEW USER
+and fill in the appropriate information for each now user you want to
 add.
-	- Next, you need to create a new campaign, click on the ADD A NEW 
-CAMPAIGN link and fill in what you want the campaign to be called as 
+	- Next, you need to create a new campaign, click on the ADD A NEW
+CAMPAIGN link and fill in what you want the campaign to be called as
 well as a description
-	- Next, you need to define a new list, click on the ADD A NEW LIST link 
-and fill in what you want the list to be called as well as a using the 
-list ID of the leads that we loaded in the previous step "101" and 
+	- Next, you need to define a new list, click on the ADD A NEW LIST link
+and fill in what you want the list to be called as well as a using the
+list ID of the leads that we loaded in the previous step "101" and
 select the new campaign from the pull-down menu that we just created.
 	- Now that you have created your list, make it active by changing active to Y
-	- now modify your campaign ang change the first status to be called to 
+	- now modify your campaign ang change the first status to be called to
 NEW and submit. Now your system is ready to dial.
    - you are done
 
@@ -2589,19 +2589,19 @@ NEW and submit. Now your system is ready to dial.
 SUBPHASE 6.7: VICIDIAL remote agents:
 
 With v1.0 of VICIDIAL we have the ability to use a simple web form to give
-remote agents a way to receive calls to whatever number they happen to be at, 
+remote agents a way to receive calls to whatever number they happen to be at,
 and they can view/edit call details and see a call log all through a web page
 (vdremote.php) or http://10.10.10.15/vicidial/vdremote.php on this installation.
-Remote Agents is only recommended for inbound calls because of the extra time 
+Remote Agents is only recommended for inbound calls because of the extra time
 needed to dial a number out to transfer the call to. To set up remote agents,
-just go to the vicidial admin.php page and ADD NEW REMOTE AGENTS(Make sure the 
-userID start also has a user login so they can get to the vdremote page). You 
+just go to the vicidial admin.php page and ADD NEW REMOTE AGENTS(Make sure the
+userID start also has a user login so they can get to the vdremote page). You
 will see that you can set up a remote agent entry to take multiple lines if you
 wish meaning that, for example, if you need to send all of your calls to another
 location because of a massive snowstorm(and none of your agents showed up at work)
 you just log in that remote agent record with say 10 lines and then all of those
-calls will be directed to the same number you set up for the remote agent. Then 
-again you could just get your agents to log in from home if they have a phone 
+calls will be directed to the same number you set up for the remote agent. Then
+again you could just get your agents to log in from home if they have a phone
 and computer
 
 
@@ -2609,7 +2609,7 @@ and computer
 SUBPHASE 6.8: astGUIclient web-only client:
 
 With 1.1.1 release of astguiclient we have completely rewritten the astGUIclient
-client app in AJAX(PHP/Javascript/XMLHTTPRequest) to enable a full, real-time 
+client app in AJAX(PHP/Javascript/XMLHTTPRequest) to enable a full, real-time
 GUI interface using only a web browser. The browser requirements for this are:
 - Firefox 1.0 or greater    *** RECOMMENDED ***
 - Mozilla 1.7 or greater
@@ -2618,36 +2618,36 @@ GUI interface using only a web browser. The browser requirements for this are:
 - Microsoft Internet Explorer 6.0
 
 This new version also has more flexibility and functionality than the perl/Tk
-version as well as being prettier. We have successfully tested this on many 
+version as well as being prettier. We have successfully tested this on many
 platforms and in remote locations. It functioned wonderfully off-site with one
 of our IAX hardphones and offers a lot of promise for road warriors who need
 a lot of options on their phone usage like conferencing and a detailed call log.
 
-To log into this app you will need a login setup in the vicidial_users table 
-with a user_level of 1 or greater as well as an entry for the phone you are 
+To log into this app you will need a login setup in the vicidial_users table
+with a user_level of 1 or greater as well as an entry for the phone you are
 using in the phones table. You will first get a login prompt for the vicidial
 login then you will have the phone login where you enter the Login and Password
-for that phone entry. From there the app should display and you will see the 
+for that phone entry. From there the app should display and you will see the
 MAIN screen with your phone information, voicemail display and your inbound/
 outbound phone call log.
 
 The example web page you would go to on this installation would be:
 http://10.10.10.15/agc/astguiclient.php
 
-The inbound log and callerID popup is dependant on having a call_inbound.agi 
+The inbound log and callerID popup is dependant on having a call_inbound.agi
 entry in your dialplan before you phone is dialed(see subphase 6.2 step 2)
 
-Another thing to note is that you can have the agc folder(with the .php files 
-in it) copied to multiple web servers, you just need to make sure that the 
+Another thing to note is that you can have the agc folder(with the .php files
+in it) copied to multiple web servers, you just need to make sure that the
 MySQL database connection works (check the settings in the dbconnect.php file
-that is in the agc directory). We have had astguiclient.php running on 3 
-separate web servers for the same DB server and Asterisk server. This is an 
-easy way to allow for auto failover and/or redundancy. Also, this client will 
+that is in the agc directory). We have had astguiclient.php running on 3
+separate web servers for the same DB server and Asterisk server. This is an
+easy way to allow for auto failover and/or redundancy. Also, this client will
 work over SSL connections(https) for encrypted communications with the server.
 
-New in astGUIclient release 1.1.7 is multi-language support. multi-language 
+New in astGUIclient release 1.1.7 is multi-language support. multi-language
 versions of web-clients and admin pages are available in the LANG_www directory
-and can be unzipped into your webroot directory. 
+and can be unzipped into your webroot directory.
 
 
 
@@ -2665,41 +2665,41 @@ The browser requirements for this are:
 - Opera 8.5 or greater
 - Microsoft Internet Explorer 6.0
 
-This version is fully functional and has been tested in our production 
+This version is fully functional and has been tested in our production
 call center with no problems.
 
-To log into this app you will need a login setup in the vicidial_users table 
-with a user_level of 1 or greater as well as an entry for the phone you are 
+To log into this app you will need a login setup in the vicidial_users table
+with a user_level of 1 or greater as well as an entry for the phone you are
 using in the phones table. You will first get a login prompt for the vicidial
 login then you will have the phone login where you enter the Login and Password
-for that phone entry. From there the app should display and you will see the 
+for that phone entry. From there the app should display and you will see the
 VICIDIAL screen with your phone information.
 
 The example web page you would go to on this installation would be:
 http://10.10.10.15/agc/vicidial.php
 
-One more feature that the VICIDIAL web-client offers is the ability to set up 
-an EXTERNAL phone extension in the astguiclient admin section so that you can 
-have agents log in to vicidial.php wherever they have access to a phone with 
+One more feature that the VICIDIAL web-client offers is the ability to set up
+an EXTERNAL phone extension in the astguiclient admin section so that you can
+have agents log in to vicidial.php wherever they have access to a phone with
 an external phone number and a web browser. To do this follow these steps:
 - "ADD PHONE" in the admin.php web page and enter whatever name you want
 - For the dialplan number field put in the full digits that you would dial from
   the Asterisk server to get to that agent's external phone(with 91 if used)
 - For the Protocol select EXTERNAL
 - make sure the agent knows the login and password set for this phone entry.
-Then the agent will go to the vicidial.php page and enter in their phone 
-login/pass, their vicidial user/pass/campaign and their phone should ring in a 
+Then the agent will go to the vicidial.php page and enter in their phone
+login/pass, their vicidial user/pass/campaign and their phone should ring in a
 few seconds, and they are logged in and ready to take calls.
 
-Another thing to note is that you can have the agc folder(with the .php files 
-in it) copied to multiple web servers, you just need to make sure that the 
+Another thing to note is that you can have the agc folder(with the .php files
+in it) copied to multiple web servers, you just need to make sure that the
 MySQL database connection works (check the settings in the dbconnect.php file
-that is in the agc directory). We have had astguiclient.php running on 3 
-separate web servers for the same DB server and Asterisk server. This is an 
-easy way to allow for auto failover and/or redundancy. Also, this client will 
+that is in the agc directory). We have had astguiclient.php running on 3
+separate web servers for the same DB server and Asterisk server. This is an
+easy way to allow for auto failover and/or redundancy. Also, this client will
 work over SSL connections(https) for encrypted communications with the server.
 
-New in astGUIclient release 1.1.7 is multi-language support. multi-language 
+New in astGUIclient release 1.1.7 is multi-language support. multi-language
 versions of web-clients and admin pages are available in the LANG_www directory
 and can be unzipped into your webroot directory.
 
@@ -2709,7 +2709,7 @@ use a bookmark on their desktop, taking one more step out of their login process
 example: http://10.10.10.15/agc/vicidial.php?pl=gs102&pp=test
 
 It is recommended if you are in a call center environment that you would disable
-the "Saved Form Information" option in Firefox settings. This is a checkbox in 
+the "Saved Form Information" option in Firefox settings. This is a checkbox in
 the Privacy settings under the Options menu.
 
 
@@ -2717,7 +2717,7 @@ the Privacy settings under the Options menu.
 PHASE 7.0: You are done with installation
 
 If you have problems and it is not working right(and are NOT celebrating right
-now), feel free to take a look at the FAQ for solutions to common installation 
+now), feel free to take a look at the FAQ for solutions to common installation
 errors, read the SCRATCH_INSTALL document, visit the VICIDIAL forum or send an
 email to the mailing list:
 http://www.eflo.net/VICIDIALforum/index.php

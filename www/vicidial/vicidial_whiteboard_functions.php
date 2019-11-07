@@ -7,7 +7,7 @@ if (isset($_GET["mobile"]))				{$mobile=$_GET["mobile"];}
 
 ?>
 // vicidial_whiteboard_functions.php
-// 
+//
 // Copyright (C) 2017  Matt Florell <vicidial@gmail.com>, Joe Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
 //
 // Javascript file used in AST_rt_whiteboard_reports.php and AST_rt_whiteboard_report_mobile.php
@@ -47,7 +47,7 @@ var TGArray_holder=new Array();
 
 function StartRefresh(refresh_rate) {
 		document.getElementById("loading_display").style.display="block";
-		if (!refresh_rate) {refresh_rate=30; RefreshReportWindow();} 
+		if (!refresh_rate) {refresh_rate=30; RefreshReportWindow();}
 		document.getElementById("query_date2").value=document.getElementById("query_date").value;
 		// document.getElementById("end_date2").value=document.getElementById("end_date").value;
 		document.getElementById("query_time2").value=document.getElementById("query_time").value;
@@ -72,11 +72,11 @@ function ToggleVisibility(span_name) {
 }
 
 function sortFunction(a, b) {
-	if (a[0] === b[0]) 
+	if (a[0] === b[0])
 		{
 		return 0;
-		} 
-	else 
+		}
+	else
 		{
 		return (a[0] > b[0]) ? -1 : 1;
 		}
@@ -165,8 +165,8 @@ function RefreshReportWindow() {
 		{
 		xmlhttp = new XMLHttpRequest();
 		}
-	if (xmlhttp) 
-		{ 
+	if (xmlhttp)
+		{
 		var rpt_query = "&rpt_type="+report_type+"&query_date="+query_date+"&query_time="+query_time+"&target_gross="+target_gross+"&target_per_agent="+target_per_agent+"&hourly_display="+hourly_display;
 
         var InvForm = document.forms[0];
@@ -255,7 +255,7 @@ function RefreshReportWindow() {
 		var UGPstr=UGPstr.replace(regRPTall, '<?php echo "ALL USER GROUPS"; ?>');
 		var USPstr=USPstr.replace(regRPTall, '<?php echo "ALL USERS"; ?>');
 		var GPstr=GPstr.replace(regRPTall, '<?php echo "ALL IN-GROUPS"; ?>');
-		
+
 		var report_parameters="<div class='embossed border2px round_corners sm_shadow alt_row1'>";
 		report_parameters+="<?php echo _QXZ("Report Type"); ?>: "+report_type_text+"<BR>\n";
 		report_parameters+=query_date_str+"<BR>\n";
@@ -269,12 +269,12 @@ function RefreshReportWindow() {
 
 		document.getElementById("parameters_span").innerHTML=report_parameters;
 
-		xmlhttp.open('POST', 'whiteboard_reports.php'); 
+		xmlhttp.open('POST', 'whiteboard_reports.php');
 		xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-		xmlhttp.send(rpt_query); 
-		xmlhttp.onreadystatechange = function() 
-			{ 
-			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+		xmlhttp.send(rpt_query);
+		xmlhttp.onreadystatechange = function()
+			{
+			if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 				{
 				response_txt = null;
 				response_txt = xmlhttp.responseText;
@@ -309,7 +309,7 @@ function RefreshReportWindow() {
 				var Top10Limit="off";
 				var alert_text="";
 
-				for (var i = 0; i < arrayLength; i++) 
+				for (var i = 0; i < arrayLength; i++)
 					{
 					var agent_array=report_result_array[i].split("|");
 					var agent_array_length=agent_array.length;
@@ -323,7 +323,7 @@ function RefreshReportWindow() {
 						if (typeof agent_array[1] !== "undefined") {agent_label+=" - "+agent_array[1];}
 						LabelArray[i]=agent_label;
 						}
-					
+
 					CallCountArray[i]=agent_array[2]; // TotalCallCount+=parseInt(agent_array[2]);
 					SaleCountArray[i]=agent_array[3]; // TotalSaleCount+=parseInt(agent_array[3]);
 
@@ -340,12 +340,12 @@ function RefreshReportWindow() {
 						Top10Array[i]=[parseInt(agent_array[3]),agent_array[0],agent_array[1]];
 						}
 
-					TimeArray[i]=agent_array[4]; 
+					TimeArray[i]=agent_array[4];
 					if (report_type.match(regRPTtype) || report_type=="status_performance_total") // If the cumulative floor report, use the last entries from the TotalCall and TotalSale above (m
 						{
 						TotalTime=parseInt(agent_array[4]);
 						}
-					else 
+					else
 						{
 						TotalTime+=parseInt(agent_array[4]);
 						}
@@ -375,7 +375,7 @@ function RefreshReportWindow() {
 
 				var breakloop="no";
 				var prev_ranking=0;
-				for (var i = 0; i < arrayLength; i++) 
+				for (var i = 0; i < arrayLength; i++)
 					{
 					var trClass="std_row"+((i%2)+1);
 					if (i>0 && Top10Array[i][0]==Top10Array[(i-1)][0])
@@ -400,7 +400,7 @@ function RefreshReportWindow() {
 						Top10HTMLChart+="</B></td>";
 						Top10HTMLChart+="</tr>";
 						}
-					else 
+					else
 						{
 						i=arrayLength;
 						}
@@ -445,15 +445,15 @@ function RefreshReportWindow() {
 				var hide_total="true";
 				var hide_rates="true";
 				var graph_type='bar';
-				
+
 				if (LabelArray) { // Seems to return 3 times above.  Dunno why
-					
-					if (report_type.match(regRPTtotal)) {hide_total="false";} 
+
+					if (report_type.match(regRPTtotal)) {hide_total="false";}
 					if (report_type.match(regRPTrates)) {hide_rates="false";}
 					if (report_type.match(regRPTtype)) {graph_type='line';}
 					if (LabelArray.length!=LabelArray_holder.length) {
-						if (MainGraph) 
-							{							
+						if (MainGraph)
+							{
 							MainGraph.destroy();
 							}
 
@@ -474,7 +474,7 @@ function RefreshReportWindow() {
 									labels: LabelArray
 								}
 							});
-							if (report_type.match(regRPTtotal)) 
+							if (report_type.match(regRPTtotal))
 								{
 								if (!ChartsHidden)
 									{
@@ -487,10 +487,10 @@ function RefreshReportWindow() {
 								MainGraph.data.datasets[3].hidden=(hidden_array[3] == 'true');
 								MainGraph.data.datasets[4].hidden=(hidden_array[4] == 'true');
 								MainGraph.data.datasets[5].hidden=(hidden_array[5] == 'true');
-	
+
 								MainGraph.update();
-								} 
-							if (report_type.match(regRPTrates)) 
+								}
+							if (report_type.match(regRPTrates))
 								{
 								if (!ChartsHidden)
 									{
@@ -503,7 +503,7 @@ function RefreshReportWindow() {
 								MainGraph.data.datasets[3].hidden=(hidden_array[3] == 'true');
 								MainGraph.data.datasets[4].hidden=(hidden_array[4] == 'true');
 								MainGraph.data.datasets[5].hidden=(hidden_array[5] == 'true');
-								
+
 								MainGraph.update();
 								}
 							}
@@ -530,7 +530,7 @@ function RefreshReportWindow() {
 									}
 								}
 							});
-							if (report_type.match(regRPTtotal)) 
+							if (report_type.match(regRPTtotal))
 								{
 								if (!ChartsHidden)
 									{
@@ -542,10 +542,10 @@ function RefreshReportWindow() {
 								MainGraph.data.datasets[2].hidden=(hidden_array[2] == 'true');
 								MainGraph.data.datasets[3].hidden=(hidden_array[3] == 'true');
 								MainGraph.data.datasets[4].hidden=(hidden_array[4] == 'true');
-					
+
 								MainGraph.update();
-								} 
-							if (report_type.match(regRPTrates)) 
+								}
+							if (report_type.match(regRPTrates))
 								{
 								if (!ChartsHidden)
 									{
@@ -557,7 +557,7 @@ function RefreshReportWindow() {
 								MainGraph.data.datasets[2].hidden=(hidden_array[2] == 'true');
 								MainGraph.data.datasets[3].hidden=(hidden_array[3] == 'true');
 								MainGraph.data.datasets[4].hidden=(hidden_array[4] == 'true');
-					
+
 								MainGraph.update();
 								}
 							}
@@ -566,74 +566,74 @@ function RefreshReportWindow() {
 						for (var j=0; j<LabelArray.length; j++) {
 							if (report_type.match(regRPTtype))
 								{
-								if (TotalCallCountArray[j]!=TotalCallCountArray_holder[j]) 
+								if (TotalCallCountArray[j]!=TotalCallCountArray_holder[j])
 									{
 									MainGraph.data.datasets[0].data[j]=TotalCallCountArray[j];
 									update_graph_flag++;
 									}
-								if (TotalSaleCountArray[j]!=TotalSaleCountArray_holder[j]) 
+								if (TotalSaleCountArray[j]!=TotalSaleCountArray_holder[j])
 									{
 									MainGraph.data.datasets[1].data[j]=TotalSaleCountArray[j];
 									update_graph_flag++;
 									}
-								if (CPHArray[j]!=CPHArray_holder[j]) 
+								if (CPHArray[j]!=CPHArray_holder[j])
 									{
 									MainGraph.data.datasets[2].data[j]=CPHArray[j];
 									update_graph_flag++;
 									}
-								if (SPHArray[j]!=SPHArray_holder[j]) 
+								if (SPHArray[j]!=SPHArray_holder[j])
 									{
 									MainGraph.data.datasets[3].data[j]=SPHArray[j];
 									update_graph_flag++;
 									}
-								if (ConvRateArray[j]!=ConvRateArray_holder[j]) 
+								if (ConvRateArray[j]!=ConvRateArray_holder[j])
 									{
 									MainGraph.data.datasets[4].data[j]=ConvRateArray[j];
 									update_graph_flag++;
 									}
-								if (TGArray[j]!=TGArray_holder[j]) 
+								if (TGArray[j]!=TGArray_holder[j])
 									{
 									MainGraph.data.datasets[5].data[j]=TGArray[j];
 									update_graph_flag++;
 									}
 								}
-							else 
+							else
 								{
-								if (CallCountArray[j]!=CallCountArray_holder[j]) 
+								if (CallCountArray[j]!=CallCountArray_holder[j])
 									{
 									MainGraph.data.datasets[0].data[j]=CallCountArray[j];
 									update_graph_flag++;
 									}
-								if (SaleCountArray[j]!=SaleCountArray_holder[j]) 
+								if (SaleCountArray[j]!=SaleCountArray_holder[j])
 									{
 									MainGraph.data.datasets[1].data[j]=SaleCountArray[j];
 									update_graph_flag++;
 									}
-								if (SPHArray[j]!=SPHArray_holder[j]) 
+								if (SPHArray[j]!=SPHArray_holder[j])
 									{
 									MainGraph.data.datasets[2].data[j]=SPHArray[j];
 									update_graph_flag++;
 									}
-								if (ConvRateArray[j]!=ConvRateArray_holder[j]) 
+								if (ConvRateArray[j]!=ConvRateArray_holder[j])
 									{
 									MainGraph.data.datasets[3].data[j]=ConvRateArray[j];
 									update_graph_flag++;
 									}
-								if (TPAArray[j]!=TPAArray_holder[j]) 
+								if (TPAArray[j]!=TPAArray_holder[j])
 									{
 									MainGraph.data.datasets[4].data[j]=TPAArray[j];
 									update_graph_flag++;
 									}
 								}
 						}
-						
-						if (update_graph_flag>0) 
+
+						if (update_graph_flag>0)
 							{
 							MainGraph.update();
 							}
 					}
 					var hidden_charts="";
-					for (var j=0; j<MainGraph.data.datasets.length; j++) 
+					for (var j=0; j<MainGraph.data.datasets.length; j++)
 						{
 						hidden_charts+=(!MainGraph.isDatasetVisible(j))+"|";
 						}

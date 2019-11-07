@@ -1,6 +1,6 @@
 <?php
 # admin_launch_trigger.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed to launch a CLI script on the voicemail server through
@@ -195,7 +195,7 @@ require("admin_header.php");
 
 
 
-if ( ($stage=="LAUNCH") && (strlen($container_id) > 1) ) 
+if ( ($stage=="LAUNCH") && (strlen($container_id) > 1) )
 	{
 	$stmt="SELECT count(*) from vicidial_settings_containers where container_id='$container_id';";
 	if ($DB) {echo "|$stmt|\n";}
@@ -210,7 +210,7 @@ if ( ($stage=="LAUNCH") && (strlen($container_id) > 1) )
 		}
 
 	$options="--container=$container_id ";
-	
+
 	$uniqueid=rand(1, 9999);
 	$TRIGGERdate = date("YmdHis");
 
@@ -237,7 +237,7 @@ $containers_to_print = mysqli_num_rows($rslt);
 $containers_list='';
 
 $o=0;
-while ($containers_to_print > $o) 
+while ($containers_to_print > $o)
 	{
 	$rowx=mysqli_fetch_row($rslt);
 	$containers_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";

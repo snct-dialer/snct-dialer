@@ -1,12 +1,12 @@
 <?php
 # user_territories.php
-# 
+#
 # Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This territories script is for use with custom tables in Vtiger which is why
 # it is separate from the standard admin.php script. user_territories_active in
 # the system_settings table must be active for this script to work.
-# 
+#
 # CHANGES
 # 90520-1928 - first build
 # 90717-0651 - Added batch
@@ -212,7 +212,7 @@ if ( ($action == "CHANGE_TERRITORY_OWNER_ACCOUNT") and ($enable_vtiger_integrati
 	$users_list='';
 
 	$o=0;
-	while ($users_to_print > $o) 
+	while ($users_to_print > $o)
 		{
 		$rowx=mysqli_fetch_row($rslt);
 		$users_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -359,7 +359,7 @@ if ($enable_vtiger_integration > 0)
 
 </TR>
 
-<?php 
+<?php
 
 echo "<TR BGCOLOR=\"#$SSframe_background\"><TD ALIGN=LEFT COLSPAN=$colspan><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=3><B> &nbsp; \n";
 
@@ -417,7 +417,7 @@ if ( ($action == "CHANGE_TERRITORY_OWNER") and ($enable_vtiger_integration > 0) 
 	$territories_list='';
 
 	$o=0;
-	while ($territories_to_print > $o) 
+	while ($territories_to_print > $o)
 		{
 		$rowx=mysqli_fetch_row($rslt);
 		$territories_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -434,7 +434,7 @@ if ( ($action == "CHANGE_TERRITORY_OWNER") and ($enable_vtiger_integration > 0) 
 	$users_list='';
 
 	$o=0;
-	while ($users_to_print > $o) 
+	while ($users_to_print > $o)
 		{
 		$rowx=mysqli_fetch_row($rslt);
 		$users_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -597,7 +597,7 @@ if ($action == "ADD_USER_TERRITORY")
 	$users_list='';
 
 	$o=0;
-	while ($users_to_print > $o) 
+	while ($users_to_print > $o)
 		{
 		$rowx=mysqli_fetch_row($rslt);
 		$users_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -614,7 +614,7 @@ if ($action == "ADD_USER_TERRITORY")
 	$territories_list='';
 
 	$o=0;
-	while ($territories_to_print > $o) 
+	while ($territories_to_print > $o)
 		{
 		$rowx=mysqli_fetch_row($rslt);
 		$territories_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -890,7 +890,7 @@ if ($action == "MODIFY_TERRITORY")
 	$stmt="SELECT territory,territory_description from vicidial_territories where territory='$territory';";
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$territories_to_print = mysqli_num_rows($rslt);
-	if ($territories_to_print > 0) 
+	if ($territories_to_print > 0)
 		{
 		$rowx=mysqli_fetch_row($rslt);
 
@@ -950,7 +950,7 @@ if ($action == "MODIFY_TERRITORY")
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$territories_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($territories_to_print > $o) 
+		while ($territories_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$Tuser[$o] =		$rowx[0];
@@ -959,13 +959,13 @@ if ($action == "MODIFY_TERRITORY")
 			$o++;
 			}
 		$o=0;
-		while ($territories_to_print > $o) 
+		while ($territories_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$p++;
 
 			if (preg_match("/1$|3$|5$|7$|9$/i", $p))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 			echo "<TR $bgcolor><TD><font size=1>$p</TD>";
@@ -1107,7 +1107,7 @@ if ($action == "LIST_ALL_TERRITORIES")
 			}
 
 		if (preg_match("/1$|3$|5$|7$|9$/i", $i))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?action=MODIFY_TERRITORY&territory=$Lterritory[$i]'\"";} echo "><td><font size=1>$i</td>";

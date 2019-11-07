@@ -12,7 +12,7 @@
 # CHANGES
 # 90105-2343 - First version
 # 90106-2308 - Added email sending
-# 
+#
 
 $secX = time();
 	($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
@@ -88,7 +88,7 @@ if (length($ARGV[0])>1)
 			$campaign = $data_in[1];
 			$campaign =~ s/ .*$//gi;
 			$campaignSQL = $campaign;
-			if ($campaignSQL =~ /-/) 
+			if ($campaignSQL =~ /-/)
 				{
 				$campaignSQL =~ s/-/','/gi;
 				}
@@ -286,7 +286,7 @@ $p1t=0;  $p2t=0;  $p7t=0;  $p8t=0;  $p5t=0;  $p6t=0;  $p9t=0;  $pSt=0;
 $p1T=0;  $p2T=0;  $p7T=0;  $p8T=0;  $p5T=0;  $p6T=0;  $p9T=0;  $pST=0;
 foreach(@region_code)
 	{
-	if ( ($region_code[$i] =~ /$previous_region_code/) && (length($region_code[$i]) == length($previous_region_code)) ) 
+	if ( ($region_code[$i] =~ /$previous_region_code/) && (length($region_code[$i]) == length($previous_region_code)) )
 		{$do_nothing=1;}
 	else
 		{
@@ -357,7 +357,7 @@ foreach(@region_code)
 
 	$Ealert .= "            $post_code_prefix[$i]$p1[$i]$p2[$i]$p7[$i]$p8[$i]$p5[$i]$p6[$i]$p9[$i]$pS[$i]\n";
 	if ($DB) {print "            $post_code_prefix[$i]$p1[$i]$p2[$i]$p7[$i]$p8[$i]$p5[$i]$p6[$i]$p9[$i]$pS[$i]\n";}
-	
+
 	$i++;
 	}
 

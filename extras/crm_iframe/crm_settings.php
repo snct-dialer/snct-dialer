@@ -1,11 +1,11 @@
 <?php
 # crm_settings.php - settings for crm_example.php and front.php to use
-# 
+#
 # Copyright (C) 2015  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 #
 # CHANGELOG
-# 151229-1556 - First Build 
+# 151229-1556 - First Build
 #
 
 # The full URL to the Vicidial Agent Screen, (usually something like "http://server/agc/vicidial.php")

@@ -1,6 +1,6 @@
 <?php
 # AST_rt_whiteboard_rpt.php
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>, Joe Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
 #
 # Real-time report that allows users to create a customized, graphical display of various data sets
@@ -258,7 +258,7 @@ if ( (!preg_match("/$report_name/",$LOGallowed_reports)) and (!preg_match("/ALL 
     exit;
 	}
 
-	
+
 $MT[0]='';
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
@@ -449,10 +449,10 @@ else
 	$WHEREcampaign_SQL=" where campaign_id in ($campaign_SQL) ";
 	$campaign_SQL=" and campaign_id in ($campaign_SQL) ";
 	}
-if (strlen($campaign_SQL)<3) 
+if (strlen($campaign_SQL)<3)
 	{
 	$campaign_SQL="";
-	} 
+	}
 
 $i=0;
 $users_string='|';
@@ -601,7 +601,7 @@ $HEADER.="<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 # $HEADER.="<link rel=\"stylesheet\" type=\"text/css\" href=\"vicidial_stylesheet.css\" />\n";
-$HEADER.="<script src='chart/Chart.js'></script>\n"; 
+$HEADER.="<script src='chart/Chart.js'></script>\n";
 $HEADER.="<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
 $HEADER.="<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 $HEADER.="<TITLE>"._QXZ("$report_name")."</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";

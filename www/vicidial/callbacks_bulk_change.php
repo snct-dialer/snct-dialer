@@ -1,6 +1,6 @@
 <?php
 # callbacks_bulk_change.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -126,11 +126,11 @@ $modify_timeclock_log =		$row[2];
 $LOGuser_group =			$row[3];
 $user_level =				$row[4];
 $LOGmodify_leads =			$row[5];
-if ($user_level==9) 
+if ($user_level==9)
 	{
 	$ul_clause="where user_level<=9";
 	}
-else 
+else
 	{
 	$ul_clause="where user_level<$user_level";
 	}
@@ -229,14 +229,14 @@ require("admin_header.php");
 
 
 
-<?php 
+<?php
 
 echo "<TR BGCOLOR=\"#".$SSstd_row1_background."\"><TD ALIGN=center COLSPAN=2><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=3><B> &nbsp; \n";
 
 ### callbacks change form
 echo "<form action=$PHP_SELF method=POST>\n";
 echo "<input type=hidden name=DB value=\"$DB\">\n";
-if ($SUBMIT && $old_user && $new_user && !$confirm_transfer) 
+if ($SUBMIT && $old_user && $new_user && !$confirm_transfer)
 	{
 	$stmt="select count(*) as ct from vicidial_callbacks where recipient='USERONLY' and status!='INACTIVE' and user='$old_user' $LOGadmin_viewable_groupsSQL";
 	$rslt=mysql_to_mysqli($stmt, $link);
@@ -260,28 +260,28 @@ if ($SUBMIT && $old_user && $new_user && !$confirm_transfer)
 	echo _QXZ("to user")." $new_user".($new_user_name!="" ? " - $new_user_name" : "")."<BR><BR><BR>\n";
 	echo "<a href='$PHP_SELF?DB=$DB&old_user=$old_user&new_user=$new_user&confirm_transfer=1&SUBMIT=1'>"._QXZ("CLICK TO CONFIRM")."</a><BR><BR>";
 	echo "<a href='$PHP_SELF?DB=$DB'>"._QXZ("CLICK TO CANCEL")."</a><BR><BR>";
-	} 
-else 
+	}
+else
 	{
 	$stmt="select user, count(*) as ct from vicidial_callbacks where recipient='USERONLY' and status!='INACTIVE' $LOGadmin_viewable_groupsSQL group by user order by user";
 	$rslt=mysql_to_mysqli($stmt, $link);
 	if ($DB) {echo "$stmt\n";}
 	# <tr><td align='right'>
 	echo _QXZ("Agents with callbacks").":<BR><select name='old_user' size=5>\n";
-	if (mysqli_num_rows($rslt)>0) 
+	if (mysqli_num_rows($rslt)>0)
 		{
-		while ($row=mysqli_fetch_array($rslt)) 
+		while ($row=mysqli_fetch_array($rslt))
 			{
 			$user_stmt="select full_name from vicidial_users $ul_clause and user='$row[user]' $LOGadmin_viewable_groupsSQL";
 			$user_rslt=mysql_to_mysqli($user_stmt, $link);
-			if (mysqli_num_rows($user_rslt)>0) 
+			if (mysqli_num_rows($user_rslt)>0)
 				{
 				$user_row=mysqli_fetch_array($user_rslt);
 				echo "\t<option value='$row[user]'>$row[user] - $user_row[full_name] - ($row[ct] "._QXZ("callbacks").")</option>\n";
 				}
 			}
-		} 
-	else 
+		}
+	else
 		{
 		echo "\t<option value=''>**"._QXZ("NO CALLBACKS")."**</option>\n";
 		}
@@ -293,7 +293,7 @@ else
 	$rslt=mysql_to_mysqli($stmt, $link);
 	echo "<select name='new_user' size=5>\n";
 	echo "\t<option value='ANYONE'>"._QXZ("Anyone - available to all agents in campaign")."</option>\n";
-	while ($row=mysqli_fetch_array($rslt)) 
+	while ($row=mysqli_fetch_array($rslt))
 		{
 		echo "\t<option value='$row[user]'>$row[user] - $row[full_name]</option>\n";
 		}
@@ -323,8 +323,8 @@ echo "|$stage|$group|";
 </html>
 
 <?php
-	
-exit; 
+
+exit;
 
 
 ?>

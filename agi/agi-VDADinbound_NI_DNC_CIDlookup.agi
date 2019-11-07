@@ -3,8 +3,8 @@
 # NOTE: IT IS RECOMMENDED THAT YOU USE cm_dnc.agi THROUGH A CALL MENU INSTEAD!
 #
 # agi-VDADinbound_NI_DNC_CIDlookup.agi version 2.0.5   *DBI-version*
-# 
-# runs when a call comes in from an inbound call. This script will 
+#
+# runs when a call comes in from an inbound call. This script will
 # play a message and take input to automatically change customer lead to NI or DNC.
 #  *** This version detects inbound callerID over PRI ***
 #
@@ -30,7 +30,7 @@
 $script = 'agi-VDADinbound_NI_DNC_CIDlookup.agi';
 
 ### number of seconds to wait until you drop a waiting call
-$DROP_TIME = 360;	
+$DROP_TIME = 360;
 
 ### files to play for message of not interested or DNC and your request has been processed
 $prompt_file = 'not_interested_or_dnc';
@@ -134,7 +134,7 @@ if (length($ARGV[0])>1)
 	if ($AGILOG) {$agi_string = "$i|$ARGV[$i]";   &agi_output;}
 	$i++;
 	}
-	
+
 	### list of command-line array arguments:
 	@ARGV_vars = split(/-----/, $ARGV[0]);
 
@@ -191,7 +191,7 @@ while(<STDIN>) {
 #	if ($extension =~ /\*\d\d\d\d\d\d\d\d\d\d\*/)
 #		{
 #		@EXT_vars = split(/\*/, $extension);
-#		
+#
 #		$referring_extension =	$EXT_vars[0];	# initial extension sent
 #		$channel_group =	$EXT_vars[1];	# name of the parked group
 #		$inbound_number =	$EXT_vars[2];	# extension to send call to after parsing
@@ -211,7 +211,7 @@ while(<STDIN>) {
 #		}
 }
 
-foreach $i (sort keys %AGI) 
+foreach $i (sort keys %AGI)
 {
 	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
 }
@@ -244,7 +244,7 @@ if ($pin =~ /2/)	# set the phone_number to NI
 		@aryA = $sthA->fetchrow_array;
 		$lead_in_system = "$aryA[0]";
 		$sthA->finish();
-	
+
 		### update all records for the phone_number in vicidial_list to NI (Not Interested)
 		$stmtA = "UPDATE vicidial_list SET status='NI' where phone_number='$phone_number';";
 		$affected_rows = $dbhA->do($stmtA);
@@ -265,14 +265,14 @@ if ($pin =~ /3/)	# set the phone_number to DNC
 		@aryA = $sthA->fetchrow_array;
 		$lead_in_system = "$aryA[0]";
 		$sthA->finish();
-	
+
 		### update all records for the phone_number in vicidial_list to NI (Not Interested)
 		$stmtA = "UPDATE vicidial_list SET status='DNC' where phone_number='$phone_number';";
 		$affected_rows = $dbhA->do($stmtA);
 			if ($AGILOG) {$agi_string = "$affected_rows|$stmtA|";   &agi_output;}
 		}
 
-	if (length($campaign_id)>1) 
+	if (length($campaign_id)>1)
 		{
 		### Grab DNC settings from campaign
 		$stmtA = "SELECT use_internal_dnc,use_campaign_dnc FROM vicidial_campaigns where campaign_id = '$campaign_id';";
@@ -309,7 +309,7 @@ if ($pin =~ /3/)	# set the phone_number to DNC
 		}
 	else
 		{
-		if ($dnc_default =~ /YES/) 
+		if ($dnc_default =~ /YES/)
 			{
 			### add the number to the vicidial_dnc table
 			$stmtA = "INSERT INTO vicidial_dnc SET phone_number='$phone_number';";
@@ -351,7 +351,7 @@ sub enter_pin_number
 $interrupt_digit='';
 undef $interrupt_digit;
 
-$interrupt_digit = $AGI->stream_file("$prompt_file",'239');   
+$interrupt_digit = $AGI->stream_file("$prompt_file",'239');
 
 	if ($AGILOG) {$agi_string = "interrupt_digit |$interrupt_digit|";   &agi_output;}
 
@@ -369,7 +369,7 @@ if ($interrupt_digit > 1)
 	if ($interrupt_digit == 55) {$interrupt_digit=7;}
 	if ($interrupt_digit == 56) {$interrupt_digit=8;}
 	if ($interrupt_digit == 57) {$interrupt_digit=9;}
-	
+
 	$totalDTMF=$interrupt_digit;
 	}
 
@@ -388,7 +388,7 @@ if ($interrupt_digit > 1)
 #		{
 #		$digits_being_entered=0;
 #		}
-#	
+#
 #	$digit_loop_counter++;
 #	}
 #while ( ($digit_loop_counter < 4) )
@@ -405,7 +405,7 @@ if ($interrupt_digit > 1)
 #		{
 #		$digit_loop_counter=4;
 #		}
-#	
+#
 #	$digit_loop_counter++;
 #	}
 

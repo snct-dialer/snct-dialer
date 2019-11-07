@@ -789,6 +789,7 @@
     * Change Logo Handling:
       - Update www/vicidial/welcome.php.
     * Convert Dos CR/LF to Unix NL.
+    * Remove trailing whitespaces.
     * Change next release to 3.0.1.
 
 2.26.29

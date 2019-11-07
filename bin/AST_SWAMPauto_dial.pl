@@ -175,7 +175,7 @@ use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sle
 
 if (!$VARDB_port) {$VARDB_port='3306';}
 
-use DBI;	  
+use DBI;
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
@@ -194,7 +194,7 @@ while($it < $total_loops)
 
 	$CIDtemp = ($CIDlist[$list_it] + $list_inc);
 	$SERVERtemp = $server_ips[$server_it];
-	
+
 	$k=0;
 	while ($k < 1)
 		{

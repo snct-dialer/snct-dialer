@@ -1,6 +1,6 @@
-<?php 
+<?php
 # AST_inbound_daily_report.php
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -109,7 +109,7 @@ $table_name="vicidial_closer_log";
 $archive_table_name=use_archive_table($table_name);
 if ($archive_table_name!=$table_name) {$archives_available="Y";}
 
-if ($search_archived_data) 
+if ($search_archived_data)
 	{
 	$vicidial_closer_log_table=use_archive_table("vicidial_closer_log");
 	}
@@ -319,7 +319,7 @@ if ($IDR_calltime_available==1)
 		$i++;
 		}
 	}
-else 
+else
 	{
 	$shift="24hours";
 	}
@@ -334,17 +334,17 @@ $groups_selected = count($group);
 $group_name_str="";
 $groups_selected_str="";
 $groups_selected_URLstr="";
-for ($i=0; $i<$groups_selected; $i++) 
+for ($i=0; $i<$groups_selected; $i++)
 	{
 	$selected_group_URLstr.="&group[]=$group[$i]";
-	if ($group[$i]=="--ALL--") 
+	if ($group[$i]=="--ALL--")
 		{
 		$group=array("--ALL--");
 		$groups_selected=1;
 		$group_name_str.="-- ALL INGROUPS --";
 		$all_selected="selected";
 		}
-	else 
+	else
 		{
 		$groups_selected_str.="'$group[$i]', ";
 		}
@@ -409,7 +409,7 @@ $HEADER.="<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 require("chart_button.php");
-$HEADER.="<script src='chart/Chart.js'></script>\n"; 
+$HEADER.="<script src='chart/Chart.js'></script>\n";
 $HEADER.="<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
 
 $HEADER.="<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
@@ -462,7 +462,7 @@ $o=0;
 while ($groups_to_print > $o)
 	{
 	$selected="";
-	for ($i=0; $i<$groups_selected; $i++) 
+	for ($i=0; $i<$groups_selected; $i++)
 		{
 		if ( ($file_download < 1) and ($DB) ) {echo "<!-- $groups[$o] == $group[$i] //-->\n";}
 		if ($groups[$o] == $group[$i]) {$selected="selected";}
@@ -493,7 +493,7 @@ if ($IDR_calltime_available==1)
 
 $MAIN.="<INPUT TYPE=submit NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'></TD></TR>\n";
 $MAIN.="<TR><TD align='left' rowspan=2><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2><INPUT TYPE=checkbox NAME=hourly_breakdown VALUE='checked' $hourly_breakdown>"._QXZ("Show hourly results")."<BR><INPUT TYPE=checkbox NAME=show_disposition_statuses VALUE='checked' $show_disposition_statuses>"._QXZ("Show disposition statuses")."<BR><INPUT TYPE=checkbox NAME=ignore_afterhours VALUE='checked' $ignore_afterhours>"._QXZ("Ignore after-hours calls");
-if ($archives_available=="Y") 
+if ($archives_available=="Y")
 	{
 	$MAIN.="<BR><input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."\n";
 	}
@@ -675,7 +675,7 @@ else
 		$time_END=$stop_time_ary[$qrow[0]];
 		#$time_BEGIN="00:00:00"; # Need this so the $SQepoch value can be tweaked per day (i.e. only adding the hours for the start time);
 
-		$query_date_BEGIN = "$query_date ".$time_BEGIN;   
+		$query_date_BEGIN = "$query_date ".$time_BEGIN;
 		$query_date_END = "$end_date ".$time_END;
 		RecalculateHPD($query_date_BEGIN, $query_date_END, $time_BEGIN, $time_END); # Only calling it here to get the DURATIONday, EQepoch, and intial SQepoch
 		# Will be called repeatedly for each day
@@ -687,13 +687,13 @@ else
 		#print_r($stop_time_ary); echo "<BR>";
 	} else {
 
-		if ($shift == 'ALL') 
+		if ($shift == 'ALL')
 			{
 			if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}
 			if (strlen($time_END) < 6) {$time_END = "23:59:59";}
 			}
 
-		$query_date_BEGIN = "$query_date $time_BEGIN";   
+		$query_date_BEGIN = "$query_date $time_BEGIN";
 		$query_date_END = "$end_date $time_END";
 
 		RecalculateHPD($query_date_BEGIN, $query_date_END, $time_BEGIN, $time_END);
@@ -745,15 +745,15 @@ else
 	while ($d < $DURATIONday)
 		{
 		$dSQepoch = ($SQepoch + ($d * 86400) + ($hr * 3600));
-		
-		if ($shift && $shift!="ALL" && $RECALC==1) 
+
+		if ($shift && $shift!="ALL" && $RECALC==1)
 			{
 			# Need to get current day, hours for that day (hpd)
 			$current_dayofweek=date("w", $dSQepoch);
 			$time_BEGIN=$start_time_ary[$current_dayofweek];
 			$time_END=$stop_time_ary[$current_dayofweek];
 			HourDifference($time_BEGIN, $time_END); # new hpd
-			$query_date_BEGIN = "$query_date $time_BEGIN";   
+			$query_date_BEGIN = "$query_date $time_BEGIN";
 			$query_date_END = "$end_date $time_END";
 			RecalculateEpochs($query_date_BEGIN, $query_date_END);
 			$dSQepoch = ($SQepoch + ($d * 86400) + ($hr * 3600) + ($shift_hrs * 3600) );
@@ -762,7 +762,7 @@ else
 			}
 
 
-		if ($hourly_breakdown) 
+		if ($hourly_breakdown)
 			{
 			$dEQepoch = $dSQepoch+3599;
 			}
@@ -779,11 +779,11 @@ else
 		$daySTART[$q] = date("Y-m-d H:i:s", $dSQepoch);
 		$dayEND[$q] = date("Y-m-d H:i:s", $dEQepoch);
 
-		if ($hr>=($hpd-1) || !$hourly_breakdown) 
+		if ($hr>=($hpd-1) || !$hourly_breakdown)
 			{
 			$d++;
 			$hr=0;
-			if (date("H:i:s", $dEQepoch)>$time_END) 
+			if (date("H:i:s", $dEQepoch)>$time_END)
 				{
 				$dayEND[$q] = date("Y-m-d ", $dEQepoch).$time_END;
 				}
@@ -812,7 +812,7 @@ else
 	$hour =		($SQtime_ARY[0] - 1);
 	$startSEC = ($SQsec - 900);
 	$endSEC =	($SQsec - 1);
-	if ($SQtime_ARY[1] > 14) 
+	if ($SQtime_ARY[1] > 14)
 		{
 		$h=1;
 		$hour++;
@@ -828,7 +828,7 @@ else
 		if ($h >= 4)
 			{
 			$hour++;
-			if ($Zhour == '00') 
+			if ($Zhour == '00')
 				{
 				$startSEC=0;
 				$endSEC=899;
@@ -860,12 +860,12 @@ else
 			$Stime="$hour:45";
 			$Etime="$Zhour:00";
 			$time = " $Stime-$Etime ";
-			if ($Zhour == '00') 
+			if ($Zhour == '00')
 				{$hour = ($Zhour - 1);}
 			}
 
-		if ( ( ($startSEC >= $SQsec) and ($endSEC <= $EQsec) and ($EQsec > $SQsec) ) or 
-			( ($startSEC >= $SQsec) and ($EQsec < $SQsec) ) or 
+		if ( ( ($startSEC >= $SQsec) and ($endSEC <= $EQsec) and ($EQsec > $SQsec) ) or
+			( ($startSEC >= $SQsec) and ($EQsec < $SQsec) ) or
 			( ($endSEC <= $EQsec) and ($EQsec < $SQsec) ) )
 			{
 			$HMdisplay[$j] =	$time;
@@ -906,7 +906,7 @@ else
 		$qs[$i] = $row[0];
 		$dt[$i] = 0;
 		$ut[$i] = ($row[1] - $SQepochDAY);
-		while($ut[$i] >= $epoch_interval) 
+		while($ut[$i] >= $epoch_interval)
 			{
 			$ut[$i] = ($ut[$i] - $epoch_interval);
 			$dt[$i]++;
@@ -1014,17 +1014,17 @@ else
 
 				if ($totCALLSmax < $ls[$i]) {$totCALLSmax = $ls[$i];}
 				if ($qrtCALLSmax[$j] < $ls[$i]) {$qrtCALLSmax[$j] = $ls[$i];}
-				if (preg_match('/ABANDON|NOAGENT|QUEUETIMEOUT|AFTERHOURS|MAXCALLS/', $tr[$i])) 
+				if (preg_match('/ABANDON|NOAGENT|QUEUETIMEOUT|AFTERHOURS|MAXCALLS/', $tr[$i]))
 					{
 					$totABANDONSdate[$j]++;
 					$totABANDONSsecdate[$j]+=$ls[$i];
 					$FtotABANDONS++;
 					$FtotABANDONSsec+=$ls[$i];
 					}
-				else 
+				else
 					{
 					$totANSWERSdate[$j]++;
-					if (($ls[$i]-$qs[$i]-15)>0) 
+					if (($ls[$i]-$qs[$i]-15)>0)
 						{  ## Patch by Joe J - can cause negative time values if removed.
 						$totANSWERSsecdate[$j]+=($ls[$i]-$qs[$i]-15);
 						$FtotANSWERSsec+=($ls[$i]-$qs[$i]-15);
@@ -1034,7 +1034,7 @@ else
 					if ($DB) {print "<!-- $FtotANSWERSspeed+=$qs[$i] //-->\n";}
 					$FtotANSWERSspeed+=$qs[$i];
 					}
-				if (preg_match('/DROP/',$st[$i])) 
+				if (preg_match('/DROP/',$st[$i]))
 					{
 					$totDROPS++;
 					$totDROPSsec = ($totDROPSsec + $ls[$i]);
@@ -1045,7 +1045,7 @@ else
 	#				if ($totDROPSmax < $ls[$i]) {$totDROPSmax = $ls[$i];}
 	#				if ($qrtDROPSmax[$j] < $ls[$i]) {$qrtDROPSmax[$j] = $ls[$i];}
 					}
-				if ($qs[$i] > 0) 
+				if ($qs[$i] > 0)
 					{
 					$totQUEUE++;
 					$totQUEUEsec = ($totQUEUEsec + $qs[$i]);
@@ -1067,7 +1067,7 @@ else
 				if ($qs[$i] > 120) {$hd121[$j]++;}
 	*/
 				}
-			
+
 			$i++;
 			}
 
@@ -1098,7 +1098,7 @@ else
 		$CSV_text2.=",\"$status_name[0]\"";
 		$CSV_text3.=",\"$status_name[1]\"";
 	}
-	
+
 	$ASCII_text.="$MAINH\n";
 	$ASCII_text.="$MAIN1\n";
 	$ASCII_text.="$MAIN2\n";
@@ -1254,7 +1254,7 @@ else
 		$totANSWERSdate[$d] =	sprintf("%8s", $totANSWERSdate[$d]);
 		$totABANDONSdate[$d] =	sprintf("%9s", $totABANDONSdate[$d]);
 
-		if (date("w", strtotime($daySTART[$d]))==0 && date("w", strtotime($daySTART[$d-1]))!=0 && $d>0) 
+		if (date("w", strtotime($daySTART[$d]))==0 && date("w", strtotime($daySTART[$d-1]))!=0 && $d>0)
 			{  # 2nd date/"w" check is for DST
 			$totAGENTSwtd=count(array_count_values($AGENTS_wtd_array));
 			$totABANDONSpctwtd =	sprintf("%7.2f", (MathZDC(100*$totABANDONSwtd, $totCALLSwtd)));
@@ -1278,7 +1278,7 @@ else
 			$totAGENTSwtd =	sprintf("%8s", $totAGENTSwtd);
 			$totANSWERSwtd =	sprintf("%8s", $totANSWERSwtd);
 			$totABANDONSwtd =	sprintf("%9s", $totABANDONSwtd);
-			$totCALLSwtd =	sprintf("%7s", $totCALLSwtd);		
+			$totCALLSwtd =	sprintf("%7s", $totCALLSwtd);
 
 			if (trim($totCALLSwtd)>$max_wtd_offered) {$max_wtd_offered=trim($totCALLSwtd);}
 			if (trim($totANSWERSwtd)>$max_wtd_answered) {$max_wtd_answered=trim($totANSWERSwtd);}
@@ -1326,7 +1326,7 @@ else
 			$totSTATUSESwtd=array();
 			}
 
-		if (date("d", strtotime($daySTART[$d]))==1 && $d>0 && date("d", strtotime($daySTART[$d-1]))!=1) 
+		if (date("d", strtotime($daySTART[$d]))==1 && $d>0 && date("d", strtotime($daySTART[$d-1]))!=1)
 			{
 			$totAGENTSmtd=count(array_count_values($AGENTS_mtd_array));
 			$totABANDONSpctmtd =	sprintf("%7.2f", (MathZDC(100*$totABANDONSmtd, $totCALLSmtd)));
@@ -1349,7 +1349,7 @@ else
 			$totAGENTSmtd =	sprintf("%8s", $totAGENTSmtd);
 			$totANSWERSmtd =	sprintf("%8s", $totANSWERSmtd);
 			$totABANDONSmtd =	sprintf("%9s", $totABANDONSmtd);
-			$totCALLSmtd =	sprintf("%7s", $totCALLSmtd);		
+			$totCALLSmtd =	sprintf("%7s", $totCALLSmtd);
 
 			if (trim($totCALLSmtd)>$max_mtd_offered) {$max_mtd_offered=trim($totCALLSmtd);}
 			if (trim($totANSWERSmtd)>$max_mtd_answered) {$max_mtd_answered=trim($totANSWERSmtd);}
@@ -1419,7 +1419,7 @@ else
 				$totAGENTSqtd =	sprintf("%8s", $totAGENTSqtd);
 				$totANSWERSqtd =	sprintf("%8s", $totANSWERSqtd);
 				$totABANDONSqtd =	sprintf("%9s", $totABANDONSqtd);
-				$totCALLSqtd =	sprintf("%7s", $totCALLSqtd);		
+				$totCALLSqtd =	sprintf("%7s", $totCALLSqtd);
 
 				if (trim($totCALLSqtd)>$max_qtd_offered) {$max_qtd_offered=trim($totCALLSqtd);}
 				if (trim($totANSWERSqtd)>$max_qtd_answered) {$max_qtd_answered=trim($totANSWERSqtd);}
@@ -1486,9 +1486,9 @@ else
 		if ($totAGENTSdayCOUNT > 0)
 			{
 			$temp_agent_array=array_keys($totAGENTSdate[$d]);
-			for ($x=0; $x<count($temp_agent_array); $x++) 
+			for ($x=0; $x<count($temp_agent_array); $x++)
 				{
-				if ($temp_agent_array[$x]!="") 
+				if ($temp_agent_array[$x]!="")
 					{
 					array_push($AGENTS_wtd_array, $temp_agent_array[$x]);
 					array_push($AGENTS_mtd_array, $temp_agent_array[$x]);
@@ -1521,7 +1521,7 @@ else
 		if (trim($totABANDONSdate[$d])>$max_abandoned) {$max_abandoned=trim($totABANDONSdate[$d]);}
 		if (trim($totABANDONSpctDATE[$d])>$max_abandonpct) {$max_abandonpct=trim($totABANDONSpctDATE[$d]);}
 
-		if (round(MathZDC($totANSWERSsecdate[$d], $totANSWERSdate[$d]))>$max_avgtalktime) 
+		if (round(MathZDC($totANSWERSsecdate[$d], $totANSWERSdate[$d]))>$max_avgtalktime)
 			{$max_avgtalktime=round(MathZDC($totANSWERSsecdate[$d], $totANSWERSdate[$d]));}
 
 		if (trim($totANSWERSsecdate[$d])>$max_totaltalktime) {$max_totaltalktime=trim($totANSWERSsecdate[$d]);}
@@ -1596,7 +1596,7 @@ else
 		$FtotANSWERS =	sprintf("%8s", $FtotANSWERS);
 		$FtotABANDONS =	sprintf("%9s", $FtotABANDONS);
 
-		if (date("w", strtotime($daySTART[$d]))>0) 
+		if (date("w", strtotime($daySTART[$d]))>0)
 			{
 			$totABANDONSpctwtd =	sprintf("%7.2f", (MathZDC(100*$totABANDONSwtd, $totCALLSwtd)));
 			$totABANDONSavgTIMEwtd =	sprintf("%7s", date("i:s", mktime(0, 0, round(MathZDC($totABANDONSsecwtd, $totABANDONSwtd)))));
@@ -1618,7 +1618,7 @@ else
 			$totAGENTSwtd =	sprintf("%8s", $totAGENTSwtd);
 			$totANSWERSwtd =	sprintf("%8s", $totANSWERSwtd);
 			$totABANDONSwtd =	sprintf("%9s", $totABANDONSwtd);
-			$totCALLSwtd =	sprintf("%7s", $totCALLSwtd);		
+			$totCALLSwtd =	sprintf("%7s", $totCALLSwtd);
 
 			if (trim($totCALLSwtd)>$max_wtd_offered) {$max_wtd_offered=trim($totCALLSwtd);}
 			if (trim($totANSWERSwtd)>$max_wtd_answered) {$max_wtd_answered=trim($totANSWERSwtd);}
@@ -1650,15 +1650,15 @@ else
 			$graph_id++;
 			$graph_array=array("IDR_wtd_TOTALCALLSOFFEREDdata|1|TOTAL CALLS OFFERED|integer|", "IDR_wtd_TOTALCALLSANSWEREDdata|2|TOTAL CALLS ANSWERED|integer|", "IDR_wtd_TOTALAGENTSANSWEREDdata|17|TOTAL AGENTS ANSWERED|integer|", "IDR_wtd_TOTALCALLSABANDONEDdata|3|TOTAL CALLS ABANDONED|integer|", "IDR_wtd_TOTALABANDONPERCENTdata|4|TOTAL ABANDON PERCENT|percent|", "IDR_wtd_AVGABANDONTIMEdata|11|AVG ABANDON TIME|time|", "IDR_wtd_AVGANSWERSPEEDdata|12|AVG ANSWER SPEED|time|", "IDR_wtd_AVGTALKTIMEdata|16|AVG TALK TIME|time|", "IDR_wtd_TOTALTALKTIMEdata|15|TOTAL TALK TIME|time|", "IDR_wtd_TOTALWRAPTIMEdata|13|TOTAL WRAP TIME|time|", "IDR_wtd_TOTALCALLTIMEdata|14|TOTAL CALL TIME|time|");
 			$default_graph="bar"; # Graph that is initally displayed when page loads
-			include("graph_color_schemas.inc"); 
+			include("graph_color_schemas.inc");
 
 			$graph_totals_array=array();
 			$graph_totals_rawdata=array();
 			for ($q=0; $q<count($graph_array); $q++) {
-				$graph_info=explode("|", $graph_array[$q]); 
+				$graph_info=explode("|", $graph_array[$q]);
 				$current_graph_total=0;
 				$dataset_name=$graph_info[0];
-				$dataset_index=$graph_info[1]; 
+				$dataset_index=$graph_info[1];
 				$dataset_type=$graph_info[3];
 
 				$JS_text.="var $dataset_name = {\n";
@@ -1684,13 +1684,13 @@ else
 					$graphConstantsA.="\"$bgcolor\",";
 					$graphConstantsB.="\"$hbgcolor\",";
 					$graphConstantsC.="\"$hbcolor\",";
-				}	
+				}
 				$graphConstantsA=substr($graphConstantsA,0,-1)."],\n";
 				$graphConstantsB=substr($graphConstantsB,0,-1)."],\n";
 				$graphConstantsC=substr($graphConstantsC,0,-1)."],\n";
 				$labels=preg_replace('/,$/', '', $labels)."],\n";
 				$data=preg_replace('/,$/', '', $data)."],\n";
-				
+
 				$graph_totals_rawdata[$q]=$current_graph_total;
 				switch($dataset_type) {
 					case "time":
@@ -1724,7 +1724,7 @@ else
 			$graph_title=_QXZ("WEEKLY REPORT")." - $query_date_BEGIN "._QXZ("to")." $query_date_END";
 			include("graphcanvas.inc");
 			$HEADER.=$HTML_graph_head;
-			$WTD_GRAPH=$graphCanvas;			
+			$WTD_GRAPH=$graphCanvas;
 
 			$ASCII_text.="$MAINH\n";
 			$ASCII_text.="| "._QXZ("Week to date",41,"r")." | $totCALLSwtd | $totANSWERSwtd | $totAGENTSwtd | $totABANDONSwtd | $totABANDONSpctwtd%| $totABANDONSavgTIMEwtd | $totANSWERSavgspeedTIMEwtd | $totANSWERSavgTIMEwtd | $totANSWERStalkTIMEwtd | $totANSWERSwrapTIMEwtd | $totANSWERStotTIMEwtd |";
@@ -1745,7 +1745,7 @@ else
 			$totABANDONSsecwtd=0;
 			}
 
-		if (date("d", strtotime($daySTART[$d]))!=1) 
+		if (date("d", strtotime($daySTART[$d]))!=1)
 			{
 			$totAGENTSmtd=count(array_count_values($AGENTS_mtd_array));
 			$totABANDONSpctmtd =	sprintf("%7.2f", (MathZDC(100*$totABANDONSmtd, $totCALLSmtd)));
@@ -1768,7 +1768,7 @@ else
 			$totAGENTSmtd =	sprintf("%8s", $totAGENTSmtd);
 			$totANSWERSmtd =	sprintf("%8s", $totANSWERSmtd);
 			$totABANDONSmtd =	sprintf("%9s", $totABANDONSmtd);
-			$totCALLSmtd =	sprintf("%7s", $totCALLSmtd);		
+			$totCALLSmtd =	sprintf("%7s", $totCALLSmtd);
 
 			if (trim($totCALLSmtd)>$max_mtd_offered) {$max_mtd_offered=trim($totCALLSmtd);}
 			if (trim($totANSWERSmtd)>$max_mtd_answered) {$max_mtd_answered=trim($totANSWERSmtd);}
@@ -1805,15 +1805,15 @@ else
 			$graph_id++;
 			$graph_array=array("IDR_mtd_TOTALCALLSOFFEREDdata|1|TOTAL CALLS OFFERED|integer|", "IDR_mtd_TOTALCALLSANSWEREDdata|2|TOTAL CALLS ANSWERED|integer|", "IDR_mtd_TOTALAGENTSANSWEREDdata|17|TOTAL AGENTS ANSWERED|integer|", "IDR_mtd_TOTALCALLSABANDONEDdata|3|TOTAL CALLS ABANDONED|integer|", "IDR_mtd_TOTALABANDONPERCENTdata|4|TOTAL ABANDON PERCENT|percent|", "IDR_mtd_AVGABANDONTIMEdata|11|AVG ABANDON TIME|time|", "IDR_mtd_AVGANSWERSPEEDdata|12|AVG ANSWER SPEED|time|", "IDR_mtd_AVGTALKTIMEdata|16|AVG TALK TIME|time|", "IDR_mtd_TOTALTALKTIMEdata|15|TOTAL TALK TIME|time|", "IDR_mtd_TOTALWRAPTIMEdata|13|TOTAL WRAP TIME|time|", "IDR_mtd_TOTALCALLTIMEdata|14|TOTAL CALL TIME|time|");
 			$default_graph="bar"; # Graph that is initally displayed when page loads
-			include("graph_color_schemas.inc"); 
+			include("graph_color_schemas.inc");
 
 			$graph_totals_array=array();
 			$graph_totals_rawdata=array();
 			for ($q=0; $q<count($graph_array); $q++) {
-				$graph_info=explode("|", $graph_array[$q]); 
+				$graph_info=explode("|", $graph_array[$q]);
 				$current_graph_total=0;
 				$dataset_name=$graph_info[0];
-				$dataset_index=$graph_info[1]; 
+				$dataset_index=$graph_info[1];
 				$dataset_type=$graph_info[3];
 
 				$JS_text.="var $dataset_name = {\n";
@@ -1839,13 +1839,13 @@ else
 					$graphConstantsA.="\"$bgcolor\",";
 					$graphConstantsB.="\"$hbgcolor\",";
 					$graphConstantsC.="\"$hbcolor\",";
-				}	
+				}
 				$graphConstantsA=substr($graphConstantsA,0,-1)."],\n";
 				$graphConstantsB=substr($graphConstantsB,0,-1)."],\n";
 				$graphConstantsC=substr($graphConstantsC,0,-1)."],\n";
 				$labels=preg_replace('/,$/', '', $labels)."],\n";
 				$data=preg_replace('/,$/', '', $data)."],\n";
-				
+
 				$graph_totals_rawdata[$q]=$current_graph_total;
 				switch($dataset_type) {
 					case "time":
@@ -1879,7 +1879,7 @@ else
 			$graph_title=_QXZ("MONTHLY REPORT")." - $query_date_BEGIN "._QXZ("to")." $query_date_END";
 			include("graphcanvas.inc");
 			$HEADER.=$HTML_graph_head;
-			$MTD_GRAPH=$graphCanvas;			
+			$MTD_GRAPH=$graphCanvas;
 
 			$ASCII_text.="$MAINH\n";
 			$ASCII_text.="| "._QXZ("Month to date",41,"r")." | $totCALLSmtd | $totANSWERSmtd | $totAGENTSmtd | $totABANDONSmtd | $totABANDONSpctmtd%| $totABANDONSavgTIMEmtd | $totANSWERSavgspeedTIMEmtd | $totANSWERSavgTIMEmtd | $totANSWERStalkTIMEmtd | $totANSWERSwrapTIMEmtd | $totANSWERStotTIMEmtd |";
@@ -1890,7 +1890,7 @@ else
 			}
 			$ASCII_text.="\n";
 			$CSV_text.="\n";
-			
+
 			$totCALLSmtd=0;
 			$totANSWERSmtd=0;
 			$AGENTS_mtd_array=array();
@@ -1922,7 +1922,7 @@ else
 			$totAGENTSqtd =	sprintf("%8s", $totAGENTSqtd);
 			$totANSWERSqtd =	sprintf("%8s", $totANSWERSqtd);
 			$totABANDONSqtd =	sprintf("%9s", $totABANDONSqtd);
-			$totCALLSqtd =	sprintf("%7s", $totCALLSqtd);		
+			$totCALLSqtd =	sprintf("%7s", $totCALLSqtd);
 
 			if (trim($totCALLSqtd)>$max_qtd_offered) {$max_qtd_offered=trim($totCALLSqtd);}
 			if (trim($totANSWERSqtd)>$max_qtd_answered) {$max_qtd_answered=trim($totANSWERSqtd);}
@@ -1972,7 +1972,7 @@ else
 			$graph_id++;
 			$graph_array=array("IDR_qtd_TOTALCALLSOFFEREDdata|1|TOTAL CALLS OFFERED|integer|", "IDR_qtd_TOTALCALLSANSWEREDdata|2|TOTAL CALLS ANSWERED|integer|", "IDR_qtd_TOTALAGENTSANSWEREDdata|17|TOTAL AGENTS ANSWERED|integer|", "IDR_qtd_TOTALCALLSABANDONEDdata|3|TOTAL CALLS ABANDONED|integer|", "IDR_qtd_TOTALABANDONPERCENTdata|4|TOTAL ABANDON PERCENT|percent|", "IDR_qtd_AVGABANDONTIMEdata|11|AVG ABANDON TIME|time|", "IDR_qtd_AVGANSWERSPEEDdata|12|AVG ANSWER SPEED|time|", "IDR_qtd_AVGTALKTIMEdata|16|AVG TALK TIME|time|", "IDR_qtd_TOTALTALKTIMEdata|15|TOTAL TALK TIME|time|", "IDR_qtd_TOTALWRAPTIMEdata|13|TOTAL WRAP TIME|time|", "IDR_qtd_TOTALCALLTIMEdata|14|TOTAL CALL TIME|time|");
 			$default_graph="bar"; # Graph that is initally displayed when page loads
-			include("graph_color_schemas.inc"); 
+			include("graph_color_schemas.inc");
 
 			$graph_totals_array=array();
 			$graph_totals_rawdata=array();
@@ -1980,7 +1980,7 @@ else
 				$graph_info=explode("|", $graph_array[$q]);
 				$current_graph_total=0;
 				$dataset_name=$graph_info[0];
-				$dataset_index=$graph_info[1]; 
+				$dataset_index=$graph_info[1];
 				$dataset_type=$graph_info[3];
 
 				$JS_text.="var $dataset_name = {\n";
@@ -2006,14 +2006,14 @@ else
 					$graphConstantsA.="\"$bgcolor\",";
 					$graphConstantsB.="\"$hbgcolor\",";
 					$graphConstantsC.="\"$hbcolor\",";
-				}	
+				}
 				$graphConstantsA=substr($graphConstantsA,0,-1)."],\n";
 				$graphConstantsB=substr($graphConstantsB,0,-1)."],\n";
 				$graphConstantsC=substr($graphConstantsC,0,-1)."],\n";
 				$labels=preg_replace('/,$/', '', $labels)."],\n";
 				$data=preg_replace('/,$/', '', $data)."],\n";
-				
-				
+
+
 				$graph_totals_rawdata[$q]=$current_graph_total;
 				switch($dataset_type) {
 					case "time":
@@ -2047,7 +2047,7 @@ else
 			$graph_title=_QXZ("QUARTERLY REPORT")." - $query_date_BEGIN "._QXZ("to")." $query_date_END";
 			include("graphcanvas.inc");
 			$HEADER.=$HTML_graph_head;
-			$QTD_GRAPH=$graphCanvas;			
+			$QTD_GRAPH=$graphCanvas;
 
 
 			$ASCII_text.="$MAINH\n";
@@ -2075,15 +2075,15 @@ else
 			$graph_id++;
 			$graph_array=array("IDR_TOTALCALLSOFFEREDdata|1|TOTAL CALLS OFFERED|integer|", "IDR_TOTALCALLSANSWEREDdata|2|TOTAL CALLS ANSWERED|integer|", "IDR_TOTALAGENTSANSWEREDdata|17|TOTAL AGENTS ANSWERED|integer|", "IDR_TOTALCALLSABANDONEDdata|3|TOTAL CALLS ABANDONED|integer|", "IDR_TOTALABANDONPERCENTdata|4|TOTAL ABANDON PERCENT|percent|", "IDR_AVGABANDONTIMEdata|11|AVG ABANDON TIME|time|", "IDR_AVGANSWERSPEEDdata|12|AVG ANSWER SPEED|time|", "IDR_AVGTALKTIMEdata|16|AVG TALK TIME|time|", "IDR_TOTALTALKTIMEdata|15|TOTAL TALK TIME|time|", "IDR_TOTALWRAPTIMEdata|13|TOTAL WRAP TIME|time|", "IDR_TOTALCALLTIMEdata|14|TOTAL CALL TIME|time|");
 			$default_graph="bar"; # Graph that is initally displayed when page loads
-			include("graph_color_schemas.inc"); 
+			include("graph_color_schemas.inc");
 
 			$graph_totals_array=array();
 			$graph_totals_rawdata=array();
 			for ($q=0; $q<count($graph_array); $q++) {
-				$graph_info=explode("|", $graph_array[$q]); 
+				$graph_info=explode("|", $graph_array[$q]);
 				$current_graph_total=0;
 				$dataset_name=$graph_info[0];
-				$dataset_index=$graph_info[1]; 
+				$dataset_index=$graph_info[1];
 				$dataset_type=$graph_info[3];
 
 				$JS_text.="var $dataset_name = {\n";
@@ -2101,7 +2101,7 @@ else
 				$graphConstantsC="\t\t\t\thoverBorderColor: [";
 				for ($d=0; $d<count($graph_stats); $d++) {
 					$labels.="\"".preg_replace('/ +/', ' ', $graph_stats[$d][0])."\",";
-					$data.="\"".$graph_stats[$d][$dataset_index]."\","; 
+					$data.="\"".$graph_stats[$d][$dataset_index]."\",";
 					$current_graph_total+=$graph_stats[$d][$dataset_index];
 					$bgcolor=$backgroundColor[($d%count($backgroundColor))];
 					$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
@@ -2109,14 +2109,14 @@ else
 					$graphConstantsA.="\"$bgcolor\",";
 					$graphConstantsB.="\"$hbgcolor\",";
 					$graphConstantsC.="\"$hbcolor\",";
-				}	
+				}
 				$graphConstantsA=substr($graphConstantsA,0,-1)."],\n";
 				$graphConstantsB=substr($graphConstantsB,0,-1)."],\n";
 				$graphConstantsC=substr($graphConstantsC,0,-1)."],\n";
 				$labels=preg_replace('/,$/', '', $labels)."],\n";
 				$data=preg_replace('/,$/', '', $data)."],\n";
-				
-				
+
+
 				$graph_totals_rawdata[$q]=$current_graph_total;
 				switch($dataset_type) {
 					case "time":
@@ -2150,7 +2150,7 @@ else
 			$graph_title=_QXZ("DAILY REPORT")." - $query_date_BEGIN "._QXZ("to")." $query_date_END";
 			include("graphcanvas.inc");
 			$HEADER.=$HTML_graph_head;
-			$GRAPH=$graphCanvas;			
+			$GRAPH=$graphCanvas;
 
 			$FtotAGENTS =	sprintf("%8s", $FtotAGENTS);
 
@@ -2165,7 +2165,7 @@ else
 	$CSV_text.="\n\n\n";
 	$ASCII_text.="$MAINH\n\n\n";
 
-	if ($show_disposition_statuses) 
+	if ($show_disposition_statuses)
 		{
 		$total_count=0;
 		$ASCII_text.="+--------+----------------------+------------+\n";
@@ -2214,7 +2214,7 @@ else
 	if ($report_display_type=='HTML') {$JS_text.=$JS_onload;}
 	$JS_text.="</script>\n";
 
-	if ($report_display_type=="HTML") 
+	if ($report_display_type=="HTML")
 		{
 		$MAIN.=$GRAPH.$WTD_GRAPH.$MTD_GRAPH.$QTD_GRAPH.$JS_text;
 		}
@@ -2254,7 +2254,7 @@ else
 
 		echo "$CSV_text";
 		}
-	else 
+	else
 		{
 		echo "$HEADER";
 		require("admin_header.php");
@@ -2268,7 +2268,7 @@ if ($db_source == 'S')
 	$use_slave_server=0;
 	$db_source = 'M';
 	require("dbconnect_mysqli.php");
-	if ($file_download < 1) 
+	if ($file_download < 1)
 		{echo "<!-- Switching back to Master server to log report run time $VARDB_server $db_source -->\n";}
 	}
 
@@ -2375,7 +2375,7 @@ function RecalculateHPD($query_date_BEGIN, $query_date_END, $time_BEGIN, $time_E
 	$SQsec = ( ($SQtime_ARY[0] * 3600) + ($SQtime_ARY[1] * 60) + ($SQtime_ARY[2] * 1) );
 	$EQsec = ( ($EQtime_ARY[0] * 3600) + ($EQtime_ARY[1] * 60) + ($EQtime_ARY[2] * 1) );
 
-	if (!$DURATIONday) 
+	if (!$DURATIONday)
 		{
 		$DURATIONsec = ($EQepoch - $SQepoch);
 		$DURATIONday = intval( MathZDC($DURATIONsec, 86400) + 1 );

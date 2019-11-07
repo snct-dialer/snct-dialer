@@ -8,7 +8,7 @@
 # kills CONGEST local channels every 15 seconds
 #
 # For the client program to work in ACQS mode, this program must be running
-# 
+#
 # put this in the cron to run every minute
 #
 # LICENSE: AGPLv3
@@ -31,7 +31,7 @@
 use Fcntl qw(:flock);
 # print "start of program $0\n";
 unless (flock(DATA, LOCK_EX|LOCK_NB)) {
-    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log'
     or print "Can't open the fscking file: $!";
     $datestring = localtime();
     print $fh "[$datestring] $0 is already running. Exiting.\n";
@@ -157,7 +157,7 @@ $stmtA = "SELECT channel FROM live_sip_channels where server_ip = '$server_ip' a
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
-	$rec_count=0; 
+	$rec_count=0;
 
 	while ($sthArows > $rec_count)
 		{
@@ -168,7 +168,7 @@ $stmtA = "SELECT channel FROM live_sip_channels where server_ip = '$server_ip' a
 		}
 		$sthA->finish();
 
-   
+
 
 $i=0;
 foreach(@congest_kill)
@@ -188,7 +188,7 @@ foreach(@congest_kill)
 		 &event_logger;
 
 		if ($DB) {print "KILLING $congest_kill[$i]\n";}
-		$affected_rows = $dbhA->do($stmtA); 
+		$affected_rows = $dbhA->do($stmtA);
 		}
 	$i++;
 	}
@@ -235,7 +235,7 @@ foreach(@congest_kill)
 
 			$event_string = "SUBRT|killing_congest|KC|$KCqueryCID|$congest_kill[$i]|$stmtA|";
 		 &event_logger;
-		
+
 		if ($DB) {print "KILLING $congest_kill[$i]\n";}
 		$affected_rows = $dbhA->do($stmtA);  # or die  "Couldn't execute query:\n";
 		}
@@ -285,7 +285,7 @@ foreach(@congest_kill)
 
 			$event_string = "SUBRT|killing_congest|KC|$KCqueryCID|$congest_kill[$i]|$stmtA|";
 		 &event_logger;
-		
+
 		if ($DB) {print "KILLING $congest_kill[$i]\n";}
 		$affected_rows = $dbhA->do($stmtA);  # or die  "Couldn't execute query:\n";
 		}
@@ -337,7 +337,7 @@ foreach(@congest_kill)
 
 			$event_string = "SUBRT|killing_congest|KC|$KCqueryCID|$congest_kill[$i]|$stmtA|";
 		 &event_logger;
-		
+
 		if ($DB) {print "KILLING $congest_kill[$i]\n";}
 			$affected_rows = $dbhA->do($stmtA);  # or die  "Couldn't execute query:\n";
 		}
@@ -384,7 +384,7 @@ $CIDdate = "$year$mon$mday$hour$min$sec";
 
 
 
-sub event_logger 
+sub event_logger
 {
 if ($SYSLOG)
 	{

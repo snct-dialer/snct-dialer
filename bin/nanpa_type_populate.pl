@@ -3,7 +3,7 @@
 # nanpa_type_populate.pl version 2.10
 #
 # DESCRIPTION:
-# This script is designed to filter the leads in a list by phone number and 
+# This script is designed to filter the leads in a list by phone number and
 # put the lead into a different list if it is a cellphone or invalid
 #
 # It is recommended that you run this program on the local Asterisk machine
@@ -176,7 +176,7 @@ if ($skip_download < 1)
 
 	if ($DB > 0) {print "\n  getting neustar.zip\n";}
 	$sftp = Net::SFTP::Foreign->new($PREFIX_SFTP_user . '@' . $PREFIX_SFTP_server, password => "$PREFIX_SFTP_pass", port => "$PREFIX_SFTP_port", more => "$sftp_more");
-	if ($DB > 0) 
+	if ($DB > 0)
 		{
 		$sftp->get("/$PREFIX_SFTP_user/_Databases/Neustar/neustar.zip", '/tmp/neustar.zip', callback => \&readcallback) or die "file transfer failed: " . $sftp->error;
 		}
@@ -189,7 +189,7 @@ if ($skip_download < 1)
 
 	if ($DB > 0) {print "\n  getting PrefixMasterList.zip\n";}
 	$sftpX = Net::SFTP::Foreign->new($PREFIX_SFTP_user . '@' . $PREFIX_SFTP_server, password => "$PREFIX_SFTP_pass", port => "$PREFIX_SFTP_port", more => "$sftp_more");
-	if ($DB > 0) 
+	if ($DB > 0)
 		{
 		$sftpX->get("/$PREFIX_SFTP_user/_Databases/WirelessPrefix/PrefixMasterList.zip", '/tmp/PrefixMasterList.zip', callback => \&readcallback) or die "file transfer failed: " . $sftpX->error;
 		}
@@ -320,16 +320,16 @@ if (!$Q) {print "TOTAL Elapsed time: ".($end_time-$start_time)." sec\n\n";}
 
 
 ### sftp callback subroutines
-sub writecallback 
+sub writecallback
 	{
 	my($sftp, $data, $offset, $size) = @_;
-	if ($DB > 0) 
+	if ($DB > 0)
 		{print STDERR "Wrote $offset / $size bytes\r";}
 	}
 
-sub readcallback 
+sub readcallback
 	{
 	my($sftp, $data, $offset, $size) = @_;
-	if ($DB > 0) 
+	if ($DB > 0)
 		{print STDERR "Read $offset / $size bytes\r";}
 	}

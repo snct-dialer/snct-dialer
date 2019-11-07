@@ -1,11 +1,11 @@
 #!/usr/bin/perl
 #
 # call_inbound.agi      version 2.6
-# 
+#
 # runs at the beginning and ending of every inbound call received
-# 
+#
 # You need to put lines similar to those below in your extensions.conf file:
-# 
+#
 # parameters for call_inbound.agi (7 fields separated by five dashes "-----"):
 # 1. the extension of the phone to ring as defined in the asterisk.phones table
 # 2. the phone number that was called, for the live_inbound/_log entry
@@ -14,8 +14,8 @@
 #
 # ;inbound calls:
 #exten => _*NXXNXXXXXX*3429,3,AGI(call_inbound.agi,spa2000-----8005553429-----Inbound 800-----x-----y-----z-----w)
-# 
-# 
+#
+#
 #
 # Copyright (C) 2013  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
@@ -119,7 +119,7 @@ if (length($ARGV[0])>1)
 	if ($AGILOG) {$agi_string = "$i|$ARGV[$i]";   &agi_output;}
 	$i++;
 	}
-	
+
 	### list of command-line array arguments:
 	@ARGV_vars = split(/-----/, $ARGV[0]);
 
@@ -204,7 +204,7 @@ while(<STDIN>) {
 
 if ($AGILOG) {$agi_string = "AGI Environment Dump:";   &agi_output;}
 
-foreach $i (sort keys %AGI) 
+foreach $i (sort keys %AGI)
 {
 	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
 }
@@ -239,7 +239,7 @@ if ($stage =~ /START/)
 
 
 ### call end stage
-else		 
+else
 	{
 	if ($AGILOG) {$agi_string = "CALL INBOUND HUNG UP; deleting live_inbound record for $unique_id";   &agi_output;}
 

@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # spreadsheet_sales_viewer.pl    version 2.0.5
-# 
+#
 # Copyright (C) 2008  Joe Johnson,Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 #
@@ -164,11 +164,11 @@ $rec_count=0;
 while ($sthArows > $rec_count)
 	{
 	@aryA = $sthA->fetchrow_array;
-	if (length($sales_number)==0 || $sales<$sales_number) 
+	if (length($sales_number)==0 || $sales<$sales_number)
 		{
 		$closers{"$aryA[1]"}[0]++;
 		$fronters{"$aryA[1]"}[0]++;
-		if ($aryA[0] eq "SALE") 
+		if ($aryA[0] eq "SALE")
 			{
 			$sales++;
 			$closers{"$aryA[1]"}[1]++;
@@ -194,10 +194,10 @@ if ($forc eq "F") {
 	while ($sthArows > $rec_count)
 		{
 		@aryA = $sthA->fetchrow_array;
-		if (!$sales_number || $sales<$sales_number) 
+		if (!$sales_number || $sales<$sales_number)
 			{
 			$closers{"$aryA[1]"}[0]++;
-			if ($aryA[0] eq "SALE") 
+			if ($aryA[0] eq "SALE")
 				{
 				$sales++;
 				$closers{"$aryA[1]"}[1]++;
@@ -212,7 +212,7 @@ if ($forc eq "F") {
 
 $x=3;
 $grand_total_time=0;
-foreach $closername (sort(keys(%closers))) 
+foreach $closername (sort(keys(%closers)))
 {
 	$closers{$closername}[0]+=0;
 	$closers{$closername}[1]+=0;
@@ -318,7 +318,7 @@ if ($forc eq "F") {
 	$terminateheader->set_num_format('0.00');
 
 	$xlsheet->write("D1", "Fronter stats", $rptheader);
-	$xlsheet->write("A2", "Fronter Name", $rptheader);	
+	$xlsheet->write("A2", "Fronter Name", $rptheader);
 	$xlsheet->write("B2", "# of calls", $rptheader);
 	$xlsheet->write("C2", "# of sales", $rptheader);
 	$xlsheet->write("D2", "Sales percentage", $rptheader);

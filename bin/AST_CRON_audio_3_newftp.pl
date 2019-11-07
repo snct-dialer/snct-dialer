@@ -2,10 +2,10 @@
 
 # AST_CRON_audio_3_newftp.pl   version 2.12
 #
-# This is a STEP-3 program in the audio archival process. Normally you can run it 
+# This is a STEP-3 program in the audio archival process. Normally you can run it
 # every 3 minutes and copies the recording files to an FTP server.
 #
-# put an entry into the cron of of your asterisk machine to run this script 
+# put an entry into the cron of of your asterisk machine to run this script
 # every 3 minutes or however often you desire
 #
 # ### recording mixing/compressing/ftping scripts
@@ -23,14 +23,14 @@
 # --gpg or --GPG = GnuPG encrypted files
 #
 # FLAGS FOR PING SETTINGS
-# --ping-type = The type of ping to send. Options are "none", "tcp", "udp", "icmp", 
+# --ping-type = The type of ping to send. Options are "none", "tcp", "udp", "icmp",
 #                 "stream", "syn", and "external". None disables pinging. Default is "icmp"
 #					WARNING setting --ping-type="none" can lead to files being "transfer" to no if your ftp server goes down.
 # --ping-timeout = How long to wait for the ping to timeout before giving up, default is 5 seconds.
 #
 # FLAGS FOR FTP TRANSFER INFO
 # --ftp-host = the host address to ftp into
-# --ftp-port = the port of the ftp server 
+# --ftp-port = the port of the ftp server
 # --ftp-user = the user to log into the ftp server with
 # --ftp-pass = the password to log into the ftp server with
 # --ftp-dir  = the directory to put the files into on the ftp server
@@ -41,13 +41,13 @@
 # --transfer-limit = the number of files to transfer before giving up. Default is 1000
 # --list-limit     = number of files to list in the directory before moving on
 # --no-date-dir    = does not create a date directory on the server for the files.
-# --campaign_id    = which OUTBOUND campaigns to transfer files for in a '-' delimited list 
-#                       (this only works for outbound calls, not inbound or transfers) 
+# --campaign_id    = which OUTBOUND campaigns to transfer files for in a '-' delimited list
+#                       (this only works for outbound calls, not inbound or transfers)
 # --ingroup_id     = which ingroups to transfer files for in a '-' delimited list
 #                       WARNING you can only set --campaign_id or --ingroup_id, not both.
 #
-# The following example will transfer 50 mp3s for the campaigns TESTCAMP1 and TESTCAMP2 to the ftp server. 
-# It will not create dated directories on the ftp server. It will send icmp pings to the server 
+# The following example will transfer 50 mp3s for the campaigns TESTCAMP1 and TESTCAMP2 to the ftp server.
+# It will not create dated directories on the ftp server. It will send icmp pings to the server
 # and wait at most 3 seconds for a response:
 # /usr/share/astguiclient/AST_CRON_audio_3_newftp.pl --no-date-dir --mp3 --ping-type="icmp" --ping-timeout=3 \
 #    --ftp-host="10.10.10.15" --ftp-port=21 --ftp-user="username" --ftp-pass="password" --ftp-dir="RECORDINGS" \
@@ -71,7 +71,7 @@
 use Fcntl qw(:flock);
 # print "start of program $0\n";
 unless (flock(DATA, LOCK_EX|LOCK_NB)) {
-    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log'
     or print "Can't open the fscking file: $!";
     $datestring = localtime();
     print $fh "[$datestring] $0 is already running. Exiting.\n";
@@ -217,7 +217,7 @@ if (length($ARGV[0])>1) {
 		print "  [--no-date-dir]        = does not put the files in a dated directory.\n";
 		print "  [--run-check]          = concurrency check, die if another instance is running\n";
 		print "  [--campaign_id]        = which OUTBOUND campaigns to transfer files for in a '-' delimited list \n";
-		print "                         (this only works for outbound calls, not inbound or transfers)\n"; 
+		print "                         (this only works for outbound calls, not inbound or transfers)\n";
 		print "  [--ingroup_id]         = which ingroups to transfer files for in a '-' delimited list\n";
 		print "                         WARNING you can only set --campaign_id or --ingroup_id, not both.\n";
 		print "\n";
@@ -390,7 +390,7 @@ if (length($ARGV[0])>1) {
 		}
 	}
 }
-	
+
 #### make sure they are not trying to do something we cannot do ####
 if (($camp_check) && ($ingrp_check)) {
 	print "ERROR. You cannot specify ingroups and campaigns in the same instance of this script.\n";
@@ -414,7 +414,7 @@ if ($run_check > 0)
 	my $grepout = `/bin/ps ax | grep $0 | grep -v grep | grep -v '/bin/sh'`;
 	my $grepnum=0;
 	$grepnum++ while ($grepout =~ m/\n/g);
-	if ($grepnum > 1) 
+	if ($grepnum > 1)
 		{
 		if ($debug) {print "I am not alone! Another $0 is running! Exiting...\n";}
 		exit;
@@ -473,7 +473,7 @@ foreach(@files)	{
 	$file_loop_count++;
 	if ($files_that_count >= $list_limit) {
 		last();
-	}		
+	}
 }
 
 ### sleep 5 seconds
@@ -498,7 +498,7 @@ $file_loop_count=0;
 $files_that_count=0;
 foreach(@files)	{
 	if ($debug) {print "\n\n\n--------NEW-FILE-------------------------------------------------------------------------------------------\n";}
-	$transfer_file=0;	
+	$transfer_file=0;
 	$FILEsize2[$file_loop_count] = 0;
 
 	if ( (length($files[$file_loop_count]) > 4) && (!-d "$directory/$files[$file_loop_count]") ) {
@@ -507,7 +507,7 @@ foreach(@files)	{
 		if ($debug) {
 			print "$directory/$files[$file_loop_count] $FILEsize2[$file_loop_count]\n";
 		}
-		
+
 		if ($FILEsize1[$file_loop_count] ne $FILEsize2[$file_loop_count]) {
 			if ($debugX) {print "not transfering $directory/$files[$file_loop_count]. File size mismatch $FILEsize2[$file_loop_count] != $FILEsize1[$file_loop_count]\n";}
 		}
@@ -538,7 +538,7 @@ foreach(@files)	{
 			if ($debug) {
 				print "|$camp_check|$recording_id|$start_date|$ALLfile|$SQLFILE|\n";
 			}
-			
+
 			### are we doing a campaign check
 			if ($camp_check) {
 				my $vici_log_db_stmt = "select campaign_id from vicidial_log where uniqueid=$vicidial_id and lead_id=$lead_id;";
@@ -547,7 +547,7 @@ foreach(@files)	{
 				if ($sthArows > 0) {
 					my @aryA = $vici_log_sth->fetchrow_array;
 					my $campaign_id = "$aryA[0]";
-					
+
 					if($debug){print STDERR "\n|$ALLfile is in the $campaign_id campaign.|\n";}
 
 					# loop through the campaigns they want to transfer
@@ -558,9 +558,9 @@ foreach(@files)	{
 							if($debug){print STDERR "\n|$_ is in the list of campaigns.|\n";}
 						}
 					}
-					if(($debug) && ($transfer_file == 0)) {print STDERR "\n|$campaign_id is not in the list of campaigns.|\n";}			
+					if(($debug) && ($transfer_file == 0)) {print STDERR "\n|$campaign_id is not in the list of campaigns.|\n";}
 				}
-				$vici_log_sth->finish();				
+				$vici_log_sth->finish();
 			} else {
 				### are we doing an ingroup check
 				if ($ingrp_check) {
@@ -569,8 +569,8 @@ foreach(@files)	{
 					my $sthArows=$clsr_log_sth->rows;
 					if ($sthArows > 0) {
 						my @aryA = $clsr_log_sth->fetchrow_array;
-						my $ingroup_id = "$aryA[0]";	
-						
+						my $ingroup_id = "$aryA[0]";
+
 						if($debug){print STDERR "\n|$ALLfile is in the $ingroup_id ingroup.|\n";}
 
 						# loop through the ingroups they want to transfer
@@ -598,14 +598,14 @@ foreach(@files)	{
 					$ping_good = $ping->ping("$ftp_host");
 					if($debug){print "Ping result: $ping_good\n";}
 				}
-				
+
 				### if the ping came back okay or if we are not pinging the server
-				if (($ping_good) || ($pingtype eq "none")) {	
+				if (($ping_good) || ($pingtype eq "none")) {
 					if($debug) {
 						print STDERR "Transfering the file\n";
 					}
 					$transfered_files++;
-					
+
 					my $start_date_PATH='';
 					my $ftp = Net::FTP->new("$ftp_host", Port => $ftp_port, Debug => $debugX);
 					$ftp->login("$ftp_user","$ftp_pass");
@@ -619,29 +619,29 @@ foreach(@files)	{
 					$ftp->binary();
 					$ftp->put("$directory/$ALLfile", "$ALLfile");
 					$ftp->quit;
-	
+
 					my $update_log_db_stmt = "UPDATE recording_log set location='$url_path/$start_date_PATH$ALLfile' where recording_id='$recording_id';";
 					if($debug){print STDERR "\n|$update_log_db_stmt|\n";}
-					my $affected_rows = $update_log_sth->execute("$url_path/$start_date_PATH$ALLfile",$recording_id) 
+					my $affected_rows = $update_log_sth->execute("$url_path/$start_date_PATH$ALLfile",$recording_id)
 						or die "executing: $rec_log_db_stmt ", $dbhA->errstr;
-	
+
 					if (!$test)	{
 						if($debugX) {
 							print STDERR "Moving file from $directory/$ALLfile to $PATHDONEmonitor/FTP/$ALLfile\n";
 						}
 						`mv -f "$directory/$ALLfile" "$PATHDONEmonitor/FTP/$ALLfile"`;
 					}
-					
+
 					if($debugX){
 						print STDERR "Transfered $transfered_files files\n";
 					}
-					
+
 					if ( $transfered_files == $trans_limit) {
 						if($debug) {
 							print STDERR "Transfer limit of $trans_limit reached breaking out of the loop\n";
 						}
 						last();
-					}	
+					}
 				} else {
 					if($debug){
 						print "ERROR: Could not ping server $ftp_host\n";

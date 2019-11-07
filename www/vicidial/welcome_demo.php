@@ -1,7 +1,7 @@
 <?php
 # welcome_demo.php - VICIDIAL welcome Demo page
-# 
-# 
+#
+#
 # Copyright (C) 2014  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 # CHANGELOG:

@@ -1,6 +1,6 @@
 <?php
 # DNCcom_inbound_filter.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script searches DNC.COM's scrub service for incoming DID phone numbers
@@ -17,7 +17,7 @@
 #INBOUND_FILTER => USADNC,PROJDNC,LITIGATOR,INVALID
 #
 # to reduce load for redundant requests, you can enable
-# searching of the recent query cache to DNC.com. Set this 
+# searching of the recent query cache to DNC.com. Set this
 # to the number of days' results you want to search through.
 # Default is 0 for disabled.
 #INBOUND_CACHE => 0
@@ -121,12 +121,12 @@ if ($SC_count > 0)
 
 			$p++;
 			}
-		if (strlen($in_filter_override)>5) 
+		if (strlen($in_filter_override)>5)
 			{
 			if ($DB) {echo "FILTER OVERRIDE: $in_filter_override|$in_filter\n";}
 			$in_filter = $in_filter_override;
 			}
-		if (strlen($in_cache_override)>0) 
+		if (strlen($in_cache_override)>0)
 			{
 			if ($DB) {echo "CACHE OVERRIDE: $in_cache_override|$in_cache\n";}
 			$in_cache = $in_cache_override;

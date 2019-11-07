@@ -1,7 +1,7 @@
 Notes on the non-English language translations(QXZ process)	Started: 2014-11-18	Updated: 2015-01-06
 
 
-Summary: 
+Summary:
 
 In the 2.10 branch, we converted from a static build process for non-English languages of the agent and admin web interfaces, to a dynamic load-time process. This necessitated creating a new function in the agent and admin web interface functions.php files to facilitate the printing or echoing of text and image names within PHP. We call this function QXZ.
 

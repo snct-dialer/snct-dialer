@@ -50,7 +50,7 @@ AS OF RELEASE 2.2.0 YOU SHOULD NOT HAVE TO TAKE ANY STEPS BEYOND STEP 2 IN THIS 
 
 
 
-1. The VICIDIAL/Asterisk servers need to have all of the perl scripts and cron jobs installed on them, except these which only need to be on one of the servers: 
+1. The VICIDIAL/Asterisk servers need to have all of the perl scripts and cron jobs installed on them, except these which only need to be on one of the servers:
 	- AST_VDhopper.pl  (crontab)
 	- AST_cleanup_agent_log.pl  (crontab)
 	- ADMIN_adjust_GMTnow_on_leads.pl  (crontab)
@@ -74,7 +74,7 @@ AS OF RELEASE 2.2.0 YOU SHOULD NOT HAVE TO TAKE ANY STEPS BEYOND STEP 2 IN THIS 
 
 (NOTE: the install.pl script now has an option to generate the following settings and print them out to the screen so that you do not have to manually build them. ./install.pl --build_multiserver_conf)
 3. The two servers need to be registered to each other as IAX2 friends:
-  SERVER ONE(ASTtest1-10.10.10.15) 
+  SERVER ONE(ASTtest1-10.10.10.15)
     iax.conf:
 	register => ASTtest1:test@10.10.10.16
 
@@ -88,7 +88,7 @@ AS OF RELEASE 2.2.0 YOU SHOULD NOT HAVE TO TAKE ANY STEPS BEYOND STEP 2 IN THIS 
 	secret=test
 	qualify=yes
 
-  SERVER TWO(ASTtest2-10.10.10.16) 
+  SERVER TWO(ASTtest2-10.10.10.16)
     iax.conf:
 	register => ASTtest2:test@10.10.10.15
 
@@ -104,9 +104,9 @@ AS OF RELEASE 2.2.0 YOU SHOULD NOT HAVE TO TAKE ANY STEPS BEYOND STEP 2 IN THIS 
 
 
 4. The two servers need to have wildcard extensions assigned to the other server in the dialplan:
-  ## NOTE: the "010*010*010*015" is the IP address of the server as defined in 
+  ## NOTE: the "010*010*010*015" is the IP address of the server as defined in
            the /etc/astguiclient.conf file
-  SERVER ONE(ASTtest1-10.10.10.15) 
+  SERVER ONE(ASTtest1-10.10.10.15)
     extensions.conf:
 	[globals]
 	TRUNKIAX2=IAX2/ASTtest1:test@10.10.10.16
@@ -118,7 +118,7 @@ AS OF RELEASE 2.2.0 YOU SHOULD NOT HAVE TO TAKE ANY STEPS BEYOND STEP 2 IN THIS 
 	exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 	exten => _78600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 
-  SERVER TWO(ASTtest2-10.10.10.16) 
+  SERVER TWO(ASTtest2-10.10.10.16)
     extensions.conf:
 	[globals]
 	TRUNKIAX1=IAX2/ASTtest2:test@10.10.10.15
@@ -239,7 +239,7 @@ THREE VICIDIAL SERVER LOAD BALANCING SETUP:
 The only steps that are different as you add more load-balanced servers are steps 2 and 3:
 
 3. The three servers need to be registered to each other as IAX2 friends:
-  SERVER ONE(ASTtest1-10.10.10.15) 
+  SERVER ONE(ASTtest1-10.10.10.15)
     iax.conf:
 	register => ASTtest1:test@10.10.10.16
 	register => ASTtest1:test@10.10.10.17
@@ -264,7 +264,7 @@ The only steps that are different as you add more load-balanced servers are step
 	secret=test
 	qualify=yes
 
-  SERVER TWO(ASTtest2-10.10.10.16) 
+  SERVER TWO(ASTtest2-10.10.10.16)
     iax.conf:
 	register => ASTtest2:test@10.10.10.15
 	register => ASTtest2:test@10.10.10.17
@@ -289,7 +289,7 @@ The only steps that are different as you add more load-balanced servers are step
 	secret=test
 	qualify=yes
 
-  SERVER THREE(ASTtest3-10.10.10.17) 
+  SERVER THREE(ASTtest3-10.10.10.17)
     iax.conf:
 	register => ASTtest3:test@10.10.10.15
 	register => ASTtest3:test@10.10.10.16
@@ -316,7 +316,7 @@ The only steps that are different as you add more load-balanced servers are step
 
 
 4. The three servers need to have wildcard extensions assigned to the other server in the dialplan:
-  SERVER ONE(ASTtest1-10.10.10.15) 
+  SERVER ONE(ASTtest1-10.10.10.15)
     extensions.conf:
 	[globals]
 	TRUNKIAX2=IAX2/ASTtest1:test@10.10.10.16
@@ -330,7 +330,7 @@ The only steps that are different as you add more load-balanced servers are step
 	exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 	exten => _78600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 
-  SERVER TWO(ASTtest2-10.10.10.16) 
+  SERVER TWO(ASTtest2-10.10.10.16)
     extensions.conf:
 	[globals]
 	TRUNKIAX1=IAX2/ASTtest2:test@10.10.10.15
@@ -350,7 +350,7 @@ The only steps that are different as you add more load-balanced servers are step
 	exten => 8500,1,Dial(${TRUNKIAX1}/${EXTEN},55,o)
 	exten => 8501,1,Dial(${TRUNKIAX1}/${EXTEN},55,o)
 
-  SERVER THREE(ASTtest3-10.10.10.17) 
+  SERVER THREE(ASTtest3-10.10.10.17)
     extensions.conf:
 	[globals]
 	TRUNKIAX1=IAX2/ASTtest2:test@10.10.10.15

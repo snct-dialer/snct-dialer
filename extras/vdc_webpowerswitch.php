@@ -1,6 +1,6 @@
 <?php
 # vdc_webpowerswitch.php
-# 
+#
 # Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed to send a URL command to turn off or on an outlet on

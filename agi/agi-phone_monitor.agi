@@ -2,7 +2,7 @@
 #
 # agi-phone_monitor.agi      version 2.8
 #
-# This script is designed to allow managers to listen to agent sessions by 
+# This script is designed to allow managers to listen to agent sessions by
 # dialing a phone exten number or user ID number. For this to work, the user ID
 # or phone extension must be only digits. If you are using the phone extension,
 # then all phone extensions on the system must be unique.
@@ -106,7 +106,7 @@ if (length($ARGV[0])>1)
 		if ($AGILOG) {$agi_string = "$i|$ARGV[$i]";   &agi_output;}
 		$i++;
 		}
-	
+
 	### list of command-line array arguments:
 	@ARGV_vars = split(/---/, $ARGV[0]);
 
@@ -125,7 +125,7 @@ if ( (length($barge_listen) < 1) || ($barge_listen !~ /BARGE|LISTEN/) )
 
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 	{
 	chomp;
 	last unless length($_);
@@ -189,7 +189,7 @@ $entry_chances=0;
 $VALID_login=0;
 $ACTIVE_login=0;
 $VDADremDIALstr='';
-while ( ($entry_chances < 3) && ($VALID_login < 1) ) 
+while ( ($entry_chances < 3) && ($VALID_login < 1) )
 	{
 	$entry_chances++;
 
@@ -217,7 +217,7 @@ while ( ($entry_chances < 3) && ($VALID_login < 1) )
 		}
 	$sthA->finish();
 
-	if ($VALID_login > 0) 
+	if ($VALID_login > 0)
 		{
 		$AGI->stream_file('pin-number-accepted');
 		}
@@ -236,7 +236,7 @@ while ( ($entry_chances < 3) && ($VALID_login < 1) )
 
 
 
-if ($VALID_login < 1) 
+if ($VALID_login < 1)
 	{
 	if ($AGILOG) {$agi_string = "PHONE MONITOR END: Invalid Login   |$VALID_login|$PIN_number|";   &agi_output;}
 
@@ -311,7 +311,7 @@ else
 		}
 	$sthA->finish();
 
-	if ($ACTIVE_login < 1) 
+	if ($ACTIVE_login < 1)
 		{
 		if ($AGILOG) {$agi_string = "PHONE MONIOR END: Inactive Login   |$VALID_login|$PIN_number|$PASS_word|  |$ACTIVE_login|$PDtsSQLdate|$stmtA|";   &agi_output;}
 
@@ -371,9 +371,9 @@ else
 		$S='*';
 		if( $VDADserver_ip =~ m/(\S+)\.(\S+)\.(\S+)\.(\S+)/ )
 			{
-			$a = leading_zero($1); 
-			$b = leading_zero($2); 
-			$c = leading_zero($3); 
+			$a = leading_zero($1);
+			$b = leading_zero($2);
+			$c = leading_zero($3);
 			$d = leading_zero($4);
 			# use double-star prefix to go through native bridge IAX path
 			$VDADremDIALstr = "$S$S$a$S$b$S$c$S$d$S";
@@ -425,7 +425,7 @@ sub user_phone_gather
 
 	$interrupt_digit='';
 
-	$interrupt_digit = $AGI->stream_file('ld_welcome_pin_number','0123456789');   
+	$interrupt_digit = $AGI->stream_file('ld_welcome_pin_number','0123456789');
 
 		print STDERR "interrupt_digit |$interrupt_digit|\n";
 
@@ -445,7 +445,7 @@ sub user_phone_gather
 		if ($interrupt_digit == 55) {$interrupt_digit=7;}
 		if ($interrupt_digit == 56) {$interrupt_digit=8;}
 		if ($interrupt_digit == 57) {$interrupt_digit=9;}
-		
+
 		$PIN_number=$interrupt_digit;
 		}
 
@@ -464,7 +464,7 @@ sub user_phone_gather
 			{
 			$digits_being_entered=0;
 			}
-		
+
 		$digit_loop_counter++;
 		}
 
@@ -493,7 +493,7 @@ sub get_time_now	#get the current date and time and epoch for logging call lengt
 
 
 
-sub checkresult 
+sub checkresult
 	{
 	my ($res) = @_;
 	my $retval;
@@ -501,18 +501,18 @@ sub checkresult
 	chomp $res;
 	if ($res =~ /^200/) {
 		$res =~ /result=(-?\d+)/;
-		if (!length($1)) 
+		if (!length($1))
 			{
 			print STDERR "FAIL ($res)\n";
 			$fail++;
-			} 
-		else 
+			}
+		else
 			{
 			print STDERR "PASS ($1)\n";
 			$pass++;
 			}
-		} 
-	else 
+		}
+	else
 		{
 		print STDERR "FAIL (unexpected result '$res')\n";
 		$fail++;
@@ -535,7 +535,7 @@ sub agi_output
 	$agi_string='';
 	}
 
-sub leading_zero($) 
+sub leading_zero($)
 	{
 	$_ = $_[0];
 	s/^(\d)$/0$1/;

@@ -1,4 +1,4 @@
-<?php 
+<?php
 #
 # Modul Check Character Set
 #
@@ -17,9 +17,9 @@ $mod_check_character_set_version = '0.1.0';
 $build = '171012-1157';
 
 
-# function VDTrimStrings 
+# function VDTrimStrings
 # Input: $Input string to Trim
-#        $Type integer Standart 0. function list see below    
+#        $Type integer Standart 0. function list see below
 # Output: Trimed string.
 #
 # Type functions:

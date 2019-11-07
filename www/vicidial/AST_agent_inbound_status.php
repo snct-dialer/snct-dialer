@@ -1,6 +1,6 @@
-<?php 
+<?php
 # AST_agent_inbound_status.php
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -410,7 +410,7 @@ if ($file_download < 1)
 	echo "<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 	echo "<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 	require("chart_button.php");
-	echo "<script src='chart/Chart.js'></script>\n"; 
+	echo "<script src='chart/Chart.js'></script>\n";
 	echo "<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
 
 	echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
@@ -436,26 +436,26 @@ if ( (strlen($group[0]) < 1) or (strlen($user_group[0]) < 1) )
 
 else
 	{
-	if ($shift == 'AM') 
+	if ($shift == 'AM')
 		{
 		$time_BEGIN=$AM_shift_BEGIN;
 		$time_END=$AM_shift_END;
-		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}   
+		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}
 		if (strlen($time_END) < 6) {$time_END = "15:14:59";}
 		}
-	if ($shift == 'PM') 
+	if ($shift == 'PM')
 		{
 		$time_BEGIN=$PM_shift_BEGIN;
 		$time_END=$PM_shift_END;
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "15:15:00";}
 		if (strlen($time_END) < 6) {$time_END = "23:15:00";}
 		}
-	if ($shift == 'ALL') 
+	if ($shift == 'ALL')
 		{
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}
 		if (strlen($time_END) < 6) {$time_END = "23:59:59";}
 		}
-	$query_date_BEGIN = "$query_date $time_BEGIN";   
+	$query_date_BEGIN = "$query_date $time_BEGIN";
 	$query_date_END = "$end_date $time_END";
 
 	if ($file_download < 1)
@@ -486,7 +486,7 @@ else
 	$user_namesARY[0]='';
 	$k=0;
 
-	if ($show_defunct_users) 
+	if ($show_defunct_users)
 		{
 		$user_stmt="SELECT distinct '' as full_name, user from ".$closer_log_table." where call_date <= '$query_date_END' and call_date >= '$query_date_BEGIN'  and status is not null $group_SQL $user_group_SQL order by user asc";
 		}
@@ -502,7 +502,7 @@ else
 	$full_name=array();
 	$user=array();
 	$status=array();
-	while($q<mysqli_num_rows($user_rslt)) 
+	while($q<mysqli_num_rows($user_rslt))
 		{
 		$user_row=mysqli_fetch_row($user_rslt);
 
@@ -510,17 +510,17 @@ else
 			{
 			$defunct_user_stmt="SELECT full_name,user_group from vicidial_users where user='$user_row[1]'";
 			$defunct_user_rslt=mysql_to_mysqli($defunct_user_stmt, $link);
-			if (mysqli_num_rows($defunct_user_rslt)>0) 
+			if (mysqli_num_rows($defunct_user_rslt)>0)
 				{
 				$defunct_user_row=mysqli_fetch_row($defunct_user_rslt);
 				$full_name_val=$defunct_user_row[0];
-				} 
-			else 
+				}
+			else
 				{
 				$full_name_val=$user_row[1];
 				}
 			}
-		else 
+		else
 			{
 			$full_name_val=$user_row[0];
 			}
@@ -538,7 +538,7 @@ else
 		$q++;
 		}
 
-	if ($show_defunct_users) 
+	if ($show_defunct_users)
 		{
 		$status_stmt="SELECT distinct status from ".$closer_log_table." where call_date <= '$query_date_END' and call_date >= '$query_date_BEGIN' and status is not null $group_SQL $user_group_SQL order by status";
 		}
@@ -551,11 +551,11 @@ else
 	$status_rslt=mysql_to_mysqli($status_stmt, $link);
 	$q=0;
 	$status_rows_to_print=0; $sub_status_count=0;
-	while($status_row=mysqli_fetch_row($status_rslt)) 
+	while($status_row=mysqli_fetch_row($status_rslt))
 		{
 		$current_status=$status_row[0];
 
-		if ($show_defunct_users) 
+		if ($show_defunct_users)
 			{
 			$stmt="SELECT count(*) as calls,'' as full_name,user,status from ".$closer_log_table." where call_date <= '$query_date_END' and call_date >= '$query_date_BEGIN' and status='$current_status' $group_SQL $user_group_SQL group by user,full_name,status order by full_name,user,status desc limit 500000;";
 			}
@@ -567,7 +567,7 @@ else
 		if ($DB) {echo "$stmt\n";}
 		$status_rows_to_print = mysqli_num_rows($rslt);
 		$rows_to_print+=$status_rows_to_print;
-		$i=0; 
+		$i=0;
 		while ($i < $status_rows_to_print)
 			{
 			$row=mysqli_fetch_row($rslt);
@@ -576,17 +576,17 @@ else
 				{
 				$defunct_user_stmt="SELECT full_name,user_group from vicidial_users where user='$row[2]'";
 				$defunct_user_rslt=mysql_to_mysqli($defunct_user_stmt, $link);
-				if (mysqli_num_rows($defunct_user_rslt)>0) 
+				if (mysqli_num_rows($defunct_user_rslt)>0)
 					{
 					$defunct_user_row=mysqli_fetch_row($defunct_user_rslt);
 					$full_name_val=$defunct_user_row[0];
-					} 
-				else 
+					}
+				else
 					{
 					$full_name_val=$row[2];
 					}
 				}
-			else 
+			else
 				{
 				$full_name_val=$row[1];
 				}
@@ -710,7 +710,7 @@ else
 						}
 
 					if ($calls[$i]>$$max_varname) {$$max_varname=$calls[$i];}
-					$graph_stats[$m][(4+$n)]=$calls[$i];					
+					$graph_stats[$m][(4+$n)]=$calls[$i];
 
 					$SstatusTXT = sprintf("%8s", $calls[$i]);
 					$SstatusesHTML .= " $SstatusTXT |";
@@ -750,7 +750,7 @@ else
 				{
 				if ( ($Suser=="$user[$i]") and ($Sstatus=="$status[$i]") )
 					{
-					$SstatusTXTpct = sprintf("%6.1f", (100*($calls[$i]/$Scalls))); # 
+					$SstatusTXTpct = sprintf("%6.1f", (100*($calls[$i]/$Scalls))); #
 					$SstatusesHTMLpct .= " $SstatusTXTpct % |";
 					$SHTML_statusespct .= "<td align='center'><font size=1 face=\"Arial,Helvetica\">(".trim($SstatusTXTpct)."%)</td>";
 					$SstatusesFILEpct .= trim($SstatusTXTpct)."%,";
@@ -769,18 +769,18 @@ else
 			}
 		### END loop through each status ###
 
-		if ($file_download<1) 
+		if ($file_download<1)
 			{
 			if ($non_latin < 1)
 				{
-				 $Sfull_name=	sprintf("%-25s", $Sfull_name); 
+				 $Sfull_name=	sprintf("%-25s", $Sfull_name);
 					while(strlen($Sfull_name)>25) {$Sfull_name = substr("$Sfull_name", 0, -1);}
 				 $Suser =		sprintf("%-8s", $Suser);
 					while(strlen($Suser)>8) {$Suser = substr("$Suser", 0, -1);}
 				}
 			else
-				{	
-					$Sfull_name=	sprintf("%-75s", $Sfull_name); 
+				{
+					$Sfull_name=	sprintf("%-75s", $Sfull_name);
 				 while(mb_strlen($Sfull_name,'utf-8')>25) {$Sfull_name = mb_substr("$Sfull_name", 0, -1,'utf-8');}
 
 					$Suser =	sprintf("%-24s", $Suser);
@@ -811,7 +811,7 @@ else
 			if ($m%2==0) {$bgcolor=$SSstd_row2_background;} else {$bgcolor=$SSstd_row1_background;}
 			$ToutputHTML  = "<tr bgcolor='$bgcolor'><td align='center'><font size=2 face=\"Arial,Helvetica\">$Sfull_name</td><td align='center'><a href=\"./user_stats.php?user=$RAWuser\"><font size=2 face=\"Arial,Helvetica\">$Suser</a></td><td align='center'><font size=2 face=\"Arial,Helvetica\">$Scalls</td><td align='center'><font size=2 face=\"Arial,Helvetica\">$CIScount</td><td align='center'><font size=2 face=\"Arial,Helvetica\">$DNCcountPCTs%</td>$SHTML_statuses</tr>\n";
 			$ToutputHTML .= "<tr bgcolor='$bgcolor'><td colspan='5'><font size=1 face=\"Arial,Helvetica\">&nbsp;</td>$SHTML_statusespct</tr>\n";
-			
+
 			# $graph_stats[$m][0]=trim("$user_namesARY[$m] - $usersARY[$m]");
 			}
 		else
@@ -964,7 +964,7 @@ else
 			}
 		else
 			{
-			$SstatusTXTpct = sprintf("%6.1f", (100*($Scalls/$TOTcalls))); # 
+			$SstatusTXTpct = sprintf("%6.1f", (100*($Scalls/$TOTcalls))); #
 			$SUMstatusesHTMLpct .= " $SstatusTXTpct % |";
 			$SUMHTML_statusespct .= "<th><font size=1 face=\"Arial,Helvetica\">(".trim($SstatusTXTpct)."%)</th>";
 			$SUMstatusesFILEpct .= trim($SstatusTXTpct)."%,";
@@ -1021,15 +1021,15 @@ else
 		}
 
 		$default_graph="bar"; # Graph that is initally displayed when page loads
-		include("graph_color_schemas.inc"); 
+		include("graph_color_schemas.inc");
 
 		$graph_totals_array=array();
 		$graph_totals_rawdata=array();
 		for ($q=0; $q<count($graph_array); $q++) {
-			$graph_info=explode("|", $graph_array[$q]); 
+			$graph_info=explode("|", $graph_array[$q]);
 			$current_graph_total=0;
 			$dataset_name=$graph_info[0];
-			$dataset_index=$graph_info[1]; 
+			$dataset_index=$graph_info[1];
 			$dataset_type=$graph_info[3];
 
 			$JS_text.="var $dataset_name = {\n";
@@ -1047,7 +1047,7 @@ else
 			$graphConstantsC="\t\t\t\thoverBorderColor: [";
 			for ($d=0; $d<count($graph_stats); $d++) {
 				$labels.="\"".preg_replace('/ +/', ' ', $graph_stats[$d][0])."\",";
-				$data.="\"".$graph_stats[$d][$dataset_index]."\","; 
+				$data.="\"".$graph_stats[$d][$dataset_index]."\",";
 				$current_graph_total+=$graph_stats[$d][$dataset_index];
 				$bgcolor=$backgroundColor[($d%count($backgroundColor))];
 				$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
@@ -1055,13 +1055,13 @@ else
 				$graphConstantsA.="\"$bgcolor\",";
 				$graphConstantsB.="\"$hbgcolor\",";
 				$graphConstantsC.="\"$hbcolor\",";
-			}	
+			}
 			$graphConstantsA.="],\n";
 			$graphConstantsB.="],\n";
 			$graphConstantsC.="],\n";
 			$labels=preg_replace('/,$/', '', $labels)."],\n";
 			$data=preg_replace('/,$/', '', $data)."],\n";
-			
+
 			$graph_totals_rawdata[$q]=$current_graph_total;
 			switch($dataset_type) {
 				case "time":
@@ -1245,7 +1245,7 @@ if ($report_display_type=="HTML")
 	{
 	echo $HTML_text;
 	}
-else 
+else
 	{
 	echo $ASCII_text;
 	}

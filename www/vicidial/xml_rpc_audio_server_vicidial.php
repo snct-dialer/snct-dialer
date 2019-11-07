@@ -1,11 +1,11 @@
-<?php 
+<?php
 # xml_rpc_audio_server_vicidial.php
-# 
+#
 # Used for integration with QueueMetrics of audio recordings
 #
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 # Copyright (C) 2007  Lenz Emilitri <lenz.loway@gmail.com> LICENSE: ????
-# 
+#
 # CHANGES
 # 90525-1141 - First build
 # 90529-2041 - Added Realtime monitoring
@@ -27,15 +27,15 @@
 // the 'default.audioRpcServer' property.
 //
 // In order to make it very easy to customize, you should change the contents of the
-// functions 'find_file()' and 'listen_call()' only. You can populate some or all of the 
+// functions 'find_file()' and 'listen_call()' only. You can populate some or all of the
 // return fields, according to the data you actually have. As the calling user is passed along,
 // it's pretty easy to log who listened to which calls if you need to do it.
-// 
+//
 //
 // IMPORTANT:
 // in order to run this, you must have the XML_RPC module that comes with the PEAR library
-// correctly installed on your PHP server. See http://pear.php.net 
-// on OpenSuSE: 
+// correctly installed on your PHP server. See http://pear.php.net
+// on OpenSuSE:
 //     sudo zypper install php5-pear
 //     sudo zypper install php5-pear-xml_rpc
 //     sudo zypper install php5-pear-xml_parser
@@ -63,7 +63,7 @@ $FILE_FOUND      = false;
 $FILE_LISTEN_URL = "";
 $FILE_LENGTH     = "";
 $FILE_ENCODING   = "";
-$FILE_DURATION   = ""; 
+$FILE_DURATION   = "";
 
 // Listening to an ongoing call
 $CALL_FOUND        = false;
@@ -75,7 +75,7 @@ $CALL_POPUP_HEIGHT = "";
 //
 // This function must be implemented by the user.
 //
-function find_file( $ServerID, $AsteriskID, $QMUserID, $QMUserName ) 
+function find_file( $ServerID, $AsteriskID, $QMUserID, $QMUserName )
 	{
 	global $FILE_FOUND;
 	global $FILE_LISTEN_URL;
@@ -207,13 +207,13 @@ function find_file( $ServerID, $AsteriskID, $QMUserID, $QMUserName )
 					$stmt="select count(*) from servers where server_ip='$URLserver_ip';";
 					$rsltx=mysql_to_mysqli($stmt, $link);
 					$rowx=mysqli_fetch_row($rsltx);
-					
+
 					if ($rowx[0] > 0)
 						{
 						$stmt="select recording_web_link,alt_server_ip from servers where server_ip='$URLserver_ip';";
 						$rsltx=mysql_to_mysqli($stmt, $link);
 						$rowx=mysqli_fetch_row($rsltx);
-						
+
 						if (preg_match("/ALT_IP/i",$rowx[0]))
 							{
 							$location = preg_replace("/$URLserver_ip/i", "$rowx[1]", $location);
@@ -222,7 +222,7 @@ function find_file( $ServerID, $AsteriskID, $QMUserID, $QMUserName )
 					$FILE_FOUND      = true;
 					$FILE_LISTEN_URL = "$location";
 					$FILE_LENGTH     = "$filesize";
-					$FILE_ENCODING   = "$extension";	
+					$FILE_ENCODING   = "$extension";
 					$FILE_DURATION   = sec_convert($length_in_sec,'H');
 					$FIND_LAST       = "FOUND";
 					}
@@ -231,7 +231,7 @@ function find_file( $ServerID, $AsteriskID, $QMUserID, $QMUserName )
 					$FILE_FOUND      = false;
 					$FILE_LISTEN_URL = "";
 					$FILE_LENGTH     = "0";
-					$FILE_ENCODING   = "wav";	
+					$FILE_ENCODING   = "wav";
 					$FILE_DURATION   = "0:00";
 					$FIND_LAST       = "No Location: $stmt";
 					}
@@ -241,7 +241,7 @@ function find_file( $ServerID, $AsteriskID, $QMUserID, $QMUserName )
 				$FILE_FOUND      = false;
 				$FILE_LISTEN_URL = "";
 				$FILE_LENGTH     = "0";
-				$FILE_ENCODING   = "wav";	
+				$FILE_ENCODING   = "wav";
 				$FILE_DURATION   = "0:00";
 				$FIND_LAST       = "$stmt";
 				}
@@ -251,7 +251,7 @@ function find_file( $ServerID, $AsteriskID, $QMUserID, $QMUserName )
 			$FILE_FOUND      = false;
 			$FILE_LISTEN_URL = "";
 			$FILE_LENGTH     = "0";
-			$FILE_ENCODING   = "wav";	
+			$FILE_ENCODING   = "wav";
 			$FILE_DURATION   = "0:00";
 			$FIND_LAST       = "$stmt";
 			}
@@ -268,11 +268,11 @@ function find_file( $ServerID, $AsteriskID, $QMUserID, $QMUserName )
 #	$FILE_FOUND      = true;
 #	$FILE_LISTEN_URL = "http://listennow.server/$ServerID/$AsteriskID/$QMUserID/$QMUserName";
 #	$FILE_LENGTH     = "125000";
-#	$FILE_ENCODING   = "mp3";	
-#	$FILE_DURATION   = "1:12"; 	
+#	$FILE_ENCODING   = "mp3";
+#	$FILE_DURATION   = "1:12";
 	}
 
-function listen_call( $ServerID, $AsteriskID, $Agent, $QMUserID, $QMUserName ) 
+function listen_call( $ServerID, $AsteriskID, $Agent, $QMUserID, $QMUserName )
 	{
 	global $CALL_FOUND;
 	global $CALL_LISTEN_URL;
@@ -369,7 +369,7 @@ function listen_call( $ServerID, $AsteriskID, $Agent, $QMUserID, $QMUserName )
 	}
 
 
-// 
+//
 // This function does the XML-RPC call handling
 // All the PHP's XML-RPC details are handled here.
 //
@@ -377,11 +377,11 @@ function xmlrpc_find_file( $params ) {
 	global $FILE_FOUND;
 	global $FILE_LISTEN_URL;
 	global $FILE_LENGTH;
-	global $FILE_ENCODING;	
+	global $FILE_ENCODING;
 	global $FILE_DURATION;
 	global $FIND_LAST;
 	global $DBlogfile;
-	
+
 	$p0 = $params->getParam(0)->scalarval(); // server ID
 	$p1 = $params->getParam(1)->scalarval(); // Asterisk call ID
 	$p2 = $params->getParam(2)->scalarval(); // QM User ID
@@ -394,16 +394,16 @@ function xmlrpc_find_file( $params ) {
 		fclose($logfile);
 		}
 
-	find_file( $p0, $p1, $p2, $p3 ); 		
-	
+	find_file( $p0, $p1, $p2, $p3 );
+
 	$response = new XML_RPC_Value(array(
         new XML_RPC_Value( $FILE_FOUND, 'boolean' ),
         new XML_RPC_Value( $FILE_LISTEN_URL ),
         new XML_RPC_Value( $FILE_LENGTH ),
         new XML_RPC_Value( $FILE_ENCODING ),
-        new XML_RPC_Value( $FILE_DURATION ),        
+        new XML_RPC_Value( $FILE_DURATION ),
     ), "array");
-	
+
 	return new XML_RPC_Response($response);
 }
 
@@ -430,15 +430,15 @@ function xmlrpc_listen_call( $params ) {
 		fclose($logfile);
 		}
 
-	listen_call( $p0, $p1, $p2, $p3, $p4 ); 		
-	
+	listen_call( $p0, $p1, $p2, $p3, $p4 );
+
 	$response = new XML_RPC_Value(array(
         new XML_RPC_Value( $CALL_FOUND, 'boolean' ),
         new XML_RPC_Value( $CALL_LISTEN_URL ),
         new XML_RPC_Value( $CALL_POPUP_WIDTH, 'int' ),
-        new XML_RPC_Value( $CALL_POPUP_HEIGHT, 'int' ),             
+        new XML_RPC_Value( $CALL_POPUP_HEIGHT, 'int' ),
     ), "array");
-	
+
 	return new XML_RPC_Response($response);
 }
 
@@ -446,7 +446,7 @@ function xmlrpc_listen_call( $params ) {
 
 if ($DBlogfile > 0)
 	{
-	if (getenv('REQUEST_METHOD') == 'POST') 
+	if (getenv('REQUEST_METHOD') == 'POST')
 		{
 		$client_data = file_get_contents("php://input");
 		}
@@ -462,14 +462,14 @@ $server = new XML_RPC_Server(
     array(
         'QMAudio.findStoredFile' => array(
             'function' => 'xmlrpc_find_file'
-        ),    
+        ),
         'QMAudio.listenOngoingCall' => array(
             'function' => 'xmlrpc_listen_call'
         ),
         'QMAudio.listenOngoingCallOutbound' => array(
             'function' => 'xmlrpc_listen_call'
         ),
-        
+
     ),
     1  // serviceNow
 );

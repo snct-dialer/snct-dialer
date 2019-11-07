@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # ADMIN_reset_failed_count.pl   version 2.8
-# 
+#
 # resets the failed_login_count for a given user
 #
 # LICENSE: AGPLv3
@@ -12,7 +12,7 @@
 
 #
 # CHANGES
-# 
+#
 # 130909-1222 - Mikec - First build
 # 180616-1925 - Add sniplet into perl scripts to run only once a time
 #
@@ -22,7 +22,7 @@
 use Fcntl qw(:flock);
 # print "start of program $0\n";
 unless (flock(DATA, LOCK_EX|LOCK_NB)) {
-    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log'
     or print "Can't open the fscking file: $!";
     $datestring = localtime();
     print $fh "[$datestring] $0 is already running. Exiting.\n";

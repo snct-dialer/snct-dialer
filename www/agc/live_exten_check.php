@@ -1,11 +1,11 @@
 <?php
 # live_exten_check.php    version 2.14
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed purely to send whether the client channel is live and to what channel it is connected
 # This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
-# 
+#
 # required variables:
 #  - $server_ip
 #  - $session_name
@@ -15,7 +15,7 @@
 #  - $format - ('text','debug')
 #  - $exten - ('cc101','testphone','49-1','1234','913125551212',...)
 #  - $protocol - ('SIP','Zap','IAX2',...)
-# 
+#
 #
 # changes
 # 50404-1249 - First build of script
@@ -329,7 +329,7 @@ if ($favorites_count > 0)
 if ($format=='debug') {echo "\n<!-- |$favorites_count|$favorites_list| -->";}
 
 
-if ($format=='debug') 
+if ($format=='debug')
 	{
 	$ENDtime = date("U");
 	$RUNtime = ($ENDtime - $StarTtime);
@@ -338,6 +338,6 @@ if ($format=='debug')
 	}
 
 if ($SSagent_debug_logging > 0) {vicidial_ajax_log($NOW_TIME,$startMS,$link,$ACTION,$php_script,$user,$stage,$lead_id,$session_name,$stmt);}
-exit; 
+exit;
 
 ?>

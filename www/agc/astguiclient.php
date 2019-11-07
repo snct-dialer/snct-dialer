@@ -1,11 +1,11 @@
 <?php
 # astguiclient.php - the web-based version of the astGUIclient client application
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least
 # user_level 1 or greater to access this page. Also you need to have the login
-# and pass of a phone listed in the asterisk.phones table. The page grabs the 
+# and pass of a phone listed in the asterisk.phones table. The page grabs the
 # server info and other details from this login and pass
 #
 # Other scripts that this application depends on:
@@ -88,7 +88,7 @@ if (isset($_GET["phone_pass"]))				{$phone_pass=$_GET["phone_pass"];}
 	elseif (isset($_POST["phone_pass"]))	{$phone_pass=$_POST["phone_pass"];}
 if (isset($_GET["relogin"]))				{$relogin=$_GET["relogin"];}
 	elseif (isset($_POST["relogin"]))		{$relogin=$_POST["relogin"];}
-	if (!isset($phone_login)) 
+	if (!isset($phone_login))
 		{
 		if (isset($_GET["pl"]))                {$phone_login=$_GET["pl"];}
 				elseif (isset($_POST["pl"]))   {$phone_login=$_POST["pl"];}
@@ -433,7 +433,7 @@ else
 		$favorites_listX='';
 
 		$o=0;
-		while ($favorites_count > $o) 
+		while ($favorites_count > $o)
 			{
 			$stmt="SELECT fullname,protocol from phones where extension = '$favorites[$o]' and server_ip='$server_ip';";
 			$rslt=mysql_to_mysqli($stmt, $link);
@@ -470,7 +470,7 @@ else
 
 
 ?>
-	<script language="Javascript">	
+	<script language="Javascript">
 	var MTvar;
 	var loop_ct = 0;
 	var t = new Date();
@@ -604,7 +604,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 		{
 		document.getElementById("LocalDialContent").innerHTML = Nactiveext;
 		}
-	function getactiveext(taskwindow) 
+	function getactiveext(taskwindow)
 		{
 		var getactiveext_window = taskwindow;
 		if (getactiveext_window == "MainXfeRBox")
@@ -647,16 +647,16 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			{
 			xmlhttp = new XMLHttpRequest();
 			}
-		if (xmlhttp) 
-			{ 
+		if (xmlhttp)
+			{
 			activeext_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ADD=1&order=" + activeext_order + "&format=selectlist&bgcolor=#E6E6E6&selectsize=" + menuheight + "&selectedext=" + extension + "&selectfontsize=" + menufontsize + "&field_name=" + ext_field;
 		//	alert(activeext_query);
-			xmlhttp.open('POST', 'active_list_refresh.php'); 
+			xmlhttp.open('POST', 'active_list_refresh.php');
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(activeext_query); 
-			xmlhttp.onreadystatechange = function() 
-				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+			xmlhttp.send(activeext_query);
+			xmlhttp.onreadystatechange = function()
+				{
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 					{
 			//		alert(xmlhttp.responseText);
 			//		alert(getactiveext_window);
@@ -688,7 +688,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 		document.getElementById("busytrunk").innerHTML = Nbusytrunk;
 	//	setTimeout("getbusyext()", 1000);
 		}
-	function getbusytrunk() 
+	function getbusytrunk()
 		{
 		var xmlhttp=false;
 		/*@cc_on @*/
@@ -709,15 +709,15 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			{
 			xmlhttp = new XMLHttpRequest();
 			}
-		if (xmlhttp) 
-			{ 
+		if (xmlhttp)
+			{
 			busytrunk_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ADD=3&order=" + busytrunk_order + "&format=textarea&bgcolor=#E6E6E6&textareaheight=" + menuheight + "&textareawidth=40&selectfontsize=" + textareafontsize;
-			xmlhttp.open('POST', 'active_list_refresh.php'); 
+			xmlhttp.open('POST', 'active_list_refresh.php');
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(busytrunk_query); 
-			xmlhttp.onreadystatechange = function() 
-				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+			xmlhttp.send(busytrunk_query);
+			xmlhttp.onreadystatechange = function()
+				{
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 					{
 					Nbusytrunk = null;
 					Nbusytrunk = xmlhttp.responseText;
@@ -735,7 +735,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 		document.getElementById("busyext").innerHTML = Nbusyext;
 	//	setTimeout("getbusyext()", 1000);
 		}
-	function getbusyext() 
+	function getbusyext()
 		{
 		var xmlhttp=false;
 		/*@cc_on @*/
@@ -756,15 +756,15 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			{
 			xmlhttp = new XMLHttpRequest();
 			}
-		if (xmlhttp) 
-			{ 
+		if (xmlhttp)
+			{
 			busyext_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ADD=4&order=" + busyext_order + "&format=textarea&bgcolor=#E6E6E6&textareaheight=" + menuheight + "&textareawidth=40&selectfontsize=" + textareafontsize;
-			xmlhttp.open('POST', 'active_list_refresh.php'); 
+			xmlhttp.open('POST', 'active_list_refresh.php');
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(busyext_query); 
-			xmlhttp.onreadystatechange = function() 
-				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+			xmlhttp.send(busyext_query);
+			xmlhttp.onreadystatechange = function()
+				{
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 					{
 					Nbusyext = null;
 					Nbusyext = xmlhttp.responseText;
@@ -781,7 +781,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 		{
 		document.getElementById("TrunkHangupContent").innerHTML = Nactiveext;
 		}
-	function busytrunkhangup() 
+	function busytrunkhangup()
 		{
 		var xmlhttp=false;
 		/*@cc_on @*/
@@ -802,16 +802,16 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			{
 			xmlhttp = new XMLHttpRequest();
 			}
-		if (xmlhttp) 
-			{ 
+		if (xmlhttp)
+			{
 			busytrunkhangup_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ADD=3&order=" + busytrunkhangup_order + "&format=selectlist&bgcolor=#E6E6E6&selectsize=" + menuheight + "&selectfontsize=10";
 		//	alert(activeext_query);
-			xmlhttp.open('POST', 'active_list_refresh.php'); 
+			xmlhttp.open('POST', 'active_list_refresh.php');
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(busytrunkhangup_query); 
-			xmlhttp.onreadystatechange = function() 
-				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+			xmlhttp.send(busytrunkhangup_query);
+			xmlhttp.onreadystatechange = function()
+				{
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 					{
 					Nactiveext = null;
 					Nactiveext = xmlhttp.responseText;
@@ -828,7 +828,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 		{
 		document.getElementById("LocalHangupContent").innerHTML = Nactiveext;
 		}
-	function busylocalhangup() 
+	function busylocalhangup()
 		{
 		var xmlhttp=false;
 		/*@cc_on @*/
@@ -849,15 +849,15 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			{
 			xmlhttp = new XMLHttpRequest();
 			}
-		if (xmlhttp) 
-			{ 
+		if (xmlhttp)
+			{
 			busylocalhangup_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ADD=4&order=" + busylocalhangup_order + "&format=selectlist&bgcolor=#E6E6E6&selectsize=" + menuheight + "&selectfontsize=10";
-			xmlhttp.open('POST', 'active_list_refresh.php'); 
+			xmlhttp.open('POST', 'active_list_refresh.php');
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(busylocalhangup_query); 
-			xmlhttp.onreadystatechange = function() 
-				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+			xmlhttp.send(busylocalhangup_query);
+			xmlhttp.onreadystatechange = function()
+				{
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 					{
 					Nactiveext = null;
 					Nactiveext = xmlhttp.responseText;
@@ -870,7 +870,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 
 // ################################################################################
 // Send Hangup command for Trunk/Local to Manager
-	function busyhangup_send_hangup(taskvar) 
+	function busyhangup_send_hangup(taskvar)
 		{
 		var xmlhttp=false;
 		/*@cc_on @*/
@@ -891,8 +891,8 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			{
 			xmlhttp = new XMLHttpRequest();
 			}
-		if (xmlhttp) 
-			{ 
+		if (xmlhttp)
+			{
 			if (taskvar == 'Trunk')
 				{
 				var queryCID = "HUagcW" + epoch_sec + user_abb;
@@ -905,12 +905,12 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 				var hangupvalue = document.extensions_list.local.value;
 				busyhangup_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=Hangup&format=text&channel=" + hangupvalue + "&queryCID=" + queryCID;
 				}
-			xmlhttp.open('POST', 'manager_send.php'); 
+			xmlhttp.open('POST', 'manager_send.php');
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(busyhangup_query); 
-			xmlhttp.onreadystatechange = function() 
-				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+			xmlhttp.send(busyhangup_query);
+			xmlhttp.onreadystatechange = function()
+				{
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 					{
 					Nactiveext = null;
 					Nactiveext = xmlhttp.responseText;
@@ -925,7 +925,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 
 // ################################################################################
 // Send Redirect command for Trunk/Local to Manager
-	function busyhangup_send_redirect(taskvar,tasktrunkaction) 
+	function busyhangup_send_redirect(taskvar,tasktrunkaction)
 		{
 		var bsr_continue=1;
 		if (tasktrunkaction == 'LISTEN')
@@ -969,8 +969,8 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 				{
 				xmlhttp = new XMLHttpRequest();
 				}
-			if (xmlhttp) 
-				{ 
+			if (xmlhttp)
+				{
 				if (taskvar == 'Trunk')
 					{
 					if (tasktrunkaction == 'LISTEN')
@@ -991,12 +991,12 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 					var redirectvalue = document.extensions_list.local.value;
 					busyredirect_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=Redirect&format=text&channel=" + redirectvalue + "&queryCID=" + queryCID + "&exten=" + dialplan_number + "&ext_context=" + ext_context + "&ext_priority=1";
 					}
-				xmlhttp.open('POST', 'manager_send.php'); 
+				xmlhttp.open('POST', 'manager_send.php');
 				xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-				xmlhttp.send(busyredirect_query); 
-				xmlhttp.onreadystatechange = function() 
-					{ 
-					if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+				xmlhttp.send(busyredirect_query);
+				xmlhttp.onreadystatechange = function()
+					{
+					if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 						{
 						Nactiveext = null;
 						Nactiveext = xmlhttp.responseText;
@@ -1012,7 +1012,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 
 // ################################################################################
 // Send Redirect command for live call to Manager sends phone name where call is going to
-	function mainxfer_send_redirect(taskvar,taskxferconf) 
+	function mainxfer_send_redirect(taskvar,taskxferconf)
 		{
 		var xmlhttp=false;
 		/*@cc_on @*/
@@ -1033,8 +1033,8 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			{
 			xmlhttp = new XMLHttpRequest();
 			}
-		if (xmlhttp) 
-			{ 
+		if (xmlhttp)
+			{
 			var redirectvalue = document.extensions_list.H_XfeR_channel.value;
 			if (taskvar == 'XfeR')
 				{
@@ -1085,12 +1085,12 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 				}
 
 
-			xmlhttp.open('POST', 'manager_send.php'); 
+			xmlhttp.open('POST', 'manager_send.php');
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(xferredirect_query); 
-			xmlhttp.onreadystatechange = function() 
-				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+			xmlhttp.send(xferredirect_query);
+			xmlhttp.onreadystatechange = function()
+				{
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 					{
 					Nactiveext = null;
 					Nactiveext = xmlhttp.responseText;
@@ -1105,7 +1105,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 
 // ################################################################################
 // Send Originate command for local dial to Manager sends phone name where call is going to
-	function mainxfer_send_originate(taskvar,taskxferconf,taskentrypop) 
+	function mainxfer_send_originate(taskvar,taskxferconf,taskentrypop)
 		{
 		var xmlhttp=false;
 		/*@cc_on @*/
@@ -1126,8 +1126,8 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			{
 			xmlhttp = new XMLHttpRequest();
 			}
-		if (xmlhttp) 
-			{ 
+		if (xmlhttp)
+			{
 			var originatevalue = protocol + "/" + extension;
 			if (taskvar == 'DiaL')
 				{
@@ -1161,12 +1161,12 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 				var localdial_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=Originate&format=text&channel=" + originatevalue + "&queryCID=" + queryCID + "&exten=" + originatedestination + "&ext_context=" + ext_context + "&ext_priority=1&outbound_cid=" + outbound_cid;
 				}
 
-			xmlhttp.open('POST', 'manager_send.php'); 
+			xmlhttp.open('POST', 'manager_send.php');
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(localdial_query); 
-			xmlhttp.onreadystatechange = function() 
-				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+			xmlhttp.send(localdial_query);
+			xmlhttp.onreadystatechange = function()
+				{
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 					{
 					Nactiveext = null;
 					Nactiveext = xmlhttp.responseText;
@@ -1181,7 +1181,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 
 // ################################################################################
 // Send Hangup command for Live call connected to phone now to Manager
-	function livehangup_send_hangup(taskvar) 
+	function livehangup_send_hangup(taskvar)
 		{
 		var xmlhttp=false;
 		/*@cc_on @*/
@@ -1202,17 +1202,17 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			{
 			xmlhttp = new XMLHttpRequest();
 			}
-		if (xmlhttp) 
-			{ 
+		if (xmlhttp)
+			{
 			var queryCID = "HLagcW" + epoch_sec + user_abb;
 			var hangupvalue = taskvar;
 			livehangup_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=Hangup&format=text&channel=" + hangupvalue + "&queryCID=" + queryCID;
-			xmlhttp.open('POST', 'manager_send.php'); 
+			xmlhttp.open('POST', 'manager_send.php');
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(livehangup_query); 
-			xmlhttp.onreadystatechange = function() 
-				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+			xmlhttp.send(livehangup_query);
+			xmlhttp.onreadystatechange = function()
+				{
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 					{
 					Nactiveext = null;
 					Nactiveext = xmlhttp.responseText;
@@ -1225,7 +1225,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 
 // ################################################################################
 // Send Monitor/StopMonitor command for recording of calls
-	function liverecording_send_recording(taskvar,taskchan,taskspan,taskfile) 
+	function liverecording_send_recording(taskvar,taskchan,taskspan,taskfile)
 		{
 		var xmlhttp=false;
 		/*@cc_on @*/
@@ -1246,8 +1246,8 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			{
 			xmlhttp = new XMLHttpRequest();
 			}
-		if (xmlhttp) 
-			{ 
+		if (xmlhttp)
+			{
 			var queryCID = "MRagcW" + epoch_sec + user_abb;
 			var monitorvalue = taskvar;
 			var monitorchannelvalue = taskchan;
@@ -1263,18 +1263,18 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 				{
 				var regy = new RegExp("\\|"+monitorchannelvalue,"ig");
 				recLIST = recLIST.replace(regy, '');
-				
+
 				filename = taskfile;
 				var rec_stop_html = "<a href=\"#\" onclick=\"liverecording_send_recording('Monitor','" + monitorchannelvalue + "','" + taskspan + "','');return false;\">Record";
 				document.getElementById(taskspan).innerHTML = rec_stop_html;
 				}
 			livemonitor_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=" + monitorvalue + "&format=text&channel=" + monitorchannelvalue + "&queryCID=" + queryCID + "&filename=" + filename + "&exten=" + protocol + "/" + extension;
-			xmlhttp.open('POST', 'manager_send.php'); 
+			xmlhttp.open('POST', 'manager_send.php');
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(livemonitor_query); 
-			xmlhttp.onreadystatechange = function() 
-				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+			xmlhttp.send(livemonitor_query);
+			xmlhttp.onreadystatechange = function()
+				{
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 					{
 					Nactiveext = null;
 					Nactiveext = xmlhttp.responseText;
@@ -1289,7 +1289,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 
 // ################################################################################
 // Send MonitorConf/StopMonitorConf command for recording of conferences
-	function conf_send_recording(taskconfrectype,taskconfspan,taskconfrec,taskconffile) 
+	function conf_send_recording(taskconfrectype,taskconfspan,taskconfrec,taskconffile)
 		{
 		var xmlhttp=false;
 		/*@cc_on @*/
@@ -1310,8 +1310,8 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			{
 			xmlhttp = new XMLHttpRequest();
 			}
-		if (xmlhttp) 
-			{ 
+		if (xmlhttp)
+			{
 			if (taskconfrectype == 'MonitorConf')
 				{
 				recLIST = recLIST + "|" + taskconfrec;
@@ -1325,19 +1325,19 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 				{
 				var regy = new RegExp("\\|"+taskconfrec,"ig");
 				recLIST = recLIST.replace(regy, '');
-				
+
 				filename = taskconffile;
 				var channelrec = "Local/" + taskconfrec + "@" + ext_context;
 				var conf_rec_start_html = "<a href=\"#\" onclick=\"conf_send_recording('MonitorConf','" + taskconfspan + "','" + taskconfrec + "','');return false;\">Record</a>";
 				document.getElementById(taskconfspan).innerHTML = conf_rec_start_html;
 				}
 			confmonitor_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=" + taskconfrectype + "&format=text&channel=" + channelrec + "&filename=" + filename + "&exten=" + recording_exten + "&ext_context=" + ext_context + "&ext_priority=1";
-			xmlhttp.open('POST', 'manager_send.php'); 
+			xmlhttp.open('POST', 'manager_send.php');
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(confmonitor_query); 
-			xmlhttp.onreadystatechange = function() 
-				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+			xmlhttp.send(confmonitor_query);
+			xmlhttp.onreadystatechange = function()
+				{
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 					{
 					Nactiveext = null;
 					Nactiveext = xmlhttp.responseText;
@@ -1374,15 +1374,15 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			{
 			xmlhttp = new XMLHttpRequest();
 			}
-		if (xmlhttp) 
-			{ 
+		if (xmlhttp)
+			{
 			checklive_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&protocol=" + protocol + "&exten=" + extension + "&favorites_count=" + favorites_count + "&favorites_list=" + favorites_listX;
-			xmlhttp.open('POST', 'live_exten_check.php'); 
+			xmlhttp.open('POST', 'live_exten_check.php');
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(checklive_query); 
-			xmlhttp.onreadystatechange = function() 
-				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+			xmlhttp.send(checklive_query);
+			xmlhttp.onreadystatechange = function()
+				{
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 					{
 					var check_live = null;
 					check_live = xmlhttp.responseText;
@@ -1446,16 +1446,16 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 						var live_calls_HTML = "<font face=\"Arial,Helvetica\"><B><?php echo _QXZ("LIVE CALLS ON THIS PHONE"); ?>:</B></font><BR><table width=100%><tr bgcolor=#E6E6E6><td><font class=\"log_title\">#</td><td><font class=\"log_title\"><?php echo _QXZ("CLIENT CHANNEL"); ?></td><td><font class=\"log_title\"><?php echo _QXZ("REMOTE CHANNEL"); ?></td><td><font class=\"log_title\"><?php echo _QXZ("RECORD"); ?></td><td><font class=\"log_title\"><?php echo _QXZ("HANGUP"); ?></td><td><font class=\"log_title\"><?php echo _QXZ("XFER"); ?></td><td><font class=\"log_title\"><?php echo _QXZ("PARK"); ?></td></tr>";
 						if ( (LCAcount > live_calls)  || (LCAcount < live_calls) )
 							{
-							LCAe[0]=''; LCAe[1]=''; LCAe[2]=''; LCAe[3]=''; LCAe[4]=''; LCAe[5]=''; 
-							LCAc[0]=''; LCAc[1]=''; LCAc[2]=''; LCAc[3]=''; LCAc[4]=''; LCAc[5]=''; 
-							LCAt[0]=''; LCAt[1]=''; LCAt[2]=''; LCAt[3]=''; LCAt[4]=''; LCAt[5]=''; 
+							LCAe[0]=''; LCAe[1]=''; LCAe[2]=''; LCAe[3]=''; LCAe[4]=''; LCAe[5]='';
+							LCAc[0]=''; LCAc[1]=''; LCAc[2]=''; LCAc[3]=''; LCAc[4]=''; LCAc[5]='';
+							LCAt[0]=''; LCAt[1]=''; LCAt[2]=''; LCAt[3]=''; LCAt[4]=''; LCAt[5]='';
 							LCAcount=0;   LCAcontent_change++;
 							}
 						while (loop_ct < live_calls)
 							{
 							loop_ct++;
 							loop_s = loop_ct.toString();
-							if (loop_s.match(/1$|3$|5$|7$|9$/)) 
+							if (loop_s.match(/1$|3$|5$|7$|9$/))
 								{var row_color = '#DDDDFF';}
 							else
 								{var row_color = '#CCCCFF';}
@@ -1468,28 +1468,28 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 							live_calls_HTML = live_calls_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + channelfieldA_array[1] + "</td><td><font class=\"log_text\">" + channelfieldB_array[1] + "</td><td><font class=\"log_text\">";
 
 							var regx = new RegExp("\\|"+channelfieldBtrunk_array[1],"ig");
-							if (recLIST.match(regx)) 
+							if (recLIST.match(regx))
 								{live_calls_HTML = live_calls_HTML + "<span id=\"recordlive" + loop_ct + "\"><a href=\"#\" onclick=\"liverecording_send_recording('StopMonitor','" + channelfieldBtrunk_array[1] + "','recordlive" + loop_ct + "');return false;\">Stop Record</span>";}
-							else 
+							else
 								{live_calls_HTML = live_calls_HTML + "<span id=\"recordlive" + loop_ct + "\"><a href=\"#\" onclick=\"liverecording_send_recording('Monitor','" + channelfieldBtrunk_array[1] + "','recordlive" + loop_ct + "');return false;\">Record</span>";}
 
 							live_calls_HTML = live_calls_HTML + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldBtrunk_array[1] + "');return false;\"><?php echo _QXZ("HANGUP"); ?></td><td><font class=\"log_text\"><a href=\"#\" onclick=\"showMainXfeR('MainXfeRBox','" + channelfieldBtrunk_array[1] + "','" + channelfieldA_array[1] + "');return false;\"><?php echo _QXZ("XFER"); ?></a></td><td><font class=\"log_text\"><a href=\"#\" onclick=\"mainxfer_send_redirect('ParK','" + channelfieldBtrunk_array[1] + "');return false;\">PARK</td></tr>";
 
-							if (LCAe[ARY_ct].length < 1) 
+							if (LCAe[ARY_ct].length < 1)
 								{LCAe[ARY_ct] = channelfieldA_array[1];   LCAcontent_change++;  LCAalter++;}
 							else
 								{
 								if (LCAe[ARY_ct] == channelfieldA_array[1]) {LCAcontent_match++;}
 								 else {LCAcontent_change++;   LCAe[ARY_ct] = channelfieldA_array[1];}
 								}
-							if (LCAc[ARY_ct].length < 1) 
+							if (LCAc[ARY_ct].length < 1)
 								{LCAc[ARY_ct] = channelfieldB_array[1];   LCAcontent_change++; LCAalter++;}
 							else
 								{
 								if (LCAc[ARY_ct] == channelfieldB_array[1]) {LCAcontent_match++;}
 								 else {LCAcontent_change++;   LCAc[ARY_ct] = channelfieldB_array[1];}
 								}
-							if (LCAt[ARY_ct].length < 1) 
+							if (LCAt[ARY_ct].length < 1)
 								{LCAt[ARY_ct] = channelfieldBtrunk_array[1];   LCAcontent_change++; LCAalter++;}
 							else
 								{
@@ -1498,7 +1498,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 								}
 
 							if (LCAalter > 0) {LCAcount++;}
-							
+
 							ARY_ct++;
 							}
 //	var debug_LCA = regx+"|"+recLIST+"|"+LCAcontent_match+"|"+LCAcontent_change+"|"+LCAcount+"|"+live_calls+"|"+LCAe[0]+LCAe[1]+LCAe[2]+LCAe[3]+LCAe[4]+LCAe[5]+"|"+LCAc[0]+LCAc[1]+LCAc[2]+LCAc[3]+LCAc[4]+LCAc[5]+"|"+LCAt[0]+LCAt[1]+LCAt[2]+LCAt[3]+LCAt[4]+LCAt[5];
@@ -1514,9 +1514,9 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 						}
 					else
 						{
-						LCAe[0]=''; LCAe[1]=''; LCAe[2]=''; LCAe[3]=''; LCAe[4]=''; LCAe[5]=''; 
-						LCAc[0]=''; LCAc[1]=''; LCAc[2]=''; LCAc[3]=''; LCAc[4]=''; LCAc[5]=''; 
-						LCAt[0]=''; LCAt[1]=''; LCAt[2]=''; LCAt[3]=''; LCAt[4]=''; LCAt[5]=''; 
+						LCAe[0]=''; LCAe[1]=''; LCAe[2]=''; LCAe[3]=''; LCAe[4]=''; LCAe[5]='';
+						LCAc[0]=''; LCAc[1]=''; LCAc[2]=''; LCAc[3]=''; LCAc[4]=''; LCAc[5]='';
+						LCAt[0]=''; LCAt[1]=''; LCAt[2]=''; LCAt[3]=''; LCAt[4]=''; LCAt[5]='';
 						LCAcount=0;
 						recLIST='';
 						if (document.getElementById("busycallsspan").innerHTML.length > 2)
@@ -1537,7 +1537,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 // build the display for the favorites list at the right of the window
 	function favorites_list_initialize()
 		{
-		
+
 
 
 		}
@@ -1566,15 +1566,15 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			{
 			xmlhttp = new XMLHttpRequest();
 			}
-		if (xmlhttp) 
-			{ 
+		if (xmlhttp)
+			{
 			call_logs_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&protocol=" + protocol + "&exten=" + extension;
-			xmlhttp.open('POST', 'call_log_display.php'); 
+			xmlhttp.open('POST', 'call_log_display.php');
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(call_logs_query); 
-			xmlhttp.onreadystatechange = function() 
-				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+			xmlhttp.send(call_logs_query);
+			xmlhttp.onreadystatechange = function()
+				{
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 					{
 					var all_logs = null;
 					all_logs = xmlhttp.responseText;
@@ -1595,7 +1595,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 							{
 							loop_ct++;
 							loop_s = loop_ct.toString();
-							if (loop_s.match(/1$|3$|5$|7$|9$/)) 
+							if (loop_s.match(/1$|3$|5$|7$|9$/))
 								{var row_color = '#DDDDFF';}
 							else
 								{var row_color = '#CCCCFF';}
@@ -1605,7 +1605,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 							var call_out_number = call_array[2];
 							var call_out_length = call_array[3];
 							out_log_HTML = out_log_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + call_out_datetime + "</td><td><font class=\"log_text\">" + call_out_number + "</td><td align=right><font class=\"log_text\">" + call_out_length + "&nbsp;</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"basic_originate_call('" + call_out_number + "');return false;\">DIAL</a></td></tr>";
-					
+
 							}
 						out_log_HTML = out_log_HTML + "</table>";
 						document.getElementById("outboundcallsspan").innerHTML = out_log_HTML;
@@ -1623,7 +1623,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 							{
 							loop_ct++;
 							loop_s = loop_ct.toString();
-							if (loop_s.match(/1$|3$|5$|7$|9$/)) 
+							if (loop_s.match(/1$|3$|5$|7$|9$/))
 								{var row_color = '#DDDDFF';}
 							else
 								{var row_color = '#CCCCFF';}
@@ -1635,7 +1635,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 							var call_in_idname = call_array[4];
 							var call_in_length = call_array[5];
 							in_log_HTML = in_log_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + call_in_datetime + "</td><td><font class=\"log_text\">" + call_in_number + "</td><td><font class=\"log_text\">" + call_in_idnum + "</td><td><font class=\"log_text\">" + call_in_idname + "</td><td align=right><font class=\"log_text\">" + call_in_length + "&nbsp;</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"basic_originate_call('" + call_in_idnum + "');return false;\">DIAL</a></td></tr>";
-					
+
 							}
 						in_log_HTML = in_log_HTML + "</table>";
 						document.getElementById("inboundcallsspan").innerHTML = in_log_HTML;
@@ -1673,15 +1673,15 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			{
 			xmlhttp = new XMLHttpRequest();
 			}
-		if (xmlhttp) 
-			{ 
+		if (xmlhttp)
+			{
 			park_calls_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&protocol=" + protocol + "&exten=" + extension;
-			xmlhttp.open('POST', 'park_calls_display.php'); 
+			xmlhttp.open('POST', 'park_calls_display.php');
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(park_calls_query); 
-			xmlhttp.onreadystatechange = function() 
-				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+			xmlhttp.send(park_calls_query);
+			xmlhttp.onreadystatechange = function()
+				{
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 					{
 					var all_park = null;
 					all_park = xmlhttp.responseText;
@@ -1698,7 +1698,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 							{
 							loop_ct++;
 							loop_s = loop_ct.toString();
-							if (loop_s.match(/1$|3$|5$|7$|9$/)) 
+							if (loop_s.match(/1$|3$|5$|7$|9$/))
 								{var row_color = '#DDDDFF';}
 							else
 								{var row_color = '#CCCCFF';}
@@ -1710,7 +1710,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 							var parked_by = park_array[3];
 							var parked_time = park_array[4];
 							park_HTML = park_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + park_channel + "<BR>&nbsp; " + park_call_id + "</td><td><font class=\"log_text\">" + parked_by + "<BR>&nbsp; " + parked_time + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + park_channel + "');return false;\"><?php echo _QXZ("HANGUP"); ?></a></td><td><font class=\"log_text\"><a href=\"#\" onclick=\"showMainXfeR('MainXfeRBox','" + park_channel + "');return false;\"><?php echo _QXZ("XFER"); ?></a></td><td><font class=\"log_text\"><a href=\"#\" onclick=\"mainxfer_send_redirect('FROMParK','" + park_channel + "');return false;\"><?php echo _QXZ("PICKUP"); ?></a></td></tr>";
-					
+
 							}
 						park_HTML = park_HTML + "</table>";
 						document.getElementById("ParkDisplayContents").innerHTML = park_HTML;
@@ -1748,15 +1748,15 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			{
 			xmlhttp = new XMLHttpRequest();
 			}
-		if (xmlhttp) 
+		if (xmlhttp)
 			{
 			conferences_list_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ADD=5&order=asc&format=text";
-			xmlhttp.open('POST', 'active_list_refresh.php'); 
+			xmlhttp.open('POST', 'active_list_refresh.php');
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(conferences_list_query); 
-			xmlhttp.onreadystatechange = function() 
-				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+			xmlhttp.send(conferences_list_query);
+			xmlhttp.onreadystatechange = function()
+				{
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 					{
 					var all_conf = null;
 					all_conf = xmlhttp.responseText;
@@ -1777,7 +1777,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 							var conf_exten = conf_array[0];
 							var conf_reg = conf_array[1];
 							var conf_reg_length = conf_reg.length;
-							if (conf_reg_length > 0) 
+							if (conf_reg_length > 0)
 								{var row_color = 'ON_conf';}
 							else
 								{var row_color = 'OFF_conf';}
@@ -1789,7 +1789,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 								{
 								conf_list_HTML = conf_list_HTML + "<font class=\"" + row_color + "\"><a href=\"#\" onclick=\"conference_header_display('" + conf_exten + "','" + conf_reg + "','2');return false;\">" + conf_exten + " " + conf_reg + " </a></font><BR>";
 								}
-					
+
 							}
 						conf_list_HTML = conf_list_HTML + "<BR>";
 						if (taskplace == "MainXfeRconfContent")
@@ -1815,17 +1815,17 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 		var head_reg = taskreg;
 		var show_reglink=0;
 		var reglink='';
-		if (taskreg.length<1) 
+		if (taskreg.length<1)
 			{
 			head_reg = "<?php echo _QXZ("NO ONE"); ?>";
 			show_reglink=1;
 			reglink = "<a href=\"#\" onclick=\"conf_register_room('" + head_conf + "');return false;\">Register</a>";
 			}
 		var conf_head_HTML = "<font class=\"sh_text\"><?php echo _QXZ("CONFERENCE"); ?> " + head_conf + "</b></font><font class=\"sb_text\">&nbsp; &nbsp; <?php echo _QXZ("Registered to"); ?>: " + head_reg + " &nbsp; " + reglink + " &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"basic_originate_call('" + head_conf + "','NO','NO');return false;\"><?php echo _QXZ("Enter Conference"); ?> </a><BR><a href=\"#\" onclick=\"check_for_conf_calls('" + head_conf + "','1');return false;\"><?php echo _QXZ("Refresh"); ?> </a> &nbsp; &nbsp; <span id=\"conf_rec_link\"><a href=\"#\" onclick=\"conf_send_recording('MonitorConf','conf_rec_link','" + head_conf + "');return false;\"><?php echo _QXZ("Record"); ?></a></span> &nbsp; &nbsp; &nbsp; &nbsp; <input TYPE=TEXT SIZE=15 NAME=conf_dtmf STYLE=\"font-family : sans-serif; font-size : 10px\"> <A HREF=\"#\" onclick=\"SendConfDTMF(" + head_conf + ");\"><?php echo _QXZ("Send DTMF"); ?></A> &nbsp; &nbsp; &nbsp; &nbsp; <input TYPE=TEXT SIZE=15 NAME=conf_dial STYLE=\"font-family : sans-serif; font-size : 10px\"> <A HREF=\"#\" onclick=\"SendManualDial('YES'," + head_conf + ");\"><?php echo _QXZ("Dial From Conf"); ?></A><BR></font>";
-	
+
 		document.getElementById("ConfereNceHeaderContent").innerHTML = conf_head_HTML;
 		check_for_conf_calls(head_conf,taskrefresh);
-		if (taskrefresh==2) 
+		if (taskrefresh==2)
 			{
 			check_for_conf_calls(head_conf,'1');
 			lastconf = head_conf;
@@ -1856,15 +1856,15 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			{
 			xmlhttp = new XMLHttpRequest();
 			}
-		if (xmlhttp) 
-			{ 
+		if (xmlhttp)
+			{
 			checkconf_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&conf_exten=" + taskconfnum + "&bcrypt=ON";
-			xmlhttp.open('POST', 'conf_exten_check.php'); 
+			xmlhttp.open('POST', 'conf_exten_check.php');
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(checkconf_query); 
-			xmlhttp.onreadystatechange = function() 
-				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+			xmlhttp.send(checkconf_query);
+			xmlhttp.onreadystatechange = function()
+				{
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 					{
 					var check_conf = null;
 					var LMAforce = taskforce;
@@ -1885,14 +1885,14 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 						var live_conf_HTML = "<font face=\"Arial,Helvetica\"><B><?php echo _QXZ("LIVE CALLS IN THIS CONFERENCE"); ?>:</B></font><BR><TABLE WIDTH=500><TR BGCOLOR=#E6E6E6><TD><font class=\"log_title\">#</TD><TD><font class=\"log_title\"><?php echo _QXZ("REMOTE CHANNEL"); ?></TD><TD><font class=\"log_title\"><?php echo _QXZ("HANGUP"); ?></TD><TD><font class=\"log_title\">XFER</TD></TR>";
 						if ( (LMAcount > live_conf_calls)  || (LMAcount < live_conf_calls) || (LMAforce > 0))
 							{
-							LMAe[0]=''; LMAe[1]=''; LMAe[2]=''; LMAe[3]=''; LMAe[4]=''; LMAe[5]=''; 
+							LMAe[0]=''; LMAe[1]=''; LMAe[2]=''; LMAe[3]=''; LMAe[4]=''; LMAe[5]='';
 							LMAcount=0;   LMAcontent_change++;
 							}
 						while (loop_ct < live_conf_calls)
 							{
 							loop_ct++;
 							loop_s = loop_ct.toString();
-							if (loop_s.match(/1$|3$|5$|7$|9$/)) 
+							if (loop_s.match(/1$|3$|5$|7$|9$/))
 								{var row_color = '#DDDDFF';}
 							else
 								{var row_color = '#CCCCFF';}
@@ -1900,11 +1900,11 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 							var channelfieldA = conf_chan_array[conv_ct];
 							live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\"><?php echo _QXZ("HANGUP"); ?></td><td><font class=\"log_text\"><a href=\"#\" onclick=\"showMainXfeR('MainXfeRBox','" + channelfieldA + "');return false;\"><?php echo _QXZ("XFER"); ?></td></tr>";
 
-							if (!LMAe[ARY_ct]) 
+							if (!LMAe[ARY_ct])
 								{LMAe[ARY_ct] = channelfieldA;   LMAcontent_change++;  LMAalter++;}
 							else
 								{
-								if (LMAe[ARY_ct].length < 1) 
+								if (LMAe[ARY_ct].length < 1)
 									{LMAe[ARY_ct] = channelfieldA;   LMAcontent_change++;  LMAalter++;}
 								else
 									{
@@ -1913,7 +1913,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 									}
 								}
 							if (LMAalter > 0) {LMAcount++;}
-							
+
 							ARY_ct++;
 							}
 //	var debug_LMA = LMAcontent_match+"|"+LMAcontent_change+"|"+LMAcount+"|"+live_conf_calls+"|"+LMAe[0]+LMAe[1]+LMAe[2]+LMAe[3]+LMAe[4]+LMAe[5];
@@ -1928,7 +1928,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 						}
 					else
 						{
-						LMAe[0]=''; LMAe[1]=''; LMAe[2]=''; LMAe[3]=''; LMAe[4]=''; LMAe[5]=''; 
+						LMAe[0]=''; LMAe[1]=''; LMAe[2]=''; LMAe[3]=''; LMAe[4]=''; LMAe[5]='';
 						LMAcount=0;
 						if (document.getElementById("ConfereNceDetailContent").innerHTML.length > 2)
 							{
@@ -1943,7 +1943,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 
 // ################################################################################
 // Send Registration request for meetme conference room
-	function conf_register_room(taskconfreg) 
+	function conf_register_room(taskconfreg)
 		{
 		var xmlhttp=false;
 		/*@cc_on @*/
@@ -1964,15 +1964,15 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			{
 			xmlhttp = new XMLHttpRequest();
 			}
-		if (xmlhttp) 
-			{ 
+		if (xmlhttp)
+			{
 			reg_conf_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&conf_exten=" + taskconfreg + "&exten=" + extension + "&ACTION=register&bcrypt=OFF";
-			xmlhttp.open('POST', 'conf_exten_check.php'); 
+			xmlhttp.open('POST', 'conf_exten_check.php');
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(reg_conf_query); 
-			xmlhttp.onreadystatechange = function() 
-				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+			xmlhttp.send(reg_conf_query);
+			xmlhttp.onreadystatechange = function()
+				{
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 					{
 				//	alert(xmlhttp.responseText);
 					}
@@ -2043,16 +2043,16 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			{
 			xmlhttp = new XMLHttpRequest();
 			}
-		if (xmlhttp) 
-			{ 
+		if (xmlhttp)
+			{
 			var queryCID = dtmf_string;
 			VMCoriginate_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=SysCIDOriginate&format=text&channel=" + dtmf_send_extension + "&queryCID=" + queryCID + "&exten=" + conf_dtmf_room + "&ext_context=" + ext_context + "&ext_priority=1";
-			xmlhttp.open('POST', 'manager_send.php'); 
+			xmlhttp.open('POST', 'manager_send.php');
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(VMCoriginate_query); 
-			xmlhttp.onreadystatechange = function() 
-				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+			xmlhttp.send(VMCoriginate_query);
+			xmlhttp.onreadystatechange = function()
+				{
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 					{
 		//			alert(xmlhttp.responseText);
 					}
@@ -2063,7 +2063,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 
 // ################################################################################
 // Send Originate command to manager to place a phone call
-	function basic_originate_call(tasknum,taskprefix,taskreverse,taskdialvalue) 
+	function basic_originate_call(tasknum,taskprefix,taskreverse,taskdialvalue)
 		{
 		var xmlhttp=false;
 		/*@cc_on @*/
@@ -2084,8 +2084,8 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			{
 			xmlhttp = new XMLHttpRequest();
 			}
-		if (xmlhttp) 
-			{ 
+		if (xmlhttp)
+			{
 
 			if (taskprefix == 'NO') {var orig_prefix = '';}
 			  else {var orig_prefix = agc_dial_prefix;}
@@ -2097,7 +2097,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 					{var dialnum = taskdialvalue;}
 				var originatevalue = "Local/" + tasknum + "@" + ext_context;
 				}
-			  else 
+			  else
 				{
 				var dialnum = tasknum;
 				var originatevalue = protocol + "/" + extension;
@@ -2105,12 +2105,12 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			var queryCID = "DOagcW" + epoch_sec + user_abb;
 
 			VMCoriginate_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=Originate&format=text&channel=" + originatevalue + "&queryCID=" + queryCID + "&exten=" + orig_prefix + "" + dialnum + "&ext_context=" + ext_context + "&ext_priority=1&outbound_cid=" + outbound_cid;
-			xmlhttp.open('POST', 'manager_send.php'); 
+			xmlhttp.open('POST', 'manager_send.php');
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(VMCoriginate_query); 
-			xmlhttp.onreadystatechange = function() 
-				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+			xmlhttp.send(VMCoriginate_query);
+			xmlhttp.onreadystatechange = function()
+				{
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 					{
 			//		alert(xmlhttp.responseText);
 					}
@@ -2121,7 +2121,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 
 // ################################################################################
 // Send Originate command to manager to direct user to voicemail box
-	function SendCheckVoiceMail() 
+	function SendCheckVoiceMail()
 		{
 		var xmlhttp=false;
 		/*@cc_on @*/
@@ -2142,17 +2142,17 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			{
 			xmlhttp = new XMLHttpRequest();
 			}
-		if (xmlhttp) 
-			{ 
+		if (xmlhttp)
+			{
 			var queryCID = voicemail_id;
 			var originatevalue = protocol + "/" + extension;
 			VMCoriginate_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=SysCIDOriginate&format=text&channel=" + originatevalue + "&queryCID=" + queryCID + "&exten=" + voicemail_exten + "&ext_context=" + ext_context + "&ext_priority=1";
-			xmlhttp.open('POST', 'manager_send.php'); 
+			xmlhttp.open('POST', 'manager_send.php');
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(VMCoriginate_query); 
-			xmlhttp.onreadystatechange = function() 
-				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+			xmlhttp.send(VMCoriginate_query);
+			xmlhttp.onreadystatechange = function()
+				{
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 					{
 		//			alert(xmlhttp.responseText);
 					}
@@ -2163,7 +2163,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 
 // ################################################################################
 // Query database to find out how many new and old voicemail messages there are
-	function GetVoiceMailCounts() 
+	function GetVoiceMailCounts()
 		{
 		var xmlhttp=false;
 		/*@cc_on @*/
@@ -2184,15 +2184,15 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			{
 			xmlhttp = new XMLHttpRequest();
 			}
-		if (xmlhttp) 
-			{ 
+		if (xmlhttp)
+			{
 			VMCount_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&format=text&vmail_box=" + voicemail_id;
-			xmlhttp.open('POST', 'voicemail_check.php'); 
+			xmlhttp.open('POST', 'voicemail_check.php');
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(VMCount_query); 
-			xmlhttp.onreadystatechange = function() 
-				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+			xmlhttp.send(VMCount_query);
+			xmlhttp.onreadystatechange = function()
+				{
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 					{
 		//			alert(xmlhttp.responseText);
 					var vmail_counts = null;
@@ -2209,7 +2209,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 						{
 						document.getElementById("new_vmail_span").innerHTML = new_messages_count;
 						new_messages = new_messages_count;
-						}				
+						}
 
 					if ( (new_messages_count != 0) && (document.images['voicemail'].src != image_voicemail_BLINK.src) )
 						{
@@ -2292,7 +2292,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 				var taskfavrowprev	= (taskfavrow - 1);
 				var holdingEXTEN	= favoritesEDIT[taskfavrowprev];
 				var holdingNAME		= favorites_namesEDIT[taskfavrowprev];
-				
+
 				favoritesEDIT[taskfavrowprev]		= favlistEXTEN[0];
 				favorites_namesEDIT[taskfavrowprev] = favlistEXTEN[1];
 				favoritesEDIT[taskfavrow]			= holdingEXTEN;
@@ -2364,7 +2364,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 					favedit_HTML = favedit_HTML + "<font class=\"ss_text\"><b><a href=\"#" + favlist[loop_ct] + "\" onclick=\"favorites_editor('ADD','" + favlist[loop_ct] + "');return false;\">" + favlist[loop_ct] + "</a></b></font><BR>";
 					}
 				}
-			if (loop_ct == VD_favlist_ct_half) 
+			if (loop_ct == VD_favlist_ct_half)
 				{
 				favedit_HTML = favedit_HTML + "</span></font></td><td bgcolor=\"#DDDD99\" height=380 width=200 valign=top><font class=\"ss_text\"><span id=FavSelectB>";
 				favlist_sec_col = 1;
@@ -2388,7 +2388,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			}
 
 		favedit_HTML = favedit_HTML + "</span></font></td></tr></table>";
-		
+
 		document.getElementById("FavoriteSEditContent").innerHTML = favedit_HTML;
 		}
 
@@ -2416,15 +2416,15 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			{
 			xmlhttp = new XMLHttpRequest();
 			}
-		if (xmlhttp) 
-			{ 
+		if (xmlhttp)
+			{
 			FCquery = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=UpdatEFavoritEs&format=text&exten=" + extension + "&favorites_list=" + favorites_listEDIT;
-			xmlhttp.open('POST', 'vdc_db_query.php'); 
+			xmlhttp.open('POST', 'vdc_db_query.php');
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(FCquery); 
-			xmlhttp.onreadystatechange = function() 
-				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+			xmlhttp.send(FCquery);
+			xmlhttp.onreadystatechange = function()
+				{
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 					{
 		//			alert(xmlhttp.responseText);
 					}
@@ -2471,7 +2471,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 				if ( (document.getElementById("ConfereNcesPanel").style.visibility == 'visible') && (lastconf.length > 0) )
 					{check_for_conf_calls(lastconf);}
 				}
-			if (check_n<2) 
+			if (check_n<2)
 				{
 				document.getElementById("refresh_rate").innerHTML = refresh_interval + " ms";
 				hideTrunkHangup();
@@ -2594,7 +2594,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 
 
 	// functions to hide and show different DIVs
-	function showDiv(divvar) 
+	function showDiv(divvar)
 		{
 		if (document.getElementById(divvar))
 			{
@@ -2611,7 +2611,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			}
 		}
 
-	function showTrunkHangup(divvar) 
+	function showTrunkHangup(divvar)
 		{
 		document.getElementById("TrunkHangupBox").style.visibility = 'visible';
 		pause();
@@ -2625,7 +2625,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 		if (admin_monitor_enabled == 0) {hideDiv('TrunkHangup_ZMlink');}
 		busytrunkhangup();
 		}
-	function hideTrunkHangup(divvar) 
+	function hideTrunkHangup(divvar)
 		{
 		document.getElementById("TrunkHangupBox").style.visibility = 'hidden';
 		start();
@@ -2635,7 +2635,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 		showDiv('TrunkHangupLink');
 		showDiv('LocalHangupLink');
 		}
-	function showLocalHangup(divvar) 
+	function showLocalHangup(divvar)
 		{
 		document.getElementById("LocalHangupBox").style.visibility = 'visible';
 		pause();
@@ -2649,7 +2649,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 		if (admin_monitor_enabled == 0) {hideDiv('LocalHangup_ZMlink');}
 		busylocalhangup();
 		}
-	function hideLocalHangup(divvar) 
+	function hideLocalHangup(divvar)
 		{
 		document.getElementById("LocalHangupBox").style.visibility = 'hidden';
 		start();
@@ -2660,7 +2660,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 		showDiv('LocalHangupLink');
 		}
 
-	function showMainXfeR(divvar,taskxferchan,taskxferchanmain) 
+	function showMainXfeR(divvar,taskxferchan,taskxferchanmain)
 		{
 		document.getElementById("MainXfeRBox").style.visibility = 'visible';
 		getactiveext("MainXfeRBox");
@@ -2670,19 +2670,19 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 		document.extensions_list.M_XfeR_channel.value = taskxferchanmain;
 		document.getElementById("MainXfeRChanneL").innerHTML = XfeR_channel;
 		}
-	function showLocalDial(divvar,taskxferchan) 
+	function showLocalDial(divvar,taskxferchan)
 		{
 		document.getElementById("LocalDialBox").style.visibility = 'visible';
 		getactiveext("LocalDialBox");
 		document.getElementById("LocalDialChanneL").innerHTML = protocol + "/" + extension;
 		}
-	function showParkDisplay(divvar,taskxferchan) 
+	function showParkDisplay(divvar,taskxferchan)
 		{
 		document.getElementById("ParkDisplayBox").style.visibility = 'visible';
 		parked_calls_display_refresh();
 		park_refresh=1;
 		}
-	function hideMainXfeR(divvar) 
+	function hideMainXfeR(divvar)
 		{
 		document.getElementById("MainXfeRBox").style.visibility = 'hidden';
 		var XfeR_channel = '';
@@ -2690,14 +2690,14 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 		document.extensions_list.M_XfeR_channel.value = '';
 		document.getElementById("MainXfeRChanneL").innerHTML = '';
 		}
-	function hideLocalDial(divvar) 
+	function hideLocalDial(divvar)
 		{
 		document.getElementById("LocalDialBox").style.visibility = 'hidden';
 		var XfeR_channel = '';
 		document.extensions_list.H_XfeR_channel.value = '';
 		document.getElementById("LocalDialChanneL").innerHTML = '';
 		}
-	function hideParkDisplay(divvar) 
+	function hideParkDisplay(divvar)
 		{
 		document.getElementById("ParkDisplayBox").style.visibility = 'hidden';
 		park_refresh=0;
@@ -2796,7 +2796,7 @@ echo "</head>\n";
 	<span id="TrunkHangup_HUlink"><a href="#" onclick="busyhangup_send_hangup('Trunk');return false;"><?php echo _QXZ("Hangup Trunk"); ?></a> &nbsp; | &nbsp; </span>
 	<span id="TrunkHangup_HJlink"><a href="#" onclick="busyhangup_send_redirect('Trunk','HIJACK');return false;"><?php echo _QXZ("Hijack Trunk"); ?></a> &nbsp; | &nbsp; </span>
 	<span id="TrunkHangup_ZMlink"><a href="#" onclick="busyhangup_send_redirect('Trunk','LISTEN');return false;"><?php echo _QXZ("Listen Trunk"); ?></a> &nbsp; | &nbsp; </span>
-	<a href="#" onclick="busytrunkhangup_force_refresh();return false;"><?php echo _QXZ("Refresh"); ?></a> &nbsp; | &nbsp; 
+	<a href="#" onclick="busytrunkhangup_force_refresh();return false;"><?php echo _QXZ("Refresh"); ?></a> &nbsp; | &nbsp;
 	<a href="#" onclick="hideTrunkHangup('TrunkHangupBox');"><?php echo _QXZ("Back to Main Window"); ?></a>
 	</TD></TR></TABLE>
 </span>
@@ -2807,7 +2807,7 @@ echo "</head>\n";
 	<span id="LocalHangup_HUlink"><a href="#" onclick="busyhangup_send_hangup('Local');return false;"><?php echo _QXZ("Hangup Local"); ?></a> &nbsp; | &nbsp; </span>
 	<span id="LocalHangup_HJlink"><a href="#" onclick="busyhangup_send_redirect('Local');return false;"><?php echo _QXZ("Hijack Local"); ?></a> &nbsp; | &nbsp; </span>
 	<span id="LocalHangup_ZMlink"><a href="#" onclick="busyhangup_send_redirect('Local','LISTEN');return false;"><?php echo _QXZ("Listen Local"); ?></a> &nbsp; | &nbsp; </span>
-	<a href="#" onclick="busylocalhangup_force_refresh();return false;"><?php echo _QXZ("Refresh"); ?></a> &nbsp; | &nbsp; 
+	<a href="#" onclick="busylocalhangup_force_refresh();return false;"><?php echo _QXZ("Refresh"); ?></a> &nbsp; | &nbsp;
 	<a href="#" onclick="hideLocalHangup('LocalHangupBox');"><?php echo _QXZ("Back to Main Window"); ?></a>
 	</TD></TR></TABLE>
 </span>
@@ -2849,7 +2849,7 @@ echo "</head>\n";
 
 <span  style="position:absolute;left:0px;top:46px;z-index:10;" id="MainPanel">
 <TABLE border=0 BGCOLOR="#CCC2E0" width=640>
-<TR><TD> &nbsp; 
+<TR><TD> &nbsp;
 </TD></TR>
 <tr><td><span id="busycallsspan"></span></td></tr>
 <tr><td><span id="busycallsdebug"></span></td></tr>
@@ -2899,18 +2899,18 @@ echo "</head>\n";
 <a href="#" onclick="pause();return false;"><?php echo _QXZ("STOP"); ?></a> | <a href="#" onclick="start();return false;"><?php echo _QXZ("START"); ?></a> &nbsp; &nbsp; <?php echo _QXZ("Refresh rate:"); ?> <span id="refresh_rate">1000 ms</span> <a href="#" onclick="faster();return false;"><?php echo _QXZ("Faster"); ?></a> | <a href="#" onclick="slower();return false;"><?php echo _QXZ("Slower"); ?></a></p>
 	<div id="status"><em><?php echo _QXZ("Initializing.."); ?></em></div>
 </td></tr>
-<tr><td><?php echo _QXZ("Active Extensions"); ?> <BR> 
-<a href="#" onclick="activeext_force_refresh();return false;"><?php echo _QXZ("Refresh"); ?></a> | 
+<tr><td><?php echo _QXZ("Active Extensions"); ?> <BR>
+<a href="#" onclick="activeext_force_refresh();return false;"><?php echo _QXZ("Refresh"); ?></a> |
 <span id="activeext_order"><a href="#" onclick="activeext_order_desc();return false;"><?php echo _QXZ("ORDER"); ?></a> | </span>
 </td>
 
 <td><?php echo _QXZ("Outside Lines"); ?> <BR>
-<a href="#" onclick="busytrunk_force_refresh();return false;"><?php echo _QXZ("Refresh"); ?></a> | 
+<a href="#" onclick="busytrunk_force_refresh();return false;"><?php echo _QXZ("Refresh"); ?></a> |
 <span id="busytrunk_order"><a href="#" onclick="busytrunk_order_desc();return false;"><?php echo _QXZ("ORDER"); ?></a> | </span>
 </td>
 
 <td><?php echo _QXZ("Local Extensions"); ?> <BR>
-<a href="#" onclick="busyext_force_refresh();return false;"><?php echo _QXZ("Refresh"); ?></a> | 
+<a href="#" onclick="busyext_force_refresh();return false;"><?php echo _QXZ("Refresh"); ?></a> |
 <span id="busyext_order"><a href="#" onclick="busyext_order_desc();return false;"><?php echo _QXZ("ORDER"); ?></a> | </span>
 </td></tr>
 
@@ -2951,8 +2951,8 @@ echo "</head>\n";
 </html>
 
 <?php
-	
-exit; 
+
+exit;
 
 
 

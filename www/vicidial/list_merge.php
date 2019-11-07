@@ -8,7 +8,7 @@
 # 170409-1548 - Added IP List validation code
 # 170819-1000 - Added allow_manage_active_lists option
 # 180508-2215 - Added new help display
-# 191101-1630 - Translation patch, removed function.js 
+# 191101-1630 - Translation patch, removed function.js
 #
 
 $version = '2.14-3';
@@ -59,8 +59,8 @@ if (isset($_GET["retain_original_list"])) {$retain_original_list=$_GET["retain_o
 if (isset($_GET["create_new_list"])) {$create_new_list=$_GET["create_new_list"];}
 	elseif (isset($_POST["create_new_list"])) {$create_new_list=$_POST["create_new_list"];}
 
-	
-	
+
+
 
 $DB = preg_replace('/[^0-9]/','',$DB);
 $retain_original_list = preg_replace('/[^NY]/i','',$retain_original_list);
@@ -370,7 +370,7 @@ else
 # confirmation page
 if ($submit == "submit" )
 	{
-	
+
 	if(count($available_lists)<1) {
 		echo "<p>"._QXZ("No list ids to merge given.")."</p>\n";
 		echo "<p><a href='$PHP_SELF'>"._QXZ("Click here to start over.")."</a></p>\n";
@@ -384,7 +384,7 @@ if ($submit == "submit" )
 		$list_row = mysqli_fetch_row($list_rslt);
 		$list_rows = mysqli_num_rows($list_rslt);
 		# If the new list ID already exists, get the existing information, not the new one.
-		if ($list_rows>0) {			
+		if ($list_rows>0) {
 			$new_list_name=$list_row[1];
 			$new_list_description=$list_row[2];
 			$campaign_id=$list_row[3];
@@ -416,7 +416,7 @@ if ($submit == "submit" )
 			echo "<p><a href='$PHP_SELF'>"._QXZ("Click here to start over.")."</a></p>\n";
 			echo "</body>\n</html>\n";
 			exit;
-			}	
+			}
 	} else {
 			echo "<p>"._QXZ("No valid destination list id given.")."</p>\n";
 			echo "<p><a href='$PHP_SELF'>"._QXZ("Click here to start over.")."</a></p>\n";
@@ -454,7 +454,7 @@ if ($submit == "submit" )
 
 	# keep debug active
 	echo "<input type=hidden name=DB value='$DB'>\n";
-	
+
 	echo "<input type=submit name='confirm' class='red_btn' value='CONFIRM'>\n";
 	echo "</form>\n";
 	echo "<p><a href='$PHP_SELF'>"._QXZ("Click here to start over.")."</a></p></center>\n";
@@ -472,7 +472,7 @@ if ($confirm == "CONFIRM")
 	$orig_count_row = mysqli_fetch_row($orig_count_rslt);
 	$orig_count = $orig_count_row[0];
 
-	if ($create_new_list) 
+	if ($create_new_list)
 		{
 		$list_create_stmt = "INSERT INTO vicidial_lists (list_id, list_name, campaign_id, active, list_description) VALUES ('$new_list_id', '$new_list_name', '$campaign_id', '$active', '$new_list_description');";
 		$list_create_rslt=mysql_to_mysqli($list_create_stmt, $link);
@@ -486,7 +486,7 @@ if ($confirm == "CONFIRM")
 		}
 
 /*
-	if ($retain_original_list) 
+	if ($retain_original_list)
 		{
 		$upd_stmt="update vicidial_list set entry_list_id=list_id where list_id in ('".implode("', '", $available_lists_array)."');";
 		$upd_rslt=mysql_to_mysqli($upd_stmt, $link);
@@ -498,7 +498,7 @@ if ($confirm == "CONFIRM")
 		}
 */
 
-	
+
 	# move the leads to the new list from the old list
 	$move_lead_stmt = "UPDATE vicidial_list SET list_id = '$destination_list_id' WHERE list_id in ('".implode("', '", $available_lists_array)."');";
 	if ($DB) { echo "|$move_lead_stmt|\n"; }
@@ -512,10 +512,10 @@ if ($confirm == "CONFIRM")
 	$admin_log_stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LISTS', event_type='OTHER', record_id='$destination_list_id', event_code='ADMIN LIST MERGE', event_sql=\"$SQL_log\", event_notes='$move_lead_count LEADS MOVED';";
 	if ($DB) {echo "|$admin_log_stmt|\n";}
 	$admin_log_rslt=mysql_to_mysqli($admin_log_stmt, $link);
-		
+
 	# reset the PHP max execution so this script does not exit prematurely
 	set_time_limit( 120 );
-	
+
 
 	echo "<p>"._QXZ("List(s)")." ".implode(", ", $available_lists_array)." "._QXZ("was merged into list")." $destination_list_id "._QXZ("with")." $move_lead_count "._QXZ("lead(s) moved.")."</p>";
 	echo "<p><a href='$PHP_SELF'>"._QXZ("Click here to start over.")."</a></p>\n";
@@ -564,7 +564,7 @@ if (($submit != "submit" ) && ($confirm != "CONFIRM"))
 		{echo "<p>"._QXZ("This is the list merge tool. It will merge several existing lists into a single list.")."</p>";}
 	else
 		{echo "<p>"._QXZ("This is the list merge tool. It will only work on inactive lists. It will merge several existing lists into a single list.")."</p>";}
-	
+
 	echo "<form action=$PHP_SELF method=POST>\n";
 	echo "<center><table width=$section_width cellspacing=3>\n";
 
@@ -579,7 +579,7 @@ if (($submit != "submit" ) && ($confirm != "CONFIRM"))
 		{
 		if (is_array($available_lists))
 			{
-			if (in_array($list_ary[$i], $available_lists)) {$x="selected";} 
+			if (in_array($list_ary[$i], $available_lists)) {$x="selected";}
 			else {$x="";}
 			}
 		else {$x="";}
@@ -603,7 +603,7 @@ if (($submit != "submit" ) && ($confirm != "CONFIRM"))
 	echo "<tr bgcolor=#$SSstd_row2_background><td align=right>"._QXZ("Alternate list ID:")."</td><td align=left>\n";
 	echo "<input type='text' name='new_list_id' id='new_list_id' size='19' maxlength='19' value='".$new_list_id."'> ("._QXZ("digits only").")\n";
 	echo "</td></tr>\n";
-	
+
 	echo "<tr bgcolor=#$SSstd_row1_background><td colspan=2 align=center><b>"._QXZ("Below fields are required ONLY if -Alternate list ID- is filled out and not an already-existing list")."</b></td></tr>\n";
 	echo "<tr bgcolor=#$SSstd_row1_background><td align=right>"._QXZ("List Name").": </td><td align=left><input type=text name='new_list_name' size=30 maxlength=30 value='".$new_list_name."'>$NWB#lists-list_name$NWE</td></tr>\n";
 	echo "<tr bgcolor=#$SSstd_row1_background><td align=right>"._QXZ("List Description").": </td><td align=left><input type=text name='new_list_description' size=30 maxlength=255 value='".$new_list_description."'>$NWB#lists-list_description$NWE</td></tr>\n";
@@ -615,7 +615,7 @@ if (($submit != "submit" ) && ($confirm != "CONFIRM"))
 	$campaigns_list='';
 
 	$o=0;
-	while ($campaigns_to_print > $o) 
+	while ($campaigns_to_print > $o)
 		{
 		$rowx=mysqli_fetch_row($rslt);
 		$campaigns_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -628,7 +628,7 @@ if (($submit != "submit" ) && ($confirm != "CONFIRM"))
 
 	# keep debug active
 	echo "<input type=hidden name=DB value='$DB'>\n";
-	
+
 	# Submit
 	echo "<tr bgcolor=#$SSstd_row2_background><td colspan=2 align=center><input type=submit name=submit value='"._QXZ("submit")."'></td></tr>\n";
 	echo "</table></center>\n";

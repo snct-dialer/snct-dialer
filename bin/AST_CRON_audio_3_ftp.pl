@@ -5,8 +5,8 @@
 # This is a STEP-3 program in the audio archival process
 #
 # runs every 3 minutes and copies the recording files to an FTP server
-# 
-# put an entry into the cron of of your asterisk machine to run this script 
+#
+# put an entry into the cron of of your asterisk machine to run this script
 # every 3 minutes or however often you desire
 #
 # ### recording mixing/compressing/ftping scripts
@@ -33,10 +33,10 @@
 # --YearYMDdatedir
 #
 # if pinging is not working, try the 'icmp' Ping command in the code instead
-# 
+#
 # make sure that the following directories exist:
 # /var/spool/asterisk/monitorDONE	# where the mixed -all files are put
-# 
+#
 # This program assumes that recordings are saved by Asterisk as .wav
 #
 # LICENSE: AGPLv3
@@ -45,14 +45,14 @@
 # Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
 #               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
 
-# 
+#
 # 80302-1958 - First Build
 # 80317-2349 - Added FTP debug if debugX
 # 80731-2253 - Changed size comparisons for more efficiency
 # 90727-1458 - Added GSW format option
 # 90730-1454 - Fixed non-VicDial recordings date directory, added secondary icmp ping if standard ping fails
 # 90818-0953 - Fixed a bug where the filesizes for all files were null
-# 90818-1017 - Added a transfer limit and list limit options. 
+# 90818-1017 - Added a transfer limit and list limit options.
 # 90827-2013 - Fixed list limit option
 # 91123-0037 - Added FTP CLI options
 # 110524-1049 - Added run-check concurrency check option
@@ -71,7 +71,7 @@
 use Fcntl qw(:flock);
 # print "start of program $0\n";
 unless (flock(DATA, LOCK_EX|LOCK_NB)) {
-    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log'
     or print "Can't open the fscking file: $!";
     $datestring = localtime();
     print $fh "[$datestring] $0 is already running. Exiting.\n";
@@ -187,14 +187,14 @@ if (length($ARGV[0])>1)
 			$run_check=1;
 			if ($DB) {print "\n----- CONCURRENCY CHECK -----\n\n";}
 			}
-		if ($args =~ /--transfer-limit=/i) 
+		if ($args =~ /--transfer-limit=/i)
 			{
 			my @data_in = split(/--transfer-limit=/,$args);
 			$file_limit = $data_in[1];
 			$file_limit =~ s/ .*//gi;
 			print "\n----- FILE TRANSFER LIMIT: $file_limit -----\n\n";
 			}
-		if ($args =~ /--list-limit=/i) 
+		if ($args =~ /--list-limit=/i)
 			{
 			my @data_in = split(/--list-limit=/,$args);
 			$list_limit = $data_in[1];
@@ -246,13 +246,13 @@ if (length($ARGV[0])>1)
 					}
 				}
 			}
-		if ($args =~ /--ftp-server=/i) 
+		if ($args =~ /--ftp-server=/i)
 			{
 			my @data_in = split(/--ftp-server=/,$args);
 			$VARFTP_host = $data_in[1];
 			$VARFTP_host =~ s/ .*//gi;
 			$CLIFTP_host=1;
-			if ($DB > 0) 
+			if ($DB > 0)
 				{print "\n----- FTP SERVER: $VARFTP_host -----\n\n";}
 			}
 		if ($args =~ /--ftp-port=/i)
@@ -264,43 +264,43 @@ if (length($ARGV[0])>1)
 			if ($DB > 0)
 				{print "\n----- FTP PORT: $VARFTP_port -----\n\n";}
 			}
-		if ($args =~ /--ftp-login=/i) 
+		if ($args =~ /--ftp-login=/i)
 			{
 			my @data_in = split(/--ftp-login=/,$args);
 			$VARFTP_user = $data_in[1];
 			$VARFTP_user =~ s/ .*//gi;
 			$CLIFTP_user=1;
-			if ($DB > 0) 
+			if ($DB > 0)
 				{print "\n----- FTP LOGIN: $VARFTP_user -----\n\n";}
 			}
-		if ($args =~ /--ftp-pass=/i) 
+		if ($args =~ /--ftp-pass=/i)
 			{
 			my @data_in = split(/--ftp-pass=/,$args);
 			$VARFTP_pass = $data_in[1];
 			$VARFTP_pass =~ s/ .*//gi;
 			$CLIFTP_pass=1;
-			if ($DB > 0) 
+			if ($DB > 0)
 				{print "\n----- FTP PASS: $VARFTP_pass -----\n\n";}
 			}
-		if ($args =~ /--ftp-dir=/i) 
+		if ($args =~ /--ftp-dir=/i)
 			{
 			my @data_in = split(/--ftp-dir=/,$args);
 			$VARFTP_dir = $data_in[1];
 			$VARFTP_dir =~ s/ .*//gi;
 			$CLIFTP_dir=1;
-			if ($DB > 0) 
+			if ($DB > 0)
 				{print "\n----- FTP DIRECTORY: $VARFTP_dir -----\n\n";}
 			}
-		if ($args =~ /--ftp-persistent/i) 
+		if ($args =~ /--ftp-persistent/i)
 			{
 			$FTPpersistent=1;
-			if ($DB > 0) 
+			if ($DB > 0)
 				{print "\n----- FTP PERSISTENT: $FTPpersistent -----\n\n";}
 			}
-		if ($args =~ /--ftp-validate/i) 
+		if ($args =~ /--ftp-validate/i)
 			{
 			$FTPvalidate=1;
-			if ($DB > 0) 
+			if ($DB > 0)
 				{print "\n----- FTP VALIDATE: $FTPvalidate -----\n\n";}
 			}
 		}
@@ -370,7 +370,7 @@ if ($run_check > 0)
 	my $grepout = `/bin/ps ax | grep $0 | grep -v grep | grep -v '/bin/sh'`;
 	my $grepnum=0;
 	$grepnum++ while ($grepout =~ m/\n/g);
-	if ($grepnum > 1) 
+	if ($grepnum > 1)
 		{
 		if ($DB) {print "I am not alone! Another $0 is running! Exiting...\n";}
 		exit;
@@ -418,7 +418,7 @@ foreach(@FILES)
 	if ($files_that_count >= $list_limit)
 		{
 			last();
-		}		
+		}
 	}
 
 sleep(5);
@@ -436,8 +436,8 @@ foreach(@FILES)
 
 		$FILEsize2[$i] = (-s "$dir2/$FILES[$i]");
 		if ($DBX) {print "$dir2/$FILES[$i] $FILEsize2[$i]\n\n";}
-		
-		if ($FILEsize1[$i] ne $FILEsize2[$i]) 
+
+		if ($FILEsize1[$i] ne $FILEsize2[$i])
 			{
 			if ($DBX) {print "not transfering $dir2/$FILES[$i]. File size mismatch $FILEsize2[$i] != $FILEsize1[$i]\n\n";}
 			}
@@ -490,9 +490,9 @@ foreach(@FILES)
 				}
 
 			if ($ping_good)
-				{	
+				{
 				$transfered_files++;
-				
+
 				$start_date_PATH='';
 				$FTPdb=0;
 				if ($DBX>0) {$FTPdb=1;}
@@ -501,13 +501,13 @@ foreach(@FILES)
 					if($DBX){print STDERR "FTP PERSISTENT, skipping login\n";}
 					if ($NODATEDIR < 1)
 						{
-						if ($YMDdatedir > 0) 
+						if ($YMDdatedir > 0)
 							{
 							$ftp->cwd("../../../");
 							}
 						else
 							{
-							if ($YearYMDdatedir > 0) 
+							if ($YearYMDdatedir > 0)
 								{
 								$ftp->cwd("../../");
 								}
@@ -526,7 +526,7 @@ foreach(@FILES)
 					}
 				if ($NODATEDIR < 1)
 					{
-					if ($YMDdatedir > 0) 
+					if ($YMDdatedir > 0)
 						{
 						$ftp->mkdir("$year");
 						$ftp->cwd("$year");
@@ -538,7 +538,7 @@ foreach(@FILES)
 						}
 					else
 						{
-						if ($YearYMDdatedir > 0) 
+						if ($YearYMDdatedir > 0)
 							{
 							$ftp->mkdir("$year");
 							$ftp->cwd("$year");
@@ -581,41 +581,41 @@ foreach(@FILES)
 					$localDIR='';
 					if ( ($localdatedir > 0) && ($NODATEDIR < 1) )
 						{
-						if ($YMDdatedir > 0) 
+						if ($YMDdatedir > 0)
 							{
-							if (-d "$PATHDONEmonitor/FTP/$year") 
+							if (-d "$PATHDONEmonitor/FTP/$year")
 								{if($DBX) {print "Year directory exists: $PATHDONEmonitor/FTP/$year\n";}}
-							else 
+							else
 								{mkdir("$PATHDONEmonitor/FTP/$year",0755);   if($DBX) {print "Year directory created: $PATHDONEmonitor/FTP/$year\n";}}
-							if (-d "$PATHDONEmonitor/FTP/$year/$mon") 
+							if (-d "$PATHDONEmonitor/FTP/$year/$mon")
 								{if($DBX) {print "Month directory exists: $PATHDONEmonitor/FTP/$year/$mon\n";}}
-							else 
+							else
 								{mkdir("$PATHDONEmonitor/FTP/$year/$mon",0755);   if($DBX) {print "Month directory created: $PATHDONEmonitor/FTP/$year/$mon\n";}}
-							if (-d "$PATHDONEmonitor/FTP/$year/$mon/$mday") 
+							if (-d "$PATHDONEmonitor/FTP/$year/$mon/$mday")
 								{if($DBX) {print "Day directory exists: $PATHDONEmonitor/FTP/$year/$mon/$mday\n";}}
-							else 
+							else
 								{mkdir("$PATHDONEmonitor/FTP/$year/$mon/$mday",0755);   if($DBX) {print "Day directory created: $PATHDONEmonitor/FTP/$year/$mon/$mday\n";}}
 							$localDIR = "$year/$mon/$mday/";
 							}
 						else
 							{
-							if ($YearYMDdatedir > 0) 
+							if ($YearYMDdatedir > 0)
 								{
-								if (-d "$PATHDONEmonitor/FTP/$year") 
+								if (-d "$PATHDONEmonitor/FTP/$year")
 									{if($DBX) {print "Year directory exists: $PATHDONEmonitor/FTP/$year\n";}}
-								else 
+								else
 									{mkdir("$PATHDONEmonitor/FTP/$year",0755);   if($DBX) {print "Year directory created: $PATHDONEmonitor/FTP/$year\n";}}
-								if (-d "$PATHDONEmonitor/FTP/$year/$start_date") 
+								if (-d "$PATHDONEmonitor/FTP/$year/$start_date")
 									{if($DBX) {print "Full-date directory exists: $PATHDONEmonitor/FTP/$year/$start_date\n";}}
-								else 
+								else
 									{mkdir("$PATHDONEmonitor/FTP/$year/$start_date",0755);   if($DBX) {print "Year directory created: $PATHDONEmonitor/FTP/$year/$start_date\n";}}
 								$localDIR = "$year/$start_date/";
 								}
 							else
 								{
-								if (-d "$PATHDONEmonitor/FTP/$start_date") 
+								if (-d "$PATHDONEmonitor/FTP/$start_date")
 									{if($DBX) {print "Full-date directory exists: $PATHDONEmonitor/FTP/$start_date\n";}}
-								else 
+								else
 									{mkdir("$PATHDONEmonitor/FTP/$start_date",0755);   if($DBX) {print "Year directory created: $PATHDONEmonitor/FTP/$start_date\n";}}
 								$localDIR = "$start_date/";
 								}
@@ -623,10 +623,10 @@ foreach(@FILES)
 						}
 					`mv -f "$dir2/$ALLfile" "$PATHDONEmonitor/FTP/$localDIR$ALLfile"`;
 					}
-				
+
 				if($DBX){print STDERR "Transfered $transfered_files files\n";}
-				
-				if ( $transfered_files == $file_limit) 
+
+				if ( $transfered_files == $file_limit)
 					{
 					if($DBX){print STDERR "Transfer limit of $file_limit reached breaking out of the loop\n";}
 					last();

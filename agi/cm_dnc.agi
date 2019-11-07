@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # cm_dnc.agi version 2.14
-# 
+#
 # Designed to work with Cell Menus to allow setting of a number as DNC or NI
 # This script is meant as a replacecment for the agi-VDADinbound_NI_DNC_CIDlookup.agi
 # script. It is designed to work easily in the Call Menu framework, it plays no
@@ -125,7 +125,7 @@ if (length($ARGV[0])>1)
 		if ($AGILOG) {$agi_string = "$i|$ARGV[$i]";   &agi_output;}
 		$i++;
 		}
-	
+
 	### list of command-line array arguments:
 	@ARGV_vars = split(/---/, $ARGV[0]);
 
@@ -146,7 +146,7 @@ if (length($camp_sys) < 2)
 	{$camp_sys = 'SYS';}
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 	{
 	chomp;
 	last unless length($_);
@@ -230,7 +230,7 @@ else
 	if ($AGILOG) {$agi_string = "Not already a Vicidial call: $calleridname";   &agi_output;}
 	}
 
-foreach $i (sort keys %AGI) 
+foreach $i (sort keys %AGI)
 	{
 	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
 	}
@@ -251,7 +251,7 @@ if ( (length($campaign_id) > 0) && ($camp_sys =~ /CAMP/) )
 	if ($AGILOG) {$agi_string = "$sthArows|$stmtA|";   &agi_output;}
 	while ($sthArows > $cbc)
 		{
-		@aryA = $sthA->fetchrow_array;	
+		@aryA = $sthA->fetchrow_array;
 		$SlistsSQL	.= "'$aryA[0]',";
 		$cbc++;
 		}
@@ -324,7 +324,7 @@ if ($new_status =~ /DNC/)	# set the phone_number to DNC
 			if ($AGILOG) {$agi_string = "$affected_rows|$stmtA|";   &agi_output;}
 		}
 
-	if (length($campaign_id)>1) 
+	if (length($campaign_id)>1)
 		{
 		### Grab DNC settings from campaign
 		$stmtA = "SELECT use_internal_dnc,use_campaign_dnc FROM vicidial_campaigns where campaign_id = '$campaign_id';";
@@ -361,7 +361,7 @@ if ($new_status =~ /DNC/)	# set the phone_number to DNC
 		}
 	else
 		{
-		if ($dnc_default =~ /YES/) 
+		if ($dnc_default =~ /YES/)
 			{
 			### add the number to the vicidial_dnc table
 			$stmtA = "INSERT INTO vicidial_dnc SET phone_number='$phone_number';";
@@ -408,27 +408,27 @@ $agi_string='';
 }
 
 
-sub checkresult 
+sub checkresult
 	{
 	my ($res) = @_;
 	my $retval;
 	$tests++;
 	chomp $res;
-	if ($res =~ /^200/) 
+	if ($res =~ /^200/)
 		{
 		$res =~ /result=(-?\d+)/;
-		if (!length($1)) 
+		if (!length($1))
 			{
 		#	print STDERR "FAIL ($res)\n";
 			$fail++;
-			} 
-		else 
+			}
+		else
 			{
 		#	print STDERR "PASS ($1)\n";
 			$pass++;
 			}
-		} 
-	else 
+		}
+	else
 		{
 	#	print STDERR "FAIL (unexpected result '$res')\n";
 		$fail++;

@@ -1,6 +1,6 @@
 <?php
 # admin_languages.php
-# 
+#
 # Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # this screen manages the optional language tables in ViciDial
@@ -376,7 +376,7 @@ if ($ADD==263411111111)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$phrases_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($phrases_to_print > $o) 
+		while ($phrases_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			$english_text =				$row[0];
@@ -414,13 +414,13 @@ if ($action != "HELP")
 <link rel="stylesheet" href="calendar.css">
 
 <script language="Javascript">
-function open_help(taskspan,taskhelp) 
+function open_help(taskspan,taskhelp)
 	{
 	document.getElementById("P_" + taskspan).innerHTML = " &nbsp; <a href=\"javascript:close_help('" + taskspan + "','" + taskhelp + "');\">help-</a><BR> &nbsp; ";
 	document.getElementById(taskspan).innerHTML = "<B>" + taskhelp + "</B>";
 	document.getElementById(taskspan).style.background = "#FFFF99";
 	}
-function close_help(taskspan,taskhelp) 
+function close_help(taskspan,taskhelp)
 	{
 	document.getElementById("P_" + taskspan).innerHTML = "";
 	document.getElementById(taskspan).innerHTML = " &nbsp; <a href=\"javascript:open_help('" + taskspan + "','" + taskhelp + "');\">help+</a>";
@@ -445,7 +445,7 @@ if ( ($SSadmin_modify_refresh > 1) and (preg_match("/^3/",$ADD)) )
 <div id='HelpDisplayDiv' class='help_info' style='display:none;'></div>
 
 <title><?php echo _QXZ("ADMINISTRATION: Languages"); ?>
-<?php 
+<?php
 
 ################################################################################
 ##### BEGIN help section
@@ -578,15 +578,15 @@ if ($ADD==363211111111)
 				{
 				xmlhttp = new XMLHttpRequest();
 				}
-			if (xmlhttp) 
-				{ 
+			if (xmlhttp)
+				{
 				submit_translation_query = "ADD=AJAXtranslateSUBMIT&session_name=J78SWE23YUS29HW&user=<?php echo $PHP_AUTH_USER ?>&pass=<?php echo $PHP_AUTH_PW ?>&stage=" + TEXTspan + "&translated_text=" + translated_text_value;
-				xmlhttp.open('POST', 'admin_languages.php'); 
+				xmlhttp.open('POST', 'admin_languages.php');
 				xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-				xmlhttp.send(submit_translation_query); 
-				xmlhttp.onreadystatechange = function() 
-					{ 
-					if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+				xmlhttp.send(submit_translation_query);
+				xmlhttp.onreadystatechange = function()
+					{
+					if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 						{
 						var recheck_incoming = null;
 						translate_response = xmlhttp.responseText;
@@ -642,7 +642,7 @@ if ($ADD==363211111111)
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$phrases_to_print = mysqli_num_rows($rslt);
 			$o=0;
-			while ($phrases_to_print > $o) 
+			while ($phrases_to_print > $o)
 				{
 				$o++;
 				$row=mysqli_fetch_row($rslt);
@@ -742,7 +742,7 @@ if ( (!preg_match('/\-\-ALL\-\-/i',$LOGadmin_viewable_groups)) and (strlen($LOGa
 	$valLOGadmin_viewable_groupsSQL = "and val.user_group IN('---ALL---','$rawLOGadmin_viewable_groupsSQL')";
 	$vmLOGadmin_viewable_groupsSQL = "and vm.user_group IN('---ALL---','$rawLOGadmin_viewable_groupsSQL')";
 	}
-else 
+else
 	{$admin_viewable_groupsALL=1;}
 $regexLOGadmin_viewable_groups = " $LOGadmin_viewable_groups ";
 
@@ -754,7 +754,7 @@ if ($DB) {echo "$stmt\n";}
 $rslt=mysql_to_mysqli($stmt, $link);
 $UUgroups_to_print = mysqli_num_rows($rslt);
 $o=0;
-while ($UUgroups_to_print > $o) 
+while ($UUgroups_to_print > $o)
 	{
 	$rowx=mysqli_fetch_row($rslt);
 	$UUgroups_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -865,7 +865,7 @@ if ($ADD==163211111111)
 		$groups_list='';
 
 		$o=0;
-		while ($groups_to_print > $o) 
+		while ($groups_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$groups_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -911,7 +911,7 @@ if ($ADD==163311111111)
 		$groups_list='';
 
 		$o=0;
-		while ($groups_to_print > $o) 
+		while ($groups_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$groups_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -961,7 +961,7 @@ if ($ADD==163411111111)
 		$groups_list='';
 
 		$o=0;
-		while ($groups_to_print > $o) 
+		while ($groups_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$groups_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -1497,7 +1497,7 @@ if ($ADD==163000000000)
 	echo "<td align=center><font size=1 color=white><B>"._QXZ("MODIFY")."</B></td></tr>\n";
 
 	$o=0;
-	while ($lang_to_print > $o) 
+	while ($lang_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		while(strlen($row[1]) > 40) {$row[1] = substr("$row[1]", 0, -1);}
@@ -1512,7 +1512,7 @@ if ($ADD==163000000000)
 		}
 
 	$o=0;
-	while ($lang_to_print > $o) 
+	while ($lang_to_print > $o)
 		{
 		$stmt="SELECT count(*) from vicidial_language_phrases where language_id='$Alanguage_id[$o]';";
 		if ($DB) {echo "$stmt\n";}
@@ -1528,7 +1528,7 @@ if ($ADD==163000000000)
 		$translated_phrases_count = ($phrase_count - $null_phrase_count);
 
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=363111111111&language_id=$Alanguage_id[$o]&DB=$DB'\"";} echo "><td><a href=\"$PHP_SELF?ADD=363111111111&language_id=$Alanguage_id[$o]&DB=$DB\"><font size=1 color=black>$Alanguage_id[$o]</a></td>";
@@ -1610,7 +1610,7 @@ if ($ADD == "763000000000")
 			if (preg_match('/LANGUAGES/i', $row[4])) {$record_link = "$PHP_SELF?ADD=363111111111&language_id=$row[6]&DB=$DB";}
 
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='class="records_list_x"';} 
+				{$bgcolor='class="records_list_x"';}
 			else
 				{$bgcolor='class="records_list_y"';}
 			echo "<tr $bgcolor><td><a href=\"admin.php?ADD=730000000000000&stage=$row[0]&DB=$DB\"><font size=1 color=black>$row[0]</a></td>";

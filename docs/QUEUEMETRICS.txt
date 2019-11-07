@@ -15,7 +15,7 @@ Another very important issue to note is that just like with VICIDIAL on multi-se
 To be able to view stats for inbound and outbound calls properly you need to add each one individually in QueueMetrics "queues" and properly set whether each one is inbound or outbound. After that you can create a combined queue-alias with all of the campaigns and in-groups in it and it will tell you correctly the number of inbound and outbound calls.
 
 As of 2008-10-30, several validation and correction functions were added to the AST_cleanup_agent_log.pl script that is supposed to run every hour. These functions should clean up any queue_log errors that appear and cause QueueMetrics to display incorrect call totals.
-	
+
 
 As of 2009-05-30, live montoring and playback of archived recordings through the QueueMetrics interface was added. To use this you must have the audio.server, audio.liveserver and default.audioRpcServer variables set properly in the configuration.properties file as specified toward the bottom of this document. The live monitoring asks for an extension to send the call to, this is an extension dialed on the active voicemail server as defined in the system settings. If there is no active voicemail defined then the live monitor will place the call to the extension on the server that the agent is on.
 
@@ -115,11 +115,11 @@ You now need to add the database tables, configure the web.xml file and configur
 
 
 
-Now to the database side of things. 
+Now to the database side of things.
 First, give permissions to your user:
 
-GRANT ALL PRIVILEGES ON queuemetrics.* TO qm@'localhost' IDENTIFIED BY 'qm'; 
-GRANT ALL PRIVILEGES ON queuemetrics.* TO qm@'%' IDENTIFIED BY 'qm'; 
+GRANT ALL PRIVILEGES ON queuemetrics.* TO qm@'localhost' IDENTIFIED BY 'qm';
+GRANT ALL PRIVILEGES ON queuemetrics.* TO qm@'%' IDENTIFIED BY 'qm';
 
 Second, the queue_log table:
 
@@ -201,7 +201,7 @@ partition: set to "P01" for the first partition, should match up with configurat
 time_id: epoch, unixtime (seconds since 1970-01-01 00:00:00) [1170345603]
 
 call_id: Asterisk unique prepended with server_id field [1-1170345497.30369]
-	For VICIDIAL we will use the CallerIDname of the call to 
+	For VICIDIAL we will use the CallerIDname of the call to
 
 queue: the queue that call came into (we will use the campaign_id here)
 
@@ -231,21 +231,21 @@ call actions before going to agent - used by agi-VDAD_ALL_inbound/outbound scrip
 	ENTERQUEUE(url|callerid)
 	CALLOUTBOUND(url|callerid)
 	CONNECT(holdtime)
-	EXITWITHTIMEOUT(position) 
+	EXITWITHTIMEOUT(position)
 	EXITWITHKEY(key|position)
 	TRANSFER(extension|context|holdtime|calltime)
 	INFO([IVR or DID]|[context or DID])
 
 call actions before going to agent - used by AST_VDauto_dial.pl
-	ABANDON(position|origposition|waittime) 
+	ABANDON(position|origposition|waittime)
 
 call actions after going to agent - used by vicidial.php, vdc_db_query.php and FastAGI_log.pl
 	COMPLETEAGENT(holdtime|calltime|origposition)
-	COMPLETECALLER(holdtime|calltime|origposition) 
+	COMPLETECALLER(holdtime|calltime|origposition)
 	CALLSTATUS(status)
 
 
-not used in vicidial - 
+not used in vicidial -
 	EXITEMPTY(position|origposition|waittime)
 	AGENTDUMP
 
@@ -336,9 +336,9 @@ You now need to add the database tables, configure the web.xml file and configur
 
 mysql
 CREATE DATABASE queuemetrics;
-GRANT ALL PRIVILEGES ON queuemetrics.* TO 'queuemetrics'@'localhost' IDENTIFIED BY 'javadude'; 
-GRANT ALL PRIVILEGES ON queuemetrics.* TO queuemetrics@localhost IDENTIFIED BY 'javadude'; 
-GRANT ALL PRIVILEGES ON queuemetrics.* TO queuemetrics@'%' IDENTIFIED BY 'javadude'; 
+GRANT ALL PRIVILEGES ON queuemetrics.* TO 'queuemetrics'@'localhost' IDENTIFIED BY 'javadude';
+GRANT ALL PRIVILEGES ON queuemetrics.* TO queuemetrics@localhost IDENTIFIED BY 'javadude';
+GRANT ALL PRIVILEGES ON queuemetrics.* TO queuemetrics@'%' IDENTIFIED BY 'javadude';
 
 mysql --user=queuemetrics --password=javadude queuemetrics < /usr/local/apache-tomcat-6.0.18/webapps/QM/WEB-INF/README/queuemetrics_sample.sql
 
@@ -478,7 +478,7 @@ How to install Queue Metrics on OpenSuSE LEAP 42.3 and VICIbox 8 with a system t
 
 If you want to use the ADMIN_archive_log_tables.pl script with the --queue-log option you will need to run the following query in the QM database:
 
-CREATE TABLE queue_log_archive LIKE queue_log; 
+CREATE TABLE queue_log_archive LIKE queue_log;
 
 
 

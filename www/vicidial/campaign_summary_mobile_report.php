@@ -1,12 +1,12 @@
-<?php 
+<?php
 # campaign_summary_mobile_report.php
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>, Joe Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
 #
 # Back-end PHP script that generates text output to be interpreted by AST_timeonVDADallSUMMARY_mobile.php
 #
 # STOP=4000, SLOW=40, GO=4 seconds refresh interval
-# 
+#
 # changes:
 #
 # 181212-2329 - Initial build
@@ -179,32 +179,32 @@ if ( (!preg_match('/\-ALL/i', $LOGallowed_campaigns)) )
 
 $campaign_typeSQL='';
 if (count($types)<2) {
-	if (in_array('LIST ALL CAMPAIGNS', $types))			{$campaign_typeSQL="";} 
-	else if (in_array('AUTO-DIAL ONLY', $types))			{$campaign_typeSQL="and dial_method IN('RATIO','ADAPT_HARD_LIMIT','ADAPT_TAPERED','ADAPT_AVERAGE')";} 
-	else if (in_array('MANUAL ONLY', $types))			{$campaign_typeSQL="and dial_method IN('MANUAL','INBOUND_MAN')";} 
-	else if (in_array('INBOUND ONLY', $types))			{$campaign_typeSQL="and campaign_allow_inbound='Y'";} 
+	if (in_array('LIST ALL CAMPAIGNS', $types))			{$campaign_typeSQL="";}
+	else if (in_array('AUTO-DIAL ONLY', $types))			{$campaign_typeSQL="and dial_method IN('RATIO','ADAPT_HARD_LIMIT','ADAPT_TAPERED','ADAPT_AVERAGE')";}
+	else if (in_array('MANUAL ONLY', $types))			{$campaign_typeSQL="and dial_method IN('MANUAL','INBOUND_MAN')";}
+	else if (in_array('INBOUND ONLY', $types))			{$campaign_typeSQL="and campaign_allow_inbound='Y'";}
 	else {$campaign_typeSQL="and campaign_id='".implode("', '", $types)."'";}
 } else {
 	if (!in_array('LIST ALL CAMPAIGNS', $types)) {
 		$campaign_typeSQL='and (';
-		if (in_array('AUTO-DIAL ONLY', $types)) 
+		if (in_array('AUTO-DIAL ONLY', $types))
 			{
-			$campaign_typeSQL.="dial_method IN('RATIO','ADAPT_HARD_LIMIT','ADAPT_TAPERED','ADAPT_AVERAGE') or "; #  
+			$campaign_typeSQL.="dial_method IN('RATIO','ADAPT_HARD_LIMIT','ADAPT_TAPERED','ADAPT_AVERAGE') or "; #
 			$index = array_search('AUTO-DIAL ONLY', $types);
 			unset($types[$index]);
 			}
-		if (in_array('MANUAL ONLY', $types)) 
+		if (in_array('MANUAL ONLY', $types))
 			{
 			$campaign_typeSQL.="dial_method IN('MANUAL','INBOUND_MAN') or ";
 			$index = array_search('MANUAL ONLY', $types);
 			unset($types[$index]);
-			} #  
-		if (in_array('INBOUND ONLY', $types)) 
+			} #
+		if (in_array('INBOUND ONLY', $types))
 			{
 			$campaign_typeSQL.="campaign_allow_inbound='Y' or ";
 			$index = array_search('INBOUND ONLY', $types);
 			unset($types[$index]);
-			} #  
+			} #
 		array_values($types);
 		$campaign_typeSQL.="campaign_id in ('".implode("', '", $types)."')";
 		$campaign_typeSQL.=')';
@@ -339,15 +339,15 @@ while($k<$groups_to_print)
 			{
 			$row=mysqli_fetch_row($rslt);
 
-			if (preg_match("/LIVE/i",$row[0])) 
+			if (preg_match("/LIVE/i",$row[0]))
 				{$out_live["$group"]++;}
 			else
 				{
-				if (preg_match("/IVR/i",$row[0])) 
+				if (preg_match("/IVR/i",$row[0]))
 					{$in_ivr["$group"]++;}
-				if (preg_match("/CLOSER/i",$row[0])) 
+				if (preg_match("/CLOSER/i",$row[0]))
 					{$nothing=1;}
-				else 
+				else
 					{$out_ring["$group"]++;}
 				}
 			$out_total["$group"]++;
@@ -402,13 +402,13 @@ while($k<$groups_to_print)
 			$call_time_MS = "$call_time_M_int:$call_time_SEC";
 			$call_time_MS =		sprintf("%7s", $call_time_MS);
 			$G = '';		$EG = '';
-			if (preg_match("/PAUSED/i",$row[3])) 
+			if (preg_match("/PAUSED/i",$row[3]))
 				{
-				if ($call_time_M_int >= 30) 
-					{$i++; continue;} 
+				if ($call_time_M_int >= 30)
+					{$i++; continue;}
 				else
 					{
-					$agent_paused["$group"]++;  
+					$agent_paused["$group"]++;
 					$agent_total["$group"]++;
 					}
 				}

@@ -1,8 +1,8 @@
-<?php 
+<?php
 # AST_agent_disposition.php
 #
 # Date Range - Agent/Campaign Disposition (Perfect Network Corporation)
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -128,7 +128,7 @@ else
 	echo "$VDdisplayMESSAGE: |$PHP_AUTH_USER|$PHP_AUTH_PW|$auth_message|\n";
 	exit;
 	}
-	
+
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
 $STARTtime = date("U");
@@ -161,7 +161,7 @@ while ($i < $campaigns_to_print)
 -->
  </STYLE>
 
-<?php 
+<?php
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo "<TITLE>"._QXZ("VICIDIAL: Agent Disposition")."</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET>\n";
@@ -240,11 +240,11 @@ while ($i < $rows_to_print)
 	$pfUSERavgTALK_MS[$i] =		sprintf("%6s", $USERavgTALK_MS);
 	$i++;
 	}
-	
+
 $k=0;
 
 while($k < $i)
-	
+
 	{
 	$ctA[$k]="0   "; $ctB[$k]="0   "; $ctDC[$k]="0   "; $ctDNC[$k]="0   "; $ctN[$k]="0   "; $ctNI[$k]="0   "; $ctSALE[$k]="0   ";  $ctINCALL[$k]="0   ";  $ctDROP[$k]="0   ";  $ctQUEUE[$k]="0   ";  $ctNP[$k]="0   ";   $ctDEC[$k]="0   ";  $ctNQ[$k]="0   ";  $ctNA[$k]="0   ";   $ctXFER[$k]="0   "; $ctLB[$k]="0   ";  $ctCALLBK[$k]="0   "; $ctCBHOLD[$k]="0   ";
 	$stmt="select count(*),status from vicidial_log where call_date >= '$begin_date 00:00:01' and call_date <= '$end_date 23:59:59'  and user='$user[$k]' and campaign_id='" . mysqli_real_escape_string($link, $group) . "' group by status;";
@@ -302,7 +302,7 @@ while($k < $i)
 	$TOT_NI = sprintf("%-5s", $TOT_NI);
 	$TOT_SALE = sprintf("%-5s", $TOT_SALE);
 	$TOT_INCALL = sprintf("%-5s", $TOT_INCALL);
-	$TOT_DROP = sprintf("%-5s", $TOT_DROP); 
+	$TOT_DROP = sprintf("%-5s", $TOT_DROP);
 	$TOT_QUEUE = sprintf("%-5s", $TOT_QUEUE);
 	$TOT_NP = sprintf("%-5s", $TOT_NP);
 	$TOT_DEC = sprintf("%-5s", $TOT_DEC);

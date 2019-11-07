@@ -7,7 +7,7 @@
 #
 # This script is launched by the ADMIN_keepalive_ALL.pl script with the '9' flag
 # defined in astguiclient.conf
-# 
+#
 # Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG
@@ -143,7 +143,7 @@ if ($run_check > 0)
 	my $grepnum=0;
 	$grepnum++ while ($grepout =~ m/\n/g);
 	if ($DBX) {print "CONCURRENCY CHECK: |$grepnum|\n$grepout\n";}
-	if ($grepnum > 1) 
+	if ($grepnum > 1)
 		{
 		$SYSLOG = 1;
 		$event_string = "CONCURRENCY EXIT: |$grepnum|";
@@ -154,7 +154,7 @@ if ($run_check > 0)
 	}
 
 
-use DBI;	  
+use DBI;
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
@@ -199,7 +199,7 @@ $nowtest = ($HHMM+0);
 $logtest = ($timeclock_end_of_day+0);
 if ( ($force_run > 0) || ( ($nowtest >= $logtest) && ($timeclock_last_reset_date ne "$file_date") ) )
 	{
-	@user=@MT; 
+	@user=@MT;
 
 	### grab users that are currently logged-in to the timeclock
 	$stmtA = "SELECT user,user_group,event_epoch,status,ip_address,shift_id from vicidial_timeclock_status where status IN('START','LOGIN')";
@@ -226,7 +226,7 @@ if ( ($force_run > 0) || ( ($nowtest >= $logtest) && ($timeclock_last_reset_date
 	##### LOOP THROUGH EACH USER AND LOG THEM OUT OF THE TIMECLOCK #####
 	$i=0;
 	while($i < $rec_count)
-		{	
+		{
 		if ($DBX) {print "     USER: $user[$i]\n";}
 		$event_string = "     USER: $user[$i]";
 			&event_logger;

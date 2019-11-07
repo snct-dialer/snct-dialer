@@ -1,10 +1,10 @@
 <?php
 # vtiger_phone_match.php
-# 
+#
 # Copyright (C) 2013  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
-# This script searches Vtiger contacts for a matching phone number and returns 
-# the number of matches, it was designed to be used with the ViciDial Inbound 
+# This script searches Vtiger contacts for a matching phone number and returns
+# the number of matches, it was designed to be used with the ViciDial Inbound
 # DID Filter Phone Group feature in the URL search type with the following URL:
 #  VARhttp://server/vicidial/vtiger_phone_match.php?phone=--A--phone_number--B--
 #
@@ -64,7 +64,7 @@ if ( ($enable_vtiger_integration > 0) and (strlen($vtiger_server_ip) > 5) and (s
 	### connect to your vtiger database
 	#$linkV=mysql_connect("$vtiger_server_ip", "$vtiger_login","$vtiger_pass");
 	$linkV=mysqli_connect("$vtiger_server_ip", "$vtiger_login", "$vtiger_pass", "$vtiger_dbname");
-	
+
 	if (!$linkV) {die("Could not connect: $vtiger_server_ip|$vtiger_dbname|$vtiger_login|$vtiger_pass" . mysqli_connect_error());}
 	if ($DB) {echo 'Connected successfully';}
 	#mysql_select_db("$vtiger_dbname", $linkV);

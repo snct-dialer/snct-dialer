@@ -1,6 +1,6 @@
 <?php
 # closer-fronter_popup2.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # this is the closer popup of a specific call that starts recording the call and allows you to go and fetch info on that caller in the local CRM system.
@@ -226,7 +226,7 @@ if (preg_match('/CL_UNIV/i',$channel_group))
 			if (evt.target.constructor == Input) {
 				if (evt.target.name == 'lead_id' || evt.target.name == 'phone' || evt.target.name == 'confirmation_id') {
 					return ((evt.which >= '0'.charCodeAt() && evt.which <= '9'.charCodeAt()));
-				} 
+				}
 			}
 		}
 	}
@@ -246,7 +246,7 @@ if (preg_match('/CL_UNIV/i',$channel_group))
 	</script>
 	<?php
 	}
-else 
+else
 	{
 	echo "<script language=\"Javascript1.2\">\n";
 	echo "function WaitFirefix() {setTimeout(document.forms[0].search_phone.focus(), 1000)}\n";
@@ -257,7 +257,7 @@ else
 <BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0 onLoad="document.forms[0].search_phone.focus(); setTimeout('document.forms[0].search_phone.focus()', 1000); self.focus()">
 <CENTER><FONT FACE="Courier" COLOR=BLACK SIZE=3>
 
-<?php 
+<?php
 
 $stmt="SELECT count(*) from live_channels where server_ip='" . mysqli_real_escape_string($link, $server_ip) . "' and channel='" . mysqli_real_escape_string($link, $customer_zap_channel) . "'";
 $rslt=mysql_to_mysqli($stmt, $link);
@@ -327,7 +327,7 @@ if ($parked_count > 0)
 	echo "<table border=0 cellspacing=5 cellpadding=3 align=center width=90% bgcolor=\"$group_color\"><tr><td><b> $channel_group - $group_name </b></td></tr></table><br>\n\n";
 
 ###########################################################################################
-####### HERE IS WHERE YOU DEFINE DIFFERENT CONTENTS DEPENDING UPON THE CHANNEL_GROUP PREFIX 
+####### HERE IS WHERE YOU DEFINE DIFFERENT CONTENTS DEPENDING UPON THE CHANNEL_GROUP PREFIX
 ###########################################################################################
 
 if (preg_match('/CL/i',$channel_group))
@@ -417,7 +417,7 @@ if (preg_match('/UNIV/i',$channel_group))
 	}
 
 ###########################################################################################
-####### END CUSTOM CONTENTS 
+####### END CUSTOM CONTENTS
 ###########################################################################################
 
 
@@ -449,8 +449,8 @@ echo "<font size=0>\n\n\n<br><br><br>\n"._QXZ("script runtime").": $RUNtime "._Q
 </html>
 
 <?php
-	
-exit; 
+
+exit;
 
 ?>
 

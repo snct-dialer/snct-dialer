@@ -5,20 +5,20 @@ This document outlines the features and design of the customized fields availabl
 
 
 
-Started from this thread: 
-http://www.vicidial.org/VICIDIALforum/viewtopic.php?t=3952&sid=6453071bd2c1859d9bae44add9dae2ff 
+Started from this thread:
+http://www.vicidial.org/VICIDIALforum/viewtopic.php?t=3952&sid=6453071bd2c1859d9bae44add9dae2ff
 
-Goal: 
-To have a highly scalable, dynamic custom field creation system for use with ViciDial that would be tied to the list_id and could have up to 255 dynamically-defined fields. 
+Goal:
+To have a highly scalable, dynamic custom field creation system for use with ViciDial that would be tied to the list_id and could have up to 255 dynamically-defined fields.
 
-Development Stages: 
-1. Create admin interface to manage dynamic fields per list_id 
-2. Create display of custom fields within the ViciDial agent interface, including variables to be used in web forms and scripts 
-3. Add exporting of custom tables to list download feature as well as the calls export report 
-4. Create list loading interface to put leads into the vicidial_list table and the custom fields, includes reusable template definitions(field mapping pending) 
+Development Stages:
+1. Create admin interface to manage dynamic fields per list_id
+2. Create display of custom fields within the ViciDial agent interface, including variables to be used in web forms and scripts
+3. Add exporting of custom tables to list download feature as well as the calls export report
+4. Create list loading interface to put leads into the vicidial_list table and the custom fields, includes reusable template definitions(field mapping pending)
 
-Limitations: 
-- You could not dial leads sorted by any custom fields 
+Limitations:
+- You could not dial leads sorted by any custom fields
 - Only one set of custom fields per list_id
 
 

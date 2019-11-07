@@ -1,6 +1,6 @@
-<?php 
+<?php
 # AST_AMD_log_report.php
-# 
+#
 # Copyright (C) 2019  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -299,7 +299,7 @@ $AMDSTATUSes_string='|';
 $AMDRESPONSEs_string='|';
 while($i < $AMDSTATUS_ct)
 	{
-	if ( (strlen($AMDSTATUS[$i]) > 0) and (preg_match("/\|$AMDSTATUS[$i]\|/",$AMDSTATUS_string)) ) 
+	if ( (strlen($AMDSTATUS[$i]) > 0) and (preg_match("/\|$AMDSTATUS[$i]\|/",$AMDSTATUS_string)) )
 		{
 		$AMDSTATUSes_string .= "$AMDSTATUS[$i]|";
 		$AMDSTATUSQS .= "&AMDSTATUS[]=$AMDSTATUS[$i]";
@@ -307,9 +307,9 @@ while($i < $AMDSTATUS_ct)
 	$i++;
 	}
 
-while ($j < $AMDRESPONSE_ct) 
+while ($j < $AMDRESPONSE_ct)
 	{
-	if ( (strlen($AMDRESPONSE[$j]) > 0) and (preg_match("/\|$AMDRESPONSE[$j]\|/",$AMDRESPONSE_string)) ) 
+	if ( (strlen($AMDRESPONSE[$j]) > 0) and (preg_match("/\|$AMDRESPONSE[$j]\|/",$AMDRESPONSE_string)) )
 		{
 		$AMDRESPONSEs_string .= "$AMDRESPONSE[$j]|";
 		$AMDRESPONSEQS .= "&AMDRESPONSE[]=$AMDRESPONSE[$j]";
@@ -317,11 +317,11 @@ while ($j < $AMDRESPONSE_ct)
 	$j++;
 	}
 
-$i=0; 
+$i=0;
 while($i < $AMDSTATUS_ct)
 	{
 	$j=0;
-	while ($j < $AMDRESPONSE_ct) 
+	while ($j < $AMDRESPONSE_ct)
 		{
 		if ( (strlen($AMDSTATUS[$i]) > 0) and (preg_match("/\|$AMDSTATUS[$i]\|/",$AMDSTATUS_string)) and (strlen($AMDRESPONSE[$j]) > 0) and (preg_match("/\|$AMDRESPONSE[$j]\|/",$AMDRESPONSE_string)) )
 			{
@@ -422,7 +422,7 @@ else
 $o=0;
 while ($servers_to_print > $o)
 	{
-	if (preg_match("/\|$LISTserverIPs[$o]\|/",$server_ip_string)) 
+	if (preg_match("/\|$LISTserverIPs[$o]\|/",$server_ip_string))
 		{$MAIN.="<option selected value=\"$LISTserverIPs[$o]\">$LISTserverIPs[$o] - $LISTserver_names[$o]</option>\n";}
 	else
 		{$MAIN.="<option value=\"$LISTserverIPs[$o]\">$LISTserverIPs[$o] - $LISTserver_names[$o]</option>\n";}
@@ -440,7 +440,7 @@ else
 $o=0;
 while ($AMDSTATUSes_to_print > $o)
 	{
-	if (preg_match("/\|$master_AMDSTATUS_array[$o]\|/",$AMDSTATUSes_string)) 
+	if (preg_match("/\|$master_AMDSTATUS_array[$o]\|/",$AMDSTATUSes_string))
 		{$MAIN.="<option selected value=\"$master_AMDSTATUS_array[$o]\">"._QXZ("$master_AMDSTATUS_array[$o]")."</option>\n";}
 	else
 		{$MAIN.="<option value=\"$master_AMDSTATUS_array[$o]\">"._QXZ("$master_AMDSTATUS_array[$o]")."</option>\n";}
@@ -460,7 +460,7 @@ $o=0;
 
 while ($AMDRESPONSEs_to_print > $o)
 	{
-	if (preg_match("/\|$master_AMDRESPONSE_array[$o]\|/",$AMDRESPONSEs_string)) 
+	if (preg_match("/\|$master_AMDRESPONSE_array[$o]\|/",$AMDRESPONSEs_string))
 		{$MAIN.="<option selected value=\"$master_AMDRESPONSE_array[$o]\">"._QXZ("$master_AMDRESPONSE_array[$o]")."</option>\n";}
 	else
 		{$MAIN.="<option value=\"$master_AMDRESPONSE_array[$o]\">"._QXZ("$master_AMDRESPONSE_array[$o]")."</option>\n";}
@@ -525,7 +525,7 @@ if ($SUBMIT && $server_ip_ct>0) {
 
 		if (!$lower_limit) {$lower_limit=1;}
 		if ($lower_limit+999>=mysqli_num_rows($rpt_rslt)) {$upper_limit=($lower_limit+mysqli_num_rows($rpt_rslt)%1000)-1;} else {$upper_limit=$lower_limit+999;}
-		
+
 		$TEXT.="\n\n--- "._QXZ("AMD LOG RECORDS FOR")." $query_date, $query_date_D "._QXZ("TO")." $query_date_T $server_rpt_string, $HC_rpt_string, $DS_rpt_string\n --- "._QXZ("RECORDS")." #$lower_limit-$upper_limit               <a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&type=$type&query_date=$query_date&query_date_D=$query_date_D&query_date_T=$query_date_T$server_ipQS$AMDSTATUSQS$AMDRESPONSEQS&lower_limit=$lower_limit&upper_limit=$upper_limit&file_download=1\">["._QXZ("DOWNLOAD")."]</a>\n\n";
 		$carrier_rpt.="+---------------------+--------------------------------+-----------+----------------------+------------------------------------------+-----------------+------------+----------------------+--------------------------------+----------------------+------------------------------------------+----------------------+\n";
 		$carrier_rpt.="| "._QXZ("CALL DATE",19)." | "._QXZ("CALLER CODE",30)." | "._QXZ("LEAD ID",9)." | "._QXZ("UNIQUE ID",20)." | "._QXZ("CHANNEL",40)." | "._QXZ("SERVER IP",15)." | "._QXZ("AMD STATUS",10)." | "._QXZ("AMD RESPONSE",20)." | "._QXZ("AMD CAUSE",30)." | "._QXZ("RUN TIME",20)." | "._QXZ("AMD STATS",40)." | "._QXZ("PHONE NUMBER",20)." |\n";
@@ -569,18 +569,18 @@ if ($SUBMIT && $server_ip_ct>0) {
 			$CSV_text.="\"$row[call_date]\",\"$row[caller_code]\",\"$row[lead_id]\",\"$row[uniqueid]\",\"$row[channel]\",\"$row[server_ip]\",\"$row[AMDSTATUS]\",\"$row[AMDRESPONSE]\",\"$row[AMDCAUSE]\",\"$row[run_time]\",\"$row[AMDSTATS]\",\"$phone_number\"\n";
 			if ($i>=$lower_limit && $i<=$upper_limit) {
 				if (strlen($row["channel"])>37) {$row["channel"]=substr($row["channel"],0,37)."...";}
-				$carrier_rpt.="| ".sprintf("%-20s", $row["call_date"]); 
-				$carrier_rpt.="| ".sprintf("%-31s", $row["caller_code"]); 
-				$carrier_rpt.="| <a href=\"./admin_modify_lead.php?lead_id=".$row["lead_id"]."&CIDdisplay=Yes\">".sprintf("%-10s", $row["lead_id"])."</a>"; 
-				$carrier_rpt.="| ".sprintf("%-21s", $row["uniqueid"]); 
-				$carrier_rpt.="| ".sprintf("%-41s", $row["channel"]); 
-				$carrier_rpt.="| ".sprintf("%-16s", $row["server_ip"]); 
-				$carrier_rpt.="| ".sprintf("%-11s", $row["AMDSTATUS"]); 
-				$carrier_rpt.="| ".sprintf("%-21s", $row["AMDRESPONSE"]); 
-				$carrier_rpt.="| ".sprintf("%-31s", $row["AMDCAUSE"]); 
-				$carrier_rpt.="| ".sprintf("%-21s", $row["run_time"]); 
-				$carrier_rpt.="| ".sprintf("%-41s", $row["AMDSTATS"]); 
-				$carrier_rpt.="| ".sprintf("%-21s", $phone_number)."|\n"; 
+				$carrier_rpt.="| ".sprintf("%-20s", $row["call_date"]);
+				$carrier_rpt.="| ".sprintf("%-31s", $row["caller_code"]);
+				$carrier_rpt.="| <a href=\"./admin_modify_lead.php?lead_id=".$row["lead_id"]."&CIDdisplay=Yes\">".sprintf("%-10s", $row["lead_id"])."</a>";
+				$carrier_rpt.="| ".sprintf("%-21s", $row["uniqueid"]);
+				$carrier_rpt.="| ".sprintf("%-41s", $row["channel"]);
+				$carrier_rpt.="| ".sprintf("%-16s", $row["server_ip"]);
+				$carrier_rpt.="| ".sprintf("%-11s", $row["AMDSTATUS"]);
+				$carrier_rpt.="| ".sprintf("%-21s", $row["AMDRESPONSE"]);
+				$carrier_rpt.="| ".sprintf("%-31s", $row["AMDCAUSE"]);
+				$carrier_rpt.="| ".sprintf("%-21s", $row["run_time"]);
+				$carrier_rpt.="| ".sprintf("%-41s", $row["AMDSTATS"]);
+				$carrier_rpt.="| ".sprintf("%-21s", $phone_number)."|\n";
 
 				$HTML.="<tr bgcolor='#".$SSstd_row2_background."'>";
 				$HTML.="<th><font size='2'>".$row["call_date"]."</font></th>";

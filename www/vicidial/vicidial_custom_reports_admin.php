@@ -1,7 +1,7 @@
 <?php
 # vicidial_custom_reports_admin.php
-# 
-# Allows admin level users to add access to their own 
+#
+# Allows admin level users to add access to their own
 # custom reports and make them available to user groups
 # of their choosing
 #
@@ -9,7 +9,7 @@
 #
 # CHANGES
 #
-# 151023-0106 - First build 
+# 151023-0106 - First build
 # 170409-1542 - Added IP List validation code
 # 170822-2313 - Added screen colors
 # 170823-1411 - Fixed delete bug
@@ -188,7 +188,7 @@ if ( (!preg_match('/\-\-ALL\-\-/i',$LOGadmin_viewable_groups)) and (strlen($LOGa
 	$whereLOGadmin_viewable_groupsSQL = "where user_group IN('---ALL---','$rawLOGadmin_viewable_groupsSQL')";
 
 	$allowedUGarray=explode(" ", $rawLOGadmin_viewable_groupsSQL);
-	if (in_array('---ALL---',$custom_reports_user_groups)) 
+	if (in_array('---ALL---',$custom_reports_user_groups))
 		{
 		$custom_reports_user_groups=$allowedUGarray;
 		}
@@ -201,14 +201,14 @@ if (preg_match('/\-\-ALL\-\-/i',$LOGadmin_viewable_groups)) {
 	$all_user_groups_rslt=mysql_to_mysqli($all_user_groups_stmt, $link);
 
 	$allowedUGarray=array();
-	while ($user_group_row=mysqli_fetch_row($all_user_groups_rslt)) 
+	while ($user_group_row=mysqli_fetch_row($all_user_groups_rslt))
 		{
 		array_push($allowedUGarray, $user_group_row[0]);
 		}
 
 	if (is_array($custom_reports_user_groups))
 		{
-		if (in_array('---ALL---',$custom_reports_user_groups)) 
+		if (in_array('---ALL---',$custom_reports_user_groups))
 			{
 			$custom_reports_user_groups=$allowedUGarray;
 			}
@@ -394,7 +394,7 @@ function AddConstant() {
 		}
 	}
 	if (new_variable_value=='') {new_variable_value=document.getElementById('new_preset_custom').value;}
-	new_variable_value=new_variable_value.replace(/[^- \.\:\/\@\_0-9a-zA-Z]/gi, '');	
+	new_variable_value=new_variable_value.replace(/[^- \.\:\/\@\_0-9a-zA-Z]/gi, '');
 	new_variable_value=encodeURIComponent(new_variable_value);
 
 	current_constants+="&"+new_variable_name+"="+new_variable_value;
@@ -486,7 +486,7 @@ function RemoveConstant(array_index) {
 	echo "<tr bgcolor=#".$SSstd_row2_background."><td align=right>"._QXZ("Current constants").":</td><td align=left><span id='new_presets'></span>$NWB#custom_reports_admin-current_constants$NWE<input type='hidden' name='presets_string' id='presets_string'></td></tr>\n";
 	# echo "<tr bgcolor=#".$SSstd_row2_background."><td align=right>"._QXZ("Use slave").": </td><td align=left><select size=1 name=slave><option value='Y'>"._QXZ("Y")."</option><option value='N' selected>"._QXZ("N")."</option></select>$NWB#custom_reports_admin-use_slave$NWE</td></tr>\n";
 	echo "<tr bgcolor=#".$SSstd_row2_background."><td align=right>"._QXZ("User groups").": </td><td align=left><select size=5 name=custom_reports_user_groups[] multiple><option value='---ALL---'>"._QXZ("ALL USER GROUPS")."</option>";
-	
+
 	$stmt="SELECT user_group,group_name from vicidial_user_groups $whereLOGadmin_viewable_groupsSQL order by user_group;";
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$usergroups_to_print = mysqli_num_rows($rslt);
@@ -505,7 +505,7 @@ function RemoveConstant(array_index) {
 	echo "<BR><BR><BR>";
 
 
-	$rpt_stmt="select * from vicidial_custom_reports";	
+	$rpt_stmt="select * from vicidial_custom_reports";
 	$rpt_rslt=mysql_to_mysqli($rpt_stmt, $link);
 	echo "<form action=$PHP_SELF method=GET id='updateForm'>";
 
@@ -538,7 +538,7 @@ function RemoveConstant(array_index) {
 			}
 
 			$custom_variables=preg_replace("/\&/", "\n", urldecode($rpt_row["custom_variables"]));
-			
+
 			echo "<tr bgcolor='#".$bgcolor."'>";
 			echo "<td align=left><input type=text class='form_field' id='report_name".$id."' name='report_name".$id."' size=20 maxlength=100 value='".$rpt_row["report_name"]."'></td>\n";
 			echo "<td align=left><input type=text class='form_field' id='domain".$id."' name='domain".$id."' size=20 maxlength=70 value='".$rpt_row["domain"]."'></td>\n";

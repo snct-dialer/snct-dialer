@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 #
 # debug_speak.agi version 2.0.5
-# 
-# runs during any extension and speaks the extension sent to it while 
+#
+# runs during any extension and speaks the extension sent to it while
 # printing the extension as well as lots of info about the call to STDERR
-# 
+#
 # You need to put lines similar to those below in your extensions.conf file:
-# 
+#
 # ;inbound errors with speaking of extension:
 #exten => _XXXX,1,AGI(debug_speak.agi,${EXTEN})
 #exten => _XXXX,3,Hangup
@@ -112,7 +112,7 @@ while(<STDIN>) {
 
 if ($CLIOUT) {print STDERR "****** DEBUG: |$unique_id|$channel|$extension|$type|$callerid|$calleridname|\n";}
 
-if ($SPEAK) 
+if ($SPEAK)
 	{
 	$AGI->stream_file('beep');
 	sleep(1);

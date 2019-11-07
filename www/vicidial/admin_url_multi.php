@@ -1,10 +1,10 @@
 <?php
 # admin_url_multi.php
-# 
+#
 # Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
-# this screen will control the *url* settings needed when the Campaign or 
-# In-Group or List URL setting is set to "ALT". This screen allows for multiple 
+# this screen will control the *url* settings needed when the Campaign or
+# In-Group or List URL setting is set to "ALT". This screen allows for multiple
 # records to be entered and ranked in the order in which they are are to be run.
 #
 # NOTE: This is currently only designed to work with Dispo Call URL
@@ -279,7 +279,7 @@ if ($names_to_print > 0)
 
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
 <title><?php echo _QXZ("ADMINISTRATION: URL Multi Entry") . " " . $campaign_id . " - " . $camp_name; ?>
-<?php 
+<?php
 
 
 require("admin_header.php");
@@ -434,10 +434,10 @@ if ($action == "BLANK")
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$types_to_print = mysqli_num_rows($rslt);
 	$o=0;
-	while ($types_to_print > $o) 
+	while ($types_to_print > $o)
 		{
 		$rowx=mysqli_fetch_row($rslt);
-		
+
 		$Rurl_id =			$rowx[0];
 		$Ractive =			$rowx[1];
 		$Rurl_rank =		$rowx[2];
@@ -447,7 +447,7 @@ if ($action == "BLANK")
 		$Rurl_lists =		$rowx[6];
 
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+			{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 		else
 			{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 		$o++;

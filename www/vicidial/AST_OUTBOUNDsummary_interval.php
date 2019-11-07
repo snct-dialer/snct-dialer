@@ -1,6 +1,6 @@
-<?php 
+<?php
 # AST_OUTBOUNDsummary_interval.php
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -114,14 +114,14 @@ if (strlen($report_display_type)<2) {$report_display_type = $SSreport_default_fo
 ### ARCHIVED DATA CHECK CONFIGURATION
 $archives_available="N";
 $log_tables_array=array("vicidial_log", "vicidial_closer_log", "vicidial_agent_log");
-for ($t=0; $t<count($log_tables_array); $t++) 
+for ($t=0; $t<count($log_tables_array); $t++)
 	{
 	$table_name=$log_tables_array[$t];
 	$archive_table_name=use_archive_table($table_name);
 	if ($archive_table_name!=$table_name) {$archives_available="Y";}
 	}
 
-if ($search_archived_data) 
+if ($search_archived_data)
 	{
 	$vicidial_log_table=use_archive_table("vicidial_log");
 	$vicidial_closer_log_table=use_archive_table("vicidial_closer_log");
@@ -565,7 +565,7 @@ $HEADER.="<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 require("chart_button.php");
-$HEADER.="<script src='chart/Chart.js'></script>\n"; 
+$HEADER.="<script src='chart/Chart.js'></script>\n";
 $HEADER.="<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
 
 $HEADER.="<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
@@ -677,7 +677,7 @@ if ($bareformat < 1)
 	$MAIN.="<select name='report_display_type'>";
 	if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
 	$MAIN.="<option value='TEXT'>"._QXZ("TEXT")."</option><option value='HTML'>"._QXZ("HTML")."</option></select>\n<BR>";
-	if ($archives_available=="Y") 
+	if ($archives_available=="Y")
 		{
 		$MAIN.="<input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."\n";
 		}
@@ -712,12 +712,12 @@ if ($group_ct < 1)
 
 else
 	{
-	if ($shift == 'ALL') 
+	if ($shift == 'ALL')
 		{
 		$Gct_default_start = "0";
 		$Gct_default_stop = "2400";
 		}
-	else 
+	else
 		{
 		$stmt="SELECT call_time_id,call_time_name,call_time_comments,ct_default_start,ct_default_stop,ct_sunday_start,ct_sunday_stop,ct_monday_start,ct_monday_stop,ct_tuesday_start,ct_tuesday_stop,ct_wednesday_start,ct_wednesday_stop,ct_thursday_start,ct_thursday_stop,ct_friday_start,ct_friday_stop,ct_saturday_start,ct_saturday_stop,ct_state_call_times FROM vicidial_call_times where call_time_id='$shift';";
 		$rslt=mysql_to_mysqli($stmt, $link);
@@ -797,7 +797,7 @@ else
 		$h++;
 		}
 
-	$query_date_BEGIN = "$query_date 00:00:00";   
+	$query_date_BEGIN = "$query_date 00:00:00";
 	$query_date_END = "$end_date 23:59:59";
 
 
@@ -820,7 +820,7 @@ else
 		$CSV_main.="\""._QXZ("MULTI-CAMPAIGN BREAKDOWN").":\"\n";
 		$CSV_main.="\""._QXZ("CAMPAIGN")."\",\""._QXZ("TOTAL CALLS")."\",\""._QXZ("SYSTEM RELEASE CALLS")."\",\""._QXZ("AGENT RELEASE CALLS")."\",\""._QXZ("SALE CALLS")."\",\""._QXZ("DNC CALLS")."\",\""._QXZ("NO ANSWER PERCENT")."\",\""._QXZ("DROP PERCENT")."\",\""._QXZ("AGENT LOGIN TIME(H:M:S)")."\",\""._QXZ("AGENT PAUSE TIME(H:M:S)")."\"\n";
 		$CSV_subreports="";
-		
+
 		######## GRAPHING #########
 		$max_calls=1;
 		$max_system_release=1;
@@ -911,7 +911,7 @@ else
 			while ($s < $AGENTtime_to_print)
 				{
 				$row=mysqli_fetch_row($rslt);
-				$inTOTALsec =		($row[3] + $row[4] + $row[5] + $row[6]);	
+				$inTOTALsec =		($row[3] + $row[4] + $row[5] + $row[6]);
 				$ATcall_date[$s] =		$row[0];
 				$ATepoch[$s] =			$row[1];
 				$ATcampaign_id[$s] =	$row[2];
@@ -989,7 +989,7 @@ else
 						$thiscallsec = (($length_in_secZ - $queue_secondsZ) - $TOTALdelay);
 						if ($thiscallsec < 0)
 							{$thiscallsec = 0;}
-						$inTOTALsec =	($inTOTALsec + $thiscallsec);	
+						$inTOTALsec =	($inTOTALsec + $thiscallsec);
 
 						$CPstatus[$u] =			$row[0];
 						$CPlength_in_sec[$u] =	$inTOTALsec;
@@ -1258,7 +1258,7 @@ else
 						}
 
 					$Hcalltime[$Chour]++;
-					
+
 
 					if ($print_calls > 0)
 						{
@@ -1323,13 +1323,13 @@ else
 			$graph_stats[$i][8]=$agent_sec[$i];
 			$graph_stats[$i][9]=$pause_sec[$i];
 
-			$agent_sec[$i] =			sec_convert($agent_sec[$i],'H'); 
-			$pause_sec[$i] =			sec_convert($pause_sec[$i],'H'); 
-			$talk_sec[$i] =				sec_convert($talk_sec[$i],'H'); 
-			$talk_avg[$i] =				sec_convert($talk_avg[$i],'H'); 
-			$queue_seconds[$i] =		sec_convert($queue_seconds[$i],'H'); 
-			$queue_avg[$i] =			sec_convert($queue_avg[$i],'H'); 
-			$max_queue_seconds[$i] =	sec_convert($max_queue_seconds[$i],'H'); 
+			$agent_sec[$i] =			sec_convert($agent_sec[$i],'H');
+			$pause_sec[$i] =			sec_convert($pause_sec[$i],'H');
+			$talk_sec[$i] =				sec_convert($talk_sec[$i],'H');
+			$talk_avg[$i] =				sec_convert($talk_avg[$i],'H');
+			$queue_seconds[$i] =		sec_convert($queue_seconds[$i],'H');
+			$queue_avg[$i] =			sec_convert($queue_avg[$i],'H');
+			$max_queue_seconds[$i] =	sec_convert($max_queue_seconds[$i],'H');
 
 
 			$groupDISPLAY =	sprintf("%-40s", "$group[$i] - $group_cname[$i]");
@@ -1444,14 +1444,14 @@ else
 					$SUBgraph_stats[$z][8]=$Hagent_sec[$h];
 					$SUBgraph_stats[$z][9]=$Hpause_sec[$h];
 
-					$Hagent_sec[$h] =			sec_convert($Hagent_sec[$h],'H'); 
-					$Hpause_sec[$h] =			sec_convert($Hpause_sec[$h],'H'); 
-					$Htalk_sec[$h] =			sec_convert($Htalk_sec[$h],'H'); 
-					$Htalk_avg[$h] =			sec_convert($Htalk_avg[$h],'H'); 
-					$Hqueue_seconds[$h] =		sec_convert($Hqueue_seconds[$h],'H'); 
-					$Hqueue_avg[$h] =			sec_convert($Hqueue_avg[$h],'H'); 
+					$Hagent_sec[$h] =			sec_convert($Hagent_sec[$h],'H');
+					$Hpause_sec[$h] =			sec_convert($Hpause_sec[$h],'H');
+					$Htalk_sec[$h] =			sec_convert($Htalk_sec[$h],'H');
+					$Htalk_avg[$h] =			sec_convert($Htalk_avg[$h],'H');
+					$Hqueue_seconds[$h] =		sec_convert($Hqueue_seconds[$h],'H');
+					$Hqueue_avg[$h] =			sec_convert($Hqueue_avg[$h],'H');
 					$Hmax_queue_seconds[$h] =	sec_convert($Hmax_queue_seconds[$h],'H');
-					
+
 					$hTOTALcalls =	sprintf("%6s", $Hcalls_count[$h]);
 					$hSYSTEMcalls =	sprintf("%6s", $Hsystem_count[$h]);
 					$hAGENTcalls =	sprintf("%6s", $Hagent_count[$h]);
@@ -1488,13 +1488,13 @@ else
 			$hTOTtalk_avg = MathZDC($hTOTtalk_sec, $hTOTanswer_count);
 			$hTOTqueue_avg = MathZDC($hTOTqueue_seconds, $hTOTcalls_count);
 
-			$hTOTagent_sec =			sec_convert($hTOTagent_sec,'H'); 
-			$hTOTpause_sec =			sec_convert($hTOTpause_sec,'H'); 
-			$hTOTtalk_sec =				sec_convert($hTOTtalk_sec,'H'); 
-			$hTOTtalk_avg =				sec_convert($hTOTtalk_avg,'H'); 
-			$hTOTqueue_seconds =		sec_convert($hTOTqueue_seconds,'H'); 
-			$hTOTqueue_avg =			sec_convert($hTOTqueue_avg,'H'); 
-			$hTOTmax_queue_seconds =	sec_convert($hTOTmax_queue_seconds,'H'); 
+			$hTOTagent_sec =			sec_convert($hTOTagent_sec,'H');
+			$hTOTpause_sec =			sec_convert($hTOTpause_sec,'H');
+			$hTOTtalk_sec =				sec_convert($hTOTtalk_sec,'H');
+			$hTOTtalk_avg =				sec_convert($hTOTtalk_avg,'H');
+			$hTOTqueue_seconds =		sec_convert($hTOTqueue_seconds,'H');
+			$hTOTqueue_avg =			sec_convert($hTOTqueue_avg,'H');
+			$hTOTmax_queue_seconds =	sec_convert($hTOTmax_queue_seconds,'H');
 
 			$hTOTcalls_count =			sprintf("%6s", $hTOTcalls_count);
 			$hTOTsystem_count =			sprintf("%6s", $hTOTsystem_count);
@@ -1527,15 +1527,15 @@ else
 
 			$graph_array=array("OSI_CALLSdata$group[$i]|1|CALLS|integer|", "OSI_SYSTEMRELEASEdata$group[$i]|2|SYSTEM RELEASE CALLS|integer|", "OSI_AGENTRELEASEdata$group[$i]|3|AGENT RELEASE CALLS|integer|", "OSI_SALECALLSdata$group[$i]|4|SALE CALLS|integer|", "OSI_DNCCALLSdata$group[$i]|5|DNC CALLS|integer|", "OSI_NOANSWERPERCENTdata$group[$i]|6|NO ANSWER PERCENT|percent|", "OSI_DROPPERCENTdata$group[$i]|7|DROP PERCENT|percent|", "OSI_AGENTLOGINdata$group[$i]|8|AGENT LOGIN TIME|time|", "OSI_AGENTPAUSEdata$group[$i]|9|AGENT PAUSE TIME|time|");
 			$default_graph="bar"; # Graph that is initally displayed when page loads
-			include("graph_color_schemas.inc"); 
+			include("graph_color_schemas.inc");
 
 			$graph_totals_array=array();
 			$graph_totals_rawdata=array();
 			for ($q=0; $q<count($graph_array); $q++) {
-				$graph_info=explode("|", $graph_array[$q]); 
+				$graph_info=explode("|", $graph_array[$q]);
 				$current_graph_total=0;
 				$dataset_name=$graph_info[0];
-				$dataset_index=$graph_info[1]; 
+				$dataset_index=$graph_info[1];
 				$dataset_type=$graph_info[3];
 
 				$JS_text.="var $dataset_name = {\n";
@@ -1561,13 +1561,13 @@ else
 					$graphConstantsA.="\"$bgcolor\",";
 					$graphConstantsB.="\"$hbgcolor\",";
 					$graphConstantsC.="\"$hbcolor\",";
-				}	
+				}
 				$graphConstantsA.="],\n";
 				$graphConstantsB.="],\n";
 				$graphConstantsC.="],\n";
 				$labels=preg_replace('/,$/', '', $labels)."],\n";
 				$data=preg_replace('/,$/', '', $data)."],\n";
-				
+
 				$graph_totals_rawdata[$q]=$current_graph_total;
 				switch($dataset_type) {
 					case "time":
@@ -1611,13 +1611,13 @@ else
 		$TOTtalk_avg = MathZDC($TOTtalk_sec, $TOTanswer_count);
 		$TOTqueue_avg = MathZDC($TOTqueue_seconds, $TOTcalls_count);
 
-		$TOTagent_sec =			sec_convert($TOTagent_sec,'H'); 
-		$TOTpause_sec =			sec_convert($TOTpause_sec,'H'); 
-		$TOTtalk_sec =			sec_convert($TOTtalk_sec,'H'); 
-		$TOTtalk_avg =			sec_convert($TOTtalk_avg,'H'); 
-		$TOTqueue_seconds =		sec_convert($TOTqueue_seconds,'H'); 
-		$TOTqueue_avg =			sec_convert($TOTqueue_avg,'H'); 
-		$TOTmax_queue_seconds =	sec_convert($TOTmax_queue_seconds,'H'); 
+		$TOTagent_sec =			sec_convert($TOTagent_sec,'H');
+		$TOTpause_sec =			sec_convert($TOTpause_sec,'H');
+		$TOTtalk_sec =			sec_convert($TOTtalk_sec,'H');
+		$TOTtalk_avg =			sec_convert($TOTtalk_avg,'H');
+		$TOTqueue_seconds =		sec_convert($TOTqueue_seconds,'H');
+		$TOTqueue_avg =			sec_convert($TOTqueue_avg,'H');
+		$TOTmax_queue_seconds =	sec_convert($TOTmax_queue_seconds,'H');
 
 		$i =					sprintf("%4s", $i);
 		$TOTcalls_count =		sprintf("%6s", $TOTcalls_count);
@@ -1682,15 +1682,15 @@ else
 
 	$graph_array=array("OSI_CALLSdata|1|CALLS|integer|", "OSI_SYSTEMRELEASEdata|2|SYSTEM RELEASE CALLS|integer|", "OSI_AGENTRELEASEdata|3|AGENT RELEASE CALLS|integer|", "OSI_SALECALLSdata|4|SALE CALLS|integer|", "OSI_DNCCALLSdata|5|DNC CALLS|integer|", "OSI_NOANSWERPERCENTdata|6|NO ANSWER PERCENT|percent|", "OSI_DROPPERCENTdata|7|DROP PERCENT|percent|", "OSI_AGENTLOGINdata|8|AGENT LOGIN TIME|time|", "OSI_AGENTPAUSEdata|9|AGENT PAUSE TIME|time|");
 	$default_graph="bar"; # Graph that is initally displayed when page loads
-	include("graph_color_schemas.inc"); 
+	include("graph_color_schemas.inc");
 
 	$graph_totals_array=array();
 	$graph_totals_rawdata=array();
 	for ($q=0; $q<count($graph_array); $q++) {
-		$graph_info=explode("|", $graph_array[$q]); 
+		$graph_info=explode("|", $graph_array[$q]);
 		$current_graph_total=0;
 		$dataset_name=$graph_info[0];
-		$dataset_index=$graph_info[1]; 
+		$dataset_index=$graph_info[1];
 		$dataset_type=$graph_info[3];
 
 		$JS_text.="var $dataset_name = {\n";
@@ -1708,7 +1708,7 @@ else
 		$graphConstantsC="\t\t\t\thoverBorderColor: [";
 		for ($d=0; $d<count($graph_stats); $d++) {
 			$labels.="\"".preg_replace('/ +/', ' ', $graph_stats[$d][0])."\",";
-			$data.="\"".$graph_stats[$d][$dataset_index]."\","; 
+			$data.="\"".$graph_stats[$d][$dataset_index]."\",";
 			$current_graph_total+=$graph_stats[$d][$dataset_index];
 			$bgcolor=$backgroundColor[($d%count($backgroundColor))];
 			$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
@@ -1716,13 +1716,13 @@ else
 			$graphConstantsA.="\"$bgcolor\",";
 			$graphConstantsB.="\"$hbgcolor\",";
 			$graphConstantsC.="\"$hbcolor\",";
-		}	
+		}
 		$graphConstantsA.="],\n";
 		$graphConstantsB.="],\n";
 		$graphConstantsC.="],\n";
 		$labels=preg_replace('/,$/', '', $labels)."],\n";
 		$data=preg_replace('/,$/', '', $data)."],\n";
-		
+
 		$graph_totals_rawdata[$q]=$current_graph_total;
 		switch($dataset_type) {
 			case "time":

@@ -1,6 +1,6 @@
 <?php
 # vdc_call_url_test.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed display and log the start_call_url and dispo_call_url
@@ -228,7 +228,7 @@ if ($format=='debug')
 	echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 	echo "HEADERS:<BR>\n";
 
-	foreach (getallheaders() as $name => $value) 
+	foreach (getallheaders() as $name => $value)
 		{
 		echo "$name: $value<BR>\n";
 		}

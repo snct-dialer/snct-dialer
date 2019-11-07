@@ -5,8 +5,8 @@
 # This program can export and transfer defunct lists/leads from the dialer
 # when they are moved to a holding campaign of the user's choice, and then
 # delete them from the system when the export and transfer are complete.
-# Settings are determined by creation of a setting container in the admin 
-# interface, whose name must be passed to the script at the time of it's 
+# Settings are determined by creation of a setting container in the admin
+# interface, whose name must be passed to the script at the time of it's
 # execution, as shown below.
 #
 # 0 1 * * * /usr/share/astguiclient/AST_expired_list_exporter.pl --container_id=TEST
@@ -23,9 +23,9 @@
 # --custom_ftp_pwd (required, FTP password)
 # --ftp_passive (optional, set to non-zero value to FTP transfer in passive mode, defaults to active if not set)
 # --custom_ftp_port (optional, defaults to 21)
-# --destination_folder (optional, used for specifying a destination folder to 
+# --destination_folder (optional, used for specifying a destination folder to
 #                       transfer to once logged into the FTP account)
-# 
+#
 # Copyright (C) 2018  Matt Florell <vicidial@gmail.com>, Joe Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
 #
 # 180307-2120 - First Build
@@ -153,11 +153,11 @@ if (length($ARGV[0])>1)
 
 if (!-d "$PATHweb/vicidial/export_bkups") {
     `mkdir $PATHweb/vicidial/export_bkups`;
-	if (!-d "$PATHweb/vicidial/export_bkups") {	
+	if (!-d "$PATHweb/vicidial/export_bkups") {
 		print "Directory $PATHweb/vicidial/export_bkups does not exist and can't be created.\n";
 		exit;
 	}
-} 
+}
 
 if (!$container_id) {
 	print "Missing required container_id variable\n";
@@ -184,7 +184,7 @@ $header_stmt="show columns from vicidial_list";
 $header_rslt=$dbhA->prepare($header_stmt);
 $header_rslt->execute();
 $CSV_header="";
-while (@header_row=$header_rslt->fetchrow_array) 
+while (@header_row=$header_rslt->fetchrow_array)
 	{
 	$CSV_header.="\"$header_row[0]\",";
 	# print $header_row[0]."\n";
@@ -194,12 +194,12 @@ $stmt="select * from vicidial_settings_containers where container_id='$container
 if ($DBX) {print "\n$stmt\n\n";}
 $rslt=$dbhA->prepare($stmt);
 $rslt->execute();
-if ($rslt->rows>0) 
+if ($rslt->rows>0)
 	{
 	@row=$rslt->fetchrow_array;
 	$row[4]=~s/\r//g;
 	@container_settings=split(/\n/, $row[4]);
-	for ($i=0; $i<scalar(@container_settings); $i++) 
+	for ($i=0; $i<scalar(@container_settings); $i++)
 		{
 		$args=$container_settings[$i];
 		if ($args =~ /--campaign_id/i)
@@ -286,26 +286,26 @@ if ($rslt->rows>0)
 			}
 		}
 
-	if (!$last_call_date_days_export) 
+	if (!$last_call_date_days_export)
 		{
 		$last_call_date_days_export=$last_call_date_days;
 		}
-	if (!$last_call_date_days_delete) 
+	if (!$last_call_date_days_delete)
 		{
 		$last_call_date_days_delete=$last_call_date_days;
 		}
 
-	if (!$campaign_id) 
+	if (!$campaign_id)
 		{
 		print "Script failed - no campaign to pull from.\n";
 		exit;
 		}
-	if (!$last_call_date_days_export) 
+	if (!$last_call_date_days_export)
 		{
 		print "Script failed - no last call date range given.\n";
 		exit;
 		}
-	if (!$custom_ftp_host || !$custom_ftp_user || !$custom_ftp_pwd) 
+	if (!$custom_ftp_host || !$custom_ftp_user || !$custom_ftp_pwd)
 		{
 		print "Script failed - missing FTP info\n";
 		exit;
@@ -319,7 +319,7 @@ if ($rslt->rows>0)
 	$list_rslt->execute();
 	$lists_to_export=$list_rslt->rows;
 
-	if ($lists_to_export>0) 
+	if ($lists_to_export>0)
 		{
 		use Net::Ping;
 		use Net::FTP;
@@ -331,9 +331,9 @@ if ($rslt->rows>0)
 			$p = Net::Ping->new("icmp");
 			$ping_good = $p->ping("$VARFTP_host");
 			}
-			
+
 		if ($ping_good)
-			{	
+			{
 			$ftp = Net::FTP->new("$custom_ftp_host", Port => $custom_ftp_port, Passive => $FTPpassive, Debug => $FTPdb);
 			$ftp->login("$custom_ftp_user","$custom_ftp_pwd");
 			if ($destination_folder) {$ftp->cwd("$destination_folder");}
@@ -351,7 +351,7 @@ if ($rslt->rows>0)
 		}
 
 	$l=0;
-	while ($l<$lists_to_export) 
+	while ($l<$lists_to_export)
 		{
 		@list_row=$list_rslt->fetchrow_array;
 		$list_id=$list_row[0];
@@ -363,20 +363,20 @@ if ($rslt->rows>0)
 		$custom_tbl_rslt=$dbhC->prepare($custom_tbl_stmt);
 		$custom_tbl_rslt->execute();
 		$CSV_custom_header="";
-		if ($custom_tbl_rslt->rows==1) 
+		if ($custom_tbl_rslt->rows==1)
 			{
 			$pull_custom_info=1;
 			$col_stmt="show columns from custom_".$list_id;
 			$col_rslt=$dbhD->prepare($col_stmt);
 			$col_rslt->execute();
-			while (@col_row=$col_rslt->fetchrow_array) 
+			while (@col_row=$col_rslt->fetchrow_array)
 				{
 				$CSV_custom_header.="\"$col_row[0]\",";
 				}
 			$col_rslt->finish;
 			}
 		$custom_tbl_rslt->finish;
-		
+
 		$CSV_full_header=$CSV_header.$CSV_custom_header;
 		$CSV_full_header=~s/,$//;
 
@@ -387,24 +387,24 @@ if ($rslt->rows>0)
 		if ($DBX) {print "\n$exp_stmt\n";}
 		$exp_rslt=$dbhC->prepare($exp_stmt);
 		$exp_rslt->execute();
-		while (@exp_row=$exp_rslt->fetchrow_array) 
+		while (@exp_row=$exp_rslt->fetchrow_array)
 			{
 			$CSV_data="";
 			$lead_id=$exp_row[0];
-			for ($q=0; $q<scalar(@exp_row); $q++) 
+			for ($q=0; $q<scalar(@exp_row); $q++)
 				{
 				$CSV_data.="\"$exp_row[$q]\",";
 				}
-			if ($pull_custom_info) 
+			if ($pull_custom_info)
 				{
 				$cdata_stmt="select * from custom_".$list_id." where lead_id='$lead_id'";
 				if ($DBX) {print "\n$cdata_stmt\n";}
 				$cdata_rslt=$dbhD->prepare($cdata_stmt);
 				$cdata_rslt->execute();
-				if ($cdata_rslt->rows>0) 
+				if ($cdata_rslt->rows>0)
 					{
 					@cdata_row=$cdata_rslt->fetchrow_array;
-					for ($c=1; $c<scalar(@cdata_row); $c++) 
+					for ($c=1; $c<scalar(@cdata_row); $c++)
 						{
 						$CSV_data.="\"$cdata_row[$c]\",";
 						}
@@ -433,7 +433,7 @@ if ($rslt->rows>0)
 
 		$l++;
 		}
-		
+
 	$list_rslt->finish;
 
 	if ($last_call_date_days_delete<$last_call_date_days_export) {
@@ -445,14 +445,14 @@ if ($rslt->rows>0)
 	if ($DBX) {print "\n$list_delete_stmt\n\n";}
 
 	# Put test check here so you can see the delete statement if you're running in debug mode as well.
-	if (!$T) 
+	if (!$T)
 		{
 		$list_rslt=$dbhB->prepare($list_delete_stmt);
 		$list_rslt->execute();
 		$lists_to_delete=$list_rslt->rows;
 
 		$l=0;
-		while ($l<$lists_to_delete) 
+		while ($l<$lists_to_delete)
 			{
 			@list_row=$list_rslt->fetchrow_array;
 			$list_id=$list_row[0];
@@ -462,7 +462,7 @@ if ($rslt->rows>0)
 			$del_rslt=$dbhC->prepare($del_stmt);
 			$del_rslt->execute();
 			$del_rslt->finish;
-				
+
 			$del_stmt="delete from vicidial_lists where list_id='$list_id'";
 			if ($DBX) {print "\n$del_stmt";}
 			$del_rslt=$dbhC->prepare($del_stmt);

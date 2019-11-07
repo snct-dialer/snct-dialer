@@ -60,10 +60,10 @@ $IBGroupsArray = array ();
 
 function GenIBGroups() {
 	global $DB, $link, $IBGroupsArray;
-	
+
 	$time_start = microtime(true);
 #	LogWB("--Start GetIBGroups--");
-	
+
 	$statement="SELECT Datum, Gruppe FROM WallBoardStat GROUP BY Gruppe;";
 //	$statement="SELECT * FROM vicidial_inbound_groups GROUP BY group_id;";
 	if ($DB)
@@ -83,10 +83,10 @@ function GenIBGroups() {
 	}
 	if ($DB)
 		var_dump($IBGroupsArray);
-		
+
 	$time_end = microtime(true);
 	$time = $time_end - $time_start;
-		
+
 #	LogWB("--Ende GenIBGroups-- nach " . $time . " Sek.");
 }
 
@@ -97,7 +97,7 @@ function GenTable($Gruppe, $ods, $Date) {
 	if ($DB)
 	    print "$statement\n";
 	$result = mysql_to_mysqli($statement, $link);
-	
+
 	$Anz=mysqli_num_rows($result);
 	if($Anz == 0) {
 	    return;

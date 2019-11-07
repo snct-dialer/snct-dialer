@@ -31,7 +31,7 @@
 use Fcntl qw(:flock);
 # print "start of program $0\n";
 unless (flock(DATA, LOCK_EX|LOCK_NB)) {
-    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log'
     or print "Can't open the fscking file: $!";
     $datestring = localtime();
     print $fh "[$datestring] $0 is already running. Exiting.\n";
@@ -135,7 +135,7 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
 use DBI;
 use Net::Telnet ();
-	  
+
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
@@ -175,7 +175,7 @@ if ($sthArows > 0)
 	if ($DBext_context)				{$ext_context = $DBext_context;}
 	if ($vicidial_recording_limit < 60) {$vicidial_recording_limit=60;}
 	}
- $sthA->finish(); 
+ $sthA->finish();
 
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
@@ -267,12 +267,12 @@ if ($no_vc_3way_check < 1)
 		if ($DB) {print "|$PT_conf_extens[$rec_count]|$PTextensions[$rec_count]|\n";}
 		$rec_count++;
 		}
-	$sthA->finish(); 
+	$sthA->finish();
 
 	if (!$telnet_port) {$telnet_port = '5038';}
 
 	$max_buffer = 4*1024*1024; # 4 meg buffer
-	
+
 	### connect to asterisk manager through telnet
 	$t = new Net::Telnet (
 		Port => $telnet_port,
@@ -299,21 +299,21 @@ if ($no_vc_3way_check < 1)
 	$t->buffer_empty;
 
 	$i=0;
-	if ( !( ( @PTextensions == 1 ) && ( $PTextensions[0] eq '') ) ) 
-		{ 
+	if ( !( ( @PTextensions == 1 ) && ( $PTextensions[0] eq '') ) )
+		{
 		foreach(@PTextensions)
-			{	
+			{
 			@list_channels=@MT;
 			$t->buffer_empty;
 
-			if ($ami_version =~ /^1\./i) 
+			if ($ami_version =~ /^1\./i)
 				{
 				$COMMAND = "Action: Command\nCommand: Meetme list $PT_conf_extens[$i]\n\nAction: Ping\n\n";
 				if ($DB) {print "|$PTextensions[$i]|$PT_conf_extens[$i]|$COMMAND|\n";}
 				%ast_ver_str = parse_asterisk_version($asterisk_version);
 				if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 6))
 					{
-					@list_channels = $t->cmd(String => "$COMMAND", Prompt => '/Response: Pong.*/'); 
+					@list_channels = $t->cmd(String => "$COMMAND", Prompt => '/Response: Pong.*/');
 					}
 				else
 					{
@@ -357,7 +357,7 @@ if ($no_vc_3way_check < 1)
 			if (!$conf_empty[$i])
 				{
 				if($DB){print "CONFERENCE STILL HAS PARTICIPANTS, DOING NOTHING FOR THIS CONFERENCE\n";}
-				if ($PTextensions[$i] =~ /Xtimeout\d$/i) 
+				if ($PTextensions[$i] =~ /Xtimeout\d$/i)
 					{
 					$PTextensions[$i] =~ s/Xtimeout\d$//gi;
 					$stmtA = "UPDATE vicidial_conferences set extension='$PTextensions[$i]' where server_ip='$server_ip' and conf_exten='$PT_conf_extens[$i]';";
@@ -401,7 +401,7 @@ if ($no_vc_3way_check < 1)
 		}
 
 	$t->buffer_empty;
-	@hangup = $t->cmd(String => "Action: Logoff\n\n", Prompt => "/.*/"); 
+	@hangup = $t->cmd(String => "Action: Logoff\n\n", Prompt => "/.*/");
 	$t->buffer_empty;
 	$t->waitfor(Match => '/Message:.*\n\n/', Timeout => 10);
 	$ok = $t->close;
@@ -433,7 +433,7 @@ while ($sthArows > $rec_count)
 		if ($DB) {print "|$PT_conf_extens[$rec_count]|$PTextensions[$rec_count]|\n";}
 	$rec_count++;
 	}
-$sthA->finish(); 
+$sthA->finish();
 
 if (!$telnet_port) {$telnet_port = '5038';}
 
@@ -481,7 +481,7 @@ if ( !( ( @PTextensions == 1 ) && ( $PTextensions[0] eq '') ) )
 				%ast_ver_str = parse_asterisk_version($asterisk_version);
 				if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 6))
 					{
-					@list_channels = $t->cmd(String => "$COMMAND", Prompt => '/Response: Pong.*/'); 
+					@list_channels = $t->cmd(String => "$COMMAND", Prompt => '/Response: Pong.*/');
 					}
 				else
 					{
@@ -513,7 +513,7 @@ if ( !( ( @PTextensions == 1 ) && ( $PTextensions[0] eq '') ) )
 			foreach(@list_channels)
 				{
 				if($DB){print "|$list_channels[$j]|\n";}
-				if ($list_channels[$j] =~ /No active conferences|No active MeetMe conferences|No such conference/i) 
+				if ($list_channels[$j] =~ /No active conferences|No active MeetMe conferences|No such conference/i)
 					{$conf_empty[$i]++;}
 		#		if ($list_channels[$j] =~ /^User /i)
 		#			{
@@ -529,7 +529,7 @@ if ( !( ( @PTextensions == 1 ) && ( $PTextensions[0] eq '') ) )
 			if (!$conf_empty[$i])
 				{
 				if($DB){print "CONFERENCE STILL HAS PARTICIPANTS, DOING NOTHING FOR THIS CONFERENCE\n";}
-				if ($PTextensions[$i] =~ /Xtimeout\d$/i) 
+				if ($PTextensions[$i] =~ /Xtimeout\d$/i)
 					{
 					$PTextensions[$i] =~ s/Xtimeout\d$//gi;
 					$stmtA = "UPDATE conferences set extension='$PTextensions[$i]' where server_ip='$server_ip' and conf_exten='$PT_conf_extens[$i]';";
@@ -559,7 +559,7 @@ if ( !( ( @PTextensions == 1 ) && ( $PTextensions[0] eq '') ) )
 
 
 $t->buffer_empty;
-@hangup = $t->cmd(String => "Action: Logoff\n\n", Prompt => "/.*/"); 
+@hangup = $t->cmd(String => "Action: Logoff\n\n", Prompt => "/.*/");
 $t->buffer_empty;
 $t->waitfor(Match => '/Message:.*\n\n/', Timeout => 10);
 $ok = $t->close;

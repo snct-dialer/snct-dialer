@@ -211,7 +211,7 @@ $server_ip = $VARserver_ip;		# Asterisk server IP
 
 if (!$VARDB_port) {$VARDB_port='3306';}
 
-use DBI;	  
+use DBI;
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
@@ -242,7 +242,7 @@ if ($sthArows > 0)
 	}
 $sthA->finish();
 
-if ($SYSLOG) 
+if ($SYSLOG)
 	{$flush_time = $SQLdate_NEG_1hour;}
 else
 	{$flush_time = $SQLdate_NEG_halfhour;}
@@ -288,7 +288,7 @@ if ($SSsip_event_logging > 0)
 
 $stmtA = "OPTIMIZE table vicidial_manager;";
 if($DB){print STDERR "\n|$stmtA|\n";}
-if (!$T) 
+if (!$T)
 	{
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -389,13 +389,13 @@ if ($SSsip_event_logging > 0)
 
 $stmtA = "OPTIMIZE table vicidial_live_agents;";
 if($DB){print STDERR "\n|$stmtA|\n";}
-if (!$T) 
+if (!$T)
 	{
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
 	@aryA = $sthA->fetchrow_array;
-	if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}             
+	if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 	$sthA->finish();
 	}
 if (!$Q) {print " - OPTIMIZE vicidial_live_agents          \n";}
@@ -403,7 +403,7 @@ if (!$Q) {print " - OPTIMIZE vicidial_live_agents          \n";}
 
 $stmtA = "OPTIMIZE table vicidial_drop_rate_groups;";
 if($DB){print STDERR "\n|$stmtA|\n";}
-if (!$T) 
+if (!$T)
 	{
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -417,7 +417,7 @@ if (!$Q) {print " - OPTIMIZE vicidial_drop_rate_groups          \n";}
 
 $stmtA = "OPTIMIZE table vicidial_campaigns;";
 if($DB){print STDERR "\n|$stmtA|\n";}
-if (!$T) 
+if (!$T)
 	{
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -431,7 +431,7 @@ if (!$Q) {print " - OPTIMIZE vicidial_campaigns          \n";}
 
 $stmtA = "OPTIMIZE table vicidial_lists;";
 if($DB){print STDERR "\n|$stmtA|\n";}
-if (!$T) 
+if (!$T)
 	{
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -445,7 +445,7 @@ if (!$Q) {print " - OPTIMIZE vicidial_lists          \n";}
 
 $stmtA = "OPTIMIZE table vicidial_inbound_groups;";
 if($DB){print STDERR "\n|$stmtA|\n";}
-if (!$T) 
+if (!$T)
 	{
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -469,8 +469,8 @@ while ($sthArowsSERVERS > $aas)
 	$dialer_ip[$aas] =			$aryA[0];
 	$dialer_id[$aas] =			$aryA[1];
 	$PADserver_ip[$aas] =		$aryA[0];
-	$PADserver_ip[$aas] =~ s/(\d+)(\.|$)/sprintf "%3.3d$2",$1/eg; 
-	$PADserver_ip[$aas] =~ s/\.//eg; 
+	$PADserver_ip[$aas] =~ s/(\d+)(\.|$)/sprintf "%3.3d$2",$1/eg;
+	$PADserver_ip[$aas] =~ s/\.//eg;
 	$aas++;
 	}
 $sthA->finish();
@@ -494,7 +494,7 @@ while ($sthArowsSERVERS > $aas)
 
 		$stmtA = "OPTIMIZE table cid_channels_recent_$PADserver_ip[$aas];";
 		if($DB){print STDERR "\n|$stmtA|\n";}
-		if (!$T) 
+		if (!$T)
 			{
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -510,7 +510,7 @@ while ($sthArowsSERVERS > $aas)
 $sthA->finish();
 
 
-if ($session_flush > 0) 
+if ($session_flush > 0)
 	{
 	$stmtA = "DELETE from vicidial_sessions_recent where call_date < '$SQLdate_NEG_1hour';";
 	if($DB){print STDERR "\n|$stmtA|\n";}
@@ -519,7 +519,7 @@ if ($session_flush > 0)
 
 	$stmtA = "OPTIMIZE table vicidial_sessions_recent;";
 	if($DB){print STDERR "\n|$stmtA|\n";}
-	if (!$T) 
+	if (!$T)
 		{
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;

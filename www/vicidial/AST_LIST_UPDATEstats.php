@@ -1,6 +1,6 @@
-<?php 
+<?php
 # AST_LIST_UPDATEstats.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -242,7 +242,7 @@ if (!isset($end_date)) {$end_date = "$NOW_DATE 23:59:59";}
 -->
  </STYLE>
 
-<?php 
+<?php
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo "<TITLE>"._QXZ("$report_name")."</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 

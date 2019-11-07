@@ -1,4 +1,4 @@
-<?php 
+<?php
 # AST_user_group_hourly_detail.php
 #
 # Copyright (C) 2019  Joseph Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
@@ -84,14 +84,14 @@ if (strlen($report_display_type)<2) {$report_display_type = $SSreport_default_fo
 ### ARCHIVED DATA CHECK CONFIGURATION
 $archives_available="N";
 $log_tables_array=array("vicidial_agent_log");
-for ($t=0; $t<count($log_tables_array); $t++) 
+for ($t=0; $t<count($log_tables_array); $t++)
 	{
 	$table_name=$log_tables_array[$t];
 	$archive_table_name=use_archive_table($table_name);
 	if ($archive_table_name!=$table_name) {$archives_available="Y";}
 	}
 
-if ($search_archived_data) 
+if ($search_archived_data)
 	{
 	$vicidial_agent_log_table=use_archive_table("vicidial_agent_log");
 	}
@@ -408,7 +408,7 @@ if ($file_download < 1)
 	echo "<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 	echo "<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 	# require("chart_button.php");
-	# echo "<script src='chart/Chart.js'></script>\n"; 
+	# echo "<script src='chart/Chart.js'></script>\n";
 	# echo "<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
 
 	echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
@@ -489,7 +489,7 @@ if ($SUBMIT && $query_date && $start_hour && $end_hour) {
 	$CSV_text.="\""._QXZ("USER GROUP")."\",\""._QXZ("AGENTS")."\"";
 	$CSV_total.="\""._QXZ("TOTALS")."\",\"$grand_total\"";
 
-	while (list($key, $val)=each($hour_array)) {	
+	while (list($key, $val)=each($hour_array)) {
 		$ASCII_title.=" ".date("ha", strtotime("$key:00"))." to ";
 		$key1=$key+1;
 		$ASCII_title.=date("ha", strtotime("$key1:00"))." |";
@@ -525,7 +525,7 @@ if ($SUBMIT && $query_date && $start_hour && $end_hour) {
 		$HTML_text.="<td><font size='2'>".$total_array[$key]."&nbsp;</font></td>";
 
 		$CSV_text.="\"$key\",\"".$total_array[$key]."\"";
-		while (list($key2, $val2)=each($hour_array)) {	
+		while (list($key2, $val2)=each($hour_array)) {
 			$ASCII_text.=" ".sprintf("%12s", ($hour_total_array[$key][$key2]+0))." |";
 			$HTML_text.="<td><font size='2'>".($hour_total_array[$key][$key2]+0)."</font></td>";
 			$CSV_text.=",\"".($hour_total_array[$key][$key2]+0)."\"";
@@ -655,12 +655,12 @@ while ($user_groups_to_print > $o)
 	{
 	if (is_array($user_group))
 		{
-		if  (in_array("$user_groups[$o]",$user_group)) 
+		if  (in_array("$user_groups[$o]",$user_group))
 			{echo "<option selected value=\"$user_groups[$o]\">$user_groups[$o]</option>\n";}
-		else 
+		else
 			{echo "<option value=\"$user_groups[$o]\">$user_groups[$o]</option>\n";}
 		}
-	else 
+	else
 		{echo "<option value=\"$user_groups[$o]\">$user_groups[$o]</option>\n";}
 	$o++;
 	}
@@ -674,7 +674,7 @@ echo "<select name='report_display_type'>";
 if ($report_display_type) {echo "<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
 echo "<option value='TEXT'>"._QXZ("TEXT")."</option><option value='HTML'>"._QXZ("HTML")."</option></select>\n<BR><BR>";
 
-if ($archives_available=="Y") 
+if ($archives_available=="Y")
 	{
 	echo "<input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."\n";
 	}

@@ -3,14 +3,14 @@
 # ADMIN_backup_ng.pl
 #
 # DESCRIPTION:
-# Backs-up the asterisk database, conf/agi/sounds/bin files 
+# Backs-up the asterisk database, conf/agi/sounds/bin files
 #
 # LICENSE: AGPLv3
 #
 # Copyright (©) 2016      Matt Florell <vicidial@gmail.com>
 #
 # Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
-#               2019      SNCT GmbH <info@snct-gmbh.de> 
+#               2019      SNCT GmbH <info@snct-gmbh.de>
 #               2017-2019 Jörg Frings-Fürst <open_source@jff.email>
 #
 # CHANGELOG
@@ -25,7 +25,7 @@
 # 190531-1422 - 3.1.0 - jff Change all db backups to one file per table.
 #                           Change setupfile location.
 #                           Switch from service to systemctl
-#                           Change the directory for Backup files. 
+#                           Change the directory for Backup files.
 #                           Create backuppath if not exists.
 # 190601-1008 - 3.1.1 - jff Add KW and hour to archive filename.
 # 190601-1556 - 3.1.2 - jff Add WebPath2
@@ -38,7 +38,7 @@ $PrgVersion = "3.1.3";
 use Fcntl qw(:flock);
 # print "start of program $0\n";
 unless (flock(DATA, LOCK_EX|LOCK_NB)) {
-    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log'
     or print "Can't open the fscking file: $!";
     $datestring = localtime();
     print $fh "[$datestring] $0 is already running. Exiting.\n";
@@ -107,7 +107,7 @@ if(!$VARDB_backup_user) {
 
 if ($BackupUseHour = "1") {
 	$DateTag .= "-";
-	$DateTag .= $hour; 
+	$DateTag .= $hour;
 }
 
 ### begin parsing run-time options ###
@@ -379,7 +379,7 @@ if ( ($without_db < 1) && ($conf_only < 1) ) {
 				$dbArows=$sthA->rows;
 				$db_ct=0;
 				$db_s_ct=0;
-					
+
 				while ($dbArows > $db_ct) {
 					@aryA = $sthA->fetchrow_array;
 					if ($dbs_selected =~ /--ALLNS--/) {
@@ -395,7 +395,7 @@ if ( ($without_db < 1) && ($conf_only < 1) ) {
 					}
 					$db_ct++;
 				}
-				
+
 				$sthA->finish;
 				$dbhA->disconnect;
 			} else {
@@ -429,7 +429,7 @@ if ( ($without_db < 1) && ($conf_only < 1) ) {
 			my @all_tables = ();
 			my @wo_archive_tables = ();
 			my @wo_log_tables = ();
-				
+
 			while ($sthArows > $rec_count) {
 				@aryA = $sthA->fetchrow_array;
 				push(@all_tables, $aryA[0]);
@@ -462,7 +462,7 @@ if ( ($without_db < 1) && ($conf_only < 1) ) {
 					`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname '$_' | $xzbin -3 -T0 - > '$TEMPpath/$Server_name$underl$temp_dbname$underl$_$underl$wday.sql.xz'`;
 				}
 			} elsif ($db_without_archives) {
-				
+
 				foreach ( @wo_archive_tables ){
 					if ($DBX) {
 						print "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --routines $temp_dbname '$_' | $xzbin -3 -T0 - > '$TEMPpath/$Server_name$underl$temp_dbname$underl$_$underl$wday.sql.xz'\n";
@@ -492,7 +492,7 @@ if ( ($without_db < 1) && ($conf_only < 1) ) {
 			    print "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --no-data --no-create-info --routines $temp_dbname | $xzbin -3 -T0 - > '$TEMPpath/$Server_name$underl$temp_dbname$underl$routines$underl$wday.txt.xz'\n";
 			}
 			`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --no-data --no-create-info --routines $temp_dbname  | $xzbin -3 -T0 - > '$TEMPpath/$Server_name$underl$temp_dbname$underl$routines$underl$wday.txt.xz'`;
-			
+
 			$triggers = "triggers";
 			if ($DBX) {
 			    print "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --no-data --triggers $temp_dbname | $xzbin -3 -T0 - > '$TEMPpath/$Server_name$underl$temp_dbname$underl$triggers$underl$wday.txt.xz'\n";
@@ -505,7 +505,7 @@ if ( ($without_db < 1) && ($conf_only < 1) ) {
 			`$tarbin -cf $TEMPpath/$Server_name$underl$temp_dbname$underl$wday$tar $TEMPpath/*.sql.xz $TEMPpath/*.txt.xz`;
 			`rm $TEMPpath/*.sql.xz`;
 			`rm $TEMPpath/*.txt.xz`;
-			
+
 			$c++;
 		}
 	} else {
@@ -533,7 +533,7 @@ if ( ($without_conf < 1) && ($db_only < 1) )
 
 
 	### BACKUP THE WANPIPE CONF FILES(if there are any) ###
-	if ( -e ('/etc/wanpipe/wanpipe1.conf')) 
+	if ( -e ('/etc/wanpipe/wanpipe1.conf'))
 		{
 		$sgSTRING = '/etc/wanpipe/wanpipe1.conf ';
 		if ( -e ('/etc/wanpipe/wanpipe2.conf')) {$sgSTRING .= '/etc/wanpipe/wanpipe2.conf ';}

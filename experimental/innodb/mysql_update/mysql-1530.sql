@@ -41,7 +41,7 @@ modify_date TIMESTAMP,
 index (icbq_status)
 ) ENGINE=InnoDB;
 
-CREATE TABLE vicidial_inbound_callback_queue_archive LIKE vicidial_inbound_callback_queue; 
+CREATE TABLE vicidial_inbound_callback_queue_archive LIKE vicidial_inbound_callback_queue;
 ALTER TABLE vicidial_inbound_callback_queue_archive MODIFY icbq_id INT(9) UNSIGNED NOT NULL;
 
 ALTER TABLE vicidial_inbound_groups ADD icbq_expiration_hours SMALLINT(5) default '96';

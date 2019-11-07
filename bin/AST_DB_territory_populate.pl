@@ -91,7 +91,7 @@ $server_ip = $VARserver_ip;		# Asterisk server IP
 
 if (!$VARDB_port) {$VARDB_port='3306';}
 
-use DBI;	  
+use DBI;
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
@@ -99,11 +99,11 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
 
 
-##### Populate the owner field with a new territory based upon the state	
+##### Populate the owner field with a new territory based upon the state
 
 $stmtA = "UPDATE vicidial_list SET owner=CONCAT('MUTO2822',state) where owner='' and list_id IN('1295','1298') and state!='' and state is NOT NULL;";
 if($DB){print STDERR "\n|$stmtA|\n";}
-if (!$T) 
+if (!$T)
 	{
 	$affected_rows = $dbhA->do($stmtA);
 	if($DB){print STDERR "\n|$affected_rows records changed|\n";}

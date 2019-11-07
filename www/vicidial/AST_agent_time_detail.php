@@ -1,6 +1,6 @@
-<?php 
+<?php
 # AST_agent_time_detail.php
-# 
+#
 # Pulls time stats per agent selectable by campaign or user group
 # should be most accurate agent stats of all of the reports
 #
@@ -103,12 +103,12 @@ if (isset($_GET["search_archived_data"]))			{$search_archived_data=$_GET["search
 if (strlen($shift)<2) {$shift='ALL';}
 if (strlen($stage)<2) {$stage='NAME';}
 
-if ($search_archived_data=="checked") 
+if ($search_archived_data=="checked")
 	{
 	$agent_log_table="vicidial_agent_log_archive";
 	$table_check_stmt="show tables like 'vicidial_timeclock_log_archive'";
 	$table_check_rslt=mysql_to_mysqli($table_check_stmt, $link);
-	if (mysqli_num_rows($table_check_rslt)>0) 
+	if (mysqli_num_rows($table_check_rslt)>0)
 		{
 		$timeclock_log_table="vicidial_timeclock_log_archive";
 		}
@@ -116,8 +116,8 @@ if ($search_archived_data=="checked")
 		{
 		$timeclock_log_table="vicidial_timeclock_log";
 		}
-	} 
-else 
+	}
+else
 	{
 	$agent_log_table="vicidial_agent_log";
 	$timeclock_log_table="vicidial_timeclock_log";
@@ -504,7 +504,7 @@ if ($file_download < 1)
 	echo "<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 	echo "<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 	require("chart_button.php");
-	echo "<script src='chart/Chart.js'></script>\n"; 
+	echo "<script src='chart/Chart.js'></script>\n";
 	echo "<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
 
 	echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"vicidial_stylesheet.php\">\n";
@@ -534,41 +534,41 @@ if ( (strlen($group[0]) < 1) or (strlen($user_group[0]) < 1) )
 
 else
 	{
-	if ($shift == 'TEST') 
+	if ($shift == 'TEST')
 		{
-		$time_BEGIN = "09:45:00";  
+		$time_BEGIN = "09:45:00";
 		$time_END = "10:00:00";
 		}
-	if ($shift == 'AM') 
+	if ($shift == 'AM')
 		{
 		$time_BEGIN=$AM_shift_BEGIN;
 		$time_END=$AM_shift_END;
-		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}   
+		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}
 		if (strlen($time_END) < 6) {$time_END = "15:14:59";}
 		}
-	if ($shift == 'PM') 
+	if ($shift == 'PM')
 		{
 		$time_BEGIN=$PM_shift_BEGIN;
 		$time_END=$PM_shift_END;
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "15:15:00";}
 		if (strlen($time_END) < 6) {$time_END = "23:15:00";}
 		}
-	if ($shift == 'ALL') 
+	if ($shift == 'ALL')
 		{
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}
 		if (strlen($time_END) < 6) {$time_END = "23:59:59";}
 		}
-	if ($shift == '9AM-5PM') 
+	if ($shift == '9AM-5PM')
 		{
 		$time_BEGIN = "09:00:00";
 		$time_END = "16:59:59";
 		}
-	if ($shift == '5PM-MIDNIGHT') 
+	if ($shift == '5PM-MIDNIGHT')
 		{
 		$time_BEGIN = "17:00:00";
 		$time_END = "23:59:59";
 		}
-	$query_date_BEGIN = "$query_date $time_BEGIN";   
+	$query_date_BEGIN = "$query_date $time_BEGIN";
 	$query_date_END = "$end_date $time_END";
 
 	if ($file_download < 1)
@@ -647,7 +647,7 @@ else
 	$PCuser_namesARY=$MT;
 	$user_count=0;
 
-	if ($show_parks) 
+	if ($show_parks)
 		{
 		$park_HEADER=" "._QXZ("PARKS",8)." | "._QXZ("PARK TIME",10)." | "._QXZ("AVG PARK",10)." | "._QXZ("PARKS/CALL",10)." |";
 		$park_HEADER_DIV="+----------+------------+------------+------------";
@@ -659,7 +659,7 @@ else
 	$park_stmt="select user, count(*), sum(parked_sec) From park_log where parked_time <= '$query_date_END' and parked_time >= '$query_date_BEGIN' $park_log_SQL group by user";
 	if ($DB) {$ASCII_text.= "$park_stmt\n";}
 	$park_rslt=mysql_to_mysqli($park_stmt, $link);
-	while ($park_row=mysqli_fetch_row($park_rslt)) 
+	while ($park_row=mysqli_fetch_row($park_rslt))
 		{
 		$park_array[$park_row[0]][0]=$park_row[1];
 		$park_array[$park_row[0]][1]=$park_row[2];
@@ -674,11 +674,11 @@ else
 
 		$stmt="select $userSQL,sum(pause_sec),sub_status from ".$agent_log_table." where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN' and pause_sec > 0 and pause_sec < 65000 and sub_status='$current_ss' $group_SQL $user_group_SQL group by user,sub_status order by user,sub_status desc limit 10000000;";
 		$rslt=mysql_to_mysqli($stmt, $link);
-		
+
 		if ($DB) {$ASCII_text.= "$stmt\n";}
 		$sub_subs_to_print = mysqli_num_rows($rslt);
 		$subs_to_print+=$sub_subs_to_print;
-		$i=0; 
+		$i=0;
 		while ($i < $sub_subs_to_print)
 			{
 			$row=mysqli_fetch_row($rslt);
@@ -750,9 +750,9 @@ else
 		$TOTconnected =	($TOTconnected + $connected);
 		$TOTALtime = ($TOTALtime + $pause + $dispo + $talk + $wait);
 		if ( ($lead > 0) and ((!preg_match("/NULL/i",$status)) and (strlen($status) > 0)) ) {$TOTcalls++;}
-		
+
 		$user_found=0;
-		if ($uc < 1) 
+		if ($uc < 1)
 			{
 			$Suser[$uc] = $user;
 			$uc++;
@@ -940,8 +940,8 @@ else
 			$RAWtimeTCsec =		"0";
 
 			$graph_stats[$m][2]=0;
-			
-			$StimeTC[$m] =		"0:00"; 
+
+			$StimeTC[$m] =		"0:00";
 			if ($TIME_agenttimedetail == 'HF')
 				{$StimeTC[$m] =		"0:00:00";}
 			if ($TIME_agenttimedetail == 'S')
@@ -986,12 +986,12 @@ else
 					$USERcodePAUSE_MS =		sec_convert($PCpause_sec[$i],$TIME_agenttimedetail);
 					if (strlen($USERcodePAUSE_MS)<1) {$USERcodePAUSE_MS='0';}
 					$pfUSERcodePAUSE_MS =	sprintf("%10s", $USERcodePAUSE_MS);
-					
+
 					if ($PCpause_sec[$i]>$$max_varname) {$$max_varname=$PCpause_sec[$i];}
-					$graph_stats_sub[$m][$n]=$PCpause_sec[$i];					
+					$graph_stats_sub[$m][$n]=$PCpause_sec[$i];
 
 					$n1=($n+19); # THIS IS FOR THE GRAPHING FURTHER DOWN; COULDN'T THINK OF A BETTER WAY TO DO THIS.
-					$graph_stats[$m][$n1]=$PCpause_sec[$i];					
+					$graph_stats[$m][$n1]=$PCpause_sec[$i];
 
 					$SstatusTXT = sprintf("%10s", $pfUSERcodePAUSE_MS);
 					$SstatusesHTML .= " $SstatusTXT |";
@@ -1032,18 +1032,18 @@ else
 		$Sdispopct[$m]=		sprintf("%9s", $Sdispopct[$m])."%";
 		$Spausepct[$m]=		sprintf("%9s", $Spausepct[$m])."%";
 		$Sdeadpct[$m]=		sprintf("%9s", $Sdeadpct[$m])."%";
-		$Swait[$m]=		sprintf("%10s", $Swait[$m]); 
-		$Stalk[$m]=		sprintf("%10s", $Stalk[$m]); 
-		$Sdispo[$m]=	sprintf("%10s", $Sdispo[$m]); 
-		$Spause[$m]=	sprintf("%10s", $Spause[$m]); 
-		$Sdead[$m]=		sprintf("%10s", $Sdead[$m]); 
+		$Swait[$m]=		sprintf("%10s", $Swait[$m]);
+		$Stalk[$m]=		sprintf("%10s", $Stalk[$m]);
+		$Sdispo[$m]=	sprintf("%10s", $Sdispo[$m]);
+		$Spause[$m]=	sprintf("%10s", $Spause[$m]);
+		$Sdead[$m]=		sprintf("%10s", $Sdead[$m]);
 		$Scustomer[$m]=		sprintf("%10s", $Scustomer[$m]);
 		$Sconnected[$m]=		sprintf("%10s", $Sconnected[$m]);
-		$Scalls[$m]=	sprintf("%8s", $Scalls[$m]); 
-		$Stime[$m]=		sprintf("%10s", $Stime[$m]); 
+		$Scalls[$m]=	sprintf("%8s", $Scalls[$m]);
+		$Stime[$m]=		sprintf("%10s", $Stime[$m]);
 
 		# PARK INFO
-		if ($show_parks) 
+		if ($show_parks)
 			{
 			$user_holds=$park_array[$Suser[$m]][0]+0;
 			$total_hold_time=$park_array[$Suser[$m]][1]+0;
@@ -1057,10 +1057,10 @@ else
 			$avg_hold_time=sec_convert($avg_hold_time,$TIME_agenttimedetail);
 			$park_AGENT_INFO_CSV="$user_holds,$total_hold_time,$avg_hold_time,$user_hpc,";
 
-			$user_holds=	sprintf("%8s", $user_holds); 
-			$total_hold_time=	sprintf("%10s", $total_hold_time); 
-			$avg_hold_time=	sprintf("%10s", $avg_hold_time); 
-			$user_hpc=	sprintf("%10s", $user_hpc); 
+			$user_holds=	sprintf("%8s", $user_holds);
+			$total_hold_time=	sprintf("%10s", $total_hold_time);
+			$avg_hold_time=	sprintf("%10s", $avg_hold_time);
+			$user_hpc=	sprintf("%10s", $user_hpc);
 			$park_AGENT_INFO=" $user_holds | $total_hold_time | $avg_hold_time | $user_hpc |";
 			}
 
@@ -1077,14 +1077,14 @@ else
 		if ($file_download<1) {
 			if ($non_latin < 1)
 				{
-				$Sname[$m]=	sprintf("%-25s", $Sname[$m]); 
+				$Sname[$m]=	sprintf("%-25s", $Sname[$m]);
 				while(strlen($Sname[$m])>25) {$Sname[$m] = substr("$Sname[$m]", 0, -1);}
 				$Suser[$m] =		sprintf("%-8s", $Suser[$m]);
 				while(strlen($Suser[$m])>8) {$Suser[$m] = substr("$Suser[$m]", 0, -1);}
 				}
 			else
-				{	
-				$Sname[$m]=	sprintf("%-75s", $Sname[$m]); 
+				{
+				$Sname[$m]=	sprintf("%-75s", $Sname[$m]);
 				while(mb_strlen($Sname[$m],'utf-8')>25) {$Sname[$m] = mb_substr("$Sname[$m]", 0, -1,'utf-8');}
 				$Suser[$m] =	sprintf("%-24s", $Suser[$m]);
 				while(mb_strlen($Suser[$m],'utf-8')>8) {$Suser[$m] = mb_substr("$Suser[$m]", 0, -1,'utf-8');}
@@ -1101,7 +1101,7 @@ else
 				{
 				$Toutput = "| $Sname[$m] | <a href=\"./user_stats.php?user=$RAWuser&begin_date=$query_date&end_date\">$Suser[$m]</a> | $Scalls[$m] | $StimeTC[$m]$TCuserAUTOLOGOUT| $Stime[$m] |$park_AGENT_INFO $Swait[$m] | $Swaitpct[$m] | $Stalk[$m] | $Stalkpct[$m] | $Sdispo[$m] | $Sdispopct[$m] | $Spause[$m] | $Spausepct[$m] | $Sdead[$m] | $Sdeadpct[$m] | $Scustomer[$m] | $Sconnected[$m] |   |$SstatusesHTML\n";
 				}
-				
+
 			$graph_stats[$m][0]=trim("$Suser[$m] - $Sname[$m]");
 			$user_IDs[$m]=$Suser[$m];
 			}
@@ -1120,10 +1120,10 @@ else
 			if (strlen($RAWdeadpct)<0) {$RAWdeadpct='0.0%';}
 			if (strlen($RAWcustomer)<1) {$RAWcustomer='0';}
 			if (strlen($RAWconnected)<1) {$RAWconnected='0';}
-			$user_holds=trim($user_holds); 
-			$total_hold_time=trim($total_hold_time); 
-			$avg_hold_time=trim($avg_hold_time); 
-			$user_hpc=trim($user_hpc); 
+			$user_holds=trim($user_holds);
+			$total_hold_time=trim($total_hold_time);
+			$avg_hold_time=trim($avg_hold_time);
+			$user_hpc=trim($user_hpc);
 
 			$fileToutput = "$RAWname,$RAWuser,$RAWcalls,$RAWtimeTC,$RAWtime,$park_AGENT_INFO_CSV$RAWwait,$RAWwaitpct %,$RAWtalk,$RAWtalkpct %,$RAWdispo,$RAWdispopct %,$RAWpause,$RAWpausepct %,$RAWdead,$RAWdeadpct %,$RAWcustomer,$RAWconnected$SstatusesFILE\n";
 			}
@@ -1272,16 +1272,16 @@ else
 	$TOTALtime = sec_convert($TOTALtime,$TIME_agenttimedetail);
 	$TOTtimeTC = sec_convert($TOTtimeTC,$TIME_agenttimedetail);
 
-	if ($show_parks) 
+	if ($show_parks)
 		{
 		$TOTavg_hold_time=round(MathZDC($TOTtotal_hold_time, $TOTuser_holds));
 		$TOTuser_hpc=sprintf("%.2f", MathZDC($TOTuser_holds, $TOTcalls));
 		$TOTtotal_hold_time=sec_convert($TOTtotal_hold_time,$TIME_agenttimedetail);
 		$TOTavg_hold_time=sec_convert($TOTavg_hold_time,$TIME_agenttimedetail);
-		$hTOTuser_holds=	sprintf("%8s", $TOTuser_holds); 
-		$hTOTtotal_hold_time=	sprintf("%10s", $TOTtotal_hold_time); 
-		$hTOTavg_hold_time=	sprintf("%10s", $TOTavg_hold_time); 
-		$hTOTuser_hpc=	sprintf("%10s", $TOTuser_hpc); 
+		$hTOTuser_holds=	sprintf("%8s", $TOTuser_holds);
+		$hTOTtotal_hold_time=	sprintf("%10s", $TOTtotal_hold_time);
+		$hTOTavg_hold_time=	sprintf("%10s", $TOTavg_hold_time);
+		$hTOTuser_hpc=	sprintf("%10s", $TOTuser_hpc);
 		$park_TOTALS=" $hTOTuser_holds | $hTOTtotal_hold_time | $hTOTavg_hold_time | $hTOTuser_hpc |";
 		$park_TOTALS_CSV="$TOTuser_holds,$TOTtotal_hold_time,$TOTavg_hold_time,$TOTuser_hpc,";
 		}
@@ -1304,7 +1304,7 @@ else
 	###### END LAST LINE TOTALS FORMATTING ##########
 
 
- 
+
 	if ($file_download < 1)
 		{
 		$ASCII_text.="+---------------------------+----------+----------+------------+------------$park_HEADER_DIV+------------+------------+------------+------------+------------+------------+------------+------------+------------+------------+------------+------------+   +$sub_statusesHEAD\n";
@@ -1317,7 +1317,7 @@ else
 			}
 		$ASCII_text.="\n\n</PRE>";
 
-		for ($e=0; $e<count($sub_statusesARY); $e++) 
+		for ($e=0; $e<count($sub_statusesARY); $e++)
 			{
 			$Sstatus=$sub_statusesARY[$e];
 			$SstatusTXT=$Sstatus;
@@ -1342,15 +1342,15 @@ else
 		}
 
 		$default_graph="bar"; # Graph that is initally displayed when page loads
-		include("graph_color_schemas.inc"); 
+		include("graph_color_schemas.inc");
 
 		$graph_totals_array=array();
 		$graph_totals_rawdata=array();
 		for ($q=0; $q<count($graph_array); $q++) {
-			$graph_info=explode("|", $graph_array[$q]); 
+			$graph_info=explode("|", $graph_array[$q]);
 			$current_graph_total=0;
 			$dataset_name=$graph_info[0];
-			$dataset_index=$graph_info[1]; 
+			$dataset_index=$graph_info[1];
 			$dataset_type=$graph_info[3];
 
 			$JS_text.="var $dataset_name = {\n";
@@ -1368,7 +1368,7 @@ else
 			$graphConstantsC="\t\t\t\thoverBorderColor: [";
 			for ($d=0; $d<count($graph_stats); $d++) {
 				$labels.="\"".preg_replace('/ +/', ' ', $graph_stats[$d][0])."\",";
-				$data.="\"".$graph_stats[$d][$dataset_index]."\","; 
+				$data.="\"".$graph_stats[$d][$dataset_index]."\",";
 				$current_graph_total+=$graph_stats[$d][$dataset_index];
 				$bgcolor=$backgroundColor[($d%count($backgroundColor))];
 				$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
@@ -1376,13 +1376,13 @@ else
 				$graphConstantsA.="\"$bgcolor\",";
 				$graphConstantsB.="\"$hbgcolor\",";
 				$graphConstantsC.="\"$hbcolor\",";
-			}	
+			}
 			$graphConstantsA.="],\n";
 			$graphConstantsB.="],\n";
 			$graphConstantsC.="],\n";
 			$labels=preg_replace('/,$/', '', $labels)."],\n";
 			$data=preg_replace('/,$/', '', $data)."],\n";
-			
+
 			$graph_totals_rawdata[$q]=$current_graph_total;
 			switch($dataset_type) {
 				case "time":

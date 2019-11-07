@@ -1,6 +1,6 @@
 <?php
 # admin_phones_bulk_insert.php
-# 
+#
 # Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # this screen will insert phones into your multi-server system with aliases
@@ -216,7 +216,7 @@ if ( (!preg_match('/\-\-ALL\-\-/i',$LOGadmin_viewable_groups)) and (strlen($LOGa
 
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
 <title><?php echo _QXZ("ADMINISTRATION: Phones Bulk Insert"); ?>
-<?php 
+<?php
 
 ################################################################################
 ##### BEGIN help section
@@ -420,7 +420,7 @@ if ($action == "BLANK")
 	$templates_to_print = mysqli_num_rows($rslt);
 	$templates_list='<option value=\'\' SELECTED>--'._QXZ("NONE").'--</option>';
 	$o=0;
-	while ($templates_to_print > $o) 
+	while ($templates_to_print > $o)
 		{
 		$rowx=mysqli_fetch_row($rslt);
 		$templates_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -465,7 +465,7 @@ if ($action == "ADD_PHONES_SUBMIT")
 				if ($DB>0) {echo "$stmt";}
 				$rslt=mysql_to_mysqli($stmt, $link);
 				$servercount_to_print = mysqli_num_rows($rslt);
-				if ($servercount_to_print > 0) 
+				if ($servercount_to_print > 0)
 					{
 					$rowx=mysqli_fetch_row($rslt);
 					$server_exists =	$rowx[0];
@@ -481,7 +481,7 @@ if ($action == "ADD_PHONES_SUBMIT")
 						if ($DB>0) {echo "$stmt";}
 						$rslt=mysql_to_mysqli($stmt, $link);
 						$phonecount_to_print = mysqli_num_rows($rslt);
-						if ($phonecount_to_print > 0) 
+						if ($phonecount_to_print > 0)
 							{
 							$rowx=mysqli_fetch_row($rslt);
 							$phone_exists =	$rowx[0];
@@ -618,7 +618,7 @@ if ($action == "ADD_PHONES_SUBMIT")
 					$p++;
 					}
 				}
-			
+
 			echo _QXZ("Phones Inserted").":: $phones_inserted\n<BR>";
 			echo _QXZ("Phones Aliases Inserted").":: $phone_alias_inserted\n<BR>";
 			echo _QXZ("You now need to manually trigger a conf file rebuild from the System Settings screen").":\n<BR>";

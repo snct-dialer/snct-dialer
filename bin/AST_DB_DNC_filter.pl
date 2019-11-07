@@ -5,7 +5,7 @@
 # DESCRIPTION:
 # OPTIONAL!!!
 # - runs several filters on numbers in the DNC lists and reports results with an
-#    option to delete filtered numbers, like few digits, too many digits, 
+#    option to delete filtered numbers, like few digits, too many digits,
 #	 invalid phone numbers, etc...
 #
 # It is recommended that you run this program on the local Asterisk machine
@@ -162,7 +162,7 @@ $server_ip = $VARserver_ip;		# Asterisk server IP
 
 if (!$VARDB_port) {$VARDB_port='3306';}
 
-use DBI;	  
+use DBI;
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
@@ -205,17 +205,17 @@ $sthA->finish();
 
 
 
-if ( (length($CLIremoveless)>0) or (length($CLIremovemore)>0) or ($remove_nondigits > 0) ) 
+if ( (length($CLIremoveless)>0) or (length($CLIremovemore)>0) or ($remove_nondigits > 0) )
 	{
 	$removelessSQL='';
 	$removemoreSQL='';
 	$remove_nondigitsSQL='';
 	$protect_areacodesSQL='';
-	if (length($CLIremoveless)>0) 
+	if (length($CLIremoveless)>0)
 		{$removelessSQL="(char_length(phone_number) <= $CLIremoveless)";}
 	if (length($CLIremovemore)>0)
 		{
-		if (length($removelessSQL) > 1) 
+		if (length($removelessSQL) > 1)
 			{$removemoreSQL = 'or ';}
 		$removemoreSQL .= "(char_length(phone_number) >= $CLIremovemore)";
 		}
@@ -225,12 +225,12 @@ if ( (length($CLIremoveless)>0) or (length($CLIremovemore)>0) or ($remove_nondig
 			{$remove_nondigitsSQL = 'or ';}
 		$remove_nondigitsSQL .= "( (phone_number LIKE \"% %\") or (phone_number LIKE \"%*%\") or (phone_number LIKE \"%#%\") or (phone_number LIKE \"%a%\") or (phone_number LIKE \"%b%\") or (phone_number LIKE \"%c%\") or (phone_number LIKE \"%d%\") or (phone_number LIKE \"%e%\") or (phone_number LIKE \"%f%\") or (phone_number LIKE \"%g%\") or (phone_number LIKE \"%h%\") or (phone_number LIKE \"%i%\") or (phone_number LIKE \"%j%\") or (phone_number LIKE \"%k%\") or (phone_number LIKE \"%l%\") or (phone_number LIKE \"%m%\") or (phone_number LIKE \"%n%\") or (phone_number LIKE \"%o%\") or (phone_number LIKE \"%p%\") or (phone_number LIKE \"%q%\") or (phone_number LIKE \"%r%\") or (phone_number LIKE \"%s%\") or (phone_number LIKE \"%t%\") or (phone_number LIKE \"%u%\") or (phone_number LIKE \"%v%\") or (phone_number LIKE \"%q%\") or (phone_number LIKE \"%x%\") or (phone_number LIKE \"%y%\") or (phone_number LIKE \"%z%\") or (phone_number LIKE \"%.%\") or (phone_number LIKE \"%,%\") )";
 		}
-	if ($protect_areacodes > 0) 
+	if ($protect_areacodes > 0)
 		{
 		if ( (length($removelessSQL) > 1) or (length($removemoreSQL) > 1) or (length($remove_nondigitsSQL) > 1) )
 			{$protect_areacodesSQL = "and (phone_number NOT LIKE \"%XXXXXXX\")";}
 		}
-	if (length($CLIcampaign)<1) 
+	if (length($CLIcampaign)<1)
 		{
 		##### BEGIN system internal DNC filter #####
 		$stmtA = "SELECT phone_number from vicidial_dnc where $removelessSQL $removemoreSQL $remove_nondigitsSQL $protect_areacodesSQL limit 100000000;";
@@ -275,7 +275,7 @@ if ( (length($CLIremoveless)>0) or (length($CLIremovemore)>0) or ($remove_nondig
 	if ( (length($CLIcampaign) > 0) or ($without_campaign_dnc < 1) )
 		{
 		$CLIcampaignSQL='';
-		if (length($CLIcampaign) > 0) 
+		if (length($CLIcampaign) > 0)
 			{$CLIcampaignSQL = "and campaign_id IN('$CLIcampaign')";}
 		##### BEGIN campaign DNC filter #####
 		$stmtA = "SELECT phone_number,campaign_id from vicidial_campaign_dnc where $removelessSQL $removemoreSQL $remove_nondigitsSQL $protect_areacodesSQL $CLIcampaignSQL limit 100000000;";

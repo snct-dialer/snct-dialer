@@ -1,6 +1,6 @@
 <?php
 # whiteboard_reports.php
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>, Joe Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
 #
 # A PHP file that is for generating the stats that are displayed in the whiteboard report.  Returns values.
@@ -61,13 +61,13 @@ if (!$query_time) {$query_time="08:00:00";}
 if (!$end_date) {$end_date=date("Y-m-d");}
 if (!$end_time) {$end_time=date("H:i:00");}
 
-if ($hourly_display) 
-	{	
+if ($hourly_display)
+	{
 	$query_date=date("Y-m-d", date("U")-(3600*$hourly_display));
 	$query_time=date("H:i:00", date("U")-(3600*$hourly_display));
 	$end_date=date("Y-m-d");
 	$end_time=date("H:i:00");
-	} 
+	}
 
 $rpt_string="";
 
@@ -117,7 +117,7 @@ if (preg_match("/status_performance/", $rpt_type)) {
 			$flag_SQL.=$status_flags[$s]."='Y' or ";
 		}
 		$flag_SQL=preg_replace('/ or $/', "", $flag_SQL);
-		
+
 		$status_stmt="SELECT distinct status from vicidial_statuses where ($flag_SQL) UNION SELECT distinct status from vicidial_campaign_statuses where ($flag_SQL) $campaign_id_SQL";
 		$status_rslt=mysql_to_mysqli($status_stmt, $link);
 		$status_str="";
@@ -183,7 +183,7 @@ if (preg_match("/status_performance/", $rpt_type)) {
 
 	while (list($key, $val)=each($status_counts)) {
 		$kstatus_counts[]=array('status' => $key, 'counts' => $val[0], 'sales' => $val[1], 'dead' => $val[2]);
-	}        
+	}
 
 	foreach ($kstatus_counts as $key2 => $row2) {
 		$status_ary[$key2]  = $row2['status'];
@@ -193,7 +193,7 @@ if (preg_match("/status_performance/", $rpt_type)) {
 	}
 
 	array_multisort($status_ary, SORT_ASC, $counts_ary, SORT_ASC, $sales_ary, SORT_ASC, $dead_ary, SORT_ASC, $kstatus_counts);
-	
+
 	if (count($status_counts)==0) {
 		$rpt_string=_QXZ("REPORT RETURNED NO RESULTS");
 	} else {
@@ -248,7 +248,7 @@ if (preg_match("/(agent|team)_performance/", $rpt_type)) {
 			$flag_SQL.=$status_flags[$s]."='Y' or ";
 		}
 		$flag_SQL=preg_replace('/ or $/', "", $flag_SQL);
-		
+
 		$status_stmt="SELECT distinct status from vicidial_statuses where ($flag_SQL) UNION SELECT distinct status from vicidial_campaign_statuses where ($flag_SQL) $campaign_id_SQL";
 		$status_rslt=mysql_to_mysqli($status_stmt, $link);
 		$status_str="";
@@ -278,7 +278,7 @@ if (preg_match("/(agent|team)_performance/", $rpt_type)) {
 	} else if (preg_match("/team_performance/", $rpt_type)) {
 		$stmt="SELECT user_group, status, sum(pause_sec+wait_sec+talk_sec+dispo_sec), count(*) from vicidial_agent_log where event_time>='$query_date $query_time' and event_time<='$end_date $end_time' $campaign_id_SQL $user_SQL $user_group_SQL $status_SQL $exc_status_SQL group by user_group, status order by user_group, status";
 	}
-	
+
 	if ($DB) {$rpt_string.=$stmt."<BR>\n";}
 
 	$agent_counts=array();
@@ -324,7 +324,7 @@ if (preg_match("/(agent|team)_performance/", $rpt_type)) {
 }
 
 if (preg_match("/floor_performance/", $rpt_type)) {
-	if ($hourly_display) {	
+	if ($hourly_display) {
 		$query_date=date("Y-m-d", date("U")-(3600*$hourly_display));
 		$query_time=date("H:i:00", date("U")-(3600*$hourly_display));
 		$start_epoch=date("U")-(3600*$hourly_display);
@@ -346,7 +346,7 @@ if (preg_match("/floor_performance/", $rpt_type)) {
 		$call_counts["$key"][3]=0; # Cumulative sales
 		$start_epoch+=60;
 	}
-	
+
 	if (in_array("--ALL--", $campaigns)) {
 		$campaign_id_SQL="";
 	} else {
@@ -360,7 +360,7 @@ if (preg_match("/floor_performance/", $rpt_type)) {
 			$flag_SQL.=$status_flags[$s]."='Y' or ";
 		}
 		$flag_SQL=preg_replace('/ or $/', "", $flag_SQL);
-		
+
 		$status_stmt="SELECT distinct status from vicidial_statuses where ($flag_SQL) UNION SELECT distinct status from vicidial_campaign_statuses where ($flag_SQL) $campaign_id_SQL";
 		$status_rslt=mysql_to_mysqli($status_stmt, $link);
 		$status_str="";
@@ -456,7 +456,7 @@ if (preg_match("/(did|ingroup)_performance/", $rpt_type)) {
 			$flag_SQL.=$status_flags[$s]."='Y' or ";
 		}
 		$flag_SQL=preg_replace('/ or $/', "", $flag_SQL);
-		
+
 		$status_stmt="SELECT distinct status from vicidial_statuses where ($flag_SQL) UNION SELECT distinct status from vicidial_campaign_statuses where ($flag_SQL) $campaign_id_SQL";
 		$status_rslt=mysql_to_mysqli($status_stmt, $link);
 		$status_str="";
@@ -551,7 +551,7 @@ if (preg_match("/(did|ingroup)_performance/", $rpt_type)) {
 			$val[1]+=0;
 			$total_calls+=$val[0];
 			$total_sales+=$val[1];
-			
+
 			$shift_duration=$val[2];
 			$conv_rate=sprintf("%.2f", 100*MathZDC($val[1], $val[0])); # Conversion rate
 			$cph=sprintf("%.2f", (MathZDC($val[0], ($shift_duration/3600)))); # SPH - this is based on total time since start_time.  Switch to $val[2] if you want it based on the individual agent's total time in the dialer.
@@ -577,7 +577,7 @@ if ($rpt_type=="floor_performance_hourly") {
 			$flag_SQL.=$status_flags[$s]."='Y' or ";
 		}
 		$flag_SQL=preg_replace('/ or $/', "", $flag_SQL);
-		
+
 		$status_stmt="SELECT distinct status from vicidial_statuses where ($flag_SQL) UNION SELECT distinct status from vicidial_campaign_statuses where ($flag_SQL) $campaign_id_SQL";
 		$status_rslt=mysql_to_mysqli($status_stmt, $link);
 		$status_str="";

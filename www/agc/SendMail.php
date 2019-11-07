@@ -1,4 +1,4 @@
-<?php 
+<?php
 header ("Content-type: text/html; charset=utf-8");
 header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
 header ("Pragma: no-cache");                          // HTTP/1.0
@@ -25,12 +25,12 @@ if (isset($_GET["MailText1"]))			{$MailText1=$_GET["MailText1"];}
 	elseif (isset($_POST["MailText1"]))	{$MailText1=$_POST["MailText1"];}
 if (isset($_GET["Anzeige"]))			{$Anzeige=$_GET["Anzeige"];}
 	elseif (isset($_POST["Anzeige"]))	{$Anzeige=$_POST["Anzeige"];}
-	
+
 echo "<form name=Datum method=\"post\">" .PHP_EOL;
 echo "<table>";
 echo "<tr>";
 echo " <input type=\"hidden\" name=\"Anzeige\" value='1'> " .PHP_EOL;
-echo " <input type=\"hidden\" name=\"MailText\" value=\"$MailText\"> " . PHP_EOL; 
+echo " <input type=\"hidden\" name=\"MailText\" value=\"$MailText\"> " . PHP_EOL;
 
 echo " <td><label for=\"MailFrom\">From :</label></td>" . PHP_EOL;
 echo " <td><input type=\"text\" name=\"MailFrom\" id=\"MailFrom\" value=\"$MailFrom\" maxlength=\"50\"></td> " .PHP_EOL;

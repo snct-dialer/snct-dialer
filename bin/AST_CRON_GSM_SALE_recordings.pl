@@ -6,10 +6,10 @@
 #
 # runs every day, goes through all recordings to compress only the SALE recordings
 # and place them in a special directory
-# 
-# put an entry into the cron of of your asterisk archive to run this script 
+#
+# put an entry into the cron of of your asterisk archive to run this script
 # every day or however often you desire
-# 
+#
 # This program assumes that recordings are saved as .wav
 # should be easy to change this code if you use .gsm instead
 #
@@ -19,8 +19,8 @@
 # Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
 #               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
 
-# 
-# 1112-1245 - first build 
+#
+# 1112-1245 - first build
 # 180616-1825 - Add sniplet into perl scripts to run only once a time
 #
 
@@ -29,7 +29,7 @@
 use Fcntl qw(:flock);
 # print "start of program $0\n";
 unless (flock(DATA, LOCK_EX|LOCK_NB)) {
-    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log'
     or print "Can't open the fscking file: $!";
     $datestring = localtime();
     print $fh "[$datestring] $0 is already running. Exiting.\n";
@@ -63,7 +63,7 @@ if ($Tsec < 10) {$Tsec = "0$Tsec";}
 
 $soxbin = '';
 if ( -e ('/usr/bin/sox')) {$soxbin = '/usr/bin/sox';}
-else 
+else
 	{
 	if ( -e ('/usr/local/bin/sox')) {$soxbin = '/usr/local/bin/sox';}
 	else
@@ -115,7 +115,7 @@ foreach(@conf)
 $server_ip = $VARserver_ip;		# Asterisk server IP
 if (!$VARDB_port) {$VARDB_port='3306';}
 
-use DBI;	  
+use DBI;
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
@@ -152,7 +152,7 @@ $WAV='-all.wav';
 $GSM='-all.gsm';
 foreach(@lead_ids)
 	{
-	if ($use_date_DIRs) 
+	if ($use_date_DIRs)
 		{
 		$date_DIR = $start_times[$i];
 		$date_DIR =~ s/ .*//gi;
@@ -161,7 +161,7 @@ foreach(@lead_ids)
 	else {$date_DIR=''}
 	if ( -e ("$GSM_DIR/$date_DIR")) {$nothing=1;}
 	else {mkdir("$GSM_DIR/$date_DIR");}
-	if ( -e ("$GSM_DIR/$date_DIR$filenames[$i]$GSM")) 
+	if ( -e ("$GSM_DIR/$date_DIR$filenames[$i]$GSM"))
 		{print "DUPLICATE: $GSM_DIR/$date_DIR$filenames[$i]$GSM EXISTS\n";}
 	else
 		{

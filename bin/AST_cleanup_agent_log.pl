@@ -3,7 +3,7 @@
 # AST_cleanup_agent_log.pl version 2.14
 #
 # DESCRIPTION:
-# to be run frequently to clean up the vicidial_agent_log to fix erroneous time 
+# to be run frequently to clean up the vicidial_agent_log to fix erroneous time
 # calculations due to out-of-order vicidial_agent_log updates. This happens 0.5%
 # of the time in our test setups, but that leads to inaccurate time logs so we
 # wrote this script to fix the miscalculations
@@ -166,7 +166,7 @@ if (length($ARGV[0])>1)
 			{
 			$check_call_lengths=1;
 			if ($Q < 1) {print "\n----- CHECK CALL LENGTHS -----\n\n";}
-			}			
+			}
 		if ($args =~ /-more-than-24hours/i)
 			{
 			$VAL_validate=1;
@@ -411,7 +411,7 @@ if ($run_check > 0)
 	my $grepout = `/bin/ps ax | grep $0 | grep -v grep | grep -v '/bin/sh'`;
 	my $grepnum=0;
 	$grepnum++ while ($grepout =~ m/\n/g);
-	if ($grepnum > 1) 
+	if ($grepnum > 1)
 		{
 		if ($DB) {print "I am not alone! Another $0 is running! Exiting...\n";}
 		exit;
@@ -425,7 +425,7 @@ if (!$CLEANLOGfile) {$CLEANLOGfile = "$PATHlogs/clean.$Hyear-$Hmon-$Hmday";}
 
 if (!$VARDB_port) {$VARDB_port='3306';}
 
-use DBI;	  
+use DBI;
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
 or die "Couldn't connect to database: " . DBI->errstr;
@@ -456,7 +456,7 @@ $sthA->finish();
 
 
 ### BEGIN check for vicidial_log entries with a user with no vicidial_agent_log entry
-if ($vl_val_check > 0) 
+if ($vl_val_check > 0)
 	{
 	if ($DB) {print " - check for vicidial_log entries with a user with no vicidial_agent_log entry\n";}
 	$stmtA = "SELECT call_date,lead_id,uniqueid,user,status from vicidial_log $VDCL_SQL_time_where and user NOT IN('','VDAC','VDAD') order by call_date;";
@@ -480,7 +480,7 @@ if ($vl_val_check > 0)
 		}
 	$sthA->finish();
 
-	if ($DB > 0) 
+	if ($DB > 0)
 		{
 		print "$sthArows vicidial_log records found, starting lookups...\n";
 		}
@@ -500,7 +500,7 @@ if ($vl_val_check > 0)
 			@aryA = $sthA->fetchrow_array;
 			$sthA->finish();
 			$dup_agent_count[$i] =	$aryA[0];
-			if ($dup_agent_count[$i] < 1) 
+			if ($dup_agent_count[$i] < 1)
 				{
 				$stmtA = "SELECT uniqueid from vicidial_agent_log where user='$dup_user[$i]' and lead_id='$dup_lead[$i]' and event_time >= \"$dup_date[$i] 00:00:00\" and event_time <= \"$dup_date[$i] 23:59:59\";";
 				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -511,22 +511,22 @@ if ($vl_val_check > 0)
 					{
 					@aryA = $sthA->fetchrow_array;
 					$dup_agent_uniqueid[$i] =	$aryA[0];
-					if ($dup_agent_uniqueid[$i] != $dup_uniqueid[$i]) 
+					if ($dup_agent_uniqueid[$i] != $dup_uniqueid[$i])
 						{
 						$missing_uid++;
-						if ($DBX > 0) 
+						if ($DBX > 0)
 							{print "VAL record UID MISMATCH: $i|$missing_uid|     |$dup_call_date[$i]|$dup_user[$i]|$dup_lead[$i]|$dup_uniqueid[$i]|$dup_agent_uniqueid[$i]|$dup_status[$i]|\n";}
 						}
 					}
 				else
 					{
 					$missing++;
-					if ($DB > 0) 
+					if ($DB > 0)
 						{print "Missing VAL record: $i|$missing|     |$dup_call_date[$i]|$dup_user[$i]|$dup_lead[$i]|$dup_uniqueid[$i]|$dup_status[$i]|\n";}
 					}
 				}
 			}
-		
+
 		$i++;
 
 		if ( ($i =~ /0$/) && ($DB > 0) )
@@ -545,7 +545,7 @@ if ($vl_val_check > 0)
 			}
 		}
 
-	if ($DB > 0) 
+	if ($DB > 0)
 		{
 		print "DONE:     TOTAL: $i     MISSING: $missing ($missing_uid)\n";
 		}
@@ -584,7 +584,7 @@ if ($hold_cleanup > 0)
 	$i=0;
 	while ($sthArowsU > $i)
 		{
-		@aryA = $sthA->fetchrow_array;	
+		@aryA = $sthA->fetchrow_array;
 		$Vuser[$i] =		$aryA[0];
 		$Vpark_time[$i] =	$aryA[1];
 		$Vpark_epoch[$i] =	$aryA[2];
@@ -628,7 +628,7 @@ if ($hold_cleanup > 0)
 				{
 				@aryA = $sthA->fetchrow_array;
 				$Vagent_talk_epoch[$i] =	($aryA[0] + $aryA[2]);
-				
+
 				$h++;
 				}
 			if ($h < 1)
@@ -711,7 +711,7 @@ if ($fix_old_lagged_entries > 0)
 	$i=0;
 	while ($sthArowsU > $i)
 		{
-		@aryA = $sthA->fetchrow_array;	
+		@aryA = $sthA->fetchrow_array;
 		$Vuser[$i]	=			$aryA[0];
 		$Vagent_log_id[$i]	=	$aryA[1];
 		$Vpause_epoch[$i]	=	$aryA[2];
@@ -726,7 +726,7 @@ if ($fix_old_lagged_entries > 0)
 		if ($Vwait_epoch[$i] > 1000) {$Vlast_epoch[$i] = $Vwait_epoch[$i];}
 		if ($Vtalk_epoch[$i] > 1000) {$Vlast_epoch[$i] = $Vtalk_epoch[$i];}
 		if ($Vdispo_epoch[$i] > 1000) {$Vlast_epoch[$i] = $Vdispo_epoch[$i];}
-		
+
 		($Ksec,$Kmin,$Khour,$Kmday,$Kmon,$Kyear,$Kwday,$Kyday,$Kisdst) = localtime($Vlast_epoch[$i]);
 		$Kyear = ($Kyear + 1900);
 		$Kmon++;
@@ -749,7 +749,7 @@ if ($fix_old_lagged_entries > 0)
 		if ($DBX) {print "$stmtA\n";}
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-		@aryA = $sthA->fetchrow_array;	
+		@aryA = $sthA->fetchrow_array;
 		if ($aryA[0] < 1)
 			{
 			##### insert vicidial_agent_log record
@@ -1216,7 +1216,7 @@ while ($h < $j)
 	$del_start_epoch='';
 	while ( $sthArows > $i)
 		{
-		@aryA = $sthA->fetchrow_array;		
+		@aryA = $sthA->fetchrow_array;
 		if ($i < 1)
 			{
 			$first_uniqueid = $aryA[0];
@@ -1224,7 +1224,7 @@ while ($h < $j)
 			}
 		else
 			{
-			if ( (length($first_uniqueid)>7) && ($aryA[0] =~ /^$first_uniqueid/) ) 
+			if ( (length($first_uniqueid)>7) && ($aryA[0] =~ /^$first_uniqueid/) )
 				{
 				$del_uniqueid =		$aryA[0];
 				$del_start_epoch =	$aryA[1];
@@ -1236,7 +1236,7 @@ while ($h < $j)
 		}
 	$sthA->finish();
 
-	if ( (length($del_uniqueid)>7) && (length($del_start_epoch)>6) ) 
+	if ( (length($del_uniqueid)>7) && (length($del_start_epoch)>6) )
 		{
 		$stmtA = "DELETE FROM vicidial_log where lead_id='$dup_lead[$h]' and end_epoch='$dup_end[$h]' and uniqueid='$del_uniqueid' and start_epoch='$del_start_epoch';";
 			if($DBX){print STDERR "\n|$stmtA|\n";}
@@ -1259,7 +1259,7 @@ if ($vl_dup_check > 0)
 
 
 ### BEGIN check for call lengths longer than 1 day(84600 seconds) and correct them
-if ($check_call_lengths > 0) 
+if ($check_call_lengths > 0)
 	{
 	if ($DB) {print " - vicidial_log call length check\n";}
 	$stmtA = "SELECT uniqueid,lead_id,start_epoch,end_epoch,length_in_sec from vicidial_log $VDCL_SQL_time_where and ( (length_in_sec > 86400) or (length_in_sec < -86400) ) order by call_date;";
@@ -1284,10 +1284,10 @@ if ($check_call_lengths > 0)
 	$h=0;
 	while ($h < $i)
 		{
-		if ( ($LONG_start_epoch[$h] > 86400) && ($LONG_end_epoch[$h] > 86400) ) 
+		if ( ($LONG_start_epoch[$h] > 86400) && ($LONG_end_epoch[$h] > 86400) )
 			{
 			$new_length = ($LONG_end_epoch[$h] - $LONG_start_epoch[$h]);
-			if ($new_length < 1) 
+			if ($new_length < 1)
 				{$new_length=1;}
 			$stmtA = "UPDATE vicidial_log SET length_in_sec='$new_length' where uniqueid='$LONG_uniqueid[$h]' and lead_id='$LONG_lead_id[$h]';";
 				if($DBX){print STDERR "\n|$stmtA|\n";}
@@ -1325,10 +1325,10 @@ if ($check_call_lengths > 0)
 	$h=0;
 	while ($h < $i)
 		{
-		if ( ($LONG_start_epoch[$h] > 86400) && ($LONG_end_epoch[$h] > 86400) ) 
+		if ( ($LONG_start_epoch[$h] > 86400) && ($LONG_end_epoch[$h] > 86400) )
 			{
 			$new_length = ($LONG_end_epoch[$h] - $LONG_start_epoch[$h]);
-			if ($new_length < 1) 
+			if ($new_length < 1)
 				{$new_length=1;}
 			$stmtA = "UPDATE vicidial_closer_log SET length_in_sec='$new_length' where closecallid='$LONG_closecallid[$h]' and lead_id='$LONG_lead_id[$h]';";
 				if($DBX){print STDERR "\n|$stmtA|\n";}
@@ -1364,23 +1364,23 @@ $sthArows=$sthA->rows;
 $i=0;
 while ($sthArows > $i)
 	{
-	@aryA = $sthA->fetchrow_array;	
+	@aryA = $sthA->fetchrow_array;
 	$DBout = '';
 	$agent_log_id[$i]	=		"$aryA[0]";
 	$pause_epoch[$i]	=		"$aryA[1]";
 	$wait_epoch[$i]	=			"$aryA[2]";
 	$pause_sec[$i] = int($wait_epoch[$i] - $pause_epoch[$i]);
-	if ( ($pause_sec[$i] < 0) || ($pause_sec[$i] > 43999) ) 
+	if ( ($pause_sec[$i] < 0) || ($pause_sec[$i] > 43999) )
 		{
-		$DBout = "Override output: $pause_sec[$i]"; 
+		$DBout = "Override output: $pause_sec[$i]";
 		$pause_sec[$i] = 0;
 		}
 	if ($DBX) {print "$i - $agent_log_id[$i]     |$wait_epoch[$i]|$pause_epoch[$i]|$pause_sec[$i]|$DBout|\n";}
 	$i++;
-	} 
+	}
 
 $sthA->finish();
-		   
+
 $h=0;
 while ($h < $i)
 	{
@@ -1406,24 +1406,24 @@ $stmtA = "SELECT agent_log_id,wait_epoch,talk_epoch from vicidial_agent_log wher
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
-		
+
 $i=0;
 while ( $sthArows > $i)
 	{
-	@aryA = $sthA->fetchrow_array;		
+	@aryA = $sthA->fetchrow_array;
 	$DBout = '';
 	$agent_log_id[$i]	=		"$aryA[0]";
 	$wait_epoch[$i]	=		    "$aryA[1]";
 	$talk_epoch[$i]	=			"$aryA[2]";
 	$wait_sec[$i] = int($talk_epoch[$i] - $wait_epoch[$i]);
-	if ( ($wait_sec[$i] < 0) || ($wait_sec[$i] > 43999) ) 
+	if ( ($wait_sec[$i] < 0) || ($wait_sec[$i] > 43999) )
 		{
-		$DBout = "Override output: $wait_sec[$i]"; 
+		$DBout = "Override output: $wait_sec[$i]";
 		$wait_sec[$i] = 0;
 		}
 	if ($DBX) {print "$i - $agent_log_id[$i]     |$talk_epoch[$i]|$wait_epoch[$i]|$wait_sec[$i]|$DBout|\n";}
 	$i++;
-	} 
+	}
 $sthA->finish();
 
 $h=0;
@@ -1451,26 +1451,26 @@ $stmtA = "SELECT agent_log_id,talk_epoch,dispo_epoch from vicidial_agent_log whe
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
-	
+
 $i=0;
 while ( $sthArows > $i)
 	{
-	@aryA = $sthA->fetchrow_array;		
+	@aryA = $sthA->fetchrow_array;
 	$DBout = '';
 	$agent_log_id[$i]	=	"$aryA[0]";
 	$talk_epoch[$i]	=		"$aryA[1]";
 	$dispo_epoch[$i]	=	"$aryA[2]";
 	$talk_sec[$i] = int($dispo_epoch[$i] - $talk_epoch[$i]);
-	if ( ($talk_sec[$i] < 0) || ($talk_sec[$i] > 43999) ) 
+	if ( ($talk_sec[$i] < 0) || ($talk_sec[$i] > 43999) )
 		{
-		$DBout = "Override output: $talk_sec[$i]"; 
+		$DBout = "Override output: $talk_sec[$i]";
 		$talk_sec[$i] = 0;
 		}
 	if ($DBX) {print "$i - $agent_log_id[$i]     |$dispo_epoch[$i]|$talk_epoch[$i]|$talk_sec[$i]|$DBout|\n";}
 	$i++;
-	} 
+	}
 $sthA->finish();
- 
+
 $h=0;
 while ($h < $i)
 	{
@@ -1494,7 +1494,7 @@ if ($DB) {print " - cleaning up dispo time\n";}
 		if($DBX){print STDERR "|$stmtA|\n";}
 if ($TEST < 1)
 	{
-	$affected_rows = $dbhA->do($stmtA); 	
+	$affected_rows = $dbhA->do($stmtA);
 	}
 if ($DB) {print STDERR "     Bad Dispo times zeroed out: $affected_rows\n";}
 
@@ -1505,7 +1505,7 @@ if ($DB) {print " - cleaning up closer records\n";}
 		if($DBX){print STDERR "|$stmtA|\n";}
 if ($TEST < 1)
 	{
-	$affected_rows = $dbhA->do($stmtA); 	
+	$affected_rows = $dbhA->do($stmtA);
 	}
 if ($DB) {print STDERR "     Bad Closer times recalculated: $affected_rows\n\n";}
 
@@ -1539,7 +1539,7 @@ if ( ($skip_agent_log_validation < 1) && ($VAL_validate > 0) )
 	$i=0;
 	while ($sthArowsU > $i)
 		{
-		@aryA = $sthA->fetchrow_array;	
+		@aryA = $sthA->fetchrow_array;
 		$Vuser[$i]	=		$aryA[0];
 		$i++;
 		}
@@ -1572,7 +1572,7 @@ if ( ($skip_agent_log_validation < 1) && ($VAL_validate > 0) )
 		# gather records
 		while ($sthArowsR > $r)
 			{
-			@aryA = $sthA->fetchrow_array;	
+			@aryA = $sthA->fetchrow_array;
 			$Vagent_log_id[$r] =	$aryA[0];
 			$Vpause_epoch[$r] =		$aryA[1];
 			$Vpause_sec[$r] =		$aryA[2];
@@ -1586,7 +1586,7 @@ if ( ($skip_agent_log_validation < 1) && ($VAL_validate > 0) )
 			$Vdead_sec[$r] =		$aryA[10];
 			$Vevent_time[$r] =		$aryA[11];
 			$r++;
-			} 
+			}
 		$sthA->finish();
 
 		$total_Vrecords = $r;
@@ -1638,13 +1638,13 @@ if ( ($skip_agent_log_validation < 1) && ($VAL_validate > 0) )
 		#	if ($DBX) {print "$stmtA\n";}
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-			@aryA = $sthA->fetchrow_array;	
+			@aryA = $sthA->fetchrow_array;
 			if ($aryA[0] > 0)
 				{
 				$stmtA = "SELECT UNIX_TIMESTAMP(event_date),event_date from vicidial_user_log where user='$Vuser[$i]' and event_date < '$Vpause_date' and event_date > \"$Vpause_dayB\" and event='LOGOUT' order by event_date desc limit 1;";
 				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-				@aryA = $sthA->fetchrow_array;	
+				@aryA = $sthA->fetchrow_array;
 				$next_begin_epoch = $aryA[0];
 				$LOGOUT_update++;
 			#	if ($DBX) {print "LOGOUT UPDATE: $next_begin_epoch|$aryA[1]|$Vpause_date|$VFpause_date|$LOGOUT_update|$stmtA\n";}
@@ -1652,7 +1652,7 @@ if ( ($skip_agent_log_validation < 1) && ($VAL_validate > 0) )
 
 			if ( ($Vwait_epoch[$r] < 1000) || ( ($Vwait_epoch[$r] <= $Vpause_epoch[$r]) && ($Vtalk_epoch[$r] < 1000) && ($Vpause_sec[$r] > 0) ) )
 				{
-				if ($LOGOUT_update > 0) 
+				if ($LOGOUT_update > 0)
 					{
 					$corrections_LOG .= "WAITEPOCH:$next_begin_epoch!$Vwait_epoch[$r]|";
 					$corrections_SQL .= "wait_epoch='$next_begin_epoch',";
@@ -1666,7 +1666,7 @@ if ( ($skip_agent_log_validation < 1) && ($VAL_validate > 0) )
 				$NVpause_sec = ($Vwait_epoch[$r] - $Vpause_epoch[$r]);
 				if ($Vtalk_epoch[$r] < 1000)
 					{
-					if ($LOGOUT_update > 0) 
+					if ($LOGOUT_update > 0)
 						{
 						$corrections_LOG .= "TALKEPOCH:$next_begin_epoch!$Vtalk_epoch[$r]|";
 						$corrections_SQL .= "talk_epoch='$next_begin_epoch',";
@@ -1680,7 +1680,7 @@ if ( ($skip_agent_log_validation < 1) && ($VAL_validate > 0) )
 					$NVwait_sec = ($Vtalk_epoch[$r] - $Vwait_epoch[$r]);
 					if ($Vdispo_epoch[$r] < 1000)
 						{
-						if ($LOGOUT_update > 0) 
+						if ($LOGOUT_update > 0)
 							{
 							$corrections_LOG .= "DISPOEPOCH:$next_begin_epoch!$Vdispo_epoch[$r]|";
 							$corrections_SQL .= "dispo_epoch='$next_begin_epoch',";
@@ -1754,7 +1754,7 @@ if ( ($skip_agent_log_validation < 1) && ($VAL_validate > 0) )
 					if($DBX){print STDERR "|$stmtA|\n";}
 				if ($TEST < 1)
 					{
-					$affected_rows = $dbhA->do($stmtA); 	
+					$affected_rows = $dbhA->do($stmtA);
 					}
 				$event_string = "VAL UPDATE: $r|$i|$Vuser[$i]|$Vevent_time[$r]|$affected_rows|$corrections_LOG|$stmtA|";
 				&event_logger;
@@ -1762,10 +1762,10 @@ if ( ($skip_agent_log_validation < 1) && ($VAL_validate > 0) )
 
 			$total_scanned_records++;
 			$r++;
-			} 
+			}
 
 		$i++;
-		} 
+		}
 
 	if ($DB) {print " - finished validation of vicidial_agent_log sec fields:\n";}
 	if ($DB) {print "     records scanned/corrected:  $total_scanned_records / $total_corrected_records\n";}
@@ -1985,7 +1985,7 @@ if ($enable_queuemetrics_logging > 0)
 					else
 						{
 						$old_call_sec = ($secX - 10800);
-						if ($Ctime_id[$h] < $old_call_sec) 
+						if ($Ctime_id[$h] < $old_call_sec)
 							{
 							$search_sec_BEGIN = ($Ctime_id[$h] - 3600);
 							$search_sec_END = ($Ctime_id[$h] + 3600);
@@ -2011,7 +2011,7 @@ if ($enable_queuemetrics_logging > 0)
 								 $rec_count++;
 								}
 							$sthA->finish();
-							
+
 							if ($rec_count > 0)
 								{
 								$Stime_id[$h]=0;
@@ -2081,7 +2081,7 @@ if ($enable_queuemetrics_logging > 0)
 				if ($DBX) {print "NO CONNECT: $time_id[$h]|$call_id[$h]|$queue[$h]   \n";}
 				$noCONNECT++;
 				}
-			if ($DB) 
+			if ($DB)
 				{
 				($Dsec,$Dmin,$Dhour,$Dmday,$Dmon,$Dyear,$Dwday,$Dyday,$Disdst) = localtime($time_id[$h]);
 				$Dyear = ($Dyear + 1900);
@@ -2108,7 +2108,7 @@ if ($enable_queuemetrics_logging > 0)
 			$h++;
 			}
 		}
-	
+
 
 
 	##############################################################
@@ -2152,7 +2152,7 @@ if ($enable_queuemetrics_logging > 0)
 
 			##### update queue ID in this COMPLETEAGENT record
 			$stmtB = "UPDATE queue_log SET queue='$CAQqueue[$h]' WHERE verb='COMPLETEAGENT' and serverid='$queuemetrics_log_id' and time_id='$time_id[$h]' and call_id='$call_id[$h]';";
-			if ($TEST < 1)	
+			if ($TEST < 1)
 				{
 				$Baffected_rows = $dbhB->do($stmtB);
 				$COMPLETEqueue = ($COMPLETEqueue + $Baffected_rows);
@@ -2320,7 +2320,7 @@ if ($enable_queuemetrics_logging > 0)
 					{$pause_typeSQL=",data5='SYSTEM'";}
 				##### add new PAUSEREASON record
 				$stmtB = "INSERT INTO queue_log SET `partition`='P01',time_id='$time_id[$h]',call_id='$call_id[$h]',queue='NONE',agent='$agent[$h]',verb='PAUSEREASON',data1='$queuemetrics_dispo_pause',serverid='$Cserverid[$h]'$pause_typeSQL;";
-				if ($TEST < 1)	
+				if ($TEST < 1)
 					{
 					$Baffected_rows = $dbhB->do($stmtB);
 					$PRadded = ($PRadded + $Baffected_rows);

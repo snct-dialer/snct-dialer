@@ -1,12 +1,12 @@
 ViciDial Web Dial Firefox Plugin				2010-10-08
 
 This is an XPI-type plugin for Firefox web browsers that allows you to highlight
-on a phone number on a web page and right-click to dial that phone number 
+on a phone number on a web page and right-click to dial that phone number
 through an agent session in ViciDial.
 
 The right-click menu also allows you to login to the ViciDial agent interface.
 
-There is also an input form in the bottom right corner of your Firefox web 
+There is also an input form in the bottom right corner of your Firefox web
 browser that you can put a phone number into and click to dial.
 
 This has been tested on Firefox version 3.0 and higher only.
@@ -36,7 +36,7 @@ Your user must have API enabled.
 
 
 NOTE: If for any reason you want to wipe all traces of this plugin from your
-system, first uninstall the plugin, then close Firefox, then erase the 
+system, first uninstall the plugin, then close Firefox, then erase the
 associated preferences in the prefs.js file for that Firefox profile (This is
-in different places depending on the version of Firefox and your Operating 
+in different places depending on the version of Firefox and your Operating
 System).

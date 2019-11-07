@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # agi-AGENT_route.agi version 2.6
-# 
+#
 # for use with a Call Menu in the custom dialplan section or as an AGI route.
 #
 # ; settings for this script:
@@ -9,7 +9,7 @@
 # ; 2. the agentdirect in-group to send the calls to ('AGENTDIRECT' is default)
 # ; 3. transfer only to ACTIVE in the system agent or vicidial LOGGED_IN agent
 # ;		('ACTIVE' is default)
-# ; 4. prompt for user ID, if this is filled in with a filename it will ask, 
+# ; 4. prompt for user ID, if this is filled in with a filename it will ask,
 # ;		otherwise it will assume $extension is the user ID
 # ; 5. number of digits required for user ID validation, X will allow anything,
 # ;		this will only be enforced if "prompt for user ID" prompt is populated
@@ -139,7 +139,7 @@ if (length($ARGV[0])>1)
 		if ($AGILOG) {$agi_string = "$i|$ARGV[$i]";   &agi_output;}
 		$i++;
 		}
-	
+
 	### list of command-line array arguments:
 	@ARGV_vars = split(/---/, $ARGV[0]);
 
@@ -175,7 +175,7 @@ if ($minimum_user_digits =~ /X/)
 	}
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 	{
 	chomp;
 	last unless length($_);
@@ -381,7 +381,7 @@ sub user_id_gather
 
 	$interrupt_digit='';
 
-	$interrupt_digit = $AGI->stream_file("$user_id_prompt",'0123456789');   
+	$interrupt_digit = $AGI->stream_file("$user_id_prompt",'0123456789');
 
 		print STDERR "interrupt_digit |$interrupt_digit|\n";
 
@@ -401,7 +401,7 @@ sub user_id_gather
 		if ($interrupt_digit == 55) {$interrupt_digit=7;}
 		if ($interrupt_digit == 56) {$interrupt_digit=8;}
 		if ($interrupt_digit == 57) {$interrupt_digit=9;}
-		
+
 		$extension=$interrupt_digit;
 		}
 
@@ -421,7 +421,7 @@ sub user_id_gather
 			if ($pound_finish > 0)
 				{$digits_being_entered=0;}
 			}
-		
+
 		$digit_loop_counter++;
 		}
 
@@ -431,28 +431,28 @@ sub user_id_gather
 	##### END collect the user id number ###############################################
 
 
-sub checkresult 
+sub checkresult
 	{
 	$pass=0;   $fail=0;
 	my ($res) = @_;
 	my $retval;
 	$tests++;
 	chomp $res;
-	if ($res =~ /^200/) 
+	if ($res =~ /^200/)
 		{
 		$res =~ /result=(-?\d+)/;
-		if (!length($1)) 
+		if (!length($1))
 			{
 		#	print STDERR "FAIL ($res)\n";
 			$fail++;
-			} 
-		else 
+			}
+		else
 			{
 		#	print STDERR "PASS ($1)\n";
 			$pass++;
 			}
-		} 
-	else 
+		}
+	else
 		{
 	#	print STDERR "FAIL (unexpected result '$res')\n";
 		$fail++;

@@ -1,12 +1,12 @@
 <?php
 # options.php - manually defined options for vicidial admin scripts
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # rename this file to options.php for the settings here to go into effect
 #
 # CHANGELOG
-# 101216-1043 - First Build 
+# 101216-1043 - First Build
 # 110307-1039 - Added upper-case/lower-case user setting
 # 110708-1730 - Added precision time setting
 # 120102-2112 - Added inventory_allow_realtime option
@@ -94,10 +94,10 @@ $firstlastname_display_user_stats = 0;
 # agent time detail report login/logout link for user
 $atdr_login_logout_user_link = 0;
 
-# alternate calculation of 'Percent of DROP Calls taken out of Answers' in AST_VDADstats.php 
+# alternate calculation of 'Percent of DROP Calls taken out of Answers' in AST_VDADstats.php
 $DROPANSWERpercent_adjustment = 0;
 
-# Display only active campaigns by default in admin.php Campaigns Listings page 
+# Display only active campaigns by default in admin.php Campaigns Listings page
 $active_only_default_campaigns = 0;
 
 # convert data to html readable in modify lead page fields

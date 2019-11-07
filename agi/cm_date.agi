@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 #
 # cm_date.agi   version 2.6
-# 
+#
 # Can be used in a call menu prompt to play a date string as defined by the settings below
 #
 # ; Below are the parameters needed for the script to be run properly
 # ; the "SAY DATETIME" parameters for what to say separated by three dashes
-# ; 1. offset from current epoch in seconds, positive or negative 
+# ; 1. offset from current epoch in seconds, positive or negative
 # ;		1 hour is 3600
 # ;		1 day is 86400
 # ;		1 week is 604800
@@ -27,7 +27,7 @@
 # ; 	S: Seconds
 # ; 	T: Timezone
 #
-# ;inbound calls check calltime: 
+# ;inbound calls check calltime:
 # ;   (this example is for yesterday and says "Monday March 25th 2013")
 # cm_date.agi,-86400---ABdY
 #
@@ -62,7 +62,7 @@ if (length($ARGV[0])>1)
 		if ($AGILOG) {$agi_string = "$i|$ARGV[$i]";   &agi_output;}
 		$i++;
 		}
-	
+
 	### list of command-line array arguments:
 	@ARGV_vars = split(/---/, $ARGV[0]);
 
@@ -71,7 +71,7 @@ if (length($ARGV[0])>1)
 	}
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 	{
 	chomp;
 	last unless length($_);
@@ -102,7 +102,7 @@ exit;
 
 
 
-sub checkresult 
+sub checkresult
 	{
 	$pass=0;
 	$fail=0;
@@ -110,21 +110,21 @@ sub checkresult
 	my $retval;
 	$tests++;
 	chomp $res;
-	if ($res =~ /^200/) 
+	if ($res =~ /^200/)
 		{
 		$res =~ /result=(-?\d+)/;
-		if (!length($1)) 
+		if (!length($1))
 			{
 		#	print STDERR "FAIL ($res|$1)\n";
 			$fail++;
-			} 
-		else 
+			}
+		else
 			{
 		#	print STDERR "PASS ($res|$1)\n";
 			$pass++;
 			}
-		} 
-	else 
+		}
+	else
 		{
 	#	print STDERR "FAIL (unexpected result '$res')\n";
 		$fail++;

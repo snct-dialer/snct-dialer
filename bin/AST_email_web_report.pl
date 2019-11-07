@@ -209,12 +209,12 @@ if (length($ARGV[0])>1)
 			$remove_links=1;
 			if ($DB > 0) {print "\n----- REMOVE LINKS -----\n\n";}
 			}
-		if ($args =~ /--log-to-adminlog/) 
+		if ($args =~ /--log-to-adminlog/)
 			{
 			$log_to_adminlog=1;
 			if ($DB > 0) {print "\n----- LOGGING TO THE ADMIN LOG -----\n\n";}
 			}
-		if ($args =~ /--report-id=/i) 
+		if ($args =~ /--report-id=/i)
 			{
 			@data_in = split(/--report-id=/,$args);
 			$report_id = $data_in[1];
@@ -393,7 +393,7 @@ else
 
 if (length($Bstart_date) < 8)
 	{$Bstart_date = $start_date;}
-if (length($begindate) < 8) 
+if (length($begindate) < 8)
 	{$begindate = $shipdate;}
 
 # default path to astguiclient configuration file:
@@ -454,15 +454,15 @@ if (!$Q)
 	print "\n";
 	}
 
-if ( (length($report_id) > 1) || ($log_to_adminlog > 0) ) 
+if ( (length($report_id) > 1) || ($log_to_adminlog > 0) )
 	{
-	use DBI;	  
+	use DBI;
 
 	$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
 	 or die "Couldn't connect to database: " . DBI->errstr;
 	}
 
-if (length($report_id) > 1) 
+if (length($report_id) > 1)
 	{
 	### Grab Server values from the database
 	$stmtA = "SELECT report_destination,email_from,email_to,email_subject,ftp_server,ftp_user,ftp_pass,ftp_directory,report_url,filename_override from vicidial_automated_reports where report_id='$report_id';";
@@ -473,7 +473,7 @@ if (length($report_id) > 1)
 		{
 		@aryA = $sthA->fetchrow_array;
 		$report_destination =	$aryA[0];
-		if ($report_destination =~ /EMAIL/) 
+		if ($report_destination =~ /EMAIL/)
 			{
 			$email_sender =			$aryA[1];
 			$email_list =			$aryA[2];
@@ -482,7 +482,7 @@ if (length($report_id) > 1)
 			$email_subject =~ s/--A--yesterday--B--/$Tyear-$Tmon-$Tmday/gi;
 			$email_subject =~ s/--A--datetime--B--/$year-$mon-$mday $hour:$min:$sec/gi;
 			}
-		if ($report_destination =~ /FTP/) 
+		if ($report_destination =~ /FTP/)
 			{
 			$VARREPORT_host =		$aryA[4];
 			$VARREPORT_user =		$aryA[5];
@@ -548,7 +548,7 @@ if (length($report_id) > 1)
 		{
 		@aryA = $sthA->fetchrow_array;
 		$http_pass =	$aryA[0];
-		if (length($http_pass) < 1) 
+		if (length($http_pass) < 1)
 			{$http_pass =	$aryA[1];}
 		}
 	else
@@ -559,15 +559,15 @@ if (length($report_id) > 1)
 	$sthA->finish();
 
 	$file_extension = $html;
-	if ($location =~ /call_report_export|lead_report_export|call_report_export_carrier|list_download/) 
+	if ($location =~ /call_report_export|lead_report_export|call_report_export_carrier|list_download/)
 		{$file_extension = '.txt'}
 	else
 		{
-		if ($location =~ /&file_download=\d/) 
+		if ($location =~ /&file_download=\d/)
 			{$file_extension = '.csv'}
 		}
 	$HTMLfile = $report_id . "_" . $start_date . "_" . $hms . '' . $file_extension;
-	if (length($filename_override) > 0) 
+	if (length($filename_override) > 0)
 		{$HTMLfile = "$filename_override$file_extension";}
 	$HTMLfileLOG = $report_id . "_" . $start_date . "_" . $hms . '' . $txt;
 	$shipdate='';
@@ -702,7 +702,7 @@ $secY = time();
 $secRUN = ($secY - $secX);
 if ($secRUN < 1) {$secRUN=1;}
 
-if (length($report_id) > 1) 
+if (length($report_id) > 1)
 	{
 	$stmtA="UPDATE vicidial_automated_reports set report_last_run=NOW(), report_last_length='$secRUN' where report_id='$report_id';";
 	$affected_rows = $dbhA->do($stmtA);

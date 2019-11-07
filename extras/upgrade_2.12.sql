@@ -513,11 +513,11 @@ ALTER TABLE system_settings ADD report_default_format ENUM('TEXT', 'HTML') defau
 
 UPDATE system_settings SET db_schema_version='1452',db_schema_update_date=NOW() where db_schema_version < 1452;
 
-ALTER TABLE vicidial_live_chats ADD transferring_agent VARCHAR(20); 
+ALTER TABLE vicidial_live_chats ADD transferring_agent VARCHAR(20);
 ALTER TABLE vicidial_live_chats ADD user_direct VARCHAR(20);
 ALTER TABLE vicidial_live_chats ADD user_direct_group_id VARCHAR(20);
 
-ALTER TABLE vicidial_chat_archive ADD transferring_agent VARCHAR(20); 
+ALTER TABLE vicidial_chat_archive ADD transferring_agent VARCHAR(20);
 ALTER TABLE vicidial_chat_archive ADD user_direct VARCHAR(20);
 ALTER TABLE vicidial_chat_archive ADD user_direct_group_id VARCHAR(20);
 

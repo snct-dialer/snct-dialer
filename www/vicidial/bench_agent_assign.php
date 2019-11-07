@@ -1,6 +1,6 @@
-<?php 
+<?php
 # bench_agent_assign.php
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -237,7 +237,7 @@ $STARTtime = date("U");
 -->
  </STYLE>
 
-<?php 
+<?php
 
 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";

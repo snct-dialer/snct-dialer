@@ -1,8 +1,8 @@
-<?php 
+<?php
 # AST_source_vlc_status_report.php
 #
 # This report is designed to show the breakdown by either vendor_lead_code
-# or aource_id (user's choice) of the calls and their statuses for all lists 
+# or aource_id (user's choice) of the calls and their statuses for all lists
 # within a campaign for a set time period
 #
 # Copyright (C) 2019  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -82,14 +82,14 @@ if (strlen($report_display_type)<2) {$report_display_type = $SSreport_default_fo
 ### ARCHIVED DATA CHECK CONFIGURATION
 $archives_available="N";
 $log_tables_array=array("vicidial_list");
-for ($t=0; $t<count($log_tables_array); $t++) 
+for ($t=0; $t<count($log_tables_array); $t++)
 	{
 	$table_name=$log_tables_array[$t];
 	$archive_table_name=use_archive_table($table_name);
 	if ($archive_table_name!=$table_name) {$archives_available="Y";}
 	}
 
-if ($search_archived_data) 
+if ($search_archived_data)
 	{
 	$vicidial_list_table=use_archive_table("vicidial_list");
 	}
@@ -341,7 +341,7 @@ $HTML_head.="<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n"
 $HTML_head.="<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 $HTML_head.="<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 require("chart_button.php");
-$HTML_head.="<script src='chart/Chart.js'></script>\n"; 
+$HTML_head.="<script src='chart/Chart.js'></script>\n";
 $HTML_head.="<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
 
 $HTML_head.="<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
@@ -416,7 +416,7 @@ $HTML_text.="<select name='report_display_type'>";
 if ($report_display_type) {$HTML_text.="<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
 $HTML_text.="<option value='TEXT'>"._QXZ("TEXT")."</option><option value='HTML'>"._QXZ("HTML")."</option></select>\n<BR><BR>";
 
-if ($archives_available=="Y") 
+if ($archives_available=="Y")
 	{
 	$HTML_text.="<input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."\n";
 	}
@@ -447,7 +447,7 @@ while($i < $group_ct)
 	if ($DB) {$HTML_text.="|$list_stmt|\n";}
 	$list_rslt=mysql_to_mysqli($list_stmt, $link);
 	$list_ary=array();
-	while($list_row=mysqli_fetch_row($list_rslt)) 
+	while($list_row=mysqli_fetch_row($list_rslt))
 		{
 		array_push($list_ary, $list_row[0]);
 		}
@@ -456,7 +456,7 @@ while($i < $group_ct)
 	$dispo_stmt="SELECT status, status_name from vicidial_campaign_statuses where campaign_id='$group[$i]' UNION SELECT status, status_name from vicidial_statuses order by status, status_name";
 	if ($DB) {$HTML_text.="|$dispo_stmt|\n";}
 	$dispo_rslt=mysql_to_mysqli($dispo_stmt, $link);
-	while($dispo_row=mysqli_fetch_row($dispo_rslt)) 
+	while($dispo_row=mysqli_fetch_row($dispo_rslt))
 		{
 		$dispo_ary["$dispo_row[0]"]=$dispo_row[1];
 		}
@@ -468,7 +468,7 @@ while($i < $group_ct)
 	if ($DB) {$HTML_text.="|$stmt|\n";}
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$grand_total=mysqli_num_rows($rslt);
-	while ($row=mysqli_fetch_row($rslt)) 
+	while ($row=mysqli_fetch_row($rslt))
 		{
 		$count_ary["$row[1]"]["$row[2]"]++;
 		$total_ary["$row[1]"]++;
@@ -487,10 +487,10 @@ while($i < $group_ct)
 
 
 
-	while(list($key, $val)=each($count_ary)) 
+	while(list($key, $val)=each($count_ary))
 		{
 		arsort($count_ary[$key]);
-		switch ($sort_by) 
+		switch ($sort_by)
 			{
 			case "dispo_desc":
 				krsort($count_ary[$key]);
@@ -502,11 +502,11 @@ while($i < $group_ct)
 				asort($count_ary[$key]);
 				break;
 			}
-		
+
 		$HTML_body.="<table border='0' cellpadding='0' cellspacing='0' width='600'>";
 		$HTML_body.="<tr bgcolor='#".$SSmenu_background."'><th colspan='3'><font color='#FFFFFF'>"._QXZ("$rpt_group_title")." : ".($key !="" ? $key : "("._QXZ("NONE").")")."</font></th></tr>";
 		$HTML_body.="<tr bgcolor='#FFFFFF'><td align='left'><a href='$report_URL&sort_by=".($sort_by == "dispo_asc" ? "dispo_desc" : "dispo_asc")."'>"._QXZ("DISPOSITION",40)."</a></td><td align='center'><a href='$report_URL&sort_by=".($sort_by == "count_desc" ? "count_asc" : "count_desc")."'>"._QXZ("CALLS",6)."</a></td><td align='center'>"._QXZ("PERCENT", 7)."</td></tr>";
-		
+
 		$ASCII_text.="<FONT SIZE=2><B>"._QXZ("$rpt_group_title")." : ".($key !="" ? $key : "("._QXZ("NONE").")")."</B>\n";
 		$ASCII_text.="+------------------------------------------+--------+----------+\n";
 		$ASCII_text.="| <a href='$report_URL&sort_by=".($sort_by == "dispo_asc" ? "dispo_desc" : "dispo_asc")."'>"._QXZ("DISPOSITION",40)."</a> | <a href='$report_URL&sort_by=".($sort_by == "count_asc" ? "count_desc" : "count_asc")."'>"._QXZ("CALLS",6)."</a> | "._QXZ("PERCENT", 8)." |\n";
@@ -516,13 +516,13 @@ while($i < $group_ct)
 		$CSV_text.="\""._QXZ("VENDOR LEAD CODE")."\",\""._QXZ("DISPOSITION")."\",\""._QXZ("CALLS")."\",\""._QXZ("PERCENT")."\"\n";
 
 		$j=0;
-		while(list($key2, $val2)=each($count_ary[$key])) 
+		while(list($key2, $val2)=each($count_ary[$key]))
 			{
-			if ($j%2==0) 
+			if ($j%2==0)
 				{
 				$bgcolor=$SSstd_row1_background;
-				} 
-			else 
+				}
+			else
 				{
 				$bgcolor=$SSstd_row2_background;
 				}
@@ -546,7 +546,7 @@ while($i < $group_ct)
 	$HTML_body.="<table border='0' cellpadding='0' cellspacing='0' width='600'>";
 	$HTML_body.="<tr bgcolor='#".$SSmenu_background."'><th colspan='3'><font color='#FFFFFF'>"._QXZ("$rpt_group_title")." : "._QXZ("TOTALS")."</font></th></tr>";
 	$HTML_body.="<tr bgcolor='#FFFFFF'><td align='left'><a href='$report_URL&sort_by=".($sort_by == "dispo_asc" ? "dispo_desc" : "dispo_asc")."'>"._QXZ("DISPOSITION",40)."</a></td><td align='center'><a href='$report_URL&sort_by=".($sort_by == "count_desc" ? "count_asc" : "count_desc")."'>"._QXZ("CALLS",6)."</a></td><td align='center'>"._QXZ("PERCENT", 7)."</td></tr>";
-		
+
 	$ASCII_text.="<FONT SIZE=2><B>"._QXZ("$rpt_group_title")." : "._QXZ("TOTALS")."</B>\n";
 	$ASCII_text.="+------------------------------------------+--------+----------+\n";
 	$ASCII_text.="| <a href='$report_URL&sort_by=".($sort_by == "dispo_asc" ? "dispo_desc" : "dispo_asc")."'>"._QXZ("DISPOSITION",40)."</a> | <a href='$report_URL&sort_by=".($sort_by == "count_asc" ? "count_desc" : "count_asc")."'>"._QXZ("CALLS",6)."</a> | "._QXZ("PERCENT", 8)." |\n";
@@ -556,7 +556,7 @@ while($i < $group_ct)
 	$CSV_text.="\""._QXZ("VENDOR LEAD CODE")."\",\""._QXZ("DISPOSITION")."\",\""._QXZ("CALLS")."\",\""._QXZ("PERCENT")."\"\n";
 
 	arsort($status_totals);
-	switch ($sort_by) 
+	switch ($sort_by)
 		{
 		case "dispo_desc":
 			krsort($status_totals);
@@ -568,13 +568,13 @@ while($i < $group_ct)
 			asort($status_totals);
 			break;
 		}
-	while(list($key, $val)=each($status_totals)) 
+	while(list($key, $val)=each($status_totals))
 		{
-		if ($j%2==0) 
+		if ($j%2==0)
 			{
 			$bgcolor=$SSstd_row1_background;
-			} 
-		else 
+			}
+		else
 			{
 			$bgcolor=$SSstd_row2_background;
 			}
@@ -592,7 +592,7 @@ while($i < $group_ct)
 	$ASCII_text.="| "._QXZ("GRAND TOTAL",40)." | ".sprintf("%6s", $grand_total)." | ".sprintf("%8s", " ")." |\n";
 	$ASCII_text.="+------------------------------------------+--------+----------+\n\n";
 	$CSV_text.="\"\",\""._QXZ("GRAND TOTAL")."\",\"".$grand_total."\",\"\"\n\n";
-	
+
 	}
 
 if ($report_display_type=="HTML")
@@ -606,7 +606,7 @@ else
 
 $HTML_text.="</PRE></BODY></HTML>";
 
-if ($file_download>0) 
+if ($file_download>0)
 	{
 	$FILE_TIME = date("Ymd-His");
 	$CSVfilename = "AST_campaign_status_$US$FILE_TIME.csv";
@@ -626,7 +626,7 @@ if ($file_download>0)
 
 	echo "$CSV_text";
 	}
-else 
+else
 	{
 	header("Content-type: text/html; charset=utf-8");
 

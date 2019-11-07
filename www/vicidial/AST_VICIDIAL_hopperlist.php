@@ -1,6 +1,6 @@
-<?php 
+<?php
 # AST_VICIDIAL_hopperlist.php
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -235,7 +235,7 @@ if ($gmt_recs > 0)
 	$row=mysqli_fetch_row($rslt);
 	$DBSERVER_GMT		=		$row[0];
 	if (strlen($DBSERVER_GMT)>0)	{$SERVER_GMT = $DBSERVER_GMT;}
-	if ($isdst) {$SERVER_GMT++;} 
+	if ($isdst) {$SERVER_GMT++;}
 	}
 else
 	{
@@ -291,7 +291,7 @@ while ($i < $campaigns_to_print)
 -->
  </STYLE>
 
-<?php 
+<?php
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo "<TITLE>"._QXZ("Hopper List Report")."</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 

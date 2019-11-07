@@ -165,7 +165,7 @@ index(drop_date),
 index(drop_processed)
 ) ENGINE=InnoDB;
 
-CREATE TABLE vicidial_drop_log_archive LIKE vicidial_drop_log; 
+CREATE TABLE vicidial_drop_log_archive LIKE vicidial_drop_log;
 DROP INDEX drop_date on vicidial_drop_log_archive;
 CREATE UNIQUE INDEX vicidial_drop_log_archive_key on vicidial_drop_log_archive(drop_date, uniqueid);
 
@@ -259,7 +259,7 @@ unique index (caller_code),
 index (monitor_start_time)
 ) ENGINE=InnoDB;
 
-CREATE TABLE vicidial_rt_monitor_log_archive LIKE vicidial_rt_monitor_log; 
+CREATE TABLE vicidial_rt_monitor_log_archive LIKE vicidial_rt_monitor_log;
 
 UPDATE system_settings SET db_schema_version='1505',db_schema_update_date=NOW() where db_schema_version < 1505;
 
@@ -272,7 +272,7 @@ UPDATE system_settings SET db_schema_version='1506',db_schema_update_date=NOW() 
 
 ALTER TABLE system_settings ADD agent_push_events ENUM('0','1') default '0';
 ALTER TABLE system_settings ADD agent_push_url TEXT;
-ALTER TABLE vicidial_call_time_holidays ADD holiday_color VARCHAR(7) default ''; 
+ALTER TABLE vicidial_call_time_holidays ADD holiday_color VARCHAR(7) default '';
 
 UPDATE system_settings SET db_schema_version='1507',db_schema_update_date=NOW() where db_schema_version < 1507;
 
@@ -312,9 +312,9 @@ ALTER TABLE user_call_log ADD xfer_hungup VARCHAR(20) default '';
 ALTER TABLE user_call_log ADD xfer_hungup_datetime DATETIME;
 
 ALTER TABLE vicidial_agent_log ADD pause_code VARCHAR(6) default '';
- 
+
 UPDATE system_settings SET db_schema_version='1511',db_schema_update_date=NOW() where db_schema_version < 1511;
- 
+
 CREATE TABLE vicidial_campaign_hour_counts (
 campaign_id VARCHAR(8),
 date_hour DATETIME,
@@ -399,7 +399,7 @@ CREATE INDEX vle_lead_id on vicidial_log_extended(lead_id);
 ALTER TABLE vicidial_xfer_log ADD front_uniqueid VARCHAR(50) default '';
 ALTER TABLE vicidial_xfer_log ADD close_uniqueid VARCHAR(50) default '';
 
-CREATE TABLE vicidial_xfer_log_archive LIKE vicidial_xfer_log; 
+CREATE TABLE vicidial_xfer_log_archive LIKE vicidial_xfer_log;
 ALTER TABLE vicidial_xfer_log_archive MODIFY xfercallid INT(9) UNSIGNED NOT NULL;
 
 UPDATE system_settings SET db_schema_version='1516',db_schema_update_date=NOW() where db_schema_version < 1516;
@@ -629,7 +629,7 @@ modify_date TIMESTAMP,
 index (icbq_status)
 ) ENGINE=InnoDB;
 
-CREATE TABLE vicidial_inbound_callback_queue_archive LIKE vicidial_inbound_callback_queue; 
+CREATE TABLE vicidial_inbound_callback_queue_archive LIKE vicidial_inbound_callback_queue;
 ALTER TABLE vicidial_inbound_callback_queue_archive MODIFY icbq_id INT(9) UNSIGNED NOT NULL;
 
 ALTER TABLE vicidial_inbound_groups ADD icbq_expiration_hours SMALLINT(5) default '96';
@@ -656,11 +656,11 @@ ALTER TABLE system_settings ADD enable_gdpr_download_deletion ENUM('0','1','2') 
 ALTER TABLE vicidial_users ADD export_gdpr_leads ENUM('0','1','2') default '0';
 
 CREATE TABLE recording_log_deletion_queue (
-recording_id INT(9) UNSIGNED PRIMARY KEY, 
-lead_id int(10) UNSIGNED, 
-filename VARCHAR(100), 
-location VARCHAR(255), 
-date_queued DATETIME, 
+recording_id INT(9) UNSIGNED PRIMARY KEY,
+lead_id int(10) UNSIGNED,
+filename VARCHAR(100),
+location VARCHAR(255),
+date_queued DATETIME,
 date_deleted DATETIME,
 index (date_deleted)
 ) ENGINE=InnoDB;
@@ -683,7 +683,7 @@ ALTER TABLE vicidial_inbound_groups MODIFY no_agent_no_queue ENUM('N','Y','NO_PA
 UPDATE system_settings SET db_schema_version='1530',db_schema_update_date=NOW() where db_schema_version < 1530;
 
 ALTER TABLE `vicidial_inbound_groups` ADD `pickup_delay` TINYINT NOT NULL DEFAULT '0' AFTER `icbq_dial_filter`;
-ALTER TABLE `system_settings` ADD `agent_prefix` VARCHAR(3) default ''; 
+ALTER TABLE `system_settings` ADD `agent_prefix` VARCHAR(3) default '';
 
 UPDATE system_settings SET db_schema_version='1531',db_schema_update_date=NOW() where db_schema_version < 1531;
 

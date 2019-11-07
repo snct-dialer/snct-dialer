@@ -1,6 +1,6 @@
 <?php
-# zoiperweb.php - the web-based Zoiper softphone 
-# 
+# zoiperweb.php - the web-based Zoiper softphone
+#
 # Copyright (C) 2011  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # variables sent to this script:
@@ -156,9 +156,9 @@ function OnZoiperReady(phone)
 
 
 	<?php
-	if (preg_match("/DIALPAD_Y|DIALPAD_TOGGLE/i",$b64_options))	
+	if (preg_match("/DIALPAD_Y|DIALPAD_TOGGLE/i",$b64_options))
 		{echo "Zoiper.ShowDialPad(\"true\");\n";}
-	if (preg_match("/DIALPAD_N|DIALPAD_OFF_TOGGLE/i",$b64_options))	
+	if (preg_match("/DIALPAD_N|DIALPAD_OFF_TOGGLE/i",$b64_options))
 		{echo "Zoiper.ShowDialPad(\"false\");\n";}
 	?>
 
@@ -195,7 +195,7 @@ function OnZoiperCallIncoming(call)
 	{
 	Status(call.Phone + " incoming");
 	<?php
-	if (preg_match("/AUTOANSWER_N/i",$b64_options))	
+	if (preg_match("/AUTOANSWER_N/i",$b64_options))
 		{echo "// autoanswer disabled;\n";}
 	else
 		{echo "call.Accept();\n\tActiveCall = call;\n";}
@@ -224,15 +224,15 @@ function dialpad_inactive()
 	Zoiper.ShowDialPad("false");
 	}
 function dialpad_active()
-	{ 
+	{
 	document.getElementById("Dialpad_toggle").innerHTML = "<a href=\"#\" onclick=\"dialpad_inactive();return false;\">DIALPAD -</a>\n";
 	Zoiper.ShowDialPad("true");
-	}      
+	}
 
 </script>
 
 <table>
-<!-- 
+<!--
 <tr>
 <td>Number</td>
 </tr>
@@ -255,14 +255,14 @@ function dialpad_active()
 <tr>
 <td>
 
-<div id="supportedBrowsersScreen" style="display:block;">	   
+<div id="supportedBrowsersScreen" style="display:block;">
         <!--CODEBASE="Activextest.ocx"    -->
-		<div style="background:url(./loader.gif) 50% 50% no-repeat;width:434px;height:236px;float:left;"> 
+		<div style="background:url(./loader.gif) 50% 50% no-repeat;width:434px;height:236px;float:left;">
 		<object id="ZoiperA" classid="clsid:BCCA9B64-41B3-4A20-8D8B-E69FE61F1F8B" align="center" width="434" height="236" CODEBASE="http://www.zoiper.com/webphone/InstallerWeb.cab#Version=1,17,0,6802">
 			<embed id="ZoiperN" type="application/x-zoiper-plugin" align="center" width="434" height="236" />
-		</object> 
+		</object>
 		</div>
-	</div> 
+	</div>
 </div><!-- END phone_holder -->
 
 </td>
@@ -273,9 +273,9 @@ function dialpad_active()
 
 <span id="Dialpad_toggle">
 <?php
-if (preg_match("/DIALPAD_TOGGLE/i",$b64_options))	
+if (preg_match("/DIALPAD_TOGGLE/i",$b64_options))
 	{echo "<a href=\"#\" onclick=\"dialpad_inactive();return false;\">DIALPAD -</a>\n";}
-if (preg_match("/DIALPAD_OFF_TOGGLE/i",$b64_options))	
+if (preg_match("/DIALPAD_OFF_TOGGLE/i",$b64_options))
 	{echo "<a href=\"#\" onclick=\"dialpad_active();return false;\">DIALPAD +</a>\n";}
 ?>
 </span>

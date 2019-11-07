@@ -1,6 +1,6 @@
 <?php
 # admin_NANPA_updater.php
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed to launch NANPA filter batch proccesses through the
@@ -180,7 +180,7 @@ if (strlen($active_voicemail_server)<7)
 	exit;
 	}
 
-if ($delete_trigger_id) 
+if ($delete_trigger_id)
 	{
 	$delete_stmt="delete from vicidial_process_triggers where trigger_id='$delete_trigger_id'";
 	$delete_rslt=mysql_to_mysqli($delete_stmt, $link);
@@ -188,11 +188,11 @@ if ($delete_trigger_id)
 
 if (!isset($lists)) {$lists=array();}
 $list_ct=count($lists);
-if ($submit_form=="SUBMIT" && $list_ct>0 && (strlen($vl_field_update)>0 || strlen($cellphone_list_id)>0 || strlen($landline_list_id)>0 || strlen($invalid_list_id)>0) ) 
+if ($submit_form=="SUBMIT" && $list_ct>0 && (strlen($vl_field_update)>0 || strlen($cellphone_list_id)>0 || strlen($landline_list_id)>0 || strlen($invalid_list_id)>0) )
 	{
-	for ($i=0; $i<$list_ct; $i++) 
+	for ($i=0; $i<$list_ct; $i++)
 		{
-		if ($lists[$i]=="---ALL---") 
+		if ($lists[$i]=="---ALL---")
 			{
 			unset($lists);
 			#$lists[0]="---ALL---";
@@ -203,7 +203,7 @@ if ($submit_form=="SUBMIT" && $list_ct>0 && (strlen($vl_field_update)>0 || strle
 			$j=0;
 			$stmt="SELECT list_id from vicidial_lists where active='N' order by list_id asc";
 			$rslt=mysql_to_mysqli($stmt, $link);
-			while ($row=mysqli_fetch_array($rslt)) 
+			while ($row=mysqli_fetch_array($rslt))
 				{
 				$lists[$j]=$row[0];
 				$j++;
@@ -217,18 +217,18 @@ if ($submit_form=="SUBMIT" && $list_ct>0 && (strlen($vl_field_update)>0 || strle
 	$invalid_list_id=preg_replace('/[^0-9]/', '', $invalid_list_id);
 	$exclusion_value=preg_replace('/[\'\"\\\\]/', '', $exclusion_value);
 	$exclusion_value=preg_replace('/\s/', '\\\\\ ', $exclusion_value);
-	
+
 
 	$options="--user=$PHP_AUTH_USER --pass=$PHP_AUTH_PW ";
-	
+
 	$list_id_str="";
-	for ($i=0; $i<$list_ct; $i++) 
+	for ($i=0; $i<$list_ct; $i++)
 		{
 		$list_id_str.=$lists[$i]."--";
 		}
 	$list_id_str=substr($list_id_str, 0, -2);
 	$options.="--list-id=$list_id_str ";
-	
+
 	if (strlen($cellphone_list_id)>0)	{$options.="--cellphone-list-id=$cellphone_list_id ";}
 	if (strlen($landline_list_id)>0)	{$options.="--landline-list-id=$landline_list_id ";}
 	if (strlen($invalid_list_id)>0)		{$options.="--invalid-list-id=$invalid_list_id ";}
@@ -385,7 +385,7 @@ function ShowPastProcesses(limit) {
 		}
 	}
 }
-function openNewWindow(url) 
+function openNewWindow(url)
 	{
 	window.open (url,"",'width=620,height=300,scrollbars=yes,menubar=yes,address=yes');
 	}
@@ -495,9 +495,9 @@ if (mysqli_num_rows($schedule_rslt)>0 || (mysqli_num_rows($running_rslt)>0)) {
 
 ############################################
 
-if ( ( (mysqli_num_rows($schedule_rslt)>0) or (mysqli_num_rows($running_rslt)>0) ) and ($block_scheduling_while_running==1) ) 
-	{$do_nothing=1;} 
-else 
+if ( ( (mysqli_num_rows($schedule_rslt)>0) or (mysqli_num_rows($running_rslt)>0) ) and ($block_scheduling_while_running==1) )
+	{$do_nothing=1;}
+else
 	{
 	echo "<tr><td>";
 
@@ -510,7 +510,7 @@ else
 	$rslt=mysql_to_mysqli($stmt, $link);
 	echo "<select name='lists[]' multiple size='5'>\n";
 	echo "<option value='---ALL---'>---"._QXZ("ALL LISTS")."---</option>\n";
-	while ($row=mysqli_fetch_array($rslt)) 
+	while ($row=mysqli_fetch_array($rslt))
 		{
 		echo "<option value='$row[0]'>$row[0] - $row[1]</option>\n";
 		}
@@ -522,7 +522,7 @@ else
 	$stmt="SELECT * from vicidial_list limit 1";
 	$rslt=mysql_to_mysqli($stmt, $link);
 	echo "<option value=''>---"._QXZ("NONE")."---</option>\n";
-	while ($fieldinfo=mysqli_fetch_field($rslt)) 
+	while ($fieldinfo=mysqli_fetch_field($rslt))
 		{
 		$fieldname=$fieldinfo->name;
 		if (!preg_match("/lead_id|list_id|status|gmt_offset_now|entry_date|modify_date|gender|entry_list_id|date_of_birth|called_since_last_reset|called_count/",$fieldname))
@@ -549,7 +549,7 @@ else
 	echo "<option value='240'>4 "._QXZ("hours")."</option>\n";
 	echo "<option value='480'>8 "._QXZ("hours")."</option>\n";
 	echo "</select></font></td>";
-	
+
 	echo "</tr>\n";
 	echo "<tr>";
 	echo "<td align='right'><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>"._QXZ("Cellphone").":</font></td><td align='left'><input type='text' name='cellphone_list_id' size='5' maxlength='10'></td>";
@@ -562,7 +562,7 @@ else
 	$stmt="SELECT * from vicidial_list limit 1";
 	$rslt=mysql_to_mysqli($stmt, $link);
 	echo "<option value=''>---"._QXZ("NONE")."---</option>\n";
-	while ($fieldinfo=mysqli_fetch_field($rslt)) 
+	while ($fieldinfo=mysqli_fetch_field($rslt))
 		{
 		$fieldname=$fieldinfo->name;
 		echo "<option value='$fieldname'>$fieldname</option>\n";

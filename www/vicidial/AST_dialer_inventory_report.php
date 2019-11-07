@@ -1,4 +1,4 @@
-<?php 
+<?php
 # AST_dialer_inventory_report.php
 #
 # LICENSE: AGPLv3
@@ -306,7 +306,7 @@ while ($i < $campaigns_to_print)
 	if (preg_match('/\-ALL/',$group_string) )
 		{$group[$i] = $groups[$i];}
 	$i++;
-	}	
+	}
 
 
 $i=0;
@@ -364,11 +364,11 @@ $campaign_span_txt.="</SELECT>";
 $list_span_txt=_QXZ("Lists").":<BR>";
 $list_span_txt.="<SELECT NAME='selected_list'>";
 $o=0;
-if ($selected_list) 
+if ($selected_list)
 	{
 	$list_span_txt.="<option value=\"$selected_list\" selected>$selected_list</option>";
 	}
-while ($lists_to_print>$o) 
+while ($lists_to_print>$o)
 	{
 	$list_span_txt.="<option value=\"$lists[$o]\">$lists[$o] - $list_names[$o]</option>";
 	$o++;
@@ -381,7 +381,7 @@ if ($DBX > 0) {$HTML_header.= "|$snapshot_stmt|\n";}
 $snapshot_rslt=mysql_to_mysqli($snapshot_stmt, $link);
 $snapshot_span_txt.="<SELECT NAME='snapshot_time'>\n";
 if ($snapshot_time) {$snapshot_span_txt.="\t<option value=\"$snapshot_time\" selected>$snapshot_time</option>\n";}
-while ($ss_row=mysqli_fetch_row($snapshot_rslt)) 
+while ($ss_row=mysqli_fetch_row($snapshot_rslt))
 	{
 	$snapshot_span_txt.="\t<option value=\"$ss_row[0]\">$ss_row[0]</option>\n";
 	}
@@ -424,7 +424,7 @@ $HTML_header.="<PRE>\n";
 $rpt_header="";
 ####### STAT GENERATION #######
 require("count_functions.inc");
-function GetListCount($list_id, $inventory_ptnstr) 
+function GetListCount($list_id, $inventory_ptnstr)
 	{
 	global $list_start_inv;
 	global $new_count;
@@ -434,15 +434,15 @@ function GetListCount($list_id, $inventory_ptnstr)
 	if ($DBX > 0) {$HTML_header.= "|$ct_stmt|\n";}
 	$ct_rslt=mysql_to_mysqli($ct_stmt, $link);
 	$new_count=0; $total_calls=0;
-	while ($ct_row=mysqli_fetch_row($ct_rslt)) 
+	while ($ct_row=mysqli_fetch_row($ct_rslt))
 		{
 		$list_start_inv+=$ct_row[2];
 		$total_calls+=($ct_row[1]*$ct_row[2]);
-		if (preg_match('/|$ct_row[0]|/', $inventory_ptnstr) && $ct_row[1]=="0") {$new_count+=$ct_row[2];} 
+		if (preg_match('/|$ct_row[0]|/', $inventory_ptnstr) && $ct_row[1]=="0") {$new_count+=$ct_row[2];}
 		}
 	}
 
-if ($SUBMIT) 
+if ($SUBMIT)
 	{
 
 	$total_list_start_inv=0;
@@ -455,17 +455,17 @@ if ($SUBMIT)
 	$total_penetration=0;
 
 	$shift_ary=array();
-	if ($snapshot_time && $report_source=="SNAPSHOT") 
+	if ($snapshot_time && $report_source=="SNAPSHOT")
 		{
 		$rpt_header=_QXZ("SNAPSHOT from")." $snapshot_time\n";
 		$stmt="SELECT distinct shift_data from dialable_inventory_snapshots where snapshot_time='$snapshot_time' and time_setting='$time_setting' $time_clause order by campaign_id, list_id;";
 		if ($DBX > 0) {$HTML_header.= "|$stmt|\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$shift_SQL_str="";
-		while ($shift_row=mysqli_fetch_array($rslt)) 
+		while ($shift_row=mysqli_fetch_array($rslt))
 			{
 			$shift_data1=explode("|", $shift_row["shift_data"]);
-			for ($i=0; $i<count($shift_data1); $i++) 
+			for ($i=0; $i<count($shift_data1); $i++)
 				{
 				$shift_data2=explode(",", $shift_data1);
 				$shift_SQL_str.="'$shift_data2[0]',";
@@ -477,7 +477,7 @@ if ($SUBMIT)
 		if ($DBX > 0) {$HTML_header.= "|$shift_stmt|\n";}
 		$shift_rslt=mysql_to_mysqli($shift_stmt, $link);
 		$c=0;
-		while($shift_row=mysqli_fetch_array($shift_rslt)) 
+		while($shift_row=mysqli_fetch_array($shift_rslt))
 			{
 			$rpt_header_SHIFTS.=" ".sprintf("%8s", substr($shift_row["shift_id"],0,8))." |";
 			$CSV_header_SHIFTS.="\"$shift_row[shift_id]\",";
@@ -489,13 +489,13 @@ if ($SUBMIT)
 			if ($DB > 0) {echo "<BR>-$c-$shift_ary[$c]-$shift_row[shift_id]-\n";}
 			$c++;
 			}
-	
+
 		if ($report_type=="CAMPAIGNS") {$time_clause=$group_SQL;}
 		if ($report_type=="LIST") {$time_clause="and list_id='$selected_list'";}
 		$stmt="SELECT snapshot_id,snapshot_time,list_id,list_name,list_description,campaign_id,list_lastcalldate,list_start_inv,dialable_count,dialable_count_nofilter,dialable_count_oneoff,dialable_count_inactive,average_call_count,penetration,shift_data,time_setting from dialable_inventory_snapshots where snapshot_time='$snapshot_time' and time_setting='$time_setting' $time_clause order by campaign_id, list_id;";
 		if ($DBX > 0) {$HTML_header.= "|$stmt|\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
-		while ($row=mysqli_fetch_array($rslt)) 
+		while ($row=mysqli_fetch_array($rslt))
 			{
 			$row["list_description"]=substr($row["list_description"], 0, 30);
 			if (strlen($row["list_description"])>0) {$list_info=$row["list_description"];} else {$list_info=$row["list_name"];}
@@ -531,7 +531,7 @@ if ($SUBMIT)
 					if ($DB > 0) {echo "<BR>-$a-$b-$shift_ary[$b]-$shift_data_b[0]($shift_data_b[1])-$line_match-\n";}
 					$a++;
 					}
-				if ($no_match==0) 
+				if ($no_match==0)
 					{
 					$rpt_body.=" ".sprintf("%8s", "0")." |";
 					$CSV_body.=",\"0\"";
@@ -541,25 +541,25 @@ if ($SUBMIT)
 			$rpt_body.="\n";
 			$CSV_body.="\n";
 			}
-		} 
-	else 
+		}
+	else
 		{
 		$single_status=1;
 
-		## If time setting is set to 'Local', compile a list of time zone offsets and make an array of those offsets with the amount of time that needs to be added or subtracted 
-		if ($time_setting=="LOCAL") 
+		## If time setting is set to 'Local', compile a list of time zone offsets and make an array of those offsets with the amount of time that needs to be added or subtracted
+		if ($time_setting=="LOCAL")
 			{
 			$gmt_stmt="SELECT default_local_gmt from system_settings;";
 			$gmt_rslt=mysql_to_mysqli($gmt_stmt, $link);
 			$gmt_row=mysqli_fetch_row($gmt_rslt);
 			$local_offset=$gmt_row[0];
-			
+
 			if ($report_type=="CAMPAIGNS") {$time_clause="where list_id in (SELECT list_id from vicidial_lists where inventory_report='Y' ".substr($group_SQL,4).")";}
 			if ($report_type=="LIST") {$time_clause="where list_id='$selected_list'";}
 			$gmt_stmt="SELECT distinct gmt_offset_now, gmt_offset_now-($local_offset) from vicidial_list $time_clause ;";
 			if ($DB) {$HTML_header.=$gmt_stmt."<BR>\n";}
 			$gmt_rslt=mysql_to_mysqli($gmt_stmt, $link);
-			while ($gmt_row=mysqli_fetch_row($gmt_rslt)) 
+			while ($gmt_row=mysqli_fetch_row($gmt_rslt))
 				{
 				$gmt_row[1]=preg_replace('/25$/', '15', $gmt_row[1]);
 				$gmt_row[1]=preg_replace('/75$/', '45', $gmt_row[1]);
@@ -574,7 +574,7 @@ if ($SUBMIT)
 		$shift_stmt="SELECT shift_id, shift_name, str_to_date(shift_start_time, '%H%i') as shift_start_time, addtime(str_to_date(shift_start_time, '%H%i'), shift_length) as shift_end_time, if(addtime(str_to_date(shift_start_time, '%H%i'), shift_length)>'23:59:59', '1', '0') as day_offset, shift_weekdays from vicidial_shifts where report_option='Y' order by report_rank, shift_start_time asc;";
 		if ($DB) {$HTML_header.="$shift_stmt;\n";}
 		$shift_rslt=mysql_to_mysqli($shift_stmt, $link);
-		while($shift_row=mysqli_fetch_array($shift_rslt)) 
+		while($shift_row=mysqli_fetch_array($shift_rslt))
 			{
 			$rpt_header_SHIFTS.=" ".sprintf("%8s", substr($shift_row["shift_id"],0,8))." |";
 			$rpt_header_SHIFTS_lower.="          |";
@@ -588,13 +588,13 @@ if ($SUBMIT)
 			}
 
 		$rpt_body="";
-		if ($group_ct>0 && $report_type=="CAMPAIGNS") 
+		if ($group_ct>0 && $report_type=="CAMPAIGNS")
 			{
-			for ($i=0; $i<$group_ct; $i++) 
+			for ($i=0; $i<$group_ct; $i++)
 				{
 				$campaign_stmt="SELECT call_count_limit, call_count_target, dial_statuses, local_call_time, drop_lockout_time from vicidial_campaigns where campaign_id='$group[$i]' $LOGallowed_campaignsSQL;";
 				if ($DB) {$HTML_header.="$campaign_stmt;\n";}
-				$campaign_rslt=mysql_to_mysqli($campaign_stmt, $link);	
+				$campaign_rslt=mysql_to_mysqli($campaign_stmt, $link);
 				$campaign_row=mysqli_fetch_row($campaign_rslt);
 				$call_count_limit=$campaign_row[0];
 				$call_count_target=$campaign_row[1];
@@ -609,7 +609,7 @@ if ($SUBMIT)
 				$inventory_statuses=" ";
 				$inventory_ptnstr="|";
 				$inactive_dial_statuses=" ";
-				while ($row=mysqli_fetch_row($rslt)) 
+				while ($row=mysqli_fetch_row($rslt))
 					{
 					$dial_statuses.="$row[0] ";
 					$inventory_statuses.="'$row[0]',";
@@ -623,15 +623,15 @@ if ($SUBMIT)
 
 				$filter_stmt="SELECT lead_filter_sql from vicidial_campaigns v, vicidial_lead_filters vlf where v.campaign_id='$group[$i]' and v.lead_filter_id=vlf.lead_filter_id limit 1;";
 				if ($DB) {$HTML_header.="$filter_stmt;\n";}
-				$filter_rslt=mysql_to_mysqli($filter_stmt, $link);	
+				$filter_rslt=mysql_to_mysqli($filter_stmt, $link);
 				$filter_row=mysqli_fetch_row($filter_rslt);
 				if (strlen($filter_row[0])>0) {$filter_SQL=" and $filter_row[0]";} else {$filter_SQL="";}
 				$filter_SQL = preg_replace("/\\\/",'',$filter_SQL);
-				
+
 				$lists_stmt="SELECT list_id, list_name, list_description, if(list_lastcalldate is null, '*** Not called *** ', list_lastcalldate) as list_lastcalldate from vicidial_lists where campaign_id='$group[$i]' and inventory_report='Y' $LOGallowed_campaignsSQL order by list_id asc;";
 				if ($DB) {$HTML_header.="$lists_stmt;\n";}
 				$lists_rslt=mysql_to_mysqli($lists_stmt, $link);
-				while ($lists_row=mysqli_fetch_array($lists_rslt)) 
+				while ($lists_row=mysqli_fetch_array($lists_rslt))
 					{
 					$list_id=$lists_row["list_id"];
 					$list_name=$lists_row["list_name"];
@@ -644,11 +644,11 @@ if ($SUBMIT)
 					GetListCount($list_id, $inventory_ptnstr);
 					$average_calls=sprintf("%.1f", MathZDC($total_calls, $list_start_inv));
 					$Xdialable_count_nofilter = dialable_leads($DB,$link,$local_call_time,"$dial_statuses",$list_id,$drop_lockout_time,$call_count_limit,$single_status,"");
-					if (strlen($inactive_dial_statuses)>1) 
+					if (strlen($inactive_dial_statuses)>1)
 						{
 						$Xdialable_inactive_count = dialable_leads($DB,$link,$local_call_time,"$inactive_dial_statuses",$list_id,$drop_lockout_time,$call_count_limit,$single_status,"$filter_SQL");
-						} 
-					else 
+						}
+					else
 						{
 						$Xdialable_inactive_count = 0;
 						}
@@ -675,31 +675,31 @@ if ($SUBMIT)
 					# SELECT lead_id, count(*) as count from vicidial_log where extract(HOUR_MINUTE FROM call_date)>='900' and extract(HOUR_MINUTE FROM call_date)<='1700' and dayofweek(call_date) in (2,3,4,5,6) and lead_id in (SELECT lead_id from vicidial_list where list_id=41073) group by lead_id order by lead_id;
 
 					$shift_ary2=$shift_ary;
-					while (list($key, $val)=each($shift_ary2)) 
+					while (list($key, $val)=each($shift_ary2))
 						{
 						$total_shift_count=0;
 						$gmt_stmt="SELECT distinct gmt_offset_now from vicidial_list where list_id='$list_id';";
 						if ($DB) {$HTML_header.="<B>$gmt_stmt</B>\n";}
 						$gmt_rslt=mysql_to_mysqli($gmt_stmt, $link);
-						while ($gmt_row=mysqli_fetch_row($gmt_rslt)) 
+						while ($gmt_row=mysqli_fetch_row($gmt_rslt))
 							{
-							if ($time_setting=="LOCAL") 
+							if ($time_setting=="LOCAL")
 								{
 								$gri = $gmt_row[0];
 								$offset_hours=$gmt_array[$gri];
-								} 
-							else 
+								}
+							else
 								{
 								$offset_hours=0;
 								}
 
-							if (strlen($val[4])>0) 
+							if (strlen($val[4])>0)
 								{
-								if ($val[3]==0) 
+								if ($val[3]==0)
 									{
 									$shift_days_SQL=" and time(addtime(call_date, '$offset_hours'))>='$val[1]' and time(addtime(call_date, '$offset_hours'))<='$val[2]' ";
 									$day_str="";
-									for ($j=0; $j<strlen($val[4]); $j++) 
+									for ($j=0; $j<strlen($val[4]); $j++)
 										{
 										$day=substr($val[4], $j, 1);
 										$day++;
@@ -707,11 +707,11 @@ if ($SUBMIT)
 										}
 									$day_str=substr($day_str, 0, -1);
 									$shift_days_SQL.="and dayofweek(call_date) in ($day_str)";
-									} 
-								else 
+									}
+								else
 									{
 									$shift_days_SQL=" and (";
-									for ($j=0; $j<strlen($val[4]); $j++) 
+									for ($j=0; $j<strlen($val[4]); $j++)
 										{
 										$day=substr($val[4], $j, 1);
 										$day++;
@@ -722,15 +722,15 @@ if ($SUBMIT)
 										}
 									$shift_days_SQL=substr($shift_days_SQL, 0, -3).")";
 									}
-								} 
-							else 
+								}
+							else
 								{
 								$shift_days_SQL="";
 								}
 
 							$shift_stmt="SELECT count(*) from (SELECT lead_id, count(*) as count from vicidial_log where lead_id in (SELECT lead_id from vicidial_list where $full_dialable_SQL and gmt_offset_now='$gmt_row[0]' $filter_SQL) $shift_days_SQL group by lead_id) as count_table where count_table.count>='$call_count_target';";
 
-							$shift_rslt=mysql_to_mysqli($shift_stmt, $link);	
+							$shift_rslt=mysql_to_mysqli($shift_stmt, $link);
 							$shift_row=mysqli_fetch_row($shift_rslt);
 							if ($DB) {$HTML_header.="<B>$shift_stmt<BR>$shift_row[0]</B>\n";}
 							$total_shift_count+=$shift_row[0];
@@ -745,13 +745,13 @@ if ($SUBMIT)
 					$CSV_body.="\n";
 					if (!$file_download) {echo $HTML_header; $HTML_header=""; flush();}
 					}
-				} 
-			} 
-		else if ($selected_list && $report_type=="LIST") 
+				}
+			}
+		else if ($selected_list && $report_type=="LIST")
 			{
 			$campaign_stmt="SELECT call_count_limit, call_count_target, dial_statuses, local_call_time, drop_lockout_time, v.campaign_id from vicidial_campaigns v, vicidial_lists vl where inventory_report='Y' and vl.list_id='$selected_list' and vl.campaign_id=v.campaign_id;";
 			if ($DB) {$HTML_header.="$campaign_stmt;\n";}
-			$campaign_rslt=mysql_to_mysqli($campaign_stmt, $link);	
+			$campaign_rslt=mysql_to_mysqli($campaign_stmt, $link);
 			$campaign_row=mysqli_fetch_row($campaign_rslt);
 			$call_count_limit=$campaign_row[0];
 			$call_count_target=$campaign_row[1];
@@ -767,7 +767,7 @@ if ($SUBMIT)
 			$dial_statuses=" ";
 			$inventory_statuses="";
 			$inventory_ptnstr="|";
-			while ($row=mysqli_fetch_row($rslt)) 
+			while ($row=mysqli_fetch_row($rslt))
 				{
 				$dial_statuses.="$row[0] ";
 				$inventory_statuses.="'$row[0]',";
@@ -784,7 +784,7 @@ if ($SUBMIT)
 
 			$filter_stmt="SELECT lead_filter_sql from vicidial_campaigns v, vicidial_lead_filters vlf where v.campaign_id='$campaign_id' and v.lead_filter_id=vlf.lead_filter_id limit 1;";
 			if ($DB) {$HTML_header.="$filter_stmt;\n";}
-			$filter_rslt=mysql_to_mysqli($filter_stmt, $link);	
+			$filter_rslt=mysql_to_mysqli($filter_stmt, $link);
 			$filter_row=mysqli_fetch_row($filter_rslt);
 			if (strlen($filter_row[0])>0) {$filter_SQL=" and $filter_row[0]";} else {$filter_SQL="";}
 			$filter_SQL = preg_replace("/\\\/",'',$filter_SQL);
@@ -792,7 +792,7 @@ if ($SUBMIT)
 			$lists_stmt="SELECT list_id, list_name, list_description, if(list_lastcalldate is null, '*** "._QXZ("Not called")." *** ', list_lastcalldate) as list_lastcalldate, campaign_id from vicidial_lists where list_id='$selected_list' and inventory_report='Y' $LOGallowed_campaignsSQL order by list_id asc;";
 			if ($DB) {$HTML_header.="$lists_stmt;\n";}
 			$lists_rslt=mysql_to_mysqli($lists_stmt, $link);
-			while ($lists_row=mysqli_fetch_array($lists_rslt)) 
+			while ($lists_row=mysqli_fetch_array($lists_rslt))
 				{
 				$list_id=$lists_row["list_id"];
 				$list_name=$lists_row["list_name"];
@@ -809,11 +809,11 @@ if ($SUBMIT)
 				$total_total_calls+=$total_calls;
 
 				$Xdialable_count_nofilter = dialable_leads($DB,$link,$local_call_time,"$dial_statuses",$selected_list,$drop_lockout_time,$call_count_limit,$single_status,"");
-				if (strlen($inactive_dial_statuses)>1) 
+				if (strlen($inactive_dial_statuses)>1)
 					{
 					$Xdialable_inactive_count = dialable_leads($DB,$link,$local_call_time,"$inactive_dial_statuses",$selected_list,$drop_lockout_time,$call_count_limit,$single_status,"$filter_SQL");
-					} 
-				else 
+					}
+				else
 					{
 					$Xdialable_inactive_count = 0;
 					}
@@ -838,35 +838,35 @@ if ($SUBMIT)
 			$total_dialable_count_inactive+=$Xdialable_inactive_count;
 
 			$shift_ary2=$shift_ary;
-			while (list($key, $val)=each($shift_ary2)) 
+			while (list($key, $val)=each($shift_ary2))
 				{
-				$total_shift_count=0; 
-				$total_nofilter_shift_count=0; 
-				$total_oneoff_shift_count=0; 
-				$total_undialable_shift_count=0; 
+				$total_shift_count=0;
+				$total_nofilter_shift_count=0;
+				$total_oneoff_shift_count=0;
+				$total_undialable_shift_count=0;
 				$total_nofilter_undialable_shift_count=0;
 				$gmt_stmt="SELECT distinct gmt_offset_now from vicidial_list where list_id='$list_id';";
 				if ($DB) {$HTML_header.="$gmt_stmt\n";}
 				$gmt_rslt=mysql_to_mysqli($gmt_stmt, $link);
-				while ($gmt_row=mysqli_fetch_row($gmt_rslt)) 
+				while ($gmt_row=mysqli_fetch_row($gmt_rslt))
 					{
-					if ($time_setting=="LOCAL") 
+					if ($time_setting=="LOCAL")
 						{
 						$gri = $gmt_row[0];
 						$offset_hours=$gmt_array[$gri];
-						} 
-					else 
+						}
+					else
 						{
 						$offset_hours=0;
 						}
 
-					if (strlen($val[4])>0) 
+					if (strlen($val[4])>0)
 						{
-						if ($val[3]==0) 
+						if ($val[3]==0)
 							{
 							$shift_days_SQL=" and time(addtime(call_date, '$offset_hours'))>='$val[1]' and time(addtime(call_date, '$offset_hours'))<='$val[2]' ";
 							$day_str="";
-							for ($i=0; $i<strlen($val[4]); $i++) 
+							for ($i=0; $i<strlen($val[4]); $i++)
 								{
 								$day=substr($val[4], $i, 1);
 								$day++;
@@ -874,11 +874,11 @@ if ($SUBMIT)
 								}
 							$day_str=substr($day_str, 0, -1);
 							$shift_days_SQL.="and dayofweek(call_date) in ($day_str)";
-							} 
-						else 
+							}
+						else
 							{
 							$shift_days_SQL=" and (";
-							for ($i=0; $i<strlen($val[4]); $i++) 
+							for ($i=0; $i<strlen($val[4]); $i++)
 								{
 								$day=substr($val[4], $i, 1);
 								$day++;
@@ -889,8 +889,8 @@ if ($SUBMIT)
 								}
 							$shift_days_SQL=substr($shift_days_SQL, 0, -3).")";
 							}
-						} 
-					else 
+						}
+					else
 						{
 						$shift_days_SQL="";
 						}
@@ -902,7 +902,7 @@ if ($SUBMIT)
 #					$oneoff_stmt="SELECT count(*) from (SELECT lead_id, count(*) as count from vicidial_log where lead_id in (SELECT lead_id from vicidial_list where $full_dialable_SQL and gmt_offset_now='$gmt_row[0]' $filter_SQL) $shift_days_SQL group by lead_id) as count_table where count_table.count>='($call_count_target-1)'";
 					$shift_stmt="SELECT count(*) from (SELECT lead_id, count(*) as count from vicidial_log where lead_id in (SELECT lead_id from vicidial_list where $full_dialable_SQL and gmt_offset_now='$gmt_row[0]' $filter_SQL) $shift_days_SQL group by lead_id) as count_table where count_table.count>='$call_count_target';";
 
-					$shift_rslt=mysql_to_mysqli($shift_stmt, $link);	
+					$shift_rslt=mysql_to_mysqli($shift_stmt, $link);
 					$shift_row=mysqli_fetch_row($shift_rslt);
 					if ($DB) {$HTML_header.="<B>$shift_stmt;<BR>$shift_row[0]</B>\n";}
 					$total_shift_count+=$shift_row[0];
@@ -1021,7 +1021,7 @@ $HTML_text.="</BODY>\n";
 $HTML_text.="</HTML>\n";
 
 
-if ($file_download>0) 
+if ($file_download>0)
 	{
 	$FILE_TIME = date("Ymd-His");
 	$CSVfilename = "AST_DIALERinventory_$US$FILE_TIME.csv";
@@ -1040,8 +1040,8 @@ if ($file_download>0)
 	flush();
 
 	echo "$CSV_text";
-	} 
-else 
+	}
+else
 	{
 	$short_header=1;
 

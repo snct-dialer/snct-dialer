@@ -1,8 +1,8 @@
-<?php header("Pragma: no-cache"); 
+<?php header("Pragma: no-cache");
 #
 # vicidial_sales_viewer.php - VICIDIAL administration page
-# 
-# 
+#
+#
 # Copyright (C) 2017  Joe Johnson,Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -172,14 +172,14 @@ echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
 		<table width=100%>
 			<td align=right width=200 nowrap><font class='standard_bold'><?php echo _QXZ("Select a campaign"); ?>:</td>
 			<td align=left><select name="dcampaign" onChange="this.form.submit();">
-			<?php 
+			<?php
 			if ($dcampaign) {
 				$stmt="select campaign_id, campaign_name from vicidial_campaigns where campaign_id='$dcampaign'";
 				$rslt=mysql_to_mysqli($stmt, $link);
 				while ($row=mysqli_fetch_array($rslt)) {
 					print "\t\t<option value='$row[campaign_id]' selected>$row[campaign_id] - $row[campaign_name]</option>\n";
 				}
-			} 
+			}
 			?>
 			<option value=''>---------------------------------</option>
 			<?php

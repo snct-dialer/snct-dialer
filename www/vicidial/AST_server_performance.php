@@ -1,6 +1,6 @@
-<?php 
+<?php
 # AST_server_performance.php
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -173,13 +173,13 @@ if(isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO
 if(isset($_SERVER['HTTP_X_FORWARDED_PORT'])) {
     $LOGserver_port = $_SERVER['HTTP_X_FORWARDED_PORT'];
 }
-if (preg_match("/443/i",$LOGserver_port)) 
+if (preg_match("/443/i",$LOGserver_port))
 	{$HTTPprotocol = 'https://';}
-else 
+else
 	{$HTTPprotocol = 'http://';}
-if (($LOGserver_port == '80') or ($LOGserver_port == '443') ) 
+if (($LOGserver_port == '80') or ($LOGserver_port == '443') )
 	{$LOGserver_port='';}
-else 
+else
 	{$LOGserver_port = ":$LOGserver_port";}
 $LOGfull_url = "$HTTPprotocol$LOGserver_name$LOGserver_port$LOGrequest_uri";
 
@@ -279,7 +279,7 @@ while ($i < $servers_to_print)
 -->
  </STYLE>
 
-<?php 
+<?php
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo "<TITLE>"._QXZ("$report_name")."</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 
@@ -297,9 +297,9 @@ echo _QXZ("Server").": <SELECT SIZE=1 NAME=group>\n";
 $o=0;
 while ($servers_to_print > $o)
 	{
-	if ($groups[$o] == $group) 
+	if ($groups[$o] == $group)
 		{echo "<option selected value=\"$groups[$o]\">$groups[$o]</option>\n";}
-	else 
+	else
 		{echo "<option value=\"$groups[$o]\">$groups[$o]</option>\n";}
 	$o++;
 	}
@@ -319,7 +319,7 @@ if (!$group)
 
 else
 	{
-	$query_date_BEGIN = $begin_query_time;   
+	$query_date_BEGIN = $begin_query_time;
 	$query_date_END = $end_query_time;
 
 

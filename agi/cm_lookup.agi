@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # cm_lookup.agi version 2.6
-# 
+#
 # for use with a Call Menu in the custom dialplan section.
 #
 # ; settings for this script:
@@ -26,7 +26,7 @@
 # ; 8. Update the lead's record with the call's title variable
 # ;     Y - update the lead record's 'title' field with the call's title variable
 # ;     N - Do nothing (default)
-# 
+#
 # Found entries will send the call to the 'A' option in the source call menu
 # Not-Found entries will send the call to the 'B' option in the source call menu
 #
@@ -150,7 +150,7 @@ if (length($ARGV[0])>1)
 		if ($AGILOG) {$agi_string = "$i|$ARGV[$i]";   &agi_output;}
 		$i++;
 		}
-	
+
 	### list of command-line array arguments:
 	@ARGV_vars = split(/---/, $ARGV[0]);
 
@@ -173,7 +173,7 @@ if (length($search_id) < 1)
 
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 	{
 	chomp;
 	last unless length($_);
@@ -230,7 +230,7 @@ if ($search_method =~ /CAMPAIGNLISTS$|CAMPLISTSALL$/)
 	$sthArows=$sthA->rows;
 	while ($sthArows > $cbc)
 		{
-		@aryA = $sthA->fetchrow_array;	
+		@aryA = $sthA->fetchrow_array;
 		$SlistsSQL	.= "'$aryA[0]',";
 		$cbc++;
 		}
@@ -265,7 +265,7 @@ if ($sthArows > 0)
 
 	### BEGIN if TTS prompt is defined, generate it and wait for "1 for yes or 2 for no" response
 	### if no response or no match then continue on as if nothing played
-	if (length($tts_prompt)>1) 
+	if (length($tts_prompt)>1)
 		{
 		if ($AGILOG) {$agi_string = "--    TTS : |$tts_prompt|";   &agi_output;}
 
@@ -473,7 +473,7 @@ if ($sthArows > 0)
 		$title_update_SQL='';
 		if ($phone_update =~ /Y/i)
 			{
-			if ( (length($callerid) > 6) && ($callerid !~ /unknown|private/i) ) 
+			if ( (length($callerid) > 6) && ($callerid !~ /unknown|private/i) )
 				{$phone_update_SQL = ",phone_number='$callerid'";}
 			else
 				{
@@ -530,28 +530,28 @@ exit;
 
 
 ######### SUBROUTINES #################
-sub checkresult 
+sub checkresult
 	{
 	$pass=0;   $fail=0;
 	my ($res) = @_;
 	my $retval;
 	$tests++;
 	chomp $res;
-	if ($res =~ /^200/) 
+	if ($res =~ /^200/)
 		{
 		$res =~ /result=(-?\d+)/;
-		if (!length($1)) 
+		if (!length($1))
 			{
 		#	print STDERR "FAIL ($res)\n";
 			$fail++;
-			} 
-		else 
+			}
+		else
 			{
 		#	print STDERR "PASS ($1)\n";
 			$pass++;
 			}
-		} 
-	else 
+		}
+	else
 		{
 	#	print STDERR "FAIL (unexpected result '$res')\n";
 		$fail++;
@@ -582,7 +582,7 @@ sub confirm_entry
 	$interrupt_digit='';
 	$audio_file = "$confirm_entry_prompt";
 
-	if ($language =~ /es/) 
+	if ($language =~ /es/)
 		{
 		$file_extension_gsm='.gsm';
 		$file_extension_wav='.wav';
@@ -592,10 +592,10 @@ sub confirm_entry
 		else
 			{$audio_suffix='';}
 		}
-	else 
+	else
 		{$audio_suffix='';}
 
-	$interrupt_digit = $AGI->stream_file("$audio_file$audio_suffix",'12');   
+	$interrupt_digit = $AGI->stream_file("$audio_file$audio_suffix",'12');
 
 	print STDERR "interrupt_digit |$interrupt_digit|\n";
 
@@ -615,7 +615,7 @@ sub confirm_entry
 		if ($interrupt_digit == 55) {$interrupt_digit=7;}
 		if ($interrupt_digit == 56) {$interrupt_digit=8;}
 		if ($interrupt_digit == 57) {$interrupt_digit=9;}
-		
+
 		$ANSWER_confirm=$interrupt_digit;
 		}
 
@@ -636,7 +636,7 @@ sub confirm_entry
 				{
 				$digits_being_entered=0;
 				}
-			
+
 			$digit_loop_counter++;
 			}
 		}

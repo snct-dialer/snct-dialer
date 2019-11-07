@@ -1,6 +1,6 @@
-<?php 
+<?php
 # AST_IVRstats.php
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -107,14 +107,14 @@ if (strlen($report_display_type)<2) {$report_display_type = $SSreport_default_fo
 ### ARCHIVED DATA CHECK CONFIGURATION
 $archives_available="N";
 $log_tables_array=array("vicidial_outbound_ivr_log", "vicidial_closer_log", "live_inbound_log");
-for ($t=0; $t<count($log_tables_array); $t++) 
+for ($t=0; $t<count($log_tables_array); $t++)
 	{
 	$table_name=$log_tables_array[$t];
 	$archive_table_name=use_archive_table($table_name);
 	if ($archive_table_name!=$table_name) {$archives_available="Y";}
 	}
 
-if ($search_archived_data) 
+if ($search_archived_data)
 	{
 	$vicidial_outbound_ivr_log_table=use_archive_table("vicidial_outbound_ivr_log");
 	$vicidial_closer_log_table=use_archive_table("vicidial_closer_log");
@@ -461,38 +461,38 @@ $HEADER.="   .purple {color: white; background-color: purple}\n";
 $HEADER.="-->\n";
 $HEADER.=" </STYLE>\n";
 
-if ($shift == 'RANGE') 
+if ($shift == 'RANGE')
 	{
-	$query_date_BEGIN = "$query_date";   
+	$query_date_BEGIN = "$query_date";
 	$query_date_END = "$end_date";
 	}
 else
 	{
 	$EXquery_date = explode(' ',$query_date);
-	$query_date = "$EXquery_date[0]";   
+	$query_date = "$EXquery_date[0]";
 	$EXend_date = explode(' ',$end_date);
-	$end_date = "$EXend_date[0]";   
+	$end_date = "$EXend_date[0]";
 
-	if ($shift == 'AM') 
+	if ($shift == 'AM')
 		{
 		$time_BEGIN=$AM_shift_BEGIN;
 		$time_END=$AM_shift_END;
-		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}   
+		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}
 		if (strlen($time_END) < 6) {$time_END = "15:14:59";}
 		}
-	if ($shift == 'PM') 
+	if ($shift == 'PM')
 		{
 		$time_BEGIN=$PM_shift_BEGIN;
 		$time_END=$PM_shift_END;
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "15:15:00";}
 		if (strlen($time_END) < 6) {$time_END = "23:15:00";}
 		}
-	if ($shift == 'ALL') 
+	if ($shift == 'ALL')
 		{
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}
 		if (strlen($time_END) < 6) {$time_END = "23:59:59";}
 		}
-	$query_date_BEGIN = "$query_date $time_BEGIN";   
+	$query_date_BEGIN = "$query_date $time_BEGIN";
 	$query_date_END = "$end_date $time_END";
 	}
 
@@ -509,7 +509,7 @@ $HEADER.="<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 require("chart_button.php");
-$HEADER.="<script src='chart/Chart.js'></script>\n"; 
+$HEADER.="<script src='chart/Chart.js'></script>\n";
 $HEADER.="<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
 
 $HEADER.="<link rel=\"stylesheet\" type=\"text/css\" href=\"vicidial_stylesheet.php\">\n";
@@ -588,7 +588,7 @@ if ($type == 'inbound')
 	$o=0;
 		while ($groups_to_print > $o)
 		{
-		if (preg_match("/\|$LISTgroups[$o]\|/",$group_string)) 
+		if (preg_match("/\|$LISTgroups[$o]\|/",$group_string))
 			{$MAIN.="<option selected value=\"$LISTgroups[$o]\">$LISTgroups[$o] - $LISTgroups_names[$o]</option>\n";}
 		else
 			{$MAIN.="<option value=\"$LISTgroups[$o]\">$LISTgroups[$o] - $LISTgroups_names[$o]</option>\n";}
@@ -611,7 +611,7 @@ else
 	$o=0;
 		while ($groups_to_print > $o)
 		{
-		if (preg_match("/\|$LISTgroups[$o]\|/",$group_string)) 
+		if (preg_match("/\|$LISTgroups[$o]\|/",$group_string))
 			{$MAIN.="<option selected value=\"$LISTgroups[$o]\">$LISTgroups[$o] - $LISTgroups_names[$o]</option>\n";}
 		else
 			{$MAIN.="<option value=\"$LISTgroups[$o]\">$LISTgroups[$o] - $LISTgroups_names[$o]</option>\n";}
@@ -663,7 +663,7 @@ $MAIN.="<BR>"._QXZ("Display as").":&nbsp; ";
 $MAIN.="<select name='report_display_type'>";
 if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
 $MAIN.="<option value='TEXT'>"._QXZ("TEXT")."</option><option value='HTML'>"._QXZ("HTML")."</option></select>\n<BR>";
-if ($archives_available=="Y") 
+if ($archives_available=="Y")
 	{
 	$MAIN.="<BR><input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."<BR>\n";
 	}
@@ -913,7 +913,7 @@ else
 				$w++;
 				}
 			}
-		
+
 		$FLOWdropPCT[$s] = (MathZDC($FLOWdrop[$s], $FLOWtotal[$s]) * 100);
 		$FLOWdropPCT[$s] = round($FLOWdropPCT[$s], 2);
 
@@ -981,15 +981,15 @@ else
 	$graph_id++;
 	$graph_array=array("IVRSTATS_IVRCALLSdata|1|IVR CALLS|integer|", "IVRSTATS_QUEUECALLSdata|2|QUEUE CALLS|integer|", "IVRSTATS_QUEUEDROPCALLSdata|3|QUEUE DROP CALLS|integer|", "IVRSTATS_QUEUEDROPPERCENTdata|4|QUEUE DROP PERCENT|percent|", "IVRSTATS_IVRAVGTIMEdata|5|IVR AVG TIME|time|", "IVRSTATS_TOTALAVGTIMEdata|6|TOTAL AVG TIME|time|");
 	$default_graph="bar"; # Graph that is initally displayed when page loads
-	include("graph_color_schemas.inc"); 
+	include("graph_color_schemas.inc");
 
 	$graph_totals_array=array();
 	$graph_totals_rawdata=array();
 	for ($q=0; $q<count($graph_array); $q++) {
-		$graph_info=explode("|", $graph_array[$q]); 
+		$graph_info=explode("|", $graph_array[$q]);
 		$current_graph_total=0;
 		$dataset_name=$graph_info[0];
-		$dataset_index=$graph_info[1]; 
+		$dataset_index=$graph_info[1];
 		$dataset_type=$graph_info[3];
 
 		$JS_text.="var $dataset_name = {\n";
@@ -1007,7 +1007,7 @@ else
 		$graphConstantsC="\t\t\t\thoverBorderColor: [";
 		for ($d=0; $d<count($graph_stats); $d++) {
 			$labels.="\"".preg_replace('/ +/', ' ', $graph_stats[$d][0])."\",";
-			$data.="\"".$graph_stats[$d][$dataset_index]."\","; 
+			$data.="\"".$graph_stats[$d][$dataset_index]."\",";
 			$current_graph_total+=$graph_stats[$d][$dataset_index];
 			$bgcolor=$backgroundColor[($d%count($backgroundColor))];
 			$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
@@ -1015,13 +1015,13 @@ else
 			$graphConstantsA.="\"$bgcolor\",";
 			$graphConstantsB.="\"$hbgcolor\",";
 			$graphConstantsC.="\"$hbcolor\",";
-		}	
+		}
 		$graphConstantsA.="],\n";
 		$graphConstantsB.="],\n";
 		$graphConstantsC.="],\n";
 		$labels=preg_replace('/,$/', '', $labels)."],\n";
 		$data=preg_replace('/,$/', '', $data)."],\n";
-	
+
 		$graph_totals_rawdata[$q]=$current_graph_total;
 		switch($dataset_type) {
 			case "time":
@@ -1059,15 +1059,15 @@ else
 
 	$JS_text.="</script>\n";
 
-	if ($report_display_type=="HTML") 
+	if ($report_display_type=="HTML")
 		{
 		$MAIN.=$GRAPH_text;
 		}
-	else 
+	else
 		{
 		$MAIN.=$ASCII_text;
 		}
-	
+
 	##############################
 	#########  TIME STATS
 
@@ -1081,19 +1081,19 @@ else
 		$inb_15min_array=array();
 		$stmt="select uniqueid, SEC_TO_TIME((TIME_TO_SEC(min(start_time)) DIV 900) * 900) as stime from ".$live_inbound_log_table." where start_time >= '$query_date_BEGIN' and start_time <= '$query_date_END' and comment_a IN($group_SQL) group by uniqueid";
 		$rslt=mysql_to_mysqli($stmt, $link);
-		while ($row=mysqli_fetch_row($rslt)) 
+		while ($row=mysqli_fetch_row($rslt))
 			{
 			$time_index=substr($row[1], 0, -2);
 			$time_index=preg_replace('/[^0-9]/', '', $time_index);
 			$inb_15min_array["$time_index"]++;
 			}
 		}
-	else 
+	else
 		{
 		$inb_15min_array=array();
 		$stmt="select uniqueid, SEC_TO_TIME((TIME_TO_SEC(min(event_date)) DIV 900) * 900) as stime from ".$vicidial_outbound_ivr_log_table." where event_date >= '$query_date_BEGIN' and event_date <= '$query_date_END' and campaign_id IN($group_SQL) and menu_action='' group by uniqueid";
 		$rslt=mysql_to_mysqli($stmt, $link);
-		while ($row=mysqli_fetch_row($rslt)) 
+		while ($row=mysqli_fetch_row($rslt))
 			{
 			$time_index=substr($row[1], 0, -2);
 			$time_index=preg_replace('/[^0-9]/', '', $time_index);
@@ -1137,7 +1137,7 @@ else
 		$h++;
 		}
 
-	
+
 	$hour_multiplier = MathZDC(100, $hi_hour_count);
 
 	$MAIN.="<!-- HICOUNT: $hi_hour_count|$hour_multiplier -->\n";
@@ -1147,9 +1147,9 @@ else
 	$k=1;
 	$Mk=0;
 	$call_scale = '0';
-	while ($k <= 102) 
+	while ($k <= 102)
 		{
-		if ($Mk >= 5) 
+		if ($Mk >= 5)
 			{
 			$Mk=0;
 			$scale_num=MathZDC($k, $hour_multiplier);
@@ -1182,7 +1182,7 @@ else
 		{
 		$char_counter=0;
 		$time = '      ';
-		if ($h >= 4) 
+		if ($h >= 4)
 			{
 			$hour++;
 			$h=0;
@@ -1193,7 +1193,7 @@ else
 		if ($h == 2) {$time = "   30 ";}
 		if ($h == 3) {$time = "   45 ";}
 		$Ghour_count = $hour_count[$i];
-		if ($Ghour_count < 1) 
+		if ($Ghour_count < 1)
 			{
 			if ( ($no_lines_yet) or ($i > $last_full_record) )
 				{
@@ -1227,8 +1227,8 @@ else
 			$CSV_text.="\"\",\"$time\",\"$hour_count[$i]\"\n";
 
 			}
-		
-		
+
+
 		$i++;
 		$h++;
 		}
@@ -1245,7 +1245,7 @@ else
 	$MAIN.="</PRE>\n";
 	$MAIN.="</TD></TR></TABLE>\n";
 
-	if ($report_display_type=="HTML") 
+	if ($report_display_type=="HTML")
 		{
 		$MAIN.=$JS_text;
 		}

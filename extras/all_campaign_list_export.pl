@@ -3,7 +3,7 @@
 # all_ccampaign_list_export.pl version 2.10
 #
 # DESCRIPTION:
-# Export all of the leads in all campaigns on a system to separate CSV files in 
+# Export all of the leads in all campaigns on a system to separate CSV files in
 # the /tmp/ directory named DATABASE-CAMPAIGN.csv
 # This script will not export custom list field contents.
 #
@@ -77,7 +77,7 @@ open(CONFIG, "$PATHconf") || die "can't open $PATHconf: $!\n";
 @config = <CONFIG>;
 close(CONFIG);
 $i=0;
-foreach(@config) 
+foreach(@config)
 	{
 	$line = $config[$i];
 	$line =~ s/ |>|\n|\r|\t|\#.*|;.*//gi;
@@ -108,7 +108,7 @@ $row_count = 0;
 $leads=0;
 
 # loop through them
-while ($row_count < $num_camp) 
+while ($row_count < $num_camp)
 	{
 	@row = $sth->fetchrow_array;
 	$campaign_id = $row[0];
@@ -127,16 +127,16 @@ while ($row_count < $num_camp)
 	$num_lists = $list_sth->rows;
 	$list_row = 0;
 
-	if ($num_lists > 0) 
+	if ($num_lists > 0)
 		{
-		while ($list_row < $num_lists) 
+		while ($list_row < $num_lists)
 			{
 			@list_row_ary = $list_sth->fetchrow_array;
-			if ( $list_row == 0 ) 
+			if ( $list_row == 0 )
 				{
 				$list_string = "$list_row_ary[0]";
 				}
-			else 
+			else
 				{
 				$list_string .= ", $list_row_ary[0]";
 				}
@@ -156,7 +156,7 @@ while ($row_count < $num_camp)
 
 		open( $fh, ">", "/tmp/$VARDB_database-$campaign_id.csv" );
 
-		while ($current_row < $num_lead) 
+		while ($current_row < $num_lead)
 			{
 			@export_row = $export_sth->fetchrow_array;
 

@@ -3,7 +3,7 @@
 # AST_VDadapt.pl version 2.14
 #
 # DESCRIPTION:
-# adjusts the auto_dial_level for vicidial adaptive-predictive campaigns. 
+# adjusts the auto_dial_level for vicidial adaptive-predictive campaigns.
 # gather call stats for campaigns and in-groups
 #
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -296,14 +296,14 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
 use Time::Local;
-use DBI;	  
+use DBI;
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 if ($DBX) {print "CONNECTED TO DATABASE:  $VARDB_server|$VARDB_database\n";}
 
-# make sure the vicidial_campaign_stats table has all of the campaigns.  
+# make sure the vicidial_campaign_stats table has all of the campaigns.
 # They should exist, but sometimes they get accidently removed during db moves and the like.
 $stmtA = "INSERT IGNORE into vicidial_campaign_stats (campaign_id) select campaign_id from vicidial_campaigns;";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -374,7 +374,7 @@ if ($run_check > 0)
 	my $grepout = `/bin/ps ax | grep $0 | grep -v grep | grep -v '/bin/sh'`;
 	my $grepnum=0;
 	$grepnum++ while ($grepout =~ m/\n/g);
-	if ($grepnum > 2) 
+	if ($grepnum > 2)
 		{
 		if ($DB) {print "I am not alone! Another $0 is running! Exiting...\n";}
 		$event_string = "I am not alone! Another $0 is running! Exiting...";
@@ -386,7 +386,7 @@ if ($run_check > 0)
 $master_loop=0;
 
 ### Start master loop ###
-while ($master_loop < $CLIloops) 
+while ($master_loop < $CLIloops)
 	{
 	&get_time_now;
 
@@ -412,7 +412,7 @@ while ($master_loop < $CLIloops)
 	($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($secX);
 	$LOCAL_GMT_OFF = $SERVER_GMT;
 	$LOCAL_GMT_OFF_STD = $SERVER_GMT;
-	if ($isdst) {$LOCAL_GMT_OFF++;} 
+	if ($isdst) {$LOCAL_GMT_OFF++;}
 
 	$GMT_now = ($secX - ($LOCAL_GMT_OFF * 3600));
 	($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($GMT_now);
@@ -426,7 +426,7 @@ while ($master_loop < $CLIloops)
 
 	if ($DBXXX) {print "TIME DEBUG: $master_loop   $LOCAL_GMT_OFF_STD|$LOCAL_GMT_OFF|$isdst|   GMT: $hour:$min\n";}
 
-	@campaign_id=@MT; 
+	@campaign_id=@MT;
 	@lead_order=@MT;
 	@hopper_level=@MT;
 	@auto_dial_level=@MT;
@@ -466,7 +466,7 @@ while ($master_loop < $CLIloops)
 		@aryA = $sthA->fetchrow_array;
 		$campaign_id[$rec_count] =					$aryA[0];
 		$lead_order[$rec_count] =					$aryA[1];
-		if (!$CLIlevel) 
+		if (!$CLIlevel)
 			{$hopper_level[$rec_count] =			$aryA[2];}
 		else
 			{$hopper_level[$rec_count] =			$CLIlevel;}
@@ -541,7 +541,7 @@ while ($master_loop < $CLIloops)
 		$event_string = "|$campaign_id[$i]|$hopper_level[$i]|$hopper_ready_count|$local_call_time[$i]|$diff_ratio_updater|$drop_count_updater|";
 		if ($DBX) {print "$i     $event_string\n";}
 		$debug_camp_output .= "$i     $event_string\n";
-		&event_logger;	
+		&event_logger;
 
 		if ($DBX) {print "     TIME CALL CHECK: $five_min_ago/$campaign_calldate_epoch[$i]\n";}
 		$debug_camp_output .= "     TIME CALL CHECK: $five_min_ago/$campaign_calldate_epoch[$i]\n";
@@ -764,7 +764,7 @@ while ($master_loop < $CLIloops)
 		while ($sthArowsICBQr > $r)
 			{
 			$temp_ingroup = $ICBQgroup_id[$r];
-			if ($routed_ingroup_list !~ /\|$temp_ingroup\|/) 
+			if ($routed_ingroup_list !~ /\|$temp_ingroup\|/)
 				{
 				$routed_ingroup_list .= "$temp_ingroup|";
 				if ($DBX) {print "Live Inbound Callback Queue Entry: $r|$ICBQicbq_id[$r]|$ICBQlead_id[$r]|$ICBQgroup_id[$r]|$ICBQcall_date[$r]|\n";}
@@ -814,7 +814,7 @@ while ($master_loop < $CLIloops)
 					}
 				$sthA->finish();
 				if ($DBX) {$agi_string = "$rec_countWAITrem|$stmtA|";   print "$agi_string\n";}
-				
+
 				$rec_countWAITqueue=0;
 				### Get count of number of calls in the callback-queue for this group that are ahead of this call
 				$stmtA = "SELECT count(*) FROM vicidial_inbound_callback_queue where icbq_status IN('LIVE','SENDING') and group_id='$ICBQgroup_id[$r]' and call_date < \"$ICBQcall_date[$r]\" and lead_id != '$ICBQlead_id[$r]' and queue_priority >= '$ICBQqueue_priority[$r]';";
@@ -828,7 +828,7 @@ while ($master_loop < $CLIloops)
 					}
 				$sthA->finish();
 				if ($DBX) {$agi_string = "$rec_countWAITqueue|$stmtA|";   print "$agi_string\n";}
-				
+
 				if ( ($rec_countWAITrem < 1) && ($rec_countWAITqueue < 1) )
 					{
 					$sthArowsFA=0;
@@ -878,7 +878,7 @@ while ($master_loop < $CLIloops)
 							{
 							@aryA = $sthA->fetchrow_array;
 							$qp_groupWAIT_aco .= "'$aryA[0]',";
-							if ($dbc > 0) 
+							if ($dbc > 0)
 								{
 								$qp_groupWAIT .= "and ";
 								}
@@ -896,7 +896,7 @@ while ($master_loop < $CLIloops)
 							{
 							@aryA = $sthA->fetchrow_array;
 							$qp_groupWAIT_aco .= "'$aryA[0]',";
-							if ($dbc > 0) 
+							if ($dbc > 0)
 								{
 								$qp_groupWAIT .= "and ";
 								}
@@ -989,7 +989,7 @@ while ($master_loop < $CLIloops)
 									if ($GRADEgrade[$gg] < 1)
 										{$GRADEgrade[$gg] =	1;}
 									$gi=0;
-									while ($gi < $GRADEgrade[$gg]) 
+									while ($gi < $GRADEgrade[$gg])
 										{
 										$userGRADEarray[$ga] =	$GRADEuser[$gg];
 									#	print STDERR "     GRADE ENTRY: $userGRADEarray[$ga]|$ga|$gi|$GRADEgrade[$gg]\n";
@@ -1102,12 +1102,12 @@ while ($master_loop < $CLIloops)
 					if ( ($sthArowsFA > 0) && (length($VDADuser) > 0) )
 						{
 						$Faffected_rows=0;
-						if ($VACagent_grab !~ /\|$VDADuser\|/) 
+						if ($VACagent_grab !~ /\|$VDADuser\|/)
 							{
 							$stmtA = "UPDATE vicidial_live_agents set external_dial='$ICBQicbq_phone_number[$r]!$ICBQicbq_phone_code[$r]!NO!NO!NO!!$secX!!!$dial_ingroup_cid!!$ICBQlead_id[$r]!!$ICBQgroup_id[$r]' where user='$VDADuser' and status IN('CLOSER','READY');";
 							$Faffected_rows = $dbhA->do($stmtA);
 
-							if ($Faffected_rows > 0) 
+							if ($Faffected_rows > 0)
 								{
 								### clear the ringing hold on the ring agents
 								$stmtB = "UPDATE vicidial_live_agents SET ring_callerid='' where ring_callerid='$callerid';";
@@ -1155,7 +1155,7 @@ while ($master_loop < $CLIloops)
 			$r++;
 			}
 		}
-	
+
 	$icbq_NEW_ct=0;
 	$stmtA = "SELECT count(*) from vicidial_inbound_callback_queue where icbq_status='NEW';";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -1238,7 +1238,7 @@ while ($master_loop < $CLIloops)
 					$icbq_dial_filter =		$aryA[1];
 					}
 				$sthA->finish();
-	
+
 
 				### BEGIN check of call time dialable for this record
 				$dialable=0;
@@ -1418,7 +1418,7 @@ while ($master_loop < $CLIloops)
 							{$dialable++;}
 						}
 					}
-				if ($dialable > 0) 
+				if ($dialable > 0)
 					{$NEWstatus = 'LIVE';}
 				else
 					{$NEWstatus = 'NOCALLTIME';}
@@ -1429,7 +1429,7 @@ while ($master_loop < $CLIloops)
 				### BEGIN check of DNC filtering for this record
 				$dnc_internal_match=0;
 				$dnc_campaign_match=0;
-				if ( ($icbq_dial_filter !~ /NONE/i) && (length($icbq_dial_filter) > 4) ) 
+				if ( ($icbq_dial_filter !~ /NONE/i) && (length($icbq_dial_filter) > 4) )
 					{
 					$alt_areacode='';
 					if ($icbq_dial_filter =~ /AREACODE/)
@@ -1466,7 +1466,7 @@ while ($master_loop < $CLIloops)
 							}
 						$sthA->finish();
 
-						if (length($dnc_campaign_list) > 1) 
+						if (length($dnc_campaign_list) > 1)
 							{
 							$dnc_campaign='';
 							$stmtA = "SELECT campaign_id FROM vicidial_lists where list_id='$dnc_campaign_list';";
@@ -1480,7 +1480,7 @@ while ($master_loop < $CLIloops)
 								}
 							$sthA->finish();
 
-							if (length($dnc_campaign) > 0) 
+							if (length($dnc_campaign) > 0)
 								{
 								$stmtA = "SELECT count(*) FROM vicidial_campaign_dnc where campaign_id='$dnc_campaign' and phone_number IN('$ICBQicbq_phone_number[$r]'$alt_areacode);";
 								$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -1497,18 +1497,18 @@ while ($master_loop < $CLIloops)
 						if ($DBX) {print "     CALLBACK DIAL FILTER DNC CAMPAIGN: |$dnc_campaign_match|$dnc_campaign_list|$stmtA|\n";}
 						}
 
-					if ($dnc_internal_match > 0) 
+					if ($dnc_internal_match > 0)
 						{$NEWstatus = 'DNCL';}
 					else
 						{
-						if ($dnc_campaign_match > 0) 
+						if ($dnc_campaign_match > 0)
 							{$NEWstatus = 'DNCC';}
 						}
 					}
 				### END check of DNC filtering for this record
 
 
-				if ($ICBQicbq_status[$r] !~ /$NEWstatus/) 
+				if ($ICBQicbq_status[$r] !~ /$NEWstatus/)
 					{
 					### set the icbq record to new status
 					$stmtC = "UPDATE vicidial_inbound_callback_queue SET icbq_status='$NEWstatus' where icbq_id='$ICBQicbq_id[$r]' and icbq_status!='SENT';";
@@ -1609,7 +1609,7 @@ while ($master_loop < $CLIloops)
 		if ($DB) {print "Waiting Call URL In-Group calls waiting: |$vacWCUcount($cwu_any_on)|$stmtA|\n";}
 
 		### if there are waiting calls in WCU in-groups, or the WCU indicator had been on after the last loop, run through the Waiting Call URL process
-		if ( ($cwu_any_on > 0) || ($vacWCUcount > 0) ) 
+		if ( ($cwu_any_on > 0) || ($vacWCUcount > 0) )
 			{
 			$cwu_any_onNEW=0;   $last_group_id='';
 			if ($DB) {print "Waiting Call URL calculations starting: |$cwu_any_on|$vacWCUcount|\n";}
@@ -1680,10 +1680,10 @@ while ($master_loop < $CLIloops)
 				while ($sthArowsWCUnf > $wcunf)
 					{
 					$wcut=0; $wcut_found=0; $wcut_new=0;
-					while ($wcut < $wcuvac) 
+					while ($wcut < $wcuvac)
 						{
 						$temp_group = $WCUgroupNFvac[$wcut];
-						if ($WCUgroupNF[$wcunf] =~ /^$temp_group$/i) 
+						if ($WCUgroupNF[$wcunf] =~ /^$temp_group$/i)
 							{
 							$wcut_found++;
 							$wcut_new = $WCUgroupNFvacct[$wcut];
@@ -1691,7 +1691,7 @@ while ($master_loop < $CLIloops)
 						$wcut++;
 						if ($DBX) {print "        $wcunf|$wcut  WCU compare check: |$WCUgroupNF[$wcunf]|$temp_group|$wcut|$wcut_new|$wcut_found|\n";}
 						}
-					if ( ($wcut_new > $WCUgroupNFct[$wcunf]) || ($wcut_new < $WCUgroupNFct[$wcunf]) ) 
+					if ( ($wcut_new > $WCUgroupNFct[$wcunf]) || ($wcut_new < $WCUgroupNFct[$wcunf]) )
 						{
 						$stmtA = "UPDATE vicidial_inbound_groups SET waiting_call_count='$wcut_new' where group_id='$WCUgroupNF[$wcunf]';";
 						$WCUaffected_rows = $dbhA->do($stmtA);
@@ -1700,7 +1700,7 @@ while ($master_loop < $CLIloops)
 					$wcunf++;
 					}
 				### If last waiting-count was 0 and new waiting-count is greater than 0, trigger ON URL
-				if ( ($vacWCUcountNF > 0) && ($WCUlistNFct < 1) ) 
+				if ( ($vacWCUcountNF > 0) && ($WCUlistNFct < 1) )
 					{
 					$launch = $PATHhome . "/AST_send_URL.pl";
 					$launch .= " --SYSLOG" if ($SYSLOG);
@@ -1720,7 +1720,7 @@ while ($master_loop < $CLIloops)
 				else
 					{
 					### If last waiting-count greater than 0 and new waiting-count is 0, trigger OFF URL
-					if ( ($vacWCUcountNF < 1) && ($WCUlistNFct > 0) ) 
+					if ( ($vacWCUcountNF < 1) && ($WCUlistNFct > 0) )
 						{
 						$launch = $PATHhome . "/AST_send_URL.pl";
 						$launch .= " --SYSLOG" if ($SYSLOG);
@@ -1741,7 +1741,7 @@ while ($master_loop < $CLIloops)
 
 				$wcu++;
 				}
-			if ( ($cwu_any_onNEW > $cwu_any_on) || ($cwu_any_onNEW < $cwu_any_on) ) 
+			if ( ($cwu_any_onNEW > $cwu_any_on) || ($cwu_any_onNEW < $cwu_any_on) )
 				{
 				if ($DBX) {print "     Updating CWA any variable: |$cwu_any_on|$cwu_any_onNEW|\n";}
 				$cwu_any_on = $cwu_any_onNEW;
@@ -1832,7 +1832,7 @@ while ($master_loop < $CLIloops)
 					$updated_dial_log_no_uid = ($updated_dial_log_no_uid + $affected_rows);
 					}
 
-				if ($sthArowsVLEc > 0) 
+				if ($sthArowsVLEc > 0)
 					{$do_nothing=1;}
 				else
 					{
@@ -1855,7 +1855,7 @@ while ($master_loop < $CLIloops)
 							}
 						$sthA->finish();
 
-						if ($VLcount > 0) 
+						if ($VLcount > 0)
 							{$do_nothing=1;}
 						else
 							{
@@ -1931,13 +1931,13 @@ while ($master_loop < $CLIloops)
 									$affected_rowsVLE = $dbhA->do($stmtVLE);
 									if($DBX){print "$mvl|$affected_rowsVLE|$stmtVLE|\n";}
 
-									if ($Lstatus ne 'NA') 
+									if ($Lstatus ne 'NA')
 										{
 										$stmtLEAD = "UPDATE vicidial_list set status='NA' where lead_id='$Mlead_id[$mvl]';";
 										$affected_rowsLEAD = $dbhA->do($stmtLEAD);
 										if($DBX){print "$mvl|$affected_rowsLEAD|$stmtLEAD|\n";}
 										}
-									if ($SScall_quota_lead_ranking > 0) 
+									if ($SScall_quota_lead_ranking > 0)
 										{
 										$VD_call_quota_lead_ranking='DISABLED';
 										# find call quota setting for campaign, to see if call quota logging is enabled
@@ -1965,7 +1965,7 @@ while ($master_loop < $CLIloops)
 						}
 					}
 				$mvl++;
-				if ($DB) 
+				if ($DB)
 					{
 					if ($mvl =~ /10$/i) {print STDERR "0     $mvl / $sthArowsMVL \r";}
 					if ($mvl =~ /20$/i) {print STDERR "+     $mvl / $sthArowsMVL \r";}
@@ -1976,7 +1976,7 @@ while ($master_loop < $CLIloops)
 					if ($mvl =~ /70$/i) {print STDERR "|     $mvl / $sthArowsMVL \r";}
 					if ($mvl =~ /80$/i) {print STDERR "+     $mvl / $sthArowsMVL \r";}
 					if ($mvl =~ /90$/i) {print STDERR "0     $mvl / $sthArowsMVL \r";}
-					if ($mvl =~ /00$/i) 
+					if ($mvl =~ /00$/i)
 						{
 						print "$mvl / $sthArowsMVL   ($log_updated|$log_inserted|$count_dial_log_no_uid|$updated_dial_log_no_uid|   |$LEADlist_id[$mvl]|$LEADINFOrank| \n";
 						}
@@ -2123,7 +2123,7 @@ sub get_time_now
 		{
 		$event_string = "End of Day, shutting down this script in 10 seconds, script will resume in 60 seconds...";
 			if ($DB) {print "\n$event_string\n\n\n";}
-		&event_logger;	
+		&event_logger;
 
 		usleep(10*1000*1000);
 
@@ -2179,7 +2179,7 @@ sub count_agents_lines
 	$stat_waiting_calls[$i][$stat_count] = $waiting_calls[$i];
 	$stat_total_agents[$i][$stat_count] = $total_agents[$i];
 
-	if ($stat_count < 15) 
+	if ($stat_count < 15)
 		{
 		$stat_it = $stat_count;
 		$stat_B = 1;
@@ -2217,11 +2217,11 @@ sub count_agents_lines
 		$sthA->finish();
 		}
 
-	if ($ready_diff_total[$i] > 0) 
+	if ($ready_diff_total[$i] > 0)
 		{$ready_diff_avg[$i] = ($ready_diff_total[$i] / $stat_it);}
-	if ($waiting_diff_total[$i] > 0) 
+	if ($waiting_diff_total[$i] > 0)
 		{$waiting_diff_avg[$i] = ($waiting_diff_total[$i] / $stat_it);}
-	if ($total_agents_total[$i] > 0) 
+	if ($total_agents_total[$i] > 0)
 		{$total_agents_avg[$i] = ($total_agents_total[$i] / $stat_it);}
 	$stat_differential[$i] = ($ready_diff_avg[$i] - $waiting_diff_avg[$i]);
 
@@ -2272,7 +2272,7 @@ sub calculate_drops
 	$sthA->finish();
 
 	chop($camp_ANS_STAT_SQL);
-	if (length($camp_ANS_STAT_SQL)<2) 
+	if (length($camp_ANS_STAT_SQL)<2)
 		{$camp_ANS_STAT_SQL="'-NONE-'";}
 
 	$debug_camp_output .= "     CAMPAIGN ANSWERED STATUSES: $campaign_id[$i]|$camp_ANS_STAT_SQL|\n";
@@ -2308,7 +2308,7 @@ sub calculate_drops
 	$sthA->finish();
 
 	chop($camp_AM_STAT_SQL);
-	if (length($camp_AM_STAT_SQL)<2) 
+	if (length($camp_AM_STAT_SQL)<2)
 		{$camp_AM_STAT_SQL="'-NONE-'";}
 
 	$debug_camp_output .= "     CAMPAIGN ANSWERING MACHINE STATUSES: $campaign_id[$i]|$camp_AM_STAT_SQL|\n";
@@ -2385,7 +2385,7 @@ sub calculate_drops
 			if ($VCSdrops_one[$i] > 0)
 				{
 				$VCSdrops_one_pct[$i] = ( ($VCSdrops_one[$i] / $VCScalls_one[$i]) * 100 );
-				$VCSdrops_one_pct[$i] = sprintf("%.2f", $VCSdrops_one_pct[$i]);	
+				$VCSdrops_one_pct[$i] = sprintf("%.2f", $VCSdrops_one_pct[$i]);
 				}
 			}
 		$sthA->finish();
@@ -2395,7 +2395,7 @@ sub calculate_drops
 	### BEGIN TODAY TOTAL CALLS
 
 	## BEGIN CACHED HOURLY ANALYSIS: CALLS
-	if ($VLhour_counts > 0) 
+	if ($VLhour_counts > 0)
 		{
 		$secH = time();
 		($HRsec,$HRmin,$HRhour,$HRmday,$HRmon,$HRyear,$HRwday,$HRyday,$HRisdst) = localtime(time);
@@ -2454,7 +2454,7 @@ sub calculate_drops
 			if ($DBX) {print "VCHC CACHED HOUR CHECK: |$sthArows|$VCHC_entry_count|$stmtA|\n";}
 
 			# if cached totals equal the number of hours, then run single query to get sums of calls, if not, go hour-by-hour
-			if ($VCHC_entry_count >= $HRhour_test) 
+			if ($VCHC_entry_count >= $HRhour_test)
 				{
 				$VCHC_cache_calls=0;
 				$stmtA = "SELECT sum(calls) from vicidial_campaign_hour_counts where campaign_id='$campaign_id[$i]' and type='CALLS' and date_hour >= '$VL_day_start_date' and date_hour < '$VL_current_hour_date' and last_update > next_hour;";
@@ -2496,13 +2496,13 @@ sub calculate_drops
 				if ($DBX) {print "VCHC CACHED HOUR LIST QUERY: |$sthArows_hr|$stmtA|\n";}
 
 				$j=0;
-				while ($j < $HRhour_test) 
+				while ($j < $HRhour_test)
 					{
 					$k=0;
 					$cache_hour_found=0;
 					while ($sthArows_hr > $k)
 						{
-						if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") ) 
+						if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") )
 							{
 							$VCScalls_today[$i] = ($VCScalls_today[$i] + $VCHC_calls[$k]);
 							$cache_hour_found++;
@@ -2510,7 +2510,7 @@ sub calculate_drops
 							}
 						$k++;
 						}
-					if ($cache_hour_found < 1) 
+					if ($cache_hour_found < 1)
 						{
 						$j_next = ($j + 1);
 						$VL_this_hour_calls=0;
@@ -2563,7 +2563,7 @@ sub calculate_drops
 		{
 		# TODAY ANSWERS
 		## BEGIN CACHED HOURLY ANALYSIS: ANSWERS
-		if ($VLhour_counts > 0) 
+		if ($VLhour_counts > 0)
 			{
 			$VL_current_hour_calls=0;
 			$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date >= '$VL_current_hour_date' and status IN($camp_ANS_STAT_SQL);";
@@ -2599,7 +2599,7 @@ sub calculate_drops
 				if ($DBX) {print "VCHC CACHED HOUR CHECK: |$sthArows|$VCHC_entry_count|$stmtA|\n";}
 
 				# if cached totals equal the number of hours, then run single query to get sums of calls, if not, go hour-by-hour
-				if ($VCHC_entry_count >= $HRhour_test) 
+				if ($VCHC_entry_count >= $HRhour_test)
 					{
 					$VCHC_cache_calls=0;
 					$stmtA = "SELECT sum(calls) from vicidial_campaign_hour_counts where campaign_id='$campaign_id[$i]' and type='ANSWERS' and date_hour >= '$VL_day_start_date' and date_hour < '$VL_current_hour_date' and last_update > next_hour;";
@@ -2641,13 +2641,13 @@ sub calculate_drops
 					if ($DBX) {print "VCHC CACHED HOUR LIST QUERY: |$sthArows_hr|$stmtA|\n";}
 
 					$j=0;
-					while ($j < $HRhour_test) 
+					while ($j < $HRhour_test)
 						{
 						$k=0;
 						$cache_hour_found=0;
 						while ($sthArows_hr > $k)
 							{
-							if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") ) 
+							if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") )
 								{
 								$VCSanswers_today[$i] = ($VCSanswers_today[$i] + $VCHC_calls[$k]);
 								$cache_hour_found++;
@@ -2655,7 +2655,7 @@ sub calculate_drops
 								}
 							$k++;
 							}
-						if ($cache_hour_found < 1) 
+						if ($cache_hour_found < 1)
 							{
 							$j_next = ($j + 1);
 							$VL_this_hour_calls=0;
@@ -2705,7 +2705,7 @@ sub calculate_drops
 
 		# TODAY ANSWERING MACHINES CODED BY AGENTS FOR UK OFCOM CALCULATION
 		## BEGIN CACHED HOURLY ANALYSIS: MACHINES
-		if ($VLhour_counts > 0) 
+		if ($VLhour_counts > 0)
 			{
 			$VL_current_hour_calls=0;
 			$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date >= '$VL_current_hour_date' and status IN($camp_AM_STAT_SQL) and user != 'VDAD';";
@@ -2741,7 +2741,7 @@ sub calculate_drops
 				if ($DBX) {print "VCHC CACHED HOUR CHECK: |$sthArows|$VCHC_entry_count|$stmtA|\n";}
 
 				# if cached totals equal the number of hours, then run single query to get sums of calls, if not, go hour-by-hour
-				if ($VCHC_entry_count >= $HRhour_test) 
+				if ($VCHC_entry_count >= $HRhour_test)
 					{
 					$VCHC_cache_calls=0;
 					$stmtA = "SELECT sum(calls) from vicidial_campaign_hour_counts where campaign_id='$campaign_id[$i]' and type='MACHINES' and date_hour >= '$VL_day_start_date' and date_hour < '$VL_current_hour_date' and last_update > next_hour;";
@@ -2783,13 +2783,13 @@ sub calculate_drops
 					if ($DBX) {print "VCHC CACHED HOUR LIST QUERY: |$sthArows_hr|$stmtA|\n";}
 
 					$j=0;
-					while ($j < $HRhour_test) 
+					while ($j < $HRhour_test)
 						{
 						$k=0;
 						$cache_hour_found=0;
 						while ($sthArows_hr > $k)
 							{
-							if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") ) 
+							if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") )
 								{
 								$VCSam_today[$i] = ($VCSam_today[$i] + $VCHC_calls[$k]);
 								$cache_hour_found++;
@@ -2797,7 +2797,7 @@ sub calculate_drops
 								}
 							$k++;
 							}
-						if ($cache_hour_found < 1) 
+						if ($cache_hour_found < 1)
 							{
 							$j_next = ($j + 1);
 							$VL_this_hour_calls=0;
@@ -2847,7 +2847,7 @@ sub calculate_drops
 
 		# TODAY AGENT HANDLED ANSWERED CALLS FOR UK OFCOM CALCULATION
 		## BEGIN CACHED HOURLY ANALYSIS: AGENTS
-		if ($VLhour_counts > 0) 
+		if ($VLhour_counts > 0)
 			{
 			$VL_current_hour_calls=0;
 			$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date >= '$VL_current_hour_date' and status IN($camp_ANS_STAT_SQL) and user != 'VDAD';";
@@ -2883,7 +2883,7 @@ sub calculate_drops
 				if ($DBX) {print "VCHC CACHED HOUR CHECK: |$sthArows|$VCHC_entry_count|$stmtA|\n";}
 
 				# if cached totals equal the number of hours, then run single query to get sums of calls, if not, go hour-by-hour
-				if ($VCHC_entry_count >= $HRhour_test) 
+				if ($VCHC_entry_count >= $HRhour_test)
 					{
 					$VCHC_cache_calls=0;
 					$stmtA = "SELECT sum(calls) from vicidial_campaign_hour_counts where campaign_id='$campaign_id[$i]' and type='AGENTS' and date_hour >= '$VL_day_start_date' and date_hour < '$VL_current_hour_date' and last_update > next_hour;";
@@ -2925,13 +2925,13 @@ sub calculate_drops
 					if ($DBX) {print "VCHC CACHED HOUR LIST QUERY: |$sthArows_hr|$stmtA|\n";}
 
 					$j=0;
-					while ($j < $HRhour_test) 
+					while ($j < $HRhour_test)
 						{
 						$k=0;
 						$cache_hour_found=0;
 						while ($sthArows_hr > $k)
 							{
-							if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") ) 
+							if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") )
 								{
 								$VCSagenthandled_today[$i] = ($VCSagenthandled_today[$i] + $VCHC_calls[$k]);
 								$cache_hour_found++;
@@ -2939,7 +2939,7 @@ sub calculate_drops
 								}
 							$k++;
 							}
-						if ($cache_hour_found < 1) 
+						if ($cache_hour_found < 1)
 							{
 							$j_next = ($j + 1);
 							$VL_this_hour_calls=0;
@@ -2989,7 +2989,7 @@ sub calculate_drops
 
 		# TODAY DROPS
 		## BEGIN CACHED HOURLY ANALYSIS: DROPS
-		if ($VLhour_counts > 0) 
+		if ($VLhour_counts > 0)
 			{
 			$VL_current_hour_calls=0;
 			$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date >= '$VL_current_hour_date' and status IN('DROP','XDROP');";
@@ -3025,7 +3025,7 @@ sub calculate_drops
 				if ($DBX) {print "VCHC CACHED HOUR CHECK: |$sthArows|$VCHC_entry_count|$stmtA|\n";}
 
 				# if cached totals equal the number of hours, then run single query to get sums of calls, if not, go hour-by-hour
-				if ($VCHC_entry_count >= $HRhour_test) 
+				if ($VCHC_entry_count >= $HRhour_test)
 					{
 					$VCHC_cache_calls=0;
 					$stmtA = "SELECT sum(calls) from vicidial_campaign_hour_counts where campaign_id='$campaign_id[$i]' and type='DROPS' and date_hour >= '$VL_day_start_date' and date_hour < '$VL_current_hour_date' and last_update > next_hour;";
@@ -3067,13 +3067,13 @@ sub calculate_drops
 					if ($DBX) {print "VCHC CACHED HOUR LIST QUERY: |$sthArows_hr|$stmtA|\n";}
 
 					$j=0;
-					while ($j < $HRhour_test) 
+					while ($j < $HRhour_test)
 						{
 						$k=0;
 						$cache_hour_found=0;
 						while ($sthArows_hr > $k)
 							{
-							if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") ) 
+							if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") )
 								{
 								$VCSdrops_today[$i] = ($VCSdrops_today[$i] + $VCHC_calls[$k]);
 								$cache_hour_found++;
@@ -3081,7 +3081,7 @@ sub calculate_drops
 								}
 							$k++;
 							}
-						if ($cache_hour_found < 1) 
+						if ($cache_hour_found < 1)
 							{
 							$j_next = ($j + 1);
 							$VL_this_hour_calls=0;
@@ -3132,26 +3132,26 @@ sub calculate_drops
 		if ($VCSdrops_today[$i] > 0)
 			{
 			$temp_raw_drop = $VCSdrops_today[$i];
-			if ( ($SSofcom_uk_drop_calc > 0) && ($ofcom_uk_drop_calc[$i] =~ /Y/) ) 
+			if ( ($SSofcom_uk_drop_calc > 0) && ($ofcom_uk_drop_calc[$i] =~ /Y/) )
 				{
 				$ofcom_uk_drop_calc_ANY++;
 
 				$debug_camp_output .= "UK OFCOM DROP CALCULATION TRIGGERED FOR THIS CAMPAIGN: ($SSofcom_uk_drop_calc|$ofcom_uk_drop_calc[$i]|$ofcom_uk_drop_calc_ANY)\n";
 				if ($DBX) {print "UK OFCOM DROP CALCULATION TRIGGERED FOR THIS CAMPAIGN: ($SSofcom_uk_drop_calc|$ofcom_uk_drop_calc[$i]|$ofcom_uk_drop_calc_ANY)\n";}
 
-				# As of December 2015, OFCOM in the UK changed their method for calculating 
-				# the drop(or abandon) percentage for an outbound dialing campaign. The new 
-				# formula is to estimate the number of drops that were answering machines. 
-				# They do this by using the agent-answered percentage of answering machines 
-				# and subtracting that percentage from the number of drops. Then that new 
-				# drop number is divided by the total agent-answered human-answered calls 
-				# PLUS the number of drops. This differs in several ways from the way it had 
-				# been done, as well as the way the drop percentage has been calculated in 
+				# As of December 2015, OFCOM in the UK changed their method for calculating
+				# the drop(or abandon) percentage for an outbound dialing campaign. The new
+				# formula is to estimate the number of drops that were answering machines.
+				# They do this by using the agent-answered percentage of answering machines
+				# and subtracting that percentage from the number of drops. Then that new
+				# drop number is divided by the total agent-answered human-answered calls
+				# PLUS the number of drops. This differs in several ways from the way it had
+				# been done, as well as the way the drop percentage has been calculated in
 				# the USA and Canada. This new UK drop calculation method is activated as a
 				# system setting AND a campaign option. Both must be enabled for the campaign
-				# to use the new method. You will see code similar to the section below for 
+				# to use the new method. You will see code similar to the section below for
 				# each time period that the drop percentage is calculated. In order for agent-
-				# statused answering machines to be calculated properly, we have added an 
+				# statused answering machines to be calculated properly, we have added an
 				# answering machine status flag that is used to gather those statuses.
 
 				if ($VCSam_today[$i] > 0)
@@ -3218,7 +3218,7 @@ sub calculate_drops
 			if ($VCSdrops_hour[$i] > 0)
 				{
 				$VCSdrops_hour_pct[$i] = ( ($VCSdrops_hour[$i] / $VCScalls_hour[$i]) * 100 );
-				$VCSdrops_hour_pct[$i] = sprintf("%.2f", $VCSdrops_hour_pct[$i]);	
+				$VCSdrops_hour_pct[$i] = sprintf("%.2f", $VCSdrops_hour_pct[$i]);
 				}
 			$rec_count++;
 			}
@@ -3263,7 +3263,7 @@ sub calculate_drops
 			if ($VCSdrops_halfhour[$i] > 0)
 				{
 				$VCSdrops_halfhour_pct[$i] = ( ($VCSdrops_halfhour[$i] / $VCScalls_halfhour[$i]) * 100 );
-				$VCSdrops_halfhour_pct[$i] = sprintf("%.2f", $VCSdrops_halfhour_pct[$i]);	
+				$VCSdrops_halfhour_pct[$i] = sprintf("%.2f", $VCSdrops_halfhour_pct[$i]);
 				}
 			}
 		$sthA->finish();
@@ -3307,7 +3307,7 @@ sub calculate_drops
 			if ($VCSdrops_five[$i] > 0)
 				{
 				$VCSdrops_five_pct[$i] = ( ($VCSdrops_five[$i] / $VCScalls_five[$i]) * 100 );
-				$VCSdrops_five_pct[$i] = sprintf("%.2f", $VCSdrops_five_pct[$i]);	
+				$VCSdrops_five_pct[$i] = sprintf("%.2f", $VCSdrops_five_pct[$i]);
 				}
 			}
 		$sthA->finish();
@@ -3438,7 +3438,7 @@ sub calculate_drops
 			}
 		$sthA->finish();
 		}
-	
+
 	# if campaign realtime agent time stats is enabled, gather those here
 	if ($realtime_agent_time_stats[$i] =~ /WAIT_CUST_ACW/)
 		{
@@ -3504,13 +3504,13 @@ sub calculate_drops
 			$update_SQL='';
 			if ($STATSmax_outbound < $VCSlive_calls[$i])
 				{$update_SQL .= ",max_outbound='$VCSlive_calls[$i]'";}
-			if ($STATSmax_agents < $total_agents[$i]) 
+			if ($STATSmax_agents < $total_agents[$i])
 				{$update_SQL .= ",max_agents='$total_agents[$i]'";}
 			if ($STATSmax_remote_agents < $total_remote_agents[$i])
 				{$update_SQL .= ",max_remote_agents='$total_remote_agents[$i]'";}
-			if ($STATStotal_calls != $VCScalls_today[$i]) 
+			if ($STATStotal_calls != $VCScalls_today[$i])
 				{$update_SQL .= ",total_calls='$VCScalls_today[$i]'";}
-			if (length($update_SQL) > 5) 
+			if (length($update_SQL) > 5)
 				{
 				$stmtA = "UPDATE vicidial_daily_max_stats SET update_time=NOW()$update_SQL where campaign_id='$campaign_id[$i]' and stats_type='CAMPAIGN' and stats_flag='OPEN';";
 				$affected_rows = $dbhA->do($stmtA);
@@ -3752,20 +3752,20 @@ sub launch_max_calls_gather
 			$sthA->finish();
 
 			$update_SQL='';
-			if ($STATSmax_channels < $tc_count) 
+			if ($STATSmax_channels < $tc_count)
 				{$update_SQL .= ",max_channels='$tc_count'";}
-			if ($STATSmax_calls < $tcalls_count) 
+			if ($STATSmax_calls < $tcalls_count)
 				{$update_SQL .= ",max_calls='$tcalls_count'";}
-			if ($STATSmax_inbound < $incalls_count) 
+			if ($STATSmax_inbound < $incalls_count)
 				{$update_SQL .= ",max_inbound='$incalls_count'";}
-			if ($STATSmax_outbound < $outcalls_count) 
+			if ($STATSmax_outbound < $outcalls_count)
 				{$update_SQL .= ",max_outbound='$outcalls_count'";}
-			if ($STATSmax_agents < $live_agents) 
+			if ($STATSmax_agents < $live_agents)
 				{$update_SQL .= ",max_agents='$live_agents'";}
-			if ($STATSmax_remote_agents < $live_remote_agents) 
+			if ($STATSmax_remote_agents < $live_remote_agents)
 				{$update_SQL .= ",max_remote_agents='$live_remote_agents'";}
 
-			if (length($update_SQL) > 5) 
+			if (length($update_SQL) > 5)
 				{
 				$stmtA = "UPDATE vicidial_daily_max_stats SET update_time=NOW()$update_SQL where campaign_id='' and stats_type='TOTAL' and stats_flag='OPEN';";
 				$affected_rows = $dbhA->do($stmtA);
@@ -3872,12 +3872,12 @@ sub launch_carrier_stats_gather
 	if ($Wsec < 10) {$Wsec = "0$Wsec";}
 	$timeTWENTYFOURhoursAGO = "$Wyear-$Wmon-$Wmday $Whour:$Wmin:$Wsec";
 
-	if ($DB > 0) 
+	if ($DB > 0)
 		{
 		print "Carrier stats gather starting now:\n";
 		print "Time now:                    $timeNOW\n";
 		}
-	if ($DBX > 0) 
+	if ($DBX > 0)
 		{
 		print "Time one minute ago:         $timeONEminuteAGO\n";
 		print "Time five minutes ago:       $timeFIVEminutesAGO\n";
@@ -3890,7 +3890,7 @@ sub launch_carrier_stats_gather
 
 	$CARRIERstatsHTML='';
 	## BEGIN CACHED HOURLY ANALYSIS: CARRIER LOG - 24 hours
-	if ($VLhour_counts > 0) 
+	if ($VLhour_counts > 0)
 		{
 		$secH = time();
 		($HRsec,$HRmin,$HRhour,$HRmday,$HRmon,$HRyear,$HRwday,$HRyday,$HRisdst) = localtime(time);
@@ -3939,7 +3939,7 @@ sub launch_carrier_stats_gather
 			if ($DBX) {print "VCLHC CURRENT HOUR INSERT/UPDATE    TOTAL|$affected_rows|$stmtA|\n";}
 			$ctp++;
 			}
-		if ($ctp < 1) 
+		if ($ctp < 1)
 			{
 			$stmtA="INSERT IGNORE INTO vicidial_carrier_hour_counts SET date_hour='$CL_current_hour_date',type='ANSWER',next_hour='$CL_next_hour_date',last_update=NOW(),calls='0',hr='$HRhour_test' ON DUPLICATE KEY UPDATE last_update=NOW(),calls='0';";
 			$affected_rows = $dbhA->do($stmtA);
@@ -3972,7 +3972,7 @@ sub launch_carrier_stats_gather
 		if ($DBX) {print "VCLHC CACHED HOUR CHECK: |$sthArows|$VCLHC_entry_count|$stmtA|\n";}
 
 		# if cached not equal the number of hours, then run go hour-by-hour and generate it
-		if ($VCLHC_entry_count < 24) 
+		if ($VCLHC_entry_count < 24)
 			{
 			$start_24_hour=24;
 			while ($start_24_hour > 0)
@@ -4025,7 +4025,7 @@ sub launch_carrier_stats_gather
 					if ($DBX) {print "VCLHC STATS INSERT/UPDATE    TOTAL|$affected_rows|$stmtA|\n";}
 					$ctp++;
 					}
-				if ($ctp < 1) 
+				if ($ctp < 1)
 					{
 					$stmtA="INSERT IGNORE INTO vicidial_carrier_hour_counts SET date_hour='$sCL_start_hour_date',type='ANSWER',next_hour='$sCL_next_hour_date',last_update=NOW(),calls='0',hr='$cSHhour_test' ON DUPLICATE KEY UPDATE last_update=NOW(),calls='0';";
 					$affected_rows = $dbhA->do($stmtA);
@@ -4098,7 +4098,7 @@ sub launch_carrier_stats_gather
 	if (length($dialstatuses) > 1)
 		{
 		## BEGIN CACHED HOURLY ANALYSIS: CARRIER LOG - 6 hours
-		if ($VLhour_counts > 0) 
+		if ($VLhour_counts > 0)
 			{
 			if ($DBX > 1) {print "STARTING CARRIER CACHED HOURLY TOTAL CALLS:  |$CL_current_hour_date|$CL_next_hour_date|\n";}
 
@@ -4273,7 +4273,7 @@ sub launch_carrier_stats_gather
 			$FIVEminute_pct = (100 * $FIVEminute_prw);
 			$ONEminute_pct = (100 * $ONEminute_prw);
 
-		#	if ($DBX) 
+		#	if ($DBX)
 		#		{
 		#		print "$TFhour_prw  | ($TFhour_count[$print_ctp], $TFhour_total)\n";
 		#		print "$SIXhour_prw  | ($SIXhour_count[$print_ctp], $SIXhour_total)\n";
@@ -4403,7 +4403,7 @@ sub calculate_drops_inbound
 		}
 	$sthA->finish();
 	chop($camp_ANS_STAT_SQL);
-	if (length($camp_ANS_STAT_SQL)<2) 
+	if (length($camp_ANS_STAT_SQL)<2)
 		{$camp_ANS_STAT_SQL="'-NONE-'";}
 
 	if ($DBX) {print "     ANSWERED STATUSES: $group_id[$p]|$camp_ANS_STAT_SQL|\n";}
@@ -4465,7 +4465,7 @@ sub calculate_drops_inbound
 
 	# TODAY CALL AND DROP STATS
 	## BEGIN CACHED HOURLY ANALYSIS: INBOUND CALLS
-	if ($VCLhour_counts > 0) 
+	if ($VCLhour_counts > 0)
 		{
 		$secH = time();
 		($HRsec,$HRmin,$HRhour,$HRmday,$HRmon,$HRyear,$HRwday,$HRyday,$HRisdst) = localtime(time);
@@ -4524,7 +4524,7 @@ sub calculate_drops_inbound
 			if ($DBX) {print "VCLHC CACHED HOUR CHECK: |$sthArows|$VCHC_entry_count|$stmtA|\n";}
 
 			# if cached totals equal the number of hours, then run single query to get sums of calls, if not, go hour-by-hour
-			if ($VCHC_entry_count >= $HRhour_test) 
+			if ($VCHC_entry_count >= $HRhour_test)
 				{
 				$VCHC_cache_calls=0;
 				$stmtA = "SELECT sum(calls) from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='CALLS' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour;";
@@ -4566,13 +4566,13 @@ sub calculate_drops_inbound
 				if ($DBX) {print "VCLHC CACHED HOUR LIST QUERY: |$sthArows_hr|$stmtA|\n";}
 
 				$j=0;
-				while ($j < $HRhour_test) 
+				while ($j < $HRhour_test)
 					{
 					$k=0;
 					$cache_hour_found=0;
 					while ($sthArows_hr > $k)
 						{
-						if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") ) 
+						if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") )
 							{
 							$iVCScalls_today[$p] = ($iVCScalls_today[$p] + $VCHC_calls[$k]);
 							$cache_hour_found++;
@@ -4580,7 +4580,7 @@ sub calculate_drops_inbound
 							}
 						$k++;
 						}
-					if ($cache_hour_found < 1) 
+					if ($cache_hour_found < 1)
 						{
 						$j_next = ($j + 1);
 						$VCL_this_hour_calls=0;
@@ -4632,7 +4632,7 @@ sub calculate_drops_inbound
 		{
 		# TODAY ANSWERS
 		## BEGIN CACHED HOURLY ANALYSIS: INBOUND CALLS ANSWERS
-		if ($VCLhour_counts > 0) 
+		if ($VCLhour_counts > 0)
 			{
 			$VCL_current_hour_calls=0;
 			$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date >= '$VCL_current_hour_date' and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE','TIMEOT','AFTHRS','NANQUE','INBND','MAXCAL');";
@@ -4668,7 +4668,7 @@ sub calculate_drops_inbound
 				if ($DBX) {print "VCLHC CACHED HOUR CHECK: |$sthArows|$VCHC_entry_count|$stmtA|\n";}
 
 				# if cached totals equal the number of hours, then run single query to get sums of calls, if not, go hour-by-hour
-				if ($VCHC_entry_count >= $HRhour_test) 
+				if ($VCHC_entry_count >= $HRhour_test)
 					{
 					$VCHC_cache_calls=0;
 					$stmtA = "SELECT sum(calls) from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='ANSWERS' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour;";
@@ -4710,13 +4710,13 @@ sub calculate_drops_inbound
 					if ($DBX) {print "VCLHC CACHED HOUR LIST QUERY: |$sthArows_hr|$stmtA|\n";}
 
 					$j=0;
-					while ($j < $HRhour_test) 
+					while ($j < $HRhour_test)
 						{
 						$k=0;
 						$cache_hour_found=0;
 						while ($sthArows_hr > $k)
 							{
-							if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") ) 
+							if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") )
 								{
 								$iVCSanswers_today[$p] = ($iVCSanswers_today[$p] + $VCHC_calls[$k]);
 								$cache_hour_found++;
@@ -4724,7 +4724,7 @@ sub calculate_drops_inbound
 								}
 							$k++;
 							}
-						if ($cache_hour_found < 1) 
+						if ($cache_hour_found < 1)
 							{
 							$j_next = ($j + 1);
 							$VCL_this_hour_calls=0;
@@ -4774,7 +4774,7 @@ sub calculate_drops_inbound
 
 		# TODAY DROPS
 		## BEGIN CACHED HOURLY ANALYSIS: INBOUND CALLS DROPS
-		if ($VCLhour_counts > 0) 
+		if ($VCLhour_counts > 0)
 			{
 			$VCL_current_hour_calls=0;
 			$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date >= '$VCL_current_hour_date' and status IN('DROP','XDROP');";
@@ -4810,7 +4810,7 @@ sub calculate_drops_inbound
 				if ($DBX) {print "VCLHC CACHED HOUR CHECK: |$sthArows|$VCHC_entry_count|$stmtA|\n";}
 
 				# if cached totals equal the number of hours, then run single query to get sums of calls, if not, go hour-by-hour
-				if ($VCHC_entry_count >= $HRhour_test) 
+				if ($VCHC_entry_count >= $HRhour_test)
 					{
 					$VCHC_cache_calls=0;
 					$stmtA = "SELECT sum(calls) from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='DROPS' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour;";
@@ -4852,13 +4852,13 @@ sub calculate_drops_inbound
 					if ($DBX) {print "VCLHC CACHED HOUR LIST QUERY: |$sthArows_hr|$stmtA|\n";}
 
 					$j=0;
-					while ($j < $HRhour_test) 
+					while ($j < $HRhour_test)
 						{
 						$k=0;
 						$cache_hour_found=0;
 						while ($sthArows_hr > $k)
 							{
-							if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") ) 
+							if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") )
 								{
 								$iVCSdrops_today[$p] = ($iVCSdrops_today[$p] + $VCHC_calls[$k]);
 								$cache_hour_found++;
@@ -4866,7 +4866,7 @@ sub calculate_drops_inbound
 								}
 							$k++;
 							}
-						if ($cache_hour_found < 1) 
+						if ($cache_hour_found < 1)
 							{
 							$j_next = ($j + 1);
 							$VCL_this_hour_calls=0;
@@ -4926,7 +4926,7 @@ sub calculate_drops_inbound
 
 		# TODAY ANSWER PERCENT OF HOLD SECONDS one and two
 		## BEGIN CACHED HOURLY ANALYSIS: INBOUND CALLS HOLD SECONDS 1
-		if ($VCLhour_counts > 0) 
+		if ($VCLhour_counts > 0)
 			{
 			$VCL_current_hour_calls=0;
 			$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date >= '$VCL_current_hour_date' and queue_seconds <= $answer_sec_pct_rt_stat_one and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE','TIMEOT','AFTHRS','NANQUE','INBND','MAXCAL');";
@@ -4962,7 +4962,7 @@ sub calculate_drops_inbound
 				if ($DBX) {print "VCLHC CACHED HOUR CHECK: |$sthArows|$VCHC_entry_count|$stmtA|\n";}
 
 				# if cached totals equal the number of hours, then run single query to get sums of calls, if not, go hour-by-hour
-				if ($VCHC_entry_count >= $HRhour_test) 
+				if ($VCHC_entry_count >= $HRhour_test)
 					{
 					$VCHC_cache_calls=0;
 					$stmtA = "SELECT sum(calls) from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='HOLDSEC1' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour;";
@@ -5004,13 +5004,13 @@ sub calculate_drops_inbound
 					if ($DBX) {print "VCLHC CACHED HOUR LIST QUERY: |$sthArows_hr|$stmtA|\n";}
 
 					$j=0;
-					while ($j < $HRhour_test) 
+					while ($j < $HRhour_test)
 						{
 						$k=0;
 						$cache_hour_found=0;
 						while ($sthArows_hr > $k)
 							{
-							if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") ) 
+							if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") )
 								{
 								$answer_sec_pct_rt_stat_one_PCT[$p] = ($answer_sec_pct_rt_stat_one_PCT[$p] + $VCHC_calls[$k]);
 								$cache_hour_found++;
@@ -5018,7 +5018,7 @@ sub calculate_drops_inbound
 								}
 							$k++;
 							}
-						if ($cache_hour_found < 1) 
+						if ($cache_hour_found < 1)
 							{
 							$j_next = ($j + 1);
 							$VCL_this_hour_calls=0;
@@ -5067,7 +5067,7 @@ sub calculate_drops_inbound
 			}
 
 		## BEGIN CACHED HOURLY ANALYSIS: INBOUND CALLS HOLD SECONDS 2
-		if ($VCLhour_counts > 0) 
+		if ($VCLhour_counts > 0)
 			{
 			$VCL_current_hour_calls=0;
 			$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date >= '$VCL_current_hour_date' and queue_seconds <= $answer_sec_pct_rt_stat_two and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE','TIMEOT','AFTHRS','NANQUE','INBND','MAXCAL');";
@@ -5103,7 +5103,7 @@ sub calculate_drops_inbound
 				if ($DBX) {print "VCLHC CACHED HOUR CHECK: |$sthArows|$VCHC_entry_count|$stmtA|\n";}
 
 				# if cached totals equal the number of hours, then run single query to get sums of calls, if not, go hour-by-hour
-				if ($VCHC_entry_count >= $HRhour_test) 
+				if ($VCHC_entry_count >= $HRhour_test)
 					{
 					$VCHC_cache_calls=0;
 					$stmtA = "SELECT sum(calls) from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='HOLDSEC2' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour;";
@@ -5145,13 +5145,13 @@ sub calculate_drops_inbound
 					if ($DBX) {print "VCLHC CACHED HOUR LIST QUERY: |$sthArows_hr|$stmtA|\n";}
 
 					$j=0;
-					while ($j < $HRhour_test) 
+					while ($j < $HRhour_test)
 						{
 						$k=0;
 						$cache_hour_found=0;
 						while ($sthArows_hr > $k)
 							{
-							if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") ) 
+							if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") )
 								{
 								$answer_sec_pct_rt_stat_two_PCT[$p] = ($answer_sec_pct_rt_stat_two_PCT[$p] + $VCHC_calls[$k]);
 								$cache_hour_found++;
@@ -5159,7 +5159,7 @@ sub calculate_drops_inbound
 								}
 							$k++;
 							}
-						if ($cache_hour_found < 1) 
+						if ($cache_hour_found < 1)
 							{
 							$j_next = ($j + 1);
 							$VCL_this_hour_calls=0;
@@ -5209,7 +5209,7 @@ sub calculate_drops_inbound
 
 		# TODAY TOTAL HOLD TIME FOR ANSWERED CALLS
 		## BEGIN CACHED HOURLY ANALYSIS: INBOUND CALLS HOLD SEC ANSWERED
-		if ($VCLhour_counts > 0) 
+		if ($VCLhour_counts > 0)
 			{
 			$VCL_current_hour_calls=0;
 			$stmtA = "SELECT sum(queue_seconds) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date >= '$VCL_current_hour_date' and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE','TIMEOT','AFTHRS','NANQUE','INBND','MAXCAL');";
@@ -5245,7 +5245,7 @@ sub calculate_drops_inbound
 				if ($DBX) {print "VCLHC CACHED HOUR CHECK: |$sthArows|$VCHC_entry_count|$stmtA|\n";}
 
 				# if cached totals equal the number of hours, then run single query to get sums of calls, if not, go hour-by-hour
-				if ($VCHC_entry_count >= $HRhour_test) 
+				if ($VCHC_entry_count >= $HRhour_test)
 					{
 					$VCHC_cache_calls=0;
 					$stmtA = "SELECT sum(calls) from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='HDSECANS' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour;";
@@ -5287,13 +5287,13 @@ sub calculate_drops_inbound
 					if ($DBX) {print "VCLHC CACHED HOUR LIST QUERY: |$sthArows_hr|$stmtA|\n";}
 
 					$j=0;
-					while ($j < $HRhour_test) 
+					while ($j < $HRhour_test)
 						{
 						$k=0;
 						$cache_hour_found=0;
 						while ($sthArows_hr > $k)
 							{
-							if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") ) 
+							if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") )
 								{
 								$hold_sec_answer_calls[$p] = ($hold_sec_answer_calls[$p] + $VCHC_calls[$k]);
 								$cache_hour_found++;
@@ -5301,7 +5301,7 @@ sub calculate_drops_inbound
 								}
 							$k++;
 							}
-						if ($cache_hour_found < 1) 
+						if ($cache_hour_found < 1)
 							{
 							$j_next = ($j + 1);
 							$VCL_this_hour_calls=0;
@@ -5352,7 +5352,7 @@ sub calculate_drops_inbound
 
 		# TODAY TOTAL HOLD TIME FOR DROP CALLS
 		## BEGIN CACHED HOURLY ANALYSIS: INBOUND CALLS HOLD TIME DROPS
-		if ($VCLhour_counts > 0) 
+		if ($VCLhour_counts > 0)
 			{
 			$VCL_current_hour_calls=0;
 			$stmtA = "SELECT sum(queue_seconds) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date >= '$VCL_current_hour_date' and status IN('DROP','XDROP');";
@@ -5388,7 +5388,7 @@ sub calculate_drops_inbound
 				if ($DBX) {print "VCLHC CACHED HOUR CHECK: |$sthArows|$VCHC_entry_count|$stmtA|\n";}
 
 				# if cached totals equal the number of hours, then run single query to get sums of calls, if not, go hour-by-hour
-				if ($VCHC_entry_count >= $HRhour_test) 
+				if ($VCHC_entry_count >= $HRhour_test)
 					{
 					$VCHC_cache_calls=0;
 					$stmtA = "SELECT sum(calls) from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='HDSECDRP' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour;";
@@ -5430,13 +5430,13 @@ sub calculate_drops_inbound
 					if ($DBX) {print "VCLHC CACHED HOUR LIST QUERY: |$sthArows_hr|$stmtA|\n";}
 
 					$j=0;
-					while ($j < $HRhour_test) 
+					while ($j < $HRhour_test)
 						{
 						$k=0;
 						$cache_hour_found=0;
 						while ($sthArows_hr > $k)
 							{
-							if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") ) 
+							if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") )
 								{
 								$hold_sec_drop_calls[$p] = ($hold_sec_drop_calls[$p] + $VCHC_calls[$k]);
 								$cache_hour_found++;
@@ -5444,7 +5444,7 @@ sub calculate_drops_inbound
 								}
 							$k++;
 							}
-						if ($cache_hour_found < 1) 
+						if ($cache_hour_found < 1)
 							{
 							$j_next = ($j + 1);
 							$VCL_this_hour_calls=0;
@@ -5495,7 +5495,7 @@ sub calculate_drops_inbound
 
 		# TODAY TOTAL QUEUE TIME FOR QUEUE CALLS
 		## BEGIN CACHED HOURLY ANALYSIS: INBOUND CALLS HOLD SEC ALL
-		if ($VCLhour_counts > 0) 
+		if ($VCLhour_counts > 0)
 			{
 			$VCL_current_hour_calls=0;
 			$stmtA = "SELECT sum(queue_seconds) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date >= '$VCL_current_hour_date';";
@@ -5531,7 +5531,7 @@ sub calculate_drops_inbound
 				if ($DBX) {print "VCLHC CACHED HOUR CHECK: |$sthArows|$VCHC_entry_count|$stmtA|\n";}
 
 				# if cached totals equal the number of hours, then run single query to get sums of calls, if not, go hour-by-hour
-				if ($VCHC_entry_count >= $HRhour_test) 
+				if ($VCHC_entry_count >= $HRhour_test)
 					{
 					$VCHC_cache_calls=0;
 					$stmtA = "SELECT sum(calls) from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='HDSECALL' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour;";
@@ -5573,13 +5573,13 @@ sub calculate_drops_inbound
 					if ($DBX) {print "VCLHC CACHED HOUR LIST QUERY: |$sthArows_hr|$stmtA|\n";}
 
 					$j=0;
-					while ($j < $HRhour_test) 
+					while ($j < $HRhour_test)
 						{
 						$k=0;
 						$cache_hour_found=0;
 						while ($sthArows_hr > $k)
 							{
-							if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") ) 
+							if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") )
 								{
 								$hold_sec_queue_calls[$p] = ($hold_sec_queue_calls[$p] + $VCHC_calls[$k]);
 								$cache_hour_found++;
@@ -5587,7 +5587,7 @@ sub calculate_drops_inbound
 								}
 							$k++;
 							}
-						if ($cache_hour_found < 1) 
+						if ($cache_hour_found < 1)
 							{
 							$j_next = ($j + 1);
 							$VCL_this_hour_calls=0;
@@ -5694,7 +5694,7 @@ sub calculate_drops_inbound
 			{
 			# FIND STATUSES IN STATUS CATEGORY
 			## BEGIN CACHED HOURLY ANALYSIS: INBOUND CALLS
-			if ($VCLhour_counts > 0) 
+			if ($VCLhour_counts > 0)
 				{
 				$VCL_current_hour_calls=0;
 				$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date >= '$VCL_current_hour_date' and status IN($CATstatusesSQL);";
@@ -5730,7 +5730,7 @@ sub calculate_drops_inbound
 					if ($DBX) {print "VCLHC CACHED HOUR CHECK: |$sthArows|$VCHC_entry_count|$stmtA|\n";}
 
 					# if cached totals equal the number of hours, then run single query to get sums of calls, if not, go hour-by-hour
-					if ($VCHC_entry_count >= $HRhour_test) 
+					if ($VCHC_entry_count >= $HRhour_test)
 						{
 						$VCHC_cache_calls=0;
 						$stmtA = "SELECT sum(calls) from vicidial_ingroup_hour_counts where group_id='$group_id[$p]' and type='C_$VSCcategory' and date_hour >= '$VCL_day_start_date' and date_hour < '$VCL_current_hour_date' and last_update > next_hour;";
@@ -5772,13 +5772,13 @@ sub calculate_drops_inbound
 						if ($DBX) {print "VCLHC CACHED HOUR LIST QUERY: |$sthArows_hr|$stmtA|\n";}
 
 						$j=0;
-						while ($j < $HRhour_test) 
+						while ($j < $HRhour_test)
 							{
 							$k=0;
 							$cache_hour_found=0;
 							while ($sthArows_hr > $k)
 								{
-								if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") ) 
+								if ( ($VCHC_hour[$k] == $j) || ($VCHC_hour[$j] eq "$j") )
 									{
 									$VSCtally = ($VSCtally + $VCHC_calls[$k]);
 									$cache_hour_found++;
@@ -5786,7 +5786,7 @@ sub calculate_drops_inbound
 									}
 								$k++;
 								}
-							if ($cache_hour_found < 1) 
+							if ($cache_hour_found < 1)
 								{
 								$j_next = ($j + 1);
 								$VCL_this_hour_calls=0;
@@ -5900,15 +5900,15 @@ sub calculate_drops_inbound
 			$sthA->finish();
 
 			$update_SQL='';
-			if ($STATSmax_inbound < $iVCSlive_calls[$p]) 
+			if ($STATSmax_inbound < $iVCSlive_calls[$p])
 				{$update_SQL .= ",max_inbound='$iVCSlive_calls[$p]'";}
-			if ($STATSmax_agents < $itotal_agents[$p]) 
+			if ($STATSmax_agents < $itotal_agents[$p])
 				{$update_SQL .= ",max_agents='$itotal_agents[$p]'";}
 			if ($STATSmax_remote_agents < $itotal_remote_agents[$p])
 				{$update_SQL .= ",max_remote_agents='$itotal_remote_agents[$p]'";}
-			if ($STATStotal_calls != $iVCScalls_today[$p]) 
+			if ($STATStotal_calls != $iVCScalls_today[$p])
 				{$update_SQL .= ",total_calls='$iVCScalls_today[$p]'";}
-			if (length($update_SQL) > 5) 
+			if (length($update_SQL) > 5)
 				{
 				$stmtA = "UPDATE vicidial_daily_max_stats SET update_time=NOW()$update_SQL where campaign_id='$group_id[$p]' and stats_type='INGROUP' and stats_flag='OPEN';";
 				$affected_rows = $dbhA->do($stmtA);
@@ -5965,7 +5965,7 @@ sub calculate_dial_level
 		}
 	$sthA->finish();
 
-	if ($available_only_ratio_tally[$i] =~ /Y/) 
+	if ($available_only_ratio_tally[$i] =~ /Y/)
 		{$VCSagents_calc[$i] = $VCSREADY[$i];}
 	else
 		{
@@ -6011,7 +6011,7 @@ sub calculate_dial_level
 		}
 	else
 		{
-		$agents_average_onemin[$i] =	$total_agents_avg[$i];  
+		$agents_average_onemin[$i] =	$total_agents_avg[$i];
 		$differential_onemin[$i] =		$stat_differential[$i];
 		}
 
@@ -6040,7 +6040,7 @@ sub calculate_dial_level
 			}
 		else
 			{$intensity_diff[$i] = ($differential_pct_raw[$i] * ($intensity_mul[$i] + 1) );}
-		$intensity_pct[$i] = sprintf("%.2f", $intensity_diff[$i]);	
+		$intensity_pct[$i] = sprintf("%.2f", $intensity_diff[$i]);
 		$intensity_diff_mul[$i] = ($intensity_diff[$i] / 100);
 
 		# Suggested dial_level based on differential
@@ -6105,19 +6105,19 @@ sub calculate_dial_level
 			}
 		if ( ($VCScalls_today[$i] > 50) && ($VCSdrops_answers_today_pct[$i] > $adaptive_dropped_percentage[$i]) )
 			{
-			if ($dial_method[$i] =~ /ADAPT_HARD_LIMIT/) 
+			if ($dial_method[$i] =~ /ADAPT_HARD_LIMIT/)
 				{
 				$intensity_dial_level[$i] = "1.0";
 				$adaptive_string .= "      DROP RATE OVER HARD LIMIT FOR TODAY! HARD DIAL LEVEL TO: 1.0\n";
 				}
-			if ($dial_method[$i] =~ /ADAPT_AVERAGE/) 
+			if ($dial_method[$i] =~ /ADAPT_AVERAGE/)
 				{
 				$intensity_dial_level[$i] = ($intensity_dial_level[$i] / 2);
 				$adaptive_string .= "      DROP RATE OVER LIMIT FOR TODAY! AVERAGING DIAL LEVEL TO: $intensity_dial_level[$i]\n";
 				}
-			if ($dial_method[$i] =~ /ADAPT_TAPERED/) 
+			if ($dial_method[$i] =~ /ADAPT_TAPERED/)
 				{
-				if ($tapered_hours_left[$i] < 0) 
+				if ($tapered_hours_left[$i] < 0)
 					{
 					$intensity_dial_level[$i] = "1.0";
 					$adaptive_string .= "      DROP RATE OVER LAST HOUR LIMIT FOR TODAY! TAPERING DIAL LEVEL TO: 1.0\n";
@@ -6200,7 +6200,7 @@ sub call_quota_logging
 	$settings_session_score=0;
 	$zero_rank_after_call=0;
 
-	if (length($CQcontainer_entry) > 5) 
+	if (length($CQcontainer_entry) > 5)
 		{
 		@container_lines = split(/\n/,$CQcontainer_entry);
 		$c=0;
@@ -6213,7 +6213,7 @@ sub call_quota_logging
 				if ($container_lines[$c] =~ /^zero_rank_after_call/i)
 					{
 					$container_lines[$c] =~ s/zero_rank_after_call=>//gi;
-					if ( ($container_lines[$c] >= 0) && ($container_lines[$c] <= 1) ) 
+					if ( ($container_lines[$c] >= 0) && ($container_lines[$c] <= 1) )
 						{
 						$zero_rank_after_call = $container_lines[$c];
 						}
@@ -6224,12 +6224,12 @@ sub call_quota_logging
 					$session_one_valid=0; $session_one_start=''; $session_one_end='';
 					$session_one = $container_lines[$c];
 					$session_one =~ s/session_one=>//gi;
-					if ( (length($session_one) > 0) && (length($session_one) <= 9) && ($session_one =~ /,/) ) 
+					if ( (length($session_one) > 0) && (length($session_one) <= 9) && ($session_one =~ /,/) )
 						{
 						@session_oneARY = split(/,/,$session_one);
 						$session_one_start = $session_oneARY[0];
 						$session_one_end = $session_oneARY[1];
-						if ( (length($session_one_start) >= 4) && (length($session_one_end) >= 4) && ($session_one_start < $session_one_end) && ($session_one_end <= 2400) ) 
+						if ( (length($session_one_start) >= 4) && (length($session_one_end) >= 4) && ($session_one_start < $session_one_end) && ($session_one_end <= 2400) )
 							{
 							$settings_session_score++;
 							$session_one_valid++;
@@ -6241,12 +6241,12 @@ sub call_quota_logging
 					$session_two_valid=0; $session_two_start=''; $session_two_end='';
 					$session_two = $container_lines[$c];
 					$session_two =~ s/session_two=>//gi;
-					if ( (length($session_two) > 0) && (length($session_two) <= 9) && ($session_two =~ /,/) ) 
+					if ( (length($session_two) > 0) && (length($session_two) <= 9) && ($session_two =~ /,/) )
 						{
 						@session_twoARY = split(/,/,$session_two);
 						$session_two_start = $session_twoARY[0];
 						$session_two_end = $session_twoARY[1];
-						if ( (length($session_two_start) >= 4) && (length($session_two_end) >= 4) && ($session_one_valid > 0) && ($session_one_end <= $session_two_start) && ($session_two_start < $session_two_end) && ($session_two_end <= 2400) ) 
+						if ( (length($session_two_start) >= 4) && (length($session_two_end) >= 4) && ($session_one_valid > 0) && ($session_one_end <= $session_two_start) && ($session_two_start < $session_two_end) && ($session_two_end <= 2400) )
 							{
 							$settings_session_score++;
 							$session_two_valid++;
@@ -6258,12 +6258,12 @@ sub call_quota_logging
 					$session_three_valid=0; $session_three_start=''; $session_three_end='';
 					$session_three = $container_lines[$c];
 					$session_three =~ s/session_three=>//gi;
-					if ( (length($session_three) > 0) && (length($session_three) <= 9) && ($session_three =~ /,/) ) 
+					if ( (length($session_three) > 0) && (length($session_three) <= 9) && ($session_three =~ /,/) )
 						{
 						@session_threeARY = split(/,/,$session_three);
 						$session_three_start = $session_threeARY[0];
 						$session_three_end = $session_threeARY[1];
-						if ( (length($session_three_start) >= 4) && (length($session_three_end) >= 4) && ($session_two_valid > 0) && ($session_two_end <= $session_three_start) && ($session_three_start < $session_three_end) && ($session_three_end <= 2400) ) 
+						if ( (length($session_three_start) >= 4) && (length($session_three_end) >= 4) && ($session_two_valid > 0) && ($session_two_end <= $session_three_start) && ($session_three_start < $session_three_end) && ($session_three_end <= 2400) )
 							{
 							$settings_session_score++;
 							$session_three_valid++;
@@ -6275,12 +6275,12 @@ sub call_quota_logging
 					$session_four_valid=0; $session_four_start=''; $session_four_end='';
 					$session_four = $container_lines[$c];
 					$session_four =~ s/session_four=>//gi;
-					if ( (length($session_four) > 0) && (length($session_four) <= 9) && ($session_four =~ /,/) ) 
+					if ( (length($session_four) > 0) && (length($session_four) <= 9) && ($session_four =~ /,/) )
 						{
 						@session_fourARY = split(/,/,$session_four);
 						$session_four_start = $session_fourARY[0];
 						$session_four_end = $session_fourARY[1];
-						if ( (length($session_four_start) >= 4) && (length($session_four_end) >= 4) && ($session_three_valid > 0) && ($session_three_end <= $session_four_start) && ($session_four_start < $session_four_end) && ($session_four_end <= 2400) ) 
+						if ( (length($session_four_start) >= 4) && (length($session_four_end) >= 4) && ($session_three_valid > 0) && ($session_three_end <= $session_four_start) && ($session_four_start < $session_four_end) && ($session_four_end <= 2400) )
 							{
 							$settings_session_score++;
 							$session_four_valid++;
@@ -6292,12 +6292,12 @@ sub call_quota_logging
 					$session_five_valid=0; $session_five_start=''; $session_five_end='';
 					$session_five = $container_lines[$c];
 					$session_five =~ s/session_five=>//gi;
-					if ( (length($session_five) > 0) && (length($session_five) <= 9) && ($session_five =~ /,/) ) 
+					if ( (length($session_five) > 0) && (length($session_five) <= 9) && ($session_five =~ /,/) )
 						{
 						@session_fiveARY = split(/,/,$session_five);
 						$session_five_start = $session_fiveARY[0];
 						$session_five_end = $session_fiveARY[1];
-						if ( (length($session_five_start) >= 4) && (length($session_five_end) >= 4) && ($session_four_valid > 0) && ($session_four_end <= $session_five_start) && ($session_five_start < $session_five_end) && ($session_five_end <= 2400) ) 
+						if ( (length($session_five_start) >= 4) && (length($session_five_end) >= 4) && ($session_four_valid > 0) && ($session_four_end <= $session_five_start) && ($session_five_start < $session_five_end) && ($session_five_end <= 2400) )
 							{
 							$settings_session_score++;
 							$session_five_valid++;
@@ -6309,12 +6309,12 @@ sub call_quota_logging
 					$session_six_valid=0; $session_six_start=''; $session_six_end='';
 					$session_six = $container_lines[$c];
 					$session_six =~ s/session_six=>//gi;
-					if ( (length($session_six) > 0) && (length($session_six) <= 9) && ($session_six =~ /,/) ) 
+					if ( (length($session_six) > 0) && (length($session_six) <= 9) && ($session_six =~ /,/) )
 						{
 						@session_sixARY = split(/,/,$session_six);
 						$session_six_start = $session_sixARY[0];
 						$session_six_end = $session_sixARY[1];
-						if ( (length($session_six_start) >= 4) && (length($session_six_end) >= 4) && ($session_five_valid > 0) && ($session_five_end <= $session_six_start) && ($session_six_start < $session_six_end) && ($session_six_end <= 2400) ) 
+						if ( (length($session_six_start) >= 4) && (length($session_six_end) >= 4) && ($session_five_valid > 0) && ($session_five_end <= $session_six_start) && ($session_six_start < $session_six_end) && ($session_six_end <= 2400) )
 							{
 							$settings_session_score++;
 							$session_six_valid++;
@@ -6370,40 +6370,40 @@ sub call_quota_logging
 				@VDLcall_timeARY = split(/:/,$VDLcall_datetimeARY[1]);
 				$VDLcall_hourmin = "$VDLcall_timeARY[0]$VDLcall_timeARY[1]";
 
-				if ( ($session_one_start <= $VDLcall_hourmin) and ($session_one_end > $VDLcall_hourmin) ) 
+				if ( ($session_one_start <= $VDLcall_hourmin) and ($session_one_end > $VDLcall_hourmin) )
 					{
-					$call_in_session=1; 
-					$session_newSQL=",session_one_calls='1',session_one_today_calls='1'"; 
+					$call_in_session=1;
+					$session_newSQL=",session_one_calls='1',session_one_today_calls='1'";
 					$session_updateSQL=",session_one_calls=(session_one_calls + 1),session_one_today_calls=(session_one_today_calls + 1)";
 					}
-				if ( ($session_two_start <= $VDLcall_hourmin) and ($session_two_end > $VDLcall_hourmin) ) 
+				if ( ($session_two_start <= $VDLcall_hourmin) and ($session_two_end > $VDLcall_hourmin) )
 					{
-					$call_in_session=2; 
-					$session_newSQL=",session_two_calls='1',session_two_today_calls='1'"; 
+					$call_in_session=2;
+					$session_newSQL=",session_two_calls='1',session_two_today_calls='1'";
 					$session_updateSQL=",session_two_calls=(session_two_calls + 1),session_two_today_calls=(session_two_today_calls + 1)";
 					}
-				if ( ($session_three_start <= $VDLcall_hourmin) and ($session_three_end > $VDLcall_hourmin) ) 
+				if ( ($session_three_start <= $VDLcall_hourmin) and ($session_three_end > $VDLcall_hourmin) )
 					{
-					$call_in_session=3; 
-					$session_newSQL=",session_three_calls='1',session_three_today_calls='1'"; 
+					$call_in_session=3;
+					$session_newSQL=",session_three_calls='1',session_three_today_calls='1'";
 					$session_updateSQL=",session_three_calls=(session_three_calls + 1),session_three_today_calls=(session_three_today_calls + 1)";
 					}
-				if ( ($session_four_start <= $VDLcall_hourmin) and ($session_four_end > $VDLcall_hourmin) ) 
+				if ( ($session_four_start <= $VDLcall_hourmin) and ($session_four_end > $VDLcall_hourmin) )
 					{
-					$call_in_session=4; 
-					$session_newSQL=",session_four_calls='1',session_four_today_calls='1'"; 
+					$call_in_session=4;
+					$session_newSQL=",session_four_calls='1',session_four_today_calls='1'";
 					$session_updateSQL=",session_four_calls=(session_four_calls + 1),session_four_today_calls=(session_four_today_calls + 1)";
 					}
-				if ( ($session_five_start <= $VDLcall_hourmin) and ($session_five_end > $VDLcall_hourmin) ) 
+				if ( ($session_five_start <= $VDLcall_hourmin) and ($session_five_end > $VDLcall_hourmin) )
 					{
-					$call_in_session=5; 
-					$session_newSQL=",session_five_calls='1',session_five_today_calls='1'"; 
+					$call_in_session=5;
+					$session_newSQL=",session_five_calls='1',session_five_today_calls='1'";
 					$session_updateSQL=",session_five_calls=(session_five_calls + 1),session_five_today_calls=(session_five_today_calls + 1)";
 					}
-				if ( ($session_six_start <= $VDLcall_hourmin) and ($session_six_end > $VDLcall_hourmin) ) 
+				if ( ($session_six_start <= $VDLcall_hourmin) and ($session_six_end > $VDLcall_hourmin) )
 					{
-					$call_in_session=6; 
-					$session_newSQL=",session_six_calls='1',session_six_today_calls='1'"; 
+					$call_in_session=6;
+					$session_newSQL=",session_six_calls='1',session_six_today_calls='1'";
 					$session_updateSQL=",session_six_calls=(session_six_calls + 1),session_six_today_calls=(session_six_today_calls + 1)";
 					}
 
@@ -6438,9 +6438,9 @@ sub call_quota_logging
 						$VLCQCfirst_call_epoch =		$aryA[1];
 						$VLCQClast_call_date =			$aryA[2];
 
-						if ($VDLcall_datetime ne $VLCQClast_call_date) 
+						if ($VDLcall_datetime ne $VLCQClast_call_date)
 							{
-							if ($VLCQCfirst_call_epoch >= $today_start_epoch) 
+							if ($VLCQCfirst_call_epoch >= $today_start_epoch)
 								{$day_updateSQL=',day_one_calls=(day_one_calls+1)';}
 							if ( ($VLCQCfirst_call_epoch >= $day_two_start_epoch) and ($VLCQCfirst_call_epoch < $today_start_epoch) )
 								{$day_updateSQL=',day_two_calls=(day_two_calls+1)';}
@@ -6499,13 +6499,13 @@ sub MathZDC
 		{
 		return $quotient;
 		}
-	else 
+	else
 		{
 		if ($dividend == '0')
 			{
 			return 0;
 			}
-		else 
+		else
 			{
 			$percent = ($dividend/$divisor);
 			return $percent;

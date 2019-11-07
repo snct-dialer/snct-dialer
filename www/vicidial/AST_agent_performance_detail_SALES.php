@@ -1,6 +1,6 @@
-<?php 
+<?php
 # AST_agent_performance_detail.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -563,26 +563,26 @@ $HTML_text.=" NOTE: stats taken from shift specified\n";
 
 else
 {
-if ($shift == 'AM') 
+if ($shift == 'AM')
 	{
 	$time_BEGIN=$AM_shift_BEGIN;
 	$time_END=$AM_shift_END;
-	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}   
+	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}
 	if (strlen($time_END) < 6) {$time_END = "15:14:59";}
 	}
-if ($shift == 'PM') 
+if ($shift == 'PM')
 	{
 	$time_BEGIN=$PM_shift_BEGIN;
 	$time_END=$PM_shift_END;
 	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "15:15:00";}
 	if (strlen($time_END) < 6) {$time_END = "23:15:00";}
 	}
-if ($shift == 'ALL') 
+if ($shift == 'ALL')
 	{
 	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}
 	if (strlen($time_END) < 6) {$time_END = "23:59:59";}
 	}
-$query_date_BEGIN = "$query_date $time_BEGIN";   
+$query_date_BEGIN = "$query_date $time_BEGIN";
 $query_date_END = "$end_date $time_END";
 
 $HTML_text.="Agent Performance Detail                        $NOW_TIME\n";
@@ -682,7 +682,7 @@ while ($i < $rows_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
 #	$row[0] = ($row[0] - 1);	# subtract 1 for login/logout event compensation
-	
+
 	$calls[$i] =		$row[0];
 	$talk_sec[$i] =		$row[1];
 	$full_name[$i] =	$row[2];
@@ -694,19 +694,19 @@ while ($i < $rows_to_print)
 	$dead_sec[$i] =		$row[8];
 	$user_group[$i] =	$row[9];
 	$customer_sec[$i] =	($talk_sec[$i] - $dead_sec[$i]);
-	
+
 	if (preg_match("/\|$status[$i]\|/i", $sale_pattern_match)) {
-		$sale_counts[$row[3]]+=$row[0]; 
+		$sale_counts[$row[3]]+=$row[0];
 	}
 
 	$max_varname="max_".$status[$i];
 	$$max_varname=1;
-	
+
 	if ($customer_sec[$i] < 1)
 		{$customer_sec[$i]=0;}
 	if ( (!preg_match("/\-$status[$i]\-/i", $statuses)) and (strlen($status[$i])>0) )
 		{
-		if (preg_match("/\|$status[$i]\|/i", $sale_pattern_match)) 
+		if (preg_match("/\|$status[$i]\|/i", $sale_pattern_match))
 			{
 			$statusesTXT = sprintf("%8s", $status[$i]);
 			$statusesHEAD .= "----------+";
@@ -794,7 +794,7 @@ while ($m < $k)
 				$Sdead_sec =	($Sdead_sec + $dead_sec[$i]);
 				$Scustomer_sec =	($Scustomer_sec + $customer_sec[$i]);
 
-				if (preg_match("/\|$Sstatus\|/i", $sale_pattern_match)) 
+				if (preg_match("/\|$Sstatus\|/i", $sale_pattern_match))
 					{
 					$SstatusTXT = sprintf("%8s", $calls[$i]);
 					$SstatusesHTML .= " $SstatusTXT |";
@@ -802,8 +802,8 @@ while ($m < $k)
 					}
 
 				if ($calls[$i]>$$max_varname) {$$max_varname=$calls[$i];}
-				$graph_stats[$m][(15+$n)]=($calls[$i]+0);					
-				
+				$graph_stats[$m][(15+$n)]=($calls[$i]+0);
+
 
 				$status_found++;
 				}
@@ -813,7 +813,7 @@ while ($m < $k)
 			{
 			$SstatusesHTML .= "        0 |";
 			$CSVstatuses.=",\"0\"";
-			$graph_stats[$m][(15+$n)]=0;					
+			$graph_stats[$m][(15+$n)]=0;
 			}
 		### END loop through each stat line ###
 		$n++;
@@ -850,20 +850,20 @@ while ($m < $k)
 
 	if ($non_latin < 1)
 		{
-		$Sfull_name=	sprintf("%-15s", $Sfull_name); 
+		$Sfull_name=	sprintf("%-15s", $Sfull_name);
 		while(strlen($Sfull_name)>15) {$Sfull_name = substr("$Sfull_name", 0, -1);}
-		$Suser_group=	sprintf("%-20s", $Suser_group); 
+		$Suser_group=	sprintf("%-20s", $Suser_group);
 		while(strlen($Suser_group)>20) {$Suser_group = substr("$Suser_group", 0, -1);}
-		$Slast_user_group=	sprintf("%-20s", $Slast_user_group); 
+		$Slast_user_group=	sprintf("%-20s", $Slast_user_group);
 		while(strlen($Slast_user_group)>20) {$Slast_user_group = substr("$Slast_user_group", 0, -1);}
 		$Suser =		sprintf("%-8s", $Suser);
 		while(strlen($Suser)>8) {$Suser = substr("$Suser", 0, -1);}
 		}
 	else
-		{	
-		$Sfull_name=	sprintf("%-45s", $Sfull_name); 
+		{
+		$Sfull_name=	sprintf("%-45s", $Sfull_name);
 		while(mb_strlen($Sfull_name,'utf-8')>15) {$Sfull_name = mb_substr("$Sfull_name", 0, -1,'utf-8');}
-		$Suser_group=	sprintf("%-45s", $Suser_group); 
+		$Suser_group=	sprintf("%-45s", $Suser_group);
 		while(mb_strlen($Suser_group,'utf-8')>15) {$Suser_group = mb_substr("$Suser_group", 0, -1,'utf-8');}
 		$Suser =	sprintf("%-24s", $Suser);
 		while(mb_strlen($Suser,'utf-8')>8) {$Suser = mb_substr("$Suser", 0, -1,'utf-8');}
@@ -898,20 +898,20 @@ while ($m < $k)
 	$graph_stats[$m][12]=trim($Sdead_avg);
 	$graph_stats[$m][13]=trim($Scustomer_sec);
 	$graph_stats[$m][14]=trim($Scustomer_avg);
-			
-	$pfUSERtime_MS =		sec_convert($Stime,'H'); 
-	$pfUSERtotTALK_MS =		sec_convert($Stalk_sec,'H'); 
-	$pfUSERavgTALK_MS =		sec_convert($Stalk_avg,'M'); 
-	$USERtotPAUSE_MS =		sec_convert($Spause_sec,'H'); 
-	$USERavgPAUSE_MS =		sec_convert($Spause_avg,'M'); 
-	$USERtotWAIT_MS =		sec_convert($Swait_sec,'H'); 
-	$USERavgWAIT_MS =		sec_convert($Swait_avg,'M'); 
-	$USERtotDISPO_MS =		sec_convert($Sdispo_sec,'H'); 
-	$USERavgDISPO_MS =		sec_convert($Sdispo_avg,'M'); 
-	$USERtotDEAD_MS =		sec_convert($Sdead_sec,'H'); 
-	$USERavgDEAD_MS =		sec_convert($Sdead_avg,'M'); 
-	$USERtotCUSTOMER_MS =	sec_convert($Scustomer_sec,'H'); 
-	$USERavgCUSTOMER_MS =	sec_convert($Scustomer_avg,'M'); 
+
+	$pfUSERtime_MS =		sec_convert($Stime,'H');
+	$pfUSERtotTALK_MS =		sec_convert($Stalk_sec,'H');
+	$pfUSERavgTALK_MS =		sec_convert($Stalk_avg,'M');
+	$USERtotPAUSE_MS =		sec_convert($Spause_sec,'H');
+	$USERavgPAUSE_MS =		sec_convert($Spause_avg,'M');
+	$USERtotWAIT_MS =		sec_convert($Swait_sec,'H');
+	$USERavgWAIT_MS =		sec_convert($Swait_avg,'M');
+	$USERtotDISPO_MS =		sec_convert($Sdispo_sec,'H');
+	$USERavgDISPO_MS =		sec_convert($Sdispo_avg,'M');
+	$USERtotDEAD_MS =		sec_convert($Sdead_sec,'H');
+	$USERavgDEAD_MS =		sec_convert($Sdead_avg,'M');
+	$USERtotCUSTOMER_MS =	sec_convert($Scustomer_sec,'H');
+	$USERavgCUSTOMER_MS =	sec_convert($Scustomer_avg,'M');
 
 	$pfUSERtime_MS =		sprintf("%9s", $pfUSERtime_MS);
 	$pfUSERtotTALK_MS =		sprintf("%8s", $pfUSERtotTALK_MS);
@@ -1004,7 +1004,7 @@ while ($n < $j)
 		$i++;
 		}
 	### END loop through each stat line ###
-	if (preg_match("/\|$Sstatus\|/i", $sale_pattern_match)) 
+	if (preg_match("/\|$Sstatus\|/i", $sale_pattern_match))
 		{
 		if ($status_found < 1)
 			{
@@ -1039,19 +1039,19 @@ else {$TOTavgWAIT = ($TOTtotWAIT / $TOTcalls);}
 if ($TOTtotCUSTOMER < 1) {$TOTavgCUSTOMER = '0';}
 else {$TOTavgCUSTOMER = ($TOTtotCUSTOMER / $TOTcalls);}
 
-$TOTtime_MS =		sec_convert($TOTtime,'H'); 
-$TOTtotTALK_MS =	sec_convert($TOTtotTALK,'H'); 
-$TOTtotDISPO_MS =	sec_convert($TOTtotDISPO,'H'); 
-$TOTtotDEAD_MS =	sec_convert($TOTtotDEAD,'H'); 
-$TOTtotPAUSE_MS =	sec_convert($TOTtotPAUSE,'H'); 
-$TOTtotWAIT_MS =	sec_convert($TOTtotWAIT,'H'); 
-$TOTtotCUSTOMER_MS =	sec_convert($TOTtotCUSTOMER,'H'); 
-$TOTavgTALK_MS =	sec_convert($TOTavgTALK,'M'); 
-$TOTavgDISPO_MS =	sec_convert($TOTavgDISPO,'H'); 
-$TOTavgDEAD_MS =	sec_convert($TOTavgDEAD,'H'); 
-$TOTavgPAUSE_MS =	sec_convert($TOTavgPAUSE,'H'); 
-$TOTavgWAIT_MS =	sec_convert($TOTavgWAIT,'H'); 
-$TOTavgCUSTOMER_MS =	sec_convert($TOTavgCUSTOMER,'H'); 
+$TOTtime_MS =		sec_convert($TOTtime,'H');
+$TOTtotTALK_MS =	sec_convert($TOTtotTALK,'H');
+$TOTtotDISPO_MS =	sec_convert($TOTtotDISPO,'H');
+$TOTtotDEAD_MS =	sec_convert($TOTtotDEAD,'H');
+$TOTtotPAUSE_MS =	sec_convert($TOTtotPAUSE,'H');
+$TOTtotWAIT_MS =	sec_convert($TOTtotWAIT,'H');
+$TOTtotCUSTOMER_MS =	sec_convert($TOTtotCUSTOMER,'H');
+$TOTavgTALK_MS =	sec_convert($TOTavgTALK,'M');
+$TOTavgDISPO_MS =	sec_convert($TOTavgDISPO,'H');
+$TOTavgDEAD_MS =	sec_convert($TOTavgDEAD,'H');
+$TOTavgPAUSE_MS =	sec_convert($TOTavgPAUSE,'H');
+$TOTavgWAIT_MS =	sec_convert($TOTavgWAIT,'H');
+$TOTavgCUSTOMER_MS =	sec_convert($TOTavgCUSTOMER,'H');
 
 $TOTtime_MS =		sprintf("%10s", $TOTtime_MS);
 $TOTtotTALK_MS =	sprintf("%10s", $TOTtotTALK_MS);
@@ -1123,11 +1123,11 @@ for ($d=0; $d<count($graph_stats); $d++) {
 		$varname=$Sstatus."_graph";
 		$max_varname="max_".$Sstatus;
 #		$max.= "<!-- $max_varname => ".$$max_varname." //-->\n";
-			
+
 		$$varname.="  <tr><td class='chart_td$class'>".$graph_stats[$d][0]."</td><td nowrap class='chart_td value$class'><img src='images/bar.png' alt='' width='".round(400*$graph_stats[$d][($e+15)]/$$max_varname)."' height='16' />".$graph_stats[$d][($e+15)]."</td></tr>";
 	}
 }
-		
+
 $CALLS_graph.="<tr><th class='thgraph' scope='col'>TOTAL:</th><th class='thgraph' scope='col'>".trim($TOTcalls)."</th></tr></table>";
 $TIME_graph.="<tr><th class='thgraph' scope='col'>TOTAL:</th><th class='thgraph' scope='col'>".trim($TOTtime_MS)."</th></tr></table>";
 $PAUSE_graph.="<tr><th class='thgraph' scope='col'>TOTAL:</th><th class='thgraph' scope='col'>".trim($TOTtotPAUSE_MS)."</th></tr></table>";
@@ -1150,7 +1150,7 @@ for ($e=0; $e<count($statusesARY); $e++) {
 	$$graph_var.="<tr><th class='thgraph' scope='col'>TOTAL:</th><th class='thgraph' scope='col'>".trim($$total_var)."</th></tr></table>";
 }
 
-$JS_onload.="\tDrawGraph('CALLS', '1');\n"; 
+$JS_onload.="\tDrawGraph('CALLS', '1');\n";
 $JS_text.="function DrawGraph(graph, th_id) {\n";
 $JS_text.="	var graph_CALLS=\"$CALLS_graph\";\n";
 $JS_text.="	var graph_TIME=\"$TIME_graph\";\n";
@@ -1336,7 +1336,7 @@ while ($m < $k)
 	$Suser=$PCusersARY[$m];
 	$Sfull_name=$PCuser_namesARY[$m];
 	$Suser_group=$PCuser_groupsARY[$m];
-	$Slast_user_group=$recent_user_groups[$Suser];	
+	$Slast_user_group=$recent_user_groups[$Suser];
 	$Spause_sec=0;
 	$Snon_pause_sec=0;
 	$Stotal_sec=0;
@@ -1362,14 +1362,14 @@ while ($m < $k)
 				$Snon_pause_sec =	($Snon_pause_sec + $PCnon_pause_sec[$i]);
 				$Stotal_sec =	($Stotal_sec + $PCnon_pause_sec[$i] + $PCpause_sec[$i]);
 
-				$USERcodePAUSE_MS =		sec_convert($PCpause_sec[$i],'H'); 
+				$USERcodePAUSE_MS =		sec_convert($PCpause_sec[$i],'H');
 				$pfUSERcodePAUSE_MS =	sprintf("%6s", $USERcodePAUSE_MS);
 
 				$SstatusTXT = sprintf("%8s", $pfUSERcodePAUSE_MS);
 				$SstatusesHTML .= " $SstatusTXT |";
 
 				if ($PCpause_sec[$i]>$$max_varname) {$$max_varname=$PCpause_sec[$i];}
-				$graph_stats[$m][(4+$n)]=$PCpause_sec[$i];					
+				$graph_stats[$m][(4+$n)]=$PCpause_sec[$i];
 
 				$CSV_statuses.=",\"$USERcodePAUSE_MS\"";
 				$status_found++;
@@ -1380,7 +1380,7 @@ while ($m < $k)
 			{
 			$SstatusesHTML .= "        0 |";
 			$CSV_statuses.=",\"0\"";
-			$graph_stats[$m][(4+$n)]=0;					
+			$graph_stats[$m][(4+$n)]=0;
 			}
 		### END loop through each stat line ###
 		$n++;
@@ -1393,20 +1393,20 @@ while ($m < $k)
 
 	if ($non_latin < 1)
 		{
-		$Sfull_name=	sprintf("%-15s", $Sfull_name); 
+		$Sfull_name=	sprintf("%-15s", $Sfull_name);
 		while(strlen($Sfull_name)>15) {$Sfull_name = substr("$Sfull_name", 0, -1);}
-		$Suser_group=	sprintf("%-20s", $Suser_group); 
+		$Suser_group=	sprintf("%-20s", $Suser_group);
 		while(strlen($Suser_group)>20) {$Suser_group = substr("$Suser_group", 0, -1);}
-		$Slast_user_group=	sprintf("%-20s", $Slast_user_group); 
+		$Slast_user_group=	sprintf("%-20s", $Slast_user_group);
 		while(strlen($Slast_user_group)>20) {$Slast_user_group = substr("$Slast_user_group", 0, -1);}
 		$Suser =		sprintf("%-8s", $Suser);
 		while(strlen($Suser)>8) {$Suser = substr("$Suser", 0, -1);}
 		}
 	else
 		{
-		$Sfull_name=	sprintf("%-45s", $Sfull_name); 
+		$Sfull_name=	sprintf("%-45s", $Sfull_name);
 		while(mb_strlen($Sfull_name,'utf-8')>15) {$Sfull_name = mb_substr("$Sfull_name", 0, -1,'utf-8');}
-		$Suser_group=	sprintf("%-45s", $Suser_group); 
+		$Suser_group=	sprintf("%-45s", $Suser_group);
 		while(mb_strlen($Suser_group,'utf-8')>15) {$Suser_group = mb_substr("$Suser_group", 0, -1,'utf-8');}
 		$Suser =	sprintf("%-24s", $Suser);
 		while(mb_strlen($Suser,'utf-8')>8) {$Suser = mb_substr("$Suser", 0, -1,'utf-8');}
@@ -1422,9 +1422,9 @@ while ($m < $k)
 	$graph_stats[$m][2]="$Snon_pause_sec";
 	$graph_stats[$m][3]="$Spause_sec";
 
-	$USERtotPAUSE_MS =		sec_convert($Spause_sec,'H'); 
-	$USERtotNONPAUSE_MS =	sec_convert($Snon_pause_sec,'H'); 
-	$USERtotTOTAL_MS =		sec_convert($Stotal_sec,'H'); 
+	$USERtotPAUSE_MS =		sec_convert($Spause_sec,'H');
+	$USERtotNONPAUSE_MS =	sec_convert($Snon_pause_sec,'H');
+	$USERtotTOTAL_MS =		sec_convert($Stotal_sec,'H');
 
 	$pfUSERtotPAUSE_MS =		sprintf("%8s", $USERtotPAUSE_MS);
 	$pfUSERtotNONPAUSE_MS =		sprintf("%8s", $USERtotNONPAUSE_MS);
@@ -1492,7 +1492,7 @@ while ($n < $j)
 		$TOTtotPAUSE = ($TOTtotPAUSE + $Scalls);
 		$$total_var=$Scalls;
 
-		$USERsumstatPAUSE_MS =		sec_convert($Scalls,'H'); 
+		$USERsumstatPAUSE_MS =		sec_convert($Scalls,'H');
 		$pfUSERsumstatPAUSE_MS =	sprintf("%8s", $USERsumstatPAUSE_MS);
 
 		$SUMstatusTXT = sprintf("%8s", $pfUSERsumstatPAUSE_MS);
@@ -1505,9 +1505,9 @@ while ($n < $j)
 
 	$TOT_AGENTS = sprintf("%-4s", $m);
 
-	$TOTtotPAUSE_MS =		sec_convert($TOTtotPAUSE,'H'); 
-	$TOTtotNONPAUSE_MS =	sec_convert($TOTtotNONPAUSE,'H'); 
-	$TOTtotTOTAL_MS =		sec_convert($TOTtotTOTAL,'H'); 
+	$TOTtotPAUSE_MS =		sec_convert($TOTtotPAUSE,'H');
+	$TOTtotNONPAUSE_MS =	sec_convert($TOTtotNONPAUSE,'H');
+	$TOTtotTOTAL_MS =		sec_convert($TOTtotTOTAL,'H');
 
 	$TOTtotPAUSE_MS =		sprintf("%10s", $TOTtotPAUSE_MS);
 	$TOTtotNONPAUSE_MS =	sprintf("%10s", $TOTtotNONPAUSE_MS);
@@ -1539,7 +1539,7 @@ for ($d=0; $d<count($graph_stats); $d++) {
 		$Sstatus=$sub_statusesARY[$e];
 		$varname=$Sstatus."_graph";
 		$max_varname="max_".$Sstatus;
-	
+
 		$$varname.="  <tr><td class='chart_td$class'>".$graph_stats[$d][0]."</td><td nowrap class='chart_td value$class'><img src='images/bar.png' alt='' width='".round(400*$graph_stats[$d][($e+4)]/$$max_varname)."' height='16' />".sec_convert($graph_stats[$d][($e+4)], 'H')."</td></tr>";
 	}
 }
@@ -1553,7 +1553,7 @@ for ($e=0; $e<count($sub_statusesARY); $e++) {
 	$graph_var=$Sstatus."_graph";
 	$$graph_var.="<tr><th class='thgraph' scope='col'>TOTAL:</th><th class='thgraph' scope='col'>".trim(sec_convert($$total_var, 'H'))."</th></tr></table>";
 }
-$JS_onload.="\tDrawPauseGraph('TOTAL', '1');\n"; 
+$JS_onload.="\tDrawPauseGraph('TOTAL', '1');\n";
 $JS_text="<script language='Javascript'>\n";
 $JS_text.="function DrawPauseGraph(graph, th_id) {\n";
 $JS_text.="	var graph_TOTAL=\"$TOTAL_graph\";\n";
@@ -1637,7 +1637,7 @@ if ($report_display_type=="HTML")
 	{
 	$HTML_text.=$GRAPH_text;
 	}
-else 
+else
 	{
 	$HTML_text.=$ASCII_text;
 	}

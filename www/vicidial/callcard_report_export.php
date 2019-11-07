@@ -1,8 +1,8 @@
 <?php
 # callcard_report_export.php
-# 
+#
 # displays options to select for downloading of callcard logs selecting by run,
-# batch, pack and date range. 
+# batch, pack and date range.
 # downloads to a flat text file that is tab delimited
 #
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2

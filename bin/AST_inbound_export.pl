@@ -2,7 +2,7 @@
 #
 # AST_inbound_export.pl                version: 2.12
 #
-# This script is designed to gather inbound call data and dump 
+# This script is designed to gather inbound call data and dump
 # into a tab-delimited text file
 #
 # /usr/share/astguiclient/AST_inbound_export.pl --ingroups=---ALL--- --start-date=2016-01-01 --end-date=2016-06-30 --debug
@@ -10,7 +10,7 @@
 # Copyright (C) 2016  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
-# 161201-1913 - First version based upon AST_list_export.pl 
+# 161201-1913 - First version based upon AST_list_export.pl
 #
 
 $txt = '.txt';
@@ -192,13 +192,13 @@ if (length($ARGV[0])>1)
 			$ingroups = $data_in[1];
 			$ingroups =~ s/ .*$//gi;
 			$ingroupsSQL = $ingroups;
-			if ($ingroupsSQL =~ /--ALL--/) 
+			if ($ingroupsSQL =~ /--ALL--/)
 				{
 				$ingroupsSQL='';
 				}
 			else
 				{
-				if ($ingroupsSQL =~ /-/) 
+				if ($ingroupsSQL =~ /-/)
 					{
 					$ingroupsSQL =~ s/-/','/gi;
 					}
@@ -354,9 +354,9 @@ while ($sthArows > $rec_count)
 	$campaign_id = 				$aryA[6];
 
 	$look_up_lead=1;
-	if ($agent_only > 0) 
+	if ($agent_only > 0)
 		{
-		if ( ($user =~ /VDAD|VDIC|VDCL/) || (length($user)<1) ) 
+		if ( ($user =~ /VDAD|VDIC|VDCL/) || (length($user)<1) )
 			{
 			$look_up_lead=0;
 			$SKIP_LEAD++;
@@ -442,7 +442,7 @@ sub select_format_loop
 
 	$call_data = "$call_date\t$phone_number\t$status\t$user\t$full_name\t$campaign_id\t$vendor_lead_code\t$list_id\t$first_name\t$last_name\t$address1\t$address2\t$address3\t$city\t$state\t$country_code\t$security_phrase\t$length_in_sec";
 
-	$Ealert .= "$TOTAL_LEADS   $rec_countB   $call_data\n"; 
+	$Ealert .= "$TOTAL_LEADS   $rec_countB   $call_data\n";
 
 	if ($DBX) {print "$TOTAL_LEADS   $rec_countB   $call_data\n";}
 

@@ -1,6 +1,6 @@
-<?php 
+<?php
 # AST_webserver_url_report.php
-# 
+#
 # Copyright (C) 2019  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -308,11 +308,11 @@ while ($i < $urls_to_print)
 	}
 
 $urls_string='|';
-$i=0; 
+$i=0;
 $url_SQL="";
 while($i < $url_ct)
 	{
-	if ( (strlen($url[$i]) > 0) and (preg_match("/\|$url[$i]\|/",$url_string)) ) 
+	if ( (strlen($url[$i]) > 0) and (preg_match("/\|$url[$i]\|/",$url_string)) )
 		{
 		$urls_string .= "$url[$i]|";
 		$urlQS .= "&url[]=$url[$i]";
@@ -324,7 +324,7 @@ while($i < $url_ct)
 if ( (preg_match('/\-\-ALL\-\-/',$url_string) ) or ($url_ct < 1) )
 	{
 	$URL_rpt_string="- "._QXZ("ALL URLS");
-	if (preg_match('/\-\-ALL\-\-/',$url_string)) 
+	if (preg_match('/\-\-ALL\-\-/',$url_string))
 		{
 		$urlQS="&url[]=--ALL--";
 		$url_SQL="";
@@ -412,7 +412,7 @@ $o=0;
 
 while ($webservers_to_print > $o)
 	{
-	if (preg_match("/\|$LISTwebserver_ids[$o]\|/",$webserver_string)) 
+	if (preg_match("/\|$LISTwebserver_ids[$o]\|/",$webserver_string))
 		{$MAIN.="<option selected value=\"$LISTwebserver_ids[$o]\">$LISTwebservers[$o] - $LISThostnames[$o]</option>\n";}
 	else
 		{$MAIN.="<option value=\"$LISTwebserver_ids[$o]\">$LISTwebservers[$o] - $LISThostnames[$o]</option>\n";}
@@ -431,7 +431,7 @@ else
 $o=0;
 while ($urls_to_print > $o)
 	{
-	if (preg_match("/\|$LISTurl_ids[$o]\|/",$urls_string)) 
+	if (preg_match("/\|$LISTurl_ids[$o]\|/",$urls_string))
 		{$MAIN.="<option selected value=\"$LISTurl_ids[$o]\">$LISTurl_ids[$o] - $LISTurls[$o]</option>\n";}
 	else
 		{$MAIN.="<option value=\"$LISTurl_ids[$o]\">$LISTurl_ids[$o] - $LISTurls[$o]</option>\n";}
@@ -479,7 +479,7 @@ if ($SUBMIT && $query_date && $end_date) {
 		$HTML.="<th><font size='2'>"._QXZ("URL")."</font></th>";
 		$HTML.="<th><font size='2'>"._QXZ("COUNT")."</font></th>";
 		$HTML.="</tr>\n";
-		
+
 		$user_TOTAL=0;
 		while($row=mysqli_fetch_row($rslt)) {
 			$TEXT.="| ".sprintf("%-50s", substr($webserver_array[$row[0]], 0, 100))." | ".sprintf("%-100s", substr($url_array[$row[1]], 0, 100))." | ".sprintf("%6s", $row[2])." |\n";

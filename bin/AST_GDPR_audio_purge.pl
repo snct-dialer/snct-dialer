@@ -137,28 +137,28 @@ if (length($ARGV[0])>1)
 			$YMDdatedir=1;
 			if ($DB) {print "\n----- Y/M/D DATED DIRECTORIES -----\n\n";}
 			}
-        if ($args =~ /--nodatedir/i) 
+        if ($args =~ /--nodatedir/i)
 			{
 			$nodatedir=1;
 			if ($DB) {print "\n----- NO DATE DIRECTORIES -----\n\n";}
 			}
-        if ($args =~ /--location_search/i) 
+        if ($args =~ /--location_search/i)
 			{
 			$location_search=1;
 			if ($DB) {print "\n----- SEARCH VIA LOCATION IF NOT FOUND -----\n\n";}
 			}
-		if ($args =~ /--recording_dir=/i) 
+		if ($args =~ /--recording_dir=/i)
 			{
 			my @data_in = split(/--recording_dir=/,$args);
 			$recording_dir = $data_in[1];
 			$recording_dir =~ s/ .*//gi;
-			if ($DB > 0) 
+			if ($DB > 0)
 				{print "\n----- MAIN RECORDING DIRECTORY: $recording_dir -----\n\n";}
 			}
 		}
 	}
 
-if (!$recording_dir || (!-d "$recording_dir") ) 
+if (!$recording_dir || (!-d "$recording_dir") )
 	{
 	print "Script requires recording directory to be set and that the directory exists.\n";
 	exit;
@@ -180,34 +180,34 @@ $stmt="select * from recording_log_deletion_queue where date_deleted is null ord
 if ($DBX) {print "\n$stmt\n";}
 $rslt=$dbhA->prepare($stmt);
 $rslt->execute();
-if ($rslt->rows>0) 
+if ($rslt->rows>0)
 	{
-	while (@row=$rslt->fetchrow_array) 
+	while (@row=$rslt->fetchrow_array)
 		{
-		$recording_id=$row[0]; 
+		$recording_id=$row[0];
 		$filename=$row[2];
 		$location=$row[3];
 
 		if ($DB) {print " - $filename\n";}
 
-		if ($nodatedir) 
+		if ($nodatedir)
 			{
 			$start_time_dir="";
-			} 
-		else 
+			}
+		else
 			{
 			$et_stmt="select substr(start_time, 1, 10) from recording_log where recording_id='$recording_id'";
 			if ($DBX) {print " - $et_stmt\n";}
 			$et_rslt=$dbhB->prepare($et_stmt);
 			$et_rslt->execute();
-			if ($et_rslt->rows>0) 
+			if ($et_rslt->rows>0)
 				{
 				@et_row=$et_rslt->fetchrow_array;
-				if (!$YMDdatedir) 
+				if (!$YMDdatedir)
 					{
 					$start_time_dir="/".$et_row[0];
 					}
-				else 
+				else
 					{
 					@et_array=split(/\-/, $et_row[0]);
 					$start_time_dir="/".$et_array[0]."/".$et_array[1]."/".$et_array[2];
@@ -221,13 +221,13 @@ if ($rslt->rows>0)
 		if ($DB) {print " -- SEARCHING FOR $filepath\n";}
 
 		@found_files = glob("$filepath");
-		if (scalar(@found_files)>0) 
+		if (scalar(@found_files)>0)
 			{
-			for ($i=0; $i<scalar(@found_files); $i++) 
+			for ($i=0; $i<scalar(@found_files); $i++)
 				{
 				if ($DB) {print " --- $found_files[$i] FOUND, DELETING...\n\n";}
 				$upd_stmt="update recording_log_deletion_queue set date_deleted=now() where recording_id='$recording_id'";
-				if ($T) 
+				if ($T)
 					{
 					if ($DBX) {print "\n$upd_stmt\n";}
 					}
@@ -239,24 +239,24 @@ if ($rslt->rows>0)
 					}
 				}
 			}
-		elsif ($VARFTP_host eq "localhost" && $location_search) 
-			{ 
+		elsif ($VARFTP_host eq "localhost" && $location_search)
+			{
 			# Attempt to locate the file locally
 			$filepath="";
 			$nodatepath=$recording_dir."/".$filename."*";
 			if ($DB) {print " --- FILE NOT FOUND, SEARCHING LOCAL SERVER...\n";}
-			if ($nodatedir) 
+			if ($nodatedir)
 				{
 				if ($DB) {print " ---- SEARCHING DATE DIRECTORIES...\n";}
-				if ($location=~/((\/20\d{2}-[01]\d-[0-3]\d\/$filename.*)|(\/20\d{2}\/[01]\d\/[0-3]\d\/$filename.*))/) 
+				if ($location=~/((\/20\d{2}-[01]\d-[0-3]\d\/$filename.*)|(\/20\d{2}\/[01]\d\/[0-3]\d\/$filename.*))/)
 					{
 					$filepath=$recording_dir.$1;
 					}
 				}
-			elsif ($YMDdatedir) 
+			elsif ($YMDdatedir)
 				{
 				if ($DB) {print " ---- SEARCHING DEFAULT YYYY-MM-DD AND NO-DATE BASE DIRECTORIES...\n";}
-				if ($location=~/(\/20\d{2}-[01]\d-[0-3]\d\/$filename.*)/) 
+				if ($location=~/(\/20\d{2}-[01]\d-[0-3]\d\/$filename.*)/)
 					{
 					$filepath=$recording_dir.$1;
 					}
@@ -265,10 +265,10 @@ if ($rslt->rows>0)
 					$filepath=$nodatepath;
 					}
 				}
-			else 
+			else
 				{
 				if ($DB) {print " ---- SEARCHING SPLIT YYYY/MM/DD AND NO-DATE BASE DIRECTORIES...\n";}
-				if ($location=~/(\/20\d{2}\/[01]\d\/[0-3]\d\/$filename.*)/) 
+				if ($location=~/(\/20\d{2}\/[01]\d\/[0-3]\d\/$filename.*)/)
 					{
 					$filepath=$recording_dir.$1;
 					}
@@ -277,16 +277,16 @@ if ($rslt->rows>0)
 					$filepath=$nodatepath;
 					}
 				}
-			if ($filepath) 
+			if ($filepath)
 				{
 				@found_files = glob("$filepath");
-				if (scalar(@found_files)>0) 
+				if (scalar(@found_files)>0)
 					{
-					for ($i=0; $i<scalar(@found_files); $i++) 
+					for ($i=0; $i<scalar(@found_files); $i++)
 						{
 						if ($DB) {print " ----- $found_files[$i] FOUND, DELETING...\n\n";}
 						$upd_stmt="update recording_log_deletion_queue set date_deleted=now() where recording_id='$recording_id'";
-						if ($T) 
+						if ($T)
 							{
 							if ($DBX) {print "\n$upd_stmt\n";}
 							}
@@ -298,7 +298,7 @@ if ($rslt->rows>0)
 							}
 						}
 					}
-				else 
+				else
 					{
 					if ($DB) {print " ----- LOCATION LOOKUP $filepath FILES NOT FOUND\n\n";}
 					}
@@ -308,7 +308,7 @@ if ($rslt->rows>0)
 				if ($DB) {print " ---- LOCATION DIRECTORY NOT FOUND\n\n";}
 				}
 			}
-		else 
+		else
 			{
 			if ($DB) {print " --- $filepath NOT FOUND\n\n";}
 			}

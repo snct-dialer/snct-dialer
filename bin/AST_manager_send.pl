@@ -5,7 +5,7 @@
 # Part of the Asterisk Central Queue System (ACQS)
 #
 # DESCRIPTION:
-# spawns child processes (AST_send_action_child.pl) to execute action commands 
+# spawns child processes (AST_send_action_child.pl) to execute action commands
 # on the Asterisk manager interface from records in the vicidial_manager table
 # of the asterisk database in MySQL that are marked as a status of NEW
 #
@@ -15,7 +15,7 @@
 # by separate child process. This allows for a higher degree of flexibility and
 # scalability over just using a single process. Also, this means that a single
 # action execution lock cannot bring the entire system down.
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -49,7 +49,7 @@ my $COUNTER_OUTPUT=1;	# set to 1 to display the counter as the script runs
 my ($CLOhelp, $sendonlyone, $TEST, $DB, $DBX, $SYSLOG);
 
 ### begin parsing run-time options ###
-if (scalar @ARGV) 
+if (scalar @ARGV)
 	{
 	GetOptions('help!' => \$CLOhelp,
 		'sendonlyone!' => \$sendonlyone,
@@ -58,7 +58,7 @@ if (scalar @ARGV)
 		'debug!' => \$DB,
 		'debugX!' => \$DBX );
 	$DB = 1 if ($DBX);
-	if ($DB) 
+	if ($DB)
 		{
 		print "----- DEBUGGING -----\n";
 		print "----- EXTRA-VERBOSE DEBUGGING -----\n" if ($DBX);
@@ -66,7 +66,7 @@ if (scalar @ARGV)
 		print "sendonlyone:        $sendonlyone\n" if ($sendonlyone);
 		print "TEST:               $TEST\n" if ($TEST);
 		}
-	if ($CLOhelp) 
+	if ($CLOhelp)
 		{
 		print "\nAST_manager_send.pl\n";
 		print "allowed run time options:\n";
@@ -83,13 +83,13 @@ if (scalar @ARGV)
 
 # Begin Parsing astguiclient config file.
 open(CONF, $conf{PATHconf}) || die "can't open " . $conf{PATHconf} . ": " . $! . "\n";
-while (my $line = <CONF>) 
+while (my $line = <CONF>)
 	{
 	$line =~ s/ |>|\n|\r|\t|\#.*|;.*//gi;
 	foreach my $key (qw( PATHhome PATHlogs PATHagi PATHweb PATHsounds PATHmontior
-	  VARserver_ip VARDB_server VARDB_database VARDB_user VARDB_pass VARDB_port)) 
+	  VARserver_ip VARDB_server VARDB_database VARDB_user VARDB_pass VARDB_port))
 		{
-		if ($line =~ /^$key/) 
+		if ($line =~ /^$key/)
 			{
 			$conf{$key} = $line;
 			$conf{$key} =~ s/.*=//gi;
@@ -98,7 +98,7 @@ while (my $line = <CONF>)
 	}
 $conf{VARDB_port} = '3306' unless ($conf{VARDB_port});
 
-# Connect to DB 
+# Connect to DB
 my $dbhA = DBI->connect("DBI:mysql:" . $conf{VARDB_database} . ":" . $conf{VARDB_server} . ":" . $conf{VARDB_port},
 	$conf{VARDB_user}, $conf{VARDB_pass}, { mysql_enable_utf8 => 1 }) or die "Couldn't connect to database: " . DBI->errstr;
 
@@ -114,7 +114,7 @@ if ($run_check > 0)
 	my $grepout = `/bin/ps ax | grep $0 | grep -v grep | grep -v '/bin/sh'`;
 	my $grepnum=0;
 	$grepnum++ while ($grepout =~ m/\n/g);
-	if ($grepnum > 2) 
+	if ($grepnum > 2)
 		{
 		if ($DB) {print "I am not alone! Another $0 is running! Exiting...\n";}
 		my $event_string="I am not alone! Another $0 is running! Exiting...";
@@ -125,12 +125,12 @@ if ($run_check > 0)
 
 my $processed_actions=0;
 my $one_day_interval = 182;		# 2 day loops for 12 months
-while ($one_day_interval > 0) 
+while ($one_day_interval > 0)
 	{
 	my $endless_loop = 1728000;		# 2 days at .10 seconds per loop
 	my $affected_rows;
 	my $NEW_actions;
-	while ($endless_loop > 0) 
+	while ($endless_loop > 0)
 		{
 		my $stmtA = "SELECT count(*) from vicidial_manager where server_ip = '" . $conf{VARserver_ip} . "' and status = 'NEW';";
 	    	my $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -146,15 +146,15 @@ while ($one_day_interval > 0)
 	    $sthA->finish();
 
 		$affected_rows = 0;
-		if ($NEW_actions > 0) 
+		if ($NEW_actions > 0)
 			{
 			my $stmtA = "UPDATE vicidial_manager set status='QUEUE' where server_ip = '" . $conf{VARserver_ip} . "' and status = 'NEW' order by man_id limit 1;";
 			$affected_rows = $dbhA->do($stmtA);
 			print STDERR "rows updated to QUEUE: |$affected_rows|\n" if ($DB);
 			}
-		else 
+		else
 			{
-			if ($QUEUE_actions > 0) 
+			if ($QUEUE_actions > 0)
 				{
 				$affected_rows = $QUEUE_actions;
 				my $event_string=nowDate() . "No NEW actions, but " . $QUEUE_actions . " QUEUE actions in vicidial_manager|" . $affected_rows;
@@ -162,7 +162,7 @@ while ($one_day_interval > 0)
 				}
 			}
 
-		if ($affected_rows) 
+		if ($affected_rows)
 			{
 			my $stmtA = "SELECT man_id,uniqueid,entry_date,status,response,server_ip,channel,action,callerid,cmd_line_b,cmd_line_c,cmd_line_d,cmd_line_e,cmd_line_f,cmd_line_g,cmd_line_h,cmd_line_i,cmd_line_j,cmd_line_k FROM vicidial_manager where server_ip = '" . $conf{VARserver_ip} . "' and status = 'QUEUE' order by man_id limit 1";
 			eventLogger($conf{'PATHlogs'}, 'process', "SQL_QUERY|" . $stmtA . "|");
@@ -170,7 +170,7 @@ while ($one_day_interval > 0)
 			my $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 
-		 	while (my $vdm = $sthA->fetchrow_hashref) 
+		 	while (my $vdm = $sthA->fetchrow_hashref)
 				{
 				print STDERR $vdm->{man_id} . "|" . $vdm->{uniqueid} . "|" . $vdm->{channel} . "|" .
 					$vdm->{action} . "|" . $vdm->{callerid} . "\n" if ($DB);
@@ -202,8 +202,8 @@ while ($one_day_interval > 0)
 					$sthB->execute or die "executing: $stmtA ", $dbhA->errstr;
 					my $dead_count = ($sthB->fetchrow_array)[0];
 					$sthB->finish();
-		   
-					if ($dead_count) 
+
+					if ($dead_count)
 						{
 						print STDERR "\n|not sending command line is dead|" . $vdm->{callerid} . "|" . $vdm->{uniqueid} . "|\n" if ($DB);
 						}
@@ -216,7 +216,7 @@ while ($one_day_interval > 0)
 				my $event_string = "----BEGIN NEW COMMAND----\nCallerID: " . $vdm->{callerid} . "\n$originate_command----END NEW COMMAND----\n";
 				eventLogger($conf{'PATHlogs'}, 'process', $event_string);
 
-				if ($SENDNOW) 
+				if ($SENDNOW)
 					{
 					my $cPATHlogs = $conf{PATHlogs};
 					$cPATHlogs =~       s/([^A-Za-z0-9])/sprintf("%%%02X", ord($1))/seg;
@@ -281,7 +281,7 @@ while ($one_day_interval > 0)
 			$sthA->finish();
 			}
 
-		if ($affected_rows) 
+		if ($affected_rows)
 			{
 			### sleep for 1 hundredth of a second if just send an ACTION
 			usleep(1*10*1000);
@@ -296,7 +296,7 @@ while ($one_day_interval > 0)
 		print STDERR "loop counter: |$endless_loop|\r" if($COUNTER_OUTPUT or $DB);
 
 		### putting a blank file called "sendmgr.kill" in a directory will automatically safely kill this program
-		if (-e $conf{PATHhome} . "/sendmgr.kill" or $sendonlyone) 
+		if (-e $conf{PATHhome} . "/sendmgr.kill" or $sendonlyone)
 			{
 			unlink($conf{PATHhome} . "/sendmgr.kill");
 			$endless_loop = 0;
@@ -305,7 +305,7 @@ while ($one_day_interval > 0)
 			}
 
 		my $running_listen = 0;
-		if ($endless_loop =~ /0$/) 
+		if ($endless_loop =~ /0$/)
 			{
 			### Grab Server values from the database
 			$servConf = getServerConfig($dbhA, $conf{VARserver_ip});
@@ -319,14 +319,14 @@ while ($one_day_interval > 0)
 				chomp($line);
 				print "|$line|     \n" if ($DBX);
 				my @psline = split(/\/usr\/bin\/perl /,$line);
-				if ($psline[1] =~ /AST_manager_li/) 
+				if ($psline[1] =~ /AST_manager_li/)
 					{
 					$running_listen++;
 					print "SEND RUNNING: |$psline[1]|\n" if ($DB);
 					}
 				}
 
-			unless ($running_listen) 
+			unless ($running_listen)
 				{
 				$sendonlyone++;
 				print "LISTENER DEAD STOPPING PROGRAM... ATTEMPTING TO START keepalive SCRIPT\n" if ($COUNTER_OUTPUT or $DB);
@@ -363,7 +363,7 @@ exit 0;
 #    $serverIP : IP of server to get config for.
 # Returns:
 #    hashref with conents of table entry.
-sub getServerConfig 
+sub getServerConfig
 	{
 	my ($dbhA, $serverip) = @_;
 	my $stmtA = "SELECT server_id,server_description,server_ip,active,asterisk_version,max_vicidial_trunks,telnet_host,telnet_port,ASTmgrUSERNAME,ASTmgrSECRET,ASTmgrUSERNAMEupdate,ASTmgrUSERNAMElisten,ASTmgrUSERNAMEsend,local_gmt,voicemail_dump_exten,answer_transfer_agent,ext_context,sys_perf_log,vd_server_logs,agi_output,vicidial_balance_active,balance_trunks_offlimits,recording_web_link,alt_server_ip,active_asterisk_server,generate_vicidial_conf,rebuild_conf_files,outbound_calls_per_second,sysload,channels_total,cpu_idle_percent,disk_usage,sounds_update,vicidial_recording_limit,carrier_logging_active,vicidial_balance_rank,rebuild_music_on_hold,active_agent_login_server,conf_secret FROM servers where server_ip = '" . $serverip ."';";
@@ -381,7 +381,7 @@ sub getServerConfig
 #    $LogFilePath : Directory where log files are.
 #    $LogType     : Type of log, ie process, send, launch, full
 #    $EventString : String to record in log.
-sub eventLogger 
+sub eventLogger
 	{
 	my ($path,$type,$string) = @_;
 	open(LOG, ">>" . $path . "/action_" . $type . "." . logDate())
@@ -397,7 +397,7 @@ sub eventLogger
 #   $SecondsSinceEpoch : Request time in seconds, defaults to current date/time.
 # Returns:
 #   ($sec, $min, $hour. $day, $mon, $year)
-sub getTime 
+sub getTime
 	{
 	my ($tms) = @_;
 	$tms = time unless ($tms);
@@ -417,7 +417,7 @@ sub getTime
 #   $SecondsSinceEpoch : Request time in seconds, defaults to current date/time.
 # Returns:
 #   scalar date/time string (MySQL formatted) ie "2007-01-01 00:00:00"
-sub nowDate 
+sub nowDate
 	{
 	my ($tms) = @_;
 	my($sec,$min,$hour,$mday,$mon,$year) = getTime($tms);
@@ -430,7 +430,7 @@ sub nowDate
 #   $SecondsSinceEpoch : Request time in seconds, defaults to current date/time.
 # Returns:
 #   scalar date string ie "2007-01-01"
-sub logDate 
+sub logDate
 	{
 	my ($tms) = @_;
 	my($sec,$min,$hour,$mday,$mon,$year) = getTime($tms);

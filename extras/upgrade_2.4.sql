@@ -646,7 +646,7 @@ ALTER TABLE vicidial_campaigns ADD lead_order_randomize ENUM('Y','N') default 'N
 
 UPDATE system_settings SET db_schema_version='1258',db_schema_update_date=NOW();
 
-CREATE TABLE vicidial_call_notes_archive LIKE vicidial_call_notes; 
+CREATE TABLE vicidial_call_notes_archive LIKE vicidial_call_notes;
 ALTER TABLE vicidial_call_notes_archive MODIFY notesid INT(9) UNSIGNED NOT NULL;
 
 ALTER TABLE vicidial_statuses ADD scheduled_callback ENUM('Y','N') default 'N';
@@ -681,7 +681,7 @@ index (user),
 index (event_date)
 );
 
-CREATE TABLE vicidial_lead_search_log_archive LIKE vicidial_lead_search_log; 
+CREATE TABLE vicidial_lead_search_log_archive LIKE vicidial_lead_search_log;
 ALTER TABLE vicidial_lead_search_log_archive MODIFY search_log_id INT(9) UNSIGNED NOT NULL;
 
 UPDATE system_settings SET db_schema_version='1261',db_schema_update_date=NOW();
@@ -744,7 +744,7 @@ ALTER TABLE vicidial_campaigns ADD manual_dial_cid ENUM('CAMPAIGN','AGENT_PHONE'
 
 UPDATE system_settings SET db_schema_version='1271',db_schema_update_date=NOW();
 
-CREATE TABLE vicidial_closer_log_archive LIKE vicidial_closer_log; 
+CREATE TABLE vicidial_closer_log_archive LIKE vicidial_closer_log;
 ALTER TABLE vicidial_closer_log_archive MODIFY closecallid INT(9) UNSIGNED NOT NULL;
 
 UPDATE system_settings SET db_schema_version='1272',db_schema_update_date=NOW();
@@ -970,7 +970,7 @@ index (lead_id),
 index (call_date)
 );
 
-CREATE TABLE vicidial_log_noanswer_archive LIKE vicidial_log_noanswer; 
+CREATE TABLE vicidial_log_noanswer_archive LIKE vicidial_log_noanswer;
 
 ALTER TABLE vicidial_log_extended ADD noanswer_processed ENUM('N','Y','U') default 'N';
 
@@ -996,7 +996,7 @@ index (extension),
 index (call_date)
 );
 
-CREATE TABLE vicidial_did_agent_log_archive LIKE vicidial_did_agent_log; 
+CREATE TABLE vicidial_did_agent_log_archive LIKE vicidial_did_agent_log;
 CREATE UNIQUE INDEX vdala on vicidial_did_agent_log_archive (uniqueid,call_date,did_route);
 
 ALTER TABLE system_settings ADD did_agent_log ENUM('Y','N') default 'N';

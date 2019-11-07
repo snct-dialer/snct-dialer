@@ -2,7 +2,7 @@
 # admin_mobile.php - VICIDIAL administration page, reduced functions for mobile app
 #
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>, Joe Johnson <joej@vicidial.com>    LICENSE: AGPLv2
-# 
+#
 # CHANGES
 # 190205-1702 - First Build
 #
@@ -245,11 +245,11 @@ if ($qm_conf_ct > 0)
 if ( ($qm_conf_ct > 0) and (strlen($SSpass_key)<16) )
 	{
 	$SSpass_key = '';
-	$possible = "0123456789abcdefghijklmnpqrstvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ";  
-	$i = 0; 
+	$possible = "0123456789abcdefghijklmnpqrstvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ";
+	$i = 0;
 	$length = 16;
-	while ($i < $length) 
-		{ 
+	while ($i < $length)
+		{
 		$char = substr($possible, mt_rand(0, strlen($possible)-1), 1);
 		$SSpass_key .= $char;
 		$i++;
@@ -531,7 +531,7 @@ if ( (!preg_match('/\-\-ALL\-\-/i',$LOGadmin_viewable_groups)) and (strlen($LOGa
 	$valLOGadmin_viewable_groupsSQL = "and val.user_group IN('---ALL---','$rawLOGadmin_viewable_groupsSQL')";
 	$vmLOGadmin_viewable_groupsSQL = "and vm.user_group IN('---ALL---','$rawLOGadmin_viewable_groupsSQL')";
 	}
-else 
+else
 	{$admin_viewable_groupsALL=1;}
 $regexLOGadmin_viewable_groups = " $LOGadmin_viewable_groups ";
 
@@ -553,7 +553,7 @@ $stmt="SELECT user_group,group_name from vicidial_user_groups $whereLOGadmin_vie
 $rslt=mysql_to_mysqli($stmt, $link);
 $UUgroups_to_print = mysqli_num_rows($rslt);
 $o=0;
-while ($UUgroups_to_print > $o) 
+while ($UUgroups_to_print > $o)
 	{
 	$rowx=mysqli_fetch_row($rslt);
 	$UUgroups_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -619,14 +619,14 @@ $Mhead_color =	$SSstd_row5_background;
 $Mmain_bgcolor = $SSmenu_background;
 $Mhead_color =	$SSstd_row5_background;
 
-if ($download_max_system_stats_metric_name) 
+if ($download_max_system_stats_metric_name)
 	{
 	if (!$query_date) {$query_date=date("Y-m-d", time()-(29*86400));}
-	if (!$end_date) 
+	if (!$end_date)
 		{
 		$end_date=date("Y-m-d", time());
 		}
-	else if (strtotime($end_date)>strtotime(date("Y-m-d"))) 
+	else if (strtotime($end_date)>strtotime(date("Y-m-d")))
 		{
 		$end_date=date("Y-m-d");
 		}
@@ -635,31 +635,31 @@ if ($download_max_system_stats_metric_name)
 	$num_graph_days = ceil(abs(strtotime($end_date) - strtotime($query_date)) / 86400)+1;
 	$CSV_text="";
 
-	if ($download_max_system_stats_metric_name=="ALL" || $download_max_system_stats_metric_name=="total call count in and out") 
+	if ($download_max_system_stats_metric_name=="ALL" || $download_max_system_stats_metric_name=="total call count in and out")
 		{
 		download_max_system_stats($campaign_id,$num_graph_days,'system','total_calls','total call count in and out',$end_date);
 		}
-	if ($download_max_system_stats_metric_name=="ALL" || $download_max_system_stats_metric_name=="total inbound call count") 
+	if ($download_max_system_stats_metric_name=="ALL" || $download_max_system_stats_metric_name=="total inbound call count")
 		{
 		download_max_system_stats($campaign_id,$num_graph_days,'system','total_calls_inbound_all','total inbound call count',$end_date);
 		}
-	if ($download_max_system_stats_metric_name=="ALL" || $download_max_system_stats_metric_name=="total outbound call count") 
+	if ($download_max_system_stats_metric_name=="ALL" || $download_max_system_stats_metric_name=="total outbound call count")
 		{
 		download_max_system_stats($campaign_id,$num_graph_days,'system','total_calls_outbound_all','total outbound call count',$end_date);
 		}
-	if ($download_max_system_stats_metric_name=="ALL" || $download_max_system_stats_metric_name=="most concurrent calls in and out") 
+	if ($download_max_system_stats_metric_name=="ALL" || $download_max_system_stats_metric_name=="most concurrent calls in and out")
 		{
 		download_max_system_stats($campaign_id,$num_graph_days,'system','(max_inbound + max_outbound)','most concurrent calls in and out',$end_date);
 		}
-	if ($download_max_system_stats_metric_name=="ALL" || $download_max_system_stats_metric_name=="most concurrent calls inbound total") 
+	if ($download_max_system_stats_metric_name=="ALL" || $download_max_system_stats_metric_name=="most concurrent calls inbound total")
 		{
 		download_max_system_stats($campaign_id,$num_graph_days,'system','max_inbound','most concurrent calls inbound total',$end_date);
 		}
-	if ($download_max_system_stats_metric_name=="ALL" || $download_max_system_stats_metric_name=="most concurrent calls outbound total") 
+	if ($download_max_system_stats_metric_name=="ALL" || $download_max_system_stats_metric_name=="most concurrent calls outbound total")
 		{
 		download_max_system_stats($campaign_id,$num_graph_days,'system','max_outbound','most concurrent calls outbound total',$end_date);
 		}
-	if ($download_max_system_stats_metric_name=="ALL" || $download_max_system_stats_metric_name=="most concurrent agents") 
+	if ($download_max_system_stats_metric_name=="ALL" || $download_max_system_stats_metric_name=="most concurrent agents")
 		{
 		download_max_system_stats($campaign_id,$num_graph_days,'system','max_agents','most concurrent agents',$end_date);
 		}
@@ -768,11 +768,11 @@ if ($ADD==999990)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$active_calls=mysqli_num_rows($rslt);
 		$ringing_calls=0;
-		if ($active_calls>0) 
+		if ($active_calls>0)
 			{
-			while ($row=mysqli_fetch_row($rslt)) 
+			while ($row=mysqli_fetch_row($rslt))
 				{
-				if (!preg_match("/LIVE|CLOSER/i",$row[0])) 
+				if (!preg_match("/LIVE|CLOSER/i",$row[0]))
 					{$ringing_calls++;}
 				}
 			}
@@ -780,7 +780,7 @@ if ($ADD==999990)
 		$active_stmt="SELECT active from vicidial_users $whereLOGadmin_viewable_groupsSQL";
 		if ($DB) {echo "|$active_stmt|\n";}
 		$active_rslt=mysql_to_mysqli($active_stmt, $link);
-		while ($active_row=mysqli_fetch_array($active_rslt)) 
+		while ($active_row=mysqli_fetch_array($active_rslt))
 			{
 			$users[$active_row["active"]]++;
 			}
@@ -788,7 +788,7 @@ if ($ADD==999990)
 		$active_stmt="SELECT active from vicidial_campaigns $whereLOGallowed_campaignsSQL";
 		if ($DB) {echo "|$active_stmt|\n";}
 		$active_rslt=mysql_to_mysqli($active_stmt, $link);
-		while ($active_row=mysqli_fetch_array($active_rslt)) 
+		while ($active_row=mysqli_fetch_array($active_rslt))
 			{
 			$campaigns[$active_row["active"]]++;
 			}
@@ -796,7 +796,7 @@ if ($ADD==999990)
 		$active_stmt="SELECT active from vicidial_lists $whereLOGallowed_campaignsSQL";
 		if ($DB) {echo "|$active_stmt|\n";}
 		$active_rslt=mysql_to_mysqli($active_stmt, $link);
-		while ($active_row=mysqli_fetch_array($active_rslt)) 
+		while ($active_row=mysqli_fetch_array($active_rslt))
 			{
 			$lists[$active_row["active"]]++;
 			}
@@ -804,7 +804,7 @@ if ($ADD==999990)
 		$active_stmt="SELECT did_active from vicidial_inbound_dids $whereLOGadmin_viewable_groupsSQL";
 		if ($DB) {echo "|$active_stmt|\n";}
 		$active_rslt=mysql_to_mysqli($active_stmt, $link);
-		while ($active_row=mysqli_fetch_array($active_rslt)) 
+		while ($active_row=mysqli_fetch_array($active_rslt))
 			{
 			$dids[$active_row["did_active"]]++;
 			}
@@ -812,7 +812,7 @@ if ($ADD==999990)
 		$active_stmt="SELECT active from vicidial_inbound_groups $whereLOGadmin_viewable_groupsSQL";
 		if ($DB) {echo "|$active_stmt|\n";}
 		$active_rslt=mysql_to_mysqli($active_stmt, $link);
-		while ($active_row=mysqli_fetch_array($active_rslt)) 
+		while ($active_row=mysqli_fetch_array($active_rslt))
 			{
 			$ingroups[$active_row["active"]]++;
 			}
@@ -821,7 +821,7 @@ if ($ADD==999990)
 		if ($DB) {echo "|$stmt|\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$agent_incall=0; $agent_total=0;
-		while($row=mysqli_fetch_array($rslt)) 
+		while($row=mysqli_fetch_array($rslt))
 			{
 			$status=$row[3];
 			$agent_total++;
@@ -860,10 +860,10 @@ if ($ADD==999990)
 		if ( (preg_match("/Real-Time Whiteboard Report/",$LOGallowed_reports)) or (preg_match("/ALL REPORTS/",$LOGallowed_reports)) )
 			{echo "<LI><a href=\"AST_rt_whiteboard_rpt_mobile.php\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK size=2>"._QXZ("Real-Time Whiteboard Report")."</a></FONT>\n";}
 		echo "</UL>\n";
-		echo "</TD></TR></TABLE>\n";		
+		echo "</TD></TR></TABLE>\n";
 		echo "<BR>\n";
 		}
-		
+
 		echo "<TABLE class='admin_stats_table' cellpadding=6 cellspacing=0>\n";
 		echo "<tr"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='realtime_report_mobile.php?report_display_type=HTML';\"";} echo ">";
 		echo "<td align='center' valign='middle' bgcolor='#$SSmenu_background' rowspan=2><a href=\"realtime_report_mobile.php?report_display_type=HTML\"><img src=\"images/icon_users.png\" width=42 height=42 border=0></a></td>";
@@ -912,13 +912,13 @@ if ($ADD==999990)
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right><a href='$PHP_SELF?ADD=100' STYLE=\"text-decoration:none;\"><font color=black>"._QXZ("Lists").": </a></td><td align=center><b>".($lists["Y"]+0)."</b></td><td align=center><b>".($lists["N"]+0)."</b></td><td align=center><b>".($lists["Y"]+$lists["N"]+0)."</b></td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right><a href='$PHP_SELF?ADD=1000' STYLE=\"text-decoration:none;\"><font color=black>"._QXZ("In-Groups").": </a></td><td align=center><b>".($ingroups["Y"]+0)."</b></td><td align=center><b>".($ingroups["N"]+0)."</b></td><td align=center><b>".($ingroups["Y"]+$ingroups["N"]+0)."</b></td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right><a href='$PHP_SELF?ADD=1300' STYLE=\"text-decoration:none;\"><font color=black>"._QXZ("DIDs").": </a></td><td align=center><b>".($dids["Y"]+0)."</b></td><td align=center><b>".($dids["N"]+0)."</b></td><td align=center><b>".($dids["Y"]+$dids["N"]+0)."</b></td></tr>\n";
-	
+
 		// New voicemailbox code
 		$stmt="(SELECT voicemail_id,count(*),messages,old_messages,'vm','vm' from vicidial_voicemail where on_login_report='Y' $LOGadmin_viewable_groupsSQL group by voicemail_id) UNION (SELECT voicemail_id,count(*),messages,old_messages,extension,server_ip from phones where on_login_report='Y' $LOGadmin_viewable_groupsSQL group by voicemail_id) order by voicemail_id;";
 		if ($DB) {echo "|$stmt|\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$vm_rows=mysqli_num_rows($rslt);
-		if ($vm_rows>0) 
+		if ($vm_rows>0)
 			{
 			echo "<tr>";
 			echo "<td align='left' colspan='4'>&nbsp;</td>";  # Padding
@@ -929,8 +929,8 @@ if ($ADD==999990)
 			echo "<td  align='center'><font style=\"font-family:HELVETICA;font-size:14;color:white;font-weight:bold;\">&nbsp; Old &nbsp;</font></td>\n";
 			echo "<td  align='center'><font style=\"font-family:HELVETICA;font-size:14;color:white;font-weight:bold;\">&nbsp; Total &nbsp;</font></td>\n";
 			echo "</tr>\n";
-	
-			while($row=mysqli_fetch_array($rslt)) 
+
+			while($row=mysqli_fetch_array($rslt))
 				{
 				echo "<tr bgcolor='#$SSstd_row2_background'>\n";
 				if ($row[4] == 'vm')
@@ -963,9 +963,9 @@ if ($ADD==999990)
 		if ($DB) {echo "|$stmt|\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$rows_to_print = mysqli_num_rows($rslt);
-		if ($rows_to_print > 0) 
+		if ($rows_to_print > 0)
 			{
-			while ($rowx=mysqli_fetch_row($rslt)) 
+			while ($rowx=mysqli_fetch_row($rslt))
 				{
 				$total_calls += $rowx[1];
 				if (preg_match('/INGROUP/', $rowx[0])) {$total_inbound+=$rowx[1];}
@@ -988,9 +988,9 @@ if ($ADD==999990)
 		echo "<td><font size=1 color=white><B>&nbsp; "._QXZ("Total Outbound Calls")." &nbsp;</B></font></td>";
 		echo "<td><font size=1 color=white><B>&nbsp; "._QXZ("Maximum Agents")." &nbsp;</B></font></td>";
 
-		if (mysqli_num_rows($rslt)>0) 
+		if (mysqli_num_rows($rslt)>0)
 			{
-			while ($row=mysqli_fetch_array($rslt)) 
+			while ($row=mysqli_fetch_array($rslt))
 				{
 				echo "<tr bgcolor='#$SSstd_row2_background'>";
 			#	echo "<td align='left'><font size=1>".$row["campaign_id"]."</font></td>";
@@ -1000,8 +1000,8 @@ if ($ADD==999990)
 				echo "<td align='center'><font size=1>".($row["max_agents"]+0)."</font></td>";
 				echo "</tr>";
 				}
-			} 
-		else 
+			}
+		else
 			{
 			echo "<tr bgcolor='#$SSstd_row2_background'>";
 			echo "<td align='center' colspan='4'><font size=1>*** "._QXZ("NO ACTIVITY FOR")." $today ***</font></td>";
@@ -1016,9 +1016,9 @@ if ($ADD==999990)
 		if ($DB) {echo "|$stmt|\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$rows_to_print = mysqli_num_rows($rslt);
-		if ($rows_to_print > 0) 
+		if ($rows_to_print > 0)
 			{
-			while ($rowx=mysqli_fetch_row($rslt)) 
+			while ($rowx=mysqli_fetch_row($rslt))
 				{
 				$total_calls += $rowx[1];
 				if (preg_match('/INGROUP/', $rowx[0])) {$total_inbound+=$rowx[1];}
@@ -1041,9 +1041,9 @@ if ($ADD==999990)
 		$stmt="SELECT * from vicidial_daily_max_stats where stats_date='$yesterday' and stats_type='TOTAL' $LOGallowed_campaignsSQL order by stats_date, campaign_id asc";
 		if ($DB) {echo "|$stmt|\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
-		if (mysqli_num_rows($rslt)>0) 
+		if (mysqli_num_rows($rslt)>0)
 			{
-			while ($row=mysqli_fetch_array($rslt)) 
+			while ($row=mysqli_fetch_array($rslt))
 				{
 				echo "<tr bgcolor='#$SSstd_row2_background'>";
 				#echo "<td align='left'><font size=1>".$row["campaign_id"]."</font></td>";
@@ -1053,8 +1053,8 @@ if ($ADD==999990)
 				echo "<td align='center'><font size=1>".($row["max_agents"]+0)."</font></td>";
 				echo "</tr>";
 				}
-			} 
-		else 
+			}
+		else
 			{
 			echo "<tr bgcolor='#$SSstd_row2_background'>";
 			echo "<td align='center' colspan='4'><font size=1>*** "._QXZ("NO ACTIVITY FOR")." $today ***</font></td>";
@@ -1135,7 +1135,7 @@ $calls_array=array();
 # $hour_stmt="select distinct next_hour from vicidial_campaign_hour_counts where $LOGallowed_campaignsSQL";
 $hour_stmt="select substr(date_hour,1,16) as dhour, sum(calls) from vicidial_campaign_hour_counts where type='CALLS' $LOGallowed_campaignsSQL group by dhour order by dhour";
 $hour_rslt=mysqli_query($link, $hour_stmt);
-while ($row=mysqli_fetch_row($hour_rslt)) 
+while ($row=mysqli_fetch_row($hour_rslt))
 	{
 	$next_hour=$row[0];
 	array_push($hour_array, $row[0]);
@@ -1154,7 +1154,7 @@ $JS_calls.="];\n";
 $campaign_stmt="select distinct campaign_id from vicidial_campaign_hour_counts where $LOGallowed_campaignsSQL";
 $campaign_rslt=mysqli_query($link, $campaign_stmt);
 $campaign_array=array();
-while ($campaign_row=mysqli_fetch_row($campaign_rslt)) 
+while ($campaign_row=mysqli_fetch_row($campaign_rslt))
 	{
 	array_push($campaign_array, $campaign_row[0]);
 	}
@@ -1172,7 +1172,7 @@ echo $JS_text.$JS_calls;
 $ingroup_array=array();
 $ingroup_stmt="select distinct closer_campaigns from vicidial_campaigns $whereLOGallowed_campaignsSQL";
 $ingroup_rslt=mysqli_query($link, $ingroup_stmt);
-while ($ingroup_row=mysqli_fetch_row($ingroup_rslt)) 
+while ($ingroup_row=mysqli_fetch_row($ingroup_rslt))
 	{
 	$closer_campaigns=preg_replace('/ -$/', '', $ingroup_row[0]);
 	$campaign_ingroups=split(" ", $closer_campaigns);
@@ -1189,7 +1189,7 @@ echo "// $hour_stmt\n";
 
 $hour_stmt="select substr(date_hour,1,16) as dhour, sum(calls) from vicidial_ingroup_hour_counts where type='CALLS' and group_id in ('".implode("', '", $allowed_ingroups)."') group by dhour order by dhour";
 $hour_rslt=mysqli_query($link, $hour_stmt);
-while ($row=mysqli_fetch_row($hour_rslt)) 
+while ($row=mysqli_fetch_row($hour_rslt))
 	{
 	$next_hour=$row[0];
 	array_push($ingroup_hour_array, $row[0]);
@@ -1410,7 +1410,7 @@ if ( ($SSnocache_admin=='1') or ( ($SSadmin_modify_refresh > 1) and ($modify_foo
 
 echo "</html>\n";
 
-	
+
 exit;
 
 
@@ -1428,7 +1428,7 @@ if (isset($camp_lists))
 			$Ds_to_print = (count($Dstatuses) - 0);
 			$Dsql = '';
 			$o=0;
-			while ($Ds_to_print > $o) 
+			while ($Ds_to_print > $o)
 				{
 				$o++;
 				$Dsql .= "'$Dstatuses[$o]',";
@@ -1445,7 +1445,7 @@ if (isset($camp_lists))
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$statuses_to_print = mysqli_num_rows($rslt);
 			$q=0;
-			while ($statuses_to_print > $q) 
+			while ($statuses_to_print > $q)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$complete_statuses.="'$rowx[0]',";
@@ -1455,7 +1455,7 @@ if (isset($camp_lists))
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$statuses_to_print = mysqli_num_rows($rslt);
 			$q=0;
-			while ($statuses_to_print > $q) 
+			while ($statuses_to_print > $q)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$complete_statuses.="'$rowx[0]',";
@@ -1515,14 +1515,14 @@ if (isset($camp_lists))
 			$GMT_gmt[0] = '';
 			$GMT_hour[0] = '';
 			$GMT_day[0] = '';
-			$YMD =  date("Y-m-d");	
+			$YMD =  date("Y-m-d");
 			while ($p > -13)
 				{
 				$pzone=3600 * $p;
 				$pmin=(gmdate("i", time() + $pzone));
 				$phour=( (gmdate("G", time() + $pzone)) * 100);
 				$pday=gmdate("w", time() + $pzone);
-				$tz = sprintf("%.2f", $p);	
+				$tz = sprintf("%.2f", $p);
 				$GMT_gmt[$g] = "$tz";
 				$GMT_day[$g] = "$pday";
 				$GMT_hour[$g] = ($phour + $pmin);
@@ -1559,7 +1559,7 @@ if (isset($camp_lists))
 				{
 				$Gct_holidaysSQL = preg_replace("/\|/", "','", "$Gct_holidays");
 				$Gct_holidaysSQL = "'".$Gct_holidaysSQL."'";
-				
+
 				$stmt = "SELECT holiday_id,holiday_date,holiday_name,ct_default_start,ct_default_stop from vicidial_call_time_holidays where holiday_id IN($Gct_holidaysSQL) and holiday_status='ACTIVE' and holiday_date='$YMD' order by holiday_id;";
 				$rslt=mysql_to_mysqli($stmt, $link);
 				if ($DB) {echo "$stmt\n";}
@@ -1571,7 +1571,7 @@ if (isset($camp_lists))
 					$holiday_date =				$aryC[1];
 					$holiday_name =				$aryC[2];
 					if($Gct_default_start < $aryC[3])		{$Gct_default_start = $aryC[3];}
-					if($Gct_default_stop > $aryC[4])		{$Gct_default_stop = $aryC[4];}						
+					if($Gct_default_stop > $aryC[4])		{$Gct_default_stop = $aryC[4];}
 					if($Gct_sunday_start < $aryC[3])		{$Gct_sunday_start = $aryC[3];}
 					if($Gct_sunday_stop > $aryC[4])			{$Gct_sunday_stop = $aryC[4];}
 					if($Gct_monday_start < $aryC[3])		{$Gct_monday_start = $aryC[3];}
@@ -1630,11 +1630,11 @@ if (isset($camp_lists))
 
 					### BEGIN Check for outbound state holiday ###
 					$Sholiday_id = '';
-					if ((strlen($Sct_holidays)>2) or ((strlen($holiday_id)>2) and (strlen($Sholiday_id)<2))) 
+					if ((strlen($Sct_holidays)>2) or ((strlen($holiday_id)>2) and (strlen($Sholiday_id)<2)))
 						{
 						# Apply state holiday
 						if (strlen($Sct_holidays)>2)
-							{								
+							{
 							$Sct_holidaysSQL = preg_replace("/\|/", "','", "$Sct_holidays");
 							$Sct_holidaysSQL = "'".$Sct_holidaysSQL."'";
 							$stmt = "SELECT holiday_id,holiday_date,holiday_name,ct_default_start,ct_default_stop from vicidial_call_time_holidays where holiday_id IN($Sct_holidaysSQL) and holiday_status='ACTIVE' and holiday_date='$YMD' order by holiday_id;";
@@ -1645,7 +1645,7 @@ if (isset($camp_lists))
 							{
 							$stmt = "SELECT holiday_id,holiday_date,holiday_name,ct_default_start,ct_default_stop from vicidial_call_time_holidays where holiday_id='$holiday_id' and holiday_status='ACTIVE' and holiday_date='$YMD' order by holiday_id;";
 							$holidaytype = "NO STATE HOLIDAY APPLYING CALL TIME HOLIDAY!   ";
-							}				
+							}
 						$rslt=mysql_to_mysqli($stmt, $link);
 						if ($DB) {echo "$stmt\n";}
 						$sthCrows=mysqli_num_rows($rslt);
@@ -1893,7 +1893,7 @@ if (isset($camp_lists))
 			$Ds_to_print = (count($Dstatuses) - 0);
 			$Dsql = '';
 			$o=0;
-			while ($Ds_to_print > $o) 
+			while ($Ds_to_print > $o)
 				{
 				$o++;
 				$Dsql .= "'$Dstatuses[$o]',";
@@ -1936,7 +1936,7 @@ if (isset($camp_lists))
 			$EXPsql = "and list_id NOT IN($expired_lists)";
 
 
-			#################################								
+			#################################
 			# Camp List
 			$stmt="SELECT list_id FROM vicidial_lists where list_id IN($camp_lists) and active='Y';";
 			$rslt_list=mysql_to_mysqli($stmt, $link);
@@ -1963,7 +1963,7 @@ if (isset($camp_lists))
 					$pmin=(gmdate("i", time() + $pzone));
 					$phour=( (gmdate("G", time() + $pzone)) * 100);
 					$pday=gmdate("w", time() + $pzone);
-					$tz = sprintf("%.2f", $p);	
+					$tz = sprintf("%.2f", $p);
 					$GMT_gmt[$g] = "$tz";
 					$GMT_day[$g] = "$pday";
 					$GMT_hour[$g] = ($phour + $pmin);
@@ -1972,7 +1972,7 @@ if (isset($camp_lists))
 					}
 
 				# Set List ID Variable
-				$cur_list_id = $rowA[0];			
+				$cur_list_id = $rowA[0];
 				$list_local_call_time = "";
 
 				# Pull the call times for the lists
@@ -1987,13 +1987,13 @@ if (isset($camp_lists))
 					}
 
 				# check that call time exists
-				if ($cur_call_time != "campaign") 
+				if ($cur_call_time != "campaign")
 					{
 					$stmt="SELECT count(*) from vicidial_call_times where call_time_id='$cur_call_time';";
 					$rslt=mysql_to_mysqli($stmt, $link);
 					$row=mysqli_fetch_row($rslt);
 					$call_time_exists  =	$row[0];
-					if ($call_time_exists < 1) 
+					if ($call_time_exists < 1)
 						{$cur_call_time = 'campaign';}
 					}
 
@@ -2030,7 +2030,7 @@ if (isset($camp_lists))
 						{
 						$Gct_holidaysSQL = preg_replace("/\|/", "','", "$Gct_holidays");
 						$Gct_holidaysSQL = "'".$Gct_holidaysSQL."'";
-						
+
 						$stmt = "SELECT holiday_id,holiday_date,holiday_name,ct_default_start,ct_default_stop from vicidial_call_time_holidays where holiday_id IN($Gct_holidaysSQL) and holiday_status='ACTIVE' and holiday_date='$YMD' order by holiday_id;";
 						$rslt=mysql_to_mysqli($stmt, $link);
 						$sthCrows=mysqli_num_rows($rslt);
@@ -2104,11 +2104,11 @@ if (isset($camp_lists))
 
 							### BEGIN Check for outbound state holiday ###
 							$Sholiday_id = '';
-							if ((strlen($Sct_holidays)>2) or ((strlen($holiday_id)>2) and (strlen($Sholiday_id)<2))) 
+							if ((strlen($Sct_holidays)>2) or ((strlen($holiday_id)>2) and (strlen($Sholiday_id)<2)))
 								{
 								#Apply state holiday
 								if (strlen($Sct_holidays)>2)
-									{								
+									{
 									$Sct_holidaysSQL = preg_replace("/\|/", "','", "$Sct_holidays");
 									$Sct_holidaysSQL = "'".$Sct_holidaysSQL."'";
 									$stmt = "SELECT holiday_id,holiday_date,holiday_name,ct_default_start,ct_default_stop from vicidial_call_time_holidays where holiday_id IN($Sct_holidaysSQL) and holiday_status='ACTIVE' and holiday_date='$YMD' order by holiday_id;";
@@ -2119,7 +2119,7 @@ if (isset($camp_lists))
 									{
 									$stmt = "SELECT holiday_id,holiday_date,holiday_name,ct_default_start,ct_default_stop from vicidial_call_time_holidays where holiday_id='$holiday_id' and holiday_status='ACTIVE' and holiday_date='$YMD' order by holiday_id;";
 									$holidaytype = "LIST NO STATE HOLIDAY APPLYING CALL TIME HOLIDAY!   ";
-									}				
+									}
 								$rslt=mysql_to_mysqli($stmt, $link);
 								if ($DB) {echo "$stmt\n";}
 								$sthCrows=mysqli_num_rows($rslt);
@@ -2249,7 +2249,7 @@ if (isset($camp_lists))
 								$r++;
 								}
 							$state_gmt = "$state_gmt'99'";
-		
+
 							$del_list_state_gmt_SQL .= "or (List_id=\"$cur_list_id\" and state='$Gstate_call_time_state' and gmt_offset_now NOT IN($state_gmt)) ";
 							$list_state_gmt_SQL .= "or (List_id=\"$cur_list_id\" and state='$Gstate_call_time_state' and gmt_offset_now IN($state_gmt)) ";
 							}
@@ -2271,7 +2271,7 @@ if (isset($camp_lists))
 					$list_default_gmt='';
 					while($r < $g)
 						{
-						if ($DB > 0) 
+						if ($DB > 0)
 							{echo "LCT_gmt: $r|$GMT_day[$r]|$GMT_gmt[$r]|$Gct_sunday_start|$Gct_sunday_stop|$GMT_hour[$r]|$Gct_default_start|$Gct_default_stop\n";}
 
 						if ($GMT_day[$r]==0)	#### Sunday local time
@@ -2403,11 +2403,11 @@ if (isset($camp_lists))
 
 				else
 					{
-					if (strlen($list_id_sql) < 3) 
+					if (strlen($list_id_sql) < 3)
 						{
 						$list_id_sql = "(list_id IN('$cur_list_id'";
 						}
-					else 
+					else
 						{
 						$list_id_sql .= ",'$cur_list_id'";
 						}

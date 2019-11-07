@@ -1,6 +1,6 @@
 <?php
 # qc_api.php
-# 
+#
 # Copyright (C) 2012  poundteam.com    LICENSE: AGPLv2
 # Copyright (C) 2014  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
@@ -632,15 +632,15 @@ if ($function == 'external_dial_lead')
 
 
 
-if ($format=='debug') 
+if ($format=='debug')
 	{
 	$ENDtime = date("U");
 	$RUNtime = ($ENDtime - $StarTtime);
 	echo "\n<!-- script runtime: $RUNtime seconds -->";
 	echo "\n</body>\n</html>\n";
 	}
-	
-exit; 
+
+exit;
 
 
 

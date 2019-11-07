@@ -1,6 +1,6 @@
-<?php 
+<?php
 # AST_SIP_event_report.php
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -86,14 +86,14 @@ if (strlen($report_display_type)<2) {$report_display_type = $SSreport_default_fo
 ### ARCHIVED DATA CHECK CONFIGURATION
 $archives_available="N";
 $log_tables_array=array("vicidial_log_extended_sip","vicidial_log_extended","vicidial_log");
-for ($t=0; $t<count($log_tables_array); $t++) 
+for ($t=0; $t<count($log_tables_array); $t++)
 	{
 	$table_name=$log_tables_array[$t];
 	$archive_table_name=use_archive_table($table_name);
 	if ($archive_table_name!=$table_name) {$archives_available="Y";}
 	}
 
-if ($search_archived_data) 
+if ($search_archived_data)
 	{
 	$vicidial_log_extended_sip_table=use_archive_table("vicidial_log_extended_sip");
 	$vicidial_log_extended_table=use_archive_table("vicidial_log_extended");
@@ -504,7 +504,7 @@ if ($file_download < 1)
 	echo "<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 	echo "<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 	require("chart_button.php");
-	echo "<script src='chart/Chart.js'></script>\n"; 
+	echo "<script src='chart/Chart.js'></script>\n";
 	echo "<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
 	echo "<div id='DetailDisplayDiv' style='position:absolute; top:0; left:0; z-index:20; background-color:white display:none;'></div>\n";
 	echo "<script language=\"JavaScript\">\n";
@@ -840,7 +840,7 @@ echo "<option "; if ($group == 'ring_to_final asc') {echo "SELECTED ";} echo "va
 echo "\n<BR><BR>";
 echo "</TD><TD VALIGN=TOP>\n";
 
-if ($archives_available=="Y") 
+if ($archives_available=="Y")
 	{
 	echo "<input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."\n";
 	}
@@ -866,7 +866,7 @@ else
 
 echo "</span>\n";
 
-if ($report_display_type=="TEXT" || !$report_display_type) 
+if ($report_display_type=="TEXT" || !$report_display_type)
 	{
 	echo "<span style=\"position:absolute;left:3px;top:3px;z-index:18;\"  id=agent_status_bars>\n";
 	echo "<PRE><FONT SIZE=2>\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";

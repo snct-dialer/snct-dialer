@@ -36,7 +36,7 @@
 use Fcntl qw(:flock);
 # print "start of program $0\n";
 unless (flock(DATA, LOCK_EX|LOCK_NB)) {
-    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log'
     or print "Can't open the fscking file: $!";
     $datestring = localtime();
     print $fh "[$datestring] $0 is already running. Exiting.\n";
@@ -184,7 +184,7 @@ $slash_star = '\*';
 
 
 use Time::HiRes ('gettimeofday','usleep','sleep');  # needed to have perl sleep in increments of less than one second
-use DBI;	  
+use DBI;
 
 if (!$VARDB_port) {$VARDB_port='3306';}
 
@@ -216,7 +216,7 @@ if ($nanpa_load > 0)
 	if ($DB > 0) {print "LINES IN NANPA FILE: $#prefixfile\n";}
 	$pc=0;   $full_file=0;   $dup_count=0;   $ins_count=0;   $dup_list='';	$skp_count=0;
 	$ins_stmt="insert into vicidial_nanpa_prefix_codes VALUES ";
-	foreach (@prefixfile) 
+	foreach (@prefixfile)
 		{
 		@row=split(/,/, $prefixfile[$pc]);
 		if ($#row > 20)
@@ -256,7 +256,7 @@ if ($nanpa_load > 0)
 					$row[35] =~ s/-0/-/gi;
 					$row[35] =~ s/:/./gi;
 					$row[35] =~ s/\r|\n|\t| //gi;
-					if ( ($row[7] =~ /XX/) || (length($row[35]) < 3) ) 
+					if ( ($row[7] =~ /XX/) || (length($row[35]) < 3) )
 						{
 						$skp_count++;
 						}
@@ -284,11 +284,11 @@ if ($nanpa_load > 0)
 				}
 			$sthA->finish();
 
-			if ($dup_check < 1) 
+			if ($dup_check < 1)
 				{
 				if ($dup_list =~ /$row[0]$row[1]\|/)
 					{$dup_count++;}
-				else 
+				else
 					{
 					$dup_list .= "$row[0]$row[1]|";
 					$ins_stmt .= "$temp_insert";
@@ -309,7 +309,7 @@ if ($nanpa_load > 0)
 				$dup_list='';
 				}
 			}
-		else 
+		else
 			{$pc++;}
 		if ($pc =~ /000$/)
 			{
@@ -334,7 +334,7 @@ else
 		{
 		$wget = `which wget`;
 		print "$wget\n";
-		if ( $wget eq "" ) 
+		if ( $wget eq "" )
 			{
 			print STDERR "Please install the wget command\n";
 			exit();
@@ -370,7 +370,7 @@ else
 		}
 	$pc=0;
 	$ins_stmt="insert into vicidial_phone_codes VALUES ";
-	foreach (@codefile) 
+	foreach (@codefile)
 		{
 		@row=split(/\t/, $codefile[$pc]);
 		if ($codefile[$pc] !~ /GEOGRAPHIC DESCRIPTION/)
@@ -387,7 +387,7 @@ else
 			$row[1] =~ s/\r|\n|\t| $//gi;
 			$row[0] =~ s/\r|\n|\t| $//gi;
 			$ins_stmt.="('$row[0]', '$row[1]', '$row[2]', '$row[3]', '$row[4]', '$row[5]', '$row[6]', '$row[7]', '$row[8]', '$row[9]'), ";
-			if ($pc =~ /00$/) 
+			if ($pc =~ /00$/)
 				{
 				chop($ins_stmt);
 				chop($ins_stmt);
@@ -424,7 +424,7 @@ else
 		}
 	$pc=0;
 	$ins_stmt="insert into vicidial_postal_codes VALUES ";
-	foreach (@zipfile) 
+	foreach (@zipfile)
 		{
 		@row=split(/\t/, $zipfile[$pc]);
 		$pc++;
@@ -435,7 +435,7 @@ else
 		if ($row[3] =~ /Y/i) {$DST_range = 'SSM-FSN';}
 		else {$DST_range = '';}
 		$ins_stmt.="('$row[0]', '$row[1]', '$row[2]', '$row[3]', '$DST_range', 'USA', '1'), ";
-		if ($pc =~ /00$/) 
+		if ($pc =~ /00$/)
 			{
 			chop($ins_stmt);
 			chop($ins_stmt);
@@ -470,7 +470,7 @@ else
 		}
 	$pc=0;
 	$ins_stmt="insert into vicidial_country_iso_tld VALUES ";
-	foreach (@isofile) 
+	foreach (@isofile)
 		{
 		@row=split(/\t/, $isofile[$pc]);
 		$pc++;
@@ -480,7 +480,7 @@ else
 		$row[3] =~ s/\r|\n|\t| $//gi;
 		$row[4] =~ s/\r|\n|\t| $//gi;
 		$ins_stmt.="(\"$row[0]\", '$row[1]', '$row[2]', '$row[3]', '$row[4]'), ";
-		if ($pc =~ /00$/) 
+		if ($pc =~ /00$/)
 			{
 			chop($ins_stmt);
 			chop($ins_stmt);

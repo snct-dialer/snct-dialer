@@ -1,6 +1,6 @@
 <?php
 # user_status.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -333,17 +333,17 @@ if ($SSallow_chats > 0)
 	$rslt=mysql_to_mysqli($stmt, $link);
 	if ($DB) {echo "$stmt\n";}
 	$active_chats=mysqli_num_rows($rslt);
-	if($active_chats>0) 
+	if($active_chats>0)
 		{
 		$Achats="";
-		while ($row=mysqli_fetch_row($rslt)) 
+		while ($row=mysqli_fetch_row($rslt))
 			{
 			$chat_id=$row[0];
 			$Achats.="$chat_id, ";
 			}
 		$Achats=preg_replace('/, $/', "", $Achats);
 		}
-	else 
+	else
 		{
 		$Achats=_QXZ("NONE");
 		}
@@ -439,7 +439,7 @@ require("admin_header.php");
 
 
 
-<?php 
+<?php
 
 echo "<TR BGCOLOR=\"#$SSstd_row2_background\"><TD ALIGN=LEFT COLSPAN=2><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=3><B> &nbsp; \n";
 
@@ -450,7 +450,7 @@ if ($stage == "live_campaign_change")
 	$rslt=mysql_to_mysqli($stmt, $link);
 
 	echo _QXZ("Agent")." $user - $full_name "._QXZ("changed to")." $group "._QXZ("campaign")."<BR>\n";
-	
+
 	exit;
 	}
 
@@ -788,7 +788,7 @@ if ( ( ($stage == "tc_log_user_OUT") or ($stage == "tc_log_user_IN") ) and ($mod
 			if ($totTIME_S < 10) {$totTIME_S = "0$totTIME_S";}
 			$totTIME_HMS = "$totTIME_H_int:$totTIME_M_int:$totTIME_S";
 			}
-		else 
+		else
 			{
 			$totTIME_HMS='0:00:00';
 			}
@@ -898,12 +898,12 @@ if ( ( ($stage == "tc_log_user_OUT") or ($stage == "tc_log_user_IN") ) and ($mod
 		$LOG_run++;
 		$VDdisplayMESSAGE = _QXZ("You have now logged-out the user").": $user - $full_name<BR>"._QXZ("Amount of time user was logged-in").": $totTIME_HMS";
 		}
-	
+
 	if ($LOG_run < 1)
 		{$VDdisplayMESSAGE = _QXZ("ERROR: timeclock log problem, could not process").": $status|$stage";}
 
 	echo "$VDdisplayMESSAGE\n";
-	
+
 	if ($db_source == 'S')
 		{
 		mysqli_close($link);
@@ -1049,7 +1049,7 @@ echo "|$stage|$group|";
 </html>
 
 <?php
-	
+
 
 if ($db_source == 'S')
 	{
@@ -1070,6 +1070,6 @@ $stmt="UPDATE vicidial_report_log set run_time='$TOTALrun' where report_log_id='
 if ($DB) {echo "|$stmt|\n";}
 $rslt=mysql_to_mysqli($stmt, $link);
 
-exit; 
+exit;
 
 ?>

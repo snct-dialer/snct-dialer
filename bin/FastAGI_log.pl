@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # FastAGI_log.pl version 2.14
-# 
+#
 # Experimental Deamon using perl Net::Server that runs as FastAGI to reduce load
 # replaces the following AGI scripts:
 # - call_log.agi
@@ -9,21 +9,21 @@
 # - VD_hangup.agi
 #
 # This script needs to be running all of the time for AGI requests to work
-# 
+#
 # You need to put lines similar to those below in your extensions.conf file:
-# 
+#
 # ;outbound dialing:
-# exten => _91NXXNXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log) 
+# exten => _91NXXNXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 #
 # ;inbound calls:
 # exten => 101,1,AGI(agi://127.0.0.1:4577/call_log)
 #   or
 # exten => 101,1,AGI(agi://127.0.0.1:4577/call_log--fullCID--${EXTEN}-----${CALLERID}-----${CALLERIDNUM}-----${CALLERIDNAME})
 #
-# 
+#
 # ;all hangups:
 # exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})
-# 
+#
 #
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv3
 # Copyright (©) 2019  SNCT GmbH <info@snct-gmbh.de>
@@ -179,7 +179,7 @@ if ($sthBrows > 0)
 $sthB->finish();
 $dbhB->disconnect();
 
-if ($SERVERLOG =~ /Y/) 
+if ($SERVERLOG =~ /Y/)
 	{
 	$childLOGfile = "$PATHlogs/FastAGIchildLOG";
 	$log_level = "4";
@@ -198,7 +198,7 @@ use Time::Local;
 
 
 
-sub process_request 
+sub process_request
 	{
 	use Asterisk::AGI;
 	$AGI = new Asterisk::AGI;
@@ -288,9 +288,9 @@ sub process_request
 	if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} >= 12))
 		{$h_exten_reason=1;}
 
-	if ($AGILOG) 
+	if ($AGILOG)
 		{
-		$agi_string = "+++++++++++++++++ FastAGI Start ++++ Asterisk version: $ast_ver_str{major} $ast_ver_str{minor} ++++++ hER: $h_exten_reason ++++++"; 
+		$agi_string = "+++++++++++++++++ FastAGI Start ++++ Asterisk version: $ast_ver_str{major} $ast_ver_str{minor} ++++++ hER: $h_exten_reason ++++++";
 		&agi_output;
 		}
 
@@ -299,18 +299,18 @@ sub process_request
 	### begin parsing run-time options ###
 	if (length($ARGV[0])>1)
 		{
-		if ($AGILOG) 
+		if ($AGILOG)
 			{
-			$agi_string = "Perl Environment Dump:"; 
+			$agi_string = "Perl Environment Dump:";
 			&agi_output;
 			}
 		$i=0;
 		while ($#ARGV >= $i)
 			{
 			$args = "$args $ARGV[$i]";
-			if ($AGILOG) 
+			if ($AGILOG)
 				{
-				$agi_string = "$i|$ARGV[$i]";   
+				$agi_string = "$i|$ARGV[$i]";
 				&agi_output;
 				}
 			$i++;
@@ -322,7 +322,7 @@ sub process_request
 	$callerid='';
 	$calleridname='';
 	$|=1;
-	while(<STDIN>) 
+	while(<STDIN>)
 		{
 		chomp;
 		last unless length($_);
@@ -346,7 +346,7 @@ sub process_request
 			@CID = split(/-----/, $request);
 			$callerid =	$CID[2];
 			$calleridname =	$CID[3];
-			$agi_string = "URL fullCID: |$callerid|$calleridname|$request|";   
+			$agi_string = "URL fullCID: |$callerid|$calleridname|$request|";
 			&agi_output;
 			}
 		if ( ($request =~ /--HVcauses--/i) && (!$HVcauses) )
@@ -361,11 +361,11 @@ sub process_request
 			$dial_time =			$ARGV_vars[4];
 			$answered_time =		$ARGV_vars[5];
 			$tech_hangup_cause =	$ARGV_vars[6];
-            if( $dial_time > $answered_time ) 
+            if( $dial_time > $answered_time )
 				{$ring_time = $dial_time - $answered_time;}
-            else 
+            else
 				{$ring_time = 0;}
-			$agi_string = "URL HVcauses: |$PRI|$DEBUG|$hangup_cause|$dialstatus|$dial_time|$ring_time|$tech_hangup_cause|";   
+			$agi_string = "URL HVcauses: |$PRI|$DEBUG|$hangup_cause|$dialstatus|$dial_time|$ring_time|$tech_hangup_cause|";
 			&agi_output;
 			}
 		if (!$fullCID)	# if no fullCID sent
@@ -374,7 +374,7 @@ sub process_request
 			if (/^agi_calleridname\:\s+(.*)$/)	{$calleridname = $1;}
 			if ( $calleridname =~ /\"/)  {$calleridname =~ s/\"//gi;}
 	#	if ( (length($calleridname)>5) && ( (!$callerid) or ($callerid =~ /unknown|private|00000000/i) or ($callerid =~ /5551212/) ) )
-		if ( ( 
+		if ( (
 		(length($calleridname)>5) && ( (!$callerid) or ($callerid =~ /unknown|private|00000000/i) or ($callerid =~ /5551212/) )
 		) or ( (length($calleridname)>17) && ($calleridname =~ /\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d/) ) )
 			{$callerid = $calleridname;}
@@ -395,25 +395,25 @@ sub process_request
 	$calleridname =~ s/\'|\\\\|\\\|\\|\\;|\\\;|\;|;//gi;
 	$extension =~ s/\'|\"|\\\\|\\\|\\|\\;|\\\;|\;|;//gi;
 
-	if ($AGILOG) 
+	if ($AGILOG)
 		{
-		$agi_string = "AGI Environment Dump:";   
+		$agi_string = "AGI Environment Dump:";
 		&agi_output;
 		}
 
-	foreach $i (sort keys %AGI) 
+	foreach $i (sort keys %AGI)
 		{
-		if ($AGILOG) 
+		if ($AGILOG)
 			{
-			$agi_string = " -- $i = $AGI{$i}";   
+			$agi_string = " -- $i = $AGI{$i}";
 			&agi_output;
 			}
 		}
 
 
-	if ($AGILOG) 
+	if ($AGILOG)
 		{
-		$agi_string = "AGI Variables: |$unique_id|$channel|$extension|$type|$callerid|";   
+		$agi_string = "AGI Variables: |$unique_id|$channel|$extension|$type|$callerid|";
 		&agi_output;
 		}
 
@@ -423,9 +423,9 @@ sub process_request
 	$process = $request;
 	$process =~ s/agi:\/\///gi;
 	$process =~ s/.*\/|--.*//gi;
-	if ($AGILOG) 
+	if ($AGILOG)
 		{
-		$agi_string = "Process to run: |$request|$process|$stage|";   
+		$agi_string = "Process to run: |$request|$process|$stage|";
 		&agi_output;
 		}
 
@@ -496,7 +496,7 @@ sub process_request
 			### This section breaks the outbound dialed number down(or builds it up) to a 10 digit number and gives it a description
 			if ( ($channel =~ /^SIP|^IAX2/) || ( ($is_client_phone > 0) && (length($channel_group) < 1) ) )
 				{
-				if ( ($extension =~ /^901144/) && (length($extension)==16) )  #test 207 608 6400 
+				if ( ($extension =~ /^901144/) && (length($extension)==16) )  #test 207 608 6400
 					{$extension =~ s/^9//gi;	$channel_group = 'Outbound Intl UK';}
 				if ( ($extension =~ /^901161/) && (length($extension)==15) )  #test  39 417 2011
 					{$extension =~ s/^9//gi;	$channel_group = 'Outbound Intl AUS';}
@@ -510,7 +510,7 @@ sub process_request
 					{$extension =~ s/^91//gi;	$channel_group = 'Outbound Long Distance';}
 				if ($is_client_phone > 0)
 					{$channel_group = 'Client Phone';}
-				
+
 				$SIP_ext = $channel;	$SIP_ext =~ s/SIP\/|IAX2\/|Zap\/|DAHDI\/|Local\///gi;
 
 				$number_dialed = $extension;
@@ -615,7 +615,7 @@ sub process_request
 						}
 					}
 				}
-			
+
 			if ($park_abandon < 1)
 				{
 				if ($request =~ /--HVcauses--/i)
@@ -630,9 +630,9 @@ sub process_request
 					$dial_time =			$ARGV_vars[4];
 					$answered_time =		$ARGV_vars[5];
 					$tech_hangup_cause = 	$ARGV_vars[6];
-					if( $dial_time > $answered_time ) 
+					if( $dial_time > $answered_time )
 						{$ring_time = $dial_time - $answered_time;}
-					else 
+					else
 						{$ring_time = 0;}
 					$agi_string = "URL HVcauses: |$PRI|$DEBUG|$hangup_cause|$dialstatus|$dial_time|$ring_time|$tech_hangup_cause|";
 					&agi_output;
@@ -658,7 +658,7 @@ sub process_request
 							{
 							$beginUNIQUEID = $unique_id;
 							$beginUNIQUEID =~ s/\..*//gi;
-							if ($callerid =~ /^M/) 
+							if ($callerid =~ /^M/)
 								{
 								$stmtA = "SELECT uniqueid FROM call_log where uniqueid LIKE \"$beginUNIQUEID%\" and caller_code LIKE \"%$CIDlead_id\";";
 								$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -675,7 +675,7 @@ sub process_request
 								}
 
 							### if using Asterisk 11 and older method for hangup reasons, check vicidial_dial_log
-							if ($h_exten_reason < 1) 
+							if ($h_exten_reason < 1)
 								{
 								$sip_hangup_cause=0;
 								$sip_hangup_reason='';
@@ -697,7 +697,7 @@ sub process_request
 							### if using Asterisk 12 and newer method for hangup reasons, check variables
 							else
 								{
-								if ( $tech_hangup_cause =~ /SIP/ ) 
+								if ( $tech_hangup_cause =~ /SIP/ )
 									{
 									# we got the tech hangup cause from Asterisk (available in asterisk 13+)
 									( $tech, $sip_hangup_cause, @error ) = split( / /, $tech_hangup_cause );
@@ -705,7 +705,7 @@ sub process_request
 
 									# the vicidial_dial_log does not have the sip hangup data so populate it
 									$stmtA = "UPDATE vicidial_dial_log SET sip_hangup_cause='$sip_hangup_cause',sip_hangup_reason='$sip_hangup_reason',uniqueid='$uniqueid' where caller_code='$callerid' and server_ip='$VARserver_ip' and lead_id='$CIDlead_id';";
-									$dbhA->do($stmtA);		
+									$dbhA->do($stmtA);
 									}
 								else
 									{
@@ -764,7 +764,7 @@ sub process_request
 				### get uniqueid and start_epoch from the call_log table
 				$CALLunique_id = $unique_id;
 				$stmtA = "SELECT uniqueid,start_epoch,channel,end_epoch,channel_group FROM call_log where uniqueid='$unique_id';";
-				if ($callerid =~ /^M/) 
+				if ($callerid =~ /^M/)
 					{$stmtA = "SELECT uniqueid,start_epoch,channel,end_epoch,channel_group FROM call_log where caller_code='$callerid' and channel NOT LIKE \"Local\/%\";";}
 				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -779,7 +779,7 @@ sub process_request
 					if ($callerid =~ /^M/)
 						{$channel =			$aryA[2];}
 					$end_epoch =		$aryA[3];
-					$channel_group = 	$aryA[4]; 
+					$channel_group = 	$aryA[4];
 					if ($AGILOG) {$agi_string = "|$aryA[0]|$aryA[1]|$aryA[2]|$aryA[3]|";   &agi_output;}
 					$rec_count++;
 					}
@@ -915,7 +915,7 @@ sub process_request
 
 					close(out);
 					}
-				else 
+				else
 					{
 					if ($AGILOG) {$agi_string = "DEBUG: $DEBUG";   &agi_output;}
 					}
@@ -999,7 +999,7 @@ sub process_request
 						}
 					if ( ($PRI =~ /^PRI$/) && ($callerid =~ /\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d/) && ( ( ($dialstatus =~ /BUSY/) || ( ($dialstatus =~ /CHANUNAVAIL/) && ($hangup_cause =~ /^1$|^28$/) ) || ( ($enhanced_disconnect_logging > 0) && ( ($dialstatus =~ /CONGESTION/) && ($hangup_cause =~ /^1$|^19$|^21$|^34$|^38$/) ) ) ) || ($CPDfound > 0) ) && ($callerid !~ /^S\d\d\d\d\d\d\d\d\d\d\d\d/) )
 						{
-						if ($CPDfound < 1) 
+						if ($CPDfound < 1)
 							{
 							if ($dialstatus =~ /BUSY/) {$VDL_status = 'AB'; $VDAC_status = 'BUSY';}
 							if ($dialstatus =~ /CHANUNAVAIL/) {$VDL_status = 'ADC'; $VDAC_status = 'DISCONNECT';}
@@ -1010,7 +1010,7 @@ sub process_request
 								}
 							}
 
-						if (length($VDL_status) > 0) 
+						if (length($VDL_status) > 0)
 							{
 							$stmtA = "UPDATE vicidial_list set status='$VDL_status' where lead_id = '$CIDlead_id';";
 								if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
@@ -1100,7 +1100,7 @@ sub process_request
 											$VD_call_quota_lead_ranking =	$aryA[0];
 											}
 
-										if ($VD_call_quota_lead_ranking !~ /^DISABLED$/i) 
+										if ($VD_call_quota_lead_ranking !~ /^DISABLED$/i)
 											{
 											$temp_status = $VDL_status;
 											&call_quota_logging;
@@ -1545,7 +1545,7 @@ sub process_request
 									$VDLXPDaffected_rows = $dbhA->do($stmtA);
 									if ($AGILOG) {$agi_string = "--    PDROP vicidial_extended_log insert: |$VDLXPDaffected_rows|$uniqueid|$CIDlead_id|$VDL_status|";   &agi_output;}
 
-									if ($enable_drop_lists > 1) 
+									if ($enable_drop_lists > 1)
 										{
 										$stmtA="INSERT IGNORE INTO vicidial_drop_log SET uniqueid='$uniqueid',server_ip='$VARserver_ip',drop_date=NOW(),lead_id='$VD_lead_id',campaign_id='$VD_campaign_id',status='PDROP',phone_code='$VD_phone_code',phone_number='$VD_phone_number';";
 										$VDDLaffected_rows = $dbhA->do($stmtA);
@@ -1579,7 +1579,7 @@ sub process_request
 									$affected_rows = $dbhA->do($stmtA);
 									if ($AGILOG) {$agi_string = "--    VDAD vicidial_list update: |$affected_rows|$VD_lead_id";   &agi_output;}
 									}
-								else 
+								else
 									{
 									$SQL_status = "term_reason='CALLER',";
 									}
@@ -1645,7 +1645,7 @@ sub process_request
 									$affected_rows = $dbhA->do($stmtA);
 									if ($AGILOG) {$agi_string = "--    VDCL update: |$affected_rows|$uniqueid|$VD_closecallid|";   &agi_output;}
 
-									if ($cslr_reset_check > 0) 
+									if ($cslr_reset_check > 0)
 										{
 										$drop_lead_reset='';
 										$stmtA = "SELECT drop_lead_reset FROM vicidial_inbound_groups where group_id='$VD_campaign_id';";
@@ -1990,7 +1990,7 @@ sub process_request
 												}
 											if ($VD_alt_dnc_count < 1)
 												{
-												if ($alt_dial_phones_count eq '$Xlast') 
+												if ($alt_dial_phones_count eq '$Xlast')
 													{$Xlast = 'LAST';}
 												$stmtA = "INSERT INTO vicidial_hopper SET lead_id='$VD_lead_id',campaign_id='$VD_campaign_id',status='READY',list_id='$VD_list_id',gmt_offset_now='$VD_gmt_offset_now',state='$VD_state',alt_dial='X$Xlast',user='',priority='15',source='A';";
 												$affected_rows = $dbhA->do($stmtA);
@@ -2001,7 +2001,7 @@ sub process_request
 												{
 												if ( ( ($VD_auto_alt_dial_statuses =~ / DNCC /) && ($DNCC > 0) ) || ( ($VD_auto_alt_dial_statuses =~ / DNCL /) && ($DNCL > 0) ) )
 													{
-													if ($alt_dial_phones_count eq '$Xlast') 
+													if ($alt_dial_phones_count eq '$Xlast')
 														{$Xlast = 'LAST';}
 													$stmtA = "INSERT INTO vicidial_hopper SET lead_id='$VD_lead_id',campaign_id='$VD_campaign_id',status='DNC',list_id='$VD_list_id',gmt_offset_now='$VD_gmt_offset_now',state='$VD_state',alt_dial='X$Xlast',user='',priority='15',source='A';";
 													$affected_rows = $dbhA->do($stmtA);
@@ -2094,7 +2094,7 @@ sub call_quota_logging
 	$settings_session_score=0;
 	$zero_rank_after_call=0;
 
-	if (length($CQcontainer_entry) > 5) 
+	if (length($CQcontainer_entry) > 5)
 		{
 		@container_lines = split(/\n/,$CQcontainer_entry);
 		$c=0;
@@ -2107,7 +2107,7 @@ sub call_quota_logging
 				if ($container_lines[$c] =~ /^zero_rank_after_call/i)
 					{
 					$container_lines[$c] =~ s/zero_rank_after_call=>//gi;
-					if ( ($container_lines[$c] >= 0) && ($container_lines[$c] <= 1) ) 
+					if ( ($container_lines[$c] >= 0) && ($container_lines[$c] <= 1) )
 						{
 						$zero_rank_after_call = $container_lines[$c];
 						}
@@ -2118,12 +2118,12 @@ sub call_quota_logging
 					$session_one_valid=0; $session_one_start=''; $session_one_end='';
 					$session_one = $container_lines[$c];
 					$session_one =~ s/session_one=>//gi;
-					if ( (length($session_one) > 0) && (length($session_one) <= 9) && ($session_one =~ /,/) ) 
+					if ( (length($session_one) > 0) && (length($session_one) <= 9) && ($session_one =~ /,/) )
 						{
 						@session_oneARY = split(/,/,$session_one);
 						$session_one_start = $session_oneARY[0];
 						$session_one_end = $session_oneARY[1];
-						if ( (length($session_one_start) >= 4) && (length($session_one_end) >= 4) && ($session_one_start < $session_one_end) && ($session_one_end <= 2400) ) 
+						if ( (length($session_one_start) >= 4) && (length($session_one_end) >= 4) && ($session_one_start < $session_one_end) && ($session_one_end <= 2400) )
 							{
 							$settings_session_score++;
 							$session_one_valid++;
@@ -2135,12 +2135,12 @@ sub call_quota_logging
 					$session_two_valid=0; $session_two_start=''; $session_two_end='';
 					$session_two = $container_lines[$c];
 					$session_two =~ s/session_two=>//gi;
-					if ( (length($session_two) > 0) && (length($session_two) <= 9) && ($session_two =~ /,/) ) 
+					if ( (length($session_two) > 0) && (length($session_two) <= 9) && ($session_two =~ /,/) )
 						{
 						@session_twoARY = split(/,/,$session_two);
 						$session_two_start = $session_twoARY[0];
 						$session_two_end = $session_twoARY[1];
-						if ( (length($session_two_start) >= 4) && (length($session_two_end) >= 4) && ($session_one_valid > 0) && ($session_one_end <= $session_two_start) && ($session_two_start < $session_two_end) && ($session_two_end <= 2400) ) 
+						if ( (length($session_two_start) >= 4) && (length($session_two_end) >= 4) && ($session_one_valid > 0) && ($session_one_end <= $session_two_start) && ($session_two_start < $session_two_end) && ($session_two_end <= 2400) )
 							{
 							$settings_session_score++;
 							$session_two_valid++;
@@ -2152,12 +2152,12 @@ sub call_quota_logging
 					$session_three_valid=0; $session_three_start=''; $session_three_end='';
 					$session_three = $container_lines[$c];
 					$session_three =~ s/session_three=>//gi;
-					if ( (length($session_three) > 0) && (length($session_three) <= 9) && ($session_three =~ /,/) ) 
+					if ( (length($session_three) > 0) && (length($session_three) <= 9) && ($session_three =~ /,/) )
 						{
 						@session_threeARY = split(/,/,$session_three);
 						$session_three_start = $session_threeARY[0];
 						$session_three_end = $session_threeARY[1];
-						if ( (length($session_three_start) >= 4) && (length($session_three_end) >= 4) && ($session_two_valid > 0) && ($session_two_end <= $session_three_start) && ($session_three_start < $session_three_end) && ($session_three_end <= 2400) ) 
+						if ( (length($session_three_start) >= 4) && (length($session_three_end) >= 4) && ($session_two_valid > 0) && ($session_two_end <= $session_three_start) && ($session_three_start < $session_three_end) && ($session_three_end <= 2400) )
 							{
 							$settings_session_score++;
 							$session_three_valid++;
@@ -2169,12 +2169,12 @@ sub call_quota_logging
 					$session_four_valid=0; $session_four_start=''; $session_four_end='';
 					$session_four = $container_lines[$c];
 					$session_four =~ s/session_four=>//gi;
-					if ( (length($session_four) > 0) && (length($session_four) <= 9) && ($session_four =~ /,/) ) 
+					if ( (length($session_four) > 0) && (length($session_four) <= 9) && ($session_four =~ /,/) )
 						{
 						@session_fourARY = split(/,/,$session_four);
 						$session_four_start = $session_fourARY[0];
 						$session_four_end = $session_fourARY[1];
-						if ( (length($session_four_start) >= 4) && (length($session_four_end) >= 4) && ($session_three_valid > 0) && ($session_three_end <= $session_four_start) && ($session_four_start < $session_four_end) && ($session_four_end <= 2400) ) 
+						if ( (length($session_four_start) >= 4) && (length($session_four_end) >= 4) && ($session_three_valid > 0) && ($session_three_end <= $session_four_start) && ($session_four_start < $session_four_end) && ($session_four_end <= 2400) )
 							{
 							$settings_session_score++;
 							$session_four_valid++;
@@ -2186,12 +2186,12 @@ sub call_quota_logging
 					$session_five_valid=0; $session_five_start=''; $session_five_end='';
 					$session_five = $container_lines[$c];
 					$session_five =~ s/session_five=>//gi;
-					if ( (length($session_five) > 0) && (length($session_five) <= 9) && ($session_five =~ /,/) ) 
+					if ( (length($session_five) > 0) && (length($session_five) <= 9) && ($session_five =~ /,/) )
 						{
 						@session_fiveARY = split(/,/,$session_five);
 						$session_five_start = $session_fiveARY[0];
 						$session_five_end = $session_fiveARY[1];
-						if ( (length($session_five_start) >= 4) && (length($session_five_end) >= 4) && ($session_four_valid > 0) && ($session_four_end <= $session_five_start) && ($session_five_start < $session_five_end) && ($session_five_end <= 2400) ) 
+						if ( (length($session_five_start) >= 4) && (length($session_five_end) >= 4) && ($session_four_valid > 0) && ($session_four_end <= $session_five_start) && ($session_five_start < $session_five_end) && ($session_five_end <= 2400) )
 							{
 							$settings_session_score++;
 							$session_five_valid++;
@@ -2203,12 +2203,12 @@ sub call_quota_logging
 					$session_six_valid=0; $session_six_start=''; $session_six_end='';
 					$session_six = $container_lines[$c];
 					$session_six =~ s/session_six=>//gi;
-					if ( (length($session_six) > 0) && (length($session_six) <= 9) && ($session_six =~ /,/) ) 
+					if ( (length($session_six) > 0) && (length($session_six) <= 9) && ($session_six =~ /,/) )
 						{
 						@session_sixARY = split(/,/,$session_six);
 						$session_six_start = $session_sixARY[0];
 						$session_six_end = $session_sixARY[1];
-						if ( (length($session_six_start) >= 4) && (length($session_six_end) >= 4) && ($session_five_valid > 0) && ($session_five_end <= $session_six_start) && ($session_six_start < $session_six_end) && ($session_six_end <= 2400) ) 
+						if ( (length($session_six_start) >= 4) && (length($session_six_end) >= 4) && ($session_five_valid > 0) && ($session_five_end <= $session_six_start) && ($session_six_start < $session_six_end) && ($session_six_end <= 2400) )
 							{
 							$settings_session_score++;
 							$session_six_valid++;
@@ -2264,40 +2264,40 @@ sub call_quota_logging
 				@VDLcall_timeARY = split(/:/,$VDLcall_datetimeARY[1]);
 				$VDLcall_hourmin = "$VDLcall_timeARY[0]$VDLcall_timeARY[1]";
 
-				if ( ($session_one_start <= $VDLcall_hourmin) and ($session_one_end > $VDLcall_hourmin) ) 
+				if ( ($session_one_start <= $VDLcall_hourmin) and ($session_one_end > $VDLcall_hourmin) )
 					{
-					$call_in_session=1; 
-					$session_newSQL=",session_one_calls='1',session_one_today_calls='1'"; 
+					$call_in_session=1;
+					$session_newSQL=",session_one_calls='1',session_one_today_calls='1'";
 					$session_updateSQL=",session_one_calls=(session_one_calls + 1),session_one_today_calls=(session_one_today_calls + 1)";
 					}
-				if ( ($session_two_start <= $VDLcall_hourmin) and ($session_two_end > $VDLcall_hourmin) ) 
+				if ( ($session_two_start <= $VDLcall_hourmin) and ($session_two_end > $VDLcall_hourmin) )
 					{
-					$call_in_session=2; 
-					$session_newSQL=",session_two_calls='1',session_two_today_calls='1'"; 
+					$call_in_session=2;
+					$session_newSQL=",session_two_calls='1',session_two_today_calls='1'";
 					$session_updateSQL=",session_two_calls=(session_two_calls + 1),session_two_today_calls=(session_two_today_calls + 1)";
 					}
-				if ( ($session_three_start <= $VDLcall_hourmin) and ($session_three_end > $VDLcall_hourmin) ) 
+				if ( ($session_three_start <= $VDLcall_hourmin) and ($session_three_end > $VDLcall_hourmin) )
 					{
-					$call_in_session=3; 
-					$session_newSQL=",session_three_calls='1',session_three_today_calls='1'"; 
+					$call_in_session=3;
+					$session_newSQL=",session_three_calls='1',session_three_today_calls='1'";
 					$session_updateSQL=",session_three_calls=(session_three_calls + 1),session_three_today_calls=(session_three_today_calls + 1)";
 					}
-				if ( ($session_four_start <= $VDLcall_hourmin) and ($session_four_end > $VDLcall_hourmin) ) 
+				if ( ($session_four_start <= $VDLcall_hourmin) and ($session_four_end > $VDLcall_hourmin) )
 					{
-					$call_in_session=4; 
-					$session_newSQL=",session_four_calls='1',session_four_today_calls='1'"; 
+					$call_in_session=4;
+					$session_newSQL=",session_four_calls='1',session_four_today_calls='1'";
 					$session_updateSQL=",session_four_calls=(session_four_calls + 1),session_four_today_calls=(session_four_today_calls + 1)";
 					}
-				if ( ($session_five_start <= $VDLcall_hourmin) and ($session_five_end > $VDLcall_hourmin) ) 
+				if ( ($session_five_start <= $VDLcall_hourmin) and ($session_five_end > $VDLcall_hourmin) )
 					{
-					$call_in_session=5; 
-					$session_newSQL=",session_five_calls='1',session_five_today_calls='1'"; 
+					$call_in_session=5;
+					$session_newSQL=",session_five_calls='1',session_five_today_calls='1'";
 					$session_updateSQL=",session_five_calls=(session_five_calls + 1),session_five_today_calls=(session_five_today_calls + 1)";
 					}
-				if ( ($session_six_start <= $VDLcall_hourmin) and ($session_six_end > $VDLcall_hourmin) ) 
+				if ( ($session_six_start <= $VDLcall_hourmin) and ($session_six_end > $VDLcall_hourmin) )
 					{
-					$call_in_session=6; 
-					$session_newSQL=",session_six_calls='1',session_six_today_calls='1'"; 
+					$call_in_session=6;
+					$session_newSQL=",session_six_calls='1',session_six_today_calls='1'";
 					$session_updateSQL=",session_six_calls=(session_six_calls + 1),session_six_today_calls=(session_six_today_calls + 1)";
 					}
 
@@ -2332,9 +2332,9 @@ sub call_quota_logging
 						$VLCQCfirst_call_epoch =		$aryA[1];
 						$VLCQClast_call_date =			$aryA[2];
 
-						if ($VDLcall_datetime ne $VLCQClast_call_date) 
+						if ($VDLcall_datetime ne $VLCQClast_call_date)
 							{
-							if ($VLCQCfirst_call_epoch >= $today_start_epoch) 
+							if ($VLCQCfirst_call_epoch >= $today_start_epoch)
 								{$day_updateSQL=',day_one_calls=(day_one_calls+1)';}
 							if ( ($VLCQCfirst_call_epoch >= $day_two_start_epoch) and ($VLCQCfirst_call_epoch < $today_start_epoch) )
 								{$day_updateSQL=',day_two_calls=(day_two_calls+1)';}

@@ -9,7 +9,7 @@
 #
 # This script is designed as an API(Application Programming Interface) to allow
 # other programs to interact with the VICIDIAL Agent screen
-# 
+#
 # required variables:
 #  - $user
 #  - $pass
@@ -602,7 +602,7 @@ if ($function == 'webserver')
 	$data .= _QXZ("system load average: ") . $load[0] . "\n";
 	$data .= _QXZ("disk free space: ") . disk_free_space('/') . "\n";
 
-	if (ini_get('date.timezone')) 
+	if (ini_get('date.timezone'))
 		{
 		$data .= "date.timezone: " . ini_get('date.timezone') . "\n";
 		$data .= _QXZ("maximum execution time: ") . ini_get('max_execution_time') . "\n";
@@ -2259,7 +2259,7 @@ if ($function == 'external_add_lead')
 			$result_reason = _QXZ("agent_user is not logged in");
 			echo "$result: $result_reason - $agent_user\n";
 			api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
-			}		
+			}
 		}
 	}
 ################################################################################
@@ -4704,7 +4704,7 @@ if ($function == 'force_fronter_audio_stop')
 ################################################################################
 ### BEGIN - optional "close window" link
 ################################################################################
-if ($close_window_link > 0) 
+if ($close_window_link > 0)
 	{
 	$close_this_window_text = 'Close This Window';
 	if ($language=='es')
@@ -4719,15 +4719,15 @@ if ($close_window_link > 0)
 
 
 
-if ($format=='debug') 
+if ($format=='debug')
 	{
 	$ENDtime = date("U");
 	$RUNtime = ($ENDtime - $StarTtime);
 	echo "\n<!-- script runtime: $RUNtime seconds -->";
 	echo "\n</body>\n</html>\n";
 	}
-	
-exit; 
+
+exit;
 
 
 

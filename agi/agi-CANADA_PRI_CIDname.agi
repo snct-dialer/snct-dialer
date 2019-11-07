@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
-# agi-CANADA_PRI_CIDname.agi version 0.1 
-# 
+# agi-CANADA_PRI_CIDname.agi version 0.1
+#
 # Runs after call goes through IAX loop to send out custom CallerIDname on
 # Canadian PRIs that allow dynamic setting of CIDname with call initiation
 #
@@ -97,7 +97,7 @@ if (!$DIDLOGfile) {$DIDLOGfile = "$PATHlogs/didin.$year-$mon-$mday";}
 
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 	{
 	chomp;
 	last unless length($_);
@@ -131,7 +131,7 @@ if (length($callerid)>0) {$phone_number = $callerid;}
 if (length($calleridname)>0) {$VLcomments = $calleridname;}
    else {$VLcomments = '';}
 
-foreach $i (sort keys %AGI) 
+foreach $i (sort keys %AGI)
 	{
 	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
 	}
@@ -195,7 +195,7 @@ if ($sthArows > 0)
 			$sthA->finish();
 			$caller_id_name =	"$aryA[0]";
 			$caller_id_number = "$aryA[1]";
-			
+
 			### set the callerid to the ACQS value(calleridname)
 			## use these two lines for Asterisk 1.2 tree
 			$newcallerid = "\"$caller_id_name <$caller_id_number>\"";

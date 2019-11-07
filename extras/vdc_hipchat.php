@@ -1,6 +1,6 @@
 <?php
 # vdc_hipchat.php
-# 
+#
 # Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed to send a URL command to send a notification to a

@@ -8,8 +8,8 @@
 #
 # runs every 3 minutes and copies the -in recordings in the monitor to the DONE
 # directory for further processing. Very important for RAM-drive usage
-# 
-# put an entry into the cron of of your asterisk machine to run this script 
+#
+# put an entry into the cron of of your asterisk machine to run this script
 # every 3 minutes or however often you desire
 #
 # ### recording mixing/compressing/ftping scripts
@@ -21,10 +21,10 @@
 # make sure that the following directories exist:
 # /var/spool/asterisk/monitor		# default Asterisk recording directory
 # /var/spool/asterisk/monitorDONE	# where the moved -in files are put
-# 
+#
 # This program assumes that recordings are saved by Asterisk as .wav
 # should be easy to change this code if you use .gsm instead
-# 
+#
 #
 # LICENSE: AGPLv3
 #
@@ -47,7 +47,7 @@
 use Fcntl qw(:flock);
 # print "start of program $0\n";
 unless (flock(DATA, LOCK_EX|LOCK_NB)) {
-    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log'
     or print "Can't open the fscking file: $!";
     $datestring = localtime();
     print $fh "[$datestring] $0 is already running. Exiting.\n";
@@ -152,7 +152,7 @@ if (length($ARGV[0])>1)
 			}
 		}
 
-	if ( ($POST > 0) && ( (length($camp_post) < 1) || (length($status_post) < 1) ) ) 
+	if ( ($POST > 0) && ( (length($camp_post) < 1) || (length($status_post) < 1) ) )
 		{
 		$POST=0;
 		if ($q < 1) {print "\n----- POST disabled, status or campaign invalid: |$camp_post|$status_post| -----\n\n";}
@@ -221,7 +221,7 @@ $server_ip = $VARserver_ip;		# Asterisk server IP
 if (!$VARDB_port) {$VARDB_port='3306';}
 
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
-use DBI;	  
+use DBI;
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
@@ -242,13 +242,13 @@ $sthA->finish();
 ### find soxi to gather the length info if needed
 $soxibin = '';
 if ( -e ('/usr/bin/soxi')) {$soxibin = '/usr/bin/soxi';}
-else 
+else
 	{
 	if ( -e ('/usr/local/bin/soxi')) {$soxibin = '/usr/local/bin/soxi';}
 	else
 		{
 		if ( -e ('/usr/sbin/soxi')) {$soxibin = '/usr/sbin/soxi';}
-		else 
+		else
 			{
 			if ($DB) {print "Can't find soxi binary! No length calculations will be available...\n";}
 			}
@@ -345,12 +345,12 @@ foreach(@FILES)
 					}
 				$sthA->finish();
 
-				if ($rec_on_ct > $rec_off_ct) 
+				if ($rec_on_ct > $rec_off_ct)
 					{
 					if ($DBX > 0) {print "DEBUG: recording muting on for this call: ($rec_on_ct > $rec_off_ct) |$SQLFILE|ended: $rec_ended|\n";}
 
 					$rs_recent_on=0;
-					if ($rec_ended < 1) 
+					if ($rec_ended < 1)
 						{
 						### check if muting started in last 15 minutes
 						$stmtA = "SELECT count(*) from vicidial_agent_function_log where lead_id='$lead_id' and event_time >= \"$start_time\" and event_time > DATE_SUB(NOW(),INTERVAL 15 MINUTE) and user='$user' and function='mute_rec' and stage='on';";
@@ -366,7 +366,7 @@ foreach(@FILES)
 						$sthA->finish();
 						}
 
-					if ($rs_recent_on > 0) 
+					if ($rs_recent_on > 0)
 						{
 						if ($DBX > 0) {print "DEBUG2: recording muting recently for this call, do not process: ($rs_recent_on) |$SQLFILE|ended: $rec_ended|\n";}
 						$process_recording=0;
@@ -378,7 +378,7 @@ foreach(@FILES)
 					}
 				}
 
-			if ($process_recording > 0) 
+			if ($process_recording > 0)
 				{
 				if ($DB) {print "|$recording_id|$length_in_sec|$INfile|     |$ALLfile|\n";}
 
@@ -404,7 +404,7 @@ foreach(@FILES)
 					}
 
 				##### BEGIN post call variable replacement #####
-				if ($POST > 0) 
+				if ($POST > 0)
 					{
 					if ($ALLfile =~ /POSTVLC|POSTSP|POSTADDR3|POSTSTATUS/)
 						{
@@ -418,16 +418,16 @@ foreach(@FILES)
 						if ($status_post =~ /----ALL----/)
 							{
 							$status_ALL++;
-							if($DBX){print "All Statuses:  |$status_post|$status_ALL|\n";} 
+							if($DBX){print "All Statuses:  |$status_post|$status_ALL|\n";}
 							}
 
 						if ($camp_post =~ /----ALL----/)
 							{
 							$camp_ALL++;
-							if($DBX){print "All Campaigs and Ingroups:  |$camp_post|$camp_ALL|\n";} 
+							if($DBX){print "All Campaigs and Ingroups:  |$camp_post|$camp_ALL|\n";}
 							}
 
-						if ( ($camp_ALL < 1) || ($status_ALL < 1) ) 
+						if ( ($camp_ALL < 1) || ($status_ALL < 1) )
 							{
 							$camp_postSQL='';
 							if ($camp_ALL < 1)
@@ -436,7 +436,7 @@ foreach(@FILES)
 								$camp_postSQL =~ s/---/','/gi;
 								$camp_postSQL = "and campaign_id IN('$camp_postSQL')";
 								}
-							if ($vicidial_id =~ /\./) 
+							if ($vicidial_id =~ /\./)
 								{
 								$log_lookupSQL = "SELECT status from vicidial_log where uniqueid='$vicidial_id' and lead_id='$lead_id' $camp_postSQL;";
 								}
@@ -452,7 +452,7 @@ foreach(@FILES)
 								{
 								@aryA = $sthA->fetchrow_array;
 								$lead_status =		$aryA[0];
-								if ($status_ALL > 0) 
+								if ($status_ALL > 0)
 									{$camp_status_selected++;}
 								else
 									{
@@ -461,7 +461,7 @@ foreach(@FILES)
 									foreach(@status_vars)
 										{
 										$status_temp = $status_vars[$fc];
-										if ($status_vars[$fc] =~ /\*/) 
+										if ($status_vars[$fc] =~ /\*/)
 											{
 											$status_temp =~ s/\*/.*/gi;
 											if ( ($lead_status =~ /^$status_temp/) && ($status_vars[$fc] =~ /\*$/) )
@@ -471,7 +471,7 @@ foreach(@FILES)
 											}
 										else
 											{
-											if ($lead_status =~ /^$status_temp$/) 
+											if ($lead_status =~ /^$status_temp$/)
 												{$camp_status_selected++;}
 											}
 										if ($DBX) {print "    POST processing DEBUG: $fc|$status_temp|$lead_status|$lead_id|$vicidial_id|$ALLfile|\n";}
@@ -527,7 +527,7 @@ foreach(@FILES)
 							{
 							if ($DB) {print "    POST processing SKIPPED: |$camp_ALL|$status_ALL|$camp_status_selected|$lead_id|$vicidial_id|$ALLfile|\n";}
 
-							if ($CLEAR_POST > 0) 
+							if ($CLEAR_POST > 0)
 								{
 								$ALLfile =~ s/POSTVLC//gi;
 								$ALLfile =~ s/POSTSP//gi;

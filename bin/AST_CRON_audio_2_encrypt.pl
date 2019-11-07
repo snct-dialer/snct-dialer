@@ -5,8 +5,8 @@
 # This is a STEP-2 program in the audio archival process(should happen AFTER any compression)
 #
 # runs every 3 minutes and encrypts the recording files to GPG format by default
-# 
-# put an entry into the cron of of your asterisk machine to run this script 
+#
+# put an entry into the cron of of your asterisk machine to run this script
 # every 3 minutes or however often you desire
 #
 # You MUST define the type of audio file that this process will pull from: WAV, GSM, MP3, OGG, GSW
@@ -27,7 +27,7 @@
 # Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
 #               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
 
-# 
+#
 # 150911-1814 - First Build based upon 110524-1059 AST_CRON_audio_2_compress.pl
 # 160523-0651 - Added --HTTPS option to use https instead of http in local location
 # 180616-1825 - Add sniplet into perl scripts to run only once a time
@@ -37,7 +37,7 @@
 use Fcntl qw(:flock);
 # print "start of program $0\n";
 unless (flock(DATA, LOCK_EX|LOCK_NB)) {
-    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log'
     or print "Can't open the fscking file: $!";
     $datestring = localtime();
     print $fh "[$datestring] $0 is already running. Exiting.\n";
@@ -246,7 +246,7 @@ if ($run_check > 0)
 	my $grepout = `/bin/ps ax | grep $0 | grep -v grep | grep -v '/bin/sh'`;
 	my $grepnum=0;
 	$grepnum++ while ($grepout =~ m/\n/g);
-	if ($grepnum > 1) 
+	if ($grepnum > 1)
 		{
 		if ($DB) {print "I am not alone! Another $0 is running! Exiting...\n";}
 		exit;
@@ -270,7 +270,7 @@ if ($GPG > 0)
 	### find GnuPG encryption binary to do the encryption
 	$gpgbin = '';
 	if ( -e ('/usr/bin/gpg')) {$gpgbin = '/usr/bin/gpg';}
-	else 
+	else
 		{
 		if ( -e ('/usr/local/bin/gpg')) {$gpgbin = '/usr/local/bin/gpg';}
 		else
@@ -293,7 +293,7 @@ if ($DBX > 0)
 	print "GPG: $gpgbin    DIR: $dir2\n";
 	}
 
-if (!-e "$PATHDONEmonitor/GPG") 
+if (!-e "$PATHDONEmonitor/GPG")
 	{
 	print "Creating directory: $PATHDONEmonitor/GPG \n";
 	`mkdir -p $PATHDONEmonitor/GPG`;

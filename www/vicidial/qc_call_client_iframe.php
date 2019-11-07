@@ -2,7 +2,7 @@
 # qc_call_client_iframe.php
 #
 # ViciDial database administration modify lead in vicidial_list
-# 
+#
 # Copyright (C) 2012  poundteam.com    LICENSE: AGPLv2
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
@@ -286,8 +286,8 @@ function is_user_logged_in($user)
         if($live_agent_count == '0')
 			{
             return _QXZ("Cannot call prospect. You are not logged in as")." $user.";
-			} 
-		else 
+			}
+		else
 			{
             return _QXZ("Cannot call prospect").". $live_agent_count "._QXZ("agents logged in as")." $user.";
 			}
@@ -306,8 +306,8 @@ $qc_user_logged_in=is_user_logged_in($PHP_AUTH_USER);
 if ($qc_user_logged_in===true)
 	{
     echo "<A HREF=qc_api.php?source=test&user=$PHP_AUTH_USER&pass=$PHP_AUTH_PW&agent_user=$PHP_AUTH_USER&function=external_dial_lead&value=$phone_number&phone_code=$phone_code&search=YES&preview=NO&focus=YES target='_SELF'>"._QXZ("Call Lead")."</A>";
-	} 
-else 
+	}
+else
 	{
     echo "$qc_user_logged_in";
 	}

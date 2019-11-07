@@ -1,6 +1,6 @@
 <?php
 # user_stats.php
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -136,14 +136,14 @@ if ($qm_conf_ct > 0)
 ### ARCHIVED DATA CHECK CONFIGURATION
 $archives_available="N";
 $log_tables_array=array("vicidial_log", "vicidial_agent_log", "vicidial_closer_log", "vicidial_user_log", "vicidial_timeclock_log", "vicidial_user_closer_log", "vicidial_email_log", "call_log", "recording_log", "user_call_log", "vicidial_lead_search_log", "vicidial_agent_skip_log");
-for ($t=0; $t<count($log_tables_array); $t++) 
+for ($t=0; $t<count($log_tables_array); $t++)
 	{
 	$table_name=$log_tables_array[$t];
 	$archive_table_name=use_archive_table($table_name);
 	if ($archive_table_name!=$table_name) {$archives_available="Y";}
 	}
 
-if ($search_archived_data) 
+if ($search_archived_data)
 	{
 	$vicidial_closer_log_table=use_archive_table("vicidial_closer_log");
 	$vicidial_user_log_table=use_archive_table("vicidial_user_log");
@@ -200,12 +200,12 @@ $end_date = preg_replace("/'|\"|\\\\|;/","",$end_date);
 $user = preg_replace("/'|\"|\\\\|;/","",$user);
 $call_status = preg_replace("/'|\"|\\\\|;/","",$call_status);
 
-if ($call_status != "") 
+if ($call_status != "")
 	{
 	$query_call_status = "and status='$call_status'";
 	$VLquery_call_status = "and vlog.status='$call_status'";
 	}
-else 
+else
 	{
 	$query_call_status = '';
 	$VLquery_call_status = '';
@@ -565,7 +565,7 @@ else
 	{$MAIN.="<input type=text name=user size=12 maxlength=10> &nbsp; &nbsp; &nbsp; \n";}
 $MAIN.=_QXZ("Call status").": <input type=text name=call_status size=7 maxlength=6 value=\"$call_status\">\n";
 
-if ($archives_available=="Y") 
+if ($archives_available=="Y")
 	{
 	$MAIN.="<input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."\n";
 	}
@@ -615,7 +615,7 @@ if ($pause_code_rpt >= 1)
 		{
 		$total_pause_time+=$pause_row["pause_sec"];
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+			{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 		else
 			{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -658,7 +658,7 @@ elseif ($park_rpt >= 1)
 		{
 		$total_park_time+=$park_row["parked_sec"];
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+			{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 		else
 			{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -702,7 +702,7 @@ else
 		$counts=array();
 		$status=array();
 		$call_sec=array();
-		while ($VLstatuses_to_print > $o) 
+		while ($VLstatuses_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			$counts[$p] =		$row[0];
@@ -716,12 +716,12 @@ else
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$VCLstatuses_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($VCLstatuses_to_print > $o) 
+		while ($VCLstatuses_to_print > $o)
 			{
 			$status_match=0;
 			$r=0;
 			$row=mysqli_fetch_row($rslt);
-			while ($VLstatuses_to_print > $r) 
+			while ($VLstatuses_to_print > $r)
 				{
 				if ($status[$r] == $row[1])
 					{
@@ -747,11 +747,11 @@ else
 		while ($o < $p)
 			{
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
-			$call_hours_minutes =		sec_convert($call_sec[$o],'H'); 
+			$call_hours_minutes =		sec_convert($call_sec[$o],'H');
 
 			$MAIN.="<tr $bgcolor><td><font size=2>$status[$o]</td>";
 			$MAIN.="<td align=right><font size=2> $counts[$o]</td>\n";
@@ -763,7 +763,7 @@ else
 			$o++;
 			}
 
-		$call_hours_minutes =		sec_convert($total_sec,'H'); 
+		$call_hours_minutes =		sec_convert($total_sec,'H');
 
 		$MAIN.="<tr><td><font size=2>"._QXZ("TOTAL CALLS")." </td><td align=right><font size=2> $total_calls</td><td align=right><font size=2> $call_hours_minutes</td></tr>\n";
 		$CSV_text1.="\"\",\""._QXZ("TOTAL CALLS")."\",\"$total_calls\",\"$call_hours_minutes\"\n";
@@ -791,11 +791,11 @@ else
 		$o=0;
 		$event_start_seconds='';
 		$event_stop_seconds='';
-		while ($events_to_print > $o) 
+		while ($events_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			if (preg_match("/LOGIN/i", $row[0]))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -825,7 +825,7 @@ else
 					$event_stop_seconds = $row[1];
 					$event_seconds = ($event_stop_seconds - $event_start_seconds);
 					$total_login_time = ($total_login_time + $event_seconds);
-					$event_hours_minutes =		sec_convert($event_seconds,'H'); 
+					$event_hours_minutes =		sec_convert($event_seconds,'H');
 
 					$MAIN.="<tr $bgcolor><td><font size=2>$row[0]</td>";
 					$MAIN.="<td align=right><font size=2> $row[2]</td>\n";
@@ -855,7 +855,7 @@ else
 			$o++;
 			}
 
-		$total_login_hours_minutes =		sec_convert($total_login_time,'H'); 
+		$total_login_hours_minutes =		sec_convert($total_login_time,'H');
 
 		$MAIN.="<tr><td><font size=2>"._QXZ("TOTAL")."</td>";
 		$MAIN.="<td align=right><font size=2> </td>\n";
@@ -898,7 +898,7 @@ else
 		while ($events_to_print > $o) {
 			$row=mysqli_fetch_row($rslt);
 			if ( ($row[0]=='START') or ($row[0]=='LOGIN') )
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -923,7 +923,7 @@ else
 				{
 				$login_sec = $row[3];
 				$total_login_time = ($total_login_time + $login_sec);
-				$event_hours_minutes =		sec_convert($login_sec,'H'); 
+				$event_hours_minutes =		sec_convert($login_sec,'H');
 
 				$MAIN.="<tr $bgcolor><td><font size=2><A HREF=\"./timeclock_edit.php?timeclock_id=$row[5]\">$row[5]</A></td>";
 				$MAIN.="<td align=right><font size=2>$manager_edit</td>";
@@ -944,7 +944,7 @@ else
 			$total_login_time = ($total_login_time + $login_sec);
 				if ($DB) {$MAIN.="LOGIN ONLY - $total_login_time - $login_sec";}
 			}
-		$total_login_hours_minutes =		sec_convert($total_login_time,'H'); 
+		$total_login_hours_minutes =		sec_convert($total_login_time,'H');
 
 		if ($DB) {$MAIN.=" - $total_login_time - $login_sec";}
 
@@ -977,11 +977,11 @@ else
 		$logs_to_print = mysqli_num_rows($rslt);
 
 		$u=0;
-		while ($logs_to_print > $u) 
+		while ($logs_to_print > $u)
 			{
 			$row=mysqli_fetch_row($rslt);
 			if (preg_match("/1$|3$|5$|7$|9$/i", $u))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -1029,11 +1029,11 @@ else
 		$logs_to_print = mysqli_num_rows($rslt);
 
 		$u=0;
-		while ($logs_to_print > $u) 
+		while ($logs_to_print > $u)
 			{
 			$row=mysqli_fetch_row($rslt);
 			if (preg_match("/1$|3$|5$|7$|9$/i", $u))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -1090,7 +1090,7 @@ else
 
 		##### vicidial agent outbound emails for this time period #####
 
-		if ($allow_emails>0) 
+		if ($allow_emails>0)
 			{
 			$MAIN.="<B>"._QXZ("OUTBOUND EMAILS FOR THIS TIME PERIOD: (10000 record limit)")."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='$download_link&file_download=5'>["._QXZ("DOWNLOAD")."]</a></B>\n";
 			$MAIN.="<TABLE width=670 cellspacing=0 cellpadding=3>\n";
@@ -1103,11 +1103,11 @@ else
 			$logs_to_print = mysqli_num_rows($rslt);
 
 			$u=0;
-			while ($logs_to_print > $u) 
+			while ($logs_to_print > $u)
 				{
 				$row=mysqli_fetch_row($rslt);
 				if (preg_match("/1$|3$|5$|7$|9$/i", $u))
-					{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+					{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 				else
 					{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 				if (strlen($row[6])>400) {$row[6]=substr($row[6],0,400)."...";}
@@ -1177,11 +1177,11 @@ else
 	$u=0;
 	$TOTALinSECONDS=0;
 	$TOTALagentSECONDS=0;
-	while ($logs_to_print > $u) 
+	while ($logs_to_print > $u)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if (preg_match("/1$|3$|5$|7$|9$/i", $u))
-			{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+			{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 		else
 			{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -1280,7 +1280,7 @@ else
 		$TOTALdispoSECONDS=0;
 		$TOTALdeadSECONDS=0;
 		$TOTALcustomerSECONDS=0;
-		while ($logs_to_print > $u) 
+		while ($logs_to_print > $u)
 			{
 			$row=mysqli_fetch_row($rslt);
 			$event_time =	$row[0];
@@ -1317,7 +1317,7 @@ else
 				$DBdatetime = explode(" ",$event_time);
 				$DBdate = explode("-",$DBdatetime[0]);
 				$DBtime = explode(":",$DBdatetime[1]);
-		
+
 				$DBcall_end_sec = mktime($DBtime[0], $DBtime[1], ($DBtime[2] + $DBtotal_sec), $DBdate[1], $DBdate[2], $DBdate[0]);
 				$DBcall_end = date("Y-m-d H:i:s",$DBcall_end_sec);
 				$MAIN.="<tr $bgcolor>";
@@ -1376,12 +1376,12 @@ else
 		$MAIN.="<td colspan=4><font size=2> &nbsp; </td></tr>\n";
 		$CSV_text7.="\"\",\"\",\""._QXZ("TOTALS")."\",\"$TOTALpauseSECONDS\",\"$TOTALwaitSECONDS\",\"$TOTALtalkSECONDS\",\"$TOTALdispoSECONDS\",\"$TOTALdeadSECONDS\",\"$TOTALcustomerSECONDS\"\n";
 
-		$TOTALpauseSECONDShh =	sec_convert($TOTALpauseSECONDS,'H'); 
-		$TOTALwaitSECONDShh =	sec_convert($TOTALwaitSECONDS,'H'); 
-		$TOTALtalkSECONDShh =	sec_convert($TOTALtalkSECONDS,'H'); 
-		$TOTALdispoSECONDShh =	sec_convert($TOTALdispoSECONDS,'H'); 
-		$TOTALdeadSECONDShh =	sec_convert($TOTALdeadSECONDS,'H'); 
-		$TOTALcustomerSECONDShh =	sec_convert($TOTALcustomerSECONDS,'H'); 
+		$TOTALpauseSECONDShh =	sec_convert($TOTALpauseSECONDS,'H');
+		$TOTALwaitSECONDShh =	sec_convert($TOTALwaitSECONDS,'H');
+		$TOTALtalkSECONDShh =	sec_convert($TOTALtalkSECONDS,'H');
+		$TOTALdispoSECONDShh =	sec_convert($TOTALdispoSECONDS,'H');
+		$TOTALdeadSECONDShh =	sec_convert($TOTALdeadSECONDS,'H');
+		$TOTALcustomerSECONDShh =	sec_convert($TOTALcustomerSECONDS,'H');
 
 		$MAIN.="<tr bgcolor=white>";
 		$MAIN.="<td colspan=2><font size=1>"._QXZ("(in HH:MM:SS)")."</td>";
@@ -1423,11 +1423,11 @@ else
 	$logs_to_print = mysqli_num_rows($rslt);
 
 	$u=0;
-	while ($logs_to_print > $u) 
+	while ($logs_to_print > $u)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if (preg_match("/1$|3$|5$|7$|9$/i", $u))
-			{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+			{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 		else
 			{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -1443,13 +1443,13 @@ else
 			$stmt="SELECT count(*) from servers where server_ip='$URLserver_ip';";
 			$rsltx=mysql_to_mysqli($stmt, $link);
 			$rowx=mysqli_fetch_row($rsltx);
-			
+
 			if ($rowx[0] > 0)
 				{
 				$stmt="SELECT recording_web_link,alt_server_ip,external_server_ip from servers where server_ip='$URLserver_ip';";
 				$rsltx=mysql_to_mysqli($stmt, $link);
 				$rowx=mysqli_fetch_row($rsltx);
-				
+
 				if (preg_match("/ALT_IP/i",$rowx[0]))
 					{
 					$location = preg_replace("/$URLserver_ip/i", "$rowx[1]", $location);
@@ -1466,7 +1466,7 @@ else
 			$stmt="SELECT count(*) from ".$vicidial_agent_function_log." where user='" . mysqli_real_escape_string($link, $user) . "' and event_time >= '$row[4]'  and event_time <= '$row[6]' and function='mute_rec' and lead_id='$row[12]' and stage='on';";
 			$rsltx=mysql_to_mysqli($stmt, $link);
 			$flogs_to_print = mysqli_num_rows($rsltx);
-			if ($flogs_to_print > 0) 
+			if ($flogs_to_print > 0)
 				{
 				$rowx=mysqli_fetch_row($rsltx);
 				$mute_events = $rowx[0];
@@ -1479,7 +1479,7 @@ else
 			{$locat = $location;}
 		if ( (preg_match('/ftp/i',$location)) or (preg_match('/http/i',$location)) )
 			{
-			if ($log_recording_access<1) 
+			if ($log_recording_access<1)
 				{$location = "<a href=\"$location\">$locat</a>";}
 			else
 				{$location = "<a href=\"recording_log_redirect.php?recording_id=$row[0]&lead_id=$row[12]&search_archived_data=$search_archived_data\">$locat</a>";}
@@ -1524,11 +1524,11 @@ else
 		$logs_to_print = mysqli_num_rows($rslt);
 
 		$u=0;
-		while ($logs_to_print > $u) 
+		while ($logs_to_print > $u)
 			{
 			$row=mysqli_fetch_row($rslt);
 			if (preg_match("/1$|3$|5$|7$|9$/i", $u))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -1606,11 +1606,11 @@ else
 		$logs_to_print = mysqli_num_rows($rslt);
 
 		$u=0;
-		while ($logs_to_print > $u) 
+		while ($logs_to_print > $u)
 			{
 			$row=mysqli_fetch_row($rslt);
 			if (preg_match("/1$|3$|5$|7$|9$/i", $u))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -1648,11 +1648,11 @@ else
 		$logs_to_print = mysqli_num_rows($rslt);
 
 		$u=0;
-		while ($logs_to_print > $u) 
+		while ($logs_to_print > $u)
 			{
 			$row=mysqli_fetch_row($rslt);
 			if (preg_match("/1$|3$|5$|7$|9$/i", $u))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -1680,11 +1680,11 @@ else
 		$logs_to_print = mysqli_num_rows($rslt);
 
 		$u=0;
-		while ($logs_to_print > $u) 
+		while ($logs_to_print > $u)
 			{
 			$row=mysqli_fetch_row($rslt);
 			if (preg_match("/1$|3$|5$|7$|9$/i", $u))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -1714,11 +1714,11 @@ else
 		$logs_to_print = mysqli_num_rows($rslt);
 
 		$u=0;
-		while ($logs_to_print > $u) 
+		while ($logs_to_print > $u)
 			{
 			$row=mysqli_fetch_row($rslt);
 			if (preg_match("/1$|3$|5$|7$|9$/i", $u))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -1750,7 +1750,7 @@ $MAIN.="</body>";
 $MAIN.="</html>";
 
 
-if ($file_download>0) 
+if ($file_download>0)
 	{
 	$FILE_TIME = date("Ymd-His");
 	$CSVfilename = "user_stats_$US$FILE_TIME.csv";

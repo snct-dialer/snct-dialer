@@ -1,10 +1,10 @@
-<?php 
+<?php
 # AST_email_log_report.php
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # report of emails handled by the system
-# 
+#
 # CHANGELOG:
 # 130221-2117 - First build
 # 130414-0132 - Added report logging
@@ -96,14 +96,14 @@ if ($qm_conf_ct > 0)
 ### ARCHIVED DATA CHECK CONFIGURATION
 $archives_available="N";
 $log_tables_array=array("vicidial_email_list", "vicidial_closer_log", "vicidial_email_log");
-for ($t=0; $t<count($log_tables_array); $t++) 
+for ($t=0; $t<count($log_tables_array); $t++)
 	{
 	$table_name=$log_tables_array[$t];
 	$archive_table_name=use_archive_table($table_name);
 	if ($archive_table_name!=$table_name) {$archives_available="Y";}
 	}
 
-if ($search_archived_data) 
+if ($search_archived_data)
 	{
 	$vicidial_email_list_table=use_archive_table("vicidial_email_list");
 	$vicidial_email_log_table=use_archive_table("vicidial_email_log");
@@ -457,7 +457,7 @@ $MAIN.="<SELECT SIZE=5 NAME=group[] multiple>\n";
 $o=0;
 while ($groups_to_print > $o)
 	{
-	if (preg_match("/\|$LISTgroups[$o]\|/",$group_string)) 
+	if (preg_match("/\|$LISTgroups[$o]\|/",$group_string))
 		{$MAIN.="<option selected value=\"$LISTgroups[$o]\">$LISTgroups[$o] - $LISTgroup_names[$o]</option>\n";}
 	else
 		{$MAIN.="<option value=\"$LISTgroups[$o]\">$LISTgroups[$o] - $LISTgroup_names[$o]</option>\n";}
@@ -475,7 +475,7 @@ $MAIN.="<a href=\"./admin.php?ADD=999999\">"._QXZ("REPORTS")."</a> | ";
 $MAIN.="<BR><BR>";
 
 
-if ($archives_available=="Y") 
+if ($archives_available=="Y")
 	{
 	$MAIN.="<input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."<BR><BR>\n";
 	}
@@ -515,26 +515,26 @@ if ($groups_to_print < 1)
 
 else
 {
-if ($shift == 'AM') 
+if ($shift == 'AM')
 	{
 	$time_BEGIN=$AM_shift_BEGIN;
 	$time_END=$AM_shift_END;
-	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}   
+	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}
 	if (strlen($time_END) < 6) {$time_END = "15:14:59";}
 	}
-if ($shift == 'PM') 
+if ($shift == 'PM')
 	{
 	$time_BEGIN=$PM_shift_BEGIN;
 	$time_END=$PM_shift_END;
 	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "15:15:00";}
 	if (strlen($time_END) < 6) {$time_END = "23:15:00";}
 	}
-if ($shift == 'ALL') 
+if ($shift == 'ALL')
 	{
 	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}
 	if (strlen($time_END) < 6) {$time_END = "23:59:59";}
 	}
-$query_date_BEGIN = "$query_date 00:00:00";   
+$query_date_BEGIN = "$query_date 00:00:00";
 $query_date_END = "$end_date 23:59:59";
 
 $rpt_title=_QXZ("Showing emails")." "._QXZ("$email_title")." "._QXZ("that were")." "._QXZ("$date_title")." "._QXZ("from")." $query_date_BEGIN "._QXZ("to")." $query_date_END\n\n";
@@ -542,58 +542,58 @@ $MAIN.=$rpt_title;
 $MAIN.=_QXZ("Email log results").": $group_string          $NOW_TIME        <a href=\"$PHP_SELF?DB=$DB&query_date=$query_date&end_date=$end_date$groupQS&shift=$shift&SUBMIT=$SUBMIT&file_download=1&date_type=$date_type&email_type=$email_type&search_archived_data=$search_archived_data\">"._QXZ("DOWNLOAD")."</a>\n";
 $CSV_text1.="\""._QXZ("Showing emails")." "._QXZ("$email_title")." "._QXZ("that were")." "._QXZ("$date_title")." "._QXZ("from")." $query_date_BEGIN "._QXZ("to")." $query_date_END\"\n\n";
 
-if ($email_type=="received") 
+if ($email_type=="received")
 	{
 	$rpt_border="+---------------------+--------------------------------+----------------------+----------------------------------------------------+------------+\n";
 	$rpt_header="| "._QXZ("DATE EMAIL RECEIVED",19)." | ".sprintf("%-30s", _QXZ("ADDRESS FROM",30))." | ".sprintf("%-20s", _QXZ("SENDER NAME",20))." | ".sprintf("%-50s", _QXZ("MESSAGE",50))." | ".sprintf("%-10s", _QXZ("STATUS",10))." |\n";
 	$CSV_text1.="\""._QXZ("DATE EMAIL RECEIVED")."\",\""._QXZ("ADDRESS FROM")."\",\""._QXZ("SENDER NAME")."\",\""._QXZ("MESSAGE")."\",\""._QXZ("STATUS")."\"\n";
-	if ($date_type=="email_date") 
+	if ($date_type=="email_date")
 		{
 	#	$stmt="select vel.* from vicidial_email_list vel where $date_type>='$query_date_BEGIN' and $date_type<='$query_date_END' and group_id in ($group_SQL) order by $date_type asc";
 		$stmt="select vel.email_row_id, vel.lead_id, vel.email_date, vel.email_from, vel.email_from_name, convert(vel.message using 'UTF8') as message, vel.status from ".$vicidial_email_list_table." vel where vel.$date_type>='$query_date_BEGIN' and vel.$date_type<='$query_date_END' and vel.group_id in ($group_SQL) order by vel.$date_type asc";
-		} 
-	else if ($date_type=="call_date") 
+		}
+	else if ($date_type=="call_date")
 		{
 	#	$stmt="select vel.*, vcl.call_date, from vicidial_email_list vel, vicidial_closer_log vcl where vcl.$date_type>='$query_date_BEGIN' and vcl.$date_type<='$query_date_END' and vcl.uniqueid=vel.uniqueid and vel.group_id in ($group_SQL) order by vcl.$date_type asc";
 		$stmt="select vel.email_row_id, vel.lead_id, vel.email_date, vel.email_from, vel.email_from_name, convert(vel.message using 'UTF8') as message, vel.status from ".$vicidial_email_list_table." vel where vcl.$date_type>='$query_date_BEGIN' and vcl.$date_type<='$query_date_END' and vcl.uniqueid=vel.uniqueid and vel.group_id in ($group_SQL) and vel.email_row_id=vl.email_row_id order by vcl.$date_type asc";
-		} 
-	else if ($date_type=="date_answered") 
+		}
+	else if ($date_type=="date_answered")
 		{
 		$stmt="select vel.email_row_id, vel.lead_id, vel.email_date, vel.email_from, vel.email_from_name, convert(vel.message using 'UTF8') as message, vel.status, vcl.call_date, vl.email_date as date_response_sent, vl.user as sending_user, vl.message as sent_message from ".$vicidial_email_list_table." vel, ".$vicidial_closer_log_table." vcl, ".$vicidial_email_log_table." vl where vel.$date_type>='$query_date_BEGIN' and vel.$date_type<='$query_date_END' and vcl.uniqueid=vel.uniqueid and vel.group_id in ($group_SQL) and vel.email_row_id=vl.email_row_id order by vel.$date_type asc";
 		}
 	}
-else if ($email_type=="viewed") 
+else if ($email_type=="viewed")
 	{
 	$rpt_border="+---------------------+--------------------------------+----------------------+----------------------------------------------------+---------------------+------------+\n";
 	$rpt_header="| "._QXZ("DATE EMAIL RECEIVED",19)." | ".sprintf("%-30s", _QXZ("ADDRESS FROM",30))." | ".sprintf("%-20s", _QXZ("SENDER NAME",20))." | ".sprintf("%-50s", _QXZ("MESSAGE",50))." | "._QXZ("DATE EMAIL VIEWED",19)." | ".sprintf("%-10s", _QXZ("STATUS",10))." |\n";
 	$CSV_text1.="\""._QXZ("DATE EMAIL RECEIVED")."\",\""._QXZ("ADDRESS FROM")."\",\""._QXZ("SENDER NAME")."\",\""._QXZ("MESSAGE")."\",\""._QXZ("DATE EMAIL VIEWED")."\",\""._QXZ("STATUS")."\"\n";
-	if ($date_type=="email_date") 
+	if ($date_type=="email_date")
 		{
 		$stmt="select vel.email_row_id, vel.lead_id, vel.email_date, vel.email_from, vel.email_from_name, convert(vel.message using 'UTF8') as message, vel.status, vcl.call_date from ".$vicidial_email_list_table." vel, ".$vicidial_closer_log_table." vcl where vel.$date_type>='$query_date_BEGIN' and vel.$date_type<='$query_date_END' and vcl.uniqueid=vel.uniqueid and vel.group_id in ($group_SQL) order by vel.$date_type asc";
-		} 
-	else if ($date_type=="call_date") 
+		}
+	else if ($date_type=="call_date")
 		{
 		$stmt="select vel.email_row_id, vel.lead_id, vel.email_date, vel.email_from, vel.email_from_name, convert(vel.message using 'UTF8') as message, vel.status, vcl.call_date from ".$vicidial_email_list_table." vel, ".$vicidial_closer_log_table." vcl where vcl.$date_type>='$query_date_BEGIN' and vcl.$date_type<='$query_date_END' and vcl.uniqueid=vel.uniqueid and vel.group_id in ($group_SQL) order by vcl.$date_type asc";
-		} 
-	else if ($date_type=="date_answered") 
+		}
+	else if ($date_type=="date_answered")
 		{
 		$stmt="select vel.email_row_id, vel.lead_id, vel.email_date, vel.email_from, vel.email_from_name, convert(vel.message using 'UTF8') as message, vel.status, vcl.call_date from ".$vicidial_email_list_table." vel, ".$vicidial_closer_log_table." vcl where vel.$date_type>='$query_date_BEGIN' and vel.$date_type<='$query_date_END' and vcl.uniqueid=vel.uniqueid and vel.group_id in ($group_SQL) order by vel.$date_type asc";
 		}
 	}
-else if ($email_type=="answered") 
+else if ($email_type=="answered")
 	{
 	$rpt_border="+---------------------+--------------------------------+----------------------+----------------------------------------------------+---------------------+---------------------+----------------------+----------------------------------------------------+------------+\n";
 	$rpt_header="| "._QXZ("DATE EMAIL RECEIVED",19)." | ".sprintf("%-30s", _QXZ("ADDRESS FROM",30))." | ".sprintf("%-20s", _QXZ("SENDER NAME",20))." | ".sprintf("%-50s", _QXZ("MESSAGE (click to view full text)",50))." | "._QXZ("DATE EMAIL VIEWED",19)." | "._QXZ("DATE EMAIL ANSWERED",19)." | ".sprintf("%-20s", _QXZ("USER",20))." | ".sprintf("%-50s", _QXZ("RESPONSE (click to view full text)",50))." | ".sprintf("%-10s", _QXZ("STATUS",10))." |\n";
 	$CSV_text1.="\""._QXZ("DATE EMAIL RECEIVED")."\",\""._QXZ("ADDRESS FROM")."\",\""._QXZ("SENDER NAME")."\",\""._QXZ("MESSAGE")."\",\""._QXZ("DATE EMAIL VIEWED")."\",\""._QXZ("DATE EMAIL ANSWERED")."\",\""._QXZ("USER")."\",\""._QXZ("RESPONSE")."\",\""._QXZ("STATUS")."\"\n";
-	if ($date_type=="email_date") 
+	if ($date_type=="email_date")
 		{
 		$stmt="select vel.email_row_id, vel.lead_id, vel.email_date, vel.email_from, vel.email_from_name, convert(vel.message using 'UTF8') as message, vel.status, vcl.call_date, vl.email_date as date_response_sent, vl.email_log_id, vl.user as sending_user, vl.message as sent_message from ".$vicidial_email_list_table." vel, ".$vicidial_closer_log_table." vcl, ".$vicidial_email_log_table." vl where vel.$date_type>='$query_date_BEGIN' and vel.$date_type<='$query_date_END' and vcl.uniqueid=vel.uniqueid and vel.group_id in ($group_SQL) and vel.email_row_id=vl.email_row_id order by vel.$date_type asc";
-		} 
-	else if ($date_type=="call_date") 
+		}
+	else if ($date_type=="call_date")
 		{
 		$stmt="select vel.email_row_id, vel.lead_id, vel.email_date, vel.email_from, vel.email_from_name, convert(vel.message using 'UTF8') as message, vel.status, vcl.call_date, vl.email_date as date_response_sent, vl.email_log_id, vl.user as sending_user, vl.message as sent_message from ".$vicidial_email_list_table." vel, ".$vicidial_closer_log_table." vcl, ".$vicidial_email_log_table." vl where vcl.$date_type>='$query_date_BEGIN' and vcl.$date_type<='$query_date_END' and vcl.uniqueid=vel.uniqueid and vel.group_id in ($group_SQL) and vel.email_row_id=vl.email_row_id order by vcl.$date_type asc";
-		} 
-	else if ($date_type=="date_answered") 
+		}
+	else if ($date_type=="date_answered")
 		{
 		$stmt="select vel.email_row_id, vel.lead_id, vel.email_date, vel.email_from, vel.email_from_name, convert(vel.message using 'UTF8') as message, vel.status, vcl.call_date, vl.email_date as date_response_sent, vl.email_log_id, vl.user as sending_user, vl.message as sent_message from ".$vicidial_email_list_table." vel, ".$vicidial_closer_log_table." vcl, ".$vicidial_email_log_table." vl where vel.$date_type>='$query_date_BEGIN' and vel.$date_type<='$query_date_END' and vcl.uniqueid=vel.uniqueid and vel.group_id in ($group_SQL) and vel.email_row_id=vl.email_row_id order by vel.$date_type asc";
 		}
@@ -618,15 +618,15 @@ if (mysqli_num_rows($rslt)>0) {
 		$sender_name=$row["email_from_name"];
 		if (mb_strlen($sender_name,'UTF-8')>17) {$sender_name=mb_substr($sender_name,0,17,'UTF-8')."...";}
 
-		$message=preg_replace('/\r|\n/', '', strip_tags($row["message"]));	
+		$message=preg_replace('/\r|\n/', '', strip_tags($row["message"]));
 		if (mb_strlen($message,'UTF-8')>47) {$message=mb_substr($message,0,47,'UTF-8')."...";}
 
 		$call_date=$row["call_date"];
 		$date_answered=$row["date_response_sent"];
-		
+
 		$sent_message=preg_replace('/\r|\n/', ' ', strip_tags($row["sent_message"]));
 		if (mb_strlen($sent_message,'UTF-8')>47) {$sent_message=mb_substr($sent_message,0,47,'UTF-8')."...";}
-		
+
 		$user=$row["sending_user"];
 		$status=$row["status"];
 

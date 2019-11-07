@@ -1,7 +1,7 @@
 <?php
 
 # setup.php - VICIDIAL handle setup interface
-# 
+#
 # LICENSE: AGPLv3
 #
 # Copyright (©) 2018 flyingpenguin.de UG <info@flyingpenguin.de>
@@ -24,7 +24,7 @@ class fp_setup {
 	private $DB = 0;
 
 	function __construct($Debug = false) {
-		
+
 		if ($Debug == true) {
 			$this->DB = 1;
 		}

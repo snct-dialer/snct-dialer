@@ -22,7 +22,7 @@ $build = "20190206-1001";
 
 
 ####  collect wallboard data should only be active on a single server
-#*/1 * * * * php /usr/share/astguiclient/AST_CRON_WallBoard3_gen.php 
+#*/1 * * * * php /usr/share/astguiclient/AST_CRON_WallBoard3_gen.php
 
 
 #
@@ -50,7 +50,7 @@ if (preg_match("/80/i",$server_port)) {$HTTPprotocol = 'http:';}
 if ( file_exists("/etc/astguiclient.conf") )
 	{
 	$DBCagc = file("/etc/astguiclient.conf");
-	foreach ($DBCagc as $DBCline) 
+	foreach ($DBCagc as $DBCline)
 		{
 		$DBCline = preg_replace("/ |>|\n|\r|\t|\#.*|;.*/","",$DBCline);
 		if (preg_match("/^PATHlogs/", $DBCline))
@@ -117,13 +117,13 @@ $SL22X = 40;
 //
 function LogWB($LText) {
 	global $DB, $link, $LogFile, $LOG;
-		
+
 	if($LOG != 0) {
 		$Time=date("H:i:s : ");
 		$str = $Time . $LText . PHP_EOL;
 		fputs($LogFile, $str );
 	}
-	
+
 }
 
 //
@@ -135,10 +135,10 @@ function LogWB($LText) {
 //
 function GetServiceLevel() {
 	global $DB, $link, $SL021, $SL122, $SL22X;
-	
+
 	$time_start = microtime(true);
 	LogWB("---Start GetServiceLevel---");
-	
+
 	$statement="SELECT servicelevel_direct, servicelevel_one, servicelevel_two FROM `system_settings`;";
 	if ($DB)
 		print "$statement\n";
@@ -154,9 +154,9 @@ function GetServiceLevel() {
 	}
 	$time_end = microtime(true);
 	$time = $time_end - $time_start;
-	
+
 	LogWB("---Ende GetServiceLevel--- nach " . $time . " Sek.");
-	
+
 }
 
 
@@ -174,10 +174,10 @@ function GetServiceLevel() {
 //
 function GetDIDGroup($DID_ID) {
 	global $DB, $link;
-	
+
 	$time_start = microtime(true);
 	LogWB("---Start GetDIDGroup---");
-	
+
 	$statement="SELECT * FROM `vicidial_inbound_dids` WHERE `did_id` = '$DID_ID';";
 	if ($DB)
 		print "$statement\n";
@@ -188,12 +188,12 @@ function GetDIDGroup($DID_ID) {
 		$Grp = "Rest";
 //		$Grp = $IB_ID;
 	}
-	
+
 	$time_end = microtime(true);
 	$time = $time_end - $time_start;
-	
+
 	LogWB("---Ende GetDIDGroup--- nach " . $time . " Sek.");
-	
+
 	return $Grp;
 }
 
@@ -262,7 +262,7 @@ function GetAuswerteZeit() {
 		$min  = $tmp % 100;
 		$hour = ($tmp - $min) / 100;
 		$AZ_Begin = $hour . ":" . $min . ":00";
-	
+
 		$tmp  = $row["ct_default_stop"];
 		$min  = $tmp % 100;
 		$hour = ($tmp - $min) / 100;
@@ -271,21 +271,21 @@ function GetAuswerteZeit() {
 		$AZ_Begin = "00:00:00";
 		$AZ_Ende  = "23:59:59";
 	}
-	
+
 	$time_end = microtime(true);
 	$time = $time_end - $time_start;
 	LogWB("---Ende GetAuswerteZeit--- nach " . $time . " Sek.");
-	
+
 }
 
 
 
-// 
+//
 // function GenDIDGroups
-// 
+//
 // scan the field custom_one from vicidial_inbound_dids
 // and put them into the DIDGroupsArray.
-// 
+//
 // On empty fields a group called "Rest" is used
 //
 // Use: $DB, $link, $DIDGroupsArray
@@ -296,10 +296,10 @@ function GetAuswerteZeit() {
 function GenDIDGroups() {
 	global $DB, $link, $DIDGroupsArray;
 
-	
+
 	$time_start = microtime(true);
 	LogWB("--Start GenDIDGroups--");
-	
+
 	$statement="SELECT did_id, custom_one FROM vicidial_inbound_dids GROUP BY custom_one;";
 	if ($DB)
 		print "$statement\n";
@@ -314,15 +314,15 @@ function GenDIDGroups() {
 		}
 		#		$Grp = str_replace(' ', '_', $Grp);
 		$DIDGroupsArray[] = $Grp;
-	
+
 		$i++;
 	}
 	if ($DB)
 		var_dump($DIDGroupsArray);
-		
+
 	$time_end = microtime(true);
 	$time = $time_end - $time_start;
-		
+
 	LogWB("--Ende GenDIDGroups-- nach " . $time . " Sek.");
 }
 
@@ -341,10 +341,10 @@ function GenDIDGroups() {
 //
 function GenIBGroups() {
 	global $DB, $link, $IBGroupsArray;
-	
+
 	$time_start = microtime(true);
 	LogWB("--Start GetIBGroups--");
-	
+
 	$statement="SELECT group_id, custom_one FROM vicidial_inbound_groups GROUP BY custom_one;";
 //	$statement="SELECT * FROM vicidial_inbound_groups GROUP BY group_id;";
 	if ($DB)
@@ -364,10 +364,10 @@ function GenIBGroups() {
 	}
 	if ($DB)
 		var_dump($IBGroupsArray);
-		
+
 	$time_end = microtime(true);
 	$time = $time_end - $time_start;
-		
+
 	LogWB("--Ende GenIBGroups-- nach " . $time . " Sek.");
 }
 
@@ -384,10 +384,10 @@ function GenIBGroups() {
 //
 function Move2Arch($Date) {
 	global $DB, $link, $TableName, $TableNameArch;
-	
+
 	$time_start = microtime(true);
 	LogWB("--Start Move2Arch--");
-	
+
 	if(($TableName == "") or ($TableNameArch == "")) {
 		return -1;
 	}
@@ -400,12 +400,12 @@ function Move2Arch($Date) {
 		print "$statement1\n";
 	$result1=mysql_to_mysqli($statement1, $link);
 
-	
+
 	$time_end = microtime(true);
 	$time = $time_end - $time_start;
-	
+
 	LogWB("--Ende Move2Arch-- nach " . $time . " Sek.");
-	
+
 	return 0;
 }
 
@@ -422,11 +422,11 @@ function Move2Arch($Date) {
 //
 function GetCallsDidLog($Date) {
 	global $DB, $link, $TableName;
-	
-	
+
+
 	$time_start = microtime(true);
 	LogWB("--Start GetCallsDidLog--");
-	
+
 	if($TableName == "") {
 		return -1;
 	}
@@ -460,12 +460,12 @@ function GetCallsDidLog($Date) {
 		}
 		$i++;
 	}
-	
+
 	$time_end = microtime(true);
 	$time = $time_end - $time_start;
-	
+
 	LogWB("--Ende GetCallsDidLog-- nach " . $time . " Sek.");
-	
+
 	return 0;
 }
 
@@ -483,18 +483,18 @@ function GetCallsDidLog($Date) {
 //
 function GetNextUniqueid($uid) {
 	global $DB, $link, $TableName;
-	
+
 	$time_start = microtime(true);
 	LogWB("--Start GetNextUniqueid--");
-	
+
 	$RetUid = "";
-	
+
 	static $clid = 0;
-	
+
 	if($uid == "") {
 		return "";
 	}
-	
+
 	$statement = "SELECT * FROM `vicidial_closer_log` WHERE `uniqueid` = '$uid' ORDER BY `call_date` DESC;" ;
 	if ($DB)
 		print "$statement\n";
@@ -526,17 +526,17 @@ function GetNextUniqueid($uid) {
 				}
 //				$clid = $row2[0];
 			}
-		
+
 			mysqli_free_result($result2);
 		}
 	}
 	mysqli_free_result($result);
-	
+
 	$time_end = microtime(true);
 	$time = $time_end - $time_start;
-	
+
 	LogWB("--Ende GetNextUniqueid-- nach " . $time . " Sek.");
-	
+
 	return $RetUid;
 }
 
@@ -557,7 +557,7 @@ function GetCallsResult() {
 
 	$time_start = microtime(true);
 	LogWB("--Start GetCallsResult--");
-	
+
 	$timeh = time() - 3600;
 	$statement = "SELECT *, UNIX_TIMESTAMP(DateTBegin) AS TAA from `$TableName` WHERE `Done` = false;";
 	if ($DB)
@@ -617,7 +617,7 @@ function GetCallsResult() {
 					}
 				}
 			}
-			
+
 			$statement2 = "UPDATE `$TableName` SET `next_uniqueid` = '$nuid', `lead_id` = '$lid', `DateTEnd` = FROM_UNIXTIME('$tae'), `Agent` = '$agt', `IBGruppe` = '$ibg', `Status`= 'AGENT', `Done` = true, `Dauer` = '$Dauer', `SL0` = '$SL0', `SL1` = '$SL1', `SL2` = '$SL2' WHERE `ID`= '$id';";
 			if ($DB)
 				print "$statement2\n";
@@ -639,7 +639,7 @@ function GetCallsResult() {
 				$Erg = "";
 
 				$Dauer = $endt - $taa;
-				
+
 				if($Dauer < $SL021) {
 					$SL0 = true;
 					$SL1 = false;
@@ -657,15 +657,15 @@ function GetCallsResult() {
 						}
 					}
 				}
-			
+
 				if($status == "QVMAIL") {
 					$Erg = "MAILBOX";
 					$statement4 = "UPDATE `$TableName` SET `lead_id` = '$lid', `IBGruppe` = '$igb',  `Status`= '$Erg', `DateTEnd`= FROM_UNIXTIME('$endt'), `Done` = true, `Dauer` = '$Dauer', `SL0` = '$SL0', `SL1` = '$SL1', `SL2` = '$SL2' WHERE `ID`= '$id';";
-				}	
+				}
 				if($status == "WAITTO") {
 					$Erg = "RÜCKRUF";
 					$statement4 = "UPDATE `$TableName` SET `lead_id` = '$lid', `IBGruppe` = '$igb',  `Status`= '$Erg', `DateTEnd`= FROM_UNIXTIME('$endt'), `Done` = true, `Dauer` = '$Dauer', `SL0` = '$SL0', `SL1` = '$SL1', `SL2` = '$SL2' WHERE `ID`= '$id';";
-				}		
+				}
 				if(($status == "AFTHRS") || ($status == "NANQUE") || ($status == "HANGUP") || ($status == "DROP") || ($status == "TIMEOT")) {
 					$Erg = "DROP";
 					if($endt < $timeh) {
@@ -685,17 +685,17 @@ function GetCallsResult() {
 				} else {
 					print "unbekannter Status: " . $status . "|" . $lid . "|" . $uid . PHP_EOL;
 				}
-			
+
 			}
 		}
 		$i++;
-	}	
-	
+	}
+
 	$time_end = microtime(true);
 	$time = $time_end - $time_start;
-	
+
 	LogWB("--Ende GetCallsResult-- nach " . $time . " Sek.");
-	
+
 	return 0;
 
 }
@@ -786,7 +786,7 @@ function GenWBStatsTime($IBG, $TimeAnf, $TimeEnd) {
 		$row8=mysqli_fetch_row($result8);
 		$Warte = $row8[0];
 
-		$statement10 = "SELECT COUNT(*) FROM `$TableName` WHERE `Status` != 'DROP' AND `CallerID` != '' AND `DateTBegin` >= '$DateAnf' AND `DateTBegin` <= '$DateEnd' GROUP BY `lead_id`;"; 
+		$statement10 = "SELECT COUNT(*) FROM `$TableName` WHERE `Status` != 'DROP' AND `CallerID` != '' AND `DateTBegin` >= '$DateAnf' AND `DateTBegin` <= '$DateEnd' GROUP BY `lead_id`;";
 		if ($DB)
 			print "$statement10\n";
 		$result10=mysql_to_mysqli($statement10, $link);
@@ -821,7 +821,7 @@ function GenWBStatsTime($IBG, $TimeAnf, $TimeEnd) {
 		$row14 = mysqli_fetch_row($result14);
 		$RRuf = $row14[0];
 		$AB = $AB + $RRuf;
-		
+
 		$statement15 = "SELECT MAX(`Dauer`) FROM `$TableName` WHERE `did_route` != 'PHONE' AND `DateTBegin` >= '$DateAnf' AND `DateTBegin` <= '$DateEnd';";
 		if ($DB)
 			print "$statement15\n";
@@ -953,14 +953,14 @@ function GenWBStatsTime($IBG, $TimeAnf, $TimeEnd) {
 		$row14 = mysqli_fetch_row($result14);
 		$RRuf = $row14[0];
 		$AB = $AB + $RRuf;
-		
+
 		$statement15 = "SELECT MAX(`Dauer`) FROM `$TableName` WHERE `IBGruppe` = '$IBG' AND did_route` != 'PHONE' AND `DateTBegin` >= '$DateAnf' AND `DateTBegin` <= '$DateEnd';";
 		if ($DB)
 			print "$statement15\n";
 			$result15=mysql_to_mysqli($statement15, $link);
 			$row15 = mysqli_fetch_row($result15);
 			$MaxWT = $row15[0];
-			
+
 		$ebk = 0.0;
 		if ($Gesamt != 0) {
 			$ebk = $Agents * 100 / $Gesamt;
@@ -1025,13 +1025,13 @@ function GenWBStatsTime($IBG, $TimeAnf, $TimeEnd) {
 //
 function GenWBStats($IBG) {
 	global $DB, $link, $TableName, $TableNameStat;
-	
-	
+
+
 	$time_start = microtime(true);
 	LogWB("--Start GenWBStats--");
-	
+
 	$Date=date("Y-m-d");
-	
+
 	if($IBG == "") {
 		$statement = "SELECT COUNT(*) FROM `$TableName` ;";
 		if ($DB)
@@ -1039,7 +1039,7 @@ function GenWBStats($IBG) {
 		$result=mysql_to_mysqli($statement, $link);
 		$row = mysqli_fetch_row($result);
 		$Gesamt = $row[0];
-	
+
 		$statement1 = "SELECT COUNT(*) FROM `$TableName` WHERE `did_route` = 'PHONE';";
 		if ($DB)
 			print "$statement1\n";
@@ -1047,7 +1047,7 @@ function GenWBStats($IBG) {
 		$row1 = mysqli_fetch_row($result1);
 		$Phones = $row1[0];
 		$Gesamt -= $Phones;
-	
+
 		$statement2 = "SELECT COUNT(*) FROM `$TableName` WHERE `CallerID` != '' AND `lead_id` > 0 GROUP BY `lead_id`;";
 		if ($DB)
 			print "$statement2\n";
@@ -1074,7 +1074,7 @@ function GenWBStats($IBG) {
 		$result5=mysql_to_mysqli($statement5, $link);
 		$row5 = mysqli_fetch_row($result5);
 		$SL0 = $row5[0];
-	
+
 		$statement6 = "SELECT COUNT(*) FROM `$TableName` WHERE `SL1` = true AND `Status` = 'AGENT';";
 		if ($DB)
 			print "$statement6\n";
@@ -1088,35 +1088,35 @@ function GenWBStats($IBG) {
 		$result7=mysql_to_mysqli($statement7, $link);
 		$row7 = mysqli_fetch_row($result7);
 		$SL2 = $row7[0] + $SL1;
-	
+
 		$statement8="SELECT SUM(Dauer) / COUNT(Dauer) AS Durch FROM `$TableName` WHERE `Dauer` != 0;";
 		if ($DB)
 			print "$statement8\n";
 		$result8=mysql_to_mysqli($statement8, $link);
 		$row8=mysqli_fetch_row($result8);
 		$Warte = $row8[0];
-		
+
 		$statement10 = "SELECT COUNT(*) FROM `$TableName` WHERE `Status` != 'DROP' AND `CallerID` != '' GROUP BY `lead_id`;";
 		if ($DB)
 			print "$statement10\n";
 		$result10=mysql_to_mysqli($statement10, $link);
 		$KundenErr = mysqli_num_rows($result10);
-		
+
 #		$statement11 = "SELECT COUNT(*) from call_log WHERE start_time >= '$Date' and number_dialed LIKE '%02018321672%';";
-#		if ($DB) 
+#		if ($DB)
 #			print "$statement\n";
 #		$result11 = mysql_to_mysqli($statement11, $link);
 #		$row11=mysqli_fetch_row($result11);
 #		$Weiter = $row11[0];
 		$Weiter = 0;
-		
+
 		$statement12 = "SELECT COUNT(*) from `$TableName` WHERE `Status` = 'MAILBOX' AND `did_route` != 'PHONE';";
-		if ($DB) 
+		if ($DB)
 			print "$statement12\n";
 		$result12 = mysql_to_mysqli($statement12, $link);
 		$row12=mysqli_fetch_row($result12);
 		$AB = $row12[0];
-		
+
 		$statement13 = "SELECT COUNT(*) from `$TableName` WHERE `CallerID` = '' AND `did_route` != 'PHONE';";
 		if ($DB)
 			print "$statement13\n";
@@ -1138,17 +1138,17 @@ function GenWBStats($IBG) {
 		$result15=mysql_to_mysqli($statement15, $link);
 		$row15 = mysqli_fetch_row($result15);
 		$MaxWT = $row15[0];
-			
+
 		$ebk = 0.0;
 		if ($Gesamt != 0) {
 			$ebk = $Agents * 100 / $Gesamt;
 		}
-		
+
 		$kebk = 0.0;
 		if ($Kunden != 0) {
 			$kebk = $KundenErr * 100 / $Kunden;
 		}
-		
+
 		$statement9= "SELECT  COUNT(*) FROM `$TableNameStat` WHERE Datum='$Date' AND Gruppe='Gesamt';";
 		if ($DB)
 			print "$statement\n";
@@ -1171,24 +1171,24 @@ function GenWBStats($IBG) {
 				printf("Error: %s\n", mysqli_error($link));
 			}
 		}
-		
+
 //		print "Werte Gesamt:" . $Gesamt . ";" . $Phones . ";" . $Kunden . ";" . $Agents . ";" . $Drops . ";" . $SL0 . ";" . $SL1 . ";" .  $SL2 . ";" . $Warte . PHP_EOL;
 	} else {
-		
+
 		$statement = "SELECT COUNT(*) FROM `$TableName` WHERE `IBGruppe` = '$IBG' AND `did_route` != 'PHONE';";
 		if ($DB)
 			print "$statement\n";
 		$result=mysql_to_mysqli($statement, $link);
 		$row = mysqli_fetch_row($result);
 		$Gesamt = $row[0];
-	
+
 		$statement1 = "SELECT COUNT(*) FROM `$TableName` WHERE `did_route` = 'PHONE';";
 		if ($DB)
 			print "$statement1\n";
 		$result1=mysql_to_mysqli($statement1, $link);
 		$row1 = mysqli_fetch_row($result1);
 		$Phones = $row1[0];
-	
+
 		$statement2 = "SELECT COUNT(*) FROM `$TableName` WHERE `IBGruppe` = '$IBG' AND `CallerID` != '' AND `lead_id` > 0 GROUP BY `lead_id`;";
 		if ($DB)
 			print "$statement2\n";
@@ -1215,7 +1215,7 @@ function GenWBStats($IBG) {
 		$result5=mysql_to_mysqli($statement5, $link);
 		$row5 = mysqli_fetch_row($result5);
 		$SL0 = $row5[0];
-	
+
 		$statement6 = "SELECT COUNT(*) FROM `$TableName` WHERE `SL1` = true AND `Status` = 'AGENT' AND `IBGruppe` = '$IBG';";
 		if ($DB)
 			print "$statement6\n";
@@ -1229,34 +1229,34 @@ function GenWBStats($IBG) {
 		$result7=mysql_to_mysqli($statement7, $link);
 		$row7 = mysqli_fetch_row($result7);
 		$SL2 = $row7[0] + $SL1;
-	
+
 		$statement8="SELECT SUM(Dauer) / COUNT(Dauer) AS Durch FROM `$TableName` WHERE `Dauer` != 0 AND `IBGruppe` = '$IBG';";
 		if ($DB)
 			print "$statement8\n";
 		$result8=mysql_to_mysqli($statement8, $link);
 		$row8=mysqli_fetch_row($result8);
 		$Warte = $row8[0];
-		
+
 		$statement10 = "SELECT COUNT(*) FROM `$TableName` WHERE `IBGruppe` = '$IBG' AND `Status` = 'AGENT' AND `CallerID`!= '' AND `lead_id` > 0 GROUP BY `lead_id`;";
 		if ($DB)
 			print "$statement10\n";
 		$result10=mysql_to_mysqli($statement10, $link);
 		$KundenErr = mysqli_num_rows($result10);
-		
+
 		$statement12 = "SELECT COUNT(*) from `$TableName` WHERE `Status` = 'MAILBOX' AND `IBGruppe` = '$IBG' AND `did_route` != 'PHONE';";
 		if ($DB)
 			print "$statement12\n";
 		$result12 = mysql_to_mysqli($statement12, $link);
 		$row12=mysqli_fetch_row($result12);
 		$AB = $row12[0];
-		
+
 		$statement13 = "SELECT COUNT(*) from `$TableName` WHERE `IBGruppe` = '$IBG' AND `CallerID` = '' AND `did_route` != 'PHONE';";
 		if ($DB)
 			print "$statement13\n";
 		$result13 = mysql_to_mysqli($statement13, $link);
 		$row13=mysqli_fetch_row($result13);
 		$Unb = $row13[0];
-		
+
 		$statement14 = "SELECT COUNT(*) FROM `$TableName` WHERE `Status` = 'RÜCKRUF' AND `IBGruppe` = '$IBG' AND `did_route` != 'PHONE';";
 		if ($DB)
 			print "$statement14\n";
@@ -1281,7 +1281,7 @@ function GenWBStats($IBG) {
 		if ($Kunden != 0) {
 			$kebk = $KundenErr * 100 / $Kunden;
 		}
-		
+
 		$statement9= "SELECT  COUNT(*) FROM `$TableNameStat` WHERE Datum='$Date' AND Gruppe='$IBG';";
 		if ($DB)
 			print "$statement\n";
@@ -1292,7 +1292,7 @@ function GenWBStats($IBG) {
 		if ($Gesamt != 0) {
 			$ebk = $Agents * 100 / $Gesamt;
 		}
-		
+
 		if($row9[0] > 0) {
 			$DateT=date("Y-m-d H:i:s");
 			$statementX="UPDATE `$TableNameStat` SET `Unbekannt` = '$Unb', `StandVom`='$DateT',  `AB` = '$AB', `Kunden`='$Kunden', `Calls`='$Gesamt', `Drops` = '$Drops', `ebk`='$ebk', `kebk`='$kebk', `Agent`= '$Agents', `SL0`= '$SL0', `SL1` = '$SL1', `SL2`='$SL2', `waittime`= '$Warte', `maxwaittime` = '$MaxWT' WHERE Datum='$Date' AND Gruppe='$IBG';";
@@ -1309,15 +1309,15 @@ function GenWBStats($IBG) {
 			if(!mysqli_query($link, $statementX1)) {
 				printf("Error: %s\n", mysqli_error($link));
 			}
-		}	
+		}
 //		print "Werte " . $IBG . ":" . $Gesamt . ";" . $Phones . ";" . $Kunden . ";" . $Agents . ";" . $Drops . ";" . $SL0 . ";" . $SL1 . ";" .  $SL2 . ";" . $Warte . PHP_EOL;
-		
+
 	}
-	
-	
+
+
 	$time_end = microtime(true);
 	$time = $time_end - $time_start;
-	
+
 	LogWB("--Ende GenWBStats-- nach " . $time . " Sek.");
 }
 
@@ -1354,7 +1354,7 @@ GetServiceLevel();
 GetCallsDidLog($Date);
 
 // Search for Call Results
-GetCallsResult(); 
+GetCallsResult();
 
 // Calc Stats
 

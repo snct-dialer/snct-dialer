@@ -1,12 +1,12 @@
-<?php 
+<?php
 # AST_user_group_hourly_detail.php
 #
-# Copyright (C) 2019  Liz Tejada <liz@softkyrios.com> 
+# Copyright (C) 2019  Liz Tejada <liz@softkyrios.com>
 #                     Joseph Johnson <freewermadmin@gmail.com>
 #                     Matt Florell <vicidial@gmail.com>
-#  
-# Thanks to Joseph Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2 
-# I took his report as base for this one. 
+#
+# Thanks to Joseph Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
+# I took his report as base for this one.
 #
 # Gives hourly detail of distinct agents per user group, with totals.
 # For single days only
@@ -89,14 +89,14 @@ if (strlen($report_display_type)<2) {$report_display_type = $SSreport_default_fo
 ### ARCHIVED DATA CHECK CONFIGURATION
 $archives_available="N";
 $log_tables_array=array("vicidial_agent_log");
-for ($t=0; $t<count($log_tables_array); $t++) 
+for ($t=0; $t<count($log_tables_array); $t++)
 	{
 	$table_name=$log_tables_array[$t];
 	$archive_table_name=use_archive_table($table_name);
 	if ($archive_table_name!=$table_name) {$archives_available="Y";}
 	}
 
-if ($search_archived_data) 
+if ($search_archived_data)
 	{
 	$vicidial_agent_log_table=use_archive_table("vicidial_agent_log");
 	}
@@ -436,7 +436,7 @@ if ($SUBMIT && $query_date && $start_hour && $end_hour) {
 	if ($DB) {$ASCII_text.="* ".$stmt."\n";}
 	$rslt=mysql_to_mysqli($stmt, $link);
 
-	 
+
 	$UserGroups=array();
 	$hour_array=array();
 	$hour_total_array=array();
@@ -453,23 +453,23 @@ if ($SUBMIT && $query_date && $start_hour && $end_hour) {
 		#echo $row["user_group"]."-->".$row["user"]."<br>";
 		$temp=array();
 		$temp[]=$row["user_group"];
-		
+
 		$temp[]=$row["hour"];
 		$temp[]=$row["user"];
 		 $allData[$row["user_group"]][$row["hour"]][]=$row["user"];
-		
+
 		$hour_array[]=$row["hour"];
 		$UserGroups[]=$row["user_group"];
 		$countByUserGroupByHour[$row["user_group"]][$row["hour"]]+=1;
 		$countByUserGroup[$row["user_group"]]+=1;
 		$countUserHour[$row["hour"]]+=1;
-		
-		
-	
+
+
+
 	}
 	$UserGroups=array_unique($UserGroups);
 	$hour_array=array_unique($hour_array);
-	 
+
 	$total_stmt="select user_group, count(distinct user) as ct from ".$vicidial_agent_log_table." where event_time>='$query_date $start_hour:00:00' and event_time<='$query_date $end_hour:59:59' $group_SQL $user_group_SQL group by user_group order by user_group,2";
 	$total_rslt=mysql_to_mysqli($total_stmt, $link);
 	if ($DB) {$ASCII_text.="* ".$total_stmt."\n";}
@@ -505,18 +505,18 @@ if ($SUBMIT && $query_date && $start_hour && $end_hour) {
 						 if(isset($maxUserByUserGroup[$Ugroup])){
 							 if(count($a)>$maxUserByUserGroup[$Ugroup]){
 								 $maxUserByUserGroup[$Ugroup]=count($a);
-								 
+
 							 }
-							 
+
 						 }else{
 							 $maxUserByUserGroup[$Ugroup]=count($a);
-							 
+
 						 }
 					}
 	}
 	//print_r($hour_array);
-	foreach($hour_array as $key){	
-		
+	foreach($hour_array as $key){
+
 		$ASCII_title.=" ".date("ha", strtotime("$key:00"))." to ";
 		$key1=$key+1;
 		$ASCII_title.=date("ha", strtotime("$key1:00"))." |";
@@ -547,7 +547,7 @@ if ($SUBMIT && $query_date && $start_hour && $end_hour) {
 	foreach($UserGroups as $Ugroup){
 	#	echo "$Ugroup---->$hour--->".$maxUserByUserGroup[$Ugroup]."<br/>";
 	#	echo "<br/>$Ugroup<br/>";
-		foreach($hour_array as $hour){	
+		foreach($hour_array as $hour){
 			if($allData[$Ugroup][$hour]) {sort($allData[$Ugroup][$hour]);}
 		}
 		if ($hour_array) {reset($hour_array);}
@@ -557,16 +557,16 @@ if ($SUBMIT && $query_date && $start_hour && $end_hour) {
 			$HTML_text.="<tr bgcolor='#".$SSstd_row2_background."'>";
 			$HTML_text.="<td><font size='2'>".$Ugroup."&nbsp;</font></td>";
 			$CSV_text.="\"$Ugroup\"";
-			foreach($hour_array as $hour){	
+			foreach($hour_array as $hour){
 				$ASCII_text.=" ".sprintf("%12s", ($allData[$Ugroup][$hour][$cont]))." |";
 				$HTML_text.="<td><font size='2'>".($allData[$Ugroup][$hour][$cont])."&nbsp;</font></td>";
 				$CSV_text.=",\"".($allData[$Ugroup][$hour][$cont])."\"";
 			}
-			
+
 			$CSV_text.="\n";
 			$HTML_text.="</tr>\n";
 			$ASCII_text.="\n";
-			
+
 		}
 
 		if ($prev_group!=$Ugroup) {
@@ -588,7 +588,7 @@ if ($SUBMIT && $query_date && $start_hour && $end_hour) {
 	$HTML_text.=$HTML_text2;
 
 	$CSV_text.=$CSV_total."\n";
-	
+
 }
 
 
@@ -682,9 +682,9 @@ else
 $o=0;
 while ($user_groups_to_print > $o)
 	{
-	if  (in_array("$user_groups[$o]",$user_group)) 
+	if  (in_array("$user_groups[$o]",$user_group))
 		{echo "<option selected value=\"$user_groups[$o]\">$user_groups[$o]</option>\n";}
-	else 
+	else
 		{echo "<option value=\"$user_groups[$o]\">$user_groups[$o]</option>\n";}
 	$o++;
 	}
@@ -697,7 +697,7 @@ echo "<TD VALIGN=TOP ROWSPAN=2>\n";
 #if ($report_display_type) {echo "<option value='$report_display_type' selected>$report_display_type</option>";}
 #echo "<option value='TEXT'>TEXT</option><option value='HTML'>HTML</option></select>\n<BR><BR>";
 
-if ($archives_available=="Y") 
+if ($archives_available=="Y")
 	{
 	echo "<input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."\n";
 	}

@@ -3,7 +3,7 @@
 # ADMIN_www_languages.pl version 2.12
 #
 # This script is designed to traverse the vicidial and agc web directories and
-# generate a list of phrases that are output from the QXZ PHP functions so that 
+# generate a list of phrases that are output from the QXZ PHP functions so that
 # they can be inserted/updated in the database.
 #
 # NOTES: we used the following database query to set to UTF8:
@@ -178,7 +178,7 @@ foreach(@conf)
 if (!$VASLOGfile) {$VASLOGfile = "$PATHlogs/wwwlang";}
 if (!$VARDB_port) {$VARDB_port='3306';}
 
-use DBI;	  
+use DBI;
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
@@ -200,7 +200,7 @@ $event_string = "Existing phrases: $phrase_count";
 if ($DB > 0) {print "$event_string\n";}
 &event_logger;
 
-if ($wipewwwphrasestable > 0) 
+if ($wipewwwphrasestable > 0)
 	{
 	$stmtA="DELETE FROM www_phrases;";
 	$affected_rows = $dbhA->do($stmtA);
@@ -211,7 +211,7 @@ if ($wipewwwphrasestable > 0)
 
 $i=0;
 $f=0;
-if (length($PATHone) > 2) 
+if (length($PATHone) > 2)
 	{
 	$FILEparseDIR[$f] = "$PATHweb/temp/";
 	$FILEparseNAME[$f] = '';
@@ -326,7 +326,7 @@ $QXZdups=0;
 $f=0;
 foreach(@FILEparse)
 	{
-	if (-e "$FILEparse[$f]") 
+	if (-e "$FILEparse[$f]")
 		{
 		$event_string = "file found at: $FILEparse[$f]   $FILEparseNAME[$f]\n";
 		if ($DB > 0) {print "$event_string\n";}
@@ -348,9 +348,9 @@ foreach(@FILEparse)
 				$QXZcount = ($QXZcount + $QXZ_in_line);
 				@eachQXZ = split(/\_QXZ\(/,$line);
 				$each_ct=0;
-				while ($each_ct <= $#eachQXZ) 
+				while ($each_ct <= $#eachQXZ)
 					{
-					if ($each_ct > 0) 
+					if ($each_ct > 0)
 						{
 						@eachQXZvalue = split(/\)/,$eachQXZ[$each_ct]);
 						if ( ($eachQXZvalue[0] =~ /\(/) && (length($eachQXZvalue[1])>0) )
@@ -375,7 +375,7 @@ foreach(@FILEparse)
 							print "$event_string\n";
 							&event_logger;
 							}
-						if ($temp_QXZval_str =~ /,\d|, \d/) 
+						if ($temp_QXZval_str =~ /,\d|, \d/)
 							{
 							$QXZcount_length++;
 							if ($QXZlengthonly > 0)
@@ -385,7 +385,7 @@ foreach(@FILEparse)
 								&event_logger;
 								}
 							}
-						if ($temp_QXZval_str =~ /\$/) 
+						if ($temp_QXZval_str =~ /\$/)
 							{
 							$QXZcount_var++;
 							$var_ct_in_line = () = $temp_QXZval_str =~ /\$/g;
@@ -397,7 +397,7 @@ foreach(@FILEparse)
 								&event_logger;
 								}
 							}
-						if ($temp_QXZval_str =~ /%\ds/) 
+						if ($temp_QXZval_str =~ /%\ds/)
 							{
 							$QXZcount_place++;
 							$place_ct_in_line = () = $temp_QXZval_str =~ /\$/g;
@@ -429,7 +429,7 @@ foreach(@FILEparse)
 							{
 							if (length($temp_QXZval_strSQL)<1)
 								{
-								if ($DB > 0) 
+								if ($DB > 0)
 									{print "EMPTY INSERT SKIPPED: |$temp_QXZval_strSQL|$FILEparseNAME[$f]|$FILEparseDIR[$f]|\n";}
 								}
 							else

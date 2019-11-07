@@ -163,17 +163,17 @@ foreach(@conf)
 # Customized Variables
 $server_ip = $VARserver_ip;		# Asterisk server IP
 
-if ($output_format =~ /^pipe-standard$/) 
+if ($output_format =~ /^pipe-standard$/)
 	{$DLT = '|';   $txt='.txt';   print "---- pipe-standard ----\n";}
-if ($output_format =~ /^csv-standard$/) 
+if ($output_format =~ /^csv-standard$/)
 	{$DLT = "','";   $txt='.csv';   print "---- csv-standard ----\n";}
-if ($output_format =~ /^tab-standard$/) 
+if ($output_format =~ /^tab-standard$/)
 	{$DLT = "\t";   $txt='.txt';   print "---- tab-standard ----\n";}
-if ($output_format =~ /^pipe-triplep$/) 
+if ($output_format =~ /^pipe-triplep$/)
 	{$DLT = '';   $txt='.txt';   print "---- pipe-triplep ----\n";}
-if ($output_format =~ /^pipe-vici$/) 
+if ($output_format =~ /^pipe-vici$/)
 	{$DLT = '|';   $txt='.txt';   print "---- pipe-vici ----\n";}
-if ($output_format =~ /^html-rec$/) 
+if ($output_format =~ /^html-rec$/)
 	{$DLT = ' ';   $txt='.html';   print "---- html-rec ----\n";}
 
 if (!$Q)
@@ -260,7 +260,7 @@ foreach(@list_id)
 	$status[$i] = sprintf("%-7s", $status[$i]);
 	$status_name[$i] = sprintf("%-20s", $status_name[$i]);   while (length($status_name[$i])>20) {$status_name[$i] =~ s/.$//gi;}
 	$count[$i] = sprintf("%7s", $count[$i]);
-	if ( ($list_id[$i] =~ /$previous_list/) && (length($list_id[$i]) == length($previous_list)) ) 
+	if ( ($list_id[$i] =~ /$previous_list/) && (length($list_id[$i]) == length($previous_list)) )
 		{
 		if ($lists_line_count[$k] == 1) {$p='List Name ';}
 		if ($lists_line_count[$k] == 2) {$p='Campaign ID ';}

@@ -1,6 +1,6 @@
-<?php 
+<?php
 # AST_agent_days_time.php
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -77,14 +77,14 @@ if (strlen($report_display_type)<2) {$report_display_type = $SSreport_default_fo
 ### ARCHIVED DATA CHECK CONFIGURATION
 $archives_available="N";
 $log_tables_array=array("vicidial_agent_log");
-for ($t=0; $t<count($log_tables_array); $t++) 
+for ($t=0; $t<count($log_tables_array); $t++)
 	{
 	$table_name=$log_tables_array[$t];
 	$archive_table_name=use_archive_table($table_name);
 	if ($archive_table_name!=$table_name) {$archives_available="Y";}
 	}
 
-if ($search_archived_data) 
+if ($search_archived_data)
 	{
 	$vicidial_agent_log_table=use_archive_table("vicidial_agent_log");
 	}
@@ -420,26 +420,26 @@ if (strlen($group[0]) < 1)
 
 else
 	{
-	if ($shift == 'AM') 
+	if ($shift == 'AM')
 		{
 		$time_BEGIN=$AM_shift_BEGIN;
 		$time_END=$AM_shift_END;
-		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}   
+		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}
 		if (strlen($time_END) < 6) {$time_END = "15:14:59";}
 		}
-	if ($shift == 'PM') 
+	if ($shift == 'PM')
 		{
 		$time_BEGIN=$PM_shift_BEGIN;
 		$time_END=$PM_shift_END;
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "15:15:00";}
 		if (strlen($time_END) < 6) {$time_END = "23:15:00";}
 		}
-	if ($shift == 'ALL') 
+	if ($shift == 'ALL')
 		{
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}
 		if (strlen($time_END) < 6) {$time_END = "23:59:59";}
 		}
-	$query_date_BEGIN = "$query_date $time_BEGIN";   
+	$query_date_BEGIN = "$query_date $time_BEGIN";
 	$query_date_END = "$end_date $time_END";
 
 	if ($file_download < 1)
@@ -522,7 +522,7 @@ else
 		$TOTALcustomerSECONDS=0;
 		$TOTALtotalSECONDS=0;
 
-		while ($logs_to_print > $u) 
+		while ($logs_to_print > $u)
 			{
 			$row=mysqli_fetch_row($rslt);
 			$event_time =	$row[0];
@@ -558,7 +558,7 @@ else
 				$DBdatetime = explode(" ",$event_time);
 				$DBdate = explode("-",$DBdatetime[0]);
 				$DBtime = explode(":",$DBdatetime[1]);
-		
+
 				$DBcall_end_sec = mktime($DBtime[0], $DBtime[1], ($DBtime[2] + $DBtotal_sec), $DBdate[1], $DBdate[2], $DBdate[0]);
 				$DBcall_end = date("Y-m-d H:i:s",$DBcall_end_sec);
 		#		$MAIN.="<tr $bgcolor>";
@@ -604,14 +604,14 @@ else
 	#	$MAIN.="<td colspan=4><font size=2> &nbsp; </td></tr>\n";
 	#	$CSV_text7.="\"\",\"\",\""._QXZ("TOTALS")."\",\"$TOTALpauseSECONDS\",\"$TOTALwaitSECONDS\",\"$TOTALtalkSECONDS\",\"$TOTALdispoSECONDS\",\"$TOTALdeadSECONDS\",\"$TOTALcustomerSECONDS\"\n";
 
-		$TOTALpauseSECONDShh =	sec_convert($TOTALpauseSECONDS,'H'); 
-		$TOTALwaitSECONDShh =	sec_convert($TOTALwaitSECONDS,'H'); 
-		$TOTALtalkSECONDShh =	sec_convert($TOTALtalkSECONDS,'H'); 
-		$TOTALdispoSECONDShh =	sec_convert($TOTALdispoSECONDS,'H'); 
-		$TOTALdeadSECONDShh =	sec_convert($TOTALdeadSECONDS,'H'); 
-		$TOTALcustomerSECONDShh =	sec_convert($TOTALcustomerSECONDS,'H'); 
+		$TOTALpauseSECONDShh =	sec_convert($TOTALpauseSECONDS,'H');
+		$TOTALwaitSECONDShh =	sec_convert($TOTALwaitSECONDS,'H');
+		$TOTALtalkSECONDShh =	sec_convert($TOTALtalkSECONDS,'H');
+		$TOTALdispoSECONDShh =	sec_convert($TOTALdispoSECONDS,'H');
+		$TOTALdeadSECONDShh =	sec_convert($TOTALdeadSECONDS,'H');
+		$TOTALcustomerSECONDShh =	sec_convert($TOTALcustomerSECONDS,'H');
 		$TOTALtotalSECONDS = ($TOTALpauseSECONDS + $TOTALwaitSECONDS + $TOTALtalkSECONDS + $TOTALdispoSECONDS);
-		$TOTALtotalSECONDShh =	sec_convert($TOTALtotalSECONDS,'H'); 
+		$TOTALtotalSECONDShh =	sec_convert($TOTALtotalSECONDS,'H');
 
 		$MAIN.="<tr bgcolor=white>";
 		$MAIN.="<td align=center><font size=2><a href=\"./user_stats.php?user=$user&begin_date=$date[$i]&end_date=$date[$i]\">$date[$i]</a></td>";
@@ -704,7 +704,7 @@ echo "<option value=\"PM\">"._QXZ("PM")."</option>\n";
 echo "<option value=\"ALL\">"._QXZ("ALL")."</option>\n";
 echo "</SELECT>\n";
 
-if ($archives_available=="Y") 
+if ($archives_available=="Y")
 	{
 	echo "<input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."\n";
 	}
@@ -728,7 +728,7 @@ echo $MAINprintALL;
 
 echo "</span>\n";
 
-if ($report_display_type=="TEXT" || !$report_display_type) 
+if ($report_display_type=="TEXT" || !$report_display_type)
 	{
 	echo "<span style=\"position:absolute;left:3px;top:3px;z-index:18;\"  id=agent_status_bars>\n";
 	echo "<PRE><FONT SIZE=2>\n\n\n\n\n\n\n\n\n\n";

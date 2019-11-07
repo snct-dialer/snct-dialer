@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # AST_send_URLbasic.pl   version 2.12
-# 
+#
 # DESCRIPTION:
 # This script is spawned by the agent interface to run for URLs in the background
 #
@@ -45,7 +45,7 @@ if (scalar @ARGV) {
 		'compat_url=s' => \$compat_url);
 
 	$DB = 1 if ($DBX);
-	if ($DB) 
+	if ($DB)
 		{
 		print "\n----- DEBUGGING -----\n\n";
 		print "\n----- SUPER-DUPER DEBUGGING -----\n\n" if ($DBX);
@@ -54,7 +54,7 @@ if (scalar @ARGV) {
 		print "  compat_url:            $compat_url\n" if ($compat_url);
 		print "\n";
 		}
-	if ($CLOhelp) 
+	if ($CLOhelp)
 		{
 		print "allowed run time options:\n";
 		print "  [--help] = this help screen\n";
@@ -103,7 +103,7 @@ foreach(@conf)
 if (!$VARDB_port) {$VARDB_port='3306';}
 
 
-if (length($url_id) > 0) 
+if (length($url_id) > 0)
 	{
 	### find wget binary
 	$wgetbin = '';
@@ -123,7 +123,7 @@ if (length($url_id) > 0)
 		}
 
 	use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
-	use DBI;	  
+	use DBI;
 
 	$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
 	 or die "Couldn't connect to database: " . DBI->errstr;
@@ -156,7 +156,7 @@ if (length($url_id) > 0)
 		}
 	$sthA->finish();
 
-	if (length($url) > 5) 
+	if (length($url) > 5)
 		{
 		$url =~ s/ /+/gi;
 		$url =~ s/&/\\&/gi;
@@ -186,7 +186,7 @@ if (length($url_id) > 0)
 			$Wdocline_cat .= "$Wdocline";
 			$i++;
 			}
-		if (length($Wdocline_cat)<1) 
+		if (length($Wdocline_cat)<1)
 			{$Wdocline_cat='<RESPONSE EMPTY>';}
 
 		open(Wfile, "/tmp/ASUBtmpF$US$url_id$US$secX") || die "can't open /tmp/ASUBtmpF$US$url_id$US$secX: $!\n";
@@ -202,7 +202,7 @@ if (length($url_id) > 0)
 			$Wfileline_cat .= "$Wfileline";
 			$i++;
 			}
-		if (length($Wfileline_cat)<1) 
+		if (length($Wfileline_cat)<1)
 			{$Wfileline_cat='<HEADER EMPTY>';}
 
 
@@ -256,7 +256,7 @@ sub event_logger
 #   $SecondsSinceEpoch : Request time in seconds, defaults to current date/time.
 # Returns:
 #   ($sec, $min, $hour. $day, $mon, $year)
-sub getTime 
+sub getTime
 	{
 	my ($tms) = @_;
 	$tms = time unless ($tms);

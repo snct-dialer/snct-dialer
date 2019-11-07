@@ -5,22 +5,22 @@ $PATHconf =		'/etc/astguiclient.conf';
 # Copyright (C) 2019  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # VD_email_inbound.pl
-# This script is responsible for assigning transferred and new emails to 
+# This script is responsible for assigning transferred and new emails to
 # available agents.  This is done by repeatedly checking for transferred emails
 # waiting to be assigned sorted by email group rank, then all new emails
 # waiting to be assigned, also sorted by email group rank.  Then it checks
-# the vicidial_live_agents table for agents with READY or CLOSER status.   
+# the vicidial_live_agents table for agents with READY or CLOSER status.
 #
 # As it cycles through the prioritized emails to assign, it takes the inbound group
 # each email belongs to, selects the agent it should be assigned to based on the
-# next_agent_call setting, and puts that lead in QUEUE, as well as putting the 
+# next_agent_call setting, and puts that lead in QUEUE, as well as putting the
 # chosen agent in a special MQUEUE status.  Programming in other parts of Vicidial
 # will cause these emails to be displayed in the agent's interface.
 #
 # This script should be set up on ONLY ONE SERVER. You set it up using the "E"
 # keepalive option in the /etc/astguiclient.conf file on one of the servers in
 # your cluster.
-# 
+#
 # changes:
 # 121214-2303 - First Build
 # 180610-1812 - Added code to not allow XFER emails to go to user who transferred
@@ -28,7 +28,7 @@ $PATHconf =		'/etc/astguiclient.conf';
 # 191017-2043 - Added filtered routing options
 #
 
-if ($ARGV[0]=~/--help/) 
+if ($ARGV[0]=~/--help/)
 	{
 	print "VD_email_inbound.pl\n";
 	print "\n";
@@ -155,7 +155,7 @@ $BDtsSQLdate = "$Byear$Bmon$Bmday$Bhour$Bmin$Bsec";
 #$vig_rslt->execute();
 
 
-for ($i=0; $i<=1000000; $i++) 
+for ($i=0; $i<=1000000; $i++)
 	{
 	$vci=0;
 	$INBOUNDcampsSQL='';
@@ -178,10 +178,10 @@ for ($i=0; $i<=1000000; $i++)
 	$order_rslt=$dbhA->prepare($order_stmt);
 	$order_rslt->execute or die "executing: $order_stmt ", $dbhA->errstr;
 
-	if ($order_rslt->rows>0) 
+	if ($order_rslt->rows>0)
 		{
 		%group_orders=();
-		while (@order_row=$order_rslt->fetchrow_array) 
+		while (@order_row=$order_rslt->fetchrow_array)
 			{
 			$group_orders{"$order_row[0]"}=$order_row[1];
 			}
@@ -194,9 +194,9 @@ for ($i=0; $i<=1000000; $i++)
 		$xfer_rslt->execute or die "executing: $xfer_stmt ", $dbhB->errstr;
 		$xfers_to_assign=$xfer_rslt->rows;
 
-		if ($xfers_to_assign>0) 
+		if ($xfers_to_assign>0)
 			{
-			while (@xfer_row=$xfer_rslt->fetchrow_array) 
+			while (@xfer_row=$xfer_rslt->fetchrow_array)
 				{
 				$row_id_ary[$email_ct]=$xfer_row[0];
 				$lead_id_ary[$email_ct]=$xfer_row[1];
@@ -215,9 +215,9 @@ for ($i=0; $i<=1000000; $i++)
 		$inb_rslt=$dbhB->prepare($inb_stmt);
 		$inb_rslt->execute or die "executing: $inb_stmt ", $dbhB->errstr;
 		$emails_to_assign=$inb_rslt->rows;
-		if ($emails_to_assign>0) 
+		if ($emails_to_assign>0)
 			{
-			while (@inb_row=$inb_rslt->fetchrow_array) 
+			while (@inb_row=$inb_rslt->fetchrow_array)
 				{
 				$row_id_ary[$email_ct]=$inb_row[0];
 				$lead_id_ary[$email_ct]=$inb_row[1];
@@ -236,11 +236,11 @@ for ($i=0; $i<=1000000; $i++)
 	}
 
 
-sub AssignAgents() 
+sub AssignAgents()
 	{
 	if ($ARGV[0]=~/debug/i) {print $xfers_to_assign." transfers to assign\n".$emails_to_assign." incoming emails to assign...\n";}
 
-	for ($q=0; $q<$email_ct; $q++) 
+	for ($q=0; $q<$email_ct; $q++)
 		{
 		$CAMP_callorder=$group_orders{"$group_id_ary[$q]"};
 		$email_row_id=$row_id_ary[$q];
@@ -282,7 +282,7 @@ sub AssignAgents()
 			if ($ARGV[0]=~/debug/i) {print $stmtA."\n";}
 
 
-			if ($sthArows>0) 
+			if ($sthArows>0)
 				{
 				while (@user_row=$sthA->fetchrow_array)
 					{
@@ -291,14 +291,14 @@ sub AssignAgents()
 					$sthA->finish();
 				}
 
-			if ($user ne "") 
+			if ($user ne "")
 				{
 				# If XFER, cannot go to person who transferred
-				if ($email_type eq "XFER") 
+				if ($email_type eq "XFER")
 					{
 					$user_clause=" and user!='$user'";
-					} 
-				else 
+					}
+				else
 					{
 					$user_clause="";
 					}
@@ -308,7 +308,7 @@ sub AssignAgents()
 				$upd_rslt->execute or die "executing: $upd_stmt ", $dbhB->errstr;
 				if ($ARGV[0]=~/debug/i) {print $upd_stmt."\n";}
 
-				if ($upd_rslt->rows>0) 
+				if ($upd_rslt->rows>0)
 					{
 					$upd_rslt->finish();
 					$upd_stmt="update vicidial_live_agents set status='MQUEUE' where user='$user'";
@@ -335,7 +335,7 @@ sub AssignAgents()
 			if ($ARGV[0]=~/debug/i) {print $stmtA."\n";}
 			$sthArows=$sthA->rows;
 
-			if ($sthArows>0) 
+			if ($sthArows>0)
 				{
 				while (@user_row=$sthA->fetchrow_array)
 					{
@@ -344,14 +344,14 @@ sub AssignAgents()
 				$sthA->finish();
 				}
 
-			if ($user ne "") 
+			if ($user ne "")
 				{
 				# If XFER, cannot go to person who transferred
-				if ($email_type eq "XFER") 
+				if ($email_type eq "XFER")
 					{
 					$user_clause=" and user!='$user'";
-					} 
-				else 
+					}
+				else
 					{
 					$user_clause="";
 					}
@@ -361,7 +361,7 @@ sub AssignAgents()
 				$upd_rslt->execute or die "executing: $upd_stmt ", $dbhB->errstr;
 				if ($ARGV[0]=~/debug/i) {print $upd_stmt."\n";}
 
-				if ($upd_rslt->rows>0) 
+				if ($upd_rslt->rows>0)
 					{
 					$upd_rslt->finish();
 					$upd_stmt="update vicidial_live_agents set status='MQUEUE' where user='$user'";

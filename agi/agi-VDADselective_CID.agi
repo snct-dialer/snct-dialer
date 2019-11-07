@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 #
 # agi-VDADselective_CID.agi version 0.1   *NO DB Connection*
-# 
-# Runs before a call is placed outbound to filter outgoing callerIDnumber 
+#
+# Runs before a call is placed outbound to filter outgoing callerIDnumber
 #
 # You need to put lines similar to those below in your extensions.conf file:
 #
@@ -59,7 +59,7 @@ if (length($ARGV[0])>1)
 }
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 {
 	chomp;
 	last unless length($_);
@@ -96,7 +96,7 @@ while(<STDIN>)
 $areacode = substr($extension, -10, 3);
 
 
-foreach $i (sort keys %AGI) 
+foreach $i (sort keys %AGI)
 {
 	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
 }

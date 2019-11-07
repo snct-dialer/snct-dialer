@@ -1,6 +1,6 @@
 <?php
 # TCPAlitigatorlist_inbound_filter.php
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script searches tcpalitigatorlist.com's scrub service for incoming DID phone numbers
@@ -110,12 +110,12 @@ if ($SC_count > 0)
 
 			$p++;
 			}
-		if (strlen($in_filter_override)>5) 
+		if (strlen($in_filter_override)>5)
 			{
 			if ($DB) {echo "FILTER OVERRIDE: $in_filter_override|$in_filter\n";}
 			$in_filter = $in_filter_override;
 			}
-		if (strlen($in_cache_override)>0) 
+		if (strlen($in_cache_override)>0)
 			{
 			if ($DB) {echo "CACHE OVERRIDE: $in_cache_override|$in_cache\n";}
 			$in_cache = $in_cache_override;
@@ -195,9 +195,9 @@ if ($SC_count > 0)
 				$URLdiff_sec = ($URLend_sec - $URLstart_sec);
 				if ($resp)
 					{
-					if (is_array($resp)) 
+					if (is_array($resp))
 						{$SCUfile_contents = implode("", $resp);}
-					else 
+					else
 						{$SCUfile_contents = $resp;}
 					$SCUfile_contents = preg_replace("/;|\n/",'',$SCUfile_contents);
 					$SCUfile_contents = addslashes($SCUfile_contents);

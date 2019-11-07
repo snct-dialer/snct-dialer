@@ -3,7 +3,7 @@
 # AST_VDcall_quotas.pl version 2.14
 #
 # DESCRIPTION:
-# Updates the vicidial_list table for the call quota lead ranking system 
+# Updates the vicidial_list table for the call quota lead ranking system
 #
 # SUMMARY:
 # For VICIDIAL outbound dialing, this program must be in the crontab on only one
@@ -113,7 +113,7 @@ if (length($ARGV[0])>1)
 		else
 			{
 			$CLIcampaign = '';
-			if ($populate_call_quota_logs > 0) 
+			if ($populate_call_quota_logs > 0)
 				{
 				$populate_call_quota_logs=0;
 				print "\n----- POPULATE CALL QUOTA LOGS ERROR: No Campaign specified ($populate_call_quota_logs) -----\n\n";
@@ -194,7 +194,7 @@ if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/call_quotas.$year-$mon-$mday";}
 if (!$VARDB_port) {$VARDB_port='3306';}
 
 use Time::Local;
-use DBI;	  
+use DBI;
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
@@ -217,7 +217,7 @@ $sthA->finish();
 ##### END SYSTEM SETTINGS LOOKUP #####
 ###########################################
 
-if ($SScall_quota_lead_ranking < 1) 
+if ($SScall_quota_lead_ranking < 1)
 	{
 	print "Call Quota Lead Ranking is disabled on this system, exiting...\n";
 	exit;
@@ -228,7 +228,7 @@ $stmtA = "SELECT vd_server_logs,local_gmt FROM servers where server_ip = '$VARse
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
-if ($sthArows==0) {die "Server IP $VARserver_ip does not have an entry in the servers table\n\n";}	
+if ($sthArows==0) {die "Server IP $VARserver_ip does not have an entry in the servers table\n\n";}
 if ($sthArows > 0)
 	{
 	@aryA = $sthA->fetchrow_array;
@@ -253,7 +253,7 @@ if ($sec < 10) {$sec = "0$sec";}
 $now_hourmin = "$hour$min";
 $LOCAL_GMT_OFF = $SERVER_GMT;
 $LOCAL_GMT_OFF_STD = $SERVER_GMT;
-if ($isdst) {$LOCAL_GMT_OFF++;} 
+if ($isdst) {$LOCAL_GMT_OFF++;}
 
 $GMT_now = ($secX - ($LOCAL_GMT_OFF * 3600));
 ($GMTsec,$GMTmin,$GMThour,$GMTmday,$GMTmon,$GMTyear,$GMTwday,$GMTyday,$GMTisdst) = localtime($GMT_now);
@@ -299,7 +299,7 @@ if ($DBX > 0) {print "TIME DEBUG: |$SStimeclock_end_of_day|$now_hourmin|$timeclo
 ##################################################
 ##### BEGIN populate call quota logs process #####
 ##################################################
-if ($populate_call_quota_logs > 0) 
+if ($populate_call_quota_logs > 0)
 	{
 	$log_updated=0;
 	$log_not_updated=0;
@@ -327,7 +327,7 @@ if ($populate_call_quota_logs > 0)
 		}
 	$sthA->finish();
 
-	if (length($list_idsSQL) < 4) 
+	if (length($list_idsSQL) < 4)
 		{
 		if ($DB > 0) {print "NO LISTS ARE ASSIGNED TO CAMPAIGN: $CLIcampaign|$sthArows \n";}
 		}
@@ -349,7 +349,7 @@ if ($populate_call_quota_logs > 0)
 			}
 		$sthA->finish();
 
-		if ($lead_ct < 1) 
+		if ($lead_ct < 1)
 			{
 			if ($DB > 0) {print "NO LEADS CALLED IN THE LAST 7 DAYS ON THIS CAMPAIGN: $CLIcampaign|$lead_ct \n";}
 			}
@@ -375,7 +375,7 @@ if ($populate_call_quota_logs > 0)
 			$TEMPcall_quota_lead_ranking = $call_quota_lead_ranking;
 			&gather_call_quota_settings;
 
-			if ( ($settings_core_score >= 10) && ($settings_session_score >= 1) ) 
+			if ( ($settings_core_score >= 10) && ($settings_session_score >= 1) )
 				{
 				### BEGIN Gather calls for each lead, analyze and update call_quota log record ###
 				$lead_ct=0;
@@ -401,7 +401,7 @@ if ($populate_call_quota_logs > 0)
 					$call_ct=0;
 					while ($sthArowsCALLS > $call_ct)
 						{
-						if (length($LEADuniqueid[$call_ct]) < 9) 
+						if (length($LEADuniqueid[$call_ct]) < 9)
 							{
 							# Look for extended log from dial log entry with no uniqueid
 							$stmtA = "SELECT uniqueid from vicidial_log_extended where caller_code='$LEADcaller_code[$call_ct]' and lead_id='$LEADlead_id[$lead_ct]';";
@@ -428,7 +428,7 @@ if ($populate_call_quota_logs > 0)
 						$call_ct++;
 						}
 
-					if ($call_ct < 1) 
+					if ($call_ct < 1)
 						{
 						if ($DBX > 0) {print "NO CALLS FOUND IN THE LAST 7 DAYS ON THIS LEAD: $LEADlead_id[$lead_ct]|$LEADlist_id[$lead_ct]|$call_ct \n";}
 						}
@@ -479,7 +479,7 @@ if ($populate_call_quota_logs > 0)
 							$start_day=1;
 							while ($sthArowsCALLS > $call_ct)
 								{
-								if (length($LEADuniqueid[$call_ct]) >= 9) 
+								if (length($LEADuniqueid[$call_ct]) >= 9)
 									{
 									@VDLcall_datetimeARY = split(/ /,$LEADcall_date[$call_ct]);
 									@VDLcall_timeARY = split(/:/,$VDLcall_datetimeARY[1]);
@@ -493,26 +493,26 @@ if ($populate_call_quota_logs > 0)
 									if ( ($session_six_start <= $VDLcall_hourmin) and ($session_six_end > $VDLcall_hourmin) ) {$session_six_calls++;}
 
 									$VLCQClast_call_epoch = $LEADcall_epoch[$call_ct];   $VLCQClast_call_date = $LEADcall_date[$call_ct];
-									if ($call_ct < 1) 
+									if ($call_ct < 1)
 										{
 										$VLCQCfirst_call_epoch = $LEADcall_epoch[$call_ct];
 										$VLCQCfirst_call_date = $LEADcall_date[$call_ct];
-										
-										if ($VLCQCfirst_call_epoch >= $today_start_epoch) 
+
+										if ($VLCQCfirst_call_epoch >= $today_start_epoch)
 											{$start_day_epoch=$today_start_epoch;   $start_day=1;}
-										if ( ($VLCQCfirst_call_epoch >= $day_two_start_epoch) and ($VLCQCfirst_call_epoch < $today_start_epoch) ) 
+										if ( ($VLCQCfirst_call_epoch >= $day_two_start_epoch) and ($VLCQCfirst_call_epoch < $today_start_epoch) )
 											{$start_day_epoch=$day_two_start_epoch;   $start_day=2;}
-										if ( ($VLCQCfirst_call_epoch >= $day_three_start_epoch) and ($VLCQCfirst_call_epoch < $day_two_start_epoch) ) 
+										if ( ($VLCQCfirst_call_epoch >= $day_three_start_epoch) and ($VLCQCfirst_call_epoch < $day_two_start_epoch) )
 											{$start_day_epoch=$day_three_start_epoch;   $start_day=3;}
-										if ( ($VLCQCfirst_call_epoch >= $day_four_start_epoch) and ($VLCQCfirst_call_epoch < $day_three_start_epoch) ) 
+										if ( ($VLCQCfirst_call_epoch >= $day_four_start_epoch) and ($VLCQCfirst_call_epoch < $day_three_start_epoch) )
 											{$start_day_epoch=$day_four_start_epoch;   $start_day=4;}
-										if ( ($VLCQCfirst_call_epoch >= $day_five_start_epoch) and ($VLCQCfirst_call_epoch < $day_four_start_epoch) ) 
+										if ( ($VLCQCfirst_call_epoch >= $day_five_start_epoch) and ($VLCQCfirst_call_epoch < $day_four_start_epoch) )
 											{$start_day_epoch=$day_five_start_epoch;   $start_day=5;}
-										if ( ($VLCQCfirst_call_epoch >= $day_six_start_epoch) and ($VLCQCfirst_call_epoch < $day_five_start_epoch) ) 
+										if ( ($VLCQCfirst_call_epoch >= $day_six_start_epoch) and ($VLCQCfirst_call_epoch < $day_five_start_epoch) )
 											{$start_day_epoch=$day_six_start_epoch;   $start_day=6;}
-										if ( ($VLCQCfirst_call_epoch >= $day_seven_start_epoch) and ($VLCQCfirst_call_epoch < $day_six_start_epoch) ) 
+										if ( ($VLCQCfirst_call_epoch >= $day_seven_start_epoch) and ($VLCQCfirst_call_epoch < $day_six_start_epoch) )
 											{$start_day_epoch=$day_seven_start_epoch;   $start_day=7;}
-										
+
 										$day_one_calls++;
 
 										# calculate back to day 7 starting with day 1 = $start_day_epoch
@@ -536,7 +536,7 @@ if ($populate_call_quota_logs > 0)
 										if ( ($LEADcall_epoch[$call_ct] >= $Sday_six_start_epoch) && ($LEADcall_epoch[$call_ct] < $Sday_seven_start_epoch) ) {$day_six_calls++;}
 										if ( ($LEADcall_epoch[$call_ct] >= $Sday_seven_start_epoch) && ($LEADcall_epoch[$call_ct] < $Sday_seven_end_epoch) ) {$day_seven_calls++;}
 										}
-									if ($LEADcall_epoch[$call_ct] >= $today_start_epoch) 
+									if ($LEADcall_epoch[$call_ct] >= $today_start_epoch)
 										{
 										if ( ($session_one_start <= $VDLcall_hourmin) and ($session_one_end > $VDLcall_hourmin) ) {$session_one_today_calls++;}
 										if ( ($session_two_start <= $VDLcall_hourmin) and ($session_two_end > $VDLcall_hourmin) ) {$session_two_today_calls++;}
@@ -619,7 +619,7 @@ if ($populate_call_quota_logs > 0)
 								if ($LOGsession_five_today_calls ne $session_five_today_calls)	{$log_update++; $update_session_ct++; $log_updateSQL.=",session_five_today_calls='$session_five_today_calls'";}
 								if ($LOGsession_six_today_calls ne $session_six_today_calls)	{$log_update++; $update_session_ct++; $log_updateSQL.=",session_six_today_calls='$session_six_today_calls'";}
 
-								if ($log_update < 1) 
+								if ($log_update < 1)
 									{
 									if ($DBX > 0) {print "--    VLCQC record does not need to be updated: |$LEADlead_id[$lead_ct]|$log_update|   |$log_updateSQL|\n";}
 									$log_not_updated++;
@@ -638,7 +638,7 @@ if ($populate_call_quota_logs > 0)
 								{
 								# Insert new record into vicidial_lead_call_quota_counts table for this lead
 								$stmtA="INSERT INTO vicidial_lead_call_quota_counts SET lead_id='$LEADlead_id[$lead_ct]',list_id='$LEADlist_id[$lead_ct]',first_call_date='$VLCQCfirst_call_date',last_call_date='$VLCQClast_call_date',status='$LEADINFOstatus',called_count='$LEADINFOcalled_count',session_one_calls='$session_one_calls',session_two_calls='$session_two_calls',session_three_calls='$session_three_calls',session_four_calls='$session_four_calls',session_five_calls='$session_five_calls',session_six_calls='$session_six_calls',day_one_calls='$day_one_calls',day_two_calls='$day_two_calls',day_three_calls='$day_three_calls',day_four_calls='$day_four_calls',day_five_calls='$day_five_calls',day_six_calls='$day_six_calls',day_seven_calls='$day_seven_calls',rank='$LEADINFOrank',modify_date=NOW(),session_one_today_calls='$session_one_today_calls',session_two_today_calls='$session_two_today_calls',session_three_today_calls='$session_three_today_calls',session_four_today_calls='$session_four_today_calls',session_five_today_calls='$session_five_today_calls',session_six_today_calls='$session_six_today_calls';";
-								if ($no_insert_call_quota_logs < 1) 
+								if ($no_insert_call_quota_logs < 1)
 									{
 									$VLCQCaffected_rows_update = $dbhA->do($stmtA);
 									$event_string = "--    VLCQC record inserted: |$VLCQCaffected_rows_update|   |$stmtA|";   &event_logger;
@@ -652,7 +652,7 @@ if ($populate_call_quota_logs > 0)
 							}
 						}
 					$lead_ct++;
-					if ($DB) 
+					if ($DB)
 						{
 						if ($lead_ct =~ /100$/i) {print STDERR "0     $lead_ct / $sthArowsLEADS \r";}
 						if ($lead_ct =~ /200$/i) {print STDERR "+     $lead_ct / $sthArowsLEADS \r";}
@@ -663,13 +663,13 @@ if ($populate_call_quota_logs > 0)
 						if ($lead_ct =~ /700$/i) {print STDERR "|     $lead_ct / $sthArowsLEADS \r";}
 						if ($lead_ct =~ /800$/i) {print STDERR "+     $lead_ct / $sthArowsLEADS \r";}
 						if ($lead_ct =~ /900$/i) {print STDERR "0     $lead_ct / $sthArowsLEADS \r";}
-						if ($lead_ct =~ /0000$/i) 
+						if ($lead_ct =~ /0000$/i)
 							{
 							print "$lead_ct / $sthArowsLEADS   ($log_updated|$log_inserted|$total_call_count|$skip_dial_log_no_uid|$updated_dial_log_no_uid|   |$LEADlist_id[$lead_ct]|$LEADINFOrank| \n";
 							}
 						}
 					}
-				if ($DB) 
+				if ($DB)
 					{
 					print "Call Quota log populate process complete: \n";
 					print "Logs updated:                    $log_updated \n";
@@ -712,7 +712,7 @@ if ($populate_call_quota_logs > 0)
 ####################################################################
 ##### BEGIN gather list of active campaigns and their settings #####
 ####################################################################
-@campaign_id=@MT; 
+@campaign_id=@MT;
 
 if (length($CLIcampaign)>1)
 	{
@@ -865,7 +865,7 @@ foreach(@campaign_id)
 			if ($DBX > 0) {print "NEW LEADS IN THIS LIST:                      $LISTleads_NEW_count[$d]|$sthArows|$LISTlist_id[$d]|$campaign_id[$i]\n";}
 
 			$SUB_local_call_time = $local_call_time[$i];
-			if ($LISTlocal_call_time[$d] != 'campaign') 
+			if ($LISTlocal_call_time[$d] != 'campaign')
 				{
 				$SUB_local_call_time = $LISTlocal_call_time[$d];
 				if ($DBX > 0) {print "     List Call Time Override:                $SUB_local_call_time\n";}
@@ -896,7 +896,7 @@ foreach(@campaign_id)
 			$sthA->finish();
 			$RUNoutput .= "LIST CACHE STATS UPDATED: $LISTlist_id[$d]   TOTAL: $LISTleads_count[$d]   NEW: $LISTleads_NEW_count[$d]   DIALABLE NEW: $LISTleads_dialable_NEW_count[$d] \n";
 
-			if ($LISTactive[$d] =~ /^Y$/i) 
+			if ($LISTactive[$d] =~ /^Y$/i)
 				{
 				$active_dialable_NEW_count = ($active_dialable_NEW_count + $LISTleads_dialable_NEW_count[$d]);
 				if ($DBX) {print "LIST ACTIVE DIALABLE LEADS: $LISTleads_dialable_NEW_count[$d]($active_dialable_NEW_count)\n";}
@@ -911,7 +911,7 @@ foreach(@campaign_id)
 					}
 				}
 
-			if ($LISTlist_lastcalldateUNIX[$d] > $VDL_hour_epoch) 
+			if ($LISTlist_lastcalldateUNIX[$d] > $VDL_hour_epoch)
 				{
 				$recent_dial_count++;
 				if ($DBX) {print "LIST RECENTLY DIALED:       ($LISTlist_lastcalldateUNIX[$d] > $VDL_hour)   $recent_dial_count \n";}
@@ -928,7 +928,7 @@ foreach(@campaign_id)
 		if ($auto_active_list_new[$i] !~ /^DISABLED$/i)
 			{
 			if ($DB) {print "CHECKING TO SEE IF AUTO-ACTIVE-NEW-LIST NEEDS TO BE ACTIVATED:   $recent_dial_count|$next_NEW_list_to_activate  ($auto_active_list_new[$i] <> $active_dialable_NEW_count) \n";}
-			if ( ($recent_dial_count > 0) && ($auto_active_list_new[$i] > $active_dialable_NEW_count) && (length($next_NEW_list_to_activate)>1) ) 
+			if ( ($recent_dial_count > 0) && ($auto_active_list_new[$i] > $active_dialable_NEW_count) && (length($next_NEW_list_to_activate)>1) )
 				{
 				# Update list record to set list to active
 				$stmtB = "UPDATE vicidial_lists SET active='Y',list_changedate=NOW() where list_id='$next_NEW_list_to_activate';";
@@ -957,7 +957,7 @@ foreach(@campaign_id)
 		$TEMPcall_quota_lead_ranking = $call_quota_lead_ranking[$i];
 		&gather_call_quota_settings;
 
-		if ( ($settings_core_score >= 10) && ($settings_session_score >= 1) ) 
+		if ( ($settings_core_score >= 10) && ($settings_session_score >= 1) )
 			{
 			$test_lead_order = 'UP RANK';
 			if ($new_shuffle == 2) {$test_lead_order = 'UP RANK 2nd NEW';}
@@ -1070,7 +1070,7 @@ foreach(@campaign_id)
 						# session points added
 						if ( ($session_now == 1) && (length($session_one_start) > 0) )
 							{
-							if ($RCsession_one_calls[$rc] < $session_goal) 
+							if ($RCsession_one_calls[$rc] < $session_goal)
 								{
 								if ($RCsession_one_calls[$rc] < 1) {$LEADrank = ($LEADrank + $POINTS_uncalled_session);}
 								else {$LEADrank = ($LEADrank + $POINTS_belowgoal_session);}
@@ -1079,7 +1079,7 @@ foreach(@campaign_id)
 							}
 						if ( ($session_now == 2) && (length($session_two_start) > 0) )
 							{
-							if ($RCsession_two_calls[$rc] < $session_goal) 
+							if ($RCsession_two_calls[$rc] < $session_goal)
 								{
 								if ($RCsession_two_calls[$rc] < 1) {$LEADrank = ($LEADrank + $POINTS_uncalled_session);}
 								else {$LEADrank = ($LEADrank + $POINTS_belowgoal_session);}
@@ -1088,7 +1088,7 @@ foreach(@campaign_id)
 							}
 						if ( ($session_now == 3) && (length($session_three_start) > 0) )
 							{
-							if ($RCsession_three_calls[$rc] < $session_goal) 
+							if ($RCsession_three_calls[$rc] < $session_goal)
 								{
 								if ($RCsession_three_calls[$rc] < 1) {$LEADrank = ($LEADrank + $POINTS_uncalled_session);}
 								else {$LEADrank = ($LEADrank + $POINTS_belowgoal_session);}
@@ -1097,7 +1097,7 @@ foreach(@campaign_id)
 							}
 						if ( ($session_now == 4) && (length($session_four_start) > 0) )
 							{
-							if ($RCsession_four_calls[$rc] < $session_goal) 
+							if ($RCsession_four_calls[$rc] < $session_goal)
 								{
 								if ($RCsession_four_calls[$rc] < 1) {$LEADrank = ($LEADrank + $POINTS_uncalled_session);}
 								else {$LEADrank = ($LEADrank + $POINTS_belowgoal_session);}
@@ -1106,7 +1106,7 @@ foreach(@campaign_id)
 							}
 						if ( ($session_now == 5) && (length($session_five_start) > 0) )
 							{
-							if ($RCsession_five_calls[$rc] < $session_goal) 
+							if ($RCsession_five_calls[$rc] < $session_goal)
 								{
 								if ($RCsession_five_calls[$rc] < 1) {$LEADrank = ($LEADrank + $POINTS_uncalled_session);}
 								else {$LEADrank = ($LEADrank + $POINTS_belowgoal_session);}
@@ -1115,7 +1115,7 @@ foreach(@campaign_id)
 							}
 						if ( ($session_now == 6) && (length($session_six_start) > 0) )
 							{
-							if ($RCsession_six_calls[$rc] < $session_goal) 
+							if ($RCsession_six_calls[$rc] < $session_goal)
 								{
 								if ($RCsession_six_calls[$rc] < 1) {$LEADrank = ($LEADrank + $POINTS_uncalled_session);}
 								else {$LEADrank = ($LEADrank + $POINTS_belowgoal_session);}
@@ -1124,19 +1124,19 @@ foreach(@campaign_id)
 							}
 
 						# day points added
-						if ($RCfirst_call_epoch[$rc] >= $today_start_epoch) 
+						if ($RCfirst_call_epoch[$rc] >= $today_start_epoch)
 							{$start_day_epoch=$today_start_epoch;   $start_day=1;}
-						if ( ($RCfirst_call_epoch[$rc] >= $day_two_start_epoch) && ($RCfirst_call_epoch[$rc] < $today_start_epoch) ) 
+						if ( ($RCfirst_call_epoch[$rc] >= $day_two_start_epoch) && ($RCfirst_call_epoch[$rc] < $today_start_epoch) )
 							{$start_day_epoch=$day_two_start_epoch;   $start_day=2;}
-						if ( ($RCfirst_call_epoch[$rc] >= $day_three_start_epoch) && ($RCfirst_call_epoch[$rc] < $day_two_start_epoch) ) 
+						if ( ($RCfirst_call_epoch[$rc] >= $day_three_start_epoch) && ($RCfirst_call_epoch[$rc] < $day_two_start_epoch) )
 							{$start_day_epoch=$day_three_start_epoch;   $start_day=3;}
-						if ( ($RCfirst_call_epoch[$rc] >= $day_four_start_epoch) && ($RCfirst_call_epoch[$rc] < $day_three_start_epoch) ) 
+						if ( ($RCfirst_call_epoch[$rc] >= $day_four_start_epoch) && ($RCfirst_call_epoch[$rc] < $day_three_start_epoch) )
 							{$start_day_epoch=$day_four_start_epoch;   $start_day=4;}
-						if ( ($RCfirst_call_epoch[$rc] >= $day_five_start_epoch) && ($RCfirst_call_epoch[$rc] < $day_four_start_epoch) ) 
+						if ( ($RCfirst_call_epoch[$rc] >= $day_five_start_epoch) && ($RCfirst_call_epoch[$rc] < $day_four_start_epoch) )
 							{$start_day_epoch=$day_five_start_epoch;   $start_day=5;}
-						if ( ($RCfirst_call_epoch[$rc] >= $day_six_start_epoch) && ($RCfirst_call_epoch[$rc] < $day_five_start_epoch) ) 
+						if ( ($RCfirst_call_epoch[$rc] >= $day_six_start_epoch) && ($RCfirst_call_epoch[$rc] < $day_five_start_epoch) )
 							{$start_day_epoch=$day_six_start_epoch;   $start_day=6;}
-						if ( ($RCfirst_call_epoch[$rc] >= $day_seven_start_epoch) && ($RCfirst_call_epoch[$rc] < $day_six_start_epoch) ) 
+						if ( ($RCfirst_call_epoch[$rc] >= $day_seven_start_epoch) && ($RCfirst_call_epoch[$rc] < $day_six_start_epoch) )
 							{$start_day_epoch=$day_seven_start_epoch;   $start_day=7;}
 
 						if ($start_day == 1)
@@ -1166,7 +1166,7 @@ foreach(@campaign_id)
 								}
 							if ($RCday_three_calls[$rc] >= $daily_max) {$LEADrank = ($LEADrank + $POINTS_atmax_today);}
 							}
-						if ($start_day == 4) 
+						if ($start_day == 4)
 							{
 							if ($RCday_four_calls[$rc] < $daily_goal)
 								{
@@ -1206,9 +1206,9 @@ foreach(@campaign_id)
 						# daily goal points added
 						$temp_total_goal_diff=0;
 						$temp_total_calls = ($RCday_one_calls[$rc] + $RCday_two_calls[$rc] + $RCday_three_calls[$rc] + $RCday_four_calls[$rc] + $RCday_five_calls[$rc] + $RCday_six_calls[$rc] + $RCday_seven_calls[$rc]);
-						if ($temp_total_calls >= $total_goal) 
+						if ($temp_total_calls >= $total_goal)
 							{$LEADrank = ($LEADrank + $POINTS_atgoal_total);}
-						else 
+						else
 							{
 							$temp_total_goal_diff = ($total_goal - $temp_total_calls);
 							$LEADrank = ($LEADrank + ($temp_total_goal_diff * $POINTS_goaldiff_multiplier));
@@ -1222,18 +1222,18 @@ foreach(@campaign_id)
 							$temp_ct=1;
 							$temp_start_day = $start_day;
 							$temp_wday = $wday;
-							while ($temp_ct < $temp_start_day) 
+							while ($temp_ct < $temp_start_day)
 								{
 								if ($temp_wday == 0) {$temp_wday = 6;}
 								else {$temp_wday = ($temp_wday - 1);}
-								if ($active_days_of_week !~ /$temp_wday/) 
+								if ($active_days_of_week !~ /$temp_wday/)
 									{$no_call_days++;}
 								$temp_ct++;
 							#	print "days-off debug:    $temp_ct   $temp_start_day   $temp_wday   $active_days_of_week   $no_call_days \n";
 								}
 							}
 						$weighted_consecutive_days = ($min_consecutive_days + $no_call_days);
-						if ($weighted_consecutive_days >= $start_day) 
+						if ($weighted_consecutive_days >= $start_day)
 							{
 							$temp_days_left_points=0;
 							$temp_days_left = ($min_consecutive_days - $start_day);
@@ -1252,13 +1252,13 @@ foreach(@campaign_id)
 						# hours-since-last-call points added, and determine if lead should be reset to call again
 						$temp_called_ago_hours=0;
 						$called_since_last_resetSQL='';
-						if ($LEADrank > 0) 
+						if ($LEADrank > 0)
 							{
-							if ($RClast_call_epoch[$rc] > 1000000) 
+							if ($RClast_call_epoch[$rc] > 1000000)
 								{
 								$temp_called_ago_seconds = ($secX - $RClast_call_epoch[$rc]);
 								$temp_called_ago_hours = int($temp_called_ago_seconds / 3600);
-								if ($temp_called_ago_hours > 0) 
+								if ($temp_called_ago_hours > 0)
 									{$LEADrank = ($LEADrank + $temp_called_ago_hours);}
 								}
 							# See if the lead is in a live call
@@ -1273,7 +1273,7 @@ foreach(@campaign_id)
 								$LEADagent_check =					$aryA[0];
 								}
 							$sthA->finish();
-							if ($LEADagent_check < 1) 
+							if ($LEADagent_check < 1)
 								{
 								# See if the lead is already in a live call
 								$LEADcall_check=0;
@@ -1287,7 +1287,7 @@ foreach(@campaign_id)
 									$LEADcall_check =					$aryA[0];
 									}
 								$sthA->finish();
-								if ($LEADcall_check < 1) 
+								if ($LEADcall_check < 1)
 									{
 									# See if the lead is already in the hopper
 									$LEADhopper_check=0;
@@ -1301,7 +1301,7 @@ foreach(@campaign_id)
 										$LEADhopper_check =					$aryA[0];
 										}
 									$sthA->finish();
-									if ($LEADhopper_check < 1) 
+									if ($LEADhopper_check < 1)
 										{
 										# See if the lead is already reset to dial
 										$LEADreset_check=0;
@@ -1316,7 +1316,7 @@ foreach(@campaign_id)
 											$LEADreset_check =					$aryA[0];
 											}
 										$sthA->finish();
-										if ($LEADreset_check < 1) 
+										if ($LEADreset_check < 1)
 											{
 											$called_since_last_resetSQL=",called_since_last_reset='N'";
 											$LEADreset_ct++;
@@ -1341,7 +1341,7 @@ foreach(@campaign_id)
 							$rank_updates++;
 							}
 						$rc++;
-						if ($DB) 
+						if ($DB)
 							{
 							if ($rc =~ /100$/i) {print STDERR "0     $rc / $sthArowsRANK \r";}
 							if ($rc =~ /200$/i) {print STDERR "+     $rc / $sthArowsRANK \r";}
@@ -1352,7 +1352,7 @@ foreach(@campaign_id)
 							if ($rc =~ /700$/i) {print STDERR "|     $rc / $sthArowsRANK \r";}
 							if ($rc =~ /800$/i) {print STDERR "+     $rc / $sthArowsRANK \r";}
 							if ($rc =~ /900$/i) {print STDERR "0     $rc / $sthArowsRANK \r";}
-							if ($rc =~ /0000$/i) 
+							if ($rc =~ /0000$/i)
 								{
 								print "$rc / $sthArowsRANK   ($rank_updates|$LEADreset_check_ct|$LEADreset_ct|   |$RClead_id[$rc]|$RCfirst_call_date[$rc]|$start_day| \n";
 								}
@@ -1472,7 +1472,7 @@ sub gather_call_quota_settings
 	$session_six='';
 	$settings_session_score=0;
 
-	if (length($TEMPcontainer_entry) > 5) 
+	if (length($TEMPcontainer_entry) > 5)
 		{
 		@container_lines = split(/\n/,$TEMPcontainer_entry);
 		$c=0;
@@ -1486,7 +1486,7 @@ sub gather_call_quota_settings
 					{
 					$redial_statuses = $container_lines[$c];
 					$redial_statuses =~ s/redial_statuses=>//gi;
-					if ( (length($redial_statuses) > 0) && (length($redial_statuses) <= 700) ) 
+					if ( (length($redial_statuses) > 0) && (length($redial_statuses) <= 700) )
 						{$settings_core_score++;}
 					else {$redial_statuses='';}
 					}
@@ -1495,7 +1495,7 @@ sub gather_call_quota_settings
 					$total_goal = $container_lines[$c];
 					$total_goal =~ s/total_goal=>//gi;
 					$total_goal =~ s/\D//gi;
-					if ( ($total_goal > 0) && ($total_goal <= 100) ) 
+					if ( ($total_goal > 0) && ($total_goal <= 100) )
 						{$settings_core_score++;}
 					else {$total_goal='';}
 					}
@@ -1504,7 +1504,7 @@ sub gather_call_quota_settings
 					$daily_goal = $container_lines[$c];
 					$daily_goal =~ s/daily_goal=>//gi;
 					$daily_goal =~ s/\D//gi;
-					if ( ($daily_goal > 0) && ($daily_goal <= 20) ) 
+					if ( ($daily_goal > 0) && ($daily_goal <= 20) )
 						{$settings_core_score++;}
 					else {$daily_goal='';}
 					}
@@ -1513,7 +1513,7 @@ sub gather_call_quota_settings
 					$daily_max = $container_lines[$c];
 					$daily_max =~ s/daily_max=>//gi;
 					$daily_max =~ s/\D//gi;
-					if ( ($daily_max > 0) && ($daily_max <= 20) ) 
+					if ( ($daily_max > 0) && ($daily_max <= 20) )
 						{$settings_core_score++;}
 					else {$daily_max='';}
 					}
@@ -1522,7 +1522,7 @@ sub gather_call_quota_settings
 					$session_goal = $container_lines[$c];
 					$session_goal =~ s/session_goal=>//gi;
 					$session_goal =~ s/\D//gi;
-					if ( ($session_goal > 0) && ($session_goal <= 20) ) 
+					if ( ($session_goal > 0) && ($session_goal <= 20) )
 						{$settings_core_score++;}
 					else {$session_goal='';}
 					}
@@ -1531,7 +1531,7 @@ sub gather_call_quota_settings
 					$session_day_max = $container_lines[$c];
 					$session_day_max =~ s/session_day_max=>//gi;
 					$session_day_max =~ s/\D//gi;
-					if ( ($session_day_max > 0) && ($session_day_max <= 20) ) 
+					if ( ($session_day_max > 0) && ($session_day_max <= 20) )
 						{$settings_core_score++;}
 					else {$session_day_max='';}
 					}
@@ -1540,7 +1540,7 @@ sub gather_call_quota_settings
 					$new_shuffle = $container_lines[$c];
 					$new_shuffle =~ s/new_shuffle=>//gi;
 					$new_shuffle =~ s/\D//gi;
-					if ( ($new_shuffle > -1) && ($new_shuffle <= 6) ) 
+					if ( ($new_shuffle > -1) && ($new_shuffle <= 6) )
 						{
 						if ($new_shuffle == 1) {$new_shuffle=2;}
 						$settings_core_score++;
@@ -1552,7 +1552,7 @@ sub gather_call_quota_settings
 					$min_consecutive_days = $container_lines[$c];
 					$min_consecutive_days =~ s/min_consecutive_days=>//gi;
 					$min_consecutive_days =~ s/\D//gi;
-					if ( ($min_consecutive_days > 0) && ($min_consecutive_days <= 7) ) 
+					if ( ($min_consecutive_days > 0) && ($min_consecutive_days <= 7) )
 						{$settings_core_score++;}
 					else {$min_consecutive_days='';}
 					}
@@ -1561,7 +1561,7 @@ sub gather_call_quota_settings
 					$active_days_of_week = $container_lines[$c];
 					$active_days_of_week =~ s/active_days_of_week=>//gi;
 					$active_days_of_week =~ s/\D//gi;
-					if ( (length($active_days_of_week) > 0) && (length($active_days_of_week) <= 7) ) 
+					if ( (length($active_days_of_week) > 0) && (length($active_days_of_week) <= 7) )
 						{$settings_core_score++;}
 					else {$active_days_of_week='';}
 					}
@@ -1570,7 +1570,7 @@ sub gather_call_quota_settings
 					$zero_rank_after_call = $container_lines[$c];
 					$zero_rank_after_call =~ s/zero_rank_after_call=>//gi;
 					$zero_rank_after_call =~ s/\D//gi;
-					if ( (length($zero_rank_after_call) > 0) && (length($zero_rank_after_call) <= 1) ) 
+					if ( (length($zero_rank_after_call) > 0) && (length($zero_rank_after_call) <= 1) )
 						{$settings_core_score++;}
 					else {$zero_rank_after_call='';}
 					}
@@ -1578,7 +1578,7 @@ sub gather_call_quota_settings
 					{
 					$call_quota_run_time = $container_lines[$c];
 					$call_quota_run_time =~ s/call_quota_run_time=>//gi;
-					if ( (length($call_quota_run_time) > 0) && (length($call_quota_run_time) <= 70) ) 
+					if ( (length($call_quota_run_time) > 0) && (length($call_quota_run_time) <= 70) )
 						{$settings_core_score++;}
 					else {$call_quota_run_time='';}
 					}
@@ -1588,12 +1588,12 @@ sub gather_call_quota_settings
 					$session_one_valid=0; $session_one_start=''; $session_one_end='';
 					$session_one = $container_lines[$c];
 					$session_one =~ s/session_one=>//gi;
-					if ( (length($session_one) > 0) && (length($session_one) <= 9) && ($session_one =~ /,/) ) 
+					if ( (length($session_one) > 0) && (length($session_one) <= 9) && ($session_one =~ /,/) )
 						{
 						@session_oneARY = split(/,/,$session_one);
 						$session_one_start = $session_oneARY[0];
 						$session_one_end = $session_oneARY[1];
-						if ( (length($session_one_start) >= 4) && (length($session_one_end) >= 4) && ($session_one_start < $session_one_end) && ($session_one_end <= 2400) ) 
+						if ( (length($session_one_start) >= 4) && (length($session_one_end) >= 4) && ($session_one_start < $session_one_end) && ($session_one_end <= 2400) )
 							{
 							$settings_session_score++;
 							$session_one_valid++;
@@ -1605,12 +1605,12 @@ sub gather_call_quota_settings
 					$session_two_valid=0; $session_two_start=''; $session_two_end='';
 					$session_two = $container_lines[$c];
 					$session_two =~ s/session_two=>//gi;
-					if ( (length($session_two) > 0) && (length($session_two) <= 9) && ($session_two =~ /,/) ) 
+					if ( (length($session_two) > 0) && (length($session_two) <= 9) && ($session_two =~ /,/) )
 						{
 						@session_twoARY = split(/,/,$session_two);
 						$session_two_start = $session_twoARY[0];
 						$session_two_end = $session_twoARY[1];
-						if ( (length($session_two_start) >= 4) && (length($session_two_end) >= 4) && ($session_one_valid > 0) && ($session_one_end <= $session_two_start) && ($session_two_start < $session_two_end) && ($session_two_end <= 2400) ) 
+						if ( (length($session_two_start) >= 4) && (length($session_two_end) >= 4) && ($session_one_valid > 0) && ($session_one_end <= $session_two_start) && ($session_two_start < $session_two_end) && ($session_two_end <= 2400) )
 							{
 							$settings_session_score++;
 							$session_two_valid++;
@@ -1622,12 +1622,12 @@ sub gather_call_quota_settings
 					$session_three_valid=0; $session_three_start=''; $session_three_end='';
 					$session_three = $container_lines[$c];
 					$session_three =~ s/session_three=>//gi;
-					if ( (length($session_three) > 0) && (length($session_three) <= 9) && ($session_three =~ /,/) ) 
+					if ( (length($session_three) > 0) && (length($session_three) <= 9) && ($session_three =~ /,/) )
 						{
 						@session_threeARY = split(/,/,$session_three);
 						$session_three_start = $session_threeARY[0];
 						$session_three_end = $session_threeARY[1];
-						if ( (length($session_three_start) >= 4) && (length($session_three_end) >= 4) && ($session_two_valid > 0) && ($session_two_end <= $session_three_start) && ($session_three_start < $session_three_end) && ($session_three_end <= 2400) ) 
+						if ( (length($session_three_start) >= 4) && (length($session_three_end) >= 4) && ($session_two_valid > 0) && ($session_two_end <= $session_three_start) && ($session_three_start < $session_three_end) && ($session_three_end <= 2400) )
 							{
 							$settings_session_score++;
 							$session_three_valid++;
@@ -1639,12 +1639,12 @@ sub gather_call_quota_settings
 					$session_four_valid=0; $session_four_start=''; $session_four_end='';
 					$session_four = $container_lines[$c];
 					$session_four =~ s/session_four=>//gi;
-					if ( (length($session_four) > 0) && (length($session_four) <= 9) && ($session_four =~ /,/) ) 
+					if ( (length($session_four) > 0) && (length($session_four) <= 9) && ($session_four =~ /,/) )
 						{
 						@session_fourARY = split(/,/,$session_four);
 						$session_four_start = $session_fourARY[0];
 						$session_four_end = $session_fourARY[1];
-						if ( (length($session_four_start) >= 4) && (length($session_four_end) >= 4) && ($session_three_valid > 0) && ($session_three_end <= $session_four_start) && ($session_four_start < $session_four_end) && ($session_four_end <= 2400) ) 
+						if ( (length($session_four_start) >= 4) && (length($session_four_end) >= 4) && ($session_three_valid > 0) && ($session_three_end <= $session_four_start) && ($session_four_start < $session_four_end) && ($session_four_end <= 2400) )
 							{
 							$settings_session_score++;
 							$session_four_valid++;
@@ -1656,12 +1656,12 @@ sub gather_call_quota_settings
 					$session_five_valid=0; $session_five_start=''; $session_five_end='';
 					$session_five = $container_lines[$c];
 					$session_five =~ s/session_five=>//gi;
-					if ( (length($session_five) > 0) && (length($session_five) <= 9) && ($session_five =~ /,/) ) 
+					if ( (length($session_five) > 0) && (length($session_five) <= 9) && ($session_five =~ /,/) )
 						{
 						@session_fiveARY = split(/,/,$session_five);
 						$session_five_start = $session_fiveARY[0];
 						$session_five_end = $session_fiveARY[1];
-						if ( (length($session_five_start) >= 4) && (length($session_five_end) >= 4) && ($session_four_valid > 0) && ($session_four_end <= $session_five_start) && ($session_five_start < $session_five_end) && ($session_five_end <= 2400) ) 
+						if ( (length($session_five_start) >= 4) && (length($session_five_end) >= 4) && ($session_four_valid > 0) && ($session_four_end <= $session_five_start) && ($session_five_start < $session_five_end) && ($session_five_end <= 2400) )
 							{
 							$settings_session_score++;
 							$session_five_valid++;
@@ -1673,12 +1673,12 @@ sub gather_call_quota_settings
 					$session_six_valid=0; $session_six_start=''; $session_six_end='';
 					$session_six = $container_lines[$c];
 					$session_six =~ s/session_six=>//gi;
-					if ( (length($session_six) > 0) && (length($session_six) <= 9) && ($session_six =~ /,/) ) 
+					if ( (length($session_six) > 0) && (length($session_six) <= 9) && ($session_six =~ /,/) )
 						{
 						@session_sixARY = split(/,/,$session_six);
 						$session_six_start = $session_sixARY[0];
 						$session_six_end = $session_sixARY[1];
-						if ( (length($session_six_start) >= 4) && (length($session_six_end) >= 4) && ($session_five_valid > 0) && ($session_five_end <= $session_six_start) && ($session_six_start < $session_six_end) && ($session_six_end <= 2400) ) 
+						if ( (length($session_six_start) >= 4) && (length($session_six_end) >= 4) && ($session_five_valid > 0) && ($session_five_end <= $session_six_start) && ($session_six_start < $session_six_end) && ($session_six_end <= 2400) )
 							{
 							$settings_session_score++;
 							$session_six_valid++;
@@ -1700,7 +1700,7 @@ sub gather_call_quota_settings
 		if ( ($session_six_start <= $now_hourmin) and ($session_six_end > $now_hourmin) ) {$session_now=6;}
 
 
-		if ($DB) 
+		if ($DB)
 			{
 			$DEBUG_settings_output = "Call Quota Lead Ranking settings for $campaign_id[$i] ($call_quota_lead_ranking[$i]) \n";
 			$DEBUG_settings_output .= "redial_statuses:      $redial_statuses \n";
@@ -1749,7 +1749,7 @@ sub gmt_sql_generate
 		$pzone = ($GMT_now + ($p * 3600));
 		($psec,$pmin,$phour,$pmday,$pmon,$pyear,$pday,$pyday,$pisdst) = localtime($pzone);
 		$phour=($phour * 100);
-		$tz = sprintf("%.2f", $p);	
+		$tz = sprintf("%.2f", $p);
 		$GMT_gmt[$g] = "$tz";
 		$GMT_day[$g] = "$pday";
 		$GMT_hour[$g] = ($phour + $pmin);
@@ -1758,7 +1758,7 @@ sub gmt_sql_generate
 		$g++;
 		}
 	if ($DBX) {print "\n";}
-		
+
 	$stmtA = "SELECT call_time_id,call_time_name,call_time_comments,ct_default_start,ct_default_stop,ct_sunday_start,ct_sunday_stop,ct_monday_start,ct_monday_stop,ct_tuesday_start,ct_tuesday_stop,ct_wednesday_start,ct_wednesday_stop,ct_thursday_start,ct_thursday_stop,ct_friday_start,ct_friday_stop,ct_saturday_start,ct_saturday_stop,ct_state_call_times,ct_holidays FROM vicidial_call_times where call_time_id='$SUB_local_call_time';";
 		if ($DBX) {print "   |$stmtA|\n";}
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -2008,7 +2008,7 @@ sub gmt_sql_generate
 
 			### BEGIN Check for outbound state holiday ###
 			$Sholiday_id = '';
-			if ( (length($Sct_holidays)>2) || ( (length($holiday_id)>2) && (length($Sholiday_id)<2) ) ) 
+			if ( (length($Sct_holidays)>2) || ( (length($holiday_id)>2) && (length($Sholiday_id)<2) ) )
 				{
 				#Apply state holiday
 				if (length($Sct_holidays)>2)
@@ -2016,7 +2016,7 @@ sub gmt_sql_generate
 					$Sct_holidaysSQL = $Sct_holidays;
 					$Sct_holidaysSQL =~ s/^\||\|$//gi;
 					$Sct_holidaysSQL =~ s/\|/','/gi;
-					$Sct_holidaysSQL = "'$Sct_holidaysSQL'";					
+					$Sct_holidaysSQL = "'$Sct_holidaysSQL'";
 					$stmtA = "SELECT holiday_id,holiday_date,holiday_name,ct_default_start,ct_default_stop from vicidial_call_time_holidays where holiday_id IN($Sct_holidaysSQL) and holiday_status='ACTIVE' and holiday_date='$YMD' order by holiday_id;";
 					$holidaytype = "     STATE CALL TIME HOLIDAY FOUND!   ";
 					}
@@ -2025,7 +2025,7 @@ sub gmt_sql_generate
 					{
 					$stmtA = "SELECT holiday_id,holiday_date,holiday_name,ct_default_start,ct_default_stop from vicidial_call_time_holidays where holiday_id='$holiday_id' and holiday_status='ACTIVE' and holiday_date='$YMD' order by holiday_id;";
 					$holidaytype = "     NO STATE HOLIDAY APPLYING CALL TIME HOLIDAY!   ";
-					}				
+					}
 				if ($DBX) {print "   |$stmtA|\n";}
 				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;

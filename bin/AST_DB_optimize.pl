@@ -108,14 +108,14 @@ else
 	print "no command line options set\n";
 	}
 
-use DBI;	  
+use DBI;
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 $stmtA = "optimize table call_log;";
 if($DB){print STDERR "\n|$stmtA|\n";}
-if (!$T) 
+if (!$T)
 	{
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -127,7 +127,7 @@ if (!$T)
 
 $stmtA = "optimize table park_log;";
 if($DB){print STDERR "\n|$stmtA|\n";}
-if (!$T) 
+if (!$T)
 	{
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -139,7 +139,7 @@ if (!$T)
 
 $stmtA = "optimize table vicidial_log;";
 if($DB){print STDERR "\n|$stmtA|\n";}
-if (!$T) 
+if (!$T)
 	{
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -151,7 +151,7 @@ if (!$T)
 
 $stmtA = "optimize table vicidial_closer_log;";
 if($DB){print STDERR "\n|$stmtA|\n";}
-if (!$T) 
+if (!$T)
 	{
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -163,7 +163,7 @@ if (!$T)
 
 $stmtA = "optimize table vicidial_xfer_log;";
 if($DB){print STDERR "\n|$stmtA|\n";}
-if (!$T) 
+if (!$T)
 	{
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -175,7 +175,7 @@ if (!$T)
 
 $stmtA = "optimize table vicidial_list;";
 if($DB){print STDERR "\n|$stmtA|\n";}
-if (!$T) 
+if (!$T)
 	{
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -187,7 +187,7 @@ if (!$T)
 
 $stmtA = "optimize table vicidial_manager;";
 if($DB){print STDERR "\n|$stmtA|\n";}
-if (!$T) 
+if (!$T)
 	{
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -199,7 +199,7 @@ if (!$T)
 
 $stmtA = "optimize table vicidial_auto_calls;";
 if($DB){print STDERR "\n|$stmtA|\n";}
-if (!$T) 
+if (!$T)
 	{
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -211,7 +211,7 @@ if (!$T)
 
 $stmtA = "optimize table vicidial_live_agents;";
 if($DB){print STDERR "\n|$stmtA|\n";}
-if (!$T) 
+if (!$T)
 	{
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -223,7 +223,7 @@ if (!$T)
 
 $stmtA = "optimize table vicidial_dnc;";
 if($DB){print STDERR "\n|$stmtA|\n";}
-if (!$T) 
+if (!$T)
 	{
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -235,7 +235,7 @@ if (!$T)
 
 $stmtA = "optimize table vicidial_campaign_dnc;";
 if($DB){print STDERR "\n|$stmtA|\n";}
-if (!$T) 
+if (!$T)
 	{
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -247,7 +247,7 @@ if (!$T)
 
 $stmtA = "optimize table vicidial_callbacks;";
 if($DB){print STDERR "\n|$stmtA|\n";}
-if (!$T) 
+if (!$T)
 	{
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -259,7 +259,7 @@ if (!$T)
 
 $stmtA = "optimize table vicidial_callbacks_archive;";
 if($DB){print STDERR "\n|$stmtA|\n";}
-if (!$T) 
+if (!$T)
 	{
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -271,7 +271,7 @@ if (!$T)
 
 $stmtA = "optimize table vicidial_agent_log;";
 if($DB){print STDERR "\n|$stmtA|\n";}
-if (!$T) 
+if (!$T)
 	{
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -283,7 +283,7 @@ if (!$T)
 
 $stmtA = "optimize table vicidial_conferences;";
 if($DB){print STDERR "\n|$stmtA|\n";}
-if (!$T) 
+if (!$T)
 	{
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -295,7 +295,7 @@ if (!$T)
 
 $stmtA = "optimize table vicidial_hopper;";
 if($DB){print STDERR "\n|$stmtA|\n";}
-if (!$T) 
+if (!$T)
 	{
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -307,7 +307,7 @@ if (!$T)
 
 $stmtA = "optimize table servers;";
 if($DB){print STDERR "\n|$stmtA|\n";}
-if (!$T) 
+if (!$T)
 	{
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -319,7 +319,7 @@ if (!$T)
 
 $stmtA = "optimize table vicidial_timeclock_log;";
 if($DB){print STDERR "\n|$stmtA|\n";}
-if (!$T) 
+if (!$T)
 	{
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -331,7 +331,7 @@ if (!$T)
 
 $stmtA = "optimize table vicidial_timeclock_status;";
 if($DB){print STDERR "\n|$stmtA|\n";}
-if (!$T) 
+if (!$T)
 	{
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;

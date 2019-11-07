@@ -1,6 +1,6 @@
-<?php 
+<?php
 # AST_DIDstats_v2.php - DID sumary report
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -75,7 +75,7 @@ $table_name="vicidial_did_log";
 $archive_table_name=use_archive_table($table_name);
 if ($archive_table_name!=$table_name) {$archives_available="Y";}
 
-if ($search_archived_data) 
+if ($search_archived_data)
 	{
 	$vicidial_did_log_table=use_archive_table("vicidial_did_log");
 	}
@@ -351,7 +351,7 @@ $HEADER.="<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 require("chart_button.php");
-$HEADER.="<script src='chart/Chart.js'></script>\n"; 
+$HEADER.="<script src='chart/Chart.js'></script>\n";
 $HEADER.="<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
 
 $HEADER.="<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
@@ -411,7 +411,7 @@ $MAIN.="<SELECT SIZE=5 NAME=group[] multiple>\n";
 $o=0;
 while ($groups_to_print > $o)
 	{
-	if (preg_match("/\|$groups[$o]\|/",$group_string)) 
+	if (preg_match("/\|$groups[$o]\|/",$group_string))
 		{$MAIN.="<option selected value=\"$groups[$o]\">$group_patterns[$o] - $group_names[$o]</option>\n";}
 	else
 		{$MAIN.="<option value=\"$groups[$o]\">$group_patterns[$o] - $group_names[$o]</option>\n";}
@@ -425,7 +425,7 @@ $MAIN.=_QXZ("Display as:")."</FONT><BR>";
 $MAIN.="<select name='report_display_type'>";
 if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
 $MAIN.="<option value='TEXT'>"._QXZ("TEXT")."</option><option value='HTML'>"._QXZ("HTML")."</option></select>\n<BR><BR>";
-if ($archives_available=="Y") 
+if ($archives_available=="Y")
 	{
 	$MAIN.="<input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."<BR><BR>\n";
 	}
@@ -446,7 +446,7 @@ if (!$group)
 
 else
 	{
-	$query_date_BEGIN = "$query_date $time_BEGIN";   
+	$query_date_BEGIN = "$query_date $time_BEGIN";
 	$query_date_END = "$end_date $time_END";
 
 	$SQdate_ARY =	explode(' ',$query_date_BEGIN);
@@ -516,7 +516,7 @@ else
 		$dt[$i] =			0;
 		$ut[$i] =			($row[0] - $SQepochDAY);
 		$extension[$i] =	$row[1];
-		while($ut[$i] >= 86400) 
+		while($ut[$i] >= 86400)
 			{
 			$ut[$i] = ($ut[$i] - 86400);
 			$dt[$i]++;
@@ -691,7 +691,7 @@ else
 			$HTML_text.="<th colspan='6'>&nbsp;</th>";
 			$HTML_text.="</tr>\n";
 			$HTML_text.="</table>\n";
-	
+
 		}
 
 	if ($report_display_type=="HTML")
@@ -716,7 +716,7 @@ else
 		{
 		$qrtCALLSavg[$i] = MathZDC($qrtCALLSsec[$i], $qrtCALLS[$i]);
 
-		if ($qrtCALLS[$i] > $hi_hour_count) 
+		if ($qrtCALLS[$i] > $hi_hour_count)
 			{$hi_hour_count = $qrtCALLS[$i];}
 
 		$i++;

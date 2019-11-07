@@ -113,7 +113,7 @@ $server_ip = $VARserver_ip;		# Asterisk server IP
 
 if (!$VARDB_port) {$VARDB_port='3306';}
 
-use DBI;	  
+use DBI;
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
@@ -164,42 +164,42 @@ $YDSQLdate = "$Yyear-$Ymon-$Ymday $Yhour:$Ymin:$Ysec";
 if ($insert > 0)
 	{
 	$stmtA = "INSERT IGNORE INTO twoday_call_log SELECT * from call_log where start_time > '$HHSQLdate' ON DUPLICATE KEY UPDATE end_time=VALUES(end_time),end_epoch=VALUES(end_epoch),length_in_sec=VALUES(length_in_sec),length_in_min=VALUES(length_in_min);";
-	if (!$T) 
+	if (!$T)
 		{
 		$affected_rows = $dbhA->do($stmtA);
 		if($DB){print "\n|$affected_rows records changed|$stmtA|\n";}
 		}
 
 	$stmtA = "INSERT IGNORE INTO twoday_vicidial_log SELECT * from vicidial_log where call_date > '$HHSQLdate' ON DUPLICATE KEY UPDATE end_epoch=VALUES(end_epoch),length_in_sec=VALUES(length_in_sec),status=VALUES(status),user=VALUES(user),comments=VALUES(comments),user_group=VALUES(user_group),term_reason=VALUES(term_reason),alt_dial=VALUES(alt_dial);";
-	if (!$T) 
+	if (!$T)
 		{
 		$affected_rows = $dbhA->do($stmtA);
 		if($DB){print "\n|$affected_rows records changed|$stmtA|\n";}
 		}
 
 	$stmtA = "INSERT IGNORE INTO twoday_vicidial_closer_log SELECT * from vicidial_closer_log where call_date > '$HHSQLdate' ON DUPLICATE KEY UPDATE list_id=VALUES(list_id),campaign_id=VALUES(campaign_id),end_epoch=VALUES(end_epoch),length_in_sec=VALUES(length_in_sec),status=VALUES(status),user=VALUES(user),comments=VALUES(comments),queue_seconds=VALUES(queue_seconds),user_group=VALUES(user_group),xfercallid=VALUES(xfercallid),term_reason=VALUES(term_reason),uniqueid=VALUES(uniqueid),agent_only=VALUES(agent_only);";
-	if (!$T) 
+	if (!$T)
 		{
 		$affected_rows = $dbhA->do($stmtA);
 		if($DB){print "\n|$affected_rows records changed|$stmtA|\n";}
 		}
 
 	$stmtA = "INSERT IGNORE INTO twoday_recording_log SELECT * from recording_log where start_time > '$HHSQLdate' ON DUPLICATE KEY UPDATE end_time=VALUES(end_time),end_epoch=VALUES(end_epoch),length_in_sec=VALUES(length_in_sec),length_in_min=VALUES(length_in_min),filename=VALUES(filename),location=VALUES(location),lead_id=VALUES(lead_id),user=VALUES(user),vicidial_id=VALUES(vicidial_id);";
-	if (!$T) 
+	if (!$T)
 		{
 		$affected_rows = $dbhA->do($stmtA);
 		if($DB){print "\n|$affected_rows records changed|$stmtA|\n";}
 		}
 
 	$stmtA = "INSERT IGNORE INTO twoday_vicidial_xfer_log SELECT * from vicidial_xfer_log where call_date > '$HHSQLdate' ON DUPLICATE KEY UPDATE list_id=VALUES(list_id),campaign_id=VALUES(campaign_id),call_date=VALUES(call_date),user=VALUES(user),closer=VALUES(closer);";
-	if (!$T) 
+	if (!$T)
 		{
 		$affected_rows = $dbhA->do($stmtA);
 		if($DB){print "\n|$affected_rows records changed|$stmtA|\n";}
 		}
 
 	$stmtA = "INSERT IGNORE INTO twoday_vicidial_agent_log SELECT * from vicidial_agent_log where event_time > '$HHSQLdate' ON DUPLICATE KEY UPDATE lead_id=VALUES(lead_id),campaign_id=VALUES(campaign_id),pause_epoch=VALUES(pause_epoch),pause_sec=VALUES(pause_sec),wait_epoch=VALUES(wait_epoch),wait_sec=VALUES(wait_sec),talk_epoch=VALUES(talk_epoch),talk_sec=VALUES(talk_sec),dispo_epoch=VALUES(dispo_epoch),dispo_sec=VALUES(dispo_sec),status=VALUES(status),user_group=VALUES(user_group),comments=VALUES(comments),sub_status=VALUES(sub_status);";
-	if (!$T) 
+	if (!$T)
 		{
 		$affected_rows = $dbhA->do($stmtA);
 		if($DB){print "\n|$affected_rows records changed|$stmtA|\n";}
@@ -212,42 +212,42 @@ if ($purge > 0)
 	{
 	##### PURGE RECORDS OLDER THAN 24 HOURS
 	$stmtA = "DELETE FROM twoday_call_log where start_time < '$YDSQLdate';";
-	if (!$T) 
+	if (!$T)
 		{
 		$affected_rows = $dbhA->do($stmtA);
 		if($DB){print "\n|$affected_rows records changed|$stmtA|\n";}
 		}
 
 	$stmtA = "DELETE FROM twoday_vicidial_log where call_date < '$YDSQLdate';";
-	if (!$T) 
+	if (!$T)
 		{
 		$affected_rows = $dbhA->do($stmtA);
 		if($DB){print "\n|$affected_rows records changed|$stmtA|\n";}
 		}
 
 	$stmtA = "DELETE FROM twoday_vicidial_closer_log where call_date < '$YDSQLdate';";
-	if (!$T) 
+	if (!$T)
 		{
 		$affected_rows = $dbhA->do($stmtA);
 		if($DB){print "\n|$affected_rows records changed|$stmtA|\n";}
 		}
 
 	$stmtA = "DELETE FROM twoday_recording_log where start_time < '$YDSQLdate';";
-	if (!$T) 
+	if (!$T)
 		{
 		$affected_rows = $dbhA->do($stmtA);
 		if($DB){print "\n|$affected_rows records changed|$stmtA|\n";}
 		}
 
 	$stmtA = "DELETE FROM twoday_vicidial_xfer_log where call_date < '$YDSQLdate';";
-	if (!$T) 
+	if (!$T)
 		{
 		$affected_rows = $dbhA->do($stmtA);
 		if($DB){print "\n|$affected_rows records changed|$stmtA|\n";}
 		}
 
 	$stmtA = "DELETE FROM twoday_vicidial_agent_log where event_time < '$YDSQLdate';";
-	if (!$T) 
+	if (!$T)
 		{
 		$affected_rows = $dbhA->do($stmtA);
 		if($DB){print "\n|$affected_rows records changed|$stmtA|\n";}
@@ -256,42 +256,42 @@ if ($purge > 0)
 
 	##### OPTIMIZE TABLES
 	$stmtA = "OPTIMIZE TABLE twoday_call_log;";
-	if (!$T) 
+	if (!$T)
 		{
 		$affected_rows = $dbhA->do($stmtA);
 		if($DB){print "\n|$affected_rows records changed|$stmtA|\n";}
 		}
 
 	$stmtA = "OPTIMIZE TABLE twoday_vicidial_log;";
-	if (!$T) 
+	if (!$T)
 		{
 		$affected_rows = $dbhA->do($stmtA);
 		if($DB){print "\n|$affected_rows records changed|$stmtA|\n";}
 		}
 
 	$stmtA = "OPTIMIZE TABLE twoday_vicidial_closer_log;";
-	if (!$T) 
+	if (!$T)
 		{
 		$affected_rows = $dbhA->do($stmtA);
 		if($DB){print "\n|$affected_rows records changed|$stmtA|\n";}
 		}
 
 	$stmtA = "OPTIMIZE TABLE twoday_recording_log;";
-	if (!$T) 
+	if (!$T)
 		{
 		$affected_rows = $dbhA->do($stmtA);
 		if($DB){print "\n|$affected_rows records changed|$stmtA|\n";}
 		}
 
 	$stmtA = "OPTIMIZE TABLE twoday_vicidial_xfer_log;";
-	if (!$T) 
+	if (!$T)
 		{
 		$affected_rows = $dbhA->do($stmtA);
 		if($DB){print "\n|$affected_rows records changed|$stmtA|\n";}
 		}
 
 	$stmtA = "OPTIMIZE TABLE twoday_vicidial_agent_log;";
-	if (!$T) 
+	if (!$T)
 		{
 		$affected_rows = $dbhA->do($stmtA);
 		if($DB){print "\n|$affected_rows records changed|$stmtA|\n";}

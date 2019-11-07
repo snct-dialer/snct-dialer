@@ -43,7 +43,7 @@
 use Fcntl qw(:flock);
 # print "start of program $0\n";
 unless (flock(DATA, LOCK_EX|LOCK_NB)) {
-    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log'
     or print "Can't open the fscking file: $!";
     $datestring = localtime();
     print $fh "[$datestring] $0 is already running. Exiting.\n";
@@ -54,7 +54,7 @@ use Time::Local;
 
 $secX = time();
 $time = $secX;
-	
+
 $MT[0]='';
 $q=0;
 $forcedate='';
@@ -224,7 +224,7 @@ if ($min < 10) {$min = "0$min";}
 if ($sec < 10) {$sec = "0$sec";}
 $dsec = ( ( ($hour * 3600) + ($min * 60) ) + $sec );
 
-use DBI;	  
+use DBI;
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
@@ -266,7 +266,7 @@ $sthA->finish();
 $LOCAL_GMT_OFF = $SERVER_GMT;
 $LOCAL_GMT_OFF_STD = $SERVER_GMT;
 
-if ($isdst) {$LOCAL_GMT_OFF++;} 
+if ($isdst) {$LOCAL_GMT_OFF++;}
 if ($DB) {print "SEED TIME  $time      :   $year-$mon-$mday $hour:$min:$sec  LOCAL GMT OFFSET NOW: $LOCAL_GMT_OFF\n";}
 
 $CAAC_codes_list='';
@@ -296,7 +296,7 @@ if ($use_list_settings > 0)
 	chop($CAAC_codes_list);
 	if ($rec_countCAAC > 0)
 		{$CAAC_codes_list = "and list_id IN($CAAC_codes_list)";}
-	else 
+	else
 		{$rec_countCAAC=-1;}
 	if ($DB) {print " - COUNTRY_AND_AREA_CODE lists found: $rec_countCAAC     $CAAC_codes_list\n";}
 
@@ -317,7 +317,7 @@ if ($use_list_settings > 0)
 	chop($POST_codes_list);
 	if ($rec_countPOST > 0)
 		{$POST_codes_list = "and list_id IN($POST_codes_list)";}
-	else 
+	else
 		{$rec_countPOST=-1;}
 	if ($DB) {print " - POSTAL_CODE lists found: $rec_countPOST     $POST_codes_list\n";}
 
@@ -338,7 +338,7 @@ if ($use_list_settings > 0)
 	chop($NPFX_codes_list);
 	if ($rec_countNPFX > 0)
 		{$NPFX_codes_list = "and list_id IN($NPFX_codes_list)";}
-	else 
+	else
 		{$rec_countNPFX=-1;}
 	if ($DB) {print " - NANPA_PREFIX lists found: $rec_countNPFX     $NPFX_codes_list\n";}
 
@@ -359,14 +359,14 @@ if ($use_list_settings > 0)
 	chop($OWTZ_codes_list);
 	if ($rec_countOWTZ > 0)
 		{$OWTZ_codes_list = "and list_id IN($OWTZ_codes_list)";}
-	else 
+	else
 		{$rec_countOWTZ=-1;}
 	if ($DB) {print " - OWNER_TIME_ZONE_CODE lists found: $rec_countOWTZ     $OWTZ_codes_list\n";}
 	}
 
 if (length($singlelistid)> 0) {$listSQL = "where list_id='$singlelistid'";  $XlistSQL=" and list_id='$singlelistid' ";}
 else {$listSQL = '';  $XlistSQL='';}
-if (length($omitlistidSQL)> 0) 
+if (length($omitlistidSQL)> 0)
 	{
 	$XomitlistidSQL=" and list_id NOT IN('$omitlistidSQL')";
 	if (length($singlelistid)> 0)
@@ -389,7 +389,7 @@ $phone_codes_list='';
 while ($sthArows > $rec_countY)
 	{
 	@aryA = $sthA->fetchrow_array;
-	 
+
 	$phone_codes[$rec_countY] = $aryA[0];
 	$phone_codes_ORIG[$rec_countY] = $aryA[0];
 	$phone_codes[$rec_countY] =~ s/011|0011|^00| |\t|\r|\n//gi; # need ^ to not remove 00 from country code 500, but 00 from 0046
@@ -532,7 +532,7 @@ foreach (@phone_codes)
 
 			$stmtA = "select count(*) from vicidial_list where phone_code='$match_code_ORIG' $AC_match $XlistSQL $XomitlistidSQL;";
 			if($DBX){print STDERR "\n|$stmtA|\n";}
-			
+
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			$sthArows=$sthA->rows;
@@ -540,7 +540,7 @@ foreach (@phone_codes)
 			@aryA = $sthA->fetchrow_array;
 			$rec_countZ = $aryA[0];
 			$sthA->finish();
-			
+
 			if (!$rec_countZ)
 				{
 			#	if ($DB) {print "   IGNORING: $codefile[$e]\n";}
@@ -559,7 +559,7 @@ foreach (@phone_codes)
 				if ($min < 10) {$min = "0$min";}
 				if ($sec < 10) {$sec = "0$sec";}
 				$dsec = ( ( ($hour * 3600) + ($min * 60) ) + $sec );
-				
+
 				$AC_processed=0;
 
 				if ( (!$AC_processed) && ($area_GMT_method =~ /SSM-FSN/) )
@@ -652,7 +652,7 @@ foreach (@phone_codes)
 					@aryA = $sthA->fetchrow_array;
 					$rec_countW = $aryA[0];
    	       			$sthA->finish();
-						
+
 					if (!$rec_countW)
 						{
 						if ($DBX) {print "   ALL GMT ALREADY CORRECT FOR : $match_code_ORIG  $area_code   $area_GMT\n";}
@@ -662,7 +662,7 @@ foreach (@phone_codes)
 						{
 						$stmtA = "update vicidial_list set gmt_offset_now='$area_GMT',modify_date=modify_date where phone_code='$match_code_ORIG' $AC_match and (gmt_offset_now != '$area_GMT' or gmt_offset_now IS NULL) $XlistSQL $XomitlistidSQL;";
 						if($DBX){print STDERR "\n|$stmtA|\n";}
-						if (!$T) 
+						if (!$T)
 							{
 							$affected_rows = $dbhA->do($stmtA);
 							$area_updated_count = ($area_updated_count + $affected_rows);
@@ -674,7 +674,7 @@ foreach (@phone_codes)
 						}
 					}
 				}
-			
+
 			$ep++;
 			}
 		else
@@ -710,10 +710,10 @@ foreach (@phone_codes)
 				$area_GMT_method = $m[4];
 				$AC_match = " and postal_code LIKE \"$postal_code%\"";
 				if ($DBX) {print "PROCESSING THIS LINE: $postalfile[$e]\n";}
-				
+
 				$stmtA = "select count(*) from vicidial_list where phone_code='$match_code_ORIG' $AC_match $XlistSQL $XomitlistidSQL $POST_codes_list;";
 				if($DBX){print STDERR "\n|$stmtA|\n";}
-				
+
 				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 				$sthArows=$sthA->rows;
@@ -721,7 +721,7 @@ foreach (@phone_codes)
 				@aryA = $sthA->fetchrow_array;
 				$rec_countZ = $aryA[0];
 				$sthA->finish();
-				
+
 				if (!$rec_countZ)
 					{
 			#		if ($DB) {print "   IGNORING: $postalfile[$e]\n";}
@@ -740,7 +740,7 @@ foreach (@phone_codes)
 					if ($min < 10) {$min = "0$min";}
 					if ($sec < 10) {$sec = "0$sec";}
 					$dsec = ( ( ($hour * 3600) + ($min * 60) ) + $sec );
-					
+
 					$AC_processed=0;
 
 					if ( (!$AC_processed) && ($area_GMT_method =~ /SSM-FSN/) )
@@ -834,7 +834,7 @@ foreach (@phone_codes)
 						@aryA = $sthA->fetchrow_array;
 						$rec_countW = $aryA[0];
 						$sthA->finish();
-							
+
 						if (!$rec_countW)
 							{
 							if ($DBX) {print "   ALL GMT ALREADY CORRECT FOR : $match_code_ORIG  $postal_code   $area_GMT\n";}
@@ -844,7 +844,7 @@ foreach (@phone_codes)
 							{
 							$stmtA = "update vicidial_list set gmt_offset_now='$area_GMT',modify_date=modify_date where phone_code='$match_code_ORIG' $AC_match and (gmt_offset_now != '$area_GMT' or gmt_offset_now IS NULL) $XlistSQL $XomitlistidSQL $POST_codes_list;";
 							if($DBX){print STDERR "\n|$stmtA|\n";}
-							if (!$T) 
+							if (!$T)
 								{
 								$affected_rows = $dbhA->do($stmtA);
 								$postal_updated_count = ($postal_updated_count + $affected_rows);
@@ -856,7 +856,7 @@ foreach (@phone_codes)
 							}
 						}
 					}
-				
+
 				$ep++;
 				}
 			else
@@ -892,10 +892,10 @@ foreach (@phone_codes)
 			$area_GMT_method = $m[3];
 			$AC_match = " and phone_number LIKE \"$nanpa_areacode$nanpa_prefix%\"";
 			if ($DBX) {print "PROCESSING THIS LINE: $nanpafile[$e]\n";}
-			
+
 			$stmtA = "select count(*) from vicidial_list where phone_code='$match_code_ORIG' $AC_match $XlistSQL $XomitlistidSQL $NPFX_codes_list;";
 			if($DBX){print STDERR "\n|$stmtA|\n";}
-			
+
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			$sthArows=$sthA->rows;
@@ -903,7 +903,7 @@ foreach (@phone_codes)
 			@aryA = $sthA->fetchrow_array;
 			$rec_countZ = $aryA[0];
 			$sthA->finish();
-			
+
 			if (!$rec_countZ)
 				{
 		#		if ($DB) {print "   IGNORING: $nanpafile[$e]\n";}
@@ -922,7 +922,7 @@ foreach (@phone_codes)
 				if ($min < 10) {$min = "0$min";}
 				if ($sec < 10) {$sec = "0$sec";}
 				$dsec = ( ( ($hour * 3600) + ($min * 60) ) + $sec );
-				
+
 				$AC_processed=0;
 
 				if ( (!$AC_processed) && ($area_GMT_method =~ /SSM-FSN/) )
@@ -1016,7 +1016,7 @@ foreach (@phone_codes)
 					@aryA = $sthA->fetchrow_array;
 					$rec_countW = $aryA[0];
 					$sthA->finish();
-						
+
 					if (!$rec_countW)
 						{
 						if ($DBX) {print "   ALL GMT ALREADY CORRECT FOR : $match_code_ORIG  $nanpa_code   $area_GMT\n";}
@@ -1026,7 +1026,7 @@ foreach (@phone_codes)
 						{
 						$stmtA = "update vicidial_list set gmt_offset_now='$area_GMT',modify_date=modify_date where phone_code='$match_code_ORIG' $AC_match and (gmt_offset_now != '$area_GMT' or gmt_offset_now IS NULL) $XlistSQL $XomitlistidSQL $NPFX_codes_list;";
 						if($DBX){print STDERR "\n|$stmtA|\n";}
-						if (!$T) 
+						if (!$T)
 							{
 							$affected_rows = $dbhA->do($stmtA);
 							$nanpa_updated_count = ($nanpa_updated_count + $affected_rows);
@@ -1038,7 +1038,7 @@ foreach (@phone_codes)
 						}
 					}
 				}
-			
+
 			$ep++;
 			$e++;
 			}
@@ -1074,7 +1074,7 @@ foreach (@phone_codes)
 			$sthA->finish();
 
 			if ($DBX) {print "PROCESSING THIS TIME ZONE CODE: $tz_codes[$e]|$tz_country[$e]|$area_GMT|$area_GMT_method\n";}
-			
+
 			$stmtA = "select count(*) from vicidial_list where owner='$tz_codes[$e]' and phone_code='$tz_country[$e]' $XlistSQL $XomitlistidSQL $OWTZ_codes_list;";
 			if($DBX){print STDERR "\n|$stmtA|\n";}
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -1084,7 +1084,7 @@ foreach (@phone_codes)
 			@aryA = $sthA->fetchrow_array;
 			$rec_countZ = $aryA[0];
 			$sthA->finish();
-			
+
 			if (!$rec_countZ)
 				{
 		#		if ($DB) {print "   IGNORING: $tzcodefile[$e]\n";}
@@ -1103,7 +1103,7 @@ foreach (@phone_codes)
 				if ($min < 10) {$min = "0$min";}
 				if ($sec < 10) {$sec = "0$sec";}
 				$dsec = ( ( ($hour * 3600) + ($min * 60) ) + $sec );
-				
+
 				$AC_processed=0;
 
 				if ( (!$AC_processed) && ($area_GMT_method =~ /SSM-FSN/) )
@@ -1197,7 +1197,7 @@ foreach (@phone_codes)
 					@aryA = $sthA->fetchrow_array;
 					$rec_countW = $aryA[0];
 					$sthA->finish();
-						
+
 					if (!$rec_countW)
 						{
 						if ($DBX) {print "   ALL GMT ALREADY CORRECT FOR : $tz_codes[$e]  $tz_country[$e]   $area_GMT\n";}
@@ -1207,7 +1207,7 @@ foreach (@phone_codes)
 						{
 						$stmtA = "UPDATE vicidial_list set gmt_offset_now='$area_GMT',modify_date=modify_date where owner='$tz_codes[$e]' and phone_code='$tz_country[$e]' and (gmt_offset_now != '$area_GMT' or gmt_offset_now IS NULL) $XlistSQL $XomitlistidSQL $OWTZ_codes_list;";
 						if($DBX){print STDERR "\n|$stmtA|\n";}
-						if (!$T) 
+						if (!$T)
 							{
 							$affected_rows = $dbhA->do($stmtA);
 							$tzcode_updated_count = ($tzcode_updated_count + $affected_rows);
@@ -1219,7 +1219,7 @@ foreach (@phone_codes)
 						}
 					}
 				}
-			
+
 			$ep++;
 			$e++;
 			}
@@ -1254,7 +1254,7 @@ sub USACAN_dstcalc {
 #**********************************************************************
 # SSM-FSN
 #   USA and CANADA
-#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 #       Standard time is in effect.
 #     Based on Second Sunday March to First Sunday November at 2 am.
 #     INPUTS:
@@ -1265,10 +1265,10 @@ sub USACAN_dstcalc {
 #     OPTIONAL INPUT:
 #       timezone        INTEGER       hour difference UTC - local standard time
 #                                      (DEFAULT is blank)
-#                                     make calculations based on UTC time, 
+#                                     make calculations based on UTC time,
 #                                     which means shift at 10:00 UTC in April
 #                                     and 9:00 UTC in October
-#     OUTPUT: 
+#     OUTPUT:
 #                       INTEGER       1 = DST, 0 = not DST
 #
 # S  M  T  W  T  F  S
@@ -1277,14 +1277,14 @@ sub USACAN_dstcalc {
 #15 16 17 18 19 20 21
 #22 23 24 25 26 27 28
 #29 30 31
-# 
+#
 # S  M  T  W  T  F  S
 #    1  2  3  4  5  6
 # 7  8  9 10 11 12 13
 #14 15 16 17 18 19 20
 #21 22 23 24 25 26 27
 #28 29 30 31
-# 
+#
 #**********************************************************************
 
 	$USACAN_DST=0;
@@ -1349,11 +1349,11 @@ sub NA_dstcalc {
 #**********************************************************************
 # FSA-LSO
 #   Mexico and parts of North America
-#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 #       Standard time is in effect.
 #     Based on first Sunday in April and last Sunday in October at 2 am.
 #**********************************************************************
-    
+
 	$NA_DST=0;
 	$mm = $mon;
 	$dd = $mday;
@@ -1416,11 +1416,11 @@ sub GBR_dstcalc {
 #**********************************************************************
 # LSM-LSO
 #    Europe
-#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 #       Standard time is in effect.
 #     Based on last Sunday in March and last Sunday in October at 1 am.
 #**********************************************************************
-    
+
 	$GBR_DST=0;
 	$mm = $mon;
 	$dd = $mday;
@@ -1484,11 +1484,11 @@ sub GBR_dstcalc {
 sub AUS_dstcalc {
 #**********************************************************************
 # LSO-LSM - Australia, for 2008-9 Western Australia only (stopped in 2009)
-#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 #       Standard time is in effect.
 #     Based on last Sunday in October and last Sunday in March at 1 am.
 #**********************************************************************
-    
+
 	$AUS_DST=0;
 	$mm = $mon;
 	$dd = $mday;
@@ -1554,11 +1554,11 @@ sub AUST_dstcalc {
 #**********************************************************************
 # FSO-LSM
 #   TASMANIA ONLY (stopped in 2008)
-#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 #       Standard time is in effect.
 #     Based on first Sunday in October and last Sunday in March at 1 am.
 #**********************************************************************
-    
+
 	$AUST_DST=0;
 	$mm = $mon;
 	$dd = $mday;
@@ -1622,11 +1622,11 @@ sub AUSE_dstcalc {
 #**********************************************************************
 # FSO-FSA
 #   2008+ AUSTRALIA ONLY (country code 61)
-#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 #       Standard time is in effect.
 #     Based on first Sunday in October and first Sunday in April at 1 am.
 #**********************************************************************
-    
+
 	$AUSE_DST=0;
 	$mm = $mon;
 	$dd = $mday;
@@ -1687,11 +1687,11 @@ sub AUSE_dstcalc {
 sub NZL_dstcalc {
 #**********************************************************************
 # FSO-TSM (stopped in 2007)
-#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 #       Standard time is in effect.
 #     Based on first Sunday in October and third Sunday in March at 1 am.
 #**********************************************************************
-    
+
 	$NZL_DST=0;
 	$mm = $mon;
 	$dd = $mday;
@@ -1754,11 +1754,11 @@ sub NZLN_dstcalc {
 #**********************************************************************
 # LSS-FSA
 #   2007+ NEW ZEALAND (country code 64)
-#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 #       Standard time is in effect.
 #     Based on last Sunday in September and first Sunday in April at 1 am.
 #**********************************************************************
-    
+
 	$NZLN_DST=0;
 	$mm = $mon;
 	$dd = $mday;
@@ -1823,11 +1823,11 @@ sub BZL_dstcalc {
 #**********************************************************************
 # TSO-LSF
 #   BRAZIL
-#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 #       Standard time is in effect. Brazil
 #     Based on Third Sunday October to Last Sunday February at 1 am.
 #**********************************************************************
-    
+
 	$BZL_DST=0;
 	$mm = $mon;
 	$dd = $mday;

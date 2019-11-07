@@ -274,7 +274,7 @@ $phone_list = '|';
 
 if (!$VARDB_port) {$VARDB_port='3306';}
 
-use DBI;	  
+use DBI;
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
@@ -329,7 +329,7 @@ if ($ftp_pull > 0)
 			@FILEDETAILS = split(/ \d\d:\d\d /, $FILES[$i]);
 			$FILES[$i] = "$FILEDETAILS[1]";
 			$FILES[$i] =~ s/ *$//gi;
-			
+
 			$passed_file_filter=1;
 			if (length($file_prefix_filter)>0)
 				{
@@ -542,7 +542,7 @@ foreach(@FILES)
 				$phone_found=0;
 
 
-				if (length($m[11]) > 9) 
+				if (length($m[11]) > 9)
 					{
 					$phone_number =			$m[11];
 					$rank =					'1';
@@ -552,7 +552,7 @@ foreach(@FILES)
 					$b++;   $phone_found++;
 					if ($DBX) {print "     $b|$phone_found -   $a|$phone_number|$city|$rank|$owner|$vendor_lead_code|$source_id\n";}
 					}
-				if (length($m[12]) > 9) 
+				if (length($m[12]) > 9)
 					{
 					$phone_number =			$m[12];
 					$rank =					'2';
@@ -562,7 +562,7 @@ foreach(@FILES)
 					$b++;   $phone_found++;
 					if ($DBX) {print "     $b|$phone_found -   $a|$phone_number|$city|$rank|$owner|$vendor_lead_code|$source_id\n";}
 					}
-				if (length($m[13]) > 9) 
+				if (length($m[13]) > 9)
 					{
 					$phone_number =			$m[13];
 					$rank =					'3';
@@ -572,7 +572,7 @@ foreach(@FILES)
 					$b++;   $phone_found++;
 					if ($DBX) {print "     $b|$phone_found -   $a|$phone_number|$city|$rank|$owner|$vendor_lead_code|$source_id\n";}
 					}
-				if (length($m[14]) > 9) 
+				if (length($m[14]) > 9)
 					{
 					$phone_number =			$m[14];
 					$rank =					'4';
@@ -582,7 +582,7 @@ foreach(@FILES)
 					$b++;   $phone_found++;
 					if ($DBX) {print "     $b|$phone_found -   $a|$phone_number|$city|$rank|$owner|$vendor_lead_code|$source_id\n";}
 					}
-				if (length($m[15]) > 9) 
+				if (length($m[15]) > 9)
 					{
 					$phone_number =			$m[15];
 					$rank =					'5';
@@ -592,7 +592,7 @@ foreach(@FILES)
 					$b++;   $phone_found++;
 					if ($DBX) {print "     $b|$phone_found -   $a|$phone_number|$city|$rank|$owner|$vendor_lead_code|$source_id\n";}
 					}
-				if (length($m[16]) > 9) 
+				if (length($m[16]) > 9)
 					{
 					$phone_number =			$m[16];
 					$rank =					'6';
@@ -602,7 +602,7 @@ foreach(@FILES)
 					$b++;   $phone_found++;
 					if ($DBX) {print "     $b|$phone_found -   $a|$phone_number|$city|$rank|$owner|$vendor_lead_code|$source_id\n";}
 					}
-				if (length($m[17]) > 9) 
+				if (length($m[17]) > 9)
 					{
 					$phone_number =			$m[17];
 					$rank =					'7';
@@ -612,7 +612,7 @@ foreach(@FILES)
 					$b++;   $phone_found++;
 					if ($DBX) {print "     $b|$phone_found -   $a|$phone_number|$city|$rank|$owner|$vendor_lead_code|$source_id\n";}
 					}
-				if (length($m[18]) > 9) 
+				if (length($m[18]) > 9)
 					{
 					$phone_number =			$m[18];
 					$rank =					'8';
@@ -622,7 +622,7 @@ foreach(@FILES)
 					$b++;   $phone_found++;
 					if ($DBX) {print "     $b|$phone_found -   $a|$phone_number|$city|$rank|$owner|$vendor_lead_code|$source_id\n";}
 					}
-				if (length($m[19]) > 9) 
+				if (length($m[19]) > 9)
 					{
 					$phone_number =			$m[19];
 					$rank =					'9';
@@ -632,7 +632,7 @@ foreach(@FILES)
 					$b++;   $phone_found++;
 					if ($DBX) {print "     $b|$phone_found -   $a|$phone_number|$city|$rank|$owner|$vendor_lead_code|$source_id\n";}
 					}
-				if (length($m[20]) > 9) 
+				if (length($m[20]) > 9)
 					{
 					$phone_number =			$m[20];
 					$rank =					'10';
@@ -642,7 +642,7 @@ foreach(@FILES)
 					$b++;   $phone_found++;
 					if ($DBX) {print "     $b|$phone_found -   $a|$phone_number|$city|$rank|$owner|$vendor_lead_code|$source_id\n";}
 					}
-				if (length($m[21]) > 9) 
+				if (length($m[21]) > 9)
 					{
 					$phone_number =			$m[21];
 					$rank =					'11';
@@ -652,7 +652,7 @@ foreach(@FILES)
 					$b++;   $phone_found++;
 					if ($DBX) {print "     $b|$phone_found -   $a|$phone_number|$city|$rank|$owner|$vendor_lead_code|$source_id\n";}
 					}
-				if (length($m[22]) > 9) 
+				if (length($m[22]) > 9)
 					{
 					$phone_number =			$m[22];
 					$rank =					'12';
@@ -662,7 +662,7 @@ foreach(@FILES)
 					$b++;   $phone_found++;
 					if ($DBX) {print "     $b|$phone_found -   $a|$phone_number|$city|$rank|$owner|$vendor_lead_code|$source_id\n";}
 					}
-				if (length($m[23]) > 9) 
+				if (length($m[23]) > 9)
 					{
 					$phone_number =			$m[23];
 					$rank =					'13';
@@ -672,7 +672,7 @@ foreach(@FILES)
 					$b++;   $phone_found++;
 					if ($DBX) {print "     $b|$phone_found -   $a|$phone_number|$city|$rank|$owner|$vendor_lead_code|$source_id\n";}
 					}
-				if (length($m[24]) > 9) 
+				if (length($m[24]) > 9)
 					{
 					$phone_number =			$m[24];
 					$rank =					'14';
@@ -683,7 +683,7 @@ foreach(@FILES)
 					if ($DBX) {print "     $b|$phone_found -   $a|$phone_number|$city|$rank|$owner|$vendor_lead_code|$source_id\n";}
 					}
 
-				if ($phone_found < 1) 
+				if ($phone_found < 1)
 					{
 					if ($DB) {print "No-Phone entry: $a|$vendor_lead_code|$source_id\n";}
 					$c++;
@@ -776,7 +776,7 @@ foreach(@FILES)
 				$multi_alt_phones =		'';
 				$phone_found=0;
 
-				if (length($m[11]) > 9) 
+				if (length($m[11]) > 9)
 					{
 					$phone_number =			$m[11];
 					$city =					$m[12];	# phoneid
@@ -787,7 +787,7 @@ foreach(@FILES)
 					$b++;   $phone_found++;
 					if ($DBX) {print "     $b|$phone_found -   $a|$phone_number|$city|$rank|$owner|$vendor_lead_code|$source_id\n";}
 					}
-				if (length($m[13]) > 9) 
+				if (length($m[13]) > 9)
 					{
 					$phone_number =			$m[13];
 					$city =					$m[14];	# phoneid
@@ -798,7 +798,7 @@ foreach(@FILES)
 					$b++;   $phone_found++;
 					if ($DBX) {print "     $b|$phone_found -   $a|$phone_number|$city|$rank|$owner|$vendor_lead_code|$source_id\n";}
 					}
-				if (length($m[15]) > 9) 
+				if (length($m[15]) > 9)
 					{
 					$phone_number =			$m[15];
 					$city =					$m[16];	# phoneid
@@ -809,7 +809,7 @@ foreach(@FILES)
 					$b++;   $phone_found++;
 					if ($DBX) {print "     $b|$phone_found -   $a|$phone_number|$city|$rank|$owner|$vendor_lead_code|$source_id\n";}
 					}
-				if (length($m[17]) > 9) 
+				if (length($m[17]) > 9)
 					{
 					$phone_number =			$m[17];
 					$city =					$m[18];	# phoneid
@@ -820,7 +820,7 @@ foreach(@FILES)
 					$b++;   $phone_found++;
 					if ($DBX) {print "     $b|$phone_found -   $a|$phone_number|$city|$rank|$owner|$vendor_lead_code|$source_id\n";}
 					}
-				if (length($m[19]) > 9) 
+				if (length($m[19]) > 9)
 					{
 					$phone_number =			$m[19];
 					$city =					$m[20];	# phoneid
@@ -831,7 +831,7 @@ foreach(@FILES)
 					$b++;   $phone_found++;
 					if ($DBX) {print "     $b|$phone_found -   $a|$phone_number|$city|$rank|$owner|$vendor_lead_code|$source_id\n";}
 					}
-				if (length($m[21]) > 9) 
+				if (length($m[21]) > 9)
 					{
 					$phone_number =			$m[21];
 					$city =					$m[22];	# phoneid
@@ -842,7 +842,7 @@ foreach(@FILES)
 					$b++;   $phone_found++;
 					if ($DBX) {print "     $b|$phone_found -   $a|$phone_number|$city|$rank|$owner|$vendor_lead_code|$source_id\n";}
 					}
-				if (length($m[23]) > 9) 
+				if (length($m[23]) > 9)
 					{
 					$phone_number =			$m[23];
 					$city =					$m[24];	# phoneid
@@ -853,7 +853,7 @@ foreach(@FILES)
 					$b++;   $phone_found++;
 					if ($DBX) {print "     $b|$phone_found -   $a|$phone_number|$city|$rank|$owner|$vendor_lead_code|$source_id\n";}
 					}
-				if (length($m[25]) > 9) 
+				if (length($m[25]) > 9)
 					{
 					$phone_number =			$m[25];
 					$city =					$m[26];	# phoneid
@@ -864,7 +864,7 @@ foreach(@FILES)
 					$b++;   $phone_found++;
 					if ($DBX) {print "     $b|$phone_found -   $a|$phone_number|$city|$rank|$owner|$vendor_lead_code|$source_id\n";}
 					}
-				if (length($m[30]) > 9) 
+				if (length($m[30]) > 9)
 					{
 					$phone_number =			$m[30];
 					$city =					$m[31];	# phoneid
@@ -875,7 +875,7 @@ foreach(@FILES)
 					$b++;   $phone_found++;
 					if ($DBX) {print "     $b|$phone_found -   $a|$phone_number|$city|$rank|$owner|$vendor_lead_code|$source_id\n";}
 					}
-				if (length($m[32]) > 9) 
+				if (length($m[32]) > 9)
 					{
 					$phone_number =			$m[32];
 					$city =					$m[33];	# phoneid
@@ -886,7 +886,7 @@ foreach(@FILES)
 					$b++;   $phone_found++;
 					if ($DBX) {print "     $b|$phone_found -   $a|$phone_number|$city|$rank|$owner|$vendor_lead_code|$source_id\n";}
 					}
-				if (length($m[34]) > 9) 
+				if (length($m[34]) > 9)
 					{
 					$phone_number =			$m[34];
 					$city =					$m[35];	# phoneid
@@ -898,7 +898,7 @@ foreach(@FILES)
 					if ($DBX) {print "     $b|$phone_found -   $a|$phone_number|$city|$rank|$owner|$vendor_lead_code|$source_id\n";}
 					}
 
-				if ($phone_found < 1) 
+				if ($phone_found < 1)
 					{
 					if ($DB) {print "No-Phone entry: $a|$vendor_lead_code|$source_id\n";}
 					$c++;
@@ -989,7 +989,7 @@ foreach(@FILES)
 				$called_count =			'0';
 				$status =				'NEW';
 				$insert_date =			$pulldate0;
-				$rank =					'';			
+				$rank =					'';
 				$owner =				'';
 				$alt_phone =			"$m[26] - $m[28]";	# number of times worked AND old status code
 				$phone_number =			$m[3];
@@ -1107,7 +1107,7 @@ foreach(@FILES)
 					if ($DBX) {print "     $b|$phone_found -   $a|$phone_number|$city|$rank|$owner|$security_phrase|$vendor_lead_code|$source_id\n";}
 					}
 
-				if ($phone_found < 1) 
+				if ($phone_found < 1)
 					{
 					if ($DB) {print "No-Phone entry: $a|$vendor_lead_code|$source_id\n";}
 					$c++;
@@ -1148,7 +1148,7 @@ foreach(@FILES)
 				$called_count =			$m[23];		$called_count =~ s/\D|\r|\n|\t//gi; if (length($called_count)<1) {$called_count=0;}
 				$status =				$m[24];		$status =~ s/ |\r|\n|\t//gi;  if (length($status)<1) {$status='NEW';}
 				$insert_date =			$m[25];	$insert_date =~ s/\r|\n|\t|[a-zA-Z]//gi;  if (length($insert_date)<6) {$insert_date=$pulldate0;}
-					if ($insert_date =~ /\//) 
+					if ($insert_date =~ /\//)
 						{
 						@iD = split(/\//, $insert_date);
 						$iD[0] = sprintf("%02d", $iD[0]);
@@ -1192,7 +1192,7 @@ foreach(@FILES)
 
 			$a++;
 
-			if ($q < 1) 
+			if ($q < 1)
 				{
 				if ($a =~ /100$/i) {print STDERR "0     $a\r";}
 				if ($a =~ /200$/i) {print STDERR "+     $a\r";}
@@ -1280,7 +1280,7 @@ exit;
 
 ##### SUBROUTINES #####
 
-sub cid_state 
+sub cid_state
 	{
 	### look up the custom CID to use for this state
 	$stmtA = "select cid from vicidial_custom_cid where state='$state';";

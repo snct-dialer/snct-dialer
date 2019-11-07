@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # agi-VDADselective_CID_hangup.agi      version 2.6
-# 
+#
 # Will hangup a call if it is not within the specified area codes
 #
 # You need to put lines similar to those below in your extensions.conf file:
@@ -103,7 +103,7 @@ if (length($ARGV[0])>1)
 }
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 {
 	chomp;
 	last unless length($_);
@@ -163,7 +163,7 @@ if (length($areacode) > 10)
 $areacode =~ s/\d\d\d\d\d\d\d$//gi;
 
 
-foreach $i (sort keys %AGI) 
+foreach $i (sort keys %AGI)
 {
 	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
 }

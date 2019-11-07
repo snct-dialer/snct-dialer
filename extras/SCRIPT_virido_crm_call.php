@@ -7,7 +7,7 @@
 #
 # Copyright (C) 2013  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
-# 
+#
 # CHANGES:
 # 120223-1156 - First Build
 # 130328-0014 - Converted ereg to preg functions

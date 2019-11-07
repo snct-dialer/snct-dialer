@@ -1,6 +1,6 @@
 <?php
 # admin_soundboard.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # this screen manages the optional soundboard tables in ViciDial
@@ -251,13 +251,13 @@ if ($action != "HELP")
 <link rel="stylesheet" href="calendar.css">
 
 <script language="Javascript">
-function open_help(taskspan,taskhelp) 
+function open_help(taskspan,taskhelp)
 	{
 	document.getElementById("P_" + taskspan).innerHTML = " &nbsp; <a href=\"javascript:close_help('" + taskspan + "','" + taskhelp + "');\">help-</a><BR> &nbsp; ";
 	document.getElementById(taskspan).innerHTML = "<B>" + taskhelp + "</B>";
 	document.getElementById(taskspan).style.background = "#FFFF99";
 	}
-function close_help(taskspan,taskhelp) 
+function close_help(taskspan,taskhelp)
 	{
 	document.getElementById("P_" + taskspan).innerHTML = "";
 	document.getElementById(taskspan).innerHTML = " &nbsp; <a href=\"javascript:open_help('" + taskspan + "','" + taskhelp + "');\">help+</a>";
@@ -278,7 +278,7 @@ if ( ($SSadmin_modify_refresh > 1) and (preg_match("/^3/",$ADD)) )
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
 
 <title><?php echo _QXZ("ADMINISTRATION: Audio Soundboards"); ?>
-<?php 
+<?php
 
 ################################################################################
 ##### BEGIN help section
@@ -306,7 +306,7 @@ if ($action == "HELP")
 	<A NAME="soundboard-avatar_notes">
 	<BR>
 	<B><?php echo _QXZ("Soundboard Notes"); ?> -</B> <?php echo _QXZ("For administrative notes only, not displayed to agents."); ?>
-	
+
 	<BR>
 	<A NAME="soundboard-avatar_api_user">
 	<BR>
@@ -478,7 +478,7 @@ if ( (!preg_match('/\-\-ALL\-\-/i',$LOGadmin_viewable_groups)) and (strlen($LOGa
 	$valLOGadmin_viewable_groupsSQL = "and val.user_group IN('---ALL---','$rawLOGadmin_viewable_groupsSQL')";
 	$vmLOGadmin_viewable_groupsSQL = "and vm.user_group IN('---ALL---','$rawLOGadmin_viewable_groupsSQL')";
 	}
-else 
+else
 	{$admin_viewable_groupsALL=1;}
 $regexLOGadmin_viewable_groups = " $LOGadmin_viewable_groups ";
 
@@ -490,7 +490,7 @@ if ($DB) {echo "$stmt\n";}
 $rslt=mysql_to_mysqli($stmt, $link);
 $UUgroups_to_print = mysqli_num_rows($rslt);
 $o=0;
-while ($UUgroups_to_print > $o) 
+while ($UUgroups_to_print > $o)
 	{
 	$rowx=mysqli_fetch_row($rslt);
 	$UUgroups_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -575,7 +575,7 @@ if ($ADD==162211111111)
 		$groups_list='';
 
 		$o=0;
-		while ($groups_to_print > $o) 
+		while ($groups_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$groups_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -802,7 +802,7 @@ if ($ADD==462111111111)
 						elseif (isset($_POST["$TYPEfilename"]))	{$new_button_type=$_POST["$TYPEfilename"];}
 					if (isset($_GET["$FONTfilename"]))			{$new_font_size=$_GET["$FONTfilename"];}
 						elseif (isset($_POST["$FONTfilename"]))	{$new_font_size=$_POST["$FONTfilename"];}
-	
+
 					if ($DB)
 						{
 						echo "update variable debug: ($avatarfiles[$o])\n";
@@ -1193,7 +1193,7 @@ if ($ADD==362111111111)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$scripts_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($scripts_to_print > $o) 
+		while ($scripts_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"admin.php?ADD=3111111&script_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -1213,7 +1213,7 @@ if ($ADD==362111111111)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$camps_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($camps_to_print > $o) 
+		while ($camps_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"admin.php?ADD=31&campaign_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -1231,7 +1231,7 @@ if ($ADD==362111111111)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$igs_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($igs_to_print > $o) 
+		while ($igs_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"admin.php?ADD=3111&group_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -1284,7 +1284,7 @@ if ($ADD==162000000000)
 	echo "<td align=center><font size=1 color=white><B>"._QXZ("MODIFY")."</B></td></tr>\n";
 
 	$o=0;
-	while ($soundboard_to_print > $o) 
+	while ($soundboard_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		$row[3]=preg_replace('/;|<|>/', '', $row[3]);
@@ -1292,7 +1292,7 @@ if ($ADD==162000000000)
 		if(strlen($row[3]) > 47) {$row[3] = "$row[3]...";}
 
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=362111111111&soundboard_id=$row[0]&DB=$DB'\"";} echo "><td><a href=\"$PHP_SELF?ADD=362111111111&soundboard_id=$row[0]&DB=$DB\"><font size=1 color=black>$row[0]</a></td>";
@@ -1368,7 +1368,7 @@ if ($ADD == "762000000000")
 			if (preg_match('/SOUNDBOARDS/i', $row[4])) {$record_link = "$PHP_SELF?ADD=362111111111&soundboard_id=$row[6]&DB=$DB";}
 
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='bgcolor="#'. $SSstd_row3_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row3_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row4_background .'"';}
 			echo "<tr $bgcolor><td><font size=1><a href=\"admin.php?ADD=730000000000000&stage=$row[0]&DB=$DB\">$row[0]</a></td>";

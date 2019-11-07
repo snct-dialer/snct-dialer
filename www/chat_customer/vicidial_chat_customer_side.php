@@ -4,8 +4,8 @@
 # Copyright (C) 2016  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # The main page of the customer chat interface.  This will display a form for the customer
-# to fill out to attempt to initiate a chat with an available agent in the in-group 
-# ("department") of their choice.  
+# to fill out to attempt to initiate a chat with an available agent in the in-group
+# ("department") of their choice.
 #
 # Builds:
 # 150902-2100 - First build
@@ -219,7 +219,7 @@ if ($stage == "join_chat") { # For people invited to an existing chat from an ag
 
 	if (!$first_name || !$last_name) {
 		$error_msg=_QXZ("Please enter your first and last name");
-	} else { 
+	} else {
 		$chat_member_name="$first_name $last_name";
 		$ip_address=$_SERVER['REMOTE_ADDR'];
 		$user=time().".".rand(10000,99999);
@@ -293,7 +293,7 @@ if ($stage == "join_chat") { # For people invited to an existing chat from an ag
 			if (mysqli_affected_rows($link)==0) {
 				$del_stmt="DELETE from vicidial_live_chats where chat_id='$chat_id'";
 				$del_rslt=mysql_to_mysqli($del_stmt, $link);
-				$error_msg=_QXZ("Chat started, failure to join"); 
+				$error_msg=_QXZ("Chat started, failure to join");
 				unset($chat_id);
 			} else {
 				# echo "$chat_id|$lead_id|$ins_stmt";
@@ -359,7 +359,7 @@ if ($stage == 'send_request') { # For people requesting a chat with an agent; co
 	if (!$error_msg) {
 		$ins_stmt="INSERT INTO vicidial_live_chats(status, chat_creator, group_id, lead_id, chat_start_time) VALUES('WAITING', 'NONE', '" . mysqli_real_escape_string($link, $group_id) . "', '" . mysqli_real_escape_string($link, $lead_id) . "', now())";
 		$ins_rslt=mysql_to_mysqli($ins_stmt, $link);
-		$chat_id=mysqli_insert_id($link);	
+		$chat_id=mysqli_insert_id($link);
 
 		# WEB LOGO
 		$chat_color_stmt="select web_logo from vicidial_inbound_groups vig, vicidial_screen_colors v where vig.group_id='$group_id' and vig.customer_chat_screen_colors=v.colors_id limit 1;";
@@ -374,13 +374,13 @@ if ($stage == 'send_request') { # For people requesting a chat with an agent; co
 				case "default_old";
 					$color_row["web_logo"]=".gif";
 					$filepath="vicidial";
-					break;			
+					break;
 			}
 			$web_logo=$color_row["web_logo"];
 		}
 		if (!preg_match("/\.(jpg|gif|png|bmp)$/", $web_logo)) {$web_logo.=".png";}
 
-		
+
 		if ($chat_id>0) {
 
 			$survey_stmt="select customer_chat_survey_link, customer_chat_survey_text from vicidial_inbound_groups where group_id='$group_id'";
@@ -402,7 +402,7 @@ if ($stage == 'send_request') { # For people requesting a chat with an agent; co
 			if (mysqli_affected_rows($link)==0) {
 				$del_stmt="DELETE from vicidial_live_chats where chat_id='$chat_id'";
 				$del_rslt=mysql_to_mysqli($del_stmt, $link);
-				$error_msg=_QXZ("Chat started, failure to join"); 
+				$error_msg=_QXZ("Chat started, failure to join");
 				unset($chat_id);
 			} else {
 				# echo "$chat_id|$lead_id|$ins_stmt";
@@ -456,22 +456,22 @@ function LeaveChat(chat_id, user, chat_member_name) {
 		{
 		var chat_member_name=document.getElementById('chat_member_name').value;
 		}
-	
+
 	var xmlhttp=false;
 	if (!xmlhttp && typeof XMLHttpRequest!='undefined')
 		{
 		xmlhttp = new XMLHttpRequest();
 		}
-	if (xmlhttp) 
-		{ 
+	if (xmlhttp)
+		{
 		chat_query = "&action=leave_chat&chat_id="+chat_id+"&group_id="+group_id+"&user="+user+"&chat_member_name="+chat_member_name+"&language="+language+"&available_agents="+available_agents+"&show_email="+show_email;
 		// alert(chat_query);
-		xmlhttp.open('POST', 'customer_chat_functions.php'); 
+		xmlhttp.open('POST', 'customer_chat_functions.php');
 		xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-		xmlhttp.send(chat_query); 
-		xmlhttp.onreadystatechange = function() 
-			{ 
-			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+		xmlhttp.send(chat_query);
+		xmlhttp.onreadystatechange = function()
+			{
+			if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 				{
 				document.getElementById('chat_message_console').innerHTML="<BR/><BR/><font class='chat_title'><a href='"+chat_url+"?group_id="+group_id+"&language="+language+"&available_agents="+available_agents+"&show_email="+show_email+"'><?php echo _QXZ("GO BACK TO CHAT FORM") ?></a></font>\n<?php echo $survey_str; ?>";
 				//if (chat_creator==user) {EndChat();}
@@ -498,15 +498,15 @@ function UpdateChatWindow() {
 			{
 			xmlhttp = new XMLHttpRequest();
 			}
-		if (xmlhttp) 
-			{ 
+		if (xmlhttp)
+			{
 			chat_query = "&chat_id="+chat_id+"&group_id="+group_id+"&user="+user+"&current_message_count="+current_message_count+"&language="+language+"&available_agents="+available_agents+"&show_email="+show_email+"&action=update_chat_window&keepalive=1";
-			xmlhttp.open('POST', 'customer_chat_functions.php'); 
+			xmlhttp.open('POST', 'customer_chat_functions.php');
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(chat_query); 
-			xmlhttp.onreadystatechange = function() 
-				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+			xmlhttp.send(chat_query);
+			xmlhttp.onreadystatechange = function()
+				{
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 					{
 					var chat_log_response = xmlhttp.responseText;
 					if (chat_log_response.match(/^Error/))
@@ -525,7 +525,7 @@ function UpdateChatWindow() {
 					document.getElementById('ChatDisplay').innerHTML=fullchatlog;
 					var current_message_field_update = document.getElementById('current_message_count');
 					if (current_message_field_update != null) {var current_message_count_update=current_message_field_update.value;}
-					if (current_message_count_update>current_message_count) 
+					if (current_message_count_update>current_message_count)
 						{
 						var myDiv = document.getElementById('ChatDisplay');
 						document.getElementById('ChatDisplay').scrollTop = document.getElementById('ChatDisplay').scrollHeight;
@@ -553,18 +553,18 @@ function CustomerSendMessage(chat_id, user, message, chat_member_name) {
 		{
 		xmlhttp = new XMLHttpRequest();
 		}
-	if (xmlhttp) 
-		{ 
+	if (xmlhttp)
+		{
 		chat_query = "&chat_message="+chat_message+"&chat_id="+chat_id+"&group_id="+group_id+"&chat_member_name="+chat_member_name+"&user="+user+"&language="+language+"&available_agents="+available_agents+"&show_email="+show_email+"&chat_level=0&action=send_message";
-		xmlhttp.open('POST', 'customer_chat_functions.php'); 
+		xmlhttp.open('POST', 'customer_chat_functions.php');
 		xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-		xmlhttp.send(chat_query); 
-		xmlhttp.onreadystatechange = function() 
-			{ 
-			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+		xmlhttp.send(chat_query);
+		xmlhttp.onreadystatechange = function()
+			{
+			if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 				{
 				var posting_response = xmlhttp.responseText;
-				if (posting_response) 
+				if (posting_response)
 					{
 					// alert(posting_response);
 					}
@@ -710,7 +710,7 @@ $chat_title= _QXZ("Request chat with agent"); # This can be modified for customi
 	<table width='100%' border='0'>
 	<tr>
 		<td class="chat_window" height='250' width='100%'>
-		
+
 		<table border='0' width='100%'>
 			<tr height='35'>
 				<td align='left' width='50%' valign='top'>
@@ -718,13 +718,13 @@ $chat_title= _QXZ("Request chat with agent"); # This can be modified for customi
 				</td>
 				<td align='right' width='50%' valign='top'>
 				<?php
-				if (file_exists("../$filepath/vicidial_admin_web_logo$web_logo")) 
+				if (file_exists("../$filepath/vicidial_admin_web_logo$web_logo"))
 					{
 					echo "<img class='small_logo' src='/$filepath/vicidial_admin_web_logo$web_logo'>\n";
 					}
 				else
 					{
-					if (file_exists("./images/vicidial_admin_web_logo$web_logo")) 
+					if (file_exists("./images/vicidial_admin_web_logo$web_logo"))
 						{
 						echo "<img class='small_logo' src='images/vicidial_admin_web_logo$web_logo'>\n";
 						}
@@ -737,8 +737,8 @@ $chat_title= _QXZ("Request chat with agent"); # This can be modified for customi
 		<span id='ChatDisplay' name='ChatDisplay' style="position:relative;display:block;width:100%;height:215px;overflow-y:auto;overflow-x:none;z-index:0">
 		</span>
 <!--
-		<span style="position:fixed;display:block;top:230px;right:25px;z-index:1"><img border="0" src="images/VICIchat_powered_logo.gif" width="123" height="30"></span> 
-		<span style="display:inline-block;float:right;z-index:1"><img border="0" src="images/VICIchat_powered_logo.png" width="123" height="30"></span> 
+		<span style="position:fixed;display:block;top:230px;right:25px;z-index:1"><img border="0" src="images/VICIchat_powered_logo.gif" width="123" height="30"></span>
+		<span style="display:inline-block;float:right;z-index:1"><img border="0" src="images/VICIchat_powered_logo.png" width="123" height="30"></span>
 //-->
 		</td>
 	</tr>
@@ -771,7 +771,7 @@ $chat_title= _QXZ("Request chat with agent"); # This can be modified for customi
 		</td>
 	</tr>
 	<?php
-	if ($error_msg) 
+	if ($error_msg)
 		{
 		echo "<tr><th class='queue_text_red'>$error_msg<BR></th></tr>";
 		}

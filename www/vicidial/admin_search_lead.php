@@ -10,7 +10,7 @@
 #
 # FP - Changelog
 #
-# 2018-06-01 18:30:53 Extension of the search function around street and 
+# 2018-06-01 18:30:53 Extension of the search function around street and
 #                     city (2018-009).
 #
 # AST GUI database administration search for lead info
@@ -135,7 +135,7 @@ if ($qm_conf_ct > 0)
 
 $report_name = 'Search Leads Logs';
 
-if ($archive_search=="Yes") {$vl_table="vicidial_list_archive";} 
+if ($archive_search=="Yes") {$vl_table="vicidial_list_archive";}
 else {$vl_table="vicidial_list"; $archive_search="No";}
 
 $vicidial_list_fields = 'lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner';
@@ -249,7 +249,7 @@ if ( (!preg_match('/\-ALL/i', $LOGallowed_campaigns)) and ($LOGignore_group_on_s
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$lists_to_print = mysqli_num_rows($rslt);
 	$o=0;
-	while ($lists_to_print > $o) 
+	while ($lists_to_print > $o)
 		{
 		$rowx=mysqli_fetch_row($rslt);
 		$camp_lists .= "'$rowx[0]',";
@@ -354,7 +354,7 @@ if ( (!$vendor_id) and (!$phone)  and (!$lead_id) and (!$log_phone)  and (!$log_
 
 	$archive_stmt="SHOW TABLES LIKE '%vicidial_list_archive%'";
 	$archive_rslt=mysql_to_mysqli($archive_stmt, $link);
-	if (mysqli_num_rows($archive_rslt)>0) 
+	if (mysqli_num_rows($archive_rslt)>0)
 		{
 		echo "<TR bgcolor=#$SSstd_row2_background>";
 		echo "<TD ALIGN=right>"._QXZ("Archive search").": &nbsp; </TD><TD ALIGN=left><select size=1 name=archive_search><option value='No'>"._QXZ("No")."</option><option value='Yes'>"._QXZ("Yes")."</option><option	SELECTED value='$archive_search'>"._QXZ("$archive_search")."</option></select></TD>";
@@ -528,7 +528,7 @@ else
 				$o++;
 				$search_lead = $row[0];
 				if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-					{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+					{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 				else
 					{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 				echo "<TR $bgcolor>\n";
@@ -593,7 +593,7 @@ else
 				$o++;
 				$search_lead = $row[0];
 				if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-					{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+					{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 				else
 					{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 				echo "<TR $bgcolor>\n";
@@ -655,7 +655,7 @@ else
 					$o++;
 					$search_lead = $row[0];
 					if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-						{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+						{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 					else
 						{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 					echo "<TR $bgcolor>\n";
@@ -1015,11 +1015,11 @@ else
 						$last_nameSQL = '';
 						$address1SQL = '';
 						$citySQL = '';
-						if (strlen($first_name)>0)	
+						if (strlen($first_name)>0)
 							{
 							$first_nameSQL = "first_name LIKE '" . mysqli_real_escape_string($link, $first_name) . "'"; $SQLctA++;
 							}
-						if (strlen($last_name)>0) 
+						if (strlen($last_name)>0)
 							{
 							if ($SQLctA > 0) {$andA = 'and';}
 							$last_nameSQL = "$andA last_name LIKE '" . mysqli_real_escape_string($link, $last_name) . "'"; $SQLctA++;
@@ -1204,7 +1204,7 @@ else
 			$o++;
 			$search_lead = $row[0];
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 			echo "<TR $bgcolor>\n";
@@ -1223,7 +1223,7 @@ else
 			}
 		echo "</TABLE>\n";
 		}
-	
+
 	if ($db_source == 'S')
 		{
 		mysqli_close($link);

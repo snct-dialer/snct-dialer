@@ -1,9 +1,9 @@
 CRM EXAMPLE SKIN DOCUMENT	Started: 2015-12-27	Updated: 2017-06-01
 
-This document describes one method of integrating with the agent screen using 
+This document describes one method of integrating with the agent screen using
 a basic skin. This method could be used as a guide to integrate a CRM web system
 with Vicidial, or it could be used to create your own simple custom agent screen
-for Vicidial while keeping the full agent screen hidden. This example is not 
+for Vicidial while keeping the full agent screen hidden. This example is not
 designed as a robust solution, it is merely an example of how one can work.
 
 

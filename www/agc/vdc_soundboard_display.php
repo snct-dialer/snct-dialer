@@ -1,6 +1,6 @@
 <?php
 # vdc_soundboard_display.php
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed display the contents of an audio soundboard in the system
@@ -256,7 +256,7 @@ function countdown_run()
 		countdown_length=countdown_length_new;
 		countdown_reset=0;
 		}
-	
+
 	if ( (countdown_active > 0) && (countdown_counter > -1) )
 		{
 		var bar_length = 300;
@@ -333,7 +333,7 @@ function out_cell(temp_cell)
 	document.getElementById(temp_cell).bgColor = next_color;
 	}
 
-function clean_var(s) 
+function clean_var(s)
 	{
 	var e={},i,b=0,c,x,l=0,a,r='',w=String.fromCharCode,L=s.length;
 	var A="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -393,18 +393,18 @@ function stop_audio()
 		{
 		xmlhttp = new XMLHttpRequest();
 		}
-	if (xmlhttp) 
+	if (xmlhttp)
 		{
 		http://server/agc/api.php?source=test&user=6666&pass=1234&agent_user=1000&function=audio_playback&value=ss-noservice&stage=PLAY&dial_override=Y
 
 		PLAY_query = "source=soundboard&stage=STOP&function=audio_playback&user=" + api_user + "&pass=" + clean_var(api_set) + "&agent_user=" + agent_user + "&agent_debug=" + soundboard_event_log;
 		document.getElementById("debugsoundboardAJAXspanIN").innerHTML = PLAY_query;
-		xmlhttp.open('POST', 'api.php'); 
+		xmlhttp.open('POST', 'api.php');
 		xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-		xmlhttp.send(PLAY_query); 
-		xmlhttp.onreadystatechange = function() 
-			{ 
-			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+		xmlhttp.send(PLAY_query);
+		xmlhttp.onreadystatechange = function()
+			{
+			if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 				{
 				document.getElementById("debugsoundboardAJAXspanOUT").innerHTML = xmlhttp.responseText;
 		//		alert(xmlhttp.responseText);
@@ -470,18 +470,18 @@ function click_cell(temp_cell)
 		{
 		xmlhttp = new XMLHttpRequest();
 		}
-	if (xmlhttp) 
+	if (xmlhttp)
 		{
 		// http://server/agc/api.php?source=test&user=6666&pass=1234&agent_user=1000&function=audio_playback&value=ss-noservice&stage=PLAY&dial_override=Y
 
 		PLAY_query = "source=soundboard&stage=PLAY&dial_override=Y&function=audio_playback&user=" + api_user + "&pass=" + clean_var(api_set) + "&agent_user=" + agent_user + "&value=" + temp_audio_file + "&agent_debug=" + soundboard_event_log;
 		document.getElementById("debugsoundboardAJAXspanIN").innerHTML = PLAY_query;
-		xmlhttp.open('POST', 'api.php'); 
+		xmlhttp.open('POST', 'api.php');
 		xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-		xmlhttp.send(PLAY_query); 
-		xmlhttp.onreadystatechange = function() 
-			{ 
-			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+		xmlhttp.send(PLAY_query);
+		xmlhttp.onreadystatechange = function()
+			{
+			if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 				{
 				document.getElementById("debugsoundboardAJAXspanOUT").innerHTML = xmlhttp.responseText;
 		//		alert(xmlhttp.responseText);
@@ -562,7 +562,7 @@ while ($soundboardfiles_to_print > $o)
 		{$Aitalic_start[$o]='<I>';	$Aitalic_end[$o]='</I>';	$Afont_size[$o] = preg_replace("/I/",'',$Afont_size[$o]);}
 	if ($o == 0)
 		{
-		$Uranks[$ranks] = $Arank[$o];  
+		$Uranks[$ranks] = $Arank[$o];
 		$Rcount[$ranks]=1;
 		$rank_max_count=1;
 		$ranks++;
@@ -584,7 +584,7 @@ while ($soundboardfiles_to_print > $o)
 			}
 		if ($rc_found < 1)
 			{
-			$Uranks[$ranks] = $Arank[$o];  
+			$Uranks[$ranks] = $Arank[$o];
 			$Rcount[$ranks]=1;
 			$ranks++;
 			}
@@ -768,7 +768,7 @@ if ($soundboard_layout == 'columns01')
 					{$Citalic_start[$Co]='<I>';	$Citalic_end[$Co]='</I>';	$Cfont_size[$Co] = preg_replace("/B/",'',$Cfont_size[$Co]);}
 				if ($Co == 0)
 					{
-					$CUranks[$Cranks] = $Crank[$Co];  
+					$CUranks[$Cranks] = $Crank[$Co];
 					$CRcount[$Cranks]=1;
 					$Crank_max_count=1;
 					$Cranks++;
@@ -790,7 +790,7 @@ if ($soundboard_layout == 'columns01')
 						}
 					if ($rc_found < 1)
 						{
-						$CUranks[$Cranks] = $Crank[$Co];  
+						$CUranks[$Cranks] = $Crank[$Co];
 						$CRcount[$Cranks]=1;
 						$Cranks++;
 						}
@@ -1043,7 +1043,7 @@ else
 					{$Citalic_start[$Co]='<I>';	$Citalic_end[$Co]='</I>';	$Cfont_size[$Co] = preg_replace("/B/",'',$Cfont_size[$Co]);}
 				if ($Co == 0)
 					{
-					$CUranks[$Cranks] = $Crank[$Co];  
+					$CUranks[$Cranks] = $Crank[$Co];
 					$CRcount[$Cranks]=1;
 					$Crank_max_count=1;
 					$Cranks++;
@@ -1065,7 +1065,7 @@ else
 						}
 					if ($rc_found < 1)
 						{
-						$CUranks[$Cranks] = $Crank[$Co];  
+						$CUranks[$Cranks] = $Crank[$Co];
 						$CRcount[$Cranks]=1;
 						$Cranks++;
 						}

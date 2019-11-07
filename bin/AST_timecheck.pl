@@ -309,7 +309,7 @@ if ( (length($Ealert)>5) && (length($email_list) > 3) )
 	$mail{body} .= "--\n";
 
 	sendmail(%mail) or die $mail::Sendmail::error;
-	if (!$Q) 
+	if (!$Q)
 		{
 		print "ok. log says:\n", $mail::sendmail::log;  ### print mail log for status
 		}

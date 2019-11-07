@@ -119,7 +119,7 @@ if (length($ARGV[0])>1)
 		$args = "$args $ARGV[$i]";
 		$i++;
 		}
-	
+
 	### list of command-line array arguments:
 	@ARGV_vars = split(/-----/, $ARGV[0]);
 
@@ -128,7 +128,7 @@ if (length($ARGV[0])>1)
 	}
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 	{
 	chomp;
 	last unless length($_);
@@ -182,9 +182,9 @@ if (-e "/prompt_count.txt")
 	close(test);
 
 	$test[0] = ($test[0] + 0);
-	if ($rec_prompt_count > $test[0]) 
+	if ($rec_prompt_count > $test[0])
 		{$test[0] = $rec_prompt_count;}
-	if ($rec_prompt_count < $test[0]) 
+	if ($rec_prompt_count < $test[0])
 		{
 		$rec_prompt_count = $test[0];
 		### update the rec_prompt_count in system_settings
@@ -221,7 +221,7 @@ exit;
 sub welcome_1
 	{
 	##### Play welcome message and capture PIN ########################################################
-	while ( (length($pin) ne 4) && (!$stop_loop) )	
+	while ( (length($pin) ne 4) && (!$stop_loop) )
 		{
 		&enter_pin_number;
 		&log_transfer;
@@ -239,7 +239,7 @@ sub welcome_1
 		{
 		# please enter the pin number followed by the pound key
 
-		$AGI->stream_file('ld_invalid_pin_number');   
+		$AGI->stream_file('ld_invalid_pin_number');
 
 		$quit_program++;
 		}
@@ -304,7 +304,7 @@ sub record_prompts
 		if ($interrupt_digit == 55) {$interrupt_digit=7;}
 		if ($interrupt_digit == 56) {$interrupt_digit=8;}
 		if ($interrupt_digit == 57) {$interrupt_digit=9;}
-		
+
 		$totalDTMF=$interrupt_digit;
 		$digit_loop_counter++;
 		}
@@ -343,7 +343,7 @@ sub verify_recording
 		if ($interrupt_digit == 55) {$interrupt_digit=7;}
 		if ($interrupt_digit == 56) {$interrupt_digit=8;}
 		if ($interrupt_digit == 57) {$interrupt_digit=9;}
-		
+
 		$totalDTMF=$interrupt_digit;
 		$digit_loop_counter++;
 		}
@@ -363,7 +363,7 @@ sub verify_recording
 			{
 			$digit_loop_counter=1;
 			}
-		
+
 		$digit_loop_counter++;
 		}
 
@@ -415,7 +415,7 @@ sub lookup_account
 	if ($pin eq '4321')
 		{
 		$rec_count++;
-		} 
+		}
 	}
 
 
@@ -448,7 +448,7 @@ sub enter_pin_number
 
 	$interrupt_digit='';
 
-	$interrupt_digit = $AGI->stream_file('ld_welcome_pin_number','123456789');   
+	$interrupt_digit = $AGI->stream_file('ld_welcome_pin_number','123456789');
 
 	print STDERR "interrupt_digit |$interrupt_digit|\n";
 
@@ -466,7 +466,7 @@ sub enter_pin_number
 		if ($interrupt_digit == 55) {$interrupt_digit=7;}
 		if ($interrupt_digit == 56) {$interrupt_digit=8;}
 		if ($interrupt_digit == 57) {$interrupt_digit=9;}
-		
+
 		$totalDTMF=$interrupt_digit;
 		}
 
@@ -485,7 +485,7 @@ sub enter_pin_number
 			{
 			$digits_being_entered=0;
 			}
-		
+
 		$digit_loop_counter++;
 		}
 
@@ -495,27 +495,27 @@ sub enter_pin_number
 	}
 
 
-sub checkresult 
+sub checkresult
 	{
 	my ($res) = @_;
 	my $retval;
 	$tests++;
 	chomp $res;
-	if ($res =~ /^200/) 
+	if ($res =~ /^200/)
 		{
 		$res =~ /result=(-?\d+)/;
-		if (!length($1)) 
+		if (!length($1))
 			{
 			print STDERR "FAIL ($res)\n";
 			$fail++;
-			} 
-		else 
+			}
+		else
 			{
 			print STDERR "PASS ($1)\n";
 			$pass++;
 			}
-		} 
-	else 
+		}
+	else
 		{
 		print STDERR "FAIL (unexpected result '$res')\n";
 		$fail++;

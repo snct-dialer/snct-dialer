@@ -1,6 +1,6 @@
 <?php
 # new_manager_chat_form.php
-# 
+#
 # Copyright (C) 2015  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This page is for managers (level 8 or higher) to chat with live agents

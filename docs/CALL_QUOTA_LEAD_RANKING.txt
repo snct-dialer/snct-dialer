@@ -13,7 +13,7 @@ The purpose of this set of features is to allow for structured recycle dialing o
 - To be able to dial leads that do not connect to a customer at least 6 times over 2 concurrent days with at least one attempt made in each of 3 time periods during the day.
 - To be able to automatically set an inactive list to active when the number of dialable NEW leads in the already active lists was about to be exhausted
 
-While the feature-set that was built offers more flexibility than the requirements that were specified above, these were the parameters that we specifically tested to ensure this set of features was working properly. 
+While the feature-set that was built offers more flexibility than the requirements that were specified above, these were the parameters that we specifically tested to ensure this set of features was working properly.
 
 
 
@@ -51,7 +51,7 @@ The lead ranking is performed on a per-lead-per-list basis, so if you move a lea
 NOTE:
 The Call Quota logs per-lead that are needed for this process to work correctly are archived after 7 days, so all Call Quota Lead Ranking recycling operations for a lead need to be set for 7 days or less.
 
-NOTE: 
+NOTE:
 If Call Quota Lead Ranking is enabled on a campaign, then the campaign's "List Order" setting will be overridden by the Call Quota Settings Container settings.
 
 
@@ -87,9 +87,9 @@ call_quota_run_time => 01,31
 session_one => 0800,1200
 session_two => 1200,1600
 session_three => 1600,2000
-session_four => 
-session_five => 
-session_six => 
+session_four =>
+session_five =>
+session_six =>
 
 For the Call Quota Settings Container to be valid, the first 11 core settings listed above must be set to valid values, see below:
 
@@ -121,7 +121,7 @@ For the Call Quota Settings Container to be valid, the first 11 core settings li
 
 
 There are also up to 6 sessions that can be defined, they all follow the same format and must be put in chronological order.
-All times are based on server time, not the customer time. 
+All times are based on server time, not the customer time.
 It is assumed that the session times will cover all possible dialing times for the campaign.
 For the 'day X of dialing' determination, the "System Settings -> Timeclock End of Day" setting is used to determine when each day begins
 You must define at least one session.
@@ -179,37 +179,37 @@ There are two operating modes for the new "AST_VDcall_quotas.pl" script:
 The Campaign Debug report(accessible to level 9 users by going to "Reports -> Admin Utilities") will show you debug output from the last time the AST_VDcall_quotas.pl process ran for the campaign at the bottom of the page. Example output:
 
 Call Quota Lead Ranking Debug:     2019-07-18 09:36:54
-TESTCAMP CAMPAIGN ACTIVE DIALABLE NEW LEADS COUNT:   17588 
-TESTCAMP CAMPAIGN LISTS RECENTLY DIALED COUNT:       2 
-TESTCAMP CAMPAIGN LEAD RANK UPDATES:                 10756 
-TESTCAMP CAMPAIGN LEAD CALLED RESET UPDATES:         3639 (19128) 
-LIST CACHE STATS UPDATED: 99899   TOTAL: 60000   NEW: 17581   DIALABLE NEW: 17581 
-LIST CACHE STATS UPDATED: 107   TOTAL: 59904   NEW: 7   DIALABLE NEW: 7 
-LIST CACHE STATS UPDATED: 222   TOTAL: 1   NEW: 1   DIALABLE NEW: 1 
-LIST CACHE STATS UPDATED: 303   TOTAL: 1   NEW: 1   DIALABLE NEW: 1 
-LIST CACHE STATS UPDATED: 888   TOTAL: 5   NEW: 5   DIALABLE NEW: 5 
-LIST CACHE STATS UPDATED: 929   TOTAL: 0   NEW: 0   DIALABLE NEW: 0 
-LIST CACHE STATS UPDATED: 992   TOTAL: 10   NEW: 0   DIALABLE NEW: 0 
-LIST CACHE STATS UPDATED: 998   TOTAL: 101   NEW: 23   DIALABLE NEW: 8 
-LIST CACHE STATS UPDATED: 1101   TOTAL: 761   NEW: 761   DIALABLE NEW: 761 
-LIST CACHE STATS UPDATED: 10000   TOTAL: 0   NEW: 0   DIALABLE NEW: 0 
-LIST CACHE STATS UPDATED: 10001   TOTAL: 14   NEW: 14   DIALABLE NEW: 14 
-LIST CACHE STATS UPDATED: 10002   TOTAL: 7   NEW: 7   DIALABLE NEW: 7 
-LIST CACHE STATS UPDATED: 10003   TOTAL: 0   NEW: 0   DIALABLE NEW: 0 
-LIST CACHE STATS UPDATED: 10004   TOTAL: 0   NEW: 0   DIALABLE NEW: 0 
-LIST CACHE STATS UPDATED: 11091   TOTAL: 10   NEW: 10   DIALABLE NEW: 10 
-LIST CACHE STATS UPDATED: 89106   TOTAL: 13   NEW: 0   DIALABLE NEW: 0 
-LIST CACHE STATS UPDATED: 223344   TOTAL: 7   NEW: 3   DIALABLE NEW: 3 
-LIST CACHE STATS UPDATED: 334455   TOTAL: 1   NEW: 0   DIALABLE NEW: 0 
-LIST CACHE STATS UPDATED: 373737   TOTAL: 0   NEW: 0   DIALABLE NEW: 0 
-LIST CACHE STATS UPDATED: 999888   TOTAL: 6104   NEW: 0   DIALABLE NEW: 0 
-LIST CACHE STATS UPDATED: 3333301   TOTAL: 15   NEW: 14   DIALABLE NEW: 14 
-LIST CACHE STATS UPDATED: 3333302   TOTAL: 42   NEW: 42   DIALABLE NEW: 42 
-LIST CACHE STATS UPDATED: 3333304   TOTAL: 0   NEW: 0   DIALABLE NEW: 0 
-LIST CACHE STATS UPDATED: 12345678   TOTAL: 3   NEW: 0   DIALABLE NEW: 0 
-LIST CACHE STATS UPDATED: 100000010   TOTAL: 60000   NEW: 59999   DIALABLE NEW: 59999 
-LIST CACHE STATS UPDATED: 100000011   TOTAL: 60000   NEW: 59995   DIALABLE NEW: 59995 
-LIST CACHE STATS UPDATED: 999888999777   TOTAL: 0   NEW: 0   DIALABLE NEW: 0 
+TESTCAMP CAMPAIGN ACTIVE DIALABLE NEW LEADS COUNT:   17588
+TESTCAMP CAMPAIGN LISTS RECENTLY DIALED COUNT:       2
+TESTCAMP CAMPAIGN LEAD RANK UPDATES:                 10756
+TESTCAMP CAMPAIGN LEAD CALLED RESET UPDATES:         3639 (19128)
+LIST CACHE STATS UPDATED: 99899   TOTAL: 60000   NEW: 17581   DIALABLE NEW: 17581
+LIST CACHE STATS UPDATED: 107   TOTAL: 59904   NEW: 7   DIALABLE NEW: 7
+LIST CACHE STATS UPDATED: 222   TOTAL: 1   NEW: 1   DIALABLE NEW: 1
+LIST CACHE STATS UPDATED: 303   TOTAL: 1   NEW: 1   DIALABLE NEW: 1
+LIST CACHE STATS UPDATED: 888   TOTAL: 5   NEW: 5   DIALABLE NEW: 5
+LIST CACHE STATS UPDATED: 929   TOTAL: 0   NEW: 0   DIALABLE NEW: 0
+LIST CACHE STATS UPDATED: 992   TOTAL: 10   NEW: 0   DIALABLE NEW: 0
+LIST CACHE STATS UPDATED: 998   TOTAL: 101   NEW: 23   DIALABLE NEW: 8
+LIST CACHE STATS UPDATED: 1101   TOTAL: 761   NEW: 761   DIALABLE NEW: 761
+LIST CACHE STATS UPDATED: 10000   TOTAL: 0   NEW: 0   DIALABLE NEW: 0
+LIST CACHE STATS UPDATED: 10001   TOTAL: 14   NEW: 14   DIALABLE NEW: 14
+LIST CACHE STATS UPDATED: 10002   TOTAL: 7   NEW: 7   DIALABLE NEW: 7
+LIST CACHE STATS UPDATED: 10003   TOTAL: 0   NEW: 0   DIALABLE NEW: 0
+LIST CACHE STATS UPDATED: 10004   TOTAL: 0   NEW: 0   DIALABLE NEW: 0
+LIST CACHE STATS UPDATED: 11091   TOTAL: 10   NEW: 10   DIALABLE NEW: 10
+LIST CACHE STATS UPDATED: 89106   TOTAL: 13   NEW: 0   DIALABLE NEW: 0
+LIST CACHE STATS UPDATED: 223344   TOTAL: 7   NEW: 3   DIALABLE NEW: 3
+LIST CACHE STATS UPDATED: 334455   TOTAL: 1   NEW: 0   DIALABLE NEW: 0
+LIST CACHE STATS UPDATED: 373737   TOTAL: 0   NEW: 0   DIALABLE NEW: 0
+LIST CACHE STATS UPDATED: 999888   TOTAL: 6104   NEW: 0   DIALABLE NEW: 0
+LIST CACHE STATS UPDATED: 3333301   TOTAL: 15   NEW: 14   DIALABLE NEW: 14
+LIST CACHE STATS UPDATED: 3333302   TOTAL: 42   NEW: 42   DIALABLE NEW: 42
+LIST CACHE STATS UPDATED: 3333304   TOTAL: 0   NEW: 0   DIALABLE NEW: 0
+LIST CACHE STATS UPDATED: 12345678   TOTAL: 3   NEW: 0   DIALABLE NEW: 0
+LIST CACHE STATS UPDATED: 100000010   TOTAL: 60000   NEW: 59999   DIALABLE NEW: 59999
+LIST CACHE STATS UPDATED: 100000011   TOTAL: 60000   NEW: 59995   DIALABLE NEW: 59995
+LIST CACHE STATS UPDATED: 999888999777   TOTAL: 0   NEW: 0   DIALABLE NEW: 0
  Call Quota run time: 56 seconds
 
 

@@ -1,6 +1,6 @@
 CELLPHONE FILTERING DOC	  Started: 2013-09-20	Updated: 2018-08-05
 
-On October 16th, 2013 the FCC issued a rule change to not allow auto-dialing cellphones in the USA unless you have "express consent" from the person you are calling. This document is a summary of what this rule change means to businesses and organizations, and goes over how they can make sure they are in compliance with the TCPA(Telephone Consumer Protection Act of 1991) depending on their interpretation of the regulatory language. 
+On October 16th, 2013 the FCC issued a rule change to not allow auto-dialing cellphones in the USA unless you have "express consent" from the person you are calling. This document is a summary of what this rule change means to businesses and organizations, and goes over how they can make sure they are in compliance with the TCPA(Telephone Consumer Protection Act of 1991) depending on their interpretation of the regulatory language.
 
 First, here is a good summary of what the 2013 changes are, and what the definition of terms are(the June 2015 changes are detailed further down):
 http://www.copilevitz-canter.com/resources/articles/upcoming-fcc-rule-changes-regarding-express-consent-to-call-cell-phones
@@ -8,10 +8,10 @@ http://www.copilevitz-canter.com/resources/articles/upcoming-fcc-rule-changes-re
 Now time for a disclaimer. I am not a lawyer, and this document was not written by a lawyer. If you want legal advice on this topic, I strongly suggest discussing it with a lawyer who specializes in telecommunications law.
 
 In summary, the new regulations ban any calls to cellphones in the USA by "automatic telephone dialing systems"(or ATDS) unless you have specifically received explicit written or audio recorded permission from the person(or spouse of the person) you are calling that you are allowed to call them on their cell phone through an auto-dialer. The vague definition of ATDS that the FCC uses is,
-	"equipment which has the capacity 
+	"equipment which has the capacity
 	(A) to store or produce telephone numbers to be called, using a random or sequential number generator;
-	  and 
-	(B) to dial such numbers". 
+	  and
+	(B) to dial such numbers".
 
 This is such a broad definition that even a modern smartphone fits it's definition. But, the FCC also has said in 2013 that the basic function of an ATDS is “the capacity to dial numbers without human intervention”, which should pretty much exclude smartphones, as well as dialing systems where human intervention would be necessary for any calls to be placed, such as auto-dialers. Unfortunately, some recent court rulings have ignored the "human intervention" exclusion, and ruled against companies that were purely click-to-dial calling people because their phone systems had "the capacity to store and dial phone numbers". Under this very strict interpretation of the law, there is virtually no way to call anyone on a cellphone unless you use only a basic analog wired phone.
 
@@ -66,18 +66,18 @@ DNC.COM INTEGRATION FEATURES IN VICIDIAL
 
 Here is a list of scripts that we have added in order to integrate with DNC.COM's cellphone filtering database service.
 
-   bin/nanpa_type_populate.pl - 
+   bin/nanpa_type_populate.pl -
 Requires "Net::SFTP::Foreign" and "IO::Pty" CPAN modules to run. Automatically goes to DNC.COM SFTP server and downloads the 3 required data files(Prefixes, Wired-to-wireless, Wireless-to-wired), then loads that data into database tables on the vicidial system to be used by the other scripts. This process should be set to run in the crontab every morning. There is an "--adminlog" run time option you can use to log the results of this process to the admin log under the server that it is run on, these log entries are viewable in the Administration web interface.
   NOTE: before you can run this script, you will need to sftp into the dnc.com server first on the Linux command line, (sftp XXXX@sftp.dncscrub.com)
   NOTE: you may need to edit the "/etc/ssh/ssh_config" file to include a line like this "Ciphers 3des-cbc,blowfish-cbc,aes128-cbc,aes128-ctr,aes256-ctr,aes256-cbc"
 
-   bin/nanpa_type_preload.pl - 
+   bin/nanpa_type_preload.pl -
 This script is designed to load all of the prefixes and portability data into RAM and run against your entire database to scrub it for cellphone numbers every night after the data is refreshed. It takes several minutes to initialize, but runs very fast after that. This process should be set to run in the crontab every morning AFTER the populate script is finished running. The results of this process log to the admin log under the server that it is run on, these log entries are viewable in the Administration web interface.
 
-   bin/nanpa_type_filter.pl - 
+   bin/nanpa_type_filter.pl -
 This script is designed to do one list or a few lists at a time, or the entire database on smaller systems. It works together with a PHP script to perform lookups of cellphones and updating vicidial_list records depending on settings
 
-   www/vicidial/nanpa_type.php - 
+   www/vicidial/nanpa_type.php -
 PHP script designed to return S = Land line, C = Cellphone, I = Invalid for one to hundreds of numbers passed in either an HTTP GET or POST form submission to it. Also requires valid manager user credentials on the host system for it to work.
 
 NOTE: To find the command line options for the Perl scripts above, just run them with the "--help" flag

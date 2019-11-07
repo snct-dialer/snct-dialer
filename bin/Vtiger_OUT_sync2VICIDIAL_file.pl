@@ -343,7 +343,7 @@ $phone_list = '|';
 
 if (!$VARDB_port) {$VARDB_port='3306';}
 
-use DBI;	  
+use DBI;
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
@@ -402,14 +402,14 @@ open(out, ">$dir2/$VDLfile")
 $TODAYfile = $TODAY;
 $TODAYfile =~ s/-//gi;
 
-if ($report_call_file > 0) 
+if ($report_call_file > 0)
 	{
 	$VTcfWEBfile = "$PATHweb/vicidial/server_reports/$TODAYfile" . "_IMM_Call_File.txt";
 	### open the output file for writing ###
 	open(CFout, ">$VTcfWEBfile")
 			|| die "Can't open $VTcfWEBfile: $!\n";
 	}
-if ($report_orders_file > 0) 
+if ($report_orders_file > 0)
 	{
 	$VTofWEBfile = "$PATHweb/vicidial/server_reports/$TODAYfile" . "_IMM_Orders_File.txt";
 	### open the output file for writing ###
@@ -420,7 +420,7 @@ if ($report_orders_file > 0)
 
 
 ##### BEGIN REPORT HOURS FILE #####
-if ($report_hours_file > 0) 
+if ($report_hours_file > 0)
 	{
 	$VThfWEBfile = "$PATHweb/vicidial/server_reports/$TODAYfile" . "_IMM_Hours_File.txt";
 	### open the output file for writing ###
@@ -518,14 +518,14 @@ if ($report_hours_file > 0)
 			$L_acw = ($L_acw + $dispo_sec[$w]);
 			$L_wait = ($L_wait + $wait_sec[$w]);
 			$pause_logged=0;
-			if ( ($pause_code[$w] !~ /NULL/i) && (length($pause_code[$w])>0) ) 
+			if ( ($pause_code[$w] !~ /NULL/i) && (length($pause_code[$w])>0) )
 				{
-				if ( ($pause_code[$w] =~ /train|meet/i) && ($billable[$w] !~ /NO/) ) 
+				if ( ($pause_code[$w] =~ /train|meet/i) && ($billable[$w] !~ /NO/) )
 					{
 					$L_train = ($L_train + $pause_sec[$w]);
 					$pause_logged++;
 					}
-				if ( ($pause_code[$w] =~ /break|lunch/i) && ($billable[$w] !~ /NO/) ) 
+				if ( ($pause_code[$w] =~ /break|lunch/i) && ($billable[$w] !~ /NO/) )
 					{
 					$L_break = ($L_break + $pause_sec[$w]);
 					$pause_logged++;
@@ -1226,12 +1226,12 @@ while ($sthBrowsC > $i)
 				$b++;
 				}
 			}
-		} 
+		}
 	##### END VICIDIAL UPDATE #####
 
 	$i++;
 
-	if ($q < 1) 
+	if ($q < 1)
 		{
 		if ($i =~ /10$/i) {print STDERR "0     $i\r";}
 		if ($i =~ /20$/i) {print STDERR "+     $i\r";}

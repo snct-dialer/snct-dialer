@@ -15,12 +15,12 @@
 # with other tasks
 # 30 1 2 * * /usr/share/astguiclient/ADMIN_purge_log_tables.pl
 #
-# NOTE: On a high-load outbound dialing system, this script can take hours to 
-# run. While the script is running the system is unusable. Please schedule to 
+# NOTE: On a high-load outbound dialing system, this script can take hours to
+# run. While the script is running the system is unusable. Please schedule to
 # run this script at a time when the system will not be used for several hours.
 #
 # original author: James Pearson <jamesp@vicidial.com>
-# Based on perl scripts in ViciDial from Matt Florell and initial groundwork by Michael Cargile 
+# Based on perl scripts in ViciDial from Matt Florell and initial groundwork by Michael Cargile
 #
 # Copyright (C) 2017  James Pearson <jamesp@vicidial.com>, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
@@ -41,7 +41,7 @@
 use Fcntl qw(:flock);
 # print "start of program $0\n";
 unless (flock(DATA, LOCK_EX|LOCK_NB)) {
-    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log'
     or print "Can't open the fscking file: $!";
     $datestring = localtime();
     print $fh "[$datestring] $0 is already running. Exiting.\n";
@@ -232,7 +232,7 @@ if ( defined $ARGV[0] && length($ARGV[0])>1 ) {
 		print "  [--dbuser=$DBUSER] = Database User\n";
 		print "  [--dbpass=$DBPASS] = Database Password\n";
 		print "  [--dbport=$DBPORT] = Database Port\n";
-		
+
 		# Output the table purge info for reference
 		print "\n\nConfigured Tables and Ages to purge:\n";
 		my $numtables=@LOGTABLEAGE/2;
@@ -248,7 +248,7 @@ if ( defined $ARGV[0] && length($ARGV[0])>1 ) {
 			}
 		}
 		print "Found $numtables tables to check\n";
-		
+
 		exit;
 		}
 	else
@@ -336,7 +336,7 @@ $PATHconf =		'/etc/astguiclient.conf';
 
 # If we can read the conf file, then load it's settings
 if ( -f $PATHconf )
-	{ 
+	{
 	open('conffile', "$PATHconf") || die "can't open $PATHconf: $!\n";
 	@conf = <conffile>;
 	close('conffile');
@@ -359,7 +359,7 @@ if ( -f $PATHconf )
 		}
 	} else {
 		if ($VERBOSE==1) { print " Missing Conf File    :      No $PATHconf, using defaults\n"; }
-	}	
+	}
 
 
 ### Give feedback in debug mode on default runtime options
@@ -442,7 +442,7 @@ while ( $i < @DBTOPROC ) {
 					if ($VERBOSE==1) {
 						my $runtime = time() - $tabletime;
 						print "$affectedrows rows, $runtime secs\n";
-						
+
 					}
 				}
 			} else {

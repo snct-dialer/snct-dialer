@@ -3,7 +3,7 @@
 # AST_VDhopper.pl version 2.14
 #
 # DESCRIPTION:
-# Updates the VICIDIAL leads hopper for the streamlined approach of allocating 
+# Updates the VICIDIAL leads hopper for the streamlined approach of allocating
 # leads to dialers. Also allows for larger lists and faster dialing.
 #
 # SUMMARY:
@@ -11,7 +11,7 @@
 # server, running every minute during operating hours. For manual dialing
 # campaigns, there is a campaign option for no-hopper-dialing that can operate
 # without this script running, but the list size will be limited under that.
-# 
+#
 # hopper sources:
 #  - A = Auto-alt-dial
 #  - C = Scheduled Callbacks
@@ -69,7 +69,7 @@
 # 110214-2319 - Added lead_order_secondary option
 # 111006-1416 - Added call_count_limit option
 # 120109-1510 - Fixed list mix bug
-# 120210-1735 - Added vendor_lead_code duplication check per campaign option 
+# 120210-1735 - Added vendor_lead_code duplication check per campaign option
 # 120402-2211 - Fixed call count limit bug
 # 121124-2052 - Added List Expiration Date and Other Campaign DNC options
 # 121205-1621 - Added parentheses around filter SQL when in SQL queries
@@ -318,7 +318,7 @@ if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/hopper";}
 if (!$VDHDLOGfile) {$VDHDLOGfile = "$PATHlogs/hopper-detail";}
 if (!$VARDB_port) {$VARDB_port='3306';}
 
-use DBI;	  
+use DBI;
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
@@ -342,7 +342,7 @@ $stmtA = "SELECT vd_server_logs,local_gmt FROM servers where server_ip = '$VARse
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
-if ($sthArows==0) {die "Server IP $VARserver_ip does not have an entry in the servers table\n\n";}	
+if ($sthArows==0) {die "Server IP $VARserver_ip does not have an entry in the servers table\n\n";}
 if ($sthArows > 0)
 	{
 	@aryA = $sthA->fetchrow_array;
@@ -359,7 +359,7 @@ $secX = time();
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($secX);
 $LOCAL_GMT_OFF = $SERVER_GMT;
 $LOCAL_GMT_OFF_STD = $SERVER_GMT;
-if ($isdst) {$LOCAL_GMT_OFF++;} 
+if ($isdst) {$LOCAL_GMT_OFF++;}
 
 $GMT_now = ($secX - ($LOCAL_GMT_OFF * 3600));
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($GMT_now);
@@ -413,9 +413,9 @@ if ($count_only)
 		$hopper_count_only = $aryA[0];
 		}
 	$sthA->finish();
-	if ($DB) 
+	if ($DB)
 		{print "Hopper count: $hopper_count_only|$stmtA|\n";}
-	else 
+	else
 		{print "Hopper count: $hopper_count_only\n";}
 	$event_string = "|HOPPER COUNT: $hopper_count_only|";
 	&event_logger;
@@ -454,7 +454,7 @@ if ($inactive_lists_count > 0)
 	if ($allow_inactive_list_leads < 1)
 		{
 		$KEEPanyone_callback_inactive_listsSQL='';
-		if ($anyone_callback_inactive_lists =~ /KEEP_IN_HOPPER/i) 
+		if ($anyone_callback_inactive_lists =~ /KEEP_IN_HOPPER/i)
 			{$KEEPanyone_callback_inactive_listsSQL = "and source!='C'";}
 		$stmtA = "DELETE from $vicidial_hopper where list_id IN($inactive_lists) $KEEPanyone_callback_inactive_listsSQL;";
 		$affected_rows = $dbhA->do($stmtA);
@@ -468,7 +468,7 @@ if ($inactive_lists_count > 0)
 ##### BEGIN Change CBHOLD status leads to CALLBK if their vicidial_callbacks time has passed
 $vcNOanyone_callback_inactive_listsSQL='';
 $vlNOanyone_callback_inactive_listsSQL='';
-if ($anyone_callback_inactive_lists =~ /NO_ADD_TO_HOPPER/i) 
+if ($anyone_callback_inactive_lists =~ /NO_ADD_TO_HOPPER/i)
 	{
 	$vcNOanyone_callback_inactive_listsSQL = "and vicidial_callbacks.list_id NOT IN($inactive_lists)";
 	$vlNOanyone_callback_inactive_listsSQL = "and vicidial_list.list_id NOT IN($inactive_lists)";
@@ -563,7 +563,7 @@ if ($CBHOLD_count > 0)
 				}
 			$sthA->finish();
 
-			if ($VD_callback_dnc =~ /ENABLED/i) 
+			if ($VD_callback_dnc =~ /ENABLED/i)
 				{
 				$VD_phone_number='';
 				### look up lead information
@@ -647,7 +647,7 @@ if ($CBHOLD_count > 0)
 					}
 				}
 
-			if ($DNClead < 1) 
+			if ($DNClead < 1)
 				{
 				$stmtA = "UPDATE vicidial_list set status='$CA_status[$CAu]', called_since_last_reset='N' where lead_id='$CA_lead_id[$CAu]';";
 				$affected_rows = $dbhA->do($stmtA);
@@ -941,13 +941,13 @@ if ($hopper_dnc_count > 0)
 				}
 			$sthA->finish();
 
-			if ($alt_dial_phones_count <= $Xlast) 
+			if ($alt_dial_phones_count <= $Xlast)
 				{
 				$stmtA = "DELETE FROM $vicidial_hopper where hopper_id='$AAD_hopper_id[$aad]';";
 				$affected_rows = $dbhA->do($stmtA);
 				if ($DB) {$event_string = "--    VDH record DNC deleted: |$affected_rows|   |$stmtA|X$Xlast|$VD_altdial_id|";   &event_logger;}
 				}
-				
+
 			while ( ($alt_dial_phones_count > 0) && ($alt_dial_phones_count > $Xlast) )
 				{
 				$Xlast++;
@@ -1016,7 +1016,7 @@ if ($hopper_dnc_count > 0)
 						}
 					if ($VD_alt_dnc_count < 1)
 						{
-						if ($alt_dial_phones_count eq '$Xlast') 
+						if ($alt_dial_phones_count eq '$Xlast')
 							{$Xlast = 'LAST';}
 						$stmtA = "UPDATE $vicidial_hopper SET status='READY',list_id='$VD_list_id',gmt_offset_now='$VD_gmt_offset_now',state='$VD_state',alt_dial='X$Xlast',user='',priority='25' where hopper_id='$AAD_hopper_id[$aad]';";
 						$affected_rows = $dbhA->do($stmtA);
@@ -1025,7 +1025,7 @@ if ($hopper_dnc_count > 0)
 						}
 					else
 						{
-						if ($alt_dial_phones_count eq '$Xlast') 
+						if ($alt_dial_phones_count eq '$Xlast')
 							{$Xlast = 'LAST';}
 						$stmtA = "UPDATE $vicidial_hopper SET status='DNC',list_id='$VD_list_id',gmt_offset_now='$VD_gmt_offset_now',state='$VD_state',alt_dial='X$Xlast',user='',priority='15' where hopper_id='$AAD_hopper_id[$aad]';";
 						$affected_rows = $dbhA->do($stmtA);
@@ -1050,7 +1050,7 @@ if ($hopper_dnc_count > 0)
 
 
 ##### BEGIN check for active campaigns that need the hopper run for them
-@campaign_id=@MT; 
+@campaign_id=@MT;
 $ANY_hopper_vlc_dup_check='N';
 
 if (length($CLIcampaign)>1)
@@ -1070,7 +1070,7 @@ while ($sthArows > $rec_count)
 	@aryA = $sthA->fetchrow_array;
 	$campaign_id[$rec_count] =					$aryA[0];
 	$lead_order[$rec_count] =					$aryA[1];
-	if (!$CLIlevel) 
+	if (!$CLIlevel)
 		{$hopper_level[$rec_count] =			$aryA[2];}
 	else
 		{$hopper_level[$rec_count] = "$CLIlevel";}
@@ -1103,7 +1103,7 @@ while ($sthArows > $rec_count)
 		{$ANY_hopper_vlc_dup_check = 'Y';}
 
 	### Auto Hopper Level
-	if ( $use_auto_hopper[$rec_count] =~ /Y/) 
+	if ( $use_auto_hopper[$rec_count] =~ /Y/)
 		{
 		### Find the number of agents
 		$stmtB = "SELECT COUNT(*) FROM vicidial_live_agents WHERE campaign_id='$campaign_id[$rec_count]' and status IN ('READY','QUEUE','INCALL','CLOSER') and last_update_time >= '$VDL_tensec'";
@@ -1129,7 +1129,7 @@ while ($sthArows > $rec_count)
 		### Number of calls per minute
 		$dial_timeout_mult = 60 / $dial_timeout[$rec_count];
 
-		$auto_hopper_level = roundup( $auto_hopper_multi[$rec_count] * ( $num_agents + $num_paused_agents ) * $auto_dial_level[$rec_count] * $dial_timeout_mult );	
+		$auto_hopper_level = roundup( $auto_hopper_multi[$rec_count] * ( $num_agents + $num_paused_agents ) * $auto_dial_level[$rec_count] * $dial_timeout_mult );
 
 		### Make sure we are greater than the minimum hopper level
 		if ( $auto_hopper_level >= $minimum_hopper_level )
@@ -1141,8 +1141,8 @@ while ($sthArows > $rec_count)
 			$hopper_level[$rec_count] = $minimum_hopper_level;
 			}
 
-		if ($DB) 
-			{	
+		if ($DB)
+			{
 			print "---------------Auto Hopper Level Enabled For $campaign_id[$rec_count]---------------------\n";
 			print "Number of Agents = $num_agents\n";
 			print "Number of Paused Agents = $num_paused_agents\n";
@@ -1160,10 +1160,10 @@ while ($sthArows > $rec_count)
 		}
 
 	### Auto Trim Hopper code
-	if ( $auto_trim_hopper[$rec_count] =~ /Y/) 
+	if ( $auto_trim_hopper[$rec_count] =~ /Y/)
 		{
 		if ($DB) { print "---------------Auto Trim Hopper Enabled For $campaign_id[$rec_count]---------------------\n"; }
-	
+
 		$stmtB = "SELECT COUNT(*) FROM $vicidial_hopper WHERE campaign_id='$campaign_id[$rec_count]' and status IN ('READY') and source IN('S','N');";
 		$sthB = $dbhA->prepare($stmtB) or die "preparing: ",$dbhA->errstr;
 		$sthB->execute or die "executing: $stmtB ", $dbhA->errstr;
@@ -1171,27 +1171,27 @@ while ($sthArows > $rec_count)
 		$camp_leads = $aryLead[0];
 		$sthB->finish();
 
-		if ($DB) 
-			{ 
+		if ($DB)
+			{
 			print "Leads in Hopper for this Campaign = $camp_leads\n";
 			print "Hopper Level for this Campaign = $hopper_level[$rec_count]\n";
 			}
 
-		if ( $camp_leads > ( 2 * $hopper_level[$rec_count] ) ) 
+		if ( $camp_leads > ( 2 * $hopper_level[$rec_count] ) )
 			{
 			$num_to_delete = $camp_leads - 2 * $hopper_level[$rec_count];
 			$stmtB = "DELETE FROM $vicidial_hopper WHERE campaign_id='$campaign_id[$rec_count]' AND source='S' AND status IN ('READY') LIMIT $num_to_delete";
 			$affected_rows = $dbhA->do($stmtB);
-			
-			if ($DB) 
-				{ 
-				print "TOO MANY LEADS IN THE HOPPER ( $camp_leads > 2 * $hopper_level[$rec_count] ). \n"; 
+
+			if ($DB)
+				{
+				print "TOO MANY LEADS IN THE HOPPER ( $camp_leads > 2 * $hopper_level[$rec_count] ). \n";
 				print "DELETING $num_to_delete LEADS FROM THE HOPPER.  |$affected_rows|\n";
 				}
 			}
 		if ($DB) {print "\n";}
-		}	
-	if (length($use_other_campaign_dnc[$rec_count]) > 0) 
+		}
+	if (length($use_other_campaign_dnc[$rec_count]) > 0)
 		{
 		if ($DB) {print "OTHER CAMPAIGN DNC SELECTED: $use_other_campaign_dnc[$rec_count]\n";}
 		}
@@ -1203,7 +1203,7 @@ if ($DB) {print "CAMPAIGNS TO PROCESSES HOPPER FOR:  $rec_count|$#campaign_id\n"
 
 
 ##### BEGIN if vendor_lead_code duplicate check, grab the vlc of all vicidial_auto_calls and vicidial_live_agent sessions
-if ($ANY_hopper_vlc_dup_check =~ /Y/) 
+if ($ANY_hopper_vlc_dup_check =~ /Y/)
 	{
 	$live_leads='';
 	$live_vlc='';
@@ -1292,7 +1292,7 @@ foreach(@campaign_id)
 			$Ds_to_print = (($#Dstatuses) + 0);
 			$STATUSsql[$i]='';
 			$o=0;
-			while ($Ds_to_print > $o) 
+			while ($Ds_to_print > $o)
 				{
 				$o++;
 				$STATUSsql[$i] .= "'$Dstatuses[$o]',";
@@ -1330,7 +1330,7 @@ foreach(@campaign_id)
 			$pzone = ($GMT_now + ($p * 3600));
 			($psec,$pmin,$phour,$pmday,$pmon,$pyear,$pday,$pyday,$pisdst) = localtime($pzone);
 			$phour=($phour * 100);
-			$tz = sprintf("%.2f", $p);	
+			$tz = sprintf("%.2f", $p);
 			$GMT_gmt[$g] = "$tz";
 			$GMT_day[$g] = "$pday";
 			$GMT_hour[$g] = ($phour + $pmin);
@@ -1339,7 +1339,7 @@ foreach(@campaign_id)
 			$g++;
 			}
 		if ($DBX) {print "\n";}
-		
+
 		$stmtA = "SELECT call_time_id,call_time_name,call_time_comments,ct_default_start,ct_default_stop,ct_sunday_start,ct_sunday_stop,ct_monday_start,ct_monday_stop,ct_tuesday_start,ct_tuesday_stop,ct_wednesday_start,ct_wednesday_stop,ct_thursday_start,ct_thursday_stop,ct_friday_start,ct_friday_stop,ct_saturday_start,ct_saturday_stop,ct_state_call_times,ct_holidays FROM vicidial_call_times where call_time_id='$local_call_time[$i]';";
 			if ($DBX) {print "   |$stmtA|\n";}
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -1589,7 +1589,7 @@ foreach(@campaign_id)
 
 				### BEGIN Check for outbound state holiday ###
 				$Sholiday_id = '';
-				if ( (length($Sct_holidays)>2) || ( (length($holiday_id)>2) && (length($Sholiday_id)<2) ) ) 
+				if ( (length($Sct_holidays)>2) || ( (length($holiday_id)>2) && (length($Sholiday_id)<2) ) )
 					{
 					#Apply state holiday
 					if (length($Sct_holidays)>2)
@@ -1597,7 +1597,7 @@ foreach(@campaign_id)
 						$Sct_holidaysSQL = $Sct_holidays;
 						$Sct_holidaysSQL =~ s/^\||\|$//gi;
 						$Sct_holidaysSQL =~ s/\|/','/gi;
-						$Sct_holidaysSQL = "'$Sct_holidaysSQL'";					
+						$Sct_holidaysSQL = "'$Sct_holidaysSQL'";
 						$stmtA = "SELECT holiday_id,holiday_date,holiday_name,ct_default_start,ct_default_stop from vicidial_call_time_holidays where holiday_id IN($Sct_holidaysSQL) and holiday_status='ACTIVE' and holiday_date='$YMD' order by holiday_id;";
 						$holidaytype = "     STATE CALL TIME HOLIDAY FOUND!   ";
 						}
@@ -1606,7 +1606,7 @@ foreach(@campaign_id)
 						{
 						$stmtA = "SELECT holiday_id,holiday_date,holiday_name,ct_default_start,ct_default_stop from vicidial_call_time_holidays where holiday_id='$holiday_id' and holiday_status='ACTIVE' and holiday_date='$YMD' order by holiday_id;";
 						$holidaytype = "     NO STATE HOLIDAY APPLYING CALL TIME HOLIDAY!   ";
-						}				
+						}
 					if ($DBX) {print "   |$stmtA|\n";}
 					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -1916,7 +1916,7 @@ foreach(@campaign_id)
 					if ($Rmin < 10) {$Rmin = "0$Rmin";}
 					if ($Rsec < 10) {$Rsec = "0$Rsec";}
 					$Rhourmin = "$Rhour$Rmin";
-					if ( ($Rhourmin < $lct_begin) || ($Rhourmin > $lct_end) ) 
+					if ( ($Rhourmin < $lct_begin) || ($Rhourmin > $lct_end) )
 						{
 						$RGtarget = ($Rtarget - $lct_gap);
 						($Rsec,$Rmin,$Rhour,$Rmday,$Rmon,$Ryear,$Rwday,$Ryday,$Risdst) = localtime($RGtarget);
@@ -1967,7 +1967,7 @@ foreach(@campaign_id)
 		$sthA->finish();
 		$event_string = "|$campaign_id[$i]|$hopper_level[$i]|$hopper_ready_count|$local_call_time[$i]||";
 		&event_logger;
-	
+
 
 		### Get list of the lists in the campaign ###
 		$stmtY = "SELECT list_id,active FROM vicidial_lists where campaign_id='$campaign_id[$i]' and expiration_date >= \"$file_date\";";
@@ -1985,7 +1985,7 @@ foreach(@campaign_id)
 		while ($sthYrows > $rec_countLISTS)
 			{
 			# Start getting list GMT and putting together statements for filtering GMT
-			@aryY = $sthY->fetchrow_array;		
+			@aryY = $sthY->fetchrow_array;
 			# Set List ID Variable
 			$cur_list_id = $aryY[0];
 			if ($DB) {print "   Processing GMT for list $cur_list_id\n";}
@@ -2000,19 +2000,19 @@ foreach(@campaign_id)
 			$sthB->execute or die "executing: $stmtB", $dbhA->errstr;
 			@aryB = $sthB->fetchrow_array;
 			$cur_call_time = $aryB[0];
-			
+
 			# check that call time exists
-			if ($cur_call_time !~ /^campaign$/) 
+			if ($cur_call_time !~ /^campaign$/)
 				{
 				$stmtB = "SELECT count(*) from vicidial_call_times where call_time_id = \"$cur_call_time\"";
 				$sthB = $dbhA->prepare($stmtB) or die "preparing: ",$dbhA->errstr;
 				$sthB->execute or die "executing: $stmtB", $dbhA->errstr;
 				@aryB = $sthB->fetchrow_array;
 				$call_time_exists = $aryB[0];
-				if ($call_time_exists < 1) 
+				if ($call_time_exists < 1)
 					{$cur_call_time = 'campaign';}
 				}
-			
+
 			$sthB->finish();
 			# Handle Passing through and skip GMT code for speed if we don't need it
 			if ($cur_call_time eq "campaign")
@@ -2020,13 +2020,13 @@ foreach(@campaign_id)
 				# only create sql for pulling leads if the list is active
 				if ( ($list_id_act eq "Y") || ($allow_inactive eq "Y") )
 					{
-					if ( ( ($act_rec_countLISTS == 0) && ($allow_inactive ne "Y") ) || ( ($rec_countLISTS == 0) && ($allow_inactive eq "Y") ) ) 
+					if ( ( ($act_rec_countLISTS == 0) && ($allow_inactive ne "Y") ) || ( ($rec_countLISTS == 0) && ($allow_inactive eq "Y") ) )
 						{
 						$list_id_sql[$i] = "(list_id IN('$cur_list_id'";
 						}
-					else 
+					else
 						{
-						if (length($list_id_sql[$i]) < 3) 
+						if (length($list_id_sql[$i]) < 3)
 							{
 							$list_id_sql[$i] = "(list_id IN('$cur_list_id'";
 							}
@@ -2073,7 +2073,7 @@ foreach(@campaign_id)
 					$rec_count++;
 					}
 				$sthC->finish();
-				
+
 				### BEGIN Check for outbound call time holiday ###
 				$holiday_id = '';
 				if (length($Gct_holidays)>2)
@@ -2116,7 +2116,7 @@ foreach(@campaign_id)
 					}
 				### END Check for outbound call time holiday ###
 				$ct_states = '';
-				$ct_state_gmt_SQL = ''; 
+				$ct_state_gmt_SQL = '';
 				$list_state_gmt_SQL = '';
 				$ct_srs=0;
 				$b=0;
@@ -2159,12 +2159,12 @@ foreach(@campaign_id)
 							$Sct_holidays = 			$aryC[20];
 							$ct_states .="'$Gstate_call_time_state',";
 							}
-		
+
 						$sthC->finish();
-	
+
 						### BEGIN Check for outbound state holiday ###
 						$Sholiday_id = '';
-						if ( (length($Sct_holidays)>2) || ((length($holiday_id)>2) && (length($Sholiday_id)<2))) 
+						if ( (length($Sct_holidays)>2) || ((length($holiday_id)>2) && (length($Sholiday_id)<2)))
 							{
 							# Apply state holiday
 							if (length($Sct_holidays)>2)
@@ -2172,7 +2172,7 @@ foreach(@campaign_id)
 								$Sct_holidaysSQL = $Sct_holidays;
 								$Sct_holidaysSQL =~ s/^\||\|$//gi;
 								$Sct_holidaysSQL =~ s/\|/','/gi;
-								$Sct_holidaysSQL = "'$Sct_holidaysSQL'";					
+								$Sct_holidaysSQL = "'$Sct_holidaysSQL'";
 								$stmtA = "SELECT holiday_id,holiday_date,holiday_name,ct_default_start,ct_default_stop from vicidial_call_time_holidays where holiday_id IN($Sct_holidaysSQL) and holiday_status='ACTIVE' and holiday_date='$YMD' order by holiday_id;";
 								$holidaytype = "     STATE CALL TIME HOLIDAY FOUND!   ";
 								}
@@ -2181,7 +2181,7 @@ foreach(@campaign_id)
 								{
 								$stmtA = "SELECT holiday_id,holiday_date,holiday_name,ct_default_start,ct_default_stop from vicidial_call_time_holidays where holiday_id='$holiday_id' and holiday_status='ACTIVE' and holiday_date='$YMD' order by holiday_id;";
 								$holidaytype = "     NO STATE HOLIDAY APPLYING CALL TIME HOLIDAY!   ";
-								}				
+								}
 							if ($DBX) {print "   |$stmtA|\n";}
 							$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 							$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -2311,7 +2311,7 @@ foreach(@campaign_id)
 							$r++;
 							}
 						$state_gmt = "$state_gmt'99'";
-						$list_state_gmt_SQL .= "or (list_id='$cur_list_id' and state='$Gstate_call_time_state' and gmt_offset_now IN($state_gmt)) ";			
+						$list_state_gmt_SQL .= "or (list_id='$cur_list_id' and state='$Gstate_call_time_state' and gmt_offset_now IN($state_gmt)) ";
 						$del_list_state_gmt_SQL .= "or (list_id='$cur_list_id' and state='$Gstate_call_time_state' && gmt_offset_now NOT IN($state_gmt)) ";
 						}
 
@@ -2428,7 +2428,7 @@ foreach(@campaign_id)
 					}
 
 				$list_default_gmt = "$list_default_gmt'99'";
-				
+
 				#set variable for List Mix
 				$indv_list_gmt_sql{ "$cur_list_id" } = "((list_id=\"$cur_list_id\" and gmt_offset_now IN($list_default_gmt) $ct_statesSQL) $list_state_gmt_SQL)";
 
@@ -2462,35 +2462,35 @@ foreach(@campaign_id)
 		if ($DB) {print "     hopper DONE cleared:  $affected_rows\n";}
 		if ($DBX) {print "     |$stmtA|\n";}
 		# Update the hopper ready count
-		if ($affected_rows ne "0E0") 
-			{		
+		if ($affected_rows ne "0E0")
+			{
 			$hopper_ready_pre_count = $hopper_ready_count;
 			$hopper_ready_count = $hopper_ready_count - $affected_rows;
-			if ($DB) 
+			if ($DB)
 				{
-				if($hopper_ready_pre_count == $hopper_ready_count) 
+				if($hopper_ready_pre_count == $hopper_ready_count)
 					{print "     hopper READY count minus deleted DONE leads:   $hopper_ready_count\n";}
 				}
 			}
-		
+
 		### Delete the leads that are out of GMT time range if there are any
 		$stmtA = "DELETE from $vicidial_hopper where $del_list_id_sql[$i] (campaign_id='$campaign_id[$i]' and ($del_gmtSQL[$i]));";
 		$affected_rows = $dbhA->do($stmtA);
 		if ($DB) {print "     hopper GMT BAD cleared:  $affected_rows\n";}
 		if ($DBX) {print "     |$stmtA|\n";}
-		
+
 		# Update the hopper ready count
-		if ($affected_rows ne "0E0") 
-			{		
+		if ($affected_rows ne "0E0")
+			{
 			$hopper_ready_pre_count = $hopper_ready_count;
 			$hopper_ready_count = $hopper_ready_count - $affected_rows;
-			if ($DB) 
+			if ($DB)
 				{
-				if($hopper_ready_pre_count == $hopper_ready_count) 
+				if($hopper_ready_pre_count == $hopper_ready_count)
 					{print "     hopper READY count minus deleted GMT leads:   $hopper_ready_count\n";}
 				}
 			}
-		
+
 		# Get Campaign List Mix Settings
 		if ($list_order_mix[$i] !~ /DISABLED/)
 			{
@@ -2698,7 +2698,7 @@ foreach(@campaign_id)
 				$OTHER_level = $hopper_level[$i];
 
 				if ($lead_order_randomize[$i] =~ /Y/) {$last_order = "RAND()";}
-				else 
+				else
 					{
 					$last_order = "lead_id asc";
 					if ($lead_order_secondary[$i] =~ /LEAD_ASCEND/) {$last_order = "lead_id asc";}
@@ -2749,7 +2749,7 @@ foreach(@campaign_id)
 					{
 					if ($DB) {print "     looking for RECYCLE leads, maximum of $hopper_level[$i]\n";}
 					$vlc_dup_check_SQL='';
-					if ($hopper_vlc_dup_check[$i] =~ /Y/) 
+					if ($hopper_vlc_dup_check[$i] =~ /Y/)
 						{$vlc_dup_check_SQL = "and vendor_lead_code NOT IN($live_vlc$vlc_lists)";}
 
 					$stmtA = "SELECT lead_id,list_id,gmt_offset_now,phone_number,state,status,modify_date,user,vendor_lead_code FROM vicidial_list $VLforce_index where $recycle_SQL[$i] and ($list_id_sql[$i]) and lead_id NOT IN($lead_id_lists) $vlc_dup_check_SQL and ($all_gmtSQL[$i]) $lead_filter_sql[$i] $CCLsql[$i] $DLTsql[$i] $order_stmt limit $hopper_level[$i];";
@@ -2801,11 +2801,11 @@ foreach(@campaign_id)
 				@NEW_source_to_hopper=@MT;
 				if ( ($NEW_count > 0) && ($list_order_mix[$i] =~ /DISABLED/) )
 					{
-					$NEW_level = int($hopper_level[$i] / $NEW_count);   
-					$OTHER_level = ($hopper_level[$i] - $NEW_level);   
+					$NEW_level = int($hopper_level[$i] / $NEW_count);
+					$OTHER_level = ($hopper_level[$i] - $NEW_level);
 					if ($DB) {print "     looking for $NEW_level NEW leads mixed in with $OTHER_level other leads\n";}
 					$vlc_dup_check_SQL='';
-					if ($hopper_vlc_dup_check[$i] =~ /Y/) 
+					if ($hopper_vlc_dup_check[$i] =~ /Y/)
 						{$vlc_dup_check_SQL = "and vendor_lead_code NOT IN($live_vlc$vlc_lists)";}
 
 					$stmtA = "SELECT lead_id,list_id,gmt_offset_now,phone_number,state,status,modify_date,user,vendor_lead_code FROM vicidial_list $VLforce_index where called_since_last_reset='N' and status IN('NEW') and ($list_id_sql[$i]) and lead_id NOT IN($lead_id_lists) $vlc_dup_check_SQL and ($all_gmtSQL[$i]) $lead_filter_sql[$i] $CCLsql[$i] $DLTsql[$i] $order_stmt limit $NEW_level;";
@@ -2857,7 +2857,7 @@ foreach(@campaign_id)
 					{
 					if ($DB) {print "     lead call order:      $order_stmt\n";}
 					$vlc_dup_check_SQL='';
-					if ($hopper_vlc_dup_check[$i] =~ /Y/) 
+					if ($hopper_vlc_dup_check[$i] =~ /Y/)
 						{$vlc_dup_check_SQL = "and vendor_lead_code NOT IN($live_vlc$vlc_lists)";}
 
 					if ($list_order_mix[$i] =~ /DISABLED/)
@@ -2873,7 +2873,7 @@ foreach(@campaign_id)
 							if ( ($NEW_count > 0) && ($NEW_rec_countLEADS > $NEW_in) )
 								{
 								if ($DB_show_offset) {print "NEW_COUNT: $NEW_count|$NEW_dec|$NEW_in|$NEW_rec_countLEADS\n";}
-								if ($NEW_count > $NEW_dec) 
+								if ($NEW_count > $NEW_dec)
 									{
 									$NEW_dec++;
 									}
@@ -2962,7 +2962,7 @@ foreach(@campaign_id)
 							if ($DBX) {print "  LM $x |$list_mix_stepARY[0]|$list_mix_stepARY[2]|$LM_step_goal[$x]|$list_mix_stepARY[3]|\n";}
 							$list_mix_dialableSQL = "(($indv_list_gmt_sql{ \"$list_mix_stepARY[0]\" }) and status IN($list_mix_stepARY[3]))";
 							$vlc_dup_check_SQL='';
-							if ($hopper_vlc_dup_check[$i] =~ /Y/) 
+							if ($hopper_vlc_dup_check[$i] =~ /Y/)
 								{$vlc_dup_check_SQL = "and vendor_lead_code NOT IN($live_vlc$vlc_lists)";}
 
 							$stmtA = "SELECT lead_id,list_id,gmt_offset_now,phone_number,state,status,modify_date,user,vendor_lead_code FROM vicidial_list $VLforce_index where called_since_last_reset='N' and ($list_mix_dialableSQL) and lead_id NOT IN($lead_id_lists) $vlc_dup_check_SQL and ($all_gmtSQL[$i]) $lead_filter_sql[$i] $CCLsql[$i] $DLTsql[$i] $order_stmt limit $LM_step_goal[$x];";
@@ -2973,13 +2973,13 @@ foreach(@campaign_id)
 							while ($sthArows > $rec_count)
 								{
 								@aryA = $sthA->fetchrow_array;
-								if ($mix_method[$i] =~ /RANDOM/) 
+								if ($mix_method[$i] =~ /RANDOM/)
 									{
 									$order = int( rand(9999999)) + 10000000;
 									}
-								else 
+								else
 									{
-									if ($mix_method[$i] =~ /EVEN_MIX/) 
+									if ($mix_method[$i] =~ /EVEN_MIX/)
 										{
 										$order = ( ($rec_count * $LM_step_even[$x]) + $x);
 										}
@@ -3188,7 +3188,7 @@ foreach(@campaign_id)
 									$stmtA = "INSERT INTO $vicidial_hopper (lead_id,campaign_id,status,user,list_id,gmt_offset_now,state,priority,source,vendor_lead_code) values('$leads_to_hopper[$h]','$campaign_id[$i]','READY','','$lists_to_hopper[$h]','$gmt_to_hopper[$h]',\"$state_to_hopper[$h]\",'0','$source_to_hopper[$h]',\"$vlc_to_hopper[$h]\");";
 									$affected_rows = $dbhA->do($stmtA);
 									if ($DBX) {print "LEAD INSERTED: $affected_rows|$leads_to_hopper[$h]|\n";}
-									if ($DB_detail) 
+									if ($DB_detail)
 										{
 										$detail_string = "|$campaign_id[$i]|$leads_to_hopper[$h]|$phone_to_hopper[$h]|$state_to_hopper[$h]|$gmt_to_hopper[$h]|$status_to_hopper[$h]|$modify_to_hopper[$h]|$user_to_hopper[$h]|$vlc_to_hopper[$h]|$source_to_hopper[$h]|";
 										&detail_logger;
@@ -3202,7 +3202,7 @@ foreach(@campaign_id)
 										$stmtA = "INSERT INTO $vicidial_hopper (lead_id,campaign_id,status,user,list_id,gmt_offset_now,state,priority,source,vendor_lead_code) values('$leads_to_hopper[$h]','$campaign_id[$i]','DNC','','$lists_to_hopper[$h]','$gmt_to_hopper[$h]',\"$state_to_hopper[$h]\",'0','$source_to_hopper[$h]',\"$vlc_to_hopper[$h]\");";
 										$affected_rows = $dbhA->do($stmtA);
 										if ($DBX) {print "LEAD INSERTED AS DNC: $affected_rows|$leads_to_hopper[$h]|\n";}
-										if ($DB_detail) 
+										if ($DB_detail)
 											{
 											$detail_string = "|$campaign_id[$i]|$leads_to_hopper[$h]|$phone_to_hopper[$h]|$state_to_hopper[$h]|$gmt_to_hopper[$h]|$status_to_hopper[$h]|$modify_to_hopper[$h]|$user_to_hopper[$h]|$vlc_to_hopper[$h]|$source_to_hopper[$h]|";
 											&detail_logger;
@@ -3269,7 +3269,7 @@ sub detail_logger
 	$detail_string='';
 	}
 
-sub roundup 
+sub roundup
 	{
 	my $n = shift;
 	return(($n == int($n)) ? $n : int($n + 1))

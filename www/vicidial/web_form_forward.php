@@ -1,6 +1,6 @@
 <?php
 # web_form_forward.php - custom script forward agent to web page and alter vars
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # You will need to customize this to your needs

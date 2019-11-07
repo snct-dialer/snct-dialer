@@ -2,7 +2,7 @@
 # help.php - VICIDIAL administration page
 #
 # Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
-# 
+#
 
 # CHANGELOG:
 # 131019-0848 - Moved help from admin.php
@@ -748,7 +748,7 @@ if ($SSqc_features_active > 0)
 	<BR>
 	<A NAME="users-qc_commit">
 	<BR>
-	<B><?php echo _QXZ("QC Record Commit"); ?> -</B><?php echo _QXZ("This option allows the agent to specify that a record has been committed in QC. It can no longer be modified by anyone."); 
+	<B><?php echo _QXZ("QC Record Commit"); ?> -</B><?php echo _QXZ("This option allows the agent to specify that a record has been committed in QC. It can no longer be modified by anyone.");
 	}
 ?>
 
@@ -930,11 +930,11 @@ if ($SSqc_features_active > 0)
 <A NAME="campaigns-allow_closers">
 <BR>
 <B><?php echo _QXZ("Allow Closers"); ?> -</B>
-<?php 
+<?php
 
 echo _QXZ("This is where you can set whether the users of this campaign will have the option to send the call to a closer.");
 
-if ($SSallow_emails > 0) 
+if ($SSallow_emails > 0)
 		{
 ?>
 	<BR>
@@ -944,7 +944,7 @@ if ($SSallow_emails > 0)
 <?php
 		}
 
-if ($SSallow_chats > 0) 
+if ($SSallow_chats > 0)
 		{
 ?>
 	<BR>

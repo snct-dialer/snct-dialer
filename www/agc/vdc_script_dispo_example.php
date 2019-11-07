@@ -1,6 +1,6 @@
 <?php
 # vdc_script_dispo_example.php
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed to be used in the SCRIPT tab in an IFRAME and will not submit unless a specific field is filled in
@@ -9,7 +9,7 @@
 #       The default of this script assumes 2 custom fields('question' and 'answer')
 #
 # Example of a ViciDial agent SCRIPT using this script(you must customize this for your custom fields!):
-# <iframe src="./vdc_script_dispo_example.php?lead_id=--A--lead_id--B--&vendor_id=--A--vendor_lead_code--B--&list_id=--A--list_id--B--&gmt_offset_now=--A--gmt_offset_now--B--&phone_code=--A--phone_code--B--&phone_number=--A--phone_number--B--&title=--A--title--B--&first_name=--A--first_name--B--&middle_initial=--A--middle_initial--B--&last_name=--A--last_name--B--&address1=--A--address1--B--&address2=--A--address2--B--&address3=--A--address3--B--&city=--A--city--B--&state=--A--state--B--&province=--A--province--B--&postal_code=--A--postal_code--B--&country_code=--A--country_code--B--&gender=--A--gender--B--&date_of_birth=--A--date_of_birth--B--&alt_phone=--A--alt_phone--B--&email=--A--email--B--&security_phrase=--A--security_phrase--B--&comments=--A--comments--B--&user=--A--user--B--&pass=--A--pass--B--&campaign=--A--campaign--B--&phone_login=--A--phone_login--B--&fronter=--A--fronter--B--&closer=--A--user--B--&group=--A--group--B--&channel_group=--A--group--B--&SQLdate=--A--SQLdate--B--&epoch=--A--epoch--B--&uniqueid=--A--uniqueid--B--&rank=--A--rank--B--&owner=--A--owner--B--&customer_zap_channel=--A--customer_zap_channel--B--&server_ip=--A--server_ip--B--&SIPexten=--A--SIPexten--B--&session_id=--A--session_id--B--&entry_list_id=--A--entry_list_id--B--&closecallid=--A--closecallid--B--&fullname=--A--fullname--B--&question=--A--question--B--&answer=--A--answer--B--" style="background-color:transparent;" scrolling="auto" frameborder="0" allowtransparency="true" id="popupFrame" name="popupFrame"  width="--A--script_width--B--" height="--A--script_height--B--" STYLE="z-index:17"> </iframe> 
+# <iframe src="./vdc_script_dispo_example.php?lead_id=--A--lead_id--B--&vendor_id=--A--vendor_lead_code--B--&list_id=--A--list_id--B--&gmt_offset_now=--A--gmt_offset_now--B--&phone_code=--A--phone_code--B--&phone_number=--A--phone_number--B--&title=--A--title--B--&first_name=--A--first_name--B--&middle_initial=--A--middle_initial--B--&last_name=--A--last_name--B--&address1=--A--address1--B--&address2=--A--address2--B--&address3=--A--address3--B--&city=--A--city--B--&state=--A--state--B--&province=--A--province--B--&postal_code=--A--postal_code--B--&country_code=--A--country_code--B--&gender=--A--gender--B--&date_of_birth=--A--date_of_birth--B--&alt_phone=--A--alt_phone--B--&email=--A--email--B--&security_phrase=--A--security_phrase--B--&comments=--A--comments--B--&user=--A--user--B--&pass=--A--pass--B--&campaign=--A--campaign--B--&phone_login=--A--phone_login--B--&fronter=--A--fronter--B--&closer=--A--user--B--&group=--A--group--B--&channel_group=--A--group--B--&SQLdate=--A--SQLdate--B--&epoch=--A--epoch--B--&uniqueid=--A--uniqueid--B--&rank=--A--rank--B--&owner=--A--owner--B--&customer_zap_channel=--A--customer_zap_channel--B--&server_ip=--A--server_ip--B--&SIPexten=--A--SIPexten--B--&session_id=--A--session_id--B--&entry_list_id=--A--entry_list_id--B--&closecallid=--A--closecallid--B--&fullname=--A--fullname--B--&question=--A--question--B--&answer=--A--answer--B--" style="background-color:transparent;" scrolling="auto" frameborder="0" allowtransparency="true" id="popupFrame" name="popupFrame"  width="--A--script_width--B--" height="--A--script_height--B--" STYLE="z-index:17"> </iframe>
 #
 # CHANGELOG:
 # 110208-1239 - First build of script based upon vdc_script_notes.php
@@ -569,7 +569,7 @@ $URLsubmit = $URLarray[0];
 <TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA"><?php echo $label_state ?>: </TD><TD ALIGN=LEFT>
 <SELECT name="state" id=state>
 <OPTION value="<?php echo $state ?>" selected><?php echo $state ?></OPTION>
-<OPTGROUP label="United States"> 
+<OPTGROUP label="United States">
 <OPTION value="AL">Alabama</OPTION>
 <OPTION value="AK">Alaska</OPTION>
 <OPTION value="AZ">Arizona</OPTION>
@@ -623,7 +623,7 @@ $URLsubmit = $URLarray[0];
 <OPTION value="WY">Wyoming</OPTION>
 </OPTGROUP>
 <!--
-<OPTGROUP label="Canada"> 
+<OPTGROUP label="Canada">
 <OPTION value="AB">ALBERTA</OPTION>
 <OPTION value="NT">NORTHWEST TERRITORY</OPTION>
 <OPTION value="BC">BRITISH COLUMBIA</OPTION>
@@ -778,7 +778,7 @@ $statuses_list='';
 
 $o=0;
 $DS=0;
-while ($statuses_to_print > $o) 
+while ($statuses_to_print > $o)
 	{
 	$rowx=mysqli_fetch_row($rslt);
 	if ( (strlen($dispo) ==  strlen($rowx[0])) and (preg_match("/$dispo/i",$rowx[0])) )
@@ -794,7 +794,7 @@ $CAMPstatuses_to_print = mysqli_num_rows($rslt);
 
 $o=0;
 $CBhold_set=0;
-while ($CAMPstatuses_to_print > $o) 
+while ($CAMPstatuses_to_print > $o)
 	{
 	$rowx=mysqli_fetch_row($rslt);
 	if ( (strlen($dispo) ==  strlen($rowx[0])) and (preg_match("/$dispo/i",$rowx[0])) )
@@ -814,7 +814,7 @@ echo "</select></td></tr>\n";
 <TD ALIGN=CENTER COLSPAN=2>
 
 <input type=button value="SUBMIT and HANGUP CALL" name=smt id=smt onClick="submit_form()">
- &nbsp; &nbsp; &nbsp; &nbsp; <input type=checkbox name=pause id=pause size="1" value="1" /> <?php echo _QXZ("PAUSE AGENT DIALING"); ?> 
+ &nbsp; &nbsp; &nbsp; &nbsp; <input type=checkbox name=pause id=pause size="1" value="1" /> <?php echo _QXZ("PAUSE AGENT DIALING"); ?>
 </TD>
 </TR>
 

@@ -91,12 +91,12 @@ $server_ip = $VARserver_ip;		# Asterisk server IP
 
 if (!$VARDB_port) {$VARDB_port='3306';}
 
-use DBI;	  
+use DBI;
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
-##### change Pacific Mountain	
+##### change Pacific Mountain
 
 $stmtA = "UPDATE vicidial_list set status='NEW' where status='NA' and called_count IN('1','2');";
 	if($DB){print STDERR "\n|$stmtA|\n";}

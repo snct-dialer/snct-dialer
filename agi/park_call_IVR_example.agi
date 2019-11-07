@@ -1,16 +1,16 @@
 #!/usr/bin/perl
 #
 # park_call_IVR_example.agi version 2.4
-# 
-# NOTE: this script is an example of how you can use a custom AGI script with 
-# the new Park Call IVR feature in campaigns. You will most likely need to 
+#
+# NOTE: this script is an example of how you can use a custom AGI script with
+# the new Park Call IVR feature in campaigns. You will most likely need to
 # significantly alter this script to suit your specific needs
 #
 # Defined in the Park Call AGI IVR field of a campaign, this script will ask
 # customer for their ID and then populate it in the vicidial_list table and then
 # send the call back to the agent. If the customer enters nothing X number of
 # times then the call can be kicked out to a separate in-group
-# 
+#
 # Here is a list of the variables that you can set:
 #  1.  Language - default: en (English), other options are es-Spanish, fr-French
 #  2.  First prompt - default: please_enter_id_number
@@ -127,7 +127,7 @@ if (length($ARGV[0])>1)
 		if ($AGILOG) {$agi_string = "$i|$ARGV[$i]";   &agi_output;}
 		$i++;
 		}
-	
+
 	### list of command-line array arguments:
 	@ARGV_vars = split(/---/, $ARGV[0]);
 
@@ -152,7 +152,7 @@ if (length($kickout_attempts)<1)	{$kickout_attempts='2';}
 if (length($kickout_prompt)<1)		{$kickout_prompt='outside-transfer';}
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 	{
 	chomp;
 	last unless length($_);
@@ -193,7 +193,7 @@ while(<STDIN>)
 
 if ($AGILOG) {$agi_string = "AGI Environment Dump:";   &agi_output;}
 
-foreach $i (sort keys %AGI) 
+foreach $i (sort keys %AGI)
 	{
 	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
 	}
@@ -268,7 +268,7 @@ if ($VACcount > 0)
 		while ( ($confirmation_chances < $kickout_attempts) && ($confirmation < 1) )
 			{
 			$entry_chances=0;
-			while ( ($entry_chances < $kickout_attempts) && (length($variable) < 1) ) 
+			while ( ($entry_chances < $kickout_attempts) && (length($variable) < 1) )
 				{
 				$entry_chances++;
 
@@ -285,7 +285,7 @@ if ($VACcount > 0)
 				}
 			$confirmation_chances++;
 
-			if ( (length($customer_id_number) > 0) || (length($customer_id_number) <= 20) ) 
+			if ( (length($customer_id_number) > 0) || (length($customer_id_number) <= 20) )
 				{
 				$audio_file = $confirm_entry_prompt;   &play_audio;
 				$AGI->say_digits("$variable");
@@ -378,27 +378,27 @@ sub agi_output
 	}
 
 
-sub checkresult 
+sub checkresult
 	{
 	my ($res) = @_;
 	my $retval;
 	$tests++;
 	chomp $res;
-	if ($res =~ /^200/) 
+	if ($res =~ /^200/)
 		{
 		$res =~ /result=(-?\d+)/;
-		if (!length($1)) 
+		if (!length($1))
 			{
 		#	print STDERR "FAIL ($res)\n";
 			$fail++;
 			}
-		else 
+		else
 			{
 		#	print STDERR "PASS ($1)\n";
 			$pass++;
 			}
 		}
-	else 
+	else
 		{
 		#	print STDERR "FAIL (unexpected result '$res')\n";
 			$fail++;
@@ -406,7 +406,7 @@ sub checkresult
 	}
 
 
-sub leading_zero($) 
+sub leading_zero($)
 	{
 	$_ = $_[0];
 	s/^(\d)$/0$1/;
@@ -418,7 +418,7 @@ sub leading_zero($)
 ### play audio, check for existing other language if defined ###
 sub play_audio
 	{
-	if ($language =~ /es/) 
+	if ($language =~ /es/)
 		{
 		$file_extension_gsm='.gsm';
 		$file_extension_wav='.wav';
@@ -428,7 +428,7 @@ sub play_audio
 		else
 			{$audio_suffix='';}
 		}
-	elsif ($language =~ /fr/) 
+	elsif ($language =~ /fr/)
 		{
 		$file_extension_gsm='.gsm';
 		$file_extension_wav='.wav';
@@ -438,7 +438,7 @@ sub play_audio
 		else
 			{$audio_suffix='';}
 		}
-	else 
+	else
 		{$audio_suffix='';}
 
 	$AGI->stream_file("$audio_file$audio_suffix");
@@ -452,7 +452,7 @@ sub customer_variable_gather
 	$interrupt_digit='';
 	$audio_file = "$variable_entry_prompt";
 
-	if ($language =~ /es/) 
+	if ($language =~ /es/)
 		{
 		$file_extension_gsm='.gsm';
 		$file_extension_wav='.wav';
@@ -462,7 +462,7 @@ sub customer_variable_gather
 		else
 			{$audio_suffix='';}
 		}
-	elsif ($language =~ /fr/) 
+	elsif ($language =~ /fr/)
 		{
 		$file_extension_gsm='.gsm';
 		$file_extension_wav='.wav';
@@ -472,10 +472,10 @@ sub customer_variable_gather
 		else
 			{$audio_suffix='';}
 		}
-	else 
+	else
 		{$audio_suffix='';}
 
-	$interrupt_digit = $AGI->stream_file("$audio_file$audio_suffix",'0123456789');   
+	$interrupt_digit = $AGI->stream_file("$audio_file$audio_suffix",'0123456789');
 
 		print STDERR "interrupt_digit |$interrupt_digit|\n";
 
@@ -495,7 +495,7 @@ sub customer_variable_gather
 		if ($interrupt_digit == 55) {$interrupt_digit=7;}
 		if ($interrupt_digit == 56) {$interrupt_digit=8;}
 		if ($interrupt_digit == 57) {$interrupt_digit=9;}
-		
+
 		$PASS_word=$interrupt_digit;
 		}
 
@@ -514,11 +514,11 @@ sub customer_variable_gather
 			{
 			$digits_being_entered=0;
 			}
-		if ( (length($PASS_word)) >= $collect_digits) 
+		if ( (length($PASS_word)) >= $collect_digits)
 			{
 			$digits_being_entered=0;
 			}
-		
+
 		$digit_loop_counter++;
 		}
 
@@ -538,7 +538,7 @@ sub confirm_entry
 	$interrupt_digit='';
 	$audio_file = "$confirmation_prompt";
 
-	if ($language =~ /es/) 
+	if ($language =~ /es/)
 		{
 		$file_extension_gsm='.gsm';
 		$file_extension_wav='.wav';
@@ -548,7 +548,7 @@ sub confirm_entry
 		else
 			{$audio_suffix='';}
 		}
-	elsif ($language =~ /fr/) 
+	elsif ($language =~ /fr/)
 		{
 		$file_extension_gsm='.gsm';
 		$file_extension_wav='.wav';
@@ -558,10 +558,10 @@ sub confirm_entry
 		else
 			{$audio_suffix='';}
 		}
-	else 
+	else
 		{$audio_suffix='';}
 
-	$interrupt_digit = $AGI->stream_file("$audio_file$audio_suffix",'12');   
+	$interrupt_digit = $AGI->stream_file("$audio_file$audio_suffix",'12');
 
 		print STDERR "interrupt_digit |$interrupt_digit|\n";
 
@@ -581,7 +581,7 @@ sub confirm_entry
 		if ($interrupt_digit == 55) {$interrupt_digit=7;}
 		if ($interrupt_digit == 56) {$interrupt_digit=8;}
 		if ($interrupt_digit == 57) {$interrupt_digit=9;}
-		
+
 		$ANSWER_confirm=$interrupt_digit;
 		}
 
@@ -602,7 +602,7 @@ sub confirm_entry
 				{
 				$digits_being_entered=0;
 				}
-			
+
 			$digit_loop_counter++;
 			}
 		}

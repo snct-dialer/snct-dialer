@@ -1,6 +1,6 @@
-<?php 
+<?php
 # fcstats.php
-# 
+#
 # Copyright (C) 2014  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -468,32 +468,32 @@ else
 {
 #	$time_BEGIN=$AM_shift_BEGIN;
 #	$time_END=$AM_shift_END;
-#$query_date_BEGIN = "$query_date $time_BEGIN";   
+#$query_date_BEGIN = "$query_date $time_BEGIN";
 #$query_date_END = "$query_date $time_END";
 
 $Cqdate = explode('-',$query_date);
 $Eqdate = explode('-',$end_date);
 
-if ($shift == 'AM') 
+if ($shift == 'AM')
 	{
 	$query_date_BEGIN = date("Y-m-d H:i:s", mktime(1, 0, 0, $Cqdate[1], $Cqdate[2], $Cqdate[0]));
 	$query_date_END = date("Y-m-d H:i:s", mktime(17, 45, 0, $Eqdate[1], $Eqdate[2], $Eqdate[0]));
 	}
-if ($shift == 'PM') 
+if ($shift == 'PM')
 	{
 	$query_date_BEGIN = date("Y-m-d H:i:s", mktime(17, 45, 1, $Cqdate[1], $Cqdate[2], $Cqdate[0]));
 	$query_date_END = date("Y-m-d H:i:s", mktime(24, 59, 59, $Eqdate[1], $Eqdate[2], $Eqdate[0]));
 	}
-if ($shift == 'ALL') 
+if ($shift == 'ALL')
 	{
 	$query_date_BEGIN = date("Y-m-d H:i:s", mktime(1, 0, 0, $Cqdate[1], $Cqdate[2], $Cqdate[0]));
 	$query_date_END = date("Y-m-d H:i:s", mktime(24, 59, 59, $Eqdate[1], $Eqdate[2], $Eqdate[0]));
 	}
-if ($query_hour) 
+if ($query_hour)
 	{
 	$query_date_BEGIN = date("Y-m-d H:i:s", mktime($query_hour, 0, 0, $Cqdate[1], $Cqdate[2], $Cqdate[0]));
 	}
-if ($end_hour) 
+if ($end_hour)
 	{
 	$query_date_END = date("Y-m-d H:i:s", mktime($end_hour, 59, 59, $Eqdate[1], $Eqdate[2], $Eqdate[0]));
 	}
@@ -661,11 +661,11 @@ while ($i < $users_to_print)
 		$row=mysqli_fetch_row($rslt);
 		if ($non_latin < 1)
 			{
-			 $full_name[$i] =	sprintf("%-15s", $row[0]); while(strlen($full_name[$i])>15) {$full_name[$i] = substr("$full_name[$i]", 0, -1);}	
+			 $full_name[$i] =	sprintf("%-15s", $row[0]); while(strlen($full_name[$i])>15) {$full_name[$i] = substr("$full_name[$i]", 0, -1);}
 			}
 		else
 			{
-			 $full_name[$i] =	sprintf("%-45s", $row[0]); while(mb_strlen($full_name[$i],'utf-8')>15) {$full_name[$i] = mb_substr("$full_name[$i]", 0, -1,'utf-8');}	
+			 $full_name[$i] =	sprintf("%-45s", $row[0]); while(mb_strlen($full_name[$i],'utf-8')>15) {$full_name[$i] = mb_substr("$full_name[$i]", 0, -1,'utf-8');}
 			}
 		}
 	else
@@ -727,10 +727,10 @@ while ($i < $users_to_print)
 			#$closer=sprintf("%-6s", $frow[5]);
 			#$closer_full_name=sprintf("%-15s", substr($user_array["$frow[5]"],0, 15));
 			#$closer_talk_time=$frow[6];
-			#$closer_talk_time = sec_convert($closer_talk_time,'H'); 
+			#$closer_talk_time = sec_convert($closer_talk_time,'H');
 			#$closer_talk_time =	sprintf("%5s", $closer_talk_time);
 		}
-		
+
 	}
 	if (strlen($xfercallid_str)>0) {
 		$xfercallid_str=substr($xfercallid_str,0,-1);
@@ -759,7 +759,7 @@ while ($i < $users_to_print)
 		#$closer=sprintf("%-6s", $frow[5]);
 		#$closer_full_name=sprintf("%-15s", substr($user_array["$frow[5]"],0, 15));
 		#$closer_talk_time=$frow[6];
-		#$closer_talk_time = sec_convert($closer_talk_time,'H'); 
+		#$closer_talk_time = sec_convert($closer_talk_time,'H');
 		#$closer_talk_time =	sprintf("%5s", $closer_talk_time);
 
 		if ($frow[3]>=540) {$over540++;} else {$under540++;}
@@ -772,7 +772,7 @@ while ($i < $users_to_print)
 		$xfer_info_array[$array_key][6]=$frow[6];
 		$xfer_info_array[$array_key][7]=$frow[7]; # SORT BY THIS
 		$xfer_info_array[$array_key][8]=$frow[8];
-	
+
 
 		/*
 		$hidden_span_txt.=": $hphone : $hname : $hlead_id : $closer - $closer_full_name :\n";
@@ -784,12 +784,12 @@ while ($i < $users_to_print)
 	echo "<!--\n";
 	print_r($xfer_info_array);
 	echo "//-->\n";
-	
+
 	$new_xfer_info_array=array();
 	while (list($key, $val)=each($xfer_info_array)) {
 		$new_xfer_info_array[]=array('ID' => $key, 'phone' => $val[0], 'name' => $val[1], 'lead_id' => $val[2], 'length_in_sec' => $val[3], 'user' => $val[4], 'closer' => $val[5], 'talk_time' => $val[6], 'call_date' => $val[7], 'xfercallid' => $val[8]);
 	}
-	
+
 	foreach ($new_xfer_info_array as $key2 => $row2) {
 		$phone_ary[$key2]  = $row2['phone'];
 		$name_ary[$key2]  = $row2['name'];
@@ -815,7 +815,7 @@ while ($i < $users_to_print)
 		$closer=sprintf("%-6s", $row['closer']);
 		$closer_full_name=sprintf("%-15s", substr($user_array["$row[closer]"],0, 15));
 		$closer_talk_time=$row['talk_time'];
-		$closer_talk_time = sec_convert($closer_talk_time,'H'); 
+		$closer_talk_time = sec_convert($closer_talk_time,'H');
 		$closer_talk_time =	sprintf("%5s", $closer_talk_time);
 
 		$hidden_span_txt.=": $hphone : $hname : $hlead_id : $closer - $closer_full_name : $row[call_date] :\n";
@@ -861,7 +861,7 @@ while ($i < $users_to_print)
 	$Xpct = MathZDC($agent_xfers, $agent_calls)*100;
 	$Xpct = round($Xpct, 2);
 	$Xpct =	sprintf("%01.2f", $Xpct);
-	
+
 	if ($sales>$max_success) {$max_success=$sales;}
 	if ($USERcalls[$i]>$max_xfers) {$max_xfers=$USERcalls[$i];}
 	if ($Spct>$max_success_pct) {$max_success_pct=$Spct;}
@@ -905,7 +905,7 @@ $totXpct = MathZDC($TOTagent_xfers, $TOTagent_calls)*100;
 $totXpct = round($totXpct, 2);
 $totXpct =	sprintf("%01.2f", $totXpct);
 $totXpct =	sprintf("%6s", $totXpct);
-	
+
 
 $TOTagents =	sprintf("%6s", $i);
 $TOTcalls =		sprintf("%6s", $TOTcalls);
@@ -959,7 +959,7 @@ $CSV_fronter_footer.="\"Average time in Queue for customers:    $AVGwait\"\n\n\n
 	$SALE_graph.="<tr><th class='thgraph' scope='col'>TOTAL:</th><th class='thgraph' scope='col'>".trim($totA1)."</th></tr></table>";
 	$DROP_graph.="<tr><th class='thgraph' scope='col'>TOTAL:</th><th class='thgraph' scope='col'>".trim($totDROP)."</th></tr></table>";
 	$OTHER_graph.="<tr><th class='thgraph' scope='col'>TOTAL:</th><th class='thgraph' scope='col'>".trim($totOTHER)."</th></tr></table>";
-	$JS_onload.="\tDrawFronterGraph('SUCCESS', '1');\n"; 
+	$JS_onload.="\tDrawFronterGraph('SUCCESS', '1');\n";
 	$JS_text.="function DrawFronterGraph(graph, th_id) {\n";
 	$JS_text.="	var SUCCESS_graph=\"$SUCCESS_graph\";\n";
 	$JS_text.="	var XFERS_graph=\"$XFERS_graph\";\n";
@@ -1066,17 +1066,17 @@ while ($i < $users_to_print)
 		$row=mysqli_fetch_row($rslt);
 		if ($non_latin < 1)
 			{
-			 $full_name[$i] =	sprintf("%-15s", $row[0]); while(strlen($full_name[$i])>15) {$full_name[$i] = substr("$full_name[$i]", 0, -1);}	
+			 $full_name[$i] =	sprintf("%-15s", $row[0]); while(strlen($full_name[$i])>15) {$full_name[$i] = substr("$full_name[$i]", 0, -1);}
 			}
 		else
 			{
-			 $full_name[$i] =	sprintf("%-45s", $row[0]); while(mb_strlen($full_name[$i],'utf-8')>15) {$full_name[$i] = mb_substr("$full_name[$i]", 0, -1,'utf-8');}	
+			 $full_name[$i] =	sprintf("%-45s", $row[0]); while(mb_strlen($full_name[$i],'utf-8')>15) {$full_name[$i] = mb_substr("$full_name[$i]", 0, -1,'utf-8');}
 			}
 		}
 	else
 		{$full_name[$i] = '               ';}
 
-	$A1=0; $A2=0; $A3=0; $A4=0; $A5=0; $A6=0; $A7=0; $A8=0; $A9=0; $DROP=0; $OTHER=0; $sales=0; $uTOP=0; $uBOT=0; $points=0; 
+	$A1=0; $A2=0; $A3=0; $A4=0; $A5=0; $A6=0; $A7=0; $A8=0; $A9=0; $DROP=0; $OTHER=0; $sales=0; $uTOP=0; $uBOT=0; $points=0;
 	$under90=0; $AVG_TALK_TIME=0; $TALK_TIME=0;
 	$stmt="select status,count(*),sum(length_in_sec-queue_seconds) as talk_time,sum(if((length_in_sec-queue_seconds)<90, 1, 0)) as under90 from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and  campaign_id='" . mysqli_real_escape_string($link, $group) . "' $VCLuser_group_SQL and user='$userRAW[$i]' group by status;";
 	if ($non_latin > 0) {$rslt=mysql_to_mysqli("SET NAMES 'UTF8'", $link);}
@@ -1084,14 +1084,14 @@ while ($i < $users_to_print)
 	if ($DB) {$ASCII_text.="$stmt\n";}
 	$lead_ids_to_print = mysqli_num_rows($rslt);
 	$j=0;
-	
+
 	while ($j < $lead_ids_to_print)
 		{
 		$row=mysqli_fetch_row($rslt);
 		$recL=0;
-		if ( preg_match("/\|$row[0]\|/", $sale_dispo_str) and ($recL < 1) ) 
+		if ( preg_match("/\|$row[0]\|/", $sale_dispo_str) and ($recL < 1) )
 			{
-			$A1=$row[1]; $recL++; 
+			$A1=$row[1]; $recL++;
 			$sales=($sales + $row[1]);
 			$points = ($points + ($row[1] * 1) );
 			}
@@ -1100,7 +1100,7 @@ while ($i < $users_to_print)
 
 		$TALK_TIME+=$row[2];
 		$under90+=$row[3];
-		
+
 		$j++;
 		}
 
@@ -1126,7 +1126,7 @@ while ($i < $users_to_print)
 
 	$AVG_TIME = MathZDC($TALK_TIME, ($USERcallsRAW[$i] - 0));
 	$AVG_TIME = round($AVG_TIME);
-	$AVG_TIME = sec_convert($AVG_TIME,'H'); 
+	$AVG_TIME = sec_convert($AVG_TIME,'H');
 	$AVG_TIME =	sprintf("%5s", $AVG_TIME);
 
 	$Spct = MathZDC($sales, ($USERcallsRAW[$i] - 0) )*100;
@@ -1196,22 +1196,22 @@ $totCpct = MathZDC($TOTsales, ( ($TOTcalls - 0) - $totDROP) )*100;
 $totCpct = round($totCpct, 2);
 $totCpct =	sprintf("%01.2f", $totCpct);
 $totCpct =	sprintf("%6s", $totCpct);
-		
+
 $totSpct = MathZDC($TOTsales, ($TOTcalls - 0) )*100;
 $totSpct = round($totSpct, 2);
 $totSpct =	sprintf("%01.2f", $totSpct);
 $totSpct =	sprintf("%6s", $totSpct);
-		
+
 $TOT_AVG_TIME = MathZDC($TOT_TALK_TIME, ($TOTcalls - 0));
 $TOT_AVG_TIME = round($TOT_AVG_TIME);
-$TOT_AVG_TIME = sec_convert($TOT_AVG_TIME,'H'); 
+$TOT_AVG_TIME = sec_convert($TOT_AVG_TIME,'H');
 $TOT_AVG_TIME =	sprintf("%5s", $TOT_AVG_TIME);
 
 $ppc = MathZDC($totPOINTS, ( ($TOTcalls - $totOTHER) - $totDROP) );
 $ppc = round($ppc, 2);
 $ppc =	sprintf("%01.2f", $ppc);
 $ppc =	sprintf("%4s", $ppc);
-		
+
 $TOP = MathZDC($totTOP, $TOTsales)*100;
 $TOP = round($TOP, 0);
 $TOP =	sprintf("%01.0f", $TOP);
@@ -1285,8 +1285,8 @@ $RUNtime = ($ENDtime - $STARTtime);
 
 if ($report_display_type=="HTML") {
 	$HTML_text.=$GRAPH_text;
-	} 
-else 
+	}
+else
 	{
 	$HTML_text.=$ASCII_text;
 	}
@@ -1324,7 +1324,7 @@ if ($file_download > 0)
 
 	echo "$CSV_text";
 	}
-else 
+else
 	{
 	$JS_onload.="}\n";
 	$JS_text.=$JS_onload;

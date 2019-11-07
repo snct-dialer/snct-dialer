@@ -1,6 +1,6 @@
 <?php
 # user_group_bulk_change.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -220,7 +220,7 @@ require("admin_header.php");
 _QXZ("User Group Bulk Change"); ?></TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; </TD></TR>
 
 
-<?php 
+<?php
 
 if ($disable_user_group_bulk_change > 0)
 	{
@@ -239,7 +239,7 @@ if ($stage == "one_user_group_change")
 	$rslt=mysql_to_mysqli($stmt, $link);
 
 	echo _QXZ("All User Group %1s Users changed to the %2s User Group",0,'',$old_group,$group)."<BR>\n";
-	
+
 	### LOG INSERTION Admin Log Table ###
 	$SQL_log = "$stmt|";
 	$SQL_log = preg_replace('/;/', '', $SQL_log);
@@ -258,7 +258,7 @@ if ($stage == "all_user_group_change")
 	$rslt=mysql_to_mysqli($stmt, $link);
 
 	echo _QXZ("All non-Admin Users changed to the")." $group "._QXZ("User Group")."<BR>\n";
-	
+
 	### LOG INSERTION Admin Log Table ###
 	$SQL_log = "$stmt|";
 	$SQL_log = preg_replace('/;/', '', $SQL_log);
@@ -333,8 +333,8 @@ echo "|$stage|$group|";
 </html>
 
 <?php
-	
-exit; 
+
+exit;
 
 
 ?>

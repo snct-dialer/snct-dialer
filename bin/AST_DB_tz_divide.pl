@@ -96,7 +96,7 @@ $server_ip = $VARserver_ip;		# Asterisk server IP
 
 if (!$VARDB_port) {$VARDB_port='3306';}
 
-use DBI;	  
+use DBI;
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
@@ -109,13 +109,13 @@ if ($isdst)
  $TZmove = "'-6.00','-7.00','-8.00','-9.00','-10.00'";
  $TZback = "'-4.00','-5.00'";
  }
-else 
+else
  {
  $TZmove = "'-7.00','-8.00','-9.00','-10.00','-11.00'";
  $TZback = "'-5.00','-6.00'";
  }
 
-	##### change Pacific Mountain	
+	##### change Pacific Mountain
 
 	$stmtA = "UPDATE vicidial_list set list_id='222' where list_id='111' and gmt_offset_now IN($TZmove);";
 		if($DB){print STDERR "\n|$stmtA|\n";}

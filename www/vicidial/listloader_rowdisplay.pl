@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 #
 # listloader_rowdisplay.pl    version 2.2.0
-# 
+#
 # Copyright (C) 2009  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 #
 # CHANGES
-# 
+#
 # 60811-1232 - Changed to DBI
 # 60811-1329 - changed to use /etc/astguiclient.conf for configs
 # 90721-1340 - Added rank and owner as vicidial_list fields
@@ -49,7 +49,7 @@ if (length($ARGV[0])>1)
 
 use Spreadsheet::ParseExcel;
 use Time::Local;
-use DBI;	  
+use DBI;
 
 
 # default path to astguiclient configuration file:
@@ -107,9 +107,9 @@ foreach $oWkS (@{$oBook->{Worksheet}}) {
 	for(my $iC = $oWkS->{MinCol} ; defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++) {
 		$oWkC = $oWkS->{Cells}[0][$iC];
 		if ($oWkC) {
-			$var_str.=$oWkC->Value."|"; 
+			$var_str.=$oWkC->Value."|";
 		} else {
-			$var_str.="|"; 
+			$var_str.="|";
 		}
 	}
 }
@@ -126,7 +126,7 @@ while ($sthArows > $rec_count)
 	{
 	my $names = $sthA->{'NAME'};
 	  my $numFields = $sthA->{'NUM_OF_FIELDS'};
-	  for (my $i = 0;  $i < $numFields;  $i++) 
+	  for (my $i = 0;  $i < $numFields;  $i++)
 		{
 	#	printf("%s%s", $i ? "," : "", $$names[$i]);
 	#	printf("%s%s", $i ? "," : "", $$ref[$i]);
@@ -138,7 +138,7 @@ while ($sthArows > $rec_count)
 		print "    <th><select name='".$$names[$i]."_field'>\r\n";
 		print "     <option value='9999'>---------------------</option>\r\n";
 
-		for ($j=0; $j<scalar(@xls_row); $j++) 
+		for ($j=0; $j<scalar(@xls_row); $j++)
 			{
 			$xls_row[$j]=~s/\"//g;
 			print "     <option value='$j'>\"$xls_row[$j]\"</option>\r\n";

@@ -1,6 +1,6 @@
 <?php
 # dispo_send_email.php
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed to be used in the "Dispo URL" field of a campaign
@@ -17,7 +17,7 @@
 #
 # Example of what to put in Dead Trigger URL campaign setting field:
 # VARhttp://192.168.1.1/agc/dispo_send_email.php?container_id=TEST_CONTAINER&lead_id=--A--lead_id--B--&call_id=--A--call_id--B--&dispo=DEAD&user=NOAGENTURL--A--user--B--&pass=--A--call_id--B--&sale_status=ALL-STATUSES&called_count=--A--called_count--B--&log_to_file=1
-# 
+#
 # Definable Fields: (other fields should be left as they are)
 # - log_to_file -	(0,1) if set to 1, will create a log file in the agc directory
 # - sale_status -	(SALE---XSALE) a triple-dash "---" delimited list of the statuses that are to be moved, use ALL-STATUSES to trigger on all calls
@@ -478,7 +478,7 @@ if ($match_found > 0)
 							$agent_email =			urlencode(trim($row[7]));
 							$RUSfullname = preg_replace("/^.*_/",'',$fullname);
 							}
-						
+
 						if ( (preg_match('/--A--CF_uses_custom_fields--B--/i',$email_subject)) or (preg_match('/--A--CF_uses_custom_fields--B--/i',$email_body)) )
 							{
 							### find the names of all custom fields, if any
@@ -1287,9 +1287,9 @@ if ($match_found > 0)
 							{$header .= $attachment_20.PHP_EOL;}
 
 						// Send email
-						if (mail($email_to, $email_subject, "", $header)) 
-							{echo "Sent";} 
-						else 
+						if (mail($email_to, $email_subject, "", $header))
+							{echo "Sent";}
+						else
 							{echo "Error";}
 						}
 					else

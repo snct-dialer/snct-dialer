@@ -4301,25 +4301,25 @@ CREATE INDEX vlecc on vicidial_log_extended (caller_code);
 CREATE INDEX vlali on vicidial_live_agents (lead_id);
 CREATE INDEX vlaus on vicidial_live_agents (user);
 
-CREATE TABLE call_log_archive LIKE call_log; 
+CREATE TABLE call_log_archive LIKE call_log;
 
 CREATE TABLE vicidial_log_archive LIKE vicidial_log;
 
-CREATE TABLE vicidial_agent_log_archive LIKE vicidial_agent_log; 
+CREATE TABLE vicidial_agent_log_archive LIKE vicidial_agent_log;
 ALTER TABLE vicidial_agent_log_archive MODIFY agent_log_id INT(9) UNSIGNED NOT NULL;
 
 CREATE TABLE vicidial_carrier_log_archive LIKE vicidial_carrier_log;
 
-CREATE TABLE vicidial_call_notes_archive LIKE vicidial_call_notes; 
+CREATE TABLE vicidial_call_notes_archive LIKE vicidial_call_notes;
 ALTER TABLE vicidial_call_notes_archive MODIFY notesid INT(9) UNSIGNED NOT NULL;
 
-CREATE TABLE vicidial_lead_search_log_archive LIKE vicidial_lead_search_log; 
+CREATE TABLE vicidial_lead_search_log_archive LIKE vicidial_lead_search_log;
 ALTER TABLE vicidial_lead_search_log_archive MODIFY search_log_id INT(9) UNSIGNED NOT NULL;
 
-CREATE TABLE vicidial_closer_log_archive LIKE vicidial_closer_log; 
+CREATE TABLE vicidial_closer_log_archive LIKE vicidial_closer_log;
 ALTER TABLE vicidial_closer_log_archive MODIFY closecallid INT(9) UNSIGNED NOT NULL;
 
-CREATE TABLE vicidial_xfer_log_archive LIKE vicidial_xfer_log; 
+CREATE TABLE vicidial_xfer_log_archive LIKE vicidial_xfer_log;
 ALTER TABLE vicidial_xfer_log_archive MODIFY xfercallid INT(9) UNSIGNED NOT NULL;
 
 CREATE TABLE vicidial_outbound_ivr_log_archive LIKE vicidial_outbound_ivr_log;
@@ -4327,9 +4327,9 @@ CREATE TABLE vicidial_outbound_ivr_log_archive LIKE vicidial_outbound_ivr_log;
 CREATE TABLE vicidial_log_extended_archive LIKE vicidial_log_extended;
 CREATE UNIQUE INDEX vlea on vicidial_log_extended_archive (uniqueid,call_date,lead_id);
 
-CREATE TABLE vicidial_log_noanswer_archive LIKE vicidial_log_noanswer; 
+CREATE TABLE vicidial_log_noanswer_archive LIKE vicidial_log_noanswer;
 
-CREATE TABLE vicidial_did_agent_log_archive LIKE vicidial_did_agent_log; 
+CREATE TABLE vicidial_did_agent_log_archive LIKE vicidial_did_agent_log;
 CREATE UNIQUE INDEX vdala on vicidial_did_agent_log_archive (uniqueid,call_date,did_route);
 
 CREATE TABLE vicidial_dial_log_archive LIKE vicidial_dial_log;
@@ -4346,11 +4346,11 @@ CREATE TABLE recording_log_archive LIKE recording_log;
 ALTER TABLE recording_log_archive MODIFY recording_id INT(10) UNSIGNED UNIQUE NOT NULL;
 ALTER TABLE recording_log_archive DROP PRIMARY KEY;
 
-CREATE TABLE vicidial_drop_log_archive LIKE vicidial_drop_log; 
+CREATE TABLE vicidial_drop_log_archive LIKE vicidial_drop_log;
 DROP INDEX drop_date on vicidial_drop_log_archive;
 CREATE UNIQUE INDEX vicidial_drop_log_archive_key on vicidial_drop_log_archive(drop_date, uniqueid);
 
-CREATE TABLE vicidial_rt_monitor_log_archive LIKE vicidial_rt_monitor_log; 
+CREATE TABLE vicidial_rt_monitor_log_archive LIKE vicidial_rt_monitor_log;
 
 CREATE TABLE vicidial_campaign_hour_counts_archive LIKE vicidial_campaign_hour_counts;
 
@@ -4364,7 +4364,7 @@ ALTER TABLE user_call_log_archive MODIFY user_call_log_id INT(9) UNSIGNED NOT NU
 CREATE TABLE vicidial_inbound_survey_log_archive LIKE vicidial_inbound_survey_log;
 CREATE UNIQUE INDEX visla_key on vicidial_inbound_survey_log_archive(uniqueid, call_date, campaign_id, lead_id);
 
-CREATE TABLE vicidial_inbound_callback_queue_archive LIKE vicidial_inbound_callback_queue; 
+CREATE TABLE vicidial_inbound_callback_queue_archive LIKE vicidial_inbound_callback_queue;
 ALTER TABLE vicidial_inbound_callback_queue_archive MODIFY icbq_id INT(9) UNSIGNED NOT NULL;
 
 CREATE TABLE vicidial_agent_function_log_archive LIKE vicidial_agent_function_log;

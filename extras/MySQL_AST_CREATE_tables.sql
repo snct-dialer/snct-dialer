@@ -4212,45 +4212,45 @@ index (call_date),
 index (lead_id)
 ) ENGINE=MyISAM;
 
-CREATE TABLE vicidial_sip_event_log ( 
-sip_event_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL, 
-caller_code VARCHAR(30) NOT NULL, 
-channel VARCHAR(100), 
-server_ip VARCHAR(15), 
-uniqueid VARCHAR(20), 
-sip_call_id VARCHAR(256), 
-event_date DATETIME(6), 
-event VARCHAR(10), 
-index(caller_code), 
-index(event_date) 
+CREATE TABLE vicidial_sip_event_log (
+sip_event_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+caller_code VARCHAR(30) NOT NULL,
+channel VARCHAR(100),
+server_ip VARCHAR(15),
+uniqueid VARCHAR(20),
+sip_call_id VARCHAR(256),
+event_date DATETIME(6),
+event VARCHAR(10),
+index(caller_code),
+index(event_date)
 ) ENGINE=MyISAM;
 
-CREATE TABLE vicidial_sip_event_archive_details ( 
-wday TINYINT(1) UNSIGNED PRIMARY KEY NOT NULL, 
-start_event_date DATETIME(6), 
+CREATE TABLE vicidial_sip_event_archive_details (
+wday TINYINT(1) UNSIGNED PRIMARY KEY NOT NULL,
+start_event_date DATETIME(6),
 end_event_date DATETIME(6),
 record_count INT(9) UNSIGNED default '0'
 ) ENGINE=MyISAM;
 
-CREATE TABLE vicidial_sip_event_recent ( 
-caller_code VARCHAR(20) default '', 
-channel VARCHAR(100), 
-server_ip VARCHAR(15), 
-uniqueid VARCHAR(20), 
-invite_date DATETIME(6), 
-first_100_date DATETIME(6), 
-first_180_date DATETIME(6), 
-first_183_date DATETIME(6), 
-last_100_date DATETIME(6), 
-last_180_date DATETIME(6), 
-last_183_date DATETIME(6), 
-200_date DATETIME(6), 
-error_date DATETIME(6), 
-processed ENUM('N','Y','U') default 'N', 
-index(caller_code), 
-index(invite_date), 
-index(processed) 
-) ENGINE=MyISAM;  
+CREATE TABLE vicidial_sip_event_recent (
+caller_code VARCHAR(20) default '',
+channel VARCHAR(100),
+server_ip VARCHAR(15),
+uniqueid VARCHAR(20),
+invite_date DATETIME(6),
+first_100_date DATETIME(6),
+first_180_date DATETIME(6),
+first_183_date DATETIME(6),
+last_100_date DATETIME(6),
+last_180_date DATETIME(6),
+last_183_date DATETIME(6),
+200_date DATETIME(6),
+error_date DATETIME(6),
+processed ENUM('N','Y','U') default 'N',
+index(caller_code),
+index(invite_date),
+index(processed)
+) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_log_extended_sip (
 call_date DATETIME(6),
@@ -4520,25 +4520,25 @@ CREATE INDEX vlecc on vicidial_log_extended (caller_code);
 CREATE INDEX vlali on vicidial_live_agents (lead_id);
 CREATE INDEX vlaus on vicidial_live_agents (user);
 
-CREATE TABLE call_log_archive LIKE call_log; 
+CREATE TABLE call_log_archive LIKE call_log;
 
 CREATE TABLE vicidial_log_archive LIKE vicidial_log;
 
-CREATE TABLE vicidial_agent_log_archive LIKE vicidial_agent_log; 
+CREATE TABLE vicidial_agent_log_archive LIKE vicidial_agent_log;
 ALTER TABLE vicidial_agent_log_archive MODIFY agent_log_id INT(9) UNSIGNED NOT NULL;
 
 CREATE TABLE vicidial_carrier_log_archive LIKE vicidial_carrier_log;
 
-CREATE TABLE vicidial_call_notes_archive LIKE vicidial_call_notes; 
+CREATE TABLE vicidial_call_notes_archive LIKE vicidial_call_notes;
 ALTER TABLE vicidial_call_notes_archive MODIFY notesid INT(9) UNSIGNED NOT NULL;
 
-CREATE TABLE vicidial_lead_search_log_archive LIKE vicidial_lead_search_log; 
+CREATE TABLE vicidial_lead_search_log_archive LIKE vicidial_lead_search_log;
 ALTER TABLE vicidial_lead_search_log_archive MODIFY search_log_id INT(9) UNSIGNED NOT NULL;
 
-CREATE TABLE vicidial_closer_log_archive LIKE vicidial_closer_log; 
+CREATE TABLE vicidial_closer_log_archive LIKE vicidial_closer_log;
 ALTER TABLE vicidial_closer_log_archive MODIFY closecallid INT(9) UNSIGNED NOT NULL;
 
-CREATE TABLE vicidial_xfer_log_archive LIKE vicidial_xfer_log; 
+CREATE TABLE vicidial_xfer_log_archive LIKE vicidial_xfer_log;
 ALTER TABLE vicidial_xfer_log_archive MODIFY xfercallid INT(9) UNSIGNED NOT NULL;
 
 CREATE TABLE vicidial_outbound_ivr_log_archive LIKE vicidial_outbound_ivr_log;
@@ -4549,9 +4549,9 @@ CREATE UNIQUE INDEX vlea on vicidial_log_extended_archive (uniqueid,call_date,le
 CREATE TABLE vicidial_log_extended_sip_archive LIKE vicidial_log_extended_sip;
 CREATE UNIQUE INDEX vlesa on vicidial_log_extended_sip_archive (caller_code,call_date);
 
-CREATE TABLE vicidial_log_noanswer_archive LIKE vicidial_log_noanswer; 
+CREATE TABLE vicidial_log_noanswer_archive LIKE vicidial_log_noanswer;
 
-CREATE TABLE vicidial_did_agent_log_archive LIKE vicidial_did_agent_log; 
+CREATE TABLE vicidial_did_agent_log_archive LIKE vicidial_did_agent_log;
 CREATE UNIQUE INDEX vdala on vicidial_did_agent_log_archive (uniqueid,call_date,did_route);
 
 CREATE TABLE vicidial_dial_log_archive LIKE vicidial_dial_log;
@@ -4568,11 +4568,11 @@ CREATE TABLE recording_log_archive LIKE recording_log;
 ALTER TABLE recording_log_archive MODIFY recording_id INT(10) UNSIGNED UNIQUE NOT NULL;
 ALTER TABLE recording_log_archive DROP PRIMARY KEY;
 
-CREATE TABLE vicidial_drop_log_archive LIKE vicidial_drop_log; 
+CREATE TABLE vicidial_drop_log_archive LIKE vicidial_drop_log;
 DROP INDEX drop_date on vicidial_drop_log_archive;
 CREATE UNIQUE INDEX vicidial_drop_log_archive_key on vicidial_drop_log_archive(drop_date, uniqueid);
 
-CREATE TABLE vicidial_rt_monitor_log_archive LIKE vicidial_rt_monitor_log; 
+CREATE TABLE vicidial_rt_monitor_log_archive LIKE vicidial_rt_monitor_log;
 
 CREATE TABLE vicidial_campaign_hour_counts_archive LIKE vicidial_campaign_hour_counts;
 
@@ -4586,7 +4586,7 @@ ALTER TABLE user_call_log_archive MODIFY user_call_log_id INT(9) UNSIGNED NOT NU
 CREATE TABLE vicidial_inbound_survey_log_archive LIKE vicidial_inbound_survey_log;
 CREATE UNIQUE INDEX visla_key on vicidial_inbound_survey_log_archive(uniqueid, call_date, campaign_id, lead_id);
 
-CREATE TABLE vicidial_inbound_callback_queue_archive LIKE vicidial_inbound_callback_queue; 
+CREATE TABLE vicidial_inbound_callback_queue_archive LIKE vicidial_inbound_callback_queue;
 ALTER TABLE vicidial_inbound_callback_queue_archive MODIFY icbq_id INT(9) UNSIGNED NOT NULL;
 
 CREATE TABLE vicidial_agent_function_log_archive LIKE vicidial_agent_function_log;
@@ -4605,19 +4605,19 @@ CREATE UNIQUE INDEX amd_unq_key on vicidial_amd_log_archive(uniqueid, call_date,
 
 CREATE TABLE vicidial_sessions_recent_archive LIKE vicidial_sessions_recent;
 
-CREATE TABLE vicidial_sip_event_log_0 LIKE vicidial_sip_event_log; 
+CREATE TABLE vicidial_sip_event_log_0 LIKE vicidial_sip_event_log;
 ALTER TABLE vicidial_sip_event_log_0 MODIFY sip_event_id INT(9) UNSIGNED NOT NULL;
-CREATE TABLE vicidial_sip_event_log_1 LIKE vicidial_sip_event_log; 
+CREATE TABLE vicidial_sip_event_log_1 LIKE vicidial_sip_event_log;
 ALTER TABLE vicidial_sip_event_log_1 MODIFY sip_event_id INT(9) UNSIGNED NOT NULL;
-CREATE TABLE vicidial_sip_event_log_2 LIKE vicidial_sip_event_log; 
+CREATE TABLE vicidial_sip_event_log_2 LIKE vicidial_sip_event_log;
 ALTER TABLE vicidial_sip_event_log_2 MODIFY sip_event_id INT(9) UNSIGNED NOT NULL;
-CREATE TABLE vicidial_sip_event_log_3 LIKE vicidial_sip_event_log; 
+CREATE TABLE vicidial_sip_event_log_3 LIKE vicidial_sip_event_log;
 ALTER TABLE vicidial_sip_event_log_3 MODIFY sip_event_id INT(9) UNSIGNED NOT NULL;
-CREATE TABLE vicidial_sip_event_log_4 LIKE vicidial_sip_event_log; 
+CREATE TABLE vicidial_sip_event_log_4 LIKE vicidial_sip_event_log;
 ALTER TABLE vicidial_sip_event_log_4 MODIFY sip_event_id INT(9) UNSIGNED NOT NULL;
-CREATE TABLE vicidial_sip_event_log_5 LIKE vicidial_sip_event_log; 
+CREATE TABLE vicidial_sip_event_log_5 LIKE vicidial_sip_event_log;
 ALTER TABLE vicidial_sip_event_log_5 MODIFY sip_event_id INT(9) UNSIGNED NOT NULL;
-CREATE TABLE vicidial_sip_event_log_6 LIKE vicidial_sip_event_log; 
+CREATE TABLE vicidial_sip_event_log_6 LIKE vicidial_sip_event_log;
 ALTER TABLE vicidial_sip_event_log_6 MODIFY sip_event_id INT(9) UNSIGNED NOT NULL;
 
 CREATE TABLE vicidial_sip_action_log_archive LIKE vicidial_sip_action_log;

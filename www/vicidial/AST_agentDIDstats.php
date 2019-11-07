@@ -1,6 +1,6 @@
-<?php 
+<?php
 # AST_agentDIDstats.php
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -71,7 +71,7 @@ $table_name="vicidial_did_log";
 $archive_table_name=use_archive_table($table_name);
 if ($archive_table_name!=$table_name) {$archives_available="Y";}
 
-if ($search_archived_data) 
+if ($search_archived_data)
 	{
 	$vicidial_did_log_table=use_archive_table("vicidial_did_log");
 	$vicidial_closer_log_table=use_archive_table("vicidial_closer_log");
@@ -352,7 +352,7 @@ $HEADER.="<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 require("chart_button.php");
-$HEADER.="<script src='chart/Chart.js'></script>\n"; 
+$HEADER.="<script src='chart/Chart.js'></script>\n";
 $HEADER.="<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
 
 $HEADER.="<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
@@ -410,7 +410,7 @@ $MAIN.="<SELECT SIZE=5 NAME=group[] multiple>\n";
 $o=0;
 while ($groups_to_print > $o)
 	{
-	if (preg_match("/\|$groups[$o]\|/",$group_string)) 
+	if (preg_match("/\|$groups[$o]\|/",$group_string))
 		{$MAIN.="<option selected value=\"$groups[$o]\">$group_patterns[$o] - $group_names[$o]</option>\n";}
 	else
 		{$MAIN.="<option value=\"$groups[$o]\">$group_patterns[$o] - $group_names[$o]</option>\n";}
@@ -437,7 +437,7 @@ $MAIN.="<option value=\"1745-100\">1745-100</option>\n";
 $MAIN.="</SELECT>\n";
 */
 
-if ($archives_available=="Y") 
+if ($archives_available=="Y")
 	{
 	$MAIN.="<BR><BR><BR><input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."\n";
 	}
@@ -468,18 +468,18 @@ else
 	{
 	### FOR SHIFTS IT IS BEST TO STICK TO 15-MINUTE INCREMENTS FOR START TIMES ###
 
-	if ($shift == 'AM') 
+	if ($shift == 'AM')
 		{
 	#	$time_BEGIN=$AM_shift_BEGIN;
 	#	$time_END=$AM_shift_END;
-	#	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}   
+	#	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}
 	#	if (strlen($time_END) < 6) {$time_END = "15:15:00";}
-		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}   
+		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}
 		if (strlen($time_END) < 6) {$time_END = "11:59:59";}
-	#	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "12:00:00";}   
+	#	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "12:00:00";}
 	#	if (strlen($time_END) < 6) {$time_END = "11:59:59";}
 		}
-	if ($shift == 'PM') 
+	if ($shift == 'PM')
 		{
 	#	$time_BEGIN=$PM_shift_BEGIN;
 	#	$time_END=$PM_shift_END;
@@ -488,53 +488,53 @@ else
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "12:00:00";}
 		if (strlen($time_END) < 6) {$time_END = "23:59:59";}
 		}
-	if ($shift == 'ALL') 
+	if ($shift == 'ALL')
 		{
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}
 		if (strlen($time_END) < 6) {$time_END = "23:59:59";}
 		}
-	if ($shift == 'DAYTIME') 
+	if ($shift == 'DAYTIME')
 		{
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "08:45:00";}
 		if (strlen($time_END) < 6) {$time_END = "00:59:59";}
 		}
-	if ($shift == '10AM-5PM') 
+	if ($shift == '10AM-5PM')
 		{
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "10:00:00";}
 		if (strlen($time_END) < 6) {$time_END = "16:59:59";}
 		}
-	if ($shift == '10AM-6PM') 
+	if ($shift == '10AM-6PM')
 		{
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "10:00:00";}
 		if (strlen($time_END) < 6) {$time_END = "17:59:59";}
 		}
-	if ($shift == '9AM-11PM') 
+	if ($shift == '9AM-11PM')
 		{
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "09:00:00";}
 		if (strlen($time_END) < 6) {$time_END = "22:59:59";}
 		}
-	if ($shift == '9AM-10PM') 
+	if ($shift == '9AM-10PM')
 		{
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "09:00:00";}
 		if (strlen($time_END) < 6) {$time_END = "21:59:59";}
 		}
-	if ($shift == '9AM-1AM') 
+	if ($shift == '9AM-1AM')
 		{
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "09:00:00";}
 		if (strlen($time_END) < 6) {$time_END = "00:59:59";}
 		}
-	if ($shift == '845-1745') 
+	if ($shift == '845-1745')
 		{
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "08:45:00";}
 		if (strlen($time_END) < 6) {$time_END = "17:44:59";}
 		}
-	if ($shift == '1745-100') 
+	if ($shift == '1745-100')
 		{
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "17:45:00";}
 		if (strlen($time_END) < 6) {$time_END = "00:59:59";}
 		}
 
-	$query_date_BEGIN = "$query_date $time_BEGIN";   
+	$query_date_BEGIN = "$query_date $time_BEGIN";
 	$query_date_END = "$end_date $time_END";
 
 	$SQdate_ARY =	explode(' ',$query_date_BEGIN);
@@ -609,7 +609,7 @@ else
 		$q=1;
 		foreach ($query_date_array as &$current_date) {
 			$user_array=array();
-			$start_date = "$current_date $time_BEGIN";   
+			$start_date = "$current_date $time_BEGIN";
 			$end_date = "$current_date $time_END";
 			if (date("w", strtotime($current_date))==0 || $q==1) {
 				array_push($sunday_array, $current_date);
@@ -661,7 +661,7 @@ else
 
 		for ($q=0; $q<count($sunday_array); $q++) {
 			$user_array=array();
-			$start_date = "$sunday_array[$q] $time_BEGIN";   
+			$start_date = "$sunday_array[$q] $time_BEGIN";
 			$end_date = "$saturday_array[$q] $time_END";
 			$date_total=0;
 

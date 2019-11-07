@@ -1,12 +1,12 @@
 <?php
 ### add_DNC_test.php - add numbers to the DNC list using the admin.php form
 #
-# 
+#
 # CHANGES:
 # 190617-1057 - First Build
 #
 
-$DB=1; 
+$DB=1;
 
 $phone_numbers = "9998885555\n9998885556\n9998885557";
 

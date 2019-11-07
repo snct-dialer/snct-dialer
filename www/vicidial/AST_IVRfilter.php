@@ -1,6 +1,6 @@
-<?php 
+<?php
 # AST_IVRfilter.php
-# 
+#
 # Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -60,13 +60,13 @@ if (isset($_GET["DB"]))					{$DB=$_GET["DB"];}
 if (isset($_GET["file_download"]))				{$file_download=$_GET["file_download"];}
 	elseif (isset($_POST["file_download"]))	{$file_download=$_POST["file_download"];}
 
-if ($hourly_breakdown) 
+if ($hourly_breakdown)
 	{
 	$date_int=3600;
 	$substr_place=13;
 	$checked="checked";
-	} 
-else 
+	}
+else
 	{
 	$date_int=86400;
 	$substr_place=10;
@@ -317,26 +317,26 @@ $HTML_text.="<PRE><FONT SIZE=2>\n\n";
 
 $shift = 'ALL';
 
-if ($shift == 'AM') 
+if ($shift == 'AM')
 	{
 	$time_BEGIN=$AM_shift_BEGIN;
 	$time_END=$AM_shift_END;
-	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}   
+	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}
 	if (strlen($time_END) < 6) {$time_END = "15:14:59";}
 	}
-if ($shift == 'PM') 
+if ($shift == 'PM')
 	{
 	$time_BEGIN=$PM_shift_BEGIN;
 	$time_END=$PM_shift_END;
 	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "15:15:00";}
 	if (strlen($time_END) < 6) {$time_END = "23:15:00";}
 	}
-if ($shift == 'ALL') 
+if ($shift == 'ALL')
 	{
 	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}
 	if (strlen($time_END) < 6) {$time_END = "23:59:59";}
 	}
-$query_date_BEGIN = "$query_date $time_BEGIN";   
+$query_date_BEGIN = "$query_date $time_BEGIN";
 $query_date_END = "$end_date $time_END";
 
 
@@ -355,7 +355,7 @@ while($start_date<$end_date) {
 	for ($j=0; $j<16; $j++) {
 		$count_ary[substr($start_date_ary[$i],0,$substr_place)][$j]=0;
 	}
-	
+
 	$i++;
 	$start_date+=$date_int;
 }
@@ -474,7 +474,7 @@ $Utotalsta=0;
 	$HTML_text.="|                              +--------+--------+-------+----------------------+----------------------+-------+--------+--------+-------+--------+--------+-------+--------+--------+-------+--------+--------+-------+\n";
 	$HTML_text.="| "._QXZ("HOURS",28)." | "._QXZ("CALLS",6)." | "._QXZ("UNIQUE",6)." |     % | "._QXZ("CALLS**",20)." | "._QXZ("UNIQUE**",20)." |     % | "._QXZ("CALLS",6)." | "._QXZ("UNIQUE",6)." |     % | "._QXZ("CALLS",6)." | "._QXZ("UNIQUE",6)." |     % | "._QXZ("CALLS",6)." | "._QXZ("UNIQUE",6)." |     % | "._QXZ("CALLS",6)." | "._QXZ("UNIQUE",6)." |     % |\n";
 	$HTML_text.="+------------------------------+--------+--------+-------+----------------------+----------------------+-------+--------+--------+-------+--------+--------+-------+--------+--------+-------+--------+--------+-------+\n";
-	
+
 	$CSV_text.="\n";
 	$CSV_text.="\"\",\"\",\""._QXZ("TOTALS")."\",\"\",\"\",\""._QXZ("SENT TO QUEUE")."\",\"\",\"\",\""._QXZ("CALLERID NOT FOUND")."\",\"\",\"\",\""._QXZ("REVIOUS DNC")."\",\"\",\"\",\""._QXZ("PREVIOUS SALE")."\",\"\",\"\",\""._QXZ("ARCHIVE ONLY")."\",\n";
 	$CSV_text.="\""._QXZ("HOURS")."\",\""._QXZ("CALLS")."\",\""._QXZ("UNIQUE")."\",\"%\",\""._QXZ("CALLS**")."\",\""._QXZ("UNIQUE**")."\",\"%\",\""._QXZ("CALLS*")."\",\""._QXZ("UNIQUE**")."\",\"%\",\""._QXZ("CALLS*")."\",\""._QXZ("UNIQUE**")."\",\"%\",\""._QXZ("CALLS*")."\",\""._QXZ("UNIQUE**")."\",\"%\",\""._QXZ("CALLS*")."\",\""._QXZ("UNIQUE**")."\",\"%\",\n";
@@ -526,7 +526,7 @@ $Utotalsta=0;
 		$HTML_text.=$UpsalePERCENT." |\n";
 
 		$CSV_text.="\"$start_date_ary[$i]-".substr($end_date_ary[$i],11,8)."\",\"".$count_ary[$key][14]."\",\"".$count_ary[$key][15]."\",\"n/a\",\"$queue_str\",\"$Uqueue_str\",\"$UtotalPERCENT\",\"".$count_ary[$key][2]."\",\"".$count_ary[$key][3]."\",\"$UagentPERCENT\",\"".$count_ary[$key][4]."\",\"".$count_ary[$key][5]."\",\"$UntfndPERCENT\",\"".$count_ary[$key][6]."\",\"".$count_ary[$key][7]."\",\"$UprdncPERCENT\",\"".$count_ary[$key][8]."\",\"".$count_ary[$key][9]."\",\"$UpsalePERCENT\",\n";
-	
+
 	}
 
 	$HTML_text.="+------------------------------+--------+--------+-------+----------------------+----------------------+-------+--------+--------+-------+--------+--------+-------+--------+--------+-------+--------+--------+-------+\n";
@@ -622,7 +622,7 @@ if ($file_download == 0 || !$file_download) {
 	flush();
 
 	echo "$CSV_text";
-	
+
 }
 
 if ($db_source == 'S')

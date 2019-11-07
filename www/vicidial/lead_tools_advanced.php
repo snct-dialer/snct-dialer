@@ -252,7 +252,7 @@ if ( ($SSweb_logo=='default_old') and ($logo_old > 0) )
 	}
 if ( ($SSweb_logo!='default_new') and ($SSweb_logo!='default_old') )
 	{
-	if (file_exists("./images/vicidial_admin_web_logo$SSweb_logo")) 
+	if (file_exists("./images/vicidial_admin_web_logo$SSweb_logo"))
 		{
 		$selected_logo = "./images/vicidial_admin_web_logo$SSweb_logo";
 		$selected_small_logo = "./images/vicidial_admin_web_logo$SSweb_logo";
@@ -266,7 +266,7 @@ echo "<META HTTP-EQUIV='Content-Type' CONTENT='text/html; charset=utf-8'>\n";
 echo "<!-- VERSION: <?php echo $version ?>     BUILD: <?php echo $build ?> -->\n";
 ?>
 <script type="text/javascript">
-window.onload = function() 
+window.onload = function()
 	{
 	// move functions initialization
 	document.getElementById("enable_move_status").onclick = enableMoveStatus;
@@ -316,7 +316,7 @@ function enableMoveStatus()
 		{
 		document.getElementById("move_status").disabled = false;
 		}
-	else 
+	else
 		{
 		document.getElementById("move_status").disabled = true;
 		}

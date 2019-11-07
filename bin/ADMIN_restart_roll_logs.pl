@@ -4,7 +4,7 @@
 #
 # script to roll the Asterisk logs on machine restart
 #
-# have this run on the astersik server 
+# have this run on the astersik server
 #
 # LICENSE: AGPLv3
 #
@@ -27,7 +27,7 @@
 use Fcntl qw(:flock);
 # print "start of program $0\n";
 unless (flock(DATA, LOCK_EX|LOCK_NB)) {
-    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log'
     or print "Can't open the fscking file: $!";
     $datestring = localtime();
     print $fh "[$datestring] $0 is already running. Exiting.\n";

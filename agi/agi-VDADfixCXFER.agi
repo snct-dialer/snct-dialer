@@ -1,17 +1,17 @@
 #!/usr/bin/perl
 #
 # agi-VDADfixCXFER.agi      version 2.6
-# 
+#
 # runs when a Consultative transfer is released by the vicidial fronter as the
 # call arrives on another channel so that the vicidial_live_agents record is
 # updated to be accurate.
 #
 # You need to put lines similar to those below in your extensions.conf file:
-# 
+#
 # ;VICIDIAL Consultative Xfer fix script:
 # exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 # exten => _010*010*010*015*8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
-# 
+#
 # Copyright (C) 2013  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG:
@@ -147,7 +147,7 @@ if (length($ARGV[0])>1)
 }
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 {
 	chomp;
 	last unless length($_);
@@ -178,7 +178,7 @@ $extension =~ s/^\d\d\d\*\d\d\d\*\d\d\d\*\d\d\d\*//gi;
 
 if ($AGILOG) {$agi_string = "AGI Environment Dump:";   &agi_output;}
 
-foreach $i (sort keys %AGI) 
+foreach $i (sort keys %AGI)
 {
 	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
 }

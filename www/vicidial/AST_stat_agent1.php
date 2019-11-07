@@ -1,7 +1,7 @@
-<?php 
+<?php
 # AST_stat_agent1.php
-# 
-# Copyright (©) 2016-2019 Jörg Frings-Fürst <open_source@jff.email>    
+#
+# Copyright (©) 2016-2019 Jörg Frings-Fürst <open_source@jff.email>
 #               2016-2018 flyingpenguin UG <info@flyingpenguin.de>
 #               2019      SNCT GmbH <info@snct-gmbh.de>
 #
@@ -9,9 +9,9 @@
 #
 # Agent stats for snct GmbH
 # based on Agent stats for MediCenter Mittelrhein
-# 
+#
 # CHANGELOG:
-# 2016-12-13 - Inital release   
+# 2016-12-13 - Inital release
 # 2017-01-11 - First Release
 # 2017-01-12 - Zusammenfassung Dispo & Dead, Add Group, change order, add calendar
 # 2018-01-22 - Umstellung auf Liveberechnung und auf alle selectierbaren Stati
@@ -191,7 +191,7 @@ else
 	exit;
 	}
 
-$test_ip = $_SERVER['SERVER_ADDR'];	
+$test_ip = $_SERVER['SERVER_ADDR'];
 $doc_root = $_SERVER['DOCUMENT_ROOT'];
 
 #if($test_ip != "172.16.2.13") {
@@ -204,7 +204,7 @@ $doc_root = $_SERVER['DOCUMENT_ROOT'];
 #	echo "<br>Bitte verwenden Sie für den Aufruf des $report_name nur den Server ViciDB2 (172.16.2.13)" . PHP_EOL;
 #}
 
-	
+
 $stmt="SELECT user_id,user,pass,full_name,user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit,add_timeclock_log,modify_timeclock_log,delete_timeclock_log,alter_custphone_override,vdc_agent_api_access,modify_inbound_dids,delete_inbound_dids,active,alert_enabled,download_lists,agent_shift_enforcement_override,manager_shift_enforcement_override,shift_override_flag,export_reports,delete_from_dnc,email,user_code,territory,allow_alerts,callcard_admin,force_change_password,modify_shifts,modify_phones,modify_carriers,modify_labels,modify_statuses,modify_voicemail,modify_audiostore,modify_moh,modify_tts,modify_contacts,modify_same_user_level from vicidial_users where user='$PHP_AUTH_USER';";
 $rslt=mysql_to_mysqli($stmt, $link);
 $row=mysqli_fetch_row($rslt);
@@ -275,7 +275,7 @@ if ( (!preg_match('/\-\-ALL\-\-/i',$LOGadmin_viewable_groups)) and (strlen($LOGa
 	$valLOGadmin_viewable_groupsSQL = "and val.user_group IN('---ALL---','$rawLOGadmin_viewable_groupsSQL')";
 	$vmLOGadmin_viewable_groupsSQL = "and vm.user_group IN('---ALL---','$rawLOGadmin_viewable_groupsSQL')";
 	}
-else 
+else
 	{$admin_viewable_groupsALL=1;}
 
 #  and (preg_match("/MONITOR|BARGE|HIJACK|WHISPER/",$monitor_active) ) )
@@ -465,7 +465,7 @@ $select_list .= "<SELECT SIZE=15 NAME=groups[] multiple>";
 $o=0;
 while ($groups_to_print > $o)
 	{
-	if (preg_match("/\|$LISTgroups[$o]\|/",$group_string)) 
+	if (preg_match("/\|$LISTgroups[$o]\|/",$group_string))
 		{$select_list .= "<option selected value=\"$LISTgroups[$o]\">$LISTgroups[$o] - $LISTnames[$o]</option>";}
 	else
 		{$select_list .= "<option value=\"$LISTgroups[$o]\">$LISTgroups[$o] - $LISTnames[$o]</option>";}
@@ -496,7 +496,7 @@ $open_list = '<TABLE WIDTH=250 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\'#D9E6FE\'><
 <HTML>
 <HEAD>
 
-<?php 
+<?php
 
 if ($RTajax > 0)
 	{
@@ -510,17 +510,17 @@ else
 	window.onload = startup;
 
 	// function to detect the XY position on the page of the mouse
-	function startup() 
+	function startup()
 		{
 		hide_ingroup_info();
-		if (window.Event) 
+		if (window.Event)
 			{
 			document.captureEvents(Event.MOUSEMOVE);
 			}
 		document.onmousemove = getCursorXY;
 		}
 
-	function getCursorXY(e) 
+	function getCursorXY(e)
 		{
 		document.getElementById('cursorX').value = (window.Event) ? e.pageX : event.clientX + (document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft);
 		document.getElementById('cursorY').value = (window.Event) ? e.pageY : event.clientY + (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop);
@@ -533,7 +533,7 @@ else
 	var pass = '<?php echo $PHP_AUTH_PW ?>';
 
 	// functions to hide and show different DIVs
-	function openDiv(divvar) 
+	function openDiv(divvar)
 		{
 		document.getElementById(divvar).innerHTML = select_list;
 		document.getElementById(divvar).style.left = 0;
@@ -575,15 +575,15 @@ else
 			{
 			xmlhttp = new XMLHttpRequest();
 			}
-		if (xmlhttp) 
+		if (xmlhttp)
 			{
 			var monitorQuery = "source=realtime&function=agent_ingroup_info&stage=change&user=" + user + "&pass=" + pass + "&agent_user=" + agent_user;
-			xmlhttp.open('POST', 'non_agent_api.php'); 
+			xmlhttp.open('POST', 'non_agent_api.php');
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(monitorQuery); 
-			xmlhttp.onreadystatechange = function() 
-				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+			xmlhttp.send(monitorQuery);
+			xmlhttp.onreadystatechange = function()
+				{
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 					{
 				//	alert(xmlhttp.responseText);
 					var Xoutput = null;
@@ -621,8 +621,8 @@ else
 		.blue {color: white; background-color: blue}
 		.midnightblue {color: white; background-color: #191970}
 		.purple {color: white; background-color: purple}
-		.violet {color: black; background-color: #EE82EE} 
-		.thistle {color: black; background-color: #D8BFD8} 
+		.violet {color: black; background-color: #EE82EE}
+		.thistle {color: black; background-color: #D8BFD8}
 		.olive {color: white; background-color: #808000}
 		.lime {color: white; background-color: #006600}
 		.yellow {color: black; background-color: yellow}
@@ -648,13 +648,13 @@ else
 		.Hfr2 {color: black; background-color: #FF9999; font-family: HELVETICA; font-size: 18; font-weight: bold;}
 		.Hfr3 {color: black; background-color: #FF6666; font-family: HELVETICA; font-size: 18; font-weight: bold;}
 		.Hfr4 {color: white; background-color: #FF0000; font-family: HELVETICA; font-size: 18; font-weight: bold;}
-		
+
 		div.clear { clear: both; }
-		   
-  		table tr td {  
-   			font-size:12px;  
-   			font-family:Verdana, Arial, Helvetica, sans-serif;  
-  		}  
+
+  		table tr td {
+   			font-size:12px;
+   			font-family:Verdana, Arial, Helvetica, sans-serif;
+  		}
 
 
 	<?php
@@ -680,7 +680,7 @@ else
 
 	echo "<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
 	echo "<link rel=\"stylesheet\" href=\"calendar.css\">\n";
-	
+
 	echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 	#echo"<META URL=$PHP_SELF?RR=$RR&DB=$DB$groupQS&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal\">\n";
 	echo "<TITLE>$report_name: $group</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
@@ -693,14 +693,14 @@ else
 
 function GetLoginTime($agent, $datum_von, $datum_bis) {
     global $DB, $link;
-	    
+
 	$start_date = $datum_von . " 00:00:00";
 	$end_date   = $datum_bis . " 23:59:59";
-	   
+
 	$ep_start = 0;
 	$eo_end   = 0;
 	$ep_sum   = 0;
-	    
+
 	$statement = "SELECT * FROM vicidial_user_log  WHERE user = $agent AND event_date >= \"$start_date\" AND event_date <= \"$end_date\";";
 	if ($DB) print "$statement\n";
 	$result = mysqli_query($link, $statement) or die ("Error : " . mysqli_error($link));
@@ -710,7 +710,7 @@ function GetLoginTime($agent, $datum_von, $datum_bis) {
 	   }
 	   if(($row["event"] == "LOGOUT") && ($ep_start > 0)){
 	       $ep_end = $row["event_epoch"];
-	            
+
 	   }
 	   if(($ep_start > 0) && ($ep_end > 0)) {
 	       $ep_sum = $ep_sum + ($ep_end - $ep_start);
@@ -727,10 +727,10 @@ function GetLoginTime($agent, $datum_von, $datum_bis) {
 
 function GetLoginDays($agent, $datum_von, $datum_bis) {
     global $DB, $link;
-    
+
     $start_date = $datum_von . " 00:00:00";
     $end_date   = $datum_bis . " 23:59:59";
-        
+
     $statement = "SELECT * FROM vicidial_user_log  WHERE user = $agent AND event_date >= \"$start_date\" AND event_date <= \"$end_date\" GROUP by DATE(event_date);";
     if ($DB)  print "$statement\n";
     $result = mysqli_query($link, $statement) or die ("Error : " . mysqli_error($link));
@@ -740,21 +740,21 @@ function GetLoginDays($agent, $datum_von, $datum_bis) {
 
 function GetTrueSales($agent, $datum_von, $datum_bis) {
     global $DB, $link;
-    
+
     $start_date = $datum_von . " 00:00:00";
     $end_date   = $datum_bis . " 23:59:59";
-    
+
     $statement = "SELECT * FROM order_transaction  WHERE user_ID = $agent AND transaction_type = 'order' AND transaction_date >= \"$start_date\" AND transaction_date <= \"$end_date\" GROUP BY lead_ID;";
     if ($DB)  print "$statement\n";
     $result = mysqli_query($link, $statement) or die ("Error : " . mysqli_error($link));
     $Sales = mysqli_num_rows($result);
     return $Sales;
 }
-	
-	
+
+
 function GetAnz($agent, $datum_von, $datum_bis, $type) {
     global $DB, $link;
-	    
+
 	$start_date = $datum_von . " 00:00:00";
 	$end_date   = $datum_bis . " 23:59:59";
 	if($type == "Pause") $field = "pause_sec";
@@ -762,18 +762,18 @@ function GetAnz($agent, $datum_von, $datum_bis, $type) {
 	if($type == "Dispo") $field = "dispo_sec";
 	if($type == "Dead") $field = "dead_sec";
 	if($type == "Talk") $field = "talk_sec";
-	    
+
 	$statement = "SELECT COUNT($field) FROM vicidial_agent_log  WHERE user = $agent AND $field > 0 AND event_time >= \"$start_date\" AND event_time <= \"$end_date\";";
 	if ($DB) print "$statement\n";
 	$result = mysqli_query($link, $statement) or die ("Error : " . mysqli_error($link));
 	$row = mysqli_fetch_array($result, MYSQLI_BOTH);
-	    
+
 	return $row;
 }
 
 function GetSum($agent, $datum_von, $datum_bis, $type) {
     global $DB, $link;
-    
+
     $start_date = $datum_von . " 00:00:00";
     $end_date   = $datum_bis . " 23:59:59";
     if($type == "Pause") $field = "pause_sec";
@@ -781,48 +781,48 @@ function GetSum($agent, $datum_von, $datum_bis, $type) {
     if($type == "Dispo") $field = "dispo_sec";
     if($type == "Dead") $field = "dead_sec";
     if($type == "Talk") $field = "talk_sec";
-    
+
     $statement = "SELECT SUM($field) FROM vicidial_agent_log  WHERE user = $agent AND event_time >= \"$start_date\" AND event_time <= \"$end_date\";";
     if ($DB) print "$statement\n";
     $result = mysqli_query($link, $statement) or die ("Error : " . mysqli_error($link));
     $row = mysqli_fetch_array($result, MYSQLI_BOTH);
-    
+
     return $row;
 }
 
 function GetPauseSum($agent, $datum_von, $datum_bis, $type) {
     global $DB, $link;
-    
+
     $start_date = $datum_von . " 00:00:00";
     $end_date   = $datum_bis . " 23:59:59";
     $field = "pause_sec";
-    
+
     $statement = "SELECT SUM($field) FROM vicidial_agent_log  WHERE user = $agent AND event_time >= \"$start_date\" AND event_time <= \"$end_date\" AND pause_code = '$type';";
     if ($DB) print "$statement\n";
     $result = mysqli_query($link, $statement) or die ("Error : " . mysqli_error($link));
     $row = mysqli_fetch_array($result, MYSQLI_BOTH);
-    
+
     return $row;
 }
 
 function GetAnzStati($agent, $datum_von, $datum_bis, $stati) {
     global $DB, $link;
-    
+
     $start_date = $datum_von . " 00:00:00";
     $end_date   = $datum_bis . " 23:59:59";
-    
+
     $statement = "SELECT COUNT(status) FROM vicidial_agent_log  WHERE user = $agent AND status = \"$stati\" AND event_time >= \"$start_date\" AND event_time <= \"$end_date\";";
     if ($DB) print "$statement\n";
     $result = mysqli_query($link, $statement) or die ("Error : " . mysqli_error($link));
     $row = mysqli_fetch_array($result, MYSQLI_BOTH);
-    
+
     return $row;
 }
 
-	
+
 function GetFinalStati() {
     global $ArrStati, $ArrStatiIdx, $link;
-    
+
     $pos  = 0;
     $stmt = "SELECT * FROM `vicidial_statuses` WHERE `selectable` = 'Y' AND `status` LIKE 'SALE';";
     $rslt=mysql_to_mysqli($stmt, $link);
@@ -835,8 +835,8 @@ function GetFinalStati() {
             $ArrStatiIdx[$pos] = $row["status"];
             $pos++;
         }
-         
-        
+
+
     }
  #  print_r($ArrStatiIdx);
  #   $stmt = "SELECT * FROM `vicidial_campaign_statuses` WHERE `selectable` = 'Y';";
@@ -853,47 +853,47 @@ function GetFinalStati() {
  #   		}
  #   	}
  #   }
-}    
-	
+}
+
 function makeDownload($file, $dir, $type) {
-    
+
     header("Content-Type: $type");
-    
+
     header("Content-Disposition: attachment; filename=\"$file\"");
-    
+
     readfile($dir.$file);
-    
-} 
+
+}
 
 function formatSec($sekunden) {
 
 	$stunden = floor($sekunden / 3600);
 	$minuten = floor(($sekunden - ($stunden * 3600)) / 60);
 	$sekunden = round($sekunden - ($stunden * 3600) - ($minuten * 60), 0);
-	
+
 	if ($stunden <= 9) {
 		$strStunden = "0" . $stunden;
 	} else {
 		$strStunden = $stunden;
 	}
-	
+
 	if ($minuten <= 9) {
 		$strMinuten = "0" . $minuten;
 	} else {
 		$strMinuten = $minuten;
 	}
-	
+
 	if ($sekunden <= 9) {
 		$strSekunden = "0" . $sekunden;
 	} else {
 		$strSekunden = $sekunden;
 	}
-	
+
 	return "$strStunden:$strMinuten:$strSekunden";
 }
-	
+
 if ($DateVon == "") {
-	$DateVon = date("Y-m-d", time()-86400);	
+	$DateVon = date("Y-m-d", time()-86400);
 }
 
 if ($DateBis == "") {
@@ -937,7 +937,7 @@ $agents_to_print = mysqli_num_rows($rslt);
 
 echo "<h1>Mitarbeiter Tagesübersicht</h1>" . PHP_EOL;
 echo "<form name=Datum id=Datum>" .PHP_EOL;
-echo " <label for=\"DateVon\">Datum (JJJJ-MM-TT)</label>" . PHP_EOL; 
+echo " <label for=\"DateVon\">Datum (JJJJ-MM-TT)</label>" . PHP_EOL;
 echo " <input type=\"date\" name=\"DateVon\" id=\"DateVon\" value=\"$DateVon\" size=\"10\">" . PHP_EOL;
 
 ?>
@@ -990,7 +990,7 @@ echo "</form>" . PHP_EOL;
 if($agents_to_print < 1) {
 	$AgentsPrint = "keine Daten!";
 }
-else {	
+else {
 	$AgentsPrint = "<TABLE border=\"0\">" . PHP_EOL;
 	$AgentsPrint .= " <TR bgcolor=\"f6fba5\">" . PHP_EOL;
 	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Gruppe</font></TH>" . PHP_EOL;
@@ -1018,16 +1018,16 @@ else {
 	$AgentsPrint .= " </TR>" . PHP_EOL;
 	$CSVPrint .= PHP_EOL;
 
-	$pos = 0;	
+	$pos = 0;
 	$farb = 0;
 	$sBackCol1 = "ccff99";
 	$sBackCol2 = "ccf5ff";
 	while($pos < $agents_to_print) {
-		
+
 		$row=mysqli_fetch_row($rslt);
 
 		$Talk_Anz = GetAnz($row[0], $DateVon, $DateBis, "Talk");
-				
+
 #		$printFarbe =
 		if($Talk_Anz[0] >0 ) {
 		    if($farb == 0) {
@@ -1037,9 +1037,9 @@ else {
 		    else {
 		        $farb = 0;
 		        $printFarbe = $sBackCol2;
-		        
+
 		    }
-		$AgentsPrint .= " <TR bgcolor=$printFarbe>" . PHP_EOL;	
+		$AgentsPrint .= " <TR bgcolor=$printFarbe>" . PHP_EOL;
 		$AgentsPrint .= "  <TD nowrap>$row[2]</TD> " . PHP_EOL;
 		$AgentsPrint .= "  <TD nowrap>$row[1]</TD> " . PHP_EOL;
 		$AgentsPrint .= "  <TD nowrap>$DateVon</TD> " . PHP_EOL;
@@ -1056,10 +1056,10 @@ else {
 		    $DispoDiff = $DispoMax - $Dispo_ges[0];
 		}
 		$AgentsPrint .= "  <TD nowrap>$DispoDiff</TD> " . PHP_EOL;
-				
+
 		$DeadMax = $row[3] * 240 * $LoginDays;
 		$AgentsPrint .= "  <TD nowrap>$DeadMax</TD> " . PHP_EOL;
-		
+
 		$Dead_ges = GetSum($row[0], $DateVon, $DateBis, "Dead");
 		$AgentsPrint .= "  <TD nowrap>$Dead_ges[0]</TD> " . PHP_EOL;
 		$DeadDiff = "";
@@ -1067,7 +1067,7 @@ else {
 		    $DeadDiff = $DeadMax - $Dead_ges[0];
 		}
 		$AgentsPrint .= "  <TD nowrap>$DeadDiff</TD> " . PHP_EOL;
-		
+
 		$SalesStatus = GetAnzStati($row[0], $DateVon, $DateBis, "SALE");
 		$SalesStatusRS = GetAnzStati($row[0], $DateVon, $DateBis, "SALERS");
 		$AgentsPrint .= "  <TD nowrap>$SalesStatus[0] + $SalesStatusRS[0]</TD> " . PHP_EOL;
@@ -1083,15 +1083,15 @@ else {
 		    $SalesDiff = $SalesVorgabe - $Sales_ges[0];
 		}
 		$AgentsPrint .= "  <TD nowrap>$SalesDiff</TD> " . PHP_EOL;
-		
-		
+
+
 		$Rauch_ges = GetPauseSum($row[0], $DateVon, $DateBis, "RAUCH");
 		$AgentsPrint .= "  <TD nowrap>-$Rauch_ges[0]</TD> " . PHP_EOL;
-		
-		
+
+
 		$WC_ges = GetPauseSum($row[0], $DateVon, $DateBis, "WC");
 		$AgentsPrint .= "  <TD nowrap>-$WC_ges[0]</TD> " . PHP_EOL;
-		
+
 		$Abzug_Gesamt = $DispoDiff + $DeadDiff + $SalesDiff + (-1 * $Rauch_ges[0]);
 		$AgentsPrint .= "  <TD nowrap>$Abzug_Gesamt</TD> " . PHP_EOL;
 		$str = formatSec(abs($Abzug_Gesamt));

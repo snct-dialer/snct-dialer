@@ -1,9 +1,9 @@
 <?php
 # listloaderMAIN.php
-# 
+#
 # Copyright (C) 2013  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
 #
-# this is the main frame page for the lead loading section. This is where you 
+# this is the main frame page for the lead loading section. This is where you
 # would upload a file and have it inserted into vicidial_list
 #
 # changes:

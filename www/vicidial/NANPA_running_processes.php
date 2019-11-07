@@ -1,6 +1,6 @@
 <?php
 # NANPA_running_processes.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script shows running NANPA filter batch proccesses
@@ -194,7 +194,7 @@ $oc_ct=count($output_codes_to_display);
 $oc_SQL="'',";
 $url_str="";
 
-for ($i=0; $i<$oc_ct; $i++) 
+for ($i=0; $i<$oc_ct; $i++)
 	{
 	$oc_SQL.="'$output_codes_to_display[$i]',";
 	$url_str.="output_codes_to_display[]=".$output_codes_to_display[$i];
@@ -249,7 +249,7 @@ if (mysqli_num_rows($process_rslt)>0) {
 	}
 	echo "</table>";
 	echo $more_history_link;
-} else { 
+} else {
 	echo $more_history_link;
 }
 ?>

@@ -232,15 +232,15 @@ if (length($ARGV[0])>1)
 		print "Bob,Smith,\"Bob, Inc.\",lead,president,3125551212,1234 main st,Chicago,IL,60987,good,1235,T2R\n\n";
 		print "t2r25csv:\n";
 		print "1,2,last_name,province,first_name,phone_number,7,address1,city,state,postal_code,12,address2,email,15,16,address3,18,19,20,21,comments,23,24,25\n";
-		print "x,x,Smith,sale,Bob,3125551212,x,1234 Main St.,Chicago,IL,60987,x,mid-block,bob@asdf.com,x,x,2nd floor,x,x,x,x,last purchase,x,x,x\n\n";		
+		print "x,x,Smith,sale,Bob,3125551212,x,1234 Main St.,Chicago,IL,60987,x,mid-block,bob@asdf.com,x,x,2nd floor,x,x,x,x,last purchase,x,x,x\n\n";
 		print "t2r25xcsv:\n";
 		print "phone_number,x,last_name,x,province,first_name,x,x,address1,city,state,postal_code,address2,email,x,x,x,x,x,x,comments,x,x,x,address3\n\n";
 		print "t2r26csv:\n";
 		print "phone_number,x,last_name,x,x,x,x,province,first_name,x,address1,city,state,postal_code,address2,email,x,x,x,x,x,comments,x,x,x,address3\n\n";
 		print "t2r27csv:\n";
-		print "phone_number,x,last_name,x,x,x,x,province,first_name,x,address1,city,state,postal_code,address2,email,x,x,x,x,x,x,comments,x,x,x,address3\n\n";		
+		print "phone_number,x,last_name,x,x,x,x,province,first_name,x,address1,city,state,postal_code,address2,email,x,x,x,x,x,x,comments,x,x,x,address3\n\n";
 		print "t2r15csv:\n";
-		print "phone_number,first_name,x,x,x,city,x,address2,last_name,x,x,x,address1,address3,x\n\n";		
+		print "phone_number,first_name,x,x,x,city,x,address2,last_name,x,x,x,address1,address3,x\n\n";
 		print "twotab:\n";
 		print "UniqueID,PhoneNumber\n";
 		print "110306742,3125556666\n\n";
@@ -519,7 +519,7 @@ $phone_list = '|';
 
 if (!$VARDB_port) {$VARDB_port='3306';}
 
-use DBI;	  
+use DBI;
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
@@ -606,7 +606,7 @@ if ($ftp_pull > 0)
 			@FILEDETAILS = split(/ \d\d:\d\d /, $FILES[$i]);
 			$FILES[$i] = "$FILEDETAILS[1]";
 			$FILES[$i] =~ s/ *$//gi;
-			
+
 			$passed_file_filter=1;
 			if (length($file_prefix_filter)>0)
 				{
@@ -752,7 +752,7 @@ foreach(@FILES)
 			$LOCAL_GMT_OFF = $SERVER_GMT;
 			$LOCAL_GMT_OFF_STD = $SERVER_GMT;
 
-		if ($isdst) {$LOCAL_GMT_OFF++;} 
+		if ($isdst) {$LOCAL_GMT_OFF++;}
 		if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOCAL GMT OFFSET NOW: $LOCAL_GMT_OFF\n";}
 
 
@@ -971,7 +971,7 @@ foreach(@FILES)
 
 				$middle_initial =		'';
 				$address1 =				$m[6];
-				$address2 =				'';	
+				$address2 =				'';
 				$address3 =				$m[2];
 				$city =					$m[7];
 				$state =				$m[8];
@@ -982,7 +982,7 @@ foreach(@FILES)
 				$date_of_birth =		'';
 				$alt_phone =			'';
 				$email =				'';
-				$security_phrase =		'';		
+				$security_phrase =		'';
 				$comments =				"$m[3] $m[10] $m[11] $m[12]";
 				$rank =					'0';
 				$owner =				'';
@@ -1030,7 +1030,7 @@ foreach(@FILES)
 				$date_of_birth =		'';
 				$alt_phone =			'';
 				$email =				$m[13];
-				$security_phrase =		'';		
+				$security_phrase =		'';
 				$comments =				$m[21];
 				$rank =					'0';
 				$owner =				'';
@@ -1078,7 +1078,7 @@ foreach(@FILES)
 				$date_of_birth =		'';
 				$alt_phone =			'';
 				$email =				$m[13];
-				$security_phrase =		'';		
+				$security_phrase =		'';
 				$comments =				$m[20];
 				$rank =					'0';
 				$owner =				'';
@@ -1128,7 +1128,7 @@ foreach(@FILES)
 				$date_of_birth =		'';
 				$alt_phone =			'';
 				$email =				$m[15];
-				$security_phrase =		'';		
+				$security_phrase =		'';
 				$comments =				$m[22];
 				$rank =					'0';
 				$owner =				'';
@@ -1177,7 +1177,7 @@ foreach(@FILES)
 				$date_of_birth =		'';
 				$alt_phone =			'';
 				$email =				$m[15];
-				$security_phrase =		'';		
+				$security_phrase =		'';
 				$comments =				$m[21];
 				$rank =					'0';
 				$owner =				'';
@@ -1226,7 +1226,7 @@ foreach(@FILES)
 				$date_of_birth =		'';
 				$alt_phone =			'';
 				$email =				'';
-				$security_phrase =		'';		
+				$security_phrase =		'';
 				$comments =				'';
 				$rank =					'0';
 				$owner =				'';
@@ -1441,7 +1441,7 @@ foreach(@FILES)
 				$called_count =			$m[23];		$called_count =~ s/\D|\r|\n|\t//gi; if (length($called_count)<1) {$called_count=0;}
 				$status =				$m[24];		$status =~ s/ |\r|\n|\t//gi;  if (length($status)<1) {$status='NEW';}
 				$insert_date =			$m[25];	$insert_date =~ s/\r|\n|\t|[a-zA-Z]//gi;  if (length($insert_date)<6) {$insert_date=$pulldate0;}
-					if ($insert_date =~ /\//) 
+					if ($insert_date =~ /\//)
 						{
 						@iD = split(/\//, $insert_date);
 						$iD[0] = sprintf("%02d", $iD[0]);
@@ -1534,26 +1534,26 @@ foreach(@FILES)
 
 				$r=0;
 				$map_count=0;
-				if (length($m[6]) > 9) 
+				if (length($m[6]) > 9)
 					{
 					$ALTm_phone_number[$r] =	$m[6];
 					$ALTm_phone_code[$r] =		'1';
 					$r++;	$map_count++;
 					$g++;
 					}
-				if (length($m[7]) > 9) 
+				if (length($m[7]) > 9)
 					{
 					$ALTm_phone_number[$r] =	$m[7];
 					$ALTm_phone_code[$r] =		'1';
 					$r++;	$map_count++;
 					}
-				if (length($m[8]) > 9) 
+				if (length($m[8]) > 9)
 					{
 					$ALTm_phone_number[$r] =	$m[8];
 					$ALTm_phone_code[$r] =		'1';
 					$r++;	$map_count++;
 					}
-				if (length($m[9]) > 9) 
+				if (length($m[9]) > 9)
 					{
 					$ALTm_phone_number[$r] =	$m[9];
 					$ALTm_phone_code[$r] =		'1';
@@ -2072,7 +2072,7 @@ foreach(@FILES)
 				$called_count =			$m[23];		$called_count =~ s/\D|\r|\n|\t//gi; if (length($called_count)<1) {$called_count=0;}
 				$status =				$m[24];		$status =~ s/ |\r|\n|\t//gi;  if (length($status)<1) {$status='NEW';}
 				$insert_date =			$m[25];	$insert_date =~ s/\r|\n|\t|[a-zA-Z]//gi;  if (length($insert_date)<6) {$insert_date=$pulldate0;}
-				if ($insert_date =~ /\//) 
+				if ($insert_date =~ /\//)
 					{
 					@iD = split(/\//, $insert_date);
 					$iD[0] = sprintf("%02d", $iD[0]);
@@ -2465,7 +2465,7 @@ foreach(@FILES)
 							@aryA = $sthA->fetchrow_array;
 							$gmt_offset =	$aryA[0];  $gmt_offset =~ s/\+| //gi;
 							$dst =			$aryA[1];
-							if ($dst =~ /Y/) 
+							if ($dst =~ /Y/)
 								{$dst_range = 'SSM-FSN';}
 							$PC_processed++;
 							$postalgmt_found++;
@@ -2571,7 +2571,7 @@ foreach(@FILES)
 					if ($min < 10) {$min = "0$min";}
 					if ($sec < 10) {$sec = "0$sec";}
 					$dsec = ( ( ($hour * 3600) + ($min * 60) ) + $sec );
-					
+
 					$AC_processed=0;
 
 					if ( (!$AC_processed) && ($dst_range =~ /SSM-FSN/) )
@@ -2708,10 +2708,10 @@ foreach(@FILES)
 						{if ($q < 1) {print "BAD Home_Phone: $phone_number|$vendor_id|$a\n";}   $e++;}
 					}
 				}
-			
+
 			$a++;
 
-			if ($q < 1) 
+			if ($q < 1)
 				{
 				if ($a =~ /100$/i) {print STDERR "0     $a\r";}
 				if ($a =~ /200$/i) {print STDERR "+     $a\r";}
@@ -2823,7 +2823,7 @@ exit;
 sub USACAN_dstcalc {
 #**********************************************************************
 # SSM-FSN
-#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 #       Standard time is in effect.
 #     Based on Second Sunday March to First Sunday November at 2 am.
 #     INPUTS:
@@ -2834,10 +2834,10 @@ sub USACAN_dstcalc {
 #     OPTIONAL INPUT:
 #       timezone        INTEGER       hour difference UTC - local standard time
 #                                      (DEFAULT is blank)
-#                                     make calculations based on UTC time, 
+#                                     make calculations based on UTC time,
 #                                     which means shift at 10:00 UTC in April
 #                                     and 9:00 UTC in October
-#     OUTPUT: 
+#     OUTPUT:
 #                       INTEGER       1 = DST, 0 = not DST
 #
 # S  M  T  W  T  F  S
@@ -2846,14 +2846,14 @@ sub USACAN_dstcalc {
 #15 16 17 18 19 20 21
 #22 23 24 25 26 27 28
 #29 30 31
-# 
+#
 # S  M  T  W  T  F  S
 #    1  2  3  4  5  6
 # 7  8  9 10 11 12 13
 #14 15 16 17 18 19 20
 #21 22 23 24 25 26 27
 #28 29 30 31
-# 
+#
 #**********************************************************************
 
 	$USACAN_DST=0;
@@ -2917,11 +2917,11 @@ sub USACAN_dstcalc {
 sub NA_dstcalc {
 #**********************************************************************
 # FSA-LSO
-#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 #       Standard time is in effect.
 #     Based on first Sunday in April and last Sunday in October at 2 am.
 #**********************************************************************
-    
+
 	$NA_DST=0;
 	$mm = $mon;
 	$dd = $mday;
@@ -2983,11 +2983,11 @@ sub NA_dstcalc {
 sub GBR_dstcalc {
 #**********************************************************************
 # LSM-LSO
-#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 #       Standard time is in effect.
 #     Based on last Sunday in March and last Sunday in October at 1 am.
 #**********************************************************************
-    
+
 	$GBR_DST=0;
 	$mm = $mon;
 	$dd = $mday;
@@ -3051,11 +3051,11 @@ sub GBR_dstcalc {
 sub AUS_dstcalc {
 #**********************************************************************
 # LSO-LSM
-#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 #       Standard time is in effect.
 #     Based on last Sunday in October and last Sunday in March at 1 am.
 #**********************************************************************
-    
+
 	$AUS_DST=0;
 	$mm = $mon;
 	$dd = $mday;
@@ -3121,11 +3121,11 @@ sub AUST_dstcalc {
 #**********************************************************************
 # FSO-LSM
 #   TASMANIA ONLY
-#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 #       Standard time is in effect.
 #     Based on first Sunday in October and last Sunday in March at 1 am.
 #**********************************************************************
-    
+
 	$AUST_DST=0;
 	$mm = $mon;
 	$dd = $mday;
@@ -3189,11 +3189,11 @@ sub AUSE_dstcalc {
 #**********************************************************************
 # FSO-FSA
 #   2008+ AUSTRALIA ONLY (country code 61)
-#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 #       Standard time is in effect.
 #     Based on first Sunday in October and first Sunday in April at 1 am.
 #**********************************************************************
-    
+
 	$AUSE_DST=0;
 	$mm = $mon;
 	$dd = $mday;
@@ -3254,11 +3254,11 @@ sub AUSE_dstcalc {
 sub NZL_dstcalc {
 #**********************************************************************
 # FSO-TSM
-#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 #       Standard time is in effect.
 #     Based on first Sunday in October and third Sunday in March at 1 am.
 #**********************************************************************
-    
+
 	$NZL_DST=0;
 	$mm = $mon;
 	$dd = $mday;
@@ -3321,11 +3321,11 @@ sub NZLN_dstcalc {
 #**********************************************************************
 # LSS-FSA
 #   2007+ NEW ZEALAND (country code 64)
-#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 #       Standard time is in effect.
 #     Based on last Sunday in September and first Sunday in April at 1 am.
 #**********************************************************************
-    
+
 	$NZLN_DST=0;
 	$mm = $mon;
 	$dd = $mday;
@@ -3388,11 +3388,11 @@ sub NZLN_dstcalc {
 sub BZL_dstcalc {
 #**********************************************************************
 # TSO-LSF
-#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 #       Standard time is in effect. Brazil
 #     Based on Third Sunday October to Last Sunday February at 1 am.
 #**********************************************************************
-    
+
 	$BZL_DST=0;
 	$mm = $mon;
 	$dd = $mday;

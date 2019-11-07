@@ -1,6 +1,6 @@
 <?php
 # group_hourly_stats.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -272,7 +272,7 @@ require("admin_header.php");
 
 
 
-<?php 
+<?php
 
 if ( ($group) and ($status) and ($date_with_hour) )
 {
@@ -328,7 +328,7 @@ echo "<tr><td><font size=2>"._QXZ("TSR")." </td><td align=left><font size=2>"._Q
 	while($o < $tsrs_to_print)
 		{
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='bgcolor="#B9CBFD"';} 
+			{$bgcolor='bgcolor="#B9CBFD"';}
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';}
 		echo "<tr $bgcolor><td><font size=2>$VDuser[$o]</td>";
@@ -362,7 +362,7 @@ $rslt=mysql_to_mysqli($stmt, $link);
 $groups_to_print = mysqli_num_rows($rslt);
 $o=0;
 $groups_list='';
-while ($groups_to_print > $o) 
+while ($groups_to_print > $o)
 	{
 	$rowx=mysqli_fetch_row($rslt);
 	if ($group == $group)
@@ -416,6 +416,6 @@ $stmt="UPDATE vicidial_report_log set run_time='$TOTALrun' where report_log_id='
 if ($DB) {echo "|$stmt|\n";}
 $rslt=mysql_to_mysqli($stmt, $link);
 
-exit; 
+exit;
 
 ?>

@@ -1,9 +1,9 @@
 <?php
 # www_phrases_recent.php
-# 
+#
 # Copyright (C) 2015  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
-# This script is designed to pull records from the www_phrases table from a 
+# This script is designed to pull records from the www_phrases table from a
 # specified date until the present. Here is an example URL:
 #  http://server/vicidial/www_phrases_recent.php?date=2015-02-20+00:00:00&format=default
 #

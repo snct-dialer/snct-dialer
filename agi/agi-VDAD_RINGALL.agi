@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # agi-VDAD_RINGALL.agi version 2.8
-# 
+#
 # NOTE: this script is used for on-hook agents to be connected to customer calls
 # when they answer their ringing phones
 #
@@ -110,7 +110,7 @@ $sthA->finish();
 
 ### begin parsing run-time options ###
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 	{
 	chomp;
 	last unless length($_);
@@ -150,7 +150,7 @@ while(<STDIN>)
 
 if ($AGILOG) {$agi_string = "AGI Environment Dump:";   &agi_output;}
 
-foreach $i (sort keys %AGI) 
+foreach $i (sort keys %AGI)
 	{
 	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
 	}
@@ -238,7 +238,7 @@ while ($sthArows > $RINGct)
 	$ringVLA_server_ip[$RINGct] =		$aryA[3];
 		$ring_user =						$aryA[0];
 	if ($AGILOG) {$agi_string = "--    Ringing agents for this call: |$call_callerid|$RINGct|$ringVLA_user[$RINGct]|$ringVLA_exten[$RINGct]|$ringVLA_conf_exten[$RINGct]|$ringVLA_server_ip[$RINGct]|";   &agi_output;}
-	if ($dial_user =~ /^$ring_user$/) 
+	if ($dial_user =~ /^$ring_user$/)
 		{$user_phone=$ringVLA_exten[$RINGct];}
 	else
 		{
@@ -285,7 +285,7 @@ if ($NAGcount > 0)
 				if ($available_sessions > 0)
 					{
 					$stmtA="UPDATE vicidial_conferences set extension='3WAY_$dial_user', leave_3way='1', leave_3way_datetime='$now_date' where server_ip='$VLAserver_ip' and ((extension='') or (extension is null)) and conf_exten != '$VLAconf_exten' limit 1;";
-					$AVCaffected_rows = $dbhA->do($stmtA);  
+					$AVCaffected_rows = $dbhA->do($stmtA);
 					if ($AVCaffected_rows > 0)
 						{
 						$stmtA="SELECT conf_exten from vicidial_conferences where server_ip='$VLAserver_ip' and extension='3WAY_$dial_user' and leave_3way_datetime='$now_date' and conf_exten != '$VLAconf_exten';";
@@ -382,7 +382,7 @@ if ($NAGcount > 0)
 									}
 								else
 									{
-									$AGI->exec("Monitor","wav,/var/spool/asterisk/monitor/MIX/$campaign_rec_filename"); 
+									$AGI->exec("Monitor","wav,/var/spool/asterisk/monitor/MIX/$campaign_rec_filename");
 									}
 
 								### insert record into recording_log table ###
@@ -428,7 +428,7 @@ if ($NAGcount > 0)
 
 		### Try to grab the call for this agent, if already grabbed then buzz and hangup ###
 		$stmtA = "UPDATE vicidial_auto_calls SET agent_grab='$dial_user',agent_grab_extension='$VLAconf_exten' where auto_call_id='$auto_call_id' and agent_grab='';";
-		$AGaffected_rows = $dbhA->do($stmtA);  
+		$AGaffected_rows = $dbhA->do($stmtA);
 		if ($AGaffected_rows > 0)
 			{
 			if ($AGILOG) {$agi_string = "--    VAC Call Grabbed: |$callerid|$auto_call_id|$dial_user|$AGaffected_rows|";   &agi_output;}
@@ -468,18 +468,18 @@ if ($NAGcount > 0)
 				$sthA->finish();
 
 				### go through other-agent ringing agent records looking for matches to hang up
-				if ($rec_count > 0) 
+				if ($rec_count > 0)
 					{
 					$orct=0;
 					foreach(@orVLA_exten)
 						{
 						$exten_match='';
-						if ($orVLA_exten[$orct] =~ /^Local\//) 
+						if ($orVLA_exten[$orct] =~ /^Local\//)
 							{
 							$orVLA_exten[$orct] =~ s/^Local\/|\@.*//gi;
 							$exten_match = "STARSYM" . $orVLA_exten[$orct] . "ATSYM";
 							}
-						if ($orVLA_exten[$orct] =~ /^SIP/i) 
+						if ($orVLA_exten[$orct] =~ /^SIP/i)
 							{
 							$orVLA_exten[$orct] =~ s/^SIP\///gi;
 							$stmtA = "SELECT dialplan_number FROM phones where extension='$orVLA_exten[$orct]' and server_ip='$orVLA_server_ip[$orct]' and protocol='SIP';";
@@ -494,7 +494,7 @@ if ($NAGcount > 0)
 								}
 							$sthA->finish();
 							}
-						if ($orVLA_exten[$orct] =~ /^IAX/i) 
+						if ($orVLA_exten[$orct] =~ /^IAX/i)
 							{
 							$orVLA_exten[$orct] =~ s/^IAX2\/|^IAX\///gi;
 							$stmtA = "SELECT dialplan_number FROM phones where extension='$orVLA_exten[$orct]' and server_ip='$orVLA_server_ip[$orct]' and protocol='IAX2';";
@@ -509,7 +509,7 @@ if ($NAGcount > 0)
 								}
 							$sthA->finish();
 							}
-						if ($orVLA_exten[$orct] =~ /^Zap|^DAHDI/i) 
+						if ($orVLA_exten[$orct] =~ /^Zap|^DAHDI/i)
 							{
 							$orVLA_exten[$orct] =~ s/^Zap\/|^DAHDI\///gi;
 							$stmtA = "SELECT dialplan_number FROM phones where extension='$orVLA_exten[$orct]' and server_ip='$orVLA_server_ip[$orct]' and protocol='Zap';";
@@ -533,14 +533,14 @@ if ($NAGcount > 0)
 							foreach(@LSC_channel)
 								{
 					#		if ($AGILOG) {$agi_string = "--    Check LSC: |$callerid|$orct|$lscct|$exten_match|$LSC_channel[$lscct]|$LSC_channelREG[$lscct]|$orVLA_exten[$orct]|$orVLA_exten[$orct]|";   &agi_output;}
-								if ($LSC_channelREG[$lscct] =~ /$exten_match/) 
+								if ($LSC_channelREG[$lscct] =~ /$exten_match/)
 									{
 									if ($AGILOG) {$agi_string = "--    Chan to hangup: |$callerid|$exten_match|$LSC_channel[$lscct]|$LSC_server_ip[$lscct]|";   &agi_output;}
 
 									### send hangup command for channel
 									$VHqueryCID = "RGHANGUP$CIDdate$lscct";
 									$stmtA = "INSERT INTO vicidial_manager values('','','$now_date','NEW','N','$VARserver_ip','','Hangup','$VHqueryCID','Channel: $LSC_channel[$lscct]','','','','','','','','','')";
-									$AGaffected_rows = $dbhA->do($stmtA);  
+									$AGaffected_rows = $dbhA->do($stmtA);
 									if ($AGILOG) {$agi_string = "--    Other Ringing Hangup Sent: |$callerid|$AGaffected_rows|$LSC_channel[$lscct]|$VHqueryCID|";   &agi_output;}
 									}
 								$lscct++;
@@ -578,7 +578,7 @@ if ($NAGcount > 0)
 			print "SET PRIORITY 1\n";
 				$result = <STDIN>;
 				checkresult($result);
-			
+
 			$dbhA->disconnect();
 
 			exit;
@@ -655,27 +655,27 @@ sub agi_output
 	}
 
 
-sub checkresult 
+sub checkresult
 	{
 	my ($res) = @_;
 	my $retval;
 	$tests++;
 	chomp $res;
-	if ($res =~ /^200/) 
+	if ($res =~ /^200/)
 		{
 		$res =~ /result=(-?\d+)/;
-		if (!length($1)) 
+		if (!length($1))
 			{
 		#	print STDERR "FAIL ($res)\n";
 			$fail++;
 			}
-		else 
+		else
 			{
 		#	print STDERR "PASS ($1)\n";
 			$pass++;
 			}
 		}
-	else 
+	else
 		{
 		#	print STDERR "FAIL (unexpected result '$res')\n";
 			$fail++;
@@ -683,7 +683,7 @@ sub checkresult
 	}
 
 
-sub leading_zero($) 
+sub leading_zero($)
 	{
 	$_ = $_[0];
 	s/^(\d)$/0$1/;

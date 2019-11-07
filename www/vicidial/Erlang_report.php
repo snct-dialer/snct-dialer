@@ -1,6 +1,6 @@
 <?php
 # Erlang_report.php
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>, Joe Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -528,7 +528,7 @@ $HEADER.="<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 # $HEADER.="<link rel=\"stylesheet\" type=\"text/css\" href=\"vicidial_stylesheet.css\" />\n";
-$HEADER.="<script src='chart/Chart.js'></script>\n"; 
+$HEADER.="<script src='chart/Chart.js'></script>\n";
 $HEADER.="<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
 $HEADER.="<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 $HEADER.="<TITLE>"._QXZ("$report_name")."</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
@@ -666,7 +666,7 @@ else
 		if (strlen(trim($cg_row[0]))>0) {
 			$cg_row[0]=preg_replace("/^\s+|\s\-/", "", $cg_row[0]);
 			$campaign_group_SQL.="'".preg_replace("/\s/", "','", $cg_row[0])."',";
-		}		
+		}
 	}
 	$campaign_group_SQL=$group_SQL.",".$campaign_group_SQL;
 	$campaign_group_SQL=preg_replace("/^,|,$/", "", $campaign_group_SQL);
@@ -682,7 +682,7 @@ else
 	$HTML_text.=" Campaigns  :  ".preg_replace("/\|/", ", ", $campaign_string)."\n";
 	$HTML_text.=" In-groups  :  ".preg_replace("/\|/", ", ", $group_string)."\n";
 	$HTML_text.=" Report type:  $erlang_type\n\n";
-	
+
 	$sale_stmt="select distinct status from vicidial_campaign_statuses where campaign_id in ($campaign_SQL) and sale='Y' UNION select status from vicidial_statuses where sale='Y'";
 	if ($DB) {echo "|$sale_stmt|\n";}
 	$sale_rslt=mysql_to_mysqli($sale_stmt, $link);
@@ -720,7 +720,7 @@ else
 	if ($erlang_type=="C") {  # Erlang B reports SHOULD NOT INCLUDE WRAPUP TIME
 		$wrapup_rslt=mysql_to_mysqli($wrapup_stmt, $link); # ***
 		$wrapup_calls=mysqli_num_rows($wrapup_rslt);
-		$uid_ct=0; 
+		$uid_ct=0;
 		$uid_clause="";
 		$dispo_secs=0;
 		$talk_secs=0;
@@ -768,7 +768,7 @@ else
 	while ($hour_row=mysqli_fetch_array($hour_rslt)) {
 		$erlang_array["$hour_row[start_hour]"][0]+=$hour_row["length_up_to_next_hour"];
 		$erlang_array["$hour_row[start_hour]"][2]++;
-		
+
 		if ($hour_row["length_running_into_next_hour"]>0) {
 			$erlang_array["$hour_row[end_hour]"][0]+=$hour_row["length_running_into_next_hour"];
 			$erlang_array["$hour_row[end_hour]"][2]++;
@@ -817,7 +817,7 @@ else
 		# $ASCII_text.="| ".sprintf("%70s", _QXZ("Average talk length: ")).sprintf("%-131.4f", "$avg_talk_sec")." |\n";
 		# $ASCII_text.="| ".sprintf("%70s", _QXZ("Average wrapup time: ")).sprintf("%-131.4f", "$avg_dispo_sec")." |\n";
 		$ASCII_text.="| ".sprintf("%70s", _QXZ("Erlangs: ")).sprintf("%-131.4f", $total_erlangs)." |\n";
-	} 
+	}
 	if ($erlang_type=="C") {
 		if ($actual_agents>0) {
 			$ASCII_text.="| ".sprintf("%70s", _QXZ("Actual agents: ")).sprintf("%-147s", "$actual_agents")." |\n";
@@ -859,7 +859,7 @@ else
 	$CSV_text.="\"Average call duration:\",\"".sprintf("%.2f", "$average_call_length")." seconds\"\n";
 	$CSV_text.="\"Erlangs:\",\"".sprintf("%.4f", "$total_erlangs")."\"\n";
 
-	
+
 	# ESTIMATED AGENTS
 	$lines=1;
 	if ($total_blocking>0) {
@@ -890,7 +890,7 @@ else
 		$ASCII_text.="| ".sprintf("%70s", _QXZ("Retry rate: ")).sprintf("%-131s", "$retry_rate %")." |\n"; # B
 		$ASCII_text.="| ".sprintf("%70s", _QXZ("Grade of service: ")).sprintf("%-131s", sprintf("%0.2f", (100*$GoS)." %"))." |\n"; # B
 		$ASCII_text.="| ".sprintf("%70s", _QXZ("Estimated agents fielding calls: ")).sprintf("%-131s", $lines)." |\n";
-	} 
+	}
 	if ($erlang_type=="C") {
 		$ASCII_text.="| ".sprintf("%70s", _QXZ("Estimated queue probability: ")).sprintf("%-5.2f", (100*$Pqueue)).sprintf("%-142s", " %")." |\n"; # C
 		$ASCII_text.="| ".sprintf("%70s", _QXZ("Average speed of answering: ")).sprintf("%-147s", sec_convert($ASA,'H'))." |\n"; # C
@@ -945,7 +945,7 @@ else
 			$ASCII_text.="\n-->";
 		}
 	}
-	
+
 	if ($erlang_type=="B") {
 		$ASCII_text.="| ".sprintf("%70s", _QXZ("Recommended agent count: ")).sprintf("%-131s", $lines)." |\n";
 	} else {
@@ -956,7 +956,7 @@ else
 
 	$HTML_text.="<tr class='records_list_y'><td><font size=1>"._QXZ("Recommended agent count: ")."</font></td><td><font size=1>".$lines."</font></td></tr>";
 	$HTML_text.="</table>";
-	
+
 	#############
 
 	$ASCII_text.=$rpt_header;
@@ -1027,7 +1027,7 @@ else
 		$ASCII_text.=" | ";
 		$ASCII_text.=sprintf("%8s", sprintf("%01.4f", $blocking));
 		$ASCII_text.=" | ";
-		$ASCII_text.=sprintf("%7s", sprintf("%01.4f", $erlangs)); 
+		$ASCII_text.=sprintf("%7s", sprintf("%01.4f", $erlangs));
 		$ASCII_text.=" | ";
 
 		$CSV_text.="\"".date("Y-m-d ha", mktime(substr($key, -2), 0, 0, substr($key, 5, 2), substr($key, 8, 2), substr($key, 0, 4)))."\",\"".$val[2]."\",\"".$sales."\",\"".sec_convert($val[0],'H')."\",\"".sec_convert($average_time,'H')."\",\"".sec_convert($val[1],'H')."\",\"".sprintf("%01.4f", $blocking)."\",\"".sprintf("%01.4f", $erlangs)."\",";
@@ -1049,7 +1049,7 @@ else
 		$graph_stats["$graph_key"][3]=$val[1];
 		$graph_stats["$graph_key"][4]=sprintf("%01.4f", $blocking);
 		$graph_stats["$graph_key"][5]=sprintf("%01.4f", $erlangs);
-	
+
 		##### RECOMMENDED AGENTS
 		$lines=1;
 		if ($erlang_type=="B") {
@@ -1111,13 +1111,13 @@ else
 		if ($Pqueue>1) {$Pqueue=1;}
 
 		if ($erlang_type=="B") {
-			$ASCII_text.=sprintf("%7s", sprintf("%0.2f", (100*$GoS))."%"); 
+			$ASCII_text.=sprintf("%7s", sprintf("%0.2f", (100*$GoS))."%");
 			$ASCII_text.=" | ";
 		}
 		if ($erlang_type=="C") {
-			$ASCII_text.=sprintf("%10s", sprintf("%.4f", (100*$Pqueue))."%"); 
+			$ASCII_text.=sprintf("%10s", sprintf("%.4f", (100*$Pqueue))."%");
 			$ASCII_text.=" | ";
-			$ASCII_text.=sprintf("%10s", sec_convert($ASA,'H')); 
+			$ASCII_text.=sprintf("%10s", sec_convert($ASA,'H'));
 			$ASCII_text.=" | ";
 		}
 		$ASCII_text.=sprintf("%10s", $recommended_agents);
@@ -1171,15 +1171,15 @@ else
 
 		$graph_stats["$graph_key"][6]=$lines;
 		$graph_stats["$graph_key"][8]=$drop_rate;
-		$graph_stats["$graph_key"][9]=$sales; 
-		$graph_stats["$graph_key"][10]=number_format(MathZDC(($revenue_per_sale*$sales), $val[2]),2,".",""); # Revenue per call 
-		$graph_stats["$graph_key"][11]=number_format(MathZDC(($revenue_per_sale*$sales), $lines),2,".",""); # Revenue per agent 
-		$graph_stats["$graph_key"][12]=number_format(($revenue_per_sale*$sales),2,".",""); # Total revenue 
-		$graph_stats["$graph_key"][13]=number_format(($lines*$hourly_pay),2,".",""); # Cost 
+		$graph_stats["$graph_key"][9]=$sales;
+		$graph_stats["$graph_key"][10]=number_format(MathZDC(($revenue_per_sale*$sales), $val[2]),2,".",""); # Revenue per call
+		$graph_stats["$graph_key"][11]=number_format(MathZDC(($revenue_per_sale*$sales), $lines),2,".",""); # Revenue per agent
+		$graph_stats["$graph_key"][12]=number_format(($revenue_per_sale*$sales),2,".",""); # Total revenue
+		$graph_stats["$graph_key"][13]=number_format(($lines*$hourly_pay),2,".",""); # Cost
 		$graph_stats["$graph_key"][14]=number_format((($revenue_per_sale*$sales)-($lines*$hourly_pay)),2,".",",");
-		$graph_stats["$graph_key"][15]=$GoS; 
-		$graph_stats["$graph_key"][16]=$Pqueue; # Cost 
-		$graph_stats["$graph_key"][17]=$ASA; # Cost 
+		$graph_stats["$graph_key"][15]=$GoS;
+		$graph_stats["$graph_key"][16]=$Pqueue; # Cost
+		$graph_stats["$graph_key"][17]=$ASA; # Cost
 		# $graph_stats["$graph_key"][9]=$Pqueue; ERLANG C
 
 		$HTML_text2.="<td><font size=1>$lines</font></td>\n";
@@ -1207,12 +1207,12 @@ else
 	}
 	if ($erlang_type=="C") {
 		array_push($graph_array, "ERL_PQUEUEdata|16|QUEUE|percent|Call queue probability");
-#		$graph_stats["$graph_key"][16]=$ASA; # Cost 
+#		$graph_stats["$graph_key"][16]=$ASA; # Cost
 	}
 
 
 	$default_graph="line"; # Graph that is initally displayed when page loads
-	include("graph_color_schemas.inc"); 
+	include("graph_color_schemas.inc");
 # 		$backgroundColor=array("#9999FF", "#99FF99", "#FF9999");
 # 		$hoverBackgroundColor=array("#9999FF", "#99FF99", "#FF9999");
 # 		$hoverBorderColor=array("#9999FF", "#99FF99", "#FF9999");
@@ -1224,7 +1224,7 @@ else
 # 		$graphConstants.="\t\t\t\tpointBorderColor: \"rgba(0,0,0,1)\",\n";
 # 		$graphConstants.="\t\t\t\tpointBackgroundColor: \"#99f\",\n";
 # 		$graphConstants.="\t\t\t\tpointHoverBackgroundColor: \"rgba(255,255,204,0.75)\",\n";
-# 		$graphConstants.="\t\t\t\tpointHoverBorderColor: \"rgba(255,255,102,1)\"\n";	
+# 		$graphConstants.="\t\t\t\tpointHoverBorderColor: \"rgba(255,255,102,1)\"\n";
 
 
 	# CUSTOMIZING COLORS FOR LINE GRAPHS
@@ -1234,12 +1234,12 @@ else
 	$graph_totals_array=array();
 	$graph_totals_rawdata=array();
 	for ($q=0; $q<count($graph_array); $q++) {
-		$graph_info=explode("|", $graph_array[$q]); 
+		$graph_info=explode("|", $graph_array[$q]);
 		$current_graph_total=0;
 		$dataset_name=$graph_info[0];
-		$dataset_indices=explode(",", $graph_info[1]); 
+		$dataset_indices=explode(",", $graph_info[1]);
 		$dataset_type=$graph_info[3];
-		$dataset_labels=explode(",", $graph_info[4]); 
+		$dataset_labels=explode(",", $graph_info[4]);
 
 		$JS_text.="var $dataset_name = {\n";
 		# $JS_text.="\ttype: \"\",\n";
@@ -1279,11 +1279,11 @@ else
 			$graphConstantsB="\t\t\t\tborderColor: \"rgba(".$graph_colors[($d%count($graph_colors))].",1)\",\n";
 			$graphConstantsC="\t\t\t\tfillColor: \"rgba(".$graph_colors[($d%count($graph_colors))].",0.1)\"\n";
 			#$graphConstantsC="\t\t\t\thoverBorderColor: [";
-		
+
 			# $labels.="\"".preg_replace('/ +/', ' ', $graph_stats[$d][0])."\",";
 			while(list($key, $val)=each($graph_stats)) {
 				$val[$dataset_index]=preg_replace("/N\/A/", "0", $val[$dataset_index]);
-				$data.="\"".$val[$dataset_index]."\","; 
+				$data.="\"".$val[$dataset_index]."\",";
 				$current_graph_total+=intval($val[$dataset_index]);
 				$bgcolor=$backgroundColor[($d%count($backgroundColor))];
 				$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
@@ -1301,7 +1301,7 @@ else
 			$datasets.=$graphConstantsA.$graphConstantsB.$graphConstantsC; # SEE TOP OF SCRIPT
 			$datasets.="\t\t\t},\n";
 			$graph_totals_rawdata[$d]=$current_graph_total;
-		}	
+		}
 		$datasets=preg_replace('/,\n$/', "\n", $datasets);
 
 		switch($dataset_type) {
@@ -1341,7 +1341,7 @@ else
 	$HEADER.=$HTML_graph_head;
 	$GRAPH.=$graphCanvas;
 
-	
+
 	if ($report_display_type=="HTML")
 		{
 		$JS_onload.="}\n";
@@ -1351,7 +1351,7 @@ else
 
 		$MAIN.=$HTML_text.$GRAPH.$HTML_text2.$JS_text;
 		}
-	else 
+	else
 		{
 		$MAIN.=$ASCII_text;
 		}
@@ -1361,7 +1361,7 @@ else
 	#$MAIN.="</TD></TR></TABLE></FORM>";
 	$MAIN.="</FORM>";
 
-if ($file_download>0) 
+if ($file_download>0)
 	{
 	$FILE_TIME = date("Ymd-His");
 	$CSVfilename = "AST_Erlang_report_$US$FILE_TIME.csv";
@@ -1381,7 +1381,7 @@ if ($file_download>0)
 
 	echo "$CSV_text";
 	}
-else 
+else
 	{
 	header("Content-type: text/html; charset=utf-8");
 

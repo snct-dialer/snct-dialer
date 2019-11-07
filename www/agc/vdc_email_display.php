@@ -7,7 +7,7 @@
 # Copyright (©) 2019      SNCT GmbH <info@snct-gmbh.de>
 #               2017-2019 Jörg Frings-Fürst <open_source@jff.email>.
 #
-# This page displays any incoming emails in the Vicidial user interface.  It 
+# This page displays any incoming emails in the Vicidial user interface.  It
 # also allows the user to download and view any attachments sent in the email,
 # and also gives the user the ability to respond to the email and even
 # attach files to it.  The page also logs all email messages that are sent
@@ -158,7 +158,7 @@ if ($qm_conf_ct > 0)
 ##### END SETTINGS LOOKUP #####
 ###########################################
 
-if ($allow_emails<1) 
+if ($allow_emails<1)
 	{
 	echo _QXZ("Your system does not have the email setting enabled")."\n";
 	exit;
@@ -206,44 +206,44 @@ else
 	# do nothing for now
 	}
 
-if ($REPLY) 
+if ($REPLY)
 	{
 	$to = "$reply_to_address";
-	$from = "$reply_from_address"; 
-	$subject ="$reply_subject"; 
+	$from = "$reply_from_address";
+	$subject ="$reply_subject";
 	$message = "$reply_message";
 	$headers = "From: $from";
 	$attachment_str="";
- 
-	$semi_rand = md5(time()); 
+
+	$semi_rand = md5(time());
 	$mime_boundary = "==Multipart_Boundary_x{$semi_rand}x";
-	$headers .= "\nMIME-Version: 1.0\n" . "Content-Type: multipart/mixed;\n" . " boundary=\"{$mime_boundary}\""; 
-	$message = "This is a multi-part message in MIME format.\n\n" . "--{$mime_boundary}\n" . "Content-Type: text/plain; charset=\"utf-8\"\n" . "Content-Transfer-Encoding: 7bit\n\n" . $reply_message . "\n\n"; 
+	$headers .= "\nMIME-Version: 1.0\n" . "Content-Type: multipart/mixed;\n" . " boundary=\"{$mime_boundary}\"";
+	$message = "This is a multi-part message in MIME format.\n\n" . "--{$mime_boundary}\n" . "Content-Type: text/plain; charset=\"utf-8\"\n" . "Content-Transfer-Encoding: 7bit\n\n" . $reply_message . "\n\n";
 	$message .= "--{$mime_boundary}\n";
 
-	for ($i=1; $i<=5; $i++) 
+	for ($i=1; $i<=5; $i++)
 		{
 		$attachment_orig_name="A".$i."_orig";
 		$attachment_path="A".$i."_path";
 		$LF_orig=$$attachment_orig_name;
 		$LF_path=$$attachment_path;
-		# echo "<p>".$$attachment_name."<BR/>".$$attachment_orig_name."<BR/>".$$attachment_path."<BR/><p>"; 
-		if ($LF_orig) 
+		# echo "<p>".$$attachment_name."<BR/>".$$attachment_orig_name."<BR/>".$$attachment_path."<BR/><p>";
+		if ($LF_orig)
 			{
 			if (preg_match("/;|:|\/|\^|\[|\]|\"|\'|\*/",$LF_orig))
 				{
 				echo _QXZ("ERROR: Invalid File Name:")." $LF_orig\n";
 				exit;
 				}
-			else 
+			else
 				{
 				copy($LF_path, "/tmp/$LF_orig");
 				$file = fopen("/tmp/$LF_orig","rb");
 				$data = fread($file,filesize("/tmp/$LF_orig"));
 				fclose($file);
 				$data = chunk_split(base64_encode($data));
-				$message .= "Content-Type: {\"application/octet-stream\"};\n" . " name=\"$LF_orig\"\n" . 
-				"Content-Disposition: attachment;\n" . " filename=\"$LF_orig\"\n" . 
+				$message .= "Content-Type: {\"application/octet-stream\"};\n" . " name=\"$LF_orig\"\n" .
+				"Content-Disposition: attachment;\n" . " filename=\"$LF_orig\"\n" .
 				"Content-Transfer-Encoding: base64\n\n" . $data . "\n\n";
 				$message .= "--{$mime_boundary}\n";
 				$attachment_str.="$LF_orig|";
@@ -251,10 +251,10 @@ if ($REPLY)
 			}
 		}
 
-	$sendmail = @mail($to, $subject, $message, $headers); 
-	if ($sendmail) 
+	$sendmail = @mail($to, $subject, $message, $headers);
+	if ($sendmail)
 		{
-		$reply_message=preg_replace('/(\"|\||\'|\;)/', '\\\$1', $reply_message); 
+		$reply_message=preg_replace('/(\"|\||\'|\;)/', '\\\$1', $reply_message);
 		$log_stmt="INSERT INTO vicidial_email_log(email_row_id, lead_id, email_date, user, email_to, message, campaign_id, attachments) VALUES('$email_row_id', '$lead_id', now(), '$user', '$reply_to_address', '$reply_message', '$campaign', '$attachment_str')";
 		$log_rslt=mysql_to_mysqli($log_stmt, $link);
 		echo "<p>mail sent to $to!</p>";
@@ -265,15 +265,15 @@ if ($REPLY)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$affected_rows = mysqli_affected_rows($link);
 		}
-	else 
+	else
 		{
-		echo "<p>"._QXZ("mail could not be sent!")."</p>"; 
-		} 
+		echo "<p>"._QXZ("mail could not be sent!")."</p>";
+		}
 	exit;
 	}
 
 
-if ( ($lead_id) or (strlen($email_row_id)>0) ) 
+if ( ($lead_id) or (strlen($email_row_id)>0) )
 	{
 	$stmt="SELECT * from vicidial_email_list where lead_id='$lead_id' and direction='INBOUND' and status IN('NEW','INCALL') order by email_date asc";
 	if ($email_row_id)
@@ -291,11 +291,11 @@ if ( ($lead_id) or (strlen($email_row_id)>0) )
 		}
 		preg_match('/\<[^\>\@]+\@[^\>\@]+\>/', $row["email_to"], $matches);
 		if (strlen($matches[0])>0) {
-			$row["email_from"]=preg_replace('/\>/', '&gt;', $row["email_from"]); 
-			$row["email_from"]=preg_replace('/\</', '&lt;', $row["email_from"]); 
+			$row["email_from"]=preg_replace('/\>/', '&gt;', $row["email_from"]);
+			$row["email_from"]=preg_replace('/\</', '&lt;', $row["email_from"]);
 			$email_to = substr($matches[0],1,-1);
 		} else {
-			$row["email_to"]=preg_replace('/\>/', '\>', $row["email_to"]); 
+			$row["email_to"]=preg_replace('/\>/', '\>', $row["email_to"]);
 			$email_to = $row["email_to"];
 		}
 		$EMAIL_form="<center><TABLE cellspacing=2 cellpadding=2 bgcolor='#CCCCCC' width='500'>\n";
@@ -360,13 +360,13 @@ if ( ($lead_id) or (strlen($email_row_id)>0) )
 	<title><?php echo _QXZ("AGENT email frame"); ?></title>
 	</head>
 	<script language="Javascript">
-	function ParseFileName() 
+	function ParseFileName()
 		{
-		for (var i=1; i<=5; i++) 
-			{	
+		for (var i=1; i<=5; i++)
+			{
 			var attachment_field=eval("document.forms[0].attachment"+i);
 			var endstr=attachment_field.value.lastIndexOf('\\');
-			if (endstr>-1) 
+			if (endstr>-1)
 				{
 				endstr++;
 				var filename=attachment_field.value.substring(endstr);
@@ -376,16 +376,16 @@ if ( ($lead_id) or (strlen($email_row_id)>0) )
 		}
 	function CopyMessage()
 		{
-		<?php 
-			$row["message"]=preg_replace('/\r|\n/', ' ', $row["message"]); 
-			echo "var message=\"".preg_replace('/\"/', '\\\"', $row["message"])."\";\n"; 
+		<?php
+			$row["message"]=preg_replace('/\r|\n/', ' ', $row["message"]);
+			echo "var message=\"".preg_replace('/\"/', '\\\"', $row["message"])."\";\n";
 		?>
 		var msg_array=message.split(" ");
 		var full_msg="";
 		var msg_line="> ";
-		for (var i=0; i<msg_array.length; i++) 
+		for (var i=0; i<msg_array.length; i++)
 			{
-			if (msg_array[i].length>=48) 
+			if (msg_array[i].length>=48)
 				{
 				msg_line+=msg_array[i]+" ";
 				}

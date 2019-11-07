@@ -1,4 +1,4 @@
-<?php 
+<?php
 # AST_team_performance_detail.php
 #
 # This User-Group based report runs some very intensive SQL queries, so it is
@@ -98,14 +98,14 @@ if (strlen($report_display_type)<2) {$report_display_type = $SSreport_default_fo
 ### ARCHIVED DATA CHECK CONFIGURATION
 $archives_available="N";
 $log_tables_array=array("vicidial_list", "vicidial_agent_log");
-for ($t=0; $t<count($log_tables_array); $t++) 
+for ($t=0; $t<count($log_tables_array); $t++)
 	{
 	$table_name=$log_tables_array[$t];
 	$archive_table_name=use_archive_table($table_name);
 	if ($archive_table_name!=$table_name) {$archives_available="Y";}
 	}
 
-if ($search_archived_data) 
+if ($search_archived_data)
 	{
 	$vicidial_list_table=use_archive_table("vicidial_list");
 	$vicidial_agent_log_table=use_archive_table("vicidial_agent_log");
@@ -381,7 +381,7 @@ while ($i < $call_statuses_to_print)
 	}
 
 #######################################
-for ($i=0; $i<count($user_group); $i++) 
+for ($i=0; $i<count($user_group); $i++)
 	{
 	if (preg_match('/\-\-ALL\-\-/', $user_group[$i])) {$all_user_groups=1;}
 	}
@@ -502,7 +502,7 @@ $HTML_head.="<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n"
 $HTML_head.="<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 $HTML_head.="<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 require("chart_button.php");
-$HTML_head.="<script src='chart/Chart.js'></script>\n"; 
+$HTML_head.="<script src='chart/Chart.js'></script>\n";
 $HTML_head.="<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
 
 $HTML_head.="<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
@@ -554,7 +554,7 @@ $HTML_text.="</script>\n";
 $HTML_text.=" &nbsp; <INPUT TYPE=TEXT NAME=end_date_T SIZE=9 MAXLENGTH=8 VALUE=\"$end_date_T\">";
 
 
-if ($archives_available=="Y") 
+if ($archives_available=="Y")
 	{
 	$HTML_text.="<BR><BR><input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."\n";
 	}
@@ -569,9 +569,9 @@ else
 $o=0;
 while ($campaigns_to_print > $o)
 	{
-	if (preg_match("/$groups[$o]\|/i",$group_string)) 
+	if (preg_match("/$groups[$o]\|/i",$group_string))
 		{$HTML_text.="<option selected value=\"$groups[$o]\">$groups[$o]</option>\n";}
-	else 
+	else
 		{$HTML_text.="<option value=\"$groups[$o]\">$groups[$o]</option>\n";}
 	$o++;
 	}
@@ -587,9 +587,9 @@ else
 $o=0;
 while ($user_groups_to_print > $o)
 	{
-	if  (preg_match("/\|$user_groups[$o]\|/i",$user_group_string)) 
+	if  (preg_match("/\|$user_groups[$o]\|/i",$user_group_string))
 		{$HTML_text.="<option selected value=\"$user_groups[$o]\">$user_groups[$o]</option>\n";}
-	else 
+	else
 		{$HTML_text.="<option value=\"$user_groups[$o]\">$user_groups[$o]</option>\n";}
 	$o++;
 	}
@@ -598,16 +598,16 @@ $HTML_text.="</TD>\n";
 
 $HTML_text.="<TD VALIGN=TOP> "._QXZ("Show additional statuses").":<BR>";
 $HTML_text.="<SELECT SIZE=5 NAME=call_status[] multiple>\n";
-if (!$call_status || $call_status_ct==0) 
+if (!$call_status || $call_status_ct==0)
 	{$HTML_text.="<option selected value=\"--NONE--\">-- "._QXZ("NO ADDITIONAL STATUSES")." --</option>\n";}
 else
 	{$HTML_text.="<option value=\"--NONE--\">-- "._QXZ("NO ADDITIONAL STATUSES")." --</option>\n";}
 $o=0;
 while ($call_statuses_to_print > $o)
 	{
-	if (preg_match("/^$call_statuses[$o]\||\|$call_statuses[$o]\|/i",$call_status_string) && strlen($call_status_string)>0) 
+	if (preg_match("/^$call_statuses[$o]\||\|$call_statuses[$o]\|/i",$call_status_string) && strlen($call_status_string)>0)
 		{$HTML_text.="<option selected value=\"$call_statuses[$o]\">$call_statuses[$o] - $call_statuses_names[$o]</option>\n";}
-	else 
+	else
 		{$HTML_text.="<option value=\"$call_statuses[$o]\">$call_statuses[$o] - $call_statuses_names[$o]</option>\n";}
 	$o++;
 	}
@@ -631,32 +631,32 @@ $HTML_text.="</FORM>\n\n";
 
 if ( ($SUBMIT=="SUBMIT") or ($SUBMIT==_QXZ("SUBMIT")) )
 	{
-	# Sale counts per rep 
+	# Sale counts per rep
 	$stmt="select max(event_time), ".$vicidial_agent_log_table.".user, ".$vicidial_agent_log_table.".lead_id, ".$vicidial_list_table.".status as current_status from ".$vicidial_agent_log_table.", ".$vicidial_list_table." where event_time>='$query_date' and event_time<='$end_date' $group_SQL and ".$vicidial_agent_log_table.".status in (select status from vicidial_campaign_statuses where sale='Y' $group_SQL UNION select status from vicidial_statuses where sale='Y') and ".$vicidial_agent_log_table.".lead_id=".$vicidial_list_table.".lead_id group by ".$vicidial_agent_log_table.".user, ".$vicidial_agent_log_table.".lead_id";
 	if ($DB) {$ASCII_text.="$stmt\n";}
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$cancel_array=array();
 	$incomplete_array=array();
 	$sale_array=array();
-	while ($row=mysqli_fetch_array($rslt)) 
+	while ($row=mysqli_fetch_array($rslt))
 		{
 		$lead_id=$row["lead_id"];
 		$user=$row["user"];
 		$current_status=$row["current_status"];
-		if (preg_match("/QCCANC/i", $current_status)) 
+		if (preg_match("/QCCANC/i", $current_status))
 			{
 			$cancel_array[$row["user"]]++;
-			} 
-		else if (preg_match("/QCFAIL/i", $current_status)) 
+			}
+		else if (preg_match("/QCFAIL/i", $current_status))
 			{
 			$incomplete_array[$row["user"]]++;
-			} 
-		else 
+			}
+		else
 			{
 			$sale_array[$row["user"]]++;
 
-			# Get actual talk time for all calls made by the user for this particular lead. If cancelled and incomplete sales are to have their times 
-			# counted towards sales talk time, move the below lines OUTSIDE the curly bracket below, so the query runs regardless of what "type" of 
+			# Get actual talk time for all calls made by the user for this particular lead. If cancelled and incomplete sales are to have their times
+			# counted towards sales talk time, move the below lines OUTSIDE the curly bracket below, so the query runs regardless of what "type" of
 			# sale it is.
 			$sale_time_stmt="select sum(talk_sec)-sum(dead_sec) from ".$vicidial_agent_log_table." where user='$user' and lead_id='$lead_id' $group_SQL";
 			if ($DB) {$ASCII_text.="$sale_time_stmt\n";}
@@ -669,9 +669,9 @@ if ( ($SUBMIT=="SUBMIT") or ($SUBMIT==_QXZ("SUBMIT")) )
 	$HTML_text.="<PRE><FONT SIZE=2>";
 	$total_average_sale_time=0;
 	$total_average_contact_time=0;
-	$total_talk_time=0; 
-	$total_system_time=0; 
-	$total_calls=0;	
+	$total_talk_time=0;
+	$total_system_time=0;
+	$total_calls=0;
 	$total_leads=0;
 	$total_contacts=0;
 	$total_sales=0;
@@ -702,14 +702,14 @@ if ( ($SUBMIT=="SUBMIT") or ($SUBMIT==_QXZ("SUBMIT")) )
 	$max_totalavgsaletime=1;
 	$max_totalavgcontacttime=1;
 
-	for($i=0; $i<$user_group_ct; $i++) 
+	for($i=0; $i<$user_group_ct; $i++)
 		{
 		$group_average_sale_time=0;
 		$group_average_contact_time=0;
-		$group_talk_time=0; 
-		$group_system_time=0; 
+		$group_talk_time=0;
+		$group_system_time=0;
 		$group_nonpause_time=0;
-		$group_calls=0;	
+		$group_calls=0;
 		$group_leads=0;
 		$group_contacts=0;
 		$group_sales=0;
@@ -734,7 +734,7 @@ if ( ($SUBMIT=="SUBMIT") or ($SUBMIT==_QXZ("SUBMIT")) )
 		$user_stmt="select distinct vicidial_users.full_name, vicidial_users.user from vicidial_users, ".$vicidial_agent_log_table." where vicidial_users.user_group='$user_group[$i]' and vicidial_users.user=".$vicidial_agent_log_table.".user and ".$vicidial_agent_log_table.".user_group='$user_group[$i]'  and ".$vicidial_agent_log_table.".event_time>='$query_date' and ".$vicidial_agent_log_table.".event_time<='$end_date' and ".$vicidial_agent_log_table.".campaign_id in ($group_SQL_str) order by full_name, user";
 		if ($DB) {$ASCII_text.="$user_stmt\n";}
 		$user_rslt=mysql_to_mysqli($user_stmt, $link);
-		if (mysqli_num_rows($user_rslt)>0) 
+		if (mysqli_num_rows($user_rslt)>0)
 			{
 			$graph_stats=array();
 			$max_calls=1;
@@ -767,7 +767,7 @@ if ( ($SUBMIT=="SUBMIT") or ($SUBMIT==_QXZ("SUBMIT")) )
 			$ASCII_text.="| "._QXZ("Agent Name",40)." | "._QXZ("Agent ID",10)." | "._QXZ("Calls",5)." | "._QXZ("Leads",5)." | "._QXZ("Contacts",8)." | "._QXZ("Contact Ratio",13)." | "._QXZ("Nonpause Time",13)." | "._QXZ("System Time",11)." | "._QXZ("Talk Time",9)." | "._QXZ("Sales",5)." | "._QXZ("Sales per Working Hour",22)." | "._QXZ("Sales to Leads Ratio",20)." | "._QXZ("Sales to Contacts Ratio",23)." | "._QXZ("Sales Per Hour",14)." | "._QXZ("Incomplete Sales",16)." | "._QXZ("Cancelled Sales",15)." | "._QXZ("Callbacks",9)." | "._QXZ("First Call Resolution",21)." | "._QXZ("Average Sale Time",17)." | "._QXZ("Average Contact Time",20)." |$HTMLstatusheader\n";
 			$ASCII_text.="+------------------------------------------+------------+-------+-------+----------+---------------+---------------+-------------+-----------+-------+------------------------+----------------------+-------------------------+----------------+------------------+-----------------+-----------+-----------------------+-------------------+----------------------+$HTMLborderheader\n";
 			$CSV_text.="\"\",\""._QXZ("Agent Name")."\",\""._QXZ("Agent ID")."\",\""._QXZ("Calls")."\",\""._QXZ("Leads")."\",\""._QXZ("Contacts")."\",\""._QXZ("Contact Ratio")."\",\""._QXZ("Nonpause Time")."\",\""._QXZ("System Time")."\",\""._QXZ("Talk Time")."\",\""._QXZ("Sales")."\",\""._QXZ("Sales per Working Hour")."\",\""._QXZ("Sales to Leads Ratio")."\",\""._QXZ("Sales to Contacts Ratio")."\",\""._QXZ("Sales Per Hour")."\",\""._QXZ("Incomplete Sales")."\",\""._QXZ("Cancelled Sales")."\",\""._QXZ("Callbacks")."\",\""._QXZ("First Call Resolution")."\",\""._QXZ("Average Sale Time")."\",\""._QXZ("Average Contact Time")."\"$CSVstatusheader\n";
-			while ($user_row=mysqli_fetch_array($user_rslt)) 
+			while ($user_row=mysqli_fetch_array($user_rslt))
 				{
 				$j++;
 				$contacts=0;
@@ -784,14 +784,14 @@ if ( ($SUBMIT=="SUBMIT") or ($SUBMIT==_QXZ("SUBMIT")) )
 				$incomplete_array[$user]+=0;  # For agents with no QCFAIL logged
 				$cancel_array[$user]+=0;  # For agents with no QCCANC logged
 
-				# Leads 
+				# Leads
 				$lead_stmt="select count(distinct lead_id) from ".$vicidial_agent_log_table." where lead_id is not null and event_time>='$query_date' and event_time<='$end_date' $group_SQL and user='$user' and user_group='$user_group[$i]'";
 				if ($DB) {$ASCII_text.="$lead_stmt\n";}
 				$lead_rslt=mysql_to_mysqli($lead_stmt, $link);
 				$lead_row=mysqli_fetch_row($lead_rslt);
 				$leads=$lead_row[0];
 
-				# Callbacks 
+				# Callbacks
 				$callback_stmt="select count(*) from vicidial_callbacks where status in ('ACTIVE', 'LIVE') $group_SQL and user='$user' and user_group='$user_group[$i]'";
 				if ($DB) {$ASCII_text.="$callback_stmt\n";}
 				$callback_rslt=mysql_to_mysqli($callback_stmt, $link);
@@ -801,11 +801,11 @@ if ( ($SUBMIT=="SUBMIT") or ($SUBMIT==_QXZ("SUBMIT")) )
 				$stat_stmt="select val.status, val.sub_status, vs.customer_contact, sum(val.talk_sec), sum(val.pause_sec), sum(val.wait_sec), sum(val.dispo_sec), sum(val.dead_sec), count(*) from ".$vicidial_agent_log_table." val, vicidial_statuses vs where val.user='$user' and val.user_group='$user_group[$i]' and val.event_time>='$query_date' and val.event_time<='$end_date' and val.status=vs.status and vs.status in (select status from vicidial_statuses) and val.campaign_id in ($group_SQL_str) group by status, customer_contact UNION select val.status, val.sub_status, vs.customer_contact, sum(val.talk_sec), sum(val.pause_sec), sum(val.wait_sec), sum(val.dispo_sec), sum(val.dead_sec), count(*) from ".$vicidial_agent_log_table." val, vicidial_campaign_statuses vs where val.campaign_id in ($group_SQL_str) and val.user='$user' and val.user_group='$user_group[$i]' and val.event_time>='$query_date' and val.event_time<='$end_date' and val.status=vs.status and val.campaign_id=vs.campaign_id and vs.status in (select distinct status from vicidial_campaign_statuses where ".substr($group_SQL, 4).") group by status, customer_contact";
 				if ($DB) {$ASCII_text.="$stat_stmt\n";}
 				$stat_rslt=mysql_to_mysqli($stat_stmt, $link);
-				while ($stat_row=mysqli_fetch_row($stat_rslt)) 
+				while ($stat_row=mysqli_fetch_row($stat_rslt))
 					{
-					if ($stat_row[2]=="Y") 
+					if ($stat_row[2]=="Y")
 						{
-						$contacts+=$stat_row[8]; 
+						$contacts+=$stat_row[8];
 						$contact_talk_time+=($stat_row[3]-$stat_row[7]);
 
 						$group_contact_talk_time+=($stat_row[3]-$stat_row[7]);
@@ -815,17 +815,17 @@ if ( ($SUBMIT=="SUBMIT") or ($SUBMIT==_QXZ("SUBMIT")) )
 					$talk_time+=($stat_row[3]-$stat_row[7]);
 					$system_time+=($stat_row[3]+$stat_row[5]+$stat_row[6]);
 					$nonpause_time+=($stat_row[3]+$stat_row[5]+$stat_row[6]);
-					if ($stat_row[1]=="PRECAL") 
+					if ($stat_row[1]=="PRECAL")
 						{
 						$nonpause_time+=$stat_row[4];
 						}
 					}
-				$user_talk_time =		sec_convert($talk_time,'H'); 
+				$user_talk_time =		sec_convert($talk_time,'H');
 				$group_talk_time+=$talk_time;
-				$user_system_time =		sec_convert($system_time,'H'); 
+				$user_system_time =		sec_convert($system_time,'H');
 				$talk_hours=MathZDC($talk_time, 3600);
 				$group_system_time+=$system_time;
-				$user_nonpause_time =		sec_convert($nonpause_time,'H'); 
+				$user_nonpause_time =		sec_convert($nonpause_time,'H');
 				$group_nonpause_time+=$nonpause_time;
 
 				if ($sale_array[$user]>0) {$average_sale_time=sec_convert(round(MathZDC($sales_talk_time_array[$user], $sale_array[$user])), 'H');} else {$average_sale_time="00:00";}
@@ -906,7 +906,7 @@ if ( ($SUBMIT=="SUBMIT") or ($SUBMIT==_QXZ("SUBMIT")) )
 					$CSV_status_text.=",\"$stat_row[0]\"";
 					$call_status_group_totals[$q]+=$stat_row[0];
 					$graph_stats[$j][(17+$q)]=$stat_row[0];
-					
+
 					$varname=$Sstatus."_graph";
 					$$varname=$graph_header."<th class='thgraph' scope='col'>$Sstatus</th></tr>";
 
@@ -931,7 +931,7 @@ if ( ($SUBMIT=="SUBMIT") or ($SUBMIT==_QXZ("SUBMIT")) )
 			$ASCII_text.="| ".sprintf("%40s", "");
 			$ASCII_text.=" | ".sprintf("%10s", _QXZ("TOTALS:",10));
 
-			$TOTAL_text=" | ".sprintf("%5s", $group_calls);	
+			$TOTAL_text=" | ".sprintf("%5s", $group_calls);
 			$TOTAL_text.=" | ".sprintf("%5s", $group_leads);
 			$TOTAL_text.=" | ".sprintf("%8s", $group_contacts);
 			$group_contact_ratio=sprintf("%.2f", MathZDC(100*$group_contacts, $group_leads));
@@ -1041,15 +1041,15 @@ if ( ($SUBMIT=="SUBMIT") or ($SUBMIT==_QXZ("SUBMIT")) )
 			}
 
 			$default_graph="bar"; # Graph that is initally displayed when page loads
-			include("graph_color_schemas.inc"); 
+			include("graph_color_schemas.inc");
 			$GRAPH="";
 			$graph_totals_array=array();
 			$graph_totals_rawdata=array();
 			for ($q=0; $q<count($graph_array); $q++) {
-				$graph_info=explode("|", $graph_array[$q]); 
+				$graph_info=explode("|", $graph_array[$q]);
 				$current_graph_total=0;
 				$dataset_name=$graph_info[0];
-				$dataset_index=$graph_info[1]; 
+				$dataset_index=$graph_info[1];
 				$dataset_type=$graph_info[3];
 
 				$JS_text.="var $dataset_name = {\n";
@@ -1067,7 +1067,7 @@ if ( ($SUBMIT=="SUBMIT") or ($SUBMIT==_QXZ("SUBMIT")) )
 				$graphConstantsC="\t\t\t\thoverBorderColor: [";
 				for ($d=1; $d<=count($graph_stats); $d++) {
 					$labels.="\"".preg_replace('/ +/', ' ', $graph_stats[$d][0])."\",";
-					$data.="\"".$graph_stats[$d][$dataset_index]."\","; 
+					$data.="\"".$graph_stats[$d][$dataset_index]."\",";
 					$current_graph_total+=$graph_stats[$d][$dataset_index];
 					$bgcolor=$backgroundColor[($d%count($backgroundColor))];
 					$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
@@ -1075,13 +1075,13 @@ if ( ($SUBMIT=="SUBMIT") or ($SUBMIT==_QXZ("SUBMIT")) )
 					$graphConstantsA.="\"$bgcolor\",";
 					$graphConstantsB.="\"$hbgcolor\",";
 					$graphConstantsC.="\"$hbcolor\",";
-				}	
+				}
 				$graphConstantsA.="],\n";
 				$graphConstantsB.="],\n";
 				$graphConstantsC.="],\n";
 				$labels=preg_replace('/,$/', '', $labels)."],\n";
 				$data=preg_replace('/,$/', '', $data)."],\n";
-				
+
 				$graph_totals_rawdata[$q]=$current_graph_total;
 				switch($dataset_type) {
 					case "time":
@@ -1120,8 +1120,8 @@ if ( ($SUBMIT=="SUBMIT") or ($SUBMIT==_QXZ("SUBMIT")) )
 
 			$GRAPH_text.=$GRAPH;
 			#flush();
-			} 
-		else 
+			}
+		else
 			{
 			$ASCII_text.="    **** "._QXZ("NO AGENTS FOUND UNDER THESE REPORT PARAMETERS")." ****\n\n";
 			$CSV_text.="\"\",\"**** "._QXZ("NO AGENTS FOUND UNDER THESE REPORT PARAMETERS")." ****\"\n\n";
@@ -1143,7 +1143,7 @@ if ( ($SUBMIT=="SUBMIT") or ($SUBMIT==_QXZ("SUBMIT")) )
 
 	$ASCII_text.="| ".sprintf("%40s", "");
 	$ASCII_text.=" | ".sprintf("%10s", _QXZ("TOTALS:"));
-	$ASCII_text.=" | ".sprintf("%5s", $total_calls);	
+	$ASCII_text.=" | ".sprintf("%5s", $total_calls);
 	$ASCII_text.=" | ".sprintf("%5s", $total_leads);
 	$ASCII_text.=" | ".sprintf("%8s", $total_contacts);
 	$total_contact_ratio=sprintf("%.2f", MathZDC(100*$total_contacts, $total_leads));
@@ -1200,16 +1200,16 @@ if ( ($SUBMIT=="SUBMIT") or ($SUBMIT==_QXZ("SUBMIT")) )
 	}
 
 	$default_graph="bar"; # Graph that is initally displayed when page loads
-	include("graph_color_schemas.inc"); 
-	
+	include("graph_color_schemas.inc");
+
 	$GRAPH="";
 	$graph_totals_array=array();
 	$graph_totals_rawdata=array();
 	for ($q=0; $q<count($graph_array); $q++) {
-		$graph_info=explode("|", $graph_array[$q]); 
+		$graph_info=explode("|", $graph_array[$q]);
 		$current_graph_total=0;
 		$dataset_name=$graph_info[0];
-		$dataset_index=$graph_info[1]; 
+		$dataset_index=$graph_info[1];
 		$dataset_type=$graph_info[3];
 
 		$JS_text.="var $dataset_name = {\n";
@@ -1235,13 +1235,13 @@ if ( ($SUBMIT=="SUBMIT") or ($SUBMIT==_QXZ("SUBMIT")) )
 			$graphConstantsA.="\"$bgcolor\",";
 			$graphConstantsB.="\"$hbgcolor\",";
 			$graphConstantsC.="\"$hbcolor\",";
-		}	
+		}
 		$graphConstantsA.="],\n";
 		$graphConstantsB.="],\n";
 		$graphConstantsC.="],\n";
 		$labels=preg_replace('/,$/', '', $labels)."],\n";
 		$data=preg_replace('/,$/', '', $data)."],\n";
-		
+
 		$graph_totals_rawdata[$q]=$current_graph_total;
 		switch($dataset_type) {
 			case "time":
@@ -1278,14 +1278,14 @@ if ( ($SUBMIT=="SUBMIT") or ($SUBMIT==_QXZ("SUBMIT")) )
 	$GRAPH.=$graphCanvas;
 
 
-	$GRAPH_text.=$GRAPH;	
+	$GRAPH_text.=$GRAPH;
 	$GRAPH_text.="</FONT></PRE>";
 	$GRAPH_text.="</BODY>\n";
 	$GRAPH_text.="</HTML>\n";
-	
+
 	}
 
-if ($file_download>0) 
+if ($file_download>0)
 	{
 	$FILE_TIME = date("Ymd-His");
 	$CSVfilename = "AST_team_performance_detail_$US$FILE_TIME.csv";

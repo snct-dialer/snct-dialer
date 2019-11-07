@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # agi-dtmf.agi - script for playing DTMF tones or signals received as the callerid field or in the command CLI
-# 
+#
 # DTMF sound files must be in /var/lib/asterisk/sounds for this to work
 #
 # Accepted values are: 1 2 3 4 5 6 7 8 9 0 # * ,
@@ -48,11 +48,11 @@ if (length($cli_vars) > 0)
 
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 	{
 	chomp;
 	last unless length($_);
-	if (/^agi_(\w+)\:\s+(.*)$/) 
+	if (/^agi_(\w+)\:\s+(.*)$/)
 		{$AGI{$1} = $2;}
 	if (/^agi_callerid\:\s+(.*)$/)		{$caller_id = $1;}
 	if (/^agi_calleridname\:\s+(.*)$/)  {$caller_idname = $1;}
@@ -82,14 +82,14 @@ usleep(1*10*1000);
 $caller_id = "$caller_id$caller_idname";
 $caller_id =~ s/unknown//g;
 
-if ($cli_vars_set > 0) 
+if ($cli_vars_set > 0)
 	{$caller_id = $cli_vars;}
 
 @CALLERID_DIGITS = split(//, $caller_id);
 
 foreach (@CALLERID_DIGITS)
 	{
-	if ($CALLERID_DIGITS[$g] =~ /\d/) 
+	if ($CALLERID_DIGITS[$g] =~ /\d/)
 		{
 		if ($signalonly > 0)
 			{print "EXEC SendDTMF $CALLERID_DIGITS[$g] \"\"\n";}
@@ -100,7 +100,7 @@ foreach (@CALLERID_DIGITS)
 	else
 		{
 		$dtmf_played=0;
-		if ($CALLERID_DIGITS[$g] =~ /\#/) 
+		if ($CALLERID_DIGITS[$g] =~ /\#/)
 			{
 			if ($signalonly > 0)
 				{print "EXEC SendDTMF \# \"\"\n";}
@@ -108,7 +108,7 @@ foreach (@CALLERID_DIGITS)
 				{print "STREAM FILE hash \"\"\n";}
 			$dtmf_played++;
 			}
-		if ($CALLERID_DIGITS[$g] =~ /\*/) 
+		if ($CALLERID_DIGITS[$g] =~ /\*/)
 			{
 			if ($signalonly > 0)
 				{print "EXEC SendDTMF \* \"\"\n";}
@@ -116,12 +116,12 @@ foreach (@CALLERID_DIGITS)
 				{print "STREAM FILE star \"\"\n";}
 			$dtmf_played++;
 			}
-		if ($CALLERID_DIGITS[$g] =~ /\,/) 
+		if ($CALLERID_DIGITS[$g] =~ /\,/)
 			{
 			sleep(1);
 			$dtmf_played++;
 			}
-		if ($CALLERID_DIGITS[$g] =~ /[A-Za-z]/) 
+		if ($CALLERID_DIGITS[$g] =~ /[A-Za-z]/)
 			{
 			$translated_digit='';
 			if ($CALLERID_DIGITS[$g] =~ /[A-Ca-c]/) {$translated_digit=2;}
@@ -160,27 +160,27 @@ checkresult($result);
 
 exit;
 
-sub checkresult 
+sub checkresult
 	{
 	my ($res) = @_;
 	my $retval;
 	$tests++;
 	chomp $res;
-	if ($res =~ /^200/) 
+	if ($res =~ /^200/)
 		{
 		$res =~ /result=(-?\d+)/;
-		if (!length($1)) 
+		if (!length($1))
 			{
 			print STDERR "FAIL ($res)\n";
 			$fail++;
-			} 
-		else 
+			}
+		else
 			{
 			print STDERR "PASS ($1)\n";
 			$pass++;
 			}
-		} 
-	else 
+		}
+	else
 		{
 		print STDERR "FAIL (unexpected result '$res')\n";
 		$fail++;

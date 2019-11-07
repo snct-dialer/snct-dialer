@@ -1,8 +1,8 @@
 NON-AGENT API DOCUMENT           Started: 2008-07-24         Updated: 2019-09-30
 
-This document describes the functions of an API(Application Programming 
-Interface) for all functions NOT directly relating to the VICIDIAL Agent screen. 
-This functionality will be rather limited at first and will be built upon as 
+This document describes the functions of an API(Application Programming
+Interface) for all functions NOT directly relating to the VICIDIAL Agent screen.
+This functionality will be rather limited at first and will be built upon as
 critical functions are identified and programmed into it.
 
 There is also an Agent API script, for more information on that, please read
@@ -164,7 +164,7 @@ Example URL strings for API calls:
 http://server/vicidial/non_agent_api.php?function=version
 
 Example responses:
-VERSION: 2.4-34|BUILD: 110424-0854|DATE: 2011-05-29 12:19:22|EPOCH: 1306685962|DST: 1|TZ: -5|TZNOW: -4| 
+VERSION: 2.4-34|BUILD: 110424-0854|DATE: 2011-05-29 12:19:22|EPOCH: 1306685962|DST: 1|TZ: -5|TZNOW: -4|
 
 
 
@@ -263,11 +263,11 @@ http://server/vicidial/non_agent_api.php?source=test&user=6666&pass=1234&functio
 Example responses:
 SUCCESS: blind_monitor HAS BEEN LAUNCHED - 350a|010*010*010*017*350|8600051
 
-ERROR: blind_monitor INVALID PHONE LOGIN - 350q 
+ERROR: blind_monitor INVALID PHONE LOGIN - 350q
 
-ERROR: blind_monitor INVALID SESSION ID - 8602051 
+ERROR: blind_monitor INVALID SESSION ID - 8602051
 
-ERROR: blind_monitor USER DOES NOT HAVE PERMISSION TO BLIND MONITOR - 6666|0 
+ERROR: blind_monitor USER DOES NOT HAVE PERMISSION TO BLIND MONITOR - 6666|0
 
 ERROR: NO FUNCTION SPECIFIED
 
@@ -348,7 +348,7 @@ SETTINGS FIELDS-
 stage -			the format of the exported data: csv, tab, pipe(default)
 header -		include a header(YES) or not(NO). This is optional, default is not to include a header
 
-NOTES- 
+NOTES-
 There is a hard limit of 100000 results
 
 Example URL strings for API calls:
@@ -380,7 +380,7 @@ SETTINGS FIELDS-
 stage -			the format of the exported data: csv, tab, pipe(default)
 header -		include a header(YES) or not(NO). This is optional, default is not to include a header
 
-NOTES- 
+NOTES-
 There is a hard limit of 100000 results
 
 Example URL strings for API calls:
@@ -413,7 +413,7 @@ header -		include a header(YES) or not(NO). This is optional, default is not to 
 detail -		(ALL) calls or only (LAST) call. default is (ALL)
 type -			(IN)inbound, (OUT)outbound or (ALL) calls. defauls is (OUT) calls
 
-NOTES- 
+NOTES-
 There is a hard limit of 100000 results
 
 Example URL strings for API calls:
@@ -449,7 +449,7 @@ header -		include a header(YES) or not(NO). This is optional, default is not to 
 time_format -		time format('H','HF','M','S') in hours, minutes or seconds: H = 1:23:45, M = 83:45, S = 5023  (default 'HF')
 				* HF will force hour format even for zero seconds time "0:00:00"
 
-NOTES- 
+NOTES-
 There is a hard limit of 10000000 records analyzed
 
 Example URL strings for API calls:
@@ -483,7 +483,7 @@ SETTINGS FIELDS-
 stage -			the format of the exported data: csv, tab, pipe(default)
 header -		include a header(YES) or not(NO). This is optional, default is not to include a header
 
-NOTES- 
+NOTES-
 There is a hard limit of 10000000 records analyzed
 
 Example URL strings for API calls:
@@ -514,7 +514,7 @@ SETTINGS FIELDS-
 stage -			the format of the exported data: csv, tab, pipe(default)
 header -		include a header(YES) or not(NO). This is optional, default is not to include a header
 
-NOTES- 
+NOTES-
 There is a hard limit of 10000000 records analyzed
 
 Example URL strings for API calls:
@@ -641,7 +641,7 @@ date -			called date of the leads to pull (must be in YYYY-MM-DD format)
 			NOTE: both inbound and outbound call logs are searched, no more than 2000 responses are displayed
 
 OPTIONAL FIELDS-
-lead_id -		1-10 digits, only used if status and date are empty 
+lead_id -		1-10 digits, only used if status and date are empty
 custom_fields -		Y or N, default is N. Display custom fields values or not
 list_id -		override for the entry_list_id of a custom field
 
@@ -751,7 +751,7 @@ call_id -		either the uniqueid or the 20-character ID of the call
 group -			either a campaign_id or an in-group group_id
 status -		the new status for the log record to be set to
 
-NOTES- 
+NOTES-
 There is a hard limit of 10000000 records analyzed
 
 Example URL strings for API calls:
@@ -820,7 +820,7 @@ callback_comments -	Optional comments to appear when the callback is called back
 lookup_state -		Y or N, default is N. Looks up state field from areacode list. Only works if the 'state' field is not populated.
 
 (for fields with spaces in the values, you can replace the space with a plus + sign[address, city, first_name, etc...])
-OPTIONAL FIELDS- 
+OPTIONAL FIELDS-
 vendor_lead_code -	1-20 characters
 source_id  -		1-50 characters
 gmt_offset_now -	overridden by auto-lookup of phone_code and area_code portion of phone number if applicable
@@ -888,12 +888,12 @@ NOTICE: add_lead SCHEDULED CALLBACK NOT ADDED, CAMPAIGN NOT VALID - 1234|XYZ
 
 NOTICE: add_lead NANPA options disabled, NANPA prefix data not loaded - 0|6666
 
-ERROR: add_lead INVALID PHONE NUMBER LENGTH - 72755|6666 
-ERROR: add_lead INVALID PHONE NUMBER PREFIX - 72755|6666 
-ERROR: add_lead INVALID PHONE NUMBER AREACODE - 72755|6666 
+ERROR: add_lead INVALID PHONE NUMBER LENGTH - 72755|6666
+ERROR: add_lead INVALID PHONE NUMBER PREFIX - 72755|6666
+ERROR: add_lead INVALID PHONE NUMBER AREACODE - 72755|6666
 ERROR: add_lead INVALID PHONE NUMBER NANPA AREACODE PREFIX - 7275551212|6666
 
-ERROR: add_lead USER DOES NOT HAVE PERMISSION TO ADD LEADS TO THE SYSTEM - 6666|0 
+ERROR: add_lead USER DOES NOT HAVE PERMISSION TO ADD LEADS TO THE SYSTEM - 6666|0
 ERROR: add_lead NOT AN ALLOWED LIST ID - 7275551212|98762
 
 ERROR: NO FUNCTION SPECIFIED
@@ -959,7 +959,7 @@ add_to_hopper -		Y or N, default is N
 hopper_priority -	99 to -99, the higher number the higher priority, default is 0
 hopper_local_call_time_check - Y or N, default is N. Validate the local call time and/or state call time before inserting lead in the hopper
 
-EDITABLE FIELDS- 
+EDITABLE FIELDS-
 user_field -		1-20 characters, this updates the 'user' field in the vicidial_list table
 list_id_field -		3-12 digits, this updates the 'list_id' field in the vicidial_list table
 status -		1-6 characters, not punctuation or spaces
@@ -989,7 +989,7 @@ owner -			1-20 characters (user ID, Territory or user group)
 called_count -		digits only, the number of attempts dialing the lead
 entry_list_id -		WARNING! ONLY USE IF YOU KNOW WHAT YOU ARE DOING, CAN BREAK CUSTOM FIELDS! (must be all numbers, 3-12 digits, will not work if custom_fields is set to Y)
 force_entry_list_id -	WARNING! ONLY USE IF YOU KNOW WHAT YOU ARE DOING, CAN BREAK CUSTOM FIELDS! (must be all numbers, 3-12 digits, will override entry_list_id to this value in all custom fields queries executed by this command)
-NOTES: 
+NOTES:
  - in order to set a field to empty('') set it equal to --BLANK--, i.e. "&province=--BLANK--"
  - please use no special characters like apostrophes, double-quotes or amphersands
 
@@ -1050,7 +1050,7 @@ ERROR: update_lead INVALID DATA FOR LEAD INSERTION - 6666|||
 ERROR: update_lead NO MATCHES FOUND IN THE SYSTEM - 6666|||
 ERROR: update_lead NO VALID SEARCH METHOD - 6666|SYSTEM|||
 
-ERROR: update_lead USER DOES NOT HAVE PERMISSION TO UPDATE LEADS IN THE SYSTEM - 6666|0 
+ERROR: update_lead USER DOES NOT HAVE PERMISSION TO UPDATE LEADS IN THE SYSTEM - 6666|0
 ERROR: update_lead NOT AN ALLOWED LIST ID - 7275551212|98762
 
 
@@ -1256,7 +1256,7 @@ server_ip -		7-15 characters, must be a valid server_ip
 SETTINGS FIELDS-
 delete_phone -		Y or N, Setting this to Y will delete the phone from the system, default is N.
 
-EDITABLE FIELDS- 
+EDITABLE FIELDS-
 dialplan_number -	1-20 digits
 voicemail_id -		1-10 digits
 phone_login -		1-20 characters
@@ -1405,7 +1405,7 @@ web_form_address_three - 6-100 characters
 reset_time -		4-100 characters, must be in valid 4-digit groups of 24-hour time (i.e. 0900-1700-2359)
 expiration_date -	10 characters, must be in valid date format YYYY-MM-DD (i.e. 2012-11-25)
 custom_fields_copy -	A valid list ID with custom fields to be copied to this new list, 2-14 digits
-NOTES: 
+NOTES:
  - for the web form addresses, you can URL encode them to include standard URL special characters
  - to use the 'custom_fields_copy' option, the API user must have the "Custom Fields Modify" user option enabled
 
@@ -1449,7 +1449,7 @@ reset_list -		Y or N, Setting this to Y will reset the Called-Since-Last-Reset f
 delete_list -		Y or N, Setting this to Y will delete the list from the vicidial_lists table, default is N.
 delete_leads -		Y or N, Setting this to Y will delete all of the leads with this list_id from the vicidial_list table, default is N.
 
-EDITABLE FIELDS- 
+EDITABLE FIELDS-
 list_name -		6-30 characters
 list_description -	up to 255 characters, to empty this field, set to --BLANK--
 campaign_id -		2-8 characters, must be a valid campaign_id
@@ -1463,7 +1463,7 @@ web_form_address_two -	6-100 characters
 web_form_address_three - 6-100 characters
 reset_time -		4-100 characters, must be in valid 4-digit groups of 24-hour time (i.e. 0900-1700-2359)
 expiration_date -	10 characters, must be in valid date format YYYY-MM-DD (i.e. 2012-11-25)
-NOTES: 
+NOTES:
  - in order to set a field to empty('') set it equal to --BLANK--, i.e. "&drop_inbound_group=--BLANK--"
  - please use no special characters like apostrophes, quotes or amphersands
  - for the web form addresses, you can URL encode them to include standard URL special characters
@@ -1546,9 +1546,9 @@ Example responses:
 ERROR: check_phone_number USER DOES NOT HAVE PERMISSION TO CHECK PHONE NUMBERS - |6666|0|
 ERROR: check_phone_number THIS IS NOT A VALID CALL TIME - |6666|badct|
 ERROR: check_phone_number NANPA options disabled, NANPA prefix data not loaded - 0|6666
-ERROR: check_phone_number INVALID PHONE NUMBER LENGTH - 72755|6666 
-ERROR: check_phone_number INVALID PHONE NUMBER PREFIX - 72755|6666 
-ERROR: check_phone_number INVALID PHONE NUMBER AREACODE - 72755|6666 
+ERROR: check_phone_number INVALID PHONE NUMBER LENGTH - 72755|6666
+ERROR: check_phone_number INVALID PHONE NUMBER PREFIX - 72755|6666
+ERROR: check_phone_number INVALID PHONE NUMBER AREACODE - 72755|6666
 ERROR: check_phone_number INVALID PHONE NUMBER NANPA AREACODE PREFIX - 7275551212|6666
 ERROR: check_phone_number PHONE NUMBER IN DNC - 7275551112|6666
 
@@ -1604,7 +1604,7 @@ call_status_stats - report on number of calls made by campaign and ingroup, with
 NOTE: api user for this function must have user_level set to 8 or higher and "view reports" enabled
 
 REQUIRED FIELDS-
-campaigns -		Campaigns to return stats on.  Use "---ALL---" or "ALLCAMPAIGNS" for all campaigns, or use single dash delimiters if 
+campaigns -		Campaigns to return stats on.  Use "---ALL---" or "ALLCAMPAIGNS" for all campaigns, or use single dash delimiters if
                         requesting more than one specific campaign
 
 OPTIONAL FIELDS-
@@ -1616,7 +1616,7 @@ statuses -	List of specific statuses to report on.  Leave blank for all, or use 
 
 Example URL strings for API calls:
 http://server/vicidial/non_agent_api.php?user=6666&pass=1234&function=call_status_stats&campaigns=---ALL---&query_date=2017-11-24 (returns all campaigns and ingroups for 11/24/17)
-http://server/vicidial/non_agent_api.php?user=6666&pass=1234&function=call_status_stats&campaigns=TESTCAMP-TESTCAMP2&query_date=2017-11-24&statuses=NP-TD&ingroups=AGENTDIRECT 
+http://server/vicidial/non_agent_api.php?user=6666&pass=1234&function=call_status_stats&campaigns=TESTCAMP-TESTCAMP2&query_date=2017-11-24&statuses=NP-TD&ingroups=AGENTDIRECT
 (returns stat counts for TESTCAMP and TESTCAMP2 campaigns, and AGENTDIRECT ingroup, for 11/24/27 for calls dispositioned as NP and TD)
 
 
@@ -1700,7 +1700,7 @@ REQUIRED FIELDS-
 campaign_id -		2-8 characters
 source -		description of what originated the API call (maximum 20 characters)
 
-EDITABLE FIELDS- 
+EDITABLE FIELDS-
 campaign_name -		6-40 characters
 active -		Must be one of these: 'Y','N'
 auto_dial_level -	2-5 characters, must be within valid range
@@ -1712,7 +1712,7 @@ dial_method -		Must be one of these: 'MANUAL','RATIO','INBOUND_MAN','ADAPT_AVERA
 dial_timeout -		Must be from 1 to 120
 outbound_cid -		1-20 digits
 lead_filter_id -	Must be a valid Filter in the system, or '---NONE---' to not use a filter
-NOTES: 
+NOTES:
  - please use no special characters like apostrophes, quotes or amphersands
 
 Example URL strings for API calls:
@@ -1753,7 +1753,7 @@ did_pattern -		2-50 characters, must be a valid DID in the system
 			   NOTE: special characters in the did_pattern need to be URL encoded, for example the plus sign '+' must be sent as '%2B'
 source -		description of what originated the API call (maximum 20 characters)
 
-EDITABLE FIELDS- 
+EDITABLE FIELDS-
 did_description -	6-50 characters
 active -		Must be one of these: 'Y','N'
 did_route -		must be one of these: 'EXTEN','VOICEMAIL','AGENT','PHONE','IN_GROUP','CALLMENU','VMAIL_NO_INST'
@@ -1807,7 +1807,7 @@ stage -			UPDATE, ADD, DELETE or INFO
 OPTIONAL FIELDS-
 outbound_cid -		1-20 digits, or (if you want to UPDATE, DELETE or INFO all entries for an areacode, you can set this to "---ALL---" or leave it blank)
 
-EDITABLE FIELDS- 
+EDITABLE FIELDS-
 cid_description -	6-50 characters, default is blank
 active -		Must be one of these: 'Y','N', default is 'N'
 

@@ -4,27 +4,27 @@
 #
 # DESCRIPTION:
 # uses the Asterisk Manager interface and DBD::MySQL to update the live_channels
-# tables and verify the parked_channels table in the asterisk MySQL database 
+# tables and verify the parked_channels table in the asterisk MySQL database
 # This near-live-status of Zap/SIP/Local/IAX/DAHDI channels list is used by clients
 #
 # SUMMARY:
 # This program was designed for people using the Asterisk PBX with Digium
 # Zaptel telco cards and SIP VOIP hardphones or softphones as extensions, it
-# could be adapted to other functions, but I designed it specifically for 
-# Zap/IAX2/SIP/DAHDI users. The program will run on UNIX or Win32 command line 
+# could be adapted to other functions, but I designed it specifically for
+# Zap/IAX2/SIP/DAHDI users. The program will run on UNIX or Win32 command line
 # providing the following criteria are met:
-# 
+#
 # Win32 - ActiveState Perl 5.8.0
 # UNIX - Gnome or KDE with Tk/Tcl and perl Tk/Tcl modules loaded
 # Both - DBD::MySQL, Net::Telnet and Time::HiRes perl modules loaded
 #
 # For the astguiclient program to work, this program must always be running
-# 
-# For this program to work you need to have the "asterisk" MySQL database 
+#
+# For this program to work you need to have the "asterisk" MySQL database
 # created and create the tables listed in the MySQL_AST_CREATE_tables.sql file,
 # also make sure that the machine running this program has select/insert/update/delete
 # access to that database
-# 
+#
 # It is recommended that you run this program on each local Asterisk machine
 #
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -37,7 +37,7 @@
 # 50406-1320 - added channel_data to live_channels table for more flexibility
 #            also added Zap/IAX client check every 100 loop instead of only once
 # 50509-1047 - added collection of server_performance data with SYSPERF flag
-# 50621-1307 - modified to allow for SIP trunks 
+# 50621-1307 - modified to allow for SIP trunks
 # 50810-1601 - Added database server variable definitions lookup
 # 50823-1625 - Altered Debug vars and initial CVS/1.2 support for changed output
 # 50824-1606 - Altered CVS/1.2 support for "show channels concise" output
@@ -87,13 +87,13 @@ $cpuSYSTprev=0;
 $cpuIDLEprev=0;
 $run_check=1; # concurrency check
 
-$hangupOnHookPhones="SELECT 0"; 
-$hangupOnHookPhones="INSERT INTO vicidial_manager (entry_date, status, server_ip, action, cmd_line_b, callerid) 	
+$hangupOnHookPhones="SELECT 0";
+$hangupOnHookPhones="INSERT INTO vicidial_manager (entry_date, status, server_ip, action, cmd_line_b, callerid)
 SELECT now() AS entry_date, 'NEW' as status, lsc.server_ip AS server_ip, 'Hangup' AS action, CONCAT('Channel: ',lsc.channel) AS cmd_line_b, lsc.extension AS callerid
-FROM `live_sip_channels` AS lsc, 
+FROM `live_sip_channels` AS lsc,
 	`vicidial_live_agents` AS vla,
 	( SELECT lsct.extension, count(lsct.extension) AS total FROM `live_sip_channels` AS lsct GROUP BY lsct.extension HAVING total=1 ) AS c
-WHERE vla.conf_exten = lsc.extension 
+WHERE vla.conf_exten = lsc.extension
 	AND c.extension = vla.conf_exten
 	AND vla.on_hook_agent = 'Y'
 	AND vla.on_hook_auto_answer = 'Y'
@@ -137,10 +137,10 @@ else
 ### find df binary (partition usage)
 $dfbin = '';
 if ( -e ('/bin/df')) {$dfbin = '/bin/df';}
-else 
+else
 	{
 	if ( -e ('/usr/bin/df')) {$dfbin = '/usr/bin/df';}
-	else 
+	else
 		{
 		if ( -e ('/usr/local/bin/df')) {$dfbin = '/usr/local/bin/df';}
 		else
@@ -276,7 +276,7 @@ $event_string='PROGRAM STARTED||||||||||||||||||||||||||||||||||||||||||||||||||
 
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
 use Net::Telnet ();
-use DBI;	  
+use DBI;
 use POSIX;
 use Scalar::Util qw(looks_like_number);
 
@@ -455,7 +455,7 @@ if ($run_check > 0)
 	my $grepout = `/bin/ps ax | grep $0 | grep -v grep | grep -v '/bin/sh'`;
 	my $grepnum=0;
 	$grepnum++ while ($grepout =~ m/\n/g);
-	if ($grepnum > 2) 
+	if ($grepnum > 2)
 		{
 		if ($DB) {print "I am not alone! Another $0 is running! Exiting...\n";}
 		$event_string = "I am not alone! Another $0 is running! Exiting...";
@@ -482,7 +482,7 @@ while($one_day_interval > 0)
 #	$fh = $t->dump_log("$UPtelnetlog");  # uncomment for telnet log
 	if (length($ASTmgrUSERNAMEupdate) > 3) {$telnet_login = $ASTmgrUSERNAMEupdate;}
 	else {$telnet_login = $ASTmgrUSERNAME;}
-	$t->open("$telnet_host"); 
+	$t->open("$telnet_host");
 	$t->waitfor('/[0123]\n$/');			# print login
 	$t->print("Action: Login\nUsername: $telnet_login\nSecret: $ASTmgrSECRET\n\n");
 	$t->waitfor('/Authentication accepted/');		# waitfor auth accepted
@@ -509,19 +509,19 @@ while($one_day_interval > 0)
 		$t->buffer_empty;
 		if ($show_channels_format < 1)
 			{
-			@list_channels = $t->cmd(String => "Action: Command\nCommand: show channels\n\n", Prompt => '/--END COMMAND-.*/'); 
+			@list_channels = $t->cmd(String => "Action: Command\nCommand: show channels\n\n", Prompt => '/--END COMMAND-.*/');
 			}
 		if ($show_channels_format == 1)
 			{
-			@list_channels = $t->cmd(String => "Action: Command\nCommand: show channels concise\n\n", Prompt => '/--END COMMAND-.*/'); 
+			@list_channels = $t->cmd(String => "Action: Command\nCommand: show channels concise\n\n", Prompt => '/--END COMMAND-.*/');
 			}
 		if ($show_channels_format > 1)
 			{
-			@list_channels = $t->cmd(String => "Action: Command\nCommand: core show channels concise\n\n", Prompt => '/--END COMMAND-.*/'); 
+			@list_channels = $t->cmd(String => "Action: Command\nCommand: core show channels concise\n\n", Prompt => '/--END COMMAND-.*/');
 			}
 
 		$error_string = $t->errmsg;
-		if (length($error_string)>0) 
+		if (length($error_string)>0)
 			{
 			$error_counter++;
 			$error_string = "$error_counter|".$error_string;
@@ -530,11 +530,11 @@ while($one_day_interval > 0)
 		else
 			{$error_counter=0;}
 
-		if ($error_counter > 1) 
+		if ($error_counter > 1)
 			{
 			$event_string="ERROR LIMIT REACHED, KILLING CONNECTION: $error_counter";
 			&event_logger;
-			
+
 			# end this connection and start new one
 			$ok = $t->close;
 
@@ -546,7 +546,7 @@ while($one_day_interval > 0)
 		#	$fh = $t->dump_log("$UPtelnetlog");  # uncomment for telnet log
 			if (length($ASTmgrUSERNAMEupdate) > 3) {$telnet_login = $ASTmgrUSERNAMEupdate;}
 			else {$telnet_login = $ASTmgrUSERNAME;}
-			$t->open("$telnet_host"); 
+			$t->open("$telnet_host");
 			$t->waitfor('/[0123]\n$/');			# print login
 			$t->print("Action: Login\nUsername: $telnet_login\nSecret: $ASTmgrSECRET\n\n");
 			$t->waitfor('/Authentication accepted/');		# waitfor auth accepted
@@ -604,7 +604,7 @@ while($one_day_interval > 0)
 					$extension =~ s/\|.*//gi;
 					if ($channel =~ /^SIP/) {$test_sip_count++;}
 					if ($channel =~ /^Local/) {$test_local_count++;}
-					if ($IAX2_client_count) 
+					if ($IAX2_client_count)
 						{
 						$channel_match=$channel;
 						$channel_match =~ s/\/\d+$|-\d+$//gi;
@@ -612,7 +612,7 @@ while($one_day_interval > 0)
 						$channel_match =~ s/\*/\\\*/gi;
 						if ($IAX2_client_list =~ /\|$channel_match\|/i) {$test_iax_count++;}
 						}
-					if ($Zap_client_count) 
+					if ($Zap_client_count)
 						{
 						$channel_match=$channel;
 						$channel_match =~ s/^Zap\/|^DAHDI\///gi;
@@ -875,7 +875,7 @@ while($one_day_interval > 0)
 			{
 			@list_chan_12 = split(/:/, $list_channels[2]);
 			}
-		if( ($DB) && ($show_channels_format) ) 
+		if( ($DB) && ($show_channels_format) )
 			{print "concise: $#list_chan_12   loop: $endless_loop\n";}
 		if ( ( ( ($list_channels[1] =~ /State Appl\./) or ($list_channels[2] =~ /State Appl\.|Application\(Data\)/) or ($list_channels[3] =~ /State Appl\.|Application\(Data\)/) ) || ($#list_chan_12 > 8) ) && (!$UD_bad_grab) )
 			{
@@ -956,7 +956,7 @@ while($one_day_interval > 0)
 							}
 						if ($channel =~ /^SIP|^Zap|^IAX2|^DAHDI/) {$line_type = 'TRUNK';}
 						if ($channel =~ /^Local/) {$line_type = 'CLIENT';}
-						if ($IAX2_client_count) 
+						if ($IAX2_client_count)
 							{
 							$channel_match=$channel;
 							$channel_match =~ s/\/\d+$|-\d+$//gi;
@@ -965,7 +965,7 @@ while($one_day_interval > 0)
 		#					print "checking for IAX2 client:   |$channel_match|\n";
 							if ($IAX2_client_list =~ /\|$channel_match\|/i) {$line_type = 'CLIENT';}
 							}
-						if ($Zap_client_count) 
+						if ($Zap_client_count)
 							{
 							$channel_match=$channel;
 							$channel_match =~ s/^Zap\/|^DAHDI\///gi;
@@ -973,7 +973,7 @@ while($one_day_interval > 0)
 		#					print "checking for Zap client:   |$channel_match|\n";
 							if ($Zap_client_list =~ /\|$channel_match\|/i) {$line_type = 'CLIENT';}
 							}
-						if ($SIP_client_count) 
+						if ($SIP_client_count)
 							{
 							$channel_match=$channel;
 							$channel_match =~ s/-\S+$//gi;
@@ -1031,7 +1031,7 @@ while($one_day_interval > 0)
 									if( ($DB) or ( ($UD_bad_grab) && ($Q < 1) ) ){print STDERR "\n|$stmtA|\n";}
 								$affected_rows = $dbhA->do($stmtA) or die  "Couldn't execute query: |$stmtA|\n";
 								# if Agent logged in on phone and phone is "on hook agent" update Agent to be in call
-								my ($sipphone) = $channel =~ /^(SIP\/.*)\-.*/; 
+								my ($sipphone) = $channel =~ /^(SIP\/.*)\-.*/;
 								if ( $sipphone && ! ($extension eq "ring" ) ) {
                                                                 	$stmtA = "UPDATE vicidial_live_agents SET on_hook_saved_status=status, status='INCAll' WHERE extension='$sipphone' AND on_hook_agent='Y' AND status IN ('READY','CLOSER','PAUSED','LOGIN') AND server_ip='$server_ip'";
                                                                         	if( ($DB) or ( ($UD_bad_grab) && ($Q < 1) ) ){print STDERR "\n|$stmtA|\non channel: $channel\nextension: $extension\n";}
@@ -1171,7 +1171,7 @@ while($one_day_interval > 0)
 	$event_string='HANGING UP|';
 	&event_logger;
 
-	@hangup = $t->cmd(String => "Action: Logoff\n\n", Prompt => "/.*/"); 
+	@hangup = $t->cmd(String => "Action: Logoff\n\n", Prompt => "/.*/");
 
 	$t->buffer_empty;
 	$t->waitfor(Match => '/Message:.*\n\n/', Timeout => 5);
@@ -1253,21 +1253,21 @@ sub get_current_channels
 
 
 #######################################################################
-# The purpose of this subroutine is to make sure that the calls that are 
-# listed as parked in the parked_channels table are in fact live (to make 
-# sure the caller has not hung up) and if the channel is not live to delete 
+# The purpose of this subroutine is to make sure that the calls that are
+# listed as parked in the parked_channels table are in fact live (to make
+# sure the caller has not hung up) and if the channel is not live to delete
 # the parked_channels entry for that specific parked channel entry
-# 
+#
 # Yes it does use two DB connections all by itself, I just did that for speed
 # and ease of programming to be backward compatible with MySQL < 4.1 or else
 # I would have used a delete with subselect and saved all of this bloated code
 #######################################################################
 sub validate_parked_channels
 	{
-	if (!$run_validate_parked_channels_now) 
+	if (!$run_validate_parked_channels_now)
 		{
 		$parked_counter=0;
-		@ARchannel=@MT;   @ARextension=@MT;   @ARparked_time=@MT;   @ARparked_time_UNIX=@MT;   
+		@ARchannel=@MT;   @ARextension=@MT;   @ARparked_time=@MT;   @ARparked_time_UNIX=@MT;
 		$stmtA = "SELECT channel,extension,parked_time,UNIX_TIMESTAMP(parked_time),channel_group FROM $parked_channels where server_ip = '$server_ip' order by channel desc, parked_time desc;";
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -1298,7 +1298,7 @@ sub validate_parked_channels
 						$stmtPQ = "DELETE FROM $parked_channels where server_ip='$server_ip' and channel='$PQchannel' and extension='$PQextension' and parked_time='$PQparked_time' limit 1";
 						if ($DB) {print STDERR "\n|$stmtPQ|$$DEL_chan_park_counter|$DEL_chan_park_counter|\n\n";}
 						$affected_rows = $dbhC->do($stmtPQ);
-							
+
 						$DEL_chan_park_counter = "DEL$PQchannel$PQextension";
 						$$DEL_chan_park_counter=0;
 						$record_deleted++;
@@ -1306,7 +1306,7 @@ sub validate_parked_channels
 					}
 				$AR++;
 				}
-			
+
 			if (!$record_deleted)
 				{
 				$ARchannel[$rec_count] =			$aryA[0];
@@ -1410,7 +1410,7 @@ sub get_time_now
 
 ################################################################################
 ##### open the log file for writing, and print to screen if in debugX mode ###
-sub event_logger 
+sub event_logger
 	{
 	if ($SYSLOG)
 		{
@@ -1427,7 +1427,7 @@ sub event_logger
 	}
 
 
-sub error_logger 
+sub error_logger
 	{
 	if ($SYSLOG)
 		{

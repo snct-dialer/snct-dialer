@@ -1,10 +1,10 @@
 <?php
 # timeclock.php - VICIDIAL system user timeclock
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG
-# 80523-0134 - First Build 
+# 80523-0134 - First Build
 # 80524-0225 - Changed event_date to DATETIME, added timestamp field and tcid_link field
 # 80525-2351 - Added an audit log that is not to be editable
 # 80602-0641 - Fixed status update bug
@@ -80,7 +80,7 @@ if (isset($_GET["pass"]))						{$pass=$_GET["pass"];}
         elseif (isset($_POST["pass"]))			{$pass=$_POST["pass"];}
 if (strlen($VD_login)<1) {$VD_login = $user;}
 
-if (!isset($phone_login)) 
+if (!isset($phone_login))
 	{
 	if (isset($_GET["pl"]))					{$phone_login=$_GET["pl"];}
 			elseif (isset($_POST["pl"]))	{$phone_login=$_POST["pl"];}
@@ -212,7 +212,7 @@ if ( ($SSweb_logo=='default_old') and ($logo_old > 0) )
 	}
 if ( ($SSweb_logo!='default_new') and ($SSweb_logo!='default_old') )
 	{
-	if (file_exists("../$admin_web_directory/images/vicidial_admin_web_logo$SSweb_logo")) 
+	if (file_exists("../$admin_web_directory/images/vicidial_admin_web_logo$SSweb_logo"))
 		{
 		$selected_logo = "../$admin_web_directory/images/vicidial_admin_web_logo$SSweb_logo";
 		}
@@ -332,7 +332,7 @@ if ( ($stage == 'login') or ($stage == 'logout') )
 				if ($totTIME_S < 10) {$totTIME_S = "0$totTIME_S";}
 				$totTIME_HMS = "$totTIME_H_int:$totTIME_M_int:$totTIME_S";
 				}
-			else 
+			else
 				{
 				$totTIME_HMS='0:00:00';
 				}
@@ -466,9 +466,9 @@ if ( ($stage == 'login') or ($stage == 'logout') )
 				{echo _QXZ("ERROR: timeclock log entry already made:")." $status|$stage";  exit;}
 
 			$BACKlink='';
-			if ($referrer=='agent') 
+			if ($referrer=='agent')
 				{$BACKlink = "<A HREF=\"./$SSagent_script?pl=$phone_login&pp=$phone_pass&VD_login=$user\"><font class=\"sd_text\">"._QXZ("BACK to Agent Login Screen")."</font></A>";}
-			if ($referrer=='admin') 
+			if ($referrer=='admin')
 				{$BACKlink = "<A HREF=\"/$admin_web_directory/admin.php\"><font class=\"sd_text\">"._QXZ("BACK to Administration")."</font></A>";}
 			if ( ($referrer=='welcome') or (strlen($BACKlink) < 10) )
 				{$BACKlink = "<A HREF=\"$welcomeURL\"><font class=\"sd_text\">"._QXZ("BACK to Welcome Screen")."</font></A>";}

@@ -1,6 +1,6 @@
 <?php
 # manager_send.php    version 2.14
-# 
+#
 # LICENSE: AGPLv3
 #
 # Copyright (©) 2019  Matt Florell <vicidial@gmail.com>
@@ -9,7 +9,7 @@
 #
 # This script is designed purely to insert records into the vicidial_manager table to signal Actions to an asterisk server
 # This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
-# 
+#
 # required variables:
 #  - $server_ip
 #  - $session_name
@@ -607,7 +607,7 @@ if ($ACTION=="Originate")
 			{
 			if (strlen($lead_id)<1) {$lead_id='0';}
 			$customer_hungup='';
-			if ( ($stage > 0) and (preg_match("/3WAY/",$agent_dialed_type)) ) 
+			if ( ($stage > 0) and (preg_match("/3WAY/",$agent_dialed_type)) )
 				{$customer_hungup = 'BEFORE_CALL';}
 			$stmt = "INSERT INTO user_call_log (user,call_date,call_type,server_ip,phone_number,number_dialed,lead_id,callerid,group_alias_id,preset_name,campaign_id,customer_hungup) values('$user','$NOW_TIME','$agent_dialed_type','$server_ip','$exten','$channel','$lead_id','$outbound_cid','$RAWaccount','$preset_name','$campaign','$customer_hungup')";
 			if ($DB) {echo "$stmt\n";}
@@ -714,7 +714,7 @@ if ($ACTION=="Hangup")
 #				{
 #				$channel_live=0;
 #				echo "Channel $channel is not live on $call_server_ip, Hangup command not inserted\n";
-#				}	
+#				}
 #			}
 		if ( ($auto_dial_level > 0) and (strlen($CalLCID)>2) and (strlen($exten)>2) and ($secondS > 0))
 			{
@@ -870,7 +870,7 @@ if ($ACTION=="Hangup")
 									$time_id	= $row[0];
 									}
 								$StarTtime = date("U");
-								if ($time_id > 100000) 
+								if ($time_id > 100000)
 									{$secondS = ($StarTtime - $time_id);}
 
 								$data4SQL='';
@@ -1134,7 +1134,7 @@ if ($ACTION=="RedirectToPark")
 					$agent =	$row[2];
 					}
 				$StarTtime = date("U");
-				if ($time_id > 100000) 
+				if ($time_id > 100000)
 					{$secondS = ($StarTtime - $time_id);}
 
 				if ($VAC_eq_ct > 0)
@@ -1254,7 +1254,7 @@ if ($ACTION=="RedirectFromPark")
 						$agent =	$row[2];
 						}
 					$StarTtime = date("U");
-					if ($time_id > 100000) 
+					if ($time_id > 100000)
 						{$secondS = ($StarTtime - $time_id);}
 
 					if ($VAC_eq_ct > 0)
@@ -1382,7 +1382,7 @@ if ($ACTION=="RedirectToParkIVR")
 					$agent =	$row[2];
 					}
 				$StarTtime = date("U");
-				if ($time_id > 100000) 
+				if ($time_id > 100000)
 					{$secondS = ($StarTtime - $time_id);}
 
 				if ($VAC_eq_ct > 0)
@@ -1506,7 +1506,7 @@ if ($ACTION=="RedirectFromParkIVR")
 						$agent =	$row[2];
 						}
 					$StarTtime = date("U");
-					if ($time_id > 100000) 
+					if ($time_id > 100000)
 						{$secondS = ($StarTtime - $time_id);}
 
 					if ($VAC_eq_ct > 0)
@@ -1847,7 +1847,7 @@ if ($ACTION=="RedirectXtraCXNeW")
 				$channel_liveX=0;
 				echo _QXZ("Channel %1s is not live on %2s, Redirect command not inserted",0,'',$channel,$call_server_ip)."\n";
 				if (preg_match("/SECOND|FIRST|DEBUG/",$filename)) {$DBout .= "$channel is not live on $call_server_ip";}
-				}	
+				}
 			}
 		$stmt="SELECT count(*) FROM live_channels where server_ip = '$server_ip' and channel='$extrachannel';";
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
@@ -1866,7 +1866,7 @@ if ($ACTION=="RedirectXtraCXNeW")
 				$channel_liveY=0;
 				echo _QXZ("Channel %1s is not live on %2s, Redirect command not inserted",0,'',$channel,$server_ip)."\n";
 				if (preg_match("/SECOND|FIRST|DEBUG/",$filename)) {$DBout .= "$channel is not live on $server_ip";}
-				}	
+				}
 			}
 		if ( ($channel_liveX==1) and ($channel_liveY==1) )
 			{
@@ -1880,7 +1880,7 @@ if ($ACTION=="RedirectXtraCXNeW")
 				$channel_liveY=0;
 				echo _QXZ("No Local agent to send call to, Redirect command not inserted")."\n";
 				if (preg_match("/SECOND|FIRST|DEBUG/",$filename)) {$DBout .= "No Local agent to send call to";}
-				}	
+				}
 			else
 				{
 				$stmt="SELECT server_ip,conf_exten,user FROM vicidial_live_agents where lead_id='$lead_id' and user!='$user';";
@@ -2031,7 +2031,7 @@ if ($ACTION=="RedirectXtraNeW")
 
 					echo "NeWSessioN|$exten|\n";
 					echo "|$stmtB|\n";
-					
+
 					$stage .= "|OLD $session_id|NEW $exten|";
 					if ($SSagent_debug_logging > 0) {vicidial_ajax_log($NOW_TIME,$startMS,$link,$ACTION,$php_script,$user,$stage,$lead_id,$session_name,$stmt);}
 					exit;
@@ -2064,7 +2064,7 @@ if ($ACTION=="RedirectXtraNeW")
 					$channel_liveX=0;
 					echo _QXZ("Channel %1s is not live on %2s, Redirect command not inserted",0,'',$channel,$call_server_ip)."\n";
 					if (preg_match("/SECOND|FIRST|DEBUG/",$filename)) {$DBout .= "$channel is not live on $call_server_ip";}
-					}	
+					}
 				}
 			$stmt="SELECT count(*) FROM live_channels where server_ip = '$server_ip' and channel='$extrachannel';";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
@@ -2083,7 +2083,7 @@ if ($ACTION=="RedirectXtraNeW")
 					$channel_liveY=0;
 					echo _QXZ("Channel %1s is not live on %2s, Redirect command not inserted",0,'',$channel,$server_ip)."\n";
 					if (preg_match("/SECOND|FIRST|DEBUG/",$filename)) {$DBout .= "$channel is not live on $server_ip";}
-					}	
+					}
 				}
 			if ( ($channel_liveX==1) and ($channel_liveY==1) )
 				{
@@ -2213,7 +2213,7 @@ if ($ACTION=="Redirect")
 				{
 				$channel_live=0;
 				echo _QXZ("Channel %1s is not live on %2s, Redirect command not inserted",0,'',$channel,$server_ip)."\n";
-				}	
+				}
 			}
 		if ($channel_live==1)
 			{
@@ -2265,7 +2265,7 @@ if ( ($ACTION=="Monitor") || ($ACTION=="StopMonitor") )
 				{
 				$channel_live=0;
 				echo _QXZ("Channel %1s is not live on %2s, %3s command not inserted",0,'',$channel,$server_ip,$ACTION)."\n";
-				}	
+				}
 			}
 		if ($channel_live==1)
 			{
@@ -2543,7 +2543,7 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02079',$user,$server_ip,$session_name,$one_mysql_log);}
 				}
 
-			# find and hang up all recordings going on in this conference # and extension = '$exten' 
+			# find and hang up all recordings going on in this conference # and extension = '$exten'
 			$stmt="SELECT channel FROM live_sip_channels where server_ip = '$server_ip' and channel LIKE \"$channel%\" and (channel LIKE \"%,1\" or channel LIKE \"%;1\");";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_to_mysqli($stmt, $link);
@@ -2643,7 +2643,7 @@ if ($format=='debug') {echo "\n<!-- script runtime: $RUNtime seconds -->";}
 if ($format=='debug') {echo "\n</body>\n</html>\n";}
 
 if ($SSagent_debug_logging > 0) {vicidial_ajax_log($NOW_TIME,$startMS,$link,$ACTION,$php_script,$user,$stage,$lead_id,$session_name,$stmt);}
-exit; 
+exit;
 
 
 ?>

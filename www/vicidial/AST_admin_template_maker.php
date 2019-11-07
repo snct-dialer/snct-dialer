@@ -1,6 +1,6 @@
 <?php
 # AST_admin_template_maker.php - version 2.14
-# 
+#
 # Copyright (C) 2018  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -159,7 +159,7 @@ header ("Content-type: text/html; charset=utf-8");
 header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
 header ("Pragma: no-cache");                          // HTTP/1.0
 
-if ($submit_template==_QXZ("SUBMIT TEMPLATE") && $template_id && $template_name && $template_list_id && $standard_fields_layout) 
+if ($submit_template==_QXZ("SUBMIT TEMPLATE") && $template_id && $template_name && $template_list_id && $standard_fields_layout)
 	{
 
 	$status_str="";
@@ -172,20 +172,20 @@ if ($submit_template==_QXZ("SUBMIT TEMPLATE") && $template_id && $template_name 
 	echo "<!-- $status_str //-->";
 	$status_str=preg_replace('/\|$/', '', $status_str);
 	if (preg_match('/\-\-ALL\-\-/', $status_str)) {$status_str="";}
-	
+
 	$custom_table="custom_".$template_list_id;
 	$ins_stmt="INSERT INTO vicidial_custom_leadloader_templates(template_id, template_name, template_description, list_id, standard_variables, custom_table, custom_variables, template_statuses) values('$template_id', '$template_name', '$template_description', '$template_list_id', '$standard_fields_layout', '$custom_table', '$custom_fields_layout', '$status_str')";
 	$ins_rslt=mysql_to_mysqli($ins_stmt, $link);
 	echo "<!-- $ins_stmt //-->";
-	if (mysqli_affected_rows($link)>0) 
+	if (mysqli_affected_rows($link)>0)
 		{
 		$success_msg=_QXZ("NEW TEMPLATE CREATED SUCCESSFULLY");
-		if (!$custom_fields_layout) 
+		if (!$custom_fields_layout)
 			{
 			$success_msg.="<BR/>**"._QXZ("NO CUSTOM FIELDS ASSIGNED")."**";
 			}
 		}
-	else 
+	else
 		{
 		$errno = mysqli_errno($link);
 		if ($errno > 0)
@@ -193,7 +193,7 @@ if ($submit_template==_QXZ("SUBMIT TEMPLATE") && $template_id && $template_name 
 		$error_msg=_QXZ("TEMPLATE CREATION FAILED")."<br>\n$errno - $error<br>\n[$ins_stmt]";
 		}
 	}
-else if ( ($delete_template == _QXZ("DELETE TEMPLATE")) and (strlen($template_id) > 0) ) 
+else if ( ($delete_template == _QXZ("DELETE TEMPLATE")) and (strlen($template_id) > 0) )
 	{
 	$delete_stmt="delete from vicidial_custom_leadloader_templates where template_id='$template_id'";
 	$delete_rslt=mysql_to_mysqli($delete_stmt, $link);
@@ -279,12 +279,12 @@ function DisplayTemplateFields(list_id) {
 	var buffer=document.getElementById("template_file_buffer").value;
 
 		var endstr=document.forms[0].sample_template_file.value.lastIndexOf('\\');
-		if (endstr>-1) 
+		if (endstr>-1)
 			{
 			endstr++;
 			var filename=document.forms[0].sample_template_file.value.substring(endstr);
 			}
-	
+
 	var xmlhttp=false;
 	try {
 		xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
@@ -298,12 +298,12 @@ function DisplayTemplateFields(list_id) {
 	if (!xmlhttp && typeof XMLHttpRequest!='undefined') {
 		xmlhttp = new XMLHttpRequest();
 	}
-	if (xmlhttp) { 
+	if (xmlhttp) {
 		var vs_query = "&custom_fields_enabled="+custom_fields_enabled+"&list_id="+list_id+"&delimiter="+delimiter+"&buffer="+buffer+"&sample_template_file_name="+form_file_name;
-		xmlhttp.open('POST', 'leadloader_template_display.php'); 
+		xmlhttp.open('POST', 'leadloader_template_display.php');
 		xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-		xmlhttp.send(vs_query); 
-		xmlhttp.onreadystatechange = function() { 
+		xmlhttp.send(vs_query);
+		xmlhttp.onreadystatechange = function() {
 			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
 				var StatSpanText = null;
 				StatSpanText = xmlhttp.responseText;
@@ -339,14 +339,14 @@ function DrawTemplateStrings() {
 }
 function loadIFrame(form_action, field_value) {
 	document.getElementById("template_list_id").disabled=true; // Disable these until the file finishes loading...
-	document.getElementById("template_statuses").disabled=true; 
+	document.getElementById("template_statuses").disabled=true;
 
 	form_file_name = field_value;
 	if (field_value=="") {
-		document.getElementById('list_data_display').style.display = 'none'; 
+		document.getElementById('list_data_display').style.display = 'none';
 		document.getElementById('list_data_display').style.visibility = 'hidden';
 	} else {
-		document.getElementById('list_data_display').style.display = 'block'; 
+		document.getElementById('list_data_display').style.display = 'block';
 		document.getElementById('list_data_display').style.visibility = 'visible';
 	}
 	document.forms[0].action="leadloader_template_display.php?form_action="+form_action;
@@ -363,18 +363,18 @@ function checkForm(form_name) {
 </script>
 <?php
 
-function macfontfix($fontsize) 
+function macfontfix($fontsize)
 	{
 	$browser = getenv("HTTP_USER_AGENT");
 	$pctype = explode("(", $browser);
-	if (preg_match('/Mac/',$pctype[1])) 
+	if (preg_match('/Mac/',$pctype[1]))
 		{
 		/* Browser is a Mac.  If not Netscape 6, raise fonts */
 		$blownbrowser = explode('/', $browser);
 		$ver = explode(' ', $blownbrowser[1]);
 		$ver = $ver[0];
 		if ($ver >= 5.0) return $fontsize; else return ($fontsize+2);
-		} 
+		}
 	else return $fontsize;	/* Browser is not a Mac - don't touch fonts */
 	}
 
@@ -395,7 +395,7 @@ A.employee_standard {  font-family: garamond, sans-serif; font-size: ".macfontfi
 </style>\n";
 ?>
 <script language="JavaScript1.2">
-function openNewWindow(url) 
+function openNewWindow(url)
 	{
 	window.open (url,"",'width=700,height=300,scrollbars=yes,menubar=yes,address=yes');
 	}
@@ -411,13 +411,13 @@ require("admin_header.php");
 <tr><td align="center" bgcolor="#<?php echo $SSstd_row4_background; ?>">
 <table border=0 cellpadding=15 cellspacing=0 width="90%" align="center" bgcolor="#<?php echo $SSframe_background; ?>">
 <?php
-if ($error_msg) 
+if ($error_msg)
 	{
 	echo "<tr bgcolor='#990000'>";
 	echo "<th colspan='2'><font color='#FFFFFF'>$error_msg</font></th>";
 	echo "</tr>";
 	}
-if ($success_msg) 
+if ($success_msg)
 	{
 	echo "<tr bgcolor='#009900'>";
 	echo "<th colspan='2'><font color='#FFFFFF'>$success_msg</font></th>";
@@ -486,7 +486,7 @@ if (mysqli_num_rows($template_rslt)>0) {
 			$num_rows = mysqli_num_rows($rslt);
 
 			$count=0;
-			while ( $num_rows > $count ) 
+			while ( $num_rows > $count )
 				{
 				$row = mysqli_fetch_row($rslt);
 				echo "\t\t\t<option value='$row[0]'>$row[0] - $row[1]</option>\n";
@@ -508,7 +508,7 @@ if (mysqli_num_rows($template_rslt)>0) {
 			$num_rows = mysqli_num_rows($rslt);
 
 			$count=0;
-			while ( $num_rows > $count ) 
+			while ( $num_rows > $count )
 				{
 				$row = mysqli_fetch_row($rslt);
 				echo "\t\t\t<option value='$row[0]'>$row[0] - $row[1]</option>\n";

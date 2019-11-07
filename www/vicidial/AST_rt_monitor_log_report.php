@@ -1,6 +1,6 @@
 <?php
 # AST_rt_monitor_log_report.php
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>, Joe Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -63,7 +63,7 @@ if (!isset($users)) {$users = array();}
 if (!isset($report_display_type)) {$report_display_type = "HTML";}
 if (!isset($query_date)) {$query_date = $NOW_DATE;}
 if (!isset($end_date)) {$end_date = $NOW_DATE;}
-if (!isset($order_by)) {$order_by="monitor_start_time-asc";} 
+if (!isset($order_by)) {$order_by="monitor_start_time-asc";}
 
 $report_name = 'Real-Time Monitoring Log Report';
 $db_source = 'M';
@@ -401,10 +401,10 @@ else
 	$WHEREcampaign_SQL=" where campaign_id in ($campaign_SQL) ";
 	$campaign_SQL=" and campaign_id in ($campaign_SQL) ";
 	}
-if (strlen($campaign_SQL)<3) 
+if (strlen($campaign_SQL)<3)
 	{
 	$campaign_SQL="";
-	} 
+	}
 
 $i=0;
 $users_string='|';
@@ -532,7 +532,7 @@ $HEADER.="<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 # $HEADER.="<link rel=\"stylesheet\" type=\"text/css\" href=\"vicidial_stylesheet.css\" />\n";
-$HEADER.="<script src='chart/Chart.js'></script>\n"; 
+$HEADER.="<script src='chart/Chart.js'></script>\n";
 $HEADER.="<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
 $HEADER.="<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 $HEADER.="<TITLE>"._QXZ("$report_name")."</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
@@ -661,7 +661,7 @@ else
 		if (strlen(trim($cg_row[0]))>0) {
 			$cg_row[0]=preg_replace("/^\s+|\s\-/", "", $cg_row[0]);
 			$campaign_group_SQL.="'".preg_replace("/\s/", "','", $cg_row[0])."',";
-		}		
+		}
 	}
 	$campaign_group_SQL=$group_SQL.",".$campaign_group_SQL;
 	$campaign_group_SQL=preg_replace("/^,|,$/", "", $campaign_group_SQL);
@@ -782,7 +782,7 @@ else
 		{
 		$MAIN.=$HTML_text.$HTML_text2;
 		}
-	else 
+	else
 		{
 		$MAIN.=$ASCII_text;
 		}
@@ -791,7 +791,7 @@ else
 
 	$MAIN.="</FORM>";
 
-	if ($file_download>0) 
+	if ($file_download>0)
 		{
 		$FILE_TIME = date("Ymd-His");
 		$CSVfilename = "AST_RT_monitor_log_report_$US$FILE_TIME.csv";
@@ -811,7 +811,7 @@ else
 
 		echo "$CSV_text";
 		}
-	else 
+	else
 		{
 		header("Content-type: text/html; charset=utf-8");
 

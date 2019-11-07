@@ -1,9 +1,9 @@
 <?php
 # closer_dispo.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
-# this is the closer disposition screen of a call that has been grabbed. This 
+# this is the closer disposition screen of a call that has been grabbed. This
 # allows the closer to modify customer information and disposition the call
 #
 # CHANGES
@@ -188,19 +188,19 @@ echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n"
 <BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 <CENTER><FONT FACE="Courier" COLOR=BLACK SIZE=3>
 
-<?php 
+<?php
 
 if ($end_call > 0)
 {
 
 $call_length = ($STARTtime - $call_began);
 
-	### insert a NEW record to the vicidial_closer_log table 
+	### insert a NEW record to the vicidial_closer_log table
 	$stmt="INSERT INTO vicidial_closer_log (lead_id,list_id,campaign_id,call_date,start_epoch,end_epoch,length_in_sec,status,phone_code,phone_number,user,comments,processed) values('" . mysqli_real_escape_string($link, $lead_id) . "','" . mysqli_real_escape_string($link, $list_id) . "','" . mysqli_real_escape_string($link, $campaign_id) . "','" . mysqli_real_escape_string($link, $parked_time) . "','" . mysqli_real_escape_string($link, $call_began) . "','$STARTtime','" . mysqli_real_escape_string($link, $call_length) . "','" . mysqli_real_escape_string($link, $status) . "','" . mysqli_real_escape_string($link, $phone_code) . "','" . mysqli_real_escape_string($link, $phone_number) . "','$PHP_AUTH_USER','" . mysqli_real_escape_string($link, $comments) . "','Y')";
 	if ($DB) {echo "|$stmt|\n";}
 	$rslt=mysql_to_mysqli($stmt, $link);
 
-	### update the lead record in the vicidial_list table 
+	### update the lead record in the vicidial_list table
 	$stmt="UPDATE vicidial_list set status='" . mysqli_real_escape_string($link, $status) . "',first_name='" . mysqli_real_escape_string($link, $first_name) . "',last_name='" . mysqli_real_escape_string($link, $last_name) . "',address1='" . mysqli_real_escape_string($link, $address1) . "',address2='" . mysqli_real_escape_string($link, $address2) . "',address3='" . mysqli_real_escape_string($link, $address3) . "',city='" . mysqli_real_escape_string($link, $city) . "',state='" . mysqli_real_escape_string($link, $state) . "',province='" . mysqli_real_escape_string($link, $province) . "',postal_code='" . mysqli_real_escape_string($link, $postal_code) . "',country_code='" . mysqli_real_escape_string($link, $country_code) . "',alt_phone='" . mysqli_real_escape_string($link, $alt_phone) . "',email='" . mysqli_real_escape_string($link, $email) . "',security_phrase='" . mysqli_real_escape_string($link, $security) . "',comments='" . mysqli_real_escape_string($link, $comments) . "' where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "'";
 	if ($DB) {echo "|$stmt|\n";}
 	$rslt=mysql_to_mysqli($stmt, $link);
@@ -356,8 +356,8 @@ echo "<font size=0>\n\n\n<br><br><br>\n"._QXZ("script runtime").": $RUNtime "._Q
 </html>
 
 <?php
-	
-exit; 
+
+exit;
 
 
 

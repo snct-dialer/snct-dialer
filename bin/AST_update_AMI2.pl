@@ -141,7 +141,7 @@ use Term::ANSIColor qw(:constants);
 
 $module = 'String::Escape qw( backslash unbackslash )';
 $bs_loaded=0;
-if (try_load($module)) 
+if (try_load($module))
 	{
 	$bs_loaded=1;
 	}
@@ -214,8 +214,8 @@ event_logger($SYSLOG,$event_string);
 ##### BEGIN Check for a cid_channels_recent_IPXXXXX... table, and if not present, create one
 $cid_channels_recent = 'cid_channels_recent';
 $PADserver_ip = $server_ip;
-$PADserver_ip =~ s/(\d+)(\.|$)/sprintf "%3.3d$2",$1/eg; 
-$PADserver_ip =~ s/\.//eg; 
+$PADserver_ip =~ s/(\d+)(\.|$)/sprintf "%3.3d$2",$1/eg;
+$PADserver_ip =~ s/\.//eg;
 $CCRrec=0;   $affected_rowsCCR=0;
 $stmtA = "SHOW TABLES LIKE \"cid_channels_recent_$PADserver_ip\";";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -260,7 +260,7 @@ if ($run_check > 0)
 	my $grepout = `/bin/ps ax | grep $0 | grep -v grep | grep -v '/bin/sh'`;
 	my $grepnum=0;
 	$grepnum++ while ($grepout =~ m/\n/g);
-	if ($grepnum > 2) 
+	if ($grepnum > 2)
 		{
 		if ($DB) {print "I am not alone! Another $0 is running! Exiting...\n";}
 		$event_string = "I am not alone! Another $0 is running! Exiting...";
@@ -280,7 +280,7 @@ $tn = new Net::Telnet (
 	Port => $telnet_port,
 	Prompt => '/\r\n/',
 	Output_record_separator => "\n\n",
-	Max_buffer_length => $max_buffer, 
+	Max_buffer_length => $max_buffer,
 	Telnetmode => 0,
 );
 
@@ -289,7 +289,7 @@ $UPtelnetlog = "$PATHlogs/update_telnet_log.txt";  # uncomment for telnet log
 
 if (length($ASTmgrUSERNAMEupdate) > 3) {$telnet_login = $ASTmgrUSERNAMEupdate;}
 else {$telnet_login = $ASTmgrUSERNAME;}
-$tn->open("$telnet_host"); 
+$tn->open("$telnet_host");
 $tn->waitfor('/Asterisk Call Manager\//');
 
 # get the AMI version number
@@ -314,7 +314,7 @@ if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 13))
 	&event_logger($SYSLOG,$event_string);
 	exit;
 	}
-else 
+else
 	{
 	### BEGIN manager event handling for asterisk version >= 13
 	$endless_loop = 1;
@@ -335,7 +335,7 @@ else
 
 	# the last time the performance data was logged
 	$last_perf_log = 0;
-	
+
 	# the various channel counts from the last loop
 	$counts->{'psuedo'} = 0;
 	$counts->{'total'} = 0;
@@ -367,7 +367,7 @@ else
 		$now_micro_epoch = $now_micro_epoch + $now_micro_sec;
 
 		$begin_micro_epoch = $now_micro_epoch;
-		
+
 		# create a new action id
 		$action_id = "$now_sec.$now_micro_sec";
 
@@ -380,7 +380,7 @@ else
 		# wait till we get the response
 		$tn->waitfor('/Message: Channels will follow\n\n/');
 		$msg = $tn->errmsg;
-		if (  $msg ne '' ) 
+		if (  $msg ne '' )
 			{
 			$event_string =  "WAITFOR ERRMSG: |$msg|$now_date|" . length($read_input_buf) . "|$endless_loop|$loop_count|Command: $action_string|";
 			&event_logger($SYSLOG,$event_string);
@@ -447,7 +447,7 @@ else
 			{
 			@records = split( /\n\n/, $read_input_buf );
 			foreach my $record ( @records )
-				{			
+				{
 				# Loop to get all of the channels
 				$event_ref = {};
 
@@ -462,7 +462,7 @@ else
 						$value =~ s/\n//gi;	# remove new lines
 						$value =~ s/^ +//gi;	# remove leading white space
 						$value =~ s/ +$//gi;	# remove trailing white space
-					
+
 						# change certain strings to conform with Asterisk 1.0 behavior
 						$value =~ s/Congestion\s+\(Empty\)/ SIP\/CONGEST/gi;
 						$value =~ s/\(Outgoing Line\)|\(None\)/SIP\/ring/gi;
@@ -481,7 +481,7 @@ else
 							{
 							print "|Channel|ChannelState|ChannelStateDesc|Exten|Priority|Context|CallerIDName|CallerIDNum|ConnectedLineName|ConnectedLineNum|Uniqueid|Linkedid|Application|ApplicationData|BridgeId|AccountCode|Language|Duration|\n";
 							}
-							
+
 						print "|$event_ref->{'Channel'}";
 						print "|$event_ref->{'ChannelState'}";
 						print "|$event_ref->{'ChannelStateDesc'}";
@@ -510,7 +510,7 @@ else
 
 				$retcode = 1;
 				# make sure this is an event not a response
-				if (exists($event_ref->{"Event"})) 
+				if (exists($event_ref->{"Event"}))
 					{
 					if ( $event_ref->{"Event"} eq "CoreShowChannel" )
 						{
@@ -530,28 +530,28 @@ else
 						# We got something else???
 						}
 					}
-				elsif ( exists($event_ref->{"Response"}) ) 
+				elsif ( exists($event_ref->{"Response"}) )
 					{
 					# we got the response. Channels should follow.
 					}
 				}
 			}
-		
-		if ( $total_channels != $list_items ) 
+
+		if ( $total_channels != $list_items )
 			{
 			# something is wrong. we did not process the
 			# same number of channels as were reported.
-			$bad_grab = 1; 
+			$bad_grab = 1;
 			$total_bad_grabs++;
 			}
 
 		if ($DB) { print STDERR "$total_channels channels recieved out of $list_items reported.|$bad_grab|\n"; }
-		
+
 		$chan_array_ref = \@chan_array;
 
 		# reload the settings from the DB at a fixed interval
 		$epoch = time();
-		if ( $epoch - $last_config_reload >= $settings_reload_interval ) 
+		if ( $epoch - $last_config_reload >= $settings_reload_interval )
 			{
 			# reload the server settings
 			$settings_ref = get_server_settings($dbhA,$server_ip);
@@ -564,7 +564,7 @@ else
 			$last_config_reload = time();
 			}
 
-		
+
 		# update our time in the DB
 		$stmtA = "UPDATE server_updater set last_update=NOW() where server_ip='$server_ip'";
 		if($DB){print STDERR "\n$stmtA\n";}
@@ -574,13 +574,13 @@ else
 		my ($db_trunks_ref, $db_clients_ref) = get_db_channels($dbhA,$server_ip);
 
 		# gather the various stats specific to the  server stats
-		if ( $epoch - $last_stats_update >= $server_stats_update_interval ) 
+		if ( $epoch - $last_stats_update >= $server_stats_update_interval )
 			{
 			$disk_usage = get_disk_space();
 			}
 
 		# gather the various stats specific to the performance log
-		if (( $settings_ref->{'sys_perf_log'} ) && ( $epoch - $last_perf_log >= $performance_logging_interval )) 
+		if (( $settings_ref->{'sys_perf_log'} ) && ( $epoch - $last_perf_log >= $performance_logging_interval ))
 			{
 			( $mem_total, $mem_used, $mem_free ) = get_mem_usage();
 			$num_processes = get_num_processes();
@@ -620,7 +620,7 @@ else
 
 			# check if it is time to update the server stats
 			# if so use the old counts as the new ones are off
-			if ( $epoch - $last_stats_update >= $server_stats_update_interval ) 
+			if ( $epoch - $last_stats_update >= $server_stats_update_interval )
 				{
        			server_stats_update( $dbhA, $server_ip, $old_counts, $server_load, $cpu_idle_percent, $disk_usage );
 	       		$last_stats_update = time();
@@ -628,7 +628,7 @@ else
 
 			# check if it is time to log the performance stats
 			# if so use the old counts as the new ones are off
-			if (( $settings_ref->{'sys_perf_log'} ) && ( $epoch - $last_perf_log >= $performance_logging_interval )) 
+			if (( $settings_ref->{'sys_perf_log'} ) && ( $epoch - $last_perf_log >= $performance_logging_interval ))
 				{
 				server_perf_log( $dbhA, $server_ip, $old_counts, $server_load, $mem_free, $mem_used, $num_processes, $cpu_user_percent, $cpu_sys_percent, $cpu_idle_percent, $reads, $writes );
 				$last_perf_log = time();
@@ -644,16 +644,16 @@ else
 
 			# make sure all the parked calls are valid
 			$parked_channels = validate_parked_channels( $dbhA, $parked_channels, $chan_array_ref, $server_ip );
-			
+
 			# check if it is time to update the server stats
-			if ( $epoch - $last_stats_update >= $server_stats_update_interval ) 
+			if ( $epoch - $last_stats_update >= $server_stats_update_interval )
 				{
 				server_stats_update( $dbhA, $server_ip, $counts, $server_load, $cpu_idle_percent, $disk_usage );
 				$last_stats_update = time();
 				}
 
 			# check if it is time to log the performance stats
-			if (( $settings_ref->{'sys_perf_log'} ) && ( $epoch - $last_perf_log >= $performance_logging_interval )) 
+			if (( $settings_ref->{'sys_perf_log'} ) && ( $epoch - $last_perf_log >= $performance_logging_interval ))
 				{
 				server_perf_log( $dbhA, $server_ip, $counts, $server_load, $mem_free, $mem_used, $num_processes, $cpu_user_percent, $cpu_sys_percent, $cpu_idle_percent, $reads, $writes );
 				$last_perf_log = time();
@@ -671,12 +671,12 @@ else
 
 			# subtract the current time in usec from time at the beginning of the loop
 			$loop_usec = $end_micro_epoch - $begin_micro_epoch;
-	
+
 			# figure out how long to sleep
 			$sleep_usec = $loop_time_usec - $loop_usec;
 
 			# cannot sleep negative time
-			if ( $sleep_usec > 0 ) 
+			if ( $sleep_usec > 0 )
 				{
 				if ($DB) { print STDERR "loop took $loop_usec microseconds. sleeping for $sleep_usec microseconds to compensate\n"; }
 
@@ -695,7 +695,7 @@ if($DB){print "DONE... Exiting... Goodbye... See you later... Not really, initia
 $event_string='HANGING UP|';
 event_logger($SYSLOG,$event_string);
 
-@hangup = $tn->cmd(String => "Action: Logoff\n\n", Prompt => "/.*/", Errmode    => Return, Timeout    => 1); 
+@hangup = $tn->cmd(String => "Action: Logoff\n\n", Prompt => "/.*/", Errmode    => Return, Timeout    => 1);
 
 $tn->buffer_empty;
 $tn->waitfor(Match => '/Message:.*\n\n/', Timeout => 10);
@@ -747,7 +747,7 @@ sub process_channels
 		# only need to match local channels to real channels on VDAD and RINGAGENT calls
 		if ( (( $call_id =~ /^V\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d$/ ) && ( $channel_ref->{'ConnectedLineName'} ne "<unknown>" )) || ( $call_id =~ /^RINGAGENT|^RA_/ ) )
 			{
-			if ( $channel_ref->{'Channel'} =~ /^Local/ ) 
+			if ( $channel_ref->{'Channel'} =~ /^Local/ )
 				{
 				$cid_chan_hash{"$call_id"}->{'channel'} = $channel_ref->{'Channel'};
 				$cid_chan_hash{"$call_id"}->{'uniqueid'} = $channel_ref->{'Uniqueid'};
@@ -764,7 +764,7 @@ sub process_channels
 				$cid_chan_hash{"$call_id"}->{'connectedlinename'} = $channel_ref->{'ConnectedLineName'};
 				}
 			}
-	
+
 
 		$extension = $channel_ref->{'ApplicationData'};
 		$extension =~ s/^SIP\///gi; # remove "SIP/" from the beginning
@@ -776,26 +776,26 @@ sub process_channels
 		if ( $channel_ref->{'Channel'} =~ /^IAX2|^SIP|^Local|^DAHDI/)
 			{
 			# assume all channels are trunks then check if they are not
-			$line_type = 'TRUNK';			
- 
+			$line_type = 'TRUNK';
+
 			$channel_match = $channel_ref->{'Channel'};
-			
+
 
 			# Local channels are not considered trunks
 			if ( $channel_match =~ /^Local/)
 				{
 				$line_type = 'CLIENT';
 				$counts->{'local'}++;
-				$counts->{'clients'}++; 
+				$counts->{'clients'}++;
 				}
-			elsif ( $channel_match =~ /^IAX2/) 
+			elsif ( $channel_match =~ /^IAX2/)
 				{
 				# clean up the channel to get the extension
 				$channel_match =~ s/\/\d+$|-\d+$//gi;
 				$channel_match =~ s/^IAX2\///gi;
 				$channel_match =~ s/\*/\\\*/gi;
 
-				# if the channels extension is in phones 
+				# if the channels extension is in phones
 				# and it is and IAX phone then it is a client
 				if ( ( exists ( $phones_ref->{ $channel_match } ) ) && ( $phones_ref->{ $channel_match }->{'protocol'} eq 'IAX2' ) )
 					{
@@ -804,12 +804,12 @@ sub process_channels
 					$counts->{'clients'}++;
 					}
 				}
-			elsif ($channel_ref->{'Channel'} =~ /^SIP/) 
+			elsif ($channel_ref->{'Channel'} =~ /^SIP/)
 				{
 				# clean up the channel to get the extension
 				$channel_match =~ s/-\S+$//gi;
 				$channel_match =~ s/^SIP\///gi;
-				$channel_match =~ s/\*/\\\*/gi;	
+				$channel_match =~ s/\*/\\\*/gi;
 
 				# if the channels extension is in phones
 				# and it is and SIP phone then it is a client
@@ -827,7 +827,7 @@ sub process_channels
 				$counts->{'psuedo'}++;
 				}
 
-			elsif ($channel_ref->{'Channel'} =~ /^DAHDI/) 
+			elsif ($channel_ref->{'Channel'} =~ /^DAHDI/)
 				{
 				# clean up the channel to get the extension
 				$channel_match =~ s/^DAHDI\///gi;
@@ -851,10 +851,10 @@ sub process_channels
 			{
 			$counts->{'other'}++;
 			}
-	
+
 		# count the total we have processed
 		$counts->{'total'}++;
-		
+
 		# process the CLIENTs first
 		if ( $line_type eq 'CLIENT' )
 			{
@@ -863,7 +863,7 @@ sub process_channels
 			foreach $db_client ( @$db_clients_ref )
 				{
 				if ( ( $db_client->{'channel'} eq $channel_ref->{'Channel'} ) && ( $db_client->{'extension'} eq $extension ) )
-					{ 
+					{
 					if ($DBX) { print STDERR "marking $db_client->{'channel'} active in db_clients\n"; }
 					$in_db = 1;			# not that the channel is in the DB
 					$db_client->{'active'} = 1; 	# mark that this channel is still active
@@ -880,7 +880,7 @@ sub process_channels
 				# Add this channel to the client insert
 				if ( $client_insert_count > 0 ) { $client_insert_sql .= ", \n\t" }
 				$client_insert_sql .= "('$channel_ref->{'Channel'}','$server_ip','$extension','$channel_ref->{'ApplicationData'}')";
-				$client_insert_count++;				
+				$client_insert_count++;
 				}
 			}
 
@@ -891,7 +891,7 @@ sub process_channels
 			$in_db = 0;
 			foreach $db_trunk ( @$db_trunks_ref )
 				{
-				if ( ( $db_trunk->{'channel'} eq $channel_ref->{'Channel'} ) && ( $db_trunk->{'extension'} eq $extension) ) 
+				if ( ( $db_trunk->{'channel'} eq $channel_ref->{'Channel'} ) && ( $db_trunk->{'extension'} eq $extension) )
 					{
 					if ($DBX) { print STDERR "marking $db_trunk->{'channel'} active in db_trunks\n"; }
 					$in_db = 1;			# not that the channel is in the DB
@@ -954,8 +954,8 @@ sub process_channels
 				$client_delete_sql .= "(server_ip='$server_ip' and channel='$db_client->{'channel'}' and extension='$db_client->{'extension'}')";
 				$client_delete_count++;
 				}
-			} 
-		
+			}
+
 		# find any trunks that have hung up
 		foreach $db_trunk ( @$db_trunks_ref )
 			{
@@ -977,7 +977,7 @@ sub process_channels
 			$affected_rows = $dbhA->do($stmtA);
 			}
 		elsif ($DB) { print STDERR "|no client channels to delete|\n"; }
-			
+
 		# delete all the hung up trunks
 		if ( $trunk_delete_count > 0 )
 			{
@@ -1011,7 +1011,7 @@ sub process_channels
 				}
 			}
 
-		if ( $cid_chan_count > 0 ) 
+		if ( $cid_chan_count > 0 )
 			{
 		#	$stmtA = "INSERT IGNORE INTO cid_channels_recent (caller_id_name, connected_line_name, server_ip, call_date, channel, dest_channel, linkedid, dest_uniqueid, uniqueid) values \n\t";
 			$stmtA = "INSERT IGNORE INTO $cid_channels_recent (caller_id_name, connected_line_name, call_date, channel, dest_channel, linkedid, dest_uniqueid, uniqueid) values \n\t";
@@ -1023,7 +1023,7 @@ sub process_channels
 
 		return $counts;
 		}
-	}	
+	}
 
 sub validate_parked_channels
 	{
@@ -1055,7 +1055,7 @@ sub validate_parked_channels
 		$channel_group = $row->[4];
 
 		# check if we already saw the parked channel before
-		if ( exists( $parked_channels->{"$channel"} ) ) 
+		if ( exists( $parked_channels->{"$channel"} ) )
 			{
 			# if we have look for it in the current active channels
 			$channel_found = 0;
@@ -1081,8 +1081,8 @@ sub validate_parked_channels
 			{
 			# build the SQL for deleting stale values
 			if ( $park_delete_count > 0 )
-				{ 
-				$park_delete_sql .= " or "; 
+				{
+				$park_delete_sql .= " or ";
 				$auto_delete_sql .= ", ";
 				}
 			$park_delete_sql .= "(channel='$channel' and extension='$extension')";
@@ -1109,7 +1109,7 @@ sub validate_parked_channels
 
 	return $parked_channels;
 	}
-	
+
 sub bad_grab_check
 	{
 	my ($counts,$old_counts) = @_;
@@ -1165,37 +1165,37 @@ sub bad_grab_check
 	if ($DB) { print "BG_check_stats [$percent_total_static|$counts->{'total'}:$old_counts->{'total'}\t$percent_dahdi_client_static|$counts->{'dahdi'}:$old_counts->{'dahdi'}\t$percent_iax_client_static|$counts->{'iax'}:$old_counts->{'iax'}\t$percent_local_client_static|$counts->{'local'}:$old_counts->{'local'}\t$percent_sip_client_static|$counts->{'sip'}:$old_counts->{'sip'}]\n"; }
 
 	# MASSIVE IF STATEMENT FOR CHECKING IF IT WAS A BAD GRAB
-	if ( 
+	if (
 		# if we had > 3 trunks or > 4 clients and we now have less than 10% of those remaining
 		( ($percent_total_static < 10) && ( ($old_counts->{'trunk'} > 3) or ($old_counts->{'client'} > 4) ) ) or
-		
+
 		# or if we had > 10 trunks or > 10 clients and we now have less than 20% of those remaining
 		( ($percent_total_static < 20) && ( ($old_counts->{'trunk'} > 10) or ($old_counts->{'client'} > 10) ) ) or
-		
+
 		# or if we had > 20 trunks or > 20 clients and we now have less than 30% of those remaining
 		( ($percent_total_static < 30) && ( ($old_counts->{'trunk'} > 20) or ($old_counts->{'client'} > 20) ) ) or
-		
+
 		# or if we had > 30 trunks or > 30 clients and we now have less than 40% of those remaining
 		( ($percent_total_static < 40) && ( ($old_counts->{'trunk'} > 30) or ($old_counts->{'client'} > 30) ) ) or
-		
+
 		# or if we had > 40 trunks or > 40 clients and we now have less than 50% of those remaining
 		( ($percent_total_static < 50) && ( ($old_counts->{'trunk'} > 40) or ($old_counts->{'client'} > 40) ) ) or
-		
+
 		# or if we had > 3 dahdi clients and we now have less than 20% of those remaining
 		( ($percent_dahdi_client_static < 20) && ( $old_counts->{'dahdi'} > 3 ) ) or
-		
+
 		# or if we had > 9 dahdi clients and we now have less than 40% of those remaining
 		( ($percent_dahdi_client_static < 40) && ( $old_counts->{'dahdi'} > 9 ) ) or
-		
+
 		# or if we had > 3 iax clients and we now have less than 20% of those remaining
 		( ($percent_iax_client_static < 20) && ( $old_counts->{'iax'} > 3 ) ) or
-		
+
 		# or if we had > 9 iax clients and we now have less than 40% of those remaining
 		( ($percent_iax_client_static < 40) && ( $old_counts->{'iax'} > 9 ) ) or
-		
+
 		# or if we had > 3 sip clients and we now have less than 20% of those remaining
 		( ($percent_sip_client_static < 20) && ( $old_counts->{'sip'} > 3 ) ) or
-		
+
 		# or if we had > 9 sip clients and we now have less than 40% of those remaining
 		( ($percent_sip_client_static < 40) && ( $old_counts->{'sip'} > 9 ) )
 	)
@@ -1204,7 +1204,7 @@ sub bad_grab_check
 		$event_string="------ UPDATER BAD GRAB!!!\n$percent_total_static|$counts->{'total'}:$old_counts->{'total'}\t$percent_dahdi_client_static|$counts->{'dahdi'}:$old_counts->{'dahdi'}\t$percent_iax_client_static|$counts->{'iax'}:$old_counts->{'iax'}\t$percent_local_client_static|$counts->{'local'}:$old_counts->{'local'}\t$percent_sip_client_static|$counts->{'sip'}:$old_counts->{'sip'}\n";
 		&event_logger($SYSLOG,$event_string);
 		}
-	
+
 	return $bad_grab;
 	}
 
@@ -1216,11 +1216,11 @@ sub server_stats_update
 
 	$stmt = "UPDATE servers SET sysload='$server_load', channels_total='$channel_counts->{'total'}', cpu_idle_percent='$cpu_idle_percent', disk_usage='$disk_usage' where server_ip='$server_ip';";
 	$rows = $dbhA->do($stmt);
-	
-	if ($DB) 
-		{ 
+
+	if ($DB)
+		{
 		print STDERR BRIGHT_RED BOLD, "\nServer Stats Updated", RESET;
-		print STDERR "|$stmt|$rows\n"; 
+		print STDERR "|$stmt|$rows\n";
 		}
 	}
 
@@ -1230,7 +1230,7 @@ sub server_perf_log
 
 	$stmt = "INSERT INTO server_performance (start_time, server_ip, sysload, freeram, usedram, processes, channels_total, trunks_total, clients_total, clients_zap, clients_iax, clients_local, clients_sip, live_recordings, cpu_user_percent, cpu_system_percent, cpu_idle_percent, disk_reads, disk_writes) values( NOW(), '$server_ip', '$server_load', '$mem_free', '$mem_used', '$num_processes', '$channel_counts->{'total'}', '$channel_counts->{'trunks'}', '$channel_counts->{'clients'}', '$channel_counts->{'dahdi'}', '$channel_counts->{'iax'}', '$channel_counts->{'local'}', '$channel_counts->{'sip'}', '0', '$cpu_user_percent', '$cpu_sys_percent', '$cpu_idle_percent', '$reads', '$writes')";
 	$dbhA->do($stmt);
-	if ($DB) 
+	if ($DB)
 		{
 		print STDERR BRIGHT_BLUE BOLD, "\nPerformance Log Record Inserted", RESET;
 		print STDERR "|$stmt\n\n";
@@ -1238,7 +1238,7 @@ sub server_perf_log
 	}
 
 
-sub get_server_settings 
+sub get_server_settings
 	{
 	my ($dbhA,$server_ip) = @_;
 
@@ -1253,11 +1253,11 @@ sub get_server_settings
 		else { $settings_ref->{'sys_perf_log'} = 0;}
 	if ( $settings_ref->{'vd_server_logs'} eq 'Y' ) { $settings_ref->{'vd_server_logs'} = 1;}
 		else { $settings_ref->{'vd_server_logs'} = 0;}
-	
+
 	return $settings_ref;
 	}
 
-sub get_phones_settings 
+sub get_phones_settings
 	{
 	my ($dbhA,$server_ip) = @_;
 
@@ -1324,12 +1324,12 @@ sub get_db_channels
 	my $stmtA = "SELECT channel,extension FROM live_sip_channels where server_ip='$server_ip';";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-	
+
 	while ( $hash_ref = $sthA->fetchrow_hashref )
 		{
 		push( @db_clients, $hash_ref );
 		}
-	
+
 	return (\@db_trunks, \@db_clients);
 	}
 
@@ -1346,11 +1346,11 @@ sub validate_cid_name
 		( $cid_name =~ /V\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d/) ||	# Auto Dials
 		( $cid_name =~ /Y\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d/) ||	# Inbound Calls
 		( $cid_name =~ /^RINGAGENT|^RA_/ )
-	) 
+	)
 		{
 		return 1; # if so return 1 for true
-		} 
-	else 
+		}
+	else
 		{
 		return 0; # if not return 0 for false
 		}
@@ -1365,7 +1365,7 @@ sub get_valid_callid
 	# remove everything after the space for Orex
 	if ( $CallerIDName =~ /\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S/) {$CallerIDName =~ s/ .*//gi;}
 	if ( $ConnectedLineName =~ /\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S/) {$ConnectedLineName =~ s/ .*//gi;}
-	
+
 	# if the CallerIDName variable does not have a valid Vicidial Call ID
 	# but the ConnectedLineName does use the ConnectedLineName
 	if (  !(validate_cid_name($CallerIDName)) && (validate_cid_name($ConnectedLineName)) )
@@ -1379,7 +1379,7 @@ sub get_valid_callid
 	}
 
 
-sub event_logger 
+sub event_logger
 	{
 	my ($SYSLOG,$event_string) = @_;
 	if ($SYSLOG)
@@ -1456,25 +1456,25 @@ sub get_time_now	#get the current date and time and epoch for logging call lengt
 
 
 # try to load a module
-sub try_load 
+sub try_load
 	{
 	 my $mod = shift;
 
 	eval("use $mod");
 
-	if ($@) 
+	if ($@)
 		{
 		#print "\$@ = $@\n";
 		return(0);
 		}
-	else 
+	else
 		{
 		return(1);
 		}
 	}
 
 
-sub print_now 
+sub print_now
 	{
 	my $string = shift;
 
@@ -1492,7 +1492,7 @@ sub get_cpu_percent
 	{
 	# stat file in proc
 	$stat = '/proc/stat';
-	
+
 	# read it
 	open( FH , "<$stat" );
 	@lines = <FH>;
@@ -1508,7 +1508,7 @@ sub get_cpu_percent
 	$cpu_vm = $steal + $guest + $guest_nice;
 
 	# check if we have previous values
-	if ( defined ( $prev_user ) ) 
+	if ( defined ( $prev_user ) )
 		{
 		# get the differential from last time
 		$cpu_user_diff = $cpu_user - $prev_cpu_user;
@@ -1535,7 +1535,7 @@ sub get_cpu_percent
 		$cpu_sys_percent   = sprintf("%.0f", (( $cpu_sys_diff / $cpu_total_diff ) * 100 ));
 		$cpu_vm_percent    = sprintf("%.0f", (( $cpu_vm_diff / $cpu_total_diff ) * 100 ));
 		}
-	else 
+	else
 		{
 		# first time runnings so there are no previous values.
 		# all we can do is base it off the system totals since boot.
@@ -1544,9 +1544,9 @@ sub get_cpu_percent
 		$cpu_user_percent  = sprintf("%.0f", (( $cpu_user / $cpu_total ) * 100 ));
 		$cpu_idle_percent  = sprintf("%.0f", (( $cpu_idle / $cpu_total ) * 100 ));
 		$cpu_sys_percent   = sprintf("%.0f", (( $cpu_sys / $cpu_total ) * 100 ));
-		$cpu_vm_percent    = sprintf("%.0f", (( $cpu_vm / $cpu_total ) * 100 ));		
+		$cpu_vm_percent    = sprintf("%.0f", (( $cpu_vm / $cpu_total ) * 100 ));
 		}
-	
+
 	# store the values for the next call
 	$prev_user = $user;
 	$prev_nice = $nice;
@@ -1564,28 +1564,28 @@ sub get_cpu_percent
 	$prev_cpu_vm = $cpu_vm;
 
 
-	return ( 
-		$cpu_user_percent, 
-		$cpu_idle_percent, 
-		$cpu_sys_percent, 
-		$cpu_vm_percent, 
-		$user_diff, 
-		$nice_diff, 
-		$system_diff, 
-		$idle_diff, 
-		$iowait_diff, 
-		$irq_diff, 
-		$softirq_diff, 
-		$steal_diff, 
-		$guest_diff, 
-		$guest_nice_diff 
+	return (
+		$cpu_user_percent,
+		$cpu_idle_percent,
+		$cpu_sys_percent,
+		$cpu_vm_percent,
+		$user_diff,
+		$nice_diff,
+		$system_diff,
+		$idle_diff,
+		$iowait_diff,
+		$irq_diff,
+		$softirq_diff,
+		$steal_diff,
+		$guest_diff,
+		$guest_nice_diff
 	);
 	}
 
 sub get_cpu_load
 	{
 	$lavg = '/proc/loadavg';
-	
+
 	open( FH , "<$lavg" );
 	@lines = <FH>;
 	close( FH );
@@ -1593,21 +1593,21 @@ sub get_cpu_load
 	$server_load = $lines[0];
 	$server_load =~ s/ .*//gi;
 	$server_load =~ s/\D//gi;
-	
+
 	return $server_load;
 	}
 
 sub get_mem_usage
 	{
 	$meminfo = '/proc/meminfo';
-	
+
 	open( FH , "<$meminfo" );
 	@lines = <FH>;
 	close( FH );
-	
+
 	$mem_total = $lines[0];
 	$mem_total =~ s/MemTotal: *//g;
-	
+
 	$mem_free = $lines[1];
 	$mem_free =~ s/MemFree: *//g;
 

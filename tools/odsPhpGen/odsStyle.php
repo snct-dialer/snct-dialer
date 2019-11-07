@@ -9,68 +9,68 @@ namespace  odsPhpGenerator;
 abstract class odsStyle {
 	protected $name;
 	protected $family; // table-column, table-row, table, table-cell
-	
+
 	protected function __construct($name, $family) {
 		if($name == null) $name = $this->getType().'-'.$this->randString();
-		
+
 		$this->name   = $name;
 		$this->family = $family;
 	}
-	
+
 	protected function getContent(ods $ods, \DOMDocument $dom) {
 		$style_style = $dom->createElement('style:style');
 			$style_style->setAttribute("style:name", $this->name);
 			$style_style->setAttribute("style:family", $this->family);
 		return $style_style;
-	} 
+	}
 
 	public function getName() {
 		return $this->name;
 	}
-	
+
 	public function __clone() {
 		$this->name = 'clone-'.$this->name.'-'.rand(0,99999999999);
 	}
-	
+
 	public function setName($name) {
 		$this->name = $name;
 	}
-	
+
 	abstract protected function getType();
-	
+
 	protected function randString() {
 		return md5(time().rand().$this->getType());
 	}
-	
+
 }
 
 class odsStyleTableColumn extends odsStyle {
 	private $breakBefore;           // auto
 	private $columnWidth;           // 2.267cm
 	private $useOptimalColumnWidth; // true, false
-	
+
 	public function __construct($name = null) {
 		parent::__construct($name, "table-column");
 		$this->breakBefore           = "auto";
 		$this->columnWidth           = "2.267cm";
 		$this->useOptimalColumnWidth = "false";
 	}
-	
+
 	public function setColumnWidth($columnWidth) {
 		$this->columnWidth = $columnWidth;
 	}
-	
+
 	public function setBreakBefore($breakBefore) {
 		$this->breakBefore = $breakBefore;
 	}
-	
+
 	public function setUseOptimalColumnWidth($useOptimalColumnWidth) {
 		$this->useOptimalColumnWidth = $useOptimalColumnWidth;
 	}
-	
+
 	public function getContent(ods $ods,\DOMDocument $dom) {
 		$style_style = parent::getContent($ods,$dom);
-			
+
 			// style:table-column-properties
 			$style_table_column_properties = $dom->createElement('style:table-column-properties');
 				$style_table_column_properties->setAttribute("fo:break-before", $this->breakBefore);
@@ -80,11 +80,11 @@ class odsStyleTableColumn extends odsStyle {
 
 		return $style_style;
 	}
-	
+
 	public function getType() {
 		return 'odsStyleTableColumn';
 	}
-	
+
 }
 
 class odsStyleTable extends odsStyle {
@@ -98,11 +98,11 @@ class odsStyleTable extends odsStyle {
 		$this->display        = "true";
 		$this->writingMode    = "lr-tb";
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
 		$style_style = parent::getContent($ods,$dom);
 			$style_style->setAttribute("style:master-page-name", $this->masterPageName);
-			
+
 			// style:table-properties
 			$style_table_properties = $dom->createElement('style:table-properties');
 				$style_table_properties->setAttribute("table:display", $this->display);
@@ -110,7 +110,7 @@ class odsStyleTable extends odsStyle {
 				$style_style->appendChild($style_table_properties);
 		return $style_style;
 	}
-	
+
 	public function getType() {
 		return 'odsStyleTable';
 	}
@@ -120,7 +120,7 @@ class odsStyleTableRow extends odsStyle {
 	private $rowHeight;           // 0.52cm
 	private $breakBefore;         // auto
 	private $useOptimalRowHeight; // true, false
-	
+
 	public function __construct($name = null) {
 		parent::__construct($name, "table-row");
 		$this->rowHeight           = "0.52cm";
@@ -142,39 +142,39 @@ class odsStyleTableRow extends odsStyle {
 
 	public function getContent(ods $ods, \DOMDocument $dom) {
 		$style_style = parent::getContent($ods,$dom);
-			
+
 			// style:table-row-properties
 			$style_table_row_properties = $dom->createElement('style:table-row-properties');
 				$style_table_row_properties->setAttribute("style:row-height", $this->rowHeight);
 				$style_table_row_properties->setAttribute("fo:break-before", $this->breakBefore);
 				$style_table_row_properties->setAttribute("style:use-optimal-row-height", $this->useOptimalRowHeight);
 				$style_style->appendChild($style_table_row_properties);
-				
-		return $style_style; 
+
+		return $style_style;
 	}
-	
+
 	public function getType() {
 		return 'odsStyleTableRow';
 	}
 }
 
 class odsStyleParagraph extends odsStyle {
-	
+
 	public function __construct($name = null) {
 		parent::__construct($name, "paragraph");
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
 		$style_style = parent::getContent($ods,$dom);
-			
+
 			// style:table-row-properties
 			$style_paragraph_properties = $dom->createElement('style:paragraph-properties');
 				$style_paragraph_properties->setAttribute("fo:text-align", 'center');
 				$style_style->appendChild($style_paragraph_properties);
-				
-		return $style_style; 
+
+		return $style_style;
 	}
-	
+
 	public function getType() {
 		return 'odsStyleParagraph';
 	}
@@ -199,7 +199,7 @@ class odsStyleTableCell extends odsStyle {
 	private $wrapOption;          // opt: false, wrap
 	private $hyphenate;           // opt: true, false in string
 	private $shrinkToFit;         // opt; true, false in string
-	
+
 	public function __construct($name = null) {
 		parent::__construct($name, "table-cell");
 		$this->parentStyleName     = "Default";
@@ -221,11 +221,11 @@ class odsStyleTableCell extends odsStyle {
 		$this->hyphenate           = false;
 		$this->shrinkToFit         = false;
 	}
-	
+
 	public function setColor($color) {
 		$this->color = $color;
 	}
-	
+
 	public function setBackgroundColor($color) {
 		$this->backgroundColor = $color;
 	}
@@ -233,69 +233,69 @@ class odsStyleTableCell extends odsStyle {
 	public function setBorder($border) {
 		$this->border = $border;
 	}
-	
+
 	public function setTextAlign($textAlign) {
 		$this->textAlign = $textAlign;
 	}
-	
+
 	public function setVerticalAlign($verticalAlign) {
 		$this->verticalAlign = $verticalAlign;
 	}
-	
+
 	public function setFontWeight($weight) {
 		$this->fontWeight = $weight;
 	}
-	
+
 	public function setFontStyle($fontStyle) {
 		$this->fontStyle = $fontStyle;
 	}
-	
+
 	public function setUnderline($underline) {
 		$this->underline = $underline;
 	}
-	
+
 	public function setStyleDataName($styleDataName) {
 		$this->styleDataName = $styleDataName;
 	}
-	
+
 	public function setFontSize($fontSize) {
 		$this->fontSize = $fontSize;
 	}
-	
+
 	public function setFontFace(odsFontFace $fontFace) {
 		$this->fontFace = $fontFace;
 	}
-	
+
 	public function setWrapOption($wrapOption) {
 		$this->wrapOption = $wrapOption;
 	}
-	
+
 	public function setHyphenate($hyphenate) {
 		$this->hyphenate = $hyphenate;
 	}
-	
+
 	public function setShrinkToFit($shrinkToFit) {
 		$this->shrinkToFit = $shrinkToFit;
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
 		// style:style
 		$style_style = parent::getContent($ods,$dom);
 			$style_style->setAttribute("style:parent-style-name", $this->parentStyleName);
 			if($this->styleDataName)
 				$style_style->setAttribute("style:data-style-name", $this->styleDataName);
-			
+
 			// style:table-cell-properties
 			$style_table_cell_properties = $dom->createElement('style:table-cell-properties');
 				$style_table_cell_properties->setAttribute("style:text-align-source", $this->textAlignSource);
 				$style_table_cell_properties->setAttribute("style:repeat-content", $this->repeatContent);
-				
+
 				if($this->backgroundColor)
 					$style_table_cell_properties->setAttribute("fo:background-color", $this->backgroundColor);
-					
+
 				if($this->border)
 					$style_table_cell_properties->setAttribute("fo:border", $this->border);
-				
+
 				$style_style->appendChild($style_table_cell_properties);
 
 				if($this->textAlign) {
@@ -305,65 +305,65 @@ class odsStyleTableCell extends odsStyle {
 						$style_paragraph_properties->setAttribute("fo:margin-left", "0cm");
 						$style_style->appendChild($style_paragraph_properties);
 				}
-				
+
 				if($this->verticalAlign) {
 					$style_table_cell_properties->setAttribute("style:vertical-align", $this->verticalAlign);
 				}
-				
+
 				if($this->wrapOption) {
 					$style_table_cell_properties->setAttribute("fo:wrap-option", $this->wrapOption);
 				}
-				
+
 				if($this->shrinkToFit) {
 					$style_table_cell_properties->setAttribute("style:shrink-to-fit", $this->shrinkToFit);
 				}
-				
+
 				if($this->color OR $this->fontWeight OR $this->fontStyle OR $this->underline OR $this->fontSize OR $this->fontFace OR $this->hyphenate) {
 					// style:text-properties
 					$style_text_properties = $dom->createElement('style:text-properties');
-					
+
 						if($this->color)
 							$style_text_properties->setAttribute("fo:color", $this->color);
-							
+
 						if($this->fontWeight) {
 							$style_text_properties->setAttribute("fo:font-weight", $this->fontWeight);
 							$style_text_properties->setAttribute("style:font-weight-asian", $this->fontWeight);
 							$style_text_properties->setAttribute("style:font-weight-complex", $this->fontWeight);
 						}
-						
+
 						if($this->fontStyle) {
 							$style_text_properties->setAttribute("fo:font-style", $this->fontStyle);
 							$style_text_properties->setAttribute("fo:font-style-asian", $this->fontStyle);
 							$style_text_properties->setAttribute("fo:font-style-complex", $this->fontStyle);
 						}
-						
+
 						if($this->underline) {
 							$style_text_properties->setAttribute("style:text-underline-style", 'solid');
 							$style_text_properties->setAttribute("style:text-underline-width", 'auto');
 							$style_text_properties->setAttribute("style:text-underline-color", $this->underline);
 						}
-						
+
 						if($this->fontSize) {
 							$style_text_properties->setAttribute("fo:font-size", $this->fontSize);
 							$style_text_properties->setAttribute("style:font-size-asian", $this->fontSize);
 							$style_text_properties->setAttribute("style:font-size-complex", $this->fontSize);
 						}
-						
+
 						if($this->fontFace) {
 							$style_text_properties->setAttribute("style:font-name", $this->fontFace->getFontName());
 						}
-						
+
 						if($this->hyphenate) {
 							$style_text_properties->setAttribute("fo:hyphenate", $this->hyphenate);
 						}
-						
+
 						$style_style->appendChild($style_text_properties);
 				}
-				
-				
+
+
 		return $style_style;
 	}
-	 
+
 	public function getType() {
 		return 'odsStyleTableCell';
 	}
@@ -385,7 +385,7 @@ class odsStyleGraphic extends odsStyle {
  	private $gamma;           // 100%
  	private $red;             // 0%
  	private $green;           // 0%
- 	private $blue;            // 0%  
+ 	private $blue;            // 0%
  	private $opacity;         // 100%
 
 	public function __construct($name = null) {
@@ -406,19 +406,19 @@ class odsStyleGraphic extends odsStyle {
 		$this->blue         = null;
 		$this->opacity      = null;
 	}
-	
+
 	public function setStroke(odsStyleStrokeDash $stroke) {
 		$this->stroke = $stroke;
 	}
-	
+
 	public function setStrokeWidth($strokeWidth) {
 		$this->strokeWidth = $strokeWidth;
 	}
-	
+
 	public function setStrokeColor($strokeColor) {
 		$this->strokeColor = $strokeColor;
 	}
-	
+
 	public function setMarkerStart($markerStart) {
 		$this->markerStart = $markerStart;
 	}
@@ -426,21 +426,21 @@ class odsStyleGraphic extends odsStyle {
 	public function setMarkerEnd($markerEnd) {
 		$this->markerEnd = $markerEnd;
 	}
-	
+
 	public function setFill($fill) {
 		$this->fill = $fill;
 	}
-	
+
 	public function setFillColor($fillColor) {
 		$this->fillColor = $fillColor;
 		$this->setFill("solid");
 	}
-	
+
 	public function setFillGradient(odsStyleGradient $fillGradient) {
 		$this->fillGradient = $fillGradient;
 		$this->setFill("gradient");
 	}
-	
+
 	public function setFillHash(odsStyleHatch $fillHash) {
 		$this->fillHash = $fillHash;
 		$this->setFill("hatch");
@@ -451,38 +451,38 @@ class odsStyleGraphic extends odsStyle {
 		$this->setFill("bitmap");
 	}
 
-	
+
 	public function setLuminance($luminance) {
 		$this->luminance = $luminance;
 	}
-	
+
 	public function setContrast($contrast) {
 		$this->contrast = $contrast;
 	}
-	
+
 	public function setGamma($gamma) {
 		$this->gamma = $gamma;
 	}
-	
+
 	public function setRed($red) {
 		$this->red = $red;
 	}
-	
+
 	public function setGreen($green) {
 		$this->green = $green;
 	}
-	
+
 	public function setBlue($blue) {
 		$this->blue = $blue;
 	}
-	
+
 	public function setOpacity($opacity) {
 		$this->opacity = $opacity;
 	}
-	
+
 	public function getContent(ods $ods,\DOMDocument $dom) {
 		$style_style = parent::getContent($ods,$dom);
-		
+
 			// style:table-row-properties
 			$style_graphic_properties = $dom->createElement('style:graphic-properties');
 				$style_graphic_properties->setAttribute("draw:textarea-horizontal-align", "center");
@@ -501,7 +501,7 @@ class odsStyleGraphic extends odsStyle {
 					$style_graphic_properties->setAttribute("fo:padding-top",     $this->strokeWidth);
 					$style_graphic_properties->setAttribute("fo:padding-bottom",  $this->strokeWidth);
 					$style_graphic_properties->setAttribute("fo:padding-left",    $this->strokeWidth);
-					$style_graphic_properties->setAttribute("fo:padding-right",   $this->strokeWidth);	
+					$style_graphic_properties->setAttribute("fo:padding-right",   $this->strokeWidth);
 				}
 				if($this->strokeColor) {
 					$style_graphic_properties->setAttribute("svg:stroke-color",   $this->strokeColor);
@@ -544,29 +544,29 @@ class odsStyleGraphic extends odsStyle {
 					$style_graphic_properties->setAttribute("draw:blue",          $this->blue);
 				if($this->opacity)
 					$style_graphic_properties->setAttribute("draw:image-opacity", $this->opacity);
-				
+
 				$style_style->appendChild($style_graphic_properties);
-				
+
 		return $style_style;
 	}
 
 	public function getType() {
 		return 'odsStyleGraphic';
 	}
-	
+
 }
 
 class odsStyleGraphicGeneric extends odsStyleGraphic {
-	
+
 	public function __construct() {
 		$this->name='odsStyleGraphicGeneric';
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
-		 
+
 		 $style_default_style = $dom->createElement('style:default-style');
 			 $style_default_style->setAttribute('style:family', 'graphic');
-		 
+
 		 $style_graphic_properties = $dom->createElement('style:graphic-properties');
 		 	$style_graphic_properties->setAttribute('draw:shadow-offset-x', '0.3cm');
 		 	$style_graphic_properties->setAttribute('draw:shadow-offset-y', '0.3cm');
@@ -580,10 +580,10 @@ class odsStyleGraphicGeneric extends odsStyleGraphic {
 		 	$style_paragraph_properties->setAttribute('style:writing-mode', 'page');
 		 	$style_paragraph_properties->setAttribute('style:font-independent-line-spacing', 'false');
 		 	$style_default_style->appendChild($style_paragraph_properties);
-		 	
+
 		 	$style_tab_stops = $dom->createElement('style:tab-stops');
 		 		$style_paragraph_properties->appendChild($style_tab_stops);
-		 	
+
 		 $style_text_properties = $dom->createElement('style:text-properties');
 		 	$style_text_properties->setAttribute('style:use-window-font-color', 'true');
 		 	$style_text_properties->setAttribute('fo:font-family', "'Nimbus Roman No9 L'");
@@ -600,10 +600,10 @@ class odsStyleGraphicGeneric extends odsStyleGraphic {
 		 	$style_text_properties->setAttribute('style:language-complex', 'zxx');
 		 	$style_text_properties->setAttribute('style:country-complex', 'none');
 			$style_default_style->appendChild($style_text_properties);
-		 
+
 		 return $style_default_style;
 	}
-	
+
 	public function getType() {
 		return 'odsStyleGraphicGeneric';
 	}
@@ -617,7 +617,7 @@ class odsStyleStrokeDash extends odsStyle {
 	protected $drawDots2;
 	protected $drawDots2Length;
 	protected $drawDistance;
-	
+
 	protected function __construct($name, $displayName,$drawStyle,$drawDots1,$drawDots1Length,$drawDots2,$drawDots2Length,$drawDistance) {
 		$this->name            = $name;
 		$this->displayName     = $displayName;
@@ -628,7 +628,7 @@ class odsStyleStrokeDash extends odsStyle {
 		$this->drawDots2Length = $drawDots2Length;
 		$this->drawDistance    = $drawDistance;
 	}
-	
+
 	function getContent(ods $ods, \DOMDocument $dom) {
 		$draw_stroke_dash = $dom->createElement('draw:stroke-dash');
 			$draw_stroke_dash->setAttribute('draw:name',         $this->name);
@@ -644,44 +644,44 @@ class odsStyleStrokeDash extends odsStyle {
 			$draw_stroke_dash->setAttribute('draw:distance',     $this->drawDistance);
 		return $draw_stroke_dash;
 	}
-	
+
 	public function getType() {
 		return 'odsStyleStrokeDash';
 	}
 }
 
 class odsStyleStrokeDashUltrafine extends odsStyleStrokeDash {
-	public function __construct() { parent::__construct('Ultrafine_20_Dashed','Ultrafine Dashed','rect','1','0.051cm','1','0.051cm','0.051cm');	}		
+	public function __construct() { parent::__construct('Ultrafine_20_Dashed','Ultrafine Dashed','rect','1','0.051cm','1','0.051cm','0.051cm');	}
 	public function getType() {	return 'odsStyleStrokeDashUltrafine'; }
 }
 
 class odsStyleStrokeDashUltrafineVar extends odsStyleStrokeDash {
-	public function __construct() { parent::__construct('Fine_20_Dashed_20__28_var_29_','Fine Dashed (var)','rect','1','197%',null,null,'197%');	}		
+	public function __construct() { parent::__construct('Fine_20_Dashed_20__28_var_29_','Fine Dashed (var)','rect','1','197%',null,null,'197%');	}
 	public function getType() {	return 'UltrafineVar'; }
 }
 
 class odsStyleStrokeDashFine extends odsStyleStrokeDash {
-	public function __construct() { parent::__construct('Fine_20_Dashed','Fine Dashed','rect','1','0.508cm','1','0.508cm','0.508cm');	}		
+	public function __construct() { parent::__construct('Fine_20_Dashed','Fine Dashed','rect','1','0.508cm','1','0.508cm','0.508cm');	}
 	public function getType() { return 'odsStyleStrokeDashFine'; }
 }
 
 class odsStyleStrokeDashUltrafineAndDots extends odsStyleStrokeDash {
-	public function __construct() { parent::__construct('Ultrafine_20_2_20_Dots_20_3_20_Dashes','Ultrafine 2 Dots 3 Dashes','rect','2','0.051cm','3','0.254cm','0.254cm');	}		
+	public function __construct() { parent::__construct('Ultrafine_20_2_20_Dots_20_3_20_Dashes','Ultrafine 2 Dots 3 Dashes','rect','2','0.051cm','3','0.254cm','0.254cm');	}
 	public function getType() { return 'odsStyleStrokeDashUltrafineAndDots'; }
 }
 
 class odsStyleStrokeDashFineDotted extends odsStyleStrokeDash {
-	public function __construct() { parent::__construct('Fine_20_Dotted','Fine Dotted','rect','1',null,null,null,'0.457cm');	}		
+	public function __construct() { parent::__construct('Fine_20_Dotted','Fine Dotted','rect','1',null,null,null,'0.457cm');	}
 	public function getType() { return 'odsStyleStrokeDashFineDotted'; }
 }
 
 class odsStyleStrokeDashLineAndDot extends odsStyleStrokeDash {
-	public function __construct() { parent::__construct('Line_20_with_20_Fine_20_Dots','Line_20_with_20_Fine_20_Dots','rect','1','2.007cm','10',null,'0.152cm');	}		
+	public function __construct() { parent::__construct('Line_20_with_20_Fine_20_Dots','Line_20_with_20_Fine_20_Dots','rect','1','2.007cm','10',null,'0.152cm');	}
 	public function getType() { return 'odsStyleStrokeDashLineAndDot'; }
 }
 
 class odsStyleStrokeDash2Dots1Dash extends odsStyleStrokeDash {
-	public function __construct() { parent::__construct('_32__20_Dots_20_1_20_Dash','2 Dots 1 Dash','rect','2',null,'1','0.203cm','0.203cm');	}		
+	public function __construct() { parent::__construct('_32__20_Dots_20_1_20_Dash','2 Dots 1 Dash','rect','2',null,'1','0.203cm','0.203cm');	}
 	public function getType() { return 'odsStyleStrokeDashLineAndDot'; }
 }
 
@@ -689,14 +689,14 @@ class odsStyleStrokeMarker extends odsStyle {
 	protected $displayName;
 	protected $viewBox;
 	protected $d;
-	
+
 	public function __construct($name, $displayName, $viewBox, $d) {
 		$this->name            = $name;
 		$this->displayName     = $displayName;
 		$this->viewBox         = $viewBox;
 		$this->d               = $d;
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
 		$draw_marker = $dom->createElement('draw:marker');
 			$draw_marker->setAttribute("style:name",        $this->name);
@@ -705,7 +705,7 @@ class odsStyleStrokeMarker extends odsStyle {
 			$draw_marker->setAttribute("svg:d", $this->d);
 		return $draw_marker;
 	}
-	
+
 	public function getType() {
 		return 'odsStyleStrokeMarker';
 	}
@@ -777,9 +777,9 @@ class odsStyleGradient extends odsStyle {
 	private $drawEndIntensity;   // 100%
 	private $drawAngle;          // 300
 	private $drawBorder;         // 0%
-	
+
 	public function __construct($name, $displayName) {
-		
+
 		$this->name           = $name;
 		$this->displayName    = $displayName;
 
@@ -793,7 +793,7 @@ class odsStyleGradient extends odsStyle {
 		$this->drawAngle          = null;
 		$this->drawBorder         = null;
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
 		$draw_gradient = $dom->createElement('draw:gradient');
 			$draw_gradient->setAttribute("draw:name",            $this->name);
@@ -832,11 +832,11 @@ class odsStyleGradient extends odsStyle {
 	public function getType() {
 		return 'odsStyleGradient';
 	}
-	
+
 }
 
 class odsStyleGradientGradient1 extends odsStyleGradient {
-	
+
 	public function __construct() {
 		parent::__construct("Gradient_20_1", "Gradient 1");
 		$this->setDrawStyle("linear");
@@ -851,11 +851,11 @@ class odsStyleGradientGradient1 extends odsStyleGradient {
 	public function getType() {
 		return 'odsStyleGradientGradient1';
 	}
-	
+
 }
 
 class odsStyleGradientGradient2 extends odsStyleGradient {
-	
+
 	public function __construct() {
 		parent::__construct("Gradient_20_2", "Gradient 2");
 		$this->setDrawStyle("axial");
@@ -870,7 +870,7 @@ class odsStyleGradientGradient2 extends odsStyleGradient {
 	public function getType() {
 		return 'odsStyleGradientGradient2';
 	}
-	
+
 }
 
 class odsStyleGradientGradient3 extends odsStyleGradient {
@@ -890,7 +890,7 @@ class odsStyleGradientGradient3 extends odsStyleGradient {
 	public function getType() {
 		return 'odsStyleGradientGradient3';
 	}
-	
+
 }
 
 class odsStyleGradientGradient4 extends odsStyleGradient {
@@ -911,7 +911,7 @@ class odsStyleGradientGradient4 extends odsStyleGradient {
 	public function getType() {
 		return 'odsStyleGradientGradient4';
 	}
-	
+
 }
 
 class odsStyleGradientGradient5 extends odsStyleGradient {
@@ -932,7 +932,7 @@ class odsStyleGradientGradient5 extends odsStyleGradient {
 	public function getType() {
 		return 'odsStyleGradientGradient5';
 	}
-	
+
 }
 
 class odsStyleGradientGradient6 extends odsStyleGradient {
@@ -953,11 +953,11 @@ class odsStyleGradientGradient6 extends odsStyleGradient {
 	public function getType() {
 		return 'odsStyleGradientGradient6';
 	}
-	
+
 }
 
 class odsStyleHatch extends odsStyle {
-	
+
 	private $displayName;    // the name in interface
 	private $drawStyle;      // "single"
 	private $drawColor;      // #000000
@@ -965,17 +965,17 @@ class odsStyleHatch extends odsStyle {
 	private $drawRotation;   // 0
 
 	public function __construct($name, $displayName) {
-		
+
 		$this->name           = $name;
 		$this->displayName    = $displayName;
-		
+
 		$this->drawStyle      = null;
 		$this->drawColor      = null;
 		$this->drawDistance   = null;
 		$this->drawRotation   = null;
-	
+
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
 		$draw_gradient = $dom->createElement('draw:hatch');
 			$draw_gradient->setAttribute("draw:name",            $this->name);
@@ -990,19 +990,19 @@ class odsStyleHatch extends odsStyle {
 				$draw_gradient->setAttribute("draw:rotation",    $this->drawRotation);
 		return $draw_gradient;
 	}
-	
+
 	public function setDrawStyle($style)       { $this->drawStyle    = $style; }
 	public function setDrawColor($color)       { $this->drawColor    = $color; }
 	public function setDrawDistance($distance) { $this->drawDistance = $distance; }
 	public function setDrawRotation($rotation) { $this->drawRotation = $rotation; }
-	
+
 	public function getType() {
 		return 'odsStyleHatch';
 	}
 }
 
 class odsStyleHatchBlack0Degrees extends odsStyleHatch {
-	
+
 	public function __construct() {
 		parent::__construct("Black_20_0_20_Degrees", "Black 0 Degrees");
 		$this->setDrawStyle("single");
@@ -1014,11 +1014,11 @@ class odsStyleHatchBlack0Degrees extends odsStyleHatch {
 	public function getType() {
 		return 'odsStyleHatchBlack0Degrees';
 	}
-	
+
 }
 
 class odsStyleHatchBlack45Degrees extends odsStyleHatch {
-	
+
 	public function __construct() {
 		parent::__construct("Black_20_45_20_Degrees", "Black 45 Degrees");
 		$this->setDrawStyle("single");
@@ -1030,11 +1030,11 @@ class odsStyleHatchBlack45Degrees extends odsStyleHatch {
 	public function getType() {
 		return 'odsStyleHatchBlack45Degrees';
 	}
-	
+
 }
 
 class odsStyleHatchBlackLess45Degrees extends odsStyleHatch {
-	
+
 	public function __construct() {
 		parent::__construct("Black_20_-45_20_Degrees", "Black -45 Degrees");
 		$this->setDrawStyle("single");
@@ -1046,11 +1046,11 @@ class odsStyleHatchBlackLess45Degrees extends odsStyleHatch {
 	public function getType() {
 		return 'odsStyleHatchBlackLess45Degrees';
 	}
-	
+
 }
 
 class odsStyleHatchBlack90Degrees extends odsStyleHatch {
-	
+
 	public function __construct() {
 		parent::__construct("Black_20_90_20_Degrees", "Black 90 Degrees");
 		$this->setDrawStyle("single");
@@ -1062,11 +1062,11 @@ class odsStyleHatchBlack90Degrees extends odsStyleHatch {
 	public function getType() {
 		return 'odsStyleHatchBlack90Degrees';
 	}
-	
+
 }
 
 class odsStyleHatchRedCrossed45Degrees extends odsStyleHatch {
-	
+
 	public function __construct() {
 		parent::__construct("Red_20_Crossed_20_45_20_Degrees", "Red Crossed 45 Degrees");
 		$this->setDrawStyle("double");
@@ -1078,11 +1078,11 @@ class odsStyleHatchRedCrossed45Degrees extends odsStyleHatch {
 	public function getType() {
 		return 'odsStyleHatchRedCrossed45Degrees';
 	}
-	
+
 }
 
 class odsStyleHatchRedCrossed0Degrees extends odsStyleHatch {
-	
+
 	public function __construct() {
 		parent::__construct("Red_20_Crossed_20_0_20_Degrees", "Red Crossed 0 Degrees");
 		$this->setDrawStyle("double");
@@ -1094,11 +1094,11 @@ class odsStyleHatchRedCrossed0Degrees extends odsStyleHatch {
 	public function getType() {
 		return 'odsStyleHatchRedCrossed0Degrees';
 	}
-	
+
 }
 
 class odsStyleHatchBlueCrossed45Degrees extends odsStyleHatch {
-	
+
 	public function __construct() {
 		parent::__construct("Blue_20_Crossed_20_45_20_Degrees", "Blue Crossed 45 Degrees");
 		$this->setDrawStyle("double");
@@ -1110,11 +1110,11 @@ class odsStyleHatchBlueCrossed45Degrees extends odsStyleHatch {
 	public function getType() {
 		return 'odsStyleHatchBlueCrossed45Degrees';
 	}
-	
+
 }
 
 class odsStyleHatchBlueCrossed0Degrees extends odsStyleHatch {
-	
+
 	public function __construct() {
 		parent::__construct("Blue_20_Crossed_20_0_20_Degrees", "Blue Crossed 0 Degrees");
 		$this->setDrawStyle("double");
@@ -1126,11 +1126,11 @@ class odsStyleHatchBlueCrossed0Degrees extends odsStyleHatch {
 	public function getType() {
 		return 'odsStyleHatchBlueCrossed0Degrees';
 	}
-		
+
 }
 
 class odsStyleHatchBlueTriple90Degrees extends odsStyleHatch {
-	
+
 	public function __construct() {
 		parent::__construct("Blue_20_Triple_20_90_20_Degrees", "Blue Triple 90 Degrees");
 		$this->setDrawStyle("triple");
@@ -1142,28 +1142,28 @@ class odsStyleHatchBlueTriple90Degrees extends odsStyleHatch {
 	public function getType() {
 		return 'odsStyleHatchBlueTriple90Degrees';
 	}
-		
+
 }
 
 class odsStyleFillImage extends odsStyle {
-	
+
 	private $xlinkHref;
 	private $xlinkType;
 	private $xlinkShow;
-	
+
 	public function __construct($name, $file, $xlinkType="simple", $xlinkShow="embed") {
-		
+
 		$this->name           = $name;
 		$this->file           = $file;
 		$this->xlinkType      = $xlinkType;
-		$this->xlinkShow      = $xlinkShow;		
-	
+		$this->xlinkShow      = $xlinkShow;
+
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
-		
+
 		$xlinkHref = $ods->addTmpPictures($this->file);
-			
+
 		$draw_gradient = $dom->createElement('draw:fill-image');
 			$draw_gradient->setAttribute("draw:name",      $this->name);
 			$draw_gradient->setAttribute("xlink:href",     $xlinkHref);
@@ -1172,11 +1172,11 @@ class odsStyleFillImage extends odsStyle {
 			$draw_gradient->setAttribute("xlink:actuate",  "onLoad");
 		return $draw_gradient;
 	}
-	
+
 	public function getType() {
 		return 'odsStylefillImage';
-	}	
-	
+	}
+
 }
 
 
@@ -1187,25 +1187,25 @@ abstract class odsStyleMoney extends odsStyle {
 }
 
 class odsStyleMoneyEUR extends odsStyleMoney {
-	
+
 	public function __construct() {
 		$this->name='NCur-EUR-P0';
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
 		$number_currency_style = $dom->createElement('number:currency-style');
 			$number_currency_style->setAttribute("style:name", "NCur-EUR-P0");
 			$number_currency_style->setAttribute("style:volatile", "true");
-		
+
 			$number_number = $dom->createElement('number:number');
 				$number_number->setAttribute("number:decimal-places", "2");
 				$number_number->setAttribute("number:min-integer-digits", "1");
 				$number_number->setAttribute("number:grouping", "true");
 				$number_currency_style->appendChild($number_number);
-				
+
 			$number_text = $dom->createElement('number:text', ' ');
 				$number_currency_style->appendChild($number_text);
-		
+
 			$number_currency_symbol = $dom->createElement('number:currency-symbol', '€');
 				$number_currency_symbol->setAttribute("number:language", "fr");
 				$number_currency_symbol->setAttribute("number:country", "FR");
@@ -1213,44 +1213,44 @@ class odsStyleMoneyEUR extends odsStyleMoney {
 				$number_currency_style->appendChild($number_currency_symbol);
 		return $number_currency_style;
 	}
-	
+
 	public function getType() {
 		return 'odsStyleMoneyEUR';
 	}
 }
 
 class odsStyleMoneyEURNeg extends odsStyleMoney {
-	
+
 	public function __construct() {
 		$this->name='NCur-EUR';
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
-	
+
 		$number_currency_style = $dom->createElement('number:currency-style');
 			$number_currency_style->setAttribute("style:name", "NCur-EUR");
-	
+
 			$style_text_properties = $dom->createElement('style:text-properties');
 				$style_text_properties->setAttribute("fo:color", "#ff0000");
 				$number_currency_style->appendChild($style_text_properties);
-	
+
 			$number_text = $dom->createElement('number:text', '-');
 				$number_currency_style->appendChild($number_text);
-		
+
 			$number_number = $dom->createElement('number:number');
 				$number_number->setAttribute("number:decimal-places", "2");
 				$number_number->setAttribute("number:min-integer-digits", "1");
 				$number_number->setAttribute("number:grouping", "true");
 				$number_currency_style->appendChild($number_number);
-				
+
 			$number_text = $dom->createElement('number:text', ' ');
 				$number_currency_style->appendChild($number_text);
-		
+
 			$number_currency_symbol = $dom->createElement('number:currency-symbol', '€');
 				$number_currency_symbol->setAttribute("number:language", "fr");
 				$number_currency_symbol->setAttribute("number:country", "FR");
 				$number_currency_style->appendChild($number_currency_symbol);
-		
+
 			$style_map = $dom->createElement('style:map');
 				$style_map->setAttribute("style:condition", "value()>=0");
 				$style_map->setAttribute("style:apply-style-name", "NCur-EUR-P0");
@@ -1265,11 +1265,11 @@ class odsStyleMoneyEURNeg extends odsStyleMoney {
 }
 
 class odsStyleMoneyUSD extends odsStyleMoney {
-	
+
 	public function __construct() {
 		$this->name='NCur-USD-P0';
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
 		$number_currency_style = $dom->createElement('number:currency-style');
 			$number_currency_style->setAttribute("style:name", "NCur-USD-P0");
@@ -1280,27 +1280,27 @@ class odsStyleMoneyUSD extends odsStyleMoney {
 				$number_currency_symbol->setAttribute("number:country", "US");
 				$number_currency_symbol->setAttribute("number:grouping", "true");
 				$number_currency_style->appendChild($number_currency_symbol);
-		
+
 			$number_number = $dom->createElement('number:number');
 				$number_number->setAttribute("number:decimal-places", "2");
 				$number_number->setAttribute("number:min-integer-digits", "1");
 				$number_number->setAttribute("number:grouping", "true");
 				$number_currency_style->appendChild($number_number);
 		return $number_currency_style;
-		
+
 	}
-	
+
 	public function getType() {
 		return 'odsStyleMoneyUSD';
 	}
 }
 
 class odsStyleMoneyUSDNeg extends odsStyleMoney {
-	
+
 	public function __construct(){
 		$this->name='NCur-USD';
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
 		$number_currency_style = $dom->createElement('number:currency-style');
 			$number_currency_style->setAttribute("style:name", "NCur-USD");
@@ -1311,36 +1311,36 @@ class odsStyleMoneyUSDNeg extends odsStyleMoney {
 
 			$number_text = $dom->createElement('number:text', '-');
 				$number_currency_style->appendChild($number_text);
-		
+
 			$number_currency_symbol = $dom->createElement('number:currency-symbol', '$');
 				$number_currency_symbol->setAttribute("number:language", "en");
 				$number_currency_symbol->setAttribute("number:country", "US");
 				$number_currency_style->appendChild($number_currency_symbol);
-		
+
 			$number_number = $dom->createElement('number:number');
 				$number_number->setAttribute("number:decimal-places", "2");
 				$number_number->setAttribute("number:min-integer-digits", "1");
 				$number_number->setAttribute("number:grouping", "true");
 				$number_currency_style->appendChild($number_number);
-								
+
 			$style_map = $dom->createElement('style:map');
 				$style_map->setAttribute("style:condition", "value()>=0");
 				$style_map->setAttribute("style:apply-style-name", "NCur-USD-P0");
 				$number_currency_style->appendChild($style_map);
 		return $number_currency_style;
 	}
-	
+
 	public function getType() {
 		return 'odsStyleMoneyUSDNeg';
 	}
 }
 
 class odsStyleMoneyGBP extends odsStyleMoney {
-	
+
 	public function __construct() {
 		$this->name='NCur-GBP-P0';
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
 		$number_currency_style = $dom->createElement('number:currency-style');
 			$number_currency_style->setAttribute("style:name", "NCur-GBP-P0");
@@ -1350,7 +1350,7 @@ class odsStyleMoneyGBP extends odsStyleMoney {
 				$number_currency_symbol->setAttribute("number:language", "en");
 				$number_currency_symbol->setAttribute("number:country", "GB");
 				$number_currency_style->appendChild($number_currency_symbol);
-		
+
 			$number_number = $dom->createElement('number:number');
 				$number_number->setAttribute("number:decimal-places", "2");
 				$number_number->setAttribute("number:min-integer-digits", "1");
@@ -1358,18 +1358,18 @@ class odsStyleMoneyGBP extends odsStyleMoney {
 				$number_currency_style->appendChild($number_number);
 		return $number_currency_style;
 	}
-	
+
 	public function getType() {
 		return 'odsStyleMoneyGBP';
 	}
 }
 
 class odsStyleMoneyGBPNeg extends odsStyleMoney {
-	
+
 	public function __construct() {
 		$this->name='NCur-GBP';
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
 		$number_currency_style = $dom->createElement('number:currency-style');
 			$number_currency_style->setAttribute("style:name", "NCur-GBP");
@@ -1380,25 +1380,25 @@ class odsStyleMoneyGBPNeg extends odsStyleMoney {
 
 			$number_text = $dom->createElement('number:text', '-');
 				$number_currency_style->appendChild($number_text);
-		
+
 			$number_currency_symbol = $dom->createElement('number:currency-symbol', '£');
 				$number_currency_symbol->setAttribute("number:language", "en");
 				$number_currency_symbol->setAttribute("number:country", "GB");
 				$number_currency_style->appendChild($number_currency_symbol);
-		
+
 			$number_number = $dom->createElement('number:number');
 				$number_number->setAttribute("number:decimal-places", "2");
 				$number_number->setAttribute("number:min-integer-digits", "1");
 				$number_number->setAttribute("number:grouping", "true");
 				$number_currency_style->appendChild($number_number);
-								
+
 			$style_map = $dom->createElement('style:map');
 				$style_map->setAttribute("style:condition", "value()>=0");
 				$style_map->setAttribute("style:apply-style-name", "NCur-GBP-P0");
 				$number_currency_style->appendChild($style_map);
 		return $number_currency_style;
 	}
-	
+
 	public function getType() {
 		return 'odsStyleMoneyGBPNeg';
 	}
@@ -1406,7 +1406,7 @@ class odsStyleMoneyGBPNeg extends odsStyleMoney {
 
 abstract class odsStyleDate extends odsStyle {
 	protected $language;
-	
+
 	protected function setLanguage($number_date_style) {
 		if(!isset($this->language)) return;
 		$number_date_style->setAttribute("number:language", $this->language);
@@ -1419,13 +1419,13 @@ class odsStyleDateMMDDYYYY extends odsStyleDate {
 		$this->name='Date-MMDDYYYY';
 		$this->language = $language;
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
 		$number_date_style = $dom->createElement('number:date-style');
 			$number_date_style->setAttribute("style:name", $this->name);
 			$number_date_style->setAttribute("number:automatic-order", "true");
 			$this->setLanguage($number_date_style);
-			
+
 			$number_month = $dom->createElement('number:month');
 				$number_month->setAttribute("number:style", "long");
 				$number_date_style->appendChild($number_month);
@@ -1443,7 +1443,7 @@ class odsStyleDateMMDDYYYY extends odsStyleDate {
 			$number_year = $dom->createElement('number:year');
 				$number_year->setAttribute("number:style", "long");
 				$number_date_style->appendChild($number_year);
-			
+
 		return $number_date_style;
 	}
 
@@ -1457,13 +1457,13 @@ class odsStyleDateMMDDYY extends odsStyleDate {
 		$this->name='Date-MMDDYY';
 		$this->language = $language;
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
 		$number_date_style = $dom->createElement('number:date-style');
 			$number_date_style->setAttribute("style:name", $this->name);
 			$number_date_style->setAttribute("number:automatic-order", "true");
 			$this->setLanguage($number_date_style);
-			
+
 			$number_month = $dom->createElement('number:month');
 				$number_month->setAttribute("number:style", "long");
 				$number_date_style->appendChild($number_month);
@@ -1480,7 +1480,7 @@ class odsStyleDateMMDDYY extends odsStyleDate {
 
 			$number_year = $dom->createElement('number:year');
 				$number_date_style->appendChild($number_year);
-			
+
 		return $number_date_style;
 	}
 
@@ -1494,20 +1494,20 @@ class odsStyleDateDDMMYYYY extends odsStyleDate {
 		$this->name='Date-DDMMYYYY';
 		$this->language = $language;
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
 		$number_date_style = $dom->createElement('number:date-style');
 			$number_date_style->setAttribute("style:name", $this->name);
 			$number_date_style->setAttribute("number:automatic-order", "true");
 			$this->setLanguage($number_date_style);
-			
+
 			$number_day = $dom->createElement('number:day');
 				$number_day->setAttribute("number:style", "long");
 				$number_date_style->appendChild($number_day);
 
 			$number_text = $dom->createElement('number:text', '/');
 				$number_date_style->appendChild($number_text);
-	
+
 			$number_month = $dom->createElement('number:month');
 				$number_month->setAttribute("number:style", "long");
 				$number_date_style->appendChild($number_month);
@@ -1518,7 +1518,7 @@ class odsStyleDateDDMMYYYY extends odsStyleDate {
 			$number_year = $dom->createElement('number:year');
 				$number_year->setAttribute("number:style", "long");
 				$number_date_style->appendChild($number_year);
-			
+
 		return $number_date_style;
 	}
 
@@ -1532,20 +1532,20 @@ class odsStyleDateDDMMYY extends odsStyleDate {
 		$this->name='Date-DDMMYY';
 		$this->language = $language;
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
 		$number_date_style = $dom->createElement('number:date-style');
 			$number_date_style->setAttribute("style:name", $this->name);
 			$number_date_style->setAttribute("number:automatic-order", "true");
 			$this->setLanguage($number_date_style);
-			
+
 			$number_day = $dom->createElement('number:day');
 				$number_day->setAttribute("number:style", "long");
 				$number_date_style->appendChild($number_day);
 
 			$number_text = $dom->createElement('number:text', '/');
 				$number_date_style->appendChild($number_text);
-	
+
 			$number_month = $dom->createElement('number:month');
 				$number_month->setAttribute("number:style", "long");
 				$number_date_style->appendChild($number_month);
@@ -1555,7 +1555,7 @@ class odsStyleDateDDMMYY extends odsStyleDate {
 
 			$number_year = $dom->createElement('number:year');
 				$number_date_style->appendChild($number_year);
-			
+
 		return $number_date_style;
 	}
 
@@ -1569,19 +1569,19 @@ class odsStyleDateDMMMYYYY extends odsStyleDate {
 		$this->name='Date-DMMMYYYY';
 		$this->language = $language;
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
 		$number_date_style = $dom->createElement('number:date-style');
 			$number_date_style->setAttribute("style:name", $this->name);
 			$number_date_style->setAttribute("number:automatic-order", "true");
 			$this->setLanguage($number_date_style);
-			
+
 			$number_day = $dom->createElement('number:day');
 				$number_date_style->appendChild($number_day);
 
 			$number_text = $dom->createElement('number:text', ' ');
 				$number_date_style->appendChild($number_text);
-	
+
 			$number_month = $dom->createElement('number:month');
 				$number_month->setAttribute("number:textual", "true");
 				$number_date_style->appendChild($number_month);
@@ -1592,7 +1592,7 @@ class odsStyleDateDMMMYYYY extends odsStyleDate {
 			$number_year = $dom->createElement('number:year');
 				$number_year->setAttribute("number:style", "long");
 				$number_date_style->appendChild($number_year);
-			
+
 		return $number_date_style;
 	}
 
@@ -1606,19 +1606,19 @@ class odsStyleDateDMMMYY extends odsStyleDate {
 		$this->name='Date-DMMMYY';
 		$this->language = $language;
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
 		$number_date_style = $dom->createElement('number:date-style');
 			$number_date_style->setAttribute("style:name", $this->name);
 			$number_date_style->setAttribute("number:automatic-order", "true");
 			$this->setLanguage($number_date_style);
-			
+
 			$number_day = $dom->createElement('number:day');
 				$number_date_style->appendChild($number_day);
 
 			$number_text = $dom->createElement('number:text', ' ');
 				$number_date_style->appendChild($number_text);
-	
+
 			$number_month = $dom->createElement('number:month');
 				$number_month->setAttribute("number:textual", "true");
 				$number_date_style->appendChild($number_month);
@@ -1628,7 +1628,7 @@ class odsStyleDateDMMMYY extends odsStyleDate {
 
 			$number_year = $dom->createElement('number:year');
 				$number_date_style->appendChild($number_year);
-			
+
 		return $number_date_style;
 	}
 
@@ -1642,19 +1642,19 @@ class odsStyleDateDMMMMYYYY extends odsStyleDate {
 		$this->name='Date-DMMMMYYYY';
 		$this->language = $language;
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
 		$number_date_style = $dom->createElement('number:date-style');
 			$number_date_style->setAttribute("style:name", $this->name);
 			$number_date_style->setAttribute("number:automatic-order", "true");
 			$this->setLanguage($number_date_style);
-			
+
 			$number_day = $dom->createElement('number:day');
 				$number_date_style->appendChild($number_day);
 
 			$number_text = $dom->createElement('number:text', ' ');
 				$number_date_style->appendChild($number_text);
-	
+
 			$number_month = $dom->createElement('number:month');
 				$number_month->setAttribute("number:textual", "true");
 				$number_month->setAttribute(" number:style", "long");
@@ -1666,7 +1666,7 @@ class odsStyleDateDMMMMYYYY extends odsStyleDate {
 			$number_year = $dom->createElement('number:year');
 				$number_year->setAttribute("number:style", "long");
 				$number_date_style->appendChild($number_year);
-			
+
 		return $number_date_style;
 	}
 
@@ -1680,19 +1680,19 @@ class odsStyleDateDMMMMYY extends odsStyleDate {
 		$this->name='Date-DMMMMYY';
 		$this->language = $language;
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
 		$number_date_style = $dom->createElement('number:date-style');
 			$number_date_style->setAttribute("style:name", $this->name);
 			$number_date_style->setAttribute("number:automatic-order", "true");
 			$this->setLanguage($number_date_style);
-			
+
 			$number_day = $dom->createElement('number:day');
 				$number_date_style->appendChild($number_day);
 
 			$number_text = $dom->createElement('number:text', ' ');
 				$number_date_style->appendChild($number_text);
-	
+
 			$number_month = $dom->createElement('number:month');
 				$number_month->setAttribute("number:textual", "true");
 				$number_month->setAttribute(" number:style", "long");
@@ -1703,7 +1703,7 @@ class odsStyleDateDMMMMYY extends odsStyleDate {
 
 			$number_year = $dom->createElement('number:year');
 				$number_date_style->appendChild($number_year);
-			
+
 		return $number_date_style;
 	}
 
@@ -1717,13 +1717,13 @@ class odsStyleDateMMMDYYYY extends odsStyleDate {
 		$this->name='Date-MMMDYYYY';
 		$this->language = $language;
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
 		$number_date_style = $dom->createElement('number:date-style');
 			$number_date_style->setAttribute("style:name", $this->name);
 			$number_date_style->setAttribute("number:automatic-order", "true");
 			$this->setLanguage($number_date_style);
-			
+
 			$number_month = $dom->createElement('number:month');
 				$number_month->setAttribute("number:textual", "true");
 				$number_date_style->appendChild($number_month);
@@ -1732,7 +1732,7 @@ class odsStyleDateMMMDYYYY extends odsStyleDate {
 				$number_date_style->appendChild($number_text);
 
 			$number_day = $dom->createElement('number:day');
-				$number_date_style->appendChild($number_day);	
+				$number_date_style->appendChild($number_day);
 
 			$number_text = $dom->createElement('number:text', ', ');
 				$number_date_style->appendChild($number_text);
@@ -1740,7 +1740,7 @@ class odsStyleDateMMMDYYYY extends odsStyleDate {
 			$number_year = $dom->createElement('number:year');
 				$number_year->setAttribute("number:style", "long");
 				$number_date_style->appendChild($number_year);
-			
+
 		return $number_date_style;
 	}
 
@@ -1754,13 +1754,13 @@ class odsStyleDateMMMDYY extends odsStyleDate {
 		$this->name='Date-MMMDYY';
 		$this->language = $language;
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
 		$number_date_style = $dom->createElement('number:date-style');
 			$number_date_style->setAttribute("style:name", $this->name);
 			$number_date_style->setAttribute("number:automatic-order", "true");
 			$this->setLanguage($number_date_style);
-			
+
 			$number_month = $dom->createElement('number:month');
 				$number_month->setAttribute("number:textual", "true");
 				$number_date_style->appendChild($number_month);
@@ -1769,14 +1769,14 @@ class odsStyleDateMMMDYY extends odsStyleDate {
 				$number_date_style->appendChild($number_text);
 
 			$number_day = $dom->createElement('number:day');
-				$number_date_style->appendChild($number_day);	
+				$number_date_style->appendChild($number_day);
 
 			$number_text = $dom->createElement('number:text', ', ');
 				$number_date_style->appendChild($number_text);
 
 			$number_year = $dom->createElement('number:year');
 				$number_date_style->appendChild($number_year);
-			
+
 		return $number_date_style;
 	}
 
@@ -1792,11 +1792,11 @@ class odsStyleTimeHHMMSS extends odsStyleTime {
 	public function __construct() {
 		$this->name='Time-HHMMSS';
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
 		$number_time_style = $dom->createElement('number:time-style');
 			$number_time_style->setAttribute("style:name", $this->name);
-			
+
 			$number_hours = $dom->createElement('number:hours');
 				$number_hours->setAttribute("number:style", "long");
 				$number_time_style->appendChild($number_hours);
@@ -1806,15 +1806,15 @@ class odsStyleTimeHHMMSS extends odsStyleTime {
 
 			$number_minutes = $dom->createElement('number:minutes');
 				$number_minutes->setAttribute("number:style", "long");
-				$number_time_style->appendChild($number_minutes);	
+				$number_time_style->appendChild($number_minutes);
 
 			$number_text = $dom->createElement('number:text', ':');
 				$number_time_style->appendChild($number_text);
 
 			$number_seconds = $dom->createElement('number:seconds');
 				$number_seconds->setAttribute("number:style", "long");
-				$number_time_style->appendChild($number_seconds);	
-			
+				$number_time_style->appendChild($number_seconds);
+
 		return $number_time_style;
 	}
 
@@ -1827,11 +1827,11 @@ class odsStyleTimeHHMM extends odsStyleTime {
 	public function __construct() {
 		$this->name='Time-HHMM';
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
 		$number_time_style = $dom->createElement('number:time-style');
 			$number_time_style->setAttribute("style:name", $this->name);
-			
+
 			$number_hours = $dom->createElement('number:hours');
 				$number_hours->setAttribute("number:style", "long");
 				$number_time_style->appendChild($number_hours);
@@ -1841,8 +1841,8 @@ class odsStyleTimeHHMM extends odsStyleTime {
 
 			$number_minutes = $dom->createElement('number:minutes');
 				$number_minutes->setAttribute("number:style", "long");
-				$number_time_style->appendChild($number_minutes);	
-			
+				$number_time_style->appendChild($number_minutes);
+
 		return $number_time_style;
 	}
 
@@ -1855,11 +1855,11 @@ class odsStyleTimeHHMMSSAMPM extends odsStyleTime {
 	public function __construct() {
 		$this->name='Time-HHMMSSAMPM';
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
 		$number_time_style = $dom->createElement('number:time-style');
 			$number_time_style->setAttribute("style:name", $this->name);
-			
+
 			$number_hours = $dom->createElement('number:hours');
 				$number_hours->setAttribute("number:style", "long");
 				$number_time_style->appendChild($number_hours);
@@ -1869,22 +1869,22 @@ class odsStyleTimeHHMMSSAMPM extends odsStyleTime {
 
 			$number_minutes = $dom->createElement('number:minutes');
 				$number_minutes->setAttribute("number:style", "long");
-				$number_time_style->appendChild($number_minutes);	
+				$number_time_style->appendChild($number_minutes);
 
 			$number_text = $dom->createElement('number:text', ':');
 				$number_time_style->appendChild($number_text);
 
 			$number_seconds = $dom->createElement('number:seconds');
 				$number_seconds->setAttribute("number:style", "long");
-				$number_time_style->appendChild($number_seconds);	
+				$number_time_style->appendChild($number_seconds);
 
 			$number_text = $dom->createElement('number:text', ' ');
 				$number_time_style->appendChild($number_text);
 
 			$number_am_pm = $dom->createElement('number:am-pm');
 				$number_am_pm->setAttribute("number:style", "long");
-				$number_time_style->appendChild($number_am_pm);	
-			
+				$number_time_style->appendChild($number_am_pm);
+
 		return $number_time_style;
 	}
 
@@ -1897,11 +1897,11 @@ class odsStyleTimeHHMMAMPM extends odsStyleTime {
 	public function __construct() {
 		$this->name='Time-HHMMAMPM';
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
 		$number_time_style = $dom->createElement('number:time-style');
 			$number_time_style->setAttribute("style:name", $this->name);
-			
+
 			$number_hours = $dom->createElement('number:hours');
 				$number_hours->setAttribute("number:style", "long");
 				$number_time_style->appendChild($number_hours);
@@ -1911,18 +1911,18 @@ class odsStyleTimeHHMMAMPM extends odsStyleTime {
 
 			$number_minutes = $dom->createElement('number:minutes');
 				$number_minutes->setAttribute("number:style", "long");
-				$number_time_style->appendChild($number_minutes);	
+				$number_time_style->appendChild($number_minutes);
 
 			$number_text = $dom->createElement('number:text', ' ');
 				$number_time_style->appendChild($number_text);
-			
+
 			$number_text = $dom->createElement('number:text', ' ');
 				$number_date_style->appendChild($number_text);
 
 			$number_am_pm = $dom->createElement('number:am-pm');
 				$number_am_pm->setAttribute("number:style", "long");
-				$number_time_style->appendChild($number_am_pm);	
-			
+				$number_time_style->appendChild($number_am_pm);
+
 		return $number_time_style;
 	}
 
@@ -1939,13 +1939,13 @@ class odsStyleDateTimeMMDDYYHHMMSSAMPM extends odsStyleDateTime {
 		$this->name='DateTime-MMDDYYHHMMSSAMPM';
 		$this->language = $language;
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
 		$number_date_style = $dom->createElement('number:date-style');
 			$number_date_style->setAttribute("style:name", $this->name);
 			$number_date_style->setAttribute("number:automatic-order", "true");
 			$this->setLanguage($number_date_style);
-			
+
 			$number_month = $dom->createElement('number:month');
 				$number_date_style->appendChild($number_month);
 
@@ -1953,7 +1953,7 @@ class odsStyleDateTimeMMDDYYHHMMSSAMPM extends odsStyleDateTime {
 				$number_date_style->appendChild($number_text);
 
 			$number_day = $dom->createElement('number:day');
-				$number_date_style->appendChild($number_day);	
+				$number_date_style->appendChild($number_day);
 
 			$number_text = $dom->createElement('number:text', '/');
 				$number_date_style->appendChild($number_text);
@@ -1974,20 +1974,20 @@ class odsStyleDateTimeMMDDYYHHMMSSAMPM extends odsStyleDateTime {
 			$number_minutes = $dom->createElement('number:minutes');
 			$number_minutes->setAttribute("number:style", "long");
 				$number_date_style->appendChild($number_minutes);
-				
+
 			$number_text = $dom->createElement('number:text', ':');
 				$number_date_style->appendChild($number_text);
 
 			$number_seconds = $dom->createElement('number:seconds');
 				$number_seconds->setAttribute("number:style", "long");
 				$number_date_style->appendChild($number_seconds);
-				
+
 			$number_text = $dom->createElement('number:text', ' ');
 				$number_date_style->appendChild($number_text);
-			
+
 			$number_am_pm = $dom->createElement('number:am-pm');
 				$number_date_style->appendChild($number_am_pm);
-			
+
 		return $number_date_style;
 	}
 
@@ -2001,13 +2001,13 @@ class odsStyleDateTimeMMDDYYHHMMAMPM extends odsStyleDateTime {
 		$this->name='DateTime-MMDDYYHHMMAMPM';
 		$this->language = $language;
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
 		$number_date_style = $dom->createElement('number:date-style');
 			$number_date_style->setAttribute("style:name", $this->name);
 			$number_date_style->setAttribute("number:automatic-order", "true");
 			$this->setLanguage($number_date_style);
-			
+
 			$number_month = $dom->createElement('number:month');
 				$number_date_style->appendChild($number_month);
 
@@ -2015,7 +2015,7 @@ class odsStyleDateTimeMMDDYYHHMMAMPM extends odsStyleDateTime {
 				$number_date_style->appendChild($number_text);
 
 			$number_day = $dom->createElement('number:day');
-				$number_date_style->appendChild($number_day);	
+				$number_date_style->appendChild($number_day);
 
 			$number_text = $dom->createElement('number:text', '/');
 				$number_date_style->appendChild($number_text);
@@ -2036,10 +2036,10 @@ class odsStyleDateTimeMMDDYYHHMMAMPM extends odsStyleDateTime {
 			$number_minutes = $dom->createElement('number:minutes');
 			$number_minutes->setAttribute("number:style", "long");
 				$number_date_style->appendChild($number_minutes);
-			
+
 			$number_am_pm = $dom->createElement('number:am-pm');
 				$number_date_style->appendChild($number_am_pm);
-			
+
 		return $number_date_style;
 	}
 
@@ -2053,19 +2053,19 @@ class odsStyleDateTimeDDMMYYHHMMSS extends odsStyleDateTime {
 		$this->name='DateTime-DDMMYYHHMMSS';
 		$this->language = $language;
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
 		$number_date_style = $dom->createElement('number:date-style');
 			$number_date_style->setAttribute("style:name", $this->name);
 			$number_date_style->setAttribute("number:automatic-order", "true");
 			$this->setLanguage($number_date_style);
-			
+
 			$number_day = $dom->createElement('number:day');
-				$number_date_style->appendChild($number_day);	
+				$number_date_style->appendChild($number_day);
 
 			$number_text = $dom->createElement('number:text', '/');
 				$number_date_style->appendChild($number_text);
-			
+
 			$number_month = $dom->createElement('number:month');
 				$number_date_style->appendChild($number_month);
 
@@ -2088,14 +2088,14 @@ class odsStyleDateTimeDDMMYYHHMMSS extends odsStyleDateTime {
 			$number_minutes = $dom->createElement('number:minutes');
 			$number_minutes->setAttribute("number:style", "long");
 				$number_date_style->appendChild($number_minutes);
-				
+
 			$number_text = $dom->createElement('number:text', ':');
 				$number_date_style->appendChild($number_text);
 
 			$number_seconds = $dom->createElement('number:seconds');
 				$number_seconds->setAttribute("number:style", "long");
 				$number_date_style->appendChild($number_seconds);
-				
+
 		return $number_date_style;
 	}
 
@@ -2109,19 +2109,19 @@ class odsStyleDateTimeDDMMYYHHMM extends odsStyleDateTime {
 		$this->name='DateTime-DDMMYYHHMM';
 		$this->language = $language;
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
 		$number_date_style = $dom->createElement('number:date-style');
 			$number_date_style->setAttribute("style:name", $this->name);
 			$number_date_style->setAttribute("number:automatic-order", "true");
 			$this->setLanguage($number_date_style);
-			
+
 			$number_day = $dom->createElement('number:day');
-				$number_date_style->appendChild($number_day);	
+				$number_date_style->appendChild($number_day);
 
 			$number_text = $dom->createElement('number:text', '/');
 				$number_date_style->appendChild($number_text);
-			
+
 			$number_month = $dom->createElement('number:month');
 				$number_date_style->appendChild($number_month);
 
@@ -2144,7 +2144,7 @@ class odsStyleDateTimeDDMMYYHHMM extends odsStyleDateTime {
 			$number_minutes = $dom->createElement('number:minutes');
 			$number_minutes->setAttribute("number:style", "long");
 				$number_date_style->appendChild($number_minutes);
-				
+
 		return $number_date_style;
 	}
 

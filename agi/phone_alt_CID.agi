@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # phone_alt_CID.agi
-# 
+#
 # Changes the CID number on calls that pass through it to the Alternate defined
 # in the 'phones' record for the phone that placed the call
 #
@@ -12,7 +12,7 @@
 #exten => _91NXXNXXXXXX,n,Goto(default,${EXTEN},1)
 #
 # The easiest way to set this up for a phone is to create a new Call Menu and
-# then put the above Custom Dialplan into it, then set the Phone's 
+# then put the above Custom Dialplan into it, then set the Phone's
 # 'phone context' to the call menu ID that you just created.
 #
 # Copyright (C) 2016  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -98,7 +98,7 @@ if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/phonealt.$year-$mon-$mday";}
 
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 	{
 	chomp;
 	last unless length($_);
@@ -136,7 +136,7 @@ if (length($callerid)>0) {$phone_number = $callerid;}
 if (length($calleridname)>0) {$VLcomments = $calleridname;}
    else {$VLcomments = '';}
 
-foreach $i (sort keys %AGI) 
+foreach $i (sort keys %AGI)
 	{
 	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
 	}
@@ -196,8 +196,8 @@ if ($sthArows > 0)
 	$outbound_cid =		$aryA[0];
 	$outbound_alt_cid = $aryA[1];
 	$fullname =			$aryA[2];
-	
-	if (length($outbound_alt_cid) > 1) 
+
+	if (length($outbound_alt_cid) > 1)
 		{
 		### set the callerid to the ACQS value(calleridname)
 		$newcallerid = "\"$fullname <$outbound_alt_cid>\"";

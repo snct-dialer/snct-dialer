@@ -1,7 +1,7 @@
 <?php
 # vdremote.php
-# 
-# make sure you have added a user to the vicidial_users MySQL table with at 
+#
+# make sure you have added a user to the vicidial_users MySQL table with at
 # least user_level 4 to access this page the first time
 #
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -261,7 +261,7 @@ if (strlen($ADD)>4)
 		$p=0;
 		while ($p<50)
 			{
-			if ($group_id_value == $groups[$p]) 
+			if ($group_id_value == $groups[$p])
 				{
 				$groups_list .= " CHECKED";
 				$groups_value .= " $group_id_value";
@@ -284,7 +284,7 @@ if (strlen($ADD)>4)
 
 
 <TR><TD ALIGN=LEFT COLSPAN=2>
-<?php 
+<?php
 
 
 
@@ -430,7 +430,7 @@ if ($ADD==61111)
 				$extension =		sprintf("%-10s", $row[0]);
 				$user =				sprintf("%-6s", $row[1]);
 				$leadid =			sprintf("%-12s", $row[2]);
-				if ($row[2] > 0) 
+				if ($row[2] > 0)
 					{
 					$leadidLINK=$row[2];
 					$leadlink++;
@@ -441,7 +441,7 @@ if ($ADD==61111)
 				$cc=0;
 				while ( (strlen($channel) > 10) and ($cc < 100) )
 					{
-					$channel = preg_replace('/.$/i', '',$channel);   
+					$channel = preg_replace('/.$/i', '',$channel);
 					$cc++;
 					if (strlen($channel) <= 10) {$cc=101;}
 					}
@@ -615,8 +615,8 @@ echo "<font size=0>\n\n\n<br><br><br>\nscript runtime: $RUNtime seconds</font>";
 </html>
 
 <?php
-	
-exit; 
+
+exit;
 
 
 

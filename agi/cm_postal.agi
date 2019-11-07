@@ -1,10 +1,10 @@
 #!/usr/bin/perl
 #
 # cm_postal.agi version 2.12
-# 
-# Designed to work with Cell Menus to allow searching of the number entered by 
-# the customer to be searched within the vicidial_postal_codes table to gather 
-# the state, then search the vicidial_inbound_dids table for that state in the 
+#
+# Designed to work with Cell Menus to allow searching of the number entered by
+# the customer to be searched within the vicidial_postal_codes table to gather
+# the state, then search the vicidial_inbound_dids table for that state in the
 # did_carrier_description field and send the call on to the did that matches.
 #
 # If postal code is not found call will go to the 'D' option in the call menu
@@ -120,7 +120,7 @@ if (length($ARGV[0])>1)
 		if ($AGILOG) {$agi_string = "$i|$ARGV[$i]";   &agi_output;}
 		$i++;
 		}
-	
+
 	### list of command-line array arguments:
 	@ARGV_vars = split(/---/, $ARGV[0]);
 
@@ -134,7 +134,7 @@ if (length($did_prefix) < 1)
 	{$did_prefix = '999';}
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 	{
 	chomp;
 	last unless length($_);
@@ -177,7 +177,7 @@ while(<STDIN>)
 	if (length($pin)>0) {$callerid = $pin;}
 	}
 
-foreach $i (sort keys %AGI) 
+foreach $i (sort keys %AGI)
 	{
 	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
 	}
@@ -192,7 +192,7 @@ $AGI->stream_file('sip-silence');
 $g=0;
 $state='';
 ### only perform search if minimum digits entered is valid ###
-if (length($extension) >= $postal_length) 
+if (length($extension) >= $postal_length)
 	{
 	### search for state using entered postal code ###
 	$stmtA= "SELECT state from vicidial_postal_codes where postal_code='$extension';";
@@ -210,7 +210,7 @@ if (length($extension) >= $postal_length)
 	}
 
 # State not found, send call to 'D' option in call menu
-if ($g < 1) 
+if ($g < 1)
 	{
 	if ($AGILOG) {$agi_string = "entry not found($extension), exiting the cm_postal.agi app, transferring call to D @ $context";   &agi_output;}
 	print "SET CONTEXT $context\n";
@@ -248,7 +248,7 @@ $sthA->finish();
 $dbhA->disconnect();
 
 # DID not found, send call to 'C' option in call menu
-if ($g < 1) 
+if ($g < 1)
 	{
 	if ($AGILOG) {$agi_string = "entry not found($state|$extension), exiting the cm_postal.agi app, transferring call to C @ $context";   &agi_output;}
 	print "SET CONTEXT $context\n";
@@ -304,27 +304,27 @@ $agi_string='';
 }
 
 
-sub checkresult 
+sub checkresult
 	{
 	my ($res) = @_;
 	my $retval;
 	$tests++;
 	chomp $res;
-	if ($res =~ /^200/) 
+	if ($res =~ /^200/)
 		{
 		$res =~ /result=(-?\d+)/;
-		if (!length($1)) 
+		if (!length($1))
 			{
 		#	print STDERR "FAIL ($res)\n";
 			$fail++;
-			} 
-		else 
+			}
+		else
 			{
 		#	print STDERR "PASS ($1)\n";
 			$pass++;
 			}
-		} 
-	else 
+		}
+	else
 		{
 	#	print STDERR "FAIL (unexpected result '$res')\n";
 		$fail++;

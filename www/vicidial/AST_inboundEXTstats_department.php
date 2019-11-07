@@ -1,6 +1,6 @@
-<?php 
+<?php
 # AST_inboundEXTstats_department.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -162,7 +162,7 @@ while ($i < $dept_to_print)
 -->
  </STYLE>
 
-<?php 
+<?php
 echo"<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 #echo"<META HTTP-EQUIV=Refresh CONTENT=\"7; URL=$PHP_SELF?server_ip=$server_ip&DB=$DB\">\n";
 echo "<TITLE>"._QXZ("ASTERISK: Inbound Calls Stats - By Department")."</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";

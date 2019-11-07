@@ -1,5 +1,5 @@
 <?php
-# 
+#
 # dbconnect_mysqli.php    version 2.8
 #
 # database connection settings and some global web settings
@@ -15,7 +15,7 @@
 if ( file_exists("/etc/astguiclient.conf") )
 	{
 	$DBCagc = file("/etc/astguiclient.conf");
-	foreach ($DBCagc as $DBCline) 
+	foreach ($DBCagc as $DBCline)
 		{
 		$DBCline = preg_replace("/ |>|\n|\r|\t|\#.*|;.*/","",$DBCline);
 		if (preg_match("/^PATHlogs/", $DBCline))
@@ -48,7 +48,7 @@ else
 	}
 
 $link=mysqli_connect("$VARDB_server", "$VARDB_user", "$VARDB_pass", "$VARDB_database", $VARDB_port);
-if (!$link) 
+if (!$link)
 	{
     die('MySQL connect ERROR: ' . mysqli_connect_error());
 	}

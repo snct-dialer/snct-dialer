@@ -1,6 +1,6 @@
-<?php 
+<?php
 # AST_agent_time_sheet.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -80,14 +80,14 @@ if ($qm_conf_ct > 0)
 ### ARCHIVED DATA CHECK CONFIGURATION
 $archives_available="N";
 $log_tables_array=array("vicidial_timeclock_log", "vicidial_agent_log");
-for ($t=0; $t<count($log_tables_array); $t++) 
+for ($t=0; $t<count($log_tables_array); $t++)
 	{
 	$table_name=$log_tables_array[$t];
 	$archive_table_name=use_archive_table($table_name);
 	if ($archive_table_name!=$table_name) {$archives_available="Y";}
 	}
 
-if ($search_archived_data) 
+if ($search_archived_data)
 	{
 	$vicidial_timeclock_log_table=use_archive_table("vicidial_timeclock_log");
 	$vicidial_agent_log_table=use_archive_table("vicidial_agent_log");
@@ -353,7 +353,7 @@ if ( ($SSweb_logo=='default_old') and ($logo_old > 0) )
 	}
 if ( ($SSweb_logo!='default_new') and ($SSweb_logo!='default_old') )
 	{
-	if (file_exists("./images/vicidial_admin_web_logo$SSweb_logo")) 
+	if (file_exists("./images/vicidial_admin_web_logo$SSweb_logo"))
 		{
 		$selected_logo = "./images/vicidial_admin_web_logo$SSweb_logo";
 		$selected_small_logo = "./images/vicidial_admin_web_logo$SSweb_logo";
@@ -405,7 +405,7 @@ $MAIN.="<FORM ACTION=\"$PHP_SELF\" METHOD=GET> &nbsp; \n";
 $MAIN.=_QXZ("Date").": <INPUT TYPE=TEXT NAME=query_date SIZE=10 MAXLENGTH=19 VALUE=\"$query_date\">\n";
 $MAIN.=_QXZ("User ID").": <INPUT TYPE=TEXT NAME=agent SIZE=20 MAXLENGTH=20 VALUE=\"$agent\">\n";
 
-if ($archives_available=="Y") 
+if ($archives_available=="Y")
 	{
 	$MAIN.="<input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."<BR><BR>\n";
 	}
@@ -425,9 +425,9 @@ $MAIN.=" "._QXZ("NOTE: stats taken from available agent log data")."\n";
 
 else
 {
-$query_date_BEGIN = "$query_date 00:00:00";   
+$query_date_BEGIN = "$query_date 00:00:00";
 $query_date_END = "$query_date 23:59:59";
-$time_BEGIN = "00:00:00";   
+$time_BEGIN = "00:00:00";
 $time_END = "23:59:59";
 
 $stmt="select full_name from vicidial_users where user='$agent' $vuLOGadmin_viewable_groupsSQL;";
@@ -455,15 +455,15 @@ if ($calls_summary)
 
 	$TOTAL_TIME = ($row[1] + $row[3] + $row[5] + $row[7]);
 
-	$TOTAL_TIME_HMS =		sec_convert($TOTAL_TIME,'H'); 
-	$TALK_TIME_HMS =		sec_convert($row[1],'H'); 
-	$PAUSE_TIME_HMS =		sec_convert($row[3],'H'); 
-	$WAIT_TIME_HMS =		sec_convert($row[5],'H'); 
-	$WRAPUP_TIME_HMS =		sec_convert($row[7],'H'); 
-	$TALK_AVG_MS =			sec_convert($row[2],'H'); 
-	$PAUSE_AVG_MS =			sec_convert($row[4],'H'); 
-	$WAIT_AVG_MS =			sec_convert($row[6],'H'); 
-	$WRAPUP_AVG_MS =		sec_convert($row[8],'H'); 
+	$TOTAL_TIME_HMS =		sec_convert($TOTAL_TIME,'H');
+	$TALK_TIME_HMS =		sec_convert($row[1],'H');
+	$PAUSE_TIME_HMS =		sec_convert($row[3],'H');
+	$WAIT_TIME_HMS =		sec_convert($row[5],'H');
+	$WRAPUP_TIME_HMS =		sec_convert($row[7],'H');
+	$TALK_AVG_MS =			sec_convert($row[2],'H');
+	$PAUSE_AVG_MS =			sec_convert($row[4],'H');
+	$WAIT_AVG_MS =			sec_convert($row[6],'H');
+	$WRAPUP_AVG_MS =		sec_convert($row[8],'H');
 
 	$pfTOTAL_TIME_HMS =		sprintf("%8s", $TOTAL_TIME_HMS);
 	$pfTALK_TIME_HMS =		sprintf("%8s", $TALK_TIME_HMS);
@@ -517,7 +517,7 @@ $end = $row[1];
 $CSV_login.="\"\",\""._QXZ("LAST LOG ACTIVITY").":\",\"$row[0]\"\n";
 
 $login_time = ($end - $start);
-$LOGIN_TIME_HMS =		sec_convert($login_time,'H'); 
+$LOGIN_TIME_HMS =		sec_convert($login_time,'H');
 $pfLOGIN_TIME_HMS =		sprintf("%8s", $LOGIN_TIME_HMS);
 
 $MAIN.="-----------------------------------------\n";
@@ -558,7 +558,7 @@ $CSV_text2.="\"\",\""._QXZ("ID")."\",\""._QXZ("EDIT")."\",\""._QXZ("EVENT")."\",
 	while ($events_to_print > $o) {
 		$row=mysqli_fetch_row($rslt);
 		if ( ($row[0]=='START') or ($row[0]=='LOGIN') )
-			{$bgcolor='bgcolor="#'.$SSstd_row3_background.'"';} 
+			{$bgcolor='bgcolor="#'.$SSstd_row3_background.'"';}
 		else
 			{$bgcolor='bgcolor="#'.$SSstd_row4_background.'"';}
 
@@ -583,7 +583,7 @@ $CSV_text2.="\"\",\""._QXZ("ID")."\",\""._QXZ("EDIT")."\",\""._QXZ("EVENT")."\",
 			{
 			$login_sec = $row[3];
 			$total_login_time = ($total_login_time + $login_sec);
-			$event_hours_minutes =		sec_convert($login_sec,'H'); 
+			$event_hours_minutes =		sec_convert($login_sec,'H');
 
 			$MAIN.="<tr $bgcolor><td><font size=2><A HREF=\"./timeclock_edit.php?timeclock_id=$row[5]\">$row[5]</A></td>";
 			$MAIN.="<td align=right><font size=2>$manager_edit</td>";
@@ -604,7 +604,7 @@ if (strlen($login_sec)<1)
 	$total_login_time = ($total_login_time + $login_sec);
 		if ($DB) {$MAIN.=_QXZ("LOGIN ONLY")." - $total_login_time - $login_sec";}
 	}
-$total_login_hours_minutes =		sec_convert($total_login_time,'H'); 
+$total_login_hours_minutes =		sec_convert($total_login_time,'H');
 
 	if ($DB) {$MAIN.=" - $total_login_time - $login_sec";}
 

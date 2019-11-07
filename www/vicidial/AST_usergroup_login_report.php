@@ -2,7 +2,7 @@
 # AST_usergroup_login_report.php
 #
 # This User-Group based report runs some very intensive SQL queries, so it is
-# not recommended to run this on long time periods. 
+# not recommended to run this on long time periods.
 #
 # Copyright (C) 2019  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
@@ -77,14 +77,14 @@ if (strlen($report_display_type)<2) {$report_display_type = $SSreport_default_fo
 ### ARCHIVED DATA CHECK CONFIGURATION
 $archives_available="N";
 $log_tables_array=array("vicidial_user_log");
-for ($t=0; $t<count($log_tables_array); $t++) 
+for ($t=0; $t<count($log_tables_array); $t++)
 	{
 	$table_name=$log_tables_array[$t];
 	$archive_table_name=use_archive_table($table_name);
 	if ($archive_table_name!=$table_name) {$archives_available="Y";}
 	}
 
-if ($search_archived_data) 
+if ($search_archived_data)
 	{
 	$vicidial_user_log_table=use_archive_table("vicidial_user_log");
 	}
@@ -270,7 +270,7 @@ if ( (!preg_match('/\-\-ALL\-\-/i',$LOGadmin_viewable_groups)) and (strlen($LOGa
 	}
 
 #######################################
-#for ($i=0; $i<count($user_group); $i++) 
+#for ($i=0; $i<count($user_group); $i++)
 #	{
 #	if (preg_match('/\-\-ALL\-\-/', $user_group[$i])) {$all_user_groups=1; $user_group="";}
 #	}
@@ -371,9 +371,9 @@ else
 $o=0;
 while ($user_groups_to_print > $o)
 	{
-	if  (preg_match("/\|$user_groups[$o]\|/i",$user_group_string)) 
+	if  (preg_match("/\|$user_groups[$o]\|/i",$user_group_string))
 		{$HTML_text.="<option selected value=\"$user_groups[$o]\">$user_groups[$o]</option>\n";}
-	else 
+	else
 		{$HTML_text.="<option value=\"$user_groups[$o]\">$user_groups[$o]</option>\n";}
 	$o++;
 	}
@@ -386,7 +386,7 @@ $HTML_text.="<select name='report_display_type'>";
 if ($report_display_type) {$HTML_text.="<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
 $HTML_text.="<option value='TEXT'>"._QXZ("TEXT")."</option><option value='HTML'>"._QXZ("HTML")."</option></select>\n<BR><BR>";
 
-if ($archives_available=="Y") 
+if ($archives_available=="Y")
 	{
 	$HTML_text.="<input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."\n";
 	}
@@ -411,7 +411,7 @@ $HTML_text.="</FORM>\n";
 		$CSV_text .= _QXZ("Usergroup Login Report Report",24).": $user                     $NOW_TIME ($db_source)\n";
 		}
 
-if ($SUBMIT) 
+if ($SUBMIT)
 	{
 	$ASCII_text.="+--------------------------------+----------+----------------------+---------------------+---------------------+----------+-----------------+-----------------+----------------------+--------------+-----------------+-----------------+-----------------+\n";
 	$ASCII_text.="| "._QXZ("USER NAME",30)." | "._QXZ("ID",8)." | "._QXZ("USER GROUP",20)." | "._QXZ("FIRST LOGIN DATE",19)." | "._QXZ("LAST LOGIN DATE",19)." | "._QXZ("CAMPAIGN",8)." | "._QXZ("SERVER IP",15)." | "._QXZ("COMPUTER IP",15)." | "._QXZ("EXTENSION",20)." | "._QXZ("BROWSER",12)." | "._QXZ("PHONE LOGIN",15)." | "._QXZ("SERVER PHONE",15)." | "._QXZ("PHONE IP",15)." |\n";
@@ -441,7 +441,7 @@ if ($SUBMIT)
 	$CSV_text.="\""._QXZ("User name")."\",\""._QXZ("User ID")."\",\""._QXZ("User group")."\",\""._QXZ("First login date")."\",\""._QXZ("Last login date")."\",\""._QXZ("Campaign ID")."\",\""._QXZ("Server IP")."\",\""._QXZ("Computer IP")."\",\""._QXZ("Extension")."\",\""._QXZ("Browser")."\",\""._QXZ("Phone login")."\",\""._QXZ("Server phone")."\",\""._QXZ("Phone IP")."\"\n";
 	$stmt="select distinct user, substr(full_name,1,30) as fullname, full_name from vicidial_users $user_group_SQL order by user";
 	$rslt=mysql_to_mysqli($stmt, $link);
-	while ($row=mysqli_fetch_array($rslt)) 
+	while ($row=mysqli_fetch_array($rslt))
 		{
 		$date_stmt="select min(event_date) as min_date, max(event_date) as max_date from ".$vicidial_user_log_table." where user='$row[user]' and event='LOGIN' and event_date>='$day30range'";
 		$date_rslt=mysql_to_mysqli($date_stmt, $link);
@@ -449,7 +449,7 @@ if ($SUBMIT)
 
 		$data_stmt="select campaign_id, server_ip, computer_ip, user_group, substring(extension,1,20) as ext, extension, browser, phone_login, server_phone, phone_ip from ".$vicidial_user_log_table." where user='$row[user]' and event_date='$date_row[max_date]' and event='LOGIN'";
 		$data_rslt=mysql_to_mysqli($data_stmt, $link);
-		while ($data_row=mysqli_fetch_array($data_rslt)) 
+		while ($data_row=mysqli_fetch_array($data_rslt))
 			{
 			preg_match('/^[^\s]+/', $data_row["browser"], $browser_ary);
 			$browser=$browser_ary[0];
@@ -477,7 +477,7 @@ if ($SUBMIT)
 	$HTML_text2.="</table>\n";
 	}
 
-if ($file_download>0) 
+if ($file_download>0)
 	{
 	$FILE_TIME = date("Ymd-His");
 	$CSVfilename = "AST_usergroup_login_report_$US$FILE_TIME.csv";

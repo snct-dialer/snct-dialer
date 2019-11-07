@@ -1,5 +1,5 @@
-# language_admin.txt - this file is for the internationalization of the astGUIclient 
-# admin web pages. The associated install.pl file will take the language as an 
+# language_admin.txt - this file is for the internationalization of the astGUIclient
+# admin web pages. The associated install.pl file will take the language as an
 # argument and alter the php scripts to the language typed in the command line:
 # example: ./install.pl --language=es
 # current languages in the file:

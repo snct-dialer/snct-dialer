@@ -458,7 +458,7 @@ user VARCHAR(20),
 server_ip VARCHAR(15) NOT NULL,
 event_time DATETIME,
 lead_id INT(9) UNSIGNED,
-campaign_id VARCHAR(8),	
+campaign_id VARCHAR(8),
 pause_epoch INT(10) UNSIGNED,
 pause_sec SMALLINT(5) UNSIGNED default '0',
 wait_epoch INT(10) UNSIGNED,
@@ -713,11 +713,11 @@ ALTER TABLE vicidial_lists ADD xferconf_e_number VARCHAR(50) default '';
 
 UPDATE system_settings SET db_schema_version='1190',db_schema_update_date=NOW();
 
-CREATE TABLE call_log_archive LIKE call_log; 
+CREATE TABLE call_log_archive LIKE call_log;
 
 CREATE TABLE vicidial_log_archive LIKE vicidial_log;
 
-CREATE TABLE vicidial_agent_log_archive LIKE vicidial_agent_log; 
+CREATE TABLE vicidial_agent_log_archive LIKE vicidial_agent_log;
 ALTER TABLE vicidial_agent_log_archive MODIFY agent_log_id INT(9) UNSIGNED NOT NULL;
 
 UPDATE system_settings SET db_schema_version='1191',db_schema_update_date=NOW();

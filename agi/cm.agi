@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # cm.agi   version 2.14
-# 
+#
 # Used by Call Menus to log digit presses if enabled in the settings. You should
 # not need to manually use this script, it is used by the dialplan builder.
 #
@@ -150,7 +150,7 @@ if (length($ARGV[0])>1)
 		if ($AGILOG) {$agi_string = "$i|$ARGV[$i]";   &agi_output;}
 		$i++;
 		}
-	
+
 	### list of command-line array arguments:
 	@ARGV_vars = split(/-----/, $ARGV[0]);
 
@@ -162,7 +162,7 @@ if (length($ARGV[0])>1)
 	}
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 	{
 	chomp;
 	last unless length($_);
@@ -259,7 +259,7 @@ if (length($callerid)<8) {$callerid = $parked_by;}
 if (length($pin)>0) {$callerid = $pin;}
 
 
-foreach $i (sort keys %AGI) 
+foreach $i (sort keys %AGI)
 	{
 	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
 	}

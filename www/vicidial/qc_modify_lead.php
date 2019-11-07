@@ -4,7 +4,7 @@
 #
 # ViciDial database administration modify lead in vicidial_list
 # qc_modify_lead.php
-# 
+#
 # Copyright (C) 2012  poundteam.com    LICENSE: AGPLv2
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
@@ -419,14 +419,14 @@ if (preg_match("/cf_encrypt/",$active_modules))
 <BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 
 <?php
-if($DB) 
+if($DB)
 	{
     echo __LINE__."\n";
 	}
 
 echo "<CENTER><FONT FACE='Courier' COLOR=BLACK SIZE=3><a href=\"admin.php?ADD=881&campaign_id=$campaign_id\">"._QXZ("QC CAMPAIGN")." $campaign_id</a>: "._QXZ("Lead")." $lead_id - ".urldecode($lead_name)."<BR>\n";
 //end_call is set by submit button to denote "save", without it this is a VIEW, with it this is a SAVE
-if ($end_call > 0) 
+if ($end_call > 0)
 	{
     if($DB) { echo __LINE__."\n"; }
 	### update the lead record in the vicidial_list table
@@ -442,12 +442,12 @@ if ($end_call > 0)
 	//QUALITY CONTROL CHANGE LOG BEGIN - CHANGE VERSION (VIEW VERSION IS BELOW, WHICH CREATES THE RECORD, THIS ONE MERELY MODIFIES THE EXISTING RECORD)
 	$new_record=$row;
 	//if status has changed, the join query above will have the "status" field of "vicidial_list" overwritten by the status field of "vicidial_statuses" ... which will be EMPTY if there is no matching status to the new QC status chosen. This will cause the changelog to be incorrect.
-	if ( strlen($new_record['status']) == '0' ) 
+	if ( strlen($new_record['status']) == '0' )
 		{
 		$new_record['status']=$new_record['code'];
 		}
 
-	if($original_record != $new_record) 
+	if($original_record != $new_record)
 		{
 		//Information changed: Find out what and record it, first disable "view" logging
 		$qcchange='Y';
@@ -486,14 +486,14 @@ if ($end_call > 0)
 	$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LEADS', event_type='MODIFY', record_id='$lead_id', event_code='ADMIN MODIFY LEAD', event_sql=\"$SQL_log\", event_notes='';";
 	if ($DB) {echo "|$stmt|\n";}
 	$rslt=mysql_to_mysqli($stmt, $link);
-	if($DB) 
+	if($DB)
 		{
 		echo __LINE__."\n";
 		}
 
 	if ( ($dispo != $status) and ($dispo == 'CBHOLD') )
 		{
-		if($DB) 
+		if($DB)
 			{
 			echo __LINE__."\n";
 			}
@@ -507,7 +507,7 @@ if ($end_call > 0)
         //Duped CBHOLD version for vicidial status type 'Scheduled Callback'
 	if ( ($dispo != $status) and ($scheduled_callback == 'Y') )
 		{
-		if($DB) 
+		if($DB)
 			{
 			echo __LINE__."\n";
 			}
@@ -520,7 +520,7 @@ if ($end_call > 0)
 		}
 	if ( ($dispo != $status) and ($dispo == 'CALLBK') )
 		{
-		if($DB) 
+		if($DB)
 			{
 			echo __LINE__."\n";
 			}
@@ -534,7 +534,7 @@ if ($end_call > 0)
 
 	if ( ($dispo != $status) and ($status == 'CBHOLD') )
 		{
-		if($DB) 
+		if($DB)
 			{
 			echo __LINE__."\n";
 			}
@@ -564,7 +564,7 @@ if ($end_call > 0)
         //This entry creates the callback
 	if ( ($dispo != $status) and ($scheduled_callback == 'Y') )
 		{
-		if($DB) 
+		if($DB)
 			{
 			echo __LINE__."\n";
 			}
@@ -594,7 +594,7 @@ if ($end_call > 0)
 
 	if ( ($dispo != $status) and ($status == 'DNC') )
 		{
-		if($DB) 
+		if($DB)
 			{
 			echo __LINE__."\n";
 			}
@@ -608,7 +608,7 @@ if ($end_call > 0)
 	### update last record in vicidial_log table
        if (($dispo != $status) and ($modify_logs > 0))
 		{
-		if($DB) 
+		if($DB)
 			{
 			echo __LINE__."\n";
 			}
@@ -620,7 +620,7 @@ if ($end_call > 0)
 	### update last record in vicidial_closer_log table
        if (($dispo != $status) and ($modify_closer_logs > 0))
 		{
-		if($DB) 
+		if($DB)
 			{
 			echo __LINE__."\n";
 			}
@@ -632,7 +632,7 @@ if ($end_call > 0)
 	### update last record in vicidial_agent_log table
        if (($dispo != $status) and ($modify_agent_logs > 0))
 		{
-		if($DB) 
+		if($DB)
 			{
 			echo __LINE__."\n";
 			}
@@ -650,11 +650,11 @@ if ($end_call > 0)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		}
 	}
-else 
+else
 	{
 	echo "<iframe src=\"qc_call_client_iframe.php?phone_number=$phone_number&phone_code=$phone_code&lead_id=$lead_id&list_id=$CLlist_id&stage=DISPLAY&submit_button=YES&user=$PHP_AUTH_USER&pass=$PHP_AUTH_PW&bgcolor=E6E6E6\" style=\"background-color:#FFEEFF;\" scrolling=\"auto\" frameborder=\"1\" allowtransparency=\"true\" id=\"vcFormIFrame\" name=\"qcFormIFrame\" width=\"540\" height=\"40\" STYLE=\"z-index:18\"> </iframe>\n";
 	//Not a "Submit" result, viewing the record (possibly with URL options such as those below which modify callback status but not record data)
-	if ($CBchangeUSERtoANY == 'YES') 
+	if ($CBchangeUSERtoANY == 'YES')
 		{
 		if($DB) echo __LINE__."\n";
 		### set vicidial_callbacks record to an ANYONE callback for this lead
@@ -664,7 +664,7 @@ else
 		echo "<BR>"._QXZ("vicidial_callback record changed to ANYONE")."<BR>\n";
         $qcchange='Y';
 		}
-	if ($CBchangeUSERtoUSER == 'YES') 
+	if ($CBchangeUSERtoUSER == 'YES')
 		{
         if($DB) echo __LINE__."\n";
 		### set vicidial_callbacks record to a different USERONLY callback record for this lead
@@ -674,7 +674,7 @@ else
 		echo "<BR>"._QXZ("vicidial_callback record user changed to")." $CBuser<BR>\n";
         $qcchange='Y';
 		}
-	if ($CBchangeANYtoUSER == 'YES') 
+	if ($CBchangeANYtoUSER == 'YES')
 		{
 		if($DB) echo __LINE__."\n";
 		### set vicidial_callbacks record to an USERONLY callback for this lead
@@ -684,7 +684,7 @@ else
 		echo "<BR>"._QXZ("vicidial_callback record changed to USERONLY, user").": $CBuser<BR>\n";
 		$qcchange='Y';
 		}
-	if ($CBchangeDATE == 'YES') 
+	if ($CBchangeDATE == 'YES')
 		{
 		if($DB) echo __LINE__."\n";
 		### change date/time of vicidial_callbacks record for this lead
@@ -696,7 +696,7 @@ else
 		}
         //QUALITY CONTROL LOGGING BEGIN - VIEW ONLY
         //If no changes have been made, record "view" of this record.
-	if ($qcchange != 'Y') 
+	if ($qcchange != 'Y')
 		{
 		if($DB) echo __LINE__."\n QCCHANGE != Y";
 		### insert a NEW record to the vicidial_closer_log table
@@ -725,7 +725,7 @@ else
 		$alts_output = '';
 		while ($alts_to_print > $c)
 			{
-			if($DB) 
+			if($DB)
 				{
 				echo __LINE__."\n";
 				}
@@ -849,7 +849,7 @@ else
 			$qc_agent_log .= "<td align='right'><font size=2>&nbsp;</td>";
 			$qc_agent_log .= "<td align='right'>&nbsp;</td></tr>\n";
 			}
-		else 
+		else
 			{ // CHANGE record
 			$detailtooltip=str_replace("\n", "&#10;", $row['details']); // tool tip line break &#10; and &#xD; both work in IE, but not firefox.
 			$qc_agent_log .= "<tr $bgcolor>";
@@ -937,7 +937,7 @@ else
 	$owner				= $row[33];
 	$entry_list_id		= $row[34];
 
-	if($DB) 
+	if($DB)
 		{
 		echo __LINE__."\n";
 		}
@@ -986,7 +986,7 @@ else
 	$comments=false;
 	while ($row_count > $o)
 		{
-        if (!$comments) 
+        if (!$comments)
 			{
 			echo "<tr><td colspan='2' align=center><b>"._QXZ("Comment History")."</b></td></tr>\n";
 			$comments=true;
@@ -996,7 +996,7 @@ else
 		$o++;
 		}
 
-	if ($comments) 
+	if ($comments)
 		{
 		echo "<tr><td align=center></td><td><hr></td></tr>\n";
 		}
@@ -1039,7 +1039,7 @@ else
         //This function is disabled in QC (statuses are generated from qc codes instead)
 	while ($CAMPstatuses_to_print > $o)
 		{
-		if($DB) 
+		if($DB)
 			{
 			echo __LINE__."\n";
 			}
@@ -1054,7 +1054,7 @@ else
 
 	if ($dispo == 'CBHOLD') {$CBhold_set++;}
 
-	if($DB) 
+	if($DB)
 		{
 		echo __LINE__."\n";
 		}
@@ -1086,7 +1086,7 @@ else
         //Added scheduled_callback regular statuses option
 	if ( ($dispo == 'CALLBK') or ($dispo == 'CBHOLD') || $scheduled_callback=='Y' )
 		{
-	if($DB) 
+	if($DB)
 		{
 		echo __LINE__."\n";
 		}
@@ -1255,7 +1255,7 @@ else
 		}
 	else
 		{
-		if($DB) 
+		if($DB)
 			{
 			echo __LINE__."\n";
 			}
@@ -1270,7 +1270,7 @@ else
 
 	if ($c > 0)
 		{
-		if($DB) 
+		if($DB)
 			{
 			echo __LINE__."\n";
 			}
@@ -1402,7 +1402,7 @@ else
 		$play_audio='<td align=left><font size=2> </font></td>';
 		if ( (preg_match('/ftp/i',$location)) or (preg_match('/http/i',$location)) )
 			{
-			if ($log_recording_access<1) 
+			if ($log_recording_access<1)
 				{
 				$play_audio = "<td align=left><font size=2> <audio controls preload=\"none\"> <source src ='$location' type='audio/wav' > <source src ='$location' type='audio/mpeg' >"._QXZ("No browser audio playback support")."</audio> </td>\n";
 				$location = "<a href=\"$location\">$locat</a>";
@@ -1464,7 +1464,7 @@ echo "<font size=0>\n\n\n<br><br><br>\n"._QXZ("script runtime").": $RUNtime "._Q
 </html>
 
 <?php
-if($DB) 
+if($DB)
 	{
     echo "<pre>"._QXZ("original_record").":<br>";
 	print_r($original_record);

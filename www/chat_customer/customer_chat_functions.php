@@ -154,7 +154,7 @@ if ($action=="send_message" && $chat_id) {
 	}
 }
 
-if ($action=="leave_chat" && $user && $chat_id) { 
+if ($action=="leave_chat" && $user && $chat_id) {
 	if (!$chat_member_name) {$chat_member_name="Customer";}
 	$del_stmt2="DELETE from vicidial_chat_participants where chat_id='$chat_id' and chat_member='$user'";
 	$del_rslt2=mysql_to_mysqli($del_stmt2, $link);
@@ -173,7 +173,7 @@ if ($action=="leave_chat" && $user && $chat_id) {
 				# USE SPECIAL DROP STATUS 'CDROP' FOR DROPPED CHATS WHERE NO AGENT RESPONDED TO CHAT
 				$upd_stmt="UPDATE vicidial_list set status='CDROP' where lead_id='$lead_id'";
 				$upd_rslt=mysql_to_mysqli($upd_stmt, $link);
-			
+
 				$ins_stmt="INSERT IGNORE INTO vicidial_chat_archive SELECT chat_id, chat_start_time, 'DROP', chat_creator, group_id, lead_id, transferring_agent, user_direct, user_direct_group_id From vicidial_live_chats where chat_id='$chat_id'";
 				$ins_rslt=mysql_to_mysqli($ins_stmt, $link);
 
@@ -191,7 +191,7 @@ if ($action=="leave_chat" && $user && $chat_id) {
 				$ins_alert_stmt="INSERT INTO vicidial_chat_log(poster, chat_member_name, message_time, message, chat_id, chat_level) SELECT '$chat_creator', full_name, now(), '$chat_member_name has left chat', '$chat_id', '1' from vicidial_users where user='$chat_creator'";
 				$ins_alert_rslt=mysql_to_mysqli($ins_alert_stmt, $link);
 			}
-		} 
+		}
 	}
 }
 
@@ -219,7 +219,7 @@ if ($action=="update_chat_window" && $chat_id) {
 		if(mysqli_num_rows($color_rslt)>0 && $use_agent_colors>0) {
 			$color_row=mysqli_fetch_array($color_rslt);
 			$color_array=array("#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000");
-			$chat_background_array=array("#$color_row[std_row1_background]", "#$color_row[std_row2_background]", "#$color_row[std_row3_background]", "#$color_row[std_row4_background]", "#$color_row[std_row5_background]", "#$color_row[frame_background]", "#$color_row[menu_background]"); 
+			$chat_background_array=array("#$color_row[std_row1_background]", "#$color_row[std_row2_background]", "#$color_row[std_row3_background]", "#$color_row[std_row4_background]", "#$color_row[std_row5_background]", "#$color_row[frame_background]", "#$color_row[menu_background]");
 #			switch ($color_row["web_logo"]) {
 #				case "default_new":
 #					$color_row["web_logo"]=".png";
@@ -227,7 +227,7 @@ if ($action=="update_chat_window" && $chat_id) {
 #				case "default_old";
 #					$color_row["web_logo"]=".gif";
 #					$filepath="vicidial";
-#					break;					
+#					break;
 #			}
 #			$web_logo=$color_row["web_logo"];
 		} else {
@@ -240,14 +240,14 @@ if ($action=="update_chat_window" && $chat_id) {
 #					case "default_old";
 #						$color_row["web_logo"]=".gif";
 #						$filepath="vicidial";
-#						break;						
+#						break;
 #				}
 #				$web_logo=$color_row["web_logo"];
 #			}
 			$color_array=array("#FF0000", "#0000FF", "#009900", "#990099", "#009999", "#666600", "#999999");
-			$chat_background_array=array("#FFCCCC", "#CCCCFF", "#CCFFCC", "#FFCCFF", "#CCFFFF", "#CCCC99", "#CCCCCC"); 
+			$chat_background_array=array("#FFCCCC", "#CCCCFF", "#CCFFCC", "#FFCCFF", "#CCFFFF", "#CCCC99", "#CCCCCC");
 		}
-		
+
 #		if (!preg_match("/\.(jpg|gif|png|bmp)$/", $web_logo)) {$web_logo.=".png";}
 
 		$chat_status="<font color='#900'>INACTIVE</font>";
@@ -259,13 +259,13 @@ if ($action=="update_chat_window" && $chat_id) {
 #		echo "<font class='chat_title bold'>"._QXZ("Current chat").": <font color='#900'>INACTIVE</font></font>\n";
 #		echo "</td>\n";
 #		echo "<td align='right' width='50%' valign='top'>\n";
-#		if (file_exists("../$filepath/vicidial_admin_web_logo$web_logo")) 
+#		if (file_exists("../$filepath/vicidial_admin_web_logo$web_logo"))
 #			{
 #			echo "<img class='small_logo' src='/$filepath/vicidial_admin_web_logo$web_logo'>\n";
 #			}
 #		else
 #			{
-#			if (file_exists("./images/vicidial_admin_web_logo$web_logo")) 
+#			if (file_exists("./images/vicidial_admin_web_logo$web_logo"))
 #				{
 #				echo "<img class='small_logo' src='images/vicidial_admin_web_logo$web_logo'>\n";
 #				}
@@ -280,13 +280,13 @@ if ($action=="update_chat_window" && $chat_id) {
 		$rslt=mysql_to_mysqli($stmt, $link);
 		while ($row=mysqli_fetch_row($rslt)) {
 			$chat_color_key=array_search("$row[4]", $chat_members);
-			$row[2]=preg_replace('/\n/', '<BR/>', $row[2]);	
+			$row[2]=preg_replace('/\n/', '<BR/>', $row[2]);
 			echo "<li bgcolor='$chat_background_array[$chat_color_key]'><font color='$color_array[$chat_color_key]' class='chat_message bold'>$row[5]</font> <font class='chat_timestamp bold'>($row[3])</font> - <font class='chat_message ".$style_array[$row[6]]."'>$row[2]</font></li>\n";
 		}
 
 	} else {
 		$status_row=mysqli_fetch_row($status_rslt);
-		
+
 		## Modify user's ping date to verify they are still participating
 		if ($user && $keepalive) {
 			$upd_stmt="UPDATE vicidial_chat_participants set ping_date=now() where chat_member='$user' and chat_id='$chat_id'";
@@ -304,7 +304,7 @@ if ($action=="update_chat_window" && $chat_id) {
 				if(mysqli_num_rows($color_rslt)>0 && $use_agent_colors>0) {
 					$color_row=mysqli_fetch_array($color_rslt);
 					$color_array=array("#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000");
-					$chat_background_array=array("#$color_row[std_row1_background]", "#$color_row[std_row2_background]", "#$color_row[std_row3_background]", "#$color_row[std_row4_background]", "#$color_row[std_row5_background]", "#$color_row[frame_background]", "#$color_row[menu_background]"); 
+					$chat_background_array=array("#$color_row[std_row1_background]", "#$color_row[std_row2_background]", "#$color_row[std_row3_background]", "#$color_row[std_row4_background]", "#$color_row[std_row5_background]", "#$color_row[frame_background]", "#$color_row[menu_background]");
 #					switch ($color_row["web_logo"]) {
 #						case "default_new":
 #							$color_row["web_logo"]=".png";
@@ -312,7 +312,7 @@ if ($action=="update_chat_window" && $chat_id) {
 #						case "default_old";
 #							$color_row["web_logo"]=".gif";
 #							$filepath="vicidial";
-#							break;					
+#							break;
 #					}
 #					$web_logo=$color_row["web_logo"];
 				} else {
@@ -326,14 +326,14 @@ if ($action=="update_chat_window" && $chat_id) {
 #								$color_row["web_logo"]=".gif";
 #								$filepath="vicidial";
 #								break;
-#								
+#
 #						}
 #						$web_logo=$color_row["web_logo"];
 #					}
 					$color_array=array("#FF0000", "#0000FF", "#009900", "#990099", "#009999", "#666600", "#999999");
-					$chat_background_array=array("#FFCCCC", "#CCCCFF", "#CCFFCC", "#FFCCFF", "#CCFFFF", "#CCCC99", "#CCCCCC"); 
+					$chat_background_array=array("#FFCCCC", "#CCCCFF", "#CCFFCC", "#FFCCFF", "#CCFFFF", "#CCCC99", "#CCCCCC");
 				}
-				
+
 #				if (!preg_match("/\.(jpg|gif|png|bmp)$/", $web_logo)) {$web_logo.=".png";}
 
 				$chat_status="<font color='#090'>ACTIVE</font>";
@@ -360,7 +360,7 @@ if ($action=="update_chat_window" && $chat_id) {
 				$rslt=mysql_to_mysqli($stmt, $link);
 				while ($row=mysqli_fetch_row($rslt)) {
 					$chat_color_key=array_search("$row[4]", $chat_members);
-					$row[2]=preg_replace('/\n/', '<BR/>', $row[2]);	
+					$row[2]=preg_replace('/\n/', '<BR/>', $row[2]);
 					echo "<tr><td bgcolor='$chat_background_array[$chat_color_key]'><li><font color='$color_array[$chat_color_key]' class='chat_message bold'>$row[5]</font> <font class='chat_timestamp bold'>($row[3])</font> - <font class='chat_message ".$style_array[$row[6]]."'>$row[2]</font></li></td></tr>\n";
 				}
 				echo "</table>\n";
@@ -373,7 +373,7 @@ if ($action=="update_chat_window" && $chat_id) {
 				$current_messages=mysqli_num_rows($rslt);
 				echo "<input type='hidden' id='current_message_count' name='current_message_count' value='$current_messages'>\n";
 
-			} else {	
+			} else {
 				$chat_status="<font color='#900'>INACTIVE</font>";
 				echo "$chat_status|";
 
@@ -385,10 +385,10 @@ if ($action=="update_chat_window" && $chat_id) {
 					if(mysqli_num_rows($color_rslt)>0 && $use_agent_colors>0) {
 						$color_row=mysqli_fetch_array($color_rslt);
 						$color_array=array("#000000", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000");
-						$chat_background_array=array("#$color_row[std_row1_background]", "#$color_row[std_row2_background]", "#$color_row[std_row3_background]", "#$color_row[std_row4_background]", "#$color_row[std_row5_background]", "#$color_row[frame_background]", "#$color_row[menu_background]"); 
+						$chat_background_array=array("#$color_row[std_row1_background]", "#$color_row[std_row2_background]", "#$color_row[std_row3_background]", "#$color_row[std_row4_background]", "#$color_row[std_row5_background]", "#$color_row[frame_background]", "#$color_row[menu_background]");
 					} else {
 						$color_array=array("#FF0000", "#0000FF", "#009900", "#990099", "#009999", "#666600", "#999999");
-						$chat_background_array=array("#FFCCCC", "#CCCCFF", "#CCFFCC", "#FFCCFF", "#CCFFFF", "#CCCC99", "#CCCCCC"); 
+						$chat_background_array=array("#FFCCCC", "#CCCCFF", "#CCFFCC", "#FFCCFF", "#CCFFFF", "#CCCC99", "#CCCCCC");
 					}
 				}
 
@@ -413,7 +413,7 @@ if ($action=="update_chat_window" && $chat_id) {
 				$rslt=mysql_to_mysqli($stmt, $link);
 				while ($row=mysqli_fetch_row($rslt)) {
 					$chat_color_key=array_search("$row[4]", $chat_members);
-					$row[2]=preg_replace('/\n/', '<BR/>', $row[2]);	
+					$row[2]=preg_replace('/\n/', '<BR/>', $row[2]);
 					echo "<tr><td bgcolor='$chat_background_array[$chat_color_key]'><li><font color='$color_array[$chat_color_key]' class='chat_message bold'>$row[5]</font> <font class='chat_timestamp bold'>($row[3])</font> - <font class='chat_message ".$style_array[$row[6]]."'>$row[2]</font></li></td></tr>\n";
 				}
 				echo "</table>\n";
@@ -448,10 +448,10 @@ if ($action=="update_chat_window" && $chat_id) {
 #						case "default_old";
 #							$color_row["web_logo"]=".gif";
 #							$filepath="vicidial";
-#							break;			
+#							break;
 #					}
 #					$web_logo=$color_row["web_logo"];
-#				}				
+#				}
 #				if (!preg_match("/\.(jpg|gif|png|bmp)$/", $web_logo)) {$web_logo.=".png";}
 
 
@@ -478,18 +478,18 @@ if ($action=="update_chat_window" && $chat_id) {
 					echo "<font class='chat_title bold'>"._QXZ("There are")." <font color='#FF0000'>$people_ahead_of_you</font> "._QXZ("customer(s) in chat queue ahead of you")."</font>";
 				} else {
 					echo "<font class='chat_title bold' color='#FF0000'>"._QXZ("You are the next customer in line")."</font>";
-				}		
-				
+				}
+
 #				echo "</td>\n";
 #				echo "<td align='right' width='50%' valign='top'>\n";
 #				if (file_exists("../$filepath/vicidial_admin_web_logo$web_logo")) {
 #					echo "<img class='small_logo' src='/$filepath/vicidial_admin_web_logo$web_logo'>\n";
 #				} else {
-#					if (file_exists("./images/vicidial_admin_web_logo$web_logo")) 
+#					if (file_exists("./images/vicidial_admin_web_logo$web_logo"))
 #						{
 #						echo "<img class='small_logo' src='images/vicidial_admin_web_logo$web_logo'>\n";
 #						}
-#				} 
+#				}
 #				echo "</td>\n";
 #				echo "</tr>\n</table>\n";
 			} else {

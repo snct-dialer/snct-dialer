@@ -3,14 +3,14 @@
 # AST_agent_daily_SPH.pl
 #
 # This script is designed to gather stats for all agent activity over the course
-# of a week and print it in an ASCI text file to be placed 
+# of a week and print it in an ASCI text file to be placed
 # on a web server for viewing.
 #
 # This script assumes a work day to be from 2AM to 2AM
 #
 # Place in the crontab and run every night at 02:00AM for the previous day's stats
 # 0 2 * * * /home/cron/AST_agent_daily_SPH.pl
-# 
+#
 # Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -187,7 +187,7 @@ open(Dout, ">$PATHweb/vicidial/agent_reports/$Doutfile")
 if (!$VARDB_port) {$VARDB_port='3306';}
 
 
-use DBI;	  
+use DBI;
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
@@ -230,20 +230,20 @@ while ($sthArows > $rec_count)
 $sthA->finish();
 
 
-$Gsph[0]='   0'; $Gsph[1]='   0'; $Gsph[2]='   0'; $Gsph[3]='   0'; $Gsph[4]='   0'; $Gsph[5]='   0'; $Gsph[6]='   0'; 
-$Gsales[0]=0; $Gsales[1]=0; $Gsales[2]=0; $Gsales[3]=0; $Gsales[4]=0; $Gsales[5]=0; $Gsales[6]=0; 
+$Gsph[0]='   0'; $Gsph[1]='   0'; $Gsph[2]='   0'; $Gsph[3]='   0'; $Gsph[4]='   0'; $Gsph[5]='   0'; $Gsph[6]='   0';
+$Gsales[0]=0; $Gsales[1]=0; $Gsales[2]=0; $Gsales[3]=0; $Gsales[4]=0; $Gsales[5]=0; $Gsales[6]=0;
 $Ghours[0]='  0.0'; $Ghours[1]='  0.0'; $Ghours[2]='  0.0'; $Ghours[3]='  0.0'; $Ghours[4]='  0.0'; $Ghours[5]='  0.0'; $Ghours[6]='  0.0';
-$GDsph[0]=0; $GDsph[1]=0; $GDsph[2]=0; $GDsph[3]=0; $GDsph[4]=0; $GDsph[5]=0; $GDsph[6]=0; 
-$GDsales[0]=0; $GDsales[1]=0; $GDsales[2]=0; $GDsales[3]=0; $GDsales[4]=0; $GDsales[5]=0; $GDsales[6]=0; 
+$GDsph[0]=0; $GDsph[1]=0; $GDsph[2]=0; $GDsph[3]=0; $GDsph[4]=0; $GDsph[5]=0; $GDsph[6]=0;
+$GDsales[0]=0; $GDsales[1]=0; $GDsales[2]=0; $GDsales[3]=0; $GDsales[4]=0; $GDsales[5]=0; $GDsales[6]=0;
 $GDhours[0]=0; $GDhours[1]=0; $GDhours[2]=0; $GDhours[3]=0; $GDhours[4]=0; $GDhours[5]=0; $GDhours[6]=0;
 $GWEEKsph=0; $GWEEKhours=0; $GWEEKsales=0;
 $GMONTHsph=0; $GMONTHhours=0; $GMONTHsales=0;
 
-$TOTsph[0]='   0'; $TOTsph[1]='   0'; $TOTsph[2]='   0'; $TOTsph[3]='   0'; $TOTsph[4]='   0'; $TOTsph[5]='   0'; $TOTsph[6]='   0'; 
-$TOTsales[0]=0; $TOTsales[1]=0; $TOTsales[2]=0; $TOTsales[3]=0; $TOTsales[4]=0; $TOTsales[5]=0; $TOTsales[6]=0; 
+$TOTsph[0]='   0'; $TOTsph[1]='   0'; $TOTsph[2]='   0'; $TOTsph[3]='   0'; $TOTsph[4]='   0'; $TOTsph[5]='   0'; $TOTsph[6]='   0';
+$TOTsales[0]=0; $TOTsales[1]=0; $TOTsales[2]=0; $TOTsales[3]=0; $TOTsales[4]=0; $TOTsales[5]=0; $TOTsales[6]=0;
 $TOThours[0]='  0.0'; $TOThours[1]='  0.0'; $TOThours[2]='  0.0'; $TOThours[3]='  0.0'; $TOThours[4]='  0.0'; $TOThours[5]='  0.0'; $TOThours[6]='  0.0';
-$TOTDsph[0]=0; $TOTDsph[1]=0; $TOTDsph[2]=0; $TOTDsph[3]=0; $TOTDsph[4]=0; $TOTDsph[5]=0; $TOTDsph[6]=0; 
-$TOTDsales[0]=0; $TOTDsales[1]=0; $TOTDsales[2]=0; $TOTDsales[3]=0; $TOTDsales[4]=0; $TOTDsales[5]=0; $TOTDsales[6]=0; 
+$TOTDsph[0]=0; $TOTDsph[1]=0; $TOTDsph[2]=0; $TOTDsph[3]=0; $TOTDsph[4]=0; $TOTDsph[5]=0; $TOTDsph[6]=0;
+$TOTDsales[0]=0; $TOTDsales[1]=0; $TOTDsales[2]=0; $TOTDsales[3]=0; $TOTDsales[4]=0; $TOTDsales[5]=0; $TOTDsales[6]=0;
 $TOTDhours[0]=0; $TOTDhours[1]=0; $TOTDhours[2]=0; $TOTDhours[3]=0; $TOTDhours[4]=0; $TOTDhours[5]=0; $TOTDhours[6]=0;
 $TOTWEEKsph=0; $TOTWEEKhours=0; $TOTWEEKsales=0;
 $TOTMONTHsph=0; $TOTMONTHhours=0; $TOTMONTHsales=0;
@@ -379,7 +379,7 @@ foreach (@Duser)
 	$GMONTHhours = ($GMONTHhours + $MONTHhours);
 	$TOTMONTHhours = ($TOTMONTHhours + $MONTHhours);
 
-	print Dout "$shipdate|$Dname[$i]|$Duser[$i]|$Dhours[0]|$Dsph[0]|$Dhours[1]|$Dsph[1]|$Dhours[2]|$Dsph[2]|$Dhours[3]|$Dsph[3]|$Dhours[4]|$Dsph[4]|$Dhours[5]|$Dsph[5]|$Dhours[6]|$Dsph[6]|$WEEKhours|$WEEKsph|$MONTHhours|$MONTHsph|$Dgroup[$i]\n"; 
+	print Dout "$shipdate|$Dname[$i]|$Duser[$i]|$Dhours[0]|$Dsph[0]|$Dhours[1]|$Dsph[1]|$Dhours[2]|$Dsph[2]|$Dhours[3]|$Dsph[3]|$Dhours[4]|$Dsph[4]|$Dhours[5]|$Dsph[5]|$Dhours[6]|$Dsph[6]|$WEEKhours|$WEEKsph|$MONTHhours|$MONTHsph|$Dgroup[$i]\n";
 
 	### only print to ASCII fixed-length file if week-to-date and month-to-date hours > 0
 	if ( ($WEEKhours > 0) || ($MONTHhours > 0) )
@@ -408,7 +408,7 @@ foreach (@Duser)
 	$i++;
 
 	### BEGIN GROUP SUMMARY STATS
-	if ($Dgroup[$i] !~ /^$Dprevgroup$/) 
+	if ($Dgroup[$i] !~ /^$Dprevgroup$/)
 		{
 		$prevday = $SETprevday;
 
@@ -441,7 +441,7 @@ foreach (@Duser)
 		else
 			{$GMONTHsph = 0;}
 
-		print Dout "$shipdate|TOTAL $Dprevgroup||$GDhours[0]|$GDsph[0]|$GDhours[1]|$GDsph[1]|$GDhours[2]|$GDsph[2]|$GDhours[3]|$GDsph[3]|$GDhours[4]|$GDsph[4]|$GDhours[5]|$GDsph[5]|$GDhours[6]|$GDsph[6]|$GWEEKhours|$GWEEKsph|$GMONTHhours|$GMONTHsph|\n"; 
+		print Dout "$shipdate|TOTAL $Dprevgroup||$GDhours[0]|$GDsph[0]|$GDhours[1]|$GDsph[1]|$GDhours[2]|$GDsph[2]|$GDhours[3]|$GDsph[3]|$GDhours[4]|$GDsph[4]|$GDhours[5]|$GDsph[5]|$GDhours[6]|$GDsph[6]|$GWEEKhours|$GWEEKsph|$GMONTHhours|$GMONTHsph|\n";
 
 			$GWEEKhours =	sprintf("%.0f", $GWEEKhours);
 			$GWEEKhours =	sprintf("%5s", $GWEEKhours); while(length($GWEEKhours)>5) {chop($GWEEKhours);}
@@ -505,7 +505,7 @@ else
 	{$TOTMONTHsph = 0;}
 
 
-print Dout "$shipdate|TOTAL||$TOTDhours[0]|$TOTDsph[0]|$TOTDhours[1]|$TOTDsph[1]|$TOTDhours[2]|$TOTDsph[2]|$TOTDhours[3]|$TOTDsph[3]|$TOTDhours[4]|$TOTDsph[4]|$TOTDhours[5]|$TOTDsph[5]|$TOTDhours[6]|$TOTDsph[6]|$TOTWEEKhours|$TOTWEEKsph|$TOTMONTHhours|$TOTMONTHsph|\n"; 
+print Dout "$shipdate|TOTAL||$TOTDhours[0]|$TOTDsph[0]|$TOTDhours[1]|$TOTDsph[1]|$TOTDhours[2]|$TOTDsph[2]|$TOTDhours[3]|$TOTDsph[3]|$TOTDhours[4]|$TOTDsph[4]|$TOTDhours[5]|$TOTDsph[5]|$TOTDhours[6]|$TOTDsph[6]|$TOTWEEKhours|$TOTWEEKsph|$TOTMONTHhours|$TOTMONTHsph|\n";
 
 	$TOTWEEKhours =	sprintf("%.0f", $TOTWEEKhours);
 	$TOTWEEKhours =	sprintf("%5s", $TOTWEEKhours); while(length($TOTWEEKhours)>5) {chop($TOTWEEKhours);}
@@ -639,10 +639,10 @@ exit;
 	$login_time =	sprintf("%9s", $TIME_HMS);
 
 
-	
-	print Dout "$shipdate|$Dname|$Duser|$Dcalls|$Dtalk|$Dpause|$Dwait|$Ddispo|$Dactive|$Dlogin_time|$Dfirst_time|$Dlast_time\n"; 
-	print out "$name$user$calls$talk$pause$wait$dispo$active$login_time$first_time$last_time\n"; 
-	print "$name$user$calls$talk$pause$wait$dispo$active$login_time$first_time$last_time\n"; 
+
+	print Dout "$shipdate|$Dname|$Duser|$Dcalls|$Dtalk|$Dpause|$Dwait|$Ddispo|$Dactive|$Dlogin_time|$Dfirst_time|$Dlast_time\n";
+	print out "$name$user$calls$talk$pause$wait$dispo$active$login_time$first_time$last_time\n";
+	print "$name$user$calls$talk$pause$wait$dispo$active$login_time$first_time$last_time\n";
 
 
 

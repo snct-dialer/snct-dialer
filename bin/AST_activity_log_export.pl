@@ -2,9 +2,9 @@
 #
 # AST_activity_log_export.pl                version: 2.14
 #
-# This script is designed to gather specific fields from the vicidial_agent_log 
+# This script is designed to gather specific fields from the vicidial_agent_log
 # and recording_log tables, as well as recently changed vicidial_list records and
-# post them to a directory. 
+# post them to a directory.
 #
 # /usr/share/astguiclient/AST_activity_log_export.pl --campaign=GOODB-GROUP1-GROUP3-GROUP4-SPECIALS-DNC_BEDS --output-format=tab-basic --debug --filename=BEDSsaleDATETIME.txt --email-list=test@gmail.com --email-sender=test@test.com
 #
@@ -201,7 +201,7 @@ if (length($ARGV[0])>1)
 				{$campaignSQL='';}
 			else
 				{
-				if ($campaignSQL =~ /-/) 
+				if ($campaignSQL =~ /-/)
 					{
 					$campaignSQL =~ s/-/','/gi;
 					}
@@ -216,7 +216,7 @@ if (length($ARGV[0])>1)
 			$NOTcampaign = $data_in[1];
 			$NOTcampaign =~ s/ .*$//gi;
 			$NOTcampaignSQL = $NOTcampaign;
-			if ($NOTcampaignSQL =~ /-/) 
+			if ($NOTcampaignSQL =~ /-/)
 				{
 				$NOTcampaignSQL =~ s/-/','/gi;
 				}
@@ -348,11 +348,11 @@ foreach(@conf)
 # Customized Variables
 $server_ip = $VARserver_ip;		# Asterisk server IP
 
-if ($output_format =~ /^tab-basic$/) 
+if ($output_format =~ /^tab-basic$/)
 	{$DLT = "\t";   $txt='.txt';   if (!$Q) {print "---- tab-basic ----\n";}}
-if ($output_format =~ /^pipe-basic$/) 
+if ($output_format =~ /^pipe-basic$/)
 	{$DLT = "|";   $txt='.txt';   if (!$Q) {print "---- pipe-basic ----\n";}}
-if ($output_format =~ /^csv-basic$/) 
+if ($output_format =~ /^csv-basic$/)
 	{$DLT = ",";   $txt='.csv';   if (!$Q) {print "---- ncad14csv ----\n";}}
 
 if (length($campaignSQL) < 2)
@@ -471,22 +471,22 @@ while ($sthArows > $rec_count)
 	$status =			$aryA[9];
 	$agent_log_id =		$aryA[10];
 
-	if ($output_format =~ /^pipe-basic$/) 
+	if ($output_format =~ /^pipe-basic$/)
 		{
 		$str = "$user|$event_time|$lead_id|$campaign_id|$pause_sec|$wait_sec|$talk_sec|$dispo_sec|$dead_sec|$status|$agent_log_id\n";
 		}
 
-	if ($output_format =~ /^tab-basic$/) 
+	if ($output_format =~ /^tab-basic$/)
 		{
 		$str = "$user\t$event_time\t$lead_id\t$campaign_id\t$pause_sec\t$wait_sec\t$talk_sec\t$dispo_sec\t$dead_sec\t$status\t$agent_log_id\n";
 		}
 
-	if ($output_format =~ /^csv-basic$/) 
-		{		
+	if ($output_format =~ /^csv-basic$/)
+		{
 		$str = "$user,$event_time,$lead_id,$campaign_id,$pause_sec,$wait_sec,$talk_sec,$dispo_sec,$dead_sec,$status,$agent_log_id\n";
 		}
 
-	print VALout "$str"; 
+	print VALout "$str";
 	if ($DBX) {print "$str\n";}
 
 	if ($DB > 0)
@@ -538,22 +538,22 @@ while ($sthArows > $rec_count)
 	$recording_id =		$aryA[3];
 	$start_time =		$aryA[4];
 
-	if ($output_format =~ /^pipe-basic$/) 
+	if ($output_format =~ /^pipe-basic$/)
 		{
 		$str = "$user|$location|$lead_id|$recording_id|$start_time\n";
 		}
 
-	if ($output_format =~ /^tab-basic$/) 
+	if ($output_format =~ /^tab-basic$/)
 		{
 		$str = "$user\t$location\t$lead_id\t$recording_id\t$start_time\n";
 		}
 
-	if ($output_format =~ /^csv-basic$/) 
-		{		
+	if ($output_format =~ /^csv-basic$/)
+		{
 		$str = "$user,$location,$lead_id,$recording_id,$start_time\n";
 		}
 
-	print RECout "$str"; 
+	print RECout "$str";
 	if ($DBX) {print "$str\n";}
 
 	if ($DB > 0)
@@ -636,22 +636,22 @@ while ($sthArows > $rec_count)
 	$owner =					$aryA[33];   if ($quoted_vl > 0) {$owner = '"'.$owner.'"';}
 	$entry_list_id =			$aryA[34];   if ($quoted_vl > 0) {$entry_list_id = '"'.$entry_list_id.'"';}
 
-	if ($output_format =~ /^pipe-basic$/) 
+	if ($output_format =~ /^pipe-basic$/)
 		{
 		$str = "$lead_id|$entry_date|$modify_date|$status|$user|$vendor_lead_code|$source_id|$list_id|$gmt_offset_now|$called_since_last_reset|$phone_code|$phone_number|$title|$first_name|$middle_initial|$last_name|$address1|$address2|$address3|$city|$state|$province|$postal_code|$country_code|$gender|$date_of_birth|$alt_phone|$email|$security_phrase|$comments|$called_count|$last_local_call_time|$rank|$owner|$entry_list_id\n";
 		}
 
-	if ($output_format =~ /^tab-basic$/) 
+	if ($output_format =~ /^tab-basic$/)
 		{
 		$str = "$lead_id\t$entry_date\t$modify_date\t$status\t$user\t$vendor_lead_code\t$source_id\t$list_id\t$gmt_offset_now\t$called_since_last_reset\t$phone_code\t$phone_number\t$title\t$first_name\t$middle_initial\t$last_name\t$address1\t$address2\t$address3\t$city\t$state\t$province\t$postal_code\t$country_code\t$gender\t$date_of_birth\t$alt_phone\t$email\t$security_phrase\t$comments\t$called_count\t$last_local_call_time\t$rank\t$owner\t$entry_list_id\n";
 		}
 
-	if ($output_format =~ /^csv-basic$/) 
-		{		
+	if ($output_format =~ /^csv-basic$/)
+		{
 		$str = "$lead_id,$entry_date,$modify_date,$status,$user,$vendor_lead_code,$source_id,$list_id,$gmt_offset_now,$called_since_last_reset,$phone_code,$phone_number,$title,$first_name,$middle_initial,$last_name,$address1,$address2,$address3,$city,$state,$province,$postal_code,$country_code,$gender,$date_of_birth,$alt_phone,$email,$security_phrase,\"$comments\",$called_count,$last_local_call_time,$rank,$owner,$entry_list_id\n";
 		}
 
-	print VLout "$str"; 
+	print VLout "$str";
 	if ($DBX) {print "$str\n";}
 
 	if ($DB > 0)
@@ -701,7 +701,7 @@ if ( (length($email_sender)>5) && (length($email_list) > 3) )
 	}
 
 
-# FTP overrides- 
+# FTP overrides-
 #	$VARREPORT_host =	'10.0.0.4';
 #	$VARREPORT_port =	'21';
 #	$VARREPORT_user =	'vici';
@@ -729,7 +729,7 @@ $secY = time();
 $secZ = ($secY - $secX);
 $secZm = ($secZ /60);
 
-if (!$Q) 
+if (!$Q)
 	{
 	print "PROCESS COMPLETE! ($secZ seconds) \n";
 	print "AGENT FILE:     $TOTAL_VAL ($VALoutfile) \n";

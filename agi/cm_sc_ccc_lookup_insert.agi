@@ -1,10 +1,10 @@
 #!/usr/bin/perl
 #
 # cm_sc_ccc_lookup_insert.agi version 2.14
-# 
+#
 # Designed to work with Call Menus to send a URL defined in a Settings Container
 # for a call with a call_id associated with it for calls coming from an external
-# VICIdial system on a private IAX trunk so that the lead information can be 
+# VICIdial system on a private IAX trunk so that the lead information can be
 # copied to this destination cluster.
 #
 # If container is not found, call will go to the 'C' option in the call menu
@@ -121,7 +121,7 @@ $AGI = new Asterisk::AGI;
 
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 	{
 	chomp;
 	last unless length($_);
@@ -178,11 +178,11 @@ else
 	print "SET PRIORITY 1\n";
 		$result = <STDIN>;
 		checkresult($result);
-	
+
 	exit;
 	}
 
-if ($exit_no_wget > 0) 
+if ($exit_no_wget > 0)
 	{
 	if ($AGILOG) {$agi_string = "wget not found, exiting the cm_sc_ccc_lookup_insert.agi app, transferring call to D @ $context";   &agi_output;}
 	print "SET CONTEXT $context\n";
@@ -194,7 +194,7 @@ if ($exit_no_wget > 0)
 	print "SET PRIORITY 1\n";
 		$result = <STDIN>;
 		checkresult($result);
-	
+
 	exit;
 	}
 
@@ -238,7 +238,7 @@ if (length($ARGV[0])>1)
 		if ($AGILOG) {$agi_string = "$i|$ARGV[$i]";   &agi_output;}
 		$i++;
 		}
-	
+
 	### list of command-line array arguments:
 	@ARGV_vars = split(/---/, $ARGV[0]);
 
@@ -266,7 +266,7 @@ else
 	$sthA->finish();
 	}
 
-if ($no_container > 0) 
+if ($no_container > 0)
 	{
 	if ($AGILOG) {$agi_string = "container_id not set($container_id|$no_container), exiting the cm_sc_ccc_lookup_insert.agi app, transferring call to C @ $context";   &agi_output;}
 	print "SET CONTEXT $context\n";
@@ -278,7 +278,7 @@ if ($no_container > 0)
 	print "SET PRIORITY 1\n";
 		$result = <STDIN>;
 		checkresult($result);
-	
+
 	exit;
 	}
 
@@ -330,7 +330,7 @@ foreach(@Wdoc)
 	$Wdocline_cat .= "$Wdocline";
 	$i++;
 	}
-if (length($Wdocline_cat) < 1) 
+if (length($Wdocline_cat) < 1)
 	{
 	$external_found=0;
 	$Wdocline_cat='<RESPONSE EMPTY>';
@@ -370,12 +370,12 @@ if ( (length($Wdocline_cat) > 29) && ($Wdocline_cat !~ /ERROR: ccc_lead_info /) 
 	$LEADrank =					$lead_data[28];
 	$LEADowner =				$lead_data[29];
 
-	if (length($LEADlist_id) < 2) 
+	if (length($LEADlist_id) < 2)
 		{$external_found=0;}
 	else
 		{
 		# insert lead into local system
-		if (length($local_list_id) > 1) 
+		if (length($local_list_id) > 1)
 			{$LEADlist_id = $local_list_id;}
 
 		$stmtA = "INSERT INTO vicidial_list SET status=\"$LEADstatus\",user=\"$LEADuser\",vendor_lead_code=\"$LEADvendor_lead_code\",source_id=\"$LEADsource_id\",list_id=\"$LEADlist_id\",gmt_offset_now=\"$LEADgmt_offset_now\",phone_code=\"$LEADphone_code\",phone_number=\"$LEADphone_number\",title=\"$LEADtitle\",first_name=\"$LEADfirst_name\",middle_initial=\"$LEADmiddle_initial\",last_name=\"$LEADlast_name\",address1=\"$LEADaddress1\",address2=\"$LEADaddress2\",address3=\"$LEADaddress3\",city=\"$LEADcity\",state=\"$LEADstate\",province=\"$LEADprovince\",postal_code=\"$LEADpostal_code\",country_code=\"$LEADcountry_code\",gender=\"$LEADgender\",date_of_birth=\"$LEADdate_of_birth\",alt_phone=\"$LEADalt_phone\",email=\"$LEADemail\",security_phrase=\"$LEADsecurity_phrase\",comments=\"$LEADcomments\",called_count=\"$LEADcalled_count\",last_local_call_time=\"$LEADlast_local_call_time\",rank=\"$LEADrank\",owner=\"$LEADowner\";";
@@ -396,7 +396,7 @@ if ( (length($Wdocline_cat) > 29) && ($Wdocline_cat !~ /ERROR: ccc_lead_info /) 
 		$YqueryCID = "Y$CIDdate$PADlead_id";
 		$callerid = $YqueryCID;
 		$VCcallerid = $YqueryCID;
-		### set the callerid 
+		### set the callerid
 		$Ynewcallerid = "\"$YqueryCID <$LEADphone_number>\"";
 		$AGI->set_callerid($Ynewcallerid);
 		if ($AGILOG) {$agi_string = "callerID changed: $Ynewcallerid";   &agi_output;}
@@ -423,7 +423,7 @@ foreach(@Wfile)
 	$Wfileline_cat .= "$Wfileline";
 	$i++;
 	}
-if (length($Wfileline_cat)<1) 
+if (length($Wfileline_cat)<1)
 	{$Wfileline_cat='<HEADER EMPTY>';}
 
 
@@ -485,27 +485,27 @@ $agi_string='';
 }
 
 
-sub checkresult 
+sub checkresult
 	{
 	my ($res) = @_;
 	my $retval;
 	$tests++;
 	chomp $res;
-	if ($res =~ /^200/) 
+	if ($res =~ /^200/)
 		{
 		$res =~ /result=(-?\d+)/;
-		if (!length($1)) 
+		if (!length($1))
 			{
 		#	print STDERR "FAIL ($res)\n";
 			$fail++;
-			} 
-		else 
+			}
+		else
 			{
 		#	print STDERR "PASS ($1)\n";
 			$pass++;
 			}
-		} 
-	else 
+		}
+	else
 		{
 	#	print STDERR "FAIL (unexpected result '$res')\n";
 		$fail++;

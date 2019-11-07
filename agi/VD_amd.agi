@@ -6,7 +6,7 @@
 # it's proper destination, or when agent sends to VM message
 #
 # You need to put lines similar to those below in your extensions.conf file:
-# 
+#
 # ; VICIDIAL_auto_dialer transfer script AMD with Load Balanced:
 # exten => 8369,1,AGI(call_log.agi,${EXTEN})
 # exten => 8369,2,(AMD),AMD
@@ -15,7 +15,7 @@
 # exten => 8369,5,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
 # exten => 8369,6,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
 # exten => 8369,7,Hangup
-# 
+#
 # exten => 8320,1,AGI(VD_amd.agi,${EXTEN}-----YES)
 # exten => 8320,2,Hangup
 # exten => _8320*.,1,AGI(VD_amd.agi,${EXTEN}-----YES)
@@ -126,7 +126,7 @@ use Time::Local;
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
 
-  
+
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
     or die "Couldn't connect to database: " . DBI->errstr;
 
@@ -167,7 +167,7 @@ $sthA->finish();
 ### begin parsing run-time options ###
 if (length($ARGV[0])>1)
 	{
-	if ($AGILOG) 
+	if ($AGILOG)
 		{$agi_string = "Perl Environment Dump:";   &agi_output;}
 	$i=0;
 	while ($#ARGV >= $i)
@@ -176,7 +176,7 @@ if (length($ARGV[0])>1)
 		if ($AGILOG) {$agi_string = "$i|$ARGV[$i]";   &agi_output;}
 		$i++;
 		}
-	
+
 	### list of command-line array arguments:
 	@ARGV_vars = split(/-----/, $ARGV[0]);
 	$CLI_exten =		$ARGV_vars[0];
@@ -185,7 +185,7 @@ if (length($ARGV[0])>1)
 
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 	{
 	chomp;
 	last unless length($_);
@@ -240,7 +240,7 @@ if ( (
 
 if ($AGILOG) {$agi_string = "AGI Environment Dump:";   &agi_output;}
 
-foreach $i (sort keys %AGI) 
+foreach $i (sort keys %AGI)
 	{
 	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
 	}
@@ -289,8 +289,8 @@ if ($A)
 # AAAAA AMD results: |AMD_PERSON|AMD_HUMAN-300-300|
 # AAAAA AMD results: |AMD_MACHINE|AMD_LONGGREETING-1500-1500|
 # Asterisk 1.4.X:
-# AAAAA AMD results: |HUMAN|HUMAN-1000-1000|0000000000| 
-# AAAAA AMD results: |MACHINE|MAXWORDS-4-4|0000000000| 
+# AAAAA AMD results: |HUMAN|HUMAN-1000-1000|0000000000|
+# AAAAA AMD results: |MACHINE|MAXWORDS-4-4|0000000000|
 
 if ( ($AMD_LOG == 1) || ($AMD_LOG == 3) )
 	{
@@ -312,7 +312,7 @@ if ( ($AMD_LOG == 2) || ($AMD_LOG == 3) )
 ########## AMD says it's a person so exit and go on to transfer scripts ##########
 if ( ($AMDSTATUS =~ /PERSON|HUMAN|NOTSURE|HANGUP/) && ($force_playback !~ /YES/) )
 	{
-	if ($A) 
+	if ($A)
 		{
 		if ($AGILOG) {$agi_string = "      AMD exiting";   &agi_output;}
 		}
@@ -571,7 +571,7 @@ else
 			$recdate = "$year$mon$mday-$hour$min$sec";
 			$tinydate = "$Tyear$mon$mday$hour$min$sec";
 
-			if ($campaign_rec_filename =~ /VENDORLEADCODE/) 
+			if ($campaign_rec_filename =~ /VENDORLEADCODE/)
 				{
 				$stmtA = "SELECT vendor_lead_code FROM vicidial_list where lead_id='$VD_lead_id';";
 				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -606,7 +606,7 @@ else
 				}
 			else
 				{
-				$AGI->exec("Monitor","wav,/var/spool/asterisk/monitor/MIX/$campaign_rec_filename"); 
+				$AGI->exec("Monitor","wav,/var/spool/asterisk/monitor/MIX/$campaign_rec_filename");
 				}
 
 			### insert record into recording_log table ###
@@ -680,7 +680,7 @@ else
 		if ( ($DB_am_message_exten =~ /^TTS/) || ($DB_am_message_exten =~ /^DYN/) )
 			{
 			$useTTS=0;
-			if ($DB_am_message_exten =~ /^TTS/) 
+			if ($DB_am_message_exten =~ /^TTS/)
 				{
 				$useTTS++;
 				$TTS_filename = $DB_am_message_exten;
@@ -788,7 +788,7 @@ else
 			$TTS_text =~ s/--A--group--B--/$VD_campaign_id/gi;
 			### END replace variables with record values ###
 
-			if ($useTTS > 0) 
+			if ($useTTS > 0)
 				{
 				### BEGIN check for --C-- and --D-- tags for static file replacement
 				if ( ($TTS_text =~ /--C--/) || ($TTS_text =~ /--D--/) )
@@ -940,203 +940,203 @@ else
 					$amm_wildcard =	$aryA[2];
 					$amm_filename =	$aryA[3];
 
-					if ( (length($amm_wildcard)>0) && (length($amm_wildcard)>0) && (length($amm_filename)>0) ) 
+					if ( (length($amm_wildcard)>0) && (length($amm_wildcard)>0) && (length($amm_filename)>0) )
 						{
-						if ($amm_field =~ /vendor_lead_code/) 
+						if ($amm_field =~ /vendor_lead_code/)
 							{
-							if ($AMM_vendor_lead_code =~ /$amm_wildcard/i) 
+							if ($AMM_vendor_lead_code =~ /$amm_wildcard/i)
 								{
 								$amm_filename_match = $amm_filename;
 								if ($AGILOG) {$agi_string = "AMM vendor_lead_code Match Found: |$amm_field|$amm_rank|$amm_wildcard($AMM_vendor_lead_code)|$amm_filename|";   &agi_output;}
 								}
 							}
-						if ($amm_field =~ /source_id/) 
+						if ($amm_field =~ /source_id/)
 							{
-							if ($AMM_source_id =~ /$amm_wildcard/i) 
+							if ($AMM_source_id =~ /$amm_wildcard/i)
 								{
 								$amm_filename_match = $amm_filename;
 								if ($AGILOG) {$agi_string = "AMM source_id Match Found: |$amm_field|$amm_rank|$amm_wildcard($AMM_source_id)|$amm_filename|";   &agi_output;}
 								}
 							}
-						if ($amm_field =~ /list_id/) 
+						if ($amm_field =~ /list_id/)
 							{
-							if ($AMM_list_id =~ /$amm_wildcard/i) 
+							if ($AMM_list_id =~ /$amm_wildcard/i)
 								{
 								$amm_filename_match = $amm_filename;
 								if ($AGILOG) {$agi_string = "AMM list_id Match Found: |$amm_field|$amm_rank|$amm_wildcard($AMM_list_id)|$amm_filename|";   &agi_output;}
 								}
 							}
-						if ($amm_field =~ /phone_number/) 
+						if ($amm_field =~ /phone_number/)
 							{
-							if ($AMM_phone_number =~ /$amm_wildcard/i) 
+							if ($AMM_phone_number =~ /$amm_wildcard/i)
 								{
 								$amm_filename_match = $amm_filename;
 								if ($AGILOG) {$agi_string = "AMM phone_number Match Found: |$amm_field|$amm_rank|$amm_wildcard($AMM_phone_number)|$amm_filename|";   &agi_output;}
 								}
 							}
-						if ($amm_field =~ /title/) 
+						if ($amm_field =~ /title/)
 							{
-							if ($AMM_title =~ /$amm_wildcard/i) 
+							if ($AMM_title =~ /$amm_wildcard/i)
 								{
 								$amm_filename_match = $amm_filename;
 								if ($AGILOG) {$agi_string = "AMM title Match Found: |$amm_field|$amm_rank|$amm_wildcard($AMM_title)|$amm_filename|";   &agi_output;}
 								}
 							}
-						if ($amm_field =~ /first_name/) 
+						if ($amm_field =~ /first_name/)
 							{
-							if ($AMM_first_name =~ /$amm_wildcard/i) 
+							if ($AMM_first_name =~ /$amm_wildcard/i)
 								{
 								$amm_filename_match = $amm_filename;
 								if ($AGILOG) {$agi_string = "AMM first_name Match Found: |$amm_field|$amm_rank|$amm_wildcard($AMM_first_name)|$amm_filename|";   &agi_output;}
 								}
 							}
-						if ($amm_field =~ /middle_initial/) 
+						if ($amm_field =~ /middle_initial/)
 							{
-							if ($AMM_middle_initial =~ /$amm_wildcard/i) 
+							if ($AMM_middle_initial =~ /$amm_wildcard/i)
 								{
 								$amm_filename_match = $amm_filename;
 								if ($AGILOG) {$agi_string = "AMM middle_initial Match Found: |$amm_field|$amm_rank|$amm_wildcard($AMM_middle_initial)|$amm_filename|";   &agi_output;}
 								}
 							}
-						if ($amm_field =~ /last_name/) 
+						if ($amm_field =~ /last_name/)
 							{
-							if ($AMM_last_name =~ /$amm_wildcard/i) 
+							if ($AMM_last_name =~ /$amm_wildcard/i)
 								{
 								$amm_filename_match = $amm_filename;
 								if ($AGILOG) {$agi_string = "AMM last_name Match Found: |$amm_field|$amm_rank|$amm_wildcard($AMM_last_name)|$amm_filename|";   &agi_output;}
 								}
 							}
-						if ($amm_field =~ /address1/) 
+						if ($amm_field =~ /address1/)
 							{
-							if ($AMM_address1 =~ /$amm_wildcard/i) 
+							if ($AMM_address1 =~ /$amm_wildcard/i)
 								{
 								$amm_filename_match = $amm_filename;
 								if ($AGILOG) {$agi_string = "AMM address1 Match Found: |$amm_field|$amm_rank|$amm_wildcard($AMM_address1)|$amm_filename|";   &agi_output;}
 								}
 							}
-						if ($amm_field =~ /address2/) 
+						if ($amm_field =~ /address2/)
 							{
-							if ($AMM_address2 =~ /$amm_wildcard/i) 
+							if ($AMM_address2 =~ /$amm_wildcard/i)
 								{
 								$amm_filename_match = $amm_filename;
 								if ($AGILOG) {$agi_string = "AMM address2 Match Found: |$amm_field|$amm_rank|$amm_wildcard($AMM_address2)|$amm_filename|";   &agi_output;}
 								}
 							}
-						if ($amm_field =~ /address3/) 
+						if ($amm_field =~ /address3/)
 							{
-							if ($AMM_address3 =~ /$amm_wildcard/i) 
+							if ($AMM_address3 =~ /$amm_wildcard/i)
 								{
 								$amm_filename_match = $amm_filename;
 								if ($AGILOG) {$agi_string = "AMM address3 Match Found: |$amm_field|$amm_rank|$amm_wildcard($AMM_address3)|$amm_filename|";   &agi_output;}
 								}
 							}
-						if ($amm_field =~ /city/) 
+						if ($amm_field =~ /city/)
 							{
-							if ($AMM_city =~ /$amm_wildcard/i) 
+							if ($AMM_city =~ /$amm_wildcard/i)
 								{
 								$amm_filename_match = $amm_filename;
 								if ($AGILOG) {$agi_string = "AMM city Match Found: |$amm_field|$amm_rank|$amm_wildcard($AMM_city)|$amm_filename|";   &agi_output;}
 								}
 							}
-						if ($amm_field =~ /state/) 
+						if ($amm_field =~ /state/)
 							{
-							if ($AMM_state =~ /$amm_wildcard/i) 
+							if ($AMM_state =~ /$amm_wildcard/i)
 								{
 								$amm_filename_match = $amm_filename;
 								if ($AGILOG) {$agi_string = "AMM state Match Found: |$amm_field|$amm_rank|$amm_wildcard($AMM_state)|$amm_filename|";   &agi_output;}
 								}
 							}
-						if ($amm_field =~ /province/) 
+						if ($amm_field =~ /province/)
 							{
-							if ($AMM_province =~ /$amm_wildcard/i) 
+							if ($AMM_province =~ /$amm_wildcard/i)
 								{
 								$amm_filename_match = $amm_filename;
 								if ($AGILOG) {$agi_string = "AMM province Match Found: |$amm_field|$amm_rank|$amm_wildcard($AMM_province)|$amm_filename|";   &agi_output;}
 								}
 							}
-						if ($amm_field =~ /postal_code/) 
+						if ($amm_field =~ /postal_code/)
 							{
-							if ($AMM_postal_code =~ /$amm_wildcard/i) 
+							if ($AMM_postal_code =~ /$amm_wildcard/i)
 								{
 								$amm_filename_match = $amm_filename;
 								if ($AGILOG) {$agi_string = "AMM postal_code Match Found: |$amm_field|$amm_rank|$amm_wildcard($AMM_postal_code)|$amm_filename|";   &agi_output;}
 								}
 							}
-						if ($amm_field =~ /country_code/) 
+						if ($amm_field =~ /country_code/)
 							{
-							if ($AMM_country_code =~ /$amm_wildcard/i) 
+							if ($AMM_country_code =~ /$amm_wildcard/i)
 								{
 								$amm_filename_match = $amm_filename;
 								if ($AGILOG) {$agi_string = "AMM country_code Match Found: |$amm_field|$amm_rank|$amm_wildcard($AMM_country_code)|$amm_filename|";   &agi_output;}
 								}
 							}
-						if ($amm_field =~ /gender/) 
+						if ($amm_field =~ /gender/)
 							{
-							if ($AMM_gender =~ /$amm_wildcard/i) 
+							if ($AMM_gender =~ /$amm_wildcard/i)
 								{
 								$amm_filename_match = $amm_filename;
 								if ($AGILOG) {$agi_string = "AMM gender Match Found: |$amm_field|$amm_rank|$amm_wildcard($AMM_gender)|$amm_filename|";   &agi_output;}
 								}
 							}
-						if ($amm_field =~ /date_of_birth/) 
+						if ($amm_field =~ /date_of_birth/)
 							{
-							if ($AMM_date_of_birth =~ /$amm_wildcard/i) 
+							if ($AMM_date_of_birth =~ /$amm_wildcard/i)
 								{
 								$amm_filename_match = $amm_filename;
 								if ($AGILOG) {$agi_string = "AMM date_of_birth Match Found: |$amm_field|$amm_rank|$amm_wildcard($AMM_date_of_birth)|$amm_filename|";   &agi_output;}
 								}
 							}
-						if ($amm_field =~ /alt_phone/) 
+						if ($amm_field =~ /alt_phone/)
 							{
-							if ($AMM_alt_phone =~ /$amm_wildcard/i) 
+							if ($AMM_alt_phone =~ /$amm_wildcard/i)
 								{
 								$amm_filename_match = $amm_filename;
 								if ($AGILOG) {$agi_string = "AMM alt_phone Match Found: |$amm_field|$amm_rank|$amm_wildcard($AMM_alt_phone)|$amm_filename|";   &agi_output;}
 								}
 							}
-						if ($amm_field =~ /email/) 
+						if ($amm_field =~ /email/)
 							{
-							if ($AMM_email =~ /$amm_wildcard/i) 
+							if ($AMM_email =~ /$amm_wildcard/i)
 								{
 								$amm_filename_match = $amm_filename;
 								if ($AGILOG) {$agi_string = "AMM email Match Found: |$amm_field|$amm_rank|$amm_wildcard($AMM_email)|$amm_filename|";   &agi_output;}
 								}
 							}
-						if ($amm_field =~ /security_phrase/) 
+						if ($amm_field =~ /security_phrase/)
 							{
-							if ($AMM_security_phrase =~ /$amm_wildcard/i) 
+							if ($AMM_security_phrase =~ /$amm_wildcard/i)
 								{
 								$amm_filename_match = $amm_filename;
 								if ($AGILOG) {$agi_string = "AMM security_phrase Match Found: |$amm_field|$amm_rank|$amm_wildcard($AMM_security_phrase)|$amm_filename|";   &agi_output;}
 								}
 							}
-						if ($amm_field =~ /comments/) 
+						if ($amm_field =~ /comments/)
 							{
-							if ($AMM_comments =~ /$amm_wildcard/i) 
+							if ($AMM_comments =~ /$amm_wildcard/i)
 								{
 								$amm_filename_match = $amm_filename;
 								if ($AGILOG) {$agi_string = "AMM comments Match Found: |$amm_field|$amm_rank|$amm_wildcard($AMM_comments)|$amm_filename|";   &agi_output;}
 								}
 							}
-						if ($amm_field =~ /rank/) 
+						if ($amm_field =~ /rank/)
 							{
-							if ($AMM_rank =~ /$amm_wildcard/i) 
+							if ($AMM_rank =~ /$amm_wildcard/i)
 								{
 								$amm_filename_match = $amm_filename;
 								if ($AGILOG) {$agi_string = "AMM rank Match Found: |$amm_field|$amm_rank|$amm_wildcard($AMM_rank)|$amm_filename|";   &agi_output;}
 								}
 							}
-						if ($amm_field =~ /owner/) 
+						if ($amm_field =~ /owner/)
 							{
-							if ($AMM_owner =~ /$amm_wildcard/i) 
+							if ($AMM_owner =~ /$amm_wildcard/i)
 								{
 								$amm_filename_match = $amm_filename;
 								if ($AGILOG) {$agi_string = "AMM owner Match Found: |$amm_field|$amm_rank|$amm_wildcard($AMM_owner)|$amm_filename|";   &agi_output;}
 								}
 							}
-						if ($amm_field =~ /called_count/) 
+						if ($amm_field =~ /called_count/)
 							{
-							if ($AMM_called_count =~ /^$amm_wildcard$/i) 
+							if ($AMM_called_count =~ /^$amm_wildcard$/i)
 								{
 								$amm_filename_match = $amm_filename;
 								if ($AGILOG) {$agi_string = "AMM called_count Match Found: |$amm_field|$amm_rank|$amm_wildcard($AMM_owner)|$amm_filename|";   &agi_output;}
@@ -1184,7 +1184,7 @@ else
 			}
 
 		### if call menu or in-group method
-		if ( ($AMDCAUSE =~ /^Unknown|\?\?\?/i) && ($cpd_unknown_action =~ /CALLMENU|INGROUP/) ) 
+		if ( ($AMDCAUSE =~ /^Unknown|\?\?\?/i) && ($cpd_unknown_action =~ /CALLMENU|INGROUP/) )
 			{
 			$DROPexten='';
 			if ($cpd_unknown_action =~ /CALLMENU/)
@@ -1375,7 +1375,7 @@ sub call_quota_logging
 	$settings_session_score=0;
 	$zero_rank_after_call=0;
 
-	if (length($CQcontainer_entry) > 5) 
+	if (length($CQcontainer_entry) > 5)
 		{
 		@container_lines = split(/\n/,$CQcontainer_entry);
 		$c=0;
@@ -1388,7 +1388,7 @@ sub call_quota_logging
 				if ($container_lines[$c] =~ /^zero_rank_after_call/i)
 					{
 					$container_lines[$c] =~ s/zero_rank_after_call=>//gi;
-					if ( ($container_lines[$c] >= 0) && ($container_lines[$c] <= 1) ) 
+					if ( ($container_lines[$c] >= 0) && ($container_lines[$c] <= 1) )
 						{
 						$zero_rank_after_call = $container_lines[$c];
 						}
@@ -1399,12 +1399,12 @@ sub call_quota_logging
 					$session_one_valid=0; $session_one_start=''; $session_one_end='';
 					$session_one = $container_lines[$c];
 					$session_one =~ s/session_one=>//gi;
-					if ( (length($session_one) > 0) && (length($session_one) <= 9) && ($session_one =~ /,/) ) 
+					if ( (length($session_one) > 0) && (length($session_one) <= 9) && ($session_one =~ /,/) )
 						{
 						@session_oneARY = split(/,/,$session_one);
 						$session_one_start = $session_oneARY[0];
 						$session_one_end = $session_oneARY[1];
-						if ( (length($session_one_start) >= 4) && (length($session_one_end) >= 4) && ($session_one_start < $session_one_end) && ($session_one_end <= 2400) ) 
+						if ( (length($session_one_start) >= 4) && (length($session_one_end) >= 4) && ($session_one_start < $session_one_end) && ($session_one_end <= 2400) )
 							{
 							$settings_session_score++;
 							$session_one_valid++;
@@ -1416,12 +1416,12 @@ sub call_quota_logging
 					$session_two_valid=0; $session_two_start=''; $session_two_end='';
 					$session_two = $container_lines[$c];
 					$session_two =~ s/session_two=>//gi;
-					if ( (length($session_two) > 0) && (length($session_two) <= 9) && ($session_two =~ /,/) ) 
+					if ( (length($session_two) > 0) && (length($session_two) <= 9) && ($session_two =~ /,/) )
 						{
 						@session_twoARY = split(/,/,$session_two);
 						$session_two_start = $session_twoARY[0];
 						$session_two_end = $session_twoARY[1];
-						if ( (length($session_two_start) >= 4) && (length($session_two_end) >= 4) && ($session_one_valid > 0) && ($session_one_end <= $session_two_start) && ($session_two_start < $session_two_end) && ($session_two_end <= 2400) ) 
+						if ( (length($session_two_start) >= 4) && (length($session_two_end) >= 4) && ($session_one_valid > 0) && ($session_one_end <= $session_two_start) && ($session_two_start < $session_two_end) && ($session_two_end <= 2400) )
 							{
 							$settings_session_score++;
 							$session_two_valid++;
@@ -1433,12 +1433,12 @@ sub call_quota_logging
 					$session_three_valid=0; $session_three_start=''; $session_three_end='';
 					$session_three = $container_lines[$c];
 					$session_three =~ s/session_three=>//gi;
-					if ( (length($session_three) > 0) && (length($session_three) <= 9) && ($session_three =~ /,/) ) 
+					if ( (length($session_three) > 0) && (length($session_three) <= 9) && ($session_three =~ /,/) )
 						{
 						@session_threeARY = split(/,/,$session_three);
 						$session_three_start = $session_threeARY[0];
 						$session_three_end = $session_threeARY[1];
-						if ( (length($session_three_start) >= 4) && (length($session_three_end) >= 4) && ($session_two_valid > 0) && ($session_two_end <= $session_three_start) && ($session_three_start < $session_three_end) && ($session_three_end <= 2400) ) 
+						if ( (length($session_three_start) >= 4) && (length($session_three_end) >= 4) && ($session_two_valid > 0) && ($session_two_end <= $session_three_start) && ($session_three_start < $session_three_end) && ($session_three_end <= 2400) )
 							{
 							$settings_session_score++;
 							$session_three_valid++;
@@ -1450,12 +1450,12 @@ sub call_quota_logging
 					$session_four_valid=0; $session_four_start=''; $session_four_end='';
 					$session_four = $container_lines[$c];
 					$session_four =~ s/session_four=>//gi;
-					if ( (length($session_four) > 0) && (length($session_four) <= 9) && ($session_four =~ /,/) ) 
+					if ( (length($session_four) > 0) && (length($session_four) <= 9) && ($session_four =~ /,/) )
 						{
 						@session_fourARY = split(/,/,$session_four);
 						$session_four_start = $session_fourARY[0];
 						$session_four_end = $session_fourARY[1];
-						if ( (length($session_four_start) >= 4) && (length($session_four_end) >= 4) && ($session_three_valid > 0) && ($session_three_end <= $session_four_start) && ($session_four_start < $session_four_end) && ($session_four_end <= 2400) ) 
+						if ( (length($session_four_start) >= 4) && (length($session_four_end) >= 4) && ($session_three_valid > 0) && ($session_three_end <= $session_four_start) && ($session_four_start < $session_four_end) && ($session_four_end <= 2400) )
 							{
 							$settings_session_score++;
 							$session_four_valid++;
@@ -1467,12 +1467,12 @@ sub call_quota_logging
 					$session_five_valid=0; $session_five_start=''; $session_five_end='';
 					$session_five = $container_lines[$c];
 					$session_five =~ s/session_five=>//gi;
-					if ( (length($session_five) > 0) && (length($session_five) <= 9) && ($session_five =~ /,/) ) 
+					if ( (length($session_five) > 0) && (length($session_five) <= 9) && ($session_five =~ /,/) )
 						{
 						@session_fiveARY = split(/,/,$session_five);
 						$session_five_start = $session_fiveARY[0];
 						$session_five_end = $session_fiveARY[1];
-						if ( (length($session_five_start) >= 4) && (length($session_five_end) >= 4) && ($session_four_valid > 0) && ($session_four_end <= $session_five_start) && ($session_five_start < $session_five_end) && ($session_five_end <= 2400) ) 
+						if ( (length($session_five_start) >= 4) && (length($session_five_end) >= 4) && ($session_four_valid > 0) && ($session_four_end <= $session_five_start) && ($session_five_start < $session_five_end) && ($session_five_end <= 2400) )
 							{
 							$settings_session_score++;
 							$session_five_valid++;
@@ -1484,12 +1484,12 @@ sub call_quota_logging
 					$session_six_valid=0; $session_six_start=''; $session_six_end='';
 					$session_six = $container_lines[$c];
 					$session_six =~ s/session_six=>//gi;
-					if ( (length($session_six) > 0) && (length($session_six) <= 9) && ($session_six =~ /,/) ) 
+					if ( (length($session_six) > 0) && (length($session_six) <= 9) && ($session_six =~ /,/) )
 						{
 						@session_sixARY = split(/,/,$session_six);
 						$session_six_start = $session_sixARY[0];
 						$session_six_end = $session_sixARY[1];
-						if ( (length($session_six_start) >= 4) && (length($session_six_end) >= 4) && ($session_five_valid > 0) && ($session_five_end <= $session_six_start) && ($session_six_start < $session_six_end) && ($session_six_end <= 2400) ) 
+						if ( (length($session_six_start) >= 4) && (length($session_six_end) >= 4) && ($session_five_valid > 0) && ($session_five_end <= $session_six_start) && ($session_six_start < $session_six_end) && ($session_six_end <= 2400) )
 							{
 							$settings_session_score++;
 							$session_six_valid++;
@@ -1545,40 +1545,40 @@ sub call_quota_logging
 				@VDLcall_timeARY = split(/:/,$VDLcall_datetimeARY[1]);
 				$VDLcall_hourmin = "$VDLcall_timeARY[0]$VDLcall_timeARY[1]";
 
-				if ( ($session_one_start <= $VDLcall_hourmin) and ($session_one_end > $VDLcall_hourmin) ) 
+				if ( ($session_one_start <= $VDLcall_hourmin) and ($session_one_end > $VDLcall_hourmin) )
 					{
-					$call_in_session=1; 
-					$session_newSQL=",session_one_calls='1',session_one_today_calls='1'"; 
+					$call_in_session=1;
+					$session_newSQL=",session_one_calls='1',session_one_today_calls='1'";
 					$session_updateSQL=",session_one_calls=(session_one_calls + 1),session_one_today_calls=(session_one_today_calls + 1)";
 					}
-				if ( ($session_two_start <= $VDLcall_hourmin) and ($session_two_end > $VDLcall_hourmin) ) 
+				if ( ($session_two_start <= $VDLcall_hourmin) and ($session_two_end > $VDLcall_hourmin) )
 					{
-					$call_in_session=2; 
-					$session_newSQL=",session_two_calls='1',session_two_today_calls='1'"; 
+					$call_in_session=2;
+					$session_newSQL=",session_two_calls='1',session_two_today_calls='1'";
 					$session_updateSQL=",session_two_calls=(session_two_calls + 1),session_two_today_calls=(session_two_today_calls + 1)";
 					}
-				if ( ($session_three_start <= $VDLcall_hourmin) and ($session_three_end > $VDLcall_hourmin) ) 
+				if ( ($session_three_start <= $VDLcall_hourmin) and ($session_three_end > $VDLcall_hourmin) )
 					{
-					$call_in_session=3; 
-					$session_newSQL=",session_three_calls='1',session_three_today_calls='1'"; 
+					$call_in_session=3;
+					$session_newSQL=",session_three_calls='1',session_three_today_calls='1'";
 					$session_updateSQL=",session_three_calls=(session_three_calls + 1),session_three_today_calls=(session_three_today_calls + 1)";
 					}
-				if ( ($session_four_start <= $VDLcall_hourmin) and ($session_four_end > $VDLcall_hourmin) ) 
+				if ( ($session_four_start <= $VDLcall_hourmin) and ($session_four_end > $VDLcall_hourmin) )
 					{
-					$call_in_session=4; 
-					$session_newSQL=",session_four_calls='1',session_four_today_calls='1'"; 
+					$call_in_session=4;
+					$session_newSQL=",session_four_calls='1',session_four_today_calls='1'";
 					$session_updateSQL=",session_four_calls=(session_four_calls + 1),session_four_today_calls=(session_four_today_calls + 1)";
 					}
-				if ( ($session_five_start <= $VDLcall_hourmin) and ($session_five_end > $VDLcall_hourmin) ) 
+				if ( ($session_five_start <= $VDLcall_hourmin) and ($session_five_end > $VDLcall_hourmin) )
 					{
-					$call_in_session=5; 
-					$session_newSQL=",session_five_calls='1',session_five_today_calls='1'"; 
+					$call_in_session=5;
+					$session_newSQL=",session_five_calls='1',session_five_today_calls='1'";
 					$session_updateSQL=",session_five_calls=(session_five_calls + 1),session_five_today_calls=(session_five_today_calls + 1)";
 					}
-				if ( ($session_six_start <= $VDLcall_hourmin) and ($session_six_end > $VDLcall_hourmin) ) 
+				if ( ($session_six_start <= $VDLcall_hourmin) and ($session_six_end > $VDLcall_hourmin) )
 					{
-					$call_in_session=6; 
-					$session_newSQL=",session_six_calls='1',session_six_today_calls='1'"; 
+					$call_in_session=6;
+					$session_newSQL=",session_six_calls='1',session_six_today_calls='1'";
 					$session_updateSQL=",session_six_calls=(session_six_calls + 1),session_six_today_calls=(session_six_today_calls + 1)";
 					}
 
@@ -1613,9 +1613,9 @@ sub call_quota_logging
 						$VLCQCfirst_call_epoch =		$aryA[1];
 						$VLCQClast_call_date =			$aryA[2];
 
-						if ($VDLcall_datetime ne $VLCQClast_call_date) 
+						if ($VDLcall_datetime ne $VLCQClast_call_date)
 							{
-							if ($VLCQCfirst_call_epoch >= $today_start_epoch) 
+							if ($VLCQCfirst_call_epoch >= $today_start_epoch)
 								{$day_updateSQL=',day_one_calls=(day_one_calls+1)';}
 							if ( ($VLCQCfirst_call_epoch >= $day_two_start_epoch) and ($VLCQCfirst_call_epoch < $today_start_epoch) )
 								{$day_updateSQL=',day_two_calls=(day_two_calls+1)';}
@@ -1664,21 +1664,21 @@ sub call_quota_logging
 ##### END Call Quota Lead Ranking logging #####
 
 
-sub checkresult 
+sub checkresult
 	{
 	my ($res) = @_;
 	my $retval;
 	$tests++;
 	chomp $res;
-	if ($res =~ /^200/) 
+	if ($res =~ /^200/)
 		{
 		$res =~ /result=(-?\d+)/;
-		if (!length($1)) 
+		if (!length($1))
 			{
 		#	print STDERR "FAIL ($res)\n";
 			$fail++;
-			} 
-		else 
+			}
+		else
 			{
 		#	print STDERR "PASS ($1)\n";
 			$pass++;

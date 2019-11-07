@@ -2,8 +2,8 @@
 
 # ADMIN_update_server_ip.pl - updates IP address in DB and conf file
 #
-# This script is designed to update all database tables and the local 
-# astguiclient.conf file to reflect a change in IP address. The script will 
+# This script is designed to update all database tables and the local
+# astguiclient.conf file to reflect a change in IP address. The script will
 # automatically default to the first eth address in the ifconfig output.
 #
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -125,7 +125,7 @@ else
 	}
 ### end parsing run-time options ###
 
-if (-e "$PATHconf") 
+if (-e "$PATHconf")
 	{
 	print "Previous astGUIclient configuration file found at: $PATHconf\n";
 	open(conf, "$PATHconf") || die "can't open $PATHconf: $!\n";
@@ -216,7 +216,7 @@ if ($AUTO)
 	{
 	$manual='n';
 	if (length($VARserver_ip)<7)
-		{	
+		{
 		@ip = `/sbin/ifconfig`;
 		$j=0;
 		while($#ip>=$j)
@@ -267,7 +267,7 @@ else
 
 		##### BEGIN server_ip propmting and check #####
 		if (length($VARserver_ip)<7)
-			{	
+			{
 			### get best guess of IP address from ifconfig output ###
 			# inet addr:10.10.11.17  Bcast:10.10.255.255  Mask:255.255.0.0
 			@ip = `/sbin/ifconfig`;
@@ -497,9 +497,9 @@ $dbhA->disconnect();
 $S='*';
 if( $VARserver_ip =~ m/(\S+)\.(\S+)\.(\S+)\.(\S+)/ )
 	{
-	$a = leading_zero($1); 
-	$b = leading_zero($2); 
-	$c = leading_zero($3); 
+	$a = leading_zero($1);
+	$b = leading_zero($2);
+	$c = leading_zero($3);
 	$d = leading_zero($4);
 	$VARremDIALstr = "$a$S$b$S$c$S$d";
 	}
@@ -516,7 +516,7 @@ print "\n     - process runtime      ($secz sec) ($minz minutes)\n";
 exit;
 
 
-sub leading_zero($) 
+sub leading_zero($)
 	{
     $_ = $_[0];
     s/^(\d)$/0$1/;

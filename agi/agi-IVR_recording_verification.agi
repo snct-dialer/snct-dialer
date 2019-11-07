@@ -2,21 +2,21 @@
 #
 # agi-IVR_recording_verification.agi      version 2.6
 #
-# This script is designed to function as a complete automated 3rd party 
-# verification IVR recording system. This script will work by optionally asking 
-# for a company ID and/or a customer phone number, then it will play through the 
-# listed prompts asking for a single digit press (i.e. 1 for a yes or a 3 for a 
+# This script is designed to function as a complete automated 3rd party
+# verification IVR recording system. This script will work by optionally asking
+# for a company ID and/or a customer phone number, then it will play through the
+# listed prompts asking for a single digit press (i.e. 1 for a yes or a 3 for a
 # no, hash/pound/star/zero/0 are not accepted only 1-9 is valid for these steps).
-# All data for these calls will be logged to the vicidial_ivr table as well as 
-# optionally to a log file  in the standard astguiclient log file directory 
-# and/or STDERR output on the asterisk process. This script uses the 
+# All data for these calls will be logged to the vicidial_ivr table as well as
+# optionally to a log file  in the standard astguiclient log file directory
+# and/or STDERR output on the asterisk process. This script uses the
 # /etc/astguiclient.conf file for database connection settings, logging data and
 # for logfile path information only.
 #
-# With a modified VDAD agi transfer script, this script could also be used to do 
+# With a modified VDAD agi transfer script, this script could also be used to do
 # automated outbound surveys as well. Feature under development.
 #
-# ; 1. the DNIS or inbound number called 
+# ; 1. the DNIS or inbound number called
 # ; 2. play the recording ID (Y|N) with prompt leading up to it
 # ; 3. record this call(Y|N)
 # ; 4. ask for a company code(Y|N) with the number of digits in that company code and the prompt
@@ -194,7 +194,7 @@ if (length($ARGV[0])>1)
 
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 	{
 	chomp;
 	last unless length($_);
@@ -232,7 +232,7 @@ $phone_number=$callerid;
 if ($extension =~ /^832\d\d\*|^833\d\d\*/)
 	{
 	@EXT_vars = split(/\*/, $extension);
-	
+
 	$referring_extension =	$EXT_vars[0];	# initial extension sent
 	$phone_number =			$EXT_vars[1];	# phone number
 	$lead_id =				$EXT_vars[2];	# lead_id in vicidial_list
@@ -253,7 +253,7 @@ if ($extension =~ /^832\d\d\*|^833\d\d\*/)
 #	company_id VARCHAR(12),
 #	phone_number VARCHAR(12),
 #	lead_id INT(9) UNSIGNED,
-#	campaign_id VARCHAR(20),			
+#	campaign_id VARCHAR(20),
 #	product_code VARCHAR(20),
 #	user VARCHAR(20),
 #	prompt_audio_1 VARCHAR(20),
@@ -314,7 +314,7 @@ while ($sthArows > $cbc)
 	$ivr_id = "$aryA[0]";
 	$cbc++;
 	}
-$sthA->finish();	
+$sthA->finish();
 
 
 if ($AGILOG) {$agi_string = "IVR START- $ivr_id   $inbound_number|$record_call|$company_ID_ask|$cust_phone_ask|$prompts|$last_prompt|$AGI_output";   &agi_output;}
@@ -328,7 +328,7 @@ if ($play_ID =~ /Y/)
 	$AGI->stream_file("$play_ID_prompt");
 	$AGI->say_digits("$ivr_id");
 	sleep(1);
-	$AGI->stream_file('beep');   
+	$AGI->stream_file('beep');
 	$AGI->say_digits("$ivr_id");
 	sleep(1);
 	}
@@ -386,7 +386,7 @@ if ($record_call =~ /Y/)
 		}
 	else
 		{
-		$AGI->exec("Monitor","wav,/var/spool/asterisk/monitor/MIX/$filename,m"); 
+		$AGI->exec("Monitor","wav,/var/spool/asterisk/monitor/MIX/$filename,m");
 		}
 
 	### insert record into recording_log table ###
@@ -418,7 +418,7 @@ if ($say_date =~ /Y/)
 	if ($AGILOG) {$agi_string = "SAYING DATETIME $now_date_epoch";   &agi_output;}
 	if (length($say_date_prompt)>0) {$AGI->stream_file("$say_date_prompt");}
 	sleep(1);
-	$AGI->exec("SayUnixtime"); 
+	$AGI->exec("SayUnixtime");
 	sleep(1);
 	}
 
@@ -478,7 +478,7 @@ while($prompts_count >= $i)
 		}
 
 	sleep(1);
-	$AGI->stream_file('beep');   
+	$AGI->stream_file('beep');
 	$AGI->say_digits("$ivr_id");
 	sleep(1);
 	$AGI->stream_file('vm-goodbye');
@@ -523,7 +523,7 @@ sub company_ID_gather_response
 		if ($interrupt_digit == 55) {$interrupt_digit=7;}
 		if ($interrupt_digit == 56) {$interrupt_digit=8;}
 		if ($interrupt_digit == 57) {$interrupt_digit=9;}
-		
+
 		$totalDTMF=$interrupt_digit;
 		$digit_loop_counter++;
 		}
@@ -542,7 +542,7 @@ sub company_ID_gather_response
 			{
 			$digit_loop_counter=$company_ID_length;
 			}
-		
+
 		$digit_loop_counter++;
 		}
 	}
@@ -577,7 +577,7 @@ sub user_ID_gather_response
 		if ($interrupt_digit == 55) {$interrupt_digit=7;}
 		if ($interrupt_digit == 56) {$interrupt_digit=8;}
 		if ($interrupt_digit == 57) {$interrupt_digit=9;}
-		
+
 		$totalDTMF=$interrupt_digit;
 		$digit_loop_counter++;
 		}
@@ -596,7 +596,7 @@ sub user_ID_gather_response
 			{
 			$digit_loop_counter=$user_ID_length;
 			}
-		
+
 		$digit_loop_counter++;
 		}
 	}
@@ -629,7 +629,7 @@ sub cust_phone_gather_response
 		if ($interrupt_digit == 55) {$interrupt_digit=7;}
 		if ($interrupt_digit == 56) {$interrupt_digit=8;}
 		if ($interrupt_digit == 57) {$interrupt_digit=9;}
-		
+
 		$totalDTMF=$interrupt_digit;
 		$digit_loop_counter++;
 		}
@@ -648,7 +648,7 @@ sub cust_phone_gather_response
 			{
 			$digit_loop_counter=$cust_phone_length;
 			}
-		
+
 		$digit_loop_counter++;
 		}
 	}
@@ -681,7 +681,7 @@ sub prompt_gather_response
 		if ($interrupt_digit == 55) {$interrupt_digit=7;}
 		if ($interrupt_digit == 56) {$interrupt_digit=8;}
 		if ($interrupt_digit == 57) {$interrupt_digit=9;}
-		
+
 		$totalDTMF=$interrupt_digit;
 		$digit_loop_counter++;
 		}
@@ -701,7 +701,7 @@ sub prompt_gather_response
 			{
 			$digit_loop_counter=-1;
 			}
-		
+
 		$digit_loop_counter++;
 		}
 	}
@@ -729,27 +729,27 @@ sub get_time_now	#get the current date and time and epoch for logging call lengt
 
 
 
-sub checkresult 
+sub checkresult
 	{
 	my ($res) = @_;
 	my $retval;
 	$tests++;
 	chomp $res;
-	if ($res =~ /^200/) 
+	if ($res =~ /^200/)
 		{
 		$res =~ /result=(-?\d+)/;
-		if (!length($1)) 
+		if (!length($1))
 			{
 			print STDERR "FAIL ($res)\n";
 			$fail++;
-			} 
-		else 
+			}
+		else
 			{
 			print STDERR "PASS ($1)\n";
 			$pass++;
 			}
-		} 
-	else 
+		}
+	else
 		{
 		print STDERR "FAIL (unexpected result '$res')\n";
 		$fail++;

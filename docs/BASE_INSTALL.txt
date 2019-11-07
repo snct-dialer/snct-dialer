@@ -2,8 +2,8 @@ Asterisk/astguiclient install from existing server.    v.2.2.0        2010-01-07
    By the VICIDIAL group                                      info@vicidial.com
 
 
-This document is meant to be more of an overview of a VICIDIAL/astGUIclient 
-installation. If you are looking for more detail or are having problems with 
+This document is meant to be more of an overview of a VICIDIAL/astGUIclient
+installation. If you are looking for more detail or are having problems with
 installation please read the SCRATCH_INSTALL.txt document.
 
 
@@ -44,7 +44,7 @@ PHASE 1: INSTALLING ASTERISK
 	wget http://downloads.digium.com/pub/zaptel/zaptel-1.4.12.1.tar.gz
 	wget http://downloads.digium.com/pub/libpri/libpri-1.4.9.tar.gz
 	tar xzf asterisk-1.4.21.2.tar.gz
-	tar xzf zaptel-1.4.12.1.tar.gz 
+	tar xzf zaptel-1.4.12.1.tar.gz
 	tar xzf libpri-1.4.9.tar.gz
 	cd libpri-1.4.9
 	make clean; make; make install
@@ -73,10 +73,10 @@ PHASE 1: INSTALLING ASTERISK
 	modprobe zaptel
 	modprobe ztdummy (if you have no timer)
 
-	- install the module for the digium device that you are using, we are 
+	- install the module for the digium device that you are using, we are
 	using the T100P single span T1 card so we use:
 modprobe wct1xxp
-	   Here's the list of all digium cards and the modules you use with 
+	   Here's the list of all digium cards and the modules you use with
 them:
 		Card      Module
 		-----------------
@@ -96,17 +96,17 @@ them:
 		TE210P    wct2xxp
 		TE205P    wct2xxp
 		TDM2400P  wctdm24xxp
-	- If you have chosen a Sangoma T1/E1 or analog card, you will need to 
+	- If you have chosen a Sangoma T1/E1 or analog card, you will need to
 	  follow their instructions for installation of their driver software
-	  LATEST Sangoma Wanpipe drivers: 
+	  LATEST Sangoma Wanpipe drivers:
 	  ftp://ftp.sangoma.com/linux/current_wanpipe/wanpipe-3.3.9.tgz
-   - now your asterisk installation is built and loaded and it's time to 
+   - now your asterisk installation is built and loaded and it's time to
 configure it.
 
 NOTES: If you want to install zttool diagnostics you may need the newt package installed:
 http://download.vicidial.com/packages/newt-0.51.6.tar.gz
 ln -s /usr/lib/libnewt.so.0.51.6 /usr/lib/libnewt.so.0.51
-then go to your zaptel folder and do 'make zttool' 
+then go to your zaptel folder and do 'make zttool'
 
 Digium/Clone X100P EXAMPLE for reliable cheap hardware timer:
 ./conf_examples/zaptel.conf.x100p.sample
@@ -144,7 +144,7 @@ These are available in these sample conf files:
 ./conf_examples/logger.conf.sample
 ./conf_examples/dnsmgr.conf.sample
 
-For more information on configuring Asterisk or your phones read the 
+For more information on configuring Asterisk or your phones read the
 SCRATCH_INSTALL document.
 
 
@@ -153,12 +153,12 @@ SCRATCH_INSTALL document.
 
 PHASE 3: INSTALLING ASTGUICLIENT AND VICIDIAL
 
-Now that Asterisk is installed and running we can add the astGUIclient and 
+Now that Asterisk is installed and running we can add the astGUIclient and
 VICIDIAL components to the system.
 
 There are two methods for downloading astGUIclient/VICIDIAL, a release and SVN
 
-1. Go to http://astguiclient.sf.net/ and download the latest astguiclient 
+1. Go to http://astguiclient.sf.net/ and download the latest astguiclient
 package(as of this writing it is 2.2.0)
    - for 2.0.X release:
 	mkdir /usr/src/astguiclient
@@ -179,9 +179,9 @@ package(as of this writing it is 2.2.0)
 	cd trunk
 	perl install.pl
 	    select to do interactive setup and customize to your server
-   - there is one more file you need that's not included with the download 
-package, it's the conf.gsm file(this is the half-hour music file that we use 
-to put people on hold). I have a free classical music file that is available 
+   - there is one more file you need that's not included with the download
+package, it's the conf.gsm file(this is the half-hour music file that we use
+to put people on hold). I have a free classical music file that is available
 free for download at the following two sites:
 	http://download.vicidial.com/sounds/conf.gsm
 	http://astguiclient.sf.net/conf.gsm
@@ -195,7 +195,7 @@ free for download at the following two sites:
 	cp conf.gsm park.gsm
    - you are done
 
-If you will be doing native music-on-hold for your inbound calls, you will need 
+If you will be doing native music-on-hold for your inbound calls, you will need
 musiconhold audio files to be converted to native formats like GSM, ULAW and ALAW:
 
 	cd /var/lib/asterisk/mohmp3/
@@ -232,15 +232,15 @@ musiconhold audio files to be converted to native formats like GSM, ULAW and ALA
 
 PHASE 4: CREATING MYSQL DATABASE AND POPULATING IT
 
-we will create the database and add a few initial records so that we can 
-use the administrative web interface. Since this is a new install it is easier 
+we will create the database and add a few initial records so that we can
+use the administrative web interface. Since this is a new install it is easier
 to use our new mysql script file to add the tables to the database:
-Make sure to use reasonable settings for mysql huge.cnf does not look as huge anymore 
-in light of current systems. 
-Plus you should increase the connect_timeout so connections do not fail on 
-a more loaded system.  
+Make sure to use reasonable settings for mysql huge.cnf does not look as huge anymore
+in light of current systems.
+Plus you should increase the connect_timeout so connections do not fail on
+a more loaded system.
 
-1.  at the command prompt type go to the mysql client: 
+1.  at the command prompt type go to the mysql client:
 /usr/local/mysql/bin/mysql
 2.  type the following into the mysql client prompt:
    (make sure you put your IP address in place of "10.10.10.15" in the queries below)
@@ -301,14 +301,14 @@ quit
 
 ######------ END Mysql data entry ------######
 
-NOTE: if you are not installing using default user/pass or have MySQL on another 
-server, you will need to edit either the /etc/astguiclient.conf file or the 
-dbconnect.php files in the astguiclient, vicidial and agc directories of your 
+NOTE: if you are not installing using default user/pass or have MySQL on another
+server, you will need to edit either the /etc/astguiclient.conf file or the
+dbconnect.php files in the astguiclient, vicidial and agc directories of your
 webroot.
 
-NOTE: if you have a dedicated MySQL database server with a lot of RAM(8GB or 
-   greater) then you should consider running the following MySQL queries to 
-   turn heavily used tables into MEMORY tables to speed up execution and reduce 
+NOTE: if you have a dedicated MySQL database server with a lot of RAM(8GB or
+   greater) then you should consider running the following MySQL queries to
+   turn heavily used tables into MEMORY tables to speed up execution and reduce
    load on your database server:
 	ALTER TABLE vicidial_live_agents MODIFY closer_campaigns VARCHAR(8000) default '';
 	ALTER TABLE vicidial_live_agents MODIFY external_ingroups VARCHAR(8000) default '';
@@ -321,12 +321,12 @@ NOTE: if you have a dedicated MySQL database server with a lot of RAM(8GB or
 3. Enter the astguiclient administration page:
 http://10.10.10.15/vicidial/admin.php
 NOTE: if you click on the Logout button you must leave the user/pass empty and click OK
-   - Here you will enter the login and password that you inserted into the mysql 
+   - Here you will enter the login and password that you inserted into the mysql
 database in the vicidial_users table (above [6666/1234])
-   - Now that you are logged into the astGUIclient administration system we can 
+   - Now that you are logged into the astGUIclient administration system we can
 add a new phone entry for each of the sipura lines we created.
 	- click on the "PHONES" link at the top, then the "ADD PHONE" link below
-that and enter in the proper information for each of the new phone lines. 
+that and enter in the proper information for each of the new phone lines.
 Here's what we entered for spa2000:
    - Phone extension: spa2000
    - Dialplan Number: 2000
@@ -338,24 +338,24 @@ Here's what we entered for spa2000:
    - Password: test
    - Conf File Secret: test
    - Status: ACTIVE
-   - Active Account: Y	
+   - Active Account: Y
    - Phone Type: Sipura SPA-2000 line 1
    - Full Name: Sipura line 1 test
    - Company: TEST
    - Picture:
    - Protocol: SIP
    - for the next phone simply replace 2000 with 2001 in the above example
-   - now your phones are all all set up in the astguiclient system and you can 
-use this website to add new phones to be used with astguiclient and monitor 
+   - now your phones are all all set up in the astguiclient system and you can
+use this website to add new phones to be used with astguiclient and monitor
 the number of calls people are making.
 	- click on the "LIST ALL SERVERS" link at the top then click on the
-	server to modify. Verify that the GMT time zone and all other fields 
+	server to modify. Verify that the GMT time zone and all other fields
 	are what you want them to be. There is a setting(Max VICIDIAL Trunks)
-	that can be modified to limit the number of VICIDIAL outbound trunks 
+	that can be modified to limit the number of VICIDIAL outbound trunks
 	that will be allowed to use on this server.
 
 **OPTIONAL** For Zap clients you will need to use full Zap Channel name as the
-extension on the admin page entry: "1-1" for our Zap phone example 
+extension on the admin page entry: "1-1" for our Zap phone example
 previously. And do not forget to set the protocol on this page to Zap
 
 
@@ -502,9 +502,9 @@ PHASE 6: ADDING CRONTAB ENTRIES FOR ASTGUICLIENT/VICIDIAL SCRIPTS
 
 
 
-   - once your system starts up you can attach to the screen running asterisk by 
-typing "screen -r <screen>" find which screen by typing "screen -r" and 
-looking for the lowest screen number. Then to detach again from the screen 
+   - once your system starts up you can attach to the screen running asterisk by
+typing "screen -r <screen>" find which screen by typing "screen -r" and
+looking for the lowest screen number. Then to detach again from the screen
 while you are in it type 'Ctrl+a' then 'd'
    - you are done
 
@@ -514,29 +514,29 @@ while you are in it type 'Ctrl+a' then 'd'
 
 PHASE 7: ADDING TEST LEADS TO VICIDIAL AND CONFIGURING A TEST CAMPAIGN AND USERS
 
-First we will add a few test leads to the vicidial_list table so that we can 
-test our system. There is also an application included with the distribution 
+First we will add a few test leads to the vicidial_list table so that we can
+test our system. There is also an application included with the distribution
 that will accept a delimited file of leads placed in the /usr/share/astguiclient/VICIDIAL/LEADS_IN/
 directory and load it into the database automatically(VICIDIAL_IN_new_leads_file.pl
 [a sample lead file in the proper format is included with this release:
  - test_VICIDIAL_lead_file.txt])
 If you want to use the lead import script I suggest looking at the code to make
-sure it is entering what you want it to. We are not going to go over that 
+sure it is entering what you want it to. We are not going to go over that
 particular script in this document.
 
-Also, there is a web-based lead loader available and is accessible from the 
-VICIDIAL admin.php web page(click on the "LOAD NEW LEADS" link in the LIST 
-section at the top of the admin page). To get to this page you must have 
-permissions in the vicidial_user table(Load Leads set to 1). Instructions on 
+Also, there is a web-based lead loader available and is accessible from the
+VICIDIAL admin.php web page(click on the "LOAD NEW LEADS" link in the LIST
+section at the top of the admin page). To get to this page you must have
+permissions in the vicidial_user table(Load Leads set to 1). Instructions on
 it's use are included on the page through the help question mark link.
 
 NOTE: in PHP you must have "fileuploads" enabled for this page to work.
-NOTE: it is important to have your proper country code in the phone_code field 
-of your leads so that the GMT offset encodding will properly code the time 
-zones for your leads. For the USA/Canada/Caribbean this would be 1. For the 
+NOTE: it is important to have your proper country code in the phone_code field
+of your leads so that the GMT offset encodding will properly code the time
+zones for your leads. For the USA/Canada/Caribbean this would be 1. For the
 UK this is 44 and Mexico is 52 and so on.
 
-Now that the sample leads have been entered, we can go into the VICIDIAL 
+Now that the sample leads have been entered, we can go into the VICIDIAL
 administration website and set up our campaigns, lists and users.
 But first let's make sure that they have the right GMT offset:
 	run this on the command line:
@@ -544,24 +544,24 @@ But first let's make sure that they have the right GMT offset:
 
 3. Enter the astguiclient administration page:
 http://10.10.10.15/vicidial/admin.php
-(use the username and password created when we entered a record into the 
+(use the username and password created when we entered a record into the
 vicidial_users table in SUBPHASE 6.3, In our case this is 6666 and 1234)
 NOTE: if you click on the Logout button you must leave the user/pass empty and click OK
-   - Now that you are logged into the vicidial administration system we can add 
-new user entries for each of the new users and enter new campaigns and new 
+   - Now that you are logged into the vicidial administration system we can add
+new user entries for each of the new users and enter new campaigns and new
 lists.
-	- The first step is to enter your new users, Click on the ADD A NEW USER 
-and fill in the appropriate information for each now user you want to 
+	- The first step is to enter your new users, Click on the ADD A NEW USER
+and fill in the appropriate information for each now user you want to
 add.
-	- Next, you need to create a new campaign, click on the ADD A NEW 
-CAMPAIGN link and fill in what you want the campaign to be called as 
+	- Next, you need to create a new campaign, click on the ADD A NEW
+CAMPAIGN link and fill in what you want the campaign to be called as
 well as a description
-	- Next, you need to define a new list, click on the ADD A NEW LIST link 
-and fill in what you want the list to be called as well as a using the 
-list ID of the leads that we loaded in the previous step "101" and 
+	- Next, you need to define a new list, click on the ADD A NEW LIST link
+and fill in what you want the list to be called as well as a using the
+list ID of the leads that we loaded in the previous step "101" and
 select the new campaign from the pull-down menu that we just created.
 	- Now that you have created your list, make it active by changing active to Y
-	- now modify your campaign ang change the first status to be called to 
+	- now modify your campaign ang change the first status to be called to
 NEW and submit. Now your system is ready to dial.
    - you are done
 
@@ -576,42 +576,42 @@ The browser requirements for the web-client interfaces are:
 - Mozilla 1.7 or greater
 - Netscape 8 or greater
 - Opera 8.5 or greater
-- Microsoft Internet Explorer 6.0 or greater 
+- Microsoft Internet Explorer 6.0 or greater
 
-To log into this app you will need a login setup in the vicidial_users table 
-as well as an entry for the phone you are using in the phones table. You will 
-first get a login prompt for the vicidial login then you will have the phone 
-login where you enter the Login and Password for that phone entry. From there 
-the app should display and you will see the MAIN screen with your login 
+To log into this app you will need a login setup in the vicidial_users table
+as well as an entry for the phone you are using in the phones table. You will
+first get a login prompt for the vicidial login then you will have the phone
+login where you enter the Login and Password for that phone entry. From there
+the app should display and you will see the MAIN screen with your login
 information at the top.
 
 The example web page you would go to on this installation would be:
 http://10.10.10.15/agc/astguiclient.php
 http://10.10.10.15/agc/vicidial.php
 
-Another thing to note is that you can have the agc folder(with the .php files 
-in it) copied to multiple web servers, you just need to make sure that the 
+Another thing to note is that you can have the agc folder(with the .php files
+in it) copied to multiple web servers, you just need to make sure that the
 MySQL database connection works (check the settings in the dbconnect.php file
-that is in the agc directory). We have had astguiclient.php running on 3 
-separate web servers for the same DB server and Asterisk server. This is an 
-easy way to allow for auto failover and/or redundancy. Also, this client will 
+that is in the agc directory). We have had astguiclient.php running on 3
+separate web servers for the same DB server and Asterisk server. This is an
+easy way to allow for auto failover and/or redundancy. Also, this client will
 work over SSL connections(https) for encrypted communications with the server.
 
-New in astGUIclient release 1.1.7 is multi-language support. multi-language 
-versions of web-clients and admin pages are available in the LANG_agc.zip and 
-LANG_www directries and can be copied into your webroot directory. 
+New in astGUIclient release 1.1.7 is multi-language support. multi-language
+versions of web-clients and admin pages are available in the LANG_agc.zip and
+LANG_www directries and can be copied into your webroot directory.
 
-One more feature that the VICIDIAL web-client offers is the ability to set up 
-an EXTERNAL phone extension in the astguiclient admin section so that you can 
-have agents log in to vicidial.php wherever they have access to a phone with 
+One more feature that the VICIDIAL web-client offers is the ability to set up
+an EXTERNAL phone extension in the astguiclient admin section so that you can
+have agents log in to vicidial.php wherever they have access to a phone with
 an external phone number and a web browser. To do this follow these steps:
 - "ADD PHONE" in the admin.php web page and enter whatever name you want
 - For the dialplan number field put in the full digits that you would dial from
   the Asterisk server to get to that agent's external phone(with 91 if used)
 - For the Protocol select EXTERNAL
 - make sure the agent knows the login and password set for this phone entry.
-Then the agent will go to the vicidial.php page and enter in their phone 
-login/pass, their vicidial user/pass/campaign and their phone should ring in a 
+Then the agent will go to the vicidial.php page and enter in their phone
+login/pass, their vicidial user/pass/campaign and their phone should ring in a
 few seconds, and they are logged in and ready to take calls.
 
 Admin Note: If you want to enable your agents to login with only their user/pass
@@ -620,7 +620,7 @@ use a bookmark on their desktop, taking one more step out of their login process
 example: http://10.10.10.15/agc/vicidial.php?pl=gs102&pp=test
 
 It is recommended if you are in a call center environment that you would disable
-the "Saved Form Information" option in Firefox settings. This is a checkbox in 
+the "Saved Form Information" option in Firefox settings. This is a checkbox in
 the Privacy settings under the Options menu.
 
 
@@ -630,19 +630,19 @@ the Privacy settings under the Options menu.
 PHASE 9: VICIDIAL REMOTE AGENTS
 
 With v1.0 of VICIDIAL we have the ability to use a simple web form to give
-remote agents a way to receive calls to whatever number they happen to be at, 
+remote agents a way to receive calls to whatever number they happen to be at,
 and they can view/edit call details and see a call log all through a web page
 (vdremote.php) or http://10.10.10.15/vicidial/vdremote.php on this installation.
-Remote Agents is only recommended for inbound calls because of the extra time 
+Remote Agents is only recommended for inbound calls because of the extra time
 needed to dial a number out to transfer the call to. To set up remote agents,
-just go to the vicidial admin.php page and ADD NEW REMOTE AGENTS(Make sure the 
-userID start also has a user login so they can get to the vdremote page). You 
+just go to the vicidial admin.php page and ADD NEW REMOTE AGENTS(Make sure the
+userID start also has a user login so they can get to the vdremote page). You
 will see that you can set up a remote agent entry to take multiple lines if you
 wish meaning that, for example, if you need to send all of your calls to another
 location because of a massive snowstorm(and none of your agents showed up at work)
 you just log in that remote agent record with say 10 lines and then all of those
-calls will be directed to the same number you set up for the remote agent. Then 
-again you could just get your agents to log in from home if they have a phone 
+calls will be directed to the same number you set up for the remote agent. Then
+again you could just get your agents to log in from home if they have a phone
 and computer
 
 
@@ -652,7 +652,7 @@ and computer
 PHASE 10: You are done with installation
 
 If you have problems and it is not working right(and are NOT celebrating right
-now), feel free to take a look at the FAQ for solutions to common installation 
+now), feel free to take a look at the FAQ for solutions to common installation
 errors, read the SCRATCH_INSTALL document, visit the VICIDIAL forum or send an
 email to the mailing list:
 http://www.eflo.net/VICIDIALforum/index.php

@@ -1,10 +1,10 @@
 <?php
 # audio_store.php
-# 
+#
 # Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # Central Audio Storage script
-# 
+#
 # CHANGES
 # 90511-1325 - First build
 # 90618-0640 - Fix for users going through proxy or tunnel
@@ -117,11 +117,11 @@ if (preg_match("/;|:|\/|\^|\[|\]|\"|\'|\*/",$AF_orig))
 if (strlen($sounds_web_directory) < 30)
 	{
 	$sounds_web_directory = '';
-	$possible = "0123456789cdfghjkmnpqrstvwxyz";  
-	$i = 0; 
+	$possible = "0123456789cdfghjkmnpqrstvwxyz";
+	$i = 0;
 	$length = 30;
-	while ($i < $length) 
-		{ 
+	while ($i < $length)
+		{
 		$char = substr($possible, mt_rand(0, strlen($possible)-1), 1);
 		$sounds_web_directory .= $char;
 		$i++;
@@ -135,7 +135,7 @@ if (strlen($sounds_web_directory) < 30)
 	echo _QXZ("NOTICE").": "._QXZ("new web directory created")."\n";
 	}
 
-if (!file_exists("$WeBServeRRooT/$sounds_web_directory")) 
+if (!file_exists("$WeBServeRRooT/$sounds_web_directory"))
 	{
 	echo _QXZ("ERROR").": "._QXZ("audio store web directory does not exist").": $WeBServeRRooT/$sounds_web_directory\n";
 	exit;
@@ -276,12 +276,12 @@ if ($action == "LIST")
 	$filename_sort=$MT;
 	$dirpath = "$WeBServeRRooT/$sounds_web_directory";
 	$dh = opendir($dirpath);
-	while (false !== ($file = readdir($dh))) 
+	while (false !== ($file = readdir($dh)))
 		{
 		# Do not list subdirectories
 		if ( (!is_dir("$dirpath/$file")) and (preg_match('/\.wav$|\.gsm$/', $file)) )
 			{
-			if (file_exists("$dirpath/$file")) 
+			if (file_exists("$dirpath/$file"))
 				{
 				$file_names[$i] = $file;
 				$file_epoch[$i] = filemtime("$dirpath/$file");
@@ -477,7 +477,7 @@ require("admin_header.php");
 ?>
 <TABLE WIDTH=<?php echo $page_width ?> BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR BGCOLOR=#E6E6E6><TD ALIGN=LEFT><FONT FACE="ARIAL,HELVETICA" SIZE=2><B> &nbsp; <?php echo _QXZ("Audio Store"); ?></TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" SIZE=2><B> &nbsp; </TD></TR>
 
-<?php 
+<?php
 
 echo "<TR BGCOLOR=\"#$SSframe_background\"><TD ALIGN=LEFT COLSPAN=2><img src=\"images/icon_audiostore.png\" width=42 height=42 align=left> <FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=3><B> &nbsp; \n";
 
@@ -516,7 +516,7 @@ echo "$copy_message";
 
 if ($action == "MANUALUPLOAD")
 	{
-	if ($audiofile) 
+	if ($audiofile)
 		{
 		$AF_path = preg_replace("/ /",'\ ',$AF_path);
 		$AF_path = preg_replace("/@/",'\@',$AF_path);
@@ -540,7 +540,7 @@ if ($action == "MANUALUPLOAD")
 		$audiofile_name = preg_replace("/\^/",'',$audiofile_name);
 		copy($AF_path, "$WeBServeRRooT/$sounds_web_directory/$audiofile_name");
 		chmod("$WeBServeRRooT/$sounds_web_directory/$audiofile_name", 0766);
-		
+
 		echo _QXZ("SUCCESS").": $audiofile_name "._QXZ("uploaded")."     "._QXZ("size").":" . filesize("$WeBServeRRooT/$sounds_web_directory/$audiofile_name") . "\n";
 
 		$stmt="UPDATE servers SET sounds_update='Y';";

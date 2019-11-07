@@ -109,7 +109,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 $rec_id_file = "/root/AST-copy-rec-id";
 
 $loop = 1;
-while ( $loop ) 
+while ( $loop )
 	{
 	$stmtA = "select recording_id, location, start_time from recording_log where recording_id > $recording_id and server_ip = '$VAR_server_ip' and location IS NOT NULL order by recording_id limit 1000";
 	if ($DB) { print "$stmtA\n"; }
@@ -118,7 +118,7 @@ while ( $loop )
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
 
-	if ( $sthArows == 0 ) 
+	if ( $sthArows == 0 )
 		{
 		$loop = 0;
 		break;
@@ -140,7 +140,7 @@ while ( $loop )
 		@file_parts = split('\.',$filename);
 		$file_type = $file_parts[-1];
 
-		if ( $file_type eq 'mp3' ) 
+		if ( $file_type eq 'mp3' )
 			{
 			@date = split(' ',$start_time);
 			$date = @date[0];
@@ -149,7 +149,7 @@ while ( $loop )
 
 			if ($DB) { print "|$rec_id|$date|$filename|$sub_folder|\n"; }
 
-			if (!( -d $sub_folder )) 
+			if (!( -d $sub_folder ))
 				{
 				if ($DB) { print "making subdirectory $sub_folder\n"; }
 				mkdir( $sub_folder );
@@ -162,7 +162,7 @@ while ( $loop )
 			copy($source_file_path,$dest_file_path) or die "Copy failed: $!";
 
 			}
-		else 
+		else
 			{
 			if ($DB) { print "$filename| $file_type is not an mp3 skipping\n"; }
 			}

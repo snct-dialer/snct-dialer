@@ -10,7 +10,7 @@ class odsTable {
 	private $name;
 	private $styleName;
 	private $print;
-	
+
 	private $cursorPositionX;
 	private $cursorPositionY;
 	private $horizontalSplitMode;
@@ -21,17 +21,17 @@ class odsTable {
 	private	$positionRight;
 	private	$positionTop;
 	private	$positionBottom;
-	
+
 	private $shapes;
 	private $tableColumns;
 	private $rows;
-	
+
 	public function __construct($name, $odsStyleTable = null) {
 		$this->name                         = $name;
 		if($odsStyleTable) $this->styleName = $odsStyleTable->getName;
 		else               $this->styleName = "ta1";
 		$this->print                        = "false";
-		
+
 		$this->cursorPositionX              = 0;
 		$this->cursorPositionY              = 0;
 		$this->horizontalSplitMode          = 0;
@@ -42,32 +42,32 @@ class odsTable {
 		$this->positionRight                = 0;
 		$this->positionTop                  = 0;
 		$this->positionBottom               = 0;
-		
+
 		$this->shapes                       = array();
 		$this->tableColumns                 = array();
 		$this->rows                         = array();
 	}
-	
+
 	public function getName() {
 		return $this->name;
 	}
-	
+
 	public function setHorizontalSplit($colones = 1) {
 		$this->setHorizontalSplitMode(2);
 		$this->setHorizontalSplitPosition($colones);
 		$this->setPositionRight($colones);
 	}
-	
+
 	public function setVerticalSplit($lines = 1) {
 		$this->setVerticalSplitMode(2);
 		$this->setVerticalSplitPosition($lines);
 		$this->setPositionBottom($lines);
 	}
-	
+
 	public function addDraw(odsDraw $odsDraw) {
 		array_push($this->shapes, $odsDraw);
 	}
-	
+
 	public function addRow($odsTableRow = null) {
 		if(empty($odsTableRow))
 			$this->rows[] = new odsTableRow();
@@ -85,11 +85,11 @@ class odsTable {
 		foreach ($rows as $row)
 			$this->addRow($row);
 	}
-	
+
 	public function addTableColumn($odsTableColumn) {
 		array_push($this->tableColumns, $odsTableColumn);
 	}
-	
+
 	public function setCursorPositionX($cursorPositionX) {
 		$this->cursorPositionX = $cursorPositionX;
 	}
@@ -97,57 +97,57 @@ class odsTable {
 	public function setCursorPositionY($cursorPositionY) {
 		$this->cursorPositionY = $cursorPositionY;
 	}
-	
+
 	public function setHorizontalSplitMode($horizontalSplitMode) {
 		$this->horizontalSplitMode = $horizontalSplitMode;
 	}
 
 	public function setVerticalSplitMode($verticalSplitMode) {
-		$this->verticalSplitMode = $verticalSplitMode; 
+		$this->verticalSplitMode = $verticalSplitMode;
 	}
-	
+
 	public function setHorizontalSplitPosition($horizontalSplitPosition) {
 		$this->horizontalSplitPosition = $horizontalSplitPosition;
 	}
-	
+
 	public function setVerticalSplitPosition($verticalSplitPosition) {
 		$this->verticalSplitPosition = $verticalSplitPosition;
 	}
-	
+
 	public function setPositionLeft($positionLeft) {
 		$this->positionLeft = $positionLeft;
 	}
-	
+
 	public function setPositionRight($positionRight) {
 		$this->positionRight = $positionRight;
 	}
-	
+
 	public function setPositionTop($positionTop) {
 		$this->positionTop = $positionTop;
 	}
-	
+
 	public function setPositionBottom($positionBottom) {
 		$this->positionBottom = $positionBottom;
 	}
-	
+
 	public function getContent(ods $ods, \DOMDocument $dom) {
 		$table_table = $dom->createElement('table:table');
 			$table_table->setAttribute("table:name", $this->name);
 			$table_table->setAttribute("table:style-name", $this->styleName);
 			$table_table->setAttribute("table:print", $this->print);
-			
+
 			if(count($this->shapes)) {
 				$table_shapes = $dom->createElement('table:shapes');
-				
+
 				foreach($this->shapes as $shapes) {
 					$table_shapes->appendChild($shapes->getContent($ods,$dom));
 				}
-				
+
 				$table_table->appendChild($table_shapes);
 			}
-			
+
 			if(count($this->tableColumns)) {
-				foreach($this->tableColumns as $tableColumn) 
+				foreach($this->tableColumns as $tableColumn)
 					$table_table->appendChild($tableColumn->getContent($ods,$dom));
 			} else {
 				$column = new odsTableColumn($ods->getStyleByName('co1'));
@@ -155,31 +155,31 @@ class odsTable {
 			}
 
 			if(count($this->rows)) {
-				foreach($this->rows as $row) 
+				foreach($this->rows as $row)
 					$table_table->appendChild($row->getContent($ods,$dom));
 			} else {
 				$row = new odsTableRow();
 				$table_table->appendChild($row->getContent($ods,$dom));
 			}
-				
+
 		return $table_table;
 	}
-	
+
 	public function getSettings(ods $ods, \DOMDocument $dom) {
 		$config_config_item_map_entry2 = $dom->createElement('config:config-item-map-entry');
 			$config_config_item_map_entry2->setAttribute("config:name", $this->name);
 			//$config_config_item_map_named->appendChild($config_config_item_map_entry2);
-			
+
 			$config_config_item = $dom->createElement('config:config-item',$this->cursorPositionX);
 				$config_config_item->setAttribute("config:name", "CursorPositionX");
 				$config_config_item->setAttribute("config:type", "int");
 				$config_config_item_map_entry2->appendChild($config_config_item);
-			
+
 			$config_config_item = $dom->createElement('config:config-item',$this->cursorPositionY);
 				$config_config_item->setAttribute("config:name", "CursorPositionY");
 				$config_config_item->setAttribute("config:type", "int");
 				$config_config_item_map_entry2->appendChild($config_config_item);
-	
+
 			$config_config_item = $dom->createElement('config:config-item',$this->horizontalSplitMode);
 				$config_config_item->setAttribute("config:name", "HorizontalSplitMode");
 				$config_config_item->setAttribute("config:type", "short");
@@ -194,7 +194,7 @@ class odsTable {
 				$config_config_item->setAttribute("config:name", "HorizontalSplitPosition");
 				$config_config_item->setAttribute("config:type", "int");
 				$config_config_item_map_entry2->appendChild($config_config_item);
-		
+
 			$config_config_item = $dom->createElement('config:config-item',$this->verticalSplitPosition);
 				$config_config_item->setAttribute("config:name", "VerticalSplitPosition");
 				$config_config_item->setAttribute("config:type", "int");
@@ -244,7 +244,7 @@ class odsTable {
 				$config_config_item->setAttribute("config:name", "ShowGrid");
 				$config_config_item->setAttribute("config:type", "boolean");
 				$config_config_item_map_entry2->appendChild($config_config_item);
-		
+
 		return $config_config_item_map_entry2;
 	}
 }

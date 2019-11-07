@@ -1,6 +1,6 @@
-<?php 
+<?php
 # AST_agent_performance.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -131,7 +131,7 @@ else
 	echo "$VDdisplayMESSAGE: |$PHP_AUTH_USER|$PHP_AUTH_PW|$auth_message|\n";
 	exit;
 	}
-	
+
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
 $STARTtime = date("U");
@@ -163,7 +163,7 @@ while ($i < $campaigns_to_print)
 -->
  </STYLE>
 
-<?php 
+<?php
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo "<TITLE>"._QXZ("VICIDIAL: Agent Performance")."</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET>\n";
@@ -197,18 +197,18 @@ echo " "._QXZ("NOTE: stats taken from 6 hour shift specified")."\n";
 
 else
 {
-if ($shift == 'AM') 
+if ($shift == 'AM')
 	{
-	$query_date_BEGIN = "$query_date 08:45:00";   
+	$query_date_BEGIN = "$query_date 08:45:00";
 	$query_date_END = "$query_date 15:32:59";
-	$time_BEGIN = "08:45:00";   
+	$time_BEGIN = "08:45:00";
 	$time_END = "15:33:00";
 	}
-if ($shift == 'PM') 
+if ($shift == 'PM')
 	{
-	$query_date_BEGIN = "$query_date 15:33:00";   
+	$query_date_BEGIN = "$query_date 15:33:00";
 	$query_date_END = "$query_date 23:15:00";
-	$time_BEGIN = "15:33:00";   
+	$time_BEGIN = "15:33:00";
 	$time_END = "23:15:00";
 	}
 
@@ -236,15 +236,15 @@ while ($i < $rows_to_print)
 
 	if ($non_latin < 1)
 	{
-   	 $full_name[$i]=	sprintf("%-15s", $row[2]); 
+   	 $full_name[$i]=	sprintf("%-15s", $row[2]);
 	 while(strlen($full_name[$i])>15) {$full_name[$i] = substr("$full_name[$i]", 0, -1);}
 
 	 $user[$i] =		sprintf("%-6s", $row[3]);
         while(strlen($user[$i])>6) {$user[$i] = substr("$user[$i]", 0, -1);}
        }
 	else
-	{	
-        $full_name[$i]=	sprintf("%-45s", $row[2]); 
+	{
+        $full_name[$i]=	sprintf("%-45s", $row[2]);
 	 while(mb_strlen($full_name[$i],'utf-8')>15) {$full_name[$i] = mb_substr("$full_name[$i]", 0, -1,'utf-8');}
 
  	 $user[$i] =		sprintf("%-18s", $row[3]);
@@ -280,7 +280,7 @@ while ($i < $rows_to_print)
 $k=0;
 while($k < $i)
 	{
-	$ctA[$k]="0   "; $ctB[$k]="0   "; $ctDC[$k]="0   "; $ctDNC[$k]="0   "; $ctN[$k]="0   "; $ctNI[$k]="0   "; $ctSALE[$k]="0   "; 
+	$ctA[$k]="0   "; $ctB[$k]="0   "; $ctDC[$k]="0   "; $ctDNC[$k]="0   "; $ctN[$k]="0   "; $ctNI[$k]="0   "; $ctSALE[$k]="0   ";
 	$stmt="select count(*),status from vicidial_log where call_date <= '$query_date_END' and call_date >= '$query_date_BEGIN' and user='$user[$k]' and campaign_id='" . mysqli_real_escape_string($link, $group) . "' group by status;";
 	if ($non_latin > 0)
 	{

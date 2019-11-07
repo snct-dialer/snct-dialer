@@ -1,12 +1,12 @@
-<?php 
+<?php
 # AST_timeonVDADallSUMMARY_mobile.php
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>, Joe Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
 #
 # Mobile version of summary report for all campaigns live real-time stats for the VICIDIAL Auto-Dialer all servers
 #
 # STOP=4000, SLOW=40, GO=4 seconds refresh interval
-# 
+#
 # changes:
 #
 # 190129-1258 - First release
@@ -187,9 +187,9 @@ if ( (!preg_match('/\-ALL/i', $LOGallowed_campaigns)) )
 
 $campaign_typeSQL='';
 if (count($types)<2) {
-	if ($types == 'AUTO-DIAL ONLY')			{$campaign_typeSQL="and dial_method IN('RATIO','ADAPT_HARD_LIMIT','ADAPT_TAPERED','ADAPT_AVERAGE')";} 
-	if ($types == 'MANUAL ONLY')			{$campaign_typeSQL="and dial_method IN('MANUAL','INBOUND_MAN')";} 
-	if ($types == 'INBOUND ONLY')			{$campaign_typeSQL="and campaign_allow_inbound='Y'";} 
+	if ($types == 'AUTO-DIAL ONLY')			{$campaign_typeSQL="and dial_method IN('RATIO','ADAPT_HARD_LIMIT','ADAPT_TAPERED','ADAPT_AVERAGE')";}
+	if ($types == 'MANUAL ONLY')			{$campaign_typeSQL="and dial_method IN('MANUAL','INBOUND_MAN')";}
+	if ($types == 'INBOUND ONLY')			{$campaign_typeSQL="and campaign_allow_inbound='Y'";}
 } else {
 	if (!in_array('LIST ALL CAMPAIGNS', $types)) {
 		$campaign_typeSQL='and (';
@@ -267,10 +267,10 @@ $HEADER.="-->\n";
 $HEADER.=" </STYLE>\n";
 $HEADER.="<link rel=\"stylesheet\" type=\"text/css\" href=\"vicidial_stylesheet.php\">\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
-$HEADER.="<script src='chart/Chart.js'></script>\n"; 
+$HEADER.="<script src='chart/Chart.js'></script>\n";
 $HEADER.="<script src=\"pureknob.js\"></script>\n";
 
-$HEADER.="<TITLE>$report_name</TITLE></HEAD><BODY marginheight=0 marginwidth=0 leftmargin=0 topmargin=0 onLoad='StartRefresh()' onUnload='javascript:clearInterval(rInt)'>\n"; # BGCOLOR='#".$SSmenu_background."' 
+$HEADER.="<TITLE>$report_name</TITLE></HEAD><BODY marginheight=0 marginwidth=0 leftmargin=0 topmargin=0 onLoad='StartRefresh()' onUnload='javascript:clearInterval(rInt)'>\n"; # BGCOLOR='#".$SSmenu_background."'
 
 $MAIN.="<FORM action=$PHP_SELF method=POST><TABLE CELLPADDING=4 CELLSPACING=0><TR><TD><B>$report_name</B><BR>";
 
@@ -401,15 +401,15 @@ while($k<$groups_to_print)
 			{
 			$row=mysqli_fetch_row($rslt);
 
-			if (preg_match("/LIVE/i",$row[0])) 
+			if (preg_match("/LIVE/i",$row[0]))
 				{$out_live["$group"]++;}
 			else
 				{
-				if (preg_match("/IVR/i",$row[0])) 
+				if (preg_match("/IVR/i",$row[0]))
 					{$in_ivr["$group"]++;}
-				if (preg_match("/CLOSER/i",$row[0])) 
+				if (preg_match("/CLOSER/i",$row[0]))
 					{$nothing=1;}
-				else 
+				else
 					{$out_ring["$group"]++;}
 				}
 			$out_total["$group"]++;
@@ -464,13 +464,13 @@ while($k<$groups_to_print)
 			$call_time_MS = "$call_time_M_int:$call_time_SEC";
 			$call_time_MS =		sprintf("%7s", $call_time_MS);
 			$G = '';		$EG = '';
-			if (preg_match("/PAUSED/i",$row[3])) 
+			if (preg_match("/PAUSED/i",$row[3]))
 				{
-				if ($call_time_M_int >= 30) 
-					{$i++; continue;} 
+				if ($call_time_M_int >= 30)
+					{$i++; continue;}
 				else
 					{
-					$agent_paused["$group"]++;  
+					$agent_paused["$group"]++;
 					$agent_total["$group"]++;
 					}
 				}
@@ -706,16 +706,16 @@ $MAIN.="<table class='android_table' border='0' cellpadding='0' cellspacing='5'>
 $MAIN.="<tr valign='top'>";
 $MAIN.="<th rowspan='2'><font class='android_campaign_header'>"._QXZ("CAMPAIGNS").": </font><BR><select name=types size='5' multiple class='form_field_android'>\n";
 $MAIN.="<option value=\"LIST ALL CAMPAIGNS\"";
-	if ($types == 'LIST ALL CAMPAIGNS') {$MAIN.=" selected";} 
+	if ($types == 'LIST ALL CAMPAIGNS') {$MAIN.=" selected";}
 $MAIN.=">"._QXZ("LIST ALL CAMPAIGNS")."</option>";
 $MAIN.="<option value=\"AUTO-DIAL ONLY\"";
-	if ($types == 'AUTO-DIAL ONLY') {$MAIN.=" selected";} 
+	if ($types == 'AUTO-DIAL ONLY') {$MAIN.=" selected";}
 $MAIN.=">"._QXZ("AUTO-DIAL ONLY")."</option>";
 $MAIN.="<option value=\"MANUAL ONLY\"";
-	if ($types == 'MANUAL ONLY') {$MAIN.=" selected";} 
+	if ($types == 'MANUAL ONLY') {$MAIN.=" selected";}
 $MAIN.=">"._QXZ("MANUAL ONLY")."</option>";
 $MAIN.="<option value=\"INBOUND ONLY\"";
-	if ($types == 'INBOUND ONLY') {$MAIN.=" selected";} 
+	if ($types == 'INBOUND ONLY') {$MAIN.=" selected";}
 $MAIN.=">"._QXZ("INBOUND ONLY")."</option>";
 $MAIN.=$campaign_options;
 $MAIN.="</select> \n";
@@ -871,7 +871,7 @@ function StartRefresh(current_refresh_rate) {
 //							borderWidth: 1,
 //							stack: 'Stack 0',
 //							data: agent_total
-//						}, 
+//						},
 //						{
 							label: '<?php echo _QXZ("INCALL"); ?>',
 							backgroundColor: 'rgb(54, 162, 235)',
@@ -1016,7 +1016,7 @@ function StartRefresh(current_refresh_rate) {
 					var currentChartData=averagesChartData;
 					var titleText='<?php echo _QXZ("Averages Report"); ?>';
 				}
-					
+
 				var ctx = document.getElementById('AndroidReportCanvas').getContext('2d');
 				MainGraph = new Chart(ctx, {
 					type: CanvasChartType,
@@ -1052,7 +1052,7 @@ function StartRefresh(current_refresh_rate) {
 					}
 				});
 
-			
+
 			for (var g=0; g<CAMPAIGNS.length; g++) {
 
 				var campaign_gauge_name=CAMPAIGNS[g];
@@ -1175,7 +1175,7 @@ function SwitchGraphs(current_graph_type) {
 	document.getElementById('callsToday_graph_button').className='android_offbutton_noshadow';
 	document.getElementById('average_graph_button').className='android_offbutton_noshadow';
 
-	if (current_graph_type) 
+	if (current_graph_type)
 		{
 		document.getElementById('graph_type').value=current_graph_type;
 		}
@@ -1207,8 +1207,8 @@ function RefreshReportWindow() {
 		{
 		xmlhttp = new XMLHttpRequest();
 		}
-	if (xmlhttp) 
-		{ 
+	if (xmlhttp)
+		{
 		var rpt_query="";
         var InvForm = document.forms[0];
 		var types_str="";
@@ -1222,12 +1222,12 @@ function RefreshReportWindow() {
 			}
 
 		// alert(rpt_query);
-		xmlhttp.open('POST', 'campaign_summary_mobile_report.php'); 
+		xmlhttp.open('POST', 'campaign_summary_mobile_report.php');
 		xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 		xmlhttp.send(rpt_query);
-		xmlhttp.onreadystatechange = function() 
-			{ 
-			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+		xmlhttp.onreadystatechange = function()
+			{
+			if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 				{
 				response_txt = null;
 				response_txt = xmlhttp.responseText;
@@ -1318,7 +1318,7 @@ function RefreshReportWindow() {
 //							borderWidth: 1,
 //							stack: 'Stack 0',
 //							data: agent_total
-//						}, 
+//						},
 //						{
 							label: '<?php echo _QXZ("INCALL"); ?>',
 							backgroundColor: 'rgb(54, 162, 235)',
@@ -1463,11 +1463,11 @@ function RefreshReportWindow() {
 					var currentChartData=averagesChartData;
 					var titleText='<?php echo _QXZ("Averages Report"); ?>';
 				}
-				
+
 
 				if (currentChartData.labels.length!=MainGraph.data.labels.length){ // New axis, destroy old graphs and gauges
 					MainGraph.destroy();
-					
+
 					var ctx = document.getElementById('AndroidReportCanvas').getContext('2d');
 					MainGraph = new Chart(ctx, {
 						type: CanvasChartType,
@@ -1504,18 +1504,18 @@ function RefreshReportWindow() {
 					});
 
 				} else {
-					for (var j=0; j<currentChartData.datasets.length; j++) 
+					for (var j=0; j<currentChartData.datasets.length; j++)
 						{
-						for (var k=0; k<currentChartData.datasets[j].data.length; k++) 
+						for (var k=0; k<currentChartData.datasets[j].data.length; k++)
 							{
-							if (MainGraph.data.datasets[j].data[k]!=currentChartData.datasets[j].data[k]) 
+							if (MainGraph.data.datasets[j].data[k]!=currentChartData.datasets[j].data[k])
 								{
 								MainGraph.data.datasets[j].data[k]=currentChartData.datasets[j].data[k];
 								}
 							}
 						}
 					MainGraph.data=currentChartData;
-					MainGraph.update();	
+					MainGraph.update();
 				}
 
 				for (var f=0; f<ALL_CAMPAIGNS.length; f++) {
@@ -1632,13 +1632,13 @@ function RefreshReportWindow() {
 
 				// window.innerWidth+", "+window.innerHeight+"\n<BR>\n"+gauge_size+"<BR>
 				var settingsText="<table width='100%' border='0' cellpadding='0' cellspacing='5'><tr valign='top'><th><a class='nodec' onClick=\"ToggleVisibility('graph_display', 1); ToggleVisibility('settings_display', 0); ToggleVisibility('percentages_display', 0);\"><div class='android_switchbutton'><?php echo _QXZ("GRAPHS"); ?></div></a></th></tr><tr valign='bottom'><th><a class='nodec' onClick=\"ToggleVisibility('graph_display', 0); ToggleVisibility('settings_display', 0); ToggleVisibility('percentages_display', 1);\"><div class='android_switchbutton'><?php echo _QXZ("PERCENTS"); ?></div></a></th></tr><tr><td>";
-				
+
 				var d = new Date();
 				var NOW_TIME=("00" + (d.getMonth() + 1)).slice(-2) + "/" + ("00" + d.getDate()).slice(-2) + "/" + d.getFullYear() + " " + ("00" + d.getHours()).slice(-2) + ":" + ("00" + d.getMinutes()).slice(-2) + ":" + ("00" + d.getSeconds()).slice(-2);
 				for (var i=0; i<CAMPAIGNS.length; i++) {
 					settingsText+="\n\n<BR><div class='android_settings_table'>";
 					settingsText+="<font class='android_auto'><B>"+CAMPAIGNS[i]+":</B>";
-					settingsText+="<table cellpadding=0 cellspacing=0 width='100%'>";	
+					settingsText+="<table cellpadding=0 cellspacing=0 width='100%'>";
 					settingsText+="<TR BGCOLOR=\"#<?php echo $SSstd_row2_background; ?>\">";
 					settingsText+="<TD ALIGN=RIGHT><font class='android_auto_small'><B><?php echo _QXZ("STATUSES"); ?>:</B></font></TD><TD ALIGN=LEFT colspan='3'><font class='android_auto_small'>&nbsp; "+DIALstatuses[i]+" &nbsp; &nbsp; </font></TD>";
 					settingsText+="<TD ALIGN=RIGHT><font class='android_auto_small'><B><?php echo _QXZ("HOPPER LEVEL"); ?>:</B></font></TD><TD ALIGN=LEFT><font class='android_auto_small'>&nbsp; "+HOPlev[i]+" &nbsp; &nbsp; </font></TD>";
@@ -1665,7 +1665,7 @@ function RefreshReportWindow() {
 					settingsText+="</TR>";
 					settingsText+="</TABLE>\n";
 
-					settingsText+="<table cellpadding=0 cellspacing=0 width='100%'>";	
+					settingsText+="<table cellpadding=0 cellspacing=0 width='100%'>";
 					settingsText+="<TR BGCOLOR=\"#<?php echo $SSstd_row4_background; ?>\">";
 					settingsText+="<TD ALIGN=RIGHT><font class='android_auto_small'><B><?php echo _QXZ("STATUS CATEGORIES"); ?>:</B></font></TD>";
 					settingsText+="<TD ALIGN=LEFT COLSPAN=7>";
@@ -1695,7 +1695,7 @@ function RefreshReportWindow() {
 					settingsText+=" &nbsp; &nbsp;</font></TD>";
 					settingsText+="<TD ALIGN=RIGHT><font class='android_auto_small'><B><?php echo _QXZ("DIFF"); ?>:</B></font></TD><TD ALIGN=LEFT><font class='android_auto_small'>&nbsp; "+diffpctONEMIN_ary[i]+"% &nbsp; &nbsp; </font></TD>";
 					settingsText+="</TR></table>";
-					settingsText+="</div>";				
+					settingsText+="</div>";
 				}
 				settingsText+="</td></tr></table>";
 				document.getElementById('settings_display').innerHTML=settingsText;
@@ -1710,14 +1710,14 @@ function RefreshReportWindow() {
 	}
 
 /*
-				if (MainGraph) 
+				if (MainGraph)
 					{
-					if (document.getElementById('graph_type').value!=graph_type) 
+					if (document.getElementById('graph_type').value!=graph_type)
 						{
 						graph_type=document.getElementById('graph_type').value;
 						MainGraph.destroy();
-						} 
-					else 
+						}
+					else
 						{
 						MainGraph.update();
 						}

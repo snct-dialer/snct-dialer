@@ -1,6 +1,6 @@
-<?php 
+<?php
 # AST_agent_time_sheet_archive.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -257,7 +257,7 @@ if ( ($SSweb_logo=='default_old') and ($logo_old > 0) )
 	}
 if ( ($SSweb_logo!='default_new') and ($SSweb_logo!='default_old') )
 	{
-	if (file_exists("./images/vicidial_admin_web_logo$SSweb_logo")) 
+	if (file_exists("./images/vicidial_admin_web_logo$SSweb_logo"))
 		{
 		$selected_logo = "./images/vicidial_admin_web_logo$SSweb_logo";
 		$selected_small_logo = "./images/vicidial_admin_web_logo$SSweb_logo";
@@ -277,7 +277,7 @@ if ( ($SSweb_logo!='default_new') and ($SSweb_logo!='default_old') )
 -->
  </STYLE>
 
-<?php 
+<?php
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo "<TITLE>"._QXZ("ADMIN: Agent Time Sheet")."</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
 echo "<a href=\"./admin.php\">"._QXZ("ADMIN")."</a>: "._QXZ("Agent Time Sheet")."\n";
@@ -303,9 +303,9 @@ echo " "._QXZ("NOTE: stats taken from available agent log data")."\n";
 
 else
 {
-$query_date_BEGIN = "$query_date 00:00:00";   
+$query_date_BEGIN = "$query_date 00:00:00";
 $query_date_END = "$query_date 23:59:59";
-$time_BEGIN = "00:00:00";   
+$time_BEGIN = "00:00:00";
 $time_END = "23:59:59";
 
 $stmt="select full_name from vicidial_users where user='$agent';";

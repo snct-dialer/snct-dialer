@@ -18,13 +18,13 @@ use strict;
 
 # Author:  Jay D. Allen  jay@f2it.com
 # Version:  1.4  - July 2007
-# 
-#  1.  Delete any stale .lock* files.  Stale is defined as ctime/atime more 
-#      a few minutes old (maybe 30 minutes to be safe)?  Look into the cause of 
+#
+#  1.  Delete any stale .lock* files.  Stale is defined as ctime/atime more
+#      a few minutes old (maybe 30 minutes to be safe)?  Look into the cause of
 #      these stake lock files?  What versions of Asterisk are effected?
 #      Nasty bug!  .locked mailboxes _silently_ drop voicemail recordings.
 #  2.  Remove voicemail files older than a policy date
-#  3.  Possibly a report mode that just shows the age of the mail/boxes but 
+#  3.  Possibly a report mode that just shows the age of the mail/boxes but
 #      does nothing
 #      Report on number of messages per box, vs quota max
 #      Send whiny emails to users about voicemail quota.
@@ -102,7 +102,7 @@ my $result = GetOptions ("active"      => \$ACTIVE,
                          "help"        => \$HELP,         # flag
                          "mailbox=i"   => \$ONE_MAILBOX,  # flag
                          "spool=s"     => \$VM_SPOOL,
-                         "user=s"      => \$VM_USER) or pod2usage(2); 
+                         "user=s"      => \$VM_USER) or pod2usage(2);
 ## Parse options and print usage if there is a syntax error,
 ## or if usage was explicitly requested.
 pod2usage(1) if $HELP;
@@ -149,7 +149,7 @@ Delete the Contents of the passed directory.
 sub delete_old_messages{
     my $MAILBOX=shift;
     my $path=shift;
-    
+
     if (! delete_lock_file( $MAILBOX, $path)){
         foreach my $filename (sort grep ( /^msg.*/, readdir($MAILBOX))){
             my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks) = stat("$path/$filename");
@@ -160,7 +160,7 @@ sub delete_old_messages{
                 if ($DEBUG and !$REPORT){ "DELETE $filename\n"; }
             } else { if ($REPORT){print "\tKEEP:  $size: ".localtime($mtime).": $filename\n"} };
         }
-        rewinddir($MAILBOX); 
+        rewinddir($MAILBOX);
     } else {
         if ($REPORT){print "Mailbox $MAILBOX is LOCKED\n"};
     }
@@ -205,10 +205,10 @@ sub check_message_files{
             if ($DEBUG){print "\tCheck presence:  $prefix\.$suffix\n";}
             $mboxindx{$prefix}++;
         }
-    } # End of foreach $fixfile 
- 
+    } # End of foreach $fixfile
+
     foreach my $index (keys %mboxindx){
-        if ($mboxindx{$index} != $#SUFFIXES + 1) { 
+        if ($mboxindx{$index} != $#SUFFIXES + 1) {
             print "Broken Mailbox:  $index:  $mboxindx{$index}\n" ;
 #            if ((! $REPORT) and $BAD){
 #                # Remove files where incomplete.
@@ -256,12 +256,12 @@ sub rename_first_message {
         my ($prefix,$suffix)=split(/\./,$filename);
         foreach my $suff (@SUFFIXES){
             print "\tRenaming files: $path/$prefix.$suff to $path/msg0000\.$suff\n";
-            if ($ACTIVE){ 
+            if ($ACTIVE){
                 rename "$path/$prefix.$suff", "$path/msg0000\.$suff";
-            } else { 
-                print "\tWould rename files: $path/$prefix.$suff to $path/msg0000\.$suff\n"; 
+            } else {
+                print "\tWould rename files: $path/$prefix.$suff to $path/msg0000\.$suff\n";
             }
         }
     }
 }
-    
+

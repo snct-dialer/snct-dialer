@@ -1,9 +1,9 @@
 #!/usr/bin/perl
 #
 # agi-VDADautoREMINDERxfer.agi      version 2.6
-# 
-# runs when a call comes in from the VICIDIAL auto_dialer. This script will 
-# send the calls out to specified voicemail boxes or specified extensions if 
+#
+# runs when a call comes in from the VICIDIAL auto_dialer. This script will
+# send the calls out to specified voicemail boxes or specified extensions if
 # called person presses specified key(1,2,3).
 # The voicemail box is defined per-lead in the vicidial_list.security_phrase field
 # The exten xfer number is defined per-lead in the vicidial_list.comments field
@@ -19,7 +19,7 @@
 # It is recommended that you use remote_agents for activation of this script
 #
 # You need to put lines similar to those below in your extensions.conf file:
-# 
+#
 # ;VICIDIAL_auto_dialer transfer script:
 # exten => 8372,1,AGI(call_log.agi,${EXTEN})
 # exten => 8372,2,AGI(agi-VDADautoREMINDERxfer.agi,${EXTEN})
@@ -113,7 +113,7 @@ foreach(@conf)
 if (!$VARDB_port) {$VARDB_port='3306';}
 if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout.$year-$mon-$mday";}
 
-use DBI;	  
+use DBI;
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
@@ -229,7 +229,7 @@ if ( (
 
 if ($AGILOG) {$agi_string = "AGI Environment Dump:";   &agi_output;}
 
-foreach $i (sort keys %AGI) 
+foreach $i (sort keys %AGI)
 {
 	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
 }
@@ -376,7 +376,7 @@ if ($pin == "1")	### send call to voicemail
 	$stmtA = "UPDATE vicidial_auto_calls set status='XFER', stage='XFER-$drop_timer' where callerid='$callerid';";
 	$affected_rows = $dbhA->do($stmtA);
 	if ($AGILOG) {$agi_string = "--    VDAD XFER : |$affected_rows|update of vac table: $callerid\n|$stmtA|";   &agi_output;}
-	
+
 	$stmtA = "UPDATE vicidial_list set status='VM' where lead_id = '$CIDlead_id';";
 		if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 	$affected_rows = $dbhA->do($stmtA);
@@ -432,12 +432,12 @@ if ($pin == "1")	### send call to voicemail
 
 if ($pin == "2")	### mark call as a CALLBK
 	{
-	
+
 	# Thank you for your response, your agent will be contacting you shortly.
 	$stmtA = "DELETE from vicidial_auto_calls where callerid='$callerid';";
 	$affected_rows = $dbhA->do($stmtA);
 	if ($AGILOG) {$agi_string = "--    VDAD DONE : |$affected_rows|delete of vac table: $callerid\n|$stmtA|";   &agi_output;}
-	
+
 	$stmtA = "UPDATE vicidial_list set status='CALLBK' where lead_id = '$CIDlead_id';";
 		if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 	$affected_rows = $dbhA->do($stmtA);
@@ -483,7 +483,7 @@ if ($pin == "3")	### send call to extension
 	$stmtA = "UPDATE vicidial_auto_calls set status='XFER' where callerid='$callerid';";
 	$affected_rows = $dbhA->do($stmtA);
 	if ($AGILOG) {$agi_string = "--    VDAD XFER : |$affected_rows|update of vac table: $callerid\n|$stmtA|";   &agi_output;}
-	
+
 	$stmtA = "UPDATE vicidial_list set status='XFER' where lead_id = '$CIDlead_id';";
 		if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 	$affected_rows = $dbhA->do($stmtA);
@@ -574,8 +574,8 @@ undef $interrupt_digit;
 
 # Hello, this is a courtesy call from ACME Industries reminding you that the deadline for the submission of orders for the June 5th batch delivery is tomorrow, March 10th:
 	# second audio file
-#  If you would like to leave a message for your agent please press 1. 
-#  If you would like to have your agent call you back please press 2. 
+#  If you would like to leave a message for your agent please press 1.
+#  If you would like to have your agent call you back please press 2.
 	# third audio file
 # Thank you, Goodbye
 
@@ -616,7 +616,7 @@ $channel_status = $AGI->channel_status("$channel");
 			if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 		$affected_rows = $dbhA->do($stmtA);
 		if ($AGILOG) {$agi_string = "--    VDAD vicidial_list update: N|$affected_rows|$CIDlead_id";   &agi_output;}
-		}                
+		}
 
 while ($digit_loop_counter < 1)
 	{
@@ -632,13 +632,13 @@ while ($digit_loop_counter < 1)
 		{
 		$digit_loop_counter=1;
 		}
-	
+
 	$digit_loop_counter++;
 	}
 
 $totalDTMF =~ s/\D//gi;
 $pin = $totalDTMF;
-if ($totalDTMF) 
+if ($totalDTMF)
 	{
 	if ($AGILOG) {$agi_string = "digit |$digit|     TotalDTMF |$totalDTMF|";   &agi_output;}
 	return;
@@ -682,13 +682,13 @@ while ($digit_loop_counter < 1)
 		{
 		$digit_loop_counter=1;
 		}
-	
+
 	$digit_loop_counter++;
 	}
 
 $totalDTMF =~ s/\D//gi;
 $pin = $totalDTMF;
-if ($totalDTMF) 
+if ($totalDTMF)
 	{
 	if ($AGILOG) {$agi_string = "digit |$digit|     TotalDTMF |$totalDTMF|";   &agi_output;}
 	return;

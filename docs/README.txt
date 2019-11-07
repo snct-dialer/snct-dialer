@@ -5,8 +5,8 @@
 +------------------------------------------------------------------------------+
 
 This suite of programs is designed to work with the Asterisk Open-source PBX
-(http://www.asterisk.org) as a cross-platform GUI client and the supporting 
-server side applications necessary for the features of the GUI application to 
+(http://www.asterisk.org) as a cross-platform GUI client and the supporting
+server side applications necessary for the features of the GUI application to
 work with Asterisk. The client-side GUI apps are available as web pages running
 AJAX scripted web pages(Firefox recommended)
 
@@ -27,48 +27,48 @@ Included in this distribution of the Asterisk GUI client are:
 
 
 DESCRIPTION:
-This program was designed as a GUI client for the Asterisk PBX with Zaptel 
+This program was designed as a GUI client for the Asterisk PBX with Zaptel
 trunks or IAX or SIP VOIP trunks and SIP/IAX/Zap hard or softphones or devices
-as extensions, it could be adapted to other functions, but it was designed for 
-Zap/IAX/SIP users. The client programs are web-based and will run on most 
+as extensions, it could be adapted to other functions, but it was designed for
+Zap/IAX/SIP users. The client programs are web-based and will run on most
 modern web browsers.
 
 
 KNOWN BUGS:
-- With ViciDial(and Asterisk in general) you cannot record a native bridge 
-  VOIP-only conversation unless you go into a conference, you also cannot 
-  monitor a native-bridge VOIP-only conversation unless you use a separate 
+- With ViciDial(and Asterisk in general) you cannot record a native bridge
+  VOIP-only conversation unless you go into a conference, you also cannot
+  monitor a native-bridge VOIP-only conversation unless you use a separate
   specialized application like OrecX
 
 
 VERSION HISTORY:
 
 0.7 - First public release - 2003-11-18
-This is the first release of the Asterisk GUI Client code, it is entirely 
-written in Perl with portability and rapid development/testing in mind. The perl 
-code is NOT strict, it was written loose and fast and has been functioning 
+This is the first release of the Asterisk GUI Client code, it is entirely
+written in Perl with portability and rapid development/testing in mind. The perl
+code is NOT strict, it was written loose and fast and has been functioning
 rather well in a production environment of 60 clients for one month now.
 
 0.8 - Second public release - 2003-12-09
 - Several bug fixes
 - New button for monitoring live extensions on Zap channels
-- Changed the method that the live channels/phone were populated on the 
+- Changed the method that the live channels/phone were populated on the
 listboxes of the client app.
-- Changed the Asterisk/Manager commands to work correctly with new Asterisk CVS 
-versions requirements. 
-- A new routine was enabled to allow for making sure that the updater is   
-running and bringing up a popup alert window on the client if the updater has 
+- Changed the Asterisk/Manager commands to work correctly with new Asterisk CVS
+versions requirements.
+- A new routine was enabled to allow for making sure that the updater is
+running and bringing up a popup alert window on the client if the updater has
 not updated in the last 6 seconds. (this also added a new MySQL table)
-- Changed the updater to run every 450 milliseconds instead of every 333 
-milliseconds. 
-- Updater changed to allow for ringing channels to appear in the live_channels 
-table. 
+- Changed the updater to run every 450 milliseconds instead of every 333
+milliseconds.
+- Updater changed to allow for ringing channels to appear in the live_channels
+table.
 
 0.9 - Third public release - 2004-02-05
-The majority of the work in this release it to make it more stable and fix some 
-pretty bad bugs. We created the Asterisk Central Queue System to address the 
-problem with buffer-overflows in the manager interface of Asterisk causing total 
-system deadlocks. We also completed and touched-up many other features that we 
+The majority of the work in this release it to make it more stable and fix some
+pretty bad bugs. We created the Asterisk Central Queue System to address the
+problem with buffer-overflows in the manager interface of Asterisk causing total
+system deadlocks. We also completed and touched-up many other features that we
 didn't finish in previous releases. Here is the list of changes:
 - Several bug fixes
 - Inclusion of listing for active SIP/Local channels and ability to hang them up
@@ -79,11 +79,11 @@ didn't finish in previous releases. Here is the list of changes:
 - Recording for conferences is now able to record all audio in and out
 - Added ability to send DTMF tones within a conference
 - Changed alert window for updater being down timeout to 20 seconds
-- Added an option for using the new Asterisk Central Queue System(ACQS) that 
-reduces the risk of deadlocks that occur with buffer-overflows on remote manager 
+- Added an option for using the new Asterisk Central Queue System(ACQS) that
+reduces the risk of deadlocks that occur with buffer-overflows on remote manager
 interface connections
-- Included new script to run at boot time and rotate the logs as well as a 
-keepalive script for the new ACQS 
+- Included new script to run at boot time and rotate the logs as well as a
+keepalive script for the new ACQS
 - Changed non-AGI server-side scripts to allow for a single config file
 - Detailed activity logging to text file option added
 - Activity logging added to all non-AGI server applications
@@ -106,13 +106,13 @@ keepalive script for the new ACQS
 
 1.0.0 - Sixth public release - 2004-03-26
 - a few bug fixes for the GUI and server apps
-- Major documentation changes with the addition of the SCRATCH_INSTALL.txt file 
-that goes step-by-step through the entire install process of an asterisk server 
+- Major documentation changes with the addition of the SCRATCH_INSTALL.txt file
+that goes step-by-step through the entire install process of an asterisk server
 from blank hardware to astguiclient installation and configuration.
 - added pretty buttons to the WINphoneAPP
-- added blind transfer to voicemail, blind transfer to another extension and 
+- added blind transfer to voicemail, blind transfer to another extension and
 blind external transfer
-- new install script created to put server files in default positions and set 
+- new install script created to put server files in default positions and set
 permissions to execute
 - new sql file to create all tables by running a script execute command in MySQL
 
@@ -143,9 +143,9 @@ permissions to execute
 - WINphoneAPP config option to allow one persistant mysql DB connection
 - WINphoneAPP config option to allow modification of info refresh interval
 - VICIDIAL modified to allow for auto-dial of next number
-  (NOTE: if upgrading from 1.0.1 you do not need to update any web pages or 
-   server apps, this update is only a client GUI and docs update. Note that the 
-   AST_VICI_conf.pl has been updated, so you may need to modify your client 
+  (NOTE: if upgrading from 1.0.1 you do not need to update any web pages or
+   server apps, this update is only a client GUI and docs update. Note that the
+   AST_VICI_conf.pl has been updated, so you may need to modify your client
    configs to enable new features.)
 
 1.0.3 - Ninth public release - 2004-07-21
@@ -160,15 +160,15 @@ permissions to execute
   + added some new stats to the admin web pages
   + created a limited predictive-dialer that will dial a certain amount of leads
   per logged in agent and direct the calls that are picked up to the next agent
-  + ability to transfer the called line and the 3rd party call into a separate 
+  + ability to transfer the called line and the 3rd party call into a separate
   meetme room and continue on dialing
  UPGRADE NOTES:
-  * if upgrading from 1.0.2 you need to update the web pages and all 
-   server apps. 
+  * if upgrading from 1.0.2 you need to update the web pages and all
+   server apps.
   * if upgrading from 1.0.2 run the upgrade_1.0.3.sql script in MySQL
   * if upgrading from 1.0.2 you may want to run AST_upgrade_1.0.3.pl to update
    your called counts of your leads in vicidial_list.
-  * AST_SERVER_conf.pl has been updated, so you may need to modify your server 
+  * AST_SERVER_conf.pl has been updated, so you may need to modify your server
    configs to enable new features.
   * client app names have been changed to astVICIDIAL and astGUIclient
 
@@ -180,8 +180,8 @@ permissions to execute
 - adjusted timings in the VICIDIAL autodialer for better performance
 - added streamlined manager interface logins to help scripts run more smoothly
  UPGRADE NOTES:
-  * if upgrading from 1.0.3 you need to update the web pages and all 
-   server apps. 
+  * if upgrading from 1.0.3 you need to update the web pages and all
+   server apps.
   * if upgrading from 1.0.3 run the upgrade_1.0.4.sql script in MySQL
   * if upgrading from 1.0.3 you may want to run ADMIN_adjust_GMTnow_on_leads.pl
    to update the timezone in the vicidial_list table
@@ -201,13 +201,13 @@ permissions to execute
 - added more options to install script
 - changed CLI lead loader to use Net::MySQL instead of DBI
 - modified several scripts that handle CallerID because of the early October
-  change in the CVS of outputting CID info as two separate fields(CallerID and 
+  change in the CVS of outputting CID info as two separate fields(CallerID and
   CallerIDname) instead of everything being sent in CallerID.
 UPGRADE NOTES:
- * if upgrading from 1.0.4 you need to update the web pages and all 
-   server and client apps. 
+ * if upgrading from 1.0.4 you need to update the web pages and all
+   server and client apps.
  * if upgrading from 1.0.4 run the upgrade_1.0.5.sql script in MySQL
- * if using a CVS version 2004-10-07 or newer or release 1.0.3 or newer 
+ * if using a CVS version 2004-10-07 or newer or release 1.0.3 or newer
    change the line in extensions.conf
 	exten => 8309,2,Monitor(wav,${CALLERIDNUM})
 		change to
@@ -223,8 +223,8 @@ UPGRADE NOTES:
 - updated the SCRATCH_INSTALL instructions and corrected errors
 - see the TODO.txt file for other items DONE in this release
 UPGRADE NOTES:
- * if upgrading from 1.0.5 you need to update the web pages and all 
-   server and client apps. 
+ * if upgrading from 1.0.5 you need to update the web pages and all
+   server and client apps.
  * if upgrading from 1.0.5 run the upgrade_1.0.6.sql script in MySQL
  * if upgrading from 1.0.5 add a campaign "CLOSER" to enable closers and
    inbound call taking through the VICIDIAL application
@@ -243,11 +243,11 @@ UPGRADE NOTES:
 - added help popups to every page of the admin web pages to explain fields
 - see the TODO.txt file for other items DONE in this release
 UPGRADE NOTES:
- * if upgrading from 1.0.6 you need to update the web pages and all 
-   server and client apps. 
+ * if upgrading from 1.0.6 you need to update the web pages and all
+   server and client apps.
  * if upgrading from 1.0.6 run the upgrade_1.1.0.sql script in MySQL
  * if upgrading from 1.0.6 you will need to configure your client parameters on
-   the admin web page and remove them from the client computers (except for the 
+   the admin web page and remove them from the client computers (except for the
    fields that are in the sample AST_VICI_conf.pl file)
  * older client apps are not compatible with this version, you must upgrade
 
@@ -262,8 +262,8 @@ UPGRADE NOTES:
 - fixed the send-to-vmail portion of inbound AGI scripts
 - added simple web-based lead file loader for VICIDIAL
 UPGRADE NOTES:
- * if upgrading from 1.1.0 you need to update the web pages and all 
-   server apps. 
+ * if upgrading from 1.1.0 you need to update the web pages and all
+   server apps.
  * if upgrading from 1.1.0 run the upgrade_1.1.1.sql script in MySQL
 
 1.1.2 - Fifteenth public release - 2005-06-06
@@ -299,7 +299,7 @@ UPGRADE NOTES:
 1.1.4 - Seventeenth public release - 2005-06-24
 - fixed new Local channel bugs caused by changes in Asterisk 1.0.8 and CVS
 - added beta support for SIP trunks
-- added ability to send VICIDIAL outbound calls to custom AGI script per 
+- added ability to send VICIDIAL outbound calls to custom AGI script per
    campaign and included new survey sample AGI script
 - added better Asterisk shutdown detection to AST_manager_listen script
 UPGRADE NOTES:
@@ -371,7 +371,7 @@ UPGRADE NOTES:
       default places
    (make sure AST_SERVER_conf.pl and dbconnect.php files are config'd properly)
   - perl/TK clients have been slightly updated(will be unsupported soon)
-  - multi-language versions of web-clients and admin pages are available in the 
+  - multi-language versions of web-clients and admin pages are available in the
     LANG_agc.zip and LANG_admin.zip files and can be unzipped into your webroot
     directory. Make sure you check the dbconnect.php file in each directory.
  * if upgrading from 1.1.6 run the upgrade_1.1.7.sql script in MySQL
@@ -391,7 +391,7 @@ UPGRADE NOTES:
     + or run the install_server_files.pl script to put all items in their
       default places
    (make sure AST_SERVER_conf.pl and dbconnect.php files are config'd properly)
-  - multi-language versions of web-clients and admin pages are available in the 
+  - multi-language versions of web-clients and admin pages are available in the
     LANG_agc.zip and LANG_admin.zip files and can be unzipped into your webroot
     directory. Make sure you check the dbconnect.php file in each directory.
  * if upgrading from 1.1.7 run the upgrade_1.1.8.sql script in MySQL
@@ -416,7 +416,7 @@ UPGRADE NOTES:
     + or run the install_server_files.pl script to put all items in their
       default places
    (make sure AST_SERVER_conf.pl and dbconnect.php files are config'd properly)
-  - multi-language versions of web-clients and admin pages are available in the 
+  - multi-language versions of web-clients and admin pages are available in the
     LANG_agc.zip and LANG_admin.zip files and can be unzipped into your webroot
     directory. Make sure you check the dbconnect.php file in each directory.
  * if upgrading from 1.1.8 run the upgrade_1.1.9.sql script in MySQL
@@ -440,7 +440,7 @@ UPGRADE NOTES:
       default places
    (make sure AST_SERVER_conf.pl and dbconnect.php files are config'd properly)
   - add "exten => h,2,DeadAGI(VD_hangup.agi,${EXTEN})" to extensions.conf
-  - multi-language versions of web-clients and admin pages are available in the 
+  - multi-language versions of web-clients and admin pages are available in the
     LANG_agc.zip and LANG_admin.zip files and can be unzipped into your webroot
     directory. Make sure you check the dbconnect.php file in each directory.
  * if upgrading from 1.1.9 run the upgrade_1.1.10.sql script in MySQL
@@ -463,7 +463,7 @@ UPGRADE NOTES:
     + or run the install_server_files.pl script to put all items in their
       default places
    (make sure AST_SERVER_conf.pl and dbconnect.php files are config'd properly)
-  - multi-language versions of web-clients and admin pages are available in the 
+  - multi-language versions of web-clients and admin pages are available in the
     LANG_agc.zip and LANG_admin.zip files and can be unzipped into your webroot
     directory. Make sure you check the dbconnect.php file in each directory.
  * if upgrading from 1.1.10 run the upgrade_1.1.11.sql script in MySQL
@@ -491,12 +491,12 @@ UPGRADE NOTES:
     + or run the install_server_files.pl script to put all items in their
       default places
    (make sure AST_SERVER_conf.pl and dbconnect.php files are config'd properly)
-  - multi-language versions of web-clients and admin pages are available in the 
+  - multi-language versions of web-clients and admin pages are available in the
     LANG_agc.zip and LANG_admin.zip files and can be unzipped into your webroot
     directory. Make sure you check the dbconnect.php file in each directory.
  * if upgrading from 1.1.11 run the upgrade_1.1.12.sql script in MySQL
    (\. astguiclientastguiclient/upgrade_1.1.12.sql)
- * if upgrading from older version you will need to run this query for each 
+ * if upgrading from older version you will need to run this query for each
    campaign in VICIDIAL in MySQL:
    (INSERT INTO vicidial_campaign_stats (campaign_id) values('campaignname');)
 
@@ -560,64 +560,64 @@ UPGRADE NOTES:
 UPGRADE NOTES:
  * if upgrading from 2.0.4 you need to follow instructions in the UPGRADE doc
 CHANGES:
-1. Note the license change from GPLv2 to AGPLv2. This change was made to close the ASP loophole for code distribution that was present in the GPLv2 license. Please read the docs/LICENSE.txt file for more information 
-2. Several of the MySQL tables have been changed to a HEAP type to reside in memory to improve performance. 
-3. Added the ability for inbound and blended agents to choose their selected in-groups without logging out. The new GROUPS link at the top of the agent screen(vicidial.php) can be used when an agent is Paused to change their selected groups and whether they are set to do Blended calling or not. There is also a new log with the details of what groups an agent has selected each time in the user stats page. 
-4. Queue Priority has been added allowing for the prioritization of one in-group over another in-group or outbound campaign(when in blended mode) 
-5. Drop call action has been added to both inbound and outbound calling. You can now send a call that would drop into an inbound group. The call will still be recorded as a DROP in it's original in-group or campaign, but the lead information will move on to the drop in-group. 
-6. Audio recording mixing/compression/ftping scripts have been completely rewritten and separated into different scripts for better fault tolerance. Also, you have the option of compression in to the following formats: WAV, GSM, MP3 and OGG - AST_CRON_audio_1_move_mix.pl - AST_CRON_audio_1_move_VDonly.pl - AST_CRON_audio_2_compress.pl - AST_CRON_audio_3_ftp.pl 
-7. Created a new script to backup a VICIDIAL setup, including the Asterisk conf files, prompt recordings, bin, agi and web files: ADMIN_backup.pl 
-8. Added ability to override recording options of a campaign for individual inbound-groups 
-9. The 8 outbound agi-VDADtransfer scripts are in process of being consolidated into a single AGI script: agi-VDAD_ALL_outbound.agi All older outbound scripts are depricated and do not function any more 
-10. Added the ability to load balance the logins to vicidial.php for phones that are registered to multiple servers on a multi-server system. Simply put multiple phone_login values in the phone login field at login separated by a comma and the vicidial.php script will pick the server that has the fewest agents logged into it at the moment of login. 
-11. Added ability for vicidial.php to populate the phones.computer_ip field upon agent login. Options set in the vicidial.php file to allow for overwrite every login or only if field is empty. 
-12. Several code changes for better UTF8 compatibility with the database as well as special character leads in the agent screen, lead loading 
-13. Added after hours redirect of calls to an in-group to another in-group 
-14. Added collection of hangup reasons for inbound and outbound calls in the vicidial_log and vicidial_closer_log tables 
-15. Added a new timeclock feature w/ audit and log, including the addition of shifts to VICIDIAL user groups and the ability to auto-generate user IDs as you are adding users to the system. timeclock.php user login page created and linked to from admin/agent/welcome screens 
-16. Added a new inbound/closer(queues) report for showing service levels 
-17. Added Calls in Queue counter to agent vicidial.php screen 
-18. Added ability to use calltime scheme for calls not yet in an in-group(queue) as well as display in real-time stats. See Inbound_VDAC_IVR.txt doc for more information 
-19. Auto-dial survey broadcast campaigns can now be fully configured within the admin.php interface and they have new options shown in the Survey sub- section 
-20. Changed add-to-DNC list to allow for multiple phone numbers per submission 
-21. Date/time and phone formats that appear in the VICIDIAL agent screen are now customizable as defined in the Admin -> System Settings screen. 
-22. Added manual dial and inbound queue_log logging capability for better QueueMetrics compatibility 
-23. Added some basic agent interface API functions and an agc/api.php script 
-24. A field has been added to vicidial_list(last_local_call_time) to sort by the last time a lead was called as well as for lead recycling changes. 
-25. IMPORTANT FOR RECORDINGS!!! The recording extensions have been changed within VICIDIAL so you need to add the following lines to your extensions.conf ; quiet monitor-only entry and leaving conferences for VICIDIAL (recording) exten => _58600XXX,1,Meetme,${EXTEN:1}|Fmq 
-26. Added option (for Internet Explorer users only) to copy a field to the clipboard of the agent computer upon a call being sent to the agent. 
-27. Added new alternate number dialing method which allows for over 65,000 alt phone numbers per lead. Currently these extra numbers are only available for auto dialing, not manual dial. These extra alternate number leads must be imported either with the CLI lead loader(VICIDIAL_IN_new_leads_file.pl) or the non-agent API script. 
-28. Added campaign-specific DNC filtering lists to the system 
-29. Added optional dialplan entries to sample extensions.conf to play a not-in- service message for invalid phone numbers that cannot be dialing in North America 
-30. Rewrote Leave-3way function for conference calling to work more reliably on high load systems. Need to add more vicidial_conferences entries and meetme.conf entries for this, see the meetme.conf.sample file and the first_server_install.sql file for more information 
-31. Added several new features to inbound call handling including: - announce place in line - announce estimated hold time - welcome message options - options for call routing when estimated hold time is too high - press 1 to leave a voicemail for customers if wait time too high 
-32. Added DID call routing to allow for basic routing of calls to phones, extensions, voicemail and VICIDIAL inbound groups without editing the extensions.conf dialplan. *requires initial adding one line to dialplan of inbound context: exten => _X.,1,AGI(agi-DID_route.agi) *as well as a few more lines in your VICIDIAL default context: ; DID forwarded calls exten => _99909*.,1,Answer exten => _99909*.,2,AGI(agi-VDAD_ALL_inbound.agi) exten => _99909*.,3,Hangup 
-33. Added ability to set callerID number on outgoing conference calls to CAMPAIGN, CUSTOMER or AGENT_PHONE callerID settings. 
-34. New Slovak translation for the agent screen, as well as new German agent screen translation and new German buttons for the agent screen 
-35. New Welcome demo and languages screens with links to all translations of agent and admin screens 
-36. Added INBOUND_MAN dial method to allow for inbound call handling by agents that are also placing manual dial list calls through their campaign lists 
-37. Added option to see the inbound group call stats in the Real-time screen 
-38. Added ability for agents to dial in to an AGI script(agi-AGENT_dial_in.agi) to log their phone into the session instead of having VICIDIAL call them. The user ID and password for the agent must be digits only for this to work! This requires the following to be added to the dialplan on the dial-in DID or extension that you want to use: exten => 2345,1,Answer ; Answer the line exten => 2345,2,AGI(agi-AGENT_dial_in.agi) exten => 2345,3,Hangup 
-39. Added pause codes display to the Real-time report as well as pause code statistics to the agent performance detail report. Also added an option to force agents to enter a pause code(this is a campaign option) 
-40. Added full MySQL error logging to vicidial agent web interface. Logs are written to the webserver. 
-41. Added new inbound-only reporting to Real-time report as well as many new features to existing inbound report. Created IVR stats report to show stats on Asterisk IVRs 
-42. Updated Vtiger integration to version 5.0.4 and allow searching by leads/accounts/vendors. Also added user synchronization with vicidial_users. Also added click-to-dial from Vtiger sending call to vicidial agent screen. Also added batch synchronization of Accounts between Vtiger and VICIDIAL. 
-43. Added notification of time synchronization problems in the vicidial.php page 
-44. Added AGENTDIRECT queueing to be able to send calls to only one agent without having to create a new in-group for each agent. You can configure DIDs to use AGENTDIRECT, and you can have VICIDIAL agents send calls to specific agents using the AGENTDIRECT transfer group with LOCAL CLOSER button and putting the agent to send the call to in the Number To Dial field. 
-45. Added agent alert option to agent screen. sends browser alert prompt when a call is send to the agent screen. 
-46. Added option for using North American NANPA prefix timezone encoding for more accurate time zone encoding. The data is NOT included but can be purchased from the VICIDIAL Group. 
-47. Added System Settings option to disable auto-dialing(list dialing) from the system to simplify administration for inbound-only call centers 
-48. Added patch and configuration options to allow VICIDIAL to work with Sangoma ParaXip CPD(Call Progress Detection) for Answering Maching and Fax detection 
-49. Added list_download.php that allows you to download the entire contents of vicidial lists from the admin.php interface. You must set the download_lists permission in vicidial_users to 1 for this to work. 
-50. Small redesign of the agent interface to use grey backgrounds and new tabs 
-51. Added Asterisk version prompt to the install.pl script to allow for the copying of the proper conf files for the installed Asterisk version 
-52. Added auto-generation of SIP and IAX phones and carriers into the Asterisk conf files so that you can fully configure them using only the admin.php web interface. See the ASTERISK_CONF-GEN.txt file for more information 
-53. Added group alias option for selecting callerID on manual and 3rd-party calls 
-54. Added options for custom web variables for each agent per in-group and camaign. This is definable in the user modification page 
-55. Added Agent Shift enforcement options to restrict logins and vicidial agent activity 
-56. Added Server vital statistics(load/CPU/disk) to the reports screen and the server modification screen 
-57. Removed the admin_changes flat text log file and now put all administrative actions into the vicidial_admin_log table in MySQL. These logs are displayed to user_level 9 users in admin.php through a link on the REPORTS screen, and at the bottom of the other screens (USERS, CAMPAIGNS, LISTS, etc...)you can click on the "Click here to see Admin chages to this record" link to find out the most recent changes to that record. 
-58. Added uniform admin headers to all administrative pages and reports 
-59. Added Calls Export Utility allowing exporting of call and lead data by defining the following parameters: date range, campaigns, in-groups, statuses, lists and user groups. A flat tab-delimited text file is exported. 
+1. Note the license change from GPLv2 to AGPLv2. This change was made to close the ASP loophole for code distribution that was present in the GPLv2 license. Please read the docs/LICENSE.txt file for more information
+2. Several of the MySQL tables have been changed to a HEAP type to reside in memory to improve performance.
+3. Added the ability for inbound and blended agents to choose their selected in-groups without logging out. The new GROUPS link at the top of the agent screen(vicidial.php) can be used when an agent is Paused to change their selected groups and whether they are set to do Blended calling or not. There is also a new log with the details of what groups an agent has selected each time in the user stats page.
+4. Queue Priority has been added allowing for the prioritization of one in-group over another in-group or outbound campaign(when in blended mode)
+5. Drop call action has been added to both inbound and outbound calling. You can now send a call that would drop into an inbound group. The call will still be recorded as a DROP in it's original in-group or campaign, but the lead information will move on to the drop in-group.
+6. Audio recording mixing/compression/ftping scripts have been completely rewritten and separated into different scripts for better fault tolerance. Also, you have the option of compression in to the following formats: WAV, GSM, MP3 and OGG - AST_CRON_audio_1_move_mix.pl - AST_CRON_audio_1_move_VDonly.pl - AST_CRON_audio_2_compress.pl - AST_CRON_audio_3_ftp.pl
+7. Created a new script to backup a VICIDIAL setup, including the Asterisk conf files, prompt recordings, bin, agi and web files: ADMIN_backup.pl
+8. Added ability to override recording options of a campaign for individual inbound-groups
+9. The 8 outbound agi-VDADtransfer scripts are in process of being consolidated into a single AGI script: agi-VDAD_ALL_outbound.agi All older outbound scripts are depricated and do not function any more
+10. Added the ability to load balance the logins to vicidial.php for phones that are registered to multiple servers on a multi-server system. Simply put multiple phone_login values in the phone login field at login separated by a comma and the vicidial.php script will pick the server that has the fewest agents logged into it at the moment of login.
+11. Added ability for vicidial.php to populate the phones.computer_ip field upon agent login. Options set in the vicidial.php file to allow for overwrite every login or only if field is empty.
+12. Several code changes for better UTF8 compatibility with the database as well as special character leads in the agent screen, lead loading
+13. Added after hours redirect of calls to an in-group to another in-group
+14. Added collection of hangup reasons for inbound and outbound calls in the vicidial_log and vicidial_closer_log tables
+15. Added a new timeclock feature w/ audit and log, including the addition of shifts to VICIDIAL user groups and the ability to auto-generate user IDs as you are adding users to the system. timeclock.php user login page created and linked to from admin/agent/welcome screens
+16. Added a new inbound/closer(queues) report for showing service levels
+17. Added Calls in Queue counter to agent vicidial.php screen
+18. Added ability to use calltime scheme for calls not yet in an in-group(queue) as well as display in real-time stats. See Inbound_VDAC_IVR.txt doc for more information
+19. Auto-dial survey broadcast campaigns can now be fully configured within the admin.php interface and they have new options shown in the Survey sub- section
+20. Changed add-to-DNC list to allow for multiple phone numbers per submission
+21. Date/time and phone formats that appear in the VICIDIAL agent screen are now customizable as defined in the Admin -> System Settings screen.
+22. Added manual dial and inbound queue_log logging capability for better QueueMetrics compatibility
+23. Added some basic agent interface API functions and an agc/api.php script
+24. A field has been added to vicidial_list(last_local_call_time) to sort by the last time a lead was called as well as for lead recycling changes.
+25. IMPORTANT FOR RECORDINGS!!! The recording extensions have been changed within VICIDIAL so you need to add the following lines to your extensions.conf ; quiet monitor-only entry and leaving conferences for VICIDIAL (recording) exten => _58600XXX,1,Meetme,${EXTEN:1}|Fmq
+26. Added option (for Internet Explorer users only) to copy a field to the clipboard of the agent computer upon a call being sent to the agent.
+27. Added new alternate number dialing method which allows for over 65,000 alt phone numbers per lead. Currently these extra numbers are only available for auto dialing, not manual dial. These extra alternate number leads must be imported either with the CLI lead loader(VICIDIAL_IN_new_leads_file.pl) or the non-agent API script.
+28. Added campaign-specific DNC filtering lists to the system
+29. Added optional dialplan entries to sample extensions.conf to play a not-in- service message for invalid phone numbers that cannot be dialing in North America
+30. Rewrote Leave-3way function for conference calling to work more reliably on high load systems. Need to add more vicidial_conferences entries and meetme.conf entries for this, see the meetme.conf.sample file and the first_server_install.sql file for more information
+31. Added several new features to inbound call handling including: - announce place in line - announce estimated hold time - welcome message options - options for call routing when estimated hold time is too high - press 1 to leave a voicemail for customers if wait time too high
+32. Added DID call routing to allow for basic routing of calls to phones, extensions, voicemail and VICIDIAL inbound groups without editing the extensions.conf dialplan. *requires initial adding one line to dialplan of inbound context: exten => _X.,1,AGI(agi-DID_route.agi) *as well as a few more lines in your VICIDIAL default context: ; DID forwarded calls exten => _99909*.,1,Answer exten => _99909*.,2,AGI(agi-VDAD_ALL_inbound.agi) exten => _99909*.,3,Hangup
+33. Added ability to set callerID number on outgoing conference calls to CAMPAIGN, CUSTOMER or AGENT_PHONE callerID settings.
+34. New Slovak translation for the agent screen, as well as new German agent screen translation and new German buttons for the agent screen
+35. New Welcome demo and languages screens with links to all translations of agent and admin screens
+36. Added INBOUND_MAN dial method to allow for inbound call handling by agents that are also placing manual dial list calls through their campaign lists
+37. Added option to see the inbound group call stats in the Real-time screen
+38. Added ability for agents to dial in to an AGI script(agi-AGENT_dial_in.agi) to log their phone into the session instead of having VICIDIAL call them. The user ID and password for the agent must be digits only for this to work! This requires the following to be added to the dialplan on the dial-in DID or extension that you want to use: exten => 2345,1,Answer ; Answer the line exten => 2345,2,AGI(agi-AGENT_dial_in.agi) exten => 2345,3,Hangup
+39. Added pause codes display to the Real-time report as well as pause code statistics to the agent performance detail report. Also added an option to force agents to enter a pause code(this is a campaign option)
+40. Added full MySQL error logging to vicidial agent web interface. Logs are written to the webserver.
+41. Added new inbound-only reporting to Real-time report as well as many new features to existing inbound report. Created IVR stats report to show stats on Asterisk IVRs
+42. Updated Vtiger integration to version 5.0.4 and allow searching by leads/accounts/vendors. Also added user synchronization with vicidial_users. Also added click-to-dial from Vtiger sending call to vicidial agent screen. Also added batch synchronization of Accounts between Vtiger and VICIDIAL.
+43. Added notification of time synchronization problems in the vicidial.php page
+44. Added AGENTDIRECT queueing to be able to send calls to only one agent without having to create a new in-group for each agent. You can configure DIDs to use AGENTDIRECT, and you can have VICIDIAL agents send calls to specific agents using the AGENTDIRECT transfer group with LOCAL CLOSER button and putting the agent to send the call to in the Number To Dial field.
+45. Added agent alert option to agent screen. sends browser alert prompt when a call is send to the agent screen.
+46. Added option for using North American NANPA prefix timezone encoding for more accurate time zone encoding. The data is NOT included but can be purchased from the VICIDIAL Group.
+47. Added System Settings option to disable auto-dialing(list dialing) from the system to simplify administration for inbound-only call centers
+48. Added patch and configuration options to allow VICIDIAL to work with Sangoma ParaXip CPD(Call Progress Detection) for Answering Maching and Fax detection
+49. Added list_download.php that allows you to download the entire contents of vicidial lists from the admin.php interface. You must set the download_lists permission in vicidial_users to 1 for this to work.
+50. Small redesign of the agent interface to use grey backgrounds and new tabs
+51. Added Asterisk version prompt to the install.pl script to allow for the copying of the proper conf files for the installed Asterisk version
+52. Added auto-generation of SIP and IAX phones and carriers into the Asterisk conf files so that you can fully configure them using only the admin.php web interface. See the ASTERISK_CONF-GEN.txt file for more information
+53. Added group alias option for selecting callerID on manual and 3rd-party calls
+54. Added options for custom web variables for each agent per in-group and camaign. This is definable in the user modification page
+55. Added Agent Shift enforcement options to restrict logins and vicidial agent activity
+56. Added Server vital statistics(load/CPU/disk) to the reports screen and the server modification screen
+57. Removed the admin_changes flat text log file and now put all administrative actions into the vicidial_admin_log table in MySQL. These logs are displayed to user_level 9 users in admin.php through a link on the REPORTS screen, and at the bottom of the other screens (USERS, CAMPAIGNS, LISTS, etc...)you can click on the "Click here to see Admin chages to this record" link to find out the most recent changes to that record.
+58. Added uniform admin headers to all administrative pages and reports
+59. Added Calls Export Utility allowing exporting of call and lead data by defining the following parameters: date range, campaigns, in-groups, statuses, lists and user groups. A flat tab-delimited text file is exported.
 60. Added new monitoring functionality to allow monitoring from one agent to another without hanging up
 61. Added Russian and Dutch agent interface translations

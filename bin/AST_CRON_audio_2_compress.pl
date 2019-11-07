@@ -5,8 +5,8 @@
 # This is a STEP-2 program in the audio archival process
 #
 # runs every 3 minutes and compresses the -all recording files to GSM format
-# 
-# put an entry into the cron of of your asterisk machine to run this script 
+#
+# put an entry into the cron of of your asterisk machine to run this script
 # every 3 minutes or however often you desire
 #
 # ### recording mixing/compressing/ftping scripts
@@ -23,17 +23,17 @@
 #
 # make sure that the following directories exist:
 # /var/spool/asterisk/monitorDONE	# where the mixed -all files are put
-# 
+#
 # NOTE: If the "--file-sorting" flag is use, the step 3 FTP archiving scripts cannot be used.
 #
 # This program assumes that recordings are saved by Asterisk as .wav
-# 
+#
 # LICENSE: AGPLv3
 #
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>
 # Copyright (©) 2018 flyingpenguin.de UG <info@flyingpenguin.de>
 #               2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
-# 
+#
 # 80302-1958 - First Build
 # 80731-2253 - Changed size comparisons for more efficiency
 # 90727-1417 - Added GSW format option
@@ -48,7 +48,7 @@
 use Fcntl qw(:flock);
 # print "start of program $0\n";
 unless (flock(DATA, LOCK_EX|LOCK_NB)) {
-    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log'
     or print "Can't open the fscking file: $!";
     $datestring = localtime();
     print $fh "[$datestring] $0 is already running. Exiting.\n";
@@ -223,7 +223,7 @@ if ($run_check > 0)
 	my $grepout = `/bin/ps ax | grep $0 | grep -v grep | grep -v '/bin/sh'`;
 	my $grepnum=0;
 	$grepnum++ while ($grepout =~ m/\n/g);
-	if ($grepnum > 1) 
+	if ($grepnum > 1)
 		{
 		if ($DB) {print "I am not alone! Another $0 is running! Exiting...\n";}
 		exit;
@@ -247,7 +247,7 @@ if ( ($GSM > 0) || ($OGG > 0) || ($GSW > 0) )
 	### find sox binary to do the compression
 	$soxbin = '';
 	if ( -e ('/usr/bin/sox')) {$soxbin = '/usr/bin/sox';}
-	else 
+	else
 		{
 		if ( -e ('/usr/local/bin/sox')) {$soxbin = '/usr/local/bin/sox';}
 		else
@@ -263,7 +263,7 @@ if ($MP3 > 0)
 	### find lame mp3 encoder binary to do the compression
 	$lamebin = '';
 	if ( -e ('/usr/bin/lame')) {$lamebin = '/usr/bin/lame';}
-	else 
+	else
 		{
 		if ( -e ('/usr/local/bin/lame')) {$lamebin = '/usr/local/bin/lame';}
 		else
@@ -349,8 +349,8 @@ foreach(@FILES)
 			if ($FILESORT) {$location = "$location$file_date/";}
 			if (! -d "$dir2/$location") {mkdir "$dir2/$location";}
 			if (! -d "$dir2/$location") {die("Cannot create $dir2/$location");}
-				
-			
+
+
 			if ($GSM > 0)
 				{
 				$GSMfile = $FILES[$i];

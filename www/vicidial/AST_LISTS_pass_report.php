@@ -1,6 +1,6 @@
-<?php 
+<?php
 # AST_LISTS_pass_report.php
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This is a list inventory report, not a calling report. This report will show
@@ -91,7 +91,7 @@ $table_name="vicidial_log";
 $archive_table_name=use_archive_table($table_name);
 if ($archive_table_name!=$table_name) {$archives_available="Y";}
 
-if ($search_archived_data) 
+if ($search_archived_data)
 	{
 	$vicidial_log_table=use_archive_table("vicidial_log");
 	}
@@ -371,7 +371,7 @@ else
 $lists_id_str="";
 $list_stmt="SELECT list_id from vicidial_lists where active IN('Y','N') $group_SQLand";
 $list_rslt=mysql_to_mysqli($list_stmt, $link);
-while ($lrow=mysqli_fetch_row($list_rslt)) 
+while ($lrow=mysqli_fetch_row($list_rslt))
 	{
 	$lists_id_str.="'$lrow[0]',";
 	}
@@ -464,7 +464,7 @@ $HEADER.="-->\n";
 $HEADER.=" </STYLE>\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 require("chart_button.php");
-$HEADER.="<script src='chart/Chart.js'></script>\n"; 
+$HEADER.="<script src='chart/Chart.js'></script>\n";
 $HEADER.="<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
 
 $HEADER.="<link rel=\"stylesheet\" type=\"text/css\" href=\"vicidial_stylesheet.php\">\n";
@@ -525,7 +525,7 @@ $MAIN.=_QXZ("Display as").":<BR/>";
 $MAIN.="<select name='report_display_type'>";
 if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
 $MAIN.="<option value='TEXT'>"._QXZ("TEXT")."</option><option value='HTML'>"._QXZ("HTML")."</option></select>&nbsp; ";
-if ($archives_available=="Y") 
+if ($archives_available=="Y")
 	{
 	$MAIN.="<BR><input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."\n";
 	}
@@ -680,7 +680,7 @@ else
 	$lists_id_str="";
 	$list_stmt="SELECT list_id from vicidial_lists where active IN('Y','N') $group_SQLand";
 	$list_rslt=mysql_to_mysqli($list_stmt, $link);
-	while ($lrow=mysqli_fetch_row($list_rslt)) 
+	while ($lrow=mysqli_fetch_row($list_rslt))
 		{
 		$lists_id_str.="'$lrow[0]',";
 		}
@@ -816,7 +816,7 @@ else
 		########################################################
 		########## BEGIN CONTACT RATIO (Human-Answer flag out of total leads percentage) ##########
 
-		$HR_count=$HA_count; 
+		$HR_count=$HA_count;
 		$HR_one_count=$HA_one_count;
 		$HR_two_count=$HA_two_count;
 		$HR_three_count=$HA_three_count;
@@ -925,7 +925,7 @@ else
 		########################################################
 		########## BEGIN CONV SALES RATIO (Sales flag out of total leads percentage) ##########
 
-		$SR_count=$SA_count; 
+		$SR_count=$SA_count;
 		$SR_one_count=$SA_one_count;
 		$SR_two_count=$SA_two_count;
 		$SR_three_count=$SA_three_count;
@@ -1034,7 +1034,7 @@ else
 		########################################################
 		########## BEGIN CONV DNC RATIO (DNC flag out of total leads percentage) ##########
 
-		$DR_count=$DN_count; 
+		$DR_count=$DN_count;
 		$DR_one_count=$DN_one_count;
 		$DR_two_count=$DN_two_count;
 		$DR_three_count=$DN_three_count;
@@ -1143,7 +1143,7 @@ else
 		########################################################
 		########## BEGIN CUSTOMER CONTACT RATIO (Customer Contact flag out of total leads percentage) ##########
 
-		$CR_count=$CC_count; 
+		$CR_count=$CC_count;
 		$CR_one_count=$CC_one_count;
 		$CR_two_count=$CC_two_count;
 		$CR_three_count=$CC_three_count;
@@ -1252,7 +1252,7 @@ else
 		########################################################
 		########## BEGIN UNWORKABLE RATIO (Unworkable flag out of total leads percentage) ##########
 
-		$UR_count=$UW_count; 
+		$UR_count=$UW_count;
 		$UR_one_count=$UW_one_count;
 		$UR_two_count=$UW_two_count;
 		$UR_three_count=$UW_three_count;
@@ -1361,7 +1361,7 @@ else
 		########################################################
 		########## BEGIN SCHEDULED CALLBACK RATIO (Scheduled Callback flag out of total leads percentage) ##########
 
-		$BR_count=$BA_count; 
+		$BR_count=$BA_count;
 		$BR_one_count=$BA_one_count;
 		$BR_two_count=$BA_two_count;
 		$BR_three_count=$BA_three_count;
@@ -1470,7 +1470,7 @@ else
 		########################################################
 		########## BEGIN COMPLETED RATIO (Completed flag out of total leads percentage) ##########
 
-		$MR_count=$MP_count; 
+		$MR_count=$MP_count;
 		$MR_one_count=$MP_one_count;
 		$MR_two_count=$MP_two_count;
 		$MR_three_count=$MP_three_count;
@@ -1543,7 +1543,7 @@ else
 		$CSV_text1.=",\"$MP_one_countS\",\"$MP_two_countS\",\"$MP_three_countS\",\"$MP_four_countS\",\"$MP_five_countS\",\"$MP_countS\"";
 		$CSV_text1.=",\"$MR_one_countS%\",\"$MR_two_countS%\",\"$MR_three_countS%\",\"$MR_four_countS%\",\"$MR_five_countS%\",\"$MR_countS%\"";
 		$CSV_text1.="\n";
-			
+
 		$graph_stats2[$i][1]=$HA_one_countS;
 		$graph_stats2[$i][2]=$HA_two_countS;
 		$graph_stats2[$i][3]=$HA_three_countS;
@@ -1992,15 +1992,15 @@ else
 	$graph_id++;
 	$graph_array=array("LIS_CONTACTS1data|1|CONTACTS 1st PASS|integer|", "LIS_CONTACTS2data|2|CONTACTS 2nd PASS|integer|", "LIS_CONTACTS3data|3|CONTACTS 3rd PASS|integer|", "LIS_CONTACTS4data|4|CONTACTS 4th PASS|integer|", "LIS_CONTACTS5data|5|CONTACTS 5th PASS|integer|", "LIS_CONTACTSLIFEdata|6|CONTACTS LIFE|integer|", "LIS_CNTRATE1data|7|CNT RATE 1st PASS|decimal|", "LIS_CNTRATE2data|8|CNT RATE 2nd PASS|decimal|", "LIS_CNTRATE3data|9|CNT RATE 3rd PASS|decimal|", "LIS_CNTRATE4data|10|CNT RATE 4th PASS|decimal|", "LIS_CNTRATE5data|11|CNT RATE 5th PASS|decimal|", "LIS_CNTRATELIFEdata|12|CNT RATE LIFE|decimal|", "LIS_SALES1data|13|SALES 1st PASS|integer|", "LIS_SALES2data|14|SALES 2nd PASS|integer|", "LIS_SALES3data|15|SALES 3rd PASS|integer|", "LIS_SALES4data|16|SALES 4th PASS|integer|", "LIS_SALES5data|17|SALES 5th PASS|integer|", "LIS_SALESLIFEdata|18|SALES LIFE|integer|", "LIS_CONVRATE1data|19|CONV RATE 1st PASS|decimal|", "LIS_CONVRATE2data|20|CONV RATE 2nd PASS|decimal|", "LIS_CONVRATE3data|21|CONV RATE 3rd PASS|decimal|", "LIS_CONVRATE4data|22|CONV RATE 4th PASS|decimal|", "LIS_CONVRATE5data|23|CONV RATE 5th PASS|decimal|", "LIS_CONVLIFE1data|24|CONV RATE LIFE|decimal|", "LIS_DNC1data|25|DNC 1st PASS|integer|", "LIS_DNC2data|26|DNC 2nd PASS|integer|", "LIS_DNC3data|27|DNC 3rd PASS|integer|", "LIS_DNC4data|28|DNC 4th PASS|integer|", "LIS_DNC5data|29|DNC 5th PASS|integer|", "LIS_DNCLIFEdata|30|DNC LIFE|integer|", "LIS_DNCRATE1data|31|DNC RATE 1st PASS|decimal|", "LIS_DNCRATE2data|32|DNC RATE 2nd PASS|decimal|", "LIS_DNCRATE3data|33|DNC RATE 3rd PASS|decimal|", "LIS_DNCRATE4data|34|DNC RATE 4th PASS|decimal|", "LIS_DNCRATE5data|35|DNC RATE 5th PASS|decimal|", "LIS_DNCRATELIFEdata|36|DNC RATE LIFE|decimal|", "LIS_CUSTCNT1data|37|CUST CNT 1st PASS|integer|", "LIS_CUSTCNT2data|38|CUST CNT 2nd PASS|integer|", "LIS_CUSTCNT3data|39|CUST CNT 3rd PASS|integer|", "LIS_CUSTCNT4data|40|CUST CNT 4th PASS|integer|", "LIS_CUSTCNT5data|41|CUST CNT 5th PASS|integer|", "LIS_CUSTCNTLIFEdata|42|CUST CNT LIFE|integer|", "LIS_CUSCNTRATE1data|43|CUST CUSTCNT RATE 1st PASS|decimal|", "LIS_CUSCNTRATE2data|44|CUST CUSTCNT RATE 2nd PASS|decimal|", "LIS_CUSCNTRATE3data|45|CUST CUSTCNT RATE 3rd PASS|decimal|", "LIS_CUSCNTRATE4data|46|CUST CUSTCNT RATE 4th PASS|decimal|", "LIS_CUSCNTRATE5data|47|CUST CUSTCNT RATE 5th PASS|decimal|", "LIS_CUSCNTRATELIFEdata|48|CUST CUSTCNT RATE LIFE|decimal|", "LIS_UNWRK1data|49|UNWRK 1st PASS|integer|", "LIS_UNWRK2data|50|UNWRK 2nd PASS|integer|", "LIS_UNWRK3data|51|UNWRK 3rd PASS|integer|", "LIS_UNWRK4data|52|UNWRK 4th PASS|integer|", "LIS_UNWRK5data|53|UNWRK 5th PASS|integer|", "LIS_UNWRKLIFEdata|54|UNWRK LIFE|integer|", "LIS_UNWRKRATE1data|55|UNWRK RATE 1st PASS|decimal|", "LIS_UNWRKRATE2data|56|UNWRK RATE 2nd PASS|decimal|", "LIS_UNWRKRATE3data|57|UNWRK RATE 3rd PASS|decimal|", "LIS_UNWRKRATE4data|58|UNWRK RATE 4th PASS|decimal|", "LIS_UNWRKRATE5data|59|UNWRK RATE 5th PASS|decimal|", "LIS_UNWRKRATELIFEdata|60|UNWRK RATE LIFE|decimal|", "LIS_SCHDCLBK1data|61|SCHD CLBK 1st PASS|integer|", "LIS_SCHDCLBK2data|62|SCHD CLBK 2nd PASS|integer|", "LIS_SCHDCLBK3data|63|SCHD CLBK 3rd PASS|integer|", "LIS_SCHDCLBK4data|64|SCHD CLBK 4th PASS|integer|", "LIS_SCHDCLBK5data|65|SCHD CLBK 5th PASS|integer|", "LIS_SCHDCLBKLIFEdata|66|SCHD CLBK LIFE|integer|", "LIS_SCHDCLBKRATE1data|67|SCHD CLBK RATE 1st PASS|decimal|", "LIS_SCHDCLBKRATE2data|68|SCHD CLBK RATE 2nd PASS|decimal|", "LIS_SCHDCLBKRATE3data|69|SCHD CLBK RATE 3rd PASS|decimal|", "LIS_SCHDCLBKRATE4data|70|SCHD CLBK RATE 4th PASS|decimal|", "LIS_SCHDCLBKRATE5data|71|SCHD CLBK RATE 5th PASS|decimal|", "LIS_SCHDCLBKRATELIFEdata|72|SCHD CLBK RATE LIFE|decimal|", "LIS_COMPLTD1data|73|COMPLTD 1st PASS|integer|", "LIS_COMPLTD2data|74|COMPLTD 2nd PASS|integer|", "LIS_COMPLTD3data|75|COMPLTD 3rd PASS|integer|", "LIS_COMPLTD4data|76|COMPLTD 4th PASS|integer|", "LIS_COMPLTD5data|77|COMPLTD 5th PASS|integer|", "LIS_COMPLTDLIFEdata|78|COMPLTD LIFE|integer|", "LIS_COMPLTDRATE1data|79|COMPLTD RATE 1st PASS|decimal|", "LIS_COMPLTDRATE2data|80|COMPLTD RATE 2nd PASS|decimal|", "LIS_COMPLTDRATE3data|81|COMPLTD RATE 3rd PASS|decimal|", "LIS_COMPLTDRATE4data|82|COMPLTD RATE 4th PASS|decimal|", "LIS_COMPLTDRATE5data|83|COMPLTD RATE 5th PASS|decimal|", "LIS_COMPLTDRATELIFEdata|84|COMPLTD RATE LIFE|decimal|");
 	$default_graph="bar"; # Graph that is initally displayed when page loads
-	include("graph_color_schemas.inc"); 
+	include("graph_color_schemas.inc");
 
 	$graph_totals_array=array();
 	$graph_totals_rawdata=array();
 	for ($q=0; $q<count($graph_array); $q++) {
-		$graph_info=explode("|", $graph_array[$q]); 
+		$graph_info=explode("|", $graph_array[$q]);
 		$current_graph_total=0;
 		$dataset_name=$graph_info[0];
-		$dataset_index=$graph_info[1]; 
+		$dataset_index=$graph_info[1];
 		$dataset_type=$graph_info[3];
 
 		$JS_text.="var $dataset_name = {\n";
@@ -2026,13 +2026,13 @@ else
 			$graphConstantsA.="\"$bgcolor\",";
 			$graphConstantsB.="\"$hbgcolor\",";
 			$graphConstantsC.="\"$hbcolor\",";
-		}	
+		}
 		$graphConstantsA.="],\n";
 		$graphConstantsB.="],\n";
 		$graphConstantsC.="],\n";
 		$labels=preg_replace('/,$/', '', $labels)."],\n";
 		$data=preg_replace('/,$/', '', $data)."],\n";
-		
+
 		$graph_totals_rawdata[$q]=$current_graph_total;
 		switch($dataset_type) {
 			case "time":
@@ -2072,15 +2072,15 @@ else
 	$graph_array=array("ALRdata|||integer|");
 	$graph_id++;
 	$default_graph="bar"; # Graph that is initally displayed when page loads
-	include("graph_color_schemas.inc"); 
+	include("graph_color_schemas.inc");
 
 	$graph_totals_array=array();
 	$graph_totals_rawdata=array();
 	for ($q=0; $q<count($graph_array); $q++) {
-		$graph_info=explode("|", $graph_array[$q]); 
+		$graph_info=explode("|", $graph_array[$q]);
 		$current_graph_total=0;
 		$dataset_name=$graph_info[0];
-		$dataset_index=$graph_info[1]; 
+		$dataset_index=$graph_info[1];
 		$dataset_type=$graph_info[3];
 		if ($q==0) {$preload_dataset=$dataset_name;}  # Used below to load initial graph
 
@@ -2099,7 +2099,7 @@ else
 		$graphConstantsC="\t\t\t\thoverBorderColor: [";
 		for ($d=0; $d<count($graph_stats); $d++) {
 			$labels.="\"".$graph_stats[$d][1]."\",";
-			$data.="\"".$graph_stats[$d][0]."\","; 
+			$data.="\"".$graph_stats[$d][0]."\",";
 			$current_graph_total+=$graph_stats[$d][0];
 			$bgcolor=$backgroundColor[($d%count($backgroundColor))];
 			$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
@@ -2107,13 +2107,13 @@ else
 			$graphConstantsA.="\"$bgcolor\",";
 			$graphConstantsB.="\"$hbgcolor\",";
 			$graphConstantsC.="\"$hbcolor\",";
-		}	
+		}
 		$graphConstantsA.="],\n";
 		$graphConstantsB.="],\n";
 		$graphConstantsC.="],\n";
 		$labels=preg_replace('/,$/', '', $labels)."],\n";
 		$data=preg_replace('/,$/', '', $data)."],\n";
-		
+
 		$graph_totals_rawdata[$q]=$current_graph_total;
 		switch($dataset_type) {
 			case "time":

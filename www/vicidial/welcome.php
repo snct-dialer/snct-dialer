@@ -1,6 +1,6 @@
 <?php
 # welcome.php - VICIDIAL welcome page
-# 
+#
 #
 # LICENSE: AGPLv3
 #
@@ -106,7 +106,7 @@ if (($$SSWeb_logo == "SNCT.png") and ($logo_snct > 0)) {
 }
 if ( ($SSweb_logo!='default_new') and ($SSweb_logo!='default_old') and ($SSweb_logo!='SNCT.png'))
 	{
-	if (file_exists("../$admin_web_directory/images/vicidial_admin_web_logo$SSweb_logo")) 
+	if (file_exists("../$admin_web_directory/images/vicidial_admin_web_logo$SSweb_logo"))
 		{
 		$selected_logo = "../$admin_web_directory/images/vicidial_admin_web_logo$SSweb_logo";
 		}

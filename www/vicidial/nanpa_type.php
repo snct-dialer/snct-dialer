@@ -1,6 +1,6 @@
 <?php
 # nanpa_type.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed to work with the NANPA exchange(NPA-NXX-X) data and
@@ -14,7 +14,7 @@
 #	I|9995551212
 #
 # You can pass up to 100 phone numbers at a time to this script using a pipe
-# delimiter: 
+# delimiter:
 # http://localhost/vicidial/nanpa_type.php?user=6666&pass=1234&phone_number=7275551212|8135551212|9545551212|9995551212
 #
 # Or, even more if you send in HTTP POST to this script. We recomment 1000
@@ -214,7 +214,7 @@ else
 				{
 				$row=mysqli_fetch_row($rslt);
 				$type = $row[0];
-				if ($type == 'V') 
+				if ($type == 'V')
 					{
 					$type='S';
 					if ($DB>0) {echo "DEBUG: prefix match type V changing to type S landline |$numbers[$i]| - $stmt\n";}

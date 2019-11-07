@@ -12,7 +12,7 @@
 # Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
 # Copyright (©) 2019      SNCT GmbH <info@snct-gmbh.de>
 # Copyright (©) 2017-2019 Jörg Frings-Fürst <open_source@jff-email.de>
-#   
+#
 
 # CHANGELOG
 # 90513-0458 - First Build
@@ -33,7 +33,7 @@
 use Fcntl qw(:flock);
 # print "start of program $0\n";
 unless (flock(DATA, LOCK_EX|LOCK_NB)) {
-    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log'
     or print "Can't open the fscking file: $!";
     $datestring = localtime();
     print $fh "[$datestring] $0 is already running. Exiting.\n";
@@ -187,7 +187,7 @@ foreach(@conf)
 if (!$VASLOGfile) {$VASLOGfile = "$PATHlogs/audiostore";}
 if (!$VARDB_port) {$VARDB_port='3306';}
 
-use DBI;	  
+use DBI;
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
@@ -273,10 +273,10 @@ if (length($audio_store_purge) > 0)
 ### find wget binary
 $wgetbin = '';
 if ( -e ('/bin/wget')) {$wgetbin = '/bin/wget';}
-else 
+else
 	{
 	if ( -e ('/usr/bin/wget')) {$wgetbin = '/usr/bin/wget';}
-	else 
+	else
 		{
 		if ( -e ('/usr/local/bin/wget')) {$wgetbin = '/usr/local/bin/wget';}
 		else
@@ -290,10 +290,10 @@ else
 ### find curl binary
 $curlbin = '';
 if ( -e ('/bin/curl')) {$curlbin = '/bin/curl';}
-else 
+else
 	{
 	if ( -e ('/usr/bin/curl')) {$curlbin = '/usr/bin/curl';}
-	else 
+	else
 		{
 		if ( -e ('/usr/local/bin/curl')) {$curlbin = '/usr/local/bin/curl';}
 		else
@@ -308,7 +308,7 @@ else
 $URL = "https://$sounds_web_server/$admin_web_directory/audio_store.php?action=LIST&audio_server_ip=$VARserver_ip";
 
 $URL =~ s/&/\\&/gi;
-if ($DB) 
+if ($DB)
 	{print "\n$URL\n";}
 
 $audio_list_file = '/tmp/audio_store_list.txt';
@@ -320,7 +320,7 @@ open(list, "$audio_list_file") || die "can't open $audio_list_file: $!\n";
 close(list);
 
 opendir(sounds, "$PATHsounds");
-@sounds= readdir(sounds); 
+@sounds= readdir(sounds);
 closedir(sounds);
 
 
@@ -384,7 +384,7 @@ open(list, "$audio_list_file") || die "can't open $audio_list_file: $!\n";
 close(list);
 
 opendir(sounds, "$PATHsounds");
-@sounds= readdir(sounds); 
+@sounds= readdir(sounds);
 closedir(sounds);
 
 
@@ -513,7 +513,7 @@ if ($gather_details > 0)
 					$asd_filesize = $aryA[1];
 					$asd_length =	$aryA[2];
 
-					if ( ($asd_format eq "$audio_format") && ($asd_filesize eq "$filesize") && ($asd_length eq "$audio_length") ) 
+					if ( ($asd_format eq "$audio_format") && ($asd_filesize eq "$filesize") && ($asd_length eq "$audio_length") )
 						{
 						$old_count++;
 						if ($DB > 0) {print "$i   audio file details unchanged: $filename - |$audio_format|$filesize|$audio_length|\n";}
@@ -657,7 +657,7 @@ if ( ($force_moh_rebuild > 0) || ($new_file_moh_rebuild > 0) || ($rebuild_music_
 			}
 
 		opendir(sounds, "$PATHsounds");
-		@sounds= readdir(sounds); 
+		@sounds= readdir(sounds);
 		closedir(sounds);
 
 		if (!-e "$MoH_directory/0000_sip-silence.gsm")
@@ -733,7 +733,7 @@ if ( ($force_moh_rebuild > 0) || ($new_file_moh_rebuild > 0) || ($rebuild_music_
 		$sthA->finish();
 
 		opendir(mohdir, "$MoH_directory");
-		@MoH_files= readdir(mohdir); 
+		@MoH_files= readdir(mohdir);
 		closedir(mohdir);
 
 		### Check for files not in MoH context and delete them

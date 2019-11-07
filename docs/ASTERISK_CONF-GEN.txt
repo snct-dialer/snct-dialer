@@ -34,7 +34,7 @@ If you are using a SIP carrier, then you may need to manually set "externip=XXX.
 
 CALL MENUS (aka IVRs):
 
-The Call Menus feature allows for the creation of IVR segments that can be linked together through contexts in the dialplan. In this way, both simple and complex menus can be created, to deliver anything from a simple Automated Atttendant to more detailed IVR applications. 
+The Call Menus feature allows for the creation of IVR segments that can be linked together through contexts in the dialplan. In this way, both simple and complex menus can be created, to deliver anything from a simple Automated Atttendant to more detailed IVR applications.
 
 The Menu ID is the unique identifier of the call menu and it is also used as the context when the entry is created in the dialplan.
 
@@ -53,7 +53,7 @@ The option route is similar to the DID route since it defines what method to use
 
 Log Key Press - This option if enabled will log the DTMF key press by the caller in this Call Menu. Default is 0 for disabled.
 
-Log Field - If the Log Key Press option is enabled, this optional setting can allow the response to also be stored in this list field. vendor_lead_code, source_id, phone_code, title, first_name, middle_initial, last_name, address1, address2, address3, city, state, province, postal_code, country_code, alt_phone, email, security_phrase, comments, rank, owner, status, user. Default is NONE for disabled. 
+Log Field - If the Log Key Press option is enabled, this optional setting can allow the response to also be stored in this list field. vendor_lead_code, source_id, phone_code, title, first_name, middle_initial, last_name, address1, address2, address3, city, state, province, postal_code, country_code, alt_phone, email, security_phrase, comments, rank, owner, status, user. Default is NONE for disabled.
 
 
 An example of a call menu:
@@ -63,12 +63,12 @@ menu_name =			this is only a test
 menu_prompt =			hello
 menu_timeout =			10
 menu_timeout_prompt =		vm-goodbye
-menu_invalid_prompt =		
+menu_invalid_prompt =
 menu_repeat =			1
 menu_time_check =		1
 call_time_id =			9am-5pm
 track_in_vdac =			1
-custom_dialplan_entry =		
+custom_dialplan_entry =
 tracking_group =		CALLMENU
 dtmf_log =			0
 dtmf_field =			NONE
@@ -79,14 +79,14 @@ option_value =			1
 option_description = 		This is what happens when you press 1
 option_route =			DID
 option_route_value =		6666
-option_route_value_context =	
+option_route_value_context =
 
 menu_id =			test_menu
 option_value =			2
 option_description = 		This is what happens when you press 2
 option_route =			DID
 option_route_value =		6667
-option_route_value_context =	
+option_route_value_context =
 
 menu_id =			test_menu
 option_value =			3
@@ -100,39 +100,39 @@ option_value =			4
 option_description = 		This is what happens when you press 4
 option_route =			PHONE
 option_route_value =		350
-option_route_value_context =	
+option_route_value_context =
 
 menu_id =			test_menu
 option_value =			5
 option_description = 		This is what happens when you press 5
 option_route =			CALLMENU
 option_route_value =		test_menu_2
-option_route_value_context =	
+option_route_value_context =
 
 menu_id =			test_menu
 option_value =			6
 option_description = 		This is what happens when you press 6
 option_route =			HANGUP
 option_route_value =		vm-goodbye
-option_route_value_context =	
+option_route_value_context =
 
 menu_id =			test_menu
 option_value =			7
 option_description = 		This is what happens when you press 7
 option_route =			VOICEMAIL
 option_route_value =		350
-option_route_value_context =	
+option_route_value_context =
 
 menu_id =			test_menu
 option_value =			8
 option_description = 		This is what happens when you press 8
 option_route =			AGI
 option_route_value =		agi-test.agi,variables-go-here
-option_route_value_context =	
+option_route_value_context =
 
 menu_id =			test_menu
 option_value =			TIMECHECK
-option_description = 		
+option_description =
 option_route =			EXTENSION
 option_route_value =		101
 option_route_value_context =	default
@@ -205,7 +205,7 @@ Example of an inbound IVR using Call Menus and updating existing customer record
 	- Custom Dialplan Entry:
 		exten => _XXXXXXXX,1,AGI(cm_lookup.agi,vendor_lead_code---CAMPLISTSALL---TESTCAMP---lastname_oneyestwono)
 	<submit to save changes>
-4. Create second Call Menu - 
+4. Create second Call Menu -
 	- Menu ID: enter_date
 	- Menu Name: Enter visit date mmdd
 	- Menu Prompt: <recorded prompt>
@@ -218,7 +218,7 @@ Example of an inbound IVR using Call Menus and updating existing customer record
 		exten => _XXXX,1,AGI(cm.agi,CALLMENU-----${EXTEN}-----email)
 		exten => _XXXX,n,Goto(complete_visit,s,1)
 	<submit to save changes>
-5. Create third Call Menu - 
+5. Create third Call Menu -
 	- Menu ID: complete_visit
 	- Menu Name: Was visit complete or not
 	- Menu Prompt: <recorded prompt>
@@ -228,25 +228,25 @@ Example of an inbound IVR using Call Menus and updating existing customer record
 	- Log Key Press: 1
 	- Log Field: province <this is the field that will get the response stored in>
 	<submit to save changes>
-6. Create fourth Call Menu - 
+6. Create fourth Call Menu -
 	- Menu ID: incomplete_reason
 	- Menu Name: Reason visit was incomplete
 	- Log Key Press: 1
 	- Log Field: security_phrase <this is the field that will get the response stored in>
 	<submit to save changes>
-7. Create fifth Call Menu - 
+7. Create fifth Call Menu -
 	- Menu ID: followup_required
 	- Menu Name: Is a follow-up required
 	- Log Key Press: 1
 	- Log Field: alt_phone <this is the field that will get the response stored in>
 	<submit to save changes>
-8. Create sixth Call Menu - 
+8. Create sixth Call Menu -
 	- Menu ID: followup_action
 	- Menu Name: Follow-up action
 	- Log Key Press: 1
 	- Log Field: owner <this is the field that will get the response stored in>
 	<submit to save changes>
-9. Create seventh Call Menu - 
+9. Create seventh Call Menu -
 	- Menu ID: update_another_record
 	- Menu Name: Ask if you want to update another record
 	- Log Key Press: 0

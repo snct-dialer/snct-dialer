@@ -2,7 +2,7 @@
 # admin.php - VICIDIAL administration page
 #
 # Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
-# 
+#
 
 #
 # FP - Changelog
@@ -663,7 +663,7 @@ if (isset($_GET["campaign_stats_refresh"]))			{$campaign_stats_refresh=$_GET["ca
 	elseif (isset($_POST["campaign_stats_refresh"])){$campaign_stats_refresh=$_POST["campaign_stats_refresh"];}
 if (isset($_GET["list_description"]))			{$list_description=$_GET["list_description"];}
 	elseif (isset($_POST["list_description"]))	{$list_description=$_POST["list_description"];}
-if (isset($_GET["vicidial_recording_override"]))		{$vicidial_recording_override=$_GET["vicidial_recording_override"];}	
+if (isset($_GET["vicidial_recording_override"]))		{$vicidial_recording_override=$_GET["vicidial_recording_override"];}
 	elseif (isset($_POST["vicidial_recording_override"]))	{$vicidial_recording_override=$_POST["vicidial_recording_override"];}
 if (isset($_GET["use_non_latin"]))				{$use_non_latin=$_GET["use_non_latin"];}
 	elseif (isset($_POST["use_non_latin"]))		{$use_non_latin=$_POST["use_non_latin"];}
@@ -797,147 +797,147 @@ if (isset($_GET["qc_web_form_address"]))				{$qc_web_form_address=$_GET["qc_web_
 	elseif (isset($_POST["qc_web_form_address"]))	{$qc_web_form_address=$_POST["qc_web_form_address"];}
 if (isset($_GET["qc_script"]))						{$qc_script=$_GET["qc_script"];}
 	elseif (isset($_POST["qc_script"]))				{$qc_script=$_POST["qc_script"];}
-if (isset($_GET["ingroup_recording_override"]))		{$ingroup_recording_override=$_GET["ingroup_recording_override"];}	
+if (isset($_GET["ingroup_recording_override"]))		{$ingroup_recording_override=$_GET["ingroup_recording_override"];}
 	elseif (isset($_POST["ingroup_recording_override"]))	{$ingroup_recording_override=$_POST["ingroup_recording_override"];}
-if (isset($_GET["code"]))				{$code=$_GET["code"];}	
+if (isset($_GET["code"]))				{$code=$_GET["code"];}
 	elseif (isset($_POST["code"]))		{$code=$_POST["code"];}
-if (isset($_GET["code_name"]))			{$code_name=$_GET["code_name"];}	
+if (isset($_GET["code_name"]))			{$code_name=$_GET["code_name"];}
 	elseif (isset($_POST["code_name"]))	{$code_name=$_POST["code_name"];}
-if (isset($_GET["afterhours_xfer_group"]))			{$afterhours_xfer_group=$_GET["afterhours_xfer_group"];}	
+if (isset($_GET["afterhours_xfer_group"]))			{$afterhours_xfer_group=$_GET["afterhours_xfer_group"];}
 	elseif (isset($_POST["afterhours_xfer_group"]))	{$afterhours_xfer_group=$_POST["afterhours_xfer_group"];}
-if (isset($_GET["alias_id"]))				{$alias_id=$_GET["alias_id"];}	
+if (isset($_GET["alias_id"]))				{$alias_id=$_GET["alias_id"];}
 	elseif (isset($_POST["alias_id"]))		{$alias_id=$_POST["alias_id"];}
-if (isset($_GET["alias_name"]))				{$alias_name=$_GET["alias_name"];}	
+if (isset($_GET["alias_name"]))				{$alias_name=$_GET["alias_name"];}
 	elseif (isset($_POST["alias_name"]))		{$alias_name=$_POST["alias_name"];}
-if (isset($_GET["logins_list"]))				{$logins_list=$_GET["logins_list"];}	
+if (isset($_GET["logins_list"]))				{$logins_list=$_GET["logins_list"];}
 	elseif (isset($_POST["logins_list"]))		{$logins_list=$_POST["logins_list"];}
-if (isset($_GET["shift_id"]))				{$shift_id=$_GET["shift_id"];}	
+if (isset($_GET["shift_id"]))				{$shift_id=$_GET["shift_id"];}
 	elseif (isset($_POST["shift_id"]))		{$shift_id=$_POST["shift_id"];}
-if (isset($_GET["shift_name"]))				{$shift_name=$_GET["shift_name"];}	
+if (isset($_GET["shift_name"]))				{$shift_name=$_GET["shift_name"];}
 	elseif (isset($_POST["shift_name"]))		{$shift_name=$_POST["shift_name"];}
-if (isset($_GET["shift_start_time"]))			{$shift_start_time=$_GET["shift_start_time"];}	
+if (isset($_GET["shift_start_time"]))			{$shift_start_time=$_GET["shift_start_time"];}
 	elseif (isset($_POST["shift_start_time"]))	{$shift_start_time=$_POST["shift_start_time"];}
-if (isset($_GET["shift_length"]))				{$shift_length=$_GET["shift_length"];}	
+if (isset($_GET["shift_length"]))				{$shift_length=$_GET["shift_length"];}
 	elseif (isset($_POST["shift_length"]))		{$shift_length=$_POST["shift_length"];}
-if (isset($_GET["shift_weekdays"]))				{$shift_weekdays=$_GET["shift_weekdays"];}	
+if (isset($_GET["shift_weekdays"]))				{$shift_weekdays=$_GET["shift_weekdays"];}
 	elseif (isset($_POST["shift_weekdays"]))	{$shift_weekdays=$_POST["shift_weekdays"];}
-if (isset($_GET["group_shifts"]))			{$group_shifts=$_GET["group_shifts"];}	
+if (isset($_GET["group_shifts"]))			{$group_shifts=$_GET["group_shifts"];}
 	elseif (isset($_POST["group_shifts"]))	{$group_shifts=$_POST["group_shifts"];}
-if (isset($_GET["timeclock_end_of_day"]))			{$timeclock_end_of_day=$_GET["timeclock_end_of_day"];}	
+if (isset($_GET["timeclock_end_of_day"]))			{$timeclock_end_of_day=$_GET["timeclock_end_of_day"];}
 	elseif (isset($_POST["timeclock_end_of_day"]))	{$timeclock_end_of_day=$_POST["timeclock_end_of_day"];}
-if (isset($_GET["survey_first_audio_file"]))			{$survey_first_audio_file=$_GET["survey_first_audio_file"];}	
+if (isset($_GET["survey_first_audio_file"]))			{$survey_first_audio_file=$_GET["survey_first_audio_file"];}
 	elseif (isset($_POST["survey_first_audio_file"]))	{$survey_first_audio_file=$_POST["survey_first_audio_file"];}
-if (isset($_GET["survey_dtmf_digits"]))					{$survey_dtmf_digits=$_GET["survey_dtmf_digits"];}	
+if (isset($_GET["survey_dtmf_digits"]))					{$survey_dtmf_digits=$_GET["survey_dtmf_digits"];}
 	elseif (isset($_POST["survey_dtmf_digits"]))		{$survey_dtmf_digits=$_POST["survey_dtmf_digits"];}
-if (isset($_GET["survey_ni_digit"]))					{$survey_ni_digit=$_GET["survey_ni_digit"];}	
+if (isset($_GET["survey_ni_digit"]))					{$survey_ni_digit=$_GET["survey_ni_digit"];}
 	elseif (isset($_POST["survey_ni_digit"]))			{$survey_ni_digit=$_POST["survey_ni_digit"];}
-if (isset($_GET["survey_opt_in_audio_file"]))			{$survey_opt_in_audio_file=$_GET["survey_opt_in_audio_file"];}	
+if (isset($_GET["survey_opt_in_audio_file"]))			{$survey_opt_in_audio_file=$_GET["survey_opt_in_audio_file"];}
 	elseif (isset($_POST["survey_opt_in_audio_file"]))	{$survey_opt_in_audio_file=$_POST["survey_opt_in_audio_file"];}
-if (isset($_GET["survey_ni_audio_file"]))				{$survey_ni_audio_file=$_GET["survey_ni_audio_file"];}	
+if (isset($_GET["survey_ni_audio_file"]))				{$survey_ni_audio_file=$_GET["survey_ni_audio_file"];}
 	elseif (isset($_POST["survey_ni_audio_file"]))		{$survey_ni_audio_file=$_POST["survey_ni_audio_file"];}
-if (isset($_GET["survey_method"]))						{$survey_method=$_GET["survey_method"];}	
+if (isset($_GET["survey_method"]))						{$survey_method=$_GET["survey_method"];}
 	elseif (isset($_POST["survey_method"]))				{$survey_method=$_POST["survey_method"];}
-if (isset($_GET["survey_no_response_action"]))			{$survey_no_response_action=$_GET["survey_no_response_action"];}	
+if (isset($_GET["survey_no_response_action"]))			{$survey_no_response_action=$_GET["survey_no_response_action"];}
 	elseif (isset($_POST["survey_no_response_action"]))	{$survey_no_response_action=$_POST["survey_no_response_action"];}
-if (isset($_GET["survey_ni_status"]))					{$survey_ni_status=$_GET["survey_ni_status"];}	
+if (isset($_GET["survey_ni_status"]))					{$survey_ni_status=$_GET["survey_ni_status"];}
 	elseif (isset($_POST["survey_ni_status"]))			{$survey_ni_status=$_POST["survey_ni_status"];}
-if (isset($_GET["survey_response_digit_map"]))			{$survey_response_digit_map=$_GET["survey_response_digit_map"];}	
+if (isset($_GET["survey_response_digit_map"]))			{$survey_response_digit_map=$_GET["survey_response_digit_map"];}
 	elseif (isset($_POST["survey_response_digit_map"]))	{$survey_response_digit_map=$_POST["survey_response_digit_map"];}
-if (isset($_GET["survey_xfer_exten"]))					{$survey_xfer_exten=$_GET["survey_xfer_exten"];}	
+if (isset($_GET["survey_xfer_exten"]))					{$survey_xfer_exten=$_GET["survey_xfer_exten"];}
 	elseif (isset($_POST["survey_xfer_exten"]))			{$survey_xfer_exten=$_POST["survey_xfer_exten"];}
-if (isset($_GET["survey_camp_record_dir"]))				{$survey_camp_record_dir=$_GET["survey_camp_record_dir"];}	
+if (isset($_GET["survey_camp_record_dir"]))				{$survey_camp_record_dir=$_GET["survey_camp_record_dir"];}
 	elseif (isset($_POST["survey_camp_record_dir"]))	{$survey_camp_record_dir=$_POST["survey_camp_record_dir"];}
-if (isset($_GET["add_timeclock_log"]))				{$add_timeclock_log=$_GET["add_timeclock_log"];}	
+if (isset($_GET["add_timeclock_log"]))				{$add_timeclock_log=$_GET["add_timeclock_log"];}
 	elseif (isset($_POST["add_timeclock_log"]))		{$add_timeclock_log=$_POST["add_timeclock_log"];}
-if (isset($_GET["modify_timeclock_log"]))			{$modify_timeclock_log=$_GET["modify_timeclock_log"];}	
+if (isset($_GET["modify_timeclock_log"]))			{$modify_timeclock_log=$_GET["modify_timeclock_log"];}
 	elseif (isset($_POST["modify_timeclock_log"]))	{$modify_timeclock_log=$_POST["modify_timeclock_log"];}
-if (isset($_GET["delete_timeclock_log"]))			{$delete_timeclock_log=$_GET["delete_timeclock_log"];}	
+if (isset($_GET["delete_timeclock_log"]))			{$delete_timeclock_log=$_GET["delete_timeclock_log"];}
 	elseif (isset($_POST["delete_timeclock_log"]))	{$delete_timeclock_log=$_POST["delete_timeclock_log"];}
-if (isset($_GET["phone_numbers"]))					{$phone_numbers=$_GET["phone_numbers"];}	
+if (isset($_GET["phone_numbers"]))					{$phone_numbers=$_GET["phone_numbers"];}
 	elseif (isset($_POST["phone_numbers"]))			{$phone_numbers=$_POST["phone_numbers"];}
-if (isset($_GET["vdc_header_date_format"]))					{$vdc_header_date_format=$_GET["vdc_header_date_format"];}	
+if (isset($_GET["vdc_header_date_format"]))					{$vdc_header_date_format=$_GET["vdc_header_date_format"];}
 	elseif (isset($_POST["vdc_header_date_format"]))		{$vdc_header_date_format=$_POST["vdc_header_date_format"];}
-if (isset($_GET["vdc_customer_date_format"]))				{$vdc_customer_date_format=$_GET["vdc_customer_date_format"];}	
+if (isset($_GET["vdc_customer_date_format"]))				{$vdc_customer_date_format=$_GET["vdc_customer_date_format"];}
 	elseif (isset($_POST["vdc_customer_date_format"]))		{$vdc_customer_date_format=$_POST["vdc_customer_date_format"];}
-if (isset($_GET["vdc_header_phone_format"]))				{$vdc_header_phone_format=$_GET["vdc_header_phone_format"];}	
+if (isset($_GET["vdc_header_phone_format"]))				{$vdc_header_phone_format=$_GET["vdc_header_phone_format"];}
 	elseif (isset($_POST["vdc_header_phone_format"]))		{$vdc_header_phone_format=$_POST["vdc_header_phone_format"];}
-if (isset($_GET["disable_alter_custphone"]))			{$disable_alter_custphone=$_GET["disable_alter_custphone"];}	
+if (isset($_GET["disable_alter_custphone"]))			{$disable_alter_custphone=$_GET["disable_alter_custphone"];}
 	elseif (isset($_POST["disable_alter_custphone"]))	{$disable_alter_custphone=$_POST["disable_alter_custphone"];}
-if (isset($_GET["alter_custphone_override"]))			{$alter_custphone_override=$_GET["alter_custphone_override"];}	
+if (isset($_GET["alter_custphone_override"]))			{$alter_custphone_override=$_GET["alter_custphone_override"];}
 	elseif (isset($_POST["alter_custphone_override"]))	{$alter_custphone_override=$_POST["alter_custphone_override"];}
-if (isset($_GET["vdc_agent_api_access"]))				{$vdc_agent_api_access=$_GET["vdc_agent_api_access"];}	
+if (isset($_GET["vdc_agent_api_access"]))				{$vdc_agent_api_access=$_GET["vdc_agent_api_access"];}
 	elseif (isset($_POST["vdc_agent_api_access"]))		{$vdc_agent_api_access=$_POST["vdc_agent_api_access"];}
-if (isset($_GET["vdc_agent_api_active"]))				{$vdc_agent_api_active=$_GET["vdc_agent_api_active"];}	
+if (isset($_GET["vdc_agent_api_active"]))				{$vdc_agent_api_active=$_GET["vdc_agent_api_active"];}
 	elseif (isset($_POST["vdc_agent_api_active"]))		{$vdc_agent_api_active=$_POST["vdc_agent_api_active"];}
-if (isset($_GET["display_queue_count"]))				{$display_queue_count=$_GET["display_queue_count"];}	
+if (isset($_GET["display_queue_count"]))				{$display_queue_count=$_GET["display_queue_count"];}
 	elseif (isset($_POST["display_queue_count"]))		{$display_queue_count=$_POST["display_queue_count"];}
-if (isset($_GET["sale_category"]))				{$sale_category=$_GET["sale_category"];}	
+if (isset($_GET["sale_category"]))				{$sale_category=$_GET["sale_category"];}
 	elseif (isset($_POST["sale_category"]))		{$sale_category=$_POST["sale_category"];}
-if (isset($_GET["dead_lead_category"]))				{$dead_lead_category=$_GET["dead_lead_category"];}	
+if (isset($_GET["dead_lead_category"]))				{$dead_lead_category=$_GET["dead_lead_category"];}
 	elseif (isset($_POST["dead_lead_category"]))	{$dead_lead_category=$_POST["dead_lead_category"];}
-if (isset($_GET["manual_dial_filter"]))				{$manual_dial_filter=$_GET["manual_dial_filter"];}	
+if (isset($_GET["manual_dial_filter"]))				{$manual_dial_filter=$_GET["manual_dial_filter"];}
 	elseif (isset($_POST["manual_dial_filter"]))	{$manual_dial_filter=$_POST["manual_dial_filter"];}
-if (isset($_GET["agent_clipboard_copy"]))			{$agent_clipboard_copy=$_GET["agent_clipboard_copy"];}	
+if (isset($_GET["agent_clipboard_copy"]))			{$agent_clipboard_copy=$_GET["agent_clipboard_copy"];}
 	elseif (isset($_POST["agent_clipboard_copy"]))	{$agent_clipboard_copy=$_POST["agent_clipboard_copy"];}
-if (isset($_GET["agent_extended_alt_dial"]))			{$agent_extended_alt_dial=$_GET["agent_extended_alt_dial"];}	
+if (isset($_GET["agent_extended_alt_dial"]))			{$agent_extended_alt_dial=$_GET["agent_extended_alt_dial"];}
 	elseif (isset($_POST["agent_extended_alt_dial"]))	{$agent_extended_alt_dial=$_POST["agent_extended_alt_dial"];}
-if (isset($_GET["play_place_in_line"]))				{$play_place_in_line=$_GET["play_place_in_line"];}	
+if (isset($_GET["play_place_in_line"]))				{$play_place_in_line=$_GET["play_place_in_line"];}
 	elseif (isset($_POST["play_place_in_line"]))	{$play_place_in_line=$_POST["play_place_in_line"];}
-if (isset($_GET["play_estimate_hold_time"]))			{$play_estimate_hold_time=$_GET["play_estimate_hold_time"];}	
+if (isset($_GET["play_estimate_hold_time"]))			{$play_estimate_hold_time=$_GET["play_estimate_hold_time"];}
 	elseif (isset($_POST["play_estimate_hold_time"]))	{$play_estimate_hold_time=$_POST["play_estimate_hold_time"];}
-if (isset($_GET["hold_time_option"]))				{$hold_time_option=$_GET["hold_time_option"];}	
+if (isset($_GET["hold_time_option"]))				{$hold_time_option=$_GET["hold_time_option"];}
 	elseif (isset($_POST["hold_time_option"]))		{$hold_time_option=$_POST["hold_time_option"];}
-if (isset($_GET["hold_time_option_seconds"]))			{$hold_time_option_seconds=$_GET["hold_time_option_seconds"];}	
+if (isset($_GET["hold_time_option_seconds"]))			{$hold_time_option_seconds=$_GET["hold_time_option_seconds"];}
 	elseif (isset($_POST["hold_time_option_seconds"]))	{$hold_time_option_seconds=$_POST["hold_time_option_seconds"];}
-if (isset($_GET["hold_time_option_exten"]))				{$hold_time_option_exten=$_GET["hold_time_option_exten"];}	
+if (isset($_GET["hold_time_option_exten"]))				{$hold_time_option_exten=$_GET["hold_time_option_exten"];}
 	elseif (isset($_POST["hold_time_option_exten"]))	{$hold_time_option_exten=$_POST["hold_time_option_exten"];}
-if (isset($_GET["hold_time_option_voicemail"]))				{$hold_time_option_voicemail=$_GET["hold_time_option_voicemail"];}	
+if (isset($_GET["hold_time_option_voicemail"]))				{$hold_time_option_voicemail=$_GET["hold_time_option_voicemail"];}
 	elseif (isset($_POST["hold_time_option_voicemail"]))	{$hold_time_option_voicemail=$_POST["hold_time_option_voicemail"];}
-if (isset($_GET["hold_time_option_xfer_group"]))			{$hold_time_option_xfer_group=$_GET["hold_time_option_xfer_group"];}	
+if (isset($_GET["hold_time_option_xfer_group"]))			{$hold_time_option_xfer_group=$_GET["hold_time_option_xfer_group"];}
 	elseif (isset($_POST["hold_time_option_xfer_group"]))	{$hold_time_option_xfer_group=$_POST["hold_time_option_xfer_group"];}
-if (isset($_GET["hold_time_option_callback_filename"]))				{$hold_time_option_callback_filename=$_GET["hold_time_option_callback_filename"];}	
+if (isset($_GET["hold_time_option_callback_filename"]))				{$hold_time_option_callback_filename=$_GET["hold_time_option_callback_filename"];}
 	elseif (isset($_POST["hold_time_option_callback_filename"]))	{$hold_time_option_callback_filename=$_POST["hold_time_option_callback_filename"];}
-if (isset($_GET["hold_time_option_callback_list_id"]))				{$hold_time_option_callback_list_id=$_GET["hold_time_option_callback_list_id"];}	
+if (isset($_GET["hold_time_option_callback_list_id"]))				{$hold_time_option_callback_list_id=$_GET["hold_time_option_callback_list_id"];}
 	elseif (isset($_POST["hold_time_option_callback_list_id"]))		{$hold_time_option_callback_list_id=$_POST["hold_time_option_callback_list_id"];}
-if (isset($_GET["hold_recall_xfer_group"]))				{$hold_recall_xfer_group=$_GET["hold_recall_xfer_group"];}	
+if (isset($_GET["hold_recall_xfer_group"]))				{$hold_recall_xfer_group=$_GET["hold_recall_xfer_group"];}
 	elseif (isset($_POST["hold_recall_xfer_group"]))	{$hold_recall_xfer_group=$_POST["hold_recall_xfer_group"];}
-if (isset($_GET["no_delay_call_route"]))			{$no_delay_call_route=$_GET["no_delay_call_route"];}	
+if (isset($_GET["no_delay_call_route"]))			{$no_delay_call_route=$_GET["no_delay_call_route"];}
 	elseif (isset($_POST["no_delay_call_route"]))	{$no_delay_call_route=$_POST["no_delay_call_route"];}
-if (isset($_GET["play_welcome_message"]))			{$play_welcome_message=$_GET["play_welcome_message"];}	
+if (isset($_GET["play_welcome_message"]))			{$play_welcome_message=$_GET["play_welcome_message"];}
 	elseif (isset($_POST["play_welcome_message"]))	{$play_welcome_message=$_POST["play_welcome_message"];}
-if (isset($_GET["did_id"]))					{$did_id=$_GET["did_id"];}	
+if (isset($_GET["did_id"]))					{$did_id=$_GET["did_id"];}
 	elseif (isset($_POST["did_id"]))		{$did_id=$_POST["did_id"];}
-if (isset($_GET["source_did"]))				{$source_did=$_GET["source_did"];}	
+if (isset($_GET["source_did"]))				{$source_did=$_GET["source_did"];}
 	elseif (isset($_POST["source_did"]))	{$source_did=$_POST["source_did"];}
-if (isset($_GET["did_pattern"]))			{$did_pattern=$_GET["did_pattern"];}	
+if (isset($_GET["did_pattern"]))			{$did_pattern=$_GET["did_pattern"];}
 	elseif (isset($_POST["did_pattern"]))	{$did_pattern=$_POST["did_pattern"];}
-if (isset($_GET["did_description"]))			{$did_description=$_GET["did_description"];}	
+if (isset($_GET["did_description"]))			{$did_description=$_GET["did_description"];}
 	elseif (isset($_POST["did_description"]))	{$did_description=$_POST["did_description"];}
-if (isset($_GET["did_active"]))				{$did_active=$_GET["did_active"];}	
+if (isset($_GET["did_active"]))				{$did_active=$_GET["did_active"];}
 	elseif (isset($_POST["did_active"]))	{$did_active=$_POST["did_active"];}
-if (isset($_GET["did_route"]))				{$did_route=$_GET["did_route"];}	
+if (isset($_GET["did_route"]))				{$did_route=$_GET["did_route"];}
 	elseif (isset($_POST["did_route"]))		{$did_route=$_POST["did_route"];}
-if (isset($_GET["exten_context"]))			{$exten_context=$_GET["exten_context"];}	
+if (isset($_GET["exten_context"]))			{$exten_context=$_GET["exten_context"];}
 	elseif (isset($_POST["exten_context"]))	{$exten_context=$_POST["exten_context"];}
-if (isset($_GET["phone"]))					{$phone=$_GET["phone"];}	
+if (isset($_GET["phone"]))					{$phone=$_GET["phone"];}
 	elseif (isset($_POST["phone"]))			{$phone=$_POST["phone"];}
-if (isset($_GET["user_unavailable_action"]))			{$user_unavailable_action=$_GET["user_unavailable_action"];}	
+if (isset($_GET["user_unavailable_action"]))			{$user_unavailable_action=$_GET["user_unavailable_action"];}
 	elseif (isset($_POST["user_unavailable_action"]))	{$user_unavailable_action=$_POST["user_unavailable_action"];}
-if (isset($_GET["user_route_settings_ingroup"]))			{$user_route_settings_ingroup=$_GET["user_route_settings_ingroup"];}	
+if (isset($_GET["user_route_settings_ingroup"]))			{$user_route_settings_ingroup=$_GET["user_route_settings_ingroup"];}
 	elseif (isset($_POST["user_route_settings_ingroup"]))	{$user_route_settings_ingroup=$_POST["user_route_settings_ingroup"];}
-if (isset($_GET["call_handle_method"]))				{$call_handle_method=$_GET["call_handle_method"];}	
+if (isset($_GET["call_handle_method"]))				{$call_handle_method=$_GET["call_handle_method"];}
 	elseif (isset($_POST["call_handle_method"]))	{$call_handle_method=$_POST["call_handle_method"];}
-if (isset($_GET["agent_search_method"]))			{$agent_search_method=$_GET["agent_search_method"];}	
+if (isset($_GET["agent_search_method"]))			{$agent_search_method=$_GET["agent_search_method"];}
 	elseif (isset($_POST["agent_search_method"]))	{$agent_search_method=$_POST["agent_search_method"];}
-if (isset($_GET["phone_code"]))				{$phone_code=$_GET["phone_code"];}	
+if (isset($_GET["phone_code"]))				{$phone_code=$_GET["phone_code"];}
 	elseif (isset($_POST["phone_code"]))	{$phone_code=$_POST["phone_code"];}
-if (isset($_GET["email"]))					{$email=$_GET["email"];}	
+if (isset($_GET["email"]))					{$email=$_GET["email"];}
 	elseif (isset($_POST["email"]))			{$email=$_POST["email"];}
-if (isset($_GET["modify_inbound_dids"]))			{$modify_inbound_dids=$_GET["modify_inbound_dids"];}	
+if (isset($_GET["modify_inbound_dids"]))			{$modify_inbound_dids=$_GET["modify_inbound_dids"];}
 	elseif (isset($_POST["modify_inbound_dids"]))	{$modify_inbound_dids=$_POST["modify_inbound_dids"];}
-if (isset($_GET["delete_inbound_dids"]))			{$delete_inbound_dids=$_GET["delete_inbound_dids"];}	
+if (isset($_GET["delete_inbound_dids"]))			{$delete_inbound_dids=$_GET["delete_inbound_dids"];}
 	elseif (isset($_POST["delete_inbound_dids"]))	{$delete_inbound_dids=$_POST["delete_inbound_dids"];}
-if (isset($_GET["three_way_call_cid"]))				{$three_way_call_cid=$_GET["three_way_call_cid"];}	
+if (isset($_GET["three_way_call_cid"]))				{$three_way_call_cid=$_GET["three_way_call_cid"];}
 	elseif (isset($_POST["three_way_call_cid"]))	{$three_way_call_cid=$_POST["three_way_call_cid"];}
 if (isset($_GET["three_way_dial_prefix"]))			{$three_way_dial_prefix=$_GET["three_way_dial_prefix"];}
 	elseif (isset($_POST["three_way_dial_prefix"]))	{$three_way_dial_prefix=$_POST["three_way_dial_prefix"];}
@@ -1215,7 +1215,7 @@ if (isset($_GET["custom_four"]))				{$custom_four=$_GET["custom_four"];}
 	elseif (isset($_POST["custom_four"]))		{$custom_four=$_POST["custom_four"];}
 if (isset($_GET["custom_five"]))				{$custom_five=$_GET["custom_five"];}
 	elseif (isset($_POST["custom_five"]))		{$custom_five=$_POST["custom_five"];}
-	
+
 if (isset($_GET["ibg_custom_one"]))					{$ibg_custom_one=$_GET["ibg_custom_one"];}
 	elseif (isset($_POST["ibg_custom_one"]))		{$ibg_custom_one=$_POST["ibg_custom_one"];}
 if (isset($_GET["ibg_custom_two"]))					{$ibg_custom_two=$_GET["ibg_custom_two"];}
@@ -1226,7 +1226,7 @@ if (isset($_GET["ibg_custom_four"]))				{$ibg_custom_four=$_GET["ibg_custom_four
 	elseif (isset($_POST["ibg_custom_four"]))		{$ibg_custom_four=$_POST["ibg_custom_four"];}
 if (isset($_GET["ibg_custom_five"]))				{$ibg_custom_five=$_GET["ibg_custom_five"];}
 	elseif (isset($_POST["ibg_custom_five"]))		{$ibg_custom_five=$_POST["ibg_custom_five"];}
-	
+
 if (isset($_GET["list_custom_one"]))				{$list_custom_one=$_GET["list_custom_one"];}
 	elseif (isset($_POST["list_custom_one"]))		{$list_custom_one=$_POST["list_custom_one"];}
 if (isset($_GET["list_custom_two"]))				{$list_custom_two=$_GET["list_custom_two"];}
@@ -2440,7 +2440,7 @@ if (isset($_GET["max_hopper_calls_hour"]))			{$max_hopper_calls_hour=$_GET["max_
 if (isset($script_id)) {$script_id= strtoupper($script_id);}
 if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
 
-if (strlen($dial_status) > 0) 
+if (strlen($dial_status) > 0)
 	{
 	$ADD='28';
 	$status = $dial_status;
@@ -2539,11 +2539,11 @@ if ($qm_conf_ct > 0)
 if ( ($qm_conf_ct > 0) and (strlen($SSpass_key)<16) )
 	{
 	$SSpass_key = '';
-	$possible = "0123456789abcdefghijklmnpqrstvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ";  
-	$i = 0; 
+	$possible = "0123456789abcdefghijklmnpqrstvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ";
+	$i = 0;
 	$length = 16;
-	while ($i < $length) 
-		{ 
+	while ($i < $length)
+		{
 		$char = substr($possible, mt_rand(0, strlen($possible)-1), 1);
 		$SSpass_key .= $char;
 		$i++;
@@ -2875,7 +2875,7 @@ if ($non_latin < 1)
 	$inbound_no_agents_no_dial_threshold = preg_replace('/[^-0-9]/','',$inbound_no_agents_no_dial_threshold);
 	$pickup_delay = preg_replace('/[^-0-9]/','',$pickup_delay);
 	$autoanswer_delay = preg_replace('/[^-0-9]/','',$autoanswer_delay);
-	
+
 	### DIGITS and COLONS
 	$shift_length = preg_replace('/[^\:0-9]/','',$shift_length);
 
@@ -3655,8 +3655,8 @@ if ($non_latin < 1)
 
 	### ALPHACAPS
 	$agent_prefix = preg_replace('/[^A-Z]/','', $agent_prefix);
-	
-	### NUMERIC and A-D	
+
+	### NUMERIC and A-D
 	$autoanswer_prefix = preg_replace('/[^0-9A-D]/','', $autoanswer_prefix);
 
 	### remove semi-colons ###
@@ -3758,7 +3758,7 @@ else
 
 # ViciDial database administration
 # admin.php
-# 
+#
 # CHANGELOG:
 # 50315-1110 - Added Custom Campaign Statuses
 # 50317-1438 - Added Fronter Display var to inbound groups
@@ -3807,7 +3807,7 @@ else
 # 60509-1311 - Functionalize campaign dialable leads calculation
 #            - Change state_call_times selection from call_times to only allow one per state
 #            - Added dialable leads count popup to campaign screen if auto-calc is disabled
-#            - Added test dialable leads count popup to filter screen 
+#            - Added test dialable leads count popup to filter screen
 # 60510-1050 - Added Wrapup seconds and Wrapup message to campaigns screen
 # 60608-1401 - Added allowable inbound_groups checkboxes to CLOSER campaign detail screen
 # 60609-1051 - Added add-to-dnc in LISTS section
@@ -4179,7 +4179,7 @@ else
 # 130615-2124 - Added login lockout for 15 minutes after 10 failed logins, and other security fixes
 # 130627-0745 - Added url log, lagged log and user group login reports to admin utilities page
 # 130709-1350 - Changes for encrypted password compatibility, added Dial Log Report
-# 130711-2208 - Added SYSTEM SNAPSHOT STATS as new welcome screen, and added new 
+# 130711-2208 - Added SYSTEM SNAPSHOT STATS as new welcome screen, and added new
 # 130809-1410 - Small fixes for call times and holidays
 # 130824-2319 - Changed to mysqli PHP functions
 # 130915-0045 - Added counts for new nanpa prefix type tables
@@ -4442,7 +4442,7 @@ else
 # 180411-1647 - Added DISPO_FILTER as Settings Container type
 # 180424-1521 - Added in-group populate_lead_source, populate_lead_vendor settings
 # 180430-1834 - Added in-group park_file_name override
-# 180512-0852 - New AJAX-based help interface 
+# 180512-0852 - New AJAX-based help interface
 # 180512-2217 - Added users-max_hopper_calls,max_hopper_calls_hour settings
 #
 
@@ -4634,7 +4634,7 @@ $rslt=mysql_to_mysqli($stmt, $link);
 $row=mysqli_fetch_row($rslt);
 $qc_auth=$row[0];
 //Not "qc_" as it will interfere with ADD=4A storage of modified user.
-if ($qc_auth=='1') 
+if ($qc_auth=='1')
 	{
     $qcuser_level=$row[1];
     $qcpass=$row[2];
@@ -4754,7 +4754,7 @@ if ( (!preg_match('/\-\-ALL\-\-/i',$LOGadmin_viewable_groups)) and (strlen($LOGa
 	$valLOGadmin_viewable_groupsSQL = "and val.user_group IN('---ALL---','$rawLOGadmin_viewable_groupsSQL')";
 	$vmLOGadmin_viewable_groupsSQL = "and vm.user_group IN('---ALL---','$rawLOGadmin_viewable_groupsSQL')";
 	}
-else 
+else
 	{$admin_viewable_groupsALL=1;}
 $regexLOGadmin_viewable_groups = " $LOGadmin_viewable_groups ";
 
@@ -4776,7 +4776,7 @@ $stmt="SELECT user_group,group_name from vicidial_user_groups $whereLOGadmin_vie
 $rslt=mysql_to_mysqli($stmt, $link);
 $UUgroups_to_print = mysqli_num_rows($rslt);
 $o=0;
-while ($UUgroups_to_print > $o) 
+while ($UUgroups_to_print > $o)
 	{
 	$rowx=mysqli_fetch_row($rslt);
 	$UUgroups_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -4813,7 +4813,7 @@ if ($LOGforce_change_password=='Y')
 	}
 if ($SSfirst_login_trigger=='Y')
 	{
-	
+
 	if ($ADD==999996)
 		{$reports_only_user=1;}
 	else
@@ -4870,14 +4870,14 @@ $Mhead_color =	$SSstd_row5_background;
 $Mmain_bgcolor = $SSmenu_background;
 $Mhead_color =	$SSstd_row5_background;
 
-if ($download_max_system_stats_metric_name) 
+if ($download_max_system_stats_metric_name)
 	{
 	if (!$query_date) {$query_date=date("Y-m-d", time()-(29*86400));}
-	if (!$end_date) 
+	if (!$end_date)
 		{
 		$end_date=date("Y-m-d", time());
 		}
-	else if (strtotime($end_date)>strtotime(date("Y-m-d"))) 
+	else if (strtotime($end_date)>strtotime(date("Y-m-d")))
 		{
 		$end_date=date("Y-m-d");
 		}
@@ -4886,31 +4886,31 @@ if ($download_max_system_stats_metric_name)
 	$num_graph_days = ceil(abs(strtotime($end_date) - strtotime($query_date)) / 86400)+1;
 	$CSV_text="";
 
-	if ($download_max_system_stats_metric_name=="ALL" || $download_max_system_stats_metric_name=="total call count in and out") 
+	if ($download_max_system_stats_metric_name=="ALL" || $download_max_system_stats_metric_name=="total call count in and out")
 		{
 		download_max_system_stats($campaign_id,$num_graph_days,'system','total_calls','total call count in and out',$end_date);
 		}
-	if ($download_max_system_stats_metric_name=="ALL" || $download_max_system_stats_metric_name=="total inbound call count") 
+	if ($download_max_system_stats_metric_name=="ALL" || $download_max_system_stats_metric_name=="total inbound call count")
 		{
 		download_max_system_stats($campaign_id,$num_graph_days,'system','total_calls_inbound_all','total inbound call count',$end_date);
 		}
-	if ($download_max_system_stats_metric_name=="ALL" || $download_max_system_stats_metric_name=="total outbound call count") 
+	if ($download_max_system_stats_metric_name=="ALL" || $download_max_system_stats_metric_name=="total outbound call count")
 		{
 		download_max_system_stats($campaign_id,$num_graph_days,'system','total_calls_outbound_all','total outbound call count',$end_date);
 		}
-	if ($download_max_system_stats_metric_name=="ALL" || $download_max_system_stats_metric_name=="most concurrent calls in and out") 
+	if ($download_max_system_stats_metric_name=="ALL" || $download_max_system_stats_metric_name=="most concurrent calls in and out")
 		{
 		download_max_system_stats($campaign_id,$num_graph_days,'system','(max_inbound + max_outbound)','most concurrent calls in and out',$end_date);
 		}
-	if ($download_max_system_stats_metric_name=="ALL" || $download_max_system_stats_metric_name=="most concurrent calls inbound total") 
+	if ($download_max_system_stats_metric_name=="ALL" || $download_max_system_stats_metric_name=="most concurrent calls inbound total")
 		{
 		download_max_system_stats($campaign_id,$num_graph_days,'system','max_inbound','most concurrent calls inbound total',$end_date);
 		}
-	if ($download_max_system_stats_metric_name=="ALL" || $download_max_system_stats_metric_name=="most concurrent calls outbound total") 
+	if ($download_max_system_stats_metric_name=="ALL" || $download_max_system_stats_metric_name=="most concurrent calls outbound total")
 		{
 		download_max_system_stats($campaign_id,$num_graph_days,'system','max_outbound','most concurrent calls outbound total',$end_date);
 		}
-	if ($download_max_system_stats_metric_name=="ALL" || $download_max_system_stats_metric_name=="most concurrent agents") 
+	if ($download_max_system_stats_metric_name=="ALL" || $download_max_system_stats_metric_name=="most concurrent agents")
 		{
 		download_max_system_stats($campaign_id,$num_graph_days,'system','max_agents','most concurrent agents',$end_date);
 		}
@@ -5091,7 +5091,7 @@ if ($ADD==231111111111111)	{$hh='admin';	$sh='status';	echo _QXZ("ADDING STATUS 
 if ($ADD==241111111111111)	{$hh='admin';	$sh='status';	echo _QXZ("ADDING QC STATUS CODE");}
 if ($ADD==3)			{$hh='users';		$sh='list';	echo _QXZ("Modify User");}
 if ($ADD==30)			{$hh='campaigns';	echo _QXZ("Campaign Not Allowed");}
-if ($ADD==31)			
+if ($ADD==31)
 	{
 	$hh='campaigns';	$sh='detail';	echo _QXZ("Modify Campaign - Detail")." - $campaign_id";
 	if ($SUB==22)	{echo " - "._QXZ("Statuses");}
@@ -5592,7 +5592,7 @@ if ( ( (strlen($ADD)>4) and ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($AD
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$stmt_grp_values .= "$stmt|";
 			}
-		else 
+		else
 			{
 			$campaign_rank = $SELECT_campaign_rank;
 			$campaign_grade = $SELECT_campaign_grade;
@@ -5602,7 +5602,7 @@ if ( ( (strlen($ADD)>4) and ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($AD
 		$USER_hopper_calls_hour = ($USER_hopper_calls_hour + $hopper_calls_hour);
 
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+			{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 		else
 			{$bgcolor='bgcolor="#' . $SSstd_row1_background . '"';}
 
@@ -5627,12 +5627,12 @@ if ( ( (strlen($ADD)>4) and ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($AD
 			$UGcampaign_ct = count($UGcampaigns);
 			while ($p < $UGcampaign_ct)
 				{
-				if ($campaign_id_values[$o] == $UGcampaigns[$p]) 
+				if ($campaign_id_values[$o] == $UGcampaigns[$p])
 					{$RANK_camp_active++;   $GRADE_camp_active++;}
 				$p++;
 				}
 			}
-		if ($RANK_camp_active < 1) 
+		if ($RANK_camp_active < 1)
 			{$CR_disabled = 'DISABLED';}
 		else
 			{
@@ -5829,14 +5829,14 @@ if ( ( (strlen($ADD)>4) and ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($AD
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$stmt_grp_values .= "$stmt|";
 			}
-		else 
+		else
 			{
 			$group_rank = $SELECT_group_rank;
 			$group_grade = $SELECT_group_grade;
 			}
 
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+			{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 		else
 			{$bgcolor='bgcolor="#' . $SSstd_row1_background . '"';}
 
@@ -5847,7 +5847,7 @@ if ( ( (strlen($ADD)>4) and ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($AD
 		$group_ct = count($groups);
 		while ($p < $group_ct)
 			{
-			if ($group_id_values[$o] == $groups[$p]) 
+			if ($group_id_values[$o] == $groups[$p])
 				{
 				$groups_list .= " CHECKED";
 				$RANKgroups_list .= " CHECKED";
@@ -5859,7 +5859,7 @@ if ( ( (strlen($ADD)>4) and ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($AD
 		$XFERgroup_ct = count($XFERgroups);
 		while ($p < $XFERgroup_ct)
 			{
-			if ($group_id_values[$o] == $XFERgroups[$p]) 
+			if ($group_id_values[$o] == $XFERgroups[$p])
 				{
 				$XFERgroups_list .= " CHECKED";
 				$XFERgroups_value .= " $group_id_values[$o]";
@@ -5950,7 +5950,7 @@ if ( ($ADD==211111) or ($ADD==311111) or ($ADD==411111) or ($ADD==511111) or ($A
 	$p=0;
 	while ($p<2000)
 		{
-		if (preg_match('/ALL\-CAMPAIGNS/i',$campaigns[$p])) 
+		if (preg_match('/ALL\-CAMPAIGNS/i',$campaigns[$p]))
 			{
 			if ( (preg_match('/\-ALL/i', $LOGallowed_campaigns)) )
 				{
@@ -5958,12 +5958,12 @@ if ( ($ADD==211111) or ($ADD==311111) or ($ADD==411111) or ($ADD==511111) or ($A
 				$campaigns_value .= " -ALL-CAMPAIGNS-";
 				}
 			}
-		if (preg_match('/ALL\-CAMPAIGNS/i',$qc_campaigns[$p])) 
+		if (preg_match('/ALL\-CAMPAIGNS/i',$qc_campaigns[$p]))
 			{
 			$qc_campaigns_list.=" CHECKED";
 			$qc_campaigns_value .= " -ALL-CAMPAIGNS-";
 			}
-		if (preg_match('/ALL\-GROUPS/i',$qc_groups[$p])) 
+		if (preg_match('/ALL\-GROUPS/i',$qc_groups[$p]))
 			{
 			$qc_groups_list.=" CHECKED";
 			$qc_groups_value .= " -ALL-GROUPS-";
@@ -5996,7 +5996,7 @@ if ( ($ADD==211111) or ($ADD==311111) or ($ADD==411111) or ($ADD==511111) or ($A
 				$campaigns_list .= " CHECKED";
 				$campaigns_value .= " $campaign_id_value";
 				}
-			if ($campaign_id_value == $qc_campaigns[$p]) 
+			if ($campaign_id_value == $qc_campaigns[$p])
 				{
 				$qc_campaigns_list .= " CHECKED";
 				$qc_campaigns_value .= " $campaign_id_value";
@@ -6043,7 +6043,7 @@ if ( ($ADD==211111) or ($ADD==311111) or ($ADD==411111) or ($ADD==511111) or ($A
 
 if ( (strlen($ADD)==11) or (strlen($ADD)>12) or ( ($ADD > 1299) and ($ADD < 9999) ) or ($ADD=='141111111111') or ($ADD=='140111111111') or ($ADD=='341111111111') or ($ADD=='311111111111111') or ( (strlen($ADD)>4) and ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD<70)) or ($ADD=="4A") or ($ADD=="4B") or (strlen($ADD)==12) )
 	{
-	##### get server listing for dynamic pulldown 
+	##### get server listing for dynamic pulldown
 	$stmt="SELECT server_ip,server_description,external_server_ip from servers order by server_ip";
 	$rsltx=mysql_to_mysqli($stmt, $link);
 	$servers_to_print = mysqli_num_rows($rsltx);
@@ -6106,7 +6106,7 @@ if ($ADD==73)
 		if ($lead_filter_id=='')
 			{
 			$lead_filter_id =	$row[2];
-			if ($lead_filter_id=='') 
+			if ($lead_filter_id=='')
 				{
 				$lead_filter_id='NONE';
 				}
@@ -6117,7 +6117,7 @@ if ($ADD==73)
 		$lists_to_print = mysqli_num_rows($rslt);
 		$camp_lists='';
 		$o=0;
-		while ($lists_to_print > $o) 
+		while ($lists_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$o++;
@@ -6553,7 +6553,7 @@ if ($ADD=="1A")
 		$Uusers_list='';
 
 		$o=0;
-		while ($Uusers_to_print > $o) 
+		while ($Uusers_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$Uusers_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -6754,7 +6754,7 @@ if ($ADD==12)
 		$campaigns_list='';
 
 		$o=0;
-		while ($campaigns_to_print > $o) 
+		while ($campaigns_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$campaigns_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -6762,7 +6762,7 @@ if ($ADD==12)
 			}
 		echo "$campaigns_list";
 		echo "</select>$NWB#campaigns-campaign_id$NWE</td></tr>\n";
-		
+
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=center colspan=2><input type=submit name=SUBMIT value='"._QXZ("SUBMIT")."'></td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=center colspan=2>"._QXZ("NOTE: Copying a campaign will copy all settings from the master campaign you select, but it will not copy a campaign-specific DNC list if there was one on the selected master campaign.")."</td></tr>\n";
 		echo "</TABLE></center>\n";
@@ -6817,7 +6817,7 @@ if ($ADD==111)
 		$campaigns_list='';
 
 		$o=0;
-		while ($campaigns_to_print > $o) 
+		while ($campaigns_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$campaigns_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -6856,7 +6856,7 @@ if ($ADD==121)
 	$campaigns_to_print = mysqli_num_rows($rslt);
 
 	$o=0;
-	while ($campaigns_to_print > $o) 
+	while ($campaigns_to_print > $o)
 		{
 		$rowx=mysqli_fetch_row($rslt);
 		$campaigns_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -6888,7 +6888,7 @@ if ($ADD==121)
 		while ($vdl_ct > $i)
 			{
 			if (preg_match('/1$|3$|5$|7$|9$/i', $i))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#' . $SSstd_row1_background . '"';}
 			$row=mysqli_fetch_row($rslt);
@@ -7054,7 +7054,7 @@ if ($ADD==121)
 				}
 			$p++;
 			}
-		
+
 		if ( ($DNCadded > 0) or ($DNCnotadded > 0) )
 			{
 			echo "<br>\n";
@@ -7166,7 +7166,7 @@ if ($ADD==171)
 	$vfpg_to_print = mysqli_num_rows($rslt);
 
 	$o=0;
-	while ($vfpg_to_print > $o) 
+	while ($vfpg_to_print > $o)
 		{
 		$rowx=mysqli_fetch_row($rslt);
 		$vfpg_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -7303,7 +7303,7 @@ if ($ADD==3211)
 						$vaf=0;
 						while ($vaf_ct > $vaf)
 							{
-							if ($PN[$p] == $vaf_list[$vaf]) 
+							if ($PN[$p] == $vaf_list[$vaf])
 								{
 								$vaf_count[$vaf]++;
 								$ac_found++;
@@ -7456,12 +7456,12 @@ if ($ADD==1111)
 		if ($SSallow_chats > 0)
 			{$achHTML .= "<option value='CHAT'>"._QXZ("CHAT")."</option>";}
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Get Call Launch").": </td><td align=left><select size=1 name=get_call_launch><option selected value='NONE'>"._QXZ("NONE")."</option><option value='SCRIPT'>"._QXZ("SCRIPT")."</option><option value='WEBFORM'>"._QXZ("WEBFORM")."</option>$eswHTML$cfwHTML$aemHTML$achHTML</select>$NWB#inbound_groups-get_call_launch$NWE</td></tr>\n";
-/* Don't give an option (yet).  This is clearly for phones only. 
+/* Don't give an option (yet).  This is clearly for phones only.
 		if ($SSallow_emails>0 || $SSallow_chats > 0)
 			{
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Group Handling").": </td><td align=left><select size=1 name=group_handling><option selected value='PHONE'>"._QXZ("PHONE")."</option>";
 			if ($SSallow_emails>0) {echo "<option value='EMAIL'>"._QXZ("EMAIL")."</option>";}
-			if ($SSallow_chats>0) {echo "<option value='CHAT'>"._QXZ("CHAT")."</option>";}			
+			if ($SSallow_chats>0) {echo "<option value='CHAT'>"._QXZ("CHAT")."</option>";}
 			echo "</select>$NWB#inbound_groups-group_handling$NWE</td></tr>\n";
 			}
 		else
@@ -7540,7 +7540,7 @@ if ($ADD==1811)
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Get Call Launch").": </td><td align=left><select size=1 name=get_call_launch><option value='NONE' selected>"._QXZ("NONE")."</option><option value='SCRIPT'>"._QXZ("SCRIPT")."</option><option value='WEBFORM'>"._QXZ("WEBFORM")."</option>$eswHTML$cfwHTML$aemHTML$achHTML</select>$NWB#inbound_groups-get_call_launch$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right></td><td align=left><input type=hidden name=group_handling value='EMAIL'></td></tr>\n";
-		
+
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=center colspan=2><input type=submit name=SUBMIT value='"._QXZ("SUBMIT")."'></td></tr>\n";
 		echo "</TABLE></center>\n";
 		}
@@ -7613,7 +7613,7 @@ if ($ADD==18111)
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Get Call Launch").": </td><td align=left><select size=1 name=get_call_launch><option value='NONE' selected>"._QXZ("NONE")."</option><option value='SCRIPT'>"._QXZ("SCRIPT")."</option><option value='WEBFORM'>"._QXZ("WEBFORM")."</option>$eswHTML$cfwHTML$aemHTML$achHTML</select>$NWB#inbound_groups-get_call_launch$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right></td><td align=left><input type=hidden name=group_handling value='CHAT'></td></tr>\n";
-		
+
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=center colspan=2><input type=submit name=SUBMIT value='"._QXZ("SUBMIT")."'></td></tr>\n";
 		echo "</TABLE></center>\n";
 		}
@@ -7667,7 +7667,7 @@ if ($ADD==1211)
 		$groups_list='';
 
 		$o=0;
-		while ($groups_to_print > $o) 
+		while ($groups_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$groups_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -7729,7 +7729,7 @@ if ($ADD==1911)
 		$groups_list='';
 
 		$o=0;
-		while ($groups_to_print > $o) 
+		while ($groups_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$groups_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -7791,7 +7791,7 @@ if ($ADD==19111)
 		$groups_list='';
 
 		$o=0;
-		while ($groups_to_print > $o) 
+		while ($groups_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$groups_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -7865,7 +7865,7 @@ if ($ADD==1411)
 		$dids_list='';
 
 		$o=0;
-		while ($dids_to_print > $o) 
+		while ($dids_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$dids_list .= "<option value=\"$rowx[0]\">$rowx[1] - $rowx[2]</option>\n";
@@ -7975,7 +7975,7 @@ if ($ADD==1611)
 		$menus_list='';
 
 		$o=0;
-		while ($menus_to_print > $o) 
+		while ($menus_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$menus_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -8084,7 +8084,7 @@ if ($ADD==12111)
 		$n=99; $rank=0;
 		while ($n>=-99)
 			{
-			if ($n == $rank) 
+			if ($n == $rank)
 				{echo "<option SELECTED value=\"$n\">$n</option>\n";}
 			else
 				{echo "<option value=\"$n\">$n</option>\n";}
@@ -8721,7 +8721,7 @@ if ($ADD==141111111111)
 		$templates_to_print = mysqli_num_rows($rslt);
 		$templates_list='<option value=\'--NONE--\' SELECTED>--'._QXZ("NONE").'--</option>';
 		$o=0;
-		while ($templates_to_print > $o) 
+		while ($templates_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$templates_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -8779,7 +8779,7 @@ if ($ADD==140111111111)
 		$menus_list='';
 
 		$o=0;
-		while ($menus_to_print > $o) 
+		while ($menus_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$menus_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1] - $rowx[2]</option>\n";
@@ -9305,7 +9305,7 @@ if ($ADD=="2")
 							{
 							$new_user++;
 							}
-						else 
+						else
 							{
 							echo "<!-- AG: $auto_user_add_value -->\n";
 							$auto_user_add_value = ($auto_user_add_value + 7);
@@ -9369,7 +9369,7 @@ if ($ADD=="2")
 					#mysql_select_db("$vtiger_dbname", $linkV);
 
 					$linkV=mysqli_connect("$vtiger_server_ip", "$vtiger_login", "$vtiger_pass", "$vtiger_dbname");
-					if (!$linkV) 
+					if (!$linkV)
 						{
 						die('MySQL '._QXZ("connect ERROR").': ' . mysqli_connect_error());
 						}
@@ -9520,7 +9520,7 @@ if ($ADD=="2")
 						$rslt=mysql_to_mysqli($stmtA, $linkV);
 						if (!$rslt) {die(_QXZ("Could not execute").': ' . mysqli_error());}
 						$userid = mysqli_insert_id($linkV);
-					
+
 						$stmtB = "INSERT INTO vtiger_user2role SET userid='$userid',roleid='$roleid';";
 						if ($DB) {echo "|$stmtB|\n";}
 						$rslt=mysql_to_mysqli($stmtB, $linkV);
@@ -9616,7 +9616,7 @@ if ($ADD=="2A")
 							{
 							$new_user++;
 							}
-						else 
+						else
 							{
 							echo "<!-- AG: $auto_user_add_value -->\n";
 							$auto_user_add_value = ($auto_user_add_value + 7);
@@ -9682,7 +9682,7 @@ if ($ADD=="2A")
 					#echo 'Connected successfully';
 					#mysql_select_db("$vtiger_dbname", $linkV);
 					$linkV=mysqli_connect("$vtiger_server_ip", "$vtiger_login", "$vtiger_pass", "$vtiger_dbname");
-					if (!$linkV) 
+					if (!$linkV)
 						{
 						die('MySQL '._QXZ("connect ERROR").': ' . mysqli_connect_error());
 						}
@@ -9833,7 +9833,7 @@ if ($ADD=="2A")
 						$rslt=mysql_to_mysqli($stmtA, $linkV);
 						if (!$rslt) {die(_QXZ("Could not execute").': ' . mysqli_error());}
 						$userid = mysqli_insert_id($linkV);
-					
+
 						$stmtB = "INSERT INTO vtiger_user2role SET userid='$userid',roleid='$roleid';";
 						if ($DB) {echo "|$stmtB|\n";}
 						$rslt=mysql_to_mysqli($stmtB, $linkV);
@@ -10522,7 +10522,7 @@ if ($ADD==202)
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$accids_to_print = mysqli_num_rows($rslt);
 			$o=0;
-			while ($accids_to_print > $o) 
+			while ($accids_to_print > $o)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$Xareacode[$o] =			$rowx[0];
@@ -10537,7 +10537,7 @@ if ($ADD==202)
 			$stmt_log='';
 			$accid_log='';
 			$o=0;
-			while ($accids_to_print > $o) 
+			while ($accids_to_print > $o)
 				{
 				$Factive_value='';
 				$Fcid_description_value='';
@@ -11684,7 +11684,7 @@ if ($ADD==211111)
 					#echo 'Connected successfully';
 					#mysql_select_db("$vtiger_dbname", $linkV);
 					$linkV=mysqli_connect("$vtiger_server_ip", "$vtiger_login", "$vtiger_pass", "$vtiger_dbname");
-					if (!$linkV) 
+					if (!$linkV)
 						{
 						die('MySQL '._QXZ("connect ERROR").': ' . mysqli_connect_error());
 						}
@@ -12319,12 +12319,12 @@ if ($ADD==221111111111)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$rowx=mysqli_fetch_row($rslt);
 		$MAXvicidial_trunks = $rowx[0];
-		
+
 		$stmt="SELECT sum(dedicated_trunks) from vicidial_server_trunks where server_ip='$server_ip' and campaign_id !='$campaign_id';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$rowx=mysqli_fetch_row($rslt);
 		$SUMvicidial_trunks = ($rowx[0] + $dedicated_trunks);
-		
+
 		if ($SUMvicidial_trunks > $MAXvicidial_trunks)
 			{
 			echo "<br>"._QXZ("SERVER TRUNK RECORD NOT ADDED - the number of trunks is too high").": $SUMvicidial_trunks / $MAXvicidial_trunks\n";
@@ -12741,7 +12741,7 @@ if ($ADD==291111111111)
 		if ( (preg_match("/contact_information/",$SStables_use_alt_log_db)) and (strlen($SSalt_log_server_ip)>4) and (strlen($SSalt_log_dbname)>0) )
 			{
 			$linkALT=mysqli_connect("$SSalt_log_server_ip", "$SSalt_log_login", "$SSalt_log_pass", "$SSalt_log_dbname");
-				if (!$linkALT) 
+				if (!$linkALT)
 					{
 					die('MySQL '._QXZ("connect ERROR").': ' . mysqli_connect_error());
 					}
@@ -13234,7 +13234,7 @@ if ($ADD=="4A")
 				$delete_filters =			'0';
 				$load_leads =				'0';
 				}
-			if (strlen($agent_choose_territories) < 1) 
+			if (strlen($agent_choose_territories) < 1)
 				{$agent_choose_territories=0;}
 			$pass_hash='';
 			$pass_hashSQL='';
@@ -13300,7 +13300,7 @@ if ($ADD=="4A")
 				#echo 'Connected successfully';
 				#mysql_select_db("$vtiger_dbname", $linkV);
 				$linkV=mysqli_connect("$vtiger_server_ip", "$vtiger_login", "$vtiger_pass", "$vtiger_dbname");
-				if (!$linkV) 
+				if (!$linkV)
 					{
 					die('MySQL '._QXZ("connect ERROR").': ' . mysqli_connect_error());
 					}
@@ -13451,7 +13451,7 @@ if ($ADD=="4A")
 					$rslt=mysql_to_mysqli($stmtA, $linkV);
 					if (!$rslt) {die(_QXZ("Could not execute").': ' . mysqli_error());}
 					$userid = mysqli_insert_id($linkV);
-				
+
 					$stmtB = "INSERT INTO vtiger_user2role SET userid='$userid',roleid='$roleid';";
 					if ($DB) {echo "|$stmtB|\n";}
 					$rslt=mysql_to_mysqli($stmtB, $linkV);
@@ -13506,7 +13506,7 @@ if ($ADD=="4B")
 				$delete_filters =			'0';
 				$load_leads =				'0';
 				}
-			if (strlen($agent_choose_territories) < 1) 
+			if (strlen($agent_choose_territories) < 1)
 				{$agent_choose_territories=0;}
 			$pass_hash='';
 			$pass_hashSQL='';
@@ -13562,7 +13562,7 @@ if ($ADD=="4B")
 				#echo 'Connected successfully';
 				#mysql_select_db("$vtiger_dbname", $linkV);
 				$linkV=mysqli_connect("$vtiger_server_ip", "$vtiger_login", "$vtiger_pass", "$vtiger_dbname");
-				if (!$linkV) 
+				if (!$linkV)
 					{
 					die('MySQL '._QXZ("connect ERROR").': ' . mysqli_connect_error());
 					}
@@ -13713,7 +13713,7 @@ if ($ADD=="4B")
 					$rslt=mysql_to_mysqli($stmtA, $linkV);
 					if (!$rslt) {die(_QXZ("Could not execute").': ' . mysqli_error());}
 					$userid = mysqli_insert_id($linkV);
-				
+
 					$stmtB = "INSERT INTO vtiger_user2role SET userid='$userid',roleid='$roleid';";
 					if ($DB) {echo "|$stmtB|\n";}
 					$rslt=mysql_to_mysqli($stmtB, $linkV);
@@ -13816,7 +13816,7 @@ if ($ADD==4)
 				#echo 'Connected successfully';
 				#mysql_select_db("$vtiger_dbname", $linkV);
 				$linkV=mysqli_connect("$vtiger_server_ip", "$vtiger_login", "$vtiger_pass", "$vtiger_dbname");
-				if (!$linkV) 
+				if (!$linkV)
 					{
 					die('MySQL '._QXZ("connect ERROR").': ' . mysqli_connect_error());
 					}
@@ -13967,7 +13967,7 @@ if ($ADD==4)
 					$rslt=mysql_to_mysqli($stmtA, $linkV);
 					if (!$rslt) {die(_QXZ("Could not execute").': ' . mysqli_error());}
 					$userid = mysqli_insert_id($linkV);
-				
+
 					$stmtB = "INSERT INTO vtiger_user2role SET userid='$userid',roleid='$roleid';";
 					if ($DB) {echo "|$stmtB|\n";}
 					$rslt=mysql_to_mysqli($stmtB, $linkV);
@@ -14155,11 +14155,11 @@ if ($ADD==41)
 					$stmtB = "INSERT INTO vicidial_manager(uniqueid,entry_date,status,response,server_ip,channel,action,callerid,cmd_line_b,cmd_line_c,cmd_line_d,cmd_line_e,cmd_line_f,cmd_line_g,cmd_line_h,cmd_line_i,cmd_line_j,cmd_line_k) values('','$SQLdate','NEW','N','$old_server_ip','','Originate','$VqueryCID','Exten: $VDAD_dial_exten','Context: $ext_context','Channel: $local_DEF$Ndialstring$local_AMP$ext_context','Priority: 1','Callerid: $CIDstring','Timeout: $Local_dial_timeout','','','','VDACnote: $campaign_id|$lead_id|$phone_code|$phone_number|OUT|MAIN|99')";
 					$rslt=mysql_to_mysqli($stmtB, $link);
 
-					### insert a SENT record to the vicidial_auto_calls table 
+					### insert a SENT record to the vicidial_auto_calls table
 					$stmtC = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,callerid,phone_code,phone_number,call_time,call_type,alt_dial,queue_priority) values('$old_server_ip','$campaign_id','SENT','$lead_id','$VqueryCID','$phone_code','$phone_number','$SQLdate','OUT','MAIN','99')";
 					$rslt=mysql_to_mysqli($stmtC, $link);
 
-					### insert a record in the vicidial_dial_log table 
+					### insert a record in the vicidial_dial_log table
 					$stmtD = "INSERT INTO vicidial_dial_log SET caller_code='$VqueryCID',lead_id='$lead_id',server_ip='$old_server_ip',call_date='$SQLdate',extension='$VDAD_dial_exten',channel='$local_DEF$Ndialstring$local_AMP$ext_context',timeout='$Local_dial_timeout',outbound_cid='$CIDstring',context='$ext_context';";
 					$rslt=mysql_to_mysqli($stmtD, $link);
 
@@ -14185,7 +14185,7 @@ if ($ADD==41)
 					$LIST_ACTIVATE .= "'$list_active_change[$p]',";
 					$p++;
 					}
-				
+
 				$stmt = "UPDATE vicidial_lists SET active='Y' where list_id IN($LIST_ACTIVATE'') and campaign_id='$campaign_id';";
 				$stmtB = "UPDATE vicidial_lists SET active='N' where list_id NOT IN($LIST_ACTIVATE'') and campaign_id='$campaign_id';";
 				$rslt=mysql_to_mysqli($stmt, $link);
@@ -14235,7 +14235,7 @@ if ($ADD==41)
 						$auto_alt_dial='NONE';
 						$list_order_mix='DISABLED';
 						}
-					if ($dial_method == 'MANUAL') 
+					if ($dial_method == 'MANUAL')
 						{
 						$auto_dial_level='0';
 						$use_auto_hopper='N';
@@ -14258,7 +14258,7 @@ if ($ADD==41)
 							else
 								{
 								$adlSQL = "";
-								if ($auto_dial_level < 1) 
+								if ($auto_dial_level < 1)
 									{
 									$auto_dial_level = "1.0";
 									$adlSQL = "auto_dial_level='$auto_dial_level',";
@@ -14289,7 +14289,7 @@ if ($ADD==41)
 							$group_ct = count($groups);
 							while ($p < $group_ct)
 								{
-								if ($group_id_values[$o] == $groups[$p]) 
+								if ($group_id_values[$o] == $groups[$p])
 									{
 									$groups_list .= " CHECKED";
 									$groups_value .= " $group_id_values[$o]";
@@ -14306,7 +14306,7 @@ if ($ADD==41)
 							}
 						if (strlen($groups_value)>2) {$groups_value .= " -";}
 						}
-					
+
 					if ( ($pause_max < 10) or (strlen($pause_max)<2) )
 						{$pause_max=0;}
 					if ( ($ready_max_logout < 10) or (strlen($ready_max_logout)<2) )
@@ -14516,7 +14516,7 @@ if ($ADD==44)
 				$LIST_ACTIVATE .= "'$list_active_change[$p]',";
 				$p++;
 				}
-			
+
 			$stmt = "UPDATE vicidial_lists SET active='Y' where list_id IN($LIST_ACTIVATE'') and campaign_id='$campaign_id';";
 			$stmtB = "UPDATE vicidial_lists SET active='N' where list_id NOT IN($LIST_ACTIVATE'') and campaign_id='$campaign_id';";
 			$rslt=mysql_to_mysqli($stmt, $link);
@@ -14550,7 +14550,7 @@ if ($ADD==44)
 					}
 				else
 					{
-					if ($dial_method == 'MANUAL') 
+					if ($dial_method == 'MANUAL')
 						{
 						$auto_dial_level='0';
 						$adlSQL = "auto_dial_level='0',";
@@ -14558,7 +14558,7 @@ if ($ADD==44)
 					else
 						{
 						$adlSQL = "";
-						if ($auto_dial_level < 1) 
+						if ($auto_dial_level < 1)
 							{
 							$auto_dial_level = "1.0";
 							$adlSQL = "auto_dial_level='$auto_dial_level',";
@@ -14723,7 +14723,7 @@ if ($ADD==48)
 				$QC_lists .= " $qc_lists[$p]";
 				$p++;
 				}
-			
+
 			if (strlen($QC_statuses)>0) {$QC_statuses .= " -";}
 			if (strlen($QC_lists)>0) {$QC_lists .= " -";}
 
@@ -14904,7 +14904,7 @@ if ($ADD==49)
 					$MIXpercentPCT = $MIXdetailsPCT[2];
 
 					$q=0;
-					while ($Ms_to_print > $q) 
+					while ($Ms_to_print > $q)
 						{
 						if ( ($mix_container_item > $q) or ($mix_container_item < $q) )
 							{
@@ -15223,7 +15223,7 @@ if ($ADD==4111 || $ADD==4811 || $ADD==4911)
 				$users_to_print = mysqli_num_rows($rsltx);
 				$ARIUG_changenotes='';
 				$o=0;
-				while ($users_to_print > $o) 
+				while ($users_to_print > $o)
 					{
 					$rowx=mysqli_fetch_row($rsltx);
 					$ARIUG_user[$o] =	$rowx[0];
@@ -15302,7 +15302,7 @@ if ($ADD==4111 || $ADD==4811 || $ADD==4911)
 						$QC_lists .= " $qc_lists[$p]";
 						$p++;
 						}
-					
+
 					if (strlen($QC_statuses)>0) {$QC_statuses .= " -";}
 					if (strlen($QC_lists)>0) {$QC_lists .= " -";}
 
@@ -15426,7 +15426,7 @@ if ($ADD==4111 || $ADD==4811 || $ADD==4911)
 
 					$rslt=mysql_to_mysqli($stmt, $link);
 
-					switch($group_handling) 
+					switch($group_handling)
 						{
 						case "PHONE":
 							$ADD="4111";
@@ -15887,7 +15887,7 @@ if ($ADD==411111)
 					if ($old_allowed_rows > 0)
 						{
 						$row=mysqli_fetch_row($rslt);
-						$old_allowed =  $row[0];  
+						$old_allowed =  $row[0];
 						}
 					if ( (!preg_match('/-ALL/',$old_allowed)) )
 						{
@@ -15896,7 +15896,7 @@ if ($ADD==411111)
 						$old_allowed = preg_replace("/ -/",'',$old_allowed);
 						$old_allowed = explode(" ", $old_allowed);
 
-						foreach ($old_allowed as $oac) 
+						foreach ($old_allowed as $oac)
 							{
 							if (!in_array($oac, $changer_allowed_campaigns))
 								{
@@ -15910,24 +15910,24 @@ if ($ADD==411111)
 				$custom_rpt_SQL='';
 				$custom_stmt="show tables like 'vicidial_custom_reports'";
 				$custom_rslt=mysql_to_mysqli($custom_stmt, $link);
-				if (mysqli_num_rows($custom_rslt)>0) 
+				if (mysqli_num_rows($custom_rslt)>0)
 					{
-		
+
 					$custom_report_str="";
-					if (count($allowed_custom_reports)>0) 
+					if (count($allowed_custom_reports)>0)
 						{
-						for ($q=0; $q<count($allowed_custom_reports); $q++) 
+						for ($q=0; $q<count($allowed_custom_reports); $q++)
 							{
 							$custom_report_str.=$allowed_custom_reports[$q]."|";
 							}
 						}
 					if (preg_match('/\-\-NONE\-\-/i', $custom_report_str)) {$custom_report_str='';}
-					else if (preg_match('/\-\-ALL\-\-/i', $custom_report_str)) 
+					else if (preg_match('/\-\-ALL\-\-/i', $custom_report_str))
 						{
 						$custom_report_str='';
 						$custom_report_stmt="SELECT report_name from vicidial_custom_reports";
 						$custom_report_rslt=mysql_to_mysqli($custom_report_stmt, $link);
-						while ($custom_rpt_row=mysqli_fetch_row($custom_report_rslt)) 
+						while ($custom_rpt_row=mysqli_fetch_row($custom_report_rslt))
 							{
 							$custom_report_str.=$custom_rpt_row[0]."|";
 							}
@@ -15974,7 +15974,7 @@ if ($ADD==411111)
 					#echo 'Connected successfully';
 					#mysql_select_db("$vtiger_dbname", $linkV);
 					$linkV=mysqli_connect("$vtiger_server_ip", "$vtiger_login", "$vtiger_pass", "$vtiger_dbname");
-					if (!$linkV) 
+					if (!$linkV)
 						{
 						die('MySQL '._QXZ("connect ERROR").': ' . mysqli_connect_error());
 						}
@@ -16564,12 +16564,12 @@ if ($ADD==421111111111)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$rowx=mysqli_fetch_row($rslt);
 		$MAXvicidial_trunks = $rowx[0];
-		
+
 		$stmt="SELECT sum(dedicated_trunks) from vicidial_server_trunks where server_ip='$server_ip' and campaign_id !='$campaign_id';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$rowx=mysqli_fetch_row($rslt);
 		$SUMvicidial_trunks = ($rowx[0] + $dedicated_trunks);
-		
+
 		if ($SUMvicidial_trunks > $MAXvicidial_trunks)
 			{
 			echo "<br>"._QXZ("SERVER TRUNK RECORD NOT ADDED - the number of trunks is too high").": $SUMvicidial_trunks / $MAXvicidial_trunks\n";
@@ -16963,7 +16963,7 @@ if ($ADD==491111111111)
 			if ( (preg_match("/contact_information/",$SStables_use_alt_log_db)) and (strlen($SSalt_log_server_ip)>4) and (strlen($SSalt_log_dbname)>0) )
 				{
 				$linkALT=mysqli_connect("$SSalt_log_server_ip", "$SSalt_log_login", "$SSalt_log_pass", "$SSalt_log_dbname");
-				if (!$linkALT) 
+				if (!$linkALT)
 					{
 					die('MySQL '._QXZ("connect ERROR").': ' . mysqli_connect_error());
 					}
@@ -17278,7 +17278,7 @@ if ($ADD==496111111111)
 				$rslt=mysql_to_mysqli($stmt, $link);
 				$accids_to_print = mysqli_num_rows($rslt);
 				$o=0;
-				while ($accids_to_print > $o) 
+				while ($accids_to_print > $o)
 					{
 					$rowx=mysqli_fetch_row($rslt);
 					$Xareacode[$o] =			$rowx[0];
@@ -17293,7 +17293,7 @@ if ($ADD==496111111111)
 				$stmt_log='';
 				$accid_log='';
 				$o=0;
-				while ($accids_to_print > $o) 
+				while ($accids_to_print > $o)
 					{
 					$Factive_value='';
 					$Fcid_description_value='';
@@ -17494,9 +17494,9 @@ if ($ADD==411111111111111)
 		$custom_stmt="show tables like 'vicidial_custom_reports'";
 		$custom_rslt=mysql_to_mysqli($custom_stmt, $link);
 		$custom_reports_slave_SQL='';
-		if (mysqli_num_rows($custom_rslt)>0) 
+		if (mysqli_num_rows($custom_rslt)>0)
 			{
-			for ($q=0; $q<count($custom_reports_use_slave_db); $q++) 
+			for ($q=0; $q<count($custom_reports_use_slave_db); $q++)
 				{
 				$custom_reports_slave_SQL.=$custom_reports_use_slave_db[$q].",";
 				}
@@ -17591,7 +17591,7 @@ if ($ADD==411111111111111)
 		$update_gdpr_users_stmt="update vicidial_users set export_gdpr_leads='$enable_gdpr_download_deletion' where export_gdpr_leads>$enable_gdpr_download_deletion";
 		$update_gdpr_users_rslt=mysql_to_mysqli($update_gdpr_users_stmt, $link);
 		$update_gdpr_rows=mysqli_affected_rows($link);
-		if ($update_gdpr_rows>0) 
+		if ($update_gdpr_rows>0)
 			{
 			$event_notes="$update_gdpr_rows "._QXZ("GDPR-enabled users downgraded due to setting change");
 			}
@@ -17917,7 +17917,7 @@ if ($ADD==53)
 	if (preg_match('/IN/i', $stage))
 		{$ADD='3111';}
 	else
-		{$ADD='31';}	
+		{$ADD='31';}
 	}
 
 
@@ -18829,10 +18829,10 @@ if ($ADD==61)
 			$rslt=mysql_to_mysqli($stmtO, $link);
 
 			$stmtP="DELETE from vicidial_xfer_stats where campaign_id='$campaign_id' $LOGallowed_campaignsSQL;";
-			$rslt=mysql_to_mysqli($stmtP, $link);		
+			$rslt=mysql_to_mysqli($stmtP, $link);
 
 			$stmtQ="DELETE from vicidial_campaign_cid_areacodes where campaign_id='$campaign_id' $LOGallowed_campaignsSQL;";
-			$rslt=mysql_to_mysqli($stmtQ, $link);		
+			$rslt=mysql_to_mysqli($stmtQ, $link);
 
 			echo "<br>"._QXZ("REMOVING LIST HOPPER LEADS FROM OLD CAMPAIGN HOPPER")." ($campaign_id)\n";
 			$stmtR="DELETE from vicidial_hopper where campaign_id='$campaign_id' $LOGallowed_campaignsSQL;";
@@ -19049,7 +19049,7 @@ if ($ADD==62)
 							{$QM_LOGOFF = 'AGENTCALLBACKLOGOFF';}
 
 						$linkB=mysqli_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass","$queuemetrics_dbname");
-						if (!$linkB) 
+						if (!$linkB)
 							{
 							die('MySQL '._QXZ("connect ERROR").': ' . mysqli_connect_error());
 							}
@@ -19578,7 +19578,7 @@ if ($ADD==612)
 			echo "<br>"._QXZ("REMOVING LIST HOPPER LEADS FROM OLD CAMPAIGN HOPPER")." ($list_id)\n";
 			$stmt="DELETE from vicidial_hopper where list_id='$list_id' $LOGallowed_campaignsSQL;";
 			$rslt=mysql_to_mysqli($stmt, $link);
-			
+
 			echo "<br>"._QXZ("REMOVING LEADS FROM LIST TABLE")."\n";
 			$stmtA="DELETE from vicidial_list where list_id='$list_id';";
 			$rslt=mysql_to_mysqli($stmtA, $link);
@@ -19702,7 +19702,7 @@ if ($ADD==6111)
 			}
 		}
 
-	switch($group_handling) 
+	switch($group_handling)
 		{
 		case "EMAIL":
 			$ADD="1800";
@@ -20113,7 +20113,7 @@ if ($ADD==6111111111)
 			$sct_list='';
 
 			$o=0;
-			while ($sct_to_print > $o) 
+			while ($sct_to_print > $o)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$sct_ids[$o] = "$rowx[0]";
@@ -20121,7 +20121,7 @@ if ($ADD==6111111111)
 				$o++;
 				}
 			$o=0;
-			while ($sct_to_print > $o) 
+			while ($sct_to_print > $o)
 				{
 				$sct_states[$o] = preg_replace("/\|$call_time_id\|/i", '|',$sct_states[$o]);
 				$stmtB="UPDATE vicidial_call_times set ct_state_call_times='$sct_states[$o]' where call_time_id='$sct_ids[$o]';";
@@ -20177,7 +20177,7 @@ if ($ADD==6211111111)
 			$hct_list='';
 
 			$o=0;
-			while ($hct_to_print > $o) 
+			while ($hct_to_print > $o)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$hct_ids[$o] = "$rowx[0]";
@@ -20185,7 +20185,7 @@ if ($ADD==6211111111)
 				$o++;
 				}
 			$o=0;
-			while ($hct_to_print > $o) 
+			while ($hct_to_print > $o)
 				{
 				$hct_holidays[$o] = preg_replace("/\|$holiday_id\|/i", '|',$hct_holidays[$o]);
 				$stmtB="UPDATE vicidial_call_times set ct_holidays='$hct_holidays[$o]' where call_time_id='$hct_ids[$o]';";
@@ -20533,7 +20533,7 @@ if ($ADD==631111111111)
 			{
 			$stmtA="UPDATE phones SET template_id='' where template_id='$template_id';";
 			$rslt=mysql_to_mysqli($stmtA, $link);
-			
+
 			$stmtB="UPDATE vicidial_server_carriers SET template_id='' where template_id='$template_id';";
 			$rslt=mysql_to_mysqli($stmtB, $link);
 
@@ -20837,7 +20837,7 @@ if ($ADD==691111111111)
 		if ( (preg_match("/contact_information/",$SStables_use_alt_log_db)) and (strlen($SSalt_log_server_ip)>4) and (strlen($SSalt_log_dbname)>0) )
 			{
 			$linkALT=mysqli_connect("$SSalt_log_server_ip", "$SSalt_log_login", "$SSalt_log_pass", "$SSalt_log_dbname");
-				if (!$linkALT) 
+				if (!$linkALT)
 					{
 					die('MySQL '._QXZ("connect ERROR").': ' . mysqli_connect_error());
 					}
@@ -21347,7 +21347,7 @@ if ($ADD==3)
 			$Ugroups_to_print = mysqli_num_rows($rslt);
 			$Ugroups_list='';
 			$o=0;
-			while ($Ugroups_to_print > $o) 
+			while ($Ugroups_to_print > $o)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$Ugroups_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -21372,7 +21372,7 @@ if ($ADD==3)
 				$Uterrs_to_print = mysqli_num_rows($rslt);
 				$Uterrs_list='';
 				$o=0;
-				while ($Uterrs_to_print > $o) 
+				while ($Uterrs_to_print > $o)
 					{
 					$rowx=mysqli_fetch_row($rslt);
 					$Uterrs_list .= "$rowx[0] - $rowx[1]<BR>\n";
@@ -21432,7 +21432,7 @@ if ($ADD==3)
 					$languages_to_print = mysqli_num_rows($rslt);
 					$languages_list='';
 					$o=0;
-					while ($languages_to_print > $o) 
+					while ($languages_to_print > $o)
 						{
 						$rowx=mysqli_fetch_row($rslt);
 						$languages_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -21640,7 +21640,7 @@ if ($ADD==3)
 				echo "<tr bgcolor=#$SSstd_row2_background><td align=right>"._QXZ("Load Leads").": </td><td align=left><select size=1 name=load_leads><option>0</option><option>1</option><option SELECTED>$load_leads</option></select>$NWB#users-load_leads$NWE</td></tr>\n";
 				echo "<tr bgcolor=#$SSstd_row2_background><td align=right>"._QXZ("Modify Leads").": </td><td align=left><select size=1 name=modify_leads><option>0</option><option>1</option><option SELECTED>$modify_leads</option></select>$NWB#users-modify_leads$NWE</td></tr>\n";
 				echo "<tr bgcolor=#$SSstd_row2_background><td align=right>"._QXZ("GDPR-Compliant Export Delete Leads").": </td><td align=left><select size=1 name=export_gdpr_leads>";
-				for ($i=0; $i<=$SSenable_gdpr_download_deletion; $i++) 
+				for ($i=0; $i<=$SSenable_gdpr_download_deletion; $i++)
 					{
 					echo "<option>$i</option>";
 					}
@@ -21684,7 +21684,7 @@ if ($ADD==3)
 				echo "<tr bgcolor=#$SSstd_row2_background><td align=right>"._QXZ("Modify Shifts").": </td><td align=left><select size=1 name=modify_shifts><option>0</option><option>1</option><option SELECTED>$modify_shifts</option></select>$NWB#users-modify_sections$NWE</td></tr>\n";
 				echo "<tr bgcolor=#$SSstd_row2_background><td align=right>"._QXZ("Modify Phones").": </td><td align=left><select size=1 name=modify_phones><option>0</option><option>1</option><option SELECTED>$modify_phones</option></select>$NWB#users-modify_sections$NWE</td></tr>\n";
 				echo "<tr bgcolor=#$SSstd_row2_background><td align=right>"._QXZ("Modify Carriers").": </td><td align=left><select size=1 name=modify_carriers><option>0</option><option>1</option><option SELECTED>$modify_carriers</option></select>$NWB#users-modify_sections$NWE</td></tr>\n";
-				if ($SSallow_emails > 0) 
+				if ($SSallow_emails > 0)
 					{
 					echo "<tr bgcolor=#$SSstd_row2_background><td align=right>"._QXZ("Modify Email Accounts").": </td><td align=left><select size=1 name=modify_email_accounts><option>0</option><option>1</option><option SELECTED>$modify_email_accounts</option></select>$NWB#users-modify_email_accounts$NWE</td></tr>\n";
 					}
@@ -21823,7 +21823,7 @@ if ($ADD==3)
 
 if ( ($LOGcampaign_detail < 1) and ($ADD==31) ) {$ADD=34;}	# send to Basic if not allowed
 
-if ( ($ADD==31) and ( (!preg_match("/$campaign_id/i", $LOGallowed_campaigns)) and (!preg_match("/ALL-CAMPAIGNS/i",$LOGallowed_campaigns)) ) ) 
+if ( ($ADD==31) and ( (!preg_match("/$campaign_id/i", $LOGallowed_campaigns)) and (!preg_match("/ALL-CAMPAIGNS/i",$LOGallowed_campaigns)) ) )
 	{$ADD=30;}	# send to not allowed screen if not in vicidial_user_groups allowed_campaigns list
 
 if ($ADD==31)
@@ -22178,11 +22178,11 @@ if ($ADD==31)
 	$Dgroups_menu='';
 	$Dgroups_selected=0;
 	$o=0;
-	while ($Dgroups_to_print > $o) 
+	while ($Dgroups_to_print > $o)
 		{
 		$rowx=mysqli_fetch_row($rslt);
 		$Dgroups_menu .= "<option ";
-		if ($drop_inbound_group == "$rowx[0]") 
+		if ($drop_inbound_group == "$rowx[0]")
 			{
 			$Dgroups_menu .= "SELECTED ";
 			$Dgroups_selected++;
@@ -22190,9 +22190,9 @@ if ($ADD==31)
 		$Dgroups_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 		$o++;
 		}
-	if ($Dgroups_selected < 1) 
+	if ($Dgroups_selected < 1)
 		{$Dgroups_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-	else 
+	else
 		{$Dgroups_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
 
 	$nxLOGadmin_viewable_groupsSQL = $LOGadmin_viewable_groupsSQL;
@@ -22206,11 +22206,11 @@ if ($ADD==31)
 	$Xgroups_menu='';
 	$Xgroups_selected=0;
 	$o=0;
-	while ($Xgroups_to_print > $o) 
+	while ($Xgroups_to_print > $o)
 		{
 		$rowx=mysqli_fetch_row($rslt);
 		$Xgroups_menu .= "<option ";
-		if ($default_xfer_group == "$rowx[0]") 
+		if ($default_xfer_group == "$rowx[0]")
 			{
 			$Xgroups_menu .= "SELECTED ";
 			$Xgroups_selected++;
@@ -22218,9 +22218,9 @@ if ($ADD==31)
 		$Xgroups_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 		$o++;
 		}
-	if ($Xgroups_selected < 1) 
+	if ($Xgroups_selected < 1)
 		{$Xgroups_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-	else 
+	else
 		{$Xgroups_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
 
 	##### get in-groups listings for dynamic AMD inbound group pulldown list menu
@@ -22230,11 +22230,11 @@ if ($ADD==31)
 	$AMDgroups_menu='';
 	$AMDgroups_selected=0;
 	$o=0;
-	while ($AMDgroups_to_print > $o) 
+	while ($AMDgroups_to_print > $o)
 		{
 		$rowx=mysqli_fetch_row($rslt);
 		$AMDgroups_menu .= "<option ";
-		if ($amd_inbound_group == "$rowx[0]") 
+		if ($amd_inbound_group == "$rowx[0]")
 			{
 			$AMDgroups_menu .= "SELECTED ";
 			$AMDgroups_selected++;
@@ -22242,9 +22242,9 @@ if ($ADD==31)
 		$AMDgroups_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 		$o++;
 		}
-	if ($AMDgroups_selected < 1) 
+	if ($AMDgroups_selected < 1)
 		{$AMDgroups_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-	else 
+	else
 		{$AMDgroups_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
 
 	##### get callmenus listings for dynamic AMD callmenu pulldown list menu
@@ -22254,11 +22254,11 @@ if ($ADD==31)
 	$AMDmenus_menu='';
 	$AMDmenus_selected=0;
 	$o=0;
-	while ($AMDmenus_to_print > $o) 
+	while ($AMDmenus_to_print > $o)
 		{
 		$rowx=mysqli_fetch_row($rslt);
 		$AMDmenus_menu .= "<option ";
-		if ($amd_callmenu == "$rowx[0]") 
+		if ($amd_callmenu == "$rowx[0]")
 			{
 			$AMDmenus_menu .= "SELECTED ";
 			$AMDmenus_selected++;
@@ -22266,9 +22266,9 @@ if ($ADD==31)
 		$AMDmenus_menu .= "value=\"$rowx[0]\">$rowx[0]</option>\n";
 		$o++;
 		}
-	if ($AMDmenus_selected < 1) 
+	if ($AMDmenus_selected < 1)
 		{$AMDmenus_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-	else 
+	else
 		{$AMDmenus_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
 
 	##### get agent screen label listings for dynamic pulldown list menu
@@ -22277,7 +22277,7 @@ if ($ADD==31)
 	$labels_to_print = mysqli_num_rows($rslt);
 	$labels_menu='';
 	$o=0;
-	while ($labels_to_print > $o) 
+	while ($labels_to_print > $o)
 		{
 		$rowx=mysqli_fetch_row($rslt);
 		$labels_menu .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -22291,7 +22291,7 @@ if ($ADD==31)
 	$camp_status_groups='';
 	if ($DB) {echo "$lists_to_print|$stmt|\n";}
 	$o=0;
-	while ($lists_to_print > $o) 
+	while ($lists_to_print > $o)
 		{
 		$rowx=mysqli_fetch_row($rslt);
 		if (strlen($rowx[0]) > 0) {$camp_status_groups .= "'$rowx[0]',";}
@@ -22304,7 +22304,7 @@ if ($ADD==31)
 	$lists_to_print = mysqli_num_rows($rslt);
 	if ($DB) {echo "$lists_to_print|$stmt|\n";}
 	$o=0;
-	while ($lists_to_print > $o) 
+	while ($lists_to_print > $o)
 		{
 		$rowx=mysqli_fetch_row($rslt);
 		if (strlen($rowx[0]) > 0) {$camp_status_groups .= "'$rowx[0]',";}
@@ -22333,11 +22333,11 @@ if ($ADD==31)
 	$qc_statuses_list='';
 	$survey_ni_status_list='';
 	$o=0;
-	while ($statuses_to_print > $o) 
+	while ($statuses_to_print > $o)
 		{
 		$rowx=mysqli_fetch_row($rslt);
 		$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
-		if ($rowx[0] != 'CBHOLD') 
+		if ($rowx[0] != 'CBHOLD')
 			{
 			$dial_statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 			if ($survey_ni_status == $rowx[0])
@@ -22358,7 +22358,7 @@ if ($ADD==31)
 		$p=0;
 		while ($p < $QCs_to_print)
 			{
-			if ($rowx[0] == $QCstatuses[$p]) 
+			if ($rowx[0] == $QCstatuses[$p])
 				{
 				$qc_statuses_list .= " CHECKED";
 				}
@@ -22375,7 +22375,7 @@ if ($ADD==31)
 	if ($DB) {echo "$Cstatuses_to_print|$stmt|\n";}
 
 	$o=0;
-	while ($Cstatuses_to_print > $o) 
+	while ($Cstatuses_to_print > $o)
 		{
 		$rowx=mysqli_fetch_row($rslt);
 		$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -22389,7 +22389,7 @@ if ($ADD==31)
 		$p=0;
 		while ($p < $QCs_to_print)
 			{
-			if ($rowx[0] == $QCstatuses[$p]) 
+			if ($rowx[0] == $QCstatuses[$p])
 				{
 				$qc_statuses_list .= " CHECKED";
 				}
@@ -22514,7 +22514,7 @@ if ($ADD==31)
 			}
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Web Form Target").": </td><td align=left><input type=text name=web_form_target size=25 maxlength=255 value=\"$web_form_target\">$NWB#campaigns-web_form_target$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Allow Closers").": </td><td align=left><select size=1 name=allow_closers><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='$allow_closers' SELECTED>"._QXZ("$allow_closers")."</option></select>$NWB#campaigns-allow_closers$NWE</td></tr>\n";
-		if ($SSallow_emails > 0) 
+		if ($SSallow_emails > 0)
 			{
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Allow Emails").": </td><td align=left><select size=1 name=allow_emails><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='$allow_emails' SELECTED>"._QXZ("$allow_emails")."</option></select>$NWB#campaigns-allow_emails$NWE</td></tr>\n";
 			}
@@ -22522,7 +22522,7 @@ if ($ADD==31)
 			{
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=right></td><td align=left><input type=hidden name=allow_emails value=$allow_emails></td></tr>\n";
 			}
-		if ($SSallow_chats > 0) 
+		if ($SSallow_chats > 0)
 			{
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Allow Chats").": </td><td align=left><select size=1 name=allow_chats><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value=\"$allow_chats\" SELECTED>"._QXZ("$allow_chats")."</option></select>$NWB#campaigns-allow_chats$NWE</td></tr>\n";
 			}
@@ -22535,7 +22535,7 @@ if ($ADD==31)
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Allow Inbound and Blended").": </td><td align=left><select size=1 name=campaign_allow_inbound><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='$campaign_allow_inbound' SELECTED>"._QXZ("$campaign_allow_inbound")."</option></select>$NWB#campaigns-campaign_allow_inbound$NWE</td></tr>\n";
 
 			$o=0;
-			while ($Ds_to_print > $o) 
+			while ($Ds_to_print > $o)
 				{
 				$o++;
 				$Dstatus = $Dstatuses[$o];
@@ -22851,7 +22851,7 @@ if ($ADD==31)
 				$dtl = _QXZ("Balanced");
 				if ($n<0) {$dtl = _QXZ("Less Intense");}
 				if ($n>0) {$dtl = _QXZ("More Intense");}
-				if ($n == $adaptive_intensity) 
+				if ($n == $adaptive_intensity)
 					{echo "<option SELECTED value=\"$n\">$n - $dtl</option>\n";}
 				else
 					{echo "<option value=\"$n\">$n - $dtl</option>\n";}
@@ -22869,7 +22869,7 @@ if ($ADD==31)
 				$dtl = _QXZ("Balanced");
 				if ($n<0) {$dtl = _QXZ("Agents Waiting for Calls");}
 				if ($n>0) {$dtl = _QXZ("Calls Waiting for Agents");}
-				if ($n == $adaptive_dl_diff_target) 
+				if ($n == $adaptive_dl_diff_target)
 					{echo "<option SELECTED value=\"$n\">$n --- $nabs $dtl</option>\n";}
 				else
 					{echo "<option value=\"$n\">$n --- $nabs $dtl</option>\n";}
@@ -22888,7 +22888,7 @@ if ($ADD==31)
 				$dtl = _QXZ("Even");
 				if ($n<0) {$dtl = _QXZ("Lower");}
 				if ($n>0) {$dtl = _QXZ("Higher");}
-				if ($n == $queue_priority) 
+				if ($n == $queue_priority)
 					{echo "<option SELECTED value=\"$n\">$n - $dtl</option>\n";}
 				else
 					{echo "<option value=\"$n\">$n - $dtl</option>\n";}
@@ -22946,13 +22946,13 @@ if ($ADD==31)
 			$inbound_no_agents_no_dial_container_menu='';
 			$inand_selected=0;
 			$o=0;
-			while ($inand_to_print > $o) 
+			while ($inand_to_print > $o)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				if (strlen($rowx[1])>40)
 					{$rowx[1] = substr($rowx[1],0,40) . '...';}
 				$inbound_no_agents_no_dial_container_menu .= "<option ";
-				if ($inbound_no_agents_no_dial_container == "$rowx[0]") 
+				if ($inbound_no_agents_no_dial_container == "$rowx[0]")
 					{
 					$inbound_no_agents_no_dial_container_menu .= "SELECTED ";
 					$inand_selected++;
@@ -22987,7 +22987,7 @@ if ($ADD==31)
 		$stmt="SELECT ct_state_call_times from vicidial_call_times where call_time_id='$local_call_time';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$call_times_to_print = mysqli_num_rows($rslt);
-		if ($call_times_to_print > 0) 
+		if ($call_times_to_print > 0)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$ct_state_call_times =	$rowx[0];
@@ -23017,7 +23017,7 @@ if ($ADD==31)
 			$stmt="SELECT did_id from vicidial_inbound_dids where did_pattern='$campaign_cid' $LOGadmin_viewable_groupsSQL limit 1;";
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$dids_to_print = mysqli_num_rows($rslt);
-			if ($dids_to_print > 0) 
+			if ($dids_to_print > 0)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$DID_edit_link_BEGIN = "<a href=\"$PHP_SELF?ADD=3311&did_id=$rowx[0]\">";
@@ -23028,7 +23028,7 @@ if ($ADD==31)
 		$stmt="SELECT count(*) from vicidial_lists where campaign_id='$campaign_id' and campaign_cid_override != '' and active='Y' $LOGallowed_campaignsSQL;";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$rowx=mysqli_fetch_row($rslt);
-		if ($rowx[0] > 0) 
+		if ($rowx[0] > 0)
 			{echo " <font color=red>"._QXZ("LIST OVERRIDE ACTIVE")."</font>";}
 		echo "</td></tr>\n";
 
@@ -23043,11 +23043,11 @@ if ($ADD==31)
 			$cid_groups_menu='';
 			$cid_groups_selected=0;
 			$o=0;
-			while ($cid_groups_to_print > $o) 
+			while ($cid_groups_to_print > $o)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$cid_groups_menu .= "<option ";
-				if ($cid_group_id == "$rowx[0]") 
+				if ($cid_group_id == "$rowx[0]")
 					{
 					$cid_groups_menu .= "SELECTED ";
 					$cid_groups_selected++;
@@ -23108,7 +23108,7 @@ if ($ADD==31)
 		$stmt="SELECT count(*) from vicidial_lists where campaign_id='$campaign_id' and agent_script_override != '' and active='Y' $LOGallowed_campaignsSQL;";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$rowx=mysqli_fetch_row($rslt);
-		if ($rowx[0] > 0) 
+		if ($rowx[0] > 0)
 			{echo " <font color=red>"._QXZ("LIST OVERRIDE ACTIVE")."</font>";}
 		echo "</td></tr>\n";
 
@@ -23131,7 +23131,7 @@ if ($ADD==31)
 		$stmt="SELECT count(*) from vicidial_lists where campaign_id='$campaign_id' and am_message_exten_override != '' and active='Y' $LOGallowed_campaignsSQL;";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$rowx=mysqli_fetch_row($rslt);
-		if ($rowx[0] > 0) 
+		if ($rowx[0] > 0)
 			{echo " <font color=red>"._QXZ("LIST OVERRIDE ACTIVE")."</font>";}
 		echo "</td></tr>\n";
 
@@ -23143,10 +23143,10 @@ if ($ADD==31)
 			$stmt="SELECT count(*) from vicidial_amm_multi where campaign_id='$campaign_id' and entry_type='campaign';";
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$vam_to_print = mysqli_num_rows($rslt);
-			if ($vam_to_print > 0) 
+			if ($vam_to_print > 0)
 				{
 				$rowx=mysqli_fetch_row($rslt);
-				$vam_count = $rowx[0]; 
+				$vam_count = $rowx[0];
 				}
 
 			echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("AM Message Wildcards").": </td><td align=left><select size=1 name=am_message_wildcards><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option selected>$am_message_wildcards</option></select>$NWB#campaigns-am_message_wildcards$NWE <a href=\"admin_amm_multi.php?DB=$DB&campaign_id=$campaign_id&entry_type=campaign\"> "._QXZ("AM Message Wildcards Defined").": $vam_count</a></td></tr>\n";
@@ -23274,7 +23274,7 @@ if ($ADD==31)
 			$stmt="SELECT count(*) from vicidial_lists where campaign_id='$campaign_id' and drop_inbound_group_override != '' and active='Y' $LOGallowed_campaignsSQL;";
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$rowx=mysqli_fetch_row($rslt);
-			if ($rowx[0] > 0) 
+			if ($rowx[0] > 0)
 				{echo " <font color=red>"._QXZ("LIST OVERRIDE ACTIVE")."</font>";}
 			echo "</td></tr>\n";
 			}
@@ -23443,11 +23443,11 @@ if ($ADD==31)
 			$group_alias_menu='';
 			$group_alias_selected=0;
 			$o=0;
-			while ($group_alias_to_print > $o) 
+			while ($group_alias_to_print > $o)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$group_alias_menu .= "<option ";
-				if ($default_group_alias == "$rowx[0]") 
+				if ($default_group_alias == "$rowx[0]")
 					{
 					$group_alias_menu .= "SELECTED ";
 					$group_alias_selected++;
@@ -23520,10 +23520,10 @@ if ($ADD==31)
 			$stmt="SELECT count(*) from vicidial_url_multi where campaign_id='$campaign_id' and entry_type='campaign' and url_type='dispo';";
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$vum_to_print = mysqli_num_rows($rslt);
-			if ($vum_to_print > 0) 
+			if ($vum_to_print > 0)
 				{
 				$rowx=mysqli_fetch_row($rslt);
-				$vum_count = $rowx[0]; 
+				$vum_count = $rowx[0];
 				}
 
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=right><a href=\"admin_url_multi.php?DB=$DB&campaign_id=$campaign_id&entry_type=campaign&url_type=dispo\">"._QXZ("Dispo Call URL")."</a>: </td><td align=left><input type=text name=dispo_call_url size=10 maxlength=5000 value=\"$dispo_call_url\">$NWB#campaigns-dispo_call_url$NWE <a href=\"admin_url_multi.php?DB=$DB&campaign_id=$campaign_id&entry_type=campaign&url_type=dispo\"> "._QXZ("Alternate Dispo URLs Defined").": $vum_count</a></td></tr>\n";
@@ -23606,7 +23606,7 @@ if ($ADD==31)
 			if (preg_match('/LISTNAMEUP/i', $stage))		{$SQLorder='order by list_name asc';			$NAMElink='stage=LISTNAMEDOWN';}
 			if (preg_match('/LISTNAMEDOWN/i', $stage))		{$SQLorder='order by list_name desc';			$NAMElink='stage=LISTNAMEUP';}
 			if (preg_match('/CALLTIMEUP/i', $stage))		{$SQLorder='order by local_call_time asc';		$CALLTIMElink='stage=CALLTIMEDOWN';}
-			if (preg_match('/CALLTIMEDOWN/i', $stage))		{$SQLorder='order by local_call_time desc';		$CALLTIMElink='stage=CALLTIMEUP';}	
+			if (preg_match('/CALLTIMEDOWN/i', $stage))		{$SQLorder='order by local_call_time desc';		$CALLTIMElink='stage=CALLTIMEUP';}
 			if (preg_match('/TALLYUP/i', $stage))			{$SQLorder='order by tally asc';				$TALLYlink='stage=TALLYDOWN';}
 			if (preg_match('/TALLYDOWN/i', $stage))			{$SQLorder='order by tally desc';				$TALLYlink='stage=TALLYUP';}
 			if (preg_match('/ACTIVEUP/i', $stage))			{$SQLorder='order by active asc';				$ACTIVElink='stage=ACTIVEDOWN';}
@@ -23638,7 +23638,7 @@ if ($ADD==31)
 				{
 				$row=mysqli_fetch_row($rslt);
 				if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-					{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+					{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 				else
 					{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 				echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">$row[0]</a></td>";
@@ -23663,7 +23663,7 @@ if ($ADD==31)
 					$inactive_lists++;
 					echo "<input type=\"checkbox\" name=\"list_active_change[]\" value=\"$row[0]\"";
 					}
-					
+
 				echo "</td><td><font size=1>";
 				if ($row[7] < $EXPtestdate)
 					{echo "<font color=red><B>"._QXZ("EXP")."</B></font>";}
@@ -23701,7 +23701,7 @@ if ($ADD==31)
 				$statuses_to_print = mysqli_num_rows($rslt);
 
 				$o=0;
-				while ($statuses_to_print > $o) 
+				while ($statuses_to_print > $o)
 					{
 					$rowx=mysqli_fetch_row($rslt);
 					$statuses_name_list["$rowx[0]"] = "$rowx[1]";
@@ -23714,7 +23714,7 @@ if ($ADD==31)
 				$Cstatuses_to_print = mysqli_num_rows($rslt);
 
 				$o=0;
-				while ($Cstatuses_to_print > $o) 
+				while ($Cstatuses_to_print > $o)
 					{
 					$rowx=mysqli_fetch_row($rslt);
 					$statuses_name_list["$rowx[0]"] = "$rowx[1]";
@@ -23736,7 +23736,7 @@ if ($ADD==31)
 					$stmt="SELECT lead_filter_sql from vicidial_lead_filters where lead_filter_id='$lead_filter_id' $LOGadmin_viewable_groupsSQL;";
 					$rslt=mysql_to_mysqli($stmt, $link);
 					$filters_to_print = mysqli_num_rows($rslt);
-					if ($filters_to_print > 0) 
+					if ($filters_to_print > 0)
 						{
 						$rowx=mysqli_fetch_row($rslt);
 						$filterSQL = $rowx[0];
@@ -23767,38 +23767,38 @@ if ($ADD==31)
 				$lead_list['count'] = 0;
 				$lead_list['Y_count'] = 0;
 				$lead_list['N_count'] = 0;
-				while ($statuses_to_print > $o) 
+				while ($statuses_to_print > $o)
 					{
 					$rowx=mysqli_fetch_row($rslt);
-					
+
 					$lead_list['count'] = ($lead_list['count'] + $rowx[2]);
-					if ($rowx[1] == 'N') 
+					if ($rowx[1] == 'N')
 						{
 						$since_reset = 'N';
 						$since_resetX = 'Y';
 						}
-					else 
+					else
 						{
 						$since_reset = 'Y';
 						$since_resetX = 'N';
-						} 
+						}
 					$lead_list[$since_reset][$rowx[0]] = ($lead_list[$since_reset][$rowx[0]] + $rowx[2]);
 					$lead_list[$since_reset.'_count'] = ($lead_list[$since_reset.'_count'] + $rowx[2]);
 					#If opposite side is not set, it may not in the future so give it a value of zero
-					if (!isset($lead_list[$since_resetX][$rowx[0]])) 
+					if (!isset($lead_list[$since_resetX][$rowx[0]]))
 						{
 						$lead_list[$since_resetX][$rowx[0]]=0;
 						}
 					$o++;
 					}
-			 
+
 				$o=0;
 				if ($lead_list['count'] > 0)
 					{
 					while (list($dispo,) = each($lead_list[$since_reset]))
 						{
 						if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-							{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+							{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 						else
 							{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -23907,7 +23907,7 @@ if ($ADD==31)
 				$servers_to_print = mysqli_num_rows($rslt);
 				$servers_menu="<option SELECTED value=\"$SSactive_voicemail_server\">"._QXZ("DEFAULT")." - $SSactive_voicemail_server</option>\n";
 				$os=0;
-				while ($servers_to_print > $os) 
+				while ($servers_to_print > $os)
 					{
 					$rowx=mysqli_fetch_row($rslt);
 					$servers_menu .= "<option value=\"$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
@@ -23969,7 +23969,7 @@ if ($ADD==31)
 		$stmt="SELECT closer_campaigns from vicidial_campaigns where campaign_id='$campaign_id';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$cg_to_print = mysqli_num_rows($rslt);
-		if ($cg_to_print > 0) 
+		if ($cg_to_print > 0)
 			{
 			$row=mysqli_fetch_row($rslt);
 			$closer_campaigns =	$row[0];
@@ -23981,7 +23981,7 @@ if ($ADD==31)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$ig_to_print = mysqli_num_rows($rslt);
 		$sgo_ig=0;
-		while ($ig_to_print > $sgo_ig) 
+		while ($ig_to_print > $sgo_ig)
 			{
 			$row=mysqli_fetch_row($rslt);
 			$status_group_overrides_OUTPUT .= "<TR><TD><a href=\"$PHP_SELF?ADD=3111&group_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -23996,7 +23996,7 @@ if ($ADD==31)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$list_to_print = mysqli_num_rows($rslt);
 		$sgo_li=0;
-		while ($list_to_print > $sgo_li) 
+		while ($list_to_print > $sgo_li)
 			{
 			$row=mysqli_fetch_row($rslt);
 			$status_group_overrides_OUTPUT .= "<TR><TD><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -24049,14 +24049,14 @@ if ($ADD==31)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$statuses_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($statuses_to_print > $o) 
+		while ($statuses_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$AScategory = $rowx[4];
 			$o++;
 
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -24088,7 +24088,7 @@ if ($ADD==31)
 			echo "<td><input type=text name=max_sec size=3 maxlength=5 value=\"$rowx[13]\" class=\"cust_form\"></td>\n";
 			echo "</td><td align=center nowrap><font size=1><input type=submit name=submit value='"._QXZ("MODIFY")."'> &nbsp; &nbsp; &nbsp; &nbsp; \n";
 			echo " &nbsp; \n";
-			
+
 			if (preg_match("/^B$|^NA$|^DNC$|^NA$|^DROP$|^INCALL$|^QUEUE$|^NEW$/i",$rowx[0]))
 				{
 				echo "<DEL>"._QXZ("DELETE")."</DEL>\n";
@@ -24141,13 +24141,13 @@ if ($ADD==31)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$statuses_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($statuses_to_print > $o) 
+		while ($statuses_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$o++;
 
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -24192,7 +24192,7 @@ if ($ADD==31)
 		$lists_to_print = mysqli_num_rows($rslt);
 		$camp_lists='';
 		$o=0;
-		while ($lists_to_print > $o) 
+		while ($lists_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			if (preg_match('/Y/', $rowx[1])) {$camp_lists .= "'$rowx[0]',";}
@@ -24204,7 +24204,7 @@ if ($ADD==31)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$recycle_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($recycle_to_print > $o) 
+		while ($recycle_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$RECYCLE_status[$o] =	$rowx[2];
@@ -24230,7 +24230,7 @@ if ($ADD==31)
 		echo "<TABLE width=700 cellspacing=3>\n";
 		echo "<tr><td>"._QXZ("STATUS")."</td><td>"._QXZ("ATTEMPT DELAY")."</td><td>"._QXZ("ATTEMPT MAXIMUM")."</td><td>"._QXZ("LEADS AT LIMIT")."</td><td>"._QXZ("ACTIVE")."</td><td> </td><td>"._QXZ("DELETE")."</td></tr>\n";
 
-		while ($recycle_to_print > $o) 
+		while ($recycle_to_print > $o)
 			{
 			$recycle_limit=0;
 			if (strlen($camp_lists) > 2)
@@ -24239,7 +24239,7 @@ if ($ADD==31)
 				if ($DB) {echo "|$stmt|\n";}
 				$rslt=mysql_to_mysqli($stmt, $link);
 				$counts_to_print = mysqli_num_rows($rslt);
-				if ($counts_to_print > 0) 
+				if ($counts_to_print > 0)
 					{
 					$rowx=mysqli_fetch_row($rslt);
 					$recycle_limit = $rowx[0];
@@ -24247,7 +24247,7 @@ if ($ADD==31)
 				}
 
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -24294,10 +24294,10 @@ if ($ADD==31)
 		$AADs_to_print = (count($AADstatuses) -1);
 
 		$o=0;
-		while ($AADs_to_print > $o) 
+		while ($AADs_to_print > $o)
 			{
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 			$o++;
@@ -24335,7 +24335,7 @@ if ($ADD==31)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$pause_codes_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($pause_codes_to_print > $o) 
+		while ($pause_codes_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$o++;
@@ -24390,14 +24390,14 @@ if ($ADD==31)
 		$qc_lists_list='';
 
 		$p=0;
-		while ($lists_to_print > $p) 
+		while ($lists_to_print > $p)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$qc_lists_list .= "<input type=\"checkbox\" name=\"qc_lists[]\" value=\"$rowx[0]\"";
 			$r=0;
 			while ($r < $QCL_to_print)
 				{
-				if ($rowx[0] == $QClists[$r]) 
+				if ($rowx[0] == $QClists[$r])
 					{
 					$qc_lists_list .= " CHECKED";
 					}
@@ -24528,13 +24528,13 @@ if ($ADD==31)
 		echo "<tr><td># </td><td>"._QXZ("PRESET NAME")."</td><td>"._QXZ("NUMBER")."</td><td>"._QXZ("DTMF")."</td><td>"._QXZ("HIDE")."</td><td>"._QXZ("MODIFY")."</td><td>"._QXZ("DELETE")."</td></tr>\n";
 
 		$o=0;
-		while ($presets_to_print > $o) 
+		while ($presets_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$o++;
 
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -24573,7 +24573,7 @@ if ($ADD==31)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$accids_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($accids_to_print > $o) 
+		while ($accids_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$Xareacode[$o] =			$rowx[0];
@@ -24589,20 +24589,20 @@ if ($ADD==31)
 		echo "<tr><td>#</td><td>"._QXZ("AREACODE")."</td><td>"._QXZ("CID NUMBER")."</td><td>"._QXZ("DESCRIPTION")."</td><td>"._QXZ("ACTIVE")."<br><span id=ACCID_link><a href=\"#\" onclick=\"FORM_selectall('$checkbox_count','$checkbox_list','on','ACCID_link');return false;\"><font size=1>"._QXZ("select all")."</font></a></span></td><td>"._QXZ("CALLS")."</td><td>"._QXZ("DELETE")."</td></tr>\n";
 
 		$o=0;
-		while ($accids_to_print > $o) 
+		while ($accids_to_print > $o)
 			{
 			$ct = ($o + 1);
 			if ($ct == '1')
 				{
 				$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';
 				$bgac = $Xareacode[$o];
-				} 
+				}
 			else
 				{
 				if ($Xareacode[$o] != $bgac)
 					{
 					if (preg_match("/1$|3$|5$|7$|9$/i", $bgct))
-						{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';} 
+						{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 					else
 						{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 					$bgct++;
@@ -24617,7 +24617,7 @@ if ($ADD==31)
 				$stmt="SELECT did_id from vicidial_inbound_dids where did_pattern='$Xoutbound_cid[$o]' $LOGadmin_viewable_groupsSQL limit 1;";
 				$rslt=mysql_to_mysqli($stmt, $link);
 				$dids_to_print = mysqli_num_rows($rslt);
-				if ($dids_to_print > 0) 
+				if ($dids_to_print > 0)
 					{
 					$rowx=mysqli_fetch_row($rslt);
 					$DID_edit_link_BEGIN = "<a href=\"$PHP_SELF?ADD=3311&did_id=$rowx[0]\">";
@@ -24688,7 +24688,7 @@ if ($ADD==31)
 # ADD=34 modify campaign info in the system - Basic View
 ######################
 
-if ( ($ADD==34) and ( (!preg_match("/$campaign_id/i", $LOGallowed_campaigns)) and (!preg_match("/ALL-CAMPAIGNS/i",$LOGallowed_campaigns)) ) ) 
+if ( ($ADD==34) and ( (!preg_match("/$campaign_id/i", $LOGallowed_campaigns)) and (!preg_match("/ALL-CAMPAIGNS/i",$LOGallowed_campaigns)) ) )
 	{$ADD=30;}	# send to not allowed screen if not in vicidial_user_groups allowed_campaigns list
 
 if ($ADD==34)
@@ -24782,7 +24782,7 @@ if ($ADD==34)
 	$camp_status_groups='';
 	if ($DB) {echo "$lists_to_print|$stmt|\n";}
 	$o=0;
-	while ($lists_to_print > $o) 
+	while ($lists_to_print > $o)
 		{
 		$rowx=mysqli_fetch_row($rslt);
 		if (strlen($rowx[0]) > 0) {$camp_status_groups .= "'$rowx[0]',";}
@@ -24795,7 +24795,7 @@ if ($ADD==34)
 	$lists_to_print = mysqli_num_rows($rslt);
 	if ($DB) {echo "$lists_to_print|$stmt|\n";}
 	$o=0;
-	while ($lists_to_print > $o) 
+	while ($lists_to_print > $o)
 		{
 		$rowx=mysqli_fetch_row($rslt);
 		if (strlen($rowx[0]) > 0) {$camp_status_groups .= "'$rowx[0]',";}
@@ -24809,7 +24809,7 @@ if ($ADD==34)
 	$statuses_list='';
 	$dial_statuses_list='';
 	$o=0;
-	while ($statuses_to_print > $o) 
+	while ($statuses_to_print > $o)
 		{
 		$rowx=mysqli_fetch_row($rslt);
 		$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -24826,7 +24826,7 @@ if ($ADD==34)
 	$Cstatuses_to_print = mysqli_num_rows($rslt);
 
 	$o=0;
-	while ($Cstatuses_to_print > $o) 
+	while ($Cstatuses_to_print > $o)
 		{
 		$rowx=mysqli_fetch_row($rslt);
 		$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -24923,11 +24923,11 @@ if ($ADD==34)
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Web Form").": </td><td align=left>$row[11]$NWB#campaigns-web_form_address$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Allow Closers").": </td><td align=left>$row[12] $NWB#campaigns-allow_closers$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Default Transfer Group").": </td><td align=left>$default_xfer_group $NWB#campaigns-default_xfer_group$NWE</td></tr>\n";
-		if ($SSallow_emails > 0) 
+		if ($SSallow_emails > 0)
 			{
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Allow Emails").": </td><td align=left>$allow_emails $NWB#campaigns-allow_emails$NWE</td></tr>\n";
 			}
-		if ($SSallow_chats > 0) 
+		if ($SSallow_chats > 0)
 			{
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Allow Chats").": </td><td align=left>$allow_chats $NWB#campaigns-allow_chats$NWE</td></tr>\n";
 			}
@@ -24937,7 +24937,7 @@ if ($ADD==34)
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Allow Inbound and Blended").": </td><td align=left>$campaign_allow_inbound $NWB#campaigns-campaign_allow_inbound$NWE</td></tr>\n";
 
 			$o=0;
-			while ($Ds_to_print > $o) 
+			while ($Ds_to_print > $o)
 				{
 				$o++;
 				$Dstatus = $Dstatuses[$o];
@@ -25183,7 +25183,7 @@ if ($ADD==34)
 				$dtl = _QXZ("Balanced");
 				if ($n<0) {$dtl = _QXZ("Less Intense");}
 				if ($n>0) {$dtl = _QXZ("More Intense");}
-				if ($n == $adaptive_intensity) 
+				if ($n == $adaptive_intensity)
 					{echo "<option SELECTED value=\"$n\">$n - $dtl</option>\n";}
 				else
 					{echo "<option value=\"$n\">$n - $dtl</option>\n";}
@@ -25225,7 +25225,7 @@ if ($ADD==34)
 		if (preg_match('/LISTNAMEUP/i', $stage))	{$SQLorder='order by list_name asc';			$NAMElink='stage=LISTNAMEDOWN';}
 		if (preg_match('/LISTNAMEDOWN/i', $stage))	{$SQLorder='order by list_name desc';			$NAMElink='stage=LISTNAMEUP';}
 		if (preg_match('/CALLTIMEUP/i', $stage))	{$SQLorder='order by local_call_time asc';		$CALLTIMElink='stage=CALLTIMEDOWN';}
-		if (preg_match('/CALLTIMEDOWN/i', $stage))	{$SQLorder='order by local_call_time desc';		$CALLTIMElink='stage=CALLTIMEUP';}	
+		if (preg_match('/CALLTIMEDOWN/i', $stage))	{$SQLorder='order by local_call_time desc';		$CALLTIMElink='stage=CALLTIMEUP';}
 		if (preg_match('/TALLYUP/i', $stage))		{$SQLorder='order by tally asc';				$TALLYlink='stage=TALLYDOWN';}
 		if (preg_match('/TALLYDOWN/i', $stage))		{$SQLorder='order by tally desc';				$TALLYlink='stage=TALLYUP';}
 		if (preg_match('/ACTIVEUP/i', $stage))		{$SQLorder='order by active asc';				$ACTIVElink='stage=ACTIVEDOWN';}
@@ -25257,7 +25257,7 @@ if ($ADD==34)
 			{
 			$row=mysqli_fetch_row($rslt);
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 			echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">$row[0]</a></td>";
@@ -25319,7 +25319,7 @@ if ($ADD==34)
 			$statuses_to_print = mysqli_num_rows($rslt);
 
 			$o=0;
-			while ($statuses_to_print > $o) 
+			while ($statuses_to_print > $o)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$statuses_name_list["$rowx[0]"] = "$rowx[1]";
@@ -25331,7 +25331,7 @@ if ($ADD==34)
 			$Cstatuses_to_print = mysqli_num_rows($rslt);
 
 			$o=0;
-			while ($Cstatuses_to_print > $o) 
+			while ($Cstatuses_to_print > $o)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$statuses_name_list["$rowx[0]"] = "$rowx[1]";
@@ -25356,38 +25356,38 @@ if ($ADD==34)
 			$lead_list['count'] = 0;
 			$lead_list['Y_count'] = 0;
 			$lead_list['N_count'] = 0;
-			while ($statuses_to_print > $o) 
+			while ($statuses_to_print > $o)
 				{
 				$rowx=mysqli_fetch_row($rslt);
-				
+
 				$lead_list['count'] = ($lead_list['count'] + $rowx[2]);
-				if ($rowx[1] == 'N') 
+				if ($rowx[1] == 'N')
 					{
 					$since_reset = 'N';
 					$since_resetX = 'Y';
 					}
-				else 
+				else
 					{
 					$since_reset = 'Y';
 					$since_resetX = 'N';
-					} 
+					}
 				$lead_list[$since_reset][$rowx[0]] = ($lead_list[$since_reset][$rowx[0]] + $rowx[2]);
 				$lead_list[$since_reset.'_count'] = ($lead_list[$since_reset.'_count'] + $rowx[2]);
 				#If opposite side is not set, it may not in the future so give it a value of zero
-				if (!isset($lead_list[$since_resetX][$rowx[0]])) 
+				if (!isset($lead_list[$since_resetX][$rowx[0]]))
 					{
 					$lead_list[$since_resetX][$rowx[0]]=0;
 					}
 				$o++;
 				}
-		 
+
 			$o=0;
 			if ($lead_list['count'] > 0)
 				{
 				while (list($dispo,) = each($lead_list[$since_reset]))
 					{
 					if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-						{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+						{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 					else
 						{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -25411,7 +25411,7 @@ if ($ADD==34)
 			echo "<tr bgcolor=\"#$SSstd_row1_background\"><td><font size=1>"._QXZ("TOTAL")."</td><td colspan=3 align=center><font size=1>$lead_list[count]</td></tr>\n";
 
 			echo "</table></center><br>\n";
-			unset($lead_list);				
+			unset($lead_list);
 			}
 		else
 			{
@@ -25465,13 +25465,13 @@ if ($ADD==34)
 		$users_to_print = mysqli_num_rows($rsltx);
 
 		$o=0;
-		while ($users_to_print > $o) 
+		while ($users_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rsltx);
 			$o++;
 
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -25501,7 +25501,7 @@ if ($ADD==34)
 ######################
 # ADD=31 or 34 and SUB=29 for list mixes
 ######################
-if ( ( ($ADD==34) or ($ADD==31) ) and ( (!preg_match("/$campaign_id/i", $LOGallowed_campaigns)) and (!preg_match("/ALL-CAMPAIGNS/i",$LOGallowed_campaigns)) ) ) 
+if ( ( ($ADD==34) or ($ADD==31) ) and ( (!preg_match("/$campaign_id/i", $LOGallowed_campaigns)) and (!preg_match("/ALL-CAMPAIGNS/i",$LOGallowed_campaigns)) ) )
 	{$ADD=30;}	# send to not allowed screen if not in vicidial_user_groups allowed_campaigns list
 
 if ( ($ADD==34) or ($ADD==31) )
@@ -25534,7 +25534,7 @@ if ( ($ADD==34) or ($ADD==31) )
 		$stmt="SELECT dial_statuses from vicidial_campaigns where campaign_id='$campaign_id' $LOGallowed_campaignsSQL;";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$statuses = mysqli_num_rows($rslt);
-		if ($statuses > 0) 
+		if ($statuses > 0)
 			{
 			$rowy=mysqli_fetch_row($rslt);
 			$LMdial_statuses=$rowy[0];
@@ -25544,7 +25544,7 @@ if ( ($ADD==34) or ($ADD==31) )
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$listmixes = mysqli_num_rows($rslt);
 		$o=0;
-		while ($listmixes > $o) 
+		while ($listmixes > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$vcl_id=$rowx[0];
@@ -25555,7 +25555,7 @@ if ( ($ADD==34) or ($ADD==31) )
 			else
 				{
 				if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-					{$tablecolor='bgcolor="#'. $SSstd_row2_background .'"';   $bgcolor='bgcolor="#'. $SSstd_row1_background .'"';} 
+					{$tablecolor='bgcolor="#'. $SSstd_row2_background .'"';   $bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 				else
 					{$tablecolor='bgcolor="#'. $SSstd_row1_background .'"';   $bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 				}
@@ -25595,7 +25595,7 @@ if ( ($ADD==34) or ($ADD==31) )
 			$MIXentries = explode(":", $rowx[3]);
 			$Ms_to_print = (count($MIXentries) - 0);
 			$q=0;
-			while ($Ms_to_print > $q) 
+			while ($Ms_to_print > $q)
 				{
 				$MIXdetails = explode('|', $MIXentries[$q]);
 				$MIXdetailsLIST = $MIXdetails[0];
@@ -25605,7 +25605,7 @@ if ( ($ADD==34) or ($ADD==31) )
 				$Ds_to_print = (count($Dstatuses) - 0);
 				$Dsql = '';
 				$r=0;
-				while ($Ds_to_print > $r) 
+				while ($Ds_to_print > $r)
 					{
 					$r++;
 					$Dsql .= "'$Dstatuses[$r]',";
@@ -25634,7 +25634,7 @@ if ( ($ADD==34) or ($ADD==31) )
 					}
 				echo "<option SELECTED value=\"$MIXdetails[2]\">$MIXdetails[2]</option></select></td>\n";
 
-				
+
 				echo "<td><input type=hidden name=status$US$q$US$vcl_id id=status$US$q$US$vcl_id value=\"$MIXdetails[3]\"><input type=text size=20 maxlength=255 name=ROstatus$US$q$US$vcl_id id=ROstatus$US$q$US$vcl_id value=\"$MIXdetails[3]\" READONLY></td>\n";
 				echo "<td NOWRAP>\n";
 
@@ -25659,7 +25659,7 @@ if ( ($ADD==34) or ($ADD==31) )
 
 
 
-			
+
 			echo "<tr $bgcolor><td colspan=3 align=right><font size=2>\n";
 			echo _QXZ("Difference")." %: <input type=text size=4 name=PCT_DIFF_$vcl_id id=PCT_DIFF_$vcl_id value=0 readonly>\n";
 			echo "</td>\n";
@@ -25680,7 +25680,7 @@ if ( ($ADD==34) or ($ADD==31) )
 			echo "$mixlists_list";
 			echo "<option selected value=\"\">"._QXZ("ADD ANOTHER ENTRY")."</option>\n";
 			echo "</select>\n";
-			
+
 			if ($q > 39) {$AE_disabled = 'DISABLED';}
 			else {$AE_disabled = '';}
 			echo "<input type=submit name=submit value=\""._QXZ("ADD ENTRY")."\" $AE_disabled>\n";
@@ -25767,7 +25767,7 @@ if ($ADD==32)
 		$campaigns_to_print = mysqli_num_rows($rslt);
 
 		$o=0;
-		while ($campaigns_to_print > $o) 
+		while ($campaigns_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			$campaigns_id_list[$o] = $row[0];
@@ -25776,10 +25776,10 @@ if ($ADD==32)
 			}
 
 		$o=0;
-		while ($campaigns_to_print > $o) 
+		while ($campaigns_to_print > $o)
 			{
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='class="records_list_x"';} 
+				{$bgcolor='class="records_list_x"';}
 			else
 				{$bgcolor='class="records_list_y"';}
 			echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=31&SUB=22&campaign_id=$campaigns_id_list[$o]'\"";} echo "><td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=22&campaign_id=$campaigns_id_list[$o]\">$campaigns_id_list[$o]</a></td>";
@@ -25796,7 +25796,7 @@ if ($ADD==32)
 				echo "$row[0] ";
 				$p++;
 				}
-			if ($p<1) 
+			if ($p<1)
 				{echo "<font color=grey><DEL>"._QXZ("NONE")."</DEL></font>";}
 			echo "</td>";
 			echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=22&campaign_id=$campaigns_id_list[$o]\">"._QXZ("MODIFY STATUSES")."</a></td></tr>\n";
@@ -25829,7 +25829,7 @@ if ($ADD==33)
 		$campaigns_to_print = mysqli_num_rows($rslt);
 
 		$o=0;
-		while ($campaigns_to_print > $o) 
+		while ($campaigns_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			$campaigns_id_list[$o] = $row[0];
@@ -25838,10 +25838,10 @@ if ($ADD==33)
 			}
 
 		$o=0;
-		while ($campaigns_to_print > $o) 
+		while ($campaigns_to_print > $o)
 			{
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='class="records_list_x"';} 
+				{$bgcolor='class="records_list_x"';}
 			else
 				{$bgcolor='class="records_list_y"';}
 			echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=31&SUB=23&campaign_id=$campaigns_id_list[$o]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=31&SUB=23&campaign_id=$campaigns_id_list[$o]\"><font size=1 color=black>$campaigns_id_list[$o]</a></td>";
@@ -25858,7 +25858,7 @@ if ($ADD==33)
 				echo "$row[0] ";
 				$p++;
 				}
-			if ($p<1) 
+			if ($p<1)
 				{echo "<font color=grey><DEL>"._QXZ("NONE")."</DEL></font>";}
 			echo "</td>";
 			echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=23&campaign_id=$campaigns_id_list[$o]\">"._QXZ("MODIFY HOTKEYS")."</a></td></tr>\n";
@@ -25891,7 +25891,7 @@ if ($ADD==35)
 		$campaigns_to_print = mysqli_num_rows($rslt);
 
 		$o=0;
-		while ($campaigns_to_print > $o) 
+		while ($campaigns_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			$campaigns_id_list[$o] = $row[0];
@@ -25900,10 +25900,10 @@ if ($ADD==35)
 			}
 
 		$o=0;
-		while ($campaigns_to_print > $o) 
+		while ($campaigns_to_print > $o)
 			{
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='class="records_list_x"';} 
+				{$bgcolor='class="records_list_x"';}
 			else
 				{$bgcolor='class="records_list_y"';}
 			echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=31&SUB=25&campaign_id=$campaigns_id_list[$o]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=31&SUB=25&campaign_id=$campaigns_id_list[$o]\"><font size=1 color=black>$campaigns_id_list[$o]</a></td>";
@@ -25920,7 +25920,7 @@ if ($ADD==35)
 				echo "$row[0] ";
 				$p++;
 				}
-			if ($p<1) 
+			if ($p<1)
 				{echo "<font color=grey><DEL>"._QXZ("NONE")."</DEL></font>";}
 			echo "</td>";
 			echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=25&campaign_id=$campaigns_id_list[$o]\">"._QXZ("MODIFY LEAD RECYCLES")."</a></td></tr>\n";
@@ -25953,7 +25953,7 @@ if ($ADD==36)
 		$campaigns_to_print = mysqli_num_rows($rslt);
 
 		$o=0;
-		while ($campaigns_to_print > $o) 
+		while ($campaigns_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			$campaigns_id_list[$o] = $row[0];
@@ -25962,10 +25962,10 @@ if ($ADD==36)
 			}
 
 		$o=0;
-		while ($campaigns_to_print > $o) 
+		while ($campaigns_to_print > $o)
 			{
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='class="records_list_x"';} 
+				{$bgcolor='class="records_list_x"';}
 			else
 				{$bgcolor='class="records_list_y"';}
 			echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=31&SUB=26&campaign_id=$campaigns_id_list[$o]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=31&SUB=26&campaign_id=$campaigns_id_list[$o]\"><font size=1 color=black>$campaigns_id_list[$o]</a></td>";
@@ -25982,7 +25982,7 @@ if ($ADD==36)
 				echo "$row[0] ";
 				$p++;
 				}
-			if (strlen($row[0])<3) 
+			if (strlen($row[0])<3)
 				{echo "<font color=grey><DEL>"._QXZ("NONE")."</DEL></font>";}
 			echo "</td>";
 			echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=26&campaign_id=$campaigns_id_list[$o]\">"._QXZ("MODIFY AUTO-ALT DIAL")."</a></td></tr>\n";
@@ -26015,7 +26015,7 @@ if ($ADD==37)
 		$campaigns_to_print = mysqli_num_rows($rslt);
 
 		$o=0;
-		while ($campaigns_to_print > $o) 
+		while ($campaigns_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			$campaigns_id_list[$o] = $row[0];
@@ -26024,10 +26024,10 @@ if ($ADD==37)
 			}
 
 		$o=0;
-		while ($campaigns_to_print > $o) 
+		while ($campaigns_to_print > $o)
 			{
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='class="records_list_x"';} 
+				{$bgcolor='class="records_list_x"';}
 			else
 				{$bgcolor='class="records_list_y"';}
 			echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=31&SUB=27&campaign_id=$campaigns_id_list[$o]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=31&SUB=27&campaign_id=$campaigns_id_list[$o]\"><font size=1 color=black>$campaigns_id_list[$o]</a></td>";
@@ -26044,7 +26044,7 @@ if ($ADD==37)
 				echo "$row[0] ";
 				$p++;
 				}
-			if ($p<1) 
+			if ($p<1)
 				{echo "<font color=grey><DEL>"._QXZ("NONE")."</DEL></font>";}
 			echo "</td>";
 			echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=27&campaign_id=$campaigns_id_list[$o]\">"._QXZ("MODIFY PAUSE CODES")."</a></td></tr>\n";
@@ -26077,7 +26077,7 @@ if ($ADD==39)
 		$campaigns_to_print = mysqli_num_rows($rslt);
 
 		$o=0;
-		while ($campaigns_to_print > $o) 
+		while ($campaigns_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			$campaigns_id_list[$o] = $row[0];
@@ -26086,10 +26086,10 @@ if ($ADD==39)
 			}
 
 		$o=0;
-		while ($campaigns_to_print > $o) 
+		while ($campaigns_to_print > $o)
 			{
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='class="records_list_x"';} 
+				{$bgcolor='class="records_list_x"';}
 			else
 				{$bgcolor='class="records_list_y"';}
 			echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=31&SUB=29&campaign_id=$campaigns_id_list[$o]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=31&SUB=29&campaign_id=$campaigns_id_list[$o]\"><font size=1 color=black>$campaigns_id_list[$o]</a></td>";
@@ -26106,7 +26106,7 @@ if ($ADD==39)
 				echo "$row[0] ";
 				$p++;
 				}
-			if ($p<1) 
+			if ($p<1)
 				{echo "<font color=grey><DEL>"._QXZ("NONE")."</DEL></font>";}
 			echo "</td>";
 			echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=29&campaign_id=$campaigns_id_list[$o]\">"._QXZ("MODIFY LIST MIX")."</a></td></tr>\n";
@@ -26139,7 +26139,7 @@ if ($ADD==301)
 	$campaigns_to_print = mysqli_num_rows($rslt);
 
 	$o=0;
-	while ($campaigns_to_print > $o) 
+	while ($campaigns_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		$campaigns_id_list[$o] =		$row[0];
@@ -26150,12 +26150,12 @@ if ($ADD==301)
 
 	$o=0;
 	$k=0;
-	while ($campaigns_to_print > $o) 
+	while ($campaigns_to_print > $o)
 		{
 		if ($enable_xfer_presets_list[$o] == 'ENABLED')
 			{
 			if (preg_match('/1$|3$|5$|7$|9$/i', $k))
-				{$bgcolor='class="records_list_x"';} 
+				{$bgcolor='class="records_list_x"';}
 			else
 				{$bgcolor='class="records_list_y"';}
 			echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=31&SUB=201&campaign_id=$campaigns_id_list[$o]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=31&SUB=201&campaign_id=$campaigns_id_list[$o]\"><font size=1 color=black>$campaigns_id_list[$o]</a></td>";
@@ -26172,7 +26172,7 @@ if ($ADD==301)
 				echo "$row[0] ";
 				$p++;
 				}
-			if ($p<1) 
+			if ($p<1)
 				{echo "<font color=grey><DEL>"._QXZ("NONE")."</DEL></font>";}
 			echo "</td>";
 			echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=201&campaign_id=$campaigns_id_list[$o]\">"._QXZ("MODIFY PRESETS")."</a></td></tr>\n";
@@ -26209,7 +26209,7 @@ if ($ADD==302)
 	$campaigns_to_print = mysqli_num_rows($rslt);
 
 	$o=0;
-	while ($campaigns_to_print > $o) 
+	while ($campaigns_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		$campaigns_id_list[$o] =	$row[0];
@@ -26220,10 +26220,10 @@ if ($ADD==302)
 
 	$o=0;
 	$k=0;
-	while ($campaigns_to_print > $o) 
+	while ($campaigns_to_print > $o)
 		{
 		if (preg_match('/1$|3$|5$|7$|9$/i', $k))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=31&SUB=202&campaign_id=$campaigns_id_list[$o]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=31&SUB=202&campaign_id=$campaigns_id_list[$o]\"><font size=1 color=black>$campaigns_id_list[$o]</a></td>";
@@ -26266,7 +26266,7 @@ if ($ADD==311)
 			}
 		echo "<TABLE><TR><TD>\n";
 		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-		
+
 		if ($SSexpired_lists_inactive > 0)
 			{
 			$expired_check=0;
@@ -26345,7 +26345,7 @@ if ($ADD==311)
 		$statuses_to_print = mysqli_num_rows($rslt);
 
 		$o=0;
-		while ($statuses_to_print > $o) 
+		while ($statuses_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$statuses_list["$rowx[0]"] = "$rowx[1]";
@@ -26358,7 +26358,7 @@ if ($ADD==311)
 		$Cstatuses_to_print = mysqli_num_rows($rslt);
 
 		$o=0;
-		while ($Cstatuses_to_print > $o) 
+		while ($Cstatuses_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$statuses_list["$rowx[0]"] = "$rowx[1]";
@@ -26388,11 +26388,11 @@ if ($ADD==311)
 		$Dgroups_menu='';
 		$Dgroups_selected=0;
 		$o=0;
-		while ($Dgroups_to_print > $o) 
+		while ($Dgroups_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$Dgroups_menu .= "<option ";
-			if ($drop_inbound_group_override == "$rowx[0]") 
+			if ($drop_inbound_group_override == "$rowx[0]")
 				{
 				$Dgroups_menu .= "SELECTED ";
 				$Dgroups_selected++;
@@ -26400,9 +26400,9 @@ if ($ADD==311)
 			$Dgroups_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 			$o++;
 			}
-		if ($Dgroups_selected < 1) 
+		if ($Dgroups_selected < 1)
 			{$Dgroups_menu .= "<option SELECTED value=\"\">---"._QXZ("NONE")."---</option>\n";}
-		else 
+		else
 			{$Dgroups_menu .= "<option value=\"\">---"._QXZ("NONE")."---</option>\n";}
 
 
@@ -26421,7 +26421,7 @@ if ($ADD==311)
 		$campaigns_to_print = mysqli_num_rows($rslt);
 		$campaigns_list='';
 		$o=0;
-		while ($campaigns_to_print > $o) 
+		while ($campaigns_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$campaigns_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -26456,7 +26456,7 @@ if ($ADD==311)
 				{echo " &nbsp; &nbsp; <font color=red><B>"._QXZ("LIST EXPIRED")."</B></font>";}
 			}
 		echo "</td></tr>\n";
-		
+
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>";
 		if ($list_local_call_time == 'campaign')
 			{echo _QXZ("Local Call Time").": ";}
@@ -26464,25 +26464,25 @@ if ($ADD==311)
 			{echo "<a href=\"$PHP_SELF?ADD=311111111&call_time_id=$list_local_call_time\">"._QXZ("Local Call Time").": </a>";}
 		echo "</td><td align=left><select size=1 name=local_call_time>\n";
 
-		
-		
+
+
 		echo "<option value=\"campaign\">"._QXZ("Campaign - Use Campaign Settings")."</option>\n";
 		echo "$call_times_list";
 		if($list_local_call_time == "campaign")
 			{
 			echo "<option selected value=\"campaign\">"._QXZ("Campaign - Use Campaign Settings")."</option>\n";
-			} 
-		else 
+			}
+		else
 			{
 			echo "<option selected value=\"$list_local_call_time\">$list_local_call_time - $call_timename_list[$list_local_call_time]</option>\n";
 			}
 		echo "</select>$NWB#lists-local_call_time$NWE</td></tr>\n";
-		
-		if($audit_comments=='1') 
+
+		if($audit_comments=='1')
 			{
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Audit Comments").": </td><td align=left><select size=1 name=audit_comments><option value='1' selected>"._QXZ("Y")."</option><option value='0'>"._QXZ("N")."</option></select>$NWB#lists-audit_comments$NWE</td></tr>\n";
-			} 
-		else 
+			}
+		else
 			{
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Audit Comments").": </td><td align=left><select size=1 name=audit_comments><option value='1'>"._QXZ("Y")."</option><option value='0' selected>"._QXZ("N")."</option></select>$NWB#lists-audit_comments$NWE</td></tr>\n";
 			}
@@ -26505,7 +26505,7 @@ if ($ADD==311)
 			$stmt="SELECT did_id from vicidial_inbound_dids where did_pattern='$campaign_cid_override' $LOGadmin_viewable_groupsSQL limit 1;";
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$dids_to_print = mysqli_num_rows($rslt);
-			if ($dids_to_print > 0) 
+			if ($dids_to_print > 0)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$DID_edit_link_BEGIN = "<a href=\"$PHP_SELF?ADD=3311&did_id=$rowx[0]\">";
@@ -26528,11 +26528,11 @@ if ($ADD==311)
 		$status_groups_menu='';
 		$status_groups_selected=0;
 		$o=0;
-		while ($status_groups_to_print > $o) 
+		while ($status_groups_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$status_groups_menu .= "<option ";
-			if ($status_group_id == "$rowx[0]") 
+			if ($status_group_id == "$rowx[0]")
 				{
 				$status_groups_menu .= "SELECTED ";
 				$status_groups_selected++;
@@ -26572,11 +26572,11 @@ if ($ADD==311)
 		$Xgroups_menu='';
 		$Xgroups_selected=0;
 		$o=0;
-		while ($Xgroups_to_print > $o) 
+		while ($Xgroups_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$Xgroups_menu .= "<option ";
-			if ($default_xfer_group == "$rowx[0]") 
+			if ($default_xfer_group == "$rowx[0]")
 				{
 				$Xgroups_menu .= "SELECTED ";
 				$Xgroups_selected++;
@@ -26584,9 +26584,9 @@ if ($ADD==311)
 			$Xgroups_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 			$o++;
 			}
-		if ($Xgroups_selected < 1) 
+		if ($Xgroups_selected < 1)
 			{$Xgroups_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		else 
+		else
 			{$Xgroups_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
 
 
@@ -26641,13 +26641,13 @@ if ($ADD==311)
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Inventory Report").": </td><td align=left><select size=1 name=inventory_report><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='$inventory_report' SELECTED>"._QXZ("$inventory_report")."</option></select>$NWB#lists-inventory_report$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Time Zone Setting").": </td><td align=left><select size=1 name=time_zone_setting><option value='COUNTRY_AND_AREA_CODE'>"._QXZ("COUNTRY_AND_AREA_CODE")."</option><option value='POSTAL_CODE'>"._QXZ("POSTAL_CODE")."</option><option value='NANPA_PREFIX'>"._QXZ("NANPA_PREFIX")."</option><option value='OWNER_TIME_ZONE_CODE'>"._QXZ("OWNER_TIME_ZONE_CODE")."</option><option value='$time_zone_setting' SELECTED>"._QXZ("$time_zone_setting")."</option></select>$NWB#lists-time_zone_setting$NWE</td></tr>\n";
-		
+
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Custom 1").": </td><td align=left><input type=text name=list_custom_one   size=30 maxlength=100 value=\"$list_custom_one\">$NWB#list_custom$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Custom 2").": </td><td align=left><input type=text name=list_custom_two   size=30 maxlength=100 value=\"$list_custom_two\">$NWB#list_custom$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Custom 3").": </td><td align=left><input type=text name=list_custom_three size=30 maxlength=100 value=\"$list_custom_three\">$NWB#list_custom$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Custom 4").": </td><td align=left><input type=text name=list_custom_four  size=30 maxlength=100 value=\"$list_custom_four\">$NWB#list_custom$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Custom 5").": </td><td align=left><input type=text name=list_custom_five  size=30 maxlength=100 value=\"$list_custom_five\">$NWB#list_custom$NWE</td></tr>\n";
-		
+
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=center colspan=2><input type=submit name=SUBMIT value='"._QXZ("SUBMIT")."'></td></tr>\n";
 		echo "</TABLE></center>\n";
@@ -26673,7 +26673,7 @@ if ($ADD==311)
 			$stmt="SELECT lead_filter_sql from vicidial_lead_filters where lead_filter_id='$lead_filter_id' $LOGadmin_viewable_groupsSQL;";
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$filters_to_print = mysqli_num_rows($rslt);
-			if ($filters_to_print > 0) 
+			if ($filters_to_print > 0)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$filterSQL = $rowx[0];
@@ -26704,38 +26704,38 @@ if ($ADD==311)
 		$lead_list['count'] = 0;
 		$lead_list['Y_count'] = 0;
 		$lead_list['N_count'] = 0;
-		while ($statuses_to_print > $o) 
+		while ($statuses_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
-			
+
 			$lead_list['count'] = ($lead_list['count'] + $rowx[2]);
-			if ($rowx[1] == 'N') 
+			if ($rowx[1] == 'N')
 				{
 				$since_reset = 'N';
 				$since_resetX = 'Y';
 				}
-			else 
+			else
 				{
 				$since_reset = 'Y';
 				$since_resetX = 'N';
-				} 
+				}
 			$lead_list[$since_reset][$rowx[0]] = ($lead_list[$since_reset][$rowx[0]] + $rowx[2]);
 			$lead_list[$since_reset.'_count'] = ($lead_list[$since_reset.'_count'] + $rowx[2]);
 			#If opposite side is not set, it may not in the future so give it a value of zero
-			if (!isset($lead_list[$since_resetX][$rowx[0]])) 
+			if (!isset($lead_list[$since_resetX][$rowx[0]]))
 				{
 				$lead_list[$since_resetX][$rowx[0]]=0;
 				}
 			$o++;
 			}
-	 
+
 		$o=0;
 		if ($lead_list['count'] > 0)
 			{
 			while (list($dispo,) = each($lead_list[$since_reset]))
 				{
 				if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-					{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+					{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 				else
 					{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -26814,25 +26814,25 @@ if ($ADD==311)
 		$lead_list['count'] = 0;
 		$lead_list['Y_count'] = 0;
 		$lead_list['N_count'] = 0;
-		while ($statuses_to_print > $o) 
+		while ($statuses_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
-			
+
 			$lead_list['count'] = ($lead_list['count'] + $rowx[2]);
-			if ($rowx[1] == 'N') 
+			if ($rowx[1] == 'N')
 				{
 				$since_reset = 'N';
 				$since_resetX = 'Y';
 				}
-			else 
+			else
 				{
 				$since_reset = 'Y';
 				$since_resetX = 'N';
-				} 
+				}
 			$lead_list[$since_reset][$rowx[0]] = ($lead_list[$since_reset][$rowx[0]] + $rowx[2]);
 			$lead_list[$since_reset.'_count'] = ($lead_list[$since_reset.'_count'] + $rowx[2]);
 			#If opposite side is not set, it may not in the future so give it a value of zero
-			if (!isset($lead_list[$since_resetX][$rowx[0]])) 
+			if (!isset($lead_list[$since_resetX][$rowx[0]]))
 				{
 				$lead_list[$since_resetX][$rowx[0]]=0;
 				}
@@ -26849,7 +26849,7 @@ if ($ADD==311)
 				if ($tzone >= 0) {$DISPtzone = "$plus$tzone";}
 				else {$DISPtzone = "$tzone";}
 				if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-					{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+					{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 				else
 					{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -26890,38 +26890,38 @@ if ($ADD==311)
 			$lead_list['count'] = 0;
 			$lead_list['Y_count'] = 0;
 			$lead_list['N_count'] = 0;
-			while ($owners_to_print > $o) 
+			while ($owners_to_print > $o)
 				{
 				$rowx=mysqli_fetch_row($rslt);
-				
+
 				$lead_list['count'] = ($lead_list['count'] + $rowx[2]);
-				if ($rowx[1] == 'N') 
+				if ($rowx[1] == 'N')
 					{
 					$since_reset = 'N';
 					$since_resetX = 'Y';
 					}
-				else 
+				else
 					{
 					$since_reset = 'Y';
 					$since_resetX = 'N';
-					} 
+					}
 				$lead_list[$since_reset][$rowx[0]] = ($lead_list[$since_reset][$rowx[0]] + $rowx[2]);
 				$lead_list[$since_reset.'_count'] = ($lead_list[$since_reset.'_count'] + $rowx[2]);
 				#If opposite side is not set, it may not in the future so give it a value of zero
-				if (!isset($lead_list[$since_resetX][$rowx[0]])) 
+				if (!isset($lead_list[$since_resetX][$rowx[0]]))
 					{
 					$lead_list[$since_resetX][$rowx[0]]=0;
 					}
 				$o++;
 				}
-		 
+
 			$o=0;
 			if ($lead_list['count'] > 0)
 				{
 				while (list($owner,) = each($lead_list[$since_reset]))
 					{
 					if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-						{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+						{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 					else
 						{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -26956,38 +26956,38 @@ if ($ADD==311)
 			$lead_list['count'] = 0;
 			$lead_list['Y_count'] = 0;
 			$lead_list['N_count'] = 0;
-			while ($owners_to_print > $o) 
+			while ($owners_to_print > $o)
 				{
 				$rowx=mysqli_fetch_row($rslt);
-				
+
 				$lead_list['count'] = ($lead_list['count'] + $rowx[2]);
-				if ($rowx[1] == 'N') 
+				if ($rowx[1] == 'N')
 					{
 					$since_reset = 'N';
 					$since_resetX = 'Y';
 					}
-				else 
+				else
 					{
 					$since_reset = 'Y';
 					$since_resetX = 'N';
-					} 
+					}
 				$lead_list[$since_reset][$rowx[0]] = ($lead_list[$since_reset][$rowx[0]] + $rowx[2]);
 				$lead_list[$since_reset.'_count'] = ($lead_list[$since_reset.'_count'] + $rowx[2]);
 				#If opposite side is not set, it may not in the future so give it a value of zero
-				if (!isset($lead_list[$since_resetX][$rowx[0]])) 
+				if (!isset($lead_list[$since_resetX][$rowx[0]]))
 					{
 					$lead_list[$since_resetX][$rowx[0]]=0;
 					}
 				$o++;
 				}
-		 
+
 			$o=0;
 			if ($lead_list['count'] > 0)
 				{
 				while (list($owner,) = each($lead_list[$since_reset]))
 					{
 					if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-						{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+						{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 					else
 						{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -27023,38 +27023,38 @@ if ($ADD==311)
 		$lead_list['count'] = 0;
 		$lead_list['Y_count'] = 0;
 		$lead_list['N_count'] = 0;
-		while ($ranks_to_print > $o) 
+		while ($ranks_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
-			
+
 			$lead_list['count'] = ($lead_list['count'] + $rowx[2]);
-			if ($rowx[1] == 'N') 
+			if ($rowx[1] == 'N')
 				{
 				$since_reset = 'N';
 				$since_resetX = 'Y';
 				}
-			else 
+			else
 				{
 				$since_reset = 'Y';
 				$since_resetX = 'N';
-				} 
+				}
 			$lead_list[$since_reset][$rowx[0]] = ($lead_list[$since_reset][$rowx[0]] + $rowx[2]);
 			$lead_list[$since_reset.'_count'] = ($lead_list[$since_reset.'_count'] + $rowx[2]);
 			#If opposite side is not set, it may not in the future so give it a value of zero
-			if (!isset($lead_list[$since_resetX][$rowx[0]])) 
+			if (!isset($lead_list[$since_resetX][$rowx[0]]))
 				{
 				$lead_list[$since_resetX][$rowx[0]]=0;
 				}
 			$o++;
 			}
-	 
+
 		$o=0;
 		if ($lead_list['count'] > 0)
 			{
 			while (list($rank,) = each($lead_list[$since_reset]))
 				{
 				if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-					{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+					{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 				else
 					{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -27091,38 +27091,38 @@ if ($ADD==311)
 			$lead_list['count'] = 0;
 			$lead_list['Y_count'] = 0;
 			$lead_list['N_count'] = 0;
-			while ($ranks_to_print > $o) 
+			while ($ranks_to_print > $o)
 				{
 				$rowx=mysqli_fetch_row($rslt);
-				
+
 				$lead_list['count'] = ($lead_list['count'] + $rowx[2]);
-				if ($rowx[1] == 'N') 
+				if ($rowx[1] == 'N')
 					{
 					$since_reset = 'N';
 					$since_resetX = 'Y';
 					}
-				else 
+				else
 					{
 					$since_reset = 'Y';
 					$since_resetX = 'N';
-					} 
+					}
 				$lead_list[$since_reset][$rowx[0]] = ($lead_list[$since_reset][$rowx[0]] + $rowx[2]);
 				$lead_list[$since_reset.'_count'] = ($lead_list[$since_reset.'_count'] + $rowx[2]);
 				#If opposite side is not set, it may not in the future so give it a value of zero
-				if (!isset($lead_list[$since_resetX][$rowx[0]])) 
+				if (!isset($lead_list[$since_resetX][$rowx[0]]))
 					{
 					$lead_list[$since_resetX][$rowx[0]]=0;
 					}
 				$o++;
 				}
-		 
+
 			$o=0;
 			if ($lead_list['count'] > 0)
 				{
 				while (list($rank,) = each($lead_list[$since_reset]))
 					{
 					if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-						{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+						{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 					else
 						{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -27138,7 +27138,7 @@ if ($ADD==311)
 			echo "<tr bgcolor=\"#$SSstd_row1_background\"><td><font size=1>"._QXZ("TOTAL")."</td><td colspan=3 align=center><font size=1>$lead_list[count]</td></tr>\n";
 
 			echo "</table></center><br>\n";
-			unset($lead_list);			
+			unset($lead_list);
 			}
 
 		$leads_in_list = 0;
@@ -27153,7 +27153,7 @@ if ($ADD==311)
 		$first_row=1;
 		$all_called_first=1000;
 		$all_called_last=0;
-		while ($status_called_to_print > $o) 
+		while ($status_called_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$leads_in_list = ($leads_in_list + $rowx[2]);
@@ -27185,7 +27185,7 @@ if ($ADD==311)
 		$first = $all_called_first;
 		while ($first <= $all_called_last)
 			{
-			if (preg_match('/1$|3$|5$|7$|9$/i', $first)) {$AB='bgcolor="#AFEEEE"';} 
+			if (preg_match('/1$|3$|5$|7$|9$/i', $first)) {$AB='bgcolor="#AFEEEE"';}
 			else{$AB='bgcolor="#E0FFFF"';}
 			if ($first >= 100) {$Fplus='+';}
 			else {$Fplus='';}
@@ -27196,11 +27196,11 @@ if ($ADD==311)
 
 		$sts=0;
 		$statuses_called_to_print = count($status);
-		while ($statuses_called_to_print > $sts) 
+		while ($statuses_called_to_print > $sts)
 			{
 			$Pstatus = $status[$sts];
 			if (preg_match("/1$|3$|5$|7$|9$/i", $sts))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';   $AB='bgcolor="#'. $SSstd_row1_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';   $AB='bgcolor="#'. $SSstd_row1_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';   $AB='bgcolor="#'. $SSstd_row2_background .'"';}
 		#	echo "$status[$sts]|$status_called_first[$sts]|$status_called_last[$sts]|$leads_in_sts[$sts]|\n";
@@ -27212,12 +27212,12 @@ if ($ADD==311)
 				{
 				if (preg_match("/1$|3$|5$|7$|9$/i", $sts))
 					{
-					if (preg_match('/1$|3$|5$|7$|9$/i', $first)) {$AB='bgcolor="#'. $SSstd_row1_background .'"';} 
+					if (preg_match('/1$|3$|5$|7$|9$/i', $first)) {$AB='bgcolor="#'. $SSstd_row1_background .'"';}
 					else{$AB='bgcolor="#'. $SSstd_row2_background .'"';}
 					}
 				else
 					{
-					if (preg_match("/0$|2$|4$|6$|8$/i", $first)) {$AB='bgcolor="#'. $SSstd_row1_background .'"';} 
+					if (preg_match("/0$|2$|4$|6$|8$/i", $first)) {$AB='bgcolor="#'. $SSstd_row1_background .'"';}
 					else{$AB='bgcolor="#'. $SSstd_row2_background .'"';}
 					}
 
@@ -27233,7 +27233,7 @@ if ($ADD==311)
 
 					$o++;
 					}
-				if (!$called_printed) 
+				if (!$called_printed)
 					{echo "<td $AB><font size=1> &nbsp;</td>";}
 				$first++;
 				}
@@ -27246,7 +27246,7 @@ if ($ADD==311)
 		$first = $all_called_first;
 		while ($first <= $all_called_last)
 			{
-			if (preg_match('/1$|3$|5$|7$|9$/i', $first)) {$AB='bgcolor="#AFEEEE"';} 
+			if (preg_match('/1$|3$|5$|7$|9$/i', $first)) {$AB='bgcolor="#AFEEEE"';}
 			else{$AB='bgcolor="#E0FFFF"';}
 			echo "<td align=center $AB><b><font size=1><a href=\"admin_search_lead.php?list_id=$list_id&called_count=$first\">$all_called_count[$first]</a></td>";
 			$first++;
@@ -27475,7 +27475,7 @@ if ($ADD==331)
 			}
 		else
 			{
-			##### get server listing for dynamic pulldown 
+			##### get server listing for dynamic pulldown
 			$stmt="SELECT server_ip,server_description,external_server_ip from servers order by server_ip";
 			$rsltx=mysql_to_mysqli($stmt, $link);
 			$servers_to_print = mysqli_num_rows($rsltx);
@@ -27619,7 +27619,7 @@ if ($ADD==331)
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$Dgroups_to_print = mysqli_num_rows($rslt);
 			$o=0;
-			while ($Dgroups_to_print > $o) 
+			while ($Dgroups_to_print > $o)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$group_id_values[$o] =		$rowx[0];
@@ -27631,7 +27631,7 @@ if ($ADD==331)
 					$group_ct = count($groups);
 					while ($p < $group_ct)
 						{
-						if ($group_id_values[$o] == $groups[$p]) 
+						if ($group_id_values[$o] == $groups[$p])
 							{
 							$groups_list .= " CHECKED";
 							$groups_value .= " $group_id_values[$o]";
@@ -27861,23 +27861,23 @@ if ($ADD==3111)
 		$Xmenuslist='';
 		$Wmenuslist='';
 		$Cmenuslist='';
-		while ($Xmenus_to_print > $o) 
+		while ($Xmenus_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$Xmenuslist .= "<option ";
 			$Wmenuslist .= "<option ";
 			$Cmenuslist .= "<option ";
-			if ($hold_time_option_callmenu == "$rowx[0]") 
+			if ($hold_time_option_callmenu == "$rowx[0]")
 				{
 				$Xmenuslist .= "SELECTED ";
 				$Xmenus_selected++;
 				}
-			if ($wait_time_option_callmenu == "$rowx[0]") 
+			if ($wait_time_option_callmenu == "$rowx[0]")
 				{
 				$Wmenuslist .= "SELECTED ";
 				$Wmenus_selected++;
 				}
-			if ($closing_time_option_callmenu == "$rowx[0]") 
+			if ($closing_time_option_callmenu == "$rowx[0]")
 				{
 				$Cmenuslist .= "SELECTED ";
 				$Cmenus_selected++;
@@ -27887,11 +27887,11 @@ if ($ADD==3111)
 			$Cmenuslist .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 			$o++;
 			}
-		if ($Xmenus_selected < 1) 
+		if ($Xmenus_selected < 1)
 			{$Xmenuslist .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		if ($Wmenus_selected < 1) 
+		if ($Wmenus_selected < 1)
 			{$Wmenuslist .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		if ($Cmenus_selected < 1) 
+		if ($Cmenus_selected < 1)
 			{$Cmenuslist .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
 
 
@@ -27914,7 +27914,7 @@ if ($ADD==3111)
 		$Cgroups_menu='';
 		$Cgroups_selected=0;
 		$o=0;
-		while ($Xgroups_to_print > $o) 
+		while ($Xgroups_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$Xgroups_menu .= "<option ";
@@ -27924,37 +27924,37 @@ if ($ADD==3111)
 			$Cgroups_menu .= "<option ";
 			$Wgroups_menu .= "<option ";
 			$Hgroups_menu .= "<option ";
-			if ($default_xfer_group == "$rowx[0]") 
+			if ($default_xfer_group == "$rowx[0]")
 				{
 				$Xgroups_menu .= "SELECTED ";
 				$Xgroups_selected++;
 				}
-			if ($drop_inbound_group == "$rowx[0]") 
+			if ($drop_inbound_group == "$rowx[0]")
 				{
 				$Dgroups_menu .= "SELECTED ";
 				$Dgroups_selected++;
 				}
-			if ($afterhours_xfer_group == "$rowx[0]") 
+			if ($afterhours_xfer_group == "$rowx[0]")
 				{
 				$Agroups_menu .= "SELECTED ";
 				$Agroups_selected++;
 				}
-			if ($hold_time_option_xfer_group == "$rowx[0]") 
+			if ($hold_time_option_xfer_group == "$rowx[0]")
 				{
 				$Tgroups_menu .= "SELECTED ";
 				$Tgroups_selected++;
 				}
-			if ($closing_time_option_xfer_group == "$rowx[0]") 
+			if ($closing_time_option_xfer_group == "$rowx[0]")
 				{
 				$Cgroups_menu .= "SELECTED ";
 				$Cgroups_selected++;
 				}
-			if ($wait_time_option_xfer_group == "$rowx[0]") 
+			if ($wait_time_option_xfer_group == "$rowx[0]")
 				{
 				$Wgroups_menu .= "SELECTED ";
 				$Wgroups_selected++;
 				}
-			if ($hold_recall_xfer_group == "$rowx[0]") 
+			if ($hold_recall_xfer_group == "$rowx[0]")
 				{
 				$Hgroups_menu .= "SELECTED ";
 				$Hgroups_selected++;
@@ -27971,33 +27971,33 @@ if ($ADD==3111)
 				}
 			$o++;
 			}
-		if ($Xgroups_selected < 1) 
+		if ($Xgroups_selected < 1)
 			{$Xgroups_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		else 
+		else
 			{$Xgroups_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		if ($Dgroups_selected < 1) 
+		if ($Dgroups_selected < 1)
 			{$Dgroups_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		else 
+		else
 			{$Dgroups_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		if ($Agroups_selected < 1) 
+		if ($Agroups_selected < 1)
 			{$Agroups_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		else 
+		else
 			{$Agroups_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		if ($Tgroups_selected < 1) 
+		if ($Tgroups_selected < 1)
 			{$Tgroups_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		else 
+		else
 			{$Tgroups_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		if ($Cgroups_selected < 1) 
+		if ($Cgroups_selected < 1)
 			{$Cgroups_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		else 
+		else
 			{$Cgroups_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		if ($Wgroups_selected < 1) 
+		if ($Wgroups_selected < 1)
 			{$Wgroups_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		else 
+		else
 			{$Wgroups_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		if ($Hgroups_selected < 1) 
+		if ($Hgroups_selected < 1)
 			{$Hgroups_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		else 
+		else
 			{$Hgroups_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
 
 		$allowed_campaigns_count=0;
@@ -28006,7 +28006,7 @@ if ($ADD==3111)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$campin_to_print = mysqli_num_rows($rslt);
 		$vc_allowed_ct=0;
-		if ($campin_to_print > $vc_allowed_ct) 
+		if ($campin_to_print > $vc_allowed_ct)
 			{
 			$rowc=mysqli_fetch_row($rslt);
 			$allowed_campaigns_count = $rowc[0];
@@ -28029,7 +28029,7 @@ if ($ADD==3111)
 		$stmt="SELECT count(*) from vicidial_inbound_callback_queue where group_id='$group_id' and icbq_status='LIVE';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$icbq_to_print = mysqli_num_rows($rslt);
-		if ($icbq_to_print > 0) 
+		if ($icbq_to_print > 0)
 			{
 			$row=mysqli_fetch_row($rslt);
 			if ($row[0] > 0)
@@ -28068,7 +28068,7 @@ if ($ADD==3111)
 			$dtl = _QXZ("Even");
 			if ($n<0) {$dtl = _QXZ("Lower");}
 			if ($n>0) {$dtl = _QXZ("Higher");}
-			if ($n == $queue_priority) 
+			if ($n == $queue_priority)
 				{echo "<option SELECTED value=\"$n\">$n - $dtl</option>\n";}
 			else
 				{echo "<option value=\"$n\">$n - $dtl</option>\n";}
@@ -28081,9 +28081,9 @@ if ($ADD==3111)
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("On-Hook CID").": </td><td align=left><select size=1 name=on_hook_cid><option value='GENERIC' SELECTED>"._QXZ("GENERIC")."</option><option value='INGROUP'>"._QXZ("INGROUP")."</option><option value='CUSTOMER_PHONE'>"._QXZ("CUSTOMER_PHONE")."</option><option value='CUSTOMER_PHONE_RINGAGENT'>"._QXZ("CUSTOMER_PHONE_RINGAGENT")."</option><option value='CUSTOMER_PHONE_INGROUP'>"._QXZ("CUSTOMER_PHONE_INGROUP")."</option><option value='$on_hook_cid' SELECTED>"._QXZ("$on_hook_cid")."</option></select>$NWB#inbound_groups-on_hook_cid$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("On-Hook CID Number").": </td><td align=left><input type=text name=on_hook_cid_number size=12 maxlength=18 value=\"$on_hook_cid_number\">$NWB#inbound_groups-on_hook_cid_number$NWE</td></tr>\n";
-		
+
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Pickup Delay").": </td><td align=left><input type=text name=pickup_delay size=3 maxlength=3 value=\"$pickup_delay\">$NWB#inbound_groups-pickup_delay$NWE</td></tr>\n";
-		
+
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Fronter Display").": </td><td align=left><select size=1 name=fronter_display><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='$fronter_display' SELECTED>"._QXZ("$fronter_display")."</option></select>$NWB#inbound_groups-fronter_display$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right><a href=\"$PHP_SELF?ADD=3111111&script_id=$script_id\">"._QXZ("Script")."</a>: </td><td align=left><select size=1 name=script_id>\n";
@@ -28100,11 +28100,11 @@ if ($ADD==3111)
 		$status_groups_menu='';
 		$status_groups_selected=0;
 		$o=0;
-		while ($status_groups_to_print > $o) 
+		while ($status_groups_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$status_groups_menu .= "<option ";
-			if ($status_group_id == "$rowx[0]") 
+			if ($status_group_id == "$rowx[0]")
 				{
 				$status_groups_menu .= "SELECTED ";
 				$status_groups_selected++;
@@ -28141,7 +28141,7 @@ if ($ADD==3111)
 			{
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Group Handling").": </td><td align=left><select size=1 name=group_handling><option selected value='PHONE'>"._QXZ("PHONE")."</option>";
 			if ($SSallow_emails>0) {echo "<option value='EMAIL'>"._QXZ("EMAIL")."</option>";}
-			if ($SSallow_chats>0) {echo "<option value='CHAT'>"._QXZ("CHAT")."</option>";}			
+			if ($SSallow_chats>0) {echo "<option value='CHAT'>"._QXZ("CHAT")."</option>";}
 			echo "</select>$NWB#inbound_groups-group_handling$NWE</td></tr>\n";
 			}
 		else
@@ -28194,7 +28194,7 @@ if ($ADD==3111)
 		$stmt="SELECT ct_holidays from vicidial_call_times where call_time_id='$call_time_id';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$call_times_to_print = mysqli_num_rows($rslt);
-		if ($call_times_to_print > 0) 
+		if ($call_times_to_print > 0)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$ct_holidays =	$rowx[0];
@@ -28400,7 +28400,7 @@ if ($ADD==3111)
 		$stmt="SELECT audio_length from audio_store_details where audio_filename IN('$onhold_prompt_filename$wav','$onhold_prompt_filename$gsm') order by audio_length desc limit 1;";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$audio_to_print = mysqli_num_rows($rslt);
-		if ($audio_to_print > 0) 
+		if ($audio_to_print > 0)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$audio_length =	$rowx[0];
@@ -28506,7 +28506,7 @@ if ($ADD==3111)
 		$stmt="SELECT ct_holidays from vicidial_call_times where call_time_id='$icbq_call_time_id';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$call_times_to_print = mysqli_num_rows($rslt);
-		if ($call_times_to_print > 0) 
+		if ($call_times_to_print > 0)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$ct_holidays =	$rowx[0];
@@ -28560,11 +28560,11 @@ if ($ADD==3111)
 		$group_alias_menu='';
 		$group_alias_selected=0;
 		$o=0;
-		while ($group_alias_to_print > $o) 
+		while ($group_alias_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$group_alias_menu .= "<option ";
-			if ($default_group_alias == "$rowx[0]") 
+			if ($default_group_alias == "$rowx[0]")
 				{
 				$group_alias_menu .= "SELECTED ";
 				$group_alias_selected++;
@@ -28585,7 +28585,7 @@ if ($ADD==3111)
 			$stmt="SELECT did_id from vicidial_inbound_dids where did_pattern='$dial_ingroup_cid' $LOGadmin_viewable_groupsSQL limit 1;";
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$dids_to_print = mysqli_num_rows($rslt);
-			if ($dids_to_print > 0) 
+			if ($dids_to_print > 0)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$DID_edit_link_BEGIN = "<a href=\"$PHP_SELF?ADD=3311&did_id=$rowx[0]\">";
@@ -28617,10 +28617,10 @@ if ($ADD==3111)
 			$stmt="SELECT count(*) from vicidial_url_multi where campaign_id='$group_id' and entry_type='ingroup' and url_type='dispo';";
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$vum_to_print = mysqli_num_rows($rslt);
-			if ($vum_to_print > 0) 
+			if ($vum_to_print > 0)
 				{
 				$rowx=mysqli_fetch_row($rslt);
-				$vum_count = $rowx[0]; 
+				$vum_count = $rowx[0];
 				}
 
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=right><a href=\"admin_url_multi.php?DB=$DB&campaign_id=$group_id&entry_type=ingroup&url_type=dispo\">"._QXZ("Dispo Call URL")."</a>: </td><td align=left><input type=text name=dispo_call_url size=10 maxlength=2000 value=\"$dispo_call_url\">$NWB#inbound_groups-dispo_call_url$NWE <a href=\"admin_url_multi.php?DB=$DB&campaign_id=$group_id&entry_type=ingroup&url_type=dispo\"> "._QXZ("Alternate Dispo URLs Defined").": $vum_count</a></td></tr>\n";
@@ -28648,13 +28648,13 @@ if ($ADD==3111)
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Populate Lead State Areacode").": </td><td align=left><select size=1 name=populate_state_areacode><option value='DISABLED'>"._QXZ("DISABLED")."</option><option value='NEW_LEAD_ONLY'>"._QXZ("NEW_LEAD_ONLY")."</option><option value='OVERWRITE_ALWAYS'>"._QXZ("OVERWRITE_ALWAYS")."</option><option value='$populate_state_areacode' SELECTED>"._QXZ("$populate_state_areacode")."</option></select>$NWB#inbound_groups-populate_state_areacode$NWE</td></tr>\n";
 
-		
+
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Custom")." 1: </td><td align=left><input type=text name=ibg_custom_one size=50 maxlength=100 value=\"$ibg_custom_one\">$NWB#inbound_dids-custom_one$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Custom")." 2: </td><td align=left><input type=text name=ibg_custom_two size=50 maxlength=100 value=\"$ibg_custom_two\">$NWB#inbound_dids-custom_one$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Custom")." 3: </td><td align=left><input type=text name=ibg_custom_three size=50 maxlength=100 value=\"$ibg_custom_three\">$NWB#inbound_dids-custom_one$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Custom")." 4: </td><td align=left><input type=text name=ibg_custom_four size=50 maxlength=100 value=\"$ibg_custom_four\">$NWB#inbound_dids-custom_one$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Custom")." 5: </td><td align=left><input type=text name=ibg_custom_five size=50 maxlength=100 value=\"$ibg_custom_five\">$NWB#inbound_dids-custom_one$NWE</td></tr>\n";
-		
+
 		echo "<input type=hidden name=form_end value=\"END\">\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=center colspan=2><input type=submit name=SUBMIT value='"._QXZ("SUBMIT")."'></td></tr>\n";
 
@@ -28673,14 +28673,14 @@ if ($ADD==3111)
 			$qc_statuses_list='';
 
 			$o=0;
-			while ($statuses_to_print > $o) 
+			while ($statuses_to_print > $o)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$qc_statuses_list .= "<input type=\"checkbox\" name=\"qc_statuses[]\" value=\"$rowx[0]\"";
 				$p=0;
 				while ($p < $QCs_to_print)
 					{
-					if ($rowx[0] == $QCstatuses[$p]) 
+					if ($rowx[0] == $QCstatuses[$p])
 						{
 						$qc_statuses_list .= " CHECKED";
 						}
@@ -28696,7 +28696,7 @@ if ($ADD==3111)
 			$Cstatuses_to_print = mysqli_num_rows($rslt);
 
 			$o=0;
-			while ($Cstatuses_to_print > $o) 
+			while ($Cstatuses_to_print > $o)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				if (!preg_match("/\"$rowx[0]\"/",$qc_statuses_list))
@@ -28705,7 +28705,7 @@ if ($ADD==3111)
 					$p=0;
 					while ($p < $QCs_to_print)
 						{
-						if ($rowx[0] == $QCstatuses[$p]) 
+						if ($rowx[0] == $QCstatuses[$p])
 							{
 							$qc_statuses_list .= " CHECKED";
 							}
@@ -28777,7 +28777,7 @@ if ($ADD==3111)
 		$users_to_print = mysqli_num_rows($rsltx);
 
 		$o=0;
-		while ($users_to_print > $o) 
+		while ($users_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rsltx);
 			$o++;
@@ -28794,13 +28794,13 @@ if ($ADD==3111)
 		$o=0;
 		$ARIG_changenotes='';
 		$stmtDlog='';
-		while ($users_to_print > $o) 
+		while ($users_to_print > $o)
 			{
 			$o++;
 			$stmt="SELECT group_rank,calls_today,group_grade from vicidial_inbound_group_agents where group_id='$group_id' and user='$ARIG_user[$o]';";
 			$rsltx=mysql_to_mysqli($stmt, $link);
 			$viga_to_print = mysqli_num_rows($rsltx);
-			if ($viga_to_print > 0) 
+			if ($viga_to_print > 0)
 				{
 				$rowx=mysqli_fetch_row($rsltx);
 				$ARIG_rank[$o] =	$rowx[0];
@@ -28834,7 +28834,7 @@ if ($ADD==3111)
 		if ( ($stage=='SUBMIT') or ($stage==_QXZ("SUBMIT")) )
 			{
 			$o=0;
-			while ($users_to_print > $o) 
+			while ($users_to_print > $o)
 				{
 				$o++;
 
@@ -28912,7 +28912,7 @@ if ($ADD==3111)
 			$users_to_print = mysqli_num_rows($rsltx);
 
 			$o=0;
-			while ($users_to_print > $o) 
+			while ($users_to_print > $o)
 				{
 				$rowx=mysqli_fetch_row($rsltx);
 				$o++;
@@ -28931,12 +28931,12 @@ if ($ADD==3111)
 
 		$checkbox_count=0;
 		$o=0;
-		while ($users_to_print > $o) 
+		while ($users_to_print > $o)
 			{
 			$o++;
 
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -28994,7 +28994,7 @@ if ($ADD==3111)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$dids_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($dids_to_print > $o) 
+		while ($dids_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=3311&did_id=$row[0]\">$row[1] </a></TD><TD> $row[2]<BR></TD></TR>\n";
@@ -29009,7 +29009,7 @@ if ($ADD==3111)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$cms_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($cms_to_print > $o) 
+		while ($cms_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=3511&menu_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -29024,7 +29024,7 @@ if ($ADD==3111)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$campin_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($campin_to_print > $o) 
+		while ($campin_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -29192,17 +29192,17 @@ if ($ADD==3811)
 		$o=0;
 		$Xmenuslist='';
 		$Wmenuslist='';
-		while ($Xmenus_to_print > $o) 
+		while ($Xmenus_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$Xmenuslist .= "<option ";
 			$Wmenuslist .= "<option ";
-			if ($hold_time_option_callmenu == "$rowx[0]") 
+			if ($hold_time_option_callmenu == "$rowx[0]")
 				{
 				$Xmenuslist .= "SELECTED ";
 				$Xmenus_selected++;
 				}
-			if ($wait_time_option_callmenu == "$rowx[0]") 
+			if ($wait_time_option_callmenu == "$rowx[0]")
 				{
 				$Wmenuslist .= "SELECTED ";
 				$Wmenus_selected++;
@@ -29211,9 +29211,9 @@ if ($ADD==3811)
 			$Wmenuslist .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 			$o++;
 			}
-		if ($Xmenus_selected < 1) 
+		if ($Xmenus_selected < 1)
 			{$Xmenuslist .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		if ($Wmenus_selected < 1) 
+		if ($Wmenus_selected < 1)
 			{$Wmenuslist .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
 
 
@@ -29234,7 +29234,7 @@ if ($ADD==3811)
 		$Tgroups_menu='';
 		$Tgroups_selected=0;
 		$o=0;
-		while ($Xgroups_to_print > $o) 
+		while ($Xgroups_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$Xgroups_menu .= "<option ";
@@ -29243,32 +29243,32 @@ if ($ADD==3811)
 			$Tgroups_menu .= "<option ";
 			$Wgroups_menu .= "<option ";
 			$Hgroups_menu .= "<option ";
-			if ($default_xfer_group == "$rowx[0]") 
+			if ($default_xfer_group == "$rowx[0]")
 				{
 				$Xgroups_menu .= "SELECTED ";
 				$Xgroups_selected++;
 				}
-			if ($drop_inbound_group == "$rowx[0]") 
+			if ($drop_inbound_group == "$rowx[0]")
 				{
 				$Dgroups_menu .= "SELECTED ";
 				$Dgroups_selected++;
 				}
-			if ($afterhours_xfer_group == "$rowx[0]") 
+			if ($afterhours_xfer_group == "$rowx[0]")
 				{
 				$Agroups_menu .= "SELECTED ";
 				$Agroups_selected++;
 				}
-			if ($hold_time_option_xfer_group == "$rowx[0]") 
+			if ($hold_time_option_xfer_group == "$rowx[0]")
 				{
 				$Tgroups_menu .= "SELECTED ";
 				$Tgroups_selected++;
 				}
-			if ($wait_time_option_xfer_group == "$rowx[0]") 
+			if ($wait_time_option_xfer_group == "$rowx[0]")
 				{
 				$Wgroups_menu .= "SELECTED ";
 				$Wgroups_selected++;
 				}
-			if ($hold_recall_xfer_group == "$rowx[0]") 
+			if ($hold_recall_xfer_group == "$rowx[0]")
 				{
 				$Hgroups_menu .= "SELECTED ";
 				$Hgroups_selected++;
@@ -29284,29 +29284,29 @@ if ($ADD==3811)
 				}
 			$o++;
 			}
-		if ($Xgroups_selected < 1) 
+		if ($Xgroups_selected < 1)
 			{$Xgroups_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		else 
+		else
 			{$Xgroups_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		if ($Dgroups_selected < 1) 
+		if ($Dgroups_selected < 1)
 			{$Dgroups_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		else 
+		else
 			{$Dgroups_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		if ($Agroups_selected < 1) 
+		if ($Agroups_selected < 1)
 			{$Agroups_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		else 
+		else
 			{$Agroups_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		if ($Tgroups_selected < 1) 
+		if ($Tgroups_selected < 1)
 			{$Tgroups_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		else 
+		else
 			{$Tgroups_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		if ($Wgroups_selected < 1) 
+		if ($Wgroups_selected < 1)
 			{$Wgroups_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		else 
+		else
 			{$Wgroups_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		if ($Hgroups_selected < 1) 
+		if ($Hgroups_selected < 1)
 			{$Hgroups_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		else 
+		else
 			{$Hgroups_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
 
 		$allowed_campaigns_count=0;
@@ -29315,7 +29315,7 @@ if ($ADD==3811)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$campin_to_print = mysqli_num_rows($rslt);
 		$vc_allowed_ct=0;
-		if ($campin_to_print > $vc_allowed_ct) 
+		if ($campin_to_print > $vc_allowed_ct)
 			{
 			$rowc=mysqli_fetch_row($rslt);
 			$allowed_campaigns_count = $rowc[0];
@@ -29363,7 +29363,7 @@ if ($ADD==3811)
 			$dtl = _QXZ("Even");
 			if ($n<0) {$dtl = _QXZ("Lower");}
 			if ($n>0) {$dtl = _QXZ("Higher");}
-			if ($n == $queue_priority) 
+			if ($n == $queue_priority)
 				{echo "<option SELECTED value=\"$n\">$n - $dtl</option>\n";}
 			else
 				{echo "<option value=\"$n\">$n - $dtl</option>\n";}
@@ -29387,7 +29387,7 @@ if ($ADD==3811)
 
 		if ($SSallow_chats > 0)
 			{
-			if ($SSallow_chats>0) {echo "<option value='CHAT'>"._QXZ("CHAT")."</option>";}			
+			if ($SSallow_chats>0) {echo "<option value='CHAT'>"._QXZ("CHAT")."</option>";}
 			}
 
 		echo "</select>$NWB#inbound_groups-group_handling$NWE</td></tr>\n";
@@ -29406,11 +29406,11 @@ if ($ADD==3811)
 		$status_groups_menu='';
 		$status_groups_selected=0;
 		$o=0;
-		while ($status_groups_to_print > $o) 
+		while ($status_groups_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$status_groups_menu .= "<option ";
-			if ($status_group_id == "$rowx[0]") 
+			if ($status_group_id == "$rowx[0]")
 				{
 				$status_groups_menu .= "SELECTED ";
 				$status_groups_selected++;
@@ -29452,10 +29452,10 @@ if ($ADD==3811)
 			$stmt="SELECT count(*) from vicidial_url_multi where campaign_id='$group_id' and entry_type='ingroup' and url_type='dispo';";
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$vum_to_print = mysqli_num_rows($rslt);
-			if ($vum_to_print > 0) 
+			if ($vum_to_print > 0)
 				{
 				$rowx=mysqli_fetch_row($rslt);
-				$vum_count = $rowx[0]; 
+				$vum_count = $rowx[0];
 				}
 
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=right><a href=\"admin_url_multi.php?DB=$DB&campaign_id=$group_id&entry_type=ingroup&url_type=dispo\">"._QXZ("Dispo Email URL")."</a>: </td><td align=left><input type=text name=dispo_call_url size=10 maxlength=2000 value=\"$dispo_call_url\">$NWB#inbound_groups-dispo_call_url$NWE <a href=\"admin_url_multi.php?DB=$DB&campaign_id=$group_id&entry_type=ingroup&url_type=dispo\"> "._QXZ("Alternate Dispo URLs Defined").": $vum_count</a></td></tr>\n";
@@ -29506,14 +29506,14 @@ if ($ADD==3811)
 			$qc_statuses_list='';
 
 			$o=0;
-			while ($statuses_to_print > $o) 
+			while ($statuses_to_print > $o)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$qc_statuses_list .= "<input type=\"checkbox\" name=\"qc_statuses[]\" value=\"$rowx[0]\"";
 				$p=0;
 				while ($p < $QCs_to_print)
 					{
-					if ($rowx[0] == $QCstatuses[$p]) 
+					if ($rowx[0] == $QCstatuses[$p])
 						{
 						$qc_statuses_list .= " CHECKED";
 						}
@@ -29529,7 +29529,7 @@ if ($ADD==3811)
 			$Cstatuses_to_print = mysqli_num_rows($rslt);
 
 			$o=0;
-			while ($Cstatuses_to_print > $o) 
+			while ($Cstatuses_to_print > $o)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				if (!preg_match("/\"$rowx[0]\"/",$qc_statuses_list))
@@ -29538,7 +29538,7 @@ if ($ADD==3811)
 					$p=0;
 					while ($p < $QCs_to_print)
 						{
-						if ($rowx[0] == $QCstatuses[$p]) 
+						if ($rowx[0] == $QCstatuses[$p])
 							{
 							$qc_statuses_list .= " CHECKED";
 							}
@@ -29610,7 +29610,7 @@ if ($ADD==3811)
 		$users_to_print = mysqli_num_rows($rsltx);
 
 		$o=0;
-		while ($users_to_print > $o) 
+		while ($users_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rsltx);
 			$o++;
@@ -29627,13 +29627,13 @@ if ($ADD==3811)
 		$o=0;
 		$ARIG_changenotes='';
 		$stmtDlog='';
-		while ($users_to_print > $o) 
+		while ($users_to_print > $o)
 			{
 			$o++;
 			$stmt="SELECT group_rank,calls_today,group_grade from vicidial_inbound_group_agents where group_id='$group_id' and user='$ARIG_user[$o]';";
 			$rsltx=mysql_to_mysqli($stmt, $link);
 			$viga_to_print = mysqli_num_rows($rsltx);
-			if ($viga_to_print > 0) 
+			if ($viga_to_print > 0)
 				{
 				$rowx=mysqli_fetch_row($rsltx);
 				$ARIG_rank[$o] =	$rowx[0];
@@ -29667,7 +29667,7 @@ if ($ADD==3811)
 		if ( ($stage=='SUBMIT') or ($stage==_QXZ("SUBMIT")) )
 			{
 			$o=0;
-			while ($users_to_print > $o) 
+			while ($users_to_print > $o)
 				{
 				$o++;
 
@@ -29745,7 +29745,7 @@ if ($ADD==3811)
 			$users_to_print = mysqli_num_rows($rsltx);
 
 			$o=0;
-			while ($users_to_print > $o) 
+			while ($users_to_print > $o)
 				{
 				$rowx=mysqli_fetch_row($rsltx);
 				$o++;
@@ -29764,12 +29764,12 @@ if ($ADD==3811)
 
 		$checkbox_count=0;
 		$o=0;
-		while ($users_to_print > $o) 
+		while ($users_to_print > $o)
 			{
 			$o++;
 
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -29827,7 +29827,7 @@ if ($ADD==3811)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$emails_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($emails_to_print > $o) 
+		while ($emails_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"admin_email_accounts.php?eact=UPDATE&email_account_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -29842,7 +29842,7 @@ if ($ADD==3811)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$campin_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($campin_to_print > $o) 
+		while ($campin_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -30013,17 +30013,17 @@ if ($ADD==3911)
 		$o=0;
 		$Xmenuslist='';
 		$Wmenuslist='';
-		while ($Xmenus_to_print > $o) 
+		while ($Xmenus_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$Xmenuslist .= "<option ";
 			$Wmenuslist .= "<option ";
-			if ($hold_time_option_callmenu == "$rowx[0]") 
+			if ($hold_time_option_callmenu == "$rowx[0]")
 				{
 				$Xmenuslist .= "SELECTED ";
 				$Xmenus_selected++;
 				}
-			if ($wait_time_option_callmenu == "$rowx[0]") 
+			if ($wait_time_option_callmenu == "$rowx[0]")
 				{
 				$Wmenuslist .= "SELECTED ";
 				$Wmenus_selected++;
@@ -30032,9 +30032,9 @@ if ($ADD==3911)
 			$Wmenuslist .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 			$o++;
 			}
-		if ($Xmenus_selected < 1) 
+		if ($Xmenus_selected < 1)
 			{$Xmenuslist .= "<option SELECTED value=\"---NONE---\">---NONE---</option>\n";}
-		if ($Wmenus_selected < 1) 
+		if ($Wmenus_selected < 1)
 			{$Wmenuslist .= "<option SELECTED value=\"---NONE---\">---NONE---</option>\n";}
 */
 
@@ -30056,7 +30056,7 @@ if ($ADD==3911)
 		$Tgroups_menu='';
 		$Tgroups_selected=0;
 		$o=0;
-		while ($Xgroups_to_print > $o) 
+		while ($Xgroups_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$Xgroups_menu .= "<option ";
@@ -30065,32 +30065,32 @@ if ($ADD==3911)
 			$Tgroups_menu .= "<option ";
 			$Wgroups_menu .= "<option ";
 			$Hgroups_menu .= "<option ";
-			if ($default_xfer_group == "$rowx[0]") 
+			if ($default_xfer_group == "$rowx[0]")
 				{
 				$Xgroups_menu .= "SELECTED ";
 				$Xgroups_selected++;
 				}
-			if ($drop_inbound_group == "$rowx[0]") 
+			if ($drop_inbound_group == "$rowx[0]")
 				{
 				$Dgroups_menu .= "SELECTED ";
 				$Dgroups_selected++;
 				}
-			if ($afterhours_xfer_group == "$rowx[0]") 
+			if ($afterhours_xfer_group == "$rowx[0]")
 				{
 				$Agroups_menu .= "SELECTED ";
 				$Agroups_selected++;
 				}
-			if ($hold_time_option_xfer_group == "$rowx[0]") 
+			if ($hold_time_option_xfer_group == "$rowx[0]")
 				{
 				$Tgroups_menu .= "SELECTED ";
 				$Tgroups_selected++;
 				}
-			if ($wait_time_option_xfer_group == "$rowx[0]") 
+			if ($wait_time_option_xfer_group == "$rowx[0]")
 				{
 				$Wgroups_menu .= "SELECTED ";
 				$Wgroups_selected++;
 				}
-			if ($hold_recall_xfer_group == "$rowx[0]") 
+			if ($hold_recall_xfer_group == "$rowx[0]")
 				{
 				$Hgroups_menu .= "SELECTED ";
 				$Hgroups_selected++;
@@ -30106,29 +30106,29 @@ if ($ADD==3911)
 				}
 			$o++;
 			}
-		if ($Xgroups_selected < 1) 
+		if ($Xgroups_selected < 1)
 			{$Xgroups_menu .= "<option SELECTED value=\"---NONE---\">---NONE---</option>\n";}
-		else 
+		else
 			{$Xgroups_menu .= "<option value=\"---NONE---\">---NONE---</option>\n";}
-		if ($Dgroups_selected < 1) 
+		if ($Dgroups_selected < 1)
 			{$Dgroups_menu .= "<option SELECTED value=\"---NONE---\">---NONE---</option>\n";}
-		else 
+		else
 			{$Dgroups_menu .= "<option value=\"---NONE---\">---NONE---</option>\n";}
-		if ($Agroups_selected < 1) 
+		if ($Agroups_selected < 1)
 			{$Agroups_menu .= "<option SELECTED value=\"---NONE---\">---NONE---</option>\n";}
-		else 
+		else
 			{$Agroups_menu .= "<option value=\"---NONE---\">---NONE---</option>\n";}
-		if ($Tgroups_selected < 1) 
+		if ($Tgroups_selected < 1)
 			{$Tgroups_menu .= "<option SELECTED value=\"---NONE---\">---NONE---</option>\n";}
-		else 
+		else
 			{$Tgroups_menu .= "<option value=\"---NONE---\">---NONE---</option>\n";}
-		if ($Wgroups_selected < 1) 
+		if ($Wgroups_selected < 1)
 			{$Wgroups_menu .= "<option SELECTED value=\"---NONE---\">---NONE---</option>\n";}
-		else 
+		else
 			{$Wgroups_menu .= "<option value=\"---NONE---\">---NONE---</option>\n";}
-		if ($Hgroups_selected < 1) 
+		if ($Hgroups_selected < 1)
 			{$Hgroups_menu .= "<option SELECTED value=\"---NONE---\">---NONE---</option>\n";}
-		else 
+		else
 			{$Hgroups_menu .= "<option value=\"---NONE---\">---NONE---</option>\n";}
 */
 
@@ -30138,7 +30138,7 @@ if ($ADD==3911)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$campin_to_print = mysqli_num_rows($rslt);
 		$vc_allowed_ct=0;
-		if ($campin_to_print > $vc_allowed_ct) 
+		if ($campin_to_print > $vc_allowed_ct)
 			{
 			$rowc=mysqli_fetch_row($rslt);
 			$allowed_campaigns_count = $rowc[0];
@@ -30189,7 +30189,7 @@ if ($ADD==3911)
 			$dtl = 'Even';
 			if ($n<0) {$dtl = 'Lower';}
 			if ($n>0) {$dtl = 'Higher';}
-			if ($n == $queue_priority) 
+			if ($n == $queue_priority)
 				{echo "<option SELECTED value=\"$n\">$n - $dtl</option>\n";}
 			else
 				{echo "<option value=\"$n\">$n - $dtl</option>\n";}
@@ -30203,7 +30203,7 @@ if ($ADD==3911)
 		echo "<option selected value='CHAT'>"._QXZ("CHAT")."</option>";
 		if ($SSallow_emails > 0)
 			{
-			if ($SSallow_emails>0) {echo "<option value='EMAIL'>"._QXZ("EMAIL")."</option>";}			
+			if ($SSallow_emails>0) {echo "<option value='EMAIL'>"._QXZ("EMAIL")."</option>";}
 			}
 		echo "</select>$NWB#inbound_groups-group_handling$NWE</td></tr>\n";
 
@@ -30214,11 +30214,11 @@ if ($ADD==3911)
 		$status_groups_menu='';
 		$status_groups_selected=0;
 		$o=0;
-		while ($status_groups_to_print > $o) 
+		while ($status_groups_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$status_groups_menu .= "<option ";
-			if ($status_group_id == "$rowx[0]") 
+			if ($status_group_id == "$rowx[0]")
 				{
 				$status_groups_menu .= "SELECTED ";
 				$status_groups_selected++;
@@ -30260,10 +30260,10 @@ if ($ADD==3911)
 			$stmt="SELECT count(*) from vicidial_url_multi where campaign_id='$group_id' and entry_type='ingroup' and url_type='dispo';";
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$vum_to_print = mysqli_num_rows($rslt);
-			if ($vum_to_print > 0) 
+			if ($vum_to_print > 0)
 				{
 				$rowx=mysqli_fetch_row($rslt);
-				$vum_count = $rowx[0]; 
+				$vum_count = $rowx[0];
 				}
 
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=right><a href=\"admin_url_multi.php?DB=$DB&campaign_id=$group_id&entry_type=ingroup&url_type=dispo\">"._QXZ("Dispo Chat URL")."</a>: </td><td align=left><input type=text name=dispo_call_url size=10 maxlength=2000 value=\"$dispo_call_url\">$NWB#inbound_groups-dispo_call_url$NWE <a href=\"admin_url_multi.php?DB=$DB&campaign_id=$group_id&entry_type=ingroup&url_type=dispo\"> "._QXZ("Alternate Dispo URLs Defined").": $vum_count</a></td></tr>\n";
@@ -30287,7 +30287,7 @@ if ($ADD==3911)
 		$colors_to_print = mysqli_num_rows($rslt);
 		$colors_list='';
 		$o=0;
-		while ($colors_to_print > $o) 
+		while ($colors_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$colors_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -30334,14 +30334,14 @@ if ($ADD==3911)
 			$qc_statuses_list='';
 
 			$o=0;
-			while ($statuses_to_print > $o) 
+			while ($statuses_to_print > $o)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$qc_statuses_list .= "<input type=\"checkbox\" name=\"qc_statuses[]\" value=\"$rowx[0]\"";
 				$p=0;
 				while ($p < $QCs_to_print)
 					{
-					if ($rowx[0] == $QCstatuses[$p]) 
+					if ($rowx[0] == $QCstatuses[$p])
 						{
 						$qc_statuses_list .= " CHECKED";
 						}
@@ -30357,7 +30357,7 @@ if ($ADD==3911)
 			$Cstatuses_to_print = mysqli_num_rows($rslt);
 
 			$o=0;
-			while ($Cstatuses_to_print > $o) 
+			while ($Cstatuses_to_print > $o)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				if (!preg_match("/\"$rowx[0]\"/",$qc_statuses_list))
@@ -30366,7 +30366,7 @@ if ($ADD==3911)
 					$p=0;
 					while ($p < $QCs_to_print)
 						{
-						if ($rowx[0] == $QCstatuses[$p]) 
+						if ($rowx[0] == $QCstatuses[$p])
 							{
 							$qc_statuses_list .= " CHECKED";
 							}
@@ -30438,7 +30438,7 @@ if ($ADD==3911)
 		$users_to_print = mysqli_num_rows($rsltx);
 
 		$o=0;
-		while ($users_to_print > $o) 
+		while ($users_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rsltx);
 			$o++;
@@ -30455,13 +30455,13 @@ if ($ADD==3911)
 		$o=0;
 		$ARIG_changenotes='';
 		$stmtDlog='';
-		while ($users_to_print > $o) 
+		while ($users_to_print > $o)
 			{
 			$o++;
 			$stmt="SELECT group_rank,calls_today,group_grade from vicidial_inbound_group_agents where group_id='$group_id' and user='$ARIG_user[$o]';";
 			$rsltx=mysql_to_mysqli($stmt, $link);
 			$viga_to_print = mysqli_num_rows($rsltx);
-			if ($viga_to_print > 0) 
+			if ($viga_to_print > 0)
 				{
 				$rowx=mysqli_fetch_row($rsltx);
 				$ARIG_rank[$o] =	$rowx[0];
@@ -30495,7 +30495,7 @@ if ($ADD==3911)
 		if ( ($stage=='SUBMIT') or ($stage==_QXZ("SUBMIT")) )
 			{
 			$o=0;
-			while ($users_to_print > $o) 
+			while ($users_to_print > $o)
 				{
 				$o++;
 
@@ -30573,7 +30573,7 @@ if ($ADD==3911)
 			$users_to_print = mysqli_num_rows($rsltx);
 
 			$o=0;
-			while ($users_to_print > $o) 
+			while ($users_to_print > $o)
 				{
 				$rowx=mysqli_fetch_row($rsltx);
 				$o++;
@@ -30592,12 +30592,12 @@ if ($ADD==3911)
 
 		$checkbox_count=0;
 		$o=0;
-		while ($users_to_print > $o) 
+		while ($users_to_print > $o)
 			{
 			$o++;
 
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -30655,7 +30655,7 @@ if ($ADD==3911)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$campin_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($campin_to_print > $o) 
+		while ($campin_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -30795,7 +30795,7 @@ if ($ADD==3311)
 		$campaigns_to_print = mysqli_num_rows($rslt);
 		$campaigns_list='';
 		$o=0;
-		while ($campaigns_to_print > $o) 
+		while ($campaigns_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$campaigns_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -30811,17 +30811,17 @@ if ($ADD==3311)
 		$FXgroups_menu='';
 		$FXgroups_selected=0;
 		$o=0;
-		while ($Xgroups_to_print > $o) 
+		while ($Xgroups_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$Xgroups_menu .= "<option ";
 			$FXgroups_menu .= "<option ";
-			if ($user_route_settings_ingroup == "$rowx[0]") 
+			if ($user_route_settings_ingroup == "$rowx[0]")
 				{
 				$Xgroups_menu .= "SELECTED ";
 				$Xgroups_selected++;
 				}
-			if ($filter_user_route_settings_ingroup == "$rowx[0]") 
+			if ($filter_user_route_settings_ingroup == "$rowx[0]")
 				{
 				$FXgroups_menu .= "SELECTED ";
 				$FXgroups_selected++;
@@ -30830,13 +30830,13 @@ if ($ADD==3311)
 			$FXgroups_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 			$o++;
 			}
-		if ($Xgroups_selected < 1) 
+		if ($Xgroups_selected < 1)
 			{$Xgroups_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		else 
+		else
 			{$Xgroups_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		if ($FXgroups_selected < 1) 
+		if ($FXgroups_selected < 1)
 			{$FXgroups_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		else 
+		else
 			{$FXgroups_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
 
 
@@ -30853,29 +30853,29 @@ if ($ADD==3311)
 		$MQIgroups_menu='';
 		$MQIgroups_selected=0;
 		$o=0;
-		while ($Dgroups_to_print > $o) 
+		while ($Dgroups_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$Dgroups_menu .= "<option ";
 			$FDgroups_menu .= "<option ";
 			$PFDgroups_menu .= "<option ";
 			$MQIgroups_menu .= "<option ";
-			if ($group_id == "$rowx[0]") 
+			if ($group_id == "$rowx[0]")
 				{
 				$Dgroups_menu .= "SELECTED ";
 				$Dgroups_selected++;
 				}
-			if ($filter_group_id == "$rowx[0]") 
+			if ($filter_group_id == "$rowx[0]")
 				{
 				$FDgroups_menu .= "SELECTED ";
 				$FDgroups_selected++;
 				}
-			if ($no_agent_ingroup_id == "$rowx[0]") 
+			if ($no_agent_ingroup_id == "$rowx[0]")
 				{
 				$PFDgroups_menu .= "SELECTED ";
 				$PFDgroups_selected++;
 				}
-			if ($max_queue_ingroup_id == "$rowx[0]") 
+			if ($max_queue_ingroup_id == "$rowx[0]")
 				{
 				$MQIgroups_menu .= "SELECTED ";
 				$MQIgroups_selected++;
@@ -30886,21 +30886,21 @@ if ($ADD==3311)
 			$MQIgroups_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 			$o++;
 			}
-		if ($Dgroups_selected < 1) 
+		if ($Dgroups_selected < 1)
 			{$Dgroups_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		else 
+		else
 			{$Dgroups_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		if ($FDgroups_selected < 1) 
+		if ($FDgroups_selected < 1)
 			{$FDgroups_menu .= "<option SELECTED value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		else 
+		else
 			{$FDgroups_menu .= "<option value=\"---NONE---\">---"._QXZ("NONE")."---</option>\n";}
-		if ($PFDgroups_selected < 1) 
+		if ($PFDgroups_selected < 1)
 			{$PFDgroups_menu .= "<option SELECTED value=\"\">---NONE---</option>\n";}
-		else 
+		else
 			{$PFDgroups_menu .= "<option value=\"\">---"._QXZ("NONE")."---</option>\n";}
-		if ($MQIgroups_selected < 1) 
+		if ($MQIgroups_selected < 1)
 			{$MQIgroups_menu .= "<option SELECTED value=\"\">---"._QXZ("NONE")."---</option>\n";}
-		else 
+		else
 			{$MQIgroups_menu .= "<option value=\"\">---"._QXZ("NONE")."---</option>\n";}
 
 		$stmt="SELECT filter_phone_group_id,filter_phone_group_name from vicidial_filter_phone_groups $whereLOGadmin_viewable_groupsSQL order by filter_phone_group_id;";
@@ -31107,7 +31107,7 @@ if ($ADD==3311)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$cms_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($cms_to_print > $o) 
+		while ($cms_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=3511&menu_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -31123,7 +31123,7 @@ if ($ADD==3311)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$camps_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($camps_to_print > $o) 
+		while ($camps_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -31139,7 +31139,7 @@ if ($ADD==3311)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$campacs_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($campacs_to_print > $o) 
+		while ($campacs_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=31&SUB=202&campaign_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -31155,7 +31155,7 @@ if ($ADD==3311)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$cidgps_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($cidgps_to_print > $o) 
+		while ($cidgps_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=396111111111&cid_group_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -31171,7 +31171,7 @@ if ($ADD==3311)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$ingrps_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($ingrps_to_print > $o) 
+		while ($ingrps_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=3111&group_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -31187,7 +31187,7 @@ if ($ADD==3311)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$lists_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($lists_to_print > $o) 
+		while ($lists_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -31245,7 +31245,7 @@ if ($ADD==1320)
 	$dids_to_print = mysqli_num_rows($rslt);
 
 	$o=0;
-	while ($dids_to_print > $o) 
+	while ($dids_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		$dids_id_list[$o] =			$row[0];
@@ -31256,10 +31256,10 @@ if ($ADD==1320)
 
 	$o=0;
 	$k=0;
-	while ($dids_to_print > $o) 
+	while ($dids_to_print > $o)
 		{
 		if (preg_match('/1$|3$|5$|7$|9$/i', $k))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=3321&did_id=$dids_id_list[$o]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=3321&did_id=$dids_id_list[$o]\"><font size=1 color=black>$did_pattern_list[$o]</a></td>";
@@ -31370,7 +31370,7 @@ if ($ADD==3321)
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$raextens_to_print = mysqli_num_rows($rslt);
 			$o=0;
-			while ($raextens_to_print > $o) 
+			while ($raextens_to_print > $o)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$Xuser_start[$o] =			$rowx[0];
@@ -31382,7 +31382,7 @@ if ($ADD==3321)
 				}
 
 			$o=0;
-			while ($raextens_to_print > $o) 
+			while ($raextens_to_print > $o)
 				{
 				$Factive_value='';
 				$Fdescription_value='';
@@ -31442,7 +31442,7 @@ if ($ADD==3321)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$raextens_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($raextens_to_print > $o) 
+		while ($raextens_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$Xuser_start[$o] =			$rowx[0];
@@ -31454,20 +31454,20 @@ if ($ADD==3321)
 			}
 
 		$o=0;
-		while ($raextens_to_print > $o) 
+		while ($raextens_to_print > $o)
 			{
 			$ct = ($o + 1);
 			if ($ct == '1')
 				{
 				$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';
 				$bgac = $Xuser_start[$o];
-				} 
+				}
 			else
 				{
 				if ($Xuser_start[$o] != $bgac)
 					{
 					if (preg_match("/1$|3$|5$|7$|9$/i", $bgct))
-						{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';} 
+						{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 					else
 						{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 					$bgct++;
@@ -31591,7 +31591,7 @@ if ($ADD==3511)
 		$stmt="SELECT ct_holidays from vicidial_call_times where call_time_id='$call_time_id';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$call_times_to_print = mysqli_num_rows($rslt);
-		if ($call_times_to_print > 0) 
+		if ($call_times_to_print > 0)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$ct_holidays =	$rowx[0];
@@ -31700,13 +31700,13 @@ if ($ADD==3511)
 			$dtmf_list .= "</select>";
 
 			if (preg_match("/1$|3$|5$|7$|9$/i", $j))
-				{$bgcolor='bgcolor="#CCFFFF"';} 
+				{$bgcolor='bgcolor="#CCFFFF"';}
 			else
 				{$bgcolor='bgcolor="#99FFCC"';}
 
-			echo "<tr $bgcolor><td align=CENTER colspan=2> 
-			"._QXZ("Option").": $dtmf_list &nbsp; 
-			"._QXZ("Description").": <input type=text name=option_description_$j size=40 maxlength=255 value=\"$option_description\"> 
+			echo "<tr $bgcolor><td align=CENTER colspan=2>
+			"._QXZ("Option").": $dtmf_list &nbsp;
+			"._QXZ("Description").": <input type=text name=option_description_$j size=40 maxlength=255 value=\"$option_description\">
 			"._QXZ("Route").": <select size=1 name=option_route_$j id=option_route_$j onChange=\"call_menu_option('$j','$option_route','$option_route_value','$option_route_value_context','$choose_height');\">
 				<option value='CALLMENU'>"._QXZ("CALLMENU")."</option>
 				<option value='INGROUP'>"._QXZ("INGROUP")."</option>
@@ -31815,13 +31815,13 @@ if ($ADD==3511)
 			$dtmf_list .= "</select>";
 
 			if (preg_match("/1$|3$|5$|7$|9$/i", $j))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
-			echo "<tr $bgcolor><td align=CENTER colspan=2> 
-			"._QXZ("Option").": $dtmf_list &nbsp; 
-			"._QXZ("Description").": <input type=text name=option_description_$j size=40 maxlength=255 value=\"\">  
+			echo "<tr $bgcolor><td align=CENTER colspan=2>
+			"._QXZ("Option").": $dtmf_list &nbsp;
+			"._QXZ("Description").": <input type=text name=option_description_$j size=40 maxlength=255 value=\"\">
 			"._QXZ("Route").": <select size=1 name=option_route_$j id=option_route_$j onChange=\"call_menu_option('$j','','','','$choose_height');\">
 				<option value='CALLMENU'>"._QXZ("CALLMENU")."</option>
 				<option value='INGROUP'>"._QXZ("INGROUP")."</option>
@@ -31833,7 +31833,7 @@ if ($ADD==3511)
 				<option value='VMAIL_NO_INST'>"._QXZ("VMAIL_NO_INST")."</option>
 				<option value='AGI'>"._QXZ("AGI")."</option>
 				<option SELECTED value=\"\"> </option>
-			</select> 
+			</select>
 			$NWB#call_menu-option_value$NWE <BR>
 
 			<span id=\"option_value_value_context_$j\" name=\"option_value_value_context_$j\">\n";
@@ -31869,7 +31869,7 @@ if ($ADD==3511)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$dids_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($dids_to_print > $o) 
+		while ($dids_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=3311&did_id=$row[0]\">$row[1] </a></TD><TD> $row[2]<BR></TD></TR>\n";
@@ -31885,7 +31885,7 @@ if ($ADD==3511)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$cms_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($cms_to_print > $o) 
+		while ($cms_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=3511&menu_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -31902,7 +31902,7 @@ if ($ADD==3511)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$camps_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($camps_to_print > $o) 
+		while ($camps_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -31919,7 +31919,7 @@ if ($ADD==3511)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$ingrps_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($ingrps_to_print > $o) 
+		while ($ingrps_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=3111&group_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -32175,7 +32175,7 @@ if ($ADD==32111)
 		$rankfound=0;
 		while ($n>=-99)
 			{
-			if ($n == $rank) 
+			if ($n == $rank)
 				{echo "<option SELECTED value=\"$n\">$n</option>\n";   $rankfound++;}
 			else
 				{echo "<option value=\"$n\">$n</option>\n";}
@@ -32367,7 +32367,7 @@ if ($ADD==311111)
 			echo "<tr bgcolor=#$SSstd_row1_background><td align=right>"._QXZ("Agent Allow Dial With Customer Xfer").": </td><td align=left><select size=1 name=agent_xfer_dial_with_customer><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='$agent_xfer_dial_with_customer' SELECTED>"._QXZ("$agent_xfer_dial_with_customer")."</option></select>$NWB#user_groups-agent_xfer_options$NWE</td></tr>\n";
 
 			echo "<tr bgcolor=#$SSstd_row1_background><td align=right>"._QXZ("Agent Allow Park Customer Dial Xfer").": </td><td align=left><select size=1 name=agent_xfer_park_customer_dial><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='$agent_xfer_park_customer_dial' SELECTED>"._QXZ("$agent_xfer_park_customer_dial")."</option></select>$NWB#user_groups-agent_xfer_options$NWE</td></tr>\n";
-			
+
 			if ($SSagent_xfer_park_3way > 0)
 				{
 				echo "<tr bgcolor=#$SSstd_row1_background><td align=right>"._QXZ("Agent Allow Park Xfer").": </td><td align=left><select size=1 name=agent_xfer_park_3way><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='$agent_xfer_park_3way' SELECTED>"._QXZ("$agent_xfer_park_3way")."</option></select>$NWB#user_groups-agent_xfer_options$NWE</td></tr>\n";
@@ -32434,7 +32434,7 @@ if ($ADD==311111)
 
 			$custom_stmt="show tables like 'vicidial_custom_reports'";
 			$custom_rslt=mysql_to_mysqli($custom_stmt, $link);
-			if (mysqli_num_rows($custom_rslt)>0) 
+			if (mysqli_num_rows($custom_rslt)>0)
 				{
 
 				$custom_rpt_stmt="SELECT custom_report_id, report_name from vicidial_custom_reports order by report_name asc";
@@ -32443,7 +32443,7 @@ if ($ADD==311111)
 				$allowed_rpt_stmt="SELECT allowed_custom_reports from vicidial_user_groups where user_group='$user_group'";
 				$allowed_rpt_rslt=mysql_to_mysqli($allowed_rpt_stmt, $link);
 
-				if (mysqli_num_rows($custom_rpt_rslt)>0) 
+				if (mysqli_num_rows($custom_rpt_rslt)>0)
 					{
 					$allowed_rpt_row=mysqli_fetch_row($allowed_rpt_rslt);
 					$allowed_custom_reports=$allowed_rpt_row[0];
@@ -32454,7 +32454,7 @@ if ($ADD==311111)
 					echo "<option value=\"--ALL--\">"._QXZ("ALL REPORTS")."</option>\n";
 					echo "<option value=\"--NONE--\">"._QXZ("NONE")."</option>\n";
 
-					while ($custom_rpt_row=mysqli_fetch_array($custom_rpt_rslt)) 
+					while ($custom_rpt_row=mysqli_fetch_array($custom_rpt_rslt))
 						{
 						$report_id=$custom_rpt_row["custom_report_id"];
 						$report_name=$custom_rpt_row["report_name"];
@@ -32496,7 +32496,7 @@ if ($ADD==311111)
 
 			if ($SSallow_ip_lists > 0)
 				{
-				##### get ip lists listing for dynamic pulldowns 
+				##### get ip lists listing for dynamic pulldowns
 				$stmt="SELECT ip_list_id,ip_list_name from vicidial_ip_lists where active='Y' order by ip_list_id;";
 				$rsltx=mysql_to_mysqli($stmt, $link);
 				$iplists_to_print = mysqli_num_rows($rsltx);
@@ -32643,13 +32643,13 @@ if ($ADD==311111)
 			echo "<tr><td>"._QXZ("USER")."</td><td>"._QXZ("FULL NAME")."</td><td>"._QXZ("LEVEL")."</td><td>"._QXZ("ACTIVE")."</td></tr>\n";
 
 			$o=0;
-			while ($users_to_print > $o) 
+			while ($users_to_print > $o)
 				{
 				$rowx=mysqli_fetch_row($rsltx);
 				$o++;
 
 				if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-					{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+					{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 				else
 					{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -32676,7 +32676,7 @@ if ($ADD==311111)
 			$Xgroups_to_print = mysqli_num_rows($rslt);
 			$Xgroups_menu='';
 			$o=0;
-			while ($Xgroups_to_print > $o) 
+			while ($Xgroups_to_print > $o)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$Xgroups_menu .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -32845,7 +32845,7 @@ if ($ADD==3111111)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$camps_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($camps_to_print > $o) 
+		while ($camps_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2><a href=\"$PHP_SELF?ADD=31&campaign_id=$row[0]\">$row[0] </a></TD><TD><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> $row[1]<BR></TD></TR>\n";
@@ -32860,7 +32860,7 @@ if ($ADD==3111111)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$camps_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($camps_to_print > $o) 
+		while ($camps_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2><a href=\"$PHP_SELF?ADD=3111&group_id=$row[0]\">$row[0] </a></TD><TD><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> $row[1]<BR></TD></TR>\n";
@@ -32875,7 +32875,7 @@ if ($ADD==3111111)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$camps_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($camps_to_print > $o) 
+		while ($camps_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">$row[0] </a></TD><TD> <FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>$row[1]<BR></TD></TR>\n";
@@ -32899,7 +32899,7 @@ if ($ADD==3111111)
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$sb_to_print = mysqli_num_rows($rslt);
 			$o=0;
-			while ($sb_to_print > $o) 
+			while ($sb_to_print > $o)
 				{
 				$row=mysqli_fetch_row($rslt);
 				echo "<TR><TD><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2><a href=\"admin_soundboard.php?ADD=362111111111&soundboard_id=$row[0]\">$row[0] </a></TD><TD><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> $row[1]<BR></TD></TR>\n";
@@ -33000,7 +33000,7 @@ if ($ADD==31111111)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$campin_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($campin_to_print > $o) 
+		while ($campin_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -33015,7 +33015,7 @@ if ($ADD==31111111)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$userin_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($userin_to_print > $o) 
+		while ($userin_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=3&user=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -33333,7 +33333,7 @@ if ($ADD==311111111)
 		$sct_list='';
 
 		$o=0;
-		while ($sct_to_print > $o) 
+		while ($sct_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$sct_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -33386,7 +33386,7 @@ if ($ADD==311111111)
 		$hct_list='';
 
 		$o=0;
-		while ($hct_to_print > $o) 
+		while ($hct_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$hct_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -33410,7 +33410,7 @@ if ($ADD==311111111)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$camps_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($camps_to_print > $o) 
+		while ($camps_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -33425,7 +33425,7 @@ if ($ADD==311111111)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$camps_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($camps_to_print > $o) 
+		while ($camps_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=3111&group_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -33440,7 +33440,7 @@ if ($ADD==311111111)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$lists_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($lists_to_print > $o) 
+		while ($lists_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -33572,7 +33572,7 @@ if ($ADD==3111111111)
 		$hct_list='';
 
 		$o=0;
-		while ($hct_to_print > $o) 
+		while ($hct_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$hct_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -33598,7 +33598,7 @@ if ($ADD==3111111111)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$camps_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($camps_to_print > $o) 
+		while ($camps_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=311111111&call_time_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -33696,7 +33696,7 @@ if ($ADD==3211111111)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$camps_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($camps_to_print > $o) 
+		while ($camps_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=311111111&call_time_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -33711,7 +33711,7 @@ if ($ADD==3211111111)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$camps_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($camps_to_print > $o) 
+		while ($camps_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=3111111111&call_time_id=$row[0]\">$row[0] </a></TD><TD> $row[1] - $row[2]<BR></TD></TR>\n";
@@ -33769,17 +33769,17 @@ if ($ADD==331111111)
 		$shift_length_min = substr($shift_length,3,2);
 		$shift_end_hour = ($shift_start_hour + $shift_length_hour);
 		$shift_end_min = ($shift_start_min + $shift_length_min);
-		if ($shift_end_min >=60) 
+		if ($shift_end_min >=60)
 			{
 			$shift_end_min = ($shift_end_min - 60);
 			$shift_end_hour++;
 			}
-		if ($shift_end_hour >=24) 
+		if ($shift_end_hour >=24)
 			{
 			$shift_end_hour = ($shift_end_hour - 24);
 			}
-		$shift_end_hour = sprintf("%02s", $shift_end_hour);	
-		$shift_end_min = sprintf("%02s", $shift_end_min);	
+		$shift_end_hour = sprintf("%02s", $shift_end_hour);
+		$shift_end_min = sprintf("%02s", $shift_end_min);
 		$shift_end = "$shift_end_hour$shift_end_min";
 
 		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
@@ -33832,7 +33832,7 @@ if ($ADD==331111111)
 			$k++;
 			}
 		echo "</select>$NWB#shifts-report_rank$NWE</td></tr>\n";
-		
+
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=center colspan=2><input type=submit name=SUBMIT value='"._QXZ("SUBMIT")."'></td></tr>\n";
 		echo "</TABLE></center>\n";
 
@@ -33844,7 +33844,7 @@ if ($ADD==331111111)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$camps_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($camps_to_print > $o) 
+		while ($camps_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=311111&user_group=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -33971,10 +33971,10 @@ if ($ADD==31111111111)
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Client Protocol").": </td><td align=left><select size=1 name=protocol><option>SIP</option><option>Zap</option><option>IAX2</option><option value='EXTERNAL'>"._QXZ("EXTERNAL")."</option><option>DAHDI</option><option selected>$row[16]</option></select>$NWB#phones-protocol$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Local GMT").": </td><td align=left><select size=1 name=local_gmt><option>12.75</option><option>12.00</option><option>11.00</option><option>10.00</option><option>9.50</option><option>9.00</option><option>8.00</option><option>7.00</option><option>6.50</option><option>6.00</option><option>5.75</option><option>5.50</option><option>5.00</option><option>4.50</option><option>4.00</option><option>3.50</option><option>3.00</option><option>2.00</option><option>1.00</option><option>0.00</option><option>-1.00</option><option>-2.00</option><option>-3.00</option><option>-3.50</option><option>-4.00</option><option>-5.00</option><option>-6.00</option><option>-7.00</option><option>-8.00</option><option>-9.00</option><option>-10.00</option><option>-11.00</option><option>-12.00</option><option selected>$row[17]</option></select> ("._QXZ("Do NOT Adjust for DST").")$NWB#phones-local_gmt$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Phone Ring Timeout").": </td><td align=left><input type=text name=phone_ring_timeout size=4 maxlength=5 value=\"$row[71]\">$NWB#phones-phone_ring_timeout$NWE</td></tr>\n";
-		
+
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("On-Hook Agent").": </td><td align=left><select size=1 name=on_hook_agent><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='AutoAnswer'>"._QXZ("AutoAnswer")."</option><option selected>$row[79]</option></select>$NWB#phones-on_hook_agent$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("AutoAnswer Type").": </td><td align=left><select size=1 name=autoanswer_type><option value=''>"._QXZ("")."</option><option value='SNOM'>"._QXZ("SNOM")."</option><option selected>$row[103]</option></select>$NWB#autoanswer_type$NWE</td></tr>\n";
-		
+
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Manager Login").": </td><td align=left><input type=text name=ASTmgrUSERNAME size=20 maxlength=20 value=\"$row[18]\">$NWB#phones-ASTmgrUSERNAME$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Manager Secret").": </td><td align=left><input type=text name=ASTmgrSECRET size=20 maxlength=20 value=\"$row[19]\">$NWB#phones-ASTmgrSECRET$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Agent  Default User").": </td><td align=left><input type=text name=login_user size=20 maxlength=20 value=\"$row[20]\">$NWB#phones-login_user$NWE</td></tr>\n";
@@ -34037,7 +34037,7 @@ if ($ADD==31111111111)
 		$templates_to_print = mysqli_num_rows($rslt);
 		$templates_list='<option value=\'--NONE--\' SELECTED>--'._QXZ("NONE").'--</option>';
 		$o=0;
-		while ($templates_to_print > $o) 
+		while ($templates_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$templates_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -34109,7 +34109,7 @@ if ($ADD==32111111111)
 
 		### list of phones in this phones alias
 		$phone_alias_SQL = preg_replace('/,/', "','",$row[2]);
-	 
+
 		echo "<center>\n";
 		echo "<br><b>"._QXZ("PHONES WITHIN THIS PHONES ALIAS").":</b><br>\n";
 		echo "<TABLE width=600 cellspacing=3>\n";
@@ -34121,13 +34121,13 @@ if ($ADD==32111111111)
 		$lists_to_print = mysqli_num_rows($rsltx);
 
 		$o=0;
-		while ($lists_to_print > $o) 
+		while ($lists_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rsltx);
 			$o++;
 
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -34381,13 +34381,13 @@ if ($ADD==311111111111)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$recycle_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($recycle_to_print > $o) 
+		while ($recycle_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$o++;
 
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -34431,7 +34431,7 @@ if ($ADD==311111111111)
 		$camp_lists='';
 
 		$o=0;
-		while ($carriers_to_print > $o) 
+		while ($carriers_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rsltx);
 			$o++;
@@ -34439,7 +34439,7 @@ if ($ADD==311111111111)
 			if (preg_match('/N/', $rowx[3])) {$inactive_carriers++;}
 
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -34464,7 +34464,7 @@ if ($ADD==311111111111)
 		$camp_lists='';
 
 		$o=0;
-		while ($lists_to_print > $o) 
+		while ($lists_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rsltx);
 			$o++;
@@ -34472,7 +34472,7 @@ if ($ADD==311111111111)
 			if (preg_match('/N/', $rowx[1])) {$inactive_phones++;}
 
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -34496,14 +34496,14 @@ if ($ADD==311111111111)
 		$camp_lists='';
 
 		$o=0;
-		while ($lists_to_print > $o) 
+		while ($lists_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rsltx);
 			$o++;
 			$active_confs++;
 
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -34527,14 +34527,14 @@ if ($ADD==311111111111)
 		$camp_lists='';
 
 		$o=0;
-		while ($lists_to_print > $o) 
+		while ($lists_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rsltx);
 			$o++;
 			$active_vdconfs++;
 
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -34627,7 +34627,7 @@ if ($ADD==331111111111)
 		$camp_lists='';
 
 		$o=0;
-		while ($lists_to_print > $o) 
+		while ($lists_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rsltx);
 			$o++;
@@ -34635,7 +34635,7 @@ if ($ADD==331111111111)
 			if (preg_match('/N/', $rowx[1])) {$inactive_phones++;}
 
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -34658,7 +34658,7 @@ if ($ADD==331111111111)
 		$camp_lists='';
 
 		$o=0;
-		while ($lists_to_print > $o) 
+		while ($lists_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rsltx);
 			$o++;
@@ -34666,7 +34666,7 @@ if ($ADD==331111111111)
 			if (preg_match('/N/', $rowx[1])) {$inactive_phones++;}
 
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -34745,7 +34745,7 @@ if ($ADD==341111111111)
 		$templates_to_print = mysqli_num_rows($rslt);
 		$templates_list='<option value=\'--NONE--\' SELECTED>--'._QXZ("NONE").'--</option>';
 		$o=0;
-		while ($templates_to_print > $o) 
+		while ($templates_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$templates_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -35154,7 +35154,7 @@ if ($ADD==381111111111)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$camps_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($camps_to_print > $o) 
+		while ($camps_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -35264,7 +35264,7 @@ if ($ADD==382111111111)
 
 		if ($dir_handle = opendir('./images'))
 			{
-			while (false !== ($entry = readdir($dir_handle))) 
+			while (false !== ($entry = readdir($dir_handle)))
 				{
 				if ( (preg_match("/vicidial_admin_web_logo/",$entry)) and (!preg_match("/vicidial_admin_web_logo\.png/",$entry)) and (preg_match("/\.gif$|\.jpg$|\.png$/",$entry)) )
 					{
@@ -35285,7 +35285,7 @@ if ($ADD==382111111111)
 			}
 		if ( ($web_logo!='default_new') and ($web_logo!='default_old') )
 			{
-			if (file_exists("./images/vicidial_admin_web_logo$web_logo")) 
+			if (file_exists("./images/vicidial_admin_web_logo$web_logo"))
 				{
 				$selected_logo = "./images/vicidial_admin_web_logo$web_logo";
 				}
@@ -35337,7 +35337,7 @@ if ($ADD==391111111111)
 		if ( (preg_match("/contact_information/",$SStables_use_alt_log_db)) and (strlen($SSalt_log_server_ip)>4) and (strlen($SSalt_log_dbname)>0) )
 			{
 			$linkALT=mysqli_connect("$SSalt_log_server_ip", "$SSalt_log_login", "$SSalt_log_pass", "$SSalt_log_dbname");
-				if (!$linkALT) 
+				if (!$linkALT)
 					{
 					die('MySQL '._QXZ("connect ERROR").': ' . mysqli_connect_error());
 					}
@@ -35551,14 +35551,14 @@ if ($ADD==393111111111)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$statuses_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($statuses_to_print > $o) 
+		while ($statuses_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$AScategory = $rowx[4];
 			$o++;
 
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -35590,7 +35590,7 @@ if ($ADD==393111111111)
 			echo "<td><input type=text name=max_sec size=3 maxlength=5 value=\"$rowx[13]\" class=\"cust_form\"></td>\n";
 			echo "</td><td align=center nowrap><font size=1><input type=submit name=submit value='"._QXZ("MODIFY")."'> &nbsp; &nbsp; &nbsp; &nbsp; \n";
 			echo " &nbsp; \n";
-			
+
 			if (preg_match("/^B$|^NA$|^DNC$|^NA$|^DROP$|^INCALL$|^QUEUE$|^NEW$/i",$rowx[0]))
 				{
 				echo "<DEL>"._QXZ("DELETE")."</DEL>\n";
@@ -35640,7 +35640,7 @@ if ($ADD==393111111111)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$ig_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($ig_to_print > $o) 
+		while ($ig_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=3111&group_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -35656,7 +35656,7 @@ if ($ADD==393111111111)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$list_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($list_to_print > $o) 
+		while ($list_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -35697,7 +35697,7 @@ if ($ADD==394111111111)
 		echo "<TABLE><TR><TD>\n";
 		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-		##### get server listing for dynamic pulldown 
+		##### get server listing for dynamic pulldown
 		$stmt="SELECT server_ip,server_description,external_server_ip from servers order by server_ip";
 		$rsltx=mysql_to_mysqli($stmt, $link);
 		$servers_to_print = mysqli_num_rows($rsltx);
@@ -35870,7 +35870,7 @@ if ($ADD==395111111111)
 						$vaf=0;
 						while ($vaf_ct > $vaf)
 							{
-							if ($PN[$p] == $vaf_list[$vaf]) 
+							if ($PN[$p] == $vaf_list[$vaf])
 								{
 								$vaf_count[$vaf]++;
 								$ac_found++;
@@ -35992,7 +35992,7 @@ if ($ADD==395111111111)
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$ugs_to_print = mysqli_num_rows($rslt);
 			$o=0;
-			while ($ugs_to_print > $o) 
+			while ($ugs_to_print > $o)
 				{
 				$row=mysqli_fetch_row($rslt);
 				echo "<TR><TD><a href=\"$PHP_SELF?ADD=311111&user_group=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -36083,7 +36083,7 @@ if ($ADD==396111111111)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$accids_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($accids_to_print > $o) 
+		while ($accids_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$Xareacode[$o] =			$rowx[0];
@@ -36099,20 +36099,20 @@ if ($ADD==396111111111)
 		echo "<tr><td>#</td><td>"._QXZ("$cid_group_type")."</td><td>"._QXZ("CID NUMBER")."</td><td>"._QXZ("DESCRIPTION")."</td><td>"._QXZ("ACTIVE")."<br><span id=ACCID_link><a href=\"#\" onclick=\"FORM_selectall('$checkbox_count','$checkbox_list','on','ACCID_link');return false;\"><font size=1>"._QXZ("select all")."</font></a></span></td><td>"._QXZ("CALLS")."</td><td>"._QXZ("DELETE")."</td></tr>\n";
 
 		$o=0;
-		while ($accids_to_print > $o) 
+		while ($accids_to_print > $o)
 			{
 			$ct = ($o + 1);
 			if ($ct == '1')
 				{
 				$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';
 				$bgac = $Xareacode[$o];
-				} 
+				}
 			else
 				{
 				if ($Xareacode[$o] != $bgac)
 					{
 					if (preg_match("/1$|3$|5$|7$|9$/i", $bgct))
-						{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';} 
+						{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 					else
 						{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 					$bgct++;
@@ -36127,7 +36127,7 @@ if ($ADD==396111111111)
 				$stmt="SELECT did_id from vicidial_inbound_dids where did_pattern='$Xoutbound_cid[$o]' $LOGadmin_viewable_groupsSQL limit 1;";
 				$rslt=mysql_to_mysqli($stmt, $link);
 				$dids_to_print = mysqli_num_rows($rslt);
-				if ($dids_to_print > 0) 
+				if ($dids_to_print > 0)
 					{
 					$rowx=mysqli_fetch_row($rslt);
 					$DID_edit_link_BEGIN = "<a href=\"$PHP_SELF?ADD=3311&did_id=$rowx[0]\">";
@@ -36175,7 +36175,7 @@ if ($ADD==396111111111)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$camps_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($camps_to_print > $o) 
+		while ($camps_to_print > $o)
 			{
 			$row=mysqli_fetch_row($rslt);
 			echo "<TR><TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
@@ -36357,7 +36357,7 @@ if ($ADD==311111111111111)
 		$stmt="SELECT sum(total_calls) from vicidial_daily_max_stats where stats_flag='OPEN' and stats_type!='TOTAL';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$stats_to_print = mysqli_num_rows($rslt);
-		if ($stats_to_print > 0) 
+		if ($stats_to_print > 0)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$ALLtotal_calls = $rowx[0];
@@ -36366,7 +36366,7 @@ if ($ADD==311111111111111)
 		$stmt="SELECT max(max_inbound) from vicidial_daily_max_stats where stats_flag='OPEN' and stats_type='INGROUP';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$stats_to_print = mysqli_num_rows($rslt);
-		if ($stats_to_print > 0) 
+		if ($stats_to_print > 0)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$ALLmax_inbound = $rowx[0];
@@ -36375,7 +36375,7 @@ if ($ADD==311111111111111)
 		$stmt="SELECT max(max_outbound) from vicidial_daily_max_stats where stats_flag='OPEN' and stats_type='CAMPAIGN';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$stats_to_print = mysqli_num_rows($rslt);
-		if ($stats_to_print > 0) 
+		if ($stats_to_print > 0)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$ALLmax_outbound = $rowx[0];
@@ -36384,7 +36384,7 @@ if ($ADD==311111111111111)
 		$stmt="SELECT max_channels,max_calls,max_agents from vicidial_daily_max_stats where stats_flag='OPEN' and stats_type='TOTAL';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$stats_to_print = mysqli_num_rows($rslt);
-		if ($stats_to_print > 0) 
+		if ($stats_to_print > 0)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$ALLchannels_count =	$rowx[0];
@@ -36582,7 +36582,7 @@ if ($ADD==311111111111111)
 		$autoanswer_delay					= $row[184];
 		$source_id_display =			$row[185];
 
-		if ($pass_hash_enabled > 0) {$pass_hash_enabled = 'ENABLED';}	
+		if ($pass_hash_enabled > 0) {$pass_hash_enabled = 'ENABLED';}
 		else {$pass_hash_enabled = 'DISABLED';}
 		if (strlen($pass_key) > 12) {$pass_key = 'S1';}
 		else {$pass_key = 'S0';}
@@ -36602,7 +36602,7 @@ if ($ADD==311111111111111)
 			echo "<font color=red><b> &nbsp; "._QXZ("WARNING: Code expects different schema").": $ExpectedDBSchema</b></font>\n";
 			}
 		echo "</td></tr>\n";
-		
+
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Git Commit").": </td><td align=left> <a href=\"$PHP_SELF?ADD=999991\">$git_commit</a></td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Patch-Level").": </td><td align=left> $git_release</td></tr>\n";
 
@@ -36627,7 +36627,7 @@ if ($ADD==311111111111111)
 			$languages_to_print = mysqli_num_rows($rslt);
 			$languages_list='';
 			$o=0;
-			while ($languages_to_print > $o) 
+			while ($languages_to_print > $o)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$languages_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -36883,7 +36883,7 @@ if ($ADD==311111111111111)
 
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Allow IP Lists").": </td><td align=left><select size=1 name=allow_ip_lists><option>1</option><option>0</option><option selected>$allow_ip_lists</option></select>$NWB#settings-allow_ip_lists$NWE</td></tr>\n";
 
-		##### get ip lists listing for dynamic pulldown 
+		##### get ip lists listing for dynamic pulldown
 		$stmt="SELECT ip_list_id,ip_list_name from vicidial_ip_lists where active='Y' order by ip_list_id;";
 		$rsltx=mysql_to_mysqli($stmt, $link);
 		$iplists_to_print = mysqli_num_rows($rsltx);
@@ -36966,7 +36966,7 @@ if ($ADD==311111111111111)
 
 		$custom_stmt="show tables like 'vicidial_custom_reports'";
 		$custom_rslt=mysql_to_mysqli($custom_stmt, $link);
-		if (mysqli_num_rows($custom_rslt)>0) 
+		if (mysqli_num_rows($custom_rslt)>0)
 			{
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Custom Reports to use Slave DB").": </td><td align=left><select MULTIPLE size=5 name=custom_reports_use_slave_db[]>\n";
 			echo "<option value='--NONE--'>"._QXZ("NONE")."</option>\n";
@@ -36975,7 +36975,7 @@ if ($ADD==311111111111111)
 			$allowed_rpt_row=mysqli_fetch_row($allowed_rpt_rslt);
 			$allowed_rpt_array=explode("|", $allowed_rpt_row[0]);
 
-			if (count($allowed_rpt_array)>0) 
+			if (count($allowed_rpt_array)>0)
 				{
 				$custom_rpt_stmt="SELECT custom_reports_use_slave_db from system_settings";
 				$custom_rpt_rslt=mysql_to_mysqli($custom_rpt_stmt, $link);
@@ -36985,7 +36985,7 @@ if ($ADD==311111111111111)
 				for ($q=0; $q<count($allowed_rpt_array); $q++)
 					{
 					$report_name=$allowed_rpt_array[$q];
-					if ($report_name!="") 
+					if ($report_name!="")
 						{
 						if (in_array($report_name, $custom_rpt_array)) {$x="selected";} else {$x="";}
 						echo "<option value='$report_name' $x>$report_name</option>\n";
@@ -37053,7 +37053,7 @@ if ($ADD==311111111111111)
 		$colors_to_print = mysqli_num_rows($rslt);
 		$colors_list='';
 		$o=0;
-		while ($colors_to_print > $o) 
+		while ($colors_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$colors_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -37068,7 +37068,7 @@ if ($ADD==311111111111111)
 		$colors_to_print = mysqli_num_rows($rslt);
 		$colors_list='';
 		$o=0;
-		while ($colors_to_print > $o) 
+		while ($colors_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$colors_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -37083,7 +37083,7 @@ if ($ADD==311111111111111)
 		$colors_to_print = mysqli_num_rows($rslt);
 		$colors_list='';
 		$o=0;
-		while ($colors_to_print > $o) 
+		while ($colors_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$colors_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -37163,23 +37163,23 @@ if ($ADD==311111111111111)
 		echo "<tr bgcolor=#CCFFFF><td align=right>"._QXZ("Vtiger DB Login").": </td><td align=left><input type=text name=vtiger_login size=18 maxlength=50 value=\"$vtiger_login\">$NWB#settings-vtiger_login$NWE</td></tr>\n";
 		echo "<tr bgcolor=#CCFFFF><td align=right>"._QXZ("Vtiger DB Password").": </td><td align=left><input type=text name=vtiger_pass size=18 maxlength=50 value=\"$vtiger_pass\">$NWB#settings-vtiger_pass$NWE</td></tr>\n";
 		echo "<tr bgcolor=#CCFFFF><td align=right>"._QXZ("Vtiger URL").": </td><td align=left><input type=text name=vtiger_url size=50 maxlength=255 value=\"$vtiger_url\">$NWB#settings-vtiger_url$NWE</td></tr>\n";
-		
+
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Campaigns pause").": </td><td align=left><select size=1 name=pause_campaigns><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='$pause_campaigns' selected>"._QXZ("$pause_campaigns")."</option></select>$NWB#pause_campaigns$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Detect 3Way Calls").": </td><td align=left><select size=1 name=detect_3way><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='$detect_3way' selected>"._QXZ("$detect_3way")."</option></select>$NWB#detect_3way$NWE</td></tr>\n";
-		
+
 		echo "<tr bgcolor=#$SSstd_row2_background><td align=right>"._QXZ("Company Name").": </td><td align=left><input type=text name=company_name size=50 maxlength=50 value=\"$company_name\">$NWB#company_name$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row2_background><td align=right>"._QXZ("Ticket Mail Address").": </td><td align=left><input type=text name=ticket_mail size=50 maxlength=100 value=\"$ticket_mail\">$NWB#ticket_mail$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row2_background><td align=right>"._QXZ("Temp. Download Directory").": </td><td align=left><input type=text name=tmp_download_dir size=50 maxlength=255 value=\"$syss_tmp_download_dir\">$NWB#downloaddir$NWE</td></tr>\n";
-		
+
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Servicelevel Direct").": </td><td align=left><input type=text name=servicelevel_direct size=4 maxlen=4 value=\"$servicelevel_direct\">$NWB#servicelevel$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Servicelevel One").": </td><td align=left><input type=text name=servicelevel_one size=4 maxlen=4 value=\"$servicelevel_one\">$NWB#servicelevel$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Servicelevel Two").": </td><td align=left><input type=text name=servicelevel_two size=4 maxlen=4 value=\"$servicelevel_two\">$NWB#servicelevel$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row2_background><td align=right>"._QXZ("Agent Prefix").": </td><td align=left><input type=text name=agent_prefix size=2 maxlength=2 value=\"$agent_prefix\">$NWB#settings-agent_prefix$NWE</td></tr>\n";
-		
+
 		echo "<tr bgcolor=#$SSstd_row1_background><td align=right>"._QXZ("Enable AutoAnswer").": </td><td align=left><select size=1 name=autoanswer_enable><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='$autoanswer_enable' selected>"._QXZ("$autoanswer_enable")."</option></select>$NWB#autoanswer_enable$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row1_background><td align=right>"._QXZ("AutoAnswer Prefix").": </td><td align=left><input type=text name=autoanswer_prefix size=4 maxlength=4 value=\"$autoanswer_prefix\">$NWB#autoanswer_prefix$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row1_background><td align=right>"._QXZ("AutoAnswer Delay").": </td><td align=left><input type=text name=autoanswer_delay size=4 maxlength=4 value=\"$autoanswer_delay\">$NWB#autoanswer_delay$NWE</td></tr>\n";
-		
+
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=center colspan=2><input type=submit name=submit value='"._QXZ("SUBMIT")."'</td></tr>\n";
 		echo "</TABLE></center>\n";
 		echo "</form>\n";
@@ -37251,14 +37251,14 @@ if ($ADD==321111111111111)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$statuses_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($statuses_to_print > $o) 
+		while ($statuses_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$AScategory = $rowx[4];
 			$o++;
 
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -37289,7 +37289,7 @@ if ($ADD==321111111111111)
 			echo "<td><input type=text name=max_sec size=3 maxlength=5 value=\"$rowx[13]\" class=\"cust_form\"></td>\n";
 			echo "</td><td align=center nowrap><font size=1><input type=submit name=submit value='"._QXZ("MODIFY")."'> &nbsp; &nbsp; &nbsp; &nbsp; \n";
 			echo " &nbsp; \n";
-			
+
 			if (preg_match("/^B$|^NA$|^DNC$|^NA$|^DROP$|^INCALL$|^QUEUE$|^NEW$/i",$rowx[0]))
 				{
 				echo "<DEL>"._QXZ("DELETE")."</DEL>\n";
@@ -37359,7 +37359,7 @@ if ($ADD==331111111111111)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$statuses_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($statuses_to_print > $o) 
+		while ($statuses_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$Avsc_id[$o] =				$rowx[0];
@@ -37374,7 +37374,7 @@ if ($ADD==331111111111111)
 		while ($o > $p)
 			{
 			if (preg_match("/1$|3$|5$|7$|9$/i", $p))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -37383,7 +37383,7 @@ if ($ADD==331111111111111)
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$statuses_to_print = mysqli_num_rows($rslt);
 			$q=0;
-			while ($statuses_to_print > $q) 
+			while ($statuses_to_print > $q)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$CATstatuses.=" $rowx[0]";
@@ -37393,7 +37393,7 @@ if ($ADD==331111111111111)
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$statuses_to_print = mysqli_num_rows($rslt);
 			$q=0;
-			while ($statuses_to_print > $q) 
+			while ($statuses_to_print > $q)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$CATstatuses.=" $rowx[0]";
@@ -37418,7 +37418,7 @@ if ($ADD==331111111111111)
 
 			$p++;
 			}
-	
+
 		echo "</table>\n";
 
 		echo "<br>"._QXZ("ADD NEW STATUS CATEGORY")."<BR><form action=$PHP_SELF method=POST>\n";
@@ -37583,7 +37583,7 @@ if ($ADD==550)
 	$groups_to_print = mysqli_num_rows($rslt);
 	$o=0;
 	$groups_list='';
-	while ($groups_to_print > $o) 
+	while ($groups_to_print > $o)
 		{
 		$rowx=mysqli_fetch_row($rslt);
 		$groups_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -37621,11 +37621,11 @@ if ($ADD==660)
 	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 
 	$o=0;
-	while ($people_to_print > $o) 
+	while ($people_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+			{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 		else
 			{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 		echo "<tr $bgcolor><td><font size=1>$row[1]</td><td><font size=1>$row[3]</td><td><font size=1>$row[4]</td><td><font size=1>$row[5]</td>";
@@ -37802,11 +37802,11 @@ if ($ADD==82)
 	echo "<td><a href=\"$PHP_SELF?$oldADD&$GROUPlink\"><font size=1 color=white><B>"._QXZ("GROUP")."</B></a></td></tr>\n";
 
 	$o=0;
-	while ($cb_to_print > $o) 
+	while ($cb_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+			{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 		else
 			{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 		echo "<tr $bgcolor>";
@@ -37892,13 +37892,13 @@ if ($ADD=="0A")
 	echo "</tr>\n";
 
 	$o=0;
-	while ($people_to_print > $o) 
+	while ($people_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
-			{$bgcolor='class="records_list_y"';} 
+			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor><td"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=3&user=$row[0]'\"";} echo "><a href=\"$PHP_SELF?ADD=3&user=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
 		echo "<td"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=3&user=$row[0]'\"";} echo "><font size=1>$row[1]</td>";
 		echo "<td"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=3&user=$row[0]'\"";} echo "><font size=1>$row[2]</td>";
@@ -37962,7 +37962,7 @@ if ($ADD==10)
 	echo "<td align=center NOWRAP><font size=1 color=white><B>"._QXZ("MODIFY")."</B></td></tr>\n";
 
 	$o=0; $p=0;
-	while ($campaigns_to_print > $o) 
+	while ($campaigns_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if ( ($SQLstatus!='') and ($row[2]=='N') )
@@ -37970,7 +37970,7 @@ if ($ADD==10)
 		else
 			{
 			if (preg_match('/1$|3$|5$|7$|9$/i', $p))
-				{$bgcolor='class="records_list_x"';} 
+				{$bgcolor='class="records_list_x"';}
 			else
 				{$bgcolor='class="records_list_y"';}
 			echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=34&campaign_id=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=34&campaign_id=$row[0]\"><font size=1 color=black>$row[0]</a> &nbsp; </td>";
@@ -38015,7 +38015,7 @@ if ($ADD==100)
 	if (preg_match('/LISTNAMEUP/i', $stage))	{$SQLorder='order by list_name asc';			$NAMElink='stage=LISTNAMEDOWN';}
 	if (preg_match('/LISTNAMEDOWN/i', $stage))	{$SQLorder='order by list_name desc';			$NAMElink='stage=LISTNAMEUP';}
 	if (preg_match('/CALLTIMEUP/i', $stage))	{$SQLorder='order by local_call_time asc';		$CALLTIMElink='stage=CALLTIMEDOWN';}
-	if (preg_match('/CALLTIMEDOWN/i', $stage))	{$SQLorder='order by local_call_time desc';		$CALLTIMElink='stage=CALLTIMEUP';}	
+	if (preg_match('/CALLTIMEDOWN/i', $stage))	{$SQLorder='order by local_call_time desc';		$CALLTIMElink='stage=CALLTIMEUP';}
 	if (preg_match('/TALLYUP/i', $stage))		{$SQLorder='order by tally asc';				$TALLYlink='stage=TALLYDOWN';}
 	if (preg_match('/TALLYDOWN/i', $stage))		{$SQLorder='order by tally desc';				$TALLYlink='stage=TALLYUP';}
 	if (preg_match('/ACTIVEUP/i', $stage))		{$SQLorder='order by active asc';				$ACTIVElink='stage=ACTIVEDOWN';}
@@ -38082,7 +38082,7 @@ if ($ADD==100)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=311&list_id=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
@@ -38113,7 +38113,7 @@ if ($ADD==100)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor><td><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
@@ -38166,7 +38166,7 @@ if ($ADD==130)
 	echo "</TR>\n";
 
 	$o=0;
-	while ($droplists_to_print > $o) 
+	while ($droplists_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		$dl_id_ary[$o] =			$row[0];
@@ -38180,7 +38180,7 @@ if ($ADD==130)
 		}
 
 	$o=0;
-	while ($droplists_to_print > $o) 
+	while ($droplists_to_print > $o)
 		{
 		$closer_campaigns_ary[$o] = preg_replace("/^ |^  | -$/",'',$closer_campaigns_ary[$o]);
 		$ingroups_ary = explode(" ",$closer_campaigns_ary[$o]);
@@ -38237,7 +38237,7 @@ if ($ADD==1000)
 	echo "</TR>\n";
 
 	$o=0;
-	while ($ingroups_to_print > $o) 
+	while ($ingroups_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		$group_id_ary[$o] =			$row[0];
@@ -38251,7 +38251,7 @@ if ($ADD==1000)
 		}
 
 	$o=0;
-	while ($ingroups_to_print > $o) 
+	while ($ingroups_to_print > $o)
 		{
 		$allowed_campaigns_count=0;
 		$allowed_campaigns_warning='';
@@ -38259,7 +38259,7 @@ if ($ADD==1000)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$campin_to_print = mysqli_num_rows($rslt);
 		$vc_allowed_ct=0;
-		if ($campin_to_print > $vc_allowed_ct) 
+		if ($campin_to_print > $vc_allowed_ct)
 			{
 			$row=mysqli_fetch_row($rslt);
 			$allowed_campaigns_count = $row[0];
@@ -38272,7 +38272,7 @@ if ($ADD==1000)
 		$stmt="SELECT count(*) from vicidial_inbound_callback_queue where group_id='$group_id_ary[$o]' and icbq_status='LIVE';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$icbq_to_print = mysqli_num_rows($rslt);
-		if ($icbq_to_print > 0) 
+		if ($icbq_to_print > 0)
 			{
 			$row=mysqli_fetch_row($rslt);
 			if ($row[0] > 0)
@@ -38326,7 +38326,7 @@ if ( ($ADD==1800) and ($SSallow_emails>0) )
 	echo "</TR>\n";
 
 	$o=0;
-	while ($ingroups_to_print > $o) 
+	while ($ingroups_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 
@@ -38335,7 +38335,7 @@ if ( ($ADD==1800) and ($SSallow_emails>0) )
 		$ct_rslt=mysql_to_mysqli($ct_stmt, $link);
 		$ct_row=mysqli_fetch_row($ct_rslt);
 		$unhandled_emails=$ct_row[0];
-		
+
 		$allowed_campaigns_warning='';
 		## Get campaign allowed count
 		$ct_stmt="SELECT count(*) from vicidial_campaigns where closer_campaigns LIKE \"% $row[0] %\" $LOGallowed_campaignsSQL;";
@@ -38344,9 +38344,9 @@ if ( ($ADD==1800) and ($SSallow_emails>0) )
 		$email_allowed_campaigns_count=$ct_row[0];
 		if ($email_allowed_campaigns_count < 1)
 			{$allowed_campaigns_warning='<font color=red><b> &nbsp; NA</b></font>';}
-		
+
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=3811&group_id=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=3811&group_id=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
@@ -38391,7 +38391,7 @@ if ( ($ADD==1900) and ($SSallow_chats>0) )
 	echo "</TR>\n";
 
 	$o=0;
-	while ($ingroups_to_print > $o) 
+	while ($ingroups_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 
@@ -38403,9 +38403,9 @@ if ( ($ADD==1900) and ($SSallow_chats>0) )
 		$chat_allowed_campaigns_count=$ct_row[0];
 		if ($chat_allowed_campaigns_count < 1)
 			{$allowed_campaigns_warning='<font color=red><b> &nbsp; NA</b></font>';}
-		
+
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=3911&group_id=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=3911&group_id=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
@@ -38474,11 +38474,11 @@ if ($ADD==1300)
 	echo "</TR>\n";
 
 	$o=0;
-	while ($dids_to_print > $o) 
+	while ($dids_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 
@@ -38537,7 +38537,7 @@ if ($ADD==1500)
 	$o=0;
 	$menu_id = $MT;
 
-	while ($menus_to_print > $o) 
+	while ($menus_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		$menu_id[$o] =		$row[0];
@@ -38549,13 +38549,13 @@ if ($ADD==1500)
 		}
 
 	$o=0;
-	while ($menus_to_print > $o) 
+	while ($menus_to_print > $o)
 		{
 		$stmt="SELECT count(*) from vicidial_call_menu_options where menu_id=\"$menu_id[$o]\";";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$row=mysqli_fetch_row($rslt);
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=3511&menu_id=$menu_id[$o]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=3511&menu_id=$menu_id[$o]\"><font size=1 color=black>$menu_id[$o]</a></td>";
@@ -38601,7 +38601,7 @@ if ($ADD==1700)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=3711&filter_phone_group_id=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=3711&filter_phone_group_id=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
@@ -38622,7 +38622,7 @@ if ($ADD==1700)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=3711&filter_phone_group_id=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=3711&filter_phone_group_id=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
@@ -38684,11 +38684,11 @@ if ($ADD==10000)
 	echo "<td align=center><font size=1 color=white><B>"._QXZ("MODIFY")."</B></td></tr>\n";
 
 	$o=0;
-	while ($remoteagents_to_print > $o) 
+	while ($remoteagents_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=31111&remote_agent_id=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=31111&remote_agent_id=$row[0]\"><font size=1 color=black>$row[1]</a></td>";
@@ -38731,11 +38731,11 @@ if ($ADD==12000)
 	echo "<td align=center><font size=1 color=white><B>"._QXZ("MODIFY")."</B></td></tr>\n";
 
 	$o=0;
-	while ($extensiongroups_to_print > $o) 
+	while ($extensiongroups_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=32111&extension_id=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=32111&extension_id=$row[0]\"><font size=1 color=black>$row[1]</a></td>";
@@ -38774,11 +38774,11 @@ if ($ADD==100000)
 	echo "<td align=center><font size=1 color=white><B>"._QXZ("MODIFY")."</B></td></tr>\n";
 
 	$o=0;
-	while ($usergroups_to_print > $o) 
+	while ($usergroups_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=311111&user_group=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=311111&user_group=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
@@ -38815,11 +38815,11 @@ if ($ADD==1000000)
 	echo "<td align=center><font size=1 color=white><B>"._QXZ("MODIFY")."</B></td></tr>\n";
 
 	$o=0;
-	while ($scripts_to_print > $o) 
+	while ($scripts_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=3111111&script_id=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=3111111&script_id=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
@@ -38856,11 +38856,11 @@ if ($ADD==10000000)
 	echo "<td align=center><font size=1 color=white><B>"._QXZ("MODIFY")."</B></td></tr>\n";
 
 	$o=0;
-	while ($filters_to_print > $o) 
+	while ($filters_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=31111111&lead_filter_id=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=31111111&lead_filter_id=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
@@ -38900,11 +38900,11 @@ if ($ADD==100000000)
 	echo "<td align=center><font size=1 color=white><B>"._QXZ("MODIFY")."</B></td></tr>\n";
 
 	$o=0;
-	while ($calltimes_to_print > $o) 
+	while ($calltimes_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=311111111&call_time_id=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=311111111&call_time_id=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
@@ -38944,11 +38944,11 @@ if ($ADD==1000000000)
 	echo "<td align=center><font size=1 color=white><B>"._QXZ("MODIFY")."</B></td></tr>\n";
 
 	$o=0;
-	while ($statecalltimes_to_print > $o) 
+	while ($statecalltimes_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=3111111111&call_time_id=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=3111111111&call_time_id=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
@@ -38990,11 +38990,11 @@ if ($ADD==1200000000)
 	echo "<td align=center><font size=1 color=white><B>"._QXZ("MODIFY")."</B></td></tr>\n";
 
 	$o=0;
-	while ($holidays_to_print > $o) 
+	while ($holidays_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=3211111111&holiday_id=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=3211111111&holiday_id=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
@@ -39036,11 +39036,11 @@ if ($ADD==130000000)
 	echo "<td align=center><font size=1 color=white><B>"._QXZ("MODIFY")."</B></td></tr>\n";
 
 	$o=0;
-	while ($shifts_to_print > $o) 
+	while ($shifts_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=331111111&shift_id=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=331111111&shift_id=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
@@ -39102,11 +39102,11 @@ if ($ADD==10000000000)
 	echo "<td align=center><font size=1 color=white><B>"._QXZ("LINKS")."</B></td></tr>\n";
 
 	$o=0;
-	while ($phones_to_print > $o) 
+	while ($phones_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=31111111111&extension=$row[0]&server_ip=$row[2]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=31111111111&extension=$row[0]&server_ip=$row[2]\"><font size=1 color=black>$row[0]</font></a></td>
@@ -39149,11 +39149,11 @@ if ($ADD==12000000000)
 	echo "<td align=center><font size=1 color=white><B>"._QXZ("MODIFY")."</B></td></tr>\n";
 
 	$o=0;
-	while ($phonealias_to_print > $o) 
+	while ($phonealias_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=32111111111&alias_id=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=32111111111&alias_id=$row[0]\"><font size=1 color=black>$row[0]</font></a></td>";
@@ -39192,11 +39192,11 @@ if ($ADD==13000000000)
 	echo "<td align=center><font size=1 color=white><B>"._QXZ("MODIFY")."</B></td></tr>\n";
 
 	$o=0;
-	while ($phonealias_to_print > $o) 
+	while ($phonealias_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=33111111111&group_alias_id=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=33111111111&group_alias_id=$row[0]\"><font size=1 color=black>$row[0]</font></a></td>";
@@ -39239,11 +39239,11 @@ if ($ADD==100000000000)
 	echo "<td align=center><font size=1 color=white><B>"._QXZ("MODIFY")."</B></td></tr>\n";
 
 	$o=0;
-	while ($servers_to_print > $o) 
+	while ($servers_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=311111111111&server_id=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=311111111111&server_id=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
@@ -39283,11 +39283,11 @@ if ($ADD==130000000000)
 	echo "<td align=center><font size=1 color=white><B>"._QXZ("MODIFY")."</B></td></tr>\n";
 
 	$o=0;
-	while ($templates_to_print > $o) 
+	while ($templates_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=331111111111&template_id=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=331111111111&template_id=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
@@ -39326,7 +39326,7 @@ if ($ADD==140000000000)
 	echo "<td align=center><font size=1 color=white><B>"._QXZ("MODIFY")."</B></td></tr>\n";
 
 	$o=0;
-	while ($carriers_to_print > $o) 
+	while ($carriers_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if (strlen($row[4])>14)
@@ -39336,7 +39336,7 @@ if ($ADD==140000000000)
 			}
 		if ($row[2] == '0.0.0.0') {$row[2]='ALL SERVERS';}
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=341111111111&carrier_id=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=341111111111&carrier_id=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
@@ -39378,7 +39378,7 @@ if ($ADD==150000000000)
 	echo "<td align=center><font size=1 color=white><B>"._QXZ("MODIFY")."</B></td></tr>\n";
 
 	$o=0;
-	while ($tts_to_print > $o) 
+	while ($tts_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		$row[3]=preg_replace('/;|<|>/', '', $row[3]);
@@ -39386,7 +39386,7 @@ if ($ADD==150000000000)
 		if(strlen($row[3]) > 47) {$row[3] = "$row[3]...";}
 
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=351111111111&tts_id=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=351111111111&tts_id=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
@@ -39426,7 +39426,7 @@ if ($ADD==160000000000)
 	echo "<td align=center><font size=1 color=white><B>"._QXZ("MODIFY")."</B></td></tr>\n";
 
 	$o=0;
-	while ($moh_to_print > $o) 
+	while ($moh_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		$row[3]=preg_replace('/;|<|>/', '', $row[3]);
@@ -39434,7 +39434,7 @@ if ($ADD==160000000000)
 		if(strlen($row[3]) > 47) {$row[3] = "$row[3]...";}
 
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=361111111111&moh_id=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=361111111111&moh_id=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
@@ -39475,12 +39475,12 @@ if ($ADD==170000000000)
 	echo "<td align=center><font size=1 color=white><B>"._QXZ("MODIFY")."</B></td></tr>\n";
 
 	$o=0;
-	while ($vm_to_print > $o) 
+	while ($vm_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=371111111111&voicemail_id=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=371111111111&voicemail_id=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
@@ -39520,12 +39520,12 @@ if ($ADD==180000000000)
 	echo "<td align=center><font size=1 color=white><B>"._QXZ("MODIFY")."</B></td></tr>\n";
 
 	$o=0;
-	while ($lb_to_print > $o) 
+	while ($lb_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=381111111111&label_id=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=381111111111&label_id=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
@@ -39564,12 +39564,12 @@ if ($ADD==182000000000)
 	echo "<td align=center><font size=1 color=white><B>"._QXZ("MODIFY")."</B></td></tr>\n";
 
 	$o=0;
-	while ($lb_to_print > $o) 
+	while ($lb_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=382111111111&colors_id=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=382111111111&colors_id=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
@@ -39596,7 +39596,7 @@ if ($ADD==182000000000)
 			}
 		if ( ($row[7]!='default_new') and ($row[7]!='default_old') )
 			{
-			if (file_exists("./images/vicidial_admin_web_logo$row[7]")) 
+			if (file_exists("./images/vicidial_admin_web_logo$row[7]"))
 				{
 				$selected_logo = "./images/vicidial_admin_web_logo$row[7]";
 				}
@@ -39623,7 +39623,7 @@ if ($ADD==190000000000)
 	if ( (preg_match("/contact_information/",$SStables_use_alt_log_db)) and (strlen($SSalt_log_server_ip)>4) and (strlen($SSalt_log_dbname)>0) )
 		{
 		$linkALT=mysqli_connect("$SSalt_log_server_ip", "$SSalt_log_login", "$SSalt_log_pass", "$SSalt_log_dbname");
-			if (!$linkALT) 
+			if (!$linkALT)
 				{
 				die('MySQL '._QXZ("connect ERROR").': ' . mysqli_connect_error());
 				}
@@ -39647,7 +39647,7 @@ if ($ADD==190000000000)
 	echo "<td align=center><font size=1 color=white><B>"._QXZ("MODIFY")."</B></td></tr>\n";
 
 	$o=0;
-	while ($lb_to_print > $o) 
+	while ($lb_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		while (strlen($row[4])>20) {$row[4] = preg_replace("/.$/","",$row[4]);}
@@ -39657,7 +39657,7 @@ if ($ADD==190000000000)
 		while (strlen($row[8])>20) {$row[8] = preg_replace("/.$/","",$row[8]);}
 
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=391111111111&contact_id=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=391111111111&contact_id=$row[0]\"><font size=1 color=black>$row[1] $row[2]</a></td>";
@@ -39698,12 +39698,12 @@ if ($ADD==192000000000)
 	echo "<td align=center><font size=1 color=white><B>"._QXZ("MODIFY")."</B></td></tr>\n";
 
 	$o=0;
-	while ($sc_to_print > $o) 
+	while ($sc_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=392111111111&container_id=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=392111111111&container_id=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
@@ -39744,7 +39744,7 @@ if ($ADD==193000000000)
 	$o=0;
 	$menu_id = $MT;
 
-	while ($status_groups_to_print > $o) 
+	while ($status_groups_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		$status_group_id[$o] =		$row[0];
@@ -39754,13 +39754,13 @@ if ($ADD==193000000000)
 		}
 
 	$o=0;
-	while ($status_groups_to_print > $o) 
+	while ($status_groups_to_print > $o)
 		{
 		$stmt="SELECT count(*) from vicidial_campaign_statuses where campaign_id=\"$status_group_id[$o]\";";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$row=mysqli_fetch_row($rslt);
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=393111111111&status_group_id=$status_group_id[$o]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=393111111111&status_group_id=$status_group_id[$o]\"><font size=1 color=black>$status_group_id[$o]</a></td>";
@@ -39774,7 +39774,7 @@ if ($ADD==193000000000)
 	echo "</TABLE></center>\n";
 	}
 
-	
+
 ######################
 # ADD=193222222222 copy status group
 ######################
@@ -39786,22 +39786,22 @@ if ($ADD==193222222222)
 	$sg_ct = mysqli_num_rows($rslt);
 	if ($sg_ct > 0) {
 		##### END ID override optional section #####
-		
+
 		echo "<TABLE><TR><TD>\n";
 		echo "<img src=\"images/icon_statusgroups.png\" width=42 height=42 align=left> <FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-		
+
 		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-			
+
 		echo "<br>"._QXZ("COPY STATUS GROUP")."<form action=$PHP_SELF method=POST>\n";
 		echo "<input type=hidden name=ADD value=293222222222>\n";
 		echo "<center><TABLE width=$section_width cellspacing=3>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Status Group ID").": </td><td align=left><input type=text name=group_id size=20 maxlength=20> ("._QXZ("no spaces").")$NWB#status_groups$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Status Group Note").": </td><td align=left><input type=text name=group_name size=30 maxlength=30>$NWB#status_groups$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Source Status Group ID").": </td><td align=left><select size=1 name=source_group_id>\n";
-	
+
 		$groups_to_print = $sg_ct;
 		$groups_list='';
-			
+
 		$o=0;
 		while ($groups_to_print > $o) {
 			$rowx=mysqli_fetch_row($rslt);
@@ -39810,11 +39810,11 @@ if ($ADD==193222222222)
 		}
 		echo "$groups_list";
 		echo "</select>$NWB#status_groups$NWE</td></tr>\n";
-			
+
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=center colspan=2><input type=submit name=SUBMIT value='"._QXZ("SUBMIT")."'></td></tr>\n";
 		echo "</TABLE></center>\n";
 	}
-	
+
 	else {
 		echo _QXZ("No Status Group to copy found")."\n";
 		exit;
@@ -39827,7 +39827,7 @@ if ($ADD==193222222222)
 if ($ADD==293222222222)
 {
 	$group_id = preg_replace("/\-/",'',$group_id);
-	
+
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_inbound_groups where group_id='$group_id';";
 	$rslt=mysql_to_mysqli($stmt, $link);
@@ -39853,12 +39853,12 @@ if ($ADD==293222222222)
 			{
 				$stmt="INSERT INTO vicidial_status_groups (status_group_id,status_group_notes,user_group) SELECT \"$group_id\",\"$group_name\",user_group from vicidial_status_groups where status_group_id=\"$source_group_id\";";
 				$rslt=mysql_to_mysqli($stmt, $link);
-				
+
 				$stmtA="INSERT INTO vicidial_campaign_statuses(status,status_name,selectable,campaign_id,human_answered,category,sale,dnc,customer_contact,not_interested,unworkable,scheduled_callback,completed,min_sec,max_sec,answering_machine) SELECT status,status_name,selectable,'$group_id',human_answered,category,sale,dnc,customer_contact,not_interested,unworkable,scheduled_callback,completed,min_sec,max_sec,answering_machine FROM vicidial_campaign_statuses WHERE campaign_id='$source_group_id';";
 				$rslt=mysql_to_mysqli($stmtA, $link);
-					
+
 				echo "<br><B>"._QXZ("GROUP ADDED").": $group_id</B>\n";
-				
+
 				### LOG INSERTION Admin Log Table ###
 				$SQL_log = "$stmt|$stmtA|$stmtB|";
 				$SQL_log = preg_replace('/;/', '', $SQL_log);
@@ -39898,12 +39898,12 @@ if ($ADD==194000000000)
 	echo "<td align=center><font size=1 color=white><B>"._QXZ("MODIFY")."</B></td></tr>\n";
 
 	$o=0;
-	while ($sc_to_print > $o) 
+	while ($sc_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=394111111111&report_id=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=394111111111&report_id=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
@@ -39963,7 +39963,7 @@ if ($ADD==195000000000)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$row=mysqli_fetch_row($rslt);
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=395111111111&ip_list_id=$Xip_list_id[$o]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=395111111111&ip_list_id=$Xip_list_id[$o]\"><font size=1 color=black>$Xip_list_id[$o]</a></td>";
@@ -40005,7 +40005,7 @@ if ($ADD==196000000000)
 	$o=0;
 	$menu_id = $MT;
 
-	while ($cid_groups_to_print > $o) 
+	while ($cid_groups_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		$cid_group_id[$o] =		$row[0];
@@ -40016,13 +40016,13 @@ if ($ADD==196000000000)
 		}
 
 	$o=0;
-	while ($cid_groups_to_print > $o) 
+	while ($cid_groups_to_print > $o)
 		{
 		$stmt="SELECT count(*) from vicidial_campaign_cid_areacodes where campaign_id=\"$cid_group_id[$o]\";";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$row=mysqli_fetch_row($rslt);
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=396111111111&cid_group_id=$cid_group_id[$o]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=396111111111&cid_group_id=$cid_group_id[$o]\"><font size=1 color=black>$cid_group_id[$o]</a></td>";
@@ -40059,11 +40059,11 @@ if ($ADD==1000000000000)
 	echo "<td align=center><font size=1 color=white><B>"._QXZ("MODIFY")."</B></td></tr>\n";
 
 	$o=0;
-	while ($conferences_to_print > $o) 
+	while ($conferences_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=3111111111111&conf_exten=$row[0]&server_ip=$row[1]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=3111111111111&conf_exten=$row[0]&server_ip=$row[1]\"><font size=1 color=black>$row[0]</a></td>";
@@ -40098,11 +40098,11 @@ if ($ADD==10000000000000)
 	echo "<td align=center><font size=1 color=white><B>"._QXZ("MODIFY")."</B></td></tr>\n";
 
 	$o=0;
-	while ($vicidialconf_to_print > $o) 
+	while ($vicidialconf_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=31111111111111&conf_exten=$row[0]&server_ip=$row[1]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=31111111111111&conf_exten=$row[0]&server_ip=$row[1]\"><font size=1 color=black>$row[0]</a></td>";
@@ -40137,14 +40137,14 @@ if (($ADD==100000000000000) && ($qc_auth=='1'))
     echo "<td align=center><font size=1 color=white><B>"._QXZ("MODIFY")."</B></td></tr>\n";
 
     $o=0;
-    while ($vicidialconf_to_print > $o) 
+    while ($vicidialconf_to_print > $o)
 		{
         $row=mysqli_fetch_row($rslt);
 		if (preg_match("/1$|3$|5$|7$|9$/i", $o))
 			{
             $bgcolor='class="records_list_x"';
 			}
-        else 
+        else
 			{
             $bgcolor='class="records_list_y"';
 			}
@@ -40161,14 +40161,14 @@ if (($ADD==100000000000000) && ($qc_auth=='1'))
 ######################
 # ADD=881 VIEW one qc campaign
 ######################
-if (($ADD==881) && ($qc_auth=='1')) 
+if (($ADD==881) && ($qc_auth=='1'))
 	{
     echo "<TABLE><TR><TD>\n";
     echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
     $stmt="SELECT campaign_id,campaign_name, qc_statuses from vicidial_campaigns where active = 'Y' and qc_enabled='Y' and campaign_id='$campaign_id' $LOGqc_allowed_campaignsSQL limit 1";
     $rslt=mysql_to_mysqli($stmt, $link);
     $vicidialconf_to_print = mysqli_num_rows($rslt);
-    if ($vicidialconf_to_print > 0) 
+    if ($vicidialconf_to_print > 0)
 		{
         $row=mysqli_fetch_row($rslt);
 		$qc_status_list=substr($row[2],0,strlen($row[2])-2);
@@ -40177,13 +40177,13 @@ if (($ADD==881) && ($qc_auth=='1'))
 
 		$qc_statuses=explode(' ',$qc_status_list);
 			echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
-		foreach ( $qc_statuses as $qc_status ) 
+		foreach ( $qc_statuses as $qc_status )
 			{
 			$stmt="SELECT lead_id,first_name,last_name,modify_date,user from vicidial_list inner join vicidial_lists on vicidial_list.list_id=vicidial_lists.list_id where campaign_id='$campaign_id' and status='$qc_status' order by status, modify_date";
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$vicidialconf_to_print = mysqli_num_rows($rslt);
 			$o=0;
-			while ($vicidialconf_to_print > $o) 
+			while ($vicidialconf_to_print > $o)
 				{
 				if($o==0)
 					{
@@ -40289,7 +40289,7 @@ if ($ADD==700000000000000)
 		if (preg_match('/GROUPALIAS/i', $row[4])) {$record_link = "$PHP_SELF?ADD=33111111111&group_alias_id=$row[6]";}
 
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=730000000000000&stage=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=730000000000000&stage=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
@@ -40376,7 +40376,7 @@ if ($ADD==710000000000000)
 		if (preg_match('/GROUPALIAS/i', $row[4])) {$record_link = "$PHP_SELF?ADD=33111111111&group_alias_id=$row[6]";}
 
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=730000000000000&stage=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=730000000000000&stage=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
@@ -40466,7 +40466,7 @@ if ($ADD==720000000000000)
 			if (preg_match('/EMAIL/i',$row[4])) {$record_link = "./admin_email_accounts.php?eact=UPDATE&email_account_id=$row[6]";}
 
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='class="records_list_x"';} 
+				{$bgcolor='class="records_list_x"';}
 			else
 				{$bgcolor='class="records_list_y"';}
 			echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=730000000000000&stage=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=730000000000000&stage=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
@@ -40658,14 +40658,14 @@ if ($ADD==800000000000000)
 		$row=mysqli_fetch_row($rslt);
 
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 
 		$run_color='color=blue';
-		if ($row[9] > 5) {$run_color='color=black';} 
-		if ($row[9] > 10) {$run_color='color=purple';} 
-		if ($row[9] > 30) {$run_color='color=red';} 
+		if ($row[9] > 5) {$run_color='color=black';}
+		if ($row[9] > 10) {$run_color='color=purple';}
+		if ($row[9] > 30) {$run_color='color=red';}
 
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=830000000000000&stage=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=830000000000000&stage=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
 		echo "<td><font size=1> $row[1]</td>";
@@ -40724,14 +40724,14 @@ if ($ADD==810000000000000)
 		$row=mysqli_fetch_row($rslt);
 
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='class="records_list_x"';} 
+			{$bgcolor='class="records_list_x"';}
 		else
 			{$bgcolor='class="records_list_y"';}
 
 		$run_color='color=blue';
-		if ($row[9] > 5) {$run_color='color=black';} 
-		if ($row[9] > 10) {$run_color='color=purple';} 
-		if ($row[9] > 30) {$run_color='color=red';} 
+		if ($row[9] > 5) {$run_color='color=black';}
+		if ($row[9] > 10) {$run_color='color=purple';}
+		if ($row[9] > 30) {$run_color='color=red';}
 
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=830000000000000&stage=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=830000000000000&stage=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
 		echo "<td><font size=1> $row[1]</td>";
@@ -40770,9 +40770,9 @@ if ($ADD==830000000000000)
 			$row=mysqli_fetch_row($rslt);
 
 			$run_color='color=blue';
-			if ($row[11] > 5) {$run_color='color=black';} 
-			if ($row[11] > 10) {$run_color='color=purple';} 
-			if ($row[11] > 30) {$run_color='color=red';} 
+			if ($row[11] > 5) {$run_color='color=black';}
+			if ($row[11] > 10) {$run_color='color=purple';}
+			if ($row[11] > 30) {$run_color='color=red';}
 
 			echo "<br>"._QXZ("ADMIN REPORT LOG: Record Detail")." - $stage<BR><BR>\n";
 			echo "<center><TABLE width=$section_width cellspacing=5 cellpadding=0>\n";
@@ -40870,7 +40870,7 @@ if ($ADD==999999)
 		?>
 
 		</head><BODY BGCOLOR=WHITE>
-		<img src="images/icon_black_reports.png" alt="Reports" width=42 height=42 align=left> 
+		<img src="images/icon_black_reports.png" alt="Reports" width=42 height=42 align=left>
 		<FONT SIZE=4><B><?php echo _QXZ("Server Stats and Reports"); ?></B></FONT><BR>
 		<FONT SIZE=1><B> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; (<a href="admin.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK><?php echo _QXZ("System Summary"); ?></font></a>)</B></FONT><BR><BR>
 		<TABLE BORDER=0 CELLPADDING=5 CELLSPACING=0><TR><TD VALIGN=TOP>
@@ -40881,7 +40881,7 @@ if ($ADD==999999)
 
 		if (file_exists("ExtraMenueReports.php")) {
 			require_once("ExtraMenueReports.php");
-			
+
 			echo "<B>" . _QXZ($EMR_Title) . "</B><BR>\n";
 			echo "<UL>\n";
 			for ($i=0; $i!=$EMR_Count; $i++) {
@@ -41060,16 +41060,16 @@ if ($ADD==999999)
 
 		$custom_stmt="show tables like 'vicidial_custom_reports'";
 		$custom_rslt=mysql_to_mysqli($custom_stmt, $link);
-		if (mysqli_num_rows($custom_rslt)>0) 
+		if (mysqli_num_rows($custom_rslt)>0)
 			{
 			$allowed_rpt_stmt="SELECT allowed_custom_reports from vicidial_user_groups where user_group='$LOGuser_group' and allowed_custom_reports!=''";
 			$allowed_rpt_rslt=mysql_to_mysqli($allowed_rpt_stmt, $link);
-			if (mysqli_num_rows($allowed_rpt_rslt)>0) 
+			if (mysqli_num_rows($allowed_rpt_rslt)>0)
 				{
 				$allowed_rpt_row=mysqli_fetch_row($allowed_rpt_rslt);
 				$allowed_custom_reports=$allowed_rpt_row[0];
 				$allowed_reports_array=explode("|", $allowed_custom_reports);
-				if (count($allowed_reports_array)>0) 
+				if (count($allowed_reports_array)>0)
 					{
 					echo "<BR>\n";
 					echo "<B>"._QXZ("Custom Reports")."</B><BR>\n";
@@ -41744,7 +41744,7 @@ if ($ADD==999993)
 			$stmt="SELECT group_name from vicidial_inbound_groups where group_id='$campaign_id' $LOGadmin_viewable_groupsSQL;";
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$rows_to_print = mysqli_num_rows($rslt);
-			if ($rows_to_print > 0) 
+			if ($rows_to_print > 0)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$campaign_name = $rowx[0];
@@ -41758,7 +41758,7 @@ if ($ADD==999993)
 			$stmt="SELECT remote_agent_id from vicidial_remote_agents where user_start='$campaign_id';";
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$rows_to_print = mysqli_num_rows($rslt);
-			if ($rows_to_print > 0) 
+			if ($rows_to_print > 0)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$remote_agent_id = $rowx[0];
@@ -41776,7 +41776,7 @@ if ($ADD==999993)
 			$stmt="SELECT campaign_name from vicidial_campaigns where campaign_id='$campaign_id' $LOGallowed_campaignsSQL;";
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$rows_to_print = mysqli_num_rows($rslt);
-			if ($rows_to_print > 0) 
+			if ($rows_to_print > 0)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$campaign_name = $rowx[0];
@@ -41794,7 +41794,7 @@ if ($ADD==999993)
 		echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
 		echo "Days: <input type=text id=SUB name=SUB size=5 maxlength=4 value=\"$day_count\"> &nbsp; &nbsp;<input type=submit name=SUBMIT value='"._QXZ("SUBMIT")."'>\n";
 		echo "</form>\n";
-		
+
 		echo "<center><TABLE width=$section_width cellspacing=5 cellpadding=2>\n";
 
 		if ($stage == 'remote-agent')
@@ -41851,7 +41851,7 @@ if ($ADD==999992)
 	}
 	if ($query_date>$end_date) {$query_date=$end_date;}
 
-	
+
 	$num_graph_days = ceil(abs(strtotime($end_date) - strtotime($query_date)) / 86400)+1;
 
 	echo "<TABLE><TR><TD>\n";
@@ -41890,7 +41890,7 @@ if ($ADD==999992)
 		$stmt="SELECT sum(total_calls) from vicidial_daily_max_stats where campaign_id!='' and stats_flag='OPEN';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$rows_to_print = mysqli_num_rows($rslt);
-		if ($rows_to_print > 0) 
+		if ($rows_to_print > 0)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$ALLtotal_calls = $rowx[0];
@@ -41967,11 +41967,11 @@ if ($ADD==999990)
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$active_calls=mysqli_num_rows($rslt);
 		$ringing_calls=0;
-		if ($active_calls>0) 
+		if ($active_calls>0)
 			{
-			while ($row=mysqli_fetch_row($rslt)) 
+			while ($row=mysqli_fetch_row($rslt))
 				{
-				if (!preg_match("/LIVE|CLOSER/i",$row[0])) 
+				if (!preg_match("/LIVE|CLOSER/i",$row[0]))
 					{$ringing_calls++;}
 				}
 			}
@@ -41979,7 +41979,7 @@ if ($ADD==999990)
 		$active_stmt="SELECT active from vicidial_users $whereLOGadmin_viewable_groupsSQL";
 		if ($DB) {echo "|$active_stmt|\n";}
 		$active_rslt=mysql_to_mysqli($active_stmt, $link);
-		while ($active_row=mysqli_fetch_array($active_rslt)) 
+		while ($active_row=mysqli_fetch_array($active_rslt))
 			{
 			$users[$active_row["active"]]++;
 			}
@@ -41987,7 +41987,7 @@ if ($ADD==999990)
 		$active_stmt="SELECT active from vicidial_campaigns $whereLOGallowed_campaignsSQL";
 		if ($DB) {echo "|$active_stmt|\n";}
 		$active_rslt=mysql_to_mysqli($active_stmt, $link);
-		while ($active_row=mysqli_fetch_array($active_rslt)) 
+		while ($active_row=mysqli_fetch_array($active_rslt))
 			{
 			$campaigns[$active_row["active"]]++;
 			}
@@ -41995,7 +41995,7 @@ if ($ADD==999990)
 		$active_stmt="SELECT active from vicidial_lists $whereLOGallowed_campaignsSQL";
 		if ($DB) {echo "|$active_stmt|\n";}
 		$active_rslt=mysql_to_mysqli($active_stmt, $link);
-		while ($active_row=mysqli_fetch_array($active_rslt)) 
+		while ($active_row=mysqli_fetch_array($active_rslt))
 			{
 			$lists[$active_row["active"]]++;
 			}
@@ -42003,7 +42003,7 @@ if ($ADD==999990)
 		$active_stmt="SELECT did_active from vicidial_inbound_dids $whereLOGadmin_viewable_groupsSQL";
 		if ($DB) {echo "|$active_stmt|\n";}
 		$active_rslt=mysql_to_mysqli($active_stmt, $link);
-		while ($active_row=mysqli_fetch_array($active_rslt)) 
+		while ($active_row=mysqli_fetch_array($active_rslt))
 			{
 			$dids[$active_row["did_active"]]++;
 			}
@@ -42011,7 +42011,7 @@ if ($ADD==999990)
 		$active_stmt="SELECT active from vicidial_inbound_groups $whereLOGadmin_viewable_groupsSQL";
 		if ($DB) {echo "|$active_stmt|\n";}
 		$active_rslt=mysql_to_mysqli($active_stmt, $link);
-		while ($active_row=mysqli_fetch_array($active_rslt)) 
+		while ($active_row=mysqli_fetch_array($active_rslt))
 			{
 			$ingroups[$active_row["active"]]++;
 			}
@@ -42020,7 +42020,7 @@ if ($ADD==999990)
 		if ($DB) {echo "|$stmt|\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$agent_incall=0; $agent_total=0;
-		while($row=mysqli_fetch_array($rslt)) 
+		while($row=mysqli_fetch_array($rslt))
 			{
 			$status=$row[3];
 			$agent_total++;
@@ -42084,13 +42084,13 @@ if ($ADD==999990)
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right><a href='$PHP_SELF?ADD=100' STYLE=\"text-decoration:none;\"><font color=black>"._QXZ("Lists").": </a></td><td align=center><b>".($lists["Y"]+0)."</b></td><td align=center><b>".($lists["N"]+0)."</b></td><td align=center><b>".($lists["Y"]+$lists["N"]+0)."</b></td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right><a href='$PHP_SELF?ADD=1000' STYLE=\"text-decoration:none;\"><font color=black>"._QXZ("In-Groups").": </a></td><td align=center><b>".($ingroups["Y"]+0)."</b></td><td align=center><b>".($ingroups["N"]+0)."</b></td><td align=center><b>".($ingroups["Y"]+$ingroups["N"]+0)."</b></td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right><a href='$PHP_SELF?ADD=1300' STYLE=\"text-decoration:none;\"><font color=black>"._QXZ("DIDs").": </a></td><td align=center><b>".($dids["Y"]+0)."</b></td><td align=center><b>".($dids["N"]+0)."</b></td><td align=center><b>".($dids["Y"]+$dids["N"]+0)."</b></td></tr>\n";
-	
+
 		// New voicemailbox code
 		$stmt="(SELECT voicemail_id,count(*),messages,old_messages,'vm','vm' from vicidial_voicemail where on_login_report='Y' $LOGadmin_viewable_groupsSQL group by voicemail_id) UNION (SELECT voicemail_id,count(*),messages,old_messages,extension,server_ip from phones where on_login_report='Y' $LOGadmin_viewable_groupsSQL group by voicemail_id) order by voicemail_id;";
 		if ($DB) {echo "|$stmt|\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$vm_rows=mysqli_num_rows($rslt);
-		if ($vm_rows>0) 
+		if ($vm_rows>0)
 			{
 			echo "<tr>";
 			echo "<td align='left' colspan='4'>&nbsp;</td>";  # Padding
@@ -42101,8 +42101,8 @@ if ($ADD==999990)
 			echo "<td  align='center'><font style=\"font-family:HELVETICA;font-size:14;color:white;font-weight:bold;\">&nbsp; Old &nbsp;</font></td>\n";
 			echo "<td  align='center'><font style=\"font-family:HELVETICA;font-size:14;color:white;font-weight:bold;\">&nbsp; Total &nbsp;</font></td>\n";
 			echo "</tr>\n";
-	
-			while($row=mysqli_fetch_array($rslt)) 
+
+			while($row=mysqli_fetch_array($rslt))
 				{
 				echo "<tr bgcolor='#$SSstd_row2_background'>\n";
 				if ($row[4] == 'vm')
@@ -42135,9 +42135,9 @@ if ($ADD==999990)
 		if ($DB) {echo "|$stmt|\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$rows_to_print = mysqli_num_rows($rslt);
-		if ($rows_to_print > 0) 
+		if ($rows_to_print > 0)
 			{
-			while ($rowx=mysqli_fetch_row($rslt)) 
+			while ($rowx=mysqli_fetch_row($rslt))
 				{
 				$total_calls += $rowx[1];
 				if (preg_match('/INGROUP/', $rowx[0])) {$total_inbound+=$rowx[1];}
@@ -42160,9 +42160,9 @@ if ($ADD==999990)
 		echo "<td><font size=1 color=white><B>&nbsp; "._QXZ("Total Outbound Calls")." &nbsp;</B></font></td>";
 		echo "<td><font size=1 color=white><B>&nbsp; "._QXZ("Maximum Agents")." &nbsp;</B></font></td>";
 
-		if (mysqli_num_rows($rslt)>0) 
+		if (mysqli_num_rows($rslt)>0)
 			{
-			while ($row=mysqli_fetch_array($rslt)) 
+			while ($row=mysqli_fetch_array($rslt))
 				{
 				echo "<tr bgcolor='#$SSstd_row2_background'>";
 			#	echo "<td align='left'><font size=1>".$row["campaign_id"]."</font></td>";
@@ -42172,8 +42172,8 @@ if ($ADD==999990)
 				echo "<td align='center'><font size=1>".($row["max_agents"]+0)."</font></td>";
 				echo "</tr>";
 				}
-			} 
-		else 
+			}
+		else
 			{
 			echo "<tr bgcolor='#$SSstd_row2_background'>";
 			echo "<td align='center' colspan='4'><font size=1>*** "._QXZ("NO ACTIVITY FOR")." $today ***</font></td>";
@@ -42188,9 +42188,9 @@ if ($ADD==999990)
 		if ($DB) {echo "|$stmt|\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$rows_to_print = mysqli_num_rows($rslt);
-		if ($rows_to_print > 0) 
+		if ($rows_to_print > 0)
 			{
-			while ($rowx=mysqli_fetch_row($rslt)) 
+			while ($rowx=mysqli_fetch_row($rslt))
 				{
 				$total_calls += $rowx[1];
 				if (preg_match('/INGROUP/', $rowx[0])) {$total_inbound+=$rowx[1];}
@@ -42213,9 +42213,9 @@ if ($ADD==999990)
 		$stmt="SELECT * from vicidial_daily_max_stats where stats_date='$yesterday' and stats_type='TOTAL' $LOGallowed_campaignsSQL order by stats_date, campaign_id asc";
 		if ($DB) {echo "|$stmt|\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
-		if (mysqli_num_rows($rslt)>0) 
+		if (mysqli_num_rows($rslt)>0)
 			{
-			while ($row=mysqli_fetch_array($rslt)) 
+			while ($row=mysqli_fetch_array($rslt))
 				{
 				echo "<tr bgcolor='#$SSstd_row2_background'>";
 				#echo "<td align='left'><font size=1>".$row["campaign_id"]."</font></td>";
@@ -42225,8 +42225,8 @@ if ($ADD==999990)
 				echo "<td align='center'><font size=1>".($row["max_agents"]+0)."</font></td>";
 				echo "</tr>";
 				}
-			} 
-		else 
+			}
+		else
 			{
 			echo "<tr bgcolor='#$SSstd_row2_background'>";
 			echo "<td align='center' colspan='4'><font size=1>*** "._QXZ("NO ACTIVITY FOR")." $today ***</font></td>";
@@ -42454,7 +42454,7 @@ if ($ADD==999989)
 
 		$o=0;
 		$langSELECTED=0;
-		while ($langs_to_print > $o) 
+		while ($langs_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			echo "<option value=\"$rowx[0]\"";
@@ -42520,7 +42520,7 @@ if ( ($SSnocache_admin=='1') or ( ($SSadmin_modify_refresh > 1) and ($modify_foo
 
 echo "</html>\n";
 
-	
+
 exit;
 
 
@@ -42538,7 +42538,7 @@ if (isset($camp_lists))
 			$Ds_to_print = (count($Dstatuses) - 0);
 			$Dsql = '';
 			$o=0;
-			while ($Ds_to_print > $o) 
+			while ($Ds_to_print > $o)
 				{
 				$o++;
 				$Dsql .= "'$Dstatuses[$o]',";
@@ -42555,7 +42555,7 @@ if (isset($camp_lists))
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$statuses_to_print = mysqli_num_rows($rslt);
 			$q=0;
-			while ($statuses_to_print > $q) 
+			while ($statuses_to_print > $q)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$complete_statuses.="'$rowx[0]',";
@@ -42565,7 +42565,7 @@ if (isset($camp_lists))
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$statuses_to_print = mysqli_num_rows($rslt);
 			$q=0;
-			while ($statuses_to_print > $q) 
+			while ($statuses_to_print > $q)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$complete_statuses.="'$rowx[0]',";
@@ -42625,14 +42625,14 @@ if (isset($camp_lists))
 			$GMT_gmt[0] = '';
 			$GMT_hour[0] = '';
 			$GMT_day[0] = '';
-			$YMD =  date("Y-m-d");	
+			$YMD =  date("Y-m-d");
 			while ($p > -13)
 				{
 				$pzone=3600 * $p;
 				$pmin=(gmdate("i", time() + $pzone));
 				$phour=( (gmdate("G", time() + $pzone)) * 100);
 				$pday=gmdate("w", time() + $pzone);
-				$tz = sprintf("%.2f", $p);	
+				$tz = sprintf("%.2f", $p);
 				$GMT_gmt[$g] = "$tz";
 				$GMT_day[$g] = "$pday";
 				$GMT_hour[$g] = ($phour + $pmin);
@@ -42669,7 +42669,7 @@ if (isset($camp_lists))
 				{
 				$Gct_holidaysSQL = preg_replace("/\|/", "','", "$Gct_holidays");
 				$Gct_holidaysSQL = "'".$Gct_holidaysSQL."'";
-				
+
 				$stmt = "SELECT holiday_id,holiday_date,holiday_name,ct_default_start,ct_default_stop from vicidial_call_time_holidays where holiday_id IN($Gct_holidaysSQL) and holiday_status='ACTIVE' and holiday_date='$YMD' order by holiday_id;";
 				$rslt=mysql_to_mysqli($stmt, $link);
 				if ($DB) {echo "$stmt\n";}
@@ -42681,7 +42681,7 @@ if (isset($camp_lists))
 					$holiday_date =				$aryC[1];
 					$holiday_name =				$aryC[2];
 					if($Gct_default_start < $aryC[3])		{$Gct_default_start = $aryC[3];}
-					if($Gct_default_stop > $aryC[4])		{$Gct_default_stop = $aryC[4];}						
+					if($Gct_default_stop > $aryC[4])		{$Gct_default_stop = $aryC[4];}
 					if($Gct_sunday_start < $aryC[3])		{$Gct_sunday_start = $aryC[3];}
 					if($Gct_sunday_stop > $aryC[4])			{$Gct_sunday_stop = $aryC[4];}
 					if($Gct_monday_start < $aryC[3])		{$Gct_monday_start = $aryC[3];}
@@ -42740,11 +42740,11 @@ if (isset($camp_lists))
 
 					### BEGIN Check for outbound state holiday ###
 					$Sholiday_id = '';
-					if ((strlen($Sct_holidays)>2) or ((strlen($holiday_id)>2) and (strlen($Sholiday_id)<2))) 
+					if ((strlen($Sct_holidays)>2) or ((strlen($holiday_id)>2) and (strlen($Sholiday_id)<2)))
 						{
 						# Apply state holiday
 						if (strlen($Sct_holidays)>2)
-							{								
+							{
 							$Sct_holidaysSQL = preg_replace("/\|/", "','", "$Sct_holidays");
 							$Sct_holidaysSQL = "'".$Sct_holidaysSQL."'";
 							$stmt = "SELECT holiday_id,holiday_date,holiday_name,ct_default_start,ct_default_stop from vicidial_call_time_holidays where holiday_id IN($Sct_holidaysSQL) and holiday_status='ACTIVE' and holiday_date='$YMD' order by holiday_id;";
@@ -42755,7 +42755,7 @@ if (isset($camp_lists))
 							{
 							$stmt = "SELECT holiday_id,holiday_date,holiday_name,ct_default_start,ct_default_stop from vicidial_call_time_holidays where holiday_id='$holiday_id' and holiday_status='ACTIVE' and holiday_date='$YMD' order by holiday_id;";
 							$holidaytype = "NO STATE HOLIDAY APPLYING CALL TIME HOLIDAY!   ";
-							}				
+							}
 						$rslt=mysql_to_mysqli($stmt, $link);
 						if ($DB) {echo "$stmt\n";}
 						$sthCrows=mysqli_num_rows($rslt);
@@ -43003,7 +43003,7 @@ if (isset($camp_lists))
 			$Ds_to_print = (count($Dstatuses) - 0);
 			$Dsql = '';
 			$o=0;
-			while ($Ds_to_print > $o) 
+			while ($Ds_to_print > $o)
 				{
 				$o++;
 				$Dsql .= "'$Dstatuses[$o]',";
@@ -43046,7 +43046,7 @@ if (isset($camp_lists))
 			$EXPsql = "and list_id NOT IN($expired_lists)";
 
 
-			#################################								
+			#################################
 			# Camp List
 			$stmt="SELECT list_id FROM vicidial_lists where list_id IN($camp_lists) and active='Y';";
 			$rslt_list=mysql_to_mysqli($stmt, $link);
@@ -43073,7 +43073,7 @@ if (isset($camp_lists))
 					$pmin=(gmdate("i", time() + $pzone));
 					$phour=( (gmdate("G", time() + $pzone)) * 100);
 					$pday=gmdate("w", time() + $pzone);
-					$tz = sprintf("%.2f", $p);	
+					$tz = sprintf("%.2f", $p);
 					$GMT_gmt[$g] = "$tz";
 					$GMT_day[$g] = "$pday";
 					$GMT_hour[$g] = ($phour + $pmin);
@@ -43082,7 +43082,7 @@ if (isset($camp_lists))
 					}
 
 				# Set List ID Variable
-				$cur_list_id = $rowA[0];			
+				$cur_list_id = $rowA[0];
 				$list_local_call_time = "";
 
 				# Pull the call times for the lists
@@ -43097,13 +43097,13 @@ if (isset($camp_lists))
 					}
 
 				# check that call time exists
-				if ($cur_call_time != "campaign") 
+				if ($cur_call_time != "campaign")
 					{
 					$stmt="SELECT count(*) from vicidial_call_times where call_time_id='$cur_call_time';";
 					$rslt=mysql_to_mysqli($stmt, $link);
 					$row=mysqli_fetch_row($rslt);
 					$call_time_exists  =	$row[0];
-					if ($call_time_exists < 1) 
+					if ($call_time_exists < 1)
 						{$cur_call_time = 'campaign';}
 					}
 
@@ -43140,7 +43140,7 @@ if (isset($camp_lists))
 						{
 						$Gct_holidaysSQL = preg_replace("/\|/", "','", "$Gct_holidays");
 						$Gct_holidaysSQL = "'".$Gct_holidaysSQL."'";
-						
+
 						$stmt = "SELECT holiday_id,holiday_date,holiday_name,ct_default_start,ct_default_stop from vicidial_call_time_holidays where holiday_id IN($Gct_holidaysSQL) and holiday_status='ACTIVE' and holiday_date='$YMD' order by holiday_id;";
 						$rslt=mysql_to_mysqli($stmt, $link);
 						$sthCrows=mysqli_num_rows($rslt);
@@ -43214,11 +43214,11 @@ if (isset($camp_lists))
 
 							### BEGIN Check for outbound state holiday ###
 							$Sholiday_id = '';
-							if ((strlen($Sct_holidays)>2) or ((strlen($holiday_id)>2) and (strlen($Sholiday_id)<2))) 
+							if ((strlen($Sct_holidays)>2) or ((strlen($holiday_id)>2) and (strlen($Sholiday_id)<2)))
 								{
 								#Apply state holiday
 								if (strlen($Sct_holidays)>2)
-									{								
+									{
 									$Sct_holidaysSQL = preg_replace("/\|/", "','", "$Sct_holidays");
 									$Sct_holidaysSQL = "'".$Sct_holidaysSQL."'";
 									$stmt = "SELECT holiday_id,holiday_date,holiday_name,ct_default_start,ct_default_stop from vicidial_call_time_holidays where holiday_id IN($Sct_holidaysSQL) and holiday_status='ACTIVE' and holiday_date='$YMD' order by holiday_id;";
@@ -43229,7 +43229,7 @@ if (isset($camp_lists))
 									{
 									$stmt = "SELECT holiday_id,holiday_date,holiday_name,ct_default_start,ct_default_stop from vicidial_call_time_holidays where holiday_id='$holiday_id' and holiday_status='ACTIVE' and holiday_date='$YMD' order by holiday_id;";
 									$holidaytype = "LIST NO STATE HOLIDAY APPLYING CALL TIME HOLIDAY!   ";
-									}				
+									}
 								$rslt=mysql_to_mysqli($stmt, $link);
 								if ($DB) {echo "$stmt\n";}
 								$sthCrows=mysqli_num_rows($rslt);
@@ -43359,7 +43359,7 @@ if (isset($camp_lists))
 								$r++;
 								}
 							$state_gmt = "$state_gmt'99'";
-		
+
 							$del_list_state_gmt_SQL .= "or (List_id=\"$cur_list_id\" and state='$Gstate_call_time_state' and gmt_offset_now NOT IN($state_gmt)) ";
 							$list_state_gmt_SQL .= "or (List_id=\"$cur_list_id\" and state='$Gstate_call_time_state' and gmt_offset_now IN($state_gmt)) ";
 							}
@@ -43381,7 +43381,7 @@ if (isset($camp_lists))
 					$list_default_gmt='';
 					while($r < $g)
 						{
-						if ($DB > 0) 
+						if ($DB > 0)
 							{echo "LCT_gmt: $r|$GMT_day[$r]|$GMT_gmt[$r]|$Gct_sunday_start|$Gct_sunday_stop|$GMT_hour[$r]|$Gct_default_start|$Gct_default_stop\n";}
 
 						if ($GMT_day[$r]==0)	#### Sunday local time
@@ -43513,11 +43513,11 @@ if (isset($camp_lists))
 
 				else
 					{
-					if (strlen($list_id_sql) < 3) 
+					if (strlen($list_id_sql) < 3)
 						{
 						$list_id_sql = "(list_id IN('$cur_list_id'";
 						}
-					else 
+					else
 						{
 						$list_id_sql .= ",'$cur_list_id'";
 						}

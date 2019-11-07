@@ -3,7 +3,7 @@
 # AST_agent_week.pl    version 2.0.5
 #
 # This script is designed to gather stats for all agent activity over the course
-# of a week(Sunday to Saturday) and print it in an ASCI text file to be placed 
+# of a week(Sunday to Saturday) and print it in an ASCI text file to be placed
 # on a web server for viewing.
 #
 # Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -205,7 +205,7 @@ open(out, ">$PATHweb/vicidial/agent_reports/$outfile")
 if (!$VARDB_port) {$VARDB_port='3306';}
 
 
-use DBI;	  
+use DBI;
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
@@ -321,9 +321,9 @@ foreach(@PAST_date)
 		$login_time =	sprintf("%9s", $TIME_HMS);
 
 
-		
-		print out "$name$user$calls$talk$pause$wait$dispo$active$login_time$first_time$last_time\n"; 
-		print "$name$user$calls$talk$pause$wait$dispo$active$login_time$first_time$last_time\n"; 
+
+		print out "$name$user$calls$talk$pause$wait$dispo$active$login_time$first_time$last_time\n";
+		print "$name$user$calls$talk$pause$wait$dispo$active$login_time$first_time$last_time\n";
 
 
 		$rec_count++;

@@ -2,7 +2,7 @@
 #
 # QC_gather_records.pl                version: 2.0.5
 #
-# This script is designed to gather records to be posted to the 
+# This script is designed to gather records to be posted to the
 # qc_vicidial_list_original table so that it can be processed by the QC system
 #
 # Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -311,7 +311,7 @@ if ($pull_statuses =~ /---ALL---/)
 				$QCs_to_print = $#QCstatuses;
 				$QCsql = '';
 				$o=0;
-				while ($QCs_to_print > $o) 
+				while ($QCs_to_print > $o)
 					{
 					$o++;
 					$QCsql .= "'$QCstatuses[$o]',";
@@ -345,7 +345,7 @@ if ($pull_statuses =~ /---ALL---/)
 				$QCs_to_print = $#QCstatuses;
 				$QCsql = '';
 				$o=0;
-				while ($QCs_to_print > $o) 
+				while ($QCs_to_print > $o)
 					{
 					$o++;
 					$QCsql .= "'$QCstatuses[$o]',";
@@ -515,7 +515,7 @@ foreach(@vicidial_id)
 				}
 			$sthA->finish();
 			}
-		else 
+		else
 			{$fronter[$i]='';}
 
 		### Insert a record into the vicidial_qc_list table

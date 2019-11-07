@@ -1,6 +1,6 @@
 <?php
 # vdc_script_display.php
-# 
+#
 # LICENSE: AGPLv3
 #
 # Copyright (©) 2019  Matt Florell <vicidial@gmail.com>
@@ -794,7 +794,7 @@ if (preg_match('/--A--TABLEper_call_notes--B--/i',$script_text))
 		$Allcounter = array();
 		$g=0;
 		$u=0;
-		while ($out_logs_to_print > $u) 
+		while ($out_logs_to_print > $u)
 			{
 			$row=mysqli_fetch_row($rslt);
 			$ALLsort[$g] =			"$row[0]-----$g";
@@ -844,7 +844,7 @@ if (preg_match('/--A--TABLEper_call_notes--B--/i',$script_text))
 		if ($format=='debug') {$NOTESout .= "|$in_logs_to_print|$stmt|";}
 
 		$u=0;
-		while ($in_logs_to_print > $u) 
+		while ($in_logs_to_print > $u)
 			{
 			$row=mysqli_fetch_row($rslt);
 			$ALLsort[$g] =			"$row[0]-----$g";
@@ -895,13 +895,13 @@ if (preg_match('/--A--TABLEper_call_notes--B--/i',$script_text))
 			{$NOTESout .= "<tr bgcolor=white><td colspan=11 align=center>"._QXZ("No calls found")."</td></tr>";}
 
 		$u=0;
-		while ($g > $u) 
+		while ($g > $u)
 			{
 			$sort_split = explode("-----",$ALLsort[$u]);
 			$i = $sort_split[1];
 
 			if (preg_match("/1$|3$|5$|7$|9$/i", $u))
-				{$bgcolor='bgcolor="#B9CBFD"';} 
+				{$bgcolor='bgcolor="#B9CBFD"';}
 			else
 				{$bgcolor='bgcolor="#9BB9FB"';}
 
@@ -959,10 +959,10 @@ if ( (preg_match('/--A--EMAILinbound_message--B--/i',$script_text)) and (strlen(
 
 		$att_stmt="SELECT * from inbound_email_attachments where email_row_id='$email_row_id'";
 		$att_rslt=mysql_to_mysqli($att_stmt, $link);
-		if (mysqli_num_rows($att_rslt)>0) 
+		if (mysqli_num_rows($att_rslt)>0)
 			{
 			$EMAILout.="<tr><td align=left valign=top colspan=2 bgcolor=white>"._QXZ("Attachments:")."<br><pre>";
-			while($att_row=mysqli_fetch_array($att_rslt)) 
+			while($att_row=mysqli_fetch_array($att_rslt))
 				{
 				$EMAILout.="<LI><a href='./vdc_email_display.php?attachment_id=$att_row[attachment_id]&lead_id=$lead_id&user=$user&pass=$orig_pass' target='_blank'>$att_row[filename]</a>\n";
 				}

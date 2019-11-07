@@ -1,10 +1,10 @@
 <?php
 # did_recent_call.php
-# 
+#
 # Copyright (C) 2013  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
-# This script searches the did log for a matching phone number and returns 
-# the number of matches, it was designed to be used with the ViciDial Inbound 
+# This script searches the did log for a matching phone number and returns
+# the number of matches, it was designed to be used with the ViciDial Inbound
 # DID Filter Phone Group feature in the URL search type with the following URL:
 #  VARhttp://server/vicidial/did_recent_call.php?phone=--A--phone_number--B--&did=--A--did_pattern--B--&hours=48
 #

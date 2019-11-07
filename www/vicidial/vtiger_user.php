@@ -294,7 +294,7 @@ while ($i < $VD_users_ct)
 		$rslt=mysql_to_mysqli($stmtA, $linkV);
 		if (!$rslt) {die('Could not execute: ' . mysqli_error());}
 		$userid = mysqli_insert_id($linkV);
-	
+
 		$stmtB = "INSERT INTO vtiger_user2role SET userid='$userid',roleid='$roleid';";
 		if ($DB) {echo "|$stmtB|\n";}
 		$rslt=mysql_to_mysqli($stmtB, $linkV);

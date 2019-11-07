@@ -1,11 +1,11 @@
 <?php
 # voicemail_check.php    version 2.14
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed purely to check whether the voicemail box on the server defined has new and old messages
 # This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
-# 
+#
 # required variables:
 #  - $server_ip
 #  - $session_name
@@ -14,7 +14,7 @@
 # optional variables:
 #  - $format - ('text','debug')
 #  - $vmail_box - ('101','1234',...)
-# 
+#
 #
 # changes
 # 50422-1147 - First build of script
@@ -185,7 +185,7 @@ else
 	}
 
 
-if ($format=='debug') 
+if ($format=='debug')
 	{
 	$ENDtime = date("U");
 	$RUNtime = ($ENDtime - $StarTtime);
@@ -194,6 +194,6 @@ if ($format=='debug')
 	}
 
 if ($SSagent_debug_logging > 0) {vicidial_ajax_log($NOW_TIME,$startMS,$link,$ACTION,$php_script,$user,$stage,$lead_id,$session_name,$stmt);}
-exit; 
+exit;
 
 ?>

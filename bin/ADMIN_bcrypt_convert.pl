@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # ADMIN_bcrypt_convert.pl    version 2.10
-# 
+#
 # Bcrypt password hashing conversion script to be used for authentication
 #
 # This script is to be run once to convert the plaintext passwords into bcrypt
@@ -14,7 +14,7 @@
 #
 #
 # CHANGES
-# 
+#
 # 130704-2041 - First build
 # 141231-0959 - Added --conffile option
 #
@@ -96,19 +96,19 @@ if (length($ARGV[0])>1)
 			if (length($CLIsalt) eq 16)
 				{
 				$newCLIsalt = en_base64($CLIsalt);
-				if ($DB > 0) 
+				if ($DB > 0)
 					{print "\n----- ENCRYPTING SALT OVERRIDE: $CLIsalt -----\n";}
 				$CLIsalt = $newCLIsalt;
 				}
-			if (length($CLIsalt) ne 22) 
+			if (length($CLIsalt) ne 22)
 				{
-				if ($DB > 0) 
+				if ($DB > 0)
 					{print "\n----- INVALID SALT OVERRIDE, USING DEFAULT: $CLIsalt -----\n\n";}
 				$CLIsalt = '';
 				}
 			else
 				{
-				if ($DB > 0) 
+				if ($DB > 0)
 					{print "\n----- SALT OVERRIDE: $CLIsalt -----\n\n";}
 				}
 			}
@@ -117,7 +117,7 @@ if (length($ARGV[0])>1)
 			@data_in = split(/--cost=/,$args);
 			$CLIcost = $data_in[1];
 			$CLIcost =~ s/ .*//gi;
-			if ($DB > 0) 
+			if ($DB > 0)
 				{print "\n----- COST OVERRIDE: $CLIcost -----\n\n";}
 			}
 		if ($args =~ /--conffile=/i) # CLI defined conffile path
@@ -230,7 +230,7 @@ if (length($CLIcost) > 0)
 	}
 else
 	{$cost = $pass_cost;}
-while (length($cost) < 2) 
+while (length($cost) < 2)
 	{$cost = "0$cost";}
 
 $stmtA = "SELECT user,pass,full_name from vicidial_users;";
@@ -278,7 +278,7 @@ $START_time = $START_s_hires . '.' . sprintf("%06s", $START_usec);
 $END_time = $END_s_hires . '.' . sprintf("%06s", $END_usec);
 $RUN_time = ($END_time - $START_time);
 $RUN_time = sprintf("%.6f", $RUN_time);
-if ($DBX > 0) 
+if ($DBX > 0)
 	{print "TOTAL bcrypt time: |$RUN_time ($END_time - $START_time)|\n";}
 
 

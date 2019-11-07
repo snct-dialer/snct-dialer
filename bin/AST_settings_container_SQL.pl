@@ -156,7 +156,7 @@ if ($sthArows > 0)
 	}
 $sthA->finish();
 
-if (length($container_sql)>5) 
+if (length($container_sql)>5)
 	{
 	@container_lines = split(/\n/,$container_sql);
 	$i=0;
