@@ -800,6 +800,11 @@
       - Update: www/agc/vdc_db_query.php,
           www/agc/vicidial.php: Fix for issue #1180, hide phone number in
             callback info.
+    * Add upstream Rev. 3158:
+      - Update: docs/NON-AGENT_API.txt,
+          www/vicidial/admin.php,
+          www/vicidial/non_agent_api.php: Added list_info as API function
+            option.
     * Change next release to 3.0.1.
 
 2.26.29

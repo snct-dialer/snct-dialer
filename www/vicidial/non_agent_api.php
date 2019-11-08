@@ -139,10 +139,11 @@
 # 190628-1504 - Added update_cid_group_entry function
 # 190703-0858 - Added custom_fields_copy option to add_list function
 # 190930-1629 - Added list_description field to add_list and update_list functions
+# 191107-1143 - Added list_info function
 #
 
-$version = '2.14-116';
-$build = '190930-1629';
+$version = '2.14-117';
+$build = '191107-1143';
 $api_url_log = 0;
 
 $startMS = microtime();
@@ -511,6 +512,8 @@ if (isset($_GET["custom_fields_copy"]))				{$custom_fields_copy=$_GET["custom_fi
 	elseif (isset($_POST["custom_fields_copy"]))	{$custom_fields_copy=$_POST["custom_fields_copy"];}
 if (isset($_GET["list_description"]))			{$list_description=$_GET["list_description"];}
 	elseif (isset($_POST["list_description"]))	{$list_description=$_POST["list_description"];}
+if (isset($_GET["leads_counts"]))			{$leads_counts=$_GET["leads_counts"];}
+	elseif (isset($_POST["leads_counts"]))	{$leads_counts=$_POST["leads_counts"];}
 
 
 header ("Content-type: text/html; charset=utf-8");
@@ -734,6 +737,7 @@ if ($non_latin < 1)
 		{$outbound_cid=preg_replace('/[^0-9]/','',$outbound_cid);}
 	if ($areacode != '---ALL---')
 		{$areacode=preg_replace('/[^0-9a-zA-Z]/','',$areacode);}
+	$leads_counts = preg_replace('/[^-_0-9a-zA-Z]/','',$leads_counts);
 	}
 else
 	{
@@ -4586,6 +4590,166 @@ if ($function == 'update_list')
 	}
 ################################################################################
 ### END update_list
+################################################################################
+
+
+
+
+
+################################################################################
+### list_info - summary information about a list
+################################################################################
+if ($function == 'list_info')
+	{
+	if(strlen($source)<2)
+		{
+		$result = 'ERROR';
+		$result_reason = "Invalid Source";
+		echo "$result: $result_reason - $source\n";
+		api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+		echo "ERROR: Invalid Source: |$source|\n";
+		exit;
+		}
+	else
+		{
+		if ( (!preg_match("/ $function /",$api_allowed_functions)) and (!preg_match("/ALL_FUNCTIONS/",$api_allowed_functions)) )
+			{
+			$result = 'ERROR';
+			$result_reason = "auth USER DOES NOT HAVE PERMISSION TO USE THIS FUNCTION";
+			echo "$result: $result_reason: |$user|$function|\n";
+			$data = "$allowed_user";
+			api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+			exit;
+			}
+		$stmt="SELECT count(*) from vicidial_users where user='$user' and vdc_agent_api_access='1' and modify_lists='1' and user_level >= 8 and active='Y';";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		$row=mysqli_fetch_row($rslt);
+		$allowed_user=$row[0];
+		if ($allowed_user < 1)
+			{
+			$result = 'ERROR';
+			$result_reason = "list_info USER DOES NOT HAVE PERMISSION TO MODIFY LISTS";
+			$data = "$allowed_user";
+			echo "$result: $result_reason: |$user|$data\n";
+			api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+			exit;
+			}
+		else
+			{
+			if ( (strlen($list_id)<2) or (strlen($list_id)>14) )
+				{
+				$result = 'ERROR';
+				$result_reason = "list_info YOU MUST USE ALL REQUIRED FIELDS";
+				$data = "$list_id|$list_name|$campaign_id";
+				echo "$result: $result_reason: |$user|$data\n";
+				api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+				exit;
+				}
+			else
+				{
+				if ($api_list_restrict > 0)
+					{
+					if (!preg_match("/ $list_id /",$allowed_lists))
+						{
+						$result = 'ERROR';
+						$result_reason = "list_info NOT AN ALLOWED LIST ID";
+						$data = "$list_id";
+						echo "$result: $result_reason - $data\n";
+						api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+						exit;
+						}
+					}
+				$stmt="SELECT allowed_campaigns,admin_viewable_groups from vicidial_user_groups where user_group='$LOGuser_group';";
+				if ($DB>0) {echo "|$stmt|\n";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+				$row=mysqli_fetch_row($rslt);
+				$LOGallowed_campaigns =			$row[0];
+				$LOGadmin_viewable_groups =		$row[1];
+
+				$LOGallowed_campaignsSQL='';
+				$whereLOGallowed_campaignsSQL='';
+				if ( (!preg_match('/\-ALL/i', $LOGallowed_campaigns)) )
+					{
+					$rawLOGallowed_campaignsSQL = preg_replace("/ -/",'',$LOGallowed_campaigns);
+					$rawLOGallowed_campaignsSQL = preg_replace("/ /","','",$rawLOGallowed_campaignsSQL);
+					$LOGallowed_campaignsSQL = "and campaign_id IN('$rawLOGallowed_campaignsSQL')";
+					$whereLOGallowed_campaignsSQL = "where campaign_id IN('$rawLOGallowed_campaignsSQL')";
+					}
+
+				$stmt="SELECT count(*) from vicidial_lists where list_id='$list_id' $LOGallowed_campaignsSQL;";
+				$rslt=mysql_to_mysqli($stmt, $link);
+				$row=mysqli_fetch_row($rslt);
+				$list_exists=$row[0];
+				if ($list_exists < 1)
+					{
+					$result = 'ERROR';
+					$result_reason = "list_info LIST DOES NOT EXIST";
+					$data = "$list_id";
+					echo "$result: $result_reason: |$user|$data\n";
+					api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+					exit;
+					}
+				else
+					{
+					$stmt="SELECT list_name,campaign_id,active,list_changedate,list_lastcalldate,expiration_date,resets_today from vicidial_lists where list_id='$list_id' $LOGallowed_campaignsSQL;";
+					$rslt=mysql_to_mysqli($stmt, $link);
+					$row=mysqli_fetch_row($rslt);
+					$list_name =			$row[0];
+					$campaign_id =			$row[1];
+					$active =				$row[2];
+					$list_changedate =		$row[3];
+					$list_lastcalldate =	$row[4];
+					$expiration_date =		$row[5];
+					$resets_today =			$row[6];
+
+					$output='';
+					$DLset=0;
+					if ($stage == 'csv')
+						{$DL = ',';   $DLset++;}
+					if ($stage == 'tab')
+						{$DL = "\t";   $DLset++;}
+					if ($stage == 'pipe')
+						{$DL = '|';   $DLset++;}
+					if ($DLset < 1)
+						{$DL='|';}
+					if ($header == 'YES')
+						{$output .= 'list_id' . $DL . 'list_name' . $DL . 'campaign_id' . $DL . 'active' . $DL . 'list_changedate' . $DL . 'list_lastcalldate' . $DL . 'expiration_date' . $DL . 'resets_today';}
+					$leads_counts_output='';
+					if ($leads_counts == 'Y')
+						{
+						if ($header == 'YES')
+							{$output .= $DL . 'all_leads_count' . $DL . 'new_leads_count';}
+
+						$stmt="SELECT count(*) from vicidial_list where list_id='$list_id';";
+						$rslt=mysql_to_mysqli($stmt, $link);
+						$row=mysqli_fetch_row($rslt);
+						$all_leads_count =			$row[0];
+
+						$stmt="SELECT count(*) from vicidial_list where list_id='$list_id' and status='NEW';";
+						$rslt=mysql_to_mysqli($stmt, $link);
+						$row=mysqli_fetch_row($rslt);
+						$new_leads_count =			$row[0];
+
+						$leads_counts_output .= $DL . "$all_leads_count" . $DL . "$new_leads_count";
+						}
+					if ($header == 'YES')
+						{$output .= "\n";}
+
+					$output .= "$list_id" . $DL . "$list_name" . $DL . "$campaign_id" . $DL . "$active" . $DL . "$list_changedate" . $DL . "$list_lastcalldate" . $DL . "$expiration_date" . $DL . "$resets_today" . $leads_counts_output . "\n";
+
+					$result = 'SUCCESS';
+					$result_reason = "list_info LIST INFORMATION SENT";
+					$data = "$list_id";
+					echo $output;
+					api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+					exit;
+					}
+				}
+			}
+		}
+	}
+################################################################################
+### END list_info
 ################################################################################
 
 
