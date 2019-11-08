@@ -793,6 +793,9 @@
     * Add upstream Rev. 3155:
       - Update: www/vicidial/admin.php: Added several multi-ccampaign options
           to the add/delete DNC number page.
+    * Add upstream Rev. 3156:
+      - Update: www/agc/options-example.php,
+          www/agc/vicidial.php: Added $webphone_call_seconds.
     * Change next release to 3.0.1.
 
 2.26.29

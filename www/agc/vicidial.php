@@ -641,10 +641,11 @@
 # 191101-1150 - Added VM Message Groups features, second script tab
 # 191104-1759 - Fixes for translations
 # 191105-0824 - Fix for issue #1177
+# 191107-0935 - Added $webphone_call_seconds option
 #
 
-$version = '2.14-592c';
-$build = '191105-0824';
+$version = '2.14-593c';
+$build = '191107-0935';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=91;
 $one_mysql_log=0;
@@ -897,6 +898,7 @@ $mrglock_ig_select_ct	= '4';	# number of seconds to leave in-group select screen
 $link_to_grey_version	= '1';	# show link to old grey version of agent screen at login screen, next to timeclock link
 $no_empty_session_warnings=0;	# set to 1 to disable empty session warnings on agent screen
 $logged_in_refresh_link = '0';	# set to 1 to allow clickable "Logged in as..." link at top to force Javascript refresh
+$webphone_call_seconds	= '0';	# set to 1 or higher to have the agent phone(if set to webphone) called X seconds after login
 
 $TEST_all_statuses		= '0';	# TEST variable allows all statuses in dispo screen, FOR DEBUG ONLY
 
@@ -4996,6 +4998,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var SCRIPTweb_form_vars='';
 	var SCRIPT2web_form_vars='';
 	var customer_HHMM='0000';
+	var webphone_call_seconds='<?php echo $webphone_call_seconds ?>';
+	var temp_webphone_call_seconds=0;
 	var SSenable_second_script='<?php echo $SSenable_second_script ?>';
 	var agent_disable_manual='<?php echo $agent_disable_manual ?>';
 	var agent_disable_alt_dial='<?php echo $agent_disable_alt_dial ?>';
@@ -15454,7 +15458,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 		}
 	function NoneInSessionCalL(tempstate)
 		{
-		button_click_log = button_click_log + "" + SQLdate + "-----NoneInSessionCalL---|";
+		button_click_log = button_click_log + "" + SQLdate + "-----NoneInSessionCalL---" + tempstate + "|";
 		hideDiv('NoneInSessionBox');
 		WaitingForNextStep=0;
 		nochannelinsession=0;
@@ -18833,15 +18837,23 @@ function CallViewLogInbounds() {
 				}
 			if ( (is_webphone=='Y') && (no_empty_session_warnings < 1) )
 				{
-				NoneInSession();
-				document.getElementById("NoneInSessionLink").innerHTML = "<a href=\"#\" onclick=\"NoneInSessionCalL('LOGIN');return false;\"><?php echo _QXZ("Call Agent Webphone"); ?> -></a>";
+				if (webphone_call_seconds > 0)
+					{
+					temp_webphone_call_seconds = webphone_call_seconds;
+					}
+				else
+					{
+					NoneInSession();
+					document.getElementById("NoneInSessionLink").innerHTML = "<a href=\"#\" onclick=\"NoneInSessionCalL('LOGIN');return false;\"><?php echo _QXZ("Call Agent Webphone"); ?> -></a>";
+					
+					var WebPhonEtarget = 'webphonewindow';
+ 
+				//	WebPhonEwin =window.open(WebPhonEurl, WebPhonEtarget,'toolbar=1,location=1,directories=1,status=1,menubar=1,scrollbars=1,resizable=1,width=180,height=270');
+ 
+				//	WebPhonEwin.blur();
+					}
+ 				}
 
-				var WebPhonEtarget = 'webphonewindow';
-
-			//	WebPhonEwin =window.open(WebPhonEurl, WebPhonEtarget,'toolbar=1,location=1,directories=1,status=1,menubar=1,scrollbars=1,resizable=1,width=180,height=270');
-
-			//	WebPhonEwin.blur();
-				}
 
 			if ( (ivr_park_call=='ENABLED') || (ivr_park_call=='ENABLED_PARK_ONLY') )
 				{
@@ -18966,6 +18978,14 @@ function CallViewLogInbounds() {
 				agent_select_territories_skip_count--;
 				if (agent_select_territories_skip_count == 0)
 					{TerritorySelect_submit();}
+				}
+			if (temp_webphone_call_seconds > 0)
+				{
+				temp_webphone_call_seconds--;
+				if (temp_webphone_call_seconds < 1)
+					{
+					NoneInSessionCalL('LOGIN');
+					}
 				}
 			if (logout_stop_timeouts==1)	{WaitingForNextStep=1;}
 			if ( (custchannellive < customer_gone_seconds) && (lastcustchannel.length > 3) && (no_empty_session_warnings < 1) && (document.vicidial_form.lead_id.value != '') && (currently_in_email_or_chat==0) && (customer_gone_seconds != 0))
