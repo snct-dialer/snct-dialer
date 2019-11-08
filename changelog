@@ -787,9 +787,12 @@
     * Add upstream Rev. 3154:
       - Update: www/agc/vicidial.php: Fix for issue #1177.
     * Change Logo Handling:
-      - Update www/vicidial/welcome.php.
+      - Update: www/vicidial/welcome.php.
     * Convert Dos CR/LF to Unix NL.
     * Remove trailing whitespaces.
+    * Add upstream Rev. 3155:
+      - Update: www/vicidial/admin.php: Added several multi-ccampaign options
+          to the add/delete DNC number page.
     * Change next release to 3.0.1.
 
 2.26.29

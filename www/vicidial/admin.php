@@ -4703,12 +4703,13 @@ else
 # 191014-1816 - Additional PHP7 fixes
 # 191015-1620 - Added user inbound call count filters
 # 191101-1149 - Added 2nd script tab, voicemail message groups and fixed translation issues
+# 191106-0934 - Added several multi-ccampaign options to the add/delete DNC number page
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-722a';
-$build = '191101-1149';
+$admin_version = '2.14-723a';
+$build = '191106-0934';
 
 
 $STARTtime = date("U");
@@ -7137,10 +7138,15 @@ if ($ADD==121)
 	### filter for DIGITS and NEWLINES
 	$phone_numbers = preg_replace('/[^X\n0-9]/', '',$phone_numbers);
 
-	echo "<TABLE><TR><TD>\n";
+	echo "<TABLE WIDTH=900><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 	$campaigns_list = "<option SELECTED value=\"SYSTEM_INTERNAL\">"._QXZ("SYSTEM_INTERNAL - INTERNAL DNC LIST")."</option>\n";
+	$campaigns_list .= "<option value=\"ALL_DNC_CAMPAIGNS\">"._QXZ("ALL_DNC_CAMPAIGNS - All campaign DNC lists with camp DNC active")."</option>\n";
+	$campaigns_list .= "<option value=\"ALL_ACTIVE_CAMPAIGNS\">"._QXZ("ALL_ACTIVE_CAMPAIGNS - All campaign DNC lists for active campaigns")."</option>\n";
+	$campaigns_list .= "<option value=\"ALL_ACTIVE_DNC_CAMPAIGNS\">"._QXZ("ALL_ACTIVE_DNC_CAMPAIGNS - All campaign DNC lists with camp DNC active for active campaigns")."</option>\n";
+	$campaigns_list .= "<option value=\"ALL_CAMPAIGNS\">"._QXZ("ALL_CAMPAIGNS - All campaign DNC lists")."</option>\n";
+
 
 	$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns where use_campaign_dnc IN('Y','AREACODE') $LOGallowed_campaignsSQL order by campaign_id;";
 	$rslt=mysql_to_mysqli($stmt, $link);
@@ -7246,6 +7252,69 @@ if ($ADD==121)
 						$rslt=mysql_to_mysqli($stmt, $link);
 						}
 					}
+				### DELETE FROM ALL_CAMPAIGNS, ALL_DNC_CAMPAIGNS, ALL_ACTIVE_CAMPAIGNS, ALL_ACTIVE_DNC_CAMPAIGNS
+				elseif (preg_match('/ALL_CAMPAIGNS|ALL_ACTIVE_CAMPAIGNS|ALL_DNC_CAMPAIGNS|ALL_ACTIVE_DNC_CAMPAIGNS/',$campaign_id))
+					{
+					echo "<br><i>"._QXZ("DNC DELETE PROCESS STARTED").": $PN[$p] $campaign_id</i>\n";
+					$multi_stmts='';
+					$camp_typeSQL='';
+					$numberDNCnotdeleted=0;
+					$numberDNCdeleted=0;
+					if (preg_match('/ALL_DNC_CAMPAIGNS/',$campaign_id)) {$camp_typeSQL = "where use_campaign_dnc IN('Y','AREACODE')";}
+					if (preg_match('/ALL_ACTIVE_CAMPAIGNS/',$campaign_id)) {$camp_typeSQL = "where active='Y'";}
+					if (preg_match('/ALL_ACTIVE_DNC_CAMPAIGNS/',$campaign_id)) {$camp_typeSQL = "where active='Y' and use_campaign_dnc IN('Y','AREACODE')";}
+					### gather all campaign IDs for selected group of campaigns
+					$stmt = "SELECT campaign_id FROM vicidial_campaigns $camp_typeSQL order by campaign_id;";
+					$rslt=mysql_to_mysqli($stmt, $link);
+					$camp_ct = mysqli_num_rows($rslt);
+					$cdnc=0;
+					while ($camp_ct > $cdnc)
+						{
+						$row=mysqli_fetch_row($rslt);
+						$camp_list[$cdnc] = $row[0];
+						$cdnc++;
+						}
+					$cdnc=0;
+					while ($camp_ct > $cdnc)
+						{
+						$temp_campaign_id = $camp_list[$cdnc];
+						$stmt="SELECT count(*) from vicidial_campaign_dnc where phone_number='$PN[$p]' and campaign_id='$temp_campaign_id' $LOGallowed_campaignsSQL;";
+						$rslt=mysql_to_mysqli($stmt, $link);
+						$row=mysqli_fetch_row($rslt);
+						if ($row[0] < 1)
+							{
+							echo "<br>"._QXZ("DNC NOT DELETED - This phone number is not in the Do Not Call List").": $PN[$p] $temp_campaign_id\n";
+							$DNCnotdeleted++;
+							$numberDNCnotdeleted++;
+							}
+						else
+							{
+							$stmt="DELETE FROM vicidial_campaign_dnc where phone_number='$PN[$p]' and campaign_id='$temp_campaign_id';";
+							$rslt=mysql_to_mysqli($stmt, $link);
+							$affected_rows = mysqli_affected_rows($link);
+							$multi_stmts .= "$stmt|";
+
+							echo "<br><B>"._QXZ("DNC DELETED").": $affected_rows - $PN[$p] $temp_campaign_id</B>\n";
+							$DNCdeleted = ($DNCdeleted + $affected_rows);
+							$numberDNCdeleted = ($numberDNCdeleted + $affected_rows);
+
+							$stmt="INSERT INTO vicidial_dnc_log SET phone_number='$PN[$p]', campaign_id='$temp_campaign_id', action='delete', action_date=NOW(), user='$PHP_AUTH_USER';";
+							$rslt=mysql_to_mysqli($stmt, $link);
+							}
+						$cdnc++;
+						}
+
+					if ($camp_ct > 0)
+						{
+						### LOG INSERTION Admin Log Table ###
+						$SQL_log = "$multi_stmts|";
+						$SQL_log = preg_replace('/;/', '', $SQL_log);
+						$SQL_log = addslashes($SQL_log);
+						$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LISTS', event_type='DELETE', record_id='$PN[$p]', event_code='ADMIN DELETE NUMBER FROM CAMPAIGN DNC LIST $campaign_id', event_sql=\"$SQL_log\", event_notes='Deleted: $numberDNCdeleted   Not-Deleted: $numberDNCnotdeleted';";
+						if ($DB) {echo "|$stmt|\n";}
+						$rslt=mysql_to_mysqli($stmt, $link);
+						}
+					}
 				else
 					{
 					$stmt="SELECT count(*) from vicidial_campaign_dnc where phone_number='$PN[$p]' and campaign_id='$campaign_id' $LOGallowed_campaignsSQL;";
@@ -7311,6 +7380,69 @@ if ($ADD==121)
 						$rslt=mysql_to_mysqli($stmt, $link);
 						}
 					}
+				### ADD TO ALL_CAMPAIGNS, ALL_DNC_CAMPAIGNS, ALL_ACTIVE_CAMPAIGNS, ALL_ACTIVE_DNC_CAMPAIGNS
+				elseif (preg_match('/ALL_CAMPAIGNS|ALL_ACTIVE_CAMPAIGNS|ALL_DNC_CAMPAIGNS|ALL_ACTIVE_DNC_CAMPAIGNS/',$campaign_id))
+					{
+					echo "<br><i>"._QXZ("DNC ADD PROCESS STARTED").": $PN[$p] $campaign_id</i>\n";
+					$multi_stmts='';
+					$camp_typeSQL='';
+					$numberDNCnotadded=0;
+					$numberDNCadded=0;
+					if (preg_match('/ALL_DNC_CAMPAIGNS/',$campaign_id)) {$camp_typeSQL = "where use_campaign_dnc IN('Y','AREACODE')";}
+					if (preg_match('/ALL_ACTIVE_CAMPAIGNS/',$campaign_id)) {$camp_typeSQL = "where active='Y'";}
+					if (preg_match('/ALL_ACTIVE_DNC_CAMPAIGNS/',$campaign_id)) {$camp_typeSQL = "where active='Y' and use_campaign_dnc IN('Y','AREACODE')";}
+					### gather all campaign IDs for selected group of campaigns
+					$stmt = "SELECT campaign_id FROM vicidial_campaigns $camp_typeSQL order by campaign_id;";
+					$rslt=mysql_to_mysqli($stmt, $link);
+					$camp_ct = mysqli_num_rows($rslt);
+					$cdnc=0;
+					while ($camp_ct > $cdnc)
+						{
+						$row=mysqli_fetch_row($rslt);
+						$camp_list[$cdnc] = $row[0];
+						$cdnc++;
+						}
+					$cdnc=0;
+					while ($camp_ct > $cdnc)
+						{
+						$temp_campaign_id = $camp_list[$cdnc];
+						$stmt="SELECT count(*) from vicidial_campaign_dnc where phone_number='$PN[$p]' and campaign_id='$temp_campaign_id' $LOGallowed_campaignsSQL;";
+						$rslt=mysql_to_mysqli($stmt, $link);
+						$row=mysqli_fetch_row($rslt);
+						if ($row[0] > 0)
+							{
+							echo "<br>"._QXZ("DNC NOT ADDED - This phone number is already in the Do Not Call List").": $PN[$p] $temp_campaign_id\n";
+							$DNCnotadded++;
+							$numberDNCnotadded++;
+							}
+						else
+							{
+							$stmt="INSERT INTO vicidial_campaign_dnc (phone_number,campaign_id) values('$PN[$p]','$temp_campaign_id');";
+							$rslt=mysql_to_mysqli($stmt, $link);
+							$affected_rows = mysqli_affected_rows($link);
+							$multi_stmts .= "$stmt|";
+
+							echo "<br><B>"._QXZ("DNC ADDED").": $affected_rows - $PN[$p] $temp_campaign_id</B>\n";
+							$DNCadded = ($DNCadded + $affected_rows);
+							$numberDNCadded = ($numberDNCadded + $affected_rows);
+
+							$stmt="INSERT INTO vicidial_dnc_log SET phone_number='$PN[$p]', campaign_id='$temp_campaign_id', action='add', action_date=NOW(), user='$PHP_AUTH_USER';";
+							$rslt=mysql_to_mysqli($stmt, $link);
+							}
+						$cdnc++;
+						}
+
+					if ($camp_ct > 0)
+						{
+						### LOG INSERTION Admin Log Table ###
+						$SQL_log = "$multi_stmts|";
+						$SQL_log = preg_replace('/;/', '', $SQL_log);
+						$SQL_log = addslashes($SQL_log);
+						$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LISTS', event_type='ADD', record_id='$PN[$p]', event_code='ADMIN ADD NUMBER TO CAMPAIGN DNC LIST $campaign_id', event_sql=\"$SQL_log\", event_notes='Added: $numberDNCadded   Not-Added: $numberDNCnotadded';";
+						if ($DB) {echo "|$stmt|\n";}
+						$rslt=mysql_to_mysqli($stmt, $link);
+						}
+					}
 				else
 					{
 					$stmt="SELECT count(*) from vicidial_campaign_dnc where phone_number='$PN[$p]' and campaign_id='$campaign_id' $LOGallowed_campaignsSQL;";
@@ -7367,7 +7499,7 @@ if ($ADD==121)
 	else
 		{echo "<br>"._QXZ("ADD NUMBERS TO THE DNC LIST")."<form action=$PHP_SELF method=POST>\n";}
 	echo "<input type=hidden name=ADD value=121>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
+	echo "<center><TABLE width=850 cellspacing=3>\n";
 	echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("List").": </td><td align=left><select size=1 name=campaign_id>\n";
 	echo "$campaigns_list";
 	echo "</select></td></tr>\n";
