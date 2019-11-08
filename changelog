@@ -805,6 +805,8 @@
           www/vicidial/admin.php,
           www/vicidial/non_agent_api.php: Added list_info as API function
             option.
+    * Add upstream Rev. 3158:
+      - Update: /www/agc/vdc_db_query.php: Typo.
     * Change next release to 3.0.1.
 
 2.26.29
