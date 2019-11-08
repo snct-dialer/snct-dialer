@@ -497,10 +497,11 @@
 # 191017-2205 - Added code for filtered inbound max calls
 # 191030-1536 - Added code to gather VM Message Group entries
 # 191104-1800 - Fixes for translations
+# 191107-1010 - Fix for issue #1180, hide phone number in callback info
 #
 
-$version = '2.14-376';
-$build = '191104-1800';
+$version = '2.14-377';
+$build = '191107-1010';
 $php_script = 'vdc_db_query.php';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=824;
@@ -17544,6 +17545,9 @@ if ($ACTION == 'LEADINFOview')
 		if ($info_to_print > 0)
 			{
 			$row=mysqli_fetch_row($rslt);
+			$phone_number_display = $row[6];
+			if ($disable_alter_custphone == 'HIDE')
+				{$phone_number_display = 'XXXXXXXXXX';}
 
 			##### BEGIN check for postal_code and phone time zones if alert enabled
 			$post_phone_time_diff_alert_message='';
@@ -17661,7 +17665,7 @@ if ($ACTION == 'LEADINFOview')
 				{$INFOout .= "<tr bgcolor=white><td ALIGN=right><font class='sb_text'>$label_phone_code: &nbsp; </td><td ALIGN=left><font class='sb_text'>$row[5]</td></tr>";}
 			if ( ($label_phone_number!='---HIDE---') or ($label_hide_field_logs=='N') )
 				{
-				$INFOout .= "<tr bgcolor=white><td ALIGN=right><font class='sb_text'>$label_phone_number: &nbsp; </td><td ALIGN=left><font class='sb_text'>$row[6] - &nbsp; &nbsp; &nbsp; &nbsp; ";
+				$INFOout .= "<tr bgcolor=white><td ALIGN=right><font class='sb_text'>$label_phone_number: &nbsp; </td><td ALIGN=left><font class='sb_text'>$phone_number_display - &nbsp; &nbsp; &nbsp; &nbsp; ";
 				if ($hide_dial_links < 1)
 					{
 					if ($manual_dial_filter > 0)

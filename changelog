@@ -796,6 +796,10 @@
     * Add upstream Rev. 3156:
       - Update: www/agc/options-example.php,
           www/agc/vicidial.php: Added $webphone_call_seconds.
+    * Add upstream Rev. 3157:
+      - Update: www/agc/vdc_db_query.php,
+          www/agc/vicidial.php: Fix for issue #1180, hide phone number in
+            callback info.
     * Change next release to 3.0.1.
 
 2.26.29
