@@ -809,6 +809,8 @@
       - Update: /www/agc/vdc_db_query.php: Typo.
     * Change size of LISTEN/BARGE/WISPER on realtime:
       - Update: www/vicidial/AST_timeonVDADall.php.
+    * Correct typo:
+      - Update www/vicidial/admin.php.
     * Change next release to 3.0.1.
 
 2.26.29

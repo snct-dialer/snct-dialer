@@ -5226,7 +5226,7 @@ echo "<head>\n";
 echo "<!-- VERSION: $admin_version   BUILD: $build   ADD: $ADD   PHP_SELF: $PHP_SELF-->\n";
 echo "<META NAME=\"ROBOTS\" CONTENT=\"NONE\">\n";
 echo "<META NAME=\"COPYRIGHT\" CONTENT=\"&copy; 2019 ViciDial Group\" \"&copy; 2017-2019 SNCT GmbH\">\n";
-echo "<META NAME=\"AUTHOR\" CONTENT=\"ViciDial Group\" \"SNCT GmbH>\"\n";
+echo "<META NAME=\"AUTHOR\" CONTENT=\"ViciDial Group\" \"SNCT GmbH\">\n";
 echo "<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
 echo "<script language=\"JavaScript\" src=\"help.js\"></script>\n";
 
@@ -44312,7 +44312,6 @@ echo "</FONT>\n";
 
 </TD><TD BGCOLOR=#<?php echo $SSframe_background ?>>
 </TD></TR><TABLE>
-</body>
 <script language="Javascript">
 if (!window.A_TCALSIDX)
 	{
@@ -44322,26 +44321,10 @@ if (!window.A_TCALSIDX)
 		window.detachEvent('onscroll', f_tcalHideAll);
 	}
 </script>
+</body>
 <?php
 
-if ( ($SSnocache_admin=='1') or ( ($SSadmin_modify_refresh > 1) and ($modify_footer_refresh > 0) and (strlen($modify_url)>10) ) )
-	{
-	echo "<head>\n";
-	if ($SSnocache_admin=='1')
-		{
-		echo "<META HTTP-EQUIV=\"Pragma\" CONTENT=\"no-cache\">\n";
-		echo "<META HTTP-EQUIV=\"Expires\" CONTENT=\"-1\">\n";
-		echo "<META HTTP-EQUIV=\"CACHE-CONTROL\" CONTENT=\"NO-CACHE\">\n";
-		}
-	if ( ($SSadmin_modify_refresh > 1) and ($modify_footer_refresh > 0) and (strlen($modify_url)>10) )
-		{
-		echo "<META HTTP-EQUIV=\"REFRESH\" CONTENT=\"$SSadmin_modify_refresh;URL=$modify_url\">\n";
-		}
-	echo "</head>\n";
-	}
-
 echo "</html>\n";
-
 
 exit;
 
