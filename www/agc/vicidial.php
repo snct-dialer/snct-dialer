@@ -6107,11 +6107,11 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						var CHANanswer_detail = CHANanswer_array[1].split("-----");
 						var APIdtmf_array = check_time_array[20].split("APIdtmf: ");
 						api_dtmf = APIdtmf_array[1];
-						var PNameX = check_time_array[32].split("PauseNamE: ");
+						var PNameX = check_time_array[33].split("PauseNamE: ");
 						if(agent_pause_codes_active === "FORCE") {
 							document.getElementById("PauseName").innerHTML = "<p style='color: #ffffff; background-color: #ff0000'>" + PNameX[1] + "</p>";
 						}
-						var AnzMiss_array = check_time_array[33].split("AnzMisInbCalls: ");
+						var AnzMiss_array = check_time_array[34].split("AnzMisInbCalls: ");
 						var AnzMiss = AnzMiss_array[1];
 						if(AnzMiss != 0) {
 							document.getElementById("AnzMissInb").innerHTML = "<p style='color: #ffffff; background-color: #088A29'><a href='#' onclick='CallViewLogInbounds();return false;'>Verpasste Anrufe: " + AnzMiss + "</a></p>";
