@@ -812,6 +812,10 @@
     * Correct typo:
       - Update www/vicidial/admin.php, 
           www/agc/vicidial.php.
+    * Add Position to System Status:
+      - Update: extras/mysql_update/mysql-1567.sql,
+          extras/upgrade_2.14.sql,
+          www/vicidial/admin.php.
     * Change next release to 3.0.1.
 
 2.26.29

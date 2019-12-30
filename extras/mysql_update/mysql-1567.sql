@@ -296,4 +296,6 @@ index (call_date),
 index (lead_id)
 ) ENGINE=MyISAM;
 
+ALTER TABLE `vicidial_statuses` ADD `Pos` INT(5) NOT NULL DEFAULT '0';
+
 UPDATE system_settings SET db_schema_version='1578',db_schema_update_date=NOW() where db_schema_version < 1578;

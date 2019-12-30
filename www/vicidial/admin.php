@@ -2576,8 +2576,9 @@ if (isset($_GET["time_end"]))			{$time_end=$_GET["time_end"];}
 if (isset($_GET["leave_vm_no_dispo"]))			{$leave_vm_no_dispo=$_GET["leave_vm_no_dispo"];}
 	elseif (isset($_POST["leave_vm_no_dispo"]))	{$leave_vm_no_dispo=$_POST["leave_vm_no_dispo"];}
 if (isset($_GET["leave_vm_message_group_id"]))			{$leave_vm_message_group_id=$_GET["leave_vm_message_group_id"];}
-	elseif (isset($_POST["leave_vm_message_group_id"]))	{$leave_vm_message_group_id=$_POST["leave_vm_message_group_id"];}
-
+elseif (isset($_POST["leave_vm_message_group_id"]))	{$leave_vm_message_group_id=$_POST["leave_vm_message_group_id"];}
+if (isset($_GET["statpos"]))			{$statpos=$_GET["statpos"];}
+	elseif (isset($_POST["statpos"]))	{$statpos=$_POST["statpos"];}
 
 if (isset($script_id)) {$script_id= strtoupper($script_id);}
 if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
@@ -18450,7 +18451,7 @@ if ($ADD==421111111111111)
 				{
 				echo "<br><B>"._QXZ("SYSTEM STATUS MODIFIED").": $status</B>\n";
 
-				$stmt="UPDATE vicidial_statuses SET status_name='$status_name',selectable='$selectable',human_answered='$human_answered',category='$category',sale='$sale',dnc='$dnc',customer_contact='$customer_contact',not_interested='$not_interested',unworkable='$unworkable',scheduled_callback='$scheduled_callbacks',completed='$completed',min_sec='$min_sec',max_sec='$max_sec',answering_machine='$answering_machine' where status='$status';";
+				$stmt="UPDATE vicidial_statuses SET status_name='$status_name',selectable='$selectable',human_answered='$human_answered',category='$category',sale='$sale',dnc='$dnc',customer_contact='$customer_contact',not_interested='$not_interested',unworkable='$unworkable',scheduled_callback='$scheduled_callbacks',completed='$completed',min_sec='$min_sec',max_sec='$max_sec',answering_machine='$answering_machine',Pos='$statpos' where status='$status';";
 				$rslt=mysql_to_mysqli($stmt, $link);
 
 				### LOG INSERTION Admin Log Table ###
@@ -35308,7 +35309,7 @@ if ($ADD==31111111111)
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Outbound Alt CallerID").": </td><td align=left><input type=text name=outbound_alt_cid size=10 maxlength=20 value=\"".$row["outbound_alt_cid"]."\"> <i>"._QXZ("optional")."</i> ("._QXZ("digits only").")$NWB#phones-outbound_alt_cid$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Admin User Group").": </td><td align=left><select size=1 name=user_group>\n";
 		echo "$UUgroups_list";
-		echo "<option SELECTED value=\"".$row["user_group"]."\">".._QXZ($row["user_group"])."</option>\n";
+		echo "<option SELECTED value=\"".$row["user_group"]."\">"._QXZ($row["user_group"])."</option>\n";
 		echo "</select>$NWB#phones-user_group$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Phone IP address").": </td><td align=left><input type=text name=phone_ip size=20 maxlength=15 value=\"".$row["phone_ip"]."\"> ("._QXZ("optional").")$NWB#phones-phone_ip$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Computer IP address").": </td><td align=left><input type=text name=computer_ip size=20 maxlength=15 value=\"".$row["computer_ip"]."\"> ("._QXZ("optional").")$NWB#phones-computer_ip$NWE</td></tr>\n";
@@ -35456,7 +35457,7 @@ if ($ADD==31111111111)
 			$o++;
 			}
 		echo "$templates_list";
-		echo "<option SELECTED value='".$row["template_id"]."'>"._QXZ(".$row["template_id"].")."</option>\n";
+		echo "<option SELECTED value='".$row["template_id"]."'>"._QXZ($row["template_id"])."</option>\n";
 		echo "</select>$NWB#phones-template_id$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Conf Override").": </td><td align=left><TEXTAREA NAME=conf_override ROWS=10 COLS=70>".$row["conf_override"]."</TEXTAREA> $NWB#phones-conf_override$NWE</td></tr>\n";
@@ -38793,6 +38794,7 @@ if ($ADD==321111111111111)
 		echo "<td align=center valign=top bgcolor=\"#99ffcc\"><font size=2 class='vertical-text'><b>"._QXZ("ANSWERING MACHINE")."</B></font></td>\n";
 		echo "<td align=center valign=bottom><font size=1><b>"._QXZ("MIN SEC")."</td>\n";
 		echo "<td align=center valign=bottom><font size=1><b>"._QXZ("MAX SEC")."</td>\n";
+		echo "<td align=center valign=bottom><font size=1><b>"._QXZ("Pos.")."</td>\n";
 		echo "<td align=center valign=bottom><font size=2><b>"._QXZ("MODIFY/DELETE")."</td>\n";
 		echo "</tr>\n";
 
@@ -38811,7 +38813,7 @@ if ($ADD==321111111111111)
 			$o++;
 			}
 
-		$stmt="SELECT status,status_name,selectable,human_answered,category,sale,dnc,customer_contact,not_interested,unworkable,scheduled_callback,completed,min_sec,max_sec,answering_machine from vicidial_statuses order by status;";
+		$stmt="SELECT status,status_name,selectable,human_answered,category,sale,dnc,customer_contact,not_interested,unworkable,scheduled_callback,completed,min_sec,max_sec,answering_machine,Pos from vicidial_statuses order by status;";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$statuses_to_print = mysqli_num_rows($rslt);
 		$o=0;
@@ -38851,6 +38853,7 @@ if ($ADD==321111111111111)
 			echo "</td>\n";
 			echo "<td><input type=text name=min_sec size=3 maxlength=5 value=\"$rowx[12]\" class=\"cust_form\"></td>\n";
 			echo "<td><input type=text name=max_sec size=3 maxlength=5 value=\"$rowx[13]\" class=\"cust_form\"></td>\n";
+			echo "<td><input type=text name=statpos size=3 maxlength=3 value=\"$rowx[15]\" class=\"cust_form\"></td>\n";
 			echo "</td><td align=center nowrap><font size=1><input type=submit name=submit value='"._QXZ("MODIFY")."'> &nbsp; &nbsp; &nbsp; &nbsp; \n";
 			echo " &nbsp; \n";
 
