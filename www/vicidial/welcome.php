@@ -101,7 +101,7 @@ if ( ($SSweb_logo=='default_old') and ($logo_old > 0) )
 	{
 	$selected_logo = "../$admin_web_directory/vicidial_admin_web_logo.gif";
 	}
-if (($$SSWeb_logo == "SNCT.png") and ($logo_snct > 0)) {
+if (($SSweb_logo == "SNCT.png") and ($logo_snct > 0)) {
 	$selected_logo = "./images/vicidial_admin_web_logoSNCT.png";
 }
 if ( ($SSweb_logo!='default_new') and ($SSweb_logo!='default_old') and ($SSweb_logo!='SNCT.png'))
