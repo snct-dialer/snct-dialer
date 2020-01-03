@@ -18362,9 +18362,10 @@ if ($ADD==411111111111111)
 			enable_gdpr_download_deletion='$enable_gdpr_download_deletion',autoanswer_enable='$autoanswer_enable',autoanswer_prefix='$autoanswer_prefix',
 			autoanswer_delay='$autoanswer_delay',source_id_display='$source_id_display',agent_logout_link='$agent_logout_link',manual_dial_validation='$manual_dial_validation',
 			mute_recordings='$mute_recordings',user_admin_redirect='$user_admin_redirect',list_status_modification_confirmation='$list_status_modification_confirmation',
-			sip_event_logging='$sip_event_logging',call_quota_lead_ranking='$call_quota_lead_ranking,enable_second_script='$enable_second_script''$custom_dialplanSQL";
+			sip_event_logging='$sip_event_logging',call_quota_lead_ranking='$call_quota_lead_ranking',enable_second_script='$enable_second_script'$custom_dialplanSQL";
 
 		$rslt=mysql_to_mysqli($stmt, $link);
+		if(!$rslt) { printf("Error message: %s\n", mysqli_error($link)); }
 
 		if ( ($meetme_enter_login_filename != $SSmeetme_enter_login_filename) or ($meetme_enter_leave3way_filename != $SSmeetme_enter_leave3way_filename) )
 			{$reload_dialplan_on_servers=1;}

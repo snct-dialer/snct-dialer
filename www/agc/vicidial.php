@@ -13780,8 +13780,8 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 // ################################################################################
 // Build Dispo Content
-function BuildDispoContent() {
-	var DispoReturn = "";
+function BuildDispoContent(taskDSgrp) {
+	var DispoReturn = NULL;
 	var xmlhttp=false;
 	/*@cc_on @*/
 	/*@if (@_jscript_version >= 5)
@@ -13802,19 +13802,18 @@ function BuildDispoContent() {
 	}
 	if (xmlhttp) {
 		// ACTION=GenDispoScreen&user=6699&pass=82tq82tq&server_ip=10.100.0.5&session_name=1578041567_90118376513&lead_id=4063118&list_id=6202
-		Dispo_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=GenDispoScreen&user=" + user + "&pass=" + pass + "&orig_pass=" + orig_pass + "&lead_id=" + document.vicidial_form.lead_id.value + "&campaign=" + campaign + "&list_id=" + document.vicidial_form.list_id.value + "&customer_sec=" + customer_sec;
-		xmlhttp.open('POST', 'vdc_db_query_ng.php');
+		Dispo_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=GenDispoScreen&user=" + user + "&pass=" + pass + "&orig_pass=" + orig_pass + "&lead_id=" + document.vicidial_form.lead_id.value + "&campaign=" + campaign + "&list_id=" + document.vicidial_form.list_id.value + "&customer_sec=" + customer_sec + "&taskDSgrp=" + taskDSgrp;
+		xmlhttp.open('POST', 'vdc_db_query_ng.php', false);
 		xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 		xmlhttp.send(Dispo_query);
-		xmlhttp.onreadystatechange = function() {
+//		xmlhttp.onreadystatechange = function() {
 			//	alert(DSupdate_query + "\n" +xmlhttp.responseText);
 
-			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+//			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
 				//	alert(xmlhttp.responseText);
-				var Dispo_trigger = null;
 				DispoReturn = xmlhttp.responseText;
-			}
-		}
+//			}
+//		}
 		delete xmlhttp;
 	}
 	return DispoReturn;
@@ -13885,7 +13884,7 @@ function BuildDispoContent() {
 			var print_ct = 0;
 			if (hide_dispo_list < 1)
 				{
-				dispo_HTML = BuildDispoContent();
+				dispo_HTML = BuildDispoContent(taskDSgrp);
 //				while (loop_ct < VD_statuses_ct)
 //					{
 //					if (VARSELstatuses[loop_ct] == 'Y')
@@ -13926,7 +13925,7 @@ function BuildDispoContent() {
 
 			if (taskDSstage == 'ReSET') {document.vicidial_form.DispoSelection.value = '';}
 			else {document.vicidial_form.DispoSelection.value = taskDSgrp;}
-
+//			alert(dispo_HTML);
 			document.getElementById("DispoSelectContent").innerHTML = dispo_HTML;
 			if (focus_blur_enabled==1)
 				{

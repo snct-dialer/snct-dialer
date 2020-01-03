@@ -122,7 +122,7 @@ $php_script = 'vdc_db_query_ng.php';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=824;
 $one_mysql_log=0;
-$DB=1;
+$DB=0;
 $VD_login=0;
 $SSagent_debug_logging=0;
 $pause_to_code_jump=0;
@@ -429,6 +429,8 @@ if (isset($_GET["end_date"]))			{$end_date=$_GET["end_date"];}
 	elseif (isset($_POST["end_date"]))	{$end_date=$_POST["end_date"];}
 if (isset($_GET["customer_sec"]))			{$customer_sec=$_GET["customer_sec"];}
 	elseif (isset($_POST["customer_sec"]))	{$customer_sec=$_POST["customer_sec"];}
+if (isset($_GET["taskDSgrp"]))			{$taskDSgrp=$_GET["taskDSgrp"];}
+	elseif (isset($_POST["taskDSgrp"]))	{$taskDSgrp=$_POST["taskDSgrp"];}
 
 require_once("../tools/system_wide_settings.php");
 
@@ -861,7 +863,7 @@ if ($format=='debug')
 # Ab hier neu
 #
 
-$DB=1;
+$DB=0;
 
 $AgentCB = 25;
 $LeadCB  = 5;
@@ -900,8 +902,8 @@ function CheckCallbacks($User, $Lead) {
 #  - User
 #  - LeadId
 #  - customer_sec
-#  - list
-#  - campaign_id
+#  - taskDSgrp
+#
 
 if ($ACTION == 'GenDispoScreen') {
 	
@@ -929,7 +931,11 @@ if ($ACTION == 'GenDispoScreen') {
 			if((($row1["min_sec"] > 0) && ($customer_sec < $row1["min_sec"])) || (($row1["max_sec"] > 0) && ($customer_sec > $row1["max_sec"])) || (($CBAllow == 0) && ($row1["scheduled_callback"] == "Y"))) {
 				$Return .= "<DEL>" . $row1["status"] . " - " . $row1["status_name"] . "</DEL> " . $CBFlag . "<br /><br />";
 			} else {
-				$Return .= "<font size=\"3\" face=\"Arial, Helvetica, sans-serif\" style=\"BACKGROUND-COLOR: #FFFFCC\"><b><a href=\"#\" onclick=\"DispoSelect_submit('','','YES');return false;\">" . $row1["status"] . " - " . $row1["status_name"] . "</a> " . $CBFlag . "</b></font><br /><br />";
+				if($taskDSgrp == $row1["status"]) {
+					$Return .= "<font size=\"3\" face=\"Arial, Helvetica, sans-serif\" style=\"BACKGROUND-COLOR: #FFFFCC\"><b><a href=\"#\" onclick=\"DispoSelect_submit('','','YES');return false;\">" . $row1["status"] . " - " . $row1["status_name"] . "</a> " . $CBFlag . "</b></font><br /><br />";
+				} else {
+					$Return .= "<font size=\"2\" face=\"Arial, Helvetica, sans-serif\"><a href=\"#\" onclick=\"DispoSelectContent_create('" . $row1["status"] . "','ADD','YES');return false;\" onMouseOver=\"this.style.backgroundColor = '#FFFFCC'\" onMouseOut=\"this.style.backgroundColor = 'transparent'\";>" . $row1["status"] . " - " . $row1["status_name"] . "</a></font> " . $CBFlag . "<br /><br />";
+				}
 			}
 		}
 		
@@ -957,7 +963,11 @@ if ($ACTION == 'GenDispoScreen') {
 				if((($row1["min_sec"] > 0) && ($customer_sec < $row2["min_sec"])) || (($row2["max_sec"] > 0) && ($customer_sec > $row2["max_sec"])) || (($CBAllow == 0) && ($row1["scheduled_callback"] == "Y"))) {
 					$Return .= "<DEL>" . $row2["status"] . " - " . $row2["status_name"] . "</DEL> " . $CBFlag . "<br /><br />";
 				} else {
-					$Return .= "<font size=\"3\" face=\"Arial, Helvetica, sans-serif\" style=\"BACKGROUND-COLOR: #FFFFCC\"><b><a href=\"#\" onclick=\"DispoSelect_submit('','','YES');return false;\">" . $row2["status"] . " - " . $row2["status_name"] . "</a> " . $CBFlag . "</b></font><br /><br />";
+					if($taskDSgrp == $row2["status"]) {
+						$Return .= "<font size=\"3\" face=\"Arial, Helvetica, sans-serif\" style=\"BACKGROUND-COLOR: #FFFFCC\"><b><a href=\"#\" onclick=\"DispoSelect_submit('','','YES');return false;\">" . $row2["status"] . " - " . $row2["status_name"] . "</a> " . $CBFlag . "</b></font><br /><br />";
+					} else {
+						$Return .= "<font size=\"2\" face=\"Arial, Helvetica, sans-serif\"><a href=\"#\" onclick=\"DispoSelectContent_create('" . $row2["status"] . "','ADD','YES');return false;\" onMouseOver=\"this.style.backgroundColor = '#FFFFCC'\" onMouseOut=\"this.style.backgroundColor = 'transparent'\";>" . $row2["status"] . " - " . $row2["status_name"] . "</a></font> " . $CBFlag . "<br /><br />";
+					}
 				}
 			}
 			$Pos2++;
@@ -968,13 +978,13 @@ if ($ACTION == 'GenDispoScreen') {
 		
 	} else {
 		echo "GenDispoScreen: Parameter not set";
-		$Return = "GenDispoScreen: Parameter not set";
+#		$Return = "GenDispoScreen: Parameter not set";
 	}
 	$EndTime = microtime();
 	$RunTime = $EndTime - $StartTime;
 	
 	if($DB) { echo "<br>Runtime: ".$RunTime . "<br>"; }
 	echo $Return;
-	return $Return;
+#	return $Return;
 }
 ?>
