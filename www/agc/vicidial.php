@@ -1896,7 +1896,7 @@ else
 				$cVARMAXstatuses='';
 				$cVARCBstatusesLIST='';
 				##### grab the statuses that can be used for dispositioning by an agent
-				$stmt="SELECT status,status_name,scheduled_callback,selectable,min_sec,max_sec FROM vicidial_statuses WHERE status != 'NEW' order by status limit 500;";
+				$stmt="SELECT status,status_name,scheduled_callback,selectable,min_sec,max_sec FROM vicidial_statuses WHERE status != 'NEW' order by Pos limit 500;";
 				$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01010',$VD_login,$server_ip,$session_name,$one_mysql_log);}
 				if ($DB) {echo "$stmt\n";}
@@ -1926,7 +1926,7 @@ else
 					}
 
 				##### grab the campaign-specific statuses that can be used for dispositioning by an agent
-				$stmt="SELECT status,status_name,scheduled_callback,selectable,min_sec,max_sec FROM vicidial_campaign_statuses WHERE status != 'NEW' and campaign_id='$VD_campaign' order by status limit 500;";
+				$stmt="SELECT status,status_name,scheduled_callback,selectable,min_sec,max_sec FROM vicidial_campaign_statuses WHERE status != 'NEW' and campaign_id='$VD_campaign' order by Pos limit 500;";
 				$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01011',$VD_login,$server_ip,$session_name,$one_mysql_log);}
 				if ($DB) {echo "$stmt\n";}
@@ -13777,6 +13777,50 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 				}
 			}
 
+
+// ################################################################################
+// Build Dispo Content
+function BuildDispoContent() {
+	var DispoReturn = "";
+	var xmlhttp=false;
+	/*@cc_on @*/
+	/*@if (@_jscript_version >= 5)
+	// JScript gives us Conditional compilation, we can cope with old IE versions.
+	// and security blocked creation of the objects.
+	try {
+		xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+	} catch (e) {
+		try {
+			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+		} catch (E) {
+			xmlhttp = false;
+		}
+	}
+	@end @*/
+	if (!xmlhttp && typeof XMLHttpRequest!='undefined') {
+		xmlhttp = new XMLHttpRequest();
+	}
+	if (xmlhttp) {
+		// ACTION=GenDispoScreen&user=6699&pass=82tq82tq&server_ip=10.100.0.5&session_name=1578041567_90118376513&lead_id=4063118&list_id=6202
+		Dispo_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=GenDispoScreen&user=" + user + "&pass=" + pass + "&orig_pass=" + orig_pass + "&lead_id=" + document.vicidial_form.lead_id.value + "&campaign=" + campaign + "&list_id=" + document.vicidial_form.list_id.value + "&customer_sec=" + customer_sec;
+		xmlhttp.open('POST', 'vdc_db_query_ng.php');
+		xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
+		xmlhttp.send(Dispo_query);
+		xmlhttp.onreadystatechange = function() {
+			//	alert(DSupdate_query + "\n" +xmlhttp.responseText);
+
+			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+				//	alert(xmlhttp.responseText);
+				var Dispo_trigger = null;
+				DispoReturn = xmlhttp.responseText;
+			}
+		}
+		delete xmlhttp;
+	}
+	return DispoReturn;
+}
+
+
 // ################################################################################
 // Generate the Call Disposition Chooser panel
 	function DispoSelectContent_create(taskDSgrp,taskDSstage,DSCclick)
@@ -13841,37 +13885,38 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 			var print_ct = 0;
 			if (hide_dispo_list < 1)
 				{
-				while (loop_ct < VD_statuses_ct)
-					{
-					if (VARSELstatuses[loop_ct] == 'Y')
-						{
-						CBflag = '';
-						if (VARCBstatuses[loop_ct] == 'Y')
-							{CBflag = '*';}
-						// check for minimum and maximum customer talk seconds to see if status is non-selectable
-						if ( ( (VARMINstatuses[loop_ct] > 0) && (customer_sec < VARMINstatuses[loop_ct]) ) || ( (VARMAXstatuses[loop_ct] > 0) && (customer_sec > VARMAXstatuses[loop_ct]) ) )
-							{
-							dispo_HTML = dispo_HTML + '<DEL>' + VARstatuses[loop_ct] + " - " + VARstatusnames[loop_ct] + "</DEL> " + CBflag + "<br /><br />";
-							}
-						else
-							{
-							if (taskDSgrp == VARstatuses[loop_ct])
-								{
-								dispo_HTML = dispo_HTML + "<font size=\"3\" face=\"Arial, Helvetica, sans-serif\" style=\"BACKGROUND-COLOR: #FFFFCC\"><b><a href=\"#\" onclick=\"DispoSelect_submit('','','YES');return false;\">" + VARstatuses[loop_ct] + " - " + VARstatusnames[loop_ct] + "</a> " + CBflag + "</b></font><br /><br />";
-								}
-							else
-								{
-								dispo_HTML = dispo_HTML + "<font size=\"2\" face=\"Arial, Helvetica, sans-serif\"><a href=\"#\" onclick=\"DispoSelectContent_create('" + VARstatuses[loop_ct] + "','ADD','YES');return false;\" onMouseOver=\"this.style.backgroundColor = '#FFFFCC'\" onMouseOut=\"this.style.backgroundColor = 'transparent'\";>" + VARstatuses[loop_ct] + " - " + VARstatusnames[loop_ct] + "</a></font> " + CBflag + "<br /><br />";
-								}
-							}
-						if (print_ct == VD_statuses_ct_onethird)
-							{dispo_HTML = dispo_HTML + "</span></font></td><td bgcolor=\"#99FF99\" height=\"300px\" width=\"240px\" valign=\"top\"><font class=\"log_text\"><span id=\"DispoSelectB\">";}
-						if (print_ct == VD_statuses_ct_twothird)
-							{dispo_HTML = dispo_HTML + "</span></font></td><td bgcolor=\"#99FF99\" height=\"300px\" width=\"240px\" valign=\"top\"><font class=\"log_text\"><span id=\"DispoSelectC\">";}
-						print_ct++;
-						}
-					loop_ct++;
-					}
+				dispo_HTML = BuildDispoContent();
+//				while (loop_ct < VD_statuses_ct)
+//					{
+//					if (VARSELstatuses[loop_ct] == 'Y')
+//						{
+//						CBflag = '';
+//						if (VARCBstatuses[loop_ct] == 'Y')
+//							{CBflag = '*';}
+//						// check for minimum and maximum customer talk seconds to see if status is non-selectable
+//						if ( ( (VARMINstatuses[loop_ct] > 0) && (customer_sec < VARMINstatuses[loop_ct]) ) || ( (VARMAXstatuses[loop_ct] > 0) && (customer_sec > VARMAXstatuses[loop_ct]) ) )
+//							{
+//							dispo_HTML = dispo_HTML + '<DEL>' + VARstatuses[loop_ct] + " - " + VARstatusnames[loop_ct] + "</DEL> " + CBflag + "<br /><br />";
+//							}
+//						else
+//							{
+//							if (taskDSgrp == VARstatuses[loop_ct])
+//								{
+//								dispo_HTML = dispo_HTML + "<font size=\"3\" face=\"Arial, Helvetica, sans-serif\" style=\"BACKGROUND-COLOR: #FFFFCC\"><b><a href=\"#\" onclick=\"DispoSelect_submit('','','YES');return false;\">" + VARstatuses[loop_ct] + " - " + VARstatusnames[loop_ct] + "</a> " + CBflag + "</b></font><br /><br />";
+//								}
+//							else
+//								{
+//								dispo_HTML = dispo_HTML + "<font size=\"2\" face=\"Arial, Helvetica, sans-serif\"><a href=\"#\" onclick=\"DispoSelectContent_create('" + VARstatuses[loop_ct] + "','ADD','YES');return false;\" onMouseOver=\"this.style.backgroundColor = '#FFFFCC'\" onMouseOut=\"this.style.backgroundColor = 'transparent'\";>" + VARstatuses[loop_ct] + " - " + VARstatusnames[loop_ct] + "</a></font> " + CBflag + "<br /><br />";
+//								}
+//							}
+//						if (print_ct == VD_statuses_ct_onethird)
+//							{dispo_HTML = dispo_HTML + "</span></font></td><td bgcolor=\"#99FF99\" height=\"300px\" width=\"240px\" valign=\"top\"><font class=\"log_text\"><span id=\"DispoSelectB\">";}
+//						if (print_ct == VD_statuses_ct_twothird)
+//							{dispo_HTML = dispo_HTML + "</span></font></td><td bgcolor=\"#99FF99\" height=\"300px\" width=\"240px\" valign=\"top\"><font class=\"log_text\"><span id=\"DispoSelectC\">";}
+//						print_ct++;
+//						}
+//					loop_ct++;
+//					}
 				}
 			else
 				{

@@ -15032,7 +15032,7 @@ if ($ADD==42)
 				{
 				echo "<br><B>"._QXZ("CUSTOM CAMPAIGN STATUS MODIFIED").": $campaign_id - $status</B>\n";
 
-				$stmt="UPDATE vicidial_campaign_statuses SET status_name='$status_name',selectable='$selectable',human_answered='$human_answered',category='$category',sale='$sale',dnc='$dnc',customer_contact='$customer_contact',not_interested='$not_interested',unworkable='$unworkable',scheduled_callback='$scheduled_callbacks',completed='$completed',min_sec='$min_sec',max_sec='$max_sec',answering_machine='$answering_machine' where campaign_id='$campaign_id' and status='$status';";
+				$stmt="UPDATE vicidial_campaign_statuses SET status_name='$status_name',selectable='$selectable',human_answered='$human_answered',category='$category',sale='$sale',dnc='$dnc',customer_contact='$customer_contact',not_interested='$not_interested',unworkable='$unworkable',scheduled_callback='$scheduled_callbacks',completed='$completed',min_sec='$min_sec',max_sec='$max_sec',answering_machine='$answering_machine',Pos='$statpos' where campaign_id='$campaign_id' and status='$status';";
 				$rslt=mysql_to_mysqli($stmt, $link);
 
 				### LOG INSERTION Admin Log Table ###
@@ -25283,6 +25283,7 @@ if ($ADD==31)
 		echo "<td align=center valign=top bgcolor=\"#99ffcc\"><font size=2 class='vertical-text'><b>"._QXZ("ANSWERING MACHINE")."</B></font></td>\n";
 		echo "<td align=center valign=bottom><font size=1><b>"._QXZ("MIN SEC")."</td>\n";
 		echo "<td align=center valign=bottom><font size=1><b>"._QXZ("MAX SEC")."</td>\n";
+		echo "<td align=center valign=bottom><font size=1><b>"._QXZ("Pos")."</td>\n";
 		echo "<td align=center valign=bottom><font size=2><b>"._QXZ("MODIFY/DELETE")."</td>\n";
 		echo "</tr>\n";
 
@@ -25301,7 +25302,7 @@ if ($ADD==31)
 			$o++;
 			}
 
-		$stmt="SELECT status,status_name,selectable,human_answered,category,sale,dnc,customer_contact,not_interested,unworkable,scheduled_callback,completed,min_sec,max_sec,answering_machine from vicidial_campaign_statuses where campaign_id='$campaign_id' $LOGallowed_campaignsSQL order by status;";
+		$stmt="SELECT status,status_name,selectable,human_answered,category,sale,dnc,customer_contact,not_interested,unworkable,scheduled_callback,completed,min_sec,max_sec,answering_machine,Pos from vicidial_campaign_statuses where campaign_id='$campaign_id' $LOGallowed_campaignsSQL order by status;";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$statuses_to_print = mysqli_num_rows($rslt);
 		$o=0;
@@ -25342,6 +25343,7 @@ if ($ADD==31)
 			echo "</td>\n";
 			echo "<td><input type=text name=min_sec size=3 maxlength=5 value=\"$rowx[12]\" class=\"cust_form\"></td>\n";
 			echo "<td><input type=text name=max_sec size=3 maxlength=5 value=\"$rowx[13]\" class=\"cust_form\"></td>\n";
+			echo "<td><input type=text name=statpos size=3 maxlength=3 value=\"$rowx[15]\" class=\"cust_form\"></td>\n";
 			echo "</td><td align=center nowrap><font size=1><input type=submit name=submit value='"._QXZ("MODIFY")."'> &nbsp; &nbsp; &nbsp; &nbsp; \n";
 			echo " &nbsp; \n";
 
