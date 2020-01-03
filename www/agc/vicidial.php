@@ -8712,17 +8712,17 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 								if ( (CalL_AutO_LauncH == 'WEBFORM') || (CalL_AutO_LauncH == 'PREVIEW_WEBFORM') )
 									{
-									window.open(TEMP_VDIC_web_form_address, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
+									window.open(TEMP_VDIC_web_form_address, web_form_target); //, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
 									webform_click_log('Awebform1');
 									}
 								if ( (CalL_AutO_LauncH == 'WEBFORMTWO') || (CalL_AutO_LauncH == 'PREVIEW_WEBFORMTWO') )
 									{
-									window.open(TEMP_VDIC_web_form_address_two, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
+									window.open(TEMP_VDIC_web_form_address_two, web_form_target); //, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
 									webform_click_log('Awebform2');
 									}
 								if ( (CalL_AutO_LauncH == 'WEBFORMTHREE') || (CalL_AutO_LauncH == 'PREVIEW_WEBFORMTHREE') )
 									{
-									window.open(TEMP_VDIC_web_form_address_three, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
+									window.open(TEMP_VDIC_web_form_address_three, web_form_target); //, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
 									webform_click_log('Awebform3');
 									}
 								api_switch_lead_triggered=0;
@@ -10241,17 +10241,17 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 									if ( (get_call_launch == 'WEBFORM') || (get_call_launch == 'PREVIEW_WEBFORM') )
 										{
-										window.open(TEMP_VDIC_web_form_address, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
+										window.open(TEMP_VDIC_web_form_address, web_form_target); //, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
 										webform_click_log('Awebform1');
 										}
 									if ( (get_call_launch == 'WEBFORMTWO') || (get_call_launch == 'PREVIEW_WEBFORMTWO') )
 										{
-										window.open(TEMP_VDIC_web_form_address_two, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
+										window.open(TEMP_VDIC_web_form_address_two, web_form_target); //, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
 										webform_click_log('Awebform2');
 										}
 									if ( (get_call_launch == 'WEBFORMTHREE') || (get_call_launch == 'PREVIEW_WEBFORMTHREE') )
 										{
-										window.open(TEMP_VDIC_web_form_address_three, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
+										window.open(TEMP_VDIC_web_form_address_three, web_form_target); //, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
 										webform_click_log('Awebform3');
 										}
 									}
@@ -10280,17 +10280,17 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 									if (get_call_launch == 'PREVIEW_WEBFORM')
 										{
-										window.open(TEMP_VDIC_web_form_address, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
+										window.open(TEMP_VDIC_web_form_address, web_form_target); //, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
 										webform_click_log('Awebform1');
 										}
 									if (get_call_launch == 'PREVIEW_WEBFORMTWO')
 										{
-										window.open(TEMP_VDIC_web_form_address_two, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
+										window.open(TEMP_VDIC_web_form_address_two, web_form_target); //, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
 										webform_click_log('Awebform2');
 										}
 									if (get_call_launch == 'PREVIEW_WEBFORMTHREE')
 										{
-										window.open(TEMP_VDIC_web_form_address_three, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
+										window.open(TEMP_VDIC_web_form_address_three, web_form_target); //, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
 										webform_click_log('Awebform3');
 										}
 									if ( (document.vicidial_form.LeadPreview.checked==false) && (manual_dial_validation == 'Y') )
@@ -10797,17 +10797,17 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								}
 							if (get_call_launch == 'WEBFORM')
 								{
-								window.open(TEMP_VDIC_web_form_address, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
+								window.open(TEMP_VDIC_web_form_address, web_form_target); //, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
 								webform_click_log('Awebform1');
 								}
 							if (get_call_launch == 'WEBFORMTWO')
 								{
-								window.open(TEMP_VDIC_web_form_address_two, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
+								window.open(TEMP_VDIC_web_form_address_two, web_form_target); //, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
 								webform_click_log('Awebform2');
 								}
 							if (get_call_launch == 'WEBFORMTHREE')
 								{
-								window.open(TEMP_VDIC_web_form_address_three, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
+								window.open(TEMP_VDIC_web_form_address_three, web_form_target); //, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
 								webform_click_log('Awebform3');
 								}
 							}
@@ -11890,17 +11890,17 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 							if ( (CalL_AutO_LauncH == 'WEBFORM') || (CalL_AutO_LauncH == 'PREVIEW_WEBFORM') )
 								{
-								window.open(TEMP_VDIC_web_form_address, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
+								window.open(TEMP_VDIC_web_form_address, web_form_target); //, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
 								webform_click_log('Awebform1');
 								}
 							if ( (CalL_AutO_LauncH == 'WEBFORMTWO') || (CalL_AutO_LauncH == 'PREVIEW_WEBFORMTWO') )
 								{
-								window.open(TEMP_VDIC_web_form_address_two, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
+								window.open(TEMP_VDIC_web_form_address_two, web_form_target); //, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
 								webform_click_log('Awebform2');
 								}
 							if ( (CalL_AutO_LauncH == 'WEBFORMTHREE') || (CalL_AutO_LauncH == 'PREVIEW_WEBFORMTHREE') )
 								{
-								window.open(TEMP_VDIC_web_form_address_three, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
+								window.open(TEMP_VDIC_web_form_address_three, web_form_target); //, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
 								webform_click_log('Awebform3');
 								}
 
@@ -12701,17 +12701,17 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 							if ( (CalL_AutO_LauncH == 'WEBFORM') || (CalL_AutO_LauncH == 'PREVIEW_WEBFORM') )
 								{
-								window.open(TEMP_VDIC_web_form_address, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
+								window.open(TEMP_VDIC_web_form_address, web_form_target); //, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
 								webform_click_log('Awebform1');
 								}
 							if ( (CalL_AutO_LauncH == 'WEBFORMTWO') || (CalL_AutO_LauncH == 'PREVIEW_WEBFORMTWO') )
 								{
-								window.open(TEMP_VDIC_web_form_address_two, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
+								window.open(TEMP_VDIC_web_form_address_two, web_form_target); //, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
 								webform_click_log('Awebform2');
 								}
 							if ( (CalL_AutO_LauncH == 'WEBFORMTHREE') || (CalL_AutO_LauncH == 'PREVIEW_WEBFORMTHREE') )
 								{
-								window.open(TEMP_VDIC_web_form_address_three, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
+								window.open(TEMP_VDIC_web_form_address_three, web_form_target); //, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
 								webform_click_log('Awebform3');
 								}
 
@@ -13781,7 +13781,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 // ################################################################################
 // Build Dispo Content
 function BuildDispoContent(taskDSgrp) {
-	var DispoReturn = NULL;
+	var DispoReturn = null;
 	var xmlhttp=false;
 	/*@cc_on @*/
 	/*@if (@_jscript_version >= 5)
@@ -13803,6 +13803,7 @@ function BuildDispoContent(taskDSgrp) {
 	if (xmlhttp) {
 		// ACTION=GenDispoScreen&user=6699&pass=82tq82tq&server_ip=10.100.0.5&session_name=1578041567_90118376513&lead_id=4063118&list_id=6202
 		Dispo_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=GenDispoScreen&user=" + user + "&pass=" + pass + "&orig_pass=" + orig_pass + "&lead_id=" + document.vicidial_form.lead_id.value + "&campaign=" + campaign + "&list_id=" + document.vicidial_form.list_id.value + "&customer_sec=" + customer_sec + "&taskDSgrp=" + taskDSgrp;
+//		alert(Dispo_query);
 		xmlhttp.open('POST', 'vdc_db_query_ng.php', false);
 		xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 		xmlhttp.send(Dispo_query);
@@ -13811,11 +13812,12 @@ function BuildDispoContent(taskDSgrp) {
 
 //			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
 				//	alert(xmlhttp.responseText);
-				DispoReturn = xmlhttp.responseText;
+		DispoReturn = xmlhttp.responseText;
 //			}
 //		}
 		delete xmlhttp;
 	}
+//	alert(DispoReturn);
 	return DispoReturn;
 }
 
@@ -18533,19 +18535,19 @@ function CallViewLogInbounds() {
 			if (timer_action == 'WEBFORM')
 				{
 				WebFormRefresH('NO','YES');
-				window.open(TEMP_VDIC_web_form_address, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
+				window.open(TEMP_VDIC_web_form_address, web_form_target); //, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
 				webform_click_log('Twebform1');
 				}
 			if (timer_action == 'WEBFORM2')
 				{
 				WebFormTwoRefresH('NO','YES');
-				window.open(TEMP_VDIC_web_form_address_two, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
+				window.open(TEMP_VDIC_web_form_address_two, web_form_target); //, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
 				webform_click_log('Twebform2');
 				}
 			if (timer_action == 'WEBFORM3')
 				{
 				WebFormThreeRefresH('NO','YES');
-				window.open(TEMP_VDIC_web_form_address_three, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
+				window.open(TEMP_VDIC_web_form_address_three, web_form_target); //, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
 				webform_click_log('Twebform3');
 				}
 			if (timer_action == 'D1_DIAL')

@@ -818,6 +818,8 @@
           www/vicidial/admin.php,
           www/agc/vicidial.php.
       - New: www/agc/vdc_db_query_ng.php.
+    * Open Webforms as tabs instead as windows:
+      - Update: www/agc/vicidial.php;
     * Change next release to 3.0.1.
 
 2.26.29
