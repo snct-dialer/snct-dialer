@@ -871,7 +871,7 @@ $LeadCB  = 5;
 function CheckCallbacks($User, $Lead) {
 	global $link, $DB, $AgentCB, $LeadCB;
 	
-	$DateTemp = date("Y-m-d H:i:s", strtotime("-7 day", time())); 
+	$DateTemp = date("Y-m-d H:i:s", strtotime("-1 day", time())); 
 	if($AgentCB != 0) {
 		$sql = "SELECT COUNT(*) FROM `vicidial_agent_log` WHERE `status` = 'CALLBK' AND `user` = '". $User ."' AND `event_time` >= '". $DateTemp ."';";
 		if($DB) { echo $sql; }
@@ -882,6 +882,7 @@ function CheckCallbacks($User, $Lead) {
 			return 0;
 		}
 	}
+	$DateTemp = date("Y-m-d H:i:s", strtotime("-7 day", time()));
 	if($LeadCB != 0) {
 		$sql1 = "SELECT COUNT(*) FROM `vicidial_agent_log` WHERE `status` = 'CALLBK' AND `lead_id` = '". $Lead ."' AND `event_time` >= '". $DateTemp ."';";
 		if($DB) { echo $sql1; }
