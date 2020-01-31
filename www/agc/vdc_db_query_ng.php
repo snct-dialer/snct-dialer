@@ -11,7 +11,9 @@
 
 # Changelog
 #
-# 2019-12-07 10:10 First work
+# 2019-12-07 jff First work
+# 2020-01-09 jff Remove $_GET
+#                use mysqli_fetch_array at START SYSTEM_SETTINGS LOOKUP
 #
 #
 
@@ -116,8 +118,11 @@
 # 
 #
 
-$version = '2.14-377';
-$build = '191107-1010';
+
+$StartTimeGlob = microtime(true);
+
+$versionVdcDbQueryNG = '1.0.12';
+$build = '200104-1810';
 $php_script = 'vdc_db_query_ng.php';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=824;
@@ -128,309 +133,199 @@ $SSagent_debug_logging=0;
 $pause_to_code_jump=0;
 $startMS = microtime();
 
-require_once("dbconnect_mysqli.php");
+
+if (file_exists('../inc/include.php')) {
+	require_once '../inc/include.php';
+} elseif (file_exists('./inc/include.php')) {
+	require_once './inc/include.php';
+} else {
+	require_once '/inc/include.php';
+}
+
+
+$SetupDir = "/etc/snct-dialer/";
+$SetupFiles = array ("snct-dialer.conf", "dialer/agent.conf", "dialer/agent.local");
+
+$SetUp = setup::MakeWithArray($SetupDir, $SetupFiles);
+
+
+#require 'inc/vendor/autoload.php';
+
+#use PHPMailer\PHPMailer\PHPMailer;
+#use PHPMailer\PHPMailer\Exception;
+
+
+$Log = new Log($SetUp->GetData("Log", "DB_Query_NG"), $versionVdcDbQueryNG);
+
+
+$mysql = new DB($SetUp->GetData("Database", "VARDB_server"),
+	$SetUp->GetData("Database", "VARDB_database"),
+	$SetUp->GetData("Database", "VARDB_user"),
+	$SetUp->GetData("Database", "VARDB_pass"),
+	$SetUp->GetData("Database", "VARDB_port"));
+
+$MySqlLink = $mysql->MySqlHdl;
+
+
+#require_once("dbconnect_mysqli.php");
 require_once("functions.php");
 
 
 ### If you have globals turned off uncomment these lines
-if (isset($_GET["user"]))						{$user=$_GET["user"];}
-	elseif (isset($_POST["user"]))				{$user=$_POST["user"];}
-if (isset($_GET["pass"]))						{$pass=$_GET["pass"];}
-	elseif (isset($_POST["pass"]))				{$pass=$_POST["pass"];}
-if (isset($_GET["server_ip"]))					{$server_ip=$_GET["server_ip"];}
-	elseif (isset($_POST["server_ip"]))			{$server_ip=$_POST["server_ip"];}
-if (isset($_GET["session_name"]))				{$session_name=$_GET["session_name"];}
-	elseif (isset($_POST["session_name"]))		{$session_name=$_POST["session_name"];}
-if (isset($_GET["format"]))						{$format=$_GET["format"];}
-	elseif (isset($_POST["format"]))			{$format=$_POST["format"];}
-if (isset($_GET["ACTION"]))						{$ACTION=$_GET["ACTION"];}
-	elseif (isset($_POST["ACTION"]))			{$ACTION=$_POST["ACTION"];}
-if (isset($_GET["stage"]))						{$stage=$_GET["stage"];}
-	elseif (isset($_POST["stage"]))				{$stage=$_POST["stage"];}
-if (isset($_GET["closer_choice"]))				{$closer_choice=$_GET["closer_choice"];}
-	elseif (isset($_POST["closer_choice"]))		{$closer_choice=$_POST["closer_choice"];}
-if (isset($_GET["conf_exten"]))					{$conf_exten=$_GET["conf_exten"];}
-	elseif (isset($_POST["conf_exten"]))		{$conf_exten=$_POST["conf_exten"];}
-if (isset($_GET["exten"]))						{$exten=$_GET["exten"];}
-	elseif (isset($_POST["exten"]))				{$exten=$_POST["exten"];}
-if (isset($_GET["ext_context"]))				{$ext_context=$_GET["ext_context"];}
-	elseif (isset($_POST["ext_context"]))		{$ext_context=$_POST["ext_context"];}
-if (isset($_GET["ext_priority"]))				{$ext_priority=$_GET["ext_priority"];}
-	elseif (isset($_POST["ext_priority"]))		{$ext_priority=$_POST["ext_priority"];}
-if (isset($_GET["campaign"]))					{$campaign=$_GET["campaign"];}
-	elseif (isset($_POST["campaign"]))			{$campaign=$_POST["campaign"];}
-if (isset($_GET["dial_timeout"]))				{$dial_timeout=$_GET["dial_timeout"];}
-	elseif (isset($_POST["dial_timeout"]))		{$dial_timeout=$_POST["dial_timeout"];}
-if (isset($_GET["dial_prefix"]))				{$dial_prefix=$_GET["dial_prefix"];}
-	elseif (isset($_POST["dial_prefix"]))		{$dial_prefix=$_POST["dial_prefix"];}
-if (isset($_GET["campaign_cid"]))				{$campaign_cid=$_GET["campaign_cid"];}
-	elseif (isset($_POST["campaign_cid"]))		{$campaign_cid=$_POST["campaign_cid"];}
-if (isset($_GET["MDnextCID"]))					{$MDnextCID=$_GET["MDnextCID"];}
-	elseif (isset($_POST["MDnextCID"]))			{$MDnextCID=$_POST["MDnextCID"];}
-if (isset($_GET["uniqueid"]))					{$uniqueid=$_GET["uniqueid"];}
-	elseif (isset($_POST["uniqueid"]))			{$uniqueid=$_POST["uniqueid"];}
-if (isset($_GET["lead_id"]))					{$lead_id=$_GET["lead_id"];}
-	elseif (isset($_POST["lead_id"]))			{$lead_id=$_POST["lead_id"];}
-if (isset($_GET["list_id"]))					{$list_id=$_GET["list_id"];}
-	elseif (isset($_POST["list_id"]))			{$list_id=$_POST["list_id"];}
-if (isset($_GET["length_in_sec"]))				{$length_in_sec=$_GET["length_in_sec"];}
-	elseif (isset($_POST["length_in_sec"]))		{$length_in_sec=$_POST["length_in_sec"];}
-if (isset($_GET["phone_code"]))					{$phone_code=$_GET["phone_code"];}
-	elseif (isset($_POST["phone_code"]))		{$phone_code=$_POST["phone_code"];}
-if (isset($_GET["phone_number"]))				{$phone_number=$_GET["phone_number"];}
-	elseif (isset($_POST["phone_number"]))		{$phone_number=$_POST["phone_number"];}
-if (isset($_GET["channel"]))					{$channel=$_GET["channel"];}
-	elseif (isset($_POST["channel"]))			{$channel=$_POST["channel"];}
-if (isset($_GET["start_epoch"]))				{$start_epoch=$_GET["start_epoch"];}
-	elseif (isset($_POST["start_epoch"]))		{$start_epoch=$_POST["start_epoch"];}
-if (isset($_GET["dispo_choice"]))				{$dispo_choice=$_GET["dispo_choice"];}
-	elseif (isset($_POST["dispo_choice"]))		{$dispo_choice=$_POST["dispo_choice"];}
-if (isset($_GET["vendor_lead_code"]))			{$vendor_lead_code=$_GET["vendor_lead_code"];}
-	elseif (isset($_POST["vendor_lead_code"]))	{$vendor_lead_code=$_POST["vendor_lead_code"];}
-if (isset($_GET["title"]))						{$title=$_GET["title"];}
-	elseif (isset($_POST["title"]))				{$title=$_POST["title"];}
-if (isset($_GET["first_name"]))					{$first_name=$_GET["first_name"];}
-	elseif (isset($_POST["first_name"]))		{$first_name=$_POST["first_name"];}
-if (isset($_GET["middle_initial"]))				{$middle_initial=$_GET["middle_initial"];}
-	elseif (isset($_POST["middle_initial"]))	{$middle_initial=$_POST["middle_initial"];}
-if (isset($_GET["last_name"]))					{$last_name=$_GET["last_name"];}
-	elseif (isset($_POST["last_name"]))			{$last_name=$_POST["last_name"];}
-if (isset($_GET["address1"]))					{$address1=$_GET["address1"];}
-	elseif (isset($_POST["address1"]))			{$address1=$_POST["address1"];}
-if (isset($_GET["address2"]))					{$address2=$_GET["address2"];}
-	elseif (isset($_POST["address2"]))			{$address2=$_POST["address2"];}
-if (isset($_GET["address3"]))					{$address3=$_GET["address3"];}
-	elseif (isset($_POST["address3"]))			{$address3=$_POST["address3"];}
-if (isset($_GET["city"]))						{$city=$_GET["city"];}
-	elseif (isset($_POST["city"]))				{$city=$_POST["city"];}
-if (isset($_GET["state"]))						{$state=$_GET["state"];}
-	elseif (isset($_POST["state"]))				{$state=$_POST["state"];}
-if (isset($_GET["province"]))					{$province=$_GET["province"];}
-	elseif (isset($_POST["province"]))			{$province=$_POST["province"];}
-if (isset($_GET["postal_code"]))				{$postal_code=$_GET["postal_code"];}
-	elseif (isset($_POST["postal_code"]))		{$postal_code=$_POST["postal_code"];}
-if (isset($_GET["country_code"]))				{$country_code=$_GET["country_code"];}
-	elseif (isset($_POST["country_code"]))		{$country_code=$_POST["country_code"];}
-if (isset($_GET["gender"]))						{$gender=$_GET["gender"];}
-	elseif (isset($_POST["gender"]))			{$gender=$_POST["gender"];}
-if (isset($_GET["date_of_birth"]))				{$date_of_birth=$_GET["date_of_birth"];}
-	elseif (isset($_POST["date_of_birth"]))		{$date_of_birth=$_POST["date_of_birth"];}
-if (isset($_GET["alt_phone"]))					{$alt_phone=$_GET["alt_phone"];}
-	elseif (isset($_POST["alt_phone"]))			{$alt_phone=$_POST["alt_phone"];}
-if (isset($_GET["email"]))						{$email=$_GET["email"];}
-	elseif (isset($_POST["email"]))				{$email=$_POST["email"];}
-if (isset($_GET["security_phrase"]))			{$security_phrase=$_GET["security_phrase"];}
-	elseif (isset($_POST["security_phrase"]))	{$security_phrase=$_POST["security_phrase"];}
-if (isset($_GET["comments"]))					{$comments=$_GET["comments"];}
-	elseif (isset($_POST["comments"]))			{$comments=$_POST["comments"];}
-if (isset($_GET["auto_dial_level"]))			{$auto_dial_level=$_GET["auto_dial_level"];}
-	elseif (isset($_POST["auto_dial_level"]))	{$auto_dial_level=$_POST["auto_dial_level"];}
-if (isset($_GET["VDstop_rec_after_each_call"]))				{$VDstop_rec_after_each_call=$_GET["VDstop_rec_after_each_call"];}
-	elseif (isset($_POST["VDstop_rec_after_each_call"]))		{$VDstop_rec_after_each_call=$_POST["VDstop_rec_after_each_call"];}
-if (isset($_GET["conf_silent_prefix"]))				{$conf_silent_prefix=$_GET["conf_silent_prefix"];}
-	elseif (isset($_POST["conf_silent_prefix"]))	{$conf_silent_prefix=$_POST["conf_silent_prefix"];}
-if (isset($_GET["extension"]))					{$extension=$_GET["extension"];}
-	elseif (isset($_POST["extension"]))			{$extension=$_POST["extension"];}
-if (isset($_GET["protocol"]))					{$protocol=$_GET["protocol"];}
-	elseif (isset($_POST["protocol"]))			{$protocol=$_POST["protocol"];}
-if (isset($_GET["user_abb"]))					{$user_abb=$_GET["user_abb"];}
-	elseif (isset($_POST["user_abb"]))			{$user_abb=$_POST["user_abb"];}
-if (isset($_GET["preview"]))					{$preview=$_GET["preview"];}
-	elseif (isset($_POST["preview"]))			{$preview=$_POST["preview"];}
-if (isset($_GET["called_count"]))				{$called_count=$_GET["called_count"];}
-	elseif (isset($_POST["called_count"]))		{$called_count=$_POST["called_count"];}
-if (isset($_GET["agent_log_id"]))				{$agent_log_id=$_GET["agent_log_id"];}
-	elseif (isset($_POST["agent_log_id"]))		{$agent_log_id=$_POST["agent_log_id"];}
-if (isset($_GET["agent_log"]))					{$agent_log=$_GET["agent_log"];}
-	elseif (isset($_POST["agent_log"]))			{$agent_log=$_POST["agent_log"];}
-if (isset($_GET["favorites_list"]))				{$favorites_list=$_GET["favorites_list"];}
-	elseif (isset($_POST["favorites_list"]))	{$favorites_list=$_POST["favorites_list"];}
-if (isset($_GET["CallBackDatETimE"]))			{$CallBackDatETimE=$_GET["CallBackDatETimE"];}
-	elseif (isset($_POST["CallBackDatETimE"]))	{$CallBackDatETimE=$_POST["CallBackDatETimE"];}
-if (isset($_GET["recipient"]))					{$recipient=$_GET["recipient"];}
-	elseif (isset($_POST["recipient"]))			{$recipient=$_POST["recipient"];}
-if (isset($_GET["callback_id"]))				{$callback_id=$_GET["callback_id"];}
-	elseif (isset($_POST["callback_id"]))		{$callback_id=$_POST["callback_id"];}
-if (isset($_GET["use_internal_dnc"]))			{$use_internal_dnc=$_GET["use_internal_dnc"];}
-	elseif (isset($_POST["use_internal_dnc"]))	{$use_internal_dnc=$_POST["use_internal_dnc"];}
-if (isset($_GET["use_campaign_dnc"]))			{$use_campaign_dnc=$_GET["use_campaign_dnc"];}
-	elseif (isset($_POST["use_campaign_dnc"]))	{$use_campaign_dnc=$_POST["use_campaign_dnc"];}
-if (isset($_GET["omit_phone_code"]))			{$omit_phone_code=$_GET["omit_phone_code"];}
-	elseif (isset($_POST["omit_phone_code"]))	{$omit_phone_code=$_POST["omit_phone_code"];}
-if (isset($_GET["phone_ip"]))				{$phone_ip=$_GET["phone_ip"];}
-	elseif (isset($_POST["phone_ip"]))		{$phone_ip=$_POST["phone_ip"];}
-if (isset($_GET["enable_sipsak_messages"]))				{$enable_sipsak_messages=$_GET["enable_sipsak_messages"];}
-	elseif (isset($_POST["enable_sipsak_messages"]))	{$enable_sipsak_messages=$_POST["enable_sipsak_messages"];}
-if (isset($_GET["status"]))						{$status=$_GET["status"];}
-	elseif (isset($_POST["status"]))			{$status=$_POST["status"];}
-if (isset($_GET["LogouTKicKAlL"]))				{$LogouTKicKAlL=$_GET["LogouTKicKAlL"];}
-	elseif (isset($_POST["LogouTKicKAlL"]))		{$LogouTKicKAlL=$_POST["LogouTKicKAlL"];}
-if (isset($_GET["closer_blended"]))				{$closer_blended=$_GET["closer_blended"];}
-	elseif (isset($_POST["closer_blended"]))	{$closer_blended=$_POST["closer_blended"];}
-if (isset($_GET["inOUT"]))						{$inOUT=$_GET["inOUT"];}
-	elseif (isset($_POST["inOUT"]))				{$inOUT=$_POST["inOUT"];}
-if (isset($_GET["manual_dial_filter"]))				{$manual_dial_filter=$_GET["manual_dial_filter"];}
-	elseif (isset($_POST["manual_dial_filter"]))	{$manual_dial_filter=$_POST["manual_dial_filter"];}
-if (isset($_GET["alt_dial"]))					{$alt_dial=$_GET["alt_dial"];}
-	elseif (isset($_POST["alt_dial"]))			{$alt_dial=$_POST["alt_dial"];}
-if (isset($_GET["agentchannel"]))				{$agentchannel=$_GET["agentchannel"];}
-	elseif (isset($_POST["agentchannel"]))		{$agentchannel=$_POST["agentchannel"];}
-if (isset($_GET["conf_dialed"]))				{$conf_dialed=$_GET["conf_dialed"];}
-	elseif (isset($_POST["conf_dialed"]))		{$conf_dialed=$_POST["conf_dialed"];}
-if (isset($_GET["leaving_threeway"]))			{$leaving_threeway=$_GET["leaving_threeway"];}
-	elseif (isset($_POST["leaving_threeway"]))	{$leaving_threeway=$_POST["leaving_threeway"];}
-if (isset($_GET["hangup_all_non_reserved"]))			{$hangup_all_non_reserved=$_GET["hangup_all_non_reserved"];}
-	elseif (isset($_POST["hangup_all_non_reserved"]))	{$hangup_all_non_reserved=$_POST["hangup_all_non_reserved"];}
-if (isset($_GET["blind_transfer"]))				{$blind_transfer=$_GET["blind_transfer"];}
-	elseif (isset($_POST["blind_transfer"]))	{$blind_transfer=$_POST["blind_transfer"];}
-if (isset($_GET["usegroupalias"]))			{$usegroupalias=$_GET["usegroupalias"];}
-	elseif (isset($_POST["usegroupalias"]))	{$usegroupalias=$_POST["usegroupalias"];}
-if (isset($_GET["account"]))				{$account=$_GET["account"];}
-	elseif (isset($_POST["account"]))		{$account=$_POST["account"];}
-if (isset($_GET["agent_dialed_number"]))			{$agent_dialed_number=$_GET["agent_dialed_number"];}
-	elseif (isset($_POST["agent_dialed_number"]))	{$agent_dialed_number=$_POST["agent_dialed_number"];}
-if (isset($_GET["agent_dialed_type"]))				{$agent_dialed_type=$_GET["agent_dialed_type"];}
-	elseif (isset($_POST["agent_dialed_type"]))		{$agent_dialed_type=$_POST["agent_dialed_type"];}
-if (isset($_GET["wrapup"]))					{$wrapup=$_GET["wrapup"];}
-	elseif (isset($_POST["wrapup"]))		{$wrapup=$_POST["wrapup"];}
-if (isset($_GET["vtiger_callback_id"]))				{$vtiger_callback_id=$_GET["vtiger_callback_id"];}
-	elseif (isset($_POST["vtiger_callback_id"]))	{$vtiger_callback_id=$_POST["vtiger_callback_id"];}
-if (isset($_GET["dial_method"]))				{$dial_method=$_GET["dial_method"];}
-	elseif (isset($_POST["dial_method"]))		{$dial_method=$_POST["dial_method"];}
-if (isset($_GET["no_delete_sessions"]))				{$no_delete_sessions=$_GET["no_delete_sessions"];}
-	elseif (isset($_POST["no_delete_sessions"]))	{$no_delete_sessions=$_POST["no_delete_sessions"];}
-if (isset($_GET["nodeletevdac"]))				{$nodeletevdac=$_GET["nodeletevdac"];}
-	elseif (isset($_POST["nodeletevdac"]))		{$nodeletevdac=$_POST["nodeletevdac"];}
-if (isset($_GET["agent_territories"]))			{$agent_territories=$_GET["agent_territories"];}
-	elseif (isset($_POST["agent_territories"]))	{$agent_territories=$_POST["agent_territories"];}
-if (isset($_GET["alt_num_status"]))				{$alt_num_status=$_GET["alt_num_status"];}
-	elseif (isset($_POST["alt_num_status"]))	{$alt_num_status=$_POST["alt_num_status"];}
-if (isset($_GET["DiaL_SecondS"]))				{$DiaL_SecondS=$_GET["DiaL_SecondS"];}
-	elseif (isset($_POST["DiaL_SecondS"]))		{$DiaL_SecondS=$_POST["DiaL_SecondS"];}
-if (isset($_GET["date"]))						{$date=$_GET["date"];}
-	elseif (isset($_POST["date"]))				{$date=$_POST["date"];}
-if (isset($_GET["custom_field_names"]))				{$FORMcustom_field_names=$_GET["custom_field_names"];}
-	elseif (isset($_POST["custom_field_names"]))	{$FORMcustom_field_names=$_POST["custom_field_names"];}
-if (isset($_GET["qm_phone"]))			{$qm_phone=$_GET["qm_phone"];}
-	elseif (isset($_POST["qm_phone"]))	{$qm_phone=$_POST["qm_phone"];}
-if (isset($_GET["manual_dial_call_time_check"]))			{$manual_dial_call_time_check=$_GET["manual_dial_call_time_check"];}
-	elseif (isset($_POST["manual_dial_call_time_check"]))	{$manual_dial_call_time_check=$_POST["manual_dial_call_time_check"];}
-if (isset($_GET["CallBackLeadStatus"]))				{$CallBackLeadStatus=$_GET["CallBackLeadStatus"];}
-	elseif (isset($_POST["CallBackLeadStatus"]))	{$CallBackLeadStatus=$_POST["CallBackLeadStatus"];}
-if (isset($_GET["call_notes"]))				{$call_notes=$_GET["call_notes"];}
-	elseif (isset($_POST["call_notes"]))	{$call_notes=$_POST["call_notes"];}
-if (isset($_GET["search"]))				{$search=$_GET["search"];}
-	elseif (isset($_POST["search"]))	{$search=$_POST["search"];}
-if (isset($_GET["sub_status"]))				{$sub_status=$_GET["sub_status"];}
-	elseif (isset($_POST["sub_status"]))	{$sub_status=$_POST["sub_status"];}
-if (isset($_GET["qm_extension"]))			{$qm_extension=$_GET["qm_extension"];}
-	elseif (isset($_POST["qm_extension"]))	{$qm_extension=$_POST["qm_extension"];}
-if (isset($_GET["disable_alter_custphone"]))			{$disable_alter_custphone=$_GET["disable_alter_custphone"];}
-	elseif (isset($_POST["disable_alter_custphone"]))	{$disable_alter_custphone=$_POST["disable_alter_custphone"];}
-if (isset($_GET["bu_name"]))			{$bu_name=$_GET["bu_name"];}
-	elseif (isset($_POST["bu_name"]))	{$bu_name=$_POST["bu_name"];}
-if (isset($_GET["department"]))				{$department=$_GET["department"];}
-	elseif (isset($_POST["department"]))	{$department=$_POST["department"];}
-if (isset($_GET["group_name"]))				{$group_name=$_GET["group_name"];}
-	elseif (isset($_POST["group_name"]))	{$group_name=$_POST["group_name"];}
-if (isset($_GET["job_title"]))			{$job_title=$_GET["job_title"];}
-	elseif (isset($_POST["job_title"]))	{$job_title=$_POST["job_title"];}
-if (isset($_GET["location"]))			{$location=$_GET["location"];}
-	elseif (isset($_POST["location"]))	{$location=$_POST["location"];}
-if (isset($_GET["old_CID"]))			{$old_CID=$_GET["old_CID"];}
-	elseif (isset($_POST["old_CID"]))	{$old_CID=$_POST["old_CID"];}
-if (isset($_GET["qm_dispo_code"]))			{$qm_dispo_code=$_GET["qm_dispo_code"];}
-	elseif (isset($_POST["qm_dispo_code"]))	{$qm_dispo_code=$_POST["qm_dispo_code"];}
-if (isset($_GET["dial_ingroup"]))			{$dial_ingroup=$_GET["dial_ingroup"];}
-	elseif (isset($_POST["dial_ingroup"]))	{$dial_ingroup=$_POST["dial_ingroup"];}
-if (isset($_GET["nocall_dial_flag"]))			{$nocall_dial_flag=$_GET["nocall_dial_flag"];}
-	elseif (isset($_POST["nocall_dial_flag"]))	{$nocall_dial_flag=$_POST["nocall_dial_flag"];}
-if (isset($_GET["inbound_lead_search"]))			{$inbound_lead_search=$_GET["inbound_lead_search"];}
-	elseif (isset($_POST["inbound_lead_search"]))	{$inbound_lead_search=$_POST["inbound_lead_search"];}
-if (isset($_GET["email_enabled"]))			{$email_enabled=$_GET["email_enabled"];}
-	elseif (isset($_POST["email_enabled"]))	{$email_enabled=$_POST["email_enabled"];}
-if (isset($_GET["email_row_id"]))			{$email_row_id=$_GET["email_row_id"];}
-	elseif (isset($_POST["email_row_id"]))	{$email_row_id=$_POST["email_row_id"];}
-if (isset($_GET["inbound_email_groups"]))			{$inbound_email_groups=$_GET["inbound_email_groups"];}
-	elseif (isset($_POST["inbound_email_groups"]))	{$inbound_email_groups=$_POST["inbound_email_groups"];}
-if (isset($_GET["inbound_chat_groups"]))			{$inbound_chat_groups=$_GET["inbound_chat_groups"];}
-	elseif (isset($_POST["inbound_chat_groups"]))	{$inbound_chat_groups=$_POST["inbound_chat_groups"];}
-if (isset($_GET["recording_id"]))			{$recording_id=$_GET["recording_id"];}
-	elseif (isset($_POST["recording_id"]))	{$recording_id=$_POST["recording_id"];}
-if (isset($_GET["recording_filename"]))				{$recording_filename=$_GET["recording_filename"];}
-	elseif (isset($_POST["recording_filename"]))	{$recording_filename=$_POST["recording_filename"];}
-if (isset($_GET["orig_pass"]))			{$orig_pass=$_GET["orig_pass"];}
-	elseif (isset($_POST["orig_pass"]))	{$orig_pass=$_POST["orig_pass"];}
-if (isset($_GET["cid_lock"]))			{$cid_lock=$_GET["cid_lock"];}
-	elseif (isset($_POST["cid_lock"]))	{$cid_lock=$_POST["cid_lock"];}
-if (isset($_GET["dispo_comments"]))				{$dispo_comments=$_GET["dispo_comments"];}
-	elseif (isset($_POST["dispo_comments"]))	{$dispo_comments=$_POST["dispo_comments"];}
-if (isset($_GET["cbcomment_comments"]))				{$cbcomment_comments=$_GET["cbcomment_comments"];}
-	elseif (isset($_POST["cbcomment_comments"]))	{$cbcomment_comments=$_POST["cbcomment_comments"];}
-if (isset($_GET["parked_hangup"]))			{$parked_hangup=$_GET["parked_hangup"];}
-	elseif (isset($_POST["parked_hangup"]))	{$parked_hangup=$_POST["parked_hangup"];}
-if (isset($_GET["pause_trigger"]))			{$pause_trigger=$_GET["pause_trigger"];}
-	elseif (isset($_POST["pause_trigger"]))	{$pause_trigger=$_POST["pause_trigger"];}
-if (isset($_GET["DB"]))					{$DB=$_GET["DB"];}
-	elseif (isset($_POST["DB"]))		{$DB=$_POST["DB"];}
-if (isset($_GET["in_script"]))			{$in_script=$_GET["in_script"];}
-	elseif (isset($_POST["in_script"]))	{$in_script=$_POST["in_script"];}
-if (isset($_GET["camp_script"]))			{$camp_script=$_GET["camp_script"];}
-	elseif (isset($_POST["camp_script"]))	{$camp_script=$_POST["camp_script"];}
-if (isset($_GET["manual_dial_search_filter"]))			{$manual_dial_search_filter=$_GET["manual_dial_search_filter"];}
-	elseif (isset($_POST["manual_dial_search_filter"]))	{$manual_dial_search_filter=$_POST["manual_dial_search_filter"];}
-if (isset($_GET["url_ids"]))			{$url_ids=$_GET["url_ids"];}
-	elseif (isset($_POST["url_ids"]))	{$url_ids=$_POST["url_ids"];}
-if (isset($_GET["phone_login"]))			{$phone_login=$_GET["phone_login"];}
-	elseif (isset($_POST["phone_login"]))	{$phone_login=$_POST["phone_login"];}
-if (isset($_GET["agent_email"]))	{$agent_email=$_GET["agent_email"];}
-	elseif (isset($_POST["agent_email"]))	{$agent_email=$_POST["agent_email"];}
-if (isset($_GET["original_phone_login"]))	{$original_phone_login=$_GET["original_phone_login"];}
-	elseif (isset($_POST["original_phone_login"]))	{$original_phone_login=$_POST["original_phone_login"];}
-if (isset($_GET["customer_zap_channel"]))	{$customer_zap_channel=$_GET["customer_zap_channel"];}
-	elseif (isset($_POST["customer_zap_channel"]))	{$customer_zap_channel=$_POST["customer_zap_channel"];}
-if (isset($_GET["customer_server_ip"]))	{$customer_server_ip=$_GET["customer_server_ip"];}
-	elseif (isset($_POST["customer_server_ip"]))	{$customer_server_ip=$_POST["customer_server_ip"];}
-if (isset($_GET["phone_pass"]))	{$phone_pass=$_GET["phone_pass"];}
-	elseif (isset($_POST["phone_pass"]))	{$phone_pass=$_POST["phone_pass"];}
-if (isset($_GET["VDRP_stage"]))	{$VDRP_stage=$_GET["VDRP_stage"];}
-	elseif (isset($_POST["VDRP_stage"]))	{$VDRP_stage=$_POST["VDRP_stage"];}
-if (isset($_GET["previous_agent_log_id"]))	{$previous_agent_log_id=$_GET["previous_agent_log_id"];}
-	elseif (isset($_POST["previous_agent_log_id"]))	{$previous_agent_log_id=$_POST["previous_agent_log_id"];}
-if (isset($_GET["last_VDRP_stage"]))	{$last_VDRP_stage=$_GET["last_VDRP_stage"];}
-	elseif (isset($_POST["last_VDRP_stage"]))	{$last_VDRP_stage=$_POST["last_VDRP_stage"];}
-if (isset($_GET["pause_campaign"]))		{$pause_campaign=$_GET["pause_campaign"];}
-	elseif (isset($_POST["pause_campaign"]))	{$pause_campaign=$_POST["pause_campaign"];}
-if (isset($_GET["url_link"]))			{$url_link=$_GET["url_link"];}
-	elseif (isset($_POST["url_link"]))	{$url_link=$_POST["url_link"];}
-if (isset($_GET["newPauseCode"]))		{$newpausecode=$_GET["newPauseCode"];}
-	elseif (isset($_POST["newPauseCode"]))	{$newpausecode=$_POST["newPauseCode"];}
-if (isset($_GET["user_group"]))				{$user_group=$_GET["user_group"];}
-	elseif (isset($_POST["user_group"]))	{$user_group=$_POST["user_group"];}
-if (isset($_GET["MgrApr_user"]))			{$MgrApr_user=$_GET["MgrApr_user"];}
-	elseif (isset($_POST["MgrApr_user"]))	{$MgrApr_user=$_POST["MgrApr_user"];}
-if (isset($_GET["MgrApr_pass"]))			{$MgrApr_pass=$_GET["MgrApr_pass"];}
-	elseif (isset($_POST["MgrApr_pass"]))	{$MgrApr_pass=$_POST["MgrApr_pass"];}
-if (isset($_GET["routing_initiated_recording"]))			{$routing_initiated_recording=$_GET["routing_initiated_recording"];}
-	elseif (isset($_POST["routing_initiated_recording"]))	{$routing_initiated_recording=$_POST["routing_initiated_recording"];}
-if (isset($_GET["dead_time"]))			{$dead_time=$_GET["dead_time"];}
-	elseif (isset($_POST["dead_time"]))	{$dead_time=$_POST["dead_time"];}
-if (isset($_GET["callback_gmt_offset"]))			{$callback_gmt_offset=$_GET["callback_gmt_offset"];}
-	elseif (isset($_POST["callback_gmt_offset"]))	{$callback_gmt_offset=$_POST["callback_gmt_offset"];}
-if (isset($_GET["callback_timezone"]))			{$callback_timezone=$_GET["callback_timezone"];}
-	elseif (isset($_POST["callback_timezone"]))	{$callback_timezone=$_POST["callback_timezone"];}
-if (isset($_GET["manual_dial_validation"]))				{$manual_dial_validation=$_GET["manual_dial_validation"];}
-    elseif (isset($_POST["manual_dial_validation"]))	{$manual_dial_validation=$_POST["manual_dial_validation"];}
-if (isset($_GET["OnlyInbounds"]))				{$OnlyInbounds=$_GET["OnlyInbounds"];}
-    elseif (isset($_POST["OnlyInbounds"]))	    {$OnlyInbounds=$_POST["OnlyInbounds"];}
-if (isset($_GET["start_date"]))			{$start_date=$_GET["start_date"];}
-	elseif (isset($_POST["start_date"])){$start_date=$_POST["start_date"];}
-if (isset($_GET["end_date"]))			{$end_date=$_GET["end_date"];}
-	elseif (isset($_POST["end_date"]))	{$end_date=$_POST["end_date"];}
-if (isset($_GET["customer_sec"]))			{$customer_sec=$_GET["customer_sec"];}
-	elseif (isset($_POST["customer_sec"]))	{$customer_sec=$_POST["customer_sec"];}
-if (isset($_GET["taskDSgrp"]))			{$taskDSgrp=$_GET["taskDSgrp"];}
-	elseif (isset($_POST["taskDSgrp"]))	{$taskDSgrp=$_POST["taskDSgrp"];}
+if (isset($_POST["user"]))				{$user=$_POST["user"];}
+if (isset($_POST["pass"]))				{$pass=$_POST["pass"];}
+if (isset($_POST["server_ip"]))			{$server_ip=$_POST["server_ip"];}
+if (isset($_POST["session_name"]))		{$session_name=$_POST["session_name"];}
+if (isset($_POST["format"]))			{$format=$_POST["format"];}
+if (isset($_POST["ACTION"]))			{$ACTION=$_POST["ACTION"];}
+if (isset($_POST["stage"]))				{$stage=$_POST["stage"];}
+if (isset($_POST["closer_choice"]))		{$closer_choice=$_POST["closer_choice"];}
+if (isset($_POST["conf_exten"]))		{$conf_exten=$_POST["conf_exten"];}
+if (isset($_POST["exten"]))				{$exten=$_POST["exten"];}
+if (isset($_POST["ext_context"]))		{$ext_context=$_POST["ext_context"];}
+if (isset($_POST["ext_priority"]))		{$ext_priority=$_POST["ext_priority"];}
+if (isset($_POST["campaign"]))			{$campaign=$_POST["campaign"];}
+if (isset($_POST["dial_timeout"]))		{$dial_timeout=$_POST["dial_timeout"];}
+if (isset($_POST["dial_prefix"]))		{$dial_prefix=$_POST["dial_prefix"];}
+if (isset($_POST["campaign_cid"]))		{$campaign_cid=$_POST["campaign_cid"];}
+if (isset($_POST["MDnextCID"]))			{$MDnextCID=$_POST["MDnextCID"];}
+if (isset($_POST["uniqueid"]))			{$uniqueid=$_POST["uniqueid"];}
+if (isset($_POST["lead_id"]))			{$lead_id=$_POST["lead_id"];}
+if (isset($_POST["list_id"]))			{$list_id=$_POST["list_id"];}
+if (isset($_POST["length_in_sec"]))		{$length_in_sec=$_POST["length_in_sec"];}
+if (isset($_POST["phone_code"]))		{$phone_code=$_POST["phone_code"];}
+if (isset($_POST["phone_number"]))		{$phone_number=$_POST["phone_number"];}
+if (isset($_POST["channel"]))			{$channel=$_POST["channel"];}
+if (isset($_POST["start_epoch"]))		{$start_epoch=$_POST["start_epoch"];}
+if (isset($_POST["dispo_choice"]))		{$dispo_choice=$_POST["dispo_choice"];}
+if (isset($_POST["vendor_lead_code"]))	{$vendor_lead_code=$_POST["vendor_lead_code"];}
+if (isset($_POST["title"]))				{$title=$_POST["title"];}
+if (isset($_POST["first_name"]))		{$first_name=$_POST["first_name"];}
+if (isset($_POST["middle_initial"]))	{$middle_initial=$_POST["middle_initial"];}
+if (isset($_POST["last_name"]))			{$last_name=$_POST["last_name"];}if (isset($_POST["address1"]))			{$address1=$_POST["address1"];}
+if (isset($_POST["address2"]))			{$address2=$_POST["address2"];}
+if (isset($_POST["address3"]))			{$address3=$_POST["address3"];}
+if (isset($_POST["city"]))				{$city=$_POST["city"];}
+if (isset($_POST["state"]))				{$state=$_POST["state"];}
+if (isset($_POST["province"]))			{$province=$_POST["province"];}
+if (isset($_POST["postal_code"]))		{$postal_code=$_POST["postal_code"];}
+if (isset($_POST["country_code"]))		{$country_code=$_POST["country_code"];}
+if (isset($_POST["gender"]))			{$gender=$_POST["gender"];}
+if (isset($_POST["date_of_birth"]))		{$date_of_birth=$_POST["date_of_birth"];}
+if (isset($_POST["alt_phone"]))			{$alt_phone=$_POST["alt_phone"];}
+if (isset($_POST["email"]))				{$email=$_POST["email"];}
+if (isset($_POST["security_phrase"]))	{$security_phrase=$_POST["security_phrase"];}
+if (isset($_POST["comments"]))			{$comments=$_POST["comments"];}
+if (isset($_POST["auto_dial_level"]))	{$auto_dial_level=$_POST["auto_dial_level"];}
+if (isset($_POST["VDstop_rec_after_each_call"]))		{$VDstop_rec_after_each_call=$_POST["VDstop_rec_after_each_call"];}
+if (isset($_POST["conf_silent_prefix"]))	{$conf_silent_prefix=$_POST["conf_silent_prefix"];}
+if (isset($_POST["extension"]))			{$extension=$_POST["extension"];}
+if (isset($_POST["protocol"]))			{$protocol=$_POST["protocol"];}
+if (isset($_POST["user_abb"]))			{$user_abb=$_POST["user_abb"];}
+if (isset($_POST["preview"]))			{$preview=$_POST["preview"];}
+if (isset($_POST["called_count"]))		{$called_count=$_POST["called_count"];}
+if (isset($_POST["agent_log_id"]))		{$agent_log_id=$_POST["agent_log_id"];}
+if (isset($_POST["agent_log"]))			{$agent_log=$_POST["agent_log"];}
+if (isset($_POST["favorites_list"]))	{$favorites_list=$_POST["favorites_list"];}
+if (isset($_POST["CallBackDatETimE"]))	{$CallBackDatETimE=$_POST["CallBackDatETimE"];}
+if (isset($_POST["recipient"]))			{$recipient=$_POST["recipient"];}
+if (isset($_POST["callback_id"]))		{$callback_id=$_POST["callback_id"];}
+if (isset($_POST["use_internal_dnc"]))	{$use_internal_dnc=$_POST["use_internal_dnc"];}
+if (isset($_POST["use_campaign_dnc"]))	{$use_campaign_dnc=$_POST["use_campaign_dnc"];}
+if (isset($_POST["omit_phone_code"]))	{$omit_phone_code=$_POST["omit_phone_code"];}
+if (isset($_POST["phone_ip"]))		{$phone_ip=$_POST["phone_ip"];}
+if (isset($_POST["enable_sipsak_messages"]))	{$enable_sipsak_messages=$_POST["enable_sipsak_messages"];}
+if (isset($_POST["status"]))			{$status=$_POST["status"];}
+if (isset($_POST["LogouTKicKAlL"]))		{$LogouTKicKAlL=$_POST["LogouTKicKAlL"];}
+if (isset($_POST["closer_blended"]))	{$closer_blended=$_POST["closer_blended"];}
+if (isset($_POST["inOUT"]))				{$inOUT=$_POST["inOUT"];}
+if (isset($_POST["manual_dial_filter"]))	{$manual_dial_filter=$_POST["manual_dial_filter"];}
+if (isset($_POST["alt_dial"]))			{$alt_dial=$_POST["alt_dial"];}
+if (isset($_POST["agentchannel"]))		{$agentchannel=$_POST["agentchannel"];}
+if (isset($_POST["conf_dialed"]))		{$conf_dialed=$_POST["conf_dialed"];}
+if (isset($_POST["leaving_threeway"]))	{$leaving_threeway=$_POST["leaving_threeway"];}
+if (isset($_POST["hangup_all_non_reserved"]))	{$hangup_all_non_reserved=$_POST["hangup_all_non_reserved"];}
+if (isset($_POST["blind_transfer"]))	{$blind_transfer=$_POST["blind_transfer"];}
+if (isset($_POST["usegroupalias"]))	{$usegroupalias=$_POST["usegroupalias"];}
+if (isset($_POST["account"]))		{$account=$_POST["account"];}
+if (isset($_POST["agent_dialed_number"]))	{$agent_dialed_number=$_POST["agent_dialed_number"];}
+if (isset($_POST["agent_dialed_type"]))		{$agent_dialed_type=$_POST["agent_dialed_type"];}
+if (isset($_POST["wrapup"]))		{$wrapup=$_POST["wrapup"];}
+if (isset($_POST["vtiger_callback_id"]))	{$vtiger_callback_id=$_POST["vtiger_callback_id"];}
+if (isset($_POST["dial_method"]))		{$dial_method=$_POST["dial_method"];}
+if (isset($_POST["no_delete_sessions"]))	{$no_delete_sessions=$_POST["no_delete_sessions"];}
+if (isset($_POST["nodeletevdac"]))		{$nodeletevdac=$_POST["nodeletevdac"];}
+if (isset($_POST["agent_territories"]))	{$agent_territories=$_POST["agent_territories"];}
+if (isset($_POST["alt_num_status"]))	{$alt_num_status=$_POST["alt_num_status"];}
+if (isset($_POST["DiaL_SecondS"]))		{$DiaL_SecondS=$_POST["DiaL_SecondS"];}
+if (isset($_POST["date"]))				{$date=$_POST["date"];}
+if (isset($_POST["custom_field_names"]))	{$FORMcustom_field_names=$_POST["custom_field_names"];}
+if (isset($_POST["qm_phone"]))	{$qm_phone=$_POST["qm_phone"];}
+if (isset($_POST["manual_dial_call_time_check"]))	{$manual_dial_call_time_check=$_POST["manual_dial_call_time_check"];}
+if (isset($_POST["CallBackLeadStatus"]))	{$CallBackLeadStatus=$_POST["CallBackLeadStatus"];}
+if (isset($_POST["call_notes"]))	{$call_notes=$_POST["call_notes"];}
+if (isset($_POST["search"]))	{$search=$_POST["search"];}
+if (isset($_POST["sub_status"]))	{$sub_status=$_POST["sub_status"];}
+if (isset($_POST["qm_extension"]))	{$qm_extension=$_POST["qm_extension"];}
+if (isset($_POST["disable_alter_custphone"]))	{$disable_alter_custphone=$_POST["disable_alter_custphone"];}
+if (isset($_POST["bu_name"]))	{$bu_name=$_POST["bu_name"];}
+if (isset($_POST["department"]))	{$department=$_POST["department"];}
+if (isset($_POST["group_name"]))	{$group_name=$_POST["group_name"];}
+if (isset($_POST["job_title"]))	{$job_title=$_POST["job_title"];}
+if (isset($_POST["location"]))	{$location=$_POST["location"];}
+if (isset($_POST["old_CID"]))	{$old_CID=$_POST["old_CID"];}
+if (isset($_POST["qm_dispo_code"]))	{$qm_dispo_code=$_POST["qm_dispo_code"];}
+if (isset($_POST["dial_ingroup"]))	{$dial_ingroup=$_POST["dial_ingroup"];}
+if (isset($_POST["nocall_dial_flag"]))	{$nocall_dial_flag=$_POST["nocall_dial_flag"];}
+if (isset($_POST["inbound_lead_search"]))	{$inbound_lead_search=$_POST["inbound_lead_search"];}
+if (isset($_POST["email_enabled"]))	{$email_enabled=$_POST["email_enabled"];}
+if (isset($_POST["email_row_id"]))	{$email_row_id=$_POST["email_row_id"];}
+if (isset($_POST["inbound_email_groups"]))	{$inbound_email_groups=$_POST["inbound_email_groups"];}
+if (isset($_POST["inbound_chat_groups"]))	{$inbound_chat_groups=$_POST["inbound_chat_groups"];}
+if (isset($_POST["recording_id"]))	{$recording_id=$_POST["recording_id"];}
+if (isset($_POST["recording_filename"]))	{$recording_filename=$_POST["recording_filename"];}
+if (isset($_POST["orig_pass"]))	{$orig_pass=$_POST["orig_pass"];}
+if (isset($_POST["cid_lock"]))	{$cid_lock=$_POST["cid_lock"];}
+if (isset($_POST["dispo_comments"]))	{$dispo_comments=$_POST["dispo_comments"];}
+if (isset($_POST["cbcomment_comments"]))	{$cbcomment_comments=$_POST["cbcomment_comments"];}
+if (isset($_POST["parked_hangup"]))	{$parked_hangup=$_POST["parked_hangup"];}
+if (isset($_POST["pause_trigger"]))	{$pause_trigger=$_POST["pause_trigger"];}
+if (isset($_POST["DB"]))		{$DB=$_POST["DB"];}
+if (isset($_POST["in_script"]))	{$in_script=$_POST["in_script"];}
+if (isset($_POST["camp_script"]))	{$camp_script=$_POST["camp_script"];}
+if (isset($_POST["manual_dial_search_filter"]))	{$manual_dial_search_filter=$_POST["manual_dial_search_filter"];}
+if (isset($_POST["url_ids"]))	{$url_ids=$_POST["url_ids"];}
+if (isset($_POST["phone_login"]))	{$phone_login=$_POST["phone_login"];}
+if (isset($_POST["agent_email"]))	{$agent_email=$_POST["agent_email"];}
+if (isset($_POST["original_phone_login"]))	{$original_phone_login=$_POST["original_phone_login"];}
+if (isset($_POST["customer_zap_channel"]))	{$customer_zap_channel=$_POST["customer_zap_channel"];}
+if (isset($_POST["customer_server_ip"]))	{$customer_server_ip=$_POST["customer_server_ip"];}
+if (isset($_POST["phone_pass"]))	{$phone_pass=$_POST["phone_pass"];}
+if (isset($_POST["VDRP_stage"]))	{$VDRP_stage=$_POST["VDRP_stage"];}
+if (isset($_POST["previous_agent_log_id"]))	{$previous_agent_log_id=$_POST["previous_agent_log_id"];}
+if (isset($_POST["last_VDRP_stage"]))	{$last_VDRP_stage=$_POST["last_VDRP_stage"];}
+if (isset($_POST["pause_campaign"]))	{$pause_campaign=$_POST["pause_campaign"];}
+if (isset($_POST["url_link"]))	{$url_link=$_POST["url_link"];}
+if (isset($_POST["newPauseCode"]))	{$newpausecode=$_POST["newPauseCode"];}
+if (isset($_POST["user_group"]))	{$user_group=$_POST["user_group"];}
+if (isset($_POST["MgrApr_user"]))	{$MgrApr_user=$_POST["MgrApr_user"];}
+if (isset($_POST["MgrApr_pass"]))	{$MgrApr_pass=$_POST["MgrApr_pass"];}
+if (isset($_POST["routing_initiated_recording"]))	{$routing_initiated_recording=$_POST["routing_initiated_recording"];}
+if (isset($_POST["dead_time"]))	{$dead_time=$_POST["dead_time"];}
+if (isset($_POST["callback_gmt_offset"]))	{$callback_gmt_offset=$_POST["callback_gmt_offset"];}
+if (isset($_POST["callback_timezone"]))	{$callback_timezone=$_POST["callback_timezone"];}
+if (isset($_POST["manual_dial_validation"]))	{$manual_dial_validation=$_POST["manual_dial_validation"];}
+if (isset($_POST["OnlyInbounds"]))	    {$OnlyInbounds=$_POST["OnlyInbounds"];}
+if (isset($_POST["start_date"])){$start_date=$_POST["start_date"];}
+if (isset($_POST["end_date"]))	{$end_date=$_POST["end_date"];}
+if (isset($_POST["customer_sec"]))	{$customer_sec=$_POST["customer_sec"];}
+if (isset($_POST["taskDSgrp"]))	{$taskDSgrp=$_POST["taskDSgrp"];}
+
+if((!isset($user)) || (!isset($pass)) || (!isset($server_ip)) || (!isset($session_name))) {
+	echo ("Requested parameter missing!");
+	exit;
+}
+
 
 require_once("../tools/system_wide_settings.php");
 
@@ -474,8 +369,8 @@ $Syear = date("Y");
 
 ### Grab Server GMT value from the database
 $stmt="SELECT local_gmt FROM servers where active='Y' limit 1;";
-$rslt=mysql_to_mysqli($stmt, $link);
-	if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00545',$user,$server_ip,$session_name,$one_mysql_log);}
+$rslt=mysqli_query($MySqlLink, $stmt);
+	if ($mel > 0) {$Log->Log(" MYSqlError: " . $stmt ."|00545|" . $user . "|" .$server_ip);}
 $gmt_recs = mysqli_num_rows($rslt);
 if ($gmt_recs > 0)
 	{
@@ -610,36 +505,36 @@ $sip_hangup_cause_dictionary = array(
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$stmt = "SELECT use_non_latin,timeclock_end_of_day,agentonly_callback_campaign_lock,alt_log_server_ip,alt_log_dbname,alt_log_login,alt_log_pass,tables_use_alt_log_db,qc_features_active,allow_emails,callback_time_24hour,enable_languages,language_method,agent_debug_logging,default_language,active_modules,allow_chats,default_phone_code,user_new_lead_limit,sip_event_logging FROM system_settings;";
-$rslt=mysql_to_mysqli($stmt, $link);
-	if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00001',$user,$server_ip,$session_name,$one_mysql_log);}
+$stmt = "SELECT * FROM system_settings;";
+$rslt=mysqli_query($MySqlLink, $stmt);
+if ($mel > 0) {$Log->Log(" MYSqlError: " . $stmt ."|0001|" . $user . "|" .$server_ip);}
+
 if ($DB) {echo "$stmt\n";}
 $qm_conf_ct = mysqli_num_rows($rslt);
-if ($qm_conf_ct > 0)
-	{
-	$row=mysqli_fetch_row($rslt);
-	$non_latin =							$row[0];
-	$timeclock_end_of_day =					$row[1];
-	$agentonly_callback_campaign_lock =		$row[2];
-	$alt_log_server_ip =					$row[3];
-	$alt_log_dbname =						$row[4];
-	$alt_log_login =						$row[5];
-	$alt_log_pass =							$row[6];
-	$tables_use_alt_log_db =				$row[7];
-	$qc_features_active =					$row[8];
-	$allow_emails =							$row[9];
-	$callback_time_24hour =					$row[10];
-	$SSenable_languages =					$row[11];
-	$SSlanguage_method =					$row[12];
-	$SSagent_debug_logging =				$row[13];
-	$SSdefault_language =					$row[14];
-	$active_modules =						$row[15];
-	$allow_chats =							$row[16];
-	$default_phone_code =					$row[17];
-	$SSuser_new_lead_limit =				$row[18];
-	$SSsip_event_logging =					$row[19];
-	$SScall_quota_lead_ranking =			$row[20];
-	}
+if ($qm_conf_ct > 0) {
+		$row=mysqli_fetch_array($rslt, MYSQLI_BOTH );
+		$non_latin =							$row["use_non_latin"];
+		$timeclock_end_of_day =					$row["timeclock_end_of_day"];
+		$agentonly_callback_campaign_lock =		$row["agentonly_callback_campaign_lock"];
+		$alt_log_server_ip =					$row["alt_log_server_ip"];
+		$alt_log_dbname =						$row["alt_log_dbname"];
+		$alt_log_login =						$row["alt_log_login"];
+		$alt_log_pass =							$row["alt_log_pass"];
+		$tables_use_alt_log_db =				$row["tables_use_alt_log_db"];
+		$qc_features_active =					$row["qc_features_active"];
+		$allow_emails =							$row["allow_emails"];
+		$callback_time_24hour =					$row["callback_time_24hour"];
+		$SSenable_languages =					$row["enable_languages"];
+		$SSlanguage_method =					$row["language_method"];
+		$SSagent_debug_logging =				$row["agent_debug_logging"];
+		$SSdefault_language =					$row["default_language"];
+		$active_modules =						$row["active_modules"];
+		$allow_chats =							$row["allow_chats"];
+		$default_phone_code =					$row["default_phone_code"];
+		$SSuser_new_lead_limit =				$row["user_new_lead_limit"];
+		$SSsip_event_logging =					$row["sip_event_logging"];
+		$SScall_quota_lead_ranking =			$row["call_quota_lead_ranking"];
+}
 ##### END SETTINGS LOOKUP #####
 ###########################################
 
@@ -793,8 +688,8 @@ $VUselected_language = $SSdefault_language;
 $VUuser_new_lead_limit='-1';
 $stmt="SELECT selected_language,user_new_lead_limit from vicidial_users where user='$user';";
 if ($DB) {echo "|$stmt|\n";}
-$rslt=mysql_to_mysqli($stmt, $link);
-	if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00598',$user,$server_ip,$session_name,$one_mysql_log);}
+$rslt=mysqli_query($MySqlLink, $stmt);
+if ($mel > 0) {$Log->Log(" MYSqlError: " . $stmt ."|00598|" . $user . "|" .$server_ip);}
 $sl_ct = mysqli_num_rows($rslt);
 if ($sl_ct > 0)
 	{
@@ -810,7 +705,7 @@ if ($ACTION == 'LogiNCamPaigns')
 else
 	{
 	$auth=0;
-	$auth_message = user_authorization($user,$pass,'',0,1,0,0,'vdc_db_query');
+	$auth_message = user_authorization($user,$pass,'',0,1,0,0,'vdc_db_query_ng');
 	if ($auth_message == 'GOOD')
 		{$auth=1;}
 
@@ -830,8 +725,8 @@ else
 			{
 			$stmt="SELECT count(*) from web_client_sessions where session_name='$session_name' and server_ip='$server_ip';";
 			if ($DB) {echo "|$stmt|\n";}
-			$rslt=mysql_to_mysqli($stmt, $link);
-				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00003',$user,$server_ip,$session_name,$one_mysql_log);}
+			$rslt=mysqli_query($MySqlLink, $stmt);
+			if ($mel > 0) {$Log->Log(" MYSqlError: " . $stmt ."|00003|" . $user . "|" .$server_ip);}
 			$row=mysqli_fetch_row($rslt);
 			$SNauth=$row[0];
 			  if($SNauth==0)
@@ -852,7 +747,7 @@ if ($format=='debug')
 	echo "<html>\n";
 	echo "<head>\n";
 	echo "<!-- VERSION: $version     BUILD: $build    USER: $user   server_ip: $server_ip-->\n";
-	echo "<title>"._QXZ("VICIDiaL Database Query Script");
+	echo "<title>"._QXZ("VICIDiaL Database Query Script New Generation");
 	echo "</title>\n";
 	echo "</head>\n";
 	echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
@@ -865,34 +760,63 @@ if ($format=='debug')
 
 $DB=0;
 
-$AgentCB = 25;
-$LeadCB  = 5;
+$CBAgentCount = $SetUp->GetData("Checkcallback", "AgentCount");
+$CBAgentDays = $SetUp->GetData("Checkcallback", "AgentDays");
+$CBLeadCount = $SetUp->GetData("Checkcallback", "LeadCount");
+$CBLeadDays = $SetUp->GetData("Checkcallback", "LeadDays");
 
-function CheckCallbacks($User, $Lead) {
-	global $link, $DB, $AgentCB, $LeadCB;
+if(!isset($CBAgentCount)) { $CBAgentCount = 0;};
+if(!isset($CBAgentDays)) { $CBAgentCount = 0;};
+if(!isset($CBLeadCount)) { $CBLeadCount = 0;};
+if(!isset($CBLeadDays)) { $CBLeadCount = 0;};
+
+function CheckCallbacks($User, $Lead, $PG) {
+	global $MySqlLink, $DB, $CBAgentCount, $CBLeadCount, $CBAgentDays, $CBLeadDays, $Log;
 	
-	$DateTemp = date("Y-m-d H:i:s", strtotime("-1 day", time())); 
-	if($AgentCB != 0) {
-		$sql = "SELECT COUNT(*) FROM `vicidial_agent_log` WHERE `status` = 'CALLBK' AND `user` = '". $User ."' AND `event_time` >= '". $DateTemp ."';";
+	
+	$StartTime = microtime(true);
+	if(($CBAgentCount != 0) && ($PG != 'G')) {
+		$DateTemp = date("Y-m-d");
+#		$DateTemp = date("Y-m-d H:i:s", strtotime($CBAgentDays, time())); 
+		$sql = "SELECT COUNT(*) FROM `vicidial_agent_log` WHERE `status` = 'CALLBK' AND `user` = '". $User ."' AND DATE (`event_time`) = '". $DateTemp ."';";
 		if($DB) { echo $sql; }
-		$res = mysqli_query($link, $sql);
+		$res = mysqli_query($MySqlLink, $sql);
 		$row = mysqli_fetch_row($res);
 		$AnzUCB = $row[0];
-		if($AnzUCB > $AgentCB) {
+		if($AnzUCB > $CBAgentCount) {
+			$EndTime = microtime(true);
+			$RunTime = $EndTime - $StartTime;
+			$Log->Log("CheckCallbacks (Agent) Dauer: " . $RunTime ."|". $User . "|" .$Lead . "|" . $PG);
 			return 0;
+		} else {
+			$EndTime = microtime(true);
+			$RunTime = $EndTime - $StartTime;
+			$Log->Log("CheckCallbacks (no Agent) Dauer: " . $RunTime ."|". $User . "|" .$Lead . "|" . $PG);
 		}
 	}
-	$DateTemp = date("Y-m-d H:i:s", strtotime("-7 day", time()));
-	if($LeadCB != 0) {
+	
+	if($CBLeadCount != 0) {
+		$StartTime1 = microtime(true);
+		$DateTemp = date("Y-m-d H:i:s", strtotime($CBLeadDays, time()));
 		$sql1 = "SELECT COUNT(*) FROM `vicidial_agent_log` WHERE `status` = 'CALLBK' AND `lead_id` = '". $Lead ."' AND `event_time` >= '". $DateTemp ."';";
 		if($DB) { echo $sql1; }
-		$res1 = mysqli_query($link, $sql1);
+		$res1 = mysqli_query($MySqlLink, $sql1);
 		$row1 = mysqli_fetch_row($res1);
 		$AnzLCB = $row1[0];
-		if($AnzLCB > $LeadCB) {
+		if($AnzLCB > $CBLeadCount) {
+			$EndTime = microtime(true);
+			$RunTime = $EndTime - $StartTime;
+			$Log->Log("CheckCallbacks (Lead) Dauer: " . $RunTime ."|". $User . "|" .$Lead . "|" . $PG);
 			return 0;
+		} else {
+			$EndTime = microtime(true);
+			$RunTime = $EndTime - $StartTime1;
+			$Log->Log("CheckCallbacks (no Lead) Dauer: " . $RunTime ."|". $User . "|" .$Lead . "|" . $PG);
 		}
 	}
+	$EndTime = microtime(true);
+	$RunTime = $EndTime - $StartTime;
+	$Log->Log("CheckCallbacks (not found) Dauer: " . $RunTime ."|". $User . "|" .$Lead . "|" . $PG);
 	return 1;
 }
 
@@ -908,23 +832,24 @@ function CheckCallbacks($User, $Lead) {
 
 if ($ACTION == 'GenDispoScreen') {
 	
-	$StartTime = microtime();
+	$StartTime = microtime(true);
 	$Return = "";
 	if ((isset($user)) && (isset($lead_id)) && (isset($customer_sec)))  {
-		$CBAllow = CheckCallbacks($user, $lead_id);
+		
 		$Return = "<table cellpadding=\"5\" cellspacing=\"5\" width=\"760px\"><tr><td colspan=\"2\"><b> <?php echo _QXZ('CALL DISPOSITION'); ?></b></td></tr><tr><td bgcolor=\"#99FF99\" height=\"300px\" width=\"240px\" valign=\"top\"><font class=\"log_text\"><span id=\"DispoSelectA\">";
-		$sql = "SELECT VLS.`campaign_id` from `vicidial_list` VL, `vicidial_lists` VLS WHERE VL.`lead_id` = '". $lead_id . "' AND VL.`list_id` = VLS.`list_id`;";
-		$res = mysqli_query($link, $sql);
+		$sql = "SELECT VLS.`campaign_id`, VL.`middle_initial` from `vicidial_list` VL, `vicidial_lists` VLS WHERE VL.`lead_id` = '". $lead_id . "' AND VL.`list_id` = VLS.`list_id`;";
+		$res = mysqli_query($MySqlLink, $sql);
 		$row = mysqli_fetch_row($res);
 		$CampId = $row[0];
+		$PG = $row[1];
+		$CBAllow = CheckCallbacks($user, $lead_id, $PG);
 		
 		if($DB) {
 			echo "GDS: Campaign = " . $CampId . PHP_EOL;
 		}
 		$sql1 = "SELECT * FROM `vicidial_statuses` WHERE `selectable` = 'Y' ORDER BY `Pos` LIMIT 100;";
-		$res1 = mysqli_query($link, $sql1);
+		$res1 = mysqli_query($MySqlLink, $sql1);
 		while($row1 = mysqli_fetch_array($res1, MYSQLI_BOTH)) {
-#			echo $row1["status_name"] . PHP_EOL;
 			$CBFlag = "";
 			if($row1["scheduled_callback"] == "Y") {
 				$CBFlag = "  *";
@@ -942,11 +867,10 @@ if ($ACTION == 'GenDispoScreen') {
 		
 		$sql2 = "SELECT * FROM `vicidial_campaign_statuses` WHERE `selectable` = 'Y' AND `campaign_id` = '".$CampId."' ORDER BY `Pos` LIMIT 100;";
 		if($DB) { echo $sql2 . PHP_EOL; }
-		$res2 = mysqli_query($link, $sql2);
+		$res2 = mysqli_query($MySqlLink, $sql2);
 		$Return  .= "</span></font></td><td bgcolor=\"#99FF99\" height=\"300px\" width=\"240px\" valign=\"top\"><font class=\"log_text\"><span id=\"DispoSelectB\">";
 		$Pos2 = 10;
 		while($row2 = mysqli_fetch_array($res2, MYSQLI_BOTH)) {
-#			echo $row2["status_name"] . PHP_EOL;
 			$CBFlag = "";
 			if($row2["scheduled_callback"] == "Y") {
 				$CBFlag = "  *";
@@ -978,14 +902,16 @@ if ($ACTION == 'GenDispoScreen') {
 		}
 		
 	} else {
-		echo "GenDispoScreen: Parameter not set";
-#		$Return = "GenDispoScreen: Parameter not set";
+		$Log->Log("GenDispoScreen: Parameter not set");
 	}
-	$EndTime = microtime();
+	$EndTime = microtime(true);
 	$RunTime = $EndTime - $StartTime;
-	
-	if($DB) { echo "<br>Runtime: ".$RunTime . "<br>"; }
+	$Log->Log("GenDispoScreen Dauer: " . $RunTime);
 	echo $Return;
-#	return $Return;
 }
+
+$EndTimeGlob = microtime(true);
+$RunTimeGlob = $EndTimeGlob -  $StartTimeGlob;
+$Log->Log("vdc_db_query_ng Runtime: " . $RunTimeGlob);
+
 ?>

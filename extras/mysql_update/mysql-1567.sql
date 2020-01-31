@@ -299,4 +299,8 @@ index (lead_id)
 ALTER TABLE `vicidial_statuses` ADD `Pos` INT(5) NOT NULL DEFAULT '0';
 ALTER TABLE `vicidial_campaign_statuses` ADD `Pos` INT(5) NOT NULL DEFAULT '0';
 
+ALTER TABLE `system_settings` CHANGE `use_non_latin` `use_non_latin` ENUM('0','1') CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT '1'; 
+ALTER TABLE `system_settings` ADD `default_pdo_language` VARCHAR(20) NOT NULL DEFAULT 'en_EN';
+ALTER TABLE `vicidial_users` ADD `selected_pdo_language` VARCHAR(20) NOT NULL DEFAULT 'en_EN'; 
+
 UPDATE system_settings SET db_schema_version='1578',db_schema_update_date=NOW() where db_schema_version < 1578;

@@ -812,7 +812,7 @@
     * Correct typo:
       - Update www/vicidial/admin.php, 
           www/agc/vicidial.php.
-    * Add Position to System Status and Camapaign Status:
+    * Add Position to System Status and Campaign Status:
       - Update: extras/mysql_update/mysql-1567.sql,
           extras/upgrade_2.14.sql,
           www/vicidial/admin.php,
@@ -823,6 +823,17 @@
     * Fix typos:
       - Update: www/vicidial/welcome.php,
           www/agc/vdc_db_query.php.
+    * Use utf8 as default:
+       - Update: extras/mysql_update/mysql-1567.sql,
+           extras/upgrade_2.14.sql.
+    * Add new programming tools:
+       - New www/inc/db.php,
+           www/inc/include.php,
+           www/inc/log.php,
+           www/inc/mail.php,
+           www/inc/setup.php.
+    * Use new programming tools:
+      - Update www/agc/vdc_db_query_ng.php.
     * Change next release to 3.0.1.
 
 2.26.29
