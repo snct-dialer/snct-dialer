@@ -1867,7 +1867,7 @@ function add_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$field
 	if ($table_exists < 1)
 		{$field_sql = "CREATE TABLE custom_$list_id (lead_id INT(9) UNSIGNED PRIMARY KEY NOT NULL, $field_label ";}
 	else
-		{$field_sql = "ALTER TABLE custom_$list_id ADD $field_label ";}
+		{$field_sql = "ALTER TABLE custom_$list_id ADD `$field_label` ";}
 
 	if ($field_encrypt=='Y')
 		{
@@ -2051,9 +2051,9 @@ function modify_field_function($DB,$link,$linkCUSTOM,$ip,$user,$table_exists,$fi
 		$field_db_exists = mysqli_num_rows($rslt);
 		}
 	if ($field_db_exists > 0)
-		{$field_sql = "ALTER TABLE custom_$list_id MODIFY $field_label ";}
+		{$field_sql = "ALTER TABLE custom_$list_id MODIFY `$field_label` ";}
 	else
-		{$field_sql = "ALTER TABLE custom_$list_id ADD $field_label ";}
+		{$field_sql = "ALTER TABLE custom_$list_id ADD `$field_label` ";}
 
 	if ($field_duplicate=='Y')
 		{$field_type='TEXT';}

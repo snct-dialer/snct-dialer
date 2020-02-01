@@ -834,6 +834,8 @@
            www/inc/setup.php.
     * Use new programming tools:
       - Update www/agc/vdc_db_query_ng.php.
+    * Add backticks to quote fieldnames:
+      - Update www/vicidial/admin_lists_custom.php.
     * Change next release to 3.0.1.
 
 2.26.29
