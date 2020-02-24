@@ -10,7 +10,7 @@ next_call_menu TEXT,
 index (call_date),
 index (lead_id),
 index (uniqueid)
-) ENGINE=MyISAM;
+) ENGINE=Aria ROW_FORMAT=PAGE;
 
 CREATE TABLE vicidial_inbound_survey_log_archive LIKE vicidial_inbound_survey_log;
 CREATE UNIQUE INDEX visla_key on vicidial_inbound_survey_log_archive(uniqueid, call_date, campaign_id, lead_id);

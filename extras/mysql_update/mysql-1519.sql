@@ -9,7 +9,7 @@ flag_litigator ENUM('','0','1') default '',
 full_response VARCHAR(255) default '',
 index(phone_number),
 index(scrub_date)
-) ENGINE=MyISAM;
+) ENGINE=Aria ROW_FORMAT=PAGE;
 
 ALTER TABLE vicidial_dnccom_scrub_log ADD flag_projdnc ENUM('','0','1') default '' AFTER flag_dnc;
 

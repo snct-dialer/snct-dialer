@@ -836,6 +836,17 @@
       - Update www/agc/vdc_db_query_ng.php.
     * Add backticks to quote fieldnames:
       - Update www/vicidial/admin_lists_custom.php.
+    * Use Database Engine Aria instead MyISAM:
+      - Update extras/MySQL_AST_CREATE_tables.sql,
+           extras/mysql_update/mysql-1514.sql,
+           extras/mysql_update/mysql-1519.sql,
+           extras/mysql_update/mysql-1523.sql,
+           extras/mysql_update/mysql-1529.sql,
+           extras/mysql_update/mysql-1530.sql,
+           extras/mysql_update/mysql-1533.sql,
+           extras/mysql_update/mysql-1534.sql,
+           extras/mysql_update/mysql-1567.sql,
+           extras/upgrade_2.14.sql.
     * Change next release to 3.0.1.
 
 2.26.29

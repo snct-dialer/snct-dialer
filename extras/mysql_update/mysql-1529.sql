@@ -10,7 +10,7 @@ hr TINYINT(2) default '0',
 index (group_id),
 index (date_hour),
 unique index vihc_ingr_hour (group_id, date_hour, type)
-) ENGINE=MyISAM;
+) ENGINE=Aria ROW_FORMAT=PAGE;
 
 CREATE TABLE vicidial_ingroup_hour_counts_archive LIKE vicidial_ingroup_hour_counts;
 

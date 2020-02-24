@@ -31,7 +31,7 @@ index (caller_code),
 index (user),
 index (lead_id),
 index (stage)
-) ENGINE=MyISAM;
+) ENGINE=Aria ROW_FORMAT=PAGE;
 
 CREATE TABLE vicidial_agent_function_log_archive LIKE vicidial_agent_function_log;
 ALTER TABLE vicidial_agent_function_log_archive MODIFY agent_function_log_id INT(9) UNSIGNED NOT NULL;
@@ -51,7 +51,7 @@ CREATE TABLE help_documentation (
 help_id varchar(100) PRIMARY KEY COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
 help_title text COLLATE utf8_unicode_ci,
 help_text text COLLATE utf8_unicode_ci
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=Aria ROW_FORMAT=PAGE DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 ALTER TABLE vicidial_campaign_agents ADD hopper_calls_today SMALLINT(5) UNSIGNED default '0';
 ALTER TABLE vicidial_campaign_agents ADD hopper_calls_hour SMALLINT(5) UNSIGNED default '0';
@@ -65,7 +65,7 @@ user VARCHAR(20),
 status INT(9),
 ip VARCHAR(18),
 login_time DATETIME
-) ENGINE=MyISAM;
+) ENGINE=Aria ROW_FORMAT=PAGE;
 
 ALTER TABLE vicidial_inbound_groups ADD waiting_call_url_on TEXT;
 ALTER TABLE vicidial_inbound_groups ADD waiting_call_url_off TEXT;

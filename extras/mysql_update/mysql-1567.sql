@@ -12,7 +12,7 @@ run_time VARCHAR(20) default '0',
 AMDSTATS VARCHAR(100) default '',
 index (call_date),
 index (lead_id)
-) ENGINE=MyISAM;
+) ENGINE=Aria ROW_FORMAT=PAGE;
 
 CREATE TABLE vicidial_amd_log_archive LIKE vicidial_amd_log;
 CREATE UNIQUE INDEX amd_unq_key on vicidial_amd_log_archive(uniqueid, call_date, lead_id);
@@ -51,7 +51,7 @@ event_date DATETIME(6),
 event VARCHAR(10),
 index(caller_code),
 index(event_date)
-) ENGINE=MyISAM;
+) ENGINE=Aria ROW_FORMAT=PAGE;
 
 CREATE TABLE vicidial_sip_event_log_0 LIKE vicidial_sip_event_log;
 ALTER TABLE vicidial_sip_event_log_0 MODIFY sip_event_id INT(9) UNSIGNED NOT NULL;
@@ -73,7 +73,7 @@ wday TINYINT(1) UNSIGNED PRIMARY KEY NOT NULL,
 start_event_date DATETIME(6),
 end_event_date DATETIME(6),
 record_count INT(9) UNSIGNED default '0'
-) ENGINE=MyISAM;
+) ENGINE=Aria ROW_FORMAT=PAGE;
 
 CREATE TABLE vicidial_sip_event_recent (
 caller_code VARCHAR(20) default '',
@@ -93,7 +93,7 @@ processed ENUM('N','Y','U') default 'N',
 index(caller_code),
 index(invite_date),
 index(processed)
-) ENGINE=MyISAM;
+) ENGINE=Aria ROW_FORMAT=PAGE;
 
 CREATE TABLE vicidial_log_extended_sip (
 call_date DATETIME(6),
@@ -104,7 +104,7 @@ invite_to_final DECIMAL(10,6) DEFAULT '0.000000',
 last_event_code SMALLINT(3) default '0',
 index(call_date),
 index(caller_code)
-) ENGINE=MyISAM;
+) ENGINE=Aria ROW_FORMAT=PAGE;
 
 CREATE TABLE vicidial_log_extended_sip_archive LIKE vicidial_log_extended_sip;
 CREATE UNIQUE INDEX vlesa on vicidial_log_extended_sip_archive (caller_code,call_date);
@@ -162,7 +162,7 @@ unique index vlcqc_lead_list (lead_id, list_id),
 index(last_call_date),
 index(list_id),
 index(modify_date)
-) ENGINE=MyISAM;
+) ENGINE=Aria ROW_FORMAT=PAGE;
 
 CREATE TABLE vicidial_lead_call_quota_counts_archive (
 lead_id INT(9) UNSIGNED NOT NULL,
@@ -194,7 +194,7 @@ rank SMALLINT(5) NOT NULL default '0',
 modify_date DATETIME,
 unique index vlcqc_lead_date (lead_id, first_call_date),
 index(first_call_date)
-) ENGINE=MyISAM;
+) ENGINE=Aria ROW_FORMAT=PAGE;
 
 UPDATE system_settings SET db_schema_version='1573',db_schema_update_date=NOW() where db_schema_version < 1573;
 
@@ -211,7 +211,7 @@ bench_agent VARCHAR(20),
 user VARCHAR(20),
 index (bench_date),
 index (lead_id)
-) ENGINE=MyISAM;
+) ENGINE=Aria ROW_FORMAT=PAGE;
 
 UPDATE system_settings SET db_schema_version='1575',db_schema_update_date=NOW() where db_schema_version < 1575;
 
@@ -225,7 +225,7 @@ result VARCHAR(40),
 index(call_date),
 index(caller_code),
 index(result)
-) ENGINE=MyISAM;
+) ENGINE=Aria ROW_FORMAT=PAGE;
 
 CREATE TABLE vicidial_sip_action_log_archive LIKE vicidial_sip_action_log;
 CREATE UNIQUE INDEX vlesa on vicidial_sip_action_log_archive (caller_code,call_date);
@@ -274,7 +274,7 @@ leave_vm_message_group_id VARCHAR(40) PRIMARY KEY NOT NULL,
 leave_vm_message_group_notes VARCHAR(255) default '',
 active ENUM('Y','N') default 'Y',
 user_group VARCHAR(20) default '---ALL---'
-) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=Aria ROW_FORMAT=PAGE CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE leave_vm_message_groups_entries (
 leave_vm_message_group_id VARCHAR(40) NOT NULL,
@@ -283,7 +283,7 @@ audio_name VARCHAR(255) default '',
 rank SMALLINT(5) default '0',
 time_start VARCHAR(4) default '0000',
 time_end VARCHAR(4) default '2400'
-) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=Aria ROW_FORMAT=PAGE CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE vicidial_agent_vmm_overrides (
 call_date DATETIME,
@@ -294,7 +294,7 @@ vm_message VARCHAR(255) default '',
 index (caller_code),
 index (call_date),
 index (lead_id)
-) ENGINE=MyISAM;
+) ENGINE=Aria ROW_FORMAT=PAGE;
 
 ALTER TABLE `vicidial_statuses` ADD `Pos` INT(5) NOT NULL DEFAULT '0';
 ALTER TABLE `vicidial_campaign_statuses` ADD `Pos` INT(5) NOT NULL DEFAULT '0';

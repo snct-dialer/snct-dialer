@@ -18,7 +18,7 @@ container_id VARCHAR(40) default '',
 index (call_date),
 index (local_call_id),
 index (lead_id)
-) ENGINE=MyISAM;
+) ENGINE=Aria ROW_FORMAT=PAGE;
 
 ALTER TABLE vicidial_list ADD INDEX `modify_date` (`modify_date`);
 ALTER TABLE vicidial_list ADD coord_one POINT NULL DEFAULT NULL;
@@ -60,7 +60,7 @@ rescheduled ENUM('U','P','Y','N') default 'U',
 unique index (caller_code),
 index (call_date),
 index (lead_id)
-) ENGINE=MyISAM;
+) ENGINE=Aria ROW_FORMAT=PAGE;
 
 CREATE TABLE vicidial_recent_ascb_calls_archive LIKE vicidial_recent_ascb_calls;
 
@@ -123,7 +123,7 @@ conf_exten VARCHAR(20),
 call_type VARCHAR(1) default '',
 index(lead_id),
 index(call_date)
-) ENGINE=MyISAM;
+) ENGINE=Aria ROW_FORMAT=PAGE;
 
 CREATE TABLE vicidial_sessions_recent_archive LIKE vicidial_sessions_recent;
 
