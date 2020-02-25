@@ -701,7 +701,8 @@ agent_disable_alt_dial ENUM('0','1') default '0',
 max_inbound_filter_enabled ENUM('0','1') default '0',
 max_inbound_filter_statuses TEXT,
 max_inbound_filter_ingroups TEXT,
-max_inbound_filter_min_sec SMALLINT(5) default '-1'
+max_inbound_filter_min_sec SMALLINT(5) default '-1',
+selected_pdo_language VARCHAR(20) NOT NULL DEFAULT 'en_EN'
 ) ENGINE=Aria ROW_FORMAT=PAGE;
 
 CREATE UNIQUE INDEX user ON vicidial_users (user);
@@ -1117,7 +1118,8 @@ scheduled_callback ENUM('Y','N') default 'N',
 completed ENUM('Y','N') default 'N',
 min_sec INT(5) UNSIGNED default '0',
 max_sec INT(5) UNSIGNED default '0',
-answering_machine ENUM('Y','N') default 'N'
+answering_machine ENUM('Y','N') default 'N',
+Pos INT(5) NOT NULL DEFAULT '0'
 ) ENGINE=Aria ROW_FORMAT=PAGE;
 
 CREATE TABLE vicidial_campaign_statuses (
@@ -1137,6 +1139,7 @@ completed ENUM('Y','N') default 'N',
 min_sec INT(5) UNSIGNED default '0',
 max_sec INT(5) UNSIGNED default '0',
 answering_machine ENUM('Y','N') default 'N',
+Pos INT(5) NOT NULL DEFAULT '0',
 index (campaign_id)
 ) ENGINE=Aria ROW_FORMAT=PAGE;
 
@@ -1689,7 +1692,7 @@ index (campaign_id)
 CREATE TABLE system_settings (
 version VARCHAR(50),
 install_date VARCHAR(50),
-use_non_latin ENUM('0','1') default '0',
+use_non_latin ENUM('0','1') default '1',
 webroot_writable ENUM('0','1') default '1',
 enable_queuemetrics_logging ENUM('0','1') default '0',
 queuemetrics_server_ip VARCHAR(15),
@@ -1889,7 +1892,8 @@ user_admin_redirect ENUM('1','0') default '0',
 list_status_modification_confirmation ENUM('1','0') default '0',
 sip_event_logging ENUM('0','1','2','3','4','5','6','7') default '0',
 call_quota_lead_ranking ENUM('0','1','2') default '0',
-enable_second_script ENUM('0','1') default '0'
+enable_second_script ENUM('0','1') default '0',
+default_pdo_language VARCHAR(20) NOT NULL DEFAULT 'en_EN'
 ) ENGINE=Aria ROW_FORMAT=PAGE;
 
 CREATE TABLE vicidial_campaigns_list_mix (

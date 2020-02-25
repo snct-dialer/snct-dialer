@@ -847,6 +847,10 @@
            extras/mysql_update/mysql-1534.sql,
            extras/mysql_update/mysql-1567.sql,
            extras/upgrade_2.14.sql.
+    * Fix typos:
+      - Update extras/MySQL_AST_CREATE_tables.sql.
+    * Add missing /etc/mysql to backup:
+      - Update bin/ADMIN_backup_ng.pl.
     * Change next release to 3.0.1.
 
 2.26.29
