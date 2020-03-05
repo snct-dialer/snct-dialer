@@ -1,7 +1,16 @@
 <?php
 # AST_agent_performance_detail.php
 #
-# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# LICENSE: AGPLv3
+#
+# Copyright (©) 2019      Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2019-2020 SNCT GmbH <info@snct-gmbh.de>
+#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>.
+#
+# Other - Changelog
+#
+# 2020-03-05 - jff - Agent Pulldown only with active agents
+#
 #
 # CHANGES
 #
@@ -420,7 +429,7 @@ while ($i < $user_groups_to_print)
 	$i++;
 	}
 
-$stmt="SELECT user, full_name from vicidial_users $whereLOGadmin_viewable_groupsSQL order by user";
+$stmt="SELECT user, full_name from vicidial_users WHERE active = 'Y' $LOGadmin_viewable_groupsSQL order by user";
 $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {$HTML_text.="$stmt\n";}
 $users_to_print = mysqli_num_rows($rslt);
