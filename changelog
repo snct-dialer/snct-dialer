@@ -853,6 +853,21 @@
       - Update bin/ADMIN_backup_ng.pl.
     * Pulldown menue only with active agents:
       - Update www/vicidial/AST_agent_performance_detail.php.
+    * Change translation handling from database to po files:
+      - New: extras/language/GenPot.sh,
+          www/agc/locale/snctdialer.pot,
+          www/vicidial/language_header.php,
+          www/vicidial/admin_search_lead.php,
+          www/vicidial/locale/snctdialer.pot.
+    * Add global Lead Search:
+      - Update www/vicidial/admin_search_lead.php.
+    * Add tool for Phone number format:
+      - New www/agc/locale/,
+          www/tools/composer.json,
+          www/tools/composer.lock,
+          www/tools/format_phone.php,
+          www/tools/vendor/.
+      - Update www/vicidial/admin_search_lead.php.
     * Change next release to 3.0.1.
 
 2.26.29
