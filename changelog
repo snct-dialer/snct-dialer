@@ -868,6 +868,11 @@
           www/tools/format_phone.php,
           www/tools/vendor/.
       - Update www/vicidial/admin_search_lead.php.
+    * Rewrite Real-Time Main Report to use server based computing:
+      - Update www/agc/vdc_db_query.php,
+          www/vicidial/AST_timeonVDADall.php,
+          www/vicidial/admin_search_lead.php.
+      - New: bin/SNCT_gen_realtime.php.
     * Change next release to 3.0.1.
 
 2.26.29

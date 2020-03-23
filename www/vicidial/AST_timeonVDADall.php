@@ -136,6 +136,10 @@ header ("Content-type: text/html; charset=utf-8");
 require("dbconnect_mysqli.php");
 require("functions.php");
 
+
+require("language_header.php");
+require_once ("../tools/format_phone.php");
+
 $PHP_AUTH_USER=$_SERVER['PHP_AUTH_USER'];
 $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
 $PHP_SELF=$_SERVER['PHP_SELF'];
@@ -339,7 +343,23 @@ function get_server_load($windows = false)
 		}
 	}
 
+	
 $load_ave = get_server_load(true);
+
+function GetUserName($User) {
+	global $link;
+	
+	$ret = "";
+	if(strlen($User) > 0) {
+		$sql = "SELECT full_name FROM `vicidial_users` WHERE `user` = '".$User."';";
+		if ($DB) {echo "|$sql|\n";}
+		$rslt=mysql_to_mysqli($sql, $link);
+		$row=mysqli_fetch_row($rslt);
+		$ret = $row[0];
+	}
+	return $ret;
+}
+
 
 $NOW_TIME = date("Y-m-d H:i:s");
 $NOW_DAY = date("Y-m-d");
@@ -2367,7 +2387,7 @@ else
 
 if ($CALLSdisplay > 0)
 	{
-	$stmtA = "SELECT status,campaign_id,phone_number,server_ip,UNIX_TIMESTAMP(call_time),call_type,queue_priority,agent_only";
+	$stmtA = "SELECT status,campaign_id,phone_number,server_ip,UNIX_TIMESTAMP(call_time),call_type,queue_priority,agent_only,phone_code ";
 
 	## JCJ Display chats
 	if ($allow_chats)
@@ -2442,13 +2462,17 @@ if ($parked_to_print > 0)
 				{
 				$CDstatus[$k] =			$row[0];
 				$CDcampaign_id[$k] =	$row[1];
-				$CDphone_number[$k] =	$row[2];
+				$phTemp = FormatPhoneNr($row[8], $row[2]);
+				$CDphone_number[$k] =	$phTemp;
 				$CDserver_ip[$k] =		$row[3];
 				$CDcall_time[$k] =		$row[4];
 				$CDcall_type[$k] =		$row[5];
 				$CDqueue_priority[$k] =	$row[6];
 				$CDagent_only[$k] =		$row[7];
-				if (strlen($CDagent_only[$k]) > 0) {$agentonlycount++;}
+				if (strlen($CDagent_only[$k]) > 0) {
+					$agentonlycount++;
+					$CDagent_only[$k] = GetUserName($row[7]);
+				}
 				$k++;
 				}
 			}
@@ -2462,13 +2486,17 @@ if ($parked_to_print > 0)
 					{
 					$CDstatus[$k] =			$row[0];
 					$CDcampaign_id[$k] =	$row[1];
-					$CDphone_number[$k] =	$row[2];
+					$phTemp = FormatPhoneNr($row[8], $row[2]);
+					$CDphone_number[$k] =	$phTemp;
 					$CDserver_ip[$k] =		$row[3];
 					$CDcall_time[$k] =		$row[4];
 					$CDcall_type[$k] =		$row[5];
 					$CDqueue_priority[$k] =	$row[6];
 					$CDagent_only[$k] =		$row[7];
-					if (strlen($CDagent_only[$k]) > 0) {$agentonlycount++;}
+					if (strlen($CDagent_only[$k]) > 0) {
+						$agentonlycount++;
+						$CDagent_only[$k] = GetUserName($row[7]);
+					}
 					$k++;
 					}
 				}
@@ -3214,7 +3242,9 @@ if ($talking_to_print > 0)
 				}
 			$callerids .=	"$row[0]|";
 			$VAClead_ids[$i] =	$row[1];
-			$VACphones[$i] =	"+".$row[3] . $row[2];
+			$phTemp = FormatPhoneNr($row[3], $row[2]);
+			$VACphones[$i] = $phTemp;
+			#$VACphones[$i] =	"+".$row[3] . $row[2];
 			$i++;
 			}
 		}
@@ -3338,7 +3368,7 @@ if ($talking_to_print > 0)
 			}
 
 		$phone =			sprintf("%-18s", $phone_split[0]);
-		$custphone =		sprintf("%-11s", $custphone);
+#		$custphone =		sprintf("%-11s", $custphone);
 		$Luser =			$Auser[$i];
 		$user =				sprintf("%-20s", $Auser[$i]);
 		$Lsessionid =		$Asessionid[$i];
