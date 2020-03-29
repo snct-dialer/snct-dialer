@@ -867,7 +867,7 @@
           www/tools/composer.lock,
           www/tools/format_phone.php,
           www/tools/vendor/.
-      - Update www/vicidial/admin_search_lead.php.
+      - Update agi/agi-VDAD_ALL_inbound.agi.
     * Rewrite Real-Time Main Report to use server based computing:
       - Update www/agc/vdc_db_query.php,
           www/vicidial/AST_timeonVDADall.php,

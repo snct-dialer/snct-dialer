@@ -1,6 +1,22 @@
 #!/usr/bin/perl
 #
-# agi-DID_route.agi version 2.14
+# agi-DID_route_NG.agi version 2.14
+#
+# This script based on the agi-DID_route.agi.
+# 
+# Mainly we use now libphonnumber to get the phone_code and the phone_number
+# from the callerid. This eliminates the strict assignment of the phone code via
+# the DID settings.
+# 
+# Supported Formats:
+#
+# +4920147114711 
+# 004920147114711
+#
+# If your carrier delivers the CID in other formats, these can be adjusted in
+# the dial plan before calling the script.
+#
+
 #
 # runs when a call comes into an inbound context on a trunk. This script will
 # send the calls to various places depending on the settings for each DID.
@@ -11,9 +27,14 @@
 #
 #[trunkinbound]
 # ;inbound DID catch-all:
-#exten => _X.,1,AGI(agi-DID_route.agi)
+#exten => _X.,1,AGI(agi-DID_route_NG.agi)
 #
-# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+
+# LICENSE: AGPLv3
+#
+# Copyright (©) 2019      Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2019-2020 SNCT GmbH <info@snct-gmbh.de>
+#               2019-2020 Jörg Frings-Fürst <open_source@jff.email>.
 #
 # changes:
 # 81007-0324 - First Build
@@ -47,8 +68,13 @@
 # 190216-0814 - Fix for user-group, in-group and campaign settings matching issues
 #
 
+#
+# 2020-03-27 - Remove .$year-$mon-$mday from the logfiles
+# 
+#
 
-$script = 'agi-DID_route.agi';
+
+$script = 'agi-DID_route_NG.agi';
 $dtmf_silent_prefix = '7';
 $at='@';
 $S='*';
@@ -115,8 +141,8 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port) {$VARDB_port='3306';}
-if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout.$year-$mon-$mday";}
-if (!$DIDLOGfile) {$DIDLOGfile = "$PATHlogs/didin.$year-$mon-$mday";}
+if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout.log";}
+if (!$DIDLOGfile) {$DIDLOGfile = "$PATHlogs/didin.log";}
 
 use DBI;
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
@@ -224,8 +250,8 @@ if($lib_phone) {
 	$tmpPhoneNumber = $lib_phone->format_using('Raw');
 	$tmpPhoneCode   = $lib_phone->country_code;
 	$agi_string = "NewPhoneCode: $callerid|$tmpPhoneCode|$tmpPhoneNumber";  &agi_output;
-#	$phone_code = $tmpPhoneCode;
-#	$callerid = $tmpPhoneNumber;
+	$tmp_phone_code = $tmpPhoneCode;
+	$tmp_phone_number= $tmpPhoneNumber;
 }
 
 

@@ -14,7 +14,7 @@
 #
 # ToDo:
 #
-# Add Hold & Ingroup
+# Add Hold & Ingroup done
 # Add Waiting Calls
 # Add Add Check for mysql connection
 #
@@ -33,7 +33,7 @@ if (file_exists('../inc/include.php')) {
 	require_once 'om/inc/include.php';
 }
 
-$versionSNCTGenRealTime = "1.0.2";
+$versionSNCTGenRealTime = "1.0.4";
 
 $SetupDir = "/etc/snct-dialer/";
 $SetupFiles = array ("snct-dialer.conf", "tools/tools.conf", "tools/tools.local");
@@ -48,6 +48,7 @@ $Log = new Log($SetUp->GetData("Log", "GenRealTime"), $versionSNCTGenRealTime);
 #
 #
 $DB = 0;
+$Debug = 0;
 $EnPauseStatus = 0;
 $InboundArr = array();
 
@@ -62,7 +63,7 @@ $mysql = new DB($SetUp->GetData("Database", "Server"),
 
 
 function GetPauseStatus($User, $AgentLogID) {
-	global $mysql, $DB, $Log, $EnPauseStatus;
+	global $mysql, $DB, $Log, $EnPauseStatus, $Debug;
 	
 	$time_start = microtime(true);
 	$Ret = "";
@@ -84,12 +85,14 @@ function GetPauseStatus($User, $AgentLogID) {
 	$time_end = microtime(true);
 	
 	$time = $time_end - $time_start;
-	$Log->Log("  GetPauseStatus Dauer: ".$time);
+	if($Debug) {
+		$Log->Log("  GetPauseStatus Dauer: ".$time);
+	}
 	return $Ret;
 }
 
 function GetAgentPhone($Ext, $IP) {
-	global $mysql, $DB, $Log;
+	global $mysql, $DB, $Log, $Debug;
 	
 	
 	$time_start = microtime(true);
@@ -153,12 +156,14 @@ function GetAgentPhone($Ext, $IP) {
 	$time_end = microtime(true);
 	
 	$time = $time_end - $time_start;
-	$Log->Log("  GetAgentPhone Dauer: ".$time);
+	if($Debug) {
+		$Log->Log("  GetAgentPhone Dauer: ".$time);
+	}
 	return $Ret;
 }
 
 function GetCustPhone($LeadID) {
-	global $mysql, $DB, $Log;
+	global $mysql, $DB, $Log, $Debug;
 	
 	
 	$time_start = microtime(true);
@@ -181,12 +186,14 @@ function GetCustPhone($LeadID) {
 	$time_end = microtime(true);
 	
 	$time = $time_end - $time_start;
-	$Log->Log("  GetCustomPhone Dauer: ".$time);
+	if($Debug) {
+		$Log->Log("  GetCustomPhone Dauer: ".$time);
+	}
 	return $Ret;
 }
 
 function FillUser() {
-	global $mysql, $TableNameRTV, $DB, $Log;
+	global $mysql, $TableNameRTV, $DB, $Log, $Debug;
 	
 	
 	$time_start = microtime(true);
@@ -206,11 +213,36 @@ function FillUser() {
 	$time_end = microtime(true);
 	
 	$time = $time_end - $time_start;
-	$Log->Log("  FillUser Dauer: ".$time);
+	if($Debug) {
+		$Log->Log("  FillUser Dauer: ".$time);
+	}
+}
+
+function FillPhone() {
+	global $mysql, $TableNameRTV, $DB, $Log, $Debug;
+	
+	
+	$time_start = microtime(true);
+	$sql = "SELECT * FROM `".$TableNameRTV."` WHERE `Phone` = '';";
+	if($DB) { $Log->Log($sql);}
+	if ($res = $mysql->MySqlHdl->query($sql)) {
+		while($row = $res->fetch_array(MYSQLI_BOTH)) {
+			$APhone = GetAgentPhone($row["Station"], $row["ServerIP"]);
+			$sql2 = "UPDATE `".$TableNameRTV."` SET `Phone` = '".$APhone."' WHERE `User` = '".$row["User"]."';";
+			if($DB) { $Log->Log($sql2);}
+			$res2 = $mysql->MySqlHdl->query($sql2);
+		}
+	}
+	$time_end = microtime(true);
+	
+	$time = $time_end - $time_start;
+	if($Debug) {
+		$Log->Log("  FillPhone Dauer: ".$time);
+	}
 }
 
 function GetInbound($CallerID) {
-	global $mysql, $TableNameRTV, $DB, $Log, $InboundArr;
+	global $mysql, $TableNameRTV, $DB, $Log, $InboundArr, $Debug;
 	
 	$InGrp = "";
 	$WaitTime = "";
@@ -233,8 +265,33 @@ function GetInbound($CallerID) {
 	$time_end = microtime(true);
 	
 	$time = $time_end - $time_start;
-	$Log->Log("  GetInbound Dauer: ".$time);
+	if($Debug) {
+		$Log->Log("  GetInbound Dauer: ".$time);
+	}
 	return array ($InGrp, $WaitTime);
+}
+
+function CheckMySqlConnection() {
+	global $mysql, $Log, $Setup, $Debug;
+	
+	$time_start = microtime(true);
+	if(!$mysql->MySqlHdl->ping()) {
+		$Log->Log(" CheckMySql failed: " . $mysql->MySqlHdl->connect_error);
+		$mysql->MySqlHdl->close();
+		free($mysql);
+		
+		$mysql = new DB($SetUp->GetData("Database", "Server"),
+			$SetUp->GetData("Database", "Database"),
+			$SetUp->GetData("Database", "User"),
+			$SetUp->GetData("Database", "Pass"),
+			$SetUp->GetData("Database", "Port"));
+		$Log->Log(" MySql restarted");
+	}
+	$time_end = microtime(true);
+	$time = $time_end - $time_start;
+#	if($Debug) {
+		$Log->Log("  CheckMySqlConnection Dauer: ".$time);
+#	}
 }
 
 $sqlX = "SELECT count(*) from vicidial_campaigns where agent_pause_codes_active != 'N';";
@@ -253,6 +310,9 @@ if($resX = $mysql->MySqlHdl->query($sqlX)) {
 while(1) {
 
 	$time_start = microtime(true);
+	
+	CheckMysqlConnection();
+	
 	$sql = "UPDATE `".$TableNameRTV."` SET `invalid` = 1;";
 	if($DB) { $Log->Log($sql);}
 	if(!$res = $mysql->MySqlHdl->query($sql)) {
@@ -270,7 +330,7 @@ while(1) {
 			$InGrp = "";
 			$WaitTime = "";
 			$CustPhone = GetCustPhone($row["lead_id"]);
-			$AgentPhone = GetAgentPhone($row["extension"], $row["server_ip"]);
+#			$AgentPhone = GetAgentPhone($row["extension"], $row["server_ip"]);
 			
 			if (!preg_match("/INCALL|DIAL|QUEUE|PARK|3-WAY/i",$row["status"])) {
 				$TimeFirst = strtotime($row["last_state_change"]);
@@ -303,9 +363,9 @@ while(1) {
 			}
 			
 #			$sql2  = "INSERT IGNORE INTO `".$TableNameRTV."` (`Station`,`Phone`, `User`, `UserGrp`, `SessionID`, `Status`, `SubStatus`, `CustomPhone`, `ServerIP`, `CallServerIP`, `Time`, `Campaign`, `Calls`, `Hold`, `Ingroup`) ";
-			$sql2  = "INSERT IGNORE INTO `".$TableNameRTV."` SET `Station` = '".$row["extension"]."', `Phone` = '".$AgentPhone."', `User` = '".$row["user"]."', `UserGrp` = '' , `SessionID` = '".$row["conf_exten"]."', `Status` = '".$row["status"]."', `SubStatus` = '".$SubSt."', `CustomPhone` = '".$CustPhone."', `ServerIP` = '".$row["server_ip"]."', `CallServerIP` = '".$row["call_server_ip"]."', `Time` = 0, `Campaign` = '".$row["campaign_id"]."', `Calls` = '".$row["calls_today"]."', `Pause` = '".$PauseSt."', `Hold` = '".$WaitTime."', `Ingroup` = '".$InGrp."', `invalid` = 0 ";
+			$sql2  = "INSERT IGNORE INTO `".$TableNameRTV."` SET `Station` = '".$row["extension"]."', `Phone` = '', `User` = '".$row["user"]."', `UserGrp` = '' , `SessionID` = '".$row["conf_exten"]."', `Status` = '".$row["status"]."', `SubStatus` = '".$SubSt."', `CustomPhone` = '".$CustPhone."', `ServerIP` = '".$row["server_ip"]."', `CallServerIP` = '".$row["call_server_ip"]."', `Time` = 0, `Campaign` = '".$row["campaign_id"]."', `Calls` = '".$row["calls_today"]."', `Pause` = '".$PauseSt."', `Hold` = '".$WaitTime."', `Ingroup` = '".$InGrp."', `invalid` = 0 ";
 			$sql2 .= " ON DUPLICATE KEY UPDATE ";
-			$sql2 .= " `Station` = '".$row["extension"]."',`Pause` = '".$PauseSt."', `Phone` = '".$AgentPhone."', `Time` = '".$TimeDiff."', `SessionID` = '".$row["conf_exten"]."', `Status` = '".$row["status"]."', `SubStatus` = '".$SubSt."', `CustomPhone` = '".$CustPhone."', `ServerIP` = '".$row["server_ip"]."', `CallServerIP` = '".$row["call_server_ip"]."', `Campaign` = '".$row["campaign_id"]."', `Calls` = '".$row["calls_today"]."', `Hold` = '".$WaitTime."', `Ingroup` = '".$InGrp."', `invalid` = 0;";
+			$sql2 .= " `Station` = '".$row["extension"]."',`Pause` = '".$PauseSt."', `Time` = '".$TimeDiff."', `SessionID` = '".$row["conf_exten"]."', `Status` = '".$row["status"]."', `SubStatus` = '".$SubSt."', `CustomPhone` = '".$CustPhone."', `ServerIP` = '".$row["server_ip"]."', `CallServerIP` = '".$row["call_server_ip"]."', `Campaign` = '".$row["campaign_id"]."', `Calls` = '".$row["calls_today"]."', `Hold` = '".$WaitTime."', `Ingroup` = '".$InGrp."', `invalid` = 0;";
 #			$sql2 .= "VALUES ('".$row["extension"]."', '', '".$row["user"]."', '', '".$row["conf_exten"]."', '".$row["status"]."', '', '', '".$row["server_ip"]."', '".$row["call_server_ip"]."', '', '".$row["campaign_id"]."', '".$row["calls_today"]."', '', ''); ";
 			if($DB) { $Log->Log($sql2);}
 			if ($res2 = $mysql->MySqlHdl->query($sql2)) {
@@ -325,6 +385,7 @@ while(1) {
 		}
 	}
 	FillUser();
+	FillPhone();
 	$sql = "DELETE FROM `".$TableNameRTV."` WHERE `invalid` = 1;";
 	if($DB) { $Log->Log($sql);}
 	if(!$res = $mysql->MySqlHdl->query($sql)) {
@@ -338,8 +399,11 @@ while(1) {
 	$time = $time_end - $time_start;
 	$Log->Log("Main Anz|Dauer: ".$Anz."|".$time);
 	
-	// Warte 1 Sekunden
-	usleep(1000000);
+	if($Anz > 0) {
+		usleep(1000000);
+	} else {
+		usleep(10000000);
+	}
 }
 
 

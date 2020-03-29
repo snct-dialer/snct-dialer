@@ -2,6 +2,12 @@
 #
 # agi-VDAD_ALL_inbound.agi version 2.14
 #
+# LICENSE: AGPLv3
+#
+# Copyright (©) 2019      Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2019-2020 SNCT GmbH <info@snct-gmbh.de>
+#               2019-2020 Jörg Frings-Fürst <open_source@jff.email>.
+#
 # runs when a call comes in from an inbound call. This script will
 # send the calls out to the closers that are logged in.
 # ## THIS SCRIPT CONSOLIDATES THIRTEEN SEPARATE VDAD closer inbound SCRIPTS ##
@@ -82,8 +88,13 @@
 #exten => _99909*.,2,AGI(agi-VDAD_ALL_inbound.agi)
 #exten => _99909*.,3,Hangup
 #
-# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
+# SNCT-Changes:
+#
+# 2020-03-09 - Use libphonenumber to get real phone_code and phonenumber from 
+#              callerid. Use perl modul  Number::Phone::Lib.
+
+# 
 # changes:
 # 70828-0924 - First Build
 # 71013-0310 - Added use of default Music-on-hold instead of generic on-hold message
@@ -336,6 +347,7 @@ use DBI;
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
+use Number::Phone::Lib;
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
     or die "Couldn't connect to database: " . DBI->errstr;
@@ -562,6 +574,28 @@ if ($extension =~ /^999\d\d\*/)
 
 		}
 	}
+
+#
+# Get phone-code and number via libphonenumber
+#
+$tmpPhoneCode = "";
+$tmpPhoneNumber = "";
+$UnchangedCallerID = $callerid;
+if($callerid != "Anonymous") {
+	if($callerid =~ s/^00/\+/) {
+        $lib_phone = Number::Phone::Lib->new($callerid);
+	} else {
+        $lib_phone = Number::Phone::Lib->new('+'.$callerid);
+	}
+	if($lib_phone) {
+        $tmpPhoneNumber = $lib_phone->format_using('Raw');
+        $tmpPhoneCode   = $lib_phone->country_code;
+        $phone_code = $tmpPhoneCode;
+        $callerid = $tmpPhoneNumber;
+	}
+}
+$agi_string = "NewPhoneCode: $UnchangedCallerID|$tmpPhoneCode|$tmpPhoneNumber";  &agi_output;
+
 
 if ( ($phone_code =~ /^1$/) && ($callerid =~ /^1/) && (length($callerid) > 10) )
 	{
