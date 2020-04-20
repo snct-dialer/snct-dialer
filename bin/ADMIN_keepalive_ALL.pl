@@ -529,6 +529,7 @@ else
 	$runningemail_inbound=0;
 	$runningASTERISK=0;
 	$runningsip_logger=0;
+	$running_gen_realtime = 0;
 	$AST_conf_3way=0;
 
 	if ($VARactive_keepalives =~ /1/)
@@ -585,6 +586,11 @@ else
 		{
 		$sip_logger=1;
 		if ($DB) {print "Check to see if sip logger should run\n";}
+		}
+	if ($VARactive_keepalives =~ /R/)
+		{
+		$gen_realtime=1;
+		if ($DB) {print "Check to see if Gen Realtime data should run\n";}
 		}
 	if ($cu3way > 0)
 		{
@@ -684,6 +690,11 @@ else
 			$runningAST_conf_3way++;
 			if ($DB) {print "AST_conf_3way RUNNING:           |$psline[1]|\n";}
 			}
+		if ($psoutput[$i] =~ /SNCT_gen_realtime.php/)
+			{
+			$running_gen_realtime++;
+			if ($DB) {print "Gen Realtime RUNNING:                |$psoutput[$i]|\n";}
+			}
 
 		$i++;
 		}
@@ -757,6 +768,7 @@ else
 		( ($ip_relay > 0) && ($runningip_relay < 1) ) ||
 		( ($AST_conf_3way > 0) && ($runningAST_conf_3way < 1) ) ||
 		( ($email_inbound > 0) && ($runningemail_inbound < 1) ) ||
+		( ($gen_realtime > 0) && ($running_gen_realtime < 1) ) ||
 		( ($sip_logger > 0) && ($runningsip_logger < 1) )
 	   )
 		{
@@ -844,6 +856,11 @@ else
 				{
 				$runningAST_conf_3way++;
 				if ($DB) {print "AST_conf_3way RUNNING:           |$psline[1]|\n";}
+				}
+			if ($psoutput2[$i] =~ /SNCT_gen_realtime.php/)
+				{
+				$running_gen_realtime++;
+				if ($DB) {print "Gen Realtime RUNNING:                |$psoutput[$i]|\n";}
 				}
 			$i++;
 			}
@@ -989,6 +1006,11 @@ else
 				`/usr/bin/screen -S ASTconf3way -X logfile $PATHlogs/ASTconf3way-screenlog.0`;
 				`/usr/bin/screen -S ASTconf3way -X log`;
 				}
+			}
+		if ( ($gen_realtime > 0) && ($running_gen_realtime < 1) )
+			{
+			if ($DB) {print "starting gen realtime data...\n";}
+			system('/usr/share/astguiclient/SNCT_gen_realtime.sh &');
 			}
 		}
 	}

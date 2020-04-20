@@ -871,8 +871,10 @@
     * Rewrite Real-Time Main Report to use server based computing:
       - Update www/agc/vdc_db_query.php,
           www/vicidial/AST_timeonVDADall.php,
-          www/vicidial/admin_search_lead.php.
+          www/vicidial/admin_search_lead.php,
+          bin/ADMIN_keepalive_ALL.pl.
       - New: bin/SNCT_gen_realtime.php.
+    * Sort agents in "Modify Ingroups" by user_groups.
     * Change next release to 3.0.1.
 
 2.26.29

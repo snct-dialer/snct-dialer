@@ -225,11 +225,12 @@ if ($auth < 1)
 	exit;
 	}
 
-$rights_stmt = "SELECT modify_leads from vicidial_users where user='$PHP_AUTH_USER';";
+$rights_stmt = "SELECT modify_leads, user_level from vicidial_users where user='$PHP_AUTH_USER';";
 if ($DB) {echo "|$stmt|\n";}
 $rights_rslt=mysql_to_mysqli($rights_stmt, $link);
 $rights_row=mysqli_fetch_row($rights_rslt);
-$modify_leads =		$rights_row[0];
+$modify_leads = $rights_row[0];
+$AdminLevel   = $rights_row[1];
 
 # check their permissions
 if ( $modify_leads < 1 )
@@ -412,8 +413,8 @@ if ( (!$vendor_id) and (!$phone)  and (!$lead_id) and (!$log_phone)  and (!$log_
 	echo "<TD colspan=3 align=center height=3></TD>";
 	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
 
-	echo "<TD ALIGN=right>"._("Status").": &nbsp; </TD><TD ALIGN=left><input type=text name=status size=7 maxlength=6></TD>";
-	echo "<TD rowspan=4><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._("SUBMIT")."'></TD>\n";
+	echo "<TD ALIGN=right>* "._("Status").": &nbsp; </TD><TD ALIGN=left><input type=text name=status size=7 maxlength=6></TD>";
+#	echo "<TD rowspan=4><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._("SUBMIT")."'></TD>\n";
 	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
 	echo "<TD ALIGN=right>* "._("List ID").": &nbsp; </TD><TD ALIGN=left><input type=text name=list_id size=15 maxlength=14></TD>";
 	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
@@ -425,7 +426,7 @@ if ( (!$vendor_id) and (!$phone)  and (!$lead_id) and (!$log_phone)  and (!$log_
 	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
 
 	echo "<TD ALIGN=right>* $label_first_name: &nbsp;</TD><TD ALIGN=left><input type=text name=first_name size=15 maxlength=30></TD>";
-	echo "<TD rowspan=5><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._("SUBMIT")."'></TD>\n";
+#	echo "<TD rowspan=5><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._("SUBMIT")."'></TD>\n";
 	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
 	echo "<TD ALIGN=right>* $label_last_name: &nbsp; </TD><TD ALIGN=left><input type=text name=last_name size=15 maxlength=30></TD>";
 	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
@@ -438,8 +439,8 @@ if ( (!$vendor_id) and (!$phone)  and (!$lead_id) and (!$log_phone)  and (!$log_
 
 	echo "<TD colspan=3 align=center height=1></TD>";
 	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
-	echo "<TD ALIGN=right>$label_email: &nbsp; </TD><TD ALIGN=left><input type=text name=email size=15 maxlength=30></TD>";
-	echo "<TD><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._("SUBMIT")."'></TD>\n";
+	echo "<TD ALIGN=right>* $label_email: &nbsp; </TD><TD ALIGN=left><input type=text name=email size=15 maxlength=30></TD>";
+#	echo "<TD><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._("SUBMIT")."'></TD>\n";
 	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
 	
 	echo "</TR><TR bgcolor=#$SSmenu_background>";
@@ -556,7 +557,24 @@ else
 			$list_idSQL = "$tmpSQL list_id =  '" . mysqli_real_escape_string($link, $list_id) . "'";
 			$AnzPara++;
 		}
-		if($AnzPara < 1) {
+		$emailSQL = "";
+		if(strlen($email) > 0) {
+			if($AnzPara > 0) {
+				$tmpSQL = " AND ";
+			}
+			$list_idSQL = "$tmpSQL email =  '" . mysqli_real_escape_string($link, $email) . "'";
+			$AnzPara++;
+			$AnzPara++;
+		}
+		$statusSQL = "";
+		if(strlen($status) > 0) {
+			if($AnzPara > 0) {
+				$tmpSQL = " AND ";
+			}
+			$list_idSQL = "$tmpSQL status =  '" . mysqli_real_escape_string($link, $status) . "'";
+			$AnzPara++;
+		}
+		if(($AnzPara < 2) && ($AdminLevel < 9)) {
 			echo "\n<br><br><center>\n";
 			echo "<b>"._("You must use 2 or more fields for this function!")."</b><br><br>\n";
 			echo "</center>\n";
@@ -564,7 +582,11 @@ else
 			echo "</body></html>\n";
 			exit;
 		} else {
-			$stmt="SELECT $vicidial_list_fields from $vl_table where $first_nameSQL $last_nameSQL $address1SQL $address1_noSQL $citySQL $userSQL $ownerSQL $list_idSQL $LOGallowed_listsSQL LIMIT 5000;";
+			$stmt = "";
+			if($AdminLevel < 9) {
+				$stmt = "SET STATEMENT max_statement_time=15 FOR ";
+			}
+			$stmt .= "SELECT $vicidial_list_fields from $vl_table where $first_nameSQL $last_nameSQL $address1SQL $address1_noSQL $citySQL $userSQL $ownerSQL $list_idSQL $email_SQL $statusSQL $LOGallowed_listsSQL LIMIT 5000;";
 			if($DB) {
 				echo $stmt;
 			}
@@ -586,114 +608,132 @@ else
 				echo "<!-- Using slave server $slave_db_server $db_source -->\n";
 			}
 			
-			$rslt=mysql_to_mysqli("$stmt", $link);
-			$results_to_print = mysqli_num_rows($rslt);
-			if ( ($results_to_print < 1) and ($results_to_printX < 1) )
-			{
-				echo date("l F j, Y G:i:s A");
-				echo "\n<br><br><center>\n";
-				echo "<b>"._("The search variables you entered are not active in the system")."</b><br><br>\n";
-				echo "<b>"._("Please go back and double check the information you entered and submit again")."</b>\n";
-				echo "</center>\n";
-				echo "</body></html>\n";
-				exit;
-			}
-			else
-			{
-				echo "<b>"._("RESULTS").": $results_to_print</b><BR><BR>\n";
-				echo "<TABLE BGCOLOR=WHITE CELLPADDING=1 CELLSPACING=0 WIDTH=770>\n";
-				echo "<TR BGCOLOR=BLACK>\n";
-				echo "<TD ALIGN=LEFT VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>#</B></FONT></TD>\n";
-				echo "<TD ALIGN=CENTER VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>"._("LEAD ID")."</B> &nbsp;</FONT></TD>\n";
-				echo "<TD ALIGN=CENTER VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>"._("STATUS")."</B> &nbsp;</FONT></TD>\n";
-				echo "<TD ALIGN=CENTER VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>"._("VENDOR ID")."</B> &nbsp;</FONT></TD>\n";
-				echo "<TD ALIGN=CENTER VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>"._("LAST AGENT")."</B> &nbsp;</FONT></TD>\n";
-				echo "<TD ALIGN=CENTER VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>"._("LIST ID")."</B> &nbsp;</FONT></TD>\n";
-				echo "<TD ALIGN=CENTER VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>"._("PHONE")."</B> &nbsp;</FONT></TD>\n";
-				echo "<TD ALIGN=CENTER VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>"._("NAME")."</B> &nbsp;</FONT></TD>\n";
-				echo "<TD ALIGN=CENTER VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>"._("CITY")."</B> &nbsp;</FONT></TD>\n";
-				echo "<TD ALIGN=CENTER VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>"._("SECURITY")."</B> &nbsp;</FONT></TD>\n";
-				echo "<TD ALIGN=CENTER VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>"._("LAST CALL")."</B></FONT></TD>\n";
-				echo "</TR>\n";
-				$o=0;
-				while ($results_to_print > $o)
+			if($rslt=mysql_to_mysqli("$stmt", $link)) {
+				$results_to_print = mysqli_num_rows($rslt);
+				if ( ($results_to_print < 1) and ($results_to_printX < 1) )
 				{
-					$row=mysqli_fetch_row($rslt);
-					if ($LOGadmin_hide_phone_data != '0')
-					{
-						if ($DB > 0) {echo "HIDEPHONEDATA|$row[11]|$LOGadmin_hide_phone_data|\n";}
-						$phone_temp = $row[11];
-						if (strlen($phone_temp) > 0)
-						{
-							if ($LOGadmin_hide_phone_data == '4_DIGITS')
-							{$row[11] = str_repeat("X", (strlen($phone_temp) - 4)) . substr($phone_temp,-4,4);}
-							elseif ($LOGadmin_hide_phone_data == '3_DIGITS')
-							{$row[11] = str_repeat("X", (strlen($phone_temp) - 3)) . substr($phone_temp,-3,3);}
-							elseif ($LOGadmin_hide_phone_data == '2_DIGITS')
-							{$row[11] = str_repeat("X", (strlen($phone_temp) - 2)) . substr($phone_temp,-2,2);}
-							else
-							{$row[11] = preg_replace("/./",'X',$phone_temp);}
-						}
-					}
-					if ($LOGadmin_hide_lead_data != '0')
-					{
-						if ($DB > 0) {echo "HIDELEADDATA|$row[5]|$row[6]|$row[12]|$row[13]|$row[14]|$row[15]|$row[16]|$row[17]|$row[18]|$row[19]|$row[20]|$row[21]|$row[22]|$row[26]|$row[27]|$row[28]|$LOGadmin_hide_lead_data|\n";}
-						if (strlen($row[5]) > 0)
-						{$data_temp = $row[5];   $row[5] = preg_replace("/./",'X',$data_temp);}
-						if (strlen($row[6]) > 0)
-						{$data_temp = $row[6];   $row[6] = preg_replace("/./",'X',$data_temp);}
-						if (strlen($row[12]) > 0)
-						{$data_temp = $row[12];   $row[12] = preg_replace("/./",'X',$data_temp);}
-						if (strlen($row[13]) > 0)
-						{$data_temp = $row[13];   $row[13] = preg_replace("/./",'X',$data_temp);}
-						if (strlen($row[14]) > 0)
-						{$data_temp = $row[14];   $row[14] = preg_replace("/./",'X',$data_temp);}
-						if (strlen($row[15]) > 0)
-						{$data_temp = $row[15];   $row[15] = preg_replace("/./",'X',$data_temp);}
-						if (strlen($row[16]) > 0)
-						{$data_temp = $row[16];   $row[16] = preg_replace("/./",'X',$data_temp);}
-						if (strlen($row[17]) > 0)
-						{$data_temp = $row[17];   $row[17] = preg_replace("/./",'X',$data_temp);}
-						if (strlen($row[18]) > 0)
-						{$data_temp = $row[18];   $row[18] = preg_replace("/./",'X',$data_temp);}
-						if (strlen($row[19]) > 0)
-						{$data_temp = $row[19];   $row[19] = preg_replace("/./",'X',$data_temp);}
-						if (strlen($row[20]) > 0)
-						{$data_temp = $row[20];   $row[20] = preg_replace("/./",'X',$data_temp);}
-						if (strlen($row[21]) > 0)
-						{$data_temp = $row[21];   $row[21] = preg_replace("/./",'X',$data_temp);}
-						if (strlen($row[22]) > 0)
-						{$data_temp = $row[22];   $row[22] = preg_replace("/./",'X',$data_temp);}
-						if (strlen($row[26]) > 0)
-						{$data_temp = $row[26];   $row[26] = preg_replace("/./",'X',$data_temp);}
-						if (strlen($row[27]) > 0)
-						{$data_temp = $row[27];   $row[27] = preg_replace("/./",'X',$data_temp);}
-						if (strlen($row[28]) > 0)
-						{$data_temp = $row[28];   $row[28] = preg_replace("/./",'X',$data_temp);}
-					}
-					
-					$o++;
-					$search_lead = $row[0];
-					if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-					{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
-					else
-					{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
-					echo "<TR $bgcolor>\n";
-					echo "<TD ALIGN=LEFT><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$o</FONT></TD>\n";
-					echo "<TD ALIGN=CENTER><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1><a href=\"admin_modify_lead.php?lead_id=$row[0]&archive_search=$archive_search&archive_log=$log_archive_link\" target=\"_blank\">$row[0]</a></FONT></TD>\n";
-					echo "<TD ALIGN=RIGHT><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[3]</FONT></TD>\n";
-					echo "<TD ALIGN=RIGHT><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[5]</FONT></TD>\n";
-					echo "<TD ALIGN=RIGHT><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[4]</FONT></TD>\n";
-					echo "<TD ALIGN=RIGHT><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[7]</FONT></TD>\n";
-					$phTemp = FormatPhoneNr($row[10], $row[11]);
-					echo "<TD ALIGN=RIGHT nowrap><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$phTemp</FONT></TD>\n";
-					echo "<TD ALIGN=RIGHT nowrap><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[13] $row[15]</FONT></TD>\n";
-					echo "<TD ALIGN=RIGHT><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[19]</FONT></TD>\n";
-					echo "<TD ALIGN=RIGHT><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[28]</FONT></TD>\n";
-					echo "<TD ALIGN=LEFT nowrap><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>".strftime("%c", strtotime($row[31]))."</FONT></TD>\n";
-					echo "</TR>\n";
+					echo strftime("%c");
+					echo "\n<br><br><center>\n";
+					echo "<b>"._("The search variables you entered are not active in the system")."</b><br><br>\n";
+					echo "<b>"._("Please go back and double check the information you entered and submit again")."</b>\n";
+					echo "</center>\n";
+					echo "</body></html>\n";
+					exit;
 				}
-				echo "</TABLE>\n";
+				else
+				{
+					echo "<b>"._("RESULTS").": $results_to_print</b><BR><BR>\n";
+					echo "<TABLE BGCOLOR=WHITE CELLPADDING=1 CELLSPACING=0 WIDTH=770>\n";
+					echo "<TR BGCOLOR=BLACK>\n";
+					echo "<TD ALIGN=LEFT VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>#</B></FONT></TD>\n";
+					echo "<TD ALIGN=CENTER VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>"._("LEAD ID")."</B> &nbsp;</FONT></TD>\n";
+					echo "<TD ALIGN=CENTER VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>"._("STATUS")."</B> &nbsp;</FONT></TD>\n";
+					echo "<TD ALIGN=CENTER VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>"._("VENDOR ID")."</B> &nbsp;</FONT></TD>\n";
+					echo "<TD ALIGN=CENTER VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>"._("LAST AGENT")."</B> &nbsp;</FONT></TD>\n";
+					echo "<TD ALIGN=CENTER VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>"._("LIST ID")."</B> &nbsp;</FONT></TD>\n";
+					echo "<TD ALIGN=CENTER VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>"._("PHONE")."</B> &nbsp;</FONT></TD>\n";
+					echo "<TD ALIGN=CENTER VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>"._("NAME")."</B> &nbsp;</FONT></TD>\n";
+					echo "<TD ALIGN=CENTER VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>"._("CITY")."</B> &nbsp;</FONT></TD>\n";
+					echo "<TD ALIGN=CENTER VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>"._("SECURITY")."</B> &nbsp;</FONT></TD>\n";
+					echo "<TD ALIGN=CENTER VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>"._("LAST CALL")."</B></FONT></TD>\n";
+					echo "</TR>\n";
+					$o=0;
+					while ($results_to_print > $o)
+					{
+						$row=mysqli_fetch_row($rslt);
+						if ($LOGadmin_hide_phone_data != '0')
+						{
+							if ($DB > 0) {echo "HIDEPHONEDATA|$row[11]|$LOGadmin_hide_phone_data|\n";}
+							$phone_temp = $row[11];
+							if (strlen($phone_temp) > 0)
+							{
+								if ($LOGadmin_hide_phone_data == '4_DIGITS')
+								{$row[11] = str_repeat("X", (strlen($phone_temp) - 4)) . substr($phone_temp,-4,4);}
+								elseif ($LOGadmin_hide_phone_data == '3_DIGITS')
+								{$row[11] = str_repeat("X", (strlen($phone_temp) - 3)) . substr($phone_temp,-3,3);}
+								elseif ($LOGadmin_hide_phone_data == '2_DIGITS')
+								{$row[11] = str_repeat("X", (strlen($phone_temp) - 2)) . substr($phone_temp,-2,2);}
+								else
+								{$row[11] = preg_replace("/./",'X',$phone_temp);}
+							}
+						}
+						if ($LOGadmin_hide_lead_data != '0')
+						{
+							if ($DB > 0) {echo "HIDELEADDATA|$row[5]|$row[6]|$row[12]|$row[13]|$row[14]|$row[15]|$row[16]|$row[17]|$row[18]|$row[19]|$row[20]|$row[21]|$row[22]|$row[26]|$row[27]|$row[28]|$LOGadmin_hide_lead_data|\n";}
+							if (strlen($row[5]) > 0)
+							{$data_temp = $row[5];   $row[5] = preg_replace("/./",'X',$data_temp);}
+							if (strlen($row[6]) > 0)
+							{$data_temp = $row[6];   $row[6] = preg_replace("/./",'X',$data_temp);}
+							if (strlen($row[12]) > 0)
+							{$data_temp = $row[12];   $row[12] = preg_replace("/./",'X',$data_temp);}
+							if (strlen($row[13]) > 0)
+							{$data_temp = $row[13];   $row[13] = preg_replace("/./",'X',$data_temp);}
+							if (strlen($row[14]) > 0)
+							{$data_temp = $row[14];   $row[14] = preg_replace("/./",'X',$data_temp);}
+							if (strlen($row[15]) > 0)
+							{$data_temp = $row[15];   $row[15] = preg_replace("/./",'X',$data_temp);}
+							if (strlen($row[16]) > 0)
+							{$data_temp = $row[16];   $row[16] = preg_replace("/./",'X',$data_temp);}
+							if (strlen($row[17]) > 0)
+							{$data_temp = $row[17];   $row[17] = preg_replace("/./",'X',$data_temp);}
+							if (strlen($row[18]) > 0)
+							{$data_temp = $row[18];   $row[18] = preg_replace("/./",'X',$data_temp);}
+							if (strlen($row[19]) > 0)
+							{$data_temp = $row[19];   $row[19] = preg_replace("/./",'X',$data_temp);}
+							if (strlen($row[20]) > 0)
+							{$data_temp = $row[20];   $row[20] = preg_replace("/./",'X',$data_temp);}
+							if (strlen($row[21]) > 0)
+							{$data_temp = $row[21];   $row[21] = preg_replace("/./",'X',$data_temp);}
+							if (strlen($row[22]) > 0)
+							{$data_temp = $row[22];   $row[22] = preg_replace("/./",'X',$data_temp);}
+							if (strlen($row[26]) > 0)
+							{$data_temp = $row[26];   $row[26] = preg_replace("/./",'X',$data_temp);}
+							if (strlen($row[27]) > 0)
+							{$data_temp = $row[27];   $row[27] = preg_replace("/./",'X',$data_temp);}
+							if (strlen($row[28]) > 0)
+							{$data_temp = $row[28];   $row[28] = preg_replace("/./",'X',$data_temp);}
+						}
+						
+						$o++;
+						$search_lead = $row[0];
+						if (preg_match('/1$|3$|5$|7$|9$/i', $o))
+						{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
+						else
+						{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
+						echo "<TR $bgcolor>\n";
+						echo "<TD ALIGN=LEFT><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$o</FONT></TD>\n";
+						echo "<TD ALIGN=CENTER><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1><a href=\"admin_modify_lead.php?lead_id=$row[0]&archive_search=$archive_search&archive_log=$log_archive_link\" target=\"_blank\">$row[0]</a></FONT></TD>\n";
+						echo "<TD ALIGN=RIGHT><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[3]</FONT></TD>\n";
+						echo "<TD ALIGN=RIGHT><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[5]</FONT></TD>\n";
+						echo "<TD ALIGN=RIGHT><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[4]</FONT></TD>\n";
+						echo "<TD ALIGN=RIGHT><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[7]</FONT></TD>\n";
+						$phTemp = FormatPhoneNr($row[10], $row[11]);
+						echo "<TD ALIGN=RIGHT nowrap><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$phTemp</FONT></TD>\n";
+						echo "<TD ALIGN=RIGHT nowrap><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[13] $row[15]</FONT></TD>\n";
+						echo "<TD ALIGN=RIGHT><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[19]</FONT></TD>\n";
+						echo "<TD ALIGN=RIGHT><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[28]</FONT></TD>\n";
+						echo "<TD ALIGN=LEFT nowrap><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>".strftime("%c", strtotime($row[31]))."</FONT></TD>\n";
+						echo "</TR>\n";
+					}
+					echo "</TABLE>\n";
+				}
+			} else {
+				
+				if($err = mysqli_error($link)) {
+					echo date("l F j, Y G:i:s A");
+					echo strftime("%c");
+					echo "\n<br><br><center>\n";
+					echo "<b>"._("The search was terminated with the following error").":</b><br><br>\n";
+					$pos = strpos($err, "max_statement_time");
+					if ($pos !== false) { 
+						echo "<b>"._("The maximum search time was exceeded. Please refine your search").".</b>\n";
+					} else {
+						echo "<b>".$err."</b>\n";
+					}
+					echo "</center>\n";
+					echo "</body></html>\n";
+					exit;
+				}
 			}
 			
 			if ($db_source == 'S')
@@ -1226,7 +1266,7 @@ else
 		{
 		if ($phone)
 			{
-			if ($alt_phone_search=="Yes")
+			if ($alt_phone_search==_("Yes"))
 				{
 				$stmt="SELECT $vicidial_list_fields from $vl_table where phone_number='" . mysqli_real_escape_string($link, $phone) . "' or alt_phone='" . mysqli_real_escape_string($link, $phone) . "' or address3='" . mysqli_real_escape_string($link, $phone) . "' $LOGallowed_listsSQL";
 				}
@@ -1243,81 +1283,8 @@ else
 				}
 			else
 				{
-				if ( (strlen($status)>0) or (strlen($list_id)>0) or (strlen($user)>0) or (strlen($owner)>0) )
-					{
-					$statusSQL = '';
-					$list_idSQL = '';
-					$userSQL = '';
-					$ownerSQL = '';
-					$called_countSQL = '';
-					if (strlen($status)>0)
-						{
-						$statusSQL = "status='" . mysqli_real_escape_string($link, $status) . "'"; $SQLctA++;
-						}
-					if (strlen($list_id)>0)
-						{
-						if ($SQLctA > 0) {$andA = 'and';}
-						$list_idSQL = "$andA list_id='" . mysqli_real_escape_string($link, $list_id) . "'"; $SQLctB++;
-						}
-					if (strlen($user)>0)
-						{
-						if ( ($SQLctA > 0) or ($SQLctB > 0) ) {$andB = 'and';}
-						$userSQL = "$andB user='" . mysqli_real_escape_string($link, $user) . "'"; $SQLctC++;
-						}
-					if (strlen($owner)>0)
-						{
-						if ( ($SQLctA > 0) or ($SQLctB > 0) or ($SQLctC > 0) ) {$andC = 'and';}
-						$ownerSQL = "$andC owner='" . mysqli_real_escape_string($link, $owner) . "'";
-						}
-					if (strlen($called_count)>0)
-						{
-						$called_countSQL = "and called_count='" . mysqli_real_escape_string($link, $called_count) . "'";
-						if ($called_count > 99)
-							{$called_countSQL = "and called_count > " . mysqli_real_escape_string($link, $called_count);}
-						}
-					$stmt="SELECT $vicidial_list_fields from $vl_table where $statusSQL $list_idSQL $userSQL $ownerSQL $called_countSQL $LOGallowed_listsSQL";
-					}
-				else
-					{
-					if ( (strlen($first_name)>0) or (strlen($last_name)>0) or (strlen($address1)>0) or (strlen($city)>0))
-						{
-						$first_nameSQL = '';
-						$last_nameSQL = '';
-						$address1SQL = '';
-						$citySQL = '';
-						if (strlen($first_name)>0)
-							{
-							$first_nameSQL = "first_name LIKE '" . mysqli_real_escape_string($link, $first_name) . "'"; $SQLctA++;
-							}
-						if (strlen($last_name)>0)
-							{
-							if ($SQLctA > 0) {$andA = 'and';}
-							$last_nameSQL = "$andA last_name LIKE '" . mysqli_real_escape_string($link, $last_name) . "'"; $SQLctA++;
-							}
-						if (strlen($address1) >0) {
-							if ($SQLctA > 0) {$andA = 'and';}
-							$address1SQL = "$andA address1 LIKE '" . mysqli_real_escape_string($link, $address1) . "'"; $SQLctA++;
-						}
-						if (strlen($city) >0) {
-						    if ($SQLctA > 0) {$andA = 'and';}
-						    $citySQL = "$andA city LIKE '" . mysqli_real_escape_string($link, $city) . "'"; $SQLctA++;
-						}
-						$stmt="SELECT $vicidial_list_fields from $vl_table where $first_nameSQL $last_nameSQL $address1SQL $citySQL $LOGallowed_listsSQL";
-						}
-					else
-						{
-						if ( (strlen($email)>0) )
-							{
-							$email_SQL = "email='" . mysqli_real_escape_string($link, $email) . "'";
-							$stmt="SELECT $vicidial_list_fields from $vl_table where $email_SQL $LOGallowed_listsSQL";
-							}
-						else
-							{
-							print _("ERROR: you must search for something! Go back and search for something");
-							exit;
-							}
-						}
-					}
+				print _("ERROR: you must search for something! Go back and search for something");
+				exit;
 				}
 			}
 		}
@@ -1352,7 +1319,7 @@ else
 			{$stmt_alt = "or lead_id IN($stmt_alt)";}
 		}
 
-	$stmt = "$stmt$stmt_alt order by modify_date desc limit 10000;";
+	$stmt = "$stmt$stmt_alt order by modify_date desc limit 1000;";
 
 	if ($DB)
 		{

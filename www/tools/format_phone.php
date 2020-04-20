@@ -1,9 +1,31 @@
 <?php 
 
 
-require_once('vendor/autoload.php');
+# format_phone.php   version 1.0.1
+#
+# LICENSE: AGPLv3
+#
+# Copyright (©) 2019-2020 SNCT GmbH <info@snct-dialer.de>
+#               2019-2020 Jörg Frings-Fürst <open_source@jff.email>
+#
+#
+# SNCT - Changelog
+#
+# 2020-03-18 13:30 jff	First work
+#
+# ToDo:
+#
+# Remove +
+# Check format before use
+#
+#
+# Some Functions to handel phone numbers
+#
+#
+#
 
-use PHPMailer\PHPMailer\PHPMailer;
+
+require_once('vendor/autoload.php');
 
 $NumberType[0] = array('Long' => _("Land Line"),
 	'Short'   => _("LL"));
@@ -43,14 +65,25 @@ function FormatPhoneNr($LK, $Phone, $type = false) {
 	global $NumberType;
 	
 	$ret = "";
-	if($Phone != "Anonymous") {
-		$phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();
-		$ParseNr = "+".$LK . $Phone;
-		$phoneNumberObject = $phoneNumberUtil->parse($ParseNr, "");
-		$ret =  $phoneNumberUtil->format($phoneNumberObject, \libphonenumber\PhoneNumberFormat::INTERNATIONAL);
-		if($type == true) {
-			$tmpTyp = $phoneNumberUtil->getNumberType($phoneNumberObject);
-			$ret .= " (".$NumberType[$tmpTyp]["Short"].")";
+	if(ctype_digit($Phone)) {
+		try {
+			$phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();
+			$ParseNr = "+".$LK . $Phone;
+			$phoneNumberObject = $phoneNumberUtil->parse($ParseNr, "");
+			$ret =  $phoneNumberUtil->format($phoneNumberObject, \libphonenumber\PhoneNumberFormat::INTERNATIONAL);
+			if($type == true) {
+				$tmpTyp = $phoneNumberUtil->getNumberType($phoneNumberObject);
+				$geoCoder = \libphonenumber\geocoding\PhoneNumberOfflineGeocoder::getInstance();
+				$TmpCity = $geoCoder->getDescriptionForNumber($phoneNumberObject, 'de');
+				$ret .= " (".$NumberType[$tmpTyp]["Short"]." | ".$TmpCity.")";
+			}
+		} catch (Exception $e) {
+#			echo 'Exception abgefangen: ',  $e->getMessage(), "\n";
+			$file = 'format_phone.err';
+			$Text  = $e->getMessage()."\n";
+			$Text .= $Phone ."\n";
+			file_put_contents($file, $Text, FILE_APPEND | LOCK_EX);
+			$ret = $Phone;
 		}
 	} else {
 		$ret = $Phone;
@@ -58,8 +91,28 @@ function FormatPhoneNr($LK, $Phone, $type = false) {
 	return $ret; 
 }
 
+function SplitPhoneNr($Phone) {
+	global $NumberType;
 
+	$ret = array();
 
-
+	if(ctype_digit($Phone)) {
+		if(strncmp($Phone,"00", 2) == 0) {
+			$tmpPhone = substr($Phone, 2);
+			$Phone = $tmpPhone;
+		}
+		
+		$phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();
+		$geoCoder = \libphonenumber\geocoding\PhoneNumberOfflineGeocoder::getInstance();
+		$ParseNr = "+".$Phone;
+		$phoneNumberObject = $phoneNumberUtil->parse($ParseNr, "");
+		$ret[0] = $phoneNumberObject->getCountryCode();
+		$ret[1] = $phoneNumberObject->getNationalNumber();
+		$tmpTyp = $phoneNumberUtil->getNumberType($phoneNumberObject);
+		$ret[2] = $NumberType[$tmpTyp]["Short"];
+		$ret[3] = $geoCoder->getDescriptionForNumber($phoneNumberObject, 'de');
+	}
+	return $ret;
+}
 
 ?>

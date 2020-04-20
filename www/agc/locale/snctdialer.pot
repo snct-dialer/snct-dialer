@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-19 10:50+0100\n"
+"POT-Creation-Date: 2020-04-03 09:07+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,67 +17,923 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: vicidial.php:843
-msgid "ERROR: System Settings missing"
+#: active_list_refresh.php:185 api.php:484 vdc_soundboard_display.php:167
+msgid "Invalid Username/Password"
 msgstr ""
 
+#: active_list_refresh.php:192
+msgid "Invalid server_ip"
+msgstr ""
+
+#: active_list_refresh.php:204
+msgid "Invalid session_name"
+msgstr ""
+
+#: active_list_refresh.php:220
+msgid "Live Extensions"
+msgstr ""
+
+#: active_list_refresh.php:221
+msgid "Busy Extensions"
+msgstr ""
+
+#: active_list_refresh.php:222 astguiclient.php:2907
+msgid "Outside Lines"
+msgstr ""
+
+#: active_list_refresh.php:223 astguiclient.php:2912
+msgid "Local Extensions"
+msgstr ""
+
+#: active_list_refresh.php:224
+msgid "Conferences"
+msgstr ""
+
+#: active_list_refresh.php:225
+msgid "HELP"
+msgstr ""
+
+#: agc_agent_manager_chat_interface.php:83 call_log_display.php:140
+#: chat_db_query.php:156 conf_exten_check.php:246 deactivate_lead.php:134
+#: dispo_add_FPG.php:169 dispo_change_status.php:181 dispo_move_list.php:417
+#: dispo_send_email.php:280 inbound_popup.php:137 live_exten_check.php:142
+#: manager_send.php:390 park_calls_display.php:130 vdc_chat_display.php:153
+#: vdc_db_query_ng.php:714 vdc_db_query.php:1201 vdc_email_display.php:198
+#: vdc_form_display.php:329 vdc_script_display.php:378
+#: vdc_script_dispo_example.php:374 vdc_script_notes.php:337
+#: voicemail_check.php:123
+msgid "Invalid Username/Password:"
+msgstr ""
+
+#: agc_agent_manager_chat_interface.php:100 chat_db_query.php:173
+#: vdc_chat_display.php:142
+msgid "Error, chat disabled on this system"
+msgstr ""
+
+#: agc_agent_manager_chat_interface.php:213
+msgid "Please enter a chat message"
+msgstr ""
+
+#: agc_agent_manager_chat_interface.php:218
+msgid "Please select an agent to chat with"
+msgstr ""
+
+#: agc_agent_manager_chat_interface.php:715
+msgid "ADMINISTRATION: Agent/Manager Chat Interface"
+msgstr ""
+
+#: agc_agent_manager_chat_interface.php:722
+msgid "Chatting with"
+msgstr ""
+
+#: agc_agent_manager_chat_interface.php:723
+msgid "Chat started"
+msgstr ""
+
+#: agc_agent_manager_chat_interface.php:724
+msgid "Your active chats"
+msgstr ""
+
+#: agc_agent_manager_chat_interface.php:731 vdc_chat_display.php:876
+msgid "SEND MESSAGE"
+msgstr ""
+
+#: agc_agent_manager_chat_interface.php:738 chat_db_query.php:480
+msgid "NO OPEN CHATS"
+msgstr ""
+
+#: agc_agent_manager_chat_interface.php:761
+msgid "bolded chats = unread messages"
+msgstr ""
+
+#: agc_agent_manager_chat_interface.php:761 vdc_chat_display.php:876
+msgid "Mute alert sound"
+msgstr ""
+
+#: agc_agent_manager_chat_interface.php:762
+msgid "CHAT WITH LIVE AGENT"
+msgstr ""
+
+#: agc_agent_manager_chat_interface.php:763 vdc_chat_display.php:403
+#: vdc_chat_display.php:407 vdc_chat_display.php:492 vdc_chat_display.php:530
+#: vdc_chat_display.php:965
+msgid "END CHAT"
+msgstr ""
+
+#: agc_agent_manager_chat_interface.php:764
+msgid "ADD AGENT TO CURRENT CHAT"
+msgstr ""
+
+#: agc_agent_manager_chat_interface.php:788 chat_db_query.php:509
+msgid "Select a live agent"
+msgstr ""
+
+#: agc_agent_manager_chat_interface.php:848 chat_db_query.php:567
+msgid "Message"
+msgstr ""
+
+#: agc_agent_manager_chat_interface.php:853 chat_db_query.php:572
+msgid "BACK TO CHAT SCREEN"
+msgstr ""
+
+#: agc_agent_manager_chat_interface.php:854 chat_db_query.php:573
+#: chat_db_query.php:869 chat_db_query.php:1168 chat_db_query.php:1222
+#: vdc_chat_display.php:928
+msgid "START CHAT"
+msgstr ""
+
+#: api.php:415 astguiclient.php:229 astguiclient.php:289 phone_only.php:245
+#: phone_only.php:278 phone_only.php:320 phone_only.php:353 phone_only.php:451
+#: phone_only.php:539 timeclock.php:277 timeclock.php:384 timeclock.php:491
+#: timeclock.php:543 timeclock.php:584 vicidial-grey.php:1044
+#: vicidial-grey.php:1084 vicidial-grey.php:1134 vicidial-grey.php:1170
+#: vicidial-grey.php:2371 vicidial-grey.php:2468 vicidial-grey.php:17565
+#: vicidial.php:1333 vicidial.php:1378 vicidial.php:1433 vicidial.php:1474
+#: vicidial.php:2850 vicidial.php:2952 vicidial.php:20911
+msgid "VERSION:"
+msgstr ""
+
+#: api.php:415 astguiclient.php:229 astguiclient.php:289 phone_only.php:245
+#: phone_only.php:278 phone_only.php:320 phone_only.php:353 phone_only.php:451
+#: phone_only.php:539 timeclock.php:277 timeclock.php:384 timeclock.php:491
+#: timeclock.php:543 timeclock.php:584 vicidial-grey.php:792
+#: vicidial-grey.php:1044 vicidial-grey.php:1084 vicidial-grey.php:1134
+#: vicidial-grey.php:1170 vicidial-grey.php:2371 vicidial-grey.php:2468
+#: vicidial-grey.php:17565 vicidial.php:1071 vicidial.php:1333
+#: vicidial.php:1378 vicidial.php:1433 vicidial.php:1474 vicidial.php:2850
+#: vicidial.php:2952 vicidial.php:20911
+msgid "BUILD:"
+msgstr ""
+
+#: api.php:415
+msgid "DATE:"
+msgstr ""
+
+#: api.php:415
+msgid "EPOCH:"
+msgstr ""
+
+#: api.php:416 api.php:617 api.php:684 api.php:802 api.php:892 api.php:968
+#: api.php:1101 api.php:1303 api.php:1491 api.php:1902 api.php:2061
+#: api.php:2213 api.php:2523 api.php:2795 api.php:2881 api.php:2950
+#: api.php:3032 api.php:3136 api.php:3165 api.php:3228 api.php:3490
+#: api.php:3572 api.php:3847 api.php:3973 api.php:4096 api.php:4210
+#: api.php:4318 api.php:4384 api.php:4577 api.php:4654
+msgid "SUCCESS"
+msgstr ""
+
+#: api.php:434
+msgid "Coffee"
+msgstr ""
+
+#: api.php:435 api.php:461 api.php:483 api.php:499 api.php:547 api.php:582
+#: api.php:638 api.php:647 api.php:669 api.php:691 api.php:713 api.php:722
+#: api.php:744 api.php:809 api.php:831 api.php:840 api.php:862 api.php:882
+#: api.php:900 api.php:922 api.php:931 api.php:953 api.php:976 api.php:999
+#: api.php:1008 api.php:1030 api.php:1086 api.php:1109 api.php:1132
+#: api.php:1141 api.php:1163 api.php:1207 api.php:1215 api.php:1223
+#: api.php:1245 api.php:1254 api.php:1276 api.php:1311 api.php:1319
+#: api.php:1327 api.php:1349 api.php:1359 api.php:1381 api.php:1444
+#: api.php:1481 api.php:1500 api.php:1509 api.php:1518 api.php:1577
+#: api.php:1587 api.php:1609 api.php:1685 api.php:1695 api.php:1790
+#: api.php:1827 api.php:1853 api.php:1863 api.php:1892 api.php:1911
+#: api.php:1919 api.php:1927 api.php:1951 api.php:1961 api.php:1983
+#: api.php:2015 api.php:2024 api.php:2033 api.php:2069 api.php:2077
+#: api.php:2085 api.php:2109 api.php:2120 api.php:2146 api.php:2221
+#: api.php:2232 api.php:2240 api.php:2250 api.php:2258 api.php:2281
+#: api.php:2291 api.php:2323 api.php:2347 api.php:2360 api.php:2531
+#: api.php:2539 api.php:2547 api.php:2569 api.php:2579 api.php:2803
+#: api.php:2811 api.php:2819 api.php:2827 api.php:2849 api.php:2859
+#: api.php:2889 api.php:2897 api.php:2919 api.php:2929 api.php:2959
+#: api.php:2980 api.php:2990 api.php:3040 api.php:3048 api.php:3056
+#: api.php:3077 api.php:3086 api.php:3146 api.php:3176 api.php:3213
+#: api.php:3237 api.php:3413 api.php:3421 api.php:3444 api.php:3453
+#: api.php:3475 api.php:3497 api.php:3519 api.php:3528 api.php:3550
+#: api.php:3579 api.php:3587 api.php:3609 api.php:3618 api.php:3642
+#: api.php:3668 api.php:3706 api.php:3728 api.php:3738 api.php:3750
+#: api.php:3781 api.php:3791 api.php:3803 api.php:3834 api.php:3857
+#: api.php:3865 api.php:3889 api.php:3898 api.php:3922 api.php:3981
+#: api.php:3989 api.php:3997 api.php:4005 api.php:4013 api.php:4021
+#: api.php:4043 api.php:4052 api.php:4074 api.php:4104 api.php:4112
+#: api.php:4134 api.php:4143 api.php:4165 api.php:4217 api.php:4239
+#: api.php:4248 api.php:4270 api.php:4403 api.php:4411 api.php:4419
+#: api.php:4441 api.php:4450 api.php:4472 api.php:4568 api.php:4586
+#: api.php:4673 api.php:4681 api.php:4689 vdc_db_query.php:15740
+#: vdc_db_query.php:16702 vdc_db_query.php:16957 vdc_db_query.php:16968
+#: vdc_db_query.php:17149 vdc_db_query.php:17303 vdc_db_query.php:17314
+msgid "ERROR"
+msgstr ""
+
+#: api.php:462
+msgid "Invalid Source"
+msgstr ""
+
+#: api.php:500
+msgid "System API NOT ACTIVE"
+msgstr ""
+
+#: api.php:548
+msgid "user_group DOES NOT EXIST"
+msgstr ""
+
+#: api.php:562
+msgid "VICIDiaL Agent API"
+msgstr ""
+
+#: api.php:583 api.php:648 api.php:723 api.php:841 api.php:932 api.php:1009
+#: api.php:1142 api.php:1255 api.php:1360 api.php:1588 api.php:1962
+#: api.php:2121 api.php:2292 api.php:2580 api.php:2860 api.php:2930
+#: api.php:2991 api.php:3087 api.php:3454 api.php:3529 api.php:3619
+#: api.php:3899 api.php:4053 api.php:4144 api.php:4249 api.php:4451
+msgid "auth USER DOES NOT HAVE PERMISSION TO USE THIS FUNCTION"
+msgstr ""
+
+#: api.php:597
+msgid "host name: "
+msgstr ""
+
+#: api.php:598
+msgid "server name: "
+msgstr ""
+
+#: api.php:599
+msgid "php version: "
+msgstr ""
+
+#: api.php:600
+msgid "apache version: "
+msgstr ""
+
+#: api.php:601
+msgid "apache processes: "
+msgstr ""
+
+#: api.php:602
+msgid "system load average: "
+msgstr ""
+
+#: api.php:603
+msgid "disk free space: "
+msgstr ""
+
+#: api.php:608
+msgid "maximum execution time: "
+msgstr ""
+
+#: api.php:609
+msgid "maximum input time: "
+msgstr ""
+
+#: api.php:610
+msgid "memory limit: "
+msgstr ""
+
+#: api.php:611
+msgid "post maximum size: "
+msgstr ""
+
+#: api.php:612
+msgid "upload maximum filesize: "
+msgstr ""
+
+#: api.php:613
+msgid "default socket timeout: "
+msgstr ""
+
+#: api.php:615
+msgid "ini_get not allowed: "
+msgstr ""
+
+#: api.php:639
+msgid "external_hangup not valid"
+msgstr ""
+
+#: api.php:670 api.php:745 api.php:863 api.php:954 api.php:1031 api.php:1164
+#: api.php:1277 api.php:1382 api.php:1610 api.php:1984 api.php:2147
+#: api.php:2960 api.php:3057 api.php:3476 api.php:3551 api.php:3643
+#: api.php:3923 api.php:4075 api.php:4166 api.php:4271 api.php:4473
+msgid "no user found"
+msgstr ""
+
+#: api.php:685
+msgid "external_hangup function set"
+msgstr ""
+
+#: api.php:692 api.php:810 api.php:901 api.php:977 api.php:1110 api.php:1224
+#: api.php:1328 api.php:1520 api.php:1928 api.php:2086 api.php:2259
+#: api.php:2548 api.php:2828 api.php:2898 api.php:3422 api.php:3498
+#: api.php:3588 api.php:3866 api.php:4022 api.php:4113 api.php:4218
+#: api.php:4420 api.php:4690
+msgid "agent_user is not logged in"
+msgstr ""
+
+#: api.php:714
+msgid "external_status not valid"
+msgstr ""
+
+#: api.php:803
+msgid "external_status function set"
+msgstr ""
+
+#: api.php:832
+msgid "external_pause not valid"
+msgstr ""
+
+#: api.php:883
+msgid "external_pause agent is not paused"
+msgstr ""
+
+#: api.php:893
+msgid "external_pause function set"
+msgstr ""
+
+#: api.php:923
+msgid "logout not valid"
+msgstr ""
+
+#: api.php:969
+msgid "logout function set"
+msgstr ""
+
+#: api.php:1000
+msgid "recording not valid"
+msgstr ""
+
+#: api.php:1069 api.php:1076 api.php:1188 api.php:1195 api.php:1433
+#: api.php:1658
+msgid "NOTICE"
+msgstr ""
+
+#: api.php:1070
+msgid "recording active"
+msgstr ""
+
+#: api.php:1077
+msgid "not recording"
+msgstr ""
+
+#: api.php:1087
+msgid "stop recording error"
+msgstr ""
+
+#: api.php:1102
+msgid "recording function sent"
+msgstr ""
+
+#: api.php:1133
+msgid "webphone_url not valid"
+msgstr ""
+
+#: api.php:1189
+msgid "webphone_url active and displayed"
+msgstr ""
+
+#: api.php:1196
+msgid "webphone_url active and launched"
+msgstr ""
+
+#: api.php:1201
+msgid "click here to continue. . ."
+msgstr ""
+
+#: api.php:1208
+msgid "webphone_url error - webphone url is empty"
+msgstr ""
+
+#: api.php:1216
+msgid "webphone_url error - no session data"
+msgstr ""
+
+#: api.php:1246
+msgid "call_agent not valid"
+msgstr ""
+
+#: api.php:1304
+msgid "call_agent function sent"
+msgstr ""
+
+#: api.php:1312
+msgid "call_agent error - entry is empty"
+msgstr ""
+
+#: api.php:1320
+msgid "call_agent error - no session data"
+msgstr ""
+
+#: api.php:1350
+msgid "audio_playback not valid"
+msgstr ""
+
+#: api.php:1435
+msgid "audio_playback previous playback stopped"
+msgstr ""
+
+#: api.php:1446
+msgid "audio_playback error - audio already playing in agent session"
+msgstr ""
+
+#: api.php:1483
+msgid "audio_playback error - no audio playing in agent session"
+msgstr ""
+
+#: api.php:1493
+msgid "audio_playback function sent"
+msgstr ""
+
+#: api.php:1502
+msgid "audio_playback error - entry is empty"
+msgstr ""
+
+#: api.php:1511
+msgid "audio_playback error - no session data"
+msgstr ""
+
+#: api.php:1578
+msgid "external_dial not valid"
+msgstr ""
+
+#: api.php:1659
+msgid "defined dial_ingroup not found"
+msgstr ""
+
+#: api.php:1686 api.php:3729 api.php:3782
+msgid "caller_id_number from group_alias is not valid"
+msgstr ""
+
+#: api.php:1696 api.php:3739 api.php:3792
+msgid "group_alias is not valid"
+msgstr ""
+
+#: api.php:1750 api.php:3290 manager_send.php:808 manager_send.php:1120
+#: manager_send.php:1240 manager_send.php:1368 vdc_db_query.php:1702
+#: vdc_db_query.php:4739 vdc_db_query.php:6193 vdc_db_query.php:7273
+#: vdc_db_query.php:10163 vdc_db_query.php:13336 vdc_db_query.php:14968
+#: vdc_db_query.php:15332 vdc_db_query.php:15603 vdc_db_query.php:17186
+#: vicidial-grey.php:3192 vicidial-grey.php:3259 vicidial-grey.php:3386
+#: vicidial.php:3686 vicidial.php:3753 vicidial.php:3890
+msgid "Could not connect: "
+msgstr ""
+
+#: api.php:1791
+msgid "vtiger callback activity does not exist in vtiger system"
+msgstr ""
+
+#: api.php:1828
+msgid "phone number lead_id search not found"
+msgstr ""
+
+#: api.php:1854
+msgid "phone number is not valid"
+msgstr ""
+
+#: api.php:1864
+msgid "lead_id is not valid"
+msgstr ""
+
+#: api.php:1893
+msgid "phone_number is already in this agents manual dial queue"
+msgstr ""
+
+#: api.php:1903
+msgid "external_dial function set"
+msgstr ""
+
+#: api.php:1912 api.php:2070
+msgid "agent_user is not allowed to place manual dial calls"
+msgstr ""
+
+#: api.php:1920 api.php:2078
+msgid "agent_user is not paused"
+msgstr ""
+
+#: api.php:1952
+msgid "preview_dial_action not valid"
+msgstr ""
+
+#: api.php:2016
+msgid "preview dialing not allowed on this campaign"
+msgstr ""
+
+#: api.php:2025
+msgid "preview dial skipping not allowed on this campaign"
+msgstr ""
+
+#: api.php:2034
+msgid "alt number dialing not allowed on this campaign"
+msgstr ""
+
+#: api.php:2062
+msgid "preview_dial_action function set"
+msgstr ""
+
+#: api.php:2110
+msgid "external_add_lead not valid"
+msgstr ""
+
+#: api.php:2214
+msgid "lead added"
+msgstr ""
+
+#: api.php:2222
+msgid "lead insertion failed"
+msgstr ""
+
+#: api.php:2233
+msgid "add_lead PHONE NUMBER IN DNC"
+msgstr ""
+
+#: api.php:2241
+msgid "add_lead PHONE NUMBER IN CAMPAIGN DNC"
+msgstr ""
+
+#: api.php:2251
+msgid "campaign manual dial list undefined"
+msgstr ""
+
+#: api.php:2282
+msgid "change_ingroups not valid"
+msgstr ""
+
+#: api.php:2324
+msgid "campaign dial_method does not allow outbound autodial"
+msgstr ""
+
+#: api.php:2348
+msgid "ingroup does not exist"
+msgstr ""
+
+#: api.php:2361
+msgid "ingroup_choices are required for ADD and REMOVE values"
+msgstr ""
+
+#: api.php:2511
+msgid "User settings set as default"
+msgstr ""
+
+#: api.php:2524
+msgid "change_ingroups function set"
+msgstr ""
+
+#: api.php:2532
+msgid "user is not allowed to change agent in-groups"
+msgstr ""
+
+#: api.php:2540
+msgid "campaign does not allow inbound calls"
+msgstr ""
+
+#: api.php:2570 api.php:2920
+msgid "st_login_log not valid"
+msgstr ""
+
+#: api.php:2609
+msgid "phone_code set to"
+msgstr ""
+
+#: api.php:2616
+msgid "address1 set to"
+msgstr ""
+
+#: api.php:2623
+msgid "address2 set to"
+msgstr ""
+
+#: api.php:2630
+msgid "address3 set to"
+msgstr ""
+
+#: api.php:2637
+msgid "alt_phone set to"
+msgstr ""
+
+#: api.php:2644
+msgid "city set to"
+msgstr ""
+
+#: api.php:2651
+msgid "comments set to"
+msgstr ""
+
+#: api.php:2658
+msgid "country_code set to"
+msgstr ""
+
+#: api.php:2665
+msgid "date_of_birth set to"
+msgstr ""
+
+#: api.php:2672
+msgid "email set to"
+msgstr ""
+
+#: api.php:2679
+msgid "first_name set to"
+msgstr ""
+
+#: api.php:2686
+msgid "gender set to"
+msgstr ""
+
+#: api.php:2693
+msgid "gmt_offset_now set to"
+msgstr ""
+
+#: api.php:2700
+msgid "last_name set to"
+msgstr ""
+
+#: api.php:2707
+msgid "middle_initial set to"
+msgstr ""
+
+#: api.php:2714
+msgid "phone_number set to"
+msgstr ""
+
+#: api.php:2721
+msgid "postal_code set to"
+msgstr ""
+
+#: api.php:2728
+msgid "province set to"
+msgstr ""
+
+#: api.php:2735
+msgid "security_phrase set to"
+msgstr ""
+
+#: api.php:2742
+msgid "source_id set to"
+msgstr ""
+
+#: api.php:2749
+msgid "state set to"
+msgstr ""
+
+#: api.php:2756
+msgid "title set to"
+msgstr ""
+
+#: api.php:2763
+msgid "vendor_lead_code set to"
+msgstr ""
+
+#: api.php:2770
+msgid "rank set to"
+msgstr ""
+
+#: api.php:2777
+msgid "owner set to"
+msgstr ""
+
+#: api.php:2796
+msgid "update_fields lead updated"
+msgstr ""
+
+#: api.php:2804
+msgid "no fields have been defined"
+msgstr ""
+
+#: api.php:2812 api.php:3580
+msgid "agent_user does not have a lead on their screen"
+msgstr ""
+
+#: api.php:2820
+msgid "user is not allowed to modify lead information"
+msgstr ""
+
+#: api.php:2850
+msgid "set_timer_action not valid"
+msgstr ""
+
+#: api.php:2882
+msgid "set_timer_action lead updated"
+msgstr ""
+
+#: api.php:2890
+msgid "user is not allowed to modify campaign settings"
+msgstr ""
+
+#: api.php:2951
+msgid "st_login_log user found"
+msgstr ""
+
+#: api.php:2981
+msgid "st_get_agent_active_lead not valid"
+msgstr ""
+
+#: api.php:3033
+msgid "st_get_agent_active_lead lead found"
+msgstr ""
+
+#: api.php:3041
+msgid "no active lead found"
+msgstr ""
+
+#: api.php:3049
+msgid "user not logged in"
+msgstr ""
+
+#: api.php:3078
+msgid "ra_call_control not valid"
+msgstr ""
+
+#: api.php:3137
+msgid "ra_call_control hungup"
+msgstr ""
+
+#: api.php:3147
+msgid "phone_number is not valid"
+msgstr ""
+
+#: api.php:3166 api.php:3229
+msgid "ra_call_control transfer"
+msgstr ""
+
+#: api.php:3177 api.php:3214 api.php:3669 api.php:3707
+msgid "ingroup is not valid"
+msgstr ""
+
+#: api.php:3238
+msgid "stage is not valid"
+msgstr ""
+
+#: api.php:3414
+msgid "no active call found"
+msgstr ""
+
+#: api.php:3445
+msgid "send_dtmf not valid"
+msgstr ""
+
+#: api.php:3520
+msgid "park_call not valid"
+msgstr ""
+
+#: api.php:3573
+msgid "park_call function set"
+msgstr ""
+
+#: api.php:3610
+msgid "transfer_conference not valid"
+msgstr ""
+
+#: api.php:3751 api.php:3804
+msgid "cid_choice is not valid"
+msgstr ""
+
+#: api.php:3835
+msgid "value is not valid"
+msgstr ""
+
+#: api.php:3848
+msgid "transfer_conference function set"
+msgstr ""
+
+#: api.php:3858 api.php:4014
+msgid "agent_user does not have a live call"
+msgstr ""
+
+#: api.php:3890
+msgid "switch_lead not valid"
+msgstr ""
+
+#: api.php:3974
+msgid "switch_lead function set"
+msgstr ""
+
+#: api.php:3982
+msgid "switch-to lead not found"
+msgstr ""
+
+#: api.php:3990
+msgid "campaign does not allow inbound lead search"
+msgstr ""
+
+#: api.php:3998
+msgid "campaign not found"
+msgstr ""
+
+#: api.php:4006
+msgid "agent call is not inbound"
+msgstr ""
+
+#: api.php:4044
+msgid "pause_code not valid"
+msgstr ""
+
+#: api.php:4097
+msgid "pause_code function sent"
+msgstr ""
+
+#: api.php:4105
+msgid "pause_code error - agent is not paused"
+msgstr ""
+
+#: api.php:4135
+msgid "calls_in_queue_count not valid"
+msgstr ""
+
+#: api.php:4211
+msgid "SUCCESS: calls_in_queue_count"
+msgstr ""
+
+#: api.php:4240
+msgid "force_fronter_leave_3way not valid"
+msgstr ""
+
+#: api.php:4319
+msgid "SUCCESS: force_fronter_leave_3way SENT"
+msgstr ""
+
+#: api.php:4385
+msgid "force_fronter_leave_3way command sent over CCC"
+msgstr ""
+
+#: api.php:4404 api.php:4674
+msgid "no fronter found"
+msgstr ""
+
+#: api.php:4412 api.php:4682
+msgid "agent_user is not on a phone call"
+msgstr ""
+
+#: api.php:4442
+msgid "force_fronter_audio_stop not valid"
+msgstr ""
+
+#: api.php:4570
+msgid ""
+"force_fronter_audio_stop error - no audio playing in other agent session"
+msgstr ""
+
+#: api.php:4579
+msgid "force_fronter_audio_stop function sent"
+msgstr ""
+
+#: api.php:4588
+msgid "force_fronter_audio_stop error - no fronter session found"
+msgstr ""
+
+#: api.php:4655
+msgid "force_fronter_audio_stop command sent over CCC"
+msgstr ""
+
+#: astguiclient.php:161 phone_only.php:72 vicidial-grey.php:684
 #: vicidial.php:858
 msgid "You have now logged out. Thank you"
 msgstr ""
 
-#: vicidial.php:1071 vicidial.php:1333 vicidial.php:1378 vicidial.php:1433
-#: vicidial.php:1474 vicidial.php:2850 vicidial.php:2952 vicidial.php:20911
-msgid "BUILD:"
+#: astguiclient.php:207
+msgid "astGUIclient web client: Login"
 msgstr ""
 
-#: vicidial.php:1107
-msgid "USER LOGIN ERROR"
+#: astguiclient.php:216 astguiclient.php:280 astguiclient.php:317
+msgid "agc_tab_astguiclient.gif"
 msgstr ""
 
-#: vicidial.php:1261 vicidial.php:1332
-msgid "Refresh Campaign List"
+#: astguiclient.php:217 vicidial-grey.php:1119 vicidial-grey.php:1537
+#: vicidial.php:1418 vicidial.php:1862
+msgid "Login"
 msgstr ""
 
-#: vicidial.php:1294
-msgid "Old Agent Screen"
-msgstr ""
-
-#: vicidial.php:1298
-msgid "Agent web client: Re-Login"
-msgstr ""
-
-#: vicidial.php:1302 vicidial.php:1349 vicidial.php:1403 vicidial.php:1450
-#: vicidial.php:1846 vicidial.php:2821 vicidial.php:2926 vicidial.php:3797
-#: vicidial.php:3829
-msgid "Timeclock"
-msgstr ""
-
-#: vicidial.php:1318
-msgid "Re-Login"
-msgstr ""
-
-#: vicidial.php:1321 vicidial.php:1421 vicidial.php:1468 vicidial.php:2947
-msgid "Phone Login:"
-msgstr ""
-
-#: vicidial.php:1323 vicidial.php:1423 vicidial.php:1470 vicidial.php:2949
-msgid "Phone Password:"
-msgstr ""
-
-#: vicidial.php:1325 vicidial.php:1364 vicidial.php:1370 vicidial.php:1425
-#: vicidial.php:2842
+#: astguiclient.php:220 timeclock.php:272 timeclock.php:379 timeclock.php:579
+#: vicidial-grey.php:1036 vicidial-grey.php:1070 vicidial-grey.php:1076
+#: vicidial-grey.php:1126 vicidial-grey.php:2363 vicidial.php:1325
+#: vicidial.php:1364 vicidial.php:1370 vicidial.php:1425 vicidial.php:2842
 msgid "User Login"
 msgstr ""
 
+#: astguiclient.php:222 phone_only.php:242 phone_only.php:275 timeclock.php:274
+#: timeclock.php:381 timeclock.php:581 vicidial-grey.php:1038
+#: vicidial-grey.php:1078 vicidial-grey.php:1128 vicidial-grey.php:2365
 #: vicidial.php:1327 vicidial.php:1372 vicidial.php:1427 vicidial.php:2844
 msgid "User Password:"
 msgstr ""
 
-#: vicidial.php:1329 vicidial.php:1374 vicidial.php:1429 vicidial.php:2846
-#: vicidial.php:3815 vicidial.php:3847
-msgid "Campaign:"
+#: astguiclient.php:224 astguiclient.php:284 astguiclient.php:321
+#: phone_only.php:236 phone_only.php:314 phone_only.php:347 phone_only.php:534
+#: vicidial-grey.php:1032 vicidial-grey.php:1122 vicidial-grey.php:1164
+#: vicidial-grey.php:2463 vicidial.php:1321 vicidial.php:1421 vicidial.php:1468
+#: vicidial.php:2947
+msgid "Phone Login:"
 msgstr ""
 
+#: astguiclient.php:226 astguiclient.php:286 astguiclient.php:323
+#: phone_only.php:238 phone_only.php:316 phone_only.php:536
+#: vicidial-grey.php:1034 vicidial-grey.php:1124 vicidial-grey.php:1166
+#: vicidial-grey.php:2465 vicidial.php:1323 vicidial.php:1423 vicidial.php:1470
+#: vicidial.php:2949
+msgid "Phone Password:"
+msgstr ""
+
+#: astguiclient.php:228 astguiclient.php:288 astguiclient.php:325
+#: timeclock.php:276 timeclock.php:383 timeclock.php:583 vdc_db_query.php:1439
+#: vdc_script_notes.php:655 vicidial-grey.php:1042 vicidial-grey.php:1082
+#: vicidial-grey.php:1132 vicidial-grey.php:1168 vicidial-grey.php:1453
+#: vicidial-grey.php:1540 vicidial-grey.php:2369 vicidial-grey.php:2467
+#: vicidial-grey.php:3317 vicidial-grey.php:3344 vicidial-grey.php:17989
+#: vicidial-grey.php:18087 vicidial-grey.php:18242 vicidial-grey.php:18256
 #: vicidial.php:1331 vicidial.php:1376 vicidial.php:1431 vicidial.php:1472
 #: vicidial.php:1773 vicidial.php:1865 vicidial.php:2848 vicidial.php:2951
 #: vicidial.php:3816 vicidial.php:3848 vicidial.php:21390 vicidial.php:21499
@@ -85,233 +941,4402 @@ msgstr ""
 msgid "SUBMIT"
 msgstr ""
 
-#: vicidial.php:1333 vicidial.php:1378 vicidial.php:1433 vicidial.php:1474
-#: vicidial.php:2850 vicidial.php:2952 vicidial.php:20911
-msgid "VERSION:"
+#: astguiclient.php:269 astguiclient.php:306
+msgid "astGUIclient web client: Phone Login"
 msgstr ""
 
-#: vicidial.php:1345 vicidial.php:1842 vicidial.php:2817 vicidial.php:3793
-#: vicidial.php:3825
-msgid "Agent web client: Campaign Login"
+#: astguiclient.php:281 astguiclient.php:318
+msgid "Phone Login"
 msgstr ""
 
-#: vicidial.php:1367 vicidial.php:2839
-msgid "Campaign Login"
-msgstr ""
-
-#: vicidial.php:1399
-msgid "Agent web client:  Login"
-msgstr ""
-
-#: vicidial.php:1418 vicidial.php:1862
-msgid "Login"
-msgstr ""
-
-#: vicidial.php:1446
-msgid "Agent web client:  Phone Login"
-msgstr ""
-
-#: vicidial.php:1465
-msgid "phone login"
-msgstr ""
-
-#: vicidial.php:1687
-msgid "YOU MUST LOG IN TO THE TIMECLOCK FIRST"
-msgstr ""
-
-#: vicidial.php:1699
-msgid "ERROR: There are no Shifts enabled for your user group"
-msgstr ""
-
-#: vicidial.php:1752
-msgid "ERROR: You are not allowed to log in outside of your shift"
-msgstr ""
-
-#: vicidial.php:1757
-msgid "MANAGER OVERRIDE:"
-msgstr ""
-
-#: vicidial.php:1779
-msgid " Title"
-msgstr ""
-
-#: vicidial.php:1780
-msgid "First"
-msgstr ""
-
-#: vicidial.php:1781
-msgid "MI"
-msgstr ""
-
-#: vicidial.php:1782
-msgid "Last "
-msgstr ""
-
-#: vicidial.php:1783
-msgid "Address1"
-msgstr ""
-
-#: vicidial.php:1784
-msgid "Address2"
-msgstr ""
-
-#: vicidial.php:1785
-msgid "Address3"
-msgstr ""
-
-#: vicidial.php:1786
-msgid "City"
-msgstr ""
-
-#: vicidial.php:1787
-msgid " State"
-msgstr ""
-
-#: vicidial.php:1788
-msgid "Province"
-msgstr ""
-
-#: vicidial.php:1789
-msgid "PostCode"
-msgstr ""
-
-#: vicidial.php:1790
-msgid "Vendor ID"
-msgstr ""
-
-#: vicidial.php:1791
-msgid " Gender"
-msgstr ""
-
-#: vicidial.php:1792
-msgid "Phone"
-msgstr ""
-
-#: vicidial.php:1793
-msgid "DialCode"
-msgstr ""
-
-#: vicidial.php:1794
-msgid "Alt. Phone"
-msgstr ""
-
-#: vicidial.php:1795
-msgid "Show"
-msgstr ""
-
-#: vicidial.php:1796
-msgid "Email"
-msgstr ""
-
-#: vicidial.php:1797
-msgid " Comments"
-msgstr ""
-
-#: vicidial.php:1850
-msgid "Sorry, you are not allowed to login to this campaign:"
-msgstr ""
-
-#: vicidial.php:1863
-msgid "Password"
-msgstr ""
-
-#: vicidial.php:1864
-msgid "Campaign"
-msgstr ""
-
-#: vicidial.php:2784
-msgid "Campaign not active, please try again"
-msgstr ""
-
-#: vicidial.php:2796
-msgid "Login incorrect, please try again"
-msgstr ""
-
-#: vicidial.php:2798
-msgid "Too many login attempts, try again in 15 minutes"
-msgstr ""
-
-#: vicidial.php:2800
-msgid "Too many network errors, please contact your administrator"
-msgstr ""
-
-#: vicidial.php:2802
-msgid "No available servers, please contact your administrator"
-msgstr ""
-
-#: vicidial.php:2804
-msgid "No available phones, please contact your administrator"
-msgstr ""
-
-#: vicidial.php:2806
-msgid "You are already logged in, please log out of your other session first"
-msgstr ""
-
-#: vicidial.php:2808
-msgid "Too many agents logged in, please contact your administrator"
-msgstr ""
-
-#: vicidial.php:2810
-msgid "Login incorrect, user names are case sensitive"
-msgstr ""
-
-#: vicidial.php:2812
-msgid "Your IP Address is not allowed"
-msgstr ""
-
-#: vicidial.php:2922
-msgid "Agent web client: Phone Login Error"
-msgstr ""
-
-#: vicidial.php:2944
-msgid "Login Error"
-msgstr ""
-
-#: vicidial.php:2946
+#: astguiclient.php:320 vicidial-grey.php:2462 vicidial.php:2946
 msgid ""
 "Sorry, your phone login and password are not active in this system, please "
 "try again:"
 msgstr ""
 
-#: vicidial.php:3686 vicidial.php:3753 vicidial.php:3890
-msgid "Could not connect: "
+#: astguiclient.php:326
+#, php-format
+msgid "VERSION: %1s BUILD: %2s"
 msgstr ""
 
-#: vicidial.php:3801
-msgid "Sorry, there are no leads in the hopper for this campaign"
+#: astguiclient.php:335
+msgid "astGUIclient web client"
 msgstr ""
 
-#: vicidial.php:3813 vicidial.php:3845
-msgid "Login:"
+#: astguiclient.php:553 astguiclient.php:2785 vicidial-grey.php:4396
+#: vicidial-grey.php:17207 vicidial.php:5018 vicidial.php:20375
+msgid "agc_live_call_OFF.gif"
 msgstr ""
 
-#: vicidial.php:3814 vicidial.php:3846
-msgid "Password:"
+#: astguiclient.php:555 vicidial-grey.php:4398 vicidial.php:5020
+msgid "agc_live_call_ON.gif"
 msgstr ""
 
-#: vicidial.php:3833
-msgid "Sorry, there are no available sessions"
+#: astguiclient.php:557
+msgid "agc_check_voicemail_OFF.gif"
 msgstr ""
 
+#: astguiclient.php:559 astguiclient.php:2784
+msgid "agc_check_voicemail_ON.gif"
+msgstr ""
+
+#: astguiclient.php:561
+msgid "agc_check_voicemail_BLINK.gif"
+msgstr ""
+
+#: astguiclient.php:948
+msgid "You can only monitor Zap channels"
+msgstr ""
+
+#: astguiclient.php:1446
+msgid "LIVE CALLS ON THIS PHONE"
+msgstr ""
+
+#: astguiclient.php:1446
+msgid "CLIENT CHANNEL"
+msgstr ""
+
+#: astguiclient.php:1446 astguiclient.php:1885 vicidial-grey.php:5700
+#: vicidial.php:6582
+msgid "REMOTE CHANNEL"
+msgstr ""
+
+#: astguiclient.php:1446
+msgid "RECORD"
+msgstr ""
+
+#: astguiclient.php:1446 astguiclient.php:1476 astguiclient.php:1696
+#: astguiclient.php:1712 astguiclient.php:1885 astguiclient.php:1901
+#: functions.php:921 inbound_popup.php:372 vdc_db_query.php:16355
+#: vdc_db_query.php:17874 vdc_script_display.php:767 vicidial-grey.php:5700
+#: vicidial-grey.php:5746 vicidial-grey.php:5750 vicidial.php:6582
+#: vicidial.php:6629 vicidial.php:6633
+msgid "HANGUP"
+msgstr ""
+
+#: astguiclient.php:1446 astguiclient.php:1476 astguiclient.php:1696
+#: astguiclient.php:1712 astguiclient.php:1901
+msgid "XFER"
+msgstr ""
+
+#: astguiclient.php:1446
+msgid "PARK"
+msgstr ""
+
+#: astguiclient.php:1593 astguiclient.php:1621
+msgid "CALL DATE/TIME"
+msgstr ""
+
+#: astguiclient.php:1593 vicidial-grey.php:6844 vicidial.php:7817
+msgid "NUMBER"
+msgstr ""
+
+#: astguiclient.php:1593 astguiclient.php:1621 functions.php:915
+#: vdc_db_query.php:16348 vdc_db_query.php:17868 vdc_script_display.php:761
+msgid "LENGTH"
+msgstr ""
+
+#: astguiclient.php:1621
+msgid "IN-NUMBER"
+msgstr ""
+
+#: astguiclient.php:1621
+msgid "CALLER ID"
+msgstr ""
+
+#: astguiclient.php:1696
+msgid "CHANNEL"
+msgstr ""
+
+#: astguiclient.php:1696
+msgid "CALL ID"
+msgstr ""
+
+#: astguiclient.php:1696
+msgid "PARKED BY"
+msgstr ""
+
+#: astguiclient.php:1696
+msgid "PARKED TIME"
+msgstr ""
+
+#: astguiclient.php:1696 astguiclient.php:1712
+msgid "PICKUP"
+msgstr ""
+
+#: astguiclient.php:1820
+msgid "NO ONE"
+msgstr ""
+
+#: astguiclient.php:1824
+msgid "CONFERENCE"
+msgstr ""
+
+#: astguiclient.php:1824
+msgid "Registered to"
+msgstr ""
+
+#: astguiclient.php:1824
+msgid "Enter Conference"
+msgstr ""
+
+#: astguiclient.php:1824 astguiclient.php:2799 astguiclient.php:2810
+#: astguiclient.php:2825 astguiclient.php:2838 astguiclient.php:2903
+#: astguiclient.php:2908 astguiclient.php:2913 vicidial-grey.php:18133
+#: vicidial.php:21561
+msgid "Refresh"
+msgstr ""
+
+#: astguiclient.php:1824
+msgid "Record"
+msgstr ""
+
+#: astguiclient.php:1824
+msgid "Send DTMF"
+msgstr ""
+
+#: astguiclient.php:1824
+msgid "Dial From Conf"
+msgstr ""
+
+#: astguiclient.php:1885
+msgid "LIVE CALLS IN THIS CONFERENCE"
+msgstr ""
+
+#: astguiclient.php:2350
+msgid "AVAILABLE EXTENSIONS"
+msgstr ""
+
+#: astguiclient.php:2350 astguiclient.php:2868 astguiclient.php:2886
+msgid "FAVORITES"
+msgstr ""
+
+#: astguiclient.php:2385
+msgid "up.gif"
+msgstr ""
+
+#: astguiclient.php:2385
+msgid "down.gif"
+msgstr ""
+
+#: astguiclient.php:2385
+msgid "remove.gif"
+msgstr ""
+
+#: astguiclient.php:2447 vicidial-grey.php:13667 vicidial.php:16108
+#: vicidial.php:16112 vicidial.php:16116 vicidial.php:16121
+msgid "CLICK HERE TO LOG IN AGAIN"
+msgstr ""
+
+#: astguiclient.php:2528
+msgid "  - ACTIVE DISPLAY PAUSED -"
+msgstr ""
+
+#: astguiclient.php:2549 astguiclient.php:2555 astguiclient.php:2565
+#: astguiclient.php:2571 astguiclient.php:2583 astguiclient.php:2589
+#: astguiclient.php:2904 astguiclient.php:2909 astguiclient.php:2914
+msgid "ORDER"
+msgstr ""
+
+#: astguiclient.php:2778
+#, php-format
+msgid "Welcome %1s, you are logged into this phone: %2s - %3s/%4s on %5s"
+msgstr ""
+
+#: astguiclient.php:2778 timeclock.php:513 vicidial-grey.php:17181
+#: vicidial-grey.php:17960 vicidial.php:20342 vicidial.php:21360
+msgid "LOGOUT"
+msgstr ""
+
+#: astguiclient.php:2781
+msgid "agc_tab_main.gif"
+msgstr ""
+
+#: astguiclient.php:2782
+msgid "agc_tab_active_lines.gif"
+msgstr ""
+
+#: astguiclient.php:2783
+msgid "agc_tab_conferences.gif"
+msgstr ""
+
+#: astguiclient.php:2790 phone_only.php:946
+msgid "Logout"
+msgstr ""
+
+#: astguiclient.php:2794
+msgid "TRUNK HANGUP"
+msgstr ""
+
+#: astguiclient.php:2795
+msgid "Active Trunks Menu"
+msgstr ""
+
+#: astguiclient.php:2796
+msgid "Hangup Trunk"
+msgstr ""
+
+#: astguiclient.php:2797
+msgid "Hijack Trunk"
+msgstr ""
+
+#: astguiclient.php:2798
+msgid "Listen Trunk"
+msgstr ""
+
+#: astguiclient.php:2800 astguiclient.php:2811 astguiclient.php:2826
+#: astguiclient.php:2839 astguiclient.php:2846
+msgid "Back to Main Window"
+msgstr ""
+
+#: astguiclient.php:2805
+msgid "LOCAL HANGUP"
+msgstr ""
+
+#: astguiclient.php:2806
+msgid "Active Local Menu"
+msgstr ""
+
+#: astguiclient.php:2807
+msgid "Hangup Local"
+msgstr ""
+
+#: astguiclient.php:2808
+msgid "Hijack Local"
+msgstr ""
+
+#: astguiclient.php:2809
+msgid "Listen Local"
+msgstr ""
+
+#: astguiclient.php:2818
+msgid "LIVE CALL TRANSFER"
+msgstr ""
+
+#: astguiclient.php:2818
+msgid "Channel to be transferred:"
+msgstr ""
+
+#: astguiclient.php:2818 astguiclient.php:2832 inbound_popup.php:332
+#: vicidial-grey.php:18262 vicidial-grey.php:18263 vicidial.php:21698
+#: vicidial.php:21699
+msgid "Channel"
+msgstr ""
+
+#: astguiclient.php:2819 astguiclient.php:2833
+msgid "Extensions:"
+msgstr ""
+
+#: astguiclient.php:2819 astguiclient.php:2833
+msgid "Extensions Menu"
+msgstr ""
+
+#: astguiclient.php:2822
+msgid "Send to selected extension"
+msgstr ""
+
+#: astguiclient.php:2823
+msgid "Send to selected vmail box"
+msgstr ""
+
+#: astguiclient.php:2824
+msgid "Send to this number"
+msgstr ""
+
+#: astguiclient.php:2828
+msgid "Conferences:"
+msgstr ""
+
+#: astguiclient.php:2828
+msgid "(click on a number below to send to a conference)"
+msgstr ""
+
+#: astguiclient.php:2828
+msgid "Send my channel too"
+msgstr ""
+
+#: astguiclient.php:2828
+msgid "Conferences Menu"
+msgstr ""
+
+#: astguiclient.php:2832
+msgid "LOCAL Extensions Dial"
+msgstr ""
+
+#: astguiclient.php:2832
+msgid "Phone calling from:"
+msgstr ""
+
+#: astguiclient.php:2836
+msgid "Call selected extension"
+msgstr ""
+
+#: astguiclient.php:2837
+msgid "Call selected vmail box"
+msgstr ""
+
+#: astguiclient.php:2845
+msgid "PARKED CALLS:"
+msgstr ""
+
+#: astguiclient.php:2856
+msgid "VOICEMAIL"
+msgstr ""
+
+#: astguiclient.php:2856
+msgid "NEW:"
+msgstr ""
+
+#: astguiclient.php:2856
+msgid "OLD:"
+msgstr ""
+
+#: astguiclient.php:2856 vdc_script_display.php:981 vicidial-grey.php:17555
+#: vicidial.php:20897
+msgid "MANUAL DIAL"
+msgstr ""
+
+#: astguiclient.php:2856 vdc_db_query.php:16357 vdc_db_query.php:16486
+#: vdc_db_query.php:16488 vdc_db_query.php:16867 vdc_db_query.php:16928
+#: vdc_db_query.php:16930 vdc_db_query.php:17675 vdc_db_query.php:17679
+#: vdc_db_query.php:17692 vdc_db_query.php:17696 vdc_db_query.php:17739
+#: vdc_db_query.php:17743 vicidial-grey.php:6844 vicidial-grey.php:6873
+#: vicidial.php:7817 vicidial.php:7860
+msgid "DIAL"
+msgstr ""
+
+#: astguiclient.php:2858
+msgid "PARKED CALLS"
+msgstr ""
+
+#: astguiclient.php:2858
+msgid "LOCAL DIAL EXTENSIONS"
+msgstr ""
+
+#: astguiclient.php:2860
+msgid "OUTBOUND CALLS:"
+msgstr ""
+
+#: astguiclient.php:2862
+msgid "INBOUND CALLS:"
+msgstr ""
+
+#: astguiclient.php:2864
+#, php-format
+msgid "astGUIclient web-client VERSION: %1s BUILD: %2s"
+msgstr ""
+
+#: astguiclient.php:2868
+msgid "edit"
+msgstr ""
+
+#: astguiclient.php:2888
+msgid "SUBMIT FAVORITES CHANGES - requires logout"
+msgstr ""
+
+#: astguiclient.php:2889
+msgid "BACK TO MAIN WINDOW - ignore changes made"
+msgstr ""
+
+#: astguiclient.php:2899
+msgid "STOP"
+msgstr ""
+
+#: astguiclient.php:2899
+msgid "START"
+msgstr ""
+
+#: astguiclient.php:2899
+msgid "Refresh rate:"
+msgstr ""
+
+#: astguiclient.php:2899
+msgid "Faster"
+msgstr ""
+
+#: astguiclient.php:2899
+msgid "Slower"
+msgstr ""
+
+#: astguiclient.php:2900
+msgid "Initializing.."
+msgstr ""
+
+#: astguiclient.php:2902
+msgid "Active Extensions"
+msgstr ""
+
+#: astguiclient.php:2918 astguiclient.php:2920 astguiclient.php:2922
+msgid "Data Goes Here"
+msgstr ""
+
+#: astguiclient.php:2920
+msgid "Trunk Action"
+msgstr ""
+
+#: astguiclient.php:2922
+msgid "Local Action"
+msgstr ""
+
+#: astguiclient.php:2934
+msgid "Conferences List"
+msgstr ""
+
+#: astguiclient.php:2939
+msgid ""
+"Click on a conference room number on the left for info on that conference"
+msgstr ""
+
+#: call_log_display.php:147 conf_exten_check.php:253 live_exten_check.php:149
+#: manager_send.php:397 park_calls_display.php:137 vdc_db_query_ng.php:721
+#: vdc_db_query.php:1208 voicemail_check.php:130
+#, php-format
+msgid "Invalid server_ip: %1s or Invalid session_name: %2s"
+msgstr ""
+
+#: call_log_display.php:159 conf_exten_check.php:266 inbound_popup.php:156
+#: live_exten_check.php:161 manager_send.php:410 park_calls_display.php:149
+#: vdc_db_query_ng.php:734 vdc_db_query.php:1221 voicemail_check.php:142
+msgid "Invalid session_name:"
+msgstr ""
+
+#: call_log_display.php:186 live_exten_check.php:198 park_calls_display.php:176
+#, php-format
+msgid "Exten %1s is not valid or protocol %2s is not valid"
+msgstr ""
+
+#: chat_db_query.php:185
+msgid "Error:  You already have an open chat with this agent"
+msgstr ""
+
+#: chat_db_query.php:354
+msgid "CHAT ENDED"
+msgstr ""
+
+#: chat_db_query.php:557
+msgid "Available agents"
+msgstr ""
+
+#: chat_db_query.php:644 vdc_chat_display.php:403 vdc_chat_display.php:492
+#: vdc_chat_display.php:963
+msgid "INVITE"
+msgstr ""
+
+#: chat_db_query.php:673
+msgid "Error - agent is already in this chat."
+msgstr ""
+
+#: chat_db_query.php:699 chat_db_query.php:763
+msgid "Error sending message."
+msgstr ""
+
+#: chat_db_query.php:706 chat_db_query.php:710
+msgid "Error adding agent to chat"
+msgstr ""
+
+#: chat_db_query.php:820
+msgid "Chat is waiting for an agent"
+msgstr ""
+
+#: chat_db_query.php:826 chat_db_query.php:829 chat_db_query.php:987
+msgid "SYSTEM ERROR"
+msgstr ""
+
+#: chat_db_query.php:833
+msgid "Chat has been closed"
+msgstr ""
+
+#: chat_db_query.php:871 chat_db_query.php:1170 chat_db_query.php:1224
+#: vdc_chat_display.php:931
+msgid "SELECT A CHAT GROUP"
+msgstr ""
+
+#: chat_db_query.php:919
+msgid "Chat does not exist or has been closed"
+msgstr ""
+
+#: chat_db_query.php:934
+msgid "Current chat"
+msgstr ""
+
+#: chat_db_query.php:978
+msgid "Click on a live chat at right to join it."
+msgstr ""
+
+#: chat_db_query.php:982
+msgid "Waiting for next available agent..."
+msgstr ""
+
+#: chat_db_query.php:985
+msgid "Please send an invite to the customer to begin..."
+msgstr ""
+
+#: chat_db_query.php:1120
+msgid "NO AVAILABLE GROUPS"
+msgstr ""
+
+#: chat_db_query.php:1154
+msgid "NO AVAILABLE AGENTS"
+msgstr ""
+
+#: chat_db_query.php:1188
+msgid "You cannot end this chat unless you are the one who started it."
+msgstr ""
+
+#: chat_db_query.php:1201
+msgid "Warning: chat ID not found. Deleting any remaining participants..."
+msgstr ""
+
+#: chat_db_query.php:1203
+msgid "Chat ended"
+msgstr ""
+
+#: chat_db_query.php:1212
+msgid "removed from chat."
+msgstr ""
+
+#: chat_db_query.php:1257
+msgid "Chat was not joined."
+msgstr ""
+
+#: chat_db_query.php:1265
+msgid "You have joined a non-existent chat.  Trippy."
+msgstr ""
+
+#: chat_db_query.php:1314
+msgid "Live Chats"
+msgstr ""
+
+#: chat_db_query.php:1318 chat_db_query.php:1320
+msgid "Chat ID"
+msgstr ""
+
+#: chat_db_query.php:1340
+msgid "CLICK CHAT TO JOIN"
+msgstr ""
+
+#: conf_exten_check.php:281
+msgid "Conf Extension Check"
+msgstr ""
+
+#: conf_exten_check.php:300
+#, php-format
+msgid "Conf Exten %1s is not valid"
+msgstr ""
+
+#: conf_exten_check.php:391 conf_exten_check.php:392
+msgid "Calls in Queue"
+msgstr ""
+
+#: conf_exten_check.php:475 conf_exten_check.php:476
+msgid "Emails in Queue"
+msgstr ""
+
+#: conf_exten_check.php:1114
+#, php-format
+msgid "Conf Exten %1s is not valid or Exten %2s is not valid"
+msgstr ""
+
+#: conf_exten_check.php:1124
+#, php-format
+msgid "Conference %1s has been registered to %2s"
+msgstr ""
+
+#: deactivate_lead.php:192
+#, php-format
+msgid "DONE: %1s duplicates found,"
+msgstr ""
+
+#: deactivate_lead.php:197
+msgid "DONE: no duplicates found within"
+msgstr ""
+
+#: deactivate_lead.php:203
+msgid "DONE: no lists in campaign_check"
+msgstr ""
+
+#: deactivate_lead.php:209
+#, php-format
+msgid "DONE: %1s is empty for lead %2s"
+msgstr ""
+
+#: deactivate_lead.php:215
+msgid "DONE: dispo is not a sale status:"
+msgstr ""
+
+#: dispo_add_FPG.php:143 dispo_change_status.php:155 dispo_move_list.php:391
+#: dispo_send_email.php:248 update_cf_ivr.php:118
+msgid "Call Not Found:"
+msgstr ""
+
+#: dispo_add_FPG.php:149 dispo_change_status.php:161 dispo_move_list.php:397
+#: dispo_send_email.php:254 update_cf_ivr.php:124
+msgid "Invalid Call ID:"
+msgstr ""
+
+#: dispo_add_FPG.php:199
+#, php-format
+msgid "DONE: %1s match found, %2s inserted into %3s with %4s status"
+msgstr ""
+
+#: dispo_add_FPG.php:204
+#, php-format
+msgid "DONE: no filter phone group found %1s"
+msgstr ""
+
+#: dispo_add_FPG.php:210 dispo_send_email.php:1330
+#, php-format
+msgid "DONE: %1s or %2s are invalid"
+msgstr ""
+
+#: dispo_add_FPG.php:216
+#, php-format
+msgid "DONE: dispo is not a sale status: %1s"
+msgstr ""
+
+#: dispo_change_status.php:263
+#, php-format
+msgid "DONE: %1s x %2s match found, %3s lead_id %4s changed to %5s status"
+msgstr ""
+
+#: dispo_change_status.php:268
+#, php-format
+msgid "DONE: no change required, not enough matching log entries %1s"
+msgstr ""
+
+#: dispo_change_status.php:274
+#, php-format
+msgid "DONE: lead_id is not defined: %1s"
+msgstr ""
+
+#: dispo_change_status.php:280
+#, php-format
+msgid "DONE: Not all required variables have been set: %1s,%2s,%3s"
+msgstr ""
+
+#: dispo_move_list.php:334
+msgid "MULTI_MATCH CHECK:"
+msgstr ""
+
+#: dispo_move_list.php:356
+msgid "MULTI_MATCH:"
+msgstr ""
+
+#: dispo_move_list.php:484
+#, php-format
+msgid "DONE: %1s match found, %2s updated to %3s with %4s status"
+msgstr ""
+
+#: dispo_move_list.php:489
+#, php-format
+msgid "DONE: no match found within %1s     %2s"
+msgstr ""
+
+#: dispo_move_list.php:495
+#, php-format
+msgid "DONE: new list %1s is empty for lead %2s"
+msgstr ""
+
+#: dispo_move_list.php:501
+#, php-format
+msgid "DONE: no conditional match found(%1s): %2s"
+msgstr ""
+
+#: dispo_send_email.php:1307
+#, php-format
+msgid "DONE: %1s match found, %2s email sent using %3s with %4s status"
+msgstr ""
+
+#: dispo_send_email.php:1312
+#, php-format
+msgid "DONE: problem with settings %1s, not all required fields filled in"
+msgstr ""
+
+#: dispo_send_email.php:1318 dispo_send_email.php:1324
+#, php-format
+msgid "DONE: no settings container found %1s"
+msgstr ""
+
+#: dispo_send_email.php:1336
+#, php-format
+msgid "DONE: dispo is not a sale status: %1s  Count: "
+msgstr ""
+
+#: functions.php:519
+msgid "ERROR: no custom data for this lead: "
+msgstr ""
+
+#: functions.php:527
+msgid "There are no custom fields for this list"
+msgstr ""
+
+#: functions.php:535
+msgid "help"
+msgstr ""
+
+#: functions.php:852
+msgid "ERROR: no custom list fields"
+msgstr ""
+
+#: functions.php:855 vdc_form_display.php:516
+msgid "ERROR: no custom list fields table"
+msgstr ""
+
+#: functions.php:886
+msgid "NONE"
+msgstr ""
+
+#: functions.php:909 vdc_db_query.php:17862 vdc_script_display.php:755
+msgid "CALL LOG FOR THIS LEAD:"
+msgstr ""
+
+#: functions.php:913 vdc_db_query.php:16347 vdc_db_query.php:17866
+#: vdc_db_query.php:18058 vdc_script_display.php:759
+msgid "DATE/TIME"
+msgstr ""
+
+#: functions.php:914 vdc_db_query.php:16222 vdc_db_query.php:17867
+#: vdc_db_query.php:18059 vdc_script_display.php:760
+msgid "AGENT"
+msgstr ""
+
+#: functions.php:916 vdc_db_query.php:16349 vdc_db_query.php:16860
+#: vdc_db_query.php:17869 vdc_script_display.php:762 vicidial-grey.php:6844
+#: vicidial.php:7817
+msgid "STATUS"
+msgstr ""
+
+#: functions.php:917 vdc_db_query.php:16219 vdc_db_query.php:16350
+#: vdc_db_query.php:17870 vdc_script_display.php:763
+msgid "PHONE"
+msgstr ""
+
+#: functions.php:918 vdc_db_query.php:16352 vdc_db_query.php:17871
+#: vdc_db_query.php:18060 vdc_db_query.php:18694 vdc_script_display.php:764
+#: vicidial-grey.php:6844 vicidial-grey.php:12175 vicidial.php:7817
+#: vicidial.php:14340
+msgid "CAMPAIGN"
+msgstr ""
+
+#: functions.php:919 vdc_db_query.php:16353 vdc_db_query.php:17872
+#: vdc_script_display.php:765
+msgid "IN/OUT"
+msgstr ""
+
+#: functions.php:920 vdc_db_query.php:16354 vdc_db_query.php:17873
+#: vdc_script_display.php:766 vicidial-grey.php:6844 vicidial-grey.php:6873
+#: vicidial.php:7817 vicidial.php:7857 vicidial.php:7859
+msgid "ALT"
+msgstr ""
+
+#: functions.php:963 vdc_db_query.php:17989 vdc_script_display.php:875
+msgid "NOTES:"
+msgstr ""
+
+#: functions.php:1016
+msgid "NOTES"
+msgstr ""
+
+#: functions.php:1037 vdc_db_query.php:18010 vdc_script_display.php:895
+msgid "No calls found"
+msgstr ""
+
+#: functions.php:1433
+msgid "Second Sunday March to First Sunday November"
+msgstr ""
+
+#: functions.php:1529
+msgid "First Sunday April to Last Sunday October"
+msgstr ""
+
+#: functions.php:1598
+msgid "Last Sunday March to Last Sunday October"
+msgstr ""
+
+#: functions.php:1666
+msgid "Last Sunday October to Last Sunday March"
+msgstr ""
+
+#: functions.php:1735
+msgid "First Sunday October to Last Sunday March"
+msgstr ""
+
+#: functions.php:1803
+msgid "Sunday in October to First Sunday in April"
+msgstr ""
+
+#: functions.php:1870
+msgid "First Sunday October to Third Sunday March"
+msgstr ""
+
+#: functions.php:1937
+msgid "Last Sunday in September to First Sunday in April"
+msgstr ""
+
+#: functions.php:2006
+msgid "Third Sunday October to Last Sunday February"
+msgstr ""
+
+#: functions.php:2076
+msgid "No DST Method Found"
+msgstr ""
+
+#: inbound_popup.php:144
+msgid "Invalid server_ip:"
+msgstr ""
+
+#: inbound_popup.php:301 inbound_popup.php:305
+msgid "LIVE INBOUND CALL"
+msgstr ""
+
+#: inbound_popup.php:333
+msgid "CallerID"
+msgstr ""
+
+#: inbound_popup.php:369
+msgid "Number Dialed:"
+msgstr ""
+
+#: inbound_popup.php:370 vicidial-grey.php:9242 vicidial-grey.php:10110
+#: vicidial-grey.php:10837 vicidial.php:10627 vicidial.php:11595
+#: vicidial.php:12401
+msgid "Notes:"
+msgstr ""
+
+#: inbound_popup.php:373
+msgid "SEND TO MY VOICEMAIL"
+msgstr ""
+
+#: launch.php:152 launch.php:189
+msgid "Agent Screen Opener"
+msgstr ""
+
+#: live_exten_check.php:176
+msgid "Live Extension Check"
+msgstr ""
+
+#: manager_send.php:425
+msgid "Manager Send: "
+msgstr ""
+
+#: manager_send.php:462
+#, php-format
+msgid ""
+"Exten %1s is not valid or queryCID %2s is not valid, Originate command not "
+"inserted"
+msgstr ""
+
+#: manager_send.php:470 manager_send.php:590
+#, php-format
+msgid "Originate command sent for Exten %1s Channel %2s on %3s"
+msgstr ""
+
+#: manager_send.php:484 manager_send.php:513 manager_send.php:972
+#: manager_send.php:1067 manager_send.php:1175 manager_send.php:1311
+#: manager_send.php:1423 manager_send.php:1564 manager_send.php:1598
+#: manager_send.php:1632 manager_send.php:1679 manager_send.php:1736
+#: manager_send.php:1960 manager_send.php:2189
+msgid "One of these variables is not valid:"
+msgstr ""
+
+#: manager_send.php:485 manager_send.php:514 manager_send.php:973
+#: manager_send.php:1068 manager_send.php:1176 manager_send.php:1312
+#: manager_send.php:1424 manager_send.php:1565 manager_send.php:1599
+#: manager_send.php:1633 manager_send.php:1680 manager_send.php:1737
+#: manager_send.php:1961 manager_send.php:2190
+#, php-format
+msgid "Channel %1s must be greater than 2 characters"
+msgstr ""
+
+#: manager_send.php:486 manager_send.php:515 manager_send.php:974
+#: manager_send.php:1069 manager_send.php:1177 manager_send.php:1313
+#: manager_send.php:1425 manager_send.php:1566 manager_send.php:1600
+#: manager_send.php:1634 manager_send.php:1681 manager_send.php:1739
+#: manager_send.php:1963 manager_send.php:2191
+#, php-format
+msgid "queryCID %1s must be greater than 14 characters"
+msgstr ""
+
+#: manager_send.php:487 manager_send.php:516 manager_send.php:1071
+#: manager_send.php:1315 manager_send.php:1568 manager_send.php:1635
+#: manager_send.php:1682
+#, php-format
+msgid "extenName %1s must be set"
+msgstr ""
+
+#: manager_send.php:488 manager_send.php:518 manager_send.php:976
+#: manager_send.php:1072 manager_send.php:1179 manager_send.php:1316
+#: manager_send.php:1427 manager_send.php:1569 manager_send.php:1602
+#: manager_send.php:1636 manager_send.php:1684 manager_send.php:1741
+#: manager_send.php:1965 manager_send.php:2193
+#, php-format
+msgid "ext_context %1s must be set"
+msgstr ""
+
+#: manager_send.php:489 manager_send.php:519 manager_send.php:977
+#: manager_send.php:1073 manager_send.php:1180 manager_send.php:1317
+#: manager_send.php:1428 manager_send.php:1570 manager_send.php:1603
+#: manager_send.php:1637 manager_send.php:1685 manager_send.php:1742
+#: manager_send.php:1966 manager_send.php:2194
+#, php-format
+msgid "ext_priority %1s must be set"
+msgstr ""
+
+#: manager_send.php:490
+msgid "OriginateName Action not sent"
+msgstr ""
+
+#: manager_send.php:517 manager_send.php:975 manager_send.php:1070
+#: manager_send.php:1178 manager_send.php:1314 manager_send.php:1426
+#: manager_send.php:1567 manager_send.php:1601 manager_send.php:1683
+#: manager_send.php:1740 manager_send.php:1964 manager_send.php:2192
+#, php-format
+msgid "exten %1s must be set"
+msgstr ""
+
+#: manager_send.php:520
+msgid "OriginateNameVmail Action not sent"
+msgstr ""
+
+#: manager_send.php:560
+#, php-format
+msgid ""
+" Exten %1s is not valid or queryCID %2s is not valid, Originate command not "
+"inserted"
+msgstr ""
+
+#: manager_send.php:566
+msgid " You are not allowed to dial into other agent sessions"
+msgstr ""
+
+#: manager_send.php:653
+#, php-format
+msgid ""
+"conference %1s is not valid or ext_context %2s or queryCID %3s is not valid, "
+"Hangup command not inserted"
+msgstr ""
+
+#: manager_send.php:697
+#, php-format
+msgid ""
+"Channel %1s is not valid or queryCID %2s is not valid, Hangup command not "
+"inserted"
+msgstr ""
+
+#: manager_send.php:728
+#, php-format
+msgid "Call %1s %2s is not live on %3s, Checking Live Channel"
+msgstr ""
+
+#: manager_send.php:738
+#, php-format
+msgid "Channel %1s is not live on %2s, Hangup command not inserted"
+msgstr ""
+
+#: manager_send.php:756
+#, php-format
+msgid "Channel %1s in use by another agent on %2s, Hangup command not inserted"
+msgstr ""
+
+#: manager_send.php:954
+#, php-format
+msgid "Hangup command sent for Channel %1s on %2s"
+msgstr ""
+
+#: manager_send.php:978
+#, php-format
+msgid "auto_dial_level %1s must be set"
+msgstr ""
+
+#: manager_send.php:979
+#, php-format
+msgid "campaign %1s must be set"
+msgstr ""
+
+#: manager_send.php:980
+#, php-format
+msgid "uniqueid %1s must be set"
+msgstr ""
+
+#: manager_send.php:981
+#, php-format
+msgid "lead_id %1s must be set"
+msgstr ""
+
+#: manager_send.php:982
+msgid "RedirectVD Action not sent"
+msgstr ""
+
+#: manager_send.php:1074 manager_send.php:1318 manager_send.php:1571
+#, php-format
+msgid "parkedby %1s must be set"
+msgstr ""
+
+#: manager_send.php:1075 manager_send.php:1319
+msgid "RedirectToPark Action not sent"
+msgstr ""
+
+#: manager_send.php:1181 manager_send.php:1429
+msgid "RedirectFromPark Action not sent"
+msgstr ""
+
+#: manager_send.php:1572
+msgid "RedirectToParkXfer Action not sent"
+msgstr ""
+
+#: manager_send.php:1604
+msgid "RedirectFromParkXfer Action not sent"
+msgstr ""
+
+#: manager_send.php:1638
+msgid "RedirectName Action not sent"
+msgstr ""
+
+#: manager_send.php:1686
+msgid "RedirectNameVmail Action not sent"
+msgstr ""
+
+#: manager_send.php:1738 manager_send.php:1962
+#, php-format
+msgid "ExtraChannel %1s must be greater than 2 characters"
+msgstr ""
+
+#: manager_send.php:1743 manager_send.php:1968 manager_send.php:2195
+msgid "Redirect Action not sent"
+msgstr ""
+
+#: manager_send.php:1825
+#, php-format
+msgid ""
+"Cannot find empty vicidial_conference on %1s, Redirect command not inserted"
+msgstr ""
+
+#: manager_send.php:1848 manager_send.php:1867 manager_send.php:2065
+#: manager_send.php:2084 manager_send.php:2215
+#, php-format
+msgid "Channel %1s is not live on %2s, Redirect command not inserted"
+msgstr ""
+
+#: manager_send.php:1881
+msgid "No Local agent to send call to, Redirect command not inserted"
+msgstr ""
+
+#: manager_send.php:1917
+#, php-format
+msgid "RedirectXtraCX command sent for Channel %1s on %2s and"
+msgstr ""
+
+#: manager_send.php:1918
+#, php-format
+msgid "Hungup %1s on %2s"
+msgstr ""
+
+#: manager_send.php:1967
+#, php-format
+msgid "session_id %1s must be set"
+msgstr ""
+
+#: manager_send.php:2097
+#, php-format
+msgid "RedirectXtra command sent for Channel %1s and"
+msgstr ""
+
+#: manager_send.php:2098 manager_send.php:2127
+#, php-format
+msgid "ExtraChannel %1s"
+msgstr ""
+
+#: manager_send.php:2099 manager_send.php:2128
+#, php-format
+msgid " to %1s on %2s"
+msgstr ""
+
+#: manager_send.php:2126
+#, php-format
+msgid "RedirectXtra command sent for Channel %1s on %2s and"
+msgstr ""
+
+#: manager_send.php:2225
+#, php-format
+msgid "Redirect command sent for Channel %1s on %2s"
+msgstr ""
+
+#: manager_send.php:2248
+#, php-format
+msgid ""
+"Channel %1s is not valid or queryCID %2s is not valid or filename: %3s is "
+"not valid, %4s command not inserted"
+msgstr ""
+
+#: manager_send.php:2267
+#, php-format
+msgid "Channel %1s is not live on %2s, %3s command not inserted"
+msgstr ""
+
+#: manager_send.php:2294 manager_send.php:2339 manager_send.php:2571
+#, php-format
+msgid "%1s command sent for Channel %2s on %3s"
+msgstr ""
+
+#: manager_send.php:2362
+#, php-format
+msgid ""
+"Channel %1s is not valid or exten %2s is not valid or filename: %3s is not "
+"valid, %4s command not inserted"
+msgstr ""
+
+#: manager_send.php:2586
+#, php-format
+msgid ""
+"Conference %1s, Stage %2s is not valid or queryCID %3s is not valid, "
+"Originate command not inserted"
+msgstr ""
+
+#: manager_send.php:2603
+#, php-format
+msgid "Volume command sent for Conference %1s, Stage %2s Channel %3s on %4s"
+msgstr ""
+
+#: manager_send.php:2617
+#, php-format
+msgid ""
+"Recording %1s, Muting %2s is not valid or queryCID %3s is not valid, "
+"Originate command not inserted"
+msgstr ""
+
+#: manager_send.php:2631
+#, php-format
+msgid "Mute command sent for Recording %1s, Muting %2s on %3s"
+msgstr ""
+
+#: park_calls_display.php:164
+msgid "Parked Calls Display"
+msgstr ""
+
+#: phone_only.php:221 phone_only.php:258
+msgid "Phone web client: Login"
+msgstr ""
+
+#: phone_only.php:225 phone_only.php:262 timeclock.php:269 timeclock.php:376
+#: timeclock.php:486 timeclock.php:538 timeclock.php:576 vicidial-grey.php:1018
+#: vicidial-grey.php:1060 vicidial-grey.php:1109 vicidial-grey.php:1151
+#: vicidial-grey.php:1526 vicidial-grey.php:2347 vicidial-grey.php:2447
+#: vicidial-grey.php:3303 vicidial-grey.php:3330 vicidial.php:1302
+#: vicidial.php:1349 vicidial.php:1403 vicidial.php:1450 vicidial.php:1846
+#: vicidial.php:2821 vicidial.php:2926 vicidial.php:3797 vicidial.php:3829
+msgid "Timeclock"
+msgstr ""
+
+#: phone_only.php:232 phone_only.php:269 phone_only.php:310 phone_only.php:343
+#: phone_only.php:441 phone_only.php:530 vicidial-grey.php:1028
+#: vicidial-grey.php:1072 vicidial-grey.php:1118 vicidial-grey.php:1160
+#: vicidial-grey.php:2359 vicidial-grey.php:2459 vicidial-grey.php:17189
+msgid "vdc_tab_vicidial.gif"
+msgstr ""
+
+#: phone_only.php:233 phone_only.php:270
+msgid "Phone-Only Login"
+msgstr ""
+
+#: phone_only.php:240 phone_only.php:273
+msgid "User Login:"
+msgstr ""
+
+#: phone_only.php:244 phone_only.php:277 phone_only.php:318 phone_only.php:351
+#: phone_only.php:449 phone_only.php:538 vicidial.php:21971 vicidial.php:22043
+msgid "Submit"
+msgstr ""
+
+#: phone_only.php:299 phone_only.php:332
+msgid "Phone web client: Phone Login"
+msgstr ""
+
+#: phone_only.php:422 vicidial.php:2812
+msgid "Your IP Address is not allowed"
+msgstr ""
+
+#: phone_only.php:621
+msgid "Phone web client"
+msgstr ""
+
+#: phone_only.php:946
+msgid " Phone: "
+msgstr ""
+
+#: phone_only.php:955 vicidial.php:21006
+msgid "Web Phone"
+msgstr ""
+
+#: timeclock.php:249
+msgid ""
+"The user and password you entered are not active in the system<BR>Please try "
+"again:"
+msgstr ""
+
+#: timeclock.php:252 timeclock.php:477 timeclock.php:518 timeclock.php:559
+msgid "Agent Timeclock"
+msgstr ""
+
+#: timeclock.php:356
+msgid "You cannot log in or out within 30 seconds of your last login or logout"
+msgstr ""
+
+#: timeclock.php:397
+msgid "You have now logged-in"
+msgstr ""
+
+#: timeclock.php:398
+msgid "You logged in at"
+msgstr ""
+
+#: timeclock.php:425
+msgid "You have now logged-out"
+msgstr ""
+
+#: timeclock.php:426
+msgid "You logged out at"
+msgstr ""
+
+#: timeclock.php:426
+msgid "Amount of time you were logged-in:"
+msgstr ""
+
+#: timeclock.php:466
+msgid "ERROR: timeclock log entry already made:"
+msgstr ""
+
+#: timeclock.php:470
+msgid "BACK to Agent Login Screen"
+msgstr ""
+
+#: timeclock.php:472
+msgid "BACK to Administration"
+msgstr ""
+
+#: timeclock.php:474
+msgid "BACK to Welcome Screen"
+msgstr ""
+
+#: timeclock.php:504
+msgid "Time since you were last logged-in:"
+msgstr ""
+
+#: timeclock.php:506
+msgid "LOGIN"
+msgstr ""
+
+#: timeclock.php:507
+msgid "You last logged-out at:"
+msgstr ""
+
+#: timeclock.php:507
+msgid "Click LOGIN below to log-in"
+msgstr ""
+
+#: timeclock.php:511 timeclock.php:514
+msgid "Amount of time you have been logged-in:"
+msgstr ""
+
+#: timeclock.php:514
+msgid "You logged-in at:"
+msgstr ""
+
+#: timeclock.php:514
+msgid "Click LOGOUT below to log-out"
+msgstr ""
+
+#: update_cf_ivr.php:178
+#, php-format
+msgid "DONE: %1s found, %2s CF record %3s"
+msgstr ""
+
+#: update_cf_ivr.php:183
+#, php-format
+msgid "DONE: no custom field found %1s"
+msgstr ""
+
+#: update_cf_ivr.php:189
+#, php-format
+msgid "DONE: %1s, %2s or %3s are invalid"
+msgstr ""
+
+#: vdc_chat_display.php:136
+msgid "Customer Chat Frame"
+msgstr ""
+
+#: vdc_chat_display.php:207
+msgid "Agent Chat Interface"
+msgstr ""
+
+#: vdc_chat_display.php:227 vdc_chat_display.php:229 vicidial-grey.php:4387
+#: vicidial-grey.php:4424 vicidial-grey.php:8392 vicidial-grey.php:8567
+#: vicidial-grey.php:9149 vicidial-grey.php:9457 vicidial-grey.php:16949
 #: vicidial.php:5007 vicidial.php:5046 vicidial.php:9617 vicidial.php:9812
 #: vicidial.php:10468 vicidial.php:10893 vicidial.php:20024
 msgid "vdc_LB_paused.gif"
 msgstr ""
 
+#: vdc_chat_display.php:228 vdc_chat_display.php:230 vicidial-grey.php:4389
+#: vicidial-grey.php:4428 vicidial-grey.php:8420 vicidial-grey.php:9026
+#: vicidial-grey.php:10235 vicidial-grey.php:10963 vicidial-grey.php:11593
+#: vicidial-grey.php:11609 vicidial.php:5009 vicidial.php:5050
+#: vicidial.php:9644 vicidial.php:10342 vicidial.php:11731 vicidial.php:12538
+#: vicidial.php:13486 vicidial.php:13502
+msgid "vdc_LB_blank_OFF.gif"
+msgstr ""
+
+#: vdc_chat_display.php:229 vicidial-grey.php:4390 vicidial-grey.php:4408
+#: vicidial-grey.php:8384 vicidial-grey.php:8392 vicidial-grey.php:8559
+#: vicidial-grey.php:8567 vicidial-grey.php:9149 vicidial-grey.php:9153
+#: vicidial-grey.php:9438 vicidial-grey.php:9457 vicidial-grey.php:11561
+#: vicidial-grey.php:16111 vicidial-grey.php:16949 vicidial.php:5010
+#: vicidial.php:5030 vicidial.php:9609 vicidial.php:9617 vicidial.php:9804
+#: vicidial.php:9812 vicidial.php:10468 vicidial.php:10472 vicidial.php:10872
+#: vicidial.php:10893 vicidial.php:13454 vicidial.php:18965 vicidial.php:20024
+msgid "vdc_LB_dialnextnumber.gif"
+msgstr ""
+
+#: vdc_chat_display.php:230 vicidial-grey.php:4433 vicidial-grey.php:8420
+#: vicidial-grey.php:8426 vicidial-grey.php:9026 vicidial-grey.php:9030
+#: vicidial-grey.php:10235 vicidial-grey.php:10963 vicidial-grey.php:11593
+#: vicidial-grey.php:11609 vicidial-grey.php:17235 vicidial.php:5054
+#: vicidial.php:9644 vicidial.php:9650 vicidial.php:10342 vicidial.php:10346
+#: vicidial.php:11731 vicidial.php:12538 vicidial.php:13486 vicidial.php:13502
+#: vicidial.php:20403
+msgid "vdc_LB_dialnextnumber_OFF.gif"
+msgstr ""
+
+#: vdc_chat_display.php:324
+msgid "Please enter a name to chat as."
+msgstr ""
+
+#: vdc_chat_display.php:325
+msgid "You have not joined a chat yet."
+msgstr ""
+
+#: vdc_chat_display.php:366
+msgid "Please enter your name before joining a chat."
+msgstr ""
+
+#: vdc_chat_display.php:470
+msgid "ATTEMPT TO CREATE CHAT SESSION FAILED."
+msgstr ""
+
+#: vdc_chat_display.php:472
+msgid "YOU MUST BE PAUSED TO INITIATE A CUSTOMER CHAT."
+msgstr ""
+
+#: vdc_chat_display.php:474
+msgid "PLEASE SELECT A CHAT GROUP BEFORE STARTING A CHAT."
+msgstr ""
+
+#: vdc_chat_display.php:476
+msgid "UNABLE TO CHANGE LIVE AGENT STATUS"
+msgstr ""
+
+#: vdc_chat_display.php:488
+msgid "CHAT SESSION CREATED. INVITE CUSTOMER VIA EMAIL TO BEGIN."
+msgstr ""
+
+#: vdc_chat_display.php:534
+msgid ""
+"There was a problem sending the email invite - please re-check your "
+"information and try again."
+msgstr ""
+
+#: vdc_chat_display.php:588
+msgid "Only the chat creator can end the chat"
+msgstr ""
+
+#: vdc_chat_display.php:703 vdc_chat_display.php:903
+msgid "-- Select a group to transfer to --"
+msgstr ""
+
+#: vdc_chat_display.php:708 vdc_chat_display.php:912
+msgid "-- Select an agent to transfer to --"
+msgstr ""
+
+#: vdc_chat_display.php:776
+msgid "TRANSFER FAILED"
+msgstr ""
+
+#: vdc_chat_display.php:780
+msgid "System error - multiple chats found"
+msgstr ""
+
+#: vdc_chat_display.php:815
+msgid "No user ID - no chat access. Sorry"
+msgstr ""
+
+#: vdc_chat_display.php:848
+msgid "CLOSE WINDOW"
+msgstr ""
+
+#: vdc_chat_display.php:878
+msgid "CLEAR"
+msgstr ""
+
+#: vdc_chat_display.php:881
+msgid "Privacy ON"
+msgstr ""
+
+#: vdc_chat_display.php:885
+msgid "TRANSFER"
+msgstr ""
+
+#: vdc_chat_display.php:900
+msgid "Chat group"
+msgstr ""
+
+#: vdc_chat_display.php:906
+msgid "TRANSFER CHAT"
+msgstr ""
+
+#: vdc_chat_display.php:909
+msgid "Agents"
+msgstr ""
+
+#: vdc_chat_display.php:917
+msgid "CANCEL"
+msgstr ""
+
+#: vdc_chat_display.php:978
+msgid "Enter email address of guest"
+msgstr ""
+
+#: vdc_chat_display.php:979
+msgid "SEND"
+msgstr ""
+
+#: vdc_chat_display.php:980 vicidial-grey.php:16781 vicidial-grey.php:16783
+#: vicidial-grey.php:16785 vicidial-grey.php:16787 vicidial.php:19838
+#: vicidial.php:19840 vicidial.php:19842 vicidial.php:19844
+msgid "HIDE"
+msgstr ""
+
+#: vdc_db_query_ng.php:750
+msgid "VICIDiaL Database Query Script New Generation"
+msgstr ""
+
+#: vdc_db_query.php:1237
+msgid "VICIDiaL Database Query Script"
+msgstr ""
+
+#: vdc_db_query.php:1358 vicidial-grey.php:827 vicidial.php:1107
+msgid "USER LOGIN ERROR"
+msgstr ""
+
+#: vdc_db_query.php:1371
+msgid "There are no Shifts enabled for your user group"
+msgstr ""
+
+#: vdc_db_query.php:1424
+msgid "You are not allowed to log in outside of your shift"
+msgstr ""
+
+#: vdc_db_query.php:1431 vicidial-grey.php:1442 vicidial.php:1757
+msgid "MANAGER OVERRIDE:"
+msgstr ""
+
+#: vdc_db_query.php:1437
+msgid "Manager Login:"
+msgstr ""
+
+#: vdc_db_query.php:1438
+msgid "Manager Password:"
+msgstr ""
+
+#: vdc_db_query.php:1454
+msgid "PLEASE SELECT A CAMPAIGN"
+msgstr ""
+
+#: vdc_db_query.php:1469
+msgid "Language"
+msgstr ""
+
+#: vdc_db_query.php:1476
+msgid "PLEASE SELECT A LANGUAGE"
+msgstr ""
+
+#: vdc_db_query.php:1497 vicidial-grey.php:1372 vicidial.php:1687
+msgid "YOU MUST LOG IN TO THE TIMECLOCK FIRST"
+msgstr ""
+
+#: vdc_db_query.php:1517
+msgid "Group Choice is not valid"
+msgstr ""
+
+#: vdc_db_query.php:1767
+#, php-format
+msgid "Closer In Group Choice %1s has been registered to user %2s"
+msgstr ""
+
+#: vdc_db_query.php:1786
+msgid "Territory Choice is not valid"
+msgstr ""
+
+#: vdc_db_query.php:1827
+#, php-format
+msgid "Territory Choice %1s has been registered to user %2s"
+msgstr ""
+
+#: vdc_db_query.php:2001
+msgid "no lead info in system:"
+msgstr ""
+
+#: vdc_db_query.php:2006
+msgid "no lead active for this agent"
+msgstr ""
+
+#: vdc_db_query.php:2088
+msgid "no agent session"
+msgstr ""
+
+#: vdc_db_query.php:2110 vdc_db_query.php:5455
+#, php-format
+msgid "Conf Exten %1s or campaign %2s or ext_context %3s is not valid"
+msgstr ""
+
+#: vdc_db_query.php:4056 vdc_db_query.php:17628
+msgid "Phone and Post Code Time Zone Mismatch! "
+msgstr ""
+
+#: vdc_db_query.php:4062 vdc_db_query.php:4073 vdc_db_query.php:17634
+#: vdc_db_query.php:17645
+msgid " Phone Area Code Outside Dialable Zone"
+msgstr ""
+
+#: vdc_db_query.php:4064 vdc_db_query.php:4078 vdc_db_query.php:17636
+msgid " Postal Code Outside Dialable Zone"
+msgstr ""
+
+#: vdc_db_query.php:5396
+msgid "ALT PHONE NUMBER STATUS NOT CHANGED"
+msgstr ""
+
+#: vdc_db_query.php:5397
+#, php-format
+msgid "%1s %2s %3s or %4s is not valid"
+msgstr ""
+
+#: vdc_db_query.php:5408
+msgid "ALT PHONE NUMBER STATUS CHANGED"
+msgstr ""
+
+#: vdc_db_query.php:5422
+msgid "AGENT ALERT SETTING NOT CHANGED"
+msgstr ""
+
+#: vdc_db_query.php:5423
+#, php-format
+msgid "%1s is not valid"
+msgstr ""
+
+#: vdc_db_query.php:5437
+#, php-format
+msgid "AGENT ALERT SETTING CHANGED %1s"
+msgstr ""
+
+#: vdc_db_query.php:5505
+#, php-format
+msgid ""
+"Conf Exten %1s or campaign %2s or ext_context %3s or phone_number %4s or "
+"lead_id %5s is not valid"
+msgstr ""
+
+#: vdc_db_query.php:6988
+#, php-format
+msgid ""
+"uniqueid %1s or lead_id: %2s or list_id: %3s or phone_number: %4s or "
+"campaign: %5s is not valid"
+msgstr ""
+
+#: vdc_db_query.php:7051 vdc_db_query.php:7894
+msgid "VICIDiaL_LOG Inserted:"
+msgstr ""
+
+#: vdc_db_query.php:7148
+#, php-format
+msgid "uniqueid %1s or lead_id: %2s is not valid"
+msgstr ""
+
+#: vdc_db_query.php:8361 vdc_db_query.php:8417 vdc_db_query.php:9924
+#, php-format
+msgid "Campaign %1s is not valid"
+msgstr ""
+
+#: vdc_db_query.php:8362
+#, php-format
+msgid "lead_id %1s is not valid"
+msgstr ""
+
+#: vdc_db_query.php:11174
+#, php-format
+msgid "Campaign %1s is not valid or lead_id %2s is not valid"
+msgstr ""
+
+#: vdc_db_query.php:11943
+#, php-format
+msgid "Dispo Choice %1s or lead_id %2s is not valid"
+msgstr ""
+
+#: vdc_db_query.php:13514
+#, php-format
+msgid "Lead %1s has been changed to %2s Status"
+msgstr ""
+
+#: vdc_db_query.php:14694
+msgid "URL IDs are is not valid"
+msgstr ""
+
+#: vdc_db_query.php:14771
+#, php-format
+msgid "phone_number %1s or lead_id %2s is not valid"
+msgstr ""
+
+#: vdc_db_query.php:14861
+#, php-format
+msgid "Lead %1s information has%2s been updated"
+msgstr ""
+
+#: vdc_db_query.php:14880
+#, php-format
+msgid "stage %1s is not valid"
+msgstr ""
+
+#: vdc_db_query.php:15112
+#, php-format
+msgid "Agent %1s is now in status %2s"
+msgstr ""
+
+#: vdc_db_query.php:15128
+#, php-format
+msgid "campaign %1s or conf_exten %2s is not valid"
+msgstr ""
+
+#: vdc_db_query.php:15458
+#, php-format
+msgid "favorites list %1s is not valid"
+msgstr ""
+
+#: vdc_db_query.php:15485
+#, php-format
+msgid "Favorites list has been updated to %1s for %2s"
+msgstr ""
+
+#: vdc_db_query.php:15497
+#, php-format
+msgid "agent_log_id %1s or pause_code %2s is not valid"
+msgstr ""
+
+#: vdc_db_query.php:15620
+#, php-format
+msgid " Pause Code %1s has been recorded"
+msgstr ""
+
+#: vdc_db_query.php:15633
+#, php-format
+msgid "manager username %1s, password or pause_code %2s is not valid"
+msgstr ""
+
+#: vdc_db_query.php:15662
+#, php-format
+msgid "Manager Approval of Pause Code is Accepted %1s"
+msgstr ""
+
+#: vdc_db_query.php:15667
+#, php-format
+msgid "Invalid Manager Permissions %1s"
+msgstr ""
+
+#: vdc_db_query.php:15673
+#, php-format
+msgid "Invalid Manager Credentials %1s"
+msgstr ""
+
+#: vdc_db_query.php:15740
+msgid "No VM Messages Available"
+msgstr ""
+
+#: vdc_db_query.php:15754
+msgid "Call ID or Message not defined"
+msgstr ""
+
+#: vdc_db_query.php:15808 vdc_db_query.php:16341 vdc_db_query.php:18940
+#: vicidial-grey.php:16778 vicidial-grey.php:17890 vicidial-grey.php:18111
+#: vicidial-grey.php:18273 vicidial-grey.php:18327 vicidial-grey.php:18338
+#: vicidial-grey.php:18389 vicidial-grey.php:18400 vicidial-grey.php:18412
+#: vicidial.php:19835 vicidial.php:21283 vicidial.php:21525 vicidial.php:21709
+#: vicidial.php:21741 vicidial.php:21798 vicidial.php:21809 vicidial.php:21902
+#: vicidial.php:21913 vicidial.php:21926 vicidial.php:21990
+msgid "close"
+msgstr ""
+
+#: vdc_db_query.php:15809
+msgid "SERVER TIME"
+msgstr ""
+
+#: vdc_db_query.php:15810
+msgid "LEAD TIME"
+msgstr ""
+
+#: vdc_db_query.php:15810 vdc_db_query.php:15866
+msgid "hours difference"
+msgstr ""
+
+#: vdc_db_query.php:16105
+msgid "READY"
+msgstr ""
+
+#: vdc_db_query.php:16105
+msgid "INCALL"
+msgstr ""
+
+#: vdc_db_query.php:16105
+msgid "PAUSED"
+msgstr ""
+
+#: vdc_db_query.php:16107
+msgid "-LOGGED-OUT"
+msgstr ""
+
+#: vdc_db_query.php:16128 vdc_db_query.php:18128
+msgid "Calls in Queue View Disabled for this campaign"
+msgstr ""
+
+#: vdc_db_query.php:16220 vdc_db_query.php:16351 vicidial-grey.php:6844
+#: vicidial.php:7817
+msgid "FULL NAME"
+msgstr ""
+
+#: vdc_db_query.php:16221 vdc_db_query.php:18683 vdc_db_query.php:18696
+#: vdc_db_query.php:18957
+msgid "WAIT"
+msgstr ""
+
+#: vdc_db_query.php:16224
+msgid "CALL GROUP"
+msgstr ""
+
+#: vdc_db_query.php:16225
+msgid "TYPE"
+msgstr ""
+
+#: vdc_db_query.php:16283
+msgid "TAKE CALL"
+msgstr ""
+
+#: vdc_db_query.php:16340 vicidial.php:21740
+msgid "GO"
+msgstr ""
+
+#: vdc_db_query.php:16356 vdc_db_query.php:16483 vdc_db_query.php:16866
+#: vdc_db_query.php:16924 vicidial-grey.php:6844 vicidial-grey.php:6873
+#: vicidial.php:7817 vicidial.php:7860
+msgid "INFO"
+msgstr ""
+
+#: vdc_db_query.php:16453
+msgid "No calls on this day"
+msgstr ""
+
+#: vdc_db_query.php:16494
+msgid "Close Call Log"
+msgstr ""
+
+#: vdc_db_query.php:16523 vdc_db_query.php:17455 vicidial-grey.php:1459
+#: vicidial.php:1779
+msgid " Title"
+msgstr ""
+
+#: vdc_db_query.php:16524 vdc_db_query.php:17456
+#: vdc_script_dispo_example.php:318 vdc_script_notes.php:281
+#: vicidial-grey.php:1460 vicidial.php:1780
+msgid "First"
+msgstr ""
+
+#: vdc_db_query.php:16525 vdc_db_query.php:17457
+#: vdc_script_dispo_example.php:319 vdc_script_notes.php:282
+#: vicidial-grey.php:1461 vicidial.php:1781
+msgid "MI"
+msgstr ""
+
+#: vdc_db_query.php:16526 vdc_db_query.php:17458 vicidial-grey.php:1462
+#: vicidial.php:1782
+msgid "Last "
+msgstr ""
+
+#: vdc_db_query.php:16527 vdc_db_query.php:17459
+#: vdc_script_dispo_example.php:321 vdc_script_notes.php:284
+#: vicidial-grey.php:1463 vicidial.php:1783
+msgid "Address1"
+msgstr ""
+
+#: vdc_db_query.php:16528 vdc_db_query.php:17460
+#: vdc_script_dispo_example.php:322 vdc_script_notes.php:285
+#: vicidial-grey.php:1464 vicidial.php:1784
+msgid "Address2"
+msgstr ""
+
+#: vdc_db_query.php:16529 vdc_db_query.php:17461
+#: vdc_script_dispo_example.php:323 vdc_script_notes.php:286
+#: vicidial-grey.php:1465 vicidial.php:1785
+msgid "Address3"
+msgstr ""
+
+#: vdc_db_query.php:16530 vdc_db_query.php:17462
+#: vdc_script_dispo_example.php:324 vdc_script_notes.php:287
+#: vicidial-grey.php:1466 vicidial.php:1786
+msgid "City"
+msgstr ""
+
+#: vdc_db_query.php:16531 vdc_db_query.php:17463 vicidial-grey.php:1467
+#: vicidial.php:1787
+msgid " State"
+msgstr ""
+
+#: vdc_db_query.php:16532 vdc_db_query.php:17464
+#: vdc_script_dispo_example.php:326 vdc_script_notes.php:289
+#: vicidial-grey.php:1468 vicidial.php:1788
+msgid "Province"
+msgstr ""
+
+#: vdc_db_query.php:16533 vdc_db_query.php:17465
+#: vdc_script_dispo_example.php:327 vdc_script_notes.php:290
+#: vicidial-grey.php:1469 vicidial.php:1789
+msgid "PostCode"
+msgstr ""
+
+#: vdc_db_query.php:16534 vdc_db_query.php:17466
+#: vdc_script_dispo_example.php:328 vdc_script_notes.php:291
+#: vicidial-grey.php:1470 vicidial.php:1790
+msgid "Vendor ID"
+msgstr ""
+
+#: vdc_db_query.php:16535 vdc_db_query.php:17467 vicidial-grey.php:1471
+#: vicidial.php:1791
+msgid " Gender"
+msgstr ""
+
+#: vdc_db_query.php:16536 vdc_db_query.php:17468
+#: vdc_script_dispo_example.php:330 vdc_script_notes.php:293
+#: vicidial-grey.php:1472 vicidial.php:1792
+msgid "Phone"
+msgstr ""
+
+#: vdc_db_query.php:16537 vdc_db_query.php:17469
+#: vdc_script_dispo_example.php:331 vdc_script_notes.php:294
+#: vicidial-grey.php:1473 vicidial.php:1793
+msgid "DialCode"
+msgstr ""
+
+#: vdc_db_query.php:16538 vdc_db_query.php:17470
+#: vdc_script_dispo_example.php:332 vdc_script_notes.php:295
+#: vicidial-grey.php:1474 vicidial.php:1794
+msgid "Alt. Phone"
+msgstr ""
+
+#: vdc_db_query.php:16539 vdc_db_query.php:17471
+#: vdc_script_dispo_example.php:333 vdc_script_notes.php:296
+#: vicidial-grey.php:1475 vicidial.php:1795
+msgid "Show"
+msgstr ""
+
+#: vdc_db_query.php:16540 vdc_db_query.php:17472
+msgid " Email"
+msgstr ""
+
+#: vdc_db_query.php:16541 vdc_db_query.php:17473 vicidial-grey.php:1477
+#: vicidial.php:1797
+msgid " Comments"
+msgstr ""
+
+#: vdc_db_query.php:16702
+msgid ""
+"You must enter in search terms, one of these must be populated: lead ID, "
+"vendor ID, phone number, last name"
+msgstr ""
+
+#: vdc_db_query.php:16704 vdc_db_query.php:16952 vdc_db_query.php:16959
+#: vdc_db_query.php:16970 vdc_db_query.php:17151 vdc_db_query.php:17298
+#: vdc_db_query.php:17305 vdc_db_query.php:17316 vicidial-grey.php:12002
+#: vicidial-grey.php:12188 vicidial-grey.php:12221 vicidial-grey.php:17918
+#: vicidial-grey.php:17926 vicidial-grey.php:17955 vicidial-grey.php:18135
+#: vicidial-grey.php:18221 vicidial-grey.php:18474 vicidial.php:14037
+#: vicidial.php:14353 vicidial.php:14386 vicidial.php:21311 vicidial.php:21319
+#: vicidial.php:21348 vicidial.php:21563 vicidial.php:21655 vicidial.php:22056
+msgid "Go Back"
+msgstr ""
+
+#: vdc_db_query.php:16852 vdc_db_query.php:17210
+msgid "Results Found:"
+msgstr ""
+
+#: vdc_db_query.php:16861
+msgid "LAST CALL"
+msgstr ""
+
+#: vdc_db_query.php:16900 vdc_db_query.php:16948 vdc_db_query.php:17256
+#: vdc_db_query.php:17294
+msgid "No results found"
+msgstr ""
+
+#: vdc_db_query.php:16934
+msgid "SELECT"
+msgstr ""
+
+#: vdc_db_query.php:16957 vdc_db_query.php:17303
+msgid "There was a problem with your search terms"
+msgstr ""
+
+#: vdc_db_query.php:16968 vdc_db_query.php:17314
+msgid "Campaign not found"
+msgstr ""
+
+#: vdc_db_query.php:17149
+msgid ""
+"You must enter in search terms, one of these must be populated: office "
+"number, last name, first name"
+msgstr ""
+
+#: vdc_db_query.php:17216
+msgid "FIRST NAME"
+msgstr ""
+
+#: vdc_db_query.php:17217
+msgid "LAST NAME"
+msgstr ""
+
+#: vdc_db_query.php:17218
+msgid "OFFICE"
+msgstr ""
+
+#: vdc_db_query.php:17219
+msgid "MOBILE"
+msgstr ""
+
+#: vdc_db_query.php:17220
+msgid "OTHER 1"
+msgstr ""
+
+#: vdc_db_query.php:17221
+msgid "OTHER 2"
+msgstr ""
+
+#: vdc_db_query.php:17222
+msgid "BU NAME"
+msgstr ""
+
+#: vdc_db_query.php:17281
+msgid "Dept:"
+msgstr ""
+
+#: vdc_db_query.php:17281 vdc_phonebook_display.php:662 vicidial-grey.php:10132
+#: vicidial-grey.php:10382 vicidial-grey.php:10859 vicidial-grey.php:11115
+#: vicidial.php:11617 vicidial.php:11925 vicidial.php:12423 vicidial.php:12736
+msgid "Group"
+msgstr ""
+
+#: vdc_db_query.php:17281
+msgid "Job:"
+msgstr ""
+
+#: vdc_db_query.php:17281 vicidial-grey.php:18316 vicidial.php:21787
+msgid "Location:"
+msgstr ""
+
+#: vdc_db_query.php:17377
+msgid "no LIVE Callbacks found"
+msgstr ""
+
+#: vdc_db_query.php:17381
+msgid "no Lead ID"
+msgstr ""
+
+#: vdc_db_query.php:17407
+msgid "Callback Status:"
+msgstr ""
+
+#: vdc_db_query.php:17408
+msgid "Callback Lead Status:"
+msgstr ""
+
+#: vdc_db_query.php:17409
+msgid "Callback Entry Time:"
+msgstr ""
+
+#: vdc_db_query.php:17410
+msgid "Callback Trigger Time:"
+msgstr ""
+
+#: vdc_db_query.php:17414
+msgid "Callback Customer Timezone:"
+msgstr ""
+
+#: vdc_db_query.php:17415
+msgid "Callback Customer Time:"
+msgstr ""
+
+#: vdc_db_query.php:17417
+msgid "Callback Comments:"
+msgstr ""
+
+#: vdc_db_query.php:17650
+msgid " Postal Code Outside Dialable Zone "
+msgstr ""
+
+#: vdc_db_query.php:17658
+msgid "Status:"
+msgstr ""
+
+#: vdc_db_query.php:17661
+msgid "List ID:"
+msgstr ""
+
+#: vdc_db_query.php:17662
+msgid "Timezone:"
+msgstr ""
+
+#: vdc_db_query.php:17663
+msgid "Called Since Last Reset:"
+msgstr ""
+
+#: vdc_db_query.php:17683 vdc_db_query.php:17700
+msgid " DIAL "
+msgstr ""
+
+#: vdc_db_query.php:17692 vdc_db_query.php:17696 vdc_db_query.php:17700
+msgid "Dial Link:"
+msgstr ""
+
+#: vdc_db_query.php:17704
+msgid "SELECT THIS LEAD"
+msgstr ""
+
+#: vdc_db_query.php:17758
+msgid "Called Count:"
+msgstr ""
+
+#: vdc_db_query.php:17759
+msgid "Last Local Call Time:"
+msgstr ""
+
+#: vdc_db_query.php:17832
+msgid "ENCRYPTED"
+msgstr ""
+
+#: vdc_db_query.php:18054
+msgid "EMAIL LOG FOR THIS LEAD:"
+msgstr ""
+
+#: vdc_db_query.php:18061
+msgid "EMAIL TO"
+msgstr ""
+
+#: vdc_db_query.php:18062
+msgid "ATTACHMENTS"
+msgstr ""
+
+#: vdc_db_query.php:18094
+msgid "MESSAGE:"
+msgstr ""
+
+#: vdc_db_query.php:18163
+#, php-format
+msgid "Call %1s grabbed for %2s"
+msgstr ""
+
+#: vdc_db_query.php:18167
+#, php-format
+msgid "Call %1s could not be grabbed for %2s"
+msgstr ""
+
+#: vdc_db_query.php:18599
+msgid "ERROR: this feature is disabled for this campaign"
+msgstr ""
+
+#: vdc_db_query.php:18601 vdc_db_query.php:18662 vdc_db_query.php:18988
+msgid "Close Agent Time Report"
+msgstr ""
+
+#: vdc_db_query.php:18660
+msgid "ERROR: you must select a date range to use this feature"
+msgstr ""
+
+#: vdc_db_query.php:18667
+msgid "AGENT TIME REPORT FOR"
+msgstr ""
+
+#: vdc_db_query.php:18673 vdc_db_query.php:18681 vdc_db_query.php:18693
+#: vdc_db_query.php:18707
+msgid "DATE"
+msgstr ""
+
+#: vdc_db_query.php:18674 vdc_db_query.php:18946
+msgid "TOTAL LOGGED IN TIME"
+msgstr ""
+
+#: vdc_db_query.php:18682 vdc_db_query.php:18956
+msgid "TOTAL LOGGED IN"
+msgstr ""
+
+#: vdc_db_query.php:18684 vdc_db_query.php:18697 vdc_db_query.php:18958
+msgid "TALK"
+msgstr ""
+
+#: vdc_db_query.php:18685 vdc_db_query.php:18698 vdc_db_query.php:18959
+msgid "DISPO"
+msgstr ""
+
+#: vdc_db_query.php:18686 vdc_db_query.php:18699 vdc_db_query.php:18960
+msgid "PAUSE"
+msgstr ""
+
+#: vdc_db_query.php:18695
+msgid "TOTAL <BR>NON-PAUSE TIME"
+msgstr ""
+
+#: vdc_db_query.php:18700
+msgid "TOTAL <BR>LOGGED IN"
+msgstr ""
+
+#: vdc_db_query.php:18708 vdc_db_query.php:18974
+msgid "BILLABLE"
+msgstr ""
+
+#: vdc_db_query.php:18709 vdc_db_query.php:18975
+msgid "BREAK"
+msgstr ""
+
+#: vdc_db_query.php:18710 vdc_db_query.php:18976
+msgid "LUNCH"
+msgstr ""
+
+#: vdc_db_query.php:18711 vdc_db_query.php:18977
+msgid "COACH"
+msgstr ""
+
+#: vdc_db_query.php:18871
+msgid "TOTALS"
+msgstr ""
+
+#: vdc_db_query.php:18939
+msgid "AGENT TIME REPORT FOR TODAY"
+msgstr ""
+
+#: vdc_db_query.php:19005 vdc_db_query.php:19042
+msgid "DONE:"
+msgstr ""
+
+#: vdc_db_query.php:19061
+msgid "Webform Click Logged:"
+msgstr ""
+
+#: vdc_db_query.php:19085
+msgid "Unidentified Hangup Cause Code."
+msgstr ""
+
+#: vdc_db_query.php:19093
+msgid "Unidentified SIP Hangup Cause Code."
+msgstr ""
+
+#: vdc_email_display.php:163
+msgid "Your system does not have the email setting enabled"
+msgstr ""
+
+#: vdc_email_display.php:235
+msgid "ERROR: Invalid File Name:"
+msgstr ""
+
+#: vdc_email_display.php:270
+msgid "mail could not be sent!"
+msgstr ""
+
+#: vdc_email_display.php:302
+msgid "Date received:"
+msgstr ""
+
+#: vdc_email_display.php:303
+msgid "From:"
+msgstr ""
+
+#: vdc_email_display.php:304
+msgid "Subject:"
+msgstr ""
+
+#: vdc_email_display.php:305
+msgid "Message:"
+msgstr ""
+
+#: vdc_email_display.php:310 vdc_script_display.php:964
+msgid "Attachments:"
+msgstr ""
+
+#: vdc_email_display.php:317
+msgid "Response:"
+msgstr ""
+
+#: vdc_email_display.php:318
+msgid "Reply:"
+msgstr ""
+
+#: vdc_email_display.php:318
+msgid "COPY MESSAGE"
+msgstr ""
+
+#: vdc_email_display.php:326
+msgid "REPLY"
+msgstr ""
+
+#: vdc_email_display.php:360
+msgid "AGENT email frame"
+msgstr ""
+
+#: vdc_email_display.php:420
+msgid "ERROR - ID variable missing"
+msgstr ""
+
+#: vdc_form_display.php:320
+msgid "Custom Fields Disabled:"
+msgstr ""
+
+#: vdc_form_display.php:546
+msgid "Custom Form Output:"
+msgstr ""
+
+#: vdc_form_display.php:566
+msgid "Agent Form Display Script"
+msgstr ""
+
+#: vdc_phonebook_display.php:647
+msgid "Last Name"
+msgstr ""
+
+#: vdc_phonebook_display.php:648
+msgid "First Name"
+msgstr ""
+
+#: vdc_phonebook_display.php:650
+msgid "Office"
+msgstr ""
+
+#: vdc_phonebook_display.php:653
+msgid "Cell"
+msgstr ""
+
+#: vdc_phonebook_display.php:656
+msgid "Other 1"
+msgstr ""
+
+#: vdc_phonebook_display.php:659
+msgid "Other 2"
+msgstr ""
+
+#: vdc_phonebook_display.php:665
+msgid "BU"
+msgstr ""
+
+#: vdc_phonebook_display.php:668
+msgid "Department"
+msgstr ""
+
+#: vdc_phonebook_display.php:671
+msgid "Location"
+msgstr ""
+
+#: vdc_phonebook_display.php:674
+msgid "Job Title"
+msgstr ""
+
+#: vdc_phonebook_display.php:792
+msgid "Search:"
+msgstr ""
+
+#: vdc_phonebook_display.php:801
+msgid "search"
+msgstr ""
+
+#: vdc_script_display.php:387
+msgid "VICIDiaL Script Display Script"
+msgstr ""
+
+#: vdc_script_display.php:953
+msgid "INBOUND EMAIL MESSAGE:"
+msgstr ""
+
+#: vdc_script_display.php:954
+msgid "Email Date"
+msgstr ""
+
+#: vdc_script_display.php:955
+msgid "Subject"
+msgstr ""
+
+#: vdc_script_display.php:956
+msgid "To"
+msgstr ""
+
+#: vdc_script_display.php:957
+msgid "From"
+msgstr ""
+
+#: vdc_script_dispo_example.php:317 vdc_script_notes.php:280
+msgid "Title"
+msgstr ""
+
+#: vdc_script_dispo_example.php:320 vdc_script_notes.php:283
+msgid "Last"
+msgstr ""
+
+#: vdc_script_dispo_example.php:325 vdc_script_notes.php:288
+msgid "State"
+msgstr ""
+
+#: vdc_script_dispo_example.php:329 vdc_script_notes.php:292
+msgid "Gender"
+msgstr ""
+
+#: vdc_script_dispo_example.php:334 vdc_script_notes.php:297
+#: vicidial-grey.php:1476 vicidial.php:1796
+msgid "Email"
+msgstr ""
+
+#: vdc_script_dispo_example.php:335 vdc_script_notes.php:298
+msgid "Comments"
+msgstr ""
+
+#: vdc_script_dispo_example.php:428
+msgid "Processing..."
+msgstr ""
+
+#: vdc_script_dispo_example.php:437
+msgid "ViciDial Script"
+msgstr ""
+
+#: vdc_script_dispo_example.php:496
+msgid "Data Updated, Hanging up call, please wait"
+msgstr ""
+
+#: vdc_script_dispo_example.php:539
+msgid "Vendor ID:"
+msgstr ""
+
+#: vdc_script_dispo_example.php:545
+msgid "Title:"
+msgstr ""
+
+#: vdc_script_dispo_example.php:551
+msgid "Middle Initial:"
+msgstr ""
+
+#: vdc_script_dispo_example.php:645
+msgid "Province:"
+msgstr ""
+
+#: vdc_script_dispo_example.php:663
+msgid "Alt. Phone:"
+msgstr ""
+
+#: vdc_script_dispo_example.php:666
+msgid "Email:"
+msgstr ""
+
+#: vdc_script_dispo_example.php:669
+msgid "Show:"
+msgstr ""
+
+#: vdc_script_dispo_example.php:745 vicidial-grey.php:7512
+#: vicidial-grey.php:8879 vicidial-grey.php:10088 vicidial-grey.php:10815
+#: vicidial.php:8527 vicidial.php:10130 vicidial.php:11573 vicidial.php:12379
+msgid "Comments:"
+msgstr ""
+
+#: vdc_script_dispo_example.php:762
+msgid "Question:"
+msgstr ""
+
+#: vdc_script_dispo_example.php:766
+msgid "Answer:"
+msgstr ""
+
+#: vdc_script_dispo_example.php:771
+msgid "Disposition:"
+msgstr ""
+
+#: vdc_script_dispo_example.php:817 vicidial-grey.php:17987 vicidial.php:21388
+msgid "PAUSE AGENT DIALING"
+msgstr ""
+
+#: vdc_script_dispo_example.php:822
+msgid "Please click SUBMIT to hangup and disposition the call"
+msgstr ""
+
+#: vdc_script_dispo_example.php:822 vdc_script_notes.php:632
+msgid "denotes required fields"
+msgstr ""
+
+#: vdc_script_notes.php:344
+msgid "ViciDial Notes"
+msgstr ""
+
+#: vdc_script_notes.php:561
+msgid "Order ID:"
+msgstr ""
+
+#: vdc_script_notes.php:565
+msgid "Appointment Date/Time:"
+msgstr ""
+
+#: vdc_script_notes.php:627
+msgid "Appointment Notes:"
+msgstr ""
+
+#: vdc_script_notes.php:632
+msgid "Please click SUBMIT to commit the changes"
+msgstr ""
+
+#: vdc_soundboard_display.php:161
+msgid "Soundboards disabled on your system"
+msgstr ""
+
+#: vdc_soundboard_display.php:196
+msgid "error: soundboard not valid"
+msgstr ""
+
+#: vdc_soundboard_display.php:213
+msgid "error: API user not valid"
+msgstr ""
+
+#: vdc_soundboard_display.php:221
+msgid "VERSION"
+msgstr ""
+
+#: vdc_soundboard_display.php:221
+msgid "BUILD"
+msgstr ""
+
+#: vdc_soundboard_display.php:221
+msgid "USER"
+msgstr ""
+
+#: vdc_soundboard_display.php:222
+msgid "Agent Audio Soundboard Display Script"
+msgstr ""
+
+#: vdc_soundboard_display.php:615 vdc_soundboard_display.php:809
+#: vdc_soundboard_display.php:1084
+msgid "Max rank count"
+msgstr ""
+
+#: vdc_soundboard_display.php:633 vdc_soundboard_display.php:921
+msgid "stop audio"
+msgstr ""
+
+#: vicidial-grey.php:670 vicidial.php:843
+msgid "ERROR: System Settings missing"
+msgstr ""
+
+#: vicidial-grey.php:1014 vicidial.php:1298
+msgid "Agent web client: Re-Login"
+msgstr ""
+
+#: vicidial-grey.php:1029 vicidial.php:1318
+msgid "Re-Login"
+msgstr ""
+
+#: vicidial-grey.php:1040 vicidial-grey.php:1080 vicidial-grey.php:1130
+#: vicidial-grey.php:2367 vicidial-grey.php:3316 vicidial-grey.php:3343
+#: vicidial.php:1329 vicidial.php:1374 vicidial.php:1429 vicidial.php:2846
+#: vicidial.php:3815 vicidial.php:3847
+msgid "Campaign:"
+msgstr ""
+
+#: vicidial-grey.php:1043 vicidial.php:1261 vicidial.php:1332
+msgid "Refresh Campaign List"
+msgstr ""
+
+#: vicidial-grey.php:1056 vicidial-grey.php:1522 vicidial-grey.php:2343
+#: vicidial-grey.php:3299 vicidial-grey.php:3326 vicidial.php:1345
+#: vicidial.php:1842 vicidial.php:2817 vicidial.php:3793 vicidial.php:3825
+msgid "Agent web client: Campaign Login"
+msgstr ""
+
+#: vicidial-grey.php:1073 vicidial-grey.php:2360 vicidial.php:1367
+#: vicidial.php:2839
+msgid "Campaign Login"
+msgstr ""
+
+#: vicidial-grey.php:1105 vicidial.php:1399
+msgid "Agent web client:  Login"
+msgstr ""
+
+#: vicidial-grey.php:1147 vicidial.php:1446
+msgid "Agent web client:  Phone Login"
+msgstr ""
+
+#: vicidial-grey.php:1161 vicidial.php:1465
+msgid "phone login"
+msgstr ""
+
+#: vicidial-grey.php:1384 vicidial.php:1699
+msgid "ERROR: There are no Shifts enabled for your user group"
+msgstr ""
+
+#: vicidial-grey.php:1437 vicidial.php:1752
+msgid "ERROR: You are not allowed to log in outside of your shift"
+msgstr ""
+
+#: vicidial-grey.php:1530 vicidial.php:1850
+msgid "Sorry, you are not allowed to login to this campaign:"
+msgstr ""
+
+#: vicidial-grey.php:1538 vicidial.php:1863
+msgid "Password"
+msgstr ""
+
+#: vicidial-grey.php:1539 vicidial.php:1864
+msgid "Campaign"
+msgstr ""
+
+#: vicidial-grey.php:2312 vicidial.php:2784
+msgid "Campaign not active, please try again"
+msgstr ""
+
+#: vicidial-grey.php:2324 vicidial.php:2796
+msgid "Login incorrect, please try again"
+msgstr ""
+
+#: vicidial-grey.php:2326 vicidial.php:2798
+msgid "Too many login attempts, try again in 15 minutes"
+msgstr ""
+
+#: vicidial-grey.php:2328 vicidial.php:2800
+msgid "Too many network errors, please contact your administrator"
+msgstr ""
+
+#: vicidial-grey.php:2330 vicidial.php:2802
+msgid "No available servers, please contact your administrator"
+msgstr ""
+
+#: vicidial-grey.php:2332 vicidial.php:2804
+msgid "No available phones, please contact your administrator"
+msgstr ""
+
+#: vicidial-grey.php:2334 vicidial.php:2806
+msgid "You are already logged in, please log out of your other session first"
+msgstr ""
+
+#: vicidial-grey.php:2336 vicidial.php:2808
+msgid "Too many agents logged in, please contact your administrator"
+msgstr ""
+
+#: vicidial-grey.php:2338 vicidial.php:2810
+msgid "Login incorrect, user names are case sensitive"
+msgstr ""
+
+#: vicidial-grey.php:2443 vicidial.php:2922
+msgid "Agent web client: Phone Login Error"
+msgstr ""
+
+#: vicidial-grey.php:2460 vicidial.php:2944
+msgid "Login Error"
+msgstr ""
+
+#: vicidial-grey.php:3307 vicidial.php:3801
+msgid "Sorry, there are no leads in the hopper for this campaign"
+msgstr ""
+
+#: vicidial-grey.php:3314 vicidial-grey.php:3341 vicidial.php:3813
+#: vicidial.php:3845
+msgid "Login:"
+msgstr ""
+
+#: vicidial-grey.php:3315 vicidial-grey.php:3342 vicidial.php:3814
+#: vicidial.php:3846
+msgid "Password:"
+msgstr ""
+
+#: vicidial-grey.php:3334 vicidial.php:3833
+msgid "Sorry, there are no available sessions"
+msgstr ""
+
+#: vicidial-grey.php:4388 vicidial-grey.php:4426 vicidial-grey.php:9438
 #: vicidial.php:5008 vicidial.php:5048 vicidial.php:10872
 msgid "vdc_LB_active.gif"
 msgstr ""
 
-#: vicidial.php:5009 vicidial.php:5050 vicidial.php:9644 vicidial.php:10342
-#: vicidial.php:11731 vicidial.php:12538 vicidial.php:13486 vicidial.php:13502
-msgid "vdc_LB_blank_OFF.gif"
+#: vicidial-grey.php:4392 vicidial-grey.php:17158
+msgid "loading.gif"
 msgstr ""
 
-#: vicidial.php:5010 vicidial.php:5030 vicidial.php:9609 vicidial.php:9617
-#: vicidial.php:9804 vicidial.php:9812 vicidial.php:10468 vicidial.php:10472
-#: vicidial.php:10872 vicidial.php:10893 vicidial.php:13454 vicidial.php:18965
-#: vicidial.php:20024
-msgid "vdc_LB_dialnextnumber.gif"
+#: vicidial-grey.php:4394 vicidial-grey.php:17256 vicidial-grey.php:17288
+#: vicidial-grey.php:17290 vicidial-grey.php:18498 vicidial.php:5016
+#: vicidial.php:20425 vicidial.php:20457 vicidial.php:20459 vicidial.php:22081
+msgid "blank.gif"
+msgstr ""
+
+#: vicidial-grey.php:4400 vicidial.php:5022
+msgid "agc_live_call_DEAD.gif"
+msgstr ""
+
+#: vicidial-grey.php:4402 vicidial.php:5024
+msgid "agc_live_chat_ON.gif"
+msgstr ""
+
+#: vicidial-grey.php:4404 vicidial.php:5026
+msgid "agc_live_chat_DEAD.gif"
+msgstr ""
+
+#: vicidial-grey.php:4406 vicidial.php:5028
+msgid "agc_live_email_ON.gif"
+msgstr ""
+
+#: vicidial-grey.php:4410 vicidial-grey.php:8031 vicidial-grey.php:8899
+#: vicidial-grey.php:9326 vicidial-grey.php:10145 vicidial-grey.php:10866
+#: vicidial.php:5032 vicidial.php:9100 vicidial.php:10153 vicidial.php:10718
+#: vicidial.php:11681 vicidial.php:11686 vicidial.php:12431
+msgid "vdc_LB_hangupcustomer.gif"
+msgstr ""
+
+#: vicidial-grey.php:4412 vicidial-grey.php:8033 vicidial-grey.php:10147
+#: vicidial-grey.php:10875 vicidial-grey.php:16833 vicidial-grey.php:16846
+#: vicidial.php:5034 vicidial.php:9102 vicidial.php:11631 vicidial.php:12436
+#: vicidial.php:12451 vicidial.php:19890 vicidial.php:19906
+msgid "vdc_LB_transferconf.gif"
+msgstr ""
+
+#: vicidial-grey.php:4414 vicidial-grey.php:6252 vicidial.php:5036
+#: vicidial.php:7171
+msgid "vdc_LB_grabparkedcall.gif"
+msgstr ""
+
+#: vicidial-grey.php:4416 vicidial-grey.php:6279 vicidial-grey.php:6327
+#: vicidial-grey.php:8025 vicidial-grey.php:10139 vicidial-grey.php:10869
+#: vicidial.php:5038 vicidial.php:7200 vicidial.php:7252 vicidial.php:9094
+#: vicidial.php:11625 vicidial.php:12445
+msgid "vdc_LB_parkcall.gif"
+msgstr ""
+
+#: vicidial-grey.php:4418 vicidial-grey.php:7615 vicidial-grey.php:8343
+#: vicidial-grey.php:8862 vicidial-grey.php:10289 vicidial-grey.php:11017
+#: vicidial-grey.php:11186 vicidial-grey.php:11190 vicidial.php:5040
+#: vicidial.php:8630 vicidial.php:9564 vicidial.php:10113 vicidial.php:11785
+#: vicidial.php:12592 vicidial.php:12841 vicidial.php:12845
+msgid "vdc_LB_webform.gif"
+msgstr ""
+
+#: vicidial-grey.php:4420 vicidial-grey.php:5961 vicidial-grey.php:6028
+#: vicidial.php:5042 vicidial.php:6851 vicidial.php:6928
+msgid "vdc_LB_stoprecording.gif"
+msgstr ""
+
+#: vicidial-grey.php:4422 vicidial-grey.php:5977 vicidial-grey.php:6617
+#: vicidial-grey.php:17255 vicidial.php:5044 vicidial.php:6872
+#: vicidial.php:7582 vicidial.php:20423
+msgid "vdc_LB_startrecording.gif"
+msgstr ""
+
+#: vicidial-grey.php:4431 vicidial-grey.php:17291 vicidial.php:5052
+#: vicidial.php:20460
+msgid "vdc_LB_senddtmf.gif"
+msgstr ""
+
+#: vicidial-grey.php:4435 vicidial-grey.php:11503 vicidial-grey.php:17289
+#: vicidial.php:5056 vicidial.php:13396 vicidial.php:20458
+msgid "vdc_LB_hangupcustomer_OFF.gif"
+msgstr ""
+
+#: vicidial-grey.php:4437 vicidial-grey.php:11504 vicidial-grey.php:17272
+#: vicidial.php:5058 vicidial.php:13397 vicidial.php:20441
+msgid "vdc_LB_transferconf_OFF.gif"
+msgstr ""
+
+#: vicidial-grey.php:4439 vicidial.php:5060
+msgid "vdc_LB_grabparkedcall_OFF.gif"
+msgstr ""
+
+#: vicidial-grey.php:4441 vicidial-grey.php:6296 vicidial-grey.php:11498
+#: vicidial-grey.php:17265 vicidial.php:5062 vicidial.php:7219
+#: vicidial.php:13391 vicidial.php:20434
+msgid "vdc_LB_parkcall_OFF.gif"
+msgstr ""
+
+#: vicidial-grey.php:4443 vicidial-grey.php:11489 vicidial-grey.php:12259
+#: vicidial-grey.php:17257 vicidial.php:5064 vicidial.php:13382
+#: vicidial.php:14428 vicidial.php:20426
+msgid "vdc_LB_webform_OFF.gif"
+msgstr ""
+
+#: vicidial-grey.php:4445 vicidial.php:5066
+msgid "vdc_LB_stoprecording_OFF.gif"
+msgstr ""
+
+#: vicidial-grey.php:4447 vicidial-grey.php:5965 vicidial-grey.php:5980
+#: vicidial-grey.php:6031 vicidial-grey.php:6620 vicidial-grey.php:15984
+#: vicidial.php:5068 vicidial.php:6856 vicidial.php:6876 vicidial.php:6932
+#: vicidial.php:7586 vicidial.php:18811
+msgid "vdc_LB_startrecording_OFF.gif"
+msgstr ""
+
+#: vicidial-grey.php:4449 vicidial.php:5070
+msgid "vdc_LB_senddtmf_OFF.gif"
+msgstr ""
+
+#: vicidial-grey.php:4451 vicidial-grey.php:6303 vicidial.php:5072
+#: vicidial.php:7226
+msgid "vdc_LB_grabivrparkcall.gif"
+msgstr ""
+
+#: vicidial-grey.php:4453 vicidial-grey.php:6282 vicidial-grey.php:6330
+#: vicidial-grey.php:8028 vicidial-grey.php:10142 vicidial-grey.php:10872
+#: vicidial.php:5074 vicidial.php:7203 vicidial.php:7255 vicidial.php:9097
+#: vicidial.php:11628 vicidial.php:12448
+msgid "vdc_LB_ivrparkcall.gif"
+msgstr ""
+
+#: vicidial-grey.php:4455 vicidial-grey.php:17200 vicidial.php:5082
+#: vicidial.php:20368
+msgid "vdc_tab_chat_internal.gif"
+msgstr ""
+
+#: vicidial-grey.php:4457 vicidial.php:5084
+msgid "vdc_tab_chat_internal_red.gif"
+msgstr ""
+
+#: vicidial-grey.php:4459 vicidial.php:5086
+msgid "vdc_tab_chat_internal_blink.gif"
+msgstr ""
+
+#: vicidial-grey.php:4461 vicidial-grey.php:17203 vicidial.php:5088
+#: vicidial.php:20371
+msgid "vdc_tab_chat_customer.gif"
+msgstr ""
+
+#: vicidial-grey.php:4463 vicidial.php:5090
+msgid "vdc_tab_chat_customer_red.gif"
+msgstr ""
+
+#: vicidial-grey.php:4465 vicidial.php:5092
+msgid "vdc_tab_chat_customer_blink.gif"
+msgstr ""
+
+#: vicidial-grey.php:4467 vicidial-grey.php:4602 vicidial-grey.php:5750
+#: vicidial.php:5094 vicidial.php:5275 vicidial.php:6633
+msgid "vdc_volume_UNMUTE.gif"
+msgstr ""
+
+#: vicidial-grey.php:4469 vicidial-grey.php:4606 vicidial-grey.php:5750
+#: vicidial-grey.php:5777 vicidial-grey.php:5786 vicidial.php:5096
+#: vicidial.php:5279 vicidial.php:6633 vicidial.php:6660 vicidial.php:6669
+msgid "vdc_volume_MUTE.gif"
+msgstr ""
+
+#: vicidial-grey.php:4657 vicidial-grey.php:17574 vicidial.php:5391
+#: vicidial.php:20920
+msgid "Alert is ON"
+msgstr ""
+
+#: vicidial-grey.php:4662 vicidial-grey.php:17576 vicidial.php:5396
+#: vicidial.php:20922
+msgid "Alert is OFF"
+msgstr ""
+
+#: vicidial-grey.php:4787 vicidial-grey.php:7969 vicidial.php:5528
+#: vicidial.php:9034 vicidial.php:12441
+msgid "vdc_XB_dialwithcustomer_OFF.gif"
+msgstr ""
+
+#: vicidial-grey.php:4789 vicidial-grey.php:7971 vicidial.php:5530
+#: vicidial.php:9036 vicidial.php:12442
+msgid "vdc_XB_parkcustomerdial_OFF.gif"
+msgstr ""
+
+#: vicidial-grey.php:5298 vicidial.php:6061
+msgid "Your session has been paused"
+msgstr ""
+
+#: vicidial-grey.php:5563 vicidial.php:6420
+msgid "Manual Queue:"
+msgstr ""
+
+#: vicidial-grey.php:5577 vicidial.php:6439
+msgid "Placing call to next number"
+msgstr ""
+
+#: vicidial-grey.php:5700 vicidial.php:6582
+msgid "LIVE CALLS IN YOUR SESSION:"
+msgstr ""
+
+#: vicidial-grey.php:5700 vicidial.php:6582
+msgid "VOLUME"
+msgstr ""
+
+#: vicidial-grey.php:5740 vicidial.php:6623
+msgid "recording"
+msgstr ""
+
+#: vicidial-grey.php:5750 vicidial-grey.php:8041 vicidial-grey.php:10229
+#: vicidial-grey.php:10957 vicidial.php:6633 vicidial.php:9110
+#: vicidial.php:11725 vicidial.php:12532
+msgid "vdc_volume_up.gif"
+msgstr ""
+
+#: vicidial-grey.php:5750 vicidial-grey.php:8042 vicidial-grey.php:10230
+#: vicidial-grey.php:10958 vicidial.php:6633 vicidial.php:9111
+#: vicidial.php:11726 vicidial.php:12533
+msgid "vdc_volume_down.gif"
+msgstr ""
+
+#: vicidial-grey.php:6061 vicidial.php:6966
+msgid "YOU MUST SELECT AN AGENT TO TRANSFER TO WHEN USING AGENTDIRECT"
+msgstr ""
+
+#: vicidial-grey.php:6160 vicidial.php:7068
+msgid "Transfer number must have at least 1 digit:"
+msgstr ""
+
+#: vicidial-grey.php:6240 vicidial.php:7159
+msgid "Leave 3Way Call Again"
+msgstr ""
+
+#: vicidial-grey.php:6255 vicidial-grey.php:6299 vicidial.php:7174
+#: vicidial.php:7222
+msgid "vdc_LB_grabivrparkcall_OFF.gif"
+msgstr ""
+
+#: vicidial-grey.php:6518 vicidial.php:7483
+msgid "Dial Next Number"
+msgstr ""
+
+#: vicidial-grey.php:6542 vicidial-grey.php:7917 vicidial-grey.php:7962
+#: vicidial-grey.php:8020 vicidial-grey.php:8801 vicidial-grey.php:9321
+#: vicidial-grey.php:10076 vicidial-grey.php:10129 vicidial-grey.php:10803
+#: vicidial-grey.php:10856 vicidial.php:7507 vicidial.php:8980
+#: vicidial.php:9027 vicidial.php:9089 vicidial.php:10052 vicidial.php:10713
+#: vicidial.php:11561 vicidial.php:11614 vicidial.php:12367 vicidial.php:12420
+msgid "Lead:"
+msgstr ""
+
+#: vicidial-grey.php:6543 vicidial-grey.php:7918 vicidial-grey.php:7963
+#: vicidial-grey.php:8021 vicidial-grey.php:8802 vicidial-grey.php:9322
+#: vicidial-grey.php:10077 vicidial-grey.php:10130 vicidial-grey.php:10804
+#: vicidial-grey.php:10857 vicidial.php:7508 vicidial.php:8981
+#: vicidial.php:9028 vicidial.php:9090 vicidial.php:10053 vicidial.php:10714
+#: vicidial.php:11562 vicidial.php:11615 vicidial.php:12368 vicidial.php:12421
+msgid "List:"
+msgstr ""
+
+#: vicidial-grey.php:6554 vicidial.php:7519
+msgid "Dial Alt Phone Number:"
+msgstr ""
+
+#: vicidial-grey.php:6554 vicidial.php:7519
+msgid "MAIN PHONE"
+msgstr ""
+
+#: vicidial-grey.php:6554 vicidial.php:7519
+msgid "or"
+msgstr ""
+
+#: vicidial-grey.php:6554 vicidial-grey.php:8447 vicidial-grey.php:8450
+#: vicidial.php:7519 vicidial.php:9672 vicidial.php:9675
+msgid "ALT PHONE"
+msgstr ""
+
+#: vicidial-grey.php:6554 vicidial-grey.php:8447 vicidial-grey.php:8450
+#: vicidial.php:7519 vicidial.php:9672 vicidial.php:9675
+msgid "ADDRESS3"
+msgstr ""
+
+#: vicidial-grey.php:6554 vicidial.php:7519
+msgid "FINISH LEAD"
+msgstr ""
+
+#: vicidial-grey.php:6688 vicidial-grey.php:17682 vicidial.php:7658
+#: vicidial.php:21028
+msgid "Dialable Leads:"
+msgstr ""
+
+#: vicidial-grey.php:6740 vicidial.php:7711
+msgid "NO"
+msgstr ""
+
+#: vicidial-grey.php:6774 vicidial.php:7745
+msgid "ACTIVE CALLBACKS"
+msgstr ""
+
+#: vicidial-grey.php:6799 vicidial.php:7770
+msgid "YOU MUST BE PAUSED TO CHECK CALLBACKS IN AUTO-DIAL MODE"
+msgstr ""
+
+#: vicidial-grey.php:6844 vicidial.php:7817
+msgid "CALLBACK DATE/TIME"
+msgstr ""
+
+#: vicidial-grey.php:6844 vicidial.php:7817
+msgid "LAST CALL DATE/TIME"
+msgstr ""
+
+#: vicidial-grey.php:6877 vicidial.php:7864
+msgid "NON-DIALABLE"
+msgstr ""
+
+#: vicidial-grey.php:7036 vicidial-grey.php:7711 vicidial-grey.php:7809
+#: vicidial-grey.php:8372 vicidial.php:8037 vicidial.php:8766 vicidial.php:8867
+#: vicidial.php:9596
+msgid "System Delay, Please try again"
+msgstr ""
+
+#: vicidial-grey.php:7086 vicidial.php:8091
+msgid "YOU MUST BE PAUSED TO MANUAL DIAL A NEW LEAD IN AUTO-DIAL MODE"
+msgstr ""
+
+#: vicidial-grey.php:7123 vicidial-grey.php:16869 vicidial.php:8129
+#: vicidial.php:19934
+msgid "Group Alias:"
+msgstr ""
+
+#: vicidial-grey.php:7124 vicidial-grey.php:16870 vicidial.php:8130
+#: vicidial.php:19935
+msgid "Click Here to Choose a Group Alias"
+msgstr ""
+
+#: vicidial-grey.php:7128 vicidial-grey.php:12832 vicidial.php:8134
+#: vicidial.php:15255
+msgid "Dial In-Group:"
+msgstr ""
+
+#: vicidial-grey.php:7129 vicidial.php:8135
+msgid "Click Here to Choose a Dial In-Group"
+msgstr ""
+
+#: vicidial-grey.php:7134 vicidial-grey.php:7842 vicidial-grey.php:7847
+#: vicidial.php:8140 vicidial.php:8901 vicidial.php:8906
+msgid "No-Call Dial:"
+msgstr ""
+
+#: vicidial-grey.php:7134 vicidial-grey.php:7847 vicidial.php:8140
+#: vicidial.php:8906
+msgid "Click Here to Activate"
+msgstr ""
+
+#: vicidial-grey.php:7507 vicidial-grey.php:8874 vicidial-grey.php:10083
+#: vicidial-grey.php:10810 vicidial.php:8522 vicidial.php:10125
+#: vicidial.php:11568 vicidial.php:12374
+msgid "PREVIOUS CALLBACK"
+msgstr ""
+
+#: vicidial-grey.php:7509 vicidial-grey.php:8876 vicidial-grey.php:10085
+#: vicidial-grey.php:10812 vicidial.php:8524 vicidial.php:10127
+#: vicidial.php:11570 vicidial.php:12376
+msgid "Last Call:"
+msgstr ""
+
+#: vicidial-grey.php:7510 vicidial-grey.php:8877 vicidial-grey.php:10086
+#: vicidial-grey.php:10813 vicidial.php:8525 vicidial.php:10128
+#: vicidial.php:11571 vicidial.php:12377
+msgid "CallBack:"
+msgstr ""
+
+#: vicidial-grey.php:7511 vicidial-grey.php:8878 vicidial-grey.php:10087
+#: vicidial-grey.php:10814 vicidial.php:8526 vicidial.php:10129
+#: vicidial.php:11572 vicidial.php:12378
+msgid "Agent:"
+msgstr ""
+
+#: vicidial-grey.php:7522 vicidial-grey.php:7552 vicidial-grey.php:8050
+#: vicidial-grey.php:8081 vicidial-grey.php:10160 vicidial-grey.php:10190
+#: vicidial-grey.php:10888 vicidial-grey.php:10918 vicidial-grey.php:16850
+#: vicidial-grey.php:16854 vicidial.php:8537 vicidial.php:8567
+#: vicidial.php:9119 vicidial.php:9150 vicidial.php:11644 vicidial.php:11674
+#: vicidial.php:12463 vicidial.php:12493 vicidial.php:19910 vicidial.php:19914
+msgid "vdc_LB_quickxfer.gif"
+msgstr ""
+
+#: vicidial-grey.php:7619 vicidial-grey.php:8346 vicidial-grey.php:8865
+#: vicidial-grey.php:10293 vicidial-grey.php:11021 vicidial-grey.php:11230
+#: vicidial-grey.php:11234 vicidial.php:8634 vicidial.php:9567
+#: vicidial.php:10116 vicidial.php:11789 vicidial.php:12596 vicidial.php:12885
+#: vicidial.php:12889
+msgid "vdc_LB_webform_two.gif"
+msgstr ""
+
+#: vicidial-grey.php:7624 vicidial-grey.php:8350 vicidial-grey.php:8869
+#: vicidial-grey.php:10298 vicidial-grey.php:11025 vicidial-grey.php:11275
+#: vicidial-grey.php:11279 vicidial.php:8639 vicidial.php:9571
+#: vicidial.php:10120 vicidial.php:11794 vicidial.php:12600 vicidial.php:12930
+#: vicidial.php:12934
+msgid "vdc_LB_webform_three.gif"
+msgstr ""
+
+#: vicidial-grey.php:7711 vicidial-grey.php:7809 vicidial-grey.php:8372
+#: vicidial.php:8766 vicidial.php:8867 vicidial.php:9596
+msgid "code:"
+msgstr ""
+
+#: vicidial-grey.php:7803 vicidial.php:8860
+msgid "YOU MUST ENTER A PHONE NUMBER AND DIAL CODE TO USE FAST DIAL"
+msgstr ""
+
+#: vicidial-grey.php:7842 vicidial.php:8901
+msgid "Click Here to Deactivate"
+msgstr ""
+
+#: vicidial-grey.php:7915 vicidial-grey.php:7960 vicidial-grey.php:8018
+#: vicidial-grey.php:8799 vicidial-grey.php:9319 vicidial-grey.php:10074
+#: vicidial-grey.php:10127 vicidial-grey.php:10801 vicidial-grey.php:10854
+#: vicidial.php:8978 vicidial.php:9025 vicidial.php:9087 vicidial.php:10050
+#: vicidial.php:10711 vicidial.php:11559 vicidial.php:11612 vicidial.php:12365
+#: vicidial.php:12418
+msgid "Name:"
+msgstr ""
+
+#: vicidial-grey.php:7916 vicidial-grey.php:7961 vicidial-grey.php:8019
+#: vicidial-grey.php:8800 vicidial-grey.php:9320 vicidial-grey.php:10075
+#: vicidial-grey.php:10128 vicidial-grey.php:10802 vicidial-grey.php:10855
+#: vicidial.php:8979 vicidial.php:9026 vicidial.php:9088 vicidial.php:10051
+#: vicidial.php:10712 vicidial.php:11560 vicidial.php:11613 vicidial.php:12366
+#: vicidial.php:12419
+msgid "UID:"
+msgstr ""
+
+#: vicidial-grey.php:7921 vicidial-grey.php:8804 vicidial-grey.php:9324
+#: vicidial.php:8984 vicidial.php:10055 vicidial.php:10716
+msgid "Calling:"
+msgstr ""
+
+#: vicidial-grey.php:7921 vicidial-grey.php:8466 vicidial-grey.php:9324
+#: vicidial.php:8984 vicidial.php:9691 vicidial.php:10716
+msgid "Waiting for Ring..."
+msgstr ""
+
+#: vicidial-grey.php:7921 vicidial.php:8984
+msgid "seconds"
+msgstr ""
+
+#: vicidial-grey.php:7937 vicidial-grey.php:7991 vicidial.php:9000
+#: vicidial.php:9060
+msgid "Call Rejected:"
+msgstr ""
+
+#: vicidial-grey.php:7965 vicidial.php:9030
+msgid "Called 3rd party:"
+msgstr ""
+
+#: vicidial-grey.php:7967 vicidial-grey.php:17835 vicidial.php:9032
+#: vicidial.php:21228
+msgid "vdc_XB_leave3waycall.gif"
+msgstr ""
+
+#: vicidial-grey.php:7973 vicidial.php:9038
+msgid "vdc_XB_hangupxferline.gif"
+msgstr ""
+
+#: vicidial-grey.php:7975 vicidial-grey.php:11708 vicidial-grey.php:12245
+#: vicidial-grey.php:12302 vicidial-grey.php:17804 vicidial.php:9042
+#: vicidial.php:13619 vicidial.php:14410 vicidial.php:14473 vicidial.php:21186
+msgid "vdc_XB_hangupbothlines.gif"
+msgstr ""
+
+#: vicidial-grey.php:8023 vicidial.php:9092
+msgid "Called:"
+msgstr ""
+
+#: vicidial-grey.php:8035 vicidial-grey.php:10149 vicidial-grey.php:10877
+#: vicidial.php:9104 vicidial.php:11633 vicidial.php:12453
+msgid "vdc_XB_localcloser.gif"
+msgstr ""
+
+#: vicidial-grey.php:8037 vicidial-grey.php:10151 vicidial-grey.php:10879
+#: vicidial.php:9106 vicidial.php:11635 vicidial.php:12437
+msgid "vdc_XB_blindtransfer.gif"
+msgstr ""
+
+#: vicidial-grey.php:8039 vicidial-grey.php:10153 vicidial-grey.php:10881
+#: vicidial.php:9108 vicidial.php:11637 vicidial.php:12456
+msgid "vdc_XB_ammessage.gif"
+msgstr ""
+
+#: vicidial-grey.php:8086 vicidial-grey.php:10195 vicidial-grey.php:10923
+#: vicidial-grey.php:16858 vicidial.php:9155 vicidial.php:11691
+#: vicidial.php:12498 vicidial.php:19918
+msgid "vdc_LB_customxfer.gif"
+msgstr ""
+
+#: vicidial-grey.php:8095 vicidial-grey.php:10205 vicidial-grey.php:10933
+#: vicidial.php:9164 vicidial.php:11701 vicidial.php:12508
+msgid "vdc_LB_requeue_call.gif"
+msgstr ""
+
+#: vicidial-grey.php:8099 vicidial-grey.php:10209 vicidial-grey.php:10937
+#: vicidial-grey.php:11519 vicidial-grey.php:13304 vicidial.php:9168
+#: vicidial.php:11705 vicidial.php:12512 vicidial.php:13412 vicidial.php:15732
+msgid "vdc_LB_requeue_call_OFF.gif"
+msgstr ""
+
+#: vicidial-grey.php:8137 vicidial-grey.php:11702 vicidial-grey.php:12243
+#: vicidial-grey.php:12300 vicidial-grey.php:17843 vicidial.php:9260
+#: vicidial.php:13611 vicidial.php:14408 vicidial.php:14471 vicidial.php:21236
+msgid "vdc_XB_dialwithcustomer.gif"
+msgstr ""
+
+#: vicidial-grey.php:8138 vicidial-grey.php:11704 vicidial-grey.php:12244
+#: vicidial-grey.php:12301 vicidial-grey.php:17845 vicidial.php:9261
+#: vicidial.php:13613 vicidial.php:14409 vicidial.php:14472 vicidial.php:21238
+msgid "vdc_XB_parkcustomerdial.gif"
+msgstr ""
+
+#: vicidial-grey.php:8447 vicidial-grey.php:8450 vicidial-grey.php:8455
+#: vicidial-grey.php:8458 vicidial.php:9672 vicidial.php:9675 vicidial.php:9680
+#: vicidial.php:9683
+msgid "DIAL LEAD"
+msgstr ""
+
+#: vicidial-grey.php:8447 vicidial-grey.php:8455 vicidial.php:9672
+#: vicidial.php:9680
+msgid "SKIP LEAD"
+msgstr ""
+
+#: vicidial-grey.php:8458 vicidial.php:9683
+msgid "Preview the Lead then"
+msgstr ""
+
+#: vicidial-grey.php:8547 vicidial.php:9786
+msgid "No more leads in the hopper for campaign:"
+msgstr ""
+
+#: vicidial-grey.php:8549 vicidial.php:9788
+msgid "This phone number is in the DNC list:"
+msgstr ""
+
+#: vicidial-grey.php:8551 vicidial.php:9790
+msgid "This phone number is not in the campaign lists:"
+msgstr ""
+
+#: vicidial-grey.php:8553 vicidial.php:9794
+msgid "This phone number is outside of the local call time:"
+msgstr ""
+
+#: vicidial-grey.php:8555 vicidial.php:9800
+msgid "Unspecified error:"
+msgstr ""
+
+#: vicidial-grey.php:9017 vicidial.php:10332
+msgid "YOU CANNOT SKIP A CALLBACK OR MANUAL DIAL, YOU MUST DIAL THE LEAD"
+msgstr ""
+
+#: vicidial-grey.php:9071 vicidial.php:10387
+msgid "Lead was not reverted, there was an error:"
+msgstr ""
+
+#: vicidial-grey.php:9145 vicidial.php:10464
+msgid "Lead skipped, go on to next lead"
+msgstr ""
+
+#: vicidial-grey.php:9224 vicidial-grey.php:10093 vicidial-grey.php:10820
+#: vicidial.php:10609 vicidial.php:11578 vicidial.php:12384
+msgid "ALT DIAL NUMBER: ALT"
+msgstr ""
+
+#: vicidial-grey.php:9226 vicidial-grey.php:10095 vicidial-grey.php:10822
+#: vicidial.php:10611 vicidial.php:11580 vicidial.php:12386
+msgid "ALT DIAL NUMBER: ADDRESS3"
+msgstr ""
+
+#: vicidial-grey.php:9231 vicidial-grey.php:10099 vicidial-grey.php:10826
+#: vicidial.php:10616 vicidial.php:11584 vicidial.php:12390
+msgid "ALT DIAL NUMBER:"
+msgstr ""
+
+#: vicidial-grey.php:9232 vicidial-grey.php:10100 vicidial-grey.php:10827
+#: vicidial.php:10617 vicidial.php:11585 vicidial.php:12391
+msgid "Phone Code and Number:"
+msgstr ""
+
+#: vicidial-grey.php:9240 vicidial-grey.php:10108 vicidial-grey.php:10835
+#: vicidial.php:10625 vicidial.php:11593 vicidial.php:12399
+msgid "Active:"
+msgstr ""
+
+#: vicidial-grey.php:9241 vicidial-grey.php:10109 vicidial-grey.php:10836
+#: vicidial.php:10626 vicidial.php:11594 vicidial.php:12400
+msgid "Alt Count:"
+msgstr ""
+
+#: vicidial-grey.php:9305 vicidial.php:10696
+msgid "call was not placed, there was an error:"
+msgstr ""
+
+#: vicidial-grey.php:9631 vicidial.php:11087
+msgid "Change this phone number to INACTIVE"
+msgstr ""
+
+#: vicidial-grey.php:9633 vicidial.php:11089
+msgid "Change this phone number to ACTIVE"
+msgstr ""
+
+#: vicidial-grey.php:9815 vicidial-grey.php:10565 vicidial.php:11295
+#: vicidial.php:12124
+msgid "Fronter:"
+msgstr ""
+
+#: vicidial-grey.php:10079 vicidial-grey.php:10136 vicidial-grey.php:10382
+#: vicidial-grey.php:10806 vicidial-grey.php:10863 vicidial-grey.php:11115
+#: vicidial.php:11564 vicidial.php:11622 vicidial.php:11925 vicidial.php:12370
+#: vicidial.php:12428 vicidial.php:12736
+msgid "Incoming:"
+msgstr ""
+
+#: vicidial-grey.php:11492 vicidial-grey.php:12262 vicidial-grey.php:17260
+#: vicidial.php:13385 vicidial.php:14431 vicidial.php:20429
+msgid "vdc_LB_webform_two_OFF.gif"
+msgstr ""
+
+#: vicidial-grey.php:11496 vicidial-grey.php:12266 vicidial-grey.php:17262
+#: vicidial.php:13389 vicidial.php:14435 vicidial.php:20431
+msgid "vdc_LB_webform_three_OFF.gif"
+msgstr ""
+
+#: vicidial-grey.php:11501 vicidial-grey.php:17268 vicidial.php:13394
+#: vicidial.php:20437
+msgid "vdc_LB_ivrparkcall_OFF.gif"
+msgstr ""
+
+#: vicidial-grey.php:11505 vicidial-grey.php:17787 vicidial.php:13398
+#: vicidial.php:21167
+msgid "vdc_XB_localcloser_OFF.gif"
+msgstr ""
+
+#: vicidial-grey.php:11506 vicidial-grey.php:17841 vicidial.php:13399
+#: vicidial.php:21234
+msgid "vdc_XB_blindtransfer_OFF.gif"
+msgstr ""
+
+#: vicidial-grey.php:11507 vicidial-grey.php:17877 vicidial.php:13400
+#: vicidial.php:21270
+msgid "vdc_XB_ammessage_OFF.gif"
+msgstr ""
+
+#: vicidial-grey.php:11508 vicidial-grey.php:17589 vicidial.php:13401
+#: vicidial.php:20935
+msgid "vdc_volume_up_off.gif"
+msgstr ""
+
+#: vicidial-grey.php:11509 vicidial-grey.php:17589 vicidial.php:13402
+#: vicidial.php:20935
+msgid "vdc_volume_down_off.gif"
+msgstr ""
+
+#: vicidial-grey.php:11512 vicidial-grey.php:16835 vicidial-grey.php:17276
+#: vicidial.php:13405 vicidial.php:19892 vicidial.php:20445
+msgid "vdc_LB_quickxfer_OFF.gif"
+msgstr ""
+
+#: vicidial-grey.php:11515 vicidial-grey.php:16837 vicidial-grey.php:17278
+#: vicidial.php:13408 vicidial.php:19894 vicidial.php:20447
+msgid "vdc_LB_customxfer_OFF.gif"
+msgstr ""
+
+#: vicidial-grey.php:11700 vicidial.php:12440 vicidial.php:13609
+msgid "vdc_XB_leave3waycall_OFF.gif"
+msgstr ""
+
+#: vicidial-grey.php:11706 vicidial-grey.php:17790 vicidial.php:13615
+#: vicidial.php:21170
+msgid "vdc_XB_hangupxferline_OFF.gif"
+msgstr ""
+
+#: vicidial-grey.php:11862 vicidial.php:13844
+msgid "Manual Dial Queue Calls Waiting:"
+msgstr ""
+
+#: vicidial-grey.php:11869 vicidial.php:13851
+msgid "Call Notes:"
+msgstr ""
+
+#: vicidial-grey.php:11885 vicidial-grey.php:12347 vicidial-grey.php:17501
+#: vicidial-grey.php:17502 vicidial-grey.php:17506 vicidial-grey.php:17633
+#: vicidial.php:13867 vicidial.php:14524 vicidial.php:20840 vicidial.php:20841
+#: vicidial.php:20845 vicidial.php:20979
+msgid "History"
+msgstr ""
+
+#: vicidial-grey.php:11901 vicidial.php:13884
+msgid "CALL DISPOSITION"
+msgstr ""
+
+#: vicidial-grey.php:11938 vicidial.php:13924
+msgid "Disposition Status List Hidden"
+msgstr ""
+
+#: vicidial-grey.php:11972 vicidial.php:13967
+msgid "YOU MUST BE PAUSED TO ENTER A PAUSE CODE IN AUTO-DIAL MODE"
+msgstr ""
+
+#: vicidial-grey.php:11989
+msgid "PAUSE CODE"
+msgstr ""
+
+#: vicidial-grey.php:12039 vicidial-grey.php:15193 vicidial.php:14076
+#: vicidial.php:17758
+msgid "YOU MUST BE PAUSED TO SEARCH FOR A LEAD"
+msgstr ""
+
+#: vicidial-grey.php:12048 vicidial.php:14086
+msgid "YOU MUST BE ON AN ACTIVE INBOUND CALL TO SEARCH FOR A LEAD"
+msgstr ""
+
+#: vicidial-grey.php:12128 vicidial.php:14169
+msgid "Close"
+msgstr ""
+
+#: vicidial-grey.php:12171 vicidial.php:14336
+msgid "GROUP ALIAS"
+msgstr ""
+
+#: vicidial-grey.php:12176 vicidial.php:14341
+msgid "CUSTOMER"
+msgstr ""
+
+#: vicidial-grey.php:12177 vicidial.php:14342
+msgid "AGENT_PHONE"
+msgstr ""
+
+#: vicidial-grey.php:12211 vicidial.php:14376
+msgid "DIAL IN-GROUP"
+msgstr ""
+
+#: vicidial-grey.php:12249 vicidial-grey.php:12306 vicidial.php:14416
+#: vicidial.php:14479
+msgid "You Must Select a Disposition"
+msgstr ""
+
+#: vicidial-grey.php:12311 vicidial.php:14486
+msgid "You can only disposition a call once"
+msgstr ""
+
+#: vicidial-grey.php:12318 vicidial.php:14493
+msgid "Disposition set twice: "
+msgstr ""
+
+#: vicidial-grey.php:12591 vicidial-grey.php:16092 vicidial-grey.php:17107
+#: vicidial-grey.php:17122 vicidial-grey.php:17413 vicidial.php:14846
+#: vicidial.php:18939 vicidial.php:20264 vicidial.php:20279 vicidial.php:20708
+msgid "U - Undefined"
+msgstr ""
+
+#: vicidial-grey.php:12591 vicidial-grey.php:16092 vicidial-grey.php:17107
+#: vicidial-grey.php:17122 vicidial-grey.php:17413 vicidial.php:14846
+#: vicidial.php:18939 vicidial.php:20264 vicidial.php:20279 vicidial.php:20708
+msgid "M - Male"
+msgstr ""
+
+#: vicidial-grey.php:12591 vicidial-grey.php:16092 vicidial-grey.php:17107
+#: vicidial-grey.php:17122 vicidial-grey.php:17413 vicidial.php:14846
+#: vicidial.php:18939 vicidial.php:20264 vicidial.php:20279 vicidial.php:20708
+msgid "F - Female"
+msgstr ""
+
+#: vicidial-grey.php:12598 vicidial-grey.php:15457 vicidial-grey.php:17896
+#: vicidial-grey.php:17976 vicidial.php:14853 vicidial.php:18248
+#: vicidial.php:21289 vicidial.php:21376
+msgid "minimize"
+msgstr ""
+
+#: vicidial-grey.php:12599 vicidial-grey.php:17976 vicidial.php:14854
+#: vicidial.php:21376
+msgid "Hangup Again"
+msgstr ""
+
+#: vicidial-grey.php:12602 vicidial-grey.php:17240 vicidial.php:14857
+#: vicidial.php:20408
+msgid "Next Call Pause"
+msgstr ""
+
+#: vicidial-grey.php:12904 vicidial-grey.php:13760 vicidial-grey.php:13885
+#: vicidial-grey.php:17936 vicidial.php:15327 vicidial.php:16216
+#: vicidial.php:16342 vicidial.php:21329
+msgid "Finish Wrapup and Move On"
+msgstr ""
+
+#: vicidial-grey.php:13152 vicidial.php:15580
+msgid "GROUPS NOT SELECTED"
+msgstr ""
+
+#: vicidial-grey.php:13152 vicidial.php:15580
+msgid "SELECTED GROUPS"
+msgstr ""
+
+#: vicidial-grey.php:13152 vicidial-grey.php:13282 vicidial-grey.php:13367
+#: vicidial-grey.php:13446 vicidial.php:15580 vicidial.php:15710
+#: vicidial.php:15796 vicidial.php:15875
+msgid "ADD ALL"
+msgstr ""
+
+#: vicidial-grey.php:13195 vicidial.php:15623
+msgid "Manager has selected groups for you"
+msgstr ""
+
+#: vicidial-grey.php:13283 vicidial-grey.php:13447 vicidial.php:15711
+#: vicidial.php:15876
+msgid "DELETE ALL"
+msgstr ""
+
+#: vicidial-grey.php:13367 vicidial.php:15796
+msgid "TERRITORIES NOT SELECTED"
+msgstr ""
+
+#: vicidial-grey.php:13367 vicidial.php:15796
+msgid "SELECTED TERRITORIES"
+msgstr ""
+
+#: vicidial-grey.php:13382 vicidial.php:15811
+msgid "Manager has selected territories for you"
+msgstr ""
+
+#: vicidial-grey.php:13460 vicidial-grey.php:15964 vicidial.php:15889
+#: vicidial.php:18791
+msgid "Manual Queue is Off"
+msgstr ""
+
+#: vicidial-grey.php:13462 vicidial.php:15891
+msgid "Manual Queue is On"
+msgstr ""
+
+#: vicidial-grey.php:13572 vicidial.php:16002
+msgid "PLEASE CLICK THE LOGOUT LINK TO LOG OUT NEXT TIME."
+msgstr ""
+
+#: vicidial-grey.php:13601 vicidial.php:16031
+msgid ""
+"You cannot log out during a Dial attempt. Wait 50 seconds for the dial to "
+"fail out if it is not answered"
+msgstr ""
+
+#: vicidial-grey.php:13606 vicidial.php:16036
+msgid "STILL A LIVE CALL! Hang it up then you can log out."
+msgstr ""
+
+#: vicidial-grey.php:13612 vicidial.php:16042
+msgid "You are in ALT dial mode, you must finish the lead before logging out."
+msgstr ""
+
+#: vicidial-grey.php:13616 vicidial-grey.php:17960 vicidial.php:16048
+#: vicidial.php:16049 vicidial.php:21356 vicidial.php:21359
+msgid "LOGOUT PROCESSING..."
+msgstr ""
+
+#: vicidial-grey.php:13650 vicidial.php:16083
+msgid "LOGOUT PROCESS COMPLETE, YOU MAY NOW CLOSE YOUR BROWSER OR LOG BACK IN"
+msgstr ""
+
+#: vicidial-grey.php:13661 vicidial.php:16096
+msgid ""
+"Your Shift is over or has changed, you have been logged out of your session"
+msgstr ""
+
+#: vicidial-grey.php:13663 vicidial.php:16098
+msgid ""
+"The system has received a command to log you out, you have been logged out "
+"of your session"
+msgstr ""
+
+#: vicidial-grey.php:13665 vicidial.php:16100
+msgid ""
+"You have been paused for too long, you have been logged out of your session"
+msgstr ""
+
+#: vicidial-grey.php:13721 vicidial-grey.php:13846 vicidial.php:16176
+#: vicidial.php:16302
+msgid "That status is not available at this time: "
+msgstr ""
+
+#: vicidial-grey.php:13748 vicidial-grey.php:13873 vicidial-grey.php:16334
+#: vicidial-grey.php:17933 vicidial.php:16204 vicidial.php:16330
+#: vicidial.php:19288 vicidial.php:21326
+msgid "Call Wrapup:"
+msgstr ""
+
+#: vicidial-grey.php:13748 vicidial-grey.php:13873 vicidial-grey.php:16334
+#: vicidial-grey.php:17933 vicidial.php:16204 vicidial.php:16330
+#: vicidial.php:19288 vicidial.php:21326
+msgid "seconds remaining in wrapup"
+msgstr ""
+
+#: vicidial-grey.php:14704 vicidial.php:17197
+msgid "Close Window"
+msgstr ""
+
+#: vicidial-grey.php:14736 vicidial.php:17229
+msgid "YOU MUST BE PAUSED TO GRAB CALLS IN QUEUE"
+msgstr ""
+
+#: vicidial-grey.php:14846 vicidial-grey.php:17616 vicidial.php:17342
+#: vicidial.php:20962
+msgid "Hide Calls In Queue"
+msgstr ""
+
+#: vicidial-grey.php:14852 vicidial-grey.php:17618 vicidial.php:17348
+#: vicidial.php:20964
+msgid "Show Calls In Queue"
+msgstr ""
+
+#: vicidial-grey.php:14868 vicidial-grey.php:14878 vicidial.php:17364
+#: vicidial.php:17374
+msgid "Agents View"
+msgstr ""
+
+#: vicidial-grey.php:14893 vicidial-grey.php:14898 vicidial.php:17389
+#: vicidial.php:17394
+msgid "WebPhone View"
+msgstr ""
+
+#: vicidial-grey.php:15047 vicidial.php:17609
+msgid "YOU MUST BE PAUSED TO VIEW YOUR CALL LOG"
+msgstr ""
+
+#: vicidial-grey.php:15062 vicidial.php:17625
+msgid "Invalid Date Format. Please correct and submit again."
+msgstr ""
+
+#: vicidial-grey.php:15073 vicidial.php:17637
+msgid ""
+"Invalid Day, Month, or Year range detected. Please correct and submit again."
+msgstr ""
+
+#: vicidial-grey.php:15128 vicidial.php:17693 vicidial.php:17765
+msgid "Searching..."
+msgstr ""
+
+#: vicidial-grey.php:15447 vicidial-grey.php:17912 vicidial.php:18238
+#: vicidial.php:21305
+msgid "maximize"
+msgstr ""
+
+#: vicidial-grey.php:15470 vicidial.php:18261
+msgid "Next Call Pause Set"
+msgstr ""
+
+#: vicidial-grey.php:15489 vicidial.php:18280
+msgid "YOU MUST BE PAUSED TO CHANGE GROUPS"
+msgstr ""
+
+#: vicidial-grey.php:15496 vicidial.php:18288
+msgid "Manager"
+msgstr ""
+
+#: vicidial-grey.php:15496 vicidial.php:18288
+msgid "has selected your in-group choices"
+msgstr ""
+
+#: vicidial-grey.php:15522 vicidial.php:18316
+msgid "YOU MUST BE PAUSED TO CHANGE TERRITORIES"
+msgstr ""
+
+#: vicidial-grey.php:15590 vicidial.php:18387
+msgid "You must choose a date"
+msgstr ""
+
+#: vicidial-grey.php:15696 vicidial-grey.php:18004 vicidial.php:18495
+#: vicidial.php:21405
+msgid "Select a Date Below"
+msgstr ""
+
+#: vicidial-grey.php:15719 vicidial.php:18519
+msgid "DIAL ALERT:"
+msgstr ""
+
+#: vicidial-grey.php:15727 vicidial.php:18530
+msgid "TIMER NOTIFICATION:"
+msgstr ""
+
+#: vicidial-grey.php:15975 vicidial.php:18802
+msgid "ENTER A PAUSE CODE"
+msgstr ""
+
+#: vicidial-grey.php:16054 vicidial.php:18897
+msgid "Call Agent Webphone"
+msgstr ""
+
+#: vicidial-grey.php:16113 vicidial.php:18967
+msgid "Dial Next Call"
+msgstr ""
+
+#: vicidial-grey.php:16229 vicidial.php:19115
+msgid "Dial Countdown:"
+msgstr ""
+
+#: vicidial-grey.php:16280 vicidial.php:19234
+msgid "Time On Park:"
+msgstr ""
+
+#: vicidial-grey.php:16294 vicidial.php:19248
+msgid "Customer Hung-up, 3-way Call Ended Automatically"
+msgstr ""
+
+#: vicidial-grey.php:16301 vicidial.php:19255
+msgid "CUSTOMER 3WAY HANGUP"
+msgstr ""
+
+#: vicidial-grey.php:16535 vicidial-grey.php:16602 vicidial.php:19537
+#: vicidial.php:19604
+msgid "JAN"
+msgstr ""
+
+#: vicidial-grey.php:16536 vicidial-grey.php:16603 vicidial.php:19538
+#: vicidial.php:19605
+msgid "FEB"
+msgstr ""
+
+#: vicidial-grey.php:16537 vicidial-grey.php:16604 vicidial.php:19539
+#: vicidial.php:19606
+msgid "MAR"
+msgstr ""
+
+#: vicidial-grey.php:16538 vicidial-grey.php:16605 vicidial.php:19540
+#: vicidial.php:19607
+msgid "APR"
+msgstr ""
+
+#: vicidial-grey.php:16539 vicidial-grey.php:16606 vicidial.php:19541
+#: vicidial.php:19608
+msgid "MAY"
+msgstr ""
+
+#: vicidial-grey.php:16540 vicidial-grey.php:16607 vicidial.php:19542
+#: vicidial.php:19609
+msgid "JUN"
+msgstr ""
+
+#: vicidial-grey.php:16541 vicidial-grey.php:16608 vicidial.php:19543
+#: vicidial.php:19610
+msgid "JLY"
+msgstr ""
+
+#: vicidial-grey.php:16542 vicidial-grey.php:16609 vicidial.php:19544
+#: vicidial.php:19611
+msgid "AUG"
+msgstr ""
+
+#: vicidial-grey.php:16543 vicidial-grey.php:16610 vicidial.php:19545
+#: vicidial.php:19612
+msgid "SEP"
+msgstr ""
+
+#: vicidial-grey.php:16544 vicidial-grey.php:16611 vicidial.php:19546
+#: vicidial.php:19613
+msgid "OCT"
+msgstr ""
+
+#: vicidial-grey.php:16545 vicidial-grey.php:16612 vicidial.php:19547
+#: vicidial.php:19614
+msgid "NOV"
+msgstr ""
+
+#: vicidial-grey.php:16546 vicidial-grey.php:16613 vicidial.php:19548
+#: vicidial.php:19615
+msgid "DEC"
+msgstr ""
+
+#: vicidial-grey.php:16653 vicidial.php:19710
+msgid "ACTIVE DISPLAY PAUSED"
+msgstr ""
+
+#: vicidial-grey.php:16694 vicidial-grey.php:16714 vicidial-grey.php:17238
+#: vicidial.php:19751 vicidial.php:19771 vicidial.php:20406
+msgid "LEAD PREVIEW"
+msgstr ""
+
+#: vicidial-grey.php:16699 vicidial-grey.php:16722 vicidial.php:19756
+#: vicidial.php:19779
+msgid "ALT PHONE DIAL"
+msgstr ""
+
+#: vicidial-grey.php:16738 vicidial.php:19795
+msgid "Hide conference call channel information"
+msgstr ""
+
+#: vicidial-grey.php:16745 vicidial-grey.php:17567 vicidial.php:19802
+#: vicidial.php:20913
+msgid "Show conference call channel information"
+msgstr ""
+
+#: vicidial-grey.php:16758 vicidial.php:19815
+msgid "vdc_XB_hotkeysactive.gif"
+msgstr ""
+
+#: vicidial-grey.php:16764 vicidial-grey.php:17770 vicidial.php:19821
+#: vicidial.php:21150
+msgid "vdc_XB_hotkeysactive_OFF.gif"
+msgstr ""
+
+#: vicidial-grey.php:16778 vicidial-grey.php:18097 vicidial.php:19835
+#: vicidial.php:21511
+msgid "hide comment history"
+msgstr ""
+
+#: vicidial-grey.php:16794 vicidial.php:19851
+msgid "show comment history"
+msgstr ""
+
+#: vicidial-grey.php:16882 vicidial.php:19947
+msgid "YOU DO NOT HAVE PERMISSIONS TO TRANSFER CALLS"
+msgstr ""
+
+#: vicidial-grey.php:17172 vicidial.php:20331 vicidial.php:20333
+msgid "Logged in as User"
+msgstr ""
+
+#: vicidial-grey.php:17173 vicidial.php:20334
+#, php-format
+msgid ": %1s on Phone: %2s"
+msgstr ""
+
+#: vicidial-grey.php:17175 vicidial.php:20336
+msgid "ring"
+msgstr ""
+
+#: vicidial-grey.php:17176 vicidial.php:20337
+msgid "to campaign"
+msgstr ""
+
+#: vicidial-grey.php:17179 vicidial.php:20340
+msgid "TERRITORIES"
+msgstr ""
+
+#: vicidial-grey.php:17180 vicidial.php:20341
+msgid "GROUPS"
+msgstr ""
+
+#: vicidial-grey.php:17190 vicidial.php:20352
+msgid "vdc_tab_script.gif"
+msgstr ""
+
+#: vicidial-grey.php:17192 vicidial.php:20357
+msgid "vdc_tab_form.gif"
+msgstr ""
+
+#: vicidial-grey.php:17195
+msgid "vdc_tab_email.gif"
+msgstr ""
+
+#: vicidial-grey.php:17206 vicidial.php:20374
+msgid "LIVE"
+msgstr ""
+
+#: vicidial-grey.php:17206 vicidial.php:20374
+msgid "session ID:"
+msgstr ""
+
+#: vicidial-grey.php:17213 vicidial.php:20381
+msgid "Agent Screen"
+msgstr ""
+
+#: vicidial-grey.php:17224 vicidial-grey.php:17692 vicidial-grey.php:17704
+#: vicidial-grey.php:17712 vicidial-grey.php:17720 vicidial-grey.php:17728
+#: vicidial-grey.php:17979 vicidial-grey.php:18000 vicidial-grey.php:18129
+#: vicidial-grey.php:18229 vicidial-grey.php:18251 vicidial-grey.php:18276
+#: vicidial-grey.php:18287 vicidial-grey.php:18330 vicidial-grey.php:18341
+#: vicidial-grey.php:18392 vicidial-grey.php:18403 vicidial-grey.php:18416
+#: vicidial-grey.php:18428 vicidial-grey.php:18440 vicidial-grey.php:18451
+#: vicidial-grey.php:18463 vicidial.php:20392 vicidial.php:21046
+#: vicidial.php:21058 vicidial.php:21070 vicidial.php:21078 vicidial.php:21086
+#: vicidial.php:21094 vicidial.php:21104 vicidial.php:21379 vicidial.php:21401
+#: vicidial.php:21543 vicidial.php:21557 vicidial.php:21663 vicidial.php:21686
+#: vicidial.php:21712 vicidial.php:21758 vicidial.php:21801 vicidial.php:21812
+#: vicidial.php:21905 vicidial.php:21916 vicidial.php:21930 vicidial.php:21943
+#: vicidial.php:21959 vicidial.php:21982 vicidial.php:21993 vicidial.php:22004
+#: vicidial.php:22016 vicidial.php:22033
+msgid "pixel.gif"
+msgstr ""
+
+#: vicidial-grey.php:17231 vicidial.php:20399
+msgid "STATUS:"
+msgstr ""
+
+#: vicidial-grey.php:17239 vicidial.php:20407
+msgid " ALT PHONE DIAL"
+msgstr ""
+
+#: vicidial-grey.php:17249 vicidial.php:20417
+msgid "RECORDING FILE:"
+msgstr ""
+
+#: vicidial-grey.php:17252 vicidial.php:20420
+msgid "RECORD ID:"
+msgstr ""
+
+#: vicidial-grey.php:17317 vicidial.php:20491
+msgid "Customer Time:"
+msgstr ""
+
+#: vicidial-grey.php:17317 vicidial.php:20491
+msgid "Channel:"
+msgstr ""
+
+#: vicidial-grey.php:17319 vicidial-grey.php:18412 vicidial.php:20493
+#: vicidial.php:21926
+msgid "Customer Information:"
+msgstr ""
+
+#: vicidial-grey.php:17322 vicidial.php:20496
+msgid "LEAD SEARCH"
+msgstr ""
+
+#: vicidial-grey.php:17472 vicidial.php:20807
+msgid "Entry Date"
+msgstr ""
+
+#: vicidial-grey.php:17476 vicidial.php:20811
+msgid "Source ID"
+msgstr ""
+
+#: vicidial-grey.php:17480 vicidial.php:20815
+msgid "Date of Birth"
+msgstr ""
+
+#: vicidial-grey.php:17484 vicidial.php:20819
+msgid "Rank"
+msgstr ""
+
+#: vicidial-grey.php:17488 vicidial.php:20823
+msgid "Owner"
+msgstr ""
+
+#: vicidial-grey.php:17518 vicidial.php:20857
+msgid "Call Notes: "
+msgstr ""
+
+#: vicidial-grey.php:17520 vicidial.php:20859
+msgid "view notes"
+msgstr ""
+
+#: vicidial-grey.php:17555 vicidial.php:20897
+msgid "FAST DIAL"
+msgstr ""
+
+#: vicidial-grey.php:17556 vicidial.php:20898
+msgid "VIEW CALL LOG"
+msgstr ""
+
+#: vicidial-grey.php:17565 vicidial.php:20911
+msgid "Server:"
+msgstr ""
+
+#: vicidial-grey.php:17585 vicidial.php:20931
+msgid "seconds:"
+msgstr ""
+
+#: vicidial-grey.php:17593 vicidial.php:20939
+msgid "Your Status:"
+msgstr ""
+
+#: vicidial-grey.php:17593 vicidial.php:20939
+msgid "Calls Dialing:"
+msgstr ""
+
+#: vicidial-grey.php:17600 vicidial.php:20946
+msgid "D1 - DIAL"
+msgstr ""
+
+#: vicidial-grey.php:17602 vicidial.php:20948
+msgid "D2 - DIAL"
+msgstr ""
+
+#: vicidial-grey.php:17609 vicidial.php:20955
+msgid "Calls In Queue:"
+msgstr ""
+
+#: vicidial-grey.php:17624 vicidial.php:20970
+msgid "X ACTIVE CALLBACKS"
+msgstr ""
+
+#: vicidial-grey.php:17649 vicidial.php:20995
+msgid "Other Agents Status:"
+msgstr ""
+
+#: vicidial-grey.php:17665 vicidial.php:21011
+msgid "Agents View +"
+msgstr ""
+
+#: vicidial-grey.php:17672 vicidial.php:21018
+msgid "WebPhone View -"
+msgstr ""
+
+#: vicidial-grey.php:17694 vicidial.php:21048
+msgid "AGENT SCRIPT"
+msgstr ""
+
+#: vicidial-grey.php:17698 vicidial-grey.php:17739 vicidial.php:21052
+#: vicidial.php:21064 vicidial.php:21115 vicidial.php:21119
+msgid "refresh"
+msgstr ""
+
+#: vicidial-grey.php:17735 vicidial-grey.php:18319 vicidial-grey.php:18381
+#: vicidial.php:21111 vicidial.php:21790 vicidial.php:21894
+msgid "reset form"
+msgstr ""
+
+#: vicidial-grey.php:17744 vicidial.php:21124
+msgid "Lead Dispositioned As:"
+msgstr ""
+
+#: vicidial-grey.php:17755 vicidial.php:21135
+msgid "Disposition Hot Keys:"
+msgstr ""
+
+#: vicidial-grey.php:17756 vicidial.php:21136
+msgid ""
+"When active, simply press the keyboard key for the desired disposition for "
+"this call. The call will then be hungup and dispositioned automatically:"
+msgstr ""
+
+#: vicidial-grey.php:17780 vicidial.php:21160
+msgid "vdc_XB_header.gif"
+msgstr ""
+
+#: vicidial-grey.php:17785 vicidial.php:21165
+msgid "SELECT A GROUP TO SEND YOUR CALL TO"
+msgstr ""
+
+#: vicidial-grey.php:17796 vicidial.php:21178
+msgid "vdc_XB_seconds.gif"
+msgstr ""
+
+#: vicidial-grey.php:17798 vicidial.php:21180
+msgid "vdc_XB_channel.gif"
+msgstr ""
+
+#: vicidial-grey.php:17801 vicidial.php:21183
+msgid "CONSULTATIVE"
+msgstr ""
+
+#: vicidial-grey.php:17810 vicidial.php:5107 vicidial.php:5161
+#: vicidial.php:5173 vicidial.php:21197
+msgid "vdc_XB_number.gif"
+msgstr ""
+
+#: vicidial-grey.php:17826 vicidial.php:21219
+msgid "AGENTS"
+msgstr ""
+
+#: vicidial-grey.php:17832 vicidial.php:21225
+msgid "DIAL OVERRIDE"
+msgstr ""
+
+#: vicidial-grey.php:17832 vicidial-grey.php:18210 vicidial.php:21225
+#: vicidial.php:21640
+msgid "DISABLED"
+msgstr ""
+
+#: vicidial-grey.php:17851 vicidial.php:21244
+msgid "vdc_XB_presetsbutton.gif"
+msgstr ""
+
+#: vicidial-grey.php:17859 vicidial.php:21252
+msgid "vdc_XB_contactsbutton.gif"
+msgstr ""
+
+#: vicidial-grey.php:17890 vicidial.php:21283
+msgid "Available Agents Transfer:"
+msgstr ""
+
+#: vicidial-grey.php:17895 vicidial.php:21288
+msgid "Extended Alt Phone Information:"
+msgstr ""
+
+#: vicidial-grey.php:17912 vicidial.php:21305
+msgid "Alt Phone Info"
+msgstr ""
+
+#: vicidial-grey.php:17917 vicidial.php:21310
+msgid "No one is in your session:"
+msgstr ""
+
+#: vicidial-grey.php:17920 vicidial.php:21313
+msgid "Call Agent Again"
+msgstr ""
+
+#: vicidial-grey.php:17925 vicidial.php:21318
+msgid "Customer has hung up:"
+msgstr ""
+
+#: vicidial-grey.php:17928 vicidial.php:21321
+msgid "Finish and Disposition Call"
+msgstr ""
+
+#: vicidial-grey.php:17945 vicidial.php:21338
+msgid "Close Message"
+msgstr ""
+
+#: vicidial-grey.php:17950 vicidial.php:21343
+msgid "Your session has been disabled"
+msgstr ""
+
+#: vicidial-grey.php:17950 vicidial.php:21343
+msgid "CLICK HERE TO RESET YOUR SESSION"
+msgstr ""
+
+#: vicidial-grey.php:17955 vicidial.php:21348
+msgid ""
+"There is a time synchronization problem with your system, please tell your "
+"system administrator"
+msgstr ""
+
+#: vicidial-grey.php:17972 vicidial.php:21372
+msgid ""
+"Any changes made to the customer information below at this time will not be "
+"comitted, You must change customer information before you Hangup the call."
+msgstr ""
+
+#: vicidial-grey.php:17976 vicidial.php:21376
+msgid "DISPOSITION CALL :"
+msgstr ""
+
+#: vicidial-grey.php:17985 vicidial.php:21386
+msgid "End-of-call Disposition Selection"
+msgstr ""
+
+#: vicidial-grey.php:17988 vicidial.php:21389
+msgid "CLEAR FORM"
+msgstr ""
+
+#: vicidial-grey.php:17991 vicidial.php:21392
+msgid "WEB FORM SUBMIT"
+msgstr ""
+
+#: vicidial-grey.php:17997 vicidial.php:21398
+msgid "Select a CallBack Date :"
+msgstr ""
+
+#: vicidial-grey.php:18006 vicidial.php:21407
+msgid "Hour:"
+msgstr ""
+
+#: vicidial-grey.php:18047 vicidial.php:21448
+msgid "Minutes:"
+msgstr ""
+
+#: vicidial-grey.php:18077 vicidial-grey.php:18266 vicidial.php:21489
+#: vicidial.php:21702
+msgid "MY CALLBACK ONLY"
+msgstr ""
+
+#: vicidial-grey.php:18080 vicidial.php:21492
+msgid "CB Comments:"
+msgstr ""
+
+#: vicidial-grey.php:18097 vicidial.php:21511
+msgid "View Comment History:"
+msgstr ""
+
+#: vicidial-grey.php:18110 vicidial.php:21524
+msgid "Previous Callback Information:"
+msgstr ""
+
+#: vicidial-grey.php:18125 vicidial.php:21553
+#, php-format
+msgid ""
+"CALLBACKS FOR AGENT %1s:<br />To see information on one of the callbacks "
+"below, click on the INFO link. To call the customer back now, click on the "
+"DIAL link. If you click on a record below to dial it, it will be removed "
+"from the list."
+msgstr ""
+
+#: vicidial-grey.php:18140 vicidial.php:21569
+#, php-format
+msgid "NEW MANUAL DIAL LEAD FOR %1s in campaign %2s:"
+msgstr ""
+
+#: vicidial-grey.php:18140 vicidial.php:21569
+msgid "Enter information below for the new lead you wish to call."
+msgstr ""
+
+#: vicidial-grey.php:18145 vicidial.php:21574
+#, php-format
+msgid ""
+"Note: a dial prefix of %1s will be added to the beginning of this number"
+msgstr ""
+
+#: vicidial-grey.php:18148 vicidial.php:21577
+#, php-format
+msgid "Note: all new manual dial leads will go into list %1s"
+msgstr ""
+
+#: vicidial-grey.php:18150 vicidial.php:21579
+msgid "Dial Code:"
+msgstr ""
+
+#: vicidial-grey.php:18151 vicidial.php:21580
+msgid "(This is usually a 1 in the USA-Canada)"
+msgstr ""
+
+#: vicidial-grey.php:18153 vicidial-grey.php:18349 vicidial.php:21582
+#: vicidial.php:21821
+msgid "Phone Number:"
+msgstr ""
+
+#: vicidial-grey.php:18155 vicidial-grey.php:18166 vicidial.php:21584
+#: vicidial.php:21595
+msgid "(digits only)"
+msgstr ""
+
+#: vicidial-grey.php:18164 vicidial.php:21593
+msgid "Dial Lead ID:"
+msgstr ""
+
+#: vicidial-grey.php:18181 vicidial.php:21610
+msgid "Search Existing Leads:"
+msgstr ""
+
+#: vicidial-grey.php:18182 vicidial.php:21611
+msgid ""
+"(This option if checked will attempt to find the phone number in the system "
+"before inserting it as a new lead)"
+msgstr ""
+
+#: vicidial-grey.php:18193 vicidial.php:21623
+msgid ""
+"If you want to dial a number and have it NOT be added as a new lead, enter "
+"in the exact dialstring that you want to call in the Dial Override field "
+"below. To hangup this call you will have to open the CALLS IN THIS SESSION "
+"link at the bottom of the screen and hang it up by clicking on its channel "
+"link there."
+msgstr ""
+
+#: vicidial-grey.php:18195 vicidial.php:21625
+msgid "Dial Override:"
+msgstr ""
+
+#: vicidial-grey.php:18203 vicidial.php:21633
+msgid "(digits only please)"
+msgstr ""
+
+#: vicidial-grey.php:18217 vicidial.php:21647
+msgid "Dial Now"
+msgstr ""
+
+#: vicidial-grey.php:18219 vicidial.php:21651
+msgid "Preview Call"
+msgstr ""
+
+#: vicidial-grey.php:18226 vicidial.php:21660
+msgid "CLOSER INBOUND GROUP SELECTION"
+msgstr ""
+
+#: vicidial-grey.php:18231 vicidial.php:21666
+msgid "Closer Inbound Group Selection"
+msgstr ""
+
+#: vicidial-grey.php:18237 vicidial.php:21672
+msgid "BLENDED CALLING(outbound activated)"
+msgstr ""
+
+#: vicidial-grey.php:18241 vicidial-grey.php:18255 vicidial.php:21676
+#: vicidial.php:21691
+msgid "RESET"
+msgstr ""
+
+#: vicidial-grey.php:18248 vicidial.php:21683
+msgid "TERRITORY SELECTION"
+msgstr ""
+
+#: vicidial-grey.php:18253 vicidial.php:21689
+msgid "Territory Selection"
+msgstr ""
+
+#: vicidial-grey.php:18268 vicidial.php:21704
+msgid "BLENDED CALLING"
+msgstr ""
+
+#: vicidial-grey.php:18273 vicidial.php:21709
+msgid "AGENT CALL LOG:"
+msgstr ""
+
+#: vicidial-grey.php:18278 vicidial.php:21714
+msgid "Call log List"
+msgstr ""
+
+#: vicidial-grey.php:18284 vicidial.php:21755
+msgid "SEARCH FOR A CONTACT:"
+msgstr ""
+
+#: vicidial-grey.php:18290 vicidial.php:21761
+msgid ""
+"Notes: when doing a search for a contact, wildcard or partial search terms "
+"are not allowed. <br />Contact search requests are all logged in the system."
+msgstr ""
+
+#: vicidial-grey.php:18295 vicidial.php:21766
+msgid "Office Number:"
+msgstr ""
+
+#: vicidial-grey.php:18298 vicidial.php:21769
+msgid "First Name:"
+msgstr ""
+
+#: vicidial-grey.php:18301 vicidial.php:21772
+msgid "Last Name:"
+msgstr ""
+
+#: vicidial-grey.php:18304 vicidial.php:21775
+msgid "BU Name:"
+msgstr ""
+
+#: vicidial-grey.php:18307 vicidial.php:21778
+msgid "Department:"
+msgstr ""
+
+#: vicidial-grey.php:18310 vicidial.php:21781
+msgid "Group Name:"
+msgstr ""
+
+#: vicidial-grey.php:18313 vicidial.php:21784
+msgid "Job Title:"
+msgstr ""
+
+#: vicidial-grey.php:18319 vicidial-grey.php:18381 vicidial.php:21790
+#: vicidial.php:21894
+msgid "SUBMIT SEARCH"
+msgstr ""
+
+#: vicidial-grey.php:18327 vicidial.php:21798
+msgid "CONTACTS SEARCH RESULTS:"
+msgstr ""
+
+#: vicidial-grey.php:18332 vicidial-grey.php:18394 vicidial.php:21803
+#: vicidial.php:21907
+msgid "Search Results"
+msgstr ""
+
+#: vicidial-grey.php:18338 vicidial.php:21809
+msgid "SEARCH FOR A LEAD:"
+msgstr ""
+
+#: vicidial-grey.php:18344 vicidial.php:21816
+#, php-format
+msgid ""
+"Notes: when doing a search for a lead, the phone number, lead ID or %1s are "
+"the best fields to use."
+msgstr ""
+
+#: vicidial-grey.php:18344 vicidial.php:21816
+msgid ""
+"Using the other fields may be slower. Lead searching does not allow for "
+"wildcard or partial search terms."
+msgstr ""
+
+#: vicidial-grey.php:18344 vicidial.php:21816
+msgid "Lead search requests are all logged in the system."
+msgstr ""
+
+#: vicidial-grey.php:18352 vicidial.php:21824
+msgid "Phone Number Fields:"
+msgstr ""
+
+#: vicidial-grey.php:18354 vicidial.php:21826
+msgid "Main Phone Number"
+msgstr ""
+
+#: vicidial-grey.php:18355 vicidial.php:21827
+msgid "Alternate Phone Number"
+msgstr ""
+
+#: vicidial-grey.php:18356 vicidial.php:21828
+msgid "Address3 Phone Number"
+msgstr ""
+
+#: vicidial-grey.php:18360 vicidial.php:21833
+msgid "Lead ID:"
+msgstr ""
+
+#: vicidial-grey.php:18389 vicidial.php:21902
+msgid "SEARCH RESULTS:"
+msgstr ""
+
+#: vicidial-grey.php:18400 vicidial.php:21913
+msgid "CALL NOTES LOG:"
+msgstr ""
+
+#: vicidial-grey.php:18405 vicidial.php:21918
+msgid "Call Notes List"
+msgstr ""
+
+#: vicidial-grey.php:18407 vicidial-grey.php:18420 vicidial.php:21920
+#: vicidial.php:21934
+msgid "Close Info Box"
+msgstr ""
+
+#: vicidial-grey.php:18418 vicidial.php:21545 vicidial.php:21932
+msgid "Lead Info"
+msgstr ""
+
+#: vicidial-grey.php:18425 vicidial.php:21940
+msgid "SELECT A PAUSE CODE :"
+msgstr ""
+
+#: vicidial-grey.php:18430 vicidial.php:21945 vicidial.php:21961
+msgid "Pause Code Selection"
+msgstr ""
+
+#: vicidial-grey.php:18437 vicidial.php:21979
+msgid "SELECT A PRESET :"
+msgstr ""
+
+#: vicidial-grey.php:18442 vicidial.php:21984
+msgid "Presets Selection"
+msgstr ""
+
+#: vicidial-grey.php:18448 vicidial.php:22001
+msgid "SELECT A GROUP ALIAS :"
+msgstr ""
+
+#: vicidial-grey.php:18453 vicidial.php:22006
+msgid "Group Alias Selection"
+msgstr ""
+
+#: vicidial-grey.php:18460 vicidial.php:22013
+msgid "SELECT A DIAL IN-GROUP :"
+msgstr ""
+
+#: vicidial-grey.php:18465 vicidial.php:22018
+msgid "Dial In-Group Selection"
+msgstr ""
+
+#: vicidial-grey.php:18472 vicidial.php:22054
+msgid "ALERT :"
+msgstr ""
+
+#: vicidial-grey.php:18479 vicidial.php:22062
+msgid ""
+"Another live agent session was open using your user ID. It has been "
+"disabled. Click OK to continue to the agent screen."
+msgstr ""
+
+#: vicidial-grey.php:18479 vicidial-grey.php:18527 vicidial.php:22062
+#: vicidial.php:22110
+msgid "OK"
+msgstr ""
+
+#: vicidial-grey.php:18484 vicidial.php:19705 vicidial.php:22067
+msgid "This agent screen was not opened properly."
+msgstr ""
+
+#: vicidial-grey.php:18509 vicidial.php:22092
+msgid "Agent Alert!"
+msgstr ""
+
+#: vicidial-grey.php:18516 vicidial.php:22099
+msgid "alert.gif"
+msgstr ""
+
+#: vicidial-grey.php:18521 vicidial.php:22104
+msgid "Alert Box"
+msgstr ""
+
+#: vicidial.php:1294
+msgid "Old Agent Screen"
 msgstr ""
 
 #: vicidial.php:5012 vicidial.php:16048 vicidial.php:20314 vicidial.php:21359
@@ -320,119 +5345,6 @@ msgstr ""
 
 #: vicidial.php:5014 vicidial.php:16083
 msgid "agent_loading_done.gif"
-msgstr ""
-
-#: vicidial.php:5016 vicidial.php:20425 vicidial.php:20457 vicidial.php:20459
-#: vicidial.php:22081
-msgid "blank.gif"
-msgstr ""
-
-#: vicidial.php:5018 vicidial.php:20375
-msgid "agc_live_call_OFF.gif"
-msgstr ""
-
-#: vicidial.php:5020
-msgid "agc_live_call_ON.gif"
-msgstr ""
-
-#: vicidial.php:5022
-msgid "agc_live_call_DEAD.gif"
-msgstr ""
-
-#: vicidial.php:5024
-msgid "agc_live_chat_ON.gif"
-msgstr ""
-
-#: vicidial.php:5026
-msgid "agc_live_chat_DEAD.gif"
-msgstr ""
-
-#: vicidial.php:5028
-msgid "agc_live_email_ON.gif"
-msgstr ""
-
-#: vicidial.php:5032 vicidial.php:9100 vicidial.php:10153 vicidial.php:10718
-#: vicidial.php:11681 vicidial.php:11686 vicidial.php:12431
-msgid "vdc_LB_hangupcustomer.gif"
-msgstr ""
-
-#: vicidial.php:5034 vicidial.php:9102 vicidial.php:11631 vicidial.php:12436
-#: vicidial.php:12451 vicidial.php:19890 vicidial.php:19906
-msgid "vdc_LB_transferconf.gif"
-msgstr ""
-
-#: vicidial.php:5036 vicidial.php:7171
-msgid "vdc_LB_grabparkedcall.gif"
-msgstr ""
-
-#: vicidial.php:5038 vicidial.php:7200 vicidial.php:7252 vicidial.php:9094
-#: vicidial.php:11625 vicidial.php:12445
-msgid "vdc_LB_parkcall.gif"
-msgstr ""
-
-#: vicidial.php:5040 vicidial.php:8630 vicidial.php:9564 vicidial.php:10113
-#: vicidial.php:11785 vicidial.php:12592 vicidial.php:12841 vicidial.php:12845
-msgid "vdc_LB_webform.gif"
-msgstr ""
-
-#: vicidial.php:5042 vicidial.php:6851 vicidial.php:6928
-msgid "vdc_LB_stoprecording.gif"
-msgstr ""
-
-#: vicidial.php:5044 vicidial.php:6872 vicidial.php:7582 vicidial.php:20423
-msgid "vdc_LB_startrecording.gif"
-msgstr ""
-
-#: vicidial.php:5052 vicidial.php:20460
-msgid "vdc_LB_senddtmf.gif"
-msgstr ""
-
-#: vicidial.php:5054 vicidial.php:9644 vicidial.php:9650 vicidial.php:10342
-#: vicidial.php:10346 vicidial.php:11731 vicidial.php:12538 vicidial.php:13486
-#: vicidial.php:13502 vicidial.php:20403
-msgid "vdc_LB_dialnextnumber_OFF.gif"
-msgstr ""
-
-#: vicidial.php:5056 vicidial.php:13396 vicidial.php:20458
-msgid "vdc_LB_hangupcustomer_OFF.gif"
-msgstr ""
-
-#: vicidial.php:5058 vicidial.php:13397 vicidial.php:20441
-msgid "vdc_LB_transferconf_OFF.gif"
-msgstr ""
-
-#: vicidial.php:5060
-msgid "vdc_LB_grabparkedcall_OFF.gif"
-msgstr ""
-
-#: vicidial.php:5062 vicidial.php:7219 vicidial.php:13391 vicidial.php:20434
-msgid "vdc_LB_parkcall_OFF.gif"
-msgstr ""
-
-#: vicidial.php:5064 vicidial.php:13382 vicidial.php:14428 vicidial.php:20426
-msgid "vdc_LB_webform_OFF.gif"
-msgstr ""
-
-#: vicidial.php:5066
-msgid "vdc_LB_stoprecording_OFF.gif"
-msgstr ""
-
-#: vicidial.php:5068 vicidial.php:6856 vicidial.php:6876 vicidial.php:6932
-#: vicidial.php:7586 vicidial.php:18811
-msgid "vdc_LB_startrecording_OFF.gif"
-msgstr ""
-
-#: vicidial.php:5070
-msgid "vdc_LB_senddtmf_OFF.gif"
-msgstr ""
-
-#: vicidial.php:5072 vicidial.php:7226
-msgid "vdc_LB_grabivrparkcall.gif"
-msgstr ""
-
-#: vicidial.php:5074 vicidial.php:7203 vicidial.php:7255 vicidial.php:9097
-#: vicidial.php:11628 vicidial.php:12448
-msgid "vdc_LB_ivrparkcall.gif"
 msgstr ""
 
 #: vicidial.php:5076 vicidial.php:7293 vicidial.php:9040
@@ -447,39 +5359,6 @@ msgstr ""
 msgid "vdc_XB_parkxferline_GRAB.gif"
 msgstr ""
 
-#: vicidial.php:5082 vicidial.php:20368
-msgid "vdc_tab_chat_internal.gif"
-msgstr ""
-
-#: vicidial.php:5084
-msgid "vdc_tab_chat_internal_red.gif"
-msgstr ""
-
-#: vicidial.php:5086
-msgid "vdc_tab_chat_internal_blink.gif"
-msgstr ""
-
-#: vicidial.php:5088 vicidial.php:20371
-msgid "vdc_tab_chat_customer.gif"
-msgstr ""
-
-#: vicidial.php:5090
-msgid "vdc_tab_chat_customer_red.gif"
-msgstr ""
-
-#: vicidial.php:5092
-msgid "vdc_tab_chat_customer_blink.gif"
-msgstr ""
-
-#: vicidial.php:5094 vicidial.php:5275 vicidial.php:6633
-msgid "vdc_volume_UNMUTE.gif"
-msgstr ""
-
-#: vicidial.php:5096 vicidial.php:5279 vicidial.php:6633 vicidial.php:6660
-#: vicidial.php:6669
-msgid "vdc_volume_MUTE.gif"
-msgstr ""
-
 #: vicidial.php:5099 vicidial.php:6873 vicidial.php:7583 vicidial.php:18815
 msgid "vdc_LB_mute_recording_DISABLED.gif"
 msgstr ""
@@ -492,176 +5371,8 @@ msgstr ""
 msgid "vdc_LB_mute_recording_ON.gif"
 msgstr ""
 
-#: vicidial.php:5107 vicidial.php:5161 vicidial.php:5173 vicidial.php:21197
-msgid "vdc_XB_number.gif"
-msgstr ""
-
 #: vicidial.php:5109 vicidial.php:5165 vicidial.php:5170 vicidial.php:21199
 msgid "vdc_XB_agent.png"
-msgstr ""
-
-#: vicidial.php:5391 vicidial.php:20920
-msgid "Alert is ON"
-msgstr ""
-
-#: vicidial.php:5396 vicidial.php:20922
-msgid "Alert is OFF"
-msgstr ""
-
-#: vicidial.php:5528 vicidial.php:9034 vicidial.php:12441
-msgid "vdc_XB_dialwithcustomer_OFF.gif"
-msgstr ""
-
-#: vicidial.php:5530 vicidial.php:9036 vicidial.php:12442
-msgid "vdc_XB_parkcustomerdial_OFF.gif"
-msgstr ""
-
-#: vicidial.php:6061
-msgid "Your session has been paused"
-msgstr ""
-
-#: vicidial.php:6420
-msgid "Manual Queue:"
-msgstr ""
-
-#: vicidial.php:6439
-msgid "Placing call to next number"
-msgstr ""
-
-#: vicidial.php:6582
-msgid "LIVE CALLS IN YOUR SESSION:"
-msgstr ""
-
-#: vicidial.php:6582
-msgid "REMOTE CHANNEL"
-msgstr ""
-
-#: vicidial.php:6582 vicidial.php:6629 vicidial.php:6633
-msgid "HANGUP"
-msgstr ""
-
-#: vicidial.php:6582
-msgid "VOLUME"
-msgstr ""
-
-#: vicidial.php:6623
-msgid "recording"
-msgstr ""
-
-#: vicidial.php:6633 vicidial.php:9110 vicidial.php:11725 vicidial.php:12532
-msgid "vdc_volume_up.gif"
-msgstr ""
-
-#: vicidial.php:6633 vicidial.php:9111 vicidial.php:11726 vicidial.php:12533
-msgid "vdc_volume_down.gif"
-msgstr ""
-
-#: vicidial.php:6966
-msgid "YOU MUST SELECT AN AGENT TO TRANSFER TO WHEN USING AGENTDIRECT"
-msgstr ""
-
-#: vicidial.php:7068
-msgid "Transfer number must have at least 1 digit:"
-msgstr ""
-
-#: vicidial.php:7159
-msgid "Leave 3Way Call Again"
-msgstr ""
-
-#: vicidial.php:7174 vicidial.php:7222
-msgid "vdc_LB_grabivrparkcall_OFF.gif"
-msgstr ""
-
-#: vicidial.php:7483
-msgid "Dial Next Number"
-msgstr ""
-
-#: vicidial.php:7507 vicidial.php:8980 vicidial.php:9027 vicidial.php:9089
-#: vicidial.php:10052 vicidial.php:10713 vicidial.php:11561 vicidial.php:11614
-#: vicidial.php:12367 vicidial.php:12420
-msgid "Lead:"
-msgstr ""
-
-#: vicidial.php:7508 vicidial.php:8981 vicidial.php:9028 vicidial.php:9090
-#: vicidial.php:10053 vicidial.php:10714 vicidial.php:11562 vicidial.php:11615
-#: vicidial.php:12368 vicidial.php:12421
-msgid "List:"
-msgstr ""
-
-#: vicidial.php:7519
-msgid "Dial Alt Phone Number:"
-msgstr ""
-
-#: vicidial.php:7519
-msgid "MAIN PHONE"
-msgstr ""
-
-#: vicidial.php:7519
-msgid "or"
-msgstr ""
-
-#: vicidial.php:7519 vicidial.php:9672 vicidial.php:9675
-msgid "ALT PHONE"
-msgstr ""
-
-#: vicidial.php:7519 vicidial.php:9672 vicidial.php:9675
-msgid "ADDRESS3"
-msgstr ""
-
-#: vicidial.php:7519
-msgid "FINISH LEAD"
-msgstr ""
-
-#: vicidial.php:7658 vicidial.php:21028
-msgid "Dialable Leads:"
-msgstr ""
-
-#: vicidial.php:7711
-msgid "NO"
-msgstr ""
-
-#: vicidial.php:7745
-msgid "ACTIVE CALLBACKS"
-msgstr ""
-
-#: vicidial.php:7770
-msgid "YOU MUST BE PAUSED TO CHECK CALLBACKS IN AUTO-DIAL MODE"
-msgstr ""
-
-#: vicidial.php:7817
-msgid "CALLBACK DATE/TIME"
-msgstr ""
-
-#: vicidial.php:7817
-msgid "NUMBER"
-msgstr ""
-
-#: vicidial.php:7817 vicidial.php:7860
-msgid "INFO"
-msgstr ""
-
-#: vicidial.php:7817
-msgid "FULL NAME"
-msgstr ""
-
-#: vicidial.php:7817
-msgid "STATUS"
-msgstr ""
-
-#: vicidial.php:7817 vicidial.php:14340
-msgid "CAMPAIGN"
-msgstr ""
-
-#: vicidial.php:7817
-msgid "LAST CALL DATE/TIME"
-msgstr ""
-
-#: vicidial.php:7817 vicidial.php:7860
-msgid "DIAL"
-msgstr ""
-
-#: vicidial.php:7817 vicidial.php:7857 vicidial.php:7859
-msgid "ALT"
 msgstr ""
 
 #: vicidial.php:7848
@@ -672,264 +5383,20 @@ msgstr ""
 msgid "Customer Timezone"
 msgstr ""
 
-#: vicidial.php:7864
-msgid "NON-DIALABLE"
-msgstr ""
-
-#: vicidial.php:8037 vicidial.php:8766 vicidial.php:8867 vicidial.php:9596
-msgid "System Delay, Please try again"
-msgstr ""
-
-#: vicidial.php:8091
-msgid "YOU MUST BE PAUSED TO MANUAL DIAL A NEW LEAD IN AUTO-DIAL MODE"
-msgstr ""
-
-#: vicidial.php:8129 vicidial.php:19934
-msgid "Group Alias:"
-msgstr ""
-
-#: vicidial.php:8130 vicidial.php:19935
-msgid "Click Here to Choose a Group Alias"
-msgstr ""
-
-#: vicidial.php:8134 vicidial.php:15255
-msgid "Dial In-Group:"
-msgstr ""
-
-#: vicidial.php:8135
-msgid "Click Here to Choose a Dial In-Group"
-msgstr ""
-
-#: vicidial.php:8140 vicidial.php:8901 vicidial.php:8906
-msgid "No-Call Dial:"
-msgstr ""
-
-#: vicidial.php:8140 vicidial.php:8906
-msgid "Click Here to Activate"
-msgstr ""
-
-#: vicidial.php:8522 vicidial.php:10125 vicidial.php:11568 vicidial.php:12374
-msgid "PREVIOUS CALLBACK"
-msgstr ""
-
-#: vicidial.php:8524 vicidial.php:10127 vicidial.php:11570 vicidial.php:12376
-msgid "Last Call:"
-msgstr ""
-
-#: vicidial.php:8525 vicidial.php:10128 vicidial.php:11571 vicidial.php:12377
-msgid "CallBack:"
-msgstr ""
-
-#: vicidial.php:8526 vicidial.php:10129 vicidial.php:11572 vicidial.php:12378
-msgid "Agent:"
-msgstr ""
-
-#: vicidial.php:8527 vicidial.php:10130 vicidial.php:11573 vicidial.php:12379
-msgid "Comments:"
-msgstr ""
-
-#: vicidial.php:8537 vicidial.php:8567 vicidial.php:9119 vicidial.php:9150
-#: vicidial.php:11644 vicidial.php:11674 vicidial.php:12463 vicidial.php:12493
-#: vicidial.php:19910 vicidial.php:19914
-msgid "vdc_LB_quickxfer.gif"
-msgstr ""
-
-#: vicidial.php:8634 vicidial.php:9567 vicidial.php:10116 vicidial.php:11789
-#: vicidial.php:12596 vicidial.php:12885 vicidial.php:12889
-msgid "vdc_LB_webform_two.gif"
-msgstr ""
-
-#: vicidial.php:8639 vicidial.php:9571 vicidial.php:10120 vicidial.php:11794
-#: vicidial.php:12600 vicidial.php:12930 vicidial.php:12934
-msgid "vdc_LB_webform_three.gif"
-msgstr ""
-
-#: vicidial.php:8766 vicidial.php:8867 vicidial.php:9596
-msgid "code:"
-msgstr ""
-
-#: vicidial.php:8860
-msgid "YOU MUST ENTER A PHONE NUMBER AND DIAL CODE TO USE FAST DIAL"
-msgstr ""
-
-#: vicidial.php:8901
-msgid "Click Here to Deactivate"
-msgstr ""
-
-#: vicidial.php:8978 vicidial.php:9025 vicidial.php:9087 vicidial.php:10050
-#: vicidial.php:10711 vicidial.php:11559 vicidial.php:11612 vicidial.php:12365
-#: vicidial.php:12418
-msgid "Name:"
-msgstr ""
-
-#: vicidial.php:8979 vicidial.php:9026 vicidial.php:9088 vicidial.php:10051
-#: vicidial.php:10712 vicidial.php:11560 vicidial.php:11613 vicidial.php:12366
-#: vicidial.php:12419
-msgid "UID:"
-msgstr ""
-
-#: vicidial.php:8984 vicidial.php:10055 vicidial.php:10716
-msgid "Calling:"
-msgstr ""
-
-#: vicidial.php:8984 vicidial.php:9691 vicidial.php:10716
-msgid "Waiting for Ring..."
-msgstr ""
-
-#: vicidial.php:8984
-msgid "seconds"
-msgstr ""
-
-#: vicidial.php:9000 vicidial.php:9060
-msgid "Call Rejected:"
-msgstr ""
-
-#: vicidial.php:9030
-msgid "Called 3rd party:"
-msgstr ""
-
-#: vicidial.php:9032 vicidial.php:21228
-msgid "vdc_XB_leave3waycall.gif"
-msgstr ""
-
-#: vicidial.php:9038
-msgid "vdc_XB_hangupxferline.gif"
-msgstr ""
-
-#: vicidial.php:9042 vicidial.php:13619 vicidial.php:14410 vicidial.php:14473
-#: vicidial.php:21186
-msgid "vdc_XB_hangupbothlines.gif"
-msgstr ""
-
-#: vicidial.php:9092
-msgid "Called:"
-msgstr ""
-
-#: vicidial.php:9104 vicidial.php:11633 vicidial.php:12453
-msgid "vdc_XB_localcloser.gif"
-msgstr ""
-
-#: vicidial.php:9106 vicidial.php:11635 vicidial.php:12437
-msgid "vdc_XB_blindtransfer.gif"
-msgstr ""
-
-#: vicidial.php:9108 vicidial.php:11637 vicidial.php:12456
-msgid "vdc_XB_ammessage.gif"
-msgstr ""
-
-#: vicidial.php:9155 vicidial.php:11691 vicidial.php:12498 vicidial.php:19918
-msgid "vdc_LB_customxfer.gif"
-msgstr ""
-
-#: vicidial.php:9164 vicidial.php:11701 vicidial.php:12508
-msgid "vdc_LB_requeue_call.gif"
-msgstr ""
-
-#: vicidial.php:9168 vicidial.php:11705 vicidial.php:12512 vicidial.php:13412
-#: vicidial.php:15732
-msgid "vdc_LB_requeue_call_OFF.gif"
-msgstr ""
-
-#: vicidial.php:9260 vicidial.php:13611 vicidial.php:14408 vicidial.php:14471
-#: vicidial.php:21236
-msgid "vdc_XB_dialwithcustomer.gif"
-msgstr ""
-
-#: vicidial.php:9261 vicidial.php:13613 vicidial.php:14409 vicidial.php:14472
-#: vicidial.php:21238
-msgid "vdc_XB_parkcustomerdial.gif"
-msgstr ""
-
-#: vicidial.php:9672 vicidial.php:9675 vicidial.php:9680 vicidial.php:9683
-msgid "DIAL LEAD"
-msgstr ""
-
-#: vicidial.php:9672 vicidial.php:9680
-msgid "SKIP LEAD"
-msgstr ""
-
-#: vicidial.php:9683
-msgid "Preview the Lead then"
-msgstr ""
-
-#: vicidial.php:9786
-msgid "No more leads in the hopper for campaign:"
-msgstr ""
-
-#: vicidial.php:9788
-msgid "This phone number is in the DNC list:"
-msgstr ""
-
-#: vicidial.php:9790
-msgid "This phone number is not in the campaign lists:"
-msgstr ""
-
 #: vicidial.php:9792
 msgid "This phone number is not in the system lists:"
-msgstr ""
-
-#: vicidial.php:9794
-msgid "This phone number is outside of the local call time:"
 msgstr ""
 
 #: vicidial.php:9797
 msgid "The next lead is a DNC phone number, please try again:"
 msgstr ""
 
-#: vicidial.php:9800
-msgid "Unspecified error:"
-msgstr ""
-
 #: vicidial.php:10299
 msgid "Validating Call"
 msgstr ""
 
-#: vicidial.php:10332
-msgid "YOU CANNOT SKIP A CALLBACK OR MANUAL DIAL, YOU MUST DIAL THE LEAD"
-msgstr ""
-
-#: vicidial.php:10387
-msgid "Lead was not reverted, there was an error:"
-msgstr ""
-
-#: vicidial.php:10464
-msgid "Lead skipped, go on to next lead"
-msgstr ""
-
 #: vicidial.php:10530
 msgid "The number you entered does not match:"
-msgstr ""
-
-#: vicidial.php:10609 vicidial.php:11578 vicidial.php:12384
-msgid "ALT DIAL NUMBER: ALT"
-msgstr ""
-
-#: vicidial.php:10611 vicidial.php:11580 vicidial.php:12386
-msgid "ALT DIAL NUMBER: ADDRESS3"
-msgstr ""
-
-#: vicidial.php:10616 vicidial.php:11584 vicidial.php:12390
-msgid "ALT DIAL NUMBER:"
-msgstr ""
-
-#: vicidial.php:10617 vicidial.php:11585 vicidial.php:12391
-msgid "Phone Code and Number:"
-msgstr ""
-
-#: vicidial.php:10625 vicidial.php:11593 vicidial.php:12399
-msgid "Active:"
-msgstr ""
-
-#: vicidial.php:10626 vicidial.php:11594 vicidial.php:12400
-msgid "Alt Count:"
-msgstr ""
-
-#: vicidial.php:10627 vicidial.php:11595 vicidial.php:12401
-msgid "Notes:"
-msgstr ""
-
-#: vicidial.php:10696
-msgid "call was not placed, there was an error:"
 msgstr ""
 
 #: vicidial.php:10838
@@ -940,160 +5407,20 @@ msgstr ""
 msgid "CHECK-FOR-CALL RUNNING, PLEASE WAIT"
 msgstr ""
 
-#: vicidial.php:11087
-msgid "Change this phone number to INACTIVE"
-msgstr ""
-
-#: vicidial.php:11089
-msgid "Change this phone number to ACTIVE"
-msgstr ""
-
-#: vicidial.php:11295 vicidial.php:12124
-msgid "Fronter:"
-msgstr ""
-
-#: vicidial.php:11564 vicidial.php:11622 vicidial.php:11925 vicidial.php:12370
-#: vicidial.php:12428 vicidial.php:12736
-msgid "Incoming:"
-msgstr ""
-
-#: vicidial.php:11617 vicidial.php:11925 vicidial.php:12423 vicidial.php:12736
-msgid "Group"
-msgstr ""
-
 #: vicidial.php:12439
 msgid "vdc_XB_hangupbothlines_OFF.gif"
-msgstr ""
-
-#: vicidial.php:12440 vicidial.php:13609
-msgid "vdc_XB_leave3waycall_OFF.gif"
 msgstr ""
 
 #: vicidial.php:13227
 msgid "YOU MUST FILL IN ALL REQUIRED FIELDS BEFORE YOU CAN HANG UP THIS CALL"
 msgstr ""
 
-#: vicidial.php:13385 vicidial.php:14431 vicidial.php:20429
-msgid "vdc_LB_webform_two_OFF.gif"
-msgstr ""
-
-#: vicidial.php:13389 vicidial.php:14435 vicidial.php:20431
-msgid "vdc_LB_webform_three_OFF.gif"
-msgstr ""
-
-#: vicidial.php:13394 vicidial.php:20437
-msgid "vdc_LB_ivrparkcall_OFF.gif"
-msgstr ""
-
-#: vicidial.php:13398 vicidial.php:21167
-msgid "vdc_XB_localcloser_OFF.gif"
-msgstr ""
-
-#: vicidial.php:13399 vicidial.php:21234
-msgid "vdc_XB_blindtransfer_OFF.gif"
-msgstr ""
-
-#: vicidial.php:13400 vicidial.php:21270
-msgid "vdc_XB_ammessage_OFF.gif"
-msgstr ""
-
-#: vicidial.php:13401 vicidial.php:20935
-msgid "vdc_volume_up_off.gif"
-msgstr ""
-
-#: vicidial.php:13402 vicidial.php:20935
-msgid "vdc_volume_down_off.gif"
-msgstr ""
-
-#: vicidial.php:13405 vicidial.php:19892 vicidial.php:20445
-msgid "vdc_LB_quickxfer_OFF.gif"
-msgstr ""
-
-#: vicidial.php:13408 vicidial.php:19894 vicidial.php:20447
-msgid "vdc_LB_customxfer_OFF.gif"
-msgstr ""
-
-#: vicidial.php:13615 vicidial.php:21170
-msgid "vdc_XB_hangupxferline_OFF.gif"
-msgstr ""
-
-#: vicidial.php:13844
-msgid "Manual Dial Queue Calls Waiting:"
-msgstr ""
-
-#: vicidial.php:13851
-msgid "Call Notes:"
-msgstr ""
-
-#: vicidial.php:13867 vicidial.php:14524 vicidial.php:20840 vicidial.php:20841
-#: vicidial.php:20845 vicidial.php:20979
-msgid "History"
-msgstr ""
-
-#: vicidial.php:13884
-msgid "CALL DISPOSITION"
-msgstr ""
-
-#: vicidial.php:13924
-msgid "Disposition Status List Hidden"
-msgstr ""
-
-#: vicidial.php:13967
-msgid "YOU MUST BE PAUSED TO ENTER A PAUSE CODE IN AUTO-DIAL MODE"
-msgstr ""
-
 #: vicidial.php:13985
 msgid "Billing Group"
 msgstr ""
 
-#: vicidial.php:14037 vicidial.php:14353 vicidial.php:14386 vicidial.php:21311
-#: vicidial.php:21319 vicidial.php:21348 vicidial.php:21563 vicidial.php:21655
-#: vicidial.php:22056
-msgid "Go Back"
-msgstr ""
-
-#: vicidial.php:14076 vicidial.php:17758
-msgid "YOU MUST BE PAUSED TO SEARCH FOR A LEAD"
-msgstr ""
-
-#: vicidial.php:14086
-msgid "YOU MUST BE ON AN ACTIVE INBOUND CALL TO SEARCH FOR A LEAD"
-msgstr ""
-
-#: vicidial.php:14169
-msgid "Close"
-msgstr ""
-
 #: vicidial.php:14225
 msgid "Generating VM Messages list"
-msgstr ""
-
-#: vicidial.php:14336
-msgid "GROUP ALIAS"
-msgstr ""
-
-#: vicidial.php:14341
-msgid "CUSTOMER"
-msgstr ""
-
-#: vicidial.php:14342
-msgid "AGENT_PHONE"
-msgstr ""
-
-#: vicidial.php:14376
-msgid "DIAL IN-GROUP"
-msgstr ""
-
-#: vicidial.php:14416 vicidial.php:14479
-msgid "You Must Select a Disposition"
-msgstr ""
-
-#: vicidial.php:14486
-msgid "You can only disposition a call once"
-msgstr ""
-
-#: vicidial.php:14493
-msgid "Disposition set twice: "
 msgstr ""
 
 #: vicidial.php:14765 vicidial.php:17533 vicidial.php:21505
@@ -1104,33 +5431,6 @@ msgstr ""
 msgid "server time"
 msgstr ""
 
-#: vicidial.php:14846 vicidial.php:18939 vicidial.php:20264 vicidial.php:20279
-#: vicidial.php:20708
-msgid "U - Undefined"
-msgstr ""
-
-#: vicidial.php:14846 vicidial.php:18939 vicidial.php:20264 vicidial.php:20279
-#: vicidial.php:20708
-msgid "M - Male"
-msgstr ""
-
-#: vicidial.php:14846 vicidial.php:18939 vicidial.php:20264 vicidial.php:20279
-#: vicidial.php:20708
-msgid "F - Female"
-msgstr ""
-
-#: vicidial.php:14853 vicidial.php:18248 vicidial.php:21289 vicidial.php:21376
-msgid "minimize"
-msgstr ""
-
-#: vicidial.php:14854 vicidial.php:21376
-msgid "Hangup Again"
-msgstr ""
-
-#: vicidial.php:14857 vicidial.php:20408
-msgid "Next Call Pause"
-msgstr ""
-
 #: vicidial.php:15147
 msgid "Pause Code Selected"
 msgstr ""
@@ -1139,371 +5439,21 @@ msgstr ""
 msgid "Invalid Manager Pause Code Approval"
 msgstr ""
 
-#: vicidial.php:15327 vicidial.php:16216 vicidial.php:16342 vicidial.php:21329
-msgid "Finish Wrapup and Move On"
-msgstr ""
-
-#: vicidial.php:15580
-msgid "GROUPS NOT SELECTED"
-msgstr ""
-
-#: vicidial.php:15580
-msgid "SELECTED GROUPS"
-msgstr ""
-
-#: vicidial.php:15580 vicidial.php:15710 vicidial.php:15796 vicidial.php:15875
-msgid "ADD ALL"
-msgstr ""
-
-#: vicidial.php:15623
-msgid "Manager has selected groups for you"
-msgstr ""
-
-#: vicidial.php:15711 vicidial.php:15876
-msgid "DELETE ALL"
-msgstr ""
-
-#: vicidial.php:15796
-msgid "TERRITORIES NOT SELECTED"
-msgstr ""
-
-#: vicidial.php:15796
-msgid "SELECTED TERRITORIES"
-msgstr ""
-
-#: vicidial.php:15811
-msgid "Manager has selected territories for you"
-msgstr ""
-
-#: vicidial.php:15889 vicidial.php:18791
-msgid "Manual Queue is Off"
-msgstr ""
-
-#: vicidial.php:15891
-msgid "Manual Queue is On"
-msgstr ""
-
-#: vicidial.php:16002
-msgid "PLEASE CLICK THE LOGOUT LINK TO LOG OUT NEXT TIME."
-msgstr ""
-
-#: vicidial.php:16031
-msgid ""
-"You cannot log out during a Dial attempt. Wait 50 seconds for the dial to "
-"fail out if it is not answered"
-msgstr ""
-
-#: vicidial.php:16036
-msgid "STILL A LIVE CALL! Hang it up then you can log out."
-msgstr ""
-
-#: vicidial.php:16042
-msgid "You are in ALT dial mode, you must finish the lead before logging out."
-msgstr ""
-
-#: vicidial.php:16048 vicidial.php:16049 vicidial.php:21356 vicidial.php:21359
-msgid "LOGOUT PROCESSING..."
-msgstr ""
-
-#: vicidial.php:16083
-msgid "LOGOUT PROCESS COMPLETE, YOU MAY NOW CLOSE YOUR BROWSER OR LOG BACK IN"
-msgstr ""
-
-#: vicidial.php:16096
-msgid ""
-"Your Shift is over or has changed, you have been logged out of your session"
-msgstr ""
-
-#: vicidial.php:16098
-msgid ""
-"The system has received a command to log you out, you have been logged out "
-"of your session"
-msgstr ""
-
-#: vicidial.php:16100
-msgid ""
-"You have been paused for too long, you have been logged out of your session"
-msgstr ""
-
 #: vicidial.php:16102
 msgid ""
 "You have been ready for too long, you have been logged out of your session"
-msgstr ""
-
-#: vicidial.php:16108 vicidial.php:16112 vicidial.php:16116 vicidial.php:16121
-msgid "CLICK HERE TO LOG IN AGAIN"
-msgstr ""
-
-#: vicidial.php:16176 vicidial.php:16302
-msgid "That status is not available at this time: "
-msgstr ""
-
-#: vicidial.php:16204 vicidial.php:16330 vicidial.php:19288 vicidial.php:21326
-msgid "Call Wrapup:"
-msgstr ""
-
-#: vicidial.php:16204 vicidial.php:16330 vicidial.php:19288 vicidial.php:21326
-msgid "seconds remaining in wrapup"
-msgstr ""
-
-#: vicidial.php:17197
-msgid "Close Window"
-msgstr ""
-
-#: vicidial.php:17229
-msgid "YOU MUST BE PAUSED TO GRAB CALLS IN QUEUE"
-msgstr ""
-
-#: vicidial.php:17342 vicidial.php:20962
-msgid "Hide Calls In Queue"
-msgstr ""
-
-#: vicidial.php:17348 vicidial.php:20964
-msgid "Show Calls In Queue"
-msgstr ""
-
-#: vicidial.php:17364 vicidial.php:17374
-msgid "Agents View"
-msgstr ""
-
-#: vicidial.php:17389 vicidial.php:17394
-msgid "WebPhone View"
-msgstr ""
-
-#: vicidial.php:17609
-msgid "YOU MUST BE PAUSED TO VIEW YOUR CALL LOG"
-msgstr ""
-
-#: vicidial.php:17625
-msgid "Invalid Date Format. Please correct and submit again."
-msgstr ""
-
-#: vicidial.php:17637
-msgid ""
-"Invalid Day, Month, or Year range detected. Please correct and submit again."
-msgstr ""
-
-#: vicidial.php:17693 vicidial.php:17765
-msgid "Searching..."
-msgstr ""
-
-#: vicidial.php:18238 vicidial.php:21305
-msgid "maximize"
-msgstr ""
-
-#: vicidial.php:18261
-msgid "Next Call Pause Set"
-msgstr ""
-
-#: vicidial.php:18280
-msgid "YOU MUST BE PAUSED TO CHANGE GROUPS"
-msgstr ""
-
-#: vicidial.php:18288
-msgid "Manager"
-msgstr ""
-
-#: vicidial.php:18288
-msgid "has selected your in-group choices"
-msgstr ""
-
-#: vicidial.php:18316
-msgid "YOU MUST BE PAUSED TO CHANGE TERRITORIES"
-msgstr ""
-
-#: vicidial.php:18387
-msgid "You must choose a date"
-msgstr ""
-
-#: vicidial.php:18495 vicidial.php:21405
-msgid "Select a Date Below"
-msgstr ""
-
-#: vicidial.php:18519
-msgid "DIAL ALERT:"
-msgstr ""
-
-#: vicidial.php:18530
-msgid "TIMER NOTIFICATION:"
-msgstr ""
-
-#: vicidial.php:18802
-msgid "ENTER A PAUSE CODE"
-msgstr ""
-
-#: vicidial.php:18897
-msgid "Call Agent Webphone"
-msgstr ""
-
-#: vicidial.php:18967
-msgid "Dial Next Call"
-msgstr ""
-
-#: vicidial.php:19115
-msgid "Dial Countdown:"
 msgstr ""
 
 #: vicidial.php:19137
 msgid "Dial Next Countdown:"
 msgstr ""
 
-#: vicidial.php:19234
-msgid "Time On Park:"
-msgstr ""
-
-#: vicidial.php:19248
-msgid "Customer Hung-up, 3-way Call Ended Automatically"
-msgstr ""
-
-#: vicidial.php:19255
-msgid "CUSTOMER 3WAY HANGUP"
-msgstr ""
-
-#: vicidial.php:19537 vicidial.php:19604
-msgid "JAN"
-msgstr ""
-
-#: vicidial.php:19538 vicidial.php:19605
-msgid "FEB"
-msgstr ""
-
-#: vicidial.php:19539 vicidial.php:19606
-msgid "MAR"
-msgstr ""
-
-#: vicidial.php:19540 vicidial.php:19607
-msgid "APR"
-msgstr ""
-
-#: vicidial.php:19541 vicidial.php:19608
-msgid "MAY"
-msgstr ""
-
-#: vicidial.php:19542 vicidial.php:19609
-msgid "JUN"
-msgstr ""
-
-#: vicidial.php:19543 vicidial.php:19610
-msgid "JLY"
-msgstr ""
-
-#: vicidial.php:19544 vicidial.php:19611
-msgid "AUG"
-msgstr ""
-
-#: vicidial.php:19545 vicidial.php:19612
-msgid "SEP"
-msgstr ""
-
-#: vicidial.php:19546 vicidial.php:19613
-msgid "OCT"
-msgstr ""
-
-#: vicidial.php:19547 vicidial.php:19614
-msgid "NOV"
-msgstr ""
-
-#: vicidial.php:19548 vicidial.php:19615
-msgid "DEC"
-msgstr ""
-
-#: vicidial.php:19705 vicidial.php:22067
-msgid "This agent screen was not opened properly."
-msgstr ""
-
-#: vicidial.php:19710
-msgid "ACTIVE DISPLAY PAUSED"
-msgstr ""
-
-#: vicidial.php:19751 vicidial.php:19771 vicidial.php:20406
-msgid "LEAD PREVIEW"
-msgstr ""
-
-#: vicidial.php:19756 vicidial.php:19779
-msgid "ALT PHONE DIAL"
-msgstr ""
-
-#: vicidial.php:19795
-msgid "Hide conference call channel information"
-msgstr ""
-
-#: vicidial.php:19802 vicidial.php:20913
-msgid "Show conference call channel information"
-msgstr ""
-
-#: vicidial.php:19815
-msgid "vdc_XB_hotkeysactive.gif"
-msgstr ""
-
-#: vicidial.php:19821 vicidial.php:21150
-msgid "vdc_XB_hotkeysactive_OFF.gif"
-msgstr ""
-
-#: vicidial.php:19835 vicidial.php:21511
-msgid "hide comment history"
-msgstr ""
-
-#: vicidial.php:19835 vicidial.php:21283 vicidial.php:21525 vicidial.php:21709
-#: vicidial.php:21741 vicidial.php:21798 vicidial.php:21809 vicidial.php:21902
-#: vicidial.php:21913 vicidial.php:21926 vicidial.php:21990
-msgid "close"
-msgstr ""
-
-#: vicidial.php:19838 vicidial.php:19840 vicidial.php:19842 vicidial.php:19844
-msgid "HIDE"
-msgstr ""
-
-#: vicidial.php:19851
-msgid "show comment history"
-msgstr ""
-
-#: vicidial.php:19947
-msgid "YOU DO NOT HAVE PERMISSIONS TO TRANSFER CALLS"
-msgstr ""
-
 #: vicidial.php:20311 vicidial.php:20314
 msgid "Loading..."
 msgstr ""
 
-#: vicidial.php:20331 vicidial.php:20333
-msgid "Logged in as User"
-msgstr ""
-
-#: vicidial.php:20334
-#, php-format
-msgid ": %1s on Phone: %2s"
-msgstr ""
-
-#: vicidial.php:20336
-msgid "ring"
-msgstr ""
-
-#: vicidial.php:20337
-msgid "to campaign"
-msgstr ""
-
-#: vicidial.php:20340
-msgid "TERRITORIES"
-msgstr ""
-
-#: vicidial.php:20341
-msgid "GROUPS"
-msgstr ""
-
-#: vicidial.php:20342 vicidial.php:21360
-msgid "LOGOUT"
-msgstr ""
-
-#: vicidial.php:20352
-msgid "vdc_tab_script.gif"
-msgstr ""
-
 #: vicidial.php:20354
 msgid "vdc_tab_script2.gif"
-msgstr ""
-
-#: vicidial.php:20357
-msgid "vdc_tab_form.gif"
 msgstr ""
 
 #: vicidial.php:20360
@@ -1514,102 +5464,8 @@ msgstr ""
 msgid "vdc_tab_phonebook.png"
 msgstr ""
 
-#: vicidial.php:20374
-msgid "LIVE"
-msgstr ""
-
-#: vicidial.php:20374
-msgid "session ID:"
-msgstr ""
-
-#: vicidial.php:20381
-msgid "Agent Screen"
-msgstr ""
-
-#: vicidial.php:20392 vicidial.php:21046 vicidial.php:21058 vicidial.php:21070
-#: vicidial.php:21078 vicidial.php:21086 vicidial.php:21094 vicidial.php:21104
-#: vicidial.php:21379 vicidial.php:21401 vicidial.php:21543 vicidial.php:21557
-#: vicidial.php:21663 vicidial.php:21686 vicidial.php:21712 vicidial.php:21758
-#: vicidial.php:21801 vicidial.php:21812 vicidial.php:21905 vicidial.php:21916
-#: vicidial.php:21930 vicidial.php:21943 vicidial.php:21959 vicidial.php:21982
-#: vicidial.php:21993 vicidial.php:22004 vicidial.php:22016 vicidial.php:22033
-msgid "pixel.gif"
-msgstr ""
-
-#: vicidial.php:20399
-msgid "STATUS:"
-msgstr ""
-
-#: vicidial.php:20407
-msgid " ALT PHONE DIAL"
-msgstr ""
-
-#: vicidial.php:20417
-msgid "RECORDING FILE:"
-msgstr ""
-
-#: vicidial.php:20420
-msgid "RECORD ID:"
-msgstr ""
-
-#: vicidial.php:20491
-msgid "Customer Time:"
-msgstr ""
-
-#: vicidial.php:20491
-msgid "Channel:"
-msgstr ""
-
-#: vicidial.php:20493 vicidial.php:21926
-msgid "Customer Information:"
-msgstr ""
-
-#: vicidial.php:20496
-msgid "LEAD SEARCH"
-msgstr ""
-
-#: vicidial.php:20807
-msgid "Entry Date"
-msgstr ""
-
-#: vicidial.php:20811
-msgid "Source ID"
-msgstr ""
-
-#: vicidial.php:20815
-msgid "Date of Birth"
-msgstr ""
-
-#: vicidial.php:20819
-msgid "Rank"
-msgstr ""
-
-#: vicidial.php:20823
-msgid "Owner"
-msgstr ""
-
 #: vicidial.php:20827
 msgid "Last Call"
-msgstr ""
-
-#: vicidial.php:20857
-msgid "Call Notes: "
-msgstr ""
-
-#: vicidial.php:20859
-msgid "view notes"
-msgstr ""
-
-#: vicidial.php:20897
-msgid "MANUAL DIAL"
-msgstr ""
-
-#: vicidial.php:20897
-msgid "FAST DIAL"
-msgstr ""
-
-#: vicidial.php:20898
-msgid "VIEW CALL LOG"
 msgstr ""
 
 #: vicidial.php:20902
@@ -1620,68 +5476,12 @@ msgstr ""
 msgid "Patch-Level:"
 msgstr ""
 
-#: vicidial.php:20911
-msgid "Server:"
-msgstr ""
-
-#: vicidial.php:20931
-msgid "seconds:"
-msgstr ""
-
-#: vicidial.php:20939
-msgid "Your Status:"
-msgstr ""
-
-#: vicidial.php:20939
-msgid "Calls Dialing:"
-msgstr ""
-
-#: vicidial.php:20946
-msgid "D1 - DIAL"
-msgstr ""
-
-#: vicidial.php:20948
-msgid "D2 - DIAL"
-msgstr ""
-
-#: vicidial.php:20955
-msgid "Calls In Queue:"
-msgstr ""
-
-#: vicidial.php:20970
-msgid "X ACTIVE CALLBACKS"
-msgstr ""
-
-#: vicidial.php:20995
-msgid "Other Agents Status:"
-msgstr ""
-
-#: vicidial.php:21006
-msgid "Web Phone"
-msgstr ""
-
-#: vicidial.php:21011
-msgid "Agents View +"
-msgstr ""
-
-#: vicidial.php:21018
-msgid "WebPhone View -"
-msgstr ""
-
 #: vicidial.php:21036
 msgid "commit"
 msgstr ""
 
 #: vicidial.php:21040
 msgid "Ticket Mail"
-msgstr ""
-
-#: vicidial.php:21048
-msgid "AGENT SCRIPT"
-msgstr ""
-
-#: vicidial.php:21052 vicidial.php:21064 vicidial.php:21115 vicidial.php:21119
-msgid "refresh"
 msgstr ""
 
 #: vicidial.php:21060
@@ -1692,302 +5492,12 @@ msgstr ""
 msgid "PHONEBOOK"
 msgstr ""
 
-#: vicidial.php:21111 vicidial.php:21790 vicidial.php:21894
-msgid "reset form"
-msgstr ""
-
-#: vicidial.php:21124
-msgid "Lead Dispositioned As:"
-msgstr ""
-
-#: vicidial.php:21135
-msgid "Disposition Hot Keys:"
-msgstr ""
-
-#: vicidial.php:21136
-msgid ""
-"When active, simply press the keyboard key for the desired disposition for "
-"this call. The call will then be hungup and dispositioned automatically:"
-msgstr ""
-
-#: vicidial.php:21160
-msgid "vdc_XB_header.gif"
-msgstr ""
-
-#: vicidial.php:21165
-msgid "SELECT A GROUP TO SEND YOUR CALL TO"
-msgstr ""
-
-#: vicidial.php:21178
-msgid "vdc_XB_seconds.gif"
-msgstr ""
-
-#: vicidial.php:21180
-msgid "vdc_XB_channel.gif"
-msgstr ""
-
-#: vicidial.php:21183
-msgid "CONSULTATIVE"
-msgstr ""
-
-#: vicidial.php:21219
-msgid "AGENTS"
-msgstr ""
-
-#: vicidial.php:21225
-msgid "DIAL OVERRIDE"
-msgstr ""
-
-#: vicidial.php:21225 vicidial.php:21640
-msgid "DISABLED"
-msgstr ""
-
-#: vicidial.php:21244
-msgid "vdc_XB_presetsbutton.gif"
-msgstr ""
-
-#: vicidial.php:21252
-msgid "vdc_XB_contactsbutton.gif"
-msgstr ""
-
-#: vicidial.php:21283
-msgid "Available Agents Transfer:"
-msgstr ""
-
-#: vicidial.php:21288
-msgid "Extended Alt Phone Information:"
-msgstr ""
-
-#: vicidial.php:21305
-msgid "Alt Phone Info"
-msgstr ""
-
-#: vicidial.php:21310
-msgid "No one is in your session:"
-msgstr ""
-
-#: vicidial.php:21313
-msgid "Call Agent Again"
-msgstr ""
-
-#: vicidial.php:21318
-msgid "Customer has hung up:"
-msgstr ""
-
-#: vicidial.php:21321
-msgid "Finish and Disposition Call"
-msgstr ""
-
-#: vicidial.php:21338
-msgid "Close Message"
-msgstr ""
-
-#: vicidial.php:21343
-msgid "Your session has been disabled"
-msgstr ""
-
-#: vicidial.php:21343
-msgid "CLICK HERE TO RESET YOUR SESSION"
-msgstr ""
-
-#: vicidial.php:21348
-msgid ""
-"There is a time synchronization problem with your system, please tell your "
-"system administrator"
-msgstr ""
-
-#: vicidial.php:21372
-msgid ""
-"Any changes made to the customer information below at this time will not be "
-"comitted, You must change customer information before you Hangup the call."
-msgstr ""
-
-#: vicidial.php:21376
-msgid "DISPOSITION CALL :"
-msgstr ""
-
-#: vicidial.php:21386
-msgid "End-of-call Disposition Selection"
-msgstr ""
-
-#: vicidial.php:21388
-msgid "PAUSE AGENT DIALING"
-msgstr ""
-
-#: vicidial.php:21389
-msgid "CLEAR FORM"
-msgstr ""
-
-#: vicidial.php:21392
-msgid "WEB FORM SUBMIT"
-msgstr ""
-
-#: vicidial.php:21398
-msgid "Select a CallBack Date :"
-msgstr ""
-
-#: vicidial.php:21407
-msgid "Hour:"
-msgstr ""
-
-#: vicidial.php:21448
-msgid "Minutes:"
-msgstr ""
-
-#: vicidial.php:21489 vicidial.php:21702
-msgid "MY CALLBACK ONLY"
-msgstr ""
-
-#: vicidial.php:21492
-msgid "CB Comments:"
-msgstr ""
-
-#: vicidial.php:21511
-msgid "View Comment History:"
-msgstr ""
-
-#: vicidial.php:21524
-msgid "Previous Callback Information:"
-msgstr ""
-
 #: vicidial.php:21539
 msgid "Scheduled Callback to Dial:"
 msgstr ""
 
-#: vicidial.php:21545 vicidial.php:21932
-msgid "Lead Info"
-msgstr ""
-
 #: vicidial.php:21547
 msgid "Close Box"
-msgstr ""
-
-#: vicidial.php:21553
-#, php-format
-msgid ""
-"CALLBACKS FOR AGENT %1s:<br />To see information on one of the callbacks "
-"below, click on the INFO link. To call the customer back now, click on the "
-"DIAL link. If you click on a record below to dial it, it will be removed "
-"from the list."
-msgstr ""
-
-#: vicidial.php:21561
-msgid "Refresh"
-msgstr ""
-
-#: vicidial.php:21569
-#, php-format
-msgid "NEW MANUAL DIAL LEAD FOR %1s in campaign %2s:"
-msgstr ""
-
-#: vicidial.php:21569
-msgid "Enter information below for the new lead you wish to call."
-msgstr ""
-
-#: vicidial.php:21574
-#, php-format
-msgid ""
-"Note: a dial prefix of %1s will be added to the beginning of this number"
-msgstr ""
-
-#: vicidial.php:21577
-#, php-format
-msgid "Note: all new manual dial leads will go into list %1s"
-msgstr ""
-
-#: vicidial.php:21579
-msgid "Dial Code:"
-msgstr ""
-
-#: vicidial.php:21580
-msgid "(This is usually a 1 in the USA-Canada)"
-msgstr ""
-
-#: vicidial.php:21582 vicidial.php:21821
-msgid "Phone Number:"
-msgstr ""
-
-#: vicidial.php:21584 vicidial.php:21595
-msgid "(digits only)"
-msgstr ""
-
-#: vicidial.php:21593
-msgid "Dial Lead ID:"
-msgstr ""
-
-#: vicidial.php:21610
-msgid "Search Existing Leads:"
-msgstr ""
-
-#: vicidial.php:21611
-msgid ""
-"(This option if checked will attempt to find the phone number in the system "
-"before inserting it as a new lead)"
-msgstr ""
-
-#: vicidial.php:21623
-msgid ""
-"If you want to dial a number and have it NOT be added as a new lead, enter "
-"in the exact dialstring that you want to call in the Dial Override field "
-"below. To hangup this call you will have to open the CALLS IN THIS SESSION "
-"link at the bottom of the screen and hang it up by clicking on its channel "
-"link there."
-msgstr ""
-
-#: vicidial.php:21625
-msgid "Dial Override:"
-msgstr ""
-
-#: vicidial.php:21633
-msgid "(digits only please)"
-msgstr ""
-
-#: vicidial.php:21647
-msgid "Dial Now"
-msgstr ""
-
-#: vicidial.php:21651
-msgid "Preview Call"
-msgstr ""
-
-#: vicidial.php:21660
-msgid "CLOSER INBOUND GROUP SELECTION"
-msgstr ""
-
-#: vicidial.php:21666
-msgid "Closer Inbound Group Selection"
-msgstr ""
-
-#: vicidial.php:21672
-msgid "BLENDED CALLING(outbound activated)"
-msgstr ""
-
-#: vicidial.php:21676 vicidial.php:21691
-msgid "RESET"
-msgstr ""
-
-#: vicidial.php:21683
-msgid "TERRITORY SELECTION"
-msgstr ""
-
-#: vicidial.php:21689
-msgid "Territory Selection"
-msgstr ""
-
-#: vicidial.php:21698 vicidial.php:21699
-msgid "Channel"
-msgstr ""
-
-#: vicidial.php:21704
-msgid "BLENDED CALLING"
-msgstr ""
-
-#: vicidial.php:21709
-msgid "AGENT CALL LOG:"
-msgstr ""
-
-#: vicidial.php:21714
-msgid "Call log List"
 msgstr ""
 
 #: vicidial.php:21724
@@ -1998,131 +5508,8 @@ msgstr ""
 msgid "to"
 msgstr ""
 
-#: vicidial.php:21740
-msgid "GO"
-msgstr ""
-
 #: vicidial.php:21749
 msgid "Agent Time Report"
-msgstr ""
-
-#: vicidial.php:21755
-msgid "SEARCH FOR A CONTACT:"
-msgstr ""
-
-#: vicidial.php:21761
-msgid ""
-"Notes: when doing a search for a contact, wildcard or partial search terms "
-"are not allowed. <br />Contact search requests are all logged in the system."
-msgstr ""
-
-#: vicidial.php:21766
-msgid "Office Number:"
-msgstr ""
-
-#: vicidial.php:21769
-msgid "First Name:"
-msgstr ""
-
-#: vicidial.php:21772
-msgid "Last Name:"
-msgstr ""
-
-#: vicidial.php:21775
-msgid "BU Name:"
-msgstr ""
-
-#: vicidial.php:21778
-msgid "Department:"
-msgstr ""
-
-#: vicidial.php:21781
-msgid "Group Name:"
-msgstr ""
-
-#: vicidial.php:21784
-msgid "Job Title:"
-msgstr ""
-
-#: vicidial.php:21787
-msgid "Location:"
-msgstr ""
-
-#: vicidial.php:21790 vicidial.php:21894
-msgid "SUBMIT SEARCH"
-msgstr ""
-
-#: vicidial.php:21798
-msgid "CONTACTS SEARCH RESULTS:"
-msgstr ""
-
-#: vicidial.php:21803 vicidial.php:21907
-msgid "Search Results"
-msgstr ""
-
-#: vicidial.php:21809
-msgid "SEARCH FOR A LEAD:"
-msgstr ""
-
-#: vicidial.php:21816
-#, php-format
-msgid ""
-"Notes: when doing a search for a lead, the phone number, lead ID or %1s are "
-"the best fields to use."
-msgstr ""
-
-#: vicidial.php:21816
-msgid ""
-"Using the other fields may be slower. Lead searching does not allow for "
-"wildcard or partial search terms."
-msgstr ""
-
-#: vicidial.php:21816
-msgid "Lead search requests are all logged in the system."
-msgstr ""
-
-#: vicidial.php:21824
-msgid "Phone Number Fields:"
-msgstr ""
-
-#: vicidial.php:21826
-msgid "Main Phone Number"
-msgstr ""
-
-#: vicidial.php:21827
-msgid "Alternate Phone Number"
-msgstr ""
-
-#: vicidial.php:21828
-msgid "Address3 Phone Number"
-msgstr ""
-
-#: vicidial.php:21833
-msgid "Lead ID:"
-msgstr ""
-
-#: vicidial.php:21902
-msgid "SEARCH RESULTS:"
-msgstr ""
-
-#: vicidial.php:21913
-msgid "CALL NOTES LOG:"
-msgstr ""
-
-#: vicidial.php:21918
-msgid "Call Notes List"
-msgstr ""
-
-#: vicidial.php:21920 vicidial.php:21934
-msgid "Close Info Box"
-msgstr ""
-
-#: vicidial.php:21940
-msgid "SELECT A PAUSE CODE :"
-msgstr ""
-
-#: vicidial.php:21945 vicidial.php:21961
-msgid "Pause Code Selection"
 msgstr ""
 
 #: vicidial.php:21949
@@ -2141,20 +5528,8 @@ msgstr ""
 msgid "Manager Password"
 msgstr ""
 
-#: vicidial.php:21971 vicidial.php:22043
-msgid "Submit"
-msgstr ""
-
 #: vicidial.php:21972 vicidial.php:22044
 msgid "Cancel"
-msgstr ""
-
-#: vicidial.php:21979
-msgid "SELECT A PRESET :"
-msgstr ""
-
-#: vicidial.php:21984
-msgid "Presets Selection"
 msgstr ""
 
 #: vicidial.php:21990
@@ -2163,22 +5538,6 @@ msgstr ""
 
 #: vicidial.php:21995
 msgid "VM Message Selection"
-msgstr ""
-
-#: vicidial.php:22001
-msgid "SELECT A GROUP ALIAS :"
-msgstr ""
-
-#: vicidial.php:22006
-msgid "Group Alias Selection"
-msgstr ""
-
-#: vicidial.php:22013
-msgid "SELECT A DIAL IN-GROUP :"
-msgstr ""
-
-#: vicidial.php:22018
-msgid "Dial In-Group Selection"
 msgstr ""
 
 #: vicidial.php:22030
@@ -2193,28 +5552,19 @@ msgstr ""
 msgid "Enter number to dial to confirm"
 msgstr ""
 
-#: vicidial.php:22054
-msgid "ALERT :"
+#: vicidial_redirect.php:77
+msgid "Agent Redirect"
 msgstr ""
 
-#: vicidial.php:22062
-msgid ""
-"Another live agent session was open using your user ID. It has been "
-"disabled. Click OK to continue to the agent screen."
+#: vicidial_redirect.php:82
+msgid "click here to continue"
 msgstr ""
 
-#: vicidial.php:22062 vicidial.php:22110
-msgid "OK"
+#: voicemail_check.php:157
+msgid "Voicemail Check"
 msgstr ""
 
-#: vicidial.php:22092
-msgid "Agent Alert!"
-msgstr ""
-
-#: vicidial.php:22099
-msgid "alert.gif"
-msgstr ""
-
-#: vicidial.php:22104
-msgid "Alert Box"
+#: voicemail_check.php:168
+#, php-format
+msgid "voicemail box %1s is not valid"
 msgstr ""

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SNCT-Dialer\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-18 16:10+0100\n"
-"PO-Revision-Date: 2020-03-18 18:58+0100\n"
+"POT-Creation-Date: 2020-04-03 09:07+0200\n"
+"PO-Revision-Date: 2020-04-03 09:10+0200\n"
 "Last-Translator: Jörg Frings-Fürst <j.frings-fuerst@snct-dialer.de>\n"
 "Language-Team: SNCT EDV\n"
 "Language: de_DE\n"
@@ -19,328 +19,337 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
-#: admin_search_lead.php:202
+#: admin_search_lead.php:207
 msgid "Login incorrect, please try again"
 msgstr "Login fehlgeschlagen, bitte erneut versuchen"
 
-#: admin_search_lead.php:205
+#: admin_search_lead.php:210
 msgid "Too many login attempts, try again in 15 minutes"
 msgstr "Zu viele Login Versuche, bitte in 15 Minuten erneut versuchen"
 
-#: admin_search_lead.php:212
+#: admin_search_lead.php:217
 msgid "Your IP Address is not allowed"
 msgstr "Diese IP Adresse ist nicht erlaubt"
 
-#: admin_search_lead.php:233
+#: admin_search_lead.php:239
 msgid "You do not have permissions to search leads"
 msgstr "Du hast keine Berechtigung zur Datensatz Suche"
 
-#: admin_search_lead.php:291
+#: admin_search_lead.php:297
 msgid "ADMINISTRATION: Lead Search"
 msgstr "Verwaltung: Datensatz Suche"
 
-#: admin_search_lead.php:315
+#: admin_search_lead.php:321
 msgid "Title"
 msgstr "Anrede"
 
-#: admin_search_lead.php:316
+#: admin_search_lead.php:322
 msgid "First"
 msgstr "Vorname"
 
-#: admin_search_lead.php:317
+#: admin_search_lead.php:323
 msgid "MI"
 msgstr "Privat/Geschäft"
 
-#: admin_search_lead.php:318
+#: admin_search_lead.php:324
 msgid "Last"
 msgstr "Nachname"
 
-#: admin_search_lead.php:319
+#: admin_search_lead.php:325
 msgid "Address1"
 msgstr "Straße"
 
-#: admin_search_lead.php:320
+#: admin_search_lead.php:326
 msgid "Address1_No"
 msgstr "Hausnummer"
 
-#: admin_search_lead.php:321
+#: admin_search_lead.php:327
 msgid "Address2"
 msgstr "Adresse 2"
 
-#: admin_search_lead.php:322
+#: admin_search_lead.php:328
 msgid "Address3"
 msgstr "Adresse 3"
 
-#: admin_search_lead.php:323
+#: admin_search_lead.php:329
 msgid "City"
 msgstr "Ort"
 
-#: admin_search_lead.php:324
+#: admin_search_lead.php:330
 msgid "State"
 msgstr "Land"
 
-#: admin_search_lead.php:325
+#: admin_search_lead.php:331
 msgid "Province"
 msgstr "Bundesland"
 
-#: admin_search_lead.php:326
+#: admin_search_lead.php:332
 msgid "Postal Code"
 msgstr "PLZ"
 
-#: admin_search_lead.php:327
+#: admin_search_lead.php:333
 msgid "Vendor ID"
 msgstr "Kundennr."
 
-#: admin_search_lead.php:328
+#: admin_search_lead.php:334
 msgid "Gender"
 msgstr "Geschlecht"
 
-#: admin_search_lead.php:329
+#: admin_search_lead.php:335
 msgid "Phone"
 msgstr "Telefonnr"
 
-#: admin_search_lead.php:330
+#: admin_search_lead.php:336
 msgid "DialCode"
 msgstr "Ländervorwahl"
 
-#: admin_search_lead.php:331
+#: admin_search_lead.php:337
 msgid "Alt. Phone"
 msgstr "Mobiltelefon"
 
-#: admin_search_lead.php:332
+#: admin_search_lead.php:338
 msgid "Show"
 msgstr "Anzeige"
 
-#: admin_search_lead.php:333
+#: admin_search_lead.php:339
 msgid "Email"
 msgstr "E-Mail"
 
-#: admin_search_lead.php:334
+#: admin_search_lead.php:340
 msgid "Comments"
 msgstr "Kommentare"
 
-#: admin_search_lead.php:361
+#: admin_search_lead.php:367
 msgid "Lead search"
 msgstr "Datensatz Suche"
 
-#: admin_search_lead.php:373
+#: admin_search_lead.php:380
 msgid "Lead Search Options"
 msgstr "Datensatz Suchparameter"
 
-#: admin_search_lead.php:381
+#: admin_search_lead.php:388
 msgid "Archive search"
 msgstr "Archiv Suche"
 
-#: admin_search_lead.php:381 admin_search_lead.php:397
+#: admin_search_lead.php:388 admin_search_lead.php:404
 msgid "No"
 msgstr "Nein"
 
-#: admin_search_lead.php:381 admin_search_lead.php:397
+#: admin_search_lead.php:388 admin_search_lead.php:404
+#: admin_search_lead.php:1268
 msgid "Yes"
 msgstr "Ja"
 
-#: admin_search_lead.php:388
+#: admin_search_lead.php:395
 msgid "vendor lead code"
 msgstr "Kundennr."
 
-#: admin_search_lead.php:389 admin_search_lead.php:395
-#: admin_search_lead.php:404 admin_search_lead.php:410
-#: admin_search_lead.php:422 admin_search_lead.php:435
-#: admin_search_lead.php:454 admin_search_lead.php:460
-#: admin_search_lead.php:469 admin_search_lead.php:475
+#: admin_search_lead.php:396 admin_search_lead.php:402
+#: admin_search_lead.php:411 admin_search_lead.php:462
+#: admin_search_lead.php:468 admin_search_lead.php:477
+#: admin_search_lead.php:483
 msgid "SUBMIT"
 msgstr "Suche"
 
-#: admin_search_lead.php:397
+#: admin_search_lead.php:404
 msgid "search"
 msgstr "suche"
 
-#: admin_search_lead.php:403 admin_search_lead.php:453
-#: admin_search_lead.php:468
+#: admin_search_lead.php:410 admin_search_lead.php:461
+#: admin_search_lead.php:476
 msgid "Lead ID"
 msgstr "Lead ID"
 
-#: admin_search_lead.php:409
+#: admin_search_lead.php:416
 msgid "Status"
 msgstr "Status"
 
-#: admin_search_lead.php:412
+#: admin_search_lead.php:419
 msgid "List ID"
 msgstr "Listen ID"
 
-#: admin_search_lead.php:414
+#: admin_search_lead.php:421
 msgid "User"
 msgstr "Agent"
 
-#: admin_search_lead.php:416
+#: admin_search_lead.php:423
 msgid "Owner"
 msgstr "Besitzer"
 
-#: admin_search_lead.php:440
+#: admin_search_lead.php:448
 msgid "All fields marked with * are evaluated,"
 msgstr "Alle mit * markierten Felder werden ausgewertet,"
 
-#: admin_search_lead.php:440
+#: admin_search_lead.php:448
 msgid "if 2 or more fields are filled in."
 msgstr "wenn 2 oder mehr Felder ausgefüllt wurden."
 
-#: admin_search_lead.php:441
+#: admin_search_lead.php:449
 msgid "Global-SUBMIT"
 msgstr "Globale Suche"
 
-#: admin_search_lead.php:450
+#: admin_search_lead.php:458
 msgid "Log Search Options"
 msgstr "Log Suchparameter"
 
-#: admin_search_lead.php:459 admin_search_lead.php:474
+#: admin_search_lead.php:467 admin_search_lead.php:482
 msgid "Dialed"
 msgstr "angerufen"
 
-#: admin_search_lead.php:465
+#: admin_search_lead.php:473
 msgid "Archived Log Search Options"
 msgstr "Log Archiv Suchparameter"
 
-#: admin_search_lead.php:554
+#: admin_search_lead.php:578
 msgid "You must use 2 or more fields for this function!"
 msgstr "Bitte 2 oder mehr Felder für diese Funktion nutzen!"
 
-#: admin_search_lead.php:556 admin_search_lead.php:1515
+#: admin_search_lead.php:580 admin_search_lead.php:1496
 msgid "NEW SEARCH"
 msgstr "Neue Suche"
 
-#: admin_search_lead.php:588 admin_search_lead.php:1380
+#: admin_search_lead.php:616 admin_search_lead.php:1360
 msgid "The search variables you entered are not active in the system"
 msgstr "Mit den Suchparametern wurden keine Daten gefunden"
 
-#: admin_search_lead.php:589 admin_search_lead.php:1381
+#: admin_search_lead.php:617 admin_search_lead.php:1361
 msgid ""
 "Please go back and double check the information you entered and submit again"
 msgstr "Bitte zurückgehen und die Suchparameter überprüfen"
 
-#: admin_search_lead.php:596 admin_search_lead.php:1388
+#: admin_search_lead.php:624 admin_search_lead.php:1368
 msgid "RESULTS"
 msgstr "Ergebnis"
 
-#: admin_search_lead.php:600 admin_search_lead.php:754
-#: admin_search_lead.php:820 admin_search_lead.php:1000
-#: admin_search_lead.php:1066 admin_search_lead.php:1392
+#: admin_search_lead.php:628 admin_search_lead.php:801
+#: admin_search_lead.php:868 admin_search_lead.php:1050
+#: admin_search_lead.php:1117 admin_search_lead.php:1372
 msgid "LEAD ID"
 msgstr "Lead ID"
 
-#: admin_search_lead.php:601 admin_search_lead.php:758
-#: admin_search_lead.php:824 admin_search_lead.php:1004
-#: admin_search_lead.php:1070 admin_search_lead.php:1393
+#: admin_search_lead.php:629 admin_search_lead.php:805
+#: admin_search_lead.php:872 admin_search_lead.php:1054
+#: admin_search_lead.php:1121 admin_search_lead.php:1373
 msgid "STATUS"
 msgstr "Status"
 
-#: admin_search_lead.php:602 admin_search_lead.php:1394
+#: admin_search_lead.php:630 admin_search_lead.php:1374
 msgid "VENDOR ID"
 msgstr "Kundennr."
 
-#: admin_search_lead.php:603 admin_search_lead.php:1395
+#: admin_search_lead.php:631 admin_search_lead.php:1375
 msgid "LAST AGENT"
 msgstr "letzter Agent"
 
-#: admin_search_lead.php:604 admin_search_lead.php:760
-#: admin_search_lead.php:826 admin_search_lead.php:1006
-#: admin_search_lead.php:1072 admin_search_lead.php:1396
+#: admin_search_lead.php:632 admin_search_lead.php:807
+#: admin_search_lead.php:874 admin_search_lead.php:1056
+#: admin_search_lead.php:1123 admin_search_lead.php:1376
 msgid "LIST ID"
 msgstr "Listen ID"
 
-#: admin_search_lead.php:605 admin_search_lead.php:755
-#: admin_search_lead.php:821 admin_search_lead.php:887
-#: admin_search_lead.php:1001 admin_search_lead.php:1067
-#: admin_search_lead.php:1133 admin_search_lead.php:1397
+#: admin_search_lead.php:633 admin_search_lead.php:802
+#: admin_search_lead.php:869 admin_search_lead.php:936
+#: admin_search_lead.php:1051 admin_search_lead.php:1118
+#: admin_search_lead.php:1185 admin_search_lead.php:1377
 msgid "PHONE"
 msgstr "Telefonnr"
 
-#: admin_search_lead.php:606 admin_search_lead.php:1398
+#: admin_search_lead.php:634 admin_search_lead.php:1378
 msgid "NAME"
 msgstr "Name"
 
-#: admin_search_lead.php:607 admin_search_lead.php:1399
+#: admin_search_lead.php:635 admin_search_lead.php:1379
 msgid "CITY"
 msgstr "Ort"
 
-#: admin_search_lead.php:608 admin_search_lead.php:1400
+#: admin_search_lead.php:636 admin_search_lead.php:1380
 msgid "SECURITY"
 msgstr "Sicherheit"
 
-#: admin_search_lead.php:609 admin_search_lead.php:1401
+#: admin_search_lead.php:637 admin_search_lead.php:1381
 msgid "LAST CALL"
 msgstr "letzter Anruf"
 
-#: admin_search_lead.php:750 admin_search_lead.php:996
+#: admin_search_lead.php:725
+msgid "The search was terminated with the following error"
+msgstr "Die Suche wurde mit dem folgendem Fehler beendet"
+
+#: admin_search_lead.php:728
+msgid "The maximum search time was exceeded. Please refine your search"
+msgstr ""
+"Die maximale Suchzeit wurde überschritten. Bitte verfeinern Sie die Suche"
+
+#: admin_search_lead.php:797 admin_search_lead.php:1046
 msgid "OUTBOUND LOG RESULTS"
 msgstr "Ergebnisse für Gesprächsausgang"
 
-#: admin_search_lead.php:756 admin_search_lead.php:1002
+#: admin_search_lead.php:803 admin_search_lead.php:1052
 msgid "CAMPAIGN"
 msgstr "Kampagne"
 
-#: admin_search_lead.php:757 admin_search_lead.php:823
-#: admin_search_lead.php:889 admin_search_lead.php:1003
-#: admin_search_lead.php:1069 admin_search_lead.php:1135
+#: admin_search_lead.php:804 admin_search_lead.php:871
+#: admin_search_lead.php:938 admin_search_lead.php:1053
+#: admin_search_lead.php:1120 admin_search_lead.php:1187
 msgid "CALL DATE"
 msgstr "Anrufdatum"
 
-#: admin_search_lead.php:759 admin_search_lead.php:825
-#: admin_search_lead.php:1005 admin_search_lead.php:1071
+#: admin_search_lead.php:806 admin_search_lead.php:873
+#: admin_search_lead.php:1055 admin_search_lead.php:1122
 msgid "USER"
 msgstr "Agent"
 
-#: admin_search_lead.php:761 admin_search_lead.php:827
-#: admin_search_lead.php:1007 admin_search_lead.php:1073
+#: admin_search_lead.php:808 admin_search_lead.php:875
+#: admin_search_lead.php:1057 admin_search_lead.php:1124
 msgid "LENGTH"
 msgstr "Länge"
 
-#: admin_search_lead.php:762 admin_search_lead.php:1008
+#: admin_search_lead.php:809 admin_search_lead.php:1058
 msgid "DIAL"
 msgstr "Wahl"
 
-#: admin_search_lead.php:811 admin_search_lead.php:1057
+#: admin_search_lead.php:859 admin_search_lead.php:1108
 msgid "There are no inbound calls matching your search criteria"
 msgstr "Keine eingehenden Anrufe entsprechen den Suchparametern"
 
-#: admin_search_lead.php:822 admin_search_lead.php:1068
+#: admin_search_lead.php:870 admin_search_lead.php:1119
 msgid "INGROUP"
 msgstr "In-Gruppe"
 
-#: admin_search_lead.php:877 admin_search_lead.php:1123
+#: admin_search_lead.php:926 admin_search_lead.php:1175
 msgid "There are no inbound did calls matching your search criteria"
 msgstr "Keine eingehende DID Anrufe entsprechen den Suchparametern"
 
-#: admin_search_lead.php:882 admin_search_lead.php:1128
+#: admin_search_lead.php:931 admin_search_lead.php:1180
 msgid "INBOUND DID LOG RESULTS"
 msgstr "Ergebnisse für DID's im Gesprächseingang"
 
-#: admin_search_lead.php:886 admin_search_lead.php:1132
+#: admin_search_lead.php:935 admin_search_lead.php:1184
 msgid "DID"
 msgstr "DID"
 
-#: admin_search_lead.php:888 admin_search_lead.php:1134
+#: admin_search_lead.php:937 admin_search_lead.php:1186
 msgid "DID ID"
 msgstr "DID Id"
 
-#: admin_search_lead.php:951 admin_search_lead.php:1197
-#: admin_search_lead.php:1517
+#: admin_search_lead.php:1001 admin_search_lead.php:1250
+#: admin_search_lead.php:1498
 msgid "script runtime"
 msgstr "Skript Laufzeit"
 
-#: admin_search_lead.php:951 admin_search_lead.php:1197
-#: admin_search_lead.php:1517
+#: admin_search_lead.php:1001 admin_search_lead.php:1250
+#: admin_search_lead.php:1498
 msgid "seconds"
 msgstr "Sekunden"
 
-#: admin_search_lead.php:991
+#: admin_search_lead.php:1041
 msgid "There are no outbound calls matching your search criteria"
 msgstr "Keine ausgehenden Anrufe entsprechen den Suchparametern"
 
-#: admin_search_lead.php:1062
+#: admin_search_lead.php:1113
 msgid "INBOUND LOG RESULTS"
 msgstr "Ergebnisse für Gesprächseingang"
 
-#: admin_search_lead.php:1302
+#: admin_search_lead.php:1285
 msgid "ERROR: you must search for something! Go back and search for something"
 msgstr ""
 "Fehler: Sie müssen nach etwas suchen! Bitte zurückgehen und die "

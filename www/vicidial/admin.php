@@ -30143,7 +30143,7 @@ if ($ADD==3111)
 		echo "<TABLE width=700 cellspacing=3>\n";
 		echo "<tr><td>"._QXZ("USER")."</td><td>"._QXZ("GROUP")."</td><td>"._QXZ("SELECTED")."</td><td> &nbsp; &nbsp; "._QXZ("RANK")."</td><td> &nbsp; &nbsp; "._QXZ("GRADE")."</td><td> &nbsp; &nbsp; "._QXZ("CALLS TODAY")."</td></tr>\n";
 
-		$stmt="SELECT user,full_name,closer_campaigns,user_group from vicidial_users where active='Y' $LOGadmin_viewable_groupsSQL order by user;";
+		$stmt="SELECT user,full_name,closer_campaigns,user_group from vicidial_users where active='Y' $LOGadmin_viewable_groupsSQL order by user_group;";
 		$rsltx=mysql_to_mysqli($stmt, $link);
 		$users_to_print = mysqli_num_rows($rsltx);
 
