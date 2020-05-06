@@ -875,6 +875,8 @@
           bin/ADMIN_keepalive_ALL.pl.
       - New: bin/SNCT_gen_realtime.php.
     * Sort agents in "Modify Ingroups" by user_groups.
+    * Fix handling of internal calls to admin_search_lead:
+      - Update www/vicidial/admin_search_lead.php.
     * Change next release to 3.0.1.
 
 2.26.29

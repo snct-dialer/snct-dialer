@@ -21,7 +21,8 @@
 #						Change translation from database to po file
 #						Add tool to format phone numbers
 #						Reformat result tables
-# 
+# 2020-05-06 10:06 jff	Add strlen of $list_id into if clause to search from
+#						interal.
 #
 # AST GUI database administration search for lead info
 # admin_modify_lead.php
@@ -493,13 +494,18 @@ if ( (!$vendor_id) and (!$phone)  and (!$lead_id) and (!$log_phone)  and (!$log_
 	}
 
 else
-	if (strlen($GLBSUBMIT) > 1) {
+	if ((strlen($GLBSUBMIT) > 1) || (strlen($list_id) > 0)) {
 		
 		$AnzPara = 0;
 		$first_nameSQL = "";
 		if(strlen($first_name) > 0) {
 			$AnzPara++;
 			$first_nameSQL = "first_name LIKE '" . mysqli_real_escape_string($link, $first_name) . "'";
+		}
+		$CCQL = "";
+		if(strlen($called_count) > 0) {
+			$AnzPara++;
+			$CCSQL = "called_count = '" . mysqli_real_escape_string($link, $called_count) . "'";
 		}
 		$last_nameSQL = "";
 		if(strlen($last_name) > 0) {
@@ -571,7 +577,7 @@ else
 			if($AnzPara > 0) {
 				$tmpSQL = " AND ";
 			}
-			$list_idSQL = "$tmpSQL status =  '" . mysqli_real_escape_string($link, $status) . "'";
+			$statusSQL = "$tmpSQL status =  '" . mysqli_real_escape_string($link, $status) . "'";
 			$AnzPara++;
 		}
 		if(($AnzPara < 2) && ($AdminLevel < 9)) {
@@ -586,7 +592,7 @@ else
 			if($AdminLevel < 9) {
 				$stmt = "SET STATEMENT max_statement_time=15 FOR ";
 			}
-			$stmt .= "SELECT $vicidial_list_fields from $vl_table where $first_nameSQL $last_nameSQL $address1SQL $address1_noSQL $citySQL $userSQL $ownerSQL $list_idSQL $email_SQL $statusSQL $LOGallowed_listsSQL LIMIT 5000;";
+			$stmt .= "SELECT $vicidial_list_fields from $vl_table where $first_nameSQL $CCSQL $last_nameSQL $address1SQL $address1_noSQL $citySQL $userSQL $ownerSQL $list_idSQL $email_SQL $statusSQL $LOGallowed_listsSQL LIMIT 5000;";
 			if($DB) {
 				echo $stmt;
 			}
