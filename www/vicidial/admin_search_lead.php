@@ -440,7 +440,7 @@ if ( (!$vendor_id) and (!$phone)  and (!$lead_id) and (!$log_phone)  and (!$log_
 
 	echo "<TD colspan=3 align=center height=1></TD>";
 	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
-	echo "<TD ALIGN=right>* $label_email: &nbsp; </TD><TD ALIGN=left><input type=text name=email size=15 maxlength=30></TD>";
+	echo "<TD ALIGN=right>* $label_email: &nbsp; </TD><TD ALIGN=left><input type=text name=email size=15 maxlength=255></TD>";
 #	echo "<TD><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._("SUBMIT")."'></TD>\n";
 	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
 	
@@ -568,7 +568,7 @@ else
 			if($AnzPara > 0) {
 				$tmpSQL = " AND ";
 			}
-			$list_idSQL = "$tmpSQL email =  '" . mysqli_real_escape_string($link, $email) . "'";
+			$list_idSQL = "$tmpSQL email LIKE  '" . mysqli_real_escape_string($link, $email) . "'";
 			$AnzPara++;
 			$AnzPara++;
 		}
