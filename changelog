@@ -877,6 +877,8 @@
     * Sort agents in "Modify Ingroups" by user_groups.
     * Fix handling of internal calls to admin_search_lead and add LIKE to email:
       - Update www/vicidial/admin_search_lead.php.
+    * Fix survey after call:
+      - Update www/vicidial/admin.php
     * Change next release to 3.0.1.
 
 2.26.29

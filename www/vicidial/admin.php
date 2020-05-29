@@ -5,8 +5,8 @@
 #
 # Copyright (©) 2019  Matt Florell <vicidial@gmail.com>
 # Copyright (©) 2017-2019 flyingpenguin.de UG <info@flyingpenguin.de>
-#               2019      SNCT GmbH <info@snct-gmbh.de>
-#               2017-2019 Jörg Frings-Fürst <open_source@jff.email>
+#               2019-2020 SNCT GmbH <info@snct-gmbh.de>
+#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
 
 #
 # Other - Changelog
@@ -21,7 +21,7 @@
 #                  Phones Switch to MYSQLI_BOTH for using fieldnames
 # 2019-04-29 10:45 Add system_wide_settings.php.
 # 2019-05-29 10:37 Add Agent disable [manual dial|alt phone dial]
-#
+# 2020-05-29 20:22 Move survey after call from chat to phone.
 
 $startMS = microtime();
 
@@ -30017,6 +30017,15 @@ if ($ADD==3111)
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Populate Lead State Areacode").": </td><td align=left><select size=1 name=populate_state_areacode><option value='DISABLED'>"._QXZ("DISABLED")."</option><option value='NEW_LEAD_ONLY'>"._QXZ("NEW_LEAD_ONLY")."</option><option value='OVERWRITE_ALWAYS'>"._QXZ("OVERWRITE_ALWAYS")."</option><option value='$populate_state_areacode' SELECTED>"._QXZ("$populate_state_areacode")."</option></select>$NWB#inbound_groups-populate_state_areacode$NWE</td></tr>\n";
 
+		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("After Call Survey").": </td><td align=left><select size=1 name=inbound_survey><option value='DISABLED'>"._QXZ("DISABLED")."</option><option value='ENABLED'>"._QXZ("ENABLED")."</option><option value='$inbound_survey' SELECTED>"._QXZ("$inbound_survey")."</option></select>$NWB#inbound_groups-inbound_survey$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("After Call Survey Accept Filename").": </td><td align=left><input type=text name=inbound_survey_filename id=inbound_survey_filename size=50 maxlength=255 value=\"$inbound_survey_filename\"> <a href=\"javascript:launch_chooser('inbound_survey_filename','date');\">"._QXZ("audio chooser")."</a> $NWB#inbound_groups-inbound_survey_filename$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("After Call Survey Accept Digit").": </td><td align=left><select size=1 name=inbound_survey_accept_digit><option value='0'>"._QXZ("0")."</option><option value='1'>"._QXZ("1")."</option><option value='2'>"._QXZ("2")."</option><option value='3'>"._QXZ("3")."</option><option value='4'>"._QXZ("4")."</option><option value='5'>"._QXZ("5")."</option><option value='6'>"._QXZ("6")."</option><option value='7'>"._QXZ("7")."</option><option value='8'>"._QXZ("8")."</option><option value='9'>"._QXZ("9")."</option><option value='$inbound_survey_accept_digit' SELECTED>"._QXZ("$inbound_survey_accept_digit")."</option></select>$NWB#inbound_groups-inbound_survey_accept_digit$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("After Call Question Filename").": </td><td align=left><input type=text name=inbound_survey_question_filename id=inbound_survey_question_filename size=50 maxlength=255 value=\"$inbound_survey_question_filename\"> <a href=\"javascript:launch_chooser('inbound_survey_question_filename','date');\">"._QXZ("audio chooser")."</a> $NWB#inbound_groups-inbound_survey_question_filename$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#$SSstd_row3_background><td align=right><a href=\"$PHP_SELF?ADD=3511&menu_id=$inbound_survey_callmenu\">"._QXZ("After Call End Call Menu").":</a></td><td align=left><select size=1 name=inbound_survey_callmenu id=inbound_survey_callmenu>$call_menu_list<option SELECTED>$inbound_survey_callmenu</option></select>$NWB#inbound_groups-inbound_survey_callmenu$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Custom")." 1: </td><td align=left><input type=text name=ibg_custom_one size=50 maxlength=100 value=\"$ibg_custom_one\">$NWB#inbound_dids-custom_one$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Custom")." 2: </td><td align=left><input type=text name=ibg_custom_two size=50 maxlength=100 value=\"$ibg_custom_two\">$NWB#inbound_dids-custom_one$NWE</td></tr>\n";
@@ -31696,16 +31705,6 @@ if ($ADD==3911)
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Populate Lead Source").": </td><td align=left><select size=1 name=populate_lead_source><option value='DISABLED'>"._QXZ("DISABLED")."</option><option value='INBOUND_NUMBER'>"._QXZ("INBOUND_NUMBER")."</option><option value='BLANK'>"._QXZ("BLANK")."</option><option value='$populate_lead_province' SELECTED>"._QXZ("$populate_lead_source")."</option></select>$NWB#inbound_groups-populate_lead_source$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Populate Lead Vendor").": </td><td align=left><input type=text name=populate_lead_vendor id=populate_lead_vendor size=22 maxlength=20 value=\"$populate_lead_vendor\"> $NWB#inbound_groups-populate_lead_vendor$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("After Call Survey").": </td><td align=left><select size=1 name=inbound_survey><option value='DISABLED'>"._QXZ("DISABLED")."</option><option value='ENABLED'>"._QXZ("ENABLED")."</option><option value='$inbound_survey' SELECTED>"._QXZ("$inbound_survey")."</option></select>$NWB#inbound_groups-inbound_survey$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("After Call Survey Accept Filename").": </td><td align=left><input type=text name=inbound_survey_filename id=inbound_survey_filename size=50 maxlength=255 value=\"$inbound_survey_filename\"> <a href=\"javascript:launch_chooser('inbound_survey_filename','date');\">"._QXZ("audio chooser")."</a> $NWB#inbound_groups-inbound_survey_filename$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("After Call Survey Accept Digit").": </td><td align=left><select size=1 name=inbound_survey_accept_digit><option value='0'>"._QXZ("0")."</option><option value='1'>"._QXZ("1")."</option><option value='2'>"._QXZ("2")."</option><option value='3'>"._QXZ("3")."</option><option value='4'>"._QXZ("4")."</option><option value='5'>"._QXZ("5")."</option><option value='6'>"._QXZ("6")."</option><option value='7'>"._QXZ("7")."</option><option value='8'>"._QXZ("8")."</option><option value='9'>"._QXZ("9")."</option><option value='$inbound_survey_accept_digit' SELECTED>"._QXZ("$inbound_survey_accept_digit")."</option></select>$NWB#inbound_groups-inbound_survey_accept_digit$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("After Call Question Filename").": </td><td align=left><input type=text name=inbound_survey_question_filename id=inbound_survey_question_filename size=50 maxlength=255 value=\"$inbound_survey_question_filename\"> <a href=\"javascript:launch_chooser('inbound_survey_question_filename','date');\">"._QXZ("audio chooser")."</a> $NWB#inbound_groups-inbound_survey_question_filename$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#$SSstd_row3_background><td align=right><a href=\"$PHP_SELF?ADD=3511&menu_id=$inbound_survey_callmenu\">"._QXZ("After Call End Call Menu").":</a></td><td align=left><select size=1 name=inbound_survey_callmenu id=inbound_survey_callmenu>$call_menu_list<option SELECTED>$inbound_survey_callmenu</option></select>$NWB#inbound_groups-inbound_survey_callmenu$NWE</td></tr>\n";
 
 		echo "<input type=hidden name=form_end value=\"END\">\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=center colspan=2><input type=submit name=SUBMIT value='"._QXZ("SUBMIT")."'></td></tr>\n";
