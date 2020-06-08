@@ -160,7 +160,7 @@ if (length($ARGV[0])>1)
 else
 	{
 #	print "no command line options set\n";
-	exit;
+#	exit;
 	}
 
 ### end parsing run-time options ###

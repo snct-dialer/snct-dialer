@@ -9,9 +9,9 @@
 #
 # Copyright (©) 2016      Matt Florell <vicidial@gmail.com>
 #
-# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+# Copyright (©) 2017-2020 flyingpenguin.de UG <info@flyingpenguin.de>
 #               2019      SNCT GmbH <info@snct-gmbh.de>
-#               2017-2019 Jörg Frings-Fürst <open_source@jff.email>
+#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
 #
 # CHANGELOG
 #
@@ -29,10 +29,11 @@
 #                           Create backuppath if not exists.
 # 190601-1008 - 3.1.1 - jff Add KW and hour to archive filename.
 # 190601-1556 - 3.1.2 - jff Add WebPath2
-# 190602-0953 - 3.1.3 - jff Use YYYY-MM-DD[-HH] for archive file name.
+# 190602-0953 - 3.1.3 - jff Use YYYY-MM-DD[-HH] for backup file name.
+# 200601-1132 - 3.1.4 - jff Use YYYY-MM-DD[-HH]_DOW for backup file name.
 #
 
-$PrgVersion = "3.1.3";
+$PrgVersion = "3.1.4";
 
 ###### Test that the script is running only once a time
 use Fcntl qw(:flock);
@@ -59,7 +60,7 @@ $file_date = "$year-$mon-$mday";
 $now_date = "$year-$mon-$mday $hour:$min:$sec";
 $VDL_date = "$year-$mon-$mday 00:00:01";
 $db_raw_files_copy=0;
-$DateTag = "$year-$mon-$mday";
+$DateTag = "$year-$mon-${mday}_$wday";
 
 
 print "$0 Version: $PrgVersion \n";
