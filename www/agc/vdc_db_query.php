@@ -4,15 +4,16 @@
 # LICENSE: AGPLv3
 #
 # Copyright (©) 2019  Matt Florell <vicidial@gmail.com>
-# Copyright (©) 2019      SNCT GmbH <info@snct-gmbh.de>
-#               2017-2019 Jörg Frings-Fürst <open_source@jff.email>.
+# Copyright (©) 2019-2020 SNCT GmbH <info@snct-gmbh.de>
+#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>.
 
 # Other - Changelog
 #
 # 2019-04-29 10:10 Change lisense to AGPLv3
 # 2019-04-29 10:11 Add system_wide_settings.php
 # 2019-05-02 12:03 Add OnlyInbounds to CALLLOGview
-#
+# 2020-06-10 17:10 Add $OverWriteAfterCallSurvey to allow AfterCall survey
+#                  without OptIn
 
 
 
@@ -9080,6 +9081,8 @@ if ($ACTION == 'VDADcheckINCOMING')
 							$row=mysqli_fetch_row($rslt);
 							$VDCL_survey_participate	=		$row[0];
 							}
+						if($OverWriteAfterCallSurvey == 1) {
+							$VDCL_survey_participate = "Y";
 						}
 					### END check if ask post-call survery is enabled and caller agreed to participate
 

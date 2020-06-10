@@ -880,9 +880,12 @@
     * Fix survey after call:
       - Update www/vicidial/admin.php
     * Use YYYY-MM-DD[-HH]_DOW for archive file name:
-      -Update bin/ADMIN_backup_ng.pl.
+      - Update bin/ADMIN_backup_ng.pl.
     * Fix running email parser:
       - Update bin/AST_inbound_email_parser.pl.
+    * Add $OverWriteAfterCallSurvey to allow after call survey without optin:
+      - Update www/agc/options-example.php,
+          www/agc/vdc_db_query.php.
     * Change next release to 3.0.1.
 
 2.26.29
