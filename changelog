@@ -886,6 +886,8 @@
     * Add $OverWriteAfterCallSurvey to allow after call survey without optin:
       - Update www/agc/options-example.php,
           www/agc/vdc_db_query.php.
+    * Count missing agent calls only if lead != DROP:
+      - update www/agc/functions.php.
     * Change next release to 3.0.1.
 
 2.26.29

@@ -8,13 +8,16 @@
 #
 # Copyright (©) 2019  Matt Florell <vicidial@gmail.com>
 # Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
-#               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
+#               2020      SNCT GmbH <info@snct-gmbh.de>
+#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
 
 #
-# FP - Changelog
+# SNCT - Changelog:
 #
 # 2018-07-18 jff Add missing global debug vars ($DB, $mel);
+# 2020-06-24 jff Change search for missing Calls
 #
+
 #
 # CHANGES:
 # 100629-1201 - First Build
@@ -2649,19 +2652,25 @@ function GetPauseName($Agent) {
 }
 
 function GetMissingInboundsCalls($Agent) {
-    global $DB, $mel;
+	global $DB, $mel;
 
-    require("dbconnect_mysqli.php");
+	require("dbconnect_mysqli.php");
 
-    $Count = 0;
-    $SearchDate = date("Y-m-d H:i:s", (time() - (30 * 60)));
-#    $stmt = "SELECT * FROM `vicidial_closer_log` WHERE `campaign_id` LIKE 'AGENTDIRECT%' AND `user` = '$Agent' AND `status` = 'DROP' AND `term_reason` = 'ABANDON' AND `call_date` >= '$SearchDate' ";
-    $stmt = "SELECT * FROM `vicidial_closer_log` WHERE `user` = '$Agent' AND `status` = 'DROP' AND `term_reason` = 'ABANDON' AND `call_date` >= '$SearchDate' ";
-    $rslt=mysqli_query($link, $stmt);
-    if(! $rslt ) {  echo "Error: " .  mysqli_error($link) . PHP_EOL; }
-    if ($DB) {echo "$stmt\n";}
+	$Count = 0;
+#	$SearchDate = date("Y-m-d H:i:s", (time() - (30 * 60)));
+	$SearchDate = date("Y-m-d");
+#	$stmt = "SELECT * FROM `vicidial_closer_log` WHERE `campaign_id` LIKE 'AGENTDIRECT%' AND `user` = '$Agent' AND `status` = 'DROP' AND `term_reason` = 'ABANDON' AND `call_date` >= '$SearchDate' ";
+#	$stmt = "SELECT * FROM `vicidial_closer_log` WHERE `user` = '$Agent' AND `status` = 'DROP' AND `term_reason` = 'ABANDON' AND `call_date` >= '$SearchDate' ";
+	$stmt = "SELECT COUNT(*) AS Anzahl FROM `vicidial_closer_log` VCL, `vicidial_list` VL  WHERE VCL.`user` = '$Agent' AND VCL.`status` = 'DROP' AND VCL.`term_reason` = 'ABANDON' AND VCL.`call_date` >= '$SearchDate' AND VCL.`lead_id` = VL.`lead_id` AND VL.`status` = 'DROP';";
+	$rslt=mysqli_query($link, $stmt);
+	if(! $rslt ) {  echo "Error: " .  mysqli_error($link) . PHP_EOL; }
+	if ($DB) {echo "$stmt\n";}
 
-    $Count = mysqli_num_rows($rslt);
-    return $Count;
+	$row=mysqli_fetch_all($rslt, MYSQLI_BOTH);
+	$Count = row["Anzahl"];
+
+	return $Count;
 }
+
 ?>
+

@@ -9084,6 +9084,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 						if($OverWriteAfterCallSurvey == 1) {
 							$VDCL_survey_participate = "Y";
 						}
+						}
 					### END check if ask post-call survery is enabled and caller agreed to participate
 
 					### update the comments in vicidial_live_agents record

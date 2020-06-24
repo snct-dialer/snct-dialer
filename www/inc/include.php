@@ -25,4 +25,22 @@ if (file_exists('../inc/db.php')) {
 }
 
 
+if (file_exists('../inc/header.php')) {
+    require_once '../inc/header.php';
+} elseif (file_exists('./inc/header.php')) {
+    require_once './inc/header.php';
+} else {
+    require_once 'om/inc/header.php';
+}
+
+
+if (file_exists('../inc/menue.php')) {
+    require_once '../inc/menue.php';
+} elseif (file_exists('./inc/menue.php')) {
+    require_once './inc/menue.php';
+} else {
+    require_once 'om/inc/menue.php';
+}
+
+
 ?>
