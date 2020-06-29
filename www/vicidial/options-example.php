@@ -115,4 +115,8 @@ $enable_status_mismatch_leadloader_option=0;
 # on RealtimeReport display all Inbounds if selected Campaignes
 $displayAllInbound = 'Y';
 
+# display external link at admin_modify_lead.php
+$ExtLink_admin_modify_lead = '';
+ 
+
 ?>

@@ -2655,22 +2655,17 @@ function GetMissingInboundsCalls($Agent) {
 	global $DB, $mel;
 
 	require("dbconnect_mysqli.php");
-
+	
 	$Count = 0;
-#	$SearchDate = date("Y-m-d H:i:s", (time() - (30 * 60)));
 	$SearchDate = date("Y-m-d");
-#	$stmt = "SELECT * FROM `vicidial_closer_log` WHERE `campaign_id` LIKE 'AGENTDIRECT%' AND `user` = '$Agent' AND `status` = 'DROP' AND `term_reason` = 'ABANDON' AND `call_date` >= '$SearchDate' ";
-#	$stmt = "SELECT * FROM `vicidial_closer_log` WHERE `user` = '$Agent' AND `status` = 'DROP' AND `term_reason` = 'ABANDON' AND `call_date` >= '$SearchDate' ";
-	$stmt = "SELECT COUNT(*) AS Anzahl FROM `vicidial_closer_log` VCL, `vicidial_list` VL  WHERE VCL.`user` = '$Agent' AND VCL.`status` = 'DROP' AND VCL.`term_reason` = 'ABANDON' AND VCL.`call_date` >= '$SearchDate' AND VCL.`lead_id` = VL.`lead_id` AND VL.`status` = 'DROP';";
+	$stmt = "SELECT COUNT(*) AS Anzahl FROM `vicidial_closer_log` VCL, `vicidial_list` VL  WHERE VCL.`user` = '".$Agent."' AND VCL.`status` = 'DROP' AND VCL.`term_reason` = 'ABANDON' AND VCL.`call_date` >= '".$SearchDate."' AND VCL.`lead_id` = VL.`lead_id` AND VL.`status` = 'DROP';";
 	$rslt=mysqli_query($link, $stmt);
 	if(! $rslt ) {  echo "Error: " .  mysqli_error($link) . PHP_EOL; }
 	if ($DB) {echo "$stmt\n";}
 
-	$row=mysqli_fetch_all($rslt, MYSQLI_BOTH);
-	$Count = row["Anzahl"];
-
+	$row=mysqli_fetch_array($rslt, MYSQLI_BOTH);
+	$Count = $row["Anzahl"];
 	return $Count;
 }
 
 ?>
-

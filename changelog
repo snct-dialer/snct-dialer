@@ -888,6 +888,9 @@
           www/agc/vdc_db_query.php.
     * Count missing agent calls only if lead != DROP:
       - update www/agc/functions.php.
+    * Add external link from lead:
+      - Update www/agc/options-example.php,
+          www/vicidial/admin_modify_lead.php.
     * Change next release to 3.0.1.
 
 2.26.29
