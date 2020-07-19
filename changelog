@@ -848,11 +848,11 @@
            extras/mysql_update/mysql-1567.sql,
            extras/upgrade_2.14.sql.
     * Fix typos:
-      - Update extras/MySQL_AST_CREATE_tables.sql.
+      - Update: extras/MySQL_AST_CREATE_tables.sql.
     * Add missing /etc/mysql to backup:
-      - Update bin/ADMIN_backup_ng.pl.
+      - Update: bin/ADMIN_backup_ng.pl.
     * Pulldown menue only with active agents:
-      - Update www/vicidial/AST_agent_performance_detail.php.
+      - Update: www/vicidial/AST_agent_performance_detail.php.
     * Change translation handling from database to po files:
       - New: extras/language/GenPot.sh,
           www/agc/locale/snctdialer.pot,
@@ -860,37 +860,39 @@
           www/vicidial/admin_search_lead.php,
           www/vicidial/locale/snctdialer.pot.
     * Add global Lead Search:
-      - Update www/vicidial/admin_search_lead.php.
+      - Update: www/vicidial/admin_search_lead.php.
     * Add tool for Phone number format:
-      - New www/agc/locale/,
+      - New: www/agc/locale/,
           www/tools/composer.json,
           www/tools/composer.lock,
           www/tools/format_phone.php,
           www/tools/vendor/.
-      - Update agi/agi-VDAD_ALL_inbound.agi.
+      - Update: agi/agi-VDAD_ALL_inbound.agi.
     * Rewrite Real-Time Main Report to use server based computing:
-      - Update www/agc/vdc_db_query.php,
+      - Update: www/agc/vdc_db_query.php,
           www/vicidial/AST_timeonVDADall.php,
           www/vicidial/admin_search_lead.php,
           bin/ADMIN_keepalive_ALL.pl.
       - New: bin/SNCT_gen_realtime.php.
     * Sort agents in "Modify Ingroups" by user_groups.
     * Fix handling of internal calls to admin_search_lead and add LIKE to email:
-      - Update www/vicidial/admin_search_lead.php.
+      - Update: www/vicidial/admin_search_lead.php.
     * Fix survey after call:
-      - Update www/vicidial/admin.php
+      - Update: www/vicidial/admin.php
     * Use YYYY-MM-DD[-HH]_DOW for archive file name:
-      - Update bin/ADMIN_backup_ng.pl.
+      - Update: bin/ADMIN_backup_ng.pl.
     * Fix running email parser:
-      - Update bin/AST_inbound_email_parser.pl.
+      - Update: bin/AST_inbound_email_parser.pl.
     * Add $OverWriteAfterCallSurvey to allow after call survey without optin:
-      - Update www/agc/options-example.php,
+      - Update: www/agc/options-example.php,
           www/agc/vdc_db_query.php.
     * Count missing agent calls only if lead != DROP:
-      - update www/agc/functions.php.
+      - Update: www/agc/functions.php.
     * Add external link from lead:
-      - Update www/agc/options-example.php,
+      - Update: www/agc/options-example.php,
           www/vicidial/admin_modify_lead.php.
+    * Allow skip lead on manual dial on except for callbacks:
+      - Update: www/agc/vicidial.php;
     * Change next release to 3.0.1.
 
 2.26.29

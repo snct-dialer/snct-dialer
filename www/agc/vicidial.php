@@ -6,8 +6,8 @@
 #
 # Copyright (©) 2019  Matt Florell <vicidial@gmail.com>
 # Copyright (©) 2017-2019 flyingpenguin.de UG <info@flyingpenguin.de>
-#               2019      SNCT GmbH <info@snct-gmbh.de>
-#               2017-2019 Jörg Frings-Fürst <open_source@jff.email>
+#               2019-2020 SNCT GmbH <info@snct-gmbh.de>
+#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
 #
 # Other scripts that this application depends on:
 # - vdc_db_query.php: Updates information in the database
@@ -25,6 +25,7 @@
 # 2019-04-14 19:22 Remove old PausenDisplay stuff.
 # 2019-04-29 10:17 Add system_wide_settings.php.
 # 2019-05-28 09:18 Show Manual Dial only if UserLevel > 1
+# 2020-07-19 11:15 Warning skip lead only by callbacks
 #
 #
 #
@@ -4586,6 +4587,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var campagentstatctmax = '<?php echo $campagentstatctmax ?>'
 	var campagentstatct = '0';
 	var manual_dial_in_progress = 0;
+	var manual_cb_call = 0;
 	var auto_dial_alt_dial = 0;
 	var reselect_preview_dial = 0;
 	var in_lead_preview_state = 0;
@@ -8044,6 +8046,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 			LastCallbackCount = (LastCallbackCount - 1);
 			auto_dial_level=0;
 			manual_dial_in_progress=1;
+			manual_cb_call = 1;
 			MainPanelToFront();
 			buildDiv('DiaLLeaDPrevieW');
 			if (alt_phone_dialing == 1)
@@ -8067,6 +8070,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 		CalLBacKsCounTCheck();
 		InternalChatsCheck();
 		manual_dial_in_progress=0;
+		manual_cb_call = 0;
 		}
 
 
@@ -10327,7 +10331,10 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 		{
 		if (MDSclick=='YES')
 			{button_click_log = button_click_log + "" + SQLdate + "-----ManualDialSkip---|";}
-		if (manual_dial_in_progress==1)
+			
+//		manual_dial_in_progress_org = manual_dial_in_progress;
+//		manual_dial_in_progress = 0;
+		if ((manual_dial_in_progress==1) && (manual_cb_call == 1))
 			{
 			alert_box("<?php echo _QXZ("YOU CANNOT SKIP A CALLBACK OR MANUAL DIAL, YOU MUST DIAL THE LEAD"); ?>");
 			button_click_log = button_click_log + "" + SQLdate + "-----DialSkipFailed---" + manual_dial_in_progress + " " + "|";
@@ -10506,6 +10513,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 			//	document.getElementById('vcFormIFrame').src='./vdc_form_display.php?lead_id=&list_id=&stage=WELCOME';
 				}
 			}
+//		manual_dial_in_progress = manual_dial_in_progress_org;
 		}
 
 
