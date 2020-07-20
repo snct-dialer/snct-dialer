@@ -22,6 +22,8 @@
 # 2019-04-29 10:45 Add system_wide_settings.php.
 # 2019-05-29 10:37 Add Agent disable [manual dial|alt phone dial]
 # 2020-05-29 20:22 Move survey after call from chat to phone.
+# 2020-07-20 12:40 Allow cid_group status with len 1
+#
 
 $startMS = microtime();
 
@@ -10963,7 +10965,11 @@ if ($ADD==202)
 				{echo "<br>"._QXZ("AREACODE CID NOT ADDED - there is already an entry for this campaign with this CID")."<br>\n";}
 			else
 				{
-				if ( (strlen($campaign_id) < 2) or (strlen($areacode) < 2) or (strlen($outbound_cid) < 6) )
+					$stmt = "SELECT * FROM vicidial_cid_groups WHERE cid_group_id='$campaign_id';";
+					$rslt1=mysql_to_mysqli($stmt, $link);
+					$row1=mysqli_fetch_row($rslt1);
+					$CidSta = $row[0];
+					if ( (strlen($campaign_id) < 2) or ((strlen($areacode) < 1) && ($CidSta == "STATE")) or ((strlen($areacode) < 2) && ($CidSta == "AREACODE")) or (strlen($outbound_cid) < 6) )
 					{
 					echo "<br>"._QXZ("AREACODE CID NOT ADDED - Please go back and look at the data you entered")."<br>\n";
 					}

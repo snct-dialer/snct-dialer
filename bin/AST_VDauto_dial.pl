@@ -25,6 +25,21 @@
 # It is good practice to keep this program running by placing the associated
 # KEEPALIVE script running every minute to ensure this program is always running
 #
+
+
+# LICENSE: AGPLv3
+#
+# Copyright (©) 2019 Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2020      SNCT GmbH <info@snct-gmbh.de>
+#               2020      Jörg Frings-Fürst <open_source@jff.email>.
+#
+
+# Other - Changelog
+#
+# 2020-07-20 12:14 Change lisense to AGPLv3
+# 2020-07-20 12:15 use campaign_cid_override only if cid_group_is disabled
+
+
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG:
@@ -1390,8 +1405,9 @@ while($one_day_interval > 0)
 												{
 												$VDAD_dial_exten = $routing_prefix . $VDAD_dial_exten;
 												}
-
-											if (length($campaign_cid_override) > 6) {$CCID = "$campaign_cid_override";   $CCID_on++;}
+											# use campaign_cid_override only if cid_group_is disabled
+											if ((length($campaign_cid_override) > 6) && ($DBIPcid_group_id[$user_CIPct] =~ /\-\-\-DISABLED\-\-\-/)) 
+												{$CCID = "$campaign_cid_override";   $CCID_on++;}
 											else
 												{
 												if (length($DBIPcampaigncid[$user_CIPct]) > 6) {$CCID = "$DBIPcampaigncid[$user_CIPct]";   $CCID_on++;}

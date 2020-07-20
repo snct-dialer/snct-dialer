@@ -893,6 +893,10 @@
           www/vicidial/admin_modify_lead.php.
     * Allow skip lead on manual dial on except for callbacks:
       - Update: www/agc/vicidial.php;
+    * Use campaign_cid_override only if cid_group_is disabled:
+      - Update: bin/AST_VDauto_dial.pl.
+    * Allow cid_group status with len 1:
+      - Update: www/vicidial/admin.php.
     * Change next release to 3.0.1.
 
 2.26.29
