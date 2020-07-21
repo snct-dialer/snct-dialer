@@ -10956,6 +10956,14 @@ if ($ADD==202)
 	else
 		{
 		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		$stmt1 = "SELECT * FROM vicidial_cid_groups WHERE cid_group_id='$campaign_id';";
+		$rslt1=mysql_to_mysqli($stmt1, $link);
+		$row1=mysqli_fetch_row($rslt1);
+		$CidSta = $row1[2];
+		$MinLen = 2;
+		if($CidSta == "STATE") {
+			$MinLen = 1;
+		}
 		if ($stage == 'ADD')
 			{
 			$stmt="SELECT count(*) from vicidial_campaign_cid_areacodes where campaign_id='$campaign_id' and areacode='$areacode' and outbound_cid='$outbound_cid';";
@@ -10965,13 +10973,9 @@ if ($ADD==202)
 				{echo "<br>"._QXZ("AREACODE CID NOT ADDED - there is already an entry for this campaign with this CID")."<br>\n";}
 			else
 				{
-					$stmt = "SELECT * FROM vicidial_cid_groups WHERE cid_group_id='$campaign_id';";
-					$rslt1=mysql_to_mysqli($stmt, $link);
-					$row1=mysqli_fetch_row($rslt1);
-					$CidSta = $row[0];
-					if ( (strlen($campaign_id) < 2) or ((strlen($areacode) < 1) && ($CidSta == "STATE")) or ((strlen($areacode) < 2) && ($CidSta == "AREACODE")) or (strlen($outbound_cid) < 6) )
+					if ( (strlen($campaign_id) < 2) or (strlen($areacode) < $MinLen) or (strlen($outbound_cid) < 6) )
 					{
-					echo "<br>"._QXZ("AREACODE CID NOT ADDED - Please go back and look at the data you entered")."<br>\n";
+					echo "<br>"._QXZ("AREACODE CID NOT ADDED - Please go back and look at the data you entered"). "<br>\n";
 					}
 				else
 					{
@@ -10999,7 +11003,7 @@ if ($ADD==202)
 				{echo "<br>"._QXZ("AREACODE CID NOT DELETED - this entry does not exist")."<br>\n";}
 			else
 				{
-				if ( (strlen($campaign_id) < 2) or (strlen($areacode) < 2) or (strlen($outbound_cid) < 6) )
+				if ( (strlen($campaign_id) < 2) or (strlen($areacode) < $MinLen) or (strlen($outbound_cid) < 6) )
 					{
 					echo "<br>"._QXZ("AREACODE CID NOT DELETED - Please go back and look at the data you entered")."<br>\n";
 					}
@@ -17996,7 +18000,16 @@ if ($ADD==496111111111)
 	{
 	if ($LOGmodify_statuses==1)
 		{
-		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+			echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+			$stmt1 = "SELECT * FROM vicidial_cid_groups WHERE cid_group_id='$cid_group_id';";
+			$rslt1=mysql_to_mysqli($stmt1, $link);
+			$row1=mysqli_fetch_row($rslt1);
+			$CidSta = $row1[2];
+			#					echo $CidSta;
+			$MinLen = 2;
+			if ($CidSta == "STATE") {
+				$MinLen = 1;
+			}
 
 		if (strlen($cid_group_id) < 2)
 			{echo "<br>"._QXZ("CID GROUP NOT MODIFIED - Please go back and look at the data you entered")."\n";}
@@ -18010,10 +18023,10 @@ if ($ADD==496111111111)
 				if ($row[0] > 0)
 					{echo "<br>"._QXZ("CID GROUP CID NOT ADDED - there is already an entry for this group with this CID")."<br>\n";}
 				else
-					{
-					if ( (strlen($cid_group_id) < 2) or (strlen($areacode) < 2) or (strlen($outbound_cid) < 6) )
+				{
+					if ( (strlen($cid_group_id) < 2) or (strlen($areacode) < $MinLen) or (strlen($outbound_cid) < 6) )
 						{
-						echo "<br>"._QXZ("CID GROUP CID NOT ADDED - Please go back and look at the data you entered")."<br>\n";
+							echo "<br>"._QXZ("CID GROUP CID NOT ADDED - Please go back and look at the data you entered")."<br>\n";
 						if ($DB) {echo "|$cid_group_id|$areacode|$outbound_cid|\n";}
 						}
 					else
@@ -18042,7 +18055,7 @@ if ($ADD==496111111111)
 					{echo "<br>"._QXZ("CID GROUP CID NOT DELETED - this entry does not exist")."<br>\n";}
 				else
 					{
-					if ( (strlen($cid_group_id) < 2) or (strlen($areacode) < 2) or (strlen($outbound_cid) < 6) )
+					if ( (strlen($cid_group_id) < 2) or (strlen($areacode) < $MinLen) or (strlen($outbound_cid) < 6) )
 						{
 						echo "<br>"._QXZ("CID GROUP CID NOT DELETED - Please go back and look at the data you entered")."<br>\n";
 						}
