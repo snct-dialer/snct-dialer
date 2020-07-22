@@ -904,6 +904,13 @@
           www/vicidial/admin.php.
     * Change Logfile to update.log:
       - Update: bin/AST_update_AMI2.pl.
+    * Fix use_non_latin to 1:
+      - Update: www/vicidial/admin.php,
+          extras/upgrade_2.14.sql.
+    * Use table vicidial_call_menu_log for call menu logging:
+      - Update: extras/MySQL_AST_CREATE_tables.sql,
+          extras/upgrade_2.14.sql.
+
     * Change next release to 3.0.1.
 
 2.26.29

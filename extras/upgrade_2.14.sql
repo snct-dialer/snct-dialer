@@ -1228,3 +1228,16 @@ UPDATE system_settings SET db_schema_version='1578',db_schema_update_date=NOW() 
 
 ALTER TABLE `vicidial_cid_groups` CHANGE `cid_group_type` `cid_group_type` ENUM('AREACODE','STATE','PHONECODE') CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT 'AREACODE';
 UPDATE `system_settings` SET `use_non_latin` = '1';
+
+CREATE TABLE `vicidial_call_menu_log` (
+`ID` bigint(20) NOT NULL AUTO_INCREMENT,
+`menu_id` varchar(50) CHARACTER SET utf8 NOT NULL,
+`lead_id` bigint(20) NOT NULL,
+`select_time` datetime NOT NULL DEFAULT current_timestamp(),
+`select_value` varchar(20) CHARACTER SET utf8 NOT NULL,
+PRIMARY KEY (`ID`),
+KEY `time` (`select_time`),
+KEY `Menu_Time` (`menu_id`,`select_time`)
+) ENGINE=Aria ROW_FORMAT=PAGE DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
