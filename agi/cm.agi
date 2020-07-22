@@ -21,7 +21,22 @@
 #exten => _XXXXX,1,AGI(cm.agi,INBOUND-----${EXTEN}-----postal_code)
 #exten => _XXXXX,n,Goto(next_callmenu_here,s,1)
 #
-# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+
+
+# LICENSE: AGPLv3
+#
+# Copyright (©) 2019      Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2020      SNCT GmbH <info@snct-gmbh.de>
+#               2020      Jörg Frings-Fürst <open_source@jff.email>.
+#
+
+# SNCT-Changes:
+#
+# 2020-07-22 jff - Change License to AGPLv3
+#            jff - Add new log- table
+#            jff - Change log-file to agiout.log
+#
+
 #
 # changes:
 # 110525-2100 - First Build
@@ -91,7 +106,7 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port) {$VARDB_port='3306';}
-if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout.$year-$mon-$mday";}
+if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout.log";}
 
 use DBI;
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
@@ -335,6 +350,15 @@ if ( ($alt_logging =~ /1/) && ($alt_question =~ /\d/) )
 	$affected_rowsAI = $dbhA->do($stmtA);
 	if ($AGILOG) {$agi_string = "--    VIR insert: |$affected_rowsAI|$uniqueid|$phone_number|$lead_id|";   &agi_output;}
 	}
+
+#
+# log always into new LogTable vicidial_call_menu_log
+#
+
+$stmtA = "INSERT INTO vicidial_call_menu_log (campaign_id, menu_id, lead_id,select_value) values('$campaign_id','$alt_question','$lead_id','$dtmf');";
+if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+$affected_rowsAI = $dbhA->do($stmtA);
+if ($AGILOG) {$agi_string = "--    VCML insert: |$affected_rowsAI|$uniqueid|$phone_number|$lead_id|";   &agi_output;}
 
 
 ### QueueMetrics logging if enabled

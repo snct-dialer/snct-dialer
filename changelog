@@ -909,7 +909,8 @@
           extras/upgrade_2.14.sql.
     * Use table vicidial_call_menu_log for call menu logging:
       - Update: extras/MySQL_AST_CREATE_tables.sql,
-          extras/upgrade_2.14.sql.
+          extras/upgrade_2.14.sql,
+          agi/cm.agi.
 
     * Change next release to 3.0.1.
 
