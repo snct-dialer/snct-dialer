@@ -37,10 +37,12 @@
 # Other - Changelog
 #
 # 2020-07-20 12:14 Change lisense to AGPLv3
-# 2020-07-20 12:15 use campaign_cid_override only if cid_group_is disabled
+# 2020-07-20 12:15 use campaign_cid_override only if cid_group is disabled
+# 2020-07-21 14:28 Change logfile name
+# 2020-07-22 11:38 Add PHONECODE to cid_group
+#
+#
 
-
-# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG:
 # 50125-1201 - Changed dial timeout to 120 seconds from 180 seconds
@@ -258,8 +260,8 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 
 	&get_time_now;	# update time/date variables
 
-if (!$VDADLOGfile) {$VDADLOGfile = "$PATHlogs/vdautodial.$year-$mon-$mday";}
-if (!$JAMdebugFILE) {$JAMdebugFILE = "$PATHlogs/vdad-JAM.$year-$mon-$mday";}
+if (!$VDADLOGfile) {$VDADLOGfile = "$PATHlogs/vdautodial.log";}
+if (!$JAMdebugFILE) {$JAMdebugFILE = "$PATHlogs/vdad-JAM.log";}
 
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
 use Time::Local;
@@ -365,7 +367,7 @@ while($one_day_interval > 0)
 		{
 		&get_time_now;
 
-		$VDADLOGfile = "$PATHlogs/vdautodial.$year-$mon-$mday";
+		$VDADLOGfile = "$PATHlogs/vdautodial.log";
 
 	###############################################################################
 	###### first figure out how many calls should be placed for each campaign per server
@@ -1419,12 +1421,16 @@ while($one_day_interval > 0)
 														{$CCID = "$temp_CID";   $CCID_on++;}
 													}
 												$CIDG_set=0;
+												$event_string = "CID_Group_Select: $DBIPcid_group_id[$user_CIPct]";
+												&event_logger;
 												if ($DBIPcid_group_id[$user_CIPct] !~ /\-\-\-DISABLED\-\-\-/)
 													{
 													$stmtA = "SELECT cid_group_type FROM vicidial_cid_groups where cid_group_id='$DBIPcid_group_id[$user_CIPct]';";
 													$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 													$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 													$sthArows=$sthA->rows;
+													$event_string = "CID_Group_Select2: $stmtA|$sthArows";
+													&event_logger;
 													if ($sthArows > 0)
 														{
 														@aryA = $sthA->fetchrow_array;
@@ -1445,7 +1451,15 @@ while($one_day_interval > 0)
 															{
 															$temp_state = $state;
 															$stmtA = "SELECT outbound_cid,areacode FROM vicidial_campaign_cid_areacodes where campaign_id='$DBIPcid_group_id[$user_CIPct]' and areacode IN('$temp_state') and active='Y' order by call_count_today desc limit 100000;";
-															}											$temp_CID='';
+															}
+														if ($cid_group_type =~ /PHONECODE/)
+															{
+															$temp_pc = $phone_code;
+															$stmtA = "SELECT outbound_cid,areacode FROM vicidial_campaign_cid_areacodes where campaign_id='$DBIPcid_group_id[$user_CIPct]' and areacode IN('$temp_pc') and active='Y' order by call_count_today desc limit 100000;";
+															}
+														$temp_CID='';
+														$event_string = "CID_Group: $stmtA";
+														&event_logger;
 														$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 														$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 														$sthArows=$sthA->rows;

@@ -1225,3 +1225,6 @@ ALTER TABLE `system_settings` ADD `default_pdo_language` VARCHAR(20) NOT NULL DE
 ALTER TABLE `vicidial_users` ADD `selected_pdo_language` VARCHAR(20) NOT NULL DEFAULT 'en_EN'; 
 
 UPDATE system_settings SET db_schema_version='1578',db_schema_update_date=NOW() where db_schema_version < 1578;
+
+ALTER TABLE `vicidial_cid_groups` CHANGE `cid_group_type` `cid_group_type` ENUM('AREACODE','STATE','PHONECODE') CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT 'AREACODE';
+

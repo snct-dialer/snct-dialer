@@ -4118,7 +4118,7 @@ index (date_deleted)
 CREATE TABLE vicidial_cid_groups (
 cid_group_id VARCHAR(20) PRIMARY KEY NOT NULL,
 cid_group_notes VARCHAR(255) default '',
-cid_group_type ENUM('AREACODE','STATE') default 'AREACODE',
+cid_group_type ENUM('AREACODE','STATE','PHONECODE') default 'AREACODE',
 user_group VARCHAR(20) default '---ALL---'
 ) ENGINE=Aria ROW_FORMAT=PAGE CHARSET=utf8 COLLATE=utf8_unicode_ci;
 

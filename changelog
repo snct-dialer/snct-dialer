@@ -897,6 +897,13 @@
       - Update: bin/AST_VDauto_dial.pl.
     * Allow cid_group status with len 1:
       - Update: www/vicidial/admin.php.
+    * Add new cid_group_type PHONECODE:
+      - Update: bin/AST_VDauto_dial.pl,
+          extras/MySQL_AST_CREATE_tables.sql,
+          extras/upgrade_2.14.sql,
+          www/vicidial/admin.php.
+    * Change Logfile to update.log:
+      - Update: bin/AST_update_AMI2.pl.
     * Change next release to 3.0.1.
 
 2.26.29

@@ -23,6 +23,7 @@
 # 2019-05-29 10:37 Add Agent disable [manual dial|alt phone dial]
 # 2020-05-29 20:22 Move survey after call from chat to phone.
 # 2020-07-20 12:40 Allow cid_group status with len 1
+# 2020-07-22 12:07 Add cid_group_type PHONECODE
 #
 
 $startMS = microtime();
@@ -9602,6 +9603,7 @@ if ($ADD==196111111111)
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("CID Group Type").": </td><td align=left><select size=1 name=cid_group_type>\n";
 		echo "<option SELECTED value=\"AREACODE\">"._QXZ("AREACODE")."</option>\n";
 		echo "<option value=\"STATE\">"._QXZ("STATE")."</option>\n";
+		echo "<option value=\"PHONECODE\">"._QXZ("PHONECODE")."</option>\n";
 		echo "</select>$NWB#cid_groups$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Admin User Group").": </td><td align=left><select size=1 name=user_group>\n";
 		echo "$UUgroups_list";
@@ -10961,7 +10963,7 @@ if ($ADD==202)
 		$row1=mysqli_fetch_row($rslt1);
 		$CidSta = $row1[2];
 		$MinLen = 2;
-		if($CidSta == "STATE") {
+		if(($CidSta == "STATE") || ($CidSta == "PHONECODE")) {
 			$MinLen = 1;
 		}
 		if ($stage == 'ADD')
