@@ -8548,7 +8548,6 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								var callnum = dialed_number;
 //								var dial_display_number = phone_number_format(callnum);
 								var dial_display_number = DisplayPhoneNumber;
-								var status_display_number = DisplayPhoneNumber;
 
 								if (CBentry_time.length > 2)
 									{
@@ -9115,8 +9114,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 								MD_channel_look=0;
 								var dispnum = lead_dial_number;
-//								var status_display_number = phone_number_format(dispnum);
-								var status_display_number = DisplayPhoneNumber;
+								var status_display_number = phone_number_format(dispnum);
 								var status_display_content='';
 								if (status_display_NAME > 0) {status_display_content = status_display_content + " <?php echo _("Name:"); ?> " + document.vicidial_form.first_name.value + " " + document.vicidial_form.last_name.value;}
 								if (status_display_CALLID > 0) {status_display_content = status_display_content + " <?php echo _("UID:"); ?> " + CIDcheck;}
@@ -9947,7 +9945,6 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								LIVE_default_xfer_group							= MDnextResponse_array[60];
 								CalL_ScripT_id_two								= MDnextResponse_array[61];
 								CalL_ScripT_color_two							= MDnextResponse_array[62];
-								DisplayPhoneNumber								= MDnextResponse_array[63];
 
 								// build statuses list for disposition screen
 								VARstatuses = [];
@@ -10081,7 +10078,6 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								lead_dial_number = dialed_number;
 								var dispnum = dialed_number;
 								var status_display_number = phone_number_format(dispnum);
-								var status_display_number = DisplayPhoneNumber;
 								var status_display_content='';
 								if (status_display_NAME > 0) {status_display_content = status_display_content + " <?php echo _("Name:"); ?> " + document.vicidial_form.first_name.value + " " + document.vicidial_form.last_name.value;}
 								if (status_display_CALLID > 0) {status_display_content = status_display_content + " <?php echo _("UID:"); ?> " + MDnextCID;}
@@ -11451,8 +11447,6 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							last_call_date									= check_VDIC_array[66];
 						//	CalL_ScripT_id_two								= check_VDIC_array[67];
 						//	CalL_ScripT_color_two							= check_VDIC_array[68];
-							DisplayPhoneNumber								= check_VDIC_array[69];
-						
 
 							// build statuses list for disposition screen
 							VARstatuses = [];
@@ -11595,8 +11589,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							var dispnum = document.vicidial_form.phone_number.value;
 							var status_display_number = phone_number_format(dispnum);
 							var callnum = dialed_number;
-//							var dial_display_number = phone_number_format(callnum);
-							var dial_display_number = DisplayPhoneNumber;
+							var dial_display_number = phone_number_format(callnum);
 
 							var status_display_content='';
 							if (status_display_NAME > 0) {status_display_content = status_display_content + " <?php echo _("Name:"); ?> " + document.vicidial_form.first_name.value + " " + document.vicidial_form.last_name.value;}
@@ -11649,8 +11642,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								var dispnum = document.vicidial_form.phone_number.value;
 								var status_display_number = phone_number_format(dispnum);
 								var callnum = dialed_number;
-//								var dial_display_number = phone_number_format(callnum);
-								var dial_display_number = DisplayPhoneNumber;
+								var dial_display_number = phone_number_format(callnum);
 
 								var status_display_content='';
 								if (status_display_NAME > 0) {status_display_content = status_display_content + " <?php echo _("Name:"); ?> " + document.vicidial_form.first_name.value + " " + document.vicidial_form.last_name.value;}
@@ -11965,8 +11957,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							if (alert_enabled=='ON')
 								{
 								var callnum = dialed_number;
-//								var dial_display_number = phone_number_format(callnum);
-								var dial_display_number = DisplayPhoneNumber;
+								var dial_display_number = phone_number_format(callnum);
 								alert(" <?php echo _("Incoming:"); ?> " + dial_display_number + "\n <?php echo _("Group"); ?>- " + VDIC_data_VDIG[1] + " &nbsp; " + VDIC_fronter);
 								}
 							}
@@ -12267,7 +12258,6 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							did_custom_five									= check_VDIC_array[60];
 							status_group_statuses_data						= check_VDIC_array[61];
 							last_call_date									= check_VDIC_array[62];
-							DisplayPhoneNumber								= chexk_VDIC_array[65];
 
 							// build statuses list for disposition screen
 							VARstatuses = [];
@@ -12405,8 +12395,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							var dispnum = document.vicidial_form.phone_number.value;
 							var status_display_number = phone_number_format(dispnum);
 							var callnum = dialed_number;
-//							var dial_display_number = phone_number_format(callnum);
-							var dial_display_number = DisplayPhoneNumber;
+							var dial_display_number = phone_number_format(callnum);
 
 							var status_display_content='';
 							if (status_display_NAME > 0) {status_display_content = status_display_content + " <?php echo _("Name:"); ?> " + document.vicidial_form.first_name.value + " " + document.vicidial_form.last_name.value;}
@@ -12459,8 +12448,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								var dispnum = document.vicidial_form.phone_number.value;
 								var status_display_number = phone_number_format(dispnum);
 								var callnum = dialed_number;
-//								var dial_display_number = phone_number_format(callnum);
-								var dial_display_number = DisplayPhoneNumber;
+								var dial_display_number = phone_number_format(callnum);
 
 								var status_display_content='';
 								if (status_display_NAME > 0) {status_display_content = status_display_content + " <?php echo _("Name:"); ?> " + document.vicidial_form.first_name.value + " " + document.vicidial_form.last_name.value;}
@@ -12781,7 +12769,6 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								{
 								var callnum = dialed_number;
 								var dial_display_number = phone_number_format(callnum);
-								var dial_display_number = DisplayPhoneNumber;
 								alert(" <?php echo _("Incoming:"); ?> " + dial_display_number + "\n <?php echo _("Group"); ?>- " + VDIC_data_VDIG[1] + " &nbsp; " + VDIC_fronter);
 								}
 							agent_events('other_answered', CalL_AutO_LauncH, aec);   aec++;

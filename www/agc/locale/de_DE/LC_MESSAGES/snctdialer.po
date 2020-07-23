@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-23 17:31+0200\n"
-"PO-Revision-Date: 2020-07-23 17:32+0200\n"
+"PO-Revision-Date: 2020-07-23 21:40+0200\n"
 "Last-Translator: Jörg Frings-Fürst <j.frings-fuerst@snct-dialer.de>\n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -376,7 +376,7 @@ msgstr ""
 #: vicidial.php:5068 vicidial.php:8660 vicidial.php:9594 vicidial.php:10143
 #: vicidial.php:11819 vicidial.php:12626 vicidial.php:12875 vicidial.php:12879
 msgid "vdc_LB_webform.gif"
-msgstr ""
+msgstr "vdc_LB_webform_de.png"
 
 #: vicidial.php:5070 vicidial.php:6879 vicidial.php:6956
 msgid "vdc_LB_stoprecording.gif"
@@ -414,7 +414,7 @@ msgstr ""
 
 #: vicidial.php:5092 vicidial.php:13416 vicidial.php:14462 vicidial.php:20460
 msgid "vdc_LB_webform_OFF.gif"
-msgstr ""
+msgstr "vdc_LB_webform_off_de.png"
 
 #: vicidial.php:5094
 msgid "vdc_LB_stoprecording_OFF.gif"
@@ -732,7 +732,7 @@ msgstr ""
 #: vicidial.php:8664 vicidial.php:9597 vicidial.php:10146 vicidial.php:11823
 #: vicidial.php:12630 vicidial.php:12919 vicidial.php:12923
 msgid "vdc_LB_webform_two.gif"
-msgstr ""
+msgstr "web_form_at.png"
 
 #: vicidial.php:8669 vicidial.php:9601 vicidial.php:10150 vicidial.php:11828
 #: vicidial.php:12634 vicidial.php:12964 vicidial.php:12968
@@ -765,7 +765,7 @@ msgstr ""
 
 #: vicidial.php:9014 vicidial.php:10085 vicidial.php:10750
 msgid "Calling:"
-msgstr ""
+msgstr "wird angerufen:"
 
 #: vicidial.php:9014 vicidial.php:9721 vicidial.php:10750
 msgid "Waiting for Ring..."
@@ -798,7 +798,7 @@ msgstr ""
 
 #: vicidial.php:9122
 msgid "Called:"
-msgstr ""
+msgstr "angerufen:"
 
 #: vicidial.php:9134 vicidial.php:11667 vicidial.php:12487
 msgid "vdc_XB_localcloser.gif"
@@ -951,7 +951,7 @@ msgstr ""
 #: vicidial.php:11598 vicidial.php:11656 vicidial.php:11959 vicidial.php:12404
 #: vicidial.php:12462 vicidial.php:12770
 msgid "Incoming:"
-msgstr ""
+msgstr "Eingehend:"
 
 #: vicidial.php:11651 vicidial.php:11959 vicidial.php:12457 vicidial.php:12770
 msgid "Group"
@@ -971,7 +971,7 @@ msgstr ""
 
 #: vicidial.php:13419 vicidial.php:14465 vicidial.php:20463
 msgid "vdc_LB_webform_two_OFF.gif"
-msgstr ""
+msgstr "webform_at_off.png"
 
 #: vicidial.php:13423 vicidial.php:14469 vicidial.php:20465
 msgid "vdc_LB_webform_three_OFF.gif"
@@ -1199,7 +1199,7 @@ msgstr ""
 
 #: vicidial.php:16082 vicidial.php:16083 vicidial.php:21390 vicidial.php:21393
 msgid "LOGOUT PROCESSING..."
-msgstr ""
+msgstr "Abmeldung wird durchgeführt ..."
 
 #: vicidial.php:16117
 msgid "LOGOUT PROCESS COMPLETE, YOU MAY NOW CLOSE YOUR BROWSER OR LOG BACK IN"
@@ -1211,6 +1211,8 @@ msgstr ""
 msgid ""
 "Your Shift is over or has changed, you have been logged out of your session"
 msgstr ""
+"Ihre Arbeitszeit ist zu Ende oder hat sich geändert, Sie wurden von Ihrer "
+"Sitzung abgemeldet"
 
 #: vicidial.php:16132
 msgid ""
@@ -1423,11 +1425,11 @@ msgstr ""
 
 #: vicidial.php:19829
 msgid "Hide conference call channel information"
-msgstr ""
+msgstr "Verstecke Konferenz Infos"
 
 #: vicidial.php:19836 vicidial.php:20947
 msgid "Show conference call channel information"
-msgstr ""
+msgstr "Zeige Konferenz Infos"
 
 #: vicidial.php:19849
 msgid "vdc_XB_hotkeysactive.gif"
@@ -1659,7 +1661,7 @@ msgstr ""
 
 #: vicidial.php:21045
 msgid "Agents View +"
-msgstr ""
+msgstr "Agenten Anzeige +"
 
 #: vicidial.php:21052
 msgid "WebPhone View -"

@@ -816,6 +816,7 @@ if (isset($_GET["customer_sec"]))			{$customer_sec=$_GET["customer_sec"];}
 	elseif (isset($_POST["customer_sec"]))	{$customer_sec=$_POST["customer_sec"];}
 
 require_once("../tools/system_wide_settings.php");
+require_once("../tools/format_phone.php");
 
 if(file_exists("options.php")) {
 	require_once("options.php");
@@ -5369,6 +5370,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 			$LeaD_InfO .=	$default_xfer_group . "\n";
 			$LeaD_InfO .=	$VDCL_campaign_script_two . "\n";
 			$LeaD_InfO .=	$VDCL_ingroup_script_color_two . "\n";
+			$LeaD_InfO .=   FormatPhoneNr($phone_code, $dialed_number) . "\n";
 
 			echo $LeaD_InfO;
 			}
@@ -9421,6 +9423,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 			$LeaD_InfO .=	$call_date . "\n";
 			$LeaD_InfO .=	$VDCL_ingroup_script_two . "\n";
 			$LeaD_InfO .=	$VDCL_ingroup_script_color_two . "\n";
+			$LeaD_InfO .=   FormatPhoneNr($phone_code, $dialed_number) . "\n";
 
 			echo $LeaD_InfO;
 
@@ -10749,6 +10752,7 @@ if ($ACTION == 'VDADcheckINCOMINGother')
 			$LeaD_InfO .=	$call_date . "\n";
 			$LeaD_InfO .=	$VDCL_ingroup_script_two . "\n";
 			$LeaD_InfO .=	$VDCL_ingroup_script_color_two . "\n";
+			$LeaD_InfO .=   FormatPhoneNr($phone_code, $dialed_number) . "\n";
 
 			echo $LeaD_InfO;
 
@@ -11877,6 +11881,7 @@ if ($ACTION == 'LeaDSearcHSelecTUpdatE')
 			$LeaD_InfO .=	$call_date . "\n";
 			$LeaD_InfO .=	$VDCL_ingroup_script_two . "\n";
 			$LeaD_InfO .=	$VDCL_ingroup_script_color_two . "\n";
+			$LeaD_InfO .=	FormatPhoneNr($phone_code, $dialed_number) . "\n";
 
 			echo $LeaD_InfO;
 
