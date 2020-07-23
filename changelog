@@ -911,7 +911,8 @@
       - Update: extras/MySQL_AST_CREATE_tables.sql,
           extras/upgrade_2.14.sql,
           agi/cm.agi.
-
+    * Replace _QXZ with gettext version _(:
+      - Update: www/agc/vicidial.php;
     * Change next release to 3.0.1.
 
 2.26.29

@@ -5,7 +5,22 @@
 # runs after a call gets transferred from an agent to ask a question, then
 # optionally transfer to a call menu. Takes settings from an In-Group
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+
+#
+# LICENSE: AGPLv3
+#
+# Copyright (©) 2019      Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2020      SNCT GmbH <info@snct-gmbh.de>
+#               2020      Jörg Frings-Fürst <open_source@jff.email>.
+#
+
+#
+# SNCT-Changes:
+#
+# 2020-07-22 jff - Change License to AGPLv3
+#            jff - Change log-file to agiout.log
+#
+
 #
 # changes:
 # 170816-2357 - first build
@@ -66,7 +81,7 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port)	{$VARDB_port='3306';}
-if (!$AGILOGfile)	{$AGILOGfile = "$PATHlogs/agiout.$year-$mon-$mday";}
+if (!$AGILOGfile)	{$AGILOGfile = "$PATHlogs/agiout.log";}
 
 use DBI;
 use Asterisk::AGI;

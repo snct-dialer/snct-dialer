@@ -22,7 +22,7 @@
 #exten => _XXXXX,n,Goto(next_callmenu_here,s,1)
 #
 
-
+#
 # LICENSE: AGPLv3
 #
 # Copyright (©) 2019      Matt Florell <vicidial@gmail.com>
@@ -355,7 +355,7 @@ if ( ($alt_logging =~ /1/) && ($alt_question =~ /\d/) )
 # log always into new LogTable vicidial_call_menu_log
 #
 
-$stmtA = "INSERT INTO vicidial_call_menu_log (campaign_id, menu_id, lead_id,select_value) values('$campaign_id','$alt_question','$lead_id','$dtmf');";
+$stmtA = "INSERT INTO vicidial_call_menu_log (campaign_id, menu_id, lead_id,select_value) values('$campaign_id','$context','$lead_id','$dtmf');";
 if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 $affected_rowsAI = $dbhA->do($stmtA);
 if ($AGILOG) {$agi_string = "--    VCML insert: |$affected_rowsAI|$uniqueid|$phone_number|$lead_id|";   &agi_output;}

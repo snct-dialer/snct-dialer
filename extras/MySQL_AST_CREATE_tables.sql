@@ -4384,7 +4384,7 @@ index (lead_id)
 
 CREATE TABLE `vicidial_call_menu_log` (
 `ID` bigint(20) NOT NULL AUTO_INCREMENT,
-`campaign_id` VARCHAR(8) NOT NULL,
+`campaign_id` VARCHAR(20) NOT NULL,
 `menu_id` varchar(50) CHARACTER SET utf8 NOT NULL,
 `lead_id` bigint(20) NOT NULL,
 `select_time` datetime NOT NULL DEFAULT current_timestamp(),
