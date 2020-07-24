@@ -5,8 +5,21 @@
 # This script uses the Asterisk Manager interface to update the live_channels
 # tables and verify the parked_channels table in the asterisk MySQL database
 #
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
+
+# LICENSE: AGPLv3
+#
+# Copyright (©) 2018 Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2020      SNCT GmbH <info@snct-gmbh.de>
+#               2020      Jörg Frings-Fürst <open_source@jff.email>.
+#
+
+# Other - Changelog
+#
+# 2020-07-24 14:00 Change lisense to AGPLv3
+# 2020-07-24 14:14 On update server_updater first check if record exist.
+#
+
 # CHANGES
 # 170915-2110 - Initial version for Asterisk 13, based upon AST_update.pl
 # 171002-1111 - Fixed timeout erase channels issue, added more debug output
@@ -566,10 +579,28 @@ else
 
 
 		# update our time in the DB
-		$stmtA = "UPDATE server_updater set last_update=NOW() where server_ip='$server_ip'";
-		if($DB){print STDERR "\n$stmtA\n";}
-		$dbhA->do($stmtA);
+		# first check if record exits
+		$SUrec=0;
+		$stmtA = "SELECT count(*) FROM server_updater where server_ip='$server_ip';";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		@aryA = $sthA->fetchrow_array;
+		$SUrec = $aryA[0];
+		if($DB){print STDERR "\n|$SUrec|$stmtA|\n";}
 
+		if ($SUrec < 1)
+		{
+			&get_time_now;
+
+			$stmtU = "INSERT INTO server_updater set server_ip='$server_ip', last_update=NOW();";
+			if($DB){print STDERR "\n$stmtU\n";}
+			$affected_rows = $dbhA->do($stmtU);
+		} else {
+
+			$stmtA = "UPDATE server_updater set last_update=NOW() where server_ip='$server_ip'";
+			if($DB){print STDERR "\n$stmtA\n";}
+			$dbhA->do($stmtA);
+		}
 		# get the channels currently in the db
 		my ($db_trunks_ref, $db_clients_ref) = get_db_channels($dbhA,$server_ip);
 
