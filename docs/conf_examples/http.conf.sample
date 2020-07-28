@@ -1,0 +1,12 @@
+[general]
+
+;enabled=yes
+;bindaddr=127.0.0.1
+;bindport=8088
+;tlsclientmethod=ALL
+;tlscipher=ALL
+;tlsenable=yes          ; enable tls - default no.
+;tlsbindaddr=0.0.0.0:8089    ; address and port to bind to - default is bindaddr and port 8089.
+;tlscertfile=/path/to/cert.pem
+;tlsprivatekey=/path/to/privkey.pem
+

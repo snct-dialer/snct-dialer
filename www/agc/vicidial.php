@@ -926,7 +926,7 @@ $mrglock_ig_select_ct	= '4';	# number of seconds to leave in-group select screen
 $link_to_grey_version	= '1';	# show link to old grey version of agent screen at login screen, next to timeclock link
 $no_empty_session_warnings=0;	# set to 1 to disable empty session warnings on agent screen
 $logged_in_refresh_link = '0';	# set to 1 to allow clickable "Logged in as..." link at top to force Javascript refresh
-$webphone_call_seconds	= '0';	# set to 1 or higher to have the agent phone(if set to webphone) called X seconds after login
+$webphone_call_seconds	= '1';	# set to 1 or higher to have the agent phone(if set to webphone) called X seconds after login
 
 $TEST_all_statuses		= '0';	# TEST variable allows all statuses in dispo screen, FOR DEBUG ONLY
 
@@ -937,6 +937,7 @@ $webphone_width			= 460;	# set the webphone frame width
 $webphone_height		= 500;	# set the webphone frame height
 $webphone_pad			= 0;	# set the table cellpadding for the webphone
 $webphone_location		= 'right';	# set the location on the agent screen 'right' or 'bar'
+$webphone_viewonstart	= 'open';	# 'close' = noview, 'open' = view at start
 $MAIN_COLOR				= '#CCCCCC';	# old default is E0C2D6
 $SCRIPT_COLOR			= '#E6E6E6';	# old default is FFE7D0
 $FORM_COLOR				= '#EFEFEF';
@@ -20349,7 +20350,7 @@ function CallViewLogInbounds() {
 $zi=2;
 
 ?>
-<body onload="begin_all_refresh();"  onunload="BrowserCloseLogout();">
+<body onload="begin_all_refresh(); webphoneOpen('webphoneSpan',<?php echo $webphone_viewonstart ?>);"  onunload="BrowserCloseLogout();">
 
 <form name=vicidial_form id=vicidial_form onsubmit="return false;">
 

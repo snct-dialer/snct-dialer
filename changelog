@@ -916,6 +916,10 @@
     * On update server_updater first check if record exist:
       - Update: bin/AST_update_AMI2.pl,
           bin/AST_update.pl.
+    * Add webphone:
+      - New www/agc/webrtcphone/*,
+          docs/conf_examples/http.conf.sample.
+      - Update: www/agc/vicidial.php.
     * Change next release to 3.0.1.
 
 2.26.29
