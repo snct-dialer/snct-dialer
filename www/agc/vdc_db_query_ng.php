@@ -121,8 +121,8 @@
 
 $StartTimeGlob = microtime(true);
 
-$versionVdcDbQueryNG = '1.0.12';
-$build = '200104-1810';
+$versionVdcDbQueryNG = '1.0.13';
+$build = '200731-1054';
 $php_script = 'vdc_db_query_ng.php';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=824;
@@ -786,16 +786,16 @@ function CheckCallbacks($User, $Lead, $PG) {
 		if($AnzUCB > $CBAgentCount) {
 			$EndTime = microtime(true);
 			$RunTime = $EndTime - $StartTime;
-			$Log->Log("CheckCallbacks (Agent) Dauer: " . $RunTime ."|". $User . "|" .$Lead . "|" . $PG);
+			$Log->Log("CheckCallbacks (Agent) Dauer: " . $RunTime ."|". $User . "|" .$Lead . "|" . $PG . "|" .$AnzUCB . "|" . $CBAgentCount);
 			return 0;
 		} else {
 			$EndTime = microtime(true);
 			$RunTime = $EndTime - $StartTime;
-			$Log->Log("CheckCallbacks (no Agent) Dauer: " . $RunTime ."|". $User . "|" .$Lead . "|" . $PG);
+			$Log->Log("CheckCallbacks (no Agent) Dauer: " . $RunTime ."|". $User . "|" .$Lead . "|" . $PG . "|" .$AnzUCB . "|" . $CBAgentCount);
 		}
 	}
 	
-	if($CBLeadCount != 0) {
+	if(($CBLeadCount != 0) && ($PG != "G")) {
 		$StartTime1 = microtime(true);
 		$DateTemp = date("Y-m-d H:i:s", strtotime($CBLeadDays, time()));
 		$sql1 = "SELECT COUNT(*) FROM `vicidial_agent_log` WHERE `status` = 'CALLBK' AND `lead_id` = '". $Lead ."' AND `event_time` >= '". $DateTemp ."';";
@@ -806,12 +806,12 @@ function CheckCallbacks($User, $Lead, $PG) {
 		if($AnzLCB > $CBLeadCount) {
 			$EndTime = microtime(true);
 			$RunTime = $EndTime - $StartTime;
-			$Log->Log("CheckCallbacks (Lead) Dauer: " . $RunTime ."|". $User . "|" .$Lead . "|" . $PG);
+			$Log->Log("CheckCallbacks (Lead) Dauer: " . $RunTime ."|". $User . "|" .$Lead . "|" . $PG . "|" .$AnzLCB . "|" . $CBLeadCount);
 			return 0;
 		} else {
 			$EndTime = microtime(true);
 			$RunTime = $EndTime - $StartTime1;
-			$Log->Log("CheckCallbacks (no Lead) Dauer: " . $RunTime ."|". $User . "|" .$Lead . "|" . $PG);
+			$Log->Log("CheckCallbacks (no Lead) Dauer: " . $RunTime ."|". $User . "|" .$Lead . "|" . $PG . "|" .$AnzLCB . "|" . $CBLeadCount);
 		}
 	}
 	$EndTime = microtime(true);

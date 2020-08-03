@@ -96,6 +96,11 @@ function SplitPhoneNr($Phone) {
 
 	$ret = array();
 
+	if(strncmp($Phone,"+", 1) == 0) {
+	    $tmpPhone = substr($Phone, 1);
+	    $Phone = $tmpPhone;
+	}
+		
 	if(ctype_digit($Phone)) {
 		if(strncmp($Phone,"00", 2) == 0) {
 			$tmpPhone = substr($Phone, 2);

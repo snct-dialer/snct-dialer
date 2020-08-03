@@ -920,6 +920,8 @@
       - New www/agc/webrtcphone/*,
           docs/conf_examples/http.conf.sample.
       - Update: www/agc/vicidial.php.
+    * Add utf-8 encoding for conffiles:
+      - Update bin/ADMIN_keepalive_ALL.pl.
     * Change next release to 3.0.1.
 
 2.26.29

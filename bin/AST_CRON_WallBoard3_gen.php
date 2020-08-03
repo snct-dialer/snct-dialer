@@ -798,7 +798,7 @@ function GenWBStatsTime($IBG, $TimeAnf, $TimeEnd) {
 #		$result11 = mysql_to_mysqli($statement11, $link);
 #		$row11=mysqli_fetch_row($result11);
 #		$Weiter = $row11[0];
-		$Weiter = 0
+		$Weiter = 0;
 
 		$statement12 = "SELECT COUNT(*) from `$TableName` WHERE `Status` = 'MAILBOX' AND `did_route` != 'PHONE' AND `DateTBegin` >= '$DateAnf' AND `DateTBegin` <= '$DateEnd';";
 		if ($DB)

@@ -24,6 +24,7 @@
 # 2020-05-29 20:22 Move survey after call from chat to phone.
 # 2020-07-20 12:40 Allow cid_group status with len 1
 # 2020-07-22 12:07 Add cid_group_type PHONECODE
+# 2020-07-31 09:00 Add realtime_report_mg.php
 #
 
 $startMS = microtime();
@@ -42808,6 +42809,8 @@ if ($ADD==999999)
 
 		if ( (preg_match("/Wallboard 3.0/",$LOGallowed_reports)) or (preg_match("/ALL REPORTS/",$LOGallowed_reports)) )
 		{echo "<LI><a href=\"WallBoard3.php\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK size=2>"._QXZ("Wallboard 3.0")."</a></FONT>\n";}
+		if ( (preg_match("/Real-Time Main Report/",$LOGallowed_reports)) or (preg_match("/ALL REPORTS/",$LOGallowed_reports)) )
+		{echo "<LI><a href=\"realtime_report_ng.php?RR=4\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK size=2>"._QXZ("Real-Time Main Report NG")."</a></FONT>\n";}
 
 		echo "</UL>\n";
 

@@ -12,6 +12,7 @@
 #
 # 2020-03-18 13:30 jff	First work
 # 2020-04-08 07:53 jff	Add formatZeit
+# 2020-07-29 10:35 jff	Add Field SortStatus
 #
 # ToDo:
 #
@@ -34,7 +35,7 @@ if (file_exists('../inc/include.php')) {
 	require_once 'om/inc/include.php';
 }
 
-$versionSNCTGenRealTime = "1.0.6";
+$versionSNCTGenRealTime = "1.0.7";
 
 $SetupDir = "/etc/snct-dialer/";
 $SetupFiles = array ("snct-dialer.conf", "tools/tools.conf", "tools/tools.local");
@@ -323,7 +324,11 @@ function formatZeit($Sek) {
 	if(strlen($Sek)==1){
 		$Sek = "0".$Sek;
 	}
-	$Time = $hours.":".$mins.":".$Sek;
+	if($hours != "00") {
+		$Time = $hours.":".$mins.":".$Sek;
+	} else {
+		$Time = $mins.":".$Sek;
+	}
 
 	return $Time;
 
@@ -352,6 +357,7 @@ while(1) {
 			
 			$InGrp = "";
 			$WaitTime = "";
+			$StatSort = 0; 
 			$CustPhone = GetCustPhone($row["lead_id"]);
 #			$AgentPhone = GetAgentPhone($row["extension"], $row["server_ip"]);
 			
@@ -364,12 +370,29 @@ while(1) {
 			}
 			if(($row["lead_id"] != 0) && ($CustPhone == "")) {
 				$row["status"] = "DEAD";
+				$StatSort = 4;
 				$TimeFirst = strtotime($row["last_state_change"]);
 			}
 			$TimeDiff = time() - $TimeFirst;
 			$Time = formatZeit($TimeDiff);
 			$SubSt = "";
+			if($row["status"] == "READY") {
+				$StatSort = 10;
+			}
+			if($row["status"] == "CLOSER") {
+				$StatSort = 9;
+			}
+			if($row["status"] == "DIAL") {
+				$StatSort = 6;
+			}
+			if($row["status"] == "QUEUE") {
+				$StatSort = 7;
+			}
+			if($row["status"] == "3-WAY") {
+				$StatSort = 8;
+			}
 			if($row["status"] == "INCALL") {
+				$StatSort = 8;
 				if($row["comments"] == "MANUAL") {
 					$SubSt = "M";
 				}
@@ -383,13 +406,14 @@ while(1) {
 			}
 			$PauseSt = "";
 			if($row["status"] == "PAUSED") {
+				$StatSort = 2;
 				$PauseSt = GetPauseStatus($row["user"], $row["agent_log_id"]);
 			}
 			
 #			$sql2  = "INSERT IGNORE INTO `".$TableNameRTV."` (`Station`,`Phone`, `User`, `UserGrp`, `SessionID`, `Status`, `SubStatus`, `CustomPhone`, `ServerIP`, `CallServerIP`, `Time`, `Campaign`, `Calls`, `Hold`, `Ingroup`) ";
-			$sql2  = "INSERT IGNORE INTO `".$TableNameRTV."` SET `Station` = '".$row["extension"]."', `Phone` = '', `User` = '".$row["user"]."', `UserGrp` = '' , `SessionID` = '".$row["conf_exten"]."', `Status` = '".$row["status"]."', `SubStatus` = '".$SubSt."', `CustomPhone` = '".$CustPhone."', `ServerIP` = '".$row["server_ip"]."', `CallServerIP` = '".$row["call_server_ip"]."', `Time` = '".$Time."', `Campaign` = '".$row["campaign_id"]."', `Calls` = '".$row["calls_today"]."', `Pause` = '".$PauseSt."', `Hold` = '".$WaitTime."', `Ingroup` = '".$InGrp."', `invalid` = 0 ";
+			$sql2  = "INSERT IGNORE INTO `".$TableNameRTV."` SET `Station` = '".$row["extension"]."', `Phone` = '', `User` = '".$row["user"]."', `UserGrp` = '' , `SessionID` = '".$row["conf_exten"]."', `Status` = '".$row["status"]."', `SubStatus` = '".$SubSt."', `CustomPhone` = '".$CustPhone."', `ServerIP` = '".$row["server_ip"]."', `CallServerIP` = '".$row["call_server_ip"]."', `Time` = '".$Time."', `Campaign` = '".$row["campaign_id"]."', `Calls` = '".$row["calls_today"]."', `Pause` = '".$PauseSt."', `Hold` = '".$WaitTime."', `Ingroup` = '".$InGrp."', `invalid` = 0, `SortStatus` = '".$StatSort."' ";
 			$sql2 .= " ON DUPLICATE KEY UPDATE ";
-			$sql2 .= " `Station` = '".$row["extension"]."',`Pause` = '".$PauseSt."', `Time` = '".$Time."', `SessionID` = '".$row["conf_exten"]."', `Status` = '".$row["status"]."', `SubStatus` = '".$SubSt."', `CustomPhone` = '".$CustPhone."', `ServerIP` = '".$row["server_ip"]."', `CallServerIP` = '".$row["call_server_ip"]."', `Campaign` = '".$row["campaign_id"]."', `Calls` = '".$row["calls_today"]."', `Hold` = '".$WaitTime."', `Ingroup` = '".$InGrp."', `invalid` = 0;";
+			$sql2 .= " `Station` = '".$row["extension"]."',`Pause` = '".$PauseSt."', `Time` = '".$Time."', `SessionID` = '".$row["conf_exten"]."', `Status` = '".$row["status"]."', `SubStatus` = '".$SubSt."', `CustomPhone` = '".$CustPhone."', `ServerIP` = '".$row["server_ip"]."', `CallServerIP` = '".$row["call_server_ip"]."', `Campaign` = '".$row["campaign_id"]."', `Calls` = '".$row["calls_today"]."', `Hold` = '".$WaitTime."', `Ingroup` = '".$InGrp."', `invalid` = 0, `SortStatus` = '".$StatSort."';";
 #			$sql2 .= "VALUES ('".$row["extension"]."', '', '".$row["user"]."', '', '".$row["conf_exten"]."', '".$row["status"]."', '', '', '".$row["server_ip"]."', '".$row["call_server_ip"]."', '', '".$row["campaign_id"]."', '".$row["calls_today"]."', '', ''); ";
 			if($DB) { $Log->Log($sql2);}
 			if ($res2 = $mysql->MySqlHdl->query($sql2)) {
