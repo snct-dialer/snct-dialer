@@ -1,9 +1,9 @@
 <?php
 # AST_stat_agent1.php
 #
-# Copyright (©) 2016-2019 Jörg Frings-Fürst <open_source@jff.email>
+# Copyright (©) 2016-2020 Jörg Frings-Fürst <open_source@jff.email>
 #               2016-2018 flyingpenguin UG <info@flyingpenguin.de>
-#               2019      SNCT GmbH <info@snct-gmbh.de>
+#               2019-2020 SNCT GmbH <info@snct-gmbh.de>
 #
 # LICENSE: AGPLv3
 #
@@ -19,11 +19,11 @@
 # 2018-01-24 - Neu Zeitraum & Download
 # 2019-03-19 - Add Campaign Status
 # 2019-05-18 - Add viewable Data only for allowed user_groups
-#
+# 2020-08-12 - Add Sum LoginTime
 #
 
-$copyr = "2016-2019 SNCT GmbH, Jörg Frings-Fürst (AGPLv3)";
-$release = '20190514-15';
+$copyr = "2016-2020 SNCT GmbH, Jörg Frings-Fürst (AGPLv3)";
+$release = '20200812-15';
 
 header ("Content-type: text/html; charset=utf-8");
 
@@ -999,6 +999,7 @@ else {
 	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Datum bis </font></TH>" . PHP_EOL;
 	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Tage </font></TH>" . PHP_EOL;
 	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Arbeitszeit </font></TH>" . PHP_EOL;
+	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">AZ / Tag </font></TH>" . PHP_EOL;
 	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Dispo max</font></TH>" . PHP_EOL;
 	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Dispo ist</font></TH>" . PHP_EOL;
 	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Dispo Diff</font></TH>" . PHP_EOL;
@@ -1045,8 +1046,11 @@ else {
 		$AgentsPrint .= "  <TD nowrap>$DateVon</TD> " . PHP_EOL;
 		$AgentsPrint .= "  <TD nowrap>$DateBis</TD> " . PHP_EOL;
 		$LoginDays = GetLoginDays($row[0], $DateVon, $DateBis);
+		$LoginTime = GetLoginTime($row[0], $DateVon, $DateBis);
 		$AgentsPrint .= "  <TD nowrap>$LoginDays</TD> " . PHP_EOL;
+		$str = formatSec(abs($LoginTime));
 		$DispoMax = $row[3] * 230 * $LoginDays;
+		$AgentsPrint .= "  <TD nowrap>$str</TD> " . PHP_EOL;
 		$AgentsPrint .= "  <TD nowrap>$row[3]</TD> " . PHP_EOL;
 		$AgentsPrint .= "  <TD nowrap>$DispoMax</TD> " . PHP_EOL;
 		$Dispo_ges = GetSum($row[0], $DateVon, $DateBis, "Dispo");

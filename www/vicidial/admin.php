@@ -24,7 +24,7 @@
 # 2020-05-29 20:22 Move survey after call from chat to phone.
 # 2020-07-20 12:40 Allow cid_group status with len 1
 # 2020-07-22 12:07 Add cid_group_type PHONECODE
-# 2020-07-31 09:00 Add realtime_report_mg.php
+# 2020-07-31 09:00 Add realtime_report_ng.php
 #
 
 $startMS = microtime();
@@ -18338,7 +18338,7 @@ if ($ADD==411111111111111)
 				}
 			}
 
-		$stmt="UPDATE system_settings set use_non_latin='$use_non_latin',webroot_writable='$webroot_writable',enable_queuemetrics_logging='$enable_queuemetrics_logging',
+		$stmt="UPDATE system_settings set webroot_writable='$webroot_writable',enable_queuemetrics_logging='$enable_queuemetrics_logging',
 			queuemetrics_server_ip='$queuemetrics_server_ip',queuemetrics_dbname='$queuemetrics_dbname',queuemetrics_login='$queuemetrics_login',queuemetrics_pass='$queuemetrics_pass',
 			queuemetrics_url='$queuemetrics_url',queuemetrics_log_id='$queuemetrics_log_id',queuemetrics_eq_prepend='$queuemetrics_eq_prepend',vicidial_agent_disable='$vicidial_agent_disable',
 			allow_sipsak_messages='$allow_sipsak_messages',admin_home_url='$admin_home_url',enable_agc_xfer_log='$enable_agc_xfer_log',timeclock_end_of_day='$timeclock_end_of_day',

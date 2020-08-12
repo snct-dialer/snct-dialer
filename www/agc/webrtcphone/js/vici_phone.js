@@ -772,7 +772,7 @@ function initialize() {
 	ua.on('invite', (session) => {
 		my_session = handleInvite(session);
 	});
-
+	uiElements.audio.volume = 1.0;
 };
 
 

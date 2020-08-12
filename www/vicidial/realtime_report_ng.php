@@ -279,6 +279,11 @@ if (!isset($droppedOFtotal))
 	else {$droppedOFtotal = $RS_droppedOFtotal;}
 	}
 
+	
+if (!isset($ALLINGROUPstats)) {
+	$ALLINGROUPstats = 1;
+}
+
 $ingroup_detail='';
 
 if ( (strlen($group)>1) and (strlen($groups[0])<1) ) {$groups[0] = $group;}

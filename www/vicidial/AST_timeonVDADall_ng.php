@@ -286,6 +286,8 @@ if (!isset($CALLSdisplay))	{$CALLSdisplay=1;}	# 0=no, 1=yes
 if (!isset($PHONEdisplay))	{$PHONEdisplay=0;}	# 0=no, 1=yes
 if (!isset($CUSTPHONEdisplay))	{$CUSTPHONEdisplay=0;}	# 0=no, 1=yes
 if (!isset($PAUSEcodes))	{$PAUSEcodes='N';}  # 0=no, 1=yes
+if (!isset($DROPINGROUPstats)) {$DROPINGROUPstats=1;}
+if (!isset($DisplayInGROUPstats)) {$DisplayInGROUPstats=1;}
 if (!isset($with_inbound))
 	{
 	if ($outbound_autodial_active > 0)
@@ -1838,6 +1840,356 @@ if ($PRESETstats > 0)
 
 #	http://server/vicidial/AST_timeonVDADall.php?&groups[]=ALL-ACTIVE&RR=4000&DB=0&adastats=&SIPmonitorLINK=&IAXmonitorLINK=&usergroup=&UGdisplay=1&UidORname=1&orderby=timeup&SERVdisplay=0&CALLSdisplay=1&PHONEdisplay=0&CUSTPHONEdisplay=0&with_inbound=Y&monitor_active=&monitor_phone=350a&ALLINGROUPstats=1&DROPINGROUPstats=0&NOLEADSalert=&CARRIERstats=1
 
+# Inbound stats
+$D3Echo = "";	
+if($ALLINGROUPstats > 0) {
+
+	$Date=date("Y-m-d");
+	
+	if($AnzeigeAll == 'N') {
+		$LeadingName = "T";
+	} else {
+		$LeadingName = "";
+	}
+	$stmt="SELECT * from WallBoardStat WHERE Gruppe = 'Gesamt' AND Datum = '$Date' LIMIT 1";
+	$rslt=mysqli_query($link, $stmt);
+	$row=mysqli_fetch_array($rslt,MYSQLI_BOTH);
+	
+	if($row[$LeadingName . "Calls"] != 0.0) {
+		$SL0 = $row[$LeadingName . "SL0"] * 100.0 / $row[$LeadingName . "Calls"];
+		$SL1 = $row[$LeadingName . "SL1"] * 100.0 / $row[$LeadingName . "Calls"];
+		$SL2 = $row[$LeadingName . "SL2"] * 100.0 / $row[$LeadingName . "Calls"];
+	}
+	
+	$FEBK = "bgcolor='#FF0000'> <font color='#FFFFFF'>";
+	
+	if($row[$LeadingName . "ebk"] > 0) {
+		if($row[$LeadingName . "ebk"] > 95.0) {
+			$FEBK = "bgcolor='#00FF'>";
+		}
+		else {
+			if($row[$LeadingName . "ebk"] > 80.0) {
+				$FEBK = "bgcolor='#FFFF00'>";
+			}
+			else {
+				if($row[$LeadingName . "ebk"] > 50.0) {
+					$FEBK = "bgcolor='#FF6600'>";
+				}
+			}
+		}
+	}
+	
+	
+	$KDFEBK = "bgcolor='#FF0000'> <font color='#FFFFFF'>";
+	
+	if($row[$LeadingName . "kebk"] > 0) {
+		if($row[$LeadingName . "kebk"] > 98.0) {
+			$KDFEBK = "bgcolor='#00FF'>";
+		}
+		else {
+			if($row[$LeadingName . "kebk"] > 90.0) {
+				$KDFEBK = "bgcolor='#FFFF00'>";
+			}
+			else {
+				if($row[$LeadingName . "kebk"] > 66.0) {
+					$KDFEBK = "bgcolor='#FF6600'>";
+				}
+			}
+		}
+	}
+	
+	
+	$SL0BK = "bgcolor='#FF0000'> <font color='#FFFFFF'>";
+	
+	if($SL0 > 0) {
+		if($SL0 > 66.0) {
+			$SL0BK = "bgcolor='#00FF'>";
+		}
+		else {
+			if($SL0 > 50.0) {
+				$SL0BK = "bgcolor='#FFFF00'>";
+			}
+			else {
+				if($SL0 > 33.0) {
+					$SL0BK = "bgcolor='#FF6600'>";
+				}
+			}
+		}
+	}
+	
+	$SL1BK = "bgcolor='#FF0000'> <font color='#FFFFFF'>";
+	
+	if($SL1 > 0) {
+		if($SL1 > 95.0) {
+			$SL1BK = "bgcolor='#00FF'>";
+		}
+		else {
+			if($SL1 > 75.0) {
+				$SL1BK = "bgcolor='#FFFF00'>";
+			}
+			else {
+				if($SL1 > 50.0) {
+					$SL1BK = "bgcolor='#FF6600'>";
+				}
+			}
+		}
+	}
+	
+	
+	$SL2BK = "bgcolor='#FF0000'> <font color='#FFFFFF'>";
+	
+	if($SL2 > 0) {
+		if($SL2 > 95.0) {
+			$SL2BK = "bgcolor='#00FF'>";
+		}
+		else {
+			if($SL2 > 80.0) {
+				$SL2BK = "bgcolor='#FFFF00'>";
+			}
+			else {
+				if($SL2 > 66.0) {
+					$SL2BK = "bgcolor='#FF6600'>";
+				}
+			}
+		}
+	}
+	
+	$backCol1 ='ccff99';
+	$backCol2 ='ccf5ff';
+	$nPos=0;
+	$anzWL = 0;
+	$anzAB = 0;
+	if($row[$LeadingName . "Calls"] != 0.0) {
+		if($row[$LeadingName . "WL"] > 0) {
+			$anzWL = 1;
+		}
+		if($row[$LeadingName . "AB"] > 0) {
+			$anzAB = 1;
+		}
+		$sec = $row[$LeadingName . "waittime"] % 60;
+		$min = (($row[$LeadingName . "waittime"] - $sec) / 60) % 60;
+		$wait= sprintf("%02d:%02d", $min, $sec);
+		$sec = $row[$LeadingName . "maxwaittime"] % 60;
+		$min = (($row[$LeadingName . "maxwaittime"] - $sec) / 60) % 60;
+		$maxwait= sprintf("%02d:%02d", $min, $sec);
+		$Erbk= sprintf("%.1f%%", $row[$LeadingName . "ebk"]);
+		$KdErbk= sprintf("%.1f%%", $row[$LeadingName . "kebk"]);
+		$StrSL0 = sprintf("%.1f%%", $SL0);
+		$StrSL1 = sprintf("%.1f%%", $SL1);
+		$StrSL2 = sprintf("%.1f%%", $SL2);
+		$strSV  = $row["StandVom"];
+		$strPho = $row[$LeadingName . "phones"];
+		$D3echo = "<font size=\"-1\">";
+		$D3echo .=  "Anrufstatistik Stand vom: " . $strSV . " (zusätzlich " . $strPho . " Telefonanrufe)<br>\n";
+		if($AnzeigeAll == 'N') {
+			$D3echo .= "Zeitraum eingeschränkt <br>\n";
+		}
+		$D3echo .= "<TABLE cellpadding='1' cellspacing='1' rules='all' frame='box' style='font-family:\"Courier New\", Courier, monospace; font-size:90%'>\n";
+		$D3echo .= " <TR bgcolor='ffff66'>\n";
+		$D3echo .= "  <TH> Gruppe</TH>\n";
+		$D3echo .= "  <TH> Kunden</TH>\n";
+		$D3echo .= "  <TH> Anrufe<br />heute</TH>\n";
+		$D3echo .= "  <TH> Aufl.</TH>\n";
+		if($anzWL == 1) {
+			$D3echo .= "  <TH> Wl.<br />ext.</TH>\n";
+		}
+		if($anzAB == 1) {
+			$D3echo .= "  <TH> AB/<br />RR</TH>\n";
+		}
+		$D3echo .= "  <TH> Agent</TH>\n";
+		$D3echo .= "  <TH> Ebk</TH>\n";
+		$D3echo .= "  <TH> Kd-Ebk</TH>\n";
+		$D3echo .= "  <TH> Direkt</TH>\n";
+		$D3echo .= "  <TH> SL 1</TH>\n";
+		$D3echo .= "  <TH> SL 2</TH>\n";
+		$D3echo .= "  <TH> Warte-<br />zeit</TH>\n";
+		$D3echo .= " </TR>\n";
+		if($nPos == 0) {
+			$D3echo .= " <TR bgcolor=$backCol1>\n";
+			$nPos = 1;
+		}
+		else {
+			$D3echo .= " <TR bgcolor=$backCol2>\n";
+			$nPos = 0;
+		}
+		$D3echo .= "  <TD align='center'> $row[3]</TD>\n";
+		$D3echo .= "  <TD align='center'> ". number_format ($row[$LeadingName . "Kunden"] , 0 , ',' , '.' )."</TD>\n";
+		$tmpstr = number_format ($row[$LeadingName . "Calls"] , 0 , ',' , '.' ) . "/" . number_format ($row[$LeadingName . "Unbekannt"] , 0 , ',' , '.' );
+		$D3echo .= "  <TD align='center'> ". $tmpstr ."</TD>\n";
+		//			$D3echo .= "  <TD align='center'> ". number_format ($row[5] , 0 , ',' , '.' )."</TD>\n";
+		//			$D3echo .= "  <TD align='center'> ". number_format (($row[7] - $row[8] - $row[9]) , 0 , ',' , '.' )."</TD>\n";
+		$D3echo .= "  <TD align='center'> ". number_format (($row[$LeadingName . "Drops"]) , 0 , ',' , '.' )."</TD>\n";
+		if($anzWL == 1) {
+			$D3echo .= "  <TD align='center'> ". number_format ($row[$LeadingName . "WL"] , 0 , ',' , '.' )."</TD>\n";
+		}
+		if($anzAB == 1) {
+			$D3echo .= "  <TD align='center'> ". number_format ($row[$LeadingName . "AB"] , 0 , ',' , '.' )."</TD>\n";
+		}
+		$D3echo .= "  <TD align='center'> ". number_format ($row[$LeadingName . "Agent"] , 0 , ',' , '.' )."</TD>\n";
+		$D3echo .= "  <TD align='center' $FEBK <B> $Erbk</B></TD>\n";
+		$D3echo .= "  <TD align='center' $KDFEBK <B> $KdErbk</B></TD>\n";
+		$D3echo .= "  <TD align='center' $SL0BK <B> $StrSL0</B></TD>\n";
+		$D3echo .= "  <TD align='center' $SL1BK <B> $StrSL1</B></TD>\n";
+		$D3echo .= "  <TD align='center' $SL2BK <B> $StrSL2</B></TD>\n";
+		$D3echo .= "  <TD align='center'> $wait / $maxwait </TD>\n";
+		$D3echo .= " </TR>\n";
+	}
+	else {
+		$D3echo .= "Anrufstatistik: Heute keine Anrufe!<br><br>\n";
+	}
+	$stmt="SELECT * from WallBoardStat WHERE Gruppe != 'Gesamt' AND Datum = '$Date' ORDER BY Gruppe";
+	$rsltGrp=mysqli_query($link, $stmt);
+	$Anz=mysqli_num_rows($rsltGrp);
+	$ii = 0;
+	while($ii < $Anz) {
+		$row = mysqli_fetch_array($rsltGrp, MYSQLI_BOTH);
+		
+		
+		if(($row[$LeadingName . "Calls"] != 0.0) && ($AnzeigeNull = 'N')) {
+			$SL0 = $row[$LeadingName . "SL0"] * 100.0 / $row[$LeadingName . "Calls"];
+			$SL1 = $row[$LeadingName . "SL1"] * 100.0 / $row[$LeadingName . "Calls"];
+			$SL2 = $row[$LeadingName . "SL2"] * 100.0 / $row[$LeadingName . "Calls"];
+			
+			
+			$FEBK = "bgcolor='#FF0000'> <font color='#FFFFFF'>";
+			
+			if($row[$LeadingName . "ebk"] > 0) {
+				if($row[$LeadingName . "ebk"] > 95.0) {
+					$FEBK = "bgcolor='#00FF'>";
+				}
+				else {
+					if($row[$LeadingName . "ebk"] > 80.0) {
+						$FEBK = "bgcolor='#FFFF00'>";
+					}
+					else {
+						if($row[$LeadingName . "ebk"] > 50.0) {
+							$FEBK = "bgcolor='#FF6600'>";
+						}
+					}
+				}
+			}
+			
+			
+			$KDFEBK = "bgcolor='#FF0000'> <font color='#FFFFFF'>";
+			
+			if($row[$LeadingName . "kebk"] > 0) {
+				if($row[$LeadingName . "kebk"] > 98.0) {
+					$KDFEBK = "bgcolor='#00FF'>";
+				}
+				else {
+					if($row[$LeadingName . "kebk"] > 90.0) {
+						$KDFEBK = "bgcolor='#FFFF00'>";
+					}
+					else {
+						if($row[$LeadingName . "kebk"] > 66.0) {
+							$KDFEBK = "bgcolor='#FF6600'>";
+						}
+					}
+				}
+			}
+			
+			
+			$SL0BK = "bgcolor='#FF0000'> <font color='#FFFFFF'>";
+			
+			if($SL0 > 0) {
+				if($SL0 > 66.0) {
+					$SL0BK = "bgcolor='#00FF'>";
+				}
+				else {
+					if($SL0 > 50.0) {
+						$SL0BK = "bgcolor='#FFFF00'>";
+					}
+					else {
+						if($SL0 > 33.0) {
+							$SL0BK = "bgcolor='#FF6600'>";
+						}
+					}
+				}
+			}
+			
+			$SL1BK = "bgcolor='#FF0000'> <font color='#FFFFFF'>";
+			
+			if($SL1 > 0) {
+				if($SL1 > 95.0) {
+					$SL1BK = "bgcolor='#00FF'>";
+				}
+				else {
+					if($SL1 > 75.0) {
+						$SL1BK = "bgcolor='#FFFF00'>";
+					}
+					else {
+						if($SL1 > 50.0) {
+							$SL1BK = "bgcolor='#FF6600'>";
+						}
+					}
+				}
+			}
+			
+			
+			$SL2BK = "bgcolor='#FF0000'> <font color='#FFFFFF'>";
+			
+			if($SL2 > 0) {
+				if($SL2 > 95.0) {
+					$SL2BK = "bgcolor='#00FF'>";
+				}
+				else {
+					if($SL2 > 80.0) {
+						$SL2BK = "bgcolor='#FFFF00'>";
+					}
+					else {
+						if($SL2 > 66.0) {
+							$SL2BK = "bgcolor='#FF6600'>";
+						}
+					}
+				}
+			}
+			
+			$sec = $row[$LeadingName . "waittime"] % 60;
+			$min = (($row[$LeadingName . "waittime"] - $sec) / 60) % 60;
+			$wait= sprintf("%02d:%02d", $min, $sec);
+			$sec = $row[$LeadingName . "maxwaittime"] % 60;
+			$min = (($row[$LeadingName . "maxwaittime"] - $sec) / 60) % 60;
+			$maxwait= sprintf("%02d:%02d", $min, $sec);
+			$Erbk= sprintf("%.1f%%", $row[$LeadingName . "ebk"]);
+			$KdErbk= sprintf("%.1f%%", $row[$LeadingName . "kebk"]);
+			$StrSL0 = sprintf("%.1f%%", $SL0);
+			$StrSL1 = sprintf("%.1f%%", $SL1);
+			$StrSL2 = sprintf("%.1f%%", $SL2);
+			if($nPos == 0) {
+				$D3echo .= " <TR bgcolor=$backCol1>\n";
+				$nPos = 1;
+			}
+			else {
+				$D3echo .= " <TR bgcolor=$backCol2>\n";
+				$nPos = 0;
+			}
+			$D3echo .= "  <TD align='center'> $row[3]</TD>\n";
+			$D3echo .= "  <TD align='center'> ". number_format ($row[$LeadingName . "Kunden"] , 0 , ',' , '.' )."</TD>\n";
+			$tmpstr = number_format ($row[$LeadingName . "Calls"] , 0 , ',' , '.' ) . "/" . number_format ($row[$LeadingName . "Unbekannt"] , 0 , ',' , '.' );
+			$D3echo .= "  <TD align='center'> ". $tmpstr ."</TD>\n";
+			$D3echo .= "  <TD align='center'> ". number_format ($row[$LeadingName . "Drops"] , 0 , ',' , '.' )."</TD>\n";
+			if($anzWL == 1) {
+				$D3echo .= "  <TD align='center'> ". number_format ($row[$LeadingName . "WL"] , 0 , ',' , '.' )."</TD>\n";
+			}
+			if($anzAB == 1) {
+				$D3echo .= "  <TD align='center'> ". number_format ($row[$LeadingName . "AB"] , 0 , ',' , '.' )."</TD>\n";
+			}
+			$D3echo .= "  <TD align='center'> ". number_format ($row[$LeadingName . "Agent"] , 0 , ',' , '.' )."</TD>\n";
+			$D3echo .= "  <TD align='center' $FEBK <B> $Erbk</B></TD>\n";
+			$D3echo .= "  <TD align='center' $KDFEBK <B> $KdErbk</B></TD>\n";
+			$D3echo .= "  <TD align='center' $SL0BK <B> $StrSL0</B></TD>\n";
+			$D3echo .= "  <TD align='center' $SL1BK <B> $StrSL1</B></TD>\n";
+			$D3echo .= "  <TD align='center' $SL2BK <B> $StrSL2</B></TD>\n";
+			$D3echo .= "  <TD align='center'> $wait / $maxwait</TD>\n";
+			$D3echo .= " </TR>\n";
+		}
+		$ii++;
+	}
+	
+	$D3echo .= "</TABLE>\n";
+	$D3echo .= "<br>Anrufe heute: Gesamtanzahl/davon ohne Rufnummer.<br>\n";
+}
+
 ##### INBOUND ONLY ###
 if (preg_match('/O/',$with_inbound))
 	{
@@ -2148,8 +2500,12 @@ else
 			{echo "<font color=blue>(uk)</font>";}
 		echo ":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; ";
 
-		$DrpMaxTemp = substr($DROPmax, 0, 5);
-		if ($drpctTODAY >= $DROPmax)
+#		$DrpMaxTemp = substr($DROPmax, 0, 5);
+		$DrpMaxTemptmp = round($DROPmax, 2);
+		$DrpMaxTemp = sprintf("%01.2f", $DrpMaxTemptmp);
+		$drpctTODAYtmp = round($drpctTODAY, 2);
+		$drpctTODAY = sprintf("%01.2f", $drpctTODAYtmp);
+		if ($drpctTODAYtmp >= $DrpMaxTemptmp)
 			{echo "<font color=red><B>$drpctTODAY%</font> / $DrpMaxTemp% ";}
 		else
 			{echo "$drpctTODAY%  / $DrpMaxTemp%";}
@@ -2846,6 +3202,7 @@ if ($report_display_type=='TEXT')
 if ($report_display_type=='HTML')
 	{
 	$Aecho = '';
+	$Aecho = "<table><tr style=\"vertical-align:top\"><td>" .PHP_EOL; 
 	$Aecho .= "<table cellpadding=1 cellspacing=1 border=0 class='realtime_table'>";
 	$Aecho .= "<tr>";
 	$Aecho .= "<td colspan=4><font class='top_head_key'>&nbsp;"._QXZ("Agents Time On Calls Campaign").":</font></td>";
@@ -3548,6 +3905,8 @@ if ($talking_to_print > 0)
 				if ($call_time_S >= 10) {$G='<SPAN class="khaki"><B>'; $EG='</B></SPAN>'; $tr_class='TRkhaki';}
 				if ($call_time_S >= 60) {$G='<SPAN class="yellow"><B>'; $EG='</B></SPAN>'; $tr_class='TRyellow';}
 				if ($call_time_S >= 300) {$G='<SPAN class="olive"><B>'; $EG='</B></SPAN>'; $tr_class='TRolive';}
+				if ($call_time_S >= 1800) {$G='<SPAN class="red"><B>'; $EG='</B></SPAN>'; $tr_class='TRred';}
+				
 				if ($call_time_S >= $pause_limit) {$G='<SPAN class="darkred"><B>'; $EG='</B></SPAN>'; $tr_class='TRdarkred';}
 				}
 			}
@@ -3750,8 +4109,14 @@ if ($talking_to_print > 0)
 			}
 		$j++;
 		}
-	if ($report_display_type=='HTML')
-		{$Aecho .= "</table>\n";}
+	if ($report_display_type=='HTML') {
+		$Aecho .= "</table>\n";
+		$Aecho .= "</TD><TD>" . PHP_EOL;
+# hier InboundStat
+#		$Aecho .= "IGStats: " . $DROPINGROUPstats ." ";
+		$Aecho .= $D3echo;
+		$Aecho .= "</TD></TR></table>" . PHP_EOL;
+	}
 
 	$Aecho .= "$Aline";
 	$Aecho .= "  $agentcount "._QXZ("agents logged in on all servers")."\n";
@@ -3779,6 +4144,7 @@ if ($talking_to_print > 0)
 	$Aecho .= "  <SPAN class=\"khaki\"><B>          </SPAN> - "._QXZ("Agent Paused > 10 seconds")."</B>\n";
 	$Aecho .= "  <SPAN class=\"yellow\"><B>          </SPAN> - "._QXZ("Agent Paused > 1 minute")."</B>\n";
 	$Aecho .= "  <SPAN class=\"olive\"><B>          </SPAN> - "._QXZ("Agent Paused > 5 minutes")."</B>\n";
+	$Aecho .= "  <SPAN class=\"red\"><B>          </SPAN> - "._QXZ("Agent Paused > 30 minutes")."</B>\n";
 	$Aecho .= "  <SPAN class=\"lime\"><B>          </SPAN> - "._QXZ("Agent in 3-WAY > 10 seconds")."</B>\n";
 	$Aecho .= "  <SPAN class=\"black\"><B>          </SPAN> - "._QXZ("Agent on a dead call")."</B>\n";
 	if ($SSenable_pause_code_limits > 0)
