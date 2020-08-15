@@ -17,8 +17,18 @@
 # the ADMIN_keepalive_ALL.pl script, which makes sure it is always running in a
 # screen, provided that the astguiclient.conf keepalive setting "2" is set.
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
+# LICENSE: AGPLv3
+#
+# Copyright (C) 2017      Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2019-2020 SNCT Gmbh <info@snct-gmbh.de>
+#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
+#
+# Other changes
+#
+# 200803-1345 jff	add utf8 enconding for conf files
+
 # CHANGES
 # 170915-2106 - Initial version based off the orginal AST_manager_listen.pl script
 # 170920-1418 - Fix for issue with recordings beginning with CALLID variable
@@ -924,8 +934,8 @@ sub event_logger
 	if ($SYSLOG)
 		{
 		### open the log file for writing ###
-		open(Lout, ">>$PATHlogs/listen_process")
-				|| die "Can't open $PATHlogs/listen_process: $!\n";
+		open(Lout, ">>$PATHlogs/listen_process.log")
+				|| die "Can't open $PATHlogs/listen_process.log: $!\n";
 		print Lout "$now_date|$event_string|\n";
 		close(Lout);
 		}
@@ -938,8 +948,8 @@ sub manager_output_logger
 	{
 	if ($SYSLOG)
 		{
-		open(MOout, ">>$PATHlogs/listen")
-				|| die "Can't open $PATHlogs/listen: $!\n";
+		open(MOout, ">>$PATHlogs/listen.log")
+				|| die "Can't open $PATHlogs/listen.log: $!\n";
 		print MOout "$now_date|$manager_string|\n";
 		close(MOout);
 		}
@@ -949,8 +959,8 @@ sub dtmf_logger
 	{
 	if ($SYSLOG)
 		{
-		open(Dout, ">>$PATHlogs/dtmf")
-				|| die "Can't open $PATHlogs/dtmf: $!\n";
+		open(Dout, ">>$PATHlogs/dtmf.log")
+				|| die "Can't open $PATHlogs/dtmflog: $!\n";
 		print Dout "|$dtmf_string|\n";
 		close(Dout);
 		}

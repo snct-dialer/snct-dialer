@@ -35,7 +35,7 @@ $mel=0;
 $LOG=1;
 
 $LogDatei = "";
-$LogDateiName = "GenWallBoard-";
+$LogDateiName = "GenWallBoard.log";
 $LogFile = NULL;
 
 
@@ -1333,7 +1333,7 @@ $Date=date("Y-m-d");
 
 
 if($LOG != 0) {
-	$LogDatei = $PATHlogs . "/" . $LogDateiName . $Date . ".log";
+	$LogDatei = $PATHlogs . "/" . $LogDateiName;
 	$LogFile = fopen($LogDatei,"a");
 }
 

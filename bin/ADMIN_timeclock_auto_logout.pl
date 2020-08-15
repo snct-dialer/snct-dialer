@@ -8,8 +8,20 @@
 # This script is launched by the ADMIN_keepalive_ALL.pl script with the '9' flag
 # defined in astguiclient.conf
 #
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
+# LICENSE: AGPLv3
+#
+# Copyright (C) 2018      Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2019-2020 SNCT Gmbh <info@snct-gmbh.de>
+#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
+#
+# Other changes
+#
+# 20200815-1345 jff	add *.log to logfiles
+#
+
+
 # CHANGELOG
 # 80526-0958 - First Build
 # 80604-0733 - Fixed minor bug in update
@@ -133,7 +145,7 @@ foreach(@conf)
 	$i++;
 	}
 
-if (!$VDALOGfile) {$VDALOGfile = "$PATHlogs/timeclockautologout";}
+if (!$VDALOGfile) {$VDALOGfile = "$PATHlogs/timeclockautologout.log";}
 if (!$VARDB_port) {$VARDB_port='3306';}
 
 ### concurrency check

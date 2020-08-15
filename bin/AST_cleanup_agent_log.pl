@@ -10,7 +10,19 @@
 #
 # This program only needs to be run by one server
 #
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# LICENSE: AGPLv3
+#
+# Copyright (C) 2019      Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2019-2020 SNCT Gmbh <info@snct-gmbh.de>
+#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
+#
+# Other changes
+#
+# 20200815-1345 jff	add *.log to logfiles
+#
+
 #
 # CHANGES
 # 60711-0945 - Changed to DBI by Marin Blu
@@ -421,7 +433,7 @@ if ($run_check > 0)
 # Customized Variables
 $server_ip = $VARserver_ip;		# Asterisk server IP
 
-if (!$CLEANLOGfile) {$CLEANLOGfile = "$PATHlogs/clean.$Hyear-$Hmon-$Hmday";}
+if (!$CLEANLOGfile) {$CLEANLOGfile = "$PATHlogs/clean.log";}
 
 if (!$VARDB_port) {$VARDB_port='3306';}
 

@@ -20,8 +20,17 @@
 # exten => 8320,2,Hangup
 # exten => _8320*.,1,AGI(VD_amd.agi,${EXTEN}-----YES)
 # exten => _8320*.,2,Hangup
+##
+# LICENSE: AGPLv3
 #
-# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2019      Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2019-2020 SNCT Gmbh <info@snct-gmbh.de>
+#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
+#
+# Other changes
+#
+# 200803-1345 jff	add utf8 enconding for conf files
 #
 # changes:
 # 60206-1434 - first build
@@ -118,8 +127,8 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port)	{$VARDB_port='3306';}
-if (!$AGILOGfile)	{$AGILOGfile = "$PATHlogs/agiout.$year-$mon-$mday";}
-if (!$CEPLOGfile)	{$CEPLOGfile = "$PATHlogs/Cepstral.$year-$mon-$mday";}
+if (!$AGILOGfile)	{$AGILOGfile = "$PATHlogs/agiout.log";}
+if (!$CEPLOGfile)	{$CEPLOGfile = "$PATHlogs/Cepstral.log";}
 
 use DBI;
 use Time::Local;
@@ -294,8 +303,8 @@ if ($A)
 
 if ( ($AMD_LOG == 1) || ($AMD_LOG == 3) )
 	{
-	open(Lout, ">>$PATHlogs/AMD_log".$file_day.".txt")
-			|| die "Can't open $PATHlogs/AMD_log".$file_day.".txt: $!\n";
+	open(Lout, ">>$PATHlogs/AMD.log")
+			|| die "Can't open $PATHlogs/AMD.log: $!\n";
 	print Lout "$now_date|$VD_lead_id|      |$AMDSTATUS|$AMDCAUSE|$calleridname|$calleridnum|\n";
 	close(Lout);
 	}

@@ -1,0 +1,20 @@
+#/var/log/snct-dialer/GenRealTime.log {
+#    daily
+#    missingok
+#    compress
+#    notifempty
+#    rotate 10
+#    sharedscripts
+#    su root root
+#}
+
+/var/log/snct-dialer/*.log {
+    su www-data www-data
+    daily
+    missingok
+    compress
+    notifempty
+    rotate 60
+    sharedscripts
+    su root root
+}

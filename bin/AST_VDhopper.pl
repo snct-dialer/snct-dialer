@@ -21,7 +21,16 @@
 #  - R = Recycled leads
 #  - S = Standard hopper load
 #
-# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# LICENSE: AGPLv3
+#
+# Copyright (C) 2019      Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2019-2020 SNCT Gmbh <info@snct-gmbh.de>
+#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
+#
+# Other changes
+#
+# 200803-1345 jff	add utf8 enconding for conf files
 #
 # CHANGELOG
 # 50810-1613 - Added database server variable definitions lookup
@@ -314,8 +323,8 @@ foreach(@conf)
 	$i++;
 	}
 
-if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/hopper";}
-if (!$VDHDLOGfile) {$VDHDLOGfile = "$PATHlogs/hopper-detail";}
+if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/hopper.log";}
+if (!$VDHDLOGfile) {$VDHDLOGfile = "$PATHlogs/hopper-detail.log";}
 if (!$VARDB_port) {$VARDB_port='3306';}
 
 use DBI;

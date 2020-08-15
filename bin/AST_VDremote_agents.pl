@@ -167,7 +167,7 @@ $server_ip = $VARserver_ip;		# Asterisk server IP
 
 &get_time_now;	# update time/date variables
 
-if (!$VDRLOGfile) {$VDRLOGfile = "$PATHlogs/remoteagent";}
+if (!$VDRLOGfile) {$VDRLOGfile = "$PATHlogs/remoteagent.log";}
 if (!$VARDB_port) {$VARDB_port='3306';}
 
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
@@ -245,7 +245,7 @@ while($one_day_interval > 0)
 		{
 		&get_time_now;
 
-		$VDRLOGfile = "$PATHlogs/remoteagent";
+		$VDRLOGfile = "$PATHlogs/remoteagent.log";
 
 		if ($endless_loop =~ /0$|5$/)
 			{

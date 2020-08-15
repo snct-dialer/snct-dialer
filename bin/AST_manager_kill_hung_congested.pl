@@ -15,7 +15,8 @@
 #
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>
 # Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
-#               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
+#               2020      SNCT GmbH <info@snct-gmbh.de>
+#               2017-2020 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
 
 # CHANGES
 # 50823-1525 - Added commandline debug options with debug printouts
@@ -127,7 +128,7 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 
 	&get_time_now;
 
-if (!$KHLOGfile) {$KHLOGfile = "$PATHlogs/congest";}
+if (!$KHLOGfile) {$KHLOGfile = "$PATHlogs/congest.log";}
 
 use DBI;
 

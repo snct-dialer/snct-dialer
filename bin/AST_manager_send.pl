@@ -16,7 +16,16 @@
 # scalability over just using a single process. Also, this means that a single
 # action execution lock cannot bring the entire system down.
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# LICENSE: AGPLv3
+#
+# Copyright (C) 2017      Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2019-2020 SNCT Gmbh <info@snct-gmbh.de>
+#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
+#
+# Other changes
+#
+# 20200815-1345 jff	rename logfiles to .log
+#
 #
 # CHANGES
 # 50823-1514 - Added commandline debug options with debug printouts
@@ -384,9 +393,8 @@ sub getServerConfig
 sub eventLogger
 	{
 	my ($path,$type,$string) = @_;
-	open(LOG, ">>" . $path . "/action_" . $type . "." . logDate())
-		|| die "Can't open " . $path . "/action_" . $type . "." .
-			logDate() . ": " . $! . "\n";
+	open(LOG, ">>" . $path . "/action_" . $type . ".log")
+		|| die "Can't open " . $path . "/action_" . $type . ".log" . ": " . $! . "\n";
 	print LOG nowDate() . "|" . $string . "|\n";
 	close(LOG);
 	}

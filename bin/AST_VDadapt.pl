@@ -6,7 +6,16 @@
 # adjusts the auto_dial_level for vicidial adaptive-predictive campaigns.
 # gather call stats for campaigns and in-groups
 #
-# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# LICENSE: AGPLv3
+#
+# Copyright (C) 2019      Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2019-2020 SNCT Gmbh <info@snct-gmbh.de>
+#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
+#
+# Other changes
+#
+# 20200815-1345 jff	rename logfiles to .log
+#
 #
 # CHANGELOG
 # 60823-1302 - First build from AST_VDhopper.pl
@@ -2019,7 +2028,7 @@ sub event_logger
 	{
 	if ($SYSLOG)
 		{
-		if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/adapt";}
+		if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/adapt.log";}
 
 		### open the log file for writing ###
 		open(Lout, ">>$VDHLOGfile")
@@ -2035,7 +2044,7 @@ sub adaptive_logger
 	{
 	if ($SYSLOG)
 		{
-		$VDHCLOGfile = "$PATHlogs/VDadaptive-$campaign_id[$i]";
+		$VDHCLOGfile = "$PATHlogs/VDadaptive-$campaign_id[$i].log";
 
 		### open the log file for writing ###
 		open(Aout, ">>$VDHCLOGfile")

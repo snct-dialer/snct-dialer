@@ -25,9 +25,9 @@
 # exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})
 #
 #
-# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv3
-# Copyright (©) 2019  SNCT GmbH <info@snct-gmbh.de>
-#               2019 Jörg Frings-Fürst <open_source@jff.email>
+# Copyright (C) 2019      Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv3
+# Copyright (©) 2019-2020 SNCT GmbH <info@snct-gmbh.de>
+#               2019-2020 Jörg Frings-Fürst <open_source@jff.email>
 
 #
 # CHANGELOG:
@@ -92,7 +92,8 @@
 
 
 # JFF changelog
-# 190301-1635 - Remove date from logfiles
+# 20190301-1635 - Remove date from logfiles
+# 20200815-1538 - Add .log to logfiles
 #
 
 
@@ -181,7 +182,7 @@ $dbhB->disconnect();
 
 if ($SERVERLOG =~ /Y/)
 	{
-	$childLOGfile = "$PATHlogs/FastAGIchildLOG";
+	$childLOGfile = "$PATHlogs/FastAGIchildLOG.log";
 	$log_level = "4";
 	print "SERVER LOGGING ON: LEVEL-$log_level FILE-$childLOGfile\n";
 	}
@@ -261,7 +262,7 @@ sub process_request
 		}
 
 	if (!$VARDB_port) {$VARDB_port='3306';}
-	if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/FASTagiout";}
+	if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/FASTagiout.log";}
 
 	$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
 		or die "Couldn't connect to database: " . DBI->errstr;
