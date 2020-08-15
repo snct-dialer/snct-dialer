@@ -68,8 +68,8 @@ print "$0 Version: $PrgVersion \n";
 use Config::IniFiles;
 
 my $defcfg = Config::IniFiles->new( -file => "/etc/snct-dialer/snct-dialer.conf" );
-my $newcfg = Config::IniFiles->new( -file => "/etc/snct-dialer/snct-dialer.ini", -import => $defcfg  );
-my $cfg    = Config::IniFiles->new( -file => "/etc/snct-dialer/snct-dialer.local", -import => $newcfg );
+my $newcfg = Config::IniFiles->new( -file => "/etc/snct-dialer/dialer/backup.conf", -import => $defcfg  );
+my $cfg    = Config::IniFiles->new( -file => "/etc/snct-dialer/dialer/backup.local", -import => $newcfg );
 
 $PATHhome   = $cfg->val( 'Path', 'PATHhome' );
 $PATHlogs   = $cfg->val( 'Path', 'PATHlogs' );

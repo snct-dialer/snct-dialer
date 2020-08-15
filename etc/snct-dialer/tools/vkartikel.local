@@ -1,0 +1,11 @@
+[Database]
+Server=10.100.0.17
+Database=asterisk_snct
+User=cron
+Pass=v1c1d1SNCT
+Custom_user=custom
+Custom_pass=v1c1d1CSNCT
+Port=3306
+
+[Log]
+File=/var/log/snct-dialer/artbewegungen.log

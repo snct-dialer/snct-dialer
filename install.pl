@@ -3,6 +3,18 @@
 # install.pl version 2.14
 #
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+
+# LICENSE: AGPLv3
+#
+# Copyright (C) 2019      Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2019-2020 SNCT Gmbh <info@snct-gmbh.de>
+#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
+#
+# Other changes
+#
+# 20200815-1845 jff	add New logrotate setup. 
+# 20200815-2030 jff	add conf-files /etc/snct-dialer
 #
 
 # CHANGES
@@ -2753,6 +2765,21 @@ if ( ($PROMPTcopy_conf_files =~ /y/i) || ($CLIcopy_conf_files =~ /y/i) )
 	`echo "[vicidial-auto] ;placeholder for auto-generated sip conf" > /etc/asterisk/sip-vicidial.conf`;
 	`echo "[vicidial-auto] ;placeholder for auto-generated voicemail conf" > /etc/asterisk/voicemail-vicidial.conf`;
 	}
+
+### copy logrotate files ###
+
+if (!-d "/etc/logrotate.d/")	{`mkdir /etc/logrotate.d/`;}
+`cp -f ./etc/logrotate.d/* /etc/logrotate.d/`
+
+### copy snct-dialer conf files ###
+
+`cp -f ./etc/snct-dialer/snct-dialer.ini /etc/snct-dialer/snct-dialer.ini`
+if (!-e "/etc/snct-dialer/snct-dialer.local") {`cp -f ./etc/snct-dialer/snct-dialer.local /etc/snct-dialer/snct-dialer.local`;}
+if (!-d "/etc/snct-dialer/dialer")	{`mkdir /etc/snct-dialer/dialer/`;}
+`cp -f ./etc/snct-dialer/dialer/agent.conf /etc/snct-dialer/dialer/agent.conf`
+`cp -f ./etc/snct-dialer/dialer/backup.conf /etc/snct-dialer/dialer/backup.conf`
+if (!-e "/etc/snct-dialer/dialer/agent.local") {`cp -f ./etc/snct-dialer/dialer/agent.local /etc/snct-dialer/dialer/agent.local`;}
+if (!-e "/etc/snct-dialer/dialer/backup.local") {`cp -f ./etc/snct-dialer/dialer/backup.local /etc/snct-dialer/dialer/backup.local`;}
 
 
 ##### BEGIN attempt to connect to database, if successful then update code information in database #####

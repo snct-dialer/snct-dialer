@@ -937,8 +937,9 @@
           bin/AST_manager_kill_hung_congested.pl,
           bin/AST_manager_listen_AMI2.pl,
           bin/AST_manager_send.pl,
-          bin/FastAGI_log.pl.
-      - New: etc/logrotate.d/vicidial,
+          bin/FastAGI_log.pl
+          install.pl.
+      - New etc/logrotate.d/vicidial,
           etc/logrotate.d/snct-dialer.
     * Change next release to 3.0.1.
 
