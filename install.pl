@@ -2773,7 +2773,7 @@ if (!-d "/etc/logrotate.d/")	{`mkdir /etc/logrotate.d/`;}
 
 ### copy snct-dialer conf files ###
 
-`cp -f ./etc/snct-dialer/snct-dialer.ini /etc/snct-dialer/snct-dialer.ini`
+`cp -f ./etc/snct-dialer/snct-dialer.ini /etc/snct-dialer/snct-dialer.ini`;
 if (!-e "/etc/snct-dialer/snct-dialer.local") {`cp -f ./etc/snct-dialer/snct-dialer.local /etc/snct-dialer/snct-dialer.local`;}
 if (!-d "/etc/snct-dialer/dialer")	{`mkdir /etc/snct-dialer/dialer/`;}
 `cp -f ./etc/snct-dialer/dialer/agent.conf /etc/snct-dialer/dialer/agent.conf`
