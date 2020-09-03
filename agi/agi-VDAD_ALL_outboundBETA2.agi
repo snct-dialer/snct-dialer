@@ -223,11 +223,11 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port)	{$VARDB_port='3306';}
-if (!$AGILOGfile)	{$AGILOGfile = "$PATHlogs/agiout.$year-$mon-$mday";}
-if (!$PRSLOGfile)	{$PRSLOGfile = "$PATHlogs/prsout.$year-$mon-$mday";}
-if (!$PRSTESTfile)	{$PRSTESTfile = "$PATHlogs/prstest.$year-$mon-$mday";}
-if (!$ERRLOGfile)	{$ERRLOGfile = "$PATHlogs/MySQLerror.$year-$mon-$mday";}
-if (!$CEPLOGfile)	{$CEPLOGfile = "$PATHlogs/Cepstral.$year-$mon-$mday";}
+if (!$AGILOGfile)	{$AGILOGfile = "$PATHlogs/agiout.log";}
+if (!$PRSLOGfile)	{$PRSLOGfile = "$PATHlogs/prsout.log";}
+if (!$PRSTESTfile)	{$PRSTESTfile = "$PATHlogs/prstest.log";}
+if (!$ERRLOGfile)	{$ERRLOGfile = "$PATHlogs/MySQLerror.log";}
+if (!$CEPLOGfile)	{$CEPLOGfile = "$PATHlogs/Cepstral.log";}
 
 use DBI;
 use Asterisk::AGI;

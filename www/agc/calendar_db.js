@@ -7,7 +7,7 @@ var A_TCALDEF = {
 	'months' : ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
 	'weekdays' : ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
 	'yearscroll': true, // show year scroller
-	'weekstart': 0, // first day of week: 0-Su or 1-Mo
+	'weekstart': 1, // first day of week: 0-Su or 1-Mo
 	'centyear'  : 70, // 2 digit years less than 'centyear' are in 20xx, othewise in 19xx.
 	'imgpath' : './images/' // directory with calendar images
 }

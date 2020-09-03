@@ -1235,8 +1235,8 @@ while($one_day_interval > 0)
 										print "!!!!!!!!!!!!!!!!duplicate lead_id for this run: |$lead_id|     $lead_id_call_list\n";
 										if ($SYSLOG)
 											{
-											open(DUPout, ">>$PATHlogs/VDAD_DUPLICATE.$file_date")
-													|| die "Can't open $PATHlogs/VDAD_DUPLICATE.$file_date: $!\n";
+											open(DUPout, ">>$PATHlogs/VDAD_DUPLICATE..log")
+													|| die "Can't open $PATHlogs/VDAD_DUPLICATE.log: $!\n";
 											print DUPout "$now_date-----$lead_id_call_list-----$lead_id\n";
 											close(DUPout);
 											}

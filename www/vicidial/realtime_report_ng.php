@@ -281,7 +281,7 @@ if (!isset($droppedOFtotal))
 
 	
 if (!isset($ALLINGROUPstats)) {
-	$ALLINGROUPstats = 1;
+	$ALLINGROUPstats = 0;
 }
 
 $ingroup_detail='';

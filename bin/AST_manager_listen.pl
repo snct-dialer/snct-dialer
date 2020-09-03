@@ -1518,7 +1518,7 @@ sub dtmf_logger
 	{
 	if ($SYSLOG)
 		{
-		open(Dout, ">>$PATHlogs/dtmf")
+		open(Dout, ">>$PATHlogs/dtmf.log")
 				|| die "Can't open $PATHlogs/dtmf: $!\n";
 		print Dout "|$dtmf_string|\n";
 		close(Dout);

@@ -264,7 +264,7 @@ while ($one_day_interval > 0)
 						$vdm->{callerid} . " " . $vdm->{uniqueid} . " " . $vdm->{channel});
 
 
-					$launch .= " >> " . $conf{PATHlogs} . "/action_send." . logDate() if ($SYSLOG);
+					$launch .= " >> " . $conf{PATHlogs} . "/action_send.log" if ($SYSLOG);
 					system($launch . ' &');
 
 			#		$launch = "SENT " . $vdm->{man_id} . "  " . $vdm->{callerid} . ' ' . $vdm->{uniqueid} . ' ' . $vdm->{channel};

@@ -294,9 +294,9 @@ exit 0;
 #    $EventString : String to record in log.
 sub eventLogger {
 	my ($path,$type,$string) = @_;
-	open(LOG, ">>" . $path . "/action_" . $type . "." . logDate())
-		|| die "Can't open " . $path . "/action_" . $type . "." .
-			logDate() . ": " . $! . "\n";
+	open(LOG, ">>" . $path . "/action_" . $type . ".log")
+		|| die "Can't open " . $path . "/action_" . $type . ".log" .
+			": " . $! . "\n";
 	print LOG nowDate() . "|" . $string . "|\n";
 	close(LOG);
 }

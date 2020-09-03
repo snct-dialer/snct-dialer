@@ -4192,7 +4192,7 @@ while ($CINC < 12)
 		$CDCLR="#ffffff";
 		$CCAL_OUT .= "<td bordercolor=\"$CDCLR\">";
 		$CCAL_OUT .= "<div align=\"center\"><font color=\"#000066\"><b><font face=\"Arial, Helvetica, sans-serif\" size=\"1\">";
-		$CCAL_OUT .= _("$Cday", 3);
+		$CCAL_OUT .= _("$Cday");
 		$CCAL_OUT .= "</font></b></font></div>";
 		$CCAL_OUT .= "</td>";
 		}

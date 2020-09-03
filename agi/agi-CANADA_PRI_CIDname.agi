@@ -92,8 +92,8 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port) {$VARDB_port='3306';}
-if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout.$year-$mon-$mday";}
-if (!$DIDLOGfile) {$DIDLOGfile = "$PATHlogs/didin.$year-$mon-$mday";}
+if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout.log";}
+if (!$DIDLOGfile) {$DIDLOGfile = "$PATHlogs/didin.log";}
 
 
 $|=1;
