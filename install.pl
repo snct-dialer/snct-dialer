@@ -2776,8 +2776,8 @@ if (!-d "/etc/logrotate.d/")	{`mkdir /etc/logrotate.d/`;}
 `cp -f ./etc/snct-dialer/snct-dialer.ini /etc/snct-dialer/snct-dialer.ini`;
 if (!-e "/etc/snct-dialer/snct-dialer.local") {`cp -f ./etc/snct-dialer/snct-dialer.local /etc/snct-dialer/snct-dialer.local`;}
 if (!-d "/etc/snct-dialer/dialer")	{`mkdir /etc/snct-dialer/dialer/`;}
-`cp -f ./etc/snct-dialer/dialer/agent.conf /etc/snct-dialer/dialer/agent.conf`
-`cp -f ./etc/snct-dialer/dialer/backup.conf /etc/snct-dialer/dialer/backup.conf`
+`cp -f ./etc/snct-dialer/dialer/agent.conf /etc/snct-dialer/dialer/agent.conf`;
+`cp -f ./etc/snct-dialer/dialer/backup.conf /etc/snct-dialer/dialer/backup.conf`;
 if (!-e "/etc/snct-dialer/dialer/agent.local") {`cp -f ./etc/snct-dialer/dialer/agent.local /etc/snct-dialer/dialer/agent.local`;}
 if (!-e "/etc/snct-dialer/dialer/backup.local") {`cp -f ./etc/snct-dialer/dialer/backup.local /etc/snct-dialer/dialer/backup.local`;}
 
