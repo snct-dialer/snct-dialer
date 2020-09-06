@@ -2769,7 +2769,7 @@ if ( ($PROMPTcopy_conf_files =~ /y/i) || ($CLIcopy_conf_files =~ /y/i) )
 ### copy logrotate files ###
 
 if (!-d "/etc/logrotate.d/")	{`mkdir /etc/logrotate.d/`;}
-`cp -f ./etc/logrotate.d/* /etc/logrotate.d/`
+`cp -f ./etc/logrotate.d/* /etc/logrotate.d/`;
 
 ### copy snct-dialer conf files ###
 
