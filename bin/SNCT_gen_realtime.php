@@ -255,7 +255,8 @@ function GetInbound($CallerID) {
 	if($DB) { $Log->Log($sql);}
 	if($res = $mysql->MySqlHdl->query($sql)) {
 		$row = $res->fetch_array(MYSQLI_BOTH);
-		$InGrp = $row[0] ." - ". $row[2];
+#		$InGrp = $row[0] ." - ". $row[2];
+		$InGrp = $row[0];
 		$row[1] = preg_replace('/.*\-/i', '',$row[1]);
 		$WaitTime = sprintf("%-4s", $row[1]);
 		$WaitTime = $row[1];
@@ -324,11 +325,7 @@ function formatZeit($Sek) {
 	if(strlen($Sek)==1){
 		$Sek = "0".$Sek;
 	}
-	if($hours != "00") {
-		$Time = $hours.":".$mins.":".$Sek;
-	} else {
-		$Time = $mins.":".$Sek;
-	}
+	$Time = $hours.":".$mins.":".$Sek;
 
 	return $Time;
 
