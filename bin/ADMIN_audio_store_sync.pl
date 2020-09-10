@@ -184,7 +184,7 @@ foreach(@conf)
 	$i++;
 	}
 
-if (!$VASLOGfile) {$VASLOGfile = "$PATHlogs/audiostore";}
+if (!$VASLOGfile) {$VASLOGfile = "$PATHlogs/audiostore.log";}
 if (!$VARDB_port) {$VARDB_port='3306';}
 
 use DBI;

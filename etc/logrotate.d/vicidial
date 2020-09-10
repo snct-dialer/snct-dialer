@@ -12,6 +12,7 @@
 /var/log/astguiclient/action_launch.log
 /var/log/astguiclient/action_process.log
 /var/log/astguiclient/action_send.log
+/var/log/astguiclient/audiostore.log
 /var/log/astguiclient/adapt.log
 /var/log/astguiclient/agent_monitor.log
 /var/log/astguiclient/agiout.log
@@ -37,7 +38,7 @@
 /var/log/astguiclient/prsout.log
 /var/log/astguiclient/prstest.log
 /var/log/astguiclient/rebeep.log
-/var/log/astguiclient/remote_agent.log
+/var/log/astguiclient/remoteagent.log
 /var/log/astguiclient/timeclockautologout.log
 /var/log/astguiclient/update.log
 /var/log/astguiclient/vdad_JAM.log
