@@ -41,6 +41,7 @@
 /var/log/astguiclient/remoteagent.log
 /var/log/astguiclient/timeclockautologout.log
 /var/log/astguiclient/update.log
+/var/log/astguiclient/VDAD_DUPLICATE.log
 /var/log/astguiclient/vdad_JAM.log
 /var/log/astguiclient/VDadaptive-*.log
 /var/log/astguiclient/vdautodial.log
