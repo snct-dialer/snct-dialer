@@ -27,6 +27,7 @@
 # 2019-05-28 09:18 Show Manual Dial only if UserLevel > 1
 # 2020-07-19 11:15 Warning skip lead only by callbacks
 # 2020-07-23 17:25 Replace _QXZ with gettext version _(
+# 2020-09-16 jff   Fix typos
 #
 #
 #
@@ -648,7 +649,7 @@
 #
 
 $version = '2.14-594c';
-$build = '191107-1011';
+$build = '20200916-1630';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=91;
 $one_mysql_log=0;
@@ -21600,7 +21601,7 @@ if ($agent_display_dialable_leads > 0)
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:<?php $zi++; echo $zi ?>;" id="CallBacKsLisTBox">
-    <table border="0" bgcolor="#CCFFCC" width="<?php echo $CAwidth ?>px" height="<?php echo $WRheight ?>px"><tr><td align="center" valign="top"> <font class="sh_text"><?php echo _("CALLBACKS FOR AGENT %1s:<br />To see information on one of the callbacks below, click on the INFO link. To call the customer back now, click on the DIAL link. If you click on a record below to dial it, it will be removed from the list.",0,'',$VD_login); ?></font>
+    <table border="0" bgcolor="#CCFFCC" width="<?php echo $CAwidth ?>px" height="<?php echo $WRheight ?>px"><tr><td align="center" valign="top"> <font class="sh_text"><?php echo _("CALLBACKS FOR AGENT %1s:<br />To see information on one of the callbacks below, click on the INFO link. To call the customer back now, click on the DIAL link. If you click on a record below to dial it, it will be removed from the list."),0,'',$VD_login; ?></font>
  <br />
 	<?php
 	if ($webphone_location == 'bar')
@@ -21616,15 +21617,15 @@ if ($agent_display_dialable_leads > 0)
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:<?php $zi++; echo $zi ?>;" id="NeWManuaLDiaLBox">
-    <table border="0" bgcolor="#CCFFCC" width="<?php echo $CAwidth ?>px" height="<?php echo $WRheight ?>px"><tr><td align="center" valign="top"> <font class="sd_text"><?php echo _("NEW MANUAL DIAL LEAD FOR %1s in campaign %2s:",0,'',$VD_login,$VD_campaign); ?></font><br /><br /><font class="sh_text"><?php echo _("Enter information below for the new lead you wish to call."); ?>
+    <table border="0" bgcolor="#CCFFCC" width="<?php echo $CAwidth ?>px" height="<?php echo $WRheight ?>px"><tr><td align="center" valign="top"> <font class="sd_text"><?php echo _("NEW MANUAL DIAL LEAD FOR %1s in campaign %2s:"),0,'',$VD_login,$VD_campaign; ?></font><br /><br /><font class="sh_text"><?php echo _("Enter information below for the new lead you wish to call."); ?>
  <br />
 	<?php
 	if (!preg_match("/X/i",$manual_dial_prefix))
 		{
-        echo _("Note: a dial prefix of %1s will be added to the beginning of this number",0,'',$manual_dial_prefix)."<br />\n";
+        echo _("Note: a dial prefix of %1s will be added to the beginning of this number"),0,'',$manual_dial_prefix."<br />\n";
 		}
 	?>
-    <?php echo _("Note: all new manual dial leads will go into list %1s",0,'',$manual_dial_list_id); ?><br /><br />
+    <?php echo _("Note: all new manual dial leads will go into list %1s"),0,'',$manual_dial_list_id; ?><br /><br />
     <table><tr>
     <td align="right"><font class="body_text"> <?php echo _("Dial Code:"); ?> </font></td>
     <td align="left"><font class="body_text"><input type="text" size="7" maxlength="10" name="MDDiaLCodE" id="MDDiaLCodE" class="cust_form" value="<?php echo $default_phone_code ?>" />&nbsp; <?php echo _("(This is usually a 1 in the USA-Canada)"); ?></font></td>
@@ -21863,7 +21864,7 @@ if ($agent_display_dialable_leads > 0)
 	$TEMPlabel_vendor_lead_code = preg_replace("/---READONLY---|---REQUIRED---|---HIDE---/","",$label_vendor_lead_code);
 	?>
 	<br /><br />
-	<?php echo _("Notes: when doing a search for a lead, the phone number, lead ID or %1s are the best fields to use.",0,'',$TEMPlabel_vendor_lead_code); ?> <br /><?php echo _("Using the other fields may be slower. Lead searching does not allow for wildcard or partial search terms."); ?> <br /><?php echo _("Lead search requests are all logged in the system."); ?>
+	<?php echo _("Notes: when doing a search for a lead, the phone number, lead ID or %1s are the best fields to use."),0,'',$TEMPlabel_vendor_lead_code; ?> <br /><?php echo _("Using the other fields may be slower. Lead searching does not allow for wildcard or partial search terms."); ?> <br /><?php echo _("Lead search requests are all logged in the system."); ?>
 	<br /><br />
 	<center>
 	<table border="0">
