@@ -2,6 +2,9 @@
 
 # AST_timeonVDADall_ng.php
 #
+# based on AST_timeonVDADall.php 
+#
+#
 # LICENSE: AGPLv3
 #
 # Copyright (©) 2019      Matt Florell <vicidial@gmail.com>
@@ -127,10 +130,12 @@
 # 190525-2133 - Added new agent time segment display
 # 190531-1454 - Upgraded ingroup filter
 # 190927-1759 - Fixed PHP7 array issue
+# 20200916 jff  Replace _QXZ with gettext funktion _(
+#               remove all non_latin queries
 #
 
 $version = '2.14-101';
-$build = '190927-1759';
+$build = '20200916-1430';
 
 header ("Content-type: text/html; charset=utf-8");
 
@@ -144,6 +149,7 @@ require_once ("../tools/format_phone.php");
 $PHP_AUTH_USER=$_SERVER['PHP_AUTH_USER'];
 $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
 $PHP_SELF=$_SERVER['PHP_SELF'];
+
 if (isset($_GET["server_ip"]))			{$server_ip=$_GET["server_ip"];}
 	elseif (isset($_POST["server_ip"]))	{$server_ip=$_POST["server_ip"];}
 if (isset($_GET["RR"]))					{$RR=$_GET["RR"];}
@@ -381,16 +387,8 @@ $timeSIXhoursAGO = date("Y-m-d H:i:s",$epochSIXhoursAGO);
 $epochTWENTYFOURhoursAGO = ($STARTtime - 86400);
 $timeTWENTYFOURhoursAGO = date("Y-m-d H:i:s",$epochTWENTYFOURhoursAGO);
 
-if ($non_latin < 1)
-	{
-	$PHP_AUTH_USER = preg_replace('/[^-_0-9a-zA-Z]/', '', $PHP_AUTH_USER);
-	$PHP_AUTH_PW = preg_replace('/[^-_0-9a-zA-Z]/', '', $PHP_AUTH_PW);
-	}
-else
-	{
-	$PHP_AUTH_PW = preg_replace("/'|\"|\\\\|;/","",$PHP_AUTH_PW);
-	$PHP_AUTH_USER = preg_replace("/'|\"|\\\\|;/","",$PHP_AUTH_USER);
-	}
+$PHP_AUTH_PW = preg_replace("/'|\"|\\\\|;/","",$PHP_AUTH_PW);
+$PHP_AUTH_USER = preg_replace("/'|\"|\\\\|;/","",$PHP_AUTH_USER);
 
 $stmt="SELECT selected_language from vicidial_users where user='$PHP_AUTH_USER';";
 if ($DB) {echo "|$stmt|\n";}
@@ -425,7 +423,7 @@ if ($auth > 0)
 
 	if ($reports_auth < 1)
 		{
-		$VDdisplayMESSAGE = _QXZ("You are not allowed to view reports");
+		$VDdisplayMESSAGE = _("You are not allowed to view reports");
 		Header ("Content-type: text/html; charset=utf-8");
 		echo "$VDdisplayMESSAGE: |$PHP_AUTH_USER|$auth_message|\n";
 		exit;
@@ -438,17 +436,17 @@ if ($auth > 0)
 	}
 else
 	{
-	$VDdisplayMESSAGE = _QXZ("Login incorrect, please try again");
+	$VDdisplayMESSAGE = _("Login incorrect, please try again");
 	if ($auth_message == 'LOCK')
 		{
-		$VDdisplayMESSAGE = _QXZ("Too many login attempts, try again in 15 minutes");
+		$VDdisplayMESSAGE = _("Too many login attempts, try again in 15 minutes");
 		Header ("Content-type: text/html; charset=utf-8");
 		echo "$VDdisplayMESSAGE: |$PHP_AUTH_USER|$auth_message|\n";
 		exit;
 		}
 	if ($auth_message == 'IPBLOCK')
 		{
-		$VDdisplayMESSAGE = _QXZ("Your IP Address is not allowed") . ": $ip";
+		$VDdisplayMESSAGE = _("Your IP Address is not allowed") . ": $ip";
 		Header ("Content-type: text/html; charset=utf-8");
 		echo "$VDdisplayMESSAGE: |$PHP_AUTH_USER|$auth_message|\n";
 		exit;
@@ -564,7 +562,7 @@ if ( (!preg_match("/$report_name/",$LOGallowed_reports)) and (!preg_match("/ALL 
 	{
     Header("WWW-Authenticate: Basic realm=\"CONTACT-CENTER-ADMIN\"");
     Header("HTTP/1.0 401 Unauthorized");
-    echo _QXZ("You are not allowed to view this report").": |$PHP_AUTH_USER|$report_name|"._QXZ("$report_name")."|\n";
+    echo _("You are not allowed to view this report").": |$PHP_AUTH_USER|$report_name|$report_name|\n";
     exit;
 	}
 
@@ -786,7 +784,7 @@ $NFB = '<b><font size=6 face="courier">';
 $NFE = '</font></b>';
 $F=''; $FG=''; $B=''; $BG='';
 
-$select_list = "<TABLE class=\"realtime_settings_table\" CELLPADDING=5 BGCOLOR=\"#D9E6FE\"><TR><TD VALIGN=TOP>"._QXZ("Select Campaigns").": <BR>";
+$select_list = "<TABLE class=\"realtime_settings_table\" CELLPADDING=5 BGCOLOR=\"#D9E6FE\"><TR><TD VALIGN=TOP>"._("Select Campaigns").": <BR>";
 $select_list .= "<SELECT SIZE=15 NAME=groups[] multiple>";
 $o=0;
 while ($groups_to_print > $o)
@@ -798,9 +796,9 @@ while ($groups_to_print > $o)
 	$o++;
 	}
 $select_list .= "</SELECT>";
-$select_list .= "<BR><font class=\"top_settings_val\">"._QXZ("(To select more than 1 campaign, hold down the Ctrl key and click)")."<font>";
+$select_list .= "<BR><font class=\"top_settings_val\">"._("(To select more than 1 campaign, hold down the Ctrl key and click)")."<font>";
 
-$select_list .= "<BR><BR>"._QXZ("Select User Groups").": <BR>";
+$select_list .= "<BR><BR>"._("Select User Groups").": <BR>";
 $select_list .= "<SELECT SIZE=8 NAME=user_group_filter[] ID=user_group_filter[] multiple>";
 $o=0;
 $user_group_filter_string = "";
@@ -814,7 +812,7 @@ while ($o < $usergroups_to_print)
 	}
 $select_list .= "</SELECT>";
 
-$select_list .= "<BR><BR>"._QXZ("Select In-Groups").": <BR>";
+$select_list .= "<BR><BR>"._("Select In-Groups").": <BR>";
 $select_list .= "<SELECT SIZE=8 NAME=ingroup_filter[] ID=ingroup_filter[] multiple>";
 $o=0;
 $in_group_none = 0;
@@ -834,44 +832,44 @@ while ($o < $ingroups_to_print)
 $select_list .= "</SELECT>";
 
 $select_list .= "</TD><TD VALIGN=TOP ALIGN=CENTER>";
-$select_list .= "<a href=\"#\" onclick=\"closeDiv(\'campaign_select_list\');\">"._QXZ("Close Panel")."</a><BR><BR>";
+$select_list .= "<a href=\"#\" onclick=\"closeDiv(\'campaign_select_list\');\">"._("Close Panel")."</a><BR><BR>";
 $select_list .= "<TABLE CELLPADDING=2 CELLSPACING=2 BORDER=0>";
 
 $select_list .= "<TR><TD align=right>";
-$select_list .= _QXZ("Inbound").":  </TD><TD align=left><SELECT SIZE=1 NAME=with_inbound>";
+$select_list .= _("Inbound").":  </TD><TD align=left><SELECT SIZE=1 NAME=with_inbound>";
 $select_list .= "<option value=\"N\"";
 	if ($with_inbound=='N') {$select_list .= " selected";}
-$select_list .= ">"._QXZ("No")."</option>";
+$select_list .= ">"._("No")."</option>";
 $select_list .= "<option value=\"Y\"";
 	if ($with_inbound=='Y') {$select_list .= " selected";}
-$select_list .= ">"._QXZ("Yes")."</option>";
+$select_list .= ">"._("Yes")."</option>";
 $select_list .= "<option value=\"O\"";
 	if ($with_inbound=='O') {$select_list .= " selected";}
-$select_list .= ">"._QXZ("Only")."</option>";
+$select_list .= ">"._("Only")."</option>";
 $select_list .= "</SELECT></TD></TR>";
 
 $select_list .= "<TR><TD align=right>";
-$select_list .= _QXZ("Monitor").":  </TD><TD align=left><SELECT SIZE=1 NAME=monitor_active>";
+$select_list .= _("Monitor").":  </TD><TD align=left><SELECT SIZE=1 NAME=monitor_active>";
 $select_list .= "<option value=\"\"";
 	if (strlen($monitor_active) < 2) {$select_list .= " selected";}
-$select_list .= ">"._QXZ("NONE")."</option>";
+$select_list .= ">"._("NONE")."</option>";
 if (preg_match("/MONITOR/",$RS_ListenBarge) )
 	{
 	$select_list .= "<option value=\"MONITOR\"";
 		if ($monitor_active=='MONITOR') {$select_list .= " selected";}
-	$select_list .= ">"._QXZ("MONITOR")."</option>";
+	$select_list .= ">"._("MONITOR")."</option>";
 	}
 if (preg_match("/BARGE/",$RS_ListenBarge) )
 	{
 	$select_list .= "<option value=\"BARGE\"";
 		if ($monitor_active=='BARGE') {$select_list .= " selected";}
-	$select_list .= ">"._QXZ("BARGE")."</option>";
+	$select_list .= ">"._("BARGE")."</option>";
 	}
 if ( ($agent_whisper_enabled == '1') and (preg_match("/WHISPER/",$RS_ListenBarge) ) )
 	{
 	$select_list .= "<option value='WHISPER'";
 		if ($monitor_active=='WHISPER') {$select_list .= " selected";}
-	$select_list .= ">"._QXZ("WHISPER")."</option>";
+	$select_list .= ">"._("WHISPER")."</option>";
 	}
 #$select_list .= "<option value=\"HIJACK\"";
 #	if ($monitor_active=='HIJACK') {$select_list .= " selected";}
@@ -879,7 +877,7 @@ if ( ($agent_whisper_enabled == '1') and (preg_match("/WHISPER/",$RS_ListenBarge
 $select_list .= "</SELECT></TD></TR>";
 
 $select_list .= "<TR><TD align=right>";
-$select_list .= _QXZ("Phone").":  </TD><TD align=left>";
+$select_list .= _("Phone").":  </TD><TD align=left>";
 $select_list .= "<INPUT type=text size=10 maxlength=20 NAME=monitor_phone VALUE=\"$monitor_phone\">";
 $select_list .= "</TD></TR>";
 $select_list .= "<TR><TD align=center COLSPAN=2> &nbsp; </TD></TR>";
@@ -887,9 +885,9 @@ $select_list .= "<TR><TD align=center COLSPAN=2> &nbsp; </TD></TR>";
 if ($UGdisplay > 0)
 	{
 	$select_list .= "<TR><TD align=right>";
-	$select_list .= _QXZ("Select User Group").":  </TD><TD align=left>";
+	$select_list .= _("Select User Group").":  </TD><TD align=left>";
 	$select_list .= "<SELECT SIZE=1 NAME=usergroup>";
-	$select_list .= "<option value=\"\">"._QXZ("ALL USER GROUPS")."</option>";
+	$select_list .= "<option value=\"\">"._("ALL USER GROUPS")."</option>";
 	$o=0;
 	while ($usergroups_to_print > $o)
 		{
@@ -901,33 +899,33 @@ if ($UGdisplay > 0)
 	}
 
 $select_list .= "<TR><TD align=right>";
-$select_list .= _QXZ("Dialable Leads Alert").":  </TD><TD align=left><SELECT SIZE=1 NAME=NOLEADSalert>";
+$select_list .= _("Dialable Leads Alert").":  </TD><TD align=left><SELECT SIZE=1 NAME=NOLEADSalert>";
 $select_list .= "<option value=\"\"";
 	if (strlen($NOLEADSalert) < 2) {$select_list .= " selected";}
-$select_list .= ">"._QXZ("NO")."</option>";
+$select_list .= ">"._("NO")."</option>";
 $select_list .= "<option value=\"YES\"";
 	if ($NOLEADSalert=='YES') {$select_list .= " selected";}
-$select_list .= ">"._QXZ("YES")."</option>";
+$select_list .= ">"._("YES")."</option>";
 $select_list .= "</SELECT></TD></TR>";
 
 $select_list .= "<TR><TD align=right>";
-$select_list .= _QXZ("Show Drop In-Group Row").":  </TD><TD align=left><SELECT SIZE=1 NAME=DROPINGROUPstats>";
+$select_list .= _("Show Drop In-Group Row").":  </TD><TD align=left><SELECT SIZE=1 NAME=DROPINGROUPstats>";
 $select_list .= "<option value=\"0\"";
 	if ($DROPINGROUPstats < 1) {$select_list .= " selected";}
-$select_list .= ">"._QXZ("NO")."</option>";
+$select_list .= ">"._("NO")."</option>";
 $select_list .= "<option value=\"1\"";
 	if ($DROPINGROUPstats=='1') {$select_list .= " selected";}
-$select_list .= ">"._QXZ("YES")."</option>";
+$select_list .= ">"._("YES")."</option>";
 $select_list .= "</SELECT></TD></TR>";
 
 $select_list .= "<TR><TD align=right>";
-$select_list .= _QXZ("Show Carrier Stats").":  </TD><TD align=left><SELECT SIZE=1 NAME=CARRIERstats>";
+$select_list .= _("Show Carrier Stats").":  </TD><TD align=left><SELECT SIZE=1 NAME=CARRIERstats>";
 $select_list .= "<option value=\"0\"";
 	if ($CARRIERstats < 1) {$select_list .= " selected";}
-$select_list .= ">"._QXZ("NO")."</option>";
+$select_list .= ">"._("NO")."</option>";
 $select_list .= "<option value=\"1\"";
 	if ($CARRIERstats=='1') {$select_list .= " selected";}
-$select_list .= ">"._QXZ("YES")."</option>";
+$select_list .= ">"._("YES")."</option>";
 $select_list .= "</SELECT></TD></TR>";
 
 ## find if any selected campaigns have presets enabled
@@ -944,46 +942,46 @@ if ($presets_enabled_count > 0)
 if ($presets_enabled > 0)
 	{
 	$select_list .= "<TR><TD align=right>";
-	$select_list .= _QXZ("Show Presets Stats").":  </TD><TD align=left><SELECT SIZE=1 NAME=PRESETstats>";
+	$select_list .= _("Show Presets Stats").":  </TD><TD align=left><SELECT SIZE=1 NAME=PRESETstats>";
 	$select_list .= "<option value=\"0\"";
 		if ($PRESETstats < 1) {$select_list .= " selected";}
-	$select_list .= ">"._QXZ("NO")."</option>";
+	$select_list .= ">"._("NO")."</option>";
 	$select_list .= "<option value=\"1\"";
 		if ($PRESETstats=='1') {$select_list .= " selected";}
-	$select_list .= ">"._QXZ("YES")."</option>";
+	$select_list .= ">"._("YES")."</option>";
 	$select_list .= "</SELECT></TD></TR>";
 	}
 
 $select_list .= "<TR><TD align=right>";
-$select_list .= _QXZ("Agent Time Stats").":  </TD><TD align=left><SELECT SIZE=1 NAME=AGENTtimeSTATS>";
+$select_list .= _("Agent Time Stats").":  </TD><TD align=left><SELECT SIZE=1 NAME=AGENTtimeSTATS>";
 $select_list .= "<option value=\"0\"";
 	if ($AGENTtimeSTATS < 1) {$select_list .= " selected";}
-$select_list .= ">"._QXZ("NO")."</option>";
+$select_list .= ">"._("NO")."</option>";
 $select_list .= "<option value=\"1\"";
 	if ($AGENTtimeSTATS=='1') {$select_list .= " selected";}
-$select_list .= ">"._QXZ("YES")."</option>";
+$select_list .= ">"._("YES")."</option>";
 $select_list .= "</SELECT></TD></TR>";
 
 $select_list .= "<TR><TD align=right>";
-$select_list .= _QXZ("Display as").":  </TD><TD align=left><SELECT SIZE=1 NAME=report_display_type ID=report_display_type>";
+$select_list .= _("Display as").":  </TD><TD align=left><SELECT SIZE=1 NAME=report_display_type ID=report_display_type>";
 $select_list .= "<option value='TEXT'";
 	if ($report_display_type=='TEXT') {$select_list .= " selected";}
-$select_list .= ">"._QXZ("TEXT")."</option>";
+$select_list .= ">"._("TEXT")."</option>";
 $select_list .= "<option value='HTML'";
 	if ($report_display_type=='HTML') {$select_list .= " selected";}
-$select_list .= ">"._QXZ("HTML")."</option>";
+$select_list .= ">"._("HTML")."</option>";
 $select_list .= "<option value='WALL_1'";
 	if ($report_display_type=='WALL_1') {$select_list .= " selected";}
-$select_list .= ">"._QXZ("WALL_1")."</option>";
+$select_list .= ">"._("WALL_1")."</option>";
 $select_list .= "<option value='WALL_2'";
 	if ($report_display_type=='WALL_2') {$select_list .= " selected";}
-$select_list .= ">"._QXZ("WALL_2")."</option>";
+$select_list .= ">"._("WALL_2")."</option>";
 $select_list .= "<option value='WALL_3'";
 	if ($report_display_type=='WALL_3') {$select_list .= " selected";}
-$select_list .= ">"._QXZ("WALL_3")."</option>";
+$select_list .= ">"._("WALL_3")."</option>";
 $select_list .= "<option value='WALL_4'";
 	if ($report_display_type=='WALL_4') {$select_list .= " selected";}
-$select_list .= ">"._QXZ("WALL_4")."</option>";
+$select_list .= ">"._("WALL_4")."</option>";
 $select_list .= "</SELECT></TD></TR>";
 
 $select_list .= "</TABLE><BR>";
@@ -994,10 +992,10 @@ $select_list .= "<TR><TD ALIGN=CENTER>";
 $select_list .= "<font class=\"top_settings_val\"> &nbsp; </font>";
 $select_list .= "</TD>";
 $select_list .= "<TD NOWRAP align=right>";
-$select_list .= "<font class=\"top_settings_val\">"._QXZ("VERSION").": $version &nbsp; "._QXZ("BUILD").": $build</font>";
+$select_list .= "<font class=\"top_settings_val\">"._("VERSION").": $version &nbsp; "._("BUILD").": $build</font>";
 $select_list .= "</TD></TR></TABLE>";
 
-$open_list = '<TABLE WIDTH=250 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\'#D9E6FE\'><TR><TD ALIGN=CENTER><a href=\'#\' onclick=\\"openDiv(\'campaign_select_list\');\\"><font class=\'top_settings_val\'>'._QXZ("Choose Report Display Options").'</a></TD></TR></TABLE>';
+$open_list = '<TABLE WIDTH=250 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\'#D9E6FE\'><TR><TD ALIGN=CENTER><a href=\'#\' onclick=\\"openDiv(\'campaign_select_list\');\\"><font class=\'top_settings_val\'>'._("Choose Report Display Options").'</a></TD></TR></TABLE>';
 
 ?>
 
@@ -1097,7 +1095,7 @@ else
 					if (Xoutput.match(regXFerr))
 						{alert(xmlhttp.responseText);}
 					if (Xoutput.match(regXFscs))
-						{alert("<?php echo _QXZ("SUCCESS: calling"); ?> " + monitor_phone);}
+						{alert("<?php echo _("SUCCESS: calling"); ?> " + monitor_phone);}
 					}
 				}
 			delete xmlhttp;
@@ -1348,32 +1346,32 @@ if ($RTajax < 1)
 	echo "<INPUT TYPE=HIDDEN NAME=INGROUPcolorOVERRIDE VALUE=\"$INGROUPcolorOVERRIDE\">\n";
 	echo "<INPUT TYPE=HIDDEN NAME=droppedOFtotal VALUE=\"$droppedOFtotal\">\n";
 	echo "<INPUT TYPE=HIDDEN NAME=report_display_type VALUE=\"$report_display_type\">\n";
-	echo _QXZ("$report_name")." &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; \n";
+	echo _("$report_name")." &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; \n";
 	echo "<span style=\"position:absolute;left:160px;top:27px;z-index:19;\" id=campaign_select_list>\n";
 	echo "<TABLE WIDTH=250 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#D9E6FE\"><TR><TD ALIGN=CENTER>\n";
-	echo "<a href=\"#\" onclick=\"openDiv('campaign_select_list');\">"._QXZ("Choose Report Display Options")."</a>";
+	echo "<a href=\"#\" onclick=\"openDiv('campaign_select_list');\">"._("Choose Report Display Options")."</a>";
 	echo "</TD></TR></TABLE>\n";
 	echo "</span>\n";
 	echo "<span style=\"position:absolute;left:10px;top:120px;z-index:18;\" id=agent_ingroup_display>\n";
 	echo " &nbsp; ";
 	echo "</span>\n";
-	echo "<a href=\"$PHP_SELF?RR=4000$usergroupQS$groupQS$ingroupQS&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\">"._QXZ("STOP")."</a> | ";
-	echo "<a href=\"$PHP_SELF?RR=40$usergroupQS$groupQS$ingroupQS&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\">"._QXZ("SLOW")."</a> | ";
-	echo "<a href=\"$PHP_SELF?RR=4$usergroupQS$groupQS$ingroupQS&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\">"._QXZ("GO")."</a>";
+	echo "<a href=\"$PHP_SELF?RR=4000$usergroupQS$groupQS$ingroupQS&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\">"._("STOP")."</a> | ";
+	echo "<a href=\"$PHP_SELF?RR=40$usergroupQS$groupQS$ingroupQS&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\">"._("SLOW")."</a> | ";
+	echo "<a href=\"$PHP_SELF?RR=4$usergroupQS$groupQS$ingroupQS&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\">"._("GO")."</a>";
 	if (preg_match('/ALL\-ACTIVE/i',$group_string))
 		{
-		echo " &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=10\">"._QXZ("MODIFY")."</a> | \n";
+		echo " &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=10\">"._("MODIFY")."</a> | \n";
 		}
 	else
 		{
-		echo " &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=34&campaign_id=$group\">"._QXZ("MODIFY")."</a> | \n";
+		echo " &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=34&campaign_id=$group\">"._("MODIFY")."</a> | \n";
 		}
-	echo "<a href=\"./AST_timeonVDADallSUMMARY.php?RR=$RR&DB=$DB&adastats=$adastats\">"._QXZ("SUMMARY")."</a> </FONT>\n";
+	echo "<a href=\"./AST_timeonVDADallSUMMARY.php?RR=$RR&DB=$DB&adastats=$adastats\">"._("SUMMARY")."</a> </FONT>\n";
 	echo "\n\n";
 	}
 
 if (!$group)
-	{echo "<BR><BR>"._QXZ("please select a campaign from the pulldown above")."</FORM>\n"; exit;}
+	{echo "<BR><BR>"._("please select a campaign from the pulldown above")."</FORM>\n"; exit;}
 else
 {
 $multi_drop=0;
@@ -1434,12 +1432,12 @@ if ($DB > 0) {echo "\n|$closer_campaigns|$closer_campaignsSQL|$stmt|\n";}
 
 $answersSQL = 'sum(answers_today)';
 $answers_singleSQL = 'answers_today';
-$answers_text =  _QXZ("ANSWERED");
+$answers_text =  _("ANSWERED");
 if ($droppedOFtotal > 0)
 	{
 	$answersSQL = 'sum(calls_today)';
 	$answers_singleSQL = 'calls_today';
-	$answers_text = _QXZ("TOTAL").'   ';
+	$answers_text = _("TOTAL").'   ';
 	}
 
 ##### SHOW IN-GROUP STATS OR INBOUND ONLY WITH VIEW-MORE ###
@@ -1494,6 +1492,8 @@ if ( ($ALLINGROUPstats > 0) or ( (preg_match('/O/',$with_inbound)) and ($adastat
 		$drpctTODAY = ( MathZDC($dropsTODAY, $answersTODAY + $dropsTODAY) * 100);
 		$drpctTODAY = round($drpctTODAY, 2);
 		$drpctTODAY = sprintf("%01.2f", $drpctTODAY);
+		
+		$dropsTODAY = sprintf("%01.0f", $dropsTODAY);
 
 		$AVGhold_sec_queue_calls = MathZDC($hold_sec_queue_calls, $callsTODAY);
 		$AVGhold_sec_queue_calls = round($AVGhold_sec_queue_calls, 0);
@@ -1531,23 +1531,23 @@ if ( ($ALLINGROUPstats > 0) or ( (preg_match('/O/',$with_inbound)) and ($adastat
 		$ingroup_detail .= "<TR bgcolor=\"$bgcolor\">";
 		$ingroup_detail .= "<TD ALIGN=RIGHT bgcolor=white><font class='top_settings_val'> &nbsp; &nbsp; &nbsp; &nbsp; </TD>";
 		$ingroup_detail .= "<TD ALIGN=RIGHT><font class='top_settings_key'>$ingroupdetail &nbsp; </font></TD>";
-		$ingroup_detail .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._QXZ("CALLS TODAY").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $callsTODAY&nbsp; &nbsp; </TD>";
-		$ingroup_detail .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._QXZ("TMA")." 1</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $PCThold_sec_stat_one% &nbsp; &nbsp; </TD>";
-		$ingroup_detail .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._QXZ("Average Hold time for Answered Calls").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $AVGhold_sec_answer_calls &nbsp; </TD>";
-		$ingroup_detail .= "<TD ALIGN=RIGHT><font class='top_settings_key'> &nbsp; "._QXZ("LIVE Inbound Callback Queue Calls").":</font><font class='top_settings_val'>&nbsp; $Dicbq_live &nbsp; </TD>";
+		$ingroup_detail .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._("CALLS TODAY").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $callsTODAY&nbsp; &nbsp; </TD>";
+		$ingroup_detail .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._("TMA")." 1</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $PCThold_sec_stat_one% &nbsp; &nbsp; </TD>";
+		$ingroup_detail .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._("Average Hold time for Answered Calls").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $AVGhold_sec_answer_calls &nbsp; </TD>";
+		$ingroup_detail .= "<TD ALIGN=RIGHT><font class='top_settings_key'> &nbsp; "._("LIVE Inbound Callback Queue Calls").":</font><font class='top_settings_val'>&nbsp; $Dicbq_live &nbsp; </TD>";
 		$ingroup_detail .= "</TR>";
 		$ingroup_detail .= "<TR bgcolor=\"$bgcolor\">";
 		$ingroup_detail .= "<TD ALIGN=RIGHT bgcolor=white><font class='top_settings_val'></TD><TD ALIGN=LEFT><font class='top_settings_val'></TD>";
-		$ingroup_detail .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._QXZ("DROPS TODAY").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $dropsTODAY&nbsp; &nbsp; </TD>";
-		$ingroup_detail .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._QXZ("TMA")." 2:</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $PCThold_sec_stat_two% &nbsp; &nbsp; </TD>";
-		$ingroup_detail .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._QXZ("Average Hold time for Dropped Calls").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $AVGhold_sec_drop_calls &nbsp; </TD>";
+		$ingroup_detail .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._("DROPS TODAY").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $dropsTODAY&nbsp; &nbsp; </TD>";
+		$ingroup_detail .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._("TMA")." 2:</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $PCThold_sec_stat_two% &nbsp; &nbsp; </TD>";
+		$ingroup_detail .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._("Average Hold time for Dropped Calls").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $AVGhold_sec_drop_calls &nbsp; </TD>";
 		$ingroup_detail .= "<TD ALIGN=RIGHT bgcolor=white><font class='top_settings_val'></TD><TD ALIGN=LEFT><font class='top_settings_val'></TD>";
 		$ingroup_detail .= "</TR>";
 		$ingroup_detail .= "<TR bgcolor=\"$bgcolor\">";
 		$ingroup_detail .= "<TD ALIGN=RIGHT bgcolor=white><font class='top_settings_val'></TD><TD ALIGN=LEFT><font class='top_settings_val'></TD>";
-		$ingroup_detail .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._QXZ("ANSWERS TODAY").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $answersTODAY&nbsp; &nbsp; </TD>";
-		$ingroup_detail .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._QXZ("DROP PERCENT").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $drpctTODAY%&nbsp; &nbsp; </TD>";
-		$ingroup_detail .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._QXZ("Average Hold time for All Calls").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $AVGhold_sec_queue_calls &nbsp; </TD>";
+		$ingroup_detail .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._("ANSWERS TODAY").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $answersTODAY&nbsp; &nbsp; </TD>";
+		$ingroup_detail .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._("DROP PERCENT").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $drpctTODAY%&nbsp; &nbsp; </TD>";
+		$ingroup_detail .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._("Average Hold time for All Calls").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $AVGhold_sec_queue_calls &nbsp; </TD>";
 		$ingroup_detail .= "<TD ALIGN=RIGHT bgcolor=white><font class='top_settings_val'></TD><TD ALIGN=LEFT><font class='top_settings_val'></TD>";
 		$ingroup_detail .= "</TR>";
 
@@ -1591,10 +1591,10 @@ if ( ($DROPINGROUPstats > 0) and (!preg_match("/ALL-ACTIVE/",$group_string)) )
 	$drpctTODAY = sprintf("%01.2f", $drpctTODAY);
 
 	$DROPINGROUPstatsHTML .= "<TR BGCOLOR=\"#E6E6E6\">";
-	$DROPINGROUPstatsHTML .= "<TD ALIGN=RIGHT COLSPAN=2><font class='top_settings_key'>"._QXZ("DROP IN-GROUP STATS")." -</font></TD>";
-	$DROPINGROUPstatsHTML .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._QXZ("DROP PERCENT").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $drpctTODAY% &nbsp; &nbsp; </TD>";
-	$DROPINGROUPstatsHTML .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._QXZ("CALLS").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $callsTODAY &nbsp; &nbsp; </TD>";
-	$DROPINGROUPstatsHTML .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._QXZ("DROPS/ANSWERS").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $dropsTODAY / $answersTODAY &nbsp; &nbsp; </TD>";
+	$DROPINGROUPstatsHTML .= "<TD ALIGN=RIGHT COLSPAN=2><font class='top_settings_key'>"._("DROP IN-GROUP STATS")." -</font></TD>";
+	$DROPINGROUPstatsHTML .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._("DROP PERCENT").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $drpctTODAY% &nbsp; &nbsp; </TD>";
+	$DROPINGROUPstatsHTML .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._("CALLS").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $callsTODAY &nbsp; &nbsp; </TD>";
+	$DROPINGROUPstatsHTML .= "<TD ALIGN=RIGHT><font class='top_settings_key'>"._("DROPS/ANSWERS").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $dropsTODAY / $answersTODAY &nbsp; &nbsp; </TD>";
 	$DROPINGROUPstatsHTML .= "</TR>";
 	}
 
@@ -1645,14 +1645,14 @@ if ($CARRIERstats > 0)
 		$CARRIERstatsHTML .= "<TR BGCOLOR=white><TD ALIGN=left COLSPAN=8>";
 		$CARRIERstatsHTML .= "<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0 BGCOLOR=white>";
 		$CARRIERstatsHTML .= "<TR BGCOLOR=\"#E6E6E6\">";
-		$CARRIERstatsHTML .= "<TD ALIGN=LEFT><font class='top_settings_key'>"._QXZ("CARRIER STATS").": &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </font></TD>";
-		$CARRIERstatsHTML .= "<TD ALIGN=LEFT><font class='top_settings_key'>&nbsp; "._QXZ("HANGUP STATUS")." &nbsp; </font></TD>";
-		$CARRIERstatsHTML .= "<TD ALIGN=CENTER><font class='top_settings_key'>&nbsp; "._QXZ("24 HOURS")." &nbsp; </font></TD>";
-		$CARRIERstatsHTML .= "<TD ALIGN=CENTER><font class='top_settings_key'>&nbsp; "._QXZ("6 HOURS")." &nbsp; </font></TD>";
-		$CARRIERstatsHTML .= "<TD ALIGN=CENTER><font class='top_settings_key'>&nbsp; "._QXZ("1 HOUR")." &nbsp; </font></TD>";
-		$CARRIERstatsHTML .= "<TD ALIGN=CENTER><font class='top_settings_key'>&nbsp; "._QXZ("15 MIN")." &nbsp; </font></TD>";
-		$CARRIERstatsHTML .= "<TD ALIGN=CENTER><font class='top_settings_key'>&nbsp; "._QXZ("5 MIN")." &nbsp; </font></TD>";
-		$CARRIERstatsHTML .= "<TD ALIGN=CENTER><font class='top_settings_key'>&nbsp; "._QXZ("1 MIN")." &nbsp; </font></TD>";
+		$CARRIERstatsHTML .= "<TD ALIGN=LEFT><font class='top_settings_key'>"._("CARRIER STATS").": &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </font></TD>";
+		$CARRIERstatsHTML .= "<TD ALIGN=LEFT><font class='top_settings_key'>&nbsp; "._("HANGUP STATUS")." &nbsp; </font></TD>";
+		$CARRIERstatsHTML .= "<TD ALIGN=CENTER><font class='top_settings_key'>&nbsp; "._("24 HOURS")." &nbsp; </font></TD>";
+		$CARRIERstatsHTML .= "<TD ALIGN=CENTER><font class='top_settings_key'>&nbsp; "._("6 HOURS")." &nbsp; </font></TD>";
+		$CARRIERstatsHTML .= "<TD ALIGN=CENTER><font class='top_settings_key'>&nbsp; "._("1 HOUR")." &nbsp; </font></TD>";
+		$CARRIERstatsHTML .= "<TD ALIGN=CENTER><font class='top_settings_key'>&nbsp; "._("15 MIN")." &nbsp; </font></TD>";
+		$CARRIERstatsHTML .= "<TD ALIGN=CENTER><font class='top_settings_key'>&nbsp; "._("5 MIN")." &nbsp; </font></TD>";
+		$CARRIERstatsHTML .= "<TD ALIGN=CENTER><font class='top_settings_key'>&nbsp; "._("1 MIN")." &nbsp; </font></TD>";
 		$CARRIERstatsHTML .= "</TR>";
 
 		if (strlen($dialstatuses) > 1)
@@ -1784,7 +1784,7 @@ if ($CARRIERstats > 0)
 				}
 			$CARRIERstatsHTML .= "<TR>";
 			$CARRIERstatsHTML .= "<TD BGCOLOR=white><font class='top_settings_val'>&nbsp;</TD>";
-			$CARRIERstatsHTML .= "<TD BGCOLOR=\"#E6E6E6\" ALIGN=LEFT><font class='top_settings_key'>&nbsp; &nbsp; "._QXZ("TOTALS")."</font></TD>";
+			$CARRIERstatsHTML .= "<TD BGCOLOR=\"#E6E6E6\" ALIGN=LEFT><font class='top_settings_key'>&nbsp; &nbsp; "._("TOTALS")."</font></TD>";
 			$CARRIERstatsHTML .= "<TD BGCOLOR=\"#E6E6E6\" ALIGN=CENTER><font class='top_settings_key'> ".($TFhour_total+0)."</font> </TD>";
 			$CARRIERstatsHTML .= "<TD BGCOLOR=\"#E6E6E6\" ALIGN=CENTER><font class='top_settings_key'> ".($SIXhour_total+0)."</font> </TD>";
 			$CARRIERstatsHTML .= "<TD BGCOLOR=\"#E6E6E6\" ALIGN=CENTER><font class='top_settings_key'> ".($ONEhour_total+0)."</font> </TD>";
@@ -1796,7 +1796,7 @@ if ($CARRIERstats > 0)
 			}
 		else
 			{
-			$CARRIERstatsHTML .= "<TR><TD BGCOLOR=white colspan=7><font class='top_settings_val'>"._QXZ("no log entries")."</TD></TR>";
+			$CARRIERstatsHTML .= "<TR><TD BGCOLOR=white colspan=7><font class='top_settings_val'>"._("no log entries")."</TD></TR>";
 			}
 		$CARRIERstatsHTML .= "</TABLE>";
 		$CARRIERstatsHTML .= "</TD></TR>";
@@ -1811,9 +1811,9 @@ if ($PRESETstats > 0)
 	$PRESETstatsHTML .= "<TR BGCOLOR=white><TD ALIGN=left COLSPAN=8>";
 	$PRESETstatsHTML .= "<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0 BGCOLOR=white>";
 	$PRESETstatsHTML .= "<TR BGCOLOR=\"#E6E6E6\">";
-	$PRESETstatsHTML .= "<TD ALIGN=LEFT><font class='top_settings_key'> &nbsp; "._QXZ("AGENT DIAL PRESETS").": &nbsp; </font></TD>";
-	$PRESETstatsHTML .= "<TD ALIGN=LEFT><font class='top_settings_key'> &nbsp; "._QXZ("PRESET NAMES")." &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </font></TD>";
-	$PRESETstatsHTML .= "<TD ALIGN=LEFT><font class='top_settings_key'> &nbsp; "._QXZ("CALLS")." &nbsp; </font></TD>";
+	$PRESETstatsHTML .= "<TD ALIGN=LEFT><font class='top_settings_key'> &nbsp; "._("AGENT DIAL PRESETS").": &nbsp; </font></TD>";
+	$PRESETstatsHTML .= "<TD ALIGN=LEFT><font class='top_settings_key'> &nbsp; "._("PRESET NAMES")." &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </font></TD>";
+	$PRESETstatsHTML .= "<TD ALIGN=LEFT><font class='top_settings_key'> &nbsp; "._("CALLS")." &nbsp; </font></TD>";
 	$PRESETstatsHTML .= "</TR>";
 	$stmtB="SELECT preset_name,xfer_count from vicidial_xfer_stats where preset_name!='' and preset_name is not NULL  $group_SQLand order by preset_name;";
 	if ($DB > 0) {echo "\n|$stmtB|\n";}
@@ -1832,7 +1832,7 @@ if ($PRESETstats > 0)
 		}
 	if ($ctp < 1)
 		{
-		$PRESETstatsHTML .= "<TR><TD BGCOLOR=white colspan=2><font class='top_settings_val'>"._QXZ("no log entries")."</TD></TR>";
+		$PRESETstatsHTML .= "<TR><TD BGCOLOR=white colspan=2><font class='top_settings_val'>"._("no log entries")."</TD></TR>";
 		}
 	$PRESETstatsHTML .= "</TABLE>";
 	$PRESETstatsHTML .= "</TD></TR>";
@@ -2261,29 +2261,29 @@ if (preg_match('/O/',$with_inbound))
 	if ( ($report_display_type!='WALL_1') and ($report_display_type!='WALL_2') and ($report_display_type!='WALL_3') and ($report_display_type!='WALL_4') and !$mobile_device)
 		{
 		echo "<BR><table cellpadding=0 cellspacing=0><TR>";
-		echo "<TD ALIGN=RIGHT><font class='top_settings_key'>"._QXZ("CALLS TODAY").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $callsTODAY&nbsp; &nbsp; </TD>";
-		echo "<TD ALIGN=RIGHT><font class='top_settings_key'>"._QXZ("TMA")." 1:</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $PCThold_sec_stat_one% &nbsp; &nbsp; </TD>";
-		echo "<TD ALIGN=RIGHT><font class='top_settings_key'>"._QXZ("Average Hold time for Answered Calls").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $AVGhold_sec_answer_calls &nbsp; </TD>";
-		echo "<TD ALIGN=RIGHT><font class='top_settings_key'> "._QXZ("TIME").":</font> &nbsp; </TD><TD ALIGN=LEFT><font class='top_settings_val'> $NOW_TIME </TD>";
+		echo "<TD ALIGN=RIGHT><font class='top_settings_key'>"._("CALLS TODAY").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $callsTODAY&nbsp; &nbsp; </TD>";
+		echo "<TD ALIGN=RIGHT><font class='top_settings_key'>"._("TMA")." 1:</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $PCThold_sec_stat_one% &nbsp; &nbsp; </TD>";
+		echo "<TD ALIGN=RIGHT><font class='top_settings_key'>"._("Average Hold time for Answered Calls").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $AVGhold_sec_answer_calls &nbsp; </TD>";
+		echo "<TD ALIGN=RIGHT><font class='top_settings_key'> "._("TIME").":</font> &nbsp; </TD><TD ALIGN=LEFT><font class='top_settings_val'> $NOW_TIME </TD>";
 		echo "";
 		echo "</TR>";
 		echo "<TR>";
-		echo "<TD ALIGN=RIGHT><font class='top_settings_key'>"._QXZ("DROPS TODAY").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $dropsTODAY&nbsp; &nbsp; </TD>";
-		echo "<TD ALIGN=RIGHT><font class='top_settings_key'>"._QXZ("TMA")." 2:</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $PCThold_sec_stat_two% &nbsp; &nbsp; </TD>";
-		echo "<TD ALIGN=RIGHT><font class='top_settings_key'>"._QXZ("Average Hold time for Dropped Calls").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $AVGhold_sec_drop_calls &nbsp; </TD>";
+		echo "<TD ALIGN=RIGHT><font class='top_settings_key'>"._("DROPS TODAY").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $dropsTODAY&nbsp; &nbsp; </TD>";
+		echo "<TD ALIGN=RIGHT><font class='top_settings_key'>"._("TMA")." 2:</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $PCThold_sec_stat_two% &nbsp; &nbsp; </TD>";
+		echo "<TD ALIGN=RIGHT><font class='top_settings_key'>"._("Average Hold time for Dropped Calls").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $AVGhold_sec_drop_calls &nbsp; </TD>";
 		echo "<TD ALIGN=RIGHT><font class='top_settings_val'> </TD><TD ALIGN=LEFT><font class='top_settings_val'> </TD>";
 		echo "";
 		echo "</TR>";
 		echo "<TR>";
-		echo "<TD ALIGN=RIGHT><font class='top_settings_key'>"._QXZ("ANSWERS TODAY").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $answersTODAY&nbsp; &nbsp; </TD>";
-		echo "<TD ALIGN=RIGHT COLSPAN=2><font class='top_settings_key'>("._QXZ("Agent non-pause time / Answers").")</font></TD>";
-		echo "<TD ALIGN=RIGHT><font class='top_settings_key'>"._QXZ("Average Hold time for All Calls").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $AVGhold_sec_queue_calls &nbsp; </TD>";
+		echo "<TD ALIGN=RIGHT><font class='top_settings_key'>"._("ANSWERS TODAY").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $answersTODAY&nbsp; &nbsp; </TD>";
+		echo "<TD ALIGN=RIGHT COLSPAN=2><font class='top_settings_key'>("._("Agent non-pause time / Answers").")</font></TD>";
+		echo "<TD ALIGN=RIGHT><font class='top_settings_key'>"._("Average Hold time for All Calls").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $AVGhold_sec_queue_calls &nbsp; </TD>";
 		echo "<TD ALIGN=RIGHT><font class='top_settings_val'> </TD><TD ALIGN=LEFT><font class='top_settings_val'> </TD>";
 		echo "";
 		echo "</TR>";
 		echo "<TR>";
-		echo "<TD ALIGN=RIGHT><font class='top_settings_key'>"._QXZ("DROP PERCENT").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $drpctTODAY%&nbsp; &nbsp; </TD>";
-		echo "<TD ALIGN=RIGHT><font class='top_settings_key'>"._QXZ("PRODUCTIVITY").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $AVG_ANSWERagent_non_pause_sec &nbsp; &nbsp; </TD>";
+		echo "<TD ALIGN=RIGHT><font class='top_settings_key'>"._("DROP PERCENT").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $drpctTODAY%&nbsp; &nbsp; </TD>";
+		echo "<TD ALIGN=RIGHT><font class='top_settings_key'>"._("PRODUCTIVITY").":</font></TD><TD ALIGN=LEFT><font class='top_settings_val'>&nbsp; $AVG_ANSWERagent_non_pause_sec &nbsp; &nbsp; </TD>";
 		echo "<TD ALIGN=RIGHT><font class='top_settings_val'></TD><TD ALIGN=LEFT><font class='top_settings_val'></TD>";
 		echo "<TD ALIGN=RIGHT><font class='top_settings_val'></TD><TD ALIGN=LEFT><font class='top_settings_val'></TD>";
 		echo "";
@@ -2410,7 +2410,8 @@ else
 			$drpctTODAY = sprintf("%01.2f", $drpctTODAY);
 			}
 		}
-
+	$dropsTODAY = sprintf("%01.0f", $dropsTODAY);
+	
 	$diffpctONEMIN = ( MathZDC($diffONEMIN, $agentsONEMIN) * 100);
 	$diffpctONEMIN = sprintf("%01.2f", $diffpctONEMIN);
 
@@ -2432,8 +2433,8 @@ else
 		if ($Lmix_to_print > 0)
 			{
 			$row=mysqli_fetch_row($rslt);
-			$DIALstatuses = _QXZ("List Mix").": $row[0]";
-			$DIALorder =	_QXZ("List Mix").": $row[0]";
+			$DIALstatuses = _("List Mix").": $row[0]";
+			$DIALorder =	_("List Mix").": $row[0]";
 			}
 		}
 	$DIALlev = sprintf("%01.3f", $DIALlev);
@@ -2443,10 +2444,10 @@ else
 	if ( ($report_display_type!='WALL_1') and ($report_display_type!='WALL_2') and ($report_display_type!='WALL_3') and ($report_display_type!='WALL_4') and !$mobile_device)
 		{
 		echo "<BR><table cellpadding=0 cellspacing=0><TR>";
-		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._QXZ("DIAL LEVEL").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $DIALlev&nbsp; &nbsp; </TD>";
-		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._QXZ("TRUNK SHORT/FILL").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $balanceSHORT / $balanceFILL &nbsp; &nbsp; </TD>";
-		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._QXZ("FILTER").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; "._QXZ("$DIALfilter")." &nbsp; </TD>";
-		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\"> "._QXZ("TIME").": &nbsp; </font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\"> $NOW_TIME </TD>";
+		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._("DIAL LEVEL").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $DIALlev&nbsp; &nbsp; </TD>";
+		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._("TRUNK SHORT/FILL").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $balanceSHORT / $balanceFILL &nbsp; &nbsp; </TD>";
+		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._("FILTER").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $DIALfilter &nbsp; </TD>";
+		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\"> "._("TIME").": &nbsp; </font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\"> $NOW_TIME </TD>";
 		echo "";
 		echo "</TR>";
 
@@ -2457,44 +2458,44 @@ else
 				{$min_link='';}
 
 			echo "<TR BGCOLOR=\"#CCCCCC\">";
-			echo "<TD ALIGN=RIGHT>$min_link<font class=\"top_settings_val\">&nbsp; <B>"._QXZ("MAX LEVEL").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $maxDIALlev &nbsp; </TD>";
-			echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._QXZ("DROPPED MAX").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $DROPmax% &nbsp; &nbsp;</TD>";
-			echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._QXZ("TARGET DIFF").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $targetDIFF &nbsp; &nbsp; </TD>";
-			echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._QXZ("INTENSITY").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $ADAintense &nbsp; &nbsp; </TD>";
+			echo "<TD ALIGN=RIGHT>$min_link<font class=\"top_settings_val\">&nbsp; <B>"._("MAX LEVEL").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $maxDIALlev &nbsp; </TD>";
+			echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._("DROPPED MAX").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $DROPmax% &nbsp; &nbsp;</TD>";
+			echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._("TARGET DIFF").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $targetDIFF &nbsp; &nbsp; </TD>";
+			echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._("INTENSITY").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $ADAintense &nbsp; &nbsp; </TD>";
 			echo "</TR>";
 
 			echo "<TR BGCOLOR=\"#CCCCCC\">";
-			echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._QXZ("DIAL TIMEOUT").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $DIALtimeout &nbsp;</TD>";
-			echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._QXZ("TAPER TIME").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $TAPERtime &nbsp;</TD>";
-			echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._QXZ("LOCAL TIME").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $CALLtime &nbsp;</TD>";
-			echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._QXZ("AVAIL ONLY").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $ADAavailonly &nbsp;</TD>";
+			echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._("DIAL TIMEOUT").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $DIALtimeout &nbsp;</TD>";
+			echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._("TAPER TIME").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $TAPERtime &nbsp;</TD>";
+			echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._("LOCAL TIME").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $CALLtime &nbsp;</TD>";
+			echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._("AVAIL ONLY").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $ADAavailonly &nbsp;</TD>";
 			echo "</TR>";
 			}
 
 		echo "<TR>";
-		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._QXZ("DIALABLE LEADS").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $DAleads &nbsp; &nbsp; </TD>";
-		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._QXZ("CALLS TODAY").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $callsTODAY &nbsp; &nbsp; </TD>";
-		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._QXZ("AVG AGENTS").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $agentsONEMIN &nbsp; &nbsp; </TD>";
-		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._QXZ("DIAL METHOD").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; "._QXZ("$DIALmethod")." &nbsp; &nbsp; </TD>";
+		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._("DIALABLE LEADS").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $DAleads &nbsp; &nbsp; </TD>";
+		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._("CALLS TODAY").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $callsTODAY &nbsp; &nbsp; </TD>";
+		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._("AVG AGENTS").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $agentsONEMIN &nbsp; &nbsp; </TD>";
+		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._("DIAL METHOD").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $DIALmethod &nbsp; &nbsp; </TD>";
 		echo "</TR>";
 
 		echo "<TR>";
-		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._QXZ("HOPPER")." <font class=\"top_settings_val\">( "._QXZ("min/auto")." )</font>:</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $HOPlev / $AHOPlev &nbsp; &nbsp; </TD>";
-		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._QXZ("DROPPED")." / $answers_text:</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $dropsTODAY / $answersTODAY &nbsp; </TD>";
-		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._QXZ("DL DIFF").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $diffONEMIN &nbsp; &nbsp; </TD>";
-		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._QXZ("STATUSES").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $DIALstatuses &nbsp; &nbsp; </TD>";
+		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._("HOPPER")." <font class=\"top_settings_val\">( "._("min/auto")." )</font>:</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $HOPlev / $AHOPlev &nbsp; &nbsp; </TD>";
+		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._("DROPPED")." / $answers_text:</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $dropsTODAY / $answersTODAY &nbsp; </TD>";
+		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._("DL DIFF").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $diffONEMIN &nbsp; &nbsp; </TD>";
+		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._("STATUSES").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $DIALstatuses &nbsp; &nbsp; </TD>";
 		echo "</TR>";
 
 		echo "<TR>";
 		if( 1 == count(explode(',' , $group_SQL)))
 			{
-			echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\"><a href=\"./AST_VICIDIAL_hopperlist.php?group=".str_replace("'","",$group_SQL)."\">"._QXZ("LEADS IN HOPPER")."</a>:</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $VDhop &nbsp; &nbsp; </TD>";
+			echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\"><a href=\"./AST_VICIDIAL_hopperlist.php?group=".str_replace("'","",$group_SQL)."\">"._("LEADS IN HOPPER")."</a>:</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $VDhop &nbsp; &nbsp; </TD>";
 			}
 		else
 			{
-			echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._QXZ("LEADS IN HOPPER").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $VDhop &nbsp; &nbsp; </TD>";
+			echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._("LEADS IN HOPPER").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $VDhop &nbsp; &nbsp; </TD>";
 			}
-		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._QXZ("DROPPED PERCENT");
+		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._("DROPPED PERCENT");
 
 		if ( ($SSofcom_uk_drop_calc > 0) and ($UKocDROP == 'Y') )
 			{echo "<font color=blue>(uk)</font>";}
@@ -2512,8 +2513,8 @@ else
 		echo " &nbsp; &nbsp;</font></TD>";
 
 
-		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._QXZ("DIFF").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $diffpctONEMIN% &nbsp; &nbsp; </TD>";
-		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._QXZ("ORDER").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; "._QXZ("$DIALorder")." &nbsp; &nbsp; </TD>";
+		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._("DIFF").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $diffpctONEMIN% &nbsp; &nbsp; </TD>";
+		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._("ORDER").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; "._("$DIALorder")." &nbsp; &nbsp; </TD>";
 		echo "</TR>";
 
 		if ($AGENTtimeSTATS>0)
@@ -2535,10 +2536,10 @@ else
 			$avgacwTODAY = sprintf("%01.0f", $avgacwTODAY);
 
 			echo "<TR>";
-			echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._QXZ("AGENT AVG WAIT").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $avgwaitTODAY &nbsp;</TD>";
-			echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._QXZ("AVG CUSTTIME").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $avgcustTODAY &nbsp;</TD>";
-			echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._QXZ("AVG ACW").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $avgacwTODAY &nbsp;</TD>";
-			echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._QXZ("AVG PAUSE").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $avgpauseTODAY &nbsp;</TD>";
+			echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._("AGENT AVG WAIT").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $avgwaitTODAY &nbsp;</TD>";
+			echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._("AVG CUSTTIME").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $avgcustTODAY &nbsp;</TD>";
+			echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._("AVG ACW").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $avgacwTODAY &nbsp;</TD>";
+			echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._("AVG PAUSE").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $avgpauseTODAY &nbsp;</TD>";
 			echo "</TR>";
 			}
 
@@ -2578,63 +2579,63 @@ if ( ($report_display_type!='WALL_1') and ($report_display_type!='WALL_2') and (
 			{
 			if ($adastats<2)
 				{
-				echo "<a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=2&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class=\"top_settings_val\">+ "._QXZ("VIEW MORE")."</font></a>";
+				echo "<a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=2&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class=\"top_settings_val\">+ "._("VIEW MORE")."</font></a>";
 				}
 			else
 				{
-				echo "<a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=1&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class=\"top_settings_val\">- "._QXZ("VIEW LESS")."</font></a>";
+				echo "<a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=1&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class=\"top_settings_val\">- "._("VIEW LESS")."</font></a>";
 				}
 			}
 		if ($UGdisplay>0)
 			{
-			echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=0&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class=\"top_settings_val\">"._QXZ("HIDE USER GROUP")."</font></a>";
+			echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=0&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class=\"top_settings_val\">"._("HIDE USER GROUP")."</font></a>";
 			}
 		else
 			{
-			echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=1&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class=\"top_settings_val\">"._QXZ("VIEW USER GROUP")."</font></a>";
+			echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=1&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class=\"top_settings_val\">"._("VIEW USER GROUP")."</font></a>";
 			}
 		if ($SERVdisplay>0)
 			{
-			echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=0&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class=\"top_settings_val\">"._QXZ("HIDE SERVER INFO")."</font></a>";
+			echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=0&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class=\"top_settings_val\">"._("HIDE SERVER INFO")."</font></a>";
 			}
 		else
 			{
-			echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=1&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class=\"top_settings_val\">"._QXZ("SHOW SERVER INFO")."</font></a>";
+			echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=1&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class=\"top_settings_val\">"._("SHOW SERVER INFO")."</font></a>";
 			}
 		if ($CALLSdisplay>0)
 			{
-			echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=0&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class=\"top_settings_val\">"._QXZ("HIDE WAITING CALLS")."</font></a>";
+			echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=0&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class=\"top_settings_val\">"._("HIDE WAITING CALLS")."</font></a>";
 			}
 		else
 			{
-			echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=1&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class=\"top_settings_val\">"._QXZ("SHOW WAITING CALLS")."</font></a>";
+			echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=1&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class=\"top_settings_val\">"._("SHOW WAITING CALLS")."</font></a>";
 			}
 
 		if ($ALLINGROUPstats>0)
 			{
-			echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=0&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class=\"top_settings_val\">"._QXZ("HIDE IN-GROUP STATS")."</font></a>";
+			echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=0&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class=\"top_settings_val\">"._("HIDE IN-GROUP STATS")."</font></a>";
 			}
 		else
 			{
-			echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=1&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class=\"top_settings_val\">"._QXZ("SHOW IN-GROUP STATS")."</font></a>";
+			echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=1&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class=\"top_settings_val\">"._("SHOW IN-GROUP STATS")."</font></a>";
 			}
 		if ($PHONEdisplay>0)
 			{
-			echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=0&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class=\"top_settings_val\">"._QXZ("HIDE PHONES")."</font></a>";
+			echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=0&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class=\"top_settings_val\">"._("HIDE PHONES")."</font></a>";
 			}
 		else
 			{
-			echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=1&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class=\"top_settings_val\">"._QXZ("SHOW PHONES")."</font></a>";
+			echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=1&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class=\"top_settings_val\">"._("SHOW PHONES")."</font></a>";
 			}
 		
 		if ($CUSTPHONEdisplay == 0) {
-			echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=1&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class=\"top_settings_val\">"._QXZ("SHOW CUSTPHONES (short)")."</font></a>";
+			echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=1&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class=\"top_settings_val\">"._("SHOW CUSTPHONES (short)")."</font></a>";
 		}
 		if ($CUSTPHONEdisplay == 1) {
-			echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=2&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class=\"top_settings_val\">"._QXZ("SHOW CUSTPHONES (long)")."</font></a>";
+			echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=2&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class=\"top_settings_val\">"._("SHOW CUSTPHONES (long)")."</font></a>";
 		}
 		if ($CUSTPHONEdisplay == 2) {
-			echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=0&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class=\"top_settings_val\">"._QXZ("HIDE CUSTPHONES")."</font></a>";
+			echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=0&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class=\"top_settings_val\">"._("HIDE CUSTPHONES")."</font></a>";
 		}
 		}
 
@@ -2665,8 +2666,8 @@ if ( ($with_inbound != 'O') and ($NOLEADSalert == 'YES') )
 		{
 		echo "<span style=\"position:absolute;left:0px;top:47px;z-index:15;\" id=no_dialable_leads_span>\n";
 		echo "<TABLE class=\"realtime_settings_table\" CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E9E6EE\"><TR><TD ALIGN=CENTER>\n";
-		echo "<BR><BR><BR><BR><a href=\"#\" onclick=\"closeAlert('no_dialable_leads_span');\">"._QXZ("Close Alert")."</a>";
-		echo "<BR><BR><BR><BR><BR><b>"._QXZ("Campaigns with no dialable leads").":<BR><BR>$NDLcampaigns<b><BR>";
+		echo "<BR><BR><BR><BR><a href=\"#\" onclick=\"closeAlert('no_dialable_leads_span');\">"._("Close Alert")."</a>";
+		echo "<BR><BR><BR><BR><BR><b>"._("Campaigns with no dialable leads").":<BR><BR>$NDLcampaigns<b><BR>";
 		echo "<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR> &nbsp; ";
 		echo "</TD></TR></TABLE>\n";
 		echo "</span>\n";
@@ -2895,24 +2896,24 @@ if ($parked_to_print > 0)
 		if ($report_display_type=='WALL_1')
 			{
 			if ($campaign_allow_inbound > 0)
-				{echo "$NFB$out_total$NFE "._QXZ("current active calls")."&nbsp; &nbsp; &nbsp; \n";}
+				{echo "$NFB$out_total$NFE "._("current active calls")."&nbsp; &nbsp; &nbsp; \n";}
 			else
-				{echo "$NFB$out_total$NFE "._QXZ("calls being placed")." &nbsp; &nbsp; &nbsp; \n";}
+				{echo "$NFB$out_total$NFE "._("calls being placed")." &nbsp; &nbsp; &nbsp; \n";}
 
-			echo "$NFB$out_ring$NFE "._QXZ("calls ringing")." &nbsp; &nbsp; &nbsp; &nbsp; \n";
-			echo "$NFB$F &nbsp;$out_live $FG$NFE "._QXZ("calls waiting for agents")." &nbsp; &nbsp; &nbsp; \n";
-			echo "$NFB &nbsp;$in_ivr$NFE "._QXZ("calls in IVR")." &nbsp; &nbsp; &nbsp; \n";
+			echo "$NFB$out_ring$NFE "._("calls ringing")." &nbsp; &nbsp; &nbsp; &nbsp; \n";
+			echo "$NFB$F &nbsp;$out_live $FG$NFE "._("calls waiting for agents")." &nbsp; &nbsp; &nbsp; \n";
+			echo "$NFB &nbsp;$in_ivr$NFE "._("calls in IVR")." &nbsp; &nbsp; &nbsp; \n";
 			}
 		else
 			{
 			if ($campaign_allow_inbound > 0)
-				{echo "$NFB$out_total$NFE "._QXZ("current active calls")."&nbsp; &nbsp; &nbsp; \n";}
+				{echo "$NFB$out_total$NFE "._("current active calls")."&nbsp; &nbsp; &nbsp; \n";}
 			else
-				{echo "$NFB$out_total$NFE "._QXZ("calls being placed")." &nbsp; &nbsp; &nbsp; \n";}
+				{echo "$NFB$out_total$NFE "._("calls being placed")." &nbsp; &nbsp; &nbsp; \n";}
 
-			echo "$NFB$out_ring$NFE "._QXZ("calls ringing")." &nbsp; &nbsp; &nbsp; &nbsp; \n";
-			echo "$NFB$F &nbsp;$out_live $FG$NFE "._QXZ("calls waiting for agents")." &nbsp; &nbsp; &nbsp; \n";
-			echo "$NFB &nbsp;$in_ivr$NFE "._QXZ("calls in IVR")." &nbsp; &nbsp; &nbsp; \n";
+			echo "$NFB$out_ring$NFE "._("calls ringing")." &nbsp; &nbsp; &nbsp; &nbsp; \n";
+			echo "$NFB$F &nbsp;$out_live $FG$NFE "._("calls waiting for agents")." &nbsp; &nbsp; &nbsp; \n";
+			echo "$NFB &nbsp;$in_ivr$NFE "._("calls in IVR")." &nbsp; &nbsp; &nbsp; \n";
 			}
 		}
 	}
@@ -2921,7 +2922,7 @@ else
 	$D_active_calls=0;
 	if ( ($report_display_type!='HTML') and ($report_display_type!='WALL_2') and ($report_display_type!='WALL_3') and ($report_display_type!='WALL_4') )
 		{
-		echo _QXZ(" NO LIVE CALLS WAITING")." \n";
+		echo _(" NO LIVE CALLS WAITING")." \n";
 		}
 	}
 
@@ -2963,7 +2964,7 @@ if ($allow_chats)
 		$D_active_chats=1;
 		if ( ($report_display_type!='HTML') and ($report_display_type!='WALL_2') and ($report_display_type!='WALL_3') and ($report_display_type!='WALL_4') )
 			{
-			echo " &nbsp; &nbsp; &nbsp; $NFB$F &nbsp;$chats_waiting $FG$NFE "._QXZ("chats waiting for agents")." &nbsp; &nbsp; &nbsp; \n";
+			echo " &nbsp; &nbsp; &nbsp; $NFB$F &nbsp;$chats_waiting $FG$NFE "._("chats waiting for agents")." &nbsp; &nbsp; &nbsp; \n";
 			}
 		}
 	else
@@ -2971,7 +2972,7 @@ if ($allow_chats)
 		$D_active_chats=0;
 		if ( ($report_display_type!='HTML') and ($report_display_type!='WALL_2') and ($report_display_type!='WALL_3') and ($report_display_type!='WALL_4') )
 			{
-			echo _QXZ(" NO LIVE CHATS WAITING ")." \n";
+			echo _(" NO LIVE CHATS WAITING ")." \n";
 			}
 		}
 	}
@@ -2997,27 +2998,27 @@ if ( ($report_display_type=='HTML') or ($report_display_type=='WALL_2') )
 	echo "<td align='center' valign='middle' bgcolor='#015b91' rowspan=2><img src=\"images/icon_calls.png\" class='realtime_img_icon'></td>";
 	if ($campaign_allow_inbound > 0)
 		{
-		echo "<td align='center' valign='middle' bgcolor='#015b91'><font class=\"realtime_img_text\">"._QXZ("current active calls")."</font></td>";
+		echo "<td align='center' valign='middle' bgcolor='#015b91'><font class=\"realtime_img_text\">"._("current active calls")."</font></td>";
 		}
 	else
 		{
-		echo "<td align='center' valign='middle' bgcolor='#015b91'><font class=\"realtime_img_text\">"._QXZ("calls being placed")."</font></td>";
+		echo "<td align='center' valign='middle' bgcolor='#015b91'><font class=\"realtime_img_text\">"._("calls being placed")."</font></td>";
 		}
 	echo "<td width=6 rowspan=2> &nbsp; </td>";
 	echo "<td align='center' valign='middle' bgcolor='#015b91' rowspan=2><img src=\"images/icon_ringing.png\" class='realtime_img_icon'></td>";
-	echo "<td align='center' valign='middle' bgcolor='#015b91'><font class=\"realtime_img_text\">"._QXZ("calls ringing")."</font></td>";
+	echo "<td align='center' valign='middle' bgcolor='#015b91'><font class=\"realtime_img_text\">"._("calls ringing")."</font></td>";
 	echo "<td width=6 rowspan=2> &nbsp; </td>";
 	echo "<td align='center' valign='middle' bgcolor='#015b91' rowspan=2><img src=\"images/icon_callswaiting.png\" class='realtime_img_icon'></td>";
-	echo "<td align='center' valign='middle' bgcolor='#015b91'><font class=\"realtime_img_text\">"._QXZ("calls waiting for agents")."</font></td>";
+	echo "<td align='center' valign='middle' bgcolor='#015b91'><font class=\"realtime_img_text\">"._("calls waiting for agents")."</font></td>";
 	echo "<td width=6 rowspan=2> &nbsp; </td>";
 	echo "<td align='center' valign='middle' bgcolor='#015b91' rowspan=2><img src=\"images/icon_callsinivr.png\" class='realtime_img_icon'></td>";
-	echo "<td align='center' valign='middle' bgcolor='#015b91'><font class=\"realtime_img_text\">"._QXZ("calls in IVR")."</font></td>";
+	echo "<td align='center' valign='middle' bgcolor='#015b91'><font class=\"realtime_img_text\">"._("calls in IVR")."</font></td>";
 	echo "<td width=6 rowspan=2> &nbsp; </td>";
 
 	if ($allow_chats)
 		{
 		echo "<td align='center' valign='middle' bgcolor='#015b91' rowspan=2><img src=\"images/icon_chatswaiting.png\" class='realtime_img_icon'></td>";
-		echo "<td align='center' valign='middle' bgcolor='#015b91'><font class=\"realtime_img_text\">"._QXZ("chats waiting for agents")."</font></td>";
+		echo "<td align='center' valign='middle' bgcolor='#015b91'><font class=\"realtime_img_text\">"._("chats waiting for agents")."</font></td>";
 		}
 	else
 		{
@@ -3029,7 +3030,7 @@ if ( ($report_display_type=='HTML') or ($report_display_type=='WALL_2') )
 
 	echo "<td width=6 rowspan=2> &nbsp; </td>";
 	echo "<td align='center' valign='middle' bgcolor='#015b91' rowspan=2><img src=\"images/icon_callswaiting.png\" class='realtime_img_icon'></td>";
-	echo "<td align='center' valign='middle' bgcolor='#015b91'><font class=\"realtime_img_text\">"._QXZ("callback queue calls")."</font></td>";
+	echo "<td align='center' valign='middle' bgcolor='#015b91'><font class=\"realtime_img_text\">"._("callback queue calls")."</font></td>";
 
 	echo "</tr>";
 	echo "<tr>";
@@ -3073,14 +3074,14 @@ if ( ($report_display_type=='HTML') or ($report_display_type=='WALL_2') )
 ###################################################################################
 $agentonlyheader = '';
 if ($agentonlycount > 0)
-	{$agentonlyheader = _QXZ("AGENTONLY");}
+	{$agentonlyheader = _("AGENTONLY");}
 
 if ($report_display_type=='TEXT')
 	{
 	$Cecho = '';
 	$Cecho .= "VICIDIAL: Calls Waiting                      $NOW_TIME\n";
 	$Cecho .= "+---------+----------------------+--------------+-----------------+---------+------------+----------+\n";
-	$Cecho .= "| "._QXZ("STATUS",7)." | "._QXZ("CAMPAIGN",20)." | "._QXZ("PHONE NUMBER",12)." | "._QXZ("SERVER IP",15)." | "._QXZ("DIALTIME",8)."| "._QXZ("CALL TYPE",10)." | "._QXZ("PRIORITY",8)." | $agentonlyheader\n";
+	$Cecho .= "| "._("STATUS",7)." | "._("CAMPAIGN",20)." | "._("PHONE NUMBER",12)." | "._("SERVER IP",15)." | "._("DIALTIME",8)."| "._("CALL TYPE",10)." | "._("PRIORITY",8)." | $agentonlyheader\n";
 	$Cecho .= "+---------+----------------------+--------------+-----------------+---------+------------+----------+\n";
 	}
 if ($report_display_type=='HTML')
@@ -3088,17 +3089,17 @@ if ($report_display_type=='HTML')
 	$Cecho = '';
 	$Cecho .= "<table cellpadding=1 cellspacing=1 border=0 width=680>";
 	$Cecho .= "<tr>";
-	$Cecho .= "<td colspan=5><font class='top_head_key'>&nbsp;"._QXZ("Calls Waiting").":</font></td>";
+	$Cecho .= "<td colspan=5><font class='top_head_key'>&nbsp;"._("Calls Waiting").":</font></td>";
 	$Cecho .= "<td colspan=2><font class='top_head_val'>$NOW_TIME</font></td>";
 	$Cecho .= "</tr>\n";
 	$Cecho .= "<tr bgcolor='#C6C6C6'>";
-	$Cecho .= "<td NOWRAP><font class='top_head_key'>&nbsp; "._QXZ("STATUS")." </font></td>";
-	$Cecho .= "<td NOWRAP><font class='top_head_key'>&nbsp; "._QXZ("CAMPAIGN")." </font></td>";
-	$Cecho .= "<td NOWRAP><font class='top_head_key'>&nbsp; "._QXZ("PHONE NUMBER")." </font></td>";
-	$Cecho .= "<td NOWRAP><font class='top_head_key'>&nbsp; "._QXZ("SERVER IP")." </font></td>";
-	$Cecho .= "<td NOWRAP><font class='top_head_key'>&nbsp; "._QXZ("DIALTIME")." </font></td>";
-	$Cecho .= "<td NOWRAP><font class='top_head_key'>&nbsp; "._QXZ("CALL TYPE")." </font></td>";
-	$Cecho .= "<td NOWRAP><font class='top_head_key'>&nbsp; "._QXZ("PRIORITY")." </font></td>";
+	$Cecho .= "<td NOWRAP><font class='top_head_key'>&nbsp; "._("STATUS")." </font></td>";
+	$Cecho .= "<td NOWRAP><font class='top_head_key'>&nbsp; "._("CAMPAIGN")." </font></td>";
+	$Cecho .= "<td NOWRAP><font class='top_head_key'>&nbsp; "._("PHONE NUMBER")." </font></td>";
+	$Cecho .= "<td NOWRAP><font class='top_head_key'>&nbsp; "._("SERVER IP")." </font></td>";
+	$Cecho .= "<td NOWRAP><font class='top_head_key'>&nbsp; "._("DIALTIME")." </font></td>";
+	$Cecho .= "<td NOWRAP><font class='top_head_key'>&nbsp; "._("CALL TYPE")." </font></td>";
+	$Cecho .= "<td NOWRAP><font class='top_head_key'>&nbsp; "._("PRIORITY")." </font></td>";
 	$Cecho .= "<td NOWRAP>$agentonlyheader</td>";
 	$Cecho .= "</tr>\n";
 	}
@@ -3106,11 +3107,11 @@ if ($report_display_type=='HTML')
 $p=0;
 while($p<$k)
 	{
-	$Cstatus =			sprintf("%-7s", _QXZ("$CDstatus[$p]",6)); #TRANSLATE
+	$Cstatus =			sprintf("%-7s", _("$CDstatus[$p]"),6); #TRANSLATE
 	$Ccampaign_id =		sprintf("%-20s", $CDcampaign_id[$p]); # Do not translate
 	$Cphone_number =	sprintf("%-12s", $CDphone_number[$p]); # Do not translate
 	$Cserver_ip =		sprintf("%-15s", $CDserver_ip[$p]); # Do not translate
-	$Ccall_type =		sprintf("%-10s", _QXZ("$CDcall_type[$p]",10)); #TRANSLATE
+	$Ccall_type =		sprintf("%-10s", _("$CDcall_type[$p]")); #TRANSLATE
 	$Cqueue_priority =	sprintf("%8s", $CDqueue_priority[$p]); # Do not translate
 	$Cagent_only =		sprintf("%8s", $CDagent_only[$p]);
 
@@ -3197,7 +3198,7 @@ if ($campaignord=='campaignup') {$campaignord='campaigndown';}
 if ($report_display_type=='TEXT')
 	{
 	$Aecho = '';
-	$Aecho .= ""._QXZ("Agents Time On Calls Campaign").": $group_string            $NOW_TIME\n";
+	$Aecho .= ""._("Agents Time On Calls Campaign").": $group_string            $NOW_TIME\n";
 	}
 if ($report_display_type=='HTML')
 	{
@@ -3205,18 +3206,18 @@ if ($report_display_type=='HTML')
 	$Aecho = "<table><tr style=\"vertical-align:top\"><td>" .PHP_EOL; 
 	$Aecho .= "<table cellpadding=1 cellspacing=1 border=0 class='realtime_table'>";
 	$Aecho .= "<tr>";
-	$Aecho .= "<td colspan=4><font class='top_head_key'>&nbsp;"._QXZ("Agents Time On Calls Campaign").":</font></td>";
+	$Aecho .= "<td colspan=4><font class='top_head_key'>&nbsp;"._("Agents Time On Calls Campaign").":</font></td>";
 	$Aecho .= "<td colspan=3><font class='top_settings_val'>&nbsp;</font></td>";
 	$Aecho .= "<td colspan=4><font class='top_head_val'>$NOW_TIME\n</font></td>";
 	$Aecho .= "</tr>\n";
 #	$Aecho .= "<tr bgcolor='#C6C6C6'>";
-#	$Aecho .= "<td><font class='top_head_key'>"._QXZ("STATUS")."</font></td>";
-#	$Aecho .= "<td><font class='top_head_key'>"._QXZ("CAMPAIGN")."</font></td>";
-#	$Aecho .= "<td><font class='top_head_key'>"._QXZ("PHONE NUMBER")."</font></td>";
-#	$Aecho .= "<td><font class='top_head_key'>"._QXZ("SERVER IP")."</font></td>";
-#	$Aecho .= "<td><font class='top_head_key'>"._QXZ("DIALTIME")."</font></td>";
-#	$Aecho .= "<td><font class='top_head_key'>"._QXZ("CALL TYPE")."</font></td>";
-#	$Aecho .= "<td><font class='top_head_key'>"._QXZ("PRIORITY")."</font></td>";
+#	$Aecho .= "<td><font class='top_head_key'>"._("STATUS")."</font></td>";
+#	$Aecho .= "<td><font class='top_head_key'>"._("CAMPAIGN")."</font></td>";
+#	$Aecho .= "<td><font class='top_head_key'>"._("PHONE NUMBER")."</font></td>";
+#	$Aecho .= "<td><font class='top_head_key'>"._("SERVER IP")."</font></td>";
+#	$Aecho .= "<td><font class='top_head_key'>"._("DIALTIME")."</font></td>";
+#	$Aecho .= "<td><font class='top_head_key'>"._("CALL TYPE")."</font></td>";
+#	$Aecho .= "<td><font class='top_head_key'>"._("PRIORITY")."</font></td>";
 #	$Aecho .= "<td>$agentonlyheader</td>";
 #	$Aecho .= "</tr>\n";
 	}
@@ -3228,82 +3229,82 @@ if ($report_display_type=='HTML')
 	$HDbegin =			"";
 	$HTbegin =			"<tr bgcolor='#C6C6C6'>";
 	$HDstation =		"";
-	$HTstation =		"<td NOWRAP><font class='top_head_key'>&nbsp; "._QXZ("STATION")." </td>";
+	$HTstation =		"<td NOWRAP><font class='top_head_key'>&nbsp; "._("STATION")." </td>";
 	$HDphone =		"";
-	$HTphone =		"<td NOWRAP>&nbsp;<a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$phoneord&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class='top_head_key'>"._QXZ("PHONE")."</a>&nbsp;</td>";
+	$HTphone =		"<td NOWRAP>&nbsp;<a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$phoneord&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class='top_head_key'>"._("PHONE")."</a>&nbsp;</td>";
 	if ($RTajax > 0)
-		{$HTphone =		"<td NOWRAP>&nbsp;<a href=\"#\" onclick=\"update_variables('orderby','phone');\"><font class='top_head_key'>"._QXZ("PHONE")."</a>&nbsp;</td>";}
+		{$HTphone =		"<td NOWRAP>&nbsp;<a href=\"#\" onclick=\"update_variables('orderby','phone');\"><font class='top_head_key'>"._("PHONE")."</a>&nbsp;</td>";}
 	$HDuser =			"";
 
-	$HTuser =			"<td NOWRAP>&nbsp;<a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$userord&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class='top_head_key'>"._QXZ("USER")."</a> ";
+	$HTuser =			"<td NOWRAP>&nbsp;<a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$userord&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class='top_head_key'>"._("USER")."</a> ";
 	if ($RTajax > 0)
-		{$HTuser =	"<td NOWRAP>&nbsp;<a href=\"#\" onclick=\"update_variables('orderby','user');\"><font class='top_head_key'>&nbsp; "._QXZ("USER")."</a> ";}
+		{$HTuser =	"<td NOWRAP>&nbsp;<a href=\"#\" onclick=\"update_variables('orderby','user');\"><font class='top_head_key'>"._("USER")."</a> ";}
 	if ($UidORname>0)
 		{
 		if ($RTajax > 0)
-			{$HTuser .=	"&nbsp;<a href=\"#\" onclick=\"update_variables('UidORname','');\"><font class='top_head_key'>"._QXZ("SHOW ID")."</a> ";}
+			{$HTuser .=	"&nbsp;<a href=\"#\" onclick=\"update_variables('UidORname','');\"><font class='top_head_key'>"._("SHOW ID")."</a> ";}
 		else
 			{
-			$HTuser .= "&nbsp;<a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=0&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class='top_head_key'>"._QXZ("SHOW ID")."</a> ";
+			$HTuser .= "&nbsp;<a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=0&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class='top_head_key'>"._("SHOW ID")."</a> ";
 			}
 		}
 	else
 		{
 		if (isset($RTajax) and $RTajax > 0)
-			{$HTuser .=	"&nbsp;<a href=\"#\" onclick=\"update_variables('UidORname','');\"><font class='top_head_key'>"._QXZ("SHOW NAME")."</a> ";}
+			{$HTuser .=	"&nbsp;<a href=\"#\" onclick=\"update_variables('UidORname','');\"><font class='top_head_key'>"._("SHOW NAME")."</a> ";}
 		else
 			{
-			$HTuser .= "&nbsp; <a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=1&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class='top_head_key'>"._QXZ("SHOW NAME")."</a> ";
+			$HTuser .= "&nbsp; <a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=1&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class='top_head_key'>"._("SHOW NAME")."</a> ";
 			}
 		}
-	$HTuser .= "&nbsp;<font class='top_head_key'>"._QXZ("INFO",6)."&nbsp;</td>";
+	$HTuser .= "&nbsp;<font class='top_head_key'>"._("INFO",6)."&nbsp;</td>";
 
 	$HDusergroup =		"";
-	$HTusergroup =		"<td NOWRAP>&nbsp;<a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$groupord&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class='top_head_key'>"._QXZ("USER GROUP")."</a>&nbsp;</td>";
+	$HTusergroup =		"<td NOWRAP>&nbsp;<a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$groupord&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class='top_head_key'>"._("USER GROUP")."</a>&nbsp;</td>";
 	if ($RTajax > 0)
-		{$HTusergroup =	"<td NOWRAP>&nbsp;<a href=\"#\" onclick=\"update_variables('orderby','group');\"><font class='top_head_key'>"._QXZ("USER GROUP")."</a>&nbsp;</td>";}
+		{$HTusergroup =	"<td NOWRAP>&nbsp;<a href=\"#\" onclick=\"update_variables('orderby','group');\"><font class='top_head_key'>"._("USER GROUP")."</a>&nbsp;</td>";}
 	$HDsessionid =		"";
-	$HTsessionid =		"<td NOWRAP><font class='top_head_key'>&nbsp; "._QXZ("SESSIONID")." </td>";
+	$HTsessionid =		"<td NOWRAP><font class='top_head_key'>&nbsp; "._("SESSIONID")." </td>";
  	$HDlisten =			"";
- 	$HTlisten =			"<td NOWRAP><font class='top_head_key'>&nbsp; "._QXZ("LISTEN")." </td>";
+ 	$HTlisten =			"<td NOWRAP><font class='top_head_key'>&nbsp; "._("LISTEN")." </td>";
 	$HDbarge =			"";
-	$HTbarge =			"<td NOWRAP><font class='top_head_key'>&nbsp; "._QXZ("BARGE")." </td>";
+	$HTbarge =			"<td NOWRAP><font class='top_head_key'>&nbsp; "._("BARGE")." </td>";
 	$HDwhisper =		"";
-	$HTwhisper =		"<td NOWRAP><font class='top_head_key'>&nbsp; "._QXZ("WHISPER")." </td>";
+	$HTwhisper =		"<td NOWRAP><font class='top_head_key'>&nbsp; "._("WHISPER")." </td>";
 	$HDstatus =			"";
-	$HTstatus =			"<td NOWRAP><font class='top_head_key'>&nbsp; "._QXZ("STATUS")." </td><td><font class='top_head_key'>&nbsp;</td>";
+	$HTstatus =			"<td NOWRAP><font class='top_head_key'>&nbsp; "._("STATUS")." </td><td><font class='top_head_key'>&nbsp;</td>";
 	$HDcustphone =		"";
-	$HTcustphone =		"<td NOWRAP><font class='top_head_key'>&nbsp; "._QXZ("CUST PHONE")." </td>";
+	$HTcustphone =		"<td NOWRAP><font class='top_head_key'>&nbsp; "._("CUST PHONE")." </td>";
 	$HDserver_ip =		"";
-	$HTserver_ip =		"<td NOWRAP><font class='top_head_key'>&nbsp; "._QXZ("SERVER IP")." </td>";
+	$HTserver_ip =		"<td NOWRAP><font class='top_head_key'>&nbsp; "._("SERVER IP")." </td>";
 	$HDcall_server_ip =	"";
-	$HTcall_server_ip =	"<td NOWRAP><font class='top_head_key'>&nbsp; "._QXZ("CALL SERVER IP")." </td>";
+	$HTcall_server_ip =	"<td NOWRAP><font class='top_head_key'>&nbsp; "._("CALL SERVER IP")." </td>";
 	$HDtime =			"";
 	$HTtime =			"<td NOWRAP>&nbsp;<a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$timeord&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class='top_head_key'>MM:SS</a>&nbsp;</td>";
 	if ($RTajax > 0)
 		{$HTtime =	"<td NOWRAP>&nbsp;<a href=\"#\" onclick=\"update_variables('orderby','time');\"><font class='top_head_key'>MM:SS</a>&nbsp;</td>";}
 	$HDcampaign =		"";
-	$HTcampaign =		"<td NOWRAP>&nbsp;<a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$campaignord&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class='top_head_key'>"._QXZ("CAMPAIGN")."</a>&nbsp;</td>";
+	$HTcampaign =		"<td NOWRAP>&nbsp;<a href=\"$PHP_SELF?$usergroupQS$groupQS$ingroupQS&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$campaignord&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal&report_display_type=$report_display_type\"><font class='top_head_key'>"._("CAMPAIGN")."</a>&nbsp;</td>";
 	if ($RTajax > 0)
-		{$HTcampaign =	"<td NOWRAP>&nbsp;<a href=\"#\" onclick=\"update_variables('orderby','campaign');\"><font class='top_head_key'>"._QXZ("CAMPAIGN",10)."</a>&nbsp;</td>";}
+		{$HTcampaign =	"<td NOWRAP>&nbsp;<a href=\"#\" onclick=\"update_variables('orderby','campaign');\"><font class='top_head_key'>"._("CAMPAIGN")."</a>&nbsp;</td>";}
 	$HDcalls =			"";
-	$HTcalls =			"<td NOWRAP><font class='top_head_key'>&nbsp; "._QXZ("CALLS")." </td>";
+	$HTcalls =			"<td NOWRAP><font class='top_head_key'>&nbsp; "._("CALLS")." </td>";
 	$HDpause =	'';
 	$HTpause =	'';
 	$HDigcall =			"";
-	$HTigcall =			"<td NOWRAP><font class='top_head_key'>&nbsp; "._QXZ("HOLD")." </td><td NOWRAP><font class='top_head_key'>&nbsp; "._QXZ("IN-GROUP",8)." </td></tr>";
+	$HTigcall =			"<td NOWRAP><font class='top_head_key'>&nbsp; "._("HOLD")." </td><td NOWRAP><font class='top_head_key'>&nbsp; "._("IN-GROUP")." </td></tr>";
 
 	if ($agent_pause_codes_active > 0)
 		{
 		$HDstatus =			"";
-		$HTstatus =			"<td NOWRAP><font class='top_head_key'>&nbsp; "._QXZ("STATUS")." </td><td><font class='top_head_key'>&nbsp;</td>";
+		$HTstatus =			"<td NOWRAP><font class='top_head_key'>&nbsp; "._("STATUS")." </td><td><font class='top_head_key'>&nbsp;</td>";
 		$HDpause =			"";
-		$HTpause =			"<td NOWRAP><font class='top_head_key'>&nbsp; "._QXZ("PAUSE")." </td>";
+		$HTpause =			"<td NOWRAP><font class='top_head_key'>&nbsp; "._("PAUSE")." </td>";
 		}
 	if ( ($SIPmonitorLINK<1) and ($IAXmonitorLINK<1) and (!preg_match("/MONITOR|BARGE|WHISPER/",$monitor_active) ) )
 		{
 		$HDsessionid =	"";
-		$HTsessionid =	"<td NOWRAP><font class='top_head_key'>&nbsp; "._QXZ("SESSIONID")." </td>";
+		$HTsessionid =	"<td NOWRAP><font class='top_head_key'>&nbsp; "._("SESSIONID")." </td>";
 		}
 	##### END HTML Output generation #####
 	}
@@ -3420,7 +3421,7 @@ $Ahold=array();
 
 #$stmt="SELECT extension,vicidial_live_agents.user,conf_exten,vicidial_live_agents.status,vicidial_live_agents.server_ip,UNIX_TIMESTAMP(last_call_time),UNIX_TIMESTAMP(last_call_finish),call_server_ip,vicidial_live_agents.campaign_id,vicidial_users.user_group,vicidial_users.full_name,vicidial_live_agents.comments,vicidial_live_agents.calls_today,vicidial_live_agents.callerid,lead_id,UNIX_TIMESTAMP(last_state_change),on_hook_agent,ring_callerid,agent_log_id,vicidial_live_agents.on_hook_saved_status  from vicidial_live_agents,vicidial_users where vicidial_live_agents.user=vicidial_users.user and vicidial_users.user_hide_realtime='0' $UgroupSQL $usergroupSQL $user_group_filter_SQL order by $orderSQL;";
 #$UgroupSQL = "1 ";
-$stmt = "SELECT * FROM `SNCT_Live` WHERE $UgroupSQL $usergroupSQL $user_group_filter_SQL ORDER BY `SortStatus` DESC, `Time` DESC";
+$stmt = "SELECT * FROM `snctdialer-live` WHERE $UgroupSQL $usergroupSQL $user_group_filter_SQL ORDER BY `SortStatus` DESC, `Time` DESC";
 #{echo "$stmt\n";}
 $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {echo "$stmt\n";}
@@ -3636,24 +3637,13 @@ if ($talking_to_print > 0)
 	#			$status =		' DISPO';
 	#			}
 #			}
-		if ($non_latin < 1)
-			{
 			$extension = preg_replace('/Local\//i', '',$Aextension[$i]);
-			if ($report_display_type!='HTML')
-				{
-				$extension =		sprintf("%-14s", $extension);
-				while(strlen($extension)>14) {$extension = substr("$extension", 0, -1);}
-				}
-			}
-		else
-			{
-				$extension = preg_replace('/Local\//i', '',$Aextension[$i]);
-				$extension = $Aextension[$j];
-#				echo $extension ."|".$Aextension[$j] . PHP_EOL;
-			if ($report_display_type!='HTML')
-				{
+			$extension = $Aextension[$j];
+#			echo $extension ."|".$Aextension[$j] . PHP_EOL;
+			if ($report_display_type!='HTML') {
 				$extension =		sprintf("%-48s", $extension);
-				while(mb_strlen($extension, 'utf-8')>14) {$extension = mb_substr("$extension", 0, -1,'UTF8');}
+				while(mb_strlen($extension, 'utf-8')>14) {
+					$extension = mb_substr("$extension", 0, -1,'UTF8');
 				}
 			}
 
@@ -3775,44 +3765,18 @@ if ($talking_to_print > 0)
 		$CM = $Asubstatus[$j];
 		$Lstatus = $Astatus[$j];
 
-		if ($UGdisplay > 0)
-			{
-			if ($non_latin < 1)
-				{
-				$user_group =		sprintf("%-12s", $Auser_group[$i]);
-				if ($report_display_type!='HTML')
-					{
-					while(strlen($user_group)>12) {$user_group = substr("$user_group", 0, -1);}
-					}
-				}
-			else
-				{
-				$user_group =		sprintf("%-40s", $Auser_group[$j]);
-				if ($report_display_type!='HTML')
-					{
-					while(mb_strlen($user_group, 'utf-8')>12) {$user_group = mb_substr("$user_group", 0, -1,'UTF8');}
-					}
-				}
+		if ($UGdisplay > 0) {
+			$user_group =		sprintf("%-40s", $Auser_group[$j]);
+			if ($report_display_type!='HTML') {
+				while(mb_strlen($user_group, 'utf-8')>12) {$user_group = mb_substr("$user_group", 0, -1,'UTF8');}
 			}
-		if ($UidORname > 0)
-			{
-			if ($non_latin < 1)
-				{
-				$user =		sprintf("%-20s", $Afull_name[$j]);
-				if ($report_display_type!='HTML')
-					{
-					while(strlen($user)>20) {$user = substr("$user", 0, -1);}
-					}
-				}
-			else
-				{
-				$user =		sprintf("%-60s", $Afull_name[$j]);
-				if ($report_display_type!='HTML')
-					{
-					while(mb_strlen($user, 'utf-8')>20) {$user = mb_substr("$user", 0, -1,'UTF8');}
-					}
-				}
+		}
+		if ($UidORname > 0) {
+			$user =		sprintf("%-60s", $Afull_name[$j]);
+			if ($report_display_type!='HTML') {
+				while(mb_strlen($user, 'utf-8')>20) {$user = mb_substr("$user", 0, -1,'UTF8');}
 			}
+		}
 		if (!preg_match("/INCALL|DIAL|QUEUE|PARK|3-WAY/i",$Astatus[$i]))
 			{$call_time_S = ($STARTtime - $Astate_change[$i]);}
 		else if (preg_match("/3-WAY/i",$Astatus[$i]))
@@ -3850,7 +3814,7 @@ if ($talking_to_print > 0)
 				{
 				$agent_dead++;  $agent_total++;
 				$G = '<SPAN class="blank">'; $EG = '</SPAN>'; $tr_class='TRblank';
-				if ($call_time_S >= 10) {$G='<SPAN class="black"><B>'; $EG='</B></SPAN>'; $tr_class='TRblack';}
+				$G='<SPAN class="black"><B>'; $EG='</B></SPAN>'; $tr_class='TRblack';
 				}
 			}
 		if ($Lstatus=='DISPO')
@@ -3948,14 +3912,14 @@ if ($talking_to_print > 0)
 
 		if ($report_display_type=='TEXT')
 			{
-			if ($SIPmonitorLINK>0) {$L=" | <a href=\"sip:0$Lsessionid@$server_ip\">"._QXZ("LISTEN",6)."</a>";   $R='';}
-			if ($IAXmonitorLINK>0) {$L=" | <a href=\"iax:0$Lsessionid@$server_ip\">"._QXZ("LISTEN",6)."</a>";   $R='';}
-			if ($SIPmonitorLINK>1) {$R=" | <a href=\"sip:$Lsessionid@$server_ip\">"._QXZ("BARGE",5)."</a>";}
+			if ($SIPmonitorLINK>0) {$L=" | <a href=\"sip:0$Lsessionid@$server_ip\">"._("LISTEN",6)."</a>";   $R='';}
+			if ($IAXmonitorLINK>0) {$L=" | <a href=\"iax:0$Lsessionid@$server_ip\">"._("LISTEN",6)."</a>";   $R='';}
+			if ($SIPmonitorLINK>1) {$R=" | <a href=\"sip:$Lsessionid@$server_ip\">"._("BARGE",5)."</a>";}
 			if ($IAXmonitorLINK>1) {$R=" | <a href=\"iax:$Lsessionid@$server_ip\">BARGE</a>";}
 			if ( (strlen($monitor_phone)>1) and (preg_match("/MONITOR|BARGE|WHISPER/",$monitor_active) ) and (preg_match("/MONITOR/",$RS_ListenBarge) ) )
-				{$L=" | <a href=\"javascript:send_monitor('$Lsessionid','$Lserver_ip','MONITOR');\">"._QXZ("LISTEN",6)."</a>";   $R='';}
+				{$L=" | <a href=\"javascript:send_monitor('$Lsessionid','$Lserver_ip','MONITOR');\">"._("LISTEN")."</a>";   $R='';}
 			if ( (strlen($monitor_phone)>1) and (preg_match("/BARGE|WHISPER/",$monitor_active) ) and (preg_match("/BARGE/",$RS_ListenBarge) ) )
-				{$R=" | <a href=\"javascript:send_monitor('$Lsessionid','$Lserver_ip','BARGE');\">"._QXZ("BARGE",5)."</a>";}
+				{$R=" | <a href=\"javascript:send_monitor('$Lsessionid','$Lserver_ip','BARGE');\">"._("BARGE",5)."</a>";}
 			if ($SIPmonitorLINK>1) {$R=" | <a href=\"sip:47378218$Lsessionid@$server_ip\">WHISPER</a>";}
 			if ($IAXmonitorLINK>1) {$R=" | <a href=\"iax:47378218$Lsessionid@$server_ip\">WHISPER</a>";}
 			if ( (strlen($monitor_phone)>1) and (preg_match("/WHISPER/",$monitor_active) ) and (preg_match("/WHISPER/",$RS_ListenBarge) ) )
@@ -3992,11 +3956,11 @@ if ($talking_to_print > 0)
 				{
 				if ($realtime_block_user_info > 0)
 					{
-					$Aecho .= "|$UGD $G$sessionid$EG$L$R$Aring_note[$i]| $G"._QXZ("$status",6)."$EG $Asubstatus[$j] $pausecode|$CP$SVD$G$call_time_MS$EG | $G$campaign_id$EG | $G$calls_today$EG |$INGRP\n";
+					$Aecho .= "|$UGD $G$sessionid$EG$L$R$Aring_note[$i]| $G"._("$status",6)."$EG $Asubstatus[$j] $pausecode|$CP$SVD$G$call_time_MS$EG | $G$campaign_id$EG | $G$calls_today$EG |$INGRP\n";
 					}
 				if ($realtime_block_user_info < 1)
 					{
-					$Aecho .= "| $G$extension$EG$Aring_note[$i]|$phoneD<a href=\"./user_status.php?user=$Luser\" target=\"_blank\">$G$user$EG</a> <a href=\"javascript:ingroup_info('$Luser','$j');\">+</a> |$UGD $G$sessionid$EG$L$R | $G"._QXZ("$status",6)."$EG $$Asubstatus[$j] $pausecode|$CP$SVD$G$call_time_MS$EG | $G$campaign_id$EG | $G$calls_today$EG |$INGRP\n";
+					$Aecho .= "| $G$extension$EG$Aring_note[$i]|$phoneD<a href=\"./user_status.php?user=$Luser\" target=\"_blank\">$G$user$EG</a> <a href=\"javascript:ingroup_info('$Luser','$j');\">+</a> |$UGD $G$sessionid$EG$L$R | $G"._("$status",6)."$EG $$Asubstatus[$j] $pausecode|$CP$SVD$G$call_time_MS$EG | $G$campaign_id$EG | $G$calls_today$EG |$INGRP\n";
 					}
 				}
 
@@ -4004,18 +3968,18 @@ if ($talking_to_print > 0)
 		if ($report_display_type=='HTML')
 			{
 			$G = preg_replace("/SPAN class=\"/",'SPAN class="H',$G);
-			if ($SIPmonitorLINK>0) {$L="<td NOWRAP align=center> <a href=\"sip:0$Lsessionid@$server_ip\">"._QXZ("LISTEN")."</a></td>";   $R='';}
-			if ($IAXmonitorLINK>0) {$L="<td NOWRAP align=center> <a href=\"iax:0$Lsessionid@$server_ip\">"._QXZ("LISTEN")."</a></td>";   $R='';}
-			if ($SIPmonitorLINK>1) {$R=" <td NOWRAP align=center> <a href=\"sip:$Lsessionid@$server_ip\">"._QXZ("BARGE")."</a></td>";}
-			if ($IAXmonitorLINK>1) {$R=" <td NOWRAP align=center> <a href=\"iax:$Lsessionid@$server_ip\">BARGE</a></td>";}
+			if ($SIPmonitorLINK>0) {$L="<td NOWRAP align=center> <a href=\"sip:0$Lsessionid@$server_ip\">"._("LISTEN")."</a></td>";   $R='';}
+			if ($IAXmonitorLINK>0) {$L="<td NOWRAP align=center> <a href=\"iax:0$Lsessionid@$server_ip\">"._("LISTEN")."</a></td>";   $R='';}
+			if ($SIPmonitorLINK>1) {$R=" <td NOWRAP align=center> <a href=\"sip:$Lsessionid@$server_ip\">"._("BARGE")."</a></td>";}
+			if ($IAXmonitorLINK>1) {$R=" <td NOWRAP align=center> <a href=\"iax:$Lsessionid@$server_ip\">"._("BARGE")."</a></td>";}
 			if ( (strlen($monitor_phone)>1) and (preg_match("/MONITOR|BARGE|WHISPER/",$monitor_active) ) and (preg_match("/MONITOR/",$RS_ListenBarge) ) )
-				{$L="<td NOWRAP align=center><font size=\"-1\"><a href=\"javascript:send_monitor('$Lsessionid','$Lserver_ip','MONITOR');\">"._QXZ("LISTEN")."</a></FONT></td>";   $R='';}
+				{$L="<td NOWRAP align=center><font size=\"-1\"><a href=\"javascript:send_monitor('$Lsessionid','$Lserver_ip','MONITOR');\">"._("LISTEN")."</a></FONT></td>";   $R='';}
 			if ( (strlen($monitor_phone)>1) and (preg_match("/BARGE|WHISPER/",$monitor_active) ) and (preg_match("/BARGE/",$RS_ListenBarge) ) )
-				{$R=" <td NOWRAP align=center><font size=\"-1\"><a href=\"javascript:send_monitor('$Lsessionid','$Lserver_ip','BARGE');\">"._QXZ("BARGE")."</a></FONT></td>";}
-			if ($SIPmonitorLINK>1) {$R=" </td><td NOWRAP align=center> <a href=\"sip:47378218$Lsessionid@$server_ip\">WHISPER</a></td>";}
-			if ($IAXmonitorLINK>1) {$R=" </td><td NOWRAP align=center> <a href=\"iax:47378218$Lsessionid@$server_ip\">WHISPER</a></td>";}
+				{$R=" <td NOWRAP align=center><font size=\"-1\"><a href=\"javascript:send_monitor('$Lsessionid','$Lserver_ip','BARGE');\">"._("BARGE")."</a></FONT></td>";}
+			if ($SIPmonitorLINK>1) {$R=" </td><td NOWRAP align=center> <a href=\"sip:47378218$Lsessionid@$server_ip\">"._("WHISPER")."</a></td>";}
+			if ($IAXmonitorLINK>1) {$R=" </td><td NOWRAP align=center> <a href=\"iax:47378218$Lsessionid@$server_ip\">"._("WHISPER")."</a></td>";}
 			if ( (strlen($monitor_phone)>1) and (preg_match("/WHISPER/",$monitor_active) ) and (preg_match("/WHISPER/",$RS_ListenBarge) ) )
-				{$R=" <td NOWRAP align=center><font size=\"-1\"><a href=\"javascript:send_monitor('$Lsessionid','$Lserver_ip','WHISPER');\">WHISPER</a></FONT></td>";}
+				{$R=" <td NOWRAP align=center><font size=\"-1\"><a href=\"javascript:send_monitor('$Lsessionid','$Lserver_ip','WHISPER');\">"._("WHISPER")."</a></FONT></td>";}
 
 			if ($CUSTPHONEdisplay > 0)	{$CP = " $G$custphone$EG </td><td NOWRAP align=right>";}
 			else	{$CP = "";}
@@ -4099,11 +4063,11 @@ if ($talking_to_print > 0)
 				{
 				if ($realtime_block_user_info > 0)
 					{
-					$Aecho .= "<tr class='$tr_class'><td NOWRAP>$UGD $G$sessionid$EG$L$R$Aring_note[$i]</td><td NOWRAP align=center> $G"._QXZ("$status",6)."$EG</td><td bgcolor=white align=center><font class='Hblank'>$CM</td>$pausecodeHTML<td NOWRAP align=right>$CP$SVD$G$call_time_MS$EG </td><td NOWRAP align=right> $G$campaign_id$EG </td><td NOWRAP align=right> $G$calls_today$EG </td>$INGRP</tr>\n";
+					$Aecho .= "<tr class='$tr_class'><td NOWRAP>$UGD $G$sessionid$EG$L$R$Aring_note[$i]</td><td NOWRAP align=center> $G"._("$status")."$EG</td><td bgcolor=white align=center><font class='Hblank'>$CM</td>$pausecodeHTML<td NOWRAP align=right>$CP$SVD$G$call_time_MS$EG </td><td NOWRAP align=right> $G$campaign_id$EG </td><td NOWRAP align=right> $G$calls_today$EG </td>$INGRP</tr>\n";
 					}
 				if ($realtime_block_user_info < 1)
 					{
-					$Aecho .= "<tr class='$tr_class'><td NOWRAP> $G$extension$EG$Aring_note[$i]</td><td NOWRAP>$phoneD<a href=\"./user_status.php?user=$Luser\" target=\"_blank\">$G$user$EG</a> <a href=\"javascript:ingroup_info('$Luser','$j');\">$G+$EG</a> </td><td NOWRAP align=right>$UGD $G$sessionid$EG$L$R </td><td NOWRAP align=center> $G"._QXZ("$status",6)."$EG</td><td bgcolor=white align=center><font class='Hblank'>$CM</td>$pausecodeHTML<td NOWRAP align=right>$CP$SVD$G$call_time_MS$EG </td><td NOWRAP align=right> $G$campaign_id$EG </td><td NOWRAP align=right> $G$calls_today$EG </td>$INGRP</tr>\n";
+					$Aecho .= "<tr class='$tr_class'><td NOWRAP> $G$extension$EG$Aring_note[$i]</td><td NOWRAP>$phoneD<a href=\"./user_status.php?user=$Luser\" target=\"_blank\">$G$user$EG</a> <a href=\"javascript:ingroup_info('$Luser','$j');\">$G+$EG</a> </td><td NOWRAP align=right>$UGD $G$sessionid$EG$L$R </td><td NOWRAP align=center> $G"._("$status")."$EG</td><td bgcolor=white align=center><font class='Hblank'>$CM</td>$pausecodeHTML<td NOWRAP align=right>$CP$SVD$G$call_time_MS$EG </td><td NOWRAP align=right> $G$campaign_id$EG </td><td NOWRAP align=right> $G$calls_today$EG </td>$INGRP</tr>\n";
 					}
 				}
 			}
@@ -4119,43 +4083,43 @@ if ($talking_to_print > 0)
 	}
 
 	$Aecho .= "$Aline";
-	$Aecho .= "  $agentcount "._QXZ("agents logged in on all servers")."\n";
-	$Aecho .= "  "._QXZ("System Load Average").": $load_ave  &nbsp; $db_source\n\n";
+	$Aecho .= "  $agentcount "._("agents logged in on all servers")."\n";
+	$Aecho .= "  "._("System Load Average").": $load_ave  &nbsp; $db_source\n\n";
 
-#	$Aecho .= "  <SPAN class=\"orange\"><B>          </SPAN> - "._QXZ("Balanced call")."</B>\n";
-	$Aecho .= "  <SPAN class=\"red\"><B>          </SPAN> - "._QXZ("Agent chatting")."</B>\n";
-	$Aecho .= "  <SPAN class=\"orange\"><B>          </SPAN> - "._QXZ("Agent in email")."</B>\n";
+#	$Aecho .= "  <SPAN class=\"orange\"><B>          </SPAN> - "._("Balanced call")."</B>\n";
+	$Aecho .= "  <SPAN class=\"red\"><B>          </SPAN> - "._("Agent chatting")."</B>\n";
+	$Aecho .= "  <SPAN class=\"orange\"><B>          </SPAN> - "._("Agent in email")."</B>\n";
 	if ($RS_agentWAIT == 4)
 		{
-		$Aecho .= "  <SPAN class=\"lightblue\"><B>          </SPAN> - "._QXZ("Agent waiting for call")."</B>\n";
-		$Aecho .= "  <SPAN class=\"rust\"><B>          </SPAN> - "._QXZ("Agent waiting for call > 30 seconds")."</B>\n";
-		$Aecho .= "  <SPAN class=\"blue\"><B>          </SPAN> - "._QXZ("Agent waiting for call > 1 minute")."</B>\n";
-		$Aecho .= "  <SPAN class=\"midnightblue\"><B>          </SPAN> - "._QXZ("Agent waiting for call > 5 minutes")."</B>\n";
+		$Aecho .= "  <SPAN class=\"lightblue\"><B>          </SPAN> - "._("Agent waiting for call")."</B>\n";
+		$Aecho .= "  <SPAN class=\"rust\"><B>          </SPAN> - "._("Agent waiting for call > 30 seconds")."</B>\n";
+		$Aecho .= "  <SPAN class=\"blue\"><B>          </SPAN> - "._("Agent waiting for call > 1 minute")."</B>\n";
+		$Aecho .= "  <SPAN class=\"midnightblue\"><B>          </SPAN> - "._("Agent waiting for call > 5 minutes")."</B>\n";
 		}
 	else
 		{
-		$Aecho .= "  <SPAN class=\"lightblue\"><B>          </SPAN> - "._QXZ("Agent waiting for call")."</B>\n";
-		$Aecho .= "  <SPAN class=\"blue\"><B>          </SPAN> - "._QXZ("Agent waiting for call > 1 minute")."</B>\n";
-		$Aecho .= "  <SPAN class=\"midnightblue\"><B>          </SPAN> - "._QXZ("Agent waiting for call > 5 minutes")."</B>\n";
+		$Aecho .= "  <SPAN class=\"lightblue\"><B>          </SPAN> - "._("Agent waiting for call")."</B>\n";
+		$Aecho .= "  <SPAN class=\"blue\"><B>          </SPAN> - "._("Agent waiting for call > 1 minute")."</B>\n";
+		$Aecho .= "  <SPAN class=\"midnightblue\"><B>          </SPAN> - "._("Agent waiting for call > 5 minutes")."</B>\n";
 		}
-	$Aecho .= "  <SPAN class=\"thistle\"><B>          </SPAN> - "._QXZ("Agent on call > 0 seconds")."</B>\n";
-	$Aecho .= "  <SPAN class=\"violet\"><B>          </SPAN> - "._QXZ("Agent on call > 1 minute")."</B>\n";
-	$Aecho .= "  <SPAN class=\"purple\"><B>          </SPAN> - "._QXZ("Agent on call > 5 minutes")."</B>\n";
-	$Aecho .= "  <SPAN class=\"khaki\"><B>          </SPAN> - "._QXZ("Agent Paused > 10 seconds")."</B>\n";
-	$Aecho .= "  <SPAN class=\"yellow\"><B>          </SPAN> - "._QXZ("Agent Paused > 1 minute")."</B>\n";
-	$Aecho .= "  <SPAN class=\"olive\"><B>          </SPAN> - "._QXZ("Agent Paused > 5 minutes")."</B>\n";
-	$Aecho .= "  <SPAN class=\"red\"><B>          </SPAN> - "._QXZ("Agent Paused > 30 minutes")."</B>\n";
-	$Aecho .= "  <SPAN class=\"lime\"><B>          </SPAN> - "._QXZ("Agent in 3-WAY > 10 seconds")."</B>\n";
-	$Aecho .= "  <SPAN class=\"black\"><B>          </SPAN> - "._QXZ("Agent on a dead call")."</B>\n";
+	$Aecho .= "  <SPAN class=\"thistle\"><B>          </SPAN> - "._("Agent on call > 0 seconds")."</B>\n";
+	$Aecho .= "  <SPAN class=\"violet\"><B>          </SPAN> - "._("Agent on call > 1 minute")."</B>\n";
+	$Aecho .= "  <SPAN class=\"purple\"><B>          </SPAN> - "._("Agent on call > 5 minutes")."</B>\n";
+	$Aecho .= "  <SPAN class=\"khaki\"><B>          </SPAN> - "._("Agent Paused > 10 seconds")."</B>\n";
+	$Aecho .= "  <SPAN class=\"yellow\"><B>          </SPAN> - "._("Agent Paused > 1 minute")."</B>\n";
+	$Aecho .= "  <SPAN class=\"olive\"><B>          </SPAN> - "._("Agent Paused > 5 minutes")."</B>\n";
+	$Aecho .= "  <SPAN class=\"red\"><B>          </SPAN> - "._("Agent Paused > 30 minutes")."</B>\n";
+	$Aecho .= "  <SPAN class=\"lime\"><B>          </SPAN> - "._("Agent in 3-WAY > 10 seconds")."</B>\n";
+	$Aecho .= "  <SPAN class=\"black\"><B>          </SPAN> - "._("Agent on a dead call")."</B>\n";
 	if ($SSenable_pause_code_limits > 0)
 		{
-		$Aecho .= "  <SPAN class=\"darkred\"><B>          </SPAN> - "._QXZ("Agent over pause limit")."</B>\n";
+		$Aecho .= "  <SPAN class=\"darkred\"><B>          </SPAN> - "._("Agent over pause limit")."</B>\n";
 		}
 
 	if ($ring_agents > 0)
 		{
-		$Aecho .= "  <SPAN class=\"salmon\"><B>          </SPAN> - "._QXZ("Agent phone ringing")."</B>\n";
-		$Aecho .= "  <SPAN><B>* "._QXZ("Denotes on-hook agent")."</B></SPAN>\n";
+		$Aecho .= "  <SPAN class=\"salmon\"><B>          </SPAN> - "._("Agent phone ringing")."</B>\n";
+		$Aecho .= "  <SPAN><B>* "._("Denotes on-hook agent")."</B></SPAN>\n";
 		}
 
 	if ($agent_ready > 0) {$B='<FONT class="b1">'; $BG='</FONT>';}
@@ -4164,18 +4128,18 @@ if ($talking_to_print > 0)
 	if ($agent_ready > 14) {$B='<FONT class="b4">'; $BG='</FONT>';}
 
 	$AIDct='';   $AIDtx='';
-	if ($agent_indial > 0) {$AIDct = "/$agent_indial";   $AIDtx = ' / '._QXZ("dials");}
+	if ($agent_indial > 0) {$AIDct = "/$agent_indial";   $AIDtx = ' / '._("dials");}
 
 	echo "\n<BR>\n";
 
 	if ( ($report_display_type=='TEXT') or ($report_display_type=='WALL_1') )
 		{
-		echo "$NFB$agent_total$NFE "._QXZ("agents logged in")." &nbsp; &nbsp; &nbsp; &nbsp; \n";
-		echo "$NFB$agent_incall$AIDct$NFE "._QXZ("agents in calls")."$AIDtx &nbsp; &nbsp; &nbsp; \n";
-		echo "$NFB$B &nbsp;$agent_ready $BG$NFE "._QXZ("agents waiting")." &nbsp; &nbsp; &nbsp; \n";
-		echo "$NFB$agent_paused$NFE "._QXZ("paused agents")." &nbsp; &nbsp; &nbsp; \n";
-		echo "$NFB$agent_dead$NFE "._QXZ("agents in dead calls")."&nbsp; &nbsp; &nbsp; \n";
-		echo "$NFB$agent_dispo$NFE "._QXZ("agents in dispo")."&nbsp; &nbsp; &nbsp; \n";
+		echo "$NFB$agent_total$NFE "._("agents logged in")." &nbsp; &nbsp; &nbsp; &nbsp; \n";
+		echo "$NFB$agent_incall$AIDct$NFE "._("agents in calls")."$AIDtx &nbsp; &nbsp; &nbsp; \n";
+		echo "$NFB$B &nbsp;$agent_ready $BG$NFE "._("agents waiting")." &nbsp; &nbsp; &nbsp; \n";
+		echo "$NFB$agent_paused$NFE "._("paused agents")." &nbsp; &nbsp; &nbsp; \n";
+		echo "$NFB$agent_dead$NFE "._("agents in dead calls")."&nbsp; &nbsp; &nbsp; \n";
+		echo "$NFB$agent_dispo$NFE "._("agents in dispo")."&nbsp; &nbsp; &nbsp; \n";
 		if ($report_display_type=='TEXT')
 			{
 			echo "<PRE><FONT SIZE=2>";
@@ -4189,7 +4153,7 @@ else
 	{
 	if ( ($report_display_type!='HTML') and ($report_display_type!='WALL_2') and ($report_display_type!='WALL_3') and ($report_display_type!='WALL_4') )
 		{
-		echo " "._QXZ("NO AGENTS ON CALLS")." \n";
+		echo " "._("NO AGENTS ON CALLS")." \n";
 		echo "<PRE>$Cecho";
 		}
 	}
@@ -4205,28 +4169,28 @@ if ( ($report_display_type!='HTML') and ($report_display_type!='WALL_2') and ($r
 if ( ($report_display_type=='HTML') or ($report_display_type=='WALL_2') )
 	{
 	$AIDct='';   $AIDtx='';
-	if ($agent_indial > 0) {$AIDct = " / $agent_indial";   $AIDtx = ' / '._QXZ("dials");}
+	if ($agent_indial > 0) {$AIDct = " / $agent_indial";   $AIDtx = ' / '._("dials");}
 
 #	echo "<TABLE width=$section_width cellpadding=3 cellspacing=0>\n";
 	echo "<tr>";
 #	echo "<td width=5 rowspan=2> &nbsp; </td>";
 	echo "<td align='center' valign='middle' bgcolor='#015b91' rowspan=2><img src=\"images/icon_users.png\" class='realtime_img_icon'></td>";
-	echo "<td align='center' valign='middle' bgcolor='#015b91'><font class=\"realtime_img_text\">"._QXZ("agents logged in")."</font></td>";
+	echo "<td align='center' valign='middle' bgcolor='#015b91'><font class=\"realtime_img_text\">"._("agents logged in")."</font></td>";
 	echo "<td width=6 rowspan=2> &nbsp; </td>";
 	echo "<td align='center' valign='middle' bgcolor='#015b91' rowspan=2><img src=\"images/icon_agentsincalls.png\" class='realtime_img_icon'></td>";
-	echo "<td align='center' valign='middle' bgcolor='#015b91'><font class=\"realtime_img_text\">"._QXZ("agents in calls")."$AIDtx</font></td>";
+	echo "<td align='center' valign='middle' bgcolor='#015b91'><font class=\"realtime_img_text\">"._("agents in calls")."$AIDtx</font></td>";
 	echo "<td width=6 rowspan=2> &nbsp; </td>";
 	echo "<td align='center' valign='middle' bgcolor='#015b91' rowspan=2><img src=\"images/icon_agentswaiting.png\" class='realtime_img_icon'></td>";
-	echo "<td align='center' valign='middle' bgcolor='#015b91'><font class=\"realtime_img_text\">"._QXZ("agents waiting")."</font></td>";
+	echo "<td align='center' valign='middle' bgcolor='#015b91'><font class=\"realtime_img_text\">"._("agents waiting")."</font></td>";
 	echo "<td width=6 rowspan=2> &nbsp; </td>";
 	echo "<td align='center' valign='middle' bgcolor='#808000' rowspan=2><img src=\"images/icon_agentspaused.png\" class='realtime_img_icon'></td>";
-	echo "<td align='center' valign='middle' bgcolor='#808000'><font class=\"realtime_img_text\">"._QXZ("paused agents")."</font></td>";
+	echo "<td align='center' valign='middle' bgcolor='#808000'><font class=\"realtime_img_text\">"._("paused agents")."</font></td>";
 	echo "<td width=6 rowspan=2> &nbsp; </td>";
 	echo "<td align='center' valign='middle' bgcolor='black' rowspan=2><img src=\"images/icon_agentsindeadcalls.png\" class='realtime_img_icon'></td>";
-	echo "<td align='center' valign='middle' bgcolor='black'><font class=\"realtime_img_text\">"._QXZ("agents in dead calls")."</font></td>";
+	echo "<td align='center' valign='middle' bgcolor='black'><font class=\"realtime_img_text\">"._("agents in dead calls")."</font></td>";
 	echo "<td width=6 rowspan=2> &nbsp; </td>";
 	echo "<td align='center' valign='middle' bgcolor='#808000' rowspan=2><img src=\"images/icon_agentsindispo.png\" class='realtime_img_icon'></td>";
-	echo "<td align='center' valign='middle' bgcolor='#808000'><font class=\"realtime_img_text\">"._QXZ("agents in dispo")."</font></td>";
+	echo "<td align='center' valign='middle' bgcolor='#808000'><font class=\"realtime_img_text\">"._("agents in dispo")."</font></td>";
 	echo "</tr>";
 	echo "<tr>";
 	echo "<td align='center' valign='middle' bgcolor='#015b91'><font style=\"font-family:HELVETICA;font-size:18;color:white;font-weight:bold;\">$agent_total</font></td>";
@@ -4262,16 +4226,16 @@ if ( ($report_display_type=='HTML') or ($report_display_type=='WALL_2') )
 if ($report_display_type=='WALL_3')
 	{
 	$AIDct='';   $AIDtx='';
-	if ($agent_indial > 0) {$AIDct = " / $agent_indial";   $AIDtx = ' / '._QXZ("dials");}
-	echo "<font style=\"font-size:48; color:black; font-weight: bold; background-color:green\">"._QXZ("agents waiting")."</font>\n";
+	if ($agent_indial > 0) {$AIDct = " / $agent_indial";   $AIDtx = ' / '._("dials");}
+	echo "<font style=\"font-size:48; color:black; font-weight: bold; background-color:green\">"._("agents waiting")."</font>\n";
 	echo "<font style=\"font-size:72; color:black; font-weight: bold; background-color:green\"> &nbsp; $agent_ready</font><br>\n";
-	echo "<font style=\"font-size:48; color:black; font-weight: bold; background-color:yellow\">"._QXZ("paused agents")."</font>\n";
+	echo "<font style=\"font-size:48; color:black; font-weight: bold; background-color:yellow\">"._("paused agents")."</font>\n";
 	echo "<font style=\"font-size:72; color:black; font-weight: bold; background-color:yellow\"> &nbsp; $agent_paused</font><br>\n";
-	echo "<font style=\"font-size:48; color:black; font-weight: bold; background-color:green\">"._QXZ("agents in calls")."$AIDtx</font>\n";
+	echo "<font style=\"font-size:48; color:black; font-weight: bold; background-color:green\">"._("agents in calls")."$AIDtx</font>\n";
 	echo "<font style=\"font-size:72; color:black; font-weight: bold; background-color:green\"> &nbsp; $agent_incall$AIDct</font><br>\n";
-	echo "<font style=\"font-size:48; color:black; font-weight: bold; background-color:red\">"._QXZ("calls waiting")."</font>\n";
+	echo "<font style=\"font-size:48; color:black; font-weight: bold; background-color:red\">"._("calls waiting")."</font>\n";
 	echo "<font style=\"font-size:72; color:black; font-weight: bold; background-color:red\"> &nbsp; $out_live</font><br>\n";
-	echo "<font style=\"font-size:36; color:black; font-weight: bold;\">"._QXZ("dropped/total calls")."</font>\n";
+	echo "<font style=\"font-size:36; color:black; font-weight: bold;\">"._("dropped/total calls")."</font>\n";
 	echo "<font style=\"font-size:48; color:black; font-weight: bold;\"> &nbsp; $dropsTODAY / $callsTODAY</font> $drpctTODAY %<br>\n";
 	}
 ##### END custom WALL_3 display option #####
@@ -4281,26 +4245,26 @@ if ($report_display_type=='WALL_3')
 if ($report_display_type=='WALL_4')
 	{
 	$AIDct='';   $AIDtx='';
-	if ($agent_indial > 0) {$AIDct = " / $agent_indial";   $AIDtx = ' / '._QXZ("dials");}
+	if ($agent_indial > 0) {$AIDct = " / $agent_indial";   $AIDtx = ' / '._("dials");}
 	echo "<center><table border=0 cellpadding=3 cellspacing=3>\n";
 	echo "<tr>\n";
-	echo "<td><font style=\"font-size:48; color:black; font-weight: bold; background-color:green\">"._QXZ("agents waiting")."</font></td>";
+	echo "<td><font style=\"font-size:48; color:black; font-weight: bold; background-color:green\">"._("agents waiting")."</font></td>";
 	echo "<td><font style=\"font-size:72; color:black; font-weight: bold; background-color:green\"> &nbsp; $agent_ready</font></td>\n";
 	echo "</tr>\n";
 	echo "<tr>\n";
-	echo "<td><font style=\"font-size:48; color:black; font-weight: bold; background-color:yellow\">"._QXZ("paused agents")."</font></td>";
+	echo "<td><font style=\"font-size:48; color:black; font-weight: bold; background-color:yellow\">"._("paused agents")."</font></td>";
 	echo "<td><font style=\"font-size:72; color:black; font-weight: bold; background-color:yellow\"> &nbsp; $agent_paused</font></td>\n";
 	echo "</tr>\n";
 	echo "<tr>\n";
-	echo "<td><font style=\"font-size:48; color:black; font-weight: bold; background-color:green\">"._QXZ("agents in calls")."$AIDtx</font></td>";
+	echo "<td><font style=\"font-size:48; color:black; font-weight: bold; background-color:green\">"._("agents in calls")."$AIDtx</font></td>";
 	echo "<td><font style=\"font-size:72; color:black; font-weight: bold; background-color:green\"> &nbsp; $agent_incall$AIDct</font></td>\n";
 	echo "</tr>\n";
 	echo "<tr>\n";
-	echo "<td><font style=\"font-size:48; color:black; font-weight: bold; background-color:red\">"._QXZ("calls waiting")."</font></td>";
+	echo "<td><font style=\"font-size:48; color:black; font-weight: bold; background-color:red\">"._("calls waiting")."</font></td>";
 	echo "<td><font style=\"font-size:72; color:black; font-weight: bold; background-color:red\"> &nbsp; $out_live</font></td>\n";
 	echo "</tr>\n";
 	echo "<tr>\n";
-	echo "<td><font style=\"font-size:36; color:black; font-weight: bold;\">"._QXZ("dropped/total calls")."</font>\n";
+	echo "<td><font style=\"font-size:36; color:black; font-weight: bold;\">"._("dropped/total calls")."</font>\n";
 	echo "<font style=\"font-size:48; color:black; font-weight: bold;\"> &nbsp; $dropsTODAY / $callsTODAY</font></td>\n";
 	echo "<td><font style=\"font-size:18; color:black; font-weight: bold;\"> &nbsp;  $drpctTODAY %</td>\n";
 	echo "</tr>\n";

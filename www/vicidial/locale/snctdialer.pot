@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-23 17:31+0200\n"
+"POT-Creation-Date: 2020-09-16 14:40+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,15 +17,18 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: admin_search_lead.php:208
+#: admin_search_lead.php:208 AST_timeonVDADall_ng.php:439
+#: realtime_report_ng.php:399
 msgid "Login incorrect, please try again"
 msgstr ""
 
-#: admin_search_lead.php:211
+#: admin_search_lead.php:211 AST_timeonVDADall_ng.php:442
+#: realtime_report_ng.php:402
 msgid "Too many login attempts, try again in 15 minutes"
 msgstr ""
 
-#: admin_search_lead.php:218
+#: admin_search_lead.php:218 AST_timeonVDADall_ng.php:449
+#: realtime_report_ng.php:409
 msgid "Your IP Address is not allowed"
 msgstr ""
 
@@ -93,7 +96,8 @@ msgstr ""
 msgid "Gender"
 msgstr ""
 
-#: admin_search_lead.php:336
+#: admin_search_lead.php:336 AST_timeonVDADall_ng.php:880
+#: realtime_report_ng.php:926
 msgid "Phone"
 msgstr ""
 
@@ -130,11 +134,13 @@ msgid "Archive search"
 msgstr ""
 
 #: admin_search_lead.php:389 admin_search_lead.php:405
+#: AST_timeonVDADall_ng.php:842 realtime_report_ng.php:888
 msgid "No"
 msgstr ""
 
 #: admin_search_lead.php:389 admin_search_lead.php:405
-#: admin_search_lead.php:1275
+#: admin_search_lead.php:1275 AST_timeonVDADall_ng.php:845
+#: realtime_report_ng.php:891
 msgid "Yes"
 msgstr ""
 
@@ -145,7 +151,7 @@ msgstr ""
 #: admin_search_lead.php:397 admin_search_lead.php:403
 #: admin_search_lead.php:412 admin_search_lead.php:463
 #: admin_search_lead.php:469 admin_search_lead.php:478
-#: admin_search_lead.php:484
+#: admin_search_lead.php:484 realtime_report_ng.php:1050
 msgid "SUBMIT"
 msgstr ""
 
@@ -228,6 +234,8 @@ msgstr ""
 #: admin_search_lead.php:636 admin_search_lead.php:812
 #: admin_search_lead.php:879 admin_search_lead.php:1061
 #: admin_search_lead.php:1128 admin_search_lead.php:1380
+#: AST_timeonVDADall_ng.php:3084 AST_timeonVDADall_ng.php:3096
+#: AST_timeonVDADall_ng.php:3275 AST_timeonVDADall_ng.php:3300
 msgid "STATUS"
 msgstr ""
 
@@ -249,6 +257,7 @@ msgstr ""
 #: admin_search_lead.php:876 admin_search_lead.php:943
 #: admin_search_lead.php:1058 admin_search_lead.php:1125
 #: admin_search_lead.php:1192 admin_search_lead.php:1384
+#: AST_timeonVDADall_ng.php:3234 AST_timeonVDADall_ng.php:3236
 msgid "PHONE"
 msgstr ""
 
@@ -281,6 +290,8 @@ msgid "OUTBOUND LOG RESULTS"
 msgstr ""
 
 #: admin_search_lead.php:810 admin_search_lead.php:1059
+#: AST_timeonVDADall_ng.php:3084 AST_timeonVDADall_ng.php:3097
+#: AST_timeonVDADall_ng.php:3287 AST_timeonVDADall_ng.php:3289
 msgid "CAMPAIGN"
 msgstr ""
 
@@ -292,6 +303,7 @@ msgstr ""
 
 #: admin_search_lead.php:813 admin_search_lead.php:880
 #: admin_search_lead.php:1062 admin_search_lead.php:1129
+#: AST_timeonVDADall_ng.php:3239 AST_timeonVDADall_ng.php:3241
 msgid "USER"
 msgstr ""
 
@@ -334,7 +346,10 @@ msgid "script runtime"
 msgstr ""
 
 #: admin_search_lead.php:1008 admin_search_lead.php:1257
-#: admin_search_lead.php:1505
+#: admin_search_lead.php:1505 realtime_report_ng.php:867
+#: realtime_report_ng.php:868 realtime_report_ng.php:869
+#: realtime_report_ng.php:870 realtime_report_ng.php:871
+#: realtime_report_ng.php:872
 msgid "seconds"
 msgstr ""
 
@@ -348,4 +363,789 @@ msgstr ""
 
 #: admin_search_lead.php:1292
 msgid "ERROR: you must search for something! Go back and search for something"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:426 realtime_report_ng.php:386
+msgid "You are not allowed to view reports"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:565 realtime_report_ng.php:589
+msgid "You are not allowed to view this report"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:787 realtime_report_ng.php:811
+msgid "Select Campaigns"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:799
+msgid "(To select more than 1 campaign, hold down the Ctrl key and click)"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:801 realtime_report_ng.php:825
+msgid "Select User Groups"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:815 realtime_report_ng.php:843
+msgid "Select In-Groups"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:835 realtime_report_ng.php:862
+msgid "Close Panel"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:839 realtime_report_ng.php:885
+msgid "Inbound"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:848 realtime_report_ng.php:894
+msgid "Only"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:852 realtime_report_ng.php:898
+msgid "Monitor"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:855 realtime_report_ng.php:901
+msgid "NONE"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:860 realtime_report_ng.php:906
+msgid "MONITOR"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:866 AST_timeonVDADall_ng.php:3271
+#: AST_timeonVDADall_ng.php:3917 AST_timeonVDADall_ng.php:3922
+#: AST_timeonVDADall_ng.php:3973 AST_timeonVDADall_ng.php:3974
+#: AST_timeonVDADall_ng.php:3978 realtime_report_ng.php:912
+msgid "BARGE"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:872 AST_timeonVDADall_ng.php:3273
+#: AST_timeonVDADall_ng.php:3979 AST_timeonVDADall_ng.php:3980
+#: AST_timeonVDADall_ng.php:3982 realtime_report_ng.php:918
+msgid "WHISPER"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:888 realtime_report_ng.php:934
+msgid "Select User Group"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:890 realtime_report_ng.php:936
+msgid "ALL USER GROUPS"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:902 realtime_report_ng.php:948
+msgid "Dialable Leads Alert"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:905 AST_timeonVDADall_ng.php:915
+#: AST_timeonVDADall_ng.php:925 AST_timeonVDADall_ng.php:948
+#: AST_timeonVDADall_ng.php:959 realtime_report_ng.php:951
+#: realtime_report_ng.php:961 realtime_report_ng.php:971
+#: realtime_report_ng.php:994 realtime_report_ng.php:1009
+#: realtime_report_ng.php:1019
+msgid "NO"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:908 AST_timeonVDADall_ng.php:918
+#: AST_timeonVDADall_ng.php:928 AST_timeonVDADall_ng.php:951
+#: AST_timeonVDADall_ng.php:962 realtime_report_ng.php:954
+#: realtime_report_ng.php:964 realtime_report_ng.php:974
+#: realtime_report_ng.php:997 realtime_report_ng.php:1012
+#: realtime_report_ng.php:1022
+msgid "YES"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:912 realtime_report_ng.php:958
+msgid "Show Drop In-Group Row"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:922 realtime_report_ng.php:968
+msgid "Show Carrier Stats"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:945 realtime_report_ng.php:991
+msgid "Show Presets Stats"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:956 realtime_report_ng.php:1006
+msgid "Agent Time Stats"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:966 realtime_report_ng.php:1026
+msgid "Display as"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:969 realtime_report_ng.php:1029
+msgid "TEXT"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:972 realtime_report_ng.php:1032
+msgid "HTML"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:975 realtime_report_ng.php:1035
+msgid "WALL_1"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:978 realtime_report_ng.php:1038
+msgid "WALL_2"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:981 realtime_report_ng.php:1041
+msgid "WALL_3"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:984 realtime_report_ng.php:1044
+msgid "WALL_4"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:995 realtime_report_ng.php:1056
+msgid "VERSION"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:995 realtime_report_ng.php:1056
+msgid "BUILD"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:998 AST_timeonVDADall_ng.php:1352
+#: realtime_report_ng.php:1059 realtime_report_ng.php:1885
+msgid "Choose Report Display Options"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1098 realtime_report_ng.php:1329
+msgid "SUCCESS: calling"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1358
+msgid "STOP"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1359
+msgid "SLOW"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1360
+msgid "GO"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1363 AST_timeonVDADall_ng.php:1367
+#: realtime_report_ng.php:1905 realtime_report_ng.php:1907
+msgid "MODIFY"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1369 realtime_report_ng.php:1911
+msgid "SUMMARY"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1374
+msgid "please select a campaign from the pulldown above"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1435
+msgid "ANSWERED"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1440
+msgid "TOTAL"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1534 AST_timeonVDADall_ng.php:2264
+#: AST_timeonVDADall_ng.php:2477
+msgid "CALLS TODAY"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1535 AST_timeonVDADall_ng.php:1542
+#: AST_timeonVDADall_ng.php:2265 AST_timeonVDADall_ng.php:2272
+msgid "TMA"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1536 AST_timeonVDADall_ng.php:2266
+msgid "Average Hold time for Answered Calls"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1537
+msgid "LIVE Inbound Callback Queue Calls"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1541 AST_timeonVDADall_ng.php:2271
+msgid "DROPS TODAY"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1543 AST_timeonVDADall_ng.php:2273
+msgid "Average Hold time for Dropped Calls"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1548 AST_timeonVDADall_ng.php:2278
+msgid "ANSWERS TODAY"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1549 AST_timeonVDADall_ng.php:1595
+#: AST_timeonVDADall_ng.php:2285
+msgid "DROP PERCENT"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1550 AST_timeonVDADall_ng.php:2280
+msgid "Average Hold time for All Calls"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1594
+msgid "DROP IN-GROUP STATS"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1596 AST_timeonVDADall_ng.php:1816
+#: AST_timeonVDADall_ng.php:3291
+msgid "CALLS"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1597
+msgid "DROPS/ANSWERS"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1648
+msgid "CARRIER STATS"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1649
+msgid "HANGUP STATUS"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1650
+msgid "24 HOURS"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1651
+msgid "6 HOURS"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1652
+msgid "1 HOUR"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1653
+msgid "15 MIN"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1654
+msgid "5 MIN"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1655
+msgid "1 MIN"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1787
+msgid "TOTALS"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1799 AST_timeonVDADall_ng.php:1835
+msgid "no log entries"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1814
+msgid "AGENT DIAL PRESETS"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:1815
+msgid "PRESET NAMES"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2267 AST_timeonVDADall_ng.php:2450
+msgid "TIME"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2279
+msgid "Agent non-pause time / Answers"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2286
+msgid "PRODUCTIVITY"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2436 AST_timeonVDADall_ng.php:2437
+msgid "List Mix"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2447
+msgid "DIAL LEVEL"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2448
+msgid "TRUNK SHORT/FILL"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2449
+msgid "FILTER"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2461
+msgid "MAX LEVEL"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2462
+msgid "DROPPED MAX"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2463
+msgid "TARGET DIFF"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2464
+msgid "INTENSITY"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2468
+msgid "DIAL TIMEOUT"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2469
+msgid "TAPER TIME"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2470
+msgid "LOCAL TIME"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2471
+msgid "AVAIL ONLY"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2476
+msgid "DIALABLE LEADS"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2478
+msgid "AVG AGENTS"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2479
+msgid "DIAL METHOD"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2483
+msgid "HOPPER"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2483
+msgid "min/auto"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2484
+msgid "DROPPED"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2485
+msgid "DL DIFF"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2486
+msgid "STATUSES"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2492 AST_timeonVDADall_ng.php:2496
+msgid "LEADS IN HOPPER"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2498
+msgid "DROPPED PERCENT"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2516
+msgid "DIFF"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2517
+msgid "ORDER"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2539
+msgid "AGENT AVG WAIT"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2540
+msgid "AVG CUSTTIME"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2541
+msgid "AVG ACW"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2542
+msgid "AVG PAUSE"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2582 realtime_report_ng.php:1596
+#: realtime_report_ng.php:1935
+msgid "VIEW MORE"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2586 realtime_report_ng.php:1595
+#: realtime_report_ng.php:1937
+msgid "VIEW LESS"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2591 realtime_report_ng.php:1601
+#: realtime_report_ng.php:1939
+msgid "HIDE USER GROUP"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2595 realtime_report_ng.php:1600
+#: realtime_report_ng.php:1941
+msgid "VIEW USER GROUP"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2599 realtime_report_ng.php:1606
+#: realtime_report_ng.php:1943
+msgid "HIDE SERVER INFO"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2603 realtime_report_ng.php:1605
+#: realtime_report_ng.php:1945
+msgid "SHOW SERVER INFO"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2607 realtime_report_ng.php:1611
+#: realtime_report_ng.php:1947
+msgid "HIDE WAITING CALLS"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2611 realtime_report_ng.php:1610
+#: realtime_report_ng.php:1949
+msgid "SHOW WAITING CALLS"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2616 realtime_report_ng.php:1628
+#: realtime_report_ng.php:1951
+msgid "HIDE IN-GROUP STATS"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2620 realtime_report_ng.php:1627
+#: realtime_report_ng.php:1953
+msgid "SHOW IN-GROUP STATS"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2624 realtime_report_ng.php:1616
+#: realtime_report_ng.php:1955
+msgid "HIDE PHONES"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2628 realtime_report_ng.php:1615
+#: realtime_report_ng.php:1957
+msgid "SHOW PHONES"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2632 realtime_report_ng.php:1623
+#: realtime_report_ng.php:1962
+msgid "SHOW CUSTPHONES (short)"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2635 realtime_report_ng.php:1622
+#: realtime_report_ng.php:1965
+msgid "SHOW CUSTPHONES (long)"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2638 realtime_report_ng.php:1621
+#: realtime_report_ng.php:1959
+msgid "HIDE CUSTPHONES"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2669
+msgid "Close Alert"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2670
+msgid "Campaigns with no dialable leads"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2899 AST_timeonVDADall_ng.php:2910
+#: AST_timeonVDADall_ng.php:3001
+msgid "current active calls"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2901 AST_timeonVDADall_ng.php:2912
+#: AST_timeonVDADall_ng.php:3005
+msgid "calls being placed"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2903 AST_timeonVDADall_ng.php:2914
+#: AST_timeonVDADall_ng.php:3009
+msgid "calls ringing"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2904 AST_timeonVDADall_ng.php:2915
+#: AST_timeonVDADall_ng.php:3012
+msgid "calls waiting for agents"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2905 AST_timeonVDADall_ng.php:2916
+#: AST_timeonVDADall_ng.php:3015
+msgid "calls in IVR"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2925
+msgid " NO LIVE CALLS WAITING"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2967 AST_timeonVDADall_ng.php:3021
+msgid "chats waiting for agents"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:2975
+msgid " NO LIVE CHATS WAITING "
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:3033
+msgid "callback queue calls"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:3077
+msgid "AGENTONLY"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:3084 AST_timeonVDADall_ng.php:3098
+msgid "PHONE NUMBER"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:3084 AST_timeonVDADall_ng.php:3099
+#: AST_timeonVDADall_ng.php:3279
+msgid "SERVER IP"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:3084 AST_timeonVDADall_ng.php:3100
+msgid "DIALTIME"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:3084 AST_timeonVDADall_ng.php:3101
+msgid "CALL TYPE"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:3084 AST_timeonVDADall_ng.php:3102
+msgid "PRIORITY"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:3092
+msgid "Calls Waiting"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:3201 AST_timeonVDADall_ng.php:3209
+msgid "Agents Time On Calls Campaign"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:3232
+msgid "STATION"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:3245 AST_timeonVDADall_ng.php:3248
+msgid "SHOW ID"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:3254 AST_timeonVDADall_ng.php:3257
+msgid "SHOW NAME"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:3260
+msgid "INFO"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:3263 AST_timeonVDADall_ng.php:3265
+msgid "USER GROUP"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:3267 AST_timeonVDADall_ng.php:3307
+msgid "SESSIONID"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:3269 AST_timeonVDADall_ng.php:3915
+#: AST_timeonVDADall_ng.php:3916 AST_timeonVDADall_ng.php:3920
+#: AST_timeonVDADall_ng.php:3971 AST_timeonVDADall_ng.php:3972
+#: AST_timeonVDADall_ng.php:3976
+msgid "LISTEN"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:3277
+msgid "CUST PHONE"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:3281
+msgid "CALL SERVER IP"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:3295
+msgid "HOLD"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:3295
+msgid "IN-GROUP"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:3302
+msgid "PAUSE"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:4086
+msgid "agents logged in on all servers"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:4087
+msgid "System Load Average"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:4090
+msgid "Agent chatting"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:4091
+msgid "Agent in email"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:4094 AST_timeonVDADall_ng.php:4101
+msgid "Agent waiting for call"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:4095
+msgid "Agent waiting for call > 30 seconds"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:4096 AST_timeonVDADall_ng.php:4102
+msgid "Agent waiting for call > 1 minute"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:4097 AST_timeonVDADall_ng.php:4103
+msgid "Agent waiting for call > 5 minutes"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:4105
+msgid "Agent on call > 0 seconds"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:4106
+msgid "Agent on call > 1 minute"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:4107
+msgid "Agent on call > 5 minutes"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:4108
+msgid "Agent Paused > 10 seconds"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:4109
+msgid "Agent Paused > 1 minute"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:4110
+msgid "Agent Paused > 5 minutes"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:4111
+msgid "Agent Paused > 30 minutes"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:4112
+msgid "Agent in 3-WAY > 10 seconds"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:4113
+msgid "Agent on a dead call"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:4116
+msgid "Agent over pause limit"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:4121
+msgid "Agent phone ringing"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:4122
+msgid "Denotes on-hook agent"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:4131 AST_timeonVDADall_ng.php:4172
+#: AST_timeonVDADall_ng.php:4229 AST_timeonVDADall_ng.php:4248
+msgid "dials"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:4137 AST_timeonVDADall_ng.php:4178
+msgid "agents logged in"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:4138 AST_timeonVDADall_ng.php:4181
+#: AST_timeonVDADall_ng.php:4234 AST_timeonVDADall_ng.php:4259
+msgid "agents in calls"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:4139 AST_timeonVDADall_ng.php:4184
+#: AST_timeonVDADall_ng.php:4230 AST_timeonVDADall_ng.php:4251
+msgid "agents waiting"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:4140 AST_timeonVDADall_ng.php:4187
+#: AST_timeonVDADall_ng.php:4232 AST_timeonVDADall_ng.php:4255
+msgid "paused agents"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:4141 AST_timeonVDADall_ng.php:4190
+msgid "agents in dead calls"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:4142 AST_timeonVDADall_ng.php:4193
+msgid "agents in dispo"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:4156
+msgid "NO AGENTS ON CALLS"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:4236 AST_timeonVDADall_ng.php:4263
+msgid "calls waiting"
+msgstr ""
+
+#: AST_timeonVDADall_ng.php:4238 AST_timeonVDADall_ng.php:4267
+msgid "dropped/total calls"
+msgstr ""
+
+#: realtime_report_ng.php:183 realtime_report_ng.php:1278
+#: realtime_report_ng.php:1284 realtime_report_ng.php:1925
+msgid "webphone"
+msgstr ""
+
+#: realtime_report_ng.php:823
+msgid "To select more than 1 campaign, hold down the Ctrl key and click"
+msgstr ""
+
+#: realtime_report_ng.php:866
+msgid "Screen Refresh Rate"
+msgstr ""
+
+#: realtime_report_ng.php:873 realtime_report_ng.php:874
+#: realtime_report_ng.php:875 realtime_report_ng.php:876
+#: realtime_report_ng.php:877 realtime_report_ng.php:878
+#: realtime_report_ng.php:879
+msgid "minutes"
+msgstr ""
+
+#: realtime_report_ng.php:880
+msgid "hours"
+msgstr ""
+
+#: realtime_report_ng.php:881
+msgid "years"
+msgstr ""
+
+#: realtime_report_ng.php:1016
+msgid "In-group color override"
+msgstr ""
+
+#: realtime_report_ng.php:1901
+msgid "RELOAD NOW"
+msgstr ""
+
+#: realtime_report_ng.php:1914
+msgid "LOGOUT"
+msgstr ""
+
+#: realtime_report_ng.php:1920
+msgid "refresh"
 msgstr ""

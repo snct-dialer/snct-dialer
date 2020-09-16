@@ -70,6 +70,8 @@ header ("Content-type: text/html; charset=utf-8");
 require("dbconnect_mysqli.php");
 require("functions.php");
 
+require("language_header.php");
+
 $PHP_AUTH_USER=$_SERVER['PHP_AUTH_USER'];
 $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
 $PHP_SELF=$_SERVER['PHP_SELF'];
@@ -178,7 +180,7 @@ $webphone_top =		'27';
 $webphone_bufw =	'250';
 $webphone_bufh =	'1';
 $webphone_pad =		'10';
-$webphone_clpos =	"<BR>  &nbsp; <a href=\"#\" onclick=\"hideDiv('webphone_content');\">"._QXZ("webphone")." -</a>";
+$webphone_clpos =	"<BR>  &nbsp; <a href=\"#\" onclick=\"hideDiv('webphone_content');\">"._("webphone")." -</a>";
 
 $RS_ListenBarge =		'MONITOR|BARGE|WHISPER';
 
@@ -381,7 +383,7 @@ if ($auth > 0)
 
 	if ($reports_auth < 1)
 		{
-		$VDdisplayMESSAGE = _QXZ("You are not allowed to view reports");
+		$VDdisplayMESSAGE = _("You are not allowed to view reports");
 		Header ("Content-type: text/html; charset=utf-8");
 		echo "$VDdisplayMESSAGE: |$PHP_AUTH_USER|$auth_message|\n";
 		exit;
@@ -394,17 +396,17 @@ if ($auth > 0)
 	}
 else
 	{
-	$VDdisplayMESSAGE = _QXZ("Login incorrect, please try again");
+	$VDdisplayMESSAGE = _("Login incorrect, please try again");
 	if ($auth_message == 'LOCK')
 		{
-		$VDdisplayMESSAGE = _QXZ("Too many login attempts, try again in 15 minutes");
+		$VDdisplayMESSAGE = _("Too many login attempts, try again in 15 minutes");
 		Header ("Content-type: text/html; charset=utf-8");
 		echo "$VDdisplayMESSAGE: |$PHP_AUTH_USER|$auth_message|\n";
 		exit;
 		}
 	if ($auth_message == 'IPBLOCK')
 		{
-		$VDdisplayMESSAGE = _QXZ("Your IP Address is not allowed") . ": $ip";
+		$VDdisplayMESSAGE = _("Your IP Address is not allowed") . ": $ip";
 		Header ("Content-type: text/html; charset=utf-8");
 		echo "$VDdisplayMESSAGE: |$PHP_AUTH_USER|$auth_message|\n";
 		exit;
@@ -584,7 +586,7 @@ if ( (!preg_match("/$report_name/",$LOGallowed_reports)) and (!preg_match("/ALL 
 	{
     Header("WWW-Authenticate: Basic realm=\"CONTACT-CENTER-ADMIN\"");
     Header("HTTP/1.0 401 Unauthorized");
-    echo _QXZ("You are not allowed to view this report").": |$PHP_AUTH_USER|$report_name|"._QXZ("$report_name")."|\n";
+    echo _("You are not allowed to view this report").": |$PHP_AUTH_USER|$report_name|\n";
     exit;
 	}
 
@@ -806,114 +808,114 @@ $NFB = '<b><font size=6 face="courier">';
 $NFE = '</font></b>';
 $F=''; $FG=''; $B=''; $BG='';
 
-$select_list = "<TABLE class='realtime_settings_table' CELLPADDING=5 BGCOLOR='#D9E6FE'><TR><TD VALIGN=TOP>"._QXZ("Select Campaigns").": <BR>";
+$select_list = "<TABLE class='realtime_settings_table' CELLPADDING=5 BGCOLOR='#D9E6FE'><TR><TD VALIGN=TOP>"._("Select Campaigns").": <BR>";
 $select_list .= "<SELECT SIZE=8 NAME=groups[] ID=groups[] multiple>";
 $o=0;
 while ($groups_to_print > $o)
 	{
 	if (preg_match("/\|$LISTgroups[$o]\|/",$group_string))
-		{$select_list .= "<option selected value='$LISTgroups[$o]'>"._QXZ("$LISTgroups[$o]")." - "._QXZ("$LISTnames[$o]")."</option>";}
+		{$select_list .= "<option selected value='$LISTgroups[$o]'>$LISTgroups[$o] - $LISTnames[$o]</option>";}
 	else
-		{$select_list .= "<option value='$LISTgroups[$o]'>"._QXZ("$LISTgroups[$o]")." - "._QXZ("$LISTnames[$o]")."</option>";}
+		{$select_list .= "<option value='$LISTgroups[$o]'>$LISTgroups[$o] - $LISTnames[$o]</option>";}
 	$o++;
 	}
 $select_list .= "</SELECT>";
-$select_list .= "<BR><font class='top_settings_val'>("._QXZ("To select more than 1 campaign, hold down the Ctrl key and click").")</font>";
+$select_list .= "<BR><font class='top_settings_val'>("._("To select more than 1 campaign, hold down the Ctrl key and click").")</font>";
 
-$select_list .= "<BR><BR>"._QXZ("Select User Groups").": <BR>";
+$select_list .= "<BR><BR>"._("Select User Groups").": <BR>";
 $select_list .= "<SELECT SIZE=8 NAME=user_group_filter[] ID=user_group_filter[] multiple>";
 $o=0;
 while ($o < $usergroups_to_print)
 	{
 	if (preg_match("/\|$usergroups[$o]\|/",$user_group_string))
-		{$select_list .= "<option selected value='$usergroups[$o]'>"._QXZ("$usergroups[$o]")." - "._QXZ("$usergroupnames[$o]")."</option>";}
+		{$select_list .= "<option selected value='$usergroups[$o]'>$usergroups[$o] - $usergroupnames[$o]</option>";}
 	else
 		{
 		if ( ($user_group_none > 0) and ($usergroups[$o] == 'ALL-GROUPS') )
-			{$select_list .= "<option selected value='$usergroups[$o]'>"._QXZ("$usergroups[$o]")." - "._QXZ("$usergroupnames[$o]")."</option>";}
+			{$select_list .= "<option selected value='$usergroups[$o]'>$usergroups[$o] - $usergroupnames[$o]</option>";}
 		else
-			{$select_list .= "<option value='$usergroups[$o]'>"._QXZ("$usergroups[$o]")." - "._QXZ("$usergroupnames[$o]")."</option>";}
+			{$select_list .= "<option value='$usergroups[$o]'>$usergroups[$o] - $usergroupnames[$o]</option>";}
 		}
 	$o++;
 	}
 $select_list .= "</SELECT>";
 
-$select_list .= "<BR><BR>"._QXZ("Select In-Groups").": <BR>";
+$select_list .= "<BR><BR>"._("Select In-Groups").": <BR>";
 $select_list .= "<SELECT SIZE=8 NAME=ingroup_filter[] ID=ingroup_filter[] multiple>";
 $o=0;
 while ($o < $ingroups_to_print)
 	{
 	if (preg_match("/\|$LISTingroups[$o]\|/",$ingroup_string))
-		{$select_list .= "<option selected value='$LISTingroups[$o]'>"._QXZ("$LISTingroups[$o]")." - "._QXZ("$LISTingroup_names[$o]")."</option>";}
+		{$select_list .= "<option selected value='$LISTingroups[$o]'>$LISTingroups[$o] - $LISTingroup_names[$o]</option>";}
 	else
 		{
 		if ( ($in_group_none > 0) and ($LISTingroups[$o] == 'ALL-INGROUPS') )
-			{$select_list .= "<option selected value='$LISTingroups[$o]'>"._QXZ("$LISTingroups[$o]")." - "._QXZ("$LISTingroup_names[$o]")."</option>";}
+			{$select_list .= "<option selected value='$LISTingroups[$o]'>$LISTingroups[$o] - $LISTingroup_names[$o]</option>";}
 		else
-			{$select_list .= "<option value='$LISTingroups[$o]'>"._QXZ("$LISTingroups[$o]")."- "._QXZ("$LISTingroup_names[$o]")."</option>";}
+			{$select_list .= "<option value='$LISTingroups[$o]'>$LISTingroups[$o]- $LISTingroup_names[$o]</option>";}
 		}
 	$o++;
 	}
 $select_list .= "</SELECT>";
 
 $select_list .= "</TD><TD VALIGN=TOP ALIGN=CENTER>";
-$select_list .= "<a href='#' onclick=\\\"hideDiv('campaign_select_list');\\\">"._QXZ("Close Panel")."</a><BR><BR>";
+$select_list .= "<a href='#' onclick=\\\"hideDiv('campaign_select_list');\\\">"._("Close Panel")."</a><BR><BR>";
 $select_list .= "<TABLE CELLPADDING=2 CELLSPACING=2 BORDER=0>";
 
 $select_list .= "<TR><TD align=right>";
-$select_list .= _QXZ("Screen Refresh Rate").":  </TD><TD align=left><SELECT SIZE=1 NAME=RR ID=RR>";
-$select_list .= "<option value='4'";   if ($RR < 5) {$select_list .= " selected";}    $select_list .= ">4 "._QXZ("seconds")."</option>";
-$select_list .= "<option value='10'";   if ( ($RR >= 5) and ($RR <=10) ) {$select_list .= " selected";}    $select_list .= ">10 "._QXZ("seconds")."</option>";
-$select_list .= "<option value='20'";   if ( ($RR >= 11) and ($RR <=20) ) {$select_list .= " selected";}    $select_list .= ">20 "._QXZ("seconds")."</option>";
-$select_list .= "<option value='30'";   if ( ($RR >= 21) and ($RR <=30) ) {$select_list .= " selected";}    $select_list .= ">30 "._QXZ("seconds")."</option>";
-$select_list .= "<option value='40'";   if ( ($RR >= 31) and ($RR <=40) ) {$select_list .= " selected";}    $select_list .= ">40 "._QXZ("seconds")."</option>";
-$select_list .= "<option value='60'";   if ( ($RR >= 41) and ($RR <=60) ) {$select_list .= " selected";}    $select_list .= ">60 "._QXZ("seconds")."</option>";
-$select_list .= "<option value='120'";   if ( ($RR >= 61) and ($RR <=120) ) {$select_list .= " selected";}    $select_list .= ">2 "._QXZ("minutes")."</option>";
-$select_list .= "<option value='300'";   if ( ($RR >= 121) and ($RR <=300) ) {$select_list .= " selected";}    $select_list .= ">5 "._QXZ("minutes")."</option>";
-$select_list .= "<option value='600'";   if ( ($RR >= 301) and ($RR <=600) ) {$select_list .= " selected";}    $select_list .= ">10 "._QXZ("minutes")."</option>";
-$select_list .= "<option value='1200'";   if ( ($RR >= 601) and ($RR <=1200) ) {$select_list .= " selected";}    $select_list .= ">20 "._QXZ("minutes")."</option>";
-$select_list .= "<option value='1800'";   if ( ($RR >= 1201) and ($RR <=1800) ) {$select_list .= " selected";}    $select_list .= ">30 "._QXZ("minutes")."</option>";
-$select_list .= "<option value='2400'";   if ( ($RR >= 1801) and ($RR <=2400) ) {$select_list .= " selected";}    $select_list .= ">40 "._QXZ("minutes")."</option>";
-$select_list .= "<option value='3600'";   if ( ($RR >= 2401) and ($RR <=3600) ) {$select_list .= " selected";}    $select_list .= ">60 "._QXZ("minutes")."</option>";
-$select_list .= "<option value='7200'";   if ( ($RR >= 3601) and ($RR <=7200) ) {$select_list .= " selected";}    $select_list .= ">2 "._QXZ("hours")."</option>";
-$select_list .= "<option value='63072000'";   if ($RR >= 7201) {$select_list .= " selected";}    $select_list .= ">2 "._QXZ("years")."</option>";
+$select_list .= _("Screen Refresh Rate").":  </TD><TD align=left><SELECT SIZE=1 NAME=RR ID=RR>";
+$select_list .= "<option value='4'";   if ($RR < 5) {$select_list .= " selected";}    $select_list .= ">4 "._("seconds")."</option>";
+$select_list .= "<option value='10'";   if ( ($RR >= 5) and ($RR <=10) ) {$select_list .= " selected";}    $select_list .= ">10 "._("seconds")."</option>";
+$select_list .= "<option value='20'";   if ( ($RR >= 11) and ($RR <=20) ) {$select_list .= " selected";}    $select_list .= ">20 "._("seconds")."</option>";
+$select_list .= "<option value='30'";   if ( ($RR >= 21) and ($RR <=30) ) {$select_list .= " selected";}    $select_list .= ">30 "._("seconds")."</option>";
+$select_list .= "<option value='40'";   if ( ($RR >= 31) and ($RR <=40) ) {$select_list .= " selected";}    $select_list .= ">40 "._("seconds")."</option>";
+$select_list .= "<option value='60'";   if ( ($RR >= 41) and ($RR <=60) ) {$select_list .= " selected";}    $select_list .= ">60 "._("seconds")."</option>";
+$select_list .= "<option value='120'";   if ( ($RR >= 61) and ($RR <=120) ) {$select_list .= " selected";}    $select_list .= ">2 "._("minutes")."</option>";
+$select_list .= "<option value='300'";   if ( ($RR >= 121) and ($RR <=300) ) {$select_list .= " selected";}    $select_list .= ">5 "._("minutes")."</option>";
+$select_list .= "<option value='600'";   if ( ($RR >= 301) and ($RR <=600) ) {$select_list .= " selected";}    $select_list .= ">10 "._("minutes")."</option>";
+$select_list .= "<option value='1200'";   if ( ($RR >= 601) and ($RR <=1200) ) {$select_list .= " selected";}    $select_list .= ">20 "._("minutes")."</option>";
+$select_list .= "<option value='1800'";   if ( ($RR >= 1201) and ($RR <=1800) ) {$select_list .= " selected";}    $select_list .= ">30 "._("minutes")."</option>";
+$select_list .= "<option value='2400'";   if ( ($RR >= 1801) and ($RR <=2400) ) {$select_list .= " selected";}    $select_list .= ">40 "._("minutes")."</option>";
+$select_list .= "<option value='3600'";   if ( ($RR >= 2401) and ($RR <=3600) ) {$select_list .= " selected";}    $select_list .= ">60 "._("minutes")."</option>";
+$select_list .= "<option value='7200'";   if ( ($RR >= 3601) and ($RR <=7200) ) {$select_list .= " selected";}    $select_list .= ">2 "._("hours")."</option>";
+$select_list .= "<option value='63072000'";   if ($RR >= 7201) {$select_list .= " selected";}    $select_list .= ">2 "._("years")."</option>";
 $select_list .= "</SELECT></TD></TR>";
 
 $select_list .= "<TR><TD align=right>";
-$select_list .= _QXZ("Inbound").":  </TD><TD align=left><SELECT SIZE=1 NAME=with_inbound ID=with_inbound>";
+$select_list .= _("Inbound").":  </TD><TD align=left><SELECT SIZE=1 NAME=with_inbound ID=with_inbound>";
 $select_list .= "<option value='N'";
 	if ($with_inbound=='N') {$select_list .= " selected";}
-$select_list .= ">"._QXZ("No")."</option>";
+$select_list .= ">"._("No")."</option>";
 $select_list .= "<option value='Y'";
 	if ($with_inbound=='Y') {$select_list .= " selected";}
-$select_list .= ">"._QXZ("Yes")."</option>";
+$select_list .= ">"._("Yes")."</option>";
 $select_list .= "<option value='O'";
 	if ($with_inbound=='O') {$select_list .= " selected";}
-$select_list .= ">"._QXZ("Only")."</option>";
+$select_list .= ">"._("Only")."</option>";
 $select_list .= "</SELECT></TD></TR>";
 
 $select_list .= "<TR><TD align=right>";
-$select_list .= _QXZ("Monitor").":  </TD><TD align=left><SELECT SIZE=1 NAME=monitor_active ID=monitor_active>";
+$select_list .= _("Monitor").":  </TD><TD align=left><SELECT SIZE=1 NAME=monitor_active ID=monitor_active>";
 $select_list .= "<option value=''";
 	if (strlen($monitor_active) < 2) {$select_list .= " selected";}
-$select_list .= ">"._QXZ("NONE")."</option>";
+$select_list .= ">"._("NONE")."</option>";
 if (preg_match("/MONITOR/",$RS_ListenBarge) )
 	{
 	$select_list .= "<option value='MONITOR'";
 		if ($monitor_active=='MONITOR') {$select_list .= " selected";}
-	$select_list .= ">"._QXZ("MONITOR")."</option>";
+	$select_list .= ">"._("MONITOR")."</option>";
 	}
 if (preg_match("/BARGE/",$RS_ListenBarge) )
 	{
 	$select_list .= "<option value='BARGE'";
 		if ($monitor_active=='BARGE') {$select_list .= " selected";}
-	$select_list .= ">"._QXZ("BARGE")."</option>";
+	$select_list .= ">"._("BARGE")."</option>";
 	}
 if ( ($agent_whisper_enabled == '1') and (preg_match("/WHISPER/",$RS_ListenBarge) ) )
 	{
 	$select_list .= "<option value='WHISPER'";
 		if ($monitor_active=='WHISPER') {$select_list .= " selected";}
-	$select_list .= ">"._QXZ("WHISPER")."</option>";
+	$select_list .= ">"._("WHISPER")."</option>";
 	}
 #$select_list .= "<option value='HIJACK'";
 #	if ($monitor_active=='HIJACK') {$select_list .= " selected";}
@@ -921,7 +923,7 @@ if ( ($agent_whisper_enabled == '1') and (preg_match("/WHISPER/",$RS_ListenBarge
 $select_list .= "</SELECT></TD></TR>";
 
 $select_list .= "<TR><TD align=right>";
-$select_list .= _QXZ("Phone").":  </TD><TD align=left>";
+$select_list .= _("Phone").":  </TD><TD align=left>";
 $select_list .= "<INPUT type=text size=10 maxlength=20 NAME=monitor_phone ID=monitor_phone VALUE='$monitor_phone'>";
 $select_list .= "</TD></TR>";
 $select_list .= "<TR><TD align=center COLSPAN=2> &nbsp; </TD></TR>";
@@ -929,9 +931,9 @@ $select_list .= "<TR><TD align=center COLSPAN=2> &nbsp; </TD></TR>";
 if ($UGdisplay > 0)
 	{
 	$select_list .= "<TR><TD align=right>";
-	$select_list .= _QXZ("Select User Group").":  </TD><TD align=left>";
+	$select_list .= _("Select User Group").":  </TD><TD align=left>";
 	$select_list .= "<SELECT SIZE=1 NAME=usergroup ID=usergroup>";
-	$select_list .= "<option value=''>"._QXZ("ALL USER GROUPS")."</option>";
+	$select_list .= "<option value=''>"._("ALL USER GROUPS")."</option>";
 	$o=0;
 	while ($usergroups_to_print > $o)
 		{
@@ -943,33 +945,33 @@ if ($UGdisplay > 0)
 	}
 
 $select_list .= "<TR><TD align=right>";
-$select_list .= _QXZ("Dialable Leads Alert").":  </TD><TD align=left><SELECT SIZE=1 NAME=NOLEADSalert ID=NOLEADSalert>";
+$select_list .= _("Dialable Leads Alert").":  </TD><TD align=left><SELECT SIZE=1 NAME=NOLEADSalert ID=NOLEADSalert>";
 $select_list .= "<option value=''";
 	if (strlen($NOLEADSalert) < 2) {$select_list .= " selected";}
-$select_list .= ">"._QXZ("NO")."</option>";
+$select_list .= ">"._("NO")."</option>";
 $select_list .= "<option value='YES'";
 	if ($NOLEADSalert=='YES') {$select_list .= " selected";}
-$select_list .= ">"._QXZ("YES")."</option>";
+$select_list .= ">"._("YES")."</option>";
 $select_list .= "</SELECT></TD></TR>";
 
 $select_list .= "<TR><TD align=right>";
-$select_list .= _QXZ("Show Drop In-Group Row").":  </TD><TD align=left><SELECT SIZE=1 NAME=DROPINGROUPstats ID=DROPINGROUPstats>";
+$select_list .= _("Show Drop In-Group Row").":  </TD><TD align=left><SELECT SIZE=1 NAME=DROPINGROUPstats ID=DROPINGROUPstats>";
 $select_list .= "<option value='0'";
 	if ($DROPINGROUPstats < 1) {$select_list .= " selected";}
-$select_list .= ">"._QXZ("NO")."</option>";
+$select_list .= ">"._("NO")."</option>";
 $select_list .= "<option value='1'";
 	if ($DROPINGROUPstats=='1') {$select_list .= " selected";}
-$select_list .= ">"._QXZ("YES")."</option>";
+$select_list .= ">"._("YES")."</option>";
 $select_list .= "</SELECT></TD></TR>";
 
 $select_list .= "<TR><TD align=right>";
-$select_list .= _QXZ("Show Carrier Stats").":  </TD><TD align=left><SELECT SIZE=1 NAME=CARRIERstats ID=CARRIERstats>";
+$select_list .= _("Show Carrier Stats").":  </TD><TD align=left><SELECT SIZE=1 NAME=CARRIERstats ID=CARRIERstats>";
 $select_list .= "<option value='0'";
 	if ($CARRIERstats < 1) {$select_list .= " selected";}
-$select_list .= ">"._QXZ("NO")."</option>";
+$select_list .= ">"._("NO")."</option>";
 $select_list .= "<option value='1'";
 	if ($CARRIERstats=='1') {$select_list .= " selected";}
-$select_list .= ">"._QXZ("YES")."</option>";
+$select_list .= ">"._("YES")."</option>";
 $select_list .= "</SELECT></TD></TR>";
 
 ## find if any selected campaigns have presets enabled
@@ -986,13 +988,13 @@ if ($presets_enabled_count > 0)
 if ($presets_enabled > 0)
 	{
 	$select_list .= "<TR><TD align=right>";
-	$select_list .= _QXZ("Show Presets Stats").":  </TD><TD align=left><SELECT SIZE=1 NAME=PRESETstats ID=PRESETstats>";
+	$select_list .= _("Show Presets Stats").":  </TD><TD align=left><SELECT SIZE=1 NAME=PRESETstats ID=PRESETstats>";
 	$select_list .= "<option value='0'";
 		if ($PRESETstats < 1) {$select_list .= " selected";}
-	$select_list .= ">"._QXZ("NO")."</option>";
+	$select_list .= ">"._("NO")."</option>";
 	$select_list .= "<option value='1'";
 		if ($PRESETstats=='1') {$select_list .= " selected";}
-	$select_list .= ">"._QXZ("YES")."</option>";
+	$select_list .= ">"._("YES")."</option>";
 	$select_list .= "</SELECT></TD></TR>";
 	}
 else
@@ -1001,60 +1003,60 @@ else
 	}
 
 $select_list .= "<TR><TD align=right>";
-$select_list .= _QXZ("Agent Time Stats").":  </TD><TD align=left><SELECT SIZE=1 NAME=AGENTtimeSTATS ID=AGENTtimeSTATS>";
+$select_list .= _("Agent Time Stats").":  </TD><TD align=left><SELECT SIZE=1 NAME=AGENTtimeSTATS ID=AGENTtimeSTATS>";
 $select_list .= "<option value='0'";
 	if ($AGENTtimeSTATS < 1) {$select_list .= " selected";}
-$select_list .= ">"._QXZ("NO")."</option>";
+$select_list .= ">"._("NO")."</option>";
 $select_list .= "<option value='1'";
 	if ($AGENTtimeSTATS=='1') {$select_list .= " selected";}
-$select_list .= ">"._QXZ("YES")."</option>";
+$select_list .= ">"._("YES")."</option>";
 $select_list .= "</SELECT></TD></TR>";
 
 $select_list .= "<TR><TD align=right>";
-$select_list .= _QXZ("In-group color override").":  </TD><TD align=left><SELECT SIZE=1 NAME=INGROUPcolorOVERRIDE ID=INGROUPcolorOVERRIDE>";
+$select_list .= _("In-group color override").":  </TD><TD align=left><SELECT SIZE=1 NAME=INGROUPcolorOVERRIDE ID=INGROUPcolorOVERRIDE>";
 $select_list .= "<option value='0'";
 	if ($INGROUPcolorOVERRIDE < 1) {$select_list .= " selected";}
-$select_list .= ">"._QXZ("NO")."</option>";
+$select_list .= ">"._("NO")."</option>";
 $select_list .= "<option value='1'";
 	if ($INGROUPcolorOVERRIDE=='1') {$select_list .= " selected";}
-$select_list .= ">"._QXZ("YES")."</option>";
+$select_list .= ">"._("YES")."</option>";
 $select_list .= "</SELECT></TD></TR>";
 
 $select_list .= "<TR><TD align=right>";
-$select_list .= _QXZ("Display as").":  </TD><TD align=left><SELECT SIZE=1 NAME=report_display_type ID=report_display_type>";
+$select_list .= _("Display as").":  </TD><TD align=left><SELECT SIZE=1 NAME=report_display_type ID=report_display_type>";
 $select_list .= "<option value='TEXT'";
 	if ($report_display_type=='TEXT') {$select_list .= " selected";}
-$select_list .= ">"._QXZ("TEXT")."</option>";
+$select_list .= ">"._("TEXT")."</option>";
 $select_list .= "<option value='HTML'";
 	if ($report_display_type=='HTML') {$select_list .= " selected";}
-$select_list .= ">"._QXZ("HTML")."</option>";
+$select_list .= ">"._("HTML")."</option>";
 $select_list .= "<option value='WALL_1'";
 	if ($report_display_type=='WALL_1') {$select_list .= " selected";}
-$select_list .= ">"._QXZ("WALL_1")."</option>";
+$select_list .= ">"._("WALL_1")."</option>";
 $select_list .= "<option value='WALL_2'";
 	if ($report_display_type=='WALL_2') {$select_list .= " selected";}
-$select_list .= ">"._QXZ("WALL_2")."</option>";
+$select_list .= ">"._("WALL_2")."</option>";
 $select_list .= "<option value='WALL_3'";
 	if ($report_display_type=='WALL_3') {$select_list .= " selected";}
-$select_list .= ">"._QXZ("WALL_3")."</option>";
+$select_list .= ">"._("WALL_3")."</option>";
 $select_list .= "<option value='WALL_4'";
 	if ($report_display_type=='WALL_4') {$select_list .= " selected";}
-$select_list .= ">"._QXZ("WALL_4")."</option>";
+$select_list .= ">"._("WALL_4")."</option>";
 $select_list .= "</SELECT></TD></TR>";
 
 
 $select_list .= "</TABLE><BR>";
 $select_list .= "<INPUT type=hidden name=droppedOFtotal value='$droppedOFtotal'>";
-$select_list .= "<INPUT type=button VALUE='"._QXZ("SUBMIT")."' onclick=\\\"update_variables('form_submit','');\\\"><FONT FACE='ARIAL,HELVETICA' COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; ";
+$select_list .= "<INPUT type=button VALUE='"._("SUBMIT")."' onclick=\\\"update_variables('form_submit','');\\\"><FONT FACE='ARIAL,HELVETICA' COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; ";
 $select_list .= "</TD></TR>";
 $select_list .= "<TR><TD ALIGN=CENTER>";
 $select_list .= "<font class='top_settings_val'> &nbsp; </font>";
 $select_list .= "</TD>";
 $select_list .= "<TD NOWRAP align=right>";
-$select_list .= "<font class='top_settings_val'>"._QXZ("VERSION").": $version &nbsp; "._QXZ("BUILD").": $build</font>";
+$select_list .= "<font class='top_settings_val'>"._("VERSION").": $version &nbsp; "._("BUILD").": $build</font>";
 $select_list .= "</TD></TR></TABLE>";
 
-$open_list = '<TABLE WIDTH=250 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\'#D9E6FE\'><TR><TD ALIGN=CENTER><a href=\'#\' onclick=\\"showDiv(\'campaign_select_list\');\\"><font class=\'top_settings_val\'>'._QXZ("Choose Report Display Options").'</a></TD></TR></TABLE>';
+$open_list = '<TABLE WIDTH=250 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\'#D9E6FE\'><TR><TD ALIGN=CENTER><a href=\'#\' onclick=\\"showDiv(\'campaign_select_list\');\\"><font class=\'top_settings_val\'>'._("Choose Report Display Options").'</a></TD></TR></TABLE>';
 
 
 
@@ -1273,13 +1275,13 @@ function ShowWebphone(divvis)
 		{
 		divref = document.getElementById('webphone_content').style;
 		divref.visibility = 'visible';
-		document.getElementById("webphone_visibility").innerHTML = "<a href=\"#\" onclick=\"ShowWebphone('hide');\"><?php echo _QXZ("webphone"); ?> -</a>";
+		document.getElementById("webphone_visibility").innerHTML = "<a href=\"#\" onclick=\"ShowWebphone('hide');\"><?php echo _("webphone"); ?> -</a>";
 		}
 	else
 		{
 		divref = document.getElementById('webphone_content').style;
 		divref.visibility = 'hidden';
-		document.getElementById("webphone_visibility").innerHTML = "<a href=\"#\" onclick=\"ShowWebphone('show');\"><?php echo _QXZ("webphone"); ?> +</a>";
+		document.getElementById("webphone_visibility").innerHTML = "<a href=\"#\" onclick=\"ShowWebphone('show');\"><?php echo _("webphone"); ?> +</a>";
 		}
 	}
 
@@ -1324,7 +1326,7 @@ function send_monitor(session_id,server_ip,stage)
 				if (Xoutput.match(regXFerr))
 					{alert(xmlhttp.responseText);}
 				if (Xoutput.match(regXFscs))
-					{alert("<?php echo _QXZ("SUCCESS: calling"); ?> " + monitor_phone);}
+					{alert("<?php echo _("SUCCESS: calling"); ?> " + monitor_phone);}
 				}
 			}
 		delete xmlhttp;
@@ -1590,40 +1592,40 @@ function update_variables(task_option,task_choice,force_reload)
 		}
 	if (task_option == 'adastats')
 		{
-		if (adastats == '1') {adastats='2';   document.getElementById("adastatsTXT").innerHTML = "- <?php echo _QXZ("VIEW LESS"); ?>";}
-		else {adastats='1';   document.getElementById("adastatsTXT").innerHTML = "+ <?php echo _QXZ("VIEW MORE"); ?>";}
+		if (adastats == '1') {adastats='2';   document.getElementById("adastatsTXT").innerHTML = "- <?php echo _("VIEW LESS"); ?>";}
+		else {adastats='1';   document.getElementById("adastatsTXT").innerHTML = "+ <?php echo _("VIEW MORE"); ?>";}
 		}
 	if (task_option == 'UGdisplay')
 		{
-		if (UGdisplay == '1') {UGdisplay='0';   document.getElementById("UGdisplayTXT").innerHTML = "<?php echo _QXZ("VIEW USER GROUP"); ?>";}
-		else {UGdisplay='1';   document.getElementById("UGdisplayTXT").innerHTML = "<?php echo _QXZ("HIDE USER GROUP"); ?>";}
+		if (UGdisplay == '1') {UGdisplay='0';   document.getElementById("UGdisplayTXT").innerHTML = "<?php echo _("VIEW USER GROUP"); ?>";}
+		else {UGdisplay='1';   document.getElementById("UGdisplayTXT").innerHTML = "<?php echo _("HIDE USER GROUP"); ?>";}
 		}
 	if (task_option == 'SERVdisplay')
 		{
-		if (SERVdisplay == '1') {SERVdisplay='0';   document.getElementById("SERVdisplayTXT").innerHTML = "<?php echo _QXZ("SHOW SERVER INFO"); ?>";}
-		else {SERVdisplay='1';   document.getElementById("SERVdisplayTXT").innerHTML = "<?php echo _QXZ("HIDE SERVER INFO"); ?>";}
+		if (SERVdisplay == '1') {SERVdisplay='0';   document.getElementById("SERVdisplayTXT").innerHTML = "<?php echo _("SHOW SERVER INFO"); ?>";}
+		else {SERVdisplay='1';   document.getElementById("SERVdisplayTXT").innerHTML = "<?php echo _("HIDE SERVER INFO"); ?>";}
 		}
 	if (task_option == 'CALLSdisplay')
 		{
-		if (CALLSdisplay == '1') {CALLSdisplay='0';   document.getElementById("CALLSdisplayTXT").innerHTML = "<?php echo _QXZ("SHOW WAITING CALLS"); ?>";}
-		else {CALLSdisplay='1';   document.getElementById("CALLSdisplayTXT").innerHTML = "<?php echo _QXZ("HIDE WAITING CALLS"); ?>";}
+		if (CALLSdisplay == '1') {CALLSdisplay='0';   document.getElementById("CALLSdisplayTXT").innerHTML = "<?php echo _("SHOW WAITING CALLS"); ?>";}
+		else {CALLSdisplay='1';   document.getElementById("CALLSdisplayTXT").innerHTML = "<?php echo _("HIDE WAITING CALLS"); ?>";}
 		}
 	if (task_option == 'PHONEdisplay')
 		{
-		if (PHONEdisplay == '1') {PHONEdisplay='0';   document.getElementById("PHONEdisplayTXT").innerHTML = "<?php echo _QXZ("SHOW PHONES"); ?>";}
-		else {PHONEdisplay='1';   document.getElementById("PHONEdisplayTXT").innerHTML = "<?php echo _QXZ("HIDE PHONES"); ?>";}
+		if (PHONEdisplay == '1') {PHONEdisplay='0';   document.getElementById("PHONEdisplayTXT").innerHTML = "<?php echo _("SHOW PHONES"); ?>";}
+		else {PHONEdisplay='1';   document.getElementById("PHONEdisplayTXT").innerHTML = "<?php echo _("HIDE PHONES"); ?>";}
 		}
 	if (task_option == 'CUSTPHONEdisplay')
 		{
 		var CustPhoneTemp = CUSTPHONEdisplay;
-		if (CustPhoneTemp == '1') {CUSTPHONEdisplay='2';   document.getElementById("CUSTPHONEdisplayTXT").innerHTML = "<?php echo _QXZ("HIDE CUSTPHONES"); ?>";}
-		if (CustPhoneTemp == '2') {CUSTPHONEdisplay='0';   document.getElementById("CUSTPHONEdisplayTXT").innerHTML = "<?php echo _QXZ("SHOW CUSTPHONES (long)"); ?>";}
-		if (CustPhoneTemp == '0') {CUSTPHONEdisplay='1';   document.getElementById("CUSTPHONEdisplayTXT").innerHTML = "<?php echo _QXZ("SHOW CUSTPHONES (short)"); ?>";}
+		if (CustPhoneTemp == '1') {CUSTPHONEdisplay='2';   document.getElementById("CUSTPHONEdisplayTXT").innerHTML = "<?php echo _("HIDE CUSTPHONES"); ?>";}
+		if (CustPhoneTemp == '2') {CUSTPHONEdisplay='0';   document.getElementById("CUSTPHONEdisplayTXT").innerHTML = "<?php echo _("SHOW CUSTPHONES (long)"); ?>";}
+		if (CustPhoneTemp == '0') {CUSTPHONEdisplay='1';   document.getElementById("CUSTPHONEdisplayTXT").innerHTML = "<?php echo _("SHOW CUSTPHONES (short)"); ?>";}
 		}
 	if (task_option == 'ALLINGROUPstats')
 		{
-		if (ALLINGROUPstats == '1') {ALLINGROUPstats='0';   document.getElementById("ALLINGROUPstatsTXT").innerHTML = "<?php echo _QXZ("SHOW IN-GROUP STATS"); ?>";}
-		else {ALLINGROUPstats='1';   document.getElementById("ALLINGROUPstatsTXT").innerHTML = "<?php echo _QXZ("HIDE IN-GROUP STATS"); ?>";}
+		if (ALLINGROUPstats == '1') {ALLINGROUPstats='0';   document.getElementById("ALLINGROUPstatsTXT").innerHTML = "<?php echo _("SHOW IN-GROUP STATS"); ?>";}
+		else {ALLINGROUPstats='1';   document.getElementById("ALLINGROUPstatsTXT").innerHTML = "<?php echo _("HIDE IN-GROUP STATS"); ?>";}
 		}
 	if (task_option == 'form_submit')
 		{
@@ -1846,7 +1848,7 @@ $row=mysqli_fetch_row($rslt);
 $campaign_allow_inbound = $row[0];
 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
-echo "<TITLE>"._QXZ("$report_name").": $group</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
+echo "<TITLE>$report_name: $group</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 
 	$short_header=1;
 
@@ -1877,10 +1879,10 @@ echo "<INPUT TYPE=HIDDEN NAME=cursorY ID=cursorY>\n";
 #echo "<INPUT TYPE=HIDDEN NAME=PRESETstats ID=PRESETstats VALUE=\"$PRESETstats\">\n";
 #echo "<INPUT TYPE=HIDDEN NAME=AGENTtimeSTATS ID=AGENTtimeSTATS VALUE=\"$AGENTtimeSTATS\">\n";
 
-echo "<font class='top_head_key'>"._QXZ("$report_name")." &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; \n";
+echo "<font class='top_head_key'>$report_name &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; \n";
 echo "<span style=\"position:absolute;left:160px;z-index:20;\" id=campaign_select_list_link>\n";
 echo "<TABLE WIDTH=250 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#D9E6FE\"><TR><TD ALIGN=CENTER>\n";
-echo "<a href=\"#\" onclick=\"showDiv('campaign_select_list');\"><font class='top_head_key'>"._QXZ("Choose Report Display Options")."</a>";
+echo "<a href=\"#\" onclick=\"showDiv('campaign_select_list');\"><font class='top_head_key'>"._("Choose Report Display Options")."</a>";
 echo "</TD></TR></TABLE>\n";
 echo "</span>\n";
 echo "<span style=\"position:absolute;left:0px;z-index:21;\" id=campaign_select_list>\n";
@@ -1896,31 +1898,31 @@ echo "</span>\n";
 echo "<span style=\"position:absolute;left:10px;top:120px;z-index:14;\" id=agent_ingroup_display>\n";
 echo " &nbsp; ";
 echo "</span>\n";
-echo "<a href=\"#\" onclick=\"update_variables('form_submit','','YES')\"><font class='top_settings_val'>"._QXZ("RELOAD NOW")."</font></a>";
+echo "<a href=\"#\" onclick=\"update_variables('form_submit','','YES')\"><font class='top_settings_val'>"._("RELOAD NOW")."</font></a>";
 if ($LOGuser_level > 7)
 	{
 	if (preg_match('/ALL\-ACTIVE/i',$group_string))
-		{echo " &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=10\"><font class='top_settings_val'>"._QXZ("MODIFY")."</font></a> | \n";}
+		{echo " &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=10\"><font class='top_settings_val'>"._("MODIFY")."</font></a> | \n";}
 	else
-		{echo " &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=34&campaign_id=$group\"><font class='top_settings_val'>"._QXZ("MODIFY")."</font></a> | \n";}
+		{echo " &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=34&campaign_id=$group\"><font class='top_settings_val'>"._("MODIFY")."</font></a> | \n";}
 	}
 
 if ($SUMMARYauth > 0)
-	{echo "<a href=\"./AST_timeonVDADallSUMMARY.php?RR=$RR&DB=$DB&adastats=$adastats\"><font class='top_settings_val'>"._QXZ("SUMMARY")."</font></a> \n";}
+	{echo "<a href=\"./AST_timeonVDADallSUMMARY.php?RR=$RR&DB=$DB&adastats=$adastats\"><font class='top_settings_val'>"._("SUMMARY")."</font></a> \n";}
 
 if ($RS_logoutLINK > 0)
-	{echo " | <a href=\"./admin.php?force_logout=1\"><font class='top_settings_val'>"._QXZ("LOGOUT")."</font></a> \n";}
+	{echo " | <a href=\"./admin.php?force_logout=1\"><font class='top_settings_val'>"._("LOGOUT")."</font></a> \n";}
 
 echo "</FONT>\n";
 
 
 
-echo " &nbsp; &nbsp; &nbsp; <font class='top_settings_val'>"._QXZ("refresh").": <span id=refresh_countdown name=refresh_countdown></span></font>\n\n";
+echo " &nbsp; &nbsp; &nbsp; <font class='top_settings_val'>"._("refresh").": <span id=refresh_countdown name=refresh_countdown></span></font>\n\n";
 
 if (!preg_match("/WALL/",$report_display_type))
 	{
 	if ($is_webphone == 'Y')
-		{echo " &nbsp; &nbsp; &nbsp; <span id=webphone_visibility name=webphone_visibility><a href=\"#\" onclick=\"ShowWebphone('show');\"><font class='top_settings_val'>"._QXZ("webphone")." +</font></a></span>\n\n";}
+		{echo " &nbsp; &nbsp; &nbsp; <span id=webphone_visibility name=webphone_visibility><a href=\"#\" onclick=\"ShowWebphone('show');\"><font class='top_settings_val'>"._("webphone")." +</font></a></span>\n\n";}
 	else
 		{echo " &nbsp; &nbsp; &nbsp; <span id=webphone_visibility name=webphone_visibility></span>\n\n";}
 
@@ -1930,37 +1932,37 @@ if (!preg_match("/WALL/",$report_display_type))
 
 
 	if ($adastats<2)
-		{echo " &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"update_variables('adastats','');\"><font class=\"top_settings_val\"><span id=adastatsTXT>+ "._QXZ("VIEW MORE")."</span></font></a>";}
+		{echo " &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"update_variables('adastats','');\"><font class=\"top_settings_val\"><span id=adastatsTXT>+ "._("VIEW MORE")."</span></font></a>";}
 	else
-		{echo " &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"update_variables('adastats','');\"><font class=\"top_settings_val\"><span id=adastatsTXT>- "._QXZ("VIEW LESS")."</span></font></a>";}
+		{echo " &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"update_variables('adastats','');\"><font class=\"top_settings_val\"><span id=adastatsTXT>- "._("VIEW LESS")."</span></font></a>";}
 	if ($UGdisplay>0)
-		{echo " &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"update_variables('UGdisplay','');\"><font class=\"top_settings_val\"><span id=UGdisplayTXT>"._QXZ("HIDE USER GROUP")."</span></font></a>";}
+		{echo " &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"update_variables('UGdisplay','');\"><font class=\"top_settings_val\"><span id=UGdisplayTXT>"._("HIDE USER GROUP")."</span></font></a>";}
 	else
-		{echo " &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"update_variables('UGdisplay','');\"><font class=\"top_settings_val\"><span id=UGdisplayTXT>"._QXZ("VIEW USER GROUP")."</span></font></a>";}
+		{echo " &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"update_variables('UGdisplay','');\"><font class=\"top_settings_val\"><span id=UGdisplayTXT>"._("VIEW USER GROUP")."</span></font></a>";}
 	if ($SERVdisplay>0)
-		{echo " &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"update_variables('SERVdisplay','');\"><font class=\"top_settings_val\"><span id=SERVdisplayTXT>"._QXZ("HIDE SERVER INFO")."</span></font></a>";}
+		{echo " &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"update_variables('SERVdisplay','');\"><font class=\"top_settings_val\"><span id=SERVdisplayTXT>"._("HIDE SERVER INFO")."</span></font></a>";}
 	else
-		{echo " &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"update_variables('SERVdisplay','');\"><font class=\"top_settings_val\"><span id=SERVdisplayTXT>"._QXZ("SHOW SERVER INFO")."</span></font></a>";}
+		{echo " &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"update_variables('SERVdisplay','');\"><font class=\"top_settings_val\"><span id=SERVdisplayTXT>"._("SHOW SERVER INFO")."</span></font></a>";}
 	if ($CALLSdisplay>0)
-		{echo " &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"update_variables('CALLSdisplay','');\"><font class=\"top_settings_val\"><span id=CALLSdisplayTXT>"._QXZ("HIDE WAITING CALLS")."</span></font></a>";}
+		{echo " &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"update_variables('CALLSdisplay','');\"><font class=\"top_settings_val\"><span id=CALLSdisplayTXT>"._("HIDE WAITING CALLS")."</span></font></a>";}
 	else
-		{echo " &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"update_variables('CALLSdisplay','');\"><font class=\"top_settings_val\"><span id=CALLSdisplayTXT>"._QXZ("SHOW WAITING CALLS")."</span></font></a>";}
+		{echo " &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"update_variables('CALLSdisplay','');\"><font class=\"top_settings_val\"><span id=CALLSdisplayTXT>"._("SHOW WAITING CALLS")."</span></font></a>";}
 	if ($ALLINGROUPstats>0)
-		{echo " &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"update_variables('ALLINGROUPstats','');\"><font class=\"top_settings_val\"><span id=ALLINGROUPstatsTXT>"._QXZ("HIDE IN-GROUP STATS")."</span></font></a>";}
+		{echo " &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"update_variables('ALLINGROUPstats','');\"><font class=\"top_settings_val\"><span id=ALLINGROUPstatsTXT>"._("HIDE IN-GROUP STATS")."</span></font></a>";}
 	else
-		{echo " &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"update_variables('ALLINGROUPstats','');\"><font class=\"top_settings_val\"><span id=ALLINGROUPstatsTXT>"._QXZ("SHOW IN-GROUP STATS")."</span></font></a>";}
+		{echo " &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"update_variables('ALLINGROUPstats','');\"><font class=\"top_settings_val\"><span id=ALLINGROUPstatsTXT>"._("SHOW IN-GROUP STATS")."</span></font></a>";}
 	if ($PHONEdisplay>0)
-		{echo " &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"update_variables('PHONEdisplay','');\"><font class=\"top_settings_val\"><span id=PHONEdisplayTXT>"._QXZ("HIDE PHONES")."</span></font></a>";}
+		{echo " &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"update_variables('PHONEdisplay','');\"><font class=\"top_settings_val\"><span id=PHONEdisplayTXT>"._("HIDE PHONES")."</span></font></a>";}
 	else
-		{echo " &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"update_variables('PHONEdisplay','');\"><font class=\"top_settings_val\"><span id=PHONEdisplayTXT>"._QXZ("SHOW PHONES")."</span></font></a>";}
+		{echo " &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"update_variables('PHONEdisplay','');\"><font class=\"top_settings_val\"><span id=PHONEdisplayTXT>"._("SHOW PHONES")."</span></font></a>";}
 	if ($CUSTPHONEdisplay == 2) {
-		echo " &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"update_variables('CUSTPHONEdisplay','0');\"><font class=\"top_settings_val\"><span id=CUSTPHONEdisplayTXT>"._QXZ("HIDE CUSTPHONES")."</span></font></a>";
+		echo " &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"update_variables('CUSTPHONEdisplay','0');\"><font class=\"top_settings_val\"><span id=CUSTPHONEdisplayTXT>"._("HIDE CUSTPHONES")."</span></font></a>";
 	}
 	if ($CUSTPHONEdisplay == 1) {
-		echo " &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"update_variables('CUSTPHONEdisplay','2');\"><font class=\"top_settings_val\"><span id=CUSTPHONEdisplayTXT>"._QXZ("SHOW CUSTPHONES (short)")."</span></font></a>";
+		echo " &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"update_variables('CUSTPHONEdisplay','2');\"><font class=\"top_settings_val\"><span id=CUSTPHONEdisplayTXT>"._("SHOW CUSTPHONES (short)")."</span></font></a>";
 	}
 	if ($CUSTPHONEdisplay == 0) {
-		echo " &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"update_variables('CUSTPHONEdisplay','1');\"><font class=\"top_settings_val\"><span id=CUSTPHONEdisplayTXT>"._QXZ("SHOW CUSTPHONES (long)")."</span></font></a>";}
+		echo " &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"update_variables('CUSTPHONEdisplay','1');\"><font class=\"top_settings_val\"><span id=CUSTPHONEdisplayTXT>"._("SHOW CUSTPHONES (long)")."</span></font></a>";}
 	}
 
 #echo "</TD></TR></TABLE>";

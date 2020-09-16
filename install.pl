@@ -2622,11 +2622,11 @@ if ($WEBONLY < 1)
 
 	print "Setting ip_relay scripts to executable...\n";
 	`chmod 0755 $PATHhome/ip_relay/relay_control`;
-	`chmod 0755 $PATHhome/ip_relay/ip_relay_linux_i386`;
-	`ln -s $PATHhome/ip_relay/ip_relay_linux_i386 $PATHhome/ip_relay/ip_relay`;
-	`ln -s $PATHhome/ip_relay/ip_relay_linux_i386 /usr/local/bin/ip_relay`;
+	`chmod 0755 $PATHhome/ip_relay/ip_relay`;
+#	`ln -s $PATHhome/ip_relay/ip_relay_linux_i386 $PATHhome/ip_relay/ip_relay`;
+	`ln -s $PATHhome/ip_relay/ip_relay /usr/local/bin/ip_relay`;
 	if (! -x "/usr/bin/ip_relay" )
-		{`ln -s $PATHhome/ip_relay/ip_relay_linux_i386 /usr/bin/ip_relay`;}
+		{`ln -s $PATHhome/ip_relay/ip_relay /usr/bin/ip_relay`;}
 
 	print "Starting ip_relay port forwarding for IAX on 40569, 41569 and 42569\n";
 	`$PATHhome/ip_relay/relay_control start  2>/dev/null 1>&2`;

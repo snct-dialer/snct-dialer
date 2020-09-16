@@ -49,6 +49,10 @@ class DB {
     function __destruct() {
         $this->MySqlHdl->close();
     }
+    
+    function CheckConnection() {
+    	return $this->MySqlHdl->ping();
+    }
 }
 
 
@@ -72,4 +76,7 @@ function connect_mysqli() {
 	return $mysqli;
 }
 
+function CheckConnectition() {
+	
+}
 ?>
