@@ -3381,16 +3381,33 @@ else
 	if ($orderby=='userup') {$orderSQL='vicidial_live_agents.user';}
 	if ($orderby=='userdown') {$orderSQL='vicidial_live_agents.user desc';}
 	}
-
-if ( !preg_match("/ALL-/",$LOGallowed_campaigns) ) {$UgroupSQL = " and campaign IN($group_SQL)";}
+	
+$first = 0;
+if ( !preg_match("/ALL-/",$LOGallowed_campaigns) ) {$UgroupSQL = " campaign IN ($group_SQL)";$first=1;}
 else if ( (preg_match('/ALL\-ACTIVE/i',$group_string)) and (strlen($group_SQL) < 3) ) {$UgroupSQL = '';}
-else {$UgroupSQL = " campaign IN($group_SQL)";}
+else {
+	$UgroupSQL = " campaign IN($group_SQL)";
+	$first = 1;
+}
 
 if (strlen($usergroup)<1) {$usergroupSQL = '';}
-else {$usergroupSQL = " and UserGrp='" . mysqli_real_escape_string($link, $usergroup) . "'";}
+else {
+	$usergroupSQL = "";
+	if($first == 1) {
+		$usergroupSQL .= " and";
+	}
+	$usergroupSQL .= " UserGrp='" . mysqli_real_escape_string($link, $usergroup) . "'";
+	$first = 1;
+}
 
 if ( (preg_match('/ALL\-GROUPS/i',$user_group_string)) and (strlen($user_group_SQL) < 3) ) {$user_group_filter_SQL = '';}
-else {$user_group_filter_SQL = " and UserGrp IN($user_group_SQL)";}
+else {
+	$user_group_filter_SQL = "";
+	if($first == 1) {
+		$user_group_filter_SQL .= " and";
+	}
+	$user_group_filter_SQL .= " UserGrp IN($user_group_SQL)";
+}
 
 $ring_agents=0;
 $Aextension=array();

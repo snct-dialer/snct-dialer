@@ -303,6 +303,28 @@ if ($qm_conf_ct > 0)
 ##### END SETTINGS LOOKUP #####
 ###########################################
 
+if(!isset($ingroup_choices)) {
+	$ingroup_choices = "";
+}
+if(!isset($query_string)) {
+	$query_string = "";
+}
+if(!isset($stage)) {
+	$stage = "";
+}
+if(!isset($status)) {
+	$status = "";
+}
+if(!isset($format)) {
+	$format = "";
+}
+if(!isset($close_window_link)) {
+	$close_window_link = 0;
+}
+if(!isset($value)) {
+	$value = "";
+}
+
 $ingroup_choices = preg_replace("/\+/"," ",$ingroup_choices);
 $query_string = preg_replace("/'|\"|\\\\|;/","",$query_string);
 $stage = preg_replace("/\'|\"|\\\\|;/","",$stage);
@@ -405,7 +427,6 @@ $MT[0]='';
 $api_script = 'agent';
 $api_logging = 1;
 if ($consultative != 'YES') {$consultative='NO';}
-
 
 ################################################################################
 ### BEGIN - version - show version and date information for the API
@@ -2564,6 +2585,7 @@ if ($function == 'change_ingroups')
 ################################################################################
 if ($function == 'update_fields')
 	{
+	$data = "";
 	if (strlen($agent_user)<1)
 		{
 		$result = _QXZ("ERROR");
@@ -4738,7 +4760,7 @@ function api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$val
 	{
 	if ($api_logging > 0)
 		{
-		global $startMS, $query_string, $ip;
+		global $startMS, $query_string, $ip, $DB; 
 
 		$CL=':';
 		$script_name = getenv("SCRIPT_NAME");
