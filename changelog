@@ -923,7 +923,7 @@
     * Add utf-8 encoding for conffiles:
       - Update bin/ADMIN_keepalive_ALL.pl.
     * Rename log files to *.log:
-      - Update bin/AST_manager_send.pl,
+      - Update: bin/AST_manager_send.pl,
           bin/AST_VDadapt.pl,
           bin/AST_VDhopper.pl,
           bin/AST_manager_listen.pl,
@@ -992,8 +992,12 @@
           bin/AST_manager_send.pl,
           bin/AST_send_action_child.pl
           install.pl.
-      - New etc/logrotate.d/vicidial,
+    * New etc/logrotate.d/vicidial,
           etc/logrotate.d/snct-dialer.
+    * Add Show Archive Data for Leads:
+      - Update: www/vicidial/admin.php,
+          www/vicidial/admin_modify_lead.php,
+          www/vicidial/help_documentation.txt.
     * Change next release to 3.0.1.
 
 2.26.29

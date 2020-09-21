@@ -11,6 +11,7 @@
 # SNCT - Changelog
 #
 # 20200629 jff Add external link from lead.
+# 20200921 jff Add global ShowArchive.
 #
 #
 
@@ -22,8 +23,6 @@
 # this is the administration lead information modifier screen, the administrator
 # just needs to enter the leadID and then they can view and modify the
 # information in the record for that lead
-#
-# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -259,7 +258,7 @@ if ($nonselectable_statuses > 0)
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$stmt = "SELECT use_non_latin,custom_fields_enabled,webroot_writable,allow_emails,enable_languages,language_method,active_modules,log_recording_access,admin_screen_colors,enable_gdpr_download_deletion,source_id_display,mute_recordings,sip_event_logging FROM system_settings;";
+$stmt = "SELECT use_non_latin,custom_fields_enabled,webroot_writable,allow_emails,enable_languages,language_method,active_modules,log_recording_access,admin_screen_colors,enable_gdpr_download_deletion,source_id_display,mute_recordings,sip_event_logging,show_archive FROM system_settings;";
 $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $qm_conf_ct = mysqli_num_rows($rslt);
@@ -279,9 +278,21 @@ if ($qm_conf_ct > 0)
 	$SSsource_id_display =		$row[10];
 	$SSmute_recordings =		$row[11];
 	$SSsip_event_logging =		$row[12];
+	$ShowArchive = 				$row[13];
 	}
 ##### END SETTINGS LOOKUP #####
 ###########################################
+
+#
+# Show archive on first call if ShowArchive is set.
+#
+if(($archive_log == "0") || (!isset($archive_log))) { 
+	if ($ShowArchive == 1) {
+		$archive_log = "Yes";
+	} else {
+		$archive_log = "No";
+	}
+}
 
 $lead_id = preg_replace('/[^0-9a-zA-Z]/','',$lead_id);
 
@@ -1934,8 +1945,8 @@ else
 	if ($archive_log=="Yes")
 		{
 		echo "<tr><td colspan=2 align='center'>";
-		echo "<B><font color='#FF0000'>*** "._QXZ("ARCHIVED LOG SEARCH ENABLED")." ***</font></B> <a href=\"$PHP_SELF?lead_id=$lead_id&archive_search=$archive_search&archive_log=No&CIDdisplay=$CIDdisplay\">"._QXZ("Turn off archived logs display")."</a><BR>";
-		echo "<B><font color='#FF0000'>*** "._QXZ("ARCHIVED LOGS SHOWN IN RED, THERE MAY BE DUPLICATES WITH NON-ARCHIVED LOG ENTRIES")." ***</font></B>";
+		echo "<B><font color='#FF0000' size='1'>*** "._QXZ("ARCHIVED LOG SEARCH ENABLED")." ***</font></B> <a href=\"$PHP_SELF?lead_id=$lead_id&archive_search=$archive_search&archive_log=No&CIDdisplay=$CIDdisplay\">"._QXZ("Turn off archived logs display")."</a><BR>";
+		echo "<B><font color='#FF0000' size='1'>*** "._QXZ("ARCHIVED LOGS SHOWN IN RED, THERE MAY BE DUPLICATES WITH NON-ARCHIVED LOG ENTRIES")." ***</font></B>";
 		echo "<input type='hidden' name='archive_log' value='Yes'>";
 		echo "</td></tr>\n";
 		}
@@ -2340,16 +2351,16 @@ else
 					}
 				}
 
-			if ($cb > 0)
-				{
-				echo "<B>"._QXZ("CALLBACKS LOG").":</B>\n";
-				echo "<TABLE width=750 cellspacing=0 cellpadding=1>\n";
-				echo "<tr><td><font size=1># </td><td><font size=2>"._QXZ("ENTRY TIME")." </td><td><font size=2>"._QXZ("CALLBACK TIME")." </td><td align=left><font size=2>"._QXZ("USER")."</td><td align=left><font size=2> "._QXZ("RECIPIENT")."</td><td align=left><font size=2> "._QXZ("LEAD STATUS")."</td><td align=left><font size=2> "._QXZ("STATUS")."</td><td align=left><font size=2> "._QXZ("LIST")."</td><td align=left><font size=2> "._QXZ("CAMPAIGN")."</td></tr>\n";
-
-				echo "$callbacks_log";
-
-				echo "</TABLE>\n";
-				}
+#			if ($cb > 0)
+#				{
+#				echo "<B>"._QXZ("CALLBACKS LOG").":</B>\n";
+#				echo "<TABLE width=750 cellspacing=0 cellpadding=1>\n";
+#				echo "<tr><td><font size=1># </td><td><font size=2>"._QXZ("ENTRY TIME")." </td><td><font size=2>"._QXZ("CALLBACK TIME")." </td><td align=left><font size=2>"._QXZ("USER")."</td><td align=left><font size=2> "._QXZ("RECIPIENT")."</td><td align=left><font size=2> "._QXZ("LEAD STATUS")."</td><td align=left><font size=2> "._QXZ("STATUS")."</td><td align=left><font size=2> "._QXZ("LIST")."</td><td align=left><font size=2> "._QXZ("CAMPAIGN")."</td></tr>\n";
+#
+#				echo "$callbacks_log";
+#
+#				echo "</TABLE>\n";
+#				}
 			echo "<BR><BR>\n";
 			}
 		else
@@ -2426,16 +2437,16 @@ else
 					}
 				}
 
-			if ($cb > 0)
-				{
-				echo "<B>"._QXZ("CALLBACKS LOG").":</B>\n";
-				echo "<TABLE width=750 cellspacing=0 cellpadding=1>\n";
-				echo "<tr><td><font size=1># </td><td><font size=2>"._QXZ("ENTRY TIME")." </td><td><font size=2>"._QXZ("CALLBACK TIME")." </td><td align=left><font size=2>"._QXZ("USER")."</td><td align=left><font size=2> "._QXZ("RECIPIENT")."</td><td align=left><font size=2> "._QXZ("LEAD STATUS")."</td><td align=left><font size=2> "._QXZ("STATUS")."</td><td align=left><font size=2> "._QXZ("LIST")."</td><td align=left><font size=2> "._QXZ("CAMPAIGN")."</td></tr>\n";
-
-				echo "$callbacks_log";
-
-				echo "</TABLE>\n";
-				}
+#			if ($cb > 0)
+#				{
+#				echo "<B>"._QXZ("CALLBACKS LOG").":</B>\n";
+#				echo "<TABLE width=750 cellspacing=0 cellpadding=1>\n";
+#				echo "<tr><td><font size=1># </td><td><font size=2>"._QXZ("ENTRY TIME")." </td><td><font size=2>"._QXZ("CALLBACK TIME")." </td><td align=left><font size=2>"._QXZ("USER")."</td><td align=left><font size=2> "._QXZ("RECIPIENT")."</td><td align=left><font size=2> "._QXZ("LEAD STATUS")."</td><td align=left><font size=2> "._QXZ("STATUS")."</td><td align=left><font size=2> "._QXZ("LIST")."</td><td align=left><font size=2> "._QXZ("CAMPAIGN")."</td></tr>\n";
+#
+#				echo "$callbacks_log";
+#
+#				echo "</TABLE>\n";
+#				}
 			echo "<BR><BR>\n";
 			}
 
@@ -2949,7 +2960,17 @@ else
 
 
 		echo "</TABLE><BR><BR>\n";
-
+		
+		if ($cb > 0)
+		{
+			echo "<B>"._QXZ("CALLBACKS LOG").":</B>\n";
+			echo "<TABLE width=750 cellspacing=0 cellpadding=1>\n";
+			echo "<tr><td><font size=1># </td><td><font size=2>"._QXZ("ENTRY TIME")." </td><td><font size=2>"._QXZ("CALLBACK TIME")." </td><td align=left><font size=2>"._QXZ("USER")."</td><td align=left><font size=2> "._QXZ("RECIPIENT")."</td><td align=left><font size=2> "._QXZ("LEAD STATUS")."</td><td align=left><font size=2> "._QXZ("STATUS")."</td><td align=left><font size=2> "._QXZ("LIST")."</td><td align=left><font size=2> "._QXZ("CAMPAIGN")."</td></tr>\n";
+			
+			echo "$callbacks_log";
+			
+			echo "</TABLE><BR><BR>\n";
+		}
 
 	if ($log_recording_access > 0)
 		{
