@@ -3546,7 +3546,7 @@ if ($non_latin < 1)
 	$use_custom_cid = preg_replace('/[^-_0-9a-zA-Z]/','',$use_custom_cid);
 	$system_ip_blacklist = preg_replace('/[^-_0-9a-zA-Z]/','',$system_ip_blacklist);
 	$admin_ip_list = preg_replace('/[^-_0-9a-zA-Z]/','',$admin_ip_list);
-	$agent_ip_list = preg_replace('/[^-_0-9a-zA-Z]/','',$agent_ip_list);ead
+	$agent_ip_list = preg_replace('/[^-_0-9a-zA-Z]/','',$agent_ip_list);
 	$api_ip_list = preg_replace('/[^-_0-9a-zA-Z]/','',$api_ip_list);
 	$ip_list_id = preg_replace('/[^-_0-9a-zA-Z]/','',$ip_list_id);
 	$inbound_survey_callmenu = preg_replace('/[^-_0-9a-zA-Z]/','',$inbound_survey_callmenu);
