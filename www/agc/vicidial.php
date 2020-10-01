@@ -21622,10 +21622,10 @@ if ($agent_display_dialable_leads > 0)
 	<?php
 	if (!preg_match("/X/i",$manual_dial_prefix))
 		{
-        echo _("Note: a dial prefix of %1s will be added to the beginning of this number"),0,'',$manual_dial_prefix."<br />\n";
+			echo _("Note: a dial prefix of ") . $manual_dial_prefix . _(" will be added to the beginning of this number") . "<br />\n";
 		}
 	?>
-    <?php echo _("Note: all new manual dial leads will go into list %1s"),0,'',$manual_dial_list_id; ?><br /><br />
+    <?php echo _("Note: all new manual dial leads will go into list ") . $manual_dial_list_id; ?><br /><br />
     <table><tr>
     <td align="right"><font class="body_text"> <?php echo _("Dial Code:"); ?> </font></td>
     <td align="left"><font class="body_text"><input type="text" size="7" maxlength="10" name="MDDiaLCodE" id="MDDiaLCodE" class="cust_form" value="<?php echo $default_phone_code ?>" />&nbsp; <?php echo _("(This is usually a 1 in the USA-Canada)"); ?></font></td>

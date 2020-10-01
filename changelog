@@ -998,6 +998,8 @@
       - Update: www/vicidial/admin.php,
           www/vicidial/admin_modify_lead.php,
           www/vicidial/help_documentation.txt.
+    * Lists points now to "Search for a Lead":
+      - Update: www/vicidial/admin_header.php.
     * Change next release to 3.0.1.
 
 2.26.29

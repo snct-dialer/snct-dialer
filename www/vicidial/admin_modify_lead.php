@@ -11,7 +11,7 @@
 # SNCT - Changelog
 #
 # 20200629 jff Add external link from lead.
-# 20200921 jff Add global ShowArchive.
+# 20200921 jff Add global ShowArchive for UserLevel >= 9.
 #
 #
 
@@ -283,16 +283,6 @@ if ($qm_conf_ct > 0)
 ##### END SETTINGS LOOKUP #####
 ###########################################
 
-#
-# Show archive on first call if ShowArchive is set.
-#
-if(($archive_log == "0") || (!isset($archive_log))) { 
-	if ($ShowArchive == 1) {
-		$archive_log = "Yes";
-	} else {
-		$archive_log = "No";
-	}
-}
 
 $lead_id = preg_replace('/[^0-9a-zA-Z]/','',$lead_id);
 
@@ -458,6 +448,19 @@ if ( (!preg_match('/\-ALL/i', $LOGallowed_campaigns)) and ($LOGignore_group_on_s
 	$LOGallowed_listsSQL = "and list_id IN($camp_lists)";
 	$whereLOGallowed_listsSQL = "where list_id IN($camp_lists)";
 	}
+
+#
+# Show archive on first call if ShowArchive is set.
+#
+if(($archive_log == "0") || (!isset($archive_log))) {
+	if($LOGuser_level >= 9) {
+		if ($ShowArchive == 1) {
+			$archive_log = "Yes";
+		} else {
+			$archive_log = "No";
+		}
+	}
+}
 
 
 $SSmenu_background='015B91';

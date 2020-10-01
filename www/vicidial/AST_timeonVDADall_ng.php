@@ -3831,7 +3831,7 @@ if ($talking_to_print > 0)
 				{
 				$agent_dead++;  $agent_total++;
 				$G = '<SPAN class="blank">'; $EG = '</SPAN>'; $tr_class='TRblank';
-				$G='<SPAN class="black"><B>'; $EG='</B></SPAN>'; $tr_class='TRblack';
+				if ($call_time_S >= 10) {$G='<SPAN class="black"><B>'; $EG='</B></SPAN>'; $tr_class='TRblack';}
 				}
 			}
 		if ($Lstatus=='DISPO')

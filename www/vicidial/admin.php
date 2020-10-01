@@ -3546,7 +3546,7 @@ if ($non_latin < 1)
 	$use_custom_cid = preg_replace('/[^-_0-9a-zA-Z]/','',$use_custom_cid);
 	$system_ip_blacklist = preg_replace('/[^-_0-9a-zA-Z]/','',$system_ip_blacklist);
 	$admin_ip_list = preg_replace('/[^-_0-9a-zA-Z]/','',$admin_ip_list);
-	$agent_ip_list = preg_replace('/[^-_0-9a-zA-Z]/','',$agent_ip_list);
+	$agent_ip_list = preg_replace('/[^-_0-9a-zA-Z]/','',$agent_ip_list);ead
 	$api_ip_list = preg_replace('/[^-_0-9a-zA-Z]/','',$api_ip_list);
 	$ip_list_id = preg_replace('/[^-_0-9a-zA-Z]/','',$ip_list_id);
 	$inbound_survey_callmenu = preg_replace('/[^-_0-9a-zA-Z]/','',$inbound_survey_callmenu);
@@ -5233,7 +5233,7 @@ echo "<html>\n";
 echo "<head>\n";
 echo "<!-- VERSION: $admin_version   BUILD: $build   ADD: $ADD   PHP_SELF: $PHP_SELF-->\n";
 echo "<META NAME=\"ROBOTS\" CONTENT=\"NONE\">\n";
-echo "<META NAME=\"COPYRIGHT\" CONTENT=\"&copy; 2019 ViciDial Group\" \"&copy; 2017-2019 SNCT GmbH\">\n";
+echo "<META NAME=\"COPYRIGHT\" CONTENT=\"&copy; 2019 ViciDial Group\" \"&copy; 2017-2020 SNCT GmbH\">\n";
 echo "<META NAME=\"AUTHOR\" CONTENT=\"ViciDial Group\" \"SNCT GmbH\">\n";
 echo "<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
 echo "<script language=\"JavaScript\" src=\"help.js\"></script>\n";
