@@ -2054,6 +2054,7 @@ if ($subcamp_font_size < 4) {$subcamp_font_size='11';}
 		$emails_sh="CLASS=\"subhead_style\"";
 		$ar_sh="CLASS=\"subhead_style\"";
 		$il_sh="CLASS=\"subhead_style\"";
+		$acr_sh="CLASS=\"subhead_style\"";
 
 		if ($sh=='times') {$times_sh="CLASS=\"subhead_style_selected\"";}
 		if ($sh=='shifts') {$shifts_sh="CLASS=\"subhead_style_selected\"";}
@@ -2081,6 +2082,7 @@ if ($subcamp_font_size < 4) {$subcamp_font_size='11';}
 		if ($sh=='emails') {$emails_sh="CLASS=\"subhead_style_selected\"";}
 		if ($sh=='ar') {$ar_sh="CLASS=\"subhead_style_selected\"";}
 		if ($sh=='il') {$il_sh="CLASS=\"subhead_style_selected\"";}
+		if ($sh=='AfterCallRouting') {$acr_sh="CLASS=\"subhead_style_selected\"";}
 
 		?>
 		<TR <?php echo $times_sh ?><?php if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$ADMIN?ADD=100000000';\"";} ?>>
@@ -2125,6 +2127,12 @@ if ($subcamp_font_size < 4) {$subcamp_font_size='11';}
 			{ ?>
 			<TR <?php echo $emails_sh ?><?php if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='admin_email_accounts.php';\"";} ?>><TD ALIGN=LEFT <?php echo $emails_sh ?>> &nbsp;
 			<a href="admin_email_accounts.php" STYLE="text-decoration:none;"><FONT STYLE="font-family:HELVETICA;font-size:<?php echo $subcamp_font_size ?>;color:BLACK;"> &nbsp; <img src="images/icon_email.png" border=0 alt=\"Users\" width=14 height=14 valign=middle> <?php echo _QXZ("Email Accounts"); ?> </a></TD>
+			</TR>
+		<?php }
+		if (file_exists('admin_acr.php'))
+			{ ?>
+			<TR <?php echo $acr_sh ?><?php if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='admin_acr.php';\"";} ?>><TD ALIGN=LEFT <?php echo $acr_sh ?>> &nbsp;
+			<a href="admin_acr.php" STYLE="text-decoration:none;"><FONT STYLE="font-family:HELVETICA;font-size:<?php echo $subcamp_font_size ?>;color:BLACK;"> &nbsp; <img src="images/icon_acr.png" border=0 alt=\"Users\" width=14 height=14 valign=middle> <?php echo _QXZ("After Call Routing"); ?> </a></TD>
 			</TR>
 		<?php }
 		if ( ($sounds_central_control_active > 0) or ($SSsounds_central_control_active > 0) )
@@ -2395,6 +2403,10 @@ if ($SSenable_languages == '1')
 	if ( (strlen($status_sh) > 25) and (!preg_match('/campaign|user/i',$hh) ) ) {
 		?>
 	<TR BGCOLOR=<?php echo $status_color ?>><TD ALIGN=LEFT COLSPAN=2> &nbsp; <a href="<?php echo $ADMIN ?>?ADD=321111111111111"><FONT STYLE="font-family:HELVETICA;font-size:<?php echo $subcamp_font_size ?>;color:BLACK;"> <?php echo _QXZ("System Statuses"); ?> </a> &nbsp; | &nbsp; <a href="<?php echo $ADMIN ?>?ADD=331111111111111"><FONT STYLE="font-family:HELVETICA;font-size:<?php echo $subcamp_font_size ?>;color:BLACK;"> <?php echo _QXZ("Status Categories"); ?> </a> &nbsp; | &nbsp; <a href="<?php echo $ADMIN ?>?ADD=341111111111111"><FONT STYLE="font-family:HELVETICA;font-size:<?php echo $subcamp_font_size ?>;color:BLACK;"> <?php echo _QXZ("QC Status Codes"); ?> </a></TD></TR>
+	<?php }
+	if ( (strlen($acr_sh) > 25) and (strlen($admin_hh) > 25) ) {
+		?>
+	<TR BGCOLOR=<?php echo $emails_color ?>><TD ALIGN=LEFT COLSPAN=2> &nbsp; <a href="admin_acr.php"><FONT STYLE="font-family:HELVETICA;font-size:<?php echo $subcamp_font_size ?>;color:BLACK;"> <?php echo _QXZ("Show ACRs"); ?> </a> &nbsp; |<?php if ($add_copy_disabled < 1) { ?> &nbsp; <a href="admin_acr.php?eact=ADD"><FONT STYLE="font-family:HELVETICA;font-size:<?php echo $subcamp_font_size ?>;color:BLACK;"> <?php echo _QXZ("Add A New ACR"); ?> </a> &nbsp; | &nbsp; <a href="admin_acr.php?eact=COPY"><FONT STYLE="font-family:HELVETICA;font-size:<?php echo $subcamp_font_size ?>;color:BLACK;"> <?php echo _QXZ("Copy An ACR"); ?> </a><?php } ?></TD></TR>
 	<?php }
 
 	if ( ($ADD=='3') or ($ADD=='3') ) {

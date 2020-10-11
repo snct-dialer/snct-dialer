@@ -14,6 +14,7 @@
 # 2019-12-07 jff First work
 # 2020-01-09 jff Remove $_GET
 #                use mysqli_fetch_array at START SYSTEM_SETTINGS LOOKUP
+# 2020-10-10 jff Fix CB Limit Test
 #
 #
 
@@ -764,6 +765,18 @@ $CBAgentCount = $SetUp->GetData("Checkcallback", "AgentCount");
 $CBAgentDays = $SetUp->GetData("Checkcallback", "AgentDays");
 $CBLeadCount = $SetUp->GetData("Checkcallback", "LeadCount");
 $CBLeadDays = $SetUp->GetData("Checkcallback", "LeadDays");
+$CBAgentNoTestNum = $SetUp->GetData("Checkcallback", "AgentNoCheckNum");
+if(!isset($CBAgentNoTestNum)) { $CBAgentNoTestNum = 0;};
+$CBAgentNoTest = array ();
+
+
+if($CBAgentNoTestNum != 0) {
+	for ($n = 0; $n != $CBAgentNoTestNum; $n++) {
+		$CBName = sprintf("AgentNoCheck%'.04d", $n);
+		$CBAgentNoTest[] = $SetUp->GetData("Checkcallback", $CBName);
+	}
+}
+
 
 if(!isset($CBAgentCount)) { $CBAgentCount = 0;};
 if(!isset($CBAgentDays)) { $CBAgentCount = 0;};
@@ -842,7 +855,12 @@ if ($ACTION == 'GenDispoScreen') {
 		$row = mysqli_fetch_row($res);
 		$CampId = $row[0];
 		$PG = $row[1];
-		$CBAllow = CheckCallbacks($user, $lead_id, $PG);
+		$CBAllow = 1;
+		if(!in_array($user, $CBAgentNoTest)) {
+			$CBAllow = CheckCallbacks($user, $lead_id, $PG);
+		} else {
+			$Log->Log("GenDispoScreen NoTest: " . $user);
+		}
 		
 		if($DB) {
 			echo "GDS: Campaign = " . $CampId . PHP_EOL;

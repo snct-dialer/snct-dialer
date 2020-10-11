@@ -1000,6 +1000,11 @@
           www/vicidial/help_documentation.txt.
     * Lists points now to "Search for a Lead":
       - Update: www/vicidial/admin_header.php.
+    * New After Call Routing:
+      - New: www/vicidial/admin_acr.php,
+          www/vicidial/images/icon_acr.png.
+      - Update: www/vicidial/admin.php,
+          /www/vicidial/admin_header.php.
     * Change next release to 3.0.1.
 
 2.26.29
