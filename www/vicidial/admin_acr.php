@@ -420,61 +420,19 @@ if (($stage=="SUBMIT" || $stage=="UPDATE"))
 			}
 		}
 	}
-else if ($stage=="COPY")
-	{
-	}
-	else
-		{
-		$error_msg="- "._QXZ("Error - source ACR does not exist")."<BR/>";
-		if($DB>0) {$error_msg.="<B>$stmt</B><BR>";}
-	}
-	
+else if ($stage=="COPY") {
+
+}
+
 
 
 ################################################################################
 ##### BEGIN copy fields to a list form
-if ($eact == "COPY")
-	{
-	##### get lists listing for dynamic pulldown
-	$stmt="SELECT email_account_id, email_account_name from vicidial_email_accounts order by email_account_id";
-	$rsltx=mysql_to_mysqli($stmt, $link);
-	$accounts_to_print = mysqli_num_rows($rsltx);
-	$accounts_list='';
-	$o=0;
-	if ($accounts_to_print>0)
-		{
-		while ($accounts_to_print > $o)
-			{
-			$rowx=mysqli_fetch_row($rsltx);
-			$accounts_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
-			$o++;
-			}
+if ($eact == "COPY") {
+	
+}
 
-		echo "<TABLE><TR><TD>\n";
-		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-		if ($error_msg) {echo "ACCOUNT NOT COPIED<BR/>"._QXZ("The data you submitted has the following errors").":<BR/>$error_msg";}
-		echo "<br>"._QXZ("Copy New Account from Existing Account")."<form action='$PHP_SELF' method='GET'>\n";
-		echo "<input type=hidden name=DB value=\"$DB\">\n";
-		echo "<input type=hidden name=action value=COPY_EMAIL_SUBMIT>\n";
-		echo "<input type=hidden name=stage value='COPY'>\n";
-		echo "<center><TABLE width=$section_width cellspacing=3>\n";
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Account ID to Copy From").": </td><td align=left><select size=1 name=source_email_account>\n";
-		echo "$accounts_list";
-		echo "</select></td></tr>\n";
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("New Account ID").": </td><td align=left><input type=text name=new_account_id value='$new_account_id' size=10 maxlength=20></td></tr>\n";
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("New Account Name").": </td><td align=left><input type=text name=email_account_name size=40 maxlength=100>$NWB#email_accounts-email_account_name$NWE</td></tr>\n";
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=center colspan=2><input type=submit name=SUBMIT value='"._QXZ("COPY")."'></td></tr>\n";
-		echo "</TABLE></center>\n";
-		echo "</TD></TR></TABLE>\n";
-		}
-	else
-		{
-		echo "<TABLE><TR><TD>\n";
-		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-		echo "<br><br>*** "._QXZ("There are no existing accounts to copy from")." ***\n";
-		echo "</TD></TR></TABLE>\n";
-		}
-	}
+
 ### END copy fields to a list form
 else if ($eact == "ADD") {
 
