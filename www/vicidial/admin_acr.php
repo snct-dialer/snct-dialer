@@ -422,45 +422,13 @@ if (($stage=="SUBMIT" || $stage=="UPDATE"))
 	}
 else if ($stage=="COPY")
 	{
-	$stmt="select * from vicidial_email_accounts where email_account_id='$source_email_account'";
-	$rslt=mysql_to_mysqli($stmt, $link);
-	if (mysqli_num_rows($rslt)>0)
-		{
-		if ($add_copy_disabled > 0)
-			{
-			echo "<br>"._QXZ("You do not have permission to add records on this system")." -system_settings-\n";
-			}
-		else
-			{
-			$row=mysqli_fetch_array($rslt);
-			$ins_stmt="insert into vicidial_email_accounts(email_account_id, email_account_name, email_account_description, user_group, protocol, email_replyto_address, email_account_server, email_account_user, email_account_pass, pop3_auth_mode, active, email_frequency_check_mins, group_id, default_list_id, email_account_type, call_handle_method, agent_search_method, list_id, campaign_id) VALUES('$new_account_id', '$email_account_name', '$row[email_account_description]', '$row[user_group]', '$row[protocol]', '$row[email_replyto_address]', '$row[email_account_server]', '$row[email_account_user]', '$row[email_account_pass]', '$row[pop3_auth_mode]', '$row[active]', '$row[email_frequency_check_mins]', '$row[group_id]','$row[default_list_id]', '$row[email_account_type]', '$row[call_handle_method]','$row[agent_search_method]', '$row[list_id]', '$row[campaign_id]')";
-			$ins_rslt=mysql_to_mysqli($ins_stmt, $link);
-			if (mysqli_affected_rows($link)==0)
-				{
-				$error_msg.="- "._QXZ("There was an unknown error when attempting to copy the new account")."<BR/>";
-				if($DB>0) {$error_msg.="<B>$ins_stmt</B><BR>";}
-				}
-			else
-				{
-				$message=_QXZ("NEW ACCOUNT")." $new_account_id "._QXZ("SUCCESSFULLY COPIED FROM")." $source_email_account<BR/>";
-				$eact="";
-
-				### LOG INSERTION Admin Log Table ###
-				$SQL_log = "$ins_stmt|";
-				$SQL_log = preg_replace('/;/','',$SQL_log);
-				$SQL_log = addslashes($SQL_log);
-				$stmt="INSERT INTO vicidial_admin_log set event_date=now(), user='$PHP_AUTH_USER', ip_address='$ip', event_section='EMAIL', event_type='ADD', record_id='$user', event_code='NEW EMAIL ACCOUNT ADDED', event_sql=\"$SQL_log\", event_notes='';";
-				if ($DB) {echo "|$stmt|\n";}
-				$rslt=mysql_to_mysqli($stmt, $link);
-				}
-			}
-		}
+	}
 	else
 		{
-		$error_msg="- "._QXZ("Error - source email does not exist")."<BR/>";
+		$error_msg="- "._QXZ("Error - source ACR does not exist")."<BR/>";
 		if($DB>0) {$error_msg.="<B>$stmt</B><BR>";}
-		}
 	}
+	
 
 
 ################################################################################
