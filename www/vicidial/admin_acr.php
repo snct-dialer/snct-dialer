@@ -1,19 +1,38 @@
 <?php
-# admin_acr.php
+###############################################################################
+#
+# Modul admin_arc.php
+#
+# SNCT-Dialer™ Setup After Call Routing
+#
+# Copyright (©) 2020 SNCT GmbH <info@snct-gmbh.de>
+#               2020 Jörg Frings-Fürst <open_source@jff.email>
 #
 # LICENSE: AGPLv3
 #
-# Copyright (©) 2020      SNCT GmbH <info@snct-gmbh.de>
-#               2020      Jörg Frings-Fürst <open_source@jff.email>
+###############################################################################
 #
-# This module manage global After Call Routing
+# requested Module:
 #
-# changes:
+# dbconnect_mysqli.php
+# functions.php
+# ../tools/system_wide_settings.php
+# admin_header.php
+#
+###############################################################################
+#
+# Version  / Build
+#
+$admin_arc_version = '3.0.1-1';
+$arc_build = '20201012-5';
+#
+###############################################################################
+#
+# Changelog
+#
 # 2020-06-01 jff First Build
+# 2020-10-12 jff some fixes
 #
-
-$admin_version = '3.0.1';
-$acr_build = '20200601-1';
 
 $sh="AfterCallRouting";
 
@@ -358,26 +377,20 @@ if ($eact=="DELETE" && $confirm_deletion=="yes" && $acr_id) {
 
 
 
-if (($stage=="SUBMIT" || $stage=="UPDATE"))
-	{
+if (($stage=="SUBMIT" || $stage=="UPDATE")) {
 	$error_msg="";
 	if (!$acr_name) {$error_msg.="- "._("ACR Name is invalid or null")."<BR/>";}
 	if (!$acr_beschreibung) {$error_msg.="- "._("ACR Description is invalid or null")."<BR/>";}
 
-	if (!$error_msg)
-		{
-		if ($stage=="SUBMIT")
-			{
-			if ($add_copy_disabled > 0)
-				{
+	if (!$error_msg) {
+		if ($stage=="SUBMIT") {
+			if ($add_copy_disabled > 0) {
 				echo "<br>"._QXZ("You do not have permission to add records on this system")." -system_settings-\n";
-				}
-			else
-				{
+			} else {
 				$ins_stmt="INSERT INTO `snctdialer-after_call_action` (Name, Beschreibung, aktiv, Type, Announcement_file, Call_Menue) VALUES('$acr_name', '$acr_beschreibung', '$acr_active', '$acr_type', '$acr_survey_question_filename', '$acr_survey_callmenu')";
 				
 				$ins_rslt=mysql_to_mysqli($ins_stmt, $link);
-				if (mysqli_affected_rows($link)==0) {
+				if(!$ins_rslt) {
 					$error_msg.="- "._QXZ("There was an unknown error when attempting to create the new account")."<BR/>";
 					if($DB>0) {$error_msg.="<B>$ins_stmt</B><BR>";}
 				} else {
@@ -392,21 +405,16 @@ if (($stage=="SUBMIT" || $stage=="UPDATE"))
 					$stmt="INSERT INTO vicidial_admin_log set event_date=now(), user='$PHP_AUTH_USER', ip_address='$ip', event_section='ACR', event_type='ADD', record_id='$user', event_code='NEW ACR RECORD ADDED', event_sql=\"$SQL_log\", event_notes='';";
 					if ($DB) {echo "|$stmt|\n";}
 					$rslt=mysql_to_mysqli($stmt, $link);
-					}
 				}
 			}
-		else
-			{
+		} else {
 			$upd_stmt="update `snctdialer-after_call_action` set Name='$acr_name', Beschreibung='$acr_beschreibung', aktiv='$acr_active', Announcement_file='$acr_survey_question_filename', Call_Menue='$acr_survey_callmenu' WHERE ID='$acr_id'";
 			$upd_rslt=mysql_to_mysqli($upd_stmt, $link);
-			if (mysqli_affected_rows($link)==0)
-				{
-				$error_msg.="- "._QXZ("There was an unknown error when attempting to update account")." $email_account_id<BR/>";
+			if(!$upd_rslt) {
+				$error_msg.="- "._QXZ("There was an unknown error when attempting to update account")." $acr_id<BR/>";
 				if($DB>0) {$error_msg.="<B>$upd_stmt</B><BR>";}
-				}
-			else
-				{
-				$message=_QXZ("ACCOUNT")." $acr_id "._QXZ("SUCCESSFULLY MODIFIED");
+			} else {
+				$message=_QXZ("ACR")." $acr_id "._QXZ("SUCCESSFULLY MODIFIED");
 				# $eact="";
 
 				### LOG INSERTION Admin Log Table ###
@@ -416,10 +424,10 @@ if (($stage=="SUBMIT" || $stage=="UPDATE"))
 				$stmt="INSERT INTO vicidial_admin_log set event_date=now(), user='$PHP_AUTH_USER', ip_address='$ip', event_section='ACR', event_type='MODIFY', record_id='$email_account_id', event_code='EMAIL ACCOUNT MODIFIED', event_sql=\"$SQL_log\", event_notes='';";
 				if ($DB) {echo "|$stmt|\n";}
 				$rslt=mysql_to_mysqli($stmt, $link);
-				}
 			}
 		}
 	}
+}
 else if ($stage=="COPY") {
 
 }
@@ -556,9 +564,9 @@ else if ($eact == "ADD") {
 		echo "<br>"._("Add new After Call Routing")."<form action='$PHP_SELF' method='POST'>\n";
 		echo "<center><TABLE width=$section_width cellspacing=3>\n";
 
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._("ACR Name").": </td><td align=left><input type=text name=acr_name size=20 maxlength=50 value='$acr_name'>$NWB#email_accounts-email_account_id$NWE</td></tr>\n";
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._("ACR Description").": </td><td align=left><input type=text name=acr_beschreibung size=40 maxlength=100 value='$acr_beschreibung'>$NWB#email_accounts-email_account_name$NWE</td></tr>\n";
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._("Active").": </td><td align=left><select size=1 name=acr_active><option value='Y'>"._("Y")."</option><option SELECTED value='N'>"._("N")."</option></select>$NWB#email_accounts-email_account_active$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._("ACR Name").": </td><td align=left><input type=text name=acr_name size=20 maxlength=50 value='$acr_name'>$NWB#acr_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._("ACR Description").": </td><td align=left><input type=text name=acr_beschreibung size=40 maxlength=100 value='$acr_beschreibung'>$NWB#acr_bez$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._("Active").": </td><td align=left><select size=1 name=acr_active><option value='Y'>"._("Y")."</option><option SELECTED value='N'>"._("N")."</option></select>$NWB#acr_active$NWE</td></tr>\n";
 				
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._("ACR Type").": </td><td align=left><select size=1 name=acr_type>";
 		echo "$TypeGroup";
@@ -592,7 +600,7 @@ else if ($eact == "ADD") {
 		$acr_name=$row["Name"];
 		$acr_beschreibung=$row["Beschreibung"];
 		$acr_type=$row["Type"];
-		$acr_active=$row["Aktiv"];
+		$acr_active=$row["aktiv"];
 		$acr_survey_question_filename=$row["Announcement_file"];
 		$acr_survey_callmenu=$row["Call_Menue"];
 
@@ -640,8 +648,8 @@ else if ($eact == "ADD") {
 		
 		if ($eact=="DELETE" && $acr_id) {
 			echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-			echo "<br><B>"._("CONFIRM DELETION OF ACR Record")." $acr_id</B><BR>\n";
-			echo "<a href='$PHP_SELF?eact=DELETE&acr_id=$acr_id&confirm_deletion=yes'>"._("Click to delete account")." $acr_id</a>\n";
+			echo "<br><B>"._("CONFIRM DELETION OF ACR ID")." $acr_id</B><BR>\n";
+			echo "<a href='$PHP_SELF?eact=DELETE&acr_id=$acr_id&confirm_deletion=yes'>"._("Click to delete ACR ID")." $acr_id</a>\n";
 			echo "</font>";
 		}
 		
@@ -649,13 +657,21 @@ else if ($eact == "ADD") {
 		echo "<TABLE>\n";
 		echo "<TR><TD>\n";
 		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-		if ($error_msg) {echo "ACCOUNT NOT INSERTED<BR/>"._("The data you submitted has the following errors").":<BR/>$error_msg";}
-		echo "<br>"._("Add new After Call Routing")."<form action='$PHP_SELF' method='POST'>\n";
+		if ($error_msg) {echo "ACR NOT Modified<BR/>"._("The data you submitted has the following errors").":<BR/>$error_msg";}
+		echo "<br>"._("Update After Call Routing")."<form action='$PHP_SELF' method='POST'>\n";
 		echo "<center><TABLE width=$section_width cellspacing=3>\n";
 		
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._("ACR Name").": </td><td align=left><input type=text name=acr_name size=20 maxlength=50 value='$acr_name'>$NWB#email_accounts-email_account_id$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._("ACR Description").": </td><td align=left><input type=text name=acr_beschreibung size=40 maxlength=100 value='$acr_beschreibung'>$NWB#email_accounts-email_account_name$NWE</td></tr>\n";
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._("Active").": </td><td align=left><select size=1 name=acr_active><option value='Y'>"._("Y")."</option><option SELECTED value='N'>"._("N")."</option></select>$NWB#email_accounts-email_account_active$NWE</td></tr>\n";
+		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._("Active").": </td><td align=left><select size=1 name=acr_active>";
+
+		if($acr_active == "Y") {
+			echo "<option SELECTED value='Y'>"._("Y")."</option><option value='N'>"._("N")."</option>";
+		} else {
+			echo "<option value='Y'>"._("Y")."</option><option SELECTED value='N'>"._("N")."</option>";
+		}
+		echo "</select>$NWB#email_accounts-email_account_active$NWE</td></tr>\n";
+
 		
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._("ACR Type").": </td><td align=left><select size=1 name=acr_type>";
 		echo "$TypeGroup";
@@ -724,7 +740,7 @@ else
 		echo "<td><font size=1> $row[Beschreibung]</font></td>";
 		echo "<td><font size=1> $row[Type]</font></td>";
 		echo "<td><font size=1> $row[aktiv]</font></td>";
-		echo "<td><font size=1><a href=\"$PHP_SELF?eact=UPDATE&act_id=$row[ID]\">"._("MODIFY")."</a></font></td></tr>\n";
+		echo "<td><font size=1><a href=\"$PHP_SELF?eact=UPDATE&acr_id=$row[ID]\">"._("MODIFY")."</a></font></td></tr>\n";
 		$o++;
 		}
 

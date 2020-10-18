@@ -1,15 +1,43 @@
 <?php
-# admin.php - VICIDIAL administration page
+###############################################################################
+#
+# Modul admin.php
+#
+# SNCT-Dialer™ Administration
+#
+# Copyright (©) 2019-2020 SNCT GmbH <info@snct-gmbh.de>
+#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
 #
 # LICENSE: AGPLv3
 #
-# Copyright (©) 2019  Matt Florell <vicidial@gmail.com>
-# Copyright (©) 2017-2019 flyingpenguin.de UG <info@flyingpenguin.de>
-#               2019-2020 SNCT GmbH <info@snct-gmbh.de>
-#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
-
+###############################################################################
 #
-# Other - Changelog
+# based on VICIdial®
+# (© 2019  Matt Florell <vicidial@gmail.com>)
+#
+###############################################################################
+#
+# requested Module:
+# 
+# dbconnect_mysqli.php
+# functions.php
+# FlyInclude.php
+# ../tools/system_wide_settings.php
+# admin_header.php
+# ExtraMenueReports.php
+# ./class.Diff.php
+# options.php
+# 
+###############################################################################
+#
+# Version  / Build
+#
+$admin_version = '3.0.1-19';
+$build = '20201012-1';
+#
+###############################################################################
+#
+# Changelog
 #
 # 2017-12-21 09:53 Allow Clear Lists for User Level >= 8 (2017-061).
 # 2018-02-27 11:05 Add pickup_delay into ingroups (2018-003)
@@ -26,6 +54,7 @@
 # 2020-07-22 12:07 Add cid_group_type PHONECODE
 # 2020-07-31 09:00 Add realtime_report_ng.php
 # 2020-09-21 jff	Add show_archive to system_settings
+# 2020-10-10 jff	Add After Call Routing
 #
 
 $startMS = microtime();
@@ -33,6 +62,9 @@ $startMS = microtime();
 require("dbconnect_mysqli.php");
 require("functions.php");
 require_once("FlyInclude.php");
+
+
+
 
 ######################################################################################################
 ######################################################################################################
@@ -4719,8 +4751,6 @@ else
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 9 to access this page the first time
 
-$admin_version = '2.14-724a';
-$build = '2020092-1204';
 
 
 $STARTtime = date("U");
@@ -44360,13 +44390,11 @@ echo "</TD></TR>\n";
 echo "<TR><TD bgcolor=#$SSmenu_background ALIGN=CENTER>\n";
 echo "<FONT STYLE=\"font-family:HELVETICA;font-size:9;color:white;\"><br><br><!-- RUNTIME: $RUNtime seconds<BR> -->";
 echo _QXZ("VERSION").": $FLY_version<BR>";
-echo _QXZ("Patch-Level"). ": $FLY_patch_level<br>";
 echo _QXZ("admin.php-Version").": $admin_version<BR>";
 echo _QXZ("BUILD").": $build<br>";
 if (!preg_match("/_BUILD_/",$SShosted_settings))
     {echo "<BR><a href=\"$PHP_SELF?ADD=999995\"><font color=white>&copy; 2019 ViciDial Group</font></a><BR><img src=\"images/pixel.gif\">";}
-    echo "<BR><a href=\"$PHP_SELF?ADD=999995\"><font color=white>&copy; 2017-2019 flyingpenguin.de UG</font></a><BR><img src=\"images/pixel.gif\">";
-    echo "<BR><a href=\"$PHP_SELF?ADD=999995\"><font color=white>&copy;      2019 SNCT GmbH</font></a><BR><img src=\"images/pixel.gif\">";
+    echo "<BR><a href=\"$PHP_SELF?ADD=999995\"><font color=white>&copy; 2019-2020 SNCT GmbH</font></a><BR><img src=\"images/pixel.gif\">";
 echo "<BR><BR><a href=\"/vicidial/changelog.php\" target=\"_blank\" type=\"text/html\"><font color=white>Changelog</font></a><BR><img src=\"images/pixel.gif\">";
 echo "<BR><BR><BR><BR>";
 echo "</FONT>\n";

@@ -1,659 +1,74 @@
 <?php
-# vicidial.php - the web-based version of the astVICIDIAL client application
+###############################################################################
 #
-
-# LICENSE: AGPLv3
+# Modul vicidial.php
 #
-# Copyright (©) 2019  Matt Florell <vicidial@gmail.com>
-# Copyright (©) 2017-2019 flyingpenguin.de UG <info@flyingpenguin.de>
-#               2019-2020 SNCT GmbH <info@snct-gmbh.de>
+# SNCT-Dialer™ Agent-webinterface
+#
+# Copyright (©) 2019-2020 SNCT GmbH <info@snct-gmbh.de>
 #               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
 #
-# Other scripts that this application depends on:
-# - vdc_db_query.php: Updates information in the database
-# - manager_send.php: Sends manager actions to the DB for execution
-# - conf_exten_check.php: time sync and status updater, calls in queue
-# - vdc_script_display.php: displays script with variables
-# - vdc_form_display.php: display custom fields form
-# - vdc_email_display.php: display email interface
-# - vdc_chat_display.php: display chat interface
-# - agc_agent_manager_chat_interface.php: display internal chats
+# LICENSE: AGPLv3
 #
+###############################################################################
 #
-# Other - Changelog
+# based on VICIdial®
+# (© 2019  Matt Florell <vicidial@gmail.com>)
+#
+###############################################################################
+#
+# requested Module:
+#
+# dbconnect_mysqli.php
+# functions.php
+# FlyInclude.php
+# ../tools/system_wide_settings.php
+# options.php
+#
+# vdc_db_query.php
+# vdc_db_query_ng.php
+# manager_send.php
+# conf_exten_check.php
+# vdc_script_display.php
+# vdc_form_display.php
+# vdc_email_display.php
+# vdc_chat_display.php
+# agc_agent_manager_chat_interface.php
+#
+###############################################################################
+#
+# Version  / Build
+#
+$version = '3.0.1-23';
+$build = '20201018-1';
+#
+###############################################################################
+#
+# Global settings
+#
+$mel=1;					# Mysql Error Log enabled = 1
+$mysql_log_count=91;
+$one_mysql_log=0;
+$DB=0;
+#
+###############################################################################
+#
+# Changelog
 #
 # 2019-04-14 19:22 Remove old PausenDisplay stuff.
 # 2019-04-29 10:17 Add system_wide_settings.php.
 # 2019-05-28 09:18 Show Manual Dial only if UserLevel > 1
 # 2020-07-19 11:15 Warning skip lead only by callbacks
 # 2020-07-23 17:25 Replace _QXZ with gettext version _(
-# 2020-09-16 jff   Fix typos
+# 2020-09-16 jff	Fix typos
+# 2020-10-16 jff	Add ACR from branch feature/acr
 #
+
 #
 #
 
-# CHANGELOG
-# 50607-1426 - First Build of VICIDIAL web client basic login process finished
-# 50628-1620 - Added some basic formatting and worked on process flow
-# 50628-1715 - Startup variables mapped to javascript variables
-# 50629-1303 - Added Login Closer in-groups selection box and vla update
-# 50629-1530 - Rough layout for customer info form section and button links
-# 50630-1453 - Rough Manual Dial/Hangup with customer info displayed
-# 50701-1450 - Added vicidial_log entries on dial and hangup
-# 50701-1634 - Added Logout function
-# 50705-1259 - Added call disposition functionality
-# 50705-1432 - Added lead info DB update function
-# 50705-1658 - Added web form functionality
-# 50706-1043 - Added call park and pickup functions
-# 50706-1234 - Added Start/Stop Recording functionality
-# 50706-1614 - Added conference channels display option
-# 50711-1333 - Removed call check redundancy and fixed a span bug
-# 50727-1424 - Added customer channel and participant present sensing/alerts
-# 50804-1057 - Added SendDTMF function and reconfigured the transfer span
-# 50804-1224 - Added Local and Internal Closer transfer functions
-# 50804-1628 - Added Blind transfer, activated LIVE CALL image and fixed bugs
-# 50804-1808 - Added button images for left buttons
-# 50815-1151 - Added 3Way calling functions to Transfer-conf frame
-# 50815-1602 - Added images and buttons for xfer functions
-# 50816-1813 - Added basic autodial outbound call pickup functions
-# 50817-1113 - Fixes to auto_dialing call receipt
-# 50817-1234 - Added inbound call receipt capability
-# 50817-1541 - Added customer time display
-# 50818-1327 - Added stop-all-recordings-after-each-vicidial-call option
-# 50818-1703 - Added pretty login section
-# 50825-1200 - Modified form field lengths, added double-click dispositions
-# 50831-1603 - Fixed customer time bug and fronter display bug for CLOSER
-# 50901-1314 - Fixed CLOSER IN-GROUP Web Form bug
-# 50903-0904 - Added preview-lead code for manual dialing
-# 50904-0016 - Added ability to hangup manual dials before pickup
-# 50906-1319 - Added override for filters on xfer calls, fixed login display bug
-# 50909-1243 - Added hotkeys functionality for quick dispoing in auto-dial mode
-# 50912-0958 - Modified hotkeys function, agent must have user_level >= 5 to use
-# 50913-1212 - Added campaign_cid to 3rd party calls
-# 50923-1546 - Modified to work with language translation
-# 50926-1656 - Added campaign pull-down at login of active campaigns
-# 50928-1633 - Added manual dial alternate number dial option
-# 50930-1538 - Added session_id empty login failure and fixed 2 minor bugs
-# 51004-1656 - Fixed recording filename bug and new Spanish translation
-# 51020-1103 - Added campaign-specific recording control abilities
-# 51020-1352 - Added Basic vicidial_agent_log framework
-# 51021-1050 - Fixed custtime display and disable Enter/Return keypresses
-# 51021-1718 - Allows for multi-line comments (changes \n to !N in database)
-# 51110-1432 - Fixed non-standard http port issue
-# 51111-1047 - Added vicidial_agent_log lead_id earlier for manual dial
-# 51118-1305 - Activate multi-line comments from $multi_line_comments var
-# 51118-1313 - Move Transfer DIV to a floating span to preserve 800x600 view
-# 51121-1506 - Small PHP optimizations in many scripts and disabled globalize
-# 51129-1010 - Added ability to accept calls from other VICIDIAL servers
-# 51129-1254 - Fixed Hangups of other agents channels when customer hangs up
-# 51208-1732 - Created user-first login that looks for default phone info
-# 51219-1526 - Added variable framework for campaign and in-group scripts
-# 51221-1200 - Added SCRIPT tab, layout and functionality
-# 51221-1714 - Added auto-switch-to-SCRIPT-tab and auto-webform-popup
-# 51222-1605 - Added VMail message blind transfer button to xfer-conf frame
-# 51229-1028 - Added checks on web_form_address to allow for var in the DB value
-# 60117-1312 - Added Transfer-conf frame toggle on button press
-# 60208-1152 - Added DTMF-xfernumber preset links to xfer-conf frame
-# 60213-1129 - Added vicidial_users.hotkeys_active  for any user hotkeys
-# 60213-1210 - Added ability to sort routing of calls by user_level
-# 60214-0932 - Initial Callback calendar display framework
-# 60214-1407 - Added ability to minimize the dispo screen to see info below
-# 60215-1104 - Added ANYONE scheduled callbacks functionality
-# 60410-1116 - Added persistant pause after dispo option and change dispo text
-#            - Added web form submit that opens new window with dispo on submit
-#            - Added PREVIOUS CALLBACK in customer info to flag callbacks
-#            - Added link to try to hangup the call again in the dispo screen
-#            - Added link noone-in-session screen to call agent phone again
-#            - Added link customer-hungup screen to go straight to dispo screen
-# 60410-1532 - Added agent status and campaign calls dialing display option
-# 60411-1547 - Add ability to set callback as USERONLY and some basic formatting
-# 60413-1752 - Add basic USERONLY callback frame and listings
-# 60414-1039 - Changed manual dial preview and alt dial checkboxes to spans
-#            - Added beta-level USERONLY callback functionality
-#            - Added beta-level manual dialing with lead insertion functionality
-# 60415-1534 - Fixed manual dial lead preview and fixed manuald dial override bug
-# 60417-1108 - Added capability to do alt-number-dialing in auto-dial mode
-#            - Changed several permissions to database-defined
-# 60419-1529 - Prevent manual dial or callbacks when alt-dial lead not finished
-# 60420-1647 - Fixed DiaLDiaLAltPhonE error, Call Agent Again DialControl error
-# 60421-1229 - Check GET/POST vars lines with isset to not trigger PHP NOTICES
-# 60424-1005 - Fixed Alt phone disabled bug for callbacks and manual dials
-# 60426-1058 - Added vicidial_user setting for default blended check for CLOSER
-# 60501-1008 - Added option to manual dial screen to manually lookup phone number
-# 60503-1653 - Fixed agentonly_callback not-defined bug in scheduled callbacks screen
-# 60504-1032 - Fixed manual dial display bug and transfer dispo alert bug
-#            - Fixed recording filename display to not overrun 25 characters
-# 60510-1051 - Added Wrapup timer and wrapup message on wrapup screen after dispo
-# 60608-1453 - Added CLOSER campaign allowable in-groups limitations
-# 60609-1123 - Added add-number-to-DNC-list function and manual dial check DNC
-# 60619-1047 - Added variable filters to close security holes for login form
-# 60804-1710 - fixed scheduled CALLBK for other languages build
-# 60808-1145 - Added consultative transfers with customer data
-# 60808-2232 - Added campaign name to pulldown for login screen
-# 60809-1603 - Added option to locally transfer consult xfers
-# 60809-1732 - Added recheck of transferred channels before customer gone mesg
-# 60810-1011 - Fixed CXFER leave 3way call bugs
-# 60816-1602 - Added ALLCALLS recording delay option allcalls_delay
-# 60816-1716 - Fixed customer time display bug and client DST setting
-# 60821-1555 - Added option to omit phone_code on dialout of leads
-# 60821-1628 - Added ALLFORCE recording option
-# 60821-1643 - Added no_delete_sessions option to not delete sessions
-# 60822-0512 - Changed phone number fields to be maxlength of 12
-# 60829-1531 - Made compatible with WeBRooTWritablE setting in dbconnect.php
-# 60906-1152 - Added Previous CallBack info display span
-# 60906-1715 - Allow for Local phone extension conferences
-# 61004-1729 - Add ability to control volume per channel in "calls in this session"
-# 61122-1341 - Added vicidial_user_groups allowed_campaigns restrictions
-# 61122-1523 - Added more SCRIPT variables
-# 61128-2229 - Added vicidial_live_agents and vicidial_auto_calls manual dial entries
-# 61130-1617 - Added lead_id to MonitorConf for recording_log
-# 61221-1212 - Changed width to 760 to better fit 800x600 screens, widened SCRIPT
-# 70109-1128 - Fixed wrapup timer bug
-# 70109-1635 - Added option for HotKeys automatically dialing next number in manual mode
-#            - Added option for alternate number dialing with hotkeys
-# 70111-1600 - Added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
-# 70118-1517 - Added vicidial_agent_log and vicidial_user_log logging of user_group
-# 70201-1249 - Added FAST DIAL option for manually dialing, added UTF8 compatible code
-# 70201-1703 - Fixed cursor bug for most text input fields
-# 70202-1453 - Added first portions of Agent Pause Codes
-# 70203-0108 - Finished Agent Pause Codes functionality
-# 70203-0930 - Added dialed_number to webform output
-# 70203-1010 - Added dialed_label to webform output
-# 70206-1201 - Fixed allow_closers bug
-# 70206-1332 - Added vicidial_recording_override users setting function
-# 70212-1252 - Fixed small issue with CXFER
-# 70213-1018 - Changed CXFER and AXFER to update customer information before transfer
-# 70214-1233 - Added queuemetrics_log_id field for server_id in queue_log
-# 70215-1240 - Added queuemetrics_log_id field for server_id in queue_log
-# 70222-1617 - Changed queue_log PAUSE/UNPAUSE to PAUSEALL/UNPAUSEALL
-# 70226-1252 - Added Mute/UnMute to agent screen
-# 70309-1035 - Allow amphersands and questions marks in comments to pass through
-# 70313-1052 - Allow pound signs(hash) in comments to pass through
-# 70316-1406 - Moved the MUTE button to be accessible during a transfer/conf
-# 70319-1446 - Added agent-deactive-display and disable customer info update functions
-# 70319-1626 - Added option to allow agent logins to campaigns with no leads in the hopper
-# 70320-1501 - Added option to allow retry of leave-3way-call from dispo screen
-# 70322-1545 - Added sipsak display ability
-# 70510-1319 - Added onUnload force Logout
-# 70806-1530 - Added Presets Dial links above agent mute button
-# 70823-2118 - Fixed XMLHTTPRequest, HotKeys and Scheduled Callbacks issues with MSIE
-# 70828-1443 - Added source_id to output of SCRIPTtab-IFRAME and WEBFORM
-# 71022-1427 - Added formatting of the customer phone number in the main status bar
-# 71029-1848 - Changed CLOSER-type campaign to not use campaign_id restrictions
-# 71101-1204 - Fixed bug in callback calendar with DST
-# 71116-0957 - Added campaign_weight and calls_today to the vla table insertion
-# 71120-1719 - Added XMLHTPRequest lookup of allowable campaigns for agents during login
-# 71122-0256 - Added auto-pause notification
-# 71125-1751 - Changed Transfer section to allow for selection of in-groups to send calls to
-# 71127-0408 - Added height and width settings for easier modification of screen size
-# 71129-2025 - restricted callbacks count and list to campaign only
-# 71223-0318 - changed logging of closer calls
-# 71226-1117 - added option to kick all calls from conference upon logout
-# 80109-1510 - added gender select list
-# 80116-1032 - added option on CLOSER-type campaigns to change in-groups when paused
-# 80317-2106 - added recording override options for inbound group calls
-# 80331-1433 - Added second transfer try for VICIDIAL transfers/hangups on manual dial calls
-# 80402-0121 - Fixes for manual dial transfers on some systems
-# 80407-2112 - Work on adding phone login load balancing across servers
-# 80416-0559 - Added ability to log computer_ip at login, set the $PhonESComPIP variable
-# 80428-0413 - UTF8 changes and testing
-# 80505-0054 - Added multi-phones load-balanced alias option
-# 80507-0932 - Fixed Script display bug (+ instead of space)
-# 80519-1425 - Added calls in queue display
-# 80523-1630 - Added Timeclock links
-# 80625-0047 - Added U option for gender, added date/phone display options
-# 80630-2210 - Added queue_log entries for Manual Dial
-# 80703-0139 - Added alter customer phone permissions
-# 80703-1106 - Added API functionality for Hangup and Dispo, added Agent Display Queue Count
-# 80707-2325 - Added vicidial_id to recording_log for tracking of vicidial or closer log to recording
-# 80709-0358 - Added Default alt phone dial hard-code option
-# 80719-1147 - Changed recording and senddtmf conf prefix
-# 80815-1014 - Added manual dial list restriction option
-# 80823-2123 - Fixed form scroll for IE, added copy to clipboard(IE-only feature)
-# 80831-0548 - Added Extended alt-dial-phone display information for non-manual calls
-# 80909-1717 - Added support for campaign-specific DNC lists
-# 80915-1754 - Rewrote leave-3way functions for external calling
-# 81002-1908 - Fixed double-login bug in some conditions
-# 81007-0945 - Added three_way_call_cid option for outbound 3way calls
-# 81010-1047 - Fixed conf calling prefix to use settings, other 3way improvements
-# 81011-1403 - Fixed bugs in leave3way when transferring a manual dial call
-# 81012-1729 - Added INBOUND_MAN dial method to allow manual list dialing and inbound calls
-# 81013-1644 - Fixed bug in leave 3way for manual dial fronters
-# 81015-0405 - Fixed bug related to hangups on 3way calls
-# 81016-0703 - Changed leave 3way to allow function at any time transfer-conf is available
-# 81020-1501 - Fixed bugs in queue_log logging
-# 81023-0411 - Added compatibility for dial-in agents using AGI, bug fixes
-# 81030-0403 - Added option to force Pause Codes on PAUSE
-# 81103-1427 - Added 3way call dial prefix
-# 81104-0140 - Added mysql error logging capability
-# 81104-1618 - Changed MySQL queries logging
-# 81106-0411 - Changedthe campaign login list behaviour
-# 81110-0057 - Changed Pause time to start new vicidial_agent_log on every pause
-# 81110-1514 - Added hangup_all_non_reserved to fix non-Hangup bug
-# 81119-1811 - webform backslash fix
-# 81124-2213 - Fixes blind transfer bug
-# 81209-1617 - Added campaign web form target option and web form address variables
-# 81211-0422 - Fixed Manual dial agent_log bug
-# 90102-1402 - Added time sync check notification
-# 90115-0619 - Added ability to send Local Closer to AGENTDIRECT agent_only
-# 90120-1719 - Added API pause/resume and number dial functionality
-# 90126-2302 - Added Vtiger login option and agent alert option
-# 90128-0230 - Added vendor_lead_code to API dial and manuald dial with lookup
-# 90202-0148 - Added option to disable BLENDED checkbox
-# 90209-0132 - Changed tab images and color scheme
-# 90303-1145 - Fixed rare manual dial live hangup bug
-# 90304-1333 - Added user-specific web vars option
-# 90305-0917 - Added prefix-choice and group-alias options for calls coming from API
-# 90307-1736 - Added Shift enforcement and manager override features
-# 90315-1009 - Changed revision for new trunk 2.2.0
-# 90320-0309 - Fixed agent log bug when using wrapup time
-# 90323-1555 - Initial call to agent phone now has campaign callerIDnumber
-# 90408-0104 - Added Vtiger callback record ability
-# 90508-0727 - Changed to PHP long tags
-# 90511-1018 - Added restriction not allowing dialing into agent sessions from manual dial
-# 90519-0635 - Fixed manual dial status and logging bug
-# 90525-1012 - Fixed transfer issue of auto-received call after manual dial call
-# 90529-0741 - Added nophone agent phone login that will not show any empty session alerts
-# 90531-0635 - Added option to hide customer phone number
-# 90611-1422 - Fixed multiple logging bugs
-# 90628-0655 - Added Quick Transfer button and Preset Prepopulate option
-# 90705-1400 - Added Agent view sidebar option
-# 90706-1432 - Added Agent view transfer selection
-# 90709-1649 - Fixed alt-number transfers and dispo variable reset for webform
-# 90712-2304 - Added ADD-ALL group selection, view calls in queue, grab call from queue, requeue button
-# 90717-0640 - Added dialed_label and dialed_number to script variables
-# 90721-1114 - Added rank and owner as vicidial_list fields
-# 90726-2012 - Added allow_alerts option
-# 90729-0647 - Added agent_display_dialable_leads option
-# 90730-0145 - Fixed bugs in re-queue and INBOUND_MAN with blended selected
-# 90808-0117 - Fixed manual dial calls today bug, added last_state_change to vicidial_live_agents
-# 90812-0046 - Added no-delete-sessions = 1 as default, unused sessions cleared out at timeclock end of day
-# 90814-0829 - Moved mute button next to hotkeys button
-# 90827-0133 - Reworked Script display code
-# 90827-1549 - Added list script override option, original_phone_login variable
-# 90831-1456 - Added active_agent_login_server option for servers
-# 90908-1038 - Added DEAD call display
-# 90909-0921 - Fixed park issues
-# 90916-1144 - Added Second web form button, Answering Machine Message change
-# 90917-1325 - Fixed script loading bug with customer webform at the same time
-# 90920-2108 - Changed web forms to use window.open instead of traditional links(IE7 compatibility issue)
-# 90923-1310 - Rolled back last change
-# 90928-1955 - Added lead update before closer transfer
-# 90930-2243 - Added Territory selection functions
-# 91108-2118 - Added QM pause code entry
-# 91111-1433 - Fixed Gender pulldown list display for IE, remove links for recording channels in SHOW CHANNELS
-# 91123-1801 - Added code for outbound_autodial field
-# 91130-2021 - Added code for manager override of in-group selection
-# 91204-1638 - Added recording_filename and recording_id script variables and script refresh link
-# 91205-2055 - Added CONSULTATIVE checkbox in a redesigned Transfer-Conf frame
-# 91206-2020 - Fixed vicidial_agent_log logging bug on logout when not paused
-# 91211-1412 - Added User custom variables and CRM login popup
-# 91219-0657 - Set pause code automatically on ReQueue and INBOUND_MAN Dial-Next-Number
-# 91228-1339 - Added API "fields update" functions and "timer action" functions
-# 100103-1250 - Added 3 more conf-presets, list ID override presets and call start/dispo URLs
-# 100107-0108 - Added dynamic screen size based on login screen browser dimensions
-# 100109-0801 - Added ALTNUM alt number status, fixed alt number dialing from setting
-# 100109-1338 - Fixed Manual dial live call detection
-# 100116-0709 - Added presets to script and web form variables
-# 100123-0954 - changes to AGENTDIRECT selection span
-# 100131-2233 - Added functions to allow for a webphone loaded in a separate IFRAME
-# 100203-0639 - Fixed logging issues related to INBOUND_MAN dial method
-# 100207-1103 - Changed Pause Codes function to allow for multiple pause codes per pause period
-# 100220-1040 - Added Call Log View and Customer Info View and fixed HotKeys position
-# 100221-1107 - Added Custom CID compatibility
-# 100301-1330 - Changed AGENTDIRECT user selection launching to AGENTS link next to number-to-dial field
-# 100302-2145 - Added scheduled callbacks alert feature
-# 100306-0852 - Added options.php optional file for setting interface options that will survive upgrade
-# 100309-0525 - Added queuemetrics_loginout option
-# 100313-0053 - Added display options for transfer/conf buttons
-# 100315-1148 - fix for rare recording_log uniqueid issue on manual dial calls to same number
-# 100317-1301 - Added agent_fullscreen User Group option
-# 100327-0901 - fix for manual dial answering machine message
-# 100331-1220 - Added human-readable hangup codes for manual dial
-# 100401-0019 - Added agent_choose_blended option
-# 100413-1349 - Various small logging fixes and extended alt-dial fixes
-# 100420-1009 - Added scheduled_callbacks_count option
-# 100423-1156 - Added more user logging data and manual_dial_override, blind monitor warnings, uniqueid display and codec features
-# 100428-0544 - Added uniqueid display option for PRESERVE
-# 100513-0714 - Added options.php option to hide the timeclock link
-# 100513-2337 - Changed user_login_first to attempt full login if phone_login/pass are filled in
-# 100527-2212 - Added API send_dtmf, transfer_conference and park_call functions
-# 100616-1622 - Allowed longer manual dial numbers
-# 100622-2209 - Added field labels
-# 100625-1118 - Added poor-network-connection-mitigating code
-# 100629-1158 - Added initial code for custom list fields
-# 100702-1315 - Custom List Fields functionality enabled
-# 100712-1441 - Added entry_list_id field to vicidial_list to preserve link to custom fields if any
-# 100723-1522 - Added LOCKED options for quick transfer button feature
-# 100726-1233 - Added HANGUP, CALLMENU, EXTENSION, IN_GROUP timer actions
-# 100803-2324 - Cleanup of URLDecode (issue #375)
-# 100811-0810 - Added webphone_url_override option from user Groups
-# 100813-0554 - Added Campaign presets
-# 100815-1015 - Added manual_dial_prefix campaign option
-# 100823-1605 - Added DID variables for webform and scripting
-# 100827-1436 - Added webphone dialpad options
-# 100902-0046 - Added initial loading screen
-# 100902-1349 - Added closecallid, xfercallid, agent_log_id as webform and script variables
-# 100908-0955 - Added customer 3way hangup
-# 100912-1304 - Changed Dispo screen phone number display to dialed_number
-# 100927-1616 - Added custom fields ability to web forms and optimized related code
-# 101004-1322 - Added "IVR Park Call" button in agent interface
-# 101006-1358 - Raised limits on several dynamic items from the database
-# 101008-0356 - Added manual_preview_dial and two new variables for recording filenames
-# 101012-1656 - Added scroll command at dispo submission to for scrolling to the top of the screen
-# 101024-1639 - Added parked call counter
-# 101108-0110 - Added ADDMEMBER option for queue_log
-# 101124-0436 - Added manual dial queue and manual dial call time check features
-# 101125-2151 - Changed CIDname for 3way calls
-# 101128-0102 - Added list webform override options
-# 101207-1621 - Added scroll to the top after in-group, pause code, etc... selections, and added focus blur to several functions
-# 101208-1210 - Fixed focus/blur coding to work after Dispo
-# 101216-1758 - Added the ability to hide fields if the label is set to ---HIDE--- in System Settings
-# 101227-1645 - Added dialplan off toggle options, and settings and code changes for top bar webphone
-# 110109-1205 - Added queuemetrics_loginout NONE option
-# 110112-1254 - Added options.php option for focus/blur/enter functions
-# 110129-1050 - Changed to XHTML compliant formatting, issue #444
-# 110208-1202 - Made scheduled callbacks notice move when on script/form tabs
-# 110212-2206 - Added scheduled callback custom statuses compatibility
-# 110215-1412 - Added my_callback_option and per_call_notes options
-# 110218-1522 - Added agent_lead_search feature
-# 110221-1251 - Changed statuses display to keep track of non-selectable statuses
-# 110224-1713 - Added compatibility with QM phone environment logging, QM pause code last call logging and active server twin check
-# 110225-1231 - Changed scheduled callbacks list to allow clicking to see lead info without dialing, and separate dial link
-# 110303-2321 - Added notice of on-hook phone use, and ability to click 'ring' to call into session, minor queue_log fix
-# 110304-1623 - Added callback count notification defer options
-# 110310-0331 - Added auto-pause/resume functions in auto-dial mode for pre-call work
-# 110310-1627 - Changed most browser alerts to HTML alerts, other bug fixes
-# 110322-0923 - Allowed hiding of gender pulldown
-# 110413-1244 - Added ALT dialing from scheduled callback list, and other formatting changes
-# 110420-1211 - Added web_vars variable
-# 110428-1549 - Added use of manual_dial_cid setting
-# 110430-1126 - Added ability to use external_dial API function with lead_id and alt_dial options
-# 110430-1924 - Added post_phone_time_diff_alert campaign feature
-# 110506-1612 - Added custom_3way_button_transfer button feature
-# 110510-1637 - Added number validation to custom_3way_button_transfer function
-# 110526-1723 - Added webphone_auto_answer option
-# 110528-1033 - Added waiting_on_dispo manual dial check
-# 110531-2158 - Added callback_days_limit campaign feature
-# 110619-2005 - Added disable_dispo_ options
-# 110624-2311 - Added screen labels option and status display fields option
-# 110626-2234 - Added queuemetrics_pe_phone_append
-# 110707-1412 - Added last_inbound_call_time and finish compatibility
-# 110713-0048 - Allow for full hiding of the phone number field label
-# 110718-1159 - Added logging of skipped leads
-# 110719-0854 - Removed debug output and small display alignment changes
-# 110723-2308 - Complete hiding of phone numbers in logs when alter phone is set to HIDE
-# 110730-2240 - Added option to hide dispo statuses, only to be used with API
-# 110802-0122 - Added call_id variable
-# 110911-1604 - Added API logout function
-# 110916-1514 - Fixed dial timeout to check for dial_timeout setting and greater than 49 seconds
-# 110919-1603 - Added Phone login load balancing grouping options
-# 111015-2037 - Added contact search functions
-# 111018-1528 - Added more contact fields, added code to prevent API transfer duplicates
-# 111021-1623 - Fix for rare stuck vac issue with manual alt dial
-# 111024-1237 - Added callback_list_calltime option
-# 111114-0039 - Added scheduled callback and qm-dispo-code fields to API
-# 111202-1444 - Added grade-random next-agent-call options
-# 111227-1940 - Added Timer Action for Dx_DIAL_QUIET options
-# 120213-2029 - Changed consultative transfer with custom fields behavior for better data updating
-# 120223-2119 - Removed logging of good login passwords if webroot writable is enabled
-# 120308-1617 - Added compatibility for DAHDI phones using asterisk version for server > 1.4.21.2
-# 120403-1204 - Fixed issue with MANUAL dial method hotkeys, added 1 second delay
-# 120420-1621 - Forked 2.4 to branches, changing trunk to 2.6
-# 120427-1718 - Fixed 3-way logging issue
-# 120512-0849 - Added In-Group Manual Dial functions
-# 120518-1225 - Added transfer call to answering machine message with hotkey (LTMG or XFTAMM)
-# 120810-0056 - Added recording api function
-# 120819-1747 - Added vicidial_session_data logging for webphone api function
-# 120914-1357 - Added group_alias to transfer_conference function
-# 121025-2335 - Do not allow AGENTDIRECT transfers without a user defined
-# 121029-0122 - Added pause_after_next_call and owner_populate campaign options
-# 121114-1759 - Fixed manual dial lead preview script variable issue
-# 121114-1937 - Added INGROUP recording option
-# 121116-1407 - Added QC functionality
-# 121129-2149 - Corrected hotkeys activation conditions
-# 121130-0734 - Fixed call notes amphersand issue #612
-# 121206-0634 - Added inbound lead search feature
-# 121222-2315 - Added inbound email features
-# 130220-1214 - Fixed issue with 3-way call dial timeout
-# 130328-0006 - Converted ereg to preg functions
-# 130328-0934 - Applied changes from Issue #655
-# 130328-1017 - Added validation for agent manual dial permission on DIAL links
-# 130402-2250 - Added user_group variable in scripts, forms and webforms
-# 130412-1359 - Added SIP message for failed calls
-# 130417-1937 - Changed locked agent choose in-group/closer/territories to auto-close
-# 130508-2223 - Cleanup for other language builds
-# 130508-2307 - Branched 2.7, trunk becomes 2.8
-# 130603-2209 - Added login lockout for 15 minutes after 10 failed logins, and other security fixes
-# 130615-1125 - Added recording_id to dispo url
-# 130625-0841 - Added more user log data on login
-# 130705-1439 - Added optional encrypted passwords compatibility
-# 130718-0745 - Added recording_filename to dispo_call_url
-# 130802-1134 - Changed to PHP mysqli functions
-# 130822-0656 - Changed all require to require_once in agc directory for PHP backward compatibility
-# 130903-1920 - Added security check for browser window name, see launch.php for more information
-# 130925-2119 - Fixed span order issue
-# 131007-1348 - Added mrglock_ig_select_ct options.php setting
-# 131010-2149 - Added option to allow manual dial by lead_id
-# 131208-2331 - Added campaign options for max dead, dispo and pause time. Changed CB blink to CSS
-# 131209-1604 - Addded called_count logging
-# 131210-1354 - Fixed manual dial CID choice issue with AC-CID settings
-# 140107-2034 - Added webserver/url login logging
-# 140126-0741 - Added pause code API function
-# 140204-1230 - Added check for valid date in call log view
-# 140214-1851 - Added preview_dial_action API function
-# 140301-2059 - Added API functions options for SEARCH for phone within lead_id and Dial Next Number
-# 140302-1018 - Changes to allow for & and + in standard fields
-# 140312-2109 - Added CALLID as recording filename variable
-# 140403-1731 - Added recording filename API append option
-# 140418-0937 - Added max inbound calls feature
-# 140423-1728 - Added campaign options manual_dial_search_checkbox and hide_call_log_info
-# 140428-1514 - Added pause_type
-# 140429-2040 - Added called_count and  call notes display option as script and form variables
-# 140519-1011 - Fixed calls in this session to not count monitoring channels
-# 140521-2147 - Added manual alt dial options and more agent login error messages
-# 140609-2246 - Fixed issue with webform2 button after manual alt-dial
-# 140612-2152 - branched 2.9 version, raised trunk to 2.10
-# 140617-1041 - Fixed issue with non-latin, issue #773
-# 140617-2015 - Added vicidial_users wrapup_seconds_override option
-# 140621-1557 - Added update_settings call to grab selected user and campaign settings more frequently
-# 140623-1710 - Added wrapup_bypass setting
-# 140626-0757 - Added wrapup_after_hotkey setting
-# 140630-0921 - Added the FSCREEN option to Wrapup message to allow for message only display
-# 140703-1658 - Several logging fixes, mostly related to manual dial calls
-# 140706-0932 - Added callback_time_24hour for callback setting screen
-# 140811-1219 - Changed to use QXZ function for echoing text
-# 140822-0900 - Fixed issue with phone alias login
-# 140902-0826 - Added callback_active_limit and callback_active_limit_override
-# 140918-1606 - Fixed manual dial pause warning issue
-# 141105-1153 - Fixed issue with AGENTDIRECT transfers to agents with IDs over 7 characters long
-# 141113-1431 - Added admin_test option to allow login on active_agent=N servers
-# 141116-1805 - Fixed issue #801
-# 141118-1229 - Formatting changes for QXZ output
-# 141118-1439 - Added agent_email as webform and script variable
-# 141121-1005 - Added new QC and comments campaign options
-# 141124-1144 - Added new Callback Comments campaign option
-# 141124-2146 - Added show_previous_callback campaign option
-# 141124-2217 - Fix for issue #798
-# 141124-2234 - Added clear_script campaign option
-# 141125-0100 - Added parked_hangup code
-# 141125-1235 - Fixed issue with lead info not being updated when Max Dead time is triggered
-# 141128-0848 - Code cleanup for QXZ functions
-# 141204-1211 - Added more error checking on login
-# 141207-1155 - Added pause_trigger to logout to force pause before running logout process
-# 141216-1859 - Added agent choose language option
-# 141222-2035 - Fix for issue #811
-# 141223-2109 - Fix for hide_gender issue
-# 141227-1759 - Found missing phrase for QXZ
-# 141229-1429 - Changed single-quote QXZ arguments to double-quotes
-# 150101-1516 - Updated for 2015
-# 150108-1725 - Added more validation for API transfer commands
-# 150111-1545 - Added manual_dial_search_filter campaign option(Issue #812)
-# 150114-2052 - Added list_name web url variable
-# 150117-1445 - Added NAME as status display variable
-# 150117-1524 - Changed Pause/Resume buttons to single button(Issue #814)
-# 150122-0629 - Fixed issue with double dispo warning, Fixed issue with alt-dial/preview-dial custom form reset
-# 150123-1505 - Fixed issue with manual dial hotkey usage and agent logs
-# 150129-0828 - Added confirmation if agent tries to leave the page without logging out, issue #821
-# 150202-0829 - Reconfigured hotkeys and auto-manual-dial for less delay
-# 150203-1331 - Small changes to improve manual dial hotkey use
-# 150204-1911 - Changed Manual hotkey auto-manual-dial to a variable delay depending on dispo processing time
-# 150210-1225 - Added LOCK options for manual_dial_search_checkbox, fixed missing QXZ tags(issue #827)
-# 150212-0034 - Added case-sensitive user validation(issue #682)
-# 150218-1356 - Fixes for QXZ enclosed in single-quotes
-# 150220-1533 - Fix for leave page confirmation after logout and QXZ fixes
-# 150302-0950 - Release of 2.11 stable branch and raising trunk to 2.12
-# 150309-0315 - Added custom agent login prompt option
-# 150405-1410 - Fixed issue with API dialing and preview
-# 150418-2206 - Fixed issue with manual dial with hotkeys in RATIO method, issue #836
-# 150428-1735 - Added web form three
-# 150522-1254 - Fixed issue #859
-# 150608-1126 - Added campaign option to disable the manual dial override field
-# 150609-1736 - Added status_display_ingroup option
-# 150609-1917 - Added list_description web url variable
-# 150610-0940 - Added customer_gone_seconds campaign option
-# 150701-1211 - Modified mysqli_error() to mysqli_connect_error() where appropriate
-# 150704-0005 - Changed disposubmit to be blocking before resume, Issue #863
-# 150712-2045 - Changed dispo call url to operate through a separate AJAX process
-# 150723-1741 - Created method for logging agent button/link clicks
-# 150725-1744 - Added Agent Display Fields campaign option
-# 150727-0908 - Added default_language
-# 150808-1439 - Added compatibility for custom fields data option
-# 150909-0212 - Fixed MDlogEPOCH variable issue #882
-# 150917-0926 - Added dynamic default field maxlengths based on DB schema
-# 150923-1952 - Added DID custum fields as web and form variables
-# 150928-1205 - Fixed issue with API transfers and dial_override flag
-# 151022-0004 - Added audio alert when email arrives, issue #899
-# 151028-1458 - Added status groups statuses feature with min/max seconds qualifiers for statuses
-# 151119-1925 - Fixed issue with scheduled callbacks and status groups
-# 151125-0942 - Fixed manual call only logging bug
-# 151212-0922 - Added all chat functionality
-# 151218-1200 - Fixes for chat security and language translation
-# 151229-2240 - Fixed issue #907, script reload after canceling manual 3way call
-# 151229-2331 - Added campaign setting for manual_dial_timeout, Issue #903
-# 151230-0911 - Fixed transfer of parked call logging issue #901
-# 160101-1131 - Added code to handle routing initiated recordings
-# 160104-1237 - Added images for live chat and email, and dead chat
-# 160106-2215 - Deactivated several call action buttons while Email/Chat handling
-# 160306-1019 - Added more webphone options
-# 160326-0941 - Fixed issue #933, variables
-# 160326-1001 - Fixed issue #934, phone_login
-# 160331-2129 - Fixed missing start and dispo call url variables, issue #938
-# 160414-0922 - Added default_phone_code system settings option
-# 160420-1342 - Fixed text link overlaps with other languages
-# 160428-1826 - Fixed user_authorization bug
-# 160706-1438 - Redesign for loading, login and logout screens. Added Screen Colors. Logging of browser width/height
-# 160731-1102 - Added option to automatically dial the next number after X seconds in a manual dial mode
-# 160901-1728 - Added last_local_call_time display field
-# 160915-0955 - Added ---READONLY--- option for most screen labels
-# 161019-0031 - Added ---REQUIRED--- option for most screen labels
-# 161029-0858 - Added option to park xfer channel
-# 161102-1121 - Fixed QM partition problem
-# 161106-2221 - Changed to screen colors for main tab logo, other small style changes
-# 161117-1532 - Changed default main screen logo background color to white(screen color standard row 5)
-# 161126-2152 - Release of 2.13 stable branch and raising trunk to 2.14
-# 161217-0826 - Added debug logging of dead call trigger
-# 161222-0727 - Fixed issue with Scheduled Callbacks with tilde'~' in text fields
-# 161222-1111 - Added more debug logging of events
-# 170201-2215 - Fixes for pause-while-call-coming-in issues
-# 170207-1314 - Added user option api_only_user
-# 170217-1359 - Added dead_to_dispo campaign option
-# 170220-1306 - Added external_lead_id trigger for switch_lead API function
-# 170223-2122 - Fixed rare recording issue
-# 170301-0839 - Added functionality for required custom fields
-# 170303-1206 - Expanded required custom fields types
-# 170309-0705 - Small fix for INBOUND_MAN agent logging issue
-# 170309-1215 - Added agent_xfer_validation option
-# 170317-2342 - Fix for script tab ignore list script override
-# 170331-2255 - Assure that custom field form submitted after standard field submit
-# 170409-1601 - Added IP List validation code
-# 170411-1158 - Added called_count as a webform variable
-# 170416-1640 - Added ready_max_logout option
-# 170429-0851 - Added callback_display_days option
-# 170430-1005 - Added three_way_record_stop and hangup_xfer_record_start campaign options
-# 170513-1527 - Added debug logging of all alert boxes
-# 170531-0937 - Added Agent Events Push function
-# 170601-2017 - Added more agent events
-# 170609-1711 - Added 'commit' function to force immediate submission of Customer Information changes to database
-# 170629-1831 - Added some new agent_events entries
-# 170709-1116 - Added Xfer Hung Up notification
-# 170710-1802 - Added logging of clicks on webform buttons
-# 170725-2147 - Added counter(aec) to agent_events calls
-# 170808-1014 - Added more qualifiers for Hungup Xfer function to be triggered
-# 170816-2336 - Added ask post-call survey feature for in-group calls
-# 170912-1619 - Fix for no-hopper dnc dialing issue
-# 170913-1747 - Small change for two agent events
-# 170914-0708 - Fix for script tab issue
-# 170923-1336 - Small change to hangup customer process
-# 171011-1524 - Added webphone_layout options
-# 171026-0109 - Small change for email queue_log logging
-# 171115-0713 - Hide preview call if preview campaign option is disabled
-# 171124-1057 - Added max_inbound_calls_outcome options
-# 171124-1459 - Added manual_auto_next_options options
-# 171126-1140 - Added ability to use EMAILinbound_message script variable
-# 171130-0226 - Added agent_screen_time_display option
-# 171214-2018 - Added PREVIEW_ get_call_launch options
-# 171224-1244 - Added List default_xfer_group override
-# 180105-1543 - Small javascript fixes, and more debug logging, change to 2018
-# 180126-0855 - Added more agent api pause debug output
-# 180204-2304 - Added API dial_ingroup option to external_dial
-# 180210-0001 - Added flag for WebRTC webphone compatibility in iframe
-# 180215-1105 - Changes for CID Groups functionality
-# 180216-1349 - Fix for callback alt dial isssue #1066
-# 180217-0915 - Added pause_max_dispo, fix for issue #1030
-# 180223-1150 - Fix for rare webform VAR url issue
-# 180224-1433 - Added LOGINvar variables, and options.php $INSERT_ variables
-# 180302-1704 - Fix for pause code issue
-# 180306-1717 - Added script_top_dispo feature
-# 180314-2222 - Fix for lead search screen hidden fields, issue #1079
-# 180323-2228 - Added more logging for notices
-# 180327-1355 - Added code for LOCALFQDN conversion to browser-used server URL for webform and script iframes
-# 180405-0913 - Fix for API Hangup after dial timeout
-# 180410-1629 - Added Pause Code manager approval feature, Added switch_lead logging
-# 180421-0754 - Moved AGENT TIME link and Dialable Leads display to not overlap
-# 180425-2036 - Added INSERT_first_onload variable
-# 180506-2222 - Added SWITCH custom field type
-# 180512-2226 - Added support for users-max_hopper_calls feature
-# 180522-1921 - Added Routing Initiated Recording ability for manual dial calls
-# 180606-0024 - Fixed email transfers bugs, modified transfer-conf panel for same
-# 180610-2305 - Added dead_trigger_ features
-# 180727-2044 - Small fix for pause code issue
-# 180807-1703 - Added agent_logout_link credentials system setting
-# 180809-1649 - Added scheduled_callbacks_force_dial campaign feature
-# 180824-1317 - Add Selector Agent/Phone for Transfer
-# 180827-1224 - Added scheduled_callbacks_timezones_... features
-# 180924-0002 - Added three_way_volume_buttons campaign feature
-# 180926-1757 - Fix for rare webform URL issue
-# 181003-1737 - Added external_web_socket_url option
-# 181005-1909 - Added SYSTEM manual_dial_filter option
-# 190108-0833 - Added manual_dial_validation option, updated dates for 2019
-# 190222-1316 - Added recent session per-call logging
-# 190310-2017 - Added mute_recordings system/campaign/user option
-# 190316-0915 - Remove all passwords from default URLDecode.
-# 190330-0815 - Added logged_in_refresh_link option
-# 190406-1615 - Added agent next_dial_my_callbacks override
-# 190529-2144 - Fix for shift enforcement dispo-call-url issue
-# 190617-1116 - Fix for script variable issue
-# 190627-2134 - Added new options for campaign agent_screen_time_display feature
-# 190723-1655 - Fix for script tab custom fields
-# 190730-0925 - Added campaign SIP Actions processing
-# 190901-0956 - Added cid_choice option to API transfer_conference function
-# 190902-0914 - Fix for PHP 7.2
-# 190925-1346 - Changes for more SIP Event Action features
-# 191018-0904 - Added User Inbound Filtered features
-# 191101-1150 - Added VM Message Groups features, second script tab
-# 191104-1759 - Fixes for translations
-# 191105-0824 - Fix for issue #1177
-# 191107-0935 - Added $webphone_call_seconds option
-# 191107-1011 - Fix for issue #1180, hide phone number in callback list
 #
-
-$version = '2.14-594c';
-$build = '20200916-1630';
-$mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=91;
-$one_mysql_log=0;
-$DB=0;
+#
 
 require_once("dbconnect_mysqli.php");
 require_once("functions.php");
@@ -2032,7 +1447,7 @@ else
 				$HKstatusnames = substr("$HKstatusnames", 0, -1);
 
 				##### grab the campaign settings
-				$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active,no_hopper_leads_logins,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,xfer_groups,disable_alter_custphone,display_queue_count,manual_dial_filter,agent_clipboard_copy,use_campaign_dnc,three_way_call_cid,dial_method,three_way_dial_prefix,web_form_target,vtiger_screen_login,agent_allow_group_alias,default_group_alias,quick_transfer_button,prepopulate_transfer_preset,view_calls_in_queue,view_calls_in_queue_launch,call_requeue_button,pause_after_each_call,no_hopper_dialing,agent_dial_owner_only,agent_display_dialable_leads,web_form_address_two,agent_select_territories,crm_popup_login,crm_login_address,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,use_custom_cid,scheduled_callbacks_alert,scheduled_callbacks_count,manual_dial_override,blind_monitor_warning,blind_monitor_message,blind_monitor_filename,timer_action_destination,enable_xfer_presets,hide_xfer_number_to_dial,manual_dial_prefix,customer_3way_hangup_logging,customer_3way_hangup_seconds,customer_3way_hangup_action,ivr_park_call,manual_preview_dial,api_manual_dial,manual_dial_call_time_check,my_callback_option,per_call_notes,agent_lead_search,agent_lead_search_method,queuemetrics_phone_environment,auto_pause_precall,auto_pause_precall_code,auto_resume_precall,manual_dial_cid,custom_3way_button_transfer,callback_days_limit,disable_dispo_screen,disable_dispo_status,screen_labels,status_display_fields,pllb_grouping,pllb_grouping_limit,in_group_dial,in_group_dial_select,pause_after_next_call,owner_populate,manual_dial_lead_id,dead_max,dispo_max,pause_max,dead_max_dispo,dispo_max_dispo,max_inbound_calls,manual_dial_search_checkbox,hide_call_log_info,timer_alt_seconds,wrapup_bypass,wrapup_after_hotkey,callback_active_limit,callback_active_limit_override,comments_all_tabs,comments_dispo_screen,comments_callback_screen,qc_comment_history,show_previous_callback,clear_script,manual_dial_search_filter,web_form_address_three,manual_dial_override_field,status_display_ingroup,customer_gone_seconds,agent_display_fields,manual_dial_timeout,manual_auto_next,manual_auto_show,allow_required_fields,dead_to_dispo,agent_xfer_validation,ready_max_logout,callback_display_days,three_way_record_stop,hangup_xfer_record_start,max_inbound_calls_outcome,manual_auto_next_options,agent_screen_time_display,pause_max_dispo,script_top_dispo,routing_initiated_recordings,dead_trigger_seconds,dead_trigger_action,dead_trigger_repeat,dead_trigger_filename,scheduled_callbacks_force_dial,callback_hours_block,callback_display_days,scheduled_callbacks_timezones_container,three_way_volume_buttons,manual_dial_validation,mute_recordings,leave_vm_no_dispo,leave_vm_message_group_id,campaign_script_two FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
+				$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active,no_hopper_leads_logins,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,xfer_groups,disable_alter_custphone,display_queue_count,manual_dial_filter,agent_clipboard_copy,use_campaign_dnc,three_way_call_cid,dial_method,three_way_dial_prefix,web_form_target,vtiger_screen_login,agent_allow_group_alias,default_group_alias,quick_transfer_button,prepopulate_transfer_preset,view_calls_in_queue,view_calls_in_queue_launch,call_requeue_button,pause_after_each_call,no_hopper_dialing,agent_dial_owner_only,agent_display_dialable_leads,web_form_address_two,agent_select_territories,crm_popup_login,crm_login_address,timer_action,timer_action_message,timer_action_seconds,start_call_url,dispo_call_url,xferconf_c_number,xferconf_d_number,xferconf_e_number,use_custom_cid,scheduled_callbacks_alert,scheduled_callbacks_count,manual_dial_override,blind_monitor_warning,blind_monitor_message,blind_monitor_filename,timer_action_destination,enable_xfer_presets,hide_xfer_number_to_dial,manual_dial_prefix,customer_3way_hangup_logging,customer_3way_hangup_seconds,customer_3way_hangup_action,ivr_park_call,manual_preview_dial,api_manual_dial,manual_dial_call_time_check,my_callback_option,per_call_notes,agent_lead_search,agent_lead_search_method,queuemetrics_phone_environment,auto_pause_precall,auto_pause_precall_code,auto_resume_precall,manual_dial_cid,custom_3way_button_transfer,callback_days_limit,disable_dispo_screen,disable_dispo_status,screen_labels,status_display_fields,pllb_grouping,pllb_grouping_limit,in_group_dial,in_group_dial_select,pause_after_next_call,owner_populate,manual_dial_lead_id,dead_max,dispo_max,pause_max,dead_max_dispo,dispo_max_dispo,max_inbound_calls,manual_dial_search_checkbox,hide_call_log_info,timer_alt_seconds,wrapup_bypass,wrapup_after_hotkey,callback_active_limit,callback_active_limit_override,comments_all_tabs,comments_dispo_screen,comments_callback_screen,qc_comment_history,show_previous_callback,clear_script,manual_dial_search_filter,web_form_address_three,manual_dial_override_field,status_display_ingroup,customer_gone_seconds,agent_display_fields,manual_dial_timeout,manual_auto_next,manual_auto_show,allow_required_fields,dead_to_dispo,agent_xfer_validation,ready_max_logout,callback_display_days,three_way_record_stop,hangup_xfer_record_start,max_inbound_calls_outcome,manual_auto_next_options,agent_screen_time_display,pause_max_dispo,script_top_dispo,routing_initiated_recordings,dead_trigger_seconds,dead_trigger_action,dead_trigger_repeat,dead_trigger_filename,scheduled_callbacks_force_dial,callback_hours_block,callback_display_days,scheduled_callbacks_timezones_container,three_way_volume_buttons,manual_dial_validation,mute_recordings,leave_vm_no_dispo,leave_vm_message_group_id,campaign_script_two,acr_id FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
 				$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01013',$VD_login,$server_ip,$session_name,$one_mysql_log);}
 				if ($DB) {echo "$stmt\n";}
@@ -2198,6 +1613,7 @@ else
 				$leave_vm_no_dispo =		$row[158];
 				$leave_vm_message_group_id = $row[159];
 				$campaign_script_two =		$row[160];
+				$campaign_acr_id =			$row[161];
 
 				if ($leave_vm_no_dispo == 'ENABLED')
 					{$leave_vm_no_dispo = 'VMNOHANG';}
@@ -4991,6 +4407,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var aec=0;
 	var inbound_post_call_survey='';
 	var inbound_survey_participate='';
+	var campaign_acr_id = '<?php echo $campaign_acr_id ?>';
 	var left_3way_timeout=0;
 	var MI_PAUSE='<?php echo $MI_PAUSE ?>';
 	var LOGINvarONE='<?php echo $LOGINvarONE ?>';
@@ -7039,7 +6456,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 					var redirectserverip = lastcustserverip;
 					if (redirectvalue.length < 2)
 						{redirectvalue = lastcustchannel}
-					if ( (taskvar == 'XfeRBLIND') || (taskvar == 'XfeRVMAIL') )
+					if ( (taskvar == 'XfeRBLIND') || (taskvar == 'XfeRVMAIL') || (taskvar == 'XfeRBLINDACR') )
 						{
 						var temp_blind_dialstring='';
 						if (tasklockedquick > 0)
@@ -7100,7 +6517,11 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							}
 						else
 							{
-							xferredirect_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=RedirectVD&format=text&channel=" + redirectvalue + "&call_server_ip=" + redirectserverip + "&queryCID=" + queryCID + "&exten=" + blindxferdialstring + "&ext_context=" + blindxfercontext + "&ext_priority=1&auto_dial_level=" + auto_dial_level + "&campaign=" + campaign + "&uniqueid=" + document.vicidial_form.uniqueid.value + "&lead_id=" + document.vicidial_form.lead_id.value + "&secondS=" + VD_live_call_secondS + "&session_id=" + session_id + "&nodeletevdac=" + no_delete_VDAC + "&preset_name=" + document.vicidial_form.xfername.value + "&CalLCID=" + CalLCID + "&customerparked=" + customerparked;
+							if(taskvar == 'XfeRBLINDACR') {
+								xferredirect_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=RedirectACR&format=text&channel=" + redirectvalue + "&call_server_ip=" + redirectserverip + "&queryCID=" + queryCID + "&exten=" + blindxferdialstring + "&ext_context=" + blindxfercontext + "&ext_priority=1&auto_dial_level=" + auto_dial_level + "&campaign=" + campaign + "&uniqueid=" + document.vicidial_form.uniqueid.value + "&lead_id=" + document.vicidial_form.lead_id.value + "&secondS=" + VD_live_call_secondS + "&session_id=" + session_id + "&nodeletevdac=" + no_delete_VDAC + "&preset_name=" + document.vicidial_form.xfername.value + "&CalLCID=" + CalLCID + "&customerparked=" + customerparked;
+							} else {
+								xferredirect_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=RedirectVD&format=text&channel=" + redirectvalue + "&call_server_ip=" + redirectserverip + "&queryCID=" + queryCID + "&exten=" + blindxferdialstring + "&ext_context=" + blindxfercontext + "&ext_priority=1&auto_dial_level=" + auto_dial_level + "&campaign=" + campaign + "&uniqueid=" + document.vicidial_form.uniqueid.value + "&lead_id=" + document.vicidial_form.lead_id.value + "&secondS=" + VD_live_call_secondS + "&session_id=" + session_id + "&nodeletevdac=" + no_delete_VDAC + "&preset_name=" + document.vicidial_form.xfername.value + "&CalLCID=" + CalLCID + "&customerparked=" + customerparked;
+							}
 
 							if (temp_blind_dialstring != 'vmail')
 								{temp_blind_dialstring = blindxferdialstring;}
@@ -11719,19 +11140,21 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
                                 document.getElementById("QuickXfer").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRBLIND','" + lastcustchannel + "','" + lastcustserverip + "','','','" + quick_transfer_button_locked + "','YES');return false;\"><img src=\"./images/<?php echo _("vdc_LB_quickxfer.gif"); ?>\" border=\"0\" alt=\"QUICK TRANSFER\" /></a>";
 								}
-
-							if ( (inbound_post_call_survey=='ENABLED') && (inbound_survey_participate=='Y') )
-								{
-								document.vicidial_form.xfernumber.value = '83068888888888883999';
+							if (campaign_acr_id > 0) {
+								document.vicidial_form.xfernumber.value = '83068888888888881998';
 								document.vicidial_form.xferoverride.checked=true;
-								document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRBLIND','" + lastcustchannel + "','" + lastcustserverip + "','','','','YES');return false;\"><img src=\"./images/<?php echo _("vdc_LB_hangupcustomer.gif"); ?>\" border=\"0\" alt=\"Hangup Customer\" /></a>";
-								button_click_log = button_click_log + "" + SQLdate + "-----AskInGroupSurvey---" + inbound_post_call_survey + " " + inbound_survey_participate + " " + document.vicidial_form.xfernumber.value + "|";
+								document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"('XfeRBLINDACR','" + lastcustchannel + "','" + lastcustserverip + "','','','','YES');return false;\"><img src=\"./images/<?php echo _("vdc_LB_hangupcustomer.gif"); ?>\" border=\"0\" alt=\"Hangup Customer\" /></a>";
+								button_click_log = button_click_log + "" + SQLdate + "-----ACR---" + campaign_acr_id + " " + document.vicidial_form.xfernumber.value + "|";
+							} else {
+								if ( (inbound_post_call_survey=='ENABLED') && (inbound_survey_participate=='Y') )  {
+									document.vicidial_form.xfernumber.value = '83068888888888883999';
+									document.vicidial_form.xferoverride.checked=true;
+									document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"('XfeRBLIND','" + lastcustchannel + "','" + lastcustserverip + "','','','','YES');return false;\"><img src=\"./images/<?php echo _("vdc_LB_hangupcustomer.gif"); ?>\" border=\"0\" alt=\"Hangup Customer\" /></a>";
+									button_click_log = button_click_log + "" + SQLdate + "-----AskInGroupSurvey---" + inbound_post_call_survey + " " + inbound_survey_participate + " " + document.vicidial_form.xfernumber.value + "|";
+								} else {
+									document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup('','','','','YES');\"><img src=\"./images/<?php echo _("vdc_LB_hangupcustomer.gif"); ?>\" border=\"0\" alt=\"Hangup Customer\" /></a>";
 								}
-							else
-								{
-								document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup('','','','','YES');\"><img src=\"./images/<?php echo _("vdc_LB_hangupcustomer.gif"); ?>\" border=\"0\" alt=\"Hangup Customer\" /></a>";
-								}
-
+							}
 							if (custom_3way_button_transfer_enabled > 0)
 								{
 								document.getElementById("CustomXfer").innerHTML = "<a href=\"#\" onclick=\"custom_button_transfer();return false;\"><img src=\"./images/<?php echo _("vdc_LB_customxfer.gif"); ?>\" border=\"0\" alt=\"Custom Transfer\" /></a>";

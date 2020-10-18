@@ -960,14 +960,12 @@ if ($ACTION=="Hangup")
 
 
 ######################
-# ACTION=Redirect, RedirectName, RedirectNameVmail, RedirectToPark, RedirectFromPark, RedirectVD, RedirectXtra, RedirectXtraCX
+# ACTION=Redirect, RedirectName, RedirectNameVmail, RedirectToPark, RedirectFromPark, RedirectVD, RedirectXtra, RedirectXtraCX, RedirectACR
 # - insert Redirect Manager statement using extensions name
 ######################
 if (strlen($stage)<1) {$stage=$ACTION;}
-if ($ACTION=="RedirectVD")
-	{
-	if ( (strlen($channel)<3) or (strlen($queryCID)<15) or (strlen($exten)<1) or (strlen($campaign)<1) or (strlen($ext_context)<1) or (strlen($ext_priority)<1) or (strlen($uniqueid)<2) or (strlen($lead_id)<1) )
-		{
+if ($ACTION=="RedirectACR") {
+	if ( (strlen($channel)<3) or (strlen($queryCID)<15) or (strlen($exten)<1) or (strlen($campaign)<1) or (strlen($ext_context)<1) or (strlen($ext_priority)<1) or (strlen($uniqueid)<2) or (strlen($lead_id)<1) ) {
 		$channel_live=0;
 		echo _QXZ("One of these variables is not valid:")."\n";
 		echo _QXZ("Channel %1s must be greater than 2 characters",0,'',$channel)."\n";
@@ -980,84 +978,178 @@ if ($ACTION=="RedirectVD")
 		echo _QXZ("uniqueid %1s must be set",0,'',$uniqueid)."\n";
 		echo _QXZ("lead_id %1s must be set",0,'',$lead_id)."\n\n";
 		echo _QXZ("RedirectVD Action not sent")."\n";
-		}
-	else
-		{
+	} else {
 		if (strlen($call_server_ip)>6) {$server_ip = $call_server_ip;}
-		$stmt = "select count(*) from vicidial_campaigns where campaign_id='$campaign' and campaign_allow_inbound='Y';";
-			if ($format=='debug') {echo "\n<!-- $stmt -->";}
+		$stmt = "select count(*) from vicidial_campaigns where campaign_id='$campaign';";
+		if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_to_mysqli($stmt, $link);
-			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02021',$user,$server_ip,$session_name,$one_mysql_log);}
-			$row=mysqli_fetch_row($rslt);
-		if ($row[0] > 0)
-			{
+		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'020211',$user,$server_ip,$session_name,$one_mysql_log);}
+		$row=mysqli_fetch_row($rslt);
+		if ($row[0] > 0) {
 			$four_hours_ago = date("Y-m-d H:i:s", mktime(date("H")-4,date("i"),date("s"),date("m"),date("d"),date("Y")));
 			$stmt = "UPDATE vicidial_closer_log set end_epoch='$StarTtime', length_in_sec=(queue_seconds + $secondS),status='XFER' where lead_id='$lead_id' and call_date > \"$four_hours_ago\" order by closecallid desc limit 1;";
-				if ($format=='debug') {echo "\n<!-- $stmt -->";}
+			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_to_mysqli($stmt, $link);
-			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02022',$user,$server_ip,$session_name,$one_mysql_log);}
-			}
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'020221',$user,$server_ip,$session_name,$one_mysql_log);}
+			
+			$stmt1 = "select `arc_id` from vicidial_campaigns where campaign_id='$campaign';";
+			if ($format=='debug') {echo "\n<!-- $stmt1 -->";}
+			$rslt1=mysql_to_mysqli($stmt1, $link);
+			$row1=mysqli_fetch_row($rslt1);
+
+			$stmt2 = "INSERT INTO `snct-dialer_acr_select` (`uniqueid`, `lead_id`, `campaign_id`, acr_id`) VALUES('$uniqueid','$lead_id','$campaign', $row1[0])";
+			if ($format=='debug') {echo "\n<!-- $stmt2 -->";}
+			$rslt2=mysql_to_mysqli($stmt2, $link);
+		}
 
 		$stmt = "UPDATE vicidial_log set end_epoch='$StarTtime', length_in_sec='$secondS',status='XFER' where uniqueid='$uniqueid';";
-			if ($format=='debug') {echo "\n<!-- $stmt -->";}
+		if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_to_mysqli($stmt, $link);
-		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02023',$user,$server_ip,$session_name,$one_mysql_log);}
+		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'020231',$user,$server_ip,$session_name,$one_mysql_log);}
 
-		if ($nodeletevdac < 1)
-			{
+		if ($nodeletevdac < 1) {
 			$stmt = "DELETE from vicidial_auto_calls where uniqueid='$uniqueid';";
-				if ($format=='debug') {echo "\n<!-- $stmt -->";}
+			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_to_mysqli($stmt, $link);
-			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02024',$user,$server_ip,$session_name,$one_mysql_log);}
-			}
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'020241',$user,$server_ip,$session_name,$one_mysql_log);}
+		}
 
-		if ($customerparked > 0)
-			{
+		if ($customerparked > 0) {
 			$parked_sec=0;
 			$stmt = "SELECT UNIX_TIMESTAMP(parked_time) FROM park_log where uniqueid='$uniqueid' and server_ip='$server_ip' and extension='$CalLCID' and (parked_sec < 1 or grab_time is NULL) order by parked_time desc limit 1;";
 			$rslt=mysql_to_mysqli($stmt, $link);
-				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02133',$user,$server_ip,$session_name,$one_mysql_log);}
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'021331',$user,$server_ip,$session_name,$one_mysql_log);}
 			$VAC_pl_ct = mysqli_num_rows($rslt);
-			if ($VAC_pl_ct > 0)
-				{
+			if ($VAC_pl_ct > 0) {
 				$row=mysqli_fetch_row($rslt);
 				$parked_sec	= ($StarTtime - $row[0]);
 
 				$stmt = "UPDATE park_log SET status='GRABBED',grab_time='$NOW_TIME',parked_sec='$parked_sec' where uniqueid='$uniqueid' and server_ip='$server_ip' and extension='$CalLCID' order by parked_time desc limit 1;";
-					if ($format=='debug') {echo "\n<!-- $stmt -->";}
+				if ($format=='debug') {echo "\n<!-- $stmt -->";}
 				$rslt=mysql_to_mysqli($stmt, $link);
-					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02134',$user,$server_ip,$session_name,$one_mysql_log);}
-				}
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'021341',$user,$server_ip,$session_name,$one_mysql_log);}
 			}
+		}
 
-		if (strlen($preset_name) > 0)
+		if (strlen($preset_name) > 0) {
+			$stmt = "INSERT INTO user_call_log (user,call_date,call_type,server_ip,phone_number,number_dialed,lead_id,preset_name,campaign_id) values('$user','$NOW_TIME','BLIND_XFER','$server_ip','$exten','$channel','$lead_id','$preset_name','$campaign')";
+			if ($DB) {echo "$stmt\n";}
+			$rslt=mysql_to_mysqli($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'020951',$user,$server_ip,$session_name,$one_mysql_log);}
+
+			$stmt = "SELECT count(*) from vicidial_xfer_stats where campaign_id='$campaign' and preset_name='$preset_name';";
+			if ($format=='debug') {echo "\n<!-- $stmt -->";}
+			$rslt=mysql_to_mysqli($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'020961',$user,$server_ip,$session_name,$one_mysql_log);}
+			$row=mysqli_fetch_row($rslt);
+			if ($row[0] > 0) {
+				$stmt = "UPDATE vicidial_xfer_stats SET xfer_count=(xfer_count+1) where campaign_id='$campaign' and preset_name='$preset_name';";
+			} else {
+				$stmt = "INSERT INTO vicidial_xfer_stats SET campaign_id='$campaign',preset_name='$preset_name',xfer_count='1';";
+			}
+			if ($DB) {echo "$stmt\n";}
+			$rslt=mysql_to_mysqli($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'020971',$user,$server_ip,$session_name,$one_mysql_log);}
+		}
+
+		$ACTION="Redirect";
+	}
+}
+	
+if ($ACTION=="RedirectVD")
+{
+	if ( (strlen($channel)<3) or (strlen($queryCID)<15) or (strlen($exten)<1) or (strlen($campaign)<1) or (strlen($ext_context)<1) or (strlen($ext_priority)<1) or (strlen($uniqueid)<2) or (strlen($lead_id)<1) )
+	{
+		$channel_live=0;
+		echo _QXZ("One of these variables is not valid:")."\n";
+		echo _QXZ("Channel %1s must be greater than 2 characters",0,'',$channel)."\n";
+		echo _QXZ("queryCID %1s must be greater than 14 characters",0,'',$queryCID)."\n";
+		echo _QXZ("exten %1s must be set",0,'',$exten)."\n";
+		echo _QXZ("ext_context %1s must be set",0,'',$ext_context)."\n";
+		echo _QXZ("ext_priority %1s must be set",0,'',$ext_priority)."\n";
+		echo _QXZ("auto_dial_level %1s must be set",0,'',$auto_dial_level)."\n";
+		echo _QXZ("campaign %1s must be set",0,'',$campaign)."\n";
+		echo _QXZ("uniqueid %1s must be set",0,'',$uniqueid)."\n";
+		echo _QXZ("lead_id %1s must be set",0,'',$lead_id)."\n\n";
+		echo _QXZ("RedirectVD Action not sent")."\n";
+	}
+	else
+	{
+		if (strlen($call_server_ip)>6) {$server_ip = $call_server_ip;}
+		$stmt = "select count(*) from vicidial_campaigns where campaign_id='$campaign' and campaign_allow_inbound='Y';";
+		if ($format=='debug') {echo "\n<!-- $stmt -->";}
+		$rslt=mysql_to_mysqli($stmt, $link);
+		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02021',$user,$server_ip,$session_name,$one_mysql_log);}
+		$row=mysqli_fetch_row($rslt);
+		if ($row[0] > 0)
+		{
+			$four_hours_ago = date("Y-m-d H:i:s", mktime(date("H")-4,date("i"),date("s"),date("m"),date("d"),date("Y")));
+			$stmt = "UPDATE vicidial_closer_log set end_epoch='$StarTtime', length_in_sec=(queue_seconds + $secondS),status='XFER' where lead_id='$lead_id' and call_date > \"$four_hours_ago\" order by closecallid desc limit 1;";
+			if ($format=='debug') {echo "\n<!-- $stmt -->";}
+			$rslt=mysql_to_mysqli($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02022',$user,$server_ip,$session_name,$one_mysql_log);}
+		}
+		
+		$stmt = "UPDATE vicidial_log set end_epoch='$StarTtime', length_in_sec='$secondS',status='XFER' where uniqueid='$uniqueid';";
+		if ($format=='debug') {echo "\n<!-- $stmt -->";}
+		$rslt=mysql_to_mysqli($stmt, $link);
+		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02023',$user,$server_ip,$session_name,$one_mysql_log);}
+		
+		if ($nodeletevdac < 1)
+		{
+			$stmt = "DELETE from vicidial_auto_calls where uniqueid='$uniqueid';";
+			if ($format=='debug') {echo "\n<!-- $stmt -->";}
+			$rslt=mysql_to_mysqli($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02024',$user,$server_ip,$session_name,$one_mysql_log);}
+		}
+		
+		if ($customerparked > 0)
+		{
+			$parked_sec=0;
+			$stmt = "SELECT UNIX_TIMESTAMP(parked_time) FROM park_log where uniqueid='$uniqueid' and server_ip='$server_ip' and extension='$CalLCID' and (parked_sec < 1 or grab_time is NULL) order by parked_time desc limit 1;";
+			$rslt=mysql_to_mysqli($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02133',$user,$server_ip,$session_name,$one_mysql_log);}
+			$VAC_pl_ct = mysqli_num_rows($rslt);
+			if ($VAC_pl_ct > 0)
 			{
+				$row=mysqli_fetch_row($rslt);
+				$parked_sec	= ($StarTtime - $row[0]);
+				
+				$stmt = "UPDATE park_log SET status='GRABBED',grab_time='$NOW_TIME',parked_sec='$parked_sec' where uniqueid='$uniqueid' and server_ip='$server_ip' and extension='$CalLCID' order by parked_time desc limit 1;";
+				if ($format=='debug') {echo "\n<!-- $stmt -->";}
+				$rslt=mysql_to_mysqli($stmt, $link);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02134',$user,$server_ip,$session_name,$one_mysql_log);}
+			}
+		}
+		
+		if (strlen($preset_name) > 0)
+		{
 			$stmt = "INSERT INTO user_call_log (user,call_date,call_type,server_ip,phone_number,number_dialed,lead_id,preset_name,campaign_id) values('$user','$NOW_TIME','BLIND_XFER','$server_ip','$exten','$channel','$lead_id','$preset_name','$campaign')";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02095',$user,$server_ip,$session_name,$one_mysql_log);}
-
+			
 			$stmt = "SELECT count(*) from vicidial_xfer_stats where campaign_id='$campaign' and preset_name='$preset_name';";
-				if ($format=='debug') {echo "\n<!-- $stmt -->";}
+			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_to_mysqli($stmt, $link);
-				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02096',$user,$server_ip,$session_name,$one_mysql_log);}
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02096',$user,$server_ip,$session_name,$one_mysql_log);}
 			$row=mysqli_fetch_row($rslt);
 			if ($row[0] > 0)
-				{
+			{
 				$stmt = "UPDATE vicidial_xfer_stats SET xfer_count=(xfer_count+1) where campaign_id='$campaign' and preset_name='$preset_name';";
-				}
+			}
 			else
-				{
+			{
 				$stmt = "INSERT INTO vicidial_xfer_stats SET campaign_id='$campaign',preset_name='$preset_name',xfer_count='1';";
-				}
+			}
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02097',$user,$server_ip,$session_name,$one_mysql_log);}
-			}
-
-		$ACTION="Redirect";
 		}
+		
+		$ACTION="Redirect";
 	}
+}
 
 if ($ACTION=="RedirectToPark")
 	{
