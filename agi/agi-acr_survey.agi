@@ -1,21 +1,17 @@
 #!/usr/bin/perl
 #
-# agi-ingroup_survey.agi version 2.14
-#
-# runs after a call gets transferred from an agent to ask a question, then
-# optionally transfer to a call menu. Takes settings from an In-Group
+# agi-acr_survey.agi version 3.0.
 #
 
 #
 # LICENSE: AGPLv3
 #
-# Copyright (©) 2019      Matt Florell <vicidial@gmail.com>
 # Copyright (©) 2020      SNCT GmbH <info@snct-gmbh.de>
 #               2020      Jörg Frings-Fürst <open_source@jff.email>.
 #
 
 #
-# SNCT-Changes:
+# changelog:
 #
 # 2020-07-22 jff - Change License to AGPLv3
 #            jff - Change log-file to agiout.log
@@ -26,7 +22,7 @@
 # 170816-2357 - first build
 #
 
-$script = 'agi-ingroup_survey.agi';
+$script = 'agi-acr_survey.agi';
 
 $wav='.wav';
 
@@ -209,8 +205,8 @@ $AGI->stream_file('sip-silence');
 $AGI->stream_file('sip-silence');
 
 
-########## FIND vicidial_inbound_survey_log record ##########
-$stmtA = "SELECT * FROM `snctdialer-acr_select` where lead_id='$CIDlead_id' and uniqueid='$unique_id';";
+########## FIND vicidial_acr_survey_log record ##########
+$stmtA = "SELECT * FROM `snctdialer-acr_select` where uniqueid='$unique_id';";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
@@ -218,9 +214,9 @@ if ($AGILOG) {$agi_string = "$sthArows|$stmtA|";   &agi_output;}
 if ($sthArows > 0)
 	{
 	@aryA = $sthA->fetchrow_array;
-	$VD_campaign_id		= $aryA[0];
-	$VD_participate		= $aryA[1];
-	$VD_call_date		= $aryA[2];
+	$VD_campaign_id		= $aryA[3];
+	$VD_ACR_id			= $aryA[4];
+	$VD_lead_id			= $aryA[2];
 	$sthA->finish();
 	}
 else

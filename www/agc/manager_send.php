@@ -992,12 +992,12 @@ if ($ACTION=="RedirectACR") {
 			$rslt=mysql_to_mysqli($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'020221',$user,$server_ip,$session_name,$one_mysql_log);}
 			
-			$stmt1 = "select `arc_id` from vicidial_campaigns where campaign_id='$campaign';";
+			$stmt1 = "select `acr_id` from vicidial_campaigns where campaign_id='$campaign';";
 			if ($format=='debug') {echo "\n<!-- $stmt1 -->";}
 			$rslt1=mysql_to_mysqli($stmt1, $link);
 			$row1=mysqli_fetch_row($rslt1);
 
-			$stmt2 = "INSERT INTO `snct-dialer_acr_select` (`uniqueid`, `lead_id`, `campaign_id`, acr_id`) VALUES('$uniqueid','$lead_id','$campaign', $row1[0])";
+			$stmt2 = "INSERT INTO `snctdialer-acr_select` (`ID`, `uniqueid`, `lead_id`, `campaign_id`, `acr_id`) VALUES(NULL,'$uniqueid','$lead_id','$campaign', $row1[0])";
 			if ($format=='debug') {echo "\n<!-- $stmt2 -->";}
 			$rslt2=mysql_to_mysqli($stmt2, $link);
 		}
