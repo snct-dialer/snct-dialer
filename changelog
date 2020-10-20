@@ -1005,6 +1005,11 @@
           www/vicidial/images/icon_acr.png.
       - Update: www/vicidial/admin.php,
           /www/vicidial/admin_header.php.
+    * Add Columns to selecet Dispo-Screen position and switch to change between
+      new and old version:
+      - Update www/agc/manager_send.php,
+          www/agc/vicidial.php,
+          www/vicidial/admin.php.
     * Change next release to 3.0.1.
 
 2.26.29

@@ -39,8 +39,8 @@
 #
 # Version  / Build
 #
-$version = '3.0.1-23';
-$build = '20201018-1';
+$agent_version = '3.0.1-24';
+$agent_build = '20201019-1';
 #
 ###############################################################################
 #
@@ -62,6 +62,9 @@ $DB=0;
 # 2020-07-23 17:25 Replace _QXZ with gettext version _(
 # 2020-09-16 jff	Fix typos
 # 2020-10-16 jff	Add ACR from branch feature/acr
+# 2020-10-19 jff	Add switch old / New Dispo Screen from system_settings
+#					Use $agent_[version|build]
+#
 #
 
 #
@@ -229,7 +232,7 @@ if ($sl_ct > 0)
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$stmt = "SELECT use_non_latin,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,webroot_writable,timeclock_end_of_day,vtiger_url,enable_vtiger_integration,outbound_autodial_active,enable_second_webform,user_territories_active,static_agent_url,custom_fields_enabled,pllb_grouping_limit,qc_features_active,allow_emails,callback_time_24hour,enable_languages,language_method,meetme_enter_login_filename,meetme_enter_leave3way_filename,enable_third_webform,default_language,active_modules,allow_chats,chat_url,default_phone_code,agent_screen_colors,manual_auto_next,agent_xfer_park_3way,admin_web_directory,agent_script,agent_push_events,agent_push_url,pause_campaigns,allow_phonebook,agent_prefix,agent_logout_link,agentonly_callback_campaign_lock,manual_dial_validation,mute_recordings,enable_second_script FROM system_settings;";
+$stmt = "SELECT use_non_latin,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,webroot_writable,timeclock_end_of_day,vtiger_url,enable_vtiger_integration,outbound_autodial_active,enable_second_webform,user_territories_active,static_agent_url,custom_fields_enabled,pllb_grouping_limit,qc_features_active,allow_emails,callback_time_24hour,enable_languages,language_method,meetme_enter_login_filename,meetme_enter_leave3way_filename,enable_third_webform,default_language,active_modules,allow_chats,chat_url,default_phone_code,agent_screen_colors,manual_auto_next,agent_xfer_park_3way,admin_web_directory,agent_script,agent_push_events,agent_push_url,pause_campaigns,allow_phonebook,agent_prefix,agent_logout_link,agentonly_callback_campaign_lock,manual_dial_validation,mute_recordings,enable_second_script,show_newdispo FROM system_settings;";
 
 $rslt=mysql_to_mysqli($stmt, $link);
 	if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01001',$VD_login,$server_ip,$session_name,$one_mysql_log);}
@@ -280,6 +283,7 @@ if ($qm_conf_ct > 0)
 	$SSmanual_dial_validation =			$row[39];
 	$SSmute_recordings =				$row[40];
 	$SSenable_second_script =			$row[41];
+	$Show_NewDispo =					$row[42];
 	}
 else
 	{
@@ -512,7 +516,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>
 <script language="JavaScript" src="calendar_db.js"></script>
 <link rel="stylesheet" href="calendar.css" />
 ';
-echo "<!-- VERSION: $version     "._("BUILD:")." $build -->\n";
+echo "<!-- VERSION: $agent_version     "._("BUILD:")." $agent_build -->\n";
 echo "<!-- BROWSER: $BROWSER_WIDTH x $BROWSER_HEIGHT     $JS_browser_width x $JS_browser_height -->\n";
 
 
@@ -774,7 +778,7 @@ if ($relogin == 'YES')
     echo "<td align=\"left\"><font class=\"skb_text\"><span id=\"LogiNCamPaigns\">$camp_form_code</span></font></td></tr>\n";
     echo "<tr><td align=\"center\" colspan=\"2\"><input type=\"submit\" name=\"SUBMIT\" value=\""._("SUBMIT")."\" /> &nbsp; \n";
     echo "<span id=\"LogiNReseT\"><input type=\"button\" value=\""._("Refresh Campaign List")."\" onclick=\"login_allowable_campaigns()\"></span></td></tr>\n";
-    echo "<tr><td align=\"left\" colspan=\"2\"><font class=\"body_tiny\"><br />"._("VERSION:")." $version &nbsp; &nbsp; &nbsp; "._("BUILD:")." $build</font></td></tr>\n";
+    echo "<tr><td align=\"left\" colspan=\"2\"><font class=\"body_tiny\"><br />"._("VERSION:")." $agent_version &nbsp; &nbsp; &nbsp; "._("BUILD:")." $agent_build</font></td></tr>\n";
     echo "</table></center>\n";
     echo "</form>\n\n";
 	echo "</body>\n\n";
@@ -819,7 +823,7 @@ if ($user_login_first == 1)
         echo "<td align=\"left\"><font class=\"skb_text\"><span id=\"LogiNCamPaigns\">$camp_form_code</span></font></td></tr>\n";
         echo "<tr><td align=\"center\" colspan=\"2\"><input type=\"submit\" name=\"SUBMIT\" value=\""._("SUBMIT")."\" /> &nbsp; \n";
         echo "<span id=\"LogiNReseT\"></span></td></tr>\n";
-        echo "<tr><td align=\"left\" colspan=\"2\"><font class=\"body_tiny\"><br />"._("VERSION:")." $version &nbsp; &nbsp; &nbsp; "._("BUILD:")." $build</font></td></tr>\n";
+        echo "<tr><td align=\"left\" colspan=\"2\"><font class=\"body_tiny\"><br />"._("VERSION:")." $agent_version &nbsp; &nbsp; &nbsp; "._("BUILD:")." $agent_build</font></td></tr>\n";
         echo "</table>\n";
         echo "</form>\n\n";
 		echo "</body>\n\n";
@@ -874,7 +878,7 @@ if ($user_login_first == 1)
                 echo "<td align=\"left\"><font class=\"skb_text\"><span id=\"LogiNCamPaigns\">$camp_form_code</span></font></td></tr>\n";
                 echo "<tr><td align=\"center\" colspan=\"2\"><input type=\"submit\" name=\"SUBMIT\" value=\""._("SUBMIT")."\" /> &nbsp; \n";
                 echo "<span id=\"LogiNReseT\"></span></td></tr>\n";
-                echo "<tr><td align=\"left\" colspan=\"2\"><font class=\"body_tiny\"><br />"._("VERSION:")." $version &nbsp; &nbsp; &nbsp; "._("BUILD:")." $build</font></td></tr>\n";
+                echo "<tr><td align=\"left\" colspan=\"2\"><font class=\"body_tiny\"><br />"._("VERSION:")." $agent_version &nbsp; &nbsp; &nbsp; "._("BUILD:")." $agent_build</font></td></tr>\n";
                 echo "</table></center>\n";
                 echo "</form>\n\n";
 				echo "</body>\n\n";
@@ -915,7 +919,7 @@ if ( (strlen($phone_login)<2) or (strlen($phone_pass)<2) )
     echo "<td align=\"left\"><input type=\"password\" name=\"phone_pass\" size=\"10\" maxlength=\"20\" value=\"\" /></td></tr>\n";
     echo "<tr><td align=\"center\" colspan=\"2\"><input type=\"submit\" name=\"SUBMIT\" value=\""._("SUBMIT")."\" /> &nbsp; \n";
     echo "<span id=\"LogiNReseT\"></span></td></tr>\n";
-    echo "<tr><td align=\"left\" colspan=\"2\"><font class=\"body_tiny\"><br />"._("VERSION:")." $version &nbsp; &nbsp; &nbsp; "._("BUILD:")." $build</font></td></tr>\n";
+    echo "<tr><td align=\"left\" colspan=\"2\"><font class=\"body_tiny\"><br />"._("VERSION:")." $agent_version &nbsp; &nbsp; &nbsp; "._("BUILD:")." $agent_build</font></td></tr>\n";
     echo "</table></center>\n";
     echo "</form>\n\n";
 	echo "</body>\n\n";
@@ -2292,7 +2296,7 @@ else
         echo "<td align=\"left\"><font class=\"skb_text\"><span id=\"LogiNCamPaigns\">$camp_form_code</span></font></td></tr>\n";
         echo "<tr><td align=\"center\" colspan=\"2\"><input type=\"submit\" name=\"SUBMIT\" value=\""._("SUBMIT")."\" /> &nbsp; \n";
         echo "<span id=\"LogiNReseT\"></span></td></tr>\n";
-        echo "<tr><td align=\"left\" colspan=\"2\"><font class=\"body_tiny\"><br />"._("VERSION:")." $version &nbsp; &nbsp; &nbsp; "._("BUILD:")." $build</font></td></tr>\n";
+        echo "<tr><td align=\"left\" colspan=\"2\"><font class=\"body_tiny\"><br />"._("VERSION:")." $agent_version &nbsp; &nbsp; &nbsp; "._("BUILD:")." $agent_build</font></td></tr>\n";
         echo "</table>\n";
         echo "</form>\n\n";
 		echo "</body>\n\n";
@@ -2394,7 +2398,7 @@ else
         echo "<tr><td align=\"right\"><font class=\"skb_text\">"._("Phone Password:")."</font>  </td>";
         echo "<td align=\"left\"><input type=\"password\" name=\"phone_pass\" size=10 maxlength=20 value=\"$phone_pass\"></td></tr>\n";
         echo "<tr><td align=\"center\" colspan=\"2\"><input type=\"submit\" name=\"SUBMIT\" value=\""._("SUBMIT")."\" /></td></tr>\n";
-        echo "<tr><td align=\"left\" colspan=\"2\"><font class=\"body_tiny\"><br />"._("VERSION:")." $version &nbsp; &nbsp; &nbsp; "._("BUILD:")." $build</font></td></tr>\n";
+        echo "<tr><td align=\"left\" colspan=\"2\"><font class=\"body_tiny\"><br />"._("VERSION:")." $agent_version &nbsp; &nbsp; &nbsp; "._("BUILD:")." $agent_build</font></td></tr>\n";
         echo "</table></center>\n";
         echo "</form>\n\n";
 		echo "</body>\n\n";
@@ -4377,7 +4381,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var status_display_ingroup='<?php echo $status_display_ingroup ?>';
 	var customer_gone_seconds='<?php echo $customer_gone_seconds_negative ?>';
 	var updatedispo_resume_trigger='0';
-	var button_click_log='<?php echo $NOW_TIME ?>-----LOGIN---<?php echo $version ?> <?php echo $build ?> <?php echo $script_name ?>|';
+	var button_click_log='<?php echo $NOW_TIME ?>-----LOGIN---<?php echo $agent_version ?> <?php echo $agent_build ?> <?php echo $script_name ?>|';
 	var agent_display_fields='<?php echo $agent_display_fields ?>';
 	var customer_sec='0';
 	var allow_required_fields='<?php echo $allow_required_fields ?>';
@@ -4399,8 +4403,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var agent_push_events='<?php echo $agent_push_events ?>';
 	var agent_push_url='<?php echo $agent_push_url ?>';
 	var pause_campaign='<?php echo $pause_campaign ?>';
-	var version='<?php echo $version ?>';
-	var build='<?php echo $build ?>';
+	var version='<?php echo $agent_version ?>';
+	var build='<?php echo $agent_build ?>';
 	var script_name='<?php echo $script_name ?>';
 	var transfer_panel_open=0;
 	var last_conf_channel_count=1;
@@ -4441,6 +4445,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var leave_vm_no_dispo='<?php echo $leave_vm_no_dispo ?>';
 	var leave_vm_message_group_id='<?php echo $leave_vm_message_group_id ?>';
 	var leave_vm_message_group_exists='<?php echo $leave_vm_message_group_exists ?>';
+	var Show_NewDispo='<?php echo $Show_NewDispo ?>';
 	var active_rec_channel='';
 	var trigger_shift_logout=0;
 	var SCRIPTweb_form_vars='';
@@ -13275,7 +13280,7 @@ function BuildDispoContent(taskDSgrp) {
 		xmlhttp = new XMLHttpRequest();
 	}
 	if (xmlhttp) {
-		// ACTION=GenDispoScreen&user=6699&pass=82tq82tq&server_ip=10.100.0.5&session_name=1578041567_90118376513&lead_id=4063118&list_id=6202
+		// ACTION=GenDispoScreen&user=6699&pass=XXXXXXX&server_ip=10.100.0.5&session_name=1578041567_90118376513&lead_id=4063118&list_id=6202
 		Dispo_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=GenDispoScreen&user=" + user + "&pass=" + pass + "&orig_pass=" + orig_pass + "&lead_id=" + document.vicidial_form.lead_id.value + "&campaign=" + campaign + "&list_id=" + document.vicidial_form.list_id.value + "&customer_sec=" + customer_sec + "&taskDSgrp=" + taskDSgrp;
 //		alert(Dispo_query);
 		xmlhttp.open('POST', 'vdc_db_query_ng.php', false);
@@ -13360,38 +13365,35 @@ function BuildDispoContent(taskDSgrp) {
 			var print_ct = 0;
 			if (hide_dispo_list < 1)
 				{
-				dispo_HTML = BuildDispoContent(taskDSgrp);
-//				while (loop_ct < VD_statuses_ct)
-//					{
-//					if (VARSELstatuses[loop_ct] == 'Y')
-//						{
-//						CBflag = '';
-//						if (VARCBstatuses[loop_ct] == 'Y')
-//							{CBflag = '*';}
-//						// check for minimum and maximum customer talk seconds to see if status is non-selectable
-//						if ( ( (VARMINstatuses[loop_ct] > 0) && (customer_sec < VARMINstatuses[loop_ct]) ) || ( (VARMAXstatuses[loop_ct] > 0) && (customer_sec > VARMAXstatuses[loop_ct]) ) )
-//							{
-//							dispo_HTML = dispo_HTML + '<DEL>' + VARstatuses[loop_ct] + " - " + VARstatusnames[loop_ct] + "</DEL> " + CBflag + "<br /><br />";
-//							}
-//						else
-//							{
-//							if (taskDSgrp == VARstatuses[loop_ct])
-//								{
-//								dispo_HTML = dispo_HTML + "<font size=\"3\" face=\"Arial, Helvetica, sans-serif\" style=\"BACKGROUND-COLOR: #FFFFCC\"><b><a href=\"#\" onclick=\"DispoSelect_submit('','','YES');return false;\">" + VARstatuses[loop_ct] + " - " + VARstatusnames[loop_ct] + "</a> " + CBflag + "</b></font><br /><br />";
-//								}
-//							else
-//								{
-//								dispo_HTML = dispo_HTML + "<font size=\"2\" face=\"Arial, Helvetica, sans-serif\"><a href=\"#\" onclick=\"DispoSelectContent_create('" + VARstatuses[loop_ct] + "','ADD','YES');return false;\" onMouseOver=\"this.style.backgroundColor = '#FFFFCC'\" onMouseOut=\"this.style.backgroundColor = 'transparent'\";>" + VARstatuses[loop_ct] + " - " + VARstatusnames[loop_ct] + "</a></font> " + CBflag + "<br /><br />";
-//								}
-//							}
-//						if (print_ct == VD_statuses_ct_onethird)
-//							{dispo_HTML = dispo_HTML + "</span></font></td><td bgcolor=\"#99FF99\" height=\"300px\" width=\"240px\" valign=\"top\"><font class=\"log_text\"><span id=\"DispoSelectB\">";}
-//						if (print_ct == VD_statuses_ct_twothird)
-//							{dispo_HTML = dispo_HTML + "</span></font></td><td bgcolor=\"#99FF99\" height=\"300px\" width=\"240px\" valign=\"top\"><font class=\"log_text\"><span id=\"DispoSelectC\">";}
-//						print_ct++;
-//						}
-//					loop_ct++;
-//					}
+				if(Show_NewDispo == 1) {
+					dispo_HTML = BuildDispoContent(taskDSgrp);
+				} else {
+					while (loop_ct < VD_statuses_ct) {
+						if (VARSELstatuses[loop_ct] == 'Y') {
+							CBflag = '';
+							if (VARCBstatuses[loop_ct] == 'Y') {
+								CBflag = '*';
+							}
+						// check for minimum and maximum customer talk seconds to see if status is non-selectable
+							if ( ( (VARMINstatuses[loop_ct] > 0) && (customer_sec < VARMINstatuses[loop_ct]) ) || ( (VARMAXstatuses[loop_ct] > 0) && (customer_sec > VARMAXstatuses[loop_ct]) ) ) {
+								dispo_HTML = dispo_HTML + '<DEL>' + VARstatuses[loop_ct] + " - " + VARstatusnames[loop_ct] + "</DEL> " + CBflag + "<br /><br />";
+							} else {
+								if (taskDSgrp == VARstatuses[loop_ct]) {
+									dispo_HTML = dispo_HTML + "<font size=\"3\" face=\"Arial, Helvetica, sans-serif\" style=\"BACKGROUND-COLOR: #FFFFCC\"><b><a href=\"#\" onclick=\"DispoSelect_submit('','','YES');return false;\">" + VARstatuses[loop_ct] + " - " + VARstatusnames[loop_ct] + "</a> " + CBflag + "</b></font><br /><br />";
+								} else {
+									dispo_HTML = dispo_HTML + "<font size=\"2\" face=\"Arial, Helvetica, sans-serif\"><a href=\"#\" onclick=\"DispoSelectContent_create('" + VARstatuses[loop_ct] + "','ADD','YES');return false;\" onMouseOver=\"this.style.backgroundColor = '#FFFFCC'\" onMouseOut=\"this.style.backgroundColor = 'transparent'\";>" + VARstatuses[loop_ct] + " - " + VARstatusnames[loop_ct] + "</a></font> " + CBflag + "<br /><br />";
+								}
+							}
+							if (print_ct == VD_statuses_ct_onethird) {
+								dispo_HTML = dispo_HTML + "</span></font></td><td bgcolor=\"#99FF99\" height=\"300px\" width=\"240px\" valign=\"top\"><font class=\"log_text\"><span id=\"DispoSelectB\">";
+							}
+							if (print_ct == VD_statuses_ct_twothird) {
+								dispo_HTML = dispo_HTML + "</span></font></td><td bgcolor=\"#99FF99\" height=\"300px\" width=\"240px\" valign=\"top\"><font class=\"log_text\"><span id=\"DispoSelectC\">";
+							}
+							print_ct++;
+						}
+						loop_ct++;
+					}
 				}
 			else
 				{
@@ -20382,7 +20384,7 @@ $zi=2;
 
 <span style="position:absolute;left:0px;top:<?php echo $PBheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="MaiNfooterspan">
 <span id="blind_monitor_notice_span"><b><font color="red"> &nbsp; &nbsp; <span id="blind_monitor_notice_span_contents"></span></font></b></span>
-    <table bgcolor="<?php echo $MAIN_COLOR ?>" id="MaiNfooter" width="<?php echo $MNwidth ?>px"><tr height="32px"><td height="32px"><font face="Arial,Helvetica" size="1"><?php echo _("VERSION:"); ?> <?php echo $version ?> &nbsp; <?php echo _("BUILD:"); ?> <?php echo $build ?> &nbsp; <?php echo _("Patch-Level:"); ?> <?php echo $FLY_patch_level ?> &nbsp;&nbsp; <?php echo _("Server:"); ?> <?php echo $server_ip ?>  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</font><br />
+    <table bgcolor="<?php echo $MAIN_COLOR ?>" id="MaiNfooter" width="<?php echo $MNwidth ?>px"><tr height="32px"><td height="32px"><font face="Arial,Helvetica" size="1"><?php echo _("VERSION:"); ?> <?php echo $agent_version ?> &nbsp; <?php echo _("BUILD:"); ?> <?php echo $agent_build ?> &nbsp; <?php echo _("Patch-Level:"); ?> <?php echo $FLY_patch_level ?> &nbsp;&nbsp; <?php echo _("Server:"); ?> <?php echo $server_ip ?>  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</font><br />
 	<font class="body_small">
 	<span id="busycallsdisplay"><a href="#"  onclick="conf_channels_detail('SHOW');"><?php echo _("Show conference call channel information"); ?></a>
     <br /><br />&nbsp;</span></font></td><td align="right" height="32px">
