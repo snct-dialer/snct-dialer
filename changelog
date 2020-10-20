@@ -1010,6 +1010,8 @@
       - Update www/agc/manager_send.php,
           www/agc/vicidial.php,
           www/vicidial/admin.php.
+    * Change some directories.
+      - Update install.pl.
     * Change next release to 3.0.1.
 
 2.26.29

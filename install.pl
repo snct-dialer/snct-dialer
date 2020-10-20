@@ -77,13 +77,13 @@ $PATHhome =		'/usr/share/astguiclient';
 # default path to astguiclient logs directory:
 $PATHlogs =		'/var/log/astguiclient';
 # default path to asterisk agi-bin directory:
-$PATHagi =		'/var/lib/asterisk/agi-bin';
+$PATHagi =		'/usr/share/asterisk/agi-bin';
 # default path to web root directory:
-#$PATHweb =		'/var/www/html';
+$PATHweb =		'/var/www/html';
 #$PATHweb =		'/home/www/htdocs';
-$PATHweb =		'/usr/local/apache2/htdocs';
+#$PATHweb =		'/usr/local/apache2/htdocs';
 # default path to asterisk sounds directory:
-$PATHsounds =	'/var/lib/asterisk/sounds';
+$PATHsounds =	'/usr/share/asterisk/sounds';
 # default path to asterisk recordings directory:
 $PATHmonitor =	'/var/spool/asterisk/monitor';
 # default path to asterisk recordings DONE directory:
