@@ -39,8 +39,8 @@
 #
 # Version  / Build
 #
-$agent_version = '3.0.1-24';
-$agent_build = '20201019-1';
+$agent_version = '3.0.1-25';
+$agent_build = '20201022-1';
 #
 ###############################################################################
 #
@@ -64,6 +64,7 @@ $DB=0;
 # 2020-10-16 jff	Add ACR from branch feature/acr
 # 2020-10-19 jff	Add switch old / New Dispo Screen from system_settings
 #					Use $agent_[version|build]
+# 2020-10-22 jff	Add Ingroup ACR to overwrite Campaign ACR
 #
 #
 
@@ -4411,7 +4412,9 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var aec=0;
 	var inbound_post_call_survey='';
 	var inbound_survey_participate='';
-	var campaign_acr_id = '<?php echo $campaign_acr_id ?>';
+//	var campaign_acr_id = '<?php echo $campaign_acr_id ?>';	
+	var campaign_acr_id = '';	
+	var ingroup_acr_id = '';
 	var left_3way_timeout=0;
 	var MI_PAUSE='<?php echo $MI_PAUSE ?>';
 	var LOGINvarONE='<?php echo $LOGINvarONE ?>';
@@ -10647,7 +10650,8 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						var check_VDIC_array=check_incoming.split("\n");
 						if (check_VDIC_array[0] == '1')
 							{
-						//	alert(xmlhttprequestcheckauto.responseText);
+							document.getElementById("debugbottomspan").innerHTML = "XX\n" + checkVDAI_query + " \n " + xmlhttprequestcheckauto.responseText + "\nXX";
+//							alert(xmlhttprequestcheckauto.responseText);
 							AutoDialWaiting = 0;
 							QUEUEpadding = 0;
 							UpdatESettingSChecK = 1;
@@ -10757,7 +10761,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								{CalL_ScripT_id_two = VDIC_data_VDIG[38];}
 							if (VDIC_data_VDIG[39].length > 0)
 								{CalL_ScripT_color_two = VDIC_data_VDIG[39];}
-
+							
 							var VDIC_data_VDFR=check_VDIC_array[3].split("|");
 							if ( (VDIC_data_VDFR[1].length > 1) && (VDCL_fronter_display == 'Y') )
 								{VDIC_fronter = "  <?php echo _("Fronter:"); ?> " + VDIC_data_VDFR[0] + " - " + VDIC_data_VDFR[1];}
@@ -10880,7 +10884,8 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						//	CalL_ScripT_id_two								= check_VDIC_array[67];
 						//	CalL_ScripT_color_two							= check_VDIC_array[68];
 							DisplayPhoneNumber								= check_VDIC_array[69];
-						
+							campaign_acr_id 								= check_VDIC_array[70];
+							ingroup_acr_id									= check_VDIC_array[71];
 
 							// build statuses list for disposition screen
 							VARstatuses = [];
@@ -11143,9 +11148,17 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								if (quick_transfer_button_locked > 0)
 									{quick_transfer_button_orig = document.vicidial_form.xfernumber.value;}
 
-                                document.getElementById("QuickXfer").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRBLIND','" + lastcustchannel + "','" + lastcustserverip + "','','','" + quick_transfer_button_locked + "','YES');return false;\"><img src=\"./images/<?php echo _("vdc_LB_quickxfer.gif"); ?>\" border=\"0\" alt=\"QUICK TRANSFER\" /></a>";
+								document.getElementById("QuickXfer").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRBLIND','" + lastcustchannel + "','" + lastcustserverip + "','','','" + quick_transfer_button_locked + "','YES');return false;\"><img src=\"./images/<?php echo _("vdc_LB_quickxfer.gif"); ?>\" border=\"0\" alt=\"QUICK TRANSFER\" /></a>";
 								}
-							if (campaign_acr_id > 0) {
+							alert("ACR IG = " + ingroup_acr_id + "\nACR CP:" + campaign_acr_id);
+							var test_acr_id = 0;
+							if(ingroup_acr_id > 0) {
+								test_acr_id = ingroup_acr_id;
+							}
+							if(test_acr_id == 0) {
+								test_acr_id = campaign_acr_id;
+							}
+							if (test_acr_id > 0) {
 								document.vicidial_form.xfernumber.value = '83068888888888881998';
 								document.vicidial_form.xferoverride.checked=true;
 								document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRBLINDACR','" + lastcustchannel + "','" + lastcustserverip + "','','','','YES');return false;\"><img src=\"./images/<?php echo _("vdc_LB_hangupcustomer.gif"); ?>\" border=\"0\" alt=\"Hangup Customer\" /></a>";
@@ -13395,6 +13408,7 @@ function BuildDispoContent(taskDSgrp) {
 						loop_ct++;
 					}
 				}
+			}
 			else
 				{
 				dispo_HTML = dispo_HTML + "<?php echo _("Disposition Status List Hidden"); ?><br /><br />";
@@ -20384,7 +20398,7 @@ $zi=2;
 
 <span style="position:absolute;left:0px;top:<?php echo $PBheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="MaiNfooterspan">
 <span id="blind_monitor_notice_span"><b><font color="red"> &nbsp; &nbsp; <span id="blind_monitor_notice_span_contents"></span></font></b></span>
-    <table bgcolor="<?php echo $MAIN_COLOR ?>" id="MaiNfooter" width="<?php echo $MNwidth ?>px"><tr height="32px"><td height="32px"><font face="Arial,Helvetica" size="1"><?php echo _("VERSION:"); ?> <?php echo $agent_version ?> &nbsp; <?php echo _("BUILD:"); ?> <?php echo $agent_build ?> &nbsp; <?php echo _("Patch-Level:"); ?> <?php echo $FLY_patch_level ?> &nbsp;&nbsp; <?php echo _("Server:"); ?> <?php echo $server_ip ?>  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</font><br />
+    <table bgcolor="<?php echo $MAIN_COLOR ?>" id="MaiNfooter" width="<?php echo $MNwidth ?>px"><tr height="32px"><td height="32px"><font face="Arial,Helvetica" size="1"><?php echo _("Systemversion:"); ?> <?php echo $SNCT_version ?> &nbsp; <?php echo _("Agentversion:"); ?> <?php echo $agent_version ?> &nbsp; <?php echo _("BUILD:"); ?> <?php echo $agent_build ?> &nbsp; <?php echo _("Server:"); ?> <?php echo $server_ip ?>  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</font><br />
 	<font class="body_small">
 	<span id="busycallsdisplay"><a href="#"  onclick="conf_channels_detail('SHOW');"><?php echo _("Show conference call channel information"); ?></a>
     <br /><br />&nbsp;</span></font></td><td align="right" height="32px">

@@ -1,14 +1,33 @@
 <?php
-
-# vdc_db_query_ng.php
+###############################################################################
 #
-# based on vdc_db_query.php
+# Modul vdc_db_query_ng.php
+#
+# SNCT-Dialer™ interface between vicidial.php and the database NG
+#
+# Copyright (©) 2019-2020 SNCT GmbH <info@snct-gmbh.de>
+#               2019-2020 Jörg Frings-Fürst <open_source@jff.email>
 #
 # LICENSE: AGPLv3
 #
-# Copyright (©) 2019-2020 SNCT GmbH <info@snct-gmbh.de>
-#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>.
-
+###############################################################################
+#
+# requested Module:
+#
+# ./inc/*
+# functions.php
+# ../tools/system_wide_settings.php
+# options.php
+#
+###############################################################################
+#
+# Version / Build
+#
+$vdc_db_query_ng_version = '3.0.1-1';
+$vdc_db_query_ng_build = '20201025-1';
+#
+###############################################################################
+#
 # Changelog
 #
 # 2019-12-07 jff First work
@@ -121,9 +140,6 @@
 
 
 $StartTimeGlob = microtime(true);
-
-$versionVdcDbQueryNG = '1.0.13';
-$build = '200731-1054';
 $php_script = 'vdc_db_query_ng.php';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=824;
@@ -149,14 +165,7 @@ $SetupFiles = array ("snct-dialer.conf", "dialer/agent.conf", "dialer/agent.loca
 
 $SetUp = setup::MakeWithArray($SetupDir, $SetupFiles);
 
-
-#require 'inc/vendor/autoload.php';
-
-#use PHPMailer\PHPMailer\PHPMailer;
-#use PHPMailer\PHPMailer\Exception;
-
-
-$Log = new Log($SetUp->GetData("Log", "DB_Query_NG"), $versionVdcDbQueryNG);
+$Log = new Log($SetUp->GetData("Log", "DB_Query_NG"), $$vdc_db_query_ng_version);
 
 
 $mysql = new DB($SetUp->GetData("Database", "VARDB_server"),
@@ -167,10 +176,7 @@ $mysql = new DB($SetUp->GetData("Database", "VARDB_server"),
 
 $MySqlLink = $mysql->MySqlHdl;
 
-
-#require_once("dbconnect_mysqli.php");
 require_once("functions.php");
-
 
 ### If you have globals turned off uncomment these lines
 if (isset($_POST["user"]))				{$user=$_POST["user"];}
@@ -747,7 +753,7 @@ if ($format=='debug')
 	{
 	echo "<html>\n";
 	echo "<head>\n";
-	echo "<!-- VERSION: $version     BUILD: $build    USER: $user   server_ip: $server_ip-->\n";
+	echo "<!-- VERSION: $vdc_db_query_ng_version     BUILD: $vdc_db_query_ng_build    USER: $user   server_ip: $server_ip-->\n";
 	echo "<title>"._QXZ("VICIDiaL Database Query Script New Generation");
 	echo "</title>\n";
 	echo "</head>\n";
@@ -844,11 +850,11 @@ function CheckCallbacks($User, $Lead, $PG) {
 #
 
 if ($ACTION == 'GenDispoScreen') {
-	
+
 	$StartTime = microtime(true);
 	$Return = "";
-	if ((isset($user)) && (isset($lead_id)) && (isset($customer_sec)))  {
-		
+	if ((isset($user)) && (isset($lead_id)) && (isset($customer_sec))) {
+
 		$Return = "<table cellpadding=\"5\" cellspacing=\"5\" width=\"760px\"><tr><td colspan=\"2\"><b> <?php echo _QXZ('CALL DISPOSITION'); ?></b></td></tr><tr><td bgcolor=\"#99FF99\" height=\"300px\" width=\"240px\" valign=\"top\"><font class=\"log_text\"><span id=\"DispoSelectA\">";
 		$sql = "SELECT VLS.`campaign_id`, VL.`middle_initial` from `vicidial_list` VL, `vicidial_lists` VLS WHERE VL.`lead_id` = '". $lead_id . "' AND VL.`list_id` = VLS.`list_id`;";
 		$res = mysqli_query($MySqlLink, $sql);

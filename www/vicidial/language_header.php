@@ -1,22 +1,35 @@
 <?php
-
-# language_header.php   version 1.0.1
+###############################################################################
+#
+# Modul language_header.php
+#
+# SNCT-Dialer™ Global Settings for translate into other languages
+#
+# Copyright (©) 2019-2020 SNCT GmbH <info@snct-gmbh.de>
+#               2019-2020 Jörg Frings-Fürst <open_source@jff.email>
 #
 # LICENSE: AGPLv3
 #
-# Copyright (©) 2019-2020 SNCT GmbH <info@snct-dialer.de>
-#               2019-2020 Jörg Frings-Fürst <open_source@jff.email>
+###############################################################################
+
+#
+# requested Module:
 #
 #
-# SNCT - Changelog
 #
-# 2020-03-18 13:30 jff	Add Global Search
-#						Add new Field address1_no
+###############################################################################
 #
+# Version / Build
 #
-# Global Settings for translate into other languages
+$lang_header_version = '3.0.1-1';
+$lang_header_build = '20201021-1';
 #
+###############################################################################
 #
+# Changelog
+#
+# 2019-12-15 jff	First build
+# 2020-10-21 jff	Change header
 #
 
 $localePreferences = explode(",",$_SERVER['HTTP_ACCEPT_LANGUAGE']);
