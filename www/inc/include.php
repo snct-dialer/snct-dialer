@@ -43,4 +43,13 @@ if (file_exists('../inc/menue.php')) {
 }
 
 
+if (file_exists('../inc/languages.php')) {
+    require_once '../inc/languages.php';
+} elseif (file_exists('./inc/languages.php')) {
+    require_once './inc/languages.php';
+} else {
+    require_once 'om/inc/languages.php';
+}
+
+
 ?>

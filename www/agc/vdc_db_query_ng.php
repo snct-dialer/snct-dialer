@@ -34,6 +34,7 @@ $vdc_db_query_ng_build = '20201025-1';
 # 2020-01-09 jff Remove $_GET
 #                use mysqli_fetch_array at START SYSTEM_SETTINGS LOOKUP
 # 2020-10-10 jff Fix CB Limit Test
+# 2020-10-16 jff Move CheckCallBacks function into CheckCallbackLimit.php.in
 #
 #
 
@@ -718,14 +719,14 @@ else
 
 	if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 		{
-		echo _QXZ("Invalid Username/Password:")." |$user|$pass|$auth_message|\n";
+		echo _("Invalid Username/Password:")." |$user|$pass|$auth_message|\n";
 		exit;
 		}
 	else
 		{
 		if( (strlen($server_ip)<6) or (!isset($server_ip)) or ( (strlen($session_name)<12) or (!isset($session_name)) ) )
 			{
-			echo _QXZ("Invalid server_ip: %1s or Invalid session_name: %2s",0,'',$server_ip,$session_name)."\n";
+			echo _("Invalid server_ip: ") . $server_ip . _("or Invalid session_name: ") . $session_name."\n";
 			exit;
 			}
 		else
@@ -738,7 +739,7 @@ else
 			$SNauth=$row[0];
 			  if($SNauth==0)
 				{
-				echo _QXZ("Invalid session_name:")." |$session_name|$server_ip|\n";
+				echo _("Invalid session_name:")." |$session_name|$server_ip|\n";
 				exit;
 				}
 			  else
@@ -754,7 +755,7 @@ if ($format=='debug')
 	echo "<html>\n";
 	echo "<head>\n";
 	echo "<!-- VERSION: $vdc_db_query_ng_version     BUILD: $vdc_db_query_ng_build    USER: $user   server_ip: $server_ip-->\n";
-	echo "<title>"._QXZ("VICIDiaL Database Query Script New Generation");
+	echo "<title>"._("VICIDiaL Database Query Script New Generation");
 	echo "</title>\n";
 	echo "</head>\n";
 	echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
@@ -767,78 +768,6 @@ if ($format=='debug')
 
 $DB=0;
 
-$CBAgentCount = $SetUp->GetData("Checkcallback", "AgentCount");
-$CBAgentDays = $SetUp->GetData("Checkcallback", "AgentDays");
-$CBLeadCount = $SetUp->GetData("Checkcallback", "LeadCount");
-$CBLeadDays = $SetUp->GetData("Checkcallback", "LeadDays");
-$CBAgentNoTestNum = $SetUp->GetData("Checkcallback", "AgentNoCheckNum");
-if(!isset($CBAgentNoTestNum)) { $CBAgentNoTestNum = 0;};
-$CBAgentNoTest = array ();
-
-
-if($CBAgentNoTestNum != 0) {
-	for ($n = 0; $n != $CBAgentNoTestNum; $n++) {
-		$CBName = sprintf("AgentNoCheck%'.04d", $n);
-		$CBAgentNoTest[] = $SetUp->GetData("Checkcallback", $CBName);
-	}
-}
-
-
-if(!isset($CBAgentCount)) { $CBAgentCount = 0;};
-if(!isset($CBAgentDays)) { $CBAgentCount = 0;};
-if(!isset($CBLeadCount)) { $CBLeadCount = 0;};
-if(!isset($CBLeadDays)) { $CBLeadCount = 0;};
-
-function CheckCallbacks($User, $Lead, $PG) {
-	global $MySqlLink, $DB, $CBAgentCount, $CBLeadCount, $CBAgentDays, $CBLeadDays, $Log;
-	
-	
-	$StartTime = microtime(true);
-	if(($CBAgentCount != 0) && ($PG != 'G')) {
-		$DateTemp = date("Y-m-d");
-#		$DateTemp = date("Y-m-d H:i:s", strtotime($CBAgentDays, time())); 
-		$sql = "SELECT COUNT(*) FROM `vicidial_agent_log` WHERE `status` = 'CALLBK' AND `user` = '". $User ."' AND DATE (`event_time`) = '". $DateTemp ."';";
-		if($DB) { echo $sql; }
-		$res = mysqli_query($MySqlLink, $sql);
-		$row = mysqli_fetch_row($res);
-		$AnzUCB = $row[0];
-		if($AnzUCB > $CBAgentCount) {
-			$EndTime = microtime(true);
-			$RunTime = $EndTime - $StartTime;
-			$Log->Log("CheckCallbacks (Agent) Dauer: " . $RunTime ."|". $User . "|" .$Lead . "|" . $PG . "|" .$AnzUCB . "|" . $CBAgentCount);
-			return 0;
-		} else {
-			$EndTime = microtime(true);
-			$RunTime = $EndTime - $StartTime;
-			$Log->Log("CheckCallbacks (no Agent) Dauer: " . $RunTime ."|". $User . "|" .$Lead . "|" . $PG . "|" .$AnzUCB . "|" . $CBAgentCount);
-		}
-	}
-	
-	if(($CBLeadCount != 0) && ($PG != "G")) {
-		$StartTime1 = microtime(true);
-		$DateTemp = date("Y-m-d H:i:s", strtotime($CBLeadDays, time()));
-		$sql1 = "SELECT COUNT(*) FROM `vicidial_agent_log` WHERE `status` = 'CALLBK' AND `lead_id` = '". $Lead ."' AND `event_time` >= '". $DateTemp ."';";
-		if($DB) { echo $sql1; }
-		$res1 = mysqli_query($MySqlLink, $sql1);
-		$row1 = mysqli_fetch_row($res1);
-		$AnzLCB = $row1[0];
-		if($AnzLCB > $CBLeadCount) {
-			$EndTime = microtime(true);
-			$RunTime = $EndTime - $StartTime;
-			$Log->Log("CheckCallbacks (Lead) Dauer: " . $RunTime ."|". $User . "|" .$Lead . "|" . $PG . "|" .$AnzLCB . "|" . $CBLeadCount);
-			return 0;
-		} else {
-			$EndTime = microtime(true);
-			$RunTime = $EndTime - $StartTime1;
-			$Log->Log("CheckCallbacks (no Lead) Dauer: " . $RunTime ."|". $User . "|" .$Lead . "|" . $PG . "|" .$AnzLCB . "|" . $CBLeadCount);
-		}
-	}
-	$EndTime = microtime(true);
-	$RunTime = $EndTime - $StartTime;
-	$Log->Log("CheckCallbacks (not found) Dauer: " . $RunTime ."|". $User . "|" .$Lead . "|" . $PG);
-	return 1;
-}
-
 #
 # Erzeuge DispoScreen
 #
@@ -849,25 +778,32 @@ function CheckCallbacks($User, $Lead, $PG) {
 #  - taskDSgrp
 #
 
+
+$CheckCBLimit = false;
+if(file_exists("CheckCallbackLimit.php")) {
+	require_once("CheckCallbackLimit.php");
+	$CheckCBLimit = true;
+}
+
 if ($ACTION == 'GenDispoScreen') {
 
 	$StartTime = microtime(true);
 	$Return = "";
+	$RetNeu = "";
+	$MaxPos = 0;
+	$DispoArr = array();
 	if ((isset($user)) && (isset($lead_id)) && (isset($customer_sec))) {
 
-		$Return = "<table cellpadding=\"5\" cellspacing=\"5\" width=\"760px\"><tr><td colspan=\"2\"><b> <?php echo _QXZ('CALL DISPOSITION'); ?></b></td></tr><tr><td bgcolor=\"#99FF99\" height=\"300px\" width=\"240px\" valign=\"top\"><font class=\"log_text\"><span id=\"DispoSelectA\">";
 		$sql = "SELECT VLS.`campaign_id`, VL.`middle_initial` from `vicidial_list` VL, `vicidial_lists` VLS WHERE VL.`lead_id` = '". $lead_id . "' AND VL.`list_id` = VLS.`list_id`;";
 		$res = mysqli_query($MySqlLink, $sql);
 		$row = mysqli_fetch_row($res);
 		$CampId = $row[0];
 		$PG = $row[1];
 		$CBAllow = 1;
-		if(!in_array($user, $CBAgentNoTest)) {
+		if($CheckCBLimit === true) {
 			$CBAllow = CheckCallbacks($user, $lead_id, $PG);
-		} else {
-			$Log->Log("GenDispoScreen NoTest: " . $user);
 		}
-		
+
 		if($DB) {
 			echo "GDS: Campaign = " . $CampId . PHP_EOL;
 		}
@@ -878,46 +814,48 @@ if ($ACTION == 'GenDispoScreen') {
 			if($row1["scheduled_callback"] == "Y") {
 				$CBFlag = "  *";
 			}
+			$RetTmp =  "";
 			if((($row1["min_sec"] > 0) && ($customer_sec < $row1["min_sec"])) || (($row1["max_sec"] > 0) && ($customer_sec > $row1["max_sec"])) || (($CBAllow == 0) && ($row1["scheduled_callback"] == "Y"))) {
-				$Return .= "<DEL>" . $row1["status"] . " - " . $row1["status_name"] . "</DEL> " . $CBFlag . "<br /><br />";
+				$RetTmp = "<DEL>" . $row1["status"] . " - " . $row1["status_name"] . "</DEL> " . $CBFlag . "<br /><br />";
 			} else {
 				if($taskDSgrp == $row1["status"]) {
-					$Return .= "<font size=\"3\" face=\"Arial, Helvetica, sans-serif\" style=\"BACKGROUND-COLOR: #FFFFCC\"><b><a href=\"#\" onclick=\"DispoSelect_submit('','','YES');return false;\">" . $row1["status"] . " - " . $row1["status_name"] . "</a> " . $CBFlag . "</b></font><br /><br />";
+					$RetTmp = "<font size=\"3\" face=\"Arial, Helvetica, sans-serif\" style=\"BACKGROUND-COLOR: #FFFFCC\"><b><a href=\"#\" onclick=\"DispoSelect_submit('','','YES');return false;\">" . $row1["status"] . " - " . $row1["status_name"] . "</a> " . $CBFlag . "</b></font><br /><br />";
 				} else {
-					$Return .= "<font size=\"2\" face=\"Arial, Helvetica, sans-serif\"><a href=\"#\" onclick=\"DispoSelectContent_create('" . $row1["status"] . "','ADD','YES');return false;\" onMouseOver=\"this.style.backgroundColor = '#FFFFCC'\" onMouseOut=\"this.style.backgroundColor = 'transparent'\";>" . $row1["status"] . " - " . $row1["status_name"] . "</a></font> " . $CBFlag . "<br /><br />";
+					$RetTmp = "<font size=\"2\" face=\"Arial, Helvetica, sans-serif\"><a href=\"#\" onclick=\"DispoSelectContent_create('" . $row1["status"] . "','ADD','YES');return false;\" onMouseOver=\"this.style.backgroundColor = '#FFFFCC'\" onMouseOut=\"this.style.backgroundColor = 'transparent'\";>" . $row1["status"] . " - " . $row1["status_name"] . "</a></font> " . $CBFlag . "<br /><br />";
 				}
+			}
+			if($row1["Col"] != 0) {
+				$MaxPos = max((int)$MaxPos, (int)$row1["Pos"]);
+				$DispoArr[] = array('col' => $row1["Col"],
+									'pos' => $row1["Pos"],
+									'text' => $RetTmp);
 			}
 		}
 		
 		$sql2 = "SELECT * FROM `vicidial_campaign_statuses` WHERE `selectable` = 'Y' AND `campaign_id` = '".$CampId."' ORDER BY `Pos` LIMIT 100;";
 		if($DB) { echo $sql2 . PHP_EOL; }
 		$res2 = mysqli_query($MySqlLink, $sql2);
-		$Return  .= "</span></font></td><td bgcolor=\"#99FF99\" height=\"300px\" width=\"240px\" valign=\"top\"><font class=\"log_text\"><span id=\"DispoSelectB\">";
 		$Pos2 = 10;
+		$RetTmp = "";
 		while($row2 = mysqli_fetch_array($res2, MYSQLI_BOTH)) {
 			$CBFlag = "";
 			if($row2["scheduled_callback"] == "Y") {
 				$CBFlag = "  *";
 			}
-			if(($row2["Pos"] > $Pos2) && ($row2["Pos"] != 0)) {
-				do {
-					$Return .= "<DEL>-------</DEL> <br /><br />";
-					$Pos2++;
-					if($Pos2 == 20) {
-						$Return .= "</span></font></td><td bgcolor=\"#99FF99\" height=\"300px\" width=\"240px\" valign=\"top\"><font class=\"log_text\"><span id=\"DispoSelectC\">";
-					}
-				} while($row2["Pos"] != $Pos2);
-			}
-			if((($row2["Pos"] == $Pos2) && ($row2["Pos"] != 0)) || ($row2["Pos"] == 0)) {
-				if((($row1["min_sec"] > 0) && ($customer_sec < $row2["min_sec"])) || (($row2["max_sec"] > 0) && ($customer_sec > $row2["max_sec"])) || (($CBAllow == 0) && ($row1["scheduled_callback"] == "Y"))) {
-					$Return .= "<DEL>" . $row2["status"] . " - " . $row2["status_name"] . "</DEL> " . $CBFlag . "<br /><br />";
+			if((($row1["min_sec"] > 0) && ($customer_sec < $row2["min_sec"])) || (($row2["max_sec"] > 0) && ($customer_sec > $row2["max_sec"])) || (($CBAllow == 0) && ($row1["scheduled_callback"] == "Y"))) {
+				$RetTmp = "<DEL>" . $row2["status"] . " - " . $row2["status_name"] . "</DEL> " . $CBFlag . "<br /><br />";
+			} else {
+				if($taskDSgrp == $row2["status"]) {
+					$RetTmp = "<font size=\"3\" face=\"Arial, Helvetica, sans-serif\" style=\"BACKGROUND-COLOR: #FFFFCC\"><b><a href=\"#\" onclick=\"DispoSelect_submit('','','YES');return false;\">" . $row2["status"] . " - " . $row2["status_name"] . "</a> " . $CBFlag . "</b></font><br /><br />";
 				} else {
-					if($taskDSgrp == $row2["status"]) {
-						$Return .= "<font size=\"3\" face=\"Arial, Helvetica, sans-serif\" style=\"BACKGROUND-COLOR: #FFFFCC\"><b><a href=\"#\" onclick=\"DispoSelect_submit('','','YES');return false;\">" . $row2["status"] . " - " . $row2["status_name"] . "</a> " . $CBFlag . "</b></font><br /><br />";
-					} else {
-						$Return .= "<font size=\"2\" face=\"Arial, Helvetica, sans-serif\"><a href=\"#\" onclick=\"DispoSelectContent_create('" . $row2["status"] . "','ADD','YES');return false;\" onMouseOver=\"this.style.backgroundColor = '#FFFFCC'\" onMouseOut=\"this.style.backgroundColor = 'transparent'\";>" . $row2["status"] . " - " . $row2["status_name"] . "</a></font> " . $CBFlag . "<br /><br />";
-					}
+					$RetTmp = "<font size=\"2\" face=\"Arial, Helvetica, sans-serif\"><a href=\"#\" onclick=\"DispoSelectContent_create('" . $row2["status"] . "','ADD','YES');return false;\" onMouseOver=\"this.style.backgroundColor = '#FFFFCC'\" onMouseOut=\"this.style.backgroundColor = 'transparent'\";>" . $row2["status"] . " - " . $row2["status_name"] . "</a></font> " . $CBFlag . "<br /><br />";
 				}
+			}
+			if($row2["Col"] != 0) {
+				$MaxPos = max((int)$MaxPos, (int)$row2["Pos"]);
+				$DispoArr[] = array('col' => $row2["Col"],
+									'pos' => $row2["Pos"],
+									'text' => $RetTmp);
 			}
 			$Pos2++;
 			if($Pos2 == 20) {
@@ -931,7 +869,44 @@ if ($ACTION == 'GenDispoScreen') {
 	$EndTime = microtime(true);
 	$RunTime = $EndTime - $StartTime;
 	$Log->Log("GenDispoScreen Dauer: " . $RunTime);
-	echo $Return;
+	$ColArr  = array_column($DispoArr, 'col');
+	$PosArr = array_column($DispoArr, 'pos');
+	array_multisort($ColArr, SORT_ASC, $PosArr, SORT_ASC, $DispoArr);
+	$RetNeu = "";
+	$RetCol = 1;
+	$LastPos = 0;
+
+	$RetNeu = "<table cellpadding=\"5\" cellspacing=\"5\" width=\"760px\"><tr><td colspan=\"2\"><b> <?php echo _('CALL DISPOSITION'); ?></b></td></tr><tr><td bgcolor=\"#99FF99\" height=\"300px\" width=\"240px\" valign=\"top\"><font class=\"log_text\"><span id=\"DispoSelectA\">";
+
+	foreach ($DispoArr as $key) {
+		if($key["col"] > $RetCol) {
+			do {
+				$RetNeu .= "<DEL>-------</DEL> <br /><br />";
+				$LastPos ++;
+			} while($LastPos < $MaxPos);
+			$LastPos = 0;
+			$RetCol = $key["col"];
+			if($RetCol == 2) {
+				$RetNeu .= "</span></font></td><td bgcolor=\"#99FF99\" height=\"300px\" width=\"240px\" valign=\"top\"><font class=\"log_text\"><span id=\"DispoSelectB\">";
+			}
+			if($RetCol == 3) {
+				$RetNeu .= "</span></font></td><td bgcolor=\"#99FF99\" height=\"300px\" width=\"240px\" valign=\"top\"><font class=\"log_text\"><span id=\"DispoSelectC\">";
+			}
+		}
+		if($key["col"] == $RetCol) {
+			while($LastPos != $key["pos"]) {
+				if($key["pos"] == ($LastPos + 1)) {
+					$RetNeu .= $key["text"];
+					$LastPos++;
+				} else {
+					$RetNeu .= "<DEL>-------</DEL> <br /><br />";
+					$LastPos++;
+				}
+			}
+		}
+	}
+	$RetNeu .= "</span></font></td></tr></table>";
+	echo $RetNeu;
 }
 
 $EndTimeGlob = microtime(true);

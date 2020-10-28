@@ -18534,7 +18534,7 @@ if ($ADD==421111111111111)
 				{
 				echo "<br><B>"._QXZ("SYSTEM STATUS MODIFIED").": $status</B>\n";
 
-				$stmt="UPDATE vicidial_statuses SET status_name='$status_name',selectable='$selectable',human_answered='$human_answered',category='$category',sale='$sale',dnc='$dnc',customer_contact='$customer_contact',not_interested='$not_interested',unworkable='$unworkable',scheduled_callback='$scheduled_callbacks',completed='$completed',min_sec='$min_sec',max_sec='$max_sec',answering_machine='$answering_machine',Pos='$statpos' where status='$status';";
+				$stmt="UPDATE vicidial_statuses SET status_name='$status_name',selectable='$selectable',human_answered='$human_answered',category='$category',sale='$sale',dnc='$dnc',customer_contact='$customer_contact',not_interested='$not_interested',unworkable='$unworkable',scheduled_callback='$scheduled_callbacks',completed='$completed',min_sec='$min_sec',max_sec='$max_sec',answering_machine='$answering_machine',Pos='$statpos',Col='$statcol' where status='$status';";
 				$rslt=mysql_to_mysqli($stmt, $link);
 
 				### LOG INSERTION Admin Log Table ###
