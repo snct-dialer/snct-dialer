@@ -1,6 +1,7 @@
 SNCT-dialer
 
 SNCT-dialer ist ein VICIdial fork der SNCT GmbH aus Deutschland.
+"VICIDIAL" ist ein registriertes Markenzeichen der ViciDial Group.
 
 SNCT-dialer ist eine OpenSource Call Center Software Zusammenstellung.
 Mit ihr können sie CallCenter in fast beliebiger Größe betreiben.

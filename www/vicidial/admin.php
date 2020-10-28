@@ -43497,7 +43497,8 @@ if ($ADD==999995)
 
 	echo "<tr bgcolor=#$SSstd_row4_background><td align=right valign=top><B><font size=3>"._QXZ("Copyright").": </B></td><td align=left> &nbsp; "._QXZ("The SNCT-Dialer is maintained by ")." <a href=\"https://www.snct-dialer.de/\" target=\"_blank\">SNCT GmbH</a>, &copy; 2019-2020</td></tr>\n";
 
-	echo "<tr bgcolor=#$SSstd_row4_background><td align=right valign=top><B><font size=3>"._QXZ("Trademark").": </B></td><td align=left> &nbsp; \"SNCT-Dialer\" "._QXZ("is a trademark of the")." <a href=\"https://www.snct-dialer.de/\" target=\"_blank\">SNCT GmbH</a>. Here is our <a href=\"https://www.snct-dialer.de/?page_id=262\" target=\"_blank\">"._QXZ("trademark use policy")."</a></td></tr>\n";
+	echo "<tr bgcolor=#$SSstd_row4_background><td align=right valign=top><B><font size=3>"._QXZ("Trademark").": </B></td><td align=left> &nbsp; \"SNCT-Dialer\" "._QXZ("is a trademark of the")." <a href=\"https://www.snct-dialer.de/\" target=\"_blank\">SNCT GmbH</a>. Here is our <a href=\"https://www.snct-dialer.de/?page_id=262\" target=\"_blank\">"._QXZ("trademark use policy")."</a><br>";
+	echo _QXZ("SNCT-Dialer is based on \"VICIDIAL\". \"VICIDIAL\" is a registered trademark of the ViciDial Group.")."</td></tr>\n";
 
 	echo "<tr bgcolor=#$SSstd_row4_background><td align=right valign=top><B><font size=3>"._QXZ("License").": </B></td><td align=left> &nbsp; "._QXZ("The SNCT-Dialer is released under the")." <a href=\"https://www.gnu.org/licenses/agpl-3.0.html\" target=\"_blank\">AGPLv3 "._QXZ("open source license")."</a>.</td></tr>\n";
 
