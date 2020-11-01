@@ -313,7 +313,7 @@ if ($DB)
 
 $audio_list_file = '/tmp/audio_store_list.txt';
 `rm -f $audio_list_file`;
-`$wgetbin -q --output-document=$audio_list_file $URL `;
+`$wgetbin --no-check-certificate -q --output-document=$audio_list_file $URL `;
 
 open(list, "$audio_list_file") || die "can't open $audio_list_file: $!\n";
 @list = <list>;
@@ -377,7 +377,7 @@ $total_files = $i;
 
 
 `rm -f $audio_list_file`;
-`$wgetbin -q --output-document=$audio_list_file $URL `;
+`$wgetbin --no-check-certificate -q --output-document=$audio_list_file $URL `;
 
 open(list, "$audio_list_file") || die "can't open $audio_list_file: $!\n";
 @list = <list>;
