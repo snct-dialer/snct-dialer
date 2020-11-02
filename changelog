@@ -1004,9 +1004,10 @@
       - New: www/vicidial/admin_acr.php,
           www/vicidial/images/icon_acr.png.
       - Update: www/vicidial/admin.php,
-          /www/vicidial/admin_header.php.
-    * Add Columns to selecet Dispo-Screen position and switch to change between
-      new and old version:
+          www/vicidial/admin_header.php,
+          bin/ADMIN_keepalive_ALL.pl
+    * Add Columns to select Dispo-Screen position and add aswitch to change
+      between new and old version:
       - Update www/agc/manager_send.php,
           www/agc/vicidial.php,
           www/vicidial/admin.php.

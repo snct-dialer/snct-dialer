@@ -1,10 +1,9 @@
 #!/usr/bin/perl
+###############################################################################
 #
-# ADMIN_keepalive_ALL.pl   version  2.14
+# Modul ADMIN_keepalive_ALL.pl
 #
-# Designed to keep the astGUIclient processes alive and check every minute
-# Replaces all other ADMIN_keepalive scripts
-# Uses /etc/astguiclient.conf file to know which processes to keepalive
+# SNCT-Dialer™ Keep the SANT-Dialer processes alive and check every minute
 #
 # Other functions of this program:
 #  - Launches the timeclock auto-logout process
@@ -15,145 +14,38 @@
 #  - Auto reset lists at defined times
 #  - Auto restarts Asterisk process if enabled in servers settings
 #
-# LICENSE: AGPLv3
 #
-# Copyright (C) 2019      Matt Florell <vicidial@gmail.com>
-# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
-#               2019-2020 SNCT Gmbh <info@snct-gmbh.de>
+# Copyright (©) 2019-2020 SNCT GmbH <info@snct-gmbh.de>
 #               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
 #
-# Other changes
+# LICENSE: AGPLv3
 #
-# 200803-1345 jff	add utf8 enconding for conf files
+###############################################################################
 #
-
-# CHANGES
-# 61011-1348 - First build
-# 61120-2011 - Added option 7 for AST_VDauto_dial_FILL.pl
-# 80227-1526 - Added option 8 for ip_relay
-# 80526-1350 - Added option 9 for timeclock auto-logout
-# 90211-1236 - Added auto-generation of conf files functions
-# 90213-0625 - Separated the reloading of Asterisk into 4 separate steps
-# 90325-2239 - Rewrote sending of reload commands to Asterisk
-# 90327-1421 - Removed [globals] tag from auto-generated extensions file
-# 90409-1251 - Fixed voicemail conf file issue
-# 90506-1155 - Added Call Menu functionality
-# 90513-0449 - Added audio store sync functionality
-# 90519-1018 - Added upload file trigger for prompt recording if defined as voicemail server and voicemail/prompt recording extensions auto-generated
-# 90529-0652 - Added phone_context and fixed calledid and voicemail for phones entries
-# 90614-0753 - Added in-group routing to call menu feature
-# 90617-0821 - Added phone ring timeout and call menu custom dialplan entry
-# 90621-0823 - Added phones conf file secret field use
-# 90621-1425 - Added tracking group for call menus
-# 90622-2146 - Added 83047777777777 for dynamic agent alert extension
-# 90630-2259 - Added vicidial_process_triggers functionality
-# 90713-0140 - Changed direct dial phone extensions to failover to voicemail forwarder
-# 90722-1102 - Added list reset by time option
-# 90812-0053 - Added clear out non-used vicidial_conferences sessions
-# 90821-1246 - Fixed central voicemail server conf file, changed voicemail to use phone password
-# 90903-1626 - Added musiconhold and meetme conf file generation
-# 90919-1516 - Added generation of standalone voicemail boxes in voicemail conf file
-# 91028-1023 - Added clearing of daily-reset tables at the timeclock reset time
-# 91031-1258 - Added carrier description comments
-# 91109-1205 - Added requirecalltoken=no as IAX setting for newer Asterisk 1.4 versions
-# 91125-0709 - Added conf_secret to servers conf
-# 91205-2315 - Added delete_vm_after_email option to voicemail conf generation
-# 100220-1410 - Added System Settings and Servers custom dialplan entries
-# 100225-2020 - Change voicemail configuration to use voicemail.conf
-# 100312-1012 - Changed TIMEOUT Call Menu function to work with AGI routes
-# 100424-2121 - Added codecs options for phones
-# 100616-2245 - Added VIDPROMPT options for call menus, changed INGROUP TIMECHECK routes to special extension like AGI
-# 100703-2137 - Added memory table reset nightly
-# 100811-2221 - Added --cu3way flag for new optional leave3way cleaning script
-# 100812-0515 - Added --cu3way-delay= flag for setting delay in the leave3way cleaning script
-# 100814-2206 - Added clearing and optimization for vicidial_xfer_stats table
-# 101022-1655 - Added new variables to be cleared from vicidial_cacmpaign_stats table
-# 101107-2257 - Added cross-server phone dialplan extensions
-# 101214-1507 - Changed list auto-reset to work with inactive lists
-# 110512-2112 - Added vicidial_campaign_stats_debug to table cleaning
-# 110525-2334 - Added cm.agi optional logging to call menus
-# 110705-2023 - Added agents_calls_reset option
-# 110725-2356 - Added new voicemail time zone option and menu gather
-# 110829-1601 - Added multiple invalid option to Call Menus
-# 110911-1452 - Added resets for extension groups and areacode cid tables
-# 110922-2148 - Added reset for vicidial_did_ra_extensions
-# 111004-2333 - Added Call Menu option for update of fields
-# 111221-1454 - Added resetting of max stats records at timeclock end of day
-# 120124-1032 - Added Answer to all call menus at the top
-# 120209-1525 - Separated all vicidial-auto dialplan contexts into their own contexts to allow for more control of dialing access through phones
-# 120213-1405 - Added vicidial_daily_ra_stats rolling
-# 120512-2332 - Added loopback dialaround for ringing of calls
-# 120706-1325 - Added Call Menu qualify SQL option
-# 120820-1026 - Added clearing of vicidial_session_data table at end of day
-# 121019-1021 - Added voicemail greeting option
-# 121124-1440 - Added holiday expiration function
-# 121215-2036 - Added email inbound script keepalive, option E
-# 130103-0808 - Added CLI options for delay to be used with auto-dial and FILL processes
-# 130108-1657 - Changes for Asterisk 1.8 compatibility
-# 130227-1605 - Added --fill-staggered option for the AST_VDauto_dialFILL script
-# 130326-1754 - Added ability to use .agi scripts as part of Call Menu Prompt
-# 130402-2148 - Changes to allow for native IAX bridging to other servers
-# 130424-1607 - Added NOINT prefix option for call menu prompts to do Playback() instead of Background()
-# 130508-1009 - Small fix for INVALID_2ND and 3RD
-# 130624-0733 - Added optimize for vicidial_users due to logging IP and auth timestamp
-# 130716-1441 - Clear out vicidial_monitor_calls records older than 1 day old
-# 130921-1044 - Small change to triggers allowing for them to be launched in a screen session if SCREEN is in the name
-# 131022-1746 - Added uptime gathering and asterisk auto-restart feature
-# 140112-1910 - Fixed issue with MoH in Astrisk 1.8
-# 140126-1153 - Added VMAIL_NO_INST option dialplan generation
-# 140126-2252 - Added voicemail_instructions option for phones
-# 140214-1519 - Added reload_timestamp value to conf files
-# 140619-1001 - Added new ASTplay loop IAX trunk
-# 141113-1555 - Changed FILL process screen from ASTVDautoFILL to ASTVDadFILL for easier admin
-# 141125-1710 - Added gather_stats_flag for audio sync script launch on voicemail server
-# 141227-0957 - Changed to clear out old unavail voicemail greetings before copying custom greeting
-# 150112-2018 - Added flag to delete voicemail greeting when changed from an audio file to empty
-# 150307-1738 - Added custom meetme enter sounds(only works with Asterisk 1.8)
-# 150724-0835 - Added purge of vicidial_ajax_log records older than 7 days to end of day process
-# 150804-0919 - Added whisper extensions
-# 151031-0931 - Added usacan_phone_dialcode_fix feature at timeclock-end-of-day, added -lstn-buffer option
-# 151204-0639 - Added phones-unavail_dialplan_fwd_exten options
-# 151211-1509 - Added launching of the AST_chat_timeout_cron.pl process on the voicemail server
-# 151226-1024 - Fix for double-write of extension in conf files for IAX and SIP, Issue #908
-# 151229-1623 - Added asterisk output logger launching, tied to server setting, runs every 5 minutes if active
-# 160305-2253 - Added --teod flag to log Timeclock End of Day processes to log file
-#               Limited max-stats process to only run on voicemail server, also added alt-logging flags to cm.agi calls
-# 160306-1040 - Added option for carriers to be defined for all active asterisk servers
-# 160324-1655 - Added callback_useronly_move_minutes option
-# 161014-0839 - Added vicidial_user_list_new_lead daily reset
-# 161116-0658 - Added purge of vicidial_ajax_log records older than 7 days to end of day process
-# 161226-2218 - Added conf_qualify option
-# 170113-1645 - Added call menu in-group option DYNAMIC_INGROUP_VAR for use with cm_phonesearch.agi
-# 170304-2039 - Added automated reports triggering code
-# 170320-1338 - Added conf_qualify phones option for IAX
-# 170327-0847 - Added drop list triggering code
-# 170513-1728 - Added alternative uptime counter in seconds
-# 170609-1601 - If phone entry fullname and cidnumber are empty, don't populate a callerid conf line
-# 170711-0824 - Fixed help documentation for delay seconds, issue #1025
-# 170725-0017 - Added vicidial_campaign_hour_counts and vicidial_carrier_hour_counts rolling
-# 170816-2323 - Added In-Group Ask-Post-Call Survey AGI dialplan entries
-# 170916-1009 - Added Asterisk 13 'h' exten for dialplan generation and triggering of AMI2 scripts
-# 170920-2214 - Added expired_lists_inactive option, checks once per hour
-# 171010-2254 - Added process debug with --DebugXXX flag and screen logging
-# 171107-1152 - Add allow=ulaw and allow=slin to ASTloop, ASTblind and ASTplay.
-# 171221-1628 - Added rolling of vicidial_ingroup_hour_counts records
-# 180204-0931 - Added rolling of vicidial_inbound_callback_queue records
-# 180301-1257 - Added more teodDB logging
-# 180507-1620 - Remove use of prompt_count.txt
-# 180512-2214 - Added reset of hopper_calls_today
-# 180613-1615 - Add sniplet into perl scripts to run only once a time
-# 180818-2229 - Added rolling of vicidial_recent_ascb_calls records
-# 180908-1428 - Added daily rolling of vicidial_ccc_log records
-# 180916-1003 - Added vicidial_lists.resets_today resetting at TEOD, timed reset resets_today verification before reset
-# 180930-1007 - Added more allowed codecs to conf file generation
-# 181028-1451 - Added vicidial_list stuck QUEUE reset at TEoD
-# 190220-2258 - Added flushing of vicidial_sessions_recent table
-# 190530-1411 - Added SIP logger code
-# 190713-0900 - Added vicidial_lead_call_quota_counts log archiving
-# 191017-2039 - Added reset of calls_today_filtered fields
+# based on VICIdial®
+# (© 2019  Matt Florell <vicidial@gmail.com>)
+#
+###############################################################################
+#
+# requested Module:
+# 
+# /etc/astguiclient.conf
+# 
+###############################################################################
+#
+# Version  / Build
+#
+$admin_keepalive_all_version = '3.0.1-1';
+$admin_keepalive_all_build = '20201102-1';
+#
+###############################################################################
+#
+# Changelog
+#
+# 2020-08-03 jff	add utf8 enconding for conf files
+# 2020-11-02 jff	Add dialplan extension for ACR
 #
 
-$build = '191017-2039';
 
 
 ###### Test that the script is running only once a time
@@ -285,7 +177,7 @@ if (length($ARGV[0])>1)
 		{
 		if ($args =~ /--version/i)
 			{
-			print "version: $build\n";
+			print "version: $admin_keepalive_all_version|$admin_keepalive_all_build\n";
 			exit;
 			}
 		if ($args =~ /-debug/i)
@@ -1028,7 +920,7 @@ if ($timeclock_auto_logout > 0)
 	`/usr/bin/screen -d -m -S Timeclock $PATHhome/ADMIN_timeclock_auto_logout.pl 2>/dev/null 1>&2`;
 	if ($teodDB)
 		{
-		$event_string = "running Timeclock auto-logout process $build|/usr/bin/screen -d -m -S Timeclock $PATHhome/ADMIN_timeclock_auto_logout.pl 2>/dev/null 1>&2";
+		$event_string = "running Timeclock auto-logout process $admin_keepalive_all_build|/usr/bin/screen -d -m -S Timeclock $PATHhome/ADMIN_timeclock_auto_logout.pl 2>/dev/null 1>&2";
 		&teod_logger;
 		}
 	}
@@ -1062,7 +954,7 @@ $sthA->finish();
 
 if ($timeclock_end_of_day_NOW > 0)
 	{
-	if ($teodDB) {$event_string = "Starting timeclock end of day processes: $stmtA|$timeclock_end_of_day_NOW|$build";   &teod_logger;}
+	if ($teodDB) {$event_string = "Starting timeclock end of day processes: $stmtA|$timeclock_end_of_day_NOW|$admin_keepalive_all_build";   &teod_logger;}
 
 	$stmtA = "SELECT agents_calls_reset,usacan_phone_dialcode_fix from system_settings;";
 	if ($DB) {print "|$stmtA|\n";}
@@ -2770,6 +2662,11 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 	$Vext .= "exten => _8306888888888888X999,1,Answer\n";
 	$Vext .= "exten => _8306888888888888X999,n,AGI(agi-ingroup_survey.agi)\n";
 	$Vext .= "exten => _8306888888888888X999,n,Hangup()\n";
+	$Vext .= "; ACR AGI\n"
+	$Vext .= "exten => _8306888888888888X998,1,Answer\n";
+	$Vext .= " same => n,AGI(agi-acr_survey.agi)\n";
+	$Vext .= " same => n,Hangup()\n";
+
 	##### END Create Voicemail extensions for this server_ip #####
 
 
@@ -4251,7 +4148,7 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 	`rm -f /etc/asterisk/BUILDextensions-vicidial.conf`;
 	`rm -f /etc/asterisk/BUILDiax-vicidial.conf`;
 	`rm -f /etc/asterisk/BUILDsip-vicidial.conf`;
-#	`rm -f /etc/asterisk/BUILDvoicemail-vicidial.conf`;
+	`rm -f /etc/asterisk/BUILDvoicemail-vicidial.conf`;
 	`rm -f /etc/asterisk/BUILDmusiconhold-vicidial.conf`;
 	`rm -f /etc/asterisk/BUILDmeetme-vicidial.conf`;
 
