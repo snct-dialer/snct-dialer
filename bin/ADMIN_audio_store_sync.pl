@@ -1,33 +1,43 @@
 #!/usr/bin/perl
 #
-# ADMIN_audio_store_sync.pl      version 2.12
+###############################################################################
 #
-# DESCRIPTION:
-# syncronizes audio between audio store and this server
+# Modul ADMIN_audio_store_sync.pl
 #
+# SNCT-Dialer™ syncronizes audio between audio store and this server
+#
+# Copyright (©) 2019-2020 SNCT GmbH <info@snct-gmbh.de>
+#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
 #
 # LICENSE: AGPLv3
 #
-# Copyright (C) 2015  Matt Florell <vicidial@gmail.com>
-# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
-# Copyright (©) 2019      SNCT GmbH <info@snct-gmbh.de>
-# Copyright (©) 2017-2019 Jörg Frings-Fürst <open_source@jff-email.de>
+###############################################################################
 #
+# based on VICIdial®
+# (© 2015  Matt Florell <vicidial@gmail.com>)
+#
+###############################################################################
+#
+# requested Module:
+# 
+# /etc/astguiclient.conf
+# 
+###############################################################################
+#
+# Version  / Build
+#
+$admin_audio_store_sync_version = '3.0.1-1';
+$admin_audio_store_sync_build = '20201102-1';
+#
+###############################################################################
+#
+# Changelog
+#
+# 2018-06-16 jff	Add sniplet into perl scripts to run only once a time
+# 2019-07-25 jff	Use only https without certcheck
+# 2020-11-02 jff	Use $PATHsounds instead of fixed paths
+#					Use wget also with --no-check-certificate
 
-# CHANGELOG
-# 90513-0458 - First Build
-# 90518-2107 - Added force-upload option
-# 90831-1349 - Added music-on-hold sync
-# 100621-1018 - Added admin_web_directory variable use
-# 100824-0032 - Fixed issue with first MoH file being skipped when playing in non-random order
-# 101217-2137 - Small fix for admin directories not directly off of the webroot
-# 121019-0729 - Added audio_store_purge feature
-# 141124-2309 - Fixed Fhour variable bug
-# 141125-1555 - Added audio_store_details audio file info gathering and DB population
-# 150712-2210 - Added touch of conf files to Asterisk will notice changes
-# 180616-1825 - Add sniplet into perl scripts to run only once a time
-# 190725-1321 - Use only https without certcheck
-#
 
 ###### Test that the script is running only once a time
 use Fcntl qw(:flock);
@@ -254,12 +264,12 @@ if (length($audio_store_purge) > 0)
 		{
 		if (length($purge_data[$i])>0)
 			{
-			if ( -e ("/var/lib/asterisk/sounds/$purge_data[$i]$wav"))
-				{`rm -f /var/lib/asterisk/sounds/$purge_data[$i]$wav`;		$audio_file_deleted++;}
-			if ( -e ("/var/lib/asterisk/sounds/$purge_data[$i]$gsm"))
-				{`rm -f /var/lib/asterisk/sounds/$purge_data[$i]$gsm`;		$audio_file_deleted++;}
-			if ( -e ("/var/lib/asterisk/sounds/$purge_data[$i]$ulaw"))
-				{`rm -f /var/lib/asterisk/sounds/$purge_data[$i]$ulaw`;		$audio_file_deleted++;}
+			if ( -e ("$PATHsounds/$purge_data[$i]$wav"))
+				{`rm -f $PATHsounds/$purge_data[$i]$wav`;		$audio_file_deleted++;}
+			if ( -e ("$PATHsounds/$purge_data[$i]$gsm"))
+				{`rm -f $PATHsounds/$purge_data[$i]$gsm`;		$audio_file_deleted++;}
+			if ( -e ("$PATHsounds/$purge_data[$i]$ulaw"))
+				{`rm -f $PATHsounds/$purge_data[$i]$ulaw`;		$audio_file_deleted++;}
 			if ($audio_file_deleted < 1)
 				{if ($DB) {print "no audio file deleted: $purge_data[$i]|$i\n";}}
 			if ($DBX>0) {print "audio file delete process: $purge_data[$i]|$i|$audio_file_deleted\n";}
