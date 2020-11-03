@@ -1841,6 +1841,7 @@ else
 			print " 9 - Timeclock auto logout\n";
 			print " E - Email processor, (If multi-server system, this must only be on one server)\n";
 			print " S - SIP Logger (Patched Asterisk 13 required)\n";
+			print " R - Generate RealTimeView Data, this must only be on one server)\n";
 			print "Enter active keepalives or press enter for default: [$VARactive_keepalives] ";
 			$PROMPTactive_keepalives = <STDIN>;
 			chomp($PROMPTactive_keepalives);
@@ -2655,9 +2656,9 @@ if ($NOWEB < 1)
 	`cp -f ./www/vicidial/robots.txt $PATHweb/vicidial/download/`;
 	if (-e "$PATHweb/agc/css/custom.css.save_user_changes") {`mv $PATHweb/agc/css/custom.css.save_user_changes $PATHweb/agc/css/custom.css`;}
 	`cp -f ./www/vicidial/robots.txt $PATHweb/chat_customer/`;
-	# Copy FlyInclude.php
-	`cp -f ./FlyInclude.php $PATHweb/agc`;
-	`cp -f ./FlyInclude.php $PATHweb/vicidial`;
+	# Copy SNCTVersion.inc
+	`cp -f ./SNCTVersion.inc $PATHweb/agc`;
+	`cp -f ./SNCTVersion.inc $PATHweb/vicidial`;
 	`cp -f ./changelog $PATHweb/vicidial`;
 
 	print "setting web scripts to executable...\n";
@@ -2798,13 +2799,13 @@ if ($dbhA)
 	$svn_notes = "not longer used\n";
 	`./convert2pl.php`;
 
-	require './FlyInclude.pl';
+	require './SNCTVersion.inc';
 
 	$stmtA = "UPDATE servers SET svn_revision='$FLY_old_svn',svn_info='$svn_notes' where server_ip='$VARserver_ip';";
 		if($DB){print STDERR "\n|$stmtA|\n";}
 	$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query:|$stmtA|\n";
 
-	$stmtA = "UPDATE system_settings SET svn_revision='$FLY_old_svn', version='$FLY_version';";
+	$stmtA = "UPDATE system_settings SET svn_revision='not used', version='$SNCT_version';";
 		if($DB){print STDERR "\n|$stmtA|\n";}
 	$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query:|$stmtA|\n";
 

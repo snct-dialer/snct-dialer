@@ -46,8 +46,6 @@ $admin_keepalive_all_build = '20201102-1';
 # 2020-11-02 jff	Add dialplan extension for ACR
 #
 
-
-
 ###### Test that the script is running only once a time
 use Fcntl qw(:flock);
 # print "start of program $0\n";

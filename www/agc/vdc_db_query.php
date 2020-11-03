@@ -21,7 +21,6 @@
 #
 # dbconnect_mysqli.php
 # functions.php
-#  FlyInclude.php
 # ../tools/system_wide_settings.php
 # ../tools/format_phone.php
 #  admin_header.php

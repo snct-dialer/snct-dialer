@@ -21,7 +21,7 @@
 # 
 # dbconnect_mysqli.php
 # functions.php
-# FlyInclude.php
+# SNCTVersion.inc
 # ../tools/system_wide_settings.php
 # admin_header.php
 # ExtraMenueReports.php
@@ -63,7 +63,7 @@ $startMS = microtime();
 
 require("dbconnect_mysqli.php");
 require("functions.php");
-require_once("FlyInclude.php");
+require_once("SNCTVersion.inc");
 
 
 
@@ -44410,7 +44410,7 @@ $RUNtime = ($ENDtime - $STARTtime);
 echo "</TD></TR>\n";
 echo "<TR><TD bgcolor=#$SSmenu_background ALIGN=CENTER>\n";
 echo "<FONT STYLE=\"font-family:HELVETICA;font-size:9;color:white;\"><br><br><!-- RUNTIME: $RUNtime seconds<BR> -->";
-echo _QXZ("VERSION").": $FLY_version<BR>";
+echo _QXZ("VERSION").": $SNCT_version<BR>";
 echo _QXZ("admin.php-Version").": $admin_version<BR>";
 echo _QXZ("BUILD").": $admin_build<br>";
 if (!preg_match("/_BUILD_/",$SShosted_settings))

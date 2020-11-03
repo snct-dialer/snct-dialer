@@ -21,7 +21,7 @@
 #
 # dbconnect_mysqli.php
 # functions.php
-# FlyInclude.php
+# SNCTVersion.inc
 # ../tools/system_wide_settings.php
 # options.php
 #
@@ -76,7 +76,7 @@ $DB=0;
 
 require_once("dbconnect_mysqli.php");
 require_once("functions.php");
-require_once("FlyInclude.php");
+require_once("SNCTVersion.inc");
 
 
 if (isset($_GET["DB"]))						    {$DB=$_GET["DB"];}
