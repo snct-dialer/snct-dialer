@@ -63,7 +63,7 @@ $startMS = microtime();
 
 require("dbconnect_mysqli.php");
 require("functions.php");
-require_once("SNCTVersion.inc");
+$SNCT_version = file_get_contents("SNCTVersion.inc");
 
 
 

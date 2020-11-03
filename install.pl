@@ -2797,11 +2797,12 @@ if ($dbhA)
 	$svn_revision=0;
 
 	$svn_notes = "not longer used\n";
-	`./convert2pl.php`;
 
-	require './SNCTVersion.inc';
+	open my $fh, '<', 'SNCTVersion.inc'
+		or die "Could not open $filename for reading: $!";
+	my $SNCT_version = do { local $/; <$fh> };
 
-	$stmtA = "UPDATE servers SET svn_revision='$FLY_old_svn',svn_info='$svn_notes' where server_ip='$VARserver_ip';";
+	$stmtA = "UPDATE servers SET svn_revision='not used',svn_info='$svn_notes' where server_ip='$VARserver_ip';";
 		if($DB){print STDERR "\n|$stmtA|\n";}
 	$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query:|$stmtA|\n";
 
@@ -2809,7 +2810,7 @@ if ($dbhA)
 		if($DB){print STDERR "\n|$stmtA|\n";}
 	$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query:|$stmtA|\n";
 
-	print "Version information updated: $FLY_old_svn|$VARserver_ip\n";
+	print "Version information updated: $SNCT_version|$VARserver_ip\n";
 
 	print "Git information update:\n";
 

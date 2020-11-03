@@ -76,7 +76,7 @@ $DB=0;
 
 require_once("dbconnect_mysqli.php");
 require_once("functions.php");
-require_once("SNCTVersion.inc");
+$SNCT_version = file_get_contents("SNCTVersion.inc");
 
 
 if (isset($_GET["DB"]))						    {$DB=$_GET["DB"];}
