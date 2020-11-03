@@ -1802,7 +1802,7 @@ if ($timeclock_end_of_day_NOW > 0)
 			@aryA = $sthA->fetchrow_array;
 			$table_name	= 	$aryA[0];
 
-			$stmtC = "ALTER TABLE $table_name ENGINE=MEMORY;";
+			$stmtC = "ALTER TABLE `$table_name` ENGINE=MEMORY;";
 			if($DBX){print STDERR "\n|$stmtC|\n";}
 			$Caffected_rows = $dbhC->do($stmtC);
 			if($DB){print STDERR "\n|$table_name memory reset $Caffected_rows rows|\n";}
