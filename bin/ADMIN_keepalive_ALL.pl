@@ -2660,7 +2660,7 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 	$Vext .= "exten => _8306888888888888X999,1,Answer\n";
 	$Vext .= "exten => _8306888888888888X999,n,AGI(agi-ingroup_survey.agi)\n";
 	$Vext .= "exten => _8306888888888888X999,n,Hangup()\n";
-	$Vext .= "; ACR AGI\n"
+	$Vext .= "; ACR AGI\n";
 	$Vext .= "exten => _8306888888888888X998,1,Answer\n";
 	$Vext .= " same => n,AGI(agi-acr_survey.agi)\n";
 	$Vext .= " same => n,Hangup()\n";
