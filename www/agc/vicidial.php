@@ -39,8 +39,8 @@
 #
 # Version  / Build
 #
-$agent_version = '3.0.1-25';
-$agent_build = '20201022-1';
+$agent_version = '3.0.1-26';
+$agent_build = '20201103-1';
 #
 ###############################################################################
 #
@@ -55,16 +55,16 @@ $DB=0;
 #
 # Changelog
 #
-# 2019-04-14 19:22 Remove old PausenDisplay stuff.
-# 2019-04-29 10:17 Add system_wide_settings.php.
-# 2019-05-28 09:18 Show Manual Dial only if UserLevel > 1
-# 2020-07-19 11:15 Warning skip lead only by callbacks
-# 2020-07-23 17:25 Replace _QXZ with gettext version _(
-# 2020-09-16 jff	Fix typos
-# 2020-10-16 jff	Add ACR from branch feature/acr
+# 2020-11-03 jff	Correct typo (chexk_VDIC_array)
+# 2020-10-22 jff	Add Ingroup ACR to overwrite Campaign ACR
 # 2020-10-19 jff	Add switch old / New Dispo Screen from system_settings
 #					Use $agent_[version|build]
-# 2020-10-22 jff	Add Ingroup ACR to overwrite Campaign ACR
+# 2020-10-16 jff	Add ACR from branch feature/acr
+# 2020-07-23 17:25 Replace _QXZ with gettext version _(
+# 2020-07-19 11:15 Warning skip lead only by callbacks
+# 2019-05-28 09:18 Show Manual Dial only if UserLevel > 1
+# 2019-04-29 10:17 Add system_wide_settings.php.
+# 2019-04-14 19:22 Remove old PausenDisplay stuff.
 #
 #
 
@@ -11710,7 +11710,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							did_custom_five									= check_VDIC_array[60];
 							status_group_statuses_data						= check_VDIC_array[61];
 							last_call_date									= check_VDIC_array[62];
-							DisplayPhoneNumber								= chexk_VDIC_array[65];
+							DisplayPhoneNumber								= check_VDIC_array[65];
 
 							// build statuses list for disposition screen
 							VARstatuses = [];
