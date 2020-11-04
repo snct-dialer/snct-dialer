@@ -166,7 +166,7 @@ $SetupFiles = array ("snct-dialer.conf", "dialer/agent.conf", "dialer/agent.loca
 
 $SetUp = setup::MakeWithArray($SetupDir, $SetupFiles);
 
-$Log = new Log($SetUp->GetData("Log", "DB_Query_NG"), $$vdc_db_query_ng_version);
+$Log = new Log($SetUp->GetData("Log", "DB_Query_NG"), $vdc_db_query_ng_version);
 
 
 $mysql = new DB($SetUp->GetData("Database", "VARDB_server"),
