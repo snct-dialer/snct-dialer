@@ -1018,6 +1018,8 @@
     * Use $PATHsounds instead of fixed paths:
       - Update bin/ADMIN_audio_store_sync.pl.
     * Change FlyInclude.php to SNCTVersion.inc.
+    * Allow dial from CallLog if OnlyInbounds is set:
+      - Update www/agc/vdc_db_query.php.
     * Change next release to 3.0.1.
 
 2.26.29
