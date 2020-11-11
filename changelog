@@ -1020,6 +1020,11 @@
     * Change FlyInclude.php to SNCTVersion.inc.
     * Allow dial from CallLog if OnlyInbounds is set:
       - Update www/agc/vdc_db_query.php.
+    * Generate RealTimeData via cpp based programm and change table name to
+      snctdialer_live:
+      - Update www/vicidial/AST_timeonVDADall_ng.php,
+          bin/ADMIN_keepalive_ALL.pl.
+      - New bin/cpp/*.
     * Change next release to 3.0.1.
 
 2.26.29

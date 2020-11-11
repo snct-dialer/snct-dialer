@@ -55,6 +55,7 @@ $DB=0;
 #
 # Changelog
 #
+# 2020-11-06 jff	Remove debug alert
 # 2020-11-03 jff	Correct typo (chexk_VDIC_array)
 # 2020-10-22 jff	Add Ingroup ACR to overwrite Campaign ACR
 # 2020-10-19 jff	Add switch old / New Dispo Screen from system_settings
@@ -11150,7 +11151,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 								document.getElementById("QuickXfer").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRBLIND','" + lastcustchannel + "','" + lastcustserverip + "','','','" + quick_transfer_button_locked + "','YES');return false;\"><img src=\"./images/<?php echo _("vdc_LB_quickxfer.gif"); ?>\" border=\"0\" alt=\"QUICK TRANSFER\" /></a>";
 								}
-							alert("ACR IG = " + ingroup_acr_id + "\nACR CP:" + campaign_acr_id);
+							//alert("ACR IG = " + ingroup_acr_id + "\nACR CP:" + campaign_acr_id);
 							var test_acr_id = 0;
 							if(ingroup_acr_id > 0) {
 								test_acr_id = ingroup_acr_id;

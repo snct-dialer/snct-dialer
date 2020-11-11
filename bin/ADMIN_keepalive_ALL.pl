@@ -585,7 +585,7 @@ else
 			$runningAST_conf_3way++;
 			if ($DB) {print "AST_conf_3way RUNNING:           |$psline[1]|\n";}
 			}
-		if ($psoutput[$i] =~ /SNCT_gen_realtime.php/)
+		if ($psoutput[$i] =~ /SNCT_GenRealTimeData/)
 			{
 			$running_gen_realtime++;
 			if ($DB) {print "Gen Realtime RUNNING:                |$psoutput[$i]|\n";}
@@ -752,7 +752,7 @@ else
 				$runningAST_conf_3way++;
 				if ($DB) {print "AST_conf_3way RUNNING:           |$psline[1]|\n";}
 				}
-			if ($psoutput2[$i] =~ /SNCT_gen_realtime.php/)
+			if ($psoutput2[$i] =~ /SNCT_GenRealTimeData/)
 				{
 				$running_gen_realtime++;
 				if ($DB) {print "Gen Realtime RUNNING:                |$psoutput[$i]|\n";}
@@ -905,7 +905,7 @@ else
 		if ( ($gen_realtime > 0) && ($running_gen_realtime < 1) )
 			{
 			if ($DB) {print "starting gen realtime data...\n";}
-			system('/usr/share/astguiclient/SNCT_gen_realtime.sh &');
+			system('/usr/share/astguiclient/SNCT_GenRealTimeData');
 			}
 		}
 	}

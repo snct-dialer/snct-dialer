@@ -54,7 +54,7 @@ $Debug = 0;
 $EnPauseStatus = 0;
 $InboundArr = array();
 
-$TableNameRTV = "snctdialer-live";
+$TableNameRTV = "snctdialer_live";
 
 
 $mysql = new DB($SetUp->GetData("Database", "Server"),

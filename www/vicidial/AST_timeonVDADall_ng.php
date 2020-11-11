@@ -3438,7 +3438,7 @@ $Ahold=array();
 
 #$stmt="SELECT extension,vicidial_live_agents.user,conf_exten,vicidial_live_agents.status,vicidial_live_agents.server_ip,UNIX_TIMESTAMP(last_call_time),UNIX_TIMESTAMP(last_call_finish),call_server_ip,vicidial_live_agents.campaign_id,vicidial_users.user_group,vicidial_users.full_name,vicidial_live_agents.comments,vicidial_live_agents.calls_today,vicidial_live_agents.callerid,lead_id,UNIX_TIMESTAMP(last_state_change),on_hook_agent,ring_callerid,agent_log_id,vicidial_live_agents.on_hook_saved_status  from vicidial_live_agents,vicidial_users where vicidial_live_agents.user=vicidial_users.user and vicidial_users.user_hide_realtime='0' $UgroupSQL $usergroupSQL $user_group_filter_SQL order by $orderSQL;";
 #$UgroupSQL = "1 ";
-$stmt = "SELECT * FROM `snctdialer-live` WHERE $UgroupSQL $usergroupSQL $user_group_filter_SQL ORDER BY `SortStatus` DESC, `Time` DESC";
+$stmt = "SELECT * FROM `snctdialer_live` WHERE $UgroupSQL $usergroupSQL $user_group_filter_SQL ORDER BY `SortStatus` DESC, `Time` DESC";
 #{echo "$stmt\n";}
 $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {echo "$stmt\n";}
