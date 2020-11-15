@@ -2448,6 +2448,7 @@ print conf "#  8 - ip_relay (used for blind agent monitoring)\n";
 print conf "#  9 - Timeclock auto logout, (If multi-server system, this must only be on one server)\n";
 print conf "#  E - Email processor, (If multi-server system, this must only be on one server)\n";
 print conf "#  S - SIP Logger (Patched Asterisk 13 required)\n";
+print conf "#  R - Generate RealTimeView Data, this must only be on one server)\n";
 print conf "VARactive_keepalives => $VARactive_keepalives\n";
 print conf "\n";
 print conf "# Asterisk version VICIDIAL is installed for\n";
@@ -2587,11 +2588,20 @@ if ($WEBONLY < 1)
 	if (!-e "$PATHDONEmonitor/FTP")		{`mkdir -p $PATHDONEmonitor/FTP`;}
 	if (!-e "$PATHDONEmonitor/FTP2")	{`mkdir -p $PATHDONEmonitor/FTP2`;}
 
-	print "Creating $PATHlogs/archive directory for backups...\n";
-	if (!-e "$PATHlogs/archive")	{`mkdir -p $PATHlogs/archive`;}
+#	print "Creating $PATHlogs/archive directory for backups...\n";
+#	if (!-e "$PATHlogs/archive")	{`mkdir -p $PATHlogs/archive`;}
+
+	print "Compile Programms ...\n";
+	`cd bin/cpp && ./configure && make && rm build/.dirstamp`;
 
 	print "Copying bin scripts to $PATHhome ...\n";
 	`cp -f ./bin/* $PATHhome/`;
+
+	print "Copying programms to $PATHhome ...\n";
+	`cp -f ./bin/cpp/build/* $PATHhome/`;
+
+	print "Clean build directory ...\n";
+	`cd bin/cpp && make distclean`;
 
 	print "Copying libs to $PATHhome ...\n";
 	`cp -f ./libs/* $PATHhome/libs`;
