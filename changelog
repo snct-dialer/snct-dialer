@@ -1025,6 +1025,9 @@
       - Update www/vicidial/AST_timeonVDADall_ng.php,
           bin/ADMIN_keepalive_ALL.pl.
       - New bin/cpp/*.
+    * Add options.php at begin of Header- Settings:
+      - Update www/vicidial/admin.php.
+    * Rename tables snctdialer-* into snctdialer_*:
     * Change next release to 3.0.1.
 
 2.26.29

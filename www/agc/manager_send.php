@@ -997,7 +997,7 @@ if ($ACTION=="RedirectACR") {
 			$rslt1=mysql_to_mysqli($stmt1, $link);
 			$row1=mysqli_fetch_row($rslt1);
 
-			$stmt2 = "INSERT INTO `snctdialer-acr_select` (`ID`, `uniqueid`, `lead_id`, `campaign_id`, `acr_id`) VALUES(NULL,'$uniqueid','$lead_id','$campaign', $row1[0]);";
+			$stmt2 = "INSERT INTO `snctdialer_acr_select` (`ID`, `uniqueid`, `lead_id`, `campaign_id`, `acr_id`) VALUES(NULL,'$uniqueid','$lead_id','$campaign', $row1[0]);";
 			if ($format=='debug') {echo "\n<!-- $stmt2 -->";}
 			$rslt2=mysql_to_mysqli($stmt2, $link);
 		}

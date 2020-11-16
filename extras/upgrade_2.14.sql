@@ -1384,11 +1384,6 @@ ALTER TABLE `vicidial_campaigns` ADD `acr_id` BIGINT UNSIGNED NOT NULL DEFAULT '
 ALTER TABLE `vicidial_campaign_statuses` ADD `Col` INT NOT NULL DEFAULT '0';
 ALTER TABLE `vicidial_statuses` ADD `Col` INT NOT NULL DEFAULT '0';
 
-
-
-
-
-
-
-
-
+RENAME TABLE `snctdialer-acr_select` TO `snctdialer_acr_select`;
+RENAME TABLE `snctdialer-after_call_action` TO `snctdialer_after_call_action`;
+RENAME TABLE `snctdialer-live` TO `snctdialer_live`;

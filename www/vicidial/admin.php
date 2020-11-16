@@ -32,31 +32,32 @@
 #
 # Version  / Build
 #
-$admin_version = '3.0.1-20';
-$admin_build = '20201022-1';
+$admin_version = '3.0.1-21';
+$admin_build = '20201116-1';
 #
 ###############################################################################
 #
 # Changelog
 #
-# 2017-12-21 09:53 Allow Clear Lists for User Level >= 8 (2017-061).
-# 2018-02-27 11:05 Add pickup_delay into ingroups (2018-003)
-# 2018-03-06 13:30 Add Agent Prefix into system_settings (2018-004).
-# 2018-03-23 17:30 Add new and modify fields for AutoAnswer (2018-007).
-# 2018-05-30 13:54 Add more autoanswer stuff
-# 2018-06-06 11:52 Escape pho_auto_answer_sipheader
+# 2020-11-16 jff	Add options.php at begin of Header- Settings
+# 2020-10-22 jff	Add After Call Routing to Ingroups.
+# 2020-10-20 jff	Add Switch to change between old and new Dispo-Screen
+# 2020-10-10 jff	Add After Call Routing
+# 2020-09-21 jff	Add show_archive to system_settings
+# 2020-07-31 09:00 Add realtime_report_ng.php
+# 2020-07-22 12:07 Add cid_group_type PHONECODE
+# 2020-07-20 12:40 Allow cid_group status with len 1
+# 2020-05-29 20:22 Move survey after call from chat to phone.
+# 2019-05-29 10:37 Add Agent disable [manual dial|alt phone dial]
+# 2019-04-29 10:45 Add system_wide_settings.php.
 # 2019-02-11 20:09 Phones add redirect feature
 #                  Phones Switch to MYSQLI_BOTH for using fieldnames
-# 2019-04-29 10:45 Add system_wide_settings.php.
-# 2019-05-29 10:37 Add Agent disable [manual dial|alt phone dial]
-# 2020-05-29 20:22 Move survey after call from chat to phone.
-# 2020-07-20 12:40 Allow cid_group status with len 1
-# 2020-07-22 12:07 Add cid_group_type PHONECODE
-# 2020-07-31 09:00 Add realtime_report_ng.php
-# 2020-09-21 jff	Add show_archive to system_settings
-# 2020-10-10 jff	Add After Call Routing
-# 2020-10-20 jff	Add Switch to change between old and new Dispo-Screen
-# 2020-10-22 jff	Add After Call Routing to Ingroups.
+# 2018-06-06 11:52 Escape pho_auto_answer_sipheader
+# 2018-05-30 13:54 Add more autoanswer stuff
+# 2018-03-23 17:30 Add new and modify fields for AutoAnswer (2018-007).
+# 2018-03-06 13:30 Add Agent Prefix into system_settings (2018-004).
+# 2018-02-27 11:05 Add pickup_delay into ingroups (2018-003)
+# 2017-12-21 09:53 Allow Clear Lists for User Level >= 8 (2017-061).
 #
 
 $startMS = microtime();
@@ -5262,6 +5263,9 @@ if ($download_max_system_stats_metric_name)
 ######################################################################################################
 ######################################################################################################
 
+if (file_exists('options.php')) {
+	require('options.php');
+}
 
 header ("Content-type: text/html; charset=utf-8");
 if ($SSnocache_admin=='1')

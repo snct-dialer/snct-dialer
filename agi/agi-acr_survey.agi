@@ -206,7 +206,7 @@ $AGI->stream_file('sip-silence');
 
 
 ########## FIND vicidial_acr_survey_log record ##########
-$stmtA = "SELECT * FROM `snctdialer-acr_select` where uniqueid='$unique_id';";
+$stmtA = "SELECT * FROM `snctdialer_acr_select` where uniqueid='$unique_id';";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
@@ -222,14 +222,14 @@ if ($sthArows > 0)
 else
 	{
 	### log record not found, hangup and exit
-	if ($AGILOG) {$agi_string = "--    snctdialer-acr_select record not found, exiting: |$CIDlead_id|$unique_id";   &agi_output;}
+	if ($AGILOG) {$agi_string = "--    snctdialer_acr_select record not found, exiting: |$CIDlead_id|$unique_id";   &agi_output;}
 	$AGI->hangup($channel);
 	exit;
 	}
 
 
 ### find ACR settings for this call
-$stmtA = "SELECT * FROM `snctdialer-after_call_action` where ID = '$VD_ACR_id';";
+$stmtA = "SELECT * FROM `snctdialer_after_call_action` where ID = '$VD_ACR_id';";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArowsL=$sthA->rows;
