@@ -32,13 +32,14 @@
 #
 # Version  / Build
 #
-$admin_version = '3.0.1-21';
-$admin_build = '20201116-1';
+$admin_version = '3.0.1-22';
+$admin_build = '20201120-1';
 #
 ###############################################################################
 #
 # Changelog
 #
+# 2020-11-20 jff	Add Pos,Col if copy vicidial_campaign_statuses
 # 2020-11-16 jff	Add options.php at begin of Header- Settings
 # 2020-10-22 jff	Add After Call Routing to Ingroups.
 # 2020-10-20 jff	Add Switch to change between old and new Dispo-Screen
@@ -10603,7 +10604,7 @@ if ($ADD==20)
 						$rslt=mysql_to_mysqli($stmtB, $link);
 						$affected_rowsB = mysqli_affected_rows($link);
 
-						$stmtC="INSERT INTO vicidial_campaign_statuses (status,status_name,selectable,campaign_id,human_answered,category,sale,dnc,customer_contact,not_interested,unworkable,scheduled_callback,completed,min_sec,max_sec,answering_machine) SELECT status,status_name,selectable,\"$campaign_id\",human_answered,category,sale,dnc,customer_contact,not_interested,unworkable,scheduled_callback,completed,min_sec,max_sec,answering_machine from vicidial_campaign_statuses where campaign_id='$source_campaign_id';";
+						$stmtC="INSERT INTO vicidial_campaign_statuses (status,status_name,selectable,campaign_id,human_answered,category,sale,dnc,customer_contact,not_interested,unworkable,scheduled_callback,completed,min_sec,max_sec,answering_machine,Pos,Col) SELECT status,status_name,selectable,\"$campaign_id\",human_answered,category,sale,dnc,customer_contact,not_interested,unworkable,scheduled_callback,completed,min_sec,max_sec,answering_machine,Pos,Col from vicidial_campaign_statuses where campaign_id='$source_campaign_id';";
 						$rslt=mysql_to_mysqli($stmtC, $link);
 						$affected_rowsC = mysqli_affected_rows($link);
 

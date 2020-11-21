@@ -1028,6 +1028,8 @@
     * Add options.php at begin of Header- Settings:
       - Update www/vicidial/admin.php.
     * Rename tables snctdialer-* into snctdialer_*:
+    * On copy campaign add Pos,Col to vicidial_campaign_statuses:
+      - Update www/vicidial/admin.php.
     * Change next release to 3.0.1.
 
 2.26.29
