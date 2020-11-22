@@ -1,115 +1,45 @@
 <?php
-# admin_modify_lead.php   version 2.14
+###############################################################################
+#
+# Modul admin_modify_lead.php
+#
+# SNCT-Dialer™ Modify Leads
+#
+# Copyright (©) 2019-2020 SNCT GmbH <info@snct-gmbh.de>
+#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
 #
 # LICENSE: AGPLv3
 #
-# Copyright (©) 2019  Matt Florell <vicidial@gmail.com>
-# Copyright (©) 2019-2020 SNCT GmbH <info@snct-dialer.de>
-#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
+###############################################################################
+#
+# based on VICIdial®
+# (© 2019  Matt Florell <vicidial@gmail.com>)
+#
+###############################################################################
+#
+# requested Module:
+#
+# dbconnect_mysqli.php
+# functions.php
+# admin_header.php
+# options.php
+#
+###############################################################################
+#
+# Version  / Build
+#
+$admin_modify_lead_version = '3.0.1-1';
+$admin_modify_lead_build = '20201122-1';
+#
+###############################################################################
+#
+# Changelog#
+#
+# 20201122 jff	Add iframe to show lead changes 
+# 20200921 jff	Add global ShowArchive for UserLevel >= 9.
+# 20200629 jff	Add external link from lead.
 #
 #
-# SNCT - Changelog
-#
-# 20200629 jff Add external link from lead.
-# 20200921 jff Add global ShowArchive for UserLevel >= 9.
-#
-#
-
-
-
-# ViciDial database administration modify lead in vicidial_list
-# admin_modify_lead.php
-#
-# this is the administration lead information modifier screen, the administrator
-# just needs to enter the leadID and then they can view and modify the
-# information in the record for that lead
-#
-# CHANGES
-#
-# 60419-1705 - Added ability to change lead callback record from USERONLY to ANYONE or USERONLY-user
-# 60421-1459 - check GET/POST vars lines with isset to not trigger PHP NOTICES
-# 60609-1112 - Added DNC list addition if status changed to DNC
-# 60619-1539 - Added variable filtering to eliminate SQL injection attack threat
-# 61130-1639 - Added recording_log lookup and list for this lead_id
-# 61201-1136 - Added recording_log user(TSR) display and link
-# 70305-1133 - Changed to default CHECKED modify logs upon status change
-# 70424-1128 - Added campaign-specific statuses, reformatted recordings list
-# 70702-1259 - Added recording location link and truncation
-# 70906-2132 - Added closer_log records display
-# 80428-0144 - UTF8 cleanup
-# 80501-0454 - Added Hangup Reason to logs display
-# 80516-0936 - Cleanup of logging changes, added vicidial_agent_log display
-# 80701-0832 - Changed to allow for altering of main phone number
-# 80805-2106 - Changed comments to TEXTAREA
-# 81210-1529 - Added server recording display options
-# 90309-1829 - Added admin_log logging
-# 90508-0644 - Changed to PHP long tags
-# 90708-1549 - Added phone number dialed to outbound log
-# 90721-1246 - Added rank and owner as vicidial_list fields
-# 90917-2355 - Added extended alt phone entries
-# 100405-1333 - Changed to show logs of non-found leads
-# 100618-0148 - Added Middle name modify and fixes statuses list
-# 100622-0945 - Added field labels
-# 100703-1122 - Added custom fields display/edit
-# 100712-1416 - Added entry_list_id field to vicidial_list to preserve link to custom fields if any
-# 100924-1431 - Added Called Count display
-# 101127-1610 - Added ability to set a scheduled callback date and time
-# 110212-2041 - Added compatibility with definable scheduled callback statuses
-# 110215-1411 - Added display of call notes to log records
-# 110215-1717 - Changed empty lead_id behavior to be add-a-lead functionality
-# 110525-1827 - Added ivr log records display
-# 111103-1533 - Added admin_hide_phone_data and admin_hide_lead_data options
-# 120223-2249 - Removed logging of good login passwords if webroot writable is enabled
-# 120518-1004 - Fix for multi-line comments
-# 120529-1635 - Added User Group Campaign-Lists validation
-# 121116-1411 - Added QC functionality
-# 121130-1033 - Changed scheduled callback user ID field to be 20 characters, issue #467
-# 121222-2145 - Added email log
-# 130123-1940 - Added options.php option to allow display of non-selectable statuses
-# 130610-1049 - Finalized changing of all ereg instances to preg
-# 130621-1731 - Added filtering of input to prevent SQL injection attacks and new user auth
-# 130705-1726 - Minor change for encrypted password compatibility
-# 130901-0816 - Changed to mysqli PHP functions
-# 130926-2053 - Added option for viewing/modifying vicidial_list_archive leads
-# 140125-1100 - Fixed issue with Callback records having no campaign_id
-# 140304-2034 - Fixed issue with special characters in standard data fields
-# 140706-0827 - Incorporated QC includes into code
-# 140817-0937 - Added Archive Log search option
-# 141001-2200 - Finalized adding QXZ translation to all admin files
-# 141128-0859 - Code cleanup for QXZ functions
-# 141229-1745 - Added code for on-the-fly language translations display
-# 150107-1729 - Added ignore_group_on_search user option
-# 150114-2321 - Added date_of_birth as editable field
-# 150312-1506 - Fixed minor Iframe form bug related to custom fields
-# 150514-1522 - Added $gmt_offset lookup for adding a new lead
-# 150603-1527 - Allow non-digit characters in alt_phone field
-# 150808-1437 - Added compatibility for custom fields data options
-# 150908-1531 - Fixed input lengths for several standard fields to match DB
-# 150917-1301 - Added dynamic default field maxlengths based on DB schema
-# 150923-0700 - Fixed security issues with user access, issue #894
-# 160102-1238 - Fixed issues with special characters, added $htmlconvert option
-# 160112-2344 - Added link to direct to recording logging page, access log display
-# 160122-1337 - Added display of gmt-offset, last-local-call and called-since-last-reset
-# 160407-2023 - Design changes, added more variable scrubbing, added more admin logging
-# 160926-1052 - Fix for inbound call notes display
-# 170224-1639 - Added ability to display archived recordings
-# 170409-1554 - Added IP List validation code
-# 170527-2253 - Fix for rare inbound logging issue #1017
-# 170710-2039 - Added Audit Comments display
-# 170807-2255 - Added park log
-# 170826-0858 - Added link to turn on/off archived logs display
-# 171001-1109 - Added in-browser audio control, if recording access control is disabled
-# 171216-2058 - Added ability to modify all active scheduled callbacks, and view callbacks log
-# 180212-2340 - Added basic GDPR compliance features
-# 180302-1605 - Added complete GDPR compliance features
-# 180310-2300 - Added optional source_id display
-# 180311-0008 - Added CIDdisplay
-# 180410-1720 - Added switch lead log entry display
-# 180506-1813 - Added switch_list log entry display
-# 180807-0957 - Added new diff logging code
-# 190310-2223 - Added indication of muted recordings by agent
-# 190329-1917 - Added display of AMD log info when CIDdisplay=Yes is set
-# 190609-0927 - Added sip_event_logging support
 #
 
 require("dbconnect_mysqli.php");
@@ -461,7 +391,6 @@ if(($archive_log == "0") || (!isset($archive_log))) {
 		}
 	}
 }
-
 
 $SSmenu_background='015B91';
 $SSframe_background='D9E6FE';
@@ -943,7 +872,12 @@ body
 <?php
 echo "</HEAD><BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 echo "<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
+echo "<script language=\"JavaScript\">";
+echo "var user = '$PHP_AUTH_USER';\n";
+echo "var pass = '$PHP_AUTH_PW';</script>\n";
 ?>
+<span style="position:absolute;left:500px;top:30px;z-index:50;visibility:hidden;" id="list_log_span">
+</span>
 <script language="JavaScript">
 function UpdateCallback(callback_id) {
 	var apt_date_field="appointment_date_"+callback_id;
@@ -985,7 +919,36 @@ function UpdateCallback(callback_id) {
 
 	document.getElementById('vsn').action="<?php echo $PHP_SELF; ?>?appointment_date="+appointment_date+"&appointment_time="+appointment_time+"&CBstatus="+CBstatus+"&CBchangeUSERtoANY="+CBchangeUSERtoANY+"&CBchangeANYtoUSER="+CBchangeANYtoUSER+"&CBuser="+CBuser+"&comments="+comments+"&callback_id="+callback_id;
 	document.vsn.submit();
+
 }
+
+mouseY=0;
+function getMousePos(event) {
+	mouseY=event.pageY;
+}
+document.addEventListener("click", getMousePos);
+
+function close_chooser() {
+	document.getElementById("list_log_span").style.visibility = 'hidden';
+	document.getElementById("list_log_span").innerHTML = '';
+}
+
+function launch_list_log(LeadID) {
+
+	var h = window.innerHeight;
+	var vposition=mouseY;
+
+	var listlogURL = "./non_agent_api.php";
+	var listlogQuery = "source=admin&function=lead_log_list&user=" + user + "&pass=" + pass + "&format=selectframe&lead_id=" + LeadID;
+	var Iframe_content = '<IFRAME SRC="' + listlogURL + '?' + listlogQuery + '"  style="width:740;height:440;background-color:yellow;" scrolling="NO" frameborder="0" allowtransparency="false" id="list_log_frame" name="list_log_frame" width="740" height="460" STYLE="z-index:2"> </IFRAME>';
+
+	document.getElementById("list_log_span").style.position = "absolute";
+	document.getElementById("list_log_span").style.left = "220px";
+	document.getElementById("list_log_span").style.top = vposition + "px";
+	document.getElementById("list_log_span").style.visibility = 'visible';
+	document.getElementById("list_log_span").innerHTML = Iframe_content;
+}
+
 <?php
 
 if ( ($CIDdisplay == "Yes") and ($SSsip_event_logging > 0) )
@@ -1070,7 +1033,7 @@ echo "<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 echo "<span style=\"position:absolute;left:0px;top:0px;z-index:20;\" id=admin_header>";
 
 $short_header=1;
-
+$ADD==1212121212121212121212121212121212;
 require("admin_header.php");
 
 echo "</span>\n";
@@ -1933,9 +1896,9 @@ else
 	echo "<input type=hidden name=FORM_LOADED id=FORM_LOADED value=\"0\" />\n";
 	echo "<table cellpadding=1 cellspacing=0>\n";
 	if($ExtLink_admin_modify_lead == "") {
-		echo "<tr><td colspan=2>"._QXZ("Lead ID").": $lead_id &nbsp; &nbsp; "._QXZ("List ID").":  $list_id &nbsp; &nbsp; <font size=2>"._QXZ("GMT offset").": $gmt_offset_now &nbsp; &nbsp; "._QXZ("CSLR").": $called_since_last_reset</td></tr>\n";
+		echo "<tr><td colspan=2>"._QXZ("Lead ID").": $lead_id &nbsp; &nbsp; "._QXZ("List ID").":  $list_id &nbsp; &nbsp; <font size=2>"._QXZ("GMT offset").": $gmt_offset_now &nbsp; &nbsp; "._QXZ("CSLR").": $called_since_last_reset &nbsp; &nbsp; <a href=\"javascript:launch_list_log($lead_id);\">"._QXZ("Lead change Log")."</a></td></tr>\n";
 	} else {
-		echo "<tr><td colspan=2>"._QXZ("Lead ID").": <A target= \"_blank\" HREF=\"".$ExtLink_admin_modify_lead."$lead_id\">$lead_id</A> &nbsp; &nbsp; "._QXZ("List ID").":  $list_id &nbsp; &nbsp; <font size=2>"._QXZ("GMT offset").": $gmt_offset_now &nbsp; &nbsp; "._QXZ("CSLR").": $called_since_last_reset</td></tr>\n";
+		echo "<tr><td colspan=2>"._QXZ("Lead ID").": <A target= \"_blank\" HREF=\"".$ExtLink_admin_modify_lead."$lead_id\">$lead_id</A> &nbsp; &nbsp; "._QXZ("List ID").":  $list_id &nbsp; &nbsp; <font size=2>"._QXZ("GMT offset").": $gmt_offset_now &nbsp; &nbsp; "._QXZ("CSLR").": $called_since_last_reset  &nbsp; &nbsp; <a href=\"javascript:launch_list_log($lead_id);\">"._QXZ("Lead change Log")."</a></td></tr>\n";
 	}
 	echo "<tr><td colspan=2>"._QXZ("Fronter").": <A HREF=\"user_stats.php?user=$tsr\">$tsr</A> &nbsp; &nbsp; "._QXZ("Called Count").": $called_count &nbsp; &nbsp; <font size=2>"._QXZ("Last Local Call").": $last_local_call_time</td></tr>\n";
 	if ($archive_search=="Yes")
@@ -3017,7 +2980,7 @@ else
 		$admin_display=$row[0];
 		if ($admin_display > 0)
 			{
-			echo "<a href=\"./admin.php?ADD=720000000000000&stage=$lead_id&category=LEADS\">"._QXZ("Click here to see Lead Modify changes to this lead")."</a>\n";
+			echo "<a href=\"./admin.php?ADD=720000000000000&stage=$lead_id&category=LEADS\">"._QXZ("Click here to see Lead Modify changes to this lead")."</a><br>\n";
 			}
 		//Display link to QC if user has QC permissions
 		//Get QC User permissions

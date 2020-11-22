@@ -789,6 +789,22 @@ else
 		mouseY=event.pageY;
 	}
 	document.addEventListener("click", getMousePos);
+	
+	function launch_list_log(LeadID) {
+
+		var h = window.innerHeight;
+		var vposition=mouseY;
+
+		var listlogURL = "./non_agent_api.php";
+		var listlogQuery = "source=admin&function=lead_log_list&user=" + user + "&pass=" + pass + "&format=selectframe&lead_id=" + LeadID;
+		var Iframe_content = '<IFRAME SRC="' + listlogURL + '?' + listlogQuery + '"  style="width:740;height:440;background-color:white;" scrolling="NO" frameborder="0" allowtransparency="true" id="list_log_frame' + epoch + '" name="list_log_frame" width="740" height="460" STYLE="z-index:2"> </IFRAME>';
+
+		document.getElementById("audio_chooser_span").style.position = "absolute";
+		document.getElementById("audio_chooser_span").style.left = "220px";
+		document.getElementById("audio_chooser_span").style.top = vposition + "px";
+		document.getElementById("audio_chooser_span").style.visibility = 'visible';
+		document.getElementById("audio_chooser_span").innerHTML = Iframe_content;
+	}
 
 	function launch_chooser(fieldname,stage)
 		{

@@ -20,6 +20,12 @@
 #  - $callback_user -	('6666','1001',...)
 #  - $callback_comments - ('Comments go here',...)
 
+# 
+# Changelog
+#
+# 20201122 jff	Add function lead_log_list
+
+
 # CHANGELOG:
 # 80724-0021 - First build of script
 # 80801-0047 - Added gmt lookup and hopper insert time validation
@@ -819,9 +825,6 @@ else
 
 $LOCAL_GMT_OFF = $SERVER_GMT;
 $LOCAL_GMT_OFF_STD = $SERVER_GMT;
-
-
-
 
 
 ################################################################################
@@ -11972,9 +11975,75 @@ if ($function == 'call_dispo_report')
 			}
 		}
 	exit;
-	}
+}
 ################################################################################
 ### END call_dispo_report
+################################################################################
+
+################################################################################
+### lead_log_list - sends a list of lead - changes
+################################################################################
+if ($function == 'lead_log_list') {
+	$stmt="SELECT count(*) from vicidial_users where user='$user' and user_level > 8 and active='Y';";
+	if ($DB>0) {echo "DEBUG: lead_log_list query - $stmt\n";}
+	$rslt=mysql_to_mysqli($stmt, $link);
+	$row=mysqli_fetch_row($rslt);
+	$allowed_user=$row[0];
+	if ($allowed_user < 1) {
+		$result = 'ERROR';
+		$result_reason = "sounds_list USER DOES NOT HAVE PERMISSION TO VIEW SOUNDS LIST";
+		echo "$result: $result_reason: |$user|$allowed_user|\n";
+		$data = "$allowed_user";
+		api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+		exit;
+	} else {
+		if ( (!preg_match("/ $function /",$api_allowed_functions)) and (!preg_match("/ALL_FUNCTIONS/",$api_allowed_functions)) ) {
+			$result = 'ERROR';
+			$result_reason = "auth USER DOES NOT HAVE PERMISSION TO USE THIS FUNCTION";
+			echo "$result: $result_reason: |$user|$function|\n";
+			$data = "$allowed_user";
+			api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+			exit;
+		}
+		
+		$DLLTable = "";
+		$stmt="SELECT * FROM `snctdialer_list_log` WHERE `LeadID` = '".$lead_id."' ORDER BY `Change_date` DESC;";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		if ($DB) {echo "$stmt\n";}
+		$numrecs_to_print = mysqli_num_rows($rslt);
+		
+		if($numrecs_to_print > 0) {
+			$DLLTable .= "<table style='font-family:\"Courier New\", Courier, monospace; font-size:80%'>";
+			$DLLTable .= "<TR><TH>Date</TH><TH>Old List</TH><TH>New List</TH><TH>Old Owner</TH><TH>New Owner</TH><TH>Old Status</TH><TH>New Status</TH></TR>";
+			while ($row=mysqli_fetch_row($rslt)) {
+				$DLLTable .= "<TR><TD>$row[2]</TD><TD>$row[3]</TD><TD>$row[4]</TD><TD>$row[5]</TD><TD>$row[6]</TD><TD>$row[7]</TD><TD>$row[8]</TD></TR>";
+			}
+			$DLLTable .= "</table></font>";
+		} else  {
+			$DLLTable = "No Data found!";
+		}
+		
+		echo "\n";
+		echo "<HTML><head><title>NON-AGENT API</title>\n";
+		echo "<script language=\"Javascript\">\n";
+		echo "function close_file()\n";
+		echo "	{\n";
+		echo "	document.getElementById(\"selectframe\").innerHTML = '';\n";
+		echo "	document.getElementById(\"selectframe\").style.visibility = 'hidden';\n";
+		echo "	parent.close_chooser();\n";
+		echo "	}\n";
+		echo "</script>\n";
+		echo "</head>\n\n";
+		echo "<body>\n";
+		echo "<a href=\"javascript:close_file();\"><font size=1 face=\"Arial,Helvetica\">"._QXZ("close frame")."</font></a>\n";
+		echo "<div id='selectframe' style=\"height:400px;width:710px;overflow:scroll;\">\n";
+		echo $DLLTable;
+		echo "</div></body></HTML>\n";
+	}
+	exit;
+}
+################################################################################
+### END lead_log_list
 ################################################################################
 
 
