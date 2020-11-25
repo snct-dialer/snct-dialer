@@ -1031,9 +1031,12 @@
     * On copy campaign add Pos,Col to vicidial_campaign_statuses:
       - Update www/vicidial/admin.php.
     * Add iframe to show lead changes:
-      - Update admin_header.php,
-          admin_modify_lead.php,
-          non_agent_api.php.
+      - Update www/vicidial/admin_header.php,
+          www/vicidial/admin_modify_lead.php,
+          www/vicidial/non_agent_api.php.
+    * Add Add .mp3 and .ogg Upload handling:
+      - Update www/vicidial/audio_store.php,
+          www/vicidial/non_agent_api.php
     * Change next release to 3.0.1.
 
 2.26.29

@@ -1,10 +1,47 @@
 <?php
-# non_agent_api.php
+###############################################################################
 #
-# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Modul non_agent_api.php
+#
+# SNCT-Dialer™
 #
 # This script is designed as an API(Application Programming Interface) to allow
 # other programs to interact with all non-agent-screen VICIDIAL functions
+#
+# Copyright (©) 2019-2020 SNCT GmbH <info@snct-gmbh.de>
+#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
+#
+# LICENSE: AGPLv3
+#
+###############################################################################
+#
+# based on VICIdial®
+# (© 2019  Matt Florell <vicidial@gmail.com>)
+#
+###############################################################################
+#
+# requested Module:
+#
+# dbconnect_mysqli.php
+# functions.php
+# options.php
+#
+###############################################################################
+#
+# Version  / Build
+#
+$non_agent_api_version = '3.0.1-1';
+$non_agent_api_build = '20201124-1';
+
+$api_url_log = 0;
+
+#
+###############################################################################
+#
+# Changelog
+#
+# 20201124 jff	Add .ogg and .mp3 to sounds_list
+# 20201122 jff	Add function lead_log_list
 #
 # required variables:
 #  - $user
@@ -19,138 +56,8 @@
 #  - $callback_type -	('USERONLY','ANYONE')
 #  - $callback_user -	('6666','1001',...)
 #  - $callback_comments - ('Comments go here',...)
-
-# 
-# Changelog
 #
-# 20201122 jff	Add function lead_log_list
-
-
-# CHANGELOG:
-# 80724-0021 - First build of script
-# 80801-0047 - Added gmt lookup and hopper insert time validation
-# 80909-2012 - Added support for campaign-specific DNC lists
-# 80910-0020 - Added support for multi-alt-phones, added version function
-# 90118-1056 - Added logging of API functions
-# 90428-0209 - Added blind_monitor function
-# 90508-0642 - Changed to PHP long tags
-# 90514-0602 - Added sounds_list function
-# 90522-0506 - Security fix
-# 90530-0946 - Added QueueMetrics blind monitoring option
-# 90721-1428 - Added rank and owner as vicidial_list fields
-# 90904-1535 - Added moh_list musiconhold list
-# 90916-2342 - Added vm_list voicemail list
-# 91026-1059 - Added AREACODE DNC option
-# 91203-1140 - Added agent_ingroup_info feature
-# 91216-0331 - Added duplication check features to add_lead function
-# 100118-0543 - Added new Australian and New Zealand DST schemes (FSO-FSA and LSS-FSA)
-# 100704-1148 - Added custom fields inserts to the add_lead function
-# 100712-1416 - Added entry_list_id field to vicidial_list to preserve link to custom fields if any
-# 100718-0245 - Added update_lead function to update existing leads
-# 100723-1333 - Added no_update option to the update_lead function
-# 100728-1952 - Added delete_lead option to the update_lead function
-# 100924-1403 - Added called_count as an update_lead option
-# 101111-1536 - Added vicidial_hopper.source to vicidial_hopper inserts
-# 101117-1104 - Added callback and custom field entry delete to delete_lead option
-# 101206-2126 - Added recording_lookup and did_log_export functions
-# 110127-2245 - Added add_user and add_phone functions
-# 110303-2122 - Added information on agent-on-hook phone to real-time report popup
-# 110306-1044 - Added add_list and update_list functions
-# 110316-2035 - Added reset_time variable and NAMEPHONE dup search
-# 110404-1356 - Added uniqueid search parameter to recording_lookup function
-# 110409-0822 - Added run_time logging of API functions
-# 110424-0854 - Added option for time zone code lookups using owner field
-# 110529-1220 - Added time zone information output to version function
-# 110614-0726 - Added reset_lead option to update_lead function(issue #502)
-# 110705-1928 - Added options for USACAN 4th digit prefix(no 0 or 1) and valid areacode filtering to add_lead
-# 110821-2318 - Added update_phone, add_phone_alias, update_phone_alias functions
-# 110928-2110 - Added callback options to add_lead and update_lead
-# 111106-0959 - Added user_group restrictions to some functions
-# 120127-1331 - Small fix for plus replacement in custom fields strings for add/update_lead functions
-# 120210-1215 - Small change for hopper adding vendor_lead_code
-# 120213-1613 - Added optional logging of all non-admin.php requests, enabled in options.php
-# 120315-1537 - Added filter for single-quotes and backslashes on custom field data
-# 120326-1317 - Added agent_stats_export function
-# 120810-0859 - Added add_group_alias function, altered agent_stats_export function
-# 120831-1529 - Added vicidial_dial_log outbound call logging
-# 120912-2042 - Added user_group_status and in_group_status functions
-# 120913-1255 - Added update_log_entry function
-# 121116-1938 - Added state call time restrictions to add_lead hopper insert function
-# 121125-2210 - Added Other Campaign DNC option and list expiration date option
-# 130328-0949 - Added update_phone_number option to update_lead function, issue #653
-# 130405-1539 - Added agent_status function
-# 130414-0311 - Added report logging for blind_monitor function
-# 130420-1938 - Added NANPA prefix validation and timezone options
-# 130614-0907 - Finalized changing of all ereg instances to preg
-#             - Added pause code to output of agent_status function
-# 130617-2232 - Added real-time sub-statuses to output of agent_status function
-#             - Added user authentication process to eliminate brute force attacks
-# 130705-1725 - Changes for encrypted password compatibility
-# 130831-0825 - Changed to mysqli PHP functions
-# 140107-2143 - Added webserver and url logging
-# 140124-1057 - Added callid_info function
-# 140206-1205 - Added update_user function
-# 140211-1056 - Added server_refresh function
-# 140214-1540 - Added check_phone_number function
-# 140331-2119 - Converted division calculations to use MathZDC function
-# 140403-2024 - Added camp_rg_only option to update_user function
-# 140418-1553 - Added preview_lead_id for agent_status
-# 140617-2029 - Added vicidial_users wrapup_seconds_override option
-# 140812-0939 - Added phone_number and vendor_lead_code to agent_status function output
-# 150123-1611 - Fixed issue with list local call times and add_lead
-# 150217-1404 - archive deleted callbacks to vicidial_callbacks_archive table
-# 150309-0250 - Added ability to use urlencoded web form addresses
-# 150313-0818 - Allow for single quotes in vicidial_list and custom data fields
-# 150428-1720 - Added web_form_address_three to add_list/update_list functions
-# 150430-0644 - Added API allowed function restrictions and allowed list restrictions
-# 150512-2028 - Added filtering of hash sign on some input variables, Issue #851
-# 150516-1138 - Fixed conflict with functions.php
-# 150603-1528 - Fixed format issue in recording_lookup
-# 150730-2022 - Added option to set entry_list_id
-# 150804-0948 - Added WHISPER option for blind_monitor function
-# 150808-1438 - Added compatibility for custom fields data option
-# 151226-0954 - Added session_id(conf_exten) field to output of agent_status, and added logged_in_agents function
-# 160104-1229 - Added detection of dead chats to a few functions
-# 160211-1232 - Fixed issue with blind monitoring, Issue #924
-# 160603-1041 - Added update_campaign function
-# 160709-2233 - Added lead_field_info function
-# 160824-0802 - Fixed issue with allowed lists feature
-# 161020-1042 - Added lookup_state option to add_lead, added 10-digit validation if usacan_areacode_check enabled
-# 170205-2022 - Added phone_number_log function
-# 170209-1149 - Added URL and IP logging
-# 170219-1520 - Added 90-day duplicate check option
-# 170223-0743 - Added QXZ translation to admin web user functions text
-# 170301-1649 - Added validation that sounds web dir exists to sounds_list function
-# 170409-1603 - Added IP List validation code
-# 170423-0800 - Added force_entry_list_id option for update_lead
-# 170508-1048 - Added blind_monitor logging
-# 170527-2254 - Fix for rare inbound logging issue #1017
-# 170601-0747 - Added add_to_hopper options to update_lead function
-# 170609-1107 - Added ccc_lead_info function
-# 170615-0006 - Added DIAL status for manual dial agent calls that have not been answered, to 4 functions
-# 170713-2312 - Fix for issue #1028
-# 170815-1315 - Added HTTP error code 418
-# 171114-1015 - Added ability for update_lead function insert_if_not_found leads to be inserted into the hopper
-# 171129-0751 - Fixed issue with duplicate custom fields
-# 171229-1602 - Added lead_status_search function
-# 180109-1313 - Added call_status_stats function
-# 180208-1655 - Added call_dispo_report function
-# 180301-2301 - Added GET-AND-POST URL logging
-# 180331-1716 - Added options to update_campaign, add_user, update_phone. Added function update_did
-# 180529-1102 - Fix for QM live monitoring
-# 180916-1059 - Added check for daily list reset limit
-# 181214-1606 - Added lead_callback_info function
-# 190313-0710 - Fix for update_lead custom fields issue #1134
-# 190325-1055 - Added agent_campaigns function
-# 190628-1504 - Added update_cid_group_entry function
-# 190703-0858 - Added custom_fields_copy option to add_list function
-# 190930-1629 - Added list_description field to add_list and update_list functions
-# 191107-1143 - Added list_info function
 #
-
-$version = '2.14-117';
-$build = '191107-1143';
-$api_url_log = 0;
 
 $startMS = microtime();
 
@@ -832,7 +739,7 @@ $LOCAL_GMT_OFF_STD = $SERVER_GMT;
 ################################################################################
 if ($function == 'version')
 	{
-	$data = "VERSION: $version|BUILD: $build|DATE: $NOW_TIME|EPOCH: $StarTtime|DST: $isdst|TZ: $DBSERVER_GMT|TZNOW: $SERVER_GMT|";
+	$data = "VERSION: $non_agent_api_version|BUILD: $non_agent_api_build|DATE: $NOW_TIME|EPOCH: $StarTtime|DST: $isdst|TZ: $DBSERVER_GMT|TZNOW: $SERVER_GMT|";
 	$result = 'SUCCESS';
 	echo "$data\n";
 	api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
@@ -1053,12 +960,12 @@ if ($function == 'sounds_list')
 			while (false !== ($file = readdir($dh)))
 				{
 				# Do not list subdirectories
-				if ( (!is_dir("$dirpath/$file")) and (preg_match('/\.wav$|\.gsm$/', $file)) )
+				if ( (!is_dir("$dirpath/$file")) and (preg_match('/\.wav$|\.gsm$|\.ogg$|\.mp3$/', $file)) )
 					{
 					if (file_exists("$dirpath/$file"))
 						{
 						$file_names[$i] = $file;
-						$file_namesPROMPT[$i] = preg_replace("/\.wav$|\.gsm$/","",$file);
+						$file_namesPROMPT[$i] = preg_replace("/\.wav$|\.gsm$|\.ogg$|\.mp3$/","",$file);
 						$file_epoch[$i] = filemtime("$dirpath/$file");
 						$file_dates[$i] = date ("Y-m-d H:i:s.", filemtime("$dirpath/$file"));
 						$file_sizes[$i] = filesize("$dirpath/$file");
