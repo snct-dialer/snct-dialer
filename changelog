@@ -1037,6 +1037,9 @@
     * Add Add .mp3 and .ogg Upload handling:
       - Update www/vicidial/audio_store.php,
           www/vicidial/non_agent_api.php
+  [Danny Funkat]
+    * Add Pause code into AGENTSview:
+      - Update www/agc/vdc_db_query.php.
     * Change next release to 3.0.1.
 
 2.26.29

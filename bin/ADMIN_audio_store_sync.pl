@@ -249,6 +249,8 @@ $affected_rows = $dbhA->do($stmtA);
 
 $gsm='.gsm';
 $wav='.wav';
+$ogg='.ogg';
+$mp3='.mp3';
 $ulaw='.ulaw';
 $audio_file_deleted=0;
 if (length($audio_store_purge) > 0)
@@ -270,6 +272,10 @@ if (length($audio_store_purge) > 0)
 				{`rm -f $PATHsounds/$purge_data[$i]$gsm`;		$audio_file_deleted++;}
 			if ( -e ("$PATHsounds/$purge_data[$i]$ulaw"))
 				{`rm -f $PATHsounds/$purge_data[$i]$ulaw`;		$audio_file_deleted++;}
+			if ( -e ("$PATHsounds/$purge_data[$i]$ogg"))
+				{`rm -f $PATHsounds/$purge_data[$i]$ogg`;		$audio_file_deleted++;}
+			if ( -e ("$PATHsounds/$purge_data[$i]$mp3"))
+				{`rm -f $PATHsounds/$purge_data[$i]$mp3`;		$audio_file_deleted++;}
 			if ($audio_file_deleted < 1)
 				{if ($DB) {print "no audio file deleted: $purge_data[$i]|$i\n";}}
 			if ($DBX>0) {print "audio file delete process: $purge_data[$i]|$i|$audio_file_deleted\n";}
@@ -476,6 +482,8 @@ if ($gather_details > 0)
 	{
 	$gsm_count=0;
 	$wav_count=0;
+	$ogg_count=0;
+	$mp3_count=0;
 	$new_count=0;
 	$old_count=0;
 	$update_count=0;
@@ -493,6 +501,20 @@ if ($gather_details > 0)
 		$allowed_format=0;
 		if ($filesize > 0)
 			{
+			if ($filename =~ /\.ogg$/) {
+				$allowed_format++;
+				$ogg_count++;
+				$audio_format='ogg';
+				$audio_length = ($filesize / 16000);
+				$audio_length = sprintf("%.0f", $audio_length);
+			}
+			if ($filename =~ /\.mp3$/) {
+				$allowed_format++;
+				$mp3_count++;
+				$audio_format='mp3';
+				$audio_length = ($filesize / 16000);
+				$audio_length = sprintf("%.0f", $audio_length);
+			}
 			if ($filename =~ /\.wav$/)
 				{
 				$allowed_format++;
