@@ -37,6 +37,7 @@ $admin_modify_lead_build = '20201225-1';
 # Changelog#
 #
 # 20201225 jff	Show only recordings of allowed users
+#				Mark archiv records with red
 # 20201122 jff	Add iframe to show lead changes 
 # 20200921 jff	Add global ShowArchive for UserLevel >= 9.
 # 20200629 jff	Add external link from lead.
@@ -2845,6 +2846,7 @@ else
 		if ($DB) {echo "$logs_to_print|$stmt|\n";}
 
 		$v=0;
+		$u=0;
 		while ($logs_to_print > $v)
 			{
 			$row=mysqli_fetch_row($rslt);
@@ -2916,10 +2918,11 @@ else
 				{$location = $locat;}
 			$u++;
 			$v++;
+
 			echo "<tr $bgcolor>";
-			echo "<td><font size=1>$u</td>";
-			echo "<td align=left><font size=2> $row[12] </td>";
-			echo "<td align=left><font size=1> $row[4] </td>\n";
+			echo "<td><font size=1 color='#FF0000'>$u</font></td>";
+			echo "<td align=left><font size=2 color='#FF0000'> $row[12] </font></td>";
+			echo "<td align=left><font size=1 color='#FF0000'> $row[4] </font></td>\n";
 			echo "<td align=left><font size=2> $row[8] </td>\n";
 			echo "<td align=left><font size=2> $row[0] &nbsp;</td>\n";
 			echo "<td align=center><font size=1> $row[10] </td>\n";
