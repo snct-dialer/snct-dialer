@@ -1,7 +1,57 @@
 <?php 
+###############################################################################
+#
+# Modul admin_function.php
+#
+# SNCT-Dialer™ new functions for the admin interface
+#
+# Copyright (©) 2020      SNCT GmbH <info@snct-gmbh.de>
+#               2020      Jörg Frings-Fürst <open_source@jff.email>
+#
+# LICENSE: AGPLv3
+#
+###############################################################################
+#
+# requested Module:
+#
+# ./.
+#
+###############################################################################
+#
+# Version  / Build
+#
+$admin_function_version = '3.0.1-1';
+$admin_function_build = '20201226-1';
+#
+###############################################################################
+#
+# Changelog
+#
+# 2020-12-26 jff	First build
+#
+#
+#
 
 
-
+###############################################################################
+#
+# GetViewUsr
+#
+# Returns valid users for given User Group with name contains ADMIN
+#
+###############################################################################
+#
+# Parameter:
+# 
+# $UsrGrp
+#
+###############################################################################
+#
+# Return
+#
+# sql statement with all valid users for User Group
+#
+###############################################################################
 function GetViewUsr($UsrGrp) {
 	global $DB, $link;
 	
@@ -37,10 +87,10 @@ function GetViewUsr($UsrGrp) {
 			$first = 1;
 			while ($row1=mysqli_fetch_assoc($res1)) {
 				if ($first == 1) {
-					$ret .= $row1[user];
+					$ret .= $row1["user"];
 					$first = 0;
 				} else {
-					$ret .= ", " . $row1[user];
+					$ret .= ", " . $row1["user"];
 				}
 			}
 			$ret .= ")";
@@ -53,9 +103,5 @@ function GetViewUsr($UsrGrp) {
 	return $ret;
 }
 
-
-
-
-
-
 ?>
+
