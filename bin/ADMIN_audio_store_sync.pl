@@ -33,10 +33,11 @@ $admin_audio_store_sync_build = '20201102-1';
 #
 # Changelog
 #
-# 2018-06-16 jff	Add sniplet into perl scripts to run only once a time
-# 2019-07-25 jff	Use only https without certcheck
 # 2020-11-02 jff	Use $PATHsounds instead of fixed paths
 #					Use wget also with --no-check-certificate
+# 2019-07-25 jff	Use only https without certcheck
+# 2018-06-16 jff	Add sniplet into perl scripts to run only once a time
+#
 
 
 ###### Test that the script is running only once a time
@@ -416,7 +417,7 @@ if ($upload > 0)
 	while ($k <= $#sounds)
 		{
 		chomp($sounds[$k]);
-		if ($sounds[$k] =~ /\.wav$|\.gsm$/)
+		if ($sounds[$k] =~ /\.wav$|\.gsm$\.ogg$|\.mp3$|/)
 			{
 			$soundname =	$sounds[$k];
 			$sounddate =	(-M "$PATHsounds/$sounds[$k]");

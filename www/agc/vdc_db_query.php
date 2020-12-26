@@ -34,13 +34,14 @@
 #
 # Version  / Build
 #
-$vdc_db_query_version = '3.0.1-3';
-$vdc_db_query_build = '20201127-1';
+$vdc_db_query_version = '3.0.1-4';
+$vdc_db_query_build = '20201214-1';
 #
 ###############################################################################
 #
 # Changelog
 #
+# 2020-12-14 jff	Add list_id, owner into SEARCHRESULTSview
 # 2020-10-27 dft	Add Pause code into AGENTSview
 # 2020-10-22 jff	Allow dial if OnlyInbounds is set
 # 2020-10-22 jff	Return [campaign|ingroup}_arc_id on VDADcheckINCOMING
@@ -16701,6 +16702,8 @@ if ($ACTION == 'SEARCHRESULTSview')
 	$ALLstate = array();
 	$ALLpostal_code = array();
 	$ALLvendor_lead_code = array();
+	$AllListID = array();
+	$AllOwner = array();
 
 	$stmt="SELECT agent_lead_search_method,manual_dial_list_id from vicidial_campaigns where campaign_id='$campaign';";
 	if ($non_latin > 0) {$rslt=mysql_to_mysqli("SET NAMES 'UTF8'", $link);}
@@ -16951,13 +16954,15 @@ if ($ACTION == 'SEARCHRESULTSview')
 			echo "<TD BGCOLOR=\"#CCCCCC\"><font style=\"font-size:11px;font-family:sans-serif;\"><B> &nbsp; "._QXZ($label_state)." &nbsp; </font></TD>";
 			echo "<TD BGCOLOR=\"#CCCCCC\"><font style=\"font-size:11px;font-family:sans-serif;\"><B> &nbsp; "._QXZ($label_postal_code)." &nbsp; </font></TD>";
 			echo "<TD BGCOLOR=\"#CCCCCC\"><font style=\"font-size:11px;font-family:sans-serif;\"><B> &nbsp; "._QXZ($label_vendor_lead_code)." &nbsp; </font></TD>";
+			echo "<TD BGCOLOR=\"#CCCCCC\"><font style=\"font-size:11px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("ListId")." &nbsp; </font></TD>";
+			echo "<TD BGCOLOR=\"#CCCCCC\"><font style=\"font-size:11px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("Owner")." &nbsp; </font></TD>";
 			echo "<TD BGCOLOR=\"#CCCCCC\"><font style=\"font-size:11px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("INFO")." &nbsp; </font></TD>";
 			echo "<TD BGCOLOR=\"#CCCCCC\"><font style=\"font-size:11px;font-family:sans-serif;\"><B> &nbsp; "._QXZ("DIAL")." &nbsp; </font></TD>";
 			echo "</TR>";
 
 			if ($search_result_count)
 				{
-				$stmt="SELECT first_name,last_name,phone_code,phone_number,status,last_local_call_time,lead_id,city,state,postal_code,vendor_lead_code from vicidial_list where $searchSQL $searchownerSQL $searchmethodSQL order by last_local_call_time desc limit 1000;";
+				$stmt="SELECT first_name,last_name,phone_code,phone_number,status,last_local_call_time,lead_id,city,state,postal_code,vendor_lead_code,list_id,owner from vicidial_list where $searchSQL $searchownerSQL $searchmethodSQL order by last_local_call_time desc limit 1000;";
 				$rslt=mysql_to_mysqli($stmt, $link);
 					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00380',$user,$server_ip,$session_name,$one_mysql_log);}
 				$out_logs_to_print = mysqli_num_rows($rslt);
@@ -16979,6 +16984,8 @@ if ($ACTION == 'SEARCHRESULTSview')
 					$ALLstate[$g] =				$row[8];
 					$ALLpostal_code[$g] =		$row[9];
 					$ALLvendor_lead_code[$g] =	$row[10];
+					$AllListID[$g] = 			$row[11];
+					$AllOwner[$g] = 			$row[12];
 
 					$g++;
 					$u++;
@@ -17009,6 +17016,8 @@ if ($ACTION == 'SEARCHRESULTSview')
 					echo "<td align=right><font class=\"sb_text\"> $ALLstate[$i]</font></td>\n";
 					echo "<td align=right><font class=\"sb_text\"> $ALLpostal_code[$i] </font></td>\n";
 					echo "<td align=right><font class=\"sb_text\"> $ALLvendor_lead_code[$i] </font></td>\n";
+					echo "<td align=right><font class=\"sb_text\"> $AllListID[$i] </font></td>\n";
+					echo "<td align=right><font class=\"sb_text\"> $AllOwner[$i] </font></td>\n";
 					echo "<td align=right><font class=\"sb_text\"> <a href=\"#\" onclick=\"VieWLeaDInfO($ALLlead_id[$i],'','$inbound_lead_search');return false;\"> "._QXZ("INFO")." </A> </font></td>\n";
 					if ($inbound_lead_search < 1)
 						{
