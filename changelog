@@ -1036,12 +1036,14 @@
           www/vicidial/non_agent_api.php.
     * Add Add .mp3 and .ogg Upload handling:
       - Update www/vicidial/audio_store.php,
-          www/vicidial/non_agent_api.php
+          www/vicidial/non_agent_api.php.
     * Add list_id, owner into SEARCHRESULTSview:
       - Update www/agc/vdc_db_query.php.
-    * Show only recordings of allowed users:
+    * Show only recordings of allowed users, mark archiv records with red:
       - New www/vicidial/admin_functions.php.
       - Update www/vicidial/admin_modify_lead.php.
+    * Fix lead_log_list if no rights:
+      - Update www/vicidial/non_agent_api.php.
   [Danny Funkat]
     * Add Pause code into AGENTSview:
       - Update www/agc/vdc_db_query.php.
