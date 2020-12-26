@@ -1,0 +1,12 @@
+Deprecated.txt 		Start: 26.12.2020		Update: 26.12.2020
+
+
+Die folgenden Funktionen als veraltet (deprecated) gekennzeichnet und sollten
+nicht mehr verwendet werden.
+
+
+Ab Version 3.0.1:
+
+ - Custom Fields
+ 
+ 

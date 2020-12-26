@@ -1044,6 +1044,9 @@
       - Update www/vicidial/admin_modify_lead.php.
     * Fix lead_log_list if no rights:
       - Update www/vicidial/non_agent_api.php.
+    * New Docs:
+      - New docs/Database.txt,
+          docs/Deprecated.txt.
   [Danny Funkat]
     * Add Pause code into AGENTSview:
       - Update www/agc/vdc_db_query.php.
