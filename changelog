@@ -1,4 +1,7 @@
 3.0.1
+  [Danny Funkat]
+    * Add Pause code into AGENTSview:
+      - Update www/agc/vdc_db_query.php.
   [Jörg Frings-Fürst]
     * Add upstream Rev. 3079:
       - Update: www/vicidial/admin.php,
@@ -1047,9 +1050,6 @@
     * New Docs:
       - New docs/Database.txt,
           docs/Deprecated.txt.
-  [Danny Funkat]
-    * Add Pause code into AGENTSview:
-      - Update www/agc/vdc_db_query.php.
     * Change next release to 3.0.1.
 
 2.26.29

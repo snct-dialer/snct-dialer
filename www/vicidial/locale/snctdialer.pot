@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-16 14:40+0200\n"
+"POT-Creation-Date: 2020-12-26 13:56+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,139 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: admin_acr.php:222
+msgid "You do not have permissions to modify after call routing"
+msgstr ""
+
+#: admin_acr.php:335
+msgid "ADMINISTRATION: After Call Routing"
+msgstr ""
+
+#: admin_acr.php:382
+msgid "ACR Name is invalid or null"
+msgstr ""
+
+#: admin_acr.php:383
+msgid "ACR Description is invalid or null"
+msgstr ""
+
+#: admin_acr.php:398
+msgid "NEW ACR "
+msgstr ""
+
+#: admin_acr.php:398
+msgid "SUCCESSFULLY CREATED"
+msgstr ""
+
+#: admin_acr.php:563 admin_acr.php:660
+msgid "The data you submitted has the following errors"
+msgstr ""
+
+#: admin_acr.php:564
+msgid "Add new After Call Routing"
+msgstr ""
+
+#: admin_acr.php:567 admin_acr.php:664
+msgid "ACR Name"
+msgstr ""
+
+#: admin_acr.php:568 admin_acr.php:665
+msgid "ACR Description"
+msgstr ""
+
+#: admin_acr.php:569 admin_acr.php:666
+msgid "Active"
+msgstr ""
+
+#: admin_acr.php:569 admin_acr.php:669 admin_acr.php:671
+msgid "Y"
+msgstr ""
+
+#: admin_acr.php:569 admin_acr.php:669 admin_acr.php:671
+msgid "N"
+msgstr ""
+
+#: admin_acr.php:571 admin_acr.php:676
+msgid "ACR Type"
+msgstr ""
+
+#: admin_acr.php:578
+msgid "After Call End Call Menu"
+msgstr ""
+
+#: admin_acr.php:585 admin_search_lead.php:397 admin_search_lead.php:403
+#: admin_search_lead.php:412 admin_search_lead.php:463
+#: admin_search_lead.php:469 admin_search_lead.php:478
+#: admin_search_lead.php:484 realtime_report_ng.php:1050
+msgid "SUBMIT"
+msgstr ""
+
+#: admin_acr.php:651
+msgid "CONFIRM DELETION OF ACR ID"
+msgstr ""
+
+#: admin_acr.php:652
+msgid "Click to delete ACR ID"
+msgstr ""
+
+#: admin_acr.php:661
+msgid "Update After Call Routing"
+msgstr ""
+
+#: admin_acr.php:683
+msgid "After Call Call Menu"
+msgstr ""
+
+#: admin_acr.php:715
+msgid "After Call Routing Listings"
+msgstr ""
+
+#: admin_acr.php:718
+msgid "ID"
+msgstr ""
+
+#: admin_acr.php:719
+msgid "ACR NAME"
+msgstr ""
+
+#: admin_acr.php:720
+msgid "DESCRIPTION"
+msgstr ""
+
+#: admin_acr.php:721
+msgid "TPYE"
+msgstr ""
+
+#: admin_acr.php:722
+msgid "ACTIVE"
+msgstr ""
+
+#: admin_acr.php:723 admin_acr.php:743 AST_timeonVDADall_ng.php:1363
+#: AST_timeonVDADall_ng.php:1367 realtime_report_ng.php:1905
+#: realtime_report_ng.php:1907
+msgid "MODIFY"
+msgstr ""
+
+#: admin_acr.php:753
+msgid "runtime"
+msgstr ""
+
+#: admin_acr.php:753 admin_search_lead.php:1008 admin_search_lead.php:1257
+#: admin_search_lead.php:1505 realtime_report_ng.php:867
+#: realtime_report_ng.php:868 realtime_report_ng.php:869
+#: realtime_report_ng.php:870 realtime_report_ng.php:871
+#: realtime_report_ng.php:872
+msgid "seconds"
+msgstr ""
+
+#: admin_acr.php:753
+msgid "Version"
+msgstr ""
+
+#: admin_acr.php:753
+msgid "Build"
+msgstr ""
 
 #: admin_search_lead.php:208 AST_timeonVDADall_ng.php:439
 #: realtime_report_ng.php:399
@@ -146,13 +279,6 @@ msgstr ""
 
 #: admin_search_lead.php:396
 msgid "vendor lead code"
-msgstr ""
-
-#: admin_search_lead.php:397 admin_search_lead.php:403
-#: admin_search_lead.php:412 admin_search_lead.php:463
-#: admin_search_lead.php:469 admin_search_lead.php:478
-#: admin_search_lead.php:484 realtime_report_ng.php:1050
-msgid "SUBMIT"
 msgstr ""
 
 #: admin_search_lead.php:405
@@ -345,14 +471,6 @@ msgstr ""
 msgid "script runtime"
 msgstr ""
 
-#: admin_search_lead.php:1008 admin_search_lead.php:1257
-#: admin_search_lead.php:1505 realtime_report_ng.php:867
-#: realtime_report_ng.php:868 realtime_report_ng.php:869
-#: realtime_report_ng.php:870 realtime_report_ng.php:871
-#: realtime_report_ng.php:872
-msgid "seconds"
-msgstr ""
-
 #: admin_search_lead.php:1048
 msgid "There are no outbound calls matching your search criteria"
 msgstr ""
@@ -414,15 +532,15 @@ msgid "MONITOR"
 msgstr ""
 
 #: AST_timeonVDADall_ng.php:866 AST_timeonVDADall_ng.php:3271
-#: AST_timeonVDADall_ng.php:3917 AST_timeonVDADall_ng.php:3922
-#: AST_timeonVDADall_ng.php:3973 AST_timeonVDADall_ng.php:3974
-#: AST_timeonVDADall_ng.php:3978 realtime_report_ng.php:912
+#: AST_timeonVDADall_ng.php:3934 AST_timeonVDADall_ng.php:3939
+#: AST_timeonVDADall_ng.php:3990 AST_timeonVDADall_ng.php:3991
+#: AST_timeonVDADall_ng.php:3995 realtime_report_ng.php:912
 msgid "BARGE"
 msgstr ""
 
 #: AST_timeonVDADall_ng.php:872 AST_timeonVDADall_ng.php:3273
-#: AST_timeonVDADall_ng.php:3979 AST_timeonVDADall_ng.php:3980
-#: AST_timeonVDADall_ng.php:3982 realtime_report_ng.php:918
+#: AST_timeonVDADall_ng.php:3996 AST_timeonVDADall_ng.php:3997
+#: AST_timeonVDADall_ng.php:3999 realtime_report_ng.php:918
 msgid "WHISPER"
 msgstr ""
 
@@ -527,11 +645,6 @@ msgstr ""
 
 #: AST_timeonVDADall_ng.php:1360
 msgid "GO"
-msgstr ""
-
-#: AST_timeonVDADall_ng.php:1363 AST_timeonVDADall_ng.php:1367
-#: realtime_report_ng.php:1905 realtime_report_ng.php:1907
-msgid "MODIFY"
 msgstr ""
 
 #: AST_timeonVDADall_ng.php:1369 realtime_report_ng.php:1911
@@ -955,10 +1068,10 @@ msgstr ""
 msgid "SESSIONID"
 msgstr ""
 
-#: AST_timeonVDADall_ng.php:3269 AST_timeonVDADall_ng.php:3915
-#: AST_timeonVDADall_ng.php:3916 AST_timeonVDADall_ng.php:3920
-#: AST_timeonVDADall_ng.php:3971 AST_timeonVDADall_ng.php:3972
-#: AST_timeonVDADall_ng.php:3976
+#: AST_timeonVDADall_ng.php:3269 AST_timeonVDADall_ng.php:3932
+#: AST_timeonVDADall_ng.php:3933 AST_timeonVDADall_ng.php:3937
+#: AST_timeonVDADall_ng.php:3988 AST_timeonVDADall_ng.php:3989
+#: AST_timeonVDADall_ng.php:3993
 msgid "LISTEN"
 msgstr ""
 
@@ -982,127 +1095,127 @@ msgstr ""
 msgid "PAUSE"
 msgstr ""
 
-#: AST_timeonVDADall_ng.php:4086
+#: AST_timeonVDADall_ng.php:4103
 msgid "agents logged in on all servers"
 msgstr ""
 
-#: AST_timeonVDADall_ng.php:4087
+#: AST_timeonVDADall_ng.php:4104
 msgid "System Load Average"
 msgstr ""
 
-#: AST_timeonVDADall_ng.php:4090
+#: AST_timeonVDADall_ng.php:4107
 msgid "Agent chatting"
 msgstr ""
 
-#: AST_timeonVDADall_ng.php:4091
+#: AST_timeonVDADall_ng.php:4108
 msgid "Agent in email"
 msgstr ""
 
-#: AST_timeonVDADall_ng.php:4094 AST_timeonVDADall_ng.php:4101
+#: AST_timeonVDADall_ng.php:4111 AST_timeonVDADall_ng.php:4118
 msgid "Agent waiting for call"
 msgstr ""
 
-#: AST_timeonVDADall_ng.php:4095
+#: AST_timeonVDADall_ng.php:4112
 msgid "Agent waiting for call > 30 seconds"
 msgstr ""
 
-#: AST_timeonVDADall_ng.php:4096 AST_timeonVDADall_ng.php:4102
+#: AST_timeonVDADall_ng.php:4113 AST_timeonVDADall_ng.php:4119
 msgid "Agent waiting for call > 1 minute"
 msgstr ""
 
-#: AST_timeonVDADall_ng.php:4097 AST_timeonVDADall_ng.php:4103
+#: AST_timeonVDADall_ng.php:4114 AST_timeonVDADall_ng.php:4120
 msgid "Agent waiting for call > 5 minutes"
 msgstr ""
 
-#: AST_timeonVDADall_ng.php:4105
+#: AST_timeonVDADall_ng.php:4122
 msgid "Agent on call > 0 seconds"
 msgstr ""
 
-#: AST_timeonVDADall_ng.php:4106
+#: AST_timeonVDADall_ng.php:4123
 msgid "Agent on call > 1 minute"
 msgstr ""
 
-#: AST_timeonVDADall_ng.php:4107
+#: AST_timeonVDADall_ng.php:4124
 msgid "Agent on call > 5 minutes"
 msgstr ""
 
-#: AST_timeonVDADall_ng.php:4108
+#: AST_timeonVDADall_ng.php:4125
 msgid "Agent Paused > 10 seconds"
 msgstr ""
 
-#: AST_timeonVDADall_ng.php:4109
+#: AST_timeonVDADall_ng.php:4126
 msgid "Agent Paused > 1 minute"
 msgstr ""
 
-#: AST_timeonVDADall_ng.php:4110
+#: AST_timeonVDADall_ng.php:4127
 msgid "Agent Paused > 5 minutes"
 msgstr ""
 
-#: AST_timeonVDADall_ng.php:4111
+#: AST_timeonVDADall_ng.php:4128
 msgid "Agent Paused > 30 minutes"
 msgstr ""
 
-#: AST_timeonVDADall_ng.php:4112
+#: AST_timeonVDADall_ng.php:4129
 msgid "Agent in 3-WAY > 10 seconds"
 msgstr ""
 
-#: AST_timeonVDADall_ng.php:4113
+#: AST_timeonVDADall_ng.php:4130
 msgid "Agent on a dead call"
 msgstr ""
 
-#: AST_timeonVDADall_ng.php:4116
+#: AST_timeonVDADall_ng.php:4133
 msgid "Agent over pause limit"
 msgstr ""
 
-#: AST_timeonVDADall_ng.php:4121
+#: AST_timeonVDADall_ng.php:4138
 msgid "Agent phone ringing"
 msgstr ""
 
-#: AST_timeonVDADall_ng.php:4122
+#: AST_timeonVDADall_ng.php:4139
 msgid "Denotes on-hook agent"
 msgstr ""
 
-#: AST_timeonVDADall_ng.php:4131 AST_timeonVDADall_ng.php:4172
-#: AST_timeonVDADall_ng.php:4229 AST_timeonVDADall_ng.php:4248
+#: AST_timeonVDADall_ng.php:4148 AST_timeonVDADall_ng.php:4189
+#: AST_timeonVDADall_ng.php:4246 AST_timeonVDADall_ng.php:4265
 msgid "dials"
 msgstr ""
 
-#: AST_timeonVDADall_ng.php:4137 AST_timeonVDADall_ng.php:4178
+#: AST_timeonVDADall_ng.php:4154 AST_timeonVDADall_ng.php:4195
 msgid "agents logged in"
 msgstr ""
 
-#: AST_timeonVDADall_ng.php:4138 AST_timeonVDADall_ng.php:4181
-#: AST_timeonVDADall_ng.php:4234 AST_timeonVDADall_ng.php:4259
+#: AST_timeonVDADall_ng.php:4155 AST_timeonVDADall_ng.php:4198
+#: AST_timeonVDADall_ng.php:4251 AST_timeonVDADall_ng.php:4276
 msgid "agents in calls"
 msgstr ""
 
-#: AST_timeonVDADall_ng.php:4139 AST_timeonVDADall_ng.php:4184
-#: AST_timeonVDADall_ng.php:4230 AST_timeonVDADall_ng.php:4251
+#: AST_timeonVDADall_ng.php:4156 AST_timeonVDADall_ng.php:4201
+#: AST_timeonVDADall_ng.php:4247 AST_timeonVDADall_ng.php:4268
 msgid "agents waiting"
 msgstr ""
 
-#: AST_timeonVDADall_ng.php:4140 AST_timeonVDADall_ng.php:4187
-#: AST_timeonVDADall_ng.php:4232 AST_timeonVDADall_ng.php:4255
+#: AST_timeonVDADall_ng.php:4157 AST_timeonVDADall_ng.php:4204
+#: AST_timeonVDADall_ng.php:4249 AST_timeonVDADall_ng.php:4272
 msgid "paused agents"
 msgstr ""
 
-#: AST_timeonVDADall_ng.php:4141 AST_timeonVDADall_ng.php:4190
+#: AST_timeonVDADall_ng.php:4158 AST_timeonVDADall_ng.php:4207
 msgid "agents in dead calls"
 msgstr ""
 
-#: AST_timeonVDADall_ng.php:4142 AST_timeonVDADall_ng.php:4193
+#: AST_timeonVDADall_ng.php:4159 AST_timeonVDADall_ng.php:4210
 msgid "agents in dispo"
 msgstr ""
 
-#: AST_timeonVDADall_ng.php:4156
+#: AST_timeonVDADall_ng.php:4173
 msgid "NO AGENTS ON CALLS"
 msgstr ""
 
-#: AST_timeonVDADall_ng.php:4236 AST_timeonVDADall_ng.php:4263
+#: AST_timeonVDADall_ng.php:4253 AST_timeonVDADall_ng.php:4280
 msgid "calls waiting"
 msgstr ""
 
-#: AST_timeonVDADall_ng.php:4238 AST_timeonVDADall_ng.php:4267
+#: AST_timeonVDADall_ng.php:4255 AST_timeonVDADall_ng.php:4284
 msgid "dropped/total calls"
 msgstr ""
 
