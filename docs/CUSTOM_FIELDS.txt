@@ -1,5 +1,7 @@
 Custom Fields within the vicidial agent interface		Started: 2010-05-06
 
+Custom fielde are deprecated since SNCT-Dialer 3.0.1 (26.12.2020).
+
 
 This document outlines the features and design of the customized fields available in ViciDial.
 
