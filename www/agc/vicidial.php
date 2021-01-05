@@ -39,8 +39,8 @@
 #
 # Version  / Build
 #
-$agent_version = '3.0.1-26';
-$agent_build = '20201103-1';
+$agent_version = '3.0.1-27';
+$agent_build = '20201215-1';
 #
 ###############################################################################
 #
@@ -55,6 +55,7 @@ $DB=0;
 #
 # Changelog
 #
+# 2020-12-15 jff	Fix text typo
 # 2020-11-06 jff	Remove debug alert
 # 2020-11-03 jff	Correct typo (chexk_VDIC_array)
 # 2020-10-22 jff	Add Ingroup ACR to overwrite Campaign ACR
@@ -21057,7 +21058,7 @@ if ($agent_display_dialable_leads > 0)
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:<?php $zi++; echo $zi ?>;" id="NeWManuaLDiaLBox">
-    <table border="0" bgcolor="#CCFFCC" width="<?php echo $CAwidth ?>px" height="<?php echo $WRheight ?>px"><tr><td align="center" valign="top"> <font class="sd_text"><?php echo _("NEW MANUAL DIAL LEAD FOR %1s in campaign %2s:"),0,'',$VD_login,$VD_campaign; ?></font><br /><br /><font class="sh_text"><?php echo _("Enter information below for the new lead you wish to call."); ?>
+    <table border="0" bgcolor="#CCFFCC" width="<?php echo $CAwidth ?>px" height="<?php echo $WRheight ?>px"><tr><td align="center" valign="top"> <font class="sd_text"><?php echo _("NEW MANUAL DIAL LEAD FOR ") . $VD_login . _(" in campaign ") . $VD_campaign . _(":")?></font><br /><br /><font class="sh_text"><?php echo _("Enter information below for the new lead you wish to call."); ?>
  <br />
 	<?php
 	if (!preg_match("/X/i",$manual_dial_prefix))

@@ -1,0 +1,13 @@
+Database.txt 		Start: 26.12.2020		Update: 26.12.2020
+
+
+SNCT-Dialer verwendet mariadb als Datenbank und ARIA als Datenbank-Engine. Für
+die Replication werden normale Master-Slave und Master-Master Verfahren
+angewendet.
+
+Als Ersatz für die veralteten "Custom Fields" sollen eigene Erweiterungen der
+Datensätze direkt in den Tabellen vorgenommen werden. Zur Unterscheidung sind
+die Feldnamen mit dem Präfix "own_" oder "ownnd_", wobei das nd für No Display
+steht.
+
+

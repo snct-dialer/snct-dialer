@@ -1,369 +1,376 @@
 #!/bin/bash
-#
-#     Template LSB system startup script for example service/daemon FOO
-#     Copyright (C) 1995--2005  Kurt Garloff, SUSE / Novell Inc.
-#          
-#     This library is free software; you can redistribute it and/or modify it
-#     under the terms of the GNU Lesser General Public License as published by
-#     the Free Software Foundation; either version 2.1 of the License, or (at
-#     your option) any later version.
-#			      
-#     This library is distributed in the hope that it will be useful, but
-#     WITHOUT ANY WARRANTY; without even the implied warranty of
-#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#     Lesser General Public License for more details.
-#      
-#     You should have received a copy of the GNU Lesser General Public
-#     License along with this library; if not, write to the Free Software
-#     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307,
-#     USA.
-#
-# /etc/init.d/FOO
-# LSB compatible service control script; see http://www.linuxbase.org/spec/
-# Please send feedback to http://www.suse.de/feedback/
 # 
-# Note: This template uses functions rc_XXX defined in /etc/rc.status on
-# UnitedLinux/SUSE/Novell based Linux distributions. However, it will work
-# on other distributions as well, by using the LSB (Linux Standard Base) 
-# or RH functions or by open coding the needed functions.
-# Read http://www.tldp.org/HOWTO/HighQuality-Apps-HOWTO/ if you prefer not 
-# to use this template.
+# ViciDial Init Script reworked for newer systemd and auto-drivers
 #
-# chkconfig: 345 99 00
-# description: FOO XYZ daemon providing ZYX
-# 
+# Author: James Pearson, feedback at www.vicidial.org in vicibox forum
+#
 ### BEGIN INIT INFO
-# Provides:          Vicidial
-# Required-Start:    $ALL 
-# Should-Start:
-# Required-Stop:     
-# Should-Stop:
+# Provides:          vicidial
+# Required-Start:    $syslog $local_fs $network
+# Should-Start:      $time mysql
+# Required-Stop:     $syslog $local_fs $network
+# Should-Stop:       mysql
 # Default-Start:     3 4 5
 # Default-Stop:      0 1 2 6
-# Short-Description: Vicidial Demon
-# Description:       This script starts Vicidial and all processes 
-#	that are required to operate a Vicidial Dialing Server. 
-#	Please make sure that the following services are NOT started 
-#	from any other place when using this script.
-#	wanrouter (Sangoma Drivers), 
-#	zaptel (zaptel driver and ztcfg), 
-#	ViciDial start scripts.  
-#	Please load zaptel hardware driver before starting this script 
-#	or change the ZAP_MOD line in this file
+# Short-Description: ViciDial Telephony Server
+# Description:
+#       Starts ViciDial services and drivers that are needed to operate
+#       a telephony server including DAHDI and Asterisk. Wanpipe and
+#       VoiceSync are loaded if hardware is detected otherwise just
+#       dahdi_dummy is loaded for a timing source.
 ### END INIT INFO
-# 
-# Any extensions to the keywords given above should be preceeded by 
-# X-VendorTag- according to LSB.
-# 
-# Notes on Required-Start/Should-Start:
-# * There are two different issues that are solved by Required-Start
-#    and Should-Start
-# (a) Hard dependencies: This is used by the runlevel editor to determine
-#     which services absolutely need to be started to make the start of
-#     this service make sense. Example: nfsserver should have
-#     Required-Start: $portmap
-#     Also, required services are started before the dependent ones.
-#     The runlevel editor will warn about such missing hard dependencies
-#     and suggest enabling. During system startup, you may expect an error,
-#     if the dependency is not fulfilled.
-# (b) Specifying the init script ordering, not real (hard) dependencies.
-#     This is needed by insserv to determine which service should be
-#     started first (and at a later stage what services can be started
-#     in parallel). The tag Should-Start: is used for this.
-#     It tells, that if a service is available, it should be started
-#     before. If not, never mind.
-# * When specifying hard dependencies or ordering requirements, you can 
-#   use names of services (contents of their Provides: section)
-#   or pseudo names starting with a $. The following ones are available
-#   according to LSB (1.1):
-#	$local_fs		all local file systems are mounted
-#				(most services should need this!)
-#	$remote_fs		all remote file systems are mounted
-#				(note that /usr may be remote, so
-#				 many services should Require this!)
-#	$syslog			system logging facility up
-#	$network		low level networking (eth card, ...)
-#	$named			hostname resolution available
-#	$netdaemons		all network daemons are running
-#   The $netdaemons pseudo service has been removed in LSB 1.2.
-#   For now, we still offer it for backward compatibility.
-#   These are new (LSB 1.2):
-#	$time			the system time has been set correctly	
-#	$portmap		SunRPC portmapping service available
-#   UnitedLinux/SUSE/Novell extensions:
-#	$ALL			indicates that a script should be inserted
-#				at the end
-# * The services specified in the stop tags 
-#   (Required-Stop/Should-Stop)
-#   specify which services need to be still running when this service
-#   is shut down. Often the entries there are just copies or a subset 
-#   from the respective start tag.
-# * Should-Start/Stop are now part of LSB as of 2.0,
-#   formerly SUSE/Unitedlinux used X-UnitedLinux-Should-Start/-Stop.
-#   insserv does support both variants.
-# * X-UnitedLinux-Default-Enabled: yes/no is used at installation time
-#   (%fillup_and_insserv macro in %post of many RPMs) to specify whether
-#   a startup script should default to be enabled after installation.
-#
-# Note on runlevels:
-# 0 - halt/poweroff 			6 - reboot
-# 1 - single user			2 - multiuser without network exported
-# 3 - multiuser w/ network (text mode)  5 - multiuser w/ network and X11 (xdm)
-# 
-# Note on script names:
-# http://www.linuxbase.org/spec/refspecs/LSB_1.3.0/gLSB/gLSB/scrptnames.html
-# A registry has been set up to manage the init script namespace.
-# http://www.lanana.org/
-# Please use the names already registered or register one or use a
-# vendor prefix.
 
+# Some useful global variables that determine how we start vicidial
+DAHDI_MOD=dahdi_dummy
+DAHDI_MOD2=dahdi # This is the fallback module to load just in case
+DAHDI_EXTRA="" # Extra DAHDI modules to load seperated by a space
+SLEEPSECS=5 # How long to sleep to make sure the network is up, this is ran twice
+PRIORITY=-1 # Priority to run the Asterisk process with, basically slightly higher then normal
+NETWKCHK=1 # 1 = run DB/Network check, anything else means don't run the check
 
-# Check for missing binaries (stale symlinks should not happen)
-# Note: Special treatment of stop for LSB conformance
+# All our binaries and default paths, you should NOT need to modify these, but here they are
+DBSERVERIP=`cat /etc/astguiclient.conf | grep VARDB_server | awk '{print $3}'`
 AST_BIN=/usr/sbin/asterisk
-test -x $AST_BIN || { echo "$AST_BIN not installed"; 
-	if [ "$1" = "stop" ]; then exit 0;
-	else exit 5; fi; }
-
-WAN_BIN=/usr/sbin/wanrouter
-test -x $WAN_BIN || { echo "will skip $WAN_BIN (not installed)"; }
-
 VICI_DIR=/usr/share/astguiclient
-test -x $VICI_DIR/start_asterisk_boot.pl || { echo "$VICI_BIN/start_asterisk_boot.pl not installed";
-        if [ "$1" = "stop" ]; then exit 0;
-        else exit 5; fi; }
+VICI_CONF=/etc/astguiclient.conf
+DAHDI_CFG_BIN=/usr/sbin/dahdi_cfg
+WAN_BIN=/usr/sbin/wanrouter
+ASTPIDFILE=/var/run/asterisk.pid
+RENICE_BIN=/usr/bin/renice
+LSPCI_BIN=/sbin/lspci
+SCREEN_BIN=/usr/bin/screen
+IPRELAY_BIN=/usr/bin/ip_relay
 
-ZTCFG_BIN=/sbin/ztcfg
-test -x $ZTCFG_BIN || { echo "$ZTCFG_BIN not installed";
-        if [ "$1" = "stop" ]; then exit 0;
-        else exit 5; fi; }
+# Source function library and reset status and load default variables
+#. /etc/rc.status
+#rc_reset
 
-# Zaptel module name, please replace with driver name for hardware card
-ZAP_MOD=ztdummy
-
-# providing start_daemon, killproc, pidofproc, 
-# log_success_msg, log_failure_msg and log_warning_msg.
-# This is currently not used by UnitedLinux based distributions and
-# not needed for init scripts for UnitedLinux only. If it is used,
-# the functions from rc.status should not be sourced or used.
-#. /lib/lsb/init-functions
-
-# Shell functions sourced from /etc/rc.status:
-#      rc_check         check and set local and overall rc status
-#      rc_status        check and set local and overall rc status
-#      rc_status -v     be verbose in local rc status and clear it afterwards
-#      rc_status -v -r  ditto and clear both the local and overall rc status
-#      rc_status -s     display "skipped" and exit with status 3
-#      rc_status -u     display "unused" and exit with status 3
-#      rc_failed        set local and overall rc status to failed
-#      rc_failed <num>  set local and overall rc status to <num>
-#      rc_reset         clear both the local and overall rc status
-#      rc_exit          exit appropriate to overall rc status
-#      rc_active        checks whether a service is activated by symlinks
-
-# Use the SUSE rc_ init script functions;
-# emulate them on LSB, RH and other systems
-
-# Default: Assume sysvinit binaries exist
-start_daemon() { return /sbin/start_daemon ${1+"$@"}; }
-killproc()     { return /sbin/killproc     ${1+"$@"}; }
-pidofproc()    { return /sbin/pidofproc    ${1+"$@"}; }
-checkproc()    { return /sbin/checkproc    ${1+"$@"}; }
-if test -e /etc/rc.status; then
-    # SUSE rc script library
-    . /etc/rc.status
-else
-    export LC_ALL=POSIX
-    _cmd=$1
-    declare -a _SMSG
-    if test "${_cmd}" = "status"; then
-	_SMSG=(running dead dead unused unknown reserved)
-	_RC_UNUSED=3
-    else
-	_SMSG=(done failed failed missed failed skipped unused failed failed reserved)
-	_RC_UNUSED=6
-    fi
-    if test -e /lib/lsb/init-functions; then
-	# LSB    
-    	. /lib/lsb/init-functions
-	echo_rc()
-	{
-	    if test ${_RC_RV} = 0; then
-		log_success_msg "  [${_SMSG[${_RC_RV}]}] "
-	    else
-		log_failure_msg "  [${_SMSG[${_RC_RV}]}] "
-	    fi
-	}
-	# TODO: Add checking for lockfiles
-	checkproc() { return pidofproc ${1+"$@"} >/dev/null 2>&1; }
-    elif test -e /etc/init.d/functions; then
-	# RHAT
-	. /etc/init.d/functions
-	echo_rc()
-	{
-	    #echo -n "  [${_SMSG[${_RC_RV}]}] "
-	    if test ${_RC_RV} = 0; then
-		success "  [${_SMSG[${_RC_RV}]}] "
-	    else
-		failure "  [${_SMSG[${_RC_RV}]}] "
-	    fi
-	}
-	checkproc() { return status ${1+"$@"}; }
-	start_daemon() { return daemon ${1+"$@"}; }
-    else
-	# emulate it
-	echo_rc() { echo "  [${_SMSG[${_RC_RV}]}] "; }
-    fi
-    rc_reset() { _RC_RV=0; }
-    rc_failed()
-    {
-	if test -z "$1"; then 
-	    _RC_RV=1;
-	elif test "$1" != "0"; then 
-	    _RC_RV=$1; 
-    	fi
-	return ${_RC_RV}
-    }
-    rc_check()
-    {
-	return rc_failed $?
-    }	
-    rc_status()
-    {
-	rc_failed $?
-	if test "$1" = "-r"; then _RC_RV=0; shift; fi
-	if test "$1" = "-s"; then rc_failed 5; echo_rc; rc_failed 3; shift; fi
-	if test "$1" = "-u"; then rc_failed ${_RC_UNUSED}; echo_rc; rc_failed 3; shift; fi
-	if test "$1" = "-v"; then echo_rc; shift; fi
-	if test "$1" = "-r"; then _RC_RV=0; shift; fi
-	return ${_RC_RV}
-    }
-    rc_exit() { exit ${_RC_RV}; }
-    rc_active() 
-    {
-	if test -z "$RUNLEVEL"; then read RUNLEVEL REST < <(/sbin/runlevel); fi
-	if test -e /etc/init.d/S[0-9][0-9]${1}; then return 0; fi
-	return 1
-    }
+# Make sure Asterisk is installed
+if [ ! -x $AST_BIN ]; then
+	echo "No $AST_BIN found! Asterisk installed?";
+	if [ "$1" = "stop" ]; then
+		#rc_status -v
+		exit
+	else
+		#rc_failed 5
+		exit
+	fi
 fi
 
-# Reset status of this service
-rc_reset
+# Make sure ViciDial is installed
+if [ ! -x $VICI_DIR"/start_asterisk_boot.pl" ]; then
+	echo "No $VICI_BIN/start_asterisk_boot.pl found! ViciDial installed?";
+	if [ "$1" = "stop" ]; then
+		#rc_status -v
+		exit
+	else
+		#rc_failed 5
+		exit
+	fi
+fi
 
-# Return values acc. to LSB for all commands but status:
-# 0	  - success
-# 1       - generic or unspecified error
-# 2       - invalid or excess argument(s)
-# 3       - unimplemented feature (e.g. "reload")
-# 4       - user had insufficient privileges
-# 5       - program is not installed
-# 6       - program is not configured
-# 7       - program is not running
-# 8--199  - reserved (8--99 LSB, 100--149 distrib, 150--199 appl)
-# 
-# Note that starting an already running service, stopping
-# or restarting a not-running service as well as the restart
-# with force-reload (in case signaling is not supported) are
-# considered a success.
+# Make sure ViciDial has a config file
+if [ ! -f $VICI_CONF ]; then
+	echo "No $VICI_CONF file found! ViciDial installed?";
+	if [ "$1" = "stop" ]; then
+		#rc_status -v
+		exit
+	else
+		#rc_failed 6
+		exit
+	fi
+fi
+
+# Make sure dahdi is installed
+if [ ! -x $DAHDI_CFG_BIN ]; then
+	echo "No $DAHDI_CFG_BIN found! DAHDI installed?";
+	if [ "$1" = "stop" ]; then
+		#rc_status -v
+		exit
+	else
+		#rc_failed 5
+		exit
+	fi
+fi
+
+# Make sure Screen is installed
+if [ ! -x $SCREEN_BIN ]; then
+	echo "No $SCREEN_BIN found! Screen installed?";
+	if [ "$1" = "stop" ]; then
+		#rc_status -v
+		exit
+	else
+		#rc_failed 5
+		exit
+	fi
+fi
+
+# Search for an Amfletec timer on the PCI bus, and load if we find it
+if [ -x $LSPCI_BIN ]; then
+	if [[ "$($LSPCI_BIN | /bin/grep Exar)" ]]; then
+		DAHDI_MOD=voicesync
+	fi
+fi
+
+# Determine asterisk version from installed binary
+# so we know the commands to use for starting and stopping it
+RAWASTVER=`$AST_BIN -V`
+RAWASTARY=($RAWASTVER)
+ASTVERSION=${RAWASTARY[1]}
+if [[ $ASTVERSION =~ ^13 ]]; then
+	ASTBRANCH="13"
+	ASTUPTIMECMD="core show uptime"
+	ASTSTOPCMD="core stop now"
+fi
+if [[ $ASTVERSION =~ ^11 ]]; then
+	ASTBRANCH="11"
+	ASTUPTIMECMD="core show uptime"
+	ASTSTOPCMD="core stop now"
+fi
+if [[ $ASTVERSION =~ ^1.8 ]]; then
+	ASTBRANCH="1.8"
+	ASTUPTIMECMD="core show uptime"
+	ASTSTOPCMD="core stop now"
+fi
+if [[ $ASTVERSION =~ ^1.4 ]]; then
+	ASTBRANCH="1.4"
+	ASTUPTIMECMD="show uptime"
+	ASTSTOPCMD="stop now"
+fi
 
 case "$1" in
 start)
-	echo "Starting Vicidial "
-	## Start daemon with startproc(8). If this fails
-	## the return value is set appropriately by startproc.
-	
-	if /sbin/lsmod | /usr/bin/grep zaptel 
-	then
-		echo "Zaptel already loaded"
-	else
-	        if [ -x $WAN_BIN ] ; then
-			echo "Starting Sangoma wanrouter driver"
-        	        $WAN_BIN start
-		else
-			echo "Starting kernel module $ZAP_MOD"
-			/sbin/modprobe $ZAP_MOD || { echo "$ZAP_MOD NOT loaded" ; exit 5; }
-        	fi
+	echo "Starting ViciDial Telephony Server... "
+	echo "" > /var/log/vicidial.log
+	# Make sure Asterisk isn't already running
+	# Use the process list incase it crashed and was restarted
+	ASTERISK_PS=`/bin/ps ax | /bin/grep asterisk | /bin/grep -v grep | /bin/grep -v SCREEN`
+	if [[ $ASTERISK_PS ]]; then
+		ASTERISK_PID=($ASTERISK_PS)
+		echo "   Asterisk already running at PID $ASTERISK_PID! Aborting startup."
+		#rc_status -v
+		exit
 	fi
-
-	sleep 3
-
-	$ZTCFG_BIN -vvv
-
-	sleep 20
-
-	$VICI_DIR/ADMIN_restart_roll_logs.pl
-
-	sleep 2
-
-	$VICI_DIR/AST_reset_mysql_vars.pl
-
-	sleep 2	
-
-	$VICI_DIR/start_asterisk_boot.pl
-
-	sleep 2
-
-    $VICI_DIR/ADMIN_keepalive_ALL.pl
-
-	echo ""
-
-	echo "Started Vicidial "
-
+	
+	# Load DAHDI, our drivers, and other madness
+	if [[ "$(/sbin/lsmod | /bin/grep dahdi)" ]]; then
+		echo "   DAHDI already loaded, skipping."
+	else
+		if [ -x $WAN_BIN -a -f "/etc/wanpipe/wanpipe"* ]; then
+			echo -n "   Sangoma wanrouter config found, loading... "
+			$WAN_BIN start 2>>/var/log/vicidial.log 1>&2
+			if [ ! /sbin/lsmod | /bin/grep wanpipe ]; then
+				echo "failed."
+				echo -n "   Fallback to $DAHDI_MOD module... "
+				/sbin/modprobe $DAHDI_MOD 2>>/var/log/vicidial.log 1>&2
+				if [ ! "$(/sbin/lsmod | /bin/grep $DAHDI_MOD)" ]; then
+					echo "failed."
+					echo -n "   Fallback to $DAHDI_MOD2 module... "
+					/sbin/modprobe $DAHDI_MOD2 2>>/var/log/vicidial.log 1>&2
+					if [ ! "$(/sbin/lsmod | /bin/grep $DAHDI_MOD2)" ]; then
+						echo "final failure! Aborting startup."
+						#rc_failed 5
+						exit
+					else
+						echo "done."
+					fi
+				fi
+			fi
+			echo "done."
+		else
+			echo -n "   Loading $DAHDI_MOD module... "
+			/sbin/modprobe $DAHDI_MOD 2>>/var/log/vicidial.log 1>&2
+			if [ ! "$(/sbin/lsmod | /bin/grep $DAHDI_MOD)" ]; then
+				echo "failed."
+				echo -n "   Fallback to $DAHDI_MOD2 module... "
+				/sbin/modprobe $DAHDI_MOD2 2>>/var/log/vicidial.log 1>&2
+				if [ ! "$(/sbin/lsmod | /bin/grep $DAHDI_MOD2)" ]; then
+					echo "final failure! Aborting startup."
+					#rc_failed 5
+					exit
+				else
+					echo "done."
+				fi
+			else
+				echo "done."
+			fi
+		fi
+	fi
+	
+	# Load our extra DAHDI modules since everything else loaded
+	if [ -n "$DAHDI_EXTRA" ]; then
+		echo -n "   Loading Extra DAHDI modules: "
+		for EXTRA_MOD in $DAHDI_EXTRA
+		do
+			/sbin/modprobe $EXTRA_MOD 2>>/var/log/vicidial.log 1>&2
+			echo -n "$EXTRA_MOD "
+		done
+		echo ", done."
+	fi
+	
+	# Here we sleep cause hardware sometimes takes time to initialize
+	# Especially on hardware with onboard echo cancellation
+	echo -n "   Initializing DAHDI Hardware... "
+	sleep $SLEEPSECS
+	$DAHDI_CFG_BIN -vvv 2>>/var/log/vicidial.log 1>&2
+	echo "done."
+	
+	# This is a network/database connectivity check. Sometimes when the network
+	# initializes it will appear up to the OS but the switch has it in an STP/LACP
+	# learning state for a bit. This checks to see if we can ping the database
+	# server before attempting to actually start asterisk. Also a good sanity check
+	I="0"
+	while [ $I -lt 4 ]; do
+		I=$[$I+1]
+		if [ $I -eq 4 ]; then
+			echo "   Database server unreachable! Aborting startup."
+			#rc_failed 5
+			exit
+		fi
+		ping -c1 $DBSERVERIP 2>>/var/log/vicidial.log 1>&2
+		if [ $? -ne 0 ]; then
+			echo "   DB unreachable at $DBSERVERIP, waiting $SLEEPSECS seconds (attempt $I)"
+			sleep $SLEEPSECS
+		else
+			I="4"
+		fi
+	done
+	
+	# Do some house keeping before starting, mainly flush old running stats
+#	echo -n "   Resetting vars and rolling logs... "
+#	$VICI_DIR/ADMIN_restart_roll_logs.pl 2>>/var/log/vicidial.log 1>&2
+#	if [ $? -ne 0 ]; then
+#		echo "Failed! Check /var/log/vicidial.log"
+#		#rc_failed 5
+#		exit
+#	fi
+	$VICI_DIR/AST_reset_mysql_vars.pl 2>>/var/log/vicidial.log 1>&2
+	if [ $? -ne 0 ]; then
+		echo "Failed! Check /var/log/vicidial.log"
+		#rc_failed 5
+		exit
+	fi
+	echo "done."
+	
+	# And now we start asterisk
+	echo -n "   Starting Asterisk... "
+	$VICI_DIR/start_asterisk_boot.pl 2>>/var/log/vicidial.log 1>&2
+	if [ $? -ne 0 ]; then
+		echo "Failed! Check /var/log/vicidial.log"
+		#rc_failed 5
+		exit
+	fi
+	ASTERISK_PS=`ps ax | grep asterisk | grep -v grep | grep -v SCREEN`
+	if [[ ! $ASTERISK_PS ]]; then
+		echo "Failed! Check /var/log/vicidial.log"
+		#rc_failed 5
+		exit
+	else
+		ASTERISK_PID=($ASTERISK_PS)
+		echo "PID $ASTERISK_PID, done."
+		echo $ASTERISK_PID > $ASTPIDFILE
+	fi
+	
+	# Change priority of the asterisk process to -3 so that things like
+	# the recording process doesn't rob Asterisk of CPU resources
+	if [ -x $RENICE_BIN -a "$PRIORITY" -ne "0" ]; then
+		echo -n "   Giving asterisk $PRIORITY process priority... "
+		$RENICE_BIN -n $PRIORITY -p $ASTERISK_PID 2>>/var/log/vicidial.log 1>&2
+		echo "done."
+	fi
+	
+	# If we have a distribution specific ip_relay, then use that instead
+	if [ -x $IPRELAY_BIN ]; then
+		echo -n "   Starting ip_relay with OS specific version... "
+		if [[ `ps -C ip_relay -o pid --no-heading` ]]; then
+			killall ip_relay 2>>/var/log/vicidial.log 1>&2
+		fi
+		exec -a ip_relay $IPRELAY_BIN 40569 127.0.0.1 4569 9999999 &>/dev/null &
+		exec -a ip_relay $IPRELAY_BIN 41569 127.0.0.1 4569 9999999 &>/dev/null &
+		exec -a ip_relay $IPRELAY_BIN 42569 127.0.0.1 4569 9999999 &>/dev/null &
+		echo "done."
+	fi
+	
 	# Remember status and be verbose
-	rc_status -v
+	echo "ViciDial Telephony Server Started. Log at /var/log/vicidial.log"
+	#rc_status -v
 	;;
 stop)
-	## Stop daemon with killproc(8) and if this fails
-	## killproc sets the return value according to LSB.
-
-    if /bin/ps -A | /usr/bin/grep asterisk
-    then
-		echo "Stopping asterisk gracefully (wait 60sec)"
-		$AST_BIN -rx "stop gracefully" 1> /dev/null 2> /dev/null # stop asterisk gracefully
-		sleep 60
-
-		if /bin/ps -A| /usr/bin/grep asterisk
-		then 
-            echo "Okay it has had long enough ... stopping Asterisk now"
-	        $AST_BIN -rx "stop now" 1> /dev/null 2> /dev/null  # stop asterisk now
-		fi
-		echo "Asterisk stopped"
+	echo "Stopping ViciDial Telephony Server... "
+	ASTERISK_PS=`/bin/ps ax | /bin/grep asterisk | /bin/grep -v grep | /bin/grep -v SCREEN`
+	if [[ ! $ASTERISK_PS ]]; then
+		echo "   Asterisk not running, skipping."
+		# clean up screen just in case
 	else
-		echo "Asterisk not running"
+		echo -n "   Stopping Asterisk process... "
+		$AST_BIN -rx "$ASTSTOPCMD" 2>>/var/log/vicidial.log 1>&2
+		ASTERISK_PS=`/bin/ps ax | /bin/grep asterisk | /bin/grep -v grep | /bin/grep -v SCREEN`
+		if [[ $ASTERISK_PS ]]; then
+			# Since asterisk didn't kill itself, we kill it from the kernel instead
+			ASTERISK_PID=($ASTERISK_PS)
+			/bin/kill -9 $ASTERISK_PID
+		fi
+		rm $ASTPIDFILE 2>>/var/log/vicidial.log 1>&2
+		echo "done."
 	fi
-
-        if /sbin/lsmod | /usr/bin/grep zaptel
-        then
-		$ZTCFG_BIN -s
+	
+	# Kill off the screen processes
+	SCREENPID1=`ps -ef | grep asterisk | grep -v grep | grep SCREEN | awk '{print $2}'`
+	SCREENPID2=`ps -ef | grep astshell | grep -v grep | grep SCREEN | awk '{print $2}'`
+	if [ -n "$SCREENPID1" -o -n "$SCREENPID2" ]; then
+		echo -n "   Stopping asterisk screens... "
+		/bin/kill -9 $SCREENPID1  2>>/var/log/vicidial.log 1>&2
+		/bin/kill -9 $SCREENPID2  2>>/var/log/vicidial.log 1>&2
+		$SCREEN_BIN -wipe  2>>/var/log/vicidial.log 1>&2
+		echo "done."
+	else
+		echo "   No asterisk screens found, skipping."
 	fi
-
-	if [ -x $WAN_BIN ] ; then	
-		$WAN_BIN stop
+	
+	# Kill of ip_relay
+	IPRELAY_PS=`ps -C ip_relay -o pid --no-heading`
+	if [[ $IPRELAY_PS ]]; then
+		echo -n "   Stopping ip_relay processes... "
+		kill $IPRELAY_PS 2>>/var/log/vicidial.log 1>&2
+		echo "done."
+	else
+		echo "   No ip_relay processes found, skipping."
 	fi
-
-        if /sbin/lsmod | /usr/bin/grep $ZAP_MOD
-        then
-		/sbin/rmmod $ZAP_MOD
+	
+	# Unload wanrouter, DAHDI, etc
+	if [ "$(/sbin/lsmod | /bin/grep wanrouter)" ]; then
+		echo -n "   Unloading wanrouter... "
+		$WAN_BIN stop 2>>/var/log/vicidial.log 1>&2
+		echo "done."
 	fi
-
-        if /sbin/lsmod | /usr/bin/grep zttranscode
-        then
-                /sbin/rmmod zttranscode
-        fi
-
-        if /sbin/lsmod | /usr/bin/grep zaptel
-        then
-                /sbin/rmmod zaptel
-        fi
-
-
+	if [ "$(/sbin/lsmod | /bin/grep dahdi)" ]; then
+		echo -n "   Unloading DAHDI and modules... "
+		$DAHDI_CFG_BIN -s -vvv 2>>/var/log/vicidial.log 1>&2
+		if [ "$(/sbin/lsmod | /bin/grep $DAHDI_MOD)" ]; then
+			/sbin/rmmod $DAHDI_MOD 2>>/var/log/vicidial.log 1>&2
+		fi
+		if [ "$(/sbin/lsmod | /bin/grep $DAHDI_MOD2)" ]; then
+			/sbin/rmmod $DAHDI_MOD2 2>>/var/log/vicidial.log 1>&2
+		fi
+		if [ -n "$EXTRA_MOD" ]; then
+			for EXTRA_MOD in $DAHDI_EXTRA
+			do
+				/sbin/rmmod $EXTRA_MOD 2>>/var/log/vicidial.log 1>&2
+			done
+		fi
+		if [ "$(/sbin/lsmod | /bin/grep dahdi)" ]; then
+			/sbin/rmmod dahdi  2>>/var/log/vicidial.log 1>&2
+		fi
+		echo "done."
+	else
+		echo "   DAHDI and modules not loaded, skipping."
+	fi
+	
 	# Remember status and be verbose
-
-	echo -n "Stopped Vicidial "
-
-	rc_status -v
+	echo "ViciDial Telephony server stopped. Log at /var/log/vicidial.log"
+	#rc_status -v
 	;;
-    try-restart|condrestart)
+	try-restart|condrestart)
 	## Do a restart only if the service was active before.
 	## Note: try-restart is now part of LSB (as of 1.9).
 	## RH has a similar command named condrestart.
@@ -374,10 +381,11 @@ stop)
 	if test $? = 0; then
 		$0 restart
 	else
-		rc_reset	# Not running is not a failure.
+		echo "!"
+		#rc_reset	# Not running is not a failure.
 	fi
 	# Remember status and be quiet
-	rc_status
+	#rc_status
 	;;
 restart)
 	## Stop the service and regardless of whether it was
@@ -389,10 +397,7 @@ restart)
 	rc_status
 	;;
 status)
-    echo -n "Checking for service Vicidial "
-	## Check status with checkproc(8), if process is running
-	## checkproc will return with exit status 0.
-
+    echo -n "Checking status for ViciDial Telephony Server... "
 	# Return value is slightly different for the status command:
 	# 0 - service up and running
 	# 1 - service dead, but /var/run/  pid  file exists
@@ -401,13 +406,27 @@ status)
 	# 4 - service status unknown :-(
 	# 5--199 reserved (5--99 LSB, 100--149 distro, 150--199 appl.)
 	
-	/usr/bin/screen -ls
+	# clean up just in case
+	$SCREEN_BIN -wipe  2>>/var/log/vicidial.log 1>&2
 	
-	# NOTE: checkproc returns LSB compliant status values.
-	checkproc $AST_BIN
-	# NOTE: rc_status knows that we called this init script with
-	# "status" option and adapts its messages accordingly.
-	rc_status -v
+	# Check for our stuff
+	ASTERISK_PS=`/bin/ps ax | /bin/grep asterisk | /bin/grep -v grep | /bin/grep -v SCREEN`
+	if [[ ! $ASTERISK_PS ]]; then
+		echo "   Asterisk not running..."
+		#rc_failed 3
+		exit
+	else
+		ASTERISK_PID=($ASTERISK_PS)
+		ASTERISK_UP=$AST_BIN" -rx "$ASTUPTIMECMD" | /bin/grep System"
+		SCREENPID1=`/bin/ps -ef | /bin/grep asterisk | /bin/grep -v grep | /bin/grep SCREEN | /usr/bin/awk '{print $2}'`
+		SCREENPID2=`/bin/ps -ef | /bin/grep astshell | /bin/grep -v grep | /bin/grep SCREEN | /usr/bin/awk '{print $2}'`
+		echo "   Asterisk has been up for $ASTERISK_UP"
+		echo "   Asterisk running on PID $ASTERISK_PID"
+		echo "   Asterisk Screen running on PID $SCREENPID1"
+		echo "   Astshell Screen running on PID $SCREENPID2"
+	fi
+	
+	#rc_status -v[5]
 	;;
 probe)
 	## Optional: Probe for the necessity of a reload, print out the
@@ -421,4 +440,4 @@ probe)
 	exit 1
 	;;
 esac
-rc_exit
+exit

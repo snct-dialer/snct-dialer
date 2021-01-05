@@ -21,6 +21,7 @@
 #
 # dbconnect_mysqli.php
 # functions.php
+# admin_functions.php
 # admin_header.php
 # options.php
 #
@@ -28,13 +29,15 @@
 #
 # Version  / Build
 #
-$admin_modify_lead_version = '3.0.1-1';
-$admin_modify_lead_build = '20201122-1';
+$admin_modify_lead_version = '3.0.1-2';
+$admin_modify_lead_build = '20201225-1';
 #
 ###############################################################################
 #
 # Changelog#
 #
+# 20201225 jff	Show only recordings of allowed users
+#				Mark archiv records with red
 # 20201122 jff	Add iframe to show lead changes 
 # 20200921 jff	Add global ShowArchive for UserLevel >= 9.
 # 20200629 jff	Add external link from lead.
@@ -44,6 +47,7 @@ $admin_modify_lead_build = '20201122-1';
 
 require("dbconnect_mysqli.php");
 require("functions.php");
+require("admin_functions.php");
 
 $PHP_AUTH_USER=$_SERVER['PHP_AUTH_USER'];
 $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
@@ -2734,7 +2738,12 @@ else
 		echo "<TABLE width=800 cellspacing=1 cellpadding=1>\n";
 		echo "<tr><td><font size=1># </td><td align=left><font size=2> "._QXZ("LEAD")."</td><td><font size=2>"._QXZ("DATE/TIME")." </td><td align=left><font size=2>"._QXZ("SECONDS")." </td><td align=left><font size=2> &nbsp; "._QXZ("RECID")."</td><td align=center><font size=2>"._QXZ("FILENAME")."</td><td align=left><font size=2>"._QXZ("LOCATION")."</td><td align=left><font size=2>"._QXZ("TSR")."</td>$mute_column<td align=left><font size=2> </td></tr>\n";
 
-		$stmt="SELECT recording_id,channel,server_ip,extension,start_time,start_epoch,end_time,end_epoch,length_in_sec,length_in_min,filename,location,lead_id,user,vicidial_id from recording_log where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' order by recording_id desc limit 500;";
+		$sqlUser = "";
+		if($LOGuser_level < 9) {
+			$sqlUser = " AND " .GetViewUsr($LOGuser_group);
+		}
+
+		$stmt="SELECT recording_id,channel,server_ip,extension,start_time,start_epoch,end_time,end_epoch,length_in_sec,length_in_min,filename,location,lead_id,user,vicidial_id from recording_log where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' $sqlUser order by recording_id desc limit 500;";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$logs_to_print = mysqli_num_rows($rslt);
 		if ($DB) {echo "$logs_to_print|$stmt|\n";}
@@ -2829,12 +2838,15 @@ else
 			$rec_ids .= ",'$row[0]'";
 			}
 
-		$stmt="SELECT recording_id,channel,server_ip,extension,start_time,start_epoch,end_time,end_epoch,length_in_sec,length_in_min,filename,location,lead_id,user,vicidial_id from recording_log_archive where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' and recording_id NOT IN($rec_ids) order by recording_id desc limit 500;";
+
+		if ($archive_log == 'Yes') {
+		$stmt="SELECT recording_id,channel,server_ip,extension,start_time,start_epoch,end_time,end_epoch,length_in_sec,length_in_min,filename,location,lead_id,user,vicidial_id from recording_log_archive where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' and recording_id NOT IN($rec_ids) $sqlUser order by recording_id desc limit 500;";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$logs_to_print = mysqli_num_rows($rslt);
 		if ($DB) {echo "$logs_to_print|$stmt|\n";}
 
 		$v=0;
+		$u=0;
 		while ($logs_to_print > $v)
 			{
 			$row=mysqli_fetch_row($rslt);
@@ -2906,10 +2918,11 @@ else
 				{$location = $locat;}
 			$u++;
 			$v++;
+
 			echo "<tr $bgcolor>";
-			echo "<td><font size=1>$u</td>";
-			echo "<td align=left><font size=2> $row[12] </td>";
-			echo "<td align=left><font size=1> $row[4] </td>\n";
+			echo "<td><font size=1 color='#FF0000'>$u</font></td>";
+			echo "<td align=left><font size=2 color='#FF0000'> $row[12] </font></td>";
+			echo "<td align=left><font size=1 color='#FF0000'> $row[4] </font></td>\n";
 			echo "<td align=left><font size=2> $row[8] </td>\n";
 			echo "<td align=left><font size=2> $row[0] &nbsp;</td>\n";
 			echo "<td align=center><font size=1> $row[10] </td>\n";
@@ -2923,7 +2936,7 @@ else
 			echo "$play_audio";
 			echo "</tr>\n";
 			}
-
+		}
 
 		echo "</TABLE><BR><BR>\n";
 		
@@ -3075,6 +3088,7 @@ function htmlparse($text)
 		return $text;
 		}
 	}
+
 
 
 ?>

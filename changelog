@@ -1,4 +1,7 @@
 3.0.1
+  [Danny Funkat]
+    * Add Pause code into AGENTSview:
+      - Update www/agc/vdc_db_query.php.
   [Jörg Frings-Fürst]
     * Add upstream Rev. 3079:
       - Update: www/vicidial/admin.php,
@@ -1031,10 +1034,24 @@
     * On copy campaign add Pos,Col to vicidial_campaign_statuses:
       - Update www/vicidial/admin.php.
     * Add iframe to show lead changes:
-      - Update admin_header.php,
-          admin_modify_lead.php,
-          non_agent_api.php.
-    * Change next release to 3.0.1.
+      - Update www/vicidial/admin_header.php,
+          www/vicidial/admin_modify_lead.php,
+          www/vicidial/non_agent_api.php.
+    * Add Add .mp3 and .ogg Upload handling:
+      - Update www/vicidial/audio_store.php,
+          www/vicidial/non_agent_api.php.
+    * Add list_id, owner into SEARCHRESULTSview:
+      - Update www/agc/vdc_db_query.php.
+    * Show only recordings of allowed users, mark archiv records with red:
+      - New www/vicidial/admin_functions.php.
+      - Update www/vicidial/admin_modify_lead.php.
+    * Fix lead_log_list if no rights:
+      - Update www/vicidial/non_agent_api.php.
+    * New Docs:
+      - New docs/Database.txt,
+          docs/Deprecated.txt.
+    * Release 3.0.1 2020-01-05:
+      - Stable release.
 
 2.26.29
   [Jörg Frings-Fürst]
