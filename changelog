@@ -1050,7 +1050,8 @@
     * New Docs:
       - New docs/Database.txt,
           docs/Deprecated.txt.
-    * Change next release to 3.0.1.
+    * Release 3.0.1 2020-01-05:
+      - Stable release.
 
 2.26.29
   [Jörg Frings-Fürst]
