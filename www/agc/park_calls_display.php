@@ -1,11 +1,11 @@
 <?php
 # park_calls_display.php    version 2.14
-# 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed purely to send the details on the parked calls on the server
 # This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
-# 
+#
 # required variables:
 #  - $server_ip
 #  - $session_name
@@ -15,7 +15,7 @@
 #  - $format - ('text','debug')
 #  - $exten - ('cc101','testphone','49-1','1234','913125551212',...)
 #  - $protocol - ('SIP','Zap','IAX2',...)
-# 
+#
 #
 # changes
 # 50524-1515 - First build of script
@@ -31,10 +31,11 @@
 # 141216-2105 - Added language settings lookups and user/pass variable standardization
 # 150723-1712 - Added ajax logging
 # 170526-2244 - Added additional variable filtering
-# 
+# 190111-0907 - Fix for PHP7
+#
 
-$version = '2.14-13';
-$build = '170526-2244';
+$version = '2.14-14';
+$build = '190111-0907';
 $php_script = 'park_calls_display.php';
 $SSagent_debug_logging=0;
 $startMS = microtime();
@@ -120,7 +121,7 @@ if (strlen($SSagent_debug_logging) > 1)
 
 
 $auth=0;
-$auth_message = user_authorization($user,$pass,'',0,1,0,0);
+$auth_message = user_authorization($user,$pass,'',0,1,0,0,'park_calls_display');
 if ($auth_message == 'GOOD')
 	{$auth=1;}
 
@@ -131,7 +132,7 @@ if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 	}
 else
 	{
-	if( (strlen($server_ip)<6) or (!isset($server_ip)) or ( (strlen($session_name)<12) or (!isset($session_name)) ) ) 		
+	if( (strlen($server_ip)<6) or (!isset($server_ip)) or ( (strlen($session_name)<12) or (!isset($session_name)) ) )
 		{
 		echo _QXZ("Invalid server_ip: %1s or Invalid session_name: %2s",0,'',$server_ip,$session_name)."\n";
 		exit;
@@ -195,7 +196,7 @@ else
 
 
 
-if ($format=='debug') 
+if ($format=='debug')
 	{
 	$ENDtime = date("U");
 	$RUNtime = ($ENDtime - $StarTtime);
@@ -204,6 +205,6 @@ if ($format=='debug')
 	}
 
 if ($SSagent_debug_logging > 0) {vicidial_ajax_log($NOW_TIME,$startMS,$link,$ACTION,$php_script,$user,$stage,$lead_id,$session_name,$stmt);}
-exit; 
+exit;
 
 ?>

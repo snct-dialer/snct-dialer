@@ -60,7 +60,7 @@ if (isset($_GET["confirm_update"])) {$confirm_move=$_GET["confirm_update"];}
 	elseif (isset($_POST["confirm_update"])) {$confirm_update=$_POST["confirm_update"];}
 if (isset($_GET["confirm_delete"])) {$confirm_delete=$_GET["confirm_delete"];}
 	elseif (isset($_POST["confirm_delete"])) {$confirm_delete=$_POST["confirm_delete"];}
-	
+
 $DB = preg_replace('/[^0-9]/','',$DB);
 $move_submit = preg_replace('/[^-_0-9a-zA-Z]/','',$move_submit);
 $update_submit = preg_replace('/[^-_0-9a-zA-Z]/','',$update_submit);
@@ -238,7 +238,7 @@ if ( ($SSweb_logo=='default_old') and ($logo_old > 0) )
 	}
 if ( ($SSweb_logo!='default_new') and ($SSweb_logo!='default_old') )
 	{
-	if (file_exists("./images/vicidial_admin_web_logo$SSweb_logo")) 
+	if (file_exists("./images/vicidial_admin_web_logo$SSweb_logo"))
 		{
 		$selected_logo = "./images/vicidial_admin_web_logo$SSweb_logo";
 		$selected_small_logo = "./images/vicidial_admin_web_logo$SSweb_logo";
@@ -308,7 +308,7 @@ if ($move_submit == "move" )
 		elseif (isset($_POST["move_count_op"])) {$move_count_op=$_POST["move_count_op"];}
 	if (isset($_GET["move_count_num"])) {$move_count_num=$_GET["move_count_num"];}
 		elseif (isset($_POST["move_count_num"])) {$move_count_num=$_POST["move_count_num"];}
-	
+
 	#$move_status = preg_replace('/[^-_0-9a-zA-Z]/','',$move_status);
 	$move_from_list = preg_replace('/[^0-9]/','',$move_from_list);
 	$move_to_list = preg_replace('/[^0-9]/','',$move_to_list);
@@ -387,7 +387,7 @@ if ($confirm_move == "confirm")
 	$move_status="";
 	$move_count_op="";
 	$move_count_num="";
-		
+
 	if (isset($_GET["move_from_list"])) {$move_from_list=$_GET["move_from_list"];}
 		elseif (isset($_POST["move_from_list"])) {$move_from_list=$_POST["move_from_list"];}
 	if (isset($_GET["move_to_list"])) {$move_to_list=$_GET["move_to_list"];}
@@ -398,7 +398,7 @@ if ($confirm_move == "confirm")
 		elseif (isset($_POST["move_count_op"])) {$move_count_op=$_POST["move_count_op"];}
 	if (isset($_GET["move_count_num"])) {$move_count_num=$_GET["move_count_num"];}
 		elseif (isset($_POST["move_count_num"])) {$move_count_num=$_POST["move_count_num"];}
-			
+
 	#$move_status = preg_replace('/[^-_0-9a-zA-Z]/','',$move_status);
 	$move_from_list = preg_replace('/[^0-9]/','',$move_from_list);
 	$move_to_list = preg_replace('/[^0-9]/','',$move_to_list);
@@ -427,9 +427,9 @@ if ($confirm_move == "confirm")
 	if ($DB) { echo "|$move_lead_stmt|\n"; }
 	$move_lead_rslt = mysql_to_mysqli($move_lead_stmt, $link);
 	$move_lead_count = mysqli_affected_rows($link);
-		
+
 	$move_sentence = "$move_lead_count leads have been moved from list $move_from_list to $move_to_list with the status $move_status and that were called $move_count_op_phrase$move_count_num times.";
-	
+
 	$SQL_log = "$move_lead_stmt|";
 	$SQL_log = preg_replace('/;/', '', $SQL_log);
 	$SQL_log = addslashes($SQL_log);
@@ -462,7 +462,7 @@ if ($update_submit == "update" )
 		elseif (isset($_POST["update_count_op"])) {$update_count_op=$_POST["update_count_op"];}
 	if (isset($_GET["update_count_num"])) {$update_count_num=$_GET["update_count_num"];}
 		elseif (isset($_POST["update_count_num"])) {$update_count_num=$_POST["update_count_num"];}
-			
+
 	$update_from_status = preg_replace('/[^-_0-9a-zA-Z]/','',$update_from_status);
 	$update_to_status = preg_replace('/[^-_0-9a-zA-Z]/','',$update_to_status);
 	$update_list = preg_replace('/[^0-9]/','',$update_list);
@@ -535,7 +535,7 @@ if ($confirm_update == "confirm")
 	$update_list = preg_replace('/[^0-9]/','',$update_list);
 	$update_count_num = preg_replace('/[^0-9]/','',$update_count_num);
 	$update_count_op = preg_replace('/[^<>=]/','',$update_count_op);
-		
+
 	$update_count_op_phrase="";
 	if ( $update_count_op == "<" )
 		{
@@ -558,9 +558,9 @@ if ($confirm_update == "confirm")
 	if ($DB) { echo "|$delete_lead_stmt|\n"; }
 	$update_lead_rslt = mysql_to_mysqli($update_lead_stmt, $link);
 	$update_lead_count = mysqli_affected_rows($link);
-		
+
 		$update_sentence = "$update_lead_count leads had their status changed from $update_from_status to $update_to_status in list $update_list that were called $update_count_op_phrase$update_count_num times.";
-		
+
 		$SQL_log = "$update_lead_stmt|";
 		$SQL_log = preg_replace('/;/', '', $SQL_log);
 		$SQL_log = addslashes($SQL_log);
@@ -590,7 +590,7 @@ if ( ( $delete_submit == "delete" ) && ( $delete_lists > 0 ) )
 		elseif (isset($_POST["delete_count_op"])) {$delete_count_op=$_POST["delete_count_op"];}
 	if (isset($_GET["delete_count_num"])) {$delete_count_num=$_GET["delete_count_num"];}
 		elseif (isset($_POST["delete_count_num"])) {$delete_count_num=$_POST["delete_count_num"];}
-	
+
 	$delete_status = preg_replace('/[^-_0-9a-zA-Z]/','',$delete_status);
 	$delete_list = preg_replace('/[^0-9]/','',$delete_list);
 	$delete_count_num = preg_replace('/[^0-9]/','',$delete_count_num);
@@ -657,7 +657,7 @@ if ( ( $confirm_delete == "confirm" ) && ( $delete_lists > 0 ) )
 	$delete_list = preg_replace('/[^0-9]/','',$delete_list);
 	$delete_count_num = preg_replace('/[^0-9]/','',$delete_count_num);
 	$delete_count_op = preg_replace('/[^<>=]/','',$delete_count_op);
-		
+
 	$delete_count_op_phrase="";
 	if ( $delete_count_op == "<" )
 		{
@@ -682,14 +682,14 @@ if ( ( $confirm_delete == "confirm" ) && ( $delete_lists > 0 ) )
 	$delete_lead_count = mysqli_affected_rows($link);
 
 		$delete_sentence = "$delete_lead_count "._QXZ("leads delete from list")." $delete_list "._QXZ("with the status")." $delete_status "._QXZ("that were called")." $delete_count_op_phrase$delete_count_num "._QXZ("times").".";
-		
+
 		$SQL_log = "$update_lead_stmt|";
 		$SQL_log = preg_replace('/;/', '', $SQL_log);
 		$SQL_log = addslashes($SQL_log);
 		$admin_log_stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LISTS', event_type='DELETE', record_id='$delete_list', event_code='ADMIN DELETE LEADS', event_sql=\"$SQL_log\", event_notes='$delete_sentence';";
 		if ($DB) {echo "|$admin_log_stmt|\n";}
 		$admin_log_rslt=mysql_to_mysqli($admin_log_stmt, $link);
-		
+
 	echo "<p>$delete_sentence</p>";
 	echo "<p><a href='$PHP_SELF'>"._QXZ("Click here to start over").".</a></p>\n";
 	}
@@ -855,7 +855,7 @@ if (
 		echo "<option value='$statuses[$i]'>$statuses[$i]</option>\n";
 		$i++;
 		}
-		
+
 	echo "</select></td></tr>\n";
 	echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Called Count")."</td><td align=left>\n";
 	echo "<select size=1 name=move_count_op>\n";

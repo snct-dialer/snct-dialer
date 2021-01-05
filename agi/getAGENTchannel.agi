@@ -2,7 +2,7 @@
 
 # getAGENTchannel.agi by Omar Rodriguez  www.ItContinental.com
 # Copyright (C) 2016  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
-# This script is able to return the name of the channel that belongs to the agent, 
+# This script is able to return the name of the channel that belongs to the agent,
 # to allow administrators to whisper to the agents
 # Has been made using Vicidial code as Base
 
@@ -62,14 +62,14 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port)	{$VARDB_port='3306';}
-if (!$AGILOGfile)	{$AGILOGfile = "$PATHlogs/agiout";}
+if (!$AGILOGfile)	{$AGILOGfile = "$PATHlogs/agiout.log";}
 
 use DBI;
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
     or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
@@ -93,7 +93,7 @@ $agent_zap_channel =		"101";
 ########## FIND playfilename  ##########
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 	{
 	chomp;
 	last unless length($_);
@@ -113,7 +113,7 @@ while(<STDIN>)
 	if (/^agi_calleridname\:\s+(.*)$/)	{$calleridname = $1;}
 	}
 
-if (length($extension) > 7) 
+if (length($extension) > 7)
 	{$extension = substr($extension, -7);}
 if ($AGILOG) {$agi_string = "Agent session: $extension| Channel: $channel| CID: $calleridname <$callerid>|";   &agi_output;}
 
@@ -122,7 +122,7 @@ if ($AGILOG) {$agi_string = "Agent session: $extension| Channel: $channel| CID: 
 
 $stmtA = "SELECT channel FROM live_sip_channels WHERE server_ip='$VARserver_ip' AND extension=right('$extension',7) AND ifnull(trim(channel), '') <> '' limit 10;";
 
-#$AGI->verbose($stmtA); 
+#$AGI->verbose($stmtA);
 
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -132,18 +132,18 @@ while ($sthArows > $s)
 	{
 	@aryA = $sthA->fetchrow_array;
 	# channel priority(highest to lowest): SIP, IAX, Local
-	if ($aryA[0] =~ /^SIP/i) 
+	if ($aryA[0] =~ /^SIP/i)
 		{$agent_zap_channel =		$aryA[0];}
 	if ( ($aryA[0] =~ /^IAX/i) && ( (length($agent_zap_channel) < 4) || ($agent_zap_channel =~ /^Local/i) ) )
 		{$agent_zap_channel =		$aryA[0];}
-	if ( ($aryA[0] =~ /^Local/i) && (length($agent_zap_channel) < 4) ) 
+	if ( ($aryA[0] =~ /^Local/i) && (length($agent_zap_channel) < 4) )
 		{$agent_zap_channel =		$aryA[0];}
 	$s++;
 	}
 $sthA->finish();
 if ($AGILOG) {$agi_string = "$sthArows|$agent_zap_channel|$stmtA|";   &agi_output;}
 
-#$AGI->verbose("agent_zap_channel: $agent_zap_channel"); 
+#$AGI->verbose("agent_zap_channel: $agent_zap_channel");
 
 $AGI->set_variable('agent_zap_channel', $agent_zap_channel);
 

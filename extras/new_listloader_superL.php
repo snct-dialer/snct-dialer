@@ -1,10 +1,10 @@
 <?php
 # new_listloader_superL.php
-# 
+#
 # Copyright (C) 2012  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # AST GUI lead loader from formatted file
-# 
+#
 # CHANGES
 # 50602-1640 - First version created by Joe Johnson
 # 51128-1108 - Removed PHP global vars requirement
@@ -217,7 +217,7 @@ $browser = getenv("HTTP_USER_AGENT");
 			echo "You do not have permissions to load leads\n";
 			exit;
 			}
-		if ($webroot_writable > 0) 
+		if ($webroot_writable > 0)
 			{
 			fwrite ($fp, "LIST_LOAD|GOOD|$date|$PHP_AUTH_USER|XXXX|$ip|$browser|$LOGfullname|\n");
 			fclose($fp);
@@ -225,7 +225,7 @@ $browser = getenv("HTTP_USER_AGENT");
 		}
 	else
 		{
-		if ($webroot_writable > 0) 
+		if ($webroot_writable > 0)
 			{
 			fwrite ($fp, "LIST_LOAD|FAIL|$date|$PHP_AUTH_USER|XXXX|$ip|$browser|\n");
 			fclose($fp);
@@ -283,7 +283,7 @@ $dsec = ( ( ($hour * 3600) + ($min * 60) ) + $sec );
 		$row=mysql_fetch_row($rslt);
 		$DBSERVER_GMT		=		"$row[0]";
 		if (strlen($DBSERVER_GMT)>0)	{$SERVER_GMT = $DBSERVER_GMT;}
-		if ($isdst) {$SERVER_GMT++;} 
+		if ($isdst) {$SERVER_GMT++;}
 		}
 	else
 		{
@@ -348,7 +348,7 @@ function ShowProgress(good, bad, total, dup, post) {
 	parent.lead_count.document.close();
 }
 function ParseFileName() {
-	if (!document.forms[0].OK_to_process) {	
+	if (!document.forms[0].OK_to_process) {
 		var endstr=document.forms[0].leadfile.value.lastIndexOf('\\');
 		if (endstr>-1) {
 			endstr++;
@@ -440,12 +440,12 @@ echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
 				$file=fopen("$lead_file", "r");
 				print "<center><font face='arial, helvetica' size=3 color='#009900'><B>Processing $delim_name-delimited file...\n";
 
-			if (strlen($list_id_override)>0) 
+			if (strlen($list_id_override)>0)
 				{
 				print "<BR><BR>LIST ID OVERRIDE FOR THIS FILE: $list_id_override<BR><BR>";
 				}
 
-			if (strlen($phone_code_override)>0) 
+			if (strlen($phone_code_override)>0)
 				{
 				print "<BR><BR>PHONE CODE OVERRIDE FOR THIS FILE: $phone_code_override<BR><BR>";
 				}
@@ -491,7 +491,7 @@ echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
 						$comments =				trim($row[$comments_field]);
 						$rank =					$row[$rank_field];
 						$owner =				$row[$owner_field];
-						
+
 						# replace ' " ` \ ; with nothing
 						$vendor_lead_code =		eregi_replace($field_regx, "", $vendor_lead_code);
 						$source_code =			eregi_replace($field_regx, "", $source_code);
@@ -519,15 +519,15 @@ echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
 						$comments =				eregi_replace($field_regx, "", $comments);
 						$rank =					eregi_replace($field_regx, "", $rank);
 						$owner =				eregi_replace($field_regx, "", $owner);
-						
+
 						$USarea = 			substr($phone_number, 0, 3);
 
-						if (strlen($list_id_override)>0) 
+						if (strlen($list_id_override)>0)
 							{
 						#	print "<BR><BR>LIST ID OVERRIDE FOR THIS FILE: $list_id_override<BR><BR>";
 							$list_id = $list_id_override;
 							}
-						if (strlen($phone_code_override)>0) 
+						if (strlen($phone_code_override)>0)
 							{
 							$phone_code = $phone_code_override;
 							}
@@ -540,24 +540,24 @@ echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
 							if ($DB>0) {echo "$stmt\n";}
 							$rslt=mysql_query($stmt, $link);
 							$tablecount_to_print = mysql_num_rows($rslt);
-							if ($tablecount_to_print > 0) 
+							if ($tablecount_to_print > 0)
 								{
 								$stmt="SELECT count(*) from vicidial_lists_fields where list_id='$list_id_override';";
 								if ($DB>0) {echo "$stmt\n";}
 								$rslt=mysql_query($stmt, $link);
 								$fieldscount_to_print = mysql_num_rows($rslt);
-								if ($fieldscount_to_print > 0) 
+								if ($fieldscount_to_print > 0)
 									{
 									$rowx=mysql_fetch_row($rslt);
 									$custom_records_count =	$rowx[0];
-									
+
 									$stmt="SELECT field_id,field_label,field_name,field_description,field_rank,field_help,field_type,field_options,field_size,field_max,field_default,field_cost,field_required,multi_position,name_position,field_order from vicidial_lists_fields where list_id='$list_id_override' order by field_rank,field_order,field_label;";
 									if ($DB>0) {echo "$stmt\n";}
 									$rslt=mysql_query($stmt, $link);
 									$fields_to_print = mysql_num_rows($rslt);
 									$fields_list='';
 									$o=0;
-									while ($fields_to_print > $o) 
+									while ($fields_to_print > $o)
 										{
 										$rowx=mysql_fetch_row($rslt);
 										$A_field_label[$o] =	$rowx[1];
@@ -739,7 +739,7 @@ echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
 								$affected_rows = mysql_affected_rows($link);
 								$lead_id = mysql_insert_id($link);
 								if ($DB > 0) {echo "<!-- $affected_rows|$lead_id|$stmtZ -->";}
-								if ($webroot_writable > 0) 
+								if ($webroot_writable > 0)
 									{fwrite($stmt_file, $stmtZ."\r\n");}
 								$multistmt='';
 
@@ -750,12 +750,12 @@ echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
 								}
 							else
 								{
-								if ($multi_insert_counter > 8) 
+								if ($multi_insert_counter > 8)
 									{
 									### insert good record into vicidial_list table ###
 									$stmtZ = "INSERT INTO vicidial_list (lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id) values$multistmt('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country_code','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments',0,'2008-01-01 00:00:00','$rank','$owner','0');";
 									$rslt=mysql_query($stmtZ, $link);
-									if ($webroot_writable > 0) 
+									if ($webroot_writable > 0)
 										{fwrite($stmt_file, $stmtZ."\r\n");}
 									$multistmt='';
 									$multi_insert_counter=0;
@@ -793,7 +793,7 @@ echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
 				if ($multi_insert_counter!=0) {
 					$stmtZ = "INSERT INTO vicidial_list (lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id) values".substr($multistmt, 0, -1).";";
 					mysql_query($stmtZ, $link);
-					if ($webroot_writable > 0) 
+					if ($webroot_writable > 0)
 						{fwrite($stmt_file, $stmtZ."\r\n");}
 				}
 
@@ -807,11 +807,11 @@ echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
 			$file=fopen("$lead_file", "r");
 
 			print "<center><font face='arial, helvetica' size=3 color='#009900'><B>Processing Excel file... \n";
-			if (strlen($list_id_override)>0) 
+			if (strlen($list_id_override)>0)
 			{
 			print "<BR><BR>LIST ID OVERRIDE FOR THIS FILE: $list_id_override<BR><BR>\n";
 			}
-			if (strlen($phone_code_override)>0) 
+			if (strlen($phone_code_override)>0)
 			{
 			print "<BR><BR>PHONE CODE OVERRIDE FOR THIS FILE: $phone_code_override<BR><BR>\n";
 			}
@@ -830,14 +830,14 @@ echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
 
 			if ($webroot_writable > 0)
 				{$stmt_file=fopen("$WeBServeRRooT/$admin_web_directory/listloader_stmts.txt", "w");}
-			
+
 			print "<center><font face='arial, helvetica' size=3 color='#009900'><B>Processing CSV file... \n";
-			if (strlen($list_id_override)>0) 
+			if (strlen($list_id_override)>0)
 				{
 				print "<BR><BR>LIST ID OVERRIDE FOR THIS FILE: $list_id_override<BR><BR>";
 				}
 
-			if (strlen($phone_code_override)>0) 
+			if (strlen($phone_code_override)>0)
 				{
 				print "<BR><BR>PHONE CODE OVERRIDE FOR THIS FILE: $phone_code_override<BR><BR>";
 				}
@@ -877,7 +877,7 @@ echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
 				$comments =				trim($row[$comments_field]);
 				$rank =					$row[$rank_field];
 				$owner =				$row[$owner_field];
-				
+
 				# replace ' " ` \ ; with nothing
 				$vendor_lead_code =		eregi_replace($field_regx, "", $vendor_lead_code);
 				$source_code =			eregi_replace($field_regx, "", $source_code);
@@ -905,17 +905,17 @@ echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
 				$comments =				eregi_replace($field_regx, "", $comments);
 				$rank =					eregi_replace($field_regx, "", $rank);
 				$owner =				eregi_replace($field_regx, "", $owner);
-				
+
 				$USarea = 			substr($phone_number, 0, 3);
 
 
 				if (strlen($rank)<1) {$rank='0';}
 
-				if (strlen($list_id_override)>0) 
+				if (strlen($list_id_override)>0)
 					{
 					$list_id = $list_id_override;
 					}
-				if (strlen($phone_code_override)>0) 
+				if (strlen($phone_code_override)>0)
 					{
 					$phone_code = $phone_code_override;
 					}
@@ -928,13 +928,13 @@ echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
 						if ($DB>0) {echo "$stmt\n";}
 						$rslt=mysql_query($stmt, $link);
 						$tablecount_to_print = mysql_num_rows($rslt);
-						if ($tablecount_to_print > 0) 
+						if ($tablecount_to_print > 0)
 							{
 							$stmt="SELECT count(*) from vicidial_lists_fields where list_id='$list_id_override';";
 							if ($DB>0) {echo "$stmt\n";}
 							$rslt=mysql_query($stmt, $link);
 							$fieldscount_to_print = mysql_num_rows($rslt);
-							if ($fieldscount_to_print > 0) 
+							if ($fieldscount_to_print > 0)
 								{
 								$rowx=mysql_fetch_row($rslt);
 								$custom_records_count =	$rowx[0];
@@ -945,7 +945,7 @@ echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
 								$fields_to_print = mysql_num_rows($rslt);
 								$fields_list='';
 								$o=0;
-								while ($fields_to_print > $o) 
+								while ($fields_to_print > $o)
 									{
 									$rowx=mysql_fetch_row($rslt);
 									$A_field_label[$o] =	$rowx[1];
@@ -982,7 +982,7 @@ echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
 
 					$custom_SQL = preg_replace("/,$/","",$custom_SQL);
 
-					
+
 					##### Check for duplicate phone numbers in vicidial_list table for all lists in a campaign #####
 					if (eregi("DUPCAMP",$dupcheck))
 						{
@@ -1127,7 +1127,7 @@ echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
 							$affected_rows = mysql_affected_rows($link);
 							$lead_id = mysql_insert_id($link);
 							if ($DB > 0) {echo "<!-- $affected_rows|$lead_id|$stmtZ -->";}
-							if ($webroot_writable > 0) 
+							if ($webroot_writable > 0)
 								{fwrite($stmt_file, $stmtZ."\r\n");}
 							$multistmt='';
 
@@ -1138,12 +1138,12 @@ echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
 							}
 						else
 							{
-							if ($multi_insert_counter > 8) 
+							if ($multi_insert_counter > 8)
 								{
 								### insert good deal into pending_transactions table ###
 								$stmtZ = "INSERT INTO vicidial_list (lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id) values$multistmt('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country_code','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments',0,'2008-01-01 00:00:00','$rank','$owner','0');";
 								$rslt=mysql_query($stmtZ, $link);
-								if ($webroot_writable > 0) 
+								if ($webroot_writable > 0)
 									{fwrite($stmt_file, $stmtZ."\r\n");}
 								$multistmt='';
 								$multi_insert_counter=0;
@@ -1179,13 +1179,13 @@ echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
 			if ($multi_insert_counter!=0) {
 				$stmtZ = "INSERT INTO vicidial_list (lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id) values".substr($multistmt, 0, -1).";";
 				mysql_query($stmtZ, $link);
-				if ($webroot_writable > 0) 
+				if ($webroot_writable > 0)
 					{fwrite($stmt_file, $stmtZ."\r\n");}
 			}
 			print "<BR><BR>Done</B> GOOD: $good &nbsp; &nbsp; &nbsp; BAD: $bad &nbsp; &nbsp; &nbsp; TOTAL: $total</font></center>";
 		}
 		print "<script language='JavaScript1.2'>document.forms[0].leadfile.disabled=false; document.forms[0].submit_file.disabled=false; document.forms[0].reload_page.disabled=false;</script>";
-	} 
+	}
 
 if ($leadfile) {
 		$total=0; $good=0; $bad=0; $dup=0; $post=0; $phone_list='';
@@ -1228,11 +1228,11 @@ if ($leadfile) {
 			$file=fopen("$lead_file", "r");
 			$total=0; $good=0; $bad=0; $dup=0; $post=0; $phone_list='';
 			print "<center><font face='arial, helvetica' size=3 color='#009900'><B>Processing $delim_name-delimited file... ($tab_count|$pipe_count)\n";
-			if (strlen($list_id_override)>0) 
+			if (strlen($list_id_override)>0)
 			{
 			print "<BR><BR>LIST ID OVERRIDE FOR THIS FILE: $list_id_override<BR><BR>";
 			}
-			if (strlen($phone_code_override)>0) 
+			if (strlen($phone_code_override)>0)
 			{
 			print "<BR><BR>PHONE CODE OVERRIDE FOR THIS FILE: $phone_code_override<BR><BR>\n";
 			}
@@ -1277,7 +1277,7 @@ if ($leadfile) {
 					$comments =				trim($row[22]);
 					$rank =					$row[23];
 					$owner =				$row[24];
-						
+
 					# replace ' " ` \ ; with nothing
 					$vendor_lead_code =		eregi_replace($field_regx, "", $vendor_lead_code);
 					$source_code =			eregi_replace($field_regx, "", $source_code);
@@ -1305,14 +1305,14 @@ if ($leadfile) {
 					$comments =				eregi_replace($field_regx, "", $comments);
 					$rank =					eregi_replace($field_regx, "", $rank);
 					$owner =				eregi_replace($field_regx, "", $owner);
-					
+
 					$USarea = 			substr($phone_number, 0, 3);
 
-					if (strlen($list_id_override)>0) 
+					if (strlen($list_id_override)>0)
 						{
 						$list_id = $list_id_override;
 						}
-					if (strlen($phone_code_override)>0) 
+					if (strlen($phone_code_override)>0)
 						{
 						$phone_code = $phone_code_override;
 						}
@@ -1458,7 +1458,7 @@ if ($leadfile) {
 							### insert good deal into pending_transactions table ###
 							$stmtZ = "INSERT INTO vicidial_list (lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id) values$multistmt('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country_code','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments',0,'2008-01-01 00:00:00','$rank','$owner','0');";
 							$rslt=mysql_query($stmtZ, $link);
-							if ($webroot_writable > 0) 
+							if ($webroot_writable > 0)
 								{fwrite($stmt_file, $stmtZ."\r\n");}
 							$multistmt='';
 							$multi_insert_counter=0;
@@ -1494,7 +1494,7 @@ if ($leadfile) {
 			if ($multi_insert_counter!=0) {
 				$stmtZ = "INSERT INTO vicidial_list (lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id) values".substr($multistmt, 0, -1).";";
 				mysql_query($stmtZ, $link);
-				if ($webroot_writable > 0) 
+				if ($webroot_writable > 0)
 					{fwrite($stmt_file, $stmtZ."\r\n");}
 			}
 
@@ -1503,7 +1503,7 @@ if ($leadfile) {
 		} else {
 			print "<center><font face='arial, helvetica' size=3 color='#990000'><B>ERROR: The file does not have the required number of fields to process it.</B></font></center>";
 		}
-	} else if (!eregi(".csv", $leadfile_name)) 
+	} else if (!eregi(".csv", $leadfile_name))
 		{
 		if ($webroot_writable > 0)
 			{
@@ -1526,9 +1526,9 @@ if ($leadfile) {
 		if (eregi("DUPTITLEALTPHONESYS",$dupcheck)) {$dupcheckCLI='--duplicate-tap-system-check';}
 		if (eregi("POSTAL",$postalgmt)) {$postalgmtCLI='--postal-code-gmt';}
 		passthru("$WeBServeRRooT/$admin_web_directory/listloader.pl --forcelistid=$list_id_override --forcephonecode=$phone_code_override --lead-file=$lead_file  $postalgmtCLI $dupcheckCLI");
-	
+
 		}
-		else 
+		else
 		{
 		if ($webroot_writable > 0)
 			{
@@ -1543,14 +1543,14 @@ if ($leadfile) {
 		$file=fopen("$lead_file", "r");
 		if ($webroot_writable > 0)
 			{$stmt_file=fopen("$WeBServeRRooT/$admin_web_directory/listloader_stmts.txt", "w");}
-		
+
 		print "<center><font face='arial, helvetica' size=3 color='#009900'><B>Processing CSV file... \n";
 
-		if (strlen($list_id_override)>0) 
+		if (strlen($list_id_override)>0)
 			{
 			print "<BR><BR>LIST ID OVERRIDE FOR THIS FILE: $list_id_override<BR><BR>";
 			}
-		if (strlen($phone_code_override)>0) 
+		if (strlen($phone_code_override)>0)
 			{
 			print "<BR><BR>PHONE CODE OVERRIDE FOR THIS FILE: $phone_code_override<BR><BR>";
 			}
@@ -1589,7 +1589,7 @@ if ($leadfile) {
 				$comments =				trim($row[22]);
 				$rank =					$row[23];
 				$owner =				$row[24];
-				
+
 				# replace ' " ` \ ; with nothing
 				$vendor_lead_code =		eregi_replace($field_regx, "", $vendor_lead_code);
 				$source_code =			eregi_replace($field_regx, "", $source_code);
@@ -1617,14 +1617,14 @@ if ($leadfile) {
 				$comments =				eregi_replace($field_regx, "", $comments);
 				$rank =					eregi_replace($field_regx, "", $rank);
 				$owner =				eregi_replace($field_regx, "", $owner);
-				
+
 				$USarea = 			substr($phone_number, 0, 3);
 
-					if (strlen($list_id_override)>0) 
+					if (strlen($list_id_override)>0)
 						{
 						$list_id = $list_id_override;
 						}
-					if (strlen($phone_code_override)>0) 
+					if (strlen($phone_code_override)>0)
 						{
 						$phone_code = $phone_code_override;
 						}
@@ -1769,7 +1769,7 @@ if ($leadfile) {
 						### insert good deal into pending_transactions table ###
 						$stmtZ = "INSERT INTO vicidial_list (lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id) values$multistmt('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country_code','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments',0,'2008-01-01 00:00:00','$rank','$owner','0');";
 						$rslt=mysql_query($stmtZ, $link);
-						if ($webroot_writable > 0) 
+						if ($webroot_writable > 0)
 							{fwrite($stmt_file, $stmtZ."\r\n");}
 						$multistmt='';
 						$multi_insert_counter=0;
@@ -1804,7 +1804,7 @@ if ($leadfile) {
 			if ($multi_insert_counter!=0) {
 				$stmtZ = "INSERT INTO vicidial_list (lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id) values".substr($multistmt, 0, -1).";";
 				mysql_query($stmtZ, $link);
-				if ($webroot_writable > 0) 
+				if ($webroot_writable > 0)
 					{fwrite($stmt_file, $stmtZ."\r\n");}
 			}
 
@@ -1832,13 +1832,13 @@ if ($leadfile) {
 				if ($DB>0) {echo "$stmt\n";}
 				$rslt=mysql_query($stmt, $link);
 				$tablecount_to_print = mysql_num_rows($rslt);
-				if ($tablecount_to_print > 0) 
+				if ($tablecount_to_print > 0)
 					{
 					$stmt="SELECT count(*) from vicidial_lists_fields where list_id='$list_id_override';";
 					if ($DB>0) {echo "$stmt\n";}
 					$rslt=mysql_query($stmt, $link);
 					$fieldscount_to_print = mysql_num_rows($rslt);
-					if ($fieldscount_to_print > 0) 
+					if ($fieldscount_to_print > 0)
 						{
 						$rowx=mysql_fetch_row($rslt);
 						$custom_records_count =	$rowx[0];
@@ -1850,7 +1850,7 @@ if ($leadfile) {
 						$fields_to_print = mysql_num_rows($rslt);
 						$fields_list='';
 						$o=0;
-						while ($fields_to_print > $o) 
+						while ($fields_to_print > $o)
 							{
 							$rowx=mysql_fetch_row($rslt);
 							$A_field_label[$o] =	$rowx[1];
@@ -1878,7 +1878,7 @@ if ($leadfile) {
 
 			$rslt=mysql_query("$fields_stmt", $link);
 
-			if (!eregi(".csv", $leadfile_name) && !eregi(".xls", $leadfile_name)) 
+			if (!eregi(".csv", $leadfile_name) && !eregi(".xls", $leadfile_name))
 				{
 				if ($webroot_writable > 0)
 					{
@@ -1904,18 +1904,18 @@ if ($leadfile) {
 				$file=fopen("$lead_file", "r");
 				print "<center><font face='arial, helvetica' size=3 color='#009900'><B>Processing $delim_name-delimited file...\n";
 
-				if (strlen($list_id_override)>0) 
+				if (strlen($list_id_override)>0)
 					{
 					print "<BR><BR>LIST ID OVERRIDE FOR THIS FILE: $list_id_override<BR><BR>";
 					}
-				if (strlen($phone_code_override)>0) 
+				if (strlen($phone_code_override)>0)
 					{
 					print "<BR><BR>PHONE CODE OVERRIDE FOR THIS FILE: $phone_code_override<BR><BR>";
 					}
 				$buffer=rtrim(fgets($file, 4096));
 				$buffer=stripslashes($buffer);
 				$row=explode($delimiter, eregi_replace("[\'\"]", "", $buffer));
-				
+
 				for ($i=0; $i<mysql_num_fields($rslt); $i++) {
 
 					if ( (mysql_field_name($rslt, $i)=="list_id" and $list_id_override!="") or (mysql_field_name($rslt, $i)=="phone_code" and $phone_code_override!="") ) {
@@ -1925,19 +1925,19 @@ if ($leadfile) {
 						print "    <td align=right><font class=standard>".strtoupper(eregi_replace("_", " ", mysql_field_name($rslt, $i))).": </font></td>\r\n";
 						print "    <td align=center><select name='".mysql_field_name($rslt, $i)."_field'>\r\n";
 						print "     <option value='-1'>(none)</option>\r\n";
-	
+
 						for ($j=0; $j<count($row); $j++) {
 							eregi_replace("\"", "", $row[$j]);
 							print "     <option value='$j'>\"$row[$j]\"</option>\r\n";
 						}
-	
+
 						print "    </select></td>\r\n";
 						print "  </tr>\r\n";
 					}
 
 				}
-			} 
-			else if (!eregi(".csv", $leadfile_name)) 
+			}
+			else if (!eregi(".csv", $leadfile_name))
 			{
 				if ($webroot_writable > 0)
 					{
@@ -1959,8 +1959,8 @@ if ($leadfile) {
 				if (eregi("DUPTITLEALTPHONESYS",$dupcheck)) {$dupcheckCLI='--duplicate-tap-system-check';}
 				if (eregi("POSTAL",$postalgmt)) {$postalgmtCLI='--postal-code-gmt';}
 				passthru("$WeBServeRRooT/$admin_web_directory/listloader_rowdisplay.pl --lead-file=$lead_file $postalgmtCLI $dupcheckCLI");
-			} 
-			else 
+			}
+			else
 			{
 				if ($webroot_writable > 0)
 					{
@@ -1976,14 +1976,14 @@ if ($leadfile) {
 
 				if ($webroot_writable > 0)
 					{$stmt_file=fopen("$WeBServeRRooT/$admin_web_directory/listloader_stmts.txt", "w");}
-				
+
 				print "<center><font face='arial, helvetica' size=3 color='#009900'><B>Processing CSV file... \n";
-				
-				if (strlen($list_id_override)>0) 
+
+				if (strlen($list_id_override)>0)
 					{
 					print "<BR><BR>LIST ID OVERRIDE FOR THIS FILE: $list_id_override<BR><BR>";
 					}
-				if (strlen($phone_code_override)>0) 
+				if (strlen($phone_code_override)>0)
 					{
 					print "<BR><BR>PHONE CODE OVERRIDE FOR THIS FILE: $phone_code_override<BR><BR>";
 					}
@@ -2149,7 +2149,7 @@ if ( (!$AC_processed) and ($dst_range == 'SSM-FSN') )
 	if ($DBX) {print "     Second Sunday March to First Sunday November\n";}
 	#**********************************************************************
 	# SSM-FSN
-	#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+	#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 	#       Standard time is in effect.
 	#     Based on Second Sunday March to First Sunday November at 2 am.
 	#     INPUTS:
@@ -2160,10 +2160,10 @@ if ( (!$AC_processed) and ($dst_range == 'SSM-FSN') )
 	#     OPTIONAL INPUT:
 	#       timezone        INTEGER       hour difference UTC - local standard time
 	#                                      (DEFAULT is blank)
-	#                                     make calculations based on UTC time, 
+	#                                     make calculations based on UTC time,
 	#                                     which means shift at 10:00 UTC in April
 	#                                     and 9:00 UTC in October
-	#     OUTPUT: 
+	#     OUTPUT:
 	#                       INTEGER       1 = DST, 0 = not DST
 	#
 	# S  M  T  W  T  F  S
@@ -2172,14 +2172,14 @@ if ( (!$AC_processed) and ($dst_range == 'SSM-FSN') )
 	#15 16 17 18 19 20 21
 	#22 23 24 25 26 27 28
 	#29 30 31
-	# 
+	#
 	# S  M  T  W  T  F  S
 	#    1  2  3  4  5  6
 	# 7  8  9 10 11 12 13
 	#14 15 16 17 18 19 20
 	#21 22 23 24 25 26 27
 	#28 29 30 31
-	# 
+	#
 	#**********************************************************************
 
 		$USACAN_DST=0;
@@ -2189,50 +2189,50 @@ if ( (!$AC_processed) and ($dst_range == 'SSM-FSN') )
 		$dow= $wday;
 
 		if ($mm < 3 || $mm > 11) {
-		$USACAN_DST=0;   
+		$USACAN_DST=0;
 		} elseif ($mm >= 4 and $mm <= 10) {
-		$USACAN_DST=1;   
+		$USACAN_DST=1;
 		} elseif ($mm == 3) {
 		if ($dd > 13) {
-			$USACAN_DST=1;   
+			$USACAN_DST=1;
 		} elseif ($dd >= ($dow+8)) {
 			if ($timezone) {
 			if ($dow == 0 and $ns < (7200+$timezone*3600)) {
-				$USACAN_DST=0;   
+				$USACAN_DST=0;
 			} else {
-				$USACAN_DST=1;   
+				$USACAN_DST=1;
 			}
 			} else {
 			if ($dow == 0 and $ns < 7200) {
-				$USACAN_DST=0;   
+				$USACAN_DST=0;
 			} else {
-				$USACAN_DST=1;   
+				$USACAN_DST=1;
 			}
 			}
 		} else {
-			$USACAN_DST=0;   
+			$USACAN_DST=0;
 		}
 		} elseif ($mm == 11) {
 		if ($dd > 7) {
-			$USACAN_DST=0;   
+			$USACAN_DST=0;
 		} elseif ($dd < ($dow+1)) {
-			$USACAN_DST=1;   
+			$USACAN_DST=1;
 		} elseif ($dow == 0) {
 			if ($timezone) { # UTC calculations
 			if ($ns < (7200+($timezone-1)*3600)) {
-				$USACAN_DST=1;   
+				$USACAN_DST=1;
 			} else {
-				$USACAN_DST=0;   
+				$USACAN_DST=0;
 			}
 			} else { # local time calculations
 			if ($ns < 7200) {
-				$USACAN_DST=1;   
+				$USACAN_DST=1;
 			} else {
-				$USACAN_DST=0;   
+				$USACAN_DST=0;
 			}
 			}
 		} else {
-			$USACAN_DST=0;   
+			$USACAN_DST=0;
 		}
 		} # end of month checks
 	if ($DBX) {print "     DST: $USACAN_DST\n";}
@@ -2245,11 +2245,11 @@ if ( (!$AC_processed) and ($dst_range == 'FSA-LSO') )
 	if ($DBX) {print "     First Sunday April to Last Sunday October\n";}
 	#**********************************************************************
 	# FSA-LSO
-	#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+	#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 	#       Standard time is in effect.
 	#     Based on first Sunday in April and last Sunday in October at 2 am.
 	#**********************************************************************
-		
+
 		$USA_DST=0;
 		$mm = $mon;
 		$dd = $mday;
@@ -2313,11 +2313,11 @@ if ( (!$AC_processed) and ($dst_range == 'LSM-LSO') )
 	{
 	if ($DBX) {print "     Last Sunday March to Last Sunday October\n";}
 	#**********************************************************************
-	#     This is s 1 if Daylight Savings Time is in effect and 0 if 
+	#     This is s 1 if Daylight Savings Time is in effect and 0 if
 	#       Standard time is in effect.
 	#     Based on last Sunday in March and last Sunday in October at 1 am.
 	#**********************************************************************
-		
+
 		$GBR_DST=0;
 		$mm = $mon;
 		$dd = $mday;
@@ -2381,11 +2381,11 @@ if ( (!$AC_processed) and ($dst_range == 'LSO-LSM') )
 	{
 	if ($DBX) {print "     Last Sunday October to Last Sunday March\n";}
 	#**********************************************************************
-	#     This is s 1 if Daylight Savings Time is in effect and 0 if 
+	#     This is s 1 if Daylight Savings Time is in effect and 0 if
 	#       Standard time is in effect.
 	#     Based on last Sunday in October and last Sunday in March at 1 am.
 	#**********************************************************************
-		
+
 		$AUS_DST=0;
 		$mm = $mon;
 		$dd = $mday;
@@ -2440,7 +2440,7 @@ if ( (!$AC_processed) and ($dst_range == 'LSO-LSM') )
 		} else {
 			$AUS_DST=1;
 		}
-		} # end of month checks						
+		} # end of month checks
 	if ($DBX) {print "     DST: $AUS_DST\n";}
 	if ($AUS_DST) {$gmt_offset++;}
 	$AC_processed++;
@@ -2451,11 +2451,11 @@ if ( (!$AC_processed) and ($dst_range == 'FSO-LSM') )
 	if ($DBX) {print "     First Sunday October to Last Sunday March\n";}
 	#**********************************************************************
 	#   TASMANIA ONLY
-	#     This is s 1 if Daylight Savings Time is in effect and 0 if 
+	#     This is s 1 if Daylight Savings Time is in effect and 0 if
 	#       Standard time is in effect.
 	#     Based on first Sunday in October and last Sunday in March at 1 am.
 	#**********************************************************************
-		
+
 		$AUST_DST=0;
 		$mm = $mon;
 		$dd = $mday;
@@ -2508,7 +2508,7 @@ if ( (!$AC_processed) and ($dst_range == 'FSO-LSM') )
 		} else {
 			$AUST_DST=0;
 		}
-		} # end of month checks						
+		} # end of month checks
 	if ($DBX) {print "     DST: $AUST_DST\n";}
 	if ($AUST_DST) {$gmt_offset++;}
 	$AC_processed++;
@@ -2520,11 +2520,11 @@ if ( (!$AC_processed) and ($dst_range == 'FSO-FSA') )
 	#**********************************************************************
 	# FSO-FSA
 	#   2008+ AUSTRALIA ONLY (country code 61)
-	#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+	#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 	#       Standard time is in effect.
 	#     Based on first Sunday in October and first Sunday in April at 1 am.
 	#**********************************************************************
-    
+
 	$AUSE_DST=0;
 	$mm = $mon;
 	$dd = $mday;
@@ -2532,48 +2532,48 @@ if ( (!$AC_processed) and ($dst_range == 'FSO-FSA') )
 	$dow= $wday;
 
     if ($mm < 4 or $mm > 10) {
-	$AUSE_DST=1;   
+	$AUSE_DST=1;
     } elseif ($mm >= 5 and $mm <= 9) {
-	$AUSE_DST=0;   
+	$AUSE_DST=0;
     } elseif ($mm == 4) {
 	if ($dd > 7) {
-	    $AUSE_DST=0;   
+	    $AUSE_DST=0;
 	} elseif ($dd >= ($dow+1)) {
 	    if ($timezone) {
 		if ($dow == 0 and $ns < (3600+$timezone*3600)) {
-		    $AUSE_DST=1;   
+		    $AUSE_DST=1;
 		} else {
-		    $AUSE_DST=0;   
+		    $AUSE_DST=0;
 		}
 	    } else {
 		if ($dow == 0 and $ns < 7200) {
-		    $AUSE_DST=1;   
+		    $AUSE_DST=1;
 		} else {
-		    $AUSE_DST=0;   
+		    $AUSE_DST=0;
 		}
 	    }
 	} else {
-	    $AUSE_DST=1;   
+	    $AUSE_DST=1;
 	}
     } elseif ($mm == 10) {
 	if ($dd >= 8) {
-	    $AUSE_DST=1;   
+	    $AUSE_DST=1;
 	} elseif ($dd >= ($dow+1)) {
 	    if ($timezone) {
 		if ($dow == 0 and $ns < (7200+$timezone*3600)) {
-		    $AUSE_DST=0;   
+		    $AUSE_DST=0;
 		} else {
-		    $AUSE_DST=1;   
+		    $AUSE_DST=1;
 		}
 	    } else {
 		if ($dow == 0 and $ns < 3600) {
-		    $AUSE_DST=0;   
+		    $AUSE_DST=0;
 		} else {
-		    $AUSE_DST=1;   
+		    $AUSE_DST=1;
 		}
 	    }
 	} else {
-	    $AUSE_DST=0;   
+	    $AUSE_DST=0;
 	}
     } # end of month checks
 	if ($DBX) {print "     DST: $AUSE_DST\n";}
@@ -2585,11 +2585,11 @@ if ( (!$AC_processed) and ($dst_range == 'FSO-TSM') )
 	{
 	if ($DBX) {print "     First Sunday October to Third Sunday March\n";}
 	#**********************************************************************
-	#     This is s 1 if Daylight Savings Time is in effect and 0 if 
+	#     This is s 1 if Daylight Savings Time is in effect and 0 if
 	#       Standard time is in effect.
 	#     Based on first Sunday in October and third Sunday in March at 1 am.
 	#**********************************************************************
-		
+
 		$NZL_DST=0;
 		$mm = $mon;
 		$dd = $mday;
@@ -2642,7 +2642,7 @@ if ( (!$AC_processed) and ($dst_range == 'FSO-TSM') )
 		} else {
 			$NZL_DST=0;
 		}
-		} # end of month checks						
+		} # end of month checks
 	if ($DBX) {print "     DST: $NZL_DST\n";}
 	if ($NZL_DST) {$gmt_offset++;}
 	$AC_processed++;
@@ -2654,11 +2654,11 @@ if ( (!$AC_processed) and ($dst_range == 'LSS-FSA') )
 	#**********************************************************************
 	# LSS-FSA
 	#   2007+ NEW ZEALAND (country code 64)
-	#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+	#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 	#       Standard time is in effect.
 	#     Based on last Sunday in September and first Sunday in April at 1 am.
 	#**********************************************************************
-    
+
 	$NZLN_DST=0;
 	$mm = $mon;
 	$dd = $mday;
@@ -2666,50 +2666,50 @@ if ( (!$AC_processed) and ($dst_range == 'LSS-FSA') )
 	$dow= $wday;
 
     if ($mm < 4 || $mm > 9) {
-	$NZLN_DST=1;   
+	$NZLN_DST=1;
     } elseif ($mm >= 5 && $mm <= 9) {
-	$NZLN_DST=0;   
+	$NZLN_DST=0;
     } elseif ($mm == 4) {
 	if ($dd > 7) {
-	    $NZLN_DST=0;   
+	    $NZLN_DST=0;
 	} elseif ($dd >= ($dow+1)) {
 	    if ($timezone) {
 		if ($dow == 0 && $ns < (3600+$timezone*3600)) {
-		    $NZLN_DST=1;   
+		    $NZLN_DST=1;
 		} else {
-		    $NZLN_DST=0;   
+		    $NZLN_DST=0;
 		}
 	    } else {
 		if ($dow == 0 && $ns < 7200) {
-		    $NZLN_DST=1;   
+		    $NZLN_DST=1;
 		} else {
-		    $NZLN_DST=0;   
+		    $NZLN_DST=0;
 		}
 	    }
 	} else {
-	    $NZLN_DST=1;   
+	    $NZLN_DST=1;
 	}
     } elseif ($mm == 9) {
 	if ($dd < 25) {
-	    $NZLN_DST=0;   
+	    $NZLN_DST=0;
 	} elseif ($dd < ($dow+25)) {
-	    $NZLN_DST=0;   
+	    $NZLN_DST=0;
 	} elseif ($dow == 0) {
 	    if ($timezone) { # UTC calculations
 		if ($ns < (3600+($timezone-1)*3600)) {
-		    $NZLN_DST=0;   
+		    $NZLN_DST=0;
 		} else {
-		    $NZLN_DST=1;   
+		    $NZLN_DST=1;
 		}
 	    } else { # local time calculations
 		if ($ns < 3600) {
-		    $NZLN_DST=0;   
+		    $NZLN_DST=0;
 		} else {
-		    $NZLN_DST=1;   
+		    $NZLN_DST=1;
 		}
 	    }
 	} else {
-	    $NZLN_DST=1;   
+	    $NZLN_DST=1;
 	}
     } # end of month checks
 	if ($DBX) {print "     DST: $NZLN_DST\n";}
@@ -2722,11 +2722,11 @@ if ( (!$AC_processed) and ($dst_range == 'TSO-LSF') )
 	if ($DBX) {print "     Third Sunday October to Last Sunday February\n";}
 	#**********************************************************************
 	# TSO-LSF
-	#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+	#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 	#       Standard time is in effect. Brazil
 	#     Based on Third Sunday October to Last Sunday February at 1 am.
 	#**********************************************************************
-		
+
 		$BZL_DST=0;
 		$mm = $mon;
 		$dd = $mday;
@@ -2734,52 +2734,52 @@ if ( (!$AC_processed) and ($dst_range == 'TSO-LSF') )
 		$dow= $wday;
 
 		if ($mm < 2 || $mm > 10) {
-		$BZL_DST=1;   
+		$BZL_DST=1;
 		} elseif ($mm >= 3 and $mm <= 9) {
-		$BZL_DST=0;   
+		$BZL_DST=0;
 		} elseif ($mm == 2) {
 		if ($dd < 22) {
-			$BZL_DST=1;   
+			$BZL_DST=1;
 		} elseif ($dd < ($dow+22)) {
-			$BZL_DST=1;   
+			$BZL_DST=1;
 		} elseif ($dow == 0) {
 			if ($timezone) { # UTC calculations
 			if ($ns < (3600+($timezone-1)*3600)) {
-				$BZL_DST=1;   
+				$BZL_DST=1;
 			} else {
-				$BZL_DST=0;   
+				$BZL_DST=0;
 			}
 			} else { # local time calculations
 			if ($ns < 3600) {
-				$BZL_DST=1;   
+				$BZL_DST=1;
 			} else {
-				$BZL_DST=0;   
+				$BZL_DST=0;
 			}
 			}
 		} else {
-			$BZL_DST=0;   
+			$BZL_DST=0;
 		}
 		} elseif ($mm == 10) {
 		if ($dd < 22) {
-			$BZL_DST=0;   
+			$BZL_DST=0;
 		} elseif ($dd < ($dow+22)) {
-			$BZL_DST=0;   
+			$BZL_DST=0;
 		} elseif ($dow == 0) {
 			if ($timezone) { # UTC calculations
 			if ($ns < (3600+($timezone-1)*3600)) {
-				$BZL_DST=0;   
+				$BZL_DST=0;
 			} else {
-				$BZL_DST=1;   
+				$BZL_DST=1;
 			}
 			} else { # local time calculations
 			if ($ns < 3600) {
-				$BZL_DST=0;   
+				$BZL_DST=0;
 			} else {
-				$BZL_DST=1;   
+				$BZL_DST=1;
 			}
 			}
 		} else {
-			$BZL_DST=1;   
+			$BZL_DST=1;
 		}
 		} # end of month checks
 	if ($DBX) {print "     DST: $BZL_DST\n";}

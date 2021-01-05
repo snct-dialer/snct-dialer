@@ -2,8 +2,8 @@
 #
 # agi-LCR-Route.agi version 2.2.0
 #
-# This script looks up the NPANXX in the lcr table and sets 
-# the LCRTRUNK dialplan variable to the carrier string 
+# This script looks up the NPANXX in the lcr table and sets
+# the LCRTRUNK dialplan variable to the carrier string
 # with the cheapest rate. If no carrier is found for this NPANXX
 # the variable is unchanged so you should set it with the default
 # previously.
@@ -118,13 +118,13 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port) {$VARDB_port='3306';}
-if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout";}
+if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout.log";}
 
 use DBI;
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
     or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
@@ -154,7 +154,7 @@ if (length($ARGV[0])>1)
 		if ($AGILOG) {$agi_string = "$i|$ARGV[$i]";   &agi_output;}
 		$i++;
 		}
-	
+
 	### list of command-line array arguments:
 	@ARGV_vars = split(/-----/, $ARGV[0]);
 
@@ -167,8 +167,8 @@ $stmtA = "SELECT carrier_string, rate FROM lcr WHERE npanxx='$npanxx' ORDER BY r
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
-if ( $sthArows > 0 ) 
-	{ 
+if ( $sthArows > 0 )
+	{
 	$rec_count=0;
 	@aryA = $sthA->fetchrow_array;
 	$carrier_string = "$aryA[0]";
@@ -178,7 +178,7 @@ if ( $sthArows > 0 )
 
 	$AGI->set_variable( "LCRTRUNK",$carrier_string );
 	}
-else 
+else
 	{
 	if ($AGILOG) {$agi_string = "No carrier found for NPANXX = $npanxx. Leaving the LCRTRUNK variable as the default.";   &agi_output;}
 	}

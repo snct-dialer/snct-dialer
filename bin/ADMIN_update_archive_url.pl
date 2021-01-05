@@ -21,7 +21,7 @@
 use Fcntl qw(:flock);
 # print "start of program $0\n";
 unless (flock(DATA, LOCK_EX|LOCK_NB)) {
-    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log'
     or print "Can't open the fscking file: $!";
     $datestring = localtime();
     print $fh "[$datestring] $0 is already running. Exiting.\n";
@@ -31,7 +31,7 @@ unless (flock(DATA, LOCK_EX|LOCK_NB)) {
 use DBI;
 
 # function to print out the help for this script
-sub print_help 
+sub print_help
 	{
 	print "$0 - updates the url in the recording_log\n";
 	print "command-line options:\n";
@@ -125,7 +125,7 @@ if (( $new_url eq "") || ( $old_url eq "")) {
 }
 
 # connect to the db
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
 	or die "Couldn't connect to database: " . DBI->errstr;
 
 # get all the recordings with the old_url

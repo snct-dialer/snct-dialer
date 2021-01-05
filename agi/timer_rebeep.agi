@@ -89,13 +89,13 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port) {$VARDB_port='3306';}
-if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/rebeep";}
+if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/rebeep.log";}
 
 use DBI;
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
     or die "Couldn't connect to database: " . DBI->errstr;
 
 # defaults:
@@ -114,7 +114,7 @@ if (length($ARGV[0])>1)
 		if ($AGILOG) {$agi_string = "$i|$ARGV[$i]";   &agi_output;}
 		$i++;
 		}
-	
+
 	### list of command-line array arguments:
 	@ARGV_vars = split(/---/, $ARGV[0]);
 
@@ -123,7 +123,7 @@ if (length($ARGV[0])>1)
 	}
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 	{
 	chomp;
 	last unless length($_);
@@ -273,7 +273,7 @@ if ( ($AGILOG == '1') || ($AGILOG == '3') )
 $agi_string='';
 }
 
-sub leading_zero($) 
+sub leading_zero($)
 {
     $_ = $_[0];
     s/^(\d)$/0$1/;

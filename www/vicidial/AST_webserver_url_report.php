@@ -1,7 +1,7 @@
-<?php 
+<?php
 # AST_webserver_url_report.php
-# 
-# Copyright (C) 2017  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# Copyright (C) 2019  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 140225-0229 - First build
@@ -10,6 +10,7 @@
 # 170409-1534 - Added IP List validation code
 # 170818-2130 - Added HTML formatting
 # 170829-0040 - Added screen color settings
+# 191013-0907 - Fixes for PHP7
 #
 
 $startMS = microtime();
@@ -53,6 +54,8 @@ $NOW_DATE = date("Y-m-d");
 
 if (strlen($query_date_D) < 6) {$query_date_D = "00:00:00";}
 if (strlen($query_date_T) < 6) {$query_date_T = "23:59:59";}
+if (!isset($webserver)) {$webserver = array();}
+if (!isset($url)) {$url = array();}
 if (!isset($query_date)) {$query_date = $NOW_DATE;}
 if (!isset($end_date)) {$end_date = $NOW_DATE;}
 
@@ -232,6 +235,9 @@ $webserver_stmt="select webserver_id,webserver,hostname from vicidial_webservers
 $webserver_rslt=mysql_to_mysqli($webserver_stmt, $link);
 $webservers_to_print=mysqli_num_rows($webserver_rslt);
 $i=0;
+$LISTwebserver_ids=array();
+$LISTwebservers=array();
+$LISThostnames=array();
 while ($i < $webservers_to_print)
 	{
 	$row=mysqli_fetch_row($webserver_rslt);
@@ -302,11 +308,11 @@ while ($i < $urls_to_print)
 	}
 
 $urls_string='|';
-$i=0; 
+$i=0;
 $url_SQL="";
 while($i < $url_ct)
 	{
-	if ( (strlen($url[$i]) > 0) and (preg_match("/\|$url[$i]\|/",$url_string)) ) 
+	if ( (strlen($url[$i]) > 0) and (preg_match("/\|$url[$i]\|/",$url_string)) )
 		{
 		$urls_string .= "$url[$i]|";
 		$urlQS .= "&url[]=$url[$i]";
@@ -318,7 +324,7 @@ while($i < $url_ct)
 if ( (preg_match('/\-\-ALL\-\-/',$url_string) ) or ($url_ct < 1) )
 	{
 	$URL_rpt_string="- "._QXZ("ALL URLS");
-	if (preg_match('/\-\-ALL\-\-/',$url_string)) 
+	if (preg_match('/\-\-ALL\-\-/',$url_string))
 		{
 		$urlQS="&url[]=--ALL--";
 		$url_SQL="";
@@ -406,7 +412,7 @@ $o=0;
 
 while ($webservers_to_print > $o)
 	{
-	if (preg_match("/\|$LISTwebserver_ids[$o]\|/",$webserver_string)) 
+	if (preg_match("/\|$LISTwebserver_ids[$o]\|/",$webserver_string))
 		{$MAIN.="<option selected value=\"$LISTwebserver_ids[$o]\">$LISTwebservers[$o] - $LISThostnames[$o]</option>\n";}
 	else
 		{$MAIN.="<option value=\"$LISTwebserver_ids[$o]\">$LISTwebservers[$o] - $LISThostnames[$o]</option>\n";}
@@ -425,7 +431,7 @@ else
 $o=0;
 while ($urls_to_print > $o)
 	{
-	if (preg_match("/\|$LISTurl_ids[$o]\|/",$urls_string)) 
+	if (preg_match("/\|$LISTurl_ids[$o]\|/",$urls_string))
 		{$MAIN.="<option selected value=\"$LISTurl_ids[$o]\">$LISTurl_ids[$o] - $LISTurls[$o]</option>\n";}
 	else
 		{$MAIN.="<option value=\"$LISTurl_ids[$o]\">$LISTurl_ids[$o] - $LISTurls[$o]</option>\n";}
@@ -438,8 +444,8 @@ $MAIN.="<TD ROWSPAN=2 VALIGN=middle align=center>\n";
 
 $MAIN.=_QXZ("Display as:");
 $MAIN.="<select name='report_display_type'>";
-if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>$report_display_type</option>";}
-$MAIN.="<option value='TEXT'>TEXT</option><option value='HTML'>HTML</option></select>\n<BR><BR>";
+if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
+$MAIN.="<option value='TEXT'>"._QXZ("TEXT")."</option><option value='HTML'>"._QXZ("HTML")."</option></select>\n<BR><BR>";
 
 $MAIN.="<INPUT TYPE=submit NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'><BR/><BR/>\n";
 $MAIN.="</TD></TR></TABLE>\n";
@@ -473,7 +479,7 @@ if ($SUBMIT && $query_date && $end_date) {
 		$HTML.="<th><font size='2'>"._QXZ("URL")."</font></th>";
 		$HTML.="<th><font size='2'>"._QXZ("COUNT")."</font></th>";
 		$HTML.="</tr>\n";
-		
+
 		$user_TOTAL=0;
 		while($row=mysqli_fetch_row($rslt)) {
 			$TEXT.="| ".sprintf("%-50s", substr($webserver_array[$row[0]], 0, 100))." | ".sprintf("%-100s", substr($url_array[$row[1]], 0, 100))." | ".sprintf("%6s", $row[2])." |\n";

@@ -29,7 +29,7 @@
 use Fcntl qw(:flock);
 # print "start of program $0\n";
 unless (flock(DATA, LOCK_EX|LOCK_NB)) {
-    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log'
     or print "Can't open the fscking file: $!";
     $datestring = localtime();
     print $fh "[$datestring] $0 is already running. Exiting.\n";
@@ -166,40 +166,40 @@ if (length($ARGV[0])>1)
 			$KEY_allq=1;
 			if ($Q < 1) {print "\n----- QUEUE KEY ALLQ -----\n\n";}
 			}
-		if ($args =~ /--qm-db-server=/i) 
+		if ($args =~ /--qm-db-server=/i)
 			{
 			my @data_in = split(/--qm-db-server=/,$args);
 			$VARQMDB_host = $data_in[1];
 			$VARQMDB_host =~ s/ .*//gi;
 			$CLIQMDB_host=1;
-			if ($DB > 0) 
+			if ($DB > 0)
 				{print "\n----- QM DB SERVER: $VARQMDB_host -----\n\n";}
 			}
-		if ($args =~ /--qm-db-login=/i) 
+		if ($args =~ /--qm-db-login=/i)
 			{
 			my @data_in = split(/--qm-db-login=/,$args);
 			$VARQMDB_user = $data_in[1];
 			$VARQMDB_user =~ s/ .*//gi;
 			$CLIQMDB_user=1;
-			if ($DB > 0) 
+			if ($DB > 0)
 				{print "\n----- QM DB LOGIN: $VARQMDB_user -----\n\n";}
 			}
-		if ($args =~ /--qm-db-pass=/i) 
+		if ($args =~ /--qm-db-pass=/i)
 			{
 			my @data_in = split(/--qm-db-pass=/,$args);
 			$VARQMDB_pass = $data_in[1];
 			$VARQMDB_pass =~ s/ .*//gi;
 			$CLIQMDB_pass=1;
-			if ($DB > 0) 
+			if ($DB > 0)
 				{print "\n----- QM DB PASS: $VARQMDB_pass -----\n\n";}
 			}
-		if ($args =~ /--qm-db-dbname=/i) 
+		if ($args =~ /--qm-db-dbname=/i)
 			{
 			my @data_in = split(/--qm-db-dbname=/,$args);
 			$VARQMDB_dbname = $data_in[1];
 			$VARQMDB_dbname =~ s/ .*//gi;
 			$CLIQMDB_dbname=1;
-			if ($DB > 0) 
+			if ($DB > 0)
 				{print "\n----- QM DB DBNAME: $VARQMDB_dbname -----\n\n";}
 			}
 		}
@@ -254,9 +254,9 @@ if (!$CLEANLOGfile) {$CLEANLOGfile = "$PATHlogs/qmsync.$Hyear-$Hmon-$Hmday";}
 
 if (!$VARDB_port) {$VARDB_port='3306';}
 
-use DBI;	  
+use DBI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
 or die "Couldn't connect to database: " . DBI->errstr;
 
 #############################################
@@ -285,7 +285,7 @@ if ($CLIQMDB_user > 0)		{$queuemetrics_login =		$VARQMDB_user;}
 if ($CLIQMDB_pass > 0)		{$queuemetrics_pass =		$VARQMDB_pass;}
 
 
-$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 if ($DBX) {print "CONNECTED TO QM DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
@@ -312,7 +312,7 @@ if ($SYNC_user > 0)
 	$i=0;
 	while ($sthArowsU > $i)
 		{
-		@aryA = $sthA->fetchrow_array;	
+		@aryA = $sthA->fetchrow_array;
 		$Vuser[$i]	=			$aryA[0];
 		$Vfullname[$i]	=		$aryA[1];
 		$i++;
@@ -350,7 +350,7 @@ if ($SYNC_user > 0)
 
 			if ($ANX_count < 1)
 				{
-				### add a new agenti_noti record 
+				### add a new agenti_noti record
 				$stmtB = "INSERT INTO agenti_noti(nome_agente,descr_agente,location,current_terminal,xmpp_address,payroll_code,sys_dt_creazione,sys_user_creazione,sys_dt_modifica,sys_user_modifica,chiave_agente) values('agent/$Vuser[$i]','$Vfullname[$i]','7','-','','',NOW(),'32',NOW(),'32','');";
 				if ($TEST < 1)
 					{$Baffected_rows = $dbhB->do($stmtB);}
@@ -375,7 +375,7 @@ if ($SYNC_user > 0)
 				$updated_records++;
 				}
 			}
-		
+
 		else
 			{
 			if ($DB) {print "   agent exists: $Vuser[$i] - $Vfullname[$i]\n";}
@@ -415,7 +415,7 @@ if ($SYNC_remoteagents > 0)
 	$i=0;
 	while ($sthArowsU > $i)
 		{
-		@aryA = $sthA->fetchrow_array;	
+		@aryA = $sthA->fetchrow_array;
 		$Vuser[$i]	=				$aryA[0];
 		$Vnumber_of_lines[$i] =		$aryA[1];
 		$Vfullname[$i]	=			$aryA[2];
@@ -459,7 +459,7 @@ if ($SYNC_remoteagents > 0)
 
 				if ($ANX_count < 1)
 					{
-					### add a new agenti_noti record 
+					### add a new agenti_noti record
 					$stmtB = "INSERT INTO agenti_noti(nome_agente,descr_agente,location,current_terminal,xmpp_address,payroll_code,sys_dt_creazione,sys_user_creazione,sys_dt_modifica,sys_user_modifica,chiave_agente) values('agent/$Vuser[$i]','$Vfullname[$i]','7','-','','',NOW(),'32',NOW(),'32','');";
 					if ($TEST < 1)
 						{$Baffected_rows = $dbhB->do($stmtB);}
@@ -484,7 +484,7 @@ if ($SYNC_remoteagents > 0)
 					$updated_records++;
 					}
 				}
-			
+
 			else
 				{
 				if ($DB) {print "   agent exists: $Vuser[$i] - $Vfullname[$i]\n";}
@@ -526,7 +526,7 @@ if ($SYNC_dids > 0)
 	$i=0;
 	while ($sthArowsD > $i)
 		{
-		@aryA = $sthA->fetchrow_array;	
+		@aryA = $sthA->fetchrow_array;
 		$Vdid[$i]	=			$aryA[0];
 		$Vdescription[$i]	=	$aryA[1];
 		$i++;
@@ -564,7 +564,7 @@ if ($SYNC_dids > 0)
 
 			if ($ANX_count < 1)
 				{
-				### add a new dnis record 
+				### add a new dnis record
 				$stmtB = "INSERT INTO dnis (dnis_k,dnis_v,sys_dt_creazione,sys_user_creazione,sys_dt_modifica,sys_user_modifica,sys_optilock) values('$Vdid[$i]','$Vdid[$i] - $Vdescription[$i]',NOW(),'32',NOW(),'32','82946');";
 				if ($TEST < 1)
 					{$Baffected_rows = $dbhB->do($stmtB);}
@@ -589,7 +589,7 @@ if ($SYNC_dids > 0)
 				$updated_records++;
 				}
 			}
-		
+
 		else
 			{
 			if ($DB) {print "   did exists: $Vdid[$i] - $Vdescription[$i]\n";}
@@ -630,7 +630,7 @@ if ($SYNC_ivrs > 0)
 	$i=0;
 	while ($sthArowsD > $i)
 		{
-		@aryA = $sthA->fetchrow_array;	
+		@aryA = $sthA->fetchrow_array;
 		$Vivr[$i]	=			$aryA[0];
 		$Vdescription[$i]	=	$aryA[1];
 		$i++;
@@ -668,7 +668,7 @@ if ($SYNC_ivrs > 0)
 
 			if ($ANX_count < 1)
 				{
-				### add a new ivr record 
+				### add a new ivr record
 				$stmtB = "INSERT INTO ivr (ivr_k,ivr_v,sys_dt_creazione,sys_user_creazione,sys_dt_modifica,sys_user_modifica,sys_optilock) values('$Vivr[$i]','$Vivr[$i] - $Vdescription[$i]',NOW(),'32',NOW(),'32','82946');";
 				if ($TEST < 1)
 					{$Baffected_rows = $dbhB->do($stmtB);}
@@ -693,7 +693,7 @@ if ($SYNC_ivrs > 0)
 				$updated_records++;
 				}
 			}
-		
+
 		else
 			{
 			if ($DB) {print "   ivr exists: $Vivr[$i] - $Vdescription[$i]\n";}
@@ -734,7 +734,7 @@ if ($SYNC_ingroups > 0)
 	$i=0;
 	while ($sthArowsD > $i)
 		{
-		@aryA = $sthA->fetchrow_array;	
+		@aryA = $sthA->fetchrow_array;
 		$Vid[$i]	=			$aryA[0];
 		$Vdescription[$i]	=	$aryA[1];
 		$i++;
@@ -831,7 +831,7 @@ if ($SYNC_ingroups > 0)
 						$visibility_key =	$aryB[0];
 						}
 					$sthB->finish();
-					
+
 					if ($KEY_wipe > 0)
 						{$visibility_key='';}
 
@@ -879,7 +879,7 @@ if ($SYNC_ingroups > 0)
 				$updated_records++;
 				}
 			}
-		
+
 		else
 			{
 			if ($DB) {print "   code_possibili in-group exists: $Vid[$i] - $Vdescription[$i]\n";}
@@ -920,7 +920,7 @@ if ($SYNC_campaigns > 0)
 	$i=0;
 	while ($sthArowsD > $i)
 		{
-		@aryA = $sthA->fetchrow_array;	
+		@aryA = $sthA->fetchrow_array;
 		$Vid[$i]	=			$aryA[0];
 		$Vdescription[$i]	=	$aryA[1];
 		$i++;
@@ -983,7 +983,7 @@ if ($SYNC_campaigns > 0)
 				$updated_records++;
 				}
 			}
-		
+
 		else
 			{
 			if ($DB) {print "   code_possibili campaign exists: $Vid[$i] - $Vdescription[$i]\n";}

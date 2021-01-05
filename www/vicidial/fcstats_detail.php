@@ -1,6 +1,6 @@
-<?php 
+<?php
 # fcstats_detail.php
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -42,6 +42,7 @@
 # 171012-2015 - Fixed javascript/apache errors with graphs
 # 180508-2215 - Added new help display
 # 190216-0808 - Fix for user-group, in-group and campaign allowed/permissions matching issues
+# 191013-0851 - Fixes for PHP7
 #
 
 $startMS = microtime();
@@ -127,14 +128,14 @@ if (strlen($report_display_type)<2) {$report_display_type = $SSreport_default_fo
 ### ARCHIVED DATA CHECK CONFIGURATION
 $archives_available="N";
 $log_tables_array=array("vicidial_log", "vicidial_xfer_log", "vicidial_closer_log", "vicidial_agent_log");
-for ($t=0; $t<count($log_tables_array); $t++) 
+for ($t=0; $t<count($log_tables_array); $t++)
 	{
 	$table_name=$log_tables_array[$t];
 	$archive_table_name=use_archive_table($table_name);
 	if ($archive_table_name!=$table_name) {$archives_available="Y";}
 	}
 
-if ($search_archived_data) 
+if ($search_archived_data)
 	{
 	$vicidial_log_table=use_archive_table("vicidial_log");
 	$vicidial_agent_log_table=use_archive_table("vicidial_agent_log");
@@ -351,6 +352,7 @@ if ($DB) {$HTML_text.="$stmt\n";}
 $groups_to_print = mysqli_num_rows($rslt);
 $i=0;
 $groups_string='|';
+$groups=array();
 while ($i < $groups_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -364,6 +366,7 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {$HTML_text.="$stmt\n";}
 $campaigns_to_print = mysqli_num_rows($rslt);
 $i=0;
+$campaigns=array();
 while ($i < $campaigns_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -385,6 +388,7 @@ $user_groups_to_print = mysqli_num_rows($rslt);
 $i=0;
 #$user_groups[$i]="Auto-dial agents";
 #$i++;
+$user_groups=array();
 while ($i < $user_groups_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -398,6 +402,8 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {$HTML_text.="$stmt\n";}
 $users_to_print = mysqli_num_rows($rslt);
 $i=0;
+$user_list=array();
+$user_names=array();
 while ($i < $users_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -520,7 +526,7 @@ $HTML_head.="<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n"
 $HTML_head.="<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 $HTML_head.="<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 require("chart_button.php");
-$HTML_head.="<script src='chart/Chart.js'>Chart.defaults.global.defaultFontSize = 10;</script>\n"; 
+$HTML_head.="<script src='chart/Chart.js'>Chart.defaults.global.defaultFontSize = 10;</script>\n";
 $HTML_head.="<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
 
 $HTML_head.="<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
@@ -532,7 +538,7 @@ $HTML_head.="<TITLE>"._QXZ("$report_name")."</TITLE></HEAD><BODY BGCOLOR=WHITE m
 
 $HTML_text.="<b>"._QXZ("$report_name")."</b> $NWB#fcstats$NWE\n";
 $HTML_text.="<FORM ACTION=\"$PHP_SELF\" METHOD=GET name=vicidial_report id=vicidial_report>\n";
-$HTML_text.="<TABLE CELLPADDING=3 CELLSPACING=0 BGCOLOR=\"#".$SSframe_background."\"><TR><TD>Date:<BR>";
+$HTML_text.="<TABLE CELLPADDING=3 CELLSPACING=0 BGCOLOR=\"#".$SSframe_background."\"><TR><TD>"._QXZ("Date").":<BR>";
 
 $HTML_text.="<INPUT TYPE=TEXT NAME=query_date SIZE=10 MAXLENGTH=10 VALUE=\"$query_date\">";
 $HTML_text.="<script language=\"JavaScript\">\n";
@@ -544,7 +550,7 @@ $HTML_text.="	'controlname': 'query_date'\n";
 $HTML_text.="});\n";
 $HTML_text.="o_cal.a_tpl.yearscroll = false;\n";
 $HTML_text.="// o_cal.a_tpl.weekstart = 1; // Monday week start\n";
-$HTML_text.="</script> <BR>to:<BR>\n";
+$HTML_text.="</script> <BR>"._QXZ("to").":<BR>\n";
 
 $HTML_text.="<INPUT TYPE=TEXT NAME=end_date SIZE=10 MAXLENGTH=10 VALUE=\"$end_date\">";
 $HTML_text.="<script language=\"JavaScript\">\n";
@@ -559,11 +565,11 @@ $HTML_text.="// o_cal.a_tpl.weekstart = 1; // Monday week start\n";
 $HTML_text.="</script>\n";
 
 $HTML_text.="<BR><BR>";
-$HTML_text.="Display: <select name='report_display_type'>";
-if ($report_display_type) {$HTML_text.="<option value='$report_display_type' selected>$report_display_type</option>";}
+$HTML_text.=_QXZ("Display").": <select name='report_display_type'>";
+if ($report_display_type) {$HTML_text.="<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
 $HTML_text.="<option value='TEXT'>"._QXZ("TEXT")."</option><option value='HTML'>"._QXZ("HTML")."</option></select><BR><BR>\n";
-$HTML_text.="Shift: <SELECT SIZE=1 NAME=shift>\n";
-$HTML_text.="<option selected value=\"$shift\">$shift</option>\n";
+$HTML_text.=_QXZ("Shift").": <SELECT SIZE=1 NAME=shift>\n";
+$HTML_text.="<option selected value=\"$shift\">"._QXZ("$shift")."</option>\n";
 $HTML_text.="<option value=\"\">--</option>\n";
 $HTML_text.="<option value=\"AM\">"._QXZ("AM")."</option>\n";
 $HTML_text.="<option value=\"PM\">"._QXZ("PM")."</option>\n";
@@ -571,7 +577,7 @@ $HTML_text.="<option value=\"ALL\">"._QXZ("ALL")."</option>\n";
 $HTML_text.="</SELECT>\n";
 
 $HTML_text.="</td><td valign=TOP>";
-$HTML_text.="Ingroup: <BR><SELECT SIZE=5 NAME=group[] multiple>\n";
+$HTML_text.=_QXZ("Ingroup").": <BR><SELECT SIZE=5 NAME=group[] multiple>\n";
 	$o=0;
 	while ($groups_to_print > $o)
 	{
@@ -630,12 +636,12 @@ $HTML_text.="</SELECT>\n";
 $HTML_text.="</TD>";
 
 $HTML_text.="<TD align='center'><INPUT TYPE=hidden NAME=DB VALUE=\"$DB\">\n";
-if ($archives_available=="Y") 
+if ($archives_available=="Y")
 	{
 	$HTML_text.="<input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."<BR><BR>\n";
 	}
 $HTML_text.="<input type='checkbox' name='show_summary' value='checked' $show_summary>"._QXZ("Show fronter/closer summary")."<BR><BR>\n";
-$HTML_text.="<INPUT TYPE=submit NAME=SUBMIT VALUE=SUBMIT><BR><BR>\n";
+$HTML_text.="<INPUT TYPE=submit NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'><BR><BR>\n";
 $HTML_text.="<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2><a href=\"$PHP_SELF?query_date=$query_date&end_date=$end_date&group[]=" . implode("&group[]=", array_map(array($link, 'real_escape_string'), $group)) . "&shift=$shift&file_download=1&search_archived_data=$search_archived_data&show_summary=$show_summary$campaignQS$user_groupQS$userQS\">"._QXZ("DOWNLOAD")."</a> | <a href=\"./admin.php?ADD=3111&group_id=$group\">"._QXZ("MODIFY")."</a> | <a href=\"./admin.php?ADD=999999\">"._QXZ("REPORTS")."</a><BR/></FONT>\n";
 $HTML_text.="</TD>";
 
@@ -643,7 +649,7 @@ $HTML_text.="</TD>";
 $HTML_text.="</TR></TABLE>\n";
 $HTML_text.="</FORM>\n\n";
 
-$HTML_text.="<PRE><FONT SIZE=2>$report_display_type\n\n";
+$HTML_text.="<PRE><FONT SIZE=2>\n\n";
 
 
 if (!$group)
@@ -656,23 +662,23 @@ else
 {
 #	$time_BEGIN=$AM_shift_BEGIN;
 #	$time_END=$AM_shift_END;
-#$query_date_BEGIN = "$query_date $time_BEGIN";   
+#$query_date_BEGIN = "$query_date $time_BEGIN";
 #$query_date_END = "$query_date $time_END";
 
 $Cqdate = explode('-',$query_date);
 $Cedate = explode('-',$end_date);
 
-if ($shift == 'AM') 
+if ($shift == 'AM')
 	{
 	$query_date_BEGIN = date("Y-m-d H:i:s", mktime(1, 0, 0, $Cqdate[1], $Cqdate[2], $Cqdate[0]));
 	$query_date_END = date("Y-m-d H:i:s", mktime(17, 45, 0, $Cedate[1], $Cedate[2], $Cedate[0]));
 	}
-if ($shift == 'PM') 
+if ($shift == 'PM')
 	{
 	$query_date_BEGIN = date("Y-m-d H:i:s", mktime(17, 45, 1, $Cqdate[1], $Cqdate[2], $Cqdate[0]));
 	$query_date_END = date("Y-m-d H:i:s", mktime(24, 59, 59, $Cedate[1], $Cedate[2], $Cedate[0]));
 	}
-if ($shift == 'ALL') 
+if ($shift == 'ALL')
 	{
 	$query_date_BEGIN = date("Y-m-d H:i:s", mktime(1, 0, 0, $Cqdate[1], $Cqdate[2], $Cqdate[0]));
 	$query_date_END = date("Y-m-d H:i:s", mktime(24, 59, 59, $Cedate[1], $Cedate[2], $Cedate[0]));
@@ -823,8 +829,8 @@ if (count($complete_xfer_log)>0) {
 	$output_header="+---------------------+-----------+----------------------+----------------------+----------------------+----------------------+------------+----------------------+------------+----------------------+----------------------+----------------------+---------------------+--------+\n";
 	$HTML_text.="\n";
 	$HTML_text.=$output_header;
-	$HTML_text.="| CALL DATE (INITIAL) | LEAD ID   | PHONE NUMBER         | PROVINCE             | USER                 | USER GROUP - FRONTER | FRONT CAMP | INBOUND/XFER GROUP   | RECVD CAMP | RCVD GROUP           |  USER                | USER GROUP - CLOSER  | RECEIPT DATE        | STATUS |\n";
-	$CSV_text1="\"CALL DATE (INITIAL)\",\"LEAD ID\",\"PHONE NUMBER\",\"PROVINCE\",\"USER\",\"USER GROUP - FRONTER\",\"FRONT CAMP\",\"INBOUND/XFER GROUP\",\"RECVD CAMP\",\"RCVD GROUP\",\"USER\",\"USER GROUP - CLOSER\",\"RECEIPT DATE\",\"STATUS\"\n";
+	$HTML_text.="| "._QXZ("CALL DATE (INITIAL)", 19)." | "._QXZ("LEAD ID", 9)." | "._QXZ("PHONE NUMBER", 20)." | "._QXZ("PROVINCE", 20)." | "._QXZ("USER", 20)." | "._QXZ("USER GROUP - FRONTER", 20)." | "._QXZ("FRONT CAMP", 10)." | "._QXZ("INBOUND/XFER GROUP", 20)." | "._QXZ("RECVD CAMP", 10)." | "._QXZ("RCVD GROUP", 20)." | "._QXZ("USER", 20)." | "._QXZ("USER GROUP - CLOSER", 20)." | "._QXZ("RECEIPT DATE", 19)." | "._QXZ("STATUS", 6)." |\n";
+	$CSV_text1="\""._QXZ("CALL DATE (INITIAL)")."\",\""._QXZ("LEAD ID")."\",\""._QXZ("PHONE NUMBER")."\",\""._QXZ("PROVINCE")."\",\""._QXZ("USER")."\",\""._QXZ("USER GROUP - FRONTER")."\",\""._QXZ("FRONT CAMP")."\",\""._QXZ("INBOUND/XFER GROUP")."\",\""._QXZ("RECVD CAMP")."\",\""._QXZ("RCVD GROUP")."\",\""._QXZ("USER")."\",\""._QXZ("USER GROUP - CLOSER")."\",\""._QXZ("RECEIPT DATE")."\",\""._QXZ("STATUS")."\"\n";
 	$HTML_text.=$output_header;
 	for($i=0; $i<count($complete_xfer_log); $i++) {
 		$HTML_text.="| ";
@@ -932,6 +938,10 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {$ASCII_text.="$stmt\n";}
 $users_to_print = mysqli_num_rows($rslt);
 $i=0;
+$userRAW=array();
+$user=array();
+$USERcallsRAW=array();
+$USERcalls=array();
 while ($i < $users_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -947,6 +957,7 @@ while ($i < $users_to_print)
 	}
 
 $i=0;
+$full_name=array();
 while ($i < $users_to_print)
 	{
 	$stmt="select full_name from vicidial_users where user='$userRAW[$i]' $LOGadmin_viewable_groupsSQL;";
@@ -959,17 +970,17 @@ while ($i < $users_to_print)
 		$row=mysqli_fetch_row($rslt);
 		if ($non_latin < 1)
 			{
-			 $full_name[$i] =	sprintf("%-15s", $row[0]); while(strlen($full_name[$i])>15) {$full_name[$i] = substr("$full_name[$i]", 0, -1);}	
+			 $full_name[$i] =	sprintf("%-15s", $row[0]); while(strlen($full_name[$i])>15) {$full_name[$i] = substr("$full_name[$i]", 0, -1);}
 			}
 		else
 			{
-			 $full_name[$i] =	sprintf("%-45s", $row[0]); while(mb_strlen($full_name[$i],'utf-8')>15) {$full_name[$i] = mb_substr("$full_name[$i]", 0, -1,'utf-8');}	
+			 $full_name[$i] =	sprintf("%-45s", $row[0]); while(mb_strlen($full_name[$i],'utf-8')>15) {$full_name[$i] = mb_substr("$full_name[$i]", 0, -1,'utf-8');}
 			}
 		}
 	else
 		{$full_name[$i] = '               ';}
 
-	$DROP=0; $OTHER=0; $sales=0; 
+	$DROP=0; $OTHER=0; $sales=0;
 	$stmt="select vc.status,count(*) from ".$vicidial_xfer_log_table." vx, ".$vicidial_closer_log_table." vc where vx.call_date >= '$query_date_BEGIN' and vx.call_date <= '$query_date_END' and vc.call_date >= '$query_date_BEGIN' and vc.call_date <= '$query_date_END' and  vc.campaign_id in ('" . implode("','", array_map(array($link, 'real_escape_string'), $group)) . "') and vx.campaign_id in ('" . implode("','", array_map(array($link, 'real_escape_string'), $group)) . "') and vx.user='$userRAW[$i]' and vc.lead_id=vx.lead_id and vc.xfercallid=vx.xfercallid group by vc.status;";
 	if ($non_latin > 0) {$rslt=mysql_to_mysqli("SET NAMES 'UTF8'", $link);}
 	$rslt=mysql_to_mysqli($stmt, $link);
@@ -993,7 +1004,7 @@ while ($i < $users_to_print)
 	$Spct = MathZDC($sales, $USERcallsRAW[$i])*100;
 	$Spct = round($Spct, 2);
 	$Spct =	sprintf("%01.2f", $Spct);
-	
+
 	if ($sales>$max_success) {$max_success=$sales;}
 	if ($USERcalls[$i]>$max_xfers) {$max_xfers=$USERcalls[$i];}
 	if ($Spct>$max_success_pct) {$max_success_pct=$Spct;}
@@ -1022,7 +1033,7 @@ $totSpct = MathZDC($TOTsales, $TOTcalls)*100;
 $totSpct = round($totSpct, 2);
 $totSpct =	sprintf("%01.2f", $totSpct);
 $totSpct =	sprintf("%7s", $totSpct);
-	
+
 $TOTagents =	sprintf("%6s", $i);
 $TOTcalls =		sprintf("%6s", $TOTcalls);
 $TOTsales =		sprintf("%7s", $TOTsales);
@@ -1061,15 +1072,15 @@ $CSV_fronter_footer.="\""._QXZ("Average time in Queue for customers").":    $AVG
 	$graph_id++;
 	$graph_array=array("FCSF_XFERSdata|1|XFERS|integer|", "FCSF_SALEPCTdata|2|SALE %|percent|", "FCSF_SALESdata|3|SALES|integer|", "FCSF_DROPSdata|4|DROPS|integer|", "FCSF_OTHERdata|5|OTHER|integer|");
 	$default_graph="bar"; # Graph that is initally displayed when page loads
-	include("graph_color_schemas.inc"); 
+	include("graph_color_schemas.inc");
 
 	$graph_totals_array=array();
 	$graph_totals_rawdata=array();
 	for ($q=0; $q<count($graph_array); $q++) {
-		$graph_info=explode("|", $graph_array[$q]); 
+		$graph_info=explode("|", $graph_array[$q]);
 		$current_graph_total=0;
 		$dataset_name=$graph_info[0];
-		$dataset_index=$graph_info[1]; 
+		$dataset_index=$graph_info[1];
 		$dataset_type=$graph_info[3];
 
 		$JS_text.="var $dataset_name = {\n";
@@ -1087,7 +1098,7 @@ $CSV_fronter_footer.="\""._QXZ("Average time in Queue for customers").":    $AVG
 		$graphConstantsC="\t\t\t\thoverBorderColor: [";
 		for ($d=0; $d<count($graph_stats); $d++) {
 			$labels.="\"".preg_replace('/ +/', ' ', $graph_stats[$d][0])."\",";
-			$data.="\"".$graph_stats[$d][$dataset_index]."\","; 
+			$data.="\"".$graph_stats[$d][$dataset_index]."\",";
 			$current_graph_total+=$graph_stats[$d][$dataset_index];
 			$bgcolor=$backgroundColor[($d%count($backgroundColor))];
 			$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
@@ -1095,13 +1106,13 @@ $CSV_fronter_footer.="\""._QXZ("Average time in Queue for customers").":    $AVG
 			$graphConstantsA.="\"$bgcolor\",";
 			$graphConstantsB.="\"$hbgcolor\",";
 			$graphConstantsC.="\"$hbcolor\",";
-		}	
+		}
 		$graphConstantsA.="],\n";
 		$graphConstantsB.="],\n";
 		$graphConstantsC.="],\n";
 		$labels=preg_replace('/,$/', '', $labels)."],\n";
 		$data=preg_replace('/,$/', '', $data)."],\n";
-		
+
 		$graph_totals_rawdata[$q]=$current_graph_total;
 		switch($dataset_type) {
 			case "time":
@@ -1176,6 +1187,10 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {$ASCII_text.="$stmt\n";}
 $users_to_print = mysqli_num_rows($rslt);
 $i=0;
+$userRAW=array();
+$user=array();
+$USERcallsRAW=array();
+$USERcalls=array();
 while ($i < $users_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -1190,6 +1205,7 @@ while ($i < $users_to_print)
 	}
 
 $i=0;
+$full_name=array();
 while ($i < $users_to_print)
 	{
 	$stmt="select full_name from vicidial_users where user='$userRAW[$i]' $LOGadmin_viewable_groupsSQL;";
@@ -1202,11 +1218,11 @@ while ($i < $users_to_print)
 		$row=mysqli_fetch_row($rslt);
 		if ($non_latin < 1)
 			{
-			 $full_name[$i] =	sprintf("%-15s", $row[0]); while(strlen($full_name[$i])>15) {$full_name[$i] = substr("$full_name[$i]", 0, -1);}	
+			 $full_name[$i] =	sprintf("%-15s", $row[0]); while(strlen($full_name[$i])>15) {$full_name[$i] = substr("$full_name[$i]", 0, -1);}
 			}
 		else
 			{
-			 $full_name[$i] =	sprintf("%-45s", $row[0]); while(mb_strlen($full_name[$i],'utf-8')>15) {$full_name[$i] = mb_substr("$full_name[$i]", 0, -1,'utf-8');}	
+			 $full_name[$i] =	sprintf("%-45s", $row[0]); while(mb_strlen($full_name[$i],'utf-8')>15) {$full_name[$i] = mb_substr("$full_name[$i]", 0, -1,'utf-8');}
 			}
 		}
 	else
@@ -1223,15 +1239,15 @@ while ($i < $users_to_print)
 		{
 		$row=mysqli_fetch_row($rslt);
 		$recL=0;
-		if ( preg_match("/\|$row[0]\|/", $sale_dispo_str) and ($recL < 1) ) 
+		if ( preg_match("/\|$row[0]\|/", $sale_dispo_str) and ($recL < 1) )
 			{
-			$A1=$row[1]; $recL++; 
+			$A1=$row[1]; $recL++;
 			$sales=($sales + $row[1]);
 			$points = ($points + ($row[1] * 1) );
 			}
 		if ( ($row[0]=='DROP') and ($recL < 1) ) {$DROP=$row[1]; $recL++;}
 		if ($recL < 1) {$OTHER=($row[1] + $OTHER); $recL++;}
-		
+
 		$j++;
 		}
 
@@ -1289,12 +1305,12 @@ $totCpct = MathZDC($TOTsales, ( ($TOTcalls - 0) - $totDROP) )*100;
 $totCpct = round($totCpct, 2);
 $totCpct =	sprintf("%01.2f", $totCpct);
 $totCpct =	sprintf("%5s", $totCpct);
-		
+
 $ppc = MathZDC($totPOINTS, ( ($TOTcalls - $totOTHER) - $totDROP) );
 $ppc = round($ppc, 2);
 $ppc =	sprintf("%01.2f", $ppc);
 $ppc =	sprintf("%4s", $ppc);
-		
+
 $TOP = MathZDC($totTOP, $TOTsales)*100;
 $TOP = round($TOP, 0);
 $TOP =	sprintf("%01.0f", $TOP);
@@ -1322,15 +1338,15 @@ $CSV_closer_footer.="\""._QXZ("TOTAL CLOSERS").":  $TOTagents\",\"$TOTcalls\",\"
 	$graph_id++;
 	$graph_array=array("FCSC_CALLSdata|1|CALLS|integer|", "FCSC_SALESdata|2|SALES|integer|", "FCSC_DROPSdata|3|DROPS|integer|", "FCSC_OTHERdata|4|OTHER|integer|", "FCSC_CONVPCTdata|5|CONV %|percent|");
 	$default_graph="bar"; # Graph that is initally displayed when page loads
-	include("graph_color_schemas.inc"); 
+	include("graph_color_schemas.inc");
 
 	$graph_totals_array=array();
 	$graph_totals_rawdata=array();
 	for ($q=0; $q<count($graph_array); $q++) {
-		$graph_info=explode("|", $graph_array[$q]); 
+		$graph_info=explode("|", $graph_array[$q]);
 		$current_graph_total=0;
 		$dataset_name=$graph_info[0];
-		$dataset_index=$graph_info[1]; 
+		$dataset_index=$graph_info[1];
 		$dataset_type=$graph_info[3];
 
 		$JS_text.="var $dataset_name = {\n";
@@ -1348,7 +1364,7 @@ $CSV_closer_footer.="\""._QXZ("TOTAL CLOSERS").":  $TOTagents\",\"$TOTcalls\",\"
 		$graphConstantsC="\t\t\t\thoverBorderColor: [";
 		for ($d=0; $d<count($graph_stats); $d++) {
 			$labels.="\"".preg_replace('/ +/', ' ', $graph_stats[$d][0])."\",";
-			$data.="\"".$graph_stats[$d][$dataset_index]."\","; 
+			$data.="\"".$graph_stats[$d][$dataset_index]."\",";
 			$current_graph_total+=$graph_stats[$d][$dataset_index];
 			$bgcolor=$backgroundColor[($d%count($backgroundColor))];
 			$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
@@ -1356,13 +1372,13 @@ $CSV_closer_footer.="\""._QXZ("TOTAL CLOSERS").":  $TOTagents\",\"$TOTcalls\",\"
 			$graphConstantsA.="\"$bgcolor\",";
 			$graphConstantsB.="\"$hbgcolor\",";
 			$graphConstantsC.="\"$hbcolor\",";
-		}	
+		}
 		$graphConstantsA.="],\n";
 		$graphConstantsB.="],\n";
 		$graphConstantsC.="],\n";
 		$labels=preg_replace('/,$/', '', $labels)."],\n";
 		$data=preg_replace('/,$/', '', $data)."],\n";
-		
+
 		$graph_totals_rawdata[$q]=$current_graph_total;
 		switch($dataset_type) {
 			case "time":
@@ -1405,8 +1421,8 @@ $RUNtime = ($ENDtime - $STARTtime);
 
 if ($report_display_type=="HTML") {
 	$HTML_text.=$GRAPH_text;
-	} 
-else 
+	}
+else
 	{
 	$HTML_text.=$ASCII_text;
 	}
@@ -1437,7 +1453,7 @@ if ($file_download > 0)
 
 	echo "$CSV_text";
 	}
-else 
+else
 	{
 	$JS_onload.="}\n";
 	if ($report_display_type=='HTML') {$JS_text.=$JS_onload;}
@@ -1446,7 +1462,7 @@ else
 	echo $HTML_head;
 	require("admin_header.php");
 	echo $HTML_text;
-	if ($report_display_type=='HTML') {echo $JS_text;} 
+	if ($report_display_type=='HTML') {echo $JS_text;}
 	}
 
 if ($db_source == 'S')

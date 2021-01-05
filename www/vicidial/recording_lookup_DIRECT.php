@@ -76,7 +76,7 @@ fwrite ($fp, "AUTH|VDC   |$date|$auth|$ip|$phone|$format|$browser|\n");
 fclose($fp);
 
 if (strlen($format)<3) {$format='WAV';}
-if ( (strlen($phone)<10) or (strlen($phone)>10) ) 
+if ( (strlen($phone)<10) or (strlen($phone)>10) )
 	{
 	echo "<html>\n";
 	echo "<head>\n";
@@ -98,13 +98,13 @@ else
 	if ($logs_to_print)
 		{
 		$row=mysqli_fetch_row($rslt);
-		$recording_id = $row[0]; 
+		$recording_id = $row[0];
 		$filename =		$row[1];
 		$location =		$row[2];
 		$start_time =	$row[3];
 		$AUDname =	explode("/",$location);
 		$AUDnamect =	(count($AUDname)) - 1;
-		
+
 		preg_replace('/10\.10\.10\.16/i', "10.10.10.16",$AUDname[$AUDnamect]);
 
 		$fileGSM=$AUDname[$AUDnamect];

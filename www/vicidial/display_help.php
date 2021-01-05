@@ -100,7 +100,7 @@ if ($help_file_time > $help_modification_date)
 	fclose($help_fp);
 	$help_contents = explode("\n",$help_contentsRAW);
 	$help_contents_ct = count($help_contents);
-	if ($DB > 0) 
+	if ($DB > 0)
 		{echo "New $help_file found, loading contents: ($help_file_time <> $help_modification_date), ".filesize($help_file)."|$help_contents_ct\n";}
 
 	$h=0;
@@ -145,13 +145,13 @@ if ($help_file_time > $help_modification_date)
 ### Lookup of help text for display
 $help_stmt="select help_title, help_text from help_documentation where help_id='$help_id'";
 $help_rslt=mysql_to_mysqli($help_stmt, $link);
-while ($help_row=mysqli_fetch_row($help_rslt)) 
+while ($help_row=mysqli_fetch_row($help_rslt))
 	{
 	preg_match_all("/<QXZ>(.*?)<\/QXZ>/", $help_row[1], $QXZ_matches);
 
 	$qxz_match=$QXZ_matches[0];
 	$qxz_replace=$QXZ_matches[1];
-	for ($q=0; $q<count($qxz_replace); $q++) 
+	for ($q=0; $q<count($qxz_replace); $q++)
 		{
 		# $qxz_match[$q]=preg_replace("/\//", '\\\/', $qxz_match[$q]);
 		$qxz_match[$q]=preg_quote($qxz_match[$q], '/');
@@ -165,7 +165,7 @@ while ($help_row=mysqli_fetch_row($help_rslt))
 	echo "<TR><TD VALIGN='TOP' width='280'><FONT class='help_bold'>"._QXZ("$help_row[0]")."</font></td><TD VALIGN='TOP' align='right' width='20' onClick='ClearAndHideHelpDiv()'><B>[X]</B></tr>";
 	echo "<TR><TD VALIGN='TOP' colspan='2'>$help_row[1]</td></tr>";
 	echo "</TABLE>";
-	if ($DB > 0) 
+	if ($DB > 0)
 		{echo "$help_file($help_file_time <> $help_modification_date)\n";}
 	}
 ?>

@@ -6,13 +6,14 @@
 #
 # !!! REQUIRES A SETTINGS CONTAINER CALLED "DNCDOTCOM" TO BE SET UP TO USE !!!
 #
-# Copyright (C) 2015  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # 151004-1606 - Initial Build
 # 151005-1256 - Added logging
 # 151019-1456 - Reorganzied to reduce vicidial_list locks and improve dnc.com response
 # 151022-1900 - Code clean up
 # 151202-1435 - Added URL option for settings container
+# 190405-0617 - Small fix based on DNC.com response values
 #
 
 # constants
@@ -115,8 +116,8 @@ use DBI;
 use Time::HiRes qw( gettimeofday );
 use WWW::Curl::Easy;
 use WWW::Curl::Form;
-	  
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 $stmtA = "SELECT container_entry FROM vicidial_settings_containers WHERE container_id = 'DNCDOTCOM';";
@@ -125,7 +126,7 @@ $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
 $rec_count=0;
-if ($sthArows > 0) 
+if ($sthArows > 0)
 	{
 
 	# log to the vicidial_admin_log the scrub
@@ -142,11 +143,11 @@ if ($sthArows > 0)
 	$container_entry = $aryA[0];
 	%dnccom_settings = get_container_settings($container_entry);
 
-	if ( 
-		exists($dnccom_settings{'LOGIN_ID'}) && 
-		exists($dnccom_settings{'CAMPAIGN_ID'}) && 
-		exists($dnccom_settings{'PROJ_ID'}) && 
-		exists($dnccom_settings{'VERSION'}) 
+	if (
+		exists($dnccom_settings{'LOGIN_ID'}) &&
+		exists($dnccom_settings{'CAMPAIGN_ID'}) &&
+		exists($dnccom_settings{'PROJ_ID'}) &&
+		exists($dnccom_settings{'VERSION'})
 	)
 		{
 	#	$base_url = "http://www.dncscrub.com/app/main/rpc/scrub";
@@ -157,7 +158,7 @@ if ($sthArows > 0)
 
 		$skip_statuses = $dnccom_settings{'VICI_STATUS_SKIP'};
 		$skip_statuses = "'$skip_statuses'";
-		$skip_statuses =~ s/-/','/gi;	
+		$skip_statuses =~ s/-/','/gi;
 
 		if ($DB) {print "|$skip_statuses|\n";}
 
@@ -188,9 +189,9 @@ if ($sthArows > 0)
 		$s_count=0;
 		$t_count=0;
 		$y_count=0;
-		
 
-		while ( $loop > 0 ) 
+
+		while ( $loop > 0 )
 			{
 			$scrub_success = 0;
 			$good_num_count = 0;
@@ -210,7 +211,7 @@ if ($sthArows > 0)
 				$sthArows=$sthA->rows;
 
 				# if we got results
-				if ( $sthArows > 0 ) 
+				if ( $sthArows > 0 )
 					{
 					$grabbed_leads = 1;
 					$rec_count=0;
@@ -224,12 +225,12 @@ if ($sthArows > 0)
 						$list_id = $aryA[3];
 
 						# verify the lead is 10 digits
-						if ( $phone_number =~ /^\d\d\d\d\d\d\d\d\d\d$/ ) 
+						if ( $phone_number =~ /^\d\d\d\d\d\d\d\d\d\d$/ )
 							{
 						#	if ($DB) { print "$good_num_count|$phone_number is in NANPA\n"; }
 							if ( $good_num_count == 0 ) { $phone_string = "$phone_number"; }
 							else { $phone_string = "$phone_string,$phone_number"; }
-	
+
 							# add the numbers to our array
 							$leads[$good_num_count][0] = $lead_id;
 							$leads[$good_num_count][1] = $phone_number;
@@ -238,12 +239,12 @@ if ($sthArows > 0)
 
 							$good_num_count++;
 							$scrub_count++;
-							} 
-						else 
+							}
+						else
 							{
 							if ($DB) { print "$phone_number is not 10 digits\n"; }
 							}
-			
+
 						# keep track of the last lead we grabbed
 						$lead_id_pos = $lead_id;
 						$rec_count++;
@@ -305,7 +306,7 @@ if ($sthArows > 0)
 
 					# split their response into single lines
 					if ($DB) {print "Spliting\n";}
-					foreach $line (split /\n/ ,$dnccom_body) 
+					foreach $line (split /\n/ ,$dnccom_body)
 						{
 						#if ($DB) {print "$line\n";}
 						@line_results = split /,/, $line;
@@ -339,11 +340,13 @@ if ($sthArows > 0)
 
 
 							# update the lead
-							if ( $dnccom_settings{'ADD_INFO_TO_COMMENTS'} eq 'YES' ) 
+							if ( $dnccom_settings{'ADD_INFO_TO_COMMENTS'} eq 'YES' )
 								{
+								$line =~ s/['"`]//g;
+								$line =~ s/[^a-zA-Z0-9 _-]/|/g;
 								$stmtA = "UPDATE vicidial_list SET status = '$up_status', comments = CONCAT(comments,'!N$leads[$result_count][2]!N$line') where lead_id=$leads[$result_count][0] and phone_number='$leads[$result_count][1]';";
-								} 
-							else 
+								}
+							else
 								{
 								$stmtA = "UPDATE vicidial_list SET status = '$up_status' where lead_id=$leads[$result_count][0] and phone_number='$leads[$result_count][1]';";
 								}
@@ -365,7 +368,7 @@ if ($sthArows > 0)
 							print "leads phone_number doesnt match DNC.com. Exiting.\n";
 							exit();
 							}
-						
+
 						$result_count++;
 						}
 
@@ -399,7 +402,7 @@ if ($sthArows > 0)
 					$stmtA = "INSERT INTO vicidial_admin_log SET event_date = '$now', user = 'VDAD', ip_address = '1.1.1.1', event_section = 'LISTS', event_type = 'OTHER', record_id = '$list_id', event_sql='', event_code='DNC.com SCRUB FAILED', event_notes='DNC.com scrub of lists $CLIlists failed after processing $scrub_count leads due to connection errors.';";
 					if ($DB) { print "|$stmtA|\n"; }
 					$dbhA->do($stmtA) or die "executing: $stmtA ", $dbhA->errstr;
-					}	
+					}
 				}
 
 			}
@@ -417,7 +420,7 @@ if ($sthArows > 0)
 				}
 
 		}
-	else 
+	else
 		{
 		print "DNC.com support not setup properly. Exiting.";
 		exit();
@@ -436,7 +439,7 @@ sub get_container_settings
 
 	# the container entry from the DB
 	my $container_entry = $_[0];
-	
+
 	# loop through the container
 	foreach $line (split /\n/ ,$container_entry) {
 
@@ -456,7 +459,7 @@ sub get_container_settings
 
 	}
 
-	if ($DB) 
+	if ($DB)
 		{
 		foreach (sort keys %settings_hash) {
 			print "$_ : $settings_hash{$_}\n";

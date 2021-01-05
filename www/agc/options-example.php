@@ -1,7 +1,7 @@
 <?php
 # options.php - manually defined options for vicidial.php
-# 
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # rename this file to options.php for the settings here to go into effect
 #
@@ -15,12 +15,14 @@
 # 160910-1317 - Added use_agent_colors option
 # 180223-1657 - Added $INSERT_ variables
 # 180425-2035 - Added #INSERT_first_onload variable
+# 190330-0817 - Added logged_in_refresh_link
+# 191107-0925 - Added $webphone_call_seconds
 #
 
 $conf_silent_prefix		= '5';	# vicidial_conferences prefix to enter silently and muted for recording
 $dtmf_silent_prefix		= '7';	# vicidial_conferences prefix to enter silently
 $HKuser_level			= '1';	# minimum vicidial user_level for HotKeys
-$campaign_login_list	= '1';	# show drop-down list of campaigns at login	
+$campaign_login_list	= '1';	# show drop-down list of campaigns at login
 $manual_dial_preview	= '1';	# allow preview lead option when manual dial
 $multi_line_comments	= '1';	# set to 1 to allow multi-line comment box
 $user_login_first		= '0';	# set to 1 to have the vicidial_user login before the phone login
@@ -52,6 +54,8 @@ $mrglock_ig_select_ct	= '4';	# number of seconds to leave in-group select screen
 $link_to_grey_version	= '1';	# show link to old grey version of agent screen at login screen, next to timeclock link
 $use_agent_colors		= '1';	# agent chat colors
 $no_empty_session_warnings=0;	# set to 1 to disable empty session warnings on agent screen
+$logged_in_refresh_link = '0';	# set to 1 to allow clickable "Logged in as..." link at top to force Javascript refresh
+$webphone_call_seconds	= '0';	# set to 1 or higher to have the agent phone(if set to webphone) called X seconds after login
 
 $TEST_all_statuses		= '0';	# TEST variable allows all statuses in dispo screen
 
@@ -82,5 +86,7 @@ $INSERT_first_onload	= '';	# inserted at the beginning of the first section of t
 $INSERT_window_onload	= '';	# inserted at the end of the onload function
 $INSERT_agent_events	= '';	# inserted within the agent_events function
 
+$OnlyInbounds = 0; # Used in vdc_db_query to display only AGENTDIRECT inbounds in call log
+$OverWriteAfterCallSurvey = 0; # Set to 1 to allow without OptIn
 
 ?>

@@ -1,11 +1,11 @@
 <?php
 # live_exten_check.php    version 2.14
-# 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed purely to send whether the client channel is live and to what channel it is connected
 # This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
-# 
+#
 # required variables:
 #  - $server_ip
 #  - $session_name
@@ -15,7 +15,7 @@
 #  - $format - ('text','debug')
 #  - $exten - ('cc101','testphone','49-1','1234','913125551212',...)
 #  - $protocol - ('SIP','Zap','IAX2',...)
-# 
+#
 #
 # changes
 # 50404-1249 - First build of script
@@ -40,10 +40,11 @@
 # 141216-2109 - Added language settings lookups and user/pass variable standardization
 # 150723-1713 - Added ajax logging
 # 170526-2234 - Added additional variable filtering
+# 190111-0906 - Fix for PHP7
 #
 
-$version = '2.14-17';
-$build = '170526-2234';
+$version = '2.14-18';
+$build = '190111-0906';
 $php_script = 'live_exten_check.php';
 $SSagent_debug_logging=0;
 $startMS = microtime();
@@ -132,7 +133,7 @@ if (strlen($SSagent_debug_logging) > 1)
 	}
 
 $auth=0;
-$auth_message = user_authorization($user,$pass,'',0,1,0,0);
+$auth_message = user_authorization($user,$pass,'',0,1,0,0,'live_exten_check');
 if ($auth_message == 'GOOD')
 	{$auth=1;}
 
@@ -328,7 +329,7 @@ if ($favorites_count > 0)
 if ($format=='debug') {echo "\n<!-- |$favorites_count|$favorites_list| -->";}
 
 
-if ($format=='debug') 
+if ($format=='debug')
 	{
 	$ENDtime = date("U");
 	$RUNtime = ($ENDtime - $StarTtime);
@@ -337,6 +338,6 @@ if ($format=='debug')
 	}
 
 if ($SSagent_debug_logging > 0) {vicidial_ajax_log($NOW_TIME,$startMS,$link,$ACTION,$php_script,$user,$stage,$lead_id,$session_name,$stmt);}
-exit; 
+exit;
 
 ?>

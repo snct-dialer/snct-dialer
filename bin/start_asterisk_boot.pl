@@ -2,7 +2,7 @@
 #
 # start_asterisk_boot.pl    version 2.8
 #
-# This script is designed to start Asterisk in the proper way for Vicidial to 
+# This script is designed to start Asterisk in the proper way for Vicidial to
 # operate as intended
 #
 #
@@ -100,9 +100,9 @@ else
 
 `PERL5LIB="$PATHhome/libs"; export PERL5LIB`;
 
-use DBI;	  
+use DBI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database

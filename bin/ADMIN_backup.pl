@@ -3,13 +3,14 @@
 # ADMIN_backup.pl    version 2.12
 #
 # DESCRIPTION:
-# Backs-up the asterisk database, conf/agi/sounds/bin files 
+# Backs-up the asterisk database, conf/agi/sounds/bin files
 #
 # LICENSE: AGPLv3
 #
 # Copyright (C) 2016  Matt Florell <vicidial@gmail.com>
 # Copyright (c) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
-#               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
+#               2017-2019 Jörg Frings-Fürst <open_source@jff.email>
+#               2019      SNTC GmbH <info@snct-gmbh.de>
 #
 # CHANGELOG
 #
@@ -46,15 +47,17 @@
 #             - Add tests for file exists
 # 181227-1030 - Allow table names with whitespaces
 # 181228-1210 - Correct typo
+# 190521-0555 - Add sep. backup for trigger and routines
+# 190531-1422 - Change all db backups to one file per table.
 #
 
-$PrgVersion = "2.9.3";
+$PrgVersion = "2.9.4";
 
 ###### Test that the script is running only once a time
 use Fcntl qw(:flock);
 # print "start of program $0\n";
 unless (flock(DATA, LOCK_EX|LOCK_NB)) {
-    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log'
     or print "Can't open the fscking file: $!";
     $datestring = localtime();
     print $fh "[$datestring] $0 is already running. Exiting.\n";
@@ -329,7 +332,7 @@ $LOCALpath="";
 ### find tar binary to do the archiving
 $tarbin = '';
 if ( -e ('/usr/bin/tar')) {$tarbin = '/usr/bin/tar';}
-else 
+else
 	{
 	if ( -e ('/usr/local/bin/tar')) {$tarbin = '/usr/local/bin/tar';}
 	else
@@ -346,7 +349,7 @@ else
 ### find xz binary to do the archiving
 $xzbin = '';
 if ( -e ('/usr/bin/xz')) {$xzbin = '/usr/bin/xz';}
-else 
+else
 	{
 	if ( -e ('/usr/local/bin/xz')) {$xzbin = '/usr/local/bin/xz';}
 	else
@@ -386,7 +389,7 @@ if ( ($without_db < 1) && ($conf_only < 1) )
 		print "\n----- Mysql dump -----\n\n";
 		$mysqldumpbin = '';
 		if ( -e ('/usr/bin/mysqldump')) {$mysqldumpbin = '/usr/bin/mysqldump';}
-		else 
+		else
 			{
 			if ( -e ('/usr/local/mysql/bin/mysqldump')) {$mysqldumpbin = '/usr/local/mysql/bin/mysqldump';}
 			else
@@ -402,13 +405,13 @@ if ( ($without_db < 1) && ($conf_only < 1) )
 		use DBI;
 
 		$dbs_to_backup[0]="$VARDB_database";
-		if (length($dbs_selected)> 0) 
+		if (length($dbs_selected)> 0)
 			{
-			if ($dbs_selected =~ /--ALL--|--ALLNS--/) 
+			if ($dbs_selected =~ /--ALL--|--ALLNS--/)
 				{
 				if ($DBX > 0) {print "DBX-  ALL DATABASES OPTION ENABLED! GATHERING DBS...\n";}
 				### connect to MySQL database defined in the conf file so we can get database list
-				$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+				$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
 				or die "Couldn't connect to database: " . DBI->errstr;
 
 				$stmtA = "show databases;";
@@ -417,11 +420,11 @@ if ( ($without_db < 1) && ($conf_only < 1) )
 				$dbArows=$sthA->rows;
 				$db_ct=0;
 				$db_s_ct=0;
-					
+
 				while ($dbArows > $db_ct)
 					{
 					@aryA = $sthA->fetchrow_array;
-					if ($dbs_selected =~ /--ALLNS--/) 
+					if ($dbs_selected =~ /--ALLNS--/)
 						{
 						if ($aryA[0] !~ /^test$|^mysql$|^information_schema$/)
 							{
@@ -438,7 +441,7 @@ if ( ($without_db < 1) && ($conf_only < 1) )
 						}
 					$db_ct++;
 					}
-				
+
 				$sthA->finish;
 				$dbhA->disconnect;
 				}
@@ -455,14 +458,14 @@ if ( ($without_db < 1) && ($conf_only < 1) )
 			}
 
 		$c=0;
-		while ($c <= $#dbs_to_backup) 
+		while ($c <= $#dbs_to_backup)
 			{
 			$temp_dbname = $dbs_to_backup[$c];
 			if ($DBX > 0) {print "DBX-  starting to backup database $c: $temp_dbname\n";}
 			### BACKUP THE MYSQL FILES ON THE DB SERVER ###
 
 			### connect to MySQL database defined in the conf file
-			$dbhA = DBI->connect("DBI:mysql:$temp_dbname:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+			$dbhA = DBI->connect("DBI:mysql:$temp_dbname:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
 			or die "Couldn't connect to database: " . DBI->errstr;
 
 			$stmtA = "show tables;";
@@ -474,24 +477,24 @@ if ( ($without_db < 1) && ($conf_only < 1) )
 			$archive_tables='';
 			$regular_tables='';
 			my @all_tables = ();
-				
+
 			while ($sthArows > $rec_count)
 				{
 				@aryA = $sthA->fetchrow_array;
 				push(@all_tables, $aryA[0]);
-				if ($aryA[0] =~ /_archive/) 
+				if ($aryA[0] =~ /_archive/)
 					{
 					$archive_tables .= " $aryA[0]";
 					}
-				elsif ($aryA[0] =~ /_log|server_performance|vicidial_ivr|vicidial_hopper|vicidial_manager|web_client_sessions|imm_outcomes/) 
+				elsif ($aryA[0] =~ /_log|server_performance|vicidial_ivr|vicidial_hopper|vicidial_manager|web_client_sessions|imm_outcomes/)
 					{
 					$log_tables .= " $aryA[0]";
 					}
-				elsif ($aryA[0] =~ /server|^phones|conferences|stats|vicidial_list$|^custom/) 
+				elsif ($aryA[0] =~ /server|^phones|conferences|stats|vicidial_list$|^custom/)
 					{
 					$regular_tables .= " $aryA[0]";
-					}				
-				else 
+					}
+				else
 					{
 					$conf_tables .= " $aryA[0]";
 					}
@@ -499,7 +502,7 @@ if ( ($without_db < 1) && ($conf_only < 1) )
 				}
 			$sthA->finish();
 
-					
+
 			if ($db_without_logs)
 				{
 				$dump_non_log_command = "$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname $regular_tables $conf_tables | $xzbin -9 > $TEMPpath/LOGS_$VARserver_ip$underl$temp_dbname$underl$wday$xz";
@@ -509,7 +512,7 @@ if ( ($without_db < 1) && ($conf_only < 1) )
 				if ($DBX) {print "$dump_non_log_commandOP\nDEBUG: LOG EXPORT COMMAND(not run): $dump_log_command\n";}
 				`$dump_non_log_command`;
 				}
-				
+
 			elsif ($db_without_archives)
 				{
 				$dump_non_archive_command = "$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname $regular_tables $conf_tables $log_tables | $xzbin -9 > $TEMPEpath/ARCHIVES_$VARserver_ip_$underl$temp_dbname$underl$wday$xz";
@@ -519,7 +522,7 @@ if ( ($without_db < 1) && ($conf_only < 1) )
 				if ($DBX) {print "$dump_non_archive_commandOP\nDEBUG: ARCHIVE EXPORT COMMAND(not run): $dump_archive_command\n";}
 				`$dump_non_archive_command`;
 				}
-				
+
 			elsif ($db_settings_only)
 				{
 				$dump_non_log_command = "$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname $conf_tables | $zxbin -9 > $TEMPpath/SETTINGSONLY_$VARserver_ip$underl$temp_dbname$underl$wday$xz";
@@ -532,15 +535,27 @@ if ( ($without_db < 1) && ($conf_only < 1) )
 			else {
 				foreach ( @all_tables ){
 					if ($DBX) {
-						print "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --routines $temp_dbname '$_' | $xzbin -3 -T0 - > '$TEMPpath/$VARserver_ip$underl$temp_dbname$underl$_$underl$wday.sql.xz'\n";
+						print "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --routines --triggers $temp_dbname '$_' | $xzbin -3 -T0 - > '$TEMPpath/$VARserver_ip$underl$temp_dbname$underl$_$underl$wday.sql.xz'\n";
 					}
-					`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname '$_' | $xzbin -3 -T0 - > '$TEMPpath/$VARserver_ip$underl$temp_dbname$underl$_$underl$wday.sql.xz'`;
+					`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines --triggers $temp_dbname '$_' | $xzbin -3 -T0 - > '$TEMPpath/$VARserver_ip$underl$temp_dbname$underl$_$underl$wday.sql.xz'`;
 				}
+				$triggers = "triggers";
 				if ($DBX) {
-					print "$tarbin -cf $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday$tar $TEMPpath/*.sql.xz`\n";
+				    print "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --no-data --triggers $temp_dbname | $xzbin -3 -T0 - > '$TEMPpath/$VARserver_ip$underl$temp_dbname$underl$triggers$underl$wday.txt.xz'\n";
 				}
-				`$tarbin -cf $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday$tar $TEMPpath/*.sql.xz`;
+				`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --no-data --triggers $temp_dbname  | $xzbin -3 -T0 - > '$TEMPpath/$VARserver_ip$underl$temp_dbname$underl$triggers$underl$wday.txt.xz'`;
+
+				$routines = "routines";
+				if ($DBX) {
+				    print "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --no-data --no-create-info --routines $temp_dbname | $xzbin -3 -T0 - > '$TEMPpath/$VARserver_ip$underl$temp_dbname$underl$routines$underl$wday.txt.xz'\n";
+				}
+				`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --no-data --no-create-info --routines $temp_dbname  | $xzbin -3 -T0 - > '$TEMPpath/$VARserver_ip$underl$temp_dbname$underl$routines$underl$wday.txt.xz'`;
+				if ($DBX) {
+					print "$tarbin -cf $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday$tar $TEMPpath/*.txt.xz`\n";
+				}
+				`$tarbin -cf $TEMPpath/$VARserver_ip$underl$temp_dbname$underl$wday$tar $TEMPpath/*.sql.xz $TEMPpath/*.txt.xz`;
 				`rm $TEMPpath/*.sql.xz`;
+				`rm $TEMPpath/*.txt.xz`;
 			}
 			$c++;
 			}
@@ -548,9 +563,9 @@ if ( ($without_db < 1) && ($conf_only < 1) )
 	else
 		{
 		print "\n----- Mysql Raw Copy -----\n\n";
-		`service mysql stop`;
+		`systemctl stop mysql`;
 		`$tarbin -Jcvf $TEMPpath/"$VARserver_ip$underl"mysql_raw_"$wday"$txz /var/lib/mysql/test /var/lib/mysql/mysql /var/lib/mysql/performance_schema /var/lib/mysql/asterisk`;
-		`service mysql start`;
+		`systemctl start mysql`;
 		}
 	}
 
@@ -570,7 +585,7 @@ if ( ($without_conf < 1) && ($db_only < 1) )
 
 
 	### BACKUP THE WANPIPE CONF FILES(if there are any) ###
-	if ( -e ('/etc/wanpipe/wanpipe1.conf')) 
+	if ( -e ('/etc/wanpipe/wanpipe1.conf'))
 		{
 		$sgSTRING = '/etc/wanpipe/wanpipe1.conf ';
 		if ( -e ('/etc/wanpipe/wanpipe2.conf')) {$sgSTRING .= '/etc/wanpipe/wanpipe2.conf ';}

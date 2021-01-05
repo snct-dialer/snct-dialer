@@ -123,7 +123,7 @@ my $week_ago_time_stamp = "$wyear-$wmon-$wmday $whour:$wmin:$wsec";
 
 print "running report for date range $week_ago_time_stamp to $current_time_stamp\n";
 
-# read in the config file 
+# read in the config file
 
 # default path to astguiclient configuration file:
 my $config_file = '/etc/astguiclient.conf';
@@ -184,7 +184,7 @@ my $csv_path = "$PATHweb/$csv_file_name";
 if ( !$VARDB_port ) { $VARDB_port='3306'; }
 
 # connect to the db
-my $dbh = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass") or die "Couldn't connect to database: " . DBI->errstr;
+my $dbh = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 }) or die "Couldn't connect to database: " . DBI->errstr;
 
 # setup the queries
 my $sys_status_stmt = "SELECT status, status_name FROM vicidial_statuses;";
@@ -235,7 +235,7 @@ while ($agent_stats_rows > $rec_count) {
 	my $status_name = "";
 
 	# apparently you can have a NULL status
-	if ($status) { 
+	if ($status) {
 		$status_name = $sys_status_ref->{$status}->{'status_name'};
 		if ( !($status_name) ) {
 			$status_name = $camp_status_ref->{$status}->{'status_name'};
@@ -243,7 +243,7 @@ while ($agent_stats_rows > $rec_count) {
 	} else {
 		$status = "";
 	}
-	
+
 	my $vendor_lead_code = "";
 
 	# apparently you can have a NULL lead_id
@@ -257,9 +257,9 @@ while ($agent_stats_rows > $rec_count) {
 	} else {
 		$lead_id="";
 	}
-	
+
 	print CSVFILE "\"$user\",\"$lead_id\",\"$event_time\",\"$campaign_id\",\"$pause_sec\",\"$wait_sec\",\"$talk_sec\",\"$dispo_sec\",\"$status\",\"$status_name\",\"$vendor_lead_code\"\n";
-	
+
 	$rec_count++;
 }
 
@@ -278,7 +278,7 @@ if ($email_list ne "") {
 
 	my $mailsubject = "VICIDIAL Weekly Agent Status Report $csv_file_name";
 
-	my %mail = ( 
+	my %mail = (
 			To      => "$email_list",
 			From    => "$email_sender",
 			Subject => "$mailsubject",

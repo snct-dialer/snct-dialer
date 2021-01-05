@@ -1,6 +1,6 @@
 <?php
 # SCRIPT_multirecording_AJAX.php - script that stops/starts recordings being made over a forced-recording (ALLFORCE) call
-# 
+#
 # Copyright (C) 2018  Joe Johnson, Matt Florell <mattf@vicidial.com>    LICENSE: AGPLv2
 #
 # Other scripts that this application depends on:
@@ -76,7 +76,7 @@ $one_mysql_log=0;
 $row='';   $rowx='';
 $channel_live=1;
 
-if ($rec_action=="START") 
+if ($rec_action=="START")
 	{
 
 	if ( (strlen($exten)<3) or (strlen($channel)<4) or (strlen($filename)<15)) {
@@ -110,12 +110,12 @@ if ($rec_action=="START")
 			$current_rec_filename=$filename;
 			$channel_stmt="SELECT channel FROM live_sip_channels where server_ip = '$server_ip' and channel LIKE \"$channel%\" and (channel LIKE \"%,1\" or channel LIKE \"%;1\") $channel_SQL;";
 			$channel_rslt=mysqli_query($link, $channel_stmt);
-			if (mysqli_num_rows($channel_rslt)==1) 
+			if (mysqli_num_rows($channel_rslt)==1)
 				{
 				$channel_row=mysqli_fetch_row($channel_rslt);
 				echo "$recording_id|$channel_row[0]";
 				}
-			else 
+			else
 				{
 				echo "Error 2\n$channel_stmt\n".mysqli_num_rows($channel_rslt);
 				}
@@ -146,7 +146,7 @@ if ($rec_action=="START")
 		$VM_mancall_ct = mysqli_num_rows($rslt);
 		if ($VM_mancall_ct > 0) {
 			$row=mysqli_fetch_row($rslt);
-			$VDvicidial_id =	$row[0];	
+			$VDvicidial_id =	$row[0];
 			$stmt = "UPDATE recording_log SET vicidial_id='$VDvicidial_id' where recording_id='$recording_id';";
 			$rslt=mysqli_query($link, $stmt);
 		}
@@ -172,7 +172,7 @@ else
 		$rslt=mysqli_query($link, $stmt);
 	}
 
-	# find and hang up the recording 
+	# find and hang up the recording
 	$stmt="SELECT channel FROM live_sip_channels where server_ip = '$server_ip' and channel LIKE \"$recording_channel%\" and (channel LIKE \"%,1\" or channel LIKE \"%;1\");";
 	$rslt=mysqli_query($link, $stmt);
 	$rec_count = mysqli_num_rows($rslt);

@@ -1,6 +1,6 @@
 <?php
 # update_cf_ivr.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is part of the API group and any modifications of data are

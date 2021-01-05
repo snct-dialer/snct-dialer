@@ -96,13 +96,13 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port) {$VARDB_port='3306';}
-if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/ivrout";}
+if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/ivrout.log";}
 
 use DBI;
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
     or die "Couldn't connect to database: " . DBI->errstr;
 
 # defaults:
@@ -123,7 +123,7 @@ if (length($ARGV[0])>1)
 		if ($AGILOG) {$agi_string = "$i|$ARGV[$i]";   &agi_output;}
 		$i++;
 		}
-	
+
 	### list of command-line array arguments:
 	@ARGV_vars = split(/---/, $ARGV[0]);
 
@@ -133,7 +133,7 @@ if (length($ARGV[0])>1)
 	if (length($ARGV_vars[3]) > 0) {$pin_invalid_audio = 	$ARGV_vars[3];}
 	if (length($ARGV_vars[4]) > 0) {$did_ingroup_settings = $ARGV_vars[4];}
 	}
-if ($language =~ /es/) 
+if ($language =~ /es/)
 	{
 	$audio_suffix='_es';
 	$AGI->exec("EXEC Set(CHANNEL(language)=$language)");
@@ -141,7 +141,7 @@ if ($language =~ /es/)
 	$AGI->stream_file('sip-silence');
 	$AGI->stream_file('sip-silence');
 	}
-if ($language =~ /fr/) 
+if ($language =~ /fr/)
 	{
 	$audio_suffix='_fr';
 	$AGI->exec("EXEC Set(CHANNEL(language)=$language)");
@@ -153,7 +153,7 @@ if ($language !~ /es|fr/) {$audio_suffix='';}
 
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 	{
 	chomp;
 	last unless length($_);
@@ -214,7 +214,7 @@ $entry_chances=0;
 $VALID_login=0;
 $ACTIVE_login=0;
 $VDADremDIALstr='';
-while ( ($entry_chances < $maximum_attempts) && ($VALID_login < 1) ) 
+while ( ($entry_chances < $maximum_attempts) && ($VALID_login < 1) )
 	{
 	$entry_chances++;
 
@@ -236,7 +236,7 @@ while ( ($entry_chances < $maximum_attempts) && ($VALID_login < 1) )
 	if ($AGILOG) {$agi_string = "validate PIN: |$VALID_login|$stmtA|";   &agi_output;}
 
 
-	if ($VALID_login > 0) 
+	if ($VALID_login > 0)
 		{
 		$AGI->stream_file("pin-number-accepted$audio_suffix");
 		}
@@ -248,7 +248,7 @@ while ( ($entry_chances < $maximum_attempts) && ($VALID_login < 1) )
 
 
 
-if ($VALID_login < 1) 
+if ($VALID_login < 1)
 	{
 	if ($AGILOG) {$agi_string = "DIAL-IN END: Invalid Pin   |$VALID_login|$PIN_number|";   &agi_output;}
 
@@ -373,7 +373,7 @@ sub user_password_gather
 
 	$interrupt_digit='';
 
-	$interrupt_digit = $AGI->stream_file("$pin_enter_audio$audio_suffix",'0123456789');   
+	$interrupt_digit = $AGI->stream_file("$pin_enter_audio$audio_suffix",'0123456789');
 
 		print STDERR "interrupt_digit |$interrupt_digit|\n";
 
@@ -393,7 +393,7 @@ sub user_password_gather
 		if ($interrupt_digit == 55) {$interrupt_digit=7;}
 		if ($interrupt_digit == 56) {$interrupt_digit=8;}
 		if ($interrupt_digit == 57) {$interrupt_digit=9;}
-		
+
 		$PIN_number=$interrupt_digit;
 		}
 
@@ -412,7 +412,7 @@ sub user_password_gather
 			{
 			$digits_being_entered=0;
 			}
-		
+
 		$digit_loop_counter++;
 		}
 
@@ -443,7 +443,7 @@ sub get_time_now	#get the current date and time and epoch for logging call lengt
 
 
 
-sub checkresult 
+sub checkresult
 	{
 	my ($res) = @_;
 	my $retval;
@@ -451,18 +451,18 @@ sub checkresult
 	chomp $res;
 	if ($res =~ /^200/) {
 		$res =~ /result=(-?\d+)/;
-		if (!length($1)) 
+		if (!length($1))
 			{
 			print STDERR "FAIL ($res)\n";
 			$fail++;
-			} 
-		else 
+			}
+		else
 			{
 			print STDERR "PASS ($1)\n";
 			$pass++;
 			}
-		} 
-	else 
+		}
+	else
 		{
 		print STDERR "FAIL (unexpected result '$res')\n";
 		$fail++;
@@ -485,7 +485,7 @@ sub agi_output
 	$agi_string='';
 	}
 
-sub leading_zero($) 
+sub leading_zero($)
 	{
     $_ = $_[0];
     s/^(\d)$/0$1/;

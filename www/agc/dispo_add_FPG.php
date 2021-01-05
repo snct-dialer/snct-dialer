@@ -1,10 +1,10 @@
 <?php
 # dispo_add_FPG.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed to be used in the "Dispo URL" field of a campaign
-# or in-group. It adds the phone_number of the call to a designated inbound 
+# or in-group. It adds the phone_number of the call to a designated inbound
 # Filter Phone Group
 #
 # This script is part of the API group and any modifications of data are
@@ -12,7 +12,7 @@
 #
 # Example of what to put in the Dispo URL field:
 # VARhttp://192.168.1.1/agc/dispo_add_FPG.php?phone_number=--A--dialed_number--B--&lead_id=--A--lead_id--B--&dispo=--A--dispo--B--&user=--A--user--B--&pass=--A--pass--B--&FPG_id=BLOCKSALE&sale_status=SALE---SSALE---XSALE&log_to_file=1
-# 
+#
 # Definable Fields: (other fields should be left as they are)
 # - log_to_file -	(0,1) if set to 1, will create a log file in the agc directory
 # - sale_status -	(SALE---XSALE) a triple-dash "---" delimited list of the statuses that are to be moved

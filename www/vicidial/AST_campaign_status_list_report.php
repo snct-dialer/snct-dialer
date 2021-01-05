@@ -1,10 +1,10 @@
-<?php 
+<?php
 # AST_campaign_status_list_report.php
 #
-# This report is designed to show the breakdown by list_id of the calls and 
+# This report is designed to show the breakdown by list_id of the calls and
 # their statuses for all lists within a campaign for a set time period
 #
-# Copyright (C) 2018  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2019  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -28,6 +28,7 @@
 # 170829-0040 - Added screen color settings
 # 171012-2015 - Fixed javascript/apache errors with graphs
 # 180807-1204 - Fixed log query issue
+# 191013-0832 - Fixes for PHP7
 #
 
 $startMS = microtime();
@@ -93,14 +94,14 @@ if (strlen($report_display_type)<2) {$report_display_type = $SSreport_default_fo
 ### ARCHIVED DATA CHECK CONFIGURATION
 $archives_available="N";
 $log_tables_array=array("vicidial_log", "vicidial_closer_log", "vicidial_agent_log");
-for ($t=0; $t<count($log_tables_array); $t++) 
+for ($t=0; $t<count($log_tables_array); $t++)
 	{
 	$table_name=$log_tables_array[$t];
 	$archive_table_name=use_archive_table($table_name);
 	if ($archive_table_name!=$table_name) {$archives_available="Y";}
 	}
 
-if ($search_archived_data) 
+if ($search_archived_data)
 	{
 	$vicidial_log_table=use_archive_table("vicidial_log");
 	$vicidial_closer_log_table=use_archive_table("vicidial_closer_log");
@@ -299,6 +300,7 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {$HTML_text.="$stmt\n";}
 $campaigns_to_print = mysqli_num_rows($rslt);
 $i=0;
+$groups=array();
 while ($i < $campaigns_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -354,7 +356,7 @@ $HTML_head.="<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n"
 $HTML_head.="<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 $HTML_head.="<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 require("chart_button.php");
-$HTML_head.="<script src='chart/Chart.js'></script>\n"; 
+$HTML_head.="<script src='chart/Chart.js'></script>\n";
 $HTML_head.="<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
 
 $HTML_head.="<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
@@ -424,10 +426,10 @@ $HTML_text.="</TD><TD VALIGN=TOP>&nbsp;\n";
 $HTML_text.="</TD><TD VALIGN=TOP>\n";
 $HTML_text.=_QXZ("Display as").":<BR>";
 $HTML_text.="<select name='report_display_type'>";
-if ($report_display_type) {$HTML_text.="<option value='$report_display_type' selected>$report_display_type</option>";}
+if ($report_display_type) {$HTML_text.="<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
 $HTML_text.="<option value='TEXT'>"._QXZ("TEXT")."</option><option value='HTML'>"._QXZ("HTML")."</option></select>\n<BR><BR>";
 
-if ($archives_available=="Y") 
+if ($archives_available=="Y")
 	{
 	$HTML_text.="<input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."<BR><BR>\n";
 	}
@@ -453,7 +455,16 @@ while($i < $group_ct)
 	{
 	$stmt="SELECT status, status_name, human_answered, sale, dnc, customer_contact, not_interested, unworkable, scheduled_callback, completed from vicidial_campaign_statuses where campaign_id='$group[$i]' UNION SELECT status, status_name, human_answered, sale, dnc, customer_contact, not_interested, unworkable, scheduled_callback, completed from vicidial_statuses order by status, status_name";
 	$rslt=mysql_to_mysqli($stmt, $link);
-	while ($row=mysqli_fetch_row($rslt)) 
+	$status_ary=array();
+	$HA_ary=array();
+	$SALE_ary=array();
+	$DNC_ary=array();
+	$CC_ary=array();
+	$NI_ary=array();
+	$UW_ary=array();
+	$SC_ary=array();
+	$COMP_ary=array();
+	while ($row=mysqli_fetch_row($rslt))
 		{
 		$status_ary[$row[0]] = " - $row[1]";
 		$HA_ary[$row[0]] =		$row[2];
@@ -471,16 +482,16 @@ while($i < $group_ct)
 
 	$stmt="SELECT closer_campaigns from vicidial_campaigns where campaign_id='$group[$i]'";
 	$rslt=mysql_to_mysqli($stmt, $link);
-	if (mysqli_num_rows($rslt)>0) 
+	if (mysqli_num_rows($rslt)>0)
 		{
 		$row=mysqli_fetch_row($rslt);
 		$inbound_groups=preg_replace('/ -$/', '', trim($row[0]));
-		if (strlen($inbound_groups)>0) 
+		if (strlen($inbound_groups)>0)
 			{
 			$inbound_groups=preg_replace("/\s/", "', '", $inbound_groups);
 			$inbound_SQL="and ".$vicidial_closer_log_table.".campaign_id in ('$inbound_groups')";
-			} 
-		else 
+			}
+		else
 			{
 			$inbound_SQL="";
 			}
@@ -488,7 +499,7 @@ while($i < $group_ct)
 
 	$stmt="SELECT distinct list_id, list_name, active from vicidial_lists where campaign_id='$group[$i]' order by list_id, list_name asc";
 	$rslt=mysql_to_mysqli($stmt, $link);
-	while ($row=mysqli_fetch_row($rslt)) 
+	while ($row=mysqli_fetch_row($rslt))
 		{
 		$list_id=$row[0]; $list_name=$row[1]; $list_active=$row[2];
 		$HA_count=0;
@@ -500,7 +511,7 @@ while($i < $group_ct)
 		$SC_count=0;
 		$COMP_count=0;
 
-		$dispo_ary="";
+		$dispo_ary=array();
 		$ASCII_text.="<FONT SIZE=2><B>"._QXZ("List ID")." #$list_id: $list_name</B>\n";
 		$CSV_text.="\""._QXZ("List ID")." #$list_id: $list_name\"\n";
 
@@ -509,7 +520,7 @@ while($i < $group_ct)
 		if ($DB) {$HTML_text.="|$stat_stmt|\n";}
 		# $ASCII_text.=$stat_stmt."\n";
 		$stat_rslt=mysql_to_mysqli($stat_stmt, $link);
-		if (mysqli_num_rows($stat_rslt)>0) 
+		if (mysqli_num_rows($stat_rslt)>0)
 			{
 
 			$total_calls=0; $total_handle_time=0; $total_duration=0;
@@ -518,36 +529,36 @@ while($i < $group_ct)
 			$max_calls=1;
 			$max_duration=1;
 			$max_handletime=1;
-			
+
 			$ASCII_text.="+------------------------------------------+--------+------------+-------------+\n";
 			$ASCII_text.="| "._QXZ("DISPOSITION",40)." | "._QXZ("CALLS",6)." | "._QXZ("DURATION",10)." | "._QXZ("HANDLE TIME",11)." |\n";
 			$ASCII_text.="+------------------------------------------+--------+------------+-------------+\n";
 			$CSV_text.="\""._QXZ("DISPOSITION")."\",\""._QXZ("CALLS")."\",\""._QXZ("DURATION")."\",\""._QXZ("HANDLE TIME")."\"\n";
-			while ($stat_row=mysqli_fetch_row($stat_rslt)) 
+			while ($stat_row=mysqli_fetch_row($stat_rslt))
 				{
 				#if ($stat_row[0]=="") {$stat_row[0]="(no dispo)";}
 				#$handle_time=sec_convert(($stat_row[4]-$stat_row[6]), 'H');
 				#$duration=sec_convert(($stat_row[3]+$stat_row[4]+$stat_row[5]), 'H');
 				#$total_handle_time+=($stat_row[4]-$stat_row[6]);
 				#$total_duration+=($stat_row[3]+$stat_row[4]+$stat_row[5]);
-				$dispo_ary[$stat_row[0]][0]++;
-				$dispo_ary[$stat_row[0]][1]+=$stat_row[2];
-				$dispo_ary[$stat_row[0]][2]+=$stat_row[3];
+				$dispo_ary["$stat_row[0]"][0]++;
+				$dispo_ary["$stat_row[0]"][1]+=$stat_row[2];
+				$dispo_ary["$stat_row[0]"][2]+=$stat_row[3];
 				$total_calls++;
 				$total_duration+=$stat_row[2];
 				$total_handle_time+=$stat_row[3];
-				if ($HA_ary[$stat_row[0]]=="Y") {$HA_count++;}
-				if ($SALE_ary[$stat_row[0]]=="Y") {$SALE_count++;}
-				if ($DNC_ary[$stat_row[0]]=="Y") {$DNC_count++;}
-				if ($CC_ary[$stat_row[0]]=="Y") {$CC_count++;}
-				if ($NI_ary[$stat_row[0]]=="Y") {$NI_count++;}
-				if ($UW_ary[$stat_row[0]]=="Y") {$UW_count++;}
-				if ($SC_ary[$stat_row[0]]=="Y") {$SC_count++;}
-				if ($COMP_ary[$stat_row[0]]=="Y") {$COMP_count++;}
+				if ($HA_ary["$stat_row[0]"]=="Y") {$HA_count++;}
+				if ($SALE_ary["$stat_row[0]"]=="Y") {$SALE_count++;}
+				if ($DNC_ary["$stat_row[0]"]=="Y") {$DNC_count++;}
+				if ($CC_ary["$stat_row[0]"]=="Y") {$CC_count++;}
+				if ($NI_ary["$stat_row[0]"]=="Y") {$NI_count++;}
+				if ($UW_ary["$stat_row[0]"]=="Y") {$UW_count++;}
+				if ($SC_ary["$stat_row[0]"]=="Y") {$SC_count++;}
+				if ($COMP_ary["$stat_row[0]"]=="Y") {$COMP_count++;}
 				}
 
 			$d=0;
-			while (list($key, $val)=each($dispo_ary)) 
+			while (list($key, $val)=each($dispo_ary))
 				{
 				$ASCII_text.="| ".sprintf("%-40s", $key.$status_ary[$key]);
 				$ASCII_text.=" | ".sprintf("%6s", $val[0]);
@@ -591,7 +602,7 @@ while($i < $group_ct)
 			$SC_count =	sprintf("%9s", "$SC_count"); while(strlen($SC_count)>9) {$SC_count = substr("$SC_count", 0, -1);}
 			$COMP_count =	sprintf("%9s", "$COMP_count"); while(strlen($COMP_count)>9) {$COMP_count = substr("$COMP_count", 0, -1);}
 
-			if ($list_active=='Y') {$list_active = 'ACTIVE  ';} else {$list_active = 'INACTIVE';}
+			if ($list_active=='Y') {$list_active = _QXZ('ACTIVE', 8);} else {$list_active = _QXZ('INACTIVE', 8);}
 			$header_list_id = "$list_id - $list_name";
 			$header_list_id =	sprintf("%-51s", $header_list_id); while(strlen($header_list_id)>51) {$header_list_id = substr("$header_list_id", 0, -1);}
 			$header_list_count =	sprintf("%10s", $total_calls); while(strlen($header_list_count)>10) {$header_list_count = substr("$header_list_count", 0, -1);}
@@ -616,15 +627,15 @@ while($i < $group_ct)
 			$graph_id++;
 			$graph_array=array("CSL_CALLS".$list_id."data|1|CALLS|integer|", "CSL_DURATION".$list_id."data|2|DURATION|time|", "CSL_HANDLETIME".$list_id."data|3|HANDLE TIME|time|");
 			$default_graph="bar"; # Graph that is initally displayed when page loads
-			include("graph_color_schemas.inc"); 
+			include("graph_color_schemas.inc");
 
 			$graph_totals_array=array();
 			$graph_totals_rawdata=array();
 			for ($q=0; $q<count($graph_array); $q++) {
-				$graph_info=explode("|", $graph_array[$q]); 
+				$graph_info=explode("|", $graph_array[$q]);
 				$current_graph_total=0;
 				$dataset_name=$graph_info[0];
-				$dataset_index=$graph_info[1]; 
+				$dataset_index=$graph_info[1];
 				$dataset_type=$graph_info[3];
 
 				$JS_text.="var $dataset_name = {\n";
@@ -642,7 +653,7 @@ while($i < $group_ct)
 				$graphConstantsC="\t\t\t\thoverBorderColor: [";
 				for ($d=0; $d<count($graph_stats); $d++) {
 					$labels.="\"".preg_replace('/ +/', ' ', $graph_stats[$d][0])."\",";
-					$data.="\"".$graph_stats[$d][$dataset_index]."\","; 
+					$data.="\"".$graph_stats[$d][$dataset_index]."\",";
 					$current_graph_total+=$graph_stats[$d][$dataset_index];
 					$bgcolor=$backgroundColor[($d%count($backgroundColor))];
 					$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
@@ -650,7 +661,7 @@ while($i < $group_ct)
 					$graphConstantsA.="\"$bgcolor\",";
 					$graphConstantsB.="\"$hbgcolor\",";
 					$graphConstantsC.="\"$hbcolor\",";
-				}	
+				}
 				$graphConstantsA.="],\n";
 				$graphConstantsB.="],\n";
 				$graphConstantsC.="],\n";
@@ -693,7 +704,7 @@ while($i < $group_ct)
 			$GRAPH.=$graphCanvas;
 
 			}
-		else 
+		else
 			{
 			$ASCII_text.="<B>***"._QXZ("NO CALLS FOUND FROM")." $query_date "._QXZ("TO")." $end_date***</B>\n";
 			$CSV_text.="\"***"._QXZ("NO CALLS FOUND FROM")." $query_date "._QXZ("TO")." $end_date***\"\n\n";
@@ -722,7 +733,7 @@ else
 
 $HTML_text.="</PRE></BODY></HTML>";
 
-if ($file_download>0) 
+if ($file_download>0)
 	{
 	$FILE_TIME = date("Ymd-His");
 	$CSVfilename = "AST_campaign_status_$US$FILE_TIME.csv";
@@ -742,7 +753,7 @@ if ($file_download>0)
 
 	echo "$CSV_text";
 	}
-else 
+else
 	{
 	header("Content-type: text/html; charset=utf-8");
 

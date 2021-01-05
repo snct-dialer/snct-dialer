@@ -1,6 +1,6 @@
-<?php 
+<?php
 # AST_agent_debug_log_report.php
-# 
+#
 # Copyright (C) 2017  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -316,8 +316,8 @@ $MAIN.=" "._QXZ("to")." <INPUT TYPE=TEXT NAME=query_date_T SIZE=9 MAXLENGTH=8 VA
 
 $MAIN.=_QXZ("Display as:");
 $MAIN.="<select name='report_display_type'>";
-if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>$report_display_type</option>";}
-$MAIN.="<option value='TEXT'>TEXT</option><option value='HTML'>HTML</option></select>\n<BR><BR>";
+if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
+$MAIN.="<option value='TEXT'>"._QXZ("TEXT")."</option><option value='HTML'>"._QXZ("HTML")."</option></select>\n<BR><BR>";
 
 
 /*
@@ -330,7 +330,7 @@ else
 $o=0;
 while ($servers_to_print > $o)
 	{
-	if (preg_match("/\|$LISTserverIPs[$o]\|/",$server_ip_string)) 
+	if (preg_match("/\|$LISTserverIPs[$o]\|/",$server_ip_string))
 		{$MAIN.="<option selected value=\"$LISTserverIPs[$o]\">$LISTserverIPs[$o] - $LISTserver_names[$o]</option>\n";}
 	else
 		{$MAIN.="<option value=\"$LISTserverIPs[$o]\">$LISTserverIPs[$o] - $LISTserver_names[$o]</option>\n";}
@@ -403,7 +403,7 @@ if ($SUBMIT) {
 
 		if (!$lower_limit) {$lower_limit=1;}
 		if ($lower_limit+999>=mysqli_num_rows($rpt_rslt)) {$upper_limit=($lower_limit+mysqli_num_rows($rpt_rslt)%1000)-1;} else {$upper_limit=$lower_limit+999;}
-		
+
 		$TEXT.="--- "._QXZ("AGENT SCREEN DEBUG LOG RECORDS FOR")." $query_date, $query_date_D "._QXZ("TO")." $query_date_T $server_rpt_string, "._QXZ("RECORDS")." #$lower_limit-$upper_limit               <a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&type=$type&query_date=$query_date&query_date_D=$query_date_D&query_date_T=$query_date_T&agent_user=$agent_user&lower_limit=$lower_limit&upper_limit=$upper_limit&file_download=1\">["._QXZ("DOWNLOAD")."]</a>\n";
 		$agntdb_rpt.="+----------------------+---------------------+---------------------+------------+----------------------+-------------------------------------+------------+------------------------------------------------------------------------+\n";
 		$agntdb_rpt.="| "._QXZ("USER",20)." | "._QXZ("SCREEN DATE",19)." | "._QXZ("DB DATE",19)." | "._QXZ("RUN TIME",10)." | "._QXZ("SCRIPT",20)." | "._QXZ("ACTION",35)." | "._QXZ("LEAD_ID",10)." | "._QXZ("STAGE",70)." |\n";
@@ -426,29 +426,29 @@ if ($SUBMIT) {
 		$HTML.="<th><font size='2'>"._QXZ("STAGE")."</font></th>";
 		$HTML.="</tr>\n";
 
-		for ($i=1; $i<=mysqli_num_rows($rpt_rslt); $i++) 
+		for ($i=1; $i<=mysqli_num_rows($rpt_rslt); $i++)
 			{
 			$row=mysqli_fetch_array($rpt_rslt);
 
 			$CSV_text.="\"$row[user]\",\"$row[start_time]\",\"$row[db_time]\",\"$row[run_time]\",\"$row[php_script]\",\"$row[action]\",\"$row[lead_id]\",\"$row[stage]\"\n";
-			if ($i>=$lower_limit && $i<=$upper_limit) 
+			if ($i>=$lower_limit && $i<=$upper_limit)
 				{
-				$agntdb_rpt.="| ".sprintf("%-20s", $row["user"]); 
-				$agntdb_rpt.=" | ".sprintf("%-19s", $row["start_time"]); 
-				$agntdb_rpt.=" | ".sprintf("%-19s", $row["db_time"]); 
+				$agntdb_rpt.="| ".sprintf("%-20s", $row["user"]);
+				$agntdb_rpt.=" | ".sprintf("%-19s", $row["start_time"]);
+				$agntdb_rpt.=" | ".sprintf("%-19s", $row["db_time"]);
 				if (strlen($row["run_time"])>10) {$row["run_time"]=substr($row["run_time"],0,10)."";}
 				$run_color='color=black';
-				if ($row["run_time"] > 1) {$run_color='color=blue';} 
-				if ($row["run_time"] > 2) {$run_color='color=purple';} 
-				if ($row["run_time"] > 3) {$run_color='color=red';} 
-				$agntdb_rpt.=" | <font size=2 $run_color>".sprintf("%-10s", $row["run_time"])."</font>"; 
+				if ($row["run_time"] > 1) {$run_color='color=blue';}
+				if ($row["run_time"] > 2) {$run_color='color=purple';}
+				if ($row["run_time"] > 3) {$run_color='color=red';}
+				$agntdb_rpt.=" | <font size=2 $run_color>".sprintf("%-10s", $row["run_time"])."</font>";
 				if (strlen($row["php_script"])>20) {$row["php_script"]=substr($row["php_script"],-20)."";}
-				$agntdb_rpt.=" | ".sprintf("%-20s", $row["php_script"]); 
+				$agntdb_rpt.=" | ".sprintf("%-20s", $row["php_script"]);
 				if (strlen($row["action"])>32) {$row["action"]=substr($row["action"],0,32)."...";}
-				$agntdb_rpt.=" | ".sprintf("%-35s", $row["action"]); 
-				$agntdb_rpt.=" | ".sprintf("%-10s", $row["lead_id"]); 
+				$agntdb_rpt.=" | ".sprintf("%-35s", $row["action"]);
+				$agntdb_rpt.=" | ".sprintf("%-10s", $row["lead_id"]);
 				if (strlen($row["stage"])>67) {$row["stage"]=substr($row["stage"],0,67)."...";}
-				$agntdb_rpt.=" | ".sprintf("%-70s", $row["stage"])." |\n"; 
+				$agntdb_rpt.=" | ".sprintf("%-70s", $row["stage"])." |\n";
 
 				$HTML.="<tr bgcolor='#".$SSstd_row2_background."'>";
 				$HTML.="<td><font size='2'>".$row["user"]."</font></td>";
@@ -459,7 +459,7 @@ if ($SUBMIT) {
 				$HTML.="<td><font size='2'>".$row["action"]."</font></td>";
 				$HTML.="<td><font size='2'>".$row["lead_id"]."</font></td>";
 				$HTML.="<td><font size='2'>".$row["stage"]."</font></td>";
-				$HTML.="</tr>\n";				
+				$HTML.="</tr>\n";
 				}
 			}
 		$agntdb_rpt.="+----------------------+---------------------+---------------------+------------+----------------------+-------------------------------------+------------+------------------------------------------------------------------------+\n";
@@ -486,8 +486,8 @@ if ($SUBMIT) {
 		}
 		$agntdb_rpt_hf.="\n";
 		$TEXT.=$agntdb_rpt_hf.$agntdb_rpt.$agntdb_rpt_hf;
-	
-		$HTML.="</tr></table>\n";				
+
+		$HTML.="</tr></table>\n";
 
 	} else {
 		$TEXT.="*** "._QXZ("NO RECORDS FOUND")." ***\n";

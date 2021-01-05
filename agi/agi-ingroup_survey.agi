@@ -5,7 +5,22 @@
 # runs after a call gets transferred from an agent to ask a question, then
 # optionally transfer to a call menu. Takes settings from an In-Group
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+
+#
+# LICENSE: AGPLv3
+#
+# Copyright (©) 2019      Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2020      SNCT GmbH <info@snct-gmbh.de>
+#               2020      Jörg Frings-Fürst <open_source@jff.email>.
+#
+
+#
+# SNCT-Changes:
+#
+# 2020-07-22 jff - Change License to AGPLv3
+#            jff - Change log-file to agiout.log
+#
+
 #
 # changes:
 # 170816-2357 - first build
@@ -66,14 +81,14 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port)	{$VARDB_port='3306';}
-if (!$AGILOGfile)	{$AGILOGfile = "$PATHlogs/agiout";}
+if (!$AGILOGfile)	{$AGILOGfile = "$PATHlogs/agiout.log";}
 
 use DBI;
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
 
-  
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
     or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
@@ -98,7 +113,7 @@ $sthA->finish();
 ### begin parsing run-time options ###
 if (length($ARGV[0])>1)
 	{
-	if ($AGILOG) 
+	if ($AGILOG)
 		{$agi_string = "Perl Environment Dump:";   &agi_output;}
 	$i=0;
 	while ($#ARGV >= $i)
@@ -107,7 +122,7 @@ if (length($ARGV[0])>1)
 		if ($AGILOG) {$agi_string = "$i|$ARGV[$i]";   &agi_output;}
 		$i++;
 		}
-	
+
 	### list of command-line array arguments:
 	@ARGV_vars = split(/-----/, $ARGV[0]);
 	$CLI_exten =		$ARGV_vars[0];
@@ -116,7 +131,7 @@ if (length($ARGV[0])>1)
 
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 	{
 	chomp;
 	last unless length($_);
@@ -160,7 +175,7 @@ if ( (
 
 if ($AGILOG) {$agi_string = "AGI Environment Dump:";   &agi_output;}
 
-foreach $i (sort keys %AGI) 
+foreach $i (sort keys %AGI)
 	{
 	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
 	}
@@ -234,7 +249,7 @@ $sthA->finish();
 
 
 ##### BEGIN ASK QUESTION, COLLECT RESPONSE #####
-if ( ($inbound_survey =~ /ENABLED/) && (length($inbound_survey_question_filename) > 0) && ($VD_participate =~ /Y/) ) 
+if ( ($inbound_survey =~ /ENABLED/) && (length($inbound_survey_question_filename) > 0) && ($VD_participate =~ /Y/) )
 	{
 	$digits_to_collect=1;
 
@@ -281,7 +296,7 @@ if ( ($inbound_survey =~ /ENABLED/) && (length($inbound_survey_question_filename
 		if ($interrupt_digit == 55) {$interrupt_digit=7;}
 		if ($interrupt_digit == 56) {$interrupt_digit=8;}
 		if ($interrupt_digit == 57) {$interrupt_digit=9;}
-		
+
 		$totalDTMF=$interrupt_digit;
 		$digit_loop_counter++;
 		}
@@ -301,7 +316,7 @@ if ( ($inbound_survey =~ /ENABLED/) && (length($inbound_survey_question_filename
 			{
 			$digit_loop_counter=$digits_to_collect;
 			}
-		
+
 		$digit_loop_counter++;
 		}
 
@@ -323,7 +338,7 @@ if ( ($inbound_survey =~ /ENABLED/) && (length($inbound_survey_question_filename
 
 
 	### send call to a call menu, if defined
-	if (length($inbound_survey_callmenu) > 0) 
+	if (length($inbound_survey_callmenu) > 0)
 		{
 		$AGI->stream_file('sip-silence');
 		$AGI->stream_file('sip-silence');
@@ -358,21 +373,21 @@ $dbhA->disconnect();
 
 exit;
 
-sub checkresult 
+sub checkresult
 	{
 	my ($res) = @_;
 	my $retval;
 	$tests++;
 	chomp $res;
-	if ($res =~ /^200/) 
+	if ($res =~ /^200/)
 		{
 		$res =~ /result=(-?\d+)/;
-		if (!length($1)) 
+		if (!length($1))
 			{
 		#	print STDERR "FAIL ($res)\n";
 			$fail++;
-			} 
-		else 
+			}
+		else
 			{
 		#	print STDERR "PASS ($1)\n";
 			$pass++;

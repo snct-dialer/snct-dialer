@@ -6,7 +6,7 @@
 # forces logout of agents in a specified campaign or all campaigns
 #
 # This script is meant to be used in the crontab at scheduled intervals
-# 
+#
 # EXAMPLE CRONTAB ENTRIES:
 #
 #	### Force logout at different times
@@ -138,9 +138,9 @@ foreach(@conf)
 if (!$VDALOGfile) {$VDALOGfile = "$PATHlogs/agentlogout";}
 if (!$VARDB_port) {$VARDB_port='3306';}
 
-use DBI;	  
+use DBI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 
@@ -162,7 +162,7 @@ $sthA->finish();
 
 
 
-@user=@MT; 
+@user=@MT;
 
 if ($CLIcampaign)
 	{

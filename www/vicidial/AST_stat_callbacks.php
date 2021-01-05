@@ -1,15 +1,15 @@
-<?php 
+<?php
 # AST_stat_callback.php
-# 
-# Copyright (C) 2018 Jörg Frings-Fürst <jff@flyingpenguim.de>    
-#               2018 flyingpenguin UG <info@flyingpenguin.de> 
+#
+# Copyright (C) 2018 Jörg Frings-Fürst <jff@flyingpenguim.de>
+#               2018 flyingpenguin UG <info@flyingpenguin.de>
 #
 # LICENSE: AGPLv2
 #
 # Callback stats
-# 
+#
 # CHANGELOG:
-# 2018-27-01 - Inital release   
+# 2018-27-01 - Inital release
 # 2018-02-01 - First Release
 #            - Add download
 # 2018-02-02 - Add fields from lead
@@ -22,7 +22,7 @@
 #
 # ToDo
 # - Fortschrittsbalken
-# 
+#
 
 $copyr = "2018 flyingpenguin.de UG, Jörg Frings-Fürst (AGPLv2)";
 $release = '20180227-2';
@@ -126,7 +126,7 @@ if ($sl_ct > 0)
 $auth=0;
 $reports_auth=0;
 $admin_auth=0;
-$auth_message = user_authorization($PHP_AUTH_USER,$PHP_AUTH_PW,'REPORTS',0);
+$auth_message = user_authorization($PHP_AUTH_USER,$PHP_AUTH_PW,'REPORTS',0,0);
 if ($auth_message == 'GOOD')
 	{$auth=1;}
 
@@ -173,7 +173,7 @@ else
 	exit;
 	}
 
-$test_ip = $_SERVER['SERVER_ADDR'];	
+$test_ip = $_SERVER['SERVER_ADDR'];
 $doc_root = $_SERVER['DOCUMENT_ROOT'];
 
 $loadn = sys_getloadavg();
@@ -183,7 +183,7 @@ if ($loadn[0] > 2.0) {
 	exit;
 }
 
-	
+
 $stmt="SELECT user_id,user,pass,full_name,user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit,add_timeclock_log,modify_timeclock_log,delete_timeclock_log,alter_custphone_override,vdc_agent_api_access,modify_inbound_dids,delete_inbound_dids,active,alert_enabled,download_lists,agent_shift_enforcement_override,manager_shift_enforcement_override,shift_override_flag,export_reports,delete_from_dnc,email,user_code,territory,allow_alerts,callcard_admin,force_change_password,modify_shifts,modify_phones,modify_carriers,modify_labels,modify_statuses,modify_voicemail,modify_audiostore,modify_moh,modify_tts,modify_contacts,modify_same_user_level from vicidial_users where user='$PHP_AUTH_USER';";
 $rslt=mysql_to_mysqli($stmt, $link);
 $row=mysqli_fetch_row($rslt);
@@ -254,7 +254,7 @@ if ( (!preg_match('/\-\-ALL\-\-/i',$LOGadmin_viewable_groups)) and (strlen($LOGa
 	$valLOGadmin_viewable_groupsSQL = "and val.user_group IN('---ALL---','$rawLOGadmin_viewable_groupsSQL')";
 	$vmLOGadmin_viewable_groupsSQL = "and vm.user_group IN('---ALL---','$rawLOGadmin_viewable_groupsSQL')";
 	}
-else 
+else
 	{$admin_viewable_groupsALL=1;}
 
 #  and (preg_match("/MONITOR|BARGE|HIJACK|WHISPER/",$monitor_active) ) )
@@ -442,7 +442,7 @@ $select_list .= "<SELECT SIZE=15 NAME=groups[] multiple>";
 $o=0;
 while ($groups_to_print > $o)
 	{
-	if (preg_match("/\|$LISTgroups[$o]\|/",$group_string)) 
+	if (preg_match("/\|$LISTgroups[$o]\|/",$group_string))
 		{$select_list .= "<option selected value=\"$LISTgroups[$o]\">$LISTgroups[$o] - $LISTnames[$o]</option>";}
 	else
 		{$select_list .= "<option value=\"$LISTgroups[$o]\">$LISTgroups[$o] - $LISTnames[$o]</option>";}
@@ -473,7 +473,7 @@ $open_list = '<TABLE WIDTH=250 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\'#D9E6FE\'><
 <HTML>
 <HEAD>
 
-<?php 
+<?php
 
 if ($RTajax > 0)
 	{
@@ -487,17 +487,17 @@ else
 	window.onload = startup;
 
 	// function to detect the XY position on the page of the mouse
-	function startup() 
+	function startup()
 		{
 		hide_ingroup_info();
-		if (window.Event) 
+		if (window.Event)
 			{
 			document.captureEvents(Event.MOUSEMOVE);
 			}
 		document.onmousemove = getCursorXY;
 		}
 
-	function getCursorXY(e) 
+	function getCursorXY(e)
 		{
 		document.getElementById('cursorX').value = (window.Event) ? e.pageX : event.clientX + (document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft);
 		document.getElementById('cursorY').value = (window.Event) ? e.pageY : event.clientY + (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop);
@@ -510,7 +510,7 @@ else
 	var pass = '<?php echo $PHP_AUTH_PW ?>';
 
 	// functions to hide and show different DIVs
-	function openDiv(divvar) 
+	function openDiv(divvar)
 		{
 		document.getElementById(divvar).innerHTML = select_list;
 		document.getElementById(divvar).style.left = 0;
@@ -552,15 +552,15 @@ else
 			{
 			xmlhttp = new XMLHttpRequest();
 			}
-		if (xmlhttp) 
+		if (xmlhttp)
 			{
 			var monitorQuery = "source=realtime&function=agent_ingroup_info&stage=change&user=" + user + "&pass=" + pass + "&agent_user=" + agent_user;
-			xmlhttp.open('POST', 'non_agent_api.php'); 
+			xmlhttp.open('POST', 'non_agent_api.php');
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(monitorQuery); 
-			xmlhttp.onreadystatechange = function() 
-				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+			xmlhttp.send(monitorQuery);
+			xmlhttp.onreadystatechange = function()
+				{
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 					{
 				//	alert(xmlhttp.responseText);
 					var Xoutput = null;
@@ -598,8 +598,8 @@ else
 		.blue {color: white; background-color: blue}
 		.midnightblue {color: white; background-color: #191970}
 		.purple {color: white; background-color: purple}
-		.violet {color: black; background-color: #EE82EE} 
-		.thistle {color: black; background-color: #D8BFD8} 
+		.violet {color: black; background-color: #EE82EE}
+		.thistle {color: black; background-color: #D8BFD8}
 		.olive {color: white; background-color: #808000}
 		.lime {color: white; background-color: #006600}
 		.yellow {color: black; background-color: yellow}
@@ -625,13 +625,13 @@ else
 		.Hfr2 {color: black; background-color: #FF9999; font-family: HELVETICA; font-size: 18; font-weight: bold;}
 		.Hfr3 {color: black; background-color: #FF6666; font-family: HELVETICA; font-size: 18; font-weight: bold;}
 		.Hfr4 {color: white; background-color: #FF0000; font-family: HELVETICA; font-size: 18; font-weight: bold;}
-		
+
 		div.clear { clear: both; }
-		   
-  		table tr td {  
-   			font-size:12px;  
-   			font-family:Verdana, Arial, Helvetica, sans-serif;  
-  		}  
+
+  		table tr td {
+   			font-size:12px;
+   			font-family:Verdana, Arial, Helvetica, sans-serif;
+  		}
 
 
 	<?php
@@ -657,7 +657,7 @@ else
 	$title = AddCompany2Title($report_name);
 	echo "<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
 	echo "<link rel=\"stylesheet\" href=\"calendar.css\">\n";
-	
+
 	echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 	#echo"<META URL=$PHP_SELF?RR=$RR&DB=$DB$groupQS&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound&monitor_active=$monitor_active&monitor_phone=$monitor_phone&ALLINGROUPstats=$ALLINGROUPstats&DROPINGROUPstats=$DROPINGROUPstats&NOLEADSalert=$NOLEADSalert&CARRIERstats=$CARRIERstats&PRESETstats=$PRESETstats&AGENTtimeSTATS=$AGENTtimeSTATS&INGROUPcolorOVERRIDE=$INGROUPcolorOVERRIDE&droppedOFtotal=$droppedOFtotal\">\n";
 	echo "<TITLE>$title</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
@@ -687,17 +687,17 @@ else
 #
 # - $DB for additional Output
 # - $link Mysqli link
-	
+
 	function GetList($ListId) {
 		global $DB, $link;
-		
+
 		$statement = "SELECT * FROM vicidial_lists WHERE list_id = \"$ListId\";";
 		if ($DB) print "$statement\n";
 		$result = mysqli_query($link, $statement) or die ("Error : " . mysqli_error($link));
 		$row = mysqli_fetch_array($result, MYSQLI_BOTH);
-		
+
 		return $row;
-		
+
 	}
 
 #
@@ -717,14 +717,14 @@ else
 
 function GetLead($LeadId) {
 	global $DB, $link;
-	
+
 	$statement = "SELECT * FROM vicidial_list WHERE lead_id = \"$LeadId\";";
 	if ($DB) print "$statement\n";
 	$result = mysqli_query($link, $statement) or die ("Error : " . mysqli_error($link));
 	$row = mysqli_fetch_array($result, MYSQLI_BOTH);
-	
+
 	return $row;
-	
+
 }
 
 #
@@ -736,25 +736,25 @@ function formatSec($sekunden) {
 	$stunden = floor($sekunden / 3600);
 	$minuten = floor(($sekunden - ($stunden * 3600)) / 60);
 	$sekunden = round($sekunden - ($stunden * 3600) - ($minuten * 60), 0);
-	
+
 	if ($stunden <= 9) {
 		$strStunden = "0" . $stunden;
 	} else {
 		$strStunden = $stunden;
 	}
-	
+
 	if ($minuten <= 9) {
 		$strMinuten = "0" . $minuten;
 	} else {
 		$strMinuten = $minuten;
 	}
-	
+
 	if ($sekunden <= 9) {
 		$strSekunden = "0" . $sekunden;
 	} else {
 		$strSekunden = $sekunden;
 	}
-	
+
 	return "$strStunden:$strMinuten:$strSekunden";
 }
 
@@ -776,7 +776,7 @@ echo "<h1>Callbacks Übersicht</h1>" . PHP_EOL;
 if($cb_to_print < 1) {
 	$AgentsPrint = "keine Daten!";
 }
-else {	
+else {
 	$AgentsPrint = "<TABLE border=\"0\">" . PHP_EOL;
 	$AgentsPrint .= " <TR bgcolor=\"f6fba5\">" . PHP_EOL;
 	$AgentsPrint .= "  <TH nowrap><font size=\"-1\">Campaign</font></TH>" . PHP_EOL;
@@ -797,7 +797,7 @@ else {
 	$AgentsPrint .= " </TR>" . PHP_EOL;
 	$CSVPrint .= PHP_EOL;
 
-	$pos = 0;	
+	$pos = 0;
 	$farb = 0;
 	$sBackCol1 = "ccff99";
 	$sBackCol2 = "ccf5ff";
@@ -811,12 +811,12 @@ else {
 		else {
 			$farb = 0;
 			$printFarbe = $sBackCol2;
-			
+
 		}
 		$Lrow = GetLead($row[1]);
 		$Lirow = GetList($row[2]);
-		
-		$AgentsPrint .= " <TR bgcolor=$printFarbe>" . PHP_EOL;	
+
+		$AgentsPrint .= " <TR bgcolor=$printFarbe>" . PHP_EOL;
 		$AgentsPrint .= "  <TD nowrap>$row[3]</TD> " . PHP_EOL;
 		$AgentsPrint .= "  <TD nowrap>$Lirow[0] / $Lirow[1] </TD> " . PHP_EOL;
 		$AgentsPrint .= "  <TD nowrap>$Lirow[3] </TD> " . PHP_EOL;
@@ -831,7 +831,7 @@ else {
 		$AgentsPrint .= "  <TD nowrap>$Lrow[11]</TD> " . PHP_EOL;
 		$AgentsPrint .= "  <TD nowrap>$Lrow[30]</TD> " . PHP_EOL;
 		$AgentsPrint .= "  <TD nowrap>$Lrow[29]</TD> " . PHP_EOL;
-		
+
 		$CSVPrint .= $row[3] . "|" . $Lirow[0] . " / " .$Lirow[1] . "|" . $Lirow[3] . "|" . $row[6] . "|" . $row[4] . "|" . $row[8] . "|" . $row[9] . "|" . $row[12] . "|" . $row[1] ."|" . "|" . $Lrow[5] ."|" . $Lrow[13] . " " . $Lrow[15] . "|" . $Lrow[11] . "|" . $Lrow[30] . "|" . $Lrow[29];
 
 		$AgentsPrint .= " </TR>" . PHP_EOL;

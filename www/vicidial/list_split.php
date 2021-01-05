@@ -1,7 +1,7 @@
 <?php
 # list_split.php - split one big list into smaller lists. Part of Admin Utilities.
 #
-# Copyright (C) 2017  Matt Florell,Michael Cargile <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2019  Matt Florell,Michael Cargile <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 140916-1215 - Initial Build
@@ -11,10 +11,11 @@
 # 161014-0842 - Added screen colors
 # 170409-1542 - Added IP List validation code
 # 170819-1001 - Added allow_manage_active_lists option
+# 190703-0925 - Added use of admin_web_directory system setting
 #
 
-$version = '2.14-7';
-$build = '170819-1001';
+$version = '2.14-8';
+$build = '190703-0925';
 
 require("dbconnect_mysqli.php");
 require("functions.php");
@@ -55,7 +56,7 @@ $num_leads = preg_replace('/[^0-9]/','',$num_leads);
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$sys_settings_stmt = "SELECT use_non_latin,outbound_autodial_active,sounds_central_control_active,enable_languages,language_method,active_modules,admin_screen_colors,allow_manage_active_lists FROM system_settings;";
+$sys_settings_stmt = "SELECT use_non_latin,outbound_autodial_active,sounds_central_control_active,enable_languages,language_method,active_modules,admin_screen_colors,allow_manage_active_lists,admin_web_directory FROM system_settings;";
 $sys_settings_rslt=mysql_to_mysqli($sys_settings_stmt, $link);
 if ($DB) {echo "$sys_settings_stmt\n";}
 $num_rows = mysqli_num_rows($sys_settings_rslt);
@@ -70,6 +71,7 @@ if ($num_rows > 0)
 	$SSactive_modules =					$sys_settings_row[5];
 	$SSadmin_screen_colors =			$sys_settings_row[6];
 	$SSallow_manage_active_lists =		$sys_settings_row[7];
+	$SSadmin_web_directory =			$sys_settings_row[8];
 	}
 else
 	{
@@ -261,7 +263,7 @@ if ($DB>0)
 	}
 
 # confirmation page
-if ($submit == "submit" )
+if ($submit == _QXZ("submit") )
 	{
 	# make sure the original list id is valid
 	$id_chk_stmt = "SELECT list_id FROM vicidial_lists where list_id = $orig_list;";
@@ -274,7 +276,7 @@ if ($submit == "submit" )
 		echo "<p><a href='$PHP_SELF'>"._QXZ("Click here to start over.")."</a></p>\n";
 		echo "</body>\n</html>\n";
 		exit;
-		}	
+		}
 
 	# figure out the highest list id in the system
 	$max_id_stmt = "SELECT MAX(list_id) FROM vicidial_lists;";
@@ -319,7 +321,7 @@ if ($submit == "submit" )
 
 	# keep debug active
 	echo "<input type=hidden name=DB value='$DB'>\n";
-	
+
 	echo "<input type=submit name=confirm value=confirm>\n";
 	echo "</form></center>\n";
 	echo "<p><a href='$PHP_SELF'>"._QXZ("Click here to start over.")."</a></p>\n";
@@ -342,7 +344,7 @@ if ($confirm == "confirm")
 		echo "</body>\n</html>\n";
 		exit;
 		}
-		
+
 	# find out if the original list has any custom fields
 	$cf_chk_stmt = "SELECT COUNT(1) FROM vicidial_lists_fields where list_id = $orig_list;";
 	if ($DB) { echo "|$cf_chk_stmt|\n"; }
@@ -416,15 +418,15 @@ if ($confirm == "confirm")
 	$i = 0;
 	$new_list_id = $start_dest_list_id;
 	$new_lists = "";
-	
+
 	$all_sql = "";
-	
+
 	while ( $i < $num_lists ) {
 		# create the new list
 		$list_create_stmt = "INSERT INTO vicidial_lists ( list_id, list_name, campaign_id, active, list_description, list_changedate, list_lastcalldate, reset_time, agent_script_override, campaign_cid_override, am_message_exten_override, drop_inbound_group_override, xferconf_a_number, xferconf_b_number, xferconf_c_number, xferconf_d_number, xferconf_e_number, web_form_address, web_form_address_two, time_zone_setting, inventory_report, expiration_date ) VALUES ( '$new_list_id', '$list_name split $i', '$campaign_id', '$active', '$list_description', '$list_changedate', '$list_lastcalldate', '$reset_time', '$agent_script_override', '$campaign_cid_override', '$am_message_exten_override', '$drop_inbound_group_override', '$xferconf_a_number', '$xferconf_b_number', '$xferconf_c_number', '$xferconf_d_number', '$xferconf_e_number', '$web_form_address', '$web_form_address_two', '$time_zone_setting', '$inventory_report', '$expiration_date' );";
 		if ($DB) {echo "|$list_create_stmt|\n";}
 		$list_create_rslt=mysql_to_mysqli($list_create_stmt, $link);
-		
+
 		$all_sql .= "$list_create_stmt|";
 
 		# insert a record into the admin change log for the new list creation
@@ -436,15 +438,15 @@ if ($confirm == "confirm")
 		$admin_log_rslt=mysql_to_mysqli($admin_log_stmt, $link);
 
 		# copy the custom fields if there are any
-		if ( $cf_chk_count > 0 ) 
+		if ( $cf_chk_count > 0 )
 			{
 			$admin_lists_custom = 'admin_lists_custom.php';
 
-			$url = "http" . (isset($_SERVER['HTTPS']) ? 's' : '') . "://$_SERVER[HTTP_HOST]/vicidial/" . $admin_lists_custom . "?action=COPY_FIELDS_SUBMIT&list_id=$new_list_id&source_list_id=$orig_list&copy_option=APPEND";
-			
+			$url = "http" . (isset($_SERVER['HTTPS']) ? 's' : '') . "://$_SERVER[HTTP_HOST]/$SSadmin_web_directory/" . $admin_lists_custom . "?action=COPY_FIELDS_SUBMIT&list_id=$new_list_id&source_list_id=$orig_list&copy_option=APPEND";
+
 			# use cURL to call the copy custom fields code
 			$curl = curl_init();
-			
+
 			# Set some options - we are passing in a useragent too here
 			curl_setopt_array($curl, array(
 				CURLOPT_RETURNTRANSFER => 1,
@@ -452,17 +454,17 @@ if ($confirm == "confirm")
 				CURLOPT_USERPWD => "$PHP_AUTH_USER:$PHP_AUTH_PW",
 				CURLOPT_USERAGENT => 'list_split.php'
 			));
-			
+
 			# Send the request & save response to $resp
 			$resp = curl_exec($curl);
-			
+
 			# Close request to clear up some resources
 			curl_close($curl);
 			}
-		
+
 		if ($DB) { echo "|$resp|\n"; }
-		
-		
+
+
 		# move the leads to the new list from the old list
 		$move_lead_stmt = "UPDATE vicidial_list SET list_id = '$new_list_id' WHERE list_id = '$orig_list' limit $num_leads;";
 		if ($DB) { echo "|$move_lead_stmt|\n"; }
@@ -470,7 +472,7 @@ if ($confirm == "confirm")
 		$move_lead_count = mysqli_affected_rows($link);
 
 		$all_sql .= "$move_lead_stmt|";
-		
+
 		# insert a record into the admin change log for the mvoe into new list
 		$SQL_log = "$move_lead_stmt|";
 		$SQL_log = preg_replace('/;/', '', $SQL_log);
@@ -484,11 +486,11 @@ if ($confirm == "confirm")
 
 		$i++;
 		$new_list_id++;
-		
+
 		# reset the PHP max execution so this script does not exit prematurely
 		set_time_limit( 120 );
 	}
-	
+
 	# insert a record into the admin change log for the split into orig list
 	$SQL_log = "$all_sql|";
 	$SQL_log = preg_replace('/;/', '', $SQL_log);
@@ -505,7 +507,7 @@ if ($confirm == "confirm")
 
 
 # main page display
-if (($submit != "submit" ) && ($confirm != "confirm"))
+if (($submit != _QXZ("submit") ) && ($confirm != "confirm"))
 	{
 	# figure out which campaigns this user is allowed to work on
 	$allowed_campaigns_stmt="SELECT allowed_campaigns from vicidial_user_groups where user_group='$user_group';";
@@ -598,7 +600,7 @@ if (($submit != "submit" ) && ($confirm != "confirm"))
 		{echo "<p>"._QXZ("This is the list split tool. It will split an existing list into several new lists with the same options as the original list. This includes copying the customer fields from the original.")."</p>";}
 	else
 		{echo "<p>"._QXZ("This is the list split tool.  It will only work on inactive lists. It will split an existing list into several new lists with the same options as the original list. This includes copying the customer fields from the original.")."</p>";}
-	
+
 	echo "<form action=$PHP_SELF method=POST>\n";
 	echo "<center><table width=$section_width cellspacing=3>\n";
 
@@ -637,9 +639,9 @@ if (($submit != "submit" ) && ($confirm != "confirm"))
 
 	# keep debug active
 	echo "<input type=hidden name=DB value='$DB'>\n";
-	
+
 	# Submit
-	echo "<tr bgcolor=#$SSstd_row4_background><td colspan=2 align=center><input type=submit name=submit value=submit></td></tr>\n";
+	echo "<tr bgcolor=#$SSstd_row4_background><td colspan=2 align=center><input type=submit name=submit value='"._QXZ("submit")."'></td></tr>\n";
 	echo "</table></center>\n";
 	echo "</form>\n";
 

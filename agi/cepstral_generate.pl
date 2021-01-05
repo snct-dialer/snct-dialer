@@ -173,7 +173,7 @@ sub get_cep_voice {
 			@voice = split(/\|/,$voice_line);
 		}
 	}
-	
+
 	# return it
 	return @voice;
 }
@@ -198,7 +198,7 @@ sub get_cep_num_voices {
 
         foreach (@voice_lines) {
 		$number++;
-        }	
+        }
 
 	return $number;
 }
@@ -209,11 +209,11 @@ sub get_cep_num_voices {
 sub gen_cepstral {
 	my $text = $_[0];	# the text to play
 	my $voice = $_[1];	# voice to use
-	
-	# hash of the text 
+
+	# hash of the text
 	my $hash = md5_hex("$text-$voice");	# the hash
 	my $hash_ftl = substr($hash, 0, 2);	# first two letters of hash
-	
+
 	# Directories that hold everything
 	my $astsounddir = $PATHsounds; 	# asterisk sound directory
 	my $ttssounddir = $astsounddir."/tts";
@@ -224,7 +224,7 @@ sub gen_cepstral {
 	my $wavefile = "tts-".$hash; 			# wave file without the .wav at the end
 	my $wavepath = $sounddir."/".$wavefile.".wav"; 	# full path to the wavefile
 	my $astwavpath = $astsubdir."/".$wavefile; 	# asterisk path to .wav file without .wav
-	
+
 	# text file of words to say
 	my $textfile = "tts-text-".$hash.".txt";	# file to hold the words to say
 	my $textpath = $sounddir."/".$textfile;		# full path to the text file
@@ -233,7 +233,7 @@ sub gen_cepstral {
 	if (!(&real_gen_cepstral($text, $voice, $ttssounddir, $sounddir, $wavepath, $textpath))) {
 		#TODO print an error message somewhere
 		return 0; # failure
-	}	
+	}
 
 	return 1; # success
 }
@@ -246,7 +246,7 @@ sub say_cepstral {
 	my $text = $_[0];	# the text to play
 	my $voice = $_[1];	# voice to use
 
-	my %input = $AGI->ReadParse(); 
+	my %input = $AGI->ReadParse();
 
 	# hash of the text
         my $hash = md5_hex("$text-$voice");	# the hash
@@ -266,9 +266,9 @@ sub say_cepstral {
         # text file of words to say
         my $textfile = "tts-text-".$hash.".txt";        # file to hold the words to say
         my $textpath = $sounddir."/".$textfile;         # full path to the text file
-	
+
 	# generate the tts
-	if (!(&real_gen_cepstral($text, $voice, $ttssounddir, $sounddir, $wavepath, $textpath))) { 
+	if (!(&real_gen_cepstral($text, $voice, $ttssounddir, $sounddir, $wavepath, $textpath))) {
 		#TODO print an error message somewhere
 		return 0; # failure
 	}
@@ -296,7 +296,7 @@ sub real_gen_cepstral {
 	my $wavepath = $_[4];
 	my $textpath = $_[5];
 
-	
+
         # Cepstral commnad and options
         my $cepstral_app = "$PATHswift";      # the executable
         my $cepstral_opt = "-p speech/rate=140";                          # the command line options

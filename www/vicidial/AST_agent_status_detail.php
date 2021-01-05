@@ -1,7 +1,7 @@
-<?php 
+<?php
 # AST_agent_status_detail.php
-# 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -36,6 +36,7 @@
 # 170409-1556 - Added IP List validation code
 # 170829-0040 - Added screen color settings
 # 171012-2015 - Fixed javascript/apache errors with graphs
+# 191013-0904 - Fixes for PHP7
 #
 
 $startMS = microtime();
@@ -293,7 +294,6 @@ if (!isset($user_group)) {$user_group = array();}
 if (!isset($query_date)) {$query_date = $NOW_DATE;}
 if (!isset($end_date)) {$end_date = $NOW_DATE;}
 
-
 $i=0;
 $group_string='|';
 $group_ct = count($group);
@@ -308,6 +308,7 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $campaigns_to_print = mysqli_num_rows($rslt);
 $i=0;
+$groups=array();
 while ($i < $campaigns_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -317,15 +318,16 @@ while ($i < $campaigns_to_print)
 	$i++;
 	}
 
-for ($i=0; $i<count($user_group); $i++)
-	{
-	if (preg_match('/\-\-ALL\-\-/', $user_group[$i])) {$all_user_groups=1; $user_group="";}
-	}
+#for ($i=0; $i<count($user_group); $i++)
+#	{
+#	if (preg_match('/\-\-ALL\-\-/', $user_group[$i])) {$all_user_groups=1; $user_group="";}
+#	}
 $stmt="SELECT user_group from vicidial_user_groups $whereLOGadmin_viewable_groupsSQL order by user_group;";
 $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $user_groups_to_print = mysqli_num_rows($rslt);
 $i=0;
+$user_groups=array();
 while ($i < $user_groups_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -374,12 +376,15 @@ else
 	}
 
 if ($DB) {echo "$user_group_string|$user_group_ct|$user_groupQS|$i<BR>";}
-
+# |5| | 1 | &user_group[]=5 | 1
 $stmt="SELECT vsc_id,vsc_name from vicidial_status_categories;";
 $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $statcats_to_print = mysqli_num_rows($rslt);
 $i=0;
+$vsc_id=array();
+$vsc_name=array();
+$vsc_count=array();
 while ($i < $statcats_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -445,11 +450,11 @@ if ($file_download < 1)
 	echo "<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 	echo "<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 	require("chart_button.php");
-	echo "<script src='chart/Chart.js'></script>\n"; 
+	echo "<script src='chart/Chart.js'></script>\n";
 	echo "<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
 
 	echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
-	echo "<TITLE>$report_name</TITLE></HEAD><BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
+	echo "<TITLE>"._QXZ("$report_name")."</TITLE></HEAD><BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 	echo "<span style=\"position:absolute;left:0px;top:0px;z-index:20;\" id=admin_header>";
 
 	$short_header=1;
@@ -465,45 +470,45 @@ if ($file_download < 1)
 if ( (strlen($group[0]) < 1) or (strlen($user_group[0]) < 1) )
 	{
 	echo "<PRE><FONT SIZE=2>";
-	echo "PLEASE SELECT A CAMPAIGN OR USER GROUP AND DATE-TIME BELOW AND CLICK SUBMIT\n";
-	echo " NOTE: stats taken from shift specified\n";
+	echo _QXZ("PLEASE SELECT A CAMPAIGN OR USER GROUP AND DATE-TIME BELOW AND CLICK SUBMIT")."\n";
+	echo " "._QXZ("NOTE: stats taken from shift specified")."\n";
 	}
 
 else
 	{
-	if ($shift == 'AM') 
+	if ($shift == 'AM')
 		{
 		$time_BEGIN=$AM_shift_BEGIN;
 		$time_END=$AM_shift_END;
-		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}   
+		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}
 		if (strlen($time_END) < 6) {$time_END = "15:14:59";}
 		}
-	if ($shift == 'PM') 
+	if ($shift == 'PM')
 		{
 		$time_BEGIN=$PM_shift_BEGIN;
 		$time_END=$PM_shift_END;
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "15:15:00";}
 		if (strlen($time_END) < 6) {$time_END = "23:15:00";}
 		}
-	if ($shift == 'ALL') 
+	if ($shift == 'ALL')
 		{
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}
 		if (strlen($time_END) < 6) {$time_END = "23:59:59";}
 		}
-	$query_date_BEGIN = "$query_date $time_BEGIN";   
+	$query_date_BEGIN = "$query_date $time_BEGIN";
 	$query_date_END = "$end_date $time_END";
 
 	if ($file_download < 1)
 		{
-		$ASCII_text.=_QXZ("$report_name")." Report                     $NOW_TIME ($db_source)\n";
-		$ASCII_text.="Time range: $query_date_BEGIN to $query_date_END\n\n";
-		$GRAPH.=_QXZ("$report_name")." Report                     $NOW_TIME\n";
-		$GRAPH.="Time range: $query_date_BEGIN to $query_date_END\n\n";
+		$ASCII_text.=_QXZ("$report_name")." "._QXZ("Report")."                     $NOW_TIME ($db_source)\n";
+		$ASCII_text.=_QXZ("Time range").": $query_date_BEGIN "._QXZ("to")." $query_date_END\n\n";
+		$GRAPH.=_QXZ("$report_name")." "._QXZ("Report")."                     $NOW_TIME\n";
+		$GRAPH.=_QXZ("Time range").": $query_date_BEGIN "._QXZ("to")." $query_date_END\n\n";
 		}
 	else
 		{
-		$file_output .= _QXZ("$report_name")." Report                     $NOW_TIME\n";
-		$file_output .= "Time range: $query_date_BEGIN to $query_date_END\n\n";
+		$file_output .= _QXZ("$report_name")." "._QXZ("Report")."                     $NOW_TIME\n";
+		$file_output .= _QXZ("Time range").": $query_date_BEGIN "._QXZ("to")." $query_date_END\n\n";
 		}
 
 	$statuses='-';
@@ -511,14 +516,17 @@ else
 	$statusesHEAD='';
 	$statusesHTML='';
 	$statusesFILE='';
+	$statusesARY=array();
 	$statusesARY[0]='';
 	$j=0;
 	$users='-';
+	$usersARY=array();
 	$usersARY[0]='';
+	$user_namesARY=array();
 	$user_namesARY[0]='';
 	$k=0;
 
-	if ($show_defunct_users) 
+	if ($show_defunct_users)
 		{
 		$user_stmt="SELECT distinct '' as full_name, user from ".$agent_log_table." where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN'  and status is not null $group_SQL $user_group_SQL order by user asc";
 		}
@@ -530,7 +538,7 @@ else
 		if ($DB) {echo "$user_stmt\n";}
 	$user_rslt=mysql_to_mysqli($user_stmt, $link);
 	$q=0;
-	while($q<mysqli_num_rows($user_rslt)) 
+	while($q<mysqli_num_rows($user_rslt))
 		{
 		$user_row=mysqli_fetch_row($user_rslt);
 
@@ -538,17 +546,17 @@ else
 			{
 			$defunct_user_stmt="SELECT full_name,user_group from vicidial_users where user='$user_row[1]'";
 			$defunct_user_rslt=mysql_to_mysqli($defunct_user_stmt, $link);
-			if (mysqli_num_rows($defunct_user_rslt)>0) 
+			if (mysqli_num_rows($defunct_user_rslt)>0)
 				{
 				$defunct_user_row=mysqli_fetch_row($defunct_user_rslt);
 				$full_name_val=$defunct_user_row[0];
-				} 
-			else 
+				}
+			else
 				{
 				$full_name_val=$user_row[1];
 				}
 			}
-		else 
+		else
 			{
 			$full_name_val=$user_row[0];
 			}
@@ -566,7 +574,7 @@ else
 		$q++;
 		}
 
-	if ($show_defunct_users) 
+	if ($show_defunct_users)
 		{
 		$status_stmt="SELECT distinct status from ".$agent_log_table." where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN' and status is not null $group_SQL $user_group_SQL order by status";
 		}
@@ -578,12 +586,16 @@ else
 		if ($DB) {echo "$status_stmt\n";}
 	$status_rslt=mysql_to_mysqli($status_stmt, $link);
 	$q=0;
+	$calls=array();
+	$full_name=array();
+	$user=array();
+	$status=array();
 	$status_rows_to_print=0; $sub_status_count=0;
-	while($status_row=mysqli_fetch_row($status_rslt)) 
+	while($status_row=mysqli_fetch_row($status_rslt))
 		{
 		$current_status=$status_row[0];
 
-		if ($show_defunct_users) 
+		if ($show_defunct_users)
 			{
 			$stmt="SELECT count(*) as calls,'' as full_name,user,status from ".$agent_log_table." where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN' and status='$current_status' $group_SQL $user_group_SQL group by user,full_name,status order by full_name,user,status desc limit 500000;";
 			}
@@ -595,7 +607,7 @@ else
 		if ($DB) {echo "$stmt\n";}
 		$status_rows_to_print = mysqli_num_rows($rslt);
 		$rows_to_print+=$status_rows_to_print;
-		$i=0; 
+		$i=0;
 		while ($i < $status_rows_to_print)
 			{
 			$row=mysqli_fetch_row($rslt);
@@ -604,17 +616,17 @@ else
 				{
 				$defunct_user_stmt="SELECT full_name,user_group from vicidial_users where user='$row[2]'";
 				$defunct_user_rslt=mysql_to_mysqli($defunct_user_stmt, $link);
-				if (mysqli_num_rows($defunct_user_rslt)>0) 
+				if (mysqli_num_rows($defunct_user_rslt)>0)
 					{
 					$defunct_user_row=mysqli_fetch_row($defunct_user_rslt);
 					$full_name_val=$defunct_user_row[0];
-					} 
-				else 
+					}
+				else
 					{
 					$full_name_val=$row[2];
 					}
 				}
-			else 
+			else
 				{
 				$full_name_val=$row[1];
 				}
@@ -657,15 +669,15 @@ else
 
 	if ($file_download < 1)
 		{
-		$ASCII_text.="CALLS STATS BREAKDOWN:\n";
+		$ASCII_text.=_QXZ("CALLS STATS BREAKDOWN").":\n";
 		$ASCII_text.="+---------------------------+----------+--------+--------+--------+$statusesHEAD\n";
-		$ASCII_text.="| <a href=\"$LINKbase\">USER NAME</a>                 | <a href=\"$LINKbase&stage=ID\">ID</a>       | <a href=\"$LINKbase&stage=LEADS\">CALLS</a>  | <a href=\"$LINKbase&stage=CI\">CIcalls</a>| <a href=\"$LINKbase&stage=DNCCI\">DNC/CI%</a>|$statusesHTML\n";
+		$ASCII_text.="| <a href=\"$LINKbase\">"._QXZ("USER NAME", 9)."</a>                 | <a href=\"$LINKbase&stage=ID\">"._QXZ("ID", 2)."</a>       | <a href=\"$LINKbase&stage=LEADS\">"._QXZ("CALLS", 5)."</a>  | <a href=\"$LINKbase&stage=CI\">"._QXZ("CIcalls", 7)."</a>| <a href=\"$LINKbase&stage=DNCCI\">DNC/CI%</a>|$statusesHTML\n";
 		$ASCII_text.="+---------------------------+----------+--------+--------+--------+$statusesHEAD\n";
 
 		}
 	else
 		{
-		$file_output .= "USER,ID,CALLS,CIcalls,DNC-CI%,$statusesFILE\n";
+		$file_output .= _QXZ("USER").","._QXZ("ID").","._QXZ("CALLS").","._QXZ("CIcalls").",DNC-CI%,$statusesFILE\n";
 		}
 
 
@@ -675,6 +687,10 @@ else
 	$DNCcountTOT=0;
 
 	$graph_stats=array();
+	$TOPsort=array();
+	$TOPsortTALLY=array();
+	$TOPsorted_output=array();
+	$TOPsorted_outputFILE=array();
 	$max_calls=1;
 	$max_cicalls=1;
 	$max_dncci=1;
@@ -717,7 +733,7 @@ else
 						}
 
 					if ($calls[$i]>$$max_varname) {$$max_varname=$calls[$i];}
-					$graph_stats[$m][(4+$n)]=$calls[$i];					
+					$graph_stats[$m][(4+$n)]=$calls[$i];
 
 					$SstatusTXT = sprintf("%8s", $calls[$i]);
 					$SstatusesHTML .= " $SstatusTXT |";
@@ -744,18 +760,18 @@ else
 		$Scalls =	sprintf("%6s", $Scalls);
 		$CIScount =	sprintf("%6s", $CIScount);
 
-		if ($file_download<1) 
+		if ($file_download<1)
 			{
 			if ($non_latin < 1)
 				{
-				 $Sfull_name=	sprintf("%-25s", $Sfull_name); 
+				 $Sfull_name=	sprintf("%-25s", $Sfull_name);
 					while(strlen($Sfull_name)>25) {$Sfull_name = substr("$Sfull_name", 0, -1);}
 				 $Suser =		sprintf("%-8s", $Suser);
 					while(strlen($Suser)>8) {$Suser = substr("$Suser", 0, -1);}
 				}
 			else
-				{	
-					$Sfull_name=	sprintf("%-75s", $Sfull_name); 
+				{
+					$Sfull_name=	sprintf("%-75s", $Sfull_name);
 				 while(mb_strlen($Sfull_name,'utf-8')>25) {$Sfull_name = mb_substr("$Sfull_name", 0, -1,'utf-8');}
 
 					$Suser =	sprintf("%-24s", $Suser);
@@ -839,6 +855,7 @@ else
 			{rsort($TOPsort, SORT_NUMERIC);}
 
 		$m=0;
+		$sort_order=array();
 		while ($m < $k)
 			{
 			$sort_split = explode("-----",$TOPsort[$m]);
@@ -907,7 +924,7 @@ else
 	if ($file_download < 1)
 		{
 		$ASCII_text.="+---------------------------+----------+--------+--------+--------+$statusesHEAD\n";
-		$ASCII_text.="|  TOTALS        AGENTS:$TOT_AGENTS           | $TOTcalls| $CIScountTOT| $DNCcountPCT%|$SUMstatusesHTML\n";
+		$ASCII_text.="|  "._QXZ("TOTALS", 6)."        "._QXZ("AGENTS", 6).":$TOT_AGENTS           | $TOTcalls| $CIScountTOT| $DNCcountPCT%|$SUMstatusesHTML\n";
 		$ASCII_text.="+--------------------------------------+--------+--------+--------+$statusesHEAD\n";
 
 		$ASCII_text.="\n\n</PRE>";
@@ -926,15 +943,15 @@ else
 		}
 
 		$default_graph="bar"; # Graph that is initally displayed when page loads
-		include("graph_color_schemas.inc"); 
+		include("graph_color_schemas.inc");
 
 		$graph_totals_array=array();
 		$graph_totals_rawdata=array();
 		for ($q=0; $q<count($graph_array); $q++) {
-			$graph_info=explode("|", $graph_array[$q]); 
+			$graph_info=explode("|", $graph_array[$q]);
 			$current_graph_total=0;
 			$dataset_name=$graph_info[0];
-			$dataset_index=$graph_info[1]; 
+			$dataset_index=$graph_info[1];
 			$dataset_type=$graph_info[3];
 
 			$JS_text.="var $dataset_name = {\n";
@@ -952,7 +969,7 @@ else
 			$graphConstantsC="\t\t\t\thoverBorderColor: [";
 			for ($d=0; $d<count($graph_stats); $d++) {
 				$labels.="\"".preg_replace('/ +/', ' ', $graph_stats[$d][0])."\",";
-				$data.="\"".$graph_stats[$d][$dataset_index]."\","; 
+				$data.="\"".$graph_stats[$d][$dataset_index]."\",";
 				$current_graph_total+=$graph_stats[$d][$dataset_index];
 				$bgcolor=$backgroundColor[($d%count($backgroundColor))];
 				$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
@@ -960,13 +977,13 @@ else
 				$graphConstantsA.="\"$bgcolor\",";
 				$graphConstantsB.="\"$hbgcolor\",";
 				$graphConstantsC.="\"$hbcolor\",";
-			}	
+			}
 			$graphConstantsA.="],\n";
 			$graphConstantsB.="],\n";
 			$graphConstantsC.="],\n";
 			$labels=preg_replace('/,$/', '', $labels)."],\n";
 			$data=preg_replace('/,$/', '', $data)."],\n";
-			
+
 			$graph_totals_rawdata[$q]=$current_graph_total;
 			switch($dataset_type) {
 				case "time":
@@ -1005,7 +1022,7 @@ else
 		}
 	else
 		{
-		$file_output .= "TOTALS,$TOT_AGENTS,$TOTcalls,$CIScountTOT,$DNCcountPCT%,$SUMstatusesFILE\n";
+		$file_output .= _QXZ("TOTALS").",$TOT_AGENTS,$TOTcalls,$CIScountTOT,$DNCcountPCT%,$SUMstatusesFILE\n";
 		}
 	}
 
@@ -1054,7 +1071,7 @@ if ($report_display_type=='HTML') {$JS_text.=$JS_onload;}
 $JS_text.="</script>\n";
 
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET name=vicidial_report id=vicidial_report>";
-echo "<TABLE CELLSPACING=3 BGCOLOR=\"#".$SSframe_background."\"><TR><TD VALIGN=TOP> Dates:<BR>";
+echo "<TABLE CELLSPACING=3 BGCOLOR=\"#".$SSframe_background."\"><TR><TD VALIGN=TOP> "._QXZ("Dates").":<BR>";
 echo "<INPUT TYPE=hidden NAME=DB VALUE=\"$DB\">\n";
 echo "<INPUT TYPE=TEXT NAME=query_date SIZE=10 MAXLENGTH=10 VALUE=\"$query_date\">";
 
@@ -1075,7 +1092,7 @@ o_cal.a_tpl.yearscroll = false;
 </script>
 <?php
 
-echo "<BR> to <BR><INPUT TYPE=TEXT NAME=end_date SIZE=10 MAXLENGTH=10 VALUE=\"$end_date\">";
+echo "<BR> "._QXZ("to")." <BR><INPUT TYPE=TEXT NAME=end_date SIZE=10 MAXLENGTH=10 VALUE=\"$end_date\">";
 
 ?>
 <script language="JavaScript">
@@ -1090,12 +1107,12 @@ o_cal.a_tpl.yearscroll = false;
 </script>
 <?php
 
-echo "</TD><TD VALIGN=TOP> Campaigns:<BR>";
+echo "</TD><TD VALIGN=TOP> "._QXZ("Campaigns").":<BR>";
 echo "<SELECT SIZE=5 NAME=group[] multiple>\n";
 if  (preg_match('/\-\-ALL\-\-/',$group_string))
-	{echo "<option value=\"--ALL--\" selected>-- ALL CAMPAIGNS --</option>\n";}
+	{echo "<option value=\"--ALL--\" selected>-- "._QXZ("ALL CAMPAIGNS")." --</option>\n";}
 else
-	{echo "<option value=\"--ALL--\">-- ALL CAMPAIGNS --</option>\n";}
+	{echo "<option value=\"--ALL--\">-- "._QXZ("ALL CAMPAIGNS")." --</option>\n";}
 $o=0;
 while ($campaigns_to_print > $o)
 {
@@ -1104,13 +1121,13 @@ while ($campaigns_to_print > $o)
 	$o++;
 }
 echo "</SELECT>\n";
-echo "</TD><TD VALIGN=TOP>User Groups:<BR>";
+echo "</TD><TD VALIGN=TOP>"._QXZ("User Groups").":<BR>";
 echo "<SELECT SIZE=5 NAME=user_group[] multiple>\n";
 
 if  (preg_match('/\-\-ALL\-\-/',$user_group_string))
-	{echo "<option value=\"--ALL--\" selected>-- ALL USER GROUPS --</option>\n";}
+	{echo "<option value=\"--ALL--\" selected>-- "._QXZ("ALL USER GROUPS")." --</option>\n";}
 else
-	{echo "<option value=\"--ALL--\">-- ALL USER GROUPS --</option>\n";}
+	{echo "<option value=\"--ALL--\">-- "._QXZ("ALL USER GROUPS")." --</option>\n";}
 $o=0;
 while ($user_groups_to_print > $o)
 	{
@@ -1119,17 +1136,17 @@ while ($user_groups_to_print > $o)
 	$o++;
 	}
 echo "</SELECT>\n";
-echo "</TD><TD VALIGN=TOP>Shift:<BR>";
+echo "</TD><TD VALIGN=TOP>"._QXZ("Shift").":<BR>";
 echo "<SELECT SIZE=1 NAME=shift>\n";
-echo "<option selected value=\"$shift\">$shift</option>\n";
+echo "<option selected value=\"$shift\">"._QXZ("$shift")."</option>\n";
 echo "<option value=\"\">--</option>\n";
 echo "<option value=\"AM\">AM</option>\n";
 echo "<option value=\"PM\">PM</option>\n";
 echo "<option value=\"ALL\">ALL</option>\n";
 echo "</SELECT><BR><BR>\n";
-echo "Display as:<BR>";
+echo _QXZ("Display as").":<BR>";
 echo "<select name='report_display_type'>";
-if ($report_display_type) {echo "<option value='$report_display_type' selected>$report_display_type</option>";}
+if ($report_display_type) {echo "<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
 echo "<option value='TEXT'>TEXT</option><option value='HTML'>HTML</option></select>\n<BR><BR>";
 echo "</TD><TD VALIGN=TOP><BR>";
 echo "<input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."<BR>\n";
@@ -1138,8 +1155,8 @@ echo " &nbsp; &nbsp; &nbsp; <INPUT TYPE=SUBMIT NAME=SUBMIT VALUE=SUBMIT>\n";
 echo "</TD><TD VALIGN=TOP> &nbsp; &nbsp; &nbsp; &nbsp; ";
 
 echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;\n";
-echo " <a href=\"$LINKbase&stage=$stage&file_download=1\">DOWNLOAD</a> | \n";
-echo " <a href=\"./admin.php?ADD=999999\">REPORTS</a> </FONT>";
+echo " <a href=\"$LINKbase&stage=$stage&file_download=1\">"._QXZ("DOWNLOAD")."</a> | \n";
+echo " <a href=\"./admin.php?ADD=999999\">"._QXZ("REPORTS")."</a> </FONT>";
 echo "</FONT>\n";
 echo "</TD></TR></TABLE>";
 
@@ -1149,7 +1166,7 @@ if ($report_display_type=="HTML")
 	{
 	echo $GRAPH.$JS_text;
 	}
-else 
+else
 	{
 	echo $ASCII_text;
 	}
@@ -1163,6 +1180,7 @@ if (!$report_display_type || $report_display_type=="TEXT")
 	echo "<PRE><FONT SIZE=2>\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 
 	$m=0;
+	$sort_order=array();
 	while ($m < $k)
 		{
 		$sort_split = explode("-----",$TOPsort[$m]);

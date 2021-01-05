@@ -1,7 +1,7 @@
-<?php 
+<?php
 # AST_performance_comparison_report.php
-# 
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>, Joe Johnson <freewermadmin@gmail.com    LICENSE: AGPLv2
+#
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>, Joe Johnson <freewermadmin@gmail.com    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -19,6 +19,7 @@
 # 170829-0040 - Added screen color settings
 # 171012-2015 - Fixed javascript/apache errors with graphs
 # 180507-2315 - Added new help display
+# 191013-0900 - Fixes for PHP7
 #
 
 $startMS = microtime();
@@ -89,14 +90,14 @@ if (strlen($report_display_type)<2) {$report_display_type = $SSreport_default_fo
 ### ARCHIVED DATA CHECK CONFIGURATION
 $archives_available="N";
 $log_tables_array=array("vicidial_agent_log");
-for ($t=0; $t<count($log_tables_array); $t++) 
+for ($t=0; $t<count($log_tables_array); $t++)
 	{
 	$table_name=$log_tables_array[$t];
 	$archive_table_name=use_archive_table($table_name);
 	if ($archive_table_name!=$table_name) {$archives_available="Y";}
 	}
 
-if ($search_archived_data) 
+if ($search_archived_data)
 	{
 	$vicidial_agent_log_table=use_archive_table("vicidial_agent_log");
 	}
@@ -348,6 +349,7 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {$HTML_text.="$stmt\n";}
 $campaigns_to_print = mysqli_num_rows($rslt);
 $i=0;
+$groups=array();
 while ($i < $campaigns_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -356,16 +358,17 @@ while ($i < $campaigns_to_print)
 		{$group[$i] = $groups[$i];}
 	$i++;
 	}
-for ($i=0; $i<count($user_group); $i++)
-	{
-	if (preg_match('/\-\-ALL\-\-/', $user_group[$i])) {$all_user_groups=1; $user_group="";}
-	}
+#for ($i=0; $i<count($user_group); $i++)
+#	{
+#	if (preg_match('/\-\-ALL\-\-/', $user_group[$i])) {$all_user_groups=1; $user_group="";}
+#	}
 
 $stmt="select user_group from vicidial_user_groups $whereLOGadmin_viewable_groupsSQL order by user_group;";
 $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {$HTML_text.="$stmt\n";}
 $user_groups_to_print = mysqli_num_rows($rslt);
 $i=0;
+$user_groups=array();
 while ($i < $user_groups_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -379,6 +382,8 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {$HTML_text.="$stmt\n";}
 $users_to_print = mysqli_num_rows($rslt);
 $i=0;
+$user_list=array();
+$user_names=array();
 while ($i < $users_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -479,7 +484,7 @@ $HTML_head.="<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n"
 $HTML_head.="<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 $HTML_head.="<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 require("chart_button.php");
-$HTML_head.="<script src='chart/Chart.js'></script>\n"; 
+$HTML_head.="<script src='chart/Chart.js'></script>\n";
 $HTML_head.="<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
 
 $HTML_head.="<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
@@ -572,7 +577,7 @@ while ($users_to_print > $o)
 $HTML_text.="</SELECT>\n";
 $HTML_text.="</TD><TD VALIGN=TOP>"._QXZ("Shift").":<BR>";
 $HTML_text.="<SELECT SIZE=1 NAME=shift>\n";
-$HTML_text.="<option selected value=\"$shift\">$shift</option>\n";
+$HTML_text.="<option selected value=\"$shift\">"._QXZ("$shift")."</option>\n";
 $HTML_text.="<option value=\"\">--</option>\n";
 $HTML_text.="<option value=\"AM\">"._QXZ("AM")."</option>\n";
 $HTML_text.="<option value=\"PM\">"._QXZ("PM")."</option>\n";
@@ -581,10 +586,10 @@ $HTML_text.="</SELECT>\n";
 $HTML_text.="</TD><TD VALIGN=TOP>";
 $HTML_text.=_QXZ("Display as").":<BR>";
 $HTML_text.="<select name='report_display_type'>";
-if ($report_display_type) {$HTML_text.="<option value='$report_display_type' selected>$report_display_type</option>";}
+if ($report_display_type) {$HTML_text.="<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
 $HTML_text.="<option value='TEXT'>"._QXZ("TEXT")."</option><option value='HTML'>"._QXZ("HTML")."</option></select>\n";
 
-if ($archives_available=="Y") 
+if ($archives_available=="Y")
 	{
 	$HTML_text.="<input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."\n";
 	}
@@ -611,26 +616,26 @@ if (!$group)
 	}
 else
 	{
-	if ($shift == 'AM') 
+	if ($shift == 'AM')
 		{
 		$time_BEGIN=$AM_shift_BEGIN;
 		$time_END=$AM_shift_END;
-		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}   
+		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}
 		if (strlen($time_END) < 6) {$time_END = "15:14:59";}
 		}
-	if ($shift == 'PM') 
+	if ($shift == 'PM')
 		{
 		$time_BEGIN=$PM_shift_BEGIN;
 		$time_END=$PM_shift_END;
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "15:15:00";}
 		if (strlen($time_END) < 6) {$time_END = "23:15:00";}
 		}
-	if ($shift == 'ALL') 
+	if ($shift == 'ALL')
 		{
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}
 		if (strlen($time_END) < 6) {$time_END = "23:59:59";}
 		}
-	$query_date_BEGIN = "$query_date $time_BEGIN";   
+	$query_date_BEGIN = "$query_date $time_BEGIN";
 	$query_date_END = "$end_date $time_END";
 
 
@@ -650,7 +655,8 @@ else
 	$initial_user_stmt="select distinct ".$vicidial_agent_log_table.".user, full_name from ".$vicidial_agent_log_table.", vicidial_users where event_time <= '$query_date $time_END' and event_time >= '$thirtydaysago $time_BEGIN' $group_SQL $user_group_SQL $user_SQL and ".$vicidial_agent_log_table.".user=vicidial_users.user order by full_name asc";
 	if ($DB) {echo $initial_user_stmt;}
 	$initial_user_rslt=mysql_to_mysqli($initial_user_stmt, $link);
-	while ($user_row=mysqli_fetch_array($initial_user_rslt)) 
+	$agent_performance_array=array();
+	while ($user_row=mysqli_fetch_array($initial_user_rslt))
 		{
 		$agent_performance_array[$user_row[0]][0]=$user_row[1];
 		}
@@ -659,7 +665,7 @@ else
 	$sale_stmt="select distinct status from vicidial_campaign_statuses where sale='Y' $group_SQL UNION select distinct status from vicidial_statuses where sale='Y' order by status asc";
 	$sale_rslt=mysql_to_mysqli($sale_stmt, $link);
 	$sale_status_str="|";
-	while ($sale_row=mysqli_fetch_row($sale_rslt)) 
+	while ($sale_row=mysqli_fetch_row($sale_rslt))
 		{
 		$sale_status_str.="$sale_row[0]|";
 		}
@@ -673,20 +679,22 @@ else
 
 
 	$master_graph_array=array();
-	for ($q=0; $q<count($rpt_date_array); $q++) 
+	for ($q=0; $q<count($rpt_date_array); $q++)
 		{
 		$rpt_subtitle=$rpt_subtitle_array[$q];
 		$rpt_date=$rpt_date_array[$q];
 		$rpt_date_numeric=preg_replace('/[^0-9]/', '', $rpt_date_array[$q]);
 		$array_offset=($q*5)+1;
-						$master_graph_array[$q]=array("APC_CALLSdata$rpt_date_numeric|1|CALLS|integer|", "APC_SALESdata$rpt_date_numeric|2|SALES|integer|", "APC_SALECONVdata$rpt_date_numeric|3|SALE CONV %|percent|", "APC_SPHdata$rpt_date_numeric|4|SALES PER HOUR|decimal|", "APC_TIMEdata$rpt_date_numeric|5|TIME|time|");
+		$master_graph_array[$q]=array("APC_CALLSdata$rpt_date_numeric|1|CALLS|integer|", "APC_SALESdata$rpt_date_numeric|2|SALES|integer|", "APC_SALECONVdata$rpt_date_numeric|3|SALE CONV %|percent|", "APC_SPHdata$rpt_date_numeric|4|SALES PER HOUR|decimal|", "APC_TIMEdata$rpt_date_numeric|5|TIME|time|");
 		}
 
+	$TOTALS_array=array();
+	$graph_TOTALS_array=array();
 	$TOTALS_array[0]=_QXZ("TOTALS");
-	$graph_TOTALS_array[0]+=_QXZ("TOTALS");
+	$graph_TOTALS_array[0]=_QXZ("TOTALS");
 
 	$GRAPH="";
-	for ($y=0; $y<count($rpt_date_array); $y++) 
+	for ($y=0; $y<count($rpt_date_array); $y++)
 		{
 		$rpt_subtitle=$rpt_subtitle_array[$y];
 		$rpt_date=$rpt_date_array[$y];
@@ -703,7 +711,7 @@ else
 
 		$graph_stats=array();
 		$max_stats=array();
-		for ($k=1; $k<6; $k++) 
+		for ($k=1; $k<6; $k++)
 			{
 			$max_stats[$k]=0;
 			}
@@ -721,7 +729,7 @@ else
 			{
 			$row=mysqli_fetch_row($rslt);
 			if ($row[7]!="") {$agent_performance_array[$row[3]][$array_offset]+=$row[0];} # CALLS FOR TIME RANGE, MUST HAVE DISPO TO COUNT AS A CALL
-			if(preg_match("/\|$row[7]\|/", $sale_status_str)) 
+			if(preg_match("/\|$row[7]\|/", $sale_status_str))
 				{
 				$agent_performance_array[$row[3]][($array_offset+1)]+=$row[0]; # SALES FOR TIME RANGE
 				}
@@ -731,7 +739,7 @@ else
 
 		$j=0;
 		while (list($key, $val)=each($agent_performance_array)) { # CYCLE THROUGH EACH USER
-			for ($k=0; $k<2; $k++) 
+			for ($k=0; $k<2; $k++)
 				{
 				$agent_performance_array[$key][($array_offset+$k)]+=0; # Add zero so there are no null values;
 				}
@@ -740,11 +748,11 @@ else
 			$agent_performance_array[$key][($array_offset+4)]+=0;
 
 			$graph_stats[$j][0]="$key - ".$val[0];
-			for ($k=0; $k<5; $k++) 
+			for ($k=0; $k<5; $k++)
 				{
 				$graph_stats[$j][($k+1)]=$agent_performance_array[$key][($array_offset+$k)];
 				}
-			for ($k=0; $k<5; $k++) 
+			for ($k=0; $k<5; $k++)
 				{ # Cycle through and check for max values
 				if ($agent_performance_array[$key][($array_offset+$k)]>$max_stats[($k+1)]) {$max_stats[($k+1)]=$agent_performance_array[$key][($array_offset+$k)];}
 				$graph_TOTALS_array[($array_offset+$k)]+=$agent_performance_array[$key][($array_offset+$k)];
@@ -757,15 +765,15 @@ else
 		$graph_id++;
 		$graph_array=$master_graph_array[$y];
 		$default_graph="bar"; # Graph that is initally displayed when page loads
-		include("graph_color_schemas.inc"); 
+		include("graph_color_schemas.inc");
 
 		$graph_totals_array=array();
 		$graph_totals_rawdata=array();
 		for ($q=0; $q<count($graph_array); $q++) {
-			$graph_info=explode("|", $graph_array[$q]); 
+			$graph_info=explode("|", $graph_array[$q]);
 			$current_graph_total=0;
 			$dataset_name=$graph_info[0];
-			$dataset_index=$graph_info[1]; 
+			$dataset_index=$graph_info[1];
 			$dataset_type=$graph_info[3];
 
 			$JS_text.="var $dataset_name = {\n";
@@ -783,7 +791,7 @@ else
 			$graphConstantsC="\t\t\t\thoverBorderColor: [";
 			for ($d=0; $d<count($graph_stats); $d++) {
 				$labels.="\"".preg_replace('/ +/', ' ', $graph_stats[$d][0])."\",";
-				$data.="\"".$graph_stats[$d][$dataset_index]."\","; 
+				$data.="\"".$graph_stats[$d][$dataset_index]."\",";
 				$current_graph_total+=$graph_stats[$d][$dataset_index];
 				$bgcolor=$backgroundColor[($d%count($backgroundColor))];
 				$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
@@ -791,13 +799,13 @@ else
 				$graphConstantsA.="\"$bgcolor\",";
 				$graphConstantsB.="\"$hbgcolor\",";
 				$graphConstantsC.="\"$hbcolor\",";
-			}	
+			}
 			$graphConstantsA.="],\n";
 			$graphConstantsB.="],\n";
 			$graphConstantsC.="],\n";
 			$labels=preg_replace('/,$/', '', $labels)."],\n";
 			$data=preg_replace('/,$/', '', $data)."],\n";
-			
+
 			$graph_totals_rawdata[$q]=$current_graph_total;
 			switch($dataset_type) {
 				case "time":
@@ -856,14 +864,14 @@ else
 
 		if ($non_latin < 1)
 			{
-			$full_name=	sprintf("%-15s", $full_name); 
+			$full_name=	sprintf("%-15s", $full_name);
 			while(strlen($full_name)>15) {$full_name = substr("$full_name", 0, -1);}
 			$user =		sprintf("%-8s", $user);
 			while(strlen($user)>8) {$user = substr("$user", 0, -1);}
 			}
 		else
-			{	
-			$full_name=	sprintf("%-45s", $full_name); 
+			{
+			$full_name=	sprintf("%-45s", $full_name);
 			while(mb_strlen($full_name,'utf-8')>15) {$full_name = mb_substr("$full_name", 0, -1,'utf-8');}
 			$user =	sprintf("%-24s", $user);
 			while(mb_strlen($user,'utf-8')>8) {$user = mb_substr("$user", 0, -1,'utf-8');}
@@ -871,7 +879,7 @@ else
 		$CSV_text.="\"$full_name\",\"$user\",";
 		$ASCII_text.=" ".$full_name." | ".$user." ||";
 
-		for ($q=0; $q<count($rpt_date_array); $q++) 
+		for ($q=0; $q<count($rpt_date_array); $q++)
 			{
 			$x=($q*5)+1;
 			$CSV_text.="\"$val[$x]\",";
@@ -908,10 +916,10 @@ else
 	$ASCII_text.="| ".sprintf("%26s", $TOTALS_array[0])." ||";
 	$GRAPH_text.=$GRAPH;
 
-	for ($i=1; $i<count($TOTALS_array); $i++) 
+	for ($i=1; $i<count($TOTALS_array); $i++)
 		{
 		$CSV_text.="\"$TOTALS_array[$i]\",";
-		switch($i%5) 
+		switch($i%5)
 			{
 			case "1":
 			case "2":
@@ -987,7 +995,7 @@ if ($report_display_type=="HTML")
 	{
 	$HTML_text.=$GRAPH_text;
 	}
-else 
+else
 	{
 	$HTML_text.=$ASCII_text;
 	}
@@ -999,7 +1007,7 @@ $HTML_text.="</BODY></HTML>";
 
 
 }
-if ($file_download == 0 || !$file_download) 
+if ($file_download == 0 || !$file_download)
 	{
 	$JS_onload.="}\n";
 	if ($report_display_type=='HTML') {$JS_text.=$JS_onload;}

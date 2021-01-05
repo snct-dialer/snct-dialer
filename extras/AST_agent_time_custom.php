@@ -1,6 +1,6 @@
-<?php 
+<?php
 # AST_agent_time_custom.php
-# 
+#
 # Pulls a single time stat per agent selectable by user group
 # NOTE: THIS SCRIPT IS DESIGNED TO BE CUSTOMIZED!
 #
@@ -35,11 +35,11 @@ if (isset($_GET["time_in_sec"]))			{$time_in_sec=$_GET["time_in_sec"];}
 if (isset($_GET["search_archived_data"]))			{$search_archived_data=$_GET["search_archived_data"];}
 	elseif (isset($_POST["search_archived_data"]))	{$search_archived_data=$_POST["search_archived_data"];}
 
-if ($search_archived_data=="checked") 
+if ($search_archived_data=="checked")
 	{
 	$agent_log_table="vicidial_agent_log_archive";
-	} 
-else 
+	}
+else
 	{
 	$agent_log_table="vicidial_agent_log";
 	}
@@ -311,7 +311,7 @@ else
 
 if ($DB) {echo "$user_group_string|$user_group_ct|$user_groupQS|$i<BR>";}
 
-	
+
 if (strlen($user_group[0]) < 1)
 	{
 	echo _QXZ("PLEASE SELECT A USER GROUP AND DATE-TIME BELOW AND CLICK SUBMIT")."\n";
@@ -322,7 +322,7 @@ else
 	{
 	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}
 	if (strlen($time_END) < 6) {$time_END = "23:59:59";}
-	$query_date_BEGIN = "$query_date $time_BEGIN";   
+	$query_date_BEGIN = "$query_date $time_BEGIN";
 	$query_date_END = "$end_date $time_END";
 
 	$ASCII_text.=""._QXZ("$report_name",40)." $NOW_TIME ($db_source)\n";
@@ -390,9 +390,9 @@ else
 		$TOTtalk =	($TOTtalk + $talk);
 		$TOTpause =	($TOTpause + $pause);
 		$TOTALtime = ($TOTALtime + $pause + $talk + $wait);
-		
+
 		$user_found=0;
-		if ($uc < 1) 
+		if ($uc < 1)
 			{
 			$Suser[$uc] = $user;
 			$uc++;
@@ -495,28 +495,28 @@ else
 			$Sname[$m] =	$RAWname;
 			}
 
-		$Swait[$m]=		sprintf("%10s", $Swait[$m]); 
-		$Stalk[$m]=		sprintf("%10s", $Stalk[$m]); 
-		$Spause[$m]=	sprintf("%10s", $Spause[$m]); 
-		$Stime[$m]=		sprintf("%10s", $Stime[$m]); 
+		$Swait[$m]=		sprintf("%10s", $Swait[$m]);
+		$Stalk[$m]=		sprintf("%10s", $Stalk[$m]);
+		$Spause[$m]=	sprintf("%10s", $Spause[$m]);
+		$Stime[$m]=		sprintf("%10s", $Stime[$m]);
 
 		if ($non_latin < 1)
 			{
-			$Sname[$m]=	sprintf("%-25s", $Sname[$m]); 
+			$Sname[$m]=	sprintf("%-25s", $Sname[$m]);
 			while(strlen($Sname[$m])>25) {$Sname[$m] = substr("$Sname[$m]", 0, -1);}
 			$Suser[$m] =		sprintf("%-8s", $Suser[$m]);
 			while(strlen($Suser[$m])>8) {$Suser[$m] = substr("$Suser[$m]", 0, -1);}
 			}
 		else
-			{	
-			$Sname[$m]=	sprintf("%-75s", $Sname[$m]); 
+			{
+			$Sname[$m]=	sprintf("%-75s", $Sname[$m]);
 			while(mb_strlen($Sname[$m],'utf-8')>25) {$Sname[$m] = mb_substr("$Sname[$m]", 0, -1,'utf-8');}
 			$Suser[$m] =	sprintf("%-24s", $Suser[$m]);
 			while(mb_strlen($Suser[$m],'utf-8')>8) {$Suser[$m] = mb_substr("$Suser[$m]", 0, -1,'utf-8');}
 			}
 
 		$Toutput = "| $Sname[$m] | <a href=\"./user_stats.php?user=$RAWuser&begin_date=$query_date&end_date\">$Suser[$m]</a> | $Stime[$m] |\n";
-		
+
 		$user_IDs[$m]=$Suser[$m];
 
 		$TOPsorted_output[$m] = $Toutput;
@@ -625,7 +625,7 @@ else
 	###### END LAST LINE TOTALS FORMATTING ##########
 
 
- 
+
 	$ASCII_text.="+---------------------------+----------+------------+\n";
 	$ASCII_text.="| "._QXZ("TOTALS",10)." "._QXZ("AGENTS",9,"r").":$hTOT_AGENTS           |$hTOTALtime |\n";
 	$ASCII_text.="+--------------------------------------+------------+\n";

@@ -149,9 +149,9 @@ if ($min < 10) {$min = "0$min";}
 if ($sec < 10) {$sec = "0$sec";}
 $shipdate = "$year-$mon-$mday $hour:$min:$sec";
 
-use DBI;	  
+use DBI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
@@ -173,7 +173,7 @@ $k=0;
 while ($sthArowsT > $k)
 	{
 	@aryA = $sthA->fetchrow_array;
-	if ($aryA[0] =~ /archive/i) 
+	if ($aryA[0] =~ /archive/i)
 		{$ARCHIVEcount++;}
 	else
 		{
@@ -201,11 +201,11 @@ $check_output .= "Starting table checks:\n";
 $check_output .= "\n";
 
 $QUICKsql='';
-if ($QUICK > 0) 
+if ($QUICK > 0)
 	{$QUICKsql = ' QUICK';}
 
 $k=0;
-while ($TABLEcount > $k) 
+while ($TABLEcount > $k)
 	{
 	$secY = time();
 	$stmtA = "check table $check_table[$k] $QUICKsql;";
@@ -218,17 +218,17 @@ while ($TABLEcount > $k)
 	$secZ = time();
 	$check_time = ($secZ - $secY);
 	if ($DB) {print "($check_time seconds) |",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
-	if ($aryA[3] =~ /corrupt/) 
+	if ($aryA[3] =~ /corrupt/)
 		{
 		$corrupt_table[$CORRUPTcount] = $aryA[0];
 		$CORRUPTcount++;
 		}
-	if ($aryA[3] =~ /closed the table properly/) 
+	if ($aryA[3] =~ /closed the table properly/)
 		{
 		$closed_table[$CLOSEDcount] = $aryA[0];
 		$CLOSEDcount++;
 		}
-	if ($aryA[3] =~ /storage engine/) 
+	if ($aryA[3] =~ /storage engine/)
 		{
 		$MEMORYcount++;
 		}

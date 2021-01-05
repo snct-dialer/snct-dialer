@@ -1,11 +1,11 @@
 #!/usr/bin/perl
 #
 # cm_status_dial.agi   version 2.14
-# 
+#
 # Used as a Call Menu AGI option route to alter status of a lead before dialing.
 # The lead is only updated if the call is tagged with a lead_id before this script.
 #
-# You need to put lines similar to those below in your extensions.conf file or 
+# You need to put lines similar to those below in your extensions.conf file or
 # a Custom Dialplan entry:
 # ; Below are the parameters needed for the script to be run properly
 # ; 1. the status to change the lead to
@@ -77,14 +77,14 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port) {$VARDB_port='3306';}
-if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout";}
+if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout.log";}
 
 use DBI;
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
     or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
@@ -136,7 +136,7 @@ if (length($ARGV[0])>1)
 		if ($AGILOG) {$agi_string = "$i|$ARGV[$i]";   &agi_output;}
 		$i++;
 		}
-	
+
 	### list of command-line array arguments:
 	@ARGV_vars = split(/-----/, $ARGV[0]);
 
@@ -146,7 +146,7 @@ if (length($ARGV[0])>1)
 	}
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 	{
 	chomp;
 	last unless length($_);
@@ -221,7 +221,7 @@ if (length($callerid)<8) {$callerid = $parked_by;}
 if (length($pin)>0) {$callerid = $pin;}
 
 
-foreach $i (sort keys %AGI) 
+foreach $i (sort keys %AGI)
 	{
 	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
 	}
@@ -276,7 +276,7 @@ else
 ### QueueMetrics logging if enabled
 if ($enable_queuemetrics_logging > 0)
 	{
-	$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+	$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass", { mysql_enable_utf8 => 1 })
 	 or die "Couldn't connect to database: " . DBI->errstr;
 	$stmtB = "UPDATE queue_log SET data1='$new_status' where call_id='$calleridname' and verb='CALLSTATUS' order by time_id desc limit 1;";
 		if ($AGILOG) {$agi_string = "|$stmtB|";   &agi_output;}
@@ -326,27 +326,27 @@ sub agi_output
 	$agi_string='';
 	}
 
-sub checkresult 
+sub checkresult
 	{
 	my ($res) = @_;
 	my $retval;
 	$tests++;
 	chomp $res;
-	if ($res =~ /^200/) 
+	if ($res =~ /^200/)
 		{
 		$res =~ /result=(-?\d+)/;
-		if (!length($1)) 
+		if (!length($1))
 			{
 		#	print STDERR "FAIL ($res)\n";
 			$fail++;
-			} 
-		else 
+			}
+		else
 			{
 		#	print STDERR "PASS ($1)\n";
 			$pass++;
 			}
 		}
-	else 
+	else
 		{
 	#	print STDERR "FAIL (unexpected result '$res')\n";
 		$fail++;

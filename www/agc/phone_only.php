@@ -1,6 +1,6 @@
 <?php
 # phone_only.php - the web-based web-phone-only client application
-# 
+#
 # Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG
@@ -41,7 +41,7 @@ if (isset($_GET["VD_pass"]))					{$VD_pass=$_GET["VD_pass"];}
         elseif (isset($_POST["VD_pass"]))       {$VD_pass=$_POST["VD_pass"];}
 if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
         elseif (isset($_POST["relogin"]))       {$relogin=$_POST["relogin"];}
-if (!isset($phone_login)) 
+if (!isset($phone_login))
 	{
 	if (isset($_GET["pl"]))                {$phone_login=$_GET["pl"];}
 		elseif (isset($_POST["pl"]))   {$phone_login=$_POST["pl"];}
@@ -570,7 +570,7 @@ else
 				$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'09010',$VD_login,$server_ip,$session_name,$one_mysql_log);}
 				$row=mysqli_fetch_row($rslt);
-				
+
 				### find out whether the server is set to active
 				$stmt="SELECT count(*) from servers where server_ip = '$rowx[0]' and active='Y' and active_asterisk_server='Y';";
 				if ($DB) {echo "|$stmt|\n";}
@@ -847,12 +847,12 @@ else
 			$webphone_content = "<iframe src=\"$WebPhonEurl\" style=\"width:1100px;height:500px;background-color:transparent;z-index:17;\" scrolling=\"auto\" frameborder=\"0\" allowtransparency=\"true\" id=\"webphone\" name=\"webphone\" width=\"" . $webphone_width . "px\" height=\"" . $webphone_height . "px\" allow=\"microphone *; speakers *;\"> </iframe>";
 			}
 
-		if (preg_match('/MSIE/',$browser)) 
+		if (preg_match('/MSIE/',$browser))
 			{
 			$useIE=1;
 			echo "<!-- client web browser used: MSIE |$browser|$useIE| -->\n";
 			}
-		else 
+		else
 			{
 			$useIE=0;
 			echo "<!-- client web browser used: W3C-Compliant |$browser|$useIE| -->\n";
@@ -886,8 +886,8 @@ if ($agent_fullscreen=='Y')
 	}
 $MASTERwidth=($BROWSER_WIDTH - 340);
 $MASTERheight=($BROWSER_HEIGHT - 200);
-if ($MASTERwidth < 430) {$MASTERwidth = '430';} 
-if ($MASTERheight < 300) {$MASTERheight = '300';} 
+if ($MASTERwidth < 430) {$MASTERwidth = '430';}
+if ($MASTERheight < 300) {$MASTERheight = '300';}
 if ($webphone_location == 'bar') {$MASTERwidth = ($MASTERwidth + $webphone_height);}
 
 $CAwidth =  ($MASTERwidth + 340);	# 770 - cover all (none-in-session, customer hunngup, etc...)
@@ -925,7 +925,7 @@ $BPheight =  ($MASTERheight - 250);	# 50 - bottom buffer, Agent Xfer Span
 $SCheight =	 49;	# 49 - seconds on call display
 $SFheight =	 65;	# 65 - height of the script and form contents
 $SRheight =	 69;	# 69 - height of the script and form refrech links
-if ($webphone_location == 'bar') 
+if ($webphone_location == 'bar')
 	{
 	$SCheight = ($SCheight + $webphone_height);
 #	$SFheight = ($SFheight + $webphone_height);
@@ -952,7 +952,7 @@ if ($webphone_location == 'bar')
 else
 	{
     echo "<span style=\"position:absolute;left:0px;top:30px;height:500px;overflow:scroll;z-index:$zi;background-color:$SIDEBAR_COLOR;\" id=\"webphoneSpanDEFAULT\"><table cellpadding=\"$webphone_pad\" cellspacing=\"0\" border=\"0\"><tr><td width=\"5px\" rowspan=\"2\">&nbsp;</td><td align=\"center\"><font class=\"body_text\">
-    Web Phone: &nbsp; </font></td></tr><tr><td align=\"center\"><span id=\"webphonecontent\">$webphone_content</span></td></tr></table></span>\n";
+    "._QXZ("Web Phone").": &nbsp; </font></td></tr><tr><td align=\"center\"><span id=\"webphonecontent\">$webphone_content</span></td></tr></table></span>\n";
 	}
 ?>
 
@@ -960,8 +960,8 @@ else
 </html>
 
 <?php
-	
-exit; 
+
+exit;
 
 ?>
 

@@ -1,12 +1,12 @@
-<?php 
+<?php
 # AST_timeonVDADallREC.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # live real-time stats for the VICIDIAL Auto-Dialer all servers
 #
 # STOP=4000, SLOW=40, GO=4 seconds refresh interval
-# 
+#
 # CHANGELOG:
 # 50406-0920 - Added Paused agents < 1 min (Chris Doyle)
 # 51130-1218 - Modified layout and info to show all servers in a vicidial system
@@ -220,14 +220,14 @@ else
 	exit;
 	}
 
-	
+
 $stmt="SELECT vicidial_recording  from vicidial_users where user='$PHP_AUTH_USER';";
 if ($DB) {echo "|$stmt|\n";}
 $rslt=mysql_to_mysqli($stmt, $link);
 $row=mysqli_fetch_row($rslt);
 $authrec=$row[0];
 if ($authrec=='1') {$RECmonitorLINK = 1;} else {$RECmonitorLINK = 0;}
-   
+
 
 $NOW_TIME = date("Y-m-d H:i:s");
 $FILE_TIME = date("Ymd-His");
@@ -293,7 +293,7 @@ var recording_exten = '8309';
 var ext_context = 'default';
 
 
-function conf_send_recording(taskconfrectype,sesname,taskconfrec,taskconffile,leadid,userid,campaignid,serverip,userpass) 
+function conf_send_recording(taskconfrectype,sesname,taskconfrec,taskconffile,leadid,userid,campaignid,serverip,userpass)
 		{
 		var xmlhttp=false;
 
@@ -316,8 +316,8 @@ function conf_send_recording(taskconfrectype,sesname,taskconfrec,taskconffile,le
 			{
 			xmlhttp = new XMLHttpRequest();
 			}
-		if (xmlhttp) 
-			{ 
+		if (xmlhttp)
+			{
 			var channelrec = "Local/7" + taskconfrec + "@" + ext_context;
 
 			if (taskconfrectype=='MonitorConf'){
@@ -326,14 +326,14 @@ function conf_send_recording(taskconfrectype,sesname,taskconfrec,taskconffile,le
 			else {
 				filenamelog = taskconffile;
 			}
-			
+
 			confmonitor_query = "server_ip=" + serverip + "&session_name=" + sesname + "&user=" + userid + "&pass=" + userpass + "&ACTION=" + taskconfrectype + "&format=text&channel=" + channelrec + "&filename=" + filenamelog + "&exten=" + recording_exten + "&ext_context=" + ext_context + "&ext_priority=1" + "&lead_id=" + leadid;
-	   		xmlhttp.open('POST', 'manager_send.php'); 
+	   		xmlhttp.open('POST', 'manager_send.php');
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(confmonitor_query); 
-			xmlhttp.onreadystatechange = function() 
-				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+			xmlhttp.send(confmonitor_query);
+			xmlhttp.onreadystatechange = function()
+				{
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 					{
 	 					Nactiveext = null;
 						Nactiveext = xmlhttp.responseText;
@@ -341,7 +341,7 @@ function conf_send_recording(taskconfrectype,sesname,taskconfrec,taskconffile,le
 				}
 			delete xmlhttp;
 			}
-		}	
+		}
 </script>
 
 
@@ -353,8 +353,8 @@ function conf_send_recording(taskconfrectype,sesname,taskconfrec,taskconffile,le
 	.blue {color: white; background-color: blue}
 	.midnightblue {color: white; background-color: #191970}
 	.purple {color: white; background-color: purple}
-	.violet {color: black; background-color: #EE82EE} 
-	.thistle {color: black; background-color: #D8BFD8} 
+	.violet {color: black; background-color: #EE82EE}
+	.thistle {color: black; background-color: #D8BFD8}
 	.olive {color: white; background-color: #808000}
 	.yellow {color: black; background-color: yellow}
 	.khaki {color: black; background-color: #F0E68C}
@@ -371,7 +371,7 @@ function conf_send_recording(taskconfrectype,sesname,taskconfrec,taskconffile,le
 -->
  </STYLE>
 
-<?php 
+<?php
 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo"<META HTTP-EQUIV=Refresh CONTENT=\"$RR; URL=$PHP_SELF?RR=$RR&DB=$DB&group=$group&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&RECmonitorLINK=$RECmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay\">\n";
@@ -427,7 +427,7 @@ else
 {
 $stmt="select auto_dial_level,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,lead_filter_id,hopper_level,dial_method,adaptive_maximum_level,adaptive_dropped_percentage,adaptive_dl_diff_target,adaptive_intensity,available_only_ratio_tally,adaptive_latest_server_time,local_call_time,dial_timeout,dial_statuses from vicidial_campaigns where campaign_id='" . mysqli_real_escape_string($link, $group) . "';";
 
-if ($group=='XXXX-ALL-ACTIVE-XXXX') 
+if ($group=='XXXX-ALL-ACTIVE-XXXX')
 	{
 	$stmt="select avg(auto_dial_level),min(dial_status_a),min(dial_status_b),min(dial_status_c),min(dial_status_d),min(dial_status_e),min(lead_order),min(lead_filter_id),sum(hopper_level),min(dial_method),avg(adaptive_maximum_level),avg(adaptive_dropped_percentage),avg(adaptive_dl_diff_target),avg(adaptive_intensity),min(available_only_ratio_tally),min(adaptive_latest_server_time),min(local_call_time),avg(dial_timeout),min(dial_statuses) from vicidial_campaigns;";
 	}
@@ -460,7 +460,7 @@ $DIALstatuses =	$row[18];
 	$DIALstatuses = (preg_replace('/\s/', ', ', $DIALstatuses));
 
 $stmt="select count(*) from vicidial_hopper where campaign_id='" . mysqli_real_escape_string($link, $group) . "';";
-if ($group=='XXXX-ALL-ACTIVE-XXXX') 
+if ($group=='XXXX-ALL-ACTIVE-XXXX')
 	{
 	$stmt="select count(*) from vicidial_hopper;";
 	}
@@ -473,7 +473,7 @@ $row=mysqli_fetch_row($rslt);
 $VDhop = $row[0];
 
 $stmt="select dialable_leads,calls_today,drops_today,drops_answers_today_pct,differential_onemin,agents_average_onemin,balance_trunk_fill,answers_today from vicidial_campaign_stats where campaign_id='" . mysqli_real_escape_string($link, $group) . "';";
-if ($group=='XXXX-ALL-ACTIVE-XXXX') 
+if ($group=='XXXX-ALL-ACTIVE-XXXX')
 	{
 	$stmt="select sum(dialable_leads),sum(calls_today),sum(drops_today),avg(drops_answers_today_pct),avg(differential_onemin),avg(agents_average_onemin),sum(balance_trunk_fill),sum(answers_today) from vicidial_campaign_stats;";
 	}
@@ -495,7 +495,7 @@ $diffpctONEMIN = (MathZDC($diffONEMIN, $agentsONEMIN) * 100);
 $diffpctONEMIN = sprintf("%01.2f", $diffpctONEMIN);
 
 $stmt="select sum(local_trunk_shortage) from vicidial_campaign_server_stats where campaign_id='" . mysqli_real_escape_string($link, $group) . "';";
-if ($group=='XXXX-ALL-ACTIVE-XXXX') 
+if ($group=='XXXX-ALL-ACTIVE-XXXX')
 	{
 	$stmt="select sum(local_trunk_shortage) from vicidial_campaign_server_stats;";
 	}
@@ -632,13 +632,13 @@ $parked_to_print = mysqli_num_rows($rslt);
 		{
 		$row=mysqli_fetch_row($rslt);
 
-		if (preg_match("/LIVE/i",$row[0])) 
+		if (preg_match("/LIVE/i",$row[0]))
 			{$out_live++;}
 		else
 			{
-			if (preg_match("/CLOSER/i",$row[0])) 
+			if (preg_match("/CLOSER/i",$row[0]))
 				{$nothing=1;}
-			else 
+			else
 				{$out_ring++;}
 			}
 		$out_total++;
@@ -654,7 +654,7 @@ $parked_to_print = mysqli_num_rows($rslt);
 			{echo "$NFB$out_total$NFE "._QXZ("current active calls")."&nbsp; &nbsp; &nbsp; \n";}
 		else
 			{echo "$NFB$out_total$NFE "._QXZ("calls being placed")." &nbsp; &nbsp; &nbsp; \n";}
-		
+
 		echo "$NFB$out_ring$NFE "._QXZ("calls ringing")." &nbsp; &nbsp; &nbsp; &nbsp; \n";
 		echo "$NFB$F &nbsp;$out_live $FG$NFE "._QXZ("calls waiting for agents")." &nbsp; &nbsp; &nbsp; \n";
 		}
@@ -707,12 +707,12 @@ if ($UGdisplay < 1)
 	$HDusergroup =	'';
 	$HTusergroup =	'';
 	}
-if ( ($SIPmonitorLINK<1) && ($IAXmonitorLINK<1) ) 
+if ( ($SIPmonitorLINK<1) && ($IAXmonitorLINK<1) )
 	{
 	$HDsessionid =	"-----------+";
 	$HTsessionid =	" "._QXZ("SESSIONID",9)." |";
 	}
-if ( ($SIPmonitorLINK<2) && ($IAXmonitorLINK<2) ) 
+if ( ($SIPmonitorLINK<2) && ($IAXmonitorLINK<2) )
 	{
 	$HDbarge =		'';
 	$HTbarge =		'';
@@ -808,22 +808,22 @@ $talking_to_print = mysqli_num_rows($rslt);
 		$call_server_ip =	sprintf("%-15s", $row[7]);
 		$campaign_id =	sprintf("%-10s", $row[8]);
 		$comments=		$row[11];
-		
+
 		$lead_id =			$row[12];
 		$user_pass =			$row[13];
 
 
-		if (preg_match("/INCALL/i",$Lstatus)) 
+		if (preg_match("/INCALL/i",$Lstatus))
 			{
 			if ( (preg_match("/AUTO/i",$comments)) or (strlen($comments)<1) )
 				{$CM='A';}
 			else
 				{
-				if (preg_match("/INBOUND/i",$comments)) 
+				if (preg_match("/INBOUND/i",$comments))
 					{$CM='I';}
 				else
 					{$CM='M';}
-				} 
+				}
 			}
 		else {$CM=' ';}
 
@@ -875,10 +875,10 @@ $talking_to_print = mysqli_num_rows($rslt);
 			if ($call_time_M_int >= 5) {$G='<SPAN class="purple"><B>'; $EG='</B></SPAN>';}
 	#		if ($call_time_M_int >= 10) {$G='<SPAN class="purple"><B>'; $EG='</B></SPAN>';}
 			}
-		if (preg_match("/PAUSED/i",$row[3])) 
+		if (preg_match("/PAUSED/i",$row[3]))
 			{
-			if ($call_time_M_int >= 30) 
-				{$i++; continue;} 
+			if ($call_time_M_int >= 30)
+				{$i++; continue;}
 			else
 				{
 				$agent_paused++;  $agent_total++;
@@ -893,7 +893,7 @@ $talking_to_print = mysqli_num_rows($rslt);
 
 		if ( (preg_match("/INCALL/i",$status)) or (preg_match("/QUEUE/i",$status)) ) {$agent_incall++;  $agent_total++;}
 		if ( (preg_match("/READY/i",$status)) or (preg_match("/CLOSER/i",$status)) ) {$agent_ready++;  $agent_total++;}
-		if ( (preg_match("/READY/i",$status)) or (preg_match("/CLOSER/i",$status)) ) 
+		if ( (preg_match("/READY/i",$status)) or (preg_match("/CLOSER/i",$status)) )
 			{
 			$G='<SPAN class="lightblue"><B>'; $EG='</B></SPAN>';
 			if ($call_time_M_int >= 1) {$G='<SPAN class="blue"><B>'; $EG='</B></SPAN>';}
@@ -911,31 +911,31 @@ $talking_to_print = mysqli_num_rows($rslt);
 		if ($IAXmonitorLINK>1) {$R=" | <a href=\"tel:$servip$Lsessionid\">BARGE</a>";}
 
 
-		if ($RECmonitorLINK>0) 
+		if ($RECmonitorLINK>0)
               {
 
 			$stmt="select session_name from web_client_sessions where server_ip ='$server_ip' and extension ='$extension' limit 1;";
-		  			if ($non_latin > 0) {$rslta=mysql_to_mysqli("SET NAMES 'UTF8'", $link);} 
+		  			if ($non_latin > 0) {$rslta=mysql_to_mysqli("SET NAMES 'UTF8'", $link);}
 		  			$rslta=mysql_to_mysqli($stmt, $link);
 		   			if ($DB) {echo "$stmt\n";}
-		   			$sess = mysqli_num_rows($rslta);	
-					
-					if ($sess  > 0) 
+		   			$sess = mysqli_num_rows($rslta);
+
+					if ($sess  > 0)
 					{
   					 	$row=mysqli_fetch_row($rslta);
 						$sessionname = $row[0];
 					} else
 					{
-					  	$sessionname = "";	
+					  	$sessionname = "";
 					}
 
 
                 	$stmt="select end_time,channel,extension,lead_id,user,server_ip,filename from recording_log where server_ip ='$server_ip' and user ='$Luser';";
-		  			if ($non_latin > 0) {$rslta=mysql_to_mysqli("SET NAMES 'UTF8'", $link);} 
+		  			if ($non_latin > 0) {$rslta=mysql_to_mysqli("SET NAMES 'UTF8'", $link);}
 		  			$rslta=mysql_to_mysqli($stmt, $link);
 		   			if ($DB) {echo "$stmt\n";}
 		   			$rec_channels = mysqli_num_rows($rslta);
-			
+
                  	if ($rec_channels  > 0)
 		   			{
    						$ii=0;
@@ -943,14 +943,14 @@ $talking_to_print = mysqli_num_rows($rslt);
 						{
 			 				$row=mysqli_fetch_row($rslta);
 							$pos=strpos($row[1], $Lsessionid);
-														
+
 							if ($pos===false)
 			  				{
 								$LL=" <a href=\"#\" onclick=\"conf_send_recording('MonitorConf','$sessionname', '$Lsessionid','' ,$lead_id,'$Luser','$campaign_id','$Lserver_ip','$user_pass');return false;\">"._QXZ("Rec")." </a>";
-			  				}		
+			  				}
 			  				else
-			  				{	 
-								if(is_null($row[0])) { 
+			  				{
+								if(is_null($row[0])) {
 				 				$LL=" <a href=\"#\" onclick=\"conf_send_recording('StopMonitorConf','$sessionname', '$Lsessionid', '$row[6]', $lead_id,'$Luser','$campaign_id','$Lserver_ip','$user_pass');return false;\">"._QXZ("Stop")."</a>";
 								}
 								else
@@ -958,18 +958,18 @@ $talking_to_print = mysqli_num_rows($rslt);
 				 					$LL=" <a href=\"#\" onclick=\"conf_send_recording('MonitorConf','$sessionname', '$Lsessionid','' ,$lead_id,'$Luser','$campaign_id','$Lserver_ip','$user_pass');return false;\">"._QXZ("Rec")." </a>";
 								}
 			  				}
-							
+
 			 				$ii++;
 						   }
  		   	   			 }
 		    			else
              				{
 			  		 $LL=" <a href=\"#\" onclick=\"conf_send_recording('MonitorConf','$sessionname','$Lsessionid', '' , $lead_id,'$Luser','$campaign_id','$Lserver_ip','$user_pass');return false;\">Rec </a>";
-						
+
 		     			}
               }
 
-		
+
 		if ($UGdisplay > 0)	{$UGD = " $G$user_group$EG |";}
 		else	{$UGD = "";}
 
@@ -1010,7 +1010,7 @@ $talking_to_print = mysqli_num_rows($rslt);
 		echo "$NFB$agent_incall$NFE "._QXZ("agents in calls")." &nbsp; &nbsp; &nbsp; \n";
 		echo "$NFB$B &nbsp;$agent_ready $BG$NFE "._QXZ("agents waiting")." &nbsp; &nbsp; &nbsp; \n";
 		echo "$NFB$agent_paused$NFE "._QXZ("paused agents")." &nbsp; &nbsp; &nbsp; \n";
-		
+
 		echo "<PRE><FONT SIZE=2>";
 		echo "";
 		echo "$Aecho";

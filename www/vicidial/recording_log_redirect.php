@@ -1,13 +1,13 @@
 <?php
 # recording_log_redirect.php - audio recording access logging and redirect script
-# 
+#
 # Copyright (C) 2017  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG
 # 160116-1349 - First Build
 # 170409-1538 - Added IP List validation code
 #
- 
+
 require("dbconnect_mysqli.php");
 require("functions.php");
 
@@ -59,7 +59,7 @@ else
 	$PHP_AUTH_PW = preg_replace("/'|\"|\\\\|;/","",$PHP_AUTH_PW);
 	}
 
-if ($search_archived_data) 
+if ($search_archived_data)
 	{$recording_log_table=use_archive_table("recording_log");}
 else
 	{$recording_log_table="recording_log";}
@@ -113,22 +113,22 @@ if ( ( $access_recordings < 1 ) or ( $log_recording_access < 1 ) )
 	exit;
 	}
 
-if (!$recording_id) 
+if (!$recording_id)
 	{
 	exit;
-	} 
-else 
+	}
+else
 	{
 	$rec_lookup_stmt="select recording_id,channel,server_ip,extension,start_time,start_epoch,end_time,end_epoch,length_in_sec,length_in_min,filename,location,lead_id,user,vicidial_id from ".$recording_log_table." where recording_id='$recording_id'";
 	$rec_lookup_rslt=mysql_to_mysqli($rec_lookup_stmt, $link);
-	if (mysqli_num_rows($rec_lookup_rslt)==0) 
+	if (mysqli_num_rows($rec_lookup_rslt)==0)
 		{
 		$log_stmt="insert into vicidial_recording_access_log(recording_id, user, access_datetime, access_result, ip, lead_id) VALUES ('$recording_id', '$PHP_AUTH_USER', now(), 'NO RECORDING', '$ip', '$lead_id');";
 		$log_rslt=mysql_to_mysqli($log_stmt, $link);
 		echo _QXZ("Not a valid recording")."\n";
 		exit;
 		}
-	else 
+	else
 		{
 		$rec_row=mysqli_fetch_array($rec_lookup_rslt);
 		$lead_id=$rec_row["lead_id"];
@@ -143,13 +143,13 @@ else
 			$stmt="SELECT count(*) from servers where server_ip='$URLserver_ip';";
 			$rsltx=mysql_to_mysqli($stmt, $link);
 			$rowx=mysqli_fetch_row($rsltx);
-		
+
 			if ($rowx[0] > 0)
 				{
 				$stmt="SELECT recording_web_link,alt_server_ip,external_server_ip from servers where server_ip='$URLserver_ip';";
 				$rsltx=mysql_to_mysqli($stmt, $link);
 				$rowx=mysqli_fetch_row($rsltx);
-			
+
 				if (preg_match("/ALT_IP/i",$rowx[0]))
 					{
 					$location = preg_replace("/$URLserver_ip/i", "$rowx[1]", $location);

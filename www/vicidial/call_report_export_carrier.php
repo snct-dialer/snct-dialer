@@ -1,12 +1,12 @@
 <?php
 # call_report_export_carrier.php
-# 
-# displays options to select for downloading of leads and their vicidial_log 
-# and/or vicidial_closer_log information by status, list_id and date range. 
+#
+# displays options to select for downloading of leads and their vicidial_log
+# and/or vicidial_closer_log information by status, list_id and date range.
 # downloads to a flat text file that is tab delimited. This version also
 # attempts to link carrier and dial log entries to those calls.
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -18,6 +18,8 @@
 # 150909-0748 - Fixed issues with translated select list values, issue #885
 # 160510-2100 - Added coding to remove tab characters from the data
 # 170409-1542 - Added IP List validation code
+# 190610-2037 - Fixed admin hide phone issue
+# 190926-0927 - Fixes for PHP7
 #
 
 $startMS = microtime();
@@ -461,6 +463,17 @@ if ($run_export > 0)
 
 	$outbound_calls=0;
 	$export_rows='';
+	$export_status = array();
+	$export_list_id = array();
+	$export_lead_id = array();
+	$export_uniqueid = array();
+	$export_vicidial_id = array();
+	$export_entry_list_id = array();
+	$export_wrapup_time = array();
+	$export_queue_time = array();
+	$export_user = array();
+	$export_rows = array();
+	$carrier_dial_log_rows = array();
 	$k=0;
 	if ($RUNcampaign > 0)
 		{
@@ -511,16 +524,29 @@ if ($run_export > 0)
 					{
 					if ($DB > 0) {echo "HIDEPHONEDATA|$row[1]|$LOGadmin_hide_phone_data|\n";}
 					$phone_temp = $row[1];
-					if (strlen($phone_temp) > 0)
+					$phone_lead_temp = $row[10];
+					if ( (strlen($phone_temp) > 0) or (strlen($phone_lead_temp) > 0) )
 						{
 						if ($LOGadmin_hide_phone_data == '4_DIGITS')
-							{$row[1] = str_repeat("X", (strlen($phone_temp) - 4)) . substr($phone_temp,-4,4);}
+							{
+							$row[1] = str_repeat("X", (strlen($phone_temp) - 4)) . substr($phone_temp,-4,4);
+							$row[10] = str_repeat("X", (strlen($phone_lead_temp) - 4)) . substr($phone_lead_temp,-4,4);
+							}
 						elseif ($LOGadmin_hide_phone_data == '3_DIGITS')
-							{$row[1] = str_repeat("X", (strlen($phone_temp) - 3)) . substr($phone_temp,-3,3);}
+							{
+							$row[1] = str_repeat("X", (strlen($phone_temp) - 3)) . substr($phone_temp,-3,3);
+							$row[10] = str_repeat("X", (strlen($phone_lead_temp) - 3)) . substr($phone_lead_temp,-3,3);
+							}
 						elseif ($LOGadmin_hide_phone_data == '2_DIGITS')
-							{$row[1] = str_repeat("X", (strlen($phone_temp) - 2)) . substr($phone_temp,-2,2);}
+							{
+							$row[1] = str_repeat("X", (strlen($phone_temp) - 2)) . substr($phone_temp,-2,2);
+							$row[10] = str_repeat("X", (strlen($phone_lead_temp) - 2)) . substr($phone_lead_temp,-2,2);
+							}
 						else
-							{$row[1] = preg_replace("/./",'X',$phone_temp);}
+							{
+							$row[1] = preg_replace("/./",'X',$phone_temp);
+							$row[10] = preg_replace("/./",'X',$phone_lead_temp);
+							}
 						}
 					}
 				if ($LOGadmin_hide_lead_data != '0')
@@ -578,7 +604,7 @@ if ($run_export > 0)
 						}
 					$export_rows[$k] = "$row[0]\t$row[1]\t$row[2]\t$row[3]\t$row[4]\t$row[5]\t$row[6]\t$row[7]\t$row[8]\t$row[9]\t$row[10]\t$row[11]\t$row[12]\t$row[13]\t$row[14]\t$row[15]\t$row[16]\t$row[17]\t$row[18]\t$row[19]\t$row[20]\t$row[21]\t$row[22]\t$row[23]\t$row[24]\t$row[25]\t$row[26]\t$row[27]\t$row[28]\t$row[29]\t$row[30]\t$row[31]\t$row[32]\t$row[33]\t$row[34]\t$export_fieldsDATA";
 					}
-				
+
 				# Carrier/dial log
 				for ($q=$carrier_log_offset; $q<count($row); $q++)
 					{
@@ -639,16 +665,29 @@ if ($run_export > 0)
 					{
 					if ($DB > 0) {echo "HIDEPHONEDATA|$row[1]|$LOGadmin_hide_phone_data|\n";}
 					$phone_temp = $row[1];
-					if (strlen($phone_temp) > 0)
+					$phone_lead_temp = $row[10];
+					if ( (strlen($phone_temp) > 0) or (strlen($phone_lead_temp) > 0) )
 						{
 						if ($LOGadmin_hide_phone_data == '4_DIGITS')
-							{$row[1] = str_repeat("X", (strlen($phone_temp) - 4)) . substr($phone_temp,-4,4);}
+							{
+							$row[1] = str_repeat("X", (strlen($phone_temp) - 4)) . substr($phone_temp,-4,4);
+							$row[10] = str_repeat("X", (strlen($phone_lead_temp) - 4)) . substr($phone_lead_temp,-4,4);
+							}
 						elseif ($LOGadmin_hide_phone_data == '3_DIGITS')
-							{$row[1] = str_repeat("X", (strlen($phone_temp) - 3)) . substr($phone_temp,-3,3);}
+							{
+							$row[1] = str_repeat("X", (strlen($phone_temp) - 3)) . substr($phone_temp,-3,3);
+							$row[10] = str_repeat("X", (strlen($phone_lead_temp) - 3)) . substr($phone_lead_temp,-3,3);
+							}
 						elseif ($LOGadmin_hide_phone_data == '2_DIGITS')
-							{$row[1] = str_repeat("X", (strlen($phone_temp) - 2)) . substr($phone_temp,-2,2);}
+							{
+							$row[1] = str_repeat("X", (strlen($phone_temp) - 2)) . substr($phone_temp,-2,2);
+							$row[10] = str_repeat("X", (strlen($phone_lead_temp) - 2)) . substr($phone_lead_temp,-2,2);
+							}
 						else
-							{$row[1] = preg_replace("/./",'X',$phone_temp);}
+							{
+							$row[1] = preg_replace("/./",'X',$phone_temp);
+							$row[10] = preg_replace("/./",'X',$phone_lead_temp);
+							}
 						}
 					}
 				if ($LOGadmin_hide_lead_data != '0')
@@ -825,7 +864,7 @@ if ($run_export > 0)
 					for ($t=0; $t<count($row); $t++){
 						$row[$t]=preg_replace('/\t/', ' -- ', $row[$t]);
 					}
-					
+
 					$rec_id .=			"$row[0]|";
 					$rec_filename .=	"$row[1]|";
 					$rec_location .=	"$row[2]|";
@@ -1053,7 +1092,7 @@ if ($run_export > 0)
 				if ($DB>0) {echo "$stmt";}
 				$rslt=mysql_to_mysqli($stmt, $link);
 				$tablecount_to_print = mysqli_num_rows($rslt);
-				if ($tablecount_to_print > 0) 
+				if ($tablecount_to_print > 0)
 					{
 					$column_list='';
 					$encrypt_list='';
@@ -1139,7 +1178,7 @@ if ($run_export > 0)
 							{
 							$row=mysqli_fetch_row($rslt);
 							$t=0;
-							while ($columns_ct >= $t) 
+							while ($columns_ct >= $t)
 								{
 								if ($enc_fields > 0)
 									{
@@ -1417,10 +1456,10 @@ if ($file_exported < 1)
 		$o=0;
 		while ($campaigns_to_print > $o)
 		{
-			if (preg_match("/\|$LISTcampaigns[$o]\|/",$campaign_string)) 
-				{echo "<option selected value=\"$LISTcampaigns[$o]\">$LISTcampaigns[$o]</option>\n";}
-			else 
-				{echo "<option value=\"$LISTcampaigns[$o]\">$LISTcampaigns[$o]</option>\n";}
+			if (preg_match("/\|$LISTcampaigns[$o]\|/",$campaign_string))
+				{echo "<option selected value=\"$LISTcampaigns[$o]\">"._QXZ("$LISTcampaigns[$o]")."</option>\n";}
+			else
+				{echo "<option value=\"$LISTcampaigns[$o]\">"._QXZ("$LISTcampaigns[$o]")."</option>\n";}
 			$o++;
 		}
 	echo "</SELECT>\n";
@@ -1433,10 +1472,10 @@ if ($file_exported < 1)
 			$o=0;
 			while ($groups_to_print > $o)
 			{
-				if (preg_match("/\|$LISTgroups[$o]\|/",$group_string)) 
-					{echo "<option selected value=\"$LISTgroups[$o]\">$LISTgroups[$o]</option>\n";}
+				if (preg_match("/\|$LISTgroups[$o]\|/",$group_string))
+					{echo "<option selected value=\"$LISTgroups[$o]\">"._QXZ("$LISTgroups[$o]")."</option>\n";}
 				else
-					{echo "<option value=\"$LISTgroups[$o]\">$LISTgroups[$o]</option>\n";}
+					{echo "<option value=\"$LISTgroups[$o]\">"._QXZ("$LISTgroups[$o]")."</option>\n";}
 				$o++;
 			}
 		echo "</SELECT>\n";
@@ -1447,10 +1486,10 @@ if ($file_exported < 1)
 		$o=0;
 		while ($lists_to_print > $o)
 		{
-			if (preg_match("/\|$LISTlists[$o]\|/",$list_string)) 
-				{echo "<option selected value=\"$LISTlists[$o]\">$LISTlists[$o]</option>\n";}
-			else 
-				{echo "<option value=\"$LISTlists[$o]\">$LISTlists[$o]</option>\n";}
+			if (preg_match("/\|$LISTlists[$o]\|/",$list_string))
+				{echo "<option selected value=\"$LISTlists[$o]\">"._QXZ("$LISTlists[$o]")."</option>\n";}
+			else
+				{echo "<option value=\"$LISTlists[$o]\">"._QXZ("$LISTlists[$o]")."</option>\n";}
 			$o++;
 		}
 	echo "</SELECT>\n";
@@ -1460,10 +1499,10 @@ if ($file_exported < 1)
 		$o=0;
 		while ($statuses_to_print > $o)
 		{
-			if (preg_match("/\|$LISTstatus[$o]\|/",$list_string)) 
-				{echo "<option selected value=\"$LISTstatus[$o]\">$LISTstatus[$o]</option>\n";}
-			else 
-				{echo "<option value=\"$LISTstatus[$o]\">$LISTstatus[$o]</option>\n";}
+			if (preg_match("/\|$LISTstatus[$o]\|/",$list_string))
+				{echo "<option selected value=\"$LISTstatus[$o]\">"._QXZ("$LISTstatus[$o]")."</option>\n";}
+			else
+				{echo "<option value=\"$LISTstatus[$o]\">"._QXZ("$LISTstatus[$o]")."</option>\n";}
 			$o++;
 		}
 	echo "</SELECT>\n";
@@ -1475,10 +1514,10 @@ if ($file_exported < 1)
 			$o=0;
 			while ($user_groups_to_print > $o)
 			{
-				if (preg_match("/\|$LISTuser_groups[$o]\|/",$user_group_string)) 
-					{echo "<option selected value=\"$LISTuser_groups[$o]\">$LISTuser_groups[$o]</option>\n";}
-				else 
-					{echo "<option value=\"$LISTuser_groups[$o]\">$LISTuser_groups[$o]</option>\n";}
+				if (preg_match("/\|$LISTuser_groups[$o]\|/",$user_group_string))
+					{echo "<option selected value=\"$LISTuser_groups[$o]\">"._QXZ("$LISTuser_groups[$o]")."</option>\n";}
+				else
+					{echo "<option value=\"$LISTuser_groups[$o]\">"._QXZ("$LISTuser_groups[$o]")."</option>\n";}
 				$o++;
 			}
 		echo "</SELECT>\n";

@@ -212,7 +212,7 @@ make
 make install
 
 
-cd /usr/local	
+cd /usr/local
 wget http://superb-west.dl.sourceforge.net/sourceforge/ploticus/pl240src.tar.gz
 gunzip pl240src.tar.gz
 tar xvf pl240src.tar
@@ -335,7 +335,7 @@ php -v
 /usr/local/apache2/bin/apachectl startssl
 
 
-cpan 
+cpan
 
 install Curses
 install Net::Domain
@@ -423,7 +423,7 @@ patch -p1 < ./meetme_DTMF_passthru-1.2.23.patch
 wget http://www.eflo.net/files/meetme_volume_control_1.2.16.patch
 patch -p1 < ./meetme_volume_control_1.2.16.patch
 
-	
+
 	- File to patch: app_meetme.c
 
 
@@ -431,7 +431,7 @@ cd ../
 wget http://www.eflo.net/files/cli_chan_concise_delimiter.patch
 patch -p1 < ./cli_chan_concise_delimiter.patch
 
-	
+
 	- File to patch: cli.c
 
 wget http://download.vicidial.com/asterisk-patches/1.2-gsm-gcc4.2.patch
@@ -547,7 +547,7 @@ wget http://downloads.digium.com/pub/asterisk/old-releases/asterisk-1.4.21.2.tar
 wget http://downloads.digium.com/pub/zaptel/zaptel-1.4.12.1.tar.gz
 wget http://downloads.digium.com/pub/libpri/libpri-1.4.9.tar.gz
 tar xzf asterisk-1.4.21.2.tar.gz
-tar xzf zaptel-1.4.12.1.tar.gz 
+tar xzf zaptel-1.4.12.1.tar.gz
 tar xzf libpri-1.4.9.tar.gz
 cd libpri-1.4.9
 make clean; make; make install

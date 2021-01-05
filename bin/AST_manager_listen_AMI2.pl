@@ -5,20 +5,30 @@
 # Part of the Asterisk Central Queue System (ACQS)
 #
 # DESCRIPTION:
-# connects to the Asterisk Manager Interface version 2 and updates records in the 
-# vicidial_manager table of the asterisk database in MySQL based upon the 
+# connects to the Asterisk Manager Interface version 2 and updates records in the
+# vicidial_manager table of the asterisk database in MySQL based upon the
 # events that it receives
-# 
+#
 # SUMMARY:
 # This program was designed as the listen-only part of the ACQS. It's job is to
-# look for certain events and based upon either the uniqueid or the callerid of 
-# the call update the status and information of an action record in the 
+# look for certain events and based upon either the uniqueid or the callerid of
+# the call update the status and information of an action record in the
 # vicidial_manager table of the asterisk MySQL database. This program is run by
 # the ADMIN_keepalive_ALL.pl script, which makes sure it is always running in a
 # screen, provided that the astguiclient.conf keepalive setting "2" is set.
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
+# LICENSE: AGPLv3
+#
+# Copyright (C) 2017      Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2019-2020 SNCT Gmbh <info@snct-gmbh.de>
+#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
+#
+# Other changes
+#
+# 200803-1345 jff	add utf8 enconding for conf files
+
 # CHANGES
 # 170915-2106 - Initial version based off the orginal AST_manager_listen.pl script
 # 170920-1418 - Fix for issue with recordings beginning with CALLID variable
@@ -117,12 +127,12 @@ use Switch;
 
 $module = 'String::Escape qw( backslash unbackslash )';
 $bs_loaded=0;
-if (try_load($module)) 
+if (try_load($module))
 	{
 	$bs_loaded=1;
 	}
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
 or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
@@ -173,7 +183,7 @@ if ($run_check > 0)
 	my $grepout = `/bin/ps ax | grep $0 | grep -v grep | grep -v '/bin/sh'`;
 	my $grepnum=0;
 	$grepnum++ while ($grepout =~ m/\n/g);
-	if ($grepnum > 2) 
+	if ($grepnum > 2)
 		{
 		if ($DB) {print "I am not alone! Another $0 is running! Exiting...\n";}
 		$event_string = "I am not alone! Another $0 is running! Exiting...";
@@ -193,7 +203,7 @@ $tn = new Net::Telnet (
 	Port => $telnet_port,
 	Prompt => '/\r\n/',
 	Output_record_separator => "\n\n",
-	Max_buffer_length => $max_buffer, 
+	Max_buffer_length => $max_buffer,
 	Telnetmode => 0,
 );
 
@@ -201,7 +211,7 @@ $LItelnetlog = "$PATHlogs/listen_telnet_log.txt";  # uncomment for telnet log
 #$fh = $tn->dump_log("$LItelnetlog");  # uncomment for telnet log
 if (length($ASTmgrUSERNAMElisten) > 3) {$telnet_login = $ASTmgrUSERNAMElisten;}
 else {$telnet_login = $ASTmgrUSERNAME;}
-$tn->open("$telnet_host"); 
+$tn->open("$telnet_host");
 $tn->waitfor('/Asterisk Call Manager\//');
 
 # get the AMI version number
@@ -243,7 +253,7 @@ if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 13))
 	&event_logger;
 	exit;
 	}
-else 
+else
 	{
 	### BEGIN manager event handling for asterisk version >= 13
 	$endless_loop = 1;
@@ -300,16 +310,16 @@ else
 					$event_hash{"$key"} = $value;
 					}
 				}
-			if ($full_listen_log > 0) 
+			if ($full_listen_log > 0)
 				{
 				$manager_string="$line_log";
 				&manager_output_logger;
 				}
 			}
-		
-			
+
+
 		$keep_alive_epoch = time();
-			
+
 		# take certain actions every second
 		if ( $keep_alive_epoch - $last_partial_keep_alive_epoch >= 1 )
 			{
@@ -342,7 +352,7 @@ else
 			$sthA->finish();
 
 			### putting a blank file called "listenmgr.kill" in a directory will automatically safely kill this program
-			if ( -e "$PATHhome/listenmgr.kill" ) 
+			if ( -e "$PATHhome/listenmgr.kill" )
 				{
 				unlink("$PATHhome/listenmgr.kill");
 				$endless_loop=0;
@@ -351,13 +361,13 @@ else
 				}
 
 			### no response to our last keep alive
-			if ( $keep_alive_response == 0 ) 
+			if ( $keep_alive_response == 0 )
 				{
 				$response_wait = $keep_alive_epoch - $last_keep_alive_epoch;
 				if($DB) { print "No response to keep alive in $response_wait seconds.\n"; }
 				}
 
-			if ( $keep_alive_no_responses > 10 ) 
+			if ( $keep_alive_no_responses > 10 )
 				{
 				if($DB) { print "$keep_alive_no_responses failed to get a response. Exiting!!!" }
 				$endless_loop=0;
@@ -372,38 +382,38 @@ else
 					{
 					### if so send an AMI command to keep the connection alive
 					$keep_alive_skips = 0;
-	
+
 					if ( $keep_alive_response == 0 ) { $keep_alive_no_responses++; }
-	
+
 					$keep_alive_response = 0;
 
 					$keep_alive_string = "Action: Ping";
-					
+
 					$tn->print($keep_alive_string);
-	
-					$msg = $tn->errmsg;					
-					
+
+					$msg = $tn->errmsg;
+
 					$buf_ref = $tn->buffer;
 					$buf_len = length( $$buf_ref );
 					$output_size = @keep_alive_output;
-	
+
 					if($DB) { print "++++++++++++++++sending keepalive |$keep_alive_type|em:$msg|$output_size|$endless_loop|$now_date|$buf_len|$keep_alive_no_responses\n"; }
 					if($DBX) { print "---@keep_alive_output---\n"; }
-					
+
 					$manager_string="PROCESS: keepalive length: $output_size|$now_date";
 					&manager_output_logger;
-	
+
 					$last_keep_alive_epoch = time();
 					}
 				else
 					{
 					### otherwise
 					$keep_alive_skips++;
-	
+
 					$buf_ref = $tn->buffer;
 					$buf_len = length( $$buf_ref );
 					if($DB){print "----------------no keepalive transmit necessary ($keep_alive_skips in a row) $endless_loop|$now_date|$buf_len|$keep_alive_no_responses\n";}
-	
+
 					$manager_string="PROCESS: keepalive skip ($keep_alive_skips in a row)|$now_date";
 					&manager_output_logger;
 					}
@@ -425,13 +435,13 @@ else
 				{
 				$value = $event_hash{"$key"};
 				print "  $key -> $value\n";
-				} 
+				}
 			print "\n";
 			}
 
 		$retcode = 1;
 		# make sure this is an event not a response
-		if (exists($event_hash{"Event"})) 
+		if (exists($event_hash{"Event"}))
 			{
 			# handle the event
 			$retcode = handle_event( %event_hash );
@@ -442,7 +452,7 @@ else
 			$keep_alive_response = 1;
 			$keep_alive_no_responses = 0;
 			}
-			
+
 
 		# handle a shutdown
 		if ( $retcode == 0 )
@@ -465,7 +475,7 @@ if($DB){print "DONE... Exiting... Goodbye... See you later... Not really, initia
 $event_string='HANGING UP|';
 &event_logger;
 
-@hangup = $tn->cmd(String => "Action: Logoff\n\n", Prompt => "/.*/", Errmode    => Return, Timeout    => 1); 
+@hangup = $tn->cmd(String => "Action: Logoff\n\n", Prompt => "/.*/", Errmode    => Return, Timeout    => 1);
 
 $tn->buffer_empty;
 $tn->waitfor(Match => '/Message:.*\n\n/', Timeout => 10);
@@ -496,11 +506,11 @@ sub validate_cid_name
 		( $cid_name =~ /V\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d/) ||	# Auto Dials
 		( $cid_name =~ /Y\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d/) ||	# Inbound Calls
 		( $cid_name =~ /^RINGAGENT|^RA_/ )
-	) 
+	)
 		{
 		return 1; # if so return 1 for true
-		} 
-	else 
+		}
+	else
 		{
 		return 0; # if not return 0 for false
 		}
@@ -515,7 +525,7 @@ sub get_valid_callid
 	# remove everything after the space for Orex
 	if ( $CallerIDName =~ /\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S/) {$CallerIDName =~ s/ .*//gi;}
 	if ( $ConnectedLineName =~ /\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S/) {$ConnectedLineName =~ s/ .*//gi;}
-	
+
 	# if the CallerIDName variable does not have a valid Vicidial Call ID
 	# but the ConnectedLineName does use the ConnectedLineName
 	if (  !(validate_cid_name($CallerIDName)) && (validate_cid_name($ConnectedLineName)) )
@@ -533,14 +543,14 @@ sub handle_event
 	{
 	my %event_hash = @_;
 
-	switch ($event_hash{'Event'}) 
+	switch ($event_hash{'Event'})
 		{
 		# Asterisk is shutting down so should we
 		case "Shutdown" { return 0; }
 
 		# DTMF event
 		case "DTMFBegin" { return handle_dtmf_begin_event( %event_hash ); }
-		case "DTMFEnd" { return handle_dtmf_end_event( %event_hash ); }		
+		case "DTMFEnd" { return handle_dtmf_end_event( %event_hash ); }
 
 		# CPD-Result event
 	#	case "CPD-Result" { return handle_cpd_event( %event_hash ); }
@@ -568,16 +578,16 @@ sub handle_hangup_event
 	{
 	my %event_hash = @_;
 
-	if ( 
-		( exists $event_hash{'Channel'} ) && 
+	if (
+		( exists $event_hash{'Channel'} ) &&
 		( exists $event_hash{'Uniqueid'} ) &&
 		( exists $event_hash{'CallerIDName'} ) &&
 		( exists $event_hash{'ConnectedLineName'} )
-	) 
+	)
 		{
 
 		# get the valid Vicidial Call ID
-		$call_id = get_valid_callid( $event_hash{'CallerIDName'}, $event_hash{'ConnectedLineName'} ); 
+		$call_id = get_valid_callid( $event_hash{'CallerIDName'}, $event_hash{'ConnectedLineName'} );
 
 		# Check if we are not a local channel for a consultative transfer
 		if ( ( $event_hash{'Channel'} !~ /local/i) && ( $event_hash{'Channel'} !~ /cxfer/i) )
@@ -594,7 +604,7 @@ sub handle_hangup_event
 			return 1;
 			}
 		}
-	else 
+	else
 		{
 		print STDERR "Hangup event does not have a Channel, Uniqueid, or CallerIDName ?!!!\n";
 		return 3;
@@ -613,7 +623,7 @@ sub handle_newstate_event
 		( exists $event_hash{'ConnectedLineName'} )
 	)
 		{
-		
+
 		# get the valid Vicidial Call ID
 		$call_id = get_valid_callid( $event_hash{'CallerIDName'}, $event_hash{'ConnectedLineName'} );
 
@@ -625,7 +635,7 @@ sub handle_newstate_event
 			my $affected_rows = $dbhA->do($stmtA);
 			if($DB){print "|$affected_rows DIALINGs updated|\n";}
 			}
-	
+
 		### ChannelStateDesc = Ringing or Up
 		elsif ($event_hash{'ChannelStateDesc'} =~ /Ringing|Up/)
 			{
@@ -642,12 +652,12 @@ sub handle_newstate_event
 				if($DB){print STDERR "|$event_hash{'Channel'}|LOCAL CHANNEL >>>> ABOVE STATMENT IGNORED|\n";}
 				}
 			}
-		else 
+		else
 			{
 			if ( $DBX ) { print "Channel State $event_hash{'ChannelStateDesc'} not Dialing, Ringing, or Up. Ignoring."; }
 			}
 
-		
+
 		return 1;
 		}
 	else
@@ -679,7 +689,7 @@ sub handle_newcid_event
 			my $affected_rows = $dbhA->do($stmtA);
 			if($DB){print "|$affected_rows RINGINGs updated|\n";}
 			}
-		
+
 		return 1;
 		}
 	else
@@ -812,7 +822,7 @@ sub handle_dtmf_end_event
 #			{
 #			$lead_id = substr($call_id, 10, 10);
 #			$lead_id = ($lead_id + 0);
-#	
+#
 #			# TODO change the cpd log and this insert to include the new SIP Headers for 2.0 CPD
 #			$stmtA = "INSERT INTO vicidial_cpd_log set channel='$event_hash{'Channel'}', uniqueid='$event_hash{'Uniqueid'}', callerid='$call_id', server_ip='$event_hash{'ServerIP'}', lead_id='$lead_id', event_date='$now_date', result='$event_hash{'CPDResult'}';";
 #			if($DB){print STDERR "|$stmtA|\n";}
@@ -849,7 +859,7 @@ sub handle_dtmf_end_event
 #		&get_time_now;
 #
 #		@result_details=split(/\|/, $event_hash{'Result'});
-#	
+#
 #		if ( (length($event_hash{'Result'})>0) && ($result_details[0] !~ /^407/) )
 #			{
 #			$lead_id = substr($call_id, 10, 10);
@@ -883,12 +893,12 @@ sub handle_dtmf_end_event
 #			if ($postCmin < 10) {$postCmin = "0$postCmin";}
 #			if ($postCsec < 10) {$postCsec = "0$postCsec";}
 #			$postCSQLdate = "$postCyear-$postCmon-$postCmday $postChour:$postCmin:$postCsec";
-#	
+#
 #			$stmtA = "UPDATE vicidial_carrier_log SET sip_hangup_cause='$result_details[0]',sip_hangup_reason='$result_details[1]' where server_ip='$event_hash{'ServerIP'}' and caller_code='$call_id' and lead_id='$lead_id' and call_date > \"$preCSQLdate\" and call_date < \"$postCSQLdate\" order by call_date desc limit 1;";
 #			if($DB){print STDERR "|$stmtA|\n";}
 #			my $affected_rows = $dbhA->do($stmtA);
 #			if($DB){print "|$affected_rows carrier_log updated|$call_id|$event_hash{'ServerIP'}|$event_hash{'Uniqueid'}|$result_details[0]|$result_details[1]|\n";}
-#			}				
+#			}
 #
 #		return 1;
 #		}
@@ -919,13 +929,13 @@ sub get_time_now	#get the current date and time and epoch for logging call lengt
 
 
 
-sub event_logger 
+sub event_logger
 	{
 	if ($SYSLOG)
 		{
 		### open the log file for writing ###
-		open(Lout, ">>$PATHlogs/listen_process")
-				|| die "Can't open $PATHlogs/listen_process: $!\n";
+		open(Lout, ">>$PATHlogs/listen_process.log")
+				|| die "Can't open $PATHlogs/listen_process.log: $!\n";
 		print Lout "$now_date|$event_string|\n";
 		close(Lout);
 		}
@@ -938,8 +948,8 @@ sub manager_output_logger
 	{
 	if ($SYSLOG)
 		{
-		open(MOout, ">>$PATHlogs/listen")
-				|| die "Can't open $PATHlogs/listen: $!\n";
+		open(MOout, ">>$PATHlogs/listen.log")
+				|| die "Can't open $PATHlogs/listen.log: $!\n";
 		print MOout "$now_date|$manager_string|\n";
 		close(MOout);
 		}
@@ -949,8 +959,8 @@ sub dtmf_logger
 	{
 	if ($SYSLOG)
 		{
-		open(Dout, ">>$PATHlogs/dtmf")
-				|| die "Can't open $PATHlogs/dtmf: $!\n";
+		open(Dout, ">>$PATHlogs/dtmf.log")
+				|| die "Can't open $PATHlogs/dtmflog: $!\n";
 		print Dout "|$dtmf_string|\n";
 		close(Dout);
 		}
@@ -1000,18 +1010,18 @@ sub parse_asterisk_version
 	}
 
 # try to load a module
-sub try_load 
+sub try_load
 	{
 	 my $mod = shift;
 
 	eval("use $mod");
 
-	if ($@) 
+	if ($@)
 		{
 		#print "\$@ = $@\n";
 		return(0);
 		}
-	else 
+	else
 		{
 		return(1);
 		}

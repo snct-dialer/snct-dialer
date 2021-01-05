@@ -224,10 +224,10 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 
 use DBI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
-$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 $w=0;
@@ -248,7 +248,7 @@ while ($sthArows > $rec_count)
 	$source_id =	$aryA[0];
 	$count =		$aryA[1];
 
-	print out "ALL_SALES|$source_id|$count\r\n"; 
+	print out "ALL_SALES|$source_id|$count\r\n";
 	if ($DBX) {print "$rec_count|ALL_SALES|$source_id|$count|\n";}
 	$rec_count++;   $w++;
 	}
@@ -270,7 +270,7 @@ while ($sthArows > $rec_count)
 	$source_id =	$aryA[0];
 	$count =		$aryA[1];
 
-	print out "NOT_INTR|$source_id|$count\r\n"; 
+	print out "NOT_INTR|$source_id|$count\r\n";
 	if ($DBX) {print "$rec_count|NOT_INTR|$source_id|$count|\n";}
 	$rec_count++;   $w++;
 	}
@@ -292,7 +292,7 @@ while ($sthArows > $rec_count)
 	$source_id =	$aryA[0];
 	$count =		$aryA[1];
 
-	print out "B6_NO_PTCH|$source_id|$count\r\n"; 
+	print out "B6_NO_PTCH|$source_id|$count\r\n";
 	if ($DBX) {print "$rec_count|B6_NO_PTCH|$source_id|$count|\n";}
 	$rec_count++;   $w++;
 	}
@@ -314,7 +314,7 @@ while ($sthArows > $rec_count)
 	$source_id =	$aryA[0];
 	$count =		$aryA[1];
 
-	print out "RECD_COUNT|$source_id|$count\r\n"; 
+	print out "RECD_COUNT|$source_id|$count\r\n";
 	if ($DBX) {print "$rec_count|RECD_COUNT|$source_id|$count|\n";}
 	$rec_count++;   $w++;
 	}

@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 #
 # agi-DID_route.agi version 2.14
-# 
-# runs when a call comes into an inbound context on a trunk. This script will 
+#
+# runs when a call comes into an inbound context on a trunk. This script will
 # send the calls to various places depending on the settings for each DID.
 #
 # You need to put a line similar to this below in your extensions.conf file in
@@ -13,8 +13,17 @@
 # ;inbound DID catch-all:
 #exten => _X.,1,AGI(agi-DID_route.agi)
 #
-# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# LICENSE: AGPLv3
 #
+# Copyright (C) 2019      Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2019-2020 SNCT Gmbh <info@snct-gmbh.de>
+#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
+#
+# Other changes
+#
+# 20200815-1345 jff	add *.log to logfiles
+
 # changes:
 # 81007-0324 - First Build
 # 90115-0645 - Activated AGENT call routing
@@ -115,15 +124,16 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port) {$VARDB_port='3306';}
-if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout";}
-if (!$DIDLOGfile) {$DIDLOGfile = "$PATHlogs/didin";}
+if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout.log";}
+if (!$DIDLOGfile) {$DIDLOGfile = "$PATHlogs/didin.log";}
 
 use DBI;
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
+use Number::Phone::Lib;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
     or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
@@ -174,7 +184,7 @@ $sthA->finish();
 
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 	{
 	chomp;
 	last unless length($_);
@@ -211,9 +221,25 @@ $callerid =~ s/\'|\"|\\\\|\\\|\\|\\;|\\\;|\;|;//gi;
 $calleridname =~ s/\'|\"|\\\\|\\\|\\|\\;|\\\;|\;|;//gi;
 $extension =~ s/\'|\"|\\\\|\\\|\\|\\;|\\\;|\;|;//gi;
 
+#
+# Get phone-code and number via libphonenumber
+#
+if($callerid =~ /^0$/) {
+	$lib_phone = Number::Phone::Lib->new('DE',$callerid);
+} else {
+	$lib_phone = Number::Phone::Lib->new('+'.$callerid);
+}
+if($lib_phone) {
+	$tmpPhoneNumber = $lib_phone->format_using('Raw');
+	$tmpPhoneCode   = $lib_phone->country_code;
+	$agi_string = "NewPhoneCode: $callerid|$tmpPhoneCode|$tmpPhoneNumber";  &agi_output;
+#	$phone_code = $tmpPhoneCode;
+#	$callerid = $tmpPhoneNumber;
+}
+
 
 ### BEGIN did_system_filter filter process ###
-if ($SSdid_system_filter > 0) 
+if ($SSdid_system_filter > 0)
 	{
 	if ($AGILOG) {$agi_string = "--    DID SYSTEM FILTER ENABLED: |$SSdid_system_filter|";   &agi_output;}
 	$stmtA = "SELECT did_id,did_pattern,did_description,did_active,did_route,extension,exten_context,voicemail_ext,phone,server_ip,user,user_unavailable_action,user_route_settings_ingroup,menu_id,record_call,filter_inbound_number,filter_phone_group_id,filter_url,filter_action,filter_extension,filter_exten_context,filter_voicemail_ext,filter_phone,filter_server_ip,filter_user,filter_user_unavailable_action,filter_user_route_settings_ingroup,filter_group_id,filter_call_handle_method,filter_agent_search_method,filter_list_id,filter_campaign_id,filter_phone_code,filter_menu_id,filter_clean_cid_number,group_id,filter_dnc_campaign,filter_url_did_redirect,no_agent_ingroup_redirect,no_agent_ingroup_id,no_agent_ingroup_extension,pre_filter_phone_group_id,pre_filter_extension,max_queue_ingroup_calls,max_queue_ingroup_id,max_queue_ingroup_extension FROM vicidial_inbound_dids where did_pattern = 'did_system_filter' and did_active='Y';";
@@ -323,7 +349,7 @@ if ($SSdid_system_filter > 0)
 					}
 				$sthA->finish();
 
-				if ( ($filter_match_found < 1) && ($filter_inbound_number =~ /AREACODE/) ) 
+				if ( ($filter_match_found < 1) && ($filter_inbound_number =~ /AREACODE/) )
 					{
 					$alt_areacode = substr($callerid, 0, 3);
 					$alt_areacode .= "XXXXXXX";
@@ -377,10 +403,10 @@ if ($SSdid_system_filter > 0)
 				### first, find curl binary
 				$curlbin = '';
 				if ( -e ('/bin/curl')) {$curlbin = '/bin/curl';}
-				else 
+				else
 					{
 					if ( -e ('/usr/bin/curl')) {$curlbin = '/usr/bin/curl';}
-					else 
+					else
 						{
 						if ( -e ('/usr/local/bin/curl')) {$curlbin = '/usr/local/bin/curl';}
 						else
@@ -431,10 +457,10 @@ if ($SSdid_system_filter > 0)
 						}
 					$full_output = $full_output_raw;
 					$full_output =~ s/\D//gi;
-					if ($full_output > 0) 
+					if ($full_output > 0)
 						{
 						$filter_match_found = $full_output;
-						if ($filter_url_did_redirect =~ /Y/) 
+						if ($filter_url_did_redirect =~ /Y/)
 							{
 							$did_route='DID';
 							if ($AGILOG) {$agi_string = "SYSTEM Filter URL DID Redirect found: |$filter_match_found|$filter_url_did_redirect|$did_route|";   &agi_output;}
@@ -487,13 +513,13 @@ if ($SSdid_system_filter > 0)
 
 				if ($did_agent_log =~ /Y/)
 					{
-					if ($did_route !~ /IN_GROUP/) 
+					if ($did_route !~ /IN_GROUP/)
 						{$group_id='';}
 					$stmtA = "INSERT INTO vicidial_did_agent_log SET uniqueid='$uniqueid',server_ip='$VARserver_ip',caller_id_number='$callerid',caller_id_name='$calleridname',extension='$extension',call_date='$SQLdate',did_id='$did_id',did_route='$did_route',user='VDCL',group_id='$group_id',did_description='$did_description';";
 
 					if ( ($tables_use_alt_log_db =~ /did_agent_log/i) && (length($alt_log_server_ip)>4) && (length($alt_log_dbname)>0) )
 						{
-						$dbhD = DBI->connect("DBI:mysql:$alt_log_dbname:$alt_log_server_ip:3306", "$alt_log_login", "$alt_log_pass")
+						$dbhD = DBI->connect("DBI:mysql:$alt_log_dbname:$alt_log_server_ip:3306", "$alt_log_login", "$alt_log_pass", { mysql_enable_utf8 => 1 })
 						 or die "Couldn't connect to database: " . DBI->errstr;
 
 						if ($AGILOG) {$agi_string = "CONNECTED TO ALT-LOG DATABASE:  $alt_log_server_ip|$alt_log_dbname|$uniqueid";   &agi_output;}
@@ -529,9 +555,9 @@ if ($SSdid_system_filter > 0)
 					### format the remote server dialstring to get the call to the overflow agent meetme room
 					if( $did_server_ip =~ m/(\S+)\.(\S+)\.(\S+)\.(\S+)/ )
 						{
-						$a = leading_zero($1); 
-						$b = leading_zero($2); 
-						$c = leading_zero($3); 
+						$a = leading_zero($1);
+						$b = leading_zero($2);
+						$c = leading_zero($3);
 						$d = leading_zero($4);
 						$ServerString = "$a$S$b$S$c$S$d$S";
 						}
@@ -546,13 +572,13 @@ if ($SSdid_system_filter > 0)
 					### format the remote server dialstring to get the call to the overflow agent meetme room
 					if( $did_server_ip =~ m/(\S+)\.(\S+)\.(\S+)\.(\S+)/ )
 						{
-						$a = leading_zero($1); 
-						$b = leading_zero($2); 
-						$c = leading_zero($3); 
+						$a = leading_zero($1);
+						$b = leading_zero($2);
+						$c = leading_zero($3);
 						$d = leading_zero($4);
 						$ServerString = "$a$S$b$S$c$S$d$S";
 						}
-					if ($did_route =~ /VMAIL_NO_INST/) 
+					if ($did_route =~ /VMAIL_NO_INST/)
 						{$voicemail_dump_exten = $voicemail_dump_exten_no_inst;}
 					$did_extension = "$ServerString$voicemail_dump_exten$voicemail_ext";
 					$did_route = 'EXTEN';
@@ -577,7 +603,7 @@ if ($SSdid_system_filter > 0)
 				### QueueMetrics logging if enabled
 				if ( ($did_route =~ /EXTEN|CALLMENU/) && ($enable_queuemetrics_logging > 0) )
 					{
-					$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+					$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass", { mysql_enable_utf8 => 1 })
 					 or die "Couldn't connect to database: " . DBI->errstr;
 
 					if ($DBX) {print "CONNECTED TO QueueMetrics DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
@@ -601,7 +627,7 @@ if ($SSdid_system_filter > 0)
 					print "SET PRIORITY 1\n";
 						$result = <STDIN>;
 						checkresult($result);
-					
+
 					exit;
 					}
 
@@ -618,7 +644,7 @@ if ($SSdid_system_filter > 0)
 					print "SET PRIORITY 1\n";
 						$result = <STDIN>;
 						checkresult($result);
-					
+
 					exit;
 					}
 
@@ -627,7 +653,7 @@ if ($SSdid_system_filter > 0)
 					{
 					if ($enable_queuemetrics_logging > 0)
 						{
-						$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+						$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass", { mysql_enable_utf8 => 1 })
 						 or die "Couldn't connect to database: " . DBI->errstr;
 
 						if ($DBX) {print "CONNECTED TO QM DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
@@ -648,7 +674,7 @@ if ($SSdid_system_filter > 0)
 					print "SET PRIORITY 1\n";
 						$result = <STDIN>;
 						checkresult($result);
-					
+
 					exit;
 					}
 				}
@@ -787,28 +813,7 @@ $affected_rowsL = $dbhA->do($stmtA);
 if ($AGILOG) {$agi_string = "--    DID LOG : |$affected_rowsL|$stmtA|";   &agi_output;}
 
 ### Log the call to call_log
-$stmtZus = " ON DUPLICATE KEY UPDATE";
-if(length($channel) > 0) {
-	$stmtZus = $stmtZus . " channel='$channel',";
-}
-if(length($VARserver_ip) > 0) {
-	$stmtZus = $stmtZus . " server_ip='$VARserver_ip',";
-}
-if(length($extention) > 0) {
-	$stmtZus = $stmtZus . " extension='$extension', number_dialed='$extension', ";
-}
-if(length($callerid) > 0) {
-	$stmtZus = $stmtZus . " caller_code='$callerid',";
-}
-if(length($SQLdate) > 0) {
-	$stmtZus = $stmtZus . " start_time='$SQLdate',";
-}
-if($now_date_epoch > 0) {
-	$stmtZus = $stmtZus . " start_epoch='$now_date_epoch'";
-}
-
-
-$stmtA = "INSERT INTO call_log SET uniqueid='$unique_id', channel='$channel', channel_group='DID_INBOUND', server_ip='$VARserver_ip', type='$type', extension='$extension', number_dialed='$extension', caller_code='$callerid', start_time='$SQLdate', start_epoch='$now_date_epoch'" . $stmtZus . ";";
+$stmtA = "INSERT INTO call_log SET uniqueid='$unique_id', channel='$channel', channel_group='DID_INBOUND', server_ip='$VARserver_ip', type='$type', extension='$extension', number_dialed='$extension', caller_code='$callerid', start_time='$SQLdate', start_epoch='$now_date_epoch';";
 $affected_rowsC = $dbhA->do($stmtA);
 if ($AGILOG) {$agi_string = "--    CALL LOG : |$affected_rowsC|$stmtA|";   &agi_output;}
 
@@ -816,13 +821,13 @@ if ($AGILOG) {$did_string = "$SQLdate|$uniqueid|$channel|$extension|$callerid|$c
 
 if ($did_agent_log =~ /Y/)
 	{
-	if ($did_route !~ /IN_GROUP/) 
+	if ($did_route !~ /IN_GROUP/)
 		{$group_id='';}
 	$stmtA = "INSERT INTO vicidial_did_agent_log SET uniqueid='$uniqueid',server_ip='$VARserver_ip',caller_id_number='$callerid',caller_id_name='$calleridname',extension='$extension',call_date='$SQLdate',did_id='$did_id',did_route='$did_route',user='VDCL',group_id='$group_id',did_description='$did_description';";
 
 	if ( ($tables_use_alt_log_db =~ /did_agent_log/i) && (length($alt_log_server_ip)>4) && (length($alt_log_dbname)>0) )
 		{
-		$dbhD = DBI->connect("DBI:mysql:$alt_log_dbname:$alt_log_server_ip:3306", "$alt_log_login", "$alt_log_pass")
+		$dbhD = DBI->connect("DBI:mysql:$alt_log_dbname:$alt_log_server_ip:3306", "$alt_log_login", "$alt_log_pass", { mysql_enable_utf8 => 1 })
 		 or die "Couldn't connect to database: " . DBI->errstr;
 
 		if ($AGILOG) {$agi_string = "CONNECTED TO ALT-LOG DATABASE:  $alt_log_server_ip|$alt_log_dbname|$uniqueid";   &agi_output;}
@@ -859,7 +864,7 @@ if ($record_call =~ /Y/)
 		}
 	else
 		{
-		$AGI->exec("Monitor","wav,/var/spool/asterisk/monitor/MIX/$filename"); 
+		$AGI->exec("Monitor","wav,/var/spool/asterisk/monitor/MIX/$filename");
 		}
 
 	### insert record into recording_log table ###
@@ -891,7 +896,7 @@ $sthArows=$sthA->rows;
 while ($sthArows > $cbc)
 	{
 	@aryA = $sthA->fetchrow_array;
-	
+
 	$DBvoicemail_dump_exten	=		$aryA[0];
 	$DBext_context		=			$aryA[1];
 	$DBanswer_transfer_agent	=	$aryA[2];
@@ -1001,7 +1006,7 @@ if ( ($filter_inbound_number =~ /GROUP|URL|DNC_INTERNAL|DNC_CAMPAIGN/) && ($pre_
 			}
 		$sthA->finish();
 
-		if ( ($filter_match_found < 1) && ($filter_inbound_number =~ /AREACODE/) ) 
+		if ( ($filter_match_found < 1) && ($filter_inbound_number =~ /AREACODE/) )
 			{
 			$alt_areacode = substr($callerid, 0, 3);
 			$alt_areacode .= "XXXXXXX";
@@ -1055,10 +1060,10 @@ if ( ($filter_inbound_number =~ /GROUP|URL|DNC_INTERNAL|DNC_CAMPAIGN/) && ($pre_
 		### first, find curl binary
 		$curlbin = '';
 		if ( -e ('/bin/curl')) {$curlbin = '/bin/curl';}
-		else 
+		else
 			{
 			if ( -e ('/usr/bin/curl')) {$curlbin = '/usr/bin/curl';}
-			else 
+			else
 				{
 				if ( -e ('/usr/local/bin/curl')) {$curlbin = '/usr/local/bin/curl';}
 				else
@@ -1109,10 +1114,10 @@ if ( ($filter_inbound_number =~ /GROUP|URL|DNC_INTERNAL|DNC_CAMPAIGN/) && ($pre_
 				}
 			$full_output = $full_output_raw;
 			$full_output =~ s/\D//gi;
-			if ($full_output > 0) 
+			if ($full_output > 0)
 				{
 				$filter_match_found = $full_output;
-				if ($filter_url_did_redirect =~ /Y/) 
+				if ($filter_url_did_redirect =~ /Y/)
 					{
 					$did_route='DID';
 					if ($AGILOG) {$agi_string = "Filter URL DID Redirect found: |$filter_match_found|$filter_url_did_redirect|$did_route|";   &agi_output;}
@@ -1172,9 +1177,9 @@ if ( ($no_agent_ingroup_redirect =~ /Y|NO_PAUSED|READY_ONLY/) && ($pre_filter_ma
 	$BDtsSQLdate = "$Byear$Bmon$Bmday$Bhour$Bmin$Bsec";
 
 	$NPsql='';
-	if ($no_agent_ingroup_redirect =~ /NO_PAUSED/) 
+	if ($no_agent_ingroup_redirect =~ /NO_PAUSED/)
 		{$NPsql = "and status NOT IN('PAUSED')";}
-	if ($no_agent_ingroup_redirect =~ /READY_ONLY/) 
+	if ($no_agent_ingroup_redirect =~ /READY_ONLY/)
 		{$NPsql = "and status IN('READY','CLOSER')";}
 	$SQL_group_id=$no_agent_ingroup_id;   $SQL_group_id =~ s/_/\\_/gi;
 	$stmtA = "SELECT count(*) FROM vicidial_live_agents where closer_campaigns LIKE \"% $SQL_group_id %\" and last_update_time > '$BDtsSQLdate' $NPsql;";
@@ -1283,9 +1288,9 @@ if ($did_route =~ /PHONE/)
 	### format the remote server dialstring to get the call to the overflow agent meetme room
 	if( $did_server_ip =~ m/(\S+)\.(\S+)\.(\S+)\.(\S+)/ )
 		{
-		$a = leading_zero($1); 
-		$b = leading_zero($2); 
-		$c = leading_zero($3); 
+		$a = leading_zero($1);
+		$b = leading_zero($2);
+		$c = leading_zero($3);
 		$d = leading_zero($4);
 		$ServerString = "$a$S$b$S$c$S$d$S";
 		}
@@ -1301,13 +1306,13 @@ if ($did_route =~ /VOICEMAIL|VMAIL_NO_INST/)
 	### format the remote server dialstring to get the call to the overflow agent meetme room
 	if( $did_server_ip =~ m/(\S+)\.(\S+)\.(\S+)\.(\S+)/ )
 		{
-		$a = leading_zero($1); 
-		$b = leading_zero($2); 
-		$c = leading_zero($3); 
+		$a = leading_zero($1);
+		$b = leading_zero($2);
+		$c = leading_zero($3);
 		$d = leading_zero($4);
 		$ServerString = "$a$S$b$S$c$S$d$S";
 		}
-	if ($did_route =~ /VMAIL_NO_INST/) 
+	if ($did_route =~ /VMAIL_NO_INST/)
 		{$voicemail_dump_exten = $voicemail_dump_exten_no_inst;}
 	$did_extension = "$ServerString$voicemail_dump_exten$voicemail_ext";
 	$did_route = 'EXTEN';
@@ -1335,7 +1340,7 @@ if ($did_route =~ /AGENT/)
 ### QueueMetrics logging if enabled
 if ( ($did_route =~ /EXTEN|CALLMENU/) && ($enable_queuemetrics_logging > 0) )
 	{
-	$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+	$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass", { mysql_enable_utf8 => 1 })
 	 or die "Couldn't connect to database: " . DBI->errstr;
 
 	if ($DBX) {print "CONNECTED TO QueueMetrics DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
@@ -1360,7 +1365,7 @@ if ($did_route =~ /EXTEN/)
 	print "SET PRIORITY 1\n";
 		$result = <STDIN>;
 		checkresult($result);
-	
+
 	exit;
 	}
 
@@ -1378,7 +1383,7 @@ if ($did_route =~ /DID/)
 	print "SET PRIORITY 1\n";
 		$result = <STDIN>;
 		checkresult($result);
-	
+
 	exit;
 	}
 
@@ -1388,7 +1393,7 @@ if ($did_route =~ /CALLMENU/)
 	{
 	if ($enable_queuemetrics_logging > 0)
 		{
-		$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+		$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass", { mysql_enable_utf8 => 1 })
 		 or die "Couldn't connect to database: " . DBI->errstr;
 
 		if ($DBX) {print "CONNECTED TO QM DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
@@ -1409,7 +1414,7 @@ if ($did_route =~ /CALLMENU/)
 	print "SET PRIORITY 1\n";
 		$result = <STDIN>;
 		checkresult($result);
-	
+
 	exit;
 	}
 
@@ -1420,35 +1425,35 @@ if ($did_route =~ /CALLMENU/)
 
 ######### SUBROUTINES #################
 
-sub checkresult 
+sub checkresult
 	{
 	$pass=0;   $fail=0;
 	my ($res) = @_;
 	my $retval;
 	$tests++;
 	chomp $res;
-	if ($res =~ /^200/) 
+	if ($res =~ /^200/)
 		{
 		$res =~ /result=(-?\d+)/;
-		if (!length($1)) 
+		if (!length($1))
 			{
 		#	print STDERR "FAIL ($res)\n";
 			$fail++;
-			} 
-		else 
+			}
+		else
 			{
 		#	print STDERR "PASS ($1)\n";
 			$pass++;
 			}
-		} 
-	else 
+		}
+	else
 		{
 	#	print STDERR "FAIL (unexpected result '$res')\n";
 		$fail++;
 		}
 	}
 
-sub leading_zero($) 
+sub leading_zero($)
 	{
     $_ = $_[0];
     s/^(\d)$/0$1/;

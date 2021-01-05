@@ -1,9 +1,9 @@
 #!/usr/bin/perl
 #
 # cm_fpg.agi version 2.14
-# 
-# Designed to work with Cell Menus to allow the entry of a CID number into a 
-# Filter Phone Group. It is designed to work easily in the Call Menu framework, 
+#
+# Designed to work with Cell Menus to allow the entry of a CID number into a
+# Filter Phone Group. It is designed to work easily in the Call Menu framework,
 # it plays no audio itself, and it has more options.
 #
 # Flag Options:
@@ -81,14 +81,14 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port) {$VARDB_port='3306';}
-if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout";}
-if (!$FPGLOGfile) {$FPGLOGfile = "$PATHlogs/fpgout";}
+if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout.log";}
+if (!$FPGLOGfile) {$FPGLOGfile = "$PATHlogs/fpgout.log";}
 
 use DBI;
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
     or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
@@ -121,7 +121,7 @@ if (length($ARGV[0])>1)
 		if ($AGILOG) {$agi_string = "$i|$ARGV[$i]";   &agi_output;}
 		$i++;
 		}
-	
+
 	### list of command-line array arguments:
 	@ARGV_vars = split(/---/, $ARGV[0]);
 
@@ -134,7 +134,7 @@ if (length($next_step) < 1)
 	{$next_step = 'B';}
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 	{
 	chomp;
 	last unless length($_);
@@ -177,14 +177,14 @@ while(<STDIN>)
 	if (length($pin)>0) {$callerid = $pin;}
 	}
 
-foreach $i (sort keys %AGI) 
+foreach $i (sort keys %AGI)
 	{
 	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
 	}
 
 if ($AGILOG) {$agi_string = "AGI Variables: |$unique_id|$channel|$extension|$type|$callerid|";   &agi_output;}
 
-if (length($cid_override) > 4) 
+if (length($cid_override) > 4)
 	{$phone_number = $cid_override;}
 $phone_number =~ s/\'|\"|\\\\|\\\|\\|\\;|\\\;|\;|;//gi;
 
@@ -197,7 +197,7 @@ $sthArows=$sthA->rows;
 if ($AGILOG) {$agi_string = "$sthArows|$stmtA|";   &agi_output;}
 if ($sthArows > 0)
 	{
-	@aryA = $sthA->fetchrow_array;	
+	@aryA = $sthA->fetchrow_array;
 	$filter_phone_group_name = $aryA[0];
 	}
 else
@@ -207,8 +207,8 @@ else
 	exit;
 	}
 $sthA->finish();
-	
-if (length($phone_number) > 4) 
+
+if (length($phone_number) > 4)
 	{
 	### add the number to the vicidial_filter_phone_numbers table
 	$stmtA = "INSERT IGNORE INTO vicidial_filter_phone_numbers SET phone_number='$phone_number',filter_phone_group_id='$fpg_id';";
@@ -267,27 +267,27 @@ $fpg_string='';
 }
 
 
-sub checkresult 
+sub checkresult
 	{
 	my ($res) = @_;
 	my $retval;
 	$tests++;
 	chomp $res;
-	if ($res =~ /^200/) 
+	if ($res =~ /^200/)
 		{
 		$res =~ /result=(-?\d+)/;
-		if (!length($1)) 
+		if (!length($1))
 			{
 		#	print STDERR "FAIL ($res)\n";
 			$fail++;
-			} 
-		else 
+			}
+		else
 			{
 		#	print STDERR "PASS ($1)\n";
 			$pass++;
 			}
-		} 
-	else 
+		}
+	else
 		{
 	#	print STDERR "FAIL (unexpected result '$res')\n";
 		$fail++;

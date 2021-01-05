@@ -1,12 +1,12 @@
 <?php
 # get2post.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
-# This script is designed to take a url as part of the query string and convert 
+# This script is designed to take a url as part of the query string and convert
 # it to a POST HTTP request and log to the url log table. uniqueid is required!
 #
-# -headers- option allows you to define HTTP headers in the POST, each header separated by 5 dashes, with their values separated by 3 dashes: 
+# -headers- option allows you to define HTTP headers in the POST, each header separated by 5 dashes, with their values separated by 3 dashes:
 #   "headers=HEADERXYZ---XYZvalue-----HEADERABC---ABCvalue"
 #
 # Example Dispo Call URL input:
@@ -169,8 +169,8 @@ if (preg_match("/HTTPURLTOPOST=|HTTPSURLTOPOST=/",$query_string))
 
 		# Close request to clear up some resources
 		curl_close($curl);
-		
-		if ($DB) 
+
+		if ($DB)
 			{
 			echo "|$uniqueid|$type|<br>\n";
 			echo "|$query_string|<br>\n";

@@ -1,7 +1,7 @@
-<?php 
+<?php
 # AST_CLOSERstats_v2.php
-# 
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES:
 # 60619-1714 - Added variable filtering to eliminate SQL injection attack threat
@@ -65,6 +65,8 @@
 # 171012-2015 - Fixed javascript/apache errors with graphs
 # 180323-2307 - Fix for user time calculation, subtracted queue_seconds
 # 180712-1508 - Fix for rare allowed reports issue
+# 190508-1901 - Streamlined DID check to optimize page load
+# 190930-1345 - Fixed PHP7 array issue
 #
 
 $startMS = microtime();
@@ -135,14 +137,14 @@ if (strlen($report_display_type)<2) {$report_display_type = $SSreport_default_fo
 ### ARCHIVED DATA CHECK CONFIGURATION
 $archives_available="N";
 $log_tables_array=array("vicidial_did_log", "vicidial_closer_log", "live_inbound_log");
-for ($t=0; $t<count($log_tables_array); $t++) 
+for ($t=0; $t<count($log_tables_array); $t++)
 	{
 	$table_name=$log_tables_array[$t];
 	$archive_table_name=use_archive_table($table_name);
 	if ($archive_table_name!=$table_name) {$archives_available="Y";}
 	}
 
-if ($search_archived_data) 
+if ($search_archived_data)
 	{
 	$vicidial_did_log_table=use_archive_table("vicidial_did_log");
 	$vicidial_closer_log_table=use_archive_table("vicidial_closer_log");
@@ -314,6 +316,9 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {$MAIN.="$stmt\n";}
 $groups_to_print = mysqli_num_rows($rslt);
 $i=0;
+$LISTgroups=array();
+$LISTgroup_names=array();
+$LISTgroup_ids=array();
 $LISTgroups[$i]='---NONE---';
 $i++;
 $groups_to_print++;
@@ -422,6 +427,9 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {$MAIN.="$stmt\n";}
 $statcats_to_print = mysqli_num_rows($rslt);
 $i=0;
+$vsc_id=array();
+$vsc_name=array();
+$vsc_count=array();
 while ($i < $statcats_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -452,7 +460,7 @@ $HEADER.="<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"verticalbargraph.css\">\n";
 require("chart_button.php");
-$HEADER.="<script src='chart/Chart.js'></script>\n"; 
+$HEADER.="<script src='chart/Chart.js'></script>\n";
 $HEADER.="<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
 $HEADER.="<script language=\"JavaScript\" src=\"wz_jsgraphics.js\"></script>\n";
 $HEADER.="<script language=\"JavaScript\" src=\"line.js\"></script>\n";
@@ -529,10 +537,10 @@ $MAIN.="<SELECT SIZE=5 NAME=group[] multiple>\n";
 $o=0;
 while ($groups_to_print > $o)
 	{
-	if (preg_match("/\|$LISTgroups[$o]\|/",$group_string)) 
-		{$MAIN.="<option selected value=\"$LISTgroups[$o]\">$LISTgroups[$o] - $LISTgroup_names[$o]</option>\n";}
+	if (preg_match("/\|$LISTgroups[$o]\|/",$group_string))
+		{$MAIN.="<option selected value=\"$LISTgroups[$o]\">"._QXZ("$LISTgroups[$o]")." - "._QXZ("$LISTgroup_names[$o]")."</option>\n";}
 	else
-		{$MAIN.="<option value=\"$LISTgroups[$o]\">$LISTgroups[$o] - $LISTgroup_names[$o]</option>\n";}
+		{$MAIN.="<option value=\"$LISTgroups[$o]\">"._QXZ("$LISTgroups[$o]")." - "._QXZ("$LISTgroup_names[$o]")."</option>\n";}
 	$o++;
 	}
 $MAIN.="</SELECT>\n";
@@ -560,9 +568,9 @@ $MAIN.="<TR><TD>\n";
 #	}
 #$MAIN.="</SELECT>\n";
 $MAIN.=_QXZ("Shift/Call time").": <SELECT SIZE=1 NAME=shift>\n";
-$MAIN.="<option selected value=\"$shift\">$shift</option>\n";
+$MAIN.="<option selected value=\"$shift\">"._QXZ("$shift")."</option>\n";
 $MAIN.="<option value=\"\"></option>\n";
-$MAIN.="<option value=\"\">--- Shifts ---</option>\n";
+$MAIN.="<option value=\"\">--- "._QXZ("Shifts")." ---</option>\n";
 $MAIN.="<option value=\"AM\">"._QXZ("AM  (03:45 - 15:15)")."</option>\n";
 $MAIN.="<option value=\"PM\">"._QXZ("PM  (15:15 - 23:15)")."</option>\n";
 $MAIN.="<option value=\"ALL\">"._QXZ("ALL")."</option>\n";
@@ -571,7 +579,7 @@ $call_time_stmt="select call_time_id, call_time_name from vicidial_call_times $w
 $call_time_rslt=mysql_to_mysqli($call_time_stmt, $link);
 if (mysqli_num_rows($call_time_rslt)>0) {
 	$MAIN.="<option value=\"\"></option>\n";
-	$MAIN.="<option value=\"\">--- Call times ---</option>\n";
+	$MAIN.="<option value=\"\">--- "._QXZ("Call times")." ---</option>\n";
 	while ($call_time_row=mysqli_fetch_array($call_time_rslt)) {
 		$MAIN.="<option value=\"".$call_time_row["call_time_id"]."\">".$call_time_row["call_time_name"]."</option>\n";
 	}
@@ -580,9 +588,9 @@ if (mysqli_num_rows($call_time_rslt)>0) {
 $MAIN.="</SELECT>\n";
 $MAIN.="<BR> &nbsp; &nbsp; &nbsp; "._QXZ("Display as").":&nbsp; ";
 $MAIN.="<select name='report_display_type'>";
-if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>$report_display_type</option>";}
+if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
 $MAIN.="<option value='TEXT'>"._QXZ("TEXT")."</option><option value='HTML'>"._QXZ("HTML")."</option></select>\n<BR>";
-if ($archives_available=="Y") 
+if ($archives_available=="Y")
 	{
 	$MAIN.="<input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."<BR><BR>\n";
 	}
@@ -613,7 +621,7 @@ $call_time_ranges=array();
 $ct_stmt="select * from vicidial_call_times where call_time_id='$shift' $LOGadmin_viewable_call_timesSQL;";
 if ($DB) {$MAIN.=$ct_stmt."\n";}
 $ct_rslt=mysql_to_mysqli($ct_stmt, $link);
-if (mysqli_num_rows($ct_rslt)>0) 
+if (mysqli_num_rows($ct_rslt)>0)
 	{
 	$ct_row=mysqli_fetch_array($ct_rslt);
 	$default_time_BEGIN=$ct_row["ct_default_start"];
@@ -830,37 +838,37 @@ if (mysqli_num_rows($ct_rslt)>0)
 			array_push($call_time_ranges, array("7", "$saturday_BEGIN", "$saturday_END"));
 		}
 	}
-	
-	} 
+
+	}
 else
 	{
-	if ($shift == 'AM') 
+	if ($shift == 'AM')
 		{
 		$time_BEGIN=$AM_shift_BEGIN;
 		$time_END=$AM_shift_END;
-		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}   
+		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}
 		if (strlen($time_END) < 6) {$time_END = "15:14:59";}
 		}
-	if ($shift == 'PM') 
+	if ($shift == 'PM')
 		{
 		$time_BEGIN=$PM_shift_BEGIN;
 		$time_END=$PM_shift_END;
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "15:15:00";}
 		if (strlen($time_END) < 6) {$time_END = "23:15:00";}
 		}
-	if ($shift == 'ALL') 
+	if ($shift == 'ALL')
 		{
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}
 		if (strlen($time_END) < 6) {$time_END = "23:59:59";}
 		}
 	#  CREATE CALL TIME ARRAYS
-	for ($i=1; $i<=7; $i++) 
+	for ($i=1; $i<=7; $i++)
 		{
 		array_push($call_time_ranges, array("$i", "$time_BEGIN", "$time_END"));
 		}
 
 	}
-$query_date_BEGIN = "$query_date $time_BEGIN";   
+$query_date_BEGIN = "$query_date $time_BEGIN";
 $query_date_END = "$end_date $time_END";
 
 # GENERATE CALL TIME CLAUSE - GET MAX/MIN TIMES FOR GRAPH
@@ -894,12 +902,12 @@ $first_shift_record=(4*$time_BEGIN_array[0])+(ceil($time_BEGIN_array[1]/15));
 $time_END_array=explode(":", $max_graph_end_time);
 $last_shift_record=(4*$time_END_array[0])+(ceil($time_END_array[1]/15));
 
-if ($CHAT=='Y') 
+if ($CHAT=='Y')
 	{
 	$MAIN.=_QXZ("Inbound Chat Stats").": $group_string          $NOW_TIME        <a href=\"$PHP_SELF?DB=$DB&DID=$DID&CHAT=Y&query_date=$query_date&end_date=$end_date$groupQS&shift=$shift&SUBMIT=$SUBMIT&file_download=1&search_archived_data=$search_archived_data\">"._QXZ("DOWNLOAD")."</a>\n";
 	$CSV_text1.="\""._QXZ("Inbound Chat Stats").":\",\"$group_string\",\"$NOW_TIME\"\n";
 	}
-elseif ($EMAIL=='Y') 
+elseif ($EMAIL=='Y')
 	{
 	$MAIN.=_QXZ("Inbound Email Stats").": $group_string          $NOW_TIME        <a href=\"$PHP_SELF?DB=$DB&DID=$DID&EMAIL=Y&query_date=$query_date&end_date=$end_date$groupQS&shift=$shift&SUBMIT=$SUBMIT&file_download=1&search_archived_data=$search_archived_data\">"._QXZ("DOWNLOAD")."</a>\n";
 	$CSV_text1.="\""._QXZ("Inbound Email Stats").":\",\"$group_string\",\"$NOW_TIME\"\n";
@@ -911,7 +919,7 @@ else
 	}
 
 
-
+$did_id=array();
 if ($DID=='Y')
 	{
 	$stmt="select did_id from vicidial_inbound_dids where did_pattern IN($group_SQL) $LOGadmin_viewable_groupsSQL;";
@@ -927,19 +935,22 @@ if ($DID=='Y')
 		$i++;
 		}
 	$did_SQL = preg_replace('/,$/i', '',$did_SQL);
-	if (strlen($did_SQL)<3) {$did_SQL="''";}
 
-	$stmt="select uniqueid from ".$vicidial_did_log_table." where did_id IN($did_SQL);";
-	$rslt=mysql_to_mysqli($stmt, $link);
-	if ($DB) {$MAIN.="$stmt\n";}
-	$unids_to_print = mysqli_num_rows($rslt);
-	$i=0;
-	while ($i < $unids_to_print)
+	if ($dids_to_print>0)
 		{
-		$row=mysqli_fetch_row($rslt);
-		$unid_SQL .= "'$row[0]',";
-		$i++;
+		$stmt="select uniqueid from ".$vicidial_did_log_table." where did_id IN($did_SQL);";
+		$rslt=mysql_to_mysqli($stmt, $link);
+		if ($DB) {$MAIN.="$stmt\n";}
+		$unids_to_print = mysqli_num_rows($rslt);
+		$i=0;
+		while ($i < $unids_to_print)
+			{
+			$row=mysqli_fetch_row($rslt);
+			$unid_SQL .= "'$row[0]',";
+			$i++;
+			}
 		}
+
 	$unid_SQL = preg_replace('/,$/i', '',$unid_SQL);
 	if (strlen($unid_SQL)<3) {$unid_SQL="''";}
 
@@ -948,6 +959,7 @@ if ($DID=='Y')
 
 	}
 
+$graph_data_ary=array();
 if ($group_ct > 1)
 	{
 	$ASCII_text.="\n";
@@ -987,31 +999,34 @@ if ($group_ct > 1)
 	$i=0;
 	while($i < $group_ct)
 		{
-		$did_id[$i]='0';
-		$DIDunid_SQL='';
-		$stmt="select did_id from vicidial_inbound_dids where did_pattern='$group[$i]';";
-		$rslt=mysql_to_mysqli($stmt, $link);
-		if ($DB) {$ASCII_text.="$stmt\n";}
-		$Sdids_to_print = mysqli_num_rows($rslt);
-		if ($Sdids_to_print > 0)
+		if ($DID=='Y')
 			{
-			$row=mysqli_fetch_row($rslt);
-			$did_id[$i] = $row[0];
-			}
+			$did_id[$i]='0';
+			$DIDunid_SQL='';
+			$stmt="select did_id from vicidial_inbound_dids where did_pattern='$group[$i]';";
+			$rslt=mysql_to_mysqli($stmt, $link);
+			if ($DB) {$ASCII_text.="$stmt\n";}
+			$Sdids_to_print = mysqli_num_rows($rslt);
+			if ($Sdids_to_print > 0)
+				{
+				$row=mysqli_fetch_row($rslt);
+				$did_id[$i] = $row[0];
 
-		$stmt="select uniqueid from ".$vicidial_did_log_table." where did_id='$did_id[$i]';";
-		$rslt=mysql_to_mysqli($stmt, $link);
-		if ($DB) {$ASCII_text.="$stmt\n";}
-		$DIDunids_to_print = mysqli_num_rows($rslt);
-		$k=0;
-		while ($k < $DIDunids_to_print)
-			{
-			$row=mysqli_fetch_row($rslt);
-			$DIDunid_SQL .= "'$row[0]',";
-			$k++;
+				$stmt="select uniqueid from ".$vicidial_did_log_table." where did_id='$did_id[$i]';";
+				$rslt=mysql_to_mysqli($stmt, $link);
+				if ($DB) {$ASCII_text.="$stmt\n";}
+				$DIDunids_to_print = mysqli_num_rows($rslt);
+				$k=0;
+				while ($k < $DIDunids_to_print)
+					{
+					$row=mysqli_fetch_row($rslt);
+					$DIDunid_SQL .= "'$row[0]',";
+					$k++;
+					}
+				}
+			$DIDunid_SQL = preg_replace('/,$/i', '',$DIDunid_SQL);
+			if (strlen($DIDunid_SQL)<3) {$DIDunid_SQL="''";}
 			}
-		$DIDunid_SQL = preg_replace('/,$/i', '',$DIDunid_SQL);
-		if (strlen($DIDunid_SQL)<3) {$DIDunid_SQL="''";}
 
 		$stmt="select count(*),sum(length_in_sec) from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and campaign_id='$group[$i]';";
 		if ($DID=='Y')
@@ -1079,7 +1094,7 @@ if ($group_ct > 1)
 		$GRAPH_text.="<table cellspacing='0' cellpadding='0'><caption align='top'>"._QXZ("MULTI-GROUP BREAKDOWN")."</caption><tr height='25' valign='top'><th class='thgraph' scope='col'>"._QXZ("GROUP")."</th><th class='thgraph' scope='col'>"._QXZ("IVRS")." <img src='./images/bar_green.png' width='10' height='10'> / "._QXZ("DROPS")." <img src='./images/bar_blue.png' width='10' height='10'> / "._QXZ("CALLS")." <img src='./images/bar.png' width='10' height='10'></th></tr>";
 		for ($d=0; $d<count($graph_data_ary); $d++) {
 			if (strlen(trim($graph_data_ary[$d][0]))>0) {
-				$graph_data_ary[$d][0]=preg_replace('/\s/', "", $graph_data_ary[$d][0]); 
+				$graph_data_ary[$d][0]=preg_replace('/\s/', "", $graph_data_ary[$d][0]);
 				$GRAPH_text.="  <tr><td class='chart_td' width='50'>".$graph_data_ary[$d][0]."<BR>".$graph_data_ary[$d][3]."% drops<BR>&nbsp;</td><td nowrap class='chart_td value' width='600' valign='top'>\n";
 				if ($graph_data_ary[$d][1]>0) {
 					$GRAPH_text.="<ul class='overlap_barGraph'><li class=\"p1\" style=\"height: 12px; left: 0px; width: ".round(MathZDC(600*$graph_data_ary[$d][1], $max_value))."px\"><font style='background-color: #900'>".$graph_data_ary[$d][1]."</font></li>";
@@ -1101,7 +1116,7 @@ if ($group_ct > 1)
 
 		$MAIN.=$GRAPH_text;
 		}
-	else 
+	else
 		{
 		$MAIN.=$ASCII_text;
 		}
@@ -1331,6 +1346,12 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {$MAIN.="$stmt\n";}
 $statuses_to_print = mysqli_num_rows($rslt);
 $p=0;
+$status=array();
+$status_name=array();
+$human_answered=array();
+$category=array();
+$statname_list=array();
+$statcat_list=array();
 while ($p < $statuses_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -1409,7 +1430,7 @@ elseif ($EMAIL=='Y')
 	$CSV_text1.="\""._QXZ("Average QUEUE Length for queue emails").":\",\"$average_queue_seconds "._QXZ("seconds")."\"\n";
 	$CSV_text1.="\""._QXZ("Average QUEUE Length across all emails").":\",\"$average_total_queue_seconds "._QXZ("seconds")."\"\n";
 	}
-else 
+else
 	{
 	$MAIN.=_QXZ("Total Calls That entered Queue:",46)." $QUEUEcalls  $QUEUEpercent%\n";
 	$MAIN.=_QXZ("Average QUEUE Length for queue calls:",46)." $average_queue_seconds "._QXZ("seconds")."\n";
@@ -1420,17 +1441,17 @@ else
 	$CSV_text1.="\""._QXZ("Average QUEUE Length across all calls").":\",\"$average_total_queue_seconds "._QXZ("seconds")."\"\n";
 	}
 
-if ($CHAT=='Y') 
+if ($CHAT=='Y')
 	{
 	$rpt_type_verbiage=_QXZ("CHAT",6);
 	$rpt_type_verbiages=_QXZ("CHATS",6);
-	} 
-elseif ($EMAIL=='Y') 
+	}
+elseif ($EMAIL=='Y')
 	{
 	$rpt_type_verbiage=_QXZ("EMAIL",6);
 	$rpt_type_verbiages=_QXZ("EMAILS",6);
-	} 
-else 
+	}
+else
 	{
 	$rpt_type_verbiage=_QXZ("CALL",6);
 	$rpt_type_verbiages=_QXZ("CALLS",6);
@@ -1444,7 +1465,7 @@ $TOTALcalls = 0;
 $ASCII_text="\n";
 $ASCII_text.="---------- $rpt_type_verbiage "._QXZ("HOLD TIME BREAKDOWN IN SECONDS",36)." <a href=\"$PHP_SELF?DB=$DB&DID=$DID&query_date=$query_date&end_date=$end_date$groupQS&shift=$shift&SUBMIT=$SUBMIT&file_download=2&search_archived_data=$search_archived_data\">"._QXZ("DOWNLOAD")."</a>\n";
 $ASCII_text.="+-------------------------------------------------------------------------------------------+------------+\n";
-$ASCII_text.="|     0     5    10    15    20    25    30    35    40    45    50    55    60    90   +90 | TOTAL      |\n";
+$ASCII_text.="|     0     5    10    15    20    25    30    35    40    45    50    55    60    90   +90 | "._QXZ("TOTAL", 10)." |\n";
 $ASCII_text.="+-------------------------------------------------------------------------------------------+------------+\n";
 
 $CSV_text2.="\n\"$rpt_type_verbiage "._QXZ("HOLD TIME BREAKDOWN IN SECONDS")."\"\n";
@@ -1511,13 +1532,14 @@ $CSV_text2.="\"\",\"$hd_0\",\"$hd_5\",\"$hd10\",\"$hd15\",\"$hd20\",\"$hd25\",\"
 
 
 if ($report_display_type=="HTML") {
+	$graph_stats=array();
 	$stmt="select count(*),round(queue_seconds) as rd_sec from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and campaign_id IN($group_SQL) group by rd_sec order by rd_sec asc;";
-	$ms_stmt="select queue_seconds from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and campaign_id IN($group_SQL) order by queue_seconds desc limit 1;"; 
+	$ms_stmt="select queue_seconds from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and campaign_id IN($group_SQL) order by queue_seconds desc limit 1;";
 	$mc_stmt="select count(*) as ct from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and  campaign_id IN($group_SQL) group by queue_seconds order by ct desc limit 1;";
 	if ($DID=='Y')
 		{
 		$stmt="select count(*),round(queue_seconds) as rd_sec from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and uniqueid IN($unid_SQL) group by rd_sec;";
-		$ms_stmt="select queue_seconds from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and uniqueid IN($unid_SQL) order by queue_seconds desc limit 1;"; 
+		$ms_stmt="select queue_seconds from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and uniqueid IN($unid_SQL) order by queue_seconds desc limit 1;";
 		$mc_stmt="select count(*) as ct from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and uniqueid IN($unid_SQL) group by queue_seconds order by ct desc limit 1;";
 		}
 	if ($DB) {$GRAPH_text.=$stmt."\n";}
@@ -1559,7 +1581,7 @@ if ($report_display_type=="HTML") {
 		}
 	}
 	$sec_ary[91]=$over90;
-	
+
 	for ($i=0; $i<=$max_seconds; $i++) {
 		if ($i<=90) {
 			if ($i%5==0) {$int=$i;} else {$int="";}
@@ -1571,17 +1593,17 @@ if ($report_display_type=="HTML") {
 		}
 	}
 
-	$GRAPH_text="";	
+	$GRAPH_text="";
 	#########
 	$graph_array=array("ACS_QUEUEseconds|||integer|");
 	$graph_id++;
 	$default_graph="line"; # Graph that is initally displayed when page loads
-	include("graph_color_schemas.inc"); 
+	include("graph_color_schemas.inc");
 
 	$graph_totals_array=array();
 	$graph_totals_rawdata=array();
 	for ($q=0; $q<count($graph_array); $q++) {
-		$graph_info=explode("|", $graph_array[$q]); 
+		$graph_info=explode("|", $graph_array[$q]);
 		$current_graph_total=0;
 		$dataset_name=$graph_info[0];
 		$dataset_index=$graph_info[1];
@@ -1611,13 +1633,13 @@ if ($report_display_type=="HTML") {
 			$graphConstantsA.="\"$bgcolor\",";
 			$graphConstantsB.="\"$hbgcolor\",";
 			$graphConstantsC.="\"$hbcolor\",";
-		}	
+		}
 		$graphConstantsA.="],\n";
 		$graphConstantsB.="],\n";
 		$graphConstantsC.="],\n";
 		$labels=preg_replace('/,$/', '', $labels)."],\n";
 		$data=preg_replace('/,$/', '', $data)."],\n";
-		
+
 		$graph_totals_rawdata[$q]=$current_graph_total;
 		switch($dataset_type) {
 			case "time":
@@ -1655,7 +1677,7 @@ if ($report_display_type=="HTML") {
 
 	$MAIN.=$GRAPH_text;
 	}
-else 
+else
 	{
 	$MAIN.=$ASCII_text;
 	}
@@ -1737,12 +1759,12 @@ $CSV_text2.="\"\",\"$dd_0\",\"$dd_5\",\"$dd10\",\"$dd15\",\"$dd20\",\"$dd25\",\"
 if ($report_display_type=="HTML") {
 	$graph_stats=array();
 	$stmt="select count(*),round(queue_seconds) as rd_sec from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and campaign_id IN($group_SQL) and status IN('DROP','XDROP') group by rd_sec order by rd_sec asc;";
-	$ms_stmt="select queue_seconds from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and campaign_id IN($group_SQL) and status IN('DROP','XDROP') order by queue_seconds desc limit 1;"; 
+	$ms_stmt="select queue_seconds from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and campaign_id IN($group_SQL) and status IN('DROP','XDROP') order by queue_seconds desc limit 1;";
 	$mc_stmt="select count(*) as ct from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and  campaign_id IN($group_SQL) and status IN('DROP','XDROP') group by queue_seconds order by ct desc limit 1;";
 	if ($DID=='Y')
 		{
 		$stmt="select count(*),round(queue_seconds) as rd_sec from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and uniqueid IN($unid_SQL) and status IN('DROP','XDROP') group by rd_sec;";
-		$ms_stmt="select queue_seconds from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and uniqueid IN($unid_SQL) and status IN('DROP','XDROP') order by queue_seconds desc limit 1;"; 
+		$ms_stmt="select queue_seconds from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and uniqueid IN($unid_SQL) and status IN('DROP','XDROP') order by queue_seconds desc limit 1;";
 		$mc_stmt="select count(*) as ct from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and uniqueid IN($unid_SQL) and status IN('DROP','XDROP') group by queue_seconds order by ct desc limit 1;";
 		}
 	if ($DB) {$GRAPH_text.=$stmt."\n";}
@@ -1784,7 +1806,7 @@ if ($report_display_type=="HTML") {
 		}
 	}
 	$sec_ary[91]=$over90;
-	
+
 	for ($i=0; $i<=$max_seconds; $i++) {
 		if ($i<=90) {
 			if ($i%5==0) {$int=$i;} else {$int="";}
@@ -1796,17 +1818,17 @@ if ($report_display_type=="HTML") {
 		}
 	}
 
-	$GRAPH_text="";	
+	$GRAPH_text="";
 	#########
 	$graph_array=array("ACS_DROPTIMEBREAKDOWNseconds|||integer|");
 	$graph_id++;
 	$default_graph="line"; # Graph that is initally displayed when page loads
-	include("graph_color_schemas.inc"); 
+	include("graph_color_schemas.inc");
 
 	$graph_totals_array=array();
 	$graph_totals_rawdata=array();
 	for ($q=0; $q<count($graph_array); $q++) {
-		$graph_info=explode("|", $graph_array[$q]); 
+		$graph_info=explode("|", $graph_array[$q]);
 		$current_graph_total=0;
 		$dataset_name=$graph_info[0];
 		$dataset_index=$graph_info[1];
@@ -1836,13 +1858,13 @@ if ($report_display_type=="HTML") {
 			$graphConstantsA.="\"$bgcolor\",";
 			$graphConstantsB.="\"$hbgcolor\",";
 			$graphConstantsC.="\"$hbcolor\",";
-		}	
+		}
 		$graphConstantsA.="],\n";
 		$graphConstantsB.="],\n";
 		$graphConstantsC.="],\n";
 		$labels=preg_replace('/,$/', '', $labels)."],\n";
 		$data=preg_replace('/,$/', '', $data)."],\n";
-		
+
 		$graph_totals_rawdata[$q]=$current_graph_total;
 		switch($dataset_type) {
 			case "time":
@@ -1915,7 +1937,7 @@ while ($i < $reasons_to_print)
 	$row=mysqli_fetch_row($rslt);
 
 	$BDansweredCALLS = ($BDansweredCALLS + $row[0]);
-	
+
 	### Get interval totals
 	if ($row[1] == 0) {$ad_0 = ($ad_0 + $row[0]);}
 	if ( ($row[1] > 0) and ($row[1] <= 5) ) {$ad_5 = ($ad_5 + $row[0]);}
@@ -1953,8 +1975,8 @@ $Cad90 =($Cad60 + $ad90);
 $Cad99 =($Cad90 + $ad99);
 
 ### Calculate interval percentages
-$pad_0=0; $pad_5=0; $pad10=0; $pad15=0; $pad20=0; $pad25=0; $pad30=0; $pad35=0; $pad40=0; $pad45=0; $pad50=0; $pad55=0; $pad60=0; $pad90=0; $pad99=0; 
-$pCad_0=0; $pCad_5=0; $pCad10=0; $pCad15=0; $pCad20=0; $pCad25=0; $pCad30=0; $pCad35=0; $pCad40=0; $pCad45=0; $pCad50=0; $pCad55=0; $pCad60=0; $pCad90=0; $pCad99=0; 
+$pad_0=0; $pad_5=0; $pad10=0; $pad15=0; $pad20=0; $pad25=0; $pad30=0; $pad35=0; $pad40=0; $pad45=0; $pad50=0; $pad55=0; $pad60=0; $pad90=0; $pad99=0;
+$pCad_0=0; $pCad_5=0; $pCad10=0; $pCad15=0; $pCad20=0; $pCad25=0; $pCad30=0; $pCad35=0; $pCad40=0; $pCad45=0; $pCad50=0; $pCad55=0; $pCad60=0; $pCad90=0; $pCad99=0;
 if ( ($BDansweredCALLS > 0) and ($TOTALcalls > 0) )
 	{
 	$pad_0 = (MathZDC($ad_0, $TOTALcalls) * 100);	$pad_0 = round($pad_0, 0);
@@ -2107,13 +2129,14 @@ $CSV_text2.="\""._QXZ("CUM ANS")." %\",\"$ApCad_0\",\"$ApCad_5\",\"$ApCad10\",\"
 
 if ($report_display_type=="HTML") {
 	$graph_stats=array();
+	$sec_ary=array();
 	$stmt="select count(*),round(queue_seconds) as rd_sec from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and campaign_id IN($group_SQL) and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE','TIMEOT','AFTHRS','NANQUE','INBND','MAXCAL') group by rd_sec order by rd_sec asc;";
-	$ms_stmt="select queue_seconds from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and campaign_id IN($group_SQL) and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE','TIMEOT','AFTHRS','NANQUE','INBND','MAXCAL') order by queue_seconds desc limit 1;"; 
+	$ms_stmt="select queue_seconds from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and campaign_id IN($group_SQL) and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE','TIMEOT','AFTHRS','NANQUE','INBND','MAXCAL') order by queue_seconds desc limit 1;";
 	$mc_stmt="select count(*) as ct from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and  campaign_id IN($group_SQL) and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE','TIMEOT','AFTHRS','NANQUE','INBND','MAXCAL') group by queue_seconds order by ct desc limit 1;";
 	if ($DID=='Y')
 		{
 		$stmt="select count(*),round(queue_seconds) as rd_sec from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and uniqueid IN($unid_SQL) and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE','TIMEOT','AFTHRS','NANQUE','INBND','MAXCAL') group by rd_sec;";
-		$ms_stmt="select queue_seconds from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and uniqueid IN($unid_SQL) and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE','TIMEOT','AFTHRS','NANQUE','INBND','MAXCAL') order by queue_seconds desc limit 1;"; 
+		$ms_stmt="select queue_seconds from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and uniqueid IN($unid_SQL) and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE','TIMEOT','AFTHRS','NANQUE','INBND','MAXCAL') order by queue_seconds desc limit 1;";
 		$mc_stmt="select count(*) as ct from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and uniqueid IN($unid_SQL) and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE','TIMEOT','AFTHRS','NANQUE','INBND','MAXCAL') group by queue_seconds order by ct desc limit 1;";
 		}
 	if ($DB) {$GRAPH_text.=$stmt."\n";}
@@ -2156,7 +2179,7 @@ if ($report_display_type=="HTML") {
 		}
 	}
 	$sec_ary[91]=$over90;
-	
+
 	for ($i=0; $i<=$max_seconds; $i++) {
 		if ($i<=90) {
 			if ($i%5==0) {$int=$i;} else {$int="";}
@@ -2168,20 +2191,20 @@ if ($report_display_type=="HTML") {
 		}
 	}
 
-	$GRAPH_text="";	
+	$GRAPH_text="";
 	#########
 	$graph_array=array("ACS_CATBdata|||integer|");
 	$graph_id++;
 	$default_graph="bar"; # Graph that is initally displayed when page loads
-	include("graph_color_schemas.inc"); 
+	include("graph_color_schemas.inc");
 
 	$graph_totals_array=array();
 	$graph_totals_rawdata=array();
 	for ($q=0; $q<count($graph_array); $q++) {
-		$graph_info=explode("|", $graph_array[$q]); 
+		$graph_info=explode("|", $graph_array[$q]);
 		$current_graph_total=0;
 		$dataset_name=$graph_info[0];
-		$dataset_index=$graph_info[1]; 
+		$dataset_index=$graph_info[1];
 		$dataset_type=$graph_info[3];
 		if ($q==0) {$preload_dataset=$dataset_name;}  # Used below to load initial graph
 
@@ -2208,13 +2231,13 @@ if ($report_display_type=="HTML") {
 			$graphConstantsA.="\"$bgcolor\",";
 			$graphConstantsB.="\"$hbgcolor\",";
 			$graphConstantsC.="\"$hbcolor\",";
-		}	
+		}
 		$graphConstantsA.="],\n";
 		$graphConstantsB.="],\n";
 		$graphConstantsC.="],\n";
 		$labels=preg_replace('/,$/', '', $labels)."],\n";
 		$data=preg_replace('/,$/', '', $data)."],\n";
-		
+
 		$graph_totals_rawdata[$q]=$current_graph_total;
 		switch($dataset_type) {
 			case "time":
@@ -2305,7 +2328,7 @@ $ASCII_text.="+----------------------+------------+\n";
 
 $CSV_text3.="\""._QXZ("TOTAL").":\",\"$TOTALcalls\"\n";
 
-if ($report_display_type=="HTML") 
+if ($report_display_type=="HTML")
 	{
 	$graph_stats=array();
 	$rslt=mysql_to_mysqli($stmt, $link);
@@ -2317,20 +2340,20 @@ if ($report_display_type=="HTML")
 		$i++;
 	}
 
-	$GRAPH_text="";	
+	$GRAPH_text="";
 	#########
 	$graph_array=array("ACS_HANGUPREASONdata||HANGUP REASON STATS|integer|");
 	$graph_id++;
 	$default_graph="bar"; # Graph that is initally displayed when page loads
-	include("graph_color_schemas.inc"); 
+	include("graph_color_schemas.inc");
 
 	$graph_totals_array=array();
 	$graph_totals_rawdata=array();
 	for ($q=0; $q<count($graph_array); $q++) {
-		$graph_info=explode("|", $graph_array[$q]); 
+		$graph_info=explode("|", $graph_array[$q]);
 		$current_graph_total=0;
 		$dataset_name=$graph_info[0];
-		$dataset_index=$graph_info[1]; 
+		$dataset_index=$graph_info[1];
 		$dataset_type=$graph_info[3];
 		if ($q==0) {$preload_dataset=$dataset_name;}  # Used below to load initial graph
 
@@ -2357,13 +2380,13 @@ if ($report_display_type=="HTML")
 			$graphConstantsA.="\"$bgcolor\",";
 			$graphConstantsB.="\"$hbgcolor\",";
 			$graphConstantsC.="\"$hbcolor\",";
-		}	
+		}
 		$graphConstantsA.="],\n";
 		$graphConstantsB.="],\n";
 		$graphConstantsC.="],\n";
 		$labels=preg_replace('/,$/', '', $labels)."],\n";
 		$data=preg_replace('/,$/', '', $data)."],\n";
-		
+
 		$graph_totals_rawdata[$q]=$current_graph_total;
 		switch($dataset_type) {
 			case "time":
@@ -2437,6 +2460,7 @@ $max_calls=1;
 $max_total_time=1;
 $max_avg_time=1;
 $max_callshr=1;
+$graph_stats=array();
 ###########################
 
 while ($i < $statuses_to_print)
@@ -2459,9 +2483,9 @@ while ($i < $statuses_to_print)
 	$STATUSrate =	(MathZDC($STATUScount, MathZDC($TOTALsec, 3600)) );
 	$STATUSrate =	sprintf("%.2f", $STATUSrate);
 
-	$STATUShours =		sec_convert($row[2],'H'); 
-	$STATUSavg_sec =	MathZDC($row[2], $STATUScount); 
-	$STATUSavg =		sec_convert($STATUSavg_sec,'H'); 
+	$STATUShours =		sec_convert($row[2],'H');
+	$STATUSavg_sec =	MathZDC($row[2], $STATUScount);
+	$STATUSavg =		sec_convert($STATUSavg_sec,'H');
 
 	if ($row[0]>$max_calls) {$max_calls=$row[0];}
 	if ($row[2]>$max_total_time) {$max_total_time=$row[2];}
@@ -2481,17 +2505,17 @@ while ($i < $statuses_to_print)
 
 	if ($non_latin < 1)
 		{
-		$status_name =	sprintf("%-20s", $statname_list[$RAWstatus]); 
-		while(strlen($status_name)>20) {$status_name = substr("$status_name", 0, -1);}	
-		$statcat =	sprintf("%-20s", $statcat_list[$RAWstatus]); 
-		while(strlen($statcat)>20) {$statcat = substr("$statcat", 0, -1);}	
+		$status_name =	sprintf("%-20s", $statname_list[$RAWstatus]);
+		while(strlen($status_name)>20) {$status_name = substr("$status_name", 0, -1);}
+		$statcat =	sprintf("%-20s", $statcat_list[$RAWstatus]);
+		while(strlen($statcat)>20) {$statcat = substr("$statcat", 0, -1);}
 		}
 	else
 		{
-		$status_name =	sprintf("%-60s", $statname_list[$RAWstatus]); 
-		while(mb_strlen($status_name,'utf-8')>20) {$status_name = mb_substr("$status_name", 0, -1,'utf-8');}	
-		$statcat =	sprintf("%-60s", $statcat_list[$RAWstatus]); 
-		while(mb_strlen($statcat,'utf-8')>20) {$statcat = mb_substr("$statcat", 0, -1,'utf-8');}	
+		$status_name =	sprintf("%-60s", $statname_list[$RAWstatus]);
+		while(mb_strlen($status_name,'utf-8')>20) {$status_name = mb_substr("$status_name", 0, -1,'utf-8');}
+		$statcat =	sprintf("%-60s", $statcat_list[$RAWstatus]);
+		while(mb_strlen($statcat,'utf-8')>20) {$statcat = mb_substr("$statcat", 0, -1,'utf-8');}
 		}
 	$graph_stats[$i][0]="$status - $status_name - $statcat";
 
@@ -2513,9 +2537,9 @@ else
 	$TOTALrate =	MathZDC($TOTALcalls, MathZDC($TOTALsec, 3600) );
 	$TOTALrate =	sprintf("%.2f", $TOTALrate);
 
-	$TOTALhours =		sec_convert($TOTALsec,'H'); 
+	$TOTALhours =		sec_convert($TOTALsec,'H');
 	$TOTALavg_sec =		MathZDC($TOTALsec, $TOTALcalls);
-	$TOTALavg =			sec_convert($TOTALavg_sec,'H'); 
+	$TOTALavg =			sec_convert($TOTALavg_sec,'H');
 	}
 $TOTALcalls =	sprintf("%10s", $TOTALcalls);
 $TOTALhours =	sprintf("%10s", $TOTALhours);while(strlen($TOTALhours)>10) {$TOTALhours = substr("$TOTALhours", 0, -1);}
@@ -2528,21 +2552,21 @@ $ASCII_text.="+------------------------------------------------------+----------
 
 #######
 
-	$GRAPH_text="";	
+	$GRAPH_text="";
 	# USE THIS FOR multiple graphs, use pipe-delimited array elements, dataset_name|index|link_name
 	$multigraph_text="";
 	$graph_id++;
 	$graph_array=array("ACS_CSSCALLSdata|1|CALLS|integer|", "ACS_CSSTOTALTIMEdata|2|TOTAL TIME|time|", "ACS_CSSAVGTIMEdata|3|AVERAGE TIME|time|", "ACS_CSSCALLSHRdata|4|CALLS/HR|decimal|");
 	$default_graph="bar"; # Graph that is initally displayed when page loads
-	include("graph_color_schemas.inc"); 
+	include("graph_color_schemas.inc");
 
 	$graph_totals_array=array();
 	$graph_totals_rawdata=array();
 	for ($q=0; $q<count($graph_array); $q++) {
-		$graph_info=explode("|", $graph_array[$q]); 
+		$graph_info=explode("|", $graph_array[$q]);
 		$current_graph_total=0;
 		$dataset_name=$graph_info[0];
-		$dataset_index=$graph_info[1]; 
+		$dataset_index=$graph_info[1];
 		$dataset_type=$graph_info[3];
 
 		$JS_text.="var $dataset_name = {\n";
@@ -2568,13 +2592,13 @@ $ASCII_text.="+------------------------------------------------------+----------
 			$graphConstantsA.="\"$bgcolor\",";
 			$graphConstantsB.="\"$hbgcolor\",";
 			$graphConstantsC.="\"$hbcolor\",";
-		}	
+		}
 		$graphConstantsA=preg_replace('/,$/', '', $graphConstantsA)."],\n";
 		$graphConstantsB=preg_replace('/,$/', '', $graphConstantsB)."],\n";
 		$graphConstantsC=preg_replace('/,$/', '', $graphConstantsC)."],\n";
 		$labels=preg_replace('/,$/', '', $labels)."],\n";
 		$data=preg_replace('/,$/', '', $data)."],\n";
-		
+
 		$graph_totals_rawdata[$q]=$current_graph_total;
 		switch($dataset_type) {
 			case "time":
@@ -2662,7 +2686,7 @@ $ASCII_text.="+----------------------+------------+\n";
 
 $CSV_text5.="\""._QXZ("TOTAL")."\",\"$TOTCATcalls\"\n";
 
-if ($report_display_type=="HTML") 
+if ($report_display_type=="HTML")
 	{
 	$graph_stats=array();
 	$r=0; $i=0;
@@ -2678,22 +2702,22 @@ if ($report_display_type=="HTML")
 		}
 		$r++;
 	}
-	
-	$GRAPH_text="";	
+
+	$GRAPH_text="";
 	#########
 	$graph_array=array("ACS_CSCSdata||CUSTOM STATUS CATEGORY STATS|integer|");
 	$graph_id++;
 	$default_graph="bar"; # Graph that is initally displayed when page loads
-	include("graph_color_schemas.inc"); 
+	include("graph_color_schemas.inc");
 
 	$graph_totals_array=array();
 	$graph_totals_rawdata=array();
 	for ($q=0; $q<count($graph_array); $q++) {
-		$graph_info=explode("|", $graph_array[$q]); 
+		$graph_info=explode("|", $graph_array[$q]);
 		$current_graph_total=0;
 		$dataset_name=$graph_info[0];
-		$dataset_index=$graph_info[1]; 
-		$graph_title=$graph_info[2]; 
+		$dataset_index=$graph_info[1];
+		$graph_title=$graph_info[2];
 		$dataset_type=$graph_info[3];
 		if ($q==0) {$preload_dataset=$dataset_name;}  # Used below to load initial graph
 
@@ -2720,13 +2744,13 @@ if ($report_display_type=="HTML")
 			$graphConstantsA.="\"$bgcolor\",";
 			$graphConstantsB.="\"$hbgcolor\",";
 			$graphConstantsC.="\"$hbcolor\",";
-		}	
+		}
 		$graphConstantsA.="],\n";
 		$graphConstantsB.="],\n";
 		$graphConstantsC.="],\n";
 		$labels=preg_replace('/,$/', '', $labels)."],\n";
 		$data=preg_replace('/,$/', '', $data)."],\n";
-		
+
 		$graph_totals_rawdata[$q]=$current_graph_total;
 		switch($dataset_type) {
 			case "time":
@@ -2763,7 +2787,7 @@ if ($report_display_type=="HTML")
 
 	$MAIN.=$GRAPH_text;
 	}
-else 
+else
 	{
 	$MAIN.=$ASCII_text;
 	}
@@ -2838,16 +2862,17 @@ $ASCII_text.="+-----------------------------------------------------------------
 
 $CSV_text6.="\"\",\"$qp_1\",\"$qp_2\",\"$qp_3\",\"$qp_4\",\"$qp_5\",\"$qp_6\",\"$qp_7\",\"$qp_8\",\"$qp_9\",\"$qp10\",\"$qp15\",\"$qp20\",\"$qp25\",\"$qp99\",\"$TOTALcalls\"\n";
 
-if ($report_display_type=="HTML") 
+if ($report_display_type=="HTML")
 	{
 	$graph_stats=array();
+	$queue_position=array();
 	$stmt="select count(*),queue_position as qp from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and campaign_id IN($group_SQL) group by qp order by qp asc;";
-	$ms_stmt="select queue_position from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and campaign_id IN($group_SQL) order by queue_position desc limit 1;"; 
+	$ms_stmt="select queue_position from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and campaign_id IN($group_SQL) order by queue_position desc limit 1;";
 	$mc_stmt="select count(*) as ct from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and campaign_id IN($group_SQL) group by queue_position order by ct desc limit 1;";
 	if ($DID=='Y')
 		{
 		$stmt="select count(*),queue_position as qp from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and uniqueid IN($unid_SQL) group by qp order by qp asc;";
-		$ms_stmt="select queue_position from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and uniqueid IN($unid_SQL) order by queue_position desc limit 1;"; 
+		$ms_stmt="select queue_position from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and uniqueid IN($unid_SQL) order by queue_position desc limit 1;";
 		$mc_stmt="select count(*) as ct from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' $calldate_call_time_clause and uniqueid IN($unid_SQL) group by queue_position order by ct desc limit 1;";
 		}
 	if ($DB) {$GRAPH_text.=$stmt."\n";}
@@ -2893,7 +2918,7 @@ if ($report_display_type=="HTML")
 		}
 	}
 	$queue_position[26]=$over25;
-	
+
 	for ($i=0; $i<=$max_calls; $i++) {
 		if ($i<=25) {
 			if ($i%5==0) {$int=$i;} else {$int="";}
@@ -2906,21 +2931,21 @@ if ($report_display_type=="HTML")
 	}
 
 #print_r($graph_stats);
-	$GRAPH_text="";	
+	$GRAPH_text="";
 	#########
 	$graph_array=array("ACS_CATBdata||CALL INITIAL QUEUE POSITION BREAKDOWN|integer|");
 	$graph_id++;
 	$default_graph="line"; # Graph that is initally displayed when page loads
-	include("graph_color_schemas.inc"); 
+	include("graph_color_schemas.inc");
 
 	$graph_totals_array=array();
 	$graph_totals_rawdata=array();
 	for ($q=0; $q<count($graph_array); $q++) {
-		$graph_info=explode("|", $graph_array[$q]); 
+		$graph_info=explode("|", $graph_array[$q]);
 		$current_graph_total=0;
 		$dataset_name=$graph_info[0];
-		$dataset_index=$graph_info[1]; 
-		$graph_title=$graph_info[2]; 
+		$dataset_index=$graph_info[1];
+		$graph_title=$graph_info[2];
 		$dataset_type=$graph_info[3];
 		if ($q==0) {$preload_dataset=$dataset_name;}  # Used below to load initial graph
 
@@ -2947,13 +2972,13 @@ if ($report_display_type=="HTML")
 			$graphConstantsA.="\"$bgcolor\",";
 			$graphConstantsB.="\"$hbgcolor\",";
 			$graphConstantsC.="\"$hbcolor\",";
-		}	
+		}
 		$graphConstantsA.="],\n";
 		$graphConstantsB.="],\n";
 		$graphConstantsC.="],\n";
 		$labels=preg_replace('/,$/', '', $labels)."],\n";
 		$data=preg_replace('/,$/', '', $data)."],\n";
-		
+
 		$graph_totals_rawdata[$q]=$current_graph_total;
 		switch($dataset_type) {
 			case "time":
@@ -3037,11 +3062,11 @@ while ($i < $users_to_print)
 	$user =			sprintf("%-6s", $row[0]);
 	if ($non_latin < 1)
 		{
-		$full_name =	sprintf("%-15s", $row[1]); while(strlen($full_name)>15) {$full_name = substr("$full_name", 0, -1);}	
+		$full_name =	sprintf("%-15s", $row[1]); while(strlen($full_name)>15) {$full_name = substr("$full_name", 0, -1);}
 		}
 	else
 		{
-		$full_name =	sprintf("%-45s", $row[1]); while(mb_strlen($full_name,'utf-8')>15) {$full_name = mb_substr("$full_name", 0, -1,'utf-8');}	
+		$full_name =	sprintf("%-45s", $row[1]); while(mb_strlen($full_name,'utf-8')>15) {$full_name = mb_substr("$full_name", 0, -1,'utf-8');}
 		}
 	$USERcalls =	sprintf("%10s", $row[2]);
 	$USERtotTALK =	$row[3];
@@ -3055,8 +3080,8 @@ while ($i < $users_to_print)
 	$graph_stats[$i][2]=$row[3];
 	$graph_stats[$i][3]=$row[4];
 
-	$USERtotTALK_MS =	sec_convert($USERtotTALK,'H'); 
-	$USERavgTALK_MS =	sec_convert($USERavgTALK,'H'); 
+	$USERtotTALK_MS =	sec_convert($USERtotTALK,'H');
+	$USERavgTALK_MS =	sec_convert($USERavgTALK,'H');
 
 	$USERtotTALK_MS =	sprintf("%9s", $USERtotTALK_MS);
 	$USERavgTALK_MS =	sprintf("%6s", $USERavgTALK_MS);
@@ -3070,10 +3095,10 @@ while ($i < $users_to_print)
 	}
 
 $TOTavg = MathZDC($TOTtime, $TOTcalls);
-$TOTavg_MS =	sec_convert($TOTavg,'H'); 
+$TOTavg_MS =	sec_convert($TOTavg,'H');
 $TOTavg =		sprintf("%6s", $TOTavg_MS);
 
-$TOTtime_MS =	sec_convert($TOTtime,'H'); 
+$TOTtime_MS =	sec_convert($TOTtime,'H');
 $TOTtime =		sprintf("%10s", $TOTtime_MS);
 
 $TOTagents =		sprintf("%10s", $i);
@@ -3085,22 +3110,22 @@ $ASCII_text.="+--------------------------+------------+------------+---------+\n
 $ASCII_text.="| "._QXZ("TOTAL Agents:",13)." $TOTagents | $TOTcalls | $TOTtime | $TOTavg |\n";
 $ASCII_text.="+--------------------------+------------+------------+---------+\n";
 
-$GRAPH_text="";	
+$GRAPH_text="";
 # USE THIS FOR multiple graphs, use pipe-delimited array elements, dataset_name|index|link_name
 $multigraph_text="";
 $graph_id++;
 $graph_array=array("ACS_AGENTSTATSCALLSdata|1|AGENT STATS - CALLS|integer|", "ACS_AGENTSTATSTIMEdata|2|AGENT STATS - TIME H:M:S|time|", "ACS_AGENTSTATSAVERAGEdata|3|AGENT STATS - AVERAGE TIME|time|");
 $default_graph="bar"; # Graph that is initally displayed when page loads
-include("graph_color_schemas.inc"); 
+include("graph_color_schemas.inc");
 
 $graph_totals_array=array();
 $graph_totals_rawdata=array();
 for ($q=0; $q<count($graph_array); $q++) {
-	$graph_info=explode("|", $graph_array[$q]); 
+	$graph_info=explode("|", $graph_array[$q]);
 	$current_graph_total=0;
 	$dataset_name=$graph_info[0];
-	$dataset_index=$graph_info[1]; 
-	$graph_title=$graph_info[2]; 
+	$dataset_index=$graph_info[1];
+	$graph_title=$graph_info[2];
 	$dataset_type=$graph_info[3];
 
 	$JS_text.="var $dataset_name = {\n";
@@ -3126,13 +3151,13 @@ for ($q=0; $q<count($graph_array); $q++) {
 		$graphConstantsA.="\"$bgcolor\",";
 		$graphConstantsB.="\"$hbgcolor\",";
 		$graphConstantsC.="\"$hbcolor\",";
-	}	
+	}
 	$graphConstantsA=preg_replace('/,$/', '', $graphConstantsA)."],\n";
 	$graphConstantsB=preg_replace('/,$/', '', $graphConstantsB)."],\n";
 	$graphConstantsC=preg_replace('/,$/', '', $graphConstantsC)."],\n";
 	$labels=preg_replace('/,$/', '', $labels)."],\n";
 	$data=preg_replace('/,$/', '', $data)."],\n";
-	
+
 	$graph_totals_rawdata[$q]=$current_graph_total;
 	switch($dataset_type) {
 		case "time":
@@ -3165,7 +3190,7 @@ for ($q=0; $q<count($graph_array); $q++) {
 $graph_count=count($graph_array);
 include("graphcanvas.inc");
 $HEADER.=$HTML_graph_head;
-$GRAPH_text.=$graphCanvas;			
+$GRAPH_text.=$graphCanvas;
 
 
 if ($report_display_type=="HTML")
@@ -3202,6 +3227,11 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {$MAIN.="$stmt\n";}
 $calls_to_print = mysqli_num_rows($rslt);
 $j=0;
+$Cstatus=array();
+$Cqueue=array();
+$Cepoch=array();
+$Cdate=array();
+$Crem=array();
 while ($j < $calls_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -3218,12 +3248,29 @@ while ($j < $calls_to_print)
 
 ### Loop through all call records and gather stats for total call/drop report and answered report
 $j=0;
+$Ftotal=array();
+$Fdrop=array();
+$adB_0=array();
+$adB_5=array();
+$adB10=array();
+$adB15=array();
+$adB20=array();
+$adB25=array();
+$adB30=array();
+$adB35=array();
+$adB40=array();
+$adB45=array();
+$adB50=array();
+$adB55=array();
+$adB60=array();
+$adB90=array();
+$adB99=array();
 while ($j < $calls_to_print)
 	{
 	$i=0; $sec=0; $sec_end=900;
 	while ($i <= 96)
 		{
-		if ( ($Crem[$j] >= $sec) and ($Crem[$j] < $sec_end) ) 
+		if ( ($Crem[$j] >= $sec) and ($Crem[$j] < $sec_end) )
 			{
 			$Ftotal[$i]++;
 			if (preg_match('/DROP/',$Cstatus[$j])) {$Fdrop[$i]++;}
@@ -3268,6 +3315,8 @@ $hi_hour_count=0;
 $last_full_record=0;
 $i=0;
 $h=0;
+$hour_count=array();
+$drop_count=array();
 while ($i <= 96)
 	{
 	$hour_count[$i] = $Ftotal[$i];
@@ -3286,9 +3335,9 @@ $ASCII_text.=_QXZ("GRAPH IN 15 MINUTE INCREMENTS OF TOTAL")." $rpt_type_verbiage
 $k=1;
 $Mk=0;
 $call_scale = '0';
-while ($k <= 102) 
+while ($k <= 102)
 	{
-	if ($Mk >= 5) 
+	if ($Mk >= 5)
 		{
 		$Mk=0;
 		$scale_num=MathZDC($k, $hour_multiplier);
@@ -3327,7 +3376,7 @@ while ($i <= 96)
 	{
 	$char_counter=0;
 	$time = '      ';
-	if ($h >= 4) 
+	if ($h >= 4)
 		{
 		$hour++;
 		$h=0;
@@ -3342,7 +3391,7 @@ while ($i <= 96)
 	if ($i >= $first_shift_record && $i<=$last_shift_record) # May need to use lower.  Ask Matt.
 #	if ($i >= $first_shift_record && $i<$last_shift_record)
 		{
-		if ($Ghour_count < 1) 
+		if ($Ghour_count < 1)
 			{
 	#		if ( ($no_lines_yet) or ($i > $last_full_record) )
 	#			{
@@ -3366,7 +3415,7 @@ while ($i <= 96)
 			$Yhour_count = (99 - $Xhour_count);
 
 			$Gdrop_count = $drop_count[$i];
-			if ($Gdrop_count < 1) 
+			if ($Gdrop_count < 1)
 				{
 				$hour_count[$i] =	sprintf("%-5s", $hour_count[$i]);
 
@@ -3407,12 +3456,12 @@ while ($i <= 96)
 
 				}
 			}
-		}	
+		}
 	$graph_stats[$i][0]="$time";
 	$graph_stats[$i][1]=trim($hour_count[$i]);
 	$graph_stats[$i][2]=trim($drop_count[$i]);
 	if (trim($hour_count[$i])>$max_calls) {$max_calls=trim($hour_count[$i]);}
-	
+
 	$i++;
 	$h++;
 	}
@@ -3421,7 +3470,7 @@ $ASCII_text.="+------+----------------------------------------------------------
 
 for ($d=0; $d<count($graph_stats); $d++) {
 	if (strlen(trim($graph_stats[$d][0]))) {
-		$graph_stats[$d][0]=preg_replace('/\s/', "", $graph_stats[$d][0]); 
+		$graph_stats[$d][0]=preg_replace('/\s/', "", $graph_stats[$d][0]);
 		$GRAPH_text.="  <tr><td class='chart_td' width='50'>".$graph_stats[$d][0]."</td><td nowrap class='chart_td value' width='600' valign='bottom'>\n";
 		if ($graph_stats[$d][1]>0) {
 			$GRAPH_text.="<ul class='overlap_barGraph'><li class=\"p1\" style=\"height: 12px; left: 0px; width: ".round(MathZDC(600*$graph_stats[$d][1], $max_calls))."px\"><font style='background-color: #900'>".$graph_stats[$d][1]."</font></li>";
@@ -3470,7 +3519,7 @@ while ($i <= 96)
 	$char_counter=0;
 	$time = '      ';
 
-	if ($h >= 4) 
+	if ($h >= 4)
 		{
 		$hour++;
 		$h=0;
@@ -3481,7 +3530,7 @@ while ($i <= 96)
 		}
 	if ($h == 1) {$time = "   15 ";   $SQLtime = "$hour:15:00";   $SQLtimeEND = "$hour:30:00";}
 	if ($h == 2) {$time = "   30 ";   $SQLtime = "$hour:30:00";   $SQLtimeEND = "$hour:45:00";}
-	if ($h == 3) 
+	if ($h == 3)
 		{
 		$time = "   45 ";
 		$SQLtime = "$hour:45:00";

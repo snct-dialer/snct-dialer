@@ -1,10 +1,10 @@
 <?php
 # vdc_form_display.php
-# 
+#
 # Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
-# This script is designed display the contents of the FORM tab in the agent 
-# interface, as well as take submission of the form submission when the agent 
+# This script is designed display the contents of the FORM tab in the agent
+# interface, as well as take submission of the form submission when the agent
 # dispositions the call
 #
 # CHANGELOG:
@@ -342,7 +342,7 @@ else
 if ($stage=='SUBMIT')
 	{
 	$SUBMIT_only=1;
-	if ($SSagent_debug_logging > 0) 
+	if ($SSagent_debug_logging > 0)
 		{
 		$stage .= " custom_$list_id";
 		}
@@ -354,7 +354,7 @@ if ($stage=='SUBMIT')
 	$rslt=mysql_to_mysqli($stmt, $link);
 		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'06001',$user,$server_ip,$session_name,$one_mysql_log);}
 	$tablecount_to_print = mysqli_num_rows($rslt);
-	if ($tablecount_to_print > 0) 
+	if ($tablecount_to_print > 0)
 		{
 		$update_SQL='';
 		$VL_update_SQL='';
@@ -363,8 +363,17 @@ if ($stage=='SUBMIT')
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'06003',$user,$server_ip,$session_name,$one_mysql_log);}
 		$fields_to_print = mysqli_num_rows($rslt);
 		$fields_list='';
+		$A_field_id = array();
+		$A_field_label = array();
+		$A_field_name = array();
+		$A_field_type = array();
+		$A_field_size = array();
+		$A_field_max = array();
+		$A_field_required = array();
+		$A_field_duplicate = array();
+		$A_field_value = array();
 		$o=0;
-		while ($fields_to_print > $o) 
+		while ($fields_to_print > $o)
 			{
 			$new_field_value='';
 			$form_field_value='';
@@ -388,7 +397,8 @@ if ($stage=='SUBMIT')
 			if ( ($A_field_type[$o]=='MULTI') or ($A_field_type[$o]=='CHECKBOX') or ($A_field_type[$o]=='RADIO') )
 				{
 				$k=0;
-				$multi_count = count($form_field_value);
+				$multi_count=0;
+				if (is_array($form_field_value)) {$multi_count = count($form_field_value);}
 				$multi_array = $form_field_value;
 				while ($k < $multi_count)
 					{
@@ -420,7 +430,7 @@ if ($stage=='SUBMIT')
 			else
 				{
 				if (!preg_match("/_DUPLICATE_\d\d\d/",$A_field_label[$o]))
-					{				
+					{
 					if (preg_match("/\|$A_field_label[$o]\|/i",$vicidial_list_fields))
 						{
 						$VL_update_SQL .= "$A_field_label[$o]=\"$A_field_value[$o]\",";
@@ -445,7 +455,7 @@ if ($stage=='SUBMIT')
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'06004',$user,$server_ip,$session_name,$one_mysql_log);}
 			$fieldleadcount_to_print = mysqli_num_rows($rslt);
-			if ($fieldleadcount_to_print > 0) 
+			if ($fieldleadcount_to_print > 0)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$custom_record_lead_count =	$rowx[0];
@@ -546,7 +556,7 @@ if ($stage=='SUBMIT')
 ### END parse submission of the custom fields form ###
 if ($SUBMIT_only < 1)
 	{
-	if ($SSagent_debug_logging > 0) 
+	if ($SSagent_debug_logging > 0)
 		{
 		$stage .= " render $list_id";
 		}
@@ -573,7 +583,7 @@ if ($SUBMIT_only < 1)
 	echo "		document.getElementById(taskspan).style.background = \"white\";\n";
 	echo "		}\n";
 	echo "	function update_default_vd_field(taskfield) \n";
-	echo "		{\n";  
+	echo "		{\n";
 	echo "		var tempvalue = document.getElementById(taskfield).value;\n";
 	echo "		parent.document.getElementById(taskfield).value = tempvalue;\n";
 	echo "		}\n";
@@ -639,7 +649,7 @@ if ($SUBMIT_only < 1)
 	echo "</BODY></HTML>\n";
 	}
 
-if ($SSagent_debug_logging > 0) 
+if ($SSagent_debug_logging > 0)
 	{
 	vicidial_ajax_log($NOW_TIME,$startMS,$link,$ACTION,$php_script,$user,$stage,$lead_id,$session_name,$stmt);
 	}

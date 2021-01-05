@@ -11,16 +11,16 @@ class odsTableColumn {
 	//private $styleName;
 	private $repeated;
 	private $odsStyleTableColumn;
-	
+
 	public function __construct(odsStyleTableColumn $odsStyleTableColumn) {
 		$this->odsStyleTableColumn = $odsStyleTableColumn;
 		$this->repeated = null;
 	}
-	
+
 	public function getContent(ods $ods,\DOMDocument $dom) {
 		if(!$ods->getStyleByName($this->odsStyleTableColumn->getName()))
 			$ods->addTmpStyles($this->odsStyleTableColumn);
-		
+
 		$table_table_column = $dom->createElement('table:table-column');
 			$table_table_column->setAttribute("table:style-name", $this->odsStyleTableColumn->getName());
 			if($this->repeated)
@@ -32,7 +32,7 @@ class odsTableColumn {
 	public function setRepeated($repeated) {
 		$this->repeated = $repeated;
 	}
-	
+
 	function getOdsStyleTableColumn() {
 		return $this->odsStyleTableColumn;
 	}

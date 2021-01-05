@@ -1,6 +1,6 @@
 <?php
 # deactivate_lead.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed to be used in the "Dispo URL" field of a campaign
@@ -19,7 +19,7 @@
 # Example of what to put in the Dispo URL field:
 # VARhttp://192.168.1.1/agc/deactivate_lead.php?search_field=vendor_lead_code&new_status=INACTIV&dispo=--A--dispo--B--&lead_id=--A--lead_id--B--&campaign_check=TESTCAMP&user=--A--user--B--&pass=--A--pass--B--&sale_status=SALE---SSALE---XSALE&log_to_file=1
 # VARhttp://192.168.1.1/agc/deactivate_lead.php?search_field=phone_number&new_status=--A--dispo--B--&dispo=--A--dispo--B--&lead_id=--A--lead_id--B--&campaign_check=TESTCAMP&user=--A--user--B--&pass=--A--pass--B--&sale_status=BI---CX&log_to_file=1
-# 
+#
 #
 # CHANGES
 # 100304-0354 - First Build

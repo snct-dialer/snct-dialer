@@ -1,7 +1,7 @@
-<?php 
+<?php
 # campaign_debug.php
-# 
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 110514-1231 - First build
@@ -14,6 +14,7 @@
 # 141229-2042 - Added code for on-the-fly language translations display
 # 170409-1534 - Added IP List validation code
 # 180201-1245 - Added live call and shortage counts per server tables
+# 190716-0909 - Added Call Quota process output
 #
 
 $startMS = microtime();
@@ -239,7 +240,7 @@ while ($i < $campaigns_to_print)
 -->
  </STYLE>
 
-<?php 
+<?php
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo "<TITLE>"._QXZ("Campaign Debug")."</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 
@@ -312,7 +313,7 @@ else
 		$i++;
 		}
 
-	$stmt="select update_time,server_ip,debug_output,adapt_output from vicidial_campaign_stats_debug where campaign_id='" . mysqli_real_escape_string($link, $group) . "' and server_ip!='ADAPT' order by server_ip limit 100;";
+	$stmt="select update_time,server_ip,debug_output,adapt_output from vicidial_campaign_stats_debug where campaign_id='" . mysqli_real_escape_string($link, $group) . "' and server_ip NOT IN('ADAPT','CALLQUOTA') order by server_ip limit 100;";
 	$rslt=mysql_to_mysqli($stmt, $link);
 	if ($DB) {echo "$stmt\n";}
 	$debugs_to_print = mysqli_num_rows($rslt);
@@ -321,7 +322,7 @@ else
 		{
 		$row=mysqli_fetch_row($rslt);
 
-		echo "$row[1] Debug:     $row[0]\n";
+		echo "$row[1] "._QXZ("Debug").":     $row[0]\n";
 		echo "$row[2]\n";
 		echo "$row[3]\n";
 
@@ -334,8 +335,8 @@ else
 	$shortages_to_print = mysqli_num_rows($rslt);
 	if ($shortages_to_print > 0)
 		{
-		echo "Per-Server Shortages:\n";
-		echo " SERVER         DATE/TIME            SHORT\n";
+		echo _QXZ("Per-Server Shortages").":\n";
+		echo " "._QXZ("SERVER", 6)."         "._QXZ("DATE/TIME", 9)."            "._QXZ("SHORT")."\n";
 		}
 	$i=0;
 	while ($shortages_to_print > $i)
@@ -357,8 +358,8 @@ else
 	$shortages_to_print = mysqli_num_rows($rslt);
 	if ($shortages_to_print > 0)
 		{
-		echo "Per-Server and Per-Type Campaign Calls:\n";
-		echo " SERVER         CALL TYPE   COUNT\n";
+		echo _QXZ("Per-Server and Per-Type Campaign Calls").":\n";
+		echo " "._QXZ("SERVER", 6)."         "._QXZ("CALL TYPE", 9)."   "._QXZ("COUNT")."\n";
 		}
 	$i=0;
 	while ($shortages_to_print > $i)
@@ -393,6 +394,21 @@ else
 		$i++;
 		}
 
+	$stmt="select update_time,debug_output,adapt_output from vicidial_campaign_stats_debug where campaign_id='" . mysqli_real_escape_string($link, $group) . "' and server_ip='CALLQUOTA' limit 1;";
+	$rslt=mysql_to_mysqli($stmt, $link);
+	if ($DB) {echo "$stmt\n";}
+	$callquotas_to_print = mysqli_num_rows($rslt);
+	$i=0;
+	while ($callquotas_to_print > $i)
+		{
+		$row=mysqli_fetch_row($rslt);
+
+		echo _QXZ("Call Quota Lead Ranking Debug").":     $row[0]\n";
+		echo "$row[1]\n";
+		echo "$row[2]\n";
+
+		$i++;
+		}
 	}
 
 if ($db_source == 'S')

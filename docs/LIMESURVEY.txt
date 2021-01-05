@@ -52,7 +52,7 @@ Add a user: (vicidial/1234/ViciDial User)
 Add a group: (ViciDial agent group)
 Add a survey: ViciDial test Survey
 Add question group: ViciDial general questions
-Add a question: 
+Add a question:
 
 For more information read the online manual:
 http://docs.limesurvey.org/tiki-index.php?page=English+Instructions+for+LimeSurvey

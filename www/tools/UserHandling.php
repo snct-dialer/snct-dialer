@@ -1,9 +1,9 @@
-<?php 
+<?php
 
 ##########################################################
 #
 # Modul: UserHandling.php
-# 
+#
 # Part of: vicidial-de
 #
 # License: AGPLv3
@@ -21,7 +21,7 @@
 ##########################################################
 #
 # ToDo:
-# 
+#
 # Global system_settings
 #
 #
@@ -58,13 +58,13 @@ $DB=0;
 #
 function LogUserLogin($User, $Status) {
 	global $link;
-	
+
 	# Test for requested vars
 	if (empty($User)) {
 		return -1;
 	}
 	$ip = getenv("REMOTE_ADDR");
-	
+
 	if($Status != 0) {
 		if($mStmt = $link->prepare("INSERT INTO vicidial_faillogin_log (user, status, ip, login_time) VALUES(?, ?, ?, NOW();")) {
 			$mStmt->bind_param('sis', $User, $Status, $ip);
@@ -96,15 +96,15 @@ function LogUserLogin($User, $Status) {
 #
 function SetFailLogin($User, $FailCount = 0) {
 	global $link;
-	
+
 	# Test for requested vars
 	if (empty($User)) {
 		return -1;
 	}
-	
-	
+
+
 	$ip = getenv("REMOTE_ADDR");
-	
+
 	if($mStmt = $link->prepare("UPDATE vicidial_users SET failed_login_count = ?, set last_login_date=NOW(), last_ip = ? WHERE user = ?;")) {
 		$mStmt->bind_param('iss', ($FailCount + 1), $ip, $User);
 		$mStmt->execute();
@@ -121,7 +121,7 @@ function SetFailLogin($User, $FailCount = 0) {
 #######################################
 #
 # function CheckLoginCred
-# 
+#
 # Parameter: $User (requested)
 #            $Pass (requested)
 #
@@ -133,17 +133,17 @@ function SetFailLogin($User, $FailCount = 0) {
 #
 function CheckUserCred($User, $Pass) {
 	global $link;
-	
+
 	# Test for requested vars
 	if ((empty($User)) || (empty($Pass))) {
 		LogUserLogin($User, -1);
 		return -1;
 	}
-	
+
 	$STARTtime = date("U");
 	$LOCK_over = ($STARTtime - 900); # failed login lockout time is 15 minutes(900 seconds)
 	$LOCK_trigger_attempts = 10;
-	
+
 	# Get Crypto method
 	# ToDo: own function
 	#
@@ -157,11 +157,11 @@ function CheckUserCred($User, $Pass) {
 		$SSpass_key =					$row[1];
 		$SSpass_cost =					$row[2];
 	}
-	
+
 	$passSQL = "pass='$pass'";
 	$passField = "pass";
 	$passTest = $pass;
-	
+
 	if ($SSpass_hash_enabled > 0) {
 		if (file_exists("../agc/bp.pl")) {
 			$pass_hash = exec("../agc/bp.pl --pass='$pass'");
@@ -173,7 +173,7 @@ function CheckUserCred($User, $Pass) {
 		$passField = "pass_hash";
 		$passTest = $pass_hash;
 	}
-	
+
 	if($mStmt = $link->prepare("SELECT user_level, failed_login_count, UNIX_TIMESTAMP(last_login_date) from vicidial_users where user = ? and $passField = ? and active='Y' and ( (failed_login_count < ?) or (UNIX_TIMESTAMP(last_login_date) < ?) );")) {
 		$mStmt->bind_param('ssii', $User, $passTest, $LOCK_trigger_attempts, $LOCK_over);
 		$mStmt->execute();
@@ -189,7 +189,7 @@ function CheckUserCred($User, $Pass) {
 			echo("Statement Prepare failed: " . $mysqli->error . PHP_EOL);
 		}
 	}
-	
+
 	LogUserLogin($User, -1);
 	SetFailLogin($User, $failCount, $lld);
 	return 0;

@@ -1,6 +1,6 @@
 QC(Quality Control) process flow					  2012-11-16
 
-Thanks to the Pound Team(pounteam.com) and Affinity On-Call(affinity.co.za) for 
+Thanks to the Pound Team(pounteam.com) and Affinity On-Call(affinity.co.za) for
 contributing this functionaly QC application to the vicidial project.
 
 Below are the basic operating instructions for how the QC system works.
@@ -61,7 +61,7 @@ Enable QC for each campaign
 Detail View -> QC -> QC Enabled = Y
 
 Choose QC Statuses
-Check the boxes for each Status you want to be managed by the QC system. You can select just one (such as SALE), or you can select as many as you would like. 
+Check the boxes for each Status you want to be managed by the QC system. You can select just one (such as SALE), or you can select as many as you would like.
 Any previously dispositioned leads with these statuses will automatically be included in the QC system, even though QC was not installed when they happened.
 
 
@@ -73,7 +73,7 @@ Audited comments will move comments made by agents to a secure table where agent
 
 Note: This is optional and only applies if you want to activate the audited comments system. This will only affect campaigns on which it is turned on. This cannot be “deactivated” to retrieve the comments. Once comments are “audited” they are moved to a separate table and no longer editable or visible on the record except in the audited comments system.
 Choose QC Statuses
-Check the boxes for each Status you want to be managed by the QC system. You can select just one (such as SALE), or you can select as many as you would like. 
+Check the boxes for each Status you want to be managed by the QC system. You can select just one (such as SALE), or you can select as many as you would like.
 Any previously dispositioned leads with these statuses will automatically be included in the QC system, even though QC was not installed when they happened.
 
 Modify/Create System QC Results
@@ -92,7 +92,7 @@ Info Regarding QC Categories
 “Pass” category items will simply change the status to the given statuscode.
 “Fail” category items will create a callback for the sales agent which will require that the sale be re-sold to get back to QC again.
 
-Note: Fail category items require a MATCHING System Status or Campaign Status with “Schedule Callback” = “Y” to cause a callback to be created. 
+Note: Fail category items require a MATCHING System Status or Campaign Status with “Schedule Callback” = “Y” to cause a callback to be created.
 
 Note: Adding new “Fail” or other QC Results is (as yet) untested. . (Alpha: use at your own risk, please report results)
 
@@ -105,7 +105,7 @@ Vicidial Administration->Users->(choose user)->Agent-Only Callbacks
 Agent Call Manual
 
 QC Users must have Agent Call Manual (or they cannot call clients during QC)
-Vicidial Administration->Users->(choose user)->Agent Call Manual 
+Vicidial Administration->Users->(choose user)->Agent Call Manual
 
 Agent Call Manual
 
@@ -120,7 +120,7 @@ QC User Level 1 (or higher, levels are not yet differentiated but will be as the
 QC Pass / Finish / Commit – Not in use yet.
 User Group settings for QC Allowed Campaigns / InGroups – Not in use yet.
 Standard Agent Interface
-QC Rejections will be received in “Callbacks”. 
+QC Rejections will be received in “Callbacks”.
 Method to resolve a QC Rejection: Manual dial client, correct errors and/or create new recording based on notes from QC agent in the QCFAIL callback record.
 Agent Call Manual – Without this the agent cannot manual dial
 
@@ -140,20 +140,20 @@ With Each Record:
 Listen to recordings listed at bottom of screen
 To call client you must be logged in, in manual dial mode, in the correct campaign (Alpha NOTE: System does not presently verify Campaign!)
 IF you call the client, disposition that call normally FIRST (as any agent would). THEN disposition in the QC window. Do not make changes in the AGENT screen (this may change in later versions), except to disposition at the end of the call.
-After completing the call on the agent screen and dispositioning, choose your QC Result in the QC screen. 
-To set the call to FAIL (and require the original agent to re-call the client): 
+After completing the call on the agent screen and dispositioning, choose your QC Result in the QC screen.
+To set the call to FAIL (and require the original agent to re-call the client):
 QC Result: FAIL
 SUBMIT
 If you want to make specific notes regarding the reason for the failure, they can be made in one of two ways:
 1. Use the Comment field before submitting (At present these notes will be editable / deletable by the agent).
 2. After submitting press Go back to re-modify this QC lead and modify the CallBack Details. (These will be temporary and viewable only by the agent during the call. However, in the future these will then appear with the Audited Comments because they are stored in the Vicidial callbacks table.)
 To specify a Date/Time other than “NOW” for the callback OR to schedule for a different user or to leave notes for the reason for the FAIL:
-Press “Go back to re-modify this QC lead” on the resulting page 
+Press “Go back to re-modify this QC lead” on the resulting page
 Then set the date/time/user
 SUBMIT (at the bottom of the callback details, not the QC Result!)
 When done, click on QC Campaign at the top of the page for your next record
 Quality Control Log
-Viewing: 
+Viewing:
 The QC log records are only visible within the QC system. Each time a QC agent views or modifies a record, the view and all changes are logged. It can be viewed on each lead record along with the call and recording logs.
 Log showing viewed*:
 
@@ -165,7 +165,7 @@ The record is viewed via the “tooltip” accessed by putting your mouse over the w
 
 Note for developers: All information for the viewed and modified records is stored in vicidial_qc_agent_log. All changes made to the vicidial_list record are stored in the “details” field.
 Notes
-Testing: “QC Only” user modeled after “Reporting Only” user. Requires user level > 1, active = “Y”, and QC Enabled. 
+Testing: “QC Only” user modeled after “Reporting Only” user. Requires user level > 1, active = “Y”, and QC Enabled.
 To QC Modify a lead that is NOT presently a QC status (whether it was in the past or not), search for and Modify the lead (under Lists->Search for a Lead), then click on “Click here to QC Modify this lead” at the bottom of the Admin Modify Lead screen (if you have QC permissions, this will be visible).
 
 
@@ -213,13 +213,13 @@ The back-end process will work like this:
 
 
 Agent-side scripts:
- - qc.php - the screen that agents log in to 
+ - qc.php - the screen that agents log in to
  - qc_query.php - the data processing script that handles most of the AJAX queries and IFRAME displays from qc.php
 
 
 The QC agent will login to the new qc.php screen within the agc web directory. They will then have a screen very similar to the vicidial.php login screen(but in a different color) that will have a user/pass to fill in. Then when they login the QC agents with level of 1-3 will see a green screen similar to the vicidial.php inbound(CLOSER-type) screen that will show them their allowable qc inbound-groups and campaigns. The agent will then choose which in-groups and campaigns that they want to QC the records for and then they will submit and they will be logged-in to the QC system. QC agents with a qc_level of 4-5 can select to review first level reccords, review all 2nd level records, review only 2nd level changed-status or review 2nd level same-status records. QC agents with 6-7 qc_level can also have the option of entering a management screen showing more information on the QC system including committing QC records and links to QC reports.
 
-Upon login, they will be able to see the count of QC-able records and they can click on a link to bring up the next record to be QCd. 
+Upon login, they will be able to see the count of QC-able records and they can click on a link to bring up the next record to be QCd.
 
 Upon clicking on a link, the qc.php application will insert a record into the vicidial_qc_log to keep track of changes and other information on the qc record session. The customer and original call data will remain unaltered in the vicidial_qc_list table.
 
@@ -259,7 +259,7 @@ DEAD - QC record is old and present for logs only, newer record has taken it's p
 
 
 The Database Changes:
-!!! IMPORTANT !!! 
+!!! IMPORTANT !!!
 THESE ARE FOR REFERENCE ONLY, DO NOT RUN THEM!!!
 
 # This table contains the live session information for qc_agents
@@ -327,7 +327,7 @@ user_group VARCHAR(20),
 fronter VARCHAR(20),
 vendor_lead_code VARCHAR(20),
 source_id VARCHAR(50),
-phone_code VARCHAR(10),	
+phone_code VARCHAR(10),
 phone_number VARCHAR(12),
 title VARCHAR(4),
 first_name VARCHAR(30),
@@ -367,7 +367,7 @@ qc_comments TEXT,
 qc_altered ENUM('0','1') default '0',
 status VARCHAR(6),
 vendor_lead_code VARCHAR(20),
-phone_code VARCHAR(10),	
+phone_code VARCHAR(10),
 phone_number VARCHAR(12),
 title VARCHAR(4),
 first_name VARCHAR(30),

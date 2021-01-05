@@ -1,11 +1,11 @@
 <?php
 # call_log_display.php    version 2.14
-# 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed purely to send the inbound and outbound calls for a specific phone
 # This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
-# 
+#
 # required variables:
 #  - $server_ip
 #  - $session_name
@@ -17,7 +17,7 @@
 #  - $protocol - ('SIP','Zap','IAX2',...)
 #  - $in_limit - ('10','20','50','100',...)
 #  - $out_limit - ('10','20','50','100',...)
-# 
+#
 #
 # changes
 # 50406-1013 - First build of script
@@ -39,10 +39,11 @@
 # 141216-2113 - Added language settings lookups and user/pass variable standardization
 # 150723-1714 - Added ajax logging
 # 170526-2215 - Added additional variable filtering
+# 190111-0904 - Fix for PHP7
 #
 
-$version = '2.14-19';
-$build = '170526-2215';
+$version = '2.14-20';
+$build = '190111-0904';
 $php_script = 'call_log_display.php';
 $SSagent_debug_logging=0;
 $startMS = microtime();
@@ -130,7 +131,7 @@ if (strlen($SSagent_debug_logging) > 1)
 	}
 
 $auth=0;
-$auth_message = user_authorization($user,$pass,'',0,1,0,0);
+$auth_message = user_authorization($user,$pass,'',0,1,0,0,'call_log_display');
 if ($auth_message == 'GOOD')
 	{$auth=1;}
 
@@ -244,7 +245,7 @@ else
 
 
 
-if ($format=='debug') 
+if ($format=='debug')
 	{
 	$ENDtime = date("U");
 	$RUNtime = ($ENDtime - $StarTtime);
@@ -253,6 +254,6 @@ if ($format=='debug')
 	}
 
 if ($SSagent_debug_logging > 0) {vicidial_ajax_log($NOW_TIME,$startMS,$link,$ACTION,$php_script,$user,$stage,$lead_id,$session_name,$stmt);}
-exit; 
+exit;
 
 ?>

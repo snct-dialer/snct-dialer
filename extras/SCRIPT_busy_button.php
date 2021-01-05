@@ -14,14 +14,14 @@
 #	event_time DATETIME,
 #	user VARCHAR(20),
 #	stage ENUM('DISPLAY','CLICK'),
-#	campaign_id VARCHAR(8),	
+#	campaign_id VARCHAR(8),
 #	phone_number VARCHAR(18),
 #	vendor_lead_code VARCHAR(20),
 #	list_id BIGINT(14) UNSIGNED,
 #	click_seconds INT(5) UNSIGNED,
 #	index (lead_id)
 #	);
-# 
+#
 # CHANGES:
 # 90408-0618 - First Build
 # 90508-0727 - Changed to PHP long tags

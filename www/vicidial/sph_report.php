@@ -1,6 +1,6 @@
-<?php 
+<?php
 # sph_report.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -413,9 +413,9 @@ echo "<SELECT SIZE=5 NAME=campaign[] multiple>\n";
 	$o=0;
 	while ($campaigns_to_print > $o)
 	{
-		if (preg_match("/\|$LISTcampaigns[$o]\|/",$campaign_string)) 
+		if (preg_match("/\|$LISTcampaigns[$o]\|/",$campaign_string))
 			{echo "<option selected value=\"$LISTcampaigns[$o]\">$LISTcampaigns[$o]</option>\n";}
-		else 
+		else
 			{echo "<option value=\"$LISTcampaigns[$o]\">$LISTcampaigns[$o]</option>\n";}
 		$o++;
 	}
@@ -427,7 +427,7 @@ echo "<SELECT SIZE=5 NAME=group[] multiple>\n";
 	$o=0;
 	while ($groups_to_print > $o)
 	{
-		if (preg_match("/\|$LISTgroups[$o]\|/",$group_string)) 
+		if (preg_match("/\|$LISTgroups[$o]\|/",$group_string))
 			{echo "<option selected value=\"$LISTgroups[$o]\">$LISTgroups[$o]</option>\n";}
 		else
 			{echo "<option value=\"$LISTgroups[$o]\">$LISTgroups[$o]</option>\n";}
@@ -440,9 +440,9 @@ echo "<SELECT SIZE=5 NAME=user_group[] multiple>\n";
 	$o=0;
 	while ($user_groups_to_print > $o)
 	{
-		if (preg_match("/\|$LISTuser_groups[$o]\|/",$user_group_string)) 
+		if (preg_match("/\|$LISTuser_groups[$o]\|/",$user_group_string))
 			{echo "<option selected value=\"$LISTuser_groups[$o]\">$LISTuser_groups[$o]</option>\n";}
-		else 
+		else
 			{echo "<option value=\"$LISTuser_groups[$o]\">$LISTuser_groups[$o]</option>\n";}
 		$o++;
 	}
@@ -511,26 +511,26 @@ echo " "._QXZ("NOTE: stats taken from shift specified")."\n";
 else
 {
 /*
-if ($shift == 'AM') 
+if ($shift == 'AM')
 	{
 	$time_BEGIN=$AM_shift_BEGIN;
 	$time_END=$AM_shift_END;
-	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}   
+	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}
 	if (strlen($time_END) < 6) {$time_END = "15:14:59";}
 	}
-if ($shift == 'PM') 
+if ($shift == 'PM')
 	{
 	$time_BEGIN=$PM_shift_BEGIN;
 	$time_END=$PM_shift_END;
 	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "15:15:00";}
 	if (strlen($time_END) < 6) {$time_END = "23:15:00";}
 	}
-if ($shift == 'ALL') 
+if ($shift == 'ALL')
 	{
 	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}
 	if (strlen($time_END) < 6) {$time_END = "23:59:59";}
 	}
-$query_date_BEGIN = "$query_date $time_BEGIN";   
+$query_date_BEGIN = "$query_date $time_BEGIN";
 $query_date_END = "$end_date $time_END";
 
 if (strlen($user_group)>0) {$ugSQL="and vicidial_agent_log.user_group='$user_group'";}
@@ -578,7 +578,7 @@ $rows_to_print = mysqli_num_rows($rslt);
 $i=0;
 while ($i < $rows_to_print)
 	{
-	$dbHOURS=0; $dbSPH=0; 
+	$dbHOURS=0; $dbSPH=0;
 	$row=mysqli_fetch_row($rslt);
 	$user_id[$i] =		$row[0];
 	$full_name[$i] =	$row[1];
@@ -605,11 +605,11 @@ while ($i < $rows_to_print)
 	else
 		{$dbHOURS='0.00';}
 
-	$sph[$i] =		$dbSPH;		
-	$hours[$i] =	$dbHOURS;		
+	$sph[$i] =		$dbSPH;
+	$hours[$i] =	$dbHOURS;
 
-	$sphSORT[$i] =		"$dbSPH-----$i";		
-	$hoursSORT[$i] =	"$dbHOURS-----$i";		
+	$sphSORT[$i] =		"$dbSPH-----$i";
+	$hoursSORT[$i] =	"$dbHOURS-----$i";
 
 	$i++;
 	}
@@ -632,7 +632,7 @@ while ($j < $rows_to_print)
 	$i = $sph_split[1];
 
 	if (preg_match("/1$|3$|5$|7$|9$/i", $j))
-		{$bgcolor='bgcolor="#B9CBFD"';} 
+		{$bgcolor='bgcolor="#B9CBFD"';}
 	else
 		{$bgcolor='bgcolor="#9BB9FB"';}
 
@@ -670,8 +670,8 @@ if ($TOTlogin_sec > 0)
 else
 	{$TOTdbHOURS='0.00';}
 
-$TOTsph =	$TOTdbSPH;		
-$TOThours =	$TOTdbHOURS;		
+$TOTsph =	$TOTdbSPH;
+$TOThours =	$TOTdbHOURS;
 
 
 echo "<TR BGCOLOR=#E6E6E6>\n";

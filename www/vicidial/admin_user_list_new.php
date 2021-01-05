@@ -1,9 +1,9 @@
 <?php
 # admin_user_list_new.php
-# 
+#
 # Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
-# this screen will control the optional user list new limit override settings 
+# this screen will control the optional user list new limit override settings
 #
 #
 # changes:
@@ -244,7 +244,7 @@ if ($names_to_print > 0)
 
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
 <title><?php echo _QXZ("ADMINISTRATION: User List New Lead Limits"); ?>
-<?php 
+<?php
 
 
 require("admin_header.php");
@@ -278,12 +278,12 @@ if ( ($stage == 'overall') and ($list_id == 'NONE') )
 	}
 else
 	{
-	if ($list_id != '---ALL---') 
+	if ($list_id != '---ALL---')
 		{
 		$FORM_list_id = $list_id;
 		echo "<br><b>"._QXZ("User List New Limit Entries LIST",0,'').": <a href=\"./admin.php?$mod_link$list_id\">$list_id</a></b> &nbsp; $NWB#user_list_new_limits$NWE\n";
 		}
-	if ($user != '---ALL---') 
+	if ($user != '---ALL---')
 		{
 		$FORM_user = $user;
 		echo "<br><b>"._QXZ("User List New Limit Entries USER",0,'').": <a href=\"./admin.php?ADD=3&user=$user\">$user</a></b> &nbsp; $NWB#user_list_new_limits$NWE\n";
@@ -318,9 +318,9 @@ else
 	if ($DB) {echo "$stmt\n";}
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$users_to_print = mysqli_num_rows($rslt);
-	if ($users_to_print > 0) 
+	if ($users_to_print > 0)
 		{
-		$rowx=mysqli_fetch_row($rslt);			
+		$rowx=mysqli_fetch_row($rslt);
 		$Ruser =			$rowx[0];
 		$Rfull_name =		$rowx[1];
 		$Ruser_group =		$rowx[2];
@@ -330,9 +330,9 @@ else
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$lists_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($lists_to_print > $o) 
+		while ($lists_to_print > $o)
 			{
-			$rowx=mysqli_fetch_row($rslt);			
+			$rowx=mysqli_fetch_row($rslt);
 			$Rlist_id[$o] =				$rowx[0];
 			$Rlist_name[$o] =			$rowx[1];
 			$Rcampaign[$o] =			$rowx[2];
@@ -346,7 +346,7 @@ else
 		$vulnl_inserts=0;
 		$vulnl_nochng=0;
 		$o=0;
-		while ($lists_to_print > $o) 
+		while ($lists_to_print > $o)
 			{
 			### BEGIN modification of vicidial_user_list_new_lead record ###
 			if ($action == "USER_LIST_NEW_MODIFY")
@@ -357,7 +357,7 @@ else
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_to_mysqli($stmt, $link);
 				$entries_to_print = mysqli_num_rows($rslt);
-				if ($entries_to_print > 0) 
+				if ($entries_to_print > 0)
 					{
 					$rowx=mysqli_fetch_row($rslt);
 					$Ruser_override =	$rowx[0];
@@ -410,7 +410,7 @@ else
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$entries_to_print = mysqli_num_rows($rslt);
-			if ($entries_to_print > 0) 
+			if ($entries_to_print > 0)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$Ruser_override =	$rowx[0];
@@ -418,7 +418,7 @@ else
 				}
 
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -469,9 +469,9 @@ if ( ($list_id != '---ALL---') and ($list_id != 'NONE') )
 	if ($DB) {echo "$stmt\n";}
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$lists_to_print = mysqli_num_rows($rslt);
-	if ($lists_to_print > 0) 
+	if ($lists_to_print > 0)
 		{
-		$rowx=mysqli_fetch_row($rslt);			
+		$rowx=mysqli_fetch_row($rslt);
 		$Rlist_id =				$rowx[0];
 		$Rlist_name =			$rowx[1];
 		$Rcampaign =			$rowx[2];
@@ -483,9 +483,9 @@ if ( ($list_id != '---ALL---') and ($list_id != 'NONE') )
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$users_to_print = mysqli_num_rows($rslt);
 		$o=0;
-		while ($users_to_print > $o) 
+		while ($users_to_print > $o)
 			{
-			$rowx=mysqli_fetch_row($rslt);			
+			$rowx=mysqli_fetch_row($rslt);
 			$Ruser[$o] =			$rowx[0];
 			$Rfull_name[$o] =		$rowx[1];
 			$Ruser_group[$o] =		$rowx[2];
@@ -497,7 +497,7 @@ if ( ($list_id != '---ALL---') and ($list_id != 'NONE') )
 		$vulnl_inserts=0;
 		$vulnl_nochng=0;
 		$o=0;
-		while ($users_to_print > $o) 
+		while ($users_to_print > $o)
 			{
 			### BEGIN modification of vicidial_user_list_new_lead record ###
 			if ($action == "USER_LIST_NEW_MODIFY")
@@ -508,7 +508,7 @@ if ( ($list_id != '---ALL---') and ($list_id != 'NONE') )
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_to_mysqli($stmt, $link);
 				$entries_to_print = mysqli_num_rows($rslt);
-				if ($entries_to_print > 0) 
+				if ($entries_to_print > 0)
 					{
 					$rowx=mysqli_fetch_row($rslt);
 					$Ruser_override =	$rowx[0];
@@ -561,7 +561,7 @@ if ( ($list_id != '---ALL---') and ($list_id != 'NONE') )
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$entries_to_print = mysqli_num_rows($rslt);
-			if ($entries_to_print > 0) 
+			if ($entries_to_print > 0)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$Ruser_override =	$rowx[0];
@@ -569,7 +569,7 @@ if ( ($list_id != '---ALL---') and ($list_id != 'NONE') )
 				}
 
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 
@@ -621,9 +621,9 @@ if ($list_id == 'NONE')
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$users_to_print = mysqli_num_rows($rslt);
 	$o=0;
-	while ($users_to_print > $o) 
+	while ($users_to_print > $o)
 		{
-		$rowx=mysqli_fetch_row($rslt);			
+		$rowx=mysqli_fetch_row($rslt);
 		$Ruser[$o] =			$rowx[0];
 		$Rfull_name[$o] =		$rowx[1];
 		$Ruser_group[$o] =		$rowx[2];
@@ -635,7 +635,7 @@ if ($list_id == 'NONE')
 	$vulnl_inserts=0;
 	$vulnl_nochng=0;
 	$o=0;
-	while ($users_to_print > $o) 
+	while ($users_to_print > $o)
 		{
 		### BEGIN modification of vicidial_users record ###
 		if ($action == "USER_LIST_NEW_MODIFY")
@@ -646,7 +646,7 @@ if ($list_id == 'NONE')
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$entries_to_print = mysqli_num_rows($rslt);
-			if ($entries_to_print > 0) 
+			if ($entries_to_print > 0)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$Ruser_override =	$rowx[0];
@@ -689,7 +689,7 @@ if ($list_id == 'NONE')
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$entries_to_print = mysqli_num_rows($rslt);
-		if ($entries_to_print > 0) 
+		if ($entries_to_print > 0)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$Rnew_count =		$rowx[0];
@@ -699,14 +699,14 @@ if ($list_id == 'NONE')
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$entries_to_print = mysqli_num_rows($rslt);
-		if ($entries_to_print > 0) 
+		if ($entries_to_print > 0)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$Ruser_override =	$rowx[0];
 			}
 
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+			{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 		else
 			{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 

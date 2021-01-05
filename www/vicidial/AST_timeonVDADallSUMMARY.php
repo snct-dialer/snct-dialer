@@ -1,12 +1,12 @@
-<?php 
+<?php
 # AST_timeonVDADallSUMMARY.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # Summary for all campaigns live real-time stats for the VICIDIAL Auto-Dialer all servers
 #
 # STOP=4000, SLOW=40, GO=4 seconds refresh interval
-# 
+#
 # changes:
 # 61102-1616 - first build
 # 61215-1131 - added answered calls and drop percent taken from answered calls
@@ -30,6 +30,7 @@
 # 141001-2200 - Finalized adding QXZ translation to all admin files
 # 141230-0038 - Added code for on-the-fly language translations display
 # 170409-1534 - Added IP List validation code
+# 190927-1300 - Fixed PHP7 array issue
 #
 
 require("dbconnect_mysqli.php");
@@ -201,15 +202,16 @@ if ( (!preg_match('/\-ALL/i', $LOGallowed_campaigns)) )
 	}
 
 $campaign_typeSQL='';
-if ($types == 'AUTO-DIAL ONLY')			{$campaign_typeSQL="and dial_method IN('RATIO','ADAPT_HARD_LIMIT','ADAPT_TAPERED','ADAPT_AVERAGE')";} 
-if ($types == 'MANUAL ONLY')			{$campaign_typeSQL="and dial_method IN('MANUAL','INBOUND_MAN')";} 
-if ($types == 'INBOUND ONLY')			{$campaign_typeSQL="and campaign_allow_inbound='Y'";} 
+if ($types == 'AUTO-DIAL ONLY')			{$campaign_typeSQL="and dial_method IN('RATIO','ADAPT_HARD_LIMIT','ADAPT_TAPERED','ADAPT_AVERAGE')";}
+if ($types == 'MANUAL ONLY')			{$campaign_typeSQL="and dial_method IN('MANUAL','INBOUND_MAN')";}
+if ($types == 'INBOUND ONLY')			{$campaign_typeSQL="and campaign_allow_inbound='Y'";}
 
 $stmt="select campaign_id from vicidial_campaigns where active='Y' $LOGallowed_campaignsSQL $campaign_typeSQL order by campaign_id;";
 $rslt=mysql_to_mysqli($stmt, $link);
 if (!isset($DB))   {$DB=0;}
 if ($DB) {$MAIN.="$stmt\n";}
 $groups_to_print = mysqli_num_rows($rslt);
+$groups=array();
 $i=0;
 while ($i < $groups_to_print)
 	{
@@ -250,7 +252,7 @@ $HEADER.=" </STYLE>\n";
 
 
 $HEADER.="<META HTTP-EQUIV=Refresh CONTENT=\"$RR; URL=$PHP_SELF?RR=$RR&DB=$DB&adastats=$adastats&types=$types\">\n";
-$HEADER.="<TITLE>$report_name</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
+$HEADER.="<TITLE>"._QXZ("$report_name")."</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 
 	$short_header=1;
 
@@ -278,16 +280,16 @@ $MAIN.="<input type=hidden name=DB value=$DB>\n";
 $MAIN.="<input type=hidden name=adastats value=$adastats>\n";
 $MAIN.="<select size=1 name=types>\n";
 $MAIN.="<option value=\"SHOW ALL CAMPAIGNS\"";
-	if ($types == 'SHOW ALL CAMPAIGNS') {$MAIN.=" selected";} 
+	if ($types == 'SHOW ALL CAMPAIGNS') {$MAIN.=" selected";}
 $MAIN.=">"._QXZ("SHOW ALL CAMPAIGNS")."</option>";
 $MAIN.="<option value=\"AUTO-DIAL ONLY\"";
-	if ($types == 'AUTO-DIAL ONLY') {$MAIN.=" selected";} 
+	if ($types == 'AUTO-DIAL ONLY') {$MAIN.=" selected";}
 $MAIN.=">"._QXZ("AUTO-DIAL ONLY")."</option>";
 $MAIN.="<option value=\"MANUAL ONLY\"";
-	if ($types == 'MANUAL ONLY') {$MAIN.=" selected";} 
+	if ($types == 'MANUAL ONLY') {$MAIN.=" selected";}
 $MAIN.=">"._QXZ("MANUAL ONLY")."</option>";
 $MAIN.="<option value=\"INBOUND ONLY\"";
-	if ($types == 'INBOUND ONLY') {$MAIN.=" selected";} 
+	if ($types == 'INBOUND ONLY') {$MAIN.=" selected";}
 $MAIN.=">"._QXZ("INBOUND ONLY")."</option>";
 $MAIN.="</select> \n";
 $MAIN.="<input type=submit name=submit value='"._QXZ("SUBMIT")."'>\n";
@@ -519,15 +521,15 @@ $parked_to_print = mysqli_num_rows($rslt);
 		{
 		$row=mysqli_fetch_row($rslt);
 
-		if (preg_match("/LIVE/i",$row[0])) 
+		if (preg_match("/LIVE/i",$row[0]))
 			{$out_live++;}
 		else
 			{
-			if (preg_match("/IVR/i",$row[0])) 
+			if (preg_match("/IVR/i",$row[0]))
 				{$in_ivr++;}
-			if (preg_match("/CLOSER/i",$row[0])) 
+			if (preg_match("/CLOSER/i",$row[0]))
 				{$nothing=1;}
-			else 
+			else
 				{$out_ring++;}
 			}
 		$out_total++;
@@ -549,7 +551,7 @@ $parked_to_print = mysqli_num_rows($rslt);
 			$MAIN.="$NFB$out_total$NFE "._QXZ("calls being placed")." &nbsp; &nbsp; &nbsp; \n";
 			$CSV_text.="\"$NFB$out_total$NFE "._QXZ("calls being placed")."\",\"\"\n";
 			}
-		
+
 		$MAIN.="$NFB$out_ring$NFE "._QXZ("calls ringing")." &nbsp; &nbsp; &nbsp; &nbsp; \n";
 		$MAIN.="$NFB$F &nbsp;$out_live $FG$NFE "._QXZ("calls waiting for agents")." &nbsp; &nbsp; &nbsp; \n";
 		$MAIN.="$NFB &nbsp;$in_ivr$NFE "._QXZ("calls in IVR")." &nbsp; &nbsp; &nbsp; \n";
@@ -603,10 +605,10 @@ $talking_to_print = mysqli_num_rows($rslt);
 		$call_time_MS = "$call_time_M_int:$call_time_SEC";
 		$call_time_MS =		sprintf("%7s", $call_time_MS);
 		$G = '';		$EG = '';
-		if (preg_match("/PAUSED/i",$row[3])) 
+		if (preg_match("/PAUSED/i",$row[3]))
 			{
-			if ($call_time_M_int >= 30) 
-				{$i++; continue;} 
+			if ($call_time_M_int >= 30)
+				{$i++; continue;}
 			else
 				{
 				$agent_paused++;  $agent_total++;
@@ -633,7 +635,7 @@ $talking_to_print = mysqli_num_rows($rslt);
 		$MAIN.="$NFB$B &nbsp;$agent_ready $BG$NFE "._QXZ("agents waiting")." &nbsp; &nbsp; &nbsp; \n";
 		$MAIN.="$NFB$agent_paused$NFE "._QXZ("paused agents")." &nbsp; &nbsp; &nbsp; \n";
 		$CSV_text.="\"$agent_total "._QXZ("agents logged in")."\",\"$agent_incall "._QXZ("agents in calls")."\",\"$agent_ready "._QXZ("agents waiting")."\",\"$agent_paused "._QXZ("paused agents")."\"\n\n";
-				
+
 		$MAIN.="<PRE><FONT SIZE=2>";
 		$MAIN.="";
 	}

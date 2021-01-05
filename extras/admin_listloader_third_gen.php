@@ -1,11 +1,11 @@
 <?php
 # admin_listloader_third_gen.php - version 2.8
 #  (based upon - new_listloader_superL.php script)
-# 
+#
 # Copyright (C) 2017  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # ViciDial web-based lead loader from formatted file
-# 
+#
 # CHANGES
 # 50602-1640 - First version created by Joe Johnson
 # 51128-1108 - Removed PHP global vars requirement
@@ -301,7 +301,7 @@ if ($gmt_recs > 0)
 	$row=mysqli_fetch_row($rslt);
 	$DBSERVER_GMT		=		"$row[0]";
 	if (strlen($DBSERVER_GMT)>0)	{$SERVER_GMT = $DBSERVER_GMT;}
-	if ($isdst) {$SERVER_GMT++;} 
+	if ($isdst) {$SERVER_GMT++;}
 	}
 else
 	{
@@ -322,18 +322,18 @@ echo "<head>\n";
 echo "<!-- VERSION: $version     BUILD: $build -->\n";
 echo "<!-- SEED TIME  $secX:   $year-$mon-$mday $hour:$min:$sec  LOCAL GMT OFFSET NOW: $LOCAL_GMT_OFF  DST: $isdst -->\n";
 
-function macfontfix($fontsize) 
+function macfontfix($fontsize)
 	{
 	$browser = getenv("HTTP_USER_AGENT");
 	$pctype = explode("(", $browser);
-	if (preg_match('/Mac/',$pctype[1])) 
+	if (preg_match('/Mac/',$pctype[1]))
 		{
 		/* Browser is a Mac.  If not Netscape 6, raise fonts */
 		$blownbrowser = explode('/', $browser);
 		$ver = explode(' ', $blownbrowser[1]);
 		$ver = $ver[0];
 		if ($ver >= 5.0) return $fontsize; else return ($fontsize+2);
-		} 
+		}
 	else return $fontsize;	/* Browser is not a Mac - don't touch fonts */
 	}
 
@@ -357,22 +357,22 @@ A.employee_standard {  font-family: garamond, sans-serif; font-size: ".macfontfi
 
 
 <script language="JavaScript1.2">
-function openNewWindow(url) 
+function openNewWindow(url)
 	{
 	window.open (url,"",'width=700,height=300,scrollbars=yes,menubar=yes,address=yes');
 	}
-function ShowProgress(good, bad, total, dup, inv, post) 
+function ShowProgress(good, bad, total, dup, inv, post)
 	{
 	parent.lead_count.document.open();
 	parent.lead_count.document.write('<html><body><table border=0 width=200 cellpadding=10 cellspacing=0 align=center valign=top><tr bgcolor="#000000"><th colspan=2><font face="arial, helvetica" size=3 color=white>Current file status:</font></th></tr><tr bgcolor="#009900"><td align=right><font face="arial, helvetica" size=2 color=white><B>Good:</B></font></td><td align=left><font face="arial, helvetica" size=2 color=white><B>'+good+'</B></font></td></tr><tr bgcolor="#990000"><td align=right><font face="arial, helvetica" size=2 color=white><B>Bad:</B></font></td><td align=left><font face="arial, helvetica" size=2 color=white><B>'+bad+'</B></font></td></tr><tr bgcolor="#000099"><td align=right><font face="arial, helvetica" size=2 color=white><B>Total:</B></font></td><td align=left><font face="arial, helvetica" size=2 color=white><B>'+total+'</B></font></td></tr><tr bgcolor="#009900"><td align=right><font face="arial, helvetica" size=2 color=white><B> &nbsp; </B></font></td><td align=left><font face="arial, helvetica" size=2 color=white><B> &nbsp; </B></font></td></tr><tr bgcolor="#009900"><td align=right><font face="arial, helvetica" size=2 color=white><B>Duplicate:</B></font></td><td align=left><font face="arial, helvetica" size=2 color=white><B>'+dup+'</B></font></td></tr></tr><tr bgcolor="#009900"><td align=right><font face="arial, helvetica" size=2 color=white><B>Invalid:</B></font></td><td align=left><font face="arial, helvetica" size=2 color=white><B>'+inv+'</B></font></td></tr><tr bgcolor="#009900"><td align=right><font face="arial, helvetica" size=2 color=white><B>Postal Match:</B></font></td><td align=left><font face="arial, helvetica" size=2 color=white><B>'+post+'</B></font></td></tr></table><body></html>');
 	parent.lead_count.document.close();
 	}
-function ParseFileName() 
+function ParseFileName()
 	{
-	if (!document.forms[0].OK_to_process) 
-		{	
+	if (!document.forms[0].OK_to_process)
+		{
 		var endstr=document.forms[0].leadfile.value.lastIndexOf('\\');
-		if (endstr>-1) 
+		if (endstr>-1)
 			{
 			endstr++;
 			var filename=document.forms[0].leadfile.value.substring(endstr);
@@ -399,8 +399,8 @@ if ( (!$OK_to_process) or ( ($leadfile) and ($file_layout!="standard") ) )
 	<form action=<?php echo $PHP_SELF ?> method=post onSubmit="ParseFileName()" enctype="multipart/form-data">
 	<input type=hidden name='leadfile_name' value="<?php echo $leadfile_name ?>">
 	<input type=hidden name='DB' value="<?php echo $DB ?>">
-	<?php 
-	if ($file_layout!="custom") 
+	<?php
+	if ($file_layout!="custom")
 		{
 		?>
 		<table align=center width="700" border=0 cellpadding=5 cellspacing=0 bgcolor=#D9E6FE>
@@ -419,7 +419,7 @@ if ( (!$OK_to_process) or ( ($leadfile) and ($file_layout!="standard") ) )
 			$num_rows = mysqli_num_rows($rslt);
 
 			$count=0;
-			while ( $num_rows > $count ) 
+			while ( $num_rows > $count )
 				{
 				$row = mysqli_fetch_row($rslt);
 				echo "<option value=\'$row[0]\'>$row[0] - $row[1]</option>\n";
@@ -438,7 +438,7 @@ if ( (!$OK_to_process) or ( ($leadfile) and ($file_layout!="standard") ) )
 			$stmt="select distinct country_code, country from vicidial_phone_codes;";
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$num_rows = mysqli_num_rows($rslt);
-			
+
 			$count=0;
 	                while ( $num_rows > $count )
 				{
@@ -483,7 +483,7 @@ if ( (!$OK_to_process) or ( ($leadfile) and ($file_layout!="standard") ) )
 		  </tr>
 		  <tr><td align=left><font size=1> &nbsp; &nbsp; &nbsp; &nbsp; <a href="admin.php?ADD=100" target="_parent">BACK TO ADMIN</a> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </font></td><td align=right><font size=1>LIST LOADER 3rd Gen- &nbsp; &nbsp; VERSION: <?php echo $version ?> &nbsp; &nbsp; BUILD: <?php echo $build ?> &nbsp; &nbsp; </td></tr>
 		</table>
-		<?php 
+		<?php
 
 		}
 	}
@@ -531,7 +531,7 @@ else
 
 
 ##### BEGIN custom fields submission #####
-if ($OK_to_process) 
+if ($OK_to_process)
 	{
 	print "<script language='JavaScript1.2'>document.forms[0].leadfile.disabled=true;document.forms[0].list_id_override.disabled=true;document.forms[0].phone_code_override.disabled=true; document.forms[0].submit_file.disabled=true; document.forms[0].reload_page.disabled=true;</script>";
 	flush();
@@ -549,18 +549,18 @@ if ($OK_to_process)
 	if ($tab_count>$pipe_count) {$delimiter="\t";  $delim_name="tab";} else {$delimiter="|";  $delim_name="pipe";}
 	$field_check=explode($delimiter, $buffer);
 
-	if (count($field_check)>=2) 
+	if (count($field_check)>=2)
 		{
 		flush();
 		$file=fopen("$lead_file", "r");
 		print "<center><font face='arial, helvetica' size=3 color='#009900'><B>Processing file...\n";
 
-		if (strlen($list_id_override)>0) 
+		if (strlen($list_id_override)>0)
 			{
 			print "<BR><BR>LIST ID OVERRIDE FOR THIS FILE: $list_id_override<BR><BR>";
 			}
 
-		if (strlen($phone_code_override)>0) 
+		if (strlen($phone_code_override)>0)
 			{
 			print "<BR><BR>PHONE CODE OVERRIDE FOR THIS FILE: $phone_code_override<BR><BR>";
 			}
@@ -576,14 +576,14 @@ if ($OK_to_process)
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$tablecount_to_print = mysqli_num_rows($rslt);
 
-			if ($tablecount_to_print > 0) 
+			if ($tablecount_to_print > 0)
 				{
 				$stmt="SELECT count(*) from vicidial_lists_fields where list_id='$list_id_override';";
 				if ($DB>0) {echo "$stmt\n";}
 				$rslt=mysql_to_mysqli($stmt, $link);
 				$fieldscount_to_print = mysqli_num_rows($rslt);
 
-				if ($fieldscount_to_print > 0) 
+				if ($fieldscount_to_print > 0)
 					{
 					$stmt="SELECT field_label,field_type from vicidial_lists_fields where list_id='$list_id_override' order by field_rank,field_order,field_label;";
 					if ($DB>0) {echo "$stmt\n";}
@@ -591,7 +591,7 @@ if ($OK_to_process)
 					$fields_to_print = mysqli_num_rows($rslt);
 					$fields_list='';
 					$o=0;
-					while ($fields_to_print > $o) 
+					while ($fields_to_print > $o)
 						{
 						$rowx=mysqli_fetch_row($rslt);
 						$A_field_label[$o] =	$rowx[0];
@@ -603,13 +603,13 @@ if ($OK_to_process)
 				}
 			}
 
-		while (!feof($file)) 
+		while (!feof($file))
 			{
 			$record++;
 			$buffer=rtrim(fgets($file, 4096));
 			$buffer=stripslashes($buffer);
 
-			if (strlen($buffer)>0) 
+			if (strlen($buffer)>0)
 				{
 				$row=explode($delimiter, preg_replace('/[\'\"]/i', '', $buffer));
 
@@ -646,7 +646,7 @@ if ($OK_to_process)
 				$comments =				trim($row[$comments_field]);
 				$rank =					$row[$rank_field];
 				$owner =				$row[$owner_field];
-				
+
 				# replace ' " ` \ ; with nothing
 				$vendor_lead_code =		preg_replace("/$field_regx/i", "", $vendor_lead_code);
 				$source_code =			preg_replace("/$field_regx/i", "", $source_code);
@@ -674,15 +674,15 @@ if ($OK_to_process)
 				$comments =				preg_replace("/$field_regx/i", "", $comments);
 				$rank =					preg_replace("/$field_regx/i", "", $rank);
 				$owner =				preg_replace("/$field_regx/i", "", $owner);
-				
+
 				$USarea = 			substr($phone_number, 0, 3);
 
-				if (strlen($list_id_override)>0) 
+				if (strlen($list_id_override)>0)
 					{
 				#	print "<BR><BR>LIST ID OVERRIDE FOR THIS FILE: $list_id_override<BR><BR>";
 					$list_id = $list_id_override;
 					}
-				if (strlen($phone_code_override)>0) 
+				if (strlen($phone_code_override)>0)
 					{
 					$phone_code = $phone_code_override;
 					}
@@ -691,12 +691,12 @@ if ($OK_to_process)
 				$custom_SQL='';
 				if ($custom_fields_enabled > 0)
 					{
-					if ($tablecount_to_print > 0) 
+					if ($tablecount_to_print > 0)
 						{
 						if ($fieldscount_to_print > 0)
 							{
 							$o=0;
-							while ($fields_to_print > $o) 
+							while ($fields_to_print > $o)
 								{
 								$A_field_value[$o] =	'';
 								$field_name_id = $A_field_label[$o] . "_field";
@@ -903,7 +903,7 @@ if ($OK_to_process)
 						$affected_rows = mysqli_affected_rows($link);
 						$lead_id = mysqli_insert_id($link);
 						if ($DB > 0) {echo "<!-- $affected_rows|$lead_id|$stmtZ -->";}
-						if ($webroot_writable > 0) 
+						if ($webroot_writable > 0)
 							{fwrite($stmt_file, $stmtZ."\r\n");}
 						$multistmt='';
 
@@ -914,12 +914,12 @@ if ($OK_to_process)
 						}
 					else
 						{
-						if ($multi_insert_counter > 8) 
+						if ($multi_insert_counter > 8)
 							{
 							### insert good record into vicidial_list table ###
 							$stmtZ = "INSERT INTO vicidial_list (lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id) values$multistmt('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country_code','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments',0,'2008-01-01 00:00:00','$rank','$owner','0');";
 							$rslt=mysql_to_mysqli($stmtZ, $link);
-							if ($webroot_writable > 0) 
+							if ($webroot_writable > 0)
 								{fwrite($stmt_file, $stmtZ."\r\n");}
 							$multistmt='';
 							$multi_insert_counter=0;
@@ -955,7 +955,7 @@ if ($OK_to_process)
 					$bad++;
 					}
 				$total++;
-				if ($total%100==0) 
+				if ($total%100==0)
 					{
 					print "<script language='JavaScript1.2'>ShowProgress($good, $bad, $total, $dup, $inv, $post)</script>";
 					usleep(1000);
@@ -963,11 +963,11 @@ if ($OK_to_process)
 					}
 				}
 			}
-		if ($multi_insert_counter!=0) 
+		if ($multi_insert_counter!=0)
 			{
 			$stmtZ = "INSERT INTO vicidial_list (lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id) values".substr($multistmt, 0, -1).";";
 			mysql_to_mysqli($stmtZ, $link);
-			if ($webroot_writable > 0) 
+			if ($webroot_writable > 0)
 				{fwrite($stmt_file, $stmtZ."\r\n");}
 			}
 
@@ -977,8 +977,8 @@ if ($OK_to_process)
 		$rslt=mysql_to_mysqli($stmt, $link);
 
 		print "<BR><BR>Done</B> GOOD: $good &nbsp; &nbsp; &nbsp; BAD: $bad &nbsp; &nbsp; &nbsp; TOTAL: $total</font></center>";
-		} 
-	else 
+		}
+	else
 		{
 		print "<center><font face='arial, helvetica' size=3 color='#990000'><B>ERROR: The file does not have the required number of fields to process it.</B></font></center>";
 		}
@@ -999,7 +999,7 @@ if (($leadfile) && ($LF_path))
 
 
 	##### BEGIN process standard file layout #####
-	if ($file_layout=="standard") 
+	if ($file_layout=="standard")
 		{
 		print "<script language='JavaScript1.2'>document.forms[0].leadfile.disabled=true; document.forms[0].submit_file.disabled=true; document.forms[0].reload_page.disabled=true;</script>";
 		flush();
@@ -1007,7 +1007,7 @@ if (($leadfile) && ($LF_path))
 
 		$delim_set=0;
 		# csv xls xlsx ods sxc conversion
-		if (preg_match("/\.csv$|\.xls$|\.xlsx$|\.ods$|\.sxc$/i", $leadfile_name)) 
+		if (preg_match("/\.csv$|\.xls$|\.xlsx$|\.ods$|\.sxc$/i", $leadfile_name))
 			{
 			$leadfile_name = preg_replace('/[^-\.\_0-9a-zA-Z]/','_',$leadfile_name);
 			copy($LF_path, "/tmp/$leadfile_name");
@@ -1040,38 +1040,38 @@ if (($leadfile) && ($LF_path))
 		if ($delim_set < 1)
 			{
 			if ($tab_count>$pipe_count)
-				{$delim_name="tab-delimited";} 
-			else 
+				{$delim_name="tab-delimited";}
+			else
 				{$delim_name="pipe-delimited";}
-			} 
+			}
 		if ($tab_count>$pipe_count)
 			{$delimiter="\t";}
-		else 
+		else
 			{$delimiter="|";}
 
 		$field_check=explode($delimiter, $buffer);
 
-		if (count($field_check)>=2) 
+		if (count($field_check)>=2)
 			{
 			flush();
 			$file=fopen("$lead_file", "r");
 			$total=0; $good=0; $bad=0; $dup=0; $post=0; $phone_list='';
 			print "<center><font face='arial, helvetica' size=3 color='#009900'><B>Processing $delim_name file... ($tab_count|$pipe_count)\n";
-			if (strlen($list_id_override)>0) 
+			if (strlen($list_id_override)>0)
 				{
 				print "<BR><BR>LIST ID OVERRIDE FOR THIS FILE: $list_id_override<BR><BR>";
 				}
-			if (strlen($phone_code_override)>0) 
+			if (strlen($phone_code_override)>0)
 				{
 				print "<BR><BR>PHONE CODE OVERRIDE FOR THIS FILE: $phone_code_override<BR><BR>\n";
 				}
-			while (!feof($file)) 
+			while (!feof($file))
 				{
 				$record++;
 				$buffer=rtrim(fgets($file, 4096));
 				$buffer=stripslashes($buffer);
 
-				if (strlen($buffer)>0) 
+				if (strlen($buffer)>0)
 					{
 					$row=explode($delimiter, preg_replace('/[\'\"]/i', '', $buffer));
 
@@ -1108,7 +1108,7 @@ if (($leadfile) && ($LF_path))
 					$comments =				trim($row[22]);
 					$rank =					$row[23];
 					$owner =				$row[24];
-						
+
 					# replace ' " ` \ ; with nothing
 					$vendor_lead_code =		preg_replace("/$field_regx/i", "", $vendor_lead_code);
 					$source_code =			preg_replace("/$field_regx/i", "", $source_code);
@@ -1136,14 +1136,14 @@ if (($leadfile) && ($LF_path))
 					$comments =				preg_replace("/$field_regx/i", "", $comments);
 					$rank =					preg_replace("/$field_regx/i", "", $rank);
 					$owner =				preg_replace("/$field_regx/i", "", $owner);
-					
+
 					$USarea = 			substr($phone_number, 0, 3);
 
-					if (strlen($list_id_override)>0) 
+					if (strlen($list_id_override)>0)
 						{
 						$list_id = $list_id_override;
 						}
-					if (strlen($phone_code_override)>0) 
+					if (strlen($phone_code_override)>0)
 						{
 						$phone_code = $phone_code_override;
 						}
@@ -1313,23 +1313,23 @@ if (($leadfile) && ($LF_path))
 
 						$gmt_offset = lookup_gmt($phone_code,$USarea,$state,$LOCAL_GMT_OFF_STD,$Shour,$Smin,$Ssec,$Smon,$Smday,$Syear,$postalgmt,$postal_code,$owner);
 
-						if ($multi_insert_counter > 8) 
+						if ($multi_insert_counter > 8)
 							{
 							### insert good deal into pending_transactions table ###
 							$stmtZ = "INSERT INTO vicidial_list (lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id) values$multistmt('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country_code','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments',0,'2008-01-01 00:00:00','$rank','$owner','0');";
 							$rslt=mysql_to_mysqli($stmtZ, $link);
-							if ($webroot_writable > 0) 
+							if ($webroot_writable > 0)
 								{fwrite($stmt_file, $stmtZ."\r\n");}
 							$multistmt='';
 							$multi_insert_counter=0;
-							} 
-						else 
+							}
+						else
 							{
 							$multistmt .= "('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country_code','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments',0,'2008-01-01 00:00:00','$rank','$owner','0'),";
 							$multi_insert_counter++;
 							}
 						$good++;
-						} 
+						}
 					else
 						{
 						if ($bad < 1000000)
@@ -1353,7 +1353,7 @@ if (($leadfile) && ($LF_path))
 						$bad++;
 						}
 					$total++;
-					if ($total%100==0) 
+					if ($total%100==0)
 						{
 						print "<script language='JavaScript1.2'>ShowProgress($good, $bad, $total, $dup, $inv, $post)</script>";
 						usleep(1000);
@@ -1361,11 +1361,11 @@ if (($leadfile) && ($LF_path))
 						}
 					}
 				}
-			if ($multi_insert_counter!=0) 
+			if ($multi_insert_counter!=0)
 				{
 				$stmtZ = "INSERT INTO vicidial_list (lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id) values".substr($multistmt, 0, -1).";";
 				mysql_to_mysqli($stmtZ, $link);
-				if ($webroot_writable > 0) 
+				if ($webroot_writable > 0)
 					{fwrite($stmt_file, $stmtZ."\r\n");}
 				}
 			### LOG INSERTION Admin Log Table ###
@@ -1375,16 +1375,16 @@ if (($leadfile) && ($LF_path))
 
 			print "<BR><BR>Done</B> GOOD: $good &nbsp; &nbsp; &nbsp; BAD: $bad &nbsp; &nbsp; &nbsp; TOTAL: $total</font></center>";
 			}
-		else 
+		else
 			{
 			print "<center><font face='arial, helvetica' size=3 color='#990000'><B>ERROR: The file does not have the required number of fields to process it.</B></font></center>";
 			}
 		}
 	##### END process standard file layout #####
 
-		
+
 	##### BEGIN field chooser #####
-	else 
+	else
 		{
 		print "<script language='JavaScript1.2'>document.forms[0].leadfile.disabled=true; document.forms[0].submit_file.disabled=true; document.forms[0].reload_page.disabled=true;</script><HR>";
 		flush();
@@ -1403,13 +1403,13 @@ if (($leadfile) && ($LF_path))
 			if ($DB>0) {echo "$stmt\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$tablecount_to_print = mysqli_num_rows($rslt);
-			if ($tablecount_to_print > 0) 
+			if ($tablecount_to_print > 0)
 				{
 				$stmt="SELECT count(*) from vicidial_lists_fields where list_id='$list_id_override';";
 				if ($DB>0) {echo "$stmt\n";}
 				$rslt=mysql_to_mysqli($stmt, $link);
 				$fieldscount_to_print = mysqli_num_rows($rslt);
-				if ($fieldscount_to_print > 0) 
+				if ($fieldscount_to_print > 0)
 					{
 					$rowx=mysqli_fetch_row($rslt);
 					$custom_records_count =	$rowx[0];
@@ -1421,7 +1421,7 @@ if (($leadfile) && ($LF_path))
 					$fields_to_print = mysqli_num_rows($rslt);
 					$fields_list='';
 					$o=0;
-					while ($fields_to_print > $o) 
+					while ($fields_to_print > $o)
 						{
 						$rowx=mysqli_fetch_row($rslt);
 						$A_field_label[$o] =	$rowx[1];
@@ -1451,7 +1451,7 @@ if (($leadfile) && ($LF_path))
 
 		# csv xls xlsx ods sxc conversion
 		$delim_set=0;
-		if (preg_match("/\.csv$|\.xls$|\.xlsx$|\.ods$|\.sxc$/i", $leadfile_name)) 
+		if (preg_match("/\.csv$|\.xls$|\.xlsx$|\.ods$|\.sxc$/i", $leadfile_name))
 			{
 			$leadfile_name = preg_replace('/[^-\.\_0-9a-zA-Z]/','_',$leadfile_name);
 			copy($LF_path, "/tmp/$leadfile_name");
@@ -1484,13 +1484,13 @@ if (($leadfile) && ($LF_path))
 		if ($delim_set < 1)
 			{
 			if ($tab_count>$pipe_count)
-				{$delim_name="tab-delimited";} 
-			else 
+				{$delim_name="tab-delimited";}
+			else
 				{$delim_name="pipe-delimited";}
-			} 
+			}
 		if ($tab_count>$pipe_count)
 			{$delimiter="\t";}
-		else 
+		else
 			{$delimiter="|";}
 
 		$field_check=explode($delimiter, $buffer);
@@ -1498,18 +1498,18 @@ if (($leadfile) && ($LF_path))
 		$file=fopen("$lead_file", "r");
 		print "<center><font face='arial, helvetica' size=3 color='#009900'><B>Processing $delim_name file...\n";
 
-		if (strlen($list_id_override)>0) 
+		if (strlen($list_id_override)>0)
 			{
 			print "<BR><BR>LIST ID OVERRIDE FOR THIS FILE: $list_id_override<BR><BR>";
 			}
-		if (strlen($phone_code_override)>0) 
+		if (strlen($phone_code_override)>0)
 			{
 			print "<BR><BR>PHONE CODE OVERRIDE FOR THIS FILE: $phone_code_override<BR><BR>";
 			}
 		$buffer=rtrim(fgets($file, 4096));
 		$buffer=stripslashes($buffer);
 		$row=explode($delimiter, preg_replace('/[\'\"]/i', '', $buffer));
-		
+
 		while ($fieldinfo=mysqli_fetch_field($rslt))
 			{
 			$rslt_field_name=$fieldinfo->name;
@@ -1517,14 +1517,14 @@ if (($leadfile) && ($LF_path))
 				{
 				print "<!-- skipping " . $rslt_field_name . " -->\n";
 				}
-			else 
+			else
 				{
 				print "  <tr bgcolor=#D9E6FE>\r\n";
 				print "    <td align=right><font class=standard>".strtoupper(preg_replace('/_/i', ' ', $rslt_field_name)).": </font></td>\r\n";
 				print "    <td align=center><select name='".$rslt_field_name."_field'>\r\n";
 				print "     <option value='-1'>(none)</option>\r\n";
 
-				for ($j=0; $j<count($row); $j++) 
+				for ($j=0; $j<count($row); $j++)
 					{
 					preg_replace('/\"/i', '', $row[$j]);
 					print "     <option value='$j'>\"$row[$j]\"</option>\r\n";

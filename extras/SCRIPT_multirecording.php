@@ -1,15 +1,15 @@
 <?php
 # SCRIPT_multirecording.php - script page that stops/starts recordings being made over a forced-recording (ALLFORCE) call
-# 
+#
 # Copyright (C) 2018  Joe Johnson <joej@vicidial.com>    LICENSE: AGPLv2
 # - works in conjunction with SCRIPT_multirecording_AJAX.php to allow reps the ability to make their own recordings over the course of a call while the entire call is being recorded into its own file, as in ALLFORCE recording.
 #
-# Implementation is done by creating a script in the Scripts section that calls this page within an <iframe> tag which passes several essential dialer variables to the page 
+# Implementation is done by creating a script in the Scripts section that calls this page within an <iframe> tag which passes several essential dialer variables to the page
 #
 # SAMPLE SCRIPT TEXT:
 # <iframe src="http://<your-domain.com>/agc/SCRIPT_multirecording.php?campaign=--A--campaign--B--&lead_id=--A--lead_id--B--&phone_number=--A--phone_number--B--&session_id=--A--session_id--B--&server_ip=--A--server_ip--B--&user=--A--user--B--&vendor_lead_code=--A--vendor_lead_code--B--&uniqueid=--A--uniqueid--B--" style="width:570;height:275;background-color:transparent;" scrolling="auto" frameborder="0" allowtransparency="true" id="popupFrame" name="popupFrame" width="570" height="270"></iframe>
 #
-# All style parameters may be adjusted to suit your needs, but all variables listed in the above example MUST be passed to the VICI_multirecording.php page if this is implemented. 
+# All style parameters may be adjusted to suit your needs, but all variables listed in the above example MUST be passed to the VICI_multirecording.php page if this is implemented.
 # Variables are: campaign, lead_id, phone_number, session_id, server_ip, user, vendor_lead_code, uniqueid
 #
 # CHANGELOG
@@ -102,28 +102,28 @@ function RecordingAction(campaign, lead_id, phone_number, user, session_id, serv
 		{
 		xmlhttp = new XMLHttpRequest();
 		}
-	if (xmlhttp) 
-		{ 
-		if (rec_action=="START") 
+	if (xmlhttp)
+		{
+		if (rec_action=="START")
 			{
 			recording_query = "&campaign=" + campaign + "&lead_id=" + lead_id + "&phone_number=" + phone_number + "&user=" + user + "&session_id=" + session_id + "&server_ip=" + server_ip + "&vendor_lead_code=" + vendor_lead_code + "&uniqueid=" + uniqueid + "&rec_action=" + rec_action;
 			}
-		else 
+		else
 			{
 			recording_query = "&campaign=" + campaign + "&lead_id=" + lead_id + "&phone_number=" + phone_number + "&user=" + user + "&session_id=" + session_id + "&server_ip=" + server_ip + "&vendor_lead_code=" + vendor_lead_code + "&uniqueid=" + uniqueid + "&rec_action=" + rec_action + "&recording_channel=" + recording_channel;
 			}
-		xmlhttp.open('POST', 'SCRIPT_multirecording_AJAX.php'); 
+		xmlhttp.open('POST', 'SCRIPT_multirecording_AJAX.php');
 		xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-		xmlhttp.send(recording_query); 
-		xmlhttp.onreadystatechange = function() 
-			{ 
-			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+		xmlhttp.send(recording_query);
+		xmlhttp.onreadystatechange = function()
+			{
+			if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 				{
 				recording_response = null;
 				recording_response = xmlhttp.responseText;
 			//	alert(recording_query);
 			//	alert(xmlhttp.responseText);
-				if (recording_response.length>0 && rec_action=="START") 
+				if (recording_response.length>0 && rec_action=="START")
 					{
 					var recording_response_array=recording_response.split("|");
 					var recording_id=recording_response_array[0];

@@ -1,4 +1,4 @@
-﻿100001|10001|108|1|7275551213|MR|GREEK|P|Ενεργές|249  τηλ. συνδέσεις|||Καταγραμμένων|FL||33709|USA|M|1970-01-01|7275551212|test@test.com|nothing|Ελεγχος τηλ.σύνδεσης διάσκεψης
+100001|10001|108|1|7275551213|MR|GREEK|P|Ενεργές|249  τηλ. συνδέσεις|||Καταγραμμένων|FL||33709|USA|M|1970-01-01|7275551212|test@test.com|nothing|Ελεγχος τηλ.σύνδεσης διάσκεψης
 100002|10002|108|44|7275551213|MR|FRENCH|P|Vous êtes|249  maintenant déconnecté|||Numéro|FL||33709|USA|M|1970-01-01|7275551212|test@test.com|England|VOUS DEVEZ ÊTRE Français
 100003|10003|108|61|864886000|MR|SPANISH|P|Español|249 LA GRABACIÓN DURARÁ|||Inválido|WA|AUS|33709|USA|M|1970-01-01|7275551212|test@test.com|WestAustralia|Inválido
 100004|10004|108|61|740421111|MR|RUSSIAN|P|языки|249 здравствулте! там|||MALDON|QL|AUS|33709|USA|M|1970-01-01|7275551212|test@test.com|Queensland|добро пожаловать

@@ -1,13 +1,13 @@
 #!/usr/bin/perl
 #
 # AST_send_action_child.pl version 2.14
-# 
+#
 # Part of the Asterisk Central Queue System (ACQS)
 #
 # DESCRIPTION:
 # This script is spawned every time an action is to be executed by the main
 # AST_manager_send.pl script and sends actions blindly to the Asterisk manager
-# 
+#
 # SUMMARY:
 # This program was designed as the blind-send part of the ACQS. It's job is to
 # be spawned by the AST_manager_send.pl script lookup the record in the MySQL DB
@@ -157,7 +157,7 @@ if ($action) {
 		print "  cmd_line_j:            $cmd_line_j\n" if ($cmd_line_j);
 		print "  cmd_line_k:            $cmd_line_k\n" if ($cmd_line_k);
 	}
-	  
+
 	$telnet_port = '5038' if (!$telnet_port);
 
 	### connect to asterisk manager through telnet
@@ -237,7 +237,7 @@ if ($action) {
 	eventLogger($PATHlogs,'full',$event_string) if ($FULL_LOG and $SYSLOG);
 
 	my @list_channels = $tn->cmd(String => $originate_command,
-		Prompt => '/.*/'); 
+		Prompt => '/.*/');
 
 	$tn->waitfor(Match => '/Response:.*\n/', Timeout => 10);
 	$tn->waitfor(Match => '/Message:.*\n\n/', Timeout => 10);
@@ -255,10 +255,10 @@ if ($action) {
 	}
 
 	$tn->buffer_empty;
-	#@hangup = $tn->cmd(String => "Action: Logoff\n\n", Prompt => "/.*/"); 
+	#@hangup = $tn->cmd(String => "Action: Logoff\n\n", Prompt => "/.*/");
 	$tn->cmd(String => "Action: Logoff\n\n", Prompt => "/.*/");
-        $tn->buffer_empty;	
-	
+        $tn->buffer_empty;
+
 	$tn->waitfor(Match => '/Message:.*\n\n/', Timeout => 15);
 
 	if ($FULL_LOG and $SYSLOG) {
@@ -294,9 +294,9 @@ exit 0;
 #    $EventString : String to record in log.
 sub eventLogger {
 	my ($path,$type,$string) = @_;
-	open(LOG, ">>" . $path . "/action_" . $type . "." . logDate())
-		|| die "Can't open " . $path . "/action_" . $type . "." .
-			logDate() . ": " . $! . "\n";
+	open(LOG, ">>" . $path . "/action_" . $type . ".log")
+		|| die "Can't open " . $path . "/action_" . $type . ".log" .
+			": " . $! . "\n";
 	print LOG nowDate() . "|" . $string . "|\n";
 	close(LOG);
 }

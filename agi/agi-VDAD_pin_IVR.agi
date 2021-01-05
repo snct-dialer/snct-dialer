@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # agi-VDAD_pin_IVR.agi version 2.0.5   *DBI-version*
-# 
+#
 # At the end of a call, the agent transfers customer to this script
 #
 # This script plays a beep then plays the first portion of the message
@@ -99,13 +99,13 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port) {$VARDB_port='3306';}
-if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout";}
+if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout.log";}
 
 use DBI;
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
     or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
@@ -183,7 +183,7 @@ while(<STDIN>) {
 	if ($extension =~ /^8320\d\*/)
 		{
 		@EXT_vars = split(/\*/, $extension);
-		
+
 		$referring_extension =	$EXT_vars[0];	# initial extension sent
 		$phone_number =		$EXT_vars[1];	# phone number
 		$lead_id =		$EXT_vars[2];	# lead_id in vicidial_list
@@ -202,7 +202,7 @@ sleep(1);
 
 $AGI->stream_file("$first_audio_file");
 
-### insert a record into the vicidial_list_pins table 
+### insert a record into the vicidial_list_pins table
 $stmtA = "INSERT INTO vicidial_list_pins (entry_time,phone_number,lead_id,campaign_id,product_code,user,digits) values('$SQLdate','$phone_number','$lead_id','$campaign_id','$product_code','$user','IVR');";
 
 $affected_rows = $dbhA->do($stmtA);

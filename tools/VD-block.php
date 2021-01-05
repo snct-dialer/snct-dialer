@@ -1,4 +1,4 @@
-<?php 
+<?php
 #
 # Modul Block All Inbounds from list_id
 #

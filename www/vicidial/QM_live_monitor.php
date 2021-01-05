@@ -1,6 +1,6 @@
-<?php 
+<?php
 # QM_live_monitor.php
-# 
+#
 # Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # Script to initiate live monitoring from QueueMetrics link
@@ -122,7 +122,7 @@ if ($enable_queuemetrics_logging > 0)
 
 				$monitorURL = "$admDIR$monitor_script?source=queuemetrics&function=blind_monitor&user=$user&pass=$call&phone_login=$extension&session_id=$session&server_ip=$server_ip&stage=$stage&value=$stage&agent_user=$user";
 				$monitorCONTENTS = file("$monitorURL");
-	
+
 				if (preg_match('/SUCCESS/i',$monitorCONTENTS[0]))
 					{
 					echo "<HTML><BODY BGCOLOR=\"E6E6E6\" onLoad=\"javascript:window.close();\">\n";

@@ -130,9 +130,9 @@ $server_ip = $VARserver_ip;		# Asterisk server IP
 
 if (!$VARDB_port) {$VARDB_port='3306';}
 
-use DBI;	  
+use DBI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 
@@ -212,7 +212,7 @@ foreach(@lead_id)
 	$sthA->finish();
 
 	### If no match found in active log tables, search in the _archive log tables
-	if ($rec_count < 1) 
+	if ($rec_count < 1)
 		{
 		$stmtA = "select status,start_epoch from vicidial_log_archive where lead_id='$lead_id[$b]' order by call_date desc LIMIT 1;";
 			if($DBX){print STDERR "\n|$stmtA|\n";}
@@ -249,10 +249,10 @@ foreach(@lead_id)
 
 	if ($Cepoch > $Nepoch) {$NEWstatus = $Cstatus;}
 	else {$NEWstatus = $Nstatus;}
-	if ($NEWstatus =~ /^$NFstatus$/) 
+	if ($NEWstatus =~ /^$NFstatus$/)
 		{
 		$not_found++;
-		if ($archive > 0) 
+		if ($archive > 0)
 			{
 			$archive_not_found++;
 			}
@@ -260,7 +260,7 @@ foreach(@lead_id)
 	else
 		{
 		$found++;
-		if ($archive > 0) 
+		if ($archive > 0)
 			{
 			$archive_found++;
 			}

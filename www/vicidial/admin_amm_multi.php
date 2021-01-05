@@ -1,11 +1,11 @@
 <?php
 # admin_amm_multi.php
-# 
+#
 # Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
-# this screen will control the *amd* settings needed when the Campaign setting 
-# "AM Message Wildcards" is enabled. This screen allows for multiple messages 
-# and fields to be entered and ranked in the order in which they are are to be 
+# this screen will control the *amd* settings needed when the Campaign setting
+# "AM Message Wildcards" is enabled. This screen allows for multiple messages
+# and fields to be entered and ranked in the order in which they are are to be
 # searched.
 #
 # changes:
@@ -240,7 +240,7 @@ if ($names_to_print > 0)
 <div id='HelpDisplayDiv' class='help_info' style='display:none;'></div>
 
 <title><?php echo _QXZ("ADMINISTRATION: AM Message Multi Entry") . " " . $campaign_id . " - " . $camp_name; ?>
-<?php 
+<?php
 
 
 require("admin_header.php");
@@ -395,10 +395,10 @@ if ($action == "BLANK")
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$types_to_print = mysqli_num_rows($rslt);
 	$o=0;
-	while ($types_to_print > $o) 
+	while ($types_to_print > $o)
 		{
 		$rowx=mysqli_fetch_row($rslt);
-		
+
 		$Ramm_id =			$rowx[0];
 		$Ractive =			$rowx[1];
 		$Ramm_rank =		$rowx[2];
@@ -408,7 +408,7 @@ if ($action == "BLANK")
 		$Ramm_field =		$rowx[6];
 
 		if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-			{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+			{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 		else
 			{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 		$o++;

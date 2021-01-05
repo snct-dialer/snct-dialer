@@ -1,5 +1,5 @@
 <?php
-# 
+#
 # functions.php    version 2.12
 #
 # functions for agent scripts
@@ -141,7 +141,7 @@ function user_authorization($user,$pass,$user_option,$user_update,$bcrypt,$retur
 	#		$row=mysqli_fetch_row($rslt);
 	#		$ap_total =					$row[0];
 	#		}
-		
+
 		$stmt = "SELECT count(*) FROM vicidial_live_agents where user!='$user';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		if ($DB) {echo "$stmt\n";}
@@ -223,14 +223,14 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user)
 	$rslt=mysql_to_mysqli($stmt, $link);
 		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'05002',$user,$server_ip,$session_name,$one_mysql_log);}
 	$tablecount_to_print = mysqli_num_rows($rslt);
-	if ($tablecount_to_print > 0) 
+	if ($tablecount_to_print > 0)
 		{
 		$stmt="SELECT count(*) from custom_$list_id;";
 		if ($DB>0) {echo "$stmt";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'05003',$user,$server_ip,$session_name,$one_mysql_log);}
 		$fieldscount_to_print = mysqli_num_rows($rslt);
-		if ($fieldscount_to_print > 0) 
+		if ($fieldscount_to_print > 0)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$custom_records_count =	$rowx[0];
@@ -242,7 +242,7 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user)
 			$fields_to_print = mysqli_num_rows($rslt);
 			$fields_list='';
 			$o=0;
-			while ($fields_to_print > $o) 
+			while ($fields_to_print > $o)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$A_field_id[$o] =			$rowx[0];
@@ -303,7 +303,7 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user)
 				{
 				$row=mysqli_fetch_row($rslt);
 				$o=0;
-				while ($fields_to_print >= $o) 
+				while ($fields_to_print >= $o)
 					{
 					$A_field_value[$o]		= trim("$row[$o]");
 					if ($A_field_select[$o]=='----EMPTY----')
@@ -322,12 +322,12 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user)
 
 			$CFoutput .= "<input type=hidden name=stage id=stage value=\"SUBMIT\">\n";
 			$CFoutput .= "<center><TABLE cellspacing=2 cellpadding=2>\n";
-			if ($fields_to_print < 1) 
+			if ($fields_to_print < 1)
 				{$CFoutput .= "<tr bgcolor=white align=center><td colspan=4><font size=1>"._QXZ("There are no custom fields for this list")."</td></tr>";}
 
 			$o=0;
 			$last_field_rank=0;
-			while ($fields_to_print > $o) 
+			while ($fields_to_print > $o)
 				{
 				$helpHTML='';
 				if (strlen($A_field_help[$o])>0)
@@ -378,7 +378,7 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user)
 							$field_options_value_array = explode(",",$field_options_array[$te]);
 							if ( ($A_field_type[$o]=='SELECT') or ($A_field_type[$o]=='MULTI') )
 								{
-								if (strlen($A_field_value[$o]) > 0) 
+								if (strlen($A_field_value[$o]) > 0)
 									{
 									if (preg_match("/$field_options_value_array[0]/",$A_field_value[$o]))
 										{$field_selected = 'SELECTED';}
@@ -391,9 +391,9 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user)
 								}
 							if ( ($A_field_type[$o]=='RADIO') or ($A_field_type[$o]=='CHECKBOX') )
 								{
-								if ($A_multi_position[$o]=='VERTICAL') 
+								if ($A_multi_position[$o]=='VERTICAL')
 									{$field_HTML .= " &nbsp; ";}
-								if (strlen($A_field_value[$o]) > 0) 
+								if (strlen($A_field_value[$o]) > 0)
 									{
 									if (preg_match("/$field_options_value_array[0]/",$A_field_value[$o]))
 										{$field_selected = 'CHECKED';}
@@ -403,7 +403,7 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user)
 									if ($A_field_default[$o] == "$field_options_value_array[0]") {$field_selected = 'CHECKED';}
 									}
 								$field_HTML .= "<input type=$A_field_type[$o] name=$A_field_label[$o][] id=$A_field_label[$o][] value=\"$field_options_value_array[0]\" $field_selected> "._QXZ("$field_options_value_array[1]")."\n";
-								if ($A_multi_position[$o]=='VERTICAL') 
+								if ($A_multi_position[$o]=='VERTICAL')
 									{$field_HTML .= "<BR>\n";}
 								}
 							}
@@ -414,13 +414,13 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user)
 					{
 					$field_HTML .= "</select>\n";
 					}
-				if ($A_field_type[$o]=='TEXT') 
+				if ($A_field_type[$o]=='TEXT')
 					{
 					if ($A_field_default[$o]=='NULL') {$A_field_default[$o]='';}
 					if (strlen($A_field_value[$o]) < 1) {$A_field_value[$o] = $A_field_default[$o];}
 					$field_HTML .= "<input type=text size=$A_field_size[$o] maxlength=$A_field_max[$o] name=$A_field_label[$o] id=$A_field_label[$o] value=\""._QXZ("$A_field_value[$o]")."\">\n";
 					}
-				if ($A_field_type[$o]=='AREA') 
+				if ($A_field_type[$o]=='AREA')
 					{
 					if ($A_field_default[$o]=='NULL') {$A_field_default[$o]='';}
 					if (strlen($A_field_value[$o]) < 1) {$A_field_value[$o] = $A_field_default[$o];}
@@ -448,7 +448,7 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user)
 					if ($A_field_default[$o]=='NULL') {$A_field_default[$o]='';}
 					$field_HTML .= "$A_field_options[$o]\n";
 					}
-				if ($A_field_type[$o]=='DATE') 
+				if ($A_field_type[$o]=='DATE')
 					{
 					if ( (strlen($A_field_default[$o])<1) or ($A_field_default[$o]=='NULL') ) {$A_field_default[$o]=0;}
 					$day_diff = $A_field_default[$o];
@@ -463,13 +463,13 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user)
 					$field_HTML .= "o_cal.a_tpl.yearscroll = false;\n";
 					$field_HTML .= "</script>\n";
 					}
-				if ($A_field_type[$o]=='TIME') 
+				if ($A_field_type[$o]=='TIME')
 					{
 					$minute_diff = $A_field_default[$o];
 					$default_time = date("H:i:s", mktime(date("H"),date("i")+$minute_diff,date("s"),date("m"),date("d"),date("Y")));
 					$default_hour = date("H", mktime(date("H"),date("i")+$minute_diff,date("s"),date("m"),date("d"),date("Y")));
 					$default_minute = date("i", mktime(date("H"),date("i")+$minute_diff,date("s"),date("m"),date("d"),date("Y")));
-					if (strlen($A_field_value[$o]) > 2) 
+					if (strlen($A_field_value[$o]) > 2)
 						{
 						$default_time = $A_field_value[$o];
 						$time_field_value = explode(':',$default_time);
@@ -616,7 +616,7 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user)
 
 				$g=0;
 				$u=0;
-				while ($out_logs_to_print > $u) 
+				while ($out_logs_to_print > $u)
 					{
 					$row=mysqli_fetch_row($rslt);
 					$ALLsort[$g] =			"$row[0]-----$g";
@@ -668,7 +668,7 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user)
 				if ($format=='debug') {$NOTESout .= "|$in_logs_to_print|$stmt|";}
 
 				$u=0;
-				while ($in_logs_to_print > $u) 
+				while ($in_logs_to_print > $u)
 					{
 					$row=mysqli_fetch_row($rslt);
 					$ALLsort[$g] =			"$row[0]-----$g";
@@ -721,13 +721,13 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user)
 					{$NOTESout .= "<tr bgcolor=white><td colspan=11 align=center>"._QXZ("No calls found")."</td></tr>";}
 
 				$u=0;
-				while ($g > $u) 
+				while ($g > $u)
 					{
 					$sort_split = explode("-----",$ALLsort[$u]);
 					$i = $sort_split[1];
 
 					if (preg_match("/1$|3$|5$|7$|9$/i", $u))
-						{$bgcolor='bgcolor="#B9CBFD"';} 
+						{$bgcolor='bgcolor="#B9CBFD"';}
 					else
 						{$bgcolor='bgcolor="#9BB9FB"';}
 
@@ -868,7 +868,7 @@ function custom_list_fields_values($lead_id,$list_id,$uniqueid,$user)
 
 		# custom fields replacement
 		$o=0;
-		while ($fields_to_print > $o) 
+		while ($fields_to_print > $o)
 			{
 			$CFoutput = preg_replace("/--A--$A_field_label[$o]--B--/i","$A_field_value[$o]",$CFoutput);
 			$o++;
@@ -996,7 +996,7 @@ function lookup_gmt($phone_code,$USarea,$state,$LOCAL_GMT_OFF_STD,$Shour,$Smin,$
 		if ($DBX) {print "     "._QXZ("Second Sunday March to First Sunday November")."\n";}
 		#**********************************************************************
 		# SSM-FSN
-		#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+		#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 		#       Standard time is in effect.
 		#     Based on Second Sunday March to First Sunday November at 2 am.
 		#     INPUTS:
@@ -1007,10 +1007,10 @@ function lookup_gmt($phone_code,$USarea,$state,$LOCAL_GMT_OFF_STD,$Shour,$Smin,$
 		#     OPTIONAL INPUT:
 		#       timezone        INTEGER       hour difference UTC - local standard time
 		#                                      (DEFAULT is blank)
-		#                                     make calculations based on UTC time, 
+		#                                     make calculations based on UTC time,
 		#                                     which means shift at 10:00 UTC in April
 		#                                     and 9:00 UTC in October
-		#     OUTPUT: 
+		#     OUTPUT:
 		#                       INTEGER       1 = DST, 0 = not DST
 		#
 		# S  M  T  W  T  F  S
@@ -1019,14 +1019,14 @@ function lookup_gmt($phone_code,$USarea,$state,$LOCAL_GMT_OFF_STD,$Shour,$Smin,$
 		#15 16 17 18 19 20 21
 		#22 23 24 25 26 27 28
 		#29 30 31
-		# 
+		#
 		# S  M  T  W  T  F  S
 		#    1  2  3  4  5  6
 		# 7  8  9 10 11 12 13
 		#14 15 16 17 18 19 20
 		#21 22 23 24 25 26 27
 		#28 29 30 31
-		# 
+		#
 		#**********************************************************************
 
 			$USACAN_DST=0;
@@ -1036,50 +1036,50 @@ function lookup_gmt($phone_code,$USarea,$state,$LOCAL_GMT_OFF_STD,$Shour,$Smin,$
 			$dow= $wday;
 
 			if ($mm < 3 || $mm > 11) {
-			$USACAN_DST=0;   
+			$USACAN_DST=0;
 			} elseif ($mm >= 4 and $mm <= 10) {
-			$USACAN_DST=1;   
+			$USACAN_DST=1;
 			} elseif ($mm == 3) {
 			if ($dd > 13) {
-				$USACAN_DST=1;   
+				$USACAN_DST=1;
 			} elseif ($dd >= ($dow+8)) {
 				if ($timezone) {
 				if ($dow == 0 and $ns < (7200+$timezone*3600)) {
-					$USACAN_DST=0;   
+					$USACAN_DST=0;
 				} else {
-					$USACAN_DST=1;   
+					$USACAN_DST=1;
 				}
 				} else {
 				if ($dow == 0 and $ns < 7200) {
-					$USACAN_DST=0;   
+					$USACAN_DST=0;
 				} else {
-					$USACAN_DST=1;   
+					$USACAN_DST=1;
 				}
 				}
 			} else {
-				$USACAN_DST=0;   
+				$USACAN_DST=0;
 			}
 			} elseif ($mm == 11) {
 			if ($dd > 7) {
-				$USACAN_DST=0;   
+				$USACAN_DST=0;
 			} elseif ($dd < ($dow+1)) {
-				$USACAN_DST=1;   
+				$USACAN_DST=1;
 			} elseif ($dow == 0) {
 				if ($timezone) { # UTC calculations
 				if ($ns < (7200+($timezone-1)*3600)) {
-					$USACAN_DST=1;   
+					$USACAN_DST=1;
 				} else {
-					$USACAN_DST=0;   
+					$USACAN_DST=0;
 				}
 				} else { # local time calculations
 				if ($ns < 7200) {
-					$USACAN_DST=1;   
+					$USACAN_DST=1;
 				} else {
-					$USACAN_DST=0;   
+					$USACAN_DST=0;
 				}
 				}
 			} else {
-				$USACAN_DST=0;   
+				$USACAN_DST=0;
 			}
 			} # end of month checks
 		if ($DBX) {print "     DST: $USACAN_DST\n";}
@@ -1092,11 +1092,11 @@ function lookup_gmt($phone_code,$USarea,$state,$LOCAL_GMT_OFF_STD,$Shour,$Smin,$
 		if ($DBX) {print "     "._QXZ("First Sunday April to Last Sunday October")."\n";}
 		#**********************************************************************
 		# FSA-LSO
-		#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+		#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 		#       Standard time is in effect.
 		#     Based on first Sunday in April and last Sunday in October at 2 am.
 		#**********************************************************************
-			
+
 			$USA_DST=0;
 			$mm = $mon;
 			$dd = $mday;
@@ -1160,11 +1160,11 @@ function lookup_gmt($phone_code,$USarea,$state,$LOCAL_GMT_OFF_STD,$Shour,$Smin,$
 		{
 		if ($DBX) {print "     "._QXZ("Last Sunday March to Last Sunday October")."\n";}
 		#**********************************************************************
-		#     This is s 1 if Daylight Savings Time is in effect and 0 if 
+		#     This is s 1 if Daylight Savings Time is in effect and 0 if
 		#       Standard time is in effect.
 		#     Based on last Sunday in March and last Sunday in October at 1 am.
 		#**********************************************************************
-			
+
 			$GBR_DST=0;
 			$mm = $mon;
 			$dd = $mday;
@@ -1228,11 +1228,11 @@ function lookup_gmt($phone_code,$USarea,$state,$LOCAL_GMT_OFF_STD,$Shour,$Smin,$
 		{
 		if ($DBX) {print "     "._QXZ("Last Sunday October to Last Sunday March")."\n";}
 		#**********************************************************************
-		#     This is s 1 if Daylight Savings Time is in effect and 0 if 
+		#     This is s 1 if Daylight Savings Time is in effect and 0 if
 		#       Standard time is in effect.
 		#     Based on last Sunday in October and last Sunday in March at 1 am.
 		#**********************************************************************
-			
+
 			$AUS_DST=0;
 			$mm = $mon;
 			$dd = $mday;
@@ -1287,7 +1287,7 @@ function lookup_gmt($phone_code,$USarea,$state,$LOCAL_GMT_OFF_STD,$Shour,$Smin,$
 			} else {
 				$AUS_DST=1;
 			}
-			} # end of month checks						
+			} # end of month checks
 		if ($DBX) {print "     DST: $AUS_DST\n";}
 		if ($AUS_DST) {$gmt_offset++;}
 		$AC_processed++;
@@ -1298,11 +1298,11 @@ function lookup_gmt($phone_code,$USarea,$state,$LOCAL_GMT_OFF_STD,$Shour,$Smin,$
 		if ($DBX) {print "     "._QXZ("First Sunday October to Last Sunday March")."\n";}
 		#**********************************************************************
 		#   TASMANIA ONLY
-		#     This is s 1 if Daylight Savings Time is in effect and 0 if 
+		#     This is s 1 if Daylight Savings Time is in effect and 0 if
 		#       Standard time is in effect.
 		#     Based on first Sunday in October and last Sunday in March at 1 am.
 		#**********************************************************************
-			
+
 			$AUST_DST=0;
 			$mm = $mon;
 			$dd = $mday;
@@ -1355,7 +1355,7 @@ function lookup_gmt($phone_code,$USarea,$state,$LOCAL_GMT_OFF_STD,$Shour,$Smin,$
 			} else {
 				$AUST_DST=0;
 			}
-			} # end of month checks						
+			} # end of month checks
 		if ($DBX) {print "     DST: $AUST_DST\n";}
 		if ($AUST_DST) {$gmt_offset++;}
 		$AC_processed++;
@@ -1367,11 +1367,11 @@ function lookup_gmt($phone_code,$USarea,$state,$LOCAL_GMT_OFF_STD,$Shour,$Smin,$
 		#**********************************************************************
 		# FSO-FSA
 		#   2008+ AUSTRALIA ONLY (country code 61)
-		#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+		#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 		#       Standard time is in effect.
 		#     Based on first Sunday in October and first Sunday in April at 1 am.
 		#**********************************************************************
-		
+
 		$AUSE_DST=0;
 		$mm = $mon;
 		$dd = $mday;
@@ -1379,48 +1379,48 @@ function lookup_gmt($phone_code,$USarea,$state,$LOCAL_GMT_OFF_STD,$Shour,$Smin,$
 		$dow= $wday;
 
 		if ($mm < 4 or $mm > 10) {
-		$AUSE_DST=1;   
+		$AUSE_DST=1;
 		} elseif ($mm >= 5 and $mm <= 9) {
-		$AUSE_DST=0;   
+		$AUSE_DST=0;
 		} elseif ($mm == 4) {
 		if ($dd > 7) {
-			$AUSE_DST=0;   
+			$AUSE_DST=0;
 		} elseif ($dd >= ($dow+1)) {
 			if ($timezone) {
 			if ($dow == 0 and $ns < (3600+$timezone*3600)) {
-				$AUSE_DST=1;   
+				$AUSE_DST=1;
 			} else {
-				$AUSE_DST=0;   
+				$AUSE_DST=0;
 			}
 			} else {
 			if ($dow == 0 and $ns < 7200) {
-				$AUSE_DST=1;   
+				$AUSE_DST=1;
 			} else {
-				$AUSE_DST=0;   
+				$AUSE_DST=0;
 			}
 			}
 		} else {
-			$AUSE_DST=1;   
+			$AUSE_DST=1;
 		}
 		} elseif ($mm == 10) {
 		if ($dd >= 8) {
-			$AUSE_DST=1;   
+			$AUSE_DST=1;
 		} elseif ($dd >= ($dow+1)) {
 			if ($timezone) {
 			if ($dow == 0 and $ns < (7200+$timezone*3600)) {
-				$AUSE_DST=0;   
+				$AUSE_DST=0;
 			} else {
-				$AUSE_DST=1;   
+				$AUSE_DST=1;
 			}
 			} else {
 			if ($dow == 0 and $ns < 3600) {
-				$AUSE_DST=0;   
+				$AUSE_DST=0;
 			} else {
-				$AUSE_DST=1;   
+				$AUSE_DST=1;
 			}
 			}
 		} else {
-			$AUSE_DST=0;   
+			$AUSE_DST=0;
 		}
 		} # end of month checks
 		if ($DBX) {print "     DST: $AUSE_DST\n";}
@@ -1432,11 +1432,11 @@ function lookup_gmt($phone_code,$USarea,$state,$LOCAL_GMT_OFF_STD,$Shour,$Smin,$
 		{
 		if ($DBX) {print "     "._QXZ("First Sunday October to Third Sunday March")."\n";}
 		#**********************************************************************
-		#     This is s 1 if Daylight Savings Time is in effect and 0 if 
+		#     This is s 1 if Daylight Savings Time is in effect and 0 if
 		#       Standard time is in effect.
 		#     Based on first Sunday in October and third Sunday in March at 1 am.
 		#**********************************************************************
-			
+
 			$NZL_DST=0;
 			$mm = $mon;
 			$dd = $mday;
@@ -1489,7 +1489,7 @@ function lookup_gmt($phone_code,$USarea,$state,$LOCAL_GMT_OFF_STD,$Shour,$Smin,$
 			} else {
 				$NZL_DST=0;
 			}
-			} # end of month checks						
+			} # end of month checks
 		if ($DBX) {print "     DST: $NZL_DST\n";}
 		if ($NZL_DST) {$gmt_offset++;}
 		$AC_processed++;
@@ -1501,11 +1501,11 @@ function lookup_gmt($phone_code,$USarea,$state,$LOCAL_GMT_OFF_STD,$Shour,$Smin,$
 		#**********************************************************************
 		# LSS-FSA
 		#   2007+ NEW ZEALAND (country code 64)
-		#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+		#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 		#       Standard time is in effect.
 		#     Based on last Sunday in September and first Sunday in April at 1 am.
 		#**********************************************************************
-		
+
 		$NZLN_DST=0;
 		$mm = $mon;
 		$dd = $mday;
@@ -1513,50 +1513,50 @@ function lookup_gmt($phone_code,$USarea,$state,$LOCAL_GMT_OFF_STD,$Shour,$Smin,$
 		$dow= $wday;
 
 		if ($mm < 4 || $mm > 9) {
-		$NZLN_DST=1;   
+		$NZLN_DST=1;
 		} elseif ($mm >= 5 && $mm <= 9) {
-		$NZLN_DST=0;   
+		$NZLN_DST=0;
 		} elseif ($mm == 4) {
 		if ($dd > 7) {
-			$NZLN_DST=0;   
+			$NZLN_DST=0;
 		} elseif ($dd >= ($dow+1)) {
 			if ($timezone) {
 			if ($dow == 0 && $ns < (3600+$timezone*3600)) {
-				$NZLN_DST=1;   
+				$NZLN_DST=1;
 			} else {
-				$NZLN_DST=0;   
+				$NZLN_DST=0;
 			}
 			} else {
 			if ($dow == 0 && $ns < 7200) {
-				$NZLN_DST=1;   
+				$NZLN_DST=1;
 			} else {
-				$NZLN_DST=0;   
+				$NZLN_DST=0;
 			}
 			}
 		} else {
-			$NZLN_DST=1;   
+			$NZLN_DST=1;
 		}
 		} elseif ($mm == 9) {
 		if ($dd < 25) {
-			$NZLN_DST=0;   
+			$NZLN_DST=0;
 		} elseif ($dd < ($dow+25)) {
-			$NZLN_DST=0;   
+			$NZLN_DST=0;
 		} elseif ($dow == 0) {
 			if ($timezone) { # UTC calculations
 			if ($ns < (3600+($timezone-1)*3600)) {
-				$NZLN_DST=0;   
+				$NZLN_DST=0;
 			} else {
-				$NZLN_DST=1;   
+				$NZLN_DST=1;
 			}
 			} else { # local time calculations
 			if ($ns < 3600) {
-				$NZLN_DST=0;   
+				$NZLN_DST=0;
 			} else {
-				$NZLN_DST=1;   
+				$NZLN_DST=1;
 			}
 			}
 		} else {
-			$NZLN_DST=1;   
+			$NZLN_DST=1;
 		}
 		} # end of month checks
 		if ($DBX) {print "     DST: $NZLN_DST\n";}
@@ -1569,11 +1569,11 @@ function lookup_gmt($phone_code,$USarea,$state,$LOCAL_GMT_OFF_STD,$Shour,$Smin,$
 		if ($DBX) {print "     "._QXZ("Third Sunday October to Last Sunday February")."\n";}
 		#**********************************************************************
 		# TSO-LSF
-		#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+		#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 		#       Standard time is in effect. Brazil
 		#     Based on Third Sunday October to Last Sunday February at 1 am.
 		#**********************************************************************
-			
+
 			$BZL_DST=0;
 			$mm = $mon;
 			$dd = $mday;
@@ -1581,52 +1581,52 @@ function lookup_gmt($phone_code,$USarea,$state,$LOCAL_GMT_OFF_STD,$Shour,$Smin,$
 			$dow= $wday;
 
 			if ($mm < 2 || $mm > 10) {
-			$BZL_DST=1;   
+			$BZL_DST=1;
 			} elseif ($mm >= 3 and $mm <= 9) {
-			$BZL_DST=0;   
+			$BZL_DST=0;
 			} elseif ($mm == 2) {
 			if ($dd < 22) {
-				$BZL_DST=1;   
+				$BZL_DST=1;
 			} elseif ($dd < ($dow+22)) {
-				$BZL_DST=1;   
+				$BZL_DST=1;
 			} elseif ($dow == 0) {
 				if ($timezone) { # UTC calculations
 				if ($ns < (3600+($timezone-1)*3600)) {
-					$BZL_DST=1;   
+					$BZL_DST=1;
 				} else {
-					$BZL_DST=0;   
+					$BZL_DST=0;
 				}
 				} else { # local time calculations
 				if ($ns < 3600) {
-					$BZL_DST=1;   
+					$BZL_DST=1;
 				} else {
-					$BZL_DST=0;   
+					$BZL_DST=0;
 				}
 				}
 			} else {
-				$BZL_DST=0;   
+				$BZL_DST=0;
 			}
 			} elseif ($mm == 10) {
 			if ($dd < 22) {
-				$BZL_DST=0;   
+				$BZL_DST=0;
 			} elseif ($dd < ($dow+22)) {
-				$BZL_DST=0;   
+				$BZL_DST=0;
 			} elseif ($dow == 0) {
 				if ($timezone) { # UTC calculations
 				if ($ns < (3600+($timezone-1)*3600)) {
-					$BZL_DST=0;   
+					$BZL_DST=0;
 				} else {
-					$BZL_DST=1;   
+					$BZL_DST=1;
 				}
 				} else { # local time calculations
 				if ($ns < 3600) {
-					$BZL_DST=0;   
+					$BZL_DST=0;
 				} else {
-					$BZL_DST=1;   
+					$BZL_DST=1;
 				}
 				}
 			} else {
-				$BZL_DST=1;   
+				$BZL_DST=1;
 			}
 			} # end of month checks
 		if ($DBX) {print "     DST: $BZL_DST\n";}
@@ -1650,7 +1650,7 @@ function lookup_gmt($phone_code,$USarea,$state,$LOCAL_GMT_OFF_STD,$Shour,$Smin,$
 
 ##### DETERMINE IF LEAD IS DIALABLE #####
 function dialable_gmt($DB,$link,$local_call_time,$gmt_offset,$state)
-	{				
+	{
 	require("dbconnect_mysqli.php");
 	$dialable=0;
 
@@ -1658,12 +1658,12 @@ function dialable_gmt($DB,$link,$local_call_time,$gmt_offset,$state)
 	$pmin=(gmdate("i", time() + $pzone));
 	$phour=( (gmdate("G", time() + $pzone)) * 100);
 	$pday=gmdate("w", time() + $pzone);
-	$tz = sprintf("%.2f", $p);	
+	$tz = sprintf("%.2f", $p);
 	$GMT_gmt = "$tz";
 	$GMT_day = "$pday";
 	$GMT_hour = ($phour + $pmin);
-	$YMD =  date("Y-m-d");	
-	
+	$YMD =  date("Y-m-d");
+
 	$stmt="SELECT call_time_id,call_time_name,call_time_comments,ct_default_start,ct_default_stop,ct_sunday_start,ct_sunday_stop,ct_monday_start,ct_monday_stop,ct_tuesday_start,ct_tuesday_stop,ct_wednesday_start,ct_wednesday_stop,ct_thursday_start,ct_thursday_stop,ct_friday_start,ct_friday_stop,ct_saturday_start,ct_saturday_stop,ct_state_call_times,ct_holidays FROM vicidial_call_times where call_time_id='$local_call_time';";
 	if ($DB) {echo "$stmt\n";}
 	$rslt=mysql_to_mysqli($stmt, $link);
@@ -1693,7 +1693,7 @@ function dialable_gmt($DB,$link,$local_call_time,$gmt_offset,$state)
 		{
 		$Gct_holidaysSQL = preg_replace("/\|/", "','", "$Gct_holidays");
 		$Gct_holidaysSQL = "'".$Gct_holidaysSQL."'";
-		
+
 		$stmt = "SELECT holiday_id,holiday_date,holiday_name,ct_default_start,ct_default_stop from vicidial_call_time_holidays where holiday_id IN($Gct_holidaysSQL) and holiday_status='ACTIVE' and holiday_date='$YMD' order by holiday_id;";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		if ($DB) {echo "$stmt\n";}
@@ -1724,7 +1724,7 @@ function dialable_gmt($DB,$link,$local_call_time,$gmt_offset,$state)
 			}
 		}
 	### END Check for outbound holiday ###
-		if( $state != '') 
+		if( $state != '')
 			{
 			$ct_states = '';
 			$ct_state_gmt_SQL = '';
@@ -1747,7 +1747,7 @@ function dialable_gmt($DB,$link,$local_call_time,$gmt_offset,$state)
 							{
 							$aryC=mysqli_fetch_row($rslt);
 							$Gstate_call_time_state =	$aryC[1];
-							if ($Gstate_call_time_state == $state) 
+							if ($Gstate_call_time_state == $state)
 								{
 								$Gstate_call_time_id =		$aryC[0];
 								$Gsct_default_start =		$aryC[4];
@@ -1768,14 +1768,14 @@ function dialable_gmt($DB,$link,$local_call_time,$gmt_offset,$state)
 								$Gsct_saturday_stop =		$aryC[19];
 								$Sct_holidays =				$aryC[20];
 								$ct_states .="'$Gstate_call_time_state',";
-								
+
 								### BEGIN Check for outbound state holiday ###
 								$Sholiday_id = '';
-								if ((strlen($Sct_holidays)>2) or ((strlen($holiday_id)>2) and (strlen($Sholiday_id)<2))) 
+								if ((strlen($Sct_holidays)>2) or ((strlen($holiday_id)>2) and (strlen($Sholiday_id)<2)))
 									{
 									# Apply state holiday
 									if (strlen($Sct_holidays)>2)
-										{								
+										{
 										$Sct_holidaysSQL = preg_replace("/\|/", "','", "$Sct_holidays");
 										$Sct_holidaysSQL = "'".$Sct_holidaysSQL."'";
 										$stmt = "SELECT holiday_id,holiday_date,holiday_name,ct_default_start,ct_default_stop from vicidial_call_time_holidays where holiday_id IN($Sct_holidaysSQL) and holiday_status='ACTIVE' and holiday_date='$YMD' order by holiday_id;";
@@ -1786,7 +1786,7 @@ function dialable_gmt($DB,$link,$local_call_time,$gmt_offset,$state)
 										{
 										$stmt = "SELECT holiday_id,holiday_date,holiday_name,ct_default_start,ct_default_stop from vicidial_call_time_holidays where holiday_id='$holiday_id' and holiday_status='ACTIVE' and holiday_date='$YMD' order by holiday_id;";
 										$holidaytype = "NO STATE HOLIDAY APPLYING CALL TIME HOLIDAY!   ";
-										}				
+										}
 									$rslt=mysql_to_mysqli($stmt, $link);
 									if ($DB) {echo "$stmt\n";}
 									$sthCrows=mysqli_num_rows($rslt);
@@ -1915,7 +1915,7 @@ function dialable_gmt($DB,$link,$local_call_time,$gmt_offset,$state)
 							{$dialable=1;}
 						}
 					}
-		} else {		
+		} else {
 				#NO STATE RULES
 				if ($GMT_day==0)	#### Sunday local time
 					{
@@ -2109,13 +2109,13 @@ function _QXZ($English_text, $sprintf=0, $align="l", $v_one='', $v_two='', $v_th
 	#	fwrite ($fp, "|$English_text\n");
 	#	fclose($fp);
 
-	if ($sprintf>0) 
+	if ($sprintf>0)
 		{
-		if ($align=="r") 
+		if ($align=="r")
 			{
 			$fmt="%".$sprintf."s";
-			} 
-		else 
+			}
+		else
 			{
 			$fmt="%-".$sprintf."s";
 			}

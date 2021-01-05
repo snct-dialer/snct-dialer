@@ -1,11 +1,11 @@
 #!/usr/bin/perl
 #
 # invalid_speak.agi version 2.0.5
-# 
+#
 # runs during an invalid extension and speaks the extension sent to it while printing to STDERR
-# 
+#
 # You need to put lines similar to those below in your extensions.conf file:
-# 
+#
 # ;inbound errors with speaking of extension:
 #exten => _XXXX,1,AGI(invalid_speak.agi,${EXTEN})
 #exten => _XXXX,2,Playback(invalid)
@@ -128,7 +128,7 @@ while(<STDIN>) {
 
 if ($CLIOUT) {print STDERR "****** INVALID EXTENSION: |$unique_id|$channel|$extension|$type|$callerid|\n";}
 
-if ($SPEAK) 
+if ($SPEAK)
 	{
 	$AGI->stream_file('beep');
 	sleep(1);

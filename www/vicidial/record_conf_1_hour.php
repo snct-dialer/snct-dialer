@@ -1,6 +1,6 @@
 <?php
 # record_conf_1_hour.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # grab: $server_ip $station $session_id
@@ -152,7 +152,7 @@ echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n"
 <BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 <CENTER>
 
-<?php 
+<?php
 if ($NEW_RECORDING)
 	{
 	if ( (strlen($server_ip) > 8) && (strlen($session_id) > 3) && (strlen($station) > 3) )
@@ -187,7 +187,7 @@ else
 	echo "server_ip: <input type=text name=server_ip size=15 maxlength=15> | \n";
 	echo "session_id: <input type=text name=session_id size=7 maxlength=7> | \n";
 	echo "station: <input type=text name=station size=5 maxlength=5> | \n";
-	echo "<input type=submit name=submit value=submit>\n";
+	echo "<input type=submit name=submit value='"._QXZ("submit")."'>\n";
 	echo "<BR><BR><BR>\n";
 	}
 ?>

@@ -1,10 +1,10 @@
 <?php
 # vicidial_redirect.php - forwards agents to another URL for vicidial.php login
-# 
+#
 # Copyright (C) 2014  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG
-# 71202-1546 - First Build 
+# 71202-1546 - First Build
 # 90508-0727 - Changed to PHP long tags
 # 140811-0852 - Changed to use QXZ function for echoing text
 # 141216-2131 - Added language settings lookups and user/pass variable standardization
@@ -28,7 +28,7 @@ if (isset($_GET["VD_campaign"]))                {$VD_campaign=$_GET["VD_campaign
 if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
         elseif (isset($_POST["relogin"]))       {$relogin=$_POST["relogin"];}
 
-if (!isset($phone_login)) 
+if (!isset($phone_login))
 	{
 	if (isset($_GET["pl"]))                {$phone_login=$_GET["pl"];}
 			elseif (isset($_POST["pl"]))   {$phone_login=$_POST["pl"];}

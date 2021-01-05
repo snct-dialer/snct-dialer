@@ -1,10 +1,10 @@
 <?php
 # dispo_move_list.php
-# 
+#
 # Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed to be used in the "Dispo URL" field of a campaign
-# or in-group (although it can also be used in the "No Agent Call URL" field). 
+# or in-group (although it can also be used in the "No Agent Call URL" field).
 # It should take in the lead_id to check for the same lead_id
 # in order to change it's list_id to whatever new_list_id is set to. The
 # sale_status field is a list of statuses separated by three dashes each '---'
@@ -18,17 +18,17 @@
 #
 # Example of what to put in the Dispo URL field:
 # VARhttp://192.168.1.1/agc/dispo_move_list.php?lead_id=--A--lead_id--B--&dispo=--A--dispo--B--&user=--A--user--B--&pass=--A--pass--B--&new_list_id=10411099&sale_status=SALE---SSALE---XSALE&reset_dialed=Y&log_to_file=1
-# 
+#
 # Another example of what to put in the Dispo URL field(using status exclude with talk trigger):
 # VARhttp://192.168.1.1/agc/dispo_move_list.php?lead_id=--A--lead_id--B--&dispo=--A--dispo--B--&talk_time=--A--talk_time--B--&called_count=--A--called_count--B--&user=--A--user--B--&pass=--A--pass--B--&new_list_id=332&sale_status=DNC---BILLNW---POST&exclude_status=Y&talk_time_trigger=240&called_count_trigger=4&log_to_file=1
-# 
+#
 # Another example of what to put in the Dispo URL field(using status exclude with lead age and called count triggers):
 # VARhttp://192.168.1.1/agc/dispo_move_list.php?lead_id=--A--lead_id--B--&dispo=--A--dispo--B--&user=--A--user--B--&pass=--A--pass--B--&new_list_id=99105&called_count=--A--called_count--B--&called_count_trigger=9&lead_age=15&entry_date=--A--entry_date--B--&exclude_status=Y&sale_status=SALE---XFER&reset_dialed=Y&log_to_file=1
 #
 # Example of what to put in the No Agent Call URL field:
 # (IMPORTANT: user needs to be NOAGENTURL and pass needs to be set to the call_id)
 # VARhttp://192.168.1.1/agc/dispo_move_list.php?lead_id=--A--lead_id--B--&dispo=--A--dispo--B--&user=NOAGENTURL&pass=--A--call_id--B--&new_list_id=10411099&sale_status=SALE---SSALE---XSALE&reset_dialed=Y&log_to_file=1&list_id=--A--list_id--B--&list_id_trigger=101
-# 
+#
 # Definable Fields: (other fields should be left as they are)
 # - log_to_file -	(0,1) if set to 1, will create a log file in the agc directory
 # - sale_status -	(SALE---XSALE) a triple-dash "---" delimited list of the statuses that are to be moved
@@ -264,7 +264,7 @@ if ( ($primary_match_found < 1) and (strlen($multi_trigger) > 2) )
 		else
 			{$multi_nomatch++;}
 		}
-	
+
 	if ($multi_match > 0)
 		{
 		$primary_match_found=1;

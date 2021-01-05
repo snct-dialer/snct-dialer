@@ -1,6 +1,6 @@
 <?php
 # timeclock_edit.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -224,7 +224,7 @@ if (preg_match('/LOGOUT/',$event))
 if (strlen($LOGOUTevent_id)<1)
 	{$invalid_record++;}
 
-### 
+###
 if ($invalid_record < 1)
 	{
 	$stmt="SELECT event_epoch,event_date,login_sec,event,user,user_group,ip_address,shift_id,notes,manager_user,manager_ip,event_datestamp from vicidial_timeclock_log where timeclock_id='$LOGINevent_id';";
@@ -307,7 +307,7 @@ require("admin_header.php");
 <CENTER>
 <TABLE WIDTH=720 BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><?php echo _QXZ("Timeclock Record Edit for"); ?> <?php echo $user ?></TD><TD ALIGN=RIGHT> &nbsp; </TD></TR>
 
-<?php 
+<?php
 
 echo "<TR BGCOLOR=\"#F0F5FE\"><TD ALIGN=LEFT COLSPAN=2><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=3><B> &nbsp; \n";
 
@@ -528,8 +528,8 @@ else
 </html>
 
 <?php
-	
-exit; 
+
+exit;
 
 ?>
 

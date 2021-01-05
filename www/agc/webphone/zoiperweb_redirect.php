@@ -1,10 +1,10 @@
 <?php
 # zoiperweb_redirect.php - used for load balance forwarding with variables
-# 
+#
 # Copyright (C) 2010  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG
-# 100827-1419 - First Build 
+# 100827-1419 - First Build
 #
 
 if (isset($_GET["DB"]))							{$DB=$_GET["DB"];}

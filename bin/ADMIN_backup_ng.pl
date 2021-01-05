@@ -3,62 +3,43 @@
 # ADMIN_backup_ng.pl
 #
 # DESCRIPTION:
-# Backs-up the asterisk database, conf/agi/sounds/bin files 
+# Backs-up the asterisk database, conf/agi/sounds/bin files
 #
 # LICENSE: AGPLv3
 #
-# Copyright (C) 2016  Matt Florell <vicidial@gmail.com>
-# Copyright (c) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
-#               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
+# Copyright (©) 2016      Matt Florell <vicidial@gmail.com>
+#
+# Copyright (©) 2017-2020 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2019      SNCT GmbH <info@snct-gmbh.de>
+#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
 #
 # CHANGELOG
 #
-# 80316-2211 - First Build
-# 80317-1609 - Added Sangoma conf file backup and changed FTP settings
-# 80328-0135 - Do not attempt to archive /etc/my.cnf is --without-db flag is set
-# 80611-0549 - Added DB option to backup all tables except for log tables
-# 90620-1851 - Moved mysqldump bin lookup to database backup section
-# 100211-0910 - Added crontab backup and voicemail backup option
-# 100817-1202 - Fixed test option bug
-# 101208-0452 - Added checks for zaptel and dahdi conf files
-# 141103-1505 - Added option to export without leads, logs, servers or phones
-# 141124-2309 - Fixed Fhour variable bug
-# 150418-1801 - Added --db_raw_files_copy flag, issue #839
-# 151006-1337 - Added archive_path flag, issue #896
-# 160510-2249 - Added --db-without-archives flag, issue #945
-# 160719-1415 - Added --dbs-selected=XXX---YYY option
-# 161030-0847 - Added CLI ftp options, Issue #442
-# 171008-1235 - Fix sounds backup.
-#               Add --routines to backup PROZEDURES too.
-#               Add VARDB_backup_user, VARDB_backup_pass access parts with
-#                 no cron access.
-#               Switch temp directory to /tmp/vicibackup.
-#               Add prompt_count.txt to linux backup.
-# 180227-0658 - Add /etc/flyingpenguin
-#               Change license from AGPLv2 to AGPLv3
-# 180507-1612 - Remove prompt_count.txt from backup
-# 180616-1825 - Add sniplet into perl scripts to run only once a time
-# 180626-1030 - Split mysqldump and packing.
-# 181223-1820 - Use tar | xy for packing
-#             - Pack database tables in own files
-#             - Remove passwords from logging
-# 181226-1210 - Add PrgVersion
-#             - Add tests for file exists
+# based on ADMIN_backup.pl from Matt Florell.
 #
 # 181226-1400 - 3.0.0 - jff First work on ADMIN_backup_ng.pl, based on ADMIN_backup.pl.
 # 181226-1810 - 3.0.0 - jff Switch to new config file.
 #                     - jff Use FTPBACKUP_* instead $VARREPORT_* for ftp backup.
 # 181227-1030 - 3.0.1 - jff Allow table names with whitespaces
 # 181228-1215 - 3.0.2 - jff Correct typo
+# 190531-1422 - 3.1.0 - jff Change all db backups to one file per table.
+#                           Change setupfile location.
+#                           Switch from service to systemctl
+#                           Change the directory for Backup files.
+#                           Create backuppath if not exists.
+# 190601-1008 - 3.1.1 - jff Add KW and hour to archive filename.
+# 190601-1556 - 3.1.2 - jff Add WebPath2
+# 190602-0953 - 3.1.3 - jff Use YYYY-MM-DD[-HH] for backup file name.
+# 200601-1132 - 3.1.4 - jff Use YYYY-MM-DD[-HH]_DOW for backup file name.
 #
 
-$PrgVersion = "3.0.2";
+$PrgVersion = "3.1.4";
 
 ###### Test that the script is running only once a time
 use Fcntl qw(:flock);
 # print "start of program $0\n";
 unless (flock(DATA, LOCK_EX|LOCK_NB)) {
-    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log'
     or print "Can't open the fscking file: $!";
     $datestring = localtime();
     print $fh "[$datestring] $0 is already running. Exiting.\n";
@@ -79,23 +60,26 @@ $file_date = "$year-$mon-$mday";
 $now_date = "$year-$mon-$mday $hour:$min:$sec";
 $VDL_date = "$year-$mon-$mday 00:00:01";
 $db_raw_files_copy=0;
+$DateTag = "$year-$mon-${mday}_$wday";
 
 
 print "$0 Version: $PrgVersion \n";
 
 use Config::IniFiles;
 
-my $defcfg = Config::IniFiles->new( -file => "/etc/flyingpenguin/vicidial.conf" );
-my $newcfg = Config::IniFiles->new( -file => "/etc/flyingpenguin/vicidial.ini", -import => $defcfg  );
-my $cfg    = Config::IniFiles->new( -file => "/etc/flyingpenguin/vicidial.local", -import => $newcfg );
+my $defcfg = Config::IniFiles->new( -file => "/etc/snct-dialer/snct-dialer.conf" );
+my $newcfg = Config::IniFiles->new( -file => "/etc/snct-dialer/dialer/backup.conf", -import => $defcfg  );
+my $cfg    = Config::IniFiles->new( -file => "/etc/snct-dialer/dialer/backup.local", -import => $newcfg );
 
 $PATHhome   = $cfg->val( 'Path', 'PATHhome' );
 $PATHlogs   = $cfg->val( 'Path', 'PATHlogs' );
 $PATHagi    = $cfg->val( 'Path', 'PATHagi' );
 $PATHweb    = $cfg->val( 'Path', 'PATHweb' );
 $PATHsounds = $cfg->val( 'Path', 'PATHsounds' );
+$PATHbackup = $cfg->val( 'Path', 'PATHbackup' );
 
 $Server_name = $cfg->val( 'Server', 'Server_name' );
+$VARserver_ip = $cfg->val( 'Server', 'Server_ip' );
 
 $VARDB_server      = $cfg->val( 'Database', 'VARDB_server' );
 $VARDB_database    = $cfg->val( 'Database', 'VARDB_database' );
@@ -104,6 +88,9 @@ $VARDB_pass        = $cfg->val( 'Database', 'VARDB_pass' );
 $VARDB_backup_user = $cfg->val( 'Database', 'VARDB_backup_user' );
 $VARDB_backup_pass = $cfg->val( 'Database', 'VARDB_backup_pass' );
 $VARDB_port        = $cfg->val( 'Database', 'VARDB_port' );
+
+$BackupUseHour    = $cfg->val( 'Backup', 'BackupHour' );
+$BackupWebPath2   = $cfg->val( 'Backup', 'WebPath2' );
 
 $FTPBACKUP_enable = $cfg->val( 'Backup', 'FTPBACKUP_enable' );
 $FTPBACKUP_host   = $cfg->val( 'Backup', 'FTPBACKUP_host' );
@@ -119,6 +106,10 @@ if(!$VARDB_backup_user) {
 	$VARDB_backup_pass = $VARDB_pass;
 }
 
+if ($BackupUseHour = "1") {
+	$DateTag .= "-";
+	$DateTag .= $hour;
+}
 
 ### begin parsing run-time options ###
 if (length($ARGV[0])>1)
@@ -157,7 +148,7 @@ if (length($ARGV[0])>1)
 		print "  [--debug] = debug\n";
 		print "  [--test] = test\n";
 		print "  [--db_raw_files_copy] = if set the backup won't be a mysql dump. It will tar the /var/lib/mysql folder. WARNING, THIS OPTION WILL STOP THE MYSQL SERVER!\n";
-		print "  [--archive_path=/PATH/FROM/ROOT] = absolute path to store the resulting backup\n";
+		print "  [--backup_path=/PATH/FROM/ROOT] = absolute path to store the resulting backup\n";
 		exit;
 		}
 	else
@@ -251,12 +242,12 @@ if (length($ARGV[0])>1)
 			$db_raw_files_copy = 1;
 			print "\n----- DB raw files copy -----\n\n";
 			}
-		if ($args =~ /--archive_path=/i)
+		if ($args =~ /--backup_path=/i)
 			{
-			@data_in = split(/--archive_path=/,$args);
-			$ARCHIVEpath = $data_in[1];
-			$ARCHIVEpath =~ s/ .*$//gi;
-			print "\n----- Archive path set to $ARCHIVEpath -----\n\n";
+			@data_in = split(/--backup_path=/,$args);
+			$PATHbackup = $data_in[1];
+			$PATHbackup =~ s/ .*$//gi;
+			print "\n----- Backup path set to $PATHbackup -----\n\n";
 			}
 		if ($args =~ /--ftp-server=/i)
 			{
@@ -297,9 +288,8 @@ if (length($ARGV[0])>1)
 #	print "no command line options set\n";
 #	}
 
-
-if (!$ARCHIVEpath) {$ARCHIVEpath = "$PATHlogs/archive";}
-if (!$TEMPpath) {$TEMPpath = "/tmp/vicibackup";}
+if (!$PATHbackup) { $PATHbackup = "/var/backups/SNCT-dialer";}
+if (!$TEMPpath) {$TEMPpath = "/tmp/snctbackup";}
 if (!$TEMPpathComp) {$TEMPpathComp = "/tmp";}
 if (!$VARDB_port) {$VARDB_port='3306';}
 
@@ -340,7 +330,7 @@ $bin='_BIN_';
 $web='_WEB_';
 $sounds='_SOUNDS_';
 $voicemail='_VOICEMAIL_';
-$all='_ALL_';
+$all='_';
 $tar='.tar';
 $gz='.gz';
 $xz='.xz';
@@ -348,7 +338,14 @@ $txz='.txz';
 $sgSTRING='';
 $underl='_';
 
-`cd $ARCHIVEpath`;
+#
+# Create backup path
+#
+if ( !-d $PATHbackup ) {
+    `mkdir $PATHbackup`;
+}
+
+`cd $PATHbackup`;
 `mkdir $TEMPpath`;
 
 if ( ($without_db < 1) && ($conf_only < 1) ) {
@@ -374,7 +371,7 @@ if ( ($without_db < 1) && ($conf_only < 1) ) {
 			if ($dbs_selected =~ /--ALL--|--ALLNS--/) {
 				if ($DBX > 0) {print "DBX-  ALL DATABASES OPTION ENABLED! GATHERING DBS...\n";}
 				### connect to MySQL database defined in the conf file so we can get database list
-				$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+				$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
 				or die "Couldn't connect to database: " . DBI->errstr;
 
 				$stmtA = "show databases;";
@@ -383,7 +380,7 @@ if ( ($without_db < 1) && ($conf_only < 1) ) {
 				$dbArows=$sthA->rows;
 				$db_ct=0;
 				$db_s_ct=0;
-					
+
 				while ($dbArows > $db_ct) {
 					@aryA = $sthA->fetchrow_array;
 					if ($dbs_selected =~ /--ALLNS--/) {
@@ -399,7 +396,7 @@ if ( ($without_db < 1) && ($conf_only < 1) ) {
 					}
 					$db_ct++;
 				}
-				
+
 				$sthA->finish;
 				$dbhA->disconnect;
 			} else {
@@ -419,7 +416,7 @@ if ( ($without_db < 1) && ($conf_only < 1) ) {
 			### BACKUP THE MYSQL FILES ON THE DB SERVER ###
 
 			### connect to MySQL database defined in the conf file
-			$dbhA = DBI->connect("DBI:mysql:$temp_dbname:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+			$dbhA = DBI->connect("DBI:mysql:$temp_dbname:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
 			or die "Couldn't connect to database: " . DBI->errstr;
 
 			$stmtA = "show tables;";
@@ -427,50 +424,59 @@ if ( ($without_db < 1) && ($conf_only < 1) ) {
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			$sthArows=$sthA->rows;
 			$rec_count=0;
-			$log_tables='';
-			$archive_tables='';
-			$regular_tables='';
+			my @log_tables = ();
+			my @archive_tables = ();
+			my @regular_tables = ();
 			my @all_tables = ();
-				
+			my @wo_archive_tables = ();
+			my @wo_log_tables = ();
+
 			while ($sthArows > $rec_count) {
 				@aryA = $sthA->fetchrow_array;
 				push(@all_tables, $aryA[0]);
+				if (! ($aryA[0] =~ /_archive/)) {
+					push(@wo_archive_tables, $aryA[0]);
+				}
+				if ((!($aryA[0] =~ /_archive/)) && (!($aryA[0] =~ /_log/))) {
+					push(@wo_log_tables, $aryA[0]);
+				}
 				if ($aryA[0] =~ /_archive/) {
-					$archive_tables .= " $aryA[0]";
+					push(@archive_tables, $aryA[0]);
 				}
 				elsif ($aryA[0] =~ /_log|server_performance|vicidial_ivr|vicidial_hopper|vicidial_manager|web_client_sessions|imm_outcomes/) {
-					$log_tables .= " $aryA[0]";
+					push(@log_tables, $aryA[0]);
 				}
 				elsif ($aryA[0] =~ /server|^phones|conferences|stats|vicidial_list$|^custom/) {
-					$regular_tables .= " $aryA[0]";
+					push(@regular_tables, $aryA[0]);
 				} else {
-					$conf_tables .= " $aryA[0]";
+					push(@conf_tables, $aryA[0]);
 				}
 				$rec_count++;
 			}
 			$sthA->finish();
 
 			if ($db_without_logs) {
-				$dump_non_log_command = "$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname $regular_tables $conf_tables | $xzbin -9 > $TEMPpath/LOGS_$Server_name$underl$temp_dbname$underl$wday$xz";
-				$dump_non_log_commandOP = "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --routines $temp_dbname $regular_tables $conf_tables | $xzbin -9 > $TEMPpath/LOGS_$Server_name$underl$temp_dbname$underl$wday$xz";
-				$dump_log_command = "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --no-data --no-create-db --routines $temp_dbname $log_tables $archive_tables | $xzbin -9 > $TEMPpath/LOGS_$Server_name$underl$temp_dbname$underl$wday$xz";
-
-				if ($DBX) {print "$dump_non_log_commandOP\nDEBUG: LOG EXPORT COMMAND(not run): $dump_log_command\n";}
-				`$dump_non_log_command`;
+				foreach ( @wo_log_tables ){
+					if ($DBX) {
+						print "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --routines $temp_dbname '$_' | $xzbin -3 -T0 - > '$TEMPpath/$Server_name$underl$temp_dbname$underl$_$underl$wday.sql.xz'\n";
+					}
+					`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname '$_' | $xzbin -3 -T0 - > '$TEMPpath/$Server_name$underl$temp_dbname$underl$_$underl$wday.sql.xz'`;
+				}
 			} elsif ($db_without_archives) {
-				$dump_non_archive_command = "$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname $regular_tables $conf_tables $log_tables | $xzbin -9 > $TEMPEpath/ARCHIVES_$Server_name_$underl$temp_dbname$underl$wday$xz";
-				$dump_non_archive_commandOP = "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --routines $temp_dbname $regular_tables $conf_tables $log_tables | $xzbin -9 > $TEMPEpath/ARCHIVES_$Server_name_$underl$temp_dbname$underl$wday$xz";
-				$dump_archive_command = "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --no-data --no-create-db --routines $temp_dbname $archive_tables | $xzbin -9 > $TEMPpath/ARCHIVES_$Server_name$underl$temp_dbname$underl$wday$xz";
 
-				if ($DBX) {print "$dump_non_archive_commandOP\nDEBUG: ARCHIVE EXPORT COMMAND(not run): $dump_archive_command\n";}
-				`$dump_non_archive_command`;
+				foreach ( @wo_archive_tables ){
+					if ($DBX) {
+						print "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --routines $temp_dbname '$_' | $xzbin -3 -T0 - > '$TEMPpath/$Server_name$underl$temp_dbname$underl$_$underl$wday.sql.xz'\n";
+					}
+					`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname '$_' | $xzbin -3 -T0 - > '$TEMPpath/$Server_name$underl$temp_dbname$underl$_$underl$wday.sql.xz'`;
+				}
 			} elsif ($db_settings_only) {
-				$dump_non_log_command = "$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname $conf_tables | $zxbin -9 > $TEMPpath/SETTINGSONLY_$Server_name$underl$temp_dbname$underl$wday$xz";
-				$dump_non_log_commandOP = "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --routines $temp_dbname $conf_tables | $zxbin -9 > $TEMPpath/SETTINGSONLY_$Server_name$underl$temp_dbname$underl$wday$xz";
-				$dump_log_command = "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --no-data --no-create-db --routines $temp_dbname $log_tables $archive_tables $regular_tables | $xzbin -9 > $TEMPpath/SETTINGSONLY_$Server_name$underl$temp_dbname$underl$wday$xz";
-
-				if ($DBX) {print "$dump_non_log_commandOP\nNOT ARCHIVED: $dump_log_command\n";}
-				`$dump_non_log_command`;
+				foreach ( @conf_tables ){
+					if ($DBX) {
+						print "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --lock-tables --flush-logs --routines $temp_dbname '$_' | $xzbin -3 -T0 - > '$TEMPpath/$Server_name$underl$temp_dbname$underl$_$underl$wday.sql.xz'\n";
+					}
+					`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --lock-tables --flush-logs --routines $temp_dbname '$_' | $xzbin -3 -T0 - > '$TEMPpath/$Server_name$underl$temp_dbname$underl$_$underl$wday.sql.xz'`;
+				}
 			} else {
 				foreach ( @all_tables ){
 					if ($DBX) {
@@ -481,16 +487,33 @@ if ( ($without_db < 1) && ($conf_only < 1) ) {
 				if ($DBX) {
 					print "$tarbin -cf $TEMPpath/$Server_name$underl$temp_dbname$underl$wday$tar $TEMPpath/*.sql.xz`\n";
 				}
-				`$tarbin -cf $TEMPpath/$Server_name$underl$temp_dbname$underl$wday$tar $TEMPpath/*.sql.xz`;
-				`rm $TEMPpath/*.sql.xz`;
 			}
+			$routines = "routines";
+			if ($DBX) {
+			    print "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --no-data --no-create-info --routines $temp_dbname | $xzbin -3 -T0 - > '$TEMPpath/$Server_name$underl$temp_dbname$underl$routines$underl$wday.txt.xz'\n";
+			}
+			`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --no-data --no-create-info --routines $temp_dbname  | $xzbin -3 -T0 - > '$TEMPpath/$Server_name$underl$temp_dbname$underl$routines$underl$wday.txt.xz'`;
+
+			$triggers = "triggers";
+			if ($DBX) {
+			    print "$mysqldumpbin --user=$VARDB_backup_user --password=XXXX --no-data --triggers $temp_dbname | $xzbin -3 -T0 - > '$TEMPpath/$Server_name$underl$temp_dbname$underl$triggers$underl$wday.txt.xz'\n";
+			}
+			`$mysqldumpbin --user=$VARDB_backup_user --password=$VARDB_backup_pass --no-data --triggers $temp_dbname  | $xzbin -3 -T0 - > '$TEMPpath/$Server_name$underl$temp_dbname$underl$triggers$underl$wday.txt.xz'`;
+
+			if ($DBX) {
+				print "$tarbin -cf $TEMPpath/$Server_name$underl$temp_dbname$underl$wday$tar '$TEMPpath/*.sql.xz' '$TEMPpath/*.txt.xz'\n";
+			}
+			`$tarbin -cf $TEMPpath/$Server_name$underl$temp_dbname$underl$wday$tar $TEMPpath/*.sql.xz $TEMPpath/*.txt.xz`;
+			`rm $TEMPpath/*.sql.xz`;
+			`rm $TEMPpath/*.txt.xz`;
+
 			$c++;
 		}
 	} else {
 		print "\n----- Mysql Raw Copy -----\n\n";
-		`service mysql stop`;
+		`systemctl stop mysql`;
 		`$tarbin -Jcvf $TEMPpath/"$Server_name$underl"mysql_raw_"$wday"$txz /var/lib/mysql/test /var/lib/mysql/mysql /var/lib/mysql/performance_schema /var/lib/mysql/asterisk`;
-		`service mysql start`;
+		`systemctl stop mysql`;
 	}
 }
 
@@ -501,16 +524,18 @@ if ( ($without_conf < 1) && ($db_only < 1) )
 	if (-e "/etc/zaptel.conf") {$zapdahdi .= " /etc/zaptel.conf";}
 	if (-e "/etc/dahdi/system.conf") {$zapdahdi .= " /etc/dahdi";}
 	if (-e "/etc/apache2") {$zapdahdi .= " /etc/apache2";}
+	if (-e "/etc/mysql") {$zapdahdi .= " /etc/mysql";}
 	if (-e "/etc/letsencrypt") {$zapdahdi .= " /etc/letsencrypt";}
 	if (-e "/usr/share/astguiclient/AST_DB_lead_status_change.pl") {$zapdahdi .= " /usr/share/astguiclient/AST_DB_lead_status_change.pl";}
 	if (-e "/usr/local/sbin") {$zapdahdi .= " /usr/local/sbin";}
 	if (-e ("/etc/flyingpenguin")) {$zapdahdi .= " /etc/flyingpenguin";}
+	if (-e ("/etc/snct-dialer")) {$zapdahdi .= " /etc/snct-dialer";}
 	if ($DBX) {print "$tarbin -cf - /etc/astguiclient.conf $zapdahdi /etc/asterisk | $xzbin -1 -T0 - > $TEMPpath/$Server_name$conf$wday$txz \n";}
 	`$tarbin -cf - /etc/astguiclient.conf $zapdahdi /etc/asterisk | $xzbin -1 -T0 - > $TEMPpath/$Server_name$conf$wday$txz`;
 
 
 	### BACKUP THE WANPIPE CONF FILES(if there are any) ###
-	if ( -e ('/etc/wanpipe/wanpipe1.conf')) 
+	if ( -e ('/etc/wanpipe/wanpipe1.conf'))
 		{
 		$sgSTRING = '/etc/wanpipe/wanpipe1.conf ';
 		if ( -e ('/etc/wanpipe/wanpipe2.conf')) {$sgSTRING .= '/etc/wanpipe/wanpipe2.conf ';}
@@ -551,8 +576,8 @@ if ( ($without_conf < 1) && ($db_only < 1) )
 if ( ($conf_only < 1) && ($db_only < 1) && ($without_web < 1) )
 	{
 	### BACKUP THE WEB FILES ON THE SERVER ###
-	if ($DBX) {print "$tarbin -cf - $PATHweb |  $xzbin -1 -T0 - > $TEMPpath/$Server_name$web$wday$txz\n";}
-	`$tarbin -cf - $PATHweb | $xzbin -1 -T0 - > $TEMPpath/$Server_name$web$wday$txz`;
+	if ($DBX) {print "$tarbin -cf - $PATHweb $BackupWebPath2 |  $xzbin -1 -T0 - > $TEMPpath/$Server_name$web$wday$txz\n";}
+	`$tarbin -cf - $PATHweb $BackupWebPath2 | $xzbin -1 -T0 - > $TEMPpath/$Server_name$web$wday$txz`;
 	}
 
 if ( ($conf_only < 1) && ($db_only < 1) )
@@ -576,52 +601,28 @@ if ( ($conf_only < 1) && ($db_only < 1) && ($without_voicemail < 1) )
 	`$tarbin -cf - /var/spool/asterisk/voicemail | $xzbin -1 -T0 - > $TEMPpath/$Server_name$voicemail$wday$txz`;
 	}
 
-### REMOVE OLD GZ, xz and tar FILE
- if ( -e "$ARCHIVEpath/$Server_name$all$wday$tar$gz" ) {
-	if ($DBX) {print "rm -f $ARCHIVEpath/$Server_name$all$wday$tar$gz\n";}
-	`rm -f $ARCHIVEpath/$Server_name$all$wday$tar$gz`;
-}
-
- if ( -e "$ARCHIVEpath/$Server_name$all$wday.old$txz" ) {
-	if ($DBX) {print "rm -f $ARCHIVEpath/$Server_name$all$wday.old$txz\n";}
-	`rm -f $ARCHIVEpath/$Server_name$all$wday.old$txz`;
-}
-if ( -e "$ARCHIVEpath/$Server_name$all$wday.old$tar" ) {
-	if ($DBX) {print "rm -f $ARCHIVEpath/$Server_name$all$wday.old$tar\n";}
-	`rm -f $ARCHIVEpath/$Server_name$all$wday.old$tar`;
-}
-
-if ( -e "$ARCHIVEpath/$Server_name$all$wday$txz" ) {
-	if ($DBX) {print "mv $ARCHIVEpath/$Server_name$all$wday$txz $ARCHIVEpath/$Server_name$all$wday.old$txz\n";}
-	`mv $ARCHIVEpath/$Server_name$all$wday$txz $ARCHIVEpath/$Server_name$all$wday.old$txz`;
-}
-if ( -e "$ARCHIVEpath/$Server_name$all$wday$tar" ) {
-	if ($DBX) {print "mv $ARCHIVEpath/$Server_name$all$wday$tar $ARCHIVEpath/$Server_name$all$wday.old$tar\n";}
-	`mv $ARCHIVEpath/$Server_name$all$wday$tar $ARCHIVEpath/$Server_name$all$wday.old$tar`;
-}
-
 ### PUT EVERYTHING TOGETHER TO BE COMPRESSED ###
-if ($DBX) {print "$tarbin -Jcf $TEMPpathComp/$Server_name$all$wday$tar $TEMPpath\n";}
-`$tarbin -cf $TEMPpathComp/$Server_name$all$wday$tar $TEMPpath`;
+if ($DBX) {print "$tarbin -Jcf $TEMPpathComp/$Server_name$all$DateTag$tar $TEMPpath\n";}
+`$tarbin -cf $TEMPpathComp/$Server_name$all$DateTag$tar $TEMPpath`;
 
 ### Copy to ArchivePath ###
-if ($DBX) {print "cp $TEMPpathComp/$Server_name$all$wday$tar $ARCHIVEpath/\n";}
-`cp $TEMPpathComp/$Server_name$all$wday$tar $ARCHIVEpath/`;
+if ($DBX) {print "cp $TEMPpathComp/$Server_name$all$DateTag$tar $PATHbackup/\n";}
+`cp $TEMPpathComp/$Server_name$all$DateTag$tar $PATHbackup/`;
 
 ### Move to LocalPath ###
 if($LOCALpath) {
-	if ($DBX) {print "mv -f $TEMPpathComp/$Server_name$all$wday$tar $LOCALpath/\n";}
-	`mv -f $TEMPpathComp/$Server_name$all$wday$tar $LOCALpath/`;
+	if ($DBX) {print "mv -f $TEMPpathComp/$Server_name$all$DateTag$tar $LOCALpath/\n";}
+	`mv -f $TEMPpathComp/$Server_name$all$DateTag$tar $LOCALpath/`;
 }
 
 
 ### COMPRESS THE ALL FILE ###
-#if ($DBX) {print "$gzipbin -9 $ARCHIVEpath/$Server_name$all$wday$tar\n";}
-#`$gzipbin -9 $ARCHIVEpath/$Server_name$all$wday$tar`;
+#if ($DBX) {print "$gzipbin -9 $PATHbackup/$Server_name$all$wday$tar\n";}
+#`$gzipbin -9 $PATHbackup/$Server_name$all$wday$tar`;
 
 ### REMOVE TEMP FILES ###
-#if ($DBX) {print "rm -fR $ARCHIVEpath/temp\n";}
-#`rm -fR $ARCHIVEpath/temp`;
+#if ($DBX) {print "rm -fR $PATHbackup/temp\n";}
+#`rm -fR $PATHbackup/temp`;
 
 if ($DBX) {print "rm -fR $TEMPpath\n";}
 `rm -fR $TEMPpath`;
@@ -635,14 +636,14 @@ if ($FTPBACKUP_enable > 0) {
 	$ftp->login("$FTPBACKUP_user","$FTPBACKUP_pass");
 	$ftp->cwd("$FTPBACKUP_dir");
 	$ftp->binary();
-	$ftp->put("$TEMPpathComp/$Server_name$all$wday$tar", "$Server_name$all$wday$tar");
+	$ftp->put("$TEMPpathComp/$Server_name$all$DateTag$tar", "$Server_name$all$DateTag$tar");
 	$ftp->quit;
 }
 
 # remove temp tar file
-if ( -e "$TEMPpathComp/$Server_name$all$wday$tar") {
-	if ($DBX) {print "rm -f $TEMPpathComp/$Server_name$all$wday$tar\n";}
-	`rm -f $TEMPpathComp/$Server_name$all$wday$tar`;
+if ( -e "$TEMPpathComp/$Server_name$all$DateTag$tar") {
+	if ($DBX) {print "rm -f $TEMPpathComp/$Server_name$all$DateTag$tar\n";}
+	`rm -f $TEMPpathComp/$Server_name$all$DateTag$tar`;
 }
 
 ### calculate time to run script ###
@@ -661,3 +662,4 @@ exit;
 __DATA__
 This exists so flock() code above works.
 DO NOT REMOVE THIS DATA SECTION.
+

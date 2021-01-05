@@ -1,7 +1,7 @@
-<?php 
+<?php
 # AST_VDADstats.php
-# 
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 60619-1718 - Added variable filtering to eliminate SQL injection attack threat
@@ -55,6 +55,8 @@
 # 170829-0040 - Added screen color settings
 # 171012-2015 - Fixed javascript/apache errors with graphs
 # 180508-0115 - Added new help display
+# 190823-1620 - Fixed download archive bug
+# 191013-0852 - Fixes for PHP7
 #
 
 $startMS = microtime();
@@ -149,14 +151,14 @@ if (file_exists('options.php'))
 ### ARCHIVED DATA CHECK CONFIGURATION
 $archives_available="N";
 $log_tables_array=array("vicidial_log", "user_call_log", "vicidial_carrier_log", "vicidial_closer_log", "vicidial_agent_log");
-for ($t=0; $t<count($log_tables_array); $t++) 
+for ($t=0; $t<count($log_tables_array); $t++)
 	{
 	$table_name=$log_tables_array[$t];
 	$archive_table_name=use_archive_table($table_name);
 	if ($archive_table_name!=$table_name) {$archives_available="Y";}
 	}
 
-if ($search_archived_data) 
+if ($search_archived_data)
 	{
 	$vicidial_log_table=use_archive_table("vicidial_log");
 	$user_call_log_table=use_archive_table("user_call_log");
@@ -195,7 +197,7 @@ else
 	$PHP_AUTH_PW = preg_replace("/'|\"|\\\\|;/","",$PHP_AUTH_PW);
 	$PHP_AUTH_USER = preg_replace("/'|\"|\\\\|;/","",$PHP_AUTH_USER);
 	}
-$group = preg_replace("/'|\"|\\\\|;/","",$group);
+# $group = preg_replace("/'|\"|\\\\|;/","",$group);
 
 $stmt="SELECT selected_language from vicidial_users where user='$PHP_AUTH_USER';";
 if ($DB) {echo "|$stmt|\n";}
@@ -379,6 +381,8 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $campaigns_to_print = mysqli_num_rows($rslt);
 $i=0;
+$groups=array();
+$group_names=array();
 while ($i < $campaigns_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -434,7 +438,7 @@ while($i < $group_ct)
 				{$ofcom_uk_drop_calc++;}
 			}
 		}
-	
+
 	$i++;
 	}
 if (strlen($group_drop_SQL) < 2)
@@ -476,7 +480,7 @@ if ( (preg_match('/\-\-ALL\-\-/',$list_id_string) ) or ($list_id_ct < 1) or (str
 	$VL_INC="";
 	$skip_productivity_calc=0;
 	}
-else 
+else
 	{
 	$list_id_SQL = preg_replace('/,$/i', '',$list_id_SQL);
 	$list_id_SQLand = "and list_id IN($list_id_SQL)";
@@ -492,6 +496,9 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $statcats_to_print = mysqli_num_rows($rslt);
 $i=0;
+$vsc_id=array();
+$vsc_name=array();
+$vsc_count=array();
 while ($i < $statcats_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -558,7 +565,7 @@ $HEADER.="<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 
 # require("chart_button.php");
 
-$HEADER_b.="<script src='chart/Chart.js'></script>\n"; 
+$HEADER_b.="<script src='chart/Chart.js'></script>\n";
 $HEADER_b.="<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
 $HEADER_b.="<script language=\"JavaScript\">\n";
 
@@ -685,7 +692,7 @@ if (preg_match('/MSIE/i', $_SERVER['HTTP_USER_AGENT'])) {
 	$JS_events="onMouseUp='LoadLists(this.form.group)' onBlur='LoadLists(this.form.group)' onKeyUp='LoadLists(this.form.group)'";
 }
 
-if ($archives_available=="Y") 
+if ($archives_available=="Y")
 	{
 	$MAIN.="<BR><BR><input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."\n";
 	}
@@ -710,13 +717,13 @@ $MAIN.=$list_options;
 $MAIN.="</TD><TD VALIGN=TOP>";
 $MAIN.=_QXZ("Include Drop")." &nbsp; <BR>"._QXZ("Rollover").":<BR>";
 $MAIN.="<SELECT SIZE=1 NAME=include_rollover>\n";
-$MAIN.="<option selected value=\"$include_rollover\">$include_rollover</option>\n";
+$MAIN.="<option selected value=\"$include_rollover\">"._QXZ("$include_rollover")."</option>\n";
 $MAIN.="<option value=\"YES\">"._QXZ("YES")."</option>\n";
 $MAIN.="<option value=\"NO\">"._QXZ("NO")."</option>\n";
 $MAIN.="</SELECT>\n";
 $MAIN.="<BR>"._QXZ("Bottom Graph").": &nbsp; <BR>\n";
 $MAIN.="<SELECT SIZE=1 NAME=bottom_graph>\n";
-$MAIN.="<option selected value=\"$bottom_graph\">$bottom_graph</option>\n";
+$MAIN.="<option selected value=\"$bottom_graph\">"._QXZ("$bottom_graph")."</option>\n";
 $MAIN.="<option value=\"YES\">"._QXZ("YES")."</option>\n";
 $MAIN.="<option value=\"NO\">"._QXZ("NO")."</option>\n";
 $MAIN.="</SELECT><BR>\n";
@@ -724,18 +731,18 @@ if ($carrier_logging_active > 0)
 	{
 	$MAIN.="</TD><TD VALIGN=TOP>"._QXZ("Carrier Stats").": &nbsp; <BR>";
 	$MAIN.="<SELECT SIZE=1 NAME=carrier_stats>\n";
-	$MAIN.="<option selected value=\"$carrier_stats\">$carrier_stats</option>\n";
+	$MAIN.="<option selected value=\"$carrier_stats\">"._QXZ("$carrier_stats")."</option>\n";
 	$MAIN.="<option value=\"YES\">"._QXZ("YES")."</option>\n";
 	$MAIN.="<option value=\"NO\">"._QXZ("NO")."</option>\n";
 	$MAIN.="</SELECT>\n";
 	}
 $MAIN.="<BR><BR>"._QXZ("Display as").":<BR>";
 $MAIN.="<select name='report_display_type'>";
-if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>$report_display_type</option>";}
+if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
 $MAIN.="<option value='TEXT'>TEXT</option><option value='HTML'>HTML</option></select>\n<BR>";
 $MAIN.="</TD><TD VALIGN=TOP>"._QXZ("Shift").": &nbsp; <BR>";
 $MAIN.="<SELECT SIZE=1 NAME=shift>\n";
-$MAIN.="<option selected value=\"$shift\">$shift</option>\n";
+$MAIN.="<option selected value=\"$shift\">"._QXZ("$shift")."</option>\n";
 $MAIN.="<option value=\"\">--</option>\n";
 $MAIN.="<option value=\"AM\">"._QXZ("AM")."</option>\n";
 $MAIN.="<option value=\"PM\">"._QXZ("PM")."</option>\n";
@@ -744,7 +751,7 @@ $MAIN.="</SELECT><BR><BR>\n";
 $MAIN.="<INPUT type=submit NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'>\n";
 $MAIN.="</TD><TD VALIGN=TOP> &nbsp; &nbsp; &nbsp; &nbsp; ";
 $MAIN.="<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-$MAIN.="<a href=\"$PHP_SELF?agent_hours=$agent_hours&outbound_rate=$outbound_rate&costformat=$costformat&print_calls=$print_calls&query_date=$query_date&end_date=$end_date$groupQS$list_idQS&include_rollover=$include_rollover&bottom_graph=$bottom_graph&carrier_stats=$carrier_stats&report_display_type=$report_display_type&shift=$shift&SUBMIT=$SUBMIT&file_download=1\">"._QXZ("DOWNLOAD")."</a> |";
+$MAIN.="<a href=\"$PHP_SELF?agent_hours=$agent_hours&outbound_rate=$outbound_rate&costformat=$costformat&print_calls=$print_calls&query_date=$query_date&end_date=$end_date$groupQS$list_idQS&include_rollover=$include_rollover&bottom_graph=$bottom_graph&carrier_stats=$carrier_stats&report_display_type=$report_display_type&shift=$shift&SUBMIT=$SUBMIT&file_download=1&search_archived_data=$search_archived_data\">"._QXZ("DOWNLOAD")."</a> |";
 if (strlen($group[0]) > 1)
 	{
 	$MAIN.=" <a href=\"./admin.php?ADD=34&campaign_id=$group[0]\">"._QXZ("MODIFY")."</a> | \n";
@@ -775,26 +782,26 @@ if (strlen($group[0]) < 1)
 
 else
 	{
-	if ($shift == 'AM') 
+	if ($shift == 'AM')
 		{
 		$time_BEGIN=$AM_shift_BEGIN;
 		$time_END=$AM_shift_END;
-		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}   
+		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}
 		if (strlen($time_END) < 6) {$time_END = "15:14:59";}
 		}
-	if ($shift == 'PM') 
+	if ($shift == 'PM')
 		{
 		$time_BEGIN=$PM_shift_BEGIN;
 		$time_END=$PM_shift_END;
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "15:15:00";}
 		if (strlen($time_END) < 6) {$time_END = "23:15:00";}
 		}
-	if ($shift == 'ALL') 
+	if ($shift == 'ALL')
 		{
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}
 		if (strlen($time_END) < 6) {$time_END = "23:59:59";}
 		}
-	$query_date_BEGIN = "$query_date $time_BEGIN";   
+	$query_date_BEGIN = "$query_date $time_BEGIN";
 	$query_date_END = "$end_date $time_END";
 
 
@@ -839,7 +846,7 @@ else
 			$thiscallsec = (($length_in_secZ - $queue_secondsZ) - $TOTALdelay);
 			if ($thiscallsec < 0)
 				{$thiscallsec = 0;}
-			$inTOTALsec =	($inTOTALsec + $thiscallsec);	
+			$inTOTALsec =	($inTOTALsec + $thiscallsec);
 
 			$y++;
 			}
@@ -919,7 +926,7 @@ else
 			$thiscallsec = (($length_in_secZ - $queue_secondsZ) - $CIdelay);
 			if ($thiscallsec < 0)
 				{$thiscallsec = 0;}
-			$inCIsec =	($inCIsec + $thiscallsec);	
+			$inCIsec =	($inCIsec + $thiscallsec);
 
 			$y++;
 			}
@@ -933,7 +940,7 @@ else
 	$average_ci_seconds = MathZDC($CIsec, $CIcallsRAW);
 	$average_ci_seconds = round($average_ci_seconds, 2);
 	$average_ci_seconds =	sprintf("%10s", $average_ci_seconds);
-	$CIsec =		sec_convert($CIsec,'H'); 
+	$CIsec =		sec_convert($CIsec,'H');
 
 
 	$OUToutput .= _QXZ("Total Human Answered calls for this Campaign").": $CIcalls\n";
@@ -969,6 +976,12 @@ else
 	if ($DB) {$OUToutput .= "$stmt\n";}
 	$statuses_to_print = mysqli_num_rows($rslt);
 	$p=0;
+	$status=array();
+	$status_name=array();
+	$human_answered=array();
+	$category=array();
+	$statname_list=array();
+	$statcat_list=array();
 	while ($p < $statuses_to_print)
 		{
 		$row=mysqli_fetch_row($rslt);
@@ -1066,25 +1079,25 @@ else
 	$OUToutput .= _QXZ("Percent of DROP Calls taken out of Answers",44).": $DROPcallsA / ";
 	$CSV_text .= "\""._QXZ("Total Outbound DROP Calls").":\",\"$DROPcalls\",\"$DROPpercent%\"\n";
 	$CSV_text .= "\""._QXZ("Percent of DROP Calls taken out of Answers").":\",\"$DROPcallsA / ";
-	if ( ($SSofcom_uk_drop_calc > 0) and ($ofcom_uk_drop_calc > 0) ) 
+	if ( ($SSofcom_uk_drop_calc > 0) and ($ofcom_uk_drop_calc > 0) )
 		{
 		$OUToutput .= "$temp_answers_today";
 		$CSV_text .= "$temp_answers_today";
 		}
-	else 
+	else
 		{
 		$OUToutput .= ($ANSWERcalls+($DROPcallsRAW*$DROPANSWERpercent_adjustment));
 		$CSV_text .= ($ANSWERcalls+($DROPcallsRAW*$DROPANSWERpercent_adjustment));
 		}
 	$OUToutput .= "  $DROPANSWERpercent%";
 	$CSV_text .= "\",\"$DROPANSWERpercent%\"";
-	if ( ($SSofcom_uk_drop_calc > 0) and ($ofcom_uk_drop_calc > 0) ) 
+	if ( ($SSofcom_uk_drop_calc > 0) and ($ofcom_uk_drop_calc > 0) )
 		{
 		$OUToutput .= "   <font color=blue>(uk)</font>";
 		$CSV_text .= "\"(uk)\",";
 		}
 
-	if ( ($DB > 0) and ($SSofcom_uk_drop_calc > 0) and ($ofcom_uk_drop_calc > 0) ) 
+	if ( ($DB > 0) and ($SSofcom_uk_drop_calc > 0) and ($ofcom_uk_drop_calc > 0) )
 		{
 		$OUToutput .= "     detail: $ukDROPdebug";
 		$CSV_text .= "\",\"detail:\",\"$ukDROPdebug\"";
@@ -1125,7 +1138,7 @@ else
 	$row=mysqli_fetch_row($rslt);
 	$TOTALanswers = ($row[0] + $ANSWERcalls);
 
-	
+
 	$stmt = "SELECT sum(wait_sec + talk_sec + dispo_sec) from ".$vicidial_agent_log_table."$VL_INC where event_time >= '$query_date_BEGIN' and event_time <= '$query_date_END' and pause_sec<65000 and wait_sec<65000 and talk_sec<65000 and dispo_sec<65000 $group_SQLand $list_id_SQLandVALJOIN;";
 	$rslt=mysql_to_mysqli($stmt, $link);
 	if ($DB) {$OUToutput .= "$stmt\n";}
@@ -1170,7 +1183,7 @@ else
 
 	$NApercent = (MathZDC($totalNAcalls, $TOTALcalls) * 100);
 	$NApercent = round($NApercent, 2);
-	
+
 	$average_na_seconds = MathZDC($row[1], $row[0]);
 	$average_na_seconds = round($average_na_seconds, 2);
 	$average_na_seconds =	sprintf("%10s", $average_na_seconds);
@@ -1205,6 +1218,7 @@ else
 	if ($DB) {$ASCII_text .= "$stmt\n";}
 	$reasons_to_print = mysqli_num_rows($rslt);
 	$i=0;
+	$graph_stats=array();
 	while ($i < $reasons_to_print)
 		{
 		$row=mysqli_fetch_row($rslt);
@@ -1236,13 +1250,13 @@ else
 	$graph_array=array("CHRSdata|||integer|");
 	$graph_id++;
 	$default_graph="bar"; # Graph that is initally displayed when page loads
-	include("graph_color_schemas.inc"); 
+	include("graph_color_schemas.inc");
 
 	$graph_totals_array=array();
 	$graph_totals_rawdata=array();
 	if ($report_display_type=="HTML") {
 		for ($q=0; $q<count($graph_array); $q++) {
-			$graph_info=explode("|", $graph_array[$q]); 
+			$graph_info=explode("|", $graph_array[$q]);
 			$current_graph_total=0;
 			$dataset_name=$graph_info[0];
 			$dataset_index=$graph_info[1]; $dataset_type=$graph_info[3];
@@ -1263,7 +1277,7 @@ else
 			$graphConstantsC="\t\t\t\thoverBorderColor: [";
 			for ($d=0; $d<count($graph_stats); $d++) {
 				$labels.="\"".$graph_stats[$d][1]."\",";
-				$data.="\"".$graph_stats[$d][0]."\","; 
+				$data.="\"".$graph_stats[$d][0]."\",";
 				$current_graph_total+=$graph_stats[$d][0];
 				$bgcolor=$backgroundColor[($d%count($backgroundColor))];
 				$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
@@ -1271,13 +1285,13 @@ else
 				$graphConstantsA.="\"$bgcolor\",";
 				$graphConstantsB.="\"$hbgcolor\",";
 				$graphConstantsC.="\"$hbcolor\",";
-			}	
+			}
 			$graphConstantsA.="],\n";
 			$graphConstantsB.="],\n";
 			$graphConstantsC.="],\n";
 			$labels=preg_replace('/,$/', '', $labels)."],\n";
 			$data=preg_replace('/,$/', '', $data)."],\n";
-			
+
 			$graph_totals_rawdata[$q]=$current_graph_total;
 			switch($dataset_type) {
 				case "time":
@@ -1356,7 +1370,7 @@ else
 	$stmt="SELECT sum(pause_sec + wait_sec + talk_sec + dispo_sec) from ".$vicidial_agent_log_table."$VL_INC where event_time >= '$query_date_BEGIN' and event_time <= '$query_date_END' $campaignSQL $list_id_SQLandVALJOIN and pause_sec<65000 and wait_sec<65000 and talk_sec<65000 and dispo_sec<65000;";
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$Ctally_to_print = mysqli_num_rows($rslt);
-	if ($Ctally_to_print > 0) 
+	if ($Ctally_to_print > 0)
 		{
 		$rowx=mysqli_fetch_row($rslt);
 		$AGENTsec = "$rowx[0]";
@@ -1375,6 +1389,9 @@ else
 	if ($DB) {$ASCII_text .= "$stmt\n";}
 	$statuses_to_print = mysqli_num_rows($rslt);
 	$i=0;
+	$STATUScountARY=array();
+	$RAWstatusARY=array();
+	$RAWhoursARY=array();
 	while ($i < $statuses_to_print)
 		{
 		$row=mysqli_fetch_row($rslt);
@@ -1396,7 +1413,7 @@ else
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$inS_statuses_to_print = mysqli_num_rows($rslt);
 		$n=0;
-		while ($inS_statuses_to_print > $n) 
+		while ($inS_statuses_to_print > $n)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$STATUScountARY[$i] =	0;
@@ -1421,7 +1438,7 @@ else
 			$stmt="select count(*),sum(length_in_sec) from ".$vicidial_closer_log_table." where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and status='$RAWstatus' $group_drop_SQLand $list_id_SQLand;";
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$in_statuses_to_print = mysqli_num_rows($rslt);
-			if ($in_statuses_to_print > 0) 
+			if ($in_statuses_to_print > 0)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$inSTATUScount =	$rowx[0];
@@ -1460,9 +1477,9 @@ else
 		$graph_stats[$i][4]=$STATUSrate;
 		$graph_stats[$i][5]=$AGENTrate;
 
-		$STATUShours =		sec_convert($RAWhours,'H'); 
-		$STATUSavg_sec =	MathZDC($RAWhours, $STATUScount); 
-		$STATUSavg =		sec_convert($STATUSavg_sec,'H'); 
+		$STATUShours =		sec_convert($RAWhours,'H');
+		$STATUSavg_sec =	MathZDC($RAWhours, $STATUScount);
+		$STATUSavg =		sec_convert($STATUSavg_sec,'H');
 
 		$STATUScount =	sprintf("%10s", $STATUScount);while(strlen($STATUScount)>10) {$STATUScount = substr("$STATUScount", 0, -1);}
 		$status =	sprintf("%-6s", $RAWstatus);while(strlen($status)>6) {$status = substr("$status", 0, -1);}
@@ -1473,17 +1490,17 @@ else
 
 		if ($non_latin < 1)
 			{
-			$status_name =	sprintf("%-20s", $statname_list[$RAWstatus]); 
-			while(strlen($status_name)>20) {$status_name = substr("$status_name", 0, -1);}	
-			$statcat =	sprintf("%-20s", $statcat_list[$RAWstatus]); 
-			while(strlen($statcat)>20) {$statcat = substr("$statcat", 0, -1);}	
+			$status_name =	sprintf("%-20s", $statname_list[$RAWstatus]);
+			while(strlen($status_name)>20) {$status_name = substr("$status_name", 0, -1);}
+			$statcat =	sprintf("%-20s", $statcat_list[$RAWstatus]);
+			while(strlen($statcat)>20) {$statcat = substr("$statcat", 0, -1);}
 			}
 		else
 			{
-			$status_name =	sprintf("%-60s", $statname_list[$RAWstatus]); 
-			while(mb_strlen($status_name,'utf-8')>20) {$status_name = mb_substr("$status_name", 0, -1,'utf-8');}	
-			$statcat =	sprintf("%-60s", $statcat_list[$RAWstatus]); 
-			while(mb_strlen($statcat,'utf-8')>20) {$statcat = mb_substr("$statcat", 0, -1,'utf-8');}	
+			$status_name =	sprintf("%-60s", $statname_list[$RAWstatus]);
+			while(mb_strlen($status_name,'utf-8')>20) {$status_name = mb_substr("$status_name", 0, -1,'utf-8');}
+			$statcat =	sprintf("%-60s", $statcat_list[$RAWstatus]);
+			while(mb_strlen($statcat,'utf-8')>20) {$statcat = mb_substr("$statcat", 0, -1,'utf-8');}
 			}
 		$graph_stats[$i][0]="$status - $status_name - $statcat";
 
@@ -1498,10 +1515,10 @@ else
 	$aTOTALrate =	MathZDC($TOTALcalls, MathZDC($AGENTsec, 3600) );
 	$aTOTALrate =	sprintf("%.2f", $aTOTALrate);
 
-	$aTOTALhours =		sec_convert($AGENTsec,'H'); 
-	$TOTALhours =		sec_convert($TOTALtimeS,'H'); 
+	$aTOTALhours =		sec_convert($AGENTsec,'H');
+	$TOTALhours =		sec_convert($TOTALtimeS,'H');
 	$TOTALavg_sec =		MathZDC($TOTALtimeS, $TOTALcalls);
-	$TOTALavg =			sec_convert($TOTALavg_sec,'H'); 
+	$TOTALavg =			sec_convert($TOTALavg_sec,'H');
 
 	$TOTALcalls =	sprintf("%10s", $TOTALcalls);
 	$TOTALhours =	sprintf("%10s", $TOTALhours);while(strlen($TOTALhours)>10) {$TOTALhours = substr("$TOTALhours", 0, -1);}
@@ -1521,16 +1538,16 @@ else
 	$graph_id++;
 	$graph_array=array("CSS_CALLSdata|1|CALLS|integer|", "CSS_TOTALTIMEdata|2|TOTAL TIME|time|", "CSS_AVGTIMEdata|3|AVG TIME|time|", "CSS_CALLSHOURdata|4|CALLS/HR|decimal|", "CSS_CALLSHOUR_agent|5|AGENT CALLS/HR|decimal|");
 	$default_graph="bar"; # Graph that is initally displayed when page loads
-	include("graph_color_schemas.inc"); 
+	include("graph_color_schemas.inc");
 
 	$graph_totals_array=array();
 	$graph_totals_rawdata=array();
 	if ($report_display_type=="HTML") {
 		for ($q=0; $q<count($graph_array); $q++) {
-			$graph_info=explode("|", $graph_array[$q]); 
+			$graph_info=explode("|", $graph_array[$q]);
 			$current_graph_total=0;
 			$dataset_name=$graph_info[0];
-			$dataset_index=$graph_info[1]; 
+			$dataset_index=$graph_info[1];
 			$dataset_type=$graph_info[3];
 
 			$JS_text.="var $dataset_name = {\n";
@@ -1548,7 +1565,7 @@ else
 			$graphConstantsC="\t\t\t\thoverBorderColor: [";
 			for ($d=0; $d<count($graph_stats); $d++) {
 				$labels.="\"".preg_replace('/ +/', ' ', $graph_stats[$d][0])."\",";
-				$data.="\"".$graph_stats[$d][$dataset_index]."\","; 
+				$data.="\"".$graph_stats[$d][$dataset_index]."\",";
 				$current_graph_total+=$graph_stats[$d][$dataset_index];
 				$bgcolor=$backgroundColor[($d%count($backgroundColor))];
 				$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
@@ -1556,13 +1573,13 @@ else
 				$graphConstantsA.="\"$bgcolor\",";
 				$graphConstantsB.="\"$hbgcolor\",";
 				$graphConstantsC.="\"$hbcolor\",";
-			}	
+			}
 			$graphConstantsA.="],\n";
 			$graphConstantsB.="],\n";
 			$graphConstantsC.="],\n";
 			$labels=preg_replace('/,$/', '', $labels)."],\n";
 			$data=preg_replace('/,$/', '', $data)."],\n";
-			
+
 			$graph_totals_rawdata[$q]=$current_graph_total;
 			switch($dataset_type) {
 				case "time":
@@ -1628,7 +1645,10 @@ else
 	if ($DB) {$ASCII_text .= "$stmt\n";}
 	$listids_to_print = mysqli_num_rows($rslt);
 	$i=0;
-	$max_calls=1; $graph_stats=array();
+	$max_calls=1;
+	$graph_stats=array();
+	$LISTIDcalls=array();
+	$LISTIDlists=array();
 	while ($i < $listids_to_print)
 		{
 		$row=mysqli_fetch_row($rslt);
@@ -1641,6 +1661,7 @@ else
 		}
 
 	$i=0;
+	$LISTIDlist_names=array();
 	while ($i < $listids_to_print)
 		{
 		$stmt="select list_name from vicidial_lists where list_id='$LISTIDlists[$i]';";
@@ -1675,16 +1696,16 @@ else
 	$graph_array=array("LISdata|||integer|");
 	$graph_id++;
 	$default_graph="bar"; # Graph that is initally displayed when page loads
-	include("graph_color_schemas.inc"); 
+	include("graph_color_schemas.inc");
 
 	$graph_totals_array=array();
 	$graph_totals_rawdata=array();
 	if ($report_display_type=="HTML") {
 		for ($q=0; $q<count($graph_array); $q++) {
-			$graph_info=explode("|", $graph_array[$q]); 
+			$graph_info=explode("|", $graph_array[$q]);
 			$current_graph_total=0;
 			$dataset_name=$graph_info[0];
-			$dataset_index=$graph_info[1]; 
+			$dataset_index=$graph_info[1];
 			$dataset_type=$graph_info[3];
 			if ($q==0) {$preload_dataset=$dataset_name;}  # Used below to load initial graph
 
@@ -1703,7 +1724,7 @@ else
 			$graphConstantsC="\t\t\t\thoverBorderColor: [";
 			for ($d=0; $d<count($graph_stats); $d++) {
 				$labels.="\"".$graph_stats[$d][1]."\",";
-				$data.="\"".$graph_stats[$d][0]."\","; 
+				$data.="\"".$graph_stats[$d][0]."\",";
 				$current_graph_total+=$graph_stats[$d][0];
 				$bgcolor=$backgroundColor[($d%count($backgroundColor))];
 				$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
@@ -1711,13 +1732,13 @@ else
 				$graphConstantsA.="\"$bgcolor\",";
 				$graphConstantsB.="\"$hbgcolor\",";
 				$graphConstantsC.="\"$hbcolor\",";
-			}	
+			}
 			$graphConstantsA.="],\n";
 			$graphConstantsB.="],\n";
 			$graphConstantsC.="],\n";
 			$labels=preg_replace('/,$/', '', $labels)."],\n";
 			$data=preg_replace('/,$/', '', $data)."],\n";
-			
+
 			$graph_totals_rawdata[$q]=$current_graph_total;
 			switch($dataset_type) {
 				case "time":
@@ -1829,7 +1850,8 @@ else
 		#$GRAPH.="<th class=\"thgraph\" scope=\"col\">"._QXZ("PRESET NAME")."</th>\n";
 		#$GRAPH.="<th class=\"thgraph\" scope=\"col\">"._QXZ("CALLS")."</th>\n";
 		#$GRAPH.="</tr>\n";
-		$max_calls=1; $graph_stats=array();
+		$max_calls=1;
+		$graph_stats=array();
 
 		## get counts and time totals for all statuses in this campaign
 		$stmt="select preset_name,count(*) from ".$user_call_log_table."$VL_INC where call_date > \"$query_date_BEGIN\" and call_date < \"$query_date_END\" and preset_name!='' and preset_name is not NULL  $group_SQLand  $list_id_SQLandUCLJOIN group by preset_name order by preset_name;";
@@ -1858,16 +1880,16 @@ else
 		$graph_array=array("APDdata|||integer|");
 		$graph_id++;
 		$default_graph="bar"; # Graph that is initally displayed when page loads
-		include("graph_color_schemas.inc"); 
+		include("graph_color_schemas.inc");
 
 		$graph_totals_array=array();
 		$graph_totals_rawdata=array();
 	if ($report_display_type=="HTML") {
 		for ($q=0; $q<count($graph_array); $q++) {
-			$graph_info=explode("|", $graph_array[$q]); 
+			$graph_info=explode("|", $graph_array[$q]);
 			$current_graph_total=0;
 			$dataset_name=$graph_info[0];
-			$dataset_index=$graph_info[1]; 
+			$dataset_index=$graph_info[1];
 			$dataset_type=$graph_info[3];
 			if ($q==0) {$preload_dataset=$dataset_name;}  # Used below to load initial graph
 
@@ -1886,7 +1908,7 @@ else
 			$graphConstantsC="\t\t\t\thoverBorderColor: [";
 			for ($d=0; $d<count($graph_stats); $d++) {
 				$labels.="\"".$graph_stats[$d][1]."\",";
-				$data.="\"".$graph_stats[$d][0]."\","; 
+				$data.="\"".$graph_stats[$d][0]."\",";
 				$current_graph_total+=$graph_stats[$d][0];
 				$bgcolor=$backgroundColor[($d%count($backgroundColor))];
 				$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
@@ -1894,13 +1916,13 @@ else
 				$graphConstantsA.="\"$bgcolor\",";
 				$graphConstantsB.="\"$hbgcolor\",";
 				$graphConstantsC.="\"$hbcolor\",";
-			}	
+			}
 			$graphConstantsA.="],\n";
 			$graphConstantsB.="],\n";
 			$graphConstantsC.="],\n";
 			$labels=preg_replace('/,$/', '', $labels)."],\n";
 			$data=preg_replace('/,$/', '', $data)."],\n";
-			
+
 			$graph_totals_rawdata[$q]=$current_graph_total;
 			switch($dataset_type) {
 				case "time":
@@ -1965,7 +1987,8 @@ else
 #	$GRAPH.="<th class=\"thgraph\" scope=\"col\">"._QXZ("CATEGORY")."</th>\n";
 #	$GRAPH.="<th class=\"thgraph\" scope=\"col\">"._QXZ("CALLS")."</th>\n";
 #	$GRAPH.="</tr>\n";
-	$max_calls=1; $graph_stats=array();
+	$max_calls=1;
+	$graph_stats=array();
 
 	$TOTCATcalls=0;
 	$r=0; $i=0;
@@ -2000,16 +2023,16 @@ else
 		$graph_array=array("CSCdata|||integer|");
 		$graph_id++;
 		$default_graph="bar"; # Graph that is initally displayed when page loads
-		include("graph_color_schemas.inc"); 
+		include("graph_color_schemas.inc");
 
 		$graph_totals_array=array();
 		$graph_totals_rawdata=array();
 	if ($report_display_type=="HTML") {
 		for ($q=0; $q<count($graph_array); $q++) {
-			$graph_info=explode("|", $graph_array[$q]); 
+			$graph_info=explode("|", $graph_array[$q]);
 			$current_graph_total=0;
 			$dataset_name=$graph_info[0];
-			$dataset_index=$graph_info[1]; 
+			$dataset_index=$graph_info[1];
 			$dataset_type=$graph_info[3];
 			if ($q==0) {$preload_dataset=$dataset_name;}  # Used below to load initial graph
 
@@ -2028,7 +2051,7 @@ else
 			$graphConstantsC="\t\t\t\thoverBorderColor: [";
 			for ($d=0; $d<count($graph_stats); $d++) {
 				$labels.="\"".$graph_stats[$d][1]."\",";
-				$data.="\"".$graph_stats[$d][0]."\","; 
+				$data.="\"".$graph_stats[$d][0]."\",";
 				$current_graph_total+=$graph_stats[$d][0];
 				$bgcolor=$backgroundColor[($d%count($backgroundColor))];
 				$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
@@ -2036,13 +2059,13 @@ else
 				$graphConstantsA.="\"$bgcolor\",";
 				$graphConstantsB.="\"$hbgcolor\",";
 				$graphConstantsC.="\"$hbcolor\",";
-			}	
+			}
 			$graphConstantsA.="],\n";
 			$graphConstantsB.="],\n";
 			$graphConstantsC.="],\n";
 			$labels=preg_replace('/,$/', '', $labels)."],\n";
 			$data=preg_replace('/,$/', '', $data)."],\n";
-			
+
 			$graph_totals_rawdata[$q]=$current_graph_total;
 			switch($dataset_type) {
 				case "time":
@@ -2106,6 +2129,11 @@ else
 	if ($DB) {$ASCII_text .= "$stmt\n";}
 	$users_to_print = mysqli_num_rows($rslt);
 	$i=0;
+	$RAWuser=array();
+	$RAWfull_name=array();
+	$RAWuser_calls=array();
+	$RAWuser_talk=array();
+	$RAWuser_average=array();
 	while ($i < $users_to_print)
 		{
 		$row=mysqli_fetch_row($rslt);
@@ -2128,11 +2156,11 @@ else
 		$user =	sprintf("%-6s", $RAWuser[$i]);while(strlen($user)>6) {$user = substr("$user", 0, -1);}
 		if ($non_latin < 1)
 			{
-			$full_name =	sprintf("%-15s", $RAWfull_name[$i]); while(strlen($full_name)>15) {$full_name = substr("$full_name", 0, -1);}	
+			$full_name =	sprintf("%-15s", $RAWfull_name[$i]); while(strlen($full_name)>15) {$full_name = substr("$full_name", 0, -1);}
 			}
 		else
 			{
-			$full_name =	sprintf("%-45s", $RAWfull_name[$i]); while(mb_strlen($full_name,'utf-8')>15) {$full_name = mb_substr("$full_name", 0, -1,'utf-8');}	
+			$full_name =	sprintf("%-45s", $RAWfull_name[$i]); while(mb_strlen($full_name,'utf-8')>15) {$full_name = mb_substr("$full_name", 0, -1,'utf-8');}
 			}
 		if (preg_match("/YES/i",$include_rollover))
 			{
@@ -2156,7 +2184,7 @@ else
 				$thiscallsec = (($length_in_secZ - $queue_secondsZ) - $CIdelay);
 				if ($thiscallsec < 0)
 					{$thiscallsec = 0;}
-				$inCIsec =	($inCIsec + $thiscallsec);	
+				$inCIsec =	($inCIsec + $thiscallsec);
 
 				$y++;
 				}
@@ -2184,8 +2212,8 @@ else
 #######
 
 
-		$USERtotTALK_MS =	sec_convert($USERtotTALK,'H'); 
-		$USERavgTALK_MS =	sec_convert($USERavgTALK,'H'); 
+		$USERtotTALK_MS =	sec_convert($USERtotTALK,'H');
+		$USERavgTALK_MS =	sec_convert($USERavgTALK,'H');
 
 		$USERtotTALK_MS =	sprintf("%9s", $USERtotTALK_MS);
 		$USERavgTALK_MS =	sprintf("%6s", $USERavgTALK_MS);
@@ -2201,8 +2229,8 @@ else
 	if (!$TOTcalls) {$TOTcalls = 1;}
 	$TOTavg = MathZDC($TOTtime, $TOTcalls);
 
-	$TOTavg_MS =	sec_convert($TOTavg,'H'); 
-	$TOTtime_MS =	sec_convert($TOTtime,'H'); 
+	$TOTavg_MS =	sec_convert($TOTavg,'H');
+	$TOTtime_MS =	sec_convert($TOTtime,'H');
 
 	$TOTavg =		sprintf("%6s", $TOTavg_MS);
 	$TOTtime =		sprintf("%10s", $TOTtime_MS);
@@ -2218,7 +2246,7 @@ else
 	$row=mysqli_fetch_row($rslt);
 
 	$AVGwait = $row[0];
-	$AVGwait_MS =	sec_convert($AVGwait,'H'); 
+	$AVGwait_MS =	sec_convert($AVGwait,'H');
 	$AVGwait =		sprintf("%6s", $AVGwait_MS);
 
 	$ASCII_text .= "+--------------------------+------------+------------+--------+\n";
@@ -2234,16 +2262,16 @@ else
 	$graph_id++;
 	$graph_array=array("AS_CALLSdata|1|CALLS|integer|", "AS_TOTALTIMEdata|2|TOTAL TIME|time|", "AS_AVGTIMEdata|3|AVG TIME|time|");
 	$default_graph="bar"; # Graph that is initally displayed when page loads
-	include("graph_color_schemas.inc"); 
+	include("graph_color_schemas.inc");
 
 	$graph_totals_array=array();
 	$graph_totals_rawdata=array();
 	if ($report_display_type=="HTML") {
 		for ($q=0; $q<count($graph_array); $q++) {
-			$graph_info=explode("|", $graph_array[$q]); 
+			$graph_info=explode("|", $graph_array[$q]);
 			$current_graph_total=0;
 			$dataset_name=$graph_info[0];
-			$dataset_index=$graph_info[1]; 
+			$dataset_index=$graph_info[1];
 			$dataset_type=$graph_info[3];
 
 			$JS_text.="var $dataset_name = {\n";
@@ -2261,7 +2289,7 @@ else
 			$graphConstantsC="\t\t\t\thoverBorderColor: [";
 			for ($d=0; $d<count($graph_stats); $d++) {
 				$labels.="\"".preg_replace('/ +/', ' ', $graph_stats[$d][0])."\",";
-				$data.="\"".$graph_stats[$d][$dataset_index]."\","; 
+				$data.="\"".$graph_stats[$d][$dataset_index]."\",";
 				$current_graph_total+=$graph_stats[$d][$dataset_index];
 				$bgcolor=$backgroundColor[($d%count($backgroundColor))];
 				$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
@@ -2269,13 +2297,13 @@ else
 				$graphConstantsA.="\"$bgcolor\",";
 				$graphConstantsB.="\"$hbgcolor\",";
 				$graphConstantsC.="\"$hbcolor\",";
-			}	
+			}
 			$graphConstantsA.="],\n";
 			$graphConstantsB.="],\n";
 			$graphConstantsC.="],\n";
 			$labels=preg_replace('/,$/', '', $labels)."],\n";
 			$data=preg_replace('/,$/', '', $data)."],\n";
-			
+
 			$graph_totals_rawdata[$q]=$current_graph_total;
 			switch($dataset_type) {
 				case "time":
@@ -2381,14 +2409,14 @@ else
 		exit;
 		}
 
-	if ($file_download > 0) 
+	if ($file_download > 0)
 		{
 
 		$FILE_TIME = date("Ymd-His");
 		$CSVfilename = "AST_VDADstats_$US$FILE_TIME.csv";
 		$CSV_text=preg_replace('/ +\"/', '"', $CSV_text);
 		$CSV_text=preg_replace('/\" +/', '"', $CSV_text);
-		$OUToutput.=$CSV_text;	
+		$OUToutput.=$CSV_text;
 		// We'll be outputting a TXT file
 		header('Content-type: application/octet-stream');
 
@@ -2418,9 +2446,9 @@ else
 		$rslt=mysql_to_mysqli($stmt, $link);
 
 		exit;
-		
-		} 
-	else 
+
+		}
+	else
 		{
 		if ($report_display_type=="HTML")
 			{
@@ -2452,6 +2480,8 @@ else
 			$last_full_record=0;
 			$i=0;
 			$h=0;
+			$hour_count=array();
+			$drop_count=array();
 			while ($i <= 96)
 				{
 				$stmt="select count(*) from ".$vicidial_log_table." where call_date >= '$query_date $h:00:00' and call_date <= '$query_date $h:14:59' $group_SQLand $list_id_SQLand;";
@@ -2521,9 +2551,9 @@ else
 			$k=1;
 			$Mk=0;
 			$call_scale = '0';
-			while ($k <= 102) 
+			while ($k <= 102)
 				{
-				if ($Mk >= 5) 
+				if ($Mk >= 5)
 					{
 					$Mk=0;
 					$scale_num=MathZDC($k, $hour_multiplier, 100);
@@ -2555,7 +2585,7 @@ else
 				{
 				$char_counter=0;
 				$time = '      ';
-				if ($h >= 4) 
+				if ($h >= 4)
 					{
 					$hour++;
 					$h=0;
@@ -2566,7 +2596,7 @@ else
 				if ($h == 2) {$time = "   30 ";}
 				if ($h == 3) {$time = "   45 ";}
 				$Ghour_count = $hour_count[$i];
-				if ($Ghour_count < 1) 
+				if ($Ghour_count < 1)
 					{
 					if ( ($no_lines_yet) or ($i > $last_full_record) )
 						{
@@ -2587,7 +2617,7 @@ else
 					$Yhour_count = (99 - $Xhour_count);
 
 					$Gdrop_count = $drop_count[$i];
-					if ($Gdrop_count < 1) 
+					if ($Gdrop_count < 1)
 						{
 						$hour_count[$i] =	sprintf("%-5s", $hour_count[$i]);
 
@@ -2620,8 +2650,8 @@ else
 						echo "| $drop_count[$i] | $hour_count[$i] |\n";
 						}
 					}
-				
-				
+
+
 				$i++;
 				$h++;
 				}

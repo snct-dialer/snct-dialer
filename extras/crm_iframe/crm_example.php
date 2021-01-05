@@ -1,11 +1,11 @@
 <?php
 # crm_example.php - example of using a crm to launch vicidial in a hidden iframe
-# 
+#
 # Copyright (C) 2015  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 #
 # CHANGELOG
-# 151229-1510 - First Build 
+# 151229-1510 - First Build
 #
 
 require_once("crm_settings.php");
@@ -219,7 +219,7 @@ if (isset($_GET["did_custom_four"]))			{$did_custom_four=$_GET["did_custom_four"
 if (isset($_GET["did_custom_five"]))			{$did_custom_five=$_GET["did_custom_five"];}
 	elseif (isset($_POST["did_custom_five"]))	{$did_custom_five=$_POST["did_custom_five"];}
 
-if (!isset($phone_login)) 
+if (!isset($phone_login))
 	{
 	if (isset($_GET["pl"]))                {$phone_login=$_GET["pl"];}
 			elseif (isset($_POST["pl"]))   {$phone_login=$_POST["pl"];}
@@ -256,7 +256,7 @@ $crmPAGE = "$HTTPprotocol$server_name$server_port$script_name";
 
 ?>
 	<script language="Javascript">
-	
+
 	var needToConfirmExit = true;
 	var MTvar;
 	var NOW_TIME = '<?php echo $NOW_TIME ?>';
@@ -289,7 +289,7 @@ if ($stage == 'logout')
 	{
 	echo "Logging out of the CRM...\n";
 	echo "<BR><BR>\n";
-	
+
 	$API_logout_URL = "$api_url?source=crmexample&value=LOGOUT&user=$api_user&pass=$api_pass&function=logout&agent_user=$VD_login";
 	$API_output = file($API_logout_URL);
 
@@ -308,7 +308,7 @@ if ($stage == 'hangup')
 	{
 	echo "Call has been hung up\n";
 	echo "<BR><BR>\n";
-	
+
 	$API_logout_URL = "$api_url?source=crmexample&value=1&user=$api_user&pass=$api_pass&function=external_hangup&agent_user=$VD_login";
 	$API_output = file($API_logout_URL);
 
@@ -338,7 +338,7 @@ if ($stage == 'hanguppause')
 
 	echo "Call has been hung up\n";
 	echo "<BR><BR>\n";
-	
+
 	$API_logout_URL = "$api_url?source=crmexample&value=1&user=$api_user&pass=$api_pass&function=external_hangup&agent_user=$VD_login";
 	$API_output = file($API_logout_URL);
 
@@ -360,7 +360,7 @@ if ($stage == 'dispo')
 	{
 	echo "Call has been set as status $dispo\n";
 	echo "<BR><BR>\n";
-	
+
 	$API_logout_URL = "$api_url?source=crmexample&value=$dispo&user=$api_user&pass=$api_pass&function=external_status&agent_user=$VD_login";
 	$API_output = file($API_logout_URL);
 
@@ -392,7 +392,7 @@ if ($stage == 'resume')
 	{
 	echo "You are now ACTIVE!\n";
 	echo "<BR><BR>\n";
-	
+
 	$API_logout_URL = "$api_url?source=crmexample&value=RESUME&user=$api_user&pass=$api_pass&function=external_pause&agent_user=$VD_login";
 	$API_output = file($API_logout_URL);
 
@@ -411,7 +411,7 @@ if ($stage == 'pause')
 	{
 	echo "You are now PAUSED!\n";
 	echo "<BR><BR>\n";
-	
+
 	$API_logout_URL = "$api_url?source=crmexample&value=PAUSE&user=$api_user&pass=$api_pass&function=external_pause&agent_user=$VD_login";
 	$API_output = file($API_logout_URL);
 
@@ -619,7 +619,7 @@ if ($stage == 'hangupupdate')
 	echo "Customer information updated<BR>\n";
 
 	echo "<BR><BR>\n";
-	
+
 	if (isset($_GET["after_call"]))				{$after_call=$_GET["after_call"];}
 		elseif (isset($_POST["after_call"]))	{$after_call=$_POST["after_call"];}
 	$k=0;

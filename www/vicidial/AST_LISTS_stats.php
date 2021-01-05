@@ -1,6 +1,6 @@
-<?php 
+<?php
 # AST_LISTS_stats.php
-# 
+#
 # Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This is a list inventory report, not a calling report. This report will show
@@ -320,7 +320,7 @@ while ($i < $statcats_to_print)
 	$status_stmt="select distinct status from vicidial_statuses where category='$row[0]' UNION select distinct status from vicidial_campaign_statuses where category='$row[0]' $group_SQLand";
 	if ($DB) {echo "$status_stmt\n";}
 	$status_rslt=mysql_to_mysqli($status_stmt, $link);
-	while ($status_row=mysqli_fetch_row($status_rslt)) 
+	while ($status_row=mysqli_fetch_row($status_rslt))
 		{
 		$category_statuses.="'$status_row[0]',";
         }
@@ -511,7 +511,7 @@ else
 	$OUToutput='';
 	$OUToutput .= "\n";
 	$OUToutput .= "---------- "._QXZ("INDIVIDUAL LIST ID SUMMARIES")."\n";
-	
+
 	while ($i < $listids_to_print)
 		{
 		$list_row=mysqli_fetch_row($list_rslt);
@@ -732,7 +732,7 @@ else
 		$CSV_textALL.="\""._QXZ("STATUS BREAKDOWN FOR LIST ID")." #$list_id:\",\"\"\n";
 		$CSV_textALL.="\""._QXZ("STATUS")."\",\""._QXZ("STATUS NAME")."\",\""._QXZ("COUNT")."\",\""._QXZ("LEAD")." %\"\n";
 
-		while ($row=mysqli_fetch_row($rslt)) 
+		while ($row=mysqli_fetch_row($rslt))
 			{
 			$OUToutput .= "| ".sprintf("%6s", $row[0])." | ".sprintf("%30s", $statname_list["$row[0]"])." | ".sprintf("%8s", $row[1])." | ".sprintf("%6.2f", ( MathZDC($row[1], $TOTALleads) * 100))."% |\n";
 			$CSV_text3.="\"$row[0]\",\"".$statname_list["$row[0]"]."\",\"$row[1]\",\"".sprintf("%6.2f", ( MathZDC($row[1], $TOTALleads) * 100))."%\"\n";

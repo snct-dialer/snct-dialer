@@ -1,9 +1,9 @@
 <?php
 # vtiger_search.php
-# 
+#
 # Copyright (C) 2013  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
-# This page does a search against a standard vtiger CRM system. If the record 
+# This page does a search against a standard vtiger CRM system. If the record
 # is not present, it will create a new one and send the agent's screen to that new page.
 #
 # This code is tested against vtiger 5.0.4 and 5.1.0
@@ -177,7 +177,7 @@ if ($vtc_conf_ct > 0)
 	$vtiger_create_lead_record =	$row[2];
 	$vtiger_search_dead =			$row[3];
 	}
-if (strlen($vtiger_search_category)<1) 
+if (strlen($vtiger_search_category)<1)
 	{$vtiger_search_category = 'LEAD';}
 
 ### connect to your vtiger database
@@ -277,7 +277,7 @@ if ($acctid_search > 0)
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_to_mysqli($stmt, $linkV);
 				if (!$rslt) {die('Could not execute: ' . mysqli_error());}
-				
+
 				echo "<!-- ACCTID deleted but resurrected $vendor_id -->\n";
 				}
 
@@ -292,8 +292,8 @@ if ($acctid_search > 0)
 				$row=mysqli_fetch_row($rslt);
 				$user_id = $row[0];
 				if (!$rslt) {die('Could not execute: ' . mysqli_error());}
-				
-				# Get next aviable id from vtiger_crmentity_seq to use as activityid in vtiger_crmentity	
+
+				# Get next aviable id from vtiger_crmentity_seq to use as activityid in vtiger_crmentity
 				$stmt="SELECT id from vtiger_crmentity_seq ;";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_to_mysqli($stmt, $linkV);
@@ -306,21 +306,21 @@ if ($acctid_search > 0)
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_to_mysqli($stmt, $linkV);
 				if (!$rslt) {die('Could not execute: ' . mysqli_error());}
-				
+
 				#Insert values into vtiger_salesmanactivityrel
 				$stmt = "INSERT INTO vtiger_salesmanactivityrel SET smid='$user_id',activityid='$activityid';";
 				if ($DB) {echo "|$stmt|\n";}
 				$rslt=mysql_to_mysqli($stmt, $linkV);
 				if ($DB) {echo "|$leadid|\n";}
 				if (!$rslt) {die('Could not execute: ' . mysqli_error());}
-				
+
 				#Insert values into vtiger_seactivityrel
 				$stmt = "INSERT INTO vtiger_seactivityrel SET crmid='$vendor_id',activityid='$activityid';";
 				if ($DB) {echo "|$stmt|\n";}
 				$rslt=mysql_to_mysqli($stmt, $linkV);
 				if ($DB) {echo "|$leadid|\n";}
 				if (!$rslt) {die('Could not execute: ' . mysqli_error());}
-				
+
 				#Insert values into vtiger_crmentity
 				$stmt = "INSERT INTO vtiger_crmentity (crmid, smcreatorid, smownerid, modifiedby, setype, description, createdtime, modifiedtime, viewedtime, status, version, presence, deleted) VALUES ('$activityid', '$user_id', '$user_id','$user_id', 'Calendar', 'VICIDIAL Call user $user', '$NOW_TIME', '$NOW_TIME', '$NOW_TIME', NULL, '0', '1', '0');";
 				if ($DB) {echo "|$stmt|\n";}
@@ -462,7 +462,7 @@ if ($account_search > 0)
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_to_mysqli($stmt, $linkV);
 				if (!$rslt) {die('Could not execute: ' . mysqli_error());}
-				
+
 				echo "<!-- ACCTID deleted but resurrected $accountid -->\n";
 				}
 			if (preg_match('/Y/',$vtiger_create_call_record))
@@ -476,8 +476,8 @@ if ($account_search > 0)
 				$row=mysqli_fetch_row($rslt);
 				$user_id = $row[0];
 				if (!$rslt) {die('Could not execute: ' . mysqli_error());}
-				
-				# Get next aviable id from vtiger_crmentity_seq to use as activityid in vtiger_crmentity	
+
+				# Get next aviable id from vtiger_crmentity_seq to use as activityid in vtiger_crmentity
 				$stmt="SELECT id from vtiger_crmentity_seq ;";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_to_mysqli($stmt, $linkV);
@@ -490,21 +490,21 @@ if ($account_search > 0)
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_to_mysqli($stmt, $linkV);
 				if (!$rslt) {die('Could not execute: ' . mysqli_error());}
-				
+
 				#Insert values into vtiger_salesmanactivityrel
 				$stmt = "INSERT INTO vtiger_salesmanactivityrel SET smid='$user_id',activityid='$activityid';";
 				if ($DB) {echo "|$stmt|\n";}
 				$rslt=mysql_to_mysqli($stmt, $linkV);
 				if ($DB) {echo "|$leadid|\n";}
 				if (!$rslt) {die('Could not execute: ' . mysqli_error());}
-				
+
 				#Insert values into vtiger_seactivityrel
 				$stmt = "INSERT INTO vtiger_seactivityrel SET crmid='$accountid',activityid='$activityid';";
 				if ($DB) {echo "|$stmt|\n";}
 				$rslt=mysql_to_mysqli($stmt, $linkV);
 				if ($DB) {echo "|$leadid|\n";}
 				if (!$rslt) {die('Could not execute: ' . mysqli_error());}
-				
+
 				#Insert values into vtiger_crmentity
 				$stmt = "INSERT INTO vtiger_crmentity (crmid, smcreatorid, smownerid, modifiedby, setype, description, createdtime, modifiedtime, viewedtime, status, version, presence, deleted) VALUES ('$activityid', '$user_id', '$user_id','$user_id', 'Calendar', 'VICIDIAL Call user $user', '$NOW_TIME', '$NOW_TIME', '$NOW_TIME', NULL, '0', '1', '0');";
 				if ($DB) {echo "|$stmt|\n";}
@@ -627,9 +627,9 @@ if ($lead_search > 0)
 			$row=mysqli_fetch_row($rslt);
 			$user_id = $row[0];
 			if (!$rslt) {die('Could not execute: ' . mysqli_error());}
-			
+
 			#Vtiger no longer use auto increment for vtiger_crmentity crmid, vtiger_crmentity_seq is used instead to list next aviable entity ID
-			# Get next available id to use as  crmid in vtiger_crmentity	
+			# Get next available id to use as  crmid in vtiger_crmentity
 			$stmt="SELECT id from vtiger_crmentity_seq ;";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_to_mysqli($stmt, $linkV);
@@ -642,7 +642,7 @@ if ($lead_search > 0)
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_to_mysqli($stmt, $linkV);
 			if (!$rslt) {die('Could not execute: ' . mysqli_error());}
-			
+
 			#Insert values into vtiger_crmentity
 			$stmt = "INSERT INTO vtiger_crmentity (crmid, smcreatorid, smownerid, modifiedby, setype, description, createdtime, modifiedtime, viewedtime, status, version, presence, deleted) VALUES ('$leadid', '$user_id', '$user_id','$user_id', 'Leads', '(Memo)', '$NOW_TIME', '$NOW_TIME', '$NOW_TIME', NULL, '0', '1', '0');";
 			if ($DB) {echo "|$stmt|\n";}
@@ -650,7 +650,7 @@ if ($lead_search > 0)
 			if ($DB) {echo "|$leadid|\n";}
 			if (!$rslt) {die('Could not execute: ' . mysqli_error());}
 
-			#Insert values into vtiger_leaddetails	
+			#Insert values into vtiger_leaddetails
 			$stmt = "INSERT INTO vtiger_leaddetails (leadid,firstname,lastname,company) values('$leadid','$first_name','$last_name','$first_name $last_name');";
 			if ($DB) {echo "|$stmt|\n";}
 			$rslt=mysql_to_mysqli($stmt, $linkV);
@@ -662,13 +662,13 @@ if ($lead_search > 0)
 			$rslt=mysql_to_mysqli($stmt, $linkV);
 			if (!$rslt) {die('Could not execute: ' . mysqli_error());}
 
-			#Insert values into vtiger_leadsubdetails	
+			#Insert values into vtiger_leadsubdetails
 			$stmt = "INSERT INTO vtiger_leadsubdetails (leadsubscriptionid) VALUES ('$leadid');";
 			if ($DB) {echo "|$stmt|\n";}
 			$rslt=mysql_to_mysqli($stmt, $linkV);
 			if (!$rslt) {die('Could not execute: ' . mysqli_error());}
-			
-			#Insert values into vtiger_leadscf, these are custom created fields example	
+
+			#Insert values into vtiger_leadscf, these are custom created fields example
 			$stmt = "INSERT INTO vtiger_leadscf (leadid) VALUES ('$leadid');";
 			if ($DB) {echo "|$stmt|\n";}
 			$rslt=mysql_to_mysqli($stmt, $linkV);
@@ -687,8 +687,8 @@ if ($lead_search > 0)
 				$row=mysqli_fetch_row($rslt);
 				$user_id = $row[0];
 				if (!$rslt) {die('Could not execute: ' . mysqli_error());}
-				
-				# Get next aviable id from vtiger_crmentity_seq to use as activityid in vtiger_crmentity	
+
+				# Get next aviable id from vtiger_crmentity_seq to use as activityid in vtiger_crmentity
 				$stmt="SELECT id from vtiger_crmentity_seq ;";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_to_mysqli($stmt, $linkV);
@@ -701,21 +701,21 @@ if ($lead_search > 0)
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_to_mysqli($stmt, $linkV);
 				if (!$rslt) {die('Could not execute: ' . mysqli_error());}
-				
+
 				#Insert values into vtiger_salesmanactivityrel
 				$stmt = "INSERT INTO vtiger_salesmanactivityrel SET smid='$user_id',activityid='$activityid';";
 				if ($DB) {echo "|$stmt|\n";}
 				$rslt=mysql_to_mysqli($stmt, $linkV);
 				if ($DB) {echo "|$leadid|\n";}
 				if (!$rslt) {die('Could not execute: ' . mysqli_error());}
-				
+
 				#Insert values into vtiger_seactivityrel
 				$stmt = "INSERT INTO vtiger_seactivityrel SET crmid='$leadid',activityid='$activityid';";
 				if ($DB) {echo "|$stmt|\n";}
 				$rslt=mysql_to_mysqli($stmt, $linkV);
 				if ($DB) {echo "|$leadid|\n";}
 				if (!$rslt) {die('Could not execute: ' . mysqli_error());}
-				
+
 				#Insert values into vtiger_crmentity
 				$stmt = "INSERT INTO vtiger_crmentity (crmid, smcreatorid, smownerid, modifiedby, setype, description, createdtime, modifiedtime, viewedtime, status, version, presence, deleted) VALUES ('$activityid', '$user_id', '$user_id','$user_id', 'Calendar', 'VICIDIAL Call user $user', '$NOW_TIME', '$NOW_TIME', '$NOW_TIME', NULL, '0', '1', '0');";
 				if ($DB) {echo "|$stmt|\n";}
@@ -780,7 +780,7 @@ if ($lead_search > 0)
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_to_mysqli($stmt, $linkV);
 				if (!$rslt) {die('Could not execute: ' . mysqli_error());}
-				
+
 				echo "<!-- LEADID deleted but resurrected $leadid -->\n";
 				}
 
@@ -795,8 +795,8 @@ if ($lead_search > 0)
 				$row=mysqli_fetch_row($rslt);
 				$user_id = $row[0];
 				if (!$rslt) {die('Could not execute: ' . mysqli_error());}
-				
-				# Get next aviable id from vtiger_crmentity_seq to use as activityid in vtiger_crmentity	
+
+				# Get next aviable id from vtiger_crmentity_seq to use as activityid in vtiger_crmentity
 				$stmt="SELECT id from vtiger_crmentity_seq ;";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_to_mysqli($stmt, $linkV);
@@ -809,21 +809,21 @@ if ($lead_search > 0)
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_to_mysqli($stmt, $linkV);
 				if (!$rslt) {die('Could not execute: ' . mysqli_error());}
-				
+
 				#Insert values into vtiger_salesmanactivityrel
 				$stmt = "INSERT INTO vtiger_salesmanactivityrel SET smid='$user_id',activityid='$activityid';";
 				if ($DB) {echo "|$stmt|\n";}
 				$rslt=mysql_to_mysqli($stmt, $linkV);
 				if ($DB) {echo "|$leadid|\n";}
 				if (!$rslt) {die('Could not execute: ' . mysqli_error());}
-				
+
 				#Insert values into vtiger_seactivityrel
 				$stmt = "INSERT INTO vtiger_seactivityrel SET crmid='$leadid',activityid='$activityid';";
 				if ($DB) {echo "|$stmt|\n";}
 				$rslt=mysql_to_mysqli($stmt, $linkV);
 				if ($DB) {echo "|$leadid|\n";}
 				if (!$rslt) {die('Could not execute: ' . mysqli_error());}
-				
+
 				#Insert values into vtiger_crmentity
 				$stmt = "INSERT INTO vtiger_crmentity (crmid, smcreatorid, smownerid, modifiedby, setype, description, createdtime, modifiedtime, viewedtime, status, version, presence, deleted) VALUES ('$activityid', '$user_id', '$user_id','$user_id', 'Calendar', 'VICIDIAL Call user $user', '$NOW_TIME', '$NOW_TIME', '$NOW_TIME', NULL, '0', '1', '0');";
 				if ($DB) {echo "|$stmt|\n";}
@@ -885,8 +885,8 @@ echo "<a href=\"$vtiger_url\">Click here to go to the Vtiger home page</a>\n";
 </html>
 
 <?php
-	
-exit; 
+
+exit;
 
 
 

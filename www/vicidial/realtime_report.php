@@ -1,15 +1,26 @@
-<?php 
+<?php
 # realtime_report.php
-# 
-# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# LICENSE: AGPLv3
+#
+# Copyright (©) 2019  Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2019  SNCT GmbH <info@snct-gmbh.de>
+#               2019  Jörg Frings-Fürst <open_source@jff.email>
 #
 # live real-time stats for the VICIDIAL Auto-Dialer all servers
 #
-# Rewritten from AST_timeonVDADall.php report to be AJAX and javascript instead 
+# Rewritten from AST_timeonVDADall.php report to be AJAX and javascript instead
 # of link-driven
 #
 # * Requires AST_timeonVDADall.php for AJAX-derived stats information
-# 
+#
+#
+# Other - Changelog
+#
+# 2019-04-14 18:32 Set error reporting level E_NOTICE only if $DB is set.
+# 2019-04-29 10:25 Add system_wide_settings.php
+#
+#
 # CHANGELOG:
 # 101216-1355 - First Build
 # 101218-1520 - Small time reload bug fix and formatting fixes
@@ -42,12 +53,17 @@
 # 180330-1344 - Added fix for WebRTC webphone microphone permissions
 # 181128-1040 - Added external_web_socket_url option
 # 190302-1927 - Added variable-length header icon tables
+# 190414-1106 - Made admin and summary report links conditional, RS_logoutLINK options.php option
+# 190420-1729 - Added RS_ListenBarge options.php setting
+# 190513-1711 - Added ingroup filter
+# 190525-2205 - Added rust color definition
+# 190927-1758 - Fixed PHP7 array issue
 #
 
 $startMS = microtime();
 
-$version = '2.14-30';
-$build = '190302-1927';
+$version = '2.14-34';
+$build = '190927-1758';
 
 header ("Content-type: text/html; charset=utf-8");
 
@@ -71,6 +87,8 @@ if (isset($_GET["usergroup"]))			{$usergroup=$_GET["usergroup"];}
 	elseif (isset($_POST["usergroup"]))	{$usergroup=$_POST["usergroup"];}
 if (isset($_GET["user_group_filter"]))			{$user_group_filter=$_GET["user_group_filter"];}
 	elseif (isset($_POST["user_group_filter"]))	{$user_group_filter=$_POST["user_group_filter"];}
+if (isset($_GET["ingroup_filter"]))			{$ingroup_filter=$_GET["ingroup_filter"];}
+	elseif (isset($_POST["ingroup_filter"]))	{$ingroup_filter=$_POST["ingroup_filter"];}
 if (isset($_GET["DB"]))					{$DB=$_GET["DB"];}
 	elseif (isset($_POST["DB"]))		{$DB=$_POST["DB"];}
 if (isset($_GET["adastats"]))			{$adastats=$_GET["adastats"];}
@@ -122,8 +140,13 @@ if (isset($_GET["droppedOFtotal"]))				{$droppedOFtotal=$_GET["droppedOFtotal"];
 if (isset($_GET["report_display_type"]))			{$report_display_type=$_GET["report_display_type"];}
 	elseif (isset($_POST["report_display_type"]))	{$report_display_type=$_POST["report_display_type"];}
 
+
+require_once("../tools/system_wide_settings.php");
+
+
 $report_name = 'Real-Time Main Report';
 $db_source = 'M';
+
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
@@ -157,74 +180,76 @@ $webphone_bufh =	'1';
 $webphone_pad =		'10';
 $webphone_clpos =	"<BR>  &nbsp; <a href=\"#\" onclick=\"hideDiv('webphone_content');\">"._QXZ("webphone")." -</a>";
 
+$RS_ListenBarge =		'MONITOR|BARGE|WHISPER';
+
 if (file_exists('options.php'))
 	{
 	require('options.php');
 	}
 
-if (!isset($DB)) 
+if (!isset($DB))
 	{
 	if (!isset($RS_DB)) {$DB=0;}
 	else {$DB = $RS_DB;}
 	}
-if (!isset($RR)) 
+if (!isset($RR))
 	{
 	if (!isset($RS_RR)) {$RR=40;}
 	else {$RR = $RS_RR;}
 	}
-if (!isset($group)) 
+if (!isset($group))
 	{
 	if (!isset($RS_group)) {$group='ALL-ACTIVE';}
 	else {$group = $RS_group;}
 	}
-if (!isset($usergroup)) 
+if (!isset($usergroup))
 	{
 	if (!isset($RS_usergroup)) {$usergroup='';}
 	else {$usergroup = $RS_usergroup;}
 	}
-if (!isset($UGdisplay)) 
+if (!isset($UGdisplay))
 	{
 	if (!isset($RS_UGdisplay)) {$UGdisplay=0;}
 	else {$UGdisplay = $RS_UGdisplay;}
 	}
-if (!isset($UidORname)) 
+if (!isset($UidORname))
 	{
 	if (!isset($RS_UidORname)) {$UidORname=1;}
 	else {$UidORname = $RS_UidORname;}
 	}
-if (!isset($orderby)) 
+if (!isset($orderby))
 	{
 	if (!isset($RS_orderby)) {$orderby='timeup';}
 	else {$orderby = $RS_orderby;}
 	}
-if (!isset($SERVdisplay)) 
+if (!isset($SERVdisplay))
 	{
 	if (!isset($RS_SERVdisplay)) {$SERVdisplay=0;}
 	else {$SERVdisplay = $RS_SERVdisplay;}
 	}
-if (!isset($CALLSdisplay)) 
+if (!isset($CALLSdisplay))
 	{
 	if (!isset($RS_CALLSdisplay)) {$CALLSdisplay=1;}
 	else {$CALLSdisplay = $RS_CALLSdisplay;}
 	}
-if (!isset($PHONEdisplay)) 
+if (!isset($PHONEdisplay))
 	{
 	if (!isset($RS_PHONEdisplay)) {$PHONEdisplay=0;}
 	else {$PHONEdisplay = $RS_PHONEdisplay;}
 	}
-if (!isset($CUSTPHONEdisplay)) 
+if (!isset($CUSTPHONEdisplay))
 	{
 	if (!isset($RS_CUSTPHONEdisplay)) {$CUSTPHONEdisplay=0;}
 	else {$CUSTPHONEdisplay = $RS_CUSTPHONEdisplay;}
 	}
-if (!isset($PAUSEcodes)) 
+if (!isset($PAUSEcodes))
 	{
 	if (!isset($RS_PAUSEcodes)) {$PAUSEcodes='N';}
 	else {$PAUSEcodes = $RS_PAUSEcodes;}
 	}
-if (!isset($with_inbound)) 
+if (!isset($with_inbound))
 	{
-	if (!isset($RS_with_inbound))	
+	if (!isset($RS_with_inbound))
 		{
 		if ($outbound_autodial_active > 0)
 			{$with_inbound='Y';}  # N=no, Y=yes, O=only
@@ -233,22 +258,22 @@ if (!isset($with_inbound))
 		}
 	else {$with_inbound = $RS_with_inbound;}
 	}
-if (!isset($CARRIERstats)) 
+if (!isset($CARRIERstats))
 	{
 	if (!isset($RS_CARRIERstats)) {$CARRIERstats='0';}
 	else {$CARRIERstats = $RS_CARRIERstats;}
 	}
-if (!isset($PRESETstats)) 
+if (!isset($PRESETstats))
 	{
 	if (!isset($RS_PRESETstats)) {$PRESETstats='0';}
 	else {$PRESETstats = $RS_PRESETstats;}
 	}
-if (!isset($AGENTtimeSTATS)) 
+if (!isset($AGENTtimeSTATS))
 	{
 	if (!isset($RS_AGENTtimeSTATS)) {$AGENTtimeSTATS='0';}
 	else {$AGENTtimeSTATS = $RS_AGENTtimeSTATS;}
 	}
-if (!isset($droppedOFtotal)) 
+if (!isset($droppedOFtotal))
 	{
 	if (!isset($RS_droppedOFtotal)) {$droppedOFtotal='0';}
 	else {$droppedOFtotal = $RS_droppedOFtotal;}
@@ -258,6 +283,8 @@ $ingroup_detail='';
 
 if ( (strlen($group)>1) and (strlen($groups[0])<1) ) {$groups[0] = $group;}
 else {$group = $groups[0];}
+if (!isset($user_group_filter)) {$user_group_filter=array();}
+if (!isset($ingroup_filter)) {$ingroup_filter=array();}
 
 $NOW_TIME = date("Y-m-d H:i:s");
 $NOW_DAY = date("Y-m-d");
@@ -444,7 +471,7 @@ if ( (strlen($slave_db_server)>5) and (preg_match("/$report_name/",$reports_use_
 	echo "<!-- Using slave server $slave_db_server $db_source -->\n";
 	}
 
-if ($auth) 
+if ($auth)
 	{
 	$stmt="SELECT user_id,user,pass,full_name,user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit,add_timeclock_log,modify_timeclock_log,delete_timeclock_log,alter_custphone_override,vdc_agent_api_access,modify_inbound_dids,delete_inbound_dids,active,alert_enabled,download_lists,agent_shift_enforcement_override,manager_shift_enforcement_override,shift_override_flag,export_reports,delete_from_dnc,email,user_code,territory,allow_alerts,callcard_admin,force_change_password,modify_shifts,modify_phones,modify_carriers,modify_labels,modify_statuses,modify_voicemail,modify_audiostore,modify_moh,modify_tts,modify_contacts,modify_same_user_level from vicidial_users where user='$PHP_AUTH_USER';";
 	$rslt=mysql_to_mysqli($stmt, $link);
@@ -503,7 +530,7 @@ if ($auth)
 	$LOGallowed_reports =			$row[1];
 	$LOGadmin_viewable_groups =		$row[2];
 	$LOGadmin_viewable_call_times =	$row[3];
-	
+
 	$LOGadmin_viewable_groupsSQL='';
 	$valLOGadmin_viewable_groupsSQL='';
 	$vmLOGadmin_viewable_groupsSQL='';
@@ -516,7 +543,7 @@ if ($auth)
 		$valLOGadmin_viewable_groupsSQL = "and val.user_group IN('---ALL---','$rawLOGadmin_viewable_groupsSQL')";
 		$vmLOGadmin_viewable_groupsSQL = "and vm.user_group IN('---ALL---','$rawLOGadmin_viewable_groupsSQL')";
 		}
-	else 
+	else
 		{$admin_viewable_groupsALL=1;}
 
 	}
@@ -556,6 +583,10 @@ if ( (!preg_match("/$report_name/",$LOGallowed_reports)) and (!preg_match("/ALL 
     exit;
 	}
 
+$SUMMARYauth=1;
+if ( (!preg_match("/Real-Time Campaign Summary/",$LOGallowed_reports)) and (!preg_match("/ALL REPORTS/",$LOGallowed_reports)) )
+	{$SUMMARYauth=0;}
+
 $LOGallowed_campaignsSQL='';
 $whereLOGallowed_campaignsSQL='';
 if ( (!preg_match("/ALL-/",$LOGallowed_campaigns)) )
@@ -572,6 +603,8 @@ $stmt="select campaign_id,campaign_name from vicidial_campaigns where active='Y'
 $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $groups_to_print = mysqli_num_rows($rslt);
+$LISTgroups=array();
+$LISTnames=array();
 $i=0;
 $LISTgroups[$i]='ALL-ACTIVE';
 $i++;
@@ -620,6 +653,20 @@ while($i < $user_group_ct)
 	}
 $user_group_SQL = preg_replace('/,$/i', '',$user_group_SQL);
 
+$i=0;
+$ingroup_string='|';
+$ingroup_ct = count($ingroup_filter);
+while($i < $ingroup_ct)
+	{
+	$ingroup_filter[$i] = preg_replace('/[^-_0-9a-zA-Z]/', '', $ingroup_filter[$i]);
+	$ingroup_string .= "$ingroup_filter[$i]|";
+	$ingroup_SQL .= "'$ingroup_filter[$i]',";
+	$usergroupQS .= "&ingroup_filter[]=$ingroup_filter[$i]";
+
+	$i++;
+	}
+$ingroup_SQL = preg_replace('/,$/i', '',$ingroup_SQL);
+
 ### if no campaigns selected, display all
 if ( ($group_ct < 1) or (strlen($group_string) < 2) )
 	{
@@ -636,6 +683,15 @@ if ( ($user_group_ct < 1) or (strlen($user_group_string) < 2) )
 	$user_group_string = '|ALL-GROUPS|';
 	$usergroupQS .= "&user_group_filter[]=ALL-GROUPS";
 	$user_group_none=1;
+	}
+### if no ingroups selected, display all
+$ingroup_none=0;
+if ( ($ingroup_ct < 1) or (strlen($ingroup_string) < 2) )
+	{
+	$ingroup_filter[0] = 'ALL-INGROUPS';
+	$ingroup_string = '|ALL-INGROUPS|';
+	$ingroupQS .= "&ingroup_filter[]=ALL-INGROUPS";
+	$ingroup_none=1;
 	}
 
 if ( (preg_match('/\s\-\-NONE\-\-\s/',$group_string) ) or ($group_ct < 1) )
@@ -681,14 +737,33 @@ else
 #	$user_group_SQLwhere = "where user_group IN($user_group_SQL)";
 	}
 
+
+if ( (preg_match('/\s\-\-NONE\-\-\s/',$ingroup_string) ) or ($ingroup_ct < 1) )
+	{
+	$all_active_ingroups = 0;
+	$ingroup_SQL = "''";
+	}
+elseif ( preg_match('/ALL\-INGROUPS/i',$ingroup_string) )
+	{
+	$all_active_ingroups = 1;
+	$ingroup_SQL = "'$rawLOGadmin_viewable_groupsSQL'";
+	}
+else
+	{
+	$all_active_ingroups = 0;
+	}
+
+
 $stmt="select user_group, group_name from vicidial_user_groups $whereLOGadmin_viewable_groupsSQL order by user_group;";
 $rslt=mysql_to_mysqli($stmt, $link);
 if (!isset($DB))   {$DB=0;}
 if ($DB) {echo "$stmt\n";}
 $usergroups_to_print = mysqli_num_rows($rslt);
 $i=0;
+$usergroups=array();
+$usergroupnames=array();
 $usergroups[$i]='ALL-GROUPS';
-$usergroupnames[$i] = _QXZ("All user groups");
+$usergroupnames[$i] = "All user groups";
 $i++;
 $usergroups_to_print++;
 while ($i < $usergroups_to_print)
@@ -698,6 +773,27 @@ while ($i < $usergroups_to_print)
 	$usergroupnames[$i] =$row[1];
 	$i++;
 	}
+
+$stmt="select group_id,group_name from vicidial_inbound_groups $whereLOGadmin_viewable_groupsSQL order by group_id;";
+$rslt=mysql_to_mysqli($stmt, $link);
+if ($DB) {$MAIN.="$stmt\n";}
+$ingroups_to_print = mysqli_num_rows($rslt);
+$i=0;
+$LISTingroups=array();
+$LISTingroup_names=array();
+$LISTingroups[$i]='ALL-INGROUPS';
+$i++;
+$ingroups_to_print++;
+$ingroups_string='|';
+while ($i < $ingroups_to_print)
+	{
+	$row=mysqli_fetch_row($rslt);
+	$LISTingroups[$i] =		$row[0];
+	$LISTingroup_names[$i] =	$row[1];
+	$ingroups_string .= "$LISTingroups[$i]|";
+	$i++;
+	}
+
 
 if (!isset($RR))   {$RR=4;}
 
@@ -710,10 +806,10 @@ $select_list .= "<SELECT SIZE=8 NAME=groups[] ID=groups[] multiple>";
 $o=0;
 while ($groups_to_print > $o)
 	{
-	if (preg_match("/\|$LISTgroups[$o]\|/",$group_string)) 
-		{$select_list .= "<option selected value='$LISTgroups[$o]'>$LISTgroups[$o] - $LISTnames[$o]</option>";}
+	if (preg_match("/\|$LISTgroups[$o]\|/",$group_string))
+		{$select_list .= "<option selected value='$LISTgroups[$o]'>"._QXZ("$LISTgroups[$o]")." - "._QXZ("$LISTnames[$o]")."</option>";}
 	else
-		{$select_list .= "<option value='$LISTgroups[$o]'>$LISTgroups[$o] - $LISTnames[$o]</option>";}
+		{$select_list .= "<option value='$LISTgroups[$o]'>"._QXZ("$LISTgroups[$o]")." - "._QXZ("$LISTnames[$o]")."</option>";}
 	$o++;
 	}
 $select_list .= "</SELECT>";
@@ -725,13 +821,31 @@ $o=0;
 while ($o < $usergroups_to_print)
 	{
 	if (preg_match("/\|$usergroups[$o]\|/",$user_group_string))
-		{$select_list .= "<option selected value='$usergroups[$o]'>$usergroups[$o] - $usergroupnames[$o]</option>";}
+		{$select_list .= "<option selected value='$usergroups[$o]'>"._QXZ("$usergroups[$o]")." - "._QXZ("$usergroupnames[$o]")."</option>";}
 	else
 		{
 		if ( ($user_group_none > 0) and ($usergroups[$o] == 'ALL-GROUPS') )
-			{$select_list .= "<option selected value='$usergroups[$o]'>$usergroups[$o] - $usergroupnames[$o]</option>";}
+			{$select_list .= "<option selected value='$usergroups[$o]'>"._QXZ("$usergroups[$o]")." - "._QXZ("$usergroupnames[$o]")."</option>";}
 		else
-			{$select_list .= "<option value='$usergroups[$o]'>$usergroups[$o] - $usergroupnames[$o]</option>";}
+			{$select_list .= "<option value='$usergroups[$o]'>"._QXZ("$usergroups[$o]")." - "._QXZ("$usergroupnames[$o]")."</option>";}
+		}
+	$o++;
+	}
+$select_list .= "</SELECT>";
+
+$select_list .= "<BR><BR>"._QXZ("Select In-Groups").": <BR>";
+$select_list .= "<SELECT SIZE=8 NAME=ingroup_filter[] ID=ingroup_filter[] multiple>";
+$o=0;
+while ($o < $ingroups_to_print)
+	{
+	if (preg_match("/\|$LISTingroups[$o]\|/",$ingroup_string))
+		{$select_list .= "<option selected value='$LISTingroups[$o]'>"._QXZ("$LISTingroups[$o]")." - "._QXZ("$LISTingroup_names[$o]")."</option>";}
+	else
+		{
+		if ( ($in_group_none > 0) and ($LISTingroups[$o] == 'ALL-INGROUPS') )
+			{$select_list .= "<option selected value='$LISTingroups[$o]'>"._QXZ("$LISTingroups[$o]")." - "._QXZ("$LISTingroup_names[$o]")."</option>";}
+		else
+			{$select_list .= "<option value='$LISTingroups[$o]'>"._QXZ("$LISTingroups[$o]")."- "._QXZ("$LISTingroup_names[$o]")."</option>";}
 		}
 	$o++;
 	}
@@ -763,35 +877,41 @@ $select_list .= "</SELECT></TD></TR>";
 $select_list .= "<TR><TD align=right>";
 $select_list .= _QXZ("Inbound").":  </TD><TD align=left><SELECT SIZE=1 NAME=with_inbound ID=with_inbound>";
 $select_list .= "<option value='N'";
-	if ($with_inbound=='N') {$select_list .= " selected";} 
+	if ($with_inbound=='N') {$select_list .= " selected";}
 $select_list .= ">"._QXZ("No")."</option>";
 $select_list .= "<option value='Y'";
-	if ($with_inbound=='Y') {$select_list .= " selected";} 
+	if ($with_inbound=='Y') {$select_list .= " selected";}
 $select_list .= ">"._QXZ("Yes")."</option>";
 $select_list .= "<option value='O'";
-	if ($with_inbound=='O') {$select_list .= " selected";} 
+	if ($with_inbound=='O') {$select_list .= " selected";}
 $select_list .= ">"._QXZ("Only")."</option>";
 $select_list .= "</SELECT></TD></TR>";
 
 $select_list .= "<TR><TD align=right>";
 $select_list .= _QXZ("Monitor").":  </TD><TD align=left><SELECT SIZE=1 NAME=monitor_active ID=monitor_active>";
 $select_list .= "<option value=''";
-	if (strlen($monitor_active) < 2) {$select_list .= " selected";} 
+	if (strlen($monitor_active) < 2) {$select_list .= " selected";}
 $select_list .= ">"._QXZ("NONE")."</option>";
-$select_list .= "<option value='MONITOR'";
-	if ($monitor_active=='MONITOR') {$select_list .= " selected";} 
-$select_list .= ">"._QXZ("MONITOR")."</option>";
-$select_list .= "<option value='BARGE'";
-	if ($monitor_active=='BARGE') {$select_list .= " selected";} 
-$select_list .= ">"._QXZ("BARGE")."</option>";
-if ($agent_whisper_enabled == '1')
+if (preg_match("/MONITOR/",$RS_ListenBarge) )
+	{
+	$select_list .= "<option value='MONITOR'";
+		if ($monitor_active=='MONITOR') {$select_list .= " selected";}
+	$select_list .= ">"._QXZ("MONITOR")."</option>";
+	}
+if (preg_match("/BARGE/",$RS_ListenBarge) )
+	{
+	$select_list .= "<option value='BARGE'";
+		if ($monitor_active=='BARGE') {$select_list .= " selected";}
+	$select_list .= ">"._QXZ("BARGE")."</option>";
+	}
+if ( ($agent_whisper_enabled == '1') and (preg_match("/WHISPER/",$RS_ListenBarge) ) )
 	{
 	$select_list .= "<option value='WHISPER'";
-		if ($monitor_active=='WHISPER') {$select_list .= " selected";} 
+		if ($monitor_active=='WHISPER') {$select_list .= " selected";}
 	$select_list .= ">"._QXZ("WHISPER")."</option>";
 	}
 #$select_list .= "<option value='HIJACK'";
-#	if ($monitor_active=='HIJACK') {$select_list .= " selected";} 
+#	if ($monitor_active=='HIJACK') {$select_list .= " selected";}
 #$select_list .= ">HIJACK</option>";
 $select_list .= "</SELECT></TD></TR>";
 
@@ -820,30 +940,30 @@ if ($UGdisplay > 0)
 $select_list .= "<TR><TD align=right>";
 $select_list .= _QXZ("Dialable Leads Alert").":  </TD><TD align=left><SELECT SIZE=1 NAME=NOLEADSalert ID=NOLEADSalert>";
 $select_list .= "<option value=''";
-	if (strlen($NOLEADSalert) < 2) {$select_list .= " selected";} 
+	if (strlen($NOLEADSalert) < 2) {$select_list .= " selected";}
 $select_list .= ">"._QXZ("NO")."</option>";
 $select_list .= "<option value='YES'";
-	if ($NOLEADSalert=='YES') {$select_list .= " selected";} 
+	if ($NOLEADSalert=='YES') {$select_list .= " selected";}
 $select_list .= ">"._QXZ("YES")."</option>";
 $select_list .= "</SELECT></TD></TR>";
 
 $select_list .= "<TR><TD align=right>";
 $select_list .= _QXZ("Show Drop In-Group Row").":  </TD><TD align=left><SELECT SIZE=1 NAME=DROPINGROUPstats ID=DROPINGROUPstats>";
 $select_list .= "<option value='0'";
-	if ($DROPINGROUPstats < 1) {$select_list .= " selected";} 
+	if ($DROPINGROUPstats < 1) {$select_list .= " selected";}
 $select_list .= ">"._QXZ("NO")."</option>";
 $select_list .= "<option value='1'";
-	if ($DROPINGROUPstats=='1') {$select_list .= " selected";} 
+	if ($DROPINGROUPstats=='1') {$select_list .= " selected";}
 $select_list .= ">"._QXZ("YES")."</option>";
 $select_list .= "</SELECT></TD></TR>";
 
 $select_list .= "<TR><TD align=right>";
 $select_list .= _QXZ("Show Carrier Stats").":  </TD><TD align=left><SELECT SIZE=1 NAME=CARRIERstats ID=CARRIERstats>";
 $select_list .= "<option value='0'";
-	if ($CARRIERstats < 1) {$select_list .= " selected";} 
+	if ($CARRIERstats < 1) {$select_list .= " selected";}
 $select_list .= ">"._QXZ("NO")."</option>";
 $select_list .= "<option value='1'";
-	if ($CARRIERstats=='1') {$select_list .= " selected";} 
+	if ($CARRIERstats=='1') {$select_list .= " selected";}
 $select_list .= ">"._QXZ("YES")."</option>";
 $select_list .= "</SELECT></TD></TR>";
 
@@ -863,10 +983,10 @@ if ($presets_enabled > 0)
 	$select_list .= "<TR><TD align=right>";
 	$select_list .= _QXZ("Show Presets Stats").":  </TD><TD align=left><SELECT SIZE=1 NAME=PRESETstats ID=PRESETstats>";
 	$select_list .= "<option value='0'";
-		if ($PRESETstats < 1) {$select_list .= " selected";} 
+		if ($PRESETstats < 1) {$select_list .= " selected";}
 	$select_list .= ">"._QXZ("NO")."</option>";
 	$select_list .= "<option value='1'";
-		if ($PRESETstats=='1') {$select_list .= " selected";} 
+		if ($PRESETstats=='1') {$select_list .= " selected";}
 	$select_list .= ">"._QXZ("YES")."</option>";
 	$select_list .= "</SELECT></TD></TR>";
 	}
@@ -878,49 +998,49 @@ else
 $select_list .= "<TR><TD align=right>";
 $select_list .= _QXZ("Agent Time Stats").":  </TD><TD align=left><SELECT SIZE=1 NAME=AGENTtimeSTATS ID=AGENTtimeSTATS>";
 $select_list .= "<option value='0'";
-	if ($AGENTtimeSTATS < 1) {$select_list .= " selected";} 
+	if ($AGENTtimeSTATS < 1) {$select_list .= " selected";}
 $select_list .= ">"._QXZ("NO")."</option>";
 $select_list .= "<option value='1'";
-	if ($AGENTtimeSTATS=='1') {$select_list .= " selected";} 
+	if ($AGENTtimeSTATS=='1') {$select_list .= " selected";}
 $select_list .= ">"._QXZ("YES")."</option>";
 $select_list .= "</SELECT></TD></TR>";
 
 $select_list .= "<TR><TD align=right>";
 $select_list .= _QXZ("In-group color override").":  </TD><TD align=left><SELECT SIZE=1 NAME=INGROUPcolorOVERRIDE ID=INGROUPcolorOVERRIDE>";
 $select_list .= "<option value='0'";
-	if ($INGROUPcolorOVERRIDE < 1) {$select_list .= " selected";} 
+	if ($INGROUPcolorOVERRIDE < 1) {$select_list .= " selected";}
 $select_list .= ">"._QXZ("NO")."</option>";
 $select_list .= "<option value='1'";
-	if ($INGROUPcolorOVERRIDE=='1') {$select_list .= " selected";} 
+	if ($INGROUPcolorOVERRIDE=='1') {$select_list .= " selected";}
 $select_list .= ">"._QXZ("YES")."</option>";
 $select_list .= "</SELECT></TD></TR>";
 
 $select_list .= "<TR><TD align=right>";
 $select_list .= _QXZ("Display as").":  </TD><TD align=left><SELECT SIZE=1 NAME=report_display_type ID=report_display_type>";
 $select_list .= "<option value='TEXT'";
-	if ($report_display_type=='TEXT') {$select_list .= " selected";} 
+	if ($report_display_type=='TEXT') {$select_list .= " selected";}
 $select_list .= ">"._QXZ("TEXT")."</option>";
 $select_list .= "<option value='HTML'";
-	if ($report_display_type=='HTML') {$select_list .= " selected";} 
+	if ($report_display_type=='HTML') {$select_list .= " selected";}
 $select_list .= ">"._QXZ("HTML")."</option>";
 $select_list .= "<option value='WALL_1'";
-	if ($report_display_type=='WALL_1') {$select_list .= " selected";} 
+	if ($report_display_type=='WALL_1') {$select_list .= " selected";}
 $select_list .= ">"._QXZ("WALL_1")."</option>";
 $select_list .= "<option value='WALL_2'";
-	if ($report_display_type=='WALL_2') {$select_list .= " selected";} 
+	if ($report_display_type=='WALL_2') {$select_list .= " selected";}
 $select_list .= ">"._QXZ("WALL_2")."</option>";
 $select_list .= "<option value='WALL_3'";
-	if ($report_display_type=='WALL_3') {$select_list .= " selected";} 
+	if ($report_display_type=='WALL_3') {$select_list .= " selected";}
 $select_list .= ">"._QXZ("WALL_3")."</option>";
 $select_list .= "<option value='WALL_4'";
-	if ($report_display_type=='WALL_4') {$select_list .= " selected";} 
+	if ($report_display_type=='WALL_4') {$select_list .= " selected";}
 $select_list .= ">"._QXZ("WALL_4")."</option>";
 $select_list .= "</SELECT></TD></TR>";
 
 
 $select_list .= "</TABLE><BR>";
 $select_list .= "<INPUT type=hidden name=droppedOFtotal value='$droppedOFtotal'>";
-$select_list .= "<INPUT type=button VALUE=SUBMIT onclick=\\\"update_variables('form_submit','');\\\"><FONT FACE='ARIAL,HELVETICA' COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; ";
+$select_list .= "<INPUT type=button VALUE='"._QXZ("SUBMIT")."' onclick=\\\"update_variables('form_submit','');\\\"><FONT FACE='ARIAL,HELVETICA' COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; ";
 $select_list .= "</TD></TR>";
 $select_list .= "<TR><TD ALIGN=CENTER>";
 $select_list .= "<font class='top_settings_val'> &nbsp; </font>";
@@ -1058,14 +1178,14 @@ if (strlen($monitor_phone)>1)
 window.onload = startup;
 
 // functions to detect the XY position on the page of the mouse
-function startup() 
+function startup()
 	{
 	hideDiv('webphone_content');
 	document.getElementById('campaign_select_list').innerHTML = select_list;
 	hideDiv('campaign_select_list');
 
 	hide_ingroup_info();
-	if (window.Event) 
+	if (window.Event)
 		{
 		document.captureEvents(Event.MOUSEMOVE);
 		}
@@ -1073,7 +1193,7 @@ function startup()
 	realtime_refresh_display();
 	}
 
-function getCursorXY(e) 
+function getCursorXY(e)
 	{
 	document.getElementById('cursorX').value = (window.Event) ? e.pageX : event.clientX + (document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft);
 	document.getElementById('cursorY').value = (window.Event) ? e.pageY : event.clientY + (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop);
@@ -1088,6 +1208,7 @@ var pass = '<?php echo $PHP_AUTH_PW ?>';
 var RR = '<?php echo $RR ?>';
 var groupQS = '<?php echo $groupQS ?>';
 var usergroupQS = '<?php echo $usergroupQS ?>';
+var ingroupQS = '<?php echo $ingroupQS ?>';
 var DB = '<?php echo $DB ?>';
 var adastats = '<?php echo $adastats ?>';
 var SIPmonitorLINK = '<?php echo $SIPmonitorLINK ?>';
@@ -1116,13 +1237,13 @@ var report_display_type = '<?php echo $report_display_type; ?>';
 if (adastats == '') adastats = '1';
 
 // functions to hide and show different DIVs
-function showDiv(divvar) 
+function showDiv(divvar)
 	{
 	if (document.getElementById(divvar))
 		{
 		divref = document.getElementById(divvar).style;
 		divref.visibility = 'visible';
-		if (divvar=="campaign_select_list") 
+		if (divvar=="campaign_select_list")
 			{
 			document.getElementById(divvar).style.zIndex=21;
 			}
@@ -1134,7 +1255,7 @@ function hideDiv(divvar)
 		{
 		divref = document.getElementById(divvar).style;
 		divref.visibility = 'hidden';
-		if (divvar=="campaign_select_list") 
+		if (divvar=="campaign_select_list")
 			{
 			document.getElementById(divvar).style.zIndex=-1;
 			}
@@ -1180,15 +1301,15 @@ function send_monitor(session_id,server_ip,stage)
 		{
 		xmlhttp = new XMLHttpRequest();
 		}
-	if (xmlhttp) 
+	if (xmlhttp)
 		{
 		var monitorQuery = "source=realtime&function=blind_monitor&user=" + user + "&pass=" + pass + "&phone_login=" + monitor_phone + "&session_id=" + session_id + '&server_ip=' + server_ip + '&stage=' + stage;
-		xmlhttp.open('POST', 'non_agent_api.php'); 
+		xmlhttp.open('POST', 'non_agent_api.php');
 		xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-		xmlhttp.send(monitorQuery); 
-		xmlhttp.onreadystatechange = function() 
-			{ 
-			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+		xmlhttp.send(monitorQuery);
+		xmlhttp.onreadystatechange = function()
+			{
+			if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 				{
 			//	alert(xmlhttp.responseText);
 				var Xoutput = null;
@@ -1224,9 +1345,9 @@ function submit_ingroup_changes(temp_agent_user)
 	var selObj = document.getElementById('ingroup_new_selections');
 	var i;
 	var count = 0;
-	for (i=0; i<selObj.options.length; i++) 
+	for (i=0; i<selObj.options.length; i++)
 		{
-		if (selObj.options[i].selected) 
+		if (selObj.options[i].selected)
 			{
 		//	selectedArray[count] = selObj.options[i].value;
 			temp_ingroup_choices = temp_ingroup_choices + '+' + selObj.options[i].value;
@@ -1256,15 +1377,15 @@ function submit_ingroup_changes(temp_agent_user)
 		{
 		xmlhttp = new XMLHttpRequest();
 		}
-	if (xmlhttp) 
+	if (xmlhttp)
 		{
 		var changeQuery = "source=realtime&function=change_ingroups&user=" + user + "&pass=" + pass + "&agent_user=" + temp_agent_user + "&value=" + temp_ingroup_add_remove_change + '&set_as_default=' + temp_set_as_default + '&blended=' + temp_blended + '&ingroup_choices=' + temp_ingroup_choices;
-		xmlhttp.open('POST', '../agc/api.php'); 
+		xmlhttp.open('POST', '../agc/api.php');
 		xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-		xmlhttp.send(changeQuery); 
-		xmlhttp.onreadystatechange = function() 
-			{ 
-			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+		xmlhttp.send(changeQuery);
+		xmlhttp.onreadystatechange = function()
+			{
+			if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 				{
 			//	alert(changeQuery);
 				var Xoutput = null;
@@ -1310,15 +1431,15 @@ function ingroup_info(agent_user,count)
 		{
 		xmlhttp = new XMLHttpRequest();
 		}
-	if (xmlhttp) 
+	if (xmlhttp)
 		{
 		var monitorQuery = "source=realtime&function=agent_ingroup_info&stage=change&user=" + user + "&pass=" + pass + "&agent_user=" + agent_user;
-		xmlhttp.open('POST', 'non_agent_api.php'); 
+		xmlhttp.open('POST', 'non_agent_api.php');
 		xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-		xmlhttp.send(monitorQuery); 
-		xmlhttp.onreadystatechange = function() 
-			{ 
-			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+		xmlhttp.send(monitorQuery);
+		xmlhttp.onreadystatechange = function()
+			{
+			if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 				{
 			//	alert(xmlhttp.responseText);
 				var Xoutput = null;
@@ -1395,16 +1516,16 @@ function gather_realtime_content()
 		{
 		xmlhttp = new XMLHttpRequest();
 		}
-	if (xmlhttp) 
+	if (xmlhttp)
 		{
-		RTupdate_query = "RTajax=1&DB=" + DB + "" + groupQS + usergroupQS + "&adastats=" + adastats + "&SIPmonitorLINK=" + SIPmonitorLINK + "&IAXmonitorLINK=" + IAXmonitorLINK + "&usergroup=" + usergroup + "&UGdisplay=" + UGdisplay + "&UidORname=" + UidORname + "&orderby=" + orderby + "&SERVdisplay=" + SERVdisplay + "&CALLSdisplay=" + CALLSdisplay + "&PHONEdisplay=" + PHONEdisplay + "&CUSTPHONEdisplay=" + CUSTPHONEdisplay + "&with_inbound=" + with_inbound + "&monitor_active=" + monitor_active + "&monitor_phone=" + monitor_phone + "&ALLINGROUPstats=" + ALLINGROUPstats + "&DROPINGROUPstats=" + DROPINGROUPstats + "&NOLEADSalert=" + NOLEADSalert + "&CARRIERstats=" + CARRIERstats + "&PRESETstats=" + PRESETstats + "&AGENTtimeSTATS=" + AGENTtimeSTATS + "&INGROUPcolorOVERRIDE=" + INGROUPcolorOVERRIDE + "&droppedOFtotal=" + droppedOFtotal + "&report_display_type=" + report_display_type + "";
+		RTupdate_query = "RTajax=1&DB=" + DB + "" + groupQS + usergroupQS + ingroupQS + "&adastats=" + adastats + "&SIPmonitorLINK=" + SIPmonitorLINK + "&IAXmonitorLINK=" + IAXmonitorLINK + "&usergroup=" + usergroup + "&UGdisplay=" + UGdisplay + "&UidORname=" + UidORname + "&orderby=" + orderby + "&SERVdisplay=" + SERVdisplay + "&CALLSdisplay=" + CALLSdisplay + "&PHONEdisplay=" + PHONEdisplay + "&CUSTPHONEdisplay=" + CUSTPHONEdisplay + "&with_inbound=" + with_inbound + "&monitor_active=" + monitor_active + "&monitor_phone=" + monitor_phone + "&ALLINGROUPstats=" + ALLINGROUPstats + "&DROPINGROUPstats=" + DROPINGROUPstats + "&NOLEADSalert=" + NOLEADSalert + "&CARRIERstats=" + CARRIERstats + "&PRESETstats=" + PRESETstats + "&AGENTtimeSTATS=" + AGENTtimeSTATS + "&INGROUPcolorOVERRIDE=" + INGROUPcolorOVERRIDE + "&droppedOFtotal=" + droppedOFtotal + "&report_display_type=" + report_display_type + "";
 
-		xmlhttp.open('POST', 'AST_timeonVDADall.php'); 
+		xmlhttp.open('POST', 'AST_timeonVDADall.php');
 		xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-		xmlhttp.send(RTupdate_query); 
-		xmlhttp.onreadystatechange = function() 
-			{ 
-			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+		xmlhttp.send(RTupdate_query);
+		xmlhttp.onreadystatechange = function()
+			{
+			if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 				{
 				document.getElementById("realtime_content").innerHTML = xmlhttp.responseText;
 		//		alert(xmlhttp.responseText);
@@ -1539,7 +1660,7 @@ function update_variables(task_option,task_choice,force_reload)
 		var i;
 		var count = 0;
 		var selected_all=0;
-		for (i=0; i<selCampObj.options.length; i++) 
+		for (i=0; i<selCampObj.options.length; i++)
 			{
 			if ( (selCampObj.options[i].selected) && (selected_all < 1) )
 				{
@@ -1556,7 +1677,7 @@ function update_variables(task_option,task_choice,force_reload)
 		var i;
 		var count = 0;
 		var selected_all=0;
-		for (i=0; i<selCampObj.options.length; i++) 
+		for (i=0; i<selCampObj.options.length; i++)
 			{
 			if ( (selCampObj.options[i].selected) && (selected_all < 1) )
 				{
@@ -1567,13 +1688,30 @@ function update_variables(task_option,task_choice,force_reload)
 				}
 			}
 		usergroupQS = temp_usergroup_choices;
-		
+
+		var temp_ingroup_choices = '';
+		var selIngrpObj = document.getElementById('ingroup_filter[]');
+		var i;
+		var count = 0;
+		var selected_all=0;
+		for (i=0; i<selIngrpObj.options.length; i++)
+			{
+			if ( (selIngrpObj.options[i].selected) && (selected_all < 1) )
+				{
+				temp_usergroup_choices = temp_usergroup_choices + '&ingroup_filter[]=' + selIngrpObj.options[i].value;
+				count++;
+				if (selIngrpObj.options[i].value == 'ALL-ACTIVE')
+					{selected_all++;}
+				}
+			}
+		ingroupQS = temp_usergroup_choices;
+
 		hideDiv('campaign_select_list');
 
 		// force a reload if the phone is changed
 		if ( (temp_monitor_phone != monitor_phone) || (force_reload=='YES') )
 			{
-			reload_url = PHP_SELF + "?RR=" + RR + "&DB=" + DB + "" + groupQS + usergroupQS + "&adastats=" + adastats + "&SIPmonitorLINK=" + SIPmonitorLINK + "&IAXmonitorLINK=" + IAXmonitorLINK + "&usergroup=" + usergroup + "&UGdisplay=" + UGdisplay + "&UidORname=" + UidORname + "&orderby=" + orderby + "&SERVdisplay=" + SERVdisplay + "&CALLSdisplay=" + CALLSdisplay + "&PHONEdisplay=" + PHONEdisplay + "&CUSTPHONEdisplay=" + CUSTPHONEdisplay + "&with_inbound=" + with_inbound + "&monitor_active=" + monitor_active + "&monitor_phone=" + temp_monitor_phone + "&ALLINGROUPstats=" + ALLINGROUPstats + "&DROPINGROUPstats=" + DROPINGROUPstats + "&NOLEADSalert=" + NOLEADSalert + "&CARRIERstats=" + CARRIERstats + "&PRESETstats=" + PRESETstats + "&AGENTtimeSTATS=" + AGENTtimeSTATS + "&INGROUPcolorOVERRIDE=" + INGROUPcolorOVERRIDE + "&droppedOFtotal=" + droppedOFtotal + "&report_display_type=" + report_display_type + "";
+			reload_url = PHP_SELF + "?RR=" + RR + "&DB=" + DB + "" + groupQS + usergroupQS + ingroupQS + "&adastats=" + adastats + "&SIPmonitorLINK=" + SIPmonitorLINK + "&IAXmonitorLINK=" + IAXmonitorLINK + "&usergroup=" + usergroup + "&UGdisplay=" + UGdisplay + "&UidORname=" + UidORname + "&orderby=" + orderby + "&SERVdisplay=" + SERVdisplay + "&CALLSdisplay=" + CALLSdisplay + "&PHONEdisplay=" + PHONEdisplay + "&CUSTPHONEdisplay=" + CUSTPHONEdisplay + "&with_inbound=" + with_inbound + "&monitor_active=" + monitor_active + "&monitor_phone=" + temp_monitor_phone + "&ALLINGROUPstats=" + ALLINGROUPstats + "&DROPINGROUPstats=" + DROPINGROUPstats + "&NOLEADSalert=" + NOLEADSalert + "&CARRIERstats=" + CARRIERstats + "&PRESETstats=" + PRESETstats + "&AGENTtimeSTATS=" + AGENTtimeSTATS + "&INGROUPcolorOVERRIDE=" + INGROUPcolorOVERRIDE + "&droppedOFtotal=" + droppedOFtotal + "&report_display_type=" + report_display_type + "";
 
 		//	alert('|' + temp_monitor_phone + '|' + monitor_phone + '|\n' + reload_url);
 			window.location.href = reload_url;
@@ -1593,6 +1731,7 @@ function update_variables(task_option,task_choice,force_reload)
 	.green {color: white; background-color: green;}
 	.red {color: white; background-color: red;}
 	.lightblue {color: black; background-color: #ADD8E6;}
+	.rust {color: black; background-color: #F47442}
 	.blue {color: white; background-color: blue;}
 	.midnightblue {color: white; background-color: #191970;}
 	.purple {color: white; background-color: purple;}
@@ -1611,6 +1750,7 @@ function update_variables(task_option,task_choice,force_reload)
 	.Hgreen {color: white; background-color: green; font-size: 11;}
 	.Hred {color: white; background-color: red; font-size: 11;}
 	.Hlightblue {color: black; background-color: #ADD8E6; font-size: 11;}
+	.Hrust {color: black; background-color: #F47442; font-size: 11;}
 	.Hblue {color: white; background-color: blue; font-size: 11;}
 	.Hmidnightblue {color: white; background-color: #191970; font-size: 11;}
 	.Hpurple {color: white; background-color: purple; font-size: 11;}
@@ -1629,11 +1769,12 @@ function update_variables(task_option,task_choice,force_reload)
 	tr.TRgreen {background-color: green}
 	tr.TRred {background-color: red}
 	tr.TRlightblue {background-color: #ADD8E6}
+	tr.TRrust {background-color: #F47442}
 	tr.TRblue {background-color: blue}
 	tr.TRmidnightblue {background-color: #191970}
 	tr.TRpurple {background-color: purple}
-	tr.TRviolet {background-color: #EE82EE} 
-	tr.TRthistle {background-color: #D8BFD8} 
+	tr.TRviolet {background-color: #EE82EE}
+	tr.TRthistle {background-color: #D8BFD8}
 	tr.TRolive {background-color: #808000}
 	tr.TRlime {background-color: #006600}
 	tr.TRyellow {background-color: yellow}
@@ -1698,7 +1839,7 @@ $row=mysqli_fetch_row($rslt);
 $campaign_allow_inbound = $row[0];
 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
-echo "<TITLE>$report_name: $group</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
+echo "<TITLE>"._QXZ("$report_name").": $group</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 
 	$short_header=1;
 
@@ -1749,12 +1890,22 @@ echo "<span style=\"position:absolute;left:10px;top:120px;z-index:14;\" id=agent
 echo " &nbsp; ";
 echo "</span>\n";
 echo "<a href=\"#\" onclick=\"update_variables('form_submit','','YES')\"><font class='top_settings_val'>"._QXZ("RELOAD NOW")."</font></a>";
-if (preg_match('/ALL\-ACTIVE/i',$group_string))
-	{echo " &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=10\"><font class='top_settings_val'>"._QXZ("MODIFY")."</font></a> | \n";}
-else
-	{echo " &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=34&campaign_id=$group\"><font class='top_settings_val'>"._QXZ("MODIFY")."</font></a> | \n";}
+if ($LOGuser_level > 7)
+	{
+	if (preg_match('/ALL\-ACTIVE/i',$group_string))
+		{echo " &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=10\"><font class='top_settings_val'>"._QXZ("MODIFY")."</font></a> | \n";}
+	else
+		{echo " &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=34&campaign_id=$group\"><font class='top_settings_val'>"._QXZ("MODIFY")."</font></a> | \n";}
+	}
 
-echo "<a href=\"./AST_timeonVDADallSUMMARY.php?RR=$RR&DB=$DB&adastats=$adastats\"><font class='top_settings_val'>"._QXZ("SUMMARY")."</font></a> </FONT>\n";
+if ($SUMMARYauth > 0)
+	{echo "<a href=\"./AST_timeonVDADallSUMMARY.php?RR=$RR&DB=$DB&adastats=$adastats\"><font class='top_settings_val'>"._QXZ("SUMMARY")."</font></a> \n";}
+
+if ($RS_logoutLINK > 0)
+	{echo " | <a href=\"./admin.php?force_logout=1\"><font class='top_settings_val'>"._QXZ("LOGOUT")."</font></a> \n";}
+
+echo "</FONT>\n";
+
 
 
 echo " &nbsp; &nbsp; &nbsp; <font class='top_settings_val'>"._QXZ("refresh").": <span id=refresh_countdown name=refresh_countdown></span></font>\n\n";

@@ -1,7 +1,11 @@
 <?php
 # vdc_script_display.php
-# 
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# LICENSE: AGPLv3
+#
+# Copyright (©) 2019  Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2019      SNCT GmbH <info@snct-gmbh.de>
+#               2017-2019 Jörg Frings-Fürst <open_source@jff.email>.
 #
 # This script is designed display the contents of the SCRIPT tab in the agent interface
 #
@@ -39,10 +43,18 @@
 # 171126-1124 - Added email message display from inbound emails only
 # 180224-1406 - Added LOGINvar variables, and options.php $INSERT_ variables
 # 180327-1356 - Added code for LOCALFQDN conversion to browser-used server URL for script iframes
+# 191013-2145 - Fixes for PHP7
+# 191031-1158 - Added Script2 feature
 #
 
-$version = '2.14-33';
-$build = '180224-1406';
+# Other - Changelog
+#
+# 2019-04-29 10:06 Change lisense to AGPLv3
+# 2019-04-29 10:08 Add system_wide_settings.php
+#
+
+$version = '2.14-35';
+$build = '191013-2145';
 
 require_once("dbconnect_mysqli.php");
 require_once("functions.php");
@@ -152,6 +164,10 @@ if (isset($_GET["camp_script"]))	{$camp_script=$_GET["camp_script"];}
 	elseif (isset($_POST["camp_script"]))	{$camp_script=$_POST["camp_script"];}
 if (isset($_GET["in_script"]))	{$in_script=$_GET["in_script"];}
 	elseif (isset($_POST["in_script"]))	{$in_script=$_POST["in_script"];}
+if (isset($_GET["SCRIPTcamp_script"]))	{$SCRIPTcamp_script=$_GET["SCRIPTcamp_script"];}
+	elseif (isset($_POST["SCRIPTcamp_script"]))	{$SCRIPTcamp_script=$_POST["SCRIPTcamp_script"];}
+if (isset($_GET["SCRIPTin_script"]))	{$SCRIPTin_script=$_GET["SCRIPTin_script"];}
+	elseif (isset($_POST["SCRIPTin_script"]))	{$SCRIPTin_script=$_POST["SCRIPTin_script"];}
 if (isset($_GET["script_width"]))	{$script_width=$_GET["script_width"];}
 	elseif (isset($_POST["script_width"]))	{$script_width=$_POST["script_width"];}
 if (isset($_GET["script_height"]))	{$script_height=$_GET["script_height"];}
@@ -254,7 +270,10 @@ if (isset($_GET["LOGINvarFOUR"]))			{$LOGINvarFOUR=$_GET["LOGINvarFOUR"];}
 	elseif (isset($_POST["LOGINvarFOUR"]))	{$LOGINvarFOUR=$_POST["LOGINvarFOUR"];}
 if (isset($_GET["LOGINvarFIVE"]))			{$LOGINvarFIVE=$_GET["LOGINvarFIVE"];}
 	elseif (isset($_POST["LOGINvarFIVE"]))	{$LOGINvarFIVE=$_POST["LOGINvarFIVE"];}
+if (isset($_GET["script_span"]))			{$script_span=$_GET["script_span"];}
+	elseif (isset($_POST["script_span"]))	{$script_span=$_POST["script_span"];}
 
+require_once("../tools/system_wide_settings.php");
 
 header ("Content-type: text/html; charset=utf-8");
 header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
@@ -298,6 +317,7 @@ $LOGINvarTWO=preg_replace("/[^-_0-9a-zA-Z]/","",$LOGINvarTWO);
 $LOGINvarTHREE=preg_replace("/[^-_0-9a-zA-Z]/","",$LOGINvarTHREE);
 $LOGINvarFOUR=preg_replace("/[^-_0-9a-zA-Z]/","",$LOGINvarFOUR);
 $LOGINvarFIVE=preg_replace("/[^-_0-9a-zA-Z]/","",$LOGINvarFIVE);
+$script_span=preg_replace("/[^-_0-9a-zA-Z]/","",$script_span);
 
 #############################################
 ##### START SYSTEM_SETTINGS AND USER LANGUAGE LOOKUP #####
@@ -313,7 +333,7 @@ if ($sl_ct > 0)
 	$VUselected_language =		$row[0];
 	}
 
-$stmt = "SELECT use_non_latin,timeclock_end_of_day,agentonly_callback_campaign_lock,custom_fields_enabled,enable_languages,language_method FROM system_settings;";
+$stmt = "SELECT use_non_latin,timeclock_end_of_day,agentonly_callback_campaign_lock,custom_fields_enabled,enable_languages,language_method,enable_second_script FROM system_settings;";
 if ($DB) {echo "$stmt\n";}
 $rslt=mysql_to_mysqli($stmt, $link);
 	if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -327,6 +347,7 @@ if ($qm_conf_ct > 0)
 	$custom_fields_enabled =				$row[3];
 	$SSenable_languages =					$row[4];
 	$SSlanguage_method =					$row[5];
+	$SSenable_second_script =				$row[6];
 	}
 ##### END SETTINGS LOOKUP #####
 ###########################################
@@ -369,10 +390,10 @@ if ($format=='debug')
 	echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 	}
 
-if (strlen($in_script) < 1)
-	{$call_script = $camp_script;}
+if (strlen($SCRIPTin_script) < 1)
+	{$call_script = $SCRIPTcamp_script;}
 else
-	{$call_script = $in_script;}
+	{$call_script = $SCRIPTin_script;}
 
 $ignore_list_script_override='N';
 if ($inOUT == 'IN')
@@ -390,7 +411,7 @@ if ($inOUT == 'IN')
 		{$ignore_list_script=1;}
 	}
 
-if ($ignore_list_script < 1)
+if ( ($ignore_list_script < 1) and ($script_span != 'Script2Contents') )
 	{
 #	$stmt="SELECT agent_script_override from vicidial_lists where list_id='$list_id';";
 	$stmt="SELECT if('$inOUT'= 'IN',if(inbound_list_script_override is null or inbound_list_script_override='',agent_script_override,inbound_list_script_override),agent_script_override) from vicidial_lists where list_id='$list_id';";
@@ -655,8 +676,8 @@ $script_text = preg_replace('/--A--dialed_label--B--/i',"$dialed_label",$script_
 $script_text = preg_replace('/--A--source_id--B--/i',"$source_id",$script_text);
 $script_text = preg_replace('/--A--rank--B--/i',"$rank",$script_text);
 $script_text = preg_replace('/--A--owner--B--/i',"$owner",$script_text);
-$script_text = preg_replace('/--A--camp_script--B--/i',"$camp_script",$script_text);
-$script_text = preg_replace('/--A--in_script--B--/i',"$in_script",$script_text);
+$script_text = preg_replace('/--A--camp_script--B--/i',"$SCRIPTcamp_script",$script_text);
+$script_text = preg_replace('/--A--in_script--B--/i',"$SCRIPTin_script",$script_text);
 $script_text = preg_replace('/--A--script_width--B--/i',"$script_width",$script_text);
 $script_text = preg_replace('/--A--script_height--B--/i',"$script_height",$script_text);
 $script_text = preg_replace('/--A--full_script_height--B--/i',"$full_script_height",$script_text);
@@ -754,9 +775,26 @@ if (preg_match('/--A--TABLEper_call_notes--B--/i',$script_text))
 		$out_logs_to_print = mysqli_num_rows($rslt);
 		if ($format=='debug') {$NOTESout .= "|$out_logs_to_print|$stmt|";}
 
+		$ALLsort = array();
+		$ALLstart_epoch = array();
+		$ALLcall_date = array();
+		$ALLcampaign_id = array();
+		$ALLlength_in_sec = array();
+		$ALLstatus = array();
+		$ALLphone_code = array();
+		$ALLphone_number = array();
+		$ALLlead_id = array();
+		$ALLhangup_reason = array();
+		$ALLalt_dial = array();
+		$ALLuniqueid = array();
+		$ALLuser = array();
+		$ALLin_out = array();
+		$Allcall_notes = array();
+		$ALLemail = array();
+		$Allcounter = array();
 		$g=0;
 		$u=0;
-		while ($out_logs_to_print > $u) 
+		while ($out_logs_to_print > $u)
 			{
 			$row=mysqli_fetch_row($rslt);
 			$ALLsort[$g] =			"$row[0]-----$g";
@@ -806,7 +844,7 @@ if (preg_match('/--A--TABLEper_call_notes--B--/i',$script_text))
 		if ($format=='debug') {$NOTESout .= "|$in_logs_to_print|$stmt|";}
 
 		$u=0;
-		while ($in_logs_to_print > $u) 
+		while ($in_logs_to_print > $u)
 			{
 			$row=mysqli_fetch_row($rslt);
 			$ALLsort[$g] =			"$row[0]-----$g";
@@ -857,13 +895,13 @@ if (preg_match('/--A--TABLEper_call_notes--B--/i',$script_text))
 			{$NOTESout .= "<tr bgcolor=white><td colspan=11 align=center>"._QXZ("No calls found")."</td></tr>";}
 
 		$u=0;
-		while ($g > $u) 
+		while ($g > $u)
 			{
 			$sort_split = explode("-----",$ALLsort[$u]);
 			$i = $sort_split[1];
 
 			if (preg_match("/1$|3$|5$|7$|9$/i", $u))
-				{$bgcolor='bgcolor="#B9CBFD"';} 
+				{$bgcolor='bgcolor="#B9CBFD"';}
 			else
 				{$bgcolor='bgcolor="#9BB9FB"';}
 
@@ -880,9 +918,9 @@ if (preg_match('/--A--TABLEper_call_notes--B--/i',$script_text))
 			$NOTESout .= "<td align=right><font size=2> $ALLstatus[$i]</td>\n";
 			$NOTESout .= "<td align=right><font size=2> $ALLphone_code[$i] $phone_number_display </td>\n";
 			$NOTESout .= "<td align=right><font size=2> $ALLcampaign_id[$i] </td>\n";
-			$NOTESout .= "<td align=right><font size=2> $ALLin_out[$i] </td>\n";
-			$NOTESout .= "<td align=right><font size=2> $ALLalt_dial[$i] </td>\n";
-			$NOTESout .= "<td align=right><font size=2> $ALLhangup_reason[$i] </td>\n";
+			$NOTESout .= "<td align=right><font size=2> "._QXZ("$ALLin_out[$i]")." </td>\n";
+			$NOTESout .= "<td align=right><font size=2> "._QXZ("$ALLalt_dial[$i]")." </td>\n";
+			$NOTESout .= "<td align=right><font size=2> "._QXZ("$ALLhangup_reason[$i]")." </td>\n";
 			$NOTESout .= "</TR><TR>";
 			$NOTESout .= "<td></td>";
 			$NOTESout .= "<TD $bgcolor COLSPAN=9 align=left><font style=\"font-size:11px;font-family:sans-serif;\"> $Allcall_notes[$i] </font></TD>";
@@ -921,10 +959,10 @@ if ( (preg_match('/--A--EMAILinbound_message--B--/i',$script_text)) and (strlen(
 
 		$att_stmt="SELECT * from inbound_email_attachments where email_row_id='$email_row_id'";
 		$att_rslt=mysql_to_mysqli($att_stmt, $link);
-		if (mysqli_num_rows($att_rslt)>0) 
+		if (mysqli_num_rows($att_rslt)>0)
 			{
 			$EMAILout.="<tr><td align=left valign=top colspan=2 bgcolor=white>"._QXZ("Attachments:")."<br><pre>";
-			while($att_row=mysqli_fetch_array($att_rslt)) 
+			while($att_row=mysqli_fetch_array($att_rslt))
 				{
 				$EMAILout.="<LI><a href='./vdc_email_display.php?attachment_id=$att_row[attachment_id]&lead_id=$lead_id&user=$user&pass=$orig_pass' target='_blank'>$att_row[filename]</a>\n";
 				}

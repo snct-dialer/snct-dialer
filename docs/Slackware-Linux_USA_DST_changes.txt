@@ -1,6 +1,6 @@
-Below are Timezone update instructions for Slackware and any generic Linux 
-install. Because of the changes in Daylight Savings Time in the USA ad Canada 
-in 2007, it becomes necessary to update your system's timezone info if you are 
+Below are Timezone update instructions for Slackware and any generic Linux
+install. Because of the changes in Daylight Savings Time in the USA ad Canada
+in 2007, it becomes necessary to update your system's timezone info if you are
 using a Linux distro that was released before 2006 and have not updated it.
 
 SLACKWARE 10.2:

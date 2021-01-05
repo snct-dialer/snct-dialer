@@ -1,7 +1,7 @@
 <?php
 # admin_NANPA_updater.php
-# 
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed to launch NANPA filter batch proccesses through the
 # triggering process
@@ -16,10 +16,11 @@
 # 170409-1536 - Added IP List validation code
 # 170822-2230 - Added screen color settings
 # 180503-2015 - Added new help display
+# 191013-0814 - Fixes for PHP7
 #
 
-$version = '2.14-7';
-$build = '170409-1536';
+$version = '2.14-8';
+$build = '191013-0814';
 $startMS = microtime();
 
 require("dbconnect_mysqli.php");
@@ -179,18 +180,19 @@ if (strlen($active_voicemail_server)<7)
 	exit;
 	}
 
-if ($delete_trigger_id) 
+if ($delete_trigger_id)
 	{
 	$delete_stmt="delete from vicidial_process_triggers where trigger_id='$delete_trigger_id'";
 	$delete_rslt=mysql_to_mysqli($delete_stmt, $link);
 	}
 
+if (!isset($lists)) {$lists=array();}
 $list_ct=count($lists);
-if ($submit_form=="SUBMIT" && $list_ct>0 && (strlen($vl_field_update)>0 || strlen($cellphone_list_id)>0 || strlen($landline_list_id)>0 || strlen($invalid_list_id)>0) ) 
+if ($submit_form=="SUBMIT" && $list_ct>0 && (strlen($vl_field_update)>0 || strlen($cellphone_list_id)>0 || strlen($landline_list_id)>0 || strlen($invalid_list_id)>0) )
 	{
-	for ($i=0; $i<$list_ct; $i++) 
+	for ($i=0; $i<$list_ct; $i++)
 		{
-		if ($lists[$i]=="---ALL---") 
+		if ($lists[$i]=="---ALL---")
 			{
 			unset($lists);
 			#$lists[0]="---ALL---";
@@ -201,7 +203,7 @@ if ($submit_form=="SUBMIT" && $list_ct>0 && (strlen($vl_field_update)>0 || strle
 			$j=0;
 			$stmt="SELECT list_id from vicidial_lists where active='N' order by list_id asc";
 			$rslt=mysql_to_mysqli($stmt, $link);
-			while ($row=mysqli_fetch_array($rslt)) 
+			while ($row=mysqli_fetch_array($rslt))
 				{
 				$lists[$j]=$row[0];
 				$j++;
@@ -215,18 +217,18 @@ if ($submit_form=="SUBMIT" && $list_ct>0 && (strlen($vl_field_update)>0 || strle
 	$invalid_list_id=preg_replace('/[^0-9]/', '', $invalid_list_id);
 	$exclusion_value=preg_replace('/[\'\"\\\\]/', '', $exclusion_value);
 	$exclusion_value=preg_replace('/\s/', '\\\\\ ', $exclusion_value);
-	
+
 
 	$options="--user=$PHP_AUTH_USER --pass=$PHP_AUTH_PW ";
-	
+
 	$list_id_str="";
-	for ($i=0; $i<$list_ct; $i++) 
+	for ($i=0; $i<$list_ct; $i++)
 		{
 		$list_id_str.=$lists[$i]."--";
 		}
 	$list_id_str=substr($list_id_str, 0, -2);
 	$options.="--list-id=$list_id_str ";
-	
+
 	if (strlen($cellphone_list_id)>0)	{$options.="--cellphone-list-id=$cellphone_list_id ";}
 	if (strlen($landline_list_id)>0)	{$options.="--landline-list-id=$landline_list_id ";}
 	if (strlen($invalid_list_id)>0)		{$options.="--invalid-list-id=$invalid_list_id ";}
@@ -383,7 +385,7 @@ function ShowPastProcesses(limit) {
 		}
 	}
 }
-function openNewWindow(url) 
+function openNewWindow(url)
 	{
 	window.open (url,"",'width=620,height=300,scrollbars=yes,menubar=yes,address=yes');
 	}
@@ -446,23 +448,23 @@ if (mysqli_num_rows($schedule_rslt)>0 || (mysqli_num_rows($running_rslt)>0)) {
 					{
 					$data_in=explode("--cellphone-list-id=", $trigger_array[$q]);
 					$cellphone_list_id=trim($data_in[1]);
-					$conversion_lists.="Cellphone list: $cellphone_list_id<BR>";
+					$conversion_lists.=_QXZ("Cellphone list").": $cellphone_list_id<BR>";
 					}
 				if (preg_match('/--landline-list-id=/', $trigger_array[$q]))
 					{
 					$data_in=explode("--landline-list-id=", $trigger_array[$q]);
 					$landline_list_id=trim($data_in[1]);
-					$conversion_lists.="Landline list: $landline_list_id<BR>";
+					$conversion_lists.=_QXZ("Landline list").": $landline_list_id<BR>";
 					}
 				if (preg_match('/--invalid-list-id=/', $trigger_array[$q]))
 					{
 					$data_in=explode("--invalid-list-id=", $trigger_array[$q]);
 					$invalid_list_id=trim($data_in[1]);
-					$conversion_lists.="Invalid list: $invalid_list_id<BR>";
+					$conversion_lists.=_QXZ("Invalid list").": $invalid_list_id<BR>";
 					}
 			}
-			if (strlen($vl_update_field)==0) {$vl_update_field="**NONE**";}
-			if (strlen($conversion_lists)==0) {$conversion_lists="**NONE**";}
+			if (strlen($vl_update_field)==0) {$vl_update_field="**"._QXZ("NONE")."**";}
+			if (strlen($conversion_lists)==0) {$conversion_lists="**"._QXZ("NONE")."**";}
 			echo "<tr>";
 			echo "<td align='left'><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>$row[trigger_time]</font><BR><FONT FACE=\"ARIAL,HELVETICA\" size='1' color='red'>($row[time_until_execution] "._QXZ("until run time").")</font></td>";
 			echo "<td align='left'><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>$lists</font></td>";
@@ -493,9 +495,9 @@ if (mysqli_num_rows($schedule_rslt)>0 || (mysqli_num_rows($running_rslt)>0)) {
 
 ############################################
 
-if ( ( (mysqli_num_rows($schedule_rslt)>0) or (mysqli_num_rows($running_rslt)>0) ) and ($block_scheduling_while_running==1) ) 
-	{$do_nothing=1;} 
-else 
+if ( ( (mysqli_num_rows($schedule_rslt)>0) or (mysqli_num_rows($running_rslt)>0) ) and ($block_scheduling_while_running==1) )
+	{$do_nothing=1;}
+else
 	{
 	echo "<tr><td>";
 
@@ -508,7 +510,7 @@ else
 	$rslt=mysql_to_mysqli($stmt, $link);
 	echo "<select name='lists[]' multiple size='5'>\n";
 	echo "<option value='---ALL---'>---"._QXZ("ALL LISTS")."---</option>\n";
-	while ($row=mysqli_fetch_array($rslt)) 
+	while ($row=mysqli_fetch_array($rslt))
 		{
 		echo "<option value='$row[0]'>$row[0] - $row[1]</option>\n";
 		}
@@ -520,7 +522,7 @@ else
 	$stmt="SELECT * from vicidial_list limit 1";
 	$rslt=mysql_to_mysqli($stmt, $link);
 	echo "<option value=''>---"._QXZ("NONE")."---</option>\n";
-	while ($fieldinfo=mysqli_fetch_field($rslt)) 
+	while ($fieldinfo=mysqli_fetch_field($rslt))
 		{
 		$fieldname=$fieldinfo->name;
 		if (!preg_match("/lead_id|list_id|status|gmt_offset_now|entry_date|modify_date|gender|entry_list_id|date_of_birth|called_since_last_reset|called_count/",$fieldname))
@@ -547,7 +549,7 @@ else
 	echo "<option value='240'>4 "._QXZ("hours")."</option>\n";
 	echo "<option value='480'>8 "._QXZ("hours")."</option>\n";
 	echo "</select></font></td>";
-	
+
 	echo "</tr>\n";
 	echo "<tr>";
 	echo "<td align='right'><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>"._QXZ("Cellphone").":</font></td><td align='left'><input type='text' name='cellphone_list_id' size='5' maxlength='10'></td>";
@@ -560,7 +562,7 @@ else
 	$stmt="SELECT * from vicidial_list limit 1";
 	$rslt=mysql_to_mysqli($stmt, $link);
 	echo "<option value=''>---"._QXZ("NONE")."---</option>\n";
-	while ($fieldinfo=mysqli_fetch_field($rslt)) 
+	while ($fieldinfo=mysqli_fetch_field($rslt))
 		{
 		$fieldname=$fieldinfo->name;
 		echo "<option value='$fieldname'>$fieldname</option>\n";

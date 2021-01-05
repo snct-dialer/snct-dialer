@@ -185,7 +185,7 @@ if (length($ARGV[0])>1)
 			$campaign = $data_in[1];
 			$campaign =~ s/ .*$//gi;
 			$campaignSQL = $campaign;
-			if ($campaignSQL =~ /-/) 
+			if ($campaignSQL =~ /-/)
 				{
 				$campaignSQL =~ s/-/','/gi;
 				}
@@ -198,7 +198,7 @@ if (length($ARGV[0])>1)
 			$NOTcampaign = $data_in[1];
 			$NOTcampaign =~ s/ .*$//gi;
 			$NOTcampaignSQL = $NOTcampaign;
-			if ($NOTcampaignSQL =~ /-/) 
+			if ($NOTcampaignSQL =~ /-/)
 				{
 				$NOTcampaignSQL =~ s/-/','/gi;
 				}
@@ -315,11 +315,11 @@ foreach(@conf)
 # Customized Variables
 $server_ip = $VARserver_ip;		# Asterisk server IP
 
-if ($output_format =~ /^tab-basic$/) 
+if ($output_format =~ /^tab-basic$/)
 	{$DLT = "\t";   $txt='.txt';   if (!$Q) {print "---- tab-basic ----\n";}}
-if ($output_format =~ /^pipe-basic$/) 
+if ($output_format =~ /^pipe-basic$/)
 	{$DLT = "|";   $txt='.txt';   if (!$Q) {print "---- pipe-basic ----\n";}}
-if ($output_format =~ /^ncad14csv$/) 
+if ($output_format =~ /^ncad14csv$/)
 	{$DLT = ",";   $txt='.csv';   if (!$Q) {print "---- ncad14csv ----\n";}}
 
 if (length($campaignSQL) < 2)
@@ -374,10 +374,10 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 
 use DBI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
-$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 $TOTAL_SALES=0;
@@ -594,17 +594,17 @@ exit;
 ### Subroutine for formatting of the output ###
 sub select_format_loop
 	{
-	if ($output_format =~ /^pipe-basic$/) 
+	if ($output_format =~ /^pipe-basic$/)
 		{
 		$str = "$call_date|$phone_number|$vendor_id|$status|$user|$first_name|$last_name|$lead_id|$list_id|$campaign_id|$length_in_sec|$source_id|\n";
 		}
 
-	if ($output_format =~ /^tab-basic$/) 
+	if ($output_format =~ /^tab-basic$/)
 		{
 		$str = "$call_date\t$phone_number\t$vendor_id\t$status\t$user\t$first_name\t$last_name\t$lead_id\t$list_id\t$campaign_id\t$length_in_sec\t$source_id\t\n";
 		}
 
-	if ($output_format =~ /^ncad14csv$/) 
+	if ($output_format =~ /^ncad14csv$/)
 		{
 		if ($status =~ /^PU$/) {$status='HU';}
 		if ($status =~ /^PM$/) {$status='BM';}
@@ -614,14 +614,14 @@ sub select_format_loop
 		if ($status =~ /^B$/) {$status='BS';}
 		if ($status =~ /^AB$/) {$status='BS';}
 		if ($status =~ /^DC$/) {$status='IP';}
-		
+
 		$str = "$vendor_lead_code,\"$source_id\",\"$last_name, $first_name\",\"$phone_number\",\"$address2\",\"$alt_phone\",\"$postal_code\",\"$address1\",\"$address3\",\"$security_phrase\",\"$status\",\"$call_date\",\"$email\",\"$city\"\n";
 		}
 
 
-	$Ealert .= "$str"; 
+	$Ealert .= "$str";
 
-	print out "$str"; 
+	print out "$str";
 	if ($DBX) {print "$str\n";}
 
 	if ($DB > 0)

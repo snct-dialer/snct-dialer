@@ -1,7 +1,7 @@
-<?php 
+<?php
 # AST_agent_days_detail.php
-# 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -33,6 +33,7 @@
 # 170409-1542 - Added IP List validation code
 # 171012-2015 - Fixed javascript/apache errors with graphs
 # 171204-2300 - Fixed minor reporting bug
+# 191013-0848 - Fixes for PHP7
 #
 
 $startMS = microtime();
@@ -99,14 +100,14 @@ if (strlen($report_display_type)<2) {$report_display_type = $SSreport_default_fo
 ### ARCHIVED DATA CHECK CONFIGURATION
 $archives_available="N";
 $log_tables_array=array("vicidial_agent_log");
-for ($t=0; $t<count($log_tables_array); $t++) 
+for ($t=0; $t<count($log_tables_array); $t++)
 	{
 	$table_name=$log_tables_array[$t];
 	$archive_table_name=use_archive_table($table_name);
 	if ($archive_table_name!=$table_name) {$archives_available="Y";}
 	}
 
-if ($search_archived_data) 
+if ($search_archived_data)
 	{
 	$vicidial_agent_log_table=use_archive_table("vicidial_agent_log");
 	}
@@ -311,6 +312,7 @@ if ( (!preg_match('/\-\-ALL\-\-/i', $LOGadmin_viewable_call_times)) and (strlen(
 	$whereLOGadmin_viewable_call_timesSQL = "where call_time_id IN('---ALL---','$rawLOGadmin_viewable_call_timesSQL')";
 	}
 
+$MT=array();
 $MT[0]='';
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
@@ -333,6 +335,7 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $campaigns_to_print = mysqli_num_rows($rslt);
 $i=0;
+$groups=array();
 while ($i < $campaigns_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -418,7 +421,7 @@ if ($file_download < 1)
 	echo "<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 	echo "<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 	require("chart_button.php");
-	echo "<script src='chart/Chart.js'></script>\n"; 
+	echo "<script src='chart/Chart.js'></script>\n";
 	echo "<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
 
 	echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
@@ -444,26 +447,26 @@ if (strlen($group[0]) < 1)
 
 else
 	{
-	if ($shift == 'AM') 
+	if ($shift == 'AM')
 		{
 		$time_BEGIN=$AM_shift_BEGIN;
 		$time_END=$AM_shift_END;
-		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}   
+		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}
 		if (strlen($time_END) < 6) {$time_END = "15:14:59";}
 		}
-	if ($shift == 'PM') 
+	if ($shift == 'PM')
 		{
 		$time_BEGIN=$PM_shift_BEGIN;
 		$time_END=$PM_shift_END;
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "15:15:00";}
 		if (strlen($time_END) < 6) {$time_END = "23:15:00";}
 		}
-	if ($shift == 'ALL') 
+	if ($shift == 'ALL')
 		{
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}
 		if (strlen($time_END) < 6) {$time_END = "23:59:59";}
 		}
-	$query_date_BEGIN = "$query_date $time_BEGIN";   
+	$query_date_BEGIN = "$query_date $time_BEGIN";
 	$query_date_END = "$end_date $time_END";
 
 	if ($file_download < 1)
@@ -482,10 +485,16 @@ else
 	$statusesHEAD='';
 	$statusesHTML='';
 	$statusesFILE='';
+	$statusesARY=array();
 	$statusesARY[0]='';
 	$j=0;
 	$dates='-';
+	$date=array();
+	$calls=array();
+	$status=array();
+	$datesARY=array();
 	$datesARY[0]='';
+	$date_namesARY=array();
 	$date_namesARY[0]='';
 	$k=0;
 
@@ -547,6 +556,10 @@ else
 	$DNCcountTOT=0;
 
 	$graph_stats=array();
+	$TOPsort=array();
+	$TOPsortTALLY=array();
+	$TOPsorted_output=array();
+	$TOPsorted_outputFILE=array();
 	$max_calls=1;
 	$max_cicalls=1;
 	$max_dncci=1;
@@ -590,7 +603,7 @@ else
 						}
 
 					if ($calls[$i]>$$max_varname) {$$max_varname=$calls[$i];}
-					$graph_stats[$m][(4+$n)]=$calls[$i];					
+					$graph_stats[$m][(4+$n)]=$calls[$i];
 
 					$SstatusTXT = sprintf("%8s", $calls[$i]);
 					$SstatusesHTML .= " $SstatusTXT |";
@@ -698,6 +711,7 @@ else
 			{rsort($TOPsort, SORT_NUMERIC);}
 
 		$m=0;
+		$sort_order=array();
 		while ($m < $k)
 			{
 			$sort_split = explode("-----",$TOPsort[$m]);
@@ -782,7 +796,7 @@ else
 		$graph_id++;
 		$graph_array=array("ADD_CALLSdata|1|CALLS|integer|", "ADD_CICALLSdata|2|CI/CALLS|integer|", "ADD_DNCCIdata|3|DNC/CI|percent|");
 		$default_graph="line"; # Graph that is initally displayed when page loads
-		include("graph_color_schemas.inc"); 
+		include("graph_color_schemas.inc");
 
 		for ($e=0; $e<count($statusesARY); $e++) {
 			$Sstatus=$statusesARY[$e];
@@ -794,10 +808,10 @@ else
 		$graph_totals_array=array();
 		$graph_totals_rawdata=array();
 		for ($q=0; $q<count($graph_array); $q++) {
-			$graph_info=explode("|", $graph_array[$q]); 
+			$graph_info=explode("|", $graph_array[$q]);
 			$current_graph_total=0;
 			$dataset_name=$graph_info[0];
-			$dataset_index=$graph_info[1]; 
+			$dataset_index=$graph_info[1];
 			$dataset_type=$graph_info[3];
 
 			$JS_text.="var $dataset_name = {\n";
@@ -815,7 +829,7 @@ else
 			$graphConstantsC="\t\t\t\thoverBorderColor: [";
 			for ($d=0; $d<count($graph_stats); $d++) {
 				$labels.="\"".preg_replace('/ +/', ' ', $graph_stats[$d][0])."\",";
-				$data.="\"".$graph_stats[$d][$dataset_index]."\","; 
+				$data.="\"".$graph_stats[$d][$dataset_index]."\",";
 				$current_graph_total+=$graph_stats[$d][$dataset_index];
 				$bgcolor=$backgroundColor[($d%count($backgroundColor))];
 				$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
@@ -823,13 +837,13 @@ else
 				$graphConstantsA.="\"$bgcolor\",";
 				$graphConstantsB.="\"$hbgcolor\",";
 				$graphConstantsC.="\"$hbcolor\",";
-			}	
+			}
 			$graphConstantsA.="],\n";
 			$graphConstantsB.="],\n";
 			$graphConstantsC.="],\n";
 			$labels=preg_replace('/,$/', '', $labels)."],\n";
 			$data=preg_replace('/,$/', '', $data)."],\n";
-			
+
 			$graph_totals_rawdata[$q]=$current_graph_total;
 			switch($dataset_type) {
 				case "time":
@@ -862,7 +876,7 @@ else
 		include("graphcanvas.inc");
 		echo $HTML_graph_head;
 		$GRAPH_text.=$graphCanvas;
-		
+
 
 		}
 	else
@@ -971,20 +985,20 @@ echo "</SELECT>\n";
 echo "</TD><TD VALIGN=TOP>";
 echo _QXZ("Display as").":&nbsp;&nbsp;&nbsp;<BR>";
 echo "<select name='report_display_type'>";
-if ($report_display_type) {echo "<option value='$report_display_type' selected>$report_display_type</option>";}
+if ($report_display_type) {echo "<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
 echo "<option value='TEXT'>"._QXZ("TEXT")."</option><option value='HTML'>"._QXZ("HTML")."</option></select>\n<BR><BR>";
 echo "</TD><TD VALIGN=TOP>"._QXZ("User").":<BR>";
 echo "<INPUT TYPE=TEXT SIZE=10 NAME=user value=\"$user\">\n";
 echo "</TD><TD VALIGN=TOP>"._QXZ("Shift").":<BR>";
 echo "<SELECT SIZE=1 NAME=shift>\n";
-echo "<option selected value=\"$shift\">$shift</option>\n";
+echo "<option selected value=\"$shift\">"._QXZ("$shift")."</option>\n";
 echo "<option value=\"\">--</option>\n";
 echo "<option value=\"AM\">"._QXZ("AM")."</option>\n";
 echo "<option value=\"PM\">"._QXZ("PM")."</option>\n";
 echo "<option value=\"ALL\">"._QXZ("ALL")."</option>\n";
 echo "</SELECT>\n";
 
-if ($archives_available=="Y") 
+if ($archives_available=="Y")
 	{
 	echo "<input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."\n";
 	}
@@ -1018,12 +1032,13 @@ else
 
 echo "</span>\n";
 
-if ($report_display_type=="TEXT" || !$report_display_type) 
+if ($report_display_type=="TEXT" || !$report_display_type)
 	{
 	echo "<span style=\"position:absolute;left:3px;top:3px;z-index:18;\"  id=agent_status_bars>\n";
 	echo "<PRE><FONT SIZE=2>\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 
 	$m=0;
+	$sort_order=array();
 	while ($m < $k)
 		{
 		$sort_split = explode("-----",$TOPsort[$m]);

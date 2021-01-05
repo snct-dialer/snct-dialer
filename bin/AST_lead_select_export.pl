@@ -2,7 +2,7 @@
 #
 # AST_lead_select_export.pl               version: 2.14
 #
-# This script is designed to gather selected status lead data from call logs and 
+# This script is designed to gather selected status lead data from call logs and
 # dump into a tab-delimited text file
 #
 # /usr/share/astguiclient/AST_lead_select_export.pl --ingroups=---ALL--- --start-date=2016-01-01 --end-date=2016-06-30 --debug
@@ -179,13 +179,13 @@ if (length($ARGV[0])>1)
 			$ingroups = $data_in[1];
 			$ingroups =~ s/ .*$//gi;
 			$ingroupsSQL = $ingroups;
-			if ($ingroupsSQL =~ /--ALL--/) 
+			if ($ingroupsSQL =~ /--ALL--/)
 				{
 				$ingroupsSQL='';
 				}
 			else
 				{
-				if ($ingroupsSQL =~ /-/) 
+				if ($ingroupsSQL =~ /-/)
 					{
 					$ingroupsSQL =~ s/-/','/gi;
 					}
@@ -204,13 +204,13 @@ if (length($ARGV[0])>1)
 			$campaigns = $data_in[1];
 			$campaigns =~ s/ .*$//gi;
 			$campaignsSQL = $campaigns;
-			if ($campaignsSQL =~ /--ALL--/) 
+			if ($campaignsSQL =~ /--ALL--/)
 				{
 				$campaignsSQL='';
 				}
 			else
 				{
-				if ($campaignsSQL =~ /-/) 
+				if ($campaignsSQL =~ /-/)
 					{
 					$campaignsSQL =~ s/-/','/gi;
 					}
@@ -229,13 +229,13 @@ if (length($ARGV[0])>1)
 			$statuses = $data_in[1];
 			$statuses =~ s/ .*$//gi;
 			$statusesSQL = $statuses;
-			if ($statusesSQL =~ /--ALL--/) 
+			if ($statusesSQL =~ /--ALL--/)
 				{
 				$statusesSQL='';
 				}
 			else
 				{
-				if ($statusesSQL =~ /-/) 
+				if ($statusesSQL =~ /-/)
 					{
 					$statusesSQL =~ s/-/','/gi;
 					}
@@ -361,10 +361,10 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 
 use DBI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
-$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 $TOTAL_CALLS=0;
@@ -403,7 +403,7 @@ while ($sthArows > $rec_count)
 	$L_campaign_id = 		$aryA[6];
 	$L_list_id = 			$aryA[7];
 
-	if ($leadidLIST !~ /\|$L_lead_id\|/) 
+	if ($leadidLIST !~ /\|$L_lead_id\|/)
 		{
 		$leadidLIST .= "$L_lead_id|";
 		&select_format_loop;
@@ -419,7 +419,7 @@ while ($sthArows > $rec_count)
 $sthA->finish();
 
 
-if ($use_archives > 0) 
+if ($use_archives > 0)
 	{
 	if (!$Q) {print "Starting pull of Inbound Archive calls:\n";}
 	###########################################################################
@@ -443,7 +443,7 @@ if ($use_archives > 0)
 		$L_campaign_id = 		$aryA[6];
 		$L_list_id = 			$aryA[7];
 
-		if ($leadidLIST !~ /\|$L_lead_id\|/) 
+		if ($leadidLIST !~ /\|$L_lead_id\|/)
 			{
 			$leadidLIST .= "$L_lead_id|";
 			&select_format_loop;
@@ -482,7 +482,7 @@ while ($sthArows > $rec_count)
 	$L_campaign_id = 		$aryA[6];
 	$L_list_id = 			$aryA[7];
 
-	if ($leadidLIST !~ /\|$L_lead_id\|/) 
+	if ($leadidLIST !~ /\|$L_lead_id\|/)
 		{
 		$leadidLIST .= "$L_lead_id|";
 		&select_format_loop;
@@ -499,7 +499,7 @@ $sthA->finish();
 
 
 
-if ($use_archives > 0) 
+if ($use_archives > 0)
 	{
 	if (!$Q) {print "Starting pull of Outbound Archive calls:\n";}
 	###########################################################################
@@ -523,7 +523,7 @@ if ($use_archives > 0)
 		$L_campaign_id = 		$aryA[6];
 		$L_list_id = 			$aryA[7];
 
-		if ($leadidLIST !~ /\|$L_lead_id\|/) 
+		if ($leadidLIST !~ /\|$L_lead_id\|/)
 			{
 			$leadidLIST .= "$L_lead_id|";
 			&select_format_loop;
@@ -638,7 +638,7 @@ sub select_format_loop
 	$custom_data = '';
 	$custom_columns = '';
 
-	if ( (length($entry_list_id) > 1 ) && ($entry_list_id >= 99) ) 
+	if ( (length($entry_list_id) > 1 ) && ($entry_list_id >= 99) )
 		{
 		$stmtB = "SHOW TABLES LIKE \"custom_$entry_list_id\";";
 		$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
@@ -646,7 +646,7 @@ sub select_format_loop
 		$sthBcustrows=$sthB->rows;
 		if ($DBX) {print "$sthBcustrows|$stmtB|\n";}
 		$sthB->finish();
-		if ($sthBcustrows > 0) 
+		if ($sthBcustrows > 0)
 			{
 			$stmtB = "describe custom_$entry_list_id;";
 			$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
@@ -654,7 +654,7 @@ sub select_format_loop
 			$sthBcolrows=$sthB->rows;
 			if ($DBX) {print "$sthBcolrows|$stmtB|\n";}
 			$col_ct=0;
-			while ($sthBcolrows > $col_ct) 
+			while ($sthBcolrows > $col_ct)
 				{
 				@aryB = $sthB->fetchrow_array;
 				$column_label =		$aryB[0];
@@ -678,7 +678,7 @@ sub select_format_loop
 					{
 					@aryB = $sthB->fetchrow_array;
 					$field_ct=1;
-					while ($col_ct > $field_ct) 
+					while ($col_ct > $field_ct)
 						{
 						$custom_data .= "\t$columns[$field_ct]: $aryB[$field_ct]";
 						$field_ct++;
@@ -699,7 +699,7 @@ sub select_format_loop
 	##### END custom field data lookup #####
 
 
-	$Ealert .= "$TOTAL_LEADS   $rec_countB   $call_data\n"; 
+	$Ealert .= "$TOTAL_LEADS   $rec_countB   $call_data\n";
 
 	if ($DBX) {print "$TOTAL_LEADS   $rec_countB   $call_data\n";}
 

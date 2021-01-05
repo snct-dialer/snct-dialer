@@ -1,6 +1,6 @@
 <?php
 # vicidial_stylesheet.php
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>, Joe Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
 #
 # CSS/PHP file that uses the system-defined screen colors to display report elements
@@ -38,7 +38,7 @@ div.scrolling {
 }
 redalert {font-size: 18px; font-weight:bold; font-family: Arial, Sans-Serif; color: white ; background: #FF0000}
 .sm_shadow {box-shadow: 2px 2px 2px #000000;}
-.round_corners {    
+.round_corners {
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	border-radius: 5px;
@@ -73,12 +73,12 @@ redalert {font-size: 18px; font-weight:bold; font-family: Arial, Sans-Serif; col
 .border2px {border:solid 2px #<?php echo $SSmenu_background; ?>}
 
 .android_standard {
-	font-family: Arial, Helvetica, sans-serif; 
-	font-size: 8pt; 
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 8pt;
 }
 .android_large {
-	font-family: Arial, Helvetica, sans-serif; 
-	font-size: 10pt; 
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10pt;
 	font-weight: bold;
 }
 .android_auto {
@@ -118,7 +118,7 @@ redalert {font-size: 18px; font-weight:bold; font-family: Arial, Sans-Serif; col
 .autosize_10 {width: 10vw; max-width: 160px;}
 .autosize_12 {width: 12vw; max-width: 180px;}
 
-/* 
+/*
 	LEVEL ONE MENU
 */
 ul.dropdown_android                    { position: relative;}
@@ -131,16 +131,16 @@ ul.dropdown_android li.hover,
 ul.dropdown_android li:hover      { position: relative; }
 
 
-/* 
+/*
 	LEVEL TWO MENU
 */
 ul.dropdown_android ul 		{ width: calc(25px + (150 - 25) * ((100vw - 300px) / (1600 - 300))); visibility: hidden; position: absolute; top: 100%; left: -40;}
 ul.dropdown_android ul li 		{ font-weight: normal; float: none; top: 100%; margin-top:-4;}
 
 /* IE 6 & 7 Needs Inline Block */
-ul.dropdown_android ul li a		{ border-right: none; width: 100%; display: inline-block; } 
+ul.dropdown_android ul li a		{ border-right: none; width: 100%; display: inline-block; }
 
-/* 
+/*
 	LEVEL THREE MENU
 */
 ul.dropdown_android ul ul 		{ left: 100%; top: 0; }
@@ -158,43 +158,43 @@ ul.dropdown_android li:hover > ul 	{ visibility: visible; }
 .insetshadow {
     color: #202020;
     letter-spacing: .1em;
-    text-shadow: 
-      -1px -1px 1px #111, 
+    text-shadow:
+      -1px -1px 1px #111,
       2px 2px 1px #363636;
  }
 .elegantshadow {
     color: #131313;
     background-color: #e7e5e4;
     letter-spacing: .15em;
-    text-shadow: 
-      1px -1px 0 #767676, 
-      -1px 2px 1px #737272, 
-      -2px 4px 1px #767474, 
-      -3px 6px 1px #787777, 
-      -4px 8px 1px #7b7a7a, 
-      -5px 10px 1px #7f7d7d, 
-      -6px 12px 1px #828181, 
-      -7px 14px 1px #868585, 
-      -8px 16px 1px #8b8a89, 
-      -9px 18px 1px #8f8e8d, 
-      -10px 20px 1px #949392, 
-      -11px 22px 1px #999897, 
-      -12px 24px 1px #9e9c9c, 
-      -13px 26px 1px #a3a1a1, 
-      -14px 28px 1px #a8a6a6, 
-      -15px 30px 1px #adabab, 
-      -16px 32px 1px #b2b1b0, 
-      -17px 34px 1px #b7b6b5, 
-      -18px 36px 1px #bcbbba, 
-      -19px 38px 1px #c1bfbf, 
-      -20px 40px 1px #c6c4c4, 
-      -21px 42px 1px #cbc9c8, 
-      -22px 44px 1px #cfcdcd, 
-      -23px 46px 1px #d4d2d1, 
-      -24px 48px 1px #d8d6d5, 
-      -25px 50px 1px #dbdad9, 
-      -26px 52px 1px #dfdddc, 
-      -27px 54px 1px #e2e0df, 
+    text-shadow:
+      1px -1px 0 #767676,
+      -1px 2px 1px #737272,
+      -2px 4px 1px #767474,
+      -3px 6px 1px #787777,
+      -4px 8px 1px #7b7a7a,
+      -5px 10px 1px #7f7d7d,
+      -6px 12px 1px #828181,
+      -7px 14px 1px #868585,
+      -8px 16px 1px #8b8a89,
+      -9px 18px 1px #8f8e8d,
+      -10px 20px 1px #949392,
+      -11px 22px 1px #999897,
+      -12px 24px 1px #9e9c9c,
+      -13px 26px 1px #a3a1a1,
+      -14px 28px 1px #a8a6a6,
+      -15px 30px 1px #adabab,
+      -16px 32px 1px #b2b1b0,
+      -17px 34px 1px #b7b6b5,
+      -18px 36px 1px #bcbbba,
+      -19px 38px 1px #c1bfbf,
+      -20px 40px 1px #c6c4c4,
+      -21px 42px 1px #cbc9c8,
+      -22px 44px 1px #cfcdcd,
+      -23px 46px 1px #d4d2d1,
+      -24px 48px 1px #d8d6d5,
+      -25px 50px 1px #dbdad9,
+      -26px 52px 1px #dfdddc,
+      -27px 54px 1px #e2e0df,
       -28px 56px 1px #e4e3e2;
   }
 
@@ -235,10 +235,10 @@ textarea.chat_box_ended {
 	 border: solid 1px #000066;
 	 background-color:#999999;
 }
-.cust_form { 
-	font-family: Sans-Serif; 
-	font-size: 10px; 
-	overflow: hidden; 
+.cust_form {
+	font-family: Sans-Serif;
+	font-size: 10px;
+	overflow: hidden;
 }
 input.red_btn{
 	font-family: Arial, Sans-Serif;
@@ -400,9 +400,9 @@ TABLE.question_td {
 	border-radius: 5px 5px 5px 5px;
 	box-shadow: 5px 5px 12px #000000;
 	padding: 5px;
-	font-family: Arial, Helvetica, sans-serif; 
-	color: black; 
-	font-size: 12pt; 
+	font-family: Arial, Helvetica, sans-serif;
+	color: black;
+	font-size: 12pt;
 	font-weight: bold;
 	background: #<?php echo $SSframe_background; ?>;
 	color: #000000;
@@ -415,9 +415,9 @@ TABLE.help_td {
 	border-radius: 5px 5px 5px 5px;
 	box-shadow: 5px 5px 12px #000000;
 	padding: 5px;
-	font-family: Arial, Helvetica, sans-serif; 
-	color: black; 
-	font-size: 10pt; 
+	font-family: Arial, Helvetica, sans-serif;
+	color: black;
+	font-size: 10pt;
 	background: #<?php echo $SSframe_background; ?>;
 	color: #000000;
 	vertical-align: top;
@@ -425,9 +425,9 @@ TABLE.help_td {
 }
 TABLE.panel_td {
 	padding: 5px;
-	font-family: Arial, Helvetica, sans-serif; 
-	color: black; 
-	font-size: 12pt; 
+	font-family: Arial, Helvetica, sans-serif;
+	color: black;
+	font-size: 12pt;
 	font-weight: bold;
 	background: #<?php echo $SSframe_background; ?>;
 	color: #000000;
@@ -436,9 +436,9 @@ TABLE.panel_td {
 
 TD.panel_td {
 	padding: 5px;
-	font-family: Arial, Helvetica, sans-serif; 
-	color: black; 
-	font-size: 12pt; 
+	font-family: Arial, Helvetica, sans-serif;
+	color: black;
+	font-size: 12pt;
 	font-weight: bold;
 	background: #<?php echo $SSframe_background; ?>;
 	color: #000000;
@@ -449,9 +449,9 @@ TD.search_td {
 	-webkit-border-radius: 5px 5px 5px 5px;
 	border-radius: 5px 5px 5px 5px;
 	padding: 5px;
-	font-family: Arial, Helvetica, sans-serif; 
-	color: black; 
-	font-size: 8pt; 
+	font-family: Arial, Helvetica, sans-serif;
+	color: black;
+	font-size: 8pt;
 	font-weight: bold;
 	background: #FB9BB9;
 	color: #000000;
@@ -611,7 +611,7 @@ padding-left:3px;
 padding-right:3px;
 }
 div.dropdown_android_button:hover{
-background-color: #F3D673; 
+background-color: #F3D673;
 color: black;
 }
 div.android_offbutton_large

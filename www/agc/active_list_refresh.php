@@ -1,11 +1,11 @@
 <?php
 # active_list_refresh.php    version 2.12
-# 
-# Copyright (C) 2015  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed purely to serve updates of the live data to the display scripts
 # This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
-# 
+#
 # required variables:
 #  - $server_ip
 #  - $session_name
@@ -26,7 +26,7 @@
 #  - $textareaheight - ('8','10','12','etc...')
 #  - $textareawidth - ('8','10','12','etc...')
 #  - $field_name - ('extension','busyext','extension_xfer','etc...')
-# 
+#
 #
 # changes
 # 50323-1147 - First build of script
@@ -46,10 +46,11 @@
 # 141128-0901 - Code cleanup for QXZ functions
 # 141216-2119 - Added language settings lookups and user/pass variable standardization
 # 150723-1715 - Added ajax logging
-# 
+# 190111-0903 - Fix for PHP7
+#
 
-$version = '0.0.17';
-$build = '150723-1715';
+$version = '0.0.18';
+$build = '190111-0903';
 $php_script = 'active_list_refresh.php';
 $SSagent_debug_logging=0;
 $startMS = microtime();
@@ -175,7 +176,7 @@ if (strlen($SSagent_debug_logging) > 1)
 	}
 
 $auth=0;
-$auth_message = user_authorization($user,$pass,'',0,1,0,0);
+$auth_message = user_authorization($user,$pass,'',0,1,0,0,'active_list_refresh');
 if ($auth_message == 'GOOD')
 	{$auth=1;}
 
@@ -240,11 +241,11 @@ if ($ADD==1)
 	if (!$field_name) {$field_name = 'extension';}
 	if ($format=='table') {echo "<TABLE WIDTH=120 BGCOLOR=$bgcolor cellpadding=0 cellspacing=0>\n";}
 	if ($format=='menu') {echo "<SELECT SIZE=1 name=\"$field_name\">\n";}
-	if ($format=='selectlist') 
+	if ($format=='selectlist')
 		{
 		echo "<SELECT SIZE=$selectsize name=\"$field_name\" STYLE=\"font-family : sans-serif; font-size : $selectfontsize$pt\">\n";
 		}
-	if ($format=='textarea') 
+	if ($format=='textarea')
 		{
 		echo "<TEXTAREA ROWS=$textareaheight COLS=$textareawidth NAME=extension WRAP=off STYLE=\"font-family : sans-serif; font-size : $selectfontsize$pt\">";
 		}
@@ -254,7 +255,7 @@ if ($ADD==1)
 	$rslt=mysql_to_mysqli($stmt, $link);
 	if ($rslt) {$phones_to_print = mysqli_num_rows($rslt);}
 	$o=0;
-	while ($phones_to_print > $o) 
+	while ($phones_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if ($format=='table')
@@ -298,11 +299,11 @@ if ($ADD==2)
 	if (!$field_name) {$field_name = 'busyext';}
 	if ($format=='table') {echo "<TABLE WIDTH=120 BGCOLOR=$bgcolor cellpadding=0 cellspacing=0>\n";}
 	if ($format=='menu') {echo "<SELECT SIZE=1 name=\"$field_name\">\n";}
-	if ($format=='selectlist') 
+	if ($format=='selectlist')
 		{
 		echo "<SELECT SIZE=$selectsize name=\"$field_name\" STYLE=\"font-family : sans-serif; font-size : $selectfontsize$pt\">\n";
 		}
-	if ($format=='textarea') 
+	if ($format=='textarea')
 		{
 		echo "<TEXTAREA ROWS=$textareaheight COLS=$textareawidth NAME=extension WRAP=off STYLE=\"font-family : sans-serif; font-size : $selectfontsize$pt\">";
 		}
@@ -312,7 +313,7 @@ if ($ADD==2)
 	$rslt=mysql_to_mysqli($stmt, $link);
 	if ($rslt) {$busys_to_print = mysqli_num_rows($rslt);}
 	$o=0;
-	while ($busys_to_print > $o) 
+	while ($busys_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if ($format=='table')
@@ -355,11 +356,11 @@ if ($ADD==3)
 	if (!$field_name) {$field_name = 'trunk';}
 	if ($format=='table') {echo "<TABLE WIDTH=120 BGCOLOR=$bgcolor cellpadding=0 cellspacing=0>\n";}
 	if ($format=='menu') {echo "<SELECT SIZE=1 name=\"$field_name\">\n";}
-	if ($format=='selectlist') 
+	if ($format=='selectlist')
 		{
 		echo "<SELECT SIZE=$selectsize name=\"$field_name\" STYLE=\"font-family : sans-serif; font-size : $selectfontsize$pt\">\n";
 		}
-	if ($format=='textarea') 
+	if ($format=='textarea')
 		{
 		echo "<TEXTAREA ROWS=$textareaheight COLS=$textareawidth NAME=extension WRAP=off STYLE=\"font-family : sans-serif; font-size : $selectfontsize$pt\">";
 		}
@@ -369,7 +370,7 @@ if ($ADD==3)
 	$rslt=mysql_to_mysqli($stmt, $link);
 	if ($rslt) {$busys_to_print = mysqli_num_rows($rslt);}
 	$o=0;
-	while ($busys_to_print > $o) 
+	while ($busys_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if ($format=='table')
@@ -412,11 +413,11 @@ if ($ADD==4)
 	if (!$field_name) {$field_name = 'local';}
 	if ($format=='table') {echo "<TABLE WIDTH=120 BGCOLOR=$bgcolor cellpadding=0 cellspacing=0>\n";}
 	if ($format=='menu') {echo "<SELECT SIZE=1 name=\"$field_name\">\n";}
-	if ($format=='selectlist') 
+	if ($format=='selectlist')
 		{
 		echo "<SELECT SIZE=$selectsize name=\"$field_name\" STYLE=\"font-family : sans-serif; font-size : $selectfontsize$pt\">\n";
 		}
-	if ($format=='textarea') 
+	if ($format=='textarea')
 		{
 		echo "<TEXTAREA ROWS=$textareaheight COLS=$textareawidth NAME=extension WRAP=off STYLE=\"font-family : sans-serif; font-size : $selectfontsize$pt\">";
 		}
@@ -426,7 +427,7 @@ if ($ADD==4)
 	$rslt=mysql_to_mysqli($stmt, $link);
 	if ($rslt) {$busys_to_print = mysqli_num_rows($rslt);}
 	$o=0;
-	while ($busys_to_print > $o) 
+	while ($busys_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if ($format=='table')
@@ -470,11 +471,11 @@ if ($ADD==5)
 	if (!$field_name) {$field_name = 'conferences';}
 	if ($format=='table') {echo "<TABLE WIDTH=120 BGCOLOR=$bgcolor cellpadding=0 cellspacing=0>\n";}
 	if ($format=='menu') {echo "<SELECT SIZE=1 name=\"$field_name\">\n";}
-	if ($format=='selectlist') 
+	if ($format=='selectlist')
 		{
 		echo "<SELECT SIZE=$selectsize name=\"$field_name\" STYLE=\"font-family : sans-serif; font-size : $selectfontsize$pt\">\n";
 		}
-	if ($format=='textarea') 
+	if ($format=='textarea')
 		{
 		echo "<TEXTAREA ROWS=$textareaheight COLS=$textareawidth NAME=extension WRAP=off STYLE=\"font-family : sans-serif; font-size : $selectfontsize$pt\">";
 		}
@@ -484,7 +485,7 @@ if ($ADD==5)
 	$rslt=mysql_to_mysqli($stmt, $link);
 	if ($rslt) {$phones_to_print = mysqli_num_rows($rslt);}
 	$o=0;
-	while ($phones_to_print > $o) 
+	while ($phones_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if ($format=='table')
@@ -525,7 +526,7 @@ if ($format=='table') {echo "\n<!-- script runtime: $RUNtime seconds -->";}
 if ($format=='table') {echo "\n</body>\n</html>\n";}
 
 if ($SSagent_debug_logging > 0) {vicidial_ajax_log($NOW_TIME,$startMS,$link,$ACTION,$php_script,$user,$stage,$lead_id,$session_name,$stmt);}
-exit; 
+exit;
 
 ?>
 

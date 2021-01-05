@@ -1,16 +1,16 @@
 #!/usr/bin/perl
 #
 # park_CID.agi version 2.14
-# 
+#
 # runs before the park extension to populate the parked_channels entry with the channel's callerid
-# 
+#
 # You need to put lines similar to those below in your extensions.conf file:
-# 
+#
 # ;outbound dialing:
 # exten => 8301,1,Answer
 # exten => 8301,2,AGI(park_CID.agi)
 # exten => 8301,3,Playback(park)
-# exten => 8301,4,Hangup 
+# exten => 8301,4,Hangup
 #
 # Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
@@ -77,13 +77,13 @@ foreach(@conf)
 
 
 if (!$VARDB_port) {$VARDB_port='3306';}
-if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout";}
+if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout.log";}
 
 use DBI;
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
     or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
@@ -157,7 +157,7 @@ if (length($ARGV[0])>1)
 
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 	{
 	chomp;
 	last unless length($_);
@@ -198,7 +198,7 @@ while(<STDIN>)
 
 if ($AGILOG) {$agi_string = "AGI Environment Dump:";   &agi_output;}
 
-foreach $i (sort keys %AGI) 
+foreach $i (sort keys %AGI)
 	{
 	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
 	}
@@ -370,27 +370,27 @@ sub agi_output
 	}
 
 
-sub checkresult 
+sub checkresult
 	{
 	my ($res) = @_;
 	my $retval;
 	$tests++;
 	chomp $res;
-	if ($res =~ /^200/) 
+	if ($res =~ /^200/)
 		{
 		$res =~ /result=(-?\d+)/;
-		if (!length($1)) 
+		if (!length($1))
 			{
 		#	print STDERR "FAIL ($res)\n";
 			$fail++;
 			}
-		else 
+		else
 			{
 		#	print STDERR "PASS ($1)\n";
 			$pass++;
 			}
 		}
-	else 
+	else
 		{
 		#	print STDERR "FAIL (unexpected result '$res')\n";
 			$fail++;

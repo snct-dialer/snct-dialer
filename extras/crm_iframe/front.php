@@ -1,10 +1,10 @@
 <?php
 # front.php - first page for CRM example
-# 
+#
 # Copyright (C) 2015  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG
-# 151229-1503 - First Build 
+# 151229-1503 - First Build
 #
 
 require_once("crm_settings.php");
@@ -24,7 +24,7 @@ if (isset($_GET["VD_campaign"]))                {$VD_campaign=$_GET["VD_campaign
 if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
         elseif (isset($_POST["relogin"]))       {$relogin=$_POST["relogin"];}
 
-if (!isset($phone_login)) 
+if (!isset($phone_login))
 	{
 	if (isset($_GET["pl"]))                {$phone_login=$_GET["pl"];}
 			elseif (isset($_POST["pl"]))   {$phone_login=$_POST["pl"];}
@@ -63,7 +63,7 @@ if ( (strlen($phone_login) > 1) and (strlen($phone_pass) > 1) and (strlen($VD_lo
 	var MTvar;
 
 	// functions to hide and show different DIVs
-	function showDiv(divvar) 
+	function showDiv(divvar)
 		{
 		if (document.getElementById(divvar))
 			{
@@ -111,7 +111,7 @@ if ( (strlen($phone_login) > 1) and (strlen($phone_pass) > 1) and (strlen($VD_lo
 	echo "<span style=\"position:absolute;left:0px;top:25px;height:" . $crm_screen_height . "px;overflow:scroll;z-index:11;background-color:white;\" id=\"CRMSpan\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td width=\"5px\" rowspan=\"2\">&nbsp;</td><td align=\"center\"><font class=\"body_text\">
 	CRM Screen: &nbsp; </font></td></tr><tr><td align=\"center\"><span id=\"crmscreencontent\">$crm_screen_content</span></td></tr></table></span>\n";
 
-	
+
 	$agentURL = "$agent_screen_url?phone_login=$phone_login&phone_pass=$phone_pass&DB=$DB&VD_login=$VD_login&VD_pass=$VD_pass&VD_campaign=$VD_campaign&relogin=$relogin";
 
 	$agent_screen_content = "<iframe src=\"$agentURL\" style=\"width:" . $agent_screen_width . "px;height:" . $agent_screen_height . "px;background-color:transparent;z-index:22;\" scrolling=\"auto\" frameborder=\"0\" allowtransparency=\"true\" id=\"agent_screen\" name=\"agent_screen\" width=\"" . $agent_screen_width . "px\" height=\"" . $agent_screen_height . "px\"> </iframe>";

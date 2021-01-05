@@ -1,0 +1,78 @@
+/var/log/astguiclient/screenlog.0 {
+    daily
+    missingok
+    compress
+    notifempty
+    rotate 60
+    sharedscripts
+    su root root
+}
+
+/var/log/astguiclient/action_full.log
+/var/log/astguiclient/action_launch.log
+/var/log/astguiclient/action_process.log
+/var/log/astguiclient/action_send.log
+/var/log/astguiclient/audiostore.log
+/var/log/astguiclient/adapt.log
+/var/log/astguiclient/agent_monitor.log
+/var/log/astguiclient/agiout.log
+/var/log/astguiclient/AMD.log
+/var/log/astguiclient/Cepstral.log
+/var/log/astguiclient/clean.log
+/var/log/astguiclient/cmout.log
+/var/log/astguiclient/congest.log
+/var/log/astguiclient/didin.log
+/var/log/astguiclient/dtmf.log
+/var/log/astguiclient/FASTagiout.log
+/var/log/astguiclient/fpgout.log
+/var/log/astguiclient/GenWallBoard.log
+/var/log/astguiclient/hopper.log
+/var/log/astguiclient/hopper-detail.log
+/var/log/astguiclient/ivrout.log
+/var/log/astguiclient/listen.log
+/var/log/astguiclient/listen_process.log
+/var/log/astguiclient/MySQLerror.log
+/var/log/astguiclient/nvaout.log
+/var/log/astguiclient/phone_monitor.log
+/var/log/astguiclient/phonealt.log
+/var/log/astguiclient/prsout.log
+/var/log/astguiclient/prstest.log
+/var/log/astguiclient/rebeep.log
+/var/log/astguiclient/remoteagent.log
+/var/log/astguiclient/timeclockautologout.log
+/var/log/astguiclient/update.log
+/var/log/astguiclient/VDAD_DUPLICATE.log
+/var/log/astguiclient/vdad_JAM.log
+/var/log/astguiclient/VDadaptive-*.log
+/var/log/astguiclient/vdautodial.log
+/var/log/astguiclient/vdautodial_FILL.log
+/var/log/astguiclient/vicidial_lock.log {
+    daily
+    missingok
+    compress
+    notifempty
+    rotate 10
+    sharedscripts
+    su root root
+}
+
+/var/log/flyCRM/*.log {
+    su www-data www-data
+    daily
+    missingok
+    compress
+    notifempty
+    rotate 60
+    sharedscripts
+}
+
+/var/log/sale.log {
+    create 666 www-data www-data
+    su www-data www-data
+    daily
+    missingok
+    compress
+    notifempty
+    rotate 60
+    sharedscripts
+}

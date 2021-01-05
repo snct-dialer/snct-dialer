@@ -1,6 +1,6 @@
-<?php 
+<?php
 # AST_inboundEXTstats.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -161,7 +161,7 @@ while ($i < $inbound_to_print)
 -->
  </STYLE>
 
-<?php 
+<?php
 echo"<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 #echo"<META HTTP-EQUIV=Refresh CONTENT=\"7; URL=$PHP_SELF?server_ip=$server_ip&DB=$DB\">\n";
 echo "<TITLE>"._QXZ("ASTERISK: Inbound Calls Stats")."</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
@@ -362,9 +362,9 @@ if ($output == 'FULL')
 	$k=1;
 	$Mk=0;
 	$call_scale = '0';
-	while ($k <= 102) 
+	while ($k <= 102)
 		{
-		if ($Mk >= 5) 
+		if ($Mk >= 5)
 			{
 			$Mk=0;
 			$scale_num=MathZDC($k, $hour_multiplier);
@@ -396,7 +396,7 @@ if ($output == 'FULL')
 		{
 		$char_counter=0;
 		$time = '      ';
-		if ($h >= 4) 
+		if ($h >= 4)
 			{
 			$hour++;
 			$h=0;
@@ -407,7 +407,7 @@ if ($output == 'FULL')
 		if ($h == 2) {$time = "   30 ";}
 		if ($h == 3) {$time = "   45 ";}
 		$Ghour_count = $hour_count[$i];
-		if ($Ghour_count < 1) 
+		if ($Ghour_count < 1)
 			{
 			if ( ($no_lines_yet) or ($i > $last_full_record) )
 				{
@@ -428,7 +428,7 @@ if ($output == 'FULL')
 			$Yhour_count = (99 - $Xhour_count);
 
 			$Gdrop_count = $drop_count[$i];
-			if ($Gdrop_count < 1) 
+			if ($Gdrop_count < 1)
 				{
 				$hour_count[$i] =	sprintf("%-5s", $hour_count[$i]);
 
@@ -461,8 +461,8 @@ if ($output == 'FULL')
 				echo "| $drop_count[$i] | $hour_count[$i] |\n";
 				}
 			}
-		
-		
+
+
 		$i++;
 		$h++;
 		}

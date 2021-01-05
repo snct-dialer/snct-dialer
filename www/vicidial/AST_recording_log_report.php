@@ -1,9 +1,9 @@
-<?php 
+<?php
 # AST_recording_log_report.php
 #
 # This report is for viewing the a report of which users accessed which recordings
 #
-# Copyright (C) 2018  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2019  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -11,6 +11,7 @@
 # 170409-1538 - Added IP List validation code
 # 170824-2130 - Added HTML formatting and screen colors
 # 180507-2315 - Added new help display
+# 191013-0830 - Fixes for PHP7
 #
 
 $startMS = microtime();
@@ -55,7 +56,8 @@ if (isset($_GET["DB"]))					{$DB=$_GET["DB"];}
 
 $report_name="Recording Access Log Report";
 $NOW_DATE = date("Y-m-d");
-if (!isset($users)) {$uesrs=array();}
+if (!isset($users)) {$users=array();}
+if (!isset($user_group)) {$user_group=array();}
 if (!isset($access_date_D)) {$access_date_D=$NOW_DATE;}
 if (!isset($access_date_end_D)) {$access_date_end_D=$NOW_DATE;}
 if (!isset($access_date_T)) {$access_date_T="00:00:00";}
@@ -67,12 +69,12 @@ $CSV_text.="\""._QXZ("ACCESS DATE RANGE").":\",\"$access_date_from "._QXZ("to").
 $ASCII_rpt_header=""._QXZ("ACCESS DATE RANGE").": $access_date_from "._QXZ("to")." $access_date_to\n";
 
 $recording_date_SQL="";
-if ($recording_date_D) 
+if ($recording_date_D)
 	{
 	if (!isset($recording_date_end_D)) {$recording_date_end_D=$recording_date_D;}
 	$recording_date_from="$recording_date_D 00:00:00";
 	$recording_date_to="$recording_date_end_D 23:59:59";
-	$recording_date_title="<LI>"._QXZ("RECORDINGS CREATED")." $recording_date_D "._QXZ("to")." $recording_date_end_D"; 
+	$recording_date_title="<LI>"._QXZ("RECORDINGS CREATED")." $recording_date_D "._QXZ("to")." $recording_date_end_D";
 	$recording_date_SQL=" start_time>='$recording_date_from' and start_time<='$recording_date_to' and ";
 	$CSV_text.="\""._QXZ("RECORDING DATE RANGE").":\",\"$recording_date_from "._QXZ("to")." $recording_date_to\"\n";
 	$ASCII_rpt_header.=_QXZ("RECORDING DATE RANGE").": $recording_date_from "._QXZ("to")." $recording_date_to\n";
@@ -107,14 +109,14 @@ if ($qm_conf_ct > 0)
 ### ARCHIVED DATA CHECK CONFIGURATION
 $archives_available="N";
 $log_tables_array=array("recording_log", "vicidial_recording_access_log");
-for ($t=0; $t<count($log_tables_array); $t++) 
+for ($t=0; $t<count($log_tables_array); $t++)
 	{
 	$table_name=$log_tables_array[$t];
 	$archive_table_name=use_archive_table($table_name);
 	if ($archive_table_name!=$table_name) {$archives_available="Y";}
 	}
 
-if ($search_archived_data) 
+if ($search_archived_data)
 	{
 	$vicidial_recording_access_log_table=use_archive_table("vicidial_recording_access_log");
 	$recording_log_table=use_archive_table("recording_log");
@@ -572,10 +574,10 @@ $HTML_text.="</script>\n";
 $HTML_text.="</TD><TD VALIGN='TOP'>";
 $HTML_text.=_QXZ("Display as:")."<BR>";
 $HTML_text.="<select name='report_display_type'>";
-if ($report_display_type) {$HTML_text.="<option value='$report_display_type' selected>$report_display_type</option>";}
-$HTML_text.="<option value='TEXT'>TEXT</option><option value='HTML'>HTML</option></select>\n<BR><BR>";
+if ($report_display_type) {$HTML_text.="<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
+$HTML_text.="<option value='TEXT'>"._QXZ("TEXT")."</option><option value='HTML'>"._QXZ("HTML")."</option></select>\n<BR><BR>";
 $HTML_text.="<INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'>\n";
-if ($archives_available=="Y") 
+if ($archives_available=="Y")
 	{
 	$HTML_text.="<BR><BR><input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."\n";
 	}
@@ -585,7 +587,7 @@ $HTML_text.="</FORM>\n\n";
 
 $TEXT.="<PRE><FONT SIZE=2>\n";
 
-if ($SUBMIT) 
+if ($SUBMIT)
 	{
 	$stmt="select vra.recording_access_log_id,vra.recording_id,vra.lead_id,vra.user,vra.access_datetime,vra.access_result,vra.ip, vu.full_name, vu.user_group, r.start_time from ".$vicidial_recording_access_log_table." vra, vicidial_users vu, ".$recording_log_table." r where access_datetime>='$access_date_from' and access_datetime<='$access_date_to' and $user_SQL $user_group_SQL $recording_date_SQL vra.recording_id=r.recording_id and vra.user=vu.user order by access_datetime asc";
 	if ($DB) {print $stmt."\n";}
@@ -611,13 +613,13 @@ if ($SUBMIT)
 	$HTML.="</tr>\n";
 
 	$TEXT.=$ASCII_border;
-	$TEXT.="| RECORDING ID | RECORDING DATE/TIME | LEAD ID    | USER                           | DATE/TIME ACCESSED  | ACCESS RESULT       | IP              |\n";
+	$TEXT.="| "._QXZ("RECORDING ID", 12)." | "._QXZ("RECORDING DATE/TIME", 19)." | "._QXZ("LEAD ID", 10)." | "._QXZ("USER", 30)." | "._QXZ("DATE/TIME ACCESSED", 19)." | "._QXZ("ACCESS RESULT", 19)." | "._QXZ("IP", 15)." |\n";
 	$TEXT.=$ASCII_border;
 
-	$CSV_text.="\n\"RECORDING ID\",\"RECORDING DATE/TIME\",\"LEAD ID\",\"USER\",\"DATE/TIME ACCESSED\",\"ACCESS RESULT\",\"IP\"\n";
+	$CSV_text.="\n\""._QXZ("RECORDING ID")."\",\""._QXZ("RECORDING DATE/TIME")."\",\""._QXZ("LEAD ID")."\",\""._QXZ("USER")."\",\""._QXZ("DATE/TIME ACCESSED")."\",\""._QXZ("ACCESS RESULT")."\",\""._QXZ("IP")."\"\n";
 
 	$rslt=mysql_to_mysqli($stmt, $link);
-	while ($row=mysqli_fetch_array($rslt)) 
+	while ($row=mysqli_fetch_array($rslt))
 		{
 		$full_user=substr($row["user"]." - ".$row["full_name"], 0, 30);
 		$TEXT.="| ";
@@ -626,7 +628,7 @@ if ($SUBMIT)
 		$TEXT.=sprintf("%-10s", $row["lead_id"])." | ";
 		$TEXT.=sprintf("%-30s", $full_user)." | ";
 		$TEXT.=sprintf("%-19s", $row["access_datetime"])." | ";
-		$TEXT.=sprintf("%-19s", $row["access_result"])." | ";
+		$TEXT.=sprintf("%-19s", _QXZ($row["access_result"], 19))." | ";
 		$TEXT.=sprintf("%-15s", $row["ip"])." |\n";
 
 		$HTML.="<tr bgcolor='#".$SSstd_row2_background."'>";
@@ -635,7 +637,7 @@ if ($SUBMIT)
 		$HTML.="<th><font size='2'>".$row["lead_id"]."</font></th>";
 		$HTML.="<th><font size='2'>".$row["user"]." - ".$row["full_name"]."</font></th>";
 		$HTML.="<th><font size='2'>".$row["access_datetime"]."</font></th>";
-		$HTML.="<th><font size='2'>".$row["access_result"]."</font></th>";
+		$HTML.="<th><font size='2'>"._QXZ($row["access_result"])."</font></th>";
 		$HTML.="<th><font size='2'>".$row["ip"]."</font></th>";
 		$HTML.="</tr>\n";
 
@@ -657,7 +659,7 @@ if ($report_display_type=="HTML") {
 $HTML_text.="</BODY></HTML>";
 
 
-if ($file_download == 0 || !$file_download) 
+if ($file_download == 0 || !$file_download)
 	{
 	echo $HTML_head;
 	require("admin_header.php");

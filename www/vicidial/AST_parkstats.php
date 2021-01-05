@@ -1,7 +1,7 @@
-<?php 
+<?php
 # AST_parkstats.php
-# 
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -19,6 +19,7 @@
 # 170808-0220 - Added detailed log option
 # 170823-2154 - Added HTML formatting and screen colors
 # 180311-0327 - Added unique lead ID count
+# 191013-0858 - Fixes for PHP7
 #
 
 $startMS = microtime();
@@ -258,6 +259,7 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $groups_to_print = mysqli_num_rows($rslt);
 $i=0;
+$groups=array();
 while ($i < $groups_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -356,10 +358,10 @@ $MAIN.="<SELECT SIZE=1 NAME=group>\n";
 $MAIN.="</SELECT></TD><TD VALIGN=middle align=center>\n";
 $MAIN.=_QXZ("Display as:")."&nbsp;";
 $MAIN.="<select name='report_display_type'>";
-if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>$report_display_type</option>";}
-$MAIN.="<option value='TEXT'>TEXT</option><option value='HTML'>HTML</option></select>";
+if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
+$MAIN.="<option value='TEXT'>"._QXZ("TEXT")."</option><option value='HTML'>"._QXZ("HTML")."</option></select>";
 $MAIN.="</TD><TD VALIGN=middle align=center>\n";
-$MAIN.="<INPUT TYPE=checkbox NAME=show_details VALUE='checked' $show_details>Show details\n";
+$MAIN.="<INPUT TYPE=checkbox NAME=show_details VALUE='checked' $show_details>"._QXZ("Show details")."\n";
 $MAIN.="</TD><TD VALIGN=middle align=center>\n";
 $MAIN.="<INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'>\n";
 $MAIN.="<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=34&campaign_id=$group\">"._QXZ("MODIFY")."</a> | <a href=\"./admin.php?ADD=999999\">"._QXZ("REPORTS")."</a> </FONT>\n";
@@ -468,6 +470,12 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {$MAIN.="$stmt\n";}
 $users_to_print = mysqli_num_rows($rslt);
 $i=0;
+$user=array();
+$full_name=array();
+$USERcalls=array();
+$USERleads=array();
+$USERtotTALK_MS=array();
+$USERavgTALK_MS=array();
 while ($i < $users_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -502,6 +510,9 @@ while ($i < $users_to_print)
 	}
 
 $i=0;
+$USERdrops=array();
+$USERtotDROP_MS=array();
+$USERavgDROP_MS=array();
 while ($i < $users_to_print)
 	{
 	$stmt="select count(*),sum(parked_sec),avg(parked_sec) from park_log where parked_time >= '$query_date 00:00:00' and parked_time <= '$query_date 23:59:59' and status IN('HUNGUP') and channel_group='" . mysqli_real_escape_string($link, $group) . "' and parked_sec is not null and park_log.user='$user[$i]' group by park_log.user;";
@@ -584,6 +595,8 @@ $hi_hour_count=0;
 $last_full_record=0;
 $i=0;
 $h=0;
+$hour_count=array();
+$drop_count=array();
 while ($i <= 96)
 	{
 	$stmt="select count(*) from park_log where parked_time >= '$query_date $h:00:00' and parked_time <= '$query_date $h:14:59' and status IN('HUNGUP','GRABBED','GRABBEDIVR','IVRPARKED','PARKED') and channel_group='" . mysqli_real_escape_string($link, $group) . "';";
@@ -654,9 +667,9 @@ $MAIN2.=_QXZ("GRAPH IN 15 MINUTE INCREMENTS OF TOTAL INCOMING CALLS FOR THIS GRO
 $k=1;
 $Mk=0;
 $call_scale = '0';
-while ($k <= 102) 
+while ($k <= 102)
 	{
-	if ($Mk >= 5) 
+	if ($Mk >= 5)
 		{
 		$Mk=0;
 		$scale_num=MathZDC($k, $hour_multiplier);
@@ -687,7 +700,7 @@ while ($i <= 96)
 	{
 	$char_counter=0;
 	$time = '      ';
-	if ($h >= 4) 
+	if ($h >= 4)
 		{
 		$hour++;
 		$h=0;
@@ -698,7 +711,7 @@ while ($i <= 96)
 	if ($h == 2) {$time = "   30 ";}
 	if ($h == 3) {$time = "   45 ";}
 	$Ghour_count = $hour_count[$i];
-	if ($Ghour_count < 1) 
+	if ($Ghour_count < 1)
 		{
 		if ( ($no_lines_yet) or ($i > $last_full_record) )
 			{
@@ -719,7 +732,7 @@ while ($i <= 96)
 		$Yhour_count = (99 - $Xhour_count);
 
 		$Gdrop_count = $drop_count[$i];
-		if ($Gdrop_count < 1) 
+		if ($Gdrop_count < 1)
 			{
 			$hour_count[$i] =	sprintf("%-5s", $hour_count[$i]);
 
@@ -763,12 +776,12 @@ $TEXT.=$MAIN2."\n";
 $HTML.=$MAIN2."</font></pre></td></tr></table>";
 
 if ($show_details) {
-	$stmt="select * from park_log where parked_time >= '$query_date 00:00:00' and parked_time <= '$query_date 23:59:59' and channel_group='" . mysqli_real_escape_string($link, $group) . "'  order by parked_time, grab_time, hangup_time desc"; 
+	$stmt="select * from park_log where parked_time >= '$query_date 00:00:00' and parked_time <= '$query_date 23:59:59' and channel_group='" . mysqli_real_escape_string($link, $group) . "'  order by parked_time, grab_time, hangup_time desc";
 	$rslt=mysql_to_mysqli($stmt, $link);
 
 	if (!$lower_limit) {$lower_limit=1;}
 	if ($lower_limit+999>=mysqli_num_rows($rslt)) {$upper_limit=($lower_limit+mysqli_num_rows($rslt)%1000)-1;} else {$upper_limit=$lower_limit+999;}
-	
+
 	$TEXT.="\n\n--- "._QXZ("PARK LOG RECORDS FOR")." $query_date, "._QXZ("CHANNEL GROUP")." $group\n --- "._QXZ("RECORDS")." #$lower_limit-$upper_limit               ";
 	# $MAIN.="<a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&group=$group&show_detail=$show_detail&sort_by_detail=$sort_by_detail&query_date=$query_date&lower_limit=$lower_limit&upper_limit=$upper_limit&file_download=1\">["._QXZ("DOWNLOAD")."]</a>";
 	$TEXT.="\n";
@@ -779,7 +792,7 @@ if ($show_details) {
 	$HTML.="</tr>\n";
 
 	if (mysqli_num_rows($rslt)>0) {
-		
+
 		$header= "+---------------------+---------------------+---------------------+------------+--------------------------------+-----------------+------------+------------+----------------------+------------+------------+\n";
 		$output.=$header;
 		$output.="| "._QXZ("PARKED TIME",19)." | "._QXZ("GRAB TIME",19)." | "._QXZ("HANGUP TIME",19)." | "._QXZ("STATUS",10)." | "._QXZ("CHANNEL",30)." | "._QXZ("SERVER IP",15)." | "._QXZ("PARKED SEC",10)." | "._QXZ("TALKED SEC",10)." | "._QXZ("EXTENSION",20)." | "._QXZ("USER",10)." | "._QXZ("LEAD ID",10)." |\n";
@@ -799,7 +812,7 @@ if ($show_details) {
 		$HTML.="<th><font size='2'>"._QXZ("USER")."</font></th>";
 		$HTML.="<th><font size='2'>"._QXZ("LEAD ID")."</font></th>";
 		$HTML.="</tr>\n";
-		
+
 		while($row=mysqli_fetch_array($rslt)) {
 			$i++;
 			$output.="| ";
@@ -828,7 +841,7 @@ if ($show_details) {
 			$HTML.="<th><font size='2'>".$row["user"]."</font></th>";
 			$HTML.="<th><font size='2'>".$row["lead_id"]."</font></th>";
 			$HTML.="</tr>\n";
-		
+
 		}
 		$output.=$header;
 

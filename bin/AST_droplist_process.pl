@@ -85,12 +85,12 @@ if (length($ARGV[0])>1)
 			$T=1;   $TEST=1;
 			if ($DB > 0) {print "\n----- TESTING -----\n\n";}
 			}
-		if ($args =~ /--log-to-adminlog/) 
+		if ($args =~ /--log-to-adminlog/)
 			{
 			$log_to_adminlog=1;
 			if ($DB > 0) {print "\n----- LOGGING TO THE ADMIN LOG -----\n\n";}
 			}
-		if ($args =~ /--dl-id=/i) 
+		if ($args =~ /--dl-id=/i)
 			{
 			@data_in = split(/--dl-id=/,$args);
 			$dl_id = $data_in[1];
@@ -165,15 +165,15 @@ if (!$Q)
 	print "\n";
 	}
 
-if (length($dl_id) < 1) 
+if (length($dl_id) < 1)
 	{
 	print "ERROR, no drop list ID defined\n";
 	exit;
 	}
 
-use DBI;	  
+use DBI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 #############################################
@@ -191,7 +191,7 @@ $sthA->finish();
 ##### END SETTINGS LOOKUP #####
 ###########################################
 
-if ($enable_drop_lists < 1) 
+if ($enable_drop_lists < 1)
 	{
 	print "ERROR: enable_drop_lists is disabled in system settings, exiting...\n";
 	exit;
@@ -209,7 +209,7 @@ $sthA->finish();
 	$LOCAL_GMT_OFF = $SERVER_GMT;
 	$LOCAL_GMT_OFF_STD = $SERVER_GMT;
 
-if ($isdst) {$LOCAL_GMT_OFF++;} 
+if ($isdst) {$LOCAL_GMT_OFF++;}
 if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOCAL GMT OFFSET NOW: $LOCAL_GMT_OFF\n";}
 
 
@@ -238,7 +238,7 @@ if ($sthArows > 0)
 	$closer_campaignsSQL = "and campaign_id IN('$closer_campaignsSQL')";
 
 	$drop_dateSQL='';
-	if ($dl_minutes > 0) 
+	if ($dl_minutes > 0)
 		{
 		$dl_sec = ($dl_minutes * 60);
 		$BDtarget = ($secX - $dl_sec);
@@ -287,9 +287,9 @@ $sthA->finish();
 
 ### If duplicate check enabled, find campaign lists
 $duplicate_checkSQL='';
-if ($duplicate_check =~ /LIST/) 
+if ($duplicate_check =~ /LIST/)
 	{
-	if ($duplicate_check =~ /LIST_CAMPAIGN_LISTS/) 
+	if ($duplicate_check =~ /LIST_CAMPAIGN_LISTS/)
 		{
 		$list_campaign_id='';
 		$stmtA = "SELECT campaign_id from vicidial_lists where list_id='$list_id';";
@@ -368,7 +368,7 @@ while ($sthDROProws > $q)
 	$sthA = $dbhA->prepare($stmtB) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthBrows=$sthA->rows;
-	if ($sthBrows > 0) 
+	if ($sthBrows > 0)
 		{
 		@aryA = $sthA->fetchrow_array;
 		$ingroup_name = $aryA[0];
@@ -383,7 +383,7 @@ while ($sthDROProws > $q)
 		$sthA = $dbhA->prepare($stmtB) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 		$sthBrows=$sthA->rows;
-		if ($sthBrows > 0) 
+		if ($sthBrows > 0)
 			{
 			@aryA = $sthA->fetchrow_array;
 			$duplicate = $aryA[0];
@@ -487,7 +487,7 @@ while ($sthDROProws > $q)
 		if ($min < 10) {$min = "0$min";}
 		if ($sec < 10) {$sec = "0$sec";}
 		$dsec = ( ( ($hour * 3600) + ($min * 60) ) + $sec );
-		
+
 		$AC_processed=0;
 
 		if ( (!$AC_processed) && ($dst_range =~ /SSM-FSN/) )
@@ -575,7 +575,7 @@ while ($sthDROProws > $q)
 		$sthA = $dbhA->prepare($stmtB) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 		$sthBrows=$sthA->rows;
-		if ($sthBrows > 0) 
+		if ($sthBrows > 0)
 			{
 			@aryA = $sthA->fetchrow_array;
 			$vendor_lead_code =		$aryA[0];
@@ -603,11 +603,11 @@ while ($sthDROProws > $q)
 			}
 		$sthA->finish();
 
-		if (length($comments)>0) 
+		if (length($comments)>0)
 			{$comments .= " $Acampaign_id[$q] - $ingroup_name - $Adrop_date[$q]";}
-		else 
+		else
 			{$comments = "$Acampaign_id[$q] - $ingroup_name - $Adrop_date[$q]";}
-		if (length($source_id)<1) 
+		if (length($source_id)<1)
 			{$source_id = "$Alead_id[$q]";}
 		### END gather existing field data for lead ###
 
@@ -655,7 +655,7 @@ exit;
 sub USACAN_dstcalc {
 #**********************************************************************
 # SSM-FSN
-#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 #       Standard time is in effect.
 #     Based on Second Sunday March to First Sunday November at 2 am.
 #     INPUTS:
@@ -666,10 +666,10 @@ sub USACAN_dstcalc {
 #     OPTIONAL INPUT:
 #       timezone        INTEGER       hour difference UTC - local standard time
 #                                      (DEFAULT is blank)
-#                                     make calculations based on UTC time, 
+#                                     make calculations based on UTC time,
 #                                     which means shift at 10:00 UTC in April
 #                                     and 9:00 UTC in October
-#     OUTPUT: 
+#     OUTPUT:
 #                       INTEGER       1 = DST, 0 = not DST
 #
 # S  M  T  W  T  F  S
@@ -678,14 +678,14 @@ sub USACAN_dstcalc {
 #15 16 17 18 19 20 21
 #22 23 24 25 26 27 28
 #29 30 31
-# 
+#
 # S  M  T  W  T  F  S
 #    1  2  3  4  5  6
 # 7  8  9 10 11 12 13
 #14 15 16 17 18 19 20
 #21 22 23 24 25 26 27
 #28 29 30 31
-# 
+#
 #**********************************************************************
 
 	$USACAN_DST=0;
@@ -749,11 +749,11 @@ sub USACAN_dstcalc {
 sub NA_dstcalc {
 #**********************************************************************
 # FSA-LSO
-#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 #       Standard time is in effect.
 #     Based on first Sunday in April and last Sunday in October at 2 am.
 #**********************************************************************
-    
+
 	$NA_DST=0;
 	$mm = $mon;
 	$dd = $mday;
@@ -815,11 +815,11 @@ sub NA_dstcalc {
 sub GBR_dstcalc {
 #**********************************************************************
 # LSM-LSO
-#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 #       Standard time is in effect.
 #     Based on last Sunday in March and last Sunday in October at 1 am.
 #**********************************************************************
-    
+
 	$GBR_DST=0;
 	$mm = $mon;
 	$dd = $mday;
@@ -883,11 +883,11 @@ sub GBR_dstcalc {
 sub AUS_dstcalc {
 #**********************************************************************
 # LSO-LSM
-#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 #       Standard time is in effect.
 #     Based on last Sunday in October and last Sunday in March at 1 am.
 #**********************************************************************
-    
+
 	$AUS_DST=0;
 	$mm = $mon;
 	$dd = $mday;
@@ -953,11 +953,11 @@ sub AUST_dstcalc {
 #**********************************************************************
 # FSO-LSM
 #   TASMANIA ONLY
-#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 #       Standard time is in effect.
 #     Based on first Sunday in October and last Sunday in March at 1 am.
 #**********************************************************************
-    
+
 	$AUST_DST=0;
 	$mm = $mon;
 	$dd = $mday;
@@ -1021,11 +1021,11 @@ sub AUSE_dstcalc {
 #**********************************************************************
 # FSO-FSA
 #   2008+ AUSTRALIA ONLY (country code 61)
-#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 #       Standard time is in effect.
 #     Based on first Sunday in October and first Sunday in April at 1 am.
 #**********************************************************************
-    
+
 	$AUSE_DST=0;
 	$mm = $mon;
 	$dd = $mday;
@@ -1086,11 +1086,11 @@ sub AUSE_dstcalc {
 sub NZL_dstcalc {
 #**********************************************************************
 # FSO-TSM
-#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 #       Standard time is in effect.
 #     Based on first Sunday in October and third Sunday in March at 1 am.
 #**********************************************************************
-    
+
 	$NZL_DST=0;
 	$mm = $mon;
 	$dd = $mday;
@@ -1153,11 +1153,11 @@ sub NZLN_dstcalc {
 #**********************************************************************
 # LSS-FSA
 #   2007+ NEW ZEALAND (country code 64)
-#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 #       Standard time is in effect.
 #     Based on last Sunday in September and first Sunday in April at 1 am.
 #**********************************************************************
-    
+
 	$NZLN_DST=0;
 	$mm = $mon;
 	$dd = $mday;
@@ -1220,11 +1220,11 @@ sub NZLN_dstcalc {
 sub BZL_dstcalc {
 #**********************************************************************
 # TSO-LSF
-#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if
 #       Standard time is in effect. Brazil
 #     Based on Third Sunday October to Last Sunday February at 1 am.
 #**********************************************************************
-    
+
 	$BZL_DST=0;
 	$mm = $mon;
 	$dd = $mday;

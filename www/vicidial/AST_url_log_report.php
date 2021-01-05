@@ -1,6 +1,6 @@
-<?php 
+<?php
 # AST_url_log_report.php
-# 
+#
 # Copyright (C) 2017  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -311,7 +311,7 @@ $MAIN.="<BR><BR><INPUT TYPE=TEXT NAME=query_date_D SIZE=9 MAXLENGTH=8 VALUE=\"$q
 
 $MAIN.="<BR> "._QXZ("to")." <BR><INPUT TYPE=TEXT NAME=query_date_T SIZE=9 MAXLENGTH=8 VALUE=\"$query_date_T\">";
 
-$MAIN.="</TD><TD ROWSPAN=2 VALIGN=TOP>URL type:<BR/>\n";
+$MAIN.="</TD><TD ROWSPAN=2 VALIGN=TOP>"._QXZ("URL type").":<BR/>\n";
 $MAIN.="<SELECT SIZE=5 NAME=url_type[] multiple>\n";
 if  (preg_match('/--ALL--/',$url_type_string))
 	{$MAIN.="<option value=\"--ALL--\" selected>-- "._QXZ("ALL URL TYPES")." --</option>\n";}
@@ -320,16 +320,16 @@ else
 $o=0;
 while ($url_types_to_print > $o)
 	{
-	if (preg_match("/\|$LISTurltypes[$o]\|/",$url_type_string)) 
-		{$MAIN.="<option selected value=\"$LISTurltypes[$o]\">".preg_replace("/_/", " ", $LISTurltypes[$o])."</option>\n";}
+	if (preg_match("/\|$LISTurltypes[$o]\|/",$url_type_string))
+		{$MAIN.="<option selected value=\"$LISTurltypes[$o]\">"._QXZ(preg_replace("/_/", " ", $LISTurltypes[$o]))."</option>\n";}
 	else
-		{$MAIN.="<option value=\"$LISTurltypes[$o]\">".preg_replace("/_/", " ", $LISTurltypes[$o])."</option>\n";}
+		{$MAIN.="<option value=\"$LISTurltypes[$o]\">"._QXZ(preg_replace("/_/", " ", $LISTurltypes[$o]))."</option>\n";}
 	$o++;
 	}
 $MAIN.="</SELECT></TD><TD ROWSPAN=2 VALIGN=middle align=center>\n";
-$MAIN.="Display as:<BR>";
+$MAIN.=_QXZ("Display as").":<BR>";
 $MAIN.="<select name='report_display_type'>";
-if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>$report_display_type</option>";}
+if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
 $MAIN.="<option value='TEXT'>"._QXZ("TEXT")."</option><option value='HTML'>"._QXZ("HTML")."</option></select>\n<BR><BR>";
 $MAIN.="<INPUT TYPE=submit NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'><BR/><BR/>\n";
 $MAIN.="</TD></TR></TABLE>\n";
@@ -368,8 +368,8 @@ if ($SUBMIT && $url_type_ct>0) {
 
 		if (!$lower_limit) {$lower_limit=1;}
 		if ($lower_limit+999>=mysqli_num_rows($rpt_rslt)) {$upper_limit=($lower_limit+mysqli_num_rows($rpt_rslt)%1000)-1;} else {$upper_limit=$lower_limit+999;}
-		
-		$ASCII_text.="--- "._QXZ("URL LOG RECORDS FOR")." $query_date, $query_date_D TO $query_date_T $server_rpt_string, "._QXZ("RECORDS")." #$lower_limit-$upper_limit               <a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&type=$type&query_date=$query_date&query_date_D=$query_date_D&query_date_T=$query_date_T$url_typeQS&lower_limit=$lower_limit&upper_limit=$upper_limit&file_download=1\">["._QXZ("DOWNLOAD")."]</a>\n";
+
+		$ASCII_text.="--- "._QXZ("URL LOG RECORDS FOR")." $query_date, $query_date_D "._QXZ("TO")." $query_date_T $server_rpt_string, "._QXZ("RECORDS")." #$lower_limit-$upper_limit               <a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&type=$type&query_date=$query_date&query_date_D=$query_date_D&query_date_T=$query_date_T$url_typeQS&lower_limit=$lower_limit&upper_limit=$upper_limit&file_download=1\">["._QXZ("DOWNLOAD")."]</a>\n";
 		$url_rpt.="+----------------------+---------------------+--------------+----------+----------------------------------------------------------------------------------+----------------------------------------------------------------------------------+\n";
 		$url_rpt.="| "._QXZ("UNIQUE ID",20)." | "._QXZ("URL DATE",19)." | "._QXZ("URL TYPE",12)." | "._QXZ("RESP SEC",8)." | "._QXZ("URL",80)." | "._QXZ("URL RESPONSE",80)." |\n";
 		$url_rpt.="+----------------------+---------------------+--------------+----------+----------------------------------------------------------------------------------+----------------------------------------------------------------------------------+\n";
@@ -415,29 +415,29 @@ if ($SUBMIT && $url_type_ct>0) {
 						$url_text=substr($row["url"], (80*($j-1)), 80);
 						$url_response_text=substr($row["url_response"], (80*($j-1)), 80);
 
-						$url_rpt.="| ".sprintf("%-21s", $row["uniqueid"]); 
-						$url_rpt.="| ".sprintf("%-20s", $row["url_date"]); 
-						$url_rpt.="| ".sprintf("%-13s", $row["url_type"]); 
+						$url_rpt.="| ".sprintf("%-21s", $row["uniqueid"]);
+						$url_rpt.="| ".sprintf("%-20s", $row["url_date"]);
+						$url_rpt.="| ".sprintf("%-13s", $row["url_type"]);
 						$url_rpt.="| ".sprintf("%-9s", $row["response_sec"]);
 
 						$url_rpt.="| ";
 						$url_rpt.=htmlspecialchars($url_text);
 						$blanks=81-strlen($url_text);
 						if ($blanks>0) {for ($k=1; $k<=$blanks; $k++) {$url_rpt.=" ";}}
-					
+
 						$url_rpt.="| ";
 						$url_rpt.=htmlspecialchars($url_response_text);
 						$blanks=81-strlen($url_response_text);
-						if ($blanks>0) {for ($k=1; $k<=$blanks; $k++) {$url_rpt.=" ";}}			
+						if ($blanks>0) {for ($k=1; $k<=$blanks; $k++) {$url_rpt.=" ";}}
 						$url_rpt.="|\n";
 					} else {
 						$url_text=substr($row["url"], (80*($j-1)), 80);
 						$url_response_text=substr($row["url_response"], (80*($j-1)), 80);
 
-						$url_rpt.="| ".sprintf("%-21s", ""); 
-						$url_rpt.="| ".sprintf("%-20s", ""); 
-						$url_rpt.="| ".sprintf("%-13s", ""); 
-						$url_rpt.="| ".sprintf("%-9s", ""); 
+						$url_rpt.="| ".sprintf("%-21s", "");
+						$url_rpt.="| ".sprintf("%-20s", "");
+						$url_rpt.="| ".sprintf("%-13s", "");
+						$url_rpt.="| ".sprintf("%-9s", "");
 
 						$url_rpt.="| ";
 						$url_rpt.=htmlspecialchars($url_text);

@@ -4,7 +4,7 @@ EUROPEAN UNION GDPR COMPLIANCE	  Started: 2018-03-02	Updated: 2018-06-22
 !!!!! NOTE THIS SET OF FEATURES IS NOT ENABLED IN VICIDIAL BY DEFAULT !!!!!
 
 
-This document describes the new EU GDPR(General Data Protection Regulation) features in Vicidial, as well as a brief overview of the GDPR regulations going into effect for organizations that interact with residents of the European Union as of May 25th, 2018. 
+This document describes the new EU GDPR(General Data Protection Regulation) features in Vicidial, as well as a brief overview of the GDPR regulations going into effect for organizations that interact with residents of the European Union as of May 25th, 2018.
 
 The official EU GDPR website is located here:
 https://www.eugdpr.org/
@@ -29,21 +29,21 @@ The regulation applies if the data controller, an organisation that collects dat
 
 
 
-New VICIdial Settings - 
+New VICIdial Settings -
 
 Admin -> System Settings:
 
-Enable GDPR-compliant Data Download Deletion -This setting if enabled will allow for the complete download and/or deletion of all customer data for a particular lead, in compliance with the General Data Protection Regulation (GDPR). Default is 0 for disabled. A setting of 1 will enable downloading data, and a setting of 2 will enable not just downloading, but also deletion of data, including any recordings. 
+Enable GDPR-compliant Data Download Deletion -This setting if enabled will allow for the complete download and/or deletion of all customer data for a particular lead, in compliance with the General Data Protection Regulation (GDPR). Default is 0 for disabled. A setting of 1 will enable downloading data, and a setting of 2 will enable not just downloading, but also deletion of data, including any recordings.
 
 
 Users -> Modify User:
 
-GDPR-Compliant Export Delete Leads -This setting if enabled will allow for the complete download and/or deletion of all customer data for a particular lead, in compliance with the General Data Protection Regulation (GDPR). Default is 0 for disabled. A setting of 1 will enable downloading data, and a setting of 2 will enable not just downloading, but also deletion of data, including any recordings. 
-You are not allowed to set this user setting higher than the current system setting. 
+GDPR-Compliant Export Delete Leads -This setting if enabled will allow for the complete download and/or deletion of all customer data for a particular lead, in compliance with the General Data Protection Regulation (GDPR). Default is 0 for disabled. A setting of 1 will enable downloading data, and a setting of 2 will enable not just downloading, but also deletion of data, including any recordings.
+You are not allowed to set this user setting higher than the current system setting.
 
 
 
-New VICIdial Web Administration Features - 
+New VICIdial Web Administration Features -
 
 On the Modify Lead Page(which you can access from either the "Lists -> Search for a Lead" page, or by clicking on a lead ID in the "User Stats" page):
 
@@ -64,7 +64,7 @@ http://php.net/manual/en/zip.installation.php
 
 
 
-New VICIdial back-end scripts - 
+New VICIdial back-end scripts -
 
 AST_GDPR_audio_purge.pl:
 

@@ -1,7 +1,8 @@
 <?php
 #
-# Copyright (c) 2015-2017 Jörg Frings-Fürst <jff@flyingpenguin.de>   LICENSE: AGPLv2
+# Copyright (c) 2015-2019 Jörg Frings-Fürst <open_source@jff.email>   LICENSE: AGPLv3
 #		        2015-2017 flyingpenguin UG <info@flyingpenguin.de>
+#               2019      SNCT GmbH <info@snct-gmbh.de>
 #
 # Display module for table contact_information
 #
@@ -33,6 +34,8 @@
 # 20171130-1159 Add fields *_phone_code
 # 20171130-1439 Change to $_SERVER['SERVER_NAME'];
 # 20180423-1335 Remove Protokol and Server-IP from links
+# 20190429-1000 Change License to AGPLv3
+# 20190429-1002 Add system_wide_settings.php
 #
 
 #
@@ -49,8 +52,8 @@
 #
 #
 
-$version = '0.1.7';
-$build = '20171130-1439';
+$version = '0.1.8';
+$build = '20190429-1005';
 
 
 require_once("phonebook_setup.php");
@@ -113,6 +116,8 @@ if (isset($_GET["searchtag"]))                          {$searchTag=$_GET["searc
         elseif (isset($_POST["searchtag"]))             {$searchTag=$_POST["searchtag"];}
 if (isset($_GET["searchfield"]))                        {$searchField=$_GET["searchfield"];}
         elseif (isset($_POST["searchfield"]))           {$searchField=$_POST["searchfield"];}
+
+require_once("../tools/system_wide_settings.php");
 
 $Server_ip_ext = $_SERVER['SERVER_NAME'];
 if ($DB) { print $Server_ip_ext; }
@@ -261,10 +266,10 @@ function CallandPark(Phone, PhoneCode) {
     var DialPhone = PhoneCode + Phone;
 
     if (CIDPhoneEnable == "N") { Alias = 0; }
-    
+
     if (Alias == 0 && Warn_GA == "Y" && CIDPhoneEnable == "Y") {
         alert("Der Eintrag in der \"Group Alias\" fehlt oder ist nicht aktiv. \nBitte informieren Sie Ihren Systenm - Administrator!");
-    }    
+    }
     if (AStatus == 2) {
 	if (!xmlhttp && typeof XMLHttpRequest!='undefined') {
 	    xmlhttp = new XMLHttpRequest();
@@ -313,7 +318,7 @@ function CallExtern(Phone, PhoneCode) {
 //    alert("Alias: " + Alias );
 
     if (CIDPhoneEnable == "N") { Alias = 0; }
-    
+
     if (Alias == 0 && Warn_GA == "Y" && CIDPhoneEnable == "Y") {
         alert("Der Eintrag in der \"Group Alias\" fehlt. \nBitte informieren Sie Ihren System - Administrator!");
     }
@@ -356,9 +361,9 @@ function CallConf(Phone, PhoneCode) {
     var xmlhttp=false;
     var AStatus = '<?php GetAgentStatus($user); ?>';
     var DialPhone = PreDial + Phone;
-    
+
     if (CIDPhoneEnable == "N") { Alias = 0; }
-    
+
     if (Alias == 0 && Warn_GA == "Y" && CIDPhoneEnable == "Y") {
         alert("Der Eintrag in der \"Group Alias\" fehlt. \nBitte informieren Sie Ihren System - Administrator!");
     }
@@ -370,7 +375,7 @@ function CallConf(Phone, PhoneCode) {
 	    alert("Script Fehler!");
 	}
 	else {
-            if (Alias == 0) { 
+            if (Alias == 0) {
                 html_query = "source=PBookCall" + "&user=" + User + "&pass=" + Pass + "&agent_user=" + User + "&function=external_dial" + "&value=" + DialPhone + "&phone_code=" + PhoneCode + "&search=YES&preview=NO&focus=YES";
             }
             else {
@@ -427,7 +432,7 @@ function SetAgentToPause() {
 	}
     }
     delete xmlhttp;
-    myFunction();
+//    myFunction();
 //  window.PhoneBookPanelToFront("yes");
 }
 
@@ -521,7 +526,7 @@ function CountColum() {
     $result=mysql_to_mysqli($statement, $link);
     $Anz=mysqli_fetch_row($result);
     $dispColum[0] = $Anz[0];
- 
+
     $statement="SELECT COUNT(*) from contact_information WHERE cell_num > '';";
     if ($DB) print "$statement\n";
     $result=mysql_to_mysqli($statement, $link);
@@ -624,10 +629,10 @@ function GenAPIforAgent($phone, $a_status, $pc) {
 function PrintTableHeader() {
     global $TABLE_PARA, $count_disp_row, $IMAGE_SIZE, $dispColum;
     global $first, $user, $pass, $Server_ip_ext, $clickAt, $direction;
-    
+
     $dir = $direction;
     $AnzDir = array (1, 1, 1, 1, 1, 1, 1);
-    
+
     if($clickAt > 0) {
         if($dir == 0) {
 	    $AnzDir[$clickAt] = 1;
@@ -782,7 +787,7 @@ if(($count == 0) && ($first > 0)) {
     	sleep(1);
 	PBLog("<ch_status2>User: $user, IP: $Server_ip_ext; Proto: $HTTPprotocol\n");
     }
-    
+
     print "<form action=\"./vdc_phonebook_display.php\" method=\"post\" autocomplete=\"off\">\n";
     print "  <label for \"searchtag\">"._QXZ("Search:")."\n";
     print "    <input id=\"searchtag\" name=\"searchtag\" value=\"$searchTag\">\n";
@@ -801,7 +806,7 @@ $AgentStat = GetAgentStatus($user);
 if($AgentStat < 0) {
     echo "<script type=\"text/javascript\">SetAgentToPause();</script>\n";
     print "Agenten Status: $AgentStat\n";
-    print "Bitte warten.\n";  
+    print "Bitte warten.\n";
 }
 else {
     if($count > 0) {

@@ -82,7 +82,7 @@ Here is a process flow explanation of how a call would move through the hold que
 
 
 
-This functionality will require three new statuses in the vicidial_auto_calls table: 
+This functionality will require three new statuses in the vicidial_auto_calls table:
 HOLDQ - this status will be for the LIVE-status calls that were not sent to an agent in the first five seconds on the system, so they will be handed over to be taken care of by the AST_VD_queue_hold.pl perl script.
 HOLDP - this status will be for the HOLDQ calls that are currently in the agi-VD_queue_prompts.agi script.
 PLACE - this status is a placeholder for the customer after they choose the option to hang-up and either leave a message or leave their contact number for a callback. They are no longer on an active channel, but their place in line as a customer should be preserved so that the agent that receives their record can proceed with a call to follow-up with the customer.

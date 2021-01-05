@@ -1,10 +1,10 @@
 Extended vicidial_list fields					2012-09-07
 
 
-These fields were added to allow for more complex Call Menu setups with an 
+These fields were added to allow for more complex Call Menu setups with an
 additional 99 TINYINT fields allowed for DTMF Log data storage.
 
-To enable this feature, you must make the database changes shown at the bottom, 
+To enable this feature, you must make the database changes shown at the bottom,
 and the vicidial/options.php file needs to have $extended_vl_fields set to '1'.
 
 

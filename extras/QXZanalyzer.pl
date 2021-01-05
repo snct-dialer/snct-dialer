@@ -87,7 +87,7 @@ else
 	print "no command line options set, exiting\n";
 	exit;
 	}
-if (length($PATHconf)<2) 
+if (length($PATHconf)<2)
 	{
 	print "no file to analyze($PATHconf), exiting\n";
 	exit;
@@ -103,7 +103,7 @@ $QXZcount_place=0;
 $QXZcount_var_ct=0;
 $QXZcount_place_ct=0;
 
-if (-e "$PATHconf") 
+if (-e "$PATHconf")
 	{
 	print "file found at: $PATHconf\n";
 	print "\n";
@@ -123,9 +123,9 @@ if (-e "$PATHconf")
 			$QXZcount = ($QXZcount + $QXZ_in_line);
 			@eachQXZ = split(/\_QXZ\(/,$line);
 			$each_ct=0;
-			while ($each_ct <= $#eachQXZ) 
+			while ($each_ct <= $#eachQXZ)
 				{
-				if ($each_ct > 0) 
+				if ($each_ct > 0)
 					{
 					@eachQXZvalue = split(/\)/,$eachQXZ[$each_ct]);
 					if ( ($eachQXZvalue[0] =~ /\(/) && (length($eachQXZvalue[1])>0) )
@@ -146,13 +146,13 @@ if (-e "$PATHconf")
 						}
 					if ( ($QXZvalues > 0) && ($QXZvaronly < 1) && ($QXZlengthonly < 1) && ($QXZplaceonly < 1) )
 						{print "$temp_QXZval_str\n";}
-					if ($temp_QXZval_str =~ /,\d|, \d/) 
+					if ($temp_QXZval_str =~ /,\d|, \d/)
 						{
 						$QXZcount_length++;
 						if ($QXZlengthonly > 0)
 							{print "$temp_QXZval_str\n";}
 						}
-					if ($temp_QXZval_str =~ /\$/) 
+					if ($temp_QXZval_str =~ /\$/)
 						{
 						$QXZcount_var++;
 						$var_ct_in_line = () = $temp_QXZval_str =~ /\$/g;
@@ -160,7 +160,7 @@ if (-e "$PATHconf")
 						if ($QXZvaronly > 0)
 							{print "$temp_QXZval_str\n";}
 						}
-					if ($temp_QXZval_str =~ /%\ds/) 
+					if ($temp_QXZval_str =~ /%\ds/)
 						{
 						$QXZcount_place++;
 						$place_ct_in_line = () = $temp_QXZval_str =~ /\$/g;

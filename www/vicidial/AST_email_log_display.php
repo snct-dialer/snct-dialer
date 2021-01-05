@@ -52,7 +52,7 @@ if ($qm_conf_ct > 0)
 ##### END SETTINGS LOOKUP #####
 ###########################################
 
-if ($allow_emails<1) 
+if ($allow_emails<1)
 	{
 	echo _QXZ("Your system does not have the email setting enabled")."\n";
 	exit;
@@ -144,7 +144,7 @@ if ($email_log_id) {
 	$stmt="select * from vicidial_email_list where email_row_id='$email_row_id'";
 	$rslt=mysql_to_mysqli($stmt, $link);
 }
-	
+
 if (mysqli_num_rows($rslt)>0) {
 	$row=mysqli_fetch_array($rslt);
 	$row["message"]=preg_replace('/\r|\n/', "<BR/>", $row["message"]);

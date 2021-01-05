@@ -10,7 +10,7 @@
 #
 # CHANGES
 # 130422-0905 - first build
-# 151209-1620 - Added user field update from logs, 
+# 151209-1620 - Added user field update from logs,
 #               Added --no-cc-and-llct-update option to not update called_count, last_local_call_time
 #               Added --use-lead-id option to search logs by lead_id instead of phone number
 #
@@ -177,9 +177,9 @@ $server_ip = $VARserver_ip;		# Asterisk server IP
 
 if (!$VARDB_port) {$VARDB_port='3306';}
 
-use DBI;	  
+use DBI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 $DB=1;
@@ -228,7 +228,7 @@ foreach(@lead_id)
 	$NEWuser='';
 	$LEADfound=0;
 
-	if ($use_lead_id > 0) 
+	if ($use_lead_id > 0)
 		{$searchSQL = "lead_id='$lead_id[$b]'";}
 	else
 		{$searchSQL = "phone_number='$phone_number[$b]'";}
@@ -289,14 +289,14 @@ foreach(@lead_id)
 
 	if ($LEADfound > 0)
 		{
-		if ($Cepoch > $Nepoch) 
+		if ($Cepoch > $Nepoch)
 			{
 			$NEWstatus =	$Cstatus;
 			$OLDlead_id =	$Clead_id;
 			$NEWcall_date =	$Ccall_date;
 			$NEWuser =		$Cuser;
 			}
-		else 
+		else
 			{
 			$NEWstatus =	$Nstatus;
 			$OLDlead_id =	$Nlead_id;
@@ -316,7 +316,7 @@ foreach(@lead_id)
 			}
 		$sthA->finish();
 
-		if ($no_cc_and_llct_update > 0) 
+		if ($no_cc_and_llct_update > 0)
 			{$cc_and_llct_updateSQL = '';}
 		else
 			{$cc_and_llct_updateSQL = ",called_count='$NEWcount',last_local_call_time='$NEWcall_date'";}

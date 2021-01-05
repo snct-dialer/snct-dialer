@@ -29,19 +29,13 @@
 #	- vm-msgsaved
 #	- vm-goodbye
 #
-# LICENSE: AGPLv3
-#
-# Copyright (C) 2016  Matt Florell <vicidial@gmail.com>
-# Copyright (c) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
-#               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
+# Copyright (C) 2016  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG
 # 71226-1303 - Added option to change format GSM/WAV and timeout through flags
 # 90519-1019 - Changed formatting to conform to other scripts
 # 130108-1815 - Changes for Asterisk 1.8 compatibility
 # 161029-2239 - Changed to database storage for prompt count
-# 180507-1620 - Remove use of prompt_count.txt
-#
 #
 
 $script = 'agi-record_prompts.agi';
@@ -88,13 +82,13 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port) {$VARDB_port='3306';}
-if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout";}
+if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout.log";}
 
 use DBI;
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
     or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
@@ -125,7 +119,7 @@ if (length($ARGV[0])>1)
 		$args = "$args $ARGV[$i]";
 		$i++;
 		}
-	
+
 	### list of command-line array arguments:
 	@ARGV_vars = split(/-----/, $ARGV[0]);
 
@@ -134,7 +128,7 @@ if (length($ARGV[0])>1)
 	}
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 	{
 	chomp;
 	last unless length($_);
@@ -177,18 +171,37 @@ if ($sthArows > 0)
 	{
 	@aryA = $sthA->fetchrow_array;
 	$rec_prompt_count = $aryA[0];
-	$REC_next = ($rec_prompt_count + 1);
-	
+	$rec_prompt_count_next = ($rec_prompt_count + 1);
 	}
 $sthA->finish();
 
-$REC_id = ($REC_id + $REC_next);
+if (-e "/prompt_count.txt")
+	{
+	open(test, "/prompt_count.txt") || die "can't open /prompt_count.txt: $!\n";
+	@test = <test>;
+	close(test);
 
-### update the rec_prompt_count in system_settings
-###$stmtA = "UPDATE system_settings SET rec_prompt_count='$REC_next';";
-###$affected_rows = $dbhA->do($stmtA);
-##if ($AGILOG) {$agi_string = "$affected_rows|$stmtA|";   &agi_output;}
-
+	$test[0] = ($test[0] + 0);
+	if ($rec_prompt_count > $test[0])
+		{$test[0] = $rec_prompt_count;}
+	if ($rec_prompt_count < $test[0])
+		{
+		$rec_prompt_count = $test[0];
+		### update the rec_prompt_count in system_settings
+		$stmtA = "UPDATE system_settings SET rec_prompt_count='$rec_prompt_count';";
+		$affected_rows = $dbhA->do($stmtA);
+			if ($AGILOG) {$agi_string = "$affected_rows|$stmtA|";   &agi_output;}
+		}
+	$REC_next = ($test[0] + 1);
+	$REC_id = ($REC_id + $REC_next);
+	}
+else
+	{
+	open(test, ">/prompt_count.txt") || die "can't open /prompt_count.txt: $!\n";
+	print test "$rec_prompt_count";
+	close(test);
+	$REC_id = ($REC_id + $rec_prompt_count);
+	}
 
 $session_recording = "$REC_id";
 print STDERR "Recording ID: $REC_id\n";
@@ -208,7 +221,7 @@ exit;
 sub welcome_1
 	{
 	##### Play welcome message and capture PIN ########################################################
-	while ( (length($pin) ne 4) && (!$stop_loop) )	
+	while ( (length($pin) ne 4) && (!$stop_loop) )
 		{
 		&enter_pin_number;
 		&log_transfer;
@@ -226,7 +239,7 @@ sub welcome_1
 		{
 		# please enter the pin number followed by the pound key
 
-		$AGI->stream_file('ld_invalid_pin_number');   
+		$AGI->stream_file('ld_invalid_pin_number');
 
 		$quit_program++;
 		}
@@ -252,6 +265,9 @@ sub welcome_1
 	$affected_rows = $dbhA->do($stmtA);
 		if ($AGILOG) {$agi_string = "$affected_rows|$stmtA|";   &agi_output;}
 
+	open(test, ">/prompt_count.txt") || die "can't open /prompt_count.txt: $!\n";
+	print test "$REC_next";
+	close(test);
 
 	&record_prompts;
 	}
@@ -288,7 +304,7 @@ sub record_prompts
 		if ($interrupt_digit == 55) {$interrupt_digit=7;}
 		if ($interrupt_digit == 56) {$interrupt_digit=8;}
 		if ($interrupt_digit == 57) {$interrupt_digit=9;}
-		
+
 		$totalDTMF=$interrupt_digit;
 		$digit_loop_counter++;
 		}
@@ -327,7 +343,7 @@ sub verify_recording
 		if ($interrupt_digit == 55) {$interrupt_digit=7;}
 		if ($interrupt_digit == 56) {$interrupt_digit=8;}
 		if ($interrupt_digit == 57) {$interrupt_digit=9;}
-		
+
 		$totalDTMF=$interrupt_digit;
 		$digit_loop_counter++;
 		}
@@ -347,7 +363,7 @@ sub verify_recording
 			{
 			$digit_loop_counter=1;
 			}
-		
+
 		$digit_loop_counter++;
 		}
 
@@ -399,7 +415,7 @@ sub lookup_account
 	if ($pin eq '4321')
 		{
 		$rec_count++;
-		} 
+		}
 	}
 
 
@@ -432,7 +448,7 @@ sub enter_pin_number
 
 	$interrupt_digit='';
 
-	$interrupt_digit = $AGI->stream_file('ld_welcome_pin_number','123456789');   
+	$interrupt_digit = $AGI->stream_file('ld_welcome_pin_number','123456789');
 
 	print STDERR "interrupt_digit |$interrupt_digit|\n";
 
@@ -450,7 +466,7 @@ sub enter_pin_number
 		if ($interrupt_digit == 55) {$interrupt_digit=7;}
 		if ($interrupt_digit == 56) {$interrupt_digit=8;}
 		if ($interrupt_digit == 57) {$interrupt_digit=9;}
-		
+
 		$totalDTMF=$interrupt_digit;
 		}
 
@@ -469,7 +485,7 @@ sub enter_pin_number
 			{
 			$digits_being_entered=0;
 			}
-		
+
 		$digit_loop_counter++;
 		}
 
@@ -479,27 +495,27 @@ sub enter_pin_number
 	}
 
 
-sub checkresult 
+sub checkresult
 	{
 	my ($res) = @_;
 	my $retval;
 	$tests++;
 	chomp $res;
-	if ($res =~ /^200/) 
+	if ($res =~ /^200/)
 		{
 		$res =~ /result=(-?\d+)/;
-		if (!length($1)) 
+		if (!length($1))
 			{
 			print STDERR "FAIL ($res)\n";
 			$fail++;
-			} 
-		else 
+			}
+		else
 			{
 			print STDERR "PASS ($1)\n";
 			$pass++;
 			}
-		} 
-	else 
+		}
+	else
 		{
 		print STDERR "FAIL (unexpected result '$res')\n";
 		$fail++;

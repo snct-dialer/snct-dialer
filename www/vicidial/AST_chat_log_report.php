@@ -1,10 +1,10 @@
 <?php
 # AST_chat_log_report.php
-# 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>, Joe Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
 #
-# This is the report page where you can view report information of any of the dialer's chats.  The web page will 
-# display the information about the chat, including the start time and participants, and will also provide links 
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>, Joe Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
+#
+# This is the report page where you can view report information of any of the dialer's chats.  The web page will
+# display the information about the chat, including the start time and participants, and will also provide links
 # allowing you to download transcripts of any chat you wish, based on your account permissions.
 #
 # CHANGES
@@ -13,6 +13,7 @@
 # 160108-2300 - Changed some mysqli_query to mysql_to_mysqli for consistency
 # 161217-0820 - Added chat-type to allow for multi-user internal chat sessions
 # 170409-1550 - Added IP List validation code
+# 191013-0857 - Fixes for PHP7
 #
 
 $startMS = microtime();
@@ -335,6 +336,7 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $campaigns_to_print = mysqli_num_rows($rslt);
 $i=0;
+$groups=array();
 while ($i < $campaigns_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -349,6 +351,7 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $user_groups_to_print = mysqli_num_rows($rslt);
 $i=0;
+$user_groups=array();
 while ($i < $user_groups_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -363,6 +366,7 @@ if ($DB) {$HTML_text.="$stmt\n";}
 $inbound_groups_to_print = mysqli_num_rows($rslt);
 $i=0;
 $inbound_groups_string='|';
+$inbound_groups=array();
 while ($i < $inbound_groups_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -376,6 +380,8 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $users_to_print = mysqli_num_rows($rslt);
 $i=0;
+$user_list=array();
+$user_names=array();
 while ($i < $users_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -458,12 +464,12 @@ if ( (preg_match('/\-\-ALL\-\-/',$group_string) ) or ($group_ct < 1) )
 else
 	{
 	# $group_string=preg_replace("/^\||\|$/", "", $group_string);
-	$ASCII_rpt_header.="   Campaigns: ".preg_replace("/\|/", ", ", $group_string);
+	$ASCII_rpt_header.="   "._QXZ("Campaigns", 9).": ".preg_replace("/\|/", ", ", $group_string);
 	$group_SQL = preg_replace('/ or $/i', '',$group_SQL);
 	$group_SQL = "and ($group_SQL or selected_campaigns='|')";
 	$ASCII_border_header.="----------------------------------------------------+";
 	$ASCII_header       .=" ".sprintf("%-50s", "SELECTED CAMPAIGNS")." |";
-	$GRAPH_header.="<th class='column_header grey_graph_cell'>SELECTED CAMPAIGNS</th>";
+	$GRAPH_header.="<th class='column_header grey_graph_cell'>"._QXZ("SELECTED CAMPAIGNS")."</th>";
 	}
 
 $i=0;
@@ -484,12 +490,12 @@ if ( (preg_match('/\-\-ALL\-\-/',$inbound_group_string) ) or ($inbound_group_ct 
 else
 	{
 	# $group_string=preg_replace("/^\||\|$/", "", $group_string);
-	$ASCII_rpt_header.="Inbound groups: ".preg_replace("/\|/", ", ", $inbound_group_string);
+	$ASCII_rpt_header.=_QXZ("Inbound groups", 22).": ".preg_replace("/\|/", ", ", $inbound_group_string);
 	$inbound_group_SQL = preg_replace('/,$/i', '',$inbound_group_SQL);
 	$inbound_group_SQL = "and group_id in ($inbound_group_SQL)";
 	$ASCII_border_header.="----------------------------------------------------+";
 	$ASCII_header       .=" ".sprintf("%-50s", "SELECTED INBOUND GROUPS")." |";
-	$GRAPH_header.="<th class='column_header grey_graph_cell'>SELECTED INBOUND GROUPS</th>";
+	$GRAPH_header.="<th class='column_header grey_graph_cell'>"._QXZ("SELECTED INBOUND GROUPS")."</th>";
 	}
 
 
@@ -665,7 +671,7 @@ $HTML_text.=_QXZ("Chat text").":<BR>";
 $HTML_text.="<textarea name='text_search' rows='3' cols='20'>$text_search</textarea><BR><BR>";
 $HTML_text.=_QXZ("Display as").":<BR>";
 $HTML_text.="<select name='report_display_type'>";
-if ($report_display_type) {$HTML_text.="<option value='$report_display_type' selected>$report_display_type</option>";}
+if ($report_display_type) {$HTML_text.="<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
 $HTML_text.="<option value='TEXT'>"._QXZ("TEXT")."</option><option value='HTML'>"._QXZ("HTML")."</option></select><BR><BR>\n";
 $HTML_text.="<INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'>$NWB#agent_performance_detail$NWE\n";
 $HTML_text.="</TD><TD VALIGN=TOP> &nbsp; &nbsp; &nbsp; &nbsp; ";
@@ -686,12 +692,12 @@ if (!$group)
 	$HTML_text.=_QXZ("PLEASE SELECT A CAMPAIGN AND DATE-TIME ABOVE AND CLICK SUBMIT")."\n";
 	$HTML_text.=" "._QXZ("NOTE: stats taken from shift specified")."\n";
 	}
-else 
+else
 	{
 	if ($shift == 'AM') {
 		$time_BEGIN=$AM_shift_BEGIN;
 		$time_END=$AM_shift_END;
-		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}   
+		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}
 		if (strlen($time_END) < 6) {$time_END = "15:14:59";}
 	}
 	if ($shift == 'PM') {
@@ -704,7 +710,7 @@ else
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}
 		if (strlen($time_END) < 6) {$time_END = "23:59:59";}
 	}
-	$query_date_BEGIN = "$query_date $time_BEGIN";   
+	$query_date_BEGIN = "$query_date $time_BEGIN";
 	$query_date_END = "$end_date $time_END";
 
 	$HTML_text.=_QXZ("Agent/Manager Chat Log Report",47)." $NOW_TIME\n";
@@ -717,7 +723,7 @@ else
 		$stmt="select * from vicidial_manager_chats_archive where chat_start_date>='$query_date 00:00:00' and chat_start_date<='$end_date 23:59:59' $user_SQL$matching_text_SQL order by chat_start_date asc";
 		if ($DB) {echo "$stmt<BR>\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
-		if (mysqli_num_rows($rslt)>0) 
+		if (mysqli_num_rows($rslt)>0)
 			{
 			$ASCII_text.="$ASCII_rpt_header\n";
 			if ($DB) {$ASCII_text.=$stmt."\n";}
@@ -729,12 +735,12 @@ else
 			$GRAPH_text.="<BR><BR><a name='callstatsgraph'/><table border='0' cellpadding='0' cellspacing='2' width='800'>";
 			$GRAPH_text.="<tr><th class='column_header grey_graph_cell'>"._QXZ("CHAT ID")."</th><th class='column_header grey_graph_cell'>"._QXZ("CHAT START DATE")."</th><th class='column_header grey_graph_cell'>"._QXZ("MANAGER")."</th><th class='column_header grey_graph_cell'>"._QXZ("REPLIES")."</th>$GRAPH_header<th class='thgraph'>&nbsp;</th><th class='thgraph'>&nbsp;</th></tr>";
 
-			while ($row=mysqli_fetch_array($rslt)) 
+			while ($row=mysqli_fetch_array($rslt))
 				{
 				$colspan='6';
 				$ASCII_text.="| ".sprintf("%7s", $row["manager_chat_id"])." ";
 				$ASCII_text.="| ".$row["chat_start_date"]." ";
-				$ASCII_text.="| ".sprintf("%9s", $row["internal_chat_type"])." ";
+				$ASCII_text.="| ".sprintf("%9s", _QXZ($row["internal_chat_type"], 9))." ";
 				$ASCII_text.="| ".sprintf("%-10s", $row["manager"])." ";
 				$ASCII_text.="|    ".$row["allow_replies"]."    ";
 				$selected_agents=preg_replace('/^\|$/', "ALL", $row["selected_agents"]);
@@ -747,7 +753,7 @@ else
 				$selected_user_groups=preg_replace('/\|/', ', ', $selected_user_groups);
 				$selected_campaigns=preg_replace('/\|/', ', ', $selected_campaigns);
 
-				$GRAPH_text.="<tr><th class='thgraph' scope='col'>$row[manager_chat_id]</th><th class='thgraph' scope='col' nowrap>$row[chat_start_date]</th><th class='thgraph' scope='col'>$row[manager]</th><th class='thgraph' scope='col'>$row[allow_replies]</th>";
+				$GRAPH_text.="<tr><th class='thgraph' scope='col'>$row[manager_chat_id]</th><th class='thgraph' scope='col' nowrap>$row[chat_start_date]</th><th class='thgraph' scope='col'>"._QXZ("$row[manager]")."</th><th class='thgraph' scope='col'>$row[allow_replies]</th>";
 				if (!preg_match("/\-\-ALL\-\-/", $user_string)) {
 					$ASCII_text.="| ".sprintf("%-50s", $selected_agents)." ";
 					$GRAPH_text.="<th class='thgraph' scope='col'>$selected_agents</th>";
@@ -779,7 +785,7 @@ else
 
 				$GRAPH_text.="<tr><td align='center' colspan='$colspan'><span id='ChatReport".$row["manager_chat_id"]."' style='display: none;'><table width='600'>";
 				$GRAPH_text.="  <tr><th class='column_header grey_graph_cell'>"._QXZ("CHAT SUB-ID")."</th><th class='column_header grey_graph_cell'>"._QXZ("AGENT")."</th><th class='thgraph'>&nbsp;</th><th class='thgraph'>&nbsp;</th></tr>";
-				while ($sub_row=mysqli_fetch_array($sub_rslt)) 
+				while ($sub_row=mysqli_fetch_array($sub_rslt))
 					{
 					$ASCII_text.="          | ".sprintf("%-11s", $sub_row["manager_chat_subid"])." ";
 					$ASCII_text.="| ".sprintf("%-40s", substr("$sub_row[manager_chat_subid] - $sub_row[full_name]", 0, 40))." | <a href='$LINKbase&file_download=1&chat_log_type=".$chat_log_type."&download_chat_id=".$row["manager_chat_id"]."&download_chat_subid=".$sub_row["manager_chat_subid"]."&download_manager=".$row["manager"]."&download_user=".$row["user"]."'>["._QXZ("DOWNLOAD CHAT LOG")."]</a>\n";
@@ -799,7 +805,7 @@ else
 		$stmt="select vca.*, v.first_name, v.last_name from vicidial_chat_archive vca, vicidial_list v where chat_start_time>='$query_date 00:00:00' and chat_start_time<='$end_date 23:59:59' and vca.lead_id=v.lead_id $inbound_group_SQL$ingroup_SQL$customer_user_SQL$matching_text_SQL order by chat_start_time asc";
 		if ($DB) {echo "**********$stmt<BR>\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
-		if (mysqli_num_rows($rslt)>0) 
+		if (mysqli_num_rows($rslt)>0)
 			{
 			$ASCII_text.="$ASCII_rpt_header\n";
 			if ($DB) {$ASCII_text.=$stmt."\n";}
@@ -811,7 +817,7 @@ else
 			$GRAPH_text.="<BR><BR><a name='callstatsgraph'/><table border='0' cellpadding='0' cellspacing='2' width='800'>";
 			$GRAPH_text.="<tr><th class='column_header grey_graph_cell'>"._QXZ("CHAT ID")."</th><th class='column_header grey_graph_cell'>"._QXZ("CHAT START DATE")."</th><th class='column_header grey_graph_cell'>"._QXZ("AGENT")."</th><th class='column_header grey_graph_cell'>"._QXZ("CUSTOMER")."</th>$GRAPH_header<th class='thgraph'>&nbsp;</th><th class='thgraph'>&nbsp;</th></tr>";
 
-			while ($row=mysqli_fetch_array($rslt)) 
+			while ($row=mysqli_fetch_array($rslt))
 				{
 				$colspan='5';
 				$ASCII_text.="| ".sprintf("%7s", $row["chat_id"])." ";
@@ -856,12 +862,12 @@ else
 				$ASCII_text.="          | "._QXZ("MESSAGE TIME",19)." | "._QXZ("CHAT MEMBER NAME",28)." | "._QXZ("MESSAGE",53)." |\n";
 				$ASCII_text.="          +---------------------+------------------------------+-------------------------------------------------------+\n";
 
-				$GRAPH_text.="<tr><td align='center' colspan='$colspan'><span id='ChatReport".$sub_row["chat_id"]."' style='display: none;'><table width='600'>";
+				$GRAPH_text.="<tr><td align='center' colspan='$colspan'><span id='ChatReport".$row["chat_id"]."' style='display: none;'><table width='600'>";
 				$GRAPH_text.="  <tr><th class='column_header grey_graph_cell'>"._QXZ("MESSAGE TIME")."</th><th class='column_header grey_graph_cell'>"._QXZ("CHAT MEMBER NAME")."</th><th class='thgraph'>"._QXZ("MESSAGE")."</th><th class='thgraph'>&nbsp;</th></tr>";
-				while ($sub_row=mysqli_fetch_array($sub_rslt)) 
+				while ($sub_row=mysqli_fetch_array($sub_rslt))
 					{
 					$pos=strpos($sub_row["message"], "\n");
-					if ($pos) 
+					if ($pos)
 						{
 						$sub_row["message"]=substr($sub_row["message"],0,$pos)."...";
 						}
@@ -902,6 +908,7 @@ else
 			$user_stmt="select vu.user, vu.full_name from vicidial_users vu, vicidial_manager_chat_log_archive v where manager_chat_id='$download_chat_id' and v.user=vu.user";
 			if ($download_chat_subid) {$user_stmt.=" and manager_chat_subid='$download_chat_subid' ";}
 			$user_rslt=mysql_to_mysqli($user_stmt, $link);
+			$user_name=array();
 			while ($user_row=mysqli_fetch_row($user_rslt)) {
 				$user_name["$user_row[0]"]=$user_row[1];
 			}
@@ -914,7 +921,7 @@ else
 
 			$CSV_text.="\""._QXZ("MESSAGE DATE")."\",\""._QXZ("MESSAGE POSTED BY")."\",\""._QXZ("MESSAGE")."\"\n";
 
-			while($csv_row=mysqli_fetch_array($csv_rslt)) 
+			while($csv_row=mysqli_fetch_array($csv_rslt))
 				{
 				if ($csv_row["message_posted_by"]==$download_manager) {$poster="$mgr_name";} else {$poster=$user_name["$csv_row[message_posted_by]"];}
 				$CSV_text.="\"".$csv_row["message_date"]."\",\"".$poster."\",\"".$csv_row["message"]."\"\n";
@@ -924,7 +931,7 @@ else
 			$csv_rslt=mysql_to_mysqli($csv_stmt, $link);
 
 			$CSV_text.="\""._QXZ("MESSAGE TIME")."\",\""._QXZ("MESSAGE POSTED BY")."\",\""._QXZ("MESSAGE")."\"\n";
-			while($csv_row=mysqli_fetch_array($csv_rslt)) 
+			while($csv_row=mysqli_fetch_array($csv_rslt))
 				{
 				$CSV_text.="\"".$csv_row["message_time"]."\",\"".$csv_row["chat_member_name"]."\",\"".$csv_row["message"]."\"\n";
 				}
@@ -971,7 +978,7 @@ else
 		{
 		$HTML_text.=$GRAPH_text;
 		}
-	else 
+	else
 		{
 		$HTML_text.=$ASCII_text;
 		}
@@ -982,7 +989,7 @@ else
 	$HTML_text.="</BODY></HTML>";
 	}
 
-	if ($file_download == 0 || !$file_download) 
+	if ($file_download == 0 || !$file_download)
 		{
 		echo $HTML_head;
 		require("admin_header.php");

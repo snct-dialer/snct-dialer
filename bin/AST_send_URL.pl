@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # AST_send_URL.pl   version 2.14
-# 
+#
 # DESCRIPTION:
 # This script is spawned for remote agents when the Start Call URL is set in the
 # campaign or in-group that the call came from when sent to the remote agent.
@@ -74,7 +74,7 @@ if (scalar @ARGV) {
 		'compat_url=s' => \$compat_url);
 
 	$DB = 1 if ($DBX);
-	if ($DB) 
+	if ($DB)
 		{
 		print "\n----- DEBUGGING -----\n\n";
 		print "\n----- SUPER-DUPER DEBUGGING -----\n\n" if ($DBX);
@@ -93,7 +93,7 @@ if (scalar @ARGV) {
 		print "  compat_url:            $compat_url\n" if ($compat_url);
 		print "\n";
 		}
-	if ($CLOhelp) 
+	if ($CLOhelp)
 		{
 		print "allowed run time options:\n";
 		print "  [--help] = this help screen\n";
@@ -153,7 +153,7 @@ foreach(@conf)
 if (!$VARDB_port) {$VARDB_port='3306';}
 
 
-if (length($lead_id) > 0) 
+if (length($lead_id) > 0)
 	{
 	### find wget binary
 	$wgetbin = '';
@@ -173,9 +173,9 @@ if (length($lead_id) > 0)
 		}
 
 	use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
-	use DBI;	  
+	use DBI;
 
-	$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+	$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
 	 or die "Couldn't connect to database: " . DBI->errstr;
 
 	### Grab Server values from the database
@@ -213,7 +213,7 @@ if (length($lead_id) > 0)
 		$enter_ingroup_url =	$aryA[5];
 		}
 	$sthA->finish();
-	
+
 	if ($DBX) {print "DEBUG: $stmtG\n";}
 
 	if ($function =~ /SC_CALL_URL/)
@@ -243,7 +243,7 @@ if (length($lead_id) > 0)
 		if ($list_nacu_url_ct > 0)
 			{
 			@aryA = $sthA->fetchrow_array;
-			if (length($aryA[0])>3) 
+			if (length($aryA[0])>3)
 				{
 				$na_call_url =		$aryA[0];
 				}
@@ -262,11 +262,11 @@ if (length($lead_id) > 0)
 		if ($list_name_ct > 0)
 			{
 			@aryA = $sthA->fetchrow_array;
-			if (length($aryA[0])>0) 
+			if (length($aryA[0])>0)
 				{
 				$list_name =		$aryA[0];
 				}
-			if (length($aryA[1])>0) 
+			if (length($aryA[1])>0)
 				{
 				$list_description =	$aryA[1];
 				}
@@ -385,11 +385,11 @@ if (length($lead_id) > 0)
 			if ($list_name_ct > 0)
 				{
 				@aryA = $sthA->fetchrow_array;
-				if (length($aryA[0])>0) 
+				if (length($aryA[0])>0)
 					{
 					$list_name =		$aryA[0];
 					}
-				if (length($aryA[1])>0) 
+				if (length($aryA[1])>0)
 					{
 					$list_description =	$aryA[1];
 					}
@@ -532,11 +532,11 @@ if (length($lead_id) > 0)
 			if ($list_name_ct > 0)
 				{
 				@aryA = $sthA->fetchrow_array;
-				if (length($aryA[0])>0) 
+				if (length($aryA[0])>0)
 					{
 					$list_name =		$aryA[0];
 					}
-				if (length($aryA[1])>0) 
+				if (length($aryA[1])>0)
 					{
 					$list_description =	$aryA[1];
 					}
@@ -721,11 +721,11 @@ if (length($lead_id) > 0)
 			if ($list_name_ct > 0)
 				{
 				@aryA = $sthA->fetchrow_array;
-				if (length($aryA[0])>0) 
+				if (length($aryA[0])>0)
 					{
 					$list_name =		$aryA[0];
 					}
-				if (length($aryA[1])>0) 
+				if (length($aryA[1])>0)
 					{
 					$list_description =	$aryA[1];
 					}
@@ -932,11 +932,11 @@ if (length($lead_id) > 0)
 			if ($list_name_ct > 0)
 				{
 				@aryA = $sthA->fetchrow_array;
-				if (length($aryA[0])>0) 
+				if (length($aryA[0])>0)
 					{
 					$list_name =		$aryA[0];
 					}
-				if (length($aryA[1])>0) 
+				if (length($aryA[1])>0)
 					{
 					$list_description =	$aryA[1];
 					}
@@ -1124,11 +1124,11 @@ if (length($lead_id) > 0)
 			if ($list_name_ct > 0)
 				{
 				@aryA = $sthA->fetchrow_array;
-				if (length($aryA[0])>0) 
+				if (length($aryA[0])>0)
 					{
 					$list_name =		$aryA[0];
 					}
-				if (length($aryA[1])>0) 
+				if (length($aryA[1])>0)
 					{
 					$list_description =	$aryA[1];
 					}
@@ -1201,7 +1201,7 @@ if (length($lead_id) > 0)
 		if ($function =~ /REMOTE_AGENT_START_CALL_URL/)
 			{
 			$url_function = 'start_ra';
-			
+
 			$stmtA="UPDATE vicidial_log_extended set start_url_processed='Y' where uniqueid='$uniqueid';";
 			$affected_rows = $dbhA->do($stmtA);
 			}
@@ -1252,7 +1252,7 @@ if (length($lead_id) > 0)
 		$Wdocline_cat .= "$Wdocline";
 		$i++;
 		}
-	if (length($Wdocline_cat)<1) 
+	if (length($Wdocline_cat)<1)
 		{$Wdocline_cat='<RESPONSE EMPTY>';}
 
 	open(Wfile, "/tmp/ASUBtmpF$US$url_id$US$secX") || die "can't open /tmp/ASUBtmpF$US$url_id$US$secX: $!\n";
@@ -1268,7 +1268,7 @@ if (length($lead_id) > 0)
 		$Wfileline_cat .= "$Wfileline";
 		$i++;
 		}
-	if (length($Wfileline_cat)<1) 
+	if (length($Wfileline_cat)<1)
 		{$Wfileline_cat='<HEADER EMPTY>';}
 
 
@@ -1317,7 +1317,7 @@ sub event_logger
 #   $SecondsSinceEpoch : Request time in seconds, defaults to current date/time.
 # Returns:
 #   ($sec, $min, $hour. $day, $mon, $year)
-sub getTime 
+sub getTime
 	{
 	my ($tms) = @_;
 	$tms = time unless ($tms);

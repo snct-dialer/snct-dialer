@@ -85,7 +85,7 @@ else
 </head>
 <body bgcolor=white>
 
-<?php 
+<?php
 
 
 echo "<br><br>\n";
@@ -112,8 +112,8 @@ else
 		{
 		$row=mysqli_fetch_row($rslt);
 		$phone = $QUERY_recid;
-		$recording_id = $row[0]; 
-		$lead_id =		$row[1]; 
+		$recording_id = $row[0];
+		$lead_id =		$row[1];
 		$user =			$row[2];
 		$filename =		$row[3];
 		$location =		$row[4];
@@ -122,7 +122,7 @@ else
 		$AUDname =	explode("/",$location);
 		$AUDnamect =	(count($AUDname)) - 1;
 
-		
+
 		preg_replace('/10\.10\.10\.16/i', "10.10.10.16",$AUDname[$AUDnamect]);
 
 		echo "Call Date/Time:        $start_time\n";
@@ -163,7 +163,7 @@ $RUNtime = ($ENDtime - $STARTtime);
 
 echo "\n\n\n<br><br><br>\n<FORM ACTION=\"$PHP_SELF\" METHOD=GET>\n";
 echo "<INPUT TYPE=text name=QUERY_recid size=12 maxlength=10>\n";
-echo "<INPUT type=submit name=submit value=submit>\n";
+echo "<INPUT type=submit name=submit value='"._QXZ("submit")."'>\n";
 echo "</FORM>\n";
 
 

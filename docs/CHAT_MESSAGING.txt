@@ -18,7 +18,7 @@ AGENT CHAT INTERFACE INSTRUCTIONS:
 
 If your system administrator has enabled the chat feature, when you log in to the Vicidial agent interface, you will see two tabs at the top of your interface labeled "CHAT INTERNAL" and "CHAT CUSTOMER".
 
-If you have any internal chats open, the words "CHAT INTERNAL" will appear in red. If you are involved in a chat where there are unread messages, the chat tab will be blinking red. To view the agent customer chat interface, simply click on the "CHAT CUSTOMER" tabs. The chat interface window will appear in place of the customer's information. If you have a chat with an unread message, that chat will automatically load in the agent screen by default, along with the name of the person you are chatting with and the date and time the chat started. If you have no unread messages, but have any open chats, the chat where the last message was posted will load by default. Otherwise, the screen will simply inform you that you have no active chats. 
+If you have any internal chats open, the words "CHAT INTERNAL" will appear in red. If you are involved in a chat where there are unread messages, the chat tab will be blinking red. To view the agent customer chat interface, simply click on the "CHAT CUSTOMER" tabs. The chat interface window will appear in place of the customer's information. If you have a chat with an unread message, that chat will automatically load in the agent screen by default, along with the name of the person you are chatting with and the date and time the chat started. If you have no unread messages, but have any open chats, the chat where the last message was posted will load by default. Otherwise, the screen will simply inform you that you have no active chats.
 
 In the chat window, messages posted by you are displayed in blue text, while messages posted by the person you are chatting with are displayed in red.
 
@@ -50,9 +50,9 @@ In the Administration web screen, there is a new link at the top of the screen n
 
 CUSTOMER CHAT INSTRUCTIONS:
 
-There is a new folder in the web directory called "chat_customer". You will find a file in this folder called "customer_chat_code.php" that you can use to write your own web page for a customer to chat from, or you can just use that page as your Chat URL. The Chat URL is a field in the System Settings that you need to populate in order for  the customer chat to work. To use the default for this, just add "chat_customer/customer_chat_code.php" to your current Vicidial webserver URL. For example, if your current webserver url is "http://192.168.1.2/" then you can use this as your Chat URL: 
+There is a new folder in the web directory called "chat_customer". You will find a file in this folder called "customer_chat_code.php" that you can use to write your own web page for a customer to chat from, or you can just use that page as your Chat URL. The Chat URL is a field in the System Settings that you need to populate in order for  the customer chat to work. To use the default for this, just add "chat_customer/customer_chat_code.php" to your current Vicidial webserver URL. For example, if your current webserver url is "http://192.168.1.2/" then you can use this as your Chat URL:
     "http://192.168.1.2/chat_customer/customer_chat_code.php"
-       or 
+       or
     "http://192.168.1.2/chat_customer/vicidial_chat_customer_side.php"
 
 
@@ -86,11 +86,11 @@ http://192.168.1.2/chat_customer/vicidial_chat_customer_side.php?status_link=Y&u
 
 Chat settings in System Settings:
 
-Allow Chats -This is where you can set whether this system will be able to receive incoming chats in addition to phone calls, as well as allow agent-to-agent and agent-to-manager chatting. 
+Allow Chats -This is where you can set whether this system will be able to receive incoming chats in addition to phone calls, as well as allow agent-to-agent and agent-to-manager chatting.
 
-Chat Timeout -This is where you can set how long a customer chat can stay alive after the customer has navigated away from or closed their chat window. When the timeout is reached the chat is closed. 
+Chat Timeout -This is where you can set how long a customer chat can stay alive after the customer has navigated away from or closed their chat window. When the timeout is reached the chat is closed.
 
-Chat URL -This is the location where you have placed the chat web pages for customer use. 
+Chat URL -This is the location where you have placed the chat web pages for customer use.
 
 
 NOTE: You will need to Allow Chat on the campaign that you want agents to handle Chat InGroups from

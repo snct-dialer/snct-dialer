@@ -3,7 +3,7 @@
 #
 # Copyright (C) 2016  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
-# Example for incorporating the customer side of the Vicidial chat into a web page.  
+# Example for incorporating the customer side of the Vicidial chat into a web page.
 # Can be called as an include file, if desired.
 #
 # Builds:

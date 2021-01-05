@@ -1,12 +1,12 @@
 <?php
 # options.php - manually defined options for vicidial admin scripts
-# 
-# Copyright (C) 2016  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # rename this file to options.php for the settings here to go into effect
 #
 # CHANGELOG
-# 101216-1043 - First Build 
+# 101216-1043 - First Build
 # 110307-1039 - Added upper-case/lower-case user setting
 # 110708-1730 - Added precision time setting
 # 120102-2112 - Added inventory_allow_realtime option
@@ -21,6 +21,10 @@
 # 160102-1249 - Added htmlconvert option for modify lead pages
 # 160106-1321 - Added disable_user_group_bulk_change option
 # 160715-0752 - Added graph_canvas_size option for HTML reports
+# 190414-1121 - Added RS_logoutLINK
+# 190420-1722 - Added RS_ListenBarge
+# 190503-1544 - Added enable_status_mismatch_leadloader_option
+# 190525-2145 - Added RS_agentWAIT option
 #
 
 # used by the realtime_report.php script
@@ -61,6 +65,10 @@ $RS_CARRIERstats =		0;	# 0=no, 1=yes
 $RS_PRESETstats =		0;	# 0=no, 1=yes
 $RS_AGENTtimeSTATS =	0;	# 0=no, 1=yes
 $RS_droppedOFtotal =	0;	# 0=no, 1=yes
+$RS_logoutLINK =		0;	# 0=no, 1=yes
+$RS_ListenBarge =		'MONITOR|BARGE|WHISPER';	# list of listen-related features separated by pipes: "MONITOR|BARGE|WHISPER"
+$RS_agentWAIT =			3;	# 3 or 4
+
 
 # used by agent reports
 $user_case =			0;		# 1=upper-case, 2-lower-case, 0-no-case-change
@@ -86,10 +94,10 @@ $firstlastname_display_user_stats = 0;
 # agent time detail report login/logout link for user
 $atdr_login_logout_user_link = 0;
 
-# alternate calculation of 'Percent of DROP Calls taken out of Answers' in AST_VDADstats.php 
+# alternate calculation of 'Percent of DROP Calls taken out of Answers' in AST_VDADstats.php
 $DROPANSWERpercent_adjustment = 0;
 
-# Display only active campaigns by default in admin.php Campaigns Listings page 
+# Display only active campaigns by default in admin.php Campaigns Listings page
 $active_only_default_campaigns = 0;
 
 # convert data to html readable in modify lead page fields
@@ -100,5 +108,15 @@ $disable_user_group_bulk_change=0;
 
 # canvas size in pixels for Chartjs-style graphs (width and height)
 $graph_canvas_size=600;
+
+# enable the leadloader's duplicate-with-status-mismatch setting
+$enable_status_mismatch_leadloader_option=0;
+
+# on RealtimeReport display all Inbounds if selected Campaignes
+$displayAllInbound = 'Y';
+
+# display external link at admin_modify_lead.php
+$ExtLink_admin_modify_lead = '';
+ 
 
 ?>

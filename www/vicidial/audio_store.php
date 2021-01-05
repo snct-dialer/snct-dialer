@@ -1,38 +1,49 @@
 <?php
-# audio_store.php
-# 
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+###############################################################################
 #
-# Central Audio Storage script
-# 
-# CHANGES
-# 90511-1325 - First build
-# 90618-0640 - Fix for users going through proxy or tunnel
-# 100401-1037 - remove spaces and special characters from filenames, admin log uploads
-# 110922-2331 - Added modify_audiostore user option for access
-# 111122-1332 - Added more filename filtering
-# 120525-0739 - Added yet more filename filtering
-# 120529-1345 - Filename filter fix
-# 120531-1747 - Another filtering fix
-# 121019-0816 - Added audio file delete process
-# 121129-1620 - Hide delete option text if not allowed
-# 130610-1052 - Finalized changing of all ereg instances to preg
-# 130620-1729 - Added filtering of input to prevent SQL injection attacks and new user auth
-# 130901-2001 - Changed to mysqli PHP functions
-# 141007-2042 - Finalized adding QXZ translation to all admin files
-# 141229-2052 - Added code for on-the-fly language translations display
-# 160330-1550 - navigation changes and fixes, added force_allow var
-# 160508-0139 - Added screen colors feature
-# 160613-1002 - Added feature to copy recordings to a new filename
-# 170301-1650 - Added validation that sounds web dir exists
-# 170409-1555 - Added IP List validation code
-# 170630-1440 - Require modify_audiostore user permissions to access this page
-# 180508-0115 - Added new help display
-# 180618-2300 - Modified calls to audio file chooser function
+# Modul audio_store.php
+#
+# SNCT-Dialer™ Main Audio Storage script
+#
+# Copyright (©) 2020      SNCT GmbH <info@snct-gmbh.de>
+#               2020      Jörg Frings-Fürst <open_source@jff.email>
+#
+# LICENSE: AGPLv3
+#
+###############################################################################
+#
+# based on VICIdial®
+# (© 2018  Matt Florell <vicidial@gmail.com>)
+#
+###############################################################################
+#
+# requested Module:
+#
+# dbconnect_mysqli.php
+# functions.php
+# SNCTVersion.inc
+# ../tools/system_wide_settings.php
+# admin_header.php
+# ExtraMenueReports.php
+# ./class.Diff.php
+# options.php
+#
+###############################################################################
+#
+# Version  / Build
+#
+$audio_store_version = '3.0.1-1';
+$audio_store_build = '20201125-1';
+#
+###############################################################################
+#
+# Changelog
+#
+# 20201125 jff	Add .mp3 and .ogg Upload handling
+#
+#
 #
 
-$version = '2.14-22';
-$build = '170630-1440';
 
 $MT[0]='';
 
@@ -102,11 +113,10 @@ if ($ss_conf_ct > 0)
 
 
 ### check if sounds server matches this server IP, if not then exit with an error
-if ( ( ( (strlen($sounds_web_server)) != (strlen($server_name)) ) or (!preg_match("/$sounds_web_server/i",$server_name) ) ) and ($force_allow!='FORCED') )
-	{
+if ( strlen($sounds_web_server) == 0) {
 	echo _QXZ("ERROR").": "._QXZ("server")."($server_name) "._QXZ("does not match sounds web server ip")."($sounds_web_server)\n";
 	exit;
-	}
+}
 
 if (preg_match("/;|:|\/|\^|\[|\]|\"|\'|\*/",$AF_orig))
 	{
@@ -118,11 +128,11 @@ if (preg_match("/;|:|\/|\^|\[|\]|\"|\'|\*/",$AF_orig))
 if (strlen($sounds_web_directory) < 30)
 	{
 	$sounds_web_directory = '';
-	$possible = "0123456789cdfghjkmnpqrstvwxyz";  
-	$i = 0; 
+	$possible = "0123456789cdfghjkmnpqrstvwxyz";
+	$i = 0;
 	$length = 30;
-	while ($i < $length) 
-		{ 
+	while ($i < $length)
+		{
 		$char = substr($possible, mt_rand(0, strlen($possible)-1), 1);
 		$sounds_web_directory .= $char;
 		$i++;
@@ -136,7 +146,7 @@ if (strlen($sounds_web_directory) < 30)
 	echo _QXZ("NOTICE").": "._QXZ("new web directory created")."\n";
 	}
 
-if (!file_exists("$WeBServeRRooT/$sounds_web_directory")) 
+if (!file_exists("$WeBServeRRooT/$sounds_web_directory"))
 	{
 	echo _QXZ("ERROR").": "._QXZ("audio store web directory does not exist").": $WeBServeRRooT/$sounds_web_directory\n";
 	exit;
@@ -277,12 +287,12 @@ if ($action == "LIST")
 	$filename_sort=$MT;
 	$dirpath = "$WeBServeRRooT/$sounds_web_directory";
 	$dh = opendir($dirpath);
-	while (false !== ($file = readdir($dh))) 
+	while (false !== ($file = readdir($dh)))
 		{
 		# Do not list subdirectories
 		if ( (!is_dir("$dirpath/$file")) and (preg_match('/\.wav$|\.gsm$/', $file)) )
 			{
-			if (file_exists("$dirpath/$file")) 
+			if (file_exists("$dirpath/$file"))
 				{
 				$file_names[$i] = $file;
 				$file_epoch[$i] = filemtime("$dirpath/$file");
@@ -407,6 +417,24 @@ if ($action == "COPYFILE")
 			$copy_message = _QXZ("SUCCESS").": $new_audiofile$suffix "._QXZ("copied")."     "._QXZ("size").": $new_filesize "._QXZ("from")." $master_audiofile$suffix\n";
 			$copied++;
 			}
+		$suffix='.ogg';
+		if (file_exists("$WeBServeRRooT/$sounds_web_directory/$master_audiofile$suffix")) {
+			copy("$WeBServeRRooT/$sounds_web_directory/$master_audiofile$suffix", "$WeBServeRRooT/$sounds_web_directory/$new_audiofile$suffix");
+			chmod("$WeBServeRRooT/$sounds_web_directory/$new_audiofile$suffix", 0766);
+			
+			$new_filesize = filesize("$WeBServeRRooT/$sounds_web_directory/$new_audiofile$suffix");
+			$copy_message = _QXZ("SUCCESS").": $new_audiofile$suffix "._QXZ("copied")."     "._QXZ("size").": $new_filesize "._QXZ("from")." $master_audiofile$suffix\n";
+			$copied++;
+		}
+		$suffix='.mp3';
+		if (file_exists("$WeBServeRRooT/$sounds_web_directory/$master_audiofile$suffix")) {
+			copy("$WeBServeRRooT/$sounds_web_directory/$master_audiofile$suffix", "$WeBServeRRooT/$sounds_web_directory/$new_audiofile$suffix");
+			chmod("$WeBServeRRooT/$sounds_web_directory/$new_audiofile$suffix", 0766);
+			
+			$new_filesize = filesize("$WeBServeRRooT/$sounds_web_directory/$new_audiofile$suffix");
+			$copy_message = _QXZ("SUCCESS").": $new_audiofile$suffix "._QXZ("copied")."     "._QXZ("size").": $new_filesize "._QXZ("from")." $master_audiofile$suffix\n";
+			$copied++;
+		}
 
 		if ($copied < 1)
 			{
@@ -438,7 +466,7 @@ if ($action == "COPYFILE")
 <html>
 <head>
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
-<!-- VERSION: <?php echo $version ?>     BUILD: <?php echo $build ?> -->
+<!-- VERSION: <?php echo $audio_store_version ?>     BUILD: <?php echo $audio_store_build ?> -->
 
 <link rel="stylesheet" type="text/css" href="vicidial_stylesheet.php">
 <script language="JavaScript" src="help.js"></script>
@@ -478,7 +506,7 @@ require("admin_header.php");
 ?>
 <TABLE WIDTH=<?php echo $page_width ?> BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR BGCOLOR=#E6E6E6><TD ALIGN=LEFT><FONT FACE="ARIAL,HELVETICA" SIZE=2><B> &nbsp; <?php echo _QXZ("Audio Store"); ?></TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" SIZE=2><B> &nbsp; </TD></TR>
 
-<?php 
+<?php
 
 echo "<TR BGCOLOR=\"#$SSframe_background\"><TD ALIGN=LEFT COLSPAN=2><img src=\"images/icon_audiostore.png\" width=42 height=42 align=left> <FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=3><B> &nbsp; \n";
 
@@ -517,7 +545,7 @@ echo "$copy_message";
 
 if ($action == "MANUALUPLOAD")
 	{
-	if ($audiofile) 
+	if ($audiofile)
 		{
 		$AF_path = preg_replace("/ /",'\ ',$AF_path);
 		$AF_path = preg_replace("/@/",'\@',$AF_path);
@@ -541,7 +569,7 @@ if ($action == "MANUALUPLOAD")
 		$audiofile_name = preg_replace("/\^/",'',$audiofile_name);
 		copy($AF_path, "$WeBServeRRooT/$sounds_web_directory/$audiofile_name");
 		chmod("$WeBServeRRooT/$sounds_web_directory/$audiofile_name", 0766);
-		
+
 		echo _QXZ("SUCCESS").": $audiofile_name "._QXZ("uploaded")."     "._QXZ("size").":" . filesize("$WeBServeRRooT/$sounds_web_directory/$audiofile_name") . "\n";
 
 		$stmt="UPDATE servers SET sounds_update='Y';";
@@ -577,7 +605,7 @@ if ($action == "MANUALUPLOAD")
   <tr>
 	<td align=center colspan=2><input type=submit name=submit value='<?php echo _QXZ("submit"); ?>'></td>
   </tr>
-  <tr><td align=left><font size=1> &nbsp; </font></td><td align=right><font size=1><?php echo _QXZ("Audio Store"); ?>- &nbsp; &nbsp; <?php echo _QXZ("VERSION"); ?>: <?php echo $version ?> &nbsp; &nbsp; <?php echo _QXZ("BUILD"); ?>: <?php echo $build ?> &nbsp; &nbsp; </td></tr>
+  <tr><td align=left><font size=1> &nbsp; </font></td><td align=right><font size=1><?php echo _QXZ("Audio Store"); ?>- &nbsp; &nbsp; <?php echo _QXZ("VERSION"); ?>: <?php echo $audio_store_version ?> &nbsp; &nbsp; <?php echo _QXZ("BUILD"); ?>: <?php echo $audio_store_build ?> &nbsp; &nbsp; </td></tr>
 </table>
 </form>
 <BR><BR>
@@ -595,7 +623,7 @@ echo "<input type=hidden name=force_allow value=\"$force_allow\">\n";
 echo _QXZ("Original file").": <input type=text size=50 maxlength=100 name=master_audiofile id=master_audiofile value=\"\"><BR>\n";
 echo _QXZ("New file").": <input type=text size=50 maxlength=100 name=new_audiofile id=new_audiofile value=\"\"><BR>\n";
 echo "<input type=hidden name=DB value=\"$DB\">\n";
-echo "<input type=submit name=submit value=submit></form>\n";
+echo "<input type=submit name=submit value='"._QXZ("submit")."'></form>\n";
 
 ?>
 
@@ -611,7 +639,7 @@ if ($auth_delete > 0)
 	echo "<input type=hidden name=force_allow value=\"$force_allow\">\n";
 	echo "<input type=text size=50 maxlength=100 name=delete_file id=delete_file value=\"\">\n";
 	echo "<input type=hidden name=DB value=\"$DB\">\n";
-	echo "<input type=submit name=submit value=submit>\n";
+	echo "<input type=submit name=submit value='"._QXZ("submit")."'>\n";
 	}
 else
 	{

@@ -1,10 +1,10 @@
 #!/usr/bin/perl
 #
 # agi-VDAD_inbound_calltime_check.agi   version 2.14
-# 
+#
 # Runs when a call comes in from an inbound call. This script will check the
 # settings of the defined calltime scheme in VICIDIAL and either send the call
-# to the after-hours method for the defined IN-GROUP or exit to let the call 
+# to the after-hours method for the defined IN-GROUP or exit to let the call
 # continue. This script is also used by Call Menus.
 #
 # You need to put lines similar to those below in your extensions.conf file:
@@ -20,7 +20,7 @@
 # ; 5. call route after hours override
 # ; 6. call route value after hours override
 # ; 7. call route context after hours override
-# ; 8. vicidial_list query qualification (YES/NO, default is NO) 
+# ; 8. vicidial_list query qualification (YES/NO, default is NO)
 # ;    * only works with lead_id-populated calleridname phone calls.
 # ;    This option allows you to specify a SQL fragment used to do a count(*)
 # ;    against the vicidial_list table for the lead and other field values
@@ -130,16 +130,16 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port) {$VARDB_port='3306';}
-if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout";}
-if (!$PRSLOGfile) {$PRSLOGfile = "$PATHlogs/prsout";}
-if (!$PRSTESTfile) {$PRSTESTfile = "$PATHlogs/prstest";}
+if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout.log";}
+if (!$PRSLOGfile) {$PRSLOGfile = "$PATHlogs/prsout.log";}
+if (!$PRSTESTfile) {$PRSTESTfile = "$PATHlogs/prstest.log";}
 
 use DBI;
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
     or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
@@ -192,7 +192,7 @@ if (length($ARGV[0])>1)
 		if ($AGILOG) {$agi_string = "$i|$ARGV[$i]";   &agi_output;}
 		$i++;
 		}
-	
+
 	### list of command-line array arguments:
 	@ARGV_vars = split(/-----/, $ARGV[0]);
 
@@ -208,7 +208,7 @@ if (length($ARGV[0])>1)
 	}
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 	{
 	chomp;
 	last unless length($_);
@@ -302,7 +302,7 @@ else
 if (length($callerid)<8) {$callerid = $parked_by;}
 if (length($pin)>0) {$callerid = $pin;}
 
-foreach $i (sort keys %AGI) 
+foreach $i (sort keys %AGI)
 	{
 	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
 	}
@@ -406,37 +406,37 @@ if (length($route_context_override) > 1)
 	$ext_context = $route_context_override;
 	}
 
-if ($wday==0) 
+if ($wday==0)
 	{
 	$daySQL=',ct_sunday_start,ct_sunday_stop';
 	$yestSQL=',ct_saturday_start,ct_saturday_stop';
 	}
-if ($wday==1) 
+if ($wday==1)
 	{
 	$daySQL=',ct_monday_start,ct_monday_stop';
 	$yestSQL=',ct_sunday_start,ct_sunday_stop';
 	}
-if ($wday==2) 
+if ($wday==2)
 	{
 	$daySQL=',ct_tuesday_start,ct_tuesday_stop';
 	$yestSQL=',ct_monday_start,ct_monday_stop';
 	}
-if ($wday==3) 
+if ($wday==3)
 	{
 	$daySQL=',ct_wednesday_start,ct_wednesday_stop';
 	$yestSQL=',ct_tuesday_start,ct_tuesday_stop';
 	}
-if ($wday==4) 
+if ($wday==4)
 	{
 	$daySQL=',ct_thursday_start,ct_thursday_stop';
 	$yestSQL=',ct_wednesday_start,ct_wednesday_stop';
 	}
-if ($wday==5) 
+if ($wday==5)
 	{
 	$daySQL=',ct_friday_start,ct_friday_stop';
 	$yestSQL=',ct_thursday_start,ct_thursday_stop';
 	}
-if ($wday==6) 
+if ($wday==6)
 	{
 	$daySQL=',ct_saturday_start,ct_saturday_stop';
 	$yestSQL=',ct_friday_start,ct_friday_stop';
@@ -462,12 +462,12 @@ if ($sthArows > 0)
 	$ct_holidays =			$aryA[6];
 	$sthA->finish();
 
-	if ( ($ct_yest_start < 1) && ($ct_yest_stop < 1) )  
+	if ( ($ct_yest_start < 1) && ($ct_yest_stop < 1) )
 		{
 		$ct_yest_start =		$ct_default_start;
 		$ct_yest_stop =			$ct_default_stop;
 		}
-	if ( ($ct_day_start > 0) || ($ct_day_stop > 0) )  
+	if ( ($ct_day_start > 0) || ($ct_day_stop > 0) )
 		{
 		$ct_default_start =		$ct_day_start;
 		$ct_default_stop =		$ct_day_stop;
@@ -555,7 +555,7 @@ if ( ( ($hm < $ct_default_start) || ($hm > $ct_default_stop) ) && ($hm >= $ct_st
 	### QueueMetrics logging if enabled
 	if ($enable_queuemetrics_logging > 0)
 		{
-		$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+		$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass", { mysql_enable_utf8 => 1 })
 		 or die "Couldn't connect to database: " . DBI->errstr;
 
 		if ($DBX) {print "CONNECTED TO QueueMetrics DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
@@ -579,7 +579,7 @@ if ( ( ($hm < $ct_default_start) || ($hm > $ct_default_stop) ) && ($hm >= $ct_st
 			}
 		if ($after_hours_action =~ /VOICEMAIL|VMAIL_NO_INST/)
 			{
-			if ($after_hours_action =~ /VMAIL_NO_INST/) 
+			if ($after_hours_action =~ /VMAIL_NO_INST/)
 				{$voicemail_dump_exten = $voicemail_dump_exten_no_inst;}
 			$DROPexten = "$voicemail_dump_exten$after_hours_voicemail";
 			}
@@ -618,7 +618,7 @@ if ( ( ($hm < $ct_default_start) || ($hm > $ct_default_stop) ) && ($hm >= $ct_st
 
 		### insert a NEW record to the vicidial_manager table to hangup the channel
 		$stmtA = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$VARserver_ip','','Hangup','$VHqueryCID','Channel: $channel','','','','','','','','','')";
-		$affected_rows = $dbhA->do($stmtA);  
+		$affected_rows = $dbhA->do($stmtA);
 		if ($AGILOG) {$agi_string = "--    VDCL call_hungup after hours: |$VHqueryCID|$VDADconf_exten|$channel|insert to vicidial_manager";   &agi_output;}
 		}
 
@@ -683,7 +683,7 @@ if ( ($call_menu_qualify_enabled > 0) && ($query_qualification =~ /YES/) && ( ($
 			print "SET PRIORITY 1\n";
 				$result = <STDIN>;
 				checkresult($result);
-			
+
 			exit;
 			}
 		}
@@ -744,7 +744,7 @@ else
 ### QueueMetrics logging if enabled
 if ($enable_queuemetrics_logging > 0)
 	{
-	$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+	$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass", { mysql_enable_utf8 => 1 })
 	 or die "Couldn't connect to database: " . DBI->errstr;
 
 	if ($DBX) {print "CONNECTED TO QueueMetrics DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
@@ -770,27 +770,27 @@ exit;
 
 
 
-sub checkresult 
+sub checkresult
 	{
 	my ($res) = @_;
 	my $retval;
 	$tests++;
 	chomp $res;
-	if ($res =~ /^200/) 
+	if ($res =~ /^200/)
 		{
 		$res =~ /result=(-?\d+)/;
-		if (!length($1)) 
+		if (!length($1))
 			{
 		#	print STDERR "FAIL ($res)\n";
 			$fail++;
-			} 
-		else 
+			}
+		else
 			{
 		#	print STDERR "PASS ($1)\n";
 			$pass++;
 			}
-		} 
-	else 
+		}
+	else
 		{
 	#	print STDERR "FAIL (unexpected result '$res')\n";
 		$fail++;

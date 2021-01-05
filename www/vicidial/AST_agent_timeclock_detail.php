@@ -1,9 +1,9 @@
-<?php 
+<?php
 # AST_agent_timeclock_detail.php
-# 
+#
 # Pulls all timeclock records for an agent
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 90602-2244 - First build
@@ -28,6 +28,7 @@
 # 170409-1555 - Added IP List validation code
 # 170829-0040 - Added screen color settings
 # 171012-2015 - Fixed javascript/apache errors with graphs
+# 191013-0833 - Fixes for PHP7
 #
 
 $startMS = microtime();
@@ -303,6 +304,7 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $campaigns_to_print = mysqli_num_rows($rslt);
 $i=0;
+$groups=array();
 while ($i < $campaigns_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -314,6 +316,7 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $user_groups_to_print = mysqli_num_rows($rslt);
 $i=0;
+$user_groups=array();
 while ($i < $user_groups_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -367,6 +370,8 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $statha_to_print = mysqli_num_rows($rslt);
 $i=0;
+$pause_code=array();
+$pause_code_name=array();
 while ($i < $statha_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -496,11 +501,11 @@ window.open(url,"",'width=620,height=300,scrollbars=yes,menubar=yes,address=yes'
 	echo "</TD><TD VALIGN=TOP>";
 	echo _QXZ("Display as").":&nbsp;&nbsp;&nbsp;<BR>";
 	echo "<select name='report_display_type'>";
-	if ($report_display_type) {echo "<option value='$report_display_type' selected>$report_display_type</option>";}
+	if ($report_display_type) {echo "<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
 	echo "<option value='TEXT'>"._QXZ("TEXT")."</option><option value='HTML'>"._QXZ("HTML")."</option></select>\n<BR><BR>";
 	echo "</TD><TD VALIGN=TOP>"._QXZ("Shift").":<BR>";
 	echo "<SELECT SIZE=1 NAME=shift>\n";
-	echo "<option selected value=\"$shift\">$shift</option>\n";
+	echo "<option selected value=\"$shift\">"._QXZ("$shift")."</option>\n";
 	echo "<option value=\"\">--</option>\n";
 	echo "<option value=\"AM\">"._QXZ("AM")."</option>\n";
 	echo "<option value=\"PM\">"._QXZ("PM")."</option>\n";
@@ -534,7 +539,7 @@ window.open(url,"",'width=620,height=300,scrollbars=yes,menubar=yes,address=yes'
 	############################################################################
 	##### END HTML form section
 	############################################################################
-	
+
 
 	echo "<span style=\"z-index:19;\" id=agent_status_stats>\n";
 	echo "<PRE><FONT SIZE=2>\n";
@@ -549,31 +554,31 @@ if (strlen($user_group[0]) < 1)
 
 else
 	{
-	if ($shift == 'TEST') 
+	if ($shift == 'TEST')
 		{
-		$time_BEGIN = "09:45:00";  
+		$time_BEGIN = "09:45:00";
 		$time_END = "10:00:00";
 		}
-	if ($shift == 'AM') 
+	if ($shift == 'AM')
 		{
 		$time_BEGIN=$AM_shift_BEGIN;
 		$time_END=$AM_shift_END;
-		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}   
+		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}
 		if (strlen($time_END) < 6) {$time_END = "15:14:59";}
 		}
-	if ($shift == 'PM') 
+	if ($shift == 'PM')
 		{
 		$time_BEGIN=$PM_shift_BEGIN;
 		$time_END=$PM_shift_END;
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "15:15:00";}
 		if (strlen($time_END) < 6) {$time_END = "23:15:00";}
 		}
-	if ($shift == 'ALL') 
+	if ($shift == 'ALL')
 		{
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}
 		if (strlen($time_END) < 6) {$time_END = "23:59:59";}
 		}
-	$query_date_BEGIN = "$query_date";   
+	$query_date_BEGIN = "$query_date";
 	$query_date_END = "$end_date";
 
 	if ($file_download < 1)
@@ -600,6 +605,9 @@ else
 	if ($DB) {echo "$stmt\n";}
 	$users_to_print = mysqli_num_rows($rslt);
 	$i=0;
+	$ULname=array();
+	$ULuser=array();
+	$ULgroup=array();
 	while ($i < $users_to_print)
 		{
 		$row=mysqli_fetch_row($rslt);
@@ -617,6 +625,8 @@ else
 	if ($DB) {echo "$stmt\n";}
 	$punches_to_print = mysqli_num_rows($rslt);
 	$i=0;
+	$TCuser=array();
+	$TCtime=array();
 	while ($i < $punches_to_print)
 		{
 		$row=mysqli_fetch_row($rslt);
@@ -663,6 +673,15 @@ else
 	$max_time=1;
 	$graph_stats=array();
 	$q=0;
+	$Suser=array();
+	$Stime=array();
+	$Sname=array();
+	$Sgroup=array();
+	$StimeTC=array();
+	$TOPsort=array();
+	$TOPsortTALLY=array();
+	$TOPsorted_output=array();
+	$TOPsorted_outputFILE=array();
 	while ( ($m < $uc) and ($m < 50000) )
 		{
 		$TCdetail='';
@@ -698,7 +717,7 @@ else
 				$punches_found++;
 				$RAWtimeTCsec =		$TCtime[$n];
 				$TOTtimeTC =		($TOTtimeTC + $TCtime[$n]);
-				$StimeTC[$m]=		sec_convert($TCtime[$n],'H'); 
+				$StimeTC[$m]=		sec_convert($TCtime[$n],'H');
 				$RAWtimeTC =		$StimeTC[$m];
 				if ($RAWtimeTCsec>$max_time) {$max_time=$RAWtimeTCsec;}
 				$StimeTC[$m] =		sprintf("%10s", $StimeTC[$m]);
@@ -708,7 +727,7 @@ else
 		if ($punches_found < 1)
 			{
 			$RAWtimeTCsec =		"0";
-			$StimeTC[$m]=		"0:00"; 
+			$StimeTC[$m]=		"0:00";
 			$RAWtimeTC =		$StimeTC[$m];
 			$StimeTC[$m] =		sprintf("%10s", $StimeTC[$m]);
 			}
@@ -745,23 +764,23 @@ else
 		if ($TC_results > 0)
 			{$rawTCdetail = preg_replace('/,$/','',$rawTCdetail);}
 
-		$Stime[$m] =	sprintf("%10s", $Stime[$m]); 
+		$Stime[$m] =	sprintf("%10s", $Stime[$m]);
 		$SORTname =	sprintf("%-20s", $Sname[$m]);
 		$SORTgroup =	sprintf("%-20s", $Sgroup[$m]);
-		$Sgroup[$m] =	sprintf("%-20s", $Sgroup[$m]); 
+		$Sgroup[$m] =	sprintf("%-20s", $Sgroup[$m]);
 		$SORTgroup = preg_replace('/\s/', '0',$SORTgroup);
 		$SORTname = preg_replace('/\s/', '0',$SORTname);
 
 		if ($non_latin < 1)
 			{
-			$Sname[$m]=	sprintf("%-15s", $Sname[$m]); 
+			$Sname[$m]=	sprintf("%-15s", $Sname[$m]);
 			while(strlen($Sname[$m])>15) {$Sname[$m] = substr("$Sname[$m]", 0, -1);}
 			$Suser[$m] =		sprintf("%-8s", $TCuser[$m]);
 			while(strlen($Suser[$m])>8) {$Suser[$m] = substr("$Suser[$m]", 0, -1);}
 			}
 		else
-			{	
-			$Sname[$m]=	sprintf("%-45s", $Sname[$m]); 
+			{
+			$Sname[$m]=	sprintf("%-45s", $Sname[$m]);
 			while(mb_strlen($Sname[$m],'utf-8')>15) {$Sname[$m] = mb_substr("$Sname[$m]", 0, -1,'utf-8');}
 			$Suser[$m] =	sprintf("%-24s", $TCuser[$m]);
 			while(mb_strlen($Suser[$m],'utf-8')>8) {$Suser[$m] = mb_substr("$Suser[$m]", 0, -1,'utf-8');}
@@ -825,15 +844,15 @@ else
 		$graph_array=array("ATDdata|||time|");
 		$graph_id++;
 		$default_graph="bar"; # Graph that is initally displayed when page loads
-		include("graph_color_schemas.inc"); 
+		include("graph_color_schemas.inc");
 
 		$graph_totals_array=array();
 		$graph_totals_rawdata=array();
 		for ($q=0; $q<count($graph_array); $q++) {
-			$graph_info=explode("|", $graph_array[$q]); 
+			$graph_info=explode("|", $graph_array[$q]);
 			$current_graph_total=0;
 			$dataset_name=$graph_info[0];
-			$dataset_index=$graph_info[1]; 
+			$dataset_index=$graph_info[1];
 			$dataset_type=$graph_info[3];
 			if ($q==0) {$preload_dataset=$dataset_name;}  # Used below to load initial graph
 
@@ -852,7 +871,7 @@ else
 			$graphConstantsC="\t\t\t\thoverBorderColor: [";
 			for ($d=0; $d<count($graph_stats); $d++) {
 				$labels.="\"".$graph_stats[$d][0]." ".$graph_stats[$d][2]."\",";
-				$data.="\"".$graph_stats[$d][1]."\","; 
+				$data.="\"".$graph_stats[$d][1]."\",";
 				$current_graph_total+=$graph_stats[$d][1];
 				$bgcolor=$backgroundColor[($d%count($backgroundColor))];
 				$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
@@ -860,13 +879,13 @@ else
 				$graphConstantsA.="\"$bgcolor\",";
 				$graphConstantsB.="\"$hbgcolor\",";
 				$graphConstantsC.="\"$hbcolor\",";
-			}	
+			}
 			$graphConstantsA.="],\n";
 			$graphConstantsB.="],\n";
 			$graphConstantsC.="],\n";
 			$labels=preg_replace('/,$/', '', $labels)."],\n";
 			$data=preg_replace('/,$/', '', $data)."],\n";
-			
+
 			$graph_totals_rawdata[$q]=$current_graph_total;
 			switch($dataset_type) {
 				case "time":
@@ -917,7 +936,7 @@ else
 			$graphCanvas.="  </tr>\n";
 		}
 		$graphCanvas.="</table>\n";
-		
+
 		$GRAPH_text.=$graphCanvas;
 
 
@@ -940,6 +959,7 @@ else
 			{sort($TOPsort, SORT_STRING);}
 
 		$m=0;
+		$sort_order=array();
 		while ($m < $k)
 			{
 			$sort_split = explode("-----",$TOPsort[$m]);

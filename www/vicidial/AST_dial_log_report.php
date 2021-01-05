@@ -1,7 +1,7 @@
-<?php 
+<?php
 # AST_dial_log_report.php
-# 
-# Copyright (C) 2017  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# Copyright (C) 2019  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 130709-1346 - First build
@@ -12,6 +12,7 @@
 # 170409-1534 - Added IP List validation code
 # 170821-2323 - Added HTML formatting
 # 170829-0040 - Added screen color settings
+# 191013-0818 - Fixes for PHP7
 #
 
 $startMS = microtime();
@@ -135,7 +136,7 @@ $sip_response_directory = array(
 $master_sip_response_directory=array();
 $master_sip_response_verbiage_directory=array();
 $i=0;
-while (list($key, $val)=each($sip_response_directory)) 
+while (list($key, $val)=each($sip_response_directory))
 	{
 	$master_sip_response_directory[$i]=$key;
 	$master_sip_response_verbiage_directory[$i]=$val;
@@ -326,6 +327,8 @@ $server_stmt="select server_ip,server_description from servers where active_aste
 $server_rslt=mysql_to_mysqli($server_stmt, $link);
 $servers_to_print=mysqli_num_rows($server_rslt);
 $i=0;
+$LISTserverIPs=array();
+$LISTserver_names=array();
 while ($i < $servers_to_print)
 	{
 	$row=mysqli_fetch_row($server_rslt);
@@ -377,11 +380,11 @@ while($i < $sip_hangup_cause_ct)
 
 $sip_hangup_causes_string='|';
 
-$i=0; 
+$i=0;
 $sip_hangup_cause_SQL="";
 while($i < $sip_hangup_cause_ct)
 	{
-	if ( (strlen($sip_hangup_cause[$i]) > 0) and (preg_match("/\|$sip_hangup_cause[$i]\|/",$sip_hangup_cause_string)) ) 
+	if ( (strlen($sip_hangup_cause[$i]) > 0) and (preg_match("/\|$sip_hangup_cause[$i]\|/",$sip_hangup_cause_string)) )
 		{
 		$sip_hangup_causes_string .= "$sip_hangup_cause[$i]|";
 		$sip_hangup_causeQS .= "&sip_hangup_cause[]=$sip_hangup_cause[$i]";
@@ -393,7 +396,7 @@ while($i < $sip_hangup_cause_ct)
 if ( (preg_match('/\-\-ALL\-\-/',$sip_hangup_cause_string) ) or ($sip_hangup_cause_ct < 1) )
 	{
 	$HC_rpt_string="- "._QXZ("ALL SIP hangup causes")." ";
-	if (preg_match('/\-\-ALL\-\-/',$sip_hangup_cause_string)) 
+	if (preg_match('/\-\-ALL\-\-/',$sip_hangup_cause_string))
 		{
 		$sip_hangup_causeQS="&sip_hangup_cause[]=--ALL--";
 		$sip_hangup_cause_SQL="";
@@ -460,7 +463,7 @@ else
 $o=0;
 while ($servers_to_print > $o)
 	{
-	if (preg_match("/\|$LISTserverIPs[$o]\|/",$server_ip_string)) 
+	if (preg_match("/\|$LISTserverIPs[$o]\|/",$server_ip_string))
 		{$MAIN.="<option selected value=\"$LISTserverIPs[$o]\">$LISTserverIPs[$o] - $LISTserver_names[$o]</option>\n";}
 	else
 		{$MAIN.="<option value=\"$LISTserverIPs[$o]\">$LISTserverIPs[$o] - $LISTserver_names[$o]</option>\n";}
@@ -478,7 +481,7 @@ else
 $o=0;
 while ($sip_responses_to_print > $o)
 	{
-	if (preg_match("/\|$master_sip_response_directory[$o]\|/",$sip_hangup_causes_string)) 
+	if (preg_match("/\|$master_sip_response_directory[$o]\|/",$sip_hangup_causes_string))
 		{$MAIN.="<option selected value=\"$master_sip_response_directory[$o]\">$master_sip_response_directory[$o] - $master_sip_response_verbiage_directory[$o]</option>\n";}
 	else
 		{$MAIN.="<option value=\"$master_sip_response_directory[$o]\">$master_sip_response_directory[$o] - $master_sip_response_verbiage_directory[$o]</option>\n";}
@@ -490,8 +493,8 @@ $MAIN.="</TD>";
 $MAIN.="<TD ROWSPAN=2 VALIGN=middle align=center>\n";
 $MAIN.=_QXZ("Display as:")."<BR>";
 $MAIN.="<select name='report_display_type'>";
-if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>$report_display_type</option>";}
-$MAIN.="<option value='TEXT'>TEXT</option><option value='HTML'>HTML</option></select>\n<BR><BR>";
+if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
+$MAIN.="<option value='TEXT'>"._QXZ("TEXT")."</option><option value='HTML'>"._QXZ("HTML")."</option></select>\n<BR><BR>";
 $MAIN.="<INPUT TYPE=submit NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'><BR/><BR/>\n";
 $MAIN.="</TD></TR></TABLE>\n";
 $TEXT.="<PRE><font size=2>\n";
@@ -629,7 +632,7 @@ if ($SUBMIT && $query_date) {
 	}
 	$dial_log_rpt_hf.="\n";
 	$TEXT.=$dial_log_rpt_hf.$dial_log_rpt.$dial_log_rpt_hf;
-	
+
 	$TEXT.="</PRE>\n";
 	$HTML.="</tr></table>";
 

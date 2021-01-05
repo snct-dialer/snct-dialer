@@ -1,7 +1,7 @@
-<?php 
+<?php
 # AST_CLOSERsummary_hourly.php
-# 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -31,6 +31,7 @@
 # 170409-1555 - Added IP List validation code
 # 170829-0040 - Added screen color settings
 # 171012-2015 - Fixed javascript/apache errors with graphs
+# 191013-0831 - Fixes for PHP7
 #
 
 $startMS = microtime();
@@ -109,7 +110,7 @@ $table_name="vicidial_closer_log";
 $archive_table_name=use_archive_table($table_name);
 if ($archive_table_name!=$table_name) {$archives_available="Y";}
 
-if ($search_archived_data) 
+if ($search_archived_data)
 	{
 	$vicidial_closer_log_table=use_archive_table("vicidial_closer_log");
 	}
@@ -328,6 +329,8 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {$MAIN.="$stmt\n";}
 $groups_to_print = mysqli_num_rows($rslt);
 $i=0;
+$LISTgroups=array();
+$LISTgroup_names=array();
 $groups_string='|';
 #$LISTgroups[$i]='---NONE---';
 #$i++;
@@ -372,6 +375,9 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {$MAIN.="$stmt\n";}
 $statcats_to_print = mysqli_num_rows($rslt);
 $i=0;
+$vsc_id=array();
+$vsc_name=array();
+$vsc_count=array();
 while ($i < $statcats_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -386,6 +392,8 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {$MAIN.="$stmt\n";}
 $times_to_print = mysqli_num_rows($rslt);
 $i=0;
+$call_times=array();
+$call_time_names=array();
 while ($i < $times_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -414,7 +422,7 @@ $HEADER.="<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 require("chart_button.php");
-$HEADER.="<script src='chart/Chart.js'></script>\n"; 
+$HEADER.="<script src='chart/Chart.js'></script>\n";
 $HEADER.="<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
 
 $HEADER.="<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
@@ -483,7 +491,7 @@ if ($bareformat < 1)
 	$o=0;
 	while ($groups_to_print > $o)
 		{
-		if (preg_match("/\|$LISTgroups[$o]\|/",$group_string)) 
+		if (preg_match("/\|$LISTgroups[$o]\|/",$group_string))
 			{$MAIN.="<option selected value=\"$LISTgroups[$o]\">$LISTgroups[$o] - $LISTgroup_names[$o]</option>\n";}
 		else
 			{$MAIN.="<option value=\"$LISTgroups[$o]\">$LISTgroups[$o] - $LISTgroup_names[$o]</option>\n";}
@@ -498,21 +506,21 @@ if ($bareformat < 1)
 	$MAIN.="</FONT>\n";
 	$MAIN.="<BR> &nbsp; "._QXZ("Display as").":&nbsp;";
 	$MAIN.="<select name='report_display_type'>";
-	if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>$report_display_type</option>";}
+	if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
 	$MAIN.="<option value='TEXT'>"._QXZ("TEXT")."</option><option value='HTML'>"._QXZ("HTML")."</option></select>\n<BR>";
 	$MAIN.=" &nbsp; "._QXZ("Exclude Outbound Drop Groups").": <BR>";
 	$MAIN.=" &nbsp; <SELECT SIZE=1 NAME=exclude_rollover>\n";
-	$MAIN.="<option selected value=\"$exclude_rollover\">$exclude_rollover</option>\n";
+	$MAIN.="<option selected value=\"$exclude_rollover\">"._QXZ("$exclude_rollover")."</option>\n";
 	$MAIN.="<option value=\"YES\">"._QXZ("YES")."</option>\n";
 	$MAIN.="<option value=\"NO\">"._QXZ("NO")."</option>\n";
 	$MAIN.="</SELECT>\n";
-	if ($archives_available=="Y") 
+	if ($archives_available=="Y")
 	{
 	$MAIN.="<BR><input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."\n";
 	}
 
 	$MAIN.="<BR> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ";
-	$MAIN.="<INPUT TYPE=submit NAME=SUBMIT VALUE=SUBMIT>\n";
+	$MAIN.="<INPUT TYPE=submit NAME=SUBMIT VALUE'"._QXZ("SUBMIT")."'>\n";
 
 	$MAIN.="</TD></TR>\n";
 	$MAIN.="<TR><TD>\n";
@@ -542,12 +550,12 @@ if ($groups_to_print < 1)
 
 else
 	{
-	if ($shift == 'ALL') 
+	if ($shift == 'ALL')
 		{
 		$Gct_default_start = "0";
 		$Gct_default_stop = "2400";
 		}
-	else 
+	else
 		{
 		$stmt="SELECT call_time_id,call_time_name,call_time_comments,ct_default_start,ct_default_stop,ct_sunday_start,ct_sunday_stop,ct_monday_start,ct_monday_stop,ct_tuesday_start,ct_tuesday_stop,ct_wednesday_start,ct_wednesday_stop,ct_thursday_start,ct_thursday_stop,ct_friday_start,ct_friday_stop,ct_saturday_start,ct_saturday_stop,ct_state_call_times FROM vicidial_call_times where call_time_id='$shift';";
 		$rslt=mysql_to_mysqli($stmt, $link);
@@ -580,6 +588,7 @@ else
 			}
 		}
 	$h=0;
+	$Hcalltime=array();
 	while ($h < 24)
 		{
 		$H_test = $h . "00";
@@ -590,7 +599,7 @@ else
 		$h++;
 		}
 
-	$query_date_BEGIN = "$query_date 00:00:00";   
+	$query_date_BEGIN = "$query_date 00:00:00";
 	$query_date_END = "$end_date 23:59:59";
 
 
@@ -626,6 +635,15 @@ else
 		$TOTqueue_avg=0;
 		$TOTmax_queue_seconds=0;
 		$TOTdrop_count=0;
+		$length_in_sec=array();
+		$queue_seconds=array();
+		$talk_sec=array();
+		$calls_count=array();
+		$drop_count=array();
+		$answer_count=array();
+		$max_queue_seconds=array();
+		$group_name=array();
+		$agent_alert_delay=array();
 		$SUBoutput='';
 
 		while($i < $group_ct)
@@ -777,11 +795,11 @@ else
 			if ($max_queue_seconds[$i]>$max_maxqueue) {$max_maxqueue=$max_queue_seconds[$i];}
 			if ($drop_count[$i]>$max_totalabandons) {$max_totalabandons=$drop_count[$i];}
 
-			$talk_sec[$i] =				sec_convert($talk_sec[$i],'H'); 
-			$talk_avg[$i] =				sec_convert($talk_avg[$i],'H'); 
-			$queue_seconds[$i] =		sec_convert($queue_seconds[$i],'H'); 
-			$queue_avg[$i] =			sec_convert($queue_avg[$i],'H'); 
-			$max_queue_seconds[$i] =	sec_convert($max_queue_seconds[$i],'H'); 
+			$talk_sec[$i] =				sec_convert($talk_sec[$i],'H');
+			$talk_avg[$i] =				sec_convert($talk_avg[$i],'H');
+			$queue_seconds[$i] =		sec_convert($queue_seconds[$i],'H');
+			$queue_avg[$i] =			sec_convert($queue_avg[$i],'H');
+			$max_queue_seconds[$i] =	sec_convert($max_queue_seconds[$i],'H');
 
 			$groupDISPLAY =	sprintf("%-40s", "$group[$i] - $group_name[$i]");
 			$gTOTALcalls =	sprintf("%6s", $calls_count[$i]);
@@ -801,15 +819,15 @@ else
 			$ASCII_text .= "<!-- OUT OF CALLTIME: $out_of_call_time -->\n";
 
 			### hour by hour sumaries
-			$SUBoutput .= "\n---------- $group[$i] - $group_name[$i]     HOURLY BREAKDOWN:\n";
+			$SUBoutput .= "\n---------- $group[$i] - $group_name[$i]     "._QXZ("HOURLY BREAKDOWN").":\n";
 			$SUBoutput .= "+------+--------+--------+-----------+---------+-----------+---------+---------+--------+\n";
-			$SUBoutput .= "|      |        |        |           |         | TOTAL     | AVERAGE | MAXIMUM | TOTAL  |\n";
-			$SUBoutput .= "|      | TOTAL  | TOTAL  | TOTAL     | AVERAGE | QUEUE     | QUEUE   | QUEUE   | ABANDON|\n";
-			$SUBoutput .= "| HOUR | CALLS  | ANSWER | TALK      | TALK    | TIME      | TIME    | TIME    | CALLS  |\n";
+			$SUBoutput .= "|      |        |        |           |         | "._QXZ("TOTAL", 9)." | "._QXZ("AVERAGE", 7)." | "._QXZ("MAXIMUM", 7)." | "._QXZ("TOTAL", 7)."|\n";
+			$SUBoutput .= "|      | "._QXZ("TOTAL", 6)." | "._QXZ("TOTAL", 6)." | "._QXZ("TOTAL", 9)." | "._QXZ("AVERAGE", 7)." | "._QXZ("QUEUE", 9)." | "._QXZ("QUEUE", 7)." | "._QXZ("QUEUE", 7)." | "._QXZ("ABANDON", 7)."|\n";
+			$SUBoutput .= "| "._QXZ("HOUR", 4)." | "._QXZ("CALLS", 6)." | "._QXZ("ANSWER", 6)." | "._QXZ("TALK", 9)." | "._QXZ("TALK", 7)." | "._QXZ("TIME", 9)." | "._QXZ("TIME", 7)." | "._QXZ("TIME", 7)." | "._QXZ("CALLS", 7)."|\n";
 			$SUBoutput .= "+------+--------+--------+-----------+---------+-----------+---------+---------+--------+\n";
 
-			$CSV_subreports.="\n\n\"$group[$i] - $group_name[$i]\"\n\"HOURLY BREAKDOWN:\"\n";
-			$CSV_subreports.="\"HOUR\",\"TOTAL CALLS\",\"TOTAL ANSWER\",\" TOTAL TALK\",\" AVERAGE TALK\",\" TOTAL QUEUE TIME\",\" AVERAGE QUEUE TIME\",\" MAXIMUM QUEUE TIME\",\" TOTAL ABANDON CALLS\"\n";
+			$CSV_subreports.="\n\n\"$group[$i] - $group_name[$i]\"\n\""._QXZ("HOURLY BREAKDOWN").":\"\n";
+			$CSV_subreports.="\""._QXZ("HOUR")."\",\""._QXZ("TOTAL CALLS")."\",\""._QXZ("TOTAL ANSWER")."\",\" "._QXZ("TOTAL TALK")."\",\" "._QXZ("AVERAGE TALK")."\",\" "._QXZ("TOTAL QUEUE TIME")."\",\" "._QXZ("AVERAGE QUEUE TIME")."\",\" "._QXZ("MAXIMUM QUEUE TIME")."\",\" "._QXZ("TOTAL ABANDON CALLS")."\"\n";
 
 			$sub_graph_stats=array();
 
@@ -855,12 +873,12 @@ else
 					if ($Hdrop_count[$h]>$sub_max_totalabandons) {$sub_max_totalabandons=$Hdrop_count[$h];}
 					$q++;
 
-					$Htalk_sec[$h] =			sec_convert($Htalk_sec[$h],'H'); 
-					$Htalk_avg[$h] =			sec_convert($Htalk_avg[$h],'H'); 
-					$Hqueue_seconds[$h] =		sec_convert($Hqueue_seconds[$h],'H'); 
-					$Hqueue_avg[$h] =			sec_convert($Hqueue_avg[$h],'H'); 
+					$Htalk_sec[$h] =			sec_convert($Htalk_sec[$h],'H');
+					$Htalk_avg[$h] =			sec_convert($Htalk_avg[$h],'H');
+					$Hqueue_seconds[$h] =		sec_convert($Hqueue_seconds[$h],'H');
+					$Hqueue_avg[$h] =			sec_convert($Hqueue_avg[$h],'H');
 					$Hmax_queue_seconds[$h] =	sec_convert($Hmax_queue_seconds[$h],'H');
-					
+
 					$hTOTALcalls =	sprintf("%6s", $Hcalls_count[$h]);
 					$hANSWERcalls =	sprintf("%6s", $Hanswer_count[$h]);
 					$hSUMtalk =		sprintf("%9s", $Htalk_sec[$h]);
@@ -873,11 +891,11 @@ else
 
 					$SUBoutput .= "| $hPRINT   | $hTOTALcalls | $hANSWERcalls | $hSUMtalk | $hAVGtalk | $hSUMqueue | $hAVGqueue | $hMAXqueue | $hDROPcalls |\n";
 					$CSV_subreports.="\"$hPRINT\",\"$hTOTALcalls\",\"$hANSWERcalls\",\"$hSUMtalk\",\"$hAVGtalk\",\"$hSUMqueue\",\"$hAVGqueue\",\"$hMAXqueue\",\"$hDROPcalls\"\n";
-					
+
 					}
 
 				$h++;
-				}			
+				}
 
 			$hTOTtalk_avg = MathZDC($hTOTtalk_sec, $hTOTanswer_count);
 			$hTOTqueue_avg = MathZDC($hTOTqueue_seconds, $hTOTcalls_count);
@@ -891,11 +909,11 @@ else
 			$gTOTmax_queue_seconds+=$hTOTmax_queue_seconds;
 			$gTOTdrop_count+=$hTOTdrop_count;
 
-			$hTOTtalk_sec =			sec_convert($hTOTtalk_sec,'H'); 
-			$hTOTtalk_avg =			sec_convert($hTOTtalk_avg,'H'); 
-			$hTOTqueue_seconds =		sec_convert($hTOTqueue_seconds,'H'); 
-			$hTOTqueue_avg =			sec_convert($hTOTqueue_avg,'H'); 
-			$hTOTmax_queue_seconds =	sec_convert($hTOTmax_queue_seconds,'H'); 
+			$hTOTtalk_sec =			sec_convert($hTOTtalk_sec,'H');
+			$hTOTtalk_avg =			sec_convert($hTOTtalk_avg,'H');
+			$hTOTqueue_seconds =		sec_convert($hTOTqueue_seconds,'H');
+			$hTOTqueue_avg =			sec_convert($hTOTqueue_avg,'H');
+			$hTOTmax_queue_seconds =	sec_convert($hTOTmax_queue_seconds,'H');
 
 			$hTOTcalls_count =			sprintf("%6s", $hTOTcalls_count);
 			$hTOTanswer_count =			sprintf("%6s", $hTOTanswer_count);
@@ -911,12 +929,12 @@ else
 			$graph_id++;
 			$graph_array=array("ACSH_TOTALCALLS$group[$i]data|1|TOTAL CALLS|integer|", "ACSH_TOTALANSWER$group[$i]data|2|TOTAL ANSWER|integer|", "ACSH_TOTALTALK$group[$i]data|3|TOTAL TALK|time|", "ACSH_AVERAGETALK$group[$i]data|4|AVERAGE TALK|time|", "ACSH_TOTALQUEUE$group[$i]data|5|TOTAL QUEUE TIME|time|", "ACSH_AVERAGEQUEUE$group[$i]data|6|AVERAGE QUEUE TIME|time|", "ACSH_MAXQUEUE$group[$i]data|7|MAXIMUM QUEUE TIME|time|", "ACSH_TOTALABANDON$group[$i]data|8|TOTAL ABANDON CALLS|integer|");
 			$default_graph="bar"; # Graph that is initally displayed when page loads
-			include("graph_color_schemas.inc"); 
+			include("graph_color_schemas.inc");
 
 			$graph_totals_array=array();
 			$graph_totals_rawdata=array();
 			for ($q=0; $q<count($graph_array); $q++) {
-				$graph_info=explode("|", $graph_array[$q]); 
+				$graph_info=explode("|", $graph_array[$q]);
 				$current_graph_total=0;
 				$dataset_name=$graph_info[0];
 				$dataset_index=$graph_info[1];
@@ -945,13 +963,13 @@ else
 					$graphConstantsA.="\"$bgcolor\",";
 					$graphConstantsB.="\"$hbgcolor\",";
 					$graphConstantsC.="\"$hbcolor\",";
-				}	
+				}
 				$graphConstantsA.="],\n";
 				$graphConstantsB.="],\n";
 				$graphConstantsC.="],\n";
 				$labels=preg_replace('/,$/', '', $labels)."],\n";
 				$data=preg_replace('/,$/', '', $data)."],\n";
-				
+
 				$graph_totals_rawdata[$q]=$current_graph_total;
 				switch($dataset_type) {
 					case "time":
@@ -992,7 +1010,7 @@ else
 			$SUBoutput .= "|TOTALS| $hTOTcalls_count | $hTOTanswer_count | $hTOTtalk_sec | $hTOTtalk_avg | $hTOTqueue_seconds | $hTOTqueue_avg | $hTOTmax_queue_seconds | $hTOTdrop_count |\n";
 			$SUBoutput .= "+------+--------+--------+-----------+---------+-----------+---------+---------+--------+\n";
 			$CSV_subreports.="\"TOTALS\",\"$hTOTcalls_count\",\"$hTOTanswer_count\",\"$hTOTtalk_sec\",\"$hTOTtalk_avg\",\"$hTOTqueue_seconds\",\"$hTOTqueue_avg\",\"$hTOTmax_queue_seconds\",\"$hTOTdrop_count\"\n";
-			
+
 #			$SUBoutput.=$sub_GRAPH;
 
 			$i++;
@@ -1009,15 +1027,15 @@ else
 		$graph_id++;
 		$graph_array=array("ACSH_TOTALCALLSdata|1|TOTAL CALLS|integer|", "ACSH_TOTALANSWERdata|2|TOTAL ANSWERS|integer|", "ACSH_TOTALTALKdata|3|TOTAL TALK TIME|time|", "ACSH_AVERAGETALKdata|4|AGV TALK TIME|time|", "ACSH_TOTALQUEUEdata|5|TOTAL QUEUE TIME|time|", "ACSH_AVERAGEQUEUEdata|6|AVERAGE QUEUE TIME|time|", "ACSH_MAXQUEUEdata|7|MAXIMUM QUEUE TIME|time|", "ACSH_TOTALABANDONdata|8|TOTAL ABANDON CALLS|integer|");
 		$default_graph="bar"; # Graph that is initally displayed when page loads
-		include("graph_color_schemas.inc"); 
+		include("graph_color_schemas.inc");
 
 		$graph_totals_array=array();
 		$graph_totals_rawdata=array();
 		for ($q=0; $q<count($graph_array); $q++) {
-			$graph_info=explode("|", $graph_array[$q]); 
+			$graph_info=explode("|", $graph_array[$q]);
 			$current_graph_total=0;
 			$dataset_name=$graph_info[0];
-			$dataset_index=$graph_info[1]; 
+			$dataset_index=$graph_info[1];
 			$dataset_type=$graph_info[3];
 
 			$JS_text.="var $dataset_name = {\n";
@@ -1034,7 +1052,7 @@ else
 			$graphConstantsC="\t\t\t\thoverBorderColor: [";
 			for ($d=0; $d<count($graph_stats); $d++) {
 				$labels.="\"".preg_replace('/ +/', ' ', $graph_stats[$d][0])."\",";
-				$data.="\"".$graph_stats[$d][$dataset_index]."\","; 
+				$data.="\"".$graph_stats[$d][$dataset_index]."\",";
 				$current_graph_total+=$graph_stats[$d][$dataset_index];
 				$bgcolor=$backgroundColor[($d%count($backgroundColor))];
 				$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
@@ -1042,13 +1060,13 @@ else
 				$graphConstantsA.="\"$bgcolor\",";
 				$graphConstantsB.="\"$hbgcolor\",";
 				$graphConstantsC.="\"$hbcolor\",";
-			}	
+			}
 			$graphConstantsA.="],\n";
 			$graphConstantsB.="],\n";
 			$graphConstantsC.="],\n";
 			$labels=preg_replace('/,$/', '', $labels)."],\n";
 			$data=preg_replace('/,$/', '', $data)."],\n";
-			
+
 			$graph_totals_rawdata[$q]=$current_graph_total;
 			switch($dataset_type) {
 				case "time":
@@ -1085,13 +1103,13 @@ else
 		$GRAPH.=$graphCanvas;
 
 
-		
-		
-		$TOTtalk_sec =			sec_convert($TOTtalk_sec,'H'); 
-		$TOTtalk_avg =			sec_convert($TOTtalk_avg,'H'); 
-		$TOTqueue_seconds =		sec_convert($TOTqueue_seconds,'H'); 
-		$TOTqueue_avg =			sec_convert($TOTqueue_avg,'H'); 
-		$TOTmax_queue_seconds =	sec_convert($TOTmax_queue_seconds,'H'); 
+
+
+		$TOTtalk_sec =			sec_convert($TOTtalk_sec,'H');
+		$TOTtalk_avg =			sec_convert($TOTtalk_avg,'H');
+		$TOTqueue_seconds =		sec_convert($TOTqueue_seconds,'H');
+		$TOTqueue_avg =			sec_convert($TOTqueue_avg,'H');
+		$TOTmax_queue_seconds =	sec_convert($TOTmax_queue_seconds,'H');
 
 		$i =					sprintf("%4s", $i);
 		$TOTcalls_count =		sprintf("%6s", $TOTcalls_count);
@@ -1108,7 +1126,7 @@ else
 		$ASCII_text .= "+------------------------------------------+--------+--------+-----------+---------+-----------+---------+---------+--------+\n";
 
 		# $MAIN.=$GRAPH;
-		
+
 		$CSV_main.="\"TOTALS       In-Groups: $i\",\"$TOTcalls_count\",\"$TOTanswer_count\",\"$TOTtalk_sec\",\"$TOTtalk_avg\",\"$TOTqueue_seconds\",\"$TOTqueue_avg\",\"$TOTmax_queue_seconds\",\"$TOTdrop_count\"\n";
 		}
 
@@ -1167,7 +1185,7 @@ if ($file_download > 0)
 
 	echo "$CSV_text";
 	}
-else 
+else
 	{
 
 	if ($report_display_type=="HTML")
@@ -1191,7 +1209,7 @@ else
 
 	$ENDtime = date("U");
 	$RUNtime = ($ENDtime - $STARTtime);
-	echo "\n\nRun Time: $RUNtime seconds|$db_source\n";
+	echo "\n\n"._QXZ("Run Time").": $RUNtime "._QXZ("seconds")."|$db_source\n";
 	echo "</PRE>";
 	echo "</TD></TR></TABLE>";
 

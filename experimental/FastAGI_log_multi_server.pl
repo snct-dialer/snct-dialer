@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # FastAGI_log_multi_server.pl version 2.2.0   *DBI-version*
-# 
+#
 # Experimental Deamon using perl Net::Server that runs as FastAGI to reduce load
 # replaces the following AGI scripts:
 # - call_log.agi
@@ -9,32 +9,32 @@
 # - VD_hangup.agi
 #
 # This script needs to be running all of the time for AGI requests to work
-# 
+#
 # You need to put lines similar to those below in your extensions.conf file if the FastAGI is running on the same server as Asterisk:
-# 
+#
 # ;outbound dialing:
-# exten => _91NXXNXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log) 
+# exten => _91NXXNXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 #
 # ;inbound calls:
 # exten => 101,1,AGI(agi://127.0.0.1:4577/call_log)
 #   or
 # exten => 101,1,AGI(agi://127.0.0.1:4577/call_log--fullCID--${EXTEN}-----${CALLERID}-----${CALLERIDNUM}-----${CALLERIDNAME})
-# 
+#
 # ;all hangups:
 # exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})
-# 
+#
 #
 # If the FastAGI server will be handling multiple Asterisk servers you need to put the following in each Asterisk servers extensions.conf,
 # replacing "10.10.10.15" with ip address of the FastAGI server:
 #
 # ;outbound dialing:
-# exten => _91NXXNXXXXXX,1,AGI(agi://10.10.10.15:4577/call_log) 
+# exten => _91NXXNXXXXXX,1,AGI(agi://10.10.10.15:4577/call_log)
 #
 # ;inbound calls:
 # exten => 101,1,AGI(agi://10.10.10.15:4577/call_log)
 #   or
 # exten => 101,1,AGI(agi://10.10.10.15:4577/call_log--fullCID--${EXTEN}-----${CALLERID}-----${CALLERIDNUM}-----${CALLERIDNAME})
-# 
+#
 # ;all hangups:
 # exten => h,1,DeadAGI(agi://10.10.10.15:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})
 #
@@ -169,7 +169,7 @@ $SERVERLOG = 'N';
 $log_level = '0';
 
 use DBI;
-$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
 	or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
@@ -187,7 +187,7 @@ while ($sthBrows > $rec_count)
 $sthB->finish();
 $dbhB->disconnect();
 
-if ($SERVERLOG =~ /Y/) 
+if ($SERVERLOG =~ /Y/)
 	{
 	$childLOGfile = "$PATHlogs/FastAGIchildLOG";
 	$log_level = "4";
@@ -207,7 +207,7 @@ use Net::Server::PreFork; # any personality will do
 
 sub process_request {
 	my $self = shift;
-	
+
 	$process = 'begin';
 	$script = 'VDfastAGI';
 	########## Get current time, parse configs, get logging preferences ##########
@@ -238,62 +238,62 @@ sub process_request {
 		$line =~ s/ |>|\n|\r|\t|\#.*|;.*//gi;
 		if ($line =~ /^PATHhome/)
 			{
-			$PATHhome = $line;   
+			$PATHhome = $line;
 			$PATHhome =~ s/.*=//gi;
 			}
 		if ($line =~ /^PATHlogs/)
 			{
-			$PATHlogs = $line;   
+			$PATHlogs = $line;
 			$PATHlogs =~ s/.*=//gi;
 			}
 		if ($line =~ /^PATHagi/)
 			{
-			$PATHagi = $line;   
+			$PATHagi = $line;
 			$PATHagi =~ s/.*=//gi;
 			}
 		if ($line =~ /^PATHweb/)
 			{
-			$PATHweb = $line;   
+			$PATHweb = $line;
 			$PATHweb =~ s/.*=//gi;
 			}
 		if ($line =~ /^PATHsounds/)
 			{
-			$PATHsounds = $line;   
+			$PATHsounds = $line;
 			$PATHsounds =~ s/.*=//gi;
 			}
 		if ($line =~ /^PATHmonitor/)
 			{
-			$PATHmonitor = $line;   
+			$PATHmonitor = $line;
 			$PATHmonitor =~ s/.*=//gi;
 			}
 		if ($line =~ /^VARserver_ip/)
 			{
-			$VARserver_ip = $line;   
+			$VARserver_ip = $line;
 			$VARserver_ip =~ s/.*=//gi;
 			}
 		if ($line =~ /^VARDB_server/)
 			{
-			$VARDB_server = $line;   
+			$VARDB_server = $line;
 			$VARDB_server =~ s/.*=//gi;
 			}
 		if ($line =~ /^VARDB_database/)
 			{
-			$VARDB_database = $line;   
+			$VARDB_database = $line;
 			$VARDB_database =~ s/.*=//gi;
 			}
 		if ($line =~ /^VARDB_user/)
 			{
-			$VARDB_user = $line;   
+			$VARDB_user = $line;
 			$VARDB_user =~ s/.*=//gi;
 			}
 		if ($line =~ /^VARDB_pass/)
 			{
-			$VARDB_pass = $line;   
+			$VARDB_pass = $line;
 			$VARDB_pass =~ s/.*=//gi;
 			}
 		if ($line =~ /^VARDB_port/)
 			{
-			$VARDB_port = $line;   
+			$VARDB_port = $line;
 			$VARDB_port =~ s/.*=//gi;
 			}
 		$i++;
@@ -302,7 +302,7 @@ sub process_request {
 	if (!$VARDB_port) {$VARDB_port='3306';}
 	if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/FASTagiout";}
 
-	$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+	$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
 		or die "Couldn't connect to database: " . DBI->errstr;
 
 	### Grab Server values from the database
@@ -331,15 +331,15 @@ sub process_request {
 
 	### if client is connecting from localhost ###
 	### use the ip address in the config file ###
-	if ( $ast_server_ip eq "127.0.0.1" ) 
+	if ( $ast_server_ip eq "127.0.0.1" )
 		{
 			$ast_server_ip = $VARserver_ip;
 		}
 
 	### start the log if we are logging ###
-	if ($AGILOG) 
+	if ($AGILOG)
 		{
-		$agi_string = "+++++++++++++++++ FastAGI Start ++++++++++++++++++++++++++++++++++++++++"; 
+		$agi_string = "+++++++++++++++++ FastAGI Start ++++++++++++++++++++++++++++++++++++++++";
 		&agi_output;
 		$agi_string = "Connection accepted from $ast_server_ip";
 		&agi_output;
@@ -350,18 +350,18 @@ sub process_request {
 	### begin parsing run-time options ###
 	if (length($ARGV[0])>1)
 		{
-		if ($AGILOG) 
+		if ($AGILOG)
 			{
-			$agi_string = "Perl Environment Dump:"; 
+			$agi_string = "Perl Environment Dump:";
 			&agi_output;
 			}
 		$i=0;
 		while ($#ARGV >= $i)
 			{
 			$args = "$args $ARGV[$i]";
-			if ($AGILOG) 
+			if ($AGILOG)
 				{
-				$agi_string = "$i|$ARGV[$i]";   
+				$agi_string = "$i|$ARGV[$i]";
 				&agi_output;
 				}
 			$i++;
@@ -396,7 +396,7 @@ sub process_request {
 			@CID = split(/-----/, $request);
 			$callerid =	$CID[2];
 			$calleridname =	$CID[3];
-			$agi_string = "URL fullCID: |$callerid|$calleridname|$request|";   
+			$agi_string = "URL fullCID: |$callerid|$calleridname|$request|";
 			&agi_output;
 			}
 		if ( ($request =~ /--HVcauses--/i) && (!$HVcauses) )
@@ -410,7 +410,7 @@ sub process_request {
 			$dialstatus = $ARGV_vars[3];
 			$dial_time = $ARGV_vars[4];
 			$ring_time = $ARGV_vars[5];
-			$agi_string = "URL HVcauses: |$PRI|$DEBUG|$hangup_cause|$dialstatus|$dial_time|$ring_time|";   
+			$agi_string = "URL HVcauses: |$PRI|$DEBUG|$hangup_cause|$dialstatus|$dial_time|$ring_time|";
 			&agi_output;
 			}
 		if (!$fullCID)	# if no fullCID sent
@@ -418,19 +418,19 @@ sub process_request {
 			if (/^agi_callerid\:\s+(.*)$/)		{$callerid = $1;}
 			if (/^agi_calleridname\:\s+(.*)$/)	{$calleridname = $1;}
 			if ( $calleridname =~ /\"/)  {$calleridname =~ s/\"//gi;}
-		if ( 
-		     ( 
-		       (length($calleridname)>5) && 
-		       ( 
-		         (!$callerid) or 
-		         ($callerid =~ /unknown|private|00000000/i) or 
-		         ($callerid =~ /5551212/) 
+		if (
+		     (
+		       (length($calleridname)>5) &&
+		       (
+		         (!$callerid) or
+		         ($callerid =~ /unknown|private|00000000/i) or
+		         ($callerid =~ /5551212/)
 		       )
-		      ) or 
-		     ( 
-		       (length($calleridname)>17) && 
-		       ($calleridname =~ /\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d/) 
-		      ) 
+		      ) or
+		     (
+		       (length($calleridname)>17) &&
+		       ($calleridname =~ /\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d/)
+		      )
 		    )
 			{$callerid = $calleridname;}
 
@@ -447,25 +447,25 @@ sub process_request {
 			}
 	}
 
-	if ($AGILOG) 
+	if ($AGILOG)
 		{
-		$agi_string = "AGI Environment Dump:";   
+		$agi_string = "AGI Environment Dump:";
 		&agi_output;
 		}
 
-	foreach $i (sort keys %AGI) 
+	foreach $i (sort keys %AGI)
 		{
-		if ($AGILOG) 
+		if ($AGILOG)
 			{
-			$agi_string = " -- $i = $AGI{$i}";   
+			$agi_string = " -- $i = $AGI{$i}";
 			&agi_output;
 			}
 		}
 
 
-	if ($AGILOG) 
+	if ($AGILOG)
 		{
-		$agi_string = "AGI Variables: |$unique_id|$channel|$extension|$type|$callerid|";   
+		$agi_string = "AGI Variables: |$unique_id|$channel|$extension|$type|$callerid|";
 		&agi_output;
 		}
 
@@ -475,9 +475,9 @@ sub process_request {
 	$process = $request;
 	$process =~ s/agi:\/\///gi;
 	$process =~ s/.*\/|--.*//gi;
-	if ($AGILOG) 
+	if ($AGILOG)
 		{
-		$agi_string = "Process to run: |$request|$process|$stage|";   
+		$agi_string = "Process to run: |$request|$process|$stage|";
 		&agi_output;
 		}
 
@@ -547,7 +547,7 @@ sub process_request {
 			### This section breaks the outbound dialed number down(or builds it up) to a 10 digit number and gives it a description
 			if ( ($channel =~ /^SIP|^IAX2/) || ( ($is_client_phone > 0) && (length($channel_group) < 1) ) )
 				{
-				if ( ($extension =~ /^901144/) && (length($extension)==16) )  #test 207 608 6400 
+				if ( ($extension =~ /^901144/) && (length($extension)==16) )  #test 207 608 6400
 					{$extension =~ s/^9//gi;	$channel_group = 'Outbound Intl UK';}
 				if ( ($extension =~ /^901161/) && (length($extension)==15) )  #test  39 417 2011
 					{$extension =~ s/^9//gi;	$channel_group = 'Outbound Intl AUS';}
@@ -561,7 +561,7 @@ sub process_request {
 					{$extension =~ s/^91//gi;	$channel_group = 'Outbound Long Distance';}
 				if ($is_client_phone > 0)
 					{$channel_group = 'Client Phone';}
-				
+
 				$SIP_ext = $channel;	$SIP_ext =~ s/SIP\/|IAX2\/|Zap\/|Local\///gi;
 
 				$number_dialed = $extension;
@@ -600,7 +600,7 @@ sub process_request {
 
 
 		### call end stage
-		else		 
+		else
 			{
 			if ($AGILOG) {$agi_string = "|CALL HUNG UP|";   &agi_output;}
 			if ($request =~ /--HVcauses--/i)
@@ -614,7 +614,7 @@ sub process_request {
 				$dialstatus = $ARGV_vars[3];
 				$dial_time = $ARGV_vars[4];
 				$ring_time = $ARGV_vars[5];
-				$agi_string = "URL HVcauses: |$PRI|$DEBUG|$hangup_cause|$dialstatus|$dial_time|$ring_time|";   
+				$agi_string = "URL HVcauses: |$PRI|$DEBUG|$hangup_cause|$dialstatus|$dial_time|$ring_time|";
 				&agi_output;
 				}
 
@@ -707,7 +707,7 @@ sub process_request {
 
 				close(DEBUGOUT);
 			}
-			else 
+			else
 			{
 			if ($AGILOG) {$agi_string = "DEBUG: $DEBUG";   &agi_output;}
 			}
@@ -821,7 +821,7 @@ sub process_request {
 						$VD_stage =~ s/.*-//gi;
 						if ($VD_stage < 0.25) {$VD_stage=0;}
 
-						$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+						$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass", { mysql_enable_utf8 => 1 })
 						 or die "Couldn't connect to database: " . DBI->errstr;
 
 						if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
@@ -947,7 +947,7 @@ sub process_request {
 							$affected_rows = $dbhA->do($stmtA);
 							if ($AGILOG) {$agi_string = "--    VDAD vicidial_list update: |$affected_rows|$VD_lead_id";   &agi_output;}
 							}
-						else 
+						else
 							{
 							$SQL_status = "term_reason='CALLER',";
 							}
@@ -1249,7 +1249,7 @@ sub process_request {
 										}
 									if ($VD_alt_dnc_count < 1)
 										{
-										if ($alt_dial_phones_count eq '$Xlast') 
+										if ($alt_dial_phones_count eq '$Xlast')
 											{$Xlast = 'LAST';}
 										$stmtA = "INSERT INTO vicidial_hopper SET lead_id='$VD_lead_id',campaign_id='$VD_campaign_id',status='READY',list_id='$VD_list_id',gmt_offset_now='$VD_gmt_offset_now',state='$VD_state',alt_dial='X$Xlast',user='',priority='15';";
 										$affected_rows = $dbhA->do($stmtA);

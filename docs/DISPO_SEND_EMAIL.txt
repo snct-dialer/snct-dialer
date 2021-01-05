@@ -48,7 +48,7 @@ email_from => --A--agent_email--B--
 email_subject => Order confirmation --A--vendor_lead_code--B--
 
 ; body of the email
-email_body_begin => 
+email_body_begin =>
 Hello --A--first_name--B--,
 
 This email is to welcome you to the wonderful ACME product-of-the-month club!

@@ -5,7 +5,7 @@
 # runs after a call has lead_id assigned to it, speaks letters/numbers
 #
 # You need to put lines similar to those below in your Custom Dialplan:
-# 
+#
 # exten => 8412,1,Answer
 # exten => 8412,n,AGI(cm_speak_var.agi,say_digits---security_phrase)
 # exten => 8412,n,Hangup
@@ -13,7 +13,7 @@
 # CLI FLAG OPTIONS:
 # 1. function: (say_digits, say_number, say_alpha, say_datetime, say_phonetic, stream_file)
 # 2. field: (any vicidial_list field)
-# 
+#
 # Copyright (C) 2014  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # changes:
@@ -75,15 +75,15 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port)	{$VARDB_port='3306';}
-if (!$CMLOGfile)	{$CMLOGfile = "$PATHlogs/cmout";}
-if (!$AGILOGfile)	{$AGILOGfile = "$PATHlogs/agiout";}
+if (!$CMLOGfile)	{$CMLOGfile = "$PATHlogs/cmout.log";}
+if (!$AGILOGfile)	{$AGILOGfile = "$PATHlogs/agiout.log";}
 
 use DBI;
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
 
-  
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
     or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
@@ -108,7 +108,7 @@ $sthA->finish();
 ### begin parsing run-time options ###
 if (length($ARGV[0])>1)
 	{
-	if ($AGILOG) 
+	if ($AGILOG)
 		{$agi_string = "Perl Environment Dump:";   &agi_output;}
 	$i=0;
 	while ($#ARGV >= $i)
@@ -117,7 +117,7 @@ if (length($ARGV[0])>1)
 		if ($AGILOG) {$agi_string = "$i|$ARGV[$i]";   &agi_output;}
 		$i++;
 		}
-	
+
 	### list of command-line array arguments:
 	@ARGV_vars = split(/---/, $ARGV[0]);
 	$CLI_function =	$ARGV_vars[0];
@@ -125,7 +125,7 @@ if (length($ARGV[0])>1)
 	}
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 	{
 	chomp;
 	last unless length($_);
@@ -161,7 +161,7 @@ if ( (
 
 if ($AGILOG) {$agi_string = "AGI Environment Dump:";   &agi_output;}
 
-foreach $i (sort keys %AGI) 
+foreach $i (sort keys %AGI)
 	{
 	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
 	}
@@ -172,7 +172,7 @@ if ($AGILOG) {$agi_string = "AGI Variables: |$unique_id|$channel|$extension|$typ
 $callerid =~ s/\"//gi;
 $callerid =~ s/ .*//gi;
 $CIDlead_id = $callerid;
-if ( ($calleridname =~ /^DC/) && ($calleridname =~ /\d\d\d\d\d\d\d\d\d\dW$/) ) #DC234728W0001010141W 
+if ( ($calleridname =~ /^DC/) && ($calleridname =~ /\d\d\d\d\d\d\d\d\d\dW$/) ) #DC234728W0001010141W
 	{$CIDlead_id = substr($calleridname, 9, 10);}
 else
 	{$CIDlead_id = substr($CIDlead_id, 10, 10);}
@@ -182,7 +182,7 @@ $VD_lead_id = $CIDlead_id;
 
 if ($AGILOG) {$agi_string = "+++++ cm_speak_var START : |$CLI_function|$CLI_field|$CIDlead_id|$now_date|$AST_ver|$priority|$calleridname|";   &agi_output;}
 
-if ($CM_LOG) 
+if ($CM_LOG)
 	{
 	open(Lout, ">>$CMLOGfile")
 			|| die "Can't open $CMLOGfile: $!\n";
@@ -268,27 +268,27 @@ if ($CLI_field =~ /rank/)				{$field_value = $CM_rank;}
 if ($CLI_field =~ /owner/)				{$field_value = $CM_owner;}
 
 
-if ($CLI_function =~ /say_digits/) 
+if ($CLI_function =~ /say_digits/)
 	{
 	$AGI->say_digits("$field_value");
 	}
-if ($CLI_function =~ /say_number/) 
+if ($CLI_function =~ /say_number/)
 	{
 	$AGI->say_number("$field_value");
 	}
-if ($CLI_function =~ /say_alpha/) 
+if ($CLI_function =~ /say_alpha/)
 	{
 	$AGI->say_alpha("$field_value");
 	}
-if ($CLI_function =~ /say_datetime/) 
+if ($CLI_function =~ /say_datetime/)
 	{
 	$AGI->say_datetime("$field_value");
 	}
-if ($CLI_function =~ /say_phonetic/) 
+if ($CLI_function =~ /say_phonetic/)
 	{
 	$AGI->say_phonetic("$field_value");
 	}
-if ($CLI_function =~ /stream_file/) 
+if ($CLI_function =~ /stream_file/)
 	{
 	$AGI->stream_file("$field_value");
 	}
@@ -302,21 +302,21 @@ $dbhA->disconnect();
 
 exit;
 
-sub checkresult 
+sub checkresult
 	{
 	my ($res) = @_;
 	my $retval;
 	$tests++;
 	chomp $res;
-	if ($res =~ /^200/) 
+	if ($res =~ /^200/)
 		{
 		$res =~ /result=(-?\d+)/;
-		if (!length($1)) 
+		if (!length($1))
 			{
 		#	print STDERR "FAIL ($res)\n";
 			$fail++;
-			} 
-		else 
+			}
+		else
 			{
 		#	print STDERR "PASS ($1)\n";
 			$pass++;

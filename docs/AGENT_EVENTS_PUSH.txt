@@ -8,7 +8,7 @@ This feature allows for selected events in the VICIdial agent screen to push out
 There are two System Settings configurations that need to be set for Agent Events Push to work:
 
 
-Agent Push Events - This setting will enable the sending of events from agent screens to the URL defined below. Default is 0 for disabled. 
+Agent Push Events - This setting will enable the sending of events from agent screens to the URL defined below. Default is 0 for disabled.
 
 Agent Push URL - If Agent Push Events are enabled above, this is the URL that the events will be sent to. The variables that you can use within the URL are --A--user--B--, --A--event--B--, --A--message--B--, --A--lead_id--B--, --A--counter--B--. Since this function uses AJAX, it must reference a local script on the web server. If you want to reference an external web address then you should use the get2post.php script that can be found in the extras directory.
 

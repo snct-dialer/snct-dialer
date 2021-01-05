@@ -11,7 +11,7 @@
 # 150902-2209 - Slight SQL modifications for abandoned chats/notifying agents
 #
 # This script is designed to repeatedly check any customer-to-agent chats and close the customer side of the
-# chat if it has not shown any activity for a period of time longer that what was set for the chat_timeout 
+# chat if it has not shown any activity for a period of time longer that what was set for the chat_timeout
 # system setting.
 #
 # It will also close any manager-to-agent chats that do not show the agent(s) involved are still logged in.
@@ -103,13 +103,13 @@ $THISserver_voicemail=0;
 $voicemail_server_id='';
 if (!$VARDB_port) {$VARDB_port='3306';}
 
-use DBI;	  
+use DBI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
-$dbhA2 = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA2 = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
-$dbhA3 = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA3 = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 $timeout_stmt="select allow_chats, chat_timeout from system_settings";
@@ -178,7 +178,7 @@ if ($allow_chats==1 && $chat_timeout>0) {
 		$lead_id_str=~s/,$//;
 
 		#######################################
-	
+
 	}
 }
 ## Kill manager-agent chats where the agent has logged out/is no longer live in the system
@@ -193,7 +193,7 @@ if ($allow_chats==1) {
 		$agent_str.="$live_row[0],";
 	}
 	$agent_str=~s/,$//;
-	
+
 	if ($live_rslt->rows>0) {
 		$archive_stmt="insert ignore into vicidial_manager_chat_log_archive select * from vicidial_manager_chat_log where user not in ($agent_str)";
 		$dbhA2->do($archive_stmt);
@@ -225,7 +225,7 @@ if ($allow_chats==1) {
 			$del_rslt=$dbhA3->do($del_stmt);
 		}
 	} else {
-		# Clear all chats because no one is logged in 
+		# Clear all chats because no one is logged in
 		$archive_stmt="insert ignore into vicidial_manager_chat_log_archive select * from vicidial_manager_chat_log";
 		$dbhA2->do($archive_stmt);
 		if ($debug) {print $archive_stmt."\n\n";}

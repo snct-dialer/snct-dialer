@@ -62,6 +62,20 @@ canreinvite=no
 ; autodomain=yes
 ; fromdomain=mydomain.tld ; When making outbound SIP INVITEs to
 
+tos_sip=cs3                    ; Sets TOS for SIP packets.
+tos_audio=ef                   ; Sets TOS for RTP audio packets.
+tos_video=af41                 ; Sets TOS for RTP video packets.
+tos_text=af41                  ; Sets TOS for RTP text packets.
+cos_sip=3                      ; Sets 802.1p priority for SIP packets.
+cos_audio=5                    ; Sets 802.1p priority for RTP audio packets.
+cos_video=4                    ; Sets 802.1p priority for RTP video packets.
+cos_text=3                     ; Sets 802.1p priority for RTP text packets.
+
+;transport=udp,ws,wss
+;avpf=yes
+;srvlookup=yes
+
+
 #include sip-vicidial.conf
 
 ; register SIP account on remote machine if using SIP trunks

@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
-# cm.agi   version 2.12
-# 
+# cm.agi   version 2.14
+#
 # Used by Call Menus to log digit presses if enabled in the settings. You should
 # not need to manually use this script, it is used by the dialplan builder.
 #
@@ -21,7 +21,22 @@
 #exten => _XXXXX,1,AGI(cm.agi,INBOUND-----${EXTEN}-----postal_code)
 #exten => _XXXXX,n,Goto(next_callmenu_here,s,1)
 #
-# Copyright (C) 2016  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+
+#
+# LICENSE: AGPLv3
+#
+# Copyright (©) 2019      Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2020      SNCT GmbH <info@snct-gmbh.de>
+#               2020      Jörg Frings-Fürst <open_source@jff.email>.
+#
+
+# SNCT-Changes:
+#
+# 2020-07-22 jff - Change License to AGPLv3
+#            jff - Add new log- table
+#            jff - Change log-file to agiout.log
+#
+
 #
 # changes:
 # 110525-2100 - First Build
@@ -31,6 +46,7 @@
 # 130926-1547 - Added new queue_log IVR entries for QM
 # 160305-2244 - Added Alt IVR Logging options
 # 161102-1039 - Fixed QM partition problem
+# 191011-0921 - Fixed logging issue with missing active call record
 #
 
 $script = 'cm.agi';
@@ -90,14 +106,14 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port) {$VARDB_port='3306';}
-if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout";}
+if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout.log";}
 
 use DBI;
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
     or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
@@ -149,7 +165,7 @@ if (length($ARGV[0])>1)
 		if ($AGILOG) {$agi_string = "$i|$ARGV[$i]";   &agi_output;}
 		$i++;
 		}
-	
+
 	### list of command-line array arguments:
 	@ARGV_vars = split(/-----/, $ARGV[0]);
 
@@ -161,7 +177,7 @@ if (length($ARGV[0])>1)
 	}
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 	{
 	chomp;
 	last unless length($_);
@@ -203,6 +219,11 @@ if ($calleridname =~ /^V\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d/)
 		@aryA = $sthA->fetchrow_array;
 		$campaign_id =	$aryA[0];
 		$lead_id =		$aryA[1];
+		}
+	else
+		{
+		$lead_id = substr($calleridname, 10, 10);
+		$lead_id = ($lead_id + 0);
 		}
 	$sthA->finish();
 	}
@@ -253,7 +274,7 @@ if (length($callerid)<8) {$callerid = $parked_by;}
 if (length($pin)>0) {$callerid = $pin;}
 
 
-foreach $i (sort keys %AGI) 
+foreach $i (sort keys %AGI)
 	{
 	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
 	}
@@ -330,11 +351,20 @@ if ( ($alt_logging =~ /1/) && ($alt_question =~ /\d/) )
 	if ($AGILOG) {$agi_string = "--    VIR insert: |$affected_rowsAI|$uniqueid|$phone_number|$lead_id|";   &agi_output;}
 	}
 
+#
+# log always into new LogTable vicidial_call_menu_log
+#
+
+$stmtA = "INSERT INTO vicidial_call_menu_log (campaign_id, menu_id, lead_id,select_value) values('$campaign_id','$context','$lead_id','$dtmf');";
+if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+$affected_rowsAI = $dbhA->do($stmtA);
+if ($AGILOG) {$agi_string = "--    VCML insert: |$affected_rowsAI|$uniqueid|$phone_number|$lead_id|";   &agi_output;}
+
 
 ### QueueMetrics logging if enabled
 if ($enable_queuemetrics_logging > 0)
 	{
-	$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+	$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass", { mysql_enable_utf8 => 1 })
 	 or die "Couldn't connect to database: " . DBI->errstr;
 
 	if ($DBX) {print "CONNECTED TO QueueMetrics DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}

@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # agi-VDADlisten_DTMF.agi version 2.0.5   *DBI-version*
-# 
+#
 # To be initiated by an agent so during a call. Agent will click a PIN NUMBER
 # link on a web form webpage that will Originate a new call to this script
 #
@@ -98,14 +98,14 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port) {$VARDB_port='3306';}
-if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout";}
+if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout.log";}
 
 use Time::HiRes qw(gettimeofday);
 use DBI;
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
     or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
@@ -183,7 +183,7 @@ while(<STDIN>) {
 	if ($extension =~ /^8300\d\*/)
 		{
 		@EXT_vars = split(/\*/, $extension);
-		
+
 		$referring_extension =	$EXT_vars[0];	# initial extension sent
 		$phone_number =		$EXT_vars[1];	# phone number
 		$lead_id =		$EXT_vars[2];	# lead_id in vicidial_list
@@ -200,7 +200,7 @@ while(<STDIN>) {
 if (length($pin) < 4) {$AGI->stream_file('buzz');}
 else {$AGI->stream_file('ding');}
 
-### insert a record into the vicidial_list_pins table 
+### insert a record into the vicidial_list_pins table
 $stmtA = "INSERT INTO vicidial_list_pins (entry_time,phone_number,lead_id,campaign_id,product_code,user,digits) values('$SQLdate','$phone_number','$lead_id','$campaign_id','$product_code','$user','$pin');";
 
 $affected_rows = $dbhA->do($stmtA);
@@ -236,7 +236,7 @@ while ( ($digit_loop_counter < 4) )
 		  ($s, $usec) = gettimeofday();
 		  $Susec = sprintf("%06s", $usec);
 		  $utime = "$s$Susec";
- 
+
 		  if (length($lastdigittime)<1) {$lastdigittime = $utime;  $lastdigit = 99;  $difftime = 0;}
 		  else
 			{
@@ -261,13 +261,13 @@ while ( ($digit_loop_counter < 4) )
 		{
 		$digit_loop_counter=4;
 		}
-	
+
 	$digit_loop_counter++;
 	}
 
 $totalDTMF =~ s/\D//gi;
 $pin = $totalDTMF;
-if ($totalDTMF) 
+if ($totalDTMF)
 	{
 	if ($AGILOG) {$agi_string = "digit |$digit|     TotalDTMF |$totalDTMF|";   &agi_output;}
 	}

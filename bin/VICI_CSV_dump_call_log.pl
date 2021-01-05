@@ -3,7 +3,7 @@
 # VICI_CSV_dump_call_log.pl
 
 # DESCRIPTION:
-# adjusts the auto_dial_level for vicidial adaptive-predictive campaigns. 
+# adjusts the auto_dial_level for vicidial adaptive-predictive campaigns.
 # gather call stats for campaigns and in-groups
 #
 # Copyright (C) 2016  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -172,10 +172,10 @@ $servers=0;
 
 use DBI;
 
-$dbh = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbh = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
-# $user_stmt="SELECT distinct '' as full_name, user from ".$agent_log_table." where event_time >= '$start_date 00:00:00' and event_time <= '$start_date 23:59:59' order by user asc"; 
+# $user_stmt="SELECT distinct '' as full_name, user from ".$agent_log_table." where event_time >= '$start_date 00:00:00' and event_time <= '$start_date 23:59:59' order by user asc";
 
 $status_stmt="select distinct status from vicidial_campaign_statuses where customer_contact='Y' UNION select distinct status from vicidial_statuses where customer_contact='Y' order by status";
 if ($DBX) {print "$status_stmt\n";}

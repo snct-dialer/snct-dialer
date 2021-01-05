@@ -1,7 +1,16 @@
-<?php 
+<?php
 # AST_agent_performance_detail.php
-# 
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# LICENSE: AGPLv3
+#
+# Copyright (©) 2019      Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2019-2020 SNCT GmbH <info@snct-gmbh.de>
+#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>.
+#
+# Other - Changelog
+#
+# 2020-03-05 - jff - Agent Pulldown only with active agents
+#
 #
 # CHANGES
 #
@@ -63,6 +72,8 @@
 # 171012-2015 - Fixed javascript/apache errors with graphs
 # 180208-1724 - Added times to/from
 # 180330-1750 - Fixed display bug for individual user selection
+# 191013-0847 - Fixes for PHP7
+# 191030-1530 - Query fixes
 #
 
 $startMS = microtime();
@@ -390,6 +401,7 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {$HTML_text.="$stmt\n";}
 $campaigns_to_print = mysqli_num_rows($rslt);
 $i=0;
+$groups=array();
 while ($i < $campaigns_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -398,16 +410,17 @@ while ($i < $campaigns_to_print)
 		{$group[$i] = $groups[$i];}
 	$i++;
 	}
-for ($i=0; $i<count($user_group); $i++)
-	{
-	if (preg_match('/\-\-ALL\-\-/', $user_group[$i])) {$all_user_groups=1; $user_group="";}
-	}
+#for ($i=0; $i<count($user_group); $i++)
+#	{
+#	if (preg_match('/\-\-ALL\-\-/', $user_group[$i])) {$all_user_groups=1; $user_group="";}
+#	}
 
 $stmt="SELECT user_group from vicidial_user_groups $whereLOGadmin_viewable_groupsSQL order by user_group;";
 $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {$HTML_text.="$stmt\n";}
 $user_groups_to_print = mysqli_num_rows($rslt);
 $i=0;
+$user_groups=array();
 while ($i < $user_groups_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -416,11 +429,13 @@ while ($i < $user_groups_to_print)
 	$i++;
 	}
 
-$stmt="SELECT user, full_name from vicidial_users $whereLOGadmin_viewable_groupsSQL order by user";
+$stmt="SELECT user, full_name from vicidial_users WHERE active = 'Y' $LOGadmin_viewable_groupsSQL order by user";
 $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {$HTML_text.="$stmt\n";}
 $users_to_print = mysqli_num_rows($rslt);
 $i=0;
+$user_list=array();
+$user_names=array();
 while ($i < $users_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -515,7 +530,7 @@ $HTML_head.="<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n"
 $HTML_head.="<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 $HTML_head.="<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 require("chart_button.php");
-$HTML_head.="<script src='chart/Chart.js'></script>\n"; 
+$HTML_head.="<script src='chart/Chart.js'></script>\n";
 $HTML_head.="<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
 
 $HTML_head.="<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
@@ -619,7 +634,7 @@ $HTML_text.="<input type='checkbox' name='show_defunct_users' value='checked' $s
 $HTML_text.="</TD><TD VALIGN=TOP>";
 $HTML_text.=_QXZ("Display as").":<BR>";
 $HTML_text.="<select name='report_display_type'>";
-if ($report_display_type) {$HTML_text.="<option value='$report_display_type' selected>$report_display_type</option>";}
+if ($report_display_type) {$HTML_text.="<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
 $HTML_text.="<option value='TEXT'>"._QXZ("TEXT")."</option><option value='HTML'>"._QXZ("HTML")."</option></select><BR>\n";
 $HTML_text.=_QXZ("Shift").":<BR>";
 $HTML_text.="<SELECT SIZE=1 NAME=shift>\n";
@@ -655,26 +670,26 @@ else
 $time_BEGIN=$query_time;
 $time_END=$end_time;
 
-if ($shift == 'AM') 
+if ($shift == 'AM')
 	{
 	$time_BEGIN=$AM_shift_BEGIN;
 	$time_END=$AM_shift_END;
-	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}   
+	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}
 	if (strlen($time_END) < 6) {$time_END = "15:14:59";}
 	}
-if ($shift == 'PM') 
+if ($shift == 'PM')
 	{
 	$time_BEGIN=$PM_shift_BEGIN;
 	$time_END=$PM_shift_END;
 	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "15:15:00";}
 	if (strlen($time_END) < 6) {$time_END = "23:15:00";}
 	}
-if ($shift == 'ALL') 
+if ($shift == 'ALL')
 	{
 	$time_BEGIN = "00:00:00";
 	$time_END = "23:59:59";
 	}
-$query_date_BEGIN = "$query_date $time_BEGIN";   
+$query_date_BEGIN = "$query_date $time_BEGIN";
 $query_date_END = "$end_date $time_END";
 
 $HTML_text.=_QXZ("Agent Performance Detail",47)." $NOW_TIME\n";
@@ -689,19 +704,19 @@ $statusesTXT='';
 $statusesHEAD='';
 
 ## Breakdown by date text
-if ($breakdown_by_date) 
+if ($breakdown_by_date)
 	{
 	$BBD_header="------------+";
-	$BBD_text=" | "._QXZ("CALL DATE",10); 
-	$BBD_filler=" | ".sprintf("%-10s", " "); 
-	$BBD_csv=_QXZ("CALL DATE",10)."\",\""; 
-	$BBD_csv_filler="\",\""; 
+	$BBD_text=" | "._QXZ("CALL DATE",10);
+	$BBD_filler=" | ".sprintf("%-10s", " ");
+	$BBD_csv=_QXZ("CALL DATE",10)."\",\"";
+	$BBD_csv_filler="\",\"";
 	}
-else 
+else
 	{
 	$BBD_header="";
 	$BBD_text="";
-	$BBD_filler=""; 
+	$BBD_filler="";
 	$BBD_csv="";
 	$BBD_csv_filler="";
 	}
@@ -718,10 +733,13 @@ if ($show_percentages) {
 
 
 $statusesHTML='';
+$statusesARY=array();
 $statusesARY[0]='';
 $j=0;
 $users='-';
+$usersARY=array();
 $usersARY[0]='';
+$user_namesARY=array();
 $user_namesARY[0]='';
 $k=0;
 
@@ -741,6 +759,7 @@ if ($live_agents) {
 $recent_UG_stmt="SELECT max(agent_log_id), user from ".$agent_log_table." where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN' and pause_sec<65000 and wait_sec<65000 and talk_sec<65000 and dispo_sec<65000 $group_SQL $user_group_agent_log_SQL $user_agent_log_SQL group by user";
 if ($DB) {$HTML_text.="$recent_UG_stmt\n";}
 $recent_UG_rslt=mysql_to_mysqli($recent_UG_stmt, $link);
+$recent_user_groups=array();
 while ($UG_row=mysqli_fetch_row($recent_UG_rslt)) {
 	$agent_log_id=$UG_row[0];
 	$al_stmt="SELECT user_group from ".$agent_log_table." where agent_log_id='$agent_log_id'";
@@ -751,6 +770,8 @@ while ($UG_row=mysqli_fetch_row($recent_UG_rslt)) {
 }
 
 $graph_stats=array();
+$full_name=array();
+$user=array();
 $max_calls=1;
 $max_time=1;
 $max_pause=1;
@@ -777,7 +798,7 @@ $max_customeravg=1;
 		if ($DB) {echo "$user_stmt\n";}
 	$user_rslt=mysql_to_mysqli($user_stmt, $link);
 	$q=0;
-	while($q<mysqli_num_rows($user_rslt)) 
+	while($q<mysqli_num_rows($user_rslt))
 		{
 		$user_row=mysqli_fetch_row($user_rslt);
 
@@ -785,13 +806,13 @@ $max_customeravg=1;
 			{
 			$defunct_user_stmt="SELECT full_name, user_group from vicidial_users where user='$user_row[1]'";
 			$defunct_user_rslt=mysql_to_mysqli($defunct_user_stmt, $link);
-			if (mysqli_num_rows($defunct_user_rslt)>0) 
+			if (mysqli_num_rows($defunct_user_rslt)>0)
 				{
 				$defunct_user_row=mysqli_fetch_row($defunct_user_rslt);
 				$full_name_val=$defunct_user_row[0];
 				$user_group_val=$defunct_user_row[1];
-				} 
-			else 
+				}
+			else
 				{
 				$full_name_val=$user_row[1];
 				$user_group_val="** NONE **";
@@ -821,9 +842,9 @@ $max_customeravg=1;
 
 if ($show_defunct_users=="checked")
 	{
-	$stat_stmt="SELECT distinct status from ".$agent_log_table." where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN' and pause_sec<65000 and wait_sec<65000 and talk_sec<65000 and dispo_sec<65000 $live_user_SQL $group_SQL $user_agent_log_SQL $user_SQL order by status asc";
+	$stat_stmt="SELECT distinct status from ".$agent_log_table." where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN' and pause_sec<65000 and wait_sec<65000 and talk_sec<65000 and dispo_sec<65000 $live_user_SQL $group_SQL $user_agent_log_SQL order by status asc";
 	}
-else 
+else
 	{
 	$stat_stmt="SELECT distinct status from vicidial_users,".$agent_log_table." where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN' and vicidial_users.user=".$agent_log_table.".user and pause_sec<65000 and wait_sec<65000 and talk_sec<65000 and dispo_sec<65000 $live_user_SQLvu $group_SQL $user_group_SQL $user_SQL order by status asc";
 	}
@@ -831,20 +852,32 @@ $stat_rslt=mysql_to_mysqli($stat_stmt, $link);
 	if ($DB) {$HTML_text.="$stat_stmt\n";}
 $q=0;
 $userTOTcalls=array();
+$calls=array();
+$talk_sec=array();
+$full_name=array();
+$user=array();
+$pause_sec=array();
+$wait_sec=array();
+$dispo_sec=array();
+$status=array();
+$dead_sec=array();
+$user_group=array();
+$call_date=array();
+$customer_sec=array();
 
 while ($stat_row=mysqli_fetch_row($stat_rslt)) {
 	$current_status=$stat_row[0];
 
 	if ($show_defunct_users=="checked")
 		{
-		$stmt="SELECT count(*) as calls,sum(talk_sec) as talk,'' as full_name,user,sum(pause_sec),sum(wait_sec),sum(dispo_sec),status,sum(dead_sec), '' as user_group,date(event_time) as call_date from ".$agent_log_table." where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN' and pause_sec<65000 and wait_sec<65000 and talk_sec<65000 and dispo_sec<65000 and status='$current_status' $live_user_SQL $group_SQL $user_agent_log_SQL $user_SQL group by user,full_name,user_group,status,call_date order by full_name,user,status desc limit 500000;";
+		$stmt="SELECT count(*) as calls,sum(talk_sec) as talk,'' as full_name,user,sum(pause_sec),sum(wait_sec),sum(dispo_sec),status,sum(dead_sec), '' as user_group,date(event_time) as call_date from ".$agent_log_table." where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN' and pause_sec<65000 and wait_sec<65000 and talk_sec<65000 and dispo_sec<65000 and status='$current_status' $live_user_SQL $group_SQL $user_agent_log_SQL group by user,full_name,user_group,status,call_date order by full_name,user,status desc limit 500000;";
 		}
 	else
 		{
 		$stmt="SELECT count(*) as calls,sum(talk_sec) as talk,full_name,vicidial_users.user,sum(pause_sec),sum(wait_sec),sum(dispo_sec),status,sum(dead_sec), vicidial_users.user_group,date(event_time) as call_date from vicidial_users,".$agent_log_table." where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN' and vicidial_users.user=".$agent_log_table.".user and pause_sec<65000 and wait_sec<65000 and talk_sec<65000 and dispo_sec<65000 and status='$current_status' $live_user_SQLvu $group_SQL $user_group_SQL $user_SQL group by user,full_name,user_group,status order by full_name,user,status desc limit 500000;";
 		}
 	$rslt=mysql_to_mysqli($stmt, $link);
-	if ($DB) {$HTML_text.="$stmt\n";} 
+	if ($DB) {$HTML_text.="$stmt\n";}
 	$rows_to_print+=mysqli_num_rows($rslt);
 
 	$stat_rows_to_print = mysqli_num_rows($rslt);
@@ -854,25 +887,25 @@ while ($stat_row=mysqli_fetch_row($stat_rslt)) {
 		{
 		$row=mysqli_fetch_row($rslt);
 	#	$row[0] = ($row[0] - 1);	# subtract 1 for login/logout event compensation
-		
+
 		if ($show_defunct_users=="checked")
 			{
 			$defunct_user_stmt="SELECT full_name,user_group from vicidial_users where user='$row[3]'";
 	if ($DB) {$HTML_text.="$defunct_user_stmt\n";}
 			$defunct_user_rslt=mysql_to_mysqli($defunct_user_stmt, $link);
-			if (mysqli_num_rows($defunct_user_rslt)>0) 
+			if (mysqli_num_rows($defunct_user_rslt)>0)
 				{
 				$defunct_user_row=mysqli_fetch_row($defunct_user_rslt);
 				$full_name_val=$defunct_user_row[0];
 				$user_group_val=$defunct_user_row[1];
-				} 
-			else 
+				}
+			else
 				{
 				$full_name_val=$row[3];
 				$user_group_val="**NONE**";
 				}
 			}
-		else 
+		else
 			{
 			$full_name_val=$row[2];
 			$user_group_val=$row[9];
@@ -896,7 +929,7 @@ while ($stat_row=mysqli_fetch_row($stat_rslt)) {
 
 		$max_varname="max_".$status[$q];
 		$$max_varname=1;
-		
+
 		if ($customer_sec[$q] < 1)
 			{$customer_sec[$q]=0;}
 		if ( (!preg_match("/\-$status[$q]\-/i", $statuses)) and (strlen($status[$q])>0) )
@@ -953,7 +986,7 @@ while ($m < $k)
 	{
 	$Suser=$usersARY[$m];
 
-	if ($breakdown_by_date) 
+	if ($breakdown_by_date)
 		{
 		$Toutput_sub="";
 		$CSV_lines_sub="";
@@ -970,16 +1003,25 @@ while ($m < $k)
 		$date_stmt="select distinct date(event_time) as call_date from ".$agent_log_table." where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN' and user='$Suser' and pause_sec<65000 and wait_sec<65000 and talk_sec<65000 and dispo_sec<65000 $group_SQL $user_group_agent_log_SQL $user_agent_log_SQL order by call_date asc limit 500000;";
 		if ($DB) {$ASCII_text.=$date_stmt."\n";}
 		$date_rslt=mysql_to_mysqli($date_stmt, $link);
-		while($date_row=mysqli_fetch_row($date_rslt)) 
+		while($date_row=mysqli_fetch_row($date_rslt))
 			{
 			$call_dateX=$date_row[0];
 
-			$cd_stmt="SELECT count(*) as calls,sum(talk_sec) as talk,'' as full_name,user,sum(pause_sec),sum(wait_sec),sum(dispo_sec),status,sum(dead_sec), '' as user_group from ".$agent_log_table." where date(event_time)='$call_dateX' and pause_sec<65000 and wait_sec<65000 and talk_sec<65000 and dispo_sec<65000 and user='$Suser' $group_SQL $user_agent_log_SQL $user_SQL group by user,full_name,user_group,status order by full_name,user,status desc limit 500000;";
-			$cd_rslt=mysql_to_mysqli($cd_stmt, $link); 
+			$cd_stmt="SELECT count(*) as calls,sum(talk_sec) as talk,'' as full_name,user,sum(pause_sec),sum(wait_sec),sum(dispo_sec),status,sum(dead_sec), '' as user_group from ".$agent_log_table." where date(event_time)='$call_dateX' and pause_sec<65000 and wait_sec<65000 and talk_sec<65000 and dispo_sec<65000 and user='$Suser' $group_SQL $user_agent_log_SQL group by user,full_name,user_group,status order by full_name,user,status desc limit 500000;";
+			$cd_rslt=mysql_to_mysqli($cd_stmt, $link);
 			if ($DB) {$ASCII_text.=$cd_stmt."\n";}
 
 			$x=0;
-			while ($cd_row=mysqli_fetch_row($cd_rslt)) 
+			$calls_sub=array();
+			$talk_sec_sub=array();
+			$user_sub=array();
+			$pause_sec_sub=array();
+			$wait_sec_sub=array();
+			$dispo_sec_sub=array();
+			$status_sub=array();
+			$dead_sec_sub=array();
+			$customer_sec_sub=array();
+			while ($cd_row=mysqli_fetch_row($cd_rslt))
 				{
 				$calls_sub[$x] =		$cd_row[0];
 				$talk_sec_sub[$x] =		$cd_row[1];
@@ -992,7 +1034,7 @@ while ($m < $k)
 				$customer_sec_sub[$x] =	($talk_sec_sub[$x] - $dead_sec_sub[$x]);
 				$x++;
 				}
-			
+
 
 			$Stime=0;
 			$Scalls=0;
@@ -1028,7 +1070,7 @@ while ($m < $k)
 
 						$CSVstatuses.=",\"$calls_sub[$i]\"";
 
-						if ($show_percentages) 
+						if ($show_percentages)
 							{
 							$SstatusTXT_pct=sprintf("%8s", sprintf("%0.2f", MathZDC(100*$calls[$i], $userTOTcalls[$Suser])));
 							$SstatusesHTML .= " $SstatusTXT_pct % |";
@@ -1043,7 +1085,7 @@ while ($m < $k)
 					{
 					$SstatusesHTML .= "        0 |";
 					$CSVstatuses.=",\"0\"";
-					if ($show_percentages) 
+					if ($show_percentages)
 						{
 						$SstatusesHTML .= "     0.00 % |";
 						$CSVstatuses.=",\"0.00 %\"";
@@ -1054,7 +1096,7 @@ while ($m < $k)
 				}
 
 			$Stime = ($Stalk_sec + $Spause_sec + $Swait_sec + $Sdispo_sec);
-			
+
 			$Stalk_avg = MathZDC($Stalk_sec, $Scalls);
 			$Spause_avg = MathZDC($Spause_sec, $Scalls);
 			$Swait_avg = MathZDC($Swait_sec, $Scalls);
@@ -1068,25 +1110,25 @@ while ($m < $k)
 			$Sfull_nameRAW = $Sfull_name;
 			$SuserRAW = $Suser;
 
-			$pfUSERtime_MS =			sec_convert($Stime,$TIME_H_agentperfdetail); 
-			$pfUSERtotTALK_MS =			sec_convert($Stalk_sec,$TIME_H_agentperfdetail); 
+			$pfUSERtime_MS =			sec_convert($Stime,$TIME_H_agentperfdetail);
+			$pfUSERtotTALK_MS =			sec_convert($Stalk_sec,$TIME_H_agentperfdetail);
 			$pfUSERtotTALK_MS_pct =		sprintf("%0.2f", MathZDC(100*$Stalk_sec, $Stime));
-			$pfUSERavgTALK_MS =			sec_convert($Stalk_avg,$TIME_M_agentperfdetail); 
-			$USERtotPAUSE_MS =			sec_convert($Spause_sec,$TIME_H_agentperfdetail); 
+			$pfUSERavgTALK_MS =			sec_convert($Stalk_avg,$TIME_M_agentperfdetail);
+			$USERtotPAUSE_MS =			sec_convert($Spause_sec,$TIME_H_agentperfdetail);
 			$pfUSERtotPAUSE_MS_pct =	sprintf("%0.2f", MathZDC(100*$Spause_sec, $Stime));
-			$USERavgPAUSE_MS =			sec_convert($Spause_avg,$TIME_M_agentperfdetail); 
-			$USERtotWAIT_MS =			sec_convert($Swait_sec,$TIME_H_agentperfdetail); 
+			$USERavgPAUSE_MS =			sec_convert($Spause_avg,$TIME_M_agentperfdetail);
+			$USERtotWAIT_MS =			sec_convert($Swait_sec,$TIME_H_agentperfdetail);
 			$pfUSERtotWAIT_MS_pct =		sprintf("%0.2f", MathZDC(100*$Swait_sec, $Stime));
-			$USERavgWAIT_MS =			sec_convert($Swait_avg,$TIME_M_agentperfdetail); 
-			$USERtotDISPO_MS =			sec_convert($Sdispo_sec,$TIME_H_agentperfdetail); 
+			$USERavgWAIT_MS =			sec_convert($Swait_avg,$TIME_M_agentperfdetail);
+			$USERtotDISPO_MS =			sec_convert($Sdispo_sec,$TIME_H_agentperfdetail);
 			$pfUSERtotDISPO_MS_pct =	sprintf("%0.2f", MathZDC(100*$Sdispo_sec, $Stime));
-			$USERavgDISPO_MS =			sec_convert($Sdispo_avg,$TIME_M_agentperfdetail); 
-			$USERtotDEAD_MS =			sec_convert($Sdead_sec,$TIME_H_agentperfdetail); 
+			$USERavgDISPO_MS =			sec_convert($Sdispo_avg,$TIME_M_agentperfdetail);
+			$USERtotDEAD_MS =			sec_convert($Sdead_sec,$TIME_H_agentperfdetail);
 			$pfUSERtotDEAD_MS_pct =		sprintf("%0.2f", MathZDC(100*$Sdead_sec, $Stime));
-			$USERavgDEAD_MS =			sec_convert($Sdead_avg,$TIME_M_agentperfdetail); 
+			$USERavgDEAD_MS =			sec_convert($Sdead_avg,$TIME_M_agentperfdetail);
 			$USERtotCUSTOMER_MS	=		sec_convert($Scustomer_sec,$TIME_H_agentperfdetail);
 			$pfUSERtotCUSTOMER_MS_pct =	sprintf("%0.2f", MathZDC(100*$Scustomer_sec, $Stime));
-			$USERavgCUSTOMER_MS =		sec_convert($Scustomer_avg,$TIME_M_agentperfdetail); 
+			$USERavgCUSTOMER_MS =		sec_convert($Scustomer_avg,$TIME_M_agentperfdetail);
 
 			$pfUSERtime_MS =			sprintf("%9s", $pfUSERtime_MS);
 			$pfUSERtotTALK_MS =			sprintf("%8s", $pfUSERtotTALK_MS);
@@ -1112,17 +1154,17 @@ while ($m < $k)
 			if ($non_latin < 1)
 				{
 				$Scall_date=	sprintf("%-10s", $call_dateX);
-				$Sfull_name=	sprintf("%-15s", " "); 
-				$Suser_group=	sprintf("%-20s", " "); 
-				$Slast_user_group=	sprintf("%-20s", " "); 
+				$Sfull_name=	sprintf("%-15s", " ");
+				$Suser_group=	sprintf("%-20s", " ");
+				$Slast_user_group=	sprintf("%-20s", " ");
 				$Suser_sub =		sprintf("%-8s", " ");
 				}
 			else
-				{	
+				{
 				$Scall_date=	sprintf("%-10s", $call_dateX);
-				$Sfull_name=	sprintf("%-45s", " "); 
-				$Suser_group=	sprintf("%-60s", " "); 
-				$Slast_user_group=	sprintf("%-60s", " "); 
+				$Sfull_name=	sprintf("%-45s", " ");
+				$Suser_group=	sprintf("%-60s", " ");
+				$Slast_user_group=	sprintf("%-60s", " ");
 				$Suser_sub =	sprintf("%-24s", " ");
 				}
 
@@ -1142,11 +1184,11 @@ while ($m < $k)
 			$CSV_lines_sub.="\n";
 
 			}
-		if ($show_percentages) 
+		if ($show_percentages)
 			{
 			$Toutput_sub.="+-----------------+----------+----------------------+----------------------+".$BBD_header."--------+-----------+----------+------------+--------+----------+------------+--------+----------+------------+--------+----------+------------+--------+----------+------------+--------+----------+------------+--------+$statusesHEAD\n";
-			} 
-		else 
+			}
+		else
 			{
 			$Toutput_sub.="+-----------------+----------+----------------------+----------------------+".$BBD_header."--------+-----------+----------+--------+----------+--------+----------+--------+----------+--------+----------+--------+----------+--------+$statusesHEAD\n";
 			}
@@ -1200,8 +1242,8 @@ while ($m < $k)
 				$SstatusesHTML .= " $SstatusTXT |";
 
 				if ($calls[$i]>$$max_varname) {$$max_varname=$calls[$i];}
-				$graph_stats[$m][(15+$n)]=($calls[$i]+0);					
-				
+				$graph_stats[$m][(15+$n)]=($calls[$i]+0);
+
 				$CSVstatuses.=",\"$calls[$i]\"";
 
 				if ($show_percentages) {
@@ -1222,7 +1264,7 @@ while ($m < $k)
 				$SstatusesHTML .= "     0.00 % |";
 				$CSVstatuses.=",\"0.00 %\"";
 			}
-			$graph_stats[$m][(15+$n)]=0;					
+			$graph_stats[$m][(15+$n)]=0;
 			}
 		### END loop through each stat line ###
 		$n++;
@@ -1238,7 +1280,7 @@ while ($m < $k)
 	$TOTtotDEAD=($TOTtotDEAD + $Sdead_sec);
 	$TOTtotCUSTOMER=($TOTtotCUSTOMER + $Scustomer_sec);
 	$Stime = ($Stalk_sec + $Spause_sec + $Swait_sec + $Sdispo_sec);
-	
+
 	$Stalk_avg = MathZDC($Stalk_sec, $Scalls);
 	$Spause_avg = MathZDC($Spause_sec, $Scalls);
 	$Swait_avg = MathZDC($Swait_sec, $Scalls);
@@ -1255,23 +1297,23 @@ while ($m < $k)
 	if ($non_latin < 1)
 		{
 		$Scall_date=	sprintf("%-10s", " ");
-		$Sfull_name=	sprintf("%-15s", $Sfull_name); 
+		$Sfull_name=	sprintf("%-15s", $Sfull_name);
 		while(strlen($Sfull_name)>15) {$Sfull_name = substr("$Sfull_name", 0, -1);}
-		$Suser_group=	sprintf("%-20s", $Suser_group); 
+		$Suser_group=	sprintf("%-20s", $Suser_group);
 		while(strlen($Suser_group)>20) {$Suser_group = substr("$Suser_group", 0, -1);}
-		$Slast_user_group=	sprintf("%-20s", $Slast_user_group); 
+		$Slast_user_group=	sprintf("%-20s", $Slast_user_group);
 		while(strlen($Slast_user_group)>20) {$Slast_user_group = substr("$Slast_user_group", 0, -1);}
 		$Suser =		sprintf("%-8s", $Suser);
 		while(strlen($Suser)>8) {$Suser = substr("$Suser", 0, -1);}
 		}
 	else
-		{	
+		{
 		$Scall_date=	sprintf("%-10s", " ");
-		$Sfull_name=	sprintf("%-45s", $Sfull_name); 
+		$Sfull_name=	sprintf("%-45s", $Sfull_name);
 		while(mb_strlen($Sfull_name,'utf-8')>15) {$Sfull_name = mb_substr("$Sfull_name", 0, -1,'utf-8');}
-		$Suser_group=	sprintf("%-60s", $Suser_group); 
+		$Suser_group=	sprintf("%-60s", $Suser_group);
 		while(mb_strlen($Suser_group,'utf-8')>20) {$Suser_group = mb_substr("$Suser_group", 0, -1,'utf-8');}
-		$Slast_user_group=	sprintf("%-60s", $Slast_user_group); 
+		$Slast_user_group=	sprintf("%-60s", $Slast_user_group);
 		while(mb_strlen($Slast_user_group,'utf-8')>20) {$Slast_user_group = mb_substr("$Slast_user_group", 0, -1,'utf-8');}
 		$Suser =	sprintf("%-24s", $Suser);
 		while(mb_strlen($Suser,'utf-8')>8) {$Suser = mb_substr("$Suser", 0, -1,'utf-8');}
@@ -1306,27 +1348,27 @@ while ($m < $k)
 	$graph_stats[$m][12]=trim($Sdead_avg);
 	$graph_stats[$m][13]=trim($Scustomer_sec);
 	$graph_stats[$m][14]=trim($Scustomer_avg);
-	
 
-	$pfUSERtime_MS =			sec_convert($Stime,$TIME_H_agentperfdetail); 
-	$pfUSERtotTALK_MS =			sec_convert($Stalk_sec,$TIME_H_agentperfdetail); 
+
+	$pfUSERtime_MS =			sec_convert($Stime,$TIME_H_agentperfdetail);
+	$pfUSERtotTALK_MS =			sec_convert($Stalk_sec,$TIME_H_agentperfdetail);
 	$pfUSERtotTALK_MS_pct =		sprintf("%0.2f", MathZDC(100*$Stalk_sec, $Stime));
-	$pfUSERavgTALK_MS =			sec_convert($Stalk_avg,$TIME_M_agentperfdetail); 
-	$USERtotPAUSE_MS =			sec_convert($Spause_sec,$TIME_H_agentperfdetail); 
+	$pfUSERavgTALK_MS =			sec_convert($Stalk_avg,$TIME_M_agentperfdetail);
+	$USERtotPAUSE_MS =			sec_convert($Spause_sec,$TIME_H_agentperfdetail);
 	$pfUSERtotPAUSE_MS_pct =	sprintf("%0.2f", MathZDC(100*$Spause_sec, $Stime));
-	$USERavgPAUSE_MS =			sec_convert($Spause_avg,$TIME_M_agentperfdetail); 
-	$USERtotWAIT_MS =			sec_convert($Swait_sec,$TIME_H_agentperfdetail); 
+	$USERavgPAUSE_MS =			sec_convert($Spause_avg,$TIME_M_agentperfdetail);
+	$USERtotWAIT_MS =			sec_convert($Swait_sec,$TIME_H_agentperfdetail);
 	$pfUSERtotWAIT_MS_pct =		sprintf("%0.2f", MathZDC(100*$Swait_sec, $Stime));
-	$USERavgWAIT_MS =			sec_convert($Swait_avg,$TIME_M_agentperfdetail); 
-	$USERtotDISPO_MS =			sec_convert($Sdispo_sec,$TIME_H_agentperfdetail); 
+	$USERavgWAIT_MS =			sec_convert($Swait_avg,$TIME_M_agentperfdetail);
+	$USERtotDISPO_MS =			sec_convert($Sdispo_sec,$TIME_H_agentperfdetail);
 	$pfUSERtotDISPO_MS_pct =	sprintf("%0.2f", MathZDC(100*$Sdispo_sec, $Stime));
-	$USERavgDISPO_MS =			sec_convert($Sdispo_avg,$TIME_M_agentperfdetail); 
-	$USERtotDEAD_MS =			sec_convert($Sdead_sec,$TIME_H_agentperfdetail); 
+	$USERavgDISPO_MS =			sec_convert($Sdispo_avg,$TIME_M_agentperfdetail);
+	$USERtotDEAD_MS =			sec_convert($Sdead_sec,$TIME_H_agentperfdetail);
 	$pfUSERtotDEAD_MS_pct =		sprintf("%0.2f", MathZDC(100*$Sdead_sec, $Stime));
-	$USERavgDEAD_MS =			sec_convert($Sdead_avg,$TIME_M_agentperfdetail); 
+	$USERavgDEAD_MS =			sec_convert($Sdead_avg,$TIME_M_agentperfdetail);
 	$USERtotCUSTOMER_MS	=		sec_convert($Scustomer_sec,$TIME_H_agentperfdetail);
 	$pfUSERtotCUSTOMER_MS_pct =	sprintf("%0.2f", MathZDC(100*$Scustomer_sec, $Stime));
-	$USERavgCUSTOMER_MS =		sec_convert($Scustomer_avg,$TIME_M_agentperfdetail); 
+	$USERavgCUSTOMER_MS =		sec_convert($Scustomer_avg,$TIME_M_agentperfdetail);
 
 	$pfUSERtime_MS =			sprintf("%9s", $pfUSERtime_MS);
 	$pfUSERtotTALK_MS =			sprintf("%8s", $pfUSERtotTALK_MS);
@@ -1464,25 +1506,25 @@ $TOTavgPAUSE = MathZDC($TOTtotPAUSE, $TOTcalls);
 $TOTavgWAIT = MathZDC($TOTtotWAIT, $TOTcalls);
 $TOTavgCUSTOMER = MathZDC($TOTtotCUSTOMER, $TOTcalls);
 
-$TOTtime_MS =		sec_convert($TOTtime,$TIME_H_agentperfdetail); 
-$TOTtotTALK_MS =	sec_convert($TOTtotTALK,$TIME_H_agentperfdetail); 
-$TOTtotDISPO_MS =	sec_convert($TOTtotDISPO,$TIME_H_agentperfdetail); 
-$TOTtotDEAD_MS =	sec_convert($TOTtotDEAD,$TIME_H_agentperfdetail); 
-$TOTtotPAUSE_MS =	sec_convert($TOTtotPAUSE,$TIME_H_agentperfdetail); 
-$TOTtotWAIT_MS =	sec_convert($TOTtotWAIT,$TIME_H_agentperfdetail); 
-$TOTtotCUSTOMER_MS =	sec_convert($TOTtotCUSTOMER,$TIME_H_agentperfdetail); 
+$TOTtime_MS =		sec_convert($TOTtime,$TIME_H_agentperfdetail);
+$TOTtotTALK_MS =	sec_convert($TOTtotTALK,$TIME_H_agentperfdetail);
+$TOTtotDISPO_MS =	sec_convert($TOTtotDISPO,$TIME_H_agentperfdetail);
+$TOTtotDEAD_MS =	sec_convert($TOTtotDEAD,$TIME_H_agentperfdetail);
+$TOTtotPAUSE_MS =	sec_convert($TOTtotPAUSE,$TIME_H_agentperfdetail);
+$TOTtotWAIT_MS =	sec_convert($TOTtotWAIT,$TIME_H_agentperfdetail);
+$TOTtotCUSTOMER_MS =	sec_convert($TOTtotCUSTOMER,$TIME_H_agentperfdetail);
 $TOTtotTALK_MS_pct =	sprintf("%0.2f", MathZDC(100*$TOTtotTALK, $TOTtime));
 $TOTtotDISPO_MS_pct =	sprintf("%0.2f", MathZDC(100*$TOTtotDISPO, $TOTtime));
 $TOTtotDEAD_MS_pct =	sprintf("%0.2f", MathZDC(100*$TOTtotDEAD, $TOTtime));
 $TOTtotPAUSE_MS_pct =	sprintf("%0.2f", MathZDC(100*$TOTtotPAUSE, $TOTtime));
 $TOTtotWAIT_MS_pct =	sprintf("%0.2f", MathZDC(100*$TOTtotWAIT, $TOTtime));
 $TOTtotCUSTOMER_MS_pct =sprintf("%0.2f", MathZDC(100*$TOTtotCUSTOMER, $TOTtime));
-$TOTavgTALK_MS =	sec_convert($TOTavgTALK,$TIME_M_agentperfdetail); 
-$TOTavgDISPO_MS =	sec_convert($TOTavgDISPO,$TIME_M_agentperfdetail); 
-$TOTavgDEAD_MS =	sec_convert($TOTavgDEAD,$TIME_M_agentperfdetail); 
-$TOTavgPAUSE_MS =	sec_convert($TOTavgPAUSE,$TIME_M_agentperfdetail); 
-$TOTavgWAIT_MS =	sec_convert($TOTavgWAIT,$TIME_M_agentperfdetail); 
-$TOTavgCUSTOMER_MS =	sec_convert($TOTavgCUSTOMER,$TIME_M_agentperfdetail); 
+$TOTavgTALK_MS =	sec_convert($TOTavgTALK,$TIME_M_agentperfdetail);
+$TOTavgDISPO_MS =	sec_convert($TOTavgDISPO,$TIME_M_agentperfdetail);
+$TOTavgDEAD_MS =	sec_convert($TOTavgDEAD,$TIME_M_agentperfdetail);
+$TOTavgPAUSE_MS =	sec_convert($TOTavgPAUSE,$TIME_M_agentperfdetail);
+$TOTavgWAIT_MS =	sec_convert($TOTavgWAIT,$TIME_M_agentperfdetail);
+$TOTavgCUSTOMER_MS =	sec_convert($TOTavgCUSTOMER,$TIME_M_agentperfdetail);
 
 $TOTtime_MS =		sprintf("%10s", $TOTtime_MS);
 $TOTtotTALK_MS =	sprintf("%10s", $TOTtotTALK_MS);
@@ -1551,15 +1593,15 @@ for ($e=0; $e<count($statusesARY); $e++) {
 }
 
 $default_graph="bar"; # Graph that is initally displayed when page loads
-include("graph_color_schemas.inc"); 
+include("graph_color_schemas.inc");
 
 $graph_totals_array=array();
 $graph_totals_rawdata=array();
 for ($q=0; $q<count($graph_array); $q++) {
-	$graph_info=explode("|", $graph_array[$q]); 
+	$graph_info=explode("|", $graph_array[$q]);
 	$current_graph_total=0;
 	$dataset_name=$graph_info[0];
-	$dataset_index=$graph_info[1]; 
+	$dataset_index=$graph_info[1];
 	$dataset_type=$graph_info[3];
 
 	$JS_text.="var $dataset_name = {\n";
@@ -1577,7 +1619,7 @@ for ($q=0; $q<count($graph_array); $q++) {
 	$graphConstantsC="\t\t\t\thoverBorderColor: [";
 	for ($d=0; $d<count($graph_stats); $d++) {
 		$labels.="\"".preg_replace('/ +/', ' ', $graph_stats[$d][0])."\",";
-		$data.="\"".$graph_stats[$d][$dataset_index]."\","; 
+		$data.="\"".$graph_stats[$d][$dataset_index]."\",";
 		$current_graph_total+=$graph_stats[$d][$dataset_index];
 		$bgcolor=$backgroundColor[($d%count($backgroundColor))];
 		$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
@@ -1585,13 +1627,13 @@ for ($q=0; $q<count($graph_array); $q++) {
 		$graphConstantsA.="\"$bgcolor\",";
 		$graphConstantsB.="\"$hbgcolor\",";
 		$graphConstantsC.="\"$hbcolor\",";
-	}	
+	}
 	$graphConstantsA.="],\n";
 	$graphConstantsB.="],\n";
 	$graphConstantsC.="],\n";
 	$labels=preg_replace('/,$/', '', $labels)."],\n";
 	$data=preg_replace('/,$/', '', $data)."],\n";
-	
+
 	$graph_totals_rawdata[$q]=$current_graph_total;
 	switch($dataset_type) {
 		case "time":
@@ -1705,10 +1747,13 @@ $sub_statusesTXT='';
 $sub_statusesHEAD='';
 $sub_statusesHTML='';
 $CSV_statuses='';
+$sub_statusesARY=array();
 $sub_statusesARY=$MT;
 $j=0;
 $PCusers='-';
+$PCusersARY=array();
 $PCusersARY=$MT;
+$PCuser_namesARY=array();
 $PCuser_namesARY=$MT;
 $k=0;
 
@@ -1722,6 +1767,12 @@ $sub_status_stmt="SELECT distinct if(sub_status is null, '*', sub_status) as all
 $sub_status_rslt=mysql_to_mysqli($sub_status_stmt, $link);
 $subs_to_print=0;
 $q=0;
+$PCfull_name=array();
+$PCuser=array();
+$PCpause_sec=array();
+$sub_status=array();
+$PCnon_pause_sec=array();
+$PCuser_group=array();
 while($ss_row=mysqli_fetch_row($sub_status_rslt)) {
 	$current_ss=$ss_row[0];
 	# FOR NULL SUB STATUSES
@@ -1729,7 +1780,7 @@ while($ss_row=mysqli_fetch_row($sub_status_rslt)) {
 
 	if ($show_defunct_users=="checked")
 		{
-		$stmt="SELECT '' as full_name,user,sum(pause_sec),sub_status,sum(wait_sec + talk_sec + dispo_sec), '' as user_group from ".$agent_log_table." where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN' $sub_status_clause and pause_sec<65000 $live_user_SQL $group_SQL $user_group_agent_log_SQL $user_SQL group by user,full_name,sub_status order by user,full_name,sub_status desc limit 100000;";
+		$stmt="SELECT '' as full_name,user,sum(pause_sec),sub_status,sum(wait_sec + talk_sec + dispo_sec), '' as user_group from ".$agent_log_table." where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN' $sub_status_clause and pause_sec<65000 $live_user_SQL $group_SQL $user_group_agent_log_SQL group by user,full_name,sub_status order by user,full_name,sub_status desc limit 100000;";
 		}
 	else
 		{
@@ -1749,25 +1800,25 @@ while($ss_row=mysqli_fetch_row($sub_status_rslt)) {
 			{
 			$defunct_user_stmt="SELECT full_name,user_group from vicidial_users where user='$row[1]'";
 			$defunct_user_rslt=mysql_to_mysqli($defunct_user_stmt, $link);
-			if (mysqli_num_rows($defunct_user_rslt)>0) 
+			if (mysqli_num_rows($defunct_user_rslt)>0)
 				{
 				$defunct_user_row=mysqli_fetch_row($defunct_user_rslt);
 				$PCfull_name_val=$defunct_user_row[0];
 				$PCuser_group_val=$defunct_user_row[1];
-				} 
-			else 
+				}
+			else
 				{
 				$PCfull_name_val=$row[1];
 				$PCuser_group_val="**NONE**";
 				}
 			}
-		else 
+		else
 			{
 			$PCfull_name_val=$row[0];
 			$PCuser_group_val=$row[5];
 			}
-		
-		
+
+
 		$PCfull_name[$q] =	$PCfull_name_val;
 		$PCuser[$q] =		$row[1];
 		$PCpause_sec[$q] =	$row[2];
@@ -1832,7 +1883,7 @@ while ($m < $k)
 	$Suser=$PCusersARY[$m];
 	$Sfull_name=$PCuser_namesARY[$m];
 	$Suser_group=$PCuser_groupsARY[$m];
-	$Slast_user_group=$recent_user_groups[$Suser];	
+	$Slast_user_group=$recent_user_groups[$Suser];
 	$Spause_sec=0;
 	$Snon_pause_sec=0;
 	$Stotal_sec=0;
@@ -1858,14 +1909,14 @@ while ($m < $k)
 				$Snon_pause_sec =	($Snon_pause_sec + $PCnon_pause_sec[$i]);
 				$Stotal_sec =	($Stotal_sec + $PCnon_pause_sec[$i] + $PCpause_sec[$i]);
 
-				$USERcodePAUSE_MS =		sec_convert($PCpause_sec[$i],$TIME_H_agentperfdetail); 
+				$USERcodePAUSE_MS =		sec_convert($PCpause_sec[$i],$TIME_H_agentperfdetail);
 				$pfUSERcodePAUSE_MS =	sprintf("%6s", $USERcodePAUSE_MS);
 
 				$SstatusTXT = sprintf("%8s", $pfUSERcodePAUSE_MS);
 				$SstatusesHTML .= " $SstatusTXT |";
 
 				if ($PCpause_sec[$i]>$$max_varname) {$$max_varname=$PCpause_sec[$i];}
-				$graph_stats[$m][(4+$n)]=$PCpause_sec[$i];					
+				$graph_stats[$m][(4+$n)]=$PCpause_sec[$i];
 
 				$CSV_statuses.=",\"$USERcodePAUSE_MS\"";
 				$status_found++;
@@ -1876,7 +1927,7 @@ while ($m < $k)
 			{
 			$SstatusesHTML .= "     0:00 |";
 			$CSV_statuses.=",\"0:00:00\"";
-			$graph_stats[$m][(4+$n)]=0;					
+			$graph_stats[$m][(4+$n)]=0;
 			}
 		### END loop through each stat line ###
 		$n++;
@@ -1889,22 +1940,22 @@ while ($m < $k)
 
 	if ($non_latin < 1)
 		{
-		$Sfull_name=	sprintf("%-15s", $Sfull_name); 
+		$Sfull_name=	sprintf("%-15s", $Sfull_name);
 		while(strlen($Sfull_name)>15) {$Sfull_name = substr("$Sfull_name", 0, -1);}
-		$Suser_group=	sprintf("%-20s", $Suser_group); 
+		$Suser_group=	sprintf("%-20s", $Suser_group);
 		while(strlen($Suser_group)>20) {$Suser_group = substr("$Suser_group", 0, -1);}
-		$Slast_user_group=	sprintf("%-20s", $Slast_user_group); 
+		$Slast_user_group=	sprintf("%-20s", $Slast_user_group);
 		while(strlen($Slast_user_group)>20) {$Slast_user_group = substr("$Slast_user_group", 0, -1);}
 		$Suser =		sprintf("%-8s", $Suser);
 		while(strlen($Suser)>8) {$Suser = substr("$Suser", 0, -1);}
 		}
 	else
 		{
-		$Sfull_name=	sprintf("%-45s", $Sfull_name); 
+		$Sfull_name=	sprintf("%-45s", $Sfull_name);
 		while(mb_strlen($Sfull_name,'utf-8')>15) {$Sfull_name = mb_substr("$Sfull_name", 0, -1,'utf-8');}
-		$Suser_group=	sprintf("%-60s", $Suser_group); 
+		$Suser_group=	sprintf("%-60s", $Suser_group);
 		while(mb_strlen($Suser_group,'utf-8')>20) {$Suser_group = mb_substr("$Suser_group", 0, -1,'utf-8');}
-		$Slast_user_group=	sprintf("%-60s", $Slast_user_group); 
+		$Slast_user_group=	sprintf("%-60s", $Slast_user_group);
 		while(mb_strlen($Slast_user_group,'utf-8')>20) {$Slast_user_group = mb_substr("$Slast_user_group", 0, -1,'utf-8');}
 		$Suser =	sprintf("%-24s", $Suser);
 		while(mb_strlen($Suser,'utf-8')>8) {$Suser = mb_substr("$Suser", 0, -1,'utf-8');}
@@ -1920,9 +1971,9 @@ while ($m < $k)
 	$graph_stats[$m][2]="$Snon_pause_sec";
 	$graph_stats[$m][3]="$Spause_sec";
 
-	$USERtotPAUSE_MS =		sec_convert($Spause_sec,$TIME_H_agentperfdetail); 
-	$USERtotNONPAUSE_MS =	sec_convert($Snon_pause_sec,$TIME_H_agentperfdetail); 
-	$USERtotTOTAL_MS =		sec_convert($Stotal_sec,$TIME_H_agentperfdetail); 
+	$USERtotPAUSE_MS =		sec_convert($Spause_sec,$TIME_H_agentperfdetail);
+	$USERtotNONPAUSE_MS =	sec_convert($Snon_pause_sec,$TIME_H_agentperfdetail);
+	$USERtotTOTAL_MS =		sec_convert($Stotal_sec,$TIME_H_agentperfdetail);
 
 	$pfUSERtotPAUSE_MS =		sprintf("%8s", $USERtotPAUSE_MS);
 	$pfUSERtotNONPAUSE_MS =		sprintf("%8s", $USERtotNONPAUSE_MS);
@@ -1990,7 +2041,7 @@ while ($n < $j)
 		$TOTtotPAUSE = ($TOTtotPAUSE + $Scalls);
 		$$total_var=$Scalls;
 
-		$USERsumstatPAUSE_MS =		sec_convert($Scalls,$TIME_H_agentperfdetail); 
+		$USERsumstatPAUSE_MS =		sec_convert($Scalls,$TIME_H_agentperfdetail);
 		$pfUSERsumstatPAUSE_MS =	sprintf("%8s", $USERsumstatPAUSE_MS);
 
 		$SUMstatusTXT = sprintf("%8s", $pfUSERsumstatPAUSE_MS);
@@ -2003,9 +2054,9 @@ while ($n < $j)
 
 	$TOT_AGENTS = sprintf("%-4s", $m);
 
-	$TOTtotPAUSE_MS =		sec_convert($TOTtotPAUSE,$TIME_H_agentperfdetail); 
-	$TOTtotNONPAUSE_MS =	sec_convert($TOTtotNONPAUSE,$TIME_H_agentperfdetail); 
-	$TOTtotTOTAL_MS =		sec_convert($TOTtotTOTAL,$TIME_H_agentperfdetail); 
+	$TOTtotPAUSE_MS =		sec_convert($TOTtotPAUSE,$TIME_H_agentperfdetail);
+	$TOTtotNONPAUSE_MS =	sec_convert($TOTtotNONPAUSE,$TIME_H_agentperfdetail);
+	$TOTtotTOTAL_MS =		sec_convert($TOTtotTOTAL,$TIME_H_agentperfdetail);
 
 	$TOTtotPAUSE_MS =		sprintf("%10s", $TOTtotPAUSE_MS);
 	$TOTtotNONPAUSE_MS =	sprintf("%10s", $TOTtotNONPAUSE_MS);
@@ -2036,15 +2087,15 @@ for ($e=0; $e<count($sub_statusesARY); $e++) {
 }
 
 $default_graph="bar"; # Graph that is initally displayed when page loads
-include("graph_color_schemas.inc"); 
+include("graph_color_schemas.inc");
 
 $graph_totals_array=array();
 $graph_totals_rawdata=array();
 for ($q=0; $q<count($graph_array); $q++) {
-	$graph_info=explode("|", $graph_array[$q]); 
+	$graph_info=explode("|", $graph_array[$q]);
 	$current_graph_total=0;
 	$dataset_name=$graph_info[0];
-	$dataset_index=$graph_info[1]; 
+	$dataset_index=$graph_info[1];
 	$dataset_type=$graph_info[3];
 
 	$JS_text.="var $dataset_name = {\n";
@@ -2062,7 +2113,7 @@ for ($q=0; $q<count($graph_array); $q++) {
 	$graphConstantsC="\t\t\t\thoverBorderColor: [";
 	for ($d=0; $d<count($graph_stats); $d++) {
 		$labels.="\"".preg_replace('/ +/', ' ', $graph_stats[$d][0])."\",";
-		$data.="\"".$graph_stats[$d][$dataset_index]."\","; 
+		$data.="\"".$graph_stats[$d][$dataset_index]."\",";
 		$current_graph_total+=$graph_stats[$d][$dataset_index];
 		$bgcolor=$backgroundColor[($d%count($backgroundColor))];
 		$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
@@ -2070,13 +2121,13 @@ for ($q=0; $q<count($graph_array); $q++) {
 		$graphConstantsA.="\"$bgcolor\",";
 		$graphConstantsB.="\"$hbgcolor\",";
 		$graphConstantsC.="\"$hbcolor\",";
-	}	
+	}
 	$graphConstantsA.="],\n";
 	$graphConstantsB.="],\n";
 	$graphConstantsC.="],\n";
 	$labels=preg_replace('/,$/', '', $labels)."],\n";
 	$data=preg_replace('/,$/', '', $data)."],\n";
-	
+
 	$graph_totals_rawdata[$q]=$current_graph_total;
 	switch($dataset_type) {
 		case "time":
@@ -2167,7 +2218,7 @@ if ($report_display_type=="HTML")
 	{
 	$HTML_text.=$GRAPH.$JS_text;
 	}
-else 
+else
 	{
 	$HTML_text.=$ASCII_text;
 	}
@@ -2179,7 +2230,7 @@ $HTML_text.="</BODY></HTML>";
 }
 
 
-if ($file_download == 0 || !$file_download) 
+if ($file_download == 0 || !$file_download)
 	{
 	echo $HTML_head;
 	require("admin_header.php");

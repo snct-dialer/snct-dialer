@@ -1,12 +1,12 @@
 <?php
 # callcard_admin.php
-# 
+#
 # Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This callcard script is to administer the callcard accounts in ViciDial
 # it is separate from the standard admin.php script. callcard_enabled in
 # the system_settings table must be active for this script to work.
-# 
+#
 # CHANGES
 # 100311-2325 - first build
 # 100525-1824 - Added generate option
@@ -287,7 +287,7 @@ header ("Pragma: no-cache");                          // HTTP/1.0
 <div id='HelpDisplayDiv' class='help_info' style='display:none;'></div>
 
 <!-- VERSION: <?php echo $version ?>     BUILD: <?php echo $build ?> -->
-<title>ADMINISTRATION: CallCard Admin
+<title><?php echo _QXZ("ADMINISTRATION").": "._QXZ("CallCard Admin"); ?></title>
 <?php
 
 
@@ -321,7 +321,7 @@ $colspan='3';
 ?>
 <TABLE WIDTH=<?php echo $page_width ?> BGCOLOR=#<?php echo $SSframe_background; ?> cellpadding=2 cellspacing=0>
 
-<?php 
+<?php
 
 echo "<TR BGCOLOR=\"#".$SSframe_background."\"><TD ALIGN=LEFT COLSPAN=$colspan><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=3><B> &nbsp; \n";
 
@@ -429,7 +429,7 @@ if ($action == "CALLCARD_DETAIL")
 	$stmt="SELECT card_id,run,batch,pack,sequence,status,balance_minutes,initial_value,initial_minutes,note_purchase_order,note_printer,note_did,inbound_group_id,note_language,note_name,note_comments,create_user,activate_user,used_user,void_user,create_time,activate_time,used_time,void_time from callcard_accounts_details where card_id='$card_id';";
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$details_to_print = mysqli_num_rows($rslt);
-	if ($details_to_print > 0) 
+	if ($details_to_print > 0)
 		{
 		$rowx=mysqli_fetch_row($rslt);
 		$card_id =				$rowx[0];
@@ -460,7 +460,7 @@ if ($action == "CALLCARD_DETAIL")
 		$stmt="SELECT pin from callcard_accounts where card_id='$card_id';";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$pin_to_print = mysqli_num_rows($rslt);
-		if ($pin_to_print > 0) 
+		if ($pin_to_print > 0)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$pin =				$rowx[0];
@@ -534,7 +534,7 @@ if ($action == "CALLCARD_DETAIL")
 			if (preg_match("/1$|3$|5$|7$|9$/i", $i))
 				{$bgcolor='bgcolor="#'.$SSstd_row4_background.'"';}
 			else
-				{$bgcolor='bgcolor="#'.$SSstd_row3_background.'"';} 
+				{$bgcolor='bgcolor="#'.$SSstd_row3_background.'"';}
 			echo "<tr $bgcolor>\n";
 			echo "<td><font size=1> $i </td>";
 			echo "<td><font size=1> $row[0] </td>";
@@ -591,9 +591,9 @@ if ($action == "CALLCARD_SUMMARY")
 		if (preg_match("/1$|3$|5$|7$|9$/i", $i))
 			{$bgcolor='bgcolor="#'.$SSstd_row4_background.'"';}
 		else
-			{$bgcolor='bgcolor="#'.$SSstd_row3_background.'"';} 
+			{$bgcolor='bgcolor="#'.$SSstd_row3_background.'"';}
 		echo "<tr $bgcolor>\n";
-		echo "<td><font size=1> $Lstatus[$i] </td>";
+		echo "<td><font size=1> "._QXZ("$Lstatus[$i]")."</td>";
 		echo "<td><font size=1> $Lcount[$i] </td>";
 		echo "</tr>\n";
 
@@ -643,7 +643,7 @@ if ($action == "CALLCARD_SUMMARY")
 			if (preg_match("/1$|3$|5$|7$|9$/i", $i))
 				{$bgcolor='bgcolor="#'.$SSstd_row4_background.'"';}
 			else
-				{$bgcolor='bgcolor="#'.$SSstd_row3_background.'"';} 
+				{$bgcolor='bgcolor="#'.$SSstd_row3_background.'"';}
 			echo "<tr $bgcolor>\n";
 			echo "<td><font size=1> $i </td>";
 			echo "<td><font size=1> <a href=\"$PHP_SELF?action=CALLCARD_DETAIL&card_id=$row[0]&DB=$DB\"><font color=black>$row[0]</font></a> </td>";
@@ -695,11 +695,11 @@ if ($action == "CALLCARD_RUNS")
 		if (preg_match("/1$|3$|5$|7$|9$/i", $i))
 			{$bgcolor='bgcolor="#'.$SSstd_row4_background.'"';}
 		else
-			{$bgcolor='bgcolor="#'.$SSstd_row3_background.'"';} 
+			{$bgcolor='bgcolor="#'.$SSstd_row3_background.'"';}
 		echo "<tr $bgcolor>\n";
 		echo "<td><font size=1> $Lrun[$i] </td>";
 		echo "<td><font size=1> $Lcount[$i] </td>";
-		echo "<td><font size=1> <a href=\"$PHP_SELF?action=SEARCH_RESULTS&run=$Lrun[$i]&DB=$DB\">LIST</a> </td>";
+		echo "<td><font size=1> <a href=\"$PHP_SELF?action=SEARCH_RESULTS&run=$Lrun[$i]&DB=$DB\">"._QXZ("LIST")."</a> </td>";
 		echo "</tr>\n";
 
 		$i++;
@@ -740,11 +740,11 @@ if ($action == "CALLCARD_BATCHES")
 		if (preg_match("/1$|3$|5$|7$|9$/i", $i))
 			{$bgcolor='bgcolor="#'.$SSstd_row4_background.'"';}
 		else
-			{$bgcolor='bgcolor="#'.$SSstd_row3_background.'"';} 
+			{$bgcolor='bgcolor="#'.$SSstd_row3_background.'"';}
 		echo "<tr $bgcolor>\n";
 		echo "<td><font size=1> $Lbatch[$i] </td>";
 		echo "<td><font size=1> $Lcount[$i] </td>";
-		echo "<td><font size=1> <a href=\"$PHP_SELF?action=SEARCH_RESULTS&batch=$Lbatch[$i]&DB=$DB\">LIST</a> </td>";
+		echo "<td><font size=1> <a href=\"$PHP_SELF?action=SEARCH_RESULTS&batch=$Lbatch[$i]&DB=$DB\">"._QXZ("LIST")."</a> </td>";
 		echo "</tr>\n";
 
 		$i++;
@@ -836,7 +836,7 @@ if ($action == "GENERATE_RESULTS")
 					if (preg_match("/1$|3$|5$|7$|9$/i", $i))
 						{$bgcolor='bgcolor="#'.$SSstd_row4_background.'"';}
 					else
-						{$bgcolor='bgcolor="#'.$SSstd_row3_background.'"';} 
+						{$bgcolor='bgcolor="#'.$SSstd_row3_background.'"';}
 					echo "<tr $bgcolor>\n";
 					echo "<td><font size=1> <a href=\"$PHP_SELF?action=CALLCARD_DETAIL&card_id=$Pcard_id&DB=$DB\"><font color=black>$Pcard_id</font></a> </td>";
 					echo "<td><font size=1> $Ppin </td>";
@@ -943,7 +943,7 @@ if ($action == "SEARCH_RESULTS")
 
 	if (strlen($searchSQL) < 5)
 		{
-		echo "you must enter something to search for<BR><BR>\n";
+		echo _QXZ("you must enter something to search for")."<BR><BR>\n";
 		$action = 'SEARCH';
 		}
 	else
@@ -982,7 +982,7 @@ if ($action == "SEARCH_RESULTS")
 			if (preg_match("/1$|3$|5$|7$|9$/i", $i))
 				{$bgcolor='bgcolor="#'.$SSstd_row4_background.'"';}
 			else
-				{$bgcolor='bgcolor="#'.$SSstd_row3_background.'"';} 
+				{$bgcolor='bgcolor="#'.$SSstd_row3_background.'"';}
 			echo "<tr $bgcolor>\n";
 			echo "<td><font size=1> <a href=\"$PHP_SELF?action=CALLCARD_DETAIL&card_id=$Lcard_id[$i]&DB=$DB\"><font color=black>$Lcard_id[$i]</font></a> </td>";
 			echo "<td><font size=1> $Lstatus[$i] </td>";
@@ -991,7 +991,7 @@ if ($action == "SEARCH_RESULTS")
 			echo "<td><font size=1> $Lactivate_time[$i] </td>";
 			echo "<td><font size=1> $Lused_time[$i] </td>";
 			echo "<td><font size=1> $Lvoid_time[$i] </td>";
-			echo "<td><font size=1> <a href=\"$PHP_SELF?action=CALLCARD_DETAIL&card_id=$Lcard_id[$i]&DB=$DB\">DETAILS</a> </td>";
+			echo "<td><font size=1> <a href=\"$PHP_SELF?action=CALLCARD_DETAIL&card_id=$Lcard_id[$i]&DB=$DB\">"._QXZ("DETAILS")."</a> </td>";
 			echo "</tr>\n";
 
 			$i++;

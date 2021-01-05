@@ -1,6 +1,6 @@
-<?php 
+<?php
 # AST_LAGGED_log_report.php
-# 
+#
 # Copyright (C) 2017  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -320,9 +320,9 @@ if ($SUBMIT && $query_date) {
 
 				$HTML_rpt.="<TR valign='top'><td class='small_standard_bold $color_class' width='90'>$row[agent_log_id]</td><td class='small_standard_bold $color_class' width='80'>$row[user]</td><td class='small_standard_bold $color_class' width='120'>$row[server_ip]</td><td class='small_standard_bold $color_class' width='100'>$row[event_time]</td><td class='small_standard_bold $color_class' width='80'>$row[lead_id]</td><td class='small_standard_bold $color_class' width='80'>$row[campaign_id]</td><td class='small_standard_bold $color_class' width='60'>$row[status]</td><td class='small_standard_bold $color_class' width='80'>$row[user_group]</td><td class='small_standard_bold $color_class' width='160'>$row[comments]</td><td class='small_standard_bold $color_class' width='120'>$row[uniqueid]</td></TR>";
 
-				$lagged_rpt.="| ".sprintf("%-13s", $row["agent_log_id"]); 
-				$lagged_rpt.="| ".sprintf("%-11s", $row["user"]); 
-				$lagged_rpt.="| ".sprintf("%-16s", $row["server_ip"]); 
+				$lagged_rpt.="| ".sprintf("%-13s", $row["agent_log_id"]);
+				$lagged_rpt.="| ".sprintf("%-11s", $row["user"]);
+				$lagged_rpt.="| ".sprintf("%-16s", $row["server_ip"]);
 				$lagged_rpt.="| ".sprintf("%-20s", $row["event_time"]);
 				$lagged_rpt.="| ".sprintf("%-10s", $row["lead_id"]);
 				$lagged_rpt.="| ".sprintf("%-9s", $row["campaign_id"]);

@@ -293,7 +293,7 @@ if (length($ARGV[0])>1)
 			$campaign = $data_in[1];
 			$campaign =~ s/ .*$//gi;
 			$campaignSQL = $campaign;
-			if ($campaignSQL =~ /-/) 
+			if ($campaignSQL =~ /-/)
 				{
 				$campaignSQL =~ s/-/','/gi;
 				}
@@ -306,7 +306,7 @@ if (length($ARGV[0])>1)
 			$NOTcampaign = $data_in[1];
 			$NOTcampaign =~ s/ .*$//gi;
 			$NOTcampaignSQL = $NOTcampaign;
-			if ($NOTcampaignSQL =~ /-/) 
+			if ($NOTcampaignSQL =~ /-/)
 				{
 				$NOTcampaignSQL =~ s/-/','/gi;
 				}
@@ -458,10 +458,10 @@ else
 ### find wget binary
 $wgetbin = '';
 if ( -e ('/bin/wget')) {$wgetbin = '/bin/wget';}
-else 
+else
 	{
 	if ( -e ('/usr/bin/wget')) {$wgetbin = '/usr/bin/wget';}
-	else 
+	else
 		{
 		if ( -e ('/usr/local/bin/wget')) {$wgetbin = '/usr/local/bin/wget';}
 		else
@@ -474,10 +474,10 @@ else
 ### find find binary
 $findbin = '';
 if ( -e ('/bin/find')) {$findbin = '/bin/find';}
-else 
+else
 	{
 	if ( -e ('/usr/bin/find')) {$findbin = '/usr/bin/find';}
-	else 
+	else
 		{
 		if ( -e ('/usr/local/bin/find')) {$findbin = '/usr/local/bin/find';}
 		else
@@ -489,7 +489,7 @@ else
 	}
 
 $tempdir = "/root/tempaudioexport$temp_dir";
-if (!-e "$tempdir") 
+if (!-e "$tempdir")
 	{`mkdir -p $tempdir`;}
 
 
@@ -634,10 +634,10 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 
 use DBI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
-$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 $TOTAL_SALES=0;
@@ -736,7 +736,7 @@ if ($did_only > 0)
 		}
 	$sthA->finish();
 
-	if ($archive_logs > 0) 
+	if ($archive_logs > 0)
 		{
 		$stmtA = "SELECT lead_id,user,vicidial_id,vicidial_id,length_in_sec,UNIX_TIMESTAMP(start_time) from recording_log_archive where $archive_with_inboundSQL and start_time >= '$shipdate 00:00:00' and start_time <= '$shipdate_end 23:59:59' order by start_time;";
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -799,7 +799,7 @@ else
 		}
 	$sthA->finish();
 
-	if ($archive_logs > 0) 
+	if ($archive_logs > 0)
 		{
 		$stmtA = "SELECT vicidial_list.lead_id,uniqueid,length_in_sec,UNIX_TIMESTAMP(vicidial_log_archive.call_date) from vicidial_list,vicidial_log_archive where $archive_campaignSQL $archive_sale_statusesSQL and call_date >= '$shipdate 00:00:00' and call_date <= '$shipdate_end 23:59:59' and vicidial_log_archive.lead_id=vicidial_list.lead_id order by call_date;";
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -862,7 +862,7 @@ else
 			}
 		$sthA->finish();
 
-		if ($archive_logs > 0) 
+		if ($archive_logs > 0)
 			{
 			$stmtA = "SELECT vicidial_list.lead_id,xfercallid,closecallid,uniqueid,length_in_sec,UNIX_TIMESTAMP(vicidial_closer_log_archive.call_date) from vicidial_list,vicidial_closer_log_archive where $archive_with_inboundSQL $archive_close_statusesSQL and call_date >= '$shipdate 00:00:00' and call_date <= '$shipdate_end 23:59:59' and vicidial_closer_log_archive.lead_id=vicidial_list.lead_id order by call_date;";
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -1088,7 +1088,7 @@ sub select_format_loop
 			$within_calltime=0;
 			}
 		}
-	
+
 	if ( ($within_calltime > 0) || ( ($outbound_calltime_ignore > 0) && ($outbound =~ /Y/) ) )
 		{
 		$str='';
@@ -1153,7 +1153,7 @@ sub select_format_loop
 			}
 		##### END standard audio lookup #####
 
-		$Ealert .= "$TOTAL_SALES   $TOTAL_RECORDINGS   $rec_countB   $call_data\n"; 
+		$Ealert .= "$TOTAL_SALES   $TOTAL_RECORDINGS   $rec_countB   $call_data\n";
 
 		if ($DBX) {print "$TOTAL_SALES   $TOTAL_RECORDINGS   $rec_countB   $call_data\n";}
 		}

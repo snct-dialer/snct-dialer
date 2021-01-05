@@ -23,7 +23,7 @@
 # 90721-1314 - Added rank and owner as vicidial_list fields
 # 90731-0555 - Added call time scheme restriction
 # 90807-1632 - Fixed call time bug and call length bug
-# 90825-1249 - Added without-camp and without-in options 
+# 90825-1249 - Added without-camp and without-in options
 # 90902-0437 - Added outbound-calltime-ignore and ftp-norun options
 # 90909-2322 - Added totals-only option
 # 101022-1022 - Added hours minutes seconds to filename variables
@@ -282,7 +282,7 @@ if (length($ARGV[0])>1)
 			$campaign = $data_in[1];
 			$campaign =~ s/ .*$//gi;
 			$campaignSQL = $campaign;
-			if ($campaignSQL =~ /-/) 
+			if ($campaignSQL =~ /-/)
 				{
 				$campaignSQL =~ s/-/','/gi;
 				}
@@ -295,7 +295,7 @@ if (length($ARGV[0])>1)
 			$NOTcampaign = $data_in[1];
 			$NOTcampaign =~ s/ .*$//gi;
 			$NOTcampaignSQL = $NOTcampaign;
-			if ($NOTcampaignSQL =~ /-/) 
+			if ($NOTcampaignSQL =~ /-/)
 				{
 				$NOTcampaignSQL =~ s/-/','/gi;
 				}
@@ -395,10 +395,10 @@ if (length($ARGV[0])>1)
 			### find wget binary
 			$wgetbin = '';
 			if ( -e ('/bin/wget')) {$wgetbin = '/bin/wget';}
-			else 
+			else
 				{
 				if ( -e ('/usr/bin/wget')) {$wgetbin = '/usr/bin/wget';}
-				else 
+				else
 					{
 					if ( -e ('/usr/local/bin/wget')) {$wgetbin = '/usr/local/bin/wget';}
 					else
@@ -411,10 +411,10 @@ if (length($ARGV[0])>1)
 			### find find binary
 			$findbin = '';
 			if ( -e ('/bin/find')) {$findbin = '/bin/find';}
-			else 
+			else
 				{
 				if ( -e ('/usr/bin/find')) {$findbin = '/usr/bin/find';}
-				else 
+				else
 					{
 					if ( -e ('/usr/local/bin/find')) {$findbin = '/usr/local/bin/find';}
 					else
@@ -425,7 +425,7 @@ if (length($ARGV[0])>1)
 					}
 				}
 			$tempdir = "/root/tempaudioexport$temp_dir";
-			if (!-e "$tempdir") 
+			if (!-e "$tempdir")
 				{`mkdir -p $tempdir`;}
 			## remove old audio files from directory
 			`$findbin $tempdir/ -maxdepth 1 -type f -mtime +0 -print | xargs rm -f`;
@@ -544,19 +544,19 @@ else
 # Customized Variables
 $server_ip = $VARserver_ip;		# Asterisk server IP
 
-if ($output_format =~ /^pipe-standard$/) 
+if ($output_format =~ /^pipe-standard$/)
 	{$DLT = '|';   $txt='.txt';   print "---- pipe-standard ----\n";}
-if ($output_format =~ /^csv-standard$/) 
+if ($output_format =~ /^csv-standard$/)
 	{$DLT = "','";   $txt='.csv';   print "---- csv-standard ----\n";}
-if ($output_format =~ /^tab-standard$/) 
+if ($output_format =~ /^tab-standard$/)
 	{$DLT = "\t";   $txt='.txt';   print "---- tab-standard ----\n";}
-if ($output_format =~ /^pipe-triplep$/) 
+if ($output_format =~ /^pipe-triplep$/)
 	{$DLT = '';   $txt='.txt';   print "---- pipe-triplep ----\n";}
-if ($output_format =~ /^pipe-vici$/) 
+if ($output_format =~ /^pipe-vici$/)
 	{$DLT = '|';   $txt='.txt';   print "---- pipe-vici ----\n";}
-if ($output_format =~ /^html-rec$/) 
+if ($output_format =~ /^html-rec$/)
 	{$DLT = ' ';   $txt='.html';   print "---- html-rec ----\n";}
-if ($output_format =~ /^fixed-as400$/) 
+if ($output_format =~ /^fixed-as400$/)
 	{$DLT = '';   $txt='.txt';   print "---- fixed-as400 ----\n";}
 
 if ($sale_statuses =~ /---ALL---/)
@@ -628,10 +628,10 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 
 use DBI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
-$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 $TOTAL_SALES=0;
@@ -1047,7 +1047,7 @@ sub select_format_loop
 			$within_calltime=0;
 			}
 		}
-	
+
 	if ( ($within_calltime > 0) || ( ($outbound_calltime_ignore > 0) && ($outbound =~ /Y/) ) )
 		{
 		$str='';
@@ -1119,7 +1119,7 @@ sub select_format_loop
 					}
 				$sthB->finish();
 
-				if (length($ivr_id)<3) 
+				if (length($ivr_id)<3)
 					{
 					$stmtB = "select recording_id,filename,location from recording_log where filename LIKE \"%$phone_number%\" order by length_in_sec desc limit 1;";
 					$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
@@ -1199,7 +1199,7 @@ sub select_format_loop
 				}
 			$sthB->finish();
 
-			if ($skip_rec_extra < 1) 
+			if ($skip_rec_extra < 1)
 				{
 				### Look for other closer calls after this call
 				$more_calls[0]='';
@@ -1322,37 +1322,37 @@ sub select_format_loop
 		if ($status =~ /UPSELL/) {$UPSELL='L5';}
 		else {$UPSELL='N';}
 
-		if ($output_format =~ /^pipe-standard$/) 
+		if ($output_format =~ /^pipe-standard$/)
 			{
 			$str = "$first_name|$last_name|$address1|$address2|$city|$state|$postal_code|$phone_number|$email|$security|$comments|$call_date|$lead_id|$list_id|$user|$agent_name|$status|$vendor_id|$source_id|$campaign|$campaign_id|$ivr_id|$closer|$closer_name|$rank|$owner|\n";
 			}
 
-		if ($output_format =~ /^csv-standard$/) 
+		if ($output_format =~ /^csv-standard$/)
 			{
 			$str = "\"$first_name\",\"$last_name\",\"$address1\",\"$address2\",\"$city\",\"$state\",\"$postal_code\",\"$phone_number\",\"$email\",\"$security\",\"$comments\",\"$call_date\",\"$lead_id\",\"$list_id\",\"$user\",\"$agent_name\",\"$status\",\"$vendor_id\",\"$source_id\",\"$campaign\",\"$campaign_id\",\"$ivr_id\",\"$closer\",\"$closer_name\",\"$rank\",\"$owner\"\r\n";
 			}
 
-		if ($output_format =~ /^tab-standard$/) 
+		if ($output_format =~ /^tab-standard$/)
 			{
 			$str = "$first_name\t$last_name\t$address1\t$address2\t$city\t$state\t$postal_code\t$phone_number\t$email\t$security\t$comments\t$call_date\t$lead_id\t$list_id\t$user\t$agent_name\t$status\t$vendor_id\t$source_id\t$campaign\t$campaign_id\t$ivr_id\t$closer\t$closer_name\t$rank\t$owner\t\n";
 			}
 
-		if ($output_format =~ /^pipe-triplep$/) 
+		if ($output_format =~ /^pipe-triplep$/)
 			{
 			$str = "$user|$agent_name|$closer|$closer_name|$call_date|$status|$first_name|$last_name|$phone_number|$address1|$address2|$city|$state|$postal_code|$comments|$security|$email|$vendor_id|$source_id|$lead_id|$list_id|$campaign|$campaign_id|$ivr_id|\n";
 			}
 
-		if ($output_format =~ /^pipe-vici$/) 
+		if ($output_format =~ /^pipe-vici$/)
 			{
 			$str = "VDAD|$agent_name|$first_name|$last_name|$address1|$address2|$city|$state|$postal_code|$phone_number|$ivr_id|DU|$UPSELL|N|||$security|$comments||||||$call_date|CBDISC|$email\r\n";
 			}
 
-		if ($output_format =~ /^html-rec$/) 
+		if ($output_format =~ /^html-rec$/)
 			{
 			$str = "$user|$agent_name|$closer|$closer_name|$call_date|$status|$first_name|$last_name|$phone_number|$address1|$address2|$city|$state|$postal_code|$comments|$security|$email|$vendor_id|$source_id|$lead_id|$list_id|$campaign|$campaign_id|<a href=\"$ivr_location\">$ivr_id</a>|\n";
 			}
 
-		if ($output_format =~ /^fixed-as400$/) 
+		if ($output_format =~ /^fixed-as400$/)
 			{
 			# 16884259  MRS.      JEAN           BROWN               RISALPUR                      BROMSBERROW HEATYH            LEDBURY                       HEREFORDSHIRE                 ENGLAND             HR8 1PQ  01531650052         1209200809:52NI              3205UK
 			$vendor_id =	sprintf("%-10s",$vendor_id);	while(length($vendor_id)>10)	{$vendor_id =~ s/.$//gi;}
@@ -1365,7 +1365,7 @@ sub select_format_loop
 			$city =			sprintf("%-50s",$city);			while(length($city)>50)			{$city =~ s/.$//gi;}
 			$postal_code =	sprintf("%-9s",$postal_code);	while(length($postal_code)>9)	{$postal_code =~ s/.$//gi;}
 			$phone_number =	sprintf("%-20s",$phone_number);	while(length($phone_number)>20)	{$phone_number =~ s/.$//gi;}
-			@dtsplit = split(" ",$last_local_call_time); 
+			@dtsplit = split(" ",$last_local_call_time);
 			@datesplit = split("-",$dtsplit[0]);
 			$timesplit = substr($dtsplit[1], 0, 5);
 			$formatted_date = "$datesplit[1]$datesplit[2]$datesplit[0]$timesplit";
@@ -1397,13 +1397,13 @@ sub select_format_loop
 			if ($status =~ /^NI$/)		{$status = 'NI';}
 
 			$status =	sprintf("%-16s",$status);			while(length($status)>16)		{$status =~ s/.$//gi;}
-			$user =~ s/VDAD/    /gi;	
+			$user =~ s/VDAD/    /gi;
 			$UK = 'UK';
 
 			$str = "$vendor_id$title$first_name$last_name$address1$address2$address3$city$postal_code$phone_number$formatted_date$status$user$UK\r\n";
 			}
 
-		if ($output_format =~ /^tab-QMcustomUSA$/) 
+		if ($output_format =~ /^tab-QMcustomUSA$/)
 			{
 			# 1245328655100219	2009-06-18	05:37:35	937	9375551212	8185551223	8106	35	255	0	DSAW	-	q8187-20090618-053939-1245328655.100219.WAV|q8186-20090618-053735-1245328655.100219.WAV
 			# 1-  unique number (digits only)
@@ -1453,7 +1453,7 @@ sub select_format_loop
 
 			}
 
-		if ($output_format =~ /^tab-SCcustomUSA$/) 
+		if ($output_format =~ /^tab-SCcustomUSA$/)
 			{
 			# 1031266398284129        02-17-2010      01:18:04        727     7275551212              6666    0       114     11              NI      1234567890      20100217-041806_7275551212-all.wav|20100217-041806_7275551212-all.wav  Inbound 02-24-2010  19:00:00    02-17-2010 01:18:47     this is a test
 
@@ -1556,9 +1556,9 @@ sub select_format_loop
 
 			}
 
-		$Ealert .= "$str"; 
+		$Ealert .= "$str";
 
-		print out "$str"; 
+		print out "$str";
 		if ($DBX) {print "$str\n";}
 		}
 	else

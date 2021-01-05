@@ -2,7 +2,7 @@
 #
 # agi-NVA_recording.agi version 2.12
 #
-# This script is designed to give recording ability to agents not the using 
+# This script is designed to give recording ability to agents not the using
 # ViciDial agent screen
 #
 # ; 1. logging output (NONE|STDERR|FILE|BOTH)
@@ -116,13 +116,13 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port) {$VARDB_port='3306';}
-if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/nvaout";}
+if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/nvaout.log";}
 
 use DBI;
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
     or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
@@ -183,7 +183,7 @@ if (length($ARGV[0])>1)
 
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 	{
 	chomp;
 	last unless length($_);
@@ -333,7 +333,7 @@ if ($search_phone =~ /Y/)
 			}
 		else
 			{
-			if ($insert_list =~ /Y/) 
+			if ($insert_list =~ /Y/)
 				{
 				if (length($override_list) > 1) {$nva_new_list_id = $override_list;}
 				if (length($override_code) > 0) {$nva_new_phone_code = $override_code;}
@@ -393,7 +393,7 @@ if ($record_call =~ /Y/)
 		}
 	if ($play_recid =~ /Y/)
 		{
-		$AGI->stream_file('id_number');   
+		$AGI->stream_file('id_number');
 		$AGI->say_digits("$recording_id");
 		}
 
@@ -404,7 +404,7 @@ if ($record_call =~ /Y/)
 		}
 	else
 		{
-		$AGI->exec("Monitor","wav,/var/spool/asterisk/monitor/MIX/$filename"); 
+		$AGI->exec("Monitor","wav,/var/spool/asterisk/monitor/MIX/$filename");
 		}
 	}
 
@@ -413,10 +413,10 @@ if ( ($phone_url =~ /Y/) && (length($nva_call_url) > 8) )
 	### first, find curl binary
 	$curlbin = '';
 	if ( -e ('/bin/curl')) {$curlbin = '/bin/curl';}
-	else 
+	else
 		{
 		if ( -e ('/usr/bin/curl')) {$curlbin = '/usr/bin/curl';}
-		else 
+		else
 			{
 			if ( -e ('/usr/local/bin/curl')) {$curlbin = '/usr/local/bin/curl';}
 			else

@@ -3,7 +3,7 @@
 # Vtiger_IN_notes_activities_file.pl version 2.2.0
 #
 # DESCRIPTION:
-# script lets you insert notes and activities into the vtiger system from a 
+# script lets you insert notes and activities into the vtiger system from a
 # CSV-formatted file that is in the proper format. (for format see --help)
 #
 # NOTE - written for a specific client use, you will probably need to modify
@@ -227,9 +227,9 @@ $DASH='-';
 
 if (!$VARDB_port) {$VARDB_port='3306';}
 
-use DBI;	  
+use DBI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 #############################################
@@ -251,7 +251,7 @@ $sthA->finish();
 ##### END SETTINGS LOOKUP #####
 ###########################################
 
-$dbhB = DBI->connect("DBI:mysql:$vtiger_dbname:$vtiger_server_ip:$VARDB_port", "$vtiger_login", "$vtiger_pass")
+$dbhB = DBI->connect("DBI:mysql:$vtiger_dbname:$vtiger_server_ip:$VARDB_port", "$vtiger_login", "$vtiger_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 if ($non_latin > 0) {$affected_rows = $dbhA->do("SET NAMES 'UTF8'");}
@@ -449,7 +449,7 @@ foreach(@FILES)
 				if ($sthBrows < 1)
 					{
 					$sthB->finish();
-					
+
 					print "BAD Account Not Found: $website|$a\n";   $f++;
 					}
 				else
@@ -544,7 +544,7 @@ foreach(@FILES)
 							$user_id = $aryB[0];
 							}
 						$sthB->finish();
-						
+
 						# Get current ID from vtiger_crmentity_seq
 						$stmtB="SELECT id from vtiger_crmentity_seq;";
 							if($DBX){print STDERR "\n|$stmtB|\n";}
@@ -573,7 +573,7 @@ foreach(@FILES)
 							### insert record into vtiger_seactivityrel table ###
 							$stmtB = "INSERT INTO vtiger_seactivityrel SET crmid='$vendor_id',activityid='$crm_id';";
 								if (!$T) {$affected_rows = $dbhB->do($stmtB); } #  or die  "Couldn't execute query: |$stmtB|\n";
-								if($DB){print STDERR "\n|$affected_rows|$stmtB|\n";}					
+								if($DB){print STDERR "\n|$affected_rows|$stmtB|\n";}
 
 							### insert record into crmentity table ###
 							$stmtB = "INSERT INTO vtiger_crmentity SET crmid='$crm_id',smcreatorid='$user_id',smownerid='$user_id',modifiedby='$user_id',setype='Calendar',description='Old Call: $status',createdtime='$date $time',modifiedtime='$date $time', viewedtime='$date $time';";
@@ -614,7 +614,7 @@ foreach(@FILES)
 				{
 				print "BAD Account Number: $web1|$revenue|$a\n";   $e++;
 				}
-			
+
 			$a++;
 
 			if ($a =~ /100$/i) {print STDERR "0     $a\r";}

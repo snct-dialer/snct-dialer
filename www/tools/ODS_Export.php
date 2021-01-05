@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 function exportODF($data, $fields, $feet, $name) {
 
@@ -10,7 +10,7 @@ function exportODF($data, $fields, $feet, $name) {
 	if(!$zip->open($file, ZipArchive::CREATE|ZipArchive::OVERWRITE)) {
 		return FALSE;
 	}
-	
+
 	if(!$zip->addEmptyDir("META-INF")) {
 		return FALSE;
 	}
@@ -20,7 +20,7 @@ function exportODF($data, $fields, $feet, $name) {
 	if(!$zip->addFromString("mimetype", "application/vnd.oasis.opendocument.spreadsheet")) {
 		return FALSE;
 	}
-	
+
 	$buffer = '<?xml version="1.0" encoding="UTF-8"?>'
 		.'<office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" xmlns:number="urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0" xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" xmlns:chart="urn:oasis:names:tc:opendocument:xmlns:chart:1.0" xmlns:dr3d="urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0" xmlns:math="http://www.w3.org/1998/Math/MathML" xmlns:form="urn:oasis:names:tc:opendocument:xmlns:form:1.0" xmlns:script="urn:oasis:names:tc:opendocument:xmlns:script:1.0" xmlns:dom="http://www.w3.org/2001/xml-events" xmlns:xforms="http://www.w3.org/2002/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:of="urn:oasis:names:tc:opendocument:xmlns:of:1.2" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:grddl="http://www.w3.org/2003/g/data-view#" xmlns:field="urn:openoffice:names:experimental:ooo-ms-interop:xmlns:field:1.0" office:version="1.2" grddl:transformation="http://docs.oasis-open.org/office/1.2/xslt/odf2rdf.xsl">'
 		.'<office:scripts/>'
@@ -50,7 +50,7 @@ function exportODF($data, $fields, $feet, $name) {
 		$buffer .= '<table:table-column table:style-name="co1" table:default-cell-style-name="Default"/>';
 	}
 	$buffer .= '';
-	
+
 	$buffer .= '<table:table-row>';
 	foreach($fields AS $value) {
 		$buffer .= '<table:table-cell office:value-type="string">'
@@ -58,7 +58,7 @@ function exportODF($data, $fields, $feet, $name) {
 			.'</table:table-cell>';
 	}
 	$buffer .= '</table:table-row>';
-		
+
 	while($row = mysql_fetch_assoc($data)) {
 		$buffer .= '<table:table-row table:style-name="ro1">';
 		foreach($fields AS $key => $value) {
@@ -79,23 +79,23 @@ function exportODF($data, $fields, $feet, $name) {
 		$buffer .= '</table:table-row>';
 		$buffer .= $feet;
 	}
-	
-	
+
+
 	$buffer .= '</table:table>'
 		.'</office:spreadsheet>'
 		.'</office:body>'
 		.'</office:document-content>';
-	
-	
+
+
 	if(!$zip->addFromString("content.xml", $buffer))
 	{
 		return FALSE;
 	}
-	
+
 	$zip->close();
-	
+
 	return $file;
-	
+
 }
 
 

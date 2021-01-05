@@ -1,10 +1,10 @@
 <?php
 # dispo_change_status.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed to be used in the "Dispo URL" field of a campaign
-# or in-group. It can update the status of a lead to a new status if the lead 
+# or in-group. It can update the status of a lead to a new status if the lead
 # has been dispositioned as a specified status a set number of times
 #
 # This script is part of the API group and any modifications of data are
@@ -12,7 +12,7 @@
 #
 # Example of what to put in the Dispo URL field:
 # VARhttp://192.168.1.1/agc/dispo_change_status.php?lead_id=--A--lead_id--B--&user=--A--user--B--&pass=--A--pass--B--&logged_status=NI&logged_count=3&new_status=NI3&days_search=0&archive_search=N&log_to_file=1
-# 
+#
 # Definable Fields: (other fields should be left as they are)
 # - logged_status -	(NI) the status that is to be counted in the logs, REQUIRED
 # - logged_count -	(3) the number of times a lead was set to the above status that will trigger the change in status, REQUIRED

@@ -3,13 +3,13 @@
 # AST_vm_update.pl version 2.14
 #
 # DESCRIPTION:
-# uses the Asterisk Manager interface to update the count of voicemail messages 
+# uses the Asterisk Manager interface to update the count of voicemail messages
 # for each mailbox (in the phone and vicidial_voicemail tables) in the voicemail
 # table list is used by client apps for voicemail notification
 #
-# If this script is run ever minute there is a theoretical limit of 
-# 1200 mailboxes that it can check due to the wait interval. If you have 
-# more than this either change the cron when this script is run or change the 
+# If this script is run ever minute there is a theoretical limit of
+# 1200 mailboxes that it can check due to the wait interval. If you have
+# more than this either change the cron when this script is run or change the
 # wait interval below
 #
 # NOTE: THIS SHOULD ONLY BE RUN ON THE DESIGNATED VOICEMAIL SERVER IN A CLUSTER!
@@ -38,7 +38,7 @@
 use Fcntl qw(:flock);
 # print "start of program $0\n";
 unless (flock(DATA, LOCK_EX|LOCK_NB)) {
-    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log'
     or print "Can't open the fscking file: $!";
     $datestring = localtime();
     print $fh "[$datestring] $0 is already running. Exiting.\n";
@@ -145,8 +145,8 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
 use DBI;
 use Net::Telnet ();
-	  
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 ### find out if this server is the active_voicemail_server, if not, exit.
@@ -161,7 +161,7 @@ if ($sthArows > 0)
 	@aryA = $sthA->fetchrow_array;
 	$active_voicemail_server = $aryA[0];
 	}
-$sthA->finish(); 
+$sthA->finish();
 
 if ($active_voicemail_server < 1)
 	{
@@ -203,7 +203,7 @@ if ($sthArows > 0)
 	if ($DBSERVER_GMT)				{$SERVER_GMT = $DBSERVER_GMT;}
 	if ($DBext_context)				{$ext_context = $DBext_context;}
 	}
-$sthA->finish(); 
+$sthA->finish();
 
 @PTvoicemail_ids=@MT;
 $stmtA = "SELECT distinct voicemail_id from phones;";
@@ -218,7 +218,7 @@ while ($sthArows > $rec_count)
 	$PTvoicemail_ids[$rec_count] =	 $aryA[0];
 	$rec_count++;
     }
-$sthA->finish(); 
+$sthA->finish();
 
 $max_buffer = 4*1024*1024; # 4 meg buffer
 
@@ -260,8 +260,8 @@ foreach(@PTvoicemail_ids)
 	%ast_ver_str = parse_asterisk_version($asterisk_version);
 	if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 6))
 		{
-		@list_channels = $t->cmd(String => "Action: MailboxCount\nMailbox: $PTvoicemail_ids[$i]\n\nAction: Ping\n\n", Prompt => '/Response: Pong.*/'); 
-		
+		@list_channels = $t->cmd(String => "Action: MailboxCount\nMailbox: $PTvoicemail_ids[$i]\n\nAction: Ping\n\n", Prompt => '/Response: Pong.*/');
+
 		$j=0;
 		foreach(@list_channels)
 			{
@@ -278,7 +278,7 @@ foreach(@PTvoicemail_ids)
 	elsif (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 13))
 		{
 		@list_channels = $t->cmd(String => "Action: MailboxCount\nMailbox: $PTvoicemail_ids[$i]\n\nAction: Ping\n\n", Prompt => '/Response: Success\nPing: Pong.*/');
-	
+
 		$j=0;
 		foreach(@list_channels)
 			{
@@ -344,7 +344,7 @@ foreach(@PTvoicemail_ids)
 		$PTserver_ips[$rec_countX] =	$aryA[3];
 		$rec_countX++;
 		}
-	$sthA->finish(); 
+	$sthA->finish();
 
 	$rec_countX=0;
 	while ($sthArows > $rec_countX)
@@ -385,7 +385,7 @@ if ($sthArows > 0)
 	@aryA = $sthA->fetchrow_array;
 	$active_voicemail_server = $aryA[0];
 	}
-$sthA->finish(); 
+$sthA->finish();
 
 if ($active_voicemail_server > 0)
 	{
@@ -405,7 +405,7 @@ if ($active_voicemail_server > 0)
 		$PTold_messages[$rec_count] =	 $aryA[2];
 		$rec_count++;
 		}
-	$sthA->finish(); 
+	$sthA->finish();
 
 	$i=0;
 	foreach(@PTvoicemail_ids)
@@ -416,7 +416,7 @@ if ($active_voicemail_server > 0)
 		if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 6))
 			{
 			@list_channels = $t->cmd(String => "Action: MailboxCount\nMailbox: $PTvoicemail_ids[$i]\n\nAction: Ping\n\n", Prompt => '/Response: Pong.*/');
-	
+
 			$j=0;
 			foreach(@list_channels)
 				{
@@ -433,7 +433,7 @@ if ($active_voicemail_server > 0)
 		elsif (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 13))
 			{
 			@list_channels = $t->cmd(String => "Action: MailboxCount\nMailbox: $PTvoicemail_ids[$i]\n\nAction: Ping\n\n", Prompt => '/Response: Success\nPing: Pong.*/');
-	
+
 			$j=0;
 			foreach(@list_channels)
 				{
@@ -509,7 +509,7 @@ if ($active_voicemail_server > 0)
 
 
 $t->buffer_empty;
-@hangup = $t->cmd(String => "Action: Logoff\n\n", Prompt => "/.*/"); 
+@hangup = $t->cmd(String => "Action: Logoff\n\n", Prompt => "/.*/");
 $t->buffer_empty;
 $t->waitfor(Match => '/Message:.*\n\n/', Timeout => 10);
 $ok = $t->close;

@@ -1,7 +1,7 @@
 <?php
 # AST_rt_monitor_log_report.php
-# 
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>, Joe Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
+#
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>, Joe Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -9,6 +9,7 @@
 # 170822-2231 - Modified to use screen colors
 # 180507-2315 - Added new help display
 # 180712-1508 - Fix for rare allowed reports issue
+# 191013-0906 - Fixes for PHP7
 #
 
 $startMS = microtime();
@@ -52,6 +53,17 @@ if (isset($_GET["report_display_type"]))				{$report_display_type=$_GET["report_
 	elseif (isset($_POST["report_display_type"]))	{$report_display_type=$_POST["report_display_type"];}
 
 if (strlen($shift)<2) {$shift='ALL';}
+$MT[0]='';
+$NOW_DATE = date("Y-m-d");
+$NOW_TIME = date("Y-m-d H:i:s");
+$STARTtime = date("U");
+if (!isset($campaign)) {$campaign = array();}
+if (!isset($managers)) {$managers = array();}
+if (!isset($users)) {$users = array();}
+if (!isset($report_display_type)) {$report_display_type = "HTML";}
+if (!isset($query_date)) {$query_date = $NOW_DATE;}
+if (!isset($end_date)) {$end_date = $NOW_DATE;}
+if (!isset($order_by)) {$order_by="monitor_start_time-asc";}
 
 $report_name = 'Real-Time Monitoring Log Report';
 $db_source = 'M';
@@ -320,6 +332,8 @@ if ($DB) {$MAIN.="$stmt\n";}
 $users_to_print = mysqli_num_rows($rslt);
 $i=0;
 $user_array=array(); # For quick full-name reference
+$user_list=array();
+$user_names=array();
 while ($i < $users_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -346,6 +360,8 @@ if ($DB) {$MAIN.="$stmt\n";}
 $managers_to_print = mysqli_num_rows($rslt);
 $i=0;
 $manager_array=array(); # For quick full-name reference
+$manager_list=array();
+$manager_names=array();
 while ($i < $managers_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -355,18 +371,6 @@ while ($i < $managers_to_print)
 	if ($all_managers) {$manager_list[$i]=$row[0];}
 	$i++;
 	}
-
-$MT[0]='';
-$NOW_DATE = date("Y-m-d");
-$NOW_TIME = date("Y-m-d H:i:s");
-$STARTtime = date("U");
-if (!isset($campaign)) {$campaign = array();}
-if (!isset($managers)) {$managers = array();}
-if (!isset($users)) {$users = array();}
-if (!isset($report_display_type)) {$report_display_type = "HTML";}
-if (!isset($query_date)) {$query_date = $NOW_DATE;}
-if (!isset($end_date)) {$end_date = $NOW_DATE;}
-if (!isset($order_by)) {$order_by="monitor_start_time-asc";} 
 
 $i=0;
 $campaign_string='|';
@@ -397,10 +401,10 @@ else
 	$WHEREcampaign_SQL=" where campaign_id in ($campaign_SQL) ";
 	$campaign_SQL=" and campaign_id in ($campaign_SQL) ";
 	}
-if (strlen($campaign_SQL)<3) 
+if (strlen($campaign_SQL)<3)
 	{
 	$campaign_SQL="";
-	} 
+	}
 
 $i=0;
 $users_string='|';
@@ -528,7 +532,7 @@ $HEADER.="<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 # $HEADER.="<link rel=\"stylesheet\" type=\"text/css\" href=\"vicidial_stylesheet.css\" />\n";
-$HEADER.="<script src='chart/Chart.js'></script>\n"; 
+$HEADER.="<script src='chart/Chart.js'></script>\n";
 $HEADER.="<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
 $HEADER.="<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 $HEADER.="<TITLE>"._QXZ("$report_name")."</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
@@ -632,7 +636,7 @@ $MAIN.="</SELECT>\n";
 $MAIN.="</TD>\n";
 
 $MAIN.="<TD VALIGN=TOP>";
-$MAIN.="<B>Display as:</B><BR><select name='report_display_type'>";
+$MAIN.="<B>"._QXZ("Display as").":</B><BR><select name='report_display_type'>";
 if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
 $MAIN.="<option value='TEXT'>"._QXZ("TEXT")."</option><option value='HTML'>"._QXZ("HTML")."</option></select>&nbsp; ";
 $MAIN.="<BR><BR><INPUT TYPE=submit NAME='SUBMIT' VALUE='"._QXZ("SUBMIT")."'><BR><BR><FONT FACE=\"Arial,Helvetica\" size=2><a href=\"$rerun_rpt_URL&order_by=$order_by&file_download=1\">"._QXZ("DOWNLOAD")."</a></FONT> | <FONT FACE=\"Arial,Helvetica\" size=2><a href=\"./admin.php?ADD=3111&group_id=$group[0]\">"._QXZ("MODIFY")."</a></FONT> | <FONT FACE=\"Arial,Helvetica\" size=2><a href=\"./admin.php?ADD=999999\">"._QXZ("REPORTS")."</a></FONT></TD></TR></TABLE>\n";
@@ -657,7 +661,7 @@ else
 		if (strlen(trim($cg_row[0]))>0) {
 			$cg_row[0]=preg_replace("/^\s+|\s\-/", "", $cg_row[0]);
 			$campaign_group_SQL.="'".preg_replace("/\s/", "','", $cg_row[0])."',";
-		}		
+		}
 	}
 	$campaign_group_SQL=$group_SQL.",".$campaign_group_SQL;
 	$campaign_group_SQL=preg_replace("/^,|,$/", "", $campaign_group_SQL);
@@ -666,15 +670,19 @@ else
 	$users_string=preg_replace("/^\||\|$/", "", $users_string);
 	$manager_string=preg_replace("/^\||\|$/", "", $manager_string);
 
-	$MAIN.=" Date range :  $query_date to $end_date\n";
-	$MAIN.=" Campaigns  :  ".preg_replace("/\|/", ", ", $campaign_string)."\n";
-	$MAIN.=" Managers   :  ".preg_replace("/\|/", ", ", $manager_string)."\n";
-	$MAIN.=" Agents     :  ".preg_replace("/\|/", ", ", $users_string)."\n\n";
+	$campaign_string=preg_replace("/\-\-ALL\-\-/", "--"._QXZ("ALL")."--", $campaign_string);
+	$users_string=preg_replace("/\-\-ALL\-\-/", "--"._QXZ("ALL")."--", $users_string);
+	$manager_string=preg_replace("/\-\-ALL\-\-/", "--"._QXZ("ALL")."--", $manager_string);
 
-	$CSV_text.="\"Date range:\",\"$query_date to $end_date\"\n";
-	$CSV_text.="\"Campaigns:\",\"".preg_replace("/\|/", ", ", $campaign_string)."\"\n";
-	$CSV_text.="\"Managers:\",\"".preg_replace("/\|/", ", ", $manager_string)."\"\n";
-	$CSV_text.="\"Agents:\",\"".preg_replace("/\|/", ", ", $users_string)."\"\n\n";
+	$MAIN.=" "._QXZ("Date range", 11).":  $query_date "._QXZ("to")." $end_date\n";
+	$MAIN.=" "._QXZ("Campaigns", 11).":  ".preg_replace("/\|/", ", ", $campaign_string)."\n";
+	$MAIN.=" "._QXZ("Managers", 11).":  ".preg_replace("/\|/", ", ", $manager_string)."\n";
+	$MAIN.=" "._QXZ("Agents", 11).":  ".preg_replace("/\|/", ", ", $users_string)."\n\n";
+
+	$CSV_text.="\""._QXZ("Date range").":\",\"$query_date "._QXZ("to")." $end_date\"\n";
+	$CSV_text.="\""._QXZ("Campaigns").":\",\"".preg_replace("/\|/", ", ", $campaign_string)."\"\n";
+	$CSV_text.="\""._QXZ("Managers").":\",\"".preg_replace("/\|/", ", ", $manager_string)."\"\n";
+	$CSV_text.="\""._QXZ("Agents").":\",\"".preg_replace("/\|/", ", ", $users_string)."\"\n\n";
 
 	$order_by=preg_replace('/\-/', ' ', $order_by);
 
@@ -687,7 +695,7 @@ else
 		$ASCII_header="+---------------------+--------------------------------+-----------------+---------------+-----------------+--------------------------------+-----------------+--------------+---------------+---------+----------+---------------------+----------+---------+\n";
 		$ASCII_text2="| <a href='$rerun_rpt_URL&order_by=monitor_start_time-asc'>"._QXZ("START TIME", 19)."</a> | <a href='$rerun_rpt_URL&order_by=manager_user-asc'>"._QXZ("MANAGER", 30)."</a> | <a href='$rerun_rpt_URL&order_by=manager_server_ip-asc'>"._QXZ("MANAGER SERVER", 15)."</a> | <a href='$rerun_rpt_URL&order_by=manager_phone-asc'>"._QXZ("MANAGER PHONE", 13)."</a> | <a href='$rerun_rpt_URL&order_by=manager_ip-asc'>"._QXZ("MANAGER IP", 15)."</a> | <a href='$rerun_rpt_URL&order_by=agent_user-asc'>"._QXZ("AGENT MONITORED", 30)."</a> | <a href='$rerun_rpt_URL&order_by=agent_server_ip-asc'>"._QXZ("AGENT SERVER", 15)."</a> | <a href='$rerun_rpt_URL&order_by=agent_status-asc'>"._QXZ("AGENT STATUS", 12)."</a> | <a href='$rerun_rpt_URL&order_by=agent_session-asc'>"._QXZ("AGENT SESSION", 13)."</a> | <a href='$rerun_rpt_URL&order_by=lead_id-asc'>"._QXZ("LEAD ID", 7)."</a> | <a href='$rerun_rpt_URL&order_by=campaign_id-asc'>"._QXZ("CAMPAIGN", 8)."</a> | <a href='$rerun_rpt_URL&order_by=monitor_end_time-asc'>"._QXZ("END TIME", 19)."</a> | <a href='$rerun_rpt_URL&order_by=monitor_sec-asc'>"._QXZ("LENGTH", 8)."</a> | <a href='$rerun_rpt_URL&order_by=monitor_type-asc'>"._QXZ("TYPE", 7)."</a> |\n";
 
-		$CSV_text.="\"START TIME\",\"MANAGER\",\"MANAGER SERVER\",\"MANAGER PHONE\",\"MANAGER IP\",\"AGENT MONITORED\",\"AGENT SERVER\",\"AGENT STATUS\",\"AGENT SESSION\",\"LEAD ID\",\"CAMPAIGN\",\"END TIME\",\"LENGTH\",\"TYPE\"\n";
+		$CSV_text.="\""._QXZ("START TIME")."\",\""._QXZ("MANAGER")."\",\""._QXZ("MANAGER SERVER")."\",\""._QXZ("MANAGER PHONE")."\",\""._QXZ("MANAGER IP")."\",\""._QXZ("AGENT MONITORED")."\",\""._QXZ("AGENT SERVER")."\",\""._QXZ("AGENT STATUS")."\",\""._QXZ("AGENT SESSION")."\",\""._QXZ("LEAD ID")."\",\""._QXZ("CAMPAIGN")."\",\""._QXZ("END TIME")."\",\""._QXZ("LENGTH")."\",\""._QXZ("TYPE")."\"\n";
 
 		$ASCII_text=$ASCII_header.$ASCII_text2.$ASCII_header;
 
@@ -720,13 +728,13 @@ else
 			$HTML_text.="<TD><B><FONT FACE=\"Arial,Helvetica\" size=1>".$log_row["manager_ip"]."</FONT></B></TD>\n";
 			$HTML_text.="<TD><B><FONT FACE=\"Arial,Helvetica\" size=1><a href='/vicidial/user_stats.php?user=".$log_row["agent_user"]."'>".$log_row["agent_user"]." - ".$user_array["$log_row[agent_user]"]."</a></FONT></B></TD>\n";
 			$HTML_text.="<TD><B><FONT FACE=\"Arial,Helvetica\" size=1>".$log_row["agent_server_ip"]."</FONT></B></TD>\n";
-			$HTML_text.="<TD><B><FONT FACE=\"Arial,Helvetica\" size=1>".$log_row["agent_status"]."</FONT></B></TD>\n";
+			$HTML_text.="<TD><B><FONT FACE=\"Arial,Helvetica\" size=1>"._QXZ($log_row["agent_status"])."</FONT></B></TD>\n";
 			$HTML_text.="<TD><B><FONT FACE=\"Arial,Helvetica\" size=1>".$log_row["agent_session"]."</FONT></B></TD>\n";
 			$HTML_text.="<TD><B><FONT FACE=\"Arial,Helvetica\" size=1>".$log_row["lead_id"]."</FONT></B></TD>\n";
 			$HTML_text.="<TD><B><FONT FACE=\"Arial,Helvetica\" size=1>".$log_row["campaign_id"]."</FONT></B></TD>\n";
 			$HTML_text.="<TD><B><FONT FACE=\"Arial,Helvetica\" size=1>".$log_row["monitor_end_time"]."</FONT></B></TD>\n";
 			$HTML_text.="<TD><B><FONT FACE=\"Arial,Helvetica\" size=1>".$log_row["monitor_sec"]."</FONT></B></TD>\n";
-			$HTML_text.="<TD><B><FONT FACE=\"Arial,Helvetica\" size=1>".$log_row["monitor_type"]."</FONT></B></TD>\n";
+			$HTML_text.="<TD><B><FONT FACE=\"Arial,Helvetica\" size=1>"._QXZ("$log_row[monitor_type]")."</FONT></B></TD>\n";
 			$HTML_text.="</TR>\n";
 			$q++;
 
@@ -737,13 +745,13 @@ else
 			$ASCII_text.="| ".sprintf("%-15s", $log_row["manager_ip"])." ";
 			$ASCII_text.="| <a href='/vicidial/user_stats.php?user=".$log_row["agent_user"]."'>".sprintf("%-30s", substr($log_row["agent_user"]." - ".$user_array["$log_row[agent_user]"], 0, 30))."</a> ";
 			$ASCII_text.="| ".sprintf("%-15s", $log_row["agent_server_ip"])." ";
-			$ASCII_text.="| ".sprintf("%-12s", $log_row["agent_status"])." ";
+			$ASCII_text.="| ".sprintf("%-12s", _QXZ($log_row["agent_status"]))." ";
 			$ASCII_text.="| ".sprintf("%-13s", $log_row["agent_session"])." ";
 			$ASCII_text.="| ".sprintf("%-7s", $log_row["lead_id"])." ";
 			$ASCII_text.="| ".sprintf("%-8s", $log_row["campaign_id"])." ";
 			$ASCII_text.="| ".sprintf("%-19s", $log_row["monitor_end_time"])." ";
 			$ASCII_text.="| ".sprintf("%-8s", $log_row["monitor_sec"])." ";
-			$ASCII_text.="| ".sprintf("%-7s", $log_row["monitor_type"])." |\n";
+			$ASCII_text.="| ".sprintf("%-7s", _QXZ("$log_row[monitor_type]", 7))." |\n";
 
 			$CSV_text.="\"".$log_row["monitor_start_time"]."\",";
 			$CSV_text.="\"".substr($log_row["manager_user"]." - ".$manager_array["$log_row[manager_user]"], 0, 30)."\",";
@@ -758,7 +766,7 @@ else
 			$CSV_text.="\"".$log_row["campaign_id"]."\",";
 			$CSV_text.="\"".$log_row["monitor_end_time"]."\",";
 			$CSV_text.="\"".$log_row["monitor_sec"]."\",";
-			$CSV_text.="\"".$log_row["monitor_type"]."\"\n";
+			$CSV_text.="\""._QXZ("$log_row[monitor_type]")."\"\n";
 
 		}
 
@@ -774,7 +782,7 @@ else
 		{
 		$MAIN.=$HTML_text.$HTML_text2;
 		}
-	else 
+	else
 		{
 		$MAIN.=$ASCII_text;
 		}
@@ -783,7 +791,7 @@ else
 
 	$MAIN.="</FORM>";
 
-	if ($file_download>0) 
+	if ($file_download>0)
 		{
 		$FILE_TIME = date("Ymd-His");
 		$CSVfilename = "AST_RT_monitor_log_report_$US$FILE_TIME.csv";
@@ -803,7 +811,7 @@ else
 
 		echo "$CSV_text";
 		}
-	else 
+	else
 		{
 		header("Content-type: text/html; charset=utf-8");
 

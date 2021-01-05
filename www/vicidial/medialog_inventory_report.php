@@ -1,6 +1,6 @@
 <?php
 # medialog_inventory_report.php
-# 
+#
 # Copyright (C) 2018  Joe Johnson <freewermadmin@gmail.com>, Matt Florell <mattf@vicidial.com>    LICENSE: AGPLv2
 #
 # This is a report designed for showing custom statistics based on client
@@ -89,14 +89,14 @@ if ($qm_conf_ct > 0)
 ### ARCHIVED DATA CHECK CONFIGURATION
 $archives_available="N";
 $log_tables_array=array("vicidial_list", "vicidial_log", "vicidial_closer_log", "vicidial_agent_log", "user_call_log");
-for ($t=0; $t<count($log_tables_array); $t++) 
+for ($t=0; $t<count($log_tables_array); $t++)
 	{
 	$table_name=$log_tables_array[$t];
 	$archive_table_name=use_archive_table($table_name);
 	if ($archive_table_name!=$table_name) {$archives_available="Y";}
 	}
 
-if ($search_archived_data) 
+if ($search_archived_data)
 	{
 	$vicidial_list_table=use_archive_table("vicidial_list");
 	$vicidial_closer_log_table=use_archive_table("vicidial_closer_log");
@@ -341,7 +341,7 @@ $rslt=mysql_to_mysqli($stmt, $link);
 $statuses_to_print = mysqli_num_rows($rslt);
 
 $o=0;
-while ($statuses_to_print > $o) 
+while ($statuses_to_print > $o)
 	{
 	$rowx=mysqli_fetch_row($rslt);
 	$statuses_list["$rowx[0]"] = "$rowx[1]";
@@ -353,7 +353,7 @@ $rslt=mysql_to_mysqli($stmt, $link);
 $Cstatuses_to_print = mysqli_num_rows($rslt);
 
 $o=0;
-while ($Cstatuses_to_print > $o) 
+while ($Cstatuses_to_print > $o)
 	{
 	$rowx=mysqli_fetch_row($rslt);
 	$statuses_list["$rowx[0]"] = "$rowx[1]";
@@ -439,7 +439,7 @@ if ( preg_match('/\-\-ALL\-\-/',$list_id_string) )
 	$list_stmt="select list_id from vicidial_lists where active='Y' $group_SQLand";
 	if ($DB) {echo $list_stmt."<BR>\n";}
 	$list_rslt=mysql_to_mysqli($list_stmt, $link);
-	while ($list_row=mysqli_fetch_row($list_rslt)) 
+	while ($list_row=mysqli_fetch_row($list_rslt))
 		{
 		$list_id_string .= "$list_row[0]|";
 		$list_id_SQL .= "'$list_row[0]',";
@@ -451,7 +451,7 @@ $list_id_SQL = preg_replace('/,$/i', '',$list_id_SQL);
 $list_id_SQLandVLJOIN = "and ".$vicidial_log_table.".lead_id=".$vicidial_list_table.".lead_id";
 $list_id_SQLandVCLJOIN = "and ".$vicidial_closer_log_table.".lead_id=".$vicidial_list_table.".lead_id";
 $list_id_SQLandUCLJOIN = "and ".$user_call_log_table.".lead_id=".$vicidial_list_table.".lead_id";
-if (strlen($list_id_SQL)>0) 
+if (strlen($list_id_SQL)>0)
 	{
 	$list_id_SQLandVLJOIN .= " and ".$vicidial_log_table.".list_id IN($list_id_SQL)";
 	$list_id_SQLandVCLJOIN .= " and ".$vicidial_closer_log_table.".list_id IN($list_id_SQL)";
@@ -469,7 +469,7 @@ if ( (preg_match('/\-\-ALL\-\-/',$list_id_string) ) or ($list_id_ct < 1) or (str
 	$list_id_drop_SQL = "";
 	$skip_productivity_calc=0;
 	}
-else 
+else
 	{
 	$list_id_SQL = preg_replace('/,$/i', '',$list_id_SQL);
 	$skip_productivity_calc=1;
@@ -641,7 +641,7 @@ $MAIN.=_QXZ("Lists").": <font size=1>("._QXZ("optional, possibly slow").")</font
 $MAIN.=$list_options;
 $MAIN.="</TD><TD VALIGN=TOP ALIGN=CENTER>";
 
-if ($archives_available=="Y") 
+if ($archives_available=="Y")
 	{
 	$MAIN.="<BR><input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."\n";
 	}
@@ -691,7 +691,7 @@ if (count($list_ids) > 0 && count($group) > 0)
 	while($nixi_row=mysqli_fetch_row($nixi_rslt)) {
 		array_push($nixi_statuses, $nixi_row[0]);
 	}
-	
+
 	$afc_statuses=array("DC", "AFAX", "DCF", "ADC", "CPDINV");
 
 	$sale_stmt="select distinct status from vicidial_statuses where sale='Y' UNION select distinct status from vicidial_campaign_statuses where sale='Y' $group_SQLand";
@@ -868,7 +868,7 @@ if (count($list_ids) > 0 && count($group) > 0)
 			$calledback_counts[$ary_index]++;
 		}
 	}
-	
+
 	for($i=0; $i<=4; $i++) {
 		$anyone_counts[$i]+=0;
 		$useronly_counts[$i]+=0;
@@ -919,7 +919,7 @@ if (count($list_ids) > 0 && count($group) > 0)
 		# Need counts not limited by status?  Otherwise use above statement
 		$stmt="select ".$vicidial_log_table.".lead_id,".$vicidial_list_table.".called_count,".$vicidial_log_table.".status,".$vicidial_log_table.".call_date from ".$vicidial_list_table.", ".$vicidial_log_table." where ".$vicidial_log_table.".call_date>='$date_ary[$i] 00:00:00' and ".$vicidial_log_table.".call_date<='$date_ary[$i] 23:59:59' $group_SQLand $list_id_SQLandVLJOIN UNION select ".$vicidial_closer_log_table.".lead_id,".$vicidial_list_table.".called_count,".$vicidial_closer_log_table.".status,".$vicidial_closer_log_table.".call_date from ".$vicidial_list_table.", ".$vicidial_closer_log_table." where ".$vicidial_closer_log_table.".call_date>='$date_ary[$i] 00:00:00' and ".$vicidial_closer_log_table.".call_date<='$date_ary[$i] 23:59:59' $list_id_SQLandVCLJOIN";
 # 		$stmt="select lead_id, called_count, status, max(call_date) from ($call_count_stmt) as dt group by lead_id, called_count, status";
-		
+
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$date_daily_count=0;
 		$contact_daily_count=0;
@@ -948,7 +948,7 @@ if (count($list_ids) > 0 && count($group) > 0)
 			}
 		}
 		$CSV_text.="\"$DEU_date\",\"$afc_daily_counts\",\"".sprintf("%.2f", (100*($afc_daily_counts/$total)))." %\",\"$nixi_daily_counts\",\"$no_daily_counts\",\"$sales_daily_counts\",\"".sprintf("%.2f", (100*($sales_daily_counts/($nixi_daily_counts+$no_daily_counts+$sales_daily_counts))))." %\",\"$contact_daily_count\"\n";
-		
+
 		$MAIN.="| $DEU_date | ".sprintf("%12s", $afc_daily_counts)." | ".sprintf("%6s", sprintf("%.2f", (100*($afc_daily_counts/$total))))."% | ".sprintf("%7s", $nixi_daily_counts)." | ".sprintf("%7s", $no_daily_counts)." | ".sprintf("%7s", $sales_daily_counts)." | ".sprintf("%6s", sprintf("%.2f", (100*($sales_daily_counts/($nixi_daily_counts+$no_daily_counts+$sales_daily_counts)))))."% | ".sprintf("%7s", $contact_daily_count)." |\n";
 		$MAIN.=$foot;
 
@@ -974,7 +974,7 @@ select lead_id, max(max_count) as total_count from (select vicidial_log.lead_id,
 	$MAIN.="</BODY></HTML>\n";
 
 
-	if ($file_download>0) 
+	if ($file_download>0)
 		{
 		$FILE_TIME = date("Ymd-His");
 		$CSVfilename = "MEDIALOG_INVENTORY_report_$US$FILE_TIME.csv";
@@ -993,8 +993,8 @@ select lead_id, max(max_count) as total_count from (select vicidial_log.lead_id,
 		flush();
 
 		echo "$CSV_text";
-		} 
-	else 
+		}
+	else
 		{
 		echo $HEADER;
 		require("admin_header.php");

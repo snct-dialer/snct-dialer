@@ -1,7 +1,7 @@
-<?php 
+<?php
 # AST_carrier_log_report.php
-# 
-# Copyright (C) 2017  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# Copyright (C) 2019  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 120210-2202 - First build
@@ -15,6 +15,7 @@
 # 141230-1513 - Added code for on-the-fly language translations display
 # 170409-1534 - Added IP List validation code
 # 170821-2219 - Added HTML formatting and screen colors
+# 191013-0815 - Fixes for PHP7
 #
 
 $startMS = microtime();
@@ -229,6 +230,8 @@ $server_stmt="select server_ip,server_description from servers where active_aste
 $server_rslt=mysql_to_mysqli($server_stmt, $link);
 $servers_to_print=mysqli_num_rows($server_rslt);
 $i=0;
+$LISTserverIPs=array();
+$LISTserver_names=array();
 while ($i < $servers_to_print)
 	{
 	$row=mysqli_fetch_row($server_rslt);
@@ -359,7 +362,7 @@ else
 $o=0;
 while ($servers_to_print > $o)
 	{
-	if (preg_match("/\|$LISTserverIPs[$o]\|/",$server_ip_string)) 
+	if (preg_match("/\|$LISTserverIPs[$o]\|/",$server_ip_string))
 		{$MAIN.="<option selected value=\"$LISTserverIPs[$o]\">$LISTserverIPs[$o] - $LISTserver_names[$o]</option>\n";}
 	else
 		{$MAIN.="<option value=\"$LISTserverIPs[$o]\">$LISTserverIPs[$o] - $LISTserver_names[$o]</option>\n";}
@@ -368,8 +371,8 @@ while ($servers_to_print > $o)
 $MAIN.="</SELECT></TD><TD ROWSPAN=2 VALIGN=middle align=center>\n";
 $MAIN.=_QXZ("Display as:")."<BR>";
 $MAIN.="<select name='report_display_type'>";
-if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>$report_display_type</option>";}
-$MAIN.="<option value='TEXT'>TEXT</option><option value='HTML'>HTML</option></select>\n<BR><BR>";
+if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
+$MAIN.="<option value='TEXT'>"._QXZ("TEXT")."</option><option value='HTML'>"._QXZ("HTML")."</option></select>\n<BR><BR>";
 $MAIN.="<INPUT TYPE=submit NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'>\n";
 $MAIN.="</TD></TR></TABLE>\n";
 if ($SUBMIT && $server_ip_ct>0) {
@@ -462,7 +465,7 @@ if ($SUBMIT && $server_ip_ct>0) {
 
 		if (!$lower_limit) {$lower_limit=1;}
 		if ($lower_limit+999>=mysqli_num_rows($rpt_rslt)) {$upper_limit=($lower_limit+mysqli_num_rows($rpt_rslt)%1000)-1;} else {$upper_limit=$lower_limit+999;}
-		
+
 		$TEXT.="--- "._QXZ("CARRIER LOG RECORDS FOR")." $query_date, $query_date_D "._QXZ("TO")." $query_date_T $server_rpt_string, "._QXZ("RECORDS")." #$lower_limit-$upper_limit               <a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&type=$type&query_date=$query_date&query_date_D=$query_date_D&query_date_T=$query_date_T$server_ipQS&lower_limit=$lower_limit&upper_limit=$upper_limit&file_download=1\">["._QXZ("DOWNLOAD")."]</a>\n";
 		$carrier_rpt.="+----------------------+---------------------+-----------------+-----------+--------------+-------------+------------------------------------------+-----------+---------------+----------+--------------------------------+--------------+\n";
 		$carrier_rpt.="| "._QXZ("UNIQUE ID",20)." | "._QXZ("CALL DATE",19)." | "._QXZ("SERVER IP",15)." | "._QXZ("LEAD ID",9)." | "._QXZ("HANGUP CAUSE",12)." | "._QXZ("DIAL STATUS",11)." | "._QXZ("CHANNEL",40)." | "._QXZ("DIAL TIME",9)." | "._QXZ("ANSWERED TIME",13)." | "._QXZ("SIP CODE",8)." | "._QXZ("SIP HANGUP REASON",30)." | "._QXZ("PHONE NUMBER",12)." |\n";
@@ -510,18 +513,18 @@ if ($SUBMIT && $server_ip_ct>0) {
 			$CSV_text.="\"$row[uniqueid]\",\"$row[call_date]\",\"$row[server_ip]\",\"$row[lead_id]\",\"$row[hangup_cause]\",\"$row[dialstatus]\",\"$row[channel]\",\"$row[dial_time]\",\"$row[answered_time]\",\"$row[sip_hangup_cause]\",\"$row[sip_hangup_reason]\",\"$phone_number\"\n";
 			if ($i>=$lower_limit && $i<=$upper_limit) {
 				if (strlen($row["channel"])>37) {$row["channel"]=substr($row["channel"],0,37)."...";}
-				$carrier_rpt.="| ".sprintf("%-21s", $row["uniqueid"]); 
-				$carrier_rpt.="| ".sprintf("%-20s", $row["call_date"]); 
-				$carrier_rpt.="| ".sprintf("%-16s", $row["server_ip"]); 
-				$carrier_rpt.="| ".sprintf("%-10s", $row["lead_id"]); 
-				$carrier_rpt.="| ".sprintf("%-13s", $row["hangup_cause"]); 
-				$carrier_rpt.="| ".sprintf("%-12s", $row["dialstatus"]); 
-				$carrier_rpt.="| ".sprintf("%-41s", $row["channel"]); 
-				$carrier_rpt.="| ".sprintf("%-10s", $row["dial_time"]); 
-				$carrier_rpt.="| ".sprintf("%-14s", $row["answered_time"]); 
-				$carrier_rpt.="| ".sprintf("%8s", $row["sip_hangup_cause"])." "; 
-				$carrier_rpt.="| ".sprintf("%-31s", $row["sip_hangup_reason"]); 
-				$carrier_rpt.="| ".sprintf("%-13s", $phone_number)."|\n"; 
+				$carrier_rpt.="| ".sprintf("%-21s", $row["uniqueid"]);
+				$carrier_rpt.="| ".sprintf("%-20s", $row["call_date"]);
+				$carrier_rpt.="| ".sprintf("%-16s", $row["server_ip"]);
+				$carrier_rpt.="| ".sprintf("%-10s", $row["lead_id"]);
+				$carrier_rpt.="| ".sprintf("%-13s", $row["hangup_cause"]);
+				$carrier_rpt.="| ".sprintf("%-12s", $row["dialstatus"]);
+				$carrier_rpt.="| ".sprintf("%-41s", $row["channel"]);
+				$carrier_rpt.="| ".sprintf("%-10s", $row["dial_time"]);
+				$carrier_rpt.="| ".sprintf("%-14s", $row["answered_time"]);
+				$carrier_rpt.="| ".sprintf("%8s", $row["sip_hangup_cause"])." ";
+				$carrier_rpt.="| ".sprintf("%-31s", $row["sip_hangup_reason"]);
+				$carrier_rpt.="| ".sprintf("%-13s", $phone_number)."|\n";
 				$HTML.="<tr bgcolor='#".$SSstd_row2_background."'>";
 				$HTML.="<th><font size='2'>".$row["uniqueid"]."</font></th>";
 				$HTML.="<th><font size='2'>".$row["call_date"]."</font></th>";

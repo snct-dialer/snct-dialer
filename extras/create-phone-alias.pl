@@ -101,7 +101,7 @@ if (length($ARGV[0])>1)
 					die "Need a starting phone position\n";
 				}
 		}
-		
+
 		if ($args =~ /--phone-count=/i) # number of sequential phones to make
 			{
 			@phonecountARY = split(/--phone-count=/,$args);
@@ -115,7 +115,7 @@ if (length($ARGV[0])>1)
 					die "Need to be creating at least 10 phones to use this script!\n";
 				}
 		}
-		
+
 		if ($args =~ /--password=/i) # static password to use
 			{
 			@passwordARY = split(/--password=/,$args);
@@ -129,7 +129,7 @@ if (length($ARGV[0])>1)
 					die "No password option given\n";
 				}
 		}
-		
+
 		if ($args =~ /--pass-length=/i) # password length to use if random
 			{
 			@passlengthARY = split(/--pass-length=/,$args);
@@ -142,7 +142,7 @@ if (length($ARGV[0])>1)
 				$passlength = $passlength - 1 ;
 				}
 		}
-		
+
 		if ($args =~ /--protocol=/i) # Protocol to use
 			{
 			@protocolARY = split(/--protocol=/,$args);
@@ -156,7 +156,7 @@ if (length($ARGV[0])>1)
 					die "Need to specify SIP or IAX protocol\n";
 				}
 		}
-		
+
 		if ($args =~ /--server=/i) # Protocol to use
 			{
 			@serverARY = split(/--server=/,$args);
@@ -168,7 +168,7 @@ if (length($ARGV[0])>1)
 				print "  server      :      $server\n";
 				}
 		}
-		
+
 		if ($args =~ /--gmt-offset=/i) # Protocol to use
 			{
 			@gmtoffsetARY = split(/--gmt-offset=/,$args);
@@ -183,7 +183,7 @@ if (length($ARGV[0])>1)
 				}
 		}
 
-		
+
 	}
 else
 	{
@@ -197,8 +197,8 @@ if (length($passlength)>0 and $password!='RND') {
 
 # Set-up our database connection strings, die if we cant connect to either DB
 use DBI;
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass") or die "Couldn't connect to database: " . DBI->errstr;
- 
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 }) or die "Couldn't connect to database: " . DBI->errstr;
+
 # Find our servers
 if (length($server)>2) {
 	$stmtSERVERS = "select server_ip from servers where server_id='$server' and active_agent_login_server='Y' and active='Y';";
@@ -222,16 +222,16 @@ if ($sthSERVERSrows>=1) {
 			} else {
 				$server_ip_list = $server_ip_list . " " . $server_ip;
 		}
-		
+
 		$i++;
 	}
 	if ($DB==1) { print "Server IP List: $server_ip_list\n"; }
 	@serverip = split(" ", $server_ip_list);
-	
+
 	} else {
 		die "That server does not exist\n";
 }
-	
+
 	$i=0;
 	# Now do some inserts
 	while ($i < $phonecount) {
@@ -245,24 +245,24 @@ if ($sthSERVERSrows>=1) {
 		if ($DB==1) { print "Password for phone $currphone: $phonepass \n"; }
 		while ($n < $sthSERVERSrows) {
 			if ($sthSERVERSrows>1) { $currphonealias = $currphone . $abcnumsub[$n]; } else { $currphonealias = $currphone; }
-			
+
 			if ($n == 0) {
 				$aliaslist = $currphonealias;
 				} else {
 					$aliaslist = $aliaslist . "," . $currphonealias;
 			}
-			
+
 			$server_ip = $serverip[$n];
 			$stmtPHONE = "INSERT INTO phones (extension,dialplan_number,voicemail_id,server_ip,login,pass,status,active,phone_type,fullname,protocol,local_gmt,outbound_cid) values('$currphonealias','$currphone','$currphone','$server_ip','$currphonealias','$phonepass','ACTIVE','Y','Agent $currphone','station $currphone','$protocol','$gmtoffset','0000000000');";
 			if ($DB==1) { print "Phone insert $n for phone $currphone: $stmtPHONE \n"; }
 			$sthPHONE = $dbhCDR->prepare($stmtPHONE) or die "Preparing stmtPHONE: ",$dbhA->errstr;
 			$sthPHONE->execute or die "Executing sthPHONE: ",$dbhA->errstr;
 			$sthPHONE->finish;
-			
+
 		$n++;
 		}
 		$aliaslogin = $currphone . 'x';
-		
+
 		if ($sthSERVERSrows>1) {
 			$stmtALIAS = "insert into phones_alias (alias_id, alias_name, logins_list) values ('$aliaslogin', '$aliaslogin', '$aliaslist');";
 			if ($DB==1) { print "Phone alias insert for phone $currphone: $stmtALIAS \n"; }

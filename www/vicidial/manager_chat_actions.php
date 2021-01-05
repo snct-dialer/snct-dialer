@@ -1,6 +1,6 @@
 <?php
 # manager_chat_actions.php
-# 
+#
 # Copyright (C) 2017  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # Contains PHP actions for manager_chat_interface.php - works with vicidial_chat.js
@@ -18,7 +18,7 @@
 $admin_version = '2.14-7';
 $build = '170409-1550';
 
-$sh="managerchats"; 
+$sh="managerchats";
 
 require("dbconnect_mysqli.php");
 require("functions.php");
@@ -106,7 +106,7 @@ if ($auth < 1)
 $user_stmt="select full_name,user_level,selected_language from vicidial_users where user='$PHP_AUTH_USER'";
 $user_level=0;
 $user_rslt=mysql_to_mysqli($user_stmt, $link);
-if (mysqli_num_rows($user_rslt)>0) 
+if (mysqli_num_rows($user_rslt)>0)
 	{
 	$user_row=mysqli_fetch_row($user_rslt);
 	$full_name =			$user_row[0];
@@ -146,13 +146,13 @@ if ($action=="EndAgentChat") {
 	if ($active_chats==0) {
 		$archive_stmt="insert ignore into vicidial_manager_chats_archive select * from vicidial_manager_chats where manager_chat_id='$manager_chat_id'";
 		$archive_rslt=mysql_to_mysqli($archive_stmt, $link);
-		
+
 		$del_stmt="delete from vicidial_manager_chats where manager_chat_id='$manager_chat_id'";
 		$del_rslt=mysql_to_mysqli($del_stmt, $link);
 		$manager_chat_id="";
 		echo "ALL CHATS CLOSED";
 		exit;
-	} 
+	}
 
 	$reload_chat_span=1;
 }
@@ -202,7 +202,7 @@ if ($action=="PrintSubChatText") {
 			while($row=mysqli_fetch_row($rslt)) {
 				if ($backlog_limit>0) {
 					if ($row[0]==$row[4]) {$fc="#990000";} else {$fc="#000099";}
-					$chat_output_text="<font color='$fc' FACE=\"ARIAL,HELVETICA\" size='1'>$row[1]</font><BR>".$chat_output_text; 
+					$chat_output_text="<font color='$fc' FACE=\"ARIAL,HELVETICA\" size='1'>$row[1]</font><BR>".$chat_output_text;
 					$backlog_limit--;
 				}
 			}
@@ -308,12 +308,12 @@ if ($reload_chat_span) {
 			$chat_subids_array="[";
 			while($row=mysqli_fetch_row($rslt)) {
 				$full_name=$row[3];
-				$chat_subid=$row[5]; 
+				$chat_subid=$row[5];
 				$chat_subids_array.="'$chat_subid',";
 
 				if ($backlog_limit>0) {
 					if ($row[0]==$row[4]) {$fc="#990000";} else {$fc="#000099";}
-					$chat_output_text[$chat_subid]="<font color='$fc' FACE=\"ARIAL,HELVETICA\" size='1'>$row[1]</font><BR>".$chat_output_text[$chat_subid]; 
+					$chat_output_text[$chat_subid]="<font color='$fc' FACE=\"ARIAL,HELVETICA\" size='1'>$row[1]</font><BR>".$chat_output_text[$chat_subid];
 					$backlog_limit--;
 				}
 				if ($prev_chat_subid!=$chat_subid) {

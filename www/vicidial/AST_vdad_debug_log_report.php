@@ -1,6 +1,6 @@
-<?php 
+<?php
 # AST_vdad_debug_log_report.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -332,7 +332,7 @@ else
 $o=0;
 while ($servers_to_print > $o)
 	{
-	if (preg_match("/\|$LISTserverIPs[$o]\|/",$server_ip_string)) 
+	if (preg_match("/\|$LISTserverIPs[$o]\|/",$server_ip_string))
 		{$MAIN.="<option selected value=\"$LISTserverIPs[$o]\">$LISTserverIPs[$o] - $LISTserver_names[$o]</option>\n";}
 	else
 		{$MAIN.="<option value=\"$LISTserverIPs[$o]\">$LISTserverIPs[$o] - $LISTserver_names[$o]</option>\n";}
@@ -443,7 +443,7 @@ if ($SUBMIT) {
 			$Acaller_code[$i] =		$row[0];
 			$Aserver_ip[$i] =		$row[1];
 			$Acc_count[$i] =		$row[2];
-			if ($i==0) 
+			if ($i==0)
 				{
 				$server_ct++;
 				$server_array[0]=$Aserver_ip[$i];
@@ -471,7 +471,7 @@ if ($SUBMIT) {
 				}
 			$i++;
 			}
-		if ($cc_ct < 1) 
+		if ($cc_ct < 1)
 			{
 			$MAIN.="*** "._QXZ("NO RECORDS FOUND")." ***\n";
 			}
@@ -527,11 +527,11 @@ if ($SUBMIT) {
 				if ($j < 1) {$start_epoch=$Aepoch_micro[$j];}
 				$last_epoch=$Aepoch_micro[$j];
 				$last_runtime=$Arun_time[$j];
-				if ($Astage[$j] == 'LocalEXIT-5') 
+				if ($Astage[$j] == 'LocalEXIT-5')
 					{
 					$this_call_LR++;
 					}
-				if ($Astage[$j] == 'LocalEXIT-8') 
+				if ($Astage[$j] == 'LocalEXIT-8')
 					{
 					$call_counted++;
 					$LRERR++;
@@ -547,7 +547,7 @@ if ($SUBMIT) {
 							}
 						$k++;
 						}
-					
+
 					if ($lrerr_statuses > 0)
 						{
 						$start_epoch = $Aepoch_micro[$j];
@@ -565,7 +565,7 @@ if ($SUBMIT) {
 							{
 							$row=mysqli_fetch_row($rslt);
 
-							if ($m==0) 
+							if ($m==0)
 								{
 								$status_ct++;
 								$status_array[0]=$row[0];
@@ -674,7 +674,7 @@ if ($SUBMIT) {
 						{
 						$row=mysqli_fetch_row($rslt);
 
-						if ($m==0) 
+						if ($m==0)
 							{
 							$ucstatus_ct++;
 							$ucstatus_array[0]=$row[0];
@@ -818,7 +818,7 @@ if ($SUBMIT) {
 			$Acc_count[$i] =		$row[2];
 			$i++;
 			}
-		if ($cc_ct < 1) 
+		if ($cc_ct < 1)
 			{
 			$MAIN.="*** "._QXZ("NO RECORDS FOUND")." ***\n";
 			}
@@ -848,69 +848,69 @@ if ($SUBMIT) {
 		$rpt_stmt="select caller_code,call_date,db_time,run_time,vdad_script,stage,lead_id,step,epoch_micro from $vicidial_vdad_log where db_time >= '$query_date $query_date_D' and db_time <= '$query_date $query_date_T' order by db_time desc, epoch_micro desc;";
 		$rpt_rslt=mysql_to_mysqli($rpt_stmt, $link);
 		if ($DB) {$MAIN.=$rpt_stmt."\n";}
-		if (mysqli_num_rows($rpt_rslt)>0) 
+		if (mysqli_num_rows($rpt_rslt)>0)
 			{
 			if (!$lower_limit) {$lower_limit=1;}
 			if ($lower_limit+999>=mysqli_num_rows($rpt_rslt)) {$upper_limit=($lower_limit+mysqli_num_rows($rpt_rslt)%1000)-1;} else {$upper_limit=$lower_limit+999;}
-			
+
 			$MAIN.="--- "._QXZ("VDAD DEBUG LOG DETAIL RECORDS FOR")." $query_date, $query_date_D "._QXZ("TO")." $query_date_T $server_rpt_string, "._QXZ("RECORDS")." #$lower_limit-$upper_limit               <a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&type=$type&query_date=$query_date&query_date_D=$query_date_D&query_date_T=$query_date_T&stage=$stage&lower_limit=$lower_limit&upper_limit=$upper_limit&file_download=1\">["._QXZ("DOWNLOAD")."]</a>\n";
 			$agntdb_rpt.="+----------------------+---------------------+---------------------+-------------------+------------+----------------------+--------------------------------+------------+-------+\n";
 			$agntdb_rpt.="| "._QXZ("CALL",20)." | "._QXZ("CALL DATE",19)." | "._QXZ("DB DATE",19)." | "._QXZ("EPOCH MICRO",17)." | "._QXZ("RUN TIME",10)." | "._QXZ("SCRIPT",20)." | "._QXZ("STAGE",30)." | "._QXZ("LEAD_ID",10)." | "._QXZ("STEP",5)." |\n";
 			$agntdb_rpt.="+----------------------+---------------------+---------------------+-------------------+------------+----------------------+--------------------------------+------------+-------+\n";
 			$CSV_text="\""._QXZ("CALL")."\",\""._QXZ("CALL DATE")."\",\""._QXZ("DB DATE")."\",\""._QXZ("EPOCH MICRO")."\",\""._QXZ("RUN TIME")."\",\""._QXZ("SCRIPT")."\",\""._QXZ("STAGE")."\",\""._QXZ("LEAD_ID")."\",\""._QXZ("STEP")."\"\n";
 
-			for ($i=1; $i<=mysqli_num_rows($rpt_rslt); $i++) 
+			for ($i=1; $i<=mysqli_num_rows($rpt_rslt); $i++)
 				{
 				$row=mysqli_fetch_array($rpt_rslt);
 
 				$CSV_text.="\"$row[caller_code]\",\"$row[call_date]\",\"$row[db_time]\",\"$row[epoch_micro]\",\"$row[run_time]\",\"$row[vdad_script]\",\"$row[stage]\",\"$row[lead_id]\",\"$row[step]\"\n";
-				if ($i>=$lower_limit && $i<=$upper_limit) 
+				if ($i>=$lower_limit && $i<=$upper_limit)
 					{
-					$agntdb_rpt.="| ".sprintf("%-20s", $row["caller_code"]); 
-					$agntdb_rpt.=" | ".sprintf("%-19s", $row["call_date"]); 
-					$agntdb_rpt.=" | ".sprintf("%-19s", $row["db_time"]); 
-					$agntdb_rpt.=" | ".sprintf("%-17s", $row["epoch_micro"]); 
+					$agntdb_rpt.="| ".sprintf("%-20s", $row["caller_code"]);
+					$agntdb_rpt.=" | ".sprintf("%-19s", $row["call_date"]);
+					$agntdb_rpt.=" | ".sprintf("%-19s", $row["db_time"]);
+					$agntdb_rpt.=" | ".sprintf("%-17s", $row["epoch_micro"]);
 					if (strlen($row["run_time"])>10) {$row["run_time"]=substr($row["run_time"],0,10)."";}
 					$run_color='color=black';
-					if ($row["run_time"] > 1) {$run_color='color=blue';} 
-					if ($row["run_time"] > 2) {$run_color='color=purple';} 
-					if ($row["run_time"] > 3) {$run_color='color=red';} 
-					$agntdb_rpt.=" | <font size=2 $run_color>".sprintf("%-10s", $row["run_time"])."</font>"; 
+					if ($row["run_time"] > 1) {$run_color='color=blue';}
+					if ($row["run_time"] > 2) {$run_color='color=purple';}
+					if ($row["run_time"] > 3) {$run_color='color=red';}
+					$agntdb_rpt.=" | <font size=2 $run_color>".sprintf("%-10s", $row["run_time"])."</font>";
 					if (strlen($row["vdad_script"])>20) {$row["vdad_script"]=substr($row["vdad_script"],-20)."";}
-					$agntdb_rpt.=" | ".sprintf("%-20s", $row["vdad_script"]); 
+					$agntdb_rpt.=" | ".sprintf("%-20s", $row["vdad_script"]);
 					if (strlen($row["stage"])>27) {$row["stage"]=substr($row["stage"],0,27)."...";}
-					$agntdb_rpt.=" | ".sprintf("%-30s", $row["stage"]); 
-					$agntdb_rpt.=" | ".sprintf("%-10s", $row["lead_id"]); 
+					$agntdb_rpt.=" | ".sprintf("%-30s", $row["stage"]);
+					$agntdb_rpt.=" | ".sprintf("%-10s", $row["lead_id"]);
 					if (strlen($row["step"])>4) {$row["step"]=substr($row["step"],0,4)."...";}
-					$agntdb_rpt.=" | ".sprintf("%-5s", $row["step"])." |\n"; 
+					$agntdb_rpt.=" | ".sprintf("%-5s", $row["step"])." |\n";
 					}
 				}
 			$agntdb_rpt.="+----------------------+---------------------+---------------------+-------------------+------------+----------------------+--------------------------------+------------+-------+\n";
 
 			$agntdb_rpt_hf="";
 			$ll=$lower_limit-1000;
-			if ($ll>=1) 
+			if ($ll>=1)
 				{
 				$agntdb_rpt_hf.="<a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&type=$type&query_date=$query_date&query_date_D=$query_date_D&query_date_T=$query_date_T&stage=$stage&lower_limit=$ll\">[<<< "._QXZ("PREV")." 1000 "._QXZ("records")."]</a>";
-				} 
-			else 
+				}
+			else
 				{
 				$agntdb_rpt_hf.=sprintf("%-23s", " ");
 				}
 			$agntdb_rpt_hf.=sprintf("%-145s", " ");
-			if (($lower_limit+1000)<mysqli_num_rows($rpt_rslt)) 
+			if (($lower_limit+1000)<mysqli_num_rows($rpt_rslt))
 				{
 				if ($upper_limit+1000>=mysqli_num_rows($rpt_rslt)) {$max_limit=mysqli_num_rows($rpt_rslt)-$upper_limit;} else {$max_limit=1000;}
 				$agntdb_rpt_hf.="<a href=\"$PHP_SELF?SUBMIT=$SUBMIT&DB=$DB&type=$type&query_date=$query_date&query_date_D=$query_date_D&query_date_T=$query_date_T&stage=$stage&lower_limit=".($lower_limit+1000)."\">["._QXZ("NEXT")." $max_limit "._QXZ("records")." >>>]</a>";
-				} 
-			else 
+				}
+			else
 				{
 				$agntdb_rpt_hf.=sprintf("%23s", " ");
 				}
 			$agntdb_rpt_hf.="\n";
 			$MAIN.=$agntdb_rpt_hf.$agntdb_rpt.$agntdb_rpt_hf;
 			}
-		else 
+		else
 			{
 			$MAIN.="*** "._QXZ("NO RECORDS FOUND")." ***\n";
 			}
@@ -921,8 +921,8 @@ if ($SUBMIT) {
 	##### END DETAIL SECTION #####
 
 	}
-	
-if ($file_download>0) 
+
+if ($file_download>0)
 	{
 	$FILE_TIME = date("Ymd-His");
 	$CSVfilename = "AST_vdad_debug_log_report_$US$FILE_TIME.csv";
@@ -940,8 +940,8 @@ if ($file_download>0)
 	flush();
 
 	echo "$CSV_text";
-	} 
-else 
+	}
+else
 	{
 	echo $HEADER;
 	require("admin_header.php");

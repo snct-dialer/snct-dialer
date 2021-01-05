@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # AST_dialer_inventory_snapshot.pl
-# 
+#
 # Copyright (C) 2012  Joe Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
 #                     Matt Florell <vicidial@gmail.com>
 #
@@ -149,15 +149,15 @@ if (length($ARGV[0])>1)
 if ($DB > 0) {print "\nAST_dialer_inventory_snapshot.pl - backend statistical gathering process\n";}
 
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
-$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
-$dbhC = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhC = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
-$dbhD = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhD = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
-$dbh = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbh = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 $single_status=1;
@@ -169,12 +169,12 @@ $gmt_rslt=$dbhA->prepare($gmt_stmt);
 $gmt_rslt->execute();
 @gmt_row=$gmt_rslt->fetchrow_array;
 $local_offset=$gmt_row[0];
-		
+
 $gmt_stmt="SELECT distinct gmt_offset_now, gmt_offset_now-($local_offset) from vicidial_list";
 $gmt_rslt=$dbhA->prepare($gmt_stmt);
 $gmt_rslt->execute();
 # tie %gmt_ary, "Tie::IxHash";
-while (@gmt_row=$gmt_rslt->fetchrow_array) 
+while (@gmt_row=$gmt_rslt->fetchrow_array)
 	{
 	$gmt_row[1]=~s/25$/15/gi;
 	$gmt_row[1]=~s/75$/45/gi;
@@ -190,7 +190,7 @@ if ($DB > 0) {print "GMT OFFSET:     $local_offset\nLIST TIMEZONES: $i\n";}
 $shift_stmt="SELECT shift_id, shift_name, str_to_date(shift_start_time, '%H%i') as shift_start_time, addtime(str_to_date(shift_start_time, '%H%i'), shift_length) as shift_end_time, if(addtime(str_to_date(shift_start_time, '%H%i'), shift_length)>'23:59:59', '1', '0') as day_offset, shift_weekdays from vicidial_shifts where report_option='Y' order by shift_start_time asc";
 $shift_rslt=$dbhA->prepare($shift_stmt);
 $shift_rslt->execute();
-while(@shift_row=$shift_rslt->fetchrow_array) 
+while(@shift_row=$shift_rslt->fetchrow_array)
 	{
 	$shift_ary{$shift_row[0]}[0]=$shift_row[1];
 	$shift_ary{$shift_row[0]}[1]=$shift_row[2];
@@ -204,7 +204,7 @@ if ($DB > 0) {print "SHIFT COUNT:    $i\n";}
 $campaign_stmt="SELECT campaign_id from vicidial_campaigns  where campaign_id in (SELECT distinct campaign_id from vicidial_lists where inventory_report='Y') $campaign_SQL order by campaign_id;";
 $campaign_rslt=$dbhA->prepare($campaign_stmt);
 $campaign_rslt->execute();
-while (@group=$campaign_rslt->fetchrow_array) 
+while (@group=$campaign_rslt->fetchrow_array)
 	{
 	$stmt="SELECT call_count_limit, call_count_target, dial_statuses, local_call_time, drop_lockout_time from vicidial_campaigns where campaign_id='$group[0]'";
 	if ($DBX > 0) {print "     |$stmt|\n";}
@@ -226,7 +226,7 @@ while (@group=$campaign_rslt->fetchrow_array)
 	$dial_statuses=" ";
 	$inventory_statuses=" ";
 	$inventory_ptnstr="|";
-	while (@row=$rslt->fetchrow_array) 
+	while (@row=$rslt->fetchrow_array)
 		{
 		$dial_statuses.="$row[0] ";
 		$inventory_statuses.="'$row[0]',";
@@ -253,7 +253,7 @@ while (@group=$campaign_rslt->fetchrow_array)
 	if ($DBX > 0) {print "     |$lists_stmt|\n";}
 	$lists_rslt=$dbhB->prepare($lists_stmt);
 	$lists_rslt->execute();
-	while (@lists_row=$lists_rslt->fetchrow_array) 
+	while (@lists_row=$lists_rslt->fetchrow_array)
 		{
 		$list_id=$lists_row[0];
 		$list_name=$lists_row[1];
@@ -264,11 +264,11 @@ while (@group=$campaign_rslt->fetchrow_array)
 		GetListCount($list_id, $inventory_ptnstr);
 		if ($list_start_inv>0) {$average_calls=sprintf("%.1f", $total_calls/$list_start_inv);} else {$average_calls="0.0";}
 		$Xdialable_count_nofilter = dialable_leads($local_call_time,$dial_statuses,$list_id,$drop_lockout_time,$call_count_limit,$single_status);
-		if (length($inactive_dial_statuses)>1) 
+		if (length($inactive_dial_statuses)>1)
 			{
 			$Xdialable_inactive_count = dialable_leads($local_call_time,$inactive_dial_statuses,$list_id,$drop_lockout_time,$call_count_limit,$single_status,$filter_SQL);
-			} 
-		else 
+			}
+		else
 			{
 			$Xdialable_inactive_count = 0;
 			}
@@ -284,36 +284,36 @@ while (@group=$campaign_rslt->fetchrow_array)
 
 		if ($list_start_inv>0) {$penetration=sprintf("%.2f", (100*($list_start_inv-$Xdialable_count)/$list_start_inv));} else {$penetration="0.00";}
 
-		for ($q=0; $q<scalar(@time_settings); $q++) 
+		for ($q=0; $q<scalar(@time_settings); $q++)
 			{
 			%shift_ary2=%shift_ary;
 			$shift_data="";
 			$time_setting=$time_settings[$q];
-			foreach $val (keys %shift_ary2) 
+			foreach $val (keys %shift_ary2)
 				{
 				$total_shift_count=0;
 				$gmt_stmt="SELECT distinct gmt_offset_now from vicidial_list where list_id='$list_id'";
 				if ($DBX > 0) {print "     |$gmt_stmt|\n";}
 				$gmt_rslt=$dbhC->prepare($gmt_stmt);
 				$gmt_rslt->execute();
-				while (@gmt_row=$gmt_rslt->fetchrow_array) 
+				while (@gmt_row=$gmt_rslt->fetchrow_array)
 					{
-					if ($time_setting=="LOCAL") 
+					if ($time_setting=="LOCAL")
 						{
 						$offset_hours=$gmt_array{"$gmt_row[0]"};
-						} 
-					else 
+						}
+					else
 						{
 						$offset_hours=0;
 						}
 
-					if (length($shift_ary2{$val}[4])>0) 
+					if (length($shift_ary2{$val}[4])>0)
 						{
-						if ($shift_ary2{$val}[3]==0) 
+						if ($shift_ary2{$val}[3]==0)
 							{
 							$shift_days_SQL=" and time(addtime(call_date, '$offset_hours'))>='$shift_ary2{$val}[1]' and time(addtime(call_date, '$offset_hours'))<='$shift_ary2{$val}[2]' ";
 							$day_str="";
-							for ($j=0; $j<length($shift_ary2{$val}[4]); $j++) 
+							for ($j=0; $j<length($shift_ary2{$val}[4]); $j++)
 								{
 								$day=substr($shift_ary2{$val}[4], $j, 1);
 								$day++;
@@ -321,11 +321,11 @@ while (@group=$campaign_rslt->fetchrow_array)
 								}
 							$day_str=substr($day_str, 0, -1);
 							$shift_days_SQL.="and dayofweek(call_date) in ($day_str)";
-							} 
-						else 
+							}
+						else
 							{
 							$shift_days_SQL=" and (";
-							for ($j=0; $j<length($shift_ary2{$val}[4]); $j++) 
+							for ($j=0; $j<length($shift_ary2{$val}[4]); $j++)
 								{
 								$day=substr($shift_ary2{$val}[4], $j, 1);
 								$day++;
@@ -336,8 +336,8 @@ while (@group=$campaign_rslt->fetchrow_array)
 								}
 							$shift_days_SQL=substr($shift_days_SQL, 0, -3).")";
 							}
-						} 
-					else 
+						}
+					else
 						{
 						$shift_days_SQL="";
 						}
@@ -372,7 +372,7 @@ if ($DB > 0) {print "\nDONE, process time: $process_time seconds\n";}
 
 
 ##### subroutines #####
-sub GetListCount 
+sub GetListCount
 	{
 	$list_id=$_[0];
 	$inventory_ptnstr=$_[1];
@@ -381,15 +381,15 @@ sub GetListCount
 	$ct_rslt=$dbh->prepare($ct_stmt);
 	$ct_rslt->execute();
 	$new_count=0;  $total_calls=0;
-	while (@ct_row=$ct_rslt->fetchrow_array) 
+	while (@ct_row=$ct_rslt->fetchrow_array)
 		{
 		$list_start_inv+=$ct_row[2];
 		$total_calls+=($ct_row[1]*$ct_row[2]);
-		if ($inventory_ptnstr=~/\|$ct_row[0]\|/ && $ct_row[1]=="0") {$new_count+=$ct_row[2];} 
+		if ($inventory_ptnstr=~/\|$ct_row[0]\|/ && $ct_row[1]=="0") {$new_count+=$ct_row[2];}
 		}
 	}
 
-sub dialable_leads 
+sub dialable_leads
 	{
 	$local_call_time=$_[0];
 	$working_dial_statuses=$_[1];
@@ -419,7 +419,7 @@ sub dialable_leads
 					#$pmin=(gmdate("i", time() + $pzone));
 					#$phour=( (gmdate("G", time() + $pzone)) * 100);
 					#$pday=gmdate("w", time() + $pzone);
-					$tz = sprintf("%.2f", $p);	
+					$tz = sprintf("%.2f", $p);
 					$GMT_gmt[$g] = "$tz";
 					$GMT_day[$g] = "$pday";
 					$GMT_hour[$g] = ($phour + $pmin);
@@ -708,7 +708,7 @@ sub dialable_leads
 				$Ds_to_print = (scalar(@Dstatuses) - 0);
 				$Dsql = '';
 				$o=0;
-				while ($Ds_to_print > $o) 
+				while ($Ds_to_print > $o)
 					{
 					$o++;
 					$Dsql .= "'$Dstatuses[$o]',";

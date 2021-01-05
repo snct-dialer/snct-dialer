@@ -58,7 +58,7 @@ if (length($ARGV[0])>1)
 			@data_in = split(/--list-id=/,$args);
 			$list_id = $data_in[1];
 			$list_id =~ s/ .*//gi;
-			if ($list_id =~ /---ALL---/) 
+			if ($list_id =~ /---ALL---/)
 				{
 				$list_idSQL = '';
 				$list_idSQLand = '';
@@ -66,7 +66,7 @@ if (length($ARGV[0])>1)
 				}
 			else
 				{
-				if ($list_id =~ /--/) 
+				if ($list_id =~ /--/)
 					{
 					$list_idTEMP = $list_id;
 					$list_idTEMP =~ s/--/','/gi;
@@ -159,9 +159,9 @@ if ($Tmin < 10) {$Tmin = "0$Tmin";}
 if ($Tsec < 10) {$Tsec = "0$Tsec";}
 	$TDSQLdate = "$Tyear-$Tmon-$Tmday $Thour:$Tmin:$Tsec";
 
-use DBI;	  
+use DBI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
@@ -169,7 +169,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 $affected_rows=0;
 $stmtA = "UPDATE vicidial_list set called_since_last_reset='N',rank=90 where list_id IN('$list_idIN') and called_count < 1;";
 if($DB){print STDERR "\n|$stmtA|\n";}
-if ($T < 1) 
+if ($T < 1)
 	{
 	$affected_rows = $dbhA->do($stmtA);
 	if($DB){print STDERR "\n|$affected_rows records changed|\n";}

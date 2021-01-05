@@ -3,7 +3,7 @@ AGENT MONITOR DOC		Started: 2013-07-16	Updated: 2017-09-15
 
 Requirements:
 
-This feature requires SVN/trunk revision 2001 or higher, as well as DB Schema 
+This feature requires SVN/trunk revision 2001 or higher, as well as DB Schema
 Version 1354 or higher.
 
 
@@ -15,7 +15,7 @@ as well as restrict the agents that can be listened to by campaign.
 
 This will also work across a multiple server cluster.
 
-The CLI option flags below can be used for the agent_monitor.agi script in the 
+The CLI option flags below can be used for the agent_monitor.agi script in the
 up_monitor context below:
 
  1. USER, PHONE, PLOGIN or REDIRECT, lookup by user id, phone extension or phone login (default is USER)

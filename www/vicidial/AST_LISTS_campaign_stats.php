@@ -1,7 +1,7 @@
-<?php 
+<?php
 # AST_LISTS_campaign_stats.php
-# 
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This is a list inventory report, not a calling report. This report will show
 # statistics for all of the lists in the selected campaigns
@@ -31,6 +31,7 @@
 # 170829-0040 - Added screen color settings
 # 171012-2015 - Fixed javascript/apache errors with graphs
 # 180507-2315 - Added new help display
+# 191013-0819 - Fixes for PHP7
 #
 
 $startMS = microtime();
@@ -95,7 +96,7 @@ $table_name="vicidial_list";
 $archive_table_name=use_archive_table($table_name);
 if ($archive_table_name!=$table_name) {$archives_available="Y";}
 
-if ($search_archived_data) 
+if ($search_archived_data)
 	{
 	$vicidial_list_table=use_archive_table("vicidial_list");
 	}
@@ -296,6 +297,8 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {$MAIN.="$stmt\n";}
 $campaigns_to_print = mysqli_num_rows($rslt);
 $i=0;
+$groups=array();
+$group_names=array();
 while ($i < $campaigns_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -351,6 +354,9 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $statcats_to_print = mysqli_num_rows($rslt);
 $i=0;
+$vsc_id=array();
+$vsc_name=array();
+$vsc_count=array();
 while ($i < $statcats_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -361,7 +367,7 @@ while ($i < $statcats_to_print)
 	$status_stmt="select distinct status from vicidial_statuses where category='$row[0]' UNION select distinct status from vicidial_campaign_statuses where category='$row[0]' $group_SQLand";
 	if ($DB) {echo "$status_stmt\n";}
 	$status_rslt=mysql_to_mysqli($status_stmt, $link);
-	while ($status_row=mysqli_fetch_row($status_rslt)) 
+	while ($status_row=mysqli_fetch_row($status_rslt))
 		{
 		$category_statuses.="'$status_row[0]',";
         }
@@ -389,6 +395,7 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {$MAIN.="$stmt\n";}
 $statha_to_print = mysqli_num_rows($rslt);
 $i=0;
+$statname_list=array();
 while ($i < $statha_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -461,7 +468,7 @@ $HEADER.="-->\n";
 $HEADER.=" </STYLE>\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 require("chart_button.php");
-$HEADER.="<script src='chart/Chart.js'></script>\n"; 
+$HEADER.="<script src='chart/Chart.js'></script>\n";
 $HEADER.="<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
 
 $HEADER.="<link rel=\"stylesheet\" type=\"text/css\" href=\"vicidial_stylesheet.php\">\n";
@@ -497,10 +504,10 @@ $MAIN.="</SELECT>\n<BR>\n<a href=\"AST_LISTS_stats.php?DB=$DB\">"._QXZ("SWITCH T
 $MAIN.="</TD><TD VALIGN=TOP>";
 $MAIN.=_QXZ("Display as").":<BR/>";
 $MAIN.="<select name='report_display_type'>";
-if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>$report_display_type</option>";}
+if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
 $MAIN.="<option value='TEXT'>"._QXZ("TEXT")."</option><option value='HTML'>"._QXZ("HTML")."</option></select>&nbsp; ";
 
-if ($archives_available=="Y") 
+if ($archives_available=="Y")
 	{
 	$MAIN.="<BR><BR><input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."\n";
 	}
@@ -551,7 +558,8 @@ else
 	$CSV_text1.="\""._QXZ("LIST ID SUMMARY")."\"\n";
 	$CSV_text1.="\""._QXZ("LIST")."\",\""._QXZ("LEADS")."\",\""._QXZ("ACTIVE")."\"\n";
 
-	$max_calls=1; $graph_stats=array();
+	$max_calls=1;
+	$graph_stats=array();
 	$lists_id_str="";
 	$list_stmt="SELECT list_id from vicidial_lists where active IN('Y','N') $group_SQLand";
 	$list_rslt=mysql_to_mysqli($list_stmt, $link);
@@ -565,6 +573,8 @@ else
 	if ($DB) {$MAIN.="$stmt\n";}
 	$listids_to_print = mysqli_num_rows($rslt);
 	$i=0;
+	$LISTIDcalls=array();
+	$LISTIDlists=array();
 	while ($i < $listids_to_print)
 		{
 		$row=mysqli_fetch_row($rslt);
@@ -580,6 +590,8 @@ else
 	else {$list_id_SQL="''";}
 
 	$i=0;
+	$LISTIDlist_names=array();
+	$LISTIDlist_active=array();
 	while ($i < $listids_to_print)
 		{
 		$stmt="select list_name,active from vicidial_lists where list_id='$LISTIDlists[$i]';";
@@ -619,15 +631,15 @@ else
 	$graph_array=array("LID_SUMMARYdata|||integer|");
 	$graph_id++;
 	$default_graph="bar"; # Graph that is initally displayed when page loads
-	include("graph_color_schemas.inc"); 
+	include("graph_color_schemas.inc");
 
 	$graph_totals_array=array();
 	$graph_totals_rawdata=array();
 	for ($q=0; $q<count($graph_array); $q++) {
-		$graph_info=explode("|", $graph_array[$q]); 
+		$graph_info=explode("|", $graph_array[$q]);
 		$current_graph_total=0;
 		$dataset_name=$graph_info[0];
-		$dataset_index=$graph_info[1]; 
+		$dataset_index=$graph_info[1];
 		$dataset_type=$graph_info[3];
 		if ($q==0) {$preload_dataset=$dataset_name;}  # Used below to load initial graph
 
@@ -654,13 +666,13 @@ else
 			$graphConstantsA.="\"$bgcolor\",";
 			$graphConstantsB.="\"$hbgcolor\",";
 			$graphConstantsC.="\"$hbcolor\",";
-		}	
+		}
 		$graphConstantsA.="],\n";
 		$graphConstantsB.="],\n";
 		$graphConstantsC.="],\n";
 		$labels=preg_replace('/,$/', '', $labels)."],\n";
 		$data=preg_replace('/,$/', '', $data)."],\n";
-		
+
 		$graph_totals_rawdata[$q]=$current_graph_total;
 		switch($dataset_type) {
 			case "time":
@@ -864,15 +876,15 @@ else
 		$graph_array=array("APDdata|||intpct|");
 		$graph_id++;
 		$default_graph="bar"; # Graph that is initally displayed when page loads
-		include("graph_color_schemas.inc"); 
+		include("graph_color_schemas.inc");
 
 		$graph_totals_array=array();
 		$graph_totals_rawdata=array();
 		for ($q=0; $q<count($graph_array); $q++) {
-			$graph_info=explode("|", $graph_array[$q]); 
+			$graph_info=explode("|", $graph_array[$q]);
 			$current_graph_total=0;
 			$dataset_name=$graph_info[0];
-			$dataset_index=$graph_info[1]; 
+			$dataset_index=$graph_info[1];
 			$dataset_type=$graph_info[3];
 			if ($q==0) {$preload_dataset=$dataset_name;}  # Used below to load initial graph
 
@@ -899,13 +911,13 @@ else
 				$graphConstantsA.="\"$bgcolor\",";
 				$graphConstantsB.="\"$hbgcolor\",";
 				$graphConstantsC.="\"$hbcolor\",";
-			}	
+			}
 			$graphConstantsA.="],\n";
 			$graphConstantsB.="],\n";
 			$graphConstantsC.="],\n";
 			$labels=preg_replace('/,$/', '', $labels)."],\n";
 			$data=preg_replace('/,$/', '', $data)."],\n";
-			
+
 			$graph_totals_rawdata[$q]=$current_graph_total;
 			switch($dataset_type) {
 				case "time":
@@ -954,7 +966,8 @@ else
 	$CSV_text3.="\""._QXZ("CUSTOM STATUS CATEGORY STATS")."\"\n";
 	$CSV_text3.="\""._QXZ("CATEGORY")."\",\""._QXZ("CALLS")."\",\""._QXZ("DESCRIPTION")."\"\n";
 
-	$max_calls=1; $graph_stats=array();
+	$max_calls=1;
+	$graph_stats=array();
 
 	$TOTCATcalls=0;
 	$r=0; $i=0;
@@ -989,15 +1002,15 @@ else
 	$graph_array=array("CSCSdata|||integer|");
 	$graph_id++;
 	$default_graph="bar"; # Graph that is initally displayed when page loads
-	include("graph_color_schemas.inc"); 
+	include("graph_color_schemas.inc");
 
 	$graph_totals_array=array();
 	$graph_totals_rawdata=array();
 	for ($q=0; $q<count($graph_array); $q++) {
-		$graph_info=explode("|", $graph_array[$q]); 
+		$graph_info=explode("|", $graph_array[$q]);
 		$current_graph_total=0;
 		$dataset_name=$graph_info[0];
-		$dataset_index=$graph_info[1]; 
+		$dataset_index=$graph_info[1];
 		$dataset_type=$graph_info[3];
 		if ($q==0) {$preload_dataset=$dataset_name;}  # Used below to load initial graph
 
@@ -1024,13 +1037,13 @@ else
 			$graphConstantsA.="\"$bgcolor\",";
 			$graphConstantsB.="\"$hbgcolor\",";
 			$graphConstantsC.="\"$hbcolor\",";
-		}	
+		}
 		$graphConstantsA.="],\n";
 		$graphConstantsB.="],\n";
 		$graphConstantsC.="],\n";
 		$labels=preg_replace('/,$/', '', $labels)."],\n";
 		$data=preg_replace('/,$/', '', $data)."],\n";
-		
+
 		$graph_totals_rawdata[$q]=$current_graph_total;
 		switch($dataset_type) {
 			case "time":
@@ -1094,7 +1107,7 @@ else
 		$OUToutput .= "| "._QXZ("TOTAL LEADS",14,"r").": $header_list_count                                   |\n";
 		$OUToutput .= "+--------------------------------------------------------------+\n";
 
-		$max_flags=1; 
+		$max_flags=1;
 		$max_status=1;
 		$graph_stats=array();
 		$CSV_text4.="\""._QXZ("LIST ID").": $LISTIDlists[$i]\",\"$LISTIDlist_names[$i]\",\"$LISTIDlist_active[$i]\"\n";
@@ -1226,7 +1239,7 @@ else
 		$SC_count =	sprintf("%9s", "$SC_count"); while(strlen($SC_count)>9) {$SC_count = substr("$SC_count", 0, -1);}
 		$COMP_count =	sprintf("%9s", "$COMP_count"); while(strlen($COMP_count)>9) {$COMP_count = substr("$COMP_count", 0, -1);}
 
-		$OUToutput .= "| "._QXZ("STATUS FLAGS BREAKDOWN",22).":  "._QXZ("(and % of total leads in the list)",34)." |\n";
+		$OUToutput .= "| "._QXZ("STATUS FLAGS BREAKDOWN",22).":  "._QXZ("(and % of total leads in the list)",35)." |\n";
 		$OUToutput .= "|   "._QXZ("Human Answer:",19)." $HA_count    $HA_percent%                   |\n";
 		$OUToutput .= "|   "._QXZ("Sale:",19)." $SALE_count    $SALE_percent%                   |\n";
 		$OUToutput .= "|   "._QXZ("DNC:",19)." $DNC_count    $DNC_percent%                   |\n";
@@ -1305,15 +1318,15 @@ else
 		$graph_id++;
 		$graph_array=array("ALCS_STATUSFLAG$LISTIDlists[$i]data|0|STATUS FLAG BREAKDOWN|intpct|graph_stats2", "ALCS_STATUS$LISTIDlists[$i]data|1|STATUS BREAKDOWN|integer|");
 		$default_graph="bar"; # Graph that is initally displayed when page loads
-		include("graph_color_schemas.inc"); 
+		include("graph_color_schemas.inc");
 
 		$graph_totals_array=array();
 		$graph_totals_rawdata=array();
 		for ($q=0; $q<count($graph_array); $q++) {
-			$graph_info=explode("|", $graph_array[$q]); 
+			$graph_info=explode("|", $graph_array[$q]);
 			$current_graph_total=0;
 			$dataset_name=$graph_info[0];
-			$dataset_index=$graph_info[1]; 
+			$dataset_index=$graph_info[1];
 			$dataset_type=$graph_info[3];
 			$graph_override=$graph_info[4];
 
@@ -1342,11 +1355,11 @@ else
 					$graphConstantsA.="\"$bgcolor\",";
 					$graphConstantsB.="\"$hbgcolor\",";
 					$graphConstantsC.="\"$hbcolor\",";
-				}	
+				}
 			} else {
 				for ($d=0; $d<count($graph_stats); $d++) {
 					$labels.="\"".preg_replace('/ +/', ' ', $graph_stats[$d][0])."\",";
-					$data.="\"".$graph_stats[$d][$dataset_index]."\","; 
+					$data.="\"".$graph_stats[$d][$dataset_index]."\",";
 					$current_graph_total+=$graph_stats[$d][$dataset_index];
 					$bgcolor=$backgroundColor[($d%count($backgroundColor))];
 					$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
@@ -1354,14 +1367,14 @@ else
 					$graphConstantsA.="\"$bgcolor\",";
 					$graphConstantsB.="\"$hbgcolor\",";
 					$graphConstantsC.="\"$hbcolor\",";
-				}	
+				}
 			}
 			$graphConstantsA.="],\n";
 			$graphConstantsB.="],\n";
 			$graphConstantsC.="],\n";
 			$labels=preg_replace('/,$/', '', $labels)."],\n";
 			$data=preg_replace('/,$/', '', $data)."],\n";
-			
+
 			$graph_totals_rawdata[$q]=$current_graph_total;
 			switch($dataset_type) {
 				case "time":

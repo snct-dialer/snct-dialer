@@ -256,9 +256,9 @@ $phone_list = '|';
 
 if (!$VARDB_port) {$VARDB_port='3306';}
 
-use DBI;	  
+use DBI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 #############################################
@@ -280,7 +280,7 @@ $sthA->finish();
 ##### END SETTINGS LOOKUP #####
 ###########################################
 
-$dbhB = DBI->connect("DBI:mysql:$vtiger_dbname:$vtiger_server_ip:$VARDB_port", "$vtiger_login", "$vtiger_pass")
+$dbhB = DBI->connect("DBI:mysql:$vtiger_dbname:$vtiger_server_ip:$VARDB_port", "$vtiger_login", "$vtiger_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 if ($non_latin > 0) {$affected_rows = $dbhA->do("SET NAMES 'UTF8'");}
@@ -575,7 +575,7 @@ foreach(@FILES)
 					$user_id = $aryB[0];
 					}
 				$sthB->finish();
-				
+
 				# Get current ID from vtiger_crmentity_seq
 				$stmtB="SELECT id from vtiger_crmentity_seq;";
 					if($DBX){print STDERR "\n|$stmtB|\n";}
@@ -633,7 +633,7 @@ foreach(@FILES)
 				else
 					{print "BAD Phone Number: $phone_number|$vendor_id|$a\n";   $e++;}
 				}
-			
+
 			$a++;
 
 			if ($a =~ /100$/i) {print STDERR "0     $a\r";}

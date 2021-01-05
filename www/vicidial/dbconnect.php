@@ -1,5 +1,5 @@
 <?php
-# 
+#
 # dbconnect.php    version 2.8
 #
 # database connection settings and some global web settings
@@ -15,7 +15,7 @@
 if ( file_exists("/etc/astguiclient.conf") )
 	{
 	$DBCagc = file("/etc/astguiclient.conf");
-	foreach ($DBCagc as $DBCline) 
+	foreach ($DBCagc as $DBCline)
 		{
 		$DBCline = preg_replace("/ |>|\n|\r|\t|\#.*|;.*/","",$DBCline);
 		if (preg_match('/^PATHlogs/', $DBCline))
@@ -56,7 +56,7 @@ else
 $server_string = "$VARDB_server:$VARDB_port";
 if ( ($use_slave_server > 0) and (strlen($slave_db_server)>1) )
 	{
-	if (preg_match("/\:/", $slave_db_server)) 
+	if (preg_match("/\:/", $slave_db_server))
 		{
 		$server_string = $slave_db_server;
 		}
@@ -67,7 +67,7 @@ if ( ($use_slave_server > 0) and (strlen($slave_db_server)>1) )
 	}
 $link=mysql_connect($server_string, "$VARDB_user", "$VARDB_pass");
 
-if (!$link) 
+if (!$link)
 	{
     die('MySQL connect ERROR: ' . mysql_error());
 	}

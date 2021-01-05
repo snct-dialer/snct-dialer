@@ -1,29 +1,42 @@
 #!/usr/bin/perl
 #
-# ADMIN_audio_store_sync.pl      version 2.12
+###############################################################################
 #
-# DESCRIPTION:
-# syncronizes audio between audio store and this server
+# Modul ADMIN_audio_store_sync.pl
 #
+# SNCT-Dialer™ syncronizes audio between audio store and this server
+#
+# Copyright (©) 2019-2020 SNCT GmbH <info@snct-gmbh.de>
+#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
 #
 # LICENSE: AGPLv3
 #
-# Copyright (C) 2015  Matt Florell <vicidial@gmail.com>
-# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
-#   
-
-# CHANGELOG
-# 90513-0458 - First Build
-# 90518-2107 - Added force-upload option
-# 90831-1349 - Added music-on-hold sync
-# 100621-1018 - Added admin_web_directory variable use
-# 100824-0032 - Fixed issue with first MoH file being skipped when playing in non-random order
-# 101217-2137 - Small fix for admin directories not directly off of the webroot
-# 121019-0729 - Added audio_store_purge feature
-# 141124-2309 - Fixed Fhour variable bug
-# 141125-1555 - Added audio_store_details audio file info gathering and DB population
-# 150712-2210 - Added touch of conf files to Asterisk will notice changes
-# 180616-1825 - Add sniplet into perl scripts to run only once a time
+###############################################################################
+#
+# based on VICIdial®
+# (© 2015  Matt Florell <vicidial@gmail.com>)
+#
+###############################################################################
+#
+# requested Module:
+# 
+# /etc/astguiclient.conf
+# 
+###############################################################################
+#
+# Version  / Build
+#
+$admin_audio_store_sync_version = '3.0.1-1';
+$admin_audio_store_sync_build = '20201102-1';
+#
+###############################################################################
+#
+# Changelog
+#
+# 2020-11-02 jff	Use $PATHsounds instead of fixed paths
+#					Use wget also with --no-check-certificate
+# 2019-07-25 jff	Use only https without certcheck
+# 2018-06-16 jff	Add sniplet into perl scripts to run only once a time
 #
 
 
@@ -31,7 +44,7 @@
 use Fcntl qw(:flock);
 # print "start of program $0\n";
 unless (flock(DATA, LOCK_EX|LOCK_NB)) {
-    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log'
     or print "Can't open the fscking file: $!";
     $datestring = localtime();
     print $fh "[$datestring] $0 is already running. Exiting.\n";
@@ -182,12 +195,12 @@ foreach(@conf)
 	$i++;
 	}
 
-if (!$VASLOGfile) {$VASLOGfile = "$PATHlogs/audiostore";}
+if (!$VASLOGfile) {$VASLOGfile = "$PATHlogs/audiostore.log";}
 if (!$VARDB_port) {$VARDB_port='3306';}
 
-use DBI;	  
+use DBI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 
@@ -237,6 +250,8 @@ $affected_rows = $dbhA->do($stmtA);
 
 $gsm='.gsm';
 $wav='.wav';
+$ogg='.ogg';
+$mp3='.mp3';
 $ulaw='.ulaw';
 $audio_file_deleted=0;
 if (length($audio_store_purge) > 0)
@@ -252,12 +267,16 @@ if (length($audio_store_purge) > 0)
 		{
 		if (length($purge_data[$i])>0)
 			{
-			if ( -e ("/var/lib/asterisk/sounds/$purge_data[$i]$wav"))
-				{`rm -f /var/lib/asterisk/sounds/$purge_data[$i]$wav`;		$audio_file_deleted++;}
-			if ( -e ("/var/lib/asterisk/sounds/$purge_data[$i]$gsm"))
-				{`rm -f /var/lib/asterisk/sounds/$purge_data[$i]$gsm`;		$audio_file_deleted++;}
-			if ( -e ("/var/lib/asterisk/sounds/$purge_data[$i]$ulaw"))
-				{`rm -f /var/lib/asterisk/sounds/$purge_data[$i]$ulaw`;		$audio_file_deleted++;}
+			if ( -e ("$PATHsounds/$purge_data[$i]$wav"))
+				{`rm -f $PATHsounds/$purge_data[$i]$wav`;		$audio_file_deleted++;}
+			if ( -e ("$PATHsounds/$purge_data[$i]$gsm"))
+				{`rm -f $PATHsounds/$purge_data[$i]$gsm`;		$audio_file_deleted++;}
+			if ( -e ("$PATHsounds/$purge_data[$i]$ulaw"))
+				{`rm -f $PATHsounds/$purge_data[$i]$ulaw`;		$audio_file_deleted++;}
+			if ( -e ("$PATHsounds/$purge_data[$i]$ogg"))
+				{`rm -f $PATHsounds/$purge_data[$i]$ogg`;		$audio_file_deleted++;}
+			if ( -e ("$PATHsounds/$purge_data[$i]$mp3"))
+				{`rm -f $PATHsounds/$purge_data[$i]$mp3`;		$audio_file_deleted++;}
 			if ($audio_file_deleted < 1)
 				{if ($DB) {print "no audio file deleted: $purge_data[$i]|$i\n";}}
 			if ($DBX>0) {print "audio file delete process: $purge_data[$i]|$i|$audio_file_deleted\n";}
@@ -271,10 +290,10 @@ if (length($audio_store_purge) > 0)
 ### find wget binary
 $wgetbin = '';
 if ( -e ('/bin/wget')) {$wgetbin = '/bin/wget';}
-else 
+else
 	{
 	if ( -e ('/usr/bin/wget')) {$wgetbin = '/usr/bin/wget';}
-	else 
+	else
 		{
 		if ( -e ('/usr/local/bin/wget')) {$wgetbin = '/usr/local/bin/wget';}
 		else
@@ -288,10 +307,10 @@ else
 ### find curl binary
 $curlbin = '';
 if ( -e ('/bin/curl')) {$curlbin = '/bin/curl';}
-else 
+else
 	{
 	if ( -e ('/usr/bin/curl')) {$curlbin = '/usr/bin/curl';}
-	else 
+	else
 		{
 		if ( -e ('/usr/local/bin/curl')) {$curlbin = '/usr/local/bin/curl';}
 		else
@@ -303,22 +322,22 @@ else
 	}
 
 
-$URL = "http://$sounds_web_server/$admin_web_directory/audio_store.php?action=LIST&audio_server_ip=$VARserver_ip";
+$URL = "https://$sounds_web_server/$admin_web_directory/audio_store.php?action=LIST&audio_server_ip=$VARserver_ip";
 
 $URL =~ s/&/\\&/gi;
-if ($DB) 
+if ($DB)
 	{print "\n$URL\n";}
 
 $audio_list_file = '/tmp/audio_store_list.txt';
 `rm -f $audio_list_file`;
-`$wgetbin -q --output-document=$audio_list_file $URL `;
+`$wgetbin --no-check-certificate -q --output-document=$audio_list_file $URL `;
 
 open(list, "$audio_list_file") || die "can't open $audio_list_file: $!\n";
 @list = <list>;
 close(list);
 
 opendir(sounds, "$PATHsounds");
-@sounds= readdir(sounds); 
+@sounds= readdir(sounds);
 closedir(sounds);
 
 
@@ -354,7 +373,7 @@ while ($i <= $#list)
 
 	if ( ($found_file < 1) || ($force_download > 0) )
 		{
-		`$wgetbin -q --output-document=$PATHsounds/$filename http://$sounds_web_server/$web_prefix$sounds_web_directory/$filename`;
+		`$wgetbin -q --no-check-certificate --output-document=$PATHsounds/$filename https://$sounds_web_server/$web_prefix$sounds_web_directory/$filename`;
 		$event_string = "DOWNLOADING: $filename     $filesize";
 		if ($DB > 0) {print "          $event_string\n";}
 		&event_logger;
@@ -375,14 +394,14 @@ $total_files = $i;
 
 
 `rm -f $audio_list_file`;
-`$wgetbin -q --output-document=$audio_list_file $URL `;
+`$wgetbin --no-check-certificate -q --output-document=$audio_list_file $URL `;
 
 open(list, "$audio_list_file") || die "can't open $audio_list_file: $!\n";
 @list = <list>;
 close(list);
 
 opendir(sounds, "$PATHsounds");
-@sounds= readdir(sounds); 
+@sounds= readdir(sounds);
 closedir(sounds);
 
 
@@ -398,7 +417,7 @@ if ($upload > 0)
 	while ($k <= $#sounds)
 		{
 		chomp($sounds[$k]);
-		if ($sounds[$k] =~ /\.wav$|\.gsm$/)
+		if ($sounds[$k] =~ /\.wav$|\.gsm$\.ogg$|\.mp3$|/)
 			{
 			$soundname =	$sounds[$k];
 			$sounddate =	(-M "$PATHsounds/$sounds[$k]");
@@ -428,7 +447,7 @@ if ($upload > 0)
 
 			if ( ($found_file < 1) || ($force_upload > 0) )
 				{
-				$curloptions = "-s 'http://$sounds_web_server/$admin_web_directory/audio_store.php?action=AUTOUPLOAD&audio_server_ip=$VARserver_ip' -F \"audiofile=\@$PATHsounds/$soundname\"";
+				$curloptions = "-sk 'https://$sounds_web_server/$admin_web_directory/audio_store.php?action=AUTOUPLOAD&audio_server_ip=$VARserver_ip' -F \"audiofile=\@$PATHsounds/$soundname\"";
 				`$curlbin $curloptions`;
 				$event_string = "UPLOADING: $soundname     $soundsize";
 				if ($DB > 0) {print "          $event_string\n|$curlbin $curloptions|\n";}
@@ -464,6 +483,8 @@ if ($gather_details > 0)
 	{
 	$gsm_count=0;
 	$wav_count=0;
+	$ogg_count=0;
+	$mp3_count=0;
 	$new_count=0;
 	$old_count=0;
 	$update_count=0;
@@ -481,6 +502,20 @@ if ($gather_details > 0)
 		$allowed_format=0;
 		if ($filesize > 0)
 			{
+			if ($filename =~ /\.ogg$/) {
+				$allowed_format++;
+				$ogg_count++;
+				$audio_format='ogg';
+				$audio_length = ($filesize / 16000);
+				$audio_length = sprintf("%.0f", $audio_length);
+			}
+			if ($filename =~ /\.mp3$/) {
+				$allowed_format++;
+				$mp3_count++;
+				$audio_format='mp3';
+				$audio_length = ($filesize / 16000);
+				$audio_length = sprintf("%.0f", $audio_length);
+			}
 			if ($filename =~ /\.wav$/)
 				{
 				$allowed_format++;
@@ -511,7 +546,7 @@ if ($gather_details > 0)
 					$asd_filesize = $aryA[1];
 					$asd_length =	$aryA[2];
 
-					if ( ($asd_format eq "$audio_format") && ($asd_filesize eq "$filesize") && ($asd_length eq "$audio_length") ) 
+					if ( ($asd_format eq "$audio_format") && ($asd_filesize eq "$filesize") && ($asd_length eq "$audio_length") )
 						{
 						$old_count++;
 						if ($DB > 0) {print "$i   audio file details unchanged: $filename - |$audio_format|$filesize|$audio_length|\n";}
@@ -655,7 +690,7 @@ if ( ($force_moh_rebuild > 0) || ($new_file_moh_rebuild > 0) || ($rebuild_music_
 			}
 
 		opendir(sounds, "$PATHsounds");
-		@sounds= readdir(sounds); 
+		@sounds= readdir(sounds);
 		closedir(sounds);
 
 		if (!-e "$MoH_directory/0000_sip-silence.gsm")
@@ -731,7 +766,7 @@ if ( ($force_moh_rebuild > 0) || ($new_file_moh_rebuild > 0) || ($rebuild_music_
 		$sthA->finish();
 
 		opendir(mohdir, "$MoH_directory");
-		@MoH_files= readdir(mohdir); 
+		@MoH_files= readdir(mohdir);
 		closedir(mohdir);
 
 		### Check for files not in MoH context and delete them

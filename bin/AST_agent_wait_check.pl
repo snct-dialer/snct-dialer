@@ -139,14 +139,14 @@ if (length($ARGV[0])>1)
 			@data_in = split(/--campaign=/,$args);
 			$campaign = $data_in[1];
 			$campaign =~ s/ .*$//gi;
-			if ($campaign =~ /---ALL---/gi) 
+			if ($campaign =~ /---ALL---/gi)
 				{
 				$campaignSQL='';
 				}
 			else
 				{
 				$campaignSQL = $campaign;
-				if ($campaignSQL =~ /-/) 
+				if ($campaignSQL =~ /-/)
 					{
 					$campaignSQL =~ s/-/','/gi;
 					}
@@ -225,10 +225,10 @@ $server_ip = $VARserver_ip;		# Asterisk server IP
 
 use DBI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
-if (length($container) > 1) 
+if (length($container) > 1)
 	{
 	### Grab container content from the database
 	$container_entry='';
@@ -242,7 +242,7 @@ if (length($container) > 1)
 		$container_entry = $aryA[0];
 		}
 	$sthA->finish();
-	if (length($container_entry) < 3) 
+	if (length($container_entry) < 3)
 		{
 		if ($DB > 0) {print "NOTICE: Invalid Container: |$container|$container_entry|\n";}
 		}
@@ -318,14 +318,14 @@ if (length($container) > 1)
 			@data_in = split(/--campaign=/,$container_entry);
 			$campaign = $data_in[1];
 			$campaign =~ s/ .*$//gi;
-			if ($campaign =~ /---ALL---/gi) 
+			if ($campaign =~ /---ALL---/gi)
 				{
 				$campaignSQL='';
 				}
 			else
 				{
 				$campaignSQL = $campaign;
-				if ($campaignSQL =~ /-/) 
+				if ($campaignSQL =~ /-/)
 					{
 					$campaignSQL =~ s/-/','/gi;
 					}
@@ -409,7 +409,7 @@ if ( (length($Ealert)>5) && (length($email_list) > 5) && ($test < 1) )
 	$mail{body} .= "--\n";
 
 	sendmail(%mail) or die $mail::Sendmail::error;
-	if (!$Q) 
+	if (!$Q)
 		{
 		print "ok. log says:\n", $mail::sendmail::log;  ### print mail log for status
 		}

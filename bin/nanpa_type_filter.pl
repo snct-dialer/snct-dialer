@@ -3,7 +3,7 @@
 # nanpa_type_filter.pl version 2.10
 #
 # DESCRIPTION:
-# This script is designed to filter the leads in a list by phone number and 
+# This script is designed to filter the leads in a list by phone number and
 # put the lead into a different list if it is a cellphone or invalid
 #
 # It is recommended that you run this program on the local Asterisk machine
@@ -113,13 +113,13 @@ if (length($ARGV[0])>1)
 			@data_in = split(/--list-id=/,$args);
 			$list_id = $data_in[1];
 			$list_id =~ s/ .*//gi;
-			if ($list_id =~ /---ALL---/) 
+			if ($list_id =~ /---ALL---/)
 				{
 				$list_idSQL = '';
 				}
 			else
 				{
-				if ($list_id =~ /--/) 
+				if ($list_id =~ /--/)
 					{
 					$list_idTEMP = $list_id;
 					$list_idTEMP =~ s/--/','/gi;
@@ -202,10 +202,10 @@ else
 ### find wget binary
 $wgetbin = '';
 if ( -e ('/bin/wget')) {$wgetbin = '/bin/wget';}
-else 
+else
 	{
 	if ( -e ('/usr/bin/wget')) {$wgetbin = '/usr/bin/wget';}
-	else 
+	else
 		{
 		if ( -e ('/usr/local/bin/wget')) {$wgetbin = '/usr/local/bin/wget';}
 		else
@@ -301,11 +301,11 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 if (length($db_output_code)<2) {$db_output_code = $filedate . "_" . $VDrandom;}
 
 
-use DBI;	  
+use DBI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
-$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
@@ -321,7 +321,7 @@ if ($output_to_db)
 @phones=@MT;
 
 $excludeSQL='';
-if ( (length($exclude_field) > 1) && (length($exclude_value) > 0) ) 
+if ( (length($exclude_field) > 1) && (length($exclude_value) > 0) )
 	{
 	if (length($list_idSQL) > 5)
 		{
@@ -334,7 +334,7 @@ if ( (length($exclude_field) > 1) && (length($exclude_value) > 0) )
 	}
 
 $includeSQL='';
-if ( (length($include_field) > 1) && (length($include_value) > 0) ) 
+if ( (length($include_field) > 1) && (length($include_value) > 0) )
 	{
 	$include_value =~ s/EMPTY//gi;
 	if ( (length($list_idSQL) > 5) || (length($excludeSQL) > 5) )

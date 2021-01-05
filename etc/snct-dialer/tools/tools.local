@@ -1,0 +1,21 @@
+[Database]
+Server=10.100.0.17
+Database=asterisk_snct
+User=cron
+Pass=v1c1d1SNCT
+Port=3306
+
+[Log]
+File=SYSLOG
+FileCloser=/var/log/snct-dialer/logoutcloser.log
+FileShortNI=/var/log/snct-dialer/shortNI.log
+FileAddVk=/var/log/snct-dialer/AddVK2Lead.log
+GenRealTime=/var/log/snct-dialer/GenRealTime.log
+
+[Email]
+EmailFrom  = CallbacksTool@snct3.snct-dialer.de
+EmailTo    = j.fringsfuerst@snct-dialer.de
+EmailReply = support@snct-dialer.de
+
+[Keys]
+Essen = Ue8phahcheizoshi

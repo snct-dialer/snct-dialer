@@ -8,14 +8,15 @@
 # kills CONGEST local channels every 15 seconds
 #
 # For the client program to work in ACQS mode, this program must be running
-# 
+#
 # put this in the cron to run every minute
 #
 # LICENSE: AGPLv3
 #
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>
 # Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
-#               2017-2018 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
+#               2020      SNCT GmbH <info@snct-gmbh.de>
+#               2017-2020 Jörg Frings-Fürst <j.fringsfuerst@flyingpenguin.de>
 
 # CHANGES
 # 50823-1525 - Added commandline debug options with debug printouts
@@ -31,7 +32,7 @@
 use Fcntl qw(:flock);
 # print "start of program $0\n";
 unless (flock(DATA, LOCK_EX|LOCK_NB)) {
-    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log'
     or print "Can't open the fscking file: $!";
     $datestring = localtime();
     print $fh "[$datestring] $0 is already running. Exiting.\n";
@@ -127,11 +128,11 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 
 	&get_time_now;
 
-if (!$KHLOGfile) {$KHLOGfile = "$PATHlogs/congest";}
+if (!$KHLOGfile) {$KHLOGfile = "$PATHlogs/congest.log";}
 
 use DBI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
@@ -157,7 +158,7 @@ $stmtA = "SELECT channel FROM live_sip_channels where server_ip = '$server_ip' a
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
-	$rec_count=0; 
+	$rec_count=0;
 
 	while ($sthArows > $rec_count)
 		{
@@ -168,7 +169,7 @@ $stmtA = "SELECT channel FROM live_sip_channels where server_ip = '$server_ip' a
 		}
 		$sthA->finish();
 
-   
+
 
 $i=0;
 foreach(@congest_kill)
@@ -188,7 +189,7 @@ foreach(@congest_kill)
 		 &event_logger;
 
 		if ($DB) {print "KILLING $congest_kill[$i]\n";}
-		$affected_rows = $dbhA->do($stmtA); 
+		$affected_rows = $dbhA->do($stmtA);
 		}
 	$i++;
 	}
@@ -235,7 +236,7 @@ foreach(@congest_kill)
 
 			$event_string = "SUBRT|killing_congest|KC|$KCqueryCID|$congest_kill[$i]|$stmtA|";
 		 &event_logger;
-		
+
 		if ($DB) {print "KILLING $congest_kill[$i]\n";}
 		$affected_rows = $dbhA->do($stmtA);  # or die  "Couldn't execute query:\n";
 		}
@@ -285,7 +286,7 @@ foreach(@congest_kill)
 
 			$event_string = "SUBRT|killing_congest|KC|$KCqueryCID|$congest_kill[$i]|$stmtA|";
 		 &event_logger;
-		
+
 		if ($DB) {print "KILLING $congest_kill[$i]\n";}
 		$affected_rows = $dbhA->do($stmtA);  # or die  "Couldn't execute query:\n";
 		}
@@ -337,7 +338,7 @@ foreach(@congest_kill)
 
 			$event_string = "SUBRT|killing_congest|KC|$KCqueryCID|$congest_kill[$i]|$stmtA|";
 		 &event_logger;
-		
+
 		if ($DB) {print "KILLING $congest_kill[$i]\n";}
 			$affected_rows = $dbhA->do($stmtA);  # or die  "Couldn't execute query:\n";
 		}
@@ -384,7 +385,7 @@ $CIDdate = "$year$mon$mday$hour$min$sec";
 
 
 
-sub event_logger 
+sub event_logger
 {
 if ($SYSLOG)
 	{

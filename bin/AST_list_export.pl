@@ -2,7 +2,7 @@
 #
 # AST_list_export.pl                version: 2.12
 #
-# This script is designed to gather list data and custom field data and dump 
+# This script is designed to gather list data and custom field data and dump
 # into a tab-delimited text file
 #
 # /usr/share/astguiclient/AST_list_export.pl --list=101-102-103 --output-format=fixed-as400 --debug --filename=101exportMMDD.txt --email-list=test@gmail.com --email-sender=test@test.com
@@ -177,7 +177,7 @@ if (length($ARGV[0])>1)
 			$list = $data_in[1];
 			$list =~ s/ .*$//gi;
 			$listSQL = $list;
-			if ($listSQL =~ /-/) 
+			if ($listSQL =~ /-/)
 				{
 				$listSQL =~ s/-/','/gi;
 				}
@@ -228,10 +228,10 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 
 use DBI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
-$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 $TOTAL_LEADS=0;
@@ -316,7 +316,7 @@ sub select_format_loop
 	$custom_data = '';
 	$custom_columns = '';
 
-	if ( (length($entry_list_id) > 1 ) && ($entry_list_id >= 99) ) 
+	if ( (length($entry_list_id) > 1 ) && ($entry_list_id >= 99) )
 		{
 		$stmtB = "SHOW TABLES LIKE \"custom_$entry_list_id\";";
 		$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
@@ -324,7 +324,7 @@ sub select_format_loop
 		$sthBcustrows=$sthB->rows;
 		if ($DBX) {print "$sthBcustrows|$stmtB|\n";}
 		$sthB->finish();
-		if ($sthBcustrows > 0) 
+		if ($sthBcustrows > 0)
 			{
 			$stmtB = "describe custom_$entry_list_id;";
 			$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
@@ -332,7 +332,7 @@ sub select_format_loop
 			$sthBcolrows=$sthB->rows;
 			if ($DBX) {print "$sthBcolrows|$stmtB|\n";}
 			$col_ct=0;
-			while ($sthBcolrows > $col_ct) 
+			while ($sthBcolrows > $col_ct)
 				{
 				@aryB = $sthB->fetchrow_array;
 				$column_label =		$aryB[0];
@@ -355,7 +355,7 @@ sub select_format_loop
 					{
 					@aryB = $sthB->fetchrow_array;
 					$field_ct=1;
-					while ($col_ct > $field_ct) 
+					while ($col_ct > $field_ct)
 						{
 						$custom_data .= "\t$aryB[$field_ct]";
 						$field_ct++;
@@ -375,7 +375,7 @@ sub select_format_loop
 		}
 	##### END custom field data lookup #####
 
-	$Ealert .= "$TOTAL_LEADS   $TOTAL_CUSTOM   $rec_countB   $call_data\n"; 
+	$Ealert .= "$TOTAL_LEADS   $TOTAL_CUSTOM   $rec_countB   $call_data\n";
 
 	if ($DBX) {print "$TOTAL_LEADS   $TOTAL_CUSTOM   $rec_countB   $call_data\n";}
 

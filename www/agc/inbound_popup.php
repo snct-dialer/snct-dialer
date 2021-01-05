@@ -1,12 +1,12 @@
 <?php
 # inbound_popup.php    version 2.14
-# 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed to open up when a live_inbound call comes in giving the user
 #   options of what to do with the call or options to lookup the callerID on various web sites
 # This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
-# 
+#
 # required variables:
 #  - $server_ip
 #  - $session_name
@@ -21,7 +21,7 @@
 #  - $ext_priority - ('1','2',...)
 #  - $voicemail_dump_exten - ('85026666666666')
 #  - $local_web_callerID_URL_enc - ( rawurlencoded custom callerid lookup URL)
-# 
+#
 #
 # changes
 # 50428-1500 - First build of script display only
@@ -37,10 +37,11 @@
 # 140811-0843 - Changed to use QXZ function for echoing text
 # 141216-2120 - Added language settings lookups and user/pass variable standardization
 # 170526-2231 - Added additional variable filtering
+# 190111-0905 - Fix for PHP7
 #
 
-$version = '2.14-13';
-$build = '170526-2231';
+$version = '2.14-14';
+$build = '190111-0905';
 
 require_once("dbconnect_mysqli.php");
 require_once("functions.php");
@@ -127,7 +128,7 @@ if ($non_latin < 1)
 	}
 
 $auth=0;
-$auth_message = user_authorization($user,$pass,'',0,1,0,0);
+$auth_message = user_authorization($user,$pass,'',0,1,0,0,'inbound_popup');
 if ($auth_message == 'GOOD')
 	{$auth=1;}
 
@@ -173,7 +174,7 @@ echo "<html>\n";
 echo "<head>\n";
 echo "<!-- VERSION: $version     BUILD: $build    UNIQUEID: $uniqueid   server_ip: $server_ip-->\n";
 ?>
-	<script language="Javascript">	
+	<script language="Javascript">
 		var server_ip = '<?php echo $server_ip ?>';
 		var epoch_sec = '<?php echo $StarTtime ?>';
 		var user_abb = '<?php echo $user_abb ?>';
@@ -188,7 +189,7 @@ echo "<!-- VERSION: $version     BUILD: $build    UNIQUEID: $uniqueid   server_i
 
 // ################################################################################
 // Send Hangup command for Live call connected to phone now to Manager
-	function livehangup_send_hangup(taskvar) 
+	function livehangup_send_hangup(taskvar)
 		{
 		var xmlhttp=false;
 		/*@cc_on @*/
@@ -209,17 +210,17 @@ echo "<!-- VERSION: $version     BUILD: $build    UNIQUEID: $uniqueid   server_i
 			{
 			xmlhttp = new XMLHttpRequest();
 			}
-		if (xmlhttp) 
-			{ 
+		if (xmlhttp)
+			{
 			var queryCID = "HLagcP" + epoch_sec + user_abb;
 			var hangupvalue = taskvar;
 			livehangup_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=Hangup&format=text&channel=" + hangupvalue + "&queryCID=" + queryCID;
-			xmlhttp.open('POST', 'manager_send.php'); 
+			xmlhttp.open('POST', 'manager_send.php');
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(livehangup_query); 
-			xmlhttp.onreadystatechange = function() 
-				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+			xmlhttp.send(livehangup_query);
+			xmlhttp.onreadystatechange = function()
+				{
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 					{
 					Nactiveext = null;
 					Nactiveext = xmlhttp.responseText;
@@ -234,7 +235,7 @@ echo "<!-- VERSION: $version     BUILD: $build    UNIQUEID: $uniqueid   server_i
 
 // ################################################################################
 // Send Redirect command for ringing call to go directly to your voicemail
-	function liveredirect_send_vmail(taskvar,taskbox) 
+	function liveredirect_send_vmail(taskvar,taskbox)
 		{
 		var xmlhttp=false;
 		/*@cc_on @*/
@@ -255,18 +256,18 @@ echo "<!-- VERSION: $version     BUILD: $build    UNIQUEID: $uniqueid   server_i
 			{
 			xmlhttp = new XMLHttpRequest();
 			}
-		if (xmlhttp) 
-			{ 
+		if (xmlhttp)
+			{
 			var queryCID = "RVagcP" + epoch_sec + user_abb;
 			var hangupvalue = taskvar;
 			var mailboxvalue = taskbox;
 			liveredirect_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=Redirect&format=text&channel=" + hangupvalue + "&queryCID=" + queryCID + "&exten=" + voicemail_dump_exten + "" + mailboxvalue + "&ext_context=" + ext_context + "&ext_priority=" + ext_priority;
-			xmlhttp.open('POST', 'manager_send.php'); 
+			xmlhttp.open('POST', 'manager_send.php');
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(liveredirect_query); 
-			xmlhttp.onreadystatechange = function() 
-				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+			xmlhttp.send(liveredirect_query);
+			xmlhttp.onreadystatechange = function()
+				{
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 					{
 					Nactiveext = null;
 					Nactiveext = xmlhttp.responseText;
@@ -281,7 +282,7 @@ echo "<!-- VERSION: $version     BUILD: $build    UNIQUEID: $uniqueid   server_i
 
 // ################################################################################
 // timeout to deactivate the call action links after 30 seconds
-	function link_timeout() 
+	function link_timeout()
 		{
 		window.focus();
 		setTimeout("call_action_link_clear()", 30000);
@@ -289,9 +290,9 @@ echo "<!-- VERSION: $version     BUILD: $build    UNIQUEID: $uniqueid   server_i
 
 // ################################################################################
 // deactivates the call action links
-	function call_action_link_clear() 
+	function call_action_link_clear()
 		{
-		document.getElementById("callactions").innerHTML = "";		
+		document.getElementById("callactions").innerHTML = "";
 		}
 
 	</script>
@@ -378,18 +379,18 @@ else
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 		}
-	
+
 	}
 
 
-if ($format=='debug') 
+if ($format=='debug')
 	{
 	$ENDtime = date("U");
 	$RUNtime = ($ENDtime - $StarTtime);
 	echo "\n<!-- script runtime: $RUNtime seconds -->";
 	echo "\n</body>\n</html>\n";
 	}
-	
-exit; 
+
+exit;
 
 ?>

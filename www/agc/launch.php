@@ -1,6 +1,6 @@
 <?php
 # launch.php - launches vicidial.php in restricted window
-# 
+#
 # Copyright (C) 2014  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # For launch validation to work, the options.php file must have
@@ -39,7 +39,7 @@ if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
         elseif (isset($_POST["relogin"]))       {$relogin=$_POST["relogin"];}
 if (isset($_GET["MGR_override"]))				{$MGR_override=$_GET["MGR_override"];}
         elseif (isset($_POST["MGR_override"]))  {$MGR_override=$_POST["MGR_override"];}
-if (!isset($phone_login)) 
+if (!isset($phone_login))
 	{
 	if (isset($_GET["pl"]))            {$phone_login=$_GET["pl"];}
 		elseif (isset($_POST["pl"]))   {$phone_login=$_POST["pl"];}
@@ -152,14 +152,14 @@ if ($non_latin < 1)
 <title><?php echo _QXZ("Agent Screen Opener"); ?></title>
 <script type="text/javascript">
 
-<!-- 
+<!--
 var BrowseWidth = 0;
 var BrowseHeight = 0;
 
-function browser_dimensions() 
+function browser_dimensions()
 	{
-<?php 
-	if (preg_match('/MSIE/',$browser)) 
+<?php
+	if (preg_match('/MSIE/',$browser))
 		{
 		echo "	if (document.documentElement && document.documentElement.clientHeight)\n";
 		echo "		{BrowseWidth = document.documentElement.clientWidth;}\n";
@@ -170,7 +170,7 @@ function browser_dimensions()
 		echo "	else if (document.body)\n";
 		echo "		{BrowseHeight = document.body.clientHeight;}\n";
 		}
-	else 
+	else
 		{
 		echo "	BrowseWidth = window.innerWidth;\n";
 		echo "	BrowseHeight = window.innerHeight;\n";

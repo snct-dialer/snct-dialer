@@ -5,8 +5,8 @@
 # This is a STEP-4 program in the audio archival process
 #
 # runs every 3 minutes and copies the recording files to an FTP server
-# 
-# put an entry into the cron of of your asterisk machine to run this script 
+#
+# put an entry into the cron of of your asterisk machine to run this script
 # every 3 minutes or however often you desire
 #
 # ### recording mixing/compressing/ftping scripts
@@ -20,12 +20,12 @@
 # --NODATEDIR
 #
 # if pinging is not working, try the 'icmp' Ping command in the code instead
-# 
+#
 # make sure that the following directories exist:
 # /var/spool/asterisk/monitorDONE	# where the mixed -all files are put
-# 
+#
 # This program assumes that recordings are saved by Asterisk as .wav
-# 
+#
 # LICENSE: AGPLv3
 #
 # Copyright (C) 2015 Matt Florell <vicidial@gmail.com>
@@ -46,7 +46,7 @@
 use Fcntl qw(:flock);
 # print "start of program $0\n";
 unless (flock(DATA, LOCK_EX|LOCK_NB)) {
-    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log' 
+    open my $fh, ">>", '/var/log/astguiclient/vicidial_lock.log'
     or print "Can't open the fscking file: $!";
     $datestring = localtime();
     print $fh "[$datestring] $0 is already running. Exiting.\n";
@@ -138,27 +138,27 @@ if (length($ARGV[0])>1)
 			$run_check=1;
 			if ($DB) {print "\n----- CONCURRENCY CHECK -----\n\n";}
 			}
-		if ($args =~ /--transfer-limit=/i) 
+		if ($args =~ /--transfer-limit=/i)
 			{
 			my @data_in = split(/--transfer-limit=/,$args);
 			$file_limit = $data_in[1];
 			$file_limit =~ s/ .*//gi;
 			print "\n----- FILE TRANSFER LIMIT: $file_limit -----\n\n";
 			}
-		if ($args =~ /--list-limit=/i) 
+		if ($args =~ /--list-limit=/i)
 			{
 			my @data_in = split(/--list-limit=/,$args);
 			$list_limit = $data_in[1];
 			$list_limit =~ s/ .*//gi;
 			print "\n----- FILE LIST LIMIT: $list_limit -----\n\n";
 			}
-		if ($args =~ /--ftp-server=/i) 
+		if ($args =~ /--ftp-server=/i)
 			{
 			my @data_in = split(/--ftp-server=/,$args);
 			$VARFTP_host = $data_in[1];
 			$VARFTP_host =~ s/ .*//gi;
 			$CLIFTP_host=1;
-			if ($DB > 0) 
+			if ($DB > 0)
 				{print "\n----- FTP SERVER: $VARFTP_host -----\n\n";}
 			}
 		if ($args =~ /--ftp-port=/i)
@@ -170,43 +170,43 @@ if (length($ARGV[0])>1)
 			if ($DB > 0)
 				{print "\n----- FTP PORT: $VARFTP_port -----\n\n";}
 			}
-		if ($args =~ /--ftp-login=/i) 
+		if ($args =~ /--ftp-login=/i)
 			{
 			my @data_in = split(/--ftp-login=/,$args);
 			$VARFTP_user = $data_in[1];
 			$VARFTP_user =~ s/ .*//gi;
 			$CLIFTP_user=1;
-			if ($DB > 0) 
+			if ($DB > 0)
 				{print "\n----- FTP LOGIN: $VARFTP_user -----\n\n";}
 			}
-		if ($args =~ /--ftp-pass=/i) 
+		if ($args =~ /--ftp-pass=/i)
 			{
 			my @data_in = split(/--ftp-pass=/,$args);
 			$VARFTP_pass = $data_in[1];
 			$VARFTP_pass =~ s/ .*//gi;
 			$CLIFTP_pass=1;
-			if ($DB > 0) 
+			if ($DB > 0)
 				{print "\n----- FTP PASS: $VARFTP_pass -----\n\n";}
 			}
-		if ($args =~ /--ftp-dir=/i) 
+		if ($args =~ /--ftp-dir=/i)
 			{
 			my @data_in = split(/--ftp-dir=/,$args);
 			$VARFTP_dir = $data_in[1];
 			$VARFTP_dir =~ s/ .*//gi;
 			$CLIFTP_dir=1;
-			if ($DB > 0) 
+			if ($DB > 0)
 				{print "\n----- FTP DIRECTORY: $VARFTP_dir -----\n\n";}
 			}
-		if ($args =~ /--ftp-persistent/i) 
+		if ($args =~ /--ftp-persistent/i)
 			{
 			$FTPpersistent=1;
-			if ($DB > 0) 
+			if ($DB > 0)
 				{print "\n----- FTP PERSISTENT: $FTPpersistent -----\n\n";}
 			}
-		if ($args =~ /--ftp-validate/i) 
+		if ($args =~ /--ftp-validate/i)
 			{
 			$FTPvalidate=1;
-			if ($DB > 0) 
+			if ($DB > 0)
 				{print "\n----- FTP VALIDATE: $FTPvalidate -----\n\n";}
 			}
 		}
@@ -277,7 +277,7 @@ if ($run_check > 0)
 	my $grepout = `/bin/ps ax | grep $0 | grep -v grep | grep -v '/bin/sh'`;
 	my $grepnum=0;
 	$grepnum++ while ($grepout =~ m/\n/g);
-	if ($grepnum > 1) 
+	if ($grepnum > 1)
 		{
 		if ($DB) {print "I am not alone! Another $0 is running! Exiting...\n";}
 		exit;
@@ -291,7 +291,7 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
 use DBI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 use Net::Ping;
@@ -319,7 +319,7 @@ foreach(@FILES)
 	if ($files_that_count >= $list_limit)
 		{
 		last();
-		}		
+		}
 	}
 
 sleep(5);
@@ -337,8 +337,8 @@ foreach(@FILES)
 
 		$FILEsize2[$i] = (-s "$dir2/$FILES[$i]");
 		if ($DBX) {print "$dir2/$FILES[$i] $FILEsize2[$i]\n\n";}
-		
-		if ($FILEsize1[$i] ne $FILEsize2[$i]) 
+
+		if ($FILEsize1[$i] ne $FILEsize2[$i])
 			{
 			if ($DBX) {print "not transfering $dir2/$FILES[$i]. File size mismatch $FILEsize2[$i] != $FILEsize1[$i]\n\n";}
 			}
@@ -386,9 +386,9 @@ foreach(@FILES)
 				}
 
 			if ($ping_good)
-				{	
+				{
 				$transfered_files++;
-				
+
 				$start_date_PATH='';
 				$FTPdb=0;
 				if ($DBX>0) {$FTPdb=1;}
@@ -439,10 +439,10 @@ foreach(@FILES)
 					{
 					`mv -f "$dir2/$ALLfile" "$PATHDONEmonitor/FTP2/$ALLfile"`;
 					}
-				
+
 				if($DBX){print STDERR "Transfered $transfered_files files\n";}
-				
-				if ( $transfered_files == $file_limit) 
+
+				if ( $transfered_files == $file_limit)
 					{
 					if($DBX){print STDERR "Transfer limit of $file_limit reached breaking out of the loop\n";}
 					last();

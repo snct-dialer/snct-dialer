@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # agi-VDADselective_CID_hangup.agi      version 2.6
-# 
+#
 # Will hangup a call if it is not within the specified area codes
 #
 # You need to put lines similar to those below in your extensions.conf file:
@@ -80,13 +80,13 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port) {$VARDB_port='3306';}
-if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout";}
+if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout.log";}
 
 use DBI;
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
     or die "Couldn't connect to database: " . DBI->errstr;
 
 ### begin parsing run-time options ###
@@ -103,7 +103,7 @@ if (length($ARGV[0])>1)
 }
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 {
 	chomp;
 	last unless length($_);
@@ -163,7 +163,7 @@ if (length($areacode) > 10)
 $areacode =~ s/\d\d\d\d\d\d\d$//gi;
 
 
-foreach $i (sort keys %AGI) 
+foreach $i (sort keys %AGI)
 {
 	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
 }

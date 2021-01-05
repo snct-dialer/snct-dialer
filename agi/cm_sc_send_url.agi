@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # cm_sc_send_url.agi version 2.14
-# 
+#
 # Designed to work with Call Menus to send a URL defined in a Settings Container
 # for a call with a lead_id associated with it(use CUSTOMERCLOSER in the In-Group
 # Action Transfer CID field!).
@@ -16,9 +16,9 @@
 # example of what to set in the Call Menu:
 # Set the prompt to "sip-silence|cm_sc_send_url.agi,test_cm_url"
 #
-# The URL that you define in the Settings Container can use most of the 
-# variables you can use in the Dispo Call URL fields. The 'user' and 'status' 
-# fields as well as the talk_time, talk_time_min and ivr_time fields that are 
+# The URL that you define in the Settings Container can use most of the
+# variables you can use in the Dispo Call URL fields. The 'user' and 'status'
+# fields as well as the talk_time, talk_time_min and ivr_time fields that are
 # also available will all use the last vicidial_agent_log entry for it's values.
 #
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -87,7 +87,7 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port) {$VARDB_port='3306';}
-if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout";}
+if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout.log";}
 
 use DBI;
 use Asterisk::AGI;
@@ -95,7 +95,7 @@ $AGI = new Asterisk::AGI;
 
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 	{
 	chomp;
 	last unless length($_);
@@ -145,7 +145,7 @@ else
 	print "SET PRIORITY 1\n";
 		$result = <STDIN>;
 		checkresult($result);
-	
+
 	exit;
 	}
 
@@ -156,7 +156,7 @@ $AGI->stream_file('sip-silence');
 $AGI->stream_file('sip-silence');
 
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
     or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
@@ -189,7 +189,7 @@ if (length($ARGV[0])>1)
 		if ($AGILOG) {$agi_string = "$i|$ARGV[$i]";   &agi_output;}
 		$i++;
 		}
-	
+
 	### list of command-line array arguments:
 	@ARGV_vars = split(/---/, $ARGV[0]);
 
@@ -216,7 +216,7 @@ else
 	$sthA->finish();
 	}
 
-if ($no_container > 0) 
+if ($no_container > 0)
 	{
 	if ($AGILOG) {$agi_string = "container_id not set($container_id|$no_container), exiting the cm_sc_areacode.agi app, transferring call to C @ $context";   &agi_output;}
 	print "SET CONTEXT $context\n";
@@ -228,7 +228,7 @@ if ($no_container > 0)
 	print "SET PRIORITY 1\n";
 		$result = <STDIN>;
 		checkresult($result);
-	
+
 	exit;
 	}
 
@@ -290,27 +290,27 @@ $agi_string='';
 }
 
 
-sub checkresult 
+sub checkresult
 	{
 	my ($res) = @_;
 	my $retval;
 	$tests++;
 	chomp $res;
-	if ($res =~ /^200/) 
+	if ($res =~ /^200/)
 		{
 		$res =~ /result=(-?\d+)/;
-		if (!length($1)) 
+		if (!length($1))
 			{
 		#	print STDERR "FAIL ($res)\n";
 			$fail++;
-			} 
-		else 
+			}
+		else
 			{
 		#	print STDERR "PASS ($1)\n";
 			$pass++;
 			}
-		} 
-	else 
+		}
+	else
 		{
 	#	print STDERR "FAIL (unexpected result '$res')\n";
 		$fail++;

@@ -3,15 +3,15 @@
 # AST_VDremote_agents.pl version 2.14
 #
 # SUMMARY:
-# To use VICIDIAL with remote agents, this must always be running 
-# 
+# To use VICIDIAL with remote agents, this must always be running
+#
 # This program must be run on each local Asterisk machine that has Remote Agents
 #
-# This script is to run perpetually querying every second to update the remote 
-# agents that should appear to be logged in so that the calls can be transferred 
+# This script is to run perpetually querying every second to update the remote
+# agents that should appear to be logged in so that the calls can be transferred
 # out to them properly.
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG:
 # 50215-0954 - First version of script
@@ -52,6 +52,8 @@
 # 141113-1559 - Added concurrency check
 # 161102-1032 - Fixed QM partition problem
 # 170527-2348 - Fix for rare inbound logging issue #1017
+# 190716-1628 - Added code for Call Quotas
+# 191017-1909 - Added code for filtered maximum inbound calls
 #
 
 ### begin parsing run-time options ###
@@ -165,14 +167,31 @@ $server_ip = $VARserver_ip;		# Asterisk server IP
 
 &get_time_now;	# update time/date variables
 
-if (!$VDRLOGfile) {$VDRLOGfile = "$PATHlogs/remoteagent";}
+if (!$VDRLOGfile) {$VDRLOGfile = "$PATHlogs/remoteagent.log";}
 if (!$VARDB_port) {$VARDB_port='3306';}
 
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
-use DBI;	  
+use Time::Local;
+use DBI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
+
+
+#############################################
+##### Gather system_settings #####
+$stmtA = "SELECT sip_event_logging,call_quota_lead_ranking FROM system_settings;";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+if ($sthArows > 0)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$SSsip_event_logging =			$aryA[0];
+	$SScall_quota_lead_ranking =	$aryA[1];
+	}
+$sthA->finish();
+###########################################
 
 ### Grab Server values from the database
 $stmtA = "SELECT vd_server_logs,local_gmt,ext_context FROM servers where server_ip = '$VARserver_ip';";
@@ -207,7 +226,7 @@ if ($run_check > 0)
 	my $grepout = `/bin/ps ax | grep $0 | grep -v grep | grep -v '/bin/sh'`;
 	my $grepnum=0;
 	$grepnum++ while ($grepout =~ m/\n/g);
-	if ($grepnum > 2) 
+	if ($grepnum > 2)
 		{
 		if ($DB) {print "I am not alone! Another $0 is running! Exiting...\n";}
 		$event_string = "I am not alone! Another $0 is running! Exiting...";
@@ -216,7 +235,7 @@ if ($run_check > 0)
 		}
 	}
 
-#$one_day_interval = 12;	# 1 month loops for one year 
+#$one_day_interval = 12;	# 1 month loops for one year
 $one_day_interval = 1;		# 1 day
 while($one_day_interval > 0)
 	{
@@ -226,7 +245,7 @@ while($one_day_interval > 0)
 		{
 		&get_time_now;
 
-		$VDRLOGfile = "$PATHlogs/remoteagent";
+		$VDRLOGfile = "$PATHlogs/remoteagent.log";
 
 		if ($endless_loop =~ /0$|5$/)
 			{
@@ -349,7 +368,7 @@ while($one_day_interval > 0)
 				if ($QHcall_type[$w] =~ /IN/)
 					{$licf_SQL = ",last_inbound_call_time='$SQLdate'";}
 
-				$stmtA = "UPDATE vicidial_live_agents set status='INCALL',last_call_time='$SQLdate',comments='REMOTE',calls_today=(calls_today + 1),last_state_change='$SQLdate' $licf_SQL where live_agent_id='$QHlive_agent_id[$w]';";
+				$stmtA = "UPDATE vicidial_live_agents set status='INCALL',last_call_time='$SQLdate',last_inbound_call_time_filtered='$SQLdate',last_inbound_call_finish_filtered='$SQLdate',comments='REMOTE',calls_today=(calls_today + 1),last_state_change='$SQLdate' $licf_SQL where live_agent_id='$QHlive_agent_id[$w]';";
 				$Aaffected_rows = $dbhA->do($stmtA);
 
 				$stmtB = "UPDATE vicidial_list set status='XFER',user='$QHuser[$w]' where lead_id='$QHlead_id[$w]';";
@@ -357,73 +376,104 @@ while($one_day_interval > 0)
 
 				if ($QHcall_type[$w] =~ /IN/)
 					{
+					### Gather user details for max inbound calls
+					$max_inbound_calls=0;
+					$stmtJ = "SELECT max_inbound_calls,max_inbound_filter_enabled,max_inbound_filter_ingroups FROM vicidial_users where user='$QHuser[$w]';";
+					$sthA = $dbhA->prepare($stmtJ) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtJ ", $dbhA->errstr;
+					$sthArowsMIC=$sthA->rows;
+					if ($sthArowsMIC > 0)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$VU_max_inbound_calls =				$aryA[0];
+						$VU_max_inbound_filter_enabled =	$aryA[1];
+						$VU_max_inbound_filter_ingroups =	$aryA[2];
+						}
+					$channel_group = $QHcampaign_id[$w];
+					$calls_today_filteredSQL = ",calls_today_filtered=(calls_today_filtered + 1),last_call_time_filtered='$SQLdate'";
+					$calls_today_filteredSQLnew = ",calls_today_filtered='1',last_call_time_filtered='$SQLdate'";
+					$calls_today_filteredSQLnewIGA = ",calls_today_filtered='1' ON DUPLICATE KEY UPDATE calls_today_filtered=(calls_today_filtered + 1)";
+					if ($VU_max_inbound_filter_enabled > 0)
+						{
+						$calls_today_filteredSQL = '';
+						$calls_today_filteredSQLnew = '';
+						$calls_today_filteredSQLnewIGA = '';
+						$VU_max_inbound_filter_ingroupsTEST = ",$VU_max_inbound_filter_ingroups,";
+						if ($VU_max_inbound_filter_ingroupsTEST !~ /,$channel_group,/)
+							{
+							$calls_today_filteredSQL = ",calls_today_filtered=(calls_today_filtered + 1),last_call_time_filtered='$SQLdate'";
+							$calls_today_filteredSQLnew = ",calls_today_filtered='1',last_call_time_filtered='$SQLdate'";
+							$calls_today_filteredSQLnewIGA = ",calls_today_filtered='1' ON DUPLICATE KEY UPDATE calls_today_filtered=(calls_today_filtered + 1)";
+							}
+						}
+
 					$stmtC = "UPDATE vicidial_closer_log set status='XFER',user='$QHuser[$w]',comments='REMOTE' where lead_id='$QHlead_id[$w]' and uniqueid='$QHuniqueid[$w]' and campaign_id='$QHcampaign_id[$w]' order by closecallid desc limit 1;";
 					$Caffected_rows = $dbhA->do($stmtC);
 
-					$stmtD = "INSERT IGNORE INTO vicidial_live_inbound_agents SET calls_today='1',last_call_time='$SQLdate',user='$QHuser[$w]', group_id='$QHcampaign_id[$w]' ON DUPLICATE KEY UPDATE calls_today=(calls_today + 1),last_call_time='$SQLdate';";
+					$stmtD = "INSERT IGNORE INTO vicidial_live_inbound_agents SET calls_today='1',last_call_time='$SQLdate',user='$QHuser[$w]', group_id='$QHcampaign_id[$w]' $calls_today_filteredSQLnew ON DUPLICATE KEY UPDATE calls_today=(calls_today + 1) $calls_today_filteredSQL;";
 					$Daffected_rows = $dbhA->do($stmtD);
 
 				#	$stmtE = "INSERT IGNORE INTO vicidial_inbound_group_agents set calls_today=1,user='$QHuser[$w]',group_id='$QHcampaign_id[$w]' ON DUPLICATE KEY UPDATE calls_today=(calls_today + 1);";
-					$stmtE = "INSERT IGNORE INTO vicidial_inbound_group_agents set calls_today=1,user='$QHuser[$w]',group_id='$QHcampaign_id[$w]';";
+					$stmtE = "INSERT IGNORE INTO vicidial_inbound_group_agents set calls_today=1,user='$QHuser[$w]',group_id='$QHcampaign_id[$w]' $calls_today_filteredSQLnewIGA;";
 					$Eaffected_rows = $dbhA->do($stmtE);
 
-				##### BEGIN check for user max inbound calls #####
-				$max_inbound_calls=0;
-				$stmtJ = "SELECT max_inbound_calls FROM vicidial_users where user='$QHuser[$w]';";
-				$sthA = $dbhA->prepare($stmtJ) or die "preparing: ",$dbhA->errstr;
-				$sthA->execute or die "executing: $stmtJ ", $dbhA->errstr;
-				$sthArowsMIC=$sthA->rows;
-				if ($sthArowsMIC > 0)
-					{
-					@aryA = $sthA->fetchrow_array;
-					$VU_max_inbound_calls = $aryA[0];
-					}
-				$stmtJ = "SELECT max_inbound_calls FROM vicidial_campaigns where campaign_id='$QHcampaign_id[$w]';";
-				$sthA = $dbhA->prepare($stmtJ) or die "preparing: ",$dbhA->errstr;
-				$sthA->execute or die "executing: $stmtJ ", $dbhA->errstr;
-				$sthArowsMIC=$sthA->rows;
-				if ($sthArowsMIC > 0)
-					{
-					@aryA = $sthA->fetchrow_array;
-					$CP_max_inbound_calls = $aryA[0];
-					}
+					if (length($calls_today_filteredSQL) > 10)
+						{
+						$stmtF = "UPDATE vicidial_live_agents set last_inbound_call_time_filtered='$SQLdate' where live_agent_id='$QHlive_agent_id[$w]';";
+						$Faffected_rows = $dbhA->do($stmtF);
+						}
 
-				if ( ($VU_max_inbound_calls > 0) || ($CP_max_inbound_calls > 0) )
-					{
-					$max_inbound_calls = $CP_max_inbound_calls;
-					if ($VU_max_inbound_calls > 0)
-						{$max_inbound_calls = $VU_max_inbound_calls;}
-					$max_inbound_count=0;
-					$stmtJ = "SELECT sum(calls_today) FROM vicidial_inbound_group_agents where user='$QHuser[$w]' and group_type='C';";
+					##### BEGIN check for user max inbound calls #####
+					$stmtJ = "SELECT max_inbound_calls FROM vicidial_campaigns where campaign_id='$QHcampaign_id[$w]';";
 					$sthA = $dbhA->prepare($stmtJ) or die "preparing: ",$dbhA->errstr;
 					$sthA->execute or die "executing: $stmtJ ", $dbhA->errstr;
-					$sthArowsVIGA=$sthA->rows;
-					if ($sthArowsVIGA > 0)
+					$sthArowsMIC=$sthA->rows;
+					if ($sthArowsMIC > 0)
 						{
 						@aryA = $sthA->fetchrow_array;
-						$max_inbound_count = $aryA[0];
+						$CP_max_inbound_calls = $aryA[0];
 						}
-					if ($max_inbound_count >= $max_inbound_calls)
+
+					if ( ($VU_max_inbound_calls > 0) || ($CP_max_inbound_calls > 0) )
 						{
-						$stmtJ = "UPDATE vicidial_live_agents set closer_campaigns='' where user='$QHuser[$w]';";
-						$affected_rows = $dbhA->do($stmtJ);
+						$max_inbound_calls = $CP_max_inbound_calls;
+						if ($VU_max_inbound_calls > 0)
+							{$max_inbound_calls = $VU_max_inbound_calls;}
+						$max_inbound_count=0;
+						$stmtJ = "SELECT sum(calls_today),sum(calls_today_filtered) FROM vicidial_inbound_group_agents where user='$QHuser[$w]' and group_type='C';";
+						$sthA = $dbhA->prepare($stmtJ) or die "preparing: ",$dbhA->errstr;
+						$sthA->execute or die "executing: $stmtJ ", $dbhA->errstr;
+						$sthArowsVIGA=$sthA->rows;
+						if ($sthArowsVIGA > 0)
+							{
+							@aryA = $sthA->fetchrow_array;
+							$max_inbound_count = $aryA[0];
+							if ($VU_max_inbound_filter_enabled > 0)
+								{
+								$max_inbound_count = $aryA[1];
+								}
+							}
+						if ($max_inbound_count >= $max_inbound_calls)
+							{
+							$stmtJ = "UPDATE vicidial_live_agents set closer_campaigns='' where user='$QHuser[$w]';";
+							$affected_rows = $dbhA->do($stmtJ);
 
-						$stmtJ = "DELETE FROM vicidial_live_inbound_agents where user='$QHuser[$w]';";
-						$affected_rows = $dbhA->do($stmtJ);
+							$stmtJ = "DELETE FROM vicidial_live_inbound_agents where user='$QHuser[$w]';";
+							$affected_rows = $dbhA->do($stmtJ);
 
-						$stmtJ = "UPDATE vicidial_remote_agents set closer_campaigns='' where user_start='$QHuser[$w]';";
-						$affected_rows = $dbhA->do($stmtJ);
+							$stmtJ = "UPDATE vicidial_remote_agents set closer_campaigns='' where user_start='$QHuser[$w]';";
+							$affected_rows = $dbhA->do($stmtJ);
 
-						$stmtJ = "INSERT INTO vicidial_admin_log set event_date=NOW(), user='$QHuser[$w]', ip_address='$VARserver_ip', event_section='USERS', event_type='MODIFY', record_id='$QHuser[$w]', event_code='MAX IN CALLS MODIFY REMOTE AGENT', event_sql='DELETE FROM vicidial_live_inbound_agents where user=$QHuser[$w]', event_notes='|$max_inbound_count|$max_inbound_calls|$QHuser[$w]|$QHcall_id[$w]|RA|';";
-						$affected_rows = $dbhA->do($stmtJ);
+							$stmtJ = "INSERT INTO vicidial_admin_log set event_date=NOW(), user='$QHuser[$w]', ip_address='$VARserver_ip', event_section='USERS', event_type='MODIFY', record_id='$QHuser[$w]', event_code='MAX IN CALLS MODIFY REMOTE AGENT', event_sql='DELETE FROM vicidial_live_inbound_agents where user=$QHuser[$w]', event_notes='|$max_inbound_count|$max_inbound_calls|$QHuser[$w]|$QHcall_id[$w]|RA|';";
+							$affected_rows = $dbhA->do($stmtJ);
 
-						if ($AGILOG) {$agi_string = "--    MAX INBOUND AGENT CALLS TRIGGER: |$max_inbound_count|$max_inbound_calls|$QHuser[$w]|$QHcall_id[$w]|";   &agi_output;}
+							$event_string = "--    MAX INBOUND AGENT CALLS TRIGGER: |$max_inbound_count|$max_inbound_calls|$QHuser[$w]|$QHcall_id[$w]|";   &event_logger;
+							}
 						}
-					}
-				##### END check for user max inbound calls #####
+					##### END check for user max inbound calls #####
 
 
-					$stmtG = "SELECT start_call_url FROM vicidial_inbound_groups where group_id='$QHcampaign_id[$w]';";
+					$stmtG = "SELECT start_call_url,'DISABLED' FROM vicidial_inbound_groups where group_id='$QHcampaign_id[$w]';";
 					}
 				else
 					{
@@ -433,7 +483,7 @@ while($one_day_interval > 0)
 					$Daffected_rows=0;
 					$Eaffected_rows=0;
 
-					$stmtG = "SELECT start_call_url FROM vicidial_campaigns where campaign_id='$QHcampaign_id[$w]';";
+					$stmtG = "SELECT start_call_url,call_quota_lead_ranking FROM vicidial_campaigns where campaign_id='$QHcampaign_id[$w]';";
 					}
 
 				$sthA = $dbhA->prepare($stmtG) or die "preparing: ",$dbhA->errstr;
@@ -442,10 +492,17 @@ while($one_day_interval > 0)
 				if ($start_url_ct > 0)
 					{
 					@aryA = $sthA->fetchrow_array;
-					$start_call_url =	$aryA[0];
+					$start_call_url =				$aryA[0];
+					$VD_call_quota_lead_ranking =	$aryA[1];
 					}
 				$sthA->finish();
 
+				if ( ($SScall_quota_lead_ranking > 0) && ($VD_call_quota_lead_ranking !~ /^DISABLED$/i) )
+					{
+					$CIDlead_id = $QHlead_id[$w];
+					$temp_status = 'XFER';
+					&call_quota_logging;
+					}
 
 				##### BEGIN remote agent concurrent call calculation and updating
 				$concurrent_calls=0;
@@ -482,21 +539,21 @@ while($one_day_interval > 0)
 
 					$stmtA = "UPDATE vicidial_daily_ra_stats SET update_time=NOW(),total_calls=(total_calls + 1)$update_SQL where user='$QHra_user[$w]' and stats_flag='OPEN';";
 					$affected_rows = $dbhA->do($stmtA);
-					if ($AGILOG) {$agi_string = "DAILY STATS UPDATE $channel_group|$affected_rows|$stmtA|\n";   &agi_output;}
+					$event_string = "DAILY STATS UPDATE $channel_group|$affected_rows|$stmtA|";   &event_logger;
 					}
 				else
 					{
 					$sthA->finish();
 					$stmtA = "INSERT INTO vicidial_daily_ra_stats SET stats_date='$YMD',update_time=NOW(),max_calls='$incalls_count',user='$QHra_user[$w]',stats_flag='OPEN',total_calls=1;";
 					$affected_rows = $dbhA->do($stmtA);
-					if ($AGILOG) {$agi_string = "DAILY STATS INSERT $channel_group|$affected_rows|$stmtA|";   &agi_output;}
-					}				
+					$event_string = "DAILY STATS INSERT $channel_group|$affected_rows|$stmtA|";   &event_logger;
+					}
 				##### END remote agent concurrent call calculation and updating
 
 
 				### This is where the call to the start_call_url launch goes
 
-				if (length($start_call_url) > 5) 
+				if (length($start_call_url) > 5)
 					{
 					$launch = $PATHhome . "/AST_send_URL.pl";
 					$launch .= " --SYSLOG" if ($SYSLOG);
@@ -540,7 +597,7 @@ while($one_day_interval > 0)
 				$i++;
 				}
 
-			if (!$running_listen) 
+			if (!$running_listen)
 				{
 				$endless_loop=0;
 				$one_day_interval=0;
@@ -612,16 +669,16 @@ while($one_day_interval > 0)
 				$DBremote_random[$user_counter] =		$random;
 				$DBon_hook_agent[$user_counter] =		$on_hook_agent;
 				$DBon_hook_ring_time[$user_counter] =	$on_hook_ring_time;
-				
+
 				$y++;
 				$user_counter++;
 				}
-				
+
 			$rec_count++;
 			}
 		$sthA->finish();
 		if ($DB) {print STDERR "$user_counter live remote agents ACTIVE\n";}
-   
+
 
 		###############################################################################
 		###### second, grab all of the INACTIVE remote agents information from the database
@@ -650,13 +707,13 @@ while($one_day_interval > 0)
 
 
 		###############################################################################
-		###### third, traverse array of remote agents to be active and insert or update 
-		###### in vicidial_live_agents and vicidial_live_inbound_agents tables 
+		###### third, traverse array of remote agents to be active and insert or update
+		###### in vicidial_live_agents and vicidial_live_inbound_agents tables
 		###############################################################################
 		$h=0;
-		foreach(@DBremote_user) 
+		foreach(@DBremote_user)
 			{
-			if (length($DBremote_user[$h])>1) 
+			if (length($DBremote_user[$h])>1)
 				{
 				$CAMPAIGN_autodial[$h] = 'Y';
 				$CAMPAIGN_queuemetrics_phone_environment[$h] = '';
@@ -692,7 +749,7 @@ while($one_day_interval > 0)
 					$loginexistsRANDOM[$h] =	$aryA[0];
 					}
 				$sthA->finish();
-				
+
 				if ($loginexistsRANDOM[$h] > 0)
 					{
 					$stmtA = "UPDATE vicidial_live_agents set random_id='$DBremote_random[$h]' where user='$DBremote_user[$h]' and server_ip='$server_ip' and campaign_id='$DBremote_campaign[$h]' and conf_exten='$DBremote_conf_exten[$h]' and closer_campaigns='$DBremote_closer[$h]';";
@@ -719,7 +776,7 @@ while($one_day_interval > 0)
 						$stmtA = "UPDATE vicidial_live_agents set random_id='$DBremote_random[$h]',campaign_id='$DBremote_campaign[$h]',conf_exten='$DBremote_conf_exten[$h]',closer_campaigns='$DBremote_closer[$h]',status='READY',last_state_change='$SQLdate',outbound_autodial='$CAMPAIGN_autodial[$h]',on_hook_agent='$DBon_hook_agent[$h]',on_hook_ring_time='$DBon_hook_ring_time[$h]' where user='$DBremote_user[$h]' and server_ip='$server_ip';";
 						$affected_rows = $dbhA->do($stmtA);
 						if ($DBX) {print STDERR "$DBremote_user[$h] ALL UPDATE: $affected_rows\n";}
-			#			if ($affected_rows>0) 
+			#			if ($affected_rows>0)
 			#				{
 			#				if ($enable_queuemetrics_logging > 0)
 			#					{
@@ -780,7 +837,7 @@ while($one_day_interval > 0)
 								}
 							else {print STDERR "Agent test calls already adequate $number_of_lines !> $LSC_count\n";}
 							}
-						if ($affected_rows>0) 
+						if ($affected_rows>0)
 							{
 							if ($enable_queuemetrics_logging > 0)
 								{
@@ -788,7 +845,7 @@ while($one_day_interval > 0)
 								if ($queuemetrics_loginout =~ /CALLBACK/)
 									{$QM_LOGIN = 'AGENTCALLBACKLOGIN';}
 
-								$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+								$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass", { mysql_enable_utf8 => 1 })
 								 or die "Couldn't connect to database: " . DBI->errstr;
 
 								if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
@@ -827,7 +884,7 @@ while($one_day_interval > 0)
 					{
 					if ( ($enable_queuemetrics_logging > 0) && ($queuemetrics_addmember_enabled > 0) )
 						{
-						$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+						$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass", { mysql_enable_utf8 => 1 })
 						 or die "Couldn't connect to database: " . DBI->errstr;
 						}
 					$TEMPagentINGROUPS = $DBremote_closer[$h];
@@ -843,16 +900,17 @@ while($one_day_interval > 0)
 							$TEMPexistsVLIA=0;
 							# grab the group weight and calls today of the agent in each in-group
 							$DBuser_level[$h]='1';
-							$stmtA = "SELECT group_weight,calls_today,group_grade FROM vicidial_inbound_group_agents where user='$DBuser_start[$h]' and group_id='$TEMPingroups[$s]';";
+							$stmtA = "SELECT group_weight,calls_today,group_grade,calls_today_filtered FROM vicidial_inbound_group_agents where user='$DBuser_start[$h]' and group_id='$TEMPingroups[$s]';";
 							$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 							$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 							$sthArowsVIGA=$sthA->rows;
 							if ($sthArowsVIGA > 0)
 								{
 								@aryA = $sthA->fetchrow_array;
-								$TEMPagentWEIGHT =	$aryA[0];
-								$TEMPagentCALLS =	$aryA[1];
-								$TEMPagentGRADE =	$aryA[2];
+								$TEMPagentWEIGHT =		$aryA[0];
+								$TEMPagentCALLS =		$aryA[1];
+								$TEMPagentGRADE =		$aryA[2];
+								$TEMPagentCALLSftl =	$aryA[3];
 								}
 							$sthA->finish();
 
@@ -873,7 +931,7 @@ while($one_day_interval > 0)
 
 							if ($TEMPexistsVLIA < 1)
 								{
-								$stmtA = "INSERT IGNORE INTO vicidial_live_inbound_agents SET user='$DBremote_user[$h]', group_id='$TEMPingroups[$s]', group_weight='$TEMPagentWEIGHT', calls_today='$TEMPagentCALLS', last_call_time='$SQLdate', last_call_finish='$SQLdate', group_grade='$TEMPagentGRADE' ON DUPLICATE KEY UPDATE group_weight='$TEMPagentWEIGHT',group_grade='$TEMPagentGRADE';";
+								$stmtA = "INSERT IGNORE INTO vicidial_live_inbound_agents SET user='$DBremote_user[$h]', group_id='$TEMPingroups[$s]', group_weight='$TEMPagentWEIGHT', calls_today='$TEMPagentCALLS', calls_today_filtered='$TEMPagentCALLSftl', last_call_time='$SQLdate', last_call_time_filtered='$SQLdate', last_call_finish='$SQLdate', group_grade='$TEMPagentGRADE' ON DUPLICATE KEY UPDATE group_weight='$TEMPagentWEIGHT',group_grade='$TEMPagentGRADE';";
 								$affected_rows = $dbhA->do($stmtA);
 								if ( ($DBX) && ($affected_rows > 0) ) {print STDERR "$DBremote_user[$h] VLIA UPDATE: $affected_rows|$TEMPingroups[$s]|$TEMPagentWEIGHT\n";}
 
@@ -928,14 +986,14 @@ while($one_day_interval > 0)
 			$VD_random[$z] =		$VDrandom;
 			$USER_queuemetrics_phone_environment[$z]='';
 
-			$z++;				
+			$z++;
 			$rec_count++;
 			}
 		$sthA->finish();
 		if ($DB) {print STDERR "$z remote agents on calls\n";}
 
 		$z=0;
-		foreach(@VD_user) 
+		foreach(@VD_user)
 			{
 			$stmtA = "SELECT count(*) FROM vicidial_auto_calls where uniqueid='$VD_uniqueid[$z]' and server_ip IN('$server_ip','$VD_call_server_ip[$z]');";
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -947,7 +1005,7 @@ while($one_day_interval > 0)
 				$autocallexists[$z] =	$aryA[0];
 				}
 			$sthA->finish();
-			
+
 			$stmtA = "SELECT queuemetrics_phone_environment FROM vicidial_campaigns where campaign_id='$VD_campaign_id[$z]';";
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -958,7 +1016,7 @@ while($one_day_interval > 0)
 				$USER_queuemetrics_phone_environment[$z] =	$aryA[0];
 				}
 			$sthA->finish();
-			
+
 			if ($autocallexists[$z] < 1)
 				{
 				$pe_append='';
@@ -970,7 +1028,7 @@ while($one_day_interval > 0)
 					$stmtA = "UPDATE vicidial_live_agents set random_id='$VD_random[$z]',status='PAUSED', last_call_finish='$SQLdate',lead_id='',uniqueid='',callerid='',channel='',last_state_change='$SQLdate' where user='$VD_user[$z]' and server_ip='$server_ip';";
 					$affected_rows = $dbhA->do($stmtA);
 					if ($DB) {print STDERR "$VD_user[$z] CALL WIPE DELETE UPDATE: $affected_rows|PAUSED|$VD_uniqueid[$z]|$VD_user[$z]|\n";}
-					if ($affected_rows>0) 
+					if ($affected_rows>0)
 						{
 						if ($enable_queuemetrics_logging > 0)
 							{
@@ -979,7 +1037,7 @@ while($one_day_interval > 0)
 							if ($queuemetrics_loginout =~ /CALLBACK/)
 								{$QM_LOGOFF = 'AGENTCALLBACKLOGOFF';}
 
-							$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+							$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass", { mysql_enable_utf8 => 1 })
 							 or die "Couldn't connect to database: " . DBI->errstr;
 
 							if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
@@ -1078,11 +1136,11 @@ while($one_day_interval > 0)
 					$stmtA = "UPDATE vicidial_live_agents set status='READY' where user='$VD_user[$z]' and server_ip='$server_ip';";
 					$affected_rows = $dbhA->do($stmtA);
 					if ($DB) {print STDERR "$VD_user[$z] CALL WIPE UPDATE: $affected_rows|READY|$VD_uniqueid[$z]|$VD_user[$z]|\n";}
-					if ($affected_rows>0) 
+					if ($affected_rows>0)
 						{
 						if ($enable_queuemetrics_logging > 0)
 							{
-							$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+							$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass", { mysql_enable_utf8 => 1 })
 							 or die "Couldn't connect to database: " . DBI->errstr;
 
 							if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
@@ -1191,7 +1249,7 @@ sub get_time_now	#get the current date and time and epoch for logging call lengt
 	($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($secX);
 	$LOCAL_GMT_OFF = $SERVER_GMT;
 	$LOCAL_GMT_OFF_STD = $SERVER_GMT;
-	if ($isdst) {$LOCAL_GMT_OFF++;} 
+	if ($isdst) {$LOCAL_GMT_OFF++;}
 	$check_time = ($secX - 86400);
 
 	$GMT_now = ($secX - ($LOCAL_GMT_OFF * 3600));
@@ -1288,3 +1346,319 @@ sub event_logger
 		}
 	$event_string='';
 	}
+
+
+##### BEGIN Call Quota Lead Ranking logging #####
+sub call_quota_logging
+	{
+	# Gather settings container for Call Quota Lead Ranking
+	$CQcontainer_entry='';
+	$stmtA = "SELECT container_entry FROM vicidial_settings_containers where container_id='$VD_call_quota_lead_ranking';";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	if ($sthArows > 0)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$CQcontainer_entry = $aryA[0];
+		$CQcontainer_entry =~ s/\\//gi;
+		}
+	$sthA->finish();
+
+	# Define variables for Call Quota settings
+	$session_one='';
+	$session_two='';
+	$session_three='';
+	$session_four='';
+	$session_five='';
+	$session_six='';
+	$settings_session_score=0;
+	$zero_rank_after_call=0;
+
+	if (length($CQcontainer_entry) > 5)
+		{
+		@container_lines = split(/\n/,$CQcontainer_entry);
+		$c=0;
+		foreach(@container_lines)
+			{
+			$container_lines[$c] =~ s/;.*|\r|\t| //gi;
+			if (length($container_lines[$c]) > 5)
+				{
+				# define core settings
+				if ($container_lines[$c] =~ /^zero_rank_after_call/i)
+					{
+					$container_lines[$c] =~ s/zero_rank_after_call=>//gi;
+					if ( ($container_lines[$c] >= 0) && ($container_lines[$c] <= 1) )
+						{
+						$zero_rank_after_call = $container_lines[$c];
+						}
+					}
+				# define sessions
+				if ($container_lines[$c] =~ /^session_one/i)
+					{
+					$session_one_valid=0; $session_one_start=''; $session_one_end='';
+					$session_one = $container_lines[$c];
+					$session_one =~ s/session_one=>//gi;
+					if ( (length($session_one) > 0) && (length($session_one) <= 9) && ($session_one =~ /,/) )
+						{
+						@session_oneARY = split(/,/,$session_one);
+						$session_one_start = $session_oneARY[0];
+						$session_one_end = $session_oneARY[1];
+						if ( (length($session_one_start) >= 4) && (length($session_one_end) >= 4) && ($session_one_start < $session_one_end) && ($session_one_end <= 2400) )
+							{
+							$settings_session_score++;
+							$session_one_valid++;
+							}
+						}
+					}
+				if ($container_lines[$c] =~ /^session_two/i)
+					{
+					$session_two_valid=0; $session_two_start=''; $session_two_end='';
+					$session_two = $container_lines[$c];
+					$session_two =~ s/session_two=>//gi;
+					if ( (length($session_two) > 0) && (length($session_two) <= 9) && ($session_two =~ /,/) )
+						{
+						@session_twoARY = split(/,/,$session_two);
+						$session_two_start = $session_twoARY[0];
+						$session_two_end = $session_twoARY[1];
+						if ( (length($session_two_start) >= 4) && (length($session_two_end) >= 4) && ($session_one_valid > 0) && ($session_one_end <= $session_two_start) && ($session_two_start < $session_two_end) && ($session_two_end <= 2400) )
+							{
+							$settings_session_score++;
+							$session_two_valid++;
+							}
+						}
+					}
+				if ($container_lines[$c] =~ /^session_three/i)
+					{
+					$session_three_valid=0; $session_three_start=''; $session_three_end='';
+					$session_three = $container_lines[$c];
+					$session_three =~ s/session_three=>//gi;
+					if ( (length($session_three) > 0) && (length($session_three) <= 9) && ($session_three =~ /,/) )
+						{
+						@session_threeARY = split(/,/,$session_three);
+						$session_three_start = $session_threeARY[0];
+						$session_three_end = $session_threeARY[1];
+						if ( (length($session_three_start) >= 4) && (length($session_three_end) >= 4) && ($session_two_valid > 0) && ($session_two_end <= $session_three_start) && ($session_three_start < $session_three_end) && ($session_three_end <= 2400) )
+							{
+							$settings_session_score++;
+							$session_three_valid++;
+							}
+						}
+					}
+				if ($container_lines[$c] =~ /^session_four/i)
+					{
+					$session_four_valid=0; $session_four_start=''; $session_four_end='';
+					$session_four = $container_lines[$c];
+					$session_four =~ s/session_four=>//gi;
+					if ( (length($session_four) > 0) && (length($session_four) <= 9) && ($session_four =~ /,/) )
+						{
+						@session_fourARY = split(/,/,$session_four);
+						$session_four_start = $session_fourARY[0];
+						$session_four_end = $session_fourARY[1];
+						if ( (length($session_four_start) >= 4) && (length($session_four_end) >= 4) && ($session_three_valid > 0) && ($session_three_end <= $session_four_start) && ($session_four_start < $session_four_end) && ($session_four_end <= 2400) )
+							{
+							$settings_session_score++;
+							$session_four_valid++;
+							}
+						}
+					}
+				if ($container_lines[$c] =~ /^session_five/i)
+					{
+					$session_five_valid=0; $session_five_start=''; $session_five_end='';
+					$session_five = $container_lines[$c];
+					$session_five =~ s/session_five=>//gi;
+					if ( (length($session_five) > 0) && (length($session_five) <= 9) && ($session_five =~ /,/) )
+						{
+						@session_fiveARY = split(/,/,$session_five);
+						$session_five_start = $session_fiveARY[0];
+						$session_five_end = $session_fiveARY[1];
+						if ( (length($session_five_start) >= 4) && (length($session_five_end) >= 4) && ($session_four_valid > 0) && ($session_four_end <= $session_five_start) && ($session_five_start < $session_five_end) && ($session_five_end <= 2400) )
+							{
+							$settings_session_score++;
+							$session_five_valid++;
+							}
+						}
+					}
+				if ($container_lines[$c] =~ /^session_six/i)
+					{
+					$session_six_valid=0; $session_six_start=''; $session_six_end='';
+					$session_six = $container_lines[$c];
+					$session_six =~ s/session_six=>//gi;
+					if ( (length($session_six) > 0) && (length($session_six) <= 9) && ($session_six =~ /,/) )
+						{
+						@session_sixARY = split(/,/,$session_six);
+						$session_six_start = $session_sixARY[0];
+						$session_six_end = $session_sixARY[1];
+						if ( (length($session_six_start) >= 4) && (length($session_six_end) >= 4) && ($session_five_valid > 0) && ($session_five_end <= $session_six_start) && ($session_six_start < $session_six_end) && ($session_six_end <= 2400) )
+							{
+							$settings_session_score++;
+							$session_six_valid++;
+							}
+						}
+					}
+				}
+			else
+				{if ($DBX > 0) {print "     blank line: $c|$container_lines[$c]|\n";}}
+			$c++;
+			}
+		if ($settings_session_score >= 1)
+			{
+			$stmtA = "SELECT list_id,called_count,rank FROM vicidial_list where lead_id='$CIDlead_id';";
+			$event_string = "|$stmtA|";   &event_logger;
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$VLlist_id =			$aryA[0];
+				$VLcalled_count =		$aryA[1];
+				$VLrank =				$aryA[2];
+				$tempVLrank = $VLrank;
+				if ( ($zero_rank_after_call > 0) && ($VLrank > 0) ) {$tempVLrank=0;}
+				}
+			$sthA->finish();
+
+			$secX = time();
+			$CQtarget = ($secX - 14400);	# look back 4 hours
+			($CQsec,$CQmin,$CQhour,$CQmday,$CQmon,$CQyear,$CQwday,$CQyday,$CQisdst) = localtime($CQtarget);
+			$CQyear = ($CQyear + 1900);
+			$CQmon++;
+			if ($CQmon < 10) {$CQmon = "0$CQmon";}
+			if ($CQmday < 10) {$CQmday = "0$CQmday";}
+			if ($CQhour < 10) {$CQhour = "0$CQhour";}
+			if ($CQmin < 10) {$CQmin = "0$CQmin";}
+			if ($CQsec < 10) {$CQsec = "0$CQsec";}
+			$CQSQLdate = "$CQyear-$CQmon-$CQmday $CQhour:$CQmin:$CQsec";
+
+			$VDL_call_datetime='';
+			$stmtA = "SELECT call_date from vicidial_dial_log where lead_id='$CIDlead_id' and call_date > \"$CQSQLdate\" and caller_code LIKE \"%$CIDlead_id\" order by call_date desc limit 1;";
+			$event_string = "|$stmtA|";   &event_logger;
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$VDLcall_datetime = 	$aryA[0];
+				@VDLcall_datetimeARY = split(/ /,$VDLcall_datetime);
+				@VDLcall_timeARY = split(/:/,$VDLcall_datetimeARY[1]);
+				$VDLcall_hourmin = "$VDLcall_timeARY[0]$VDLcall_timeARY[1]";
+
+				if ( ($session_one_start <= $VDLcall_hourmin) and ($session_one_end > $VDLcall_hourmin) )
+					{
+					$call_in_session=1;
+					$session_newSQL=",session_one_calls='1',session_one_today_calls='1'";
+					$session_updateSQL=",session_one_calls=(session_one_calls + 1),session_one_today_calls=(session_one_today_calls + 1)";
+					}
+				if ( ($session_two_start <= $VDLcall_hourmin) and ($session_two_end > $VDLcall_hourmin) )
+					{
+					$call_in_session=2;
+					$session_newSQL=",session_two_calls='1',session_two_today_calls='1'";
+					$session_updateSQL=",session_two_calls=(session_two_calls + 1),session_two_today_calls=(session_two_today_calls + 1)";
+					}
+				if ( ($session_three_start <= $VDLcall_hourmin) and ($session_three_end > $VDLcall_hourmin) )
+					{
+					$call_in_session=3;
+					$session_newSQL=",session_three_calls='1',session_three_today_calls='1'";
+					$session_updateSQL=",session_three_calls=(session_three_calls + 1),session_three_today_calls=(session_three_today_calls + 1)";
+					}
+				if ( ($session_four_start <= $VDLcall_hourmin) and ($session_four_end > $VDLcall_hourmin) )
+					{
+					$call_in_session=4;
+					$session_newSQL=",session_four_calls='1',session_four_today_calls='1'";
+					$session_updateSQL=",session_four_calls=(session_four_calls + 1),session_four_today_calls=(session_four_today_calls + 1)";
+					}
+				if ( ($session_five_start <= $VDLcall_hourmin) and ($session_five_end > $VDLcall_hourmin) )
+					{
+					$call_in_session=5;
+					$session_newSQL=",session_five_calls='1',session_five_today_calls='1'";
+					$session_updateSQL=",session_five_calls=(session_five_calls + 1),session_five_today_calls=(session_five_today_calls + 1)";
+					}
+				if ( ($session_six_start <= $VDLcall_hourmin) and ($session_six_end > $VDLcall_hourmin) )
+					{
+					$call_in_session=6;
+					$session_newSQL=",session_six_calls='1',session_six_today_calls='1'";
+					$session_updateSQL=",session_six_calls=(session_six_calls + 1),session_six_today_calls=(session_six_today_calls + 1)";
+					}
+
+				$event_string = "CQ-Debug 2: $VDLcall_datetime|$VDLcall_hourmin|$timeclock_end_of_day|$session_one_start|$session_one_end|$call_in_session|";   &event_logger;
+
+				if ($call_in_session > 0)
+					{
+					if (length($timeclock_end_of_day) < 1) {$timeclock_end_of_day='0000';}
+					$timeclock_end_of_day_hour = (substr($timeclock_end_of_day, 0, 2) + 0);
+					$timeclock_end_of_day_min = (substr($timeclock_end_of_day, 2, 2) + 0);
+
+					$today_start_epoch = timelocal('0',$timeclock_end_of_day_min,$timeclock_end_of_day_hour,$mday,($mon-1),$year);
+					if ($timeclock_end_of_day > $VDLcall_hourmin)
+						{$today_start_epoch = ($today_start_epoch - 86400);}
+					$day_two_start_epoch = ($today_start_epoch - (86400 * 1));
+					$day_three_start_epoch = ($today_start_epoch - (86400 * 2));
+					$day_four_start_epoch = ($today_start_epoch - (86400 * 3));
+					$day_five_start_epoch = ($today_start_epoch - (86400 * 4));
+					$day_six_start_epoch = ($today_start_epoch - (86400 * 5));
+					$day_seven_start_epoch = ($today_start_epoch - (86400 * 6));
+
+					# Gather the details on existing vicidial_lead_call_quota_counts for this lead, if there is one
+					$stmtA = "SELECT first_call_date,UNIX_TIMESTAMP(first_call_date),last_call_date from vicidial_lead_call_quota_counts where lead_id='$CIDlead_id' and list_id='$VLlist_id';";
+					$event_string = "|$stmtA|";   &event_logger;
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$VLCQCinfo_ct=$sthA->rows;
+					if ($VLCQCinfo_ct > 0)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$VLCQCfirst_call_datetime =		$aryA[0];
+						$VLCQCfirst_call_epoch =		$aryA[1];
+						$VLCQClast_call_date =			$aryA[2];
+
+						if ($VDLcall_datetime ne $VLCQClast_call_date)
+							{
+							if ($VLCQCfirst_call_epoch >= $today_start_epoch)
+								{$day_updateSQL=',day_one_calls=(day_one_calls+1)';}
+							if ( ($VLCQCfirst_call_epoch >= $day_two_start_epoch) and ($VLCQCfirst_call_epoch < $today_start_epoch) )
+								{$day_updateSQL=',day_two_calls=(day_two_calls+1)';}
+							if ( ($VLCQCfirst_call_epoch >= $day_three_start_epoch) and ($VLCQCfirst_call_epoch < $day_two_start_epoch) )
+								{$day_updateSQL=',day_three_calls=(day_three_calls+1)';}
+							if ( ($VLCQCfirst_call_epoch >= $day_four_start_epoch) and ($VLCQCfirst_call_epoch < $day_three_start_epoch) )
+								{$day_updateSQL=',day_four_calls=(day_four_calls+1)';}
+							if ( ($VLCQCfirst_call_epoch >= $day_five_start_epoch) and ($VLCQCfirst_call_epoch < $day_four_start_epoch) )
+								{$day_updateSQL=',day_five_calls=(day_five_calls+1)';}
+							if ( ($VLCQCfirst_call_epoch >= $day_six_start_epoch) and ($VLCQCfirst_call_epoch < $day_five_start_epoch) )
+								{$day_updateSQL=',day_six_calls=(day_six_calls+1)';}
+							if ( ($VLCQCfirst_call_epoch >= $day_seven_start_epoch) and ($VLCQCfirst_call_epoch < $day_six_start_epoch) )
+								{$day_updateSQL=',day_seven_calls=(day_seven_calls+1)';}
+							# Update in the vicidial_lead_call_quota_counts table for this lead
+							$stmtA="UPDATE vicidial_lead_call_quota_counts SET last_call_date='$VDLcall_datetime',status='$temp_status',called_count='$VLcalled_count',rank='$tempVLrank',modify_date=NOW() $session_updateSQL $day_updateSQL where lead_id='$CIDlead_id' and list_id='$VLlist_id';";
+							}
+						else
+							{
+							# Update in the vicidial_lead_call_quota_counts table for this lead
+							$stmtA="UPDATE vicidial_lead_call_quota_counts SET status='$temp_status',called_count='$VLcalled_count',rank='$tempVLrank',modify_date=NOW() where lead_id='$CIDlead_id' and list_id='$VLlist_id';";
+							}
+						$VLCQCaffected_rows_update = $dbhA->do($stmtA);
+						$event_string = "--    VLCQC record updated: |$VLCQCaffected_rows_update|   |$stmtA|";   &event_logger;
+						}
+					else
+						{
+						# Insert new record into vicidial_lead_call_quota_counts table for this lead
+						$stmtA="INSERT INTO vicidial_lead_call_quota_counts SET lead_id='$CIDlead_id',list_id='$VLlist_id',first_call_date='$VDLcall_datetime',last_call_date='$VDLcall_datetime',status='$temp_status',called_count='$VLcalled_count',day_one_calls='1',rank='$tempVLrank',modify_date=NOW() $session_newSQL;";
+						$VLCQCaffected_rows_update = $dbhA->do($stmtA);
+						$event_string = "--    VLCQC record inserted: |$VLCQCaffected_rows_update|   |$stmtA|";   &event_logger;
+						}
+
+					if ( ($zero_rank_after_call > 0) && ($VLrank > 0) )
+						{
+						# Update this lead to rank=0
+						$stmtA="UPDATE vicidial_list SET rank='0' where lead_id='$CIDlead_id';";
+						$VLCQCaffected_rows_zero_rank = $dbhA->do($stmtA);
+						$event_string = "--    VLCQC lead rank zero: |$VLCQCaffected_rows_zero_rank|   |$stmtA|";   &event_logger;
+						}
+					}
+				}
+			$sthA->finish();
+			}
+		}
+	}
+##### END Call Quota Lead Ranking logging #####

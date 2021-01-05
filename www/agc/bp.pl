@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # bp.pl    version 2.8
-# 
+#
 # Bcrypt password hashing script to be used for authentication
 #
 # IMPORTANT !!!!!!!!!!!!!
@@ -11,7 +11,7 @@
 #
 #
 # CHANGES
-# 
+#
 # 130630-1044 - First build
 #
 
@@ -19,7 +19,7 @@ $DB=0;
 $DBX=0;
 
 use DBI;
-use Crypt::Eksblowfish::Bcrypt qw(en_base64);  
+use Crypt::Eksblowfish::Bcrypt qw(en_base64);
 
 ### begin parsing run-time options ###
 if (length($ARGV[0])>1)
@@ -55,7 +55,7 @@ if (length($ARGV[0])>1)
 			@data_in = split(/--pass=/,$args);
 			$pass = $data_in[1];
 			$pass =~ s/ .*//gi;
-			if ($DB > 0) 
+			if ($DB > 0)
 				{print "\n----- PASS: $pass -----\n\n";}
 			}
 		if ($args =~ /--salt=/i)
@@ -66,19 +66,19 @@ if (length($ARGV[0])>1)
 			if (length($CLIsalt) eq 16)
 				{
 				$newCLIsalt = en_base64($CLIsalt);
-				if ($DB > 0) 
+				if ($DB > 0)
 					{print "\n----- ENCRYPTING SALT OVERRIDE: $CLIsalt -----\n";}
 				$CLIsalt = $newCLIsalt;
 				}
-			if (length($CLIsalt) ne 22) 
+			if (length($CLIsalt) ne 22)
 				{
-				if ($DB > 0) 
+				if ($DB > 0)
 					{print "\n----- INVALID SALT OVERRIDE, USING DEFAULT: $CLIsalt -----\n\n";}
 				$CLIsalt = '';
 				}
 			else
 				{
-				if ($DB > 0) 
+				if ($DB > 0)
 					{print "\n----- SALT OVERRIDE: $CLIsalt -----\n\n";}
 				}
 			}
@@ -87,7 +87,7 @@ if (length($ARGV[0])>1)
 			@data_in = split(/--cost=/,$args);
 			$CLIcost = $data_in[1];
 			$CLIcost =~ s/ .*//gi;
-			if ($DB > 0) 
+			if ($DB > 0)
 				{print "\n----- COST OVERRIDE: $CLIcost -----\n\n";}
 			}
 		}
@@ -145,7 +145,7 @@ foreach(@conf)
 
 if (!$VARDB_port) {$VARDB_port='3306';}
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 ##### Get the settings from system_settings #####
@@ -181,17 +181,17 @@ if (length($CLIcost) > 0)
 	}
 else
 	{$cost = $pass_cost;}
-while (length($cost) < 2) 
+while (length($cost) < 2)
 	{$cost = "0$cost";}
 
 
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl timing of less than one second
 ($START_s_hires, $START_usec) = gettimeofday();
 
- 
+
 # Set the cost to $cost and append a NUL
 $settings = '$2a$'.$cost.'$'.$salt;
- 
+
 # Encrypt it
 $pass_hash = Crypt::Eksblowfish::Bcrypt::bcrypt($pass, $settings);
 
@@ -206,7 +206,7 @@ $START_time = $START_s_hires . '.' . sprintf("%06s", $START_usec);
 $END_time = $END_s_hires . '.' . sprintf("%06s", $END_usec);
 $RUN_time = ($END_time - $START_time);
 $RUN_time = sprintf("%.6f", $RUN_time);
-if ($DBX > 0) 
+if ($DBX > 0)
 	{print "bcrypt time: |$RUN_time ($END_time - $START_time)|\n";}
 
 print "PHASH: $only_pass_hash\n";

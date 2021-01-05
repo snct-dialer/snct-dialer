@@ -1,6 +1,6 @@
 <?php
 # log_test.php
-# 
+#
 # Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 
@@ -24,8 +24,8 @@ $browser = getenv("HTTP_USER_AGENT");
 		fclose($fp);
 
 
-	
-exit; 
+
+exit;
 
 
 

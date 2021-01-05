@@ -3,7 +3,7 @@
 # nanpa_type_preload.pl version 2.10
 #
 # DESCRIPTION:
-# This script is designed to filter the leads in a list by phone number and 
+# This script is designed to filter the leads in a list by phone number and
 # put the lead into a different list if it is a cellphone or invalid
 #
 # It is recommended that you run this program on the local Asterisk machine
@@ -81,7 +81,7 @@ foreach(@viciprefix)
 		{$PREFIX_DB_port = $line;   $PREFIX_DB_port =~ s/.*=//gi;}
 	$i++;
 	}
-#;;;;;;;;;;;; 
+#;;;;;;;;;;;;
 
 
 $secX = time();
@@ -177,13 +177,13 @@ if (length($ARGV[0])>1)
 			@data_in = split(/--list-id=/,$args);
 			$list_id = $data_in[1];
 			$list_id =~ s/ .*//gi;
-			if ($list_id =~ /---ALL---/) 
+			if ($list_id =~ /---ALL---/)
 				{
 				$list_idSQL = '';
 				}
 			else
 				{
-				if ($list_id =~ /--/) 
+				if ($list_id =~ /--/)
 					{
 					$list_idTEMP = $list_id;
 					$list_idTEMP =~ s/--/','/gi;
@@ -271,13 +271,13 @@ $server_ip = $VARserver_ip;		# Asterisk server IP
 if (!$VARDB_port) {$VARDB_port='3306';}
 
 use DBI;
-$dbh = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbh = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
 	or die "Couldn't connect to database: " . DBI->errstr;
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 ### connect to phone type prefix DB
-$dbhN = DBI->connect("DBI:mysql:$PREFIX_DB_database:$PREFIX_DB_server:$PREFIX_DB_port", "$PREFIX_DB_user", "$PREFIX_DB_pass")
+$dbhN = DBI->connect("DBI:mysql:$PREFIX_DB_database:$PREFIX_DB_server:$PREFIX_DB_port", "$PREFIX_DB_user", "$PREFIX_DB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 if (!%six_digit_wireless_hash) {&CompilePrefixHashes;}
@@ -288,7 +288,7 @@ if (!%six_digit_wireless_hash) {&CompilePrefixHashes;}
 @phones=@MT;
 
 $excludeSQL='';
-if ( (length($exclude_field) > 1) && (length($exclude_value) > 0) ) 
+if ( (length($exclude_field) > 1) && (length($exclude_value) > 0) )
 	{
 	if (length($list_idSQL) > 5)
 		{
@@ -301,7 +301,7 @@ if ( (length($exclude_field) > 1) && (length($exclude_value) > 0) )
 	}
 
 $limitSQL='';
-if ( (length($batch_quantity) > 1) && (length($vl_field_update) > 2) ) 
+if ( (length($batch_quantity) > 1) && (length($vl_field_update) > 2) )
 	{
 	if ( (length($list_idSQL) > 5) || (length($excludeSQL) > 5) )
 		{
@@ -388,62 +388,62 @@ while ($sthArows > $rec_count)
 		$secTEMP = time();
 		$batch_count=0;
 		}
-		
+
 	# NANPA prefix check
 	$type='I';
-	if ( (length($phones[$rec_count])>9) && (length($phones[$rec_count])<11) ) 
+	if ( (length($phones[$rec_count])>9) && (length($phones[$rec_count])<11) )
 		{
 		$pre4=substr($phones[$rec_count],0,4);
 		$pre5=substr($phones[$rec_count],0,5);
 		$pre6=substr($phones[$rec_count],0,6);
 		$pre7=substr($phones[$rec_count],0,7);
-		if ($four_digit_prefix_hash{$pre4}) 
+		if ($four_digit_prefix_hash{$pre4})
 			{
 			if ( ($four_digit_prefix_hash{$pre4} ne "S") && ($four_digit_prefix_hash{$pre4} ne "V") )
 				{
 				$type="C";
 				Wireless_to_Wired($phones[$rec_count]);
-				} 
-			else 
+				}
+			else
 				{
 				$type="S";
 				Wired_to_Wireless($phones[$rec_count]);
 				}
-			} 
-		elsif ($five_digit_prefix_hash{$pre5}) 
+			}
+		elsif ($five_digit_prefix_hash{$pre5})
 			{
 			if ( ($five_digit_prefix_hash{$pre5} ne "S") && ($five_digit_prefix_hash{$pre5} ne "V") )
 				{
 				$type="C";
 				Wireless_to_Wired($phones[$rec_count]);
-				} 
-			else 
+				}
+			else
 				{
 				$type="S";
 				Wired_to_Wireless($phones[$rec_count]);
 				}
-			} 
-		elsif ($six_digit_prefix_hash{$pre6}) 
+			}
+		elsif ($six_digit_prefix_hash{$pre6})
 			{
 			if ( ($six_digit_prefix_hash{$pre6} ne "S") && ($six_digit_prefix_hash{$pre6} ne "V") )
 				{
 				$type="C";
 				Wireless_to_Wired($phones[$rec_count]);
-				} 
-			else 
+				}
+			else
 				{
 				$type="S";
 				Wired_to_Wireless($phones[$rec_count]);
 				}
-			} 
-		elsif ($seven_digit_prefix_hash{$pre7}) 
+			}
+		elsif ($seven_digit_prefix_hash{$pre7})
 			{
 			if ( ($seven_digit_prefix_hash{$pre7} ne "S") && ($seven_digit_prefix_hash{$pre7} ne "V") )
 				{
 				$type="C";
 				Wireless_to_Wired($phones[$rec_count]);
-				} 
-			else 
+				}
+			else
 				{
 				$type="S";
 				Wired_to_Wireless($phones[$rec_count]);
@@ -455,7 +455,7 @@ while ($sthArows > $rec_count)
 	#### CHECK IF 1,000 TYPES have been compiled #####
 	$type_hash{$type}.=$lead_ids[$rec_count].",";
 	@lead_count=($type_hash{$type}=~/,/g);
-	if (@lead_count==1000) 
+	if (@lead_count==1000)
 		{
 		$stmtA="";
 		$type_hash{$type}=~s/,$//;
@@ -465,7 +465,7 @@ while ($sthArows > $rec_count)
 			{$stmtA = "UPDATE vicidial_list SET list_id=$cellphone_list_id where lead_id in ($type_hash{$type});";}
 		if ( ($type =~ /S|V/) && (length($landline_list_id) > 1) )
 			{$stmtA = "UPDATE vicidial_list SET list_id=$landline_list_id where lead_id in ($type_hash{$type});";}
-		if (length($stmtA)>0) 
+		if (length($stmtA)>0)
 			{
 			if($DBX){print STDERR "\n|$stmtA|$phones[$temp_rec]|\n";}
 			$affected_rows = $dbhA->do($stmtA);
@@ -494,12 +494,12 @@ while ($sthArows > $rec_count)
 	}
 
 #### Update remaining leads to the appropriate type #####
-foreach $type (keys %type_hash) 
+foreach $type (keys %type_hash)
 	{
 	@lead_count=($type_hash{$type}=~/,/g);
 
 	$stmtA="";
-	if (@lead_count>0) 
+	if (@lead_count>0)
 		{
 		$type_hash{$type}=~s/,$//;
 		if ( ($type =~ /I/) && (length($invalid_list_id) > 1) )
@@ -508,7 +508,7 @@ foreach $type (keys %type_hash)
 			{$stmtA = "UPDATE vicidial_list SET list_id=$cellphone_list_id where lead_id in ($type_hash{$type});";}
 		if ( ($type =~ /S|V/) && (length($landline_list_id) > 1) )
 			{$stmtA = "UPDATE vicidial_list SET list_id=$landline_list_id where lead_id in ($type_hash{$type});";}
-		if (length($stmtA)>0) 
+		if (length($stmtA)>0)
 			{
 			if($DBX){print STDERR "\n|$stmtA|$phones[$temp_rec]|\n";}
 			$affected_rows = $dbhA->do($stmtA);
@@ -540,7 +540,7 @@ if (!$Q) {print STDERR "$rec_count / $sthArows (S:$landline | C:$cellphone | I:$
 if (!$Q) {print "TOTAL Elapsed time: ".($end_time-$start_time)." sec\n\n";}
 
 
-### 
+###
 sub Wired_to_Wireless {
 	$phone=$_[0];
 	$wtw6=substr($phone,0,6);

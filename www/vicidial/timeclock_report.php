@@ -1,7 +1,7 @@
-<?php 
+<?php
 # timeclock_report.php
-# 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -31,6 +31,7 @@
 # 170227-1723 - Fix for default HTML report format, issue #997
 # 170409-1555 - Added IP List validation code
 # 171012-2015 - Fixed javascript/apache errors with graphs
+# 191013-0827 - Fixes for PHP7
 #
 
 $startMS = microtime();
@@ -112,7 +113,6 @@ else
 	}
 $query_date = preg_replace("/'|\"|\\\\|;/","",$query_date);
 $end_date = preg_replace("/'|\"|\\\\|;/","",$end_date);
-$user_group = preg_replace("/'|\"|\\\\|;/","",$user_group);
 $shift = preg_replace("/'|\"|\\\\|;/","",$shift);
 $order = preg_replace("/'|\"|\\\\|;/","",$order);
 $user = preg_replace("/'|\"|\\\\|;/","",$user);
@@ -301,9 +301,10 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {$MAIN.="$stmt\n";}
 $user_groups_to_print = mysqli_num_rows($rslt);
 $i=0;
-	$LISTuser_groups[$i]='---ALL---';
-	$i++;
-	$user_groups_to_print++;
+$LISTuser_groups=array();
+$LISTuser_groups[$i]='---ALL---';
+$i++;
+$user_groups_to_print++;
 while ($i < $user_groups_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -369,7 +370,7 @@ if ( ($SSweb_logo=='default_old') and ($logo_old > 0) )
 	}
 if ( ($SSweb_logo!='default_new') and ($SSweb_logo!='default_old') )
 	{
-	if (file_exists("./images/vicidial_admin_web_logo$SSweb_logo")) 
+	if (file_exists("./images/vicidial_admin_web_logo$SSweb_logo"))
 		{
 		$selected_logo = "./images/vicidial_admin_web_logo$SSweb_logo";
 		$selected_small_logo = "./images/vicidial_admin_web_logo$SSweb_logo";
@@ -408,20 +409,21 @@ $HEADER.="   .header_white {font-size: 14px;  font-family: sans-serif; font-weig
 $HEADER.="   .data_records {font-size: 12px;  font-family: sans-serif; color: black}\n";
 $HEADER.="   .data_records_fix {font-size: 12px;  font-family: monospace; color: black}\n";
 $HEADER.="   .data_records_fix_small {font-size: 9px;  font-family: monospace; color: black}\n";
-$HEADER.="\n"; 
+$HEADER.="\n";
 $HEADER.="-->\n";
 $HEADER.="</style>\n";
 $HEADER.="<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 require("chart_button.php");
-$HEADER.="<script src='chart/Chart.js'></script>\n"; 
+$HEADER.="<script src='chart/Chart.js'></script>\n";
 $HEADER.="<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
 
 $HEADER.="<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 $HEADER.="<TITLE>\n";
 
 $HEADER.= _QXZ("$report_name");
+$HEADER.="</TITLE>\n";
 
 ##### BEGIN Set variables to make header show properly #####
 $ADD =					'311111';
@@ -512,10 +514,10 @@ $MAIN.="<SELECT SIZE=5 NAME=user_group[] multiple>\n";
 	$o=0;
 	while ($user_groups_to_print > $o)
 	{
-		if (preg_match("/\|$LISTuser_groups[$o]\|/",$user_group_string)) 
-			{$MAIN.="<option selected value=\"$LISTuser_groups[$o]\">$LISTuser_groups[$o]</option>\n";}
-		else 
-			{$MAIN.="<option value=\"$LISTuser_groups[$o]\">$LISTuser_groups[$o]</option>\n";}
+		if (preg_match("/\|$LISTuser_groups[$o]\|/",$user_group_string))
+			{$MAIN.="<option selected value=\"$LISTuser_groups[$o]\">"._QXZ("$LISTuser_groups[$o]")."</option>\n";}
+		else
+			{$MAIN.="<option value=\"$LISTuser_groups[$o]\">"._QXZ("$LISTuser_groups[$o]")."</option>\n";}
 		$o++;
 	}
 $MAIN.="</SELECT>\n";
@@ -523,12 +525,12 @@ $MAIN.="</SELECT>\n";
 $MAIN.="</TD></TD><TD ALIGN=LEFT VALIGN=TOP><font class=\"select_bold\">";
 $MAIN.=_QXZ("Display as").":<BR>";
 $MAIN.="<select name='report_display_type'>";
-if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>$report_display_type</option>";}
+if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
 $MAIN.="<option value='TEXT'>"._QXZ("TEXT")."</option><option value='HTML'>"._QXZ("HTML")."</option></select>\n<BR>\n";
 $MAIN.="</font></TD><TD ALIGN=LEFT VALIGN=TOP>\n";
 $MAIN.="<font class=\"select_bold\"><B>"._QXZ("Order").":</B><BR>\n";
 $MAIN.="<SELECT SIZE=1 NAME=order>\n";
-$MAIN.="<option selected value=\"$order\">$order</option>\n";
+$MAIN.="<option selected value=\"$order\">"._QXZ("$order")."</option>\n";
 $MAIN.="<option value=\"\">--</option>\n";
 $MAIN.="<option value='hours_up'>"._QXZ("hours_up")."</option value=''>\n";
 $MAIN.="<option value='hours_down'>"._QXZ("hours_down")."</option value=''>\n";
@@ -548,7 +550,7 @@ $MAIN.="<INPUT TYPE=text NAME=user SIZE=7 MAXLENGTH=20 VALUE=\"$user\">\n";
 
 $MAIN.="<BR><BR><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'\n";
 $MAIN.="</TD></TD><TD ALIGN=LEFT VALIGN=TOP>\n";
-$MAIN.="</TD><TD ALIGN=CENTER VALIGN=TOP ROWSPAN=3>\n";	
+$MAIN.="</TD><TD ALIGN=CENTER VALIGN=TOP ROWSPAN=3>\n";
 $MAIN.="<FONT class=\"select_bold\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; <a href=\"$PHP_SELF?DB=$DB$user_groupQS&query_date=$query_date&end_date=$end_date&order=$order&user=$user&SUBMIT=$SUBMIT&file_download=1\">"._QXZ("DOWNLOAD")."</a><FONT class=\"select_bold\" COLOR=BLACK SIZE=2> &nbsp; | &nbsp; <a href=\"./admin.php?ADD=999999\">"._QXZ("REPORTS")."</a> </FONT>\n";
 
 $MAIN.="</TD></TR></TABLE>\n";
@@ -581,7 +583,7 @@ else {$user_SQL='';}
 $stmt="select vicidial_users.user,full_name,sum(login_sec) as login,vicidial_timeclock_log.user_group from vicidial_users,vicidial_timeclock_log where event IN('LOGIN','START') and event_date >= '$query_date 00:00:00' and event_date <= '$end_date 23:59:59' and vicidial_users.user=vicidial_timeclock_log.user $user_SQL $user_group_SQL group by vicidial_users.user,vicidial_timeclock_log.user_group $order_SQL limit 100000;";
 
 
-if (!$report_display_type || $report_display_type=="TEXT") 
+if (!$report_display_type || $report_display_type=="TEXT")
 	{
 	$MAIN.=_QXZ("Time range").": $query_date "._QXZ("to")." $end_date\n\n";
 	$MAIN.="---------- "._QXZ("USER TIMECLOCK DETAILS")." -------------\n";
@@ -601,6 +603,12 @@ if (!$report_display_type || $report_display_type=="TEXT")
 	$rows_to_print = mysqli_num_rows($rslt);
 	$i=0;
 
+	$user_id=array();
+	$full_name=array();
+	$login_sec=array();
+	$u_group=array();
+	$hours=array();
+	$hoursSORT=array();
 	while ($i < $rows_to_print)
 		{
 		$dbHOURS=0;
@@ -619,8 +627,8 @@ if (!$report_display_type || $report_display_type=="TEXT")
 		else
 			{$dbHOURS='0.00';}
 
-		$hours[$i] =	$dbHOURS;		
-		$hoursSORT[$i] =	"$dbHOURS-----$i";		
+		$hours[$i] =	$dbHOURS;
+		$hoursSORT[$i] =	"$dbHOURS-----$i";
 
 		$i++;
 		}
@@ -634,7 +642,7 @@ if (!$report_display_type || $report_display_type=="TEXT")
 		$i = $hours_split[1];
 
 		if (preg_match("/1$|3$|5$|7$|9$/i", $j))
-			{$bgcolor='bgcolor="#'.$SSstd_row3_background.'"';} 
+			{$bgcolor='bgcolor="#'.$SSstd_row3_background.'"';}
 		else
 			{$bgcolor='bgcolor="#'.$SSstd_row4_background.'"';}
 
@@ -660,7 +668,7 @@ if (!$report_display_type || $report_display_type=="TEXT")
 	else
 		{$TOTdbHOURS='0.00';}
 
-	$TOThours =	$TOTdbHOURS;		
+	$TOThours =	$TOTdbHOURS;
 
 
 
@@ -672,11 +680,12 @@ if (!$report_display_type || $report_display_type=="TEXT")
 
 	$MAIN.="</TABLE>\n";
 	}
-else 
+else
 	{
 	######## GRAPHING #########
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$high_ct=0; $i=0;
+	$ct_ary=array();
 	while ($row=mysqli_fetch_row($rslt)) {
 
 		if ($row[2] > 0)
@@ -688,7 +697,7 @@ else
 		else
 			{$dbHOURS='0.00';}
 
-		if ($dbHOURS>$high_ct) {$high_ct=$dbHOURS;}		
+		if ($dbHOURS>$high_ct) {$high_ct=$dbHOURS;}
 		$ct_ary[$i][0]="$row[1] ($row[0]) - $row[3]";
 		$ct_ary[$i][1]=$dbHOURS;
 		$i++;
@@ -701,15 +710,15 @@ else
 	$graph_array=array("TCdata|||decimal|");
 	$graph_id++;
 	$default_graph="bar"; # Graph that is initally displayed when page loads
-	include("graph_color_schemas.inc"); 
+	include("graph_color_schemas.inc");
 
 	$graph_totals_array=array();
 	$graph_totals_rawdata=array();
 	for ($q=0; $q<count($graph_array); $q++) {
-		$graph_info=explode("|", $graph_array[$q]); 
+		$graph_info=explode("|", $graph_array[$q]);
 		$current_graph_total=0;
 		$dataset_name=$graph_info[0];
-		$dataset_index=$graph_info[1]; 
+		$dataset_index=$graph_info[1];
 		$dataset_type=$graph_info[3];
 		if ($q==0) {$preload_dataset=$dataset_name;}  # Used below to load initial graph
 
@@ -728,7 +737,7 @@ else
 		$graphConstantsC="\t\t\t\thoverBorderColor: [";
 		for ($d=0; $d<count($ct_ary); $d++) {
 			$labels.="\"".$ct_ary[$d][0]."\",";
-			$data.="\"".$ct_ary[$d][1]."\","; 
+			$data.="\"".$ct_ary[$d][1]."\",";
 			$current_graph_total+=$ct_ary[$d][1];
 			$bgcolor=$backgroundColor[($d%count($backgroundColor))];
 			$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
@@ -736,13 +745,13 @@ else
 			$graphConstantsA.="\"$bgcolor\",";
 			$graphConstantsB.="\"$hbgcolor\",";
 			$graphConstantsC.="\"$hbcolor\",";
-		}	
+		}
 		$graphConstantsA.="],\n";
 		$graphConstantsB.="],\n";
 		$graphConstantsC.="],\n";
 		$labels=preg_replace('/,$/', '', $labels)."],\n";
 		$data=preg_replace('/,$/', '', $data)."],\n";
-		
+
 		$graph_totals_rawdata[$q]=$current_graph_total;
 		switch($dataset_type) {
 			case "time":

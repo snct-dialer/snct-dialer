@@ -4,27 +4,27 @@
 #
 # DESCRIPTION:
 # uses the Asterisk Manager interface and Net::MySQL to update the live_channels
-# tables and verify the parked_channels table in the asterisk MySQL database 
+# tables and verify the parked_channels table in the asterisk MySQL database
 # This "near-live-status of Zap/SIP/Local/IAX channels" list is used by clients
 #
 # SUMMARY:
 # This program was designed for people using the Asterisk PBX with Digium
 # Zaptel telco cards and SIP VOIP hardphones or softphones as extensions, it
-# could be adapted to other functions, but I designed it specifically for 
-# Zap/IAX2/SIP users. The program will run on UNIX or Win32 command line 
+# could be adapted to other functions, but I designed it specifically for
+# Zap/IAX2/SIP users. The program will run on UNIX or Win32 command line
 # providing the following criteria are met:
-# 
+#
 # Win32 - ActiveState Perl 5.8.0
 # UNIX - Gnome or KDE with Tk/Tcl and perl Tk/Tcl modules loaded
 # Both - Net::MySQL, Net::Telnet and Time::HiRes perl modules loaded
 #
 # For the client program to work, this program must always be running
-# 
-# For this program to work you need to have the "asterisk" MySQL database 
+#
+# For this program to work you need to have the "asterisk" MySQL database
 # created and create the tables listed in the MySQL_AST_CREATE_tables.sql file,
 # also make sure that the machine running this program has select/insert/update/delete
 # access to that database
-# 
+#
 # In your Asterisk server setup you also need to have several things activated
 # and defined. See the CONF_Asterisk.txt file for details
 #
@@ -40,7 +40,7 @@
 # 50406-1320 - added channel_data to live_channels table for more flexibility
 #            also added Zap/IAX client check every 100 loop instead of only once
 # 50509-1047 - added collection of server_performance data with SYSPERF flag
-# 50621-1307 - modified to allow for SIP trunks 
+# 50621-1307 - modified to allow for SIP trunks
 # 50810-1601 - Added database server variable definitions lookup
 # 50823-1625 - Altered Debug vars and initial CVS/1.2 support for changed output
 # 50824-1606 - Altered CVS/1.2 support for "show channels concise" output
@@ -217,9 +217,9 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
 use Net::Telnet ();
-use DBI;	  
+use DBI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 	$event_string='LOGGED INTO MYSQL SERVER ON 1 CONNECTION|';
@@ -374,7 +374,7 @@ if (!$telnet_port) {$telnet_port = '5038';}
 	#$fh = $t->dump_log("$telnetlog");  # uncomment for telnet log
 	if (length($ASTmgrUSERNAMEupdate) > 3) {$telnet_login = $ASTmgrUSERNAMEupdate;}
 	else {$telnet_login = $ASTmgrUSERNAME;}
-	$t->open("$telnet_host"); 
+	$t->open("$telnet_host");
 	$t->waitfor('/[01]\n$/');			# print login
 	$t->print("Action: Login\nUsername: $telnet_login\nSecret: $ASTmgrSECRET\n\n");
 	$t->waitfor('/Authentication accepted/');		# waitfor auth accepted
@@ -397,19 +397,19 @@ if (!$telnet_port) {$telnet_port = '5038';}
 
 			&validate_parked_channels;
 
-	   
+
 	$t->buffer_empty;
 	if ($show_channels_format < 1)
 		{
-		@list_channels = $t->cmd(String => "Action: Command\nCommand: show channels\n\n", Prompt => '/--END COMMAND-.*/'); 
+		@list_channels = $t->cmd(String => "Action: Command\nCommand: show channels\n\n", Prompt => '/--END COMMAND-.*/');
 		}
 	if ($show_channels_format == 1)
 		{
-		@list_channels = $t->cmd(String => "Action: Command\nCommand: show channels concise\n\n", Prompt => '/--END COMMAND-.*/'); 
+		@list_channels = $t->cmd(String => "Action: Command\nCommand: show channels concise\n\n", Prompt => '/--END COMMAND-.*/');
 		}
 	if ($show_channels_format > 1)
 		{
-		@list_channels = $t->cmd(String => "Action: Command\nCommand: core show channels concise\n\n", Prompt => '/--END COMMAND-.*/'); 
+		@list_channels = $t->cmd(String => "Action: Command\nCommand: core show channels concise\n\n", Prompt => '/--END COMMAND-.*/');
 		}
 
 	##### TEST CHANNELS ZAP/IAX2/Local TO SEE IF THERE WAS A LARGE HICCUP IN OUTPUT FROM PREVIOUS OUTPUT
@@ -459,7 +459,7 @@ if (!$telnet_port) {$telnet_port = '5038';}
 				$extension =~ s/\|.*//gi;
 				if ($channel =~ /^SIP/) {$test_sip_count++;}
 				if ($channel =~ /^Local/) {$test_local_count++;}
-				if ($IAX2_client_count) 
+				if ($IAX2_client_count)
 					{
 					$channel_match=$channel;
 					$channel_match =~ s/\/\d+$|-\d+$//gi;
@@ -467,7 +467,7 @@ if (!$telnet_port) {$telnet_port = '5038';}
 					$channel_match =~ s/\*/\\\*/gi;
 					if ($IAX2_client_list =~ /\|$channel_match\|/i) {$test_iax_count++;}
 					}
-				if ($Zap_client_count) 
+				if ($Zap_client_count)
 					{
 					$channel_match=$channel;
 					$channel_match =~ s/^Zap\///gi;
@@ -562,7 +562,7 @@ if (!$telnet_port) {$telnet_port = '5038';}
 					$cpuSYSTdiff  = ($cpuSYST - $cpuSYSTprev);
 					$cpuIDLEdiff  = ($cpuIDLE - $cpuIDLEprev);
 					$cpuIDLEdiffTOTAL = (($cpuUSERdiff + $cpuSYSTdiff) + $cpuIDLEdiff);
-					if ($cpuIDLEdiffTOTAL > 0) 
+					if ($cpuIDLEdiffTOTAL > 0)
 						{
 						$cpuUSERcent  = sprintf("%.0f", (($cpuUSERdiff / $cpuIDLEdiffTOTAL) * 100));
 						$cpuSYSTcent  = sprintf("%.0f", (($cpuSYSTdiff / $cpuIDLEdiffTOTAL) * 100));
@@ -777,7 +777,7 @@ if (!$telnet_port) {$telnet_port = '5038';}
 
 					if ($channel =~ /^SIP|^Zap|^IAX2/) {$line_type = 'TRUNK';}
 					if ($channel =~ /^Local/) {$line_type = 'CLIENT';}
-					if ($IAX2_client_count) 
+					if ($IAX2_client_count)
 						{
 						$channel_match=$channel;
 						$channel_match =~ s/\/\d+$|-\d+$//gi;
@@ -786,7 +786,7 @@ if (!$telnet_port) {$telnet_port = '5038';}
 	#					print "checking for IAX2 client:   |$channel_match|\n";
 						if ($IAX2_client_list =~ /\|$channel_match\|/i) {$line_type = 'CLIENT';}
 						}
-					if ($Zap_client_count) 
+					if ($Zap_client_count)
 						{
 						$channel_match=$channel;
 						$channel_match =~ s/^Zap\///gi;
@@ -794,7 +794,7 @@ if (!$telnet_port) {$telnet_port = '5038';}
 	#					print "checking for Zap client:   |$channel_match|\n";
 						if ($Zap_client_list =~ /\|$channel_match\|/i) {$line_type = 'CLIENT';}
 						}
-					if ($SIP_client_count) 
+					if ($SIP_client_count)
 						{
 						$channel_match=$channel;
 						$channel_match =~ s/-\S+$//gi;
@@ -967,7 +967,7 @@ if (!$telnet_port) {$telnet_port = '5038';}
 		$event_string='HANGING UP|';
 		&event_logger;
 
-		@hangup = $t->cmd(String => "Action: Logoff\n\n", Prompt => "/.*/"); 
+		@hangup = $t->cmd(String => "Action: Logoff\n\n", Prompt => "/.*/");
 
 		$ok = $t->close;
 
@@ -1051,11 +1051,11 @@ $affected_rows = $dbhA->do($stmtU);
 
 
 #######################################################################
-# The purpose of this subroutine is to make sure that the calls that are 
-# listed as parked in the parked_channels table are in fact live (to make 
-# sure the caller has not hung up) and if the channel is not live to delete 
+# The purpose of this subroutine is to make sure that the calls that are
+# listed as parked in the parked_channels table are in fact live (to make
+# sure the caller has not hung up) and if the channel is not live to delete
 # the parked_channels entry for that specific parked channel entry
-# 
+#
 # Yes it does use two DB connections all by itself, I just did that for speed
 # and ease of programming to be backward compatible with MySQL < 4.1 or else
 # I would have used a delete with subselect and saved all of this bloated code
@@ -1063,10 +1063,10 @@ $affected_rows = $dbhA->do($stmtU);
 sub validate_parked_channels
 {
 
-if (!$run_validate_parked_channels_now) 
+if (!$run_validate_parked_channels_now)
 	{
 	$parked_counter=0;
-	@ARchannel=@MT;   @ARextension=@MT;   @ARparked_time=@MT;   @ARparked_time_UNIX=@MT;   
+	@ARchannel=@MT;   @ARextension=@MT;   @ARparked_time=@MT;   @ARparked_time_UNIX=@MT;
 	$stmtA = "SELECT channel,extension,parked_time,UNIX_TIMESTAMP(parked_time) FROM $parked_channels where server_ip = '$server_ip' order by channel desc, parked_time desc;";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -1079,7 +1079,7 @@ if (!$run_validate_parked_channels_now)
 		$PQparked_time_UNIX =	$aryA[3];
 			if($DB){print STDERR "\n|$PQchannel|$PQextension|$PQparked_time|$PQparked_time_UNIX|\n";}
 
-		$dbhC = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+		$dbhC = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 		$AR=0;
@@ -1094,7 +1094,7 @@ if (!$run_validate_parked_channels_now)
 					$stmtPQ = "DELETE FROM $parked_channels where server_ip='$server_ip' and channel='$PQchannel' and extension='$PQextension' and parked_time='$PQparked_time' limit 1";
 							if($DB){print STDERR "\n|$stmtPQ|$$DEL_chan_park_counter|$DEL_chan_park_counter|\n\n";}
 						$affected_rows = $dbhC->do($stmtPQ);
-						
+
 						$DEL_chan_park_counter = "DEL$PQchannel$PQextension";
 						$$DEL_chan_park_counter=0;
 					$record_deleted++;
@@ -1104,18 +1104,18 @@ if (!$run_validate_parked_channels_now)
 
 			$AR++;
 		   }
-		
-		
-		
+
+
+
 		if (!$record_deleted)
 			{
 			$ARchannel[$rec_count] =			$aryA[0];
 			$ARextension[$rec_count] =			$aryA[1];
 			$ARparked_time[$rec_count] =		$aryA[2];
 			$ARparked_time_UNIX[$rec_count] =	$aryA[3];
-		
 
-		$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+
+		$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 
@@ -1130,7 +1130,7 @@ if (!$run_validate_parked_channels_now)
 				{
 				$PQcount = $aryB[0];
 					if($DB){print STDERR "\n|$PQcount|\n";}
-					
+
 				$rec_countB++;
 				}
 			$sthB->finish();
@@ -1212,7 +1212,7 @@ $now_date = "$year-$mon-$mday $hour:$min:$sec";
 
 ################################################################################
 ##### open the log file for writing ###
-sub event_logger 
+sub event_logger
 {
 if ($SYSLOG)
 	{

@@ -61,8 +61,8 @@ BELOW THIS LINE ARE THE OLD PLANNING NOTES FOR A MUCH MORE COMPLEX CROSS-CLUSTER
 !!!!! THIS FEATURE DOES NOT EXIST AS DESCRIBED BELOW, THIS IS FOR PLANNING PURPOSES ONLY !!!!!
 
 
-This is a planning document for how different vicidial clusters can communicate 
-with each other to send various types of information between them. The overall 
+This is a planning document for how different vicidial clusters can communicate
+with each other to send various types of information between them. The overall
 goal is to allow for many clusters to talk to each other.
 
 Some of the types of communication that we would like to achieve are:

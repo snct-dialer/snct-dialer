@@ -1,11 +1,11 @@
 <?php
 # lead_report_export.php
-# 
-# displays options to select for downloading of leads and their latest 
-# vicidial_log and/or vicidial_closer_log information by status, list_id and 
+#
+# displays options to select for downloading of leads and their latest
+# vicidial_log and/or vicidial_closer_log information by status, list_id and
 # date range. downloads to a flat text file that is tab delimited
 #
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -32,6 +32,8 @@
 # 180109-2005 - Added vendor lead code filtering option
 # 180422-0923 - Fix for missing header row in translated language, issue #1090
 # 180610-1634 - Added option to allow --ALL-- as a campaign value
+# 190610-2036 - Fixed admin hide phone issue
+# 190926-0926 - Fixes for PHP7
 #
 
 $startMS = microtime();
@@ -121,7 +123,7 @@ if ($qm_conf_ct > 0)
 ### ARCHIVED DATA CHECK CONFIGURATION
 $archives_available="N";
 $log_tables_array=array("vicidial_did_log", "vicidial_log", "vicidial_closer_log", "vicidial_log_extended", "recording_log", "vicidial_carrier_log", "vicidial_cpd_log", "vicidial_list");
-for ($t=0; $t<count($log_tables_array); $t++) 
+for ($t=0; $t<count($log_tables_array); $t++)
 	{
 	$table_name=$log_tables_array[$t];
 	$archive_table_name=use_archive_table($table_name);
@@ -572,6 +574,15 @@ if ($run_export > 0)
 
 	$outbound_calls=0;
 	$export_rows='';
+	$export_status = array();
+	$export_list_id = array();
+	$export_lead_id = array();
+	$export_uniqueid = array();
+	$export_vicidial_id = array();
+	$export_entry_list_id = array();
+	$export_epoch_time = array();
+	$export_duplicate_check_line = array();
+	$export_rows = array();
 	$k=0;
 	if ($RUNcampaign > 0)
 		{
@@ -606,16 +617,29 @@ if ($run_export > 0)
 					{
 					if ($DB > 0) {echo "HIDEPHONEDATA|$row[1]|$LOGadmin_hide_phone_data|\n";}
 					$phone_temp = $row[1];
-					if (strlen($phone_temp) > 0)
+					$phone_lead_temp = $row[11];
+					if ( (strlen($phone_temp) > 0) or (strlen($phone_lead_temp) > 0) )
 						{
 						if ($LOGadmin_hide_phone_data == '4_DIGITS')
-							{$row[1] = str_repeat("X", (strlen($phone_temp) - 4)) . substr($phone_temp,-4,4);}
+							{
+							$row[1] = str_repeat("X", (strlen($phone_temp) - 4)) . substr($phone_temp,-4,4);
+							$row[11] = str_repeat("X", (strlen($phone_lead_temp) - 4)) . substr($phone_lead_temp,-4,4);
+							}
 						elseif ($LOGadmin_hide_phone_data == '3_DIGITS')
-							{$row[1] = str_repeat("X", (strlen($phone_temp) - 3)) . substr($phone_temp,-3,3);}
+							{
+							$row[1] = str_repeat("X", (strlen($phone_temp) - 3)) . substr($phone_temp,-3,3);
+							$row[11] = str_repeat("X", (strlen($phone_lead_temp) - 3)) . substr($phone_lead_temp,-3,3);
+							}
 						elseif ($LOGadmin_hide_phone_data == '2_DIGITS')
-							{$row[1] = str_repeat("X", (strlen($phone_temp) - 2)) . substr($phone_temp,-2,2);}
+							{
+							$row[1] = str_repeat("X", (strlen($phone_temp) - 2)) . substr($phone_temp,-2,2);
+							$row[11] = str_repeat("X", (strlen($phone_lead_temp) - 2)) . substr($phone_lead_temp,-2,2);
+							}
 						else
-							{$row[1] = preg_replace("/./",'X',$phone_temp);}
+							{
+							$row[1] = preg_replace("/./",'X',$phone_temp);
+							$row[11] = preg_replace("/./",'X',$phone_lead_temp);
+							}
 						}
 					}
 				if ($LOGadmin_hide_lead_data != '0')
@@ -664,7 +688,7 @@ if ($run_export > 0)
 				if ($export_fields == 'EXTENDED')
 					{
 					$export_fieldsDATA = "$row[39]\t$row[40]\t$row[41]\t$row[42]\t$row[43]\t";
-					if ($did_filter=="YES") 
+					if ($did_filter=="YES")
 						{
 						$export_fieldsDATA .= "N/A\t";
 						}
@@ -681,7 +705,7 @@ if ($run_export > 0)
 		{
 		if ($did_filter=="YES")  {$export_fields_SQL .= ",vdl.extension";}
 
-		if ($RUNdid > 0 && $RUNgroup > 0) 
+		if ($RUNdid > 0 && $RUNgroup > 0)
 			{
 			$stmtA = "SELECT vl.call_date,vl.phone_number,vi.status,vl.user,vu.full_name,vl.campaign_id,vi.vendor_lead_code,vi.source_id,vi.list_id,vi.gmt_offset_now,vi.phone_code,vi.phone_number,vi.title,vi.first_name,vi.middle_initial,vi.last_name,vi.address1,vi.address2,vi.address3,vi.city,vi.state,vi.province,vi.postal_code,vi.country_code,vi.gender,vi.date_of_birth,vi.alt_phone,vi.email,vi.security_phrase,vi.comments,vl.length_in_sec,vl.user_group,vl.queue_seconds,vi.rank,vi.owner,vi.lead_id,vl.closecallid,vi.entry_list_id,vl.uniqueid,UNIX_TIMESTAMP(vl.call_date)$export_fields_SQL from vicidial_users vu,".$vicidial_closer_log_table." vl,".$vicidial_list_table." vi, ".$vicidial_did_log_table." vdl where ".$date_field." >= '$query_date 00:00:00' and ".$date_field." <= '$end_date 23:59:59' and vu.user=vl.user and vi.lead_id=vl.lead_id and vl.uniqueid=vdl.uniqueid $list_SQL $group_SQL $user_group_SQL $did_SQL $status_SQL $vlc_SQL order by ".$date_field." desc limit 500000;";
 			}
@@ -689,7 +713,7 @@ if ($run_export > 0)
 			{
 			$stmtA = "SELECT vl.call_date,vl.phone_number,vi.status,vl.user,vu.full_name,vl.campaign_id,vi.vendor_lead_code,vi.source_id,vi.list_id,vi.gmt_offset_now,vi.phone_code,vi.phone_number,vi.title,vi.first_name,vi.middle_initial,vi.last_name,vi.address1,vi.address2,vi.address3,vi.city,vi.state,vi.province,vi.postal_code,vi.country_code,vi.gender,vi.date_of_birth,vi.alt_phone,vi.email,vi.security_phrase,vi.comments,vl.length_in_sec,vl.user_group,vl.queue_seconds,vi.rank,vi.owner,vi.lead_id,vl.closecallid,vi.entry_list_id,vl.uniqueid,UNIX_TIMESTAMP(vl.call_date)$export_fields_SQL from vicidial_users vu,".$vicidial_closer_log_table." vl,".$vicidial_list_table." vi, ".$vicidial_did_log_table." vdl where ".$date_field." >= '$query_date 00:00:00' and ".$date_field." <= '$end_date 23:59:59' and vu.user=vl.user and vi.lead_id=vl.lead_id and vl.uniqueid=vdl.uniqueid $list_SQL $user_group_SQL $status_SQL $vlc_SQL $did_SQL order by ".$date_field." desc limit 500000;";
 			}
-		else 
+		else
 			{
 			$stmtA = "SELECT vl.call_date,vl.phone_number,vi.status,vl.user,vu.full_name,vl.campaign_id,vi.vendor_lead_code,vi.source_id,vi.list_id,vi.gmt_offset_now,vi.phone_code,vi.phone_number,vi.title,vi.first_name,vi.middle_initial,vi.last_name,vi.address1,vi.address2,vi.address3,vi.city,vi.state,vi.province,vi.postal_code,vi.country_code,vi.gender,vi.date_of_birth,vi.alt_phone,vi.email,vi.security_phrase,vi.comments,vl.length_in_sec,vl.user_group,vl.queue_seconds,vi.rank,vi.owner,vi.lead_id,vl.closecallid,vi.entry_list_id,vl.uniqueid,UNIX_TIMESTAMP(vl.call_date)$export_fields_SQL from vicidial_users vu,".$vicidial_closer_log_table." vl,".$vicidial_list_table." vi where ".$date_field." >= '$query_date 00:00:00' and ".$date_field." <= '$end_date 23:59:59' and vu.user=vl.user and vi.lead_id=vl.lead_id $list_SQL $group_SQL $user_group_SQL $status_SQL $vlc_SQL order by ".$date_field." desc limit 500000;";
 			}
@@ -723,16 +747,29 @@ if ($run_export > 0)
 					{
 					if ($DB > 0) {echo "HIDEPHONEDATA|$row[1]|$LOGadmin_hide_phone_data|\n";}
 					$phone_temp = $row[1];
-					if (strlen($phone_temp) > 0)
+					$phone_lead_temp = $row[11];
+					if ( (strlen($phone_temp) > 0) or (strlen($phone_lead_temp) > 0) )
 						{
 						if ($LOGadmin_hide_phone_data == '4_DIGITS')
-							{$row[1] = str_repeat("X", (strlen($phone_temp) - 4)) . substr($phone_temp,-4,4);}
+							{
+							$row[1] = str_repeat("X", (strlen($phone_temp) - 4)) . substr($phone_temp,-4,4);
+							$row[11] = str_repeat("X", (strlen($phone_lead_temp) - 4)) . substr($phone_lead_temp,-4,4);
+							}
 						elseif ($LOGadmin_hide_phone_data == '3_DIGITS')
-							{$row[1] = str_repeat("X", (strlen($phone_temp) - 3)) . substr($phone_temp,-3,3);}
+							{
+							$row[1] = str_repeat("X", (strlen($phone_temp) - 3)) . substr($phone_temp,-3,3);
+							$row[11] = str_repeat("X", (strlen($phone_lead_temp) - 3)) . substr($phone_lead_temp,-3,3);
+							}
 						elseif ($LOGadmin_hide_phone_data == '2_DIGITS')
-							{$row[1] = str_repeat("X", (strlen($phone_temp) - 2)) . substr($phone_temp,-2,2);}
+							{
+							$row[1] = str_repeat("X", (strlen($phone_temp) - 2)) . substr($phone_temp,-2,2);
+							$row[11] = str_repeat("X", (strlen($phone_lead_temp) - 2)) . substr($phone_lead_temp,-2,2);
+							}
 						else
-							{$row[1] = preg_replace("/./",'X',$phone_temp);}
+							{
+							$row[1] = preg_replace("/./",'X',$phone_temp);
+							$row[11] = preg_replace("/./",'X',$phone_lead_temp);
+							}
 						}
 					}
 				if ($LOGadmin_hide_lead_data != '0')
@@ -776,14 +813,14 @@ if ($run_export > 0)
 				if ($export_fields == 'EXTENDED')
 					{
 					$export_fieldsDATA = "$row[40]\t$row[41]\t$row[42]\t$row[43]\t$row[44]\t";
-					if ($did_filter=="YES") 
+					if ($did_filter=="YES")
 						{
-						if ($RUNdid>0) 
+						if ($RUNdid>0)
 							{
 							# INCLUDE COMPLETE LENGTH OF DID CALL BY CHECKING FOR WARM TRANSFERS
 							$did_stmt="select UNIX_TIMESTAMP(call_date) from vicidial_did_log where uniqueid='$row[38]'";
 							$did_rslt=mysql_to_mysqli($did_stmt, $link);
-							if (mysqli_num_rows($did_rslt)>0) 
+							if (mysqli_num_rows($did_rslt)>0)
 								{
 								$did_row=mysqli_fetch_row($did_rslt);
 								$start_epoch=$did_row[0];
@@ -793,11 +830,11 @@ if ($run_export > 0)
 								$start_epoch=$row[39];
 								}
 							if ($DB>0) {echo "A) $did_stmt - ".mysqli_num_rows($did_rslt)." - $start_epoch<BR>\n";}
-							
+
 							# Added 10 seconds for padding
 							$log_stmt="select vcl.end_epoch from vicidial_xfer_log vxl, vicidial_closer_log vcl where vxl.lead_id='$row[35]' and UNIX_TIMESTAMP(vxl.call_date)>='$row[39]' and UNIX_TIMESTAMP(vxl.call_date)<=".($row[39]+$row[30]+10)." and vxl.xfercallid=vcl.xfercallid";
 							$log_rslt=mysql_to_mysqli($log_stmt, $link);
-							if (mysqli_num_rows($log_rslt)>0) 
+							if (mysqli_num_rows($log_rslt)>0)
 								{
 								$log_row=mysqli_fetch_row($log_rslt);
 								$end_epoch=$log_row[0];
@@ -1003,7 +1040,7 @@ if ($run_export > 0)
 				if ($DB>0) {echo "$stmt";}
 				$rslt=mysql_to_mysqli($stmt, $link);
 				$tablecount_to_print = mysqli_num_rows($rslt);
-				if ($tablecount_to_print > 0) 
+				if ($tablecount_to_print > 0)
 					{
 					$column_list='';
 					$encrypt_list='';
@@ -1089,7 +1126,7 @@ if ($run_export > 0)
 							{
 							$row=mysqli_fetch_row($rslt);
 							$t=0;
-							while ($columns_ct >= $t) 
+							while ($columns_ct >= $t)
 								{
 								if ($enc_fields > 0)
 									{
@@ -1336,7 +1373,7 @@ else
 		array_push($allowed_lists, $row[0]);
 		$i++;
 		}
-	if (count($allowed_lists)>0) 
+	if (count($allowed_lists)>0)
 		{
 		$whereLOGallowed_listsSQL="where list_id in ('".implode("','", $allowed_lists)."')";
 		$LOGallowed_listsSQL="and list_id in ('".implode("','", $allowed_lists)."')";
@@ -1470,7 +1507,7 @@ else
 	echo "<B>"._QXZ("Date Field").":</B><BR>\n";
 	echo "<select size=1 name=date_field><option selected value=\"call_date\">"._QXZ("Call date")."</option><option value=\"entry_date\">"._QXZ("Entry date")."</option></select>\n";
 
-	
+
 	echo "<BR><BR>\n";
 
 	echo "<B>"._QXZ("Header Row").":</B><BR>\n";
@@ -1522,7 +1559,7 @@ else
 	echo "<B>"._QXZ("Export Fields").":</B><BR>\n";
 	echo "<select size=1 name=export_fields><option value='STANDARD' selected>"._QXZ("STANDARD")."</option><option value='EXTENDED'>"._QXZ("EXTENDED")."</option></select>\n";
 
-	if ($archives_available=="Y") 
+	if ($archives_available=="Y")
 	{
 	echo "<BR><BR><B>"._QXZ("Search archived data").":</B><BR>\n";
 	echo "<select size=1 name='search_archived_data'>";
@@ -1541,10 +1578,10 @@ else
 		$o=0;
 		while ($campaigns_to_print > $o)
 		{
-			if (preg_match("/\|$LISTcampaigns[$o]\|/",$campaign_string)) 
-				{echo "<option selected value=\"$LISTcampaigns[$o]\">$LISTcampaigns[$o]</option>\n";}
-			else 
-				{echo "<option value=\"$LISTcampaigns[$o]\">$LISTcampaigns[$o]</option>\n";}
+			if (preg_match("/\|$LISTcampaigns[$o]\|/",$campaign_string))
+				{echo "<option selected value=\"$LISTcampaigns[$o]\">"._QXZ("$LISTcampaigns[$o]")."</option>\n";}
+			else
+				{echo "<option value=\"$LISTcampaigns[$o]\">"._QXZ("$LISTcampaigns[$o]")."</option>\n";}
 			$o++;
 		}
 	echo "</SELECT>\n";
@@ -1555,10 +1592,10 @@ else
 		$o=0;
 		while ($groups_to_print > $o)
 		{
-			if (preg_match("/\|$LISTgroups[$o]\|/",$group_string)) 
-				{echo "<option selected value=\"$LISTgroups[$o]\">$LISTgroups[$o]</option>\n";}
+			if (preg_match("/\|$LISTgroups[$o]\|/",$group_string))
+				{echo "<option selected value=\"$LISTgroups[$o]\">"._QXZ("$LISTgroups[$o]")."</option>\n";}
 			else
-				{echo "<option value=\"$LISTgroups[$o]\">$LISTgroups[$o]</option>\n";}
+				{echo "<option value=\"$LISTgroups[$o]\">"._QXZ("$LISTgroups[$o]")."</option>\n";}
 			$o++;
 		}
 	echo "</SELECT>\n";
@@ -1568,10 +1605,10 @@ else
 		$o=0;
 		while ($lists_to_print > $o)
 		{
-			if (preg_match("/\|$LISTlists[$o]\|/",$list_string)) 
-				{echo "<option selected value=\"$LISTlists[$o]\">$LISTlists[$o]</option>\n";}
-			else 
-				{echo "<option value=\"$LISTlists[$o]\">$LISTlists[$o]</option>\n";}
+			if (preg_match("/\|$LISTlists[$o]\|/",$list_string))
+				{echo "<option selected value=\"$LISTlists[$o]\">"._QXZ("$LISTlists[$o]")."</option>\n";}
+			else
+				{echo "<option value=\"$LISTlists[$o]\">"._QXZ("$LISTlists[$o]")."</option>\n";}
 			$o++;
 		}
 	echo "</SELECT>\n";
@@ -1581,10 +1618,10 @@ else
 		$o=0;
 		while ($statuses_to_print > $o)
 		{
-			if (preg_match("/\|$LISTstatus[$o]\|/",$list_string)) 
-				{echo "<option selected value=\"$LISTstatus[$o]\">$LISTstatus[$o]</option>\n";}
-			else 
-				{echo "<option value=\"$LISTstatus[$o]\">$LISTstatus[$o]</option>\n";}
+			if (preg_match("/\|$LISTstatus[$o]\|/",$list_string))
+				{echo "<option selected value=\"$LISTstatus[$o]\">"._QXZ("$LISTstatus[$o]")."</option>\n";}
+			else
+				{echo "<option value=\"$LISTstatus[$o]\">"._QXZ("$LISTstatus[$o]")."</option>\n";}
 			$o++;
 		}
 	echo "</SELECT>\n";
@@ -1595,10 +1632,10 @@ else
 		$o=0;
 		while ($user_groups_to_print > $o)
 		{
-			if (preg_match("/\|$LISTuser_groups[$o]\|/",$user_group_string)) 
-				{echo "<option selected value=\"$LISTuser_groups[$o]\">$LISTuser_groups[$o]</option>\n";}
-			else 
-				{echo "<option value=\"$LISTuser_groups[$o]\">$LISTuser_groups[$o]</option>\n";}
+			if (preg_match("/\|$LISTuser_groups[$o]\|/",$user_group_string))
+				{echo "<option selected value=\"$LISTuser_groups[$o]\">"._QXZ("$LISTuser_groups[$o]")."</option>\n";}
+			else
+				{echo "<option value=\"$LISTuser_groups[$o]\">"._QXZ("$LISTuser_groups[$o]")."</option>\n";}
 			$o++;
 		}
 	echo "</SELECT></TD>\n";
@@ -1609,9 +1646,9 @@ else
 		$o=0;
 		while ($dids_to_print > $o)
 		{
-			if (preg_match("/\|$LISTdid_ids[$o]\|/",$did_string)) 
+			if (preg_match("/\|$LISTdid_ids[$o]\|/",$did_string))
 				{echo "<option selected value=\"$LISTdid_ids[$o]\">$LISTdids[$o]</option>\n";}
-			else 
+			else
 				{echo "<option value=\"$LISTdid_ids[$o]\">$LISTdids[$o]</option>\n";}
 			$o++;
 		}
@@ -1624,9 +1661,9 @@ else
 		while ($vlcs_to_print > $o)
 			{
 			$temp_vlc = preg_quote($LISTvlcs[$o], '/');
-			if (preg_match("/\|$temp_vlc\|/",$vlc_string)) 
+			if (preg_match("/\|$temp_vlc\|/",$vlc_string))
 				{echo "<option selected value=\"$LISTvlcs[$o]\">$LISTvlcs[$o]</option>\n";}
-			else 
+			else
 				{echo "<option value=\"$LISTvlcs[$o]\">$LISTvlcs[$o]</option>\n";}
 			$o++;
 			}

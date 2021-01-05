@@ -1,8 +1,8 @@
 <?php
-# 
+#
 # screen_colors.php    version 2.14
 #
-# include file to generate screen colors - normally in admin_header.php, 
+# include file to generate screen colors - normally in admin_header.php,
 # but most reports include admin_header.php after the colors need to be set
 #
 # Copyright (C) 2017  Joseph Johnson <freewermadmin@gmail.com>, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2

@@ -1,6 +1,6 @@
 <?php
 # leadloader_template_display.php - version 2.14
-# 
+#
 # Copyright (C) 2017  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -153,10 +153,10 @@ if ($template_id) {
 	exit;
 }
 
-if ($form_action=="prime_file" && $sample_template_file_name) 
+if ($form_action=="prime_file" && $sample_template_file_name)
 	{
 	$delim_set=0;
-	if (preg_match("/\.csv$|\.xls$|\.xlsx$|\.ods$|\.sxc$/i", $sample_template_file_name)) 
+	if (preg_match("/\.csv$|\.xls$|\.xlsx$|\.ods$|\.sxc$/i", $sample_template_file_name))
 		{
 		$sample_template_file_name = preg_replace('/[^-\.\_0-9a-zA-Z]/','_',$sample_template_file_name);
 		copy($LF_path, "/tmp/$sample_template_file_name");
@@ -191,13 +191,13 @@ if ($form_action=="prime_file" && $sample_template_file_name)
 	if ($delim_set < 1)
 		{
 		if ($tab_count>$pipe_count)
-			{$delim_name=_QXZ("tab-delimited");} 
-		else 
+			{$delim_name=_QXZ("tab-delimited");}
+		else
 			{$delim_name=_QXZ("pipe-delimited");}
-		} 
+		}
 	if ($tab_count>$pipe_count)
 		{$delimiter="\t";}
-	else 
+	else
 		{$delimiter="|";}
 	echo "<script language='Javascript'>\n";
 	#echo "parent.document.getElementById(\"sample_template_file_name\").value='$fail_msg';\n";
@@ -211,11 +211,11 @@ if ($form_action=="prime_file" && $sample_template_file_name)
 	$field_check=explode($delimiter, $buffer);
 	flush();
 	}
-else if ($list_id>=0 && $form_action=="no_template") 
+else if ($list_id>=0 && $form_action=="no_template")
 	{
 	$campaign_stmt="select campaign_id from vicidial_lists where list_id='$list_id'";
 	$campaign_rslt=mysql_to_mysqli($campaign_stmt, $link);
-	if (mysqli_num_rows($campaign_rslt)>0) 
+	if (mysqli_num_rows($campaign_rslt)>0)
 		{
 		$campaign_row=mysqli_fetch_row($campaign_rslt);
 		$campaign_id=$campaign_row[0];
@@ -225,24 +225,24 @@ else if ($list_id>=0 && $form_action=="no_template")
 
 	echo "<select id='dedupe_statuses' name='dedupe_statuses[]' size=5 multiple>\n";
 	echo "\t<option value='--ALL--' selected>--"._QXZ("ALL DISPOSITIONS")."--</option>\n";
-	while ($row=mysqli_fetch_array($rslt)) 
+	while ($row=mysqli_fetch_array($rslt))
 		{
 		echo "\t<option value='$row[status]'>$row[status] - $row[status_name]</option>\n";
 		}
 	echo "</select>\n";
 	}
-else if ($form_action=="update_template") 
+else if ($form_action=="update_template")
 	{
 	echo "Hi";
-	} 
+	}
 else
 	{
 
-	if ($list_id) 
+	if ($list_id)
 		{
 		$campaign_stmt="select campaign_id from vicidial_lists where list_id='$list_id'";
 		$campaign_rslt=mysql_to_mysqli($campaign_stmt, $link);
-		if (mysqli_num_rows($campaign_rslt)>0) 
+		if (mysqli_num_rows($campaign_rslt)>0)
 			{
 			$campaign_row=mysqli_fetch_row($campaign_rslt);
 			$campaign_id=$campaign_row[0];
@@ -252,14 +252,14 @@ else
 
 		echo "<select id='template_statuses' name='template_statuses[]' size=5 multiple>\n";
 		echo "\t<option value='--ALL--' selected>--"._QXZ("ALL DISPOSITIONS")."--</option>\n";
-		while ($row=mysqli_fetch_array($rslt)) 
+		while ($row=mysqli_fetch_array($rslt))
 			{
 			echo "\t<option value='$row[status]'>$row[status] - $row[status_name]</option>\n";
 			}
 		echo "</select>\n";
 		}
 	echo "|||";
-	
+
 	if ( (preg_match("/;|:|\/|\^|\[|\]|\"|\'|\*/",$LF_orig)) or (preg_match("/;|:|\/|\^|\[|\]|\"|\'|\*/",$sample_template_file_name)) )
 		{
 		echo _QXZ("ERROR: Invalid File Name").": $LF_orig $sample_template_file_name\n";
@@ -279,13 +279,13 @@ else
 		if ($DB>0) {echo "$stmt\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$tablecount_to_print = mysqli_num_rows($rslt);
-		if ($tablecount_to_print > 0) 
+		if ($tablecount_to_print > 0)
 			{
 			$stmt="SELECT count(*) from vicidial_lists_fields where list_id='$list_id' and field_duplicate!='Y';";
 			if ($DB>0) {echo "$stmt\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);
 			$fieldscount_to_print = mysqli_num_rows($rslt);
-			if ($fieldscount_to_print > 0) 
+			if ($fieldscount_to_print > 0)
 				{
 				$rowx=mysqli_fetch_row($rslt);
 				$custom_records_count =	$rowx[0];
@@ -297,7 +297,7 @@ else
 				$fields_to_print = mysqli_num_rows($rslt);
 				$fields_list='';
 				$o=0;
-				while ($fields_to_print > $o) 
+				while ($fields_to_print > $o)
 					{
 					$rowx=mysqli_fetch_row($rslt);
 					$A_field_label[$o] =	$rowx[1];
@@ -339,12 +339,12 @@ else
 
 		echo "  <tr bgcolor='$bgcolor'>\r\n";
 		echo "    <td align=right nowrap><font class=standard>".strtoupper(preg_replace('/_/i', ' ', $rslt_field_name)).": </font></td>\r\n";
-		if ($rslt_field_name!="list_id") 
+		if ($rslt_field_name!="list_id")
 			{
 			echo "    <td align=left><select name='$field_prefix".$rslt_field_name."_field' onChange='DrawTemplateStrings()'>\r\n";
 			echo "     <option value='-1'>("._QXZ("none").")</option>\r\n";
 
-			for ($j=0; $j<count($row); $j++) 
+			for ($j=0; $j<count($row); $j++)
 				{
 				preg_replace('/\"/i', '', $row[$j]);
 				echo "     <option value='$j'>\"$row[$j]\"</option>\r\n";
@@ -352,7 +352,7 @@ else
 
 			echo "    </select></td>\r\n";
 			}
-		else 
+		else
 			{
 			echo "    <td align=left>&nbsp;<font class='standard_bold'>$list_id<input type='hidden' name='".$field_prefix.$list_id."' value='$list_id'></font></td>\r\n";
 			}

@@ -1,6 +1,6 @@
-<?php 
+<?php
 # AST_VICIDIAL_ingrouplist.php
-# 
+#
 # shows the agents logged into vicidial and set to take calls from in-group
 #
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -216,7 +216,7 @@ while ($i < $ingroups_to_print)
 -->
  </STYLE>
 
-<?php 
+<?php
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo "<TITLE>"._QXZ("Live In-Group Agent Report")."</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 
@@ -230,12 +230,12 @@ echo "<SELECT SIZE=1 NAME=group>\n";
 $o=0;
 while ($ingroups_to_print > $o)
 	{
-	if ($group_id[$o] == $group) 
+	if ($group_id[$o] == $group)
 		{
 		echo "<option selected value=\"$group_id[$o]\">$group_id[$o] - $group_name[$o]</option>\n";
 		$selected_name=$group_name[$o];
 		}
-	else 
+	else
 		{
 		echo "<option value=\"$group_id[$o]\">$group_id[$o] - $group_name[$o]</option>\n";
 		}
@@ -305,7 +305,7 @@ else
 
 	echo "+------+--------------------------------+----------------------+--------+---------------------+\n";
 
-	
+
 	if ($DB) {echo "\n$user_list\n";}
 
 	##############################
@@ -346,7 +346,7 @@ else
 		}
 
 	echo "+------+--------------------------------+-----------+\n";
-	
+
 	}
 
 

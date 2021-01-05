@@ -138,8 +138,8 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
 use DBI;
 use Net::Telnet ();
-	  
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
@@ -181,7 +181,7 @@ if ($sthArows > 0)
 	if ($DBvd_server_logs =~ /Y/)	{$SYSLOG = '1';}
 	else {$SYSLOG = '0';}
 	}
- $sthA->finish(); 
+ $sthA->finish();
 
 if (!$telnet_port) {$telnet_port = '5038';}
 if (length($ASTmgrUSERNAMEsend) > 3) {$telnet_login = $ASTmgrUSERNAMEsend;}
@@ -255,7 +255,7 @@ while ($loops > $loop_counter)
 		 &event_logger;
 		$rec_count++;
 		}
-	$sthA->finish(); 
+	$sthA->finish();
 
 	if ($rec_count > 0)
 		{
@@ -349,7 +349,7 @@ while ($loops > $loop_counter)
 				{
 				$event_string = "CONFERENCE STILL HAS PARTICIPANTS, DOING NOTHING FOR THIS CONFERENCE";
 				 &event_logger;
-				if ($PTextensions[$i] =~ /Xtimeout\d$/i) 
+				if ($PTextensions[$i] =~ /Xtimeout\d$/i)
 					{
 					$PTextensions[$i] =~ s/Xtimeout\d$//gi;
 					$stmtA = "UPDATE vicidial_conferences set extension='$PTextensions[$i]' where server_ip='$server_ip' and conf_exten='$PT_conf_extens[$i]';";
@@ -379,7 +379,7 @@ while ($loops > $loop_counter)
 						$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query:|$stmtA|\n";
 					$event_string = "|$affected_rows|$stmtA|";
 					 &event_logger;
-					
+
 					$TDinc++;
 					}
 
@@ -396,7 +396,7 @@ while ($loops > $loop_counter)
 			}
 
 		$t->buffer_empty;
-		@hangup = $t->cmd(String => "Action: Logoff\n\n", Prompt => "/.*/"); 
+		@hangup = $t->cmd(String => "Action: Logoff\n\n", Prompt => "/.*/");
 		$t->buffer_empty;
 		$t->waitfor(Match => '/Message:.*\n\n/', Timeout => 10);
 		$ok = $t->close;

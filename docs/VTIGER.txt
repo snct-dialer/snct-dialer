@@ -13,7 +13,7 @@ Current integration features:
 - Ability to click-to-dial a phone number from a record in Vtiger screen to the vicidial.php screen
 - Ability to click-to-dial from a Planned Activity record then have it changed to Held after VICIDIAL dispo
 - Ability for an agent to click on a VC fax log or VC email log link to account for fax or email time through VICIDIAL
-- Optional script to bulk load leads into Vtiger from a CSV file since Vtiger only seems to want to load 500 at a time: 
+- Optional script to bulk load leads into Vtiger from a CSV file since Vtiger only seems to want to load 500 at a time:
     Vtiger_IN_new_accounts_file.pl
 - Batch Account synchronization through script to output new leads from Vtiger and update existing leads in the VICIDIAL system:
     Vtiger_OUT_sync2VICIDIAL_file.pl then you run the VICIDIAL_IN_new_leads_file.pl script to load the new leads
@@ -27,14 +27,14 @@ Since the 2.0.5 release we have added the ability to initiate a callback from a 
 
 as of 2008-12-31, several user synchronization features have been added to allow for the creation of vtiger users from the vicidial_users user database. The vtiger_search.php script has also been updated to work with the current vtiger release 5.0.4. To enable the Vtiger integration features you will need to go to the Admin -> System Settings section of the admin.php Administration web page to set Vtiger Integration to enabled and configure the connection details for the Vtiger database.
 
-There are options in the VICIDIAL Modify Campaign Detail screen that you can choose how you want the vtiger_search.php to search for a Vtiger record in the Vtiger system. If Vtiger integration is enabled in the system_settings then this setting will define where the vtiger_search.php page will search for the phone number that was entered. There are 4 options that can be used in this field: 
-	ACCTID- This option works only for accounts and it will take the vicidial vendor_lead_code field and try to search for the Vtiger accountid.     If unsuccessful it will try any other methods listed that you have selected. 
+There are options in the VICIDIAL Modify Campaign Detail screen that you can choose how you want the vtiger_search.php to search for a Vtiger record in the Vtiger system. If Vtiger integration is enabled in the system_settings then this setting will define where the vtiger_search.php page will search for the phone number that was entered. There are 4 options that can be used in this field:
+	ACCTID- This option works only for accounts and it will take the vicidial vendor_lead_code field and try to search for the Vtiger accountid.     If unsuccessful it will try any other methods listed that you have selected.
 	ACCOUNT- This option will search through the Vtiger accounts and all contacts and sub-contacts for the phone number
 	VENDOR- This option will only search through the Vtiger vendors
 	LEAD- This option will search through the Vtiger leads only
 
-    NOTE: For this to work, you must have the vtiger_search.php set as your webform page, i.e.(http://10.10.10.15/vicidial/vtiger_search.php) 
-Multiple search options can be used for each campaign(in the VICIDIAL Campaign Detail screen), but on large databases this is not recommended. Default is LEAD. The order that you see the searching options above is the order in which they will be searched if you have selected multiple searching methods. If an account does not exist and you have LEAD selected as a search method, then(if the create lead option is enabled) it will insert the lead with that phone number and you will be taken to the edit screen for that lead when you go to the vtiger_search web page. There is also an option to log the call as an event in Vtiger that will associate with the Lead or Account that the agent screen is sent to. Vtiger recommends on standard equipment a limit of 50,000 account records, but many users report no issues with 100,000 or more account records in their Vtiger systems. 
+    NOTE: For this to work, you must have the vtiger_search.php set as your webform page, i.e.(http://10.10.10.15/vicidial/vtiger_search.php)
+Multiple search options can be used for each campaign(in the VICIDIAL Campaign Detail screen), but on large databases this is not recommended. Default is LEAD. The order that you see the searching options above is the order in which they will be searched if you have selected multiple searching methods. If an account does not exist and you have LEAD selected as a search method, then(if the create lead option is enabled) it will insert the lead with that phone number and you will be taken to the edit screen for that lead when you go to the vtiger_search web page. There is also an option to log the call as an event in Vtiger that will associate with the Lead or Account that the agent screen is sent to. Vtiger recommends on standard equipment a limit of 50,000 account records, but many users report no issues with 100,000 or more account records in their Vtiger systems.
 
 
 Here are the procedures to load leads into Vtiger, then output them from Vtiger and then load them into VICIDIAL:
@@ -76,7 +76,7 @@ $stmt="SELECT count(*) from vtiger_leadaddress where phone='$phone' or mobile='$
 
 Here is a short summary of the needed steps to install vtiger on your system:
 
-NOTE: vtiger requires PHP5, APACHE2.2 and MySQL5, 
+NOTE: vtiger requires PHP5, APACHE2.2 and MySQL5,
       see the REQUIRED_APPS.txt doc for install instructions for those packages
 
 
@@ -116,7 +116,7 @@ INSERT INTO vtiger_vicidial_roles SET user_level='8',vtiger_role='H3';
 INSERT INTO vtiger_vicidial_roles SET user_level='9',vtiger_role='H2';
 
 
-Now to explain the database side of things. 
+Now to explain the database side of things.
 First, here is how users are stored in vtiger:
 
 THE USER TABLES:
@@ -269,7 +269,7 @@ mysql> describe vtiger_usertype;
 
 ## Logging calls in Vtiger:
 vtiger_crmentity_seq -		increment once to account for call log and use for activity ID
-vtiger_activity -		Where calls are logged 
+vtiger_activity -		Where calls are logged
 vtiger_cntactivityrel -		links a contact to an activity(call)
 vtiger_salesmanactivityrel -	links a user to an activity(call)
 vtiger_seactivityrel -		links crmid(account) to an activity(call)

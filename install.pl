@@ -2,7 +2,19 @@
 
 # install.pl version 2.14
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+
+# LICENSE: AGPLv3
+#
+# Copyright (C) 2019      Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2019-2020 SNCT Gmbh <info@snct-gmbh.de>
+#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
+#
+# Other changes
+#
+# 20200815-1845 jff	add New logrotate setup. 
+# 20200815-2030 jff	add conf-files /etc/snct-dialer
 #
 
 # CHANGES
@@ -44,6 +56,7 @@
 # 160101-0907 - Changed ip_relay code to look for installed package
 # 160522-2051 - Add code to copy FlyInclude.php
 # 170915-1458 - Added Asterisk 13 compability pieces
+# 190530-1511 - Added 'S' keepalive option
 #
 
 ############################################
@@ -54,28 +67,28 @@
 # default path to astguiclient configuration file:
 $defaultPATHconf =		'/etc/astguiclient.conf';
 $PATHconf =		$defaultPATHconf;
-$defaultPATHconfNew =		'/etc/flyingpenguin/vicidial.conf';
+$defaultPATHconfNew =		'/etc/snct-dialer/snct-dialer.conf';
 $PATHconfNew =		$defaultPATHconfNew;
 $defaultPATHmasterConf = 	'extras/master.conf';
 $PATHmasterConf =	$defaultPATHmasterConf;
 
 # default path to home directory:
 $PATHhome =		'/usr/share/astguiclient';
-# default path to astguiclient logs directory: 
+# default path to astguiclient logs directory:
 $PATHlogs =		'/var/log/astguiclient';
-# default path to asterisk agi-bin directory: 
-$PATHagi =		'/var/lib/asterisk/agi-bin';
-# default path to web root directory: 
-#$PATHweb =		'/var/www/html';
+# default path to asterisk agi-bin directory:
+$PATHagi =		'/usr/share/asterisk/agi-bin';
+# default path to web root directory:
+$PATHweb =		'/var/www/html';
 #$PATHweb =		'/home/www/htdocs';
-$PATHweb =		'/usr/local/apache2/htdocs';
-# default path to asterisk sounds directory: 
-$PATHsounds =	'/var/lib/asterisk/sounds';
-# default path to asterisk recordings directory: 
+#$PATHweb =		'/usr/local/apache2/htdocs';
+# default path to asterisk sounds directory:
+$PATHsounds =	'/usr/share/asterisk/sounds';
+# default path to asterisk recordings directory:
 $PATHmonitor =	'/var/spool/asterisk/monitor';
-# default path to asterisk recordings DONE directory: 
+# default path to asterisk recordings DONE directory:
 $PATHDONEmonitor =	'/var/spool/asterisk/monitorDONE';
-# default database server variables: 
+# default database server variables:
 $VARDB_server =	'localhost';
 $VARDB_database =	'asterisk';
 $VARDB_user =	'cron';
@@ -83,9 +96,9 @@ $VARDB_pass =	'1234';
 $VARDB_custom_user =	'custom';
 $VARDB_custom_pass =	'custom1234';
 $VARDB_port =	'3306';
-# default keepalive processes: 
+# default keepalive processes:
 $VARactive_keepalives =		'1234568';
-# default Asterisk version: 
+# default Asterisk version:
 $VARasterisk_version =		'1.4';
 # default recording FTP archive variables:
 $VARFTP_host = '10.0.0.4';
@@ -212,6 +225,7 @@ if (length($ARGV[0])>1)
 		print "     8 - ip_relay (used for blind agent monitoring)\n";
 		print "     9 - Timeclock auto-logout\n";
 		print "     E - Email processor, (If multi-server system, this must only be on one server)\n";
+		print "     S - SIP Logger (Patched Asterisk 13 required)\n";
 		print "  [--asterisk_version] = set the asterisk version you want to install for\n";
 		print "  [--copy_sample_conf_files] = copies the sample conf files to /etc/asterisk/\n";
 		print "  [--web-languages] = copy language translations (WARNING! may not work on trunk installs)\n";
@@ -748,18 +762,18 @@ if (length($ARGV[0])>1)
 			$server_ip = $VARserver_ip;		# Asterisk server IP
 			if (!$VARDB_port) {$VARDB_port='3306';}
 
-			use DBI;	  
+			use DBI;
 
-			$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+			$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
 			 or die "Couldn't connect to database: " . DBI->errstr;
 
 			### format the new server_ip dialstring for example to use with extensions.conf
 			$S='*';
 			if( $VARserver_ip =~ m/(\S+)\.(\S+)\.(\S+)\.(\S+)/ )
 				{
-				$a = leading_zero($1); 
-				$b = leading_zero($2); 
-				$c = leading_zero($3); 
+				$a = leading_zero($1);
+				$b = leading_zero($2);
+				$c = leading_zero($3);
 				$d = leading_zero($4);
 				$VARremDIALstr = "$a$S$b$S$c$S$d";
 				}
@@ -837,9 +851,9 @@ if (length($ARGV[0])>1)
 
 				if( $server_ip[$i] =~ m/(\S+)\.(\S+)\.(\S+)\.(\S+)/ )
 					{
-					$a = leading_zero($1); 
-					$b = leading_zero($2); 
-					$c = leading_zero($3); 
+					$a = leading_zero($1);
+					$b = leading_zero($2);
+					$c = leading_zero($3);
 					$d = leading_zero($4);
 					$VARremDIALstr = "$a$S$b$S$c$S$d";
 					}
@@ -914,9 +928,9 @@ if (length($ARGV[0])>1)
 			$server_ip = $VARserver_ip;		# Asterisk server IP
 			if (!$VARDB_port) {$VARDB_port='3306';}
 
-			use DBI;	  
+			use DBI;
 
-			$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+			$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
 			 or die "Couldn't connect to database: " . DBI->errstr;
 
 			$ext  = "\nAdd the following lines to your extensions.conf file:\n";
@@ -1011,7 +1025,7 @@ else
 	}
 ### end parsing run-time options ###
 
-if (-e "$PATHconf") 
+if (-e "$PATHconf")
 	{
 	print "Previous astGUIclient configuration file found at: $PATHconf\n";
 	open(conf, "$PATHconf") || die "can't open $PATHconf: $!\n";
@@ -1130,7 +1144,7 @@ else
 				$continue='YES';
 				}
 			}
-		if (-e "$PATHconf") 
+		if (-e "$PATHconf")
 			{
 			print "Previous astGUIclient configuration file found at: $PATHconf\n";
 			open(conf, "$PATHconf") || die "can't open $PATHconf: $!\n";
@@ -1632,7 +1646,7 @@ else
 
 		##### BEGIN server_ip prompting and check #####
 		if (length($VARserver_ip)<7)
-			{	
+			{
 			### get best guess of IP address from ifconfig output ###
 			# inet addr:10.10.11.17  Bcast:10.10.255.255  Mask:255.255.0.0
 			@ip = `/sbin/ifconfig`;
@@ -1667,7 +1681,7 @@ else
 
 		##### BEGIN DB_server prompting and check #####
 		if (length($VARDB_server)<7)
-			{	
+			{
 			$VARDB_server = 'localhost';
 			}
 		$continue='NO';
@@ -1826,6 +1840,8 @@ else
 			print " 8 - ip_relay (used for blind agent monitoring)\n";
 			print " 9 - Timeclock auto logout\n";
 			print " E - Email processor, (If multi-server system, this must only be on one server)\n";
+			print " S - SIP Logger (Patched Asterisk 13 required)\n";
+			print " R - Generate RealTimeView Data, this must only be on one server)\n";
 			print "Enter active keepalives or press enter for default: [$VARactive_keepalives] ";
 			$PROMPTactive_keepalives = <STDIN>;
 			chomp($PROMPTactive_keepalives);
@@ -1949,7 +1965,7 @@ else
 
 		##### BEGIN FTP_host prompting and check #####
 		if (length($VARFTP_host)<7)
-			{	
+			{
 			$VARFTP_host = 'localhost';
 			}
 		$continue='NO';
@@ -2073,7 +2089,7 @@ else
 
 		##### BEGIN REPORT_host prompting and check #####
 		if (length($VARREPORT_host)<7)
-			{	
+			{
 			$VARREPORT_host = 'localhost';
 			}
 		$continue='NO';
@@ -2368,7 +2384,7 @@ else
 	}
 
 $ExpectedDBSchema='?';
-if (-e "./extras/MySQL_AST_CREATE_tables.sql") 
+if (-e "./extras/MySQL_AST_CREATE_tables.sql")
 	{
 	print "Gathering expected DB Schema version...\n";
 	open(DBcreate, "./extras/MySQL_AST_CREATE_tables.sql") || die "can't open ./extras/MySQL_AST_CREATE_tables.sql: $!\n";
@@ -2431,6 +2447,8 @@ print conf "#  7 - AST_VDauto_dial_FILL (only for multi-server, this must only b
 print conf "#  8 - ip_relay (used for blind agent monitoring)\n";
 print conf "#  9 - Timeclock auto logout, (If multi-server system, this must only be on one server)\n";
 print conf "#  E - Email processor, (If multi-server system, this must only be on one server)\n";
+print conf "#  S - SIP Logger (Patched Asterisk 13 required)\n";
+print conf "#  R - Generate RealTimeView Data, this must only be on one server)\n";
 print conf "VARactive_keepalives => $VARactive_keepalives\n";
 print conf "\n";
 print conf "# Asterisk version VICIDIAL is installed for\n";
@@ -2467,7 +2485,7 @@ close(conf);
 
 print "Writing to configuration file: $PATHconfNew\n";
 
-if (!-e "/etc/flyingpenguin")	{`mkdir -p "/etc/flyingpenguin"`;}
+if (!-e "/etc/snct-dialer")	{`mkdir -p "/etc/snct-dialer"`;}
 if (!-e $PATHconfNew)	{`cp $PATHmasterConf  $PATHconfNew`}
 
 use Config::IniFiles;
@@ -2537,26 +2555,26 @@ if ($WEBONLY < 1)
 		`mkdir -p $PATHhome/PREPROCESS/DONE`;
 		`chmod -R 0766 $PATHhome/PREPROCESS`;
 		}
-	if (!-e "$PATHhome/VTIGER_IN/DONE")	
+	if (!-e "$PATHhome/VTIGER_IN/DONE")
 		{
 		`mkdir -p $PATHhome/VTIGER_IN/DONE`;
 		`chmod -R 0766 $PATHhome/VTIGER_IN`;
 		}
-	if (!-e "$PATHhome/UPDATE_IN/DONE")	
+	if (!-e "$PATHhome/UPDATE_IN/DONE")
 		{
 		`mkdir -p $PATHhome/UPDATE_IN/DONE`;
 		`chmod -R 0766 $PATHhome/UPDATE_IN`;
 		}
 
 	print "Creating $PATHmonitor directories...\n";
-	if (!-e "$PATHmonitor")					
+	if (!-e "$PATHmonitor")
 		{
 		`mkdir -p $PATHmonitor`;
 		`chmod -R 0766 $PATHmonitor`;
 		}
 	if (!-e "$PATHmonitor/MIX")	{`mkdir -p $PATHmonitor/MIX`;}
 
-	if (!-e "$PATHDONEmonitor")					
+	if (!-e "$PATHDONEmonitor")
 		{
 		`mkdir -p $PATHDONEmonitor`;
 		`chmod -R 0766 $PATHDONEmonitor`;
@@ -2570,11 +2588,20 @@ if ($WEBONLY < 1)
 	if (!-e "$PATHDONEmonitor/FTP")		{`mkdir -p $PATHDONEmonitor/FTP`;}
 	if (!-e "$PATHDONEmonitor/FTP2")	{`mkdir -p $PATHDONEmonitor/FTP2`;}
 
-	print "Creating $PATHlogs/archive directory for backups...\n";
-	if (!-e "$PATHlogs/archive")	{`mkdir -p $PATHlogs/archive`;}
+#	print "Creating $PATHlogs/archive directory for backups...\n";
+#	if (!-e "$PATHlogs/archive")	{`mkdir -p $PATHlogs/archive`;}
+
+	print "Compile Programms ...\n";
+	`cd bin/cpp && ./configure && make && rm build/.dirstamp`;
 
 	print "Copying bin scripts to $PATHhome ...\n";
 	`cp -f ./bin/* $PATHhome/`;
+
+	print "Copying programms to $PATHhome ...\n";
+	`cp -f ./bin/cpp/build/* $PATHhome/`;
+
+	print "Clean build directory ...\n";
+	`cd bin/cpp && make distclean`;
 
 	print "Copying libs to $PATHhome ...\n";
 	`cp -f ./libs/* $PATHhome/libs`;
@@ -2606,11 +2633,11 @@ if ($WEBONLY < 1)
 
 	print "Setting ip_relay scripts to executable...\n";
 	`chmod 0755 $PATHhome/ip_relay/relay_control`;
-	`chmod 0755 $PATHhome/ip_relay/ip_relay_linux_i386`;
-	`ln -s $PATHhome/ip_relay/ip_relay_linux_i386 $PATHhome/ip_relay/ip_relay`;
-	`ln -s $PATHhome/ip_relay/ip_relay_linux_i386 /usr/local/bin/ip_relay`;
-	if (! -x "/usr/bin/ip_relay" ) 
-		{`ln -s $PATHhome/ip_relay/ip_relay_linux_i386 /usr/bin/ip_relay`;}
+	`chmod 0755 $PATHhome/ip_relay/ip_relay`;
+#	`ln -s $PATHhome/ip_relay/ip_relay_linux_i386 $PATHhome/ip_relay/ip_relay`;
+	`ln -s $PATHhome/ip_relay/ip_relay /usr/local/bin/ip_relay`;
+	if (! -x "/usr/bin/ip_relay" )
+		{`ln -s $PATHhome/ip_relay/ip_relay /usr/bin/ip_relay`;}
 
 	print "Starting ip_relay port forwarding for IAX on 40569, 41569 and 42569\n";
 	`$PATHhome/ip_relay/relay_control start  2>/dev/null 1>&2`;
@@ -2639,9 +2666,9 @@ if ($NOWEB < 1)
 	`cp -f ./www/vicidial/robots.txt $PATHweb/vicidial/download/`;
 	if (-e "$PATHweb/agc/css/custom.css.save_user_changes") {`mv $PATHweb/agc/css/custom.css.save_user_changes $PATHweb/agc/css/custom.css`;}
 	`cp -f ./www/vicidial/robots.txt $PATHweb/chat_customer/`;
-	# Copy FlyInclude.php
-	`cp -f ./FlyInclude.php $PATHweb/agc`;
-	`cp -f ./FlyInclude.php $PATHweb/vicidial`;
+	# Copy SNCTVersion.inc
+	`cp -f ./SNCTVersion.inc $PATHweb/agc`;
+	`cp -f ./SNCTVersion.inc $PATHweb/vicidial`;
 	`cp -f ./changelog $PATHweb/vicidial`;
 
 	print "setting web scripts to executable...\n";
@@ -2750,11 +2777,26 @@ if ( ($PROMPTcopy_conf_files =~ /y/i) || ($CLIcopy_conf_files =~ /y/i) )
 	`echo "[vicidial-auto] ;placeholder for auto-generated voicemail conf" > /etc/asterisk/voicemail-vicidial.conf`;
 	}
 
+### copy logrotate files ###
+
+if (!-d "/etc/logrotate.d/")	{`mkdir /etc/logrotate.d/`;}
+`cp -f ./etc/logrotate.d/* /etc/logrotate.d/`;
+
+### copy snct-dialer conf files ###
+
+`cp -f ./etc/snct-dialer/snct-dialer.ini /etc/snct-dialer/snct-dialer.ini`;
+if (!-e "/etc/snct-dialer/snct-dialer.local") {`cp -f ./etc/snct-dialer/snct-dialer.local /etc/snct-dialer/snct-dialer.local`;}
+if (!-d "/etc/snct-dialer/dialer")	{`mkdir /etc/snct-dialer/dialer/`;}
+`cp -f ./etc/snct-dialer/dialer/agent.conf /etc/snct-dialer/dialer/agent.conf`;
+`cp -f ./etc/snct-dialer/dialer/backup.conf /etc/snct-dialer/dialer/backup.conf`;
+if (!-e "/etc/snct-dialer/dialer/agent.local") {`cp -f ./etc/snct-dialer/dialer/agent.local /etc/snct-dialer/dialer/agent.local`;}
+if (!-e "/etc/snct-dialer/dialer/backup.local") {`cp -f ./etc/snct-dialer/dialer/backup.local /etc/snct-dialer/dialer/backup.local`;}
+
 
 ##### BEGIN attempt to connect to database, if successful then update code information in database #####
-use DBI;	  
+use DBI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or warn "Couldn't connect to database: " . DBI->errstr;
 
 if ($dbhA)
@@ -2765,19 +2807,20 @@ if ($dbhA)
 	$svn_revision=0;
 
 	$svn_notes = "not longer used\n";
-	`./convert2pl.php`;
 
-	require './FlyInclude.pl';
+	open my $fh, '<', 'SNCTVersion.inc'
+		or die "Could not open $filename for reading: $!";
+	my $SNCT_version = do { local $/; <$fh> };
 
-	$stmtA = "UPDATE servers SET svn_revision='$FLY_old_svn',svn_info='$svn_notes' where server_ip='$VARserver_ip';";
+	$stmtA = "UPDATE servers SET svn_revision='not used',svn_info='$svn_notes' where server_ip='$VARserver_ip';";
 		if($DB){print STDERR "\n|$stmtA|\n";}
 	$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query:|$stmtA|\n";
 
-	$stmtA = "UPDATE system_settings SET svn_revision='$FLY_old_svn', version='$FLY_version';";
+	$stmtA = "UPDATE system_settings SET svn_revision='not used', version='$SNCT_version';";
 		if($DB){print STDERR "\n|$stmtA|\n";}
 	$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query:|$stmtA|\n";
 
-	print "Version information updated: $FLY_old_svn|$VARserver_ip\n";
+	print "Version information updated: $SNCT_version|$VARserver_ip\n";
 
 	print "Git information update:\n";
 
@@ -2841,7 +2884,7 @@ exit;
 
 
 
-sub leading_zero($) 
+sub leading_zero($)
 	{
 	$_ = $_[0];
 	s/^(\d)$/0$1/;

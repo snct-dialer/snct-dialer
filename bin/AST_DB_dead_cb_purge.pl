@@ -120,9 +120,9 @@ $server_ip = $VARserver_ip;		# Asterisk server IP
 
 if (!$VARDB_port) {$VARDB_port='3306';}
 
-use DBI;	  
+use DBI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
@@ -267,7 +267,7 @@ if ($remove_dup_cb > 0)
 				if($DBX){print STDERR "          DUP |$lead_ids[$rec_count]|$last_lead_id|   |$callback_ids[$rec_count]|$last_callback_id|\n";}
 				}
 			else
-				{	
+				{
 				if($DBX){print STDERR "          NON |$lead_ids[$rec_count]|$last_lead_id|   |$callback_ids[$rec_count]|$last_callback_id|\n";}
 				$last_lead_id=$lead_ids[$rec_count];
 				$last_callback_id=$callback_ids[$rec_count];

@@ -1,10 +1,10 @@
 <?php
 # remote_dispo.php
-# 
+#
 # Copyright (C) 2014  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
-# this is the remote agent disposition screen for calls sent to remote agents. 
-# This allows the remote agent to modify customer information and disposition 
+# this is the remote agent disposition screen for calls sent to remote agents.
+# This allows the remote agent to modify customer information and disposition
 # the call
 #
 # CHANGES
@@ -191,7 +191,7 @@ echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n"
 <BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 <CENTER><FONT FACE="Courier" COLOR=BLACK SIZE=3>
 
-<?php 
+<?php
 
 echo "<!-- $call_began $lead_id -->";
 
@@ -199,12 +199,12 @@ if ($end_call > 0)
 	{
 	$call_length = ($STARTtime - $call_began);
 
-	### insert a NEW record to the vicidial_closer_log table 
+	### insert a NEW record to the vicidial_closer_log table
 	$stmt="UPDATE vicidial_closer_log set end_epoch='$STARTtime', length_in_sec='" . mysqli_real_escape_string($link, $call_length) . "', status='" . mysqli_real_escape_string($link, $status) . "', user='$PHP_AUTH_USER' where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' order by start_epoch desc limit 1;";
 	if ($DB) {echo "|$stmt|\n";}
 	$rslt=mysql_to_mysqli($stmt, $link);
 
-	### update the lead record in the vicidial_list table 
+	### update the lead record in the vicidial_list table
 	$stmt="UPDATE vicidial_list set status='" . mysqli_real_escape_string($link, $status) . "',first_name='" . mysqli_real_escape_string($link, $first_name) . "',last_name='" . mysqli_real_escape_string($link, $last_name) . "',address1='" . mysqli_real_escape_string($link, $address1) . "',address2='" . mysqli_real_escape_string($link, $address2) . "',address3='" . mysqli_real_escape_string($link, $address3) . "',city='" . mysqli_real_escape_string($link, $city) . "',state='" . mysqli_real_escape_string($link, $state) . "',province='" . mysqli_real_escape_string($link, $province) . "',postal_code='" . mysqli_real_escape_string($link, $postal_code) . "',country_code='" . mysqli_real_escape_string($link, $country_code) . "',alt_phone='" . mysqli_real_escape_string($link, $alt_phone) . "',email='" . mysqli_real_escape_string($link, $email) . "',security_phrase='" . mysqli_real_escape_string($link, $security) . "',comments='" . mysqli_real_escape_string($link, $comments) . "',user='$PHP_AUTH_USER' where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "'";
 	if ($DB) {echo "|$stmt|\n";}
 	$rslt=mysql_to_mysqli($stmt, $link);
@@ -292,7 +292,7 @@ else
 		$statuses_list='';
 
 		$o=0;
-		while ($statuses_to_print > $o) 
+		while ($statuses_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
 			$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -328,8 +328,8 @@ echo "<font size=0>\n\n\n<br><br><br>\n"._QXZ("script runtime").": $RUNtime "._Q
 </html>
 
 <?php
-	
-exit; 
+
+exit;
 
 ?>
 

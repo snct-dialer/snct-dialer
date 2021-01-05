@@ -1,13 +1,14 @@
-<?php 
+<?php
 # AST_agentDIDstats.php
-# 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
 # 161207-1952 - First build
 # 170409-1550 - Added IP List validation code
 # 170829-0040 - Added screen color settings
+# 191013-0836 - Fixes for PHP7
 #
 
 $startMS = microtime();
@@ -70,7 +71,7 @@ $table_name="vicidial_did_log";
 $archive_table_name=use_archive_table($table_name);
 if ($archive_table_name!=$table_name) {$archives_available="Y";}
 
-if ($search_archived_data) 
+if ($search_archived_data)
 	{
 	$vicidial_did_log_table=use_archive_table("vicidial_did_log");
 	$vicidial_closer_log_table=use_archive_table("vicidial_closer_log");
@@ -217,6 +218,9 @@ if ($DB) {$MAIN.="$stmt\n";}
 $groups_to_print = mysqli_num_rows($rslt);
 $groups_string='|';
 $i=0;
+$groups=array();
+$group_patterns=array();
+$group_names=array();
 while ($i < $groups_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -348,7 +352,7 @@ $HEADER.="<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 require("chart_button.php");
-$HEADER.="<script src='chart/Chart.js'></script>\n"; 
+$HEADER.="<script src='chart/Chart.js'></script>\n";
 $HEADER.="<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
 
 $HEADER.="<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
@@ -406,7 +410,7 @@ $MAIN.="<SELECT SIZE=5 NAME=group[] multiple>\n";
 $o=0;
 while ($groups_to_print > $o)
 	{
-	if (preg_match("/\|$groups[$o]\|/",$group_string)) 
+	if (preg_match("/\|$groups[$o]\|/",$group_string))
 		{$MAIN.="<option selected value=\"$groups[$o]\">$group_patterns[$o] - $group_names[$o]</option>\n";}
 	else
 		{$MAIN.="<option value=\"$groups[$o]\">$group_patterns[$o] - $group_names[$o]</option>\n";}
@@ -433,7 +437,7 @@ $MAIN.="<option value=\"1745-100\">1745-100</option>\n";
 $MAIN.="</SELECT>\n";
 */
 
-if ($archives_available=="Y") 
+if ($archives_available=="Y")
 	{
 	$MAIN.="<BR><BR><BR><input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."\n";
 	}
@@ -445,7 +449,7 @@ $MAIN.=" &nbsp;";
 #if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>$report_display_type</option>";}
 #$MAIN.="<option value='TEXT'>"._QXZ("TEXT")."</option><option value='HTML'>"._QXZ("HTML")."</option></select>\n";
 $MAIN.="<BR><BR>";
-$MAIN.="<INPUT TYPE=submit NAME=SUBMIT VALUE=SUBMIT>\n";
+$MAIN.="<INPUT TYPE=submit NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'>\n";
 $MAIN.="<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?query_date=$query_date&end_date=$end_date$groupQS&shift=$shift&DB=$DB&SUBMIT=$SUBMIT&file_download=1\">"._QXZ("DOWNLOAD")."</a> | <a href=\"./admin.php?ADD=3311&did_id=$group[0]\">"._QXZ("MODIFY")."</a> | <a href=\"./admin.php?ADD=999999\">"._QXZ("REPORTS")."</a> </FONT>\n";
 $MAIN.="</TD></TR></TABLE>\n";
 $MAIN.="</FORM>\n";
@@ -464,18 +468,18 @@ else
 	{
 	### FOR SHIFTS IT IS BEST TO STICK TO 15-MINUTE INCREMENTS FOR START TIMES ###
 
-	if ($shift == 'AM') 
+	if ($shift == 'AM')
 		{
 	#	$time_BEGIN=$AM_shift_BEGIN;
 	#	$time_END=$AM_shift_END;
-	#	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}   
+	#	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}
 	#	if (strlen($time_END) < 6) {$time_END = "15:15:00";}
-		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}   
+		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}
 		if (strlen($time_END) < 6) {$time_END = "11:59:59";}
-	#	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "12:00:00";}   
+	#	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "12:00:00";}
 	#	if (strlen($time_END) < 6) {$time_END = "11:59:59";}
 		}
-	if ($shift == 'PM') 
+	if ($shift == 'PM')
 		{
 	#	$time_BEGIN=$PM_shift_BEGIN;
 	#	$time_END=$PM_shift_END;
@@ -484,53 +488,53 @@ else
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "12:00:00";}
 		if (strlen($time_END) < 6) {$time_END = "23:59:59";}
 		}
-	if ($shift == 'ALL') 
+	if ($shift == 'ALL')
 		{
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}
 		if (strlen($time_END) < 6) {$time_END = "23:59:59";}
 		}
-	if ($shift == 'DAYTIME') 
+	if ($shift == 'DAYTIME')
 		{
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "08:45:00";}
 		if (strlen($time_END) < 6) {$time_END = "00:59:59";}
 		}
-	if ($shift == '10AM-5PM') 
+	if ($shift == '10AM-5PM')
 		{
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "10:00:00";}
 		if (strlen($time_END) < 6) {$time_END = "16:59:59";}
 		}
-	if ($shift == '10AM-6PM') 
+	if ($shift == '10AM-6PM')
 		{
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "10:00:00";}
 		if (strlen($time_END) < 6) {$time_END = "17:59:59";}
 		}
-	if ($shift == '9AM-11PM') 
+	if ($shift == '9AM-11PM')
 		{
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "09:00:00";}
 		if (strlen($time_END) < 6) {$time_END = "22:59:59";}
 		}
-	if ($shift == '9AM-10PM') 
+	if ($shift == '9AM-10PM')
 		{
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "09:00:00";}
 		if (strlen($time_END) < 6) {$time_END = "21:59:59";}
 		}
-	if ($shift == '9AM-1AM') 
+	if ($shift == '9AM-1AM')
 		{
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "09:00:00";}
 		if (strlen($time_END) < 6) {$time_END = "00:59:59";}
 		}
-	if ($shift == '845-1745') 
+	if ($shift == '845-1745')
 		{
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "08:45:00";}
 		if (strlen($time_END) < 6) {$time_END = "17:44:59";}
 		}
-	if ($shift == '1745-100') 
+	if ($shift == '1745-100')
 		{
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "17:45:00";}
 		if (strlen($time_END) < 6) {$time_END = "00:59:59";}
 		}
 
-	$query_date_BEGIN = "$query_date $time_BEGIN";   
+	$query_date_BEGIN = "$query_date $time_BEGIN";
 	$query_date_END = "$end_date $time_END";
 
 	$SQdate_ARY =	explode(' ',$query_date_BEGIN);
@@ -581,120 +585,124 @@ else
 		array_push($did_array, "$header_row[0]");
 	}
 
-	$did_stmt="select substr(did_description, 1, 30), did_id from vicidial_inbound_dids where did_id in (".implode(",", $did_array).") order by did_description asc";
-	if ($DB) {echo "$did_stmt\n";}
-	$did_rslt=mysql_to_mysqli($did_stmt, $link);
-	$did_description_array=array();
-	while ($did_row=mysqli_fetch_row($did_rslt)) {
-		$ASCII_headerA.="--------------------------------+";
-		$ASCII_headerB.=" ".sprintf("%30s", $did_row[0])." |";
-		$CSV_header.="\"".$did_row[0]."\",";
-		$did_description_array["$did_row[1]"]=$did_row[0];
+	if (count($did_array)>0) {
+		$did_stmt="select substr(did_description, 1, 30), did_id from vicidial_inbound_dids where did_id in (".implode(",", $did_array).") order by did_description asc";
+		if ($DB) {echo "$did_stmt\n";}
+		$did_rslt=mysql_to_mysqli($did_stmt, $link);
+		$did_description_array=array();
+		while ($did_row=mysqli_fetch_row($did_rslt)) {
+			$ASCII_headerA.="--------------------------------+";
+			$ASCII_headerB.=" ".sprintf("%30s", $did_row[0])." |";
+			$CSV_header.="\"".$did_row[0]."\",";
+			$did_description_array["$did_row[1]"]=$did_row[0];
+		}
 	}
+
 	$ASCII_headerA.="-------+\n";
 	$ASCII_headerB.=" TOTAL |\n";
 	$CSV_header.="\"TOTAL\"\n";
-
 	$ASCII_text="";
-	$sunday_array=array();
-	$saturday_array=array();
-	$q=1;
-	foreach ($query_date_array as &$current_date) {
-		$user_array=array();
-		$start_date = "$current_date $time_BEGIN";   
-		$end_date = "$current_date $time_END";
-		if (date("w", strtotime($current_date))==0 || $q==1) {
-			array_push($sunday_array, $current_date);
-		}
-		if (date("w", strtotime($current_date))==6 || $q==count($query_date_array)) {
-			array_push($saturday_array, $current_date);
-		}
 
-		$stmt="select did_id, uniqueid from vicidial_did_log where call_date>='$start_date' and call_date<='$end_date' and did_id in (".implode(",", $did_array).") order by did_id asc";
-		if ($DB) {echo "$stmt\n";}
-		$rslt=mysql_to_mysqli($stmt, $link);
-		if (mysqli_num_rows($rslt)>0) {
-			while ($row=mysqli_fetch_array($rslt)) {
-				$agent_stmt="select vicidial_users.user, vicidial_users.full_name from ".$vicidial_closer_log_table.", vicidial_users where uniqueid='$row[uniqueid]' and ".$vicidial_closer_log_table.".user=vicidial_users.user";
-				if ($DB) {echo "$agent_stmt\n";}
-				$agent_rslt=mysql_to_mysqli($agent_stmt, $link);
-				while($agent_row=mysqli_fetch_array($agent_rslt)) {
-					$user_array["$agent_row[0]|$agent_row[1]"][$row[0]]++;
-				}
+	if (count($did_array)>0) {
+		$sunday_array=array();
+		$saturday_array=array();
+		$q=1;
+		foreach ($query_date_array as &$current_date) {
+			$user_array=array();
+			$start_date = "$current_date $time_BEGIN";
+			$end_date = "$current_date $time_END";
+			if (date("w", strtotime($current_date))==0 || $q==1) {
+				array_push($sunday_array, $current_date);
+			}
+			if (date("w", strtotime($current_date))==6 || $q==count($query_date_array)) {
+				array_push($saturday_array, $current_date);
 			}
 
-			$ASCII_text.=" $current_date\n";
-			$ASCII_text.=$ASCII_headerA.$ASCII_headerB.$ASCII_headerA;
-
-			$CSV_text.="\"$current_date\"\n";
-			$CSV_text.=$CSV_header;
-			while (list($key, $val)=each($user_array)) {
-				$agent_total=0;
-				$agent_info=explode("|", $key);
-				$ASCII_text.="| ".sprintf("%-20s", $agent_info[0]);
-				$ASCII_text.=" | ".sprintf("%-30s", $agent_info[1]);
-				$CSV_text.="\"$agent_info[0]\",\"$agent_info[1]\",";
-				while (list($key2, $val2)=each($did_description_array)) {
-					$ASCII_text.=" | ".sprintf("%30s", ($user_array["$key"][$key2]+0));
-					$CSV_text.="\"".($user_array["$key"][$key2]+0)."\",";
-					$agent_total+=($user_array["$key"][$key2]+0);
+			$stmt="select did_id, uniqueid from vicidial_did_log where call_date>='$start_date' and call_date<='$end_date' and did_id in (".implode(",", $did_array).") order by did_id asc";
+			if ($DB) {echo "$stmt\n";}
+			$rslt=mysql_to_mysqli($stmt, $link);
+			if (mysqli_num_rows($rslt)>0) {
+				while ($row=mysqli_fetch_array($rslt)) {
+					$agent_stmt="select vicidial_users.user, vicidial_users.full_name from ".$vicidial_closer_log_table.", vicidial_users where uniqueid='$row[uniqueid]' and ".$vicidial_closer_log_table.".user=vicidial_users.user";
+					if ($DB) {echo "$agent_stmt\n";}
+					$agent_rslt=mysql_to_mysqli($agent_stmt, $link);
+					while($agent_row=mysqli_fetch_array($agent_rslt)) {
+						$user_array["$agent_row[0]|$agent_row[1]"][$row[0]]++;
+					}
 				}
-				reset($did_description_array);
-				$ASCII_text.=" | ".sprintf("%5s", $agent_total)." |\n";
-				$CSV_text.="\"$agent_total\"\n";
-				$date_total+=$agent_total;
+
+				$ASCII_text.=" $current_date\n";
+				$ASCII_text.=$ASCII_headerA.$ASCII_headerB.$ASCII_headerA;
+
+				$CSV_text.="\"$current_date\"\n";
+				$CSV_text.=$CSV_header;
+				while (list($key, $val)=each($user_array)) {
+					$agent_total=0;
+					$agent_info=explode("|", $key);
+					$ASCII_text.="| ".sprintf("%-20s", $agent_info[0]);
+					$ASCII_text.=" | ".sprintf("%-30s", $agent_info[1]);
+					$CSV_text.="\"$agent_info[0]\",\"$agent_info[1]\",";
+					while (list($key2, $val2)=each($did_description_array)) {
+						$ASCII_text.=" | ".sprintf("%30s", ($user_array["$key"][$key2]+0));
+						$CSV_text.="\"".($user_array["$key"][$key2]+0)."\",";
+						$agent_total+=($user_array["$key"][$key2]+0);
+					}
+					reset($did_description_array);
+					$ASCII_text.=" | ".sprintf("%5s", $agent_total)." |\n";
+					$CSV_text.="\"$agent_total\"\n";
+					$date_total+=$agent_total;
+				}
+				$ASCII_text.=$ASCII_headerA."\n\n";
+				$CSV_text.="\n\n";
 			}
-			$ASCII_text.=$ASCII_headerA."\n\n";
-			$CSV_text.="\n\n";
+
+			$q++;
 		}
 
-		$q++;
+		for ($q=0; $q<count($sunday_array); $q++) {
+			$user_array=array();
+			$start_date = "$sunday_array[$q] $time_BEGIN";
+			$end_date = "$saturday_array[$q] $time_END";
+			$date_total=0;
+
+			$stmt="select did_id, uniqueid from vicidial_did_log where call_date>='$start_date' and call_date<='$end_date' and did_id in (".implode(",", $did_array).") order by did_id asc";
+			if ($DB) {echo "$stmt\n";}
+			$rslt=mysql_to_mysqli($stmt, $link);
+			if (mysqli_num_rows($rslt)>0) {
+				while ($row=mysqli_fetch_array($rslt)) {
+					$agent_stmt="select vicidial_users.user, vicidial_users.full_name from ".$vicidial_closer_log_table.", vicidial_users where uniqueid='$row[uniqueid]' and ".$vicidial_closer_log_table.".user=vicidial_users.user";
+					if ($DB) {echo "$agent_stmt\n";}
+					$agent_rslt=mysql_to_mysqli($agent_stmt, $link);
+					while($agent_row=mysqli_fetch_array($agent_rslt)) {
+						$user_array["$agent_row[0]|$agent_row[1]"][$row[0]]++;
+					}
+				}
+
+				$ASCII_text.=" Week of $sunday_array[$q] thru $saturday_array[$q]\n";
+				$ASCII_text.=$ASCII_headerA.$ASCII_headerB.$ASCII_headerA;
+				$CSV_text.="\"Week of $sunday_array[$q] thru $saturday_array[$q]\"\n";
+				$CSV_text.=$CSV_header;
+				while (list($key, $val)=each($user_array)) {
+					$agent_total=0;
+					$agent_info=explode("|", $key);
+					$ASCII_text.="| ".sprintf("%-20s", $agent_info[0]);
+					$ASCII_text.=" | ".sprintf("%-30s", $agent_info[1]);
+					$CSV_text.="\"$agent_info[0]\",\"$agent_info[1]\",";
+					while (list($key2, $val2)=each($did_description_array)) {
+						$ASCII_text.=" | ".sprintf("%30s", ($user_array["$key"][$key2]+0));
+						$CSV_text.="\"".($user_array["$key"][$key2]+0)."\",";
+						$agent_total+=($user_array["$key"][$key2]+0);
+					}
+					reset($did_description_array);
+					$ASCII_text.=" | ".sprintf("%5s", $agent_total)." |\n";
+					$CSV_text.="\"$agent_total\"\n";
+					$date_total+=$agent_total;
+				}
+				$ASCII_text.=$ASCII_headerA."\n\n";
+				$CSV_text.="\n\n";
+			}
+		}
 	}
-
-	for ($q=0; $q<count($sunday_array); $q++) {
-		$user_array=array();
-		$start_date = "$sunday_array[$q] $time_BEGIN";   
-		$end_date = "$saturday_array[$q] $time_END";
-		$date_total=0;
-
-		$stmt="select did_id, uniqueid from vicidial_did_log where call_date>='$start_date' and call_date<='$end_date' and did_id in (".implode(",", $did_array).") order by did_id asc";
-		if ($DB) {echo "$stmt\n";}
-		$rslt=mysql_to_mysqli($stmt, $link);
-		if (mysqli_num_rows($rslt)>0) {
-			while ($row=mysqli_fetch_array($rslt)) {
-				$agent_stmt="select vicidial_users.user, vicidial_users.full_name from ".$vicidial_closer_log_table.", vicidial_users where uniqueid='$row[uniqueid]' and ".$vicidial_closer_log_table.".user=vicidial_users.user";
-				if ($DB) {echo "$agent_stmt\n";}
-				$agent_rslt=mysql_to_mysqli($agent_stmt, $link);
-				while($agent_row=mysqli_fetch_array($agent_rslt)) {
-					$user_array["$agent_row[0]|$agent_row[1]"][$row[0]]++;
-				}
-			}
-
-			$ASCII_text.=" Week of $sunday_array[$q] thru $saturday_array[$q]\n";
-			$ASCII_text.=$ASCII_headerA.$ASCII_headerB.$ASCII_headerA;
-			$CSV_text.="\"Week of $sunday_array[$q] thru $saturday_array[$q]\"\n";
-			$CSV_text.=$CSV_header;
-			while (list($key, $val)=each($user_array)) {
-				$agent_total=0;
-				$agent_info=explode("|", $key);
-				$ASCII_text.="| ".sprintf("%-20s", $agent_info[0]);
-				$ASCII_text.=" | ".sprintf("%-30s", $agent_info[1]);
-				$CSV_text.="\"$agent_info[0]\",\"$agent_info[1]\",";
-				while (list($key2, $val2)=each($did_description_array)) {
-					$ASCII_text.=" | ".sprintf("%30s", ($user_array["$key"][$key2]+0));
-					$CSV_text.="\"".($user_array["$key"][$key2]+0)."\",";
-					$agent_total+=($user_array["$key"][$key2]+0);
-				}
-				reset($did_description_array);
-				$ASCII_text.=" | ".sprintf("%5s", $agent_total)." |\n";
-				$CSV_text.="\"$agent_total\"\n";
-				$date_total+=$agent_total;
-			}
-			$ASCII_text.=$ASCII_headerA."\n\n";
-			$CSV_text.="\n\n";
-		}
-	}
-
 	if ($report_display_type=="HTML")
 		{
 		$MAIN.=$GRAPH_text;

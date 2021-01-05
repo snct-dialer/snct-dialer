@@ -3,12 +3,12 @@
 # AST_agent_week_tally.pl    version 2.0.5
 #
 # This script is designed to gather stats for all agent activity over the course
-# of a week and print it in an ASCI text file to be placed 
+# of a week and print it in an ASCI text file to be placed
 # on a web server for viewing.
 #
 # Place in the crontab and run every Saturday night at 23:59
 # 59 23 6 * * /home/cron/AST_agent_day.pl
-# 
+#
 # Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -153,12 +153,12 @@ open(Dout, ">$PATHweb/vicidial/agent_reports/$Doutfile")
 if (!$VARDB_port) {$VARDB_port='3306';}
 
 
-use DBI;	  
+use DBI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
-$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
 
 #$vicidial_agent_log = 'vicidial_agent_log_archive';
@@ -281,10 +281,10 @@ while ($sthArows > $rec_count)
 	$login_time =	sprintf("%9s", $TIME_HMS);
 
 
-	
-	print Dout "$shipdate|$Dname|$Duser|$Dcalls|$Dtalk|$Dpause|$Dwait|$Ddispo|$Dactive|$Dlogin_time|$Dfirst_time|$Dlast_time\n"; 
-	print out "$name$user$calls$talk$pause$wait$dispo$active$login_time$first_time$last_time\n"; 
-	print "$name$user$calls$talk$pause$wait$dispo$active$login_time$first_time$last_time\n"; 
+
+	print Dout "$shipdate|$Dname|$Duser|$Dcalls|$Dtalk|$Dpause|$Dwait|$Ddispo|$Dactive|$Dlogin_time|$Dfirst_time|$Dlast_time\n";
+	print out "$name$user$calls$talk$pause$wait$dispo$active$login_time$first_time$last_time\n";
+	print "$name$user$calls$talk$pause$wait$dispo$active$login_time$first_time$last_time\n";
 
 
 	$rec_count++;

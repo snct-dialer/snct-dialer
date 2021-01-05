@@ -1,6 +1,6 @@
-<?php 
+<?php
 # AST_GROUP_ALIASstats.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # If you are going to run this report I would recommend adding the following in MySQL:
@@ -208,7 +208,7 @@ if (!isset($end_date)) {$end_date = "$NOW_DATE 23:59:59";}
 -->
  </STYLE>
 
-<?php 
+<?php
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo "<TITLE>Group Alias Report</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 
@@ -335,7 +335,7 @@ while ($i < $records_to_grab)
 		$k++;
 		}
 
-	$Ccall_time_MS =		sec_convert($group_sec,'M'); 
+	$Ccall_time_MS =		sec_convert($group_sec,'M');
 	$Ccall_time_MS =		sprintf("%10s", $Ccall_time_MS);
 	echo "| $group_alias_name[$i] | $Ccall_time_MS | $count[$i] |";
 	if ($DB) {echo "$found_sec";}
@@ -345,7 +345,7 @@ while ($i < $records_to_grab)
 
 $TOTcount =	sprintf("%-8s", $TOTcount);
 
-$Tcall_time_MS =		sec_convert($total_sec,'M'); 
+$Tcall_time_MS =		sec_convert($total_sec,'M');
 $Tcall_time_MS =		sprintf("%10s", $Tcall_time_MS);
 
 echo "+------------------------------------------------------------------------+------------+----------+\n";

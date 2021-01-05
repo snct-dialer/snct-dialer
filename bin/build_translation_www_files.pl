@@ -150,7 +150,7 @@ if ($LANG)
 	if ( (!$admin_only) && (!$client_only) )
 		{$admin_only=1; $client_only=1;}
 
-	if ($admin_only==1) 
+	if ($admin_only==1)
 		{
 		print "\n----- LANGUAGE BUILD: $CLIlanguage -----\n\n";
 		$LANG_FILE_ERROR = "$PATHlogs/$CLIlanguage$US$admin_error_file";
@@ -167,7 +167,7 @@ if ($LANG)
 	@TRANSLATIONS=@MT;
 	@TRANSLATIONS_RAW=@MT;
 
-	if ($client_only==1) 
+	if ($client_only==1)
 		{
 		$LANG_FILE_ERROR = "$PATHlogs/$CLIlanguage$US$error_file";
 		$LANG_FILE = "./translations/$CLIlanguage$US$language_file";
@@ -206,7 +206,7 @@ sub translate_pages
 		{
 		if ($lang[$i] !~ /^\#/)
 			{
-			if ($lang[$i] =~ /^\*\*\*/) 
+			if ($lang[$i] =~ /^\*\*\*/)
 				{
 				$section = $lang[$i];
 				$section =~ s/\*|\n|\r//gi;
@@ -261,7 +261,7 @@ sub translate_pages
 	#foreach(@TRANSLATIONS)
 	#	{
 	#	$length = length($TRANSLATIONS[$k]);
-	#	print "$TRANSLATIONS[$k]|$length|\n";  
+	#	print "$TRANSLATIONS[$k]|$length|\n";
 	#	$k++;
 	#	}
 
@@ -272,7 +272,7 @@ sub translate_pages
 	$gif = '.gif';
 	foreach(@lang_list)
 		{
-		if (length($lang_list[$i]) > 2) 
+		if (length($lang_list[$i]) > 2)
 			{
 			@lang_detail  = split(/-/, $lang_list[$i]);
 			$lang_abb = $lang_detail[0];
@@ -336,7 +336,7 @@ sub translate_pages
 											$gif = '.gif';
 											foreach(@lang_link_list)
 												{
-												if (length($lang_link_list[$e]) > 2) 
+												if (length($lang_link_list[$e]) > 2)
 													{
 													@lang_list_detail  = split(/-/, $lang_link_list[$e]);
 													$lang_list_abb = $lang_list_detail[0];
@@ -359,7 +359,7 @@ sub translate_pages
 												$gif = '.gif';
 												foreach(@lang_link_list)
 													{
-													if (length($lang_link_list[$e]) > 2) 
+													if (length($lang_link_list[$e]) > 2)
 														{
 														@lang_list_detail  = split(/-/, $lang_link_list[$e]);
 														$lang_list_abb = $lang_list_detail[0];

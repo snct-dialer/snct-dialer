@@ -1,10 +1,10 @@
-<?php 
+<?php
 # AST_agent_time_detail.php
-# 
+#
 # Pulls time stats per agent selectable by campaign or user group
 # should be most accurate agent stats of all of the reports
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 90522-0723 - First build
@@ -53,6 +53,8 @@
 # 170409-1542 - Added IP List validation code
 # 170829-0040 - Added screen color settings
 # 171012-2015 - Fixed javascript/apache errors with graphs
+# 180502-2215 - Added new help display, added CONNECTED column
+# 191013-0846 - Fixes for PHP7
 #
 
 $startMS = microtime();
@@ -101,12 +103,12 @@ if (isset($_GET["search_archived_data"]))			{$search_archived_data=$_GET["search
 if (strlen($shift)<2) {$shift='ALL';}
 if (strlen($stage)<2) {$stage='NAME';}
 
-if ($search_archived_data=="checked") 
+if ($search_archived_data=="checked")
 	{
 	$agent_log_table="vicidial_agent_log_archive";
 	$table_check_stmt="show tables like 'vicidial_timeclock_log_archive'";
 	$table_check_rslt=mysql_to_mysqli($table_check_stmt, $link);
-	if (mysqli_num_rows($table_check_rslt)>0) 
+	if (mysqli_num_rows($table_check_rslt)>0)
 		{
 		$timeclock_log_table="vicidial_timeclock_log_archive";
 		}
@@ -114,8 +116,8 @@ if ($search_archived_data=="checked")
 		{
 		$timeclock_log_table="vicidial_timeclock_log";
 		}
-	} 
-else 
+	}
+else
 	{
 	$agent_log_table="vicidial_agent_log";
 	$timeclock_log_table="vicidial_timeclock_log";
@@ -420,14 +422,15 @@ else
 	$group_SQL = "and campaign_id IN($group_SQL)";
 	}
 
-for ($i=0; $i<count($user_group); $i++)
-	{
-	if (preg_match('/\-\-ALL\-\-/', $user_group[$i])) {$all_user_groups=1; $user_group="";}
-	}
+#for ($i=0; $i<count($user_group); $i++)
+#	{
+#	if (preg_match('/\-\-ALL\-\-/', $user_group[$i])) {$all_user_groups=1; $user_group="";}
+#	}
 $stmt="select user_group from vicidial_user_groups $whereLOGadmin_viewable_groupsSQL order by user_group;";
 $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $user_groups_to_print = mysqli_num_rows($rslt);
+$user_groups=array();
 $i=0;
 while ($i < $user_groups_to_print)
 	{
@@ -474,9 +477,11 @@ while ($i < $statha_to_print)
 
 $LINKbase = "$PHP_SELF?query_date=$query_date&end_date=$end_date$groupQS$user_groupQS&shift=$shift&show_parks=$show_parks&time_in_sec=$time_in_sec&search_archived_data=$search_archived_data&report_display_type=$report_display_type&DB=$DB";
 
-$NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
-$NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+# $NWB = " &nbsp; <a href=\"javascript:openNewWindow('help.php?ADD=99999";
+# $NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
 
+$NWB = "<IMG SRC=\"help.gif\" onClick=\"FillAndShowHelpDiv(event, '";
+$NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
 
 if ($file_download < 1)
 	{
@@ -499,8 +504,12 @@ if ($file_download < 1)
 	echo "<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 	echo "<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 	require("chart_button.php");
-	echo "<script src='chart/Chart.js'></script>\n"; 
+	echo "<script src='chart/Chart.js'></script>\n";
 	echo "<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
+
+	echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"vicidial_stylesheet.php\">\n";
+	echo "<script language=\"JavaScript\" src=\"help.js\"></script>\n";
+	echo "<div id='HelpDisplayDiv' class='help_info' style='display:none;z-index:99;'></div>";
 
 	echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 	echo "<TITLE>"._QXZ("$report_name")."</TITLE></HEAD><BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
@@ -525,41 +534,41 @@ if ( (strlen($group[0]) < 1) or (strlen($user_group[0]) < 1) )
 
 else
 	{
-	if ($shift == 'TEST') 
+	if ($shift == 'TEST')
 		{
-		$time_BEGIN = "09:45:00";  
+		$time_BEGIN = "09:45:00";
 		$time_END = "10:00:00";
 		}
-	if ($shift == 'AM') 
+	if ($shift == 'AM')
 		{
 		$time_BEGIN=$AM_shift_BEGIN;
 		$time_END=$AM_shift_END;
-		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}   
+		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}
 		if (strlen($time_END) < 6) {$time_END = "15:14:59";}
 		}
-	if ($shift == 'PM') 
+	if ($shift == 'PM')
 		{
 		$time_BEGIN=$PM_shift_BEGIN;
 		$time_END=$PM_shift_END;
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "15:15:00";}
 		if (strlen($time_END) < 6) {$time_END = "23:15:00";}
 		}
-	if ($shift == 'ALL') 
+	if ($shift == 'ALL')
 		{
 		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}
 		if (strlen($time_END) < 6) {$time_END = "23:59:59";}
 		}
-	if ($shift == '9AM-5PM') 
+	if ($shift == '9AM-5PM')
 		{
 		$time_BEGIN = "09:00:00";
 		$time_END = "16:59:59";
 		}
-	if ($shift == '5PM-MIDNIGHT') 
+	if ($shift == '5PM-MIDNIGHT')
 		{
 		$time_BEGIN = "17:00:00";
 		$time_END = "23:59:59";
 		}
-	$query_date_BEGIN = "$query_date $time_BEGIN";   
+	$query_date_BEGIN = "$query_date $time_BEGIN";
 	$query_date_END = "$end_date $time_END";
 
 	if ($file_download < 1)
@@ -638,7 +647,7 @@ else
 	$PCuser_namesARY=$MT;
 	$user_count=0;
 
-	if ($show_parks) 
+	if ($show_parks)
 		{
 		$park_HEADER=" "._QXZ("PARKS",8)." | "._QXZ("PARK TIME",10)." | "._QXZ("AVG PARK",10)." | "._QXZ("PARKS/CALL",10)." |";
 		$park_HEADER_DIV="+----------+------------+------------+------------";
@@ -650,7 +659,7 @@ else
 	$park_stmt="select user, count(*), sum(parked_sec) From park_log where parked_time <= '$query_date_END' and parked_time >= '$query_date_BEGIN' $park_log_SQL group by user";
 	if ($DB) {$ASCII_text.= "$park_stmt\n";}
 	$park_rslt=mysql_to_mysqli($park_stmt, $link);
-	while ($park_row=mysqli_fetch_row($park_rslt)) 
+	while ($park_row=mysqli_fetch_row($park_rslt))
 		{
 		$park_array[$park_row[0]][0]=$park_row[1];
 		$park_array[$park_row[0]][1]=$park_row[2];
@@ -665,11 +674,11 @@ else
 
 		$stmt="select $userSQL,sum(pause_sec),sub_status from ".$agent_log_table." where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN' and pause_sec > 0 and pause_sec < 65000 and sub_status='$current_ss' $group_SQL $user_group_SQL group by user,sub_status order by user,sub_status desc limit 10000000;";
 		$rslt=mysql_to_mysqli($stmt, $link);
-		
+
 		if ($DB) {$ASCII_text.= "$stmt\n";}
 		$sub_subs_to_print = mysqli_num_rows($rslt);
 		$subs_to_print+=$sub_subs_to_print;
-		$i=0; 
+		$i=0;
 		while ($i < $sub_subs_to_print)
 			{
 			$row=mysqli_fetch_row($rslt);
@@ -729,6 +738,7 @@ else
 		if ($pause > 65000) {$pause=0;}
 		if ($dead > 65000) {$dead=0;}
 		$customer =		($talk - $dead);
+		$connected =		($talk + $wait);
 		if ($customer < 1)
 			{$customer=0;}
 		$TOTwait =	($TOTwait + $wait);
@@ -737,11 +747,12 @@ else
 		$TOTpause =	($TOTpause + $pause);
 		$TOTdead =	($TOTdead + $dead);
 		$TOTcustomer =	($TOTcustomer + $customer);
+		$TOTconnected =	($TOTconnected + $connected);
 		$TOTALtime = ($TOTALtime + $pause + $dispo + $talk + $wait);
 		if ( ($lead > 0) and ((!preg_match("/NULL/i",$status)) and (strlen($status) > 0)) ) {$TOTcalls++;}
-		
+
 		$user_found=0;
-		if ($uc < 1) 
+		if ($uc < 1)
 			{
 			$Suser[$uc] = $user;
 			$uc++;
@@ -759,6 +770,7 @@ else
 				$Spause[$m] =	($Spause[$m] + $pause);
 				$Sdead[$m] =	($Sdead[$m] + $dead);
 				$Scustomer[$m] =	($Scustomer[$m] + $customer);
+				$Sconnected[$m] =	($Sconnected[$m] + $connected);
 				if ( ($lead > 0) and ((!preg_match("/NULL/i",$status)) and (strlen($status) > 0)) ) {$Scalls[$m]++;}
 				}
 			$m++;
@@ -773,6 +785,7 @@ else
 			$Spause[$uc] =	$pause;
 			$Sdead[$uc] =	$dead;
 			$Scustomer[$uc] =	$customer;
+			$Sconnected[$uc] =	$connected;
 			if ($lead > 0) {$Scalls[$uc]++;}
 			$uc++;
 			}
@@ -793,13 +806,13 @@ else
 	if ($file_download < 1)
 		{
 		$ASCII_text.=_QXZ("AGENT TIME BREAKDOWN").":\n";
-		$ASCII_text.="+---------------------------+----------+----------+------------+------------$park_HEADER_DIV+------------+------------+------------+------------+------------+------------+------------+------------+------------+------------+------------+   +$sub_statusesHEAD\n";
-		$ASCII_text.="| <a href=\"$LINKbase&stage=NAME\">"._QXZ("USER NAME",25)."</a> | <a href=\"$LINKbase&stage=ID\">"._QXZ("ID",8)."</a> | <a href=\"$LINKbase&stage=LEADS\">"._QXZ("CALLS",8)."</a> | <a href=\"$LINKbase&stage=TCLOCK\">"._QXZ("TIME CLOCK",10)."</a> | <a href=\"$LINKbase&stage=TIME\">"._QXZ("LOGIN TIME",10)."</a> |$park_HEADER "._QXZ("WAIT",10)." | "._QXZ("WAIT",8)." % | "._QXZ("TALK",10)." | "._QXZ("TALK TIME",9)." %| "._QXZ("DISPO",10)." | "._QXZ("DISPOTIME",9)." %| "._QXZ("PAUSE",10)." | "._QXZ("PAUSETIME",9)." %| "._QXZ("DEAD",10)." | "._QXZ("DEAD TIME",9)." %| "._QXZ("CUSTOMER",10)." |   |$sub_statusesHTML\n";
-		$ASCII_text.="+---------------------------+----------+----------+------------+------------$park_HEADER_DIV+------------+------------+------------+------------+------------+------------+------------+------------+------------+------------+------------+   +$sub_statusesHEAD\n";
+		$ASCII_text.="+---------------------------+----------+----------+------------+------------$park_HEADER_DIV+------------+------------+------------+------------+------------+------------+------------+------------+------------+------------+------------+------------+   +$sub_statusesHEAD\n";
+		$ASCII_text.="| <a href=\"$LINKbase&stage=NAME\">"._QXZ("USER NAME",25)."</a> | <a href=\"$LINKbase&stage=ID\">"._QXZ("ID",8)."</a> | <a href=\"$LINKbase&stage=LEADS\">"._QXZ("CALLS",8)."</a> | <a href=\"$LINKbase&stage=TCLOCK\">"._QXZ("TIME CLOCK",10)."</a> | <a href=\"$LINKbase&stage=TIME\">"._QXZ("LOGIN TIME",10)."</a> |$park_HEADER "._QXZ("WAIT",10)." | "._QXZ("WAIT",8)." % | "._QXZ("TALK",10)." | "._QXZ("TALK TIME",9)." %| "._QXZ("DISPO",10)." | "._QXZ("DISPOTIME",9)." %| "._QXZ("PAUSE",10)." | "._QXZ("PAUSETIME",9)." %| "._QXZ("DEAD",10)." | "._QXZ("DEAD TIME",9)." %| "._QXZ("CUSTOMER",10)." | "._QXZ("CONNECTED",10)." |   |$sub_statusesHTML\n";
+		$ASCII_text.="+---------------------------+----------+----------+------------+------------$park_HEADER_DIV+------------+------------+------------+------------+------------+------------+------------+------------+------------+------------+------------+------------+   +$sub_statusesHEAD\n";
 		}
 	else
 		{
-		$file_output .= _QXZ("USER").","._QXZ("ID").","._QXZ("CALLS").","._QXZ("TIME CLOCK").","._QXZ("LOGIN TIME")."$park_HEADER_CSV,"._QXZ("WAIT").","._QXZ("WAIT %").","._QXZ("TALK").","._QXZ("TALK TIME %").","._QXZ("DISPO").","._QXZ("DISPOTIME %").","._QXZ("PAUSE").","._QXZ("PAUSETIME %").","._QXZ("DEAD").","._QXZ("DEAD TIME %").","._QXZ("CUSTOMER")."$sub_statusesFILE\n";
+		$file_output .= _QXZ("USER").","._QXZ("ID").","._QXZ("CALLS").","._QXZ("TIME CLOCK").","._QXZ("LOGIN TIME")."$park_HEADER_CSV,"._QXZ("WAIT").","._QXZ("WAIT %").","._QXZ("TALK").","._QXZ("TALK TIME %").","._QXZ("DISPO").","._QXZ("DISPOTIME %").","._QXZ("PAUSE").","._QXZ("PAUSETIME %").","._QXZ("DEAD").","._QXZ("DEAD TIME %").","._QXZ("CUSTOMER").","._QXZ("CONNECTED")."$sub_statusesFILE\n";
 		}
 	##### END print the output to screen or put into file output variable
 
@@ -836,6 +849,7 @@ else
 		if (trim($Spause[$m])>$max_pause) {$max_pause=trim($Spause[$m]);}
 		if (trim($Sdead[$m])>$max_dead) {$max_dead=trim($Sdead[$m]);}
 		if (trim($Scustomer[$m])>$max_customer) {$max_customer=trim($Scustomer[$m]);}
+		if (trim($Sconnected[$m])>$max_connected) {$max_connected=trim($Sconnected[$m]);}
 		if (trim($Swaitpct[$m])>$max_waitpct) {$max_waitpct=trim($Swaitpct[$m]);}
 		if (trim($Stalkpct[$m])>$max_talkpct) {$max_talkpct=trim($Stalkpct[$m]);}
 		if (trim($Sdispopct[$m])>$max_dispopct) {$max_dispopct=trim($Sdispopct[$m]);}
@@ -849,11 +863,12 @@ else
 		$graph_stats[$m][7]=trim($Spause[$m]);
 		$graph_stats[$m][8]=trim($Sdead[$m]);
 		$graph_stats[$m][9]=trim($Scustomer[$m]);
-		$graph_stats[$m][10]=trim(sprintf("%01.2f", $Stalkpct[$m]));
-		$graph_stats[$m][11]=trim(sprintf("%01.2f", $Sdispopct[$m]));
-		$graph_stats[$m][12]=trim(sprintf("%01.2f", $Spausepct[$m]));
-		$graph_stats[$m][13]=trim(sprintf("%01.2f", $Sdeadpct[$m]));
-		$graph_stats[$m][14]=trim(sprintf("%01.2f", $Swaitpct[$m]));
+		$graph_stats[$m][10]=trim($Sconnected[$m]);
+		$graph_stats[$m][11]=trim(sprintf("%01.2f", $Stalkpct[$m]));
+		$graph_stats[$m][12]=trim(sprintf("%01.2f", $Sdispopct[$m]));
+		$graph_stats[$m][13]=trim(sprintf("%01.2f", $Spausepct[$m]));
+		$graph_stats[$m][14]=trim(sprintf("%01.2f", $Sdeadpct[$m]));
+		$graph_stats[$m][15]=trim(sprintf("%01.2f", $Swaitpct[$m]));
 
 		$Swaitpct[$m]=	sprintf("%01.2f", $Swaitpct[$m]);
 		$Stalkpct[$m]=	sprintf("%01.2f", $Stalkpct[$m]);
@@ -866,6 +881,7 @@ else
 		$Spause[$m]=	sec_convert($Spause[$m],$TIME_agenttimedetail);
 		$Sdead[$m]=	sec_convert($Sdead[$m],$TIME_agenttimedetail);
 		$Scustomer[$m]=	sec_convert($Scustomer[$m],$TIME_agenttimedetail);
+		$Sconnected[$m]=	sec_convert($Sconnected[$m],$TIME_agenttimedetail);
 		$Stime[$m]=		sec_convert($Stime[$m],$TIME_agenttimedetail);
 
 		$RAWtime = $Stime[$m];
@@ -875,6 +891,7 @@ else
 		$RAWpause = $Spause[$m];
 		$RAWdead = $Sdead[$m];
 		$RAWcustomer = $Scustomer[$m];
+		$RAWconnected = $Sconnected[$m];
 		$RAWwaitpct = $Swaitpct[$m];
 		$RAWtalkpct = $Stalkpct[$m];
 		$RAWdispopct = $Sdispopct[$m];
@@ -923,8 +940,8 @@ else
 			$RAWtimeTCsec =		"0";
 
 			$graph_stats[$m][2]=0;
-			
-			$StimeTC[$m] =		"0:00"; 
+
+			$StimeTC[$m] =		"0:00";
 			if ($TIME_agenttimedetail == 'HF')
 				{$StimeTC[$m] =		"0:00:00";}
 			if ($TIME_agenttimedetail == 'S')
@@ -969,12 +986,12 @@ else
 					$USERcodePAUSE_MS =		sec_convert($PCpause_sec[$i],$TIME_agenttimedetail);
 					if (strlen($USERcodePAUSE_MS)<1) {$USERcodePAUSE_MS='0';}
 					$pfUSERcodePAUSE_MS =	sprintf("%10s", $USERcodePAUSE_MS);
-					
+
 					if ($PCpause_sec[$i]>$$max_varname) {$$max_varname=$PCpause_sec[$i];}
-					$graph_stats_sub[$m][$n]=$PCpause_sec[$i];					
+					$graph_stats_sub[$m][$n]=$PCpause_sec[$i];
 
 					$n1=($n+19); # THIS IS FOR THE GRAPHING FURTHER DOWN; COULDN'T THINK OF A BETTER WAY TO DO THIS.
-					$graph_stats[$m][$n1]=$PCpause_sec[$i];					
+					$graph_stats[$m][$n1]=$PCpause_sec[$i];
 
 					$SstatusTXT = sprintf("%10s", $pfUSERcodePAUSE_MS);
 					$SstatusesHTML .= " $SstatusTXT |";
@@ -1015,17 +1032,18 @@ else
 		$Sdispopct[$m]=		sprintf("%9s", $Sdispopct[$m])."%";
 		$Spausepct[$m]=		sprintf("%9s", $Spausepct[$m])."%";
 		$Sdeadpct[$m]=		sprintf("%9s", $Sdeadpct[$m])."%";
-		$Swait[$m]=		sprintf("%10s", $Swait[$m]); 
-		$Stalk[$m]=		sprintf("%10s", $Stalk[$m]); 
-		$Sdispo[$m]=	sprintf("%10s", $Sdispo[$m]); 
-		$Spause[$m]=	sprintf("%10s", $Spause[$m]); 
-		$Sdead[$m]=		sprintf("%10s", $Sdead[$m]); 
+		$Swait[$m]=		sprintf("%10s", $Swait[$m]);
+		$Stalk[$m]=		sprintf("%10s", $Stalk[$m]);
+		$Sdispo[$m]=	sprintf("%10s", $Sdispo[$m]);
+		$Spause[$m]=	sprintf("%10s", $Spause[$m]);
+		$Sdead[$m]=		sprintf("%10s", $Sdead[$m]);
 		$Scustomer[$m]=		sprintf("%10s", $Scustomer[$m]);
-		$Scalls[$m]=	sprintf("%8s", $Scalls[$m]); 
-		$Stime[$m]=		sprintf("%10s", $Stime[$m]); 
+		$Sconnected[$m]=		sprintf("%10s", $Sconnected[$m]);
+		$Scalls[$m]=	sprintf("%8s", $Scalls[$m]);
+		$Stime[$m]=		sprintf("%10s", $Stime[$m]);
 
 		# PARK INFO
-		if ($show_parks) 
+		if ($show_parks)
 			{
 			$user_holds=$park_array[$Suser[$m]][0]+0;
 			$total_hold_time=$park_array[$Suser[$m]][1]+0;
@@ -1039,10 +1057,10 @@ else
 			$avg_hold_time=sec_convert($avg_hold_time,$TIME_agenttimedetail);
 			$park_AGENT_INFO_CSV="$user_holds,$total_hold_time,$avg_hold_time,$user_hpc,";
 
-			$user_holds=	sprintf("%8s", $user_holds); 
-			$total_hold_time=	sprintf("%10s", $total_hold_time); 
-			$avg_hold_time=	sprintf("%10s", $avg_hold_time); 
-			$user_hpc=	sprintf("%10s", $user_hpc); 
+			$user_holds=	sprintf("%8s", $user_holds);
+			$total_hold_time=	sprintf("%10s", $total_hold_time);
+			$avg_hold_time=	sprintf("%10s", $avg_hold_time);
+			$user_hpc=	sprintf("%10s", $user_hpc);
 			$park_AGENT_INFO=" $user_holds | $total_hold_time | $avg_hold_time | $user_hpc |";
 			}
 
@@ -1050,23 +1068,23 @@ else
 		if (trim($park_array[$Suser[$m]][1]+0)>$max_total_hold_time) {$max_total_hold_time=trim($park_array[$Suser[$m]][1]+0);}
 		if (trim(round(MathZDC(($park_array[$Suser[$m]][1]+0), $user_holds)))>$max_avg_hold_time) {$max_avg_hold_time=trim(round(MathZDC(($park_array[$Suser[$m]][1]+0), $user_holds)));}
 		if (trim($user_hpc)>$max_user_hpc) {$max_user_hpc=trim($user_hpc);}
-		$graph_stats[$m][15]=trim($user_holds);
-		$graph_stats[$m][16]=trim($park_array[$Suser[$m]][1]+0);
-		$graph_stats[$m][17]=trim(round(MathZDC(($park_array[$Suser[$m]][1]+0), $user_holds)));
-		$graph_stats[$m][18]=trim($user_hpc);
+		$graph_stats[$m][16]=trim($user_holds);
+		$graph_stats[$m][17]=trim($park_array[$Suser[$m]][1]+0);
+		$graph_stats[$m][18]=trim(round(MathZDC(($park_array[$Suser[$m]][1]+0), $user_holds)));
+		$graph_stats[$m][19]=trim($user_hpc);
 
 
 		if ($file_download<1) {
 			if ($non_latin < 1)
 				{
-				$Sname[$m]=	sprintf("%-25s", $Sname[$m]); 
+				$Sname[$m]=	sprintf("%-25s", $Sname[$m]);
 				while(strlen($Sname[$m])>25) {$Sname[$m] = substr("$Sname[$m]", 0, -1);}
 				$Suser[$m] =		sprintf("%-8s", $Suser[$m]);
 				while(strlen($Suser[$m])>8) {$Suser[$m] = substr("$Suser[$m]", 0, -1);}
 				}
 			else
-				{	
-				$Sname[$m]=	sprintf("%-75s", $Sname[$m]); 
+				{
+				$Sname[$m]=	sprintf("%-75s", $Sname[$m]);
 				while(mb_strlen($Sname[$m],'utf-8')>25) {$Sname[$m] = mb_substr("$Sname[$m]", 0, -1,'utf-8');}
 				$Suser[$m] =	sprintf("%-24s", $Suser[$m]);
 				while(mb_strlen($Suser[$m],'utf-8')>8) {$Suser[$m] = mb_substr("$Suser[$m]", 0, -1,'utf-8');}
@@ -1077,13 +1095,13 @@ else
 			{
 			if ($atdr_login_logout_user_link > 0)
 				{
-				$Toutput = "| $Sname[$m] | <a href=\"./user_stats.php?pause_code_rpt=1&begin_date=$query_date&end_date=$end_date&user=$RAWuser\">$Suser[$m]</a> | $Scalls[$m] | $StimeTC[$m]$TCuserAUTOLOGOUT| $Stime[$m] |$park_AGENT_INFO $Swait[$m] | $Swaitpct[$m] | $Stalk[$m] | $Stalkpct[$m] | $Sdispo[$m] | $Sdispopct[$m] | $Spause[$m] | $Spausepct[$m] | $Sdead[$m] | $Sdeadpct[$m] | $Scustomer[$m] |   |$SstatusesHTML\n";
+				$Toutput = "| $Sname[$m] | <a href=\"./user_stats.php?pause_code_rpt=1&begin_date=$query_date&end_date=$end_date&user=$RAWuser\">$Suser[$m]</a> | $Scalls[$m] | $StimeTC[$m]$TCuserAUTOLOGOUT| $Stime[$m] |$park_AGENT_INFO $Swait[$m] | $Swaitpct[$m] | $Stalk[$m] | $Stalkpct[$m] | $Sdispo[$m] | $Sdispopct[$m] | $Spause[$m] | $Spausepct[$m] | $Sdead[$m] | $Sdeadpct[$m] | $Scustomer[$m] | $Sconnected[$m] |   |$SstatusesHTML\n";
 				}
 			else
 				{
-				$Toutput = "| $Sname[$m] | <a href=\"./user_stats.php?user=$RAWuser&begin_date=$query_date&end_date\">$Suser[$m]</a> | $Scalls[$m] | $StimeTC[$m]$TCuserAUTOLOGOUT| $Stime[$m] |$park_AGENT_INFO $Swait[$m] | $Swaitpct[$m] | $Stalk[$m] | $Stalkpct[$m] | $Sdispo[$m] | $Sdispopct[$m] | $Spause[$m] | $Spausepct[$m] | $Sdead[$m] | $Sdeadpct[$m] | $Scustomer[$m] |   |$SstatusesHTML\n";
+				$Toutput = "| $Sname[$m] | <a href=\"./user_stats.php?user=$RAWuser&begin_date=$query_date&end_date\">$Suser[$m]</a> | $Scalls[$m] | $StimeTC[$m]$TCuserAUTOLOGOUT| $Stime[$m] |$park_AGENT_INFO $Swait[$m] | $Swaitpct[$m] | $Stalk[$m] | $Stalkpct[$m] | $Sdispo[$m] | $Sdispopct[$m] | $Spause[$m] | $Spausepct[$m] | $Sdead[$m] | $Sdeadpct[$m] | $Scustomer[$m] | $Sconnected[$m] |   |$SstatusesHTML\n";
 				}
-				
+
 			$graph_stats[$m][0]=trim("$Suser[$m] - $Sname[$m]");
 			$user_IDs[$m]=$Suser[$m];
 			}
@@ -1101,12 +1119,13 @@ else
 			if (strlen($RAWdead)<1) {$RAWdead='0';}
 			if (strlen($RAWdeadpct)<0) {$RAWdeadpct='0.0%';}
 			if (strlen($RAWcustomer)<1) {$RAWcustomer='0';}
-			$user_holds=trim($user_holds); 
-			$total_hold_time=trim($total_hold_time); 
-			$avg_hold_time=trim($avg_hold_time); 
-			$user_hpc=trim($user_hpc); 
+			if (strlen($RAWconnected)<1) {$RAWconnected='0';}
+			$user_holds=trim($user_holds);
+			$total_hold_time=trim($total_hold_time);
+			$avg_hold_time=trim($avg_hold_time);
+			$user_hpc=trim($user_hpc);
 
-			$fileToutput = "$RAWname,$RAWuser,$RAWcalls,$RAWtimeTC,$RAWtime,$park_AGENT_INFO_CSV$RAWwait,$RAWwaitpct %,$RAWtalk,$RAWtalkpct %,$RAWdispo,$RAWdispopct %,$RAWpause,$RAWpausepct %,$RAWdead,$RAWdeadpct %,$RAWcustomer$SstatusesFILE\n";
+			$fileToutput = "$RAWname,$RAWuser,$RAWcalls,$RAWtimeTC,$RAWtime,$park_AGENT_INFO_CSV$RAWwait,$RAWwaitpct %,$RAWtalk,$RAWtalkpct %,$RAWdispo,$RAWdispopct %,$RAWpause,$RAWpausepct %,$RAWdead,$RAWdeadpct %,$RAWcustomer,$RAWconnected$SstatusesFILE\n";
 			}
 
 		$TOPsorted_output[$m] = $Toutput;
@@ -1155,7 +1174,7 @@ else
 	$hTOT_AGENTS = sprintf("%5s", $TOT_AGENTS);
 	$k=$m;
 
-	if ($DB) {echo "Done analyzing...   $TOTwait|$TOTtalk|$TOTdispo|$TOTpause|$TOTdead|$TOTcustomer|$TOTALtime|$TOTcalls|$uc|<BR>\n";}
+	if ($DB) {echo "Done analyzing...   $TOTwait|$TOTtalk|$TOTdispo|$TOTpause|$TOTdead|$TOTcustomer|$TOTconnected|$TOTALtime|$TOTcalls|$uc|<BR>\n";}
 
 
 	### BEGIN sort through output to display properly ###
@@ -1249,19 +1268,20 @@ else
 	$TOTpause = sec_convert($TOTpause,$TIME_agenttimedetail);
 	$TOTdead = sec_convert($TOTdead,$TIME_agenttimedetail);
 	$TOTcustomer = sec_convert($TOTcustomer,$TIME_agenttimedetail);
+	$TOTconnected = sec_convert($TOTconnected,$TIME_agenttimedetail);
 	$TOTALtime = sec_convert($TOTALtime,$TIME_agenttimedetail);
 	$TOTtimeTC = sec_convert($TOTtimeTC,$TIME_agenttimedetail);
 
-	if ($show_parks) 
+	if ($show_parks)
 		{
 		$TOTavg_hold_time=round(MathZDC($TOTtotal_hold_time, $TOTuser_holds));
 		$TOTuser_hpc=sprintf("%.2f", MathZDC($TOTuser_holds, $TOTcalls));
 		$TOTtotal_hold_time=sec_convert($TOTtotal_hold_time,$TIME_agenttimedetail);
 		$TOTavg_hold_time=sec_convert($TOTavg_hold_time,$TIME_agenttimedetail);
-		$hTOTuser_holds=	sprintf("%8s", $TOTuser_holds); 
-		$hTOTtotal_hold_time=	sprintf("%10s", $TOTtotal_hold_time); 
-		$hTOTavg_hold_time=	sprintf("%10s", $TOTavg_hold_time); 
-		$hTOTuser_hpc=	sprintf("%10s", $TOTuser_hpc); 
+		$hTOTuser_holds=	sprintf("%8s", $TOTuser_holds);
+		$hTOTtotal_hold_time=	sprintf("%10s", $TOTtotal_hold_time);
+		$hTOTavg_hold_time=	sprintf("%10s", $TOTavg_hold_time);
+		$hTOTuser_hpc=	sprintf("%10s", $TOTuser_hpc);
 		$park_TOTALS=" $hTOTuser_holds | $hTOTtotal_hold_time | $hTOTavg_hold_time | $hTOTuser_hpc |";
 		$park_TOTALS_CSV="$TOTuser_holds,$TOTtotal_hold_time,$TOTavg_hold_time,$TOTuser_hpc,";
 		}
@@ -1278,17 +1298,18 @@ else
 	$hTOTpause =	sprintf("%11s", $TOTpause);
 	$hTOTdead =	sprintf("%11s", $TOTdead);
 	$hTOTcustomer =	sprintf("%11s", $TOTcustomer);
+	$hTOTconnected =	sprintf("%11s", $TOTconnected);
 	$hTOTALtime = sprintf("%11s", $TOTALtime);
 	$hTOTtimeTC = sprintf("%11s", $TOTtimeTC);
 	###### END LAST LINE TOTALS FORMATTING ##########
 
 
- 
+
 	if ($file_download < 1)
 		{
-		$ASCII_text.="+---------------------------+----------+----------+------------+------------$park_HEADER_DIV+------------+------------+------------+------------+------------+------------+------------+------------+------------+------------+------------+   +$sub_statusesHEAD\n";
-		$ASCII_text.="| "._QXZ("TOTALS",10)." "._QXZ("AGENTS",9,"r").":$hTOT_AGENTS           | $hTOTcalls |$hTOTtimeTC |$hTOTALtime |$park_TOTALS$hTOTwait |$hTOTwaitpct |$hTOTtalk |$hTOTtalkpct |$hTOTdispo |$hTOTdispopct |$hTOTpause |$hTOTpausepct |$hTOTdead |$hTOTdeadpct |$hTOTcustomer |   |$SUMstatusesHTML\n";
-		$ASCII_text.="+--------------------------------------+----------+------------+------------$park_HEADER_DIV+------------+------------+------------+------------+------------+------------+------------+------------+------------+------------+------------+   +$sub_statusesHEAD\n";
+		$ASCII_text.="+---------------------------+----------+----------+------------+------------$park_HEADER_DIV+------------+------------+------------+------------+------------+------------+------------+------------+------------+------------+------------+------------+   +$sub_statusesHEAD\n";
+		$ASCII_text.="| "._QXZ("TOTALS",10)." "._QXZ("AGENTS",9,"r").":$hTOT_AGENTS           | $hTOTcalls |$hTOTtimeTC |$hTOTALtime |$park_TOTALS$hTOTwait |$hTOTwaitpct |$hTOTtalk |$hTOTtalkpct |$hTOTdispo |$hTOTdispopct |$hTOTpause |$hTOTpausepct |$hTOTdead |$hTOTdeadpct |$hTOTcustomer |$hTOTconnected |   |$SUMstatusesHTML\n";
+		$ASCII_text.="+--------------------------------------+----------+------------+------------$park_HEADER_DIV+------------+------------+------------+------------+------------+------------+------------+------------+------------+------------+------------+------------+   +$sub_statusesHEAD\n";
 		if ($AUTOLOGOUTflag > 0)
 			{
 			$ASCII_text.= "     * "._QXZ("denotes AUTOLOGOUT from timeclock")."\n";
@@ -1296,7 +1317,7 @@ else
 			}
 		$ASCII_text.="\n\n</PRE>";
 
-		for ($e=0; $e<count($sub_statusesARY); $e++) 
+		for ($e=0; $e<count($sub_statusesARY); $e++)
 			{
 			$Sstatus=$sub_statusesARY[$e];
 			$SstatusTXT=$Sstatus;
@@ -1309,9 +1330,9 @@ else
 		$graph_id++;
 		$graph_array=array("ATD_CALLSdata|1|CALLS|integer|", "ATD_TIMECLOCKdata|2|TIME CLOCK|time|", "ATD_LOGINTIMEdata|3|LOGIN TIME|time|");
 		if ($show_parks) {
-			array_push($graph_array, "ATD_PARKSdata|15|PARKS|integer|", "ATD_PARKTIMEdata|16|PARKTIME|time|", "ATD_AVGPARKdata|17|AVGPARK|time|", "ATD_PARKSCALLdata|18|PARKS/CALL|decimal|");
+			array_push($graph_array, "ATD_PARKSdata|16|PARKS|integer|", "ATD_PARKTIMEdata|17|PARKTIME|time|", "ATD_AVGPARKdata|18|AVGPARK|time|", "ATD_PARKSCALLdata|19|PARKS/CALL|decimal|");
 		}
-		array_push($graph_array, "ATD_WAITdata|4|WAIT|time|", "ATD_WAITPCTdata|14|WAIT %|percent|", "ATD_TALKdata|5|TALK|time|", "ATD_TALKTIMEPCTdata|10|TALKTIME%|percent|", "ATD_DISPOdata|6|DISPO|time|", "ATD_DISPOTIMEPCTdata|11|DISPOTIME%|percent|", "ATD_PAUSEdata|7|PAUSE|time|", "ATD_PAUSETIMEPCTdata|12|PAUSETIME%|percent|", "ATD_DEADdata|8|DEAD|time|", "ATD_DEADTIMEPCTdata|13|DEADTIME%|percent|", "ATD_CUSTOMERdata|9|CUSTOMER|time|");
+		array_push($graph_array, "ATD_WAITdata|4|WAIT|time|", "ATD_WAITPCTdata|15|WAIT %|percent|", "ATD_TALKdata|5|TALK|time|", "ATD_TALKTIMEPCTdata|11|TALKTIME%|percent|", "ATD_DISPOdata|6|DISPO|time|", "ATD_DISPOTIMEPCTdata|12|DISPOTIME%|percent|", "ATD_PAUSEdata|7|PAUSE|time|", "ATD_PAUSETIMEPCTdata|13|PAUSETIME%|percent|", "ATD_DEADdata|8|DEAD|time|", "ATD_DEADTIMEPCTdata|14|DEADTIME%|percent|", "ATD_CUSTOMERdata|9|CUSTOMER|time|", "ATD_CONNECTEDdata|10|CONNECTED|time|");
 
 		for ($e=0; $e<count($sub_statusesARY); $e++) {
 			$Sstatus=$sub_statusesARY[$e];
@@ -1321,15 +1342,15 @@ else
 		}
 
 		$default_graph="bar"; # Graph that is initally displayed when page loads
-		include("graph_color_schemas.inc"); 
+		include("graph_color_schemas.inc");
 
 		$graph_totals_array=array();
 		$graph_totals_rawdata=array();
 		for ($q=0; $q<count($graph_array); $q++) {
-			$graph_info=explode("|", $graph_array[$q]); 
+			$graph_info=explode("|", $graph_array[$q]);
 			$current_graph_total=0;
 			$dataset_name=$graph_info[0];
-			$dataset_index=$graph_info[1]; 
+			$dataset_index=$graph_info[1];
 			$dataset_type=$graph_info[3];
 
 			$JS_text.="var $dataset_name = {\n";
@@ -1347,7 +1368,7 @@ else
 			$graphConstantsC="\t\t\t\thoverBorderColor: [";
 			for ($d=0; $d<count($graph_stats); $d++) {
 				$labels.="\"".preg_replace('/ +/', ' ', $graph_stats[$d][0])."\",";
-				$data.="\"".$graph_stats[$d][$dataset_index]."\","; 
+				$data.="\"".$graph_stats[$d][$dataset_index]."\",";
 				$current_graph_total+=$graph_stats[$d][$dataset_index];
 				$bgcolor=$backgroundColor[($d%count($backgroundColor))];
 				$hbgcolor=$hoverBackgroundColor[($d%count($hoverBackgroundColor))];
@@ -1355,13 +1376,13 @@ else
 				$graphConstantsA.="\"$bgcolor\",";
 				$graphConstantsB.="\"$hbgcolor\",";
 				$graphConstantsC.="\"$hbcolor\",";
-			}	
+			}
 			$graphConstantsA.="],\n";
 			$graphConstantsB.="],\n";
 			$graphConstantsC.="],\n";
 			$labels=preg_replace('/,$/', '', $labels)."],\n";
 			$data=preg_replace('/,$/', '', $data)."],\n";
-			
+
 			$graph_totals_rawdata[$q]=$current_graph_total;
 			switch($dataset_type) {
 				case "time":
@@ -1401,7 +1422,7 @@ else
 		}
 	else
 		{
-		$file_output .= _QXZ("TOTALS").",$TOT_AGENTS,$TOTcalls,$TOTtimeTC,$TOTALtime,$park_TOTALS_CSV$TOTwait,$TOTwaitpct %,$TOTtalk,$TOTtalkpct %,$TOTdispo,$TOTdispopct %,$TOTpause,$TOTpausepct %,$TOTdead,$TOTdeadpct  %,$TOTcustomer$SUMstatusesFILE\n";
+		$file_output .= _QXZ("TOTALS").",$TOT_AGENTS,$TOTcalls,$TOTtimeTC,$TOTALtime,$park_TOTALS_CSV$TOTwait,$TOTwaitpct %,$TOTtalk,$TOTtalkpct %,$TOTdispo,$TOTdispopct %,$TOTpause,$TOTpausepct %,$TOTdead,$TOTdeadpct  %,$TOTcustomer,$TOTconnected$SUMstatusesFILE\n";
 		}
 	}
 
@@ -1530,7 +1551,7 @@ while ($user_groups_to_print > $o)
 echo "</SELECT>\n";
 echo "</TD><TD VALIGN=TOP>"._QXZ("Shift").":<BR>";
 echo "<SELECT SIZE=1 NAME=shift>\n";
-echo "<option selected value=\"$shift\">$shift</option>\n";
+echo "<option selected value=\"$shift\">"._QXZ("$shift")."</option>\n";
 echo "<option value=\"\">--</option>\n";
 echo "<option value=\"AM\">"._QXZ("AM")."</option>\n";
 echo "<option value=\"PM\">"._QXZ("PM")."</option>\n";
@@ -1543,7 +1564,7 @@ echo "<input type='checkbox' name='time_in_sec' value='checked' $time_in_sec>"._
 echo "<input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."<BR>\n";
 echo "</TD><TD VALIGN=TOP>"._QXZ("Display as").":<BR>";
 echo "<select name='report_display_type'>";
-if ($report_display_type) {echo "<option value='$report_display_type' selected>$report_display_type</option>";}
+if ($report_display_type) {echo "<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
 echo "<option value='TEXT'>"._QXZ("TEXT")."</option><option value='HTML'>"._QXZ("HTML")."</option></select>\n<BR><BR>";
 echo "<INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'>\n";
 echo "</TD><TD VALIGN=TOP> &nbsp; &nbsp; &nbsp; &nbsp; ";

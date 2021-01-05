@@ -38,7 +38,7 @@ Factors to be taken into account by the scoring process:
 
 
 Needed database changes:
-!!! IMPORTANT !!! 
+!!! IMPORTANT !!!
 THESE ARE FOR REFERENCE ONLY, DO NOT RUN THEM!!!
 
 ALTER TABLE vicidial_status_categories ADD sale_category ENUM('Y','N') default 'N';

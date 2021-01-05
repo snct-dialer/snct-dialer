@@ -2,17 +2,17 @@
 #
 # agi-set_variables.agi version 2.10
 #
-# runs after a call_log before call is placed out the trunk and sets all 
+# runs after a call_log before call is placed out the trunk and sets all
 # vicidial_list fields as variables for the call
 #
 # You need to put lines similar to those below in your extensions.conf file:
-# 
+#
 # ; VICIDIAL_auto_dialer transfer script AMD with Load Balanced:
 # exten => _91NXXNXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 # exten => _91NXXNXXXXXX,n,AGI(agi-set_variables.agi,)
 # exten => _91NXXNXXXXXX,n,Dial(${TESTSIPTRUNK}/${EXTEN:2},,tTor)
 # exten => _91NXXNXXXXXX,n,Hangup
-# 
+#
 # Copyright (C) 2014  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # changes:
@@ -75,14 +75,14 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port)	{$VARDB_port='3306';}
-if (!$AGILOGfile)	{$AGILOGfile = "$PATHlogs/agiout";}
+if (!$AGILOGfile)	{$AGILOGfile = "$PATHlogs/agiout.log";}
 
 use DBI;
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
 
-  
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
     or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
@@ -104,7 +104,7 @@ $sthA->finish();
 ### begin parsing run-time options ###
 if (length($ARGV[0])>1)
 	{
-	if ($AGILOG) 
+	if ($AGILOG)
 		{$agi_string = "Perl Environment Dump:";   &agi_output;}
 	$i=0;
 	while ($#ARGV >= $i)
@@ -113,7 +113,7 @@ if (length($ARGV[0])>1)
 		if ($AGILOG) {$agi_string = "$i|$ARGV[$i]";   &agi_output;}
 		$i++;
 		}
-	
+
 	### list of command-line array arguments:
 	@ARGV_vars = split(/-----/, $ARGV[0]);
 	$CLI_exten =		$ARGV_vars[0];
@@ -122,7 +122,7 @@ if (length($ARGV[0])>1)
 
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 	{
 	chomp;
 	last unless length($_);
@@ -166,7 +166,7 @@ if ( (
 
 if ($AGILOG) {$agi_string = "AGI Environment Dump:";   &agi_output;}
 
-foreach $i (sort keys %AGI) 
+foreach $i (sort keys %AGI)
 	{
 	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
 	}
@@ -355,21 +355,21 @@ if ($AGILOG) {$agi_string = "+++++ VARIABLE SET DONE EXITING : |$CIDlead_id|$now
 
 exit;
 
-sub checkresult 
+sub checkresult
 	{
 	my ($res) = @_;
 	my $retval;
 	$tests++;
 	chomp $res;
-	if ($res =~ /^200/) 
+	if ($res =~ /^200/)
 		{
 		$res =~ /result=(-?\d+)/;
-		if (!length($1)) 
+		if (!length($1))
 			{
 		#	print STDERR "FAIL ($res)\n";
 			$fail++;
-			} 
-		else 
+			}
+		else
 			{
 		#	print STDERR "PASS ($1)\n";
 			$pass++;

@@ -3,16 +3,16 @@
 # VD_auto_post_VERIFY.agi version 2.0.5   *DBI-version*
 #
 # NOTE: This script is only used with auto-message campaigns with dynamic data
-# 
+#
 # runs after a call is answered
 #
 # You need to put lines similar to those below in your extensions.conf file:
-# 
+#
 # ; VICIDIAL_auto_dialer transfer script AMD with Load Balanced:
 #exten => 8320,1,WaitForSilence(2000,2) ; wait for 2 seconds of silence
 #exten => 8320,2,AGI(VD_auto_post_VERIFY.agi,${EXTEN})
 #exten => 8320,3,Hangup
-# 
+#
 #
 # Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
@@ -90,13 +90,13 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port) {$VARDB_port='3306';}
-if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout";}
+if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout.log";}
 
 use DBI;
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
     or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
@@ -161,7 +161,7 @@ if (length($ARGV[0])>1)
 }
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 {
 	chomp;
 	last unless length($_);
@@ -206,7 +206,7 @@ if ( (
 
 if ($AGILOG) {$agi_string = "AGI Environment Dump:";   &agi_output;}
 
-foreach $i (sort keys %AGI) 
+foreach $i (sort keys %AGI)
 {
 	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
 }
@@ -236,19 +236,19 @@ exit;
 
 
 #	Thank you for your recent purchase of ACME Sprockets, we have
-#	confirmed your enrollment in the 
+#	confirmed your enrollment in the
 
 #	[Verified by Visa| MasterCard SecureCode]
 
 #	program. Please go to www.iconfirm.net and enter your name and
-#	verification code 
+#	verification code
 
-#	[verification code] 
+#	[verification code]
 
 #	within the next (x amount of hours) to
-#	complete 
+#	complete
 
-#	[Verified by Visa|MasterCard SecureCode] 
+#	[Verified by Visa|MasterCard SecureCode]
 
 #	authentication. Your
 #	participation is optional and does not effect the processing of your

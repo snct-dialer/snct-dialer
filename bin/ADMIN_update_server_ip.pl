@@ -2,11 +2,11 @@
 
 # ADMIN_update_server_ip.pl - updates IP address in DB and conf file
 #
-# This script is designed to update all database tables and the local 
-# astguiclient.conf file to reflect a change in IP address. The script will 
+# This script is designed to update all database tables and the local
+# astguiclient.conf file to reflect a change in IP address. The script will
 # automatically default to the first eth address in the ifconfig output.
 #
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG
 # 71205-2144 - Added display of extensions.conf example for call routing
@@ -16,6 +16,7 @@
 # 100428-0943 - Added DB custom user/pass fields
 # 150312-1000 - Added ExpectedDBSchema
 # 180928-1958 - Added update of report_server, active_twin_server_ip and active_voicemail_server, issue #1109
+# 190530-1517 - Added mising commented-out keepalives in conf file
 #
 
 # default path to astguiclient configuration file:
@@ -124,7 +125,7 @@ else
 	}
 ### end parsing run-time options ###
 
-if (-e "$PATHconf") 
+if (-e "$PATHconf")
 	{
 	print "Previous astGUIclient configuration file found at: $PATHconf\n";
 	open(conf, "$PATHconf") || die "can't open $PATHconf: $!\n";
@@ -215,7 +216,7 @@ if ($AUTO)
 	{
 	$manual='n';
 	if (length($VARserver_ip)<7)
-		{	
+		{
 		@ip = `/sbin/ifconfig`;
 		$j=0;
 		while($#ip>=$j)
@@ -266,7 +267,7 @@ else
 
 		##### BEGIN server_ip propmting and check #####
 		if (length($VARserver_ip)<7)
-			{	
+			{
 			### get best guess of IP address from ifconfig output ###
 			# inet addr:10.10.11.17  Bcast:10.10.255.255  Mask:255.255.0.0
 			@ip = `/sbin/ifconfig`;
@@ -355,6 +356,8 @@ print conf "#  6 - FastAGI_log\n";
 print conf "#  7 - AST_VDauto_dial_FILL (only for multi-server, this must only be on one server)\n";
 print conf "#  8 - ip_relay (used for blind agent monitoring)\n";
 print conf "#  9 - Timeclock auto logout\n";
+print conf "#  E - Email processor, (If multi-server system, this must only be on one server)\n";
+print conf "#  S - SIP Logger (Patched Asterisk 13 required)\n";
 print conf "VARactive_keepalives => $VARactive_keepalives\n";
 print conf "\n";
 print conf "# Asterisk version VICIDIAL is installed for\n";
@@ -394,7 +397,7 @@ print "\nSTARTING DATABASE TABLES UPDATES PHASE...\n";
 if (!$VARDB_port) {$VARDB_port='3306';}
 
 use DBI;
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
 	or die "Couldn't connect to database: " . DBI->errstr;
 
 print "  Updating servers table: server_ip...\n";
@@ -494,9 +497,9 @@ $dbhA->disconnect();
 $S='*';
 if( $VARserver_ip =~ m/(\S+)\.(\S+)\.(\S+)\.(\S+)/ )
 	{
-	$a = leading_zero($1); 
-	$b = leading_zero($2); 
-	$c = leading_zero($3); 
+	$a = leading_zero($1);
+	$b = leading_zero($2);
+	$c = leading_zero($3);
 	$d = leading_zero($4);
 	$VARremDIALstr = "$a$S$b$S$c$S$d";
 	}
@@ -513,7 +516,7 @@ print "\n     - process runtime      ($secz sec) ($minz minutes)\n";
 exit;
 
 
-sub leading_zero($) 
+sub leading_zero($)
 	{
     $_ = $_[0];
     s/^(\d)$/0$1/;

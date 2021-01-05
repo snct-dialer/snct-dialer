@@ -1,7 +1,7 @@
 Ubuntu VICIDIAL Install:					2009-09-13
 
 ### NOTE ###
-If you just want a quick setup of ViciDial on Ubuntu, take a look at our 
+If you just want a quick setup of ViciDial on Ubuntu, take a look at our
 downloadable ViciBox server install ISO available at: http://www.vicibox.com
 
 
@@ -131,10 +131,10 @@ $ cd /usr/src/asterisk
 
 ****FOR 1.2 asterisk run the following
 $ wget http://downloads.digium.com/pub/asterisk/releases/asterisk-1.2.30.2.tar.gz
-$ wget http://downloads.digium.com/pub/zaptel/releases/zaptel-1.2.27.tar.gz 
+$ wget http://downloads.digium.com/pub/zaptel/releases/zaptel-1.2.27.tar.gz
 $ wget http://downloads.digium.com/pub/libpri/releases/libpri-1.2.8.tar.gz
 $ tar xzf asterisk-1.2.30.2.tar.gz
-$ tar xzf zaptel-1.2.27.tar.gz 
+$ tar xzf zaptel-1.2.27.tar.gz
 $ tar xzf libpri-1.2.8.tar.gz
 $ cd libpri-1.2.8
 $ make clean && make && make install
@@ -180,7 +180,7 @@ $ wget http://downloads.vicidial.com/required-apps/asterisk-1.4.21.2-vic.tar.gz
 $ wget http://downloads.digium.com/pub/zaptel/zaptel-1.4.12.1.tar.gz
 $ wget http://downloads.asterisk.org/pub/telephony/libpri/old/libpri-1.4.10.1.tar.gz
 $ tar xzf asterisk-1.4.21.2-vici.tar.gz
-$ tar xzf zaptel-1.4.12.1.tar.gz 
+$ tar xzf zaptel-1.4.12.1.tar.gz
 $ tar xzf libpri-1.4.9.tar.gz
 $ cd libpri-1.4.9
 $ make clean; make; make install

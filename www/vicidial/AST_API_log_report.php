@@ -1,9 +1,9 @@
-<?php 
+<?php
 # AST_API_log_report.php
 #
 # This report is for viewing the a report of API activity to the vicidial_api_log table
 #
-# Copyright (C) 2018  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2019  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -15,6 +15,7 @@
 # 180206-2300 - Added option for displaying individual URL variables
 # 180301-2303 - Added DATA column to TEXT/HTML output, Added GET-AND-POST URL logging
 # 180502-2115 - Added new help display
+# 191013-0829 - Fixes for PHP7
 #
 
 $startMS = microtime();
@@ -103,14 +104,14 @@ if ($qm_conf_ct > 0)
 ### ARCHIVED DATA CHECK CONFIGURATION
 $archives_available="N";
 $log_tables_array=array("vicidial_api_log");
-for ($t=0; $t<count($log_tables_array); $t++) 
+for ($t=0; $t<count($log_tables_array); $t++)
 	{
 	$table_name=$log_tables_array[$t];
 	$archive_table_name=use_archive_table($table_name);
 	if ($archive_table_name!=$table_name) {$archives_available="Y";}
 	}
 
-if ($search_archived_data) 
+if ($search_archived_data)
 	{
 	$vicidial_api_log_table=use_archive_table("vicidial_api_log");
 	$vicidial_api_log_table=use_archive_table("vicidial_api_urls");
@@ -341,7 +342,7 @@ while ($row=mysqli_fetch_row($rslt))
 	$user_list[$i]=$row[0];
 	$name_stmt="select full_name from vicidial_users where user='$row[0]'";
 	$name_rslt=mysql_to_mysqli($name_stmt, $link);
-	if (mysqli_num_rows($name_rslt)>0) 
+	if (mysqli_num_rows($name_rslt)>0)
 		{
 		$name_row=mysqli_fetch_row($name_rslt);
 		$user_names[$i]=" - ".$name_row[0];
@@ -354,6 +355,9 @@ $rslt=mysql_to_mysqli($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $users_to_print = mysqli_num_rows($rslt);
 $i=0;
+$user_list=array();
+$user_names=array();
+$user_directory=array();
 while ($i < $users_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -594,7 +598,7 @@ $HTML_head.="<TITLE>"._QXZ("$report_name")."</TITLE></HEAD><BODY BGCOLOR=WHITE m
 
 #	require("admin_header.php");
 
-$HTML_text.="<B>$report_name</B> $NWB#api_log_report$NWE<BR>";
+$HTML_text.="<B>"._QXZ("$report_name")."</B> $NWB#api_log_report$NWE<BR>";
 $HTML_text.="<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
 
 $HTML_text.="<FORM ACTION=\"$PHP_SELF\" METHOD=GET name=vicidial_report id=vicidial_report>\n";
@@ -667,8 +671,8 @@ else
 	{$HTML_text.="<option value=\"--ALL--\">-- "._QXZ("ALL FUNCTIONS")." --</option>\n";}
 for ($o=0; $o<count($functions_array); $o++)
 	{
-	if  (preg_match("/$functions_array[$o]\|/i",$function_string)) {$HTML_text.="<option selected value=\"$functions_array[$o]\">$functions_array[$o]</option>\n";}
-	  else {$HTML_text.="<option value=\"$functions_array[$o]\">$functions_array[$o]</option>\n";}
+	if  (preg_match("/$functions_array[$o]\|/i",$function_string)) {$HTML_text.="<option selected value=\"$functions_array[$o]\">"._QXZ("$functions_array[$o]")."</option>\n";}
+	  else {$HTML_text.="<option value=\"$functions_array[$o]\">"._QXZ("$functions_array[$o]")."</option>\n";}
 	}
 $HTML_text.="</SELECT>\n";
 $HTML_text.="</TD>\n";
@@ -682,8 +686,8 @@ else
 $o=0;
 for ($o=0; $o<count($results_array); $o++)
 	{
-	if  (preg_match("/$results_array[$o]\|/i",$result_string)) {$HTML_text.="<option selected value=\"$results_array[$o]\">$results_array[$o]</option>\n";}
-	  else {$HTML_text.="<option value=\"$results_array[$o]\">$results_array[$o]</option>\n";}
+	if  (preg_match("/$results_array[$o]\|/i",$result_string)) {$HTML_text.="<option selected value=\"$results_array[$o]\">"._QXZ("$results_array[$o]")."</option>\n";}
+	  else {$HTML_text.="<option value=\"$results_array[$o]\">"._QXZ("$results_array[$o]")."</option>\n";}
 	}
 $HTML_text.="</SELECT>\n";
 $HTML_text.="</TD>\n";
@@ -691,11 +695,11 @@ $HTML_text.="</TD>\n";
 $HTML_text.="<TD VALIGN='TOP'>";
 $HTML_text.=_QXZ("Display as:")."<BR>";
 $HTML_text.="<select name='report_display_type'>";
-if ($report_display_type) {$HTML_text.="<option value='$report_display_type' selected>$report_display_type</option>";}
-$HTML_text.="<option value='TEXT'>TEXT</option><option value='HTML'>HTML</option></select>\n<BR><BR>";
+if ($report_display_type) {$HTML_text.="<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
+$HTML_text.="<option value='TEXT'>"._QXZ("TEXT")."</option><option value='HTML'>"._QXZ("HTML")."</option></select>\n<BR><BR>";
 $HTML_text.="<INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'>\n";
 $HTML_text.="<BR><BR><input type='checkbox' name='show_urls' value='checked' $show_urls>"._QXZ("Show URLs, slower")."\n";
-if ($archives_available=="Y") 
+if ($archives_available=="Y")
 	{
 	$HTML_text.="<BR><input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."\n";
 	}
@@ -706,7 +710,7 @@ $HTML_text.="</FORM>\n\n";
 
 $TEXT.="<PRE><FONT SIZE=2>\n";
 
-if ($SUBMIT && $api_date_D && $api_date_T && $api_date_end_D && $api_date_end_T) 
+if ($SUBMIT && $api_date_D && $api_date_T && $api_date_end_D && $api_date_end_T)
 	{
 	$stmt="select api_id,user,api_date,api_script,function,agent_user,value,result,result_reason,source,data,run_time,webserver,api_url from $vicidial_api_log_table where api_date>='$api_date_D $api_date_T' and api_date<='$api_date_end_D $api_date_end_T' $result_SQL $function_SQL $agent_user_SQL $user_SQL order by $order_by asc";
 	if ($DB) {print $stmt."\n";}
@@ -721,18 +725,18 @@ if ($SUBMIT && $api_date_D && $api_date_T && $api_date_end_D && $api_date_end_T)
 		$container_id='API_LOG_URL_COLUMNS';
 		$container_stmt="select container_entry from vicidial_settings_containers where container_id='$container_id'";
 		$container_rslt=mysql_to_mysqli($container_stmt, $link);
-		
-		if (mysqli_num_rows($container_rslt)>0) 
+
+		if (mysqli_num_rows($container_rslt)>0)
 			{
 			$container_row=mysqli_fetch_row($container_rslt);
 			$url_vars=explode("\r\n", $container_row[0]);
 			$URL_header="";
-			for($u=0; $u<count($url_vars); $u++) 
+			for($u=0; $u<count($url_vars); $u++)
 				{
 				$URL_header.=sprintf("%-20s", $url_vars[$u])." | ";
 				$ASCII_border.="----------------------+";
 				}
-			
+
 			}
 		$URL_header.=" "._QXZ("REMOTE IP", 19)." |    "._QXZ("URL");
 		$ASCII_border.="----------------------+----------\n";
@@ -747,7 +751,7 @@ if ($SUBMIT && $api_date_D && $api_date_T && $api_date_end_D && $api_date_end_T)
 
 	$HTML.="<BR><table border='0' cellpadding='3' cellspacing='1'>";
 	$HTML.="<tr bgcolor='#".$SSstd_row1_background."'>";
-	$HTML.="<th colspan='".($show_urls ? (11+count($url_vars)) : "9")."'><font size='2'>$ASCII_rpt_header</font></th>";
+	$HTML.="<th colspan='".($show_urls ? (11+count($url_vars)) : "10")."'><font size='2'>$ASCII_rpt_header</font></th>";
 	$HTML.="<th><font size='2'><a href=\"$PHP_SELF?api_date_D=$api_date_D&api_date_T=$api_date_T&api_date_end_D=$api_date_end_D&api_date_end_T=$api_date_end_T$resultQS$functionQS$agent_userQS$userQS&file_download=1&show_urls=$show_urls&search_archived_data=$search_archived_data&SUBMIT=$SUBMIT\">"._QXZ("DOWNLOAD")."</a></font></th>";
 	$HTML.="</tr>\n";
 	$HTML.="<tr bgcolor='#".$SSstd_row1_background."'>";
@@ -768,7 +772,7 @@ if ($SUBMIT && $api_date_D && $api_date_T && $api_date_end_D && $api_date_end_T)
 		{
 		$CSV_text.="\n\""._QXZ("API DATE")."\",\""._QXZ("USER")."\",\""._QXZ("API SCRIPT")."\",\""._QXZ("FUNCTION")."\",\""._QXZ("AGENT USER")."\",\""._QXZ("VALUE")."\",\""._QXZ("RESULT")."\",\""._QXZ("RESULT REASON")."\",\""._QXZ("SOURCE")."\",\""._QXZ("DATA")."\",\""._QXZ("RUN TIME")."\",\""._QXZ("WEBSERVER")."\",\""._QXZ("API URL")."\"";
 
-		for($u=0; $u<count($url_vars); $u++) 
+		for($u=0; $u<count($url_vars); $u++)
 			{
 			$CSV_text.=",\"".$url_vars[$u]."\"";
 			$HTML.="<th><font size='2'>"._QXZ("$url_vars[$u]")."</font></th>";
@@ -787,16 +791,30 @@ if ($SUBMIT && $api_date_D && $api_date_T && $api_date_end_D && $api_date_end_T)
 
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$g=0;
-	while ($row=mysqli_fetch_array($rslt)) 
+	$full_user=array();
+	$full_agent_user=array();
+	$api_id=array();
+	$api_date=array();
+	$api_script=array();
+	$function=array();
+	$result=array();
+	$source=array();
+	$run_time=array();
+	$webserver=array();
+	$api_url=array();
+	$value=array();
+	$result_reason=array();
+	$data=array();
+	while ($row=mysqli_fetch_array($rslt))
 		{
 		$full_user[$g] =		substr($row["user"].$user_directory[$row["user"]], 0, 30);
 		$full_agent_user[$g] =	substr($row["agent_user"].$user_directory[$row["agent_user"]], 0, 30);
 		$api_id[$g] =			$row["api_id"];
 		$api_date[$g] =			sprintf("%-19s", $row["api_date"]);
-		$api_script[$g] =		sprintf("%-10s", $row["api_script"]);
-		$function[$g] =			sprintf("%-20s", $row["function"]);
-		$result[$g] =			sprintf("%-10s", $row["result"]);
-		$source[$g] =			sprintf("%-20s", $row["source"]);
+		$api_script[$g] =		sprintf("%-10s", _QXZ($row["api_script"], 10));
+		$function[$g] =			sprintf("%-20s", _QXZ($row["function"], 20));
+		$result[$g] =			sprintf("%-10s", _QXZ($row["result"], 10));
+		$source[$g] =			sprintf("%-20s", _QXZ($row["source"], 20));
 		$run_time[$g] =			sprintf("%-8s", substr($row["run_time"],0,8));
 		$webserver[$g] =		sprintf("%-9s", $row["webserver"]);
 		$api_url[$g] =			sprintf("%-9s", $row["api_url"]);
@@ -807,7 +825,7 @@ if ($SUBMIT && $api_date_D && $api_date_T && $api_date_end_D && $api_date_end_T)
 		}
 
 	$h=0;
-	while ($h < $g) 
+	while ($h < $g)
 		{
 		$TEXT.="| ";
 		$TEXT.=sprintf("%-19s", $api_date[$h])." | ";
@@ -825,11 +843,11 @@ if ($SUBMIT && $api_date_D && $api_date_T && $api_date_end_D && $api_date_end_T)
 		$HTML.="<tr bgcolor='#".$SSstd_row2_background."'>";
 		$HTML.="<th><font size='2'>".$api_date[$h]."</font></th>";
 		$HTML.="<th><font size='2'>".$full_user[$h]."</font></th>";
-		$HTML.="<th><font size='2'>".$api_script[$h]."</font></th>";
-		$HTML.="<th><font size='2'>".$function[$h]."</font></th>";
+		$HTML.="<th><font size='2'>"._QXZ("$api_script[$h]")."</font></th>";
+		$HTML.="<th><font size='2'>"._QXZ("$function[$h]")."</font></th>";
 		$HTML.="<th><font size='2'>".$full_agent_user[$h]."</font></th>";
-		$HTML.="<th><font size='2'>".$result[$h]."</font></th>";
-		$HTML.="<th><font size='2'>".$source[$h]."</font></th>";
+		$HTML.="<th><font size='2'>"._QXZ("$result[$h]")."</font></th>";
+		$HTML.="<th><font size='2'>"._QXZ("$source[$h]")."</font></th>";
 		$HTML.="<th><font size='2'>".$run_time[$h]."</font></th>";
 		$HTML.="<th><font size='2'>".$webserver[$h]."</font></th>";
 		$HTML.="<th><font size='2'>".sprintf("%-20s", substr($data[$h],0,20))."</font></th>";
@@ -840,16 +858,16 @@ if ($SUBMIT && $api_date_D && $api_date_T && $api_date_end_D && $api_date_end_T)
 			$stmt="select remote_ip,url from $vicidial_api_urls_table where api_id='$api_id[$h]';";
 			if ($DB) {print $stmt."\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);
-			if (mysqli_num_rows($rslt)>0) 
+			if (mysqli_num_rows($rslt)>0)
 				{
-				while ($row=mysqli_fetch_array($rslt)) 
+				while ($row=mysqli_fetch_array($rslt))
 					{
 					$full_url = $row["url"];
 					$remote_ip = $row["remote_ip"];
 					$key_array=array();
 					$val_array=array();
 					$CSV_vals="";
-					
+
 					$url_ary=preg_split("/\?/", $full_url);
 					for($u=2; $u<count($url_ary); $u++)
 						{
@@ -879,7 +897,7 @@ if ($SUBMIT && $api_date_D && $api_date_T && $api_date_end_D && $api_date_end_T)
 					$TEXT.=sprintf("%-20s", $row["remote_ip"])." | ";
 					$TEXT.=sprintf("%-2000s", $full_url)." | ";
 					}
-				} 
+				}
 			else
 				{
 				$CSV_vals="";
@@ -894,7 +912,7 @@ if ($SUBMIT && $api_date_D && $api_date_T && $api_date_end_D && $api_date_end_T)
 				$TEXT.=sprintf("%-2000s", "")." | ";
 				}
 				$CSV_text.="\"$api_date[$h]\",\"$full_user[$h]\",\"$api_script[$h]\",\"$function[$h]\",\"$full_agent_user[$h]\",\"$value[$h]\",\"$result[$h]\",\"$result_reason[$h]\",\"$source[$h]\",\"$data[$h]\",\"$run_time[$h]\",\"$webserver[$h]\",\"$api_url[$h]\"$CSV_vals";
-				
+
 				$CSV_text.=",\"$remote_ip\",\"$full_url\"\n";
 				$HTML.="<th><font size='2'>".($remote_ip=="" ? "&nbsp;" : $remote_ip)."</font></th>";
 				$HTML.="<th><font size='2'>".($full_url=="" ? "&nbsp;" : $full_url)."</font></th>";
@@ -923,7 +941,7 @@ if ($report_display_type=="HTML") {
 $HTML_text.="</BODY></HTML>";
 
 
-if ($file_download == 0 || !$file_download) 
+if ($file_download == 0 || !$file_download)
 	{
 	echo $HTML_head;
 	require("admin_header.php");

@@ -20,7 +20,7 @@ The example below shows how to do a very simple IVR before sending to a queue as
 
 The "test_in_menu" audio file would have something like the following script:
 
-"Hello, thank you for calling ACME Service Inc. For English press one, para el 
+"Hello, thank you for calling ACME Service Inc. For English press one, para el
 español, prensa dos, pour le Français, presse trois, für Deutsche Presse vier."
 
 
@@ -28,8 +28,8 @@ español, prensa dos, pour le Français, presse trois, für Deutsche Presse vier."
 extensions.conf additions:
 
 
-; First, in the default context you will put a line sending the inbound calls 
-; for this number into a context named the same as the first in-group(queue), 
+; First, in the default context you will put a line sending the inbound calls
+; for this number into a context named the same as the first in-group(queue),
 ; in this case "TEST_IN". There are also 3 other in-groups(queues) for the
 ; non-English in-groups(queues):
 ;    TEST_IN - English - option 1

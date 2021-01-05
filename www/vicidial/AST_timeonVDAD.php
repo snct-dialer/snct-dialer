@@ -1,6 +1,6 @@
-<?php 
+<?php
 # AST_timeonVDAD.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # live real-time stats for the VICIDIAL Auto-Dialer
@@ -152,7 +152,7 @@ if ($reset_counter > 7)
 	if ($DB) {echo "$stmt\n";}
 
 	if ($DB)
-		{	
+		{
 		$stmt="delete from park_log where grab_time < '$timeSIXhoursAGO' and (hangup_time is null or hangup_time='');";
 #		$rslt=mysql_to_mysqli($stmt, $link);
 		 echo "$stmt\n";
@@ -196,7 +196,7 @@ if ($closer_display>0)
 -->
  </STYLE>
 
-<?php 
+<?php
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo"<META HTTP-EQUIV=Refresh CONTENT=\"4; URL=$PHP_SELF?server_ip=$server_ip&DB=$DB&reset_counter=$reset_counter&closer_display=$closer_display\">\n";
 echo "<TITLE>"._QXZ("Server-Specific Real-Time Report")."</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
@@ -271,35 +271,35 @@ $talking_to_print = mysqli_num_rows($rslt);
 	while ($i < $talking_to_print)
 		{
 		$phone[$i]='          ';
-		if (preg_match("/R\//i",$Sextension[$i])) 
+		if (preg_match("/R\//i",$Sextension[$i]))
 			{
 			$protocol = 'EXTERNAL';
 			$dialplan = preg_replace('/R\//i', '',$Sextension[$i]);
 			$dialplan = preg_replace('/\@.*/i', '',$dialplan);
 			$exten = "dialplan_number='$dialplan'";
 			}
-		if (preg_match("/Local\//i",$Sextension[$i])) 
+		if (preg_match("/Local\//i",$Sextension[$i]))
 			{
 			$protocol = 'EXTERNAL';
 			$dialplan = preg_replace('/Local\//i', '',$Sextension[$i]);
 			$dialplan = preg_replace('/\@.*/i', '',$dialplan);
 			$exten = "dialplan_number='$dialplan'";
 			}
-		if (preg_match('/SIP\//i',$Sextension[$i])) 
+		if (preg_match('/SIP\//i',$Sextension[$i]))
 			{
 			$protocol = 'SIP';
 			$dialplan = preg_replace('/SIP\//i', '',$Sextension[$i]);
 			$dialplan = preg_replace('/\-.*/i', '',$dialplan);
 			$exten = "extension='$dialplan'";
 			}
-		if (preg_match('/IAX2\//i',$Sextension[$i])) 
+		if (preg_match('/IAX2\//i',$Sextension[$i]))
 			{
 			$protocol = 'IAX2';
 			$dialplan = preg_replace('/IAX2\//i', '',$Sextension[$i]);
 			$dialplan = preg_replace('/\-.*/i', '',$dialplan);
 			$exten = "extension='$dialplan'";
 			}
-		if (preg_match('/Zap\//i',$Sextension[$i])) 
+		if (preg_match('/Zap\//i',$Sextension[$i]))
 			{
 			$protocol = 'Zap';
 			$dialplan = preg_replace('/Zap\/|DAHDI\//i', '',$Sextension[$i]);
@@ -328,7 +328,7 @@ $talking_to_print = mysqli_num_rows($rslt);
 			$cc[$i]=0;
 		while ( (strlen($channel[$i]) > 19) and ($cc[$i] < 100) )
 			{
-			$channel[$i] = preg_replace('/.$/i', '',$channel[$i]);   
+			$channel[$i] = preg_replace('/.$/i', '',$channel[$i]);
 			$cc[$i]++;
 			if (strlen($channel[$i]) <= 19) {$cc[$i]=101;}
 			}
@@ -337,7 +337,7 @@ $talking_to_print = mysqli_num_rows($rslt);
 			$cd[$i]=0;
 		while ( (strlen($start_time[$i]) > 8) and ($cd[$i] < 100) )
 			{
-			$start_time[$i] = preg_replace('/^./i', '',$start_time[$i]);   
+			$start_time[$i] = preg_replace('/^./i', '',$start_time[$i]);
 			$cd[$i]++;
 			if (strlen($start_time[$i]) <= 8) {$cd[$i]=101;}
 			}
@@ -361,10 +361,10 @@ $talking_to_print = mysqli_num_rows($rslt);
 			$G = '';		$EG = '';
 			if ($call_time_M_int[$i] >= 5) {$G='<SPAN class="blue"><B>'; $EG='</B></SPAN>';}
 			if ($call_time_M_int[$i] >= 10) {$G='<SPAN class="purple"><B>'; $EG='</B></SPAN>';}
-			if (preg_match("/PAUSED/i",$Sstatus[$i])) 
+			if (preg_match("/PAUSED/i",$Sstatus[$i]))
 				{
-				if ($call_time_M_int >= 1) 
-					{$i++; continue;} 
+				if ($call_time_M_int >= 1)
+					{$i++; continue;}
 				else
 					{$G='<SPAN class="yellow"><B>'; $EG='</B></SPAN>';}
 				}
@@ -470,7 +470,7 @@ $parked_to_print = mysqli_num_rows($rslt);
 			$cc=0;
 		while ( (strlen($channel) > 19) and ($cc < 100) )
 			{
-			$channel = preg_replace('/.$/i', '',$channel);   
+			$channel = preg_replace('/.$/i', '',$channel);
 			$cc++;
 			if (strlen($channel) <= 19) {$cc=101;}
 			}
@@ -478,7 +478,7 @@ $parked_to_print = mysqli_num_rows($rslt);
 			$cd=0;
 		while ( (strlen($start_time) > 8) and ($cd < 100) )
 			{
-			$start_time = preg_replace('/^./i', '',$start_time);   
+			$start_time = preg_replace('/^./i', '',$start_time);
 			$cd++;
 			if (strlen($start_time) <= 8) {$cd=101;}
 			}

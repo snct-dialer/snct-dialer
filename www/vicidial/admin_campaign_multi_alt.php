@@ -1,12 +1,12 @@
 <?php
 # admin_campaign_multi_alt.php
-# 
+#
 # Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
-# this screen will control the campaign settings needed for alternate number 
-# dialing using multiple leads with the same account number and different phone 
-# numbers. the leads will use different owner values and this script will alter 
-# the ranks for those leads as well as alter the special campaign filter and 
+# this screen will control the campaign settings needed for alternate number
+# dialing using multiple leads with the same account number and different phone
+# numbers. the leads will use different owner values and this script will alter
+# the ranks for those leads as well as alter the special campaign filter and
 # change some campaign settings.
 #
 # changes:
@@ -153,7 +153,7 @@ $camp_multi=$row[0];
 
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
 <title><?php echo _QXZ("ADMINISTRATION: Campaign Multi-Alt-Leads"); ?>
-<?php 
+<?php
 
 
 ##### BEGIN Set variables to make header show properly #####
@@ -353,31 +353,31 @@ if ($action == "BLANK")
 	$lead_list['count'] = 0;
 	$lead_list['Y_count'] = 0;
 	$lead_list['N_count'] = 0;
-	while ($types_to_print > $o) 
+	while ($types_to_print > $o)
 		{
 		$rowx=mysqli_fetch_row($rslt);
-		
+
 		$lead_list['count'] = ($lead_list['count'] + $rowx[2]);
-		if ($rowx[1] == 'N') 
+		if ($rowx[1] == 'N')
 			{
 			$since_reset = 'N';
 			$since_resetX = 'Y';
 			}
-		else 
+		else
 			{
 			$since_reset = 'Y';
 			$since_resetX = 'N';
-			} 
+			}
 		$lead_list[$since_reset][$rowx[0]] = ($lead_list[$since_reset][$rowx[0]] + $rowx[2]);
 		$lead_list[$since_reset.'_count'] = ($lead_list[$since_reset.'_count'] + $rowx[2]);
 		#If opposite side is not set, it may not in the future so give it a value of zero
-		if (!isset($lead_list[$since_resetX][$rowx[0]])) 
+		if (!isset($lead_list[$since_resetX][$rowx[0]]))
 			{
 			$lead_list[$since_resetX][$rowx[0]]=0;
 			}
 		$o++;
 		}
- 
+
 	$o=0;
 	if ($lead_list['count'] > 0)
 		{
@@ -385,7 +385,7 @@ if ($action == "BLANK")
 			{
 			$owner_var = preg_replace('/ |\n|\r|\t/','',$owner);
 			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';} 
+				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
 			else
 				{$bgcolor='bgcolor="#' . $SSstd_row1_background . '"';}
 
@@ -410,13 +410,13 @@ if ($action == "BLANK")
 	echo "<tr bgcolor=\"#$SSstd_row1_background\"><td><font size=1>"._QXZ("TOTAL")."</td><td colspan=3 align=center><font size=1>$lead_list[count]</td><td align=center><font size=1>$o</td></tr>\n";
 
 	echo "</table></center><br>\n";
-	unset($lead_list);				
+	unset($lead_list);
 
 
 	echo "</td></tr>\n";
 
-	echo "<tr bgcolor=#$SSstd_row1_background><td align=right>"._QXZ("List Order Randomize").": </td><td align=left><select size=1 name=lead_order_randomize><option>Y</option><option>N</option><option SELECTED>$lead_order_randomize</option></select></td></tr>\n";
-	echo "<tr bgcolor=#$SSstd_row1_background><td align=right>"._QXZ("List Order Secondary").": </td><td align=left><select size=1 name=lead_order_secondary><option value='LEAD_ASCEND'>"._QXZ("LEAD_ASCEND")."</option><option value='LEAD_DESCEND'>"._QXZ("LEAD_DESCEND")."</option><option value='CALLTIME_ASCEND'>"._QXZ("CALLTIME_ASCEND")."</option><option value='CALLTIME_DESCEND'>"._QXZ("CALLTIME_DESCEND")."</option><option value='VENDOR_ASCEND'>"._QXZ("VENDOR_ASCEND")."</option><option value='VENDOR_DESCEND'>"._QXZ("VENDOR_DESCEND")."</option><option SELECTED>$lead_order_secondary</option></select></td></tr>\n";
+	echo "<tr bgcolor=#$SSstd_row1_background><td align=right>"._QXZ("List Order Randomize").": </td><td align=left><select size=1 name=lead_order_randomize><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='$lead_order_randomize' SELECTED>"._QXZ("$lead_order_randomize")."</option></select></td></tr>\n";
+	echo "<tr bgcolor=#$SSstd_row1_background><td align=right>"._QXZ("List Order Secondary").": </td><td align=left><select size=1 name=lead_order_secondary><option value='LEAD_ASCEND'>"._QXZ("LEAD_ASCEND")."</option><option value='LEAD_DESCEND'>"._QXZ("LEAD_DESCEND")."</option><option value='CALLTIME_ASCEND'>"._QXZ("CALLTIME_ASCEND")."</option><option value='CALLTIME_DESCEND'>"._QXZ("CALLTIME_DESCEND")."</option><option value='VENDOR_ASCEND'>"._QXZ("VENDOR_ASCEND")."</option><option value='VENDOR_DESCEND'>"._QXZ("VENDOR_DESCEND")."</option><option value='$lead_order_secondary' SELECTED>"._QXZ("$lead_order_secondary")."</option></select></td></tr>\n";
 
 	echo "<tr bgcolor=#$SSstd_row1_background><td align=center colspan=2><input type=submit name=SUBMIT value='"._QXZ("SUBMIT")."'></td></tr>\n";
 	echo "</TABLE></center>\n";

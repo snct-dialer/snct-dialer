@@ -6,7 +6,7 @@
 </head>
 <body>
 
-<font face="Courier New"> 
+<font face="Courier New">
 <?php
 
 
@@ -14,7 +14,7 @@ $handle = fopen("changelog", "r");
 if ($handle) {
     while (($line = fgets($handle)) !== false) {
 	$line1 = str_replace( " ", "&nbsp;", $line );
-	echo $line1 . "<br>" . PHP_EOL; 
+	echo $line1 . "<br>" . PHP_EOL;
     }
 
     fclose($handle);

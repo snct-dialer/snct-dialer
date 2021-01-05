@@ -10,7 +10,7 @@
 # has executable privileges or the Spreadsheet::XLSX compile will fail and this script WILL NOT WORK.
 # For some reason it is installed with read privileges only, unlike other Spreadsheet modules which have
 # read and executable for all.
-# 
+#
 # *Stage 1 - Convert file to a tab delimited format (DONE)
 #  Stage 2 - Prompt the user for the field mapping (TBD)
 #  Stage 3 - Schedule a List Load by the command line list loader (TBD)
@@ -47,13 +47,13 @@ use File::Basename;
 use open ':std', ':encoding(UTF-8)';
 
 
-sub scrub_lead_field 
+sub scrub_lead_field
 	{
 	my $lead_field = $_[0];
 
 	# remove bad characters
 	$lead_field	=~ s/\\|\"|;|\`|\224//gi;
-	
+
 	# replace tabs and newlines with spaces
 	$lead_field	=~ s/\n|\r|\t|\174/ /gi;
 
@@ -69,11 +69,11 @@ my $csv_chuck_size = 500;
 
 my $crap_loop_time = 5;
 
-if ( $#ARGV == 1 ) 
+if ( $#ARGV == 1 )
 	{
-	$infile = $ARGV[0]; 
+	$infile = $ARGV[0];
 	$outfile = $ARGV[1];
-	} 
+	}
 else
 	{
 	print STDERR "Incorrect number of arguments\n";
@@ -107,7 +107,7 @@ my ($dir, $name, $ext) = fileparse($exten_file, @exts);
 
 # if we are a csv file
 
-if ($ext eq '.csv') 
+if ($ext eq '.csv')
 	{
 	open( IN, $infile ) or die "can't open $infile: $!\n";
 	open( TMPFILE , ">$tempfile" ) or die $!;
@@ -196,7 +196,7 @@ if ($ext eq '.csv')
 
 			# repopn the TMPFILE
 			open( TMPFILE , ">$tempfile" ) or die $!;
-				
+
 
 			# figure out how long it took to loop
 			$old_loop_time = $cur_loop_time;
@@ -206,14 +206,14 @@ if ($ext eq '.csv')
 
 			#print STDERR "loop_count = '$loop_count' $loop_time $loop_sleep\n";
 
-			if ( $loop_time > $crap_loop_time ) 
+			if ( $loop_time > $crap_loop_time )
 				{
 				# this should not take this long to run through a loop.
 				# sleep for a bit to let the CPU recover.
 				$loop_sleep = $loop_sleep + $loop_time;
 
 				# they have waited 60 seconds lets just kill this and get it over with
-				if ( $loop_sleep > 60 ) 
+				if ( $loop_sleep > 60 )
 					{
 					close( TMPFILE );
 					close( IN );
@@ -243,7 +243,7 @@ if ($ext eq '.csv')
 				}
 			}
 		}
-		
+
 	# close the temp and In files
 	close( TMPFILE );
 	close( IN );
@@ -252,7 +252,7 @@ if ($ext eq '.csv')
 	my $temp_file_size = -s $tempfile;
 
 	# if not exit
-	if ( $temp_file_size == 0 ) 
+	if ( $temp_file_size == 0 )
 		{
 		# delete the TMPFILE
 		unlink( $tempfile ) or die $!;
@@ -323,7 +323,7 @@ else
 	{
 	# parse the file
 	my $parser = ReadData ( "$infile" );
-	
+
 	my $maxCol = $parser->[1]{maxcol};
 	my $maxRow = $parser->[1]{maxrow};
 
@@ -332,23 +332,23 @@ else
 	if ($debug) { print STDERR "maxRow = '$maxRow'\n"; };
 
 	# loop through the rows
-	for ( $rowPos = 1; $rowPos <= $maxRow; $rowPos++  ) 
+	for ( $rowPos = 1; $rowPos <= $maxRow; $rowPos++  )
 		{
 		# loop through the cols
-		for ( $colPos = 1; $colPos <= $maxCol; $colPos++  ) 
+		for ( $colPos = 1; $colPos <= $maxCol; $colPos++  )
 			{
 			my $cell = cr2cell( $colPos, $rowPos );
-	
+
 			if ($debug) { print STDERR "cell = '$cell'\n"; };
 
 			my $field;
 
 			# make sure the field has a value
-			if ( $parser->[1]{$cell} ) 
+			if ( $parser->[1]{$cell} )
 				{
 				$field = $parser->[1]{$cell};
-				} 
-			else 
+				}
+			else
 				{
 				$field = "";
 				}
@@ -359,11 +359,11 @@ else
 
 			print OUTFILE $field;
 
-			if ( $colPos < $maxCol ) 
+			if ( $colPos < $maxCol )
 				{
 				print OUTFILE $out_delim;
-				} 
-			else 
+				}
+			else
 				{
 				print OUTFILE "\n";
 				}

@@ -1,12 +1,13 @@
-<?php 
+<?php
 # AST_DIDstats_v2.php - DID sumary report
-# 
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
 # 170828-2018 - First build, based on AST_DIDstats.php
 # 170903-0941 - Added screen color settings
+# 191013-0817 - Fixes for PHP7
 #
 
 $startMS = microtime();
@@ -74,7 +75,7 @@ $table_name="vicidial_did_log";
 $archive_table_name=use_archive_table($table_name);
 if ($archive_table_name!=$table_name) {$archives_available="Y";}
 
-if ($search_archived_data) 
+if ($search_archived_data)
 	{
 	$vicidial_did_log_table=use_archive_table("vicidial_did_log");
 	}
@@ -221,6 +222,9 @@ if ($DB) {$MAIN.="$stmt\n";}
 $groups_to_print = mysqli_num_rows($rslt);
 $groups_string='|';
 $i=0;
+$groups=array();
+$group_patterns=array();
+$group_names=array();
 while ($i < $groups_to_print)
 	{
 	$row=mysqli_fetch_row($rslt);
@@ -347,7 +351,7 @@ $HEADER.="<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"calendar.css\">\n";
 $HEADER.="<link rel=\"stylesheet\" href=\"horizontalbargraph.css\">\n";
 require("chart_button.php");
-$HEADER.="<script src='chart/Chart.js'></script>\n"; 
+$HEADER.="<script src='chart/Chart.js'></script>\n";
 $HEADER.="<script language=\"JavaScript\" src=\"vicidial_chart_functions.js\"></script>\n";
 
 $HEADER.="<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
@@ -407,7 +411,7 @@ $MAIN.="<SELECT SIZE=5 NAME=group[] multiple>\n";
 $o=0;
 while ($groups_to_print > $o)
 	{
-	if (preg_match("/\|$groups[$o]\|/",$group_string)) 
+	if (preg_match("/\|$groups[$o]\|/",$group_string))
 		{$MAIN.="<option selected value=\"$groups[$o]\">$group_patterns[$o] - $group_names[$o]</option>\n";}
 	else
 		{$MAIN.="<option value=\"$groups[$o]\">$group_patterns[$o] - $group_names[$o]</option>\n";}
@@ -419,13 +423,13 @@ $MAIN.="<TD align=left valign=top><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZ
 $MAIN.="<INPUT TYPE=hidden NAME=DB VALUE=\"$DB\">\n";
 $MAIN.=_QXZ("Display as:")."</FONT><BR>";
 $MAIN.="<select name='report_display_type'>";
-if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>$report_display_type</option>";}
+if ($report_display_type) {$MAIN.="<option value='$report_display_type' selected>"._QXZ("$report_display_type")."</option>";}
 $MAIN.="<option value='TEXT'>"._QXZ("TEXT")."</option><option value='HTML'>"._QXZ("HTML")."</option></select>\n<BR><BR>";
-if ($archives_available=="Y") 
+if ($archives_available=="Y")
 	{
 	$MAIN.="<input type='checkbox' name='search_archived_data' value='checked' $search_archived_data>"._QXZ("Search archived data")."<BR><BR>\n";
 	}
-$MAIN.="<INPUT TYPE=submit NAME=SUBMIT VALUE=SUBMIT>\n";
+$MAIN.="<INPUT TYPE=submit NAME=SUBMIT VALUE='"._QXZ("SUBMIT")."'>\n";
 $MAIN.="<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?query_date=$query_date&end_date=$end_date$groupQS&shift=$shift&DB=$DB&SUBMIT=$SUBMIT&file_download=1\">"._QXZ("DOWNLOAD")."</a> | <a href=\"./admin.php?ADD=3311&did_id=$group[0]\">"._QXZ("MODIFY")."</a> | <a href=\"./admin.php?ADD=999999\">"._QXZ("REPORTS")."</a> </FONT>\n";
 $MAIN.="</TD></TR></TABLE>\n";
 $MAIN.="</FORM>\n";
@@ -442,7 +446,7 @@ if (!$group)
 
 else
 	{
-	$query_date_BEGIN = "$query_date $time_BEGIN";   
+	$query_date_BEGIN = "$query_date $time_BEGIN";
 	$query_date_END = "$end_date $time_END";
 
 	$SQdate_ARY =	explode(' ',$query_date_BEGIN);
@@ -478,6 +482,8 @@ else
 	$CSV_text1.="\""._QXZ("Time range")." $DURATIONday "._QXZ("days").":\",\"$query_date_BEGIN "._QXZ("to")." $query_date_END\",\"$suffix\"\n\n";
 
 	$d=0;
+	$daySTART=array();
+	$dayEND=array();
 	while ($d < $DURATIONday)
 		{
 		$dSQepoch = ($SQepoch + ($d * 86400) );
@@ -502,13 +508,15 @@ else
 	$i=0;
 	$extension[0]='';
 	$did_server_ip[0]='';
+	$dt=array();
+	$ut=array();
 	while ($i < $records_to_grab)
 		{
 		$row=mysqli_fetch_row($rslt);
 		$dt[$i] =			0;
 		$ut[$i] =			($row[0] - $SQepochDAY);
 		$extension[$i] =	$row[1];
-		while($ut[$i] >= 86400) 
+		while($ut[$i] >= 86400)
 			{
 			$ut[$i] = ($ut[$i] - 86400);
 			$dt[$i]++;
@@ -535,6 +543,9 @@ else
 
 	###################################################
 	### TOTALS DID SUMMARY SECTION ###
+	$qrtCALLS=array();
+	$qrtCALLSavg=array();
+	$qrtCALLSsec=array();
 	if (strlen($extension[0]) > 0)
 		{
 		$ASCII_text.=_QXZ("DID Summary").":\n";
@@ -571,6 +582,7 @@ else
 
 		$d=0;
 		$max_calls=1;
+		$graph_stats=array();
 		while ($d < $stats_array_ct)
 			{
 			$stat_description =		' *** default *** ';
@@ -679,7 +691,7 @@ else
 			$HTML_text.="<th colspan='6'>&nbsp;</th>";
 			$HTML_text.="</tr>\n";
 			$HTML_text.="</table>\n";
-	
+
 		}
 
 	if ($report_display_type=="HTML")
@@ -697,11 +709,14 @@ else
 	$hi_hour_count=0;
 	$hi_hold_count=0;
 
+	$qrtCALLS=array();
+	$qrtCALLSavg=array();
+	$qrtCALLSsec=array();
 	while ($i < $TOTintervals)
 		{
 		$qrtCALLSavg[$i] = MathZDC($qrtCALLSsec[$i], $qrtCALLS[$i]);
 
-		if ($qrtCALLS[$i] > $hi_hour_count) 
+		if ($qrtCALLS[$i] > $hi_hour_count)
 			{$hi_hour_count = $qrtCALLS[$i];}
 
 		$i++;

@@ -1,0 +1,11 @@
+<?php
+
+#
+# Funktion to check Callback - Limits for Agents
+#
+
+function CheckCallbacks($User, $Lead, $PG) {
+	return 1;
+}
+
+?>

@@ -5,24 +5,34 @@
 # Part of the Asterisk Central Queue System (ACQS)
 #
 # DESCRIPTION:
-# connects to the Asterisk Manager interface and updates records in the 
-# vicidial_manager table of the asterisk database in MySQL based upon the 
+# connects to the Asterisk Manager interface and updates records in the
+# vicidial_manager table of the asterisk database in MySQL based upon the
 # events that it receives
-# 
+#
 # SUMMARY:
 # This program was designed as the listen-only part of the ACQS. It's job is to
-# look for certain events and based upon either the uniqueid or the callerid of 
-# the call update the status and information of an action record in the 
+# look for certain events and based upon either the uniqueid or the callerid of
+# the call update the status and information of an action record in the
 # vicidial_manager table of the asterisk MySQL database. This program is run by
 # the ADMIN_keepalive_ALL.pl script, which makes sure it is always running in a
 # screen, provided that the astguiclient.conf keepalive setting "2" is set.
 #
-# Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
+# LICENSE: AGPLv3
+#
+# Copyright (C) 2017      Matt Florell <vicidial@gmail.com>
+# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2019-2020 SNCT Gmbh <info@snct-gmbh.de>
+#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
+#
+# Other changes
+#
+# 200803-1345 jff	add utf8 enconding for conf files
+
 # CHANGES
 # 50322-1300 - changed callerid parsing to remove quotes and number
-# 50616-1559 - Added NewCallerID parsing and updating 
-# 50621-1406 - Added Asterisk server shutdown and connection dead detection 
+# 50616-1559 - Added NewCallerID parsing and updating
+# 50621-1406 - Added Asterisk server shutdown and connection dead detection
 # 50810-1534 - Added database server variable definitions lookup
 # 50824-1606 - Altered CVS/1.2 support for different output
 # 50901-2359 - Another CVS/1.2 output parsing fix
@@ -156,8 +166,8 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
 use DBI;
 use Net::Telnet ();
-  
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
 or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
@@ -208,7 +218,7 @@ if ($run_check > 0)
 	my $grepout = `/bin/ps ax | grep $0 | grep -v grep | grep -v '/bin/sh'`;
 	my $grepnum=0;
 	$grepnum++ while ($grepout =~ m/\n/g);
-	if ($grepnum > 2) 
+	if ($grepnum > 2)
 		{
 		if ($DB) {print "I am not alone! Another $0 is running! Exiting...\n";}
 		$event_string = "I am not alone! Another $0 is running! Exiting...";
@@ -233,7 +243,7 @@ while($one_day_interval > 0)
 #	$fh = $tn->dump_log("$LItelnetlog");  # uncomment for telnet log
 	if (length($ASTmgrUSERNAMElisten) > 3) {$telnet_login = $ASTmgrUSERNAMElisten;}
 	else {$telnet_login = $ASTmgrUSERNAME;}
-	$tn->open("$telnet_host"); 
+	$tn->open("$telnet_host");
 	$tn->waitfor('/[0123]\n$/');			# print login
 	$tn->print("Action: Login\nUsername: $telnet_login\nSecret: $ASTmgrSECRET\n\n");
 	$tn->waitfor('/Authentication accepted/');		# waitfor auth accepted
@@ -253,7 +263,7 @@ while($one_day_interval > 0)
 			{
 			### sleep for 10 hundredths of a second(one tenth of a second)
 			usleep(1*100*1000);
-		
+
 			$msg='';
 			$read_input_buf = $tn->get(Errmode => Return, Timeout => 1,);
 			$input_buf_length = length($read_input_buf);
@@ -279,7 +289,7 @@ while($one_day_interval > 0)
 			if ( ($read_input_buf !~ /\n\n/) or ($input_buf_length < 10) )
 				{
 				#if ($read_input_buf =~ /\n/) {print "\n|||$input_buf_length|||$read_input_buf|||\n";}
-				if ($endless_loop =~ /00$|50$/) 
+				if ($endless_loop =~ /00$|50$/)
 					{
 					$input_buf = "$input_buf$keepalive_lines$read_input_buf";
 					$input_buf =~ s/\n\n\n/\n\n/gi;
@@ -306,7 +316,7 @@ while($one_day_interval > 0)
 					$partial++;
 					}
 
-				if ($endless_loop =~ /00$|50$/) 
+				if ($endless_loop =~ /00$|50$/)
 					{
 					$input_buf = "$input_buf$keepalive_lines$read_input_buf";
 					$input_buf =~ s/\n\n\n/\n\n/gi;
@@ -319,12 +329,12 @@ while($one_day_interval > 0)
 				if($DB){print "input buffer: $input_buf_length     lines: $#input_lines     partial: $partial\n";}
 				if ( ($DB) && ($partial) ) {print "-----[$partial_input_buf]-----\n\n";}
 				if($DB){print "|$input_buf|\n";}
-				
+
 				$manager_string = "$input_buf";
 					&manager_output_logger;
 
 				$input_buf = "$partial_input_buf";
-				
+
 
 				@command_line=@MT;
 				$ILcount=0;
@@ -384,7 +394,7 @@ while($one_day_interval > 0)
 						{
 						$input_lines[$ILcount] =~ s/^\n|^\n\n//gi;
 						@command_line=split(/\n/, $input_lines[$ILcount]);
-						
+
 						if($DB)
 							{
 							### Pring the command_line structure to easily see where elements are
@@ -393,10 +403,10 @@ while($one_day_interval > 0)
 								{
 								print "command_line[$cmd_counter] = $_\n";
 								$cmd_counter++;
-								}						
+								}
 							print "\n";
 							}
-						
+
 						if ($input_lines[$ILcount] =~ /Event: Shutdown/)
 							{
 							$endless_loop=0;
@@ -409,7 +419,7 @@ while($one_day_interval > 0)
 						if ($input_lines[$ILcount] =~ /Event: Hangup/)
 							{
 							### post 2005-08-07 CVS and Asterisk 1.8 -- added Privilege line
-							if ( ($command_line[2] =~ /^Channel: /i) && ($command_line[3] =~ /^Uniqueid: /i) ) 
+							if ( ($command_line[2] =~ /^Channel: /i) && ($command_line[3] =~ /^Uniqueid: /i) )
 								{
 								$channel = $command_line[2];
 								$channel =~ s/Channel: |\s*$//gi;
@@ -456,7 +466,7 @@ while($one_day_interval > 0)
 									}
 								}
 							}
-			
+
 						if ($input_lines[$ILcount] =~ /State: Dialing/)
 							{
 							if ( ($command_line[1] =~ /^Channel: /i) && ($command_line[4] =~ /^Uniqueid: /i) ) ### pre 2004-10-07 CVS
@@ -472,7 +482,7 @@ while($one_day_interval > 0)
 								$stmtA = "UPDATE vicidial_manager set status='SENT', channel='$channel', uniqueid = '$uniqueid' where server_ip = '$server_ip' and callerid = '$callid'";
 								print STDERR "|$stmtA|\n";
 								my $affected_rows = $dbhA->do($stmtA);
-								
+
 								if($DB){print "|$affected_rows DIALINGs updated|\n";}
 								}
 							if ( ($command_line[1] =~ /^Channel: /i) && ($command_line[4] =~ /^CalleridName: /i) ) ### post 2004-10-07 CVS
@@ -596,10 +606,10 @@ while($one_day_interval > 0)
 									}
 								}
 							}
-			
+
 						if ($input_lines[$ILcount] =~ /Event: Newcallerid/)
 							{
-							if ( ($command_line[1] =~ /^Channel: /i) && ($command_line[3] =~ /^Uniqueid: /i) ) 
+							if ( ($command_line[1] =~ /^Channel: /i) && ($command_line[3] =~ /^Uniqueid: /i) )
 								{
 								$channel = $command_line[1];
 								$channel =~ s/Channel: |\s*$//gi;
@@ -635,7 +645,7 @@ while($one_day_interval > 0)
 									my $affected_rows = $dbhA->do($stmtA);
 									if($DB){print "|$affected_rows RINGINGs updated|\n";}
 									}
-								} 
+								}
 							### post Asterisk 1.8 - Consultative XFER - Added 2014-05-24
 							if ( ($command_line[2] =~ /^Channel: /i) && ($command_line[5] =~ /^Uniqueid: /i) && ($command_line[4] =~ /^CallerIDName: DC/i) )
 								{
@@ -683,7 +693,7 @@ while($one_day_interval > 0)
 							#	CallerIDName: V0202034729000030735
 							#	Uniqueid: 1233564450.141
 							#	Result: Answering-Machine
-							if ( ($command_line[3] =~ /^Channel: /i) && ($command_line[5] =~ /^Uniqueid: /i) ) 
+							if ( ($command_line[3] =~ /^Channel: /i) && ($command_line[5] =~ /^Uniqueid: /i) )
 								{
 									&get_time_now;
 
@@ -733,7 +743,7 @@ while($one_day_interval > 0)
 							#	CallerIDName: M4121149450000795193
 							#	Uniqueid: 1233564450.141
 							#	Result: 603
-							if ( ($command_line[3] =~ /^Channel: /i) && ($command_line[5] =~ /^Uniqueid: /i) ) 
+							if ( ($command_line[3] =~ /^Channel: /i) && ($command_line[5] =~ /^Uniqueid: /i) )
 								{
 									&get_time_now;
 
@@ -812,7 +822,7 @@ while($one_day_interval > 0)
 
 			### run a keepalive command to flush whatever is in the buffer through and to keep the connection alive
 			### Also, keep the MySQL connection alive by selecting the server_updater time for this server
-			if ($endless_loop =~ /00$|50$/) 
+			if ($endless_loop =~ /00$|50$/)
 				{
 				$keepalive_lines='';
 
@@ -842,10 +852,10 @@ while($one_day_interval > 0)
 
 				$keepalive_epoch = time();
 				$keepalive_sec = ($keepalive_epoch - $last_keepalive_epoch);
-				if ($keepalive_sec > 40) 
+				if ($keepalive_sec > 40)
 					{
 					$keepalive_skips=0;
-					@keepalive_output = $tn->cmd(String => "Action: Command\nCommand: show uptime\n\n", Prompt => '/--END COMMAND--.*/', Errmode => Return, Timeout => 1); 
+					@keepalive_output = $tn->cmd(String => "Action: Command\nCommand: show uptime\n\n", Prompt => '/--END COMMAND--.*/', Errmode => Return, Timeout => 1);
 					$msg = $tn->errmsg;
 					$buf_ref = $tn->buffer;
 					$buf_len = length( $$buf_ref );
@@ -854,7 +864,7 @@ while($one_day_interval > 0)
 					if($DB){print "+++++++++++++++++++++++++++++++sending keepalive transmit line: $keepalive_sec seconds   $endless_loop|$now_date|$last_update|\n";}
 
 					$k=0;
-					foreach(@keepalive_output) 
+					foreach(@keepalive_output)
 						{
 						$keepalive_lines .= "$keepalive_output[$k]";
 						$k++;
@@ -879,15 +889,15 @@ while($one_day_interval > 0)
 			}
 		### END manager event handling for asterisk version < 1.6
 		}
-	else 
+	else
 		{
 		### BEGIN manager event handling for asterisk version >= 1.6
-		
+
 		while($endless_loop > 0)
 			{
 			### sleep for 10 hundredths of a second
 			usleep(1*100*1000);
-			
+
 			$msg='';
 			$read_input_buf = $tn->get(Errmode => Return, Timeout => 1,);
 			$input_buf_length = length($read_input_buf);
@@ -895,8 +905,8 @@ while($one_day_interval > 0)
 			if (($msg =~ /read timed-out/i) || ( $msg eq ''  ))
 				{
 					# This is normal
-				} 
-			else 
+				}
+			else
 				{
 					print "ERRMSG: |$msg|\n";
 				}
@@ -913,7 +923,7 @@ while($one_day_interval > 0)
 			if ( ($read_input_buf !~ /\n\n/) or ($input_buf_length < 10) )
 				{
 				#if ($read_input_buf =~ /\n/) {print "\n|||$input_buf_length|||$read_input_buf|||\n";}
-				if ($endless_loop =~ /00$|50$/) 
+				if ($endless_loop =~ /00$|50$/)
 					{
 					$input_buf = "$input_buf$keepalive_lines$read_input_buf";
 					$input_buf =~ s/\n\n\n/\n\n/gi;
@@ -940,7 +950,7 @@ while($one_day_interval > 0)
 					$partial++;
 					}
 
-				if ($endless_loop =~ /00$|50$/) 
+				if ($endless_loop =~ /00$|50$/)
 					{
 					$input_buf = "$input_buf$keepalive_lines$read_input_buf";
 					$input_buf =~ s/\n\n\n/\n\n/gi;
@@ -954,12 +964,12 @@ while($one_day_interval > 0)
 				if($DB){print "input buffer: $input_buf_length     lines: $#input_lines     partial: $partial\n";}
 				if ( ($DB) && ($partial) ) {print "-----[$partial_input_buf]-----\n\n";}
 				if($DB){print "|$input_buf|\n";}
-				
+
 				$manager_string = "$input_buf";
 					&manager_output_logger;
 
 				$input_buf = "$partial_input_buf";
-				
+
 
 				@command_line=@MT;
 				$ILcount=0;
@@ -970,13 +980,13 @@ while($one_day_interval > 0)
 						{
 						$input_lines[$ILcount] =~ s/^\n|^\n\n//gi;
 						@command_line=split(/\n/, $input_lines[$ILcount]);
-						
+
 						$cmd_counter = 0;
 						foreach ( @command_line )
 							{
 							print "command_line[$cmd_counter] = $_\n";
 							$cmd_counter++;
-							}						
+							}
 						print "\n";
 
 						if ($input_lines[$ILcount] =~ /Event: Dial/)
@@ -1025,7 +1035,7 @@ while($one_day_interval > 0)
 						{
 						$input_lines[$ILcount] =~ s/^\n|^\n\n//gi;
 						@command_line=split(/\n/, $input_lines[$ILcount]);
-						
+
 						if($DB)
 							{
 							### Pring the command_line structure to easily see where elements are
@@ -1034,10 +1044,10 @@ while($one_day_interval > 0)
 								{
 								print "command_line[$cmd_counter] = $_\n";
 								$cmd_counter++;
-								}						
+								}
 							print "\n";
 							}
-						
+
 						### Event: Shutdown
 						if ($input_lines[$ILcount] =~ /Event: Shutdown/)
 							{
@@ -1047,7 +1057,7 @@ while($one_day_interval > 0)
 								$event_string="Asterisk server shutting down, PROCESS KILLED... EXITING|ONE DAY INTERVAL:$one_day_interval|";
 							&event_logger;
 							}
-							
+
 						### Event: Hangup
 						if ($input_lines[$ILcount] =~ /Event: Hangup/)
 							{
@@ -1070,7 +1080,7 @@ while($one_day_interval > 0)
 									}
 								}
 							}
-							
+
 						### Event: Newstate
 						if ($input_lines[$ILcount] =~ /Event: Newstate/)
 							{
@@ -1087,7 +1097,7 @@ while($one_day_interval > 0)
 								if ($callid =~ /\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S/) {$callid =~ s/ .*//gi;} # remove everything after the space for Orex
 								$uniqueid = $command_line[9];
 								$uniqueid =~ s/Uniqueid: |\s*$//gi;
-								
+
 								### ChannelStateDesc = Dialing
 								if ($state =~ /Dialing/)
 									{
@@ -1096,7 +1106,7 @@ while($one_day_interval > 0)
 									my $affected_rows = $dbhA->do($stmtA);
 									if($DB){print "|$affected_rows DIALINGs updated|\n";}
 									}
-								
+
 								### ChannelStateDesc = Ringing or Up
 								if ($state =~ /Ringing|Up/)
 									{
@@ -1112,10 +1122,10 @@ while($one_day_interval > 0)
 										{
 										print STDERR "|$channel|LOCAL CHANNEL >>>> ABOVE STATMENT IGNORED|\n";
 										}
-									}								
+									}
 								}
 							}
-			
+
 						### Event: NewCallerid
 						if ($input_lines[$ILcount] =~ /Event: NewCallerid/)
 							{
@@ -1162,7 +1172,7 @@ while($one_day_interval > 0)
 								# set the state
 								$state = '';
 								if ($begin eq 'Yes') {$state = 'Begin';}
-								else 
+								else
 									{
 									if ($end eq 'Yes') {$state = 'End';}
 									}
@@ -1201,7 +1211,7 @@ while($one_day_interval > 0)
 							#	CallerIDName: V0202034729000030735
 							#	Uniqueid: 1233564450.141
 							#	Result: Answering-Machine
-							if ( ($command_line[3] =~ /^Channel: /i) && ($command_line[5] =~ /^Uniqueid: /i) ) 
+							if ( ($command_line[3] =~ /^Channel: /i) && ($command_line[5] =~ /^Uniqueid: /i) )
 								{
 								&get_time_now;
 
@@ -1234,9 +1244,9 @@ while($one_day_interval > 0)
 								# Pulled from the X-Netborder-Cpa-Campaign-Name SIP Header
 								$cpd_camp_name = $command_line[10];
 								$cpd_camp_name =~ s/CPDCampaignName: |\s*$//gi;
-							
-								print STDERR "|cpd_result = $cpd_result|cpd_detailed_result = $cpd_detailed_result|cpd_call_id = $cpd_call_id|cpd_ref_id = $cpd_ref_id|cpd_camp_name = $cpd_camp_name|\n";	
-								
+
+								print STDERR "|cpd_result = $cpd_result|cpd_detailed_result = $cpd_detailed_result|cpd_call_id = $cpd_call_id|cpd_ref_id = $cpd_ref_id|cpd_camp_name = $cpd_camp_name|\n";
+
 								if (length($cpd_result)>0)
 									{
 									# 2011-03-22 13:22:12.123   (1277187888 123 456)
@@ -1275,7 +1285,7 @@ while($one_day_interval > 0)
 							#	CallerIDName: M4121149450000795193
 							#	Uniqueid: 1233564450.141
 							#	Result: 603
-							if ( ($command_line[3] =~ /^Channel: /i) && ($command_line[5] =~ /^Uniqueid: /i) ) 
+							if ( ($command_line[3] =~ /^Channel: /i) && ($command_line[5] =~ /^Uniqueid: /i) )
 								{
 									&get_time_now;
 
@@ -1354,7 +1364,7 @@ while($one_day_interval > 0)
 
 			### run a keepalive command to flush whatever is in the buffer through and to keep the connection alive
 			### Also, keep the MySQL connection alive by selecting the server_updater time for this server
-			if ($endless_loop =~ /00$|50$/) 
+			if ($endless_loop =~ /00$|50$/)
 				{
 				$keepalive_lines='';
 
@@ -1384,10 +1394,10 @@ while($one_day_interval > 0)
 
 				$keepalive_epoch = time();
 				$keepalive_sec = ($keepalive_epoch - $last_keepalive_epoch);
-				if ($keepalive_sec > 40) 
+				if ($keepalive_sec > 40)
 					{
 					$keepalive_skips=0;
-					@keepalive_output = $tn->cmd(String => "Action: Command\nCommand: core show uptime\n\n", Prompt => '/--END COMMAND--.*/', Errmode => Return, Timeout => 1); 
+					@keepalive_output = $tn->cmd(String => "Action: Command\nCommand: core show uptime\n\n", Prompt => '/--END COMMAND--.*/', Errmode => Return, Timeout => 1);
 					$msg = $tn->errmsg;
 					$buf_ref = $tn->buffer;
                                         $buf_len = length( $$buf_ref );
@@ -1396,7 +1406,7 @@ while($one_day_interval > 0)
 					if($DB){print "+++++++++++++++++++++++++++++++sending keepalive transmit line: $keepalive_sec seconds   $endless_loop|$now_date|$last_update|\n";}
 
 					$k=0;
-					foreach(@keepalive_output) 
+					foreach(@keepalive_output)
 						{
 						$keepalive_lines .= "$keepalive_output[$k]";
 						$k++;
@@ -1422,7 +1432,7 @@ while($one_day_interval > 0)
 			}
 		### END manager event handling for asterisk version >= 1.6
 		}
-	
+
 
 
 	if($DB){print "DONE... Exiting... Goodbye... See you later... Not really, initiating next loop...$one_day_interval left\n";}
@@ -1430,7 +1440,7 @@ while($one_day_interval > 0)
 	$event_string='HANGING UP|';
 	&event_logger;
 
-	@hangup = $tn->cmd(String => "Action: Logoff\n\n", Prompt => "/.*/", Errmode    => Return, Timeout    => 1); 
+	@hangup = $tn->cmd(String => "Action: Logoff\n\n", Prompt => "/.*/", Errmode    => Return, Timeout    => 1);
 
 	$tn->buffer_empty;
 	$tn->waitfor(Match => '/Message:.*\n\n/', Timeout => 10);
@@ -1477,13 +1487,13 @@ sub get_time_now	#get the current date and time and epoch for logging call lengt
 
 
 
-sub event_logger 
+sub event_logger
 	{
 	if ($SYSLOG)
 		{
 		### open the log file for writing ###
-		open(Lout, ">>$PATHlogs/listen_process")
-				|| die "Can't open $PATHlogs/listen_process: $!\n";
+		open(Lout, ">>$PATHlogs/listen_process.log")
+				|| die "Can't open $PATHlogs/listen_process.log: $!\n";
 		print Lout "$now_date|$event_string|\n";
 		close(Lout);
 		}
@@ -1497,8 +1507,8 @@ sub manager_output_logger
 	{
 	if ($SYSLOG)
 		{
-		open(MOout, ">>$PATHlogs/listen")
-				|| die "Can't open $PATHlogs/listen: $!\n";
+		open(MOout, ">>$PATHlogs/listen.log")
+				|| die "Can't open $PATHlogs/listen.log: $!\n";
 		print MOout "$now_date|$manager_string|\n";
 		close(MOout);
 		}
@@ -1508,7 +1518,7 @@ sub dtmf_logger
 	{
 	if ($SYSLOG)
 		{
-		open(Dout, ">>$PATHlogs/dtmf")
+		open(Dout, ">>$PATHlogs/dtmf.log")
 				|| die "Can't open $PATHlogs/dtmf: $!\n";
 		print Dout "|$dtmf_string|\n";
 		close(Dout);

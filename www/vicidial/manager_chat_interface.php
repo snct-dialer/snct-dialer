@@ -1,6 +1,6 @@
 <?php
 # manager_chat_interface.php
-# 
+#
 # Copyright (C) 2018  Joe Johnson, Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This page is for managers (level 8 or higher) to chat with live agents
@@ -20,7 +20,7 @@
 $admin_version = '2.14-8';
 $build = '170409-1551';
 
-$sh="managerchats"; 
+$sh="managerchats";
 
 require("dbconnect_mysqli.php");
 require("functions.php");
@@ -158,7 +158,7 @@ if ($auth < 1)
 $user_stmt="select full_name,user_level,selected_language,qc_enabled from vicidial_users where user='$PHP_AUTH_USER'";
 $user_level=0;
 $user_rslt=mysql_to_mysqli($user_stmt, $link);
-if (mysqli_num_rows($user_rslt)>0) 
+if (mysqli_num_rows($user_rslt)>0)
 	{
 	$user_row=mysqli_fetch_row($user_rslt);
 	$full_name =			$user_row[0];
@@ -174,7 +174,7 @@ if ($SSallow_chats < 1)
 	}
 
 
-if ($end_all_chats) 
+if ($end_all_chats)
 	{
 	$archive_stmt="insert ignore into vicidial_manager_chat_log_archive select * from vicidial_manager_chat_log where manager_chat_id='$end_all_chats'";
 	$archive_rslt=mysql_to_mysqli($archive_stmt, $link);
@@ -189,7 +189,7 @@ if ($end_all_chats)
 	$archive_rslt=mysql_to_mysqli($archive_stmt, $link);
 	}
 
-if ($submit_chat == _QXZ("ALL LIVE AGENTS")) 
+if ($submit_chat == _QXZ("ALL LIVE AGENTS"))
 	{
 	$chat_agents_SQL_OR="";
 	$chat_groups_SQL_OR="";
@@ -197,8 +197,8 @@ if ($submit_chat == _QXZ("ALL LIVE AGENTS"))
 	$available_chat_agents_string='|';
 	$available_chat_groups_string='|';
 	$available_chat_campaigns_string='|';
-	} 
-else if ($submit_chat) 
+	}
+else if ($submit_chat)
 	{
 	$i=0;
 	$available_chat_agents_string='|';
@@ -239,11 +239,11 @@ else if ($submit_chat)
 	$chat_campaigns_SQL_OR=preg_replace("/,$/", "", $chat_campaigns_SQL_OR);
 	$chat_campaigns_SQL_OR.=") ";
 	}
-if (strlen($chat_agents_SQL_OR.$chat_groups_SQL_OR.$chat_campaigns_SQL_OR)>0) 
+if (strlen($chat_agents_SQL_OR.$chat_groups_SQL_OR.$chat_campaigns_SQL_OR)>0)
 	{
 	$chat_query_SQL=" and (".$chat_agents_SQL_OR.$chat_groups_SQL_OR.$chat_campaigns_SQL_OR.")";
 	}
-else 
+else
 	{
 	$chat_query_SQL="";
 	}
@@ -251,24 +251,24 @@ else
 $check_stmt="select manager_chat_id from vicidial_manager_chats where manager='$PHP_AUTH_USER' limit 1";
 $check_rslt=mysql_to_mysqli($check_stmt, $link);
 $active_chats=mysqli_num_rows($check_rslt);
-if ($active_chats>0) 
+if ($active_chats>0)
 	{
 	$active_row=mysqli_fetch_row($check_rslt);
 	$manager_chat_id=$active_row[0];
 	}
 
-if ($active_chats<1 && $manager_message && ($submit_chat== _QXZ("ALL LIVE AGENTS") || ($submit_chat== _QXZ("SELECTED AGENTS") && ($available_chat_agents_ct+$available_chat_groups_ct+$available_chat_campaigns_ct)>0))) 
+if ($active_chats<1 && $manager_message && ($submit_chat== _QXZ("ALL LIVE AGENTS") || ($submit_chat== _QXZ("SELECTED AGENTS") && ($available_chat_agents_ct+$available_chat_groups_ct+$available_chat_campaigns_ct)>0)))
 	{
 	$stmt="select vicidial_live_agents.user, vicidial_users.full_name from vicidial_live_agents, vicidial_users where vicidial_live_agents.user=vicidial_users.user $chat_query_SQL and vicidial_users.user!='$PHP_AUTH_USER' order by vicidial_users.full_name asc";
 	$rslt=mysql_to_mysqli($stmt, $link);
-	if (mysqli_num_rows($rslt)>0) 
+	if (mysqli_num_rows($rslt)>0)
 		{
 		$ins_stmt="insert into vicidial_manager_chats(chat_start_date, manager, selected_agents, selected_user_groups, selected_campaigns, allow_replies, internal_chat_type) VALUES(now(), '$PHP_AUTH_USER', '$available_chat_agents_string', '$available_chat_groups_string', '$available_chat_campaigns_string', '$allow_replies', 'MANAGER')";
 		$ins_rslt=mysql_to_mysqli($ins_stmt, $link);
 		$manager_chat_id=mysqli_insert_id($link);
 
 		$subid=1;
-		while($row=mysqli_fetch_row($rslt)) 
+		while($row=mysqli_fetch_row($rslt))
 			{
 			$user=$row[0];
 
@@ -280,7 +280,7 @@ if ($active_chats<1 && $manager_message && ($submit_chat== _QXZ("ALL LIVE AGENTS
 			$manager_message = preg_replace("/\r/i",'',$manager_message);
 			$manager_message = preg_replace("/\n/i",' ',$manager_message);
 			# $manager_message=addslashes(trim("$manager_message"));
-			
+
 			$message_id=date("U").".".rand(10000000,99999999);
 
 			$ins_chat_stmt="insert into vicidial_manager_chat_log(manager_chat_id, manager_chat_subid, manager, user, message, message_id, message_date, message_posted_by) VALUES('$manager_chat_id', '$subid', '".$PHP_AUTH_USER."', '$user', '".mysqli_real_escape_string($link, $manager_message)."', '$message_id', now(), '".$PHP_AUTH_USER."')";
@@ -314,7 +314,7 @@ if ( (!preg_match("/\-\-ALL\-\-/i",$LOGadmin_viewable_groups)) and (strlen($LOGa
 	$valLOGadmin_viewable_groupsSQL = "and val.user_group IN('---ALL---','$rawLOGadmin_viewable_groupsSQL')";
 	$vmLOGadmin_viewable_groupsSQL = "and vm.user_group IN('---ALL---','$rawLOGadmin_viewable_groupsSQL')";
 	}
-else 
+else
 	{$admin_viewable_groupsALL=1;}
 $regexLOGadmin_viewable_groups = " $LOGadmin_viewable_groups ";
 
@@ -325,7 +325,7 @@ $stmt="SELECT user_group,group_name from vicidial_user_groups $whereLOGadmin_vie
 $rslt=mysql_to_mysqli($stmt, $link);
 $UUgroups_to_print = mysqli_num_rows($rslt);
 $o=0;
-while ($UUgroups_to_print > $o) 
+while ($UUgroups_to_print > $o)
 	{
 	$rowx=mysqli_fetch_row($rslt);
 	$UUgroups_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -367,15 +367,15 @@ function RefreshChatDisplay(manager_chat_id) {
 		{
 		xmlhttp = new XMLHttpRequest();
 		}
-	if (xmlhttp) 
-		{ 
+	if (xmlhttp)
+		{
 		chat_SQL_query = "reload_chat_span=1";
-		xmlhttp.open('POST', 'manager_chat_actions.php'); 
+		xmlhttp.open('POST', 'manager_chat_actions.php');
 		xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-		xmlhttp.send(chat_SQL_query); 
-		xmlhttp.onreadystatechange = function() 
-			{ 
-			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+		xmlhttp.send(chat_SQL_query);
+		xmlhttp.onreadystatechange = function()
+			{
+			if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 				{
 				var ChatText = null;
 				ChatText = xmlhttp.responseText;
@@ -406,16 +406,16 @@ function CheckNewMessages(manager_chat_id) {
 		{
 		xmlhttp = new XMLHttpRequest();
 		}
-	if (xmlhttp) 
+	if (xmlhttp)
 		{
 		chat_SQL_query = "action=CheckNewMessages&manager_chat_id="+manager_chat_id;
 		// alert(chat_SQL_query);
-		xmlhttp.open('POST', 'manager_chat_actions.php'); 
+		xmlhttp.open('POST', 'manager_chat_actions.php');
 		xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-		xmlhttp.send(chat_SQL_query); 
-		xmlhttp.onreadystatechange = function() 
-			{ 
-			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+		xmlhttp.send(chat_SQL_query);
+		xmlhttp.onreadystatechange = function()
+			{
+			if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 				{
 				var ChatResponseText = null;
 				ChatResponseText = xmlhttp.responseText;
@@ -427,7 +427,7 @@ function CheckNewMessages(manager_chat_id) {
 					{
 					var sub_ids=[];
 					var ChatText_array=ChatResponseText.split("\n");
-					for (var i=0; i<ChatText_array.length; i++) 
+					for (var i=0; i<ChatText_array.length; i++)
 						{
 						if (ChatText_array[i].length>0) {sub_ids.push(ChatText_array[i]);}
 						}
@@ -460,26 +460,26 @@ function RefreshChatSubIDs(manager_chat_id, sub_ids) {
 		{
 		xmlhttp = new XMLHttpRequest();
 		}
-	if (xmlhttp) 
+	if (xmlhttp)
 		{
 		var sub_id_str="";
-		for (var i=0; i<sub_ids.length; i++) 
+		for (var i=0; i<sub_ids.length; i++)
 			{
 			sub_id_str+="&chat_sub_ids[]="+sub_ids[i];
 			}
 		chat_SQL_query = "action=PrintSubChatText&manager_chat_id="+manager_chat_id+sub_id_str;
 		// alert(chat_SQL_query);
-		xmlhttp.open('POST', 'manager_chat_actions.php'); 
+		xmlhttp.open('POST', 'manager_chat_actions.php');
 		xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-		xmlhttp.send(chat_SQL_query); 
-		xmlhttp.onreadystatechange = function() 
-			{ 
-			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+		xmlhttp.send(chat_SQL_query);
+		xmlhttp.onreadystatechange = function()
+			{
+			if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 				{
 				var ChatResponseText = null;
 				ChatResponseText = xmlhttp.responseText;
 				var ChatText_array=ChatResponseText.split("\n");
-				for (var j=1; j<ChatText_array.length; j+=2) 
+				for (var j=1; j<ChatText_array.length; j+=2)
 					{
 					var manager_chat_span_id=ChatText_array[j-1];
 					var ChatText=ChatText_array[j];
@@ -489,7 +489,7 @@ function RefreshChatSubIDs(manager_chat_id, sub_ids) {
 						var objDiv = document.getElementById(manager_chat_span_id);
 						objDiv.scrollTop = objDiv.scrollHeight;
 						}
-					}	
+					}
 				CheckEndedChats(manager_chat_id);
 				}
 			}
@@ -517,16 +517,16 @@ function CheckEndedChats(manager_chat_id) {
 		{
 		xmlhttp = new XMLHttpRequest();
 		}
-	if (xmlhttp) 
+	if (xmlhttp)
 		{
 		chat_SQL_query = "action=CheckEndedChats&manager_chat_id="+manager_chat_id;
 		// alert(chat_SQL_query);
-		xmlhttp.open('POST', 'manager_chat_actions.php'); 
+		xmlhttp.open('POST', 'manager_chat_actions.php');
 		xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-		xmlhttp.send(chat_SQL_query); 
-		xmlhttp.onreadystatechange = function() 
-			{ 
-			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+		xmlhttp.send(chat_SQL_query);
+		xmlhttp.onreadystatechange = function()
+			{
+			if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 				{
 				var ChatResponseText = null;
 				ChatResponseText = xmlhttp.responseText;
@@ -537,7 +537,7 @@ function CheckEndedChats(manager_chat_id) {
 				else
 					{
 					var ChatText_array=ChatResponseText.split("\n");
-					for (var i=0; i<ChatText_array.length; i++) 
+					for (var i=0; i<ChatText_array.length; i++)
 						{
 						var EndedChatSpanName="manager_chat_message_"+manager_chat_id+"_"+ChatText_array[i];
 						if (document.getElementById(EndedChatSpanName))
@@ -574,16 +574,16 @@ function PrintSubChatText(manager_chat_id, chat_sub_id) {
 		{
 		xmlhttp = new XMLHttpRequest();
 		}
-	if (xmlhttp) 
-		{ 
+	if (xmlhttp)
+		{
 		var manager_chat_span_id="manager_chat_"+manager_chat_id+"_"+chat_sub_id;
 		chat_SQL_query = "action=PrintSubChatText&manager_chat_id="+manager_chat_id+"&chat_sub_id="+chat_sub_id;
-		xmlhttp.open('POST', 'manager_chat_actions.php'); 
+		xmlhttp.open('POST', 'manager_chat_actions.php');
 		xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-		xmlhttp.send(chat_SQL_query); 
-		xmlhttp.onreadystatechange = function() 
-			{ 
-			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+		xmlhttp.send(chat_SQL_query);
+		xmlhttp.onreadystatechange = function()
+			{
+			if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 				{
 				var ChatText = null;
 				ChatText = xmlhttp.responseText;
@@ -614,26 +614,26 @@ function SendChatMessage(manager_chat_id, chat_sub_id, user) {
 		{
 		xmlhttp = new XMLHttpRequest();
 		}
-	if (xmlhttp) 
+	if (xmlhttp)
 		{
 		var chat_message_field_id="manager_chat_message_"+manager_chat_id+"_"+chat_sub_id;
 		var chat_message=encodeURIComponent(document.getElementById(chat_message_field_id).value);
 
 		chat_SQL_query = "action=SendChatMessage&manager_chat_id="+manager_chat_id+"&chat_sub_id="+chat_sub_id+"&chat_message="+chat_message+"&user="+user;
-		xmlhttp.open('POST', 'manager_chat_actions.php'); 
+		xmlhttp.open('POST', 'manager_chat_actions.php');
 		xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-		xmlhttp.send(chat_SQL_query); 
-		xmlhttp.onreadystatechange = function() 
-			{ 
-			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+		xmlhttp.send(chat_SQL_query);
+		xmlhttp.onreadystatechange = function()
+			{
+			if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 				{
 				var ChatText = null;
 				ChatText = xmlhttp.responseText;
-				if (ChatText.length>0 && ChatText.match(/^Error/)) 
+				if (ChatText.length>0 && ChatText.match(/^Error/))
 					{
 					alert(ChatText);
 					}
-				else 
+				else
 					{
 					document.getElementById(chat_message_field_id).value="";
 					}
@@ -663,15 +663,15 @@ function EndAgentChat(manager_chat_id, chat_sub_id) {
 		{
 		xmlhttp = new XMLHttpRequest();
 		}
-	if (xmlhttp) 
-		{ 
+	if (xmlhttp)
+		{
 		chat_SQL_query = "action=EndAgentChat&manager_chat_id="+manager_chat_id+"&chat_sub_id="+chat_sub_id;
-		xmlhttp.open('POST', 'manager_chat_actions.php'); 
+		xmlhttp.open('POST', 'manager_chat_actions.php');
 		xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-		xmlhttp.send(chat_SQL_query); 
-		xmlhttp.onreadystatechange = function() 
-			{ 
-			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+		xmlhttp.send(chat_SQL_query);
+		xmlhttp.onreadystatechange = function()
+			{
+			if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
 				{
 				var ChatText = null;
 				ChatText = xmlhttp.responseText;
@@ -689,7 +689,7 @@ function EndAgentChat(manager_chat_id, chat_sub_id) {
 
 </script>
 <title><?php echo _QXZ("ADMINISTRATION: Manager Chat Interface"); ?></title>
-<?php 
+<?php
 
 ##### BEGIN Set variables to make header show properly #####
 # $ADD =					'3';
@@ -822,7 +822,7 @@ $NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
 		echo "</TR>";
 		$stmt="select vm.message_posted_by, vm.message, vm.message_date, vu.full_name, vm.manager, vm.manager_chat_subid, vm.user from vicidial_manager_chats vmc, vicidial_manager_chat_log vm, vicidial_users vu where vmc.manager_chat_id='$manager_chat_id' and vmc.manager_chat_id=vm.manager_chat_id and vm.user=vu.user order by vm.manager_chat_subid asc, message_date desc";
 		$rslt=mysql_to_mysqli($stmt, $link);
-		if (mysqli_num_rows($rslt)>0) 
+		if (mysqli_num_rows($rslt)>0)
 			{
 			$prev_chat_subid="";
 			$backlog_limit=20;
@@ -830,19 +830,19 @@ $NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
 			$chat_output_text=array();
 			$chat_output_footer=array();
 			$chat_subids_array="[";
-			while($row=mysqli_fetch_row($rslt)) 
+			while($row=mysqli_fetch_row($rslt))
 				{
 				$full_name=$row[3];
-				$chat_subid=$row[5]; 
+				$chat_subid=$row[5];
 				$chat_subids_array.="'$chat_subid',";
 
-				if ($backlog_limit>0) 
+				if ($backlog_limit>0)
 					{
 					if ($row[0]==$row[4]) {$fc="#990000";} else {$fc="#000099";}
-					$chat_output_text[$chat_subid]="<font color='$fc' FACE=\"ARIAL,HELVETICA\" size='1'>$row[1]</font><BR>".$chat_output_text[$chat_subid]; 
+					$chat_output_text[$chat_subid]="<font color='$fc' FACE=\"ARIAL,HELVETICA\" size='1'>$row[1]</font><BR>".$chat_output_text[$chat_subid];
 					$backlog_limit--;
 					}
-				if ($prev_chat_subid!=$chat_subid) 
+				if ($prev_chat_subid!=$chat_subid)
 					{
 					$agent_id=$row[6];
 					if ($bgcolor=="#E6E6E6") {$bgcolor="#FFFFFF";} else {$bgcolor="#E6E6E6";}
@@ -862,7 +862,7 @@ $NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
 				}
 			$chat_subids_array=preg_replace("/,$/", "", $chat_subids_array);
 			$chat_subids_array.="]";
-			while (list($chat_subid, $text) = each($chat_output_header)) 
+			while (list($chat_subid, $text) = each($chat_output_header))
 				{
 				echo $chat_output_header[$chat_subid];
 				echo $chat_output_text[$chat_subid];
@@ -870,8 +870,8 @@ $NWE = "')\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP>";
 				}
 			# $reload_function="setInterval(\"CheckNewMessages($manager_chat_id, $chat_subids_array)\", 3000);\n";
 			$reload_function="setInterval(\"CheckNewMessages($manager_chat_id)\", 500);\n";
-			} 
-		else 
+			}
+		else
 			{
 			$reload_function="setInterval(\"RefreshChatDisplay()\", 30000);\n";
 			}

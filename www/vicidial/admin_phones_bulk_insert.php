@@ -1,6 +1,6 @@
 <?php
 # admin_phones_bulk_insert.php
-# 
+#
 # Copyright (C) 2018  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # this screen will insert phones into your multi-server system with aliases
@@ -216,7 +216,7 @@ if ( (!preg_match('/\-\-ALL\-\-/i',$LOGadmin_viewable_groups)) and (strlen($LOGa
 
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
 <title><?php echo _QXZ("ADMINISTRATION: Phones Bulk Insert"); ?>
-<?php 
+<?php
 
 ################################################################################
 ##### BEGIN help section
@@ -406,13 +406,13 @@ if ($action == "BLANK")
 	echo "<option>"._QXZ("NO")."</option>";
 	echo "</select> $NWB#admin_phones_bulk_insert-create_alias$NWE </td></tr>\n";
 	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Alias Suffix").": </td><td align=left><input type=text name=alias_suffix size=2 maxlength=4> $NWB#admin_phones_bulk_insert-alias_suffix$NWE </td></tr>\n";
-	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Client Protocol").": </td><td align=left><select size=1 name=protocol><option>SIP</option><option>Zap</option><option>IAX2</option><option>EXTERNAL</option></select> $NWB#admin_phones_bulk_insert-protocol$NWE </td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Client Protocol").": </td><td align=left><select size=1 name=protocol><option value='SIP'>SIP</option><option value='Zap'>Zap</option><option value='IAX2'>IAX2</option><option value='EXTERNAL'>"._QXZ("EXTERNAL")."</option></select> $NWB#admin_phones_bulk_insert-protocol$NWE </td></tr>\n";
 	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Local GMT").": </td><td align=left><select size=1 name=local_gmt><option>12.75</option><option>12.00</option><option>11.00</option><option>10.00</option><option>9.50</option><option>9.00</option><option>8.00</option><option>7.00</option><option>6.50</option><option>6.00</option><option>5.75</option><option>5.50</option><option>5.00</option><option>4.50</option><option>4.00</option><option>3.50</option><option>3.00</option><option>2.00</option><option>1.00</option><option>0.00</option><option>-1.00</option><option>-2.00</option><option>-3.00</option><option>-3.50</option><option>-4.00</option><option selected>-5.00</option><option>-6.00</option><option>-7.00</option><option>-8.00</option><option>-9.00</option><option>-10.00</option><option>-11.00</option><option>-12.00</option></select> ("._QXZ("Do NOT Adjust for DST").") $NWB#admin_phones_bulk_insert-gmt$NWE </td></tr>\n";
 	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Phone Context").": </td><td align=left><input type=text name=phone_context size=20 maxlength=20> $NWB#admin_phones_bulk_insert-phone_context$NWE </td></tr>\n";
-	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Set As Webphone").": </td><td align=left><select size=1 name=is_webphone><option>Y</option><option selected>N</option><option>Y_API_LAUNCH</option></select>$NWB#admin_phones_bulk_insert-is_webphone$NWE</td></tr>\n";
-	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Webphone Dialpad").": </td><td align=left><select size=1 name=webphone_dialpad><option selected>Y</option><option>N</option><option>TOGGLE</option><option>TOGGLE_OFF</option></select>$NWB#admin_phones_bulk_insert-webphone_dialpad$NWE</td></tr>\n";
-	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Webphone Auto-Answer").": </td><td align=left><select size=1 name=webphone_auto_answer><option selected>Y</option><option>N</option></select>$NWB#admin_phones_bulk_insert-webphone_auto_answer$NWE</td></tr>\n";
-	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Use External Server IP").": </td><td align=left><select size=1 name=use_external_server_ip><option>Y</option><option selected>N</option></select>$NWB#admin_phones_bulk_insert-use_external_server_ip$NWE</td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Set As Webphone").": </td><td align=left><select size=1 name=is_webphone><option value='Y'>"._QXZ("Y")."</option><option selected value='N'>"._QXZ("N")."</option><option value='Y_API_LAUNCH'>"._QXZ("Y_API_LAUNCH")."</option></select>$NWB#admin_phones_bulk_insert-is_webphone$NWE</td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Webphone Dialpad").": </td><td align=left><select size=1 name=webphone_dialpad><option selected value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='TOGGLE'>"._QXZ("TOGGLE")."</option><option value='TOGGLE_OFF'>"._QXZ("TOGGLE_OFF")."</option></select>$NWB#admin_phones_bulk_insert-webphone_dialpad$NWE</td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Webphone Auto-Answer").": </td><td align=left><select size=1 name=webphone_auto_answer><option selected value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option></select>$NWB#admin_phones_bulk_insert-webphone_auto_answer$NWE</td></tr>\n";
+	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Use External Server IP").": </td><td align=left><select size=1 name=use_external_server_ip><option value='Y'>"._QXZ("Y")."</option><option selected value='N'>"._QXZ("N")."</option></select>$NWB#admin_phones_bulk_insert-use_external_server_ip$NWE</td></tr>\n";
 
 	echo "<tr bgcolor=#".$SSstd_row4_background."><td align=right>"._QXZ("Template ID")."</a>: </td><td align=left><select size=1 name=template_id>\n";
 	$stmt="SELECT template_id,template_name from vicidial_conf_templates $whereLOGadmin_viewable_groupsSQL order by template_id;";
@@ -420,7 +420,7 @@ if ($action == "BLANK")
 	$templates_to_print = mysqli_num_rows($rslt);
 	$templates_list='<option value=\'\' SELECTED>--'._QXZ("NONE").'--</option>';
 	$o=0;
-	while ($templates_to_print > $o) 
+	while ($templates_to_print > $o)
 		{
 		$rowx=mysqli_fetch_row($rslt);
 		$templates_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
@@ -465,7 +465,7 @@ if ($action == "ADD_PHONES_SUBMIT")
 				if ($DB>0) {echo "$stmt";}
 				$rslt=mysql_to_mysqli($stmt, $link);
 				$servercount_to_print = mysqli_num_rows($rslt);
-				if ($servercount_to_print > 0) 
+				if ($servercount_to_print > 0)
 					{
 					$rowx=mysqli_fetch_row($rslt);
 					$server_exists =	$rowx[0];
@@ -481,7 +481,7 @@ if ($action == "ADD_PHONES_SUBMIT")
 						if ($DB>0) {echo "$stmt";}
 						$rslt=mysql_to_mysqli($stmt, $link);
 						$phonecount_to_print = mysqli_num_rows($rslt);
-						if ($phonecount_to_print > 0) 
+						if ($phonecount_to_print > 0)
 							{
 							$rowx=mysqli_fetch_row($rslt);
 							$phone_exists =	$rowx[0];
@@ -618,7 +618,7 @@ if ($action == "ADD_PHONES_SUBMIT")
 					$p++;
 					}
 				}
-			
+
 			echo _QXZ("Phones Inserted").":: $phones_inserted\n<BR>";
 			echo _QXZ("Phones Aliases Inserted").":: $phone_alias_inserted\n<BR>";
 			echo _QXZ("You now need to manually trigger a conf file rebuild from the System Settings screen").":\n<BR>";

@@ -114,10 +114,10 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
 use DBI;
 use Net::Telnet ();
-	  
- $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+
+ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
  or die "Couldn't connect to database: " . DBI->errstr;
- 
+
 ### Grab Server values from the database
 $stmtA = "SELECT telnet_host,telnet_port,ASTmgrUSERNAME,ASTmgrSECRET,ASTmgrUSERNAMEupdate,ASTmgrUSERNAMElisten,ASTmgrUSERNAMEsend,max_vicidial_trunks,answer_transfer_agent,local_gmt,ext_context,asterisk_version FROM servers where server_ip = '$server_ip';";
 
@@ -153,8 +153,8 @@ if ($sthArows > 0)
 	if ($DBSERVER_GMT)				{$SERVER_GMT = $DBSERVER_GMT;}
 	if ($DBext_context)				{$ext_context = $DBext_context;}
 	}
-$sthA->finish(); 
-	
+$sthA->finish();
+
 $secX = time();
 
 $BDtarget = ($secX - 86400);
@@ -184,7 +184,7 @@ if ($agent_lookup > 0)
 		$phone_list .= "'$aryA[0]',";
 		$sip_count++;
 		}
-	$sthA->finish(); 
+	$sthA->finish();
 	chop($phone_list);
 	if (length($phone_list) > 2)
 		{$phone_listSQL = "and login IN($phone_list)";}
@@ -212,7 +212,7 @@ if ( ($sip_count > 0) || ($agent_lookup < 1) )
 		$PTlogins[$rec_count] =			$aryA[2];
 		$rec_count++;
 		}
-	$sthA->finish(); 
+	$sthA->finish();
 
 
 	### connect to asterisk manager through telnet
@@ -249,11 +249,11 @@ if ( ($sip_count > 0) || ($agent_lookup < 1) )
 		%ast_ver_str = parse_asterisk_version($asterisk_version);
 		if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 6))
 			{
-			@list_channels = $t->cmd(String => "Action: Command\nCommand: sip show peer $PTextensions[$i]\n\nAction: Ping\n\n", Prompt => '/Response: Pong.*/'); 
+			@list_channels = $t->cmd(String => "Action: Command\nCommand: sip show peer $PTextensions[$i]\n\nAction: Ping\n\n", Prompt => '/Response: Pong.*/');
 			}
 		else
 			{
-			@list_channels = $t->cmd(String => "Action: Command\nCommand: sip show peer $PTextensions[$i]\n\nAction: Ping\n\n", Prompt => '/Response: Success\nPing: Pong.*/'); 
+			@list_channels = $t->cmd(String => "Action: Command\nCommand: sip show peer $PTextensions[$i]\n\nAction: Ping\n\n", Prompt => '/Response: Success\nPing: Pong.*/');
 			}
 
 		$j=0;
@@ -275,7 +275,7 @@ if ( ($sip_count > 0) || ($agent_lookup < 1) )
 			}
 		else
 			{
-			if ($NEW_IPaddr[$i] =~ /Unspecified/) 
+			if ($NEW_IPaddr[$i] =~ /Unspecified/)
 				{
 				if($DB){print "PHONE IP UNSPECIFIED, DOING NOTHING FOR THIS EXTENSION\n";}
 				}
@@ -299,7 +299,7 @@ if ( ($sip_count > 0) || ($agent_lookup < 1) )
 		}
 
 	$t->buffer_empty;
-	@hangup = $t->cmd(String => "Action: Logoff\n\n", Prompt => "/.*/"); 
+	@hangup = $t->cmd(String => "Action: Logoff\n\n", Prompt => "/.*/");
 	$t->buffer_empty;
 	$t->waitfor(Match => '/Message:.*\n\n/', Timeout => 10);
 	$ok = $t->close;
@@ -324,7 +324,7 @@ if ($agent_lookup > 0)
 		$phone_list .= "'$aryA[0]',";
 		$iax_count++;
 		}
-	$sthA->finish(); 
+	$sthA->finish();
 	chop($phone_list);
 	if (length($phone_list) > 2)
 		{$phone_listSQL = "and login IN($phone_list)";}
@@ -352,7 +352,7 @@ if ( ($iax_count > 0) || ($agent_lookup < 1) )
 		$PTlogins[$rec_count] =			$aryA[2];
 		$rec_count++;
 		}
-	$sthA->finish(); 
+	$sthA->finish();
 
 
 	### connect to asterisk manager through telnet
@@ -388,11 +388,11 @@ if ( ($iax_count > 0) || ($agent_lookup < 1) )
 		%ast_ver_str = parse_asterisk_version($asterisk_version);
 		if (( $ast_ver_str{major} = 1 ) && ($ast_ver_str{minor} < 6))
 			{
-			@list_channels = $t->cmd(String => "Action: Command\nCommand: iax2 show peer $PTextensions[$i]\n\nAction: Ping\n\n", Prompt => '/Response: Pong.*/'); 
+			@list_channels = $t->cmd(String => "Action: Command\nCommand: iax2 show peer $PTextensions[$i]\n\nAction: Ping\n\n", Prompt => '/Response: Pong.*/');
 			}
 		else
 			{
-			@list_channels = $t->cmd(String => "Action: Command\nCommand: iax2 show peer $PTextensions[$i]\n\nAction: Ping\n\n", Prompt => '/Response: Success\nPing: Pong.*/'); 
+			@list_channels = $t->cmd(String => "Action: Command\nCommand: iax2 show peer $PTextensions[$i]\n\nAction: Ping\n\n", Prompt => '/Response: Success\nPing: Pong.*/');
 			}
 
 		$j=0;
@@ -414,7 +414,7 @@ if ( ($iax_count > 0) || ($agent_lookup < 1) )
 			}
 		else
 			{
-			if ($NEW_IPaddr[$i] =~ /Unspecified/) 
+			if ($NEW_IPaddr[$i] =~ /Unspecified/)
 				{
 				if($DB){print "PHONE IP UNSPECIFIED, DOING NOTHING FOR THIS EXTENSION\n";}
 				}
@@ -438,7 +438,7 @@ if ( ($iax_count > 0) || ($agent_lookup < 1) )
 		}
 
 	$t->buffer_empty;
-	@hangup = $t->cmd(String => "Action: Logoff\n\n", Prompt => "/.*/"); 
+	@hangup = $t->cmd(String => "Action: Logoff\n\n", Prompt => "/.*/");
 	$t->buffer_empty;
 	$t->waitfor(Match => '/Message:.*\n\n/', Timeout => 10);
 	$ok = $t->close;

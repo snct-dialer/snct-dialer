@@ -1,9 +1,9 @@
 <?php
 # voice_lab.php
-# 
+#
 # This script is designed to broadcast a recorded message or allow a person to
 # speak to all agents logged into a VICIDIAL campaign.
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 #
@@ -211,7 +211,7 @@ echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n"
 <BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 <CENTER>
 
-<?php 
+<?php
 if ($NEW_VOICE_LAB > 0)
 	{
 	if ( (strlen($server_ip) > 6) && (strlen($session_id) > 6) && (strlen($campaign_id) > 2) )
@@ -226,7 +226,7 @@ if ($NEW_VOICE_LAB > 0)
 		echo _QXZ("Message Extension")."<input type=text name=message>\n";
 		echo "<input type=submit name=submit value='"._QXZ("PLAY THIS MESSAGE")."'>\n";
 		echo "</form><BR><BR><BR>\n";
-		
+
 		$S='*';
 		$D_s_ip = explode('.', $server_ip);
 		if (strlen($D_s_ip[0])<2) {$D_s_ip[0] = "0$D_s_ip[0]";}
@@ -262,7 +262,7 @@ if ($NEW_VOICE_LAB > 0)
 		$o=0;
 		while ($agents_to_loop > $o)
 			{
-			if ($agents_servers[$o] == "$server_ip") 
+			if ($agents_servers[$o] == "$server_ip")
 				{$dial_string = $session_id;}
 			else
 				{$dial_string = $remote_dialstring;}
@@ -309,7 +309,7 @@ else
 			echo _QXZ("Message Extension")."<input type=text name=message>\n";
 			echo "<input type=submit name=submit value='"._QXZ("PLAY THIS MESSAGE")."'>\n";
 			echo "</form><BR><BR><BR>\n";
-			
+
 			$nn='99';
 			$n='9';
 

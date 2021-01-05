@@ -1,6 +1,6 @@
 <?php
 # timeclock_status.php
-# 
+#
 # Copyright (C) 2017  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -364,7 +364,7 @@ if ( ($SSweb_logo=='default_old') and ($logo_old > 0) )
 	}
 if ( ($SSweb_logo!='default_new') and ($SSweb_logo!='default_old') )
 	{
-	if (file_exists("./images/vicidial_admin_web_logo$SSweb_logo")) 
+	if (file_exists("./images/vicidial_admin_web_logo$SSweb_logo"))
 		{
 		$selected_logo = "./images/vicidial_admin_web_logo$SSweb_logo";
 		$selected_small_logo = "./images/vicidial_admin_web_logo$SSweb_logo";
@@ -375,8 +375,9 @@ if ( ($SSweb_logo!='default_new') and ($SSweb_logo!='default_old') )
 $HEADER.="<html>\n";
 $HEADER.="<head>\n";
 $HEADER.="<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
-$HEADER.="<title>ADMINISTRATION: \n";
+$HEADER.="<title>"._QXZ("ADMINISTRATION").": \n";
 $HEADER.=_QXZ("$report_name");
+$HEADER.="</title>";
 
 ##### BEGIN Set variables to make header show properly #####
 $ADD =					'311111';
@@ -454,7 +455,7 @@ if ($DB>0) {$MAIN.="|$stmt|";}
 $rslt=mysql_to_mysqli($stmt, $link);
 $users_to_print = mysqli_num_rows($rslt);
 $o=0;
-while ($users_to_print > $o) 
+while ($users_to_print > $o)
 	{
 	$row=mysqli_fetch_row($rslt);
 	$users[$o] =		$row[0];
@@ -473,7 +474,7 @@ while ($users_to_print > $o)
 	}
 
 $o=0;
-while ($users_to_print > $o) 
+while ($users_to_print > $o)
 	{
 	$total_login_time = 0;
 	##### grab timeclock status record for this user #####
@@ -481,7 +482,7 @@ while ($users_to_print > $o)
 	if ($DB>0) {$MAIN.="|$stmt|";}
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$stats_to_print = mysqli_num_rows($rslt);
-	if ($stats_to_print > 0) 
+	if ($stats_to_print > 0)
 		{
 		$row=mysqli_fetch_row($rslt);
 		$Tevent_epoch[$o] =	$row[0];
@@ -490,7 +491,7 @@ while ($users_to_print > $o)
 		$Tip_address[$o] =	$row[3];
 
 		if ( ($row[2]=='START') or ($row[2]=='LOGIN') )
-			{$bgcolor[$o]='bgcolor="#'. $SSstd_row3_background .'"';} 
+			{$bgcolor[$o]='bgcolor="#'. $SSstd_row3_background .'"';}
 		else
 			{$bgcolor[$o]='bgcolor="#'. $SSstd_row3_background .'"';}
 		}
@@ -501,7 +502,7 @@ while ($users_to_print > $o)
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$logs_to_parse = mysqli_num_rows($rslt);
 	$p=0;
-	while ($logs_to_parse > $p) 
+	while ($logs_to_parse > $p)
 		{
 		$row=mysqli_fetch_row($rslt);
 		if ( (preg_match('/LOGIN/', $row[0])) or (preg_match('/START/', $row[0])) )
@@ -548,7 +549,7 @@ while ($users_to_print > $o)
 	if ($DB>0) {$MAIN.="|$stmt|";}
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$vals_to_print = mysqli_num_rows($rslt);
-	if ($vals_to_print > 0) 
+	if ($vals_to_print > 0)
 		{
 		$row=mysqli_fetch_row($rslt);
 		$Vevent_time[$o] =	$row[0];
@@ -584,7 +585,7 @@ $CSV_text.="\"\",\"#\",\""._QXZ("USER")."\",\""._QXZ("NAME")."\",\""._QXZ("STATU
 
 $o=0;
 $s=0;
-while ($users_to_print > $o) 
+while ($users_to_print > $o)
 	{
 	if ( ($Tlogin_sec[$o] > 0) or (strlen($Vevent_time[$o]) > 0) )
 		{
@@ -679,7 +680,7 @@ if ($file_download > 0)
 
 	echo "$CSV_text";
 	}
-else 
+else
 	{
 	header ("Content-type: text/html; charset=utf-8");
 	echo "$HEADER";

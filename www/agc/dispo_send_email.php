@@ -1,6 +1,6 @@
 <?php
 # dispo_send_email.php
-# 
+#
 # Copyright (C) 2019  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed to be used in the "Dispo URL" field of a campaign
@@ -17,7 +17,7 @@
 #
 # Example of what to put in Dead Trigger URL campaign setting field:
 # VARhttp://192.168.1.1/agc/dispo_send_email.php?container_id=TEST_CONTAINER&lead_id=--A--lead_id--B--&call_id=--A--call_id--B--&dispo=DEAD&user=NOAGENTURL--A--user--B--&pass=--A--call_id--B--&sale_status=ALL-STATUSES&called_count=--A--called_count--B--&log_to_file=1
-# 
+#
 # Definable Fields: (other fields should be left as they are)
 # - log_to_file -	(0,1) if set to 1, will create a log file in the agc directory
 # - sale_status -	(SALE---XSALE) a triple-dash "---" delimited list of the statuses that are to be moved, use ALL-STATUSES to trigger on all calls
@@ -37,6 +37,8 @@
 # 180611-1703 - Added instructions for Dead Trigger URL
 # 180909-1907 - Added channel_group variable
 # 190129-1855 - Added --A--RUSfullname--B-- special variable flag
+# 190521-1715 - Added --A--dispo--B-- and --A--dispo_name--B-- to email_body
+# 191013-2113 - Fixes for PHP7
 #
 
 $api_script = 'send_email';
@@ -476,7 +478,7 @@ if ($match_found > 0)
 							$agent_email =			urlencode(trim($row[7]));
 							$RUSfullname = preg_replace("/^.*_/",'',$fullname);
 							}
-						
+
 						if ( (preg_match('/--A--CF_uses_custom_fields--B--/i',$email_subject)) or (preg_match('/--A--CF_uses_custom_fields--B--/i',$email_body)) )
 							{
 							### find the names of all custom fields, if any
@@ -485,6 +487,7 @@ if ($match_found > 0)
 								if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'60013',$user,$server_ip,$session_name,$one_mysql_log);}
 							if ($DB) {echo "$stmt\n";}
 							$cffn_ct = mysqli_num_rows($rslt);
+							$field_name_id = array();
 							$d=0;   $field_query_SQL='';
 							while ($cffn_ct > $d)
 								{
@@ -619,6 +622,8 @@ if ($match_found > 0)
 						{
 						$email_body = preg_replace('/^VAR|--A--CF_uses_custom_fields--B--/','',$email_body);
 						$email_body = preg_replace('/--A--lead_id--B--/i',"$lead_id",$email_body);
+						$email_body = preg_replace('/--A--dispo--B--/i',"$dispo",$email_body);
+						$email_body = preg_replace('/--A--dispo_name--B--/i',"$dispo_name",$email_body);
 						$email_body = preg_replace('/--A--vendor_id--B--/i',"$vendor_id",$email_body);
 						$email_body = preg_replace('/--A--vendor_lead_code--B--/i',"$vendor_lead_code",$email_body);
 						$email_body = preg_replace('/--A--list_id--B--/i',"$list_id",$email_body);
@@ -1282,9 +1287,9 @@ if ($match_found > 0)
 							{$header .= $attachment_20.PHP_EOL;}
 
 						// Send email
-						if (mail($email_to, $email_subject, "", $header)) 
-							{echo "Sent";} 
-						else 
+						if (mail($email_to, $email_subject, "", $header))
+							{echo "Sent";}
+						else
 							{echo "Error";}
 						}
 					else
@@ -1328,7 +1333,7 @@ if ($match_found > 0)
 	}
 else
 	{
-	$MESSAGE = _QXZ("DONE: dispo is not a sale status: %1s  Count: ",0,'',$dispo) . $called_count|$called_count_trigger;
+	$MESSAGE = _QXZ("DONE: dispo is not a sale status: %1s  Count: ",0,'',$dispo) . "$called_count|$called_count_trigger";
 	echo "$MESSAGE\n";
 	}
 

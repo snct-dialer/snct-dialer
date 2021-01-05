@@ -89,13 +89,13 @@ foreach(@conf)
 	}
 
 if (!$VARDB_port) {$VARDB_port='3306';}
-if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/ivrout";}
+if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/ivrout.log";}
 
 use DBI;
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass", { mysql_enable_utf8 => 1 })
     or die "Couldn't connect to database: " . DBI->errstr;
 
 
@@ -110,7 +110,7 @@ if (length($ARGV[0])>1)
 		if ($AGILOG) {$agi_string = "$i|$ARGV[$i]";   &agi_output;}
 		$i++;
 		}
-	
+
 	### list of command-line array arguments:
 	@ARGV_vars = split(/---/, $ARGV[0]);
 
@@ -125,7 +125,7 @@ if ( (length($use_call_menu) < 1) || ($use_call_menu !~ /Y|N/) )
 
 
 $|=1;
-while(<STDIN>) 
+while(<STDIN>)
 {
 	chomp;
 	last unless length($_);
@@ -187,7 +187,7 @@ $entry_chances=0;
 $VALID_login=0;
 $ACTIVE_login=0;
 $VDADremDIALstr='';
-while ( ($entry_chances < 3) && ($VALID_login < 1) ) 
+while ( ($entry_chances < 3) && ($VALID_login < 1) )
 	{
 	$entry_chances++;
 
@@ -219,7 +219,7 @@ while ( ($entry_chances < 3) && ($VALID_login < 1) )
 
 		if ( ($tables_use_alt_log_db =~ /contact_information/) && (length($alt_log_server_ip)>4) && (length($alt_log_dbname)>0) )
 			{
-			$linkALT = DBI->connect("DBI:mysql:$alt_log_dbname:$alt_log_server_ip:$VARDB_port", "$alt_log_login", "$alt_log_pass")
+			$linkALT = DBI->connect("DBI:mysql:$alt_log_dbname:$alt_log_server_ip:$VARDB_port", "$alt_log_login", "$alt_log_pass", { mysql_enable_utf8 => 1 })
 				or die "Couldn't connect to database: " . DBI->errstr;
 			}
 		else
@@ -252,7 +252,7 @@ while ( ($entry_chances < 3) && ($VALID_login < 1) )
 		$sthA->finish();
 		}
 
-	if ($VALID_login > 0) 
+	if ($VALID_login > 0)
 		{
 		$AGI->exec("EXEC Set(_agent_user_id=$PIN_number)");
 
@@ -266,7 +266,7 @@ while ( ($entry_chances < 3) && ($VALID_login < 1) )
 
 
 
-if ($VALID_login < 1) 
+if ($VALID_login < 1)
 	{
 	if ($AGILOG) {$agi_string = "DIAL-IN END: Invalid Login   |$VALID_login|$PIN_number|$PASS_word|";   &agi_output;}
 
@@ -339,7 +339,7 @@ else
 			}
 		$sthA->finish();
 
-		if ($ACTIVE_login < 1) 
+		if ($ACTIVE_login < 1)
 			{
 			if ($AGILOG) {$agi_string = "DIAL-IN END: Inactive Login   |$VALID_login|$PIN_number|$PASS_word|  |$ACTIVE_login|$PDtsSQLdate|";   &agi_output;}
 
@@ -374,9 +374,9 @@ else
 			$S='*';
 			if( $VDADserver_ip =~ m/(\S+)\.(\S+)\.(\S+)\.(\S+)/ )
 				{
-				$a = leading_zero($1); 
-				$b = leading_zero($2); 
-				$c = leading_zero($3); 
+				$a = leading_zero($1);
+				$b = leading_zero($2);
+				$c = leading_zero($3);
 				$d = leading_zero($4);
 				$VDADremDIALstr = "$a$S$b$S$c$S$d$S";
 				}
@@ -420,7 +420,7 @@ sub user_password_gather
 
 	$interrupt_digit='';
 
-	$interrupt_digit = $AGI->stream_file('ld_welcome_pin_number','0123456789');   
+	$interrupt_digit = $AGI->stream_file('ld_welcome_pin_number','0123456789');
 
 		print STDERR "interrupt_digit |$interrupt_digit|\n";
 
@@ -440,7 +440,7 @@ sub user_password_gather
 		if ($interrupt_digit == 55) {$interrupt_digit=7;}
 		if ($interrupt_digit == 56) {$interrupt_digit=8;}
 		if ($interrupt_digit == 57) {$interrupt_digit=9;}
-		
+
 		$PIN_number=$interrupt_digit;
 		}
 
@@ -459,7 +459,7 @@ sub user_password_gather
 			{
 			$digits_being_entered=0;
 			}
-		
+
 		$digit_loop_counter++;
 		}
 
@@ -474,7 +474,7 @@ sub user_password_gather
 
 		$interrupt_digit='';
 
-		$interrupt_digit = $AGI->stream_file('enter-password','0123456789');   
+		$interrupt_digit = $AGI->stream_file('enter-password','0123456789');
 
 			print STDERR "interrupt_digit |$interrupt_digit|\n";
 
@@ -494,7 +494,7 @@ sub user_password_gather
 			if ($interrupt_digit == 55) {$interrupt_digit=7;}
 			if ($interrupt_digit == 56) {$interrupt_digit=8;}
 			if ($interrupt_digit == 57) {$interrupt_digit=9;}
-			
+
 			$PASS_word=$interrupt_digit;
 			}
 
@@ -513,7 +513,7 @@ sub user_password_gather
 				{
 				$digits_being_entered=0;
 				}
-			
+
 			$digit_loop_counter++;
 			}
 
@@ -546,7 +546,7 @@ sub get_time_now	#get the current date and time and epoch for logging call lengt
 
 
 
-sub checkresult 
+sub checkresult
 	{
 	my ($res) = @_;
 	my $retval;
@@ -554,18 +554,18 @@ sub checkresult
 	chomp $res;
 	if ($res =~ /^200/) {
 		$res =~ /result=(-?\d+)/;
-		if (!length($1)) 
+		if (!length($1))
 			{
 			print STDERR "FAIL ($res)\n";
 			$fail++;
-			} 
-		else 
+			}
+		else
 			{
 			print STDERR "PASS ($1)\n";
 			$pass++;
 			}
-		} 
-	else 
+		}
+	else
 		{
 		print STDERR "FAIL (unexpected result '$res')\n";
 		$fail++;
@@ -588,7 +588,7 @@ sub agi_output
 	$agi_string='';
 	}
 
-sub leading_zero($) 
+sub leading_zero($)
 	{
 	$_ = $_[0];
 	s/^(\d)$/0$1/;

@@ -64,36 +64,36 @@ class ods {
 		$this->setPageFooterDisplay(true);
 
 		$this->path2OdsFiles = ".";
-		
+
 		$this->defaultTable = null;
-		
+
 		$this->scripts   = array();
 		$this->fontFaces = array();
 		$this->styles    = array();
 		$this->tables    = array();
-		
+
 		$this->addFontFaces( new odsFontFace( "Nimbus Sans L", "swiss" ) );
 		$this->addFontFaces( new odsFontFace( "Bitstream Vera Sans", "system" ) );
-		
+
 		$this->addStyles( new odsStyleTableColumn("co1") );
 		$this->addStyles( new odsStyleTable("ta1") );
 		$this->addStyles( new odsStyleTableRow("ro1") );
 		$this->addStyles( new odsStyleTableCell("ce1") );
 
 	}
-	
+
 	public function setTitle($title) {
 		$this->title = $title;
 	}
-	
+
 	public function setSubject($subject) {
 		$this->subject = $subject;
 	}
-	
+
 	public function setKeyword($keyword) {
 		$this->keyword = $keyword;
 	}
-	
+
 	public function setDescription($description) {
 		$this->description = $description;
 	}
@@ -229,36 +229,36 @@ class ods {
 
 	// Deprecated
 	public function setPath2OdsFiles($path) {}
-	
+
 	public function addFontFaces(odsFontFace $odsFontFace) {
 		if(in_array($odsFontFace,$this->fontFaces)) return;
 		$this->fontFaces[$odsFontFace->getFontName()] = $odsFontFace;
 	}
-	
+
 	public function addStyles(odsStyle $odsStyle) {
 		if(in_array($odsStyle,$this->styles)) return;
 		$this->styles[$odsStyle->getName()] = $odsStyle;
 	}
-	
+
 	public function addTmpStyles(odsStyle $odsStyle) {
 		if(in_array($odsStyle,$this->styles)) return;
 		if(in_array($odsStyle,$this->tmpStyles)) return;
 		$this->tmpStyles[$odsStyle->getName()] = $odsStyle;
 		//echo "addTmpStyles:".$odsStyle->getName()."\n";
 	}
-	
+
 	public function addTmpPictures($file) {
 		if(in_array($file,$this->tmpPictures)) return  $this->tmpPictures[$file];
 		$this->tmpPictures[$file] = "Pictures/".md5(time().rand()).strrchr($file,'.');
 		return $this->tmpPictures[$file];
 	}
-	
+
 	public function getStyleByName($name) {
 		if(isset($this->styles[$name])) return $this->styles[$name];
 		if(isset($this->tmpStyles[$name])) return $this->tmpStyles[$name];
-		return null; 
+		return null;
 	}
-	
+
 	public function addTable($odsTable, $data=null) {
 		if(is_a($odsTable, odsTable::class)) {
 			if(in_array($odsTable,$this->tables)) return;
@@ -273,11 +273,11 @@ class ods {
 			$this->addTable($table);
 		}
 	}
-	
+
 	public function setDefaultTable(odsTable $odsTable) {
 		$this->defaultTable = $odsTable;
 	}
-	
+
 	private function getDefaultTableName() {
 		if($this->defaultTable) {
 			return $this->defaultTable->getName();
@@ -289,11 +289,11 @@ class ods {
 			return "feuille1";
 		}
 	}
-	
+
 	public function getContent() {
 		$this->tmpStyles = array();
 		$this->tmpPictures = array();
-		
+
 		$dom = new \DOMDocument('1.0', 'UTF-8');
 		$root = $dom->createElement('office:document-content');
 			$root->setAttribute("xmlns:office", "urn:oasis:names:tc:opendocument:xmlns:office:1.0");
@@ -330,32 +330,32 @@ class ods {
 
 		// office:scripts
 		$root->appendChild($dom->createElement('office:scripts'));
-		
+
 		//office:font-face-decls
 		$office_font_face_decls =  $dom->createElement('office:font-face-decls');
 		$root->appendChild($office_font_face_decls);
-		
+
 			foreach($this->fontFaces as $fontFace)
 				$office_font_face_decls->appendChild($fontFace->getContent($this,$dom));
 
 		// office:automatic-styles
 		$office_automatic_styles =  $dom->createElement('office:automatic-styles');
 			$root->appendChild($office_automatic_styles);
-			
+
 			foreach($this->styles as $style)
 				$office_automatic_styles->appendChild($style->getContent($this,$dom));
 
 		// office:body
 		$office_body =  $dom->createElement('office:body');
 			$root->appendChild($office_body);
-		
+
 			// office:spreadsheet
 			$office_spreadsheet = $dom->createElement('office:spreadsheet');
 				$office_body->appendChild($office_spreadsheet);
 
 					foreach($this->tables as $table)
 						$office_spreadsheet->appendChild($table->getContent($this,$dom));
-		
+
 			// the $this->tmpStyle can change in for ( add new elemements only )
 			for($i=0; $i<count($this->tmpStyles); $i++) {
 				$keys = array_keys($this->tmpStyles);
@@ -363,14 +363,14 @@ class ods {
 				//echo "createTmpStyle:".$style->getName()."\n";
 				$office_automatic_styles->appendChild($style->getContent($this,$dom));
 			}
-		
+
 		return $dom->saveXML();
 	}
-	
+
 	public function getMeta() {
 
 		$dom = new \DOMDocument('1.0', 'UTF-8');
-		
+
 		$root = $dom->createElement('office:document-meta');
 			$root->setAttribute("xmlns:office", "urn:oasis:names:tc:opendocument:xmlns:office:1.0");
 			$root->setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
@@ -379,10 +379,10 @@ class ods {
 			$root->setAttribute("xmlns:ooo", "http://openoffice.org/2004/office");
 			$root->setAttribute("office:version", "1.2");
 			$dom->appendChild($root);
-		
+
 		$meta =  $dom->createElement('office:meta');
 			$root->appendChild($meta);
-		
+
 		$meta->appendChild($dom->createElement('meta:creation-date',date("Y-m-d\TH:j:s")));
 		$meta->appendChild($dom->createElement('meta:generator','ods générator'));
 		$meta->appendChild($dom->createElement('dc:date',date("Y-m-d\TH:j:s")));
@@ -401,13 +401,13 @@ class ods {
 			$elm->setAttribute("meta:cell-count", "4");
 			$elm->setAttribute("meta:object-count", "0");
 			$meta->appendChild($elm);
-		
+
 		return $dom->saveXML();
 	}
-	
+
 	public function getSettings() {
 		$dom = new \DOMDocument('1.0', 'UTF-8');
-		
+
 		$root = $dom->createElement('office:document-settings');
 			$root->setAttribute("xmlns:office", "urn:oasis:names:tc:opendocument:xmlns:office:1.0");
 			$root->setAttribute("xmlns:xlink",  "http://www.w3.org/1999/xlink");
@@ -415,19 +415,19 @@ class ods {
 			$root->setAttribute("xmlns:ooo",    "http://openoffice.org/2004/office");
 			$root->setAttribute("office:version", "1.2");
 			$dom->appendChild($root);
-		
+
 			$office_settings =  $dom->createElement('office:settings');
 				$root->appendChild($office_settings);
-			
+
 				$config_config_item_set = $dom->createElement('config:config-item-set');
 					$config_config_item_set->setAttribute("config:name", "ooo:view-settings");
 					$office_settings->appendChild($config_config_item_set);
-				
+
 					$config_config_item = $dom->createElement('config:config-item',0);
 						$config_config_item->setAttribute("config:name", "VisibleAreaTop");
 						$config_config_item->setAttribute("config:type", "int");
 						$config_config_item_set->appendChild($config_config_item);
-			
+
 					$config_config_item = $dom->createElement('config:config-item',0);
 						$config_config_item->setAttribute("config:name", "VisibleAreaLeft");
 						$config_config_item->setAttribute("config:type", "int");
@@ -442,25 +442,25 @@ class ods {
 						$config_config_item->setAttribute("config:name", "VisibleAreaHeight");
 						$config_config_item->setAttribute("config:type", "int");
 						$config_config_item_set->appendChild($config_config_item);
-					
+
 					$config_config_item_map_indexed = $dom->createElement('config:config-item-map-indexed');
 						$config_config_item_map_indexed->setAttribute("config:name", "Views");
 						$config_config_item_set->appendChild($config_config_item_map_indexed);
-			
+
 						$config_config_item_map_entry1 = $dom->createElement('config:config-item-map-entry');
 							$config_config_item_map_indexed->appendChild($config_config_item_map_entry1);
-			
+
 							//<config:config-item config:name="ViewId" config:type="string">View1</config:config-item>
 							$config_config_item = $dom->createElement('config:config-item', 'View1');
 								$config_config_item->setAttribute("config:name", "ViewId");
 								$config_config_item->setAttribute("config:type", "string");
 								$config_config_item_map_entry1->appendChild($config_config_item);
-								
+
 							//<config:config-item-map-named config:name="Tables">
 							$config_config_item_map_named = $dom->createElement('config:config-item-map-named');
 								$config_config_item_map_named->setAttribute("config:name", "Tables");
 								$config_config_item_map_entry1->appendChild($config_config_item_map_named);
-								
+
 								foreach($this->tables as $table)
 									$config_config_item_map_named->appendChild($table->getSettings($this,$dom));
 
@@ -519,7 +519,7 @@ class ods {
 								$config_config_item->setAttribute("config:name", "ShowPageBreaks");
 								$config_config_item->setAttribute("config:type", "boolean");
 								$config_config_item_map_entry1->appendChild($config_config_item);
-										
+
 							$config_config_item = $dom->createElement('config:config-item', 'true');
 								$config_config_item->setAttribute("config:name", "HasColumnRowHeaders");
 								$config_config_item->setAttribute("config:type", "boolean");
@@ -714,7 +714,7 @@ class ods {
 
 	public function getStyles() {
 		$dom = new \DOMDocument('1.0', 'UTF-8');
-		
+
 		$root = $dom->createElement('office:document-styles');
 			$root->setAttribute("xmlns:office", "urn:oasis:names:tc:opendocument:xmlns:office:1.0");
 			$root->setAttribute("xmlns:style", "urn:oasis:names:tc:opendocument:xmlns:style:1.0");
@@ -742,29 +742,29 @@ class ods {
 			$root->setAttribute("xmlns:rdfa", "http://docs.oasis-open.org/opendocument/meta/rdfa#");
 			$root->setAttribute("office:version", "1.2");
 			$dom->appendChild($root);
-		
-		
+
+
 			$office_font_face_decls = $dom->createElement('office:font-face-decls');
 				$root->appendChild($office_font_face_decls);
-				
+
 				foreach($this->fontFaces as $fontFace)
 					$office_font_face_decls->appendChild($fontFace->getStyles($this,$dom));
-			
+
 			$office_styles = $dom->createElement('office:styles');
 				$root->appendChild($office_styles);
-				
+
 				$style_default_style = $dom->createElement('style:default-style');
 					$style_default_style->setAttribute("style:family", "table-cell");
 					$office_styles->appendChild($style_default_style);
-				
+
 					$style_table_cell_properties = $dom->createElement('style:table-cell-properties');
 						$style_table_cell_properties->setAttribute("style:decimal-places", "2");
 						$style_default_style->appendChild($style_table_cell_properties);
-						
+
 					$style_paragraph_properties = $dom->createElement('style:paragraph-properties');
 						$style_paragraph_properties->setAttribute("style:tab-stop-distance", "1.25cm");
 						$style_default_style->appendChild($style_paragraph_properties);
-				
+
 					$style_text_properties = $dom->createElement('style:text-properties');
 						$style_text_properties->setAttribute("style:font-name", "Nimbus Sans L");
 						$style_text_properties->setAttribute("fo:language", "fr");
@@ -780,12 +780,12 @@ class ods {
 				$style_default_style = $dom->createElement('style:default-style');
 					$style_default_style->setAttribute("style:family", "graphic");
 					$office_styles->appendChild($style_default_style);
-				
+
 					$style_graphic_properties = $dom->createElement('style:graphic-properties');
 						$style_graphic_properties->setAttribute("draw:shadow-offset-x", "0.3cm");
 						$style_graphic_properties->setAttribute("draw:shadow-offset-y", "0.3cm");
 						$style_default_style->appendChild($style_graphic_properties);
-					
+
 					$style_paragraph_properties = $dom->createElement('style:paragraph-properties');
 						$style_paragraph_properties->setAttribute("style:text-autospace", "ideograph-alpha");
 						$style_paragraph_properties->setAttribute("style:punctuation-wrap", "simple");
@@ -793,10 +793,10 @@ class ods {
 						$style_paragraph_properties->setAttribute("style:writing-mode", "page");
 						$style_paragraph_properties->setAttribute("style:font-independent-line-spacing", "false");
 						$style_default_style->appendChild($style_paragraph_properties);
-						
+
 						$style_tab_stops = $dom->createElement('style:tab-stops');
 							$style_paragraph_properties->appendChild($style_tab_stops);
-							
+
 					$style_text_properties =  $dom->createElement('style:text-properties');
 						$style_text_properties->setAttribute("style:use-window-font-color", "true");
 						$style_text_properties->setAttribute("fo:font-family", "'Nimbus Roman No9 L'");
@@ -821,19 +821,19 @@ class ods {
 
 					$number_number = $dom->createElement('number:number');
 						$number_number->setAttribute("number:min-integer-digits", "1");
-						$number_number_style->appendChild($number_number);				
+						$number_number_style->appendChild($number_number);
 
 				$style_style = $dom->createElement('style:style');
 					$style_style->setAttribute("style:name", "Default");
 					$style_style->setAttribute("style:family", "table-cell");
 					$office_styles->appendChild($style_style);
-					
+
 				$style_style = $dom->createElement('style:style');
 					$style_style->setAttribute("style:name", "Result");
 					$style_style->setAttribute("style:family", "table-cell");
 					$style_style->setAttribute("style:parent-style-name", "Default");
 					$office_styles->appendChild($style_style);
-					
+
 					$style_text_properties = $dom->createElement('style:text-properties');
 						$style_text_properties->setAttribute("fo:font-style", "italic");
 						$style_text_properties->setAttribute("style:text-underline-style", "solid");
@@ -848,7 +848,7 @@ class ods {
 					$style_style->setAttribute("style:parent-style-name", "Result");
 					$style_style->setAttribute("style:data-style-name", "N106");
 					$office_styles->appendChild($style_style);
-						
+
 				$style_style = $dom->createElement('style:style');
 					$style_style->setAttribute("style:name", "Heading");
 					$style_style->setAttribute("style:family", "table-cell");
@@ -859,11 +859,11 @@ class ods {
 						$style_table_cell_properties->setAttribute("style:text-align-source", "fix");
 						$style_table_cell_properties->setAttribute("style:repeat-content", "false");
 						$style_style->appendChild($style_table_cell_properties);
-					
+
 					$style_paragraph_properties = $dom->createElement('style:paragraph-properties');
 						$style_paragraph_properties->setAttribute("fo:text-align", "center");
 						$style_style->appendChild($style_paragraph_properties);
-						
+
 					$style_text_properties = $dom->createElement('style:text-properties');
 						$style_text_properties->setAttribute("fo:font-size", "16pt");
 						$style_text_properties->setAttribute("fo:font-style", "italic");
@@ -882,11 +882,11 @@ class ods {
 
 			$office_automatic_styles = $dom->createElement('office:automatic-styles');
 				$root->appendChild($office_automatic_styles);
-				
+
 				$style_page_layout = $dom->createElement('style:page-layout');
 					$style_page_layout->setAttribute("style:name", "Mpm1");
 					$office_automatic_styles->appendChild($style_page_layout);
-				
+
 					$style_page_layout_properties = $dom->createElement('style:page-layout-properties');
 						$style_page_layout_properties->setAttribute("style:writing-mode", "lr-tb");
 						$style_page_layout_properties->setAttribute('fo:page-width', $this->pageWidth);
@@ -901,27 +901,27 @@ class ods {
 						if($this->pageMarginRight)	$style_page_layout_properties->setAttribute('fo:margin-right', $this->pageMarginRight);
 						if($this->pageTableCentering)	$style_page_layout_properties->setAttribute('style:table-centering', $this->pageTableCentering);
 						$style_page_layout->appendChild($style_page_layout_properties);
-					
+
 					$style_header_style = $dom->createElement('style:header-style');
 						$style_page_layout->appendChild($style_header_style);
-			
+
 						$style_header_footer_properties = $dom->createElement('style:header-footer-properties');
 							$style_header_footer_properties->setAttribute("fo:min-height", "0.751cm");
 							$style_header_footer_properties->setAttribute("fo:margin-left", "0cm");
 							$style_header_footer_properties->setAttribute("fo:margin-right", "0cm");
 							$style_header_footer_properties->setAttribute("fo:margin-bottom", "0.25cm");
 							$style_header_style->appendChild($style_header_footer_properties);
-					
+
 					$style_footer_style = $dom->createElement('style:footer-style');
 						$style_page_layout->appendChild($style_footer_style);
-			
+
 						$style_header_footer_properties = $dom->createElement('style:header-footer-properties');
 							$style_header_footer_properties->setAttribute("fo:min-height", "0.751cm");
 							$style_header_footer_properties->setAttribute("fo:margin-left", "0cm");
 							$style_header_footer_properties->setAttribute("fo:margin-right", "0cm");
 							$style_header_footer_properties->setAttribute("fo:margin-top", "0.25cm");
 							$style_footer_style->appendChild($style_header_footer_properties);
-					
+
 				$style_page_layout = $dom->createElement('style:page-layout');
 					$style_page_layout->setAttribute("style:name", "Mpm2");
 					$office_automatic_styles->appendChild($style_page_layout);
@@ -929,10 +929,10 @@ class ods {
 					$style_page_layout_properties = $dom->createElement('style:page-layout-properties');
 						$style_page_layout_properties->setAttribute("style:writing-mode", "lr-tb");
 						$style_page_layout->appendChild($style_page_layout_properties);
-				
+
 					$style_header_style = $dom->createElement('style:header-style');
 						$style_page_layout->appendChild($style_header_style);
-				
+
 						$style_header_footer_properties = $dom->createElement('style:header-footer-properties');
 							$style_header_footer_properties->setAttribute("fo:min-height", "0.751cm");
 							$style_header_footer_properties->setAttribute("fo:margin-left", "0cm");
@@ -942,13 +942,13 @@ class ods {
 							$style_header_footer_properties->setAttribute("fo:padding", "0.018cm");
 							$style_header_footer_properties->setAttribute("fo:background-color", "#c0c0c0");
 							$style_header_style->appendChild($style_header_footer_properties);
-						
+
 							$style_background_image = $dom->createElement('style:background-image');
 								$style_header_footer_properties->appendChild($style_background_image);
-				
+
 					$style_footer_style = $dom->createElement('style:footer-style');
 						$style_page_layout->appendChild($style_footer_style);
-				
+
 						$style_header_footer_properties = $dom->createElement('style:header-footer-properties');
 							$style_header_footer_properties->setAttribute("fo:min-height", "0.751cm");
 							$style_header_footer_properties->setAttribute("fo:margin-left", "0cm");
@@ -958,13 +958,13 @@ class ods {
 							$style_header_footer_properties->setAttribute("fo:padding", "0.018cm");
 							$style_header_footer_properties->setAttribute("fo:background-color", "#c0c0c0");
 							$style_footer_style->appendChild($style_header_footer_properties);
-						
+
 							$style_background_image = $dom->createElement('style:background-image');
 								$style_header_footer_properties->appendChild($style_background_image);
 
 			$office_master_styles = $dom->createElement('office:master-styles');
 				$root->appendChild($office_master_styles);
-		
+
 				$style_master_page = $dom->createElement('style:master-page');
 					$style_master_page->setAttribute("style:name", "Default");
 					$style_master_page->setAttribute("style:page-layout-name", "Mpm1");
@@ -976,7 +976,7 @@ class ods {
 
 						$text_p = $dom->createElement('text:p');
 							$style_header->appendChild($text_p);
-						
+
 							$text_sheet_name = $dom->createElement('text:sheet-name', '???');
 								$text_p->appendChild($text_sheet_name);
 
@@ -987,10 +987,10 @@ class ods {
 					$style_footer = $dom->createElement('style:footer');
 						if(!$this->pageFooterDisplay) $style_footer->setAttribute('style:display', 'false');
 						$style_master_page->appendChild($style_footer);
-						
+
 						$text_p = $dom->createElement('text:p', "Page");
 							$style_footer->appendChild($text_p);
-						
+
 							$text_page_number = $dom->createElement('text:page-number', '1');
 								$text_p->appendChild($text_page_number);
 
@@ -1008,10 +1008,10 @@ class ods {
 
 						$style_region_left = $dom->createElement('style:region-left');
 							$style_header->appendChild($style_region_left);
-						
+
 							$text_p = $dom->createElement('text:p');
 								$style_region_left->appendChild($text_p);
-								
+
 								$text_sheet_name = $dom->createElement('text:sheet-name', '???');
 									$text_p->appendChild($text_sheet_name);
 
@@ -1020,62 +1020,62 @@ class ods {
 
 								$text_title = $dom->createElement('text:title', '???');
 									$text_p->appendChild($text_title);
-									
+
 								$note_text = $dom->createTextNode(')');
 									$text_p->appendChild($note_text);
 
 						$style_region_right = $dom->createElement('style:region-right');
-							$style_header->appendChild($style_region_right);	
-							
+							$style_header->appendChild($style_region_right);
+
 							$text_p = $dom->createElement('text:p');
 								$style_region_right->appendChild($text_p);
-								
+
 								$text_date = $dom->createElement('text:date','31/10/2009');
 									$text_date->setAttribute("style:data-style-name", "N2");
 									$text_date->setAttribute("text:date-value", "2009-10-31");
 									$text_p->appendChild($text_date);
-						
+
 								$note_text = $dom->createTextNode(',');
 									$text_p->appendChild($note_text);
-									
+
 								$text_date = $dom->createElement('text:time','18:09:40');
 									$text_p->appendChild($text_date);
-					
+
 					$style_header_left = $dom->createElement('style:header-left');
 						$style_header_left->setAttribute("style:display", "false");
 						$style_master_page->appendChild($style_header_left);
 
 					$style_footer = $dom->createElement('style:footer');
 						$style_master_page->appendChild($style_footer);
-						
+
 						$text_p = $dom->createElement('text:p', 'Page');
 							$style_footer->appendChild($text_p);
-							
+
 							$text_page_number = $dom->createElement('text:page-number','1');
 								$text_p->appendChild($text_page_number);
-								
+
 							$note_text = $dom->createTextNode('/');
 								$text_p->appendChild($note_text);
-						
+
 							$text_page_count = $dom->createElement('text:page-count','99');
 								$text_p->appendChild($text_page_count);
-						
+
 					$style_footer_left = $dom->createElement('style:footer-left');
 						$style_footer_left->setAttribute("style:display", "false");
 						$style_master_page->appendChild($style_footer_left);
-				
-		
+
+
 		return $dom->saveXML();
 	}
-	
+
 	private function getMimeType() {
 		return "application/vnd.oasis.opendocument.spreadsheet";
 	}
-	
+
 	private function getAcceleratorCurrent() {
 		return "";
 	}
-	
+
 	private function getManifest() {
 		$mime = [
 			'.png' => 'image/png',
@@ -1091,7 +1091,7 @@ class ods {
 			$root->setAttribute("xmlns:manifest", "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0");
 			$root->setAttribute("manifest:version","1.2");
 			$dom->appendChild($root);
-		
+
 			$manifest_file_entry = $dom->createElement("manifest:file-entry");
 				$manifest_file_entry->setAttribute("manifest:media-type", "application/vnd.oasis.opendocument.spreadsheet");
 				$manifest_file_entry->setAttribute("manifest:version", "1.2");
@@ -1108,7 +1108,7 @@ class ods {
 				$manifest_file_entry->setAttribute("manifest:media-type", $mime[$ext]);
 				$root->appendChild($manifest_file_entry);
 			}
-			
+
 			$manifest_file_entry = $dom->createElement("manifest:file-entry");
 				$manifest_file_entry->setAttribute("manifest:media-type", "text/xml");
 				$manifest_file_entry->setAttribute("manifest:full-path", "content.xml");
@@ -1118,7 +1118,7 @@ class ods {
 				$manifest_file_entry->setAttribute("manifest:media-type", "text/xml");
 				$manifest_file_entry->setAttribute("manifest:full-path", "styles.xml");
 				$root->appendChild($manifest_file_entry);
-			
+
 			$manifest_file_entry = $dom->createElement("manifest:file-entry");
 				$manifest_file_entry->setAttribute("manifest:media-type", "text/xml");
 				$manifest_file_entry->setAttribute("manifest:full-path", "meta.xml");
@@ -1146,7 +1146,7 @@ class ods {
 
 		return $dom->saveXML();
 	}
-	
+
 	private function getThumbnail() {
 		return base64_decode("
 			iVBORw0KGgoAAAANSUhEUgAAALoAAAEACAYAAAAEKGxWAAAABHNCSVQICAgIfAhkiAAAAAlwSFlz
@@ -1282,7 +1282,7 @@ class ods {
 			SNbfZqI9uCpKphhK5cOO7VpHZb8ORWk1tEUealwH385CHqwUpeHEjYI0IU/yI5Et301IkcUDiH+q
 			KIqiKIqiKIqiKIqiKIqiKK2Z/wV3uZLE0YJkYAAAAABJRU5ErkJggg==");
 	}
-	
+
 	public function genOdsFile($file, $output = self::OUTPUT_ODS) {
 		$zip = new \ZipArchive();
 
@@ -1306,7 +1306,7 @@ class ods {
 
 		foreach($this->tmpPictures AS $imgfile => $name)
 			$zip->addFile($imgfile,$name);
-		
+
 		$zip->close();
 
 		switch($output) {
@@ -1334,7 +1334,7 @@ class ods {
 				return;
 		}
 	}
-	
+
 	public function downloadOdsFile($fileName, $output = self::OUTPUT_ODS) {
 		switch ($output) {
 			case self::OUTPUT_ODS:  header('Content-type: application/vnd.oasis.opendocument.spreadsheet'); break;

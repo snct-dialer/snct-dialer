@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 
-# vicilib-testcode.pl version 2.0.5 
+# vicilib-testcode.pl version 2.0.5
 #
 # This script is designed to test the vicidial.pm library.
 # It gets it's settings from the local /etc/astguiclient.conf file.
@@ -9,7 +9,7 @@
 #
 # This script should be updated anytime anything new is added to the
 # vicidial.pm library and should throughly test each functon
-# 
+#
 # Copyright (C) 2008  VICIDIAL-GROUP  <info@vicidial-group.com> LICENSE: AGPLv2
 #
 # CHANGELOG:
@@ -73,7 +73,7 @@ print "$now_date_str\n\n";
 
 # Test if agi_log is working
 agi_output(3, $now_date_str, $0, "test agi_log", "./agi_log_test", "Test if agi_log is working");
- 
+
 
 # Test if load_config_file is working
 print "Test if load_config_file is working\n";
@@ -121,7 +121,8 @@ print "config_hash{ 'report_dir' } = $config_hash{ 'report_dir' }\n\n";
 my $dbh = DBI->connect(
 		"DBI:mysql:$config_hash{ 'db_database' }:$config_hash{ 'db_server' }:$config_hash{ 'db_port' }",
 		"$config_hash{ 'db_user' }",
-		"$config_hash{ 'db_pass' }" 
+		"$config_hash{ 'db_pass' }",
+		{ mysql_enable_utf8 => 1 }
 	) or die "Couldn't connect to database: " . DBI->errstr;
 
 
@@ -193,7 +194,7 @@ for my $server_ip ( keys %all_servers_hash ) {
 	print "all_servers_hash{ $server_ip }{ 'server_desc' } 			= $all_servers_hash{ $server_ip }{ 'server_desc' }\n";
 	print "all_servers_hash{ $server_ip }{ 'server_ip' } 			= $all_servers_hash{ $server_ip }{ 'server_ip' }\n";
 	print "all_servers_hash{ $server_ip }{ 'active' } 			= $all_servers_hash{ $server_ip }{ 'active' }\n";
-	print "all_servers_hash{ $server_ip }{ 'ast_version' } 			= $all_servers_hash{ $server_ip }{ 'ast_version' }\n"; 
+	print "all_servers_hash{ $server_ip }{ 'ast_version' } 			= $all_servers_hash{ $server_ip }{ 'ast_version' }\n";
 	print "all_servers_hash{ $server_ip }{ 'max_vd_trunks' } 		= $all_servers_hash{ $server_ip }{ 'max_vd_trunks' }\n";
 	print "all_servers_hash{ $server_ip }{ 'ast_mgr_host' } 			= $all_servers_hash{ $server_ip }{ 'ast_mgr_host' }\n";
 	print "all_servers_hash{ $server_ip }{ 'ast_mgr_port' } 			= $all_servers_hash{ $server_ip }{ 'ast_mgr_port' }\n";
@@ -205,13 +206,13 @@ for my $server_ip ( keys %all_servers_hash ) {
 	print "all_servers_hash{ $server_ip }{ 'local_gmt' } 			= $all_servers_hash{ $server_ip }{ 'local_gmt' }\n";
 	print "all_servers_hash{ $server_ip }{ 'vm_dump_exten' } 		= $all_servers_hash{ $server_ip }{ 'vm_dump_exten' }\n";
 	print "all_servers_hash{ $server_ip }{ 'dft_xfer_exten' } 		= $all_servers_hash{ $server_ip }{ 'dft_xfer_exten' }\n";
-	print "all_servers_hash{ $server_ip }{ 'ext_context' } 			= $all_servers_hash{ $server_ip }{ 'ext_context' }\n"; 
+	print "all_servers_hash{ $server_ip }{ 'ext_context' } 			= $all_servers_hash{ $server_ip }{ 'ext_context' }\n";
 	print "all_servers_hash{ $server_ip }{ 'sys_perf_log' } 			= $all_servers_hash{ $server_ip }{ 'sys_perf_log' }\n";
 	print "all_servers_hash{ $server_ip }{ 'vd_server_logs' } 		= $all_servers_hash{ $server_ip }{ 'vd_server_logs' }\n";
 	print "all_servers_hash{ $server_ip }{ 'agi_output' } 			= $all_servers_hash{ $server_ip }{ 'agi_output' }\n";
-	print "all_servers_hash{ $server_ip }{ 'vd_balance_active' }	 	= $all_servers_hash{ $server_ip }{ 'vd_balance_active' }\n"; 
+	print "all_servers_hash{ $server_ip }{ 'vd_balance_active' }	 	= $all_servers_hash{ $server_ip }{ 'vd_balance_active' }\n";
 	print "all_servers_hash{ $server_ip }{ 'vd_balance_free_trunks' }	= $all_servers_hash{ $server_ip }{ 'vd_balance_free_trunks' }\n\n";
-		
+
 }
 
 
