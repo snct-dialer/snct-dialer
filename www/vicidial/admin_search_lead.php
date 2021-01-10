@@ -379,7 +379,7 @@ if ( (!$vendor_id) and (!$phone)  and (!$lead_id) and (!$log_phone)  and (!$log_
 	if($alt_phone_search != "") {
 		$CLSta = "checked=\"checked\"";
 	}
-	echo "<TD ALIGN=right>$label_alt_phone "._("search").": &nbsp; </TD><TD ALIGN=left><input type='checkbox' name='' value='AltPhoneSearch' ". $CLSta ."></TD>";
+	echo "<TD ALIGN=right>$label_alt_phone "._("search").": &nbsp; </TD><TD ALIGN=left><input type='checkbox' name='alt_phone_search' value='AltPhoneSearch' ". $CLSta ."></TD>";
 
 	echo "</TR><TR bgcolor=#$SSmenu_background>";
 	echo "<TD colspan=3 align=center height=1></TD>";
