@@ -1,7 +1,7 @@
 3.0.2
   [Jörg Frings-Fürst]
-   * Replace alt_phone_search with a checkbox:
-     - Update: www/vicidial/admin_search_lead.php.
+    * Replace alt_phone_search with a checkbox:
+      - Update: www/vicidial/admin_search_lead.php.
 
 3.0.1
   [Danny Funkat]
