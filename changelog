@@ -1,3 +1,8 @@
+3.1.1
+  [Jörg Frings-Fürst]
+    * Add footer text after callback calendar:
+      - Update: www/agc/vicidial.php.
+      - New: www/agc/callback_footer.php.sample.
 3.0.2
   [Jörg Frings-Fürst]
     * Replace alt_phone_search with a checkbox:

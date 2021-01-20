@@ -1,0 +1,13 @@
+<?php
+
+echo _("Legende"). " " . _("Feiertage"). " :<br>";
+echo '<table><tr>';
+echo '<td><font color="red">In D und AT</font><br></td>';
+echo '<td><font color="purple">In D</font><br></td>'; 
+echo '<td><font color="fuchsia">In AT</font><br></td>';
+echo '<td><font color="aqua">Regional in D</font><br></td>';
+echo '<td><font color="navy">Regional in AT</font><br></td>';
+echo '</tr></table><br>';
+$HTCBheight += 60;
+
+?>
