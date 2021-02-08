@@ -7,6 +7,9 @@
       - Update: www/vicidial/admin.php,
           extras/mysql_create_table_since_3.0.1.sql.
       - New: update_db_since_3.0.1.sql.
+    *  Remove preselect Modify [vicidial|agent] log, Change default date
+        on CBHOLD to today and preselect Useronly:
+       - Update: www/vicidial/admin_modify_lead.php.
       
 3.0.2
   [Jörg Frings-Fürst]
