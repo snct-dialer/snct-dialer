@@ -5,8 +5,8 @@
 #
 # SNCT-Dialer™ Administration
 #
-# Copyright (©) 2019-2020 SNCT GmbH <info@snct-gmbh.de>
-#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
+# Copyright (©) 2019-2021 SNCT GmbH <info@snct-gmbh.de>
+#               2017-2021 Jörg Frings-Fürst <open_source@jff.email>
 #
 # LICENSE: AGPLv3
 #
@@ -32,13 +32,14 @@
 #
 # Version  / Build
 #
-$admin_version = '3.0.1-22';
-$admin_build = '20201120-1';
+$admin_version = '3.1.1-1';
+$admin_build = '20210208-1';
 #
 ###############################################################################
 #
 # Changelog
 #
+# 2021-02-08 jff    Change length of Campaign ID to 20
 # 2020-11-20 jff	Add Pos,Col if copy vicidial_campaign_statuses
 # 2020-11-16 jff	Add options.php at begin of Header- Settings
 # 2020-10-22 jff	Add After Call Routing to Ingroups.
@@ -6957,7 +6958,7 @@ if ($ADD==11)
 			}
 		else
 			{
-			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Campaign ID").": </td><td align=left><input type=text name=campaign_id size=10 maxlength=8>$NWB#campaigns-campaign_id$NWE</td></tr>\n";
+			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Campaign ID").": </td><td align=left><input type=text name=campaign_id size=22 maxlength=20>$NWB#campaigns-campaign_id$NWE</td></tr>\n";
 			}
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Campaign Name").": </td><td align=left><input type=text name=campaign_name size=40 maxlength=40>$NWB#campaigns-campaign_name$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Campaign Description").": </td><td align=left><input type=text name=campaign_description size=40 maxlength=255>$NWB#campaigns-campaign_description$NWE</td></tr>\n";
@@ -7104,7 +7105,7 @@ if ($ADD==12)
 			}
 		else
 			{
-			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Campaign ID").": </td><td align=left><input type=text name=campaign_id size=10 maxlength=8>$NWB#campaigns-campaign_id$NWE</td></tr>\n";
+			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Campaign ID").": </td><td align=left><input type=text name=campaign_id size=22 maxlength=20>$NWB#campaigns-campaign_id$NWE</td></tr>\n";
 			}
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Campaign Name").": </td><td align=left><input type=text name=campaign_name size=40 maxlength=40>$NWB#campaigns-campaign_name$NWE</td></tr>\n";
 
@@ -10469,10 +10470,10 @@ if ($ADD==21)
 					{echo "<br>"._QXZ("CAMPAIGN NOT ADDED - there is already a status group in the system with this ID")."\n";}
 				else
 					{
-					if ( (strlen($campaign_id) < 2) or (strlen($campaign_id) > 8) or (strlen($campaign_name) < 6)  or (strlen($campaign_name) > 40) )
+					if ( (strlen($campaign_id) < 2) or (strlen($campaign_id) > 20) or (strlen($campaign_name) < 6)  or (strlen($campaign_name) > 40) )
 						{
 						echo "<br>"._QXZ("CAMPAIGN NOT ADDED - Please go back and look at the data you entered")."\n";
-						echo "<br>"._QXZ("campaign ID must be between 2 and 8 characters in length")."\n";
+						echo "<br>"._QXZ("campaign ID must be between 2 and 20 characters in length")."\n";
 						echo "<br>"._QXZ("campaign name must be between 6 and 40 characters in length")."\n";
 						}
 					else
@@ -10567,11 +10568,11 @@ if ($ADD==20)
 					{echo "<br>"._QXZ("CAMPAIGN NOT ADDED - there is already a status group in the system with this ID")."\n";}
 				else
 					{
-					if ( (strlen($campaign_id) < 2) or (strlen($campaign_id) > 8) or  (strlen($campaign_name) < 6) or (strlen($source_campaign_id) < 2) or (strlen($source_campaign_id) > 8) )
+					if ( (strlen($campaign_id) < 2) or (strlen($campaign_id) > 20) or  (strlen($campaign_name) < 6) or (strlen($source_campaign_id) < 2) or (strlen($source_campaign_id) > 20) )
 						{
 						echo "<br>"._QXZ("CAMPAIGN NOT ADDED - Please go back and look at the data you entered")."\n";
-						echo "<br>"._QXZ("campaign ID must be between 2 and 8 characters in length")."\n";
-						echo "<br>"._QXZ("source campaign ID must be between 2 and 8 characters in length")."\n";
+						echo "<br>"._QXZ("campaign ID must be between 2 and 20 characters in length")."\n";
+						echo "<br>"._QXZ("source campaign ID must be between 2 and 20 characters in length")."\n";
 						}
 					else
 						{

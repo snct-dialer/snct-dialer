@@ -3,6 +3,11 @@
     * Add footer text after callback calendar:
       - Update: www/agc/vicidial.php.
       - New: www/agc/callback_footer.php.sample.
+    * Change length of Campaign ID to 20:
+      - Update: www/vicidial/admin.php,
+          extras/mysql_create_table_since_3.0.1.sql.
+      - New: update_db_since_3.0.1.sql.
+      
 3.0.2
   [Jörg Frings-Fürst]
     * Replace alt_phone_search with a checkbox:
