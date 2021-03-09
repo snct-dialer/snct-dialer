@@ -13299,7 +13299,7 @@ function BuildDispoContent(taskDSgrp) {
 		xmlhttp = new XMLHttpRequest();
 	}
 	if (xmlhttp) {
-		// ACTION=GenDispoScreen&user=6699&pass=XXXXXXX&server_ip=10.100.0.5&session_name=1578041567_90118376513&lead_id=4063118&list_id=6202
+		// ACTION=&user=6699&pass=XXXXXXX&server_ip=10.100.0.5&session_name=1578041567_90118376513&lead_id=4063118&list_id=6202
 		Dispo_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=GenDispoScreen&user=" + user + "&pass=" + pass + "&orig_pass=" + orig_pass + "&lead_id=" + document.vicidial_form.lead_id.value + "&campaign=" + campaign + "&list_id=" + document.vicidial_form.list_id.value + "&customer_sec=" + customer_sec + "&taskDSgrp=" + taskDSgrp;
 //		alert(Dispo_query);
 		xmlhttp.open('POST', 'vdc_db_query_ng.php', false);

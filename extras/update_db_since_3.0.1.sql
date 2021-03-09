@@ -38,4 +38,7 @@ ALTER TABLE `vicidial_rt_monitor_log` CHANGE `campaign_id` `campaign_id` VARCHAR
 ALTER TABLE `vicidial_rt_monitor_log_archive` CHANGE `campaign_id` `campaign_id` VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
 ALTER TABLE `vicidial_session_data` CHANGE `campaign_id` `campaign_id` VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
 ALTER TABLE `vicidial_user_log` CHANGE `campaign_id` `campaign_id` VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+
 ALTER TABLE `vicidial_users`  ADD `password_sec` VARCHAR(256) NOT NULL  AFTER `selected_po_language`;
+
+ALTER TABLE `vicidial_list` ADD `housenr1` VARCHAR(20) NOT NULL AFTER `address1`

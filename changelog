@@ -10,7 +10,9 @@
     *  Remove preselect Modify [vicidial|agent] log, Change default date
         on CBHOLD to today and preselect Useronly:
        - Update: www/vicidial/admin_modify_lead.php.
-      
+    *  Fix bug in GenDispoScreen:
+      - Update www/agc/vdc_db_query_ng.php.
+
 3.0.2
   [Jörg Frings-Fürst]
     * Replace alt_phone_search with a checkbox:
