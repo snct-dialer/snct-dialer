@@ -5,8 +5,8 @@
 #
 # SNCT-Dialer™ Administration
 #
-# Copyright (©) 2019-2020 SNCT GmbH <info@snct-gmbh.de>
-#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
+# Copyright (©) 2019-2021 SNCT GmbH <info@snct-gmbh.de>
+#               2017-2021 Jörg Frings-Fürst <open_source@jff.email>
 #
 # LICENSE: AGPLv3
 #
@@ -32,13 +32,16 @@
 #
 # Version  / Build
 #
-$admin_version = '3.0.1-22';
-$admin_build = '20201120-1';
+$admin_version = '3.1.2-2';
+$admin_build = '20210218-1';
 #
 ###############################################################################
 #
 # Changelog
 #
+# 2021-03-12 jff    Fix typo
+# 2021-02-18 jff    Add group_[email|account] to User Groups
+# 2021-02-08 jff    Change length of Campaign ID to 20
 # 2020-11-20 jff	Add Pos,Col if copy vicidial_campaign_statuses
 # 2020-11-16 jff	Add options.php at begin of Header- Settings
 # 2020-10-22 jff	Add After Call Routing to Ingroups.
@@ -2629,7 +2632,11 @@ if (isset($_GET["show_newdispo"]))			{$show_newdispo=$_GET["show_newdispo"];}
 if (isset($_GET["acr_id"]))					{$acr_id=$_GET["acr_id"];}
 	elseif (isset($_POST["acr_id"]))		{$acr_id=$_POST["acr_id"];}
 if (isset($_GET["ingroup_acr_id"]))			{$ingroup_acr_id=$_GET["ingroup_acr_id"];}
-	elseif (isset($_POST["ingroup_acr_id"]))	{$ingroup_acr_id=$_POST["ingroup_acr_id"];}
+    elseif (isset($_POST["ingroup_acr_id"]))    {$ingroup_acr_id=$_POST["ingroup_acr_id"];}
+if (isset($_GET["group_account"]))              {$group_account=$_GET["group_account"];}
+    elseif (isset($_POST["group_account"]))	    {$group_account=$_POST["group_account"];}
+if (isset($_GET["group_email"]))                {$group_email=$_GET["group_email"];}
+    elseif (isset($_POST["group_email"]))       {$group_email=$_POST["group_email"];}
 
 if (isset($script_id)) {$script_id= strtoupper($script_id);}
 if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
@@ -5829,7 +5836,7 @@ if ( ($ADD>2) and ($ADD < 99998) )
 		}
 	
 	##### get acr listing for dynamic pulldown
-	$stmt="SELECT * from `snctdialer-after_call_action` order by ID;";
+	$stmt="SELECT * from `snctdialer_after_call_action` order by ID;";
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$times_to_print = mysqli_num_rows($rslt);
 	
@@ -6957,7 +6964,7 @@ if ($ADD==11)
 			}
 		else
 			{
-			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Campaign ID").": </td><td align=left><input type=text name=campaign_id size=10 maxlength=8>$NWB#campaigns-campaign_id$NWE</td></tr>\n";
+			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Campaign ID").": </td><td align=left><input type=text name=campaign_id size=22 maxlength=20>$NWB#campaigns-campaign_id$NWE</td></tr>\n";
 			}
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Campaign Name").": </td><td align=left><input type=text name=campaign_name size=40 maxlength=40>$NWB#campaigns-campaign_name$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Campaign Description").": </td><td align=left><input type=text name=campaign_description size=40 maxlength=255>$NWB#campaigns-campaign_description$NWE</td></tr>\n";
@@ -7104,7 +7111,7 @@ if ($ADD==12)
 			}
 		else
 			{
-			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Campaign ID").": </td><td align=left><input type=text name=campaign_id size=10 maxlength=8>$NWB#campaigns-campaign_id$NWE</td></tr>\n";
+			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Campaign ID").": </td><td align=left><input type=text name=campaign_id size=22 maxlength=20>$NWB#campaigns-campaign_id$NWE</td></tr>\n";
 			}
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Campaign Name").": </td><td align=left><input type=text name=campaign_name size=40 maxlength=40>$NWB#campaigns-campaign_name$NWE</td></tr>\n";
 
@@ -10469,10 +10476,10 @@ if ($ADD==21)
 					{echo "<br>"._QXZ("CAMPAIGN NOT ADDED - there is already a status group in the system with this ID")."\n";}
 				else
 					{
-					if ( (strlen($campaign_id) < 2) or (strlen($campaign_id) > 8) or (strlen($campaign_name) < 6)  or (strlen($campaign_name) > 40) )
+					if ( (strlen($campaign_id) < 2) or (strlen($campaign_id) > 20) or (strlen($campaign_name) < 6)  or (strlen($campaign_name) > 40) )
 						{
 						echo "<br>"._QXZ("CAMPAIGN NOT ADDED - Please go back and look at the data you entered")."\n";
-						echo "<br>"._QXZ("campaign ID must be between 2 and 8 characters in length")."\n";
+						echo "<br>"._QXZ("campaign ID must be between 2 and 20 characters in length")."\n";
 						echo "<br>"._QXZ("campaign name must be between 6 and 40 characters in length")."\n";
 						}
 					else
@@ -10567,11 +10574,11 @@ if ($ADD==20)
 					{echo "<br>"._QXZ("CAMPAIGN NOT ADDED - there is already a status group in the system with this ID")."\n";}
 				else
 					{
-					if ( (strlen($campaign_id) < 2) or (strlen($campaign_id) > 8) or  (strlen($campaign_name) < 6) or (strlen($source_campaign_id) < 2) or (strlen($source_campaign_id) > 8) )
+					if ( (strlen($campaign_id) < 2) or (strlen($campaign_id) > 20) or  (strlen($campaign_name) < 6) or (strlen($source_campaign_id) < 2) or (strlen($source_campaign_id) > 20) )
 						{
 						echo "<br>"._QXZ("CAMPAIGN NOT ADDED - Please go back and look at the data you entered")."\n";
-						echo "<br>"._QXZ("campaign ID must be between 2 and 8 characters in length")."\n";
-						echo "<br>"._QXZ("source campaign ID must be between 2 and 8 characters in length")."\n";
+						echo "<br>"._QXZ("campaign ID must be between 2 and 20 characters in length")."\n";
+						echo "<br>"._QXZ("source campaign ID must be between 2 and 20 characters in length")."\n";
 						}
 					else
 						{
@@ -16666,7 +16673,7 @@ if ($ADD==411111)
 						}
 						$custom_rpt_SQL=",allowed_custom_reports='$custom_report_str'";
 					}
-				$stmt="UPDATE vicidial_user_groups set user_group='$user_group', group_name='$group_name',allowed_campaigns='$campaigns_value',qc_allowed_campaigns='$qc_campaigns_value',qc_allowed_inbound_groups='$qc_groups_value',group_shifts='$GROUP_shifts',forced_timeclock_login='$forced_timeclock_login',shift_enforcement='$shift_enforcement',agent_status_viewable_groups='$VGROUP_vgroups',agent_status_view_time='$agent_status_view_time',agent_call_log_view='$agent_call_log_view',agent_xfer_consultative='$agent_xfer_consultative',agent_xfer_dial_override='$agent_xfer_dial_override',agent_xfer_vm_transfer='$agent_xfer_vm_transfer',agent_xfer_blind_transfer='$agent_xfer_blind_transfer',agent_xfer_dial_with_customer='$agent_xfer_dial_with_customer',agent_xfer_park_customer_dial='$agent_xfer_park_customer_dial',agent_fullscreen='$agent_fullscreen',allowed_reports='$allowed_reports'$custom_rpt_SQL,webphone_url_override='" . mysqli_real_escape_string($link, $webphone_url_override) . "',webphone_systemkey_override='$webphone_systemkey_override',webphone_dialpad_override='$webphone_dialpad_override',admin_viewable_groups='$Vadmin_viewable_groups',admin_viewable_call_times='$Vadmin_viewable_call_times',agent_allowed_chat_groups='$VGROUP_chatgroups',agent_xfer_park_3way='$agent_xfer_park_3way',admin_ip_list='$admin_ip_list',agent_ip_list='$agent_ip_list',api_ip_list='$api_ip_list',webphone_layout='" . mysqli_real_escape_string($link, $webphone_layout) . "' where user_group='$OLDuser_group';";
+				$stmt="UPDATE vicidial_user_groups set user_group='$user_group', group_name='$group_name',allowed_campaigns='$campaigns_value',qc_allowed_campaigns='$qc_campaigns_value',qc_allowed_inbound_groups='$qc_groups_value',group_shifts='$GROUP_shifts',forced_timeclock_login='$forced_timeclock_login',shift_enforcement='$shift_enforcement',agent_status_viewable_groups='$VGROUP_vgroups',agent_status_view_time='$agent_status_view_time',agent_call_log_view='$agent_call_log_view',agent_xfer_consultative='$agent_xfer_consultative',agent_xfer_dial_override='$agent_xfer_dial_override',agent_xfer_vm_transfer='$agent_xfer_vm_transfer',agent_xfer_blind_transfer='$agent_xfer_blind_transfer',agent_xfer_dial_with_customer='$agent_xfer_dial_with_customer',agent_xfer_park_customer_dial='$agent_xfer_park_customer_dial',agent_fullscreen='$agent_fullscreen',allowed_reports='$allowed_reports'$custom_rpt_SQL,webphone_url_override='" . mysqli_real_escape_string($link, $webphone_url_override) . "',webphone_systemkey_override='$webphone_systemkey_override',webphone_dialpad_override='$webphone_dialpad_override',admin_viewable_groups='$Vadmin_viewable_groups',admin_viewable_call_times='$Vadmin_viewable_call_times',agent_allowed_chat_groups='$VGROUP_chatgroups',agent_xfer_park_3way='$agent_xfer_park_3way',admin_ip_list='$admin_ip_list',agent_ip_list='$agent_ip_list',api_ip_list='$api_ip_list',webphone_layout='" . mysqli_real_escape_string($link, $webphone_layout) . "',group_email='$group_email', group_account='$group_account'  where user_group='$OLDuser_group';";
 				$rslt=mysql_to_mysqli($stmt, $link);
 
 				echo "<br><B>"._QXZ("USER GROUP MODIFIED")."</B>\n";
@@ -33726,36 +33733,38 @@ if ($ADD==311111)
 			echo "<TABLE><TR><TD>\n";
 			echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-			$stmt="SELECT user_group,group_name,allowed_campaigns,qc_allowed_campaigns,qc_allowed_inbound_groups,group_shifts,forced_timeclock_login,shift_enforcement,agent_status_viewable_groups,agent_status_view_time,agent_call_log_view,agent_xfer_consultative,agent_xfer_dial_override,agent_xfer_vm_transfer,agent_xfer_blind_transfer,agent_xfer_dial_with_customer,agent_xfer_park_customer_dial,agent_fullscreen,allowed_reports,webphone_url_override,webphone_systemkey_override,webphone_dialpad_override,admin_viewable_groups,admin_viewable_call_times,agent_allowed_chat_groups,agent_xfer_park_3way,admin_ip_list,agent_ip_list,api_ip_list,webphone_layout from vicidial_user_groups where user_group='$user_group' $LOGadmin_viewable_groupsSQL;";
+			$stmt="SELECT * from vicidial_user_groups where user_group='$user_group' $LOGadmin_viewable_groupsSQL;";
 			$rslt=mysql_to_mysqli($stmt, $link);
-			$row=mysqli_fetch_row($rslt);
-			$user_group =						$row[0];
-			$group_name =						$row[1];
-			$GROUP_shifts =						$row[5];
-			$forced_timeclock_login =			$row[6];
-			$shift_enforcement =				$row[7];
-			$VGROUP_vgroups =					$row[8];
-			$agent_status_view_time =			$row[9];
-			$agent_call_log_view =				$row[10];
-			$agent_xfer_consultative =			$row[11];
-			$agent_xfer_dial_override =			$row[12];
-			$agent_xfer_vm_transfer =			$row[13];
-			$agent_xfer_blind_transfer =		$row[14];
-			$agent_xfer_dial_with_customer =	$row[15];
-			$agent_xfer_park_customer_dial =	$row[16];
-			$agent_fullscreen =					$row[17];
-			$allowed_reports =					$row[18];
-			$webphone_url_override =			$row[19];
-			$webphone_systemkey_override =		$row[20];
-			$webphone_dialpad_override =		$row[21];
-			$admin_viewable_groups =			$row[22];
-			$admin_viewable_call_times =		$row[23];
-			$VGROUP_chatgroups =				$row[24];
-			$agent_xfer_park_3way =				$row[25];
-			$admin_ip_list =					$row[26];
-			$agent_ip_list =					$row[27];
-			$api_ip_list =						$row[28];
-			$webphone_layout =					$row[29];
+			$row=mysqli_fetch_array($rslt);
+			$user_group =						$row["user_group"];
+			$group_name =						$row["group_name"];
+			$GROUP_shifts =						$row["group_shifts"];
+			$forced_timeclock_login =			$row["forced_timeclock_login"];
+			$shift_enforcement =				$row["shift_enforcement"];
+			$VGROUP_vgroups =					$row["agent_status_viewable_groups"];
+			$agent_status_view_time =			$row["agent_status_view_time"];
+			$agent_call_log_view =				$row["agent_call_log_view"];
+			$agent_xfer_consultative =			$row["agent_xfer_consultative"];
+			$agent_xfer_dial_override =			$row["agent_xfer_dial_override"];
+			$agent_xfer_vm_transfer =			$row["agent_xfer_vm_transfer"];
+			$agent_xfer_blind_transfer =		$row["agent_xfer_blind_transfer"];
+			$agent_xfer_dial_with_customer =	$row["agent_xfer_dial_with_customer"];
+			$agent_xfer_park_customer_dial =	$row["agent_xfer_park_customer_dial"];
+			$agent_fullscreen =					$row["agent_fullscreen"];
+			$allowed_reports =					$row["allowed_reports"];
+			$webphone_url_override =			$row["webphone_url_override"];
+			$webphone_systemkey_override =		$row["webphone_systemkey_override"];
+			$webphone_dialpad_override =		$row["webphone_dialpad_override"];
+			$admin_viewable_groups =			$row["admin_viewable_groups"];
+			$admin_viewable_call_times =		$row["admin_viewable_call_times"];
+			$VGROUP_chatgroups =				$row["agent_allowed_chat_groups"];
+			$agent_xfer_park_3way =				$row["agent_xfer_park_3way"];
+			$admin_ip_list =					$row["admin_ip_list"];
+			$agent_ip_list =					$row["agent_ip_list"];
+			$api_ip_list =						$row["api_ip_list"];
+			$webphone_layout =					$row["webphone_layout"];
+			$group_email =	      				$row["group_email"];
+			$group_account =					$row["group_account"];
 
 			echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
@@ -33766,7 +33775,10 @@ if ($ADD==311111)
 			echo "<center><TABLE width=$section_width cellspacing=3>\n";
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Group").": </td><td align=left>$user_group $NWB#user_groups-user_group$NWE</td></tr>\n";
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Description").": </td><td align=left><input type=text name=group_name size=40 maxlength=40 value=\"$group_name\"> ("._QXZ("description of group").")$NWB#user_groups-group_name$NWE</td></tr>\n";
-
+			
+			echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Group Email").": </td><td align=left><input type=text name=group_email size=40 maxlength=100 value=\"$group_email\">$NWB#user_groups-group_email$NWE</td></tr>\n";
+			echo "<tr bgcolor=#$SSstd_row3_background><td align=right>"._QXZ("Accounting group").": </td><td align=left><input type=text name=group_account size=40 maxlength=40 value=\"$group_account\">$NWB#user_groups-group_account$NWE</td></tr>\n";
+			
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Force Timeclock Login").": </td><td align=left><select size=1 name=forced_timeclock_login><option value='N' SELECTED>"._QXZ("N")."</option><option value='Y'>"._QXZ("Y")."</option><option value='ADMIN_EXEMPT'>"._QXZ("ADMIN_EXEMPT")."</option><option value='$forced_timeclock_login' SELECTED>"._QXZ("$forced_timeclock_login")."</option></select>$NWB#user_groups-forced_timeclock_login$NWE</td></tr>\n";
 
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Shift Enforcement").": </td><td align=left><select size=1 name=shift_enforcement><option value='OFF' SELECTED>"._QXZ("OFF")."</option><option value='START'>"._QXZ("START")."</option><option value='ALL'>"._QXZ("ALL")."</option><option value='ADMIN_EXEMPT'>"._QXZ("ADMIN_EXEMPT")."</option><option VALUE='$shift_enforcement' SELECTED>"._QXZ("$shift_enforcement")."</option></select>$NWB#user_groups-shift_enforcement$NWE</td></tr>\n";
@@ -40482,7 +40494,7 @@ if ($ADD==100000)
 	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT user_group,group_name,forced_timeclock_login from vicidial_user_groups $whereLOGadmin_viewable_groupsSQL order by user_group;";
+	$stmt="SELECT user_group,group_name,forced_timeclock_login,group_account from vicidial_user_groups $whereLOGadmin_viewable_groupsSQL order by user_group;";
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$usergroups_to_print = mysqli_num_rows($rslt);
 
@@ -40491,6 +40503,7 @@ if ($ADD==100000)
 	echo "<tr bgcolor=black>";
 	echo "<td><font size=1 color=white align=left><B>"._QXZ("USER GROUP")."</B></td>";
 	echo "<td><font size=1 color=white><B>"._QXZ("GROUP NAME")."</B></td>";
+	echo "<td><font size=1 color=white><B>"._QXZ("Account Group")."</B></td>";
 	echo "<td><font size=1 color=white><B>"._QXZ("FORCE TIMECLOCK")." &nbsp; </B></td>";
 	echo "<td align=center><font size=1 color=white><B>"._QXZ("MODIFY")."</B></td></tr>\n";
 
@@ -40504,6 +40517,7 @@ if ($ADD==100000)
 			{$bgcolor='class="records_list_y"';}
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=311111&user_group=$row[0]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=311111&user_group=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
 		echo "<td><font size=1> $row[1]</td>";
+		echo "<td><font size=1> $row[3]</td>";
 		echo "<td><font size=1> "._QXZ("$row[2]")."</td>";
 		echo "<td align=center><font size=1><a href=\"$PHP_SELF?ADD=311111&user_group=$row[0]\">"._QXZ("MODIFY")."</a></td></tr>\n";
 		$o++;

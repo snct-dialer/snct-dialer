@@ -5,8 +5,8 @@
 #
 # SNCT-Dialer™ interface between vicidial.php and the database NG
 #
-# Copyright (©) 2019-2020 SNCT GmbH <info@snct-gmbh.de>
-#               2019-2020 Jörg Frings-Fürst <open_source@jff.email>
+# Copyright (©) 2019-2021 SNCT GmbH <info@snct-gmbh.de>
+#               2019-2021 Jörg Frings-Fürst <open_source@jff.email>
 #
 # LICENSE: AGPLv3
 #
@@ -23,18 +23,19 @@
 #
 # Version / Build
 #
-$vdc_db_query_ng_version = '3.0.1-1';
-$vdc_db_query_ng_build = '20201025-1';
+$vdc_db_query_ng_version = '3.0.2-1';
+$vdc_db_query_ng_build = '20210218-1';
 #
 ###############################################################################
 #
 # Changelog
 #
-# 2019-12-07 jff First work
-# 2020-01-09 jff Remove $_GET
-#                use mysqli_fetch_array at START SYSTEM_SETTINGS LOOKUP
-# 2020-10-10 jff Fix CB Limit Test
-# 2020-10-16 jff Move CheckCallBacks function into CheckCallbackLimit.php.in
+# 2021-02-18 jff    Fix bug in GenDispoScreen
+# 2020-10-16 jff    Move CheckCallBacks function into CheckCallbackLimit.php.in
+# 2020-10-10 jff    Fix CB Limit Test
+# 2020-01-09 jff    Remove $_GET
+#                   use mysqli_fetch_array at START SYSTEM_SETTINGS LOOKUP
+# 2019-12-07 jff    First work
 #
 #
 
@@ -842,7 +843,7 @@ if ($ACTION == 'GenDispoScreen') {
 			if($row2["scheduled_callback"] == "Y") {
 				$CBFlag = "  *";
 			}
-			if((($row1["min_sec"] > 0) && ($customer_sec < $row2["min_sec"])) || (($row2["max_sec"] > 0) && ($customer_sec > $row2["max_sec"])) || (($CBAllow == 0) && ($row1["scheduled_callback"] == "Y"))) {
+			if((($row2["min_sec"] > 0) && ($customer_sec < $row2["min_sec"])) || (($row2["max_sec"] > 0) && ($customer_sec > $row2["max_sec"])) || (($CBAllow == 0) && ($row1["scheduled_callback"] == "Y"))) {
 				$RetTmp = "<DEL>" . $row2["status"] . " - " . $row2["status_name"] . "</DEL> " . $CBFlag . "<br /><br />";
 			} else {
 				if($taskDSgrp == $row2["status"]) {

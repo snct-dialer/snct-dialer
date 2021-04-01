@@ -5,8 +5,8 @@
 #
 # SNCT-Dialer™ Modify Leads
 #
-# Copyright (©) 2019-2020 SNCT GmbH <info@snct-gmbh.de>
-#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
+# Copyright (©) 2019-2021 SNCT GmbH <info@snct-gmbh.de>
+#               2017-2021 Jörg Frings-Fürst <open_source@jff.email>
 #
 # LICENSE: AGPLv3
 #
@@ -29,13 +29,15 @@
 #
 # Version  / Build
 #
-$admin_modify_lead_version = '3.0.1-2';
-$admin_modify_lead_build = '20201225-1';
+$admin_modify_lead_version = '3.1.1-1';
+$admin_modify_lead_build = '20210208-1';
 #
 ###############################################################################
 #
 # Changelog#
 #
+# 2021-02-08 jff    Remove preselect Modify [vicidial|agent] log
+#                   Change default date on CBHOLD to today and Useronly
 # 20201225 jff	Show only recordings of allowed users
 #				Mark archiv records with red
 # 20201122 jff	Add iframe to show lead changes 
@@ -1241,7 +1243,8 @@ if ($end_call > 0)
 				}
 			else
 				{
-				$tomorrow = date("Y-m-d", mktime(date("H"),date("i"),date("s"),date("m"),date("d")+1,date("Y")));
+				$tomorrow = date("Y-m-d", mktime(date("H"),date("i"),date("s"),date("m"),date("d"),date("Y")));
+				$cb_hour = date("H:i:s", mktime(date("H") + 1,0,0,0,0,0));
 				$CLEAN_campaign_id = mysqli_real_escape_string($link, $campaign_id);
 				$CLEAN_campaign_id = preg_replace("/'|\"|\\\\|;/","",$CLEAN_campaign_id);
 				$CLEAN_campaign_id = preg_replace('/[^-_0-9a-zA-Z]/','',$CLEAN_campaign_id);
@@ -1258,7 +1261,7 @@ if ($end_call > 0)
 						}
 					}
 
-				$stmtE="INSERT INTO vicidial_callbacks SET lead_id='" . mysqli_real_escape_string($link, $lead_id) . "',recipient='ANYONE',status='ACTIVE',user='$PHP_AUTH_USER',user_group='ADMIN',list_id='" . mysqli_real_escape_string($link, $list_id) . "',callback_time='$tomorrow 12:00:00',entry_time='$NOW_TIME',comments='',campaign_id='$CLEAN_campaign_id';";
+				$stmtE="INSERT INTO vicidial_callbacks SET lead_id='" . mysqli_real_escape_string($link, $lead_id) . "',recipient='USERONLY',status='ACTIVE',user='$PHP_AUTH_USER',user_group='ADMIN',list_id='" . mysqli_real_escape_string($link, $list_id) . "',callback_time='$tomorrow $cb_hour',entry_time='$NOW_TIME',comments='',campaign_id='$CLEAN_campaign_id';";
 				if ($DB) {echo "|$stmtE|\n";}
 				$rslt=mysql_to_mysqli($stmtE, $link);
 
@@ -2103,8 +2106,8 @@ else
 		echo "</select> <i>("._QXZ("with")." $list_campaign "._QXZ("statuses").")</i></td></tr>\n";
 
 
-		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=left>"._QXZ("Modify vicidial log")." </td><td align=left><input type=checkbox name=modify_logs value=\"1\" CHECKED></td></tr>\n";
-		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=left>"._QXZ("Modify agent log")." </td><td align=left><input type=checkbox name=modify_agent_logs value=\"1\" CHECKED></td></tr>\n";
+		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=left>"._QXZ("Modify vicidial log")." </td><td align=left><input type=checkbox name=modify_logs value=\"1\"></td></tr>\n";
+		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=left>"._QXZ("Modify agent log")." </td><td align=left><input type=checkbox name=modify_agent_logs value=\"1\"></td></tr>\n";
 		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=left>"._QXZ("Modify closer log")." </td><td align=left><input type=checkbox name=modify_closer_logs value=\"1\"></td></tr>\n";
 		echo "<tr bgcolor=#".$SSstd_row4_background."><td align=left>"._QXZ("Add closer log record")." </td><td align=left><input type=checkbox name=add_closer_record value=\"1\"></td></tr>\n";
 		}

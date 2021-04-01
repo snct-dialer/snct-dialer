@@ -5,8 +5,8 @@
 #
 # SNCT-Dialer™ Agent-webinterface
 #
-# Copyright (©) 2019-2020 SNCT GmbH <info@snct-gmbh.de>
-#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
+# Copyright (©) 2019-2021 SNCT GmbH <info@snct-gmbh.de>
+#               2017-2021 Jörg Frings-Fürst <open_source@jff.email>
 #
 # LICENSE: AGPLv3
 #
@@ -24,6 +24,7 @@
 # SNCTVersion.inc
 # ../tools/system_wide_settings.php
 # options.php
+# callback_footer.php
 #
 # vdc_db_query.php
 # vdc_db_query_ng.php
@@ -39,8 +40,8 @@
 #
 # Version  / Build
 #
-$agent_version = '3.0.1-27';
-$agent_build = '20201215-1';
+$agent_version = '3.1.1-2';
+$agent_build = '20210401-1';
 #
 ###############################################################################
 #
@@ -55,6 +56,8 @@ $DB=0;
 #
 # Changelog
 #
+# 2021-04-01 jff    Add Bcc to Ticketmail     
+# 2020-12-20 jff	Add footer text after callback calendar
 # 2020-12-15 jff	Fix text typo
 # 2020-11-06 jff	Remove debug alert
 # 2020-11-03 jff	Correct typo (chexk_VDIC_array)
@@ -449,6 +452,7 @@ $MailReturn = TestTicketMail($VD_login, 0, $link);
 if($MailReturn != 0) {
 	$MailTo = TestTicketMail($VD_login, 1, $link);
 	$MailFrom = TestTicketMail($VD_login, 2, $link);
+	$MailBcc = TestTicketMail($VD_login, 3, $link);
 }
 
 if($DB) {
@@ -3538,7 +3542,8 @@ $MBheight =  ($MASTERheight + 65);	# 365 - Manual Dial Buttons
 $SDLheight = ($MASTERheight + 67);	# 367 - Show Dialable Leads
 $CBheight =  ($MASTERheight + 50);	# 350 - Agent Callback, pause code, volume control Buttons and agent status
 $SSheight =  ($MASTERheight + 31);	# 331 - script content
-$HTheight =  ($MASTERheight + 10);	# 310 - transfer frame, callback comments and hotkey
+$HTheight =  ($MASTERheight + 10);	# 310 - transfer frame and hotkey
+$HTCBheight =  $HTheight;			# 310 - callback comments
 $BPheight =  ($MASTERheight - 250);	# 50 - bottom buffer, Agent Xfer Span
 $SCheight =	 49;	# 49 - seconds on call display
 $SFheight =	 65;	# 65 - height of the script and form contents
@@ -3989,6 +3994,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var menuheight = 30;
 	var menuwidth = 30;
 	var HTheight = '<?php echo $HTheight ?>px';
+	var HTCBheight = '<?php echo $HTCBheight ?>px';
 	var WRheight = '<?php echo $WRheight ?>px';
 	var CAwidth = '<?php echo $CAwidth ?>px';
 	var menufontsize = 8;
@@ -13180,8 +13186,9 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 		var MF = '<?php echo $MailFrom ?>';
 		var MT = '<?php echo $MailTo ?>';
+		var MB = '<?php echo $MailBcc ?>';
 
-		var EMailPara = "?MailFrom=" + MF + "&MailTo=" + MT + "&MailTitle=Lead Report" + "&MailText=" + MailText;
+		var EMailPara = "?MailFrom=" + MF + "&MailTo=" + MT + "&MailBcc=" + MB +"&MailTitle=Lead Report" + "&MailText=" + MailText;
 
 		var fenster = window.open("SendMail.php" + EMailPara, "Email", "width=600,height=400,top=100,left=100");
 	}
@@ -13295,7 +13302,7 @@ function BuildDispoContent(taskDSgrp) {
 		xmlhttp = new XMLHttpRequest();
 	}
 	if (xmlhttp) {
-		// ACTION=GenDispoScreen&user=6699&pass=XXXXXXX&server_ip=10.100.0.5&session_name=1578041567_90118376513&lead_id=4063118&list_id=6202
+		// ACTION=&user=6699&pass=XXXXXXX&server_ip=10.100.0.5&session_name=1578041567_90118376513&lead_id=4063118&list_id=6202
 		Dispo_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=GenDispoScreen&user=" + user + "&pass=" + pass + "&orig_pass=" + orig_pass + "&lead_id=" + document.vicidial_form.lead_id.value + "&campaign=" + campaign + "&list_id=" + document.vicidial_form.list_id.value + "&customer_sec=" + customer_sec + "&taskDSgrp=" + taskDSgrp;
 //		alert(Dispo_query);
 		xmlhttp.open('POST', 'vdc_db_query_ng.php', false);
@@ -20989,7 +20996,11 @@ if ($agent_display_dialable_leads > 0)
 	?>
 
     <a href="#" onclick="CallBackDatE_submit();return false;"><?php echo _("SUBMIT"); ?></a><br /><br />
-	<span id="CallBackDateContent"><?php echo  "$CCAL_OUT" ?></span>
+	<span id="CallBackDateContent"><?php
+		echo  "$CCAL_OUT";
+		if (file_exists('callback_footer.php')) {
+			require_once('callback_footer.php');
+		} ?></span>
     <br /><br /> &nbsp;</font>
     </td></tr></table>
 </span>
@@ -21010,7 +21021,7 @@ if ($agent_display_dialable_leads > 0)
     </TABLE>
 </span>
 <?php //end AUDIT COMMENTS ADDED BY POUNDTEAM // ?>
-<span style="position:absolute;left:5px;top:<?php echo $HTheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="CBcommentsBox">
+<span style="position:absolute;left:5px;top:<?php echo $HTCBheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="CBcommentsBox">
     <table border="0" bgcolor="#FFFFCC" width="<?php echo $HCwidth ?>px" height="70px">
     <tr bgcolor="#FFFF66">
     <td align="left"><font class="sh_text"> <?php echo _("Previous Callback Information:"); ?> </font></td>
@@ -21042,7 +21053,7 @@ if ($agent_display_dialable_leads > 0)
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:<?php $zi++; echo $zi ?>;" id="CallBacKsLisTBox">
-    <table border="0" bgcolor="#CCFFCC" width="<?php echo $CAwidth ?>px" height="<?php echo $WRheight ?>px"><tr><td align="center" valign="top"> <font class="sh_text"><?php echo _("CALLBACKS FOR AGENT %1s:<br />To see information on one of the callbacks below, click on the INFO link. To call the customer back now, click on the DIAL link. If you click on a record below to dial it, it will be removed from the list."),0,'',$VD_login; ?></font>
+    <table border="0" bgcolor="#CCFFCC" width="<?php echo $CAwidth ?>px" height="<?php echo $WRheight ?>px"><tr><td align="center" valign="top"> <font class="sh_text"><?php echo _("CALLBACKS FOR AGENT"). " " . $VD_login .":<br />". _("To see information on one of the callbacks below, click on the INFO link. To call the customer back now, click on the DIAL link. If you click on a record below to dial it, it will be removed from the list."); ?></font>
  <br />
 	<?php
 	if ($webphone_location == 'bar')
