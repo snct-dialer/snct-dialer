@@ -32,13 +32,14 @@
 #
 # Version  / Build
 #
-$admin_version = '3.1.2-1';
+$admin_version = '3.1.2-2';
 $admin_build = '20210218-1';
 #
 ###############################################################################
 #
 # Changelog
 #
+# 2021-03-12 jff    Fix typo
 # 2021-02-18 jff    Add group_[email|account] to User Groups
 # 2021-02-08 jff    Change length of Campaign ID to 20
 # 2020-11-20 jff	Add Pos,Col if copy vicidial_campaign_statuses
@@ -5835,7 +5836,7 @@ if ( ($ADD>2) and ($ADD < 99998) )
 		}
 	
 	##### get acr listing for dynamic pulldown
-	$stmt="SELECT * from `snctdialer-after_call_action` order by ID;";
+	$stmt="SELECT * from `snctdialer_after_call_action` order by ID;";
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$times_to_print = mysqli_num_rows($rslt);
 	

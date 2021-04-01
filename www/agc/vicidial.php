@@ -40,8 +40,8 @@
 #
 # Version  / Build
 #
-$agent_version = '3.1.1-1';
-$agent_build = '20210120-1';
+$agent_version = '3.1.1-2';
+$agent_build = '20210401-1';
 #
 ###############################################################################
 #
@@ -56,6 +56,7 @@ $DB=0;
 #
 # Changelog
 #
+# 2021-04-01 jff    Add Bcc to Ticketmail     
 # 2020-12-20 jff	Add footer text after callback calendar
 # 2020-12-15 jff	Fix text typo
 # 2020-11-06 jff	Remove debug alert
@@ -451,6 +452,7 @@ $MailReturn = TestTicketMail($VD_login, 0, $link);
 if($MailReturn != 0) {
 	$MailTo = TestTicketMail($VD_login, 1, $link);
 	$MailFrom = TestTicketMail($VD_login, 2, $link);
+	$MailBcc = TestTicketMail($VD_login, 3, $link);
 }
 
 if($DB) {
@@ -13184,8 +13186,9 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 		var MF = '<?php echo $MailFrom ?>';
 		var MT = '<?php echo $MailTo ?>';
+		var MB = '<?php echo $MailBcc ?>';
 
-		var EMailPara = "?MailFrom=" + MF + "&MailTo=" + MT + "&MailTitle=Lead Report" + "&MailText=" + MailText;
+		var EMailPara = "?MailFrom=" + MF + "&MailTo=" + MT + "&MailBcc=" + MB +"&MailTitle=Lead Report" + "&MailText=" + MailText;
 
 		var fenster = window.open("SendMail.php" + EMailPara, "Email", "width=600,height=400,top=100,left=100");
 	}

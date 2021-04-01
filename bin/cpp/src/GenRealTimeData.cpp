@@ -354,6 +354,7 @@ bool Proc::execMain() {
 			res = mysql_store_result(conn);
 			
 			bool 				bPauseStat = CheckPauseReq();
+			int					iDST = 0;
 			std::string 		strPauseStatus;
 			struct tm  			ttFirstTime, tmLastState, tmLastCall;
 			MYSQL_ROW 			row;
@@ -369,6 +370,7 @@ bool Proc::execMain() {
 				strptime(row[34], "%Y-%m-%d %H:%M:%S", &tmLastState);
 				strptime(row[12], "%Y-%m-%d %H:%M:%S", &tmLastCall);
 				
+				iDST = tmLastState.tm_isdst;
 				ttFirstTime = tmLastState;
 
 //				cout << row[34] << "|" << row[12] << "|" << row[1]<< endl;
@@ -421,8 +423,17 @@ bool Proc::execMain() {
 					}
 				}
 				}
-				time_t ttnow = time(NULL);
-				std:string strTime = formatZeit(difftime(ttnow,mktime(&ttFirstTime)));
+				
+				time_t t1;
+    			struct tm date1;
+				time( &t1);
+				int iDSTDiff = 0;
+    			date1 = *localtime( &t1);
+				if(date1.tm_isdst > 0) {
+					iDSTDiff = 3600;
+				}
+				time_t ttnow = time(NULL) + iDSTDiff;
+				std:string strTime = formatZeit(difftime(ttnow,(mktime(&ttFirstTime))));
 				char sql2[8196];
 
 				snprintf(sql2, sizeof(sql2), "INSERT IGNORE INTO `%s` SET `Station` = '%s', `Phone` = '', `User` = '%s', `UserGrp` = '' , `SessionID` = '%s', `Status` = '%s', "

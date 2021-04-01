@@ -1,4 +1,4 @@
-3.1.1
+3.0.3
   [Jörg Frings-Fürst]
     * Add footer text after callback calendar:
       - Update: www/agc/vicidial.php.
@@ -11,7 +11,16 @@
         on CBHOLD to today and preselect Useronly:
        - Update: www/vicidial/admin_modify_lead.php.
     *  Fix bug in GenDispoScreen:
-      - Update www/agc/vdc_db_query_ng.php.
+      - Update www/agc/vdc_db_query_ng.php,
+          bin/cpp/src/GenRealTimeData.cpp.
+    *  Add Bcc from group_email to Ticketmail:
+      - Update: www/agc/SendMail.php,
+          www/agc/functions.php,
+          www/agc/vicidial.php.
+    * Remove reading vm conffile at startup: 
+      - Update: bin/ADMIN_keepalive_ALL.pl.
+    * First work on remove short Recordings:
+      - New bin/AST_CRON_purge_short_recordings.pl.
 
 3.0.2
   [Jörg Frings-Fürst]

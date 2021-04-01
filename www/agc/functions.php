@@ -9,13 +9,14 @@
 # Copyright (©) 2019  Matt Florell <vicidial@gmail.com>
 # Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
 #               2020      SNCT GmbH <info@snct-gmbh.de>
-#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
+#               2017-2021 Jörg Frings-Fürst <open_source@jff.email>
 
 #
 # SNCT - Changelog:
 #
-# 2018-07-18 jff Add missing global debug vars ($DB, $mel);
-# 2020-06-24 jff Change search for missing Calls
+# 2021-04.04 jff    Add Bcc to TestTicketMail
+# 2020-06-24 jff    Change search for missing Calls
+# 2018-07-18 jff    Add missing global debug vars ($DB, $mel);
 #
 
 #
@@ -2617,8 +2618,22 @@ function TestTicketMail($Agent, $type, $link) {
 				$return = 1;
 			}
 		}
+		$stmt = "SELECT `group_email` FROM `vicidial_user_groups` UG, `vicidial_users` VU WHERE VU.user = '$Agent' AND UG.user_group = VU.user_group AND UG.group_email != '';";
+		$rslt=mysqli_query($link, $stmt);
+		if(! $rslt ) {  echo "Error: " .  mysqli_error($link) . PHP_EOL; }
+		if ($DB) {echo "$stmt\n";}
+		$AM_ct = mysqli_num_rows($rslt);
+		if ($AM_ct > 0)
+		{
+		    $row=mysqli_fetch_all($rslt, MYSQLI_BOTH);
+		    $Group_Mail = $row[0];
+		    if($Group_Mail[0] != "") {
+		        $return = 1;
+		    }
+		}
 	}
-
+    
+	
 	if($type == 0) {
 		return $return;
 	}
@@ -2627,6 +2642,9 @@ function TestTicketMail($Agent, $type, $link) {
 	}
 	if($type == 2) {
 		return $Agent_Mail[0];
+	}
+	if($type == 3) {
+	    return $Group_Mail[0];
 	}
 }
 

@@ -1381,6 +1381,8 @@ ALTER TABLE `system_settings` ADD `show_newdispo` ENUM('0','1') NOT NULL DEFAULT
 ALTER TABLE `vicidial_inbound_groups` ADD `acr_id` BIGINT UNSIGNED NOT NULL DEFAULT '0'; 
 ALTER TABLE `system_settings` ADD `show_archive` TINYINT NOT NULL DEFAULT '0'; 
 ALTER TABLE `vicidial_campaigns` ADD `acr_id` BIGINT UNSIGNED NOT NULL DEFAULT '0';
+ALTER TABLE `vicidial_campaign_statuses` ADD `Pos` INT NOT NULL DEFAULT '0';
+ALTER TABLE `vicidial_statuses` ADD `Pos` INT NOT NULL DEFAULT '0';
 ALTER TABLE `vicidial_campaign_statuses` ADD `Col` INT NOT NULL DEFAULT '0';
 ALTER TABLE `vicidial_statuses` ADD `Col` INT NOT NULL DEFAULT '0';
 

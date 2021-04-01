@@ -15,8 +15,8 @@
 #  - Auto restarts Asterisk process if enabled in servers settings
 #
 #
-# Copyright (©) 2019-2020 SNCT GmbH <info@snct-gmbh.de>
-#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
+# Copyright (©) 2019-2021 SNCT GmbH <info@snct-gmbh.de>
+#               2017-2021 Jörg Frings-Fürst <open_source@jff.email>
 #
 # LICENSE: AGPLv3
 #
@@ -35,13 +35,14 @@
 #
 # Version  / Build
 #
-$admin_keepalive_all_version = '3.0.1-1';
-$admin_keepalive_all_build = '20201102-1';
+$admin_keepalive_all_version = '3.0.3-1';
+$admin_keepalive_all_build = '20210330-1';
 #
 ###############################################################################
 #
 # Changelog
 #
+# 2021-03-30 jff	Remove reading vm conffile at startup
 # 2020-08-03 jff	add utf8 enconding for conf files
 # 2020-11-02 jff	Add dialplan extension for ACR
 #
@@ -2000,168 +2001,6 @@ if ( ($active_voicemail_server =~ /$server_ip/) && ((length($active_voicemail_se
 	$THISserver_voicemail=1;
 	if ($DB) {print "   voicemail server configuration: $SSallow_voicemail_greeting|$sounds_update\n";}
 
-	if ( !-e ('/etc/asterisk/voicemail.conf'))
-		{`echo -e \"; END OF FILE\n\" > /etc/asterisk/voicemail.conf`;}
-	if ( !-e ('/etc/asterisk/BUILDvoicemail-vicidial.conf'))
-		{`echo -e \"; END OF FILE\n\" > /etc/asterisk/BUILDvoicemail-vicidial.conf`;}
-	$vmCMP =  compare("/etc/asterisk/BUILDvoicemail-vicidial.conf","/etc/asterisk/voicemail.conf");
-	if ($vmCMP > 0)
-		{
-		if ($DB) {print "starting voicemail configuration check\n";}
-		################################################################################
-		#####  START Parsing of the voicemail.conf file
-		################################################################################
-		# default path to voicemail configuration file:
-		$VMCconf = '/etc/asterisk/voicemail.conf';
-
-		open(vmc, "$VMCconf") || die "can't open $VMCconf: $!\n";
-		@vmc = <vmc>;
-		close(vmc);
-		$i=0;
-		$vm_header_content='';
-		$vm_zones_content='';
-		$boxes=9999999;
-		$zones=9999;
-		$zonesend=9999;
-		$otherboxes=9999999;
-		foreach(@vmc)
-			{
-			$line = $vmc[$i];
-			$line =~ s/\n|\r//gi;
-			if ( ($zones > 0) && ($i > $zones) && ($line =~ /\[/) )
-				{
-				$zonesend = $i;
-				if ($DBXXX > 0) {print "voicemail zones end:     $zonesend\n";}
-				}
-			if ($line =~ /\[zonemessages\]/)
-				{
-				$zones = $i;
-				if ($DBXXX > 0) {print "voicemail zones begin:   $zones\n";}
-				}
-			if ($line =~ /\[default\]/)
-				{$boxes = $i;}
-			if ($line =~ /^; Other Voicemail Entries/)
-				{$otherboxes = $i;}
-			### BEGIN parse through voicemail zonemessages
-			if ( ($i > $zones) && ($i < $zonesend) )
-				{
-				if ( ($line !~ /^;/) && (length($line) > 5) )
-					{
-					$templine = $line;
-					$templine =~ s/\|.*//gi;
-					$vm_zones_content .= "$templine\n";
-					if ($DBXXX > 0) {print "voicemail zones content:   $line\n";}
-					}
-				}
-			### END parse through voicemail zonemessages
-
-			### BEGIN parse through voicemail boxes and update DB with any changed settings
-			if ($i > $boxes)
-				{
-				if ( ($line !~ /^;/) && (length($line) > 5) )
-					{
-					# 102 => 102,102a Mailbox,test@vicidial.com,,|delete=yes
-					chomp($line);
-					@parse_line = split(/ => /,$line);
-					$mailbox = $parse_line[0];
-					$mboptions = $parse_line[1];
-					@options_line = split(/,/,$parse_line[1]);
-					$vmc_pass = $options_line[0];
-					$vmc_email = $options_line[2];
-					$vmc_delete_vm_after_email='N';
-					$vmc_voicemail_timezone="$SSdefault_voicemail_timezone";
-					$vmc_voicemail_options='';
-					if ($mboptions =~ /delete=yes/)
-						{$vmc_delete_vm_after_email='Y';}
-					if ($mboptions =~ /tz=/)
-						{
-						@options_sgmt = split(/tz=/,$mboptions);
-						@tz_sgmt = split(/\|/,$options_sgmt[1]);
-						$vmc_voicemail_timezone = $tz_sgmt[0];
-						@options_sgmt = split(/tz=$vmc_voicemail_timezone\|/,$mboptions);
-						$vmc_voicemail_options = $options_sgmt[1];
-						}
-					$sthArows=0;
-
-					if ($i < $otherboxes)
-						{
-						$stmtA = "SELECT voicemail_id,pass,email,delete_vm_after_email,voicemail_timezone,voicemail_options FROM phones where voicemail_id='$mailbox' and active='Y' order by extension limit 1;";
-						#	print "$stmtA\n";
-						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-						$sthArows=$sthA->rows;
-						if ($sthArows > 0)
-							{
-							@aryA = $sthA->fetchrow_array;
-							$mb_voicemail =				$aryA[0];
-							$mb_pass =					$aryA[1];
-							$mb_email =					$aryA[2];
-							$mb_delete_vm_after_email =	$aryA[3];
-							$mb_voicemail_timezone =	$aryA[4];
-							$mb_voicemail_options =		$aryA[5];
-
-							if ( ( ($mb_pass !~ /$vmc_pass/) || (length($mb_pass) != length($vmc_pass)) ) || ( ($mb_email !~ /$vmc_email/) || (length($mb_email) != length($vmc_email)) ) || ( ($mb_delete_vm_after_email !~ /$vmc_delete_vm_after_email/) || (length($mb_delete_vm_after_email) != length($vmc_delete_vm_after_email)) ) || ( ($mb_voicemail_timezone !~ /$vmc_voicemail_timezone/) || (length($mb_voicemail_timezone) != length($vmc_voicemail_timezone)) ) || ( ($mb_voicemail_options !~ /$vmc_voicemail_options/) || (length($mb_voicemail_options) != length($vmc_voicemail_options)) ) )
-								{
-								$stmtA="UPDATE phones SET pass='$vmc_pass',email='$vmc_email',delete_vm_after_email='$vmc_delete_vm_after_email',voicemail_timezone='$vmc_voicemail_timezone',voicemail_options='$vmc_voicemail_options' where voicemail_id='$mailbox' and active='Y' order by extension limit 1;";
-								$affected_rows = $dbhA->do($stmtA);
-
-								$stmtA="UPDATE servers SET rebuild_conf_files='Y' where server_ip='$server_ip';";
-								$affected_rows = $dbhA->do($stmtA);
-								}
-							}
-						$sthA->finish();
-						}
-					else
-						{
-						$stmtA = "SELECT voicemail_id,pass,email,delete_vm_after_email,voicemail_timezone,voicemail_options FROM vicidial_voicemail WHERE voicemail_id='$mailbox' and active='Y' limit 1;";
-						#	print "$stmtA\n";
-						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-						$sthArows=$sthA->rows;
-						if ($sthArows > 0)
-							{
-							@aryA = $sthA->fetchrow_array;
-							$mb_voicemail =				$aryA[0];
-							$mb_pass =					$aryA[1];
-							$mb_email =					$aryA[2];
-							$mb_delete_vm_after_email =	$aryA[3];
-							$mb_voicemail_timezone =	$aryA[4];
-							$mb_voicemail_options =		$aryA[5];
-
-							if ( ( ($mb_pass !~ /$vmc_pass/) || (length($mb_pass) != length($vmc_pass)) ) || ( ($mb_email !~ /$vmc_email/) || (length($mb_email) != length($vmc_email)) ) || ( ($mb_delete_vm_after_email !~ /$vmc_delete_vm_after_email/) || (length($mb_delete_vm_after_email) != length($vmc_delete_vm_after_email)) ) || ( ($mb_voicemail_timezone !~ /$vmc_voicemail_timezone/) || (length($mb_voicemail_timezone) != length($vmc_voicemail_timezone)) ) || ( ($mb_voicemail_options !~ /$vmc_voicemail_options/) || (length($mb_voicemail_options) != length($vmc_voicemail_options)) ) )
-								{
-								$stmtA="UPDATE vicidial_voicemail SET pass='$vmc_pass',email='$vmc_email',delete_vm_after_email='$vmc_delete_vm_after_email',voicemail_timezone='$vmc_voicemail_timezone',voicemail_options='$vmc_voicemail_options' where voicemail_id='$mailbox' and active='Y' limit 1;";
-								$affected_rows = $dbhA->do($stmtA);
-
-								$stmtA="UPDATE servers SET rebuild_conf_files='Y' where server_ip='$server_ip';";
-								$affected_rows = $dbhA->do($stmtA);
-								}
-							}
-						$sthA->finish();
-						}
-					if ($sthArows < 1)
-						{
-						if ($DB) {print "Mailbox not found: $mailbox     it will be removed from voicemail.conf\n";}
-						}
-					}
-				### END parse through voicemail boxes and update DB with any changed settings
-				}
-			else
-				{
-				$vm_header_content .= "$line\n";
-				}
-			$i++;
-			}
-		if (length($SSvoicemail_timezones) != length($vm_zones_content))
-			{
-			$stmtA="UPDATE system_settings SET voicemail_timezones='$vm_zones_content';";
-			$affected_rows = $dbhA->do($stmtA);
-			if ($DB) {print "voicemail zones updated\n";}
-			}
-		################################################################################
-		#####  END Parsing of the voicemail.conf file
-		################################################################################
-		}
 	if (($SSallow_voicemail_greeting > 0) && ($sounds_update =~ /Y/) )
 		{
 		$stmtA = "SELECT voicemail_id,voicemail_greeting,count(*) FROM phones where voicemail_greeting != '' and voicemail_greeting is not NULL and active='Y' group by voicemail_id order by voicemail_id limit 10000;";
