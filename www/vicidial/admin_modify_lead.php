@@ -29,13 +29,14 @@
 #
 # Version  / Build
 #
-$admin_modify_lead_version = '3.1.1-1';
-$admin_modify_lead_build = '20210208-1';
+$admin_modify_lead_version = '3.1.1-2';
+$admin_modify_lead_build = '20210407-1';
 #
 ###############################################################################
 #
 # Changelog#
 #
+# 2021-04-07 jff    Add field housenr1 
 # 2021-02-08 jff    Remove preselect Modify [vicidial|agent] log
 #                   Change default date on CBHOLD to today and Useronly
 # 20201225 jff	Show only recordings of allowed users
@@ -54,28 +55,28 @@ require("admin_functions.php");
 $PHP_AUTH_USER=$_SERVER['PHP_AUTH_USER'];
 $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
 $PHP_SELF=$_SERVER['PHP_SELF'];
-if (isset($_GET["vendor_id"]))				{$vendor_id=$_GET["vendor_id"];}
-	elseif (isset($_POST["vendor_id"]))		{$vendor_id=$_POST["vendor_id"];}
-if (isset($_GET["source_id"]))				{$source_id=$_GET["source_id"];}
-	elseif (isset($_POST["source_id"]))		{$source_id=$_POST["source_id"];}
-if (isset($_GET["phone"]))				{$phone=$_GET["phone"];}
-	elseif (isset($_POST["phone"]))		{$phone=$_POST["phone"];}
-if (isset($_GET["old_phone"]))				{$old_phone=$_GET["old_phone"];}
-	elseif (isset($_POST["old_phone"]))		{$old_phone=$_POST["old_phone"];}
-if (isset($_GET["lead_id"]))				{$lead_id=$_GET["lead_id"];}
-	elseif (isset($_POST["lead_id"]))		{$lead_id=$_POST["lead_id"];}
-if (isset($_GET["title"]))				{$title=$_GET["title"];}
-	elseif (isset($_POST["title"]))		{$title=$_POST["title"];}
-if (isset($_GET["first_name"]))				{$first_name=$_GET["first_name"];}
-	elseif (isset($_POST["first_name"]))	{$first_name=$_POST["first_name"];}
-if (isset($_GET["middle_initial"]))				{$middle_initial=$_GET["middle_initial"];}
-	elseif (isset($_POST["middle_initial"]))	{$middle_initial=$_POST["middle_initial"];}
-if (isset($_GET["last_name"]))				{$last_name=$_GET["last_name"];}
-	elseif (isset($_POST["last_name"]))		{$last_name=$_POST["last_name"];}
-if (isset($_GET["phone_number"]))			{$phone_number=$_GET["phone_number"];}
-	elseif (isset($_POST["phone_number"]))	{$phone_number=$_POST["phone_number"];}
-if (isset($_GET["end_call"]))				{$end_call=$_GET["end_call"];}
-	elseif (isset($_POST["end_call"]))		{$end_call=$_POST["end_call"];}
+if (isset($_GET["vendor_id"]))				  {$vendor_id=$_GET["vendor_id"];}
+	elseif (isset($_POST["vendor_id"]))		  {$vendor_id=$_POST["vendor_id"];}
+if (isset($_GET["source_id"]))				  {$source_id=$_GET["source_id"];}
+	elseif (isset($_POST["source_id"]))		  {$source_id=$_POST["source_id"];}
+if (isset($_GET["phone"]))				      {$phone=$_GET["phone"];}
+	elseif (isset($_POST["phone"]))		      {$phone=$_POST["phone"];}
+if (isset($_GET["old_phone"]))				  {$old_phone=$_GET["old_phone"];}
+	elseif (isset($_POST["old_phone"]))		  {$old_phone=$_POST["old_phone"];}
+if (isset($_GET["lead_id"]))				  {$lead_id=$_GET["lead_id"];}
+	elseif (isset($_POST["lead_id"]))		  {$lead_id=$_POST["lead_id"];}
+if (isset($_GET["title"]))				      {$title=$_GET["title"];}
+	elseif (isset($_POST["title"]))		      {$title=$_POST["title"];}
+if (isset($_GET["first_name"]))		          {$first_name=$_GET["first_name"];}
+	elseif (isset($_POST["first_name"]))	  {$first_name=$_POST["first_name"];}
+if (isset($_GET["middle_initial"]))			  {$middle_initial=$_GET["middle_initial"];}
+	elseif (isset($_POST["middle_initial"]))  {$middle_initial=$_POST["middle_initial"];}
+if (isset($_GET["last_name"]))				  {$last_name=$_GET["last_name"];}
+	elseif (isset($_POST["last_name"]))		  {$last_name=$_POST["last_name"];}
+if (isset($_GET["phone_number"]))			  {$phone_number=$_GET["phone_number"];}
+	elseif (isset($_POST["phone_number"]))	  {$phone_number=$_POST["phone_number"];}
+if (isset($_GET["end_call"]))				  {$end_call=$_GET["end_call"];}
+	elseif (isset($_POST["end_call"]))		  {$end_call=$_POST["end_call"];}
 if (isset($_GET["DB"]))					{$DB=$_GET["DB"];}
 	elseif (isset($_POST["DB"]))		{$DB=$_POST["DB"];}
 if (isset($_GET["dispo"]))				{$dispo=$_GET["dispo"];}
@@ -85,7 +86,13 @@ if (isset($_GET["list_id"]))				{$list_id=$_GET["list_id"];}
 if (isset($_GET["campaign_id"]))			{$campaign_id=$_GET["campaign_id"];}
 	elseif (isset($_POST["campaign_id"]))	{$campaign_id=$_POST["campaign_id"];}
 if (isset($_GET["phone_code"]))				{$phone_code=$_GET["phone_code"];}
-	elseif (isset($_POST["phone_code"]))	{$phone_code=$_POST["phone_code"];}
+    elseif (isset($_POST["phone_code"]))	{$phone_code=$_POST["phone_code"];}
+if (isset($_GET["phone_code_alt"]))				{$phone_code_alt=$_GET["phone_code_alt"];}
+    elseif (isset($_POST["phone_code_alt"]))	{$phone_code_alt=$_POST["phone_code_alt"];}
+if (isset($_GET["phone_code_alt2"]))			{$phone_code_alt2=$_GET["phone_code_alt2"];}
+    elseif (isset($_POST["phone_code_alt2"]))	{$phone_code_alt2=$_POST["phone_code_alt2"];}
+if (isset($_GET["phone_code_alt3"]))			{$phone_code_alt3=$_GET["phone_code_alt3"];}
+    elseif (isset($_POST["phone_code_alt3"]))	{$phone_code_alt3=$_POST["phone_code_alt3"];}
 if (isset($_GET["server_ip"]))				{$server_ip=$_GET["server_ip"];}
 	elseif (isset($_POST["server_ip"]))		{$server_ip=$_POST["server_ip"];}
 if (isset($_GET["extension"]))				{$extension=$_GET["extension"];}
@@ -99,11 +106,17 @@ if (isset($_GET["parked_time"]))			{$parked_time=$_GET["parked_time"];}
 if (isset($_GET["tsr"]))				{$tsr=$_GET["tsr"];}
 	elseif (isset($_POST["tsr"]))		{$tsr=$_POST["tsr"];}
 if (isset($_GET["address1"]))				{$address1=$_GET["address1"];}
-	elseif (isset($_POST["address1"]))		{$address1=$_POST["address1"];}
+    elseif (isset($_POST["address1"]))		{$address1=$_POST["address1"];}
+if (isset($_GET["housenr1"]))				{$housenr1=$_GET["housenr1"];}
+    elseif (isset($_POST["housenr1"]))		{$housenr1=$_POST["housenr1"];}
 if (isset($_GET["address2"]))				{$address2=$_GET["address2"];}
-	elseif (isset($_POST["address2"]))		{$address2=$_POST["address2"];}
+    elseif (isset($_POST["address2"]))		{$address2=$_POST["address2"];}
+if (isset($_GET["housenr2"]))				{$housenr2=$_GET["housenr2"];}
+    elseif (isset($_POST["housenr2"]))		{$housenr2=$_POST["housenr2"];}
 if (isset($_GET["address3"]))				{$address3=$_GET["address3"];}
-	elseif (isset($_POST["address3"]))		{$address3=$_POST["address3"];}
+    elseif (isset($_POST["address3"]))		{$address3=$_POST["address3"];}
+if (isset($_GET["housenr3"]))				{$housenr3=$_GET["housenr3"];}
+    elseif (isset($_POST["housenr3"]))		{$housenr3=$_POST["housenr3"];}
 if (isset($_GET["city"]))				{$city=$_GET["city"];}
 	elseif (isset($_POST["city"]))		{$city=$_POST["city"];}
 if (isset($_GET["state"]))				{$state=$_GET["state"];}
@@ -115,7 +128,11 @@ if (isset($_GET["province"]))				{$province=$_GET["province"];}
 if (isset($_GET["country_code"]))			{$country_code=$_GET["country_code"];}
 	elseif (isset($_POST["country_code"]))	{$country_code=$_POST["country_code"];}
 if (isset($_GET["alt_phone"]))				{$alt_phone=$_GET["alt_phone"];}
-	elseif (isset($_POST["alt_phone"]))		{$alt_phone=$_POST["alt_phone"];}
+    elseif (isset($_POST["alt_phone"]))		{$alt_phone=$_POST["alt_phone"];}
+if (isset($_GET["alt_phone2"]))				{$alt_phone2=$_GET["alt_phone2"];}
+    elseif (isset($_POST["alt_phone2"]))		{$alt_phone2=$_POST["alt_phone2"];}   
+if (isset($_GET["alt_phone3"]))				{$alt_phone3=$_GET["alt_phone3"];}
+    elseif (isset($_POST["alt_phone3"]))	{$alt_phone3=$_POST["alt_phone3"];}
 if (isset($_GET["email"]))				{$email=$_GET["email"];}
 	elseif (isset($_POST["email"]))		{$email=$_POST["email"];}
 if (isset($_GET["security"]))				{$security=$_GET["security"];}
@@ -166,6 +183,9 @@ if (isset($_GET["gdpr_action"]))			{$gdpr_action=$_GET["gdpr_action"];}
 	elseif (isset($_POST["gdpr_action"]))	{$gdpr_action=$_POST["gdpr_action"];}
 if (isset($_GET["CIDdisplay"]))				{$CIDdisplay=$_GET["CIDdisplay"];}
 	elseif (isset($_POST["CIDdisplay"]))	{$CIDdisplay=$_POST["CIDdisplay"];}
+	
+if (isset($_GET["block_status"]))			{$block_status=$_GET["block_status"];}
+	elseif (isset($_POST["block_status"]))	{$block_status=$_POST["block_status"];}
 
 
 if ($archive_search=="Yes") {$vl_table="vicidial_list_archive";}
@@ -409,6 +429,38 @@ $SSalt_row1_background='BDFFBD';
 $SSalt_row2_background='99FF99';
 $SSalt_row3_background='CCFFCC';
 $SSweb_logo='default_old';
+
+
+function GetDistributorNr($LeadID) {
+    global $DB, $link, $SSalt_row3_background;
+    
+    $return = "";
+    $stmt = "SELECT * FROM `snctdialer_distributor_customernr` WHERE `lead_id` = '".$LeadID."';";
+    if($DB) {
+        echo $stmt . PHP_EOL;
+    }
+    $rslt = mysqli_query($link, $stmt);
+
+    if(mysqli_num_rows($rslt) > 0) {
+#        $return  = "</table>";
+        $return .= "<b>"._("external") . " " . _("Customer No")."</b>";
+        $return .= "<TABLE style=\"background-color:#".$SSalt_row3_background."\";>";
+        $return .= "<tr><th>"._("Distributor")."</th><th>"._("Customer No")."</th></tr>";
+        while($row = mysqli_fetch_array($rslt, MYSQLI_BOTH)) {
+            $stmt1 = "SELECT * FROM `snctdialer_distributor` WHERE `DistID` = '".$row["DistributorID"] ."';";
+            if($DB) {
+                echo $stmt1 . PHP_EOL;
+            }
+            $rslt1 = mysqli_query($link, $stmt1);
+            $row1 = mysqli_fetch_array($rslt1, MYSQLI_BOTH);
+            
+            $return .= "<TR><TD>".$row1["Name"]."</TD><TD>".$row["DistributorCustomerNr"]."</TD></TR>";
+        }
+#        $return .= "</table><table  cellpadding=1 cellspacing=0>";
+        $return .= "</table><br>";
+    }
+    return $return;
+}
 
 if ($SSadmin_screen_colors != 'default')
 	{
@@ -716,9 +768,11 @@ $label_gender =				_QXZ("Gender");
 $label_phone_number =		_QXZ("Phone");
 $label_phone_code =			_QXZ("DialCode");
 $label_alt_phone =			_QXZ("Alt. Phone");
+$label_alt_phone2 =			_QXZ("Alt. Phone 2");
 $label_security_phrase =	_QXZ("Show");
 $label_email =				_QXZ("Email");
 $label_comments =			_QXZ("Comments");
+$label_BlockStatus =        _("Block status");
 
 ### find any custom field labels
 $stmt="SELECT label_title,label_first_name,label_middle_initial,label_last_name,label_address1,label_address2,label_address3,label_city,label_state,label_province,label_postal_code,label_vendor_lead_code,label_gender,label_phone_number,label_phone_code,label_alt_phone,label_security_phrase,label_email,label_comments from system_settings;";
@@ -755,6 +809,7 @@ $MAXfirst_name =			'30';
 $MAXmiddle_initial =		'1';
 $MAXlast_name =				'30';
 $MAXaddress1 =				'100';
+$MAXhousenr1 =				'20';
 $MAXaddress2 =				'100';
 $MAXaddress3 =				'100';
 $MAXcity =					'50';
@@ -796,7 +851,9 @@ while ($scvl_ct > $s)
 		if ( ($vl_field == 'last_name') and ($MAXlast_name != $vl_type) )
 			{$MAXlast_name = $vl_type;}
 		if ( ($vl_field == 'address1') and ($MAXaddress1 != $vl_type) )
-			{$MAXaddress1 = $vl_type;}
+		    {$MAXaddress1 = $vl_type;}
+		if ( ($vl_field == 'housenr1') and ($MAXhousenr1  != $vl_type) )
+		    {$MAXhousenr1 = $vl_type;}
 		if ( ($vl_field == 'address2') and ($MAXaddress2 != $vl_type) )
 			{$MAXaddress2 = $vl_type;}
 		if ( ($vl_field == 'address3') and ($MAXaddress3 != $vl_type) )
@@ -1116,7 +1173,7 @@ if ($lead_id == 'NEW')
 		$source_idSQL='';
 		if ($SSsource_id_display > 0)
 			{$source_idSQL = ",source_id='" . mysqli_real_escape_string($link, $source_id) . "'";}
-		$stmt="INSERT INTO vicidial_list set status='" . mysqli_real_escape_string($link, $status) . "',title='" . mysqli_real_escape_string($link, $title) . "',first_name='" . mysqli_real_escape_string($link, $first_name) . "',middle_initial='" . mysqli_real_escape_string($link, $middle_initial) . "',last_name='" . mysqli_real_escape_string($link, $last_name) . "',address1='" . mysqli_real_escape_string($link, $address1) . "',address2='" . mysqli_real_escape_string($link, $address2) . "',address3='" . mysqli_real_escape_string($link, $address3) . "',city='" . mysqli_real_escape_string($link, $city) . "',state='" . mysqli_real_escape_string($link, $state) . "',province='" . mysqli_real_escape_string($link, $province) . "',postal_code='" . mysqli_real_escape_string($link, $postal_code) . "',country_code='" . mysqli_real_escape_string($link, $country_code) . "',alt_phone='" . mysqli_real_escape_string($link, $alt_phone) . "',phone_number='$phone_number',phone_code='$phone_code',email='" . mysqli_real_escape_string($link, $email) . "',security_phrase='" . mysqli_real_escape_string($link, $security) . "',comments='" . mysqli_real_escape_string($link, $comments) . "',rank='" . mysqli_real_escape_string($link, $rank) . "',owner='" . mysqli_real_escape_string($link, $owner) . "',vendor_lead_code='" . mysqli_real_escape_string($link, $vendor_id) . "'$source_idSQL, list_id='" . mysqli_real_escape_string($link, $list_id) . "',date_of_birth='" . mysqli_real_escape_string($link, $date_of_birth) . "',gmt_offset_now='$gmt_offset',entry_date=NOW();";
+			$stmt="INSERT INTO vicidial_list set status='" . mysqli_real_escape_string($link, $status) . "',title='" . mysqli_real_escape_string($link, $title) . "',first_name='" . mysqli_real_escape_string($link, $first_name) . "',middle_initial='" . mysqli_real_escape_string($link, $middle_initial) . "',last_name='" . mysqli_real_escape_string($link, $last_name) . "',address1='" . mysqli_real_escape_string($link, $address1) . "',housenr1='" . mysqli_real_escape_string($link, $housenr1) . "',address2='" . mysqli_real_escape_string($link, $address2) . "',address3='" . mysqli_real_escape_string($link, $address3) . "',city='" . mysqli_real_escape_string($link, $city) . "',state='" . mysqli_real_escape_string($link, $state) . "',province='" . mysqli_real_escape_string($link, $province) . "',postal_code='" . mysqli_real_escape_string($link, $postal_code) . "',country_code='" . mysqli_real_escape_string($link, $country_code) . "',alt_phone='" . mysqli_real_escape_string($link, $alt_phone) . "',phone_number='$phone_number',phone_code='$phone_code',email='" . mysqli_real_escape_string($link, $email) . "',security_phrase='" . mysqli_real_escape_string($link, $security) . "',comments='" . mysqli_real_escape_string($link, $comments) . "',rank='" . mysqli_real_escape_string($link, $rank) . "',owner='" . mysqli_real_escape_string($link, $owner) . "',vendor_lead_code='" . mysqli_real_escape_string($link, $vendor_id) . "'$source_idSQL, list_id='" . mysqli_real_escape_string($link, $list_id) . "',date_of_birth='" . mysqli_real_escape_string($link, $date_of_birth) . "',gmt_offset_now='$gmt_offset',entry_date=NOW();";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$affected_rows = mysqli_affected_rows($link);
@@ -1191,12 +1248,13 @@ if ($end_call > 0)
 		if ($SSsource_id_display > 0)
 			{$source_idSQL = ",source_id='" . mysqli_real_escape_string($link, $source_id) . "'";}
 		### update the lead record in the vicidial_list table
-		$stmtA="UPDATE $vl_table set status='" . mysqli_real_escape_string($link, $status) . "',title='" . mysqli_real_escape_string($link, $title) . "',first_name='" . mysqli_real_escape_string($link, $first_name) . "',middle_initial='" . mysqli_real_escape_string($link, $middle_initial) . "',last_name='" . mysqli_real_escape_string($link, $last_name) . "',address1='" . mysqli_real_escape_string($link, $address1) . "',address2='" . mysqli_real_escape_string($link, $address2) . "',address3='" . mysqli_real_escape_string($link, $address3) . "',city='" . mysqli_real_escape_string($link, $city) . "',state='" . mysqli_real_escape_string($link, $state) . "',province='" . mysqli_real_escape_string($link, $province) . "',postal_code='" . mysqli_real_escape_string($link, $postal_code) . "',country_code='" . mysqli_real_escape_string($link, $country_code) . "',alt_phone='" . mysqli_real_escape_string($link, $alt_phone) . "',phone_number='$phone_number',phone_code='$phone_code',email='" . mysqli_real_escape_string($link, $email) . "',security_phrase='" . mysqli_real_escape_string($link, $security) . "',comments='" . mysqli_real_escape_string($link, $comments) . "',rank='" . mysqli_real_escape_string($link, $rank) . "',owner='" . mysqli_real_escape_string($link, $owner) . "',vendor_lead_code='" . mysqli_real_escape_string($link, $vendor_id) . "'$source_idSQL,date_of_birth='" . mysqli_real_escape_string($link, $date_of_birth) . "' where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "'";
-		if ($DB) {echo "|$stmt|\n";}
+			$stmtA="UPDATE $vl_table set status='" . mysqli_real_escape_string($link, $status) . "',title='" . mysqli_real_escape_string($link, $title) . "',first_name='" . mysqli_real_escape_string($link, $first_name) . "',middle_initial='" . mysqli_real_escape_string($link, $middle_initial) . "',last_name='" . mysqli_real_escape_string($link, $last_name) . "',address1='" . mysqli_real_escape_string($link, $address1) . "',housenr1='" . mysqli_real_escape_string($link, $housenr1) . "',address2='" . mysqli_real_escape_string($link, $address2) . "',address3='" . mysqli_real_escape_string($link, $address3) . "',city='" . mysqli_real_escape_string($link, $city) . "',state='" . mysqli_real_escape_string($link, $state) . "',province='" . mysqli_real_escape_string($link, $province) . "',postal_code='" . mysqli_real_escape_string($link, $postal_code) . "',country_code='" . mysqli_real_escape_string($link, $country_code) . "',alt_phone='" . mysqli_real_escape_string($link, $alt_phone) . "',phone_number='$phone_number',phone_code='$phone_code',email='" . mysqli_real_escape_string($link, $email) . "',security_phrase='" . mysqli_real_escape_string($link, $security) . "',comments='" . mysqli_real_escape_string($link, $comments) . "',rank='" . mysqli_real_escape_string($link, $rank) . "',vendor_lead_code='" . mysqli_real_escape_string($link, $vendor_id) . "'$source_idSQL,block_status='" .$block_status . "',  date_of_birth='" . mysqli_real_escape_string($link, $date_of_birth) . "' where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "'";
+			
+		if ($DB) {echo "|$stmtA|\n";}
 		$rslt=mysql_to_mysqli($stmtA, $link);
 
 		# gather new lead data to store for admin log diff
-		$stmt="SELECT lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id from $vl_table where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' $LOGallowed_listsSQL";
+		$stmt="SELECT lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,housenr1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id from $vl_table where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' $LOGallowed_listsSQL";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$diff_to_print = mysqli_num_rows($rslt);
 		if ($DB) {echo "$diff_to_print|$stmt\n";}
@@ -1765,15 +1823,15 @@ else
 
 
 	##### grab vicidial_list data for lead #####
-	$stmt="SELECT lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id from $vl_table where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' $LOGallowed_listsSQL";
+	$stmt="SELECT * FROM $vl_table WHERE lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' $LOGallowed_listsSQL";
 	$rslt=mysql_to_mysqli($stmt, $link);
 	if ($DB) {echo "$stmt\n";}
-	$row=mysqli_fetch_row($rslt);
+	$row=mysqli_fetch_array($rslt, MYSQLI_BOTH);
 
 	if ($LOGadmin_hide_phone_data != '0')
 		{
-		if ($DB > 0) {echo "HIDEPHONEDATA|$row[11]|$LOGadmin_hide_phone_data|\n";}
-		$phone_temp = $row[11];
+		if ($DB > 0) {echo 'HIDEPHONEDATA|$row["phone_number"]|$LOGadmin_hide_phone_data|\n';}
+		$phone_temp = $row["phone_number"];
 		if (strlen($phone_temp) > 0)
 			{
 			if ($LOGadmin_hide_phone_data == '4_DIGITS')
@@ -1788,78 +1846,132 @@ else
 		}
 	if ($LOGadmin_hide_lead_data != '0')
 		{
-		if ($DB > 0) {echo "HIDELEADDATA|$row[5]|$row[6]|$row[12]|$row[13]|$row[14]|$row[15]|$row[16]|$row[17]|$row[18]|$row[19]|$row[20]|$row[21]|$row[22]|$row[26]|$row[27]|$row[28]|$LOGadmin_hide_lead_data|\n";}
-		if (strlen($row[5]) > 0)
-			{$data_temp = $row[5];   $row[5] = preg_replace("/./",'X',$data_temp);}
-		if (strlen($row[6]) > 0)
-			{$data_temp = $row[6];   $row[6] = preg_replace("/./",'X',$data_temp);}
-		if (strlen($row[12]) > 0)
-			{$data_temp = $row[12];   $row[12] = preg_replace("/./",'X',$data_temp);}
-		if (strlen($row[13]) > 0)
-			{$data_temp = $row[13];   $row[13] = preg_replace("/./",'X',$data_temp);}
-		if (strlen($row[14]) > 0)
-			{$data_temp = $row[14];   $row[14] = preg_replace("/./",'X',$data_temp);}
-		if (strlen($row[15]) > 0)
-			{$data_temp = $row[15];   $row[15] = preg_replace("/./",'X',$data_temp);}
-		if (strlen($row[16]) > 0)
-			{$data_temp = $row[16];   $row[16] = preg_replace("/./",'X',$data_temp);}
-		if (strlen($row[17]) > 0)
-			{$data_temp = $row[17];   $row[17] = preg_replace("/./",'X',$data_temp);}
-		if (strlen($row[18]) > 0)
-			{$data_temp = $row[18];   $row[18] = preg_replace("/./",'X',$data_temp);}
-		if (strlen($row[19]) > 0)
-			{$data_temp = $row[19];   $row[19] = preg_replace("/./",'X',$data_temp);}
-		if (strlen($row[20]) > 0)
-			{$data_temp = $row[20];   $row[20] = preg_replace("/./",'X',$data_temp);}
-		if (strlen($row[21]) > 0)
-			{$data_temp = $row[21];   $row[21] = preg_replace("/./",'X',$data_temp);}
-		if (strlen($row[22]) > 0)
-			{$data_temp = $row[22];   $row[22] = preg_replace("/./",'X',$data_temp);}
-		if (strlen($row[26]) > 0)
-			{$data_temp = $row[26];   $row[26] = preg_replace("/./",'X',$data_temp);}
-		if (strlen($row[27]) > 0)
-			{$data_temp = $row[27];   $row[27] = preg_replace("/./",'X',$data_temp);}
-		if (strlen($row[28]) > 0)
-			{$data_temp = $row[28];   $row[28] = preg_replace("/./",'X',$data_temp);}
+		if ($DB > 0) {
+		    echo 'HIDELEADDATA|$row["vendor_lead_code"]|$row["source_id"]|$row["title"]|$row["first_name"]|$row["middle_initial"]|$row["last_name"]|$row["address1"]|$row["address2"]|$row["address3"]|$row["city"]|$row["state"]|$row["province"]|$row["postal_code"]|$row["alt_phone"]|$row["email"]|$row["security_phrase"]|$LOGadmin_hide_lead_data|\n';
+		}
+		
+		if (strlen($row["vendor_lead_code"]) > 0) {
+		  $data_temp = $row["vendor_lead_code"];
+		  $row["vendor_lead_code"] = preg_replace("/./",'X',$data_temp);
+		}
+		if (strlen($row["source_id"]) > 0) {
+		  $data_temp = $row["source_id"];
+		  $row["source_id"] = preg_replace("/./",'X',$data_temp);
+		}
+		if (strlen($row["title"]) > 0) {
+		  $data_temp = $row["title"];   
+		  $row["title"] = preg_replace("/./",'X',$data_temp);
+		}
+		if (strlen($row["first_name"]) > 0) {
+		    $data_temp = $row["first_name"];   
+		    $row["first_name"] = preg_replace("/./",'X',$data_temp);
+		}
+		if (strlen($row["middle_initial"]) > 0) {
+		    $data_temp = $row["middle_initial"];
+		    $row["middle_initial"] = preg_replace("/./",'X',$data_temp);
+		}
+		if (strlen($row["last_name"]) > 0) {
+		    $data_temp = $row["last_name"];
+		    $row["last_name"] = preg_replace("/./",'X',$data_temp);
+		}
+		if (strlen($row["address1"]) > 0) {
+		    $data_temp = $row["address1"];   
+		    $row["address1"] = preg_replace("/./",'X',$data_temp);
+		}
+		if (strlen($row["address2"]) > 0)	{
+		    $data_temp = $row["address2"];
+		    $row["address2"] = preg_replace("/./",'X',$data_temp);
+		}
+		if (strlen($row["address3"]) > 0) {
+		    $data_temp = $row["address3"];   
+		    $row["address3"] = preg_replace("/./",'X',$data_temp);
+		}
+		if (strlen($row["city"]) > 0) {
+		    $data_temp = $row["city"];
+		    $row["city"] = preg_replace("/./",'X',$data_temp);
+		}
+		if (strlen($row["state"]) > 0) {
+		    $data_temp = $row["state"];
+		    $row["state"] = preg_replace("/./",'X',$data_temp);
+		}
+		if (strlen($row["province"]) > 0) {
+		    $data_temp = $row["province"];
+		    $row["province"] = preg_replace("/./",'X',$data_temp);
+		}
+		if (strlen($row["postal_code"]) > 0) {
+		    $data_temp = $row["postal_code"];
+		    $row["postal_code"] = preg_replace("/./",'X',$data_temp);
+		}
+		if (strlen($row["alt_phone"]) > 0) {
+		    $data_temp = $row["alt_phone"];
+		    $row["alt_phone"] = preg_replace("/./",'X',$data_temp);
+		}
+		if (strlen($row["email"]) > 0) {
+		    $data_temp = $row["email"];
+		    $row["email"] = preg_replace("/./",'X',$data_temp);
+		}
+		if (strlen($row["security_phrase"]) > 0)
+			{$data_temp = $row["security_phrase"];   $row["security_phrase"] = preg_replace("/./",'X',$data_temp);}
 		}
 
-	if (strlen($row[0]) > 0)
-		{$lead_id		= $row[0];}
-	$dispo				= $row[3];
-	$tsr				= $row[4];
-	$vendor_id			= $row[5];
-	$source_id			= $row[6];
-	$list_id			= $row[7];
-	$gmt_offset_now		= $row[8];
-	$called_since_last_reset = $row[9];
-	$phone_code			= $row[10];
-	$phone_number		= $row[11];
-	$title				= $row[12];
-	$first_name			= $row[13];
-	$middle_initial		= $row[14];
-	$last_name			= $row[15];
-	$address1			= $row[16];
-	$address2			= $row[17];
-	$address3			= $row[18];
-	$city				= $row[19];
-	$state				= $row[20];
-	$province			= $row[21];
-	$postal_code		= $row[22];
-	$country_code		= $row[23];
-	$gender				= $row[24];
-	$date_of_birth		= $row[25];
-	$alt_phone			= $row[26];
-	$email				= $row[27];
-	$security			= $row[28];
-	$comments			= $row[29];
-	$called_count		= $row[30];
-	$last_local_call_time = $row[31];
-	$rank				= $row[32];
-	$owner				= $row[33];
-	$entry_list_id		= $row[34];
+    if (strlen($row["lead_id"]) > 0) {
+	   $lead_id	= $row["lead_id"];
+    }
+    $dispo                     = $row["status"];
+	$tsr                       = $row["user"];
+	$vendor_id                 = $row["vendor_lead_code"];
+	$source_id                 = $row["source_id"];
+	$list_id                   = $row["list_id"];
+	$gmt_offset_now            = $row["gmt_offset_now"];
+	$called_since_last_reset   = $row["called_since_last_reset"];
+	$phone_code                = $row["phone_code"];
+	$phone_number              = $row["phone_number"];
+	$title                     = $row["title"];
+	$first_name                = $row["first_name"];
+	$middle_initial            = $row["middle_initial"];
+	$last_name                 = $row["last_name"];
+	$address1                  = $row["address1"];
+	$address2                  = $row["address2"];
+	$address3                  = $row["address3"];
+	$city                      = $row["city"];
+	$state                     = $row["state"];
+	$province                  = $row["province"];
+	$postal_code               = $row["postal_code"];
+	$country_code              = $row["country_code"];
+	$gender                    = $row["gender"];
+	$date_of_birth             = $row["date_of_birth"];
+	$alt_phone                 = $row["alt_phone"];
+	$email                     = $row["email"];
+	$security                  = $row["security_phrase"];
+	$comments                  = $row["comments"];
+	$called_count              = $row["called_count"];
+	$last_local_call_time      = $row["last_local_call_time"];
+	$rank                      = $row["rank"];
+	$owner			  	       = $row["owner"];
+	$entry_list_id		       = $row["entry_list_id"];
+	$housenr1                  = $row["housenr1"];
+	$BlockStatus               = $row["block_status"];
 
 	$comments = preg_replace("/!N/","\n",$comments);
 
+	$BlockStr = "<select name=\"block_status\" size=\"1\">";
+	if($BlockStatus == "free") {
+	    $BlockStr .= "<option SELECTED value=\"free\">"._("free to use"). "</option>\n";
+	    $BlockStr .= "<option value=\"blocked\">"._("use prohibited"). "</option>\n";
+	    $BlockStr .= "<option value=\"temporary\">"._("temporary blocked"). "</option>\n";
+	} else {
+	    if($BlockStatus == "blocked") {
+	       $BlockStr .= "<option value=\"free\">"._("free to use"). "</option>\n";
+	       $BlockStr .= "<option SELECTED value=\"blocked\">"._("use prohibited"). "</option>\n";
+	       $BlockStr .= "<option value=\"temporary\">"._("temporary blocked"). "</option>\n";
+	    } else {
+	        $BlockStr .= "<option value=\"free\">"._("free to use"). "</option>\n";
+	        $BlockStr .= "<option value=\"blocked\">"._("use prohibited"). "</option>\n";
+	        $BlockStr .= "<option SELECTED value=\"temporary\">"._("temporary blocked"). "</option>\n";
+	    }
+	}
+	$BlockStr .= "</select>";
+	
 	if ($lead_id == 'NEW')
 		{
 		##### create a select list of lists if a NEW lead_id #####
@@ -1962,23 +2074,45 @@ else
 		}
 	else
 		{
+		if($BlockStatus == "free") {
+		  echo "<tr style=\"background-color:#00FF00\";><td align=right>$label_BlockStatus: </td><td align=left>".$BlockStr."</td></tr>\n";
+		} else {
+		    if($BlockStatus == "blocked") {
+        	  echo "<tr style=\"background-color:#FF0000\";><td align=right>$label_BlockStatus: </td><td align=left>".$BlockStr."</td></tr>\n";
+		    } else {
+	          echo "<tr style=\"background-color:#FFAA00\";><td align=right>$label_BlockStatus: </td><td align=left>".$BlockStr."</td></tr>\n";
+		    }
+		}
 		echo "<tr><td align=right>$label_title: </td><td align=left><input type=text name=title size=4 maxlength=$MAXtitle value=\"$title\"> &nbsp; \n";
 		echo "$label_first_name: <input type=text name=first_name size=15 maxlength=$MAXfirst_name value=\"".htmlparse($first_name)."\"> </td></tr>\n";
 		echo "<tr><td align=right>$label_middle_initial:  </td><td align=left><input type=text name=middle_initial size=4 maxlength=$MAXmiddle_initial value=\"".htmlparse($middle_initial)."\"> &nbsp; \n";
 		echo " $label_last_name: <input type=text name=last_name size=15 maxlength=$MAXlast_name value=\"".htmlparse($last_name)."\"> </td></tr>\n";
-		echo "<tr><td align=right>$label_address1 : </td><td align=left><input type=text name=address1 size=40 maxlength=$MAXaddress1 value=\"".htmlparse($address1)."\"></td></tr>\n";
+		echo "<tr><td align=right>$label_address1 : </td><td align=left><input type=text name=address1 size=30 maxlength=$MAXaddress1 value=\"".htmlparse($address1)."\">\n";
+		echo "<input type=text name=housenr1 size=10 maxlength=$MAXhousenr1  value=\"".htmlparse($housenr1)."\"></td></tr>\n";
+		
+		echo "<tr><td align=right>"._QXZ("Country")." / $label_postal_code / $label_city : </td><td align=left><input type=text name=country_code size=3 maxlength=$MAXcountry_code value=\"".htmlparse($country_code)."\"> &nbsp; \n";
+		echo "<input type=text name=postal_code size=7 maxlength=$MAXpostal_code value=\"".htmlparse($postal_code)."\">\n";
+		echo "<input type=text name=city size=40 maxlength=$MAXcity value=\"".htmlparse($city)."\"></td></tr>\n";
+		
 		echo "<tr><td align=right>$label_address2 : </td><td align=left><input type=text name=address2 size=40 maxlength=$MAXaddress2 value=\"".htmlparse($address2)."\"></td></tr>\n";
 		echo "<tr><td align=right>$label_address3 : </td><td align=left><input type=text name=address3 size=40 maxlength=$MAXaddress3 value=\"".htmlparse($address3)."\"></td></tr>\n";
-		echo "<tr><td align=right>$label_city : </td><td align=left><input type=text name=city size=40 maxlength=$MAXcity value=\"".htmlparse($city)."\"></td></tr>\n";
-		echo "<tr><td align=right>$label_state: </td><td align=left><input type=text name=state size=2 maxlength=$MAXstate value=\"".htmlparse($state)."\"> &nbsp; \n";
-		echo " $label_postal_code: <input type=text name=postal_code size=10 maxlength=$MAXpostal_code value=\"".htmlparse($postal_code)."\"> </td></tr>\n";
-
+	#	echo "<tr><td align=right>$label_city : </td><td align=left><input type=text name=city size=40 maxlength=$MAXcity value=\"".htmlparse($city)."\"></td></tr>\n";
+		echo "<tr><td align=right>$label_state: </td><td align=left><input type=text name=state size=2 maxlength=$MAXstate value=\"".htmlparse($state)."\"></td></tr> \n";
+		
 		echo "<tr><td align=right>$label_province : </td><td align=left><input type=text name=province size=40 maxlength=$MAXprovince value=\"".htmlparse($province)."\"></td></tr>\n";
-		echo "<tr><td align=right>"._QXZ("Country")." : </td><td align=left><input type=text name=country_code size=3 maxlength=$MAXcountry_code value=\"".htmlparse($country_code)."\"> &nbsp; \n";
-		echo " "._QXZ("Date of Birth").": <input type=text name=date_of_birth size=12 maxlength=10 value=\"".htmlparse($date_of_birth)."\"></td></tr>\n";
+	#	echo "<tr><td align=right>"._QXZ("Country")." : </td><td align=left><input type=text name=country_code size=3 maxlength=$MAXcountry_code value=\"".htmlparse($country_code)."\"> &nbsp; \n";
+		echo "<tr><td align=right>"._QXZ("Date of Birth").": </td><td align=left><input type=text name=date_of_birth size=12 maxlength=10 value=\"".htmlparse($date_of_birth)."\"></td></tr>\n";
 		echo "<tr><td align=right>$label_phone_number : </td><td align=left><input type=text name=phone_number size=18 maxlength=$MAXphone_number value=\"".htmlparse($phone_number)."\"></td></tr>\n";
-		echo "<tr><td align=right>$label_phone_code : </td><td align=left><input type=text name=phone_code size=10 maxlength=$MAXphone_code value=\"".htmlparse($phone_code)."\"></td></tr>\n";
-		echo "<tr><td align=right>$label_alt_phone : </td><td align=left><input type=text name=alt_phone size=12 maxlength=$MAXalt_phone value=\"".htmlparse($alt_phone)."\"></td></tr>\n";
+		
+		echo "<tr><td align=right>$label_phone_code / $label_phone_number: </td><td align=left><input type=text name=phone_code size=4 maxlength=$MAXphone_code value=\"".htmlparse($phone_code)."\">\n";
+		echo "<input type=text name=phone_number size=15 maxlength=$MAXphone_number value=\"".htmlparse($phone_number)."\"></td></tr>\n";
+		
+		echo "<tr><td align=right>$label_phone_code / $label_alt_phone : </td><td align=left><input type=text name=phone_code_alt size=4 maxlength=$MAXphone_code_alt value=\"".htmlparse($phone_code_alt)."\">\n";
+        echo "<input type=text name=alt_phone size=15 maxlength=$MAXalt_phone value=\"".htmlparse($alt_phone)."\"></td></tr>\n";
+        
+        echo "<tr><td align=right>$label_phone_code / $label_alt_phone2 : </td><td align=left><input type=text name=phone_code_alt2 size=4 maxlength=$MAXphone_code_alt2 value=\"".htmlparse($phone_code_alt)."\">\n";
+        echo "<input type=text name=alt_phone2 size=15 maxlength=$MAXalt_phone2 value=\"".htmlparse($alt_phone2)."\"></td></tr>\n";
+        
 		echo "<tr><td align=right>$label_email : </td><td align=left><input type=text name=email size=40 maxlength=$MAXemail value=\"".htmlparse($email)."\"></td></tr>\n";
 		echo "<tr><td align=right>$label_security_phrase : </td><td align=left><input type=text name=security size=30 maxlength=$MAXsecurity_phrase value=\"".htmlparse($security)."\"></td></tr>\n";
 		echo "<tr><td align=right>$label_vendor_lead_code : </td><td align=left><input type=text name=vendor_id size=30 maxlength=$MAXvendor_lead_code value=\"".htmlparse($vendor_id)."\"></td></tr>\n";
@@ -1987,6 +2121,7 @@ else
 		echo "<tr><td align=right>"._QXZ("Rank")." : </td><td align=left><input type=text name=rank size=7 maxlength=5 value=\"".htmlparse($rank)."\"></td></tr>\n";
 		echo "<tr><td align=right>"._QXZ("Owner")." : </td><td align=left><input type=text name=owner size=22 maxlength=$MAXowner value=\"".htmlparse($owner)."\"></td></tr>\n";
 		echo "<tr><td align=right>$label_comments : </td><td align=left><TEXTAREA name=comments ROWS=3 COLS=65>".htmlparse($comments)."</TEXTAREA></td></tr>\n";
+
 		}
 
 	if ($lead_id != 'NEW')
@@ -2121,6 +2256,7 @@ else
 		echo "<tr><td colspan=2 align=center><input type=submit name=submit value=\""._QXZ("SUBMIT")."\"></td></tr>\n";
 		}
 	echo "</table></form>\n";
+#	echo GetDistributorNr($lead_id);
 	echo "<BR><BR><BR>\n";
 
 	if ($lead_id != 'NEW')
@@ -2256,7 +2392,10 @@ else
 			echo "</form>\n";
 
 			echo "</TD></TR></table>\n";
-
+            
+			
+#			echo GetDistributorNr($lead_id);
+			
 			### find any vicidial_callback records for this lead
 			$cb_stmt="SELECT entry_time,callback_time,user,recipient,lead_status,status,list_id,campaign_id,comments,user_group,lead_status from vicidial_callbacks where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' and status NOT IN('ACTIVE','LIVE') order by callback_id desc limit 1000;";
 			if ($DB) {echo "|$stmt|\n";}
@@ -2466,7 +2605,9 @@ else
 				}
 			}
 
-
+			
+		echo GetDistributorNr($lead_id);
+			
 		echo "<B>"._QXZ("CALLS TO THIS LEAD").":</B>\n";
 		if ($CIDdisplay == "Yes")
 			{

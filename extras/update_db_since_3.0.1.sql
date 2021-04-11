@@ -42,3 +42,5 @@ ALTER TABLE `vicidial_user_log` CHANGE `campaign_id` `campaign_id` VARCHAR(20) C
 ALTER TABLE `vicidial_users`  ADD `password_sec` VARCHAR(256) NOT NULL  AFTER `selected_po_language`;
 
 ALTER TABLE `vicidial_list` ADD `housenr1` VARCHAR(20) NOT NULL AFTER `address1`
+
+ALTER TABLE `vicidial_list` ADD `phone_code_alt1` VARCHAR(10) NULL AFTER `ownnd_OptIn_Owner`, ADD `phone_code_alt2` VARCHAR(10) NULL AFTER `phone_code_alt1`, ADD `phone_code_alt3` VARCHAR(10) NULL AFTER `phone_code_alt2`, ADD `alt_phone3` VARCHAR(10) NULL AFTER `phone_code_alt3`, ADD `use_status` ENUM('free','blocked','temporary') NOT NULL DEFAULT 'free' AFTER `alt_phone3`, ADD `house_nr2` VARCHAR(20) NULL AFTER `block_status`, ADD `house_nr3` VARCHAR(20) NULL AFTER `house_nr2`;
