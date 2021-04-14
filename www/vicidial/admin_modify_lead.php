@@ -30,13 +30,14 @@
 # Version  / Build
 #
 $admin_modify_lead_version = '3.1.1-2';
-$admin_modify_lead_build = '20210407-1';
+$admin_modify_lead_build = '20210413-1';
 #
 ###############################################################################
 #
 # Changelog#
-#
-# 2021-04-07 jff    Add field housenr1 
+# 
+# 2021-04-13 jff    Fix GDPR download
+# 2021-04-07 jff    Add field housenr1
 # 2021-02-08 jff    Remove preselect Modify [vicidial|agent] log
 #                   Change default date on CBHOLD to today and Useronly
 # 20201225 jff	Show only recordings of allowed users
@@ -47,6 +48,13 @@ $admin_modify_lead_build = '20210407-1';
 #
 #
 #
+
+#
+# Settings for download zip files via readfile
+#
+apache_setenv('no-gzip', 1);
+ini_set('zlib.output_compression', 0);
+
 
 require("dbconnect_mysqli.php");
 require("functions.php");
@@ -671,10 +679,11 @@ if ($enable_gdpr_download_deletion>0)
 			}
 
 		if (strlen($CSV_text)>0 && $gdpr_action=="download")
-			{
-			$rec_stmt="select start_time, location, filename from recording_log where lead_id='$lead_id' order by start_time asc";
+		{
+		    $files_to_zip=array();
+
+			$rec_stmt="select start_time, location, filename from recording_log where lead_id='$lead_id' AND location LIKE 'http%' order by start_time asc";
 			$rec_rslt=mysql_to_mysqli($rec_stmt, $link);
-			$files_to_zip=array();
 			while ($rec_row=mysqli_fetch_row($rec_rslt)) {
 				$start_time=$rec_row[0];
 				$start_date=substr($start_time, 1, 10);
@@ -682,8 +691,9 @@ if ($enable_gdpr_download_deletion>0)
 				$filename=$rec_row[2];
 				preg_match("/$filename.*$/", $location, $matches);
 
-				$destination_filename=$matches[0];
+				$location = GetRealRecordingsURL($location, $link);
 
+				$destination_filename=$matches[0];
 				set_time_limit(0);
 
 				$fp = fopen("/tmp/$destination_filename", 'w+');
@@ -691,11 +701,41 @@ if ($enable_gdpr_download_deletion>0)
 				curl_setopt($ch, CURLOPT_TIMEOUT, 50);
 				curl_setopt($ch, CURLOPT_FILE, $fp);
 				curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+				curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+				curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 				curl_exec($ch);
 				curl_close($ch);
 				fclose($fp);
 
 				array_push($files_to_zip, "$destination_filename");
+			}
+
+			$rec_stmt="select start_time, location, filename from recording_log_archive where lead_id='$lead_id' AND location LIKE 'http%' order by start_time asc";
+			$rec_rslt=mysql_to_mysqli($rec_stmt, $link);
+			while ($rec_row=mysqli_fetch_row($rec_rslt)) {
+			    $start_time=$rec_row[0];
+			    $start_date=substr($start_time, 1, 10);
+			    $location=$rec_row[1];
+			    $filename=$rec_row[2];
+			    preg_match("/$filename.*$/", $location, $matches);
+
+			    $location = GetRealRecordingsURL($location, $link);
+
+			    $destination_filename=$matches[0];
+			    set_time_limit(0);
+
+			    $fp = fopen("/tmp/$destination_filename", 'w+');
+			    $ch = curl_init(str_replace(" ","%20",$location));
+			    curl_setopt($ch, CURLOPT_TIMEOUT, 50);
+			    curl_setopt($ch, CURLOPT_FILE, $fp);
+			    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+			    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+			    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+			    curl_exec($ch);
+			    curl_close($ch);
+			    fclose($fp);
+
+			    array_push($files_to_zip, "$destination_filename");
 			}
 
 			$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LEADS', event_type='EXPORT', record_id='$lead_id', event_code='GDPR EXPORT LEAD DATA', event_sql=\"$SQL_log\", event_notes='';";
@@ -716,17 +756,31 @@ if ($enable_gdpr_download_deletion>0)
 
 			$zipname = "$lead_id.zip";
 			$zip = new ZipArchive;
-			$zip->open($zipname, ZipArchive::CREATE);
+			$zip->open($zipname, ZipArchive::CREATE|ZipArchive::OVERWRITE);
 			foreach ($files_to_zip as $file) {
 				$tempfile="/tmp/$file";
-				$zip->addFile($tempfile);
+				if (file_exists($tempfile)) {
+				    $zip->addFile($tempfile);
+				}
 			}
 			$zip->close();
 
-			header('Content-Type: application/zip');
-			header('Content-disposition: attachment; filename='.$zipname);
-			header('Content-Length: ' . filesize($zipname));
-			readfile($zipname);
+			if (!headers_sent()) {
+			    header('Content-Description: File Transfer');
+			    header("Pragma: public");
+			    header("Expires: 0");
+			    header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+			    header("Cache-Control: private",false);
+			    header('Content-Type: application/zip');
+			    header('Content-disposition: attachment; filename='.$zipname);
+			    header('Content-Length:' . filesize($zipname));
+			    header('Content-Transfer-Encoding: binary');
+			    ob_clean();
+			    readfile($zipname);
+			    unlink($zipname);
+			} else {
+			    echo _("Header sent before upload");
+			}
 
 			/*
 			// We'll be outputting a TXT file
@@ -2905,29 +2959,7 @@ else
 
 			if (strlen($location)>2)
 				{
-				$URLserver_ip = $location;
-				$URLserver_ip = preg_replace('/http:\/\//i', '',$URLserver_ip);
-				$URLserver_ip = preg_replace('/https:\/\//i', '',$URLserver_ip);
-				$URLserver_ip = preg_replace('/\/.*/i', '',$URLserver_ip);
-				$stmt="SELECT count(*) from servers where server_ip='$URLserver_ip';";
-				$rsltx=mysql_to_mysqli($stmt, $link);
-				$rowx=mysqli_fetch_row($rsltx);
-
-				if ($rowx[0] > 0)
-					{
-					$stmt="SELECT recording_web_link,alt_server_ip,external_server_ip from servers where server_ip='$URLserver_ip';";
-					$rsltx=mysql_to_mysqli($stmt, $link);
-					$rowx=mysqli_fetch_row($rsltx);
-
-					if (preg_match("/ALT_IP/i",$rowx[0]))
-						{
-						$location = preg_replace("/$URLserver_ip/i", "$rowx[1]", $location);
-						}
-					if (preg_match("/EXTERNAL_IP/i",$rowx[0]))
-						{
-						$location = preg_replace("/$URLserver_ip/i", "$rowx[2]", $location);
-						}
-					}
+				$location = GetRealRecordingsURL($location, $link);
 				}
 
 			if ($SSmute_recordings > 0)
@@ -3209,6 +3241,31 @@ echo "\n\n\n<br><br><br>\n\n";
 echo "<font size=0>\n\n\n<br><br><br>\n"._QXZ("script runtime").": $RUNtime "._QXZ("seconds")."</font>";
 echo "</span>\n";
 
+
+function GetRealRecordingsURL($location, $link) {
+
+    $URLserver_ip = $location;
+    $URLserver_ip = preg_replace('/http:\/\//i', '',$URLserver_ip);
+    $URLserver_ip = preg_replace('/https:\/\//i', '',$URLserver_ip);
+    $URLserver_ip = preg_replace('/\/.*/i', '',$URLserver_ip);
+    $stmt="SELECT count(*) from servers where server_ip='$URLserver_ip';";
+    $rsltx=mysql_to_mysqli($stmt, $link);
+    $rowx=mysqli_fetch_row($rsltx);
+
+    if ($rowx[0] > 0) {
+        $stmt="SELECT recording_web_link,alt_server_ip,external_server_ip from servers where server_ip='$URLserver_ip';";
+        $rsltx=mysql_to_mysqli($stmt, $link);
+        $rowx=mysqli_fetch_row($rsltx);
+
+        if (preg_match("/ALT_IP/i",$rowx[0])) {
+            $location = preg_replace("/$URLserver_ip/i", "$rowx[1]", $location);
+        }
+        if (preg_match("/EXTERNAL_IP/i",$rowx[0])) {
+            $location = preg_replace("/$URLserver_ip/i", "$rowx[2]", $location);
+        }
+    }
+    return $location;
+}
 
 ?>
 
