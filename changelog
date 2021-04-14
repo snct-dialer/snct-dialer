@@ -1,3 +1,8 @@
+3.0.4
+  [Jörg Frings-Fürst]
+    * Fix GDPR download:
+      - Update: www/vicidial/admin_modify_lead.php.
+
 3.0.3
   [Jörg Frings-Fürst]
     * Add footer text after callback calendar:
