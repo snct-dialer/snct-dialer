@@ -38,4 +38,9 @@ ALTER TABLE `vicidial_rt_monitor_log` CHANGE `campaign_id` `campaign_id` VARCHAR
 ALTER TABLE `vicidial_rt_monitor_log_archive` CHANGE `campaign_id` `campaign_id` VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
 ALTER TABLE `vicidial_session_data` CHANGE `campaign_id` `campaign_id` VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
 ALTER TABLE `vicidial_user_log` CHANGE `campaign_id` `campaign_id` VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
-ALTER TABLE `vicidial_users`  ADD `password_sec` VARCHAR(256) NOT NULL  AFTER `selected_po_language`;
+ALTER TABLE `vicidial_users` ADD `password_sec` VARCHAR(256) NOT NULL;
+ALTER TABLE `vicidial_users` ADD `2FA_enable` ENUM('Y','N') NOT NULL DEFAULT 'N';
+ALTER TABLE `vicidial_users` ADD `2FA_type` ENUM('SMS','EMail','TOTP') NOT NULL DEFAULT 'TOTP';
+ALTER TABLE `vicidial_users` ADD `2FA_Email` VARCHAR(50) NOT NULL;
+ALTER TABLE `vicidial_users` ADD `2FA_SMS` VARCHAR(20) NOT NULL;
+ALTER TABLE `vicidial_users` ADD `2FA_secret` VARCHAR(250) NOT NULL;
