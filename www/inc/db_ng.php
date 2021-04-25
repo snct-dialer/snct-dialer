@@ -19,7 +19,7 @@
 # 2020-09-15 jff Rename to db_ng.php
 
 
-class DB extends mysqli {
+class DB {
     private $db_server;
     private $db_name;
     private $db_user;
@@ -41,7 +41,7 @@ class DB extends mysqli {
 
 	private $Selected_Server;
 	
-	public $MySqlHdl;
+	public mysqli $MySqlHdl;
 
 	function __construct($Server, $Name, $User, $Pass, $Port="3306", $Persist = true, $ServerRes = "") {
 		global $Log;

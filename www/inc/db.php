@@ -26,7 +26,7 @@ class DB {
     private $db_pass;
     private $db_port;
 
-    public $MySqlHdl;
+    public mysqli $MySqlHdl;
 
     function __construct($Server, $Name, $User, $Pass, $Port="3306") {
         global $Log;
