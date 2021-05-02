@@ -2,6 +2,10 @@
   [Jörg Frings-Fürst]
     * Add some new fields to vividial_list:
       - Update www/vicidial/admin_modify_lead.php,
+    * Use block_status for don't dial;
+      add new Status 'BSHO':
+      - Update bin/AST_VDhopper.pl,
+          www/vicidial/admin.php.
 
 3.0.4
   [Jörg Frings-Fürst]

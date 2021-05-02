@@ -38981,7 +38981,7 @@ if ($ADD==321111111111111)
 			echo "</td><td align=center nowrap><font size=1><input type=submit name=submit value='"._QXZ("MODIFY")."'> &nbsp; &nbsp; &nbsp; &nbsp; \n";
 			echo " &nbsp; \n";
 
-			if (preg_match("/^B$|^NA$|^DNC$|^NA$|^DROP$|^INCALL$|^QUEUE$|^NEW$/i",$rowx[0]))
+			if (preg_match("/^B$|^NA$|^DNC$|^NA$|^DROP$|^INCALL$|^QUEUE$|^NEW$|^BSHO$/i",$rowx[0]))
 				{
 				echo "<DEL>"._QXZ("DELETE")."</DEL>\n";
 				}

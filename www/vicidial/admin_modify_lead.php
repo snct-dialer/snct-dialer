@@ -24,18 +24,27 @@
 # admin_functions.php
 # admin_header.php
 # options.php
+# ../tools/system_wide_settings.php
+# ../inc/get_system_settings.php
+# ../inc/funtions_ng.php
+# language_header.php
 #
 ###############################################################################
 #
 # Version  / Build
 #
-$admin_modify_lead_version = '3.1.1-2';
-$admin_modify_lead_build = '20210413-1';
+$admin_modify_lead_version = '3.1.1-6';
+$admin_modify_lead_build = '2021030-3';
 #
 ###############################################################################
 #
 # Changelog#
 # 
+# 2021-04-30 jff    Move system-settings to ../inc/get_system_settings.php
+#                   Add language_header.php    
+# 2021-04-29 jff    Add field customer_status
+#                   Add new function sd_error_log and sd_debug_log
+# 2021-04-28 jff    Add field for selections
 # 2021-04-13 jff    Fix GDPR download
 # 2021-04-07 jff    Add field housenr1
 # 2021-02-08 jff    Remove preselect Modify [vicidial|agent] log
@@ -59,10 +68,17 @@ ini_set('zlib.output_compression', 0);
 require("dbconnect_mysqli.php");
 require("functions.php");
 require("admin_functions.php");
+require("../inc/functions_ng.php");
+
+require_once("../tools/system_wide_settings.php");
+require_once("language_header.php");
+
+
 
 $PHP_AUTH_USER=$_SERVER['PHP_AUTH_USER'];
 $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
 $PHP_SELF=$_SERVER['PHP_SELF'];
+
 if (isset($_GET["vendor_id"]))				  {$vendor_id=$_GET["vendor_id"];}
 	elseif (isset($_POST["vendor_id"]))		  {$vendor_id=$_POST["vendor_id"];}
 if (isset($_GET["source_id"]))				  {$source_id=$_GET["source_id"];}
@@ -194,12 +210,23 @@ if (isset($_GET["CIDdisplay"]))				{$CIDdisplay=$_GET["CIDdisplay"];}
 	
 if (isset($_GET["block_status"]))			{$block_status=$_GET["block_status"];}
 	elseif (isset($_POST["block_status"]))	{$block_status=$_POST["block_status"];}
+if (isset($_GET["selection"]))              {$selection=$_GET["selection"];}
+    elseif (isset($_POST["selection"]))     {$selection=$_POST["selection"];}
+if (isset($_GET["customer_status"]))              {$customer_status=$_GET["customer_status"];}
+    elseif (isset($_POST["customer_status"]))     {$customer_status=$_POST["customer_status"];}
 
-
-if ($archive_search=="Yes") {$vl_table="vicidial_list_archive";}
-else {$vl_table="vicidial_list"; $archive_search="No";}
+  
+   
+if ($archive_search=="Yes") {
+    $vl_table="vicidial_list_archive";
+} else {
+    $vl_table="vicidial_list";
+    $archive_search="No";
+}
 $altCIDdisplay="Yes";
-if ($CIDdisplay=="Yes") {$altCIDdisplay="No";}
+if ($CIDdisplay=="Yes") {
+    $altCIDdisplay="No";
+}
 
 $STARTtime = date("U");
 $TODAY = date("Y-m-d");
@@ -211,122 +238,29 @@ $AMDcount=0;
 
 $htmlconvert=1;
 $nonselectable_statuses=0;
-if (file_exists('options.php'))
-	{
+if (file_exists('options.php')) {
 	require('options.php');
-	}
+}
 $selectableSQL = "where selectable='Y'";
 $selectableSQLand = "and selectable='Y'";
-if ($nonselectable_statuses > 0)
-	{$selectableSQL='';   $selectableSQLand='';}
+if ($nonselectable_statuses > 0) {
+    $selectableSQL='';
+    $selectableSQLand='';
+}
 
-#############################################
-##### START SYSTEM_SETTINGS LOOKUP #####
-$stmt = "SELECT use_non_latin,custom_fields_enabled,webroot_writable,allow_emails,enable_languages,language_method,active_modules,log_recording_access,admin_screen_colors,enable_gdpr_download_deletion,source_id_display,mute_recordings,sip_event_logging,show_archive FROM system_settings;";
-$rslt=mysql_to_mysqli($stmt, $link);
-if ($DB) {echo "$stmt\n";}
-$qm_conf_ct = mysqli_num_rows($rslt);
-if ($qm_conf_ct > 0)
-	{
-	$row=mysqli_fetch_row($rslt);
-	$non_latin =				$row[0];
-	$custom_fields_enabled =	$row[1];
-	$webroot_writable =			$row[2];
-	$allow_emails =				$row[3];
-	$SSenable_languages =		$row[4];
-	$SSlanguage_method =		$row[5];
-	$active_modules =			$row[6];
-	$log_recording_access =		$row[7];
-	$SSadmin_screen_colors =	$row[8];
-	$enable_gdpr_download_deletion = $row[9];
-	$SSsource_id_display =		$row[10];
-	$SSmute_recordings =		$row[11];
-	$SSsip_event_logging =		$row[12];
-	$ShowArchive = 				$row[13];
-	}
-##### END SETTINGS LOOKUP #####
-###########################################
+require_once '../inc/get_system_settings.php';
 
 
 $lead_id = preg_replace('/[^0-9a-zA-Z]/','',$lead_id);
 
-if ($non_latin < 1)
-	{
-	$PHP_AUTH_USER = preg_replace('/[^-_0-9a-zA-Z]/','',$PHP_AUTH_USER);
-	$PHP_AUTH_PW = preg_replace('/[^-_0-9a-zA-Z]/','',$PHP_AUTH_PW);
 
-	$DB=preg_replace('/[^0-9]/','',$DB);
-	$user=preg_replace('/[^-_0-9a-zA-Z]/','',$user);
-	$pass=preg_replace('/[^-_0-9a-zA-Z]/','',$pass);
-	$function = preg_replace('/[^-\_0-9a-zA-Z]/', '',$function);
-	$format = preg_replace('/[^0-9a-zA-Z]/','',$format);
-	$list_id = preg_replace('/[^0-9]/','',$list_id);
-	$entry_list_id = preg_replace('/[^0-9]/','',$entry_list_id);
-	$phone_code = preg_replace('/[^0-9]/','',$phone_code);
-	$update_phone_number=preg_replace('/[^A-Z]/','',$update_phone_number);
-	$phone_number = preg_replace('/[^0-9]/','',$phone_number);
-	$old_phone = preg_replace('/[^0-9]/','',$old_phone);
-	$vendor_lead_code = preg_replace('/;|#/','',$vendor_lead_code);
-		$vendor_lead_code = preg_replace('/\+/',' ',$vendor_lead_code);
-	$source_id = preg_replace('/;|#/','',$source_id);
-		$source_id = preg_replace('/\+/',' ',$source_id);
-	$gmt_offset_now = preg_replace('/[^-\_\.0-9]/','',$gmt_offset_now);
-	$title = preg_replace('/[^- \'\_\.0-9a-zA-Z]/','',$title);
-	$first_name = preg_replace('/[^- \'\+\_\.0-9a-zA-Z]/','',$first_name);
-		$first_name = preg_replace('/\+/',' ',$first_name);
-	$middle_initial = preg_replace('/[^0-9a-zA-Z]/','',$middle_initial);
-	$last_name = preg_replace('/[^- \'\+\_\.0-9a-zA-Z]/','',$last_name);
-		$last_name = preg_replace('/\+/',' ',$last_name);
-	$address1 = preg_replace('/[^- \'\+\.\:\/\@\_0-9a-zA-Z]/','',$address1);
-	$address2 = preg_replace('/[^- \'\+\.\:\/\@\_0-9a-zA-Z]/','',$address2);
-	$address3 = preg_replace('/[^- \'\+\.\:\/\@\_0-9a-zA-Z]/','',$address3);
-		$address1 = preg_replace('/\+/',' ',$address1);
-		$address2 = preg_replace('/\+/',' ',$address2);
-		$address3 = preg_replace('/\+/',' ',$address3);
-	$city = preg_replace('/[^- \'\+\.\:\/\@\_0-9a-zA-Z]/','',$city);
-		$city = preg_replace('/\+/',' ',$city);
-	$state = preg_replace('/[^- 0-9a-zA-Z]/','',$state);
-	$province = preg_replace('/[^- \'\+\.\_0-9a-zA-Z]/','',$province);
-		$province = preg_replace('/\+/',' ',$province);
-	$postal_code = preg_replace('/[^- \'\+0-9a-zA-Z]/','',$postal_code);
-		$postal_code = preg_replace('/\+/',' ',$postal_code);
-	$country_code = preg_replace('/[^A-Z]/','',$country_code);
-	$gender = preg_replace('/[^A-Z]/','',$gender);
-	$date_of_birth = preg_replace('/[^-0-9]/','',$date_of_birth);
-	$alt_phone = preg_replace('/[^- \'\+\_\.0-9a-zA-Z]/','',$alt_phone);
-		$alt_phone = preg_replace('/\+/',' ',$alt_phone);
-	$email = preg_replace('/[^- \'\+\.\:\/\@\%\_0-9a-zA-Z]/','',$email);
-		$email = preg_replace('/\+/',' ',$email);
-	$security_phrase = preg_replace('/[^- \'\+\.\:\/\@\_0-9a-zA-Z]/','',$security_phrase);
-		$security_phrase = preg_replace('/\+/',' ',$security_phrase);
-	$comments = preg_replace('/;|#/','',$comments);
-		$comments = preg_replace('/\+/',' ',$comments);
-	$campaign_id = preg_replace('/[^-\_0-9a-zA-Z]/', '',$campaign_id);
-	$multi_alt_phones = preg_replace('/[^- \+\!\:\_0-9a-zA-Z]/','',$multi_alt_phones);
-		$multi_alt_phones = preg_replace('/\+/',' ',$multi_alt_phones);
-	$source = preg_replace('/[^0-9a-zA-Z]/','',$source);
-	$stage = preg_replace('/[^a-zA-Z]/','',$stage);
-	$rank = preg_replace('/[^0-9]/','',$rank);
-	$owner = preg_replace('/[^- \'\+\.\:\/\@\_0-9a-zA-Z]/','',$owner);
-		$owner = preg_replace('/\+/',' ',$owner);
-	$custom_fields = preg_replace('/[^0-9a-zA-Z]/','',$custom_fields);
-	$no_update = preg_replace('/[^A-Z]/','',$no_update);
-	$called_count=preg_replace('/[^0-9]/','',$called_count);
-	$local_gmt=preg_replace('/[^-\.0-9]/','',$local_gmt);
-	$callback = preg_replace('/[^A-Z]/','',$callback);
-	$callback_status = preg_replace('/[^-\_0-9a-zA-Z]/', '',$callback_status);
-	$callback_datetime = preg_replace('/[^- \+\.\:\/\@\_0-9a-zA-Z]/','',$callback_datetime);
-	$callback_type = preg_replace('/[^A-Z]/','',$callback_type);
-	$callback_user = preg_replace('/[^-\_0-9a-zA-Z]/', '',$callback_user);
-	$callback_comments = preg_replace('/[^- \+\.\:\/\@\_0-9a-zA-Z]/','',$callback_comments);
-	}	# end of non_latin
-else
-	{
-	$PHP_AUTH_USER = preg_replace("/'|\"|\\\\|;/","",$PHP_AUTH_USER);
-	$PHP_AUTH_PW = preg_replace("/'|\"|\\\\|;/","",$PHP_AUTH_PW);
-	}
+$PHP_AUTH_USER = preg_replace("/'|\"|\\\\|;/","",$PHP_AUTH_USER);
+$PHP_AUTH_PW = preg_replace("/'|\"|\\\\|;/","",$PHP_AUTH_PW);
 
-if (strlen($phone_number)<6) {$phone_number=$old_phone;}
+
+if (strlen($phone_number)<6) {
+    $phone_number=$old_phone;
+}
 
 $auth=0;
 $auth_message = user_authorization($PHP_AUTH_USER,$PHP_AUTH_PW,'',1,0);
@@ -356,10 +290,10 @@ if ($auth < 1)
 	exit;
 	}
 
-if ($non_latin > 0) {$rslt=mysql_to_mysqli("SET NAMES 'UTF8'", $link);}
+if ($non_latin > 0) {$rslt=mysqli_query($link, "SET NAMES 'UTF8'");}
 $rights_stmt = "SELECT modify_leads,selected_language from vicidial_users where user='$PHP_AUTH_USER';";
-if ($DB) {echo "|$stmt|\n";}
-$rights_rslt=mysql_to_mysqli($rights_stmt, $link);
+if ($DB) {sd_debug_log($stmt);}
+$rights_rslt=mysqli_query($link, $rights_stmt);
 $rights_row=mysqli_fetch_row($rights_rslt);
 $modify_leads =			$rights_row[0];
 $VUselected_language =	$rights_row[1];
@@ -373,7 +307,7 @@ if ($modify_leads < 1)
 	}
 
 $stmt="SELECT full_name,modify_leads,admin_hide_lead_data,admin_hide_phone_data,user_group,user_level,ignore_group_on_search from vicidial_users where user='$PHP_AUTH_USER';";
-$rslt=mysql_to_mysqli($stmt, $link);
+$rslt=mysqli_query($link, $stmt);
 $row=mysqli_fetch_row($rslt);
 $LOGfullname =					$row[0];
 $LOGmodify_leads =				$row[1];
@@ -386,7 +320,7 @@ $LOGignore_group_on_search =	$row[6];
 $LOGallowed_listsSQL='';
 $stmt="SELECT allowed_campaigns from vicidial_user_groups where user_group='$LOGuser_group';";
 if ($DB) {$HTML_text.="|$stmt|\n";}
-$rslt=mysql_to_mysqli($stmt, $link);
+$rslt=mysqli_query($link, $stmt);
 $row=mysqli_fetch_row($rslt);
 $LOGallowed_campaigns =			$row[0];
 
@@ -398,7 +332,7 @@ if ( (!preg_match('/\-ALL/i', $LOGallowed_campaigns)) and ($LOGignore_group_on_s
 	$whereLOGallowed_campaignsSQL = "where campaign_id IN('$rawLOGallowed_campaignsSQL')";
 
 	$stmt="SELECT list_id from vicidial_lists $whereLOGallowed_campaignsSQL;";
-	$rslt=mysql_to_mysqli($stmt, $link);
+	$rslt=mysqli_query($link, $stmt);
 	$lists_to_print = mysqli_num_rows($rslt);
 	$o=0;
 	while ($lists_to_print > $o)
@@ -445,7 +379,7 @@ function GetDistributorNr($LeadID) {
     $return = "";
     $stmt = "SELECT * FROM `snctdialer_distributor_customernr` WHERE `lead_id` = '".$LeadID."';";
     if($DB) {
-        echo $stmt . PHP_EOL;
+        sd_debug_log($stmt);
     }
     $rslt = mysqli_query($link, $stmt);
 
@@ -457,7 +391,7 @@ function GetDistributorNr($LeadID) {
         while($row = mysqli_fetch_array($rslt, MYSQLI_BOTH)) {
             $stmt1 = "SELECT * FROM `snctdialer_distributor` WHERE `DistID` = '".$row["DistributorID"] ."';";
             if($DB) {
-                echo $stmt1 . PHP_EOL;
+                sd_debug_log($stmt1);
             }
             $rslt1 = mysqli_query($link, $stmt1);
             $row1 = mysqli_fetch_array($rslt1, MYSQLI_BOTH);
@@ -473,8 +407,8 @@ function GetDistributorNr($LeadID) {
 if ($SSadmin_screen_colors != 'default')
 	{
 	$stmt = "SELECT menu_background,frame_background,std_row1_background,std_row2_background,std_row3_background,std_row4_background,std_row5_background,alt_row1_background,alt_row2_background,alt_row3_background,web_logo FROM vicidial_screen_colors where colors_id='$SSadmin_screen_colors';";
-	$rslt=mysql_to_mysqli($stmt, $link);
-	if ($DB) {echo "$stmt\n";}
+	$rslt=mysqli_query($link, $stmt);
+	if ($DB) {sd_debug_log($stmt);}
 	$colors_ct = mysqli_num_rows($rslt);
 	if ($colors_ct > 0)
 		{
@@ -497,7 +431,7 @@ if ($SSadmin_screen_colors != 'default')
 if ($enable_gdpr_download_deletion>0)
 	{
 	$stmt="SELECT export_gdpr_leads from vicidial_users where user='$PHP_AUTH_USER' and export_gdpr_leads >= 1;";
-	$rslt=mysql_to_mysqli($stmt, $link);
+	$rslt=mysqli_query($link, $stmt);
 	$row=mysqli_fetch_row($rslt);
 	$gdpr_display=$row[0];
 
@@ -525,7 +459,7 @@ if ($enable_gdpr_download_deletion>0)
 			$archive_table_name=use_archive_table("vicidial_list");
 			$mysql_stmt="(select list_id from vicidial_list where lead_id='$lead_id')";
 			if ($archive_table_name!="vicidial_list") {$mysql_stmt.=" UNION (select list_id from ".$archive_table_name." where lead_id='$lead_id')";}
-			$mysql_rslt=mysql_to_mysqli($mysql_stmt, $link);
+			$mysql_rslt=mysqli_query($link, $mysql_stmt);
 			if(mysqli_num_rows($mysql_rslt)>0)
 				{
 				$mysql_row=mysqli_fetch_row($mysql_rslt);
@@ -546,7 +480,7 @@ if ($enable_gdpr_download_deletion>0)
 					$table_count++;
 
 					$custom_stmt="SHOW COLUMNS FROM custom_".$list_id."";
-					$custom_rslt=mysql_to_mysqli($custom_stmt, $link);
+					$custom_rslt=mysqli_query($link, $custom_stmt);
 					while($custom_row=mysqli_fetch_row($custom_rslt))
 						{
 						if ($custom_row[0]!="lead_id")
@@ -561,17 +495,17 @@ if ($enable_gdpr_download_deletion>0)
 					if ($table_name=="recording_log")
 						{
 						$ins_stmt="insert ignore into recording_log_deletion_queue(recording_id,lead_id, filename, location, date_queued) (select recording_id,lead_id, filename, location, now() from recording_log where lead_id='$lead_id') UNION (select recording_id,lead_id, filename, location, now() from recording_log_archive where lead_id='$lead_id')";
-						$ins_rslt=mysql_to_mysqli($ins_stmt, $link);
+						$ins_rslt=mysqli_query($link, $ins_stmt);
 						}
 
 					$upd_clause=implode("=null, ", $purge_field_array["$table_name"])."=null ";
 					$upd_stmt="update $table_name set $upd_clause where lead_id='$lead_id'";
-					$upd_rslt=mysql_to_mysqli($upd_stmt, $link);
+					$upd_rslt=mysql_query($link, $upd_stmt, $link);
 					$SQL_log.="$upd_stmt|";
 					if ($archive_table_name!=$table_name)
 						{
 						$upd_stmt="update $archive_table_name set $upd_clause where lead_id='$lead_id'";
-						$upd_rslt=mysql_to_mysqli($upd_stmt, $link);
+						$upd_rslt=mysqli_query($link, $upd_stmt);
 						$SQL_log.="$upd_stmt|";
 						}
 					}
@@ -579,8 +513,8 @@ if ($enable_gdpr_download_deletion>0)
 
 			$SQL_log = addslashes($SQL_log);
 			$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LEADS', event_type='DELETE', record_id='$lead_id', event_code='GDPR PURGE LEAD DATA', event_sql=\"$SQL_log\", event_notes='';";
-			if ($DB) {echo "|$stmt|\n";}
-			$rslt=mysql_to_mysqli($stmt, $link);
+			if ($DB) {sd_debug_log($stmt);}
+			$rslt=mysqli_query($link, $stmt);
 
 			}
 
@@ -602,8 +536,8 @@ if ($enable_gdpr_download_deletion>0)
 			$list_id=""; $HTML_header=""; $CSV_header=""; $HTML_body=""; $CSV_body="";
 
 			$mysql_stmt.=" order by ".$date_field_array[$t]." desc";
-			$mysql_rslt=mysql_to_mysqli($mysql_stmt, $link);
-			if ($DB) {echo "|$mysql_stmt|\n";}
+			$mysql_rslt=mysqli_query($link, $mysql_stmt);
+			if ($DB) {sd_debug_log($mysql_stmt);}
 			if (mysqli_num_rows($mysql_rslt)>0)
 				{
 				$CSV_text.="\""._QXZ("TABLE NAME").":\",\"$table_name\"\n";
@@ -683,7 +617,7 @@ if ($enable_gdpr_download_deletion>0)
 		    $files_to_zip=array();
 
 			$rec_stmt="select start_time, location, filename from recording_log where lead_id='$lead_id' AND location LIKE 'http%' order by start_time asc";
-			$rec_rslt=mysql_to_mysqli($rec_stmt, $link);
+			$rec_rslt=mysqli_query($link, $rec_stmt);
 			while ($rec_row=mysqli_fetch_row($rec_rslt)) {
 				$start_time=$rec_row[0];
 				$start_date=substr($start_time, 1, 10);
@@ -711,7 +645,7 @@ if ($enable_gdpr_download_deletion>0)
 			}
 
 			$rec_stmt="select start_time, location, filename from recording_log_archive where lead_id='$lead_id' AND location LIKE 'http%' order by start_time asc";
-			$rec_rslt=mysql_to_mysqli($rec_stmt, $link);
+			$rec_rslt=mysqli_query($link, $rec_stmt);
 			while ($rec_row=mysqli_fetch_row($rec_rslt)) {
 			    $start_time=$rec_row[0];
 			    $start_date=substr($start_time, 1, 10);
@@ -739,8 +673,8 @@ if ($enable_gdpr_download_deletion>0)
 			}
 
 			$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LEADS', event_type='EXPORT', record_id='$lead_id', event_code='GDPR EXPORT LEAD DATA', event_sql=\"$SQL_log\", event_notes='';";
-			if ($DB) {echo "|$stmt|\n";}
-			$rslt=mysql_to_mysqli($stmt, $link);
+			if ($DB) {sd_debug_log($stmt);}
+			$rslt=mysqli_query($link, $stmt);
 
 
 			$FILE_TIME = date("Ymd-His");
@@ -805,32 +739,34 @@ if ($enable_gdpr_download_deletion>0)
 	}
 
 
-$label_title =				_QXZ("Title");
-$label_first_name =			_QXZ("First");
-$label_middle_initial =		_QXZ("MI");
-$label_last_name =			_QXZ("Last");
-$label_address1 =			_QXZ("Address1");
-$label_address2 =			_QXZ("Address2");
-$label_address3 =			_QXZ("Address3");
-$label_city =				_QXZ("City");
-$label_state =				_QXZ("State");
-$label_province =			_QXZ("Province");
-$label_postal_code =		_QXZ("Postal Code");
-$label_vendor_lead_code =	_QXZ("Vendor ID");
-$label_source_id =			_QXZ("Source ID");
-$label_gender =				_QXZ("Gender");
-$label_phone_number =		_QXZ("Phone");
-$label_phone_code =			_QXZ("DialCode");
-$label_alt_phone =			_QXZ("Alt. Phone");
-$label_alt_phone2 =			_QXZ("Alt. Phone 2");
-$label_security_phrase =	_QXZ("Show");
-$label_email =				_QXZ("Email");
-$label_comments =			_QXZ("Comments");
+$label_title =				_("Title");
+$label_first_name =			_("First");
+$label_middle_initial =		_("MI");
+$label_last_name =			_("Last");
+$label_address1 =			_("Address1");
+$label_address2 =			_("Address2");
+$label_address3 =			_("Address3");
+$label_city =				_("City");
+$label_state =				_("State");
+$label_province =			_("Province");
+$label_postal_code =		_("Postal Code");
+$label_vendor_lead_code =	_("Vendor ID");
+$label_source_id =			_("Source ID");
+$label_gender =				_("Gender");
+$label_phone_number =		_("Phone");
+$label_phone_code =			_("DialCode");
+$label_alt_phone =			_("Alt. Phone");
+$label_alt_phone2 =			_("Alt. Phone 2");
+$label_security_phrase =	_("Show");
+$label_email =				_("Email");
+$label_comments =			_("Comments");
 $label_BlockStatus =        _("Block status");
+$label_Selection =          _("Selection");
+$label_CustStatus =         _("Customer status");
 
 ### find any custom field labels
 $stmt="SELECT label_title,label_first_name,label_middle_initial,label_last_name,label_address1,label_address2,label_address3,label_city,label_state,label_province,label_postal_code,label_vendor_lead_code,label_gender,label_phone_number,label_phone_code,label_alt_phone,label_security_phrase,label_email,label_comments from system_settings;";
-$rslt=mysql_to_mysqli($stmt, $link);
+$rslt=mysqli_query($link, $stmt);
 $row=mysqli_fetch_row($rslt);
 if (strlen($row[0])>0)	{$label_title =				$row[0];}
 if (strlen($row[1])>0)	{$label_first_name =		$row[1];}
@@ -877,8 +813,8 @@ $MAXcountry_code =			'3';
 $MAXowner =					'20';
 
 $stmt = "SHOW COLUMNS FROM vicidial_list;";
-$rslt=mysql_to_mysqli($stmt, $link);
-if ($DB) {echo "$stmt\n";}
+$rslt=mysqli_query($link, $stmt);
+if ($DB) {sd_debug_log($stmt);}
 $scvl_ct = mysqli_num_rows($rslt);
 $s=0;
 while ($scvl_ct > $s)
@@ -938,7 +874,7 @@ while ($scvl_ct > $s)
 ### find out if status(dispo) is a scheduled callback status
 $scheduled_callback='';
 $stmt="SELECT scheduled_callback from vicidial_statuses where status='$dispo';";
-$rslt=mysql_to_mysqli($stmt, $link);
+$rslt=mysqli_query($link, $stmt);
 $scb_count_to_print = mysqli_num_rows($rslt);
 if ($scb_count_to_print > 0)
 	{
@@ -946,7 +882,7 @@ if ($scb_count_to_print > 0)
 	if (strlen($row[0])>0)	{$scheduled_callback =	$row[0];}
 	}
 $stmt="SELECT scheduled_callback from vicidial_campaign_statuses where status='$dispo';";
-$rslt=mysql_to_mysqli($stmt, $link);
+$rslt=mysqli_query($link, $stmt);
 $scb_count_to_print = mysqli_num_rows($rslt);
 if ($scb_count_to_print > 0)
 	{
@@ -1184,7 +1120,7 @@ if ($lead_id == 'NEW')
 
 	### Grab Server GMT value from the database
 	$stmt="SELECT local_gmt FROM servers where active='Y' limit 1;";
-	$rslt=mysql_to_mysqli($stmt, $link);
+	$rslt=mysqli_query($link, $stmt);
 	$gmt_recs = mysqli_num_rows($rslt);
 	if ($gmt_recs > 0)
 		{
@@ -1214,7 +1150,7 @@ if ($lead_id == 'NEW')
 
 	$list_valid=0;
 	$stmt="SELECT count(*) from vicidial_lists where list_id='" . mysqli_real_escape_string($link, $list_id) . "' $LOGallowed_campaignsSQL;";
-	$rslt=mysql_to_mysqli($stmt, $link);
+	$rslt=mysqli_query($link, $stmt);
 	$list_to_print = mysqli_num_rows($rslt);
 	if ($list_to_print > 0)
 		{
@@ -1228,8 +1164,8 @@ if ($lead_id == 'NEW')
 		if ($SSsource_id_display > 0)
 			{$source_idSQL = ",source_id='" . mysqli_real_escape_string($link, $source_id) . "'";}
 			$stmt="INSERT INTO vicidial_list set status='" . mysqli_real_escape_string($link, $status) . "',title='" . mysqli_real_escape_string($link, $title) . "',first_name='" . mysqli_real_escape_string($link, $first_name) . "',middle_initial='" . mysqli_real_escape_string($link, $middle_initial) . "',last_name='" . mysqli_real_escape_string($link, $last_name) . "',address1='" . mysqli_real_escape_string($link, $address1) . "',housenr1='" . mysqli_real_escape_string($link, $housenr1) . "',address2='" . mysqli_real_escape_string($link, $address2) . "',address3='" . mysqli_real_escape_string($link, $address3) . "',city='" . mysqli_real_escape_string($link, $city) . "',state='" . mysqli_real_escape_string($link, $state) . "',province='" . mysqli_real_escape_string($link, $province) . "',postal_code='" . mysqli_real_escape_string($link, $postal_code) . "',country_code='" . mysqli_real_escape_string($link, $country_code) . "',alt_phone='" . mysqli_real_escape_string($link, $alt_phone) . "',phone_number='$phone_number',phone_code='$phone_code',email='" . mysqli_real_escape_string($link, $email) . "',security_phrase='" . mysqli_real_escape_string($link, $security) . "',comments='" . mysqli_real_escape_string($link, $comments) . "',rank='" . mysqli_real_escape_string($link, $rank) . "',owner='" . mysqli_real_escape_string($link, $owner) . "',vendor_lead_code='" . mysqli_real_escape_string($link, $vendor_id) . "'$source_idSQL, list_id='" . mysqli_real_escape_string($link, $list_id) . "',date_of_birth='" . mysqli_real_escape_string($link, $date_of_birth) . "',gmt_offset_now='$gmt_offset',entry_date=NOW();";
-		if ($DB) {echo "$stmt\n";}
-		$rslt=mysql_to_mysqli($stmt, $link);
+		if ($DB) {sd_debug_log($stmt);}
+		$rslt=mysqli_query($link, $stmt);
 		$affected_rows = mysqli_affected_rows($link);
 		if ($affected_rows > 0)
 			{
@@ -1249,14 +1185,14 @@ if ($lead_id == 'NEW')
 else
 	{
 	$stmt="SELECT count(*) from $vl_table where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "'";
-	$rslt=mysql_to_mysqli($stmt, $link);
-	if ($DB) {echo "$stmt\n";}
+	$rslt=mysqli_query($link, $stmt);
+	if ($DB) {sd_debug_log($stmt);}
 	$row=mysqli_fetch_row($rslt);
 	$lead_exists =	$row[0];
 
 	$stmt="SELECT count(*) from $vl_table where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' $LOGallowed_listsSQL";
-	$rslt=mysql_to_mysqli($stmt, $link);
-	if ($DB) {echo "$stmt\n";}
+	$rslt=mysqli_query($link, $stmt);
+	if ($DB) {sd_debug_log($stmt);}
 	$row=mysqli_fetch_row($rslt);
 	$lead_count =	$row[0];
 	if ( ($lead_exists > 0) and ($lead_count < 1) )
@@ -1276,7 +1212,7 @@ if ($end_call > 0)
 
 	$list_valid=0;
 	$stmt="SELECT count(*) from vicidial_lists where list_id='" . mysqli_real_escape_string($link, $list_id) . "' $LOGallowed_campaignsSQL;";
-	$rslt=mysql_to_mysqli($stmt, $link);
+	$rslt=mysqli_query($link, $stmt);
 	$list_to_print = mysqli_num_rows($rslt);
 	if ($list_to_print > 0)
 		{
@@ -1289,9 +1225,9 @@ if ($end_call > 0)
 		$diff_orig=''; $diff_new='';
 		# gather existing lead data to store for admin log diff
 		$stmt="SELECT lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id from $vl_table where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' $LOGallowed_listsSQL";
-		$rslt=mysql_to_mysqli($stmt, $link);
+		$rslt=mysqli_query($link, $stmt);
 		$diff_to_print = mysqli_num_rows($rslt);
-		if ($DB) {echo "$diff_to_print|$stmt\n";}
+		if ($DB) {sd_debug_log("$diff_to_print|$stmt");}
 		if ($diff_to_print > 0)
 			{
 			$row=mysqli_fetch_row($rslt);
@@ -1302,16 +1238,43 @@ if ($end_call > 0)
 		if ($SSsource_id_display > 0)
 			{$source_idSQL = ",source_id='" . mysqli_real_escape_string($link, $source_id) . "'";}
 		### update the lead record in the vicidial_list table
-			$stmtA="UPDATE $vl_table set status='" . mysqli_real_escape_string($link, $status) . "',title='" . mysqli_real_escape_string($link, $title) . "',first_name='" . mysqli_real_escape_string($link, $first_name) . "',middle_initial='" . mysqli_real_escape_string($link, $middle_initial) . "',last_name='" . mysqli_real_escape_string($link, $last_name) . "',address1='" . mysqli_real_escape_string($link, $address1) . "',housenr1='" . mysqli_real_escape_string($link, $housenr1) . "',address2='" . mysqli_real_escape_string($link, $address2) . "',address3='" . mysqli_real_escape_string($link, $address3) . "',city='" . mysqli_real_escape_string($link, $city) . "',state='" . mysqli_real_escape_string($link, $state) . "',province='" . mysqli_real_escape_string($link, $province) . "',postal_code='" . mysqli_real_escape_string($link, $postal_code) . "',country_code='" . mysqli_real_escape_string($link, $country_code) . "',alt_phone='" . mysqli_real_escape_string($link, $alt_phone) . "',phone_number='$phone_number',phone_code='$phone_code',email='" . mysqli_real_escape_string($link, $email) . "',security_phrase='" . mysqli_real_escape_string($link, $security) . "',comments='" . mysqli_real_escape_string($link, $comments) . "',rank='" . mysqli_real_escape_string($link, $rank) . "',vendor_lead_code='" . mysqli_real_escape_string($link, $vendor_id) . "'$source_idSQL,block_status='" .$block_status . "',  date_of_birth='" . mysqli_real_escape_string($link, $date_of_birth) . "' where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "'";
-			
-		if ($DB) {echo "|$stmtA|\n";}
-		$rslt=mysql_to_mysqli($stmtA, $link);
+			$stmtA  = "UPDATE $vl_table set status='" . mysqli_real_escape_string($link, $status) . "', ";
+            $stmtA .= "title='" . mysqli_real_escape_string($link, $title) . "', ";
+            $stmtA .= "first_name='" . mysqli_real_escape_string($link, $first_name) . "', ";
+            $stmtA .= "middle_initial='" . mysqli_real_escape_string($link, $middle_initial) . "', ";
+            $stmtA .= "last_name='" . mysqli_real_escape_string($link, $last_name) . "', ";
+            $stmtA .= "address1='" . mysqli_real_escape_string($link, $address1) . "', ";
+            $stmtA .= "housenr1='" . mysqli_real_escape_string($link, $housenr1) . "', ";
+            $stmtA .= "address2='" . mysqli_real_escape_string($link, $address2) . "', ";
+            $stmtA .= "address3='" . mysqli_real_escape_string($link, $address3) . "', ";
+            $stmtA .= "city='" . mysqli_real_escape_string($link, $city) . "', ";
+            $stmtA .= "state='" . mysqli_real_escape_string($link, $state) . "', ";
+            $stmtA .= "province='" . mysqli_real_escape_string($link, $province) . "', ";
+            $stmtA .= "postal_code='" . mysqli_real_escape_string($link, $postal_code) . "', ";
+            $stmtA .= "country_code='" . mysqli_real_escape_string($link, $country_code) . "', ";
+            $stmtA .= "alt_phone='" . mysqli_real_escape_string($link, $alt_phone) . "', ";
+            $stmtA .= "phone_number='$phone_number', ";
+            $stmtA .= "phone_code='$phone_code', ";
+            $stmtA .= "email='" . mysqli_real_escape_string($link, $email) . "', ";
+            $stmtA .= "security_phrase='" . mysqli_real_escape_string($link, $security) . "', ";
+            $stmtA .= "comments='" . mysqli_real_escape_string($link, $comments) . "', ";
+            $stmtA .= "rank='" . mysqli_real_escape_string($link, $rank) . "', ";
+            $stmtA .= "vendor_lead_code='" . mysqli_real_escape_string($link, $vendor_id) ." ";
+            $stmtA .= "'$source_idSQL, ";
+            $stmtA .= "block_status='" .$block_status . "', "; 
+            $stmtA .= "date_of_birth='" . mysqli_real_escape_string($link, $date_of_birth) . "', ";
+            $stmtA .= "selection='" . mysqli_real_escape_string($link, $selection) . "', ";
+            $stmtA .= "customer_status='" .$customer_status . "' ";
+            $stmtA .= "where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "'";
+		sd_debug_log($stmt);
+		if ($DB) {sd_debug_log($stmt);}
+		$rslt=mysqli_query($link, $stmtA);
 
 		# gather new lead data to store for admin log diff
 		$stmt="SELECT lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,housenr1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id from $vl_table where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' $LOGallowed_listsSQL";
-		$rslt=mysql_to_mysqli($stmt, $link);
+		$rslt=mysqli_query($link, $stmt);
 		$diff_to_print = mysqli_num_rows($rslt);
-		if ($DB) {echo "$diff_to_print|$stmt\n";}
+		if ($DB) {sd_debug_log("$diff_to_print|$stmt");}
 		if ($diff_to_print > 0)
 			{
 			$row=mysqli_fetch_row($rslt);
@@ -1326,8 +1289,8 @@ if ($end_call > 0)
 			{
 			### inactivate vicidial_callbacks record for this lead
 			$stmtB="UPDATE vicidial_callbacks set status='INACTIVE' where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' and status='ACTIVE';";
-			if ($DB) {echo "|$stmtB|\n";}
-			$rslt=mysql_to_mysqli($stmtB, $link);
+			if ($DB) {sd_debug_log($stmtB);}
+			$rslt=mysqli_query($link, $stmtB);
 
 			echo "<BR>"._QXZ("vicidial_callback record inactivated").": $lead_id<BR>\n";
 			}
@@ -1335,8 +1298,8 @@ if ($end_call > 0)
 			{
 			### inactivate vicidial_callbacks record for this lead
 			$stmtC="UPDATE vicidial_callbacks set status='INACTIVE' where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' and status IN('ACTIVE','LIVE');";
-			if ($DB) {echo "|$stmtC|\n";}
-			$rslt=mysql_to_mysqli($stmtC, $link);
+			if ($DB) {sd_debug_log($stmtC);}
+			$rslt=mysqli_query($link, $stmtC);
 
 			echo "<BR>"._QXZ("vicidial_callback record inactivated").": $lead_id<BR>\n";
 			}
@@ -1345,8 +1308,8 @@ if ($end_call > 0)
 			{
 			### find any vicidial_callback records for this lead
 			$stmtD="SELECT callback_id from vicidial_callbacks where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' and status IN('ACTIVE','LIVE') order by callback_id desc LIMIT 1;";
-			if ($DB) {echo "|$stmtD|\n";}
-			$rslt=mysql_to_mysqli($stmtD, $link);
+			if ($DB) {sd_debug_log($stmtD);}
+			$rslt=mysqli_query($link, $stmtD);
 			$CBM_to_print = mysqli_num_rows($rslt);
 			if ($CBM_to_print > 0)
 				{
@@ -1364,7 +1327,7 @@ if ($end_call > 0)
 				if (strlen($CLEAN_campaign_id)<1)
 					{
 					$stmt="SELECT campaign_id from vicidial_lists where list_id='" . mysqli_real_escape_string($link, $list_id) . "';";
-					$rslt=mysql_to_mysqli($stmt, $link);
+					$rslt=mysqli_query($link, $stmt);
 					$cidvl_count_to_print = mysqli_num_rows($rslt);
 					if ($cidvl_count_to_print > 0)
 						{
@@ -1374,8 +1337,8 @@ if ($end_call > 0)
 					}
 
 				$stmtE="INSERT INTO vicidial_callbacks SET lead_id='" . mysqli_real_escape_string($link, $lead_id) . "',recipient='USERONLY',status='ACTIVE',user='$PHP_AUTH_USER',user_group='ADMIN',list_id='" . mysqli_real_escape_string($link, $list_id) . "',callback_time='$tomorrow $cb_hour',entry_time='$NOW_TIME',comments='',campaign_id='$CLEAN_campaign_id';";
-				if ($DB) {echo "|$stmtE|\n";}
-				$rslt=mysql_to_mysqli($stmtE, $link);
+				if ($DB) {sd_debug_log($stmtE);}
+				$rslt=mysqli_query($link, $stmtE);
 
 				echo "<BR>"._QXZ("Scheduled Callback added").": $lead_id - $phone_number<BR>\n";
 				}
@@ -1386,8 +1349,8 @@ if ($end_call > 0)
 			{
 			### add lead to the internal DNC list
 			$stmtF="INSERT INTO vicidial_dnc (phone_number) values('" . mysqli_real_escape_string($link, $phone_number) . "');";
-			if ($DB) {echo "|$stmtF|\n";}
-			$rslt=mysql_to_mysqli($stmtF, $link);
+			if ($DB) {sd_debug_log($stmtF);}
+			$rslt=mysqli_query($link, $stmtF);
 
 			echo "<BR>"._QXZ("Lead added to DNC List").": $lead_id - $phone_number<BR>\n";
 			}
@@ -1395,24 +1358,24 @@ if ($end_call > 0)
 		   if (($dispo != $status) and ($modify_logs > 0))
 			{
 			$stmtG="UPDATE vicidial_log set status='" . mysqli_real_escape_string($link, $status) . "' where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' order by call_date desc limit 1";
-			if ($DB) {echo "|$stmtG|\n";}
-			$rslt=mysql_to_mysqli($stmtG, $link);
+			if ($DB) {sd_debug_log($stmtG);}
+			$rslt=mysqli_query($link, $stmtG);
 			}
 
 		### update last record in vicidial_closer_log table
 		   if (($dispo != $status) and ($modify_closer_logs > 0))
 			{
 			$stmtH="UPDATE vicidial_closer_log set status='" . mysqli_real_escape_string($link, $status) . "' where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' order by closecallid desc limit 1";
-			if ($DB) {echo "|$stmtH|\n";}
-			$rslt=mysql_to_mysqli($stmtH, $link);
+			if ($DB) {sd_debug_log($stmtH);}
+			$rslt=mysqli_query($link, $stmtH);
 			}
 
 		### update last record in vicidial_agent_log table
 		   if (($dispo != $status) and ($modify_agent_logs > 0))
 			{
 			$stmtI="UPDATE vicidial_agent_log set status='" . mysqli_real_escape_string($link, $status) . "' where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' order by agent_log_id desc limit 1";
-			if ($DB) {echo "|$stmtI|\n";}
-			$rslt=mysql_to_mysqli($stmtI, $link);
+			if ($DB) {sd_debug_log($stmtI);}
+			$rslt=mysqli_query($link, $stmtI);
 			}
 
 		if ($add_closer_record > 0)
@@ -1421,8 +1384,8 @@ if ($end_call > 0)
 			$comments = preg_replace("/\r/",'',$comments);
 			### insert a NEW record to the vicidial_closer_log table
 			$stmtJ="INSERT INTO vicidial_closer_log (lead_id,list_id,campaign_id,call_date,start_epoch,end_epoch,length_in_sec,status,phone_code,phone_number,user,comments,processed) values('" . mysqli_real_escape_string($link, $lead_id) . "','" . mysqli_real_escape_string($link, $list_id) . "','" . mysqli_real_escape_string($link, $campaign_id) . "','" . mysqli_real_escape_string($link, $parked_time) . "','$NOW_TIME','$STARTtime','1','" . mysqli_real_escape_string($link, $status) . "','" . mysqli_real_escape_string($link, $phone_code) . "','" . mysqli_real_escape_string($link, $phone_number) . "','$PHP_AUTH_USER','" . mysqli_real_escape_string($link, $comments) . "','Y')";
-			if ($DB) {echo "|$stmtJ|\n";}
-			$rslt=mysql_to_mysqli($stmtJ, $link);
+			if ($DB) {sd_debug_log($stmtJ);}
+			$rslt=mysqli_query($link, $stmtJ);
 			}
 
 		### LOG INSERTION Admin Log Table ###
@@ -1430,8 +1393,8 @@ if ($end_call > 0)
 		$SQL_log = preg_replace('/;/', '', $SQL_log);
 		$SQL_log = addslashes($SQL_log);
 		$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LEADS', event_type='MODIFY', record_id='$lead_id', event_code='ADMIN MODIFY LEAD', event_sql=\"$SQL_log\", event_notes=\"".$diff_orig."---ORIG---NEW---".$diff_new."\";";
-		if ($DB) {echo "|$stmt|\n";}
-		$rslt=mysql_to_mysqli($stmt, $link);
+		if ($DB) {sd_debug_log($stmt);}
+		$rslt=mysqli_query($link, $stmt);
 		}
 	else
 		{
@@ -1444,8 +1407,8 @@ else
 		{
 		### set vicidial_callbacks record to an ANYONE callback for this lead
 		$stmtK="UPDATE vicidial_callbacks set recipient='ANYONE' where callback_id='" . mysqli_real_escape_string($link, $callback_id) . "';";
-		if ($DB) {echo "|$stmtK|\n";}
-		$rslt=mysql_to_mysqli($stmtK, $link);
+		if ($DB) {sd_debug_log($stmtK);}
+		$rslt=mysqli_query($link, $stmtK);
 
 		echo "<BR>"._QXZ("vicidial_callback record changed to ANYONE")."<BR>\n";
 		}
@@ -1453,8 +1416,8 @@ else
 		{
 		### set vicidial_callbacks record to an USERONLY callback for this lead
 		$stmtM="UPDATE vicidial_callbacks set user='" . mysqli_real_escape_string($link, $CBuser) . "',recipient='USERONLY' where callback_id='" . mysqli_real_escape_string($link, $callback_id) . "';";
-		if ($DB) {echo "|$stmtM|\n";}
-		$rslt=mysql_to_mysqli($stmtM, $link);
+		if ($DB) {sd_debug_log($stmtM);}
+		$rslt=mysqli_query($link, $stmtM);
 
 		echo "<BR>"._QXZ("vicidial_callback record changed to USERONLY, user").": $CBuser<BR>\n";
 		}
@@ -1465,8 +1428,8 @@ else
 		$comments = preg_replace("/\r/",'',$comments);
 		### change date/time of vicidial_callbacks record for this lead
 		$stmtN="UPDATE vicidial_callbacks set callback_time='" . mysqli_real_escape_string($link, $appointment_date) . " " . mysqli_real_escape_string($link, $appointment_time) . "',comments='" . mysqli_real_escape_string($link, $comments) . "',lead_status='" . mysqli_real_escape_string($link, $CBstatus) . "' where callback_id='" . mysqli_real_escape_string($link, $callback_id) . "';";
-		if ($DB) {echo "|$stmtN|\n";}
-		$rslt=mysql_to_mysqli($stmtN, $link);
+		if ($DB) {sd_debug_log($stmtN);}
+		$rslt=mysqli_query($link, $stmtN);
 
 		echo "<BR>"._QXZ("vicidial_callback record changed to")." $appointment_date $appointment_time $CBstatus<BR>\n";
 		}
@@ -1478,13 +1441,13 @@ else
 		$SQL_log = preg_replace('/;/', '', $SQL_log);
 		$SQL_log = addslashes($SQL_log);
 		$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LEADS', event_type='MODIFY', record_id='$lead_id', event_code='ADMIN MODIFY LEAD CALLBACK', event_sql=\"$SQL_log\", event_notes='';";
-		if ($DB) {echo "|$stmt|\n";}
-		$rslt=mysql_to_mysqli($stmt, $link);
+		if ($DB) {sd_debug_log($stmt);}
+		$rslt=mysqli_query($link, $stmt);
 		}
 
 	$stmt="SELECT count(*) from $vl_table where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' $LOGallowed_listsSQL";
-	$rslt=mysql_to_mysqli($stmt, $link);
-	if ($DB) {echo "$stmt\n";}
+	$rslt=mysqli_query($link, $stmt);
+	if ($DB) {sd_debug_log($stmt);}
 	$row=mysqli_fetch_row($rslt);
 	$lead_count = $row[0];
 
@@ -1492,8 +1455,8 @@ else
 		{
 		##### grab vicidial_list_alt_phones records #####
 		$stmt="SELECT phone_code,phone_number,alt_phone_note,alt_phone_count,active from vicidial_list_alt_phones where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' order by alt_phone_count limit 500;";
-		$rslt=mysql_to_mysqli($stmt, $link);
-		if ($DB) {echo "$stmt\n";}
+		$rslt=mysqli_query($link, $stmt);
+		if ($DB) {sd_debug_log($stmt);}
 		$alts_to_print = mysqli_num_rows($rslt);
 
 		$c=0;
@@ -1529,9 +1492,9 @@ else
 
 	##### grab vicidial_log records #####
 	$stmt="SELECT uniqueid,lead_id,list_id,campaign_id,call_date,start_epoch,end_epoch,length_in_sec,status,phone_code,phone_number,user,comments,processed,user_group,term_reason,alt_dial from vicidial_log where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' order by uniqueid desc limit 500;";
-	$rslt=mysql_to_mysqli($stmt, $link);
+	$rslt=mysqli_query($link, $stmt);
 	$logs_to_print = mysqli_num_rows($rslt);
-	if ($DB) {echo "$logs_to_print|$stmt\n";}
+	if ($DB) {sd_debug_log("$logs_to_print|$stmt");}
 
 	$u=0;
 	$call_log = '';
@@ -1562,7 +1525,7 @@ else
 			{
 			$caller_code='';
 			$stmtA="SELECT caller_code FROM vicidial_log_extended WHERE lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' and uniqueid='$row[0]';";
-			$rsltA=mysql_to_mysqli($stmtA, $link);
+			$rsltA=mysqli_query($link, $stmtA);
 			$cc_to_print = mysqli_num_rows($rslt);
 			if ($cc_to_print > 0)
 				{
@@ -1571,7 +1534,7 @@ else
 				}
 			$outbound_cid='';
 			$stmtA="SELECT outbound_cid FROM vicidial_dial_log WHERE lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' and caller_code='$caller_code';";
-			$rsltA=mysql_to_mysqli($stmtA, $link);
+			$rsltA=mysqli_query($link, $stmtA);
 			$cid_to_print = mysqli_num_rows($rslt);
 			if ($cid_to_print > 0)
 				{
@@ -1589,7 +1552,7 @@ else
 				}
 			$AMDSTATUS='';	$AMDRESPONSE='';
 			$stmtA="SELECT AMDSTATUS,AMDRESPONSE FROM vicidial_amd_log WHERE lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' and caller_code='$caller_code';";
-			$rsltA=mysql_to_mysqli($stmtA, $link);
+			$rsltA=mysqli_query($link, $stmtA);
 			$amd_to_print = mysqli_num_rows($rslt);
 			if ($amd_to_print > 0)
 				{
@@ -1603,7 +1566,7 @@ else
 		$call_log .= "</tr>\n";
 
 		$stmtA="SELECT call_notes FROM vicidial_call_notes WHERE lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' and vicidial_id='$row[0]';";
-		$rsltA=mysql_to_mysqli($stmtA, $link);
+		$rsltA=mysqli_query($link, $stmtA);
 		$out_notes_to_print = mysqli_num_rows($rslt);
 		if ($out_notes_to_print > 0)
 			{
@@ -1622,9 +1585,9 @@ else
 
 	##### grab vicidial_agent_log records #####
 	$stmt="SELECT agent_log_id,user,server_ip,event_time,lead_id,campaign_id,pause_epoch,pause_sec,wait_epoch,wait_sec,talk_epoch,talk_sec,dispo_epoch,dispo_sec,status,user_group,comments,sub_status from vicidial_agent_log where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' order by agent_log_id desc limit 500;";
-	$rslt=mysql_to_mysqli($stmt, $link);
+	$rslt=mysqli_query($link, $stmt);
 	$Alogs_to_print = mysqli_num_rows($rslt);
-	if ($DB) {echo "$Alogs_to_print|$stmt\n";}
+	if ($DB) {sd_debug_log("$Alogs_to_print|$stmt");}
 
 	$y=0;
 	$agent_log = '';
@@ -1657,9 +1620,9 @@ else
 
 	##### grab vicidial_closer_log records #####
 	$stmt="SELECT closecallid,lead_id,list_id,campaign_id,call_date,start_epoch,end_epoch,length_in_sec,status,phone_code,phone_number,user,comments,processed,queue_seconds,user_group,xfercallid,term_reason,uniqueid,agent_only from vicidial_closer_log where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' order by closecallid desc limit 500;";
-	$rslt=mysql_to_mysqli($stmt, $link);
+	$rslt=mysqli_query($link, $stmt);
 	$Clogs_to_print = mysqli_num_rows($rslt);
-	if ($DB) {echo "$Clogs_to_print|$stmt\n";}
+	if ($DB) {sd_debug_log("$Clogs_to_print|$stmt");}
 
 	$y=0;
 	$closer_log = '';
@@ -1687,7 +1650,7 @@ else
 		$closer_log .= "<td align=right><font size=2> &nbsp; $row[17] </td></tr>\n";
 
 		$stmtA="SELECT call_notes FROM vicidial_call_notes WHERE lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' and vicidial_id IN('$row[0]','$row[18]');";
-		$rsltA=mysql_to_mysqli($stmtA, $link);
+		$rsltA=mysqli_query($link, $stmtA);
 		$in_notes_to_print = mysqli_num_rows($rslt);
 		if ($in_notes_to_print > 0)
 			{
@@ -1710,9 +1673,9 @@ else
 		{
 		##### grab vicidial_log_archive records #####
 		$stmt="SELECT uniqueid,lead_id,list_id,campaign_id,call_date,start_epoch,end_epoch,length_in_sec,status,phone_code,phone_number,user,comments,processed,user_group,term_reason,alt_dial from vicidial_log_archive where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' order by uniqueid desc limit 500;";
-		$rslt=mysql_to_mysqli($stmt, $link);
+		$rslt=mysqli_query($link, $stmt);
 		$logs_to_print = mysqli_num_rows($rslt);
-		if ($DB) {echo "$logs_to_print|$stmt\n";}
+		if ($DB) {sd_debug_log("$logs_to_print|$stmt");}
 
 		$u=0;
 	#	$call_log = '';
@@ -1743,7 +1706,7 @@ else
 				{
 				$caller_code='';
 				$stmtA="SELECT caller_code FROM vicidial_log_extended_archive WHERE lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' and uniqueid='$row[0]';";
-				$rsltA=mysql_to_mysqli($stmtA, $link);
+				$rsltA=mysqli_query($link, $stmtA);
 				$cc_to_print = mysqli_num_rows($rslt);
 				if ($cc_to_print > 0)
 					{
@@ -1752,7 +1715,7 @@ else
 					}
 				$outbound_cid='';
 				$stmtA="SELECT outbound_cid FROM vicidial_dial_log_archive WHERE lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' and caller_code='$caller_code';";
-				$rsltA=mysql_to_mysqli($stmtA, $link);
+				$rsltA=mysqli_query($link, $stmtA);
 				$cid_to_print = mysqli_num_rows($rslt);
 				if ($cid_to_print > 0)
 					{
@@ -1772,7 +1735,7 @@ else
 			$call_log .= "</tr>\n";
 
 			$stmtA="SELECT call_notes FROM vicidial_call_notes WHERE lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' and vicidial_id='$row[0]';";
-			$rsltA=mysql_to_mysqli($stmtA, $link);
+			$rsltA=mysqli_query($link, $stmtA);
 			$out_notes_to_print = mysqli_num_rows($rslt);
 			if ($out_notes_to_print > 0)
 				{
@@ -1791,9 +1754,9 @@ else
 
 		##### grab vicidial_agent_log_archive records #####
 		$stmt="SELECT agent_log_id,user,server_ip,event_time,lead_id,campaign_id,pause_epoch,pause_sec,wait_epoch,wait_sec,talk_epoch,talk_sec,dispo_epoch,dispo_sec,status,user_group,comments,sub_status from vicidial_agent_log_archive where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' order by agent_log_id desc limit 500;";
-		$rslt=mysql_to_mysqli($stmt, $link);
+		$rslt=mysqli_query($link, $stmt);
 		$Alogs_to_print = mysqli_num_rows($rslt);
-		if ($DB) {echo "$Alogs_to_print|$stmt\n";}
+		if ($DB) {sd_debug_log("$Alogs_to_print|$stmt");}
 
 		$y=0;
 	#	$agent_log = '';
@@ -1826,9 +1789,9 @@ else
 
 		##### grab vicidial_closer_log_archive records #####
 		$stmt="SELECT closecallid,lead_id,list_id,campaign_id,call_date,start_epoch,end_epoch,length_in_sec,status,phone_code,phone_number,user,comments,processed,queue_seconds,user_group,xfercallid,term_reason,uniqueid,agent_only from vicidial_closer_log_archive where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' order by closecallid desc limit 500;";
-		$rslt=mysql_to_mysqli($stmt, $link);
+		$rslt=mysqli_query($link, $stmt);
 		$Clogs_to_print = mysqli_num_rows($rslt);
-		if ($DB) {echo "$Clogs_to_print|$stmt\n";}
+		if ($DB) {sd_debug_log("$Clogs_to_print|$stmt");}
 
 		$y=0;
 	#	$closer_log = '';
@@ -1856,7 +1819,7 @@ else
 			$closer_log .= "<td align=right><font size=2> &nbsp; $row[17] </td></tr>\n";
 
 			$stmtA="SELECT call_notes FROM vicidial_call_notes WHERE lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' and vicidial_id IN('$row[0]','$row[18]');";
-			$rsltA=mysql_to_mysqli($stmtA, $link);
+			$rsltA=mysqli_query($link, $stmtA);
 			$in_notes_to_print = mysqli_num_rows($rslt);
 			if ($in_notes_to_print > 0)
 				{
@@ -1878,13 +1841,13 @@ else
 
 	##### grab vicidial_list data for lead #####
 	$stmt="SELECT * FROM $vl_table WHERE lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' $LOGallowed_listsSQL";
-	$rslt=mysql_to_mysqli($stmt, $link);
-	if ($DB) {echo "$stmt\n";}
+	$rslt=mysqli_query($link, $stmt);
+	if ($DB) {sd_debug_log($stmt);}
 	$row=mysqli_fetch_array($rslt, MYSQLI_BOTH);
 
 	if ($LOGadmin_hide_phone_data != '0')
 		{
-		if ($DB > 0) {echo 'HIDEPHONEDATA|$row["phone_number"]|$LOGadmin_hide_phone_data|\n';}
+		    if ($DB > 0) {sd_debug_log('HIDEPHONEDATA|$row["phone_number"]|$LOGadmin_hide_phone_data|');}
 		$phone_temp = $row["phone_number"];
 		if (strlen($phone_temp) > 0)
 			{
@@ -1901,7 +1864,7 @@ else
 	if ($LOGadmin_hide_lead_data != '0')
 		{
 		if ($DB > 0) {
-		    echo 'HIDELEADDATA|$row["vendor_lead_code"]|$row["source_id"]|$row["title"]|$row["first_name"]|$row["middle_initial"]|$row["last_name"]|$row["address1"]|$row["address2"]|$row["address3"]|$row["city"]|$row["state"]|$row["province"]|$row["postal_code"]|$row["alt_phone"]|$row["email"]|$row["security_phrase"]|$LOGadmin_hide_lead_data|\n';
+		    sd_debug_log('HIDELEADDATA|$row["vendor_lead_code"]|$row["source_id"]|$row["title"]|$row["first_name"]|$row["middle_initial"]|$row["last_name"]|$row["address1"]|$row["address2"]|$row["address3"]|$row["city"]|$row["state"]|$row["province"]|$row["postal_code"]|$row["alt_phone"]|$row["email"]|$row["security_phrase"]|$LOGadmin_hide_lead_data|');
 		}
 		
 		if (strlen($row["vendor_lead_code"]) > 0) {
@@ -2005,33 +1968,25 @@ else
 	$entry_list_id		       = $row["entry_list_id"];
 	$housenr1                  = $row["housenr1"];
 	$BlockStatus               = $row["block_status"];
+	$selection                 = $row["selection"];
+	$CustStatus                = $row["customer_status"];
 
 	$comments = preg_replace("/!N/","\n",$comments);
 
-	$BlockStr = "<select name=\"block_status\" size=\"1\">";
-	if($BlockStatus == "free") {
-	    $BlockStr .= "<option SELECTED value=\"free\">"._("free to use"). "</option>\n";
-	    $BlockStr .= "<option value=\"blocked\">"._("use prohibited"). "</option>\n";
-	    $BlockStr .= "<option value=\"temporary\">"._("temporary blocked"). "</option>\n";
-	} else {
-	    if($BlockStatus == "blocked") {
-	       $BlockStr .= "<option value=\"free\">"._("free to use"). "</option>\n";
-	       $BlockStr .= "<option SELECTED value=\"blocked\">"._("use prohibited"). "</option>\n";
-	       $BlockStr .= "<option value=\"temporary\">"._("temporary blocked"). "</option>\n";
-	    } else {
-	        $BlockStr .= "<option value=\"free\">"._("free to use"). "</option>\n";
-	        $BlockStr .= "<option value=\"blocked\">"._("use prohibited"). "</option>\n";
-	        $BlockStr .= "<option SELECTED value=\"temporary\">"._("temporary blocked"). "</option>\n";
-	    }
+	$DisableSel = "disabled";
+	if($LOGuser_level == 9) {
+	    $DisableSel = "";
 	}
-	$BlockStr .= "</select>";
 	
+	$BlockStr = FillBlockStatus($BlockStatus, $DisableSel);
+	$CustStr  = FillCustStatus($CustStatus);
+		
 	if ($lead_id == 'NEW')
 		{
 		##### create a select list of lists if a NEW lead_id #####
 		$stmt="SELECT list_id,campaign_id,list_name from vicidial_lists $whereLOGallowed_campaignsSQL order by list_id limit 5000;";
-		if ($DB) {echo "$stmt\n";}
-		$rslt=mysql_to_mysqli($stmt, $link);
+		if ($DB) {sd_debug_log($stmt);}
+		$rslt=mysqli_query($link, $stmt);
 		$lists_to_print = mysqli_num_rows($rslt);
 
 		$Lc=0;
@@ -2137,6 +2092,8 @@ else
 	          echo "<tr style=\"background-color:#FFAA00\";><td align=right>$label_BlockStatus: </td><td align=left>".$BlockStr."</td></tr>\n";
 		    }
 		}
+		echo "<tr style=\"background-color:#FFAA00\";><td align=right>$label_CustStatus: </td><td align=left>".$CustStr ."</td></tr>\n";
+		echo "<tr style=\"background-color:#FFAA00\";><td align=right>$label_Selection: </td><td align=left>".FillSelection($selection, $link) ."</td></tr>\n";
 		echo "<tr><td align=right>$label_title: </td><td align=left><input type=text name=title size=4 maxlength=$MAXtitle value=\"$title\"> &nbsp; \n";
 		echo "$label_first_name: <input type=text name=first_name size=15 maxlength=$MAXfirst_name value=\"".htmlparse($first_name)."\"> </td></tr>\n";
 		echo "<tr><td align=right>$label_middle_initial:  </td><td align=left><input type=text name=middle_initial size=4 maxlength=$MAXmiddle_initial value=\"".htmlparse($middle_initial)."\"> &nbsp; \n";
@@ -2181,7 +2138,7 @@ else
 	if ($lead_id != 'NEW')
 		{
 		$stmt="SELECT user_id, timestamp, list_id, campaign_id, comment from vicidial_comments where lead_id='$lead_id' order by timestamp;";
-		$rslt=mysql_to_mysqli($stmt, $link);
+		$rslt=mysqli_query($link, $stmt);
 		$row_count = mysqli_num_rows($rslt);
 		$audit_comments=false;
 		$o=0;
@@ -2203,7 +2160,7 @@ else
 			{
 			$Afull_name='';
 			$stmt="SELECT full_name from vicidial_users where user='$Auser[$o]';";
-			$rslt=mysql_to_mysqli($stmt, $link);
+			$rslt=mysqli_query($link, $stmt);
 			$FNrow_count = mysqli_num_rows($rslt);
 			if ($FNrow_count > 0)
 				{
@@ -2224,7 +2181,7 @@ else
 		### find out if status(dispo) is a scheduled callback status
 		$scheduled_callback='';
 		$stmt="SELECT scheduled_callback from vicidial_statuses where status='$dispo';";
-		$rslt=mysql_to_mysqli($stmt, $link);
+		$rslt=mysqli_query($link, $stmt);
 		$scb_count_to_print = mysqli_num_rows($rslt);
 		if ($scb_count_to_print > 0)
 			{
@@ -2232,7 +2189,7 @@ else
 			if (strlen($row[0])>0)	{$scheduled_callback =	$row[0];}
 			}
 		$stmt="SELECT scheduled_callback from vicidial_campaign_statuses where status='$dispo';";
-		$rslt=mysql_to_mysqli($stmt, $link);
+		$rslt=mysqli_query($link, $stmt);
 		$scb_count_to_print = mysqli_num_rows($rslt);
 		if ($scb_count_to_print > 0)
 			{
@@ -2242,8 +2199,8 @@ else
 
 		$list_campaign='';
 		$stmt="SELECT campaign_id from vicidial_lists where list_id='$list_id'";
-		$rslt=mysql_to_mysqli($stmt, $link);
-		if ($DB) {echo "$stmt\n";}
+		$rslt=mysqli_query($link, $stmt);
+		if ($DB) {sd_debug_log($stmt);}
 		$Cstatuses_to_print = mysqli_num_rows($rslt);
 		if ($Cstatuses_to_print > 0)
 			{
@@ -2252,7 +2209,7 @@ else
 			}
 
 		$stmt="SELECT status,status_name,selectable,human_answered,category,sale,dnc,customer_contact,not_interested,unworkable from vicidial_statuses $selectableSQL order by status";
-		$rslt=mysql_to_mysqli($stmt, $link);
+		$rslt=mysqli_query($link, $stmt);
 		$statuses_to_print = mysqli_num_rows($rslt);
 		$statuses_list='';
 
@@ -2269,7 +2226,7 @@ else
 			}
 
 		$stmt="SELECT status,status_name,selectable,campaign_id,human_answered,category,sale,dnc,customer_contact,not_interested,unworkable from vicidial_campaign_statuses where campaign_id='$list_campaign' $selectableSQLand order by status";
-		$rslt=mysql_to_mysqli($stmt, $link);
+		$rslt=mysqli_query($link, $stmt);
 		$CAMPstatuses_to_print = mysqli_num_rows($rslt);
 
 		$o=0;
@@ -2321,8 +2278,8 @@ else
 			{
 			### find any vicidial_callback records for this lead
 			$cb_stmt="SELECT callback_id,lead_id,list_id,campaign_id,status,entry_time,callback_time,modify_date,user,recipient,comments,user_group,lead_status from vicidial_callbacks where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' and status IN('ACTIVE','LIVE') order by callback_id desc limit 1000;";
-			if ($DB) {echo "|$stmt|\n";}
-			$cb_rslt=mysql_to_mysqli($cb_stmt, $link);
+			if ($DB) {sd_debug_log($stmt);}
+			$cb_rslt=mysqli_query($link, $cb_stmt);
 			$CB_to_print = mysqli_num_rows($cb_rslt);
 
 			if ($CB_to_print>0)
@@ -2349,7 +2306,7 @@ else
 					$appointment_min = $appointment_timeARRAY[1];
 
 					$stmt="SELECT status,status_name from vicidial_statuses where scheduled_callback='Y' $selectableSQLand and status NOT IN('CBHOLD') order by status";
-					$rslt=mysql_to_mysqli($stmt, $link);
+					$rslt=mysqli_query($link, $stmt);
 					$statuses_to_print = mysqli_num_rows($rslt);
 					$statuses_list='';
 
@@ -2366,7 +2323,7 @@ else
 						}
 
 					$stmt="SELECT status,status_name from vicidial_campaign_statuses where scheduled_callback='Y' $selectableSQLand and status NOT IN('CBHOLD') and campaign_id='$list_campaign' order by status";
-					$rslt=mysql_to_mysqli($stmt, $link);
+					$rslt=mysqli_query($link, $stmt);
 					$CAMPstatuses_to_print = mysqli_num_rows($rslt);
 
 					$o=0;
@@ -2452,8 +2409,8 @@ else
 			
 			### find any vicidial_callback records for this lead
 			$cb_stmt="SELECT entry_time,callback_time,user,recipient,lead_status,status,list_id,campaign_id,comments,user_group,lead_status from vicidial_callbacks where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' and status NOT IN('ACTIVE','LIVE') order by callback_id desc limit 1000;";
-			if ($DB) {echo "|$stmt|\n";}
-			$cb_rslt=mysql_to_mysqli($cb_stmt, $link);
+			if ($DB) {sd_debug_log($stmt);}
+			$cb_rslt=mysqli_query($link, $cb_stmt);
 			$CB_to_print = mysqli_num_rows($cb_rslt);
 
 			$cb=0;
@@ -2486,8 +2443,8 @@ else
 				{
 				### find any vicidial_callbacks_archive records for this lead
 				$cb_stmt="SELECT entry_time,callback_time,user,recipient,lead_status,status,list_id,campaign_id,comments,user_group,lead_status from vicidial_callbacks_archive where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' and status NOT IN('ACTIVE','LIVE') order by callback_id desc limit 1000;";
-				if ($DB) {echo "|$stmt|\n";}
-				$cb_rslt=mysql_to_mysqli($cb_stmt, $link);
+				if ($DB) {sd_debug_log($stmt);}
+				$cb_rslt=mysqli_query($link, $cb_stmt);
 				$CBA_to_print = mysqli_num_rows($cb_rslt);
 
 				$cba=0;
@@ -2538,8 +2495,8 @@ else
 
 			### find any vicidial_callback records for this lead
 			$cb_stmt="SELECT entry_time,callback_time,user,recipient,lead_status,status,list_id,campaign_id,comments,user_group,lead_status from vicidial_callbacks where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' order by callback_id desc limit 1000;";
-			if ($DB) {echo "|$stmt|\n";}
-			$cb_rslt=mysql_to_mysqli($cb_stmt, $link);
+			if ($DB) {sd_debug_log($stmt);}
+			$cb_rslt=mysqli_query($link, $cb_stmt);
 			$CB_to_print = mysqli_num_rows($cb_rslt);
 
 			$cb=0;
@@ -2572,8 +2529,8 @@ else
 				{
 				### find any vicidial_callbacks_archive records for this lead
 				$cb_stmt="SELECT entry_time,callback_time,user,recipient,lead_status,status,list_id,campaign_id,comments,user_group,lead_status from vicidial_callbacks_archive where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' order by callback_id desc limit 1000;";
-				if ($DB) {echo "|$stmt|\n";}
-				$cb_rslt=mysql_to_mysqli($cb_stmt, $link);
+				if ($DB) {sd_debug_log($stmt);}
+				$cb_rslt=mysqli_query($link, $cb_stmt);
 				$CBA_to_print = mysqli_num_rows($cb_rslt);
 
 				$cba=0;
@@ -2638,14 +2595,14 @@ else
 			if (strlen($entry_list_id) > 2)
 				{$CLlist_id = $entry_list_id;}
 			$stmt="SHOW TABLES LIKE \"custom_$CLlist_id\";";
-			if ($DB>0) {echo "$stmt";}
-			$rslt=mysql_to_mysqli($stmt, $link);
+			if ($DB>0) {sd_debug_log($stmt);}
+			$rslt=mysqli_query($link, $stmt);
 			$tablecount_to_print = mysqli_num_rows($rslt);
 			if ($tablecount_to_print > 0)
 				{
 				$stmt="SELECT count(*) from custom_$CLlist_id where lead_id='$lead_id';";
-				if ($DB>0) {echo "$stmt";}
-				$rslt=mysql_to_mysqli($stmt, $link);
+				if ($DB>0) {sd_debug_log($stmt);}
+				$rslt=mysqli_query($link, $stmt);
 				$fieldscount_to_print = mysqli_num_rows($rslt);
 				if ($fieldscount_to_print > 0)
 					{
@@ -2709,9 +2666,9 @@ else
 		echo "<tr><td><font size=1># </td><td align=left><font size=2> "._QXZ("PARK TIME")."</td><td><font size=2>"._QXZ("CHANNEL GROUP")." </td><td align=left><font size=2>"._QXZ("TSR")." </td><td align=left><font size=2> &nbsp; "._QXZ("STATUS")."</td><td align=left><font size=2> "._QXZ("GRAB TIME")."</td><td align=left><font size=2> "._QXZ("HANGUP TIME")."</td><td align=left><font size=2> "._QXZ("PARK SEC")."</td><td align=left><font size=2> "._QXZ("TALK SEC")."</td><td align=left><font size=2> "._QXZ("EXTENSION")."</td></tr>\n";
 
 		$stmt="SELECT * from park_log where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' order by parked_time, grab_time, hangup_time desc limit 500;";
-		$rslt=mysql_to_mysqli($stmt, $link);
+		$rslt=mysqli_query($link, $stmt);
 		$logs_to_print = mysqli_num_rows($rslt);
-		if ($DB) {echo "$logs_to_print|$stmt|\n";}
+		if ($DB) {sd_debug_log("$logs_to_print|$stmt|");}
 
 		$u=0;
 		while ($logs_to_print > $u)
@@ -2745,9 +2702,9 @@ else
 		echo "<tr><td><font size=1># </td><td align=left><font size=2> "._QXZ("CAMPAIGN")."</td><td><font size=2>"._QXZ("DATE/TIME")." </td><td align=left><font size=2>"._QXZ("CALL MENU")." </td><td align=left><font size=2> &nbsp; "._QXZ("ACTION")."</td></tr>\n";
 
 		$stmt="SELECT campaign_id,event_date,menu_id,menu_action from vicidial_outbound_ivr_log where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' order by uniqueid,event_date,menu_action desc limit 500;";
-		$rslt=mysql_to_mysqli($stmt, $link);
+		$rslt=mysqli_query($link, $stmt);
 		$logs_to_print = mysqli_num_rows($rslt);
-		if ($DB) {echo "$logs_to_print|$stmt|\n";}
+		if ($DB) {sd_debug_log("$logs_to_print|$stmt|");}
 
 		$u=0;
 		while ($logs_to_print > $u)
@@ -2773,9 +2730,9 @@ else
 
 	##### BEGIN switch lead log entries #####
 		$stmt="SELECT * from vicidial_agent_function_log where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' and function='switch_lead' order by event_time desc limit 500;";
-		$rslt=mysql_to_mysqli($stmt, $link);
+		$rslt=mysqli_query($link, $stmt);
 		$logs_to_print = mysqli_num_rows($rslt);
-		if ($DB) {echo "$logs_to_print|$stmt|\n";}
+		if ($DB) {sd_debug_log("$logs_to_print|$stmt|");}
 
 		if ($logs_to_print > 0)
 			{
@@ -2810,9 +2767,9 @@ else
 			}
 
 		$stmt="SELECT * from vicidial_agent_function_log where stage='" . mysqli_real_escape_string($link, $lead_id) . "' and function='switch_lead' order by event_time desc limit 500;";
-		$rslt=mysql_to_mysqli($stmt, $link);
+		$rslt=mysqli_query($link, $stmt);
 		$logs_to_print = mysqli_num_rows($rslt);
-		if ($DB) {echo "$logs_to_print|$stmt|\n";}
+		if ($DB) {sd_debug_log("$logs_to_print|$stmt|");}
 
 		if ($logs_to_print > 0)
 			{
@@ -2850,9 +2807,9 @@ else
 
 	##### BEGIN switch list(for custom fields) log entries #####
 		$stmt="SELECT * from vicidial_agent_function_log where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' and function='switch_list' order by event_time desc limit 500;";
-		$rslt=mysql_to_mysqli($stmt, $link);
+		$rslt=mysqli_query($link, $stmt);
 		$logs_to_print = mysqli_num_rows($rslt);
-		if ($DB) {echo "$logs_to_print|$stmt|\n";}
+		if ($DB) {sd_debug_log("$logs_to_print|$stmt|");}
 
 		if ($logs_to_print > 0)
 			{
@@ -2895,7 +2852,7 @@ else
 			echo "<tr><td><font size=1># </td><td><font size=2>"._QXZ("DATE/TIME")." </td><td align=right><font size=2> "._QXZ("USER")."</td><td align=right><font size=2> "._QXZ("CAMPAIGN")."</td><td align=left><font size=2>"._QXZ("EMAIL TO")."</td><td align=left><font size=2> "._QXZ("MESSAGE")."</td><td align=right><font size=2> "._QXZ("ATTACHMENTS")."</td></tr>\n";
 
 			$stmt="SELECT * from vicidial_email_log where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' order by email_date desc limit 500;";
-			$rslt=mysql_to_mysqli($stmt, $link);
+			$rslt=mysqli_query($link, $stmt);
 			$logs_to_print = mysqli_num_rows($rslt);
 
 			$u=0;
@@ -2942,9 +2899,9 @@ else
 		}
 
 		$stmt="SELECT recording_id,channel,server_ip,extension,start_time,start_epoch,end_time,end_epoch,length_in_sec,length_in_min,filename,location,lead_id,user,vicidial_id from recording_log where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' $sqlUser order by recording_id desc limit 500;";
-		$rslt=mysql_to_mysqli($stmt, $link);
+		$rslt=mysqli_query($link, $stmt);
 		$logs_to_print = mysqli_num_rows($rslt);
-		if ($DB) {echo "$logs_to_print|$stmt|\n";}
+		if ($DB) {sd_debug_log("$logs_to_print|$stmt|");}
 
 		$u=0;   $rec_ids="''";
 		while ($logs_to_print > $u)
@@ -2966,7 +2923,7 @@ else
 				{
 				$mute_events=0;
 				$stmt="SELECT count(*) from vicidial_agent_function_log where user='$row[13]' and event_time >= '$row[4]'  and event_time <= '$row[6]' and function='mute_rec' and lead_id='$row[12]' and stage='on';";
-				$rsltx=mysql_to_mysqli($stmt, $link);
+				$rsltx=mysqli_query($link, $stmt);
 				$flogs_to_print = mysqli_num_rows($rsltx);
 				if ($flogs_to_print > 0)
 					{
@@ -3017,9 +2974,9 @@ else
 
 		if ($archive_log == 'Yes') {
 		$stmt="SELECT recording_id,channel,server_ip,extension,start_time,start_epoch,end_time,end_epoch,length_in_sec,length_in_min,filename,location,lead_id,user,vicidial_id from recording_log_archive where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' and recording_id NOT IN($rec_ids) $sqlUser order by recording_id desc limit 500;";
-		$rslt=mysql_to_mysqli($stmt, $link);
+		$rslt=mysqli_query($link, $stmt);
 		$logs_to_print = mysqli_num_rows($rslt);
-		if ($DB) {echo "$logs_to_print|$stmt|\n";}
+		if ($DB) {sd_debug_log("$logs_to_print|$stmt|");}
 
 		$v=0;
 		$u=0;
@@ -3040,13 +2997,13 @@ else
 				$URLserver_ip = preg_replace('/https:\/\//i', '',$URLserver_ip);
 				$URLserver_ip = preg_replace('/\/.*/i', '',$URLserver_ip);
 				$stmt="SELECT count(*) from servers where server_ip='$URLserver_ip';";
-				$rsltx=mysql_to_mysqli($stmt, $link);
+				$rsltx=mysqli_query($link, $stmt);
 				$rowx=mysqli_fetch_row($rsltx);
 
 				if ($rowx[0] > 0)
 					{
 					$stmt="SELECT recording_web_link,alt_server_ip,external_server_ip from servers where server_ip='$URLserver_ip';";
-					$rsltx=mysql_to_mysqli($stmt, $link);
+					$rsltx=mysqli_query($link, $stmt);
 					$rowx=mysqli_fetch_row($rsltx);
 
 					if (preg_match("/ALT_IP/i",$rowx[0]))
@@ -3064,7 +3021,7 @@ else
 				{
 				$mute_events=0;
 				$stmt="SELECT count(*) from vicidial_agent_function_log where user='$row[13]' and event_time >= '$row[4]'  and event_time <= '$row[6]' and function='mute_rec' and lead_id='$row[12]' and stage='on';";
-				$rsltx=mysql_to_mysqli($stmt, $link);
+				$rsltx=mysqli_query($link, $stmt);
 				$flogs_to_print = mysqli_num_rows($rsltx);
 				if ($flogs_to_print > 0)
 					{
@@ -3134,9 +3091,9 @@ else
 		echo "<tr><td><font size=1># </td><td align=left><font size=2> "._QXZ("LEAD")."</td><td><font size=2>"._QXZ("DATE/TIME")." </td><td align=left><font size=2>"._QXZ("RECORDING ID")."</td><td align=left><font size=2>"._QXZ("USER")."</td><td align=left><font size=2>"._QXZ("RESULT")." </td><td align=left><font size=2>"._QXZ("IP")." </td></tr>\n";
 
 		$stmt="SELECT recording_id,lead_id,user,access_datetime,access_result,ip from vicidial_recording_access_log where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' order by recording_access_log_id desc limit 500;";
-		$rslt=mysql_to_mysqli($stmt, $link);
+		$rslt=mysqli_query($link, $stmt);
 		$logs_to_print = mysqli_num_rows($rslt);
-		if ($DB) {echo "$logs_to_print|$stmt|\n";}
+		if ($DB) {sd_debug_log("$logs_to_print|$stmt|");}
 
 		$u=0;
 		while ($logs_to_print > $u)
@@ -3163,8 +3120,8 @@ else
 		}
 
 		$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and user_level >= 9 and modify_leads='1';";
-		if ($DB) {echo "|$stmt|\n";}
-		$rslt=mysql_to_mysqli($stmt, $link);
+		if ($DB) {sd_debug_log($stmt);}
+		$rslt=mysqli_query($link, $stmt);
 		$row=mysqli_fetch_row($rslt);
 		$admin_display=$row[0];
 		if ($admin_display > 0)
@@ -3174,8 +3131,8 @@ else
 		//Display link to QC if user has QC permissions
 		//Get QC User permissions
 		$stmt="SELECT qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit from vicidial_users where user='$PHP_AUTH_USER' and user_level > 1 and active='Y' and qc_enabled='1';";
-		if ($DB) {echo "|$stmt|\n";}
-		$rslt=mysql_to_mysqli($stmt, $link);
+		if ($DB) {sd_debug_log($stmt);}
+		$rslt=mysqli_query($link, $stmt);
 		$row=mysqli_fetch_row($rslt);
 		$qc_auth=$row[0];
 		//Not "qc_" as it will interfere with ADD=4A storage of modified user.
@@ -3235,10 +3192,10 @@ $ENDtime = date("U");
 
 $RUNtime = ($ENDtime - $STARTtime);
 
-echo "\n\n\n<br><br><br>\n\n";
+echo "\n\n\n<br><br>\n\n";
 
 
-echo "<font size=0>\n\n\n<br><br><br>\n"._QXZ("script runtime").": $RUNtime "._QXZ("seconds")."</font>";
+echo "<font size=0>\n\n\n\n"._("script runtime").": $RUNtime "._("seconds")."<br>".("Version").": ".$admin_modify_lead_version."|".$admin_modify_lead_build."</font>";
 echo "</span>\n";
 
 
@@ -3249,12 +3206,12 @@ function GetRealRecordingsURL($location, $link) {
     $URLserver_ip = preg_replace('/https:\/\//i', '',$URLserver_ip);
     $URLserver_ip = preg_replace('/\/.*/i', '',$URLserver_ip);
     $stmt="SELECT count(*) from servers where server_ip='$URLserver_ip';";
-    $rsltx=mysql_to_mysqli($stmt, $link);
+    $rsltx=mysqli_query($link, $stmt);
     $rowx=mysqli_fetch_row($rsltx);
 
     if ($rowx[0] > 0) {
         $stmt="SELECT recording_web_link,alt_server_ip,external_server_ip from servers where server_ip='$URLserver_ip';";
-        $rsltx=mysql_to_mysqli($stmt, $link);
+        $rsltx=mysqli_query($link, $stmt);
         $rowx=mysqli_fetch_row($rsltx);
 
         if (preg_match("/ALT_IP/i",$rowx[0])) {
@@ -3266,6 +3223,69 @@ function GetRealRecordingsURL($location, $link) {
     }
     return $location;
 }
+
+function FillSelection($sel, $link) {
+
+    $FSel = "";
+    $FSel .= "<select name=\"selection\" size=\"1\">" . PHP_EOL;
+    if($sel == "") {
+        $FSel .= "<option SELECTED value=\"\">"."</option>" . PHP_EOL;
+    } else {
+        $FSel .= "<option value=\"\">"."</option>" . PHP_EOL;
+    }
+    $stmt="SELECT * FROM `snctdialer_lead_selection`;";
+    $reslt = mysqli_query($link, $stmt);
+    while ($row = mysqli_fetch_array($reslt, MYSQLI_BOTH)) {
+        if($sel == $row["selection"]) {
+            $FSel .= "<option SELECTED value=\"".$row["selection"]."\">".$row["selection"]."</option>" . PHP_EOL;
+        } else {
+            $FSel .= "<option value=\"".$row["selection"]."\">".$row["selection"]."</option>" . PHP_EOL;
+        }
+    }
+    $FSel .= "</select>". PHP_EOL;
+    
+    return $FSel;
+}
+
+function FillBlockStatus($BlkSts, $DisStat) {
+    
+    $ArrBlock = array("free" => _("free to use"), "temporary" => _("temporary blocked"), "blocked" => _("use prohibited"), "full" => _("full blocked"));
+    
+    $BlockStr = "<select name=\"block_status\" size=\"1\" $DisStat>";
+    
+    foreach ($ArrBlock as $BlockTest => $v) {
+        if($BlockTest == $BlkSts) {
+            $BlockStr .= "<option SELECTED value=\"".$BlockTest."\">".$v. "</option>\n";
+        } else {
+            $BlockStr .= "<option value=\"".$BlockTest."\">".$v. "</option>\n";
+        }
+    }
+    $BlockStr .= "</select>";
+    
+    return $BlockStr;
+
+}
+
+function FillCustStatus($CustSts) {
+    
+    $ArrCustSts = array("unknown" => _("unknown"), "privat" => _("privat"), "business" => _("business"));
+    
+    $RetStr = "<select name=\"customer_status\" size=\"1\">";
+    
+    foreach ($ArrCustSts as $CustTest => $v) {
+        if($CustTest == $CustSts) {
+            $RetStr .= "<option SELECTED value=\"".$CustTest."\">".$v. "</option>\n";
+        } else {
+            $RetStr .= "<option value=\"".$CustTest."\">".$v. "</option>\n";
+        }
+    }
+    $RetStr .= "</select>";
+    
+    return $RetStr;
+    
+}
+
+
 
 ?>
 
