@@ -2814,8 +2814,7 @@ if ($parked_to_print > 0)
 				}
 			}
 
-		if (preg_match("/
-/i",$row[0]))
+		if (preg_match("/LIVE/i",$row[0]))
 			{
 			$out_live++;
 

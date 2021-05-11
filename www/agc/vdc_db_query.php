@@ -5,8 +5,8 @@
 #
 # SNCT-Dialer™ interface between vicidial.php and the database
 #
-# Copyright (©) 2019-2020 SNCT GmbH <info@snct-gmbh.de>
-#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
+# Copyright (©) 2019-2021 SNCT GmbH <info@snct-gmbh.de>
+#               2017-2021 Jörg Frings-Fürst <open_source@jff.email>
 #               2020      Danny Funkat
 #
 # LICENSE: AGPLv3
@@ -34,13 +34,14 @@
 #
 # Version  / Build
 #
-$vdc_db_query_version = '3.0.1-4';
-$vdc_db_query_build = '20201214-1';
+$vdc_db_query_version = '3.1.1-1';
+$vdc_db_query_build = '20210415-1';
 #
 ###############################################################################
 #
 # Changelog
 #
+# 2021-04-15 jff    Add housenr1
 # 2020-12-14 jff	Add list_id, owner into SEARCHRESULTSview
 # 2020-10-27 dft	Add Pause code into AGENTSview
 # 2020-10-22 jff	Allow dial if OnlyInbounds is set
@@ -843,6 +844,11 @@ if (isset($_GET["end_date"]))			{$end_date=$_GET["end_date"];}
 	elseif (isset($_POST["end_date"]))	{$end_date=$_POST["end_date"];}
 if (isset($_GET["customer_sec"]))			{$customer_sec=$_GET["customer_sec"];}
 	elseif (isset($_POST["customer_sec"]))	{$customer_sec=$_POST["customer_sec"];}
+
+	
+if (isset($_GET["housenr1"]))					{$housenr1=$_GET["housenr1"];}
+	elseif (isset($_POST["housenr1"]))			{$housenr1=$_POST["housenr1"];}
+
 
 require_once("../tools/system_wide_settings.php");
 require_once("../tools/format_phone.php");
@@ -3932,7 +3938,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 				}
 
 			##### grab the data from vicidial_list for the lead_id
-			$stmt="SELECT lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id FROM vicidial_list where lead_id='$lead_id' LIMIT 1;";
+			$stmt="SELECT lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id,housenr1 FROM vicidial_list where lead_id='$lead_id' LIMIT 1;";
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00026',$user,$server_ip,$session_name,$one_mysql_log);}
 			if ($DB) {echo "$stmt\n";}
@@ -3976,6 +3982,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 				$rank			= trim("$row[32]");
 				$owner			= trim("$row[33]");
 				$entry_list_id	= trim("$row[34]");
+				$housenr1       = trim("$row[35]");
 					if ($entry_list_id < 100) {$entry_list_id = $list_id;}
 				}
 			if ($qc_features_active > 0)
@@ -5400,6 +5407,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 			$LeaD_InfO .=	$VDCL_campaign_script_two . "\n";
 			$LeaD_InfO .=	$VDCL_ingroup_script_color_two . "\n";
 			$LeaD_InfO .=   FormatPhoneNr($phone_code, $dialed_number) . "\n";
+			$LeaD_InfO .=	$housenr1 . "\n";
 
 			echo $LeaD_InfO;
 			}
@@ -11306,7 +11314,7 @@ if ($ACTION == 'LeaDSearcHSelecTUpdatE')
 				if ($mel > 0) {$errno = mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00710',$user,$server_ip,$session_name,$one_mysql_log);}
 
 			##### grab the data from vicidial_list for the lead_id
-			$stmt="SELECT lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id FROM vicidial_list where lead_id='$lead_id' LIMIT 1;";
+			$stmt="SELECT lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id,housenr1 FROM vicidial_list where lead_id='$lead_id' LIMIT 1;";
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00455',$user,$server_ip,$session_name,$one_mysql_log);}
 			if ($DB) {echo "$stmt\n";}
@@ -11347,6 +11355,7 @@ if ($ACTION == 'LeaDSearcHSelecTUpdatE')
 				$rank			= trim("$row[32]");
 				$owner			= trim("$row[33]");
 				$entry_list_id	= trim("$row[34]");
+				$housenr1	    = trim("$row[35]");
 				if ($entry_list_id < 100) {$entry_list_id = $list_id;}
 				}
 			if ($qc_features_active > 0)
@@ -11928,6 +11937,7 @@ if ($ACTION == 'LeaDSearcHSelecTUpdatE')
 			$LeaD_InfO .=	$VDCL_ingroup_script_two . "\n";
 			$LeaD_InfO .=	$VDCL_ingroup_script_color_two . "\n";
 			$LeaD_InfO .=	FormatPhoneNr($phone_code, $dialed_number) . "\n";
+			$LeaD_InfO .=	$housenr1 . "\n";
 
 			echo $LeaD_InfO;
 
@@ -14890,7 +14900,7 @@ if ($ACTION == 'updateLEAD')
 			if ($DO_NOT_UPDATEphone < 1)
 				{$phoneSQL = ",phone_number='$phone_number'";}
 
-			$stmt="UPDATE vicidial_list set vendor_lead_code='" . mysqli_real_escape_string($link, $vendor_lead_code) . "', title='" . mysqli_real_escape_string($link, $title) . "', first_name='" . mysqli_real_escape_string($link, $first_name) . "', middle_initial='" . mysqli_real_escape_string($link, $middle_initial) . "', last_name='" . mysqli_real_escape_string($link, $last_name) . "', address1='" . mysqli_real_escape_string($link, $address1) . "', address2='" . mysqli_real_escape_string($link, $address2) . "', address3='" . mysqli_real_escape_string($link, $address3) . "', city='" . mysqli_real_escape_string($link, $city) . "', state='" . mysqli_real_escape_string($link, $state) . "', province='" . mysqli_real_escape_string($link, $province) . "', postal_code='" . mysqli_real_escape_string($link, $postal_code) . "', country_code='" . mysqli_real_escape_string($link, $country_code) . "', gender='" . mysqli_real_escape_string($link, $gender) . "', date_of_birth='" . mysqli_real_escape_string($link, $date_of_birth) . "', alt_phone='" . mysqli_real_escape_string($link, $alt_phone) . "', email='" . mysqli_real_escape_string($link, $email) . "', security_phrase='" . mysqli_real_escape_string($link, $security_phrase) . "', comments='" . mysqli_real_escape_string($link, $comments) . "' $phoneSQL where lead_id='$lead_id';";
+			$stmt="UPDATE vicidial_list set vendor_lead_code='" . mysqli_real_escape_string($link, $vendor_lead_code) . "', title='" . mysqli_real_escape_string($link, $title) . "', first_name='" . mysqli_real_escape_string($link, $first_name) . "', middle_initial='" . mysqli_real_escape_string($link, $middle_initial) . "', last_name='" . mysqli_real_escape_string($link, $last_name) . "', address1='" . mysqli_real_escape_string($link, $address1) . "', address2='" . mysqli_real_escape_string($link, $address2) . "', address3='" . mysqli_real_escape_string($link, $address3) . "', city='" . mysqli_real_escape_string($link, $city) . "', state='" . mysqli_real_escape_string($link, $state) . "', province='" . mysqli_real_escape_string($link, $province) . "', postal_code='" . mysqli_real_escape_string($link, $postal_code) . "', country_code='" . mysqli_real_escape_string($link, $country_code) . "', gender='" . mysqli_real_escape_string($link, $gender) . "', date_of_birth='" . mysqli_real_escape_string($link, $date_of_birth) . "', alt_phone='" . mysqli_real_escape_string($link, $alt_phone) . "', email='" . mysqli_real_escape_string($link, $email) . "', security_phrase='" . mysqli_real_escape_string($link, $security_phrase) . "', comments='" . mysqli_real_escape_string($link, $comments) . "', housenr1='" . mysqli_real_escape_string($link, $housenr1) . "' $phoneSQL where lead_id='$lead_id';";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00163',$user,$server_ip,$session_name,$one_mysql_log);}

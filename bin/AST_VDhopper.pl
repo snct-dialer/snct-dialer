@@ -1,13 +1,14 @@
 #!/usr/bin/perl
 #
-# AST_VDhopper.pl version 2.14
+###############################################################################
 #
-# DESCRIPTION:
-# Updates the VICIDIAL leads hopper for the streamlined approach of allocating
+# Modul AST_VDhoppler.pl
+#
+# Updates the SNCTDIALER leads hopper for the streamlined approach of allocating
 # leads to dialers. Also allows for larger lists and faster dialing.
 #
 # SUMMARY:
-# For VICIDIAL outbound dialing, this program must be in the crontab on only one
+# For SNCTDIALER outbound dialing, this program must be in the crontab on only one
 # server, running every minute during operating hours. For manual dialing
 # campaigns, there is a campaign option for no-hopper-dialing that can operate
 # without this script running, but the list size will be limited under that.
@@ -19,97 +20,45 @@
 #  - P = Non-Agent API hopper load
 #  - Q = No-hopper queue insert
 #  - R = Recycled leads
-#  - S = Standard hopper load
+#
+#
+# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
+#               2019-2021 SNCT GmbH <info@snct-gmbh.de>
+#               2017-2021 Jörg Frings-Fürst <open_source@jff.email>
 #
 # LICENSE: AGPLv3
 #
-# Copyright (C) 2019      Matt Florell <vicidial@gmail.com>
-# Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
-#               2019-2020 SNCT Gmbh <info@snct-gmbh.de>
-#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
+###############################################################################
 #
-# Other changes
+# based on VICIdial®
+# (© 2019  Matt Florell <vicidial@gmail.com>)
 #
-# 200803-1345 jff	add utf8 enconding for conf files
+###############################################################################
 #
-# CHANGELOG
-# 50810-1613 - Added database server variable definitions lookup
-# 60215-1106 - Added Scheduled Callback release functionality
-# 60228-1623 - Change Callback activation to set the called_since_last_reset=N
-# 60228-1735 - Added hopper gmt validation to remove gmt outside of time range
-# 60320-0932 - Added inactive lead list hopper deletion (Thanks Vic Jolin)
-# 60322-1030 - Added super debug output
-# 60418-0947 - Added lead filter per campaign
-# 60509-1416 - Rewrite of local_call_time functions
-# 60511-1150 - Added inserts into vicidial_campaign_stats table
-# 60609-1451 - Added ability to filter by DNC list vicidial_dnc
-# 60614-1159 - Added campaign lead recycling ability
-# 60715-2251 - Changed to use /etc/astguiclient.conf for configs
-# 60801-1634 - Fixed Callback activation bug 000008
-# 60814-1720 - Added option for no logging to file
-# 60822-1527 - Added campaign_stats and logging options for adaptive dialing
-# 60925-1330 - Fixed recycling leads issues
-# 61110-1513 - Changed Xth NEW to fill to hopper_level with standard if not enough NEW
-# 70219-1247 - Changed to use dial_statuses field instead of dial_status_x fields
-# 71029-1929 - Added 5th and 6th NEW to list order
-# 71030-2043 - Added hopper priority for callbacks
-# 80112-0221 - Added 2nd, 3rd,... NEW for LAST NAME/PHONE Sort
-# 80125-0821 - Added detail logging of each lead inserted
-# 80713-0028 - Changed Recycling methodology
-# 80909-1901 - Added support for campaign-specific DNC lists
-# 90430-0117 - Added last call time and random sorting options
-# 90430-1022 - Changed this script to allow for List Mix ability
-# 90601-2111 - Added allow_inactive_list_leads to allow for inactive lists while in List Mix mode
-# 90603-1157 - Fixed rare bug in list mix where statuses field do not end with -
-# 90608-1201 - Added Drop Lockout Time Campaign setting option
-# 90723-0842 - Added no hopper dial option to clear hopper leads
-# 90809-0347 - Quick fix for null list_id loading when no active campaign lists
-# 90904-1612 - Added timezone ordering
-# 90907-2132 - Fixed order issues
-# 91020-0054 - Fixed Auto-alt-dial DNC issues
-# 91026-1207 - Added AREACODE DNC option
-# 100409-1101 - Fix for rare dial-time duplicate hopper load issue
-# 100427-0429 - Fix for list mix no-status-selected issue
-# 100529-0843 - Changed dialable leads to calculate every run for active campaigns
-# 100706-2332 - Added ability to purge only one campaign's leads in the hopper
-# 101108-1451 - Added ability for the hopper level to be set automatically and remove excess leads from the hopper (MikeC)
-# 110103-1118 - Added lead_order_randomize option
-# 110212-2255 - Added scheduled callback custom statuses capability
-# 110214-2319 - Added lead_order_secondary option
-# 111006-1416 - Added call_count_limit option
-# 120109-1510 - Fixed list mix bug
-# 120210-1735 - Added vendor_lead_code duplication check per campaign option
-# 120402-2211 - Fixed call count limit bug
-# 121124-2052 - Added List Expiration Date and Other Campaign DNC options
-# 121205-1621 - Added parentheses around filter SQL when in SQL queries
-# 121223-1540 - Fix for issue #627 preventing issues when filter is deleted, DomeDan
-# 130219-1501 - Fixed issue with other campaign dnc
-# 130510-0904 - Added state call time holidays functionality
-# 131008-1518 - Changed campaign flag to allow multiple campaigns
-#               Changed and added several CLI flags, including -t to --test, added --version, --count-only
-#               Added code to restrict all functions if campaign flag is used
-# 140612-2124 - Fixed date issue with wrong variable #772
-# 150111-1546 - Added lists option: local call time and enabled whole-campaign outbound call time holidays, Issue #812
-# 150114-1204 - Optimization of gmt code, Issue #812
-# 150117-1415 - Added list local call time validation
-# 150312-1459 - Allow for single quotes in data fields without crashing
-# 150717-1050 - Added force index to some vicidial_list queries, set with $VLforce_index variable
-# 150728-1050 - Added option for secondary sorting by vendor_lead_code, Issue #833
-# 150908-1544 - Added debug output for vendor_lead_code duplicate rejections count
-# 170531-0837 - Fixed issue #1019
-# 180111-1559 - Added anyone_callback_inactive_lists option
-# 180301-1453 - Fix to allow for commented(#) lines in filters
-# 180419-1109 - Fix for list mix to use call count limit on initial count, issue #1094
-# 180924-1734 - Added callback_dnc campaign option
-# 190213-1207 - Added additional $VLforce_index flags, for high-volume dialing systems
-# 190524-1228 - Fix for lead filters with 'NONE' in the filter ID
-# 190703-1650 - Allow for single-quotes in state field
+# requested Module:
+# 
+# /etc/astguiclient.conf
+# 
+###############################################################################
+#
+# Version  / Build
+#
+$ast_vdhopper_version = '3.1.1-2';
+$ast_vdhopper_build = '20210330-2';
+#
+###############################################################################
+#
+# Changelog
+#
+# 2021-04-27 jff	add handling for field block_status
+# 					fix holiday handling 
+# 2020-08-03 jff	add utf8 enconding for conf files
 #
 
+
 # constants
-$build = '190703-1650';
 $DB=0;  # Debug flag, set to 0 for no debug messages. Can be overriden with CLI --debug flag
-$US='__';
+$US='__'; 
 $MT[0]='';
 #$vicidial_hopper='TEST_vicidial_hopper';	# for testing only
 $vicidial_hopper='vicidial_hopper';
@@ -214,7 +163,7 @@ if (length($ARGV[0])>1)
 		{
 		if ($args =~ /--version/i)
 			{
-			print "version: $build\n";
+			print "version: $ast_vdhopper_build|$ast_vdhopper_version\n";
 			exit;
 			}
 		if ($args =~ /--campaign=/i)
@@ -1057,6 +1006,40 @@ if ($hopper_dnc_count > 0)
 	}
 ##### END Auto-Alt-Dial DNC check and update or delete
 
+##### Begin check if block_status is't free
+
+if ($DB) {$event_string = "Start check block_status";   &event_logger;}
+$stmtA = "SELECT hopper_id,lead_id FROM $vicidial_hopper;";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+if ($sthArows > 0) {
+	$block_count = 0;
+	while ($sthArows > $block_count) {
+		@aryA = $sthA->fetchrow_array;
+		$HP_hopper_id = $aryA[0];
+		$HP_lead_id = $aryA[1];
+		$stmtB = "SELECT lead_id,block_status FROM `vicidial_list` WHERE `lead_id` = '$HP_lead_id';";
+		$sthB = $dbhA->prepare($stmtB) or die "preparing: ",$dbhA->errstr;
+		$sthB->execute or die "executing: $stmtB ", $dbhA->errstr;
+		$sthArowsB=$sthB->rows;
+		if ($sthArowsB > 0) {
+			@aryB = $sthB->fetchrow_array;
+			$VD_block = $aryB[1];
+			if($VD_block ne 'free') {
+				$stmtC = "DELETE FROM $vicidial_hopper where hopper_id='$HP_hopper_id';";
+				$affectedC_rows = $dbhA->do($stmtC);
+				$stmtD = "UPDATE `vicidial_list` SET `status` = 'BSHO' WHERE `lead_id` = '$HP_lead_id';";
+				$affectedD_rows = $dbhA->do($stmtD);
+				$event_string = "-- Remove block_status Lead: |$VD_block|$affectedC_rows|$affectedD_rows|$HP_lead_id|$HP_hopper_id";
+				&event_logger;
+			}
+		}
+		$block_count++;	
+	}
+}
+if ($DB) {$event_string = "Finish check block_status";   &event_logger;}
+##### Begin check if block_status is't free
 
 ##### BEGIN check for active campaigns that need the hopper run for them
 @campaign_id=@MT;
@@ -1399,22 +1382,24 @@ foreach(@campaign_id)
 				$holiday_id =				$aryC[0];
 				$holiday_date =				$aryC[1];
 				$holiday_name =				$aryC[2];
-				if ( ($Gct_default_start < $aryC[3]) && ($Gct_default_stop > 0) )		{$Gct_default_start = $aryC[3];}
-				if ( ($Gct_default_stop > $aryC[4]) && ($Gct_default_stop > 0) )		{$Gct_default_stop = $aryC[4];}
-				if ( ($Gct_sunday_start < $aryC[3]) && ($Gct_sunday_stop > 0) )			{$Gct_sunday_start = $aryC[3];}
-				if ( ($Gct_sunday_stop > $aryC[4]) && ($Gct_sunday_stop > 0) )			{$Gct_sunday_stop = $aryC[4];}
-				if ( ($Gct_monday_start < $aryC[3]) && ($Gct_monday_stop > 0) )			{$Gct_monday_start = $aryC[3];}
-				if ( ($Gct_monday_stop >	$aryC[4]) && ($Gct_monday_stop > 0) )		{$Gct_monday_stop =	$aryC[4];}
-				if ( ($Gct_tuesday_start < $aryC[3]) && ($Gct_tuesday_stop > 0) )		{$Gct_tuesday_start = $aryC[3];}
-				if ( ($Gct_tuesday_stop > $aryC[4]) && ($Gct_tuesday_stop > 0) )		{$Gct_tuesday_stop = $aryC[4];}
-				if ( ($Gct_wednesday_start < $aryC[3]) && ($Gct_wednesday_stop > 0) ) 	{$Gct_wednesday_start = $aryC[3];}
-				if ( ($Gct_wednesday_stop > $aryC[4]) && ($Gct_wednesday_stop > 0) )	{$Gct_wednesday_stop = $aryC[4];}
-				if ( ($Gct_thursday_start < $aryC[3]) && ($Gct_thursday_stop > 0) )		{$Gct_thursday_start = $aryC[3];}
-				if ( ($Gct_thursday_stop > $aryC[4]) && ($Gct_thursday_stop > 0) )		{$Gct_thursday_stop = $aryC[4];}
-				if ( ($Gct_friday_start < $aryC[3]) && ($Gct_friday_stop > 0) )			{$Gct_friday_start = $aryC[3];}
-				if ( ($Gct_friday_stop > $aryC[4]) && ($Gct_friday_stop > 0) )			{$Gct_friday_stop = $aryC[4];}
-				if ( ($Gct_saturday_start < $aryC[3]) && ($Gct_saturday_stop > 0) )		{$Gct_saturday_start = $aryC[3];}
-				if ( ($Gct_saturday_stop > $aryC[4]) && ($Gct_saturday_stop > 0) )		{$Gct_saturday_stop = $aryC[4];}
+
+				$Gct_default_start = $aryC[3];
+            	$Gct_default_stop = $aryC[4];
+        	    $Gct_sunday_start = $aryC[3];
+    	        $Gct_sunday_stop = $aryC[4];
+	            $Gct_monday_start = $aryC[3];
+        	    $Gct_monday_stop = $aryC[4];
+    	        $Gct_tuesday_start = $aryC[3];
+	            $Gct_tuesday_stop = $aryC[4];
+        	    $Gct_wednesday_start = $aryC[3];
+    	        $Gct_wednesday_stop = $aryC[4];
+	            $Gct_thursday_start = $aryC[3];
+        	    $Gct_thursday_stop = $aryC[4];
+    	        $Gct_friday_start = $aryC[3];
+	            $Gct_friday_stop = $aryC[4];
+            	$Gct_saturday_start = $aryC[3];
+            	$Gct_saturday_stop = $aryC[4];
+
 				if ($DB) {print "     CALL TIME HOLIDAY FOUND!   $local_call_time[$i]|$holiday_id|$holiday_date|$holiday_name|$Gct_default_start|$Gct_default_stop|\n";}
 				}
 			$sthC->finish();
@@ -2000,7 +1985,7 @@ foreach(@campaign_id)
 			if ($DB) {print "   Processing GMT for list $cur_list_id\n";}
 			# Set active list variable
 			$list_id_act = $aryY[1];
-			# Allow for inactive leads
+			# set Overright for temporary blocked leads
 			if ( ($list_order_mix[$i] !~ /DISABLED/) && ($allow_inactive_list_leads > 0) )
 				{$allow_inactive = "Y";}
 			# Pull the call times for the lists
@@ -2761,7 +2746,7 @@ foreach(@campaign_id)
 					if ($hopper_vlc_dup_check[$i] =~ /Y/)
 						{$vlc_dup_check_SQL = "and vendor_lead_code NOT IN($live_vlc$vlc_lists)";}
 
-					$stmtA = "SELECT lead_id,list_id,gmt_offset_now,phone_number,state,status,modify_date,user,vendor_lead_code FROM vicidial_list $VLforce_index where $recycle_SQL[$i] and ($list_id_sql[$i]) and lead_id NOT IN($lead_id_lists) $vlc_dup_check_SQL and ($all_gmtSQL[$i]) $lead_filter_sql[$i] $CCLsql[$i] $DLTsql[$i] $order_stmt limit $hopper_level[$i];";
+					$stmtA = "SELECT lead_id,list_id,gmt_offset_now,phone_number,state,status,modify_date,user,vendor_lead_code,block_status  FROM vicidial_list $VLforce_index where block_status='free' AND  $recycle_SQL[$i] and ($list_id_sql[$i]) and lead_id NOT IN($lead_id_lists) $vlc_dup_check_SQL and ($all_gmtSQL[$i]) $lead_filter_sql[$i] $CCLsql[$i] $DLTsql[$i] $order_stmt limit $hopper_level[$i];";
 					if ($DBX) {print "     |$stmtA|\n";}
 					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -2817,7 +2802,7 @@ foreach(@campaign_id)
 					if ($hopper_vlc_dup_check[$i] =~ /Y/)
 						{$vlc_dup_check_SQL = "and vendor_lead_code NOT IN($live_vlc$vlc_lists)";}
 
-					$stmtA = "SELECT lead_id,list_id,gmt_offset_now,phone_number,state,status,modify_date,user,vendor_lead_code FROM vicidial_list $VLforce_index where called_since_last_reset='N' and status IN('NEW') and ($list_id_sql[$i]) and lead_id NOT IN($lead_id_lists) $vlc_dup_check_SQL and ($all_gmtSQL[$i]) $lead_filter_sql[$i] $CCLsql[$i] $DLTsql[$i] $order_stmt limit $NEW_level;";
+					$stmtA = "SELECT lead_id,list_id,gmt_offset_now,phone_number,state,status,modify_date,user,vendor_lead_code,block_status FROM vicidial_list $VLforce_index where block_status='free' AND called_since_last_reset='N' and status IN('NEW') and ($list_id_sql[$i]) and lead_id NOT IN($lead_id_lists) $vlc_dup_check_SQL and ($all_gmtSQL[$i]) $lead_filter_sql[$i] $CCLsql[$i] $DLTsql[$i] $order_stmt limit $NEW_level;";
 					if ($DBX) {print "     |$stmtA|\n";}
 					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -2871,7 +2856,7 @@ foreach(@campaign_id)
 
 					if ($list_order_mix[$i] =~ /DISABLED/)
 						{
-						$stmtA = "SELECT lead_id,list_id,gmt_offset_now,phone_number,state,status,modify_date,user,vendor_lead_code FROM vicidial_list $VLforce_index where called_since_last_reset='N' and status IN($STATUSsql[$i]) and ($list_id_sql[$i]) and lead_id NOT IN($lead_id_lists) $vlc_dup_check_SQL and ($all_gmtSQL[$i]) $lead_filter_sql[$i] $CCLsql[$i] $DLTsql[$i] $order_stmt limit $OTHER_level;";
+						$stmtA = "SELECT lead_id,list_id,gmt_offset_now,phone_number,state,status,modify_date,user,vendor_lead_code,block_status FROM vicidial_list $VLforce_index where block_status='free' AND called_since_last_reset='N' and status IN($STATUSsql[$i]) and ($list_id_sql[$i]) and lead_id NOT IN($lead_id_lists) $vlc_dup_check_SQL and ($all_gmtSQL[$i]) $lead_filter_sql[$i] $CCLsql[$i] $DLTsql[$i] $order_stmt limit $OTHER_level;";
 						if ($DBX) {print "     |$stmtA|\n";}
 						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -2974,7 +2959,7 @@ foreach(@campaign_id)
 							if ($hopper_vlc_dup_check[$i] =~ /Y/)
 								{$vlc_dup_check_SQL = "and vendor_lead_code NOT IN($live_vlc$vlc_lists)";}
 
-							$stmtA = "SELECT lead_id,list_id,gmt_offset_now,phone_number,state,status,modify_date,user,vendor_lead_code FROM vicidial_list $VLforce_index where called_since_last_reset='N' and ($list_mix_dialableSQL) and lead_id NOT IN($lead_id_lists) $vlc_dup_check_SQL and ($all_gmtSQL[$i]) $lead_filter_sql[$i] $CCLsql[$i] $DLTsql[$i] $order_stmt limit $LM_step_goal[$x];";
+							$stmtA = "SELECT lead_id,list_id,gmt_offset_now,phone_number,state,status,modify_date,user,vendor_lead_code,block_status FROM vicidial_list $VLforce_index where block_status='free' AND called_since_last_reset='N' and ($list_mix_dialableSQL) and lead_id NOT IN($lead_id_lists) $vlc_dup_check_SQL and ($all_gmtSQL[$i]) $lead_filter_sql[$i] $CCLsql[$i] $DLTsql[$i] $order_stmt limit $LM_step_goal[$x];";
 							if ($DBX) {print "     |$stmtA|\n";}
 							$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 							$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -3259,7 +3244,7 @@ sub event_logger
 		### open the log file for writing ###
 		open(Lout, ">>$VDHLOGfile")
 				|| die "Can't open $VDHLOGfile: $!\n";
-		print Lout "$now_date|$event_string|\n";
+		print Lout "$now_date|$ast_vdhopper_version|$event_string|\n";
 		close(Lout);
 		}
 	$event_string='';
@@ -3272,7 +3257,7 @@ sub detail_logger
 		### open the log file for writing ###
 		open(LDout, ">>$VDHDLOGfile")
 				|| die "Can't open $VDHDLOGfile: $!\n";
-		print LDout "$now_date|$detail_string|\n";
+		print LDout "$now_date|$ast_vdhopper_version|$detail_string|\n";
 		close(LDout);
 		}
 	$detail_string='';

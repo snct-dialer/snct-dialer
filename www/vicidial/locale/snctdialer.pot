@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-26 13:56+0100\n"
+"POT-Creation-Date: 2021-04-30 09:28+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -77,10 +77,10 @@ msgstr ""
 msgid "After Call End Call Menu"
 msgstr ""
 
-#: admin_acr.php:585 admin_search_lead.php:397 admin_search_lead.php:403
-#: admin_search_lead.php:412 admin_search_lead.php:463
-#: admin_search_lead.php:469 admin_search_lead.php:478
-#: admin_search_lead.php:484 realtime_report_ng.php:1050
+#: admin_acr.php:585 admin_search_lead.php:369 admin_search_lead.php:375
+#: admin_search_lead.php:389 admin_search_lead.php:440
+#: admin_search_lead.php:446 admin_search_lead.php:455
+#: admin_search_lead.php:461 realtime_report_ng.php:1050
 msgid "SUBMIT"
 msgstr ""
 
@@ -134,11 +134,11 @@ msgstr ""
 msgid "runtime"
 msgstr ""
 
-#: admin_acr.php:753 admin_search_lead.php:1008 admin_search_lead.php:1257
-#: admin_search_lead.php:1505 realtime_report_ng.php:867
-#: realtime_report_ng.php:868 realtime_report_ng.php:869
-#: realtime_report_ng.php:870 realtime_report_ng.php:871
-#: realtime_report_ng.php:872
+#: admin_acr.php:753 admin_modify_lead.php:3188 admin_search_lead.php:985
+#: admin_search_lead.php:1234 admin_search_lead.php:1482
+#: realtime_report_ng.php:867 realtime_report_ng.php:868
+#: realtime_report_ng.php:869 realtime_report_ng.php:870
+#: realtime_report_ng.php:871 realtime_report_ng.php:872
 msgid "seconds"
 msgstr ""
 
@@ -150,336 +150,399 @@ msgstr ""
 msgid "Build"
 msgstr ""
 
-#: admin_search_lead.php:208 AST_timeonVDADall_ng.php:439
+#: admin_modify_lead.php:378
+msgid "external"
+msgstr ""
+
+#: admin_modify_lead.php:378 admin_modify_lead.php:380
+msgid "Customer No"
+msgstr ""
+
+#: admin_modify_lead.php:380
+msgid "Distributor"
+msgstr ""
+
+#: admin_modify_lead.php:706
+msgid "Header sent before upload"
+msgstr ""
+
+#: admin_modify_lead.php:732 admin_search_lead.php:294
+msgid "Title"
+msgstr ""
+
+#: admin_modify_lead.php:733 admin_search_lead.php:295
+msgid "First"
+msgstr ""
+
+#: admin_modify_lead.php:734 admin_search_lead.php:296
+msgid "MI"
+msgstr ""
+
+#: admin_modify_lead.php:735 admin_search_lead.php:297
+msgid "Last"
+msgstr ""
+
+#: admin_modify_lead.php:736 admin_search_lead.php:298
+msgid "Address1"
+msgstr ""
+
+#: admin_modify_lead.php:737 admin_search_lead.php:300
+msgid "Address2"
+msgstr ""
+
+#: admin_modify_lead.php:738 admin_search_lead.php:301
+msgid "Address3"
+msgstr ""
+
+#: admin_modify_lead.php:739 admin_search_lead.php:302
+msgid "City"
+msgstr ""
+
+#: admin_modify_lead.php:740 admin_search_lead.php:303
+msgid "State"
+msgstr ""
+
+#: admin_modify_lead.php:741 admin_search_lead.php:304
+msgid "Province"
+msgstr ""
+
+#: admin_modify_lead.php:742 admin_search_lead.php:305
+msgid "Postal Code"
+msgstr ""
+
+#: admin_modify_lead.php:743 admin_search_lead.php:306
+msgid "Vendor ID"
+msgstr ""
+
+#: admin_modify_lead.php:744
+msgid "Source ID"
+msgstr ""
+
+#: admin_modify_lead.php:745 admin_search_lead.php:307
+msgid "Gender"
+msgstr ""
+
+#: admin_modify_lead.php:746 admin_search_lead.php:308
+#: AST_timeonVDADall_ng.php:880 realtime_report_ng.php:926
+msgid "Phone"
+msgstr ""
+
+#: admin_modify_lead.php:747 admin_search_lead.php:309
+msgid "DialCode"
+msgstr ""
+
+#: admin_modify_lead.php:748 admin_search_lead.php:310
+msgid "Alt. Phone"
+msgstr ""
+
+#: admin_modify_lead.php:749
+msgid "Alt. Phone 2"
+msgstr ""
+
+#: admin_modify_lead.php:750 admin_search_lead.php:311
+msgid "Show"
+msgstr ""
+
+#: admin_modify_lead.php:751 admin_search_lead.php:312
+msgid "Email"
+msgstr ""
+
+#: admin_modify_lead.php:752 admin_search_lead.php:313
+msgid "Comments"
+msgstr ""
+
+#: admin_modify_lead.php:753
+msgid "Block status"
+msgstr ""
+
+#: admin_modify_lead.php:754
+msgid "Selection"
+msgstr ""
+
+#: admin_modify_lead.php:755
+msgid "Customer status"
+msgstr ""
+
+#: admin_modify_lead.php:3188 admin_search_lead.php:985
+#: admin_search_lead.php:1234 admin_search_lead.php:1482
+msgid "script runtime"
+msgstr ""
+
+#: admin_modify_lead.php:3242
+msgid "free to use"
+msgstr ""
+
+#: admin_modify_lead.php:3242
+msgid "temporary blocked"
+msgstr ""
+
+#: admin_modify_lead.php:3242
+msgid "use prohibited"
+msgstr ""
+
+#: admin_modify_lead.php:3242
+msgid "full blocked"
+msgstr ""
+
+#: admin_modify_lead.php:3261
+msgid "unknown"
+msgstr ""
+
+#: admin_modify_lead.php:3261
+msgid "privat"
+msgstr ""
+
+#: admin_modify_lead.php:3261
+msgid "business"
+msgstr ""
+
+#: admin_search_lead.php:180 AST_timeonVDADall_ng.php:439
 #: realtime_report_ng.php:399
 msgid "Login incorrect, please try again"
 msgstr ""
 
-#: admin_search_lead.php:211 AST_timeonVDADall_ng.php:442
+#: admin_search_lead.php:183 AST_timeonVDADall_ng.php:442
 #: realtime_report_ng.php:402
 msgid "Too many login attempts, try again in 15 minutes"
 msgstr ""
 
-#: admin_search_lead.php:218 AST_timeonVDADall_ng.php:449
+#: admin_search_lead.php:190 AST_timeonVDADall_ng.php:449
 #: realtime_report_ng.php:409
 msgid "Your IP Address is not allowed"
 msgstr ""
 
-#: admin_search_lead.php:240
+#: admin_search_lead.php:212
 msgid "You do not have permissions to search leads"
 msgstr ""
 
-#: admin_search_lead.php:298
+#: admin_search_lead.php:270
 msgid "ADMINISTRATION: Lead Search"
 msgstr ""
 
-#: admin_search_lead.php:322
-msgid "Title"
-msgstr ""
-
-#: admin_search_lead.php:323
-msgid "First"
-msgstr ""
-
-#: admin_search_lead.php:324
-msgid "MI"
-msgstr ""
-
-#: admin_search_lead.php:325
-msgid "Last"
-msgstr ""
-
-#: admin_search_lead.php:326
-msgid "Address1"
-msgstr ""
-
-#: admin_search_lead.php:327
+#: admin_search_lead.php:299
 msgid "Address1_No"
 msgstr ""
 
-#: admin_search_lead.php:328
-msgid "Address2"
-msgstr ""
-
-#: admin_search_lead.php:329
-msgid "Address3"
-msgstr ""
-
-#: admin_search_lead.php:330
-msgid "City"
-msgstr ""
-
-#: admin_search_lead.php:331
-msgid "State"
-msgstr ""
-
-#: admin_search_lead.php:332
-msgid "Province"
-msgstr ""
-
-#: admin_search_lead.php:333
-msgid "Postal Code"
-msgstr ""
-
-#: admin_search_lead.php:334
-msgid "Vendor ID"
-msgstr ""
-
-#: admin_search_lead.php:335
-msgid "Gender"
-msgstr ""
-
-#: admin_search_lead.php:336 AST_timeonVDADall_ng.php:880
-#: realtime_report_ng.php:926
-msgid "Phone"
-msgstr ""
-
-#: admin_search_lead.php:337
-msgid "DialCode"
-msgstr ""
-
-#: admin_search_lead.php:338
-msgid "Alt. Phone"
-msgstr ""
-
-#: admin_search_lead.php:339
-msgid "Show"
-msgstr ""
-
 #: admin_search_lead.php:340
-msgid "Email"
-msgstr ""
-
-#: admin_search_lead.php:341
-msgid "Comments"
-msgstr ""
-
-#: admin_search_lead.php:368
 msgid "Lead search"
 msgstr ""
 
-#: admin_search_lead.php:381
+#: admin_search_lead.php:353
 msgid "Lead Search Options"
 msgstr ""
 
-#: admin_search_lead.php:389
+#: admin_search_lead.php:361
 msgid "Archive search"
 msgstr ""
 
-#: admin_search_lead.php:389 admin_search_lead.php:405
-#: AST_timeonVDADall_ng.php:842 realtime_report_ng.php:888
+#: admin_search_lead.php:361 AST_timeonVDADall_ng.php:842
+#: realtime_report_ng.php:888
 msgid "No"
 msgstr ""
 
-#: admin_search_lead.php:389 admin_search_lead.php:405
-#: admin_search_lead.php:1275 AST_timeonVDADall_ng.php:845
+#: admin_search_lead.php:361 AST_timeonVDADall_ng.php:845
 #: realtime_report_ng.php:891
 msgid "Yes"
 msgstr ""
 
-#: admin_search_lead.php:396
+#: admin_search_lead.php:368
 msgid "vendor lead code"
 msgstr ""
 
-#: admin_search_lead.php:405
+#: admin_search_lead.php:382
 msgid "search"
 msgstr ""
 
-#: admin_search_lead.php:411 admin_search_lead.php:462
-#: admin_search_lead.php:477
+#: admin_search_lead.php:388 admin_search_lead.php:439
+#: admin_search_lead.php:454
 msgid "Lead ID"
 msgstr ""
 
-#: admin_search_lead.php:417
+#: admin_search_lead.php:394
 msgid "Status"
 msgstr ""
 
-#: admin_search_lead.php:420
+#: admin_search_lead.php:397
 msgid "List ID"
 msgstr ""
 
-#: admin_search_lead.php:422
+#: admin_search_lead.php:399
 msgid "User"
 msgstr ""
 
-#: admin_search_lead.php:424
+#: admin_search_lead.php:401
 msgid "Owner"
 msgstr ""
 
-#: admin_search_lead.php:449
+#: admin_search_lead.php:426
 msgid "All fields marked with * are evaluated,"
 msgstr ""
 
-#: admin_search_lead.php:449
+#: admin_search_lead.php:426
 msgid "if 2 or more fields are filled in."
 msgstr ""
 
-#: admin_search_lead.php:450
+#: admin_search_lead.php:427
 msgid "Global-SUBMIT"
 msgstr ""
 
-#: admin_search_lead.php:459
+#: admin_search_lead.php:436
 msgid "Log Search Options"
 msgstr ""
 
-#: admin_search_lead.php:468 admin_search_lead.php:483
+#: admin_search_lead.php:445 admin_search_lead.php:460
 msgid "Dialed"
 msgstr ""
 
-#: admin_search_lead.php:474
+#: admin_search_lead.php:451
 msgid "Archived Log Search Options"
 msgstr ""
 
-#: admin_search_lead.php:585
+#: admin_search_lead.php:562
 msgid "You must use 2 or more fields for this function!"
 msgstr ""
 
-#: admin_search_lead.php:587 admin_search_lead.php:1503
+#: admin_search_lead.php:564 admin_search_lead.php:1480
 msgid "NEW SEARCH"
 msgstr ""
 
-#: admin_search_lead.php:623 admin_search_lead.php:1367
+#: admin_search_lead.php:600 admin_search_lead.php:1344
 msgid "The search variables you entered are not active in the system"
 msgstr ""
 
-#: admin_search_lead.php:624 admin_search_lead.php:1368
+#: admin_search_lead.php:601 admin_search_lead.php:1345
 msgid ""
 "Please go back and double check the information you entered and submit again"
 msgstr ""
 
-#: admin_search_lead.php:631 admin_search_lead.php:1375
+#: admin_search_lead.php:608 admin_search_lead.php:1352
 msgid "RESULTS"
 msgstr ""
 
-#: admin_search_lead.php:635 admin_search_lead.php:808
-#: admin_search_lead.php:875 admin_search_lead.php:1057
-#: admin_search_lead.php:1124 admin_search_lead.php:1379
+#: admin_search_lead.php:612 admin_search_lead.php:785
+#: admin_search_lead.php:852 admin_search_lead.php:1034
+#: admin_search_lead.php:1101 admin_search_lead.php:1356
 msgid "LEAD ID"
 msgstr ""
 
-#: admin_search_lead.php:636 admin_search_lead.php:812
-#: admin_search_lead.php:879 admin_search_lead.php:1061
-#: admin_search_lead.php:1128 admin_search_lead.php:1380
+#: admin_search_lead.php:613 admin_search_lead.php:789
+#: admin_search_lead.php:856 admin_search_lead.php:1038
+#: admin_search_lead.php:1105 admin_search_lead.php:1357
 #: AST_timeonVDADall_ng.php:3084 AST_timeonVDADall_ng.php:3096
 #: AST_timeonVDADall_ng.php:3275 AST_timeonVDADall_ng.php:3300
 msgid "STATUS"
 msgstr ""
 
-#: admin_search_lead.php:637 admin_search_lead.php:1381
+#: admin_search_lead.php:614 admin_search_lead.php:1358
 msgid "VENDOR ID"
 msgstr ""
 
-#: admin_search_lead.php:638 admin_search_lead.php:1382
+#: admin_search_lead.php:615 admin_search_lead.php:1359
 msgid "LAST AGENT"
 msgstr ""
 
-#: admin_search_lead.php:639 admin_search_lead.php:814
-#: admin_search_lead.php:881 admin_search_lead.php:1063
-#: admin_search_lead.php:1130 admin_search_lead.php:1383
+#: admin_search_lead.php:616 admin_search_lead.php:791
+#: admin_search_lead.php:858 admin_search_lead.php:1040
+#: admin_search_lead.php:1107 admin_search_lead.php:1360
 msgid "LIST ID"
 msgstr ""
 
-#: admin_search_lead.php:640 admin_search_lead.php:809
-#: admin_search_lead.php:876 admin_search_lead.php:943
-#: admin_search_lead.php:1058 admin_search_lead.php:1125
-#: admin_search_lead.php:1192 admin_search_lead.php:1384
+#: admin_search_lead.php:617 admin_search_lead.php:786
+#: admin_search_lead.php:853 admin_search_lead.php:920
+#: admin_search_lead.php:1035 admin_search_lead.php:1102
+#: admin_search_lead.php:1169 admin_search_lead.php:1361
 #: AST_timeonVDADall_ng.php:3234 AST_timeonVDADall_ng.php:3236
 msgid "PHONE"
 msgstr ""
 
-#: admin_search_lead.php:641 admin_search_lead.php:1385
+#: admin_search_lead.php:618 admin_search_lead.php:1362
 msgid "NAME"
 msgstr ""
 
-#: admin_search_lead.php:642 admin_search_lead.php:1386
+#: admin_search_lead.php:619 admin_search_lead.php:1363
 msgid "CITY"
 msgstr ""
 
-#: admin_search_lead.php:643 admin_search_lead.php:1387
+#: admin_search_lead.php:620 admin_search_lead.php:1364
 msgid "SECURITY"
 msgstr ""
 
-#: admin_search_lead.php:644 admin_search_lead.php:1388
+#: admin_search_lead.php:621 admin_search_lead.php:1365
 msgid "LAST CALL"
 msgstr ""
 
-#: admin_search_lead.php:732
+#: admin_search_lead.php:709
 msgid "The search was terminated with the following error"
 msgstr ""
 
-#: admin_search_lead.php:735
+#: admin_search_lead.php:712
 msgid "The maximum search time was exceeded. Please refine your search"
 msgstr ""
 
-#: admin_search_lead.php:804 admin_search_lead.php:1053
+#: admin_search_lead.php:781 admin_search_lead.php:1030
 msgid "OUTBOUND LOG RESULTS"
 msgstr ""
 
-#: admin_search_lead.php:810 admin_search_lead.php:1059
+#: admin_search_lead.php:787 admin_search_lead.php:1036
 #: AST_timeonVDADall_ng.php:3084 AST_timeonVDADall_ng.php:3097
 #: AST_timeonVDADall_ng.php:3287 AST_timeonVDADall_ng.php:3289
 msgid "CAMPAIGN"
 msgstr ""
 
-#: admin_search_lead.php:811 admin_search_lead.php:878
-#: admin_search_lead.php:945 admin_search_lead.php:1060
-#: admin_search_lead.php:1127 admin_search_lead.php:1194
+#: admin_search_lead.php:788 admin_search_lead.php:855
+#: admin_search_lead.php:922 admin_search_lead.php:1037
+#: admin_search_lead.php:1104 admin_search_lead.php:1171
 msgid "CALL DATE"
 msgstr ""
 
-#: admin_search_lead.php:813 admin_search_lead.php:880
-#: admin_search_lead.php:1062 admin_search_lead.php:1129
+#: admin_search_lead.php:790 admin_search_lead.php:857
+#: admin_search_lead.php:1039 admin_search_lead.php:1106
 #: AST_timeonVDADall_ng.php:3239 AST_timeonVDADall_ng.php:3241
 msgid "USER"
 msgstr ""
 
-#: admin_search_lead.php:815 admin_search_lead.php:882
-#: admin_search_lead.php:1064 admin_search_lead.php:1131
+#: admin_search_lead.php:792 admin_search_lead.php:859
+#: admin_search_lead.php:1041 admin_search_lead.php:1108
 msgid "LENGTH"
 msgstr ""
 
-#: admin_search_lead.php:816 admin_search_lead.php:1065
+#: admin_search_lead.php:793 admin_search_lead.php:1042
 msgid "DIAL"
 msgstr ""
 
-#: admin_search_lead.php:866 admin_search_lead.php:1115
+#: admin_search_lead.php:843 admin_search_lead.php:1092
 msgid "There are no inbound calls matching your search criteria"
 msgstr ""
 
-#: admin_search_lead.php:877 admin_search_lead.php:1126
+#: admin_search_lead.php:854 admin_search_lead.php:1103
 msgid "INGROUP"
 msgstr ""
 
-#: admin_search_lead.php:933 admin_search_lead.php:1182
+#: admin_search_lead.php:910 admin_search_lead.php:1159
 msgid "There are no inbound did calls matching your search criteria"
 msgstr ""
 
-#: admin_search_lead.php:938 admin_search_lead.php:1187
+#: admin_search_lead.php:915 admin_search_lead.php:1164
 msgid "INBOUND DID LOG RESULTS"
 msgstr ""
 
-#: admin_search_lead.php:942 admin_search_lead.php:1191
+#: admin_search_lead.php:919 admin_search_lead.php:1168
 msgid "DID"
 msgstr ""
 
-#: admin_search_lead.php:944 admin_search_lead.php:1193
+#: admin_search_lead.php:921 admin_search_lead.php:1170
 msgid "DID ID"
 msgstr ""
 
-#: admin_search_lead.php:1008 admin_search_lead.php:1257
-#: admin_search_lead.php:1505
-msgid "script runtime"
-msgstr ""
-
-#: admin_search_lead.php:1048
+#: admin_search_lead.php:1025
 msgid "There are no outbound calls matching your search criteria"
 msgstr ""
 
-#: admin_search_lead.php:1120
+#: admin_search_lead.php:1097
 msgid "INBOUND LOG RESULTS"
 msgstr ""
 
-#: admin_search_lead.php:1292
+#: admin_search_lead.php:1269
 msgid "ERROR: you must search for something! Go back and search for something"
 msgstr ""
 

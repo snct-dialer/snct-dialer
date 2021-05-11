@@ -40,8 +40,8 @@
 #
 # Version  / Build
 #
-$agent_version = '3.1.1-2';
-$agent_build = '20210401-1';
+$agent_version = '3.1.1-3';
+$agent_build = '20210415-1';
 #
 ###############################################################################
 #
@@ -56,6 +56,7 @@ $DB=0;
 #
 # Changelog
 #
+# 2021-04-15 jff    Add field housenr1
 # 2021-04-01 jff    Add Bcc to Ticketmail     
 # 2020-12-20 jff	Add footer text after callback calendar
 # 2020-12-15 jff	Fix text typo
@@ -3414,6 +3415,7 @@ else
 		$MAXmiddle_initial =		'1';
 		$MAXlast_name =				'30';
 		$MAXaddress1 =				'100';
+		$MAXhousenr1 =				'20';
 		$MAXaddress2 =				'100';
 		$MAXaddress3 =				'100';
 		$MAXcity =					'50';
@@ -3452,7 +3454,9 @@ else
 				if ( ($vl_field == 'last_name') and ($MAXlast_name != $vl_type) )
 					{$MAXlast_name = $vl_type;}
 				if ( ($vl_field == 'address1') and ($MAXaddress1 != $vl_type) )
-					{$MAXaddress1 = $vl_type;}
+				    {$MAXaddress1 = $vl_type;}
+				if ( ($vl_field == 'housenr1') and ($MAXhousenr1 != $vl_type) )
+				    {$MAXhousenr1 = $vl_type;}
 				if ( ($vl_field == 'address2') and ($MAXaddress2 != $vl_type) )
 					{$MAXaddress2 = $vl_type;}
 				if ( ($vl_field == 'address3') and ($MAXaddress3 != $vl_type) )
@@ -6846,7 +6850,11 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						{button_click_log = button_click_log + "" + SQLdate + "-----VMMessageNoHangup---|";}
 					else
 						{
-						dialedcall_send_hangup(taskdispowindow,'','',no_delete_VDAC);
+						if(taskvar == 'XfeRVMAIL') {
+							dialedcall_send_hangup('NO','','',no_delete_VDAC);
+						} else {
+							dialedcall_send_hangup(taskdispowindow,'','',no_delete_VDAC);
+						}
 						}
 					}
 				} // END ELSE FOR EMAIL CHECK
@@ -7769,6 +7777,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								document.vicidial_form.middle_initial.value		= change_array[15];
 								document.vicidial_form.last_name.value			= change_array[16];
 								document.vicidial_form.address1.value			= change_array[17];
+								document.vicidial_form.housenr1.value			= change_array[70];
 								document.vicidial_form.address2.value			= change_array[18];
 								document.vicidial_form.address3.value			= change_array[19];
 								document.vicidial_form.city.value				= change_array[20];
@@ -7836,6 +7845,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								status_group_statuses_data						= change_array[65];
 								last_call_date									= change_array[66];
 								DisplayPhoneNumber								= change_array[69];
+								Housenr1										= change_array[70];
 
 								// build statuses list for disposition screen
 								VARstatuses = [];
@@ -9316,6 +9326,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								document.vicidial_form.middle_initial.value		= MDnextResponse_array[11];
 								document.vicidial_form.last_name.value			= MDnextResponse_array[12];
 								document.vicidial_form.address1.value			= MDnextResponse_array[13];
+								document.vicidial_form.housenr1.value			= MDnextResponse_array[64];
 								document.vicidial_form.address2.value			= MDnextResponse_array[14];
 								document.vicidial_form.address3.value			= MDnextResponse_array[15];
 								document.vicidial_form.city.value				= MDnextResponse_array[16];
@@ -9886,6 +9897,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							document.vicidial_form.middle_initial.value	='';
 							document.vicidial_form.last_name.value		='';
 							document.vicidial_form.address1.value		='';
+							document.vicidial_form.housenr1.value		='';
 							document.vicidial_form.address2.value		='';
 							document.vicidial_form.address3.value		='';
 							document.vicidial_form.city.value			='';
@@ -13262,7 +13274,8 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 				"&alt_phone=" + encodeURIComponent(document.vicidial_form.alt_phone.value) +
 				"&email=" + encodeURIComponent(document.vicidial_form.email.value) +
 				"&security_phrase=" + encodeURIComponent(document.vicidial_form.security_phrase.value) +
-				"&comments=" + REGcommentsRESULT;
+				"&comments=" + REGcommentsRESULT + 
+				"&housenr1=" + encodeURIComponent(document.vicidial_form.housenr1.value);
 				xmlhttp.open('POST', 'vdc_db_query.php');
 				xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 				xmlhttp.send(VLupdate_query);
@@ -14186,6 +14199,7 @@ function BuildDispoContent(taskDSgrp) {
 					document.vicidial_form.customer_chat_id.value		='';
 					document.vicidial_form.dispo_comments.value ='';
 					document.vicidial_form.cbcomment_comments.value ='';
+					document.vicidial_form.housenr1.value		='';
 					VDCL_group_id = '';
 					fronter = '';
 					inOUT = 'OUT';
@@ -15938,6 +15952,7 @@ else
 		"&middle_initial=" + encodeURIComponent(document.vicidial_form.middle_initial.value) +
 		"&last_name=" + encodeURIComponent(document.vicidial_form.last_name.value) +
 		"&address1=" + encodeURIComponent(document.vicidial_form.address1.value) +
+		"&housenr1=" + encodeURIComponent(document.vicidial_form.housenr1.value) +
 		"&address2=" + encodeURIComponent(document.vicidial_form.address2.value) +
 		"&address3=" + encodeURIComponent(document.vicidial_form.address3.value) +
 		"&city=" + encodeURIComponent(document.vicidial_form.city.value) +
@@ -20074,7 +20089,7 @@ $zi=2;
 			if (preg_match("/---REQUIRED---/",$label_address1))
 				{$required_fields .= "address1|";   $label_address1 = preg_replace("/---REQUIRED---/","",$label_address1);}
 			}
-		echo "$label_address1: </td><td align=\"left\" colspan=5><font class=\"body_text\"><input type=\"text\" size=\"85\" name=\"address1\" id=\"address1\" maxlength=\"$MAXaddress1\" class=\"cust_form\" value=\"\" $address1_readonly />";
+		echo "$label_address1: </td><td align=\"left\" colspan=5><font class=\"body_text\"><input type=\"text\" size=\"70\" name=\"address1\" id=\"address1\" maxlength=\"$MAXaddress1\" class=\"cust_form\" value=\"\" $address1_readonly /><input type=\"text\" size=\"10\" name=\"housenr1\" id=\"housenr1\" maxlength=\"$MAXhousnr1\" class=\"cust_form\" value=\"\" $address1_readonly />";
 		}
 
     echo "</td></tr><tr><td align=\"right\"><font class=\"body_text\">";

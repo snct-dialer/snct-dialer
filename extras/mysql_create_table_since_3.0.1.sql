@@ -5096,6 +5096,11 @@ CREATE TABLE `vicidial_users` (
   `max_inbound_filter_ingroups` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `max_inbound_filter_min_sec` smallint(5) DEFAULT -1,
   `selected_po_language` varchar(20) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'en_EN',
+  `2FA_enable` ENUM('Y','N') NOT NULL DEFAULT 'N',
+  `2FA_type` ENUM('SMS','EMail','TOTP') NOT NULL DEFAULT 'TOTP',
+  `2FA_Email` VARCHAR(50) NOT NULL,
+  `2FA_SMS` VARCHAR(20) NOT NULL,
+  `2FA_secret` VARCHAR(250) NOT NULL,
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `user` (`user`),
   UNIQUE KEY `GroupUser` (`user_group`,`user`)

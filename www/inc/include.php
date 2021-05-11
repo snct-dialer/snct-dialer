@@ -16,12 +16,12 @@ if (file_exists('../inc/log.php')) {
     require_once 'om/inc/log.php';
 }
 
-if (file_exists('../inc/db.php')) {
-    require_once '../inc/db.php';
-} elseif (file_exists('./inc/db.php')) {
-    require_once './inc/db.php';
+if (file_exists('../inc/db_ng.php')) {
+    require_once '../inc/db_ng.php';
+} elseif (file_exists('./inc/db_ng.php')) {
+    require_once './inc/db_ngOB.php';
 } else {
-    require_once 'om/inc/db.php';
+    require_once 'om/inc/db_ng.php';
 }
 
 
