@@ -33,13 +33,14 @@
 #
 # Version  / Build
 #
-$admin_modify_lead_version = '3.1.1-6';
-$admin_modify_lead_build = '2021030-3';
+$admin_modify_lead_version = '3.1.1-7';
+$admin_modify_lead_build = '20210510-1';
 #
 ###############################################################################
 #
 # Changelog#
 # 
+# 2021-05-10 jff    Fix save owner. 
 # 2021-04-30 jff    Move system-settings to ../inc/get_system_settings.php
 #                   Add language_header.php    
 # 2021-04-29 jff    Add field customer_status
@@ -111,8 +112,8 @@ if (isset($_GET["campaign_id"]))			{$campaign_id=$_GET["campaign_id"];}
 	elseif (isset($_POST["campaign_id"]))	{$campaign_id=$_POST["campaign_id"];}
 if (isset($_GET["phone_code"]))				{$phone_code=$_GET["phone_code"];}
     elseif (isset($_POST["phone_code"]))	{$phone_code=$_POST["phone_code"];}
-if (isset($_GET["phone_code_alt"]))				{$phone_code_alt=$_GET["phone_code_alt"];}
-    elseif (isset($_POST["phone_code_alt"]))	{$phone_code_alt=$_POST["phone_code_alt"];}
+if (isset($_GET["phone_code_alt1"]))				{$phone_code_alt1=$_GET["phone_code_alt1"];}
+    elseif (isset($_POST["phone_code_alt1"]))	{$phone_code_alt1=$_POST["phone_code_alt1"];}
 if (isset($_GET["phone_code_alt2"]))			{$phone_code_alt2=$_GET["phone_code_alt2"];}
     elseif (isset($_POST["phone_code_alt2"]))	{$phone_code_alt2=$_POST["phone_code_alt2"];}
 if (isset($_GET["phone_code_alt3"]))			{$phone_code_alt3=$_GET["phone_code_alt3"];}
@@ -215,7 +216,6 @@ if (isset($_GET["selection"]))              {$selection=$_GET["selection"];}
 if (isset($_GET["customer_status"]))              {$customer_status=$_GET["customer_status"];}
     elseif (isset($_POST["customer_status"]))     {$customer_status=$_POST["customer_status"];}
 
-  
    
 if ($archive_search=="Yes") {
     $vl_table="vicidial_list_archive";
@@ -1255,7 +1255,11 @@ if ($end_call > 0)
             $stmtA .= "alt_phone='" . mysqli_real_escape_string($link, $alt_phone) . "', ";
             $stmtA .= "phone_number='$phone_number', ";
             $stmtA .= "phone_code='$phone_code', ";
+            $stmtA .= "phone_code_alt1='$phone_code_alt1', ";
+            $stmtA .= "phone_code_alt2='$phone_code_alt2', ";
+            $stmtA .= "phone_code_alt3='$phone_code_alt3', ";
             $stmtA .= "email='" . mysqli_real_escape_string($link, $email) . "', ";
+            $stmtA .= "owner='" . mysqli_real_escape_string($link, $owner) . "', ";
             $stmtA .= "security_phrase='" . mysqli_real_escape_string($link, $security) . "', ";
             $stmtA .= "comments='" . mysqli_real_escape_string($link, $comments) . "', ";
             $stmtA .= "rank='" . mysqli_real_escape_string($link, $rank) . "', ";
@@ -1970,6 +1974,9 @@ else
 	$BlockStatus               = $row["block_status"];
 	$selection                 = $row["selection"];
 	$CustStatus                = $row["customer_status"];
+	$phone_code_alt1           = $row["phone_code_alt1"];
+	$phone_code_alt2           = $row["phone_code_alt2"];
+	$phone_code_alt3           = $row["phone_code_alt3"];
 
 	$comments = preg_replace("/!N/","\n",$comments);
 
@@ -2118,10 +2125,10 @@ else
 		echo "<tr><td align=right>$label_phone_code / $label_phone_number: </td><td align=left><input type=text name=phone_code size=4 maxlength=$MAXphone_code value=\"".htmlparse($phone_code)."\">\n";
 		echo "<input type=text name=phone_number size=15 maxlength=$MAXphone_number value=\"".htmlparse($phone_number)."\"></td></tr>\n";
 		
-		echo "<tr><td align=right>$label_phone_code / $label_alt_phone : </td><td align=left><input type=text name=phone_code_alt size=4 maxlength=$MAXphone_code_alt value=\"".htmlparse($phone_code_alt)."\">\n";
+		echo "<tr><td align=right>$label_phone_code / $label_alt_phone : </td><td align=left><input type=text name=phone_code_alt1 size=4 maxlength=$MAXphone_code value=\"".htmlparse($phone_code_alt1)."\">\n";
         echo "<input type=text name=alt_phone size=15 maxlength=$MAXalt_phone value=\"".htmlparse($alt_phone)."\"></td></tr>\n";
         
-        echo "<tr><td align=right>$label_phone_code / $label_alt_phone2 : </td><td align=left><input type=text name=phone_code_alt2 size=4 maxlength=$MAXphone_code_alt2 value=\"".htmlparse($phone_code_alt)."\">\n";
+        echo "<tr><td align=right>$label_phone_code / $label_alt_phone2 : </td><td align=left><input type=text name=phone_code_alt2 size=4 maxlength=$MAXphone_code value=\"".htmlparse($phone_code_alt2)."\">\n";
         echo "<input type=text name=alt_phone2 size=15 maxlength=$MAXalt_phone2 value=\"".htmlparse($alt_phone2)."\"></td></tr>\n";
         
 		echo "<tr><td align=right>$label_email : </td><td align=left><input type=text name=email size=40 maxlength=$MAXemail value=\"".htmlparse($email)."\"></td></tr>\n";
