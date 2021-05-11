@@ -1,19 +1,7 @@
-3.1.0
+3.0.5
   [Jörg Frings-Fürst]
-    * Add some new fields to vividial_list:
-      - Update: www/vicidial/admin_modify_lead.php,
-          extras/update_db_since_3.0.1.sql,
-          www/agc/locale/snctdialer.pot,
-          www/vicidial/admin.php,
-          www/vicidial/admin_modify_lead.php,
-          www/vicidial/locale/de_DE/LC_MESSAGES/snctdialer.mo,
-          www/vicidial/locale/de_DE/LC_MESSAGES/snctdialer.po,
-          www/vicidial/locale/snctdialer.pot.
-      - New: www/inc/functions_ng.php,
-          www/inc/get_system_settings.php
-    * Use block_status for don't dial; Add new Status 'BSHO':
-      - Update bin/AST_VDhopper.pl,
-          www/vicidial/admin.php.
+  * Fix CVE-2020-7746:
+    - Update www/vicidial/chart/Chart.js to release 2.9.4.
 
 3.0.4
   [Jörg Frings-Fürst]
