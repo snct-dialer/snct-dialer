@@ -27,13 +27,14 @@
 #
 # Version  / Build
 #
-$admin_search_lead_version = '3.0.2-1';
-$admin_search_lead_build = '20210110-1';
+$admin_search_lead_version = '3.1.0-1';
+$admin_search_lead_build = '20210529-1';
 #
 ###############################################################################
 #
 # Changelog#
 #
+# 2021-05-29 jff    Allow partial search on phonenumbers
 # 2021-01-10 jff	Replace alt_phone_search with a checkbox
 # 2020-05-06 jff	Add strlen of $list_id into if clause to search from
 #					interal.
@@ -159,7 +160,7 @@ else
 	$PHP_AUTH_PW = preg_replace("/'|\"|\\\\|;/","",$PHP_AUTH_PW);
 	$PHP_AUTH_USER = preg_replace("/'|\"|\\\\|;/","",$PHP_AUTH_USER);
 	}
-$phone = preg_replace('/[^0-9]/','',$phone);
+$phone = preg_replace('/[^0-9%]/','',$phone);
 
 $stmt="SELECT selected_language from vicidial_users where user='$PHP_AUTH_USER';";
 if ($DB) {echo "|$stmt|\n";}
@@ -1264,11 +1265,11 @@ else
 			{
 			if (isset($alt_phone_search))
 				{
-				$stmt="SELECT $vicidial_list_fields from $vl_table where phone_number='" . mysqli_real_escape_string($link, $phone) . "' or alt_phone='" . mysqli_real_escape_string($link, $phone) . "' or address3='" . mysqli_real_escape_string($link, $phone) . "' $LOGallowed_listsSQL";
+				$stmt="SELECT $vicidial_list_fields from $vl_table where phone_number LIKE '" . mysqli_real_escape_string($link, $phone) . "' or alt_phone LIKE '" . mysqli_real_escape_string($link, $phone) . "' or address3 LIKE '" . mysqli_real_escape_string($link, $phone) . "' $LOGallowed_listsSQL";
 				}
 			else
 				{
-				$stmt="SELECT $vicidial_list_fields from $vl_table where phone_number='" . mysqli_real_escape_string($link, $phone) . "' $LOGallowed_listsSQL";
+				$stmt="SELECT $vicidial_list_fields from $vl_table where phone_number LIKE '" . mysqli_real_escape_string($link, $phone) . "' $LOGallowed_listsSQL";
 				}
 			}
 		else
@@ -1298,7 +1299,7 @@ else
 	$results_to_printX=0;
 	if ( ($alt_phone_search=="Yes") and (strlen($phone) > 4) )
 		{
-		$stmtX="SELECT lead_id from vicidial_list_alt_phones where phone_number='" . mysqli_real_escape_string($link, $phone) . "' $LOGallowed_listsSQL limit 10000;";
+		$stmtX="SELECT lead_id from vicidial_list_alt_phones where phone_number LIKE '" . mysqli_real_escape_string($link, $phone) . "' $LOGallowed_listsSQL limit 10000;";
 		$rsltX=mysql_to_mysqli($stmtX, $link);
 		$results_to_printX = mysqli_num_rows($rsltX);
 		if ($DB)

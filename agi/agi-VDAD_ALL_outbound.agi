@@ -374,7 +374,7 @@ foreach $i (sort keys %AGI)
 	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
 	}
 
-if ($AGILOG) {$agi_string = "AGI Variables: |$unique_id|$channel|$extension|$type|$callerid|$calleridname|$priority|";   &agi_output;}
+if ($AGILOG) {$agi_string = "AGI Variables: ||$channel|$extension|$type|$callerid|$calleridname|$priority|";   &agi_output;}
 
 $VDADcampaign='';
 $VDADphone='';
@@ -4288,12 +4288,12 @@ sub agi_output
 		### open the log file for writing ###
 		open(Lout, ">>$AGILOGfile")
 				|| die "Can't open $AGILOGfile: $!\n";
-		print Lout "$now_date|$script|$agi_string\n";
+		print Lout "$now_date|$script|$$|$CIDlead_id|$unique_id|$agi_string\n";
 		close(Lout);
 		}
 		### send to STDERR writing ###
 	if ( ($AGILOG == '1') || ($AGILOG == '3') )
-		{print STDERR "$now_date|$script|$agi_string\n";}
+		{print STDERR "$now_date|$script|$$|$CIDlead_id|$unique_id|$agi_string\n";}
 	$agi_string='';
 	}
 

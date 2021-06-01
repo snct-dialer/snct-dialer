@@ -1780,7 +1780,7 @@ while($one_day_interval > 0)
 							$CLstage =~ s/LIVE|-//gi;
 							if ($CLstage < 0.25) {$CLstage=0;}
 
-							if ($CLstatus =~ /BUSY/) {$CLnew_status = 'B';}
+							if ($CLstatus =~ /BUSY/) {$CLnew_status = '';}
 							else
 								{
 								if ($CLstatus =~ /DISCONNECT/) {$CLnew_status = 'ADC';}
@@ -1893,9 +1893,11 @@ while($one_day_interval > 0)
 
 							if ($CLlead_id > 0)
 								{
-								$stmtA = "UPDATE vicidial_list set status='$CLnew_status' where lead_id='$CLlead_id'";
-								$affected_rows = $dbhA->do($stmtA);
-
+								chomp $CLnew_status;
+								if( length($CLnew_status) > 0 ) { 
+									$stmtA = "UPDATE vicidial_list set status='$CLnew_status' where lead_id='$CLlead_id'";
+									$affected_rows = $dbhA->do($stmtA);
+								}
 								$event_string = "|     dead call vac lead marked $CLnew_status|$CLlead_id|$CLphone_number|$CLstatus|";
 								 &event_logger;
 								}

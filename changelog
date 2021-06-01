@@ -1,7 +1,24 @@
+3.1.0
+  [Jörg Frings-Fürst]
+    * Allow UTF8 campaigns at login:
+      - Update www/agc/vicidial.php.
+    * Allow all UTF-8 chars in vicidial_user_groups:
+      - Update www/vicidial/admin.php.
+    * Add some new fields to vividial_list:
+      - Update www/vicidial/admin_modify_lead.php,
+    * Use block_status for don't dial;
+      add new Status 'BSHO':
+      - Update bin/AST_VDhopper.pl,
+          www/vicidial/admin.php
+	* Fix GDPR purge:
+	  - Update www/vicidial/admin_modify_lead.php.
+	* Allow partial search on phonenumbers:
+	  - Update www/vicidial/admin_search_lead.php.
+
 3.0.5
   [Jörg Frings-Fürst]
-  * Fix CVE-2020-7746:
-    - Update www/vicidial/chart/Chart.js to release 2.9.4.
+    * Fix CVE-2020-7746:
+      - Update www/vicidial/chart/Chart.js to release 2.9.4.
 
 3.0.4
   [Jörg Frings-Fürst]

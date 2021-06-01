@@ -1000,13 +1000,14 @@ sub process_request
 						}
 					if ( ($PRI =~ /^PRI$/) && ($callerid =~ /\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d/) && ( ( ($dialstatus =~ /BUSY/) || ( ($dialstatus =~ /CHANUNAVAIL/) && ($hangup_cause =~ /^1$|^28$/) ) || ( ($enhanced_disconnect_logging > 0) && ( ($dialstatus =~ /CONGESTION/) && ($hangup_cause =~ /^1$|^19$|^21$|^34$|^38$/) ) ) ) || ($CPDfound > 0) ) && ($callerid !~ /^S\d\d\d\d\d\d\d\d\d\d\d\d/) )
 						{
-						if ($CPDfound < 1)
+						if ($CPDfound < 1) 
 							{
 							if ($dialstatus =~ /BUSY/) {$VDL_status = 'AB'; $VDAC_status = 'BUSY';}
+							if ($dialstatus =~ /BUSY/ && $hangup_cause =~ /^19$/) {$VDL_status = 'NA'; $VDAC_status = 'BUSY';}
 							if ($dialstatus =~ /CHANUNAVAIL/) {$VDL_status = 'ADC'; $VDAC_status = 'DISCONNECT';}
 							if ($enhanced_disconnect_logging > 0)
 								{
-								if ($dialstatus =~ /CONGESTION/ && $hangup_cause =~ /^1$/) {$VDL_status = 'ADC'; $VDAC_status = 'DISCONNECT';}
+								if ($dialstatus =~ /CONGESTION/ ) {$VDL_status = 'ADC'; $VDAC_status = 'DISCONNECT';}
 								if ($dialstatus =~ /CONGESTION/ && $hangup_cause =~ /^19$|^21$|^34$|^38$/) {$VDL_status = 'ADCT'; $VDAC_status = 'DISCONNECT';}
 								}
 							}

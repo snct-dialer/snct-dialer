@@ -33,14 +33,15 @@
 #
 # Version  / Build
 #
-$admin_modify_lead_version = '3.1.1-7';
-$admin_modify_lead_build = '20210510-1';
+$admin_modify_lead_version = '3.1.1-8';
+$admin_modify_lead_build = '20210525-1';
 #
 ###############################################################################
 #
 # Changelog#
-# 
-# 2021-05-10 jff    Fix save owner. 
+#
+# 2021-05-25 jff    Fix gpdr purge.
+# 2021-05-10 jff    Fix save owner.
 # 2021-04-30 jff    Move system-settings to ../inc/get_system_settings.php
 #                   Add language_header.php    
 # 2021-04-29 jff    Add field customer_status
@@ -426,8 +427,7 @@ if ($SSadmin_screen_colors != 'default')
 		$SSweb_logo =				$row[10];
 		}
 	}
-
-
+		
 if ($enable_gdpr_download_deletion>0)
 	{
 	$stmt="SELECT export_gdpr_leads from vicidial_users where user='$PHP_AUTH_USER' and export_gdpr_leads >= 1;";
@@ -456,9 +456,14 @@ if ($enable_gdpr_download_deletion>0)
 
 		if ($gdpr_action=="confirm_purge")
 			{
+			sd_debug_log("Start DSVGO Loeschung");
 			$archive_table_name=use_archive_table("vicidial_list");
+			sd_debug_log("Start DSVGO Loeschung Arch: ".$archive_table_name );
+			
 			$mysql_stmt="(select list_id from vicidial_list where lead_id='$lead_id')";
+			if ($DB) {sd_debug_log($mysql_stmt);}
 			if ($archive_table_name!="vicidial_list") {$mysql_stmt.=" UNION (select list_id from ".$archive_table_name." where lead_id='$lead_id')";}
+			if ($DB) {sd_debug_log($mysql_stmt);}
 			$mysql_rslt=mysqli_query($link, $mysql_stmt);
 			if(mysqli_num_rows($mysql_rslt)>0)
 				{
@@ -480,6 +485,7 @@ if ($enable_gdpr_download_deletion>0)
 					$table_count++;
 
 					$custom_stmt="SHOW COLUMNS FROM custom_".$list_id."";
+					if ($DB) {sd_debug_log($custom_stmt);}
 					$custom_rslt=mysqli_query($link, $custom_stmt);
 					while($custom_row=mysqli_fetch_row($custom_rslt))
 						{
@@ -495,17 +501,20 @@ if ($enable_gdpr_download_deletion>0)
 					if ($table_name=="recording_log")
 						{
 						$ins_stmt="insert ignore into recording_log_deletion_queue(recording_id,lead_id, filename, location, date_queued) (select recording_id,lead_id, filename, location, now() from recording_log where lead_id='$lead_id') UNION (select recording_id,lead_id, filename, location, now() from recording_log_archive where lead_id='$lead_id')";
+						if ($DB) {sd_debug_log($ins_stmt);}
 						$ins_rslt=mysqli_query($link, $ins_stmt);
 						}
 
 					$upd_clause=implode("=null, ", $purge_field_array["$table_name"])."=null ";
 					$upd_stmt="update $table_name set $upd_clause where lead_id='$lead_id'";
-					$upd_rslt=mysql_query($link, $upd_stmt, $link);
+					if ($DB) {sd_debug_log($upd_stmt);}
+					$upd_rslt=mysqli_query($link, $upd_stmt);
 					$SQL_log.="$upd_stmt|";
 					if ($archive_table_name!=$table_name)
 						{
 						$upd_stmt="update $archive_table_name set $upd_clause where lead_id='$lead_id'";
 						$upd_rslt=mysqli_query($link, $upd_stmt);
+						if ($DB) {sd_debug_log($upd_stmt);}
 						$SQL_log.="$upd_stmt|";
 						}
 					}
@@ -536,8 +545,8 @@ if ($enable_gdpr_download_deletion>0)
 			$list_id=""; $HTML_header=""; $CSV_header=""; $HTML_body=""; $CSV_body="";
 
 			$mysql_stmt.=" order by ".$date_field_array[$t]." desc";
-			$mysql_rslt=mysqli_query($link, $mysql_stmt);
 			if ($DB) {sd_debug_log($mysql_stmt);}
+			$mysql_rslt=mysqli_query($link, $mysql_stmt);
 			if (mysqli_num_rows($mysql_rslt)>0)
 				{
 				$CSV_text.="\""._QXZ("TABLE NAME").":\",\"$table_name\"\n";
@@ -617,6 +626,7 @@ if ($enable_gdpr_download_deletion>0)
 		    $files_to_zip=array();
 
 			$rec_stmt="select start_time, location, filename from recording_log where lead_id='$lead_id' AND location LIKE 'http%' order by start_time asc";
+			if ($DB) {sd_debug_log($rec_stmt);}
 			$rec_rslt=mysqli_query($link, $rec_stmt);
 			while ($rec_row=mysqli_fetch_row($rec_rslt)) {
 				$start_time=$rec_row[0];

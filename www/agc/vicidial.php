@@ -40,8 +40,8 @@
 #
 # Version  / Build
 #
-$agent_version = '3.1.1-3';
-$agent_build = '20210415-1';
+$agent_version = '3.1.2-4';
+$agent_build = '20210517-1';
 #
 ###############################################################################
 #
@@ -56,6 +56,7 @@ $DB=0;
 #
 # Changelog
 #
+# 2021-05-17 jff    Allow UTF8 campaigns at login.
 # 2021-04-15 jff    Add field housenr1
 # 2021-04-01 jff    Add Bcc to Ticketmail     
 # 2020-12-20 jff	Add footer text after callback calendar
@@ -174,7 +175,7 @@ $phone_login=preg_replace("/[^\,0-9a-zA-Z]/","",$phone_login);
 $phone_pass=preg_replace("/[^-_0-9a-zA-Z]/","",$phone_pass);
 $VD_login=preg_replace("/\'|\"|\\\\|;| /","",$VD_login);
 $VD_pass=preg_replace("/\'|\"|\\\\|;| /","",$VD_pass);
-$VD_campaign = preg_replace("/[^-_0-9a-zA-Z]/","",$VD_campaign);
+#$VD_campaign = preg_replace("/[^-_0-9a-zA-Z]/","",$VD_campaign);
 $VD_language = preg_replace("/\'|\"|\\\\|;/","",$VD_language);
 $admin_test = preg_replace("/[^0-9a-zA-Z]/","",$admin_test);
 $LOGINvarONE=preg_replace("/[^-_0-9a-zA-Z]/","",$LOGINvarONE);

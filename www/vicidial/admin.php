@@ -32,13 +32,14 @@
 #
 # Version  / Build
 #
-$admin_version = '3.1.2-2';
-$admin_build = '20210218-1';
+$admin_version = '3.1.2-3';
+$admin_build = '20210517-1';
 #
 ###############################################################################
 #
 # Changelog
 #
+# 2021-05-17 jff    Allow all characters in vicidial_user_groups
 # 2021-03-12 jff    Fix typo
 # 2021-02-18 jff    Add group_[email|account] to User Groups
 # 2021-02-08 jff    Change length of Campaign ID to 20
@@ -16563,7 +16564,7 @@ if ($ADD==411111)
 				$group_shifts_ct = count($group_shifts);
 				while ($p <= $group_shifts_ct)
 					{
-					$group_shifts[$p] = preg_replace('/[^- \_0-9a-zA-Z]/','',$group_shifts[$p]);
+#					$group_shifts[$p] = preg_replace('/[^- \_0-9a-zA-Z]/','',$group_shifts[$p]);
 					$GROUP_shifts .= "$group_shifts[$p] ";
 					$p++;
 					}
@@ -16572,7 +16573,7 @@ if ($ADD==411111)
 				$vgroup_vgroups_ct = count($agent_status_viewable_groups);
 				while ($p <= $vgroup_vgroups_ct)
 					{
-					$agent_status_viewable_groups[$p] = preg_replace('/[^- \_0-9a-zA-Z]/','',$agent_status_viewable_groups[$p]);
+#					$agent_status_viewable_groups[$p] = preg_replace('/[^- \_0-9a-zA-Z]/','',$agent_status_viewable_groups[$p]);
 					$VGROUP_vgroups .= "$agent_status_viewable_groups[$p] ";
 					$p++;
 					}
@@ -16581,7 +16582,7 @@ if ($ADD==411111)
 				$vgroup_chatgroups_ct = count($agent_allowed_chat_groups);
 				while ($p <= $vgroup_chatgroups_ct)
 					{
-					$agent_allowed_chat_groups[$p] = preg_replace('/[^- \_0-9a-zA-Z]/','',$agent_allowed_chat_groups[$p]);
+#					$agent_allowed_chat_groups[$p] = preg_replace('/[^- \_0-9a-zA-Z]/','',$agent_allowed_chat_groups[$p]);
 					$VGROUP_chatgroups .= "$agent_allowed_chat_groups[$p] ";
 					$p++;
 					}
@@ -16590,7 +16591,7 @@ if ($ADD==411111)
 				$admin_viewable_groups_ct = count($admin_viewable_groups);
 				while ($p <= $admin_viewable_groups_ct)
 					{
-					$admin_viewable_groups[$p] = preg_replace('/[^- \_0-9a-zA-Z]/','',$admin_viewable_groups[$p]);
+	#				$admin_viewable_groups[$p] = preg_replace('/[^- \_0-9a-zA-Z]/','',$admin_viewable_groups[$p]);
 					$Vadmin_viewable_groups .= "$admin_viewable_groups[$p] ";
 					$p++;
 					}
@@ -16599,7 +16600,7 @@ if ($ADD==411111)
 				$admin_viewable_call_times_ct = count($admin_viewable_call_times);
 				while ($p <= $admin_viewable_call_times_ct)
 					{
-					$admin_viewable_call_times[$p] = preg_replace('/[^- \_0-9a-zA-Z]/','',$admin_viewable_call_times[$p]);
+	#				$admin_viewable_call_times[$p] = preg_replace('/[^- \_0-9a-zA-Z]/','',$admin_viewable_call_times[$p]);
 					$Vadmin_viewable_call_times .= "$admin_viewable_call_times[$p] ";
 					$p++;
 					}
