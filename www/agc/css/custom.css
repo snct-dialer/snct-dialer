@@ -54,4 +54,8 @@ select.form_field {
     margin-bottom: 3px;
     padding: 2px;
     border: solid 1px #000066;
-} 
+}
+.label {
+    align:right;
+    font class:body_text;
+}

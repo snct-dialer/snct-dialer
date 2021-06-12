@@ -7,9 +7,10 @@
     * Add some new fields to vividial_list:
       - Update www/vicidial/admin_modify_lead.php,
     * Use block_status for don't dial;
-      add new Status 'BSHO':
+      add new Status 'BSHO' & 'BSMA':
       - Update bin/AST_VDhopper.pl,
-          www/vicidial/admin.php
+          www/vicidial/admin.php,
+          www/agc/vdc_db_query.php.
 	* Fix GDPR purge:
 	  - Update www/vicidial/admin_modify_lead.php.
 	* Allow partial search on phonenumbers:

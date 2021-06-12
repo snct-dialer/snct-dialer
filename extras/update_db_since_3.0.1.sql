@@ -62,3 +62,6 @@ ALTER TABLE `vicidial_list` ADD INDEX `housenr1` (`housenr1`);
 ALTER TABLE `vicidial_list` ADD `customer_status` ENUM('unknown','privat','business') NOT NULL DEFAULT 'unknown';
 ALTER TABLE `vicidial_list` ADD INDEX `CustStatus` (`customer_status`);
 ALTER TABLE `vicidial_list` ADD INDEX `BlockStatus` (`block_status`);
+ALTER TABLE `vicidial_list` ADD `Company` VARCHAR(100) NULL DEFAULT NULL;
+ALTER TABLE `vicidial_list` ADD `Privat` VARCHAR(100) NULL DEFAULT NULL;
+ALTER TABLE `system_settings` ADD `use_comp_privat` TINYINT NOT NULL DEFAULT '0';

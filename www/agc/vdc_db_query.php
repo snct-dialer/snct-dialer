@@ -34,13 +34,14 @@
 #
 # Version  / Build
 #
-$vdc_db_query_version = '3.1.1-1';
-$vdc_db_query_build = '20210415-1';
+$vdc_db_query_version = '3.1.1-2';
+$vdc_db_query_build = '20210601-1';
 #
 ###############################################################################
 #
 # Changelog
 #
+# 2021-06-01 jff    Add test for block_status
 # 2021-04-15 jff    Add housenr1
 # 2020-12-14 jff	Add list_id, owner into SEARCHRESULTSview
 # 2020-10-27 dft	Add Pause code into AGENTSview
@@ -3938,7 +3939,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 				}
 
 			##### grab the data from vicidial_list for the lead_id
-			$stmt="SELECT lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id,housenr1 FROM vicidial_list where lead_id='$lead_id' LIMIT 1;";
+			$stmt="SELECT lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id,housenr1,Company,Privat FROM vicidial_list where lead_id='$lead_id' LIMIT 1;";
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00026',$user,$server_ip,$session_name,$one_mysql_log);}
 			if ($DB) {echo "$stmt\n";}
@@ -3983,6 +3984,8 @@ if ($ACTION == 'manDiaLnextCaLL')
 				$owner			= trim("$row[33]");
 				$entry_list_id	= trim("$row[34]");
 				$housenr1       = trim("$row[35]");
+				$Company        = trim("$row[36]");
+				$Privat         = trim("$row[37]");
 					if ($entry_list_id < 100) {$entry_list_id = $list_id;}
 				}
 			if ($qc_features_active > 0)
@@ -4950,6 +4953,8 @@ if ($ACTION == 'manDiaLnextCaLL')
 					$VDCL_start_call_url = preg_replace('/--A--entry_date--B--/i',urlencode(trim($entry_date)),$VDCL_start_call_url);
 					$VDCL_start_call_url = preg_replace('/--A--agent_email--B--/i',urlencode(trim($agent_email)),$VDCL_start_call_url);
 					$VDCL_start_call_url = preg_replace('/--A--called_count--B--/i',urlencode(trim($called_count)),$VDCL_start_call_url);
+					$VDCL_start_call_url = preg_replace('/--A--Company--B--/i',urlencode(trim($Company)),$VDCL_start_call_url);
+					$VDCL_start_call_url = preg_replace('/--A--Privat--B--/i',urlencode(trim($Privat)),$VDCL_start_call_url);
 
 					if (strlen($custom_field_names)>2)
 						{
@@ -5408,6 +5413,8 @@ if ($ACTION == 'manDiaLnextCaLL')
 			$LeaD_InfO .=	$VDCL_ingroup_script_color_two . "\n";
 			$LeaD_InfO .=   FormatPhoneNr($phone_code, $dialed_number) . "\n";
 			$LeaD_InfO .=	$housenr1 . "\n";
+			$LeaD_InfO .=	$Company . "\n";
+			$LeaD_InfO .=	$Privat . "\n";
 
 			echo $LeaD_InfO;
 			}
@@ -8523,7 +8530,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00107',$user,$server_ip,$session_name,$one_mysql_log);}
 
 			##### grab the data from vicidial_list for the lead_id
-			$stmt="SELECT lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id FROM vicidial_list where lead_id='$lead_id' LIMIT 1;";
+			$stmt="SELECT lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id,housenr1,Company,Privat FROM vicidial_list where lead_id='$lead_id' LIMIT 1;";
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00108',$user,$server_ip,$session_name,$one_mysql_log);}
 			if ($DB) {echo "$stmt\n";}
@@ -8564,6 +8571,9 @@ if ($ACTION == 'VDADcheckINCOMING')
 				$rank			= trim("$row[32]");
 				$owner			= trim("$row[33]");
 				$entry_list_id	= trim("$row[34]");
+				$housenr1	    = trim("$row[35]");
+				$Company        = trim("$row[36]");
+				$Privat         = trim("$row[37]");
 				if ($entry_list_id < 100) {$entry_list_id = $list_id;}
 				}
 			if ($qc_features_active > 0)
@@ -9474,6 +9484,9 @@ if ($ACTION == 'VDADcheckINCOMING')
 			$LeaD_InfO .=   FormatPhoneNr($phone_code, $dialed_number) . "\n";
 			$LeaD_InfO .=   $VDCL_campaign_acr_id . "\n";
 			$LeaD_InfO .=   $VDCL_ingroup_acr_id . "\n";
+			$LeaD_InfO .=   $housenr1 . "\n";
+			$LeaD_InfO .=   $Company . "\n";
+			$LeaD_InfO .=   $Privat . "\n";
 
 			echo $LeaD_InfO;
 
@@ -10114,7 +10127,7 @@ if ($ACTION == 'VDADcheckINCOMINGother')
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmtA,'00550',$user,$server_ip,$session_name,$one_mysql_log);}
 
 			##### grab the data from vicidial_list for the lead_id
-			$stmt="SELECT lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id FROM vicidial_list where lead_id='$lead_id' LIMIT 1;";
+			$stmt="SELECT lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id,housenr1,Company,Privat FROM vicidial_list where lead_id='$lead_id' LIMIT 1;";
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00492',$user,$server_ip,$session_name,$one_mysql_log);}
 			if ($DB) {echo "$stmt\n";}
@@ -10155,6 +10168,9 @@ if ($ACTION == 'VDADcheckINCOMINGother')
 				$rank			= trim("$row[32]");
 				$owner			= trim("$row[33]");
 				$entry_list_id	= trim("$row[34]");
+				$housenr1       = trim("$row[35]");
+				$Company        = trim("$row[36]");
+				$Privat         = trim("$row[37]");
 				if ($entry_list_id < 100) {$entry_list_id = $list_id;}
 				}
 
@@ -10287,7 +10303,7 @@ if ($ACTION == 'VDADcheckINCOMINGother')
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmtA,'00643',$user,$server_ip,$session_name,$one_mysql_log);}
 
 			##### grab the data from vicidial_list for the lead_id
-			$stmt="SELECT lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id FROM vicidial_list where lead_id='$lead_id' LIMIT 1;";
+			$stmt="SELECT lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id,housenr1,Company,Privat FROM vicidial_list where lead_id='$lead_id' LIMIT 1;";
 			$rslt=mysql_to_mysqli($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00644',$user,$server_ip,$session_name,$one_mysql_log);}
 			if ($DB) {echo "$stmt\n";}
@@ -10327,6 +10343,9 @@ if ($ACTION == 'VDADcheckINCOMINGother')
 				$rank			= trim("$row[32]");
 				$owner			= trim("$row[33]");
 				$entry_list_id	= trim("$row[34]");
+				$housenr1       = trim("$row[35]");
+				$Company        = trim("$row[36]");
+				$Privat         = trim("$row[37]");
 				if ($entry_list_id < 100) {$entry_list_id = $list_id;}
 				}
 
@@ -10807,6 +10826,9 @@ if ($ACTION == 'VDADcheckINCOMINGother')
 			$LeaD_InfO .=   FormatPhoneNr($phone_code, $dialed_number) . "\n";
 			$LeaD_InfO .=   $VDCL_campaign_acr_id . "\n";
 			$LeaD_InfO .=   $VDCL_ingroup_acr_id . "\n";
+			$LeaD_InfO .=	$housenr1 . "\n";
+			$LeaD_InfO .=	$Company . "\n";
+			$LeaD_InfO .=	$Privat . "\n";
 
 			echo $LeaD_InfO;
 
@@ -11314,7 +11336,7 @@ if ($ACTION == 'LeaDSearcHSelecTUpdatE')
 				if ($mel > 0) {$errno = mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00710',$user,$server_ip,$session_name,$one_mysql_log);}
 
 			##### grab the data from vicidial_list for the lead_id
-			$stmt="SELECT lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id,housenr1 FROM vicidial_list where lead_id='$lead_id' LIMIT 1;";
+			$stmt="SELECT lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id,housenr1,Company,Privat FROM vicidial_list where lead_id='$lead_id' LIMIT 1;";
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00455',$user,$server_ip,$session_name,$one_mysql_log);}
 			if ($DB) {echo "$stmt\n";}
@@ -11356,6 +11378,8 @@ if ($ACTION == 'LeaDSearcHSelecTUpdatE')
 				$owner			= trim("$row[33]");
 				$entry_list_id	= trim("$row[34]");
 				$housenr1	    = trim("$row[35]");
+				$Company	    = trim("$row[36]");
+				$Privat 	    = trim("$row[37]");
 				if ($entry_list_id < 100) {$entry_list_id = $list_id;}
 				}
 			if ($qc_features_active > 0)
@@ -11938,6 +11962,8 @@ if ($ACTION == 'LeaDSearcHSelecTUpdatE')
 			$LeaD_InfO .=	$VDCL_ingroup_script_color_two . "\n";
 			$LeaD_InfO .=	FormatPhoneNr($phone_code, $dialed_number) . "\n";
 			$LeaD_InfO .=	$housenr1 . "\n";
+			$LeaD_InfO .=	$Company . "\n";
+			$LeaD_InfO .=	$Privat . "\n";
 
 			echo $LeaD_InfO;
 
@@ -14900,7 +14926,7 @@ if ($ACTION == 'updateLEAD')
 			if ($DO_NOT_UPDATEphone < 1)
 				{$phoneSQL = ",phone_number='$phone_number'";}
 
-			$stmt="UPDATE vicidial_list set vendor_lead_code='" . mysqli_real_escape_string($link, $vendor_lead_code) . "', title='" . mysqli_real_escape_string($link, $title) . "', first_name='" . mysqli_real_escape_string($link, $first_name) . "', middle_initial='" . mysqli_real_escape_string($link, $middle_initial) . "', last_name='" . mysqli_real_escape_string($link, $last_name) . "', address1='" . mysqli_real_escape_string($link, $address1) . "', address2='" . mysqli_real_escape_string($link, $address2) . "', address3='" . mysqli_real_escape_string($link, $address3) . "', city='" . mysqli_real_escape_string($link, $city) . "', state='" . mysqli_real_escape_string($link, $state) . "', province='" . mysqli_real_escape_string($link, $province) . "', postal_code='" . mysqli_real_escape_string($link, $postal_code) . "', country_code='" . mysqli_real_escape_string($link, $country_code) . "', gender='" . mysqli_real_escape_string($link, $gender) . "', date_of_birth='" . mysqli_real_escape_string($link, $date_of_birth) . "', alt_phone='" . mysqli_real_escape_string($link, $alt_phone) . "', email='" . mysqli_real_escape_string($link, $email) . "', security_phrase='" . mysqli_real_escape_string($link, $security_phrase) . "', comments='" . mysqli_real_escape_string($link, $comments) . "', housenr1='" . mysqli_real_escape_string($link, $housenr1) . "' $phoneSQL where lead_id='$lead_id';";
+			$stmt="UPDATE vicidial_list set vendor_lead_code='" . mysqli_real_escape_string($link, $vendor_lead_code) . "', title='" . mysqli_real_escape_string($link, $title) . "', first_name='" . mysqli_real_escape_string($link, $first_name) . "', middle_initial='" . mysqli_real_escape_string($link, $middle_initial) . "', last_name='" . mysqli_real_escape_string($link, $last_name) . "', address1='" . mysqli_real_escape_string($link, $address1) . "', address2='" . mysqli_real_escape_string($link, $address2) . "', address3='" . mysqli_real_escape_string($link, $address3) . "', city='" . mysqli_real_escape_string($link, $city) . "', state='" . mysqli_real_escape_string($link, $state) . "', province='" . mysqli_real_escape_string($link, $province) . "', postal_code='" . mysqli_real_escape_string($link, $postal_code) . "', country_code='" . mysqli_real_escape_string($link, $country_code) . "', gender='" . mysqli_real_escape_string($link, $gender) . "', date_of_birth='" . mysqli_real_escape_string($link, $date_of_birth) . "', alt_phone='" . mysqli_real_escape_string($link, $alt_phone) . "', email='" . mysqli_real_escape_string($link, $email) . "', security_phrase='" . mysqli_real_escape_string($link, $security_phrase) . "', comments='" . mysqli_real_escape_string($link, $comments) . "', Company='" . mysqli_real_escape_string($link, $Company) . "', Privat='" . mysqli_real_escape_string($link, $Privat) . "', housenr1='" . mysqli_real_escape_string($link, $housenr1) . "' $phoneSQL where lead_id='$lead_id';";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00163',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -19242,6 +19268,7 @@ function manual_dnc_check($temp_phone_number, $temp_no_hopper, $temp_dial_only)
 	global $manual_dial_filter, $use_internal_dnc, $use_campaign_dnc, $campaign, $user, $link, $NOW_TIME, $mel, $server_ip, $session_name, $one_mysql_log, $SSagent_debug_logging, $startMS, $ACTION, $php_script, $stage, $lead_id;
 
 	$use_other_campaign_dnc='';
+	$block_status = 'free';
 	if (strlen($campaign) > 0)
 		{
 		$stmt="SELECT use_other_campaign_dnc from vicidial_campaigns where campaign_id='$campaign';";
@@ -19252,7 +19279,76 @@ function manual_dnc_check($temp_phone_number, $temp_no_hopper, $temp_dial_only)
 		$temp_campaign_id = $campaign;
 		if (strlen($use_other_campaign_dnc) > 0) {$temp_campaign_id = $use_other_campaign_dnc;}
 		}
-
+    
+    if($lead_id > 0) {
+	    
+        $stmt1="SELECT block_status from vicidial_list where lead_id = '$lead_id';";
+	    $rslt1=mysqli_query($link, $stmt1);
+	    if ($mel > 0) {
+	        mysql_error_logging($NOW_TIME,$link,$mel,$stmt1,'00445a',$user,$server_ip,$session_name,$one_mysql_log);
+	    }
+	    $row1=mysqli_fetch_row($rslt1);
+	    $block_status =	$row1[0];
+	    if($block_status != 'free') {
+	        
+            ### purge from the dial queue and api
+	        $stmt = "DELETE from vicidial_manual_dial_queue where phone_number='$temp_phone_number' and user='$user';";
+	        if ($DB) {
+	            echo "$stmt\n";
+	        }
+	        $rslt=mysqli_query($link, $stmt);
+	        if ($mel > 0) {
+	            mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00356',$user,$server_ip,$session_name,$one_mysql_log);
+	        }
+	        $VMDQaffected_rows = mysqli_affected_rows($link);
+	        
+	        $stmt = "UPDATE vicidial_live_agents set external_dial='' where user='$user';";
+	        if ($DB) {
+	            echo "$stmt\n";
+	        }
+	        $rslt=mysqli_query($link, $stmt);
+	        if ($mel > 0) {
+	            mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00357',$user,$server_ip,$session_name,$one_mysql_log);
+	        }
+	        $VLAEDaffected_rows = mysqli_affected_rows($link);
+	        
+	        if ($temp_no_hopper > 0) {
+	           
+	           ### flag the lead as BSMA
+    	       $stmt = "UPDATE vicidial_list set status='BSMA' where lead_id='$lead_id';";
+	           if ($DB) {
+	               echo "$stmt\n";
+	           }
+	           $rslt=mysqli_query($link, $stmt);
+	           if ($mel > 0) {
+	               mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00445c',$user,$server_ip,$session_name,$one_mysql_log);
+	           }
+	        
+    	       ### reset agent log record
+	           $stmt="UPDATE vicidial_agent_log set lead_id=NULL,comments='' where agent_log_id='$agent_log_id';";
+	           if ($format=='debug') {
+	               echo "\n<!-- $stmt -->";
+	           }
+	           $rslt=mysqli_query($link, $stmt);
+    	       if ($mel > 0) {
+    	           mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00445c',$user,$server_ip,$session_name,$one_mysql_log);
+    	       }
+	           echo " NO-HOPPER DNC\nTRY AGAIN\n";
+	           $stage .= "|$agent_log_id|$vla_status|$agent_dialed_type|$agent_dialed_number|";
+            } else {
+                if ($temp_dial_only) {
+                    echo " CALL NOT PLACED\nDNC NUMBER\n";
+                } else {
+	               echo "DNC NUMBER\n";
+                }
+            }
+            if ($SSagent_debug_logging > 0) {
+                vicidial_ajax_log($NOW_TIME,$startMS,$link,$ACTION,$php_script,$user,$stage,$lead_id,$session_name,$stmt);
+            }
+	        exit;
+	    }
+    }
+	
 	if ( (preg_match("/DNC/",$manual_dial_filter)) and (!preg_match("/CAMPDNC_ONLY/",$manual_dial_filter)) and (!preg_match("/INTERNALDNC_ONLY/",$manual_dial_filter)) )
 		{
 		if ( (preg_match("/Y/",$use_internal_dnc)) or (preg_match("/AREACODE/",$use_internal_dnc)) )

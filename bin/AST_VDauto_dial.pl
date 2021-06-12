@@ -1780,7 +1780,7 @@ while($one_day_interval > 0)
 							$CLstage =~ s/LIVE|-//gi;
 							if ($CLstage < 0.25) {$CLstage=0;}
 
-							if ($CLstatus =~ /BUSY/) {$CLnew_status = '';}
+							if ($CLstatus =~ /BUSY/) {$CLnew_status = 'NA';}
 							else
 								{
 								if ($CLstatus =~ /DISCONNECT/) {$CLnew_status = 'ADC';}
