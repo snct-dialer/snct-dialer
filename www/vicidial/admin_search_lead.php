@@ -27,13 +27,14 @@
 #
 # Version  / Build
 #
-$admin_search_lead_version = '3.1.0-1';
-$admin_search_lead_build = '20210529-1';
+$admin_search_lead_version = '3.1.0-2';
+$admin_search_lead_build = '20210617-1';
 #
 ###############################################################################
 #
 # Changelog#
 #
+# 2021-06-17 jff    Fix script positon
 # 2021-05-29 jff    Allow partial search on phonenumbers
 # 2021-01-10 jff	Replace alt_phone_search with a checkbox
 # 2020-05-06 jff	Add strlen of $list_id into if clause to search from
@@ -270,13 +271,6 @@ $regexLOGallowed_campaigns = " $LOGallowed_campaigns ";
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
 <title>
 <?php echo _("ADMINISTRATION: Lead Search");
-?>
-<script>
-var CurlClick = function(URL, Param) {
-    object.innerHTML= value;
-};
-</script>
-<?php 
 
 ##### BEGIN Set variables to make header show properly #####
 $ADD =					'100';
@@ -299,6 +293,14 @@ $subcamp_color =	'#C6C6C6';
 ##### END Set variables to make header show properly #####
 
 require("admin_header.php");
+
+?>
+<script>
+var CurlClick = function(URL, Param) {
+    object.innerHTML= value;
+};
+</script>
+<?php 
 
 $label_title =				_("Title");
 $label_first_name =			_("First");

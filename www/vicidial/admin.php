@@ -32,13 +32,14 @@
 #
 # Version  / Build
 #
-$admin_version = '3.1.2-3';
-$admin_build = '20210517-1';
+$admin_version = '3.1.2-4';
+$admin_build = '20210616-1';
 #
 ###############################################################################
 #
 # Changelog
 #
+# 2021-06-16 jff    Add Maximum Adapt Dial Level into Campaign Basic View
 # 2021-05-17 jff    Allow all characters in vicidial_user_groups
 # 2021-03-12 jff    Fix typo
 # 2021-02-18 jff    Add group_[email|account] to User Groups
@@ -15296,7 +15297,7 @@ if ($ADD==44)
 				if ( (!preg_match('/DISABLED/', $list_order_mix)) and ($hopper_level < 100) )
 					{$hopper_level='100';}
 
-				$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',hopper_level='$hopper_level', $adlSQL lead_filter_id='$lead_filter_id',dial_method='$dial_method',adaptive_intensity='$adaptive_intensity',campaign_changedate='$SQLdate',list_order_mix='$list_order_mix' where campaign_id='$campaign_id';";
+				$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',hopper_level='$hopper_level', $adlSQL lead_filter_id='$lead_filter_id',dial_method='$dial_method',adaptive_intensity='$adaptive_intensity',campaign_changedate='$SQLdate',list_order_mix='$list_order_mix',adaptive_maximum_level='$adaptive_maximum_level' where campaign_id='$campaign_id';";
 				$rslt=mysql_to_mysqli($stmtA, $link);
 
 				### LOG INSERTION Admin Log Table ###
@@ -26129,6 +26130,7 @@ if ($ADD==34)
 		$call_count_limit = $row[133];
 		$allow_chats = $row[134];
 		$web_form_address_three=$row[135];
+		$adaptive_maximum_level=$row[49];
 
 	if (preg_match('/DISABLED/', $list_order_mix))
 		{$DEFlistDISABLE = '';	$DEFstatusDISABLED=0;}
@@ -26540,7 +26542,9 @@ if ($ADD==34)
 				else {echo "<option>$adl</option>\n";}
 				}
 			echo "</select>(0 = off)$NWB#campaigns-auto_dial_level$NWE</td></tr>\n";
-
+			
+			echo "<tr bgcolor=#$SSalt_row1_background><td align=right>"._QXZ("Maximum Adapt Dial Level").": </td><td align=left><input type=text name=adaptive_maximum_level size=6 maxlength=6 value=\"$adaptive_maximum_level\"><i>"._QXZ("number only")."</i> $NWB#campaigns-adaptive_maximum_level$NWE</td></tr>\n";
+			
 			echo "<tr bgcolor=#$SSalt_row1_background><td align=right>"._QXZ("Adapt Intensity Modifier").": </td><td align=left><select size=1 name=adaptive_intensity>\n";
 			$n=40;
 			while ($n>=-40)

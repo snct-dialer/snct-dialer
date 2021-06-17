@@ -33,13 +33,14 @@
 #
 # Version  / Build
 #
-$admin_modify_lead_version = '3.1.1-8';
-$admin_modify_lead_build = '20210525-1';
+$admin_modify_lead_version = '3.1.1-9';
+$admin_modify_lead_build = '2021015-1';
 #
 ###############################################################################
 #
 # Changelog#
 #
+# 2021-06-15 jff    Fix block_status handling
 # 2021-05-25 jff    Fix gpdr purge.
 # 2021-05-10 jff    Fix save owner.
 # 2021-04-30 jff    Move system-settings to ../inc/get_system_settings.php
@@ -1275,12 +1276,12 @@ if ($end_call > 0)
             $stmtA .= "rank='" . mysqli_real_escape_string($link, $rank) . "', ";
             $stmtA .= "vendor_lead_code='" . mysqli_real_escape_string($link, $vendor_id) ." ";
             $stmtA .= "'$source_idSQL, ";
-            $stmtA .= "block_status='" .$block_status . "', "; 
+            $stmtA .= "block_status='" .mysqli_real_escape_string($link,$block_status) . "', "; 
             $stmtA .= "date_of_birth='" . mysqli_real_escape_string($link, $date_of_birth) . "', ";
             $stmtA .= "selection='" . mysqli_real_escape_string($link, $selection) . "', ";
             $stmtA .= "customer_status='" .$customer_status . "' ";
             $stmtA .= "where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "'";
-		sd_debug_log($stmt);
+		sd_debug_log($stmtA);
 		if ($DB) {sd_debug_log($stmt);}
 		$rslt=mysqli_query($link, $stmtA);
 
@@ -1990,7 +1991,7 @@ else
 
 	$comments = preg_replace("/!N/","\n",$comments);
 
-	$DisableSel = "disabled";
+	$DisableSel = "hidden";
 	if($LOGuser_level == 9) {
 	    $DisableSel = "";
 	}
@@ -2100,15 +2101,19 @@ else
 		}
 	else
 		{
-		if($BlockStatus == "free") {
-		  echo "<tr style=\"background-color:#00FF00\";><td align=right>$label_BlockStatus: </td><td align=left>".$BlockStr."</td></tr>\n";
-		} else {
-		    if($BlockStatus == "blocked") {
-        	  echo "<tr style=\"background-color:#FF0000\";><td align=right>$label_BlockStatus: </td><td align=left>".$BlockStr."</td></tr>\n";
-		    } else {
-	          echo "<tr style=\"background-color:#FFAA00\";><td align=right>$label_BlockStatus: </td><td align=left>".$BlockStr."</td></tr>\n";
-		    }
-		}
+		  if($LOGuser_level == 9) {
+		      if($BlockStatus == "free") {
+		          echo "<tr style=\"background-color:#00FF00\";><td align=right>$label_BlockStatus: </td><td align=left>".$BlockStr."</td></tr>\n";
+		      } else {
+		          if($BlockStatus == "blocked") {
+        	       echo "<tr style=\"background-color:#FF0000\";><td align=right>$label_BlockStatus: </td><td align=left>".$BlockStr."</td></tr>\n";
+		          } else {
+	               echo "<tr style=\"background-color:#FFAA00\";><td align=right>$label_BlockStatus: </td><td align=left>".$BlockStr."</td></tr>\n";
+		          }
+		      }
+		  } else {
+		      echo "<br>".$BlockStr . PHP_EOL;
+		  }
 		echo "<tr style=\"background-color:#FFAA00\";><td align=right>$label_CustStatus: </td><td align=left>".$CustStr ."</td></tr>\n";
 		echo "<tr style=\"background-color:#FFAA00\";><td align=right>$label_Selection: </td><td align=left>".FillSelection($selection, $link) ."</td></tr>\n";
 		echo "<tr><td align=right>$label_title: </td><td align=left><input type=text name=title size=4 maxlength=$MAXtitle value=\"$title\"> &nbsp; \n";
@@ -3266,19 +3271,24 @@ function FillSelection($sel, $link) {
 
 function FillBlockStatus($BlkSts, $DisStat) {
     
-    $ArrBlock = array("free" => _("free to use"), "temporary" => _("temporary blocked"), "blocked" => _("use prohibited"), "full" => _("full blocked"));
+    if($DisStat == "hidden") {
+        $BlockStr = "<input type=hidden name=\"block_status\" value=\"$BlkSts\">\n";
+    } else {
     
-    $BlockStr = "<select name=\"block_status\" size=\"1\" $DisStat>";
+        $ArrBlock = array("free" => _("free to use"), "temporary" => _("temporary blocked"), "blocked" => _("use prohibited"), "full" => _("full blocked"));
     
-    foreach ($ArrBlock as $BlockTest => $v) {
-        if($BlockTest == $BlkSts) {
-            $BlockStr .= "<option SELECTED value=\"".$BlockTest."\">".$v. "</option>\n";
-        } else {
-            $BlockStr .= "<option value=\"".$BlockTest."\">".$v. "</option>\n";
+        $BlockStr = "<select name=\"block_status\" size=\"1\" $DisStat>";
+        sd_debug_log("BlkSts|$BlkSts|");
+    
+        foreach ($ArrBlock as $BlockTest => $v) {
+            if($BlockTest == $BlkSts) {
+                $BlockStr .= "<option SELECTED value=\"".$BlockTest."\">".$v. "</option>\n";
+            } else {
+                $BlockStr .= "<option value=\"".$BlockTest."\">".$v. "</option>\n";
+            }
         }
+        $BlockStr .= "</select>";
     }
-    $BlockStr .= "</select>";
-    
     return $BlockStr;
 
 }
