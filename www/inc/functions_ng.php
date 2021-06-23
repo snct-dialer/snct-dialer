@@ -126,7 +126,54 @@ function curl_post_url($Url, $Param) {
     
 }
 
-
+###############################################################################
+#
+# function GetEnumItems
+#
+# function to get the enum items from a field
+#
+# Parameter: $table     mysql Table
+#            $field     mysql Field to check
+#            $conn      mysqli Connection
+#            $returnType    
+#
+# Return: array         with the enum items
+#
+#
+# Version 1.0.0
+#
+###############################################################################
+function GetEnumItems($table, $field, $conn, $returnType = "Array") {
+       
+    $stmt = "SHOW COLUMNS FROM `$table` LIKE '$field'";
+    sd_debug_log($stmt);
+    if(($res = mysqli_query($conn, $stmt)) === false) 
+    {
+        sd_debug_log("Invalid query: ". mysqli_error($link));
+        return -1;
+    }
+    $it  = mysqli_fetch_array($res, MYSQLI_BOTH);
+    $it = $it["Type"];
+    mysqli_free_result($res);
+    
+    sd_debug_log($it);
+    $rst = explode(",", $it);
+    while ($elem = each($rst)) {
+        $rst[$elem[0]] = str_replace("set('", "", $rst[$elem[0]]);
+        $rst[$elem[0]] = str_replace("enum('", "", $rst[$elem[0]]);
+        $rst[$elem[0]] = str_replace("')", "", $rst[$elem[0]]);
+        $rst[$elem[0]] = str_replace("'", "", $rst[$elem[0]]);
+    }
+    $count = count($rst);
+    for ($i = 0; $i < $count; $i++) {
+        sd_debug_log("EnumArry[$i]: ".$rst[$i]);
+    }
+    if ($returnType == "Array") {
+        return $rst;
+    } else {
+        return implode($returnType, $rst);
+    }
+}
 
 
 #curl_post_url("https://mosel-lug.de/", "");

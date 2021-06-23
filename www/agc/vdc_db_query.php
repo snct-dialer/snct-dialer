@@ -849,8 +849,10 @@ if (isset($_GET["customer_sec"]))			{$customer_sec=$_GET["customer_sec"];}
 	
 if (isset($_GET["housenr1"]))					{$housenr1=$_GET["housenr1"];}
 	elseif (isset($_POST["housenr1"]))			{$housenr1=$_POST["housenr1"];}
-
-
+if (isset($_GET["customer_status"]))			{$customer_status=$_GET["customer_status"];}
+	elseif (isset($_POST["customer_status"]))	{$customer_status=$_POST["customer_status"];}
+	
+	
 require_once("../tools/system_wide_settings.php");
 require_once("../tools/format_phone.php");
 
@@ -3939,7 +3941,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 				}
 
 			##### grab the data from vicidial_list for the lead_id
-			$stmt="SELECT lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id,housenr1,Company,Privat FROM vicidial_list where lead_id='$lead_id' LIMIT 1;";
+			$stmt="SELECT lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id,housenr1,Company,Privat,customer_status FROM vicidial_list where lead_id='$lead_id' LIMIT 1;";
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00026',$user,$server_ip,$session_name,$one_mysql_log);}
 			if ($DB) {echo "$stmt\n";}
@@ -3986,6 +3988,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 				$housenr1       = trim("$row[35]");
 				$Company        = trim("$row[36]");
 				$Privat         = trim("$row[37]");
+				$customer_status = trim("$row[38]");
 					if ($entry_list_id < 100) {$entry_list_id = $list_id;}
 				}
 			if ($qc_features_active > 0)
@@ -4955,6 +4958,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 					$VDCL_start_call_url = preg_replace('/--A--called_count--B--/i',urlencode(trim($called_count)),$VDCL_start_call_url);
 					$VDCL_start_call_url = preg_replace('/--A--Company--B--/i',urlencode(trim($Company)),$VDCL_start_call_url);
 					$VDCL_start_call_url = preg_replace('/--A--Privat--B--/i',urlencode(trim($Privat)),$VDCL_start_call_url);
+					$VDCL_start_call_url = preg_replace('/--A--cstomer_status--B--/i',urlencode(trim($customer_status)),$VDCL_start_call_url);
 
 					if (strlen($custom_field_names)>2)
 						{
@@ -5415,6 +5419,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 			$LeaD_InfO .=	$housenr1 . "\n";
 			$LeaD_InfO .=	$Company . "\n";
 			$LeaD_InfO .=	$Privat . "\n";
+			$LeaD_InfO .=	$customer_status . "\n";
 
 			echo $LeaD_InfO;
 			}
@@ -11336,7 +11341,7 @@ if ($ACTION == 'LeaDSearcHSelecTUpdatE')
 				if ($mel > 0) {$errno = mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00710',$user,$server_ip,$session_name,$one_mysql_log);}
 
 			##### grab the data from vicidial_list for the lead_id
-			$stmt="SELECT lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id,housenr1,Company,Privat FROM vicidial_list where lead_id='$lead_id' LIMIT 1;";
+			$stmt="SELECT lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id,housenr1,Company,Privat,customer_status FROM vicidial_list where lead_id='$lead_id' LIMIT 1;";
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00455',$user,$server_ip,$session_name,$one_mysql_log);}
 			if ($DB) {echo "$stmt\n";}
@@ -11380,6 +11385,8 @@ if ($ACTION == 'LeaDSearcHSelecTUpdatE')
 				$housenr1	    = trim("$row[35]");
 				$Company	    = trim("$row[36]");
 				$Privat 	    = trim("$row[37]");
+				$customer_status = trim("$row[38]");
+				
 				if ($entry_list_id < 100) {$entry_list_id = $list_id;}
 				}
 			if ($qc_features_active > 0)
@@ -11964,6 +11971,7 @@ if ($ACTION == 'LeaDSearcHSelecTUpdatE')
 			$LeaD_InfO .=	$housenr1 . "\n";
 			$LeaD_InfO .=	$Company . "\n";
 			$LeaD_InfO .=	$Privat . "\n";
+			$LeaD_InfO .=	$customer_status . "\n";
 
 			echo $LeaD_InfO;
 

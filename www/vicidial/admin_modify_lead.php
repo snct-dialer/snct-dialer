@@ -1276,7 +1276,9 @@ if ($end_call > 0)
             $stmtA .= "rank='" . mysqli_real_escape_string($link, $rank) . "', ";
             $stmtA .= "vendor_lead_code='" . mysqli_real_escape_string($link, $vendor_id) ." ";
             $stmtA .= "'$source_idSQL, ";
-            $stmtA .= "block_status='" .mysqli_real_escape_string($link,$block_status) . "', "; 
+            if($LOGuser_level == 9) {
+                $stmtA .= "block_status='" .mysqli_real_escape_string($link,$block_status) . "', ";
+            }
             $stmtA .= "date_of_birth='" . mysqli_real_escape_string($link, $date_of_birth) . "', ";
             $stmtA .= "selection='" . mysqli_real_escape_string($link, $selection) . "', ";
             $stmtA .= "customer_status='" .$customer_status . "' ";
@@ -2101,7 +2103,7 @@ else
 		}
 	else
 		{
-		  if($LOGuser_level == 9) {
+#		  if($LOGuser_level == 9) {
 		      if($BlockStatus == "free") {
 		          echo "<tr style=\"background-color:#00FF00\";><td align=right>$label_BlockStatus: </td><td align=left>".$BlockStr."</td></tr>\n";
 		      } else {
@@ -2111,11 +2113,11 @@ else
 	               echo "<tr style=\"background-color:#FFAA00\";><td align=right>$label_BlockStatus: </td><td align=left>".$BlockStr."</td></tr>\n";
 		          }
 		      }
-		  } else {
-		      echo "<br>".$BlockStr . PHP_EOL;
-		  }
-		echo "<tr style=\"background-color:#FFAA00\";><td align=right>$label_CustStatus: </td><td align=left>".$CustStr ."</td></tr>\n";
-		echo "<tr style=\"background-color:#FFAA00\";><td align=right>$label_Selection: </td><td align=left>".FillSelection($selection, $link) ."</td></tr>\n";
+#		  } else {
+#		      echo "<br>".$BlockStr . PHP_EOL;
+#		  }
+		echo "<tr style=\"background-color:#FFFF00\";><td align=right>$label_CustStatus: </td><td align=left>".$CustStr ."</td></tr>\n";
+		echo "<tr style=\"background-color:#FFFF00\";><td align=right>$label_Selection: </td><td align=left>".FillSelection($selection, $link) ."</td></tr>\n";
 		echo "<tr><td align=right>$label_title: </td><td align=left><input type=text name=title size=4 maxlength=$MAXtitle value=\"$title\"> &nbsp; \n";
 		echo "$label_first_name: <input type=text name=first_name size=15 maxlength=$MAXfirst_name value=\"".htmlparse($first_name)."\"> </td></tr>\n";
 		echo "<tr><td align=right>$label_middle_initial:  </td><td align=left><input type=text name=middle_initial size=4 maxlength=$MAXmiddle_initial value=\"".htmlparse($middle_initial)."\"> &nbsp; \n";
@@ -3270,12 +3272,12 @@ function FillSelection($sel, $link) {
 }
 
 function FillBlockStatus($BlkSts, $DisStat) {
+
+    $ArrBlock = array("free" => _("free to use"), "temporary" => _("temporary blocked"), "blocked" => _("use prohibited"), "full" => _("full blocked"));
     
     if($DisStat == "hidden") {
-        $BlockStr = "<input type=hidden name=\"block_status\" value=\"$BlkSts\">\n";
+        $BlockStr = "<input type=text name=\"block_status\" value=\"$ArrBlock[$BlkSts]\" readonly>\n";
     } else {
-    
-        $ArrBlock = array("free" => _("free to use"), "temporary" => _("temporary blocked"), "blocked" => _("use prohibited"), "full" => _("full blocked"));
     
         $BlockStr = "<select name=\"block_status\" size=\"1\" $DisStat>";
         sd_debug_log("BlkSts|$BlkSts|");

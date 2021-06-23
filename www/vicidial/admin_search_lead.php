@@ -32,9 +32,9 @@ $admin_search_lead_build = '20210617-1';
 #
 ###############################################################################
 #
-# Changelog#
+# Changelog
 #
-# 2021-06-17 jff    Fix script positon
+# 2021-06-17 jff    Fix script position
 # 2021-05-29 jff    Allow partial search on phonenumbers
 # 2021-01-10 jff	Replace alt_phone_search with a checkbox
 # 2020-05-06 jff	Add strlen of $list_id into if clause to search from

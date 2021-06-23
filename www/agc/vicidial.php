@@ -21,6 +21,7 @@
 #
 # dbconnect_mysqli.php
 # functions.php
+# ../inc/functions_ng.php
 # SNCTVersion.inc
 # ../tools/system_wide_settings.php
 # options.php
@@ -83,6 +84,7 @@ $DB=0;
 
 require_once("dbconnect_mysqli.php");
 require_once("functions.php");
+require_once("../inc/functions_ng.php");
 $SNCT_version = file_get_contents("SNCTVersion.inc");
 
 
@@ -7819,6 +7821,8 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								document.vicidial_form.security_phrase.value	= change_array[29];
 								document.vicidial_form.Company.value			= change_array[71];
 								document.vicidial_form.Privat.value				= change_array[72];
+								document.getElementById('customer_status').value	= change_array[73];
+								
 								var REGcommentsNL = new RegExp("!N","g");
 								change_array[30] = change_array[30].replace(REGcommentsNL, "\n");
 								document.vicidial_form.comments.value			= change_array[30];
@@ -9391,6 +9395,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								post_phone_time_diff_alert_message				= MDnextResponse_array[50];
 								document.vicidial_form.Company.value			= MDnextResponse_array[65];
 								document.vicidial_form.Privat.value				= MDnextResponse_array[66];
+								document.getElementById('customer_status').value = MDnextResponse_array[67];
 								
 							//Added By Poundteam for Audited Comments (Manual Dial Section Only)
 							if (qc_enabled > 0)
@@ -20067,6 +20072,22 @@ $zi=2;
 	       if($row_AgPos["span_id"] != "") {
 	           echo "<font class=\"body_text2\"><span id=\"".$row_AgPos["span_id"]."\"> &nbsp; </span></font>" . PHP_EOL;
 	       }
+	    }
+	    if($row_AgPos["InputType"] == "select") {
+	        if($row_AgPos["List_Field"] == "customer_status") {
+                echo "<div  id=\"agent_leads\" class=\"agent_leads\"><label class=\"agent_item\" for=\"".$row_AgPos["List_Field"]."\">".$row_AgPos["DisplayName"]."</label>" . PHP_EOL;
+                
+                $EnumArr = GetEnumItems("vicidial_list", "customer_status", $link);
+                
+                $BlockStr = '<select name="'.$row_AgPos['List_Field'].'" size="1" class="cust_form" id="'.$row_AgPos['List_Field'].'">';
+#                sd_debug_log("EnumArray|".$EnumArr."|");
+                
+                foreach ($EnumArr as $BlockTest) {
+                    $BlockStr .= "<option value=\"".$BlockTest."\">"._($BlockTest). "</option>\n";
+                }
+                $BlockStr .= "</select></div>";
+                echo $BlockStr . PHP_EOL;    
+	        }
 	    }
 	    if($row_AgPos["InputType"] == "email") {
 	        echo "<div id=\"agent_leads\" class=\"agent_leads\"><label class=\"agent_item\" for=\"".$row_AgPos["List_Field"]."\">".$row_AgPos["DisplayName"]."</label>" . PHP_EOL;
