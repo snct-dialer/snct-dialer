@@ -18,6 +18,12 @@
 	* Fix block_status handling:
 	  - Update www/vicidial/admin_modify_lead.php.
 
+3.0.6
+  [Jörg Frings-Fürst]
+  * Fix for  CVE-2021-3603 /-34551:
+    - Update phpmailer to release 6.5.0.
+  * Update firebase/php-jwt to release 5.3.0.
+
 3.0.5
   [Jörg Frings-Fürst]
     * Fix CVE-2020-7746:
