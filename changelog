@@ -17,6 +17,10 @@
 	  - Update www/vicidial/admin_search_lead.php.
 	* Fix block_status handling:
 	  - Update www/vicidial/admin_modify_lead.php.
+	* Don't preset Allow Campaigns on new User Groups:
+	  - Update www/vicidial/admin.php.
+	* Fix some string handlings, add unique index:
+	  - Update bin/AST_update_AMI2.pl.  
 
 3.0.6
   [Jörg Frings-Fürst]

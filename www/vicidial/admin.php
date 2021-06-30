@@ -32,13 +32,14 @@
 #
 # Version  / Build
 #
-$admin_version = '3.1.2-4';
-$admin_build = '20210616-1';
+$admin_version = '3.1.2-5';
+$admin_build = '20210624-1';
 #
 ###############################################################################
 #
 # Changelog
 #
+# 2021-06-24 jff    Don't preset Allows Campaigns on new User Groups. 
 # 2021-06-16 jff    Add Maximum Adapt Dial Level into Campaign Basic View
 # 2021-05-17 jff    Allow all characters in vicidial_user_groups
 # 2021-03-12 jff    Fix typo
@@ -12283,7 +12284,8 @@ if ($ADD==211111)
 					{
 					$allowed_campaign_insert_SQL = $LOGallowed_campaigns;
 					}
-
+				
+				$allowed_campaign_insert_SQL = "";
 				$stmt="INSERT INTO vicidial_user_groups(user_group,group_name,allowed_campaigns,admin_viewable_groups) values('$user_group','$group_name','$allowed_campaign_insert_SQL','$allowed_user_group_insert_SQL');";
 				$rslt=mysql_to_mysqli($stmt, $link);
 

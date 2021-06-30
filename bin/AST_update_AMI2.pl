@@ -1,21 +1,42 @@
 #!/usr/bin/perl
+###############################################################################
 #
-# AST_update_AMI2.pl version 2.14
+# AST_update_AMI2.pl
 #
 # This script uses the Asterisk Manager interface to update the live_channels
 # tables and verify the parked_channels table in the asterisk MySQL database
 #
 #
-
+# Copyright (©) 2020-2021 SNCT GmbH <info@snct-gmbh.de>
+#               2020-2021 Jörg Frings-Fürst <open_source@jff.email>
+#
 # LICENSE: AGPLv3
 #
-# Copyright (©) 2018 Matt Florell <vicidial@gmail.com>
-# Copyright (©) 2020      SNCT GmbH <info@snct-gmbh.de>
-#               2020      Jörg Frings-Fürst <open_source@jff.email>.
+###############################################################################
 #
-
-# Other - Changelog
+# based on VICIdial®
+# (© 2018  Matt Florell <vicidial@gmail.com>)
 #
+###############################################################################
+#
+# requested Module:
+# 
+# /etc/astguiclient.conf
+# 
+###############################################################################
+#
+# Version  / Build
+#
+$ast_update_ami2_version = '3.0.3-1';
+$ast_update_ami2_build = '20210630-1';
+#
+###############################################################################
+#
+# Changelog
+#
+# 2021-06-30 jff	Fix string handling
+# 					Add log if table cid_channels_recent* is new created
+#					Add unique index on table cid_channels_recent*
 # 2020-07-24 14:00 Change lisense to AGPLv3
 # 2020-07-24 14:14 On update server_updater first check if record exist.
 #
@@ -243,8 +264,12 @@ else
 	$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_custom_user", "$VARDB_custom_pass", { mysql_enable_utf8 => 1 })
 	or warn "Couldn't connect to database: " . DBI->errstr;
 
-	$stmtB = "CREATE TABLE cid_channels_recent_$PADserver_ip (caller_id_name VARCHAR(30) NOT NULL, connected_line_name VARCHAR(30) NOT NULL, call_date DATETIME, channel VARCHAR(100) DEFAULT '', dest_channel VARCHAR(100) DEFAULT '', linkedid VARCHAR(20) DEFAULT '', dest_uniqueid VARCHAR(20) DEFAULT '', uniqueid VARCHAR(20) DEFAULT '', index(call_date)) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
+	$stmtB = "CREATE TABLE cid_channels_recent_$PADserver_ip (caller_id_name VARCHAR(30) NOT NULL, connected_line_name VARCHAR(30) NOT NULL, call_date DATETIME, channel VARCHAR(100) DEFAULT '', dest_channel VARCHAR(100) DEFAULT '', linkedid VARCHAR(20) DEFAULT '', dest_uniqueid VARCHAR(20) DEFAULT '', uniqueid VARCHAR(20) DEFAULT '', index(call_date), unique key `Uniqueids` (`linkedid`, `uniqueid`)) ENGINE=Aria DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
 	if($DB){print STDERR "\n$stmtB\n";}
+	
+	$event_string="TABLE CHECK cid_channels_recent_$PADserver_ip created|$stmtB|";
+	event_logger($SYSLOG,$event_string);
+	
 	eval { $affected_rowsCCR = $dbhB->do($stmtB) };
 	print "Query failed: $@\n" if $@;
 
@@ -262,7 +287,7 @@ else
 	}
 print STDERR "$CCRrec|$cid_channels_recent|$stmtA\n";
 
-$event_string='TABLE CHECK cid_channels_recent_$PADserver_ip complete|$CCRrec|$affected_rowsCCR|';
+$event_string="TABLE CHECK cid_channels_recent_$PADserver_ip complete|$CCRrec|$affected_rowsCCR|";
 event_logger($SYSLOG,$event_string);
 ##### END Check for a cid_channels_recent_IPXXXXX... table, and if not present, create one
 
