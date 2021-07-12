@@ -20,7 +20,9 @@
 	* Don't preset Allow Campaigns on new User Groups:
 	  - Update www/vicidial/admin.php.
 	* Fix some string handlings, add unique index:
-	  - Update bin/AST_update_AMI2.pl.  
+	  - Update bin/AST_update_AMI2.pl.
+	* Fix set status if dialstatus is CONGESTION:
+	  - Update bin/AST_VDauto_dial.pl   
 
 3.0.6
   [Jörg Frings-Fürst]

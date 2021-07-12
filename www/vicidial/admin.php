@@ -43292,6 +43292,13 @@ if ($ADD==999998)
 	echo "<TD><a href=\"$PHP_SELF?ADD=192000000000\"><img src=\"images/icon_settingscontainer.png\" border=0 width=42 height=42 valign=middle> </a></TD>\n";
 	echo "<TD><a href=\"$PHP_SELF?ADD=192000000000\" STYLE=\"text-decoration:none;\"><SPAN $subhead_font> "._QXZ("Settings Containers")." </SPAN></a></TD>\n";
 	echo "</TR>\n";
+	
+	
+	echo "<TR CLASS=\"adminmenu_style_selected\""; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='admin_agent_screen.php';\"";} echo ">\n";
+	echo "<TD><a href=\"admin_agent_screen.php\"><img src=\"images/agent_setup.png\" border=0 width=42 height=42 valign=middle> </a></TD>\n";
+	echo "<TD><a href=\"admin_agent_screen.php\" STYLE=\"text-decoration:none;\"><SPAN $subhead_font> "._QXZ("Agent Screen Setup")." </SPAN></a></TD>\n";
+	echo "</TR>\n";
+	
 	if ($SSenable_auto_reports > 0)
 		{
 		echo "<TR CLASS=\"adminmenu_style_selected\""; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=194000000000';\"";} echo ">\n";

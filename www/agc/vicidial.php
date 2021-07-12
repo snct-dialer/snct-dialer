@@ -20066,8 +20066,12 @@ $zi=2;
 	        }
 	        $aktLine = $row_AgPos["Line"];
 	    }
+	    $TmpClass = "agent_item";
+	    if($row_AgPos["Marker"] == 1) {
+	        $TmpClass = "agent_item_red";
+	    }
 	    if($row_AgPos["InputType"] == "text") {
-	       echo "<div  id=\"agent_leads\" class=\"agent_leads\"><label class=\"agent_item\" for=\"".$row_AgPos["List_Field"]."\">".$row_AgPos["DisplayName"]."</label>" . PHP_EOL;
+	       echo "<div  id=\"agent_leads\" class=\"agent_leads\"><label class=\"".$TmpClass."\" for=\"".$row_AgPos["List_Field"]."\">".$row_AgPos["DisplayName"]."</label>" . PHP_EOL;
 	       echo "<input type=\"text\" size=\"".$row_AgPos["FieldLen"]."\" name=\"".$row_AgPos["List_Field"]."\" id=\"".$row_AgPos["List_Field"]."\" maxlength=\"".$row_AgPos["MaxLen"]."\" class=\"cust_form\" value=\"\" /></div>" . PHP_EOL;
 	       if($row_AgPos["span_id"] != "") {
 	           echo "<font class=\"body_text2\"><span id=\"".$row_AgPos["span_id"]."\"> &nbsp; </span></font>" . PHP_EOL;
@@ -20075,7 +20079,7 @@ $zi=2;
 	    }
 	    if($row_AgPos["InputType"] == "select") {
 	        if($row_AgPos["List_Field"] == "customer_status") {
-                echo "<div  id=\"agent_leads\" class=\"agent_leads\"><label class=\"agent_item\" for=\"".$row_AgPos["List_Field"]."\">".$row_AgPos["DisplayName"]."</label>" . PHP_EOL;
+                echo "<div  id=\"agent_leads\" class=\"agent_leads\"><label class=\"".$TmpClass."\" for=\"".$row_AgPos["List_Field"]."\">".$row_AgPos["DisplayName"]."</label>" . PHP_EOL;
                 
                 $EnumArr = GetEnumItems("vicidial_list", "customer_status", $link);
                 
@@ -20090,14 +20094,14 @@ $zi=2;
 	        }
 	    }
 	    if($row_AgPos["InputType"] == "email") {
-	        echo "<div id=\"agent_leads\" class=\"agent_leads\"><label class=\"agent_item\" for=\"".$row_AgPos["List_Field"]."\">".$row_AgPos["DisplayName"]."</label>" . PHP_EOL;
+	        echo "<div id=\"agent_leads\" class=\"agent_leads\"><label class=\"".$TmpClass."\" for=\"".$row_AgPos["List_Field"]."\">".$row_AgPos["DisplayName"]."</label>" . PHP_EOL;
 	        echo "<input type=\"email\" size=\"".$row_AgPos["FieldLen"]."\" name=\"".$row_AgPos["List_Field"]."\" id=\"".$row_AgPos["List_Field"]."\" maxlength=\"".$row_AgPos["MaxLen"]."\" class=\"cust_form\" value=\"\" /></div>" . PHP_EOL;
 	    }
 	    if($row_AgPos["InputType"] == "textarea") {
 	        if($row_AgPos["List_Field"] == "comments") {
 	            echo "<span id='viewcommentsdisplay'><input type='button' id='ViewCommentButton' onClick=\"ViewComments('ON','','','YES')\" value='-"._("History")."-'/></span> ". PHP_EOL;
             }
-	        echo "<div id=\"agent_leads\" class=\"agent_leads\"><label class=\"agent_item\" for=\"".$row_AgPos["List_Field"]."\">".$row_AgPos["DisplayName"]."</label>" . PHP_EOL;
+	        echo "<div id=\"agent_leads\" class=\"agent_leads\"><label class=\"".$TmpClass."\" for=\"".$row_AgPos["List_Field"]."\">".$row_AgPos["DisplayName"]."</label>" . PHP_EOL;
 	        echo "<textarea cols=\"".$row_AgPos["FieldLen"]."\" name=\"".$row_AgPos["List_Field"]."\" id=\"".$row_AgPos["List_Field"]."\" maxlength=\"".$row_AgPos["MaxLen"]."\" class=\"cust_form\" value=\"\" ></textarea></div>" . PHP_EOL;	        
 	    }
 	}

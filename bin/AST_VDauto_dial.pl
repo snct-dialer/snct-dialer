@@ -26,16 +26,17 @@
 # KEEPALIVE script running every minute to ensure this program is always running
 #
 
-
+#
 # LICENSE: AGPLv3
 #
 # Copyright (©) 2019 Matt Florell <vicidial@gmail.com>
-# Copyright (©) 2020      SNCT GmbH <info@snct-gmbh.de>
-#               2020      Jörg Frings-Fürst <open_source@jff.email>.
+# Copyright (©) 2020-2021 SNCT GmbH <info@snct-gmbh.de>
+#               2020-2021 Jörg Frings-Fürst <open_source@jff.email>.
 #
 
 # Other - Changelog
 #
+# 2021-07-06 jff	Remove set status to ADC on DISCONNECT
 # 2020-07-20 12:14 Change lisense to AGPLv3
 # 2020-07-20 12:15 use campaign_cid_override only if cid_group is disabled
 # 2020-07-21 14:28 Change logfile name
@@ -1783,7 +1784,7 @@ while($one_day_interval > 0)
 							if ($CLstatus =~ /BUSY/) {$CLnew_status = 'NA';}
 							else
 								{
-								if ($CLstatus =~ /DISCONNECT/) {$CLnew_status = 'ADC';}
+								if ($CLstatus =~ /DISCONNECT/) {$CLnew_status = '';}
 								else {$CLnew_status = 'NA';}
 								}
 							if ($CLstatus =~ /LIVE/) {$CLnew_status = 'DROP';}
