@@ -32,13 +32,15 @@
 #
 # Version  / Build
 #
-$admin_version = '3.1.2-5';
-$admin_build = '20210624-1';
+$admin_version = '3.1.2-6';
+$admin_build = '20210713-1';
 #
 ###############################################################################
 #
 # Changelog
 #
+# 2021-07-13 jff    Set Realtimereport refresh time to 10 seconds.
+# 2021-07-12 jff    New Agent Screen Setup.
 # 2021-06-24 jff    Don't preset Allows Campaigns on new User Groups. 
 # 2021-06-16 jff    Add Maximum Adapt Dial Level into Campaign Basic View
 # 2021-05-17 jff    Allow all characters in vicidial_user_groups
@@ -23623,7 +23625,7 @@ if ($ADD==31)
 		{
 		echo "<TD></TD><TD></TD><TD></TD><TD></TD>\n";
 		}
-	echo "<TD ALIGN=CENTER> <a href=\"./realtime_report_ng.php?RR=4&DB=0&group=$campaign_id\" STYLE=\"text-decoration:none;\"><font class=\"sub_sub_head_links\">"._QXZ("Real-Time NG")."</font></a></TD>\n";
+	echo "<TD ALIGN=CENTER> <a href=\"./realtime_report_ng.php?RR=10&DB=0&group=$campaign_id\" STYLE=\"text-decoration:none;\"><font class=\"sub_sub_head_links\">"._QXZ("Real-Time NG")."</font></a></TD>\n";
 	echo "</TR></TABLE>\n";
 
 	echo "<TABLE><TR><TD>\n";
@@ -26262,7 +26264,7 @@ if ($ADD==34)
 		{
 		echo "<TD ALIGN=CENTER BGCOLOR=\"$camp_listmix_color\"> <a href=\"$PHP_SELF?ADD=34&SUB=29&campaign_id=$campaign_id\" STYLE=\"text-decoration:none;\"><font class=\"sub_sub_head_links\">"._QXZ("List Mix")."</font></a> </TD>";
 		}
-	echo "<TD ALIGN=CENTER> <a href=\"./realtime_report_ng.php?RR=4&DB=0&group=$campaign_id\" STYLE=\"text-decoration:none;\"><font class=\"sub_sub_head_links\">"._QXZ("Real-Time Screen NG")."</font></a></TD>\n";
+	echo "<TD ALIGN=CENTER> <a href=\"./realtime_report_ng.php?RR=10&DB=0&group=$campaign_id\" STYLE=\"text-decoration:none;\"><font class=\"sub_sub_head_links\">"._QXZ("Real-Time Screen NG")."</font></a></TD>\n";
 	echo "<TD WIDTH=300><font class=\"sub_sub_head_links\"> &nbsp; </font></TD>\n";
 	if ($SSoutbound_autodial_active < 1)
 		{
@@ -42762,7 +42764,7 @@ if ($ADD==999999)
 		echo "<B>"._QXZ("Real-Time Reports")."</B><BR>\n";
 		echo "<UL>\n";
 		if ( (preg_match("/Real-Time Main Report/",$LOGallowed_reports)) or (preg_match("/ALL REPORTS/",$LOGallowed_reports)) )
-			{echo "<LI><a href=\"realtime_report_ng.php?RR=4\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK size=2>"._QXZ("Real-Time Main Report NG")."</a></FONT>\n";}
+			{echo "<LI><a href=\"realtime_report_ng.php?RR=10\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK size=2>"._QXZ("Real-Time Main Report NG")."</a></FONT>\n";}
 				#	echo "<BR> &nbsp; Real-Time SIP: <a href=\"AST_timeonVDADall.php?SIPmonitorLINK=1\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK size=2>"._QXZ("Listen")."</a></FONT> - <a href=\"AST_timeonVDADall.php?SIPmonitorLINK=2\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK size=2>"._QXZ("Barge")."</a></FONT>\n";
 				#	echo "<BR> &nbsp; Real-Time IAX: <a href=\"AST_timeonVDADall.php?IAXmonitorLINK=1\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK size=2>"._QXZ("Listen")."</a></FONT> - <a href=\"AST_timeonVDADall.php?IAXmonitorLINK=2\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK size=2>"._QXZ("Barge")."</a></FONT><BR><BR>\n";
 		if ( (preg_match("/Real-Time Campaign Summary/",$LOGallowed_reports)) or (preg_match("/ALL REPORTS/",$LOGallowed_reports)) )
@@ -42928,7 +42930,7 @@ if ($ADD==999999)
 		if ( (preg_match("/Wallboard 3.0/",$LOGallowed_reports)) or (preg_match("/ALL REPORTS/",$LOGallowed_reports)) )
 		{echo "<LI><a href=\"WallBoard3.php\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK size=2>"._QXZ("Wallboard 3.0")."</a></FONT>\n";}
 		if ( (preg_match("/Real-Time Main Report/",$LOGallowed_reports)) or (preg_match("/ALL REPORTS/",$LOGallowed_reports)) )
-		{echo "<LI><a href=\"realtime_report_ng.php?RR=4\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK size=2>"._QXZ("Real-Time Main Report NG")."</a></FONT>\n";}
+		{echo "<LI><a href=\"realtime_report_ng.php?RR=10\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK size=2>"._QXZ("Real-Time Main Report NG")."</a></FONT>\n";}
 
 		echo "</UL>\n";
 

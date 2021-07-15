@@ -20312,7 +20312,8 @@ if ($agent_display_dialable_leads > 0)
 </span>
 
 <span style="position:absolute;left:<?php echo $AMwidth ?>px;top:<?php echo $MAheight + 15 ?>px;z-index:<?php $zi++; echo $zi ?>;" id="ChangeSize">
-<div onclick="change_font('Big')" class="text_size" id="text_bigger">A+</div><div onclick="change_font('Small')" class="text_size" id="text_smaller">A-</div></a>
+<div onclick="change_font('Big')" class="text_size" id="text_bigger"><img src="images/increase-font-16.png" width="16px" height="16px" alt="Abc+" /></div>
+<div onclick="change_font('Small')" class="text_size" id="text_smaller"><img src="images/decrease-font-16.png" width="16px" height="16px" alt="Abc-" /></div></a>
 </span>
 
 <span style="position:absolute;left:154px;top:<?php echo $SFheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="ScriptPanel">

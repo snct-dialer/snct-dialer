@@ -21,8 +21,18 @@
 	  - Update www/vicidial/admin.php.
 	* Fix some string handlings, add unique index:
 	  - Update bin/AST_update_AMI2.pl.
-	* Fix set status if dialstatus is CONGESTION:
-	  - Update bin/AST_VDauto_dial.pl   
+	* Fix set status if dialstatus is CONGESTION or DISCONNECT:
+	  - Update bin/AST_VDauto_dial.pl  
+	* Set Realtimereport refresh time to 10 seconds.
+	* New Agent Screen Setup:
+	  - New www/vicidial/admin_agent_screen.php,
+	      www/vicidial/images/agent_setup.png,
+	      www/agc/images/increase-font-16.png,
+	      www/agc/images/decrease-font-16.png.
+	  - Update www/agc/vicidial.php,
+	      www/vicidial/admin.php,
+	      www/agc/css/custom.css,
+	      www/vicidial/admin_header.php.
 
 3.0.6
   [Jörg Frings-Fürst]

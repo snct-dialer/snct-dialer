@@ -55,7 +55,40 @@ select.form_field {
     padding: 2px;
     border: solid 1px #000066;
 }
+
 .label {
     align:right;
     font class:body_text;
 }
+
+.agent_item {
+    display: block; 
+    font-size: 1.0em;
+    font-family: sans-serif; 
+    text-align: center;
+    background-color:lightyellow;
+}
+.agent_item_red {
+    display: block; 
+    font-size: 1.0em;
+    font-family: sans-serif; 
+    text-align: center;
+    background-color:#F79F81;
+}
+
+.input {
+    float: left;
+    font-size: 5em;
+}
+
+.inlineBlock { display: inline-block; width: 7em; }
+
+
+.agent_leads {
+    float: left;
+    font-family: Arial, Sans-Serif;
+    font-size: 1.0em;
+    background-color: lightblue;
+    margin-right: 1.0em;
+}
+.body_text2 { font-size: 1.0em;  font-family: sans-serif; }
