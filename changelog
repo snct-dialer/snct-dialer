@@ -33,6 +33,14 @@
 	      www/vicidial/admin.php,
 	      www/agc/css/custom.css,
 	      www/vicidial/admin_header.php.
+    * Fix GROUPS_ search:
+      - Update www/agc/vdc_db_query.php.
+    * Add snctdialer_list_log_archive handling:
+      - Update www/vicidial/admin_modify_lead.php,
+          www/vicidial/admin_header.php,
+          www/vicidial/non_agent_api.php
+    * Fix display format for UTF-8, Fix csv export:
+      - Update www/vicidial/AST_dialer_inventory_report.php.
 
 3.0.6
   [Jörg Frings-Fürst]

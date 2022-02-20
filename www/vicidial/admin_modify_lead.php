@@ -38,8 +38,9 @@ $admin_modify_lead_build = '2021015-1';
 #
 ###############################################################################
 #
-# Changelog#
+# Changelog
 #
+# 2022-02-19 jff    Add snctdialer_list_log_archive handling
 # 2021-06-15 jff    Fix block_status handling
 # 2021-05-25 jff    Fix gpdr purge.
 # 2021-05-10 jff    Fix save owner.
@@ -997,13 +998,13 @@ function close_chooser() {
 	document.getElementById("list_log_span").innerHTML = '';
 }
 
-function launch_list_log(LeadID) {
+function launch_list_log(LeadID,ShowArch = "N") {
 
 	var h = window.innerHeight;
 	var vposition=mouseY;
 
 	var listlogURL = "./non_agent_api.php";
-	var listlogQuery = "source=admin&function=lead_log_list&user=" + user + "&pass=" + pass + "&format=selectframe&lead_id=" + LeadID;
+	var listlogQuery = "source=admin&function=lead_log_list&user=" + user + "&pass=" + pass + "&format=selectframe&lead_id=" + LeadID + "&show_arch=" + ShowArch;
 	var Iframe_content = '<IFRAME SRC="' + listlogURL + '?' + listlogQuery + '"  style="width:740;height:440;background-color:yellow;" scrolling="NO" frameborder="0" allowtransparency="false" id="list_log_frame" name="list_log_frame" width="740" height="460" STYLE="z-index:2"> </IFRAME>';
 
 	document.getElementById("list_log_span").style.position = "absolute";
@@ -2044,9 +2045,9 @@ else
 	echo "<input type=hidden name=FORM_LOADED id=FORM_LOADED value=\"0\" />\n";
 	echo "<table cellpadding=1 cellspacing=0>\n";
 	if($ExtLink_admin_modify_lead == "") {
-		echo "<tr><td colspan=2>"._QXZ("Lead ID").": $lead_id &nbsp; &nbsp; "._QXZ("List ID").":  $list_id &nbsp; &nbsp; <font size=2>"._QXZ("GMT offset").": $gmt_offset_now &nbsp; &nbsp; "._QXZ("CSLR").": $called_since_last_reset &nbsp; &nbsp; <a href=\"javascript:launch_list_log($lead_id);\">"._QXZ("Lead change Log")."</a></td></tr>\n";
+		echo "<tr><td colspan=2>"._QXZ("Lead ID").": $lead_id &nbsp; &nbsp; "._QXZ("List ID").":  $list_id &nbsp; &nbsp; <font size=2>"._QXZ("GMT offset").": $gmt_offset_now &nbsp; &nbsp; "._QXZ("CSLR").": $called_since_last_reset &nbsp; &nbsp; <a href=\"javascript:launch_list_log($lead_id, '$archive_log[0]');\">"._QXZ("Lead change Log")."</a></td></tr>\n";
 	} else {
-		echo "<tr><td colspan=2>"._QXZ("Lead ID").": <A target= \"_blank\" HREF=\"".$ExtLink_admin_modify_lead."$lead_id\">$lead_id</A> &nbsp; &nbsp; "._QXZ("List ID").":  $list_id &nbsp; &nbsp; <font size=2>"._QXZ("GMT offset").": $gmt_offset_now &nbsp; &nbsp; "._QXZ("CSLR").": $called_since_last_reset  &nbsp; &nbsp; <a href=\"javascript:launch_list_log($lead_id);\">"._QXZ("Lead change Log")."</a></td></tr>\n";
+		echo "<tr><td colspan=2>"._QXZ("Lead ID").": <A target= \"_blank\" HREF=\"".$ExtLink_admin_modify_lead."$lead_id\">$lead_id</A> &nbsp; &nbsp; "._QXZ("List ID").":  $list_id &nbsp; &nbsp; <font size=2>"._QXZ("GMT offset").": $gmt_offset_now &nbsp; &nbsp; "._QXZ("CSLR").": $called_since_last_reset  &nbsp; &nbsp; <a href=\"javascript:launch_list_log($lead_id, '$archive_log[0]');\">"._QXZ("Lead change Log")."</a></td></tr>\n";
 	}
 	echo "<tr><td colspan=2>"._QXZ("Fronter").": <A HREF=\"user_stats.php?user=$tsr\">$tsr</A> &nbsp; &nbsp; "._QXZ("Called Count").": $called_count &nbsp; &nbsp; <font size=2>"._QXZ("Last Local Call").": $last_local_call_time</td></tr>\n";
 	if ($archive_search=="Yes")

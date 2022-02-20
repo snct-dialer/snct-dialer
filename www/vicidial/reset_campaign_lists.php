@@ -329,22 +329,28 @@ if ( ($LOGuser_level >= 9) and $LOGmodify_campaigns>0 and $LOGmodify_lists>0 and
 				$upd_rslt=mysql_to_mysqli($upd_stmt, $link);
 
 				$resets_today=($resets_today + 1);
+				$stmtD = "";
+				if (file_exists('reset_list_adv.php')) {
+				    require('reset_list_adv.php');
+				} else {
+				    $upd_stmtB="UPDATE vicidial_list SET called_since_last_reset='N' where list_id='$list_id';";
+				    $upd_rsltB=mysql_to_mysqli($upd_stmtB, $link);
+				    $affected_rowsB = mysqli_affected_rows($link);
 
-				$upd_stmtB="UPDATE vicidial_list SET called_since_last_reset='N' where list_id='$list_id';";
-				$upd_rsltB=mysql_to_mysqli($upd_stmtB, $link);
-				$affected_rowsB = mysqli_affected_rows($link);
-
+				
+				}
 				### LOG INSERTION Admin Log Table ###
 				$SQLdate=date("Y-m-d H:i:s");
-				$SQL_log = "$upd_stmt|$upd_stmtB|";
+				$SQL_log = "$upd_stmt|$upd_stmtB|$stmtD|";
 				$SQL_log = preg_replace('/;/', '', $SQL_log);
 				$SQL_log = addslashes($SQL_log);
 				$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LISTS', event_type='RESET', record_id='$list_id', event_code='ADMIN RESET LIST', event_sql=\"$SQL_log\", event_notes='$affected_rowsB leads reset, list resets today: $resets_today';";
 				if ($DB) {echo "|$stmt|\n";}
 				$rslt=mysql_to_mysqli($stmt, $link);
-
+	
+				
 				echo "<LI>"._QXZ("LIST ID")." $list_id - ";
-				if ($affected_rowsB > 0) {echo _QXZ("RESET")."<BR>";} else {echo "<B>"._QXZ("NOT")."</B> "._QXZ("RESET")."<BR>";}
+				if (($affected_rowsB > 0) || ($affected_rowsD > 0 )) {echo _QXZ("RESET")."<BR>";} else {echo "<B>"._QXZ("NOT")."</B> "._QXZ("RESET")."<BR>";}
 				}
 			else
 				{

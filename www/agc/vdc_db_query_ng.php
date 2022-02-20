@@ -843,7 +843,7 @@ if ($ACTION == 'GenDispoScreen') {
 			if($row2["scheduled_callback"] == "Y") {
 				$CBFlag = "  *";
 			}
-			if((($row2["min_sec"] > 0) && ($customer_sec < $row2["min_sec"])) || (($row2["max_sec"] > 0) && ($customer_sec > $row2["max_sec"])) || (($CBAllow == 0) && ($row1["scheduled_callback"] == "Y"))) {
+			if((($row2["min_sec"] > 0) && ($customer_sec < $row2["min_sec"])) || (($row2["max_sec"] > 0) && ($customer_sec > $row2["max_sec"])) || (($CBAllow == 0) && ($row2["scheduled_callback"] == "Y"))) {
 				$RetTmp = "<DEL>" . $row2["status"] . " - " . $row2["status_name"] . "</DEL> " . $CBFlag . "<br /><br />";
 			} else {
 				if($taskDSgrp == $row2["status"]) {

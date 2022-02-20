@@ -214,6 +214,13 @@ function user_authorization($user,$pass,$user_option,$user_update,$api_call)
 				$rslt=mysql_to_mysqli($stmt, $link);
 				}
 			$auth_key='GOOD';
+			if ($SSwebroot_writable > 0) {
+			    $fp = fopen ("./project_auth_entries.txt", "a");
+			    fwrite ($fp, "ADMIN|GOOD|$NOW_TIME|$user|$auth_key|$ip|$browser|\n");
+			    fclose($fp);
+			}
+			
+			
 			}
 		}
 	return $auth_key;

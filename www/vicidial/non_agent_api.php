@@ -30,8 +30,8 @@
 #
 # Version  / Build
 #
-$non_agent_api_version = '3.0.1-2';
-$non_agent_api_build = '20201226-1';
+$non_agent_api_version = '3.1.1-3';
+$non_agent_api_build = '20220219-1';
 
 $api_url_log = 0;
 
@@ -40,6 +40,7 @@ $api_url_log = 0;
 #
 # Changelog
 #
+# 2022-02-19 jff    Add snctdialer_list_log_archive handling
 # 20201226 jff	Fix lead_log_list if no rights
 # 20201124 jff	Add .ogg and .mp3 to sounds_list
 # 20201122 jff	Add function lead_log_list
@@ -428,7 +429,8 @@ if (isset($_GET["list_description"]))			{$list_description=$_GET["list_descripti
 	elseif (isset($_POST["list_description"]))	{$list_description=$_POST["list_description"];}
 if (isset($_GET["leads_counts"]))			{$leads_counts=$_GET["leads_counts"];}
 	elseif (isset($_POST["leads_counts"]))	{$leads_counts=$_POST["leads_counts"];}
-
+if (isset($_GET["show_arch"]))			{$show_arch=$_GET["show_arch"];}
+	elseif (isset($_POST["show_arch"]))	{$show_arch=$_POST["show_arch"];}
 
 header ("Content-type: text/html; charset=utf-8");
 header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
@@ -11934,7 +11936,11 @@ if ($function == 'lead_log_list') {
 		}
 		if($failed == 0) {
 			$DLLTable = "";
-			$stmt="SELECT * FROM `snctdialer_list_log` WHERE `LeadID` = '".$lead_id."' ORDER BY `Change_date` DESC;";
+			if($show_arch == "Y") {
+			     $stmt="SELECT * FROM `snctdialer_list_log` WHERE `LeadID` = '".$lead_id."' UNION ALL SELECT * FROM `snctdialer_list_log_archive` WHERE `LeadID` = '".$lead_id."' ORDER BY `Change_date` DESC;";
+			} else{
+			     $stmt="SELECT * FROM `snctdialer_list_log` WHERE `LeadID` = '".$lead_id."' ORDER BY `Change_date` DESC;";
+			}
 			$rslt=mysql_to_mysqli($stmt, $link);
 			if ($DB) {echo "$stmt\n";}
 			$numrecs_to_print = mysqli_num_rows($rslt);

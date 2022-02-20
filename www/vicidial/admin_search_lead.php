@@ -27,13 +27,14 @@
 #
 # Version  / Build
 #
-$admin_search_lead_version = '3.1.0-2';
-$admin_search_lead_build = '20210617-1';
+$admin_search_lead_version = '3.1.0-3';
+$admin_search_lead_build = '20211105-11';
 #
 ###############################################################################
 #
 # Changelog
 #
+# 2021-11-05 jff    Rewrite lead search
 # 2021-06-17 jff    Fix script position
 # 2021-05-29 jff    Allow partial search on phonenumbers
 # 2021-01-10 jff	Replace alt_phone_search with a checkbox
@@ -135,6 +136,11 @@ $DisHousNo = "";
 if($SSdb_schema < 1579) {
 	$DisHousNo = "disabled";
 }
+
+if(!isset($alt_phone_search)) {
+    $alt_phone_search = "1";
+}
+
 
 if ($archive_search=="Yes") {$vl_table="vicidial_list_archive";}
 else {$vl_table="vicidial_list"; $archive_search="No";}
@@ -376,59 +382,61 @@ if ( (!$vendor_id) and (!$phone)  and (!$lead_id) and (!$log_phone)  and (!$log_
 		}
 
 	echo "<TR bgcolor=#$SSstd_row2_background>";
-	echo "<TD ALIGN=right>$label_vendor_lead_code("._("vendor lead code")."): &nbsp; </TD><TD ALIGN=left><input type=text name=vendor_id size=10 maxlength=20></TD>";
-	echo "<TD><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._("SUBMIT")."'></TD>\n";
+	echo "<TD ALIGN=right>$label_vendor_lead_code("._("vendor lead code")."): &nbsp; </TD><TD colspan=2 ALIGN=left><input type=text name=vendor_id size=10 maxlength=20></TD>";
+#	echo "<TD><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._("SUBMIT")."'></TD>\n";
 	echo "</TR><TR bgcolor=#$SSmenu_background>";
 	echo "<TD colspan=3 align=center height=1></TD>";
 	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
 
-	echo "<TD ALIGN=right>$label_phone_number: &nbsp; </TD><TD ALIGN=left><input type=text name=phone size=14 maxlength=18></TD>";
-	echo "<TD rowspan=2><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._("SUBMIT")."'></TD>\n";
-	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
-	
 	$CLSta = "";
 	if($alt_phone_search != "") {
-		$CLSta = "checked=\"checked\"";
+	    $CLSta = "checked=\"checked\"";
 	}
-	echo "<TD ALIGN=right>$label_alt_phone "._("search").": &nbsp; </TD><TD ALIGN=left><input type='checkbox' name='alt_phone_search' value='AltPhoneSearch' ". $CLSta ."></TD>";
-
-	echo "</TR><TR bgcolor=#$SSmenu_background>";
-	echo "<TD colspan=3 align=center height=1></TD>";
+	
+	echo "<TD ALIGN=right>$label_phone_number / $label_alt_phone : &nbsp; </TD><TD ALIGN=left><input type=text name=phone size=14 maxlength=18></TD>";
+	echo "<TD ALIGN=left><input type='checkbox' name='alt_phone_search' id='alt_phone_search' value='AltPhoneSearch' ". $CLSta ."><label for='alt_phone_search'>".("all fields")."</label></TD>";
+#	echo "<TD rowspan=2><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._("SUBMIT")."'></TD>\n";
 	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
 
-	echo "<TD ALIGN=right>"._("Lead ID").": &nbsp; </TD><TD ALIGN=left><input type=text name=lead_id size=10 maxlength=10></TD>";
-	echo "<TD><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._("SUBMIT")."'></TD>\n";
+#	echo "<TD ALIGN=right>$label_alt_phone "._("search").": &nbsp; </TD><TD ALIGN=left><input type='checkbox' name='alt_phone_search' value='AltPhoneSearch' ". $CLSta ."></TD>";
+
+#	echo "</TR><TR bgcolor=#$SSmenu_background>";
+#    echo "<TD colspan=3 align=center height=1></TD>";
+#	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
+
+	echo "<TD ALIGN=right>"._("Lead ID").": &nbsp; </TD><TD colspan=2 ALIGN=left><input type=text name=lead_id size=10 maxlength=10></TD>";
+#	echo "<TD><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._("SUBMIT")."'></TD>\n";
 	echo "</TR><TR bgcolor=#$SSmenu_background>";
 	echo "<TD colspan=3 align=center height=3></TD>";
 	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
 
-	echo "<TD ALIGN=right>* "._("Status").": &nbsp; </TD><TD ALIGN=left><input type=text name=status size=7 maxlength=6></TD>";
+	echo "<TD ALIGN=right>* "._("Status").": &nbsp; </TD><TD colspan=2 ALIGN=left><input type=text name=status size=7 maxlength=6></TD>";
 #	echo "<TD rowspan=4><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._("SUBMIT")."'></TD>\n";
 	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
-	echo "<TD ALIGN=right>* "._("List ID").": &nbsp; </TD><TD ALIGN=left><input type=text name=list_id size=15 maxlength=14></TD>";
+	echo "<TD ALIGN=right>* "._("List ID").": &nbsp; </TD><TD colspan=2 ALIGN=left><input type=text name=list_id size=15 maxlength=14></TD>";
 	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
-	echo "<TD ALIGN=right>* "._("User").": &nbsp; </TD><TD ALIGN=left><input type=text name=user size=15 maxlength=20></TD>";
+	echo "<TD ALIGN=right>* "._("User").": &nbsp; </TD><TD colspan=2 ALIGN=left><input type=text name=user size=15 maxlength=20></TD>";
 	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
-	echo "<TD ALIGN=right>* "._("Owner").": &nbsp; </TD><TD ALIGN=left><input type=text name=owner size=15 maxlength=50></TD>";
+	echo "<TD ALIGN=right>* "._("Owner").": &nbsp; </TD><TD colspan=2 ALIGN=left><input type=text name=owner size=15 maxlength=50></TD>";
 	echo "</TR><TR bgcolor=#$SSmenu_background>";
 	echo "<TD colspan=3 align=center height=1></TD>";
 	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
 
-	echo "<TD ALIGN=right>* $label_first_name: &nbsp;</TD><TD ALIGN=left><input type=text name=first_name size=15 maxlength=30></TD>";
+	echo "<TD ALIGN=right>* $label_first_name: &nbsp;</TD><TD colspan=2 ALIGN=left><input type=text name=first_name size=15 maxlength=30></TD>";
 #	echo "<TD rowspan=5><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._("SUBMIT")."'></TD>\n";
 	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
-	echo "<TD ALIGN=right>* $label_last_name: &nbsp; </TD><TD ALIGN=left><input type=text name=last_name size=15 maxlength=30></TD>";
+	echo "<TD ALIGN=right>* $label_last_name: &nbsp; </TD><TD colspan=2 ALIGN=left><input type=text name=last_name size=15 maxlength=30></TD>";
 	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
-	echo "<TD ALIGN=right>* $label_address1: &nbsp; </TD><TD ALIGN=left><input type=text name=address1 size=15 maxlength=30></TD>";
+	echo "<TD ALIGN=right>* $label_address1: &nbsp; </TD><TD colspan=2 ALIGN=left><input type=text name=address1 size=15 maxlength=30></TD>";
 	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
-	echo "<TD ALIGN=right>* $label_address1_no: &nbsp; </TD><TD ALIGN=left><input type=text name=address1_no size=10 maxlength=10 $DisHousNo ></TD>";
+	echo "<TD ALIGN=right>* $label_address1_no: &nbsp; </TD><TD colspan=2 ALIGN=left><input type=text name=address1_no size=10 maxlength=10 $DisHousNo ></TD>";
 	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
-	echo "<TD ALIGN=right>* $label_city: &nbsp; </TD><TD ALIGN=left><input type=text name=city size=15 maxlength=30></TD>";
+	echo "<TD ALIGN=right>* $label_city: &nbsp; </TD><TD colspan=2 ALIGN=left><input type=text name=city size=15 maxlength=30></TD>";
 	echo "</TR><TR bgcolor=#$SSmenu_background>";
 
 	echo "<TD colspan=3 align=center height=1></TD>";
 	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
-	echo "<TD ALIGN=right>* $label_email: &nbsp; </TD><TD ALIGN=left><input type=text name=email size=15 maxlength=255></TD>";
+	echo "<TD ALIGN=right>* $label_email: &nbsp; </TD><TD colspan=2 ALIGN=left><input type=text name=email size=15 maxlength=255></TD>";
 #	echo "<TD><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._("SUBMIT")."'></TD>\n";
 	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
 	
@@ -485,22 +493,53 @@ else
 	if ((strlen($GLBSUBMIT) > 1) || (strlen($list_id) > 0)) {
 		
 		$AnzPara = 0;
+		$phoneSQL = "";
+		if(strlen($phone) > 0) {
+		    $AnzPara++;
+		    if (isset($alt_phone_search)) {
+		        $phoneSQL = "phone_number LIKE '" . mysqli_real_escape_string($link, $phone) . "%' or alt_phone LIKE '" . mysqli_real_escape_string($link, $phone) . "%' or address3 LIKE '" . mysqli_real_escape_string($link, $phone) . "%'";
+		    } else {
+		        $phoneSQL = "phone_number LIKE '" . mysqli_real_escape_string($link, $phone) . "%'";
+            }
+		}
+		$vendorIDSQL = "";
+		if(strlen($vendor_id) > 0) {
+		    if($AnzPara > 0) {
+		        $tmpSQL = " AND ";
+		    }
+		    $AnzPara++;
+		    $vendorIDSQL = "$tmpSQL vendor_lead_code='" . mysqli_real_escape_string($link, $vendor_id) . "'";
+		}
+		$leadIDSQL = "";
+		if(strlen($lead_id) > 0) {
+		    if($AnzPara > 0) {
+		        $tmpSQL = " AND ";
+		    }
+		    $AnzPara++;
+		    $leadIDSQL = "$tmpSQL lead_id='" . mysqli_real_escape_string($link, $lead_id) . "'";
+		}		
 		$first_nameSQL = "";
 		if(strlen($first_name) > 0) {
+		    if($AnzPara > 0) {
+		        $tmpSQL = " AND ";
+		    }
 			$AnzPara++;
-			$first_nameSQL = "first_name LIKE '" . mysqli_real_escape_string($link, $first_name) . "'";
+			$first_nameSQL = "$tmpSQL first_name LIKE '" . mysqli_real_escape_string($link, $first_name) . "%'";
 		}
 		$CCQL = "";
 		if(strlen($called_count) > 0) {
+		    if($AnzPara > 0) {
+		        $tmpSQL = " AND ";
+		    }
 			$AnzPara++;
-			$CCSQL = "called_count = '" . mysqli_real_escape_string($link, $called_count) . "'";
+			$CCSQL = "$tmpSQL called_count = '" . mysqli_real_escape_string($link, $called_count) . "'";
 		}
 		$last_nameSQL = "";
 		if(strlen($last_name) > 0) {
 			if($AnzPara > 0) { 
 				$tmpSQL = " AND ";
 			}
-			$last_nameSQL = "$tmpSQL last_name LIKE '" . mysqli_real_escape_string($link, $last_name) . "'";
+			$last_nameSQL = "$tmpSQL last_name LIKE '" . mysqli_real_escape_string($link, $last_name) . "%'";
 			$AnzPara++;
 		}
 		$address1SQL = "";
@@ -508,7 +547,7 @@ else
 			if($AnzPara > 0) {
 				$tmpSQL = " AND ";
 			}
-			$address1SQL = "$tmpSQL address1 LIKE '" . mysqli_real_escape_string($link, $address1) . "'";
+			$address1SQL = "$tmpSQL address1 LIKE '" . mysqli_real_escape_string($link, $address1) . "%'";
 			$AnzPara++;
 		}
 		$address1_noSQL = "";
@@ -516,7 +555,7 @@ else
 			if($AnzPara > 0) {
 				$tmpSQL = " AND ";
 			}
-			$address1_noSQL = "$tmpSQL address1_no LIKE '" . mysqli_real_escape_string($link, $address1_no) . "'";
+			$address1_noSQL = "$tmpSQL address1_no LIKE '" . mysqli_real_escape_string($link, $address1_no) . "%'";
 			$AnzPara++;
 		}
 		$citySQL = "";
@@ -524,7 +563,7 @@ else
 			if($AnzPara > 0) {
 				$tmpSQL = " AND ";
 			}
-			$citySQL = "$tmpSQL city LIKE '" . mysqli_real_escape_string($link, $city) . "'";
+			$citySQL = "$tmpSQL city LIKE '" . mysqli_real_escape_string($link, $city) . "%'";
 			$AnzPara++;
 		}
 		$userSQL = "";
@@ -556,7 +595,7 @@ else
 			if($AnzPara > 0) {
 				$tmpSQL = " AND ";
 			}
-			$list_idSQL = "$tmpSQL email LIKE  '" . mysqli_real_escape_string($link, $email) . "'";
+			$list_idSQL = "$tmpSQL email LIKE  '" . mysqli_real_escape_string($link, $email) . "%'";
 			$AnzPara++;
 			$AnzPara++;
 		}
@@ -580,7 +619,7 @@ else
 			if($AdminLevel < 9) {
 				$stmt = "SET STATEMENT max_statement_time=15 FOR ";
 			}
-			$stmt .= "SELECT $vicidial_list_fields from $vl_table where $first_nameSQL $CCSQL $last_nameSQL $address1SQL $address1_noSQL $citySQL $userSQL $ownerSQL $list_idSQL $email_SQL $statusSQL $LOGallowed_listsSQL LIMIT 5000;";
+			$stmt .= "SELECT $vicidial_list_fields from $vl_table where $vendorIDSQL $leadIDSQL $phoneSQL $first_nameSQL $CCSQL $last_nameSQL $address1SQL $address1_noSQL $citySQL $userSQL $ownerSQL $list_idSQL $email_SQL $statusSQL $LOGallowed_listsSQL LIMIT 5000;";
 			if($DB) {
 				echo $stmt;
 			}
@@ -1254,241 +1293,7 @@ else
 		exit;
 		}
 	##### END Log search #####
-
-
-	##### BEGIN Lead search #####
-	if ($vendor_id)
-		{
-		$stmt="SELECT $vicidial_list_fields from $vl_table where vendor_lead_code='" . mysqli_real_escape_string($link, $vendor_id) . "' $LOGallowed_listsSQL";
-		}
-	else
-		{
-		if ($phone)
-			{
-			if (isset($alt_phone_search))
-				{
-				$stmt="SELECT $vicidial_list_fields from $vl_table where phone_number LIKE '" . mysqli_real_escape_string($link, $phone) . "' or alt_phone LIKE '" . mysqli_real_escape_string($link, $phone) . "' or address3 LIKE '" . mysqli_real_escape_string($link, $phone) . "' $LOGallowed_listsSQL";
-				}
-			else
-				{
-				$stmt="SELECT $vicidial_list_fields from $vl_table where phone_number LIKE '" . mysqli_real_escape_string($link, $phone) . "' $LOGallowed_listsSQL";
-				}
-			}
-		else
-			{
-			if ($lead_id)
-				{
-				$stmt="SELECT $vicidial_list_fields from $vl_table where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' $LOGallowed_listsSQL";
-				}
-			else
-				{
-				print _("ERROR: you must search for something! Go back and search for something");
-				exit;
-				}
-			}
-		}
-
-    if ( (strlen($slave_db_server)>5) and (preg_match("/$report_name/",$reports_use_slave_db)) )
-      {
-      mysqli_close($link);
-      $use_slave_server=1;
-      $db_source = 'S';
-      require("dbconnect_mysqli.php");
-      echo "<!-- Using slave server $slave_db_server $db_source -->\n";
-      }
-
-	$stmt_alt='';
-	$results_to_printX=0;
-	if ( ($alt_phone_search=="Yes") and (strlen($phone) > 4) )
-		{
-		$stmtX="SELECT lead_id from vicidial_list_alt_phones where phone_number LIKE '" . mysqli_real_escape_string($link, $phone) . "' $LOGallowed_listsSQL limit 10000;";
-		$rsltX=mysql_to_mysqli($stmtX, $link);
-		$results_to_printX = mysqli_num_rows($rsltX);
-		if ($DB)
-			{echo "\n\n$results_to_printX|$stmtX\n\n";}
-		$o=0;
-		while ($results_to_printX > $o)
-			{
-			$row=mysqli_fetch_row($rsltX);
-			if ($o > 0) {$stmt_alt .= ",";}
-			$stmt_alt .= "'$row[0]'";
-			$o++;
-			}
-		if (strlen($stmt_alt) > 2)
-			{$stmt_alt = "or lead_id IN($stmt_alt)";}
-		}
-
-	$stmt = "$stmt$stmt_alt order by modify_date desc limit 1000;";
-
-	if ($DB)
-		{
-		echo "\n\n$stmt\n\n";
-		}
-
-	if ($db_source == 'S')
-		{
-		mysqli_close($link);
-		$use_slave_server=0;
-		$db_source = 'M';
-		require("dbconnect_mysqli.php");
-		}
-
-	### LOG INSERTION Search Log Table ###
-	$SQL_log = "$stmt|";
-	$SQL_log = preg_replace('/;/', '', $SQL_log);
-	$SQL_log = addslashes($SQL_log);
-	$stmtL="INSERT INTO vicidial_lead_search_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', source='admin', results='0', search_query=\"$SQL_log\";";
-	if ($DB) {echo "|$stmtL|\n";}
-	$rslt=mysql_to_mysqli($stmtL, $link);
-	$search_log_id = mysqli_insert_id($link);
-
-	if ( (strlen($slave_db_server)>5) and (preg_match("/$report_name/",$reports_use_slave_db)) )
-		{
-		mysqli_close($link);
-		$use_slave_server=1;
-		$db_source = 'S';
-		require("dbconnect_mysqli.php");
-		echo "<!-- Using slave server $slave_db_server $db_source -->\n";
-		}
-
-	$rslt=mysql_to_mysqli("$stmt", $link);
-	$results_to_print = mysqli_num_rows($rslt);
-	if ( ($results_to_print < 1) and ($results_to_printX < 1) )
-		{
-		echo date("l F j, Y G:i:s A");
-		echo "\n<br><br><center>\n";
-		echo "<b>"._("The search variables you entered are not active in the system")."</b><br><br>\n";
-		echo "<b>"._("Please go back and double check the information you entered and submit again")."</b>\n";
-		echo "</center>\n";
-		echo "</body></html>\n";
-		exit;
-		}
-	else
-		{
-		echo "<b>"._("RESULTS").": $results_to_print</b><BR><BR>\n";
-		echo "<TABLE BGCOLOR=WHITE CELLPADDING=1 CELLSPACING=0 WIDTH=770>\n";
-		echo "<TR BGCOLOR=BLACK>\n";
-		echo "<TD ALIGN=LEFT VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>#</B></FONT></TD>\n";
-		echo "<TD ALIGN=CENTER VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>"._("LEAD ID")."</B> &nbsp;</FONT></TD>\n";
-		echo "<TD ALIGN=CENTER VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>"._("STATUS")."</B> &nbsp;</FONT></TD>\n";
-		echo "<TD ALIGN=CENTER VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>"._("VENDOR ID")."</B> &nbsp;</FONT></TD>\n";
-		echo "<TD ALIGN=CENTER VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>"._("LAST AGENT")."</B> &nbsp;</FONT></TD>\n";
-		echo "<TD ALIGN=CENTER VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>"._("LIST ID")."</B> &nbsp;</FONT></TD>\n";
-		echo "<TD ALIGN=CENTER VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>"._("PHONE")."</B> &nbsp;</FONT></TD>\n";
-		echo "<TD ALIGN=CENTER VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>"._("NAME")."</B> &nbsp;</FONT></TD>\n";
-		echo "<TD ALIGN=CENTER VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>"._("CITY")."</B> &nbsp;</FONT></TD>\n";
-		echo "<TD ALIGN=CENTER VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>"._("SECURITY")."</B> &nbsp;</FONT></TD>\n";
-		echo "<TD ALIGN=CENTER VALIGN=TOP><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE><B>"._("LAST CALL")."</B></FONT></TD>\n";
-		echo "</TR>\n";
-		$o=0;
-		while ($results_to_print > $o)
-			{
-			$row=mysqli_fetch_row($rslt);
-			if ($LOGadmin_hide_phone_data != '0')
-				{
-				if ($DB > 0) {echo "HIDEPHONEDATA|$row[11]|$LOGadmin_hide_phone_data|\n";}
-				$phone_temp = $row[11];
-				if (strlen($phone_temp) > 0)
-					{
-					if ($LOGadmin_hide_phone_data == '4_DIGITS')
-						{$row[11] = str_repeat("X", (strlen($phone_temp) - 4)) . substr($phone_temp,-4,4);}
-					elseif ($LOGadmin_hide_phone_data == '3_DIGITS')
-						{$row[11] = str_repeat("X", (strlen($phone_temp) - 3)) . substr($phone_temp,-3,3);}
-					elseif ($LOGadmin_hide_phone_data == '2_DIGITS')
-						{$row[11] = str_repeat("X", (strlen($phone_temp) - 2)) . substr($phone_temp,-2,2);}
-					else
-						{$row[11] = preg_replace("/./",'X',$phone_temp);}
-					}
-				}
-			if ($LOGadmin_hide_lead_data != '0')
-				{
-				if ($DB > 0) {echo "HIDELEADDATA|$row[5]|$row[6]|$row[12]|$row[13]|$row[14]|$row[15]|$row[16]|$row[17]|$row[18]|$row[19]|$row[20]|$row[21]|$row[22]|$row[26]|$row[27]|$row[28]|$LOGadmin_hide_lead_data|\n";}
-				if (strlen($row[5]) > 0)
-					{$data_temp = $row[5];   $row[5] = preg_replace("/./",'X',$data_temp);}
-				if (strlen($row[6]) > 0)
-					{$data_temp = $row[6];   $row[6] = preg_replace("/./",'X',$data_temp);}
-				if (strlen($row[12]) > 0)
-					{$data_temp = $row[12];   $row[12] = preg_replace("/./",'X',$data_temp);}
-				if (strlen($row[13]) > 0)
-					{$data_temp = $row[13];   $row[13] = preg_replace("/./",'X',$data_temp);}
-				if (strlen($row[14]) > 0)
-					{$data_temp = $row[14];   $row[14] = preg_replace("/./",'X',$data_temp);}
-				if (strlen($row[15]) > 0)
-					{$data_temp = $row[15];   $row[15] = preg_replace("/./",'X',$data_temp);}
-				if (strlen($row[16]) > 0)
-					{$data_temp = $row[16];   $row[16] = preg_replace("/./",'X',$data_temp);}
-				if (strlen($row[17]) > 0)
-					{$data_temp = $row[17];   $row[17] = preg_replace("/./",'X',$data_temp);}
-				if (strlen($row[18]) > 0)
-					{$data_temp = $row[18];   $row[18] = preg_replace("/./",'X',$data_temp);}
-				if (strlen($row[19]) > 0)
-					{$data_temp = $row[19];   $row[19] = preg_replace("/./",'X',$data_temp);}
-				if (strlen($row[20]) > 0)
-					{$data_temp = $row[20];   $row[20] = preg_replace("/./",'X',$data_temp);}
-				if (strlen($row[21]) > 0)
-					{$data_temp = $row[21];   $row[21] = preg_replace("/./",'X',$data_temp);}
-				if (strlen($row[22]) > 0)
-					{$data_temp = $row[22];   $row[22] = preg_replace("/./",'X',$data_temp);}
-				if (strlen($row[26]) > 0)
-					{$data_temp = $row[26];   $row[26] = preg_replace("/./",'X',$data_temp);}
-				if (strlen($row[27]) > 0)
-					{$data_temp = $row[27];   $row[27] = preg_replace("/./",'X',$data_temp);}
-				if (strlen($row[28]) > 0)
-					{$data_temp = $row[28];   $row[28] = preg_replace("/./",'X',$data_temp);}
-				}
-
-			$o++;
-			$search_lead = $row[0];
-			if (preg_match('/1$|3$|5$|7$|9$/i', $o))
-				{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
-			else
-				{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
-			echo "<TR $bgcolor>\n";
-			echo "<TD ALIGN=LEFT><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$o</FONT></TD>\n";
-			echo "<TD ALIGN=CENTER><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1><a href=\"admin_modify_lead.php?lead_id=$row[0]&archive_search=$archive_search&archive_log=$log_archive_link\" target=\"_blank\">$row[0]</a></FONT></TD>\n";
-#			echo "<TD ALIGN=CENTER><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1><a href=\"".curl_post_url("admin_modify_lead.php", "lead_id=$row[0]&archive_search=$archive_search&archive_log=$log_archive_link")."\" target=\"_blank\">$row[0]</a></FONT></TD>\n";
-			echo "<TD ALIGN=RIGHT><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[3]</FONT></TD>\n";
-			echo "<TD ALIGN=RIGHT><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[5]</FONT></TD>\n";
-			echo "<TD ALIGN=RIGHT><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[4]</FONT></TD>\n";
-			echo "<TD ALIGN=RIGHT><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[7]</FONT></TD>\n";
-			$phTemp = FormatPhoneNr($row[10], $row[11]);
-			echo "<TD ALIGN=RIGHT nowrap><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$phTemp</FONT></TD>\n";
-			echo "<TD ALIGN=RIGHT nowrap><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[13] $row[15]</FONT></TD>\n";
-			echo "<TD ALIGN=RIGHT><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[19]</FONT></TD>\n";
-			echo "<TD ALIGN=RIGHT><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[28]</FONT></TD>\n";
-			echo "<TD ALIGN=LEFT nowrap><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>".strftime("%c", strtotime($row[31]))."</FONT></TD>\n";
-			echo "</TR>\n";
-			}
-		echo "</TABLE>\n";
-		}
-
-	if ($db_source == 'S')
-		{
-		mysqli_close($link);
-		$use_slave_server=0;
-		$db_source = 'M';
-		require("dbconnect_mysqli.php");
-		}
-
-	### LOG INSERTION Admin Log Table ###
-	$SQL_log = "$stmt|";
-	$SQL_log = preg_replace('/;/', '', $SQL_log);
-	$SQL_log = addslashes($SQL_log);
-	$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LEADS', event_type='SEARCH', record_id='$search_lead', event_code='ADMIN SEARCH LEAD', event_sql=\"$SQL_log\", event_notes='';";
-	if ($DB) {echo "|$stmt|\n";}
-	$rslt=mysql_to_mysqli($stmt, $link);
-
-	$end_process_time = date("U");
-	$search_seconds = ($end_process_time - $STARTtime);
-
-	$stmtL="UPDATE vicidial_lead_search_log set results='$o', seconds='$search_seconds' where search_log_id='$search_log_id';";
-	if ($DB) {echo "|$stmtL|\n";}
-	$rslt=mysql_to_mysqli($stmtL, $link);
 	}
-	##### END Lead search #####
-
-
-
 
 $ENDtime = date("U");
 

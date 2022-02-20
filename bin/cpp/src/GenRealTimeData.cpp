@@ -373,17 +373,25 @@ bool Proc::execMain() {
 				iDST = tmLastState.tm_isdst;
 				ttFirstTime = tmLastState;
 
-//				cout << row[34] << "|" << row[12] << "|" << row[1]<< endl;
+//				cout << row[5] << "|" << row[6] << "|" << row[1] << "|" << PhoneNr << "|" << endl;
 				
-				if((strlen(row[6]) > 1)  && (PhoneNr.length() == 0)) {
-					strcpy(row[5],"DEAD");
-					iStatSort = 4;
-					ttFirstTime = tmLastState;
-				} else {
-				if(strcmp(row[5], "DIAL") == 0) {
-					ttFirstTime = tmLastCall;
-					iStatSort = 6;
-				}
+				if((strcmp(row[5], "PAUSED") == 0) || (strcmp(row[5], "READY") == 0)) {
+					if(strlen(row[6]) > 1 ) {
+						strcpy(row[5],"DISPO");
+						iStatSort = 5;
+					}
+				} 		
+//				if((strlen(row[6]) > 1)  && (PhoneNr.length() == 0)) {
+//						strcpy(row[5],"DEAD");
+//						iStatSort = 4;
+//						ttFirstTime = tmLastState;
+//					} else {
+//						if(strcmp(row[5], "DIAL") == 0) {
+//							ttFirstTime = tmLastCall;
+//							iStatSort = 6;
+//						} 
+//					}
+//				}
 				if(strcmp(row[5], "QUEUE") == 0) {
 					ttFirstTime = tmLastCall;
 					iStatSort = 7;
@@ -395,11 +403,17 @@ bool Proc::execMain() {
 				if(strcmp(row[5], "READY") == 0) {
 					iStatSort = 10;
 				}
+				if(strcmp(row[5], "DEAD") == 0) {
+					iStatSort = 4;
+				}
 				if(strcmp(row[5], "CLOSER") == 0) {
 					iStatSort = 9;
 				}
 				if(strcmp(row[5], "3-WAY") == 0) {
 					iStatSort = 8;
+				}
+				if(strcmp(row[5], "READY") == 0) {
+					iStatSort = 10;
 				}
 				if(strcmp(row[5], "PAUSED") == 0) {
 //					cout << row[1] << "|" << row[5] << endl;
@@ -421,7 +435,12 @@ bool Proc::execMain() {
 						strcpy(chSubSt, "I");
 						arrList = GetInbound(row[9]);
 					}
-				}
+					if(PhoneNr.length() == 0) {
+						strcpy(row[5],"DEAD");
+						iStatSort = 4;
+						ttFirstTime = tmLastState;
+						strcpy(chSubSt, "");
+					}
 				}
 				
 				time_t t1;

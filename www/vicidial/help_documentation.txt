@@ -9,6 +9,7 @@ users-user_group	User Group	<QXZ>This menu is where you select the users group t
 users-phone_login	Phone Login	<QXZ>Here is where you can set a default phone login value for when the user logs into the agent screen. This value will populate the phone_login automatically when the user logs in with their user-pass-campaign in the agent login screen.</QXZ>
 users-phone_pass	Phone Pass	<QXZ>Here is where you can set a default phone pass value for when the user logs into the agent screen. This value will populate the phone_pass automatically when the user logs in with their user-pass-campaign in the agent login screen.</QXZ>
 users-active	Active	<QXZ>This field defines whether the user is active in the system and can log in as an agent or manager. Default is Y.</QXZ>
+users-systemuser	SystemUser	<QXZ>This field is only for external use</QXZ>
 users-voicemail_id	Voicemail ID	<QXZ>This is the voicemail box that calls will be directed to in an AGENTDIRECT in-group at the drop time if the in-group has the drop method set to VOICEMAIL and the Voicemail field set to AGENTVMAIL.</QXZ>
 users-optional	Email, User Code and Territory	<QXZ>These are optional fields.</QXZ>
 users-user_nickname	User Nickname	<QXZ>Optional alternative name used for agent when chatting with customers in the customer website chat feature. Only used if populated.</QXZ>

@@ -2166,6 +2166,7 @@ else
 
 
 ##### BEGIN ASK ABOUT A POST-CALL SURVEY #####
+if ($AGILOG) {$agi_string = "Entry point Inbound_survey: |$inbound_survey|$inbound_survey_filename|$inbound_survey_accept_digit|$agent_alert_exten|$alertCIDstring|";   &agi_output;}
 if ( ($inbound_survey =~ /ENABLED/) && (length($inbound_survey_filename) > 0) && (length($inbound_survey_accept_digit) > 0) )
 	{
 	$digits_to_collect=1;

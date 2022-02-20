@@ -34,13 +34,14 @@
 #
 # Version  / Build
 #
-$vdc_db_query_version = '3.1.1-2';
-$vdc_db_query_build = '20210601-1';
+$vdc_db_query_version = '3.1.1-4';
+$vdc_db_query_build = '20211207-2';
 #
 ###############################################################################
 #
 # Changelog
 #
+# 2021-12-07 jff    Fix GROUPS_ search
 # 2021-06-01 jff    Add test for block_status
 # 2021-04-15 jff    Add housenr1
 # 2020-12-14 jff	Add list_id, owner into SEARCHRESULTSview
@@ -16847,18 +16848,27 @@ if ($ACTION == 'SEARCHRESULTSview')
 		# USER_, GROUP_, TERRITORY_
 		if (preg_match('/USER_/',$agent_lead_search_method))
 			{$searchownerSQL=" and owner='$user'";}
-		if (preg_match('/GROUP_/',$agent_lead_search_method))
-			{
-			$stmt="SELECT user_group from vicidial_users where user='$user';";
+        if (preg_match('/GROUP_/',$agent_lead_search_method)) {
+			$stmt = "SELECT user FROM vicidial_users WHERE user_group IN (SELECT user_group from vicidial_users where user='$user');";
 			$rslt=mysql_to_mysqli($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00386',$user,$server_ip,$session_name,$one_mysql_log);}
 			$groups_to_parse = mysqli_num_rows($rslt);
-			if ($groups_to_parse > 0)
-				{
-				$rowx=mysqli_fetch_row($rslt);
-				$searchownerSQL=" and owner='$rowx[0]'";
-				}
+			
+			if ($groups_to_parse > 0) {
+			     $first = 1;
+			     $strTemp = "(";
+			     while($rowx = mysqli_fetch_row($rslt)) {
+			         if($first == 1) {
+			             $strTemp .= "'$rowx[0]'";
+			             $first = 0;
+			         } else {
+			             $strTemp .= ", '$rowx[0]'";
+			         }
+			     }
+			     $strTemp .= ")";
+			     $searchownerSQL = " AND owner IN $strTemp";
 			}
+	    }
 		if (preg_match('/TERRITORY_/',$agent_lead_search_method))
 			{
 			$agent_territories='';

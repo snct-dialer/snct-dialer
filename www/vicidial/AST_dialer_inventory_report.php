@@ -1,43 +1,51 @@
 <?php
-# AST_dialer_inventory_report.php
+###############################################################################
+#
+# Modul AST_dialer_inventory_report.php
+#
+# SNCT-Dialer™ Inventory report
+#
+# Copyright (©) 2019-2022 SNCT GmbH <info@snct-gmbh.de>
+#               2017-2022 Jörg Frings-Fürst <open_source@jff.email>
 #
 # LICENSE: AGPLv3
 #
-# Copyright (©) 2019  Matt Florell <vicidial@gmail.com>
-#                     Joe Johnson <freewermadmin@gmail.com>
-# Copyright (©) 2019  SNCT GmbH <info@snct-gmbh.de>
-#               2019  Jörg Frings-Fürst <open_source@jff.email>
+###############################################################################
 #
-# NOTES:
-# - For snapshots, the AST_dialer_inventory_snapshot.pl script should be put in
-#    the crontab and run on a nightly basis after-hours
+# based on VICIdial®
+# (© 2019  Matt Florell <vicidial@gmail.com>
+#          Joe Johnson <freewermadmin@gmail.com>)
+#
+###############################################################################
+#
+# requested Module:
+#
+# dbconnect_mysqli.php
+# functions.php
+# screen_colors.php
+# count_functions.inc
+# admin_header.php
+# options.php
+# ../tools/system_wide_settings.php
+# language_header.php
+#
+###############################################################################
+#
+# Version  / Build
+#
+$AST_dialer_inventory_report_version = '3.1.1-1';
+$AST_dialer_inventory_report_build = '20220219-2';
+#
+###############################################################################
+#
+# Changelog
+#
+# 2022-02-19 jff Fix display format for UTF-8
+#                Fix csv export
+# 2019-04-29 jff Change lisense to AGPLv3
+# 2019-04-29 jff Add system_wide_settings.php
+#
 
-# Other - Changelog
-#
-# 2019-04-29 10:23 Change lisense to AGPLv3
-# 2019-04-29 10:25 Add system_wide_settings.php
-#
-
-#
-#
-# CHANGES
-# 111013-0054 - First build
-# 111106-1327 - Reformatting, other minor changes
-# 111230-1145 - Debugging additions and more minor changes
-# 120221-2237 - Added totals, list options, other small changes
-# 130414-0131 - Added report logging
-# 130610-1021 - Finalized changing of all ereg instances to preg
-# 130621-0800 - Added filtering of input to prevent SQL injection attacks and new user auth
-# 130902-0735 - Changed to mysqli PHP functions
-# 140108-0743 - Added webserver and hostname to report logging
-# 140328-0005 - Converted division calculations to use MathZDC function
-# 141114-0006 - Finalized adding QXZ translation to all admin files
-# 141230-1509 - Added code for on-the-fly language translations display
-# 160227-1933 - Uniform form format
-# 170409-1538 - Added IP List validation code
-# 170829-0040 - Added screen color settings
-# 191013-0845 - Fixes for PHP7
-#
 
 $startMS = microtime();
 
@@ -499,8 +507,8 @@ if ($SUBMIT)
 			{
 			$row["list_description"]=substr($row["list_description"], 0, 30);
 			if (strlen($row["list_description"])>0) {$list_info=$row["list_description"];} else {$list_info=$row["list_name"];}
-			$rpt_body.="| ".sprintf("%9s", $row["list_id"])." | ".sprintf("%-30s", $list_info)." | ".sprintf("%8s", $row["campaign_id"])." | ".$row["list_lastcalldate"]." | ".sprintf("%9s", $row["list_start_inv"])." | ".sprintf("%8s", $row["dialable_count"])." | ".sprintf("%8s", $row["dialable_count_nofilter"])." | ".sprintf("%8s", $row["dialable_count_oneoff"])." | ".sprintf("%8s", $row["dialable_count_inactive"])." | ".sprintf("%8s", $row["average_call_count"])." | ".sprintf("%6s", $row["penetration"])."% |";
-			$CSV_body.="\"$row[list_id]\",\"$list_info\",\"$row[last_calldate]\",\"$row[campaign_id]\",\"$row[list_start_inv]\",\"$row[dialable_count]\",\"$row[dialable_count_nofilter]\",\"$row[dialable_count_oneoff]\",\"$row[dialable_count_inactive]\",\"$row[average_call_count]\",\"$row[penetration] %\"";
+			$rpt_body.= utf8_encode("| ".sprintf("%9s", $row["list_id"])." | ".sprintf("%-30s", utf8_decode($list_info))." | ".sprintf("%20s", utf8_decode($row["campaign_id"]))." | ".$row["list_lastcalldate"]." | ".sprintf("%9s", $row["list_start_inv"])." | ".sprintf("%8s", $row["dialable_count"])." | ".sprintf("%8s", $row["dialable_count_nofilter"])." | ".sprintf("%8s", $row["dialable_count_oneoff"])." | ".sprintf("%8s", $row["dialable_count_inactive"])." | ".sprintf("%8s", $row["average_call_count"])." | ".sprintf("%6s", $row["penetration"])."% |");
+			$CSV_body.="\"$row[list_id]\",\"$list_info\",\"$row[campaign_id]\",\"$row[list_lastcalldate]\",\"$row[list_start_inv]\",\"$row[dialable_count]\",\"$row[dialable_count_nofilter]\",\"$row[dialable_count_oneoff]\",\"$row[dialable_count_inactive]\",\"$row[average_call_count]\",\"$row[penetration] %\"";
 
 			$total_list_start_inv+=$row["list_start_inv"];
 			$total_dialable_count+=$row["dialable_count"];
@@ -920,21 +928,21 @@ if ($SUBMIT)
 		}
 
 	$rpt_header.=_QXZ("Date").": ".date("m/d/Y")." -- "._QXZ("Time").": ".date("H:i a")."\n\n";
-	$rpt_header.="+-----------+--------------------------------+----------+---------------------+-----------+----------+----------+----------+----------+----------+---------+$rpt_header_BORDER\n";
-	$rpt_header.="| "._QXZ("Call list",9)." | "._QXZ("List description",30)." | "._QXZ("Campaign",8)." | "._QXZ("Last call date",19)." | "._QXZ("Start Inv",9)." | "._QXZ("Call Inv",8)." | "._QXZ("Call Inv",8)." | "._QXZ("Call Inv",8)." | "._QXZ("Call Inv",8)." | "._QXZ("Dial Avg",8)." | "._QXZ("Pen.",5)." % |$rpt_header_SHIFTS\n";
-	$rpt_header.="|           |                                |          |                     |           | "._QXZ("Total",8)." | "._QXZ("No filtr",8)." | "._QXZ("One-off",8)." | "._QXZ("Inactive",8)." |          |         |$rpt_header_SHIFTS_lower\n";
-	$rpt_header.="+-----------+--------------------------------+----------+---------------------+-----------+----------+----------+----------+----------+----------+---------+$rpt_header_BORDER\n";
+	$rpt_header.="+-----------+--------------------------------+----------------------+---------------------+-----------+----------+----------+----------+----------+----------+---------+$rpt_header_BORDER\n";
+	$rpt_header.="| "._QXZ("Call list",9)." | "._QXZ("List description",30)." | "._QXZ("Campaign",20)." | "._QXZ("Last call date",19)." | "._QXZ("Start Inv",9)." | "._QXZ("Call Inv",8)." | "._QXZ("Call Inv",8)." | "._QXZ("Call Inv",8)." | "._QXZ("Call Inv",8)." | "._QXZ("Dial Avg",8)." | "._QXZ("Pen.",5)." % |$rpt_header_SHIFTS\n";
+	$rpt_header.="|           |                                |                      |                     |           | "._QXZ("Total",8)." | "._QXZ("No filtr",8)." | "._QXZ("One-off",8)." | "._QXZ("Inactive",8)." |          |         |$rpt_header_SHIFTS_lower\n";
+	$rpt_header.="+-----------+--------------------------------+----------------------+---------------------+-----------+----------+----------+----------+----------+----------+---------+$rpt_header_BORDER\n";
 
 	$CSV_header="\""._QXZ("$report_name")."\"\n";
 	$CSV_header.="\"Date: ".date("m/d/Y")."\",\"\",\"Time: ".date("H:i a")."\"\n\n";
-	$CSV_header.="\""._QXZ("Call list")."\",\""._QXZ("List description")."\",\""._QXZ("Campaign")."\",\""._QXZ("Last call date")."\",\""._QXZ("Start Inv")."\",\""._QXZ("Call Inv Total")."\",\""._QXZ("Call Inv - No filter")."\",\""._QXZ("Call Inv - One-offs")."\",\""._QXZ("Call Inv - Inactive dialable statuses")."\",\""._QXZ("Dial Avg")."\",\""._QXZ("Pen.")." %\",".substr($CSV_header_SHIFTS,0,-1)."\n";
+	$CSV_header.="\""._QXZ("Call list")."\",\""._QXZ("List description")."\",\""._QXZ("Campaign")."\",\""._QXZ("Last call date")."\",\""._QXZ("Start Inv")."\",\""._QXZ("Call Inv Total")."\",\""._QXZ("Call Inv - No filter")."\",\""._QXZ("Call Inv - One-offs")."\",\""._QXZ("Call Inv - Inactive dialable statuses")."\",\""._QXZ("Dial Avg")."\",\""._QXZ("Pen.")." %\",\"".substr($CSV_header_SHIFTS,0,-1)."\"\n";
 
-	$rpt_footer ="+-----------+--------------------------------+----------+---------------------+-----------+----------+----------+----------+----------+----------+---------+$rpt_header_BORDER\n";
+	$rpt_footer ="+-----------+--------------------------------+----------------------+---------------------+-----------+----------+----------+----------+----------+----------+---------+$rpt_header_BORDER\n";
 
 	#### PRINT TOTALS ####
 	$total_average_call_count=sprintf("%.1f", MathZDC($total_total_calls, $total_list_start_inv));
 	$total_penetration=sprintf("%.2f", (MathZDC(100*($total_list_start_inv-$total_dialable_count), $total_list_start_inv)));
-	$rpt_footer.="|"._QXZ("TOTALS",76)." | ".sprintf("%9s", $total_list_start_inv)." | ".sprintf("%8s", $total_dialable_count)." | ".sprintf("%8s", $total_dialable_count_nofilter)." | ".sprintf("%8s", $total_dialable_count_oneoff)." | ".sprintf("%8s", $total_dialable_count_inactive)." | ".sprintf("%8s", $total_average_call_count)." | ".sprintf("%6s", $total_penetration)."% |";
+	$rpt_footer.="|"._QXZ("TOTALS",88)." | ".sprintf("%9s", $total_list_start_inv)." | ".sprintf("%8s", $total_dialable_count)." | ".sprintf("%8s", $total_dialable_count_nofilter)." | ".sprintf("%8s", $total_dialable_count_oneoff)." | ".sprintf("%8s", $total_dialable_count_inactive)." | ".sprintf("%8s", $total_average_call_count)." | ".sprintf("%6s", $total_penetration)."% |";
 	$CSV_body.="\"\",\"\",\"\",\""._QXZ("TOTALS")."\",\"$total_list_start_inv\",\"$total_dialable_count\",\"$total_dialable_count_nofilter\",\"$total_dialable_count_oneoff\",\"$total_dialable_count_inactive\",\"$total_average_call_count\",\"$total_penetration\"";
 	$b=0;
 	while ($b < count($shift_ary))
@@ -948,7 +956,7 @@ if ($SUBMIT)
 	$rpt_footer.="\n";
 	######################
 
-	$rpt_footer.="+-----------+--------------------------------+----------+---------------------+-----------+----------+----------+----------+----------+----------+---------+$rpt_header_BORDER\n";
+	$rpt_footer.="+-----------+--------------------------------+----------------------+---------------------+-----------+----------+----------+----------+----------+----------+---------+$rpt_header_BORDER\n";
 	}
 $HTML_header.="</PRE>\n";
 ###############################

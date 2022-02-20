@@ -6874,6 +6874,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 				if ( (taskvar == 'XfeRLOCAL') || (taskvar == 'XfeRBLIND') || (taskvar == 'XfeRVMAIL') || (taskvar == 'XfeRBLINDACR') )
 					{
+					button_click_log = button_click_log + SQLdate + "-----ACRTEST------: " + taskvar +  " " + taskdispowindow;
 					if (auto_dial_level == 0) {RedirecTxFEr = 1;}
 					document.getElementById("callchannel").innerHTML = '';
 					document.vicidial_form.callserverip.value = '';
@@ -10700,7 +10701,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						var check_VDIC_array=check_incoming.split("\n");
 						if (check_VDIC_array[0] == '1')
 							{
-							document.getElementById("debugbottomspan").innerHTML = "XX\n" + checkVDAI_query + " \n " + xmlhttprequestcheckauto.responseText + "\nXX";
+//							document.getElementById("debugbottomspan").innerHTML = "XX\n" + checkVDAI_query + " \n " + xmlhttprequestcheckauto.responseText + "\nXX";
 //							alert(xmlhttprequestcheckauto.responseText);
 							AutoDialWaiting = 0;
 							QUEUEpadding = 0;
@@ -20092,6 +20093,10 @@ $zi=2;
                 $BlockStr .= "</select></div>";
                 echo $BlockStr . PHP_EOL;    
 	        }
+	    }
+	    if($row_AgPos["InputType"] == "checkbox") {
+	        echo "<div id=\"agent_leads\" class=\"agent_leads\"><label class=\"".$TmpClass."\" for=\"".$row_AgPos["List_Field"]."\">".$row_AgPos["DisplayName"]."</label>" . PHP_EOL;
+	        echo "<input type=\"checkbox\" name=\"".$row_AgPos["List_Field"]."\" id=\"".$row_AgPos["List_Field"]."\" class=\"cust_form\"  /><label for=\"".$row_AgPos["List_Field"]."\">".$row_AgPos["DisplayName"]."</label></div>" . PHP_EOL;
 	    }
 	    if($row_AgPos["InputType"] == "email") {
 	        echo "<div id=\"agent_leads\" class=\"agent_leads\"><label class=\"".$TmpClass."\" for=\"".$row_AgPos["List_Field"]."\">".$row_AgPos["DisplayName"]."</label>" . PHP_EOL;

@@ -11,6 +11,7 @@
 
 # Changelog
 #
+# 2022-02-19 jff  Add snctdialer_list_log_archive handling
 # 2020-10-01 jff  Lists points now to "Search for a Lead"
 
 
@@ -790,13 +791,13 @@ else
 	}
 	document.addEventListener("click", getMousePos);
 	
-	function launch_list_log(LeadID) {
+	function launch_list_log(LeadID,ShowArch) {
 
 		var h = window.innerHeight;
 		var vposition=mouseY;
 
 		var listlogURL = "./non_agent_api.php";
-		var listlogQuery = "source=admin&function=lead_log_list&user=" + user + "&pass=" + pass + "&format=selectframe&lead_id=" + LeadID;
+		var listlogQuery = "source=admin&function=lead_log_list&user=" + user + "&pass=" + pass + "&format=selectframe&lead_id=" + LeadID&show_arch=" + ShowArch;
 		var Iframe_content = '<IFRAME SRC="' + listlogURL + '?' + listlogQuery + '"  style="width:740;height:440;background-color:white;" scrolling="NO" frameborder="0" allowtransparency="true" id="list_log_frame' + epoch + '" name="list_log_frame" width="740" height="460" STYLE="z-index:2"> </IFRAME>';
 
 		document.getElementById("audio_chooser_span").style.position = "absolute";
