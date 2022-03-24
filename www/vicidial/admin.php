@@ -32,14 +32,15 @@
 #
 # Version  / Build
 #
-$admin_version = '3.1.2-8';
-$admin_build = '20220211-3';
+$admin_version = '3.1.2-12';
+$admin_build = '20220319-4';
 #
 ###############################################################################
 #
 # Changelog
 #
-# 2020-02-11 jff    Add Field SystemUser for Users
+# 2022-03-19 jff    Add base_campaign_id into lists
+# 2022-02-11 jff    Add Field SystemUser for Users
 # 2022-01-08 jff    Mark non seletable status at Campaign Status with <DEL>.  
 # 2021-07-13 jff    Set Realtimereport refresh time to 10 seconds.
 # 2021-07-12 jff    New Agent Screen Setup.
@@ -2648,6 +2649,8 @@ if (isset($_GET["group_email"]))                {$group_email=$_GET["group_email
     
 if (isset($_GET["systemuser"]))                {$systemuser=$_GET["systemuser"];}
     elseif (isset($_POST["systemuser"]))       {$systemuser=$_POST["systemuser"];}
+if (isset($_GET["base_campaign_id"]))            {$BaseCampaignId=$_GET["base_campaign_id"];}
+    elseif (isset($_POST["base_campaign_id"]))   {$BaseCampaignId=$_POST["base_campaign_id"];}
 
 if (isset($script_id)) {$script_id= strtoupper($script_id);}
 if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
@@ -11228,7 +11231,7 @@ if ($ADD==211)
 				{
 				echo "<br><B>"._QXZ("LIST ADDED").": $list_id</B>\n";
 
-				$stmt="INSERT INTO vicidial_lists (list_id,list_name,campaign_id,active,list_description,list_changedate) values('$list_id','$list_name','$campaign_id','$active','$list_description','$SQLdate');";
+				$stmt="INSERT INTO vicidial_lists (list_id,list_name,campaign_id,active,list_description,list_changedate,base_campaign_id) values('$list_id','$list_name','$campaign_id','$active','$list_description','$SQLdate','$campaign_id');";
 				$rslt=mysql_to_mysqli($stmt, $link);
 
 				### LOG INSERTION Admin Log Table ###
@@ -15891,7 +15894,7 @@ if ($ADD==411)
 
 				echo "<br><B>"._QXZ("LIST MODIFIED").": $list_id</B>\n";
 
-				$stmt="UPDATE vicidial_lists set list_name='$list_name',campaign_id='$campaign_id',active='$active',list_description='$list_description',list_changedate='$SQLdate',reset_time='$reset_time',agent_script_override='$agent_script_override',inbound_list_script_override='$inbound_list_script_override',campaign_cid_override='$campaign_cid_override',am_message_exten_override='$am_message_exten_override',drop_inbound_group_override='$drop_inbound_group_override',xferconf_a_number='$xferconf_a_number',xferconf_b_number='$xferconf_b_number',xferconf_c_number='$xferconf_c_number',xferconf_d_number='$xferconf_d_number',xferconf_e_number='$xferconf_e_number',web_form_address='" . mysqli_real_escape_string($link, $web_form_address) . "',web_form_address_two='" . mysqli_real_escape_string($link, $web_form_address_two) . "',time_zone_setting='$time_zone_setting',inventory_report='$inventory_report',expiration_date='$expiration_date',na_call_url='" . mysqli_real_escape_string($link, $na_call_url) . "',local_call_time='$local_call_time',web_form_address_three='" . mysqli_real_escape_string($link, $web_form_address_three) . "',status_group_id='$status_group_id',custom_one='$list_custom_one',custom_two='$list_custom_two',custom_three='$list_custom_three',custom_four='$list_custom_four',custom_five='$list_custom_five',user_new_lead_limit='$user_new_lead_limit',default_xfer_group='$default_xfer_group' $daily_reset_limitSQL,auto_active_list_rank='$auto_active_list_rank' where list_id='$list_id';";
+				$stmt="UPDATE vicidial_lists set list_name='$list_name',campaign_id='$campaign_id',active='$active',list_description='$list_description',list_changedate='$SQLdate',reset_time='$reset_time',agent_script_override='$agent_script_override',inbound_list_script_override='$inbound_list_script_override',campaign_cid_override='$campaign_cid_override',am_message_exten_override='$am_message_exten_override',drop_inbound_group_override='$drop_inbound_group_override',xferconf_a_number='$xferconf_a_number',xferconf_b_number='$xferconf_b_number',xferconf_c_number='$xferconf_c_number',xferconf_d_number='$xferconf_d_number',xferconf_e_number='$xferconf_e_number',web_form_address='" . mysqli_real_escape_string($link, $web_form_address) . "',web_form_address_two='" . mysqli_real_escape_string($link, $web_form_address_two) . "',time_zone_setting='$time_zone_setting',inventory_report='$inventory_report',expiration_date='$expiration_date',na_call_url='" . mysqli_real_escape_string($link, $na_call_url) . "',local_call_time='$local_call_time',web_form_address_three='" . mysqli_real_escape_string($link, $web_form_address_three) . "',status_group_id='$status_group_id',custom_one='$list_custom_one',custom_two='$list_custom_two',custom_three='$list_custom_three',custom_four='$list_custom_four',custom_five='$list_custom_five',user_new_lead_limit='$user_new_lead_limit',default_xfer_group='$default_xfer_group' $daily_reset_limitSQL,auto_active_list_rank='$auto_active_list_rank',base_campaign_id='$BaseCampaignId'  where list_id='$list_id';";
 				$rslt=mysql_to_mysqli($stmt, $link);
 
 				## QC Addition for Audited Comments
@@ -27701,7 +27704,7 @@ if ($ADD==311)
 				}
 			}
 
-		$stmt="SELECT vicidial_lists.list_id,list_name,campaign_id,active,list_description,list_changedate,list_lastcalldate,reset_time,agent_script_override,campaign_cid_override,am_message_exten_override,drop_inbound_group_override,xferconf_a_number,xferconf_b_number,xferconf_c_number,xferconf_d_number,xferconf_e_number,web_form_address,web_form_address_two,time_zone_setting,inventory_report,IFNULL(audit_comments,0),expiration_date,DATE_FORMAT(expiration_date,'%Y%m%d'),na_call_url,local_call_time,web_form_address_three,status_group_id,user_new_lead_limit,custom_one, custom_two, custom_three, custom_four, custom_five, inbound_list_script_override,default_xfer_group,daily_reset_limit,resets_today,auto_active_list_rank from vicidial_lists left outer join vicidial_lists_custom on vicidial_lists.list_id=vicidial_lists_custom.list_id where vicidial_lists.list_id='$list_id' $LOGallowed_campaignsSQL;";
+		$stmt="SELECT vicidial_lists.list_id,list_name,campaign_id,active,list_description,list_changedate,list_lastcalldate,reset_time,agent_script_override,campaign_cid_override,am_message_exten_override,drop_inbound_group_override,xferconf_a_number,xferconf_b_number,xferconf_c_number,xferconf_d_number,xferconf_e_number,web_form_address,web_form_address_two,time_zone_setting,inventory_report,IFNULL(audit_comments,0),expiration_date,DATE_FORMAT(expiration_date,'%Y%m%d'),na_call_url,local_call_time,web_form_address_three,status_group_id,user_new_lead_limit,custom_one, custom_two, custom_three, custom_four, custom_five, inbound_list_script_override,default_xfer_group,daily_reset_limit,resets_today,auto_active_list_rank,base_campaign_id from vicidial_lists left outer join vicidial_lists_custom on vicidial_lists.list_id=vicidial_lists_custom.list_id where vicidial_lists.list_id='$list_id' $LOGallowed_campaignsSQL;";
 
 		$rslt=mysql_to_mysqli($stmt, $link);
                 if ($DB) {echo "$stmt\n";}
@@ -27744,6 +27747,7 @@ if ($ADD==311)
 		$daily_reset_limit =		$row[36];
 		$resets_today =			$row[37];
 		$auto_active_list_rank =	$row[38];
+		$BaseCampaignId =           $row[39]; 
 
 		# grab names of global statuses and statuses in the selected campaign
 		$stmt="SELECT status,status_name,selectable,human_answered,category,sale,dnc,customer_contact,not_interested,unworkable,scheduled_callback,completed,min_sec,max_sec,answering_machine from vicidial_statuses order by status;";
@@ -27841,6 +27845,36 @@ if ($ADD==311)
 		if (!preg_match("/\|$campaign_id\|/",$camp_list))
 			{echo "<br> &nbsp; &nbsp; <font color=red><B>"._QXZ("CAMPAIGN DOES NOT EXIST")."</B></font>";}
 		echo "</td></tr>\n";
+		
+		#
+		# Base - Campaign
+		#
+		if($LOGuser_level == 9) {
+		  echo "<tr bgcolor=#$SSstd_row3_background><td align=right><a href=\"$PHP_SELF?ADD=34&campaign_id=$BaseCampaignId\">"._QXZ("Base-Campaign")."</a>: </td><td align=left><select size=1 name=base_campaign_id>\n";
+		  $stmt="SELECT campaign_id,campaign_name from vicidial_campaigns $whereLOGallowed_campaignsSQL order by campaign_id;";
+		  $rslt=mysql_to_mysqli($stmt, $link);
+		  $campaigns_to_print = mysqli_num_rows($rslt);
+		  $Basecampaigns_list='';
+		  $Basecamp_list='|';
+		  $o=0;
+		  while ($campaigns_to_print > $o) {
+		      $rowx=mysqli_fetch_row($rslt);
+		      $Basecampaigns_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		      $Basecamp_list .= "$rowx[0]|";
+		      $o++;
+		  }
+		  echo "$Basecampaigns_list";
+		  echo "<option SELECTED>$BaseCampaignId</option>\n";
+		  echo "</select>$NWB#lists-base-campaign_id$NWE";
+		  if (!preg_match("/\|$BaseCampaignId\|/",$Basecamp_list))
+		      {echo "<br> &nbsp; &nbsp; <font color=red><B>"._QXZ("CAMPAIGN DOES NOT EXIST")."</B></font>";}
+		  echo "</td></tr>\n";
+		}
+		
+		#
+		# Ende Base - Campaign
+		#
+		
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Active").": </td><td align=left><select size=1 name=active><option value='Y'>"._QXZ("Y")."</option><option value='N'>"._QXZ("N")."</option><option value='$active' SELECTED>"._QXZ("$active")."</option></select>$NWB#lists-active$NWE \n";
 		if ( ($expiration_dateINT < $EXPtestdate) and ($active == 'Y') )
 			{echo " &nbsp; &nbsp; <font color=red><B>"._QXZ("LIST EXPIRED AND SET TO ACTIVE")."</B></font>";}

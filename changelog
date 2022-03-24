@@ -41,6 +41,9 @@
           www/vicidial/non_agent_api.php
     * Fix display format for UTF-8, Fix csv export:
       - Update www/vicidial/AST_dialer_inventory_report.php.
+    * Add Base-Campaign to lists:
+      - Update www/vicidial/admin.php,
+        
 
 3.0.6
   [Jörg Frings-Fürst]

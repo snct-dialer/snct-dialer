@@ -16440,6 +16440,10 @@ if ($ACTION == 'CALLLOGview') {
 	if(!isset($OnlyInbounds)) {
 	    $OnlyInbounds = 0;
 	}
+	if(!isset($MaxCallLogDays)) {
+	    $MaxCallLogDays = 0;
+	}
+	
 	$date_array = explode("-",$date);
 	$day_next = mktime(7, 0, 0, $date_array[1], ($date_array[2] + 1), $date_array[0]);
 	$next_day_date = date("Y-m-d",$day_next);
@@ -16448,6 +16452,19 @@ if ($ACTION == 'CALLLOGview') {
 	$week_old = mktime(7, 0, 0, $date_array[1], ($date_array[2] - 7), $date_array[0]);
 	$past_week_date = date("Y-m-d",$week_old);
 
+	if($MaxCallLogDays != 0) {
+	   $DateTest = date("Y-m-d", strtotime($NOW_DATE) - (24 * 3600 * $MaxCallLogDays));
+	   if($next_day_date <= $DateTest) {
+	       $next_day_date = $DateTest;
+	   }
+	   if($past_week_date <= $DateTest) {
+	       $past_week_date = $DateTest;
+	   }
+	   if($past_day_date <= $DateTest) {
+	       $past_day_date = $DateTest;
+	   }
+	}
+	
 	echo "<CENTER>\n";
 	echo "<font style=\"font-size:14px;font-family:sans-serif;\"><B>";
 	echo "<a href=\"#\" onclick=\"VieWCalLLoG('$past_week_date','');return false;\"> << $past_week_date</a> &nbsp; &nbsp; ";

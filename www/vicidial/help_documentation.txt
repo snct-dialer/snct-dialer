@@ -379,6 +379,7 @@ lists-list_description	List Description	<QXZ>This is the memo field for the list
 lists-list_changedate	List Change Date	<QXZ>This is the last time that the settings for this list were modified in any way.</QXZ>
 lists-list_lastcalldate	List Last Call Date	<QXZ>This is the last time that lead was dialed from this list.</QXZ>
 lists-campaign_id	Campaign	<QXZ>This is the campaign that this list belongs to. A list can only be dialed on a single campaign at one time.</QXZ>
+lists-base-campaign_id	Campaign	<QXZ>Only for internal use. Planed from move this list back into this campaign after work.</QXZ>
 lists-active	Active	<QXZ>This defines whether the list is to be dialed on or not.</QXZ>
 lists-reset_list	Reset Lead-Called-Status for this list	<QXZ>This resets all leads in this list to N for not called since last reset and means that any lead can now be called if it is the right status as defined in the campaign screen.</QXZ>
 lists-reset_time	Reset Times	<QXZ>This field allows you to put times in, separated by a dash-, that this list will be automatically reset by the system. The times must be in 24 hour format with no punctuation, for example 0800-1700 would reset the list at 8AM and 5PM every day. Default is empty.</QXZ>
