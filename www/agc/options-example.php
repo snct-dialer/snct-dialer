@@ -89,4 +89,10 @@ $INSERT_agent_events	= '';	# inserted within the agent_events function
 $OnlyInbounds = 0; # Used in vdc_db_query to display only AGENTDIRECT inbounds in call log
 $OverWriteAfterCallSurvey = 0; # Set to 1 to allow without OptIn
 
+#
+# Call List with owner
+#
+#$SearchOwner = " AND `owner` = '".$user."' OR `owner` = '' OR `owner` = '415' ";
+
+
 ?>

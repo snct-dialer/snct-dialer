@@ -1,6 +1,6 @@
 <?php
 
-$stmtD = "UPDATE vicidial_list set called_since_last_reset='N', status='NEW' where list_id='$list_id' and `status` NOT IN('ANWALT', 'DATENS', 'DEC', 'KDALT', 'PRUEF', 'UNBEK','FALSCH', 'CALLBK', 'CBHOLD', 'NEW', 'NI', 'TL', 'NIM') AND `status` NOT LIKE 'DNC%' AND `status` NOT LIKE 'SALE%' AND `status` NOT LIKE 'Z%';";
+$stmtD = "UPDATE vicidial_list set called_since_last_reset='N', status='NEW' where list_id='$list_id' and `status` NOT IN('ANWALT', 'DATENS', 'DEC', 'KDALT', 'PRUEF', 'UNBEK','FALSCH', 'CALLBK', 'CBHOLD', 'NEW', 'NI', 'TL', 'NIM', '14TG', '7TG', '3TG', '4TG') AND `status` NOT LIKE 'DNC%' AND `status` NOT LIKE 'SALE%' AND `status` NOT LIKE 'Z%';";
 $rsltD = mysql_to_mysqli($stmtD, $link);
 $affected_rowsD = mysqli_affected_rows($link);
 

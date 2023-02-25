@@ -16,7 +16,7 @@ ALTER TABLE `vicidial_campaign_hour_counts_archive` CHANGE `campaign_id` `campai
 ALTER TABLE `vicidial_campaigns_list_mix` CHANGE `campaign_id` `campaign_id` VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
 ALTER TABLE `vicidial_comments` CHANGE `campaign_id` `campaign_id` VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL;
 ALTER TABLE `vicidial_custom_cid` CHANGE `campaign_id` `campaign_id` VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT '--ALL--';
-ALTER TABLE `vicidial_dnc_log` CHANGE `campaign_id` `campaign_id` VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL;
+ALTER TABLE `vicidial_dnc_log CHANGE `campaign_id` `campaign_id` VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL;
 ALTER TABLE `vicidial_email_accounts` CHANGE `campaign_id` `campaign_id` VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
 ALTER TABLE `vicidial_email_log` CHANGE `campaign_id` `campaign_id` VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
 ALTER TABLE `vicidial_hopper` CHANGE `campaign_id` `campaign_id` VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
@@ -41,7 +41,7 @@ ALTER TABLE `vicidial_user_log` CHANGE `campaign_id` `campaign_id` VARCHAR(20) C
 
 ALTER TABLE `vicidial_list` ADD `selection` VARCHAR(150) NOT NULL;
 ALTER TABLE `vicidial_list` ADD `housenr1` VARCHAR(20) NOT NULL;
-ALTER TABLE `vicidial_list` ADD `phone_code_alt1` VARCHAR(10) NULL AFTER `ownnd_OptIn_Owner`, ADD `phone_code_alt2` VARCHAR(10) NULL AFTER `phone_code_alt1`, ADD `phone_code_alt3` VARCHAR(10) NULL AFTER `phone_code_alt2`, ADD `alt_phone3` VARCHAR(10) NULL AFTER `phone_code_alt3`, ADD `use_status` ENUM('free','blocked','temporary','full') NOT NULL DEFAULT 'free' AFTER `alt_phone3`, ADD `house_nr2` VARCHAR(20) NULL AFTER `block_status`, ADD `house_nr3` VARCHAR(20) NULL AFTER `house_nr2`;
+ALTER TABLE `vicidial_list` ADD `phone_code_alt1` VARCHAR(10) NULL AFTER `ownnd_OptIn_Owner`, ADD `phone_code_alt2` VARCHAR(10) NULL AFTER `phone_code_alt1`, ADD `phone_code_alt3` VARCHAR(10) NULL AFTER `phone_code_alt2`, ADD `alt_phone3` VARCHAR(20) NULL AFTER `phone_code_alt3`, ADD `use_status` ENUM('free','blocked','temporary','full') NOT NULL DEFAULT 'free' AFTER `alt_phone3`, ADD `house_nr2` VARCHAR(20) NULL AFTER `block_status`, ADD `house_nr3` VARCHAR(20) NULL AFTER `house_nr2`;
 
 ALTER TABLE `vicidial_users` ADD `password_sec` VARCHAR(256) NOT NULL;
 ALTER TABLE `vicidial_users` ADD `2FA_enable` ENUM('Y','N') NOT NULL DEFAULT 'N';

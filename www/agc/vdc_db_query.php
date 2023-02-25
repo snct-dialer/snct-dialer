@@ -4381,6 +4381,10 @@ if ($ACTION == 'manDiaLnextCaLL')
 									$temp_state = $state;
 									$stmt = "SELECT outbound_cid,areacode FROM vicidial_campaign_cid_areacodes where campaign_id='$cid_group_id' and areacode IN('$temp_state') and active='Y' order by call_count_today desc limit 100000;";
 									}
+								if ($cid_group_type == 'NONE')
+									{
+									$stmt = "SELECT outbound_cid,areacode FROM vicidial_campaign_cid_areacodes where campaign_id='$cid_group_id' and active='Y' order by call_count_today desc limit 100000;";
+									}
 								$rslt=mysql_to_mysqli($stmt, $link);
 									if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00715',$user,$server_ip,$session_name,$one_mysql_log);}
 								if ($DB) {echo "$stmt\n";}
@@ -4395,11 +4399,19 @@ if ($ACTION == 'manDiaLnextCaLL')
 									}
 								if ($act > 0)
 									{
-									$stmt="UPDATE vicidial_campaign_cid_areacodes set call_count_today=(call_count_today + 1) where campaign_id='$cid_group_id' and areacode='$temp_ac' and outbound_cid='$temp_vcca';";
+									$stmt="UPDATE vicidial_campaign_cid_areacodes SET call_count_today=(call_count_today + 1) where campaign_id='$cid_group_id' and areacode='$temp_ac' and outbound_cid='$temp_vcca';";
 										if ($format=='debug') {echo "\n<!-- $stmt -->";}
 									$rslt=mysql_to_mysqli($stmt, $link);
 										if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00716',$user,$server_ip,$session_name,$one_mysql_log);}
+									if ($cid_group_type == 'NONE')
+										{
+										$stmt="UPDATE vicidial_cid_groups SET cid_auto_rotate_calls=(cid_auto_rotate_calls + 1) where cid_group_id='$cid_group_id';";
+											if ($format=='debug') {echo "\n<!-- $stmt -->";}
+										$rslt=mysql_to_mysqli($stmt, $link);
+											if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+										}
 									}
+									
 								}
 							$temp_CID = preg_replace("/\D/",'',$temp_vcca);
 							if (strlen($temp_CID) > 6)
@@ -5850,6 +5862,10 @@ if ($ACTION == 'manDiaLonly')
 							$temp_state = $state;
 							$stmt = "SELECT outbound_cid,areacode FROM vicidial_campaign_cid_areacodes where campaign_id='$cid_group_id' and areacode IN('$temp_state') and active='Y' order by call_count_today desc limit 100000;";
 							}
+						if ($cid_group_type == 'NONE')
+							{
+							$stmt = "SELECT outbound_cid,areacode FROM vicidial_campaign_cid_areacodes where campaign_id='$cid_group_id' and active='Y' order by call_count_today desc limit 100000;";
+							}
 						$rslt=mysql_to_mysqli($stmt, $link);
 							if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00718',$user,$server_ip,$session_name,$one_mysql_log);}
 						if ($DB) {echo "$stmt\n";}
@@ -5868,6 +5884,13 @@ if ($ACTION == 'manDiaLonly')
 								if ($format=='debug') {echo "\n<!-- $stmt -->";}
 							$rslt=mysql_to_mysqli($stmt, $link);
 								if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00719',$user,$server_ip,$session_name,$one_mysql_log);}
+							if ($cid_group_type == 'NONE')
+								{
+								$stmt="UPDATE vicidial_cid_groups SET cid_auto_rotate_calls=(cid_auto_rotate_calls + 1) where cid_group_id='$cid_group_id';";
+									if ($format=='debug') {echo "\n<!-- $stmt -->";}
+								$rslt=mysql_to_mysqli($stmt, $link);
+									if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00XXX',$user,$server_ip,$session_name,$one_mysql_log);}
+								}
 							}
 						}
 					$temp_CID = preg_replace("/\D/",'',$temp_vcca);
@@ -16443,6 +16466,10 @@ if ($ACTION == 'CALLLOGview') {
 	if(!isset($MaxCallLogDays)) {
 	    $MaxCallLogDays = 0;
 	}
+	if(!isset($SearchOwner)) {
+	    $SearchOwner = '';
+	}
+	
 	
 	$date_array = explode("-",$date);
 	$day_next = mktime(7, 0, 0, $date_array[1], ($date_array[2] + 1), $date_array[0]);
@@ -16454,6 +16481,9 @@ if ($ACTION == 'CALLLOGview') {
 
 	if($MaxCallLogDays != 0) {
 	   $DateTest = date("Y-m-d", strtotime($NOW_DATE) - (24 * 3600 * $MaxCallLogDays));
+	   if($date <= $DateTest) {
+	       $date = $DateTest;
+	   }
 	   if($next_day_date <= $DateTest) {
 	       $next_day_date = $DateTest;
 	   }
@@ -16494,7 +16524,11 @@ if ($ACTION == 'CALLLOGview') {
 	echo "</TR>";
 
 	if($OnlyInbounds != 1) {
-		$stmt="SELECT start_epoch,call_date,campaign_id,length_in_sec,status,phone_code,phone_number,lead_id,term_reason,alt_dial,comments from vicidial_log where user='$user' and call_date >= '$date 0:00:00'  and call_date <= '$date 23:59:59' order by call_date desc limit 10000;";
+		$stmt  = "SELECT LO.start_epoch, LO.call_date, LO.campaign_id, LO.length_in_sec, LO.status, LO.phone_code, LO.phone_number, LO.lead_id, ";
+		$stmt .= "LO.term_reason, LO.alt_dial, LO.comments from vicidial_log LO, vicidial_list VL ";
+		$stmt .= "where LO.user='$user' and LO.call_date >= '$date 0:00:00' and LO.call_date <= '$date 23:59:59' AND LO.`lead_id` = VL.`lead_id` ";
+		$stmt .= $SearchOwner;
+		$stmt .= " order by call_date desc limit 10000;";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		if ($mel > 0) {
 			mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00576',$user,$server_ip,$session_name,$one_mysql_log);
@@ -16630,8 +16664,9 @@ if ($ACTION == 'CALLLOGview') {
 		if($ALLhangup_reason[$i] == "ABANDON" ) {
 			echo "<td align=right><font class='sb_text' color='#ff0000'> $ALLhangup_reason[$i] </td>\n";
 		} else {
-			echo "<td align=right><font class='sb_text'> <a href=\"#\" onclick=\"VieWLeaDInfO($ALLlead_id[$i]);return false;\"> "._QXZ("INFO")."</A> </td>\n";
+		    echo "<td align=right><font class='sb_text'> $ALLhangup_reason[$i] </td>\n";
 		}
+		echo "<td align=right><font class='sb_text'> <a href=\"#\" onclick=\"VieWLeaDInfO($ALLlead_id[$i]);return false;\"> "._QXZ("INFO")."</A> </td>\n";
 		if(($manual_dial_filter > 0) || ($OnlyInbounds > 0)) {
 			echo "<td align=right><font class='sb_text'> <a href=\"#\" onclick=\"NeWManuaLDiaLCalL('CALLLOG','$ALLphone_code[$i]','$ALLphone_number[$i]','$ALLlead_id[$i]','','YES','NO');return false;\"> "._QXZ("DIAL")." </A> </td>\n";
 		} else {

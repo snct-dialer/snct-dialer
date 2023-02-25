@@ -440,6 +440,10 @@ if ($form_to_run == "ACCID")
 				$row=mysqli_fetch_row($SQL_rslt);
 				$areacode[$i] = $row[0];
 				}
+			if ($CGT == 'NONE')
+				{
+				$areacode[$i] = 'NONE';
+				}
 			}
 		if ($ACCIDmethod == "CSV") {$areacode[$i] = $ACCIDareacode_raw[$i];}
 		$SQL= "SELECT outbound_cid FROM vicidial_campaign_cid_areacodes WHERE outbound_cid='$ACCIDto_insert_raw[$i]' AND areacode='$areacode[$i]' AND campaign_id='$ACCIDcampaign';";

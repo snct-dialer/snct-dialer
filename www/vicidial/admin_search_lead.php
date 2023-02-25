@@ -27,8 +27,8 @@
 #
 # Version  / Build
 #
-$admin_search_lead_version = '3.1.0-3';
-$admin_search_lead_build = '20211105-11';
+$admin_search_lead_version = '3.1.0-4';
+$admin_search_lead_build = '20220712-17';
 #
 ###############################################################################
 #
@@ -105,7 +105,14 @@ if (isset($_GET["archive_search"]))			{$archive_search=$_GET["archive_search"];}
 	elseif (isset($_POST["archive_search"]))	{$archive_search=$_POST["archive_search"];}
 if (isset($_GET["called_count"]))			{$called_count=$_GET["called_count"];}
 	elseif (isset($_POST["called_count"]))	{$called_count=$_POST["called_count"];}
+	
+	
+if (isset($_GET["OrderNumber"]))			{$OrderNumber=$_GET["OrderNumber"];}
+    elseif (isset($_POST["OrderNumber"]))	{$OrderNumber=$_POST["OrderNumber"];}
+if (isset($_GET["Customer"]))			    {$Customer=$_GET["Customer"];}
+    elseif (isset($_POST["Customer"]))      {$Customer=$_POST["Customer"];}
 
+    
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
@@ -241,6 +248,14 @@ $LOGallowed_reports =			$row[1];
 $LOGadmin_viewable_groups =		$row[2];
 $LOGadmin_viewable_call_times =	$row[3];
 
+$sql="SHOW TABLES LIKE 'order_transaction';";
+if ($DB) {echo "|$sql|\n";}
+$result = mysqli_query($link, $sql);
+$OrderTransExists = mysqli_num_rows($result);
+
+
+
+
 $camp_lists='';
 $LOGallowed_campaignsSQL='';
 $whereLOGallowed_campaignsSQL='';
@@ -328,6 +343,8 @@ $label_alt_phone =			_("Alt. Phone");
 $label_security_phrase =	_("Show");
 $label_email =				_("Email");
 $label_comments =			_("Comments");
+$label_order =              _("OrderNumber");
+$label_customer =           _("Customer");
 
 ### find any custom field labels
 $stmt="SELECT label_title,label_first_name,label_middle_initial,label_last_name,label_address1,label_address2,label_address3,label_city,label_state,label_province,label_postal_code,label_vendor_lead_code,label_gender,label_phone_number,label_phone_code,label_alt_phone,label_security_phrase,label_email,label_comments from system_settings;";
@@ -352,14 +369,15 @@ if (strlen($row[15])>0) {$label_alt_phone =			$row[15];}
 if (strlen($row[16])>0) {$label_security_phrase =	$row[16];}
 if (strlen($row[17])>0) {$label_email =				$row[17];}
 if (strlen($row[18])>0) {$label_comments =			$row[18];}
-
+$label_order = "Auftrags-Nr.";
+$label_customer = "Firma/Privatkunde";
 
 echo " "._("Lead search").": $vendor_id $phone $lead_id $status $list_id $user\n";
 #echo date("l F j, Y G:i:s A"). "<br>";
 echo strftime("%c");
 echo "<BR>\n";
 
-if ( (!$vendor_id) and (!$phone)  and (!$lead_id) and (!$log_phone)  and (!$log_lead_id) and (!$log_phone_archive)  and (!$log_lead_id_archive) and ( (strlen($status)<1) and (strlen($list_id)<1) and (strlen($user)<1) and (strlen($owner)<1) ) and ( (strlen($first_name)<1) and (strlen($last_name)<1) and (strlen($address1)<1) and (strlen($city)<1) and (strlen($email)<1) and (strlen($address1_no)<1) ))
+if ( (!$Customer) AND (!$OrderNumber) AND (!$vendor_id) and (!$phone)  and (!$lead_id) and (!$log_phone)  and (!$log_lead_id) and (!$log_phone_archive)  and (!$log_lead_id_archive) and ( (strlen($status)<1) and (strlen($list_id)<1) and (strlen($user)<1) and (strlen($owner)<1) ) and ( (strlen($first_name)<1) and (strlen($last_name)<1) and (strlen($address1)<1) and (strlen($city)<1) and (strlen($email)<1) and (strlen($address1_no)<1) ))
 	{
 	### Lead search
 	echo "<br><center>\n";
@@ -439,6 +457,12 @@ if ( (!$vendor_id) and (!$phone)  and (!$lead_id) and (!$log_phone)  and (!$log_
 	echo "<TD ALIGN=right>* $label_email: &nbsp; </TD><TD colspan=2 ALIGN=left><input type=text name=email size=15 maxlength=255></TD>";
 #	echo "<TD><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE='"._("SUBMIT")."'></TD>\n";
 	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
+	if($OrderTransExists != 0) {
+	   echo "<TD ALIGN=right>$label_order: &nbsp; </TD><TD colspan=2 ALIGN=left><input type=text name=OrderNumber size=10 maxlength=10></TD>";
+	   echo "</TR><TR bgcolor=#$SSstd_row2_background>";
+	}
+	echo "<TD ALIGN=right>* $label_customer: &nbsp; </TD><TD colspan=2 ALIGN=left><input type=text name=Customer size=15 maxlength=255></TD>";
+	echo "</TR><TR bgcolor=#$SSstd_row2_background>";
 	
 	echo "</TR><TR bgcolor=#$SSmenu_background>";
 	echo "<TD colspan=3 align=center height=1></TD>";
@@ -491,7 +515,16 @@ if ( (!$vendor_id) and (!$phone)  and (!$lead_id) and (!$log_phone)  and (!$log_
 
 else
 	if ((strlen($GLBSUBMIT) > 1) || (strlen($list_id) > 0)) {
-		
+	    
+	    if($OrderNumber != "") {
+	        $sql = "SELECT * FROM `order_transaction` WHERE `transaction_nr` = '".mysqli_real_escape_string($link,$OrderNumber)."';";
+	        $result = mysqli_query($link, $sql);
+	        if(mysqli_num_rows($result) != 0) {
+	            $row1=mysqli_fetch_row($result);
+	            $lead_id = $row1[3];
+	        }
+	    }
+	    
 		$AnzPara = 0;
 		$phoneSQL = "";
 		if(strlen($phone) > 0) {
@@ -510,6 +543,16 @@ else
 		    $AnzPara++;
 		    $vendorIDSQL = "$tmpSQL vendor_lead_code='" . mysqli_real_escape_string($link, $vendor_id) . "'";
 		}
+		
+		$customerSQL = "";
+		if(strlen($Customer) > 0) {
+		    if($AnzPara > 0) {
+		        $tmpSQL = " AND ";
+		    }
+		    $AnzPara++;
+		    $customerSQL = "$tmpSQL address2 LIKE '" . mysqli_real_escape_string($link, $Customer) . "%'";
+		}
+		
 		$leadIDSQL = "";
 		if(strlen($lead_id) > 0) {
 		    if($AnzPara > 0) {
@@ -619,7 +662,7 @@ else
 			if($AdminLevel < 9) {
 				$stmt = "SET STATEMENT max_statement_time=15 FOR ";
 			}
-			$stmt .= "SELECT $vicidial_list_fields from $vl_table where $vendorIDSQL $leadIDSQL $phoneSQL $first_nameSQL $CCSQL $last_nameSQL $address1SQL $address1_noSQL $citySQL $userSQL $ownerSQL $list_idSQL $email_SQL $statusSQL $LOGallowed_listsSQL LIMIT 5000;";
+			$stmt .= "SELECT $vicidial_list_fields from $vl_table where $vendorIDSQL $customerSQL $leadIDSQL $phoneSQL $first_nameSQL $CCSQL $last_nameSQL $address1SQL $address1_noSQL $citySQL $userSQL $ownerSQL $list_idSQL $email_SQL $statusSQL $LOGallowed_listsSQL LIMIT 5000;";
 			if($DB) {
 				echo $stmt;
 			}

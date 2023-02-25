@@ -43,13 +43,14 @@
 #
 # Version  / Build
 #
-$ast_vdhopper_version = '3.1.1-2';
-$ast_vdhopper_build = '20210330-2';
+$ast_vdhopper_version = '3.1.1-3';
+$ast_vdhopper_build = '20221107-1';
 #
 ###############################################################################
 #
 # Changelog
 #
+# 2022-11-07 jff	add field block_status for dialable_leads
 # 2021-04-27 jff	add handling for field block_status
 # 					fix holiday handling 
 # 2020-08-03 jff	add utf8 enconding for conf files
@@ -2581,12 +2582,12 @@ foreach(@campaign_id)
 		##### Get count of leads that are dialable #####
 		if ($list_order_mix[$i] =~ /DISABLED/)
 			{
-			$stmtA = "SELECT count(*) FROM vicidial_list $VLforce_index where called_since_last_reset='N' and status IN($STATUSsql[$i]) and ($list_id_sql[$i]) and ($all_gmtSQL[$i]) $lead_filter_sql[$i] $DLTsql[$i] $CCLsql[$i];";
+			$stmtA = "SELECT count(*) FROM vicidial_list $VLforce_index where block_status='free' AND called_since_last_reset='N' and status IN($STATUSsql[$i]) and ($list_id_sql[$i]) and ($all_gmtSQL[$i]) $lead_filter_sql[$i] $DLTsql[$i] $CCLsql[$i];";
 			}
 		else
 			{
 			if (length($list_mix_dialableSQL)<3) {$list_mix_dialableSQL="called_count < 0";}
-			$stmtA = "SELECT count(*) FROM vicidial_list $VLforce_index where called_since_last_reset='N' and ($list_mix_dialableSQL) and ($all_gmtSQL[$i]) $lead_filter_sql[$i] $DLTsql[$i] $CCLsql[$i];";
+			$stmtA = "SELECT count(*) FROM vicidial_list $VLforce_index where block_status='free' AND called_since_last_reset='N' and ($list_mix_dialableSQL) and ($all_gmtSQL[$i]) $lead_filter_sql[$i] $DLTsql[$i] $CCLsql[$i];";
 			}
 			if ($DBX) {print "     |$stmtA|\n";}
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;

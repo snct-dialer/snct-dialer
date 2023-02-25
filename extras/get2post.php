@@ -41,8 +41,8 @@ $POST_URI = preg_replace("/'|\"|\\\\/","",$POST_URI);
 if ( (strlen($query_string) < 3) and (strlen($POST_URI) > 2) )
 	{$query_string = $POST_URI;}
 
-if (isset($_GET["uniqueid"]))			{$uniqueid=$_GET["uniqueid"];}
-	elseif (isset($_POST["uniqueid"]))	{$uniqueid=$_POST["uniqueid"];}
+if (isset($_GET["uni"]))			{$uniqueid=$_GET["uni"];}
+	elseif (isset($_POST["uni"]))	{$uniqueid=$_POST["uni"];}
 if (isset($_GET["type"]))				{$type=$_GET["type"];}
 	elseif (isset($_POST["type"]))		{$type=$_POST["type"];}
 if (isset($_GET["headers"]))			{$headers=$_GET["headers"];}
@@ -82,6 +82,9 @@ $headers=preg_replace('/[^- !\=\$\.\_0-9a-zA-Z]/',"",$headers);
 $uniqueid=preg_replace('/[^-\.\_0-9a-zA-Z]/',"",$uniqueid);
 $type=preg_replace('/[^-\_0-9a-zA-Z]/',"",$type);
 $DB=preg_replace('/[^0-9]/',"",$DB);
+
+
+$DB=1;
 
 # default optional vars if not set
 if (!isset($type))   {$type="get2post";}
@@ -155,15 +158,24 @@ if (preg_match("/HTTPURLTOPOST=|HTTPSURLTOPOST=/",$query_string))
 		$curl = curl_init();
 
 		# Set some options - we are passing in a useragent too here
-		curl_setopt_array($curl, array(
-			CURLOPT_RETURNTRANSFER => 1,
-			CURLOPT_POST => 1,
-			CURLOPT_URL => $post_page,
-			CURLOPT_POSTFIELDS => $post_vars,
-			CURLOPT_HTTPHEADER => $HTTPheader,
-			CURLOPT_USERAGENT => 'VICIdial get2post'
-		));
-
+#		curl_setopt_array($curl, array(
+#			CURLOPT_RETURNTRANSFER => 1,
+#			CURLOPT_POST => 1,
+#			CURLOPT_URL => $post_page,
+#			CURLOPT_POSTFIELDS => $post_vars,
+#			CURLOPT_HTTPHEADER => $HTTPheader,
+#			CURLOPT_USERAGENT => 'VICIdial get2post'
+#		));
+		curl_setopt($curl, CURLOPT_URL, $post_page);
+		curl_setopt($curl, CURLOPT_POST, true);
+		curl_setopt($curl, CURLOPT_POSTFIELDS, $post_vars);
+//		curl_setopt($curl, CURLOPT_HTTPHEADER, $HTTPheader);
+		curl_setopt($curl, CURLOPT_HEADER, 0);
+//		curl_setopt($curl, CURLOPT_NOBODY, TRUE); 
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, false); 
+        echo "<BR>Curl:<BR>";
+		print_r($curl);
+		
 		# Send the request & save response to $resp
 		$resp = curl_exec($curl);
 
@@ -172,12 +184,12 @@ if (preg_match("/HTTPURLTOPOST=|HTTPSURLTOPOST=/",$query_string))
 
 		if ($DB)
 			{
-			echo "|$uniqueid|$type|<br>\n";
-			echo "|$query_string|<br>\n";
-			echo "|$post_url|<br>\n";
-			echo "|$post_page|<br>\n";
-			echo "|$post_vars|<br>\n";
-			echo "|$resp|<br>\n";
+			echo "1:|$uniqueid|$type|<br>\n";
+			echo "|2:|$query_string|<br>\n";
+			echo "|3:|$post_url|<br>\n";
+			echo "|4:|$post_page|<br>\n";
+			echo "|5:|$post_vars|<br>\n";
+			echo "|6:|$resp|<br>\n";
 			}
 
 

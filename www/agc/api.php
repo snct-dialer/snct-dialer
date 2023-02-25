@@ -471,7 +471,7 @@ if ( ($function == 'coffee') or ($function == 'start_coffee') or ($function == '
 ### BEGIN - user validation section (most functions run through this first)
 ################################################################################
 
-if ($ACTION == 'LogiNCamPaigns')
+if (isset($ACTION) && ($ACTION == 'LogiNCamPaigns'))
 	{
 	$skip_user_validation=1;
 	}

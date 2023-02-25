@@ -4207,9 +4207,9 @@ if ( ($active_voicemail_server =~ /$server_ip/) && ((length($active_voicemail_se
 	if ($DBX) {print "$stmtA\n";}
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-	$sthArowsCIDG=$sthA->rows;
+	$sthArows=$sthA->rows;
 	$i=0;
-	while ($sthArowsCIDG > $i)
+	while ($sthArows > $i)
 		{
 		@aryA = $sthA->fetchrow_array;
 		$cid_group_id[$i] =					$aryA[0];
@@ -4226,15 +4226,8 @@ if ( ($active_voicemail_server =~ /$server_ip/) && ((length($active_voicemail_se
 	if ($DB) {print "   CID Groups with Auto-Rotate enabled: $i\n";}
 
 	$i=0;
-	while ($sthArowsCIDG > $i)
+	while ($sthArows > $i)
 		{
-		$Rcampaign_calldate='';
-		$Rcampaign_id='';
-		$Rcampaign_calldate_epoch=0;
-		$Lcampaign_calldate='';
-		$Llist_id='';
-		$Lcampaign_calldate_epoch=0;
-
 		$stmtA = "SELECT campaign_calldate,campaign_id,UNIX_TIMESTAMP(campaign_calldate) from vicidial_campaigns where cid_group_id='$cid_group_id[$i]' order by campaign_calldate desc limit 1;";
 		if ($DBX) {print "$stmtA\n";}
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -4249,28 +4242,14 @@ if ( ($active_voicemail_server =~ /$server_ip/) && ((length($active_voicemail_se
 			}
 		$sthA->finish();
 
-		$stmtA = "SELECT list_lastcalldate,list_id,UNIX_TIMESTAMP(list_lastcalldate) from vicidial_lists where cid_group_id='$cid_group_id[$i]' order by list_lastcalldate desc limit 1;";
-		if ($DBX) {print "$stmtA\n";}
-		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-		$sthArowsX=$sthA->rows;
-		if ($sthArowsX > 0)
+		if ( ($Rcampaign_calldate_epoch < $FMtarget) && (length($cid_auto_rotate_cid[$i]) >= 6 ) )
 			{
-			@aryA = $sthA->fetchrow_array;
-			$Lcampaign_calldate =			$aryA[0];
-			$Llist_id =						$aryA[1];
-			$Lcampaign_calldate_epoch =		$aryA[2];
-			}
-		$sthA->finish();
-
-		if ( ( ($Rcampaign_calldate_epoch < $FMtarget) && ($Lcampaign_calldate_epoch < $FMtarget) ) && (length($cid_auto_rotate_cid[$i]) >= 6 ) )
-			{
-			if ($DB) {print "     skip CID Group rotate, no recent campaign/list calls: $cid_group_id[$i]|$Rcampaign_id|$Rcampaign_calldate|  ($Rcampaign_calldate_epoch <> $FMtarget)|$Llist_id|$Lcampaign_calldate|($Lcampaign_calldate_epoch < $FMtarget)\n";}
+			if ($DB) {print "     skip CID Group rotate, no recent campaign calls: $cid_group_id[$i]|$Rcampaign_id|$Rcampaign_calldate|  ($Rcampaign_calldate_epoch <> $FMtarget)\n";}
 			}
 		else
 			{
-			if ($DBX) {print "     DEBUG: CID Group rotate, recent campaign/list calls: $cid_group_id[$i]|$Rcampaign_id|$Rcampaign_calldate|  ($Rcampaign_calldate_epoch <> $FMtarget)|$Llist_id|$Lcampaign_calldate|($Lcampaign_calldate_epoch < $FMtarget)\n";}
-			$rotate_run_minutes = (($secX - ($cid_last_auto_rotate_epoch[$i]) - 5) / 60);
+			if ($DBX) {print "     DEBUG: CID Group rotate, recent campaign calls: $cid_group_id[$i]|$Rcampaign_id|$Rcampaign_calldate|  ($Rcampaign_calldate_epoch <> $FMtarget)\n";}
+			$rotate_run_minutes = (($secX - $cid_last_auto_rotate_epoch[$i]) / 60);
 			if ($rotate_run_minutes < $cid_auto_rotate_minutes[$i]) 
 				{
 				if ($DB) {print "     skip CID Group rotate, too soon: $cid_group_id[$i]   ($rotate_run_minutes <> $cid_auto_rotate_minutes[$i])\n";}
@@ -4303,19 +4282,7 @@ if ( ($active_voicemail_server =~ /$server_ip/) && ((length($active_voicemail_se
 					else
 						{
 						### BEGIN if last-CID-used for this CID Group is blank or invalid, order the CIDs and set them all to inactive ###
-						$stmtC = "SELECT COUNT(*) from vicidial_campaign_cid_areacodes where campaign_id='$cid_group_id[$i]' AND cid_description != '' and cid_description NOT IN('NOROTATE','NO-ROTATE','NO_ROTATE','INACTIVE','DONOTUSE') and cid_description NOT LIKE \"%NOROTATE%\";";
-						if ($DBX) {print "$stmtC\n";}
-						$sthC = $dbhA->prepare($stmtC) or die "preparing: ",$dbhC->errstr;
-						$sthC->execute or die "executing: $stmtC ", $dbhC->errstr;
-						$sthArowsCX=$sthC->rows;
-						$FoundActive = 0;
-						if ($sthArowsCX > 0)
-						{
-							@aryC = $sthC->fetchrow_array;
-							$FoundActive = $aryC[0];
-						}
-						$sthC->finish();
-						if ((length($cid_auto_rotate_cid[$i]) < 6 ) || ($FoundActive == 0)) 
+						if (length($cid_auto_rotate_cid[$i]) < 6 ) 
 							{
 							@outbound_cid=@MT;
 							$stmtA = "SELECT outbound_cid from vicidial_campaign_cid_areacodes where campaign_id='$cid_group_id[$i]' and cid_description NOT IN('NOROTATE','NO-ROTATE','NO_ROTATE','INACTIVE','DONOTUSE') and cid_description NOT LIKE \"%NOROTATE%\" order by call_count_today limit 100000;";
@@ -4367,7 +4334,7 @@ if ( ($active_voicemail_server =~ /$server_ip/) && ((length($active_voicemail_se
 							{
 							### BEGIN set the next CID to active and the current one to inactive ###
 							$outbound_cid_next='';
-							$stmtA = "SELECT outbound_cid from vicidial_campaign_cid_areacodes where campaign_id='$cid_group_id[$i]' AND cid_description != '' and cid_description NOT IN('NOROTATE','NO-ROTATE','NO_ROTATE','INACTIVE','DONOTUSE') and cid_description NOT LIKE \"%NOROTATE%\" order by CAST(cid_description as SIGNED INTEGER) limit 1;";
+							$stmtA = "SELECT outbound_cid from vicidial_campaign_cid_areacodes where campaign_id='$cid_group_id[$i]' and cid_description NOT IN('NOROTATE','NO-ROTATE','NO_ROTATE','INACTIVE','DONOTUSE') and cid_description NOT LIKE \"%NOROTATE%\" order by CAST(cid_description as SIGNED INTEGER) limit 1;";
 							if ($DBX) {print "$stmtA\n";}
 							$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 							$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -4417,8 +4384,6 @@ if ( ($active_voicemail_server =~ /$server_ip/) && ((length($active_voicemail_se
 ################################################################################
 #####  END CID Group auto-rotate feature, for CID Type NONE only
 ################################################################################
-
-
 
 
 

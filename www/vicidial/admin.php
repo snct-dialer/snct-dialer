@@ -32,8 +32,8 @@
 #
 # Version  / Build
 #
-$admin_version = '3.1.2-12';
-$admin_build = '20220319-4';
+$admin_version = '3.1.2-27';
+$admin_build = '20221107-3';
 #
 ###############################################################################
 #
@@ -2646,17 +2646,27 @@ if (isset($_GET["group_account"]))              {$group_account=$_GET["group_acc
 if (isset($_GET["group_email"]))                {$group_email=$_GET["group_email"];}
     elseif (isset($_POST["group_email"]))       {$group_email=$_POST["group_email"];}
     
+if (isset($_GET["cid_auto_rotate_minutes"]))			{$cid_auto_rotate_minutes=$_GET["cid_auto_rotate_minutes"];}
+	elseif (isset($_POST["cid_auto_rotate_minutes"]))	{$cid_auto_rotate_minutes=$_POST["cid_auto_rotate_minutes"];}
+if (isset($_GET["cid_auto_rotate_minimum"]))			{$cid_auto_rotate_minimum=$_GET["cid_auto_rotate_minimum"];}
+	elseif (isset($_POST["cid_auto_rotate_minimum"]))	{$cid_auto_rotate_minimum=$_POST["cid_auto_rotate_minimum"];}
+    
+    
     
 if (isset($_GET["systemuser"]))                {$systemuser=$_GET["systemuser"];}
     elseif (isset($_POST["systemuser"]))       {$systemuser=$_POST["systemuser"];}
-if (isset($_GET["base_campaign_id"]))            {$BaseCampaignId=$_GET["base_campaign_id"];}
-    elseif (isset($_POST["base_campaign_id"]))   {$BaseCampaignId=$_POST["base_campaign_id"];}
+if (isset($_GET["base_campaign_id"]))           {$BaseCampaignId=$_GET["base_campaign_id"];}
+    elseif (isset($_POST["base_campaign_id"]))  {$BaseCampaignId=$_POST["base_campaign_id"];}
+if (isset($_GET["own_noreset"]))                {$own_noreset=$_GET["own_noreset"];}
+    elseif (isset($_POST["own_noreset"]))       {$own_noreset=$_POST["own_noreset"];}
+    
 
 if (isset($script_id)) {$script_id= strtoupper($script_id);}
 if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
 
 $use_comp_privat = (isset($_POST['use_comp_privat'])) ? 1 : 0;
 $systemuser = (isset($systemuser)) ? 1 : 0;
+$own_noreset = (isset($own_noreset)) ? 1 : 0;
 
 if (strlen($dial_status) > 0)
 	{
@@ -3115,7 +3125,11 @@ if ($non_latin < 1)
 	$daily_reset_limit = preg_replace('/[^-0-9]/','',$daily_reset_limit);
 	$auto_active_list_rank = preg_replace('/[^-0-9]/','',$auto_active_list_rank);
 	$max_inbound_filter_min_sec = preg_replace('/[^-0-9]/','',$max_inbound_filter_min_sec);
+	
+	$cid_auto_rotate_minutes = preg_replace('/[^0-9]/','',$cid_auto_rotate_minutes);
+	$cid_auto_rotate_minimum = preg_replace('/[^0-9]/','',$cid_auto_rotate_minimum);
 
+	
 	### DIGITS and COLONS
 	$shift_length = preg_replace('/[^\:0-9]/','',$shift_length);
 
@@ -9692,7 +9706,8 @@ if ($ADD==196111111111)
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("CID Group Type").": </td><td align=left><select size=1 name=cid_group_type>\n";
 		echo "<option SELECTED value=\"AREACODE\">"._QXZ("AREACODE")."</option>\n";
 		echo "<option value=\"STATE\">"._QXZ("STATE")."</option>\n";
-		echo "<option value=\"PHONECODE\">"._QXZ("PHONECODE")."</option>\n";
+		echo "<option value=\"PHONECODE\">"._QXZ("PHONECODE")."</option>\n";	
+		echo "<option value=\"NONE\">"._QXZ("NONE")."</option>\n";
 		echo "</select>$NWB#cid_groups$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Admin User Group").": </td><td align=left><select size=1 name=user_group>\n";
 		echo "$UUgroups_list";
@@ -13644,7 +13659,7 @@ if ($ADD==296111111111)
 					{
 					echo "<br>"._QXZ("CID GROUP ADDED")."\n";
 
-					$stmt="INSERT INTO vicidial_cid_groups SET cid_group_id='$cid_group_id',cid_group_notes='$cid_group_notes',cid_group_type='$cid_group_type',user_group='$user_group';";
+					$stmt="INSERT INTO vicidial_cid_groups set cid_group_type='$cid_group_type', cid_group_id='$cid_group_id', cid_group_notes='$cid_group_notes',user_group='$user_group',cid_auto_rotate_minutes='$cid_auto_rotate_minutes',cid_auto_rotate_minimum='$cid_auto_rotate_minimum';";
 					$rslt=mysql_to_mysqli($stmt, $link);
 
 					### LOG INSERTION Admin Log Table ###
@@ -15894,7 +15909,7 @@ if ($ADD==411)
 
 				echo "<br><B>"._QXZ("LIST MODIFIED").": $list_id</B>\n";
 
-				$stmt="UPDATE vicidial_lists set list_name='$list_name',campaign_id='$campaign_id',active='$active',list_description='$list_description',list_changedate='$SQLdate',reset_time='$reset_time',agent_script_override='$agent_script_override',inbound_list_script_override='$inbound_list_script_override',campaign_cid_override='$campaign_cid_override',am_message_exten_override='$am_message_exten_override',drop_inbound_group_override='$drop_inbound_group_override',xferconf_a_number='$xferconf_a_number',xferconf_b_number='$xferconf_b_number',xferconf_c_number='$xferconf_c_number',xferconf_d_number='$xferconf_d_number',xferconf_e_number='$xferconf_e_number',web_form_address='" . mysqli_real_escape_string($link, $web_form_address) . "',web_form_address_two='" . mysqli_real_escape_string($link, $web_form_address_two) . "',time_zone_setting='$time_zone_setting',inventory_report='$inventory_report',expiration_date='$expiration_date',na_call_url='" . mysqli_real_escape_string($link, $na_call_url) . "',local_call_time='$local_call_time',web_form_address_three='" . mysqli_real_escape_string($link, $web_form_address_three) . "',status_group_id='$status_group_id',custom_one='$list_custom_one',custom_two='$list_custom_two',custom_three='$list_custom_three',custom_four='$list_custom_four',custom_five='$list_custom_five',user_new_lead_limit='$user_new_lead_limit',default_xfer_group='$default_xfer_group' $daily_reset_limitSQL,auto_active_list_rank='$auto_active_list_rank',base_campaign_id='$BaseCampaignId'  where list_id='$list_id';";
+				$stmt="UPDATE vicidial_lists set list_name='$list_name',campaign_id='$campaign_id',active='$active',list_description='$list_description',list_changedate='$SQLdate',reset_time='$reset_time',agent_script_override='$agent_script_override',inbound_list_script_override='$inbound_list_script_override',campaign_cid_override='$campaign_cid_override',am_message_exten_override='$am_message_exten_override',drop_inbound_group_override='$drop_inbound_group_override',xferconf_a_number='$xferconf_a_number',xferconf_b_number='$xferconf_b_number',xferconf_c_number='$xferconf_c_number',xferconf_d_number='$xferconf_d_number',xferconf_e_number='$xferconf_e_number',web_form_address='" . mysqli_real_escape_string($link, $web_form_address) . "',web_form_address_two='" . mysqli_real_escape_string($link, $web_form_address_two) . "',time_zone_setting='$time_zone_setting',inventory_report='$inventory_report',expiration_date='$expiration_date',na_call_url='" . mysqli_real_escape_string($link, $na_call_url) . "',local_call_time='$local_call_time',web_form_address_three='" . mysqli_real_escape_string($link, $web_form_address_three) . "',status_group_id='$status_group_id',custom_one='$list_custom_one',custom_two='$list_custom_two',custom_three='$list_custom_three',custom_four='$list_custom_four',custom_five='$list_custom_five',user_new_lead_limit='$user_new_lead_limit',default_xfer_group='$default_xfer_group' $daily_reset_limitSQL,auto_active_list_rank='$auto_active_list_rank',base_campaign_id='$BaseCampaignId', own_noreset='$own_noreset' where list_id='$list_id';";
 				$rslt=mysql_to_mysqli($stmt, $link);
 
 				## QC Addition for Audited Comments
@@ -18245,7 +18260,7 @@ if ($ADD==496111111111)
 					{echo "<br>"._QXZ("CID GROUP NOT MODIFIED - Please go back and look at the data you entered")."\n";}
 				else
 					{
-					$stmt="UPDATE vicidial_cid_groups set cid_group_notes='$cid_group_notes',user_group='$user_group' where cid_group_id='$cid_group_id';";
+					$stmt="UPDATE vicidial_cid_groups set cid_group_notes='$cid_group_notes',user_group='$user_group',cid_auto_rotate_minutes='$cid_auto_rotate_minutes',cid_auto_rotate_minimum='$cid_auto_rotate_minimum' where cid_group_id='$cid_group_id';";
 					$rslt=mysql_to_mysqli($stmt, $link);
 
 					echo "<br>"._QXZ("CID GROUP MODIFIED").": $cid_group_id\n";
@@ -23650,7 +23665,7 @@ if ($ADD==31)
 		{
 		echo "<TD></TD><TD></TD><TD></TD><TD></TD>\n";
 		}
-	echo "<TD ALIGN=CENTER> <a href=\"./realtime_report_ng.php?RR=10&DB=0&group=$campaign_id\" STYLE=\"text-decoration:none;\"><font class=\"sub_sub_head_links\">"._QXZ("Real-Time NG")."</font></a></TD>\n";
+	echo "<TD ALIGN=CENTER> <a href=\"./realtime_report_ng.php?RR=4&DB=0&group=$campaign_id\" STYLE=\"text-decoration:none;\"><font class=\"sub_sub_head_links\">"._QXZ("Real-Time NG")."</font></a></TD>\n";
 	echo "</TR></TABLE>\n";
 
 	echo "<TABLE><TR><TD>\n";
@@ -24050,18 +24065,24 @@ if ($ADD==31)
 
 			echo "<tr bgcolor=#$SSalt_row1_background><td align=right>"._QXZ("Available Only Tally Threshold").": </td><td align=left><select size=1 name=available_only_tally_threshold><option value='DISABLED'>"._QXZ("DISABLED")."</option><option value='LOGGED-IN_AGENTS'>"._QXZ("LOGGED-IN_AGENTS")."</option><option value='NON-PAUSED_AGENTS'>"._QXZ("NON-PAUSED_AGENTS")."</option><option value='WAITING_AGENTS'>"._QXZ("WAITING_AGENTS")."</option><option value='$available_only_tally_threshold' SELECTED>"._QXZ("$available_only_tally_threshold")."</option></select>$NWB#campaigns-available_only_tally_threshold$NWE &nbsp; &nbsp; &nbsp; "._QXZ("agents").": <select size=1 name=available_only_tally_threshold_agents><option SELECTED>$available_only_tally_threshold_agents</option><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option><option>17</option><option>18</option><option>19</option><option>20</option><option>25</option><option>30</option><option>35</option><option>40</option><option>50</option></select></td></tr>\n";
 
-			echo "<tr bgcolor=#$SSalt_row1_background><td align=right>"._QXZ("Drop Percentage Limit").": </td><td align=left><select size=1 name=adaptive_dropped_percentage>\n";
+			echo "<tr bgcolor=#$SSalt_row1_background><td align=right>"._QXZ("Drop Percentage Limit").":</td><td align=left><select size=1 name=adaptive_dropped_percentage>\n";
 			$n=101;
+			
 			while ($n>=0.1)
 				{
 				if ($n <= 3)
-					{$n = ($n - 0.1);}
+					{$n = round(($n - 0.1),1);}
 				else
 					{$n--;}
-				echo "<option>$n</option>\n";
+				if((string)$n == $adaptive_dropped_percentage) {
+				    echo "<option SELECTED>$n</option>\n";
+				} else  {
+				    echo "<option>$n</option>\n";
 				}
-			echo "<option SELECTED>$adaptive_dropped_percentage</option></select>% $NWB#campaigns-adaptive_dropped_percentage$NWE</td></tr>\n";
-
+			}
+#			echo "<option SELECTED>$adaptive_dropped_percentage</option></select>% $NWB#campaigns-adaptive_dropped_percentage$NWE</td></tr>\n";
+			echo "</select>% $NWB#campaigns-adaptive_dropped_percentage$NWE</td></tr>\n";
+			
 			echo "<tr bgcolor=#$SSalt_row1_background><td align=right>"._QXZ("Maximum Adapt Dial Level").": </td><td align=left><input type=text name=adaptive_maximum_level size=6 maxlength=6 value=\"$adaptive_maximum_level\"><i>"._QXZ("number only")."</i> $NWB#campaigns-adaptive_maximum_level$NWE</td></tr>\n";
 
 			echo "<tr bgcolor=#$SSalt_row1_background><td align=right>"._QXZ("Latest Server Time").": </td><td align=left><input type=text name=adaptive_latest_server_time size=6 maxlength=4 value=\"$adaptive_latest_server_time\"><i>4 "._QXZ("digits only")."</i> $NWB#campaigns-adaptive_latest_server_time$NWE</td></tr>\n";
@@ -26289,7 +26310,7 @@ if ($ADD==34)
 		{
 		echo "<TD ALIGN=CENTER BGCOLOR=\"$camp_listmix_color\"> <a href=\"$PHP_SELF?ADD=34&SUB=29&campaign_id=$campaign_id\" STYLE=\"text-decoration:none;\"><font class=\"sub_sub_head_links\">"._QXZ("List Mix")."</font></a> </TD>";
 		}
-	echo "<TD ALIGN=CENTER> <a href=\"./realtime_report_ng.php?RR=10&DB=0&group=$campaign_id\" STYLE=\"text-decoration:none;\"><font class=\"sub_sub_head_links\">"._QXZ("Real-Time Screen NG")."</font></a></TD>\n";
+	echo "<TD ALIGN=CENTER> <a href=\"./realtime_report_ng.php?RR=4&DB=0&group=$campaign_id\" STYLE=\"text-decoration:none;\"><font class=\"sub_sub_head_links\">"._QXZ("Real-Time Screen NG")."</font></a></TD>\n";
 	echo "<TD WIDTH=300><font class=\"sub_sub_head_links\"> &nbsp; </font></TD>\n";
 	if ($SSoutbound_autodial_active < 1)
 		{
@@ -27703,51 +27724,56 @@ if ($ADD==311)
 				echo "<br><b>"._QXZ("NOTICE: expired list set to inactive")."\n";
 				}
 			}
+//		$stmt="SELECT vicidial_lists.list_id,list_name,campaign_id,active,list_description,list_changedate,list_lastcalldate,reset_time,agent_script_override,campaign_cid_override,am_message_exten_override,drop_inbound_group_override,xferconf_a_number,xferconf_b_number,xferconf_c_number,xferconf_d_number,xferconf_e_number,web_form_address,web_form_address_two,time_zone_setting,inventory_report,IFNULL(audit_comments,0),expiration_date,DATE_FORMAT(expiration_date,'%Y%m%d'),na_call_url,local_call_time,web_form_address_three,status_group_id,user_new_lead_limit,custom_one, custom_two, custom_three, custom_four, custom_five, inbound_list_script_override,default_xfer_group,daily_reset_limit,resets_today,auto_active_list_rank,base_campaign_id from vicidial_lists left outer join vicidial_lists_custom on vicidial_lists.list_id=vicidial_lists_custom.list_id where vicidial_lists.list_id='$list_id' $LOGallowed_campaignsSQL;";
+		$stmt  = "SELECT *, vicidial_lists.list_id as list_id1, ";
+		$stmt .= "DATE_FORMAT(expiration_date,'%Y%m%d') AS expiration_date1 from vicidial_lists where vicidial_lists.list_id='$list_id' $LOGallowed_campaignsSQL;";
 
-		$stmt="SELECT vicidial_lists.list_id,list_name,campaign_id,active,list_description,list_changedate,list_lastcalldate,reset_time,agent_script_override,campaign_cid_override,am_message_exten_override,drop_inbound_group_override,xferconf_a_number,xferconf_b_number,xferconf_c_number,xferconf_d_number,xferconf_e_number,web_form_address,web_form_address_two,time_zone_setting,inventory_report,IFNULL(audit_comments,0),expiration_date,DATE_FORMAT(expiration_date,'%Y%m%d'),na_call_url,local_call_time,web_form_address_three,status_group_id,user_new_lead_limit,custom_one, custom_two, custom_three, custom_four, custom_five, inbound_list_script_override,default_xfer_group,daily_reset_limit,resets_today,auto_active_list_rank,base_campaign_id from vicidial_lists left outer join vicidial_lists_custom on vicidial_lists.list_id=vicidial_lists_custom.list_id where vicidial_lists.list_id='$list_id' $LOGallowed_campaignsSQL;";
 
 		$rslt=mysql_to_mysqli($stmt, $link);
-                if ($DB) {echo "$stmt\n";}
-		$row=mysqli_fetch_row($rslt);
-		$list_name =				$row[1];
-		$campaign_id =				$row[2];
-		$active =					$row[3];
-		$list_description =			$row[4];
-		$list_changedate =			$row[5];
-		$list_lastcalldate =		$row[6];
-		$reset_time =				$row[7];
-		$agent_script_override =	$row[8];
-		$campaign_cid_override =	$row[9];
-		$am_message_exten_override =	$row[10];
-		$drop_inbound_group_override =	$row[11];
-		$xferconf_a_number =		$row[12];
-		$xferconf_b_number =		$row[13];
-		$xferconf_c_number =		$row[14];
-		$xferconf_d_number =		$row[15];
-		$xferconf_e_number =		$row[16];
-		$web_form_address =			$row[17];
-		$web_form_address_two =		$row[18];
-		$time_zone_setting =		$row[19];
-		$inventory_report =			$row[20];
-		$audit_comments = 			$row[21];
-		$expiration_date =			$row[22];
-		$expiration_dateINT =		$row[23];
-		$na_call_url =				$row[24];
-		$list_local_call_time =		$row[25];
-		$web_form_address_three =	$row[26];
-		$status_group_id =			$row[27];
-		$user_new_lead_limit =		$row[28];
-		$list_custom_one =          $row[29];
-		$list_custom_two =          $row[30];
-		$list_custom_three =        $row[31];
-		$list_custom_four =         $row[32];
-		$list_custom_five =         $row[33];
-		$inbound_list_script_override =		$row[34];
-		$default_xfer_group =		$row[35];
-		$daily_reset_limit =		$row[36];
-		$resets_today =			$row[37];
-		$auto_active_list_rank =	$row[38];
-		$BaseCampaignId =           $row[39]; 
+		if ($DB) {echo "$stmt\n";}
+
+		$row=mysqli_fetch_array($rslt);
+		
+		$list_name =				$row["list_name"];
+		$campaign_id =				$row["campaign_id"];
+		$active =					$row["active"];
+		$list_description =			$row["list_description"];
+		$list_changedate =			$row["list_changedate"];
+		$list_lastcalldate =		$row["list_lastcalldate"];
+		$reset_time =				$row["reset_time"];
+		$agent_script_override =	$row["agent_script_override"];
+		$campaign_cid_override =	$row["campaign_cid_override"];
+		$am_message_exten_override =	$row["am_message_exten_override"];
+		$drop_inbound_group_override =	$row["drop_inbound_group_override"];
+		$xferconf_a_number =		$row["xferconf_a_number"];
+		$xferconf_b_number =		$row["xferconf_b_number"];
+		$xferconf_c_number =		$row["xferconf_c_number"];
+		$xferconf_d_number =		$row["xferconf_d_number"];
+		$xferconf_e_number =		$row["xferconf_e_number"];
+		$web_form_address =			$row["web_form_address"];
+		$web_form_address_two =		$row["web_form_address_two"];
+		$time_zone_setting =		$row["time_zone_setting"];
+		$inventory_report =			$row["inventory_report"];
+//		$audit_comments = 			$row["audit_comment1"];
+		$expiration_date =			$row["expiration_date"];
+		$expiration_dateINT =		$row["expiration_date1"];
+		$na_call_url =				$row["na_call_url"];
+		$list_local_call_time =		$row["local_call_time"];
+		$web_form_address_three =	$row["web_form_address_three"];
+		$status_group_id =			$row["status_group_id"];
+		$user_new_lead_limit =		$row["user_new_lead_limit"];
+		$list_custom_one =          $row["custom_one"];
+		$list_custom_two =          $row["custom_two"];
+		$list_custom_three =        $row["custom_three"];
+		$list_custom_four =         $row["custom_four"];
+		$list_custom_five =         $row["custom_five"];
+		$inbound_list_script_override =		$row["inbound_list_script_override"];
+		$default_xfer_group =		$row["default_xfer_group"];
+		$daily_reset_limit =		$row["daily_reset_limit"];
+		$resets_today =			$row["resets_today"];
+		$auto_active_list_rank =	$row["auto_active_list_rank"];
+		$BaseCampaignId =           $row["base_campaign_id"]; 
+		$own_noreset =                $row["own_noreset"]; 
 
 		# grab names of global statuses and statuses in the selected campaign
 		$stmt="SELECT status,status_name,selectable,human_answered,category,sale,dnc,customer_contact,not_interested,unworkable,scheduled_callback,completed,min_sec,max_sec,answering_machine from vicidial_statuses order by status;";
@@ -27835,12 +27861,16 @@ if ($ADD==311)
 		while ($campaigns_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
-			$campaigns_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			if($rowx[0] == $campaign_id) {
+			     $campaigns_list .= "<option SELECTED value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			} else  {
+			    $campaigns_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			} 
 			$camp_list .= "$rowx[0]|";
 			$o++;
 			}
 		echo "$campaigns_list";
-		echo "<option SELECTED>$campaign_id</option>\n";
+#		echo "<option SELECTED>$campaign_id</option>\n";
 		echo "</select>$NWB#lists-campaign_id$NWE";
 		if (!preg_match("/\|$campaign_id\|/",$camp_list))
 			{echo "<br> &nbsp; &nbsp; <font color=red><B>"._QXZ("CAMPAIGN DOES NOT EXIST")."</B></font>";}
@@ -27859,12 +27889,16 @@ if ($ADD==311)
 		  $o=0;
 		  while ($campaigns_to_print > $o) {
 		      $rowx=mysqli_fetch_row($rslt);
-		      $Basecampaigns_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		      if($rowx[0] == $BaseCampaignId) {
+		          $Basecampaigns_list .= "<option SELECTED value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		      } else  {
+		          $Basecampaigns_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		      }
 		      $Basecamp_list .= "$rowx[0]|";
 		      $o++;
 		  }
 		  echo "$Basecampaigns_list";
-		  echo "<option SELECTED>$BaseCampaignId</option>\n";
+#		  echo "<option SELECTED>$BaseCampaignId</option>\n";
 		  echo "</select>$NWB#lists-base-campaign_id$NWE";
 		  if (!preg_match("/\|$BaseCampaignId\|/",$Basecamp_list))
 		      {echo "<br> &nbsp; &nbsp; <font color=red><B>"._QXZ("CAMPAIGN DOES NOT EXIST")."</B></font>";}
@@ -27884,7 +27918,12 @@ if ($ADD==311)
 
 		if ($LOGuser_level >= 9)
 			{
-			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Daily Reset Limit").": </td><td align=left><input type=text name=daily_reset_limit size=4 maxlength=3 value=\"$daily_reset_limit\"> &nbsp; <i>"._QXZ("Resets Today").":</i> $resets_today &nbsp; $NWB#lists-daily_reset_limit$NWE</td></tr>\n";
+			$CLSta = "";
+			if($own_noreset != 0) {
+			     $CLSta = "checked=\"checked\"";
+			}
+			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Daily Reset Limit").": </td><td align=left><input type=text name=daily_reset_limit size=4 maxlength=3 value=\"$daily_reset_limit\"> &nbsp; <i>"._QXZ("Resets Today").":</i> $resets_today &nbsp; $NWB#lists-daily_reset_limit$NWE   <input type='checkbox' name='own_noreset' id='own_noreset' value='own_noreset' ". $CLSta ."><label for='own_noreset'>".("No script reset")."</label></TD></tr>\n";
+		
 			}
 		else
 			{
@@ -27892,7 +27931,10 @@ if ($ADD==311)
 			if ($daily_reset_limit < 0) {$daily_reset_limitTEXT=_QXZ("none");}
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Daily Reset Limit").": </td><td align=left><input type=hidden name=daily_reset_limit value=\"$daily_reset_limit\">$daily_reset_limitTEXT &nbsp; <i>"._QXZ("Resets Today").":</i> $resets_today &nbsp; $NWB#lists-daily_reset_limit$NWE</td></tr>\n";
 			}
+		
+	    
 
+			
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Expiration Date").": </td><td align=left><input type=text name=expiration_date size=12 maxlength=10 value=\"$expiration_date\"> \n";
 		echo "<script language=\"JavaScript\">\n";
 		echo "var o_cal = new tcal ({\n";
@@ -27934,14 +27976,14 @@ if ($ADD==311)
 			}
 		echo "</select>$NWB#lists-local_call_time$NWE</td></tr>\n";
 
-		if($audit_comments=='1')
-			{
-			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Audit Comments").": </td><td align=left><select size=1 name=audit_comments><option value='1' selected>"._QXZ("Y")."</option><option value='0'>"._QXZ("N")."</option></select>$NWB#lists-audit_comments$NWE</td></tr>\n";
-			}
-		else
-			{
-			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Audit Comments").": </td><td align=left><select size=1 name=audit_comments><option value='1'>"._QXZ("Y")."</option><option value='0' selected>"._QXZ("N")."</option></select>$NWB#lists-audit_comments$NWE</td></tr>\n";
-			}
+//		if($audit_comments=='1')
+//			{
+//			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Audit Comments").": </td><td align=left><select size=1 name=audit_comments><option value='1' selected>"._QXZ("Y")."</option><option value='0'>"._QXZ("N")."</option></select>$NWB#lists-audit_comments$NWE</td></tr>\n";
+//			}
+//		else
+//			{
+//			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Audit Comments").": </td><td align=left><select size=1 name=audit_comments><option value='1'>"._QXZ("Y")."</option><option value='0' selected>"._QXZ("N")."</option></select>$NWB#lists-audit_comments$NWE</td></tr>\n";
+//			}
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("List Change Date").": </td><td align=left>$list_changedate &nbsp; $NWB#lists-list_changedate$NWE</td></tr>\n";
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("List Last Call Date").": </td><td align=left>$list_lastcalldate &nbsp; $NWB#lists-list_lastcalldate$NWE</td></tr>\n";
 
@@ -37770,12 +37812,17 @@ if ($ADD==396111111111)
 		echo "<TABLE><TR><TD>\n";
 		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-		$stmt="SELECT cid_group_notes,cid_group_type,user_group from vicidial_cid_groups where cid_group_id='$cid_group_id' $LOGadmin_viewable_groupsSQL;";
+		$stmt="SELECT cid_group_notes,cid_group_type,user_group,cid_auto_rotate_minutes,cid_auto_rotate_minimum,cid_auto_rotate_calls,cid_last_auto_rotate,cid_auto_rotate_cid from vicidial_cid_groups where cid_group_id='$cid_group_id' $LOGadmin_viewable_groupsSQL;";
 		$rslt=mysql_to_mysqli($stmt, $link);
 		$row=mysqli_fetch_row($rslt);
-		$cid_group_notes =		$row[0];
-		$cid_group_type =		$row[1];
-		$user_group =			$row[2];
+		$cid_group_notes =			$row[0];
+		$cid_group_type =			$row[1];
+		$user_group =				$row[2];
+		$cid_auto_rotate_minutes =	$row[3];
+		$cid_auto_rotate_minimum =	$row[4];
+		$cid_auto_rotate_calls =	$row[5];
+		$cid_last_auto_rotate =		$row[6];
+		$cid_auto_rotate_cid =		$row[7];
 
 		echo "<br>"._QXZ("MODIFY CID GROUP").": $cid_group_id<form action=$PHP_SELF method=POST>\n";
 		echo "<input type=hidden name=ADD value=496111111111>\n";
@@ -37793,7 +37840,20 @@ if ($ADD==396111111111)
 		echo "<option SELECTED value=\"$user_group\">".(preg_match('/\-\-ALL\-\-/', $user_group) ? _QXZ("$user_group") : $user_group)."</option>\n";
 		echo "</select>$NWB#cid_groups$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#$SSstd_row4_background><td align=center colspan=2><input type=submit name=submit value='"._QXZ("SUBMIT")."'</td></tr>\n";
+		
+    	if ($cid_group_type == 'NONE')
+			{
+			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("CID Auto Rotate Minutes").": </td><td align=left><input type=text name=cid_auto_rotate_minutes size=8 maxlength=7 value=\"$cid_auto_rotate_minutes\">$NWB#cid_groups-cid_auto_rotate_minutes$NWE</td></tr>\n";
+			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("CID Auto Rotate Minimum").": </td><td align=left><input type=text name=cid_auto_rotate_minimum size=8 maxlength=7 value=\"$cid_auto_rotate_minimum\">$NWB#cid_groups-cid_auto_rotate_minimum$NWE</td></tr>\n";
+			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("CID Auto Rotate Calls, CID and Time").": </td><td align=left><B>$cid_auto_rotate_calls - $cid_auto_rotate_cid - $cid_last_auto_rotate</B>$NWB#cid_groups-cid_auto_rotate_calls$NWE</td></tr>\n";
+			}
+    	else
+			{
+			echo "<tr bgcolor=#$SSstd_row4_background><td align=right><input type=hidden name=cid_auto_rotate_minutes value=\"$cid_auto_rotate_minutes\">\n";
+			echo "<input type=hidden name=cid_auto_rotate_minimum value=\"$cid_auto_rotate_minimum\"></td></tr>\n";
+    		}
+
+    	echo "<tr bgcolor=#$SSstd_row4_background><td align=center colspan=2><input type=submit name=submit value='"._QXZ("SUBMIT")."'</td></tr>\n";
 		echo "</TABLE></center></form>\n";
 
 		echo "<center><b>\n";
@@ -37890,7 +37950,10 @@ if ($ADD==396111111111)
 		echo "<input type=hidden name=stage value=ADD>\n";
 		echo "<input type=hidden name=DB value=\"$DB\">\n";
 		echo "<input type=hidden name=cid_group_id value=\"$cid_group_id\">\n";
-		echo _QXZ("$cid_group_type").": <input type=text size=7 maxlength=5 name=areacode>\n";
+		if ($cid_group_type == 'NONE')
+			{echo "<input type=hidden name=areacode value=\"NONE\">\n";}
+		else
+			{echo _QXZ("$cid_group_type").": <input type=text size=7 maxlength=5 name=areacode>\n";}
 		echo _QXZ("Outbound CID").": <input type=text size=20 maxlength=20 name=outbound_cid><BR>\n";
 		echo _QXZ("Description").": <input type=text size=50 maxlength=100 name=cid_description>\n";
 		echo "<input type=submit name=submit value='"._QXZ("ADD")."'><BR>\n";
@@ -41807,7 +41870,7 @@ if ($ADD==196000000000)
 	echo "<TABLE><TR><TD>\n";
 	echo "<img src=\"images/icon_cidgroups.png\" width=42 height=42 align=left> <FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT cid_group_id,cid_group_notes,cid_group_type,user_group from vicidial_cid_groups $whereLOGadmin_viewable_groupsSQL order by cid_group_id;";
+	$stmt="SELECT cid_group_id,cid_group_notes,cid_group_type,user_group,cid_auto_rotate_minutes from vicidial_cid_groups $whereLOGadmin_viewable_groupsSQL order by cid_group_id;";
 	$rslt=mysql_to_mysqli($stmt, $link);
 	$cid_groups_to_print = mysqli_num_rows($rslt);
 
@@ -41817,6 +41880,7 @@ if ($ADD==196000000000)
 	echo "<TD><font size=1 color=white>"._QXZ("CID GROUP ID")."</TD>";
 	echo "<TD><font size=1 color=white>"._QXZ("NOTES")."</TD>";
 	echo "<TD><font size=1 color=white>"._QXZ("TYPE")."</TD>";
+	echo "<TD align=left><font size=1 color=white> &nbsp; </TD>";
 	echo "<TD><font size=1 color=white>"._QXZ("GROUP")."</TD>";
 	echo "<TD><font size=1 color=white>"._QXZ("CIDS")."</TD>";
 	echo "<TD><font size=1 color=white>"._QXZ("MODIFY")."</TD>\n";
@@ -41827,14 +41891,17 @@ if ($ADD==196000000000)
 	$cid_group_notes = $MT;
 	$cid_group_type = $MT;
 	$admin_group = $MT;
+	$cid_auto_rotate_minutes = $MT;
 
 	while ($cid_groups_to_print > $o)
 		{
 		$row=mysqli_fetch_row($rslt);
-		$cid_group_id[$o] =		$row[0];
-		$cid_group_notes[$o] =	$row[1];
-		$cid_group_type[$o] =	_QXZ("$row[2]");
+		$cid_group_id[$o] =			$row[0];
+		$cid_group_notes[$o] =		$row[1];
+		$cid_group_type[$o] =		_QXZ("$row[2]");
 		$admin_group[$o] =		(preg_match('/\-\-ALL\-\-/', $row[3]) ? _QXZ("$row[3]") : $row[3]);
+		$cid_auto_rotate_minutes[$o] =	'';
+		if ($row[4] > 0) {$cid_auto_rotate_minutes[$o] =	' &nbsp; AR &nbsp; ';}
 		$o++;
 		}
 
@@ -41851,8 +41918,9 @@ if ($ADD==196000000000)
 		echo "<tr $bgcolor"; if ($SSadmin_row_click > 0) {echo " onclick=\"window.document.location='$PHP_SELF?ADD=396111111111&cid_group_id=$cid_group_id[$o]'\"";} echo "><td><a href=\"$PHP_SELF?ADD=396111111111&cid_group_id=$cid_group_id[$o]\"><font size=1 color=black>$cid_group_id[$o]</a></td>";
 		echo "<td><font size=1> $cid_group_notes[$o]</td>";
 		echo "<td><font size=1> $cid_group_type[$o]</td>";
+		echo "<td align=left><font size=1> <b>$cid_auto_rotate_minutes[$o]</b></td>";
 		echo "<td><font size=1> $admin_group[$o]</td>";
-		echo "<td><font size=1> $row[0]</td>";
+		echo "<td><font size=1>$row[0]</td>";
 		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=396111111111&cid_group_id=$cid_group_id[$o]\">"._QXZ("MODIFY")."</a></td></tr>\n";
 		$o++;
 		}
@@ -42824,7 +42892,7 @@ if ($ADD==999999)
 		echo "<B>"._QXZ("Real-Time Reports")."</B><BR>\n";
 		echo "<UL>\n";
 		if ( (preg_match("/Real-Time Main Report/",$LOGallowed_reports)) or (preg_match("/ALL REPORTS/",$LOGallowed_reports)) )
-			{echo "<LI><a href=\"realtime_report_ng.php?RR=10\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK size=2>"._QXZ("Real-Time Main Report NG")."</a></FONT>\n";}
+			{echo "<LI><a href=\"realtime_report_ng.php?RR=4\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK size=2>"._QXZ("Real-Time Main Report NG")."</a></FONT>\n";}
 				#	echo "<BR> &nbsp; Real-Time SIP: <a href=\"AST_timeonVDADall.php?SIPmonitorLINK=1\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK size=2>"._QXZ("Listen")."</a></FONT> - <a href=\"AST_timeonVDADall.php?SIPmonitorLINK=2\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK size=2>"._QXZ("Barge")."</a></FONT>\n";
 				#	echo "<BR> &nbsp; Real-Time IAX: <a href=\"AST_timeonVDADall.php?IAXmonitorLINK=1\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK size=2>"._QXZ("Listen")."</a></FONT> - <a href=\"AST_timeonVDADall.php?IAXmonitorLINK=2\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK size=2>"._QXZ("Barge")."</a></FONT><BR><BR>\n";
 		if ( (preg_match("/Real-Time Campaign Summary/",$LOGallowed_reports)) or (preg_match("/ALL REPORTS/",$LOGallowed_reports)) )
@@ -42990,7 +43058,7 @@ if ($ADD==999999)
 		if ( (preg_match("/Wallboard 3.0/",$LOGallowed_reports)) or (preg_match("/ALL REPORTS/",$LOGallowed_reports)) )
 		{echo "<LI><a href=\"WallBoard3.php\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK size=2>"._QXZ("Wallboard 3.0")."</a></FONT>\n";}
 		if ( (preg_match("/Real-Time Main Report/",$LOGallowed_reports)) or (preg_match("/ALL REPORTS/",$LOGallowed_reports)) )
-		{echo "<LI><a href=\"realtime_report_ng.php?RR=10\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK size=2>"._QXZ("Real-Time Main Report NG")."</a></FONT>\n";}
+		{echo "<LI><a href=\"realtime_report_ng.php?RR=4\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK size=2>"._QXZ("Real-Time Main Report NG")."</a></FONT>\n";}
 
 		echo "</UL>\n";
 
@@ -45552,7 +45620,7 @@ if (isset($camp_lists))
 			if (strlen($LCTlist_id_sql) > 1) {$list_id_sql .= "$LCTlist_id_sql";}
 
 
-			$stmt="SELECT count(*) FROM vicidial_list where called_since_last_reset='N' and status IN($Dsql) and list_id IN($camp_lists) and ($list_id_sql) and ($all_gmtSQL) $CCLsql $DLTsql $fSQL $EXPsql";
+			$stmt="SELECT count(*) FROM vicidial_list where block_status='free' AND called_since_last_reset='N' and status IN($Dsql) and list_id IN($camp_lists) and ($list_id_sql) and ($all_gmtSQL) $CCLsql $DLTsql $fSQL $EXPsql";
 			#$DB=1;
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_to_mysqli($stmt, $link);

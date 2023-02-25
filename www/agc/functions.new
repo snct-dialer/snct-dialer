@@ -9,14 +9,13 @@
 # Copyright (©) 2019  Matt Florell <vicidial@gmail.com>
 # Copyright (©) 2017-2018 flyingpenguin.de UG <info@flyingpenguin.de>
 #               2020      SNCT GmbH <info@snct-gmbh.de>
-#               2017-2021 Jörg Frings-Fürst <open_source@jff.email>
+#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
 
 #
 # SNCT - Changelog:
 #
-# 2021-04.04 jff    Add Bcc to TestTicketMail
-# 2020-06-24 jff    Change search for missing Calls
-# 2018-07-18 jff    Add missing global debug vars ($DB, $mel);
+# 2018-07-18 jff Add missing global debug vars ($DB, $mel);
+# 2020-06-24 jff Change search for missing Calls
 #
 
 #
@@ -2588,9 +2587,6 @@ function TestTicketMail($Agent, $type, $link) {
     global $DB, $mel;
 
 	$return = 0;
-	$OwnTicketMail = "";
-	$Group_Mail = "";
-	$Ticket_Mail = "";
 
 	$stmt = "SELECT ticket_mail FROM `system_settings`;";
 	$rslt=mysqli_query($link, $stmt);
@@ -2599,14 +2595,13 @@ function TestTicketMail($Agent, $type, $link) {
 	$TT_ct = mysqli_num_rows($rslt);
 	if ($TT_ct > 0)
 	{
-		$row=mysqli_fetch_array($rslt, MYSQLI_BOTH);
+		$row=mysqli_fetch_all($rslt, MYSQLI_BOTH);
 		$Ticket_Mail = $row[0];
-		if($Ticket_Mail != "") {
+		if($Ticket_Mail[0] != "") {
 			$return = 1;
 		}
 	}
-	
-##	$efp = fopen ("./functions_debug.log", "a");
+
 	if($return == 1) {
 		$return = 0;
 		$stmt = "SELECT `email` FROM `vicidial_users` WHERE user = '$Agent';";
@@ -2616,53 +2611,40 @@ function TestTicketMail($Agent, $type, $link) {
 		$AM_ct = mysqli_num_rows($rslt);
 		if ($AM_ct > 0)
 		{
-			$row=mysqli_fetch_array($rslt, MYSQLI_BOTH);
+			$row=mysqli_fetch_all($rslt, MYSQLI_BOTH);
 			$Agent_Mail = $row[0];
-			if($Agent_Mail != "") {
+			if($Agent_Mail[0] != "") {
 				$return = 1;
 			}
-		}                              
-		$stmt = "SELECT `group_email`, `own_ticketmail`  FROM `vicidial_user_groups` UG, `vicidial_users` VU WHERE VU.user = '$Agent' AND UG.user_group = VU.user_group AND (UG.group_email != '' OR UG.own_ticketmail != '');";
-		fwrite ($efp, "$NOW_TIME|".$stmt."|\n");
-		$rslt1=mysqli_query($link, $stmt);
-		if(! $rslt1 ) {  echo "Error: " .  mysqli_error($link) . PHP_EOL; }
+		}
+		$stmt = "SELECT `group_email` FROM `vicidial_user_groups` UG, `vicidial_users` VU WHERE VU.user = '$Agent' AND UG.user_group = VU.user_group AND UG.group_email != '';";
+		$rslt=mysqli_query($link, $stmt);
+		if(! $rslt ) {  echo "Error: " .  mysqli_error($link) . PHP_EOL; }
 		if ($DB) {echo "$stmt\n";}
-		$AM_ct = mysqli_num_rows($rslt1);
+		$AM_ct = mysqli_num_rows($rslt);
 		if ($AM_ct > 0)
 		{
-		    $row1=mysqli_fetch_array($rslt1, MYSQLI_BOTH);
-		    $Group_Mail = $row1[0];
-		    $OwnTicketMail = $row1[1];
-		    if($Group_Mail != "") {
+		    $row=mysqli_fetch_all($rslt, MYSQLI_BOTH);
+		    $Group_Mail = $row[0];
+		    if($Group_Mail[0] != "") {
 		        $return = 1;
 		    }
-		    
-##		    $efp = fopen ("./functions_debug.log", "a");
-##		    fwrite ($efp, "$NOW_TIME|".$Agent."|".$row1["group_email"]."|".$row1["own_ticketmail"]."|\n");
-##		    fclose($efp);
 		}
 	}
     
 	
-##	fclose($efp);
 	if($type == 0) {
 		return $return;
 	}
-	if($type == 1) { // To
-	    if($OwnTicketMail != "") {
-	        return $OwnTicketMail;
-	    } elseif($Group_Mail != "") {
-	        return $Group_Mail;
-	    } else {
-		  return $Ticket_Mail;
-	    }
+	if($type == 1) {
+		return $Ticket_Mail[0];
 	}
-	if($type == 2) { // From 
-		return $Agent_Mail;
+	if($type == 2) {
+		return $Agent_Mail[0];
 	}
-	if($type == 3) { // BCC
-	   return $Ticket_Mail;
-	} 
+	if($type == 3) {
+	    return $Group_Mail[0];
+	}
 }
 
 function GetPauseName($Agent) {

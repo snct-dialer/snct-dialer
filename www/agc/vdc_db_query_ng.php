@@ -795,11 +795,13 @@ if ($ACTION == 'GenDispoScreen') {
 	$DispoArr = array();
 	if ((isset($user)) && (isset($lead_id)) && (isset($customer_sec))) {
 
-		$sql = "SELECT VLS.`campaign_id`, VL.`middle_initial` from `vicidial_list` VL, `vicidial_lists` VLS WHERE VL.`lead_id` = '". $lead_id . "' AND VL.`list_id` = VLS.`list_id`;";
+		$sql = "SELECT VLS.`campaign_id`, VL.`middle_initial`,VL.`ownnd_dnc`,VL.`phone_code` from `vicidial_list` VL, `vicidial_lists` VLS WHERE VL.`lead_id` = '". $lead_id . "' AND VL.`list_id` = VLS.`list_id`;";
 		$res = mysqli_query($MySqlLink, $sql);
 		$row = mysqli_fetch_row($res);
 		$CampId = $row[0];
 		$PG = $row[1];
+		$DNC = $row[2];
+		$DNCPC = $row[3];
 		$CBAllow = 1;
 		if($CheckCBLimit === true) {
 			$CBAllow = CheckCallbacks($user, $lead_id, $PG);
@@ -816,13 +818,28 @@ if ($ACTION == 'GenDispoScreen') {
 				$CBFlag = "  *";
 			}
 			$RetTmp =  "";
-			if((($row1["min_sec"] > 0) && ($customer_sec < $row1["min_sec"])) || (($row1["max_sec"] > 0) && ($customer_sec > $row1["max_sec"])) || (($CBAllow == 0) && ($row1["scheduled_callback"] == "Y"))) {
+			$RetDNC = 0;
+			if(($DNC == 1) && (($row1["status"] == "SPERRE") || ($row1["status"] == "DEC"))) {
+#               $RetDNC = 1;
+			}
+			if($row1["status"] == "ANWALT") {
+			    $row1["status"] = "<font color: #FF0000> ".$row1["status"] . "</font>";
+			}
+			if((($row1["min_sec"] > 0) && ($customer_sec < $row1["min_sec"])) || (($row1["max_sec"] > 0) && ($customer_sec > $row1["max_sec"])) || (($CBAllow == 0) && ($row1["scheduled_callback"] == "Y")) || ($RetDNC == 1)) {
 				$RetTmp = "<DEL>" . $row1["status"] . " - " . $row1["status_name"] . "</DEL> " . $CBFlag . "<br /><br />";
 			} else {
 				if($taskDSgrp == $row1["status"]) {
-					$RetTmp = "<font size=\"3\" face=\"Arial, Helvetica, sans-serif\" style=\"BACKGROUND-COLOR: #FFFFCC\"><b><a href=\"#\" onclick=\"DispoSelect_submit('','','YES');return false;\">" . $row1["status"] . " - " . $row1["status_name"] . "</a> " . $CBFlag . "</b></font><br /><br />";
+				    if($row1["status"] == "ANWALT") {
+				        $RetTmp = "<font size=\"3\" face=\"Arial, Helvetica, sans-serif\" style=\"BACKGROUND-COLOR: #FF0000\"><b><a href=\"#\" onclick=\"DispoSelect_submit('','','YES');return false;\">" . $row1["status"] . " - " . $row1["status_name"] . "</a> " . $CBFlag . "</b></font><br /><br />";
+				    } else {
+                        $RetTmp = "<font size=\"3\" face=\"Arial, Helvetica, sans-serif\" style=\"BACKGROUND-COLOR: #FFFFCC\"><b><a href=\"#\" onclick=\"DispoSelect_submit('','','YES');return false;\">" . $row1["status"] . " - " . $row1["status_name"] . "</a> " . $CBFlag . "</b></font><br /><br />";
+				    }
 				} else {
-					$RetTmp = "<font size=\"2\" face=\"Arial, Helvetica, sans-serif\"><a href=\"#\" onclick=\"DispoSelectContent_create('" . $row1["status"] . "','ADD','YES');return false;\" onMouseOver=\"this.style.backgroundColor = '#FFFFCC'\" onMouseOut=\"this.style.backgroundColor = 'transparent'\";>" . $row1["status"] . " - " . $row1["status_name"] . "</a></font> " . $CBFlag . "<br /><br />";
+				    if($row1["status"] == "ANWALT") {        
+				        $RetTmp = "<font size=\"2\" face=\"Arial, Helvetica, sans-serif\" style=\"BACKGROUND-COLOR: #FF0000\"><a href=\"#\" onclick=\"DispoSelectContent_create('" . $row1["status"] . "','ADD','YES');return false;\" onMouseOver=\"this.style.backgroundColor = '#FF0000'\" onMouseOut=\"this.style.backgroundColor = '#FF0000'\";>" . $row1["status"] . " - " . $row1["status_name"] . "</a></font> " . $CBFlag . "<br /><br />";
+				    } else {
+					   $RetTmp = "<font size=\"2\" face=\"Arial, Helvetica, sans-serif\"><a href=\"#\" onclick=\"DispoSelectContent_create('" . $row1["status"] . "','ADD','YES');return false;\" onMouseOver=\"this.style.backgroundColor = '#FFFFCC'\" onMouseOut=\"this.style.backgroundColor = 'transparent'\";>" . $row1["status"] . " - " . $row1["status_name"] . "</a></font> " . $CBFlag . "<br /><br />";
+				    }
 				}
 			}
 			if($row1["Col"] != 0) {
@@ -843,13 +860,26 @@ if ($ACTION == 'GenDispoScreen') {
 			if($row2["scheduled_callback"] == "Y") {
 				$CBFlag = "  *";
 			}
-			if((($row2["min_sec"] > 0) && ($customer_sec < $row2["min_sec"])) || (($row2["max_sec"] > 0) && ($customer_sec > $row2["max_sec"])) || (($CBAllow == 0) && ($row2["scheduled_callback"] == "Y"))) {
+			$RetDNC = 0;
+			if(($DNC == 1) && (($row1["status"] == "SPERRE") || ($row1["status"] == "DEC"))) {
+#			    $RetDNC = 1;
+			}
+			if((($row2["min_sec"] > 0) && ($customer_sec < $row2["min_sec"])) || (($row2["max_sec"] > 0) && ($customer_sec > $row2["max_sec"])) || (($CBAllow == 0) && ($row2["scheduled_callback"] == "Y")) || ($RetDNC == 1)) {
 				$RetTmp = "<DEL>" . $row2["status"] . " - " . $row2["status_name"] . "</DEL> " . $CBFlag . "<br /><br />";
 			} else {
 				if($taskDSgrp == $row2["status"]) {
-					$RetTmp = "<font size=\"3\" face=\"Arial, Helvetica, sans-serif\" style=\"BACKGROUND-COLOR: #FFFFCC\"><b><a href=\"#\" onclick=\"DispoSelect_submit('','','YES');return false;\">" . $row2["status"] . " - " . $row2["status_name"] . "</a> " . $CBFlag . "</b></font><br /><br />";
+				    
+				    if($row2["status"] == "Anwalt") {
+				        $RetTmp = "<font size=\"3\" face=\"Arial, Helvetica, sans-serif\" style=\"BACKGROUND-COLOR: #FF0000\"><b><a href=\"#\" onclick=\"DispoSelect_submit('','','YES');return false;\">" . $row2["status"] . " - " . $row2["status_name"] . "</a> " . $CBFlag . "</b></font><br /><br />";
+				    } else {
+				        $RetTmp = "<font size=\"3\" face=\"Arial, Helvetica, sans-serif\" style=\"BACKGROUND-COLOR: #FFFFCC\"><b><a href=\"#\" onclick=\"DispoSelect_submit('','','YES');return false;\">" . $row2["status"] . " - " . $row2["status_name"] . "</a> " . $CBFlag . "</b></font><br /><br />";
+				    }
 				} else {
-					$RetTmp = "<font size=\"2\" face=\"Arial, Helvetica, sans-serif\"><a href=\"#\" onclick=\"DispoSelectContent_create('" . $row2["status"] . "','ADD','YES');return false;\" onMouseOver=\"this.style.backgroundColor = '#FFFFCC'\" onMouseOut=\"this.style.backgroundColor = 'transparent'\";>" . $row2["status"] . " - " . $row2["status_name"] . "</a></font> " . $CBFlag . "<br /><br />";
+				    if($row2["status"] == "Anwalt") {
+				        $RetTmp = "<font size=\"2\" face=\"Arial, Helvetica, sans-serif\" style=\"BACKGROUND-COLOR: #FF0000\"><a href=\"#\" onclick=\"DispoSelectContent_create('" . $row2["status"] . "','ADD','YES');return false;\" onMouseOver=\"this.style.backgroundColor = '#FFFFCC'\" onMouseOut=\"this.style.backgroundColor = '#FF0000'\";>" . $row2["status"] . " - " . $row2["status_name"] . "</a></font> " . $CBFlag . "<br /><br />";
+				    } else {
+				        $RetTmp = "<font size=\"2\"  face=\"Arial, Helvetica, sans-serif\"><a href=\"#\" onclick=\"DispoSelectContent_create('" . $row2["status"] . "','ADD','YES');return false;\" onMouseOver=\"this.style.backgroundColor = '#FFFFCC'\" onMouseOut=\"this.style.backgroundColor = 'transparent'\";>" . $row2["status"] . " - " . $row2["status_name"] . "</a></font> " . $CBFlag . "<br /><br />";
+				    }
 				}
 			}
 			if($row2["Col"] != 0) {

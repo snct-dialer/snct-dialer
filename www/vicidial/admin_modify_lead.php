@@ -5,8 +5,8 @@
 #
 # SNCT-Dialer™ Modify Leads
 #
-# Copyright (©) 2019-2021 SNCT GmbH <info@snct-gmbh.de>
-#               2017-2021 Jörg Frings-Fürst <open_source@jff.email>
+# Copyright (©) 2019-2023 SNCT GmbH <info@snct-gmbh.de>
+#               2017-2023 Jörg Frings-Fürst <open_source@jff.email>
 #
 # LICENSE: AGPLv3
 #
@@ -33,13 +33,15 @@
 #
 # Version  / Build
 #
-$admin_modify_lead_version = '3.1.1-9';
-$admin_modify_lead_build = '2021015-1';
+$admin_modify_lead_version = '3.1.1-14';
+$admin_modify_lead_build = '20230214-4';
 #
 ###############################################################################
 #
 # Changelog
 #
+# 2023-02-14 jff    Add handling for callbacks
+#                   Sort statuses 
 # 2022-02-19 jff    Add snctdialer_list_log_archive handling
 # 2021-06-15 jff    Fix block_status handling
 # 2021-05-25 jff    Fix gpdr purge.
@@ -1303,26 +1305,26 @@ if ($end_call > 0)
 		echo "<a href=\"$PHP_SELF?lead_id=$lead_id&DB=$DB&archive_search=$archive_search&archive_log=$archive_log\">"._QXZ("Go back to the lead modification page")."</a><BR><BR>\n";
 		echo "<form><input type=button value=\""._QXZ("Close This Window")."\" onClick=\"javascript:window.close();\"></form>\n";
 
-		if ( ($dispo != $status) and ($dispo == 'CBHOLD') )
+		if ( ($dispo != $status) AND (TestCallbacks($status) == false) AND (TestCallbacks($dispo) == true)) 
 			{
 			### inactivate vicidial_callbacks record for this lead
 			$stmtB="UPDATE vicidial_callbacks set status='INACTIVE' where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' and status='ACTIVE';";
 			if ($DB) {sd_debug_log($stmtB);}
 			$rslt=mysqli_query($link, $stmtB);
 
-			echo "<BR>"._QXZ("vicidial_callback record inactivated").": $lead_id<BR>\n";
+			echo "<BR>"._QXZ("vicidial_callback record inactivated 1|".$dispo."|".$status).": $lead_id<BR>\n";
 			}
-		if ( ($dispo != $status) and ( ($dispo == 'CALLBK') or ($scheduled_callback == 'Y') ) )
+			if ( ($dispo != $status) and (TestCallbacks($status) == false) AND  (($dispo == 'CALLBK') or ($scheduled_callback == 'Y') ) )
 			{
 			### inactivate vicidial_callbacks record for this lead
 			$stmtC="UPDATE vicidial_callbacks set status='INACTIVE' where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' and status IN('ACTIVE','LIVE');";
 			if ($DB) {sd_debug_log($stmtC);}
 			$rslt=mysqli_query($link, $stmtC);
 
-			echo "<BR>"._QXZ("vicidial_callback record inactivated").": $lead_id<BR>\n";
+			echo "<BR>"._QXZ("vicidial_callback record inactivated 2|".$dispo."|".$status).": $lead_id<BR>\n";
 			}
 
-		if ( ($dispo != $status) and ($status == 'CBHOLD') )
+		if ( ($dispo != $status) and (TestCallbacks($status) == true))
 			{
 			### find any vicidial_callback records for this lead
 			$stmtD="SELECT callback_id from vicidial_callbacks where lead_id='" . mysqli_real_escape_string($link, $lead_id) . "' and status IN('ACTIVE','LIVE') order by callback_id desc LIMIT 1;";
@@ -1337,7 +1339,12 @@ if ($end_call > 0)
 			else
 				{
 				$tomorrow = date("Y-m-d", mktime(date("H"),date("i"),date("s"),date("m"),date("d"),date("Y")));
-				$cb_hour = date("H:i:s", mktime(date("H") + 1,0,0,0,0,0));
+				$cbt_min  = ceil(date("i")/5)*5;
+				$cbt_hour = date("G");
+				if($cbt_min == 0) {
+				    $cbt_hour += 1;
+				}
+				$cb_hour = date("H:i:s", mktime($cbt_hour,$cbt_min,0,0,0,0));
 				$CLEAN_campaign_id = mysqli_real_escape_string($link, $campaign_id);
 				$CLEAN_campaign_id = preg_replace("/'|\"|\\\\|;/","",$CLEAN_campaign_id);
 				$CLEAN_campaign_id = preg_replace('/[^-_0-9a-zA-Z]/','',$CLEAN_campaign_id);
@@ -2237,16 +2244,18 @@ else
 		$rslt=mysqli_query($link, $stmt);
 		$statuses_to_print = mysqli_num_rows($rslt);
 		$statuses_list='';
+		$status_arr = array();
 
 		$o=0;
 		$DS=0;
 		while ($statuses_to_print > $o)
 			{
 			$rowx=mysqli_fetch_row($rslt);
-			if ( (strlen($dispo) ==  strlen($rowx[0])) and (preg_match("/$dispo/i",$rowx[0])) )
-				{$statuses_list .= "<option SELECTED value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n"; $DS++;}
-			else
-				{$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";}
+			$DataLine = array(
+	           'status' => $rowx[0],     
+			   'name'   => $rowx[1]
+			);
+			$status_arr[] = $DataLine;
 			$o++;
 			}
 
@@ -2258,15 +2267,28 @@ else
 		$CBhold_set=0;
 		while ($CAMPstatuses_to_print > $o)
 			{
-			$rowx=mysqli_fetch_row($rslt);
-			if ( (strlen($dispo) ==  strlen($rowx[0])) and (preg_match("/$dispo/i",$rowx[0])) )
-				{$statuses_list .= "<option SELECTED value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n"; $DS++;}
-			else
-				{$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";}
+			    $rowx=mysqli_fetch_row($rslt);
+			    $DataLine = array(
+			        'status' => $rowx[0],
+			        'name'   => $rowx[1]
+			    );
+			    $status_arr[] = $DataLine;
 			if ($rowx[0] == 'CBHOLD') {$CBhold_set++;}
 			$o++;
 			}
-
+		usort($status_arr, function($a, $b) {
+		  return $a['status'] <=> $b['status'];
+		});
+		$statuses_list = "";
+		foreach ($status_arr as &$value) {
+		    $key = $value["status"];
+		    $val = $value["name"];
+		    if($key == $dispo) {
+		        $statuses_list .= '<option SELECTED value="'.$key.'">'.$key.' - '.$val.'</option>\n'; $DS++;
+		    } else {
+		        $statuses_list .= '<option value="'.$key.'">'.$key.' - '.$val.'</option>\n';
+		    }
+		}
 		if ($dispo == 'CBHOLD') {$CBhold_set++;}
 
 		if ($DS < 1)
@@ -2334,16 +2356,18 @@ else
 					$rslt=mysqli_query($link, $stmt);
 					$statuses_to_print = mysqli_num_rows($rslt);
 					$statuses_list='';
+					$status_arr = array();
 
 					$o=0;
 					$DS=0;
 					while ($statuses_to_print > $o)
-						{
+						{ 
 						$rowx=mysqli_fetch_row($rslt);
-						if ( (strlen($lead_status) == strlen($rowx[0])) and (preg_match("/$lead_status/i",$rowx[0])) )
-							{$statuses_list .= "<option SELECTED value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n"; $DS++;}
-						else
-							{$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";}
+						$DataLine = array(
+						'status' => $rowx[0],
+						'name'   => $rowx[1]
+						);
+						$status_arr[] = $DataLine;
 						$o++;
 						}
 
@@ -2356,13 +2380,28 @@ else
 					while ($CAMPstatuses_to_print > $o)
 						{
 						$rowx=mysqli_fetch_row($rslt);
-						if ( (strlen($lead_status) ==  strlen($rowx[0])) and (preg_match("/$lead_status/i",$rowx[0])) )
-							{$statuses_list .= "<option SELECTED value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n"; $DS++;}
-						else
-							{$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";}
+						$DataLine = array(
+						    'status' => $rowx[0],
+						    'name'   => $rowx[1]
+						);
+						$status_arr[] = $DataLine;
 						$o++;
 						}
-
+					usort($status_arr, function($a, $b) {
+					   return $a['status'] <=> $b['status'];
+					});
+					$statuses_list = "";
+					foreach ($status_arr as &$value) {
+					    $key = $value["status"];
+					    $val = $value["name"];
+					    if($key == $dispo) {
+					        $statuses_list .= '<option SELECTED value="'.$key.'">'.$key.' - '.$val.'</option>\n'; $DS++;
+					    } else {
+					        $statuses_list .= '<option value="'.$key.'">'.$key.' - '.$val.'</option>\n';
+					    }
+					    
+					     
+				    }
 					if ($DS < 1)
 						{$statuses_list .= "<option SELECTED value=\"$lead_status\">$lead_status</option>\n";}
 
@@ -2388,19 +2427,27 @@ else
 					echo "<SELECT class='form_field' name='appointment_hour_".$callback_id."' id='appointment_hour_".$callback_id."'>\n";
 					for ($i=0; $i<=23; $i++) {
 						$hr=substr("0$i", -2);
-						echo "<OPTION value='$hr'>$hr</option>\n";
+						if($hr == $appointment_hour) {
+						    echo "<OPTION value='$hr' selected>$hr</option>\n";
+						} else {
+						    echo "<OPTION value='$hr'>$hr</option>\n";
+						}
 					}
-					echo "<OPTION value='$appointment_hour' selected>$appointment_hour</OPTION>";
+#					echo "<OPTION value='$appointment_hour' selected>$appointment_hour</OPTION>";
 					echo "</SELECT>:";
 					echo "<SELECT class='form_field' name='appointment_min_".$callback_id."' id='appointment_min_".$callback_id."'>";
 					for ($i=0; $i<=55; $i+=5) {
-						$min=substr("0$i", -2);
-						echo "<OPTION value='$min'>$min</option>\n";
+					    $min=substr("0$i", -2);
+					    if($min == $appointment_min) {
+					        echo "<OPTION value='$min' selected>$min</option>\n";
+					    } else {
+						    echo "<OPTION value='$min'>$min</option>\n";
+					    }
 					}
-					echo "<OPTION value='$appointment_min' selected>$appointment_min</OPTION>";
+#					echo "<OPTION value='$appointment_min' selected>$appointment_min</OPTION>";
 					echo "</SELECT>";
 					echo "</td>";
-					echo "<td><FONT FACE='ARIAL,HELVETICA'><select class='form_field' size=1 name='CBstatus_".$callback_id."' id='CBstatus_".$callback_id."'>\n";
+                    echo "<td><FONT FACE='ARIAL,HELVETICA'><select class='form_field' size=1 name='CBstatus_".$callback_id."' id='CBstatus_".$callback_id."'>\n";
 					echo "$statuses_list";
 					echo "</td>";
 					echo "<td><font size='2'>";
@@ -3274,7 +3321,7 @@ function FillSelection($sel, $link) {
 
 function FillBlockStatus($BlkSts, $DisStat) {
 
-    $ArrBlock = array("free" => _("free to use"), "temporary" => _("temporary blocked"), "blocked" => _("use prohibited"), "full" => _("full blocked"));
+    $ArrBlock = array("free" => _("free to use"), "temporary" => _("temporary blocked"), "blocked" => _("use prohibited"), "full" => _("full blocked"), "at_temporary" => _("AT temporary"));
     
     if($DisStat == "hidden") {
         $BlockStr = "<input type=text name=\"block_status\" value=\"$ArrBlock[$BlkSts]\" readonly>\n";

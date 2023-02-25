@@ -175,8 +175,57 @@ function GetEnumItems($table, $field, $conn, $returnType = "Array") {
     }
 }
 
+###############################################################################
+#
+# function TestCallbacks
+#
+# function to get the enum items from a field
+#
+# Parameter: $status    status to test
+#
+# Return:  bool         true if callback
+#                       false if not callback
+#                       -1 on error
+#
+#
+# Version 1.0.0
+#
+###############################################################################
+function TestCallbacks($status) {
+    global $link;
+    
+    $ret = false;
+    
+    $sql = "SELECT * FROM `vicidial_statuses` WHERE `status` = '".$status."' AND `scheduled_callback` = 'Y';";
+    sd_debug_log($sql);
+    if(($res = mysqli_query($link, $sql)) === false)
+    {
+        sd_debug_log("Invalid query: ". mysqli_error($link));
+        return -1;
+    }
+    $count = mysqli_num_rows($res);
+    if ($count == 1) {
+        return true;
+    }
+    mysqli_free_result($res);
+    
+    $sql = "SELECT * FROM `vicidial_campaign_statuses` WHERE `status` = '".$status."' AND `scheduled_callback` = 'Y';";
+    sd_debug_log($sql);
+    if(($res = mysqli_query($link, $sql)) === false)
+    {
+        sd_debug_log("Invalid query: ". mysqli_error($link));
+        return -1;
+    }
+    $count = mysqli_num_rows($res);
+    if ($count == 1) {
+        return true;
+    }
+    mysqli_free_result($res);
+    return false;
+    
+}
 
-#curl_post_url("https://mosel-lug.de/", "");
+
 
 
 ?>

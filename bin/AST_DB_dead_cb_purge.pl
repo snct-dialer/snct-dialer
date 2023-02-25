@@ -211,7 +211,7 @@ while ($sthArowsCT > $rec_count)
 
 	if ($delete_lead > 0)
 		{
-		$stmtA = "INSERT INTO vicidial_callbacks_archive SELECT * from vicidial_callbacks where callback_id='$callback_ids[$rec_count]';";
+		$stmtA = "INSERT IGNORE INTO vicidial_callbacks_archive SELECT * from vicidial_callbacks where callback_id='$callback_ids[$rec_count]'";
 		if (!$T) {$affected_rowsA = $dbhA->do($stmtA);}
 
 		$stmtA = "DELETE from vicidial_callbacks where callback_id='$callback_ids[$rec_count]';";

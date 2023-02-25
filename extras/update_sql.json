@@ -1,0 +1,86 @@
+[
+{"Section":"field","Action":"Change","Table":"vicidial_test","FieldOld":"test1","Field":"test1a","Typ":"varchar(50)","Null":"false","Default":"0","Extra":""},
+{"Section":"field","Action":"Change","Table":"vicidial_campaigns","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"dialable_inventory_snapshots","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"twoday_vicidial_agent_log","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"twoday_vicidial_log","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_agent_function_log","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_agent_function_log_archive","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_agent_log","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_agent_log_archive","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_callbacks","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_callbacks_archive","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_callbacks_log","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_campaign_dnc","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_campaign_hotkeys","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_campaign_hour_counts","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_campaign_hour_counts_archive","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_campaigns_list_mix","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_comments","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_custom_cid","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_dnc_log","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_email_accounts","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_email_log","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_hopper","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_inbound_dids","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_inbound_dids","FieldOld":"filter_campaign_id","Field":"filter_campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_lead_recycle","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_lists","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_live_agents","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_log","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_log_archive","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_log_noanswer","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_log_noanswer_archive","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_monitor_log","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_pause_codes","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_pause_codes_gratis","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_qc_agent_log","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_remote_agents","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_rt_monitor_log","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_rt_monitor_log_archive","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_session_data","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Change","Table":"vicidial_user_log","FieldOld":"campaign_id","Field":"campaign_id","Typ":"varchar(20)","Null":"false","Default":"","Extra":"CHARACTER SET utf8 COLLATE utf8_unicode_ci"},
+{"Section":"field","Action":"Add","Table":"vicidial_list","Field":"selection","Typ":"varchar(150)","Null":"false","Default":"","Extra":""},
+{"Section":"field","Action":"Add","Table":"vicidial_list","Field":"housenr1","Typ":"varchar(20)","Null":"false","Default":"","Extra":""},
+{"Section":"field","Action":"Add","Table":"vicidial_list","Field":"phone_code_alt1","Typ":"varchar(10)","Null":"false","Default":"","Extra":""},
+{"Section":"field","Action":"Add","Table":"vicidial_list","Field":"phone_code_alt2","Typ":"varchar(10)","Null":"false","Default":"","Extra":""},
+{"Section":"field","Action":"Add","Table":"vicidial_list","Field":"phone_code_alt3","Typ":"varchar(150)","Null":"false","Default":"","Extra":""},
+{"Section":"field","Action":"Add","Table":"vicidial_list","Field":"alt_phone3","Typ":"varchar(20)","Null":"false","Default":"","Extra":""},
+{"Section":"field","Action":"Add","Table":"vicidial_list","Field":"block_status","Typ":"enum('free','blocked','temporary','full')","Null":"false","Default":"free","Extra":""},
+{"Section":"field","Action":"Add","Table":"vicidial_list","Field":"house_nr2","Typ":"varchar(20)","Null":"false","Default":"","Extra":""},
+{"Section":"field","Action":"Add","Table":"vicidial_list","Field":"house_nr3","Typ":"varchar(20)","Null":"false","Default":"","Extra":""},
+
+{"Section":"field","Action":"Add","Table":"vicidial_users","Field":"password_sec","Typ":"varchar(256)","Null":"false","Default":"","Extra":""},
+{"Section":"field","Action":"Add","Table":"vicidial_users","Field":"2FA_enable","Typ":"ENUM('Y','N')","Null":"false","Default":"N","Extra":""},
+{"Section":"field","Action":"Add","Table":"vicidial_users","Field":"2FA_type","Typ":"ENUM('SMS','EMail','TOTP')","Null":"false","Default":"TOTP","Extra":""},
+{"Section":"field","Action":"Add","Table":"vicidial_users","Field":"2FA_Email","Typ":"varchar(50)","Null":"false","Default":"","Extra":""},
+{"Section":"field","Action":"Add","Table":"vicidial_users","Field":"2FA_SMS","Typ":"varchar(20)","Null":"false","Default":"","Extra":""},
+{"Section":"field","Action":"Add","Table":"vicidial_users","Field":"2FA_secret","Typ":"varchar(250)","Null":"false","Default":"","Extra":""},
+
+
+{"Section":"index","Action":"Add","Table":"vicidial_list","Index":"`LastName` (`last_name`)"},
+{"Section":"index","Action":"Add","Table":"vicidial_list","Index":"`FirstName` (`first_name`)"},
+{"Section":"index","Action":"Add","Table":"vicidial_list","Index":"`City` (`city`)"},
+
+
+{"Section":"table","Action":"Add","Table":"snctdialer_lead_selection","tag":"(`ID` BIGINT NOT NULL AUTO_INCREMENT , `selection` VARCHAR(25) NOT NULL , PRIMARY KEY (`ID`)) ENGINE=Aria DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci CHECKSUM=1 PAGE_CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=PAGE TRANSACTIONAL=1"},
+
+
+{"Section":"index","Action":"Add","Table":"vicidial_list","Index":"`address1` (`address1`)"},
+{"Section":"index","Action":"Add","Table":"vicidial_list","Index":"`housenr1` (`housenr1`)"},
+
+{"Section":"field","Action":"Add","Table":"vicidial_users","Field":"2FA_secret","Typ":"varchar(250)","Null":"false","Default":"","Extra":""},
+{"Section":"field","Action":"Add","Table":"vicidial_users","Field":"2FA_secret","Typ":"varchar(250)","Null":"false","Default":"","Extra":""},
+{"Section":"field","Action":"Add","Table":"vicidial_users","Field":"2FA_secret","Typ":"varchar(250)","Null":"false","Default":"","Extra":""},
+
+
+{"Section":"field","Action":"Add","Table":"vicidial_list","Field":"customer_status","Typ":"ENUM('unknown','privat','business')","Null":"false","Default":"unknown","Extra":""},
+{"Section":"index","Action":"Add","Table":"vicidial_list","Index":"`CustStatus` (`customer_status`)"},
+{"Section":"index","Action":"Add","Table":"vicidial_list","Index":"`BlockStatus` (`block_status`)"},
+
+{"Section":"field","Action":"Add","Table":"vicidial_list","Field":"Company","Typ":"varchar(100)","Null":"false","Default":"","Extra":""},
+{"Section":"field","Action":"Add","Table":"vicidial_list","Field":"Privat","Typ":"varchar(100)","Null":"false","Default":"","Extra":""},
+{"Section":"field","Action":"Add","Table":"system_settings","Field":"use_comp_privat","Typ":"tinyint","Null":"false","Default":"0","Extra":""}
+
+
+]

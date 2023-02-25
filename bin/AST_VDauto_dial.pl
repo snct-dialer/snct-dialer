@@ -1457,8 +1457,12 @@ while($one_day_interval > 0)
 															{
 															$temp_pc = $phone_code;
 															$stmtA = "SELECT outbound_cid,areacode FROM vicidial_campaign_cid_areacodes where campaign_id='$DBIPcid_group_id[$user_CIPct]' and areacode IN('$temp_pc') and active='Y' order by call_count_today desc limit 100000;";
+															$temp_CID='';
 															}
-														$temp_CID='';
+														if ($cid_group_type =~ /NONE/)
+															{
+															$stmtA = "SELECT outbound_cid,areacode FROM vicidial_campaign_cid_areacodes where campaign_id='$DBIPcid_group_id[$user_CIPct]' and active='Y' order by call_count_today desc limit 100000;";
+															}
 														$event_string = "CID_Group: $stmtA";
 														&event_logger;
 														$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -1477,6 +1481,13 @@ while($one_day_interval > 0)
 															$sthA->finish();
 															$stmtA="UPDATE vicidial_campaign_cid_areacodes set call_count_today=(call_count_today + 1) where campaign_id='$DBIPcid_group_id[$user_CIPct]' and areacode='$temp_ac' and outbound_cid='$temp_vcca';";
 															$affected_rows = $dbhA->do($stmtA);
+															
+															if ($cid_group_type =~ /NONE/)
+																{
+																$stmtA="UPDATE vicidial_cid_groups set cid_auto_rotate_calls=(cid_auto_rotate_calls + 1) where cid_group_id='$DBIPcid_group_id[$user_CIPct]';";
+																$affected_rows = $dbhA->do($stmtA);
+																}
+														
 															}
 														else
 															{$sthA->finish();}
