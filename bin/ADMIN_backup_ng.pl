@@ -10,8 +10,8 @@
 # Copyright (©) 2016      Matt Florell <vicidial@gmail.com>
 #
 # Copyright (©) 2017-2020 flyingpenguin.de UG <info@flyingpenguin.de>
-#               2019      SNCT GmbH <info@snct-gmbh.de>
-#               2017-2020 Jörg Frings-Fürst <open_source@jff.email>
+#               2019-2023 SNCT GmbH <info@snct-gmbh.de>
+#               2017-2023 Jörg Frings-Fürst <open_source@jff.email>
 #
 # CHANGELOG
 #
@@ -31,9 +31,13 @@
 # 190601-1556 - 3.1.2 - jff Add WebPath2
 # 190602-0953 - 3.1.3 - jff Use YYYY-MM-DD[-HH] for backup file name.
 # 200601-1132 - 3.1.4 - jff Use YYYY-MM-DD[-HH]_DOW for backup file name.
+# 230304-1230 - 3.1.5 - jff Use File::Which to find binaries
+#                           Encode tar via ccrypt
 #
 
-$PrgVersion = "3.1.4";
+$PrgVersion = "3.1.5";
+
+use File::Which; 
 
 ###### Test that the script is running only once a time
 use Fcntl qw(:flock);
@@ -91,6 +95,7 @@ $VARDB_port        = $cfg->val( 'Database', 'VARDB_port' );
 
 $BackupUseHour    = $cfg->val( 'Backup', 'BackupHour' );
 $BackupWebPath2   = $cfg->val( 'Backup', 'WebPath2' );
+$BackupCrypt      = $cfg->val( 'Backup', 'Code' );
 
 $FTPBACKUP_enable = $cfg->val( 'Backup', 'FTPBACKUP_enable' );
 $FTPBACKUP_host   = $cfg->val( 'Backup', 'FTPBACKUP_host' );
@@ -295,33 +300,20 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 
 $LOCALpath="";
 
-### find tar binary to do the archiving
-$tarbin = '';
-if ( -e ('/usr/bin/tar')) {$tarbin = '/usr/bin/tar';}
-else {
-	if ( -e ('/usr/local/bin/tar')) {$tarbin = '/usr/local/bin/tar';}
-	else {
-		if ( -e ('/bin/tar')) {$tarbin = '/bin/tar';}
-		else {
-			print "Can't find tar binary! Exiting...\n";
-			exit;
-		}
-	}
-}
+#
+# find binaries
+#
+$tarbin = which 'tar';
+$xzbin = which 'xz';
+$ccryptbin = which 'ccrypt';
+$mysqldumpbin = which 'mysqldump';
 
-### find xz binary to do the archiving
-$xzbin = '';
-if ( -e ('/usr/bin/xz')) {$xzbin = '/usr/bin/xz';}
-else {
-	if ( -e ('/usr/local/bin/xz')) {$xzbin = '/usr/local/bin/xz';}
-	else {
-		if ( -e ('/bin/xz')) {$xzbin = '/bin/xz';}
-		else {
-			print "Can't find xz binary! Exiting...\n";
-			exit;
-		}
-	}
-}
+#print $tarbin."|".$xzbin."|".$ccryptbin."|".$mysqldumpbin."|".$BackupCrypt."\n";
+
+if(length($ccryptbin) == 0) {
+	die "CCrypt not found\n";
+}	
+
 
 $conf='_CONF_';
 $sangoma='_SANGOMA_';
@@ -337,6 +329,7 @@ $xz='.xz';
 $txz='.txz';
 $sgSTRING='';
 $underl='_';
+$cyrpt='.cpt';
 
 #
 # Create backup path
@@ -352,16 +345,8 @@ if ( ($without_db < 1) && ($conf_only < 1) ) {
 	if ($db_raw_files_copy < 1) {
 		### find mysqldump binary to do the database dump
 		print "\n----- Mysql dump -----\n\n";
-		$mysqldumpbin = '';
-		if ( -e ('/usr/bin/mysqldump')) {$mysqldumpbin = '/usr/bin/mysqldump';}
-		else {
-			if ( -e ('/usr/local/mysql/bin/mysqldump')) {$mysqldumpbin = '/usr/local/mysql/bin/mysqldump';}
-			else {
-				if ( -e ('/bin/mysqldump')) {$mysqldumpbin = '/bin/mysqldump';}
-				else {
-					print "Can't find mysqldump binary! MySQL backups will not work...\n";
-				}
-			}
+		if(lenght($mysqldumpbin) == 0) {
+			print "Can't find mysqldump binary! MySQL backups will not work...\n";
 		}
 
 		use DBI;
@@ -603,16 +588,22 @@ if ( ($conf_only < 1) && ($db_only < 1) && ($without_voicemail < 1) )
 
 ### PUT EVERYTHING TOGETHER TO BE COMPRESSED ###
 if ($DBX) {print "$tarbin -Jcf $TEMPpathComp/$Server_name$all$DateTag$tar $TEMPpath\n";}
+open(pass, ">/tmp/.passkey");
+print pass $BackupCrypt;
+close(pass);
 `$tarbin -cf $TEMPpathComp/$Server_name$all$DateTag$tar $TEMPpath`;
+unlink('$TEMPpathComp/$Server_name$all$DateTag$tar$cyrpt');
+`$ccryptbin -k /tmp/.passkey $TEMPpathComp/$Server_name$all$DateTag$tar`;
+unlink("/tmp/.passkey");
 
 ### Copy to ArchivePath ###
 if ($DBX) {print "cp $TEMPpathComp/$Server_name$all$DateTag$tar $PATHbackup/\n";}
-`cp $TEMPpathComp/$Server_name$all$DateTag$tar $PATHbackup/`;
+`cp $TEMPpathComp/$Server_name$all$DateTag$tar$cyrpt $PATHbackup/`;
 
 ### Move to LocalPath ###
 if($LOCALpath) {
 	if ($DBX) {print "mv -f $TEMPpathComp/$Server_name$all$DateTag$tar $LOCALpath/\n";}
-	`mv -f $TEMPpathComp/$Server_name$all$DateTag$tar $LOCALpath/`;
+	`mv -f $TEMPpathComp/$Server_name$all$DateTag$tar$cyrpt $LOCALpath/`;
 }
 
 
@@ -636,14 +627,14 @@ if ($FTPBACKUP_enable > 0) {
 	$ftp->login("$FTPBACKUP_user","$FTPBACKUP_pass");
 	$ftp->cwd("$FTPBACKUP_dir");
 	$ftp->binary();
-	$ftp->put("$TEMPpathComp/$Server_name$all$DateTag$tar", "$Server_name$all$DateTag$tar");
+	$ftp->put("$TEMPpathComp/$Server_name$all$DateTag$tar$cyrpt", "$Server_name$all$DateTag$tar$cyrpt");
 	$ftp->quit;
 }
 
 # remove temp tar file
-if ( -e "$TEMPpathComp/$Server_name$all$DateTag$tar") {
+if ( -e "$TEMPpathComp/$Server_name$all$DateTag$tar$cyrpt") {
 	if ($DBX) {print "rm -f $TEMPpathComp/$Server_name$all$DateTag$tar\n";}
-	`rm -f $TEMPpathComp/$Server_name$all$DateTag$tar`;
+	`rm -f $TEMPpathComp/$Server_name$all$DateTag$tar$cyrpt`;
 }
 
 ### calculate time to run script ###

@@ -43,7 +43,8 @@
       - Update www/vicidial/AST_dialer_inventory_report.php.
     * Add Base-Campaign to lists:
       - Update www/vicidial/admin.php,
-        
+    * Use File::Which to find binaries, Encode tar via ccrypt
+      - Update bin/ADMIN_backup_ng.pl
 
 3.0.6
   [Jörg Frings-Fürst]
