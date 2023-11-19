@@ -21,7 +21,6 @@
 #
 # dbconnect_mysqli.php
 # functions.php
-# ../inc/functions_ng.php
 # SNCTVersion.inc
 # ../tools/system_wide_settings.php
 # options.php
@@ -41,8 +40,8 @@
 #
 # Version  / Build
 #
-$agent_version = '3.1.2-75';
-$agent_build = '20221019-4';
+$agent_version = '3.1.1-159';
+$agent_build = '20230916-2';
 #
 ###############################################################################
 #
@@ -57,9 +56,8 @@ $DB=0;
 #
 # Changelog
 #
-# 2021-05-17 jff    Allow UTF8 campaigns at login.
-# 2021-04-15 jff    Add field housenr1
-# 2021-04-01 jff    Add Bcc to Ticketmail     
+# 2023-09-16 jff    Add session_name to URLDecode
+# 2022-07-20 jff    Add function CheckDialAltPhone to manage AltNumberDialing
 # 2020-12-20 jff	Add footer text after callback calendar
 # 2020-12-15 jff	Fix text typo
 # 2020-11-06 jff	Remove debug alert
@@ -84,7 +82,6 @@ $DB=0;
 
 require_once("dbconnect_mysqli.php");
 require_once("functions.php");
-require_once("../inc/functions_ng.php");
 $SNCT_version = file_get_contents("SNCTVersion.inc");
 
 
@@ -122,10 +119,11 @@ if (isset($_GET["LOGINvarFOUR"]))				{$LOGINvarFOUR=$_GET["LOGINvarFOUR"];}
         elseif (isset($_POST["LOGINvarFOUR"]))	{$LOGINvarFOUR=$_POST["LOGINvarFOUR"];}
 if (isset($_GET["LOGINvarFIVE"]))				{$LOGINvarFIVE=$_GET["LOGINvarFIVE"];}
         elseif (isset($_POST["LOGINvarFIVE"]))	{$LOGINvarFIVE=$_POST["LOGINvarFIVE"];}
-        
+
+       
 if (isset($_GET["session_epoch"]))				{$SessEpoch=$_GET["session_epoch"];}
         elseif (isset($_POST["session_epoch"])) {$SessEpoch=$_POST["session_epoch"];}
-        
+
 if (!isset($phone_login))
 	{
 	if (isset($_GET["pl"]))            {$phone_login=$_GET["pl"];}
@@ -181,7 +179,7 @@ $phone_login=preg_replace("/[^\,0-9a-zA-Z]/","",$phone_login);
 $phone_pass=preg_replace("/[^-_0-9a-zA-Z]/","",$phone_pass);
 $VD_login=preg_replace("/\'|\"|\\\\|;| /","",$VD_login);
 $VD_pass=preg_replace("/\'|\"|\\\\|;| /","",$VD_pass);
-#$VD_campaign = preg_replace("/[^-_0-9a-zA-Z]/","",$VD_campaign);
+$VD_campaign = preg_replace("/[^-_0-9a-zA-Z]/","",$VD_campaign);
 $VD_language = preg_replace("/\'|\"|\\\\|;/","",$VD_language);
 $admin_test = preg_replace("/[^0-9a-zA-Z]/","",$admin_test);
 $LOGINvarONE=preg_replace("/[^-_0-9a-zA-Z]/","",$LOGINvarONE);
@@ -200,7 +198,7 @@ $tsNOW_TIME = date("YmdHis");
 $FILE_TIME = date("Ymd-His");
 $loginDATE = date("Ymd");
 $CIDdate = date("ymdHis");
-$month_old = mktime(11, 0, 0, date("m"), date("d")-2,  date("Y"));LogiNCamPaigns
+$month_old = mktime(11, 0, 0, date("m"), date("d")-2,  date("Y"));
 $past_month_date = date("Y-m-d H:i:s",$month_old);
 $minutes_old = mktime(date("H"), date("i")-2, date("s"), date("m"), date("d"),  date("Y"));
 $past_minutes_date = date("Y-m-d H:i:s",$minutes_old);
@@ -246,7 +244,7 @@ if ($sl_ct > 0)
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$stmt = "SELECT use_non_latin,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,webroot_writable,timeclock_end_of_day,vtiger_url,enable_vtiger_integration,outbound_autodial_active,enable_second_webform,user_territories_active,static_agent_url,custom_fields_enabled,pllb_grouping_limit,qc_features_active,allow_emails,callback_time_24hour,enable_languages,language_method,meetme_enter_login_filename,meetme_enter_leave3way_filename,enable_third_webform,default_language,active_modules,allow_chats,chat_url,default_phone_code,agent_screen_colors,manual_auto_next,agent_xfer_park_3way,admin_web_directory,agent_script,agent_push_events,agent_push_url,pause_campaigns,allow_phonebook,agent_prefix,agent_logout_link,agentonly_callback_campaign_lock,manual_dial_validation,mute_recordings,enable_second_script,show_newdispo,use_comp_privat  FROM system_settings;";
+$stmt = "SELECT use_non_latin,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,webroot_writable,timeclock_end_of_day,vtiger_url,enable_vtiger_integration,outbound_autodial_active,enable_second_webform,user_territories_active,static_agent_url,custom_fields_enabled,pllb_grouping_limit,qc_features_active,allow_emails,callback_time_24hour,enable_languages,language_method,meetme_enter_login_filename,meetme_enter_leave3way_filename,enable_third_webform,default_language,active_modules,allow_chats,chat_url,default_phone_code,agent_screen_colors,manual_auto_next,agent_xfer_park_3way,admin_web_directory,agent_script,agent_push_events,agent_push_url,pause_campaigns,allow_phonebook,agent_prefix,agent_logout_link,agentonly_callback_campaign_lock,manual_dial_validation,mute_recordings,enable_second_script,show_newdispo FROM system_settings;";
 
 $rslt=mysql_to_mysqli($stmt, $link);
 	if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01001',$VD_login,$server_ip,$session_name,$one_mysql_log);}
@@ -298,7 +296,6 @@ if ($qm_conf_ct > 0)
 	$SSmute_recordings =				$row[40];
 	$SSenable_second_script =			$row[41];
 	$Show_NewDispo =					$row[42];
-	$Use_comp_privat =                     $row[43]; 
 	}
 else
 	{
@@ -530,34 +527,17 @@ echo '<?xml version="1.0" encoding="UTF-8"?>
 <link rel="stylesheet" type="text/css" href="css/style.css" />
 <link rel="stylesheet" type="text/css" href="css/custom.css" />
 <script language="JavaScript" src="calendar_db.js"></script>
+<script language="JavaScript" src="js/copy.js"></script>
+
+<link rel="stylesheet" media="print" href="css/print.css"> 
+<link rel="stylesheet" href="css/all.min.css">
+<link href="css/menu.css" rel="stylesheet" type="text/css" />
+
 <link rel="stylesheet" href="calendar.css" />
 ';
 echo "<!-- VERSION: $agent_version     "._("BUILD:")." $agent_build -->\n";
 echo "<!-- BROWSER: $BROWSER_WIDTH x $BROWSER_HEIGHT     $JS_browser_width x $JS_browser_height -->\n";
 
-?>
-<script language="JavaScript"> 
-	function change_font(biglow) {
-		var TmpSize;
-//		alert(document.getElementById('agent_table').style.fontSize);
-		TmpSize = document.getElementById('agent_table').style.fontSize;
-		TmpSize = parseInt(TmpSize);
-		if(isNaN (TmpSize)) {
-			TmpSize = 10;
-		}
-		if(biglow == "Big") { 
-			TmpSize += 2;
-		}
-		if(biglow == "Small") { 
-			TmpSize -= 2;
-		}
-		document.getElementById('agent_table').style.fontSize = TmpSize + 'px';
-//		document.getElementById('agent_leads')[].style.fontSize = TmpSize + 'px';
-	}
-</script>
-
-
-<?php 
 
 if ($campaign_login_list > 0)
 	{
@@ -565,19 +545,22 @@ if ($campaign_login_list > 0)
 	$camp_form_code .= "<option value=\"\"></option>\n";
 
 	$LOGallowed_campaignsSQL='';
-	
-	$AktEpoch = date("U");
-	if(($relogin == 'YES') && (($SessEpoch + 1800) < $AktEpoch)) {
-	    $stmt="INSERT INTO snctdialer_wrong_loginlink (`ID`, `Date`, `UserID`, `OldSess`) VALUES(NULL, from_unixtime('$AktEpoch'), '$VD_login',from_unixtime('$SessEpoch'));";
-	    if($DB) {
-	        echo "|$stmt|\n";
-	    }
-	    $rslt=mysql_to_mysqli($stmt, $link);
-	    if($DB) {
-	       echo "Login nicht möglich" . PHP_EOL;
-	       echo "Agent wird gesperrt!";
-	    }
-	}
+
+    
+    $AktEpoch = date("U");
+    if(($relogin == 'YES') && (($SessEpoch + 1800) < $AktEpoch)) {
+        $stmt="INSERT INTO snctdialer_wrong_loginlink (`ID`, `Date`, `UserID`, `OldSess`) VALUES(NULL, from_unixtime('$AktEpoch'), '$VD_login',from_unixtime('$SessEpoch'));";
+        if($DB) {
+            echo "|$stmt|\n";
+        }
+        $rslt=mysql_to_mysqli($stmt, $link);
+        if($DB) {
+           echo "Login nicht möglich" . PHP_EOL;
+           echo "Agent wird gesperrt!";
+        }
+
+    }
+
 	if ($relogin == 'YES')
 		{
 		$stmt="SELECT user_group from vicidial_users where user='$VD_login' and active='Y' and api_only_user != '1';";
@@ -1318,11 +1301,6 @@ else
 			if (strlen($row[16])>0) {$label_security_phrase =	$row[16];}
 			if (strlen($row[17])>0) {$label_email =				$row[17];}
 			if (strlen($row[18])>0) {$label_comments =			$row[18];}
-			
-			$label_company = _("Company");
-			$label_privat  = _("Privat");
-			$label_housnr1 = _("Hausnr.");
-			
 			### END find any custom field labels ###
 			if ($label_gender == '---HIDE---')
 				{$hide_gender=1;}
@@ -2011,7 +1989,7 @@ else
 					{$manual_dial_prefix = $dial_prefix;}
 				if (strlen($three_way_dial_prefix) < 1)
 					{$three_way_dial_prefix = $dial_prefix;}
-				if ( ($alt_number_dialing=='Y') or ($alt_number_dialing=='SELECTED') or ($alt_number_dialing=='SELECTED_TIMER_ALT') or ($alt_number_dialing=='SELECTED_TIMER_ADDR3') )
+				if ( (($alt_number_dialing=='Y') or ($alt_number_dialing=='SELECTED') or ($alt_number_dialing=='SELECTED_TIMER_ALT') or ($alt_number_dialing=='SELECTED_TIMER_ADDR3')) AND ($agent_disable_alt_dial == '0') )
 					{$alt_phone_dialing='1';}
 				else
 					{
@@ -3464,7 +3442,6 @@ else
 		$MAXmiddle_initial =		'1';
 		$MAXlast_name =				'30';
 		$MAXaddress1 =				'100';
-		$MAXhousenr1 =				'20';
 		$MAXaddress2 =				'100';
 		$MAXaddress3 =				'100';
 		$MAXcity =					'50';
@@ -3503,9 +3480,7 @@ else
 				if ( ($vl_field == 'last_name') and ($MAXlast_name != $vl_type) )
 					{$MAXlast_name = $vl_type;}
 				if ( ($vl_field == 'address1') and ($MAXaddress1 != $vl_type) )
-				    {$MAXaddress1 = $vl_type;}
-				if ( ($vl_field == 'housenr1') and ($MAXhousenr1 != $vl_type) )
-				    {$MAXhousenr1 = $vl_type;}
+					{$MAXaddress1 = $vl_type;}
 				if ( ($vl_field == 'address2') and ($MAXaddress2 != $vl_type) )
 					{$MAXaddress2 = $vl_type;}
 				if ( ($vl_field == 'address3') and ($MAXaddress3 != $vl_type) )
@@ -3870,7 +3845,6 @@ $CCAL_OUT .= "</table>";
 	var cVARSELstatuses_ct = '<?php echo $cVARSELstatuses_ct ?>';
 	VARingroups = new Array(<?php echo $VARingroups ?>);
 	var INgroupCOUNT = '<?php echo $INgrpCT ?>';
-	var Use_comp_privat = '<?php echo $Use_comp_privat ?>';
 
 	VARemailgroups = new Array(<?php echo $VARemailgroups ?>);
 	// var EMAILgroupCOUNT = '<?php echo $EMAILgrpCT ?>';
@@ -4114,6 +4088,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var starting_alt_phone_dialing = '<?php echo $alt_phone_dialing ?>';
 	var alt_phone_dialing = '<?php echo $alt_phone_dialing ?>';
 	var alt_number_dialing = '<?php echo $alt_number_dialing ?>';
+	var alt_number_dialing_temp = '<?php echo $alt_number_dialing ?>';
 	var timer_alt_seconds = '<?php echo $timer_alt_seconds ?>';
 	var timer_alt_count=0;
 	var timer_alt_trigger=0;
@@ -4629,7 +4604,13 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var pc_var_ingroup = "";
 //	var PPanel = "";
 	var ShowOnlyInbounds = 0;
-
+	var CheckNoAltDial = 0;
+    
+	if (agent_disable_alt_dial == '1') {
+	    alt_phone_dialing = '0';
+	    starting_alt_phone_dialing = '0';
+	}
+	
 <?php
 	if ($window_validation > 0)
 		{
@@ -4691,6 +4672,46 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			}
 		}
 	}
+
+// ########
+// function CheckDialAltPhone
+//
+// Parameter: PhoneOne   <-- phonenumber
+//            PhoneTwo   <-- alt_phone
+//            PhoneThree <-- address3
+//
+// Disable AltNumDialing if PhoneTwo is empty
+//
+// ########
+function CheckDialAltPhone(PhoneOne, PhoneTwo, PhoneThree = '') {
+	if((PhoneOne == '') || (PhoneTwo == '')) {
+		CheckNoAltDial = 1;
+		alt_number_dialing = 'N';
+		buildDiv("DiaLDiaLAltPhonE");
+											
+//		alert("CheckAutoDial: No other nummber:" + PhoneOne + "|" + PhoneTwo );
+	} else {
+		CheckNoAltDial = 0;
+		alt_number_dialing = alt_number_dialing_temp;
+		buildDiv("DiaLDiaLAltPhonE");
+//		alert("CheckAutoDial: With other nummber:"  + PhoneOne + "|" + PhoneTwo );
+	}
+}
+
+function CheckRufNr(PhoneTwo) {
+	
+	if(PhoneTwo.length > 6) {	
+		CheckNoAltDial = 0;
+		alt_number_dialing = alt_number_dialing_temp;
+		buildDiv("DiaLDiaLAltPhonE");
+//		alert("CheckRufNr: Nummber ok:"  + PhoneTwo + "|");
+	} else {
+		CheckNoAltDial = 1;
+		alt_number_dialing = 'N';
+		buildDiv("DiaLDiaLAltPhonE");
+//		alert("CheckRufNr: Nummber not ok:"  + PhoneTwo + "|");
+	}
+}
 
 // ################################################################################
 // Send Hangup command for Live call connected to phone now to Manager
@@ -6891,7 +6912,6 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 
 				if ( (taskvar == 'XfeRLOCAL') || (taskvar == 'XfeRBLIND') || (taskvar == 'XfeRVMAIL') || (taskvar == 'XfeRBLINDACR') )
 					{
-					button_click_log = button_click_log + SQLdate + "-----ACRTEST------: " + taskvar +  " " + taskdispowindow;
 					if (auto_dial_level == 0) {RedirecTxFEr = 1;}
 					document.getElementById("callchannel").innerHTML = '';
 					document.vicidial_form.callserverip.value = '';
@@ -6901,11 +6921,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						{button_click_log = button_click_log + "" + SQLdate + "-----VMMessageNoHangup---|";}
 					else
 						{
-						if(taskvar == 'XfeRVMAIL') {
-							dialedcall_send_hangup('NO','','',no_delete_VDAC);
-						} else {
-							dialedcall_send_hangup(taskdispowindow,'','',no_delete_VDAC);
-						}
+						dialedcall_send_hangup(taskdispowindow,'','',no_delete_VDAC);
 						}
 					}
 				} // END ELSE FOR EMAIL CHECK
@@ -7572,9 +7588,10 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 			manual_dial_in_progress=1;
 			manual_cb_call = 1;
 			MainPanelToFront();
-			buildDiv('DiaLLeaDPrevieW');
-			if (alt_phone_dialing == 1)
-				{buildDiv('DiaLDiaLAltPhonE');}
+			buildDiv('DiaLLeaDPrevieW'); 
+			CheckDialAltPhone(document.vicidial_form.phone_number.value, document.vicidial_form.alt_phone.value, document.vicidial_form.address3.value);
+//			if (alt_phone_dialing == 1)
+//				{buildDiv('DiaLDiaLAltPhonE');}
 			document.vicidial_form.LeadPreview.checked=true;
 		//	document.vicidial_form.DiaLAltPhonE.checked=true;
 			hideDiv('CallBacKsLisTBox');
@@ -7729,8 +7746,8 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							{
 							var check_incoming = null;
 							lead_change = xmlhttprequestselectupdate.responseText;
-							//alert(checkVDAI_query);
-							//alert(xmlhttprequestselectupdate.responseText);
+						//	alert(checkVDAI_query);
+						//	alert(xmlhttprequestselectupdate.responseText);
 							var change_array=lead_change.split("\n");
 							if (change_array[0] == '1')
 								{
@@ -7816,7 +7833,11 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								document.vicidial_form.phone_code.value			= change_array[11];
 								if ( (disable_alter_custphone=='Y') || (disable_alter_custphone=='HIDE') )
 									{
-									document.vicidial_form.phone_number.readOnly = true;
+									var tmp_pn = document.getElementById("phone_numberDISP");
+									if (disable_alter_custphone=='Y')
+										{
+										tmp_pn.innerHTML						= change_array[12];
+										}
 									}
 								document.vicidial_form.phone_number.value		= change_array[12];
 								document.vicidial_form.title.value				= change_array[13];
@@ -7824,7 +7845,6 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								document.vicidial_form.middle_initial.value		= change_array[15];
 								document.vicidial_form.last_name.value			= change_array[16];
 								document.vicidial_form.address1.value			= change_array[17];
-								document.vicidial_form.housenr1.value			= change_array[70];
 								document.vicidial_form.address2.value			= change_array[18];
 								document.vicidial_form.address3.value			= change_array[19];
 								document.vicidial_form.city.value				= change_array[20];
@@ -7837,10 +7857,6 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								document.vicidial_form.alt_phone.value			= change_array[27];
 								document.vicidial_form.email.value				= change_array[28];
 								document.vicidial_form.security_phrase.value	= change_array[29];
-								document.vicidial_form.Company.value			= change_array[71];
-								document.vicidial_form.Privat.value				= change_array[72];
-								document.getElementById('customer_status').value	= change_array[73];
-								
 								var REGcommentsNL = new RegExp("!N","g");
 								change_array[30] = change_array[30].replace(REGcommentsNL, "\n");
 								document.vicidial_form.comments.value			= change_array[30];
@@ -7896,7 +7912,6 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								status_group_statuses_data						= change_array[65];
 								last_call_date									= change_array[66];
 								DisplayPhoneNumber								= change_array[69];
-								Housenr1										= change_array[70];
 
 								// build statuses list for disposition screen
 								VARstatuses = [];
@@ -8358,6 +8373,15 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 					if ( (alt_number_dialing == 'SELECTED') || (alt_number_dialing == 'SELECTED_TIMER_ALT') || (alt_number_dialing == 'SELECTED_TIMER_ADDR3') )
 						{
 						document.vicidial_form.DiaLAltPhonE.checked=true;
+						
+						if(CheckNoAltDial == 1) {
+			    		    document.vicidial_form.DiaLAltPhonE.checked=false;
+					    	document.vicidial_form.DiaLAltPhonE.setAttribute('disabled', 'disabled');
+	        			} else {
+				    		document.vicidial_form.DiaLAltPhonE.removeAttribute('disabled');
+						}
+						
+						
 						}
 					else
 						{
@@ -8873,7 +8897,11 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							{
 							if ( (disable_alter_custphone=='Y') || (disable_alter_custphone=='HIDE') )
 								{
-								document.vicidial_form.phone_number.readOnly = true;
+								var tmp_pn = document.getElementById("phone_numberDISP");
+								if (disable_alter_custphone=='Y')
+									{
+									tmp_pn.innerHTML						= UDfieldsResponse_array[5];
+									}
 								}
 							document.vicidial_form.phone_number.value		= UDfieldsResponse_array[5];
 							event_data = event_data + '--- phone_number ' + UDfieldsResponse_array[5];
@@ -9105,7 +9133,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 						}
 					else
 						{
-						alert_box("Update Fields Error!: " + xmlhttp.responseText);
+//						alert_box("Update Fields Error!: " + xmlhttp.responseText);
 						button_click_log = button_click_log + "" + SQLdate + "-----UpdateFieldsError---" + xmlhttp.responseText + " " + "|";
 						}
 					}
@@ -9196,7 +9224,7 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 				in_lead_preview_state = 1;
 				var man_preview = 'YES';
 				trigger_manual_validation=0;
-
+				 
 				if (alt_phone_dialing == 1)
 					{
 					var man_status = "Preview the Lead then <a href=\"#\" onclick=\"ManualDialOnly('" + manual_dial_only_type_flag + "','YES','0')\"><font class=\"preview_text\"> <?php echo _("DIAL LEAD"); ?></font></a> or <a href=\"#\" onclick=\"ManualDialSkip('YES')\"><font class=\"preview_text\"><?php echo _("SKIP LEAD"); ?></font></a> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"ManualDialOnly('ALTPhonE','YES','0')\"><font class=\"preview_text\"><?php echo _("ALT PHONE"); ?></font></a> or <a href=\"#\" onclick=\"ManualDialOnly('AddresS3','YES','0')\"><font class=\"preview_text\"><?php echo _("ADDRESS3"); ?></font></a>";
@@ -9361,7 +9389,11 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								document.vicidial_form.phone_code.value			= MDnextResponse_array[7];
 								if ( (disable_alter_custphone=='Y') || (disable_alter_custphone=='HIDE') )
 									{
-									document.vicidial_form.phone_number.readOnly = true;
+									var tmp_pn = document.getElementById("phone_numberDISP");
+									if (disable_alter_custphone=='Y')
+										{
+										tmp_pn.innerHTML						= MDnextResponse_array[8];
+										}
 									}
 								document.vicidial_form.phone_number.value		= MDnextResponse_array[8];
 								document.vicidial_form.title.value				= MDnextResponse_array[9];
@@ -9369,7 +9401,6 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								document.vicidial_form.middle_initial.value		= MDnextResponse_array[11];
 								document.vicidial_form.last_name.value			= MDnextResponse_array[12];
 								document.vicidial_form.address1.value			= MDnextResponse_array[13];
-								document.vicidial_form.housenr1.value			= MDnextResponse_array[64];
 								document.vicidial_form.address2.value			= MDnextResponse_array[14];
 								document.vicidial_form.address3.value			= MDnextResponse_array[15];
 								document.vicidial_form.city.value				= MDnextResponse_array[16];
@@ -9411,9 +9442,9 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 								var list_webform								= MDnextResponse_array[48];
 								var list_webform_two							= MDnextResponse_array[49];
 								post_phone_time_diff_alert_message				= MDnextResponse_array[50];
-								document.vicidial_form.Company.value			= MDnextResponse_array[65];
-								document.vicidial_form.Privat.value				= MDnextResponse_array[66];
-								document.getElementById('customer_status').value = MDnextResponse_array[67];
+								
+								
+								CheckDialAltPhone(MDnextResponse_array[8], MDnextResponse_array[23], MDnextResponse_array[15]);
 								
 							//Added By Poundteam for Audited Comments (Manual Dial Section Only)
 							if (qc_enabled > 0)
@@ -9935,7 +9966,8 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							document.vicidial_form.phone_code.value		='';
 							if ( (disable_alter_custphone=='Y') || (disable_alter_custphone=='HIDE') )
 								{
-									document.vicidial_form.phone_number.readOnly = true;
+								var tmp_pn = document.getElementById("phone_numberDISP");
+								tmp_pn.innerHTML			= ' &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ';
 								}
 							document.vicidial_form.phone_number.value	='';
 							document.vicidial_form.title.value			='';
@@ -9943,7 +9975,6 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							document.vicidial_form.middle_initial.value	='';
 							document.vicidial_form.last_name.value		='';
 							document.vicidial_form.address1.value		='';
-							document.vicidial_form.housenr1.value		='';
 							document.vicidial_form.address2.value		='';
 							document.vicidial_form.address3.value		='';
 							document.vicidial_form.city.value			='';
@@ -9969,8 +10000,6 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							document.vicidial_form.called_count.value	='';
 							document.vicidial_form.rank.value			='';
 							document.vicidial_form.owner.value			='';
-							document.vicidial_form.Company.value		='';
-							document.vicidial_form.Privat.value			='';
 							VDCL_group_id = '';
 							fronter = '';
 							previous_called_count = '';
@@ -10870,7 +10899,11 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							document.vicidial_form.phone_code.value			= check_VDIC_array[11];
 							if ( (disable_alter_custphone=='Y') || (disable_alter_custphone=='HIDE') )
 								{
-									document.vicidial_form.phone_number.readOnly = true;
+								var tmp_pn = document.getElementById("phone_numberDISP");
+								if (disable_alter_custphone=='Y')
+									{
+									tmp_pn.innerHTML						= check_VDIC_array[12];
+									}
 								}
 							document.vicidial_form.phone_number.value		= check_VDIC_array[12];
 							document.vicidial_form.title.value				= check_VDIC_array[13];
@@ -10913,6 +10946,9 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							custom_field_names								= check_VDIC_array[48];
 							custom_field_values								= check_VDIC_array[49];
 							custom_field_types								= check_VDIC_array[50];
+							
+							CheckDialAltPhone(check_VDIC_array[12], check_VDIC_array[27], check_VDIC_array[19]);
+							
 							//Added By Poundteam for Audited Comments (Manual Dial Section Only)
 							if (qc_enabled > 0)
 								{
@@ -10950,9 +10986,6 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							DisplayPhoneNumber								= check_VDIC_array[69];
 							campaign_acr_id 								= check_VDIC_array[70];
 							ingroup_acr_id									= check_VDIC_array[71];
-							document.vicidial_form.housenr1.value			= check_VDIC_array[72];
-							document.vicidial_form.Company.value			= check_VDIC_array[73];
-							document.vicidial_form.Privat.value				= check_VDIC_array[74];
 
 							// build statuses list for disposition screen
 							VARstatuses = [];
@@ -11718,7 +11751,11 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							document.vicidial_form.phone_code.value			= check_VDIC_array[11];
 							if ( (disable_alter_custphone=='Y') || (disable_alter_custphone=='HIDE') )
 								{
-									document.vicidial_form.phone_number.readOnly = true;
+								var tmp_pn = document.getElementById("phone_numberDISP");
+								if (disable_alter_custphone=='Y')
+									{
+									tmp_pn.innerHTML						= check_VDIC_array[12];
+									}
 								}
 							document.vicidial_form.phone_number.value		= check_VDIC_array[12];
 							document.vicidial_form.title.value				= check_VDIC_array[13];
@@ -11774,9 +11811,8 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 							status_group_statuses_data						= check_VDIC_array[61];
 							last_call_date									= check_VDIC_array[62];
 							DisplayPhoneNumber								= check_VDIC_array[65];
-							document.vicidial_form.housenr1.value			= check_VDIC_array[68];
-							document.vicidial_form.Company.value			= check_VDIC_array[69];
-							document.vicidial_form.Privat.value				= check_VDIC_array[70];
+							
+							CheckDialAltPhone(check_VDIC_array[12], check_VDIC_array[27], check_VDIC_array[19]);
 
 							// build statuses list for disposition screen
 							VARstatuses = [];
@@ -13249,8 +13285,12 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 		var MB = '<?php echo $MailBcc ?>';
 
 		var EMailPara = "?MailFrom=" + MF + "&MailTo=" + MT + "&MailBcc=" + MB +"&MailTitle=Lead Report" + "&MailText=" + MailText;
-
-		var fenster = window.open("SendMail.php" + EMailPara, "Email", "width=600,height=400,top=100,left=100");
+		
+		if(document.vicidial_form.lead_id.value != "") {
+			var fenster = window.open("SendMail.php" + EMailPara, "Email", "width=600,height=400,top=100,left=100");
+		} else {
+			alert("Ticketmail nur bei angezeigten Daten möglich!");
+		}
 	}
 
 	// ################################################################################
@@ -13322,10 +13362,10 @@ function set_length(SLnumber,SLlength_goal,SLdirection)
 				"&alt_phone=" + encodeURIComponent(document.vicidial_form.alt_phone.value) +
 				"&email=" + encodeURIComponent(document.vicidial_form.email.value) +
 				"&security_phrase=" + encodeURIComponent(document.vicidial_form.security_phrase.value) +
-				"&comments=" + REGcommentsRESULT + 
-				"&housenr1=" + encodeURIComponent(document.vicidial_form.housenr1.value) +
-				"&Company=" + encodeURIComponent(document.vicidial_form.Company.value) +
-				"&Privat=" + encodeURIComponent(document.vicidial_form.Privat.value);
+				"&comments=" + REGcommentsRESULT;
+				
+				CheckDialAltPhone(document.vicidial_form.phone_number.value, document.vicidial_form.alt_phone.value, document.vicidial_form.address3.value);
+				
 				xmlhttp.open('POST', 'vdc_db_query.php');
 				xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 				xmlhttp.send(VLupdate_query);
@@ -14030,7 +14070,9 @@ function BuildDispoContent(taskDSgrp) {
 		document.getElementById("callchannel").innerHTML = '';
 		document.vicidial_form.callserverip.value = '';
 		document.vicidial_form.xferchannel.value = '';
-		document.vicidial_form.DiaLAltPhonE.checked=false;
+		
+	document.vicidial_form.DiaLAltPhonE.checked=false;
+
         document.getElementById("DialWithCustomer").innerHTML ="<a href=\"#\" onclick=\"SendManualDial('YES','YES');return false;\"><img src=\"./images/<?php echo _("vdc_XB_dialwithcustomer.gif"); ?>\" border=\"0\" alt=\"Dial With Customer\" style=\"vertical-align:middle\" /></a>";
         document.getElementById("ParkCustomerDial").innerHTML ="<a href=\"#\" onclick=\"xfer_park_dial('YES');return false;\"><img src=\"./images/<?php echo _("vdc_XB_parkcustomerdial.gif"); ?>\" border=\"0\" alt=\"Park Customer Dial\" style=\"vertical-align:middle\" /></a>";
         document.getElementById("HangupBothLines").innerHTML ="<a href=\"#\" onclick=\"bothcall_send_hangup('YES');return false;\"><img src=\"./images/<?php echo _("vdc_XB_hangupbothlines.gif"); ?>\" border=\"0\" alt=\"Hangup Both Lines\" style=\"vertical-align:middle\" /></a>";
@@ -14165,7 +14207,7 @@ function BuildDispoContent(taskDSgrp) {
 						}
 					if (xmlhttp)
 						{
-						DSupdate_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=&format=text&user=" + user + "&pass=" + pass + "&orig_pass=" + orig_pass + "&dispo_choice=" + DispoChoice + "&lead_id=" + document.vicidial_form.lead_id.value + "&campaign=" + campaign + "&auto_dial_level=" + auto_dial_level + "&agent_log_id=" + agent_log_id + "&CallBackDatETimE=" + CallBackDatETimE + "&list_id=" + document.vicidial_form.list_id.value + "&recipient=" + CallBackrecipient + "&use_internal_dnc=" + use_internal_dnc + "&use_campaign_dnc=" + use_campaign_dnc + "&MDnextCID=" + LasTCID + "&stage=" + group + "&vtiger_callback_id=" + vtiger_callback_id + "&phone_number=" + document.vicidial_form.phone_number.value + "&phone_code=" + document.vicidial_form.phone_code.value + "&dial_method=" + dial_method + "&uniqueid=" + document.vicidial_form.uniqueid.value + "&CallBackLeadStatus=" + CallBackLeadStatus + "&comments=" + encodeURIComponent(CallBackCommenTs) + "&custom_field_names=" + custom_field_names + "&call_notes=" + encodeURIComponent(document.vicidial_form.call_notes_dispo.value) + "&dispo_comments=" + encodeURIComponent(document.vicidial_form.dispo_comments.value) + "&cbcomment_comments=" + encodeURIComponent(document.vicidial_form.cbcomment_comments.value) + "&qm_dispo_code=" + DispoQMcsCODE + "&email_enabled=" + email_enabled + "&recording_id=" + VDDCU_recording_id + "&recording_filename=" + VDDCU_recording_filename + "&called_count=" + document.vicidial_form.called_count.value + "&parked_hangup=" + parked_hangup + "&phone_login=" + phone_login + "&agent_email=" + LOGemail + "&conf_exten=" + session_id + "&camp_script=" + campaign_script + '' + "&in_script=" + CalL_ScripT_id + "&customer_server_ip=" + lastcustserverip + "&exten=" + extension + "&original_phone_login=" + original_phone_login + "&phone_pass=" + phone_pass + "&callback_gmt_offset=" + callback_gmt_offset + "&callback_timezone=" + callback_timezone + "&customer_sec=" + last_customer_sec;
+						DSupdate_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=updateDISPO&format=text&user=" + user + "&pass=" + pass + "&orig_pass=" + orig_pass + "&dispo_choice=" + DispoChoice + "&lead_id=" + document.vicidial_form.lead_id.value + "&campaign=" + campaign + "&auto_dial_level=" + auto_dial_level + "&agent_log_id=" + agent_log_id + "&CallBackDatETimE=" + CallBackDatETimE + "&list_id=" + document.vicidial_form.list_id.value + "&recipient=" + CallBackrecipient + "&use_internal_dnc=" + use_internal_dnc + "&use_campaign_dnc=" + use_campaign_dnc + "&MDnextCID=" + LasTCID + "&stage=" + group + "&vtiger_callback_id=" + vtiger_callback_id + "&phone_number=" + document.vicidial_form.phone_number.value + "&phone_code=" + document.vicidial_form.phone_code.value + "&dial_method=" + dial_method + "&uniqueid=" + document.vicidial_form.uniqueid.value + "&CallBackLeadStatus=" + CallBackLeadStatus + "&comments=" + encodeURIComponent(CallBackCommenTs) + "&custom_field_names=" + custom_field_names + "&call_notes=" + encodeURIComponent(document.vicidial_form.call_notes_dispo.value) + "&dispo_comments=" + encodeURIComponent(document.vicidial_form.dispo_comments.value) + "&cbcomment_comments=" + encodeURIComponent(document.vicidial_form.cbcomment_comments.value) + "&qm_dispo_code=" + DispoQMcsCODE + "&email_enabled=" + email_enabled + "&recording_id=" + VDDCU_recording_id + "&recording_filename=" + VDDCU_recording_filename + "&called_count=" + document.vicidial_form.called_count.value + "&parked_hangup=" + parked_hangup + "&phone_login=" + phone_login + "&agent_email=" + LOGemail + "&conf_exten=" + session_id + "&camp_script=" + campaign_script + '' + "&in_script=" + CalL_ScripT_id + "&customer_server_ip=" + lastcustserverip + "&exten=" + extension + "&original_phone_login=" + original_phone_login + "&phone_pass=" + phone_pass + "&callback_gmt_offset=" + callback_gmt_offset + "&callback_timezone=" + callback_timezone + "&customer_sec=" + last_customer_sec;
 						xmlhttp.open('POST', 'vdc_db_query.php');
 						xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 						xmlhttp.send(DSupdate_query);
@@ -14201,7 +14243,7 @@ function BuildDispoContent(taskDSgrp) {
 						delete xmlhttp;
 						}
 					// CLEAR ALL FORM VARIABLES
-					
+//					alert("Hit APD");
 					document.vicidial_form.DiaLAltPhonE.checked=false;
 					reselect_alt_dial = 0;
 					document.vicidial_form.lead_id.value		='';
@@ -14214,8 +14256,8 @@ function BuildDispoContent(taskDSgrp) {
 					document.vicidial_form.phone_code.value		='';
 					if ( (disable_alter_custphone=='Y') || (disable_alter_custphone=='HIDE') )
 						{
-							document.vicidial_form.phone_number.readOnly = true;
-							document.vicidial_form.phone_number.value = ' &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ';
+						var tmp_pn = document.getElementById("phone_numberDISP");
+						tmp_pn.innerHTML			= ' &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ';
 						}
 					document.vicidial_form.phone_number.value	='';
 					document.vicidial_form.title.value			='';
@@ -14253,9 +14295,6 @@ function BuildDispoContent(taskDSgrp) {
 					document.vicidial_form.customer_chat_id.value		='';
 					document.vicidial_form.dispo_comments.value ='';
 					document.vicidial_form.cbcomment_comments.value ='';
-					document.vicidial_form.housenr1.value		='';
-					document.vicidial_form.Company.value		='';
-					document.vicidial_form.Privat.value		='';
 					VDCL_group_id = '';
 					fronter = '';
 					inOUT = 'OUT';
@@ -14454,6 +14493,12 @@ function BuildDispoContent(taskDSgrp) {
 					if ( (alt_number_dialing == 'SELECTED') || (alt_number_dialing == 'SELECTED_TIMER_ALT') || (alt_number_dialing == 'SELECTED_TIMER_ADDR3') )
 						{
 						document.vicidial_form.DiaLAltPhonE.checked=true;
+						if(CheckNoAltDial == 1) {
+		    		    	document.vicidial_form.DiaLAltPhonE.checked=false;
+				    		document.vicidial_form.DiaLAltPhonE.setAttribute('disabled', 'disabled');
+	        			} else {
+				    		document.vicidial_form.DiaLAltPhonE.removeAttribute('disabled');
+						}
 						}
 					if ( (shift_logout_flag < 1) && (api_logout_flag < 1) )
 						{
@@ -16008,7 +16053,6 @@ else
 		"&middle_initial=" + encodeURIComponent(document.vicidial_form.middle_initial.value) +
 		"&last_name=" + encodeURIComponent(document.vicidial_form.last_name.value) +
 		"&address1=" + encodeURIComponent(document.vicidial_form.address1.value) +
-		"&housenr1=" + encodeURIComponent(document.vicidial_form.housenr1.value) +
 		"&address2=" + encodeURIComponent(document.vicidial_form.address2.value) +
 		"&address3=" + encodeURIComponent(document.vicidial_form.address3.value) +
 		"&city=" + encodeURIComponent(document.vicidial_form.city.value) +
@@ -16334,6 +16378,7 @@ else
 		var SCdid_custom_five = did_custom_five;
 		var SCcalled_count = document.vicidial_form.called_count.value;
 		var SCweb_vars = LIVE_web_vars;
+		var SCsession_name = session_name;
 
 		if (encoded.match(RGiframe))
 			{
@@ -16416,6 +16461,7 @@ else
 			SCdid_custom_four = SCdid_custom_four.replace(RGplus,'+');
 			SCdid_custom_five = SCdid_custom_five.replace(RGplus,'+');
 			SCweb_vars = SCweb_vars.replace(RGplus,'+');
+			SCsession_name = SCsesion_name.replace(RGplus,'+');
 			}
 
 		var RGvendor_lead_code = new RegExp("--A--vendor_lead_code--B--","g");
@@ -16509,6 +16555,7 @@ else
 		var RGLOGINvarFOUR = new RegExp("--A--LOGINvarFOUR--B--","g");
 		var RGLOGINvarFIVE = new RegExp("--A--LOGINvarFIVE--B--","g");
 		var RGweb_vars = new RegExp("--A--web_vars--B--","g");
+		var RGsession_name = new RegExp("--A--session_name--B--","g");
 
 		encoded = encoded.replace(RGvendor_lead_code, SCvendor_lead_code);
 		encoded = encoded.replace(RGsource_id, SCsource_id);
@@ -16601,6 +16648,7 @@ else
 		encoded = encoded.replace(RGLOGINvarFOUR,LOGINvarFOUR);
 		encoded = encoded.replace(RGLOGINvarFIVE,LOGINvarFIVE);
 		encoded = encoded.replace(RGweb_vars, SCweb_vars);
+		encoded = encoded.replace(RGsession_name, SCsession_name);
 		}
 
 	var regWFAencode = new RegExp("^VAR","ig");
@@ -19326,7 +19374,7 @@ function CallViewLogInbounds() {
                 var buildDivHTML = "<font class=\"preview_text\"> <input type=\"checkbox\" name=\"DiaLAltPhonE\" size=\"1\" value=\"0\" /> <?php echo _("ALT PHONE DIAL"); ?><br /></font>";
 				document.getElementById("DiaLDiaLAltPhonEHide").innerHTML = buildDivHTML;
 				}
-			if ( (DefaulTAlTDiaL == '1') || (alt_number_dialing == 'SELECTED') || (alt_number_dialing == 'SELECTED_TIMER_ALT') || (alt_number_dialing == 'SELECTED_TIMER_ADDR3') )
+			if ( ((DefaulTAlTDiaL == '1') || (alt_number_dialing == 'SELECTED') || (alt_number_dialing == 'SELECTED_TIMER_ALT') || (alt_number_dialing == 'SELECTED_TIMER_ADDR3')) && (agent_disable_alt_dial == '0') )
 				{document.vicidial_form.DiaLAltPhonE.checked=true;}
 			}
 		}
@@ -19339,26 +19387,31 @@ function CallViewLogInbounds() {
 				{
 				document.getElementById("DiaLLeaDPrevieWHide").innerHTML = '';
                 var buildDivHTML = "<font class=\"preview_text\"> <input type=\"checkbox\" name=\"LeadPreview\" size=\"1\" value=\"0\" /> <?php echo _("LEAD PREVIEW"); ?><br /></font>";
-				document.getElementById(divvar).innerHTML = buildDivHTML;
+				document.getElementById(divvar).innerHTML = buildDivHTML; 
 				if (reselect_preview_dial==1)
 					{document.vicidial_form.LeadPreview.checked=true}
 				}
 			if (divvar == 'DiaLDiaLAltPhonE')
 				{
-				document.getElementById("DiaLDiaLAltPhonEHide").innerHTML = '';
-                var buildDivHTML = "<font class=\"preview_text\"> <input type=\"checkbox\" name=\"DiaLAltPhonE\" size=\"1\" value=\"0\" /> <?php echo _("ALT PHONE DIAL"); ?><br /></font>";
-				document.getElementById(divvar).innerHTML = buildDivHTML;
-				if (reselect_alt_dial==1)
-					{document.vicidial_form.DiaLAltPhonE.checked=true}
-				if ( (DefaulTAlTDiaL == '1') || (alt_number_dialing == 'SELECTED') || (alt_number_dialing == 'SELECTED_TIMER_ALT') || (alt_number_dialing == 'SELECTED_TIMER_ADDR3') )
-					{document.vicidial_form.DiaLAltPhonE.checked=true;}
+				if(agent_disable_alt_dial == 0) {
+					document.getElementById("DiaLDiaLAltPhonEHide").innerHTML = '';
+                	var buildDivHTML = "<font class=\"preview_text\"> <input type=\"checkbox\" name=\"DiaLAltPhonE\" size=\"1\" value=\"0\" /> <?php echo _("ALT PHONE DIAL"); ?><br /></font>";
+					document.getElementById(divvar).innerHTML = buildDivHTML;
+					if (reselect_alt_dial==1)
+						{document.vicidial_form.DiaLAltPhonE.checked=true}
+					if ( (DefaulTAlTDiaL == '1') || (alt_number_dialing == 'SELECTED') || (alt_number_dialing == 'SELECTED_TIMER_ALT') || (alt_number_dialing == 'SELECTED_TIMER_ADDR3') )
+						{document.vicidial_form.DiaLAltPhonE.checked=true;}
+
+					if(CheckNoAltDial == 1) {
+		    	    	document.vicidial_form.DiaLAltPhonE.checked=false;
+				   		document.vicidial_form.DiaLAltPhonE.setAttribute('disabled', 'disabled');
+	        		} else {
+				    	document.vicidial_form.DiaLAltPhonE.removeAttribute('disabled');
+					}
+				} else {
+					clearDiv('DiaLDiaLAltPhonE');
 				}
-//				if(( document.vicidial_form.address3.value == '') && (document.vicidial_form.alt_phone.value == '')) {
-//					document.vicidial_form.DiaLAltPhonE.checked=false;
-//					document.vicidial_form.DiaLAltPhonE.setAttribute('disabled', 'disabled');;
-//				} else {
-//					document.vicidial_form.DiaLAltPhonE.removeAttribute('disabled');
-//				}
+				}
 			}
 		}
 
@@ -19573,6 +19626,13 @@ function CallViewLogInbounds() {
 				if ( (alt_number_dialing == 'SELECTED') || (alt_number_dialing == 'SELECTED_TIMER_ALT') || (alt_number_dialing == 'SELECTED_TIMER_ADDR3') )
 					{
 					document.vicidial_form.DiaLAltPhonE.checked=true;
+					
+					if(CheckNoAltDial == 1) {
+		    		    document.vicidial_form.DiaLAltPhonE.checked=false;
+				    	document.vicidial_form.DiaLAltPhonE.setAttribute('disabled', 'disabled');
+	        		} else {
+				    	document.vicidial_form.DiaLAltPhonE.removeAttribute('disabled');
+					}
 					}
 				}
 			else
@@ -19876,7 +19936,34 @@ function CallViewLogInbounds() {
 $zi=2;
 
 ?>
-<body onload="begin_all_refresh(); webphoneOpen('webphoneSpan',<?php echo $webphone_viewonstart ?>);"  onunload="BrowserCloseLogout();">
+<body class="nichtmarkieren" id="nichtdrucken" onload="begin_all_refresh(); webphoneOpen('webphoneSpan',<?php echo $webphone_viewonstart ?>);"  onunload="BrowserCloseLogout();">
+
+<ul id="menu" class="menu">
+    <li class="menu-item menu-item-submenu">
+        <button type="button" class="menu-btn">
+            <i class="fa fa-share"></i>
+            <span class="menu-text">Kopieren</span>
+        </button>
+        
+        <ul class="menu">
+            <li class="menu-item">
+                <button id="leadBtn" type="button" class="menu-btn">
+                    <i class="fa fa-star"></i>
+                    <span class="menu-text">Datensatz ID</span>
+                </button>
+            </li>
+            <li class="menu-item">
+                <button id="CBcommBtn" type="button" class="menu-btn">
+                    <i class="fa fa-comment"></i>
+                    <span class="menu-text">Callback Kommentar</span>
+                </button>
+            </li>
+        </ul>
+		
+    </li>
+</ul>
+
+<script src="js/menu.js" type="text/javascript"></script>
 
 <form name=vicidial_form id=vicidial_form onsubmit="return false;">
 
@@ -20040,20 +20127,18 @@ $zi=2;
 	</font>
 	</td>
     <td width="<?php echo $SDwidth ?>px" align="left" valign="top">
-    <!-- 
     <input type="hidden" name="lead_id" id="lead_id" value="" />
     <input type="hidden" name="list_id" id="list_id" value="" />
     <input type="hidden" name="entry_list_id" id="entry_list_id" value="" />
+    <input type="hidden" name="list_name" id="list_name" value="" />
+    <input type="hidden" name="list_description" id="list_description" value="" />
     <input type="hidden" name="called_count" id="called_count" value="" />
     <input type="hidden" name="rank" id="rank" value="" />
     <input type="hidden" name="owner" id="owner" value="" />
     <input type="hidden" name="gmt_offset_now" id="gmt_offset_now" value="" />
     <input type="hidden" name="gender" id="gender" value="" />
     <input type="hidden" name="date_of_birth" id="date_of_birth" value="" />
-    <input type="hidden" name="country_code" id="country_code" value="" /> 
-    -->
-    <input type="hidden" name="list_name" id="list_name" value="" />
-    <input type="hidden" name="list_description" id="list_description" value="" />
+    <input type="hidden" name="country_code" id="country_code" value="" />
     <input type="hidden" name="uniqueid" id="uniqueid" value="" />
     <input type="hidden" name="callserverip" id="callserverip" value="" />
     <input type="hidden" name="SecondS" id="SecondS" value="" />
@@ -20062,6 +20147,7 @@ $zi=2;
     <input type="hidden" name="customer_chat_id" id="customer_chat_id" value="" />
 
 	<!-- ZZZZZZZZZZZZ  customer info -->
+
 	<span class="text_input" id="MainPanelCustInfo">
     <table><tr>
     <td align="right"></td>
@@ -20075,108 +20161,381 @@ $zi=2;
 	</td>
 	</tr><tr>
     <td align="left" colspan="2">
-	<div id="agent_table" width="550px" style= "font-size:10px">
-    <table width="550px">
-    <tr>
-    <td align="right" colspan="6"><font class="body_text2">
+
+    <table width="550px"><tr>
+    <td align="right"><font class="body_text">
 	<?php
 	$required_fields = '|';
 
-	$stmt_AgPos = "SELECT * FROM `snctdialer_agent_interface` WHERE aktiv = 1 ORDER BY `Line`,`Position`; ";
-	$res_AgPos = mysqli_query($link, $stmt_AgPos);
-	$aktLine = 0;
-#	echo "<TR><TD align=\"right\" colspan=\"5\"><font class=\"body_text\">";
-#    echo "<div id=\"agent_leads\">"; 
-	while ($row_AgPos = mysqli_fetch_array($res_AgPos, MYSQLI_BOTH)) {
-	    echo "<!-- ". $aktLine."|".$row_AgPos["Line"]."|".$row_AgPos["Position"]."-->" .PHP_EOL;
-	    if($aktLine != $row_AgPos["Line"]) {
-	        if($aktLine != 0) {
-	            echo " </font></td></tr>".PHP_EOL;
-	            echo " <tr><td align=\"right\" colspan=\"6\"><font class=\"body_text2\">".PHP_EOL;
-	        }
-	        $aktLine = $row_AgPos["Line"];
-	    }
-	    $TmpClass = "agent_item";
-	    if($row_AgPos["Marker"] == 1) {
-	        $TmpClass = "agent_item_red";
-	    }
-	    if($row_AgPos["InputType"] == "text") {
-	       echo "<div  id=\"agent_leads\" class=\"agent_leads\"><label class=\"".$TmpClass."\" for=\"".$row_AgPos["List_Field"]."\">".$row_AgPos["DisplayName"]."</label>" . PHP_EOL;
-	       echo "<input type=\"text\" size=\"".$row_AgPos["FieldLen"]."\" name=\"".$row_AgPos["List_Field"]."\" id=\"".$row_AgPos["List_Field"]."\" maxlength=\"".$row_AgPos["MaxLen"]."\" class=\"cust_form\" value=\"\" /></div>" . PHP_EOL;
-	       if($row_AgPos["span_id"] != "") {
-	           echo "<font class=\"body_text2\"><span id=\"".$row_AgPos["span_id"]."\"> &nbsp; </span></font>" . PHP_EOL;
-	       }
-	    }
-	    if($row_AgPos["InputType"] == "select") {
-	        if($row_AgPos["List_Field"] == "customer_status") {
-                echo "<div  id=\"agent_leads\" class=\"agent_leads\"><label class=\"".$TmpClass."\" for=\"".$row_AgPos["List_Field"]."\">".$row_AgPos["DisplayName"]."</label>" . PHP_EOL;
-                
-                $EnumArr = GetEnumItems("vicidial_list", "customer_status", $link);
-                
-                $BlockStr = '<select name="'.$row_AgPos['List_Field'].'" size="1" class="cust_form" id="'.$row_AgPos['List_Field'].'">';
-#                sd_debug_log("EnumArray|".$EnumArr."|");
-                
-                foreach ($EnumArr as $BlockTest) {
-                    $BlockStr .= "<option value=\"".$BlockTest."\">"._($BlockTest). "</option>\n";
-                }
-                $BlockStr .= "</select></div>";
-                echo $BlockStr . PHP_EOL;    
-	        }
-	    }
-	    if($row_AgPos["InputType"] == "checkbox") {
-	        echo "<div id=\"agent_leads\" class=\"agent_leads\"><label class=\"".$TmpClass."\" for=\"".$row_AgPos["List_Field"]."\">".$row_AgPos["DisplayName"]."</label>" . PHP_EOL;
-	        echo "<input type=\"checkbox\" name=\"".$row_AgPos["List_Field"]."\" id=\"".$row_AgPos["List_Field"]."\" class=\"cust_form\"  /><label for=\"".$row_AgPos["List_Field"]."\">".$row_AgPos["DisplayName"]."</label></div>" . PHP_EOL;
-	    }
-	    if($row_AgPos["InputType"] == "email") {
-	        echo "<div id=\"agent_leads\" class=\"agent_leads\"><label class=\"".$TmpClass."\" for=\"".$row_AgPos["List_Field"]."\">".$row_AgPos["DisplayName"]."</label>" . PHP_EOL;
-	        echo "<input type=\"email\" size=\"".$row_AgPos["FieldLen"]."\" name=\"".$row_AgPos["List_Field"]."\" id=\"".$row_AgPos["List_Field"]."\" maxlength=\"".$row_AgPos["MaxLen"]."\" class=\"cust_form\" value=\"\" /></div>" . PHP_EOL;
-	    }
-	    if($row_AgPos["InputType"] == "textarea") {
-	        if($row_AgPos["List_Field"] == "comments") {
-	            echo "<span id='viewcommentsdisplay'><input type='button' id='ViewCommentButton' onClick=\"ViewComments('ON','','','YES')\" value='-"._("History")."-'/></span> ". PHP_EOL;
-            }
-	        echo "<div id=\"agent_leads\" class=\"agent_leads\"><label class=\"".$TmpClass."\" for=\"".$row_AgPos["List_Field"]."\">".$row_AgPos["DisplayName"]."</label>" . PHP_EOL;
-	        echo "<textarea cols=\"".$row_AgPos["FieldLen"]."\" name=\"".$row_AgPos["List_Field"]."\" id=\"".$row_AgPos["List_Field"]."\" maxlength=\"".$row_AgPos["MaxLen"]."\" class=\"cust_form\" value=\"\" ></textarea></div>" . PHP_EOL;	        
-	    }
-	}
-#	echo "</div>"; #  id=agent_leads;
-	echo " </font></td></tr>";
-	
-	
-    echo "<tr><td align=\"right\" colspan=\"6\"><font class=\"body_text\">";
-	$stmt_AgPosHid = "SELECT * FROM `snctdialer_agent_interface` WHERE aktiv = 0; ";
-	$res_AgPosHid = mysqli_query($link, $stmt_AgPosHid);
-	while ($row_AgPosHid = mysqli_fetch_array($res_AgPosHid, MYSQLI_BOTH)) {
-	    echo "<input type=\"hidden\" name=\"".$row_AgPosHid["List_Field"]."\" id=\"".$row_AgPosHid["List_Field"]."\" value=\"\" />" . PHP_EOL;
-	    if($row_AgPosHid["span_id"] != "") {
-	        echo "<font class=\"body_text\"><span id=\"".$row_AgPosHid["span_id"]."\"> &nbsp; </span></font>" . PHP_EOL;
-	    }
-	}
-	echo " </font></td></tr>";
-	echo "<tr><td align=\"right\" colspan=\"6\"><font class=\"body_text\">";
-	
-	
-#	{echo "</td><td align=\"left\" colspan=\"5\"><input type=\"hidden\" name=\"title\" id=\"title\" value=\"\" />";}
-	
-	if ($per_call_notes == 'ENABLED')
-	{
-	    echo _("Call Notes: ");
-	    if ($agent_call_log_view == '1')
-	    {echo "<br /><span id=\"CallNotesButtons\"><a href=\"#\" onclick=\"VieWNotesLoG();return false;\">"._("view notes")."</a></span> ";}
-	    echo "</td><td align=\"left\" colspan=\"5\"><font class=\"body_text\">";
-	    echo "<textarea name=\"call_notes\" id=\"call_notes\" rows=\"2\" cols=\"85\" class=\"cust_form_text\" value=\"\"></textarea>\n";
-	}
+	if ($label_title == '---HIDE---')
+        {echo "</td><td align=\"left\" colspan=\"5\"><input type=\"hidden\" name=\"title\" id=\"title\" value=\"\" />";}
 	else
-	{
-	    echo " </td><td align=\"left\" colspan=5><input type=\"hidden\" name=\"call_notes\" id=\"call_notes\" value=\"\" /><span id=\"CallNotesButtons\"></span>\n";
-	}
+        {
+		$title_readonly='';
+		if (preg_match("/---READONLY---/",$label_title))
+			{$title_readonly='readonly="readonly"';   $label_title = preg_replace("/---READONLY---/","",$label_title);}
+		else
+			{
+			if (preg_match("/---REQUIRED---/",$label_title))
+				{$required_fields .= "title|";   $label_title = preg_replace("/---REQUIRED---/","",$label_title);}
+			}
+		echo "$label_title: </td><td align=\"left\" colspan=\"5\"><font class=\"body_text\"><input type=\"text\" size=\"4\" name=\"title\" id=\"title\" maxlength=\"$MAXtitle\" class=\"cust_form\" value=\"\" $title_readonly />";
+		}
+	if ($label_first_name == '---HIDE---')
+        {echo "&nbsp; <input type=\"hidden\" name=\"first_name\" id=\"first_name\" value=\"\" />";}
+	else
+        {
+		$first_name_readonly='';
+		if (preg_match("/---READONLY---/",$label_first_name))
+			{$first_name_readonly='readonly="readonly"';   $label_first_name = preg_replace("/---READONLY---/","",$label_first_name);}
+		else
+			{
+			if (preg_match("/---REQUIRED---/",$label_first_name))
+				{$required_fields .= "first_name|";   $label_first_name = preg_replace("/---REQUIRED---/","",$label_first_name);}
+			}
+		echo "&nbsp; $label_first_name: <input type=\"text\" size=\"17\" name=\"first_name\" id=\"first_name\" maxlength=\"$MAXfirst_name\" class=\"cust_form\" value=\"\" $first_name_readonly />";
+		}
+	if ($label_middle_initial == '---HIDE---')
+        {echo "&nbsp; <input type=\"hidden\" name=\"middle_initial\" id=\"middle_initial\" value=\"\" />";}
+	else
+        {
+		$middle_initial_readonly='';
+		if (preg_match("/---READONLY---/",$label_middle_initial))
+			{$middle_initial_readonly='readonly="readonly"';   $label_middle_initial = preg_replace("/---READONLY---/","",$label_middle_initial);}
+		else
+			{
+			if (preg_match("/---REQUIRED---/",$label_middle_initial))
+				{$required_fields .= "middle_initial|";   $label_middle_initial = preg_replace("/---REQUIRED---/","",$label_middle_initial);}
+			}
+		echo "&nbsp; $label_middle_initial: <input type=\"text\" size=\"1\" name=\"middle_initial\" id=\"middle_initial\" maxlength=\"$MAXmiddle_initial\" class=\"cust_form\" value=\"\" $middle_initial_readonly />";
+		}
+	if ($label_last_name == '---HIDE---')
+        {echo "&nbsp; <input type=\"hidden\" name=\"last_name\" id=\"last_name\" value=\"\" />";}
+	else
+        {
+		$last_name_readonly='';
+		if (preg_match("/---READONLY---/",$label_last_name))
+			{$last_name_readonly='readonly="readonly"';   $label_last_name = preg_replace("/---READONLY---/","",$label_last_name);}
+		else
+			{
+			if (preg_match("/---REQUIRED---/",$label_last_name))
+				{$required_fields .= "last_name|";   $label_last_name = preg_replace("/---REQUIRED---/","",$label_last_name);}
+			}
+		echo "&nbsp; $label_last_name: <input type=\"text\" size=\"23\" name=\"last_name\" id=\"last_name\" maxlength=\"$MAXlast_name\" class=\"cust_form\" value=\"\" $last_name_readonly />";
+		}
+
+    echo "</td></tr><tr><td align=\"right\"><font class=\"body_text\">";
+
+	if ($label_address1 == '---HIDE---')
+        {echo " </td><td align=\"left\" colspan=\"5\"><input type=\"hidden\" name=\"address1\" id=\"address1\" value=\"\" />";}
+	else
+        {
+		$address1_readonly='';
+		if (preg_match("/---READONLY---/",$label_address1))
+			{$address1_readonly='readonly="readonly"';   $label_address1 = preg_replace("/---READONLY---/","",$label_address1);}
+		else
+			{
+			if (preg_match("/---REQUIRED---/",$label_address1))
+				{$required_fields .= "address1|";   $label_address1 = preg_replace("/---REQUIRED---/","",$label_address1);}
+			}
+		echo "$label_address1: </td><td align=\"left\" colspan=5><font class=\"body_text\"><input type=\"text\" size=\"85\" name=\"address1\" id=\"address1\" maxlength=\"$MAXaddress1\" class=\"cust_form\" value=\"\" $address1_readonly />";
+		}
+
+    echo "</td></tr><tr><td align=\"right\"><font class=\"body_text\">";
+
+	if ($label_address2 == '---HIDE---')
+        {echo " </td><td align=\"left\"><input type=\"hidden\" name=\"address2\" id=\"address2\" value=\"\" />";}
+	else
+        {
+		$address2_readonly='';
+		if (preg_match("/---READONLY---/",$label_address2))
+			{$address2_readonly='readonly="readonly"';   $label_address2 = preg_replace("/---READONLY---/","",$label_address2);}
+		else
+			{
+			if (preg_match("/---REQUIRED---/",$label_address2))
+				{$required_fields .= "address2|";   $label_address2 = preg_replace("/---REQUIRED---/","",$label_address2);}
+			}
+		echo "$label_address2: </td><td align=\"left\"><font class=\"body_text\"><input type=\"text\" size=\"20\" name=\"address2\" id=\"address2\" maxlength=\"$MAXaddress2\" class=\"cust_form\" value=\"\" $address2_readonly />";
+		}
+
+    echo "</td><td align=\"right\"><font class=\"body_text\">";
+
+	if ($label_address3 == '---HIDE---')
+        {echo " </td><td align=\"left\" colspan=\"3\"><input type=\"hidden\" name=\"address3\" id=\"address3\" value=\"\" />";}
+	else
+        {
+		$address3_readonly='';
+		if (preg_match("/---READONLY---/",$label_address3))
+			{$address3_readonly='readonly="readonly"';   $label_address3 = preg_replace("/---READONLY---/","",$label_address3);}
+		else
+			{
+			if (preg_match("/---REQUIRED---/",$label_address3))
+				{$required_fields .= "address3|";   $label_address3 = preg_replace("/---REQUIRED---/","",$label_address3);}
+			}
+		echo "$label_address3: </td><td align=\"left\" colspan=\"3\"><font class=\"body_text\"><input type=\"text\" size=\"45\" name=\"address3\" id=\"address3\" maxlength=\"$MAXaddress3\" class=\"cust_form\" value=\"\" $address3_readonly />";
+		}
+
+    echo "</td></tr><tr><td align=\"right\"><font class=\"body_text\">";
+
+	if ($label_city == '---HIDE---')
+        {echo " </td><td align=\"left\"><input type=\"hidden\" name=\"city\" id=\"city\" value=\"\" />";}
+	else
+        {
+		$city_readonly='';
+		if (preg_match("/---READONLY---/",$label_city))
+			{$city_readonly='readonly="readonly"';   $label_city = preg_replace("/---READONLY---/","",$label_city);}
+		else
+			{
+			if (preg_match("/---REQUIRED---/",$label_city))
+				{$required_fields .= "city|";   $label_city = preg_replace("/---REQUIRED---/","",$label_city);}
+			}
+		echo "$label_city: </td><td align=\"left\"><font class=\"body_text\"><input type=\"text\" size=\"20\" name=\"city\" id=\"city\" maxlength=\"$MAXcity\" class=\"cust_form\" value=\"\" $city_readonly />";
+		}
+
+    echo "</td><td align=\"right\"><font class=\"body_text\">";
+
+	if ($label_state == '---HIDE---')
+        {echo " </td><td align=\"left\"><input type=\"hidden\" name=\"state\" id=\"state\" value=\"\" />";}
+	else
+        {
+		$state_readonly='';
+		if (preg_match("/---READONLY---/",$label_state))
+			{$state_readonly='readonly="readonly"';   $label_state = preg_replace("/---READONLY---/","",$label_state);}
+		else
+			{
+			if (preg_match("/---REQUIRED---/",$label_state))
+				{$required_fields .= "state|";   $label_state = preg_replace("/---REQUIRED---/","",$label_state);}
+			}
+		echo "$label_state: </td><td align=\"left\"><font class=\"body_text\"><input type=\"text\" size=\"4\" name=\"state\" id=\"state\" maxlength=\"$MAXstate\" class=\"cust_form\" value=\"\" $state_readonly />";
+		}
+
+    echo "</td><td align=\"right\"><font class=\"body_text\">";
+
+	if ($label_postal_code == '---HIDE---')
+        {echo " </td><td align=\"left\"><input type=\"hidden\" name=\"postal_code\" id=\"postal_code\" value=\"\" />";}
+	else
+        {
+		$postal_code_readonly='';
+		if (preg_match("/---READONLY---/",$label_postal_code))
+			{$postal_code_readonly='readonly="readonly"';   $label_postal_code = preg_replace("/---READONLY---/","",$label_postal_code);}
+		else
+			{
+			if (preg_match("/---REQUIRED---/",$label_postal_code))
+				{$required_fields .= "postal_code|";   $label_postal_code = preg_replace("/---REQUIRED---/","",$label_postal_code);}
+			}
+		echo "$label_postal_code: </td><td align=\"left\"><font class=\"body_text\"><input type=\"text\" size=\"14\" name=\"postal_code\" id=\"postal_code\" maxlength=\"$MAXpostal_code\" class=\"cust_form\" value=\"\" $postal_code_readonly />";
+		}
+
+    echo "</td></tr><tr><td align=\"right\"><font class=\"body_text\">";
+
+	if ($label_province == '---HIDE---')
+        {echo " </td><td align=\"left\"><input type=\"hidden\" name=\"province\" id=\"province\" value=\"\" />";}
+	else
+        {
+		$province_readonly='';
+		if (preg_match("/---READONLY---/",$label_province))
+			{$province_readonly='readonly="readonly"';   $label_province = preg_replace("/---READONLY---/","",$label_province);}
+		else
+			{
+			if (preg_match("/---REQUIRED---/",$label_province))
+				{$required_fields .= "province|";   $label_province = preg_replace("/---REQUIRED---/","",$label_province);}
+			}
+		echo "$label_province: </td><td align=\"left\"><font class=\"body_text\"><input type=\"text\" size=\"20\" name=\"province\" id=\"province\" maxlength=\"$MAXprovince\" class=\"cust_form\" value=\"\" $province_readonly />";
+		}
+
+    echo "</td><td align=\"right\"><font class=\"body_text\">";
+
+	if ($label_vendor_lead_code == '---HIDE---')
+        {echo " </td><td align=\"left\"><input type=\"hidden\" name=\"vendor_lead_code\" id=\"vendor_lead_code\" value=\"\" />";}
+	else
+        {
+		$vendor_lead_code_readonly='';
+		if (preg_match("/---READONLY---/",$label_vendor_lead_code))
+			{$vendor_lead_code_readonly='readonly="readonly"';   $label_vendor_lead_code = preg_replace("/---READONLY---/","",$label_vendor_lead_code);}
+		else
+			{
+			if (preg_match("/---REQUIRED---/",$label_vendor_lead_code))
+				{$required_fields .= "vendor_lead_code|";   $label_vendor_lead_code = preg_replace("/---REQUIRED---/","",$label_vendor_lead_code);}
+			}
+		echo "$label_vendor_lead_code: </td><td align=\"left\"><font class=\"body_text\"><input type=\"text\" size=\"15\" name=\"vendor_lead_code\" id=\"vendor_lead_code\" maxlength=\"$MAXvendor_lead_code\" class=\"cust_form\" value=\"\" $vendor_lead_code_readonly />";
+		}
+
+    echo "</td><td align=\"right\"><font class=\"body_text\">";
+
+	if ($label_gender == '---HIDE---')
+		{
+		echo "</td><td align=\"left\"><font class=\"body_text\"><span id=\"GENDERhideFORie\"><input type=\"hidden\" name=\"gender_list\" id=\"gender_list\" value=\"\" /></span>";
+		}
+	else
+        {
+		echo "$label_gender: </td><td align=\"left\"><font class=\"body_text\"><span id=\"GENDERhideFORie\"><select size=\"1\" name=\"gender_list\" class=\"cust_form\" id=\"gender_list\"><option value=\"U\">"._("U - Undefined")."</option><option value=\"M\">"._("M - Male")."</option><option value=\"F\">"._("F - Female")."</option></select></span>";
+		}
+
+    echo "</td></tr><tr><td align=\"right\"><font class=\"body_text\">";
+
+	if ($label_phone_number == '---HIDE---')
+        {
+		echo " </td><td align=\"left\"><input type=\"hidden\" name=\"phone_number\" id=\"phone_number\" value=\"\" />";
+		echo "<font class=\"body_text\"><span id=\"phone_numberDISP\"> &nbsp; </span></font>";
+		}
+	else
+        {
+		$label_phone_number = preg_replace("/---READONLY---/","",$label_phone_number);
+		echo "$label_phone_number: </td><td align=\"left\"><font class=\"body_text\">";
+
+		if ( (preg_match('/Y/',$disable_alter_custphone)) or (preg_match('/HIDE/',$disable_alter_custphone)) )
+			{
+			echo "<font class=\"body_text\"><span id=\"phone_numberDISP\"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </span></font>";
+			echo "<input type=\"hidden\" name=\"phone_number\" id=\"phone_number\" value=\"\" />";
+			}
+		else
+			{
+			echo "<input type=\"text\" size=\"20\" name=\"phone_number\" id=\"phone_number\" maxlength=\"$MAXphone_number\" class=\"cust_form\" value=\"\" />";
+			}
+		}
+
+    echo "</td><td align=\"right\"><font class=\"body_text\">";
+
+	if ($label_phone_code == '---HIDE---')
+        {echo " </td><td align=\"left\"><input type=\"hidden\" name=\"phone_code\" id=\"phone_code\" value=\"\" />";}
+	else
+        {
+		$phone_code_readonly='';
+		if (preg_match("/---READONLY---/",$label_phone_code))
+			{$phone_code_readonly='readonly="readonly"';   $label_phone_code = preg_replace("/---READONLY---/","",$label_phone_code);}
+		else
+			{
+			if (preg_match("/---REQUIRED---/",$label_phone_code))
+				{$required_fields .= "phone_code|";   $label_phone_code = preg_replace("/---REQUIRED---/","",$label_phone_code);}
+			}
+		echo "$label_phone_code: </td><td align=\"left\"><font class=\"body_text\"><input type=\"text\" size=\"4\" name=\"phone_code\" id=\"phone_code\" maxlength=\"$MAXphone_code\" class=\"cust_form\" value=\"\" $phone_code_readonly />";
+		}
+
+    echo "</td><td align=\"right\"><font class=\"body_text\">";
+
+	if ($label_alt_phone == '---HIDE---')
+        {echo " </td><td align=\"left\"><input type=\"hidden\" name=\"alt_phone\" id=\"alt_phone\" value=\"\" />";}
+	else
+        {
+		$alt_phone_readonly='';
+		if (preg_match("/---READONLY---/",$label_alt_phone))
+			{$alt_phone_readonly='readonly="readonly"';   $label_alt_phone = preg_replace("/---READONLY---/","",$label_alt_phone);}
+		else
+			{
+			if (preg_match("/---REQUIRED---/",$label_alt_phone))
+				{$required_fields .= "alt_phone|";   $label_alt_phone = preg_replace("/---REQUIRED---/","",$label_alt_phone);}
+			}
+		echo "$label_alt_phone: </td><td align=\"left\"><font class=\"body_text\"><input type=\"text\" size=\"14\" name=\"alt_phone\" id=\"alt_phone\" maxlength=\"$MAXalt_phone\" onChange=\"CheckRufNr(this.form.alt_phone.value)\" class=\"cust_form\" value=\"\" $alt_phone_readonly />";
+		}
+
+    echo "</td></tr><tr><td align=\"right\"><font class=\"body_text\">";
+
+	if ($label_security_phrase == '---HIDE---')
+        {echo " </td><td align=\"left\"><input type=\"hidden\" name=\"security_phrase\" id=\"security_phrase\" value=\"\" />";}
+	else
+        {
+		$security_phrase_readonly='';
+		if (preg_match("/---READONLY---/",$label_security_phrase))
+			{$security_phrase_readonly='readonly="readonly"';   $label_security_phrase = preg_replace("/---READONLY---/","",$label_security_phrase);}
+		else
+			{
+			if (preg_match("/---REQUIRED---/",$label_security_phrase))
+				{$required_fields .= "security_phrase|";   $label_security_phrase = preg_replace("/---REQUIRED---/","",$label_security_phrase);}
+			}
+		echo "$label_security_phrase: </td><td align=\"left\"><font class=\"body_text\"><input type=\"text\" size=\"20\" name=\"security_phrase\" id=\"security_phrase\" maxlength=\"$MAXsecurity_phrase\" class=\"cust_form\" value=\"\" $security_phrase_readonly />";
+		}
+
+    echo "</td><td align=\"right\"><font class=\"body_text\">";
+
+	if ($label_email == '---HIDE---')
+        {echo " </td><td align=\"left\" colspan=\"3\"><input type=\"hidden\" name=\"email\" id=\"email\" value=\"\" />";}
+	else
+        {
+		$email_readonly='';
+		if (preg_match("/---READONLY---/",$label_email))
+			{$email_readonly='readonly="readonly"';   $label_email = preg_replace("/---READONLY---/","",$label_email);}
+		else
+			{
+			if (preg_match("/---REQUIRED---/",$label_email))
+				{$required_fields .= "email|";   $label_email = preg_replace("/---REQUIRED---/","",$label_email);}
+			}
+		echo "$label_email: </td><td align=\"left\" colspan=\"3\"><font class=\"body_text\"><input type=\"text\" size=\"45\" name=\"email\" id=\"email\" maxlength=\"$MAXemail\" class=\"cust_form\" value=\"\" autocomplete=\"off\" $email_readonly />";
+		}
+
+	if (strlen($agent_display_fields) > 3)
+		{
+	    echo "</td></tr><tr><td align=\"left\" colspan=\"5\"><font class=\"body_text\">";
+
+		if (preg_match("/entry_date/",$agent_display_fields))
+			{
+			echo _("Entry Date").": &nbsp; <font class=\"body_text\"><span id=\"entry_dateDISP\"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </span> &nbsp; </font>";
+			}
+		if (preg_match("/source_id/",$agent_display_fields))
+			{
+			echo _("Source ID").": &nbsp; <font class=\"body_text\"><span id=\"source_idDISP\"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </span> &nbsp; </font>";
+			}
+		if (preg_match("/date_of_birth/",$agent_display_fields))
+			{
+			echo _("Date of Birth").": &nbsp; <font class=\"body_text\"><span id=\"date_of_birthDISP\"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </span> &nbsp; </font>";
+			}
+		if (preg_match("/rank/",$agent_display_fields))
+			{
+			echo _("Rank").": &nbsp; <font class=\"body_text\"><span id=\"rankDISP\"> &nbsp; &nbsp; </span> &nbsp; </font>";
+			}
+		if (preg_match("/owner/",$agent_display_fields))
+			{
+			echo _("Owner").": &nbsp; <font class=\"body_text\"><span id=\"ownerDISP\"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </span> &nbsp; </font>";
+			}
+		if (preg_match("/last_local_call_time/",$agent_display_fields))
+			{
+			echo _("Last Call").": &nbsp; <font class=\"body_text\"><span id=\"last_local_call_timeDISP\"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </span> &nbsp; </font>";
+			}
+		}
+
+    echo "</td></tr><tr><td align=\"right\"><font class=\"body_text\">";
+
+	if ($label_comments == '---HIDE---')
+		{
+        echo " </td><td align=\"left\" colspan=5>";
+        echo "<input type=\"hidden\" name=\"comments\" id=\"comments\" value=\"\" />\n";
+        echo "<input type=\"hidden\" name=\"other_tab_comments\" id=\"other_tab_comments\" value=\"\" />\n";
+        echo "<input type=\"hidden\" name=\"dispo_comments\" id=\"dispo_comments\" value=\"\" />\n";
+        echo "<input type=\"hidden\" name=\"callback_comments\" id=\"callback_comments\" value=\"\" />\n";
+        echo "<span id='viewcommentsdisplay'><input type='button' id='ViewCommentButton' onClick=\"ViewComments('ON','','','YES')\" value='-"._("History")."-'/></span>\n";
+        echo "<span id='otherviewcommentsdisplay'><input type='button' id='OtherViewCommentButton' onClick=\"ViewComments('ON','','','YES')\" value='-"._("History")."-'/></span>\n";
+		}
+	else
+		{
+        echo "$label_comments: <br><span id='viewcommentsdisplay'><input type='button' id='ViewCommentButton' onClick=\"ViewComments('ON','','','YES')\" value='-"._("History")."-'/></span>
+		</td><td align=\"left\" colspan=\"5\"><font class=\"body_text\">";
+		if ( ($multi_line_comments) )
+            {echo "<textarea name=\"comments\" id=\"comments\" rows=\"2\" cols=\"85\" class=\"cust_form_text\" value=\"\"></textarea>\n";}
+		else
+            {echo "<input type=\"text\" size=\"65\" name=\"comments\" id=\"comments\" maxlength=\"255\" class=\"cust_form\" value=\"\" />\n";}
+		}
+	echo "</font></td>
+		</tr><tr><td align=\"right\"><font class=\"body_text\">\n";
+
+	if ($per_call_notes == 'ENABLED')
+		{
+        echo _("Call Notes: ");
+		if ($agent_call_log_view == '1')
+			{echo "<br /><span id=\"CallNotesButtons\"><a href=\"#\" onclick=\"VieWNotesLoG();return false;\">"._("view notes")."</a></span> ";}
+        echo "</td><td align=\"left\" colspan=\"5\"><font class=\"body_text\">";
+		echo "<textarea name=\"call_notes\" id=\"call_notes\" rows=\"2\" cols=\"85\" class=\"cust_form_text\" value=\"\"></textarea>\n";
+		}
+	else
+		{
+        echo " </td><td align=\"left\" colspan=5><input type=\"hidden\" name=\"call_notes\" id=\"call_notes\" value=\"\" /><span id=\"CallNotesButtons\"></span>\n";
+		}
+
 	echo "<input type=\"hidden\" name=\"required_fields\" id=\"required_fields\" value=\"$required_fields\" />\n";
 
 	?>
 	</font>
 	</td>
 
-    </tr></table></div></td>
+    </tr></table></td>
     </tr></table>
 	</span>
 	</font>
@@ -20343,11 +20702,6 @@ if ($agent_display_dialable_leads > 0)
 
 <span style="position:absolute;left:<?php echo $AMwidth ?>px;top:<?php echo $MAheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="MailCommit">
 <a href="#" onclick="MailCustomerData('YES')"><font class="body_small"><?php echo _("Ticket Mail"); ?></font></a>
-</span>
-
-<span style="position:absolute;left:<?php echo $AMwidth ?>px;top:<?php echo $MAheight + 15 ?>px;z-index:<?php $zi++; echo $zi ?>;" id="ChangeSize">
-<div onclick="change_font('Big')" class="text_size" id="text_bigger"><img src="images/increase-font-16.png" width="16px" height="16px" alt="Abc+" /></div>
-<div onclick="change_font('Small')" class="text_size" id="text_smaller"><img src="images/decrease-font-16.png" width="16px" height="16px" alt="Abc-" /></div></a>
 </span>
 
 <span style="position:absolute;left:154px;top:<?php echo $SFheight ?>px;z-index:<?php $zi++; echo $zi ?>;" id="ScriptPanel">
@@ -20891,11 +21245,26 @@ if ($agent_display_dialable_leads > 0)
     <?php echo _("Note: all new manual dial leads will go into list ") . $manual_dial_list_id; ?><br /><br />
     <table><tr>
     <td align="right"><font class="body_text"> <?php echo _("Dial Code:"); ?> </font></td>
-    <td align="left"><font class="body_text"><input type="text" size="7" maxlength="10" name="MDDiaLCodE" id="MDDiaLCodE" class="cust_form" value="<?php echo $default_phone_code ?>" />&nbsp; <?php echo _("(This is usually a 1 in the USA-Canada)"); ?></font></td>
+    <?php
+        if ($agent_disable_manual == '0') {
+            echo '<td align="left"><font class="body_text"><input type="text" size="7" maxlength="10" name="MDDiaLCodE" id="MDDiaLCodE" class="cust_form" value="'. $default_phone_code .'"';
+        } else {
+            echo '<td align="left"><font class="body_text"><input type="text" size="7" maxlength="10" name="MDDiaLCodE" id="MDDiaLCodE" class="cust_form" value="'. $default_phone_code .'" readonly';
+        }
+    ?>
+    &nbsp; <?php echo _("(This is usually a 1 in the USA-Canada)"); ?></font></td>
+    
 	</tr><tr>
     <td align="right"><font class="body_text"> <?php echo _("Phone Number:"); ?> </font></td>
     <td align="left"><font class="body_text">
-    <input type="text" size="14" maxlength="18" name="MDPhonENumbeR" id="MDPhonENumbeR" class="cust_form" value="" />&nbsp; <?php echo _("(digits only)"); ?></font>
+    <?php 
+        if($agent_disable_manual == '0') {
+            echo '<input type="text" size="14" maxlength="18" name="MDPhonENumbeR" id="MDPhonENumbeR" class="cust_form" value="" />';    
+        } else {
+            echo '<input type="text" size="14" maxlength="18" name="MDPhonENumbeR" id="MDPhonENumbeR" class="cust_form" value="" readonly />';
+        }
+    ?>
+    &nbsp; <?php echo _("(digits only)"); ?></font>
 	<input type="hidden" name="MDPhonENumbeRHiddeN" id="MDPhonENumbeRHiddeN" value="" />
 	<input type="hidden" name="MDLeadID" id="MDLeadID" value="" />
 	<input type="hidden" name="MDType" id="MDType" value="" />
@@ -20941,9 +21310,11 @@ if ($agent_display_dialable_leads > 0)
 	<?php
 	if ($manual_dial_override_field == 'ENABLED')
 		{
-		?>
-		<input type="text" size="24" maxlength="20" name="MDDiaLOverridE" id="MDDiaLOverridE" class="cust_form" value="" />&nbsp;
-		<?php
+		    if($agent_disable_manual == '0') {
+		        echo '<input type="text" size="24" maxlength="20" name="MDDiaLOverridE" id="MDDiaLOverridE" class="cust_form" value="" />&nbsp;';
+		    } else {
+		        echo '<input type="text" size="24" maxlength="20" name="MDDiaLOverridE" id="MDDiaLOverridE" class="cust_form" value="" readonly />&nbsp;';
+		    }
 		echo _("(digits only please)");
 		}
 	else

@@ -33,13 +33,16 @@
 #
 # Version  / Build
 #
-$admin_modify_lead_version = '3.1.1-14';
-$admin_modify_lead_build = '20230214-4';
+$admin_modify_lead_version = '3.1.1-22';
+$admin_modify_lead_build = '20230704-7';
 #
 ###############################################################################
 #
 # Changelog
 #
+# 2023-07-04 jff    Recording access allways over recording_log_redirect.php
+#                   Log recording access only for Userlevel >= 9
+# 2023-04-07 jff    Add launch_change_log
 # 2023-02-14 jff    Add handling for callbacks
 #                   Sort statuses 
 # 2022-02-19 jff    Add snctdialer_list_log_archive handling
@@ -1009,6 +1012,22 @@ function launch_list_log(LeadID,ShowArch = "N") {
 	var listlogQuery = "source=admin&function=lead_log_list&user=" + user + "&pass=" + pass + "&format=selectframe&lead_id=" + LeadID + "&show_arch=" + ShowArch;
 	var Iframe_content = '<IFRAME SRC="' + listlogURL + '?' + listlogQuery + '"  style="width:740;height:440;background-color:yellow;" scrolling="NO" frameborder="0" allowtransparency="false" id="list_log_frame" name="list_log_frame" width="740" height="460" STYLE="z-index:2"> </IFRAME>';
 
+	document.getElementById("list_log_span").style.position = "absolute";
+	document.getElementById("list_log_span").style.left = "220px";
+	document.getElementById("list_log_span").style.top = vposition + "px";
+	document.getElementById("list_log_span").style.visibility = 'visible';
+	document.getElementById("list_log_span").innerHTML = Iframe_content;
+}
+
+function launch_change_log(LeadID,ShowArch = "N") {
+
+	var h = window.innerHeight;
+	var vposition=mouseY;
+
+	var listlogURL = "./non_agent_api.php";
+	var listlogQuery = "source=admin&function=lead_change_list&user=" + user + "&pass=" + pass + "&format=selectframe&lead_id=" + LeadID + "&show_arch=" + ShowArch;
+	var Iframe_content = '<IFRAME SRC="' + listlogURL + '?' + listlogQuery + '"  style="width:740;height:440;background-color:lightgreen;" scrolling="NO" frameborder="0" allowtransparency="false" id="list_log_frame" name="list_log_frame" width="740" height="460" STYLE="z-index:2"> </IFRAME>';
+//	alert(listlogQuery);
 	document.getElementById("list_log_span").style.position = "absolute";
 	document.getElementById("list_log_span").style.left = "220px";
 	document.getElementById("list_log_span").style.top = vposition + "px";
@@ -2052,9 +2071,9 @@ else
 	echo "<input type=hidden name=FORM_LOADED id=FORM_LOADED value=\"0\" />\n";
 	echo "<table cellpadding=1 cellspacing=0>\n";
 	if($ExtLink_admin_modify_lead == "") {
-		echo "<tr><td colspan=2>"._QXZ("Lead ID").": $lead_id &nbsp; &nbsp; "._QXZ("List ID").":  $list_id &nbsp; &nbsp; <font size=2>"._QXZ("GMT offset").": $gmt_offset_now &nbsp; &nbsp; "._QXZ("CSLR").": $called_since_last_reset &nbsp; &nbsp; <a href=\"javascript:launch_list_log($lead_id, '$archive_log[0]');\">"._QXZ("Lead change Log")."</a></td></tr>\n";
+		echo "<tr><td colspan=2>"._QXZ("Lead ID").": $lead_id &nbsp; &nbsp; "._QXZ("List ID").":  $list_id &nbsp; &nbsp; <font size=2>"._QXZ("GMT offset").": $gmt_offset_now &nbsp; &nbsp; "._QXZ("CSLR").": $called_since_last_reset &nbsp; &nbsp; <a href=\"javascript:launch_list_log($lead_id, '$archive_log[0]');\">"._QXZ("Lead change Log")."</a>&nbsp; &nbsp; <a href=\"javascript:launch_change_log($lead_id, '$archive_log[0]');\">"._QXZ("Data change Log")."</a></td></tr>\n";
 	} else {
-		echo "<tr><td colspan=2>"._QXZ("Lead ID").": <A target= \"_blank\" HREF=\"".$ExtLink_admin_modify_lead."$lead_id\">$lead_id</A> &nbsp; &nbsp; "._QXZ("List ID").":  $list_id &nbsp; &nbsp; <font size=2>"._QXZ("GMT offset").": $gmt_offset_now &nbsp; &nbsp; "._QXZ("CSLR").": $called_since_last_reset  &nbsp; &nbsp; <a href=\"javascript:launch_list_log($lead_id, '$archive_log[0]');\">"._QXZ("Lead change Log")."</a></td></tr>\n";
+		echo "<tr><td colspan=2>"._QXZ("Lead ID").": <A target= \"_blank\" HREF=\"".$ExtLink_admin_modify_lead."$lead_id\">$lead_id</A> &nbsp; &nbsp; "._QXZ("List ID").":  $list_id &nbsp; &nbsp; <font size=2>"._QXZ("GMT offset").": $gmt_offset_now &nbsp; &nbsp; "._QXZ("CSLR").": $called_since_last_reset  &nbsp; &nbsp; <a href=\"javascript:launch_list_log($lead_id, '$archive_log[0]');\">"._QXZ("Lead change Log")."</a>&nbsp; &nbsp; <a href=\"javascript:launch_change_log($lead_id, '$archive_log[0]');\">"._QXZ("Data change Log")."</a></td></tr>\n";
 	}
 	echo "<tr><td colspan=2>"._QXZ("Fronter").": <A HREF=\"user_stats.php?user=$tsr\">$tsr</A> &nbsp; &nbsp; "._QXZ("Called Count").": $called_count &nbsp; &nbsp; <font size=2>"._QXZ("Last Local Call").": $last_local_call_time</td></tr>\n";
 	if ($archive_search=="Yes")
@@ -3012,13 +3031,18 @@ else
 			if ( (preg_match('/ftp/i',$location)) or (preg_match('/http/i',$location)) )
 				{
 				if ($log_recording_access<1)
-					{
-					$play_audio = "<td align=left><font size=2> <audio controls preload=\"none\"> <source src ='$location' type='audio/wav' > <source src ='$location' type='audio/mpeg' >"._QXZ("No browser audio playback support")."</audio> </td>\n";
-					$location = "<a href=\"$location\">$locat</a>";
+				{  
+				    $loc1 = "recording_log_redirect.php?recording_id=".$row[0]."&lead_id=".$row[12]."&search_archived_data=0";
+				    $play_audio = "<td align=left><font size=2> <audio controls preload=\"none\"> <source src ='$loc1' type='audio/wav' > <source src ='$loc1' type='audio/mpeg' >"._QXZ("No browser audio playback support")."</audio> </td>\n";
+#					$play_audio = "<td align=left><font size=2> <audio controls preload=\"none\"> <source src ='$location' type='audio/wav' > <source src ='$location' type='audio/mpeg' >"._QXZ("No browser audio playback support")."</audio> </td>\n";
+				    $location = "<a href=\"".$loc1."\">LINK</a>";
 					}
 				else
-					{
-					$location = "<a href=\"recording_log_redirect.php?recording_id=$row[0]&lead_id=$row[12]&search_archived_data=0\">$locat</a>";
+				{
+				    $loc1 = "recording_log_redirect.php?recording_id=".$row[0]."&lead_id=".$row[12]."&search_archived_data=0";
+				    $play_audio = "<td align=left><font size=2> <audio controls preload=\"none\"> <source src ='$loc1' type='audio/wav' > <source src ='$loc1' type='audio/mpeg' >"._QXZ("No browser audio playback support")."</audio> </td>\n";
+#				    $location = "<a href=\"recording_log_redirect.php?recording_id=$row[0]&lead_id=$row[12]&search_archived_data=0\">$loc1</a>";
+				    $location = "<a href=\"".$loc1."\">LINK</a>";
 					}
 				}
 			else
@@ -3110,13 +3134,19 @@ else
 			if ( (preg_match('/ftp/i',$location)) or (preg_match('/http/i',$location)) )
 				{
 				if ($log_recording_access<1)
-					{
-					$play_audio = "<td align=left><font size=2> <audio controls preload=\"none\"> <source src ='$location' type='audio/wav' > <source src ='$location' type='audio/mpeg' >"._QXZ("No browser audio playback support")."</audio> </td>\n";
-					$location = "<a href=\"$location\">$locat</a>";
+				{
+				    $loc1 = "recording_log_redirect.php?recording_id=".$row[0]."&lead_id=".$row[12]."&search_archived_data=1";
+					$play_audio = "<td align=left><font size=2> <audio controls preload=\"none\"> <source src ='$loc1' type='audio/wav' > <source src ='$loc1' type='audio/mpeg' >"._QXZ("No browser audio playback support")."</audio> </td>\n";
+#					$location = "<a href=\"$location\">$locat</a>";
+					$location = "<a href=\"".$loc1."\">LINK</a>";
 					}
 				else
-					{
-					$location = "<a href=\"recording_log_redirect.php?recording_id=$row[0]&lead_id=$row[12]&search_archived_data=1\">$locat</a>";
+				{
+				    $loc1 = "recording_log_redirect.php?recording_id=".$row[0]."&lead_id=".$row[12]."&search_archived_data=1";
+				    $play_audio = "<td align=left><font size=2> <audio controls preload=\"none\"> <source src ='$loc1' type='audio/wav' > <source src ='$loc1' type='audio/mpeg' >"._QXZ("No browser audio playback support")."</audio> </td>\n";
+#				    $location = "<a href=\"$location\">$locat</a>";
+#					$location = "<a href=\"recording_log_redirect.php?recording_id=$row[0]&lead_id=$row[12]&search_archived_data=1\">$locat</a>";
+					$location = "<a href=\"".$loc1."\">LINK</a>";
 					}
 				}
 			else
@@ -3156,7 +3186,7 @@ else
 			echo "</TABLE><BR><BR>\n";
 		}
 
-	if ($log_recording_access > 0)
+		if (($log_recording_access > 0) && ($LOGuser_level >= 9))
 		{
 		echo "<B>"._QXZ("RECORDING ACCESS LOG FOR THIS LEAD").":</B>\n";
 		echo "<TABLE width=750 cellspacing=1 cellpadding=1>\n";

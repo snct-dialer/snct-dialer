@@ -2623,7 +2623,7 @@ function TestTicketMail($Agent, $type, $link) {
 			}
 		}                              
 		$stmt = "SELECT `group_email`, `own_ticketmail`  FROM `vicidial_user_groups` UG, `vicidial_users` VU WHERE VU.user = '$Agent' AND UG.user_group = VU.user_group AND (UG.group_email != '' OR UG.own_ticketmail != '');";
-		fwrite ($efp, "$NOW_TIME|".$stmt."|\n");
+#		fwrite ($efp, "$NOW_TIME|".$stmt."|\n");
 		$rslt1=mysqli_query($link, $stmt);
 		if(! $rslt1 ) {  echo "Error: " .  mysqli_error($link) . PHP_EOL; }
 		if ($DB) {echo "$stmt\n";}

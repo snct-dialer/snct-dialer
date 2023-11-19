@@ -225,6 +225,38 @@ function TestCallbacks($status) {
     
 }
 
+###############################################################################
+#
+# function CheckEnumItems
+#
+# function to get the enum items from a field
+#
+# Parameter: $table     mysql Table
+#            $field     mysql Field to check
+#            $conn      mysqli Connection
+#
+# Return: bool          true, if field exists
+#                       false, if field not exists
+#
+#
+# Version 1.0.0
+#
+###############################################################################
+function CheckField($table, $field, $conn) {
+    
+    $stmt = "SHOW COLUMNS FROM `$table` LIKE '$field'";
+    sd_debug_log($stmt);
+    if(($res = mysqli_query($conn, $stmt)) === false)
+    {
+        sd_debug_log("Invalid query: ". mysqli_error($link));
+        return -1;
+    }
+    if(mysqli_num_rows($res) == 0) {
+        return false;
+    }
+    return true;
+}
+
 
 
 

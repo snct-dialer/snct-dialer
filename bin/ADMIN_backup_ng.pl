@@ -345,7 +345,7 @@ if ( ($without_db < 1) && ($conf_only < 1) ) {
 	if ($db_raw_files_copy < 1) {
 		### find mysqldump binary to do the database dump
 		print "\n----- Mysql dump -----\n\n";
-		if(lenght($mysqldumpbin) == 0) {
+		if(length($mysqldumpbin) == 0) {
 			print "Can't find mysqldump binary! MySQL backups will not work...\n";
 		}
 

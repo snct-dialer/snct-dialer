@@ -16526,7 +16526,7 @@ if ($ACTION == 'CALLLOGview') {
 	if($OnlyInbounds != 1) {
 		$stmt  = "SELECT LO.start_epoch, LO.call_date, LO.campaign_id, LO.length_in_sec, LO.status, LO.phone_code, LO.phone_number, LO.lead_id, ";
 		$stmt .= "LO.term_reason, LO.alt_dial, LO.comments from vicidial_log LO, vicidial_list VL ";
-		$stmt .= "where LO.user='$user' and LO.call_date >= '$date 0:00:00' and LO.call_date <= '$date 23:59:59' AND LO.`lead_id` = VL.`lead_id` ";
+		$stmt .= "where LO.user='$user' and DATE(LO.call_date) = '$date' AND LO.status NOT IN('CALLBK', 'ALTNUM', 'DNC') AND LO.`lead_id` = VL.`lead_id` ";
 		$stmt .= $SearchOwner;
 		$stmt .= " order by call_date desc limit 10000;";
 		$rslt=mysql_to_mysqli($stmt, $link);
@@ -16556,32 +16556,37 @@ if ($ACTION == 'CALLLOGview') {
 		$u=0;
 		while ($out_logs_to_print > $u) {
 			$row=mysqli_fetch_row($rslt);
-			$ALLsort[$g] =			"$row[0]-----$g";
-			$ALLstart_epoch[$g] =	$row[0];
-			$ALLcall_date[$g] =		$row[1];
-			$ALLcampaign_id[$g] =	$row[2];
-			$ALLlength_in_sec[$g] =	$row[3];
-			$ALLstatus[$g] =		$row[4];
-			$ALLphone_code[$g] =	$row[5];
-			$ALLphone_number[$g] =	$row[6];
-			$ALLlead_id[$g] =		$row[7];
-			$ALLhangup_reason[$g] =	$row[8];
-			$ALLalt_dial[$g] =		$row[9];
-			$ALLin_out[$g] =		"OUT-AUTO";
-			if ($row[10] == 'MANUAL') {
-				$ALLin_out[$g] = "OUT-MANUAL";
-			}
+			$sqlCheck = "SELECT count(*) AS Anzahl FROM `vicidial_log` WHERE `lead_id` = '".$row[7]."' AND DATE(`call_date`) > '".$date."';";
+			$resCheck = mysql_to_mysqli($sqlCheck, $link);
+			$rowCheck = mysqli_fetch_row($resCheck);
+			if($rowCheck[0] == 0) {
+			     $ALLsort[$g] =			  "$row[0]-----$g";
+			     $ALLstart_epoch[$g] =	  $row[0];
+			     $ALLcall_date[$g] =	  $row[1];
+			     $ALLcampaign_id[$g] =	  $row[2];
+			     $ALLlength_in_sec[$g] =  $row[3];
+			     $ALLstatus[$g] =	      $row[4];
+			     $ALLphone_code[$g] =	  $row[5];
+			     $ALLphone_number[$g] =	  $row[6];
+			     $ALLlead_id[$g] =		  $row[7];
+			     $ALLhangup_reason[$g] =  $row[8];
+			     $ALLalt_dial[$g] =		  $row[9];
+			     $ALLin_out[$g] =		  "OUT-AUTO";
+			     if ($row[10] == 'MANUAL') {
+				        $ALLin_out[$g] = "OUT-MANUAL";
+			     }
 
-			$stmtA="SELECT first_name,last_name FROM vicidial_list WHERE lead_id='$ALLlead_id[$g]';";
-			$rsltA=mysql_to_mysqli($stmtA, $link);
-			if ($mel > 0) {
-				mysql_error_logging($NOW_TIME,$link,$mel,$stmtA,'00577',$user,$server_ip,$session_name,$one_mysql_log);
-			}
-			$rowA=mysqli_fetch_row($rsltA);
-			$Allfirst_name[$g] =	$rowA[0];
-			$Alllast_name[$g] =		$rowA[1];
+			     $stmtA="SELECT first_name,last_name FROM vicidial_list WHERE lead_id='$ALLlead_id[$g]';";
+			     $rsltA=mysql_to_mysqli($stmtA, $link);
+			     if ($mel > 0) {
+				        mysql_error_logging($NOW_TIME,$link,$mel,$stmtA,'00577',$user,$server_ip,$session_name,$one_mysql_log);
+			     }
+			     $rowA=mysqli_fetch_row($rsltA);
+			     $Allfirst_name[$g] =	$rowA[0];
+			     $Alllast_name[$g] =		$rowA[1];
 
-			$g++;
+			     $g++;
+			}
 			$u++;
 		}
 	} // if($OnlyInbounds != 1)

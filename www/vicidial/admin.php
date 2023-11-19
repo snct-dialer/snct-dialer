@@ -5,8 +5,8 @@
 #
 # SNCT-Dialer™ Administration
 #
-# Copyright (©) 2019-2022 SNCT GmbH <info@snct-gmbh.de>
-#               2017-2022 Jörg Frings-Fürst <open_source@jff.email>
+# Copyright (©) 2019-2023 SNCT GmbH <info@snct-gmbh.de>
+#               2017-2023 Jörg Frings-Fürst <open_source@jff.email>
 #
 # LICENSE: AGPLv3
 #
@@ -27,18 +27,23 @@
 # ExtraMenueReports.php
 # ./class.Diff.php
 # options.php
+# ../inc/function_ng.php
 # 
 ###############################################################################
 #
 # Version  / Build
 #
-$admin_version = '3.1.2-27';
-$admin_build = '20221107-3';
+$admin_version = '3.1.2-45';
+$admin_build = '20231103-5';
 #
 ###############################################################################
 #
 # Changelog
 #
+# 2023-11-03 jff    Add own_no_history
+# 2023-04-13 jff    Add launch_status_log to list
+# 2023-04-07 jff    Add launch_status_log
+# 2023-03-21 jff    Add count to callbacklists
 # 2022-03-19 jff    Add base_campaign_id into lists
 # 2022-02-11 jff    Add Field SystemUser for Users
 # 2022-01-08 jff    Mark non seletable status at Campaign Status with <DEL>.  
@@ -76,6 +81,7 @@ $startMS = microtime();
 
 require("dbconnect_mysqli.php");
 require("functions.php");
+require("../inc/functions_ng.php");
 $SNCT_version = file_get_contents("SNCTVersion.inc");
 
 
@@ -2659,6 +2665,8 @@ if (isset($_GET["base_campaign_id"]))           {$BaseCampaignId=$_GET["base_cam
     elseif (isset($_POST["base_campaign_id"]))  {$BaseCampaignId=$_POST["base_campaign_id"];}
 if (isset($_GET["own_noreset"]))                {$own_noreset=$_GET["own_noreset"];}
     elseif (isset($_POST["own_noreset"]))       {$own_noreset=$_POST["own_noreset"];}
+if (isset($_GET["own_no_history"]))             {$own_no_history=$_GET["own_no_history"];}
+    elseif (isset($_POST["own_no_history"]))    {$own_no_history=$_POST["own_no_history"];}
     
 
 if (isset($script_id)) {$script_id= strtoupper($script_id);}
@@ -2667,6 +2675,7 @@ if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
 $use_comp_privat = (isset($_POST['use_comp_privat'])) ? 1 : 0;
 $systemuser = (isset($systemuser)) ? 1 : 0;
 $own_noreset = (isset($own_noreset)) ? 1 : 0;
+$own_no_history = (isset($own_no_history)) ? 1 : 0;
 
 if (strlen($dial_status) > 0)
 	{
@@ -5316,7 +5325,7 @@ echo "<html>\n";
 echo "<head>\n";
 echo "<!-- VERSION: $admin_version   BUILD: $admin_build   ADD: $ADD   PHP_SELF: $PHP_SELF-->\n";
 echo "<META NAME=\"ROBOTS\" CONTENT=\"NONE\">\n";
-echo "<META NAME=\"COPYRIGHT\" CONTENT=\"&copy; 2019 ViciDial Group\" \"&copy; 2017-2022 SNCT GmbH\">\n";
+echo "<META NAME=\"COPYRIGHT\" CONTENT=\"&copy; 2019 ViciDial Group\" \"&copy; 2017-2023 SNCT GmbH\">\n";
 echo "<META NAME=\"AUTHOR\" CONTENT=\"ViciDial Group\" \"SNCT GmbH\">\n";
 echo "<script language=\"JavaScript\" src=\"calendar_db.js\"></script>\n";
 echo "<script language=\"JavaScript\" src=\"help.js\"></script>\n";
@@ -15908,8 +15917,13 @@ if ($ADD==411)
 				if ($LOGuser_level >= 9) {$daily_reset_limitSQL = ",daily_reset_limit='$daily_reset_limit'";}
 
 				echo "<br><B>"._QXZ("LIST MODIFIED").": $list_id</B>\n";
-
-				$stmt="UPDATE vicidial_lists set list_name='$list_name',campaign_id='$campaign_id',active='$active',list_description='$list_description',list_changedate='$SQLdate',reset_time='$reset_time',agent_script_override='$agent_script_override',inbound_list_script_override='$inbound_list_script_override',campaign_cid_override='$campaign_cid_override',am_message_exten_override='$am_message_exten_override',drop_inbound_group_override='$drop_inbound_group_override',xferconf_a_number='$xferconf_a_number',xferconf_b_number='$xferconf_b_number',xferconf_c_number='$xferconf_c_number',xferconf_d_number='$xferconf_d_number',xferconf_e_number='$xferconf_e_number',web_form_address='" . mysqli_real_escape_string($link, $web_form_address) . "',web_form_address_two='" . mysqli_real_escape_string($link, $web_form_address_two) . "',time_zone_setting='$time_zone_setting',inventory_report='$inventory_report',expiration_date='$expiration_date',na_call_url='" . mysqli_real_escape_string($link, $na_call_url) . "',local_call_time='$local_call_time',web_form_address_three='" . mysqli_real_escape_string($link, $web_form_address_three) . "',status_group_id='$status_group_id',custom_one='$list_custom_one',custom_two='$list_custom_two',custom_three='$list_custom_three',custom_four='$list_custom_four',custom_five='$list_custom_five',user_new_lead_limit='$user_new_lead_limit',default_xfer_group='$default_xfer_group' $daily_reset_limitSQL,auto_active_list_rank='$auto_active_list_rank',base_campaign_id='$BaseCampaignId', own_noreset='$own_noreset' where list_id='$list_id';";
+				
+				$tmpnh = "";
+				if(CheckField('vicidial_lists', 'own_no_history', $link)) {
+				    $tmpnh = ", own_no_history='$own_no_history' ";
+				}
+                
+				$stmt="UPDATE vicidial_lists set list_name='$list_name',campaign_id='$campaign_id',active='$active',list_description='$list_description',list_changedate='$SQLdate',reset_time='$reset_time',agent_script_override='$agent_script_override',inbound_list_script_override='$inbound_list_script_override',campaign_cid_override='$campaign_cid_override',am_message_exten_override='$am_message_exten_override',drop_inbound_group_override='$drop_inbound_group_override',xferconf_a_number='$xferconf_a_number',xferconf_b_number='$xferconf_b_number',xferconf_c_number='$xferconf_c_number',xferconf_d_number='$xferconf_d_number',xferconf_e_number='$xferconf_e_number',web_form_address='" . mysqli_real_escape_string($link, $web_form_address) . "',web_form_address_two='" . mysqli_real_escape_string($link, $web_form_address_two) . "',time_zone_setting='$time_zone_setting',inventory_report='$inventory_report',expiration_date='$expiration_date',na_call_url='" . mysqli_real_escape_string($link, $na_call_url) . "',local_call_time='$local_call_time',web_form_address_three='" . mysqli_real_escape_string($link, $web_form_address_three) . "',status_group_id='$status_group_id',custom_one='$list_custom_one',custom_two='$list_custom_two',custom_three='$list_custom_three',custom_four='$list_custom_four',custom_five='$list_custom_five',user_new_lead_limit='$user_new_lead_limit',default_xfer_group='$default_xfer_group' $daily_reset_limitSQL,auto_active_list_rank='$auto_active_list_rank',base_campaign_id='$BaseCampaignId', own_noreset='$own_noreset' $tmpnh where list_id='$list_id';";
 				$rslt=mysql_to_mysqli($stmt, $link);
 
 				## QC Addition for Audited Comments
@@ -25207,7 +25221,8 @@ if ($ADD==31)
 				$o=0;
 				if ($lead_list['count'] > 0)
 					{
-					while (list($dispo,) = each($lead_list[$since_reset]))
+#					while (list($dispo,) = each($lead_list[$since_reset]))
+					foreach($lead_list[$since_reset] as $dispo => $blank)
 						{
 						if (preg_match('/1$|3$|5$|7$|9$/i', $o))
 							{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
@@ -26103,6 +26118,42 @@ if ($ADD==31)
 ######################
 # ADD=34 modify campaign info in the system - Basic View
 ######################
+echo "<script language=\"JavaScript\">";
+echo "var user = '$PHP_AUTH_USER';\n";
+echo "var pass = '$PHP_AUTH_PW';</script>\n";
+?>
+<span style="position:absolute;left:500px;top:30px;z-index:50;visibility:hidden;" id="list_log_span">
+</span>
+<script language="JavaScript">
+mouseY=0;
+function getMousePos(event) {
+	mouseY=event.pageY;
+}
+document.addEventListener("click", getMousePos);
+
+function close_chooser() {
+	document.getElementById("list_log_span").style.visibility = 'hidden';
+	document.getElementById("list_log_span").innerHTML = '';
+}
+
+function launch_status_log(CampId,StatusID,ListID='') {
+
+	var h = window.innerHeight;
+	var vposition=mouseY;
+
+	var listlogURL = "./non_agent_api.php";
+	var listlogQuery = "source=admin&function=status_day_list&user=" + user + "&pass=" + pass + "&format=selectframe&campaign_name=" + CampId + "&list_status=" + StatusID + "&list_id=" + ListID;
+	var Iframe_content = '<IFRAME SRC="' + listlogURL + '?' + listlogQuery + '"  style="width:740;height:440;background-color:lightyellow;" scrolling="NO" frameborder="0" allowtransparency="false" id="list_log_frame" name="list_log_frame" width="740" height="460" STYLE="z-index:2"> </IFRAME>';
+
+	document.getElementById("list_log_span").style.position = "absolute";
+	document.getElementById("list_log_span").style.left = "220px";
+	document.getElementById("list_log_span").style.top = vposition + "px";
+	document.getElementById("list_log_span").style.visibility = 'visible';
+	document.getElementById("list_log_span").innerHTML = Iframe_content;
+}
+</script>
+<?php
+
 
 if ( ($ADD==34) and ( (!preg_match("/$campaign_id/i", $LOGallowed_campaigns)) and (!preg_match("/ALL-CAMPAIGNS/i",$LOGallowed_campaigns)) ) )
 	{$ADD=30;}	# send to not allowed screen if not in vicidial_user_groups allowed_campaigns list
@@ -26807,7 +26858,8 @@ if ($ADD==34)
 			$o=0;
 			if ($lead_list['count'] > 0)
 				{
-				while (list($dispo,) = each($lead_list[$since_reset]))
+#				while (list($dispo,) = each($lead_list[$since_reset]))
+				foreach($lead_list[$since_reset] as $dispo => $blank)
 					{
 					if (preg_match('/1$|3$|5$|7$|9$/i', $o))
 						{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
@@ -26821,8 +26873,8 @@ if ($ADD==34)
 						}
 					else
 						{
-						$CLB='';
-						$CLE='';
+						$CLB="<a href=\"javascript:launch_status_log('$campaign_id', '$dispo')\">";
+						$CLE='</a>';
 						}
 
 					echo "<tr $bgcolor><td><font size=1>$CLB$dispo$CLE</td><td><font size=1>$statuses_name_list[$dispo]</td><td><font size=1>".$lead_list['Y'][$dispo]."</td><td><font size=1>".$lead_list['N'][$dispo]." </td></tr>\n";
@@ -27770,10 +27822,13 @@ if ($ADD==311)
 		$inbound_list_script_override =		$row["inbound_list_script_override"];
 		$default_xfer_group =		$row["default_xfer_group"];
 		$daily_reset_limit =		$row["daily_reset_limit"];
-		$resets_today =			$row["resets_today"];
+		$resets_today =			    $row["resets_today"];
 		$auto_active_list_rank =	$row["auto_active_list_rank"];
 		$BaseCampaignId =           $row["base_campaign_id"]; 
 		$own_noreset =                $row["own_noreset"]; 
+		if(CheckField('vicidial_lists', 'own_no_history', $link)) {
+		  $own_no_history = $row["own_no_history"];    
+		}
 
 		# grab names of global statuses and statuses in the selected campaign
 		$stmt="SELECT status,status_name,selectable,human_answered,category,sale,dnc,customer_contact,not_interested,unworkable,scheduled_callback,completed,min_sec,max_sec,answering_machine from vicidial_statuses order by status;";
@@ -27932,7 +27987,16 @@ if ($ADD==311)
 			echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Daily Reset Limit").": </td><td align=left><input type=hidden name=daily_reset_limit value=\"$daily_reset_limit\">$daily_reset_limitTEXT &nbsp; <i>"._QXZ("Resets Today").":</i> $resets_today &nbsp; $NWB#lists-daily_reset_limit$NWE</td></tr>\n";
 			}
 		
-	    
+	    if($LOGuser_level >= 9) {
+	        if(CheckField('vicidial_lists', 'own_no_history', $link)) {
+	           $CLSta = "";
+	           if($own_no_history != 0) {
+	               $CLSta = "checked=\"checked\"";
+	           }
+	           echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("No History").": </td><td align=left><input type='checkbox' name='own_no_history' id='own_no_history' value='own_no_history' ". $CLSta ."></TD></tr>\n";	           
+	        }
+	            
+	    }
 
 			
 		echo "<tr bgcolor=#$SSstd_row4_background><td align=right>"._QXZ("Expiration Date").": </td><td align=left><input type=text name=expiration_date size=12 maxlength=10 value=\"$expiration_date\"> \n";
@@ -28239,7 +28303,8 @@ if ($ADD==311)
 		$o=0;
 		if ($lead_list['count'] > 0)
 			{
-			while (list($dispo,) = each($lead_list[$since_reset]))
+#			while (list($dispo,) = each($lead_list[$since_reset]))
+		    foreach($lead_list[$since_reset] as $dispo => $blank)
 				{
 				if (preg_match('/1$|3$|5$|7$|9$/i', $o))
 					{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
@@ -28251,10 +28316,10 @@ if ($ADD==311)
 					$CLB="<a href=\"$PHP_SELF?ADD=811&list_id=$list_id\">";
 					$CLE="</a>";
 					}
-				else
+					else
 					{
-					$CLB='';
-					$CLE='';
+					    $CLB="<a href=\"javascript:launch_status_log('', '$dispo', $list_id)\">";
+					    $CLE='</a>';
 					}
 				if ($SSexpanded_list_stats > 0)
 					{
@@ -28348,7 +28413,8 @@ if ($ADD==311)
 
 		if ($lead_list['count'] > 0)
 			{
-			while (list($tzone,) = each($lead_list[$since_reset]))
+#			while (list($tzone,) = each($lead_list[$since_reset]))
+		    foreach($lead_list[$since_reset] as $tzone => $blank)
 				{
 				$LOCALzone=3600 * $tzone;
 				$LOCALdate=gmdate("D j M Y H:i", time() + $LOCALzone);
@@ -28425,7 +28491,8 @@ if ($ADD==311)
 			$o=0;
 			if ($lead_list['count'] > 0)
 				{
-				while (list($owner,) = each($lead_list[$since_reset]))
+#				while (list($owner,) = each($lead_list[$since_reset]))
+			    foreach($lead_list[$since_reset] as $owner => $blank)
 					{
 					if (preg_match('/1$|3$|5$|7$|9$/i', $o))
 						{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
@@ -28491,7 +28558,8 @@ if ($ADD==311)
 			$o=0;
 			if ($lead_list['count'] > 0)
 				{
-				while (list($owner,) = each($lead_list[$since_reset]))
+#				while (list($owner,) = each($lead_list[$since_reset]))
+			    foreach($lead_list[$since_reset] as $owner => $blank)
 					{
 					if (preg_match('/1$|3$|5$|7$|9$/i', $o))
 						{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
@@ -28558,7 +28626,8 @@ if ($ADD==311)
 		$o=0;
 		if ($lead_list['count'] > 0)
 			{
-			while (list($rank,) = each($lead_list[$since_reset]))
+#			while (list($rank,) = each($lead_list[$since_reset]))
+			foreach($lead_list[$since_reset] as $rank => $blank)
 				{
 				if (preg_match('/1$|3$|5$|7$|9$/i', $o))
 					{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
@@ -28626,7 +28695,8 @@ if ($ADD==311)
 			$o=0;
 			if ($lead_list['count'] > 0)
 				{
-				while (list($rank,) = each($lead_list[$since_reset]))
+#				while (list($rank,) = each($lead_list[$since_reset]))
+                foreach($lead_list[$since_reset] as $rank => $blank)
 					{
 					if (preg_match('/1$|3$|5$|7$|9$/i', $o))
 						{$bgcolor='bgcolor="#'. $SSstd_row2_background .'"';}
@@ -39624,6 +39694,7 @@ if ($ADD==82)
 	echo "<TABLE><TR><TD>\n";
 	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 	echo "<tr bgcolor=black>\n";
+	echo "<td><font size=1 color=white>"._QXZ("Count")."</td>\n";
 	echo "<td><font size=1 color=white>"._QXZ("LEAD")."</td><td><font size=1 color=white>"._QXZ("LIST")."</td>\n";
 	echo "<td><font size=1 color=white> "._QXZ("CAMPAIGN")."</td>\n";
 	echo "<td><a href=\"$PHP_SELF?$oldADD&$ENDATElink\"><font size=1 color=white><B>"._QXZ("ENTRY DATE")."</B></a></td>\n";
@@ -39631,7 +39702,9 @@ if ($ADD==82)
 	echo "<td><a href=\"$PHP_SELF?$oldADD&$USERlink\"><font size=1 color=white><B>"._QXZ("USER")."</B></a></td>\n";
 	echo "<td><font size=1 color=white>"._QXZ("RECIPIENT")."</td>\n";
 	echo "<td><font size=1 color=white>"._QXZ("STATUS")."</td>\n";
-	echo "<td><a href=\"$PHP_SELF?$oldADD&$GROUPlink\"><font size=1 color=white><B>"._QXZ("GROUP")."</B></a></td></tr>\n";
+	echo "<td><a href=\"$PHP_SELF?$oldADD&$GROUPlink\"><font size=1 color=white><B>"._QXZ("GROUP")."</B></a></td>\n";
+	echo "<td><font size=1 color=white>"._QXZ("Count")."</td></tr>\n";
+	echo "</tr>\n";
 
 	$o=0;
 	while ($cb_to_print > $o)
@@ -39642,6 +39715,8 @@ if ($ADD==82)
 		else
 			{$bgcolor='bgcolor="#'. $SSstd_row1_background .'"';}
 		echo "<tr $bgcolor>";
+		$o++;
+		echo "<td align=\"right\"><font size=1>".$o."</td>";
 		echo "<td><font size=1><A HREF=\"admin_modify_lead.php?lead_id=$row[1]\" target=\"_blank\">$row[1]</A></td>";
 		echo "<td><font size=1><A HREF=\"$PHP_SELF?ADD=311&list_id=$row[2]\">$row[2]</A></td>";
 		echo "<td><font size=1><A HREF=\"$PHP_SELF?ADD=31&campaign_id=$row[3]\">$row[3]</A></td>";
@@ -39652,7 +39727,6 @@ if ($ADD==82)
 		echo "<td><font size=1>"._QXZ("$row[4]")."</td>";
 		echo "<td><font size=1><A HREF=\"$PHP_SELF?ADD=311111&user_group=$row[11]\">$row[11]</A></td>";
 		echo "</tr>\n";
-		$o++;
 		}
 
 	echo "</TABLE></center>\n";
@@ -43667,7 +43741,7 @@ if ($ADD==999995)
 	echo "<br><B> "._QXZ("Welcome to SNCT-Dialer: copyright, trademark and license page")."</B><BR><BR>\n";
 	echo "<center><TABLE width=$section_width cellspacing=5 cellpadding=2>\n";
 
-	echo "<tr bgcolor=#$SSstd_row4_background><td align=right valign=top><B><font size=3>"._QXZ("Copyright").": </B></td><td align=left> &nbsp; "._QXZ("The SNCT-Dialer is maintained by ")." <a href=\"https://www.snct-dialer.de/\" target=\"_blank\">SNCT GmbH</a>, &copy; 2019-2022</td></tr>\n";
+	echo "<tr bgcolor=#$SSstd_row4_background><td align=right valign=top><B><font size=3>"._QXZ("Copyright").": </B></td><td align=left> &nbsp; "._QXZ("The SNCT-Dialer is maintained by ")." <a href=\"https://www.snct-dialer.de/\" target=\"_blank\">SNCT GmbH</a>, &copy; 2019-2023</td></tr>\n";
 
 	echo "<tr bgcolor=#$SSstd_row4_background><td align=right valign=top><B><font size=3>"._QXZ("Trademark").": </B></td><td align=left> &nbsp; \"SNCT-Dialer\" "._QXZ("is a trademark of the")." <a href=\"https://www.snct-dialer.de/\" target=\"_blank\">SNCT GmbH</a>. Here is our <a href=\"https://www.snct-dialer.de/?page_id=262\" target=\"_blank\">"._QXZ("trademark use policy")."</a><br>";
 	echo _QXZ("SNCT-Dialer is based on \"VICIDIAL\". \"VICIDIAL\" is a registered trademark of the ViciDial Group.")."</td></tr>\n";
@@ -44587,7 +44661,7 @@ echo _QXZ("admin.php-Version").": $admin_version<BR>";
 echo _QXZ("BUILD").": $admin_build<br>";
 if (!preg_match("/_BUILD_/",$SShosted_settings))
     {echo "<BR><a href=\"$PHP_SELF?ADD=999995\"><font color=white>&copy; 2019 ViciDial Group</font></a><BR><img src=\"images/pixel.gif\">";}
-    echo "<BR><a href=\"$PHP_SELF?ADD=999995\"><font color=white>&copy; 2019-2022 SNCT GmbH</font></a><BR><img src=\"images/pixel.gif\">";
+    echo "<BR><a href=\"$PHP_SELF?ADD=999995\"><font color=white>&copy; 2019-2023 SNCT GmbH</font></a><BR><img src=\"images/pixel.gif\">";
 echo "<BR><BR><a href=\"/vicidial/changelog.php\" target=\"_blank\" type=\"text/html\"><font color=white>Changelog</font></a><BR><img src=\"images/pixel.gif\">";
 echo "<BR><BR><BR><BR>";
 echo "</FONT>\n";

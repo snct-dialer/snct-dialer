@@ -30,8 +30,8 @@
 #
 # Version  / Build
 #
-$non_agent_api_version = '3.1.1-3';
-$non_agent_api_build = '20220219-1';
+$non_agent_api_version = '3.1.1-9';
+$non_agent_api_build = '20230413-3';
 
 $api_url_log = 0;
 
@@ -40,6 +40,9 @@ $api_url_log = 0;
 #
 # Changelog
 #
+# 2023-04-13 jff    Add list_id to status_day_list
+# 2023-04-07 jff    Add status_day_list
+#                   Add lead_change_list
 # 2022-02-19 jff    Add snctdialer_list_log_archive handling
 # 20201226 jff	Fix lead_log_list if no rights
 # 20201124 jff	Add .ogg and .mp3 to sounds_list
@@ -430,7 +433,9 @@ if (isset($_GET["list_description"]))			{$list_description=$_GET["list_descripti
 if (isset($_GET["leads_counts"]))			{$leads_counts=$_GET["leads_counts"];}
 	elseif (isset($_POST["leads_counts"]))	{$leads_counts=$_POST["leads_counts"];}
 if (isset($_GET["show_arch"]))			{$show_arch=$_GET["show_arch"];}
-	elseif (isset($_POST["show_arch"]))	{$show_arch=$_POST["show_arch"];}
+    elseif (isset($_POST["show_arch"]))	{$show_arch=$_POST["show_arch"];}
+if (isset($_GET["list_status"]))			{$list_status=$_GET["list_status"];}
+    elseif (isset($_POST["list_status"]))	{$list_status=$_POST["list_status"];}
 
 header ("Content-type: text/html; charset=utf-8");
 header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
@@ -11947,9 +11952,9 @@ if ($function == 'lead_log_list') {
 
 			if($numrecs_to_print > 0) {
 				$DLLTable .= "<table style='font-family:\"Courier New\", Courier, monospace; font-size:80%'>";
-				$DLLTable .= "<TR><TH>Date</TH><TH>Old List</TH><TH>New List</TH><TH>Old Owner</TH><TH>New Owner</TH><TH>Old Status</TH><TH>New Status</TH></TR>";
+				$DLLTable .= "<TR><TH>Date</TH><TH>Old List</TH><TH>New List</TH><TH>Old Owner</TH><TH>New Owner</TH><TH>Old Status</TH><TH>New Status</TH><TH>Rule</TH></TR>";
 				while ($row=mysqli_fetch_row($rslt)) {
-					$DLLTable .= "<TR><TD>$row[2]</TD><TD>$row[3]</TD><TD>$row[4]</TD><TD>$row[5]</TD><TD>$row[6]</TD><TD>$row[7]</TD><TD>$row[8]</TD></TR>";
+					$DLLTable .= "<TR><TD>$row[2]</TD><TD>$row[3]</TD><TD>$row[4]</TD><TD>$row[5]</TD><TD>$row[6]</TD><TD>$row[7]</TD><TD>$row[8]</TD><TD>$row[9]</TD></TR>";
 				}
 				$DLLTable .= "</table></font>";
 			} else  {
@@ -11960,6 +11965,180 @@ if ($function == 'lead_log_list') {
 	}
 	echo "</div></body></HTML>\n";
 	exit;
+}
+################################################################################
+### END lead_log_list
+################################################################################
+
+################################################################################
+### status_log_list - sends a list of lead - changes
+################################################################################
+#
+# SELECT COUNT(*), DATEDIFF(CURDATE(), last_local_call_time) AS TageDiff FROM `vicidial_list` 
+# WHERE `status` = "AA" and `list_id` IN (SELECT `list_id` FROM `vicidial_lists` WHERE `campaign_id` = "PK_AUTO" 
+# and `active` = 1) Group by TageDiff
+#
+################################################################################
+if ($function == 'status_day_list') {
+    $DLLTable = "";
+    
+    echo "\n";
+    echo "<HTML><head><title>NON-AGENT API</title>\n";
+    echo "<script language=\"Javascript\">\n";
+    echo "function close_file()\n";
+    echo "	{\n";
+    echo "	document.getElementById(\"selectframe\").innerHTML = '';\n";
+    echo "	document.getElementById(\"selectframe\").style.visibility = 'hidden';\n";
+    echo "	parent.close_chooser();\n";
+    echo "	}\n";
+    echo "</script>\n";
+    echo "</head>\n\n";
+    echo "<body>\n";
+    echo "<a href=\"javascript:close_file();\"><font size=1 face=\"Arial,Helvetica\">"._QXZ("close frame")."</font></a>\n";
+    echo "<div id='selectframe' style=\"height:400px;width:710px;overflow:scroll;\">\n";
+    
+    $stmt="SELECT count(*) from vicidial_users where user='$user' and user_level > 8 and active='Y';";
+    if ($DB>0) {echo "DEBUG: lead_log_list query - $stmt\n";}
+    $rslt=mysql_to_mysqli($stmt, $link);
+    $row=mysqli_fetch_row($rslt);
+    $allowed_user=$row[0];
+    if ($allowed_user < 1) {
+        $result = 'ERROR';
+        $result_reason = "lead USER DOES NOT HAVE PERMISSION TO VIEW List Logs LIST";
+        echo "$result: $result_reason: |$user|$allowed_user|\n";
+        echo "</div></body></HTML>\n";
+        $data = "$allowed_user";
+        api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+        exit;
+    } else {
+        if ( (!preg_match("/ $function /",$api_allowed_functions)) and (!preg_match("/ALL_FUNCTIONS/",$api_allowed_functions)) ) {
+            $result = 'ERROR';
+            $result_reason = "auth USER DOES NOT HAVE PERMISSION TO USE THIS FUNCTION";
+            echo "$result: $result_reason: |$user|$function|\n";
+            echo "</div></body></HTML>\n";
+            $data = "$allowed_user";
+            api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+            exit;
+        }
+        if($failed == 0) {
+            $DLLTable = "";
+            if($list_id == '') {
+                $stmt  = "SELECT COUNT(*), DATEDIFF(CURDATE(), IFNULL(last_local_call_time,entry_date)) AS TageDiff FROM `vicidial_list` ";
+                $stmt .= "WHERE `status` = '".$list_status."' AND `list_id` IN (SELECT `list_id` FROM `vicidial_lists` ";
+                $stmt .= "WHERE `campaign_id` = '".$campaign_name."' and `active` = 1) GROUP BY TageDiff ";
+            } else {
+                $stmt  = "SELECT COUNT(*), DATEDIFF(CURDATE(), IFNULL(last_local_call_time,entry_date)) AS TageDiff FROM `vicidial_list` ";
+                $stmt .= "WHERE `status` = '".$list_status."' AND `list_id` = '".$list_id."' GROUP BY TageDiff ";
+            }
+            $rslt=mysql_to_mysqli($stmt, $link);
+            if ($DB) {echo "$stmt\n";}
+            $numrecs_to_print = mysqli_num_rows($rslt);
+            $CountSpalte = 0;
+            if($numrecs_to_print > 0) {
+                $DLLTable .= "<table border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:80%'>";
+#                $DLLTable .= "<TR><TH>Date</TH><TH>Old List</TH><TH>New List</TH><TH>Old Owner</TH><TH>New Owner</TH><TH>Old Status</TH><TH>New Status</TH><TH>Rule</TH></TR>";
+                $Zeile1 = "<TR><TH>Days:</TH>";
+                $Zeile2 = "<TR><TH>Count $list_status:</TH>";
+                while ($row=mysqli_fetch_row($rslt)) {
+                    $Zeile1 .= "<TD>".number_format($row[1],0, ',','.')."</TD>";
+                    $Zeile2 .= "<TD>".number_format($row[0],0, ',','.')."</TD>";
+                    $CountSpalte++;
+                    if($CountSpalte >= 15) {
+                        $Zeile1 .= "</TR>";
+                        $Zeile2 .= "</TR>";
+                        $DLLTable .= $Zeile1 . $Zeile2;
+                        $CountSpalte = 0;  
+                        $Zeile1 = "<TR></TR><TR></TR><TR><TH>Days:</TH>";
+                        $Zeile2 = "<TR><TH>Count $list_status:</TH>";
+                    }
+                }
+                $Zeile1 .= "</TR>";
+                $Zeile2 .= "</TR>";
+                $DLLTable .= $Zeile1 . $Zeile2;
+                $DLLTable .= "</table></font>";
+            } else  {
+                $DLLTable = "No Data found!";
+            }
+        }
+        echo $DLLTable;
+    }
+    echo "</div></body></HTML>\n";
+    exit;
+}
+################################################################################
+### END lead_log_list
+################################################################################
+
+################################################################################
+### lead_change_list - sends a list of lead - changes
+################################################################################
+if ($function == 'lead_change_list') {
+    $DLLTable = "";
+    
+    echo "\n";
+    echo "<HTML><head><title>NON-AGENT API</title>\n";
+    echo "<script language=\"Javascript\">\n";
+    echo "function close_file()\n";
+    echo "	{\n";
+    echo "	document.getElementById(\"selectframe\").innerHTML = '';\n";
+    echo "	document.getElementById(\"selectframe\").style.visibility = 'hidden';\n";
+    echo "	parent.close_chooser();\n";
+    echo "	}\n";
+    echo "</script>\n";
+    echo "</head>\n\n";
+    echo "<body>\n";
+    echo "<a href=\"javascript:close_file();\"><font size=1 face=\"Arial,Helvetica\">"._QXZ("close frame")."</font></a>\n";
+    echo "<div id='selectframe' style=\"height:400px;width:710px;overflow:scroll;\">\n";
+    
+    $stmt="SELECT count(*) from vicidial_users where user='$user' and user_level > 8 and active='Y';";
+    if ($DB>0) {echo "DEBUG: lead_log_list query - $stmt\n";}
+    $rslt=mysql_to_mysqli($stmt, $link);
+    $row=mysqli_fetch_row($rslt);
+    $allowed_user=$row[0];
+    if ($allowed_user < 1) {
+        $result = 'ERROR';
+        $result_reason = "lead USER DOES NOT HAVE PERMISSION TO VIEW List Logs LIST";
+        echo "$result: $result_reason: |$user|$allowed_user|\n";
+        echo "</div></body></HTML>\n";
+        $data = "$allowed_user";
+        api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+        exit;
+    } else {
+        if ( (!preg_match("/ $function /",$api_allowed_functions)) and (!preg_match("/ALL_FUNCTIONS/",$api_allowed_functions)) ) {
+            $result = 'ERROR';
+            $result_reason = "auth USER DOES NOT HAVE PERMISSION TO USE THIS FUNCTION";
+            echo "$result: $result_reason: |$user|$function|\n";
+            echo "</div></body></HTML>\n";
+            $data = "$allowed_user";
+            api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+            exit;
+        }
+        if($failed == 0) {
+            $DLLTable = "";
+            if($show_arch == "Y") {
+                $stmt="SELECT * FROM `snctdialer_list_change_log` WHERE `lead_id` = '".$lead_id."' UNION ALL SELECT * FROM `snctdialer_list_change_log_archive` WHERE `lead_id` = '".$lead_id."' ORDER BY `Change_date` DESC;";
+            } else{
+                $stmt="SELECT * FROM `snctdialer_list_change_log` WHERE `lead_id` = '".$lead_id."' ORDER BY `Change_date` DESC;";
+            }
+            $rslt=mysql_to_mysqli($stmt, $link);
+            if ($DB) {echo "$stmt\n";}
+            $numrecs_to_print = mysqli_num_rows($rslt);
+            
+            if($numrecs_to_print > 0) {
+                $DLLTable .= "<table style='font-family:\"Courier New\", Courier, monospace; font-size:80%'>";
+                $DLLTable .= "<TR><TH>Date</TH><TH>Type</TH><TH>Old Data</TH><TH>New Data</TH></TR>";
+                while ($row=mysqli_fetch_row($rslt)) {
+                    $DLLTable .= "<TR><TD>$row[2]</TD><TD>$row[3]</TD><TD>$row[4]</TD><TD>$row[5]</TD> </TR>";
+                }
+                $DLLTable .= "</table></font>";
+            } else  {
+                $DLLTable = "No Data found!";
+            }
+        }
+        echo $DLLTable;
+    }
+    echo "</div></body></HTML>\n";
+    exit;
 }
 ################################################################################
 ### END lead_log_list

@@ -1,20 +1,47 @@
 <?php
-# reset_campaign_lists.php - VICIDIAL administration page
+###############################################################################
 #
-# Copyright (C) 2018  Matt Florell <vicidial@gmail.com>, Joe Johnson <freewermadmin@gmail.com>    LICENSE: AGPLv2
+# Modul reset_campaign_lists.php
 #
-# CHANGES
-# 130711-2051 - First build
-# 130830-1800 - Changed to mysqli PHP functions
-# 141007-2058 - Finalized adding QXZ translation to all admin files
-# 141229-2009 - Added code for on-the-fly language translations display
-# 160508-2301 - Added colors features, fixed allowed campaigns bug
-# 170409-1541 - Added IP List validation code
-# 180916-1027 - Added per-list daily reset limit
+# SNCT-Dialer™ Administration
+#
+# Copyright (©) 2023      SNCT GmbH <info@snct-gmbh.de>
+#               2023      Jörg Frings-Fürst <open_source@jff.email>
+#
+# LICENSE: AGPLv3
+#
+###############################################################################
+#
+# based on VICIdial®
+# (© 2018  Matt Florell <vicidial@gmail.com>)
+#
+###############################################################################
+#
+# requested Module:
+#
+# dbconnect_mysqli.php
+# functions.php
+# admin_header.php
+# reset_list_adv.php
+# 
+#
+###############################################################################
+#
+# Version  / Build
+#
+$reset_campaign_lists_version = '3.1.0-10';
+$reset_campaign_lists_build = '20230620-3';
+###############################################################################
+#
+# Changelog
+#
+# 2023-06-20 jff    Correct display Campaign names
+#                   tag RESET if reset_list_adv.php make changes
+# 2023-06-19 jff    Select multiple Campaigns 
+#                   Display inactive Campaigns
 #
 
-$admin_version = '2.14-7';
-$build = '180916-1027';
+
 
 require("dbconnect_mysqli.php");
 require("functions.php");
@@ -261,7 +288,7 @@ if ( ($LOGuser_level >= 9) and $LOGmodify_campaigns>0 and $LOGmodify_lists>0 and
 	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$campaign_stmt="SELECT vl.campaign_id, vc.campaign_name, count(*) as ct from vicidial_lists vl, vicidial_campaigns vc where vc.active='Y' and vc.campaign_id=vl.campaign_id $LOGallowed_campaignsSQL group by campaign_id order by campaign_id, campaign_name asc";
+	$campaign_stmt="SELECT vl.campaign_id, vc.campaign_name, count(*) as ct from vicidial_lists vl, vicidial_campaigns vc where vc.campaign_id=vl.campaign_id $LOGallowed_campaignsSQL group by campaign_id order by campaign_id, campaign_name asc";
 	$campaign_rslt=mysql_to_mysqli($campaign_stmt, $link);
 	if ($DB > 0) {echo $campaign_stmt;}
 
@@ -275,7 +302,7 @@ if ( ($LOGuser_level >= 9) and $LOGmodify_campaigns>0 and $LOGmodify_lists>0 and
 
 	echo "<tr bgcolor='#$SSstd_row2_background'>";
 	echo "<td align='left'>";
-	echo "<select name='reset_lead_called_campaigns'>\n";
+	echo "<select name='reset_lead_called_campaigns[]' multiple>\n";
 	while ($campaign_row=mysqli_fetch_array($campaign_rslt))
 		{
 		if ($campaign_row["ct"]>0)
@@ -297,16 +324,28 @@ if ( ($LOGuser_level >= 9) and $LOGmodify_campaigns>0 and $LOGmodify_lists>0 and
 	echo "<td align='right'><input type='submit' name='submit_campaign_reset' value='"._QXZ("SUBMIT")."'></td></tr>";
 	echo "<tr ><td colspan='3'>";
 
-	if ($submit_campaign_reset && $reset_lead_called_campaigns)
+	if ($submit_campaign_reset && count($reset_lead_called_campaigns) > 0)
 		{
 		if ($all_or_active_only=="Y") {$list_id_clause="and active='Y'";  $verbiage="(active lists only)";}
-
-		$list_id_stmt="SELECT list_id,daily_reset_limit,resets_today from vicidial_lists where campaign_id='$reset_lead_called_campaigns' $list_id_clause order by list_id asc";
+        $countIn = 0;
+		$camp_list_in = "";
+		foreach ($reset_lead_called_campaigns as $value) {
+		    if($countIn != 0) {
+		        $camp_list_in .= "," . "'" .$value . "'";
+		    } else {
+		        $camp_list_in .= "'" . $value . "'";
+		        $countIn = 1;
+		    }
+		}
+		#$list_id_stmt="SELECT list_id,daily_reset_limit,resets_today from vicidial_lists where campaign_id='$reset_lead_called_campaigns' $list_id_clause order by list_id asc";
+		$list_id_stmt="SELECT list_id,daily_reset_limit,resets_today from vicidial_lists where campaign_id IN ($camp_list_in) $list_id_clause order by list_id asc";
+##		echo $list_id_stmt .PHP_EOL;
+		
 		if ($DB > 0) {echo $list_id_stmt;}
 		$list_id_rslt=mysql_to_mysqli($list_id_stmt, $link);
 		if (mysqli_num_rows($list_id_rslt)>0)
 			{
-			echo _QXZ("CAMPAIGN")." <B>$reset_lead_called_campaigns</B> "._QXZ("LISTS RESETTING")." $verbiage:<BR>\n<UL>";
+			echo _QXZ("CAMPAIGN")." <B>$camp_list_in</B> "._QXZ("LISTS RESETTING")." $verbiage:<BR>\n<UL>";
 
 			### LOG INSERTION Admin Log Table ###
 			$SQLdate=date("Y-m-d H:i:s");
@@ -332,6 +371,7 @@ if ( ($LOGuser_level >= 9) and $LOGmodify_campaigns>0 and $LOGmodify_lists>0 and
 				$stmtD = "";
 				if (file_exists('reset_list_adv.php')) {
 				    require('reset_list_adv.php');
+				    $affected_rowsB = $DoneAnz;
 				} else {
 				    $upd_stmtB="UPDATE vicidial_list SET called_since_last_reset='N' where list_id='$list_id';";
 				    $upd_rsltB=mysql_to_mysqli($upd_stmtB, $link);
@@ -350,7 +390,7 @@ if ( ($LOGuser_level >= 9) and $LOGmodify_campaigns>0 and $LOGmodify_lists>0 and
 	
 				
 				echo "<LI>"._QXZ("LIST ID")." $list_id - ";
-				if (($affected_rowsB > 0) || ($affected_rowsD > 0 )) {echo _QXZ("RESET")."<BR>";} else {echo "<B>"._QXZ("NOT")."</B> "._QXZ("RESET")."<BR>";}
+				if (($affected_rowsB > 0) || ($affected_rowsD > 0 )) {echo _QXZ("RESET")."(".$affected_rowsB.")<BR>";} else {echo "<B>"._QXZ("NOT")."</B> "._QXZ("RESET")."<BR>";}
 				}
 			else
 				{
@@ -374,11 +414,16 @@ if ( ($LOGuser_level >= 9) and $LOGmodify_campaigns>0 and $LOGmodify_lists>0 and
 
 	echo "</TD></TR>\n";
 	echo "<TR><TD BGCOLOR=#$SSmenu_background ALIGN=CENTER>\n";
-	echo "<font size=0 color=white><br><br><!-- RUNTIME: $RUNtime seconds<BR> -->";
-	echo _QXZ("VERSION").": $admin_version<BR>";
-	echo _QXZ("BUILD").": $build\n";
+	echo "<FONT STYLE=\"font-family:HELVETICA;font-size:9;color:white;\"><br><br><!-- RUNTIME: $RUNtime seconds<BR> -->";
+#	echo "<font size=0 color=white><br><br><!-- RUNTIME: $RUNtime seconds<BR> -->";
+	echo _QXZ("VERSION").": $reset_campaign_lists_version<BR>";
+	echo _QXZ("BUILD").": $reset_campaign_lists_build\n";
+	
+	
 	if (!preg_match("/_BUILD_/",$SShosted_settings))
-		{echo "<BR><a href=\"$PHP_SELF?ADD=999995\"><font color=white>&copy; 2016 "._QXZ("ViciDial Group")."</font></a><BR><img src=\"images/pixel.gif\">";}
+	{echo "<BR><a href=\"$PHP_SELF?ADD=999995\"><font color=white>&copy; 2019 ViciDial Group</font></a><BR><img src=\"images/pixel.gif\">";}
+	echo "<BR><a href=\"$PHP_SELF?ADD=999995\"><font color=white>&copy; 2023 SNCT GmbH</font></a><BR><img src=\"images/pixel.gif\">";
+	echo "<BR><BR><a href=\"/vicidial/changelog.php\" target=\"_blank\" type=\"text/html\"><font color=white>Changelog</font></a><BR><img src=\"images/pixel.gif\">";
 	echo "</font>\n";
 	?>
 

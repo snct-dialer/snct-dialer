@@ -5,8 +5,8 @@
 #
 # SNCT-Dialer™ Search Leads
 #
-# Copyright (©) 2019-2021 SNCT GmbH <info@snct-gmbh.de>
-#               2017-2021 Jörg Frings-Fürst <open_source@jff.email>
+# Copyright (©) 2019-2023 SNCT GmbH <info@snct-gmbh.de>
+#               2017-2023 Jörg Frings-Fürst <open_source@jff.email>
 #
 # LICENSE: AGPLv3
 #
@@ -27,13 +27,14 @@
 #
 # Version  / Build
 #
-$admin_search_lead_version = '3.1.0-4';
-$admin_search_lead_build = '20220712-17';
+$admin_search_lead_version = '3.1.1-2';
+$admin_search_lead_build = '20230929-4';
 #
 ###############################################################################
 #
 # Changelog
 #
+# 2023-09-29 jff    Display summery only from allowed lists
 # 2021-11-05 jff    Rewrite lead search
 # 2021-06-17 jff    Fix script position
 # 2021-05-29 jff    Allow partial search on phonenumbers
@@ -660,9 +661,11 @@ else
 		} else {
 			$stmt = "";
 			if($AdminLevel < 9) {
-				$stmt = "SET STATEMENT max_statement_time=15 FOR ";
+				$stmt = "SET STATEMENT max_statement_time=15 FOR SELECT $vicidial_list_fields from $vl_table $whereLOGallowed_listsSQL AND";
+			} else {
+			    $stmt = "SELECT $vicidial_list_fields from $vl_table where ";
 			}
-			$stmt .= "SELECT $vicidial_list_fields from $vl_table where $vendorIDSQL $customerSQL $leadIDSQL $phoneSQL $first_nameSQL $CCSQL $last_nameSQL $address1SQL $address1_noSQL $citySQL $userSQL $ownerSQL $list_idSQL $email_SQL $statusSQL $LOGallowed_listsSQL LIMIT 5000;";
+			$stmt .= " $vendorIDSQL $customerSQL $leadIDSQL $phoneSQL $first_nameSQL $CCSQL $last_nameSQL $address1SQL $address1_noSQL $citySQL $userSQL $ownerSQL $list_idSQL $email_SQL $statusSQL $LOGallowed_listsSQL LIMIT 5000;";
 			if($DB) {
 				echo $stmt;
 			}
