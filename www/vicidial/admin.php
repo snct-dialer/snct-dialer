@@ -6101,6 +6101,7 @@ if ( ( (strlen($ADD)>4) and ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($AD
 	if ($ADD==41)
 		{
 		$p=0;
+		if (is_null($XFERgroups)) $XFERgroups = array();
 		$XFERgroup_ct = count($XFERgroups);
 		while ($p < $XFERgroup_ct)
 			{
@@ -15473,6 +15474,7 @@ if ($ADD==48)
 		else
 			{
 			$p=0;
+			if (is_null($qc_statuses)) $qc_statuses = array();
 			$qc_statuses_ct = count($qc_statuses);
 			while ($p < $qc_statuses_ct)
 				{
@@ -15480,6 +15482,7 @@ if ($ADD==48)
 				$p++;
 				}
 			$p=0;
+			if (is_null($qc_lists)) $qc_lists = array();
 			$qc_lists_ct = count($qc_lists);
 			while ($p < $qc_lists_ct)
 				{

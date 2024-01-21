@@ -14,6 +14,7 @@ if($CBAgentNoTestNum != 0) {
 	for ($n = 0; $n != $CBAgentNoTestNum; $n++) {
 		$CBName = sprintf("AgentNoCheck%'.04d", $n);
 		$CBAgentNoTest[] = $SetUp->GetData("Checkcallback", $CBName);
+		$Log->Log("Add NoTestAgent: " . $CBName . "|" . $SetUp->GetData("Checkcallback", $CBName));
 	}
 }
 
@@ -30,15 +31,31 @@ function CheckCallbacks($User, $Lead, $PG) {
 
 	$StartTime = microtime(true);
 
-	if(in_array($user, $CBAgentNoTest)) {
-		$Log->Log("GenDispoScreen NoTest: " . $user);
+	if(in_array($User, $CBAgentNoTest)) {
+		$Log->Log("GenDispoScreen NoTest: " . $User);
 		return 1;
 	}
-
+	#
+	# Check Elite
+	#
+#	$sqlElite = "SELECT `owner` FROM `vicidial_list` WHERE `lead_id` = '".$Lead."';";
+	$sqlElite  = "SELECT `owner` FROM `vicidial_list` VL, `vicidial_lists` VLS WHERE VL.`lead_id` = '".$Lead."' ";
+	$sqlElite .= " AND VL.`list_id` = VLS.`list_id` AND VLS.`base_campaign_id` LIKE 'Elite%';";
+	if($DB) { echo $sqlElite; }
+	$resElite = mysqli_query($MySqlLink, $sqlElite);
+#	$rowElite = mysqli_fetch_row($resElite);
+#	if(($rowElite[0] == '2005') || ($rowElite[0] == '2025') || ($rowElite[0] == '2015')) {
+	if(mysqli_num_rows($resElite) > 0) {
+	    $EndTime = microtime(true);
+	    $RunTime = $EndTime - $StartTime;
+	    $Log->Log("CheckCallbacks (Elite NG) Dauer: " . $RunTime ."|" .$Lead  );
+	    return 0;
+	}
 	if(($CBAgentCount != 0) && ($PG != 'G')) {
 		$DateTemp = date("Y-m-d");
 #		$DateTemp = date("Y-m-d H:i:s", strtotime($CBAgentDays, time())); 
-		$sql = "SELECT COUNT(*) FROM `vicidial_agent_log` WHERE `status` = 'CALLBK' AND `user` = '". $User ."' AND DATE (`event_time`) = '". $DateTemp ."';";
+#		$sql = "SELECT COUNT(*) FROM `vicidial_agent_log` WHERE `status` = 'CALLBK' AND `user` = '". $User ."' AND DATE (`event_time`) = '". $DateTemp ."';";
+		$sql = "SELECT COUNT(*) FROM `vicidial_agent_log` WHERE `status` = 'CALLBK' AND `user` = '". $User ."' AND DATE (`event_time`) = '". $DateTemp ."' AND `campaign_id` NOT IN ('ALTSNCT1','ALTSNCT2');";
 		if($DB) { echo $sql; }
 		$res = mysqli_query($MySqlLink, $sql);
 		$row = mysqli_fetch_row($res);

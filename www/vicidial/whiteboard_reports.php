@@ -181,7 +181,8 @@ if (preg_match("/status_performance/", $rpt_type)) {
 		$status_counts["$row[0]"][2]+=$row[2];
 	}
 
-	while (list($key, $val)=each($status_counts)) {
+#	while (list($key, $val)=each($status_counts)) {
+	foreach($status_counts as $key => $val) {
 		$kstatus_counts[]=array('status' => $key, 'counts' => $val[0], 'sales' => $val[1], 'dead' => $val[2]);
 	}
 
@@ -296,7 +297,8 @@ if (preg_match("/(agent|team)_performance/", $rpt_type)) {
 	if (count($agent_counts)==0) {
 		$rpt_string=_QXZ("REPORT RETURNED NO RESULTS");
 	} else {
-		while(list($key, $val)=each($agent_counts)) {
+#		while(list($key, $val)=each($agent_counts)) {
+	    foreach($agent_counts as $key => $val) {
 			$full_name="";
 			if (preg_match('/team_performance/', $rpt_type)) {
 				$user_stmt="select group_name from vicidial_user_groups where user_group='$key'";
@@ -405,7 +407,8 @@ if (preg_match("/floor_performance/", $rpt_type)) {
 		ksort($call_counts);
 		$prev_calls=0;
 		$prev_sales=0;
-		while(list($key, $val)=each($call_counts)) {
+#		while(list($key, $val)=each($call_counts)) {
+		foreach($call_counts as $key => $val) {
 		#	if($val[2]>0) { // With time ranges, trim off the starting time in case person running report sets it before they start dialing.
 				$mins++;
 				$shift_duration=$mins*60;
@@ -535,7 +538,8 @@ if (preg_match("/(did|ingroup)_performance/", $rpt_type)) {
 	if (count($inbound_counts)==0) {
 		$rpt_string=_QXZ("REPORT RETURNED NO RESULTS");
 	} else {
-		while(list($key, $val)=each($inbound_counts)) {
+#		while(list($key, $val)=each($inbound_counts)) {
+	    foreach($inbound_counts as $key => $val) {
 
 			if (preg_match("/did_performance/", $rpt_type)) {
 				$user_stmt="SELECT did_description from vicidial_inbound_dids where did_pattern='$key'";
@@ -624,7 +628,8 @@ if ($rpt_type=="floor_performance_hourly") {
 	if (count($cumulative_hours_array)==0) {
 		$rpt_string=_QXZ("REPORT RETURNED NO RESULTS");
 	} else {
-		while(list($key, $val)=each($cumulative_hours_array)) {
+#		while(list($key, $val)=each($cumulative_hours_array)) {
+	    foreach($cumulative_hours_array as $key => $val) {
 			$rpt_string.="$key|$val\n";
 		}
 	}

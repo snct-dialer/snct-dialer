@@ -369,6 +369,25 @@ function GetUserName($User) {
 	return $ret;
 }
 
+function GetWaitTime($Campaign) {
+    global $link;
+    
+    $NOW_DATE = date("Y-m-d 00:00:00");
+    $NOW_Last_Hour = date("Y-m-d H:i:s", time() - 1800 );
+    
+    $sql_d = "select avg(wait_sec) from vicidial_agent_log where `campaign_id` = '".$Campaign."' AND event_time >= '".$NOW_DATE."' and pause_sec<65000 and wait_sec<65000 and talk_sec<65000 and dispo_sec<65000 ";
+    $sql_h = "select avg(wait_sec) from vicidial_agent_log where `campaign_id` = '".$Campaign."' AND event_time >= '".$NOW_Last_Hour."' and pause_sec<65000 and wait_sec<65000 and talk_sec<65000 and dispo_sec<65000 ";
+    if ($DB) {echo "|$sql_d|$sql_h|\n";}
+    $rslt_d=mysql_to_mysqli($sql_d, $link);
+    $row_d=mysqli_fetch_row($rslt_d);
+    $rslt_h=mysql_to_mysqli($sql_h, $link);
+    $row_h=mysqli_fetch_row($rslt_h);
+    
+#    $ret = $row_d[0] . " / ". $row_h[0];
+    $ret = number_format($row_d[0], 1, ',', '.') . " / ". number_format($row_h[0], 1, ',', '.');
+    
+    return $ret;
+}
 
 $NOW_TIME = date("Y-m-d H:i:s");
 $NOW_DAY = date("Y-m-d");
@@ -2516,6 +2535,15 @@ else
 		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._("DIFF").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $diffpctONEMIN% &nbsp; &nbsp; </TD>";
 		echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._("ORDER").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; "._("$DIALorder")." &nbsp; &nbsp; </TD>";
 		echo "</TR>";
+		if( 1 == count(explode(',' , $group_SQL))) {
+		    echo "<TR>";
+		    $StrWait = GetWaitTime(str_replace("'","",$group_SQL));
+		    echo "<TD ALIGN=RIGHT><font class=\"top_settings_key\">"._("avg. waittime").":</font></TD><TD ALIGN=LEFT><font class=\"top_settings_val\">&nbsp; $StrWait sec. &nbsp; &nbsp; </TD>";
+		    echo "<TD></TD>";
+		    echo "<TD></TD>";
+		    echo "<TD></TD>";
+		    echo "</TR>";
+		}
 
 		if ($AGENTtimeSTATS>0)
 			{

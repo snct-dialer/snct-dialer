@@ -33,13 +33,14 @@
 #
 # Version  / Build
 #
-$admin_modify_lead_version = '3.1.1-22';
-$admin_modify_lead_build = '20230704-7';
+$admin_modify_lead_version = '3.1.1-23';
+$admin_modify_lead_build = '20240108-2';
 #
 ###############################################################################
 #
 # Changelog
 #
+# 2024-01-09 jff    Callback set status to ACTIVE if updated
 # 2023-07-04 jff    Recording access allways over recording_log_redirect.php
 #                   Log recording access only for Userlevel >= 9
 # 2023-04-07 jff    Add launch_change_log
@@ -577,7 +578,8 @@ if ($enable_gdpr_download_deletion>0)
 						$HTML_header.="<tr>\n";
 						}
 					$HTML_body.="<tr>\n";
-					while (list($key, $val)=each($row))
+#					while (list($key, $val)=each($row))
+                    foreach ($row as $key => $val)
 						{
 						if ($key=="entry_list_id") {$list_id=$val;}
 						if (in_array($key, $purge_field_array["$table_name"]) || (preg_match("/^custom_/", $table_name) && $key!="lead_id"))
@@ -1450,7 +1452,7 @@ else
 	if ($CBchangeUSERtoANY == 'YES')
 		{
 		### set vicidial_callbacks record to an ANYONE callback for this lead
-		$stmtK="UPDATE vicidial_callbacks set recipient='ANYONE' where callback_id='" . mysqli_real_escape_string($link, $callback_id) . "';";
+		$stmtK="UPDATE vicidial_callbacks set `status` = 'ACTIVE', recipient='ANYONE' where callback_id='" . mysqli_real_escape_string($link, $callback_id) . "';";
 		if ($DB) {sd_debug_log($stmtK);}
 		$rslt=mysqli_query($link, $stmtK);
 
@@ -1459,7 +1461,7 @@ else
 	if ($CBchangeANYtoUSER == 'YES')
 		{
 		### set vicidial_callbacks record to an USERONLY callback for this lead
-		$stmtM="UPDATE vicidial_callbacks set user='" . mysqli_real_escape_string($link, $CBuser) . "',recipient='USERONLY' where callback_id='" . mysqli_real_escape_string($link, $callback_id) . "';";
+		$stmtM="UPDATE vicidial_callbacks set  `status` = 'ACTIVE', user='" . mysqli_real_escape_string($link, $CBuser) . "',recipient='USERONLY' where callback_id='" . mysqli_real_escape_string($link, $callback_id) . "';";
 		if ($DB) {sd_debug_log($stmtM);}
 		$rslt=mysqli_query($link, $stmtM);
 
@@ -1471,7 +1473,7 @@ else
 		$comments = preg_replace("/\n/",' ',$comments);
 		$comments = preg_replace("/\r/",'',$comments);
 		### change date/time of vicidial_callbacks record for this lead
-		$stmtN="UPDATE vicidial_callbacks set callback_time='" . mysqli_real_escape_string($link, $appointment_date) . " " . mysqli_real_escape_string($link, $appointment_time) . "',comments='" . mysqli_real_escape_string($link, $comments) . "',lead_status='" . mysqli_real_escape_string($link, $CBstatus) . "' where callback_id='" . mysqli_real_escape_string($link, $callback_id) . "';";
+		$stmtN="UPDATE vicidial_callbacks set `status` = 'ACTIVE', callback_time='" . mysqli_real_escape_string($link, $appointment_date) . " " . mysqli_real_escape_string($link, $appointment_time) . "',comments='" . mysqli_real_escape_string($link, $comments) . "',lead_status='" . mysqli_real_escape_string($link, $CBstatus) . "' where callback_id='" . mysqli_real_escape_string($link, $callback_id) . "';";
 		if ($DB) {sd_debug_log($stmtN);}
 		$rslt=mysqli_query($link, $stmtN);
 

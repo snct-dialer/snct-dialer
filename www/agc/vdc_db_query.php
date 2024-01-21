@@ -16593,7 +16593,11 @@ if ($ACTION == 'CALLLOGview') {
 	if($OnlyInbounds == 0) {
 		$stmt="SELECT start_epoch,call_date,campaign_id,length_in_sec,status,phone_code,phone_number,lead_id,term_reason,queue_seconds from vicidial_closer_log where user='$user' and call_date >= '$date 0:00:00'  and call_date <= '$date 23:59:59' order by closecallid desc limit 10000;";
 	} else {
-		$stmt="SELECT start_epoch,call_date,campaign_id,length_in_sec,status,phone_code,phone_number,lead_id,term_reason,queue_seconds from vicidial_closer_log where user='$user' and call_date >= '$date 0:00:00'  and call_date <= '$date 23:59:59' AND campaign_id LIKE 'AGENTDIRECT%' order by closecallid desc limit 10000;";
+		$stmt  = "SELECT VCL.start_epoch, VCL.call_date, VCL.campaign_id, VCL.length_in_sec, VCL.status, VCL.phone_code, VCL.phone_number, ";
+		$stmt .= " VCL.lead_id, VCL.term_reason, VCL.queue_seconds ";
+		$stmt .= " FROM `vicidial_closer_log` VCL, `vicidial_list` VL where VCL.user='$user' and VCL.call_date >= '$date 0:00:00' ";
+		$stmt .= " AND VCL.call_date <= '$date 23:59:59' AND VCL.campaign_id LIKE 'AGENTDIRECT%' AND VCL.`lead_id` = VL.`lead_id` ";
+		$stmt .= " AND VCL.`status` = VL.`status` order by closecallid desc limit 10000;";
 	}
 	$rslt=mysql_to_mysqli($stmt, $link);
 	if ($mel > 0) {
